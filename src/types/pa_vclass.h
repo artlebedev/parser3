@@ -1,9 +1,11 @@
-/*
-	Parser
+/**	@file
+	Parser: class parser class decl.
+
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vclass.h,v 1.12 2001/04/04 06:16:22 paf Exp $
+	$Id: pa_vclass.h,v 1.13 2001/04/26 14:55:34 paf Exp $
 */
 
 #ifndef PA_VCLASS_H
@@ -13,6 +15,10 @@
 #include "pa_vhash.h"
 #include "pa_vjunction.h"
 
+/**	stores 
+	- base: VClass::base()
+	- fields: VClass::ffields
+*/
 class VClass : public VStateless_class {
 public: // Value
 	

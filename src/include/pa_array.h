@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_array.h,v 1.35 2001/04/23 15:49:58 paf Exp $
+	$Id: pa_array.h,v 1.36 2001/04/26 14:55:25 paf Exp $
 */
 
 #ifndef PA_ARRAY_H
@@ -132,26 +132,29 @@ public:
 
 private:
 
+	/// several record elements
 	struct Chunk {
-		// the number of rows in chunk
-		int count;
+		int count;  ///< the number of rows in chunk
+		/// item or a link to next chunk union
 		union Row {
 			Item *item;
-			Chunk *link;  // link to the next chunk in chain
+			Chunk *link;  ///< link to the next chunk in chain
 		} rows[1];
 		// next rows are here
 	}
-		*head;  // the head chunk of the chunk chain
+		*head;  ///< the head chunk of the chunk chain
 
-	// last allocated chunk
-	// helps appending Arrays
+	/** last allocated chunk
+		helps appending Arrays
+	*/
 	Chunk *tail;
 
-	// next append would write to this record
+	/// next append would write to this record
 	Chunk::Row *append_here;
 	
-	// the address of place where lies address 
-	// of the link to the next chunk to allocate
+	/**	the address of place where lies address 
+		of the link to the next chunk to allocate
+	*/
 	Chunk::Row *link_row;
 
 private:

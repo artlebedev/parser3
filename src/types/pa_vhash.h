@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vhash.h,v 1.10 2001/04/10 10:32:15 paf Exp $
+	$Id: pa_vhash.h,v 1.11 2001/04/26 14:55:35 paf Exp $
 */
 
 #ifndef PA_VHASH_H
@@ -13,21 +13,22 @@
 #include "pa_value.h"
 #include "pa_hash.h"
 
+/// value of type 'hash', implemented with Hash
 class VHash : public Value {
 public: // value
 
-	// all: for error reporting after fail(), etc
+	/// all: for error reporting after fail(), etc
 	const char *type() const { return "hash"; }
 
-	// hash: fhash
+	/// VHash: fhash
 	Hash *get_hash() { return &fhash; }
 
-	// hash: (key)=value
+	/// VHash: (key)=value
 	Value *get_element(const String& name) { 
 		return static_cast<Value *>(fhash.get(name));
 	}
 	
-	// hash: (key)=value
+	/// VHash: (key)=value
 	void put_element(const String& name, Value *value) { 
 		fhash.put(name, value);
 	}

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.51 2001/04/25 11:02:57 paf Exp $
+	$Id: pa_common.C,v 1.52 2001/04/26 14:55:28 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -306,9 +306,10 @@ const char *unescape_chars(Pool& pool, const char *cp, int len) {
 	return s;
 }
 
+/// used by attributed_meaning_to_string / append_attribute_subattribute
 struct Attributed_meaning_info {
-	String::Untaint_lang lang;
-	String *header;
+	String *header; // header line being constructed
+	String::Untaint_lang lang; // language in which to append to that line
 };
 static void append_attribute_subattribute(const Hash::Key& akey, Hash::Val *avalue, 
 										  void *info) {
@@ -332,8 +333,8 @@ const String& attributed_meaning_to_string(Value& meaning,
 			result.append(value->as_string(), lang, true);
 
 		Attributed_meaning_info attributed_meaning_info={
-			lang,
-			&result
+			&result,
+			lang
 		};
 		hash->for_each(append_attribute_subattribute, &attributed_meaning_info);
 	} else // result value

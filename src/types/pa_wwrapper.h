@@ -1,9 +1,11 @@
-/*
-	Parser
+/**	@file
+	Parser: write wrapper write context
+
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_wwrapper.h,v 1.6 2001/03/29 20:53:06 paf Exp $
+	$Id: pa_wwrapper.h,v 1.7 2001/04/26 14:55:35 paf Exp $
 */
 
 #ifndef PA_WWRAPPER_H
@@ -12,14 +14,15 @@
 #include "pa_wcontext.h"
 #include "pa_exception.h"
 
+/// specialized write context, adds to WContext VHash autocreation ability
 class WWrapper : public WContext {
 public: // Value
 
-	// all: for error reporting after fail(), etc
+	/// all: for error reporting after fail(), etc
 	const char *type() const { return "wwrapper"; }
-	// wwrapper: transparent
+	/// WWrapper: transparent
 	Value *get_element(const String& name) { return check_value()->get_element(name); }
-	// wwrapper: transparent
+	/// WWrapper: transparent
 	void put_element(const String& aname, Value *avalue){ 
 		if(!fvalue) {
 			fvalue=NEW VHash(pool());

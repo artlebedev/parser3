@@ -5,11 +5,16 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_dir.h,v 1.2 2001/04/09 08:55:28 paf Exp $
+	$Id: pa_dir.h,v 1.3 2001/04/26 14:55:25 paf Exp $
 */
 
 #ifndef PA_DIR_H
 #define PA_DIR_H
+
+/** @struct ffblk 
+	win32/unix unified directory entry structure name
+	for findfirst/next/close interface
+*/
 
 #ifdef WIN32
 
@@ -17,7 +22,6 @@
 
 #define MAXPATH MAX_PATH
 #define FA_DIREC FILE_ATTRIBUTE_DIRECTORY
-
 
 struct ffblk {
     DWORD ff_attrib;/*dwFileAttributes;*/
@@ -68,6 +72,7 @@ bool findfirst(const char *_pathname, struct ffblk *_ffblk, int _attrib);
 bool findnext(struct ffblk *_ffblk);
 void findclose(struct ffblk *_ffblk);
 
+/// main dir workhorse: calles win32/unix unified functions findfirst/next/close
 #define LOAD_DIR(dir,action) {\
     ffblk ffblk; \
     bool done=findfirst(dir, &ffblk, 0); \

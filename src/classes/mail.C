@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mail.C,v 1.21 2001/04/23 09:38:40 paf Exp $
+	$Id: mail.C,v 1.22 2001/04/26 14:55:12 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -155,6 +155,7 @@ static bool find_content_type_charset(const Hash::Key& aattribute, Hash::Val *am
 	return StrEqNc(aattribute.cstr(), "charset");
 }
 
+/// used by mail: _send / letter_hash_to_string / add_header_attribute
 struct Mail_info {
 	String *attribute_to_exclude;
 	const char *charset;
@@ -184,6 +185,8 @@ static void add_header_attribute(const Hash::Key& aattribute, Hash::Val *ameanin
 			cstr(String::UL_UNSPECIFIED, 0, mi.charset) << 
 		"\n";
 }
+
+/// used in mail: _send / letter_hash_to_string / add_part
 struct Seq_item {
 	const String *part_name;
 	Value *part_value;
@@ -391,6 +394,7 @@ static void sendmail(Request& r, const String& method_name,
 
 // methods
 
+/// ^mail:send{hash}
 static void _send(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
@@ -410,6 +414,6 @@ static void _send(Request& r, const String& method_name, MethodParams *params) {
 
 // initialize
 void initialize_mail_class(Pool& pool, VStateless_class& vclass) {
-	// ^mail:send{hash}
+	/// ^mail:send{hash}
 	vclass.add_native_method("send", Method::CT_STATIC, _send, 1, 1);
 }

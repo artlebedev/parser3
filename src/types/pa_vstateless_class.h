@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vstateless_class.h,v 1.9 2001/03/30 05:53:04 paf Exp $
+	$Id: pa_vstateless_class.h,v 1.10 2001/04/26 14:55:35 paf Exp $
 */
 
 #ifndef PA_VSTATELESS_CLASS_H
@@ -20,7 +20,7 @@ class Temp_method;
 /**
 	object' class. 
 	
-	basically collection of methods.
+	basically collection of methods [VStateless_class::fmethods, Method]
 
 	@see VStateless_object, Temp_method
 */

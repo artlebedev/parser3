@@ -3,7 +3,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: gifio.C,v 1.7 2001/04/23 09:38:45 paf Exp $
+	$Id: gifio.C,v 1.8 2001/04/26 14:55:17 paf Exp $
 
 
 	based on:
@@ -742,7 +742,8 @@ gdGifEncoder::gdGifEncoder(Pool& pool, gdImage& aim, String& afp) : Pooled(pool)
 		unsigned int    AspectRatio;
 	};
 #endif
-	
+
+/// Graphic Control Extension struct
 struct Gif89 {
 	int     transparent;
 	int     delayTime;

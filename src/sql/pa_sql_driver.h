@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_driver.h,v 1.7 2001/04/17 19:31:19 paf Exp $
+	$Id: pa_sql_driver.h,v 1.8 2001/04/26 14:55:31 paf Exp $
 
 
 	driver dynamic library must look like this:
@@ -48,6 +48,7 @@ public:
 class SQL_Driver {
 public:
 
+	/// row cell & column title  storage
 	struct Cell {
 		void *ptr;
 		size_t size;

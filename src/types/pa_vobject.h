@@ -1,9 +1,9 @@
-/*
-	Parser
+/**	@file
+	Parser: object class decl.
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vobject.h,v 1.5 2001/03/13 13:43:32 paf Exp $
+	$Id: pa_vobject.h,v 1.6 2001/04/26 14:55:35 paf Exp $
 */
 
 #ifndef PA_VOBJECT_H
@@ -14,13 +14,17 @@
 #include "pa_vclass.h"
 #include "pa_vstateless_object.h"
 
+
+/**	parser class instance,
+	stores fields VObject::ffields (dynamic, not static, which are stored in class).
+*/
 class VObject : public VStateless_object {
 public: // Value
 	
-	// all: for error reporting after fail(), etc
+	/// all: for error reporting after fail(), etc
 	const char *type() const { return "object"; }
 
-	// object_instance: (field)=value;(CLASS)=vclass;(method)=method_ref
+	/// VObject : (field)=value;(CLASS)=vclass;(method)=method_ref
 	Value *get_element(const String& name) {
 		// $CLASS,$BASE,$method
 		if(Value *result=VStateless_object::get_element(name))
@@ -29,7 +33,7 @@ public: // Value
 		return static_cast<Value *>(ffields.get(name));
 	}
 
-	// object_instance: (field)=value
+	/// VObject : (field)=value
 	void put_element(const String& name, Value *value) {
 		// speed1:
 		//   will not check for '$CLASS(subst)' trick

@@ -3,7 +3,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: gif.h,v 1.6 2001/04/17 19:00:32 paf Exp $
+	$Id: gif.h,v 1.7 2001/04/26 14:55:17 paf Exp $
 
 
 	based on:
@@ -41,8 +41,10 @@
 */
 class gdImage : public Pooled {
 
-public: /* Functions to manipulate images. */
-
+public: 
+	
+	//@{
+	/// @name Functions to manipulate images
 	gdImage(Pool& pool) : Pooled(pool) {}
 	void Create(int asx, int asy);
 	bool CreateFromGif(FILE *fd);
@@ -53,9 +55,9 @@ public: /* Functions to manipulate images. */
 	void Rectangle(int x1, int y1, int x2, int y2, int color);
 	void LineReplaceColor(int x1, int y1, int x2, int y2, int a, int b);
 	void FilledRectangle(int x1, int y1, int x2, int y2, int color);
+	//@}
 
-	/* Point type for use in polygon drawing. */
-	
+	/// Point type for use in polygon drawing.
 	struct Point {
 		int x, y;
 	};
@@ -84,8 +86,10 @@ public: /* Functions to manipulate images. */
 	void SetStyle(int width);
 	void SetInterlace(int interlaceArg); /* On or off(1 or 0) */
 	
-public: /* information about image. READ ONLY */
+public: 
 
+	//@{
+	/// @name information about image. READ ONLY
 	int SX() { return sx; }
 	int SY() { return sy; }
 	int ColorsTotal() { return colorsTotal; }
@@ -94,6 +98,7 @@ public: /* information about image. READ ONLY */
 	int Blue(int c) { return blue[c]; }
 	int GetTransparent() { return transparent; }
 	int GetInterlaced() { return interlace; }
+	//@}
 
 private:
 
@@ -125,6 +130,7 @@ private: // read gif
 	
 };
 
+///	used by gdImage::Gif to produce buffer with bytes in GIF format
 class gdGifEncoder : public Pooled {
 public:
 
@@ -138,9 +144,7 @@ public:
 
 private:
 
-	/*
-	 * a code_int must be able to hold 2**GIFBITS values of type int, and also -1
-	 */
+	/// a code_int must be able to hold 2**GIFBITS values of type int, and also -1
 	typedef int             code_int;
 	#ifdef SIGNED_COMPARE_SLOW
 	typedef unsigned long int count_int;

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.83 2001/04/23 09:38:50 paf Exp $
+	$Id: pa_string.h,v 1.84 2001/04/26 14:55:25 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -215,31 +215,32 @@ public:
 
 private:
 
+	/// several String fragments
 	struct Chunk {
-		// the number of rows in chunk
-		size_t count;
+		size_t count; ///< the number of rows in chunk
+		/// string fragment or a link to next chunk union
 		union Row {
-			// fragment
+			/// fragment
 			struct { 
-				const char *ptr;  // pointer to the start
-				size_t size;  // length
-				Untaint_lang lang; // untaint flag, later untaint language
+				const char *ptr;  ///< pointer to the start
+				size_t size;  ///< length
+				Untaint_lang lang; ///< untaint flag, later untaint language
 #ifndef NO_STRING_ORIGIN
-				Origin origin;  // origin
+				Origin origin;  ///< origin
 #endif
 			} item;
-			Chunk *link;  // link to the next chunk in chain
+			Chunk *link;  ///< link to the next chunk in chain
 		} rows[CR_PREALLOCATED_COUNT];
-		// next rows are here
-		Chunk *preallocated_link;
+		Chunk *preallocated_link; ///< next rows are here
 	}
-		head;  // the head chunk of the chunk chain
+		head;  ///< the head chunk of the chunk chain
 
-	// next append would write to this record
+	/// next append would write to this record
 	Chunk::Row *append_here;
 	
-	// the address of place where lies address 
-	// of the link to the next chunk to allocate
+	/** the address of place where lies address 
+		of the link to the next chunk to allocate
+	*/
 	Chunk::Row *link_row;
 
 private:

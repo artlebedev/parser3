@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: image.C,v 1.20 2001/04/23 09:38:39 paf Exp $
+	$Id: image.C,v 1.21 2001/04/26 14:55:12 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -23,6 +23,7 @@ VStateless_class *image_class;
 
 // helpers
 
+/// simple buffered reader[from memory/file], used in _measure
 class Measure_reader {
 public:
 	enum { READ_CHUNK_SIZE=0x400 };// 1K
@@ -59,7 +60,7 @@ private:
 	size_t size;
 };
 
-// GIF
+/// GIF file header
 struct GIF_Header {
 	char       type[3];         // 'GIF'
 	char       version[3];
@@ -70,7 +71,7 @@ struct GIF_Header {
 	char       nulls;
 };
 
-// JPEG
+/// JPEG file header
 struct JFIF_Header {
 	char length[2];              // length of JFIF segment marker
 	char identifier[5];          // JFIF identifier
@@ -82,6 +83,7 @@ struct JFIF_Header {
 	char ythumbnails;            // height of thumbnails
 	char reserved;               // reserved
 };
+/// JPEG frame header
 struct JPG_Frame {
 	char length[2];               // length of image marker
 	char data;                    // data precision of bits/sample
@@ -203,8 +205,7 @@ void measure(Pool& pool, const String& file_name,
 			"can not determine image type - no file name extension");
 }
 
-// read from somewhere
-
+/// used by image: _measure / read_mem
 struct Read_mem_info {
 	unsigned char *ptr;
 	unsigned char *eof;
@@ -217,6 +218,7 @@ static size_t read_mem(void*& buf, size_t limit, void *info) {
 	return read_size;
 }
 
+/// used by image: _measure / read_disk
 struct Read_disk_info {
 	const String *file_spec;
 	size_t offset;
@@ -268,9 +270,10 @@ static void _measure(Request& r, const String& method_name, MethodParams *params
 	static_cast<VImage *>(r.self)->set(file_name, width, height);
 }
 
+/// used by image: _html / append_attrib_pair
 struct Attrib_info {
-	String *tag;
-	Hash *skip;
+	String *tag; ///< html tag being constructed
+	Hash *skip; ///< tag attributes not to append to tag string [to skip]
 };
 static void append_attrib_pair(const Hash::Key& key, Hash::Val *val, void *info) {
 	Attrib_info& ai=*static_cast<Attrib_info *>(info);
@@ -284,8 +287,9 @@ static void append_attrib_pair(const Hash::Key& key, Hash::Val *val, void *info)
 	if(value.is_string() || value.as_double()>=0)
 		*ai.tag << "=\"" << value.as_string() << "\"";
 }
-/// ^image.html[]
-/// ^image.html[hash]
+/**	^image.html[]
+	^image.html[hash]
+*/
 static void _html(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
@@ -342,8 +346,9 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 	static_cast<VImage *>(r.self)->set(&file_name, width, height, &image);
 }
 
-/// ^image.create[width;height] bgcolor=white
-/// ^image.create[width;height;bgcolor]
+/**	^image.create[width;height] bgcolor=white
+	^image.create[width;height;bgcolor]
+*/
 static void _create(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
@@ -532,6 +537,8 @@ static void _polybar(Request& r, const String& method_name, MethodParams *params
 // font
 
 #define Y(y)(y+index*height+1)
+
+/// simple gdImage-based font storage & text output 
 class Font : public Pooled {
 public:
 	

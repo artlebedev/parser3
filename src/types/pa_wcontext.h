@@ -1,9 +1,11 @@
-/*
-	Parser
+/**	@file
+	Parser: write context class decl.
+
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_wcontext.h,v 1.11 2001/04/12 13:15:25 paf Exp $
+	$Id: pa_wcontext.h,v 1.12 2001/04/26 14:55:35 paf Exp $
 */
 
 #ifndef PA_WCONTEXT_H
@@ -15,35 +17,43 @@
 
 class Request;
 
+/** Write context
+	they do different write()s here, later picking up the result
+	@see Request::wcontext
+*/
 class WContext : public Value {
 	friend Request;
 public: // Value
 
-	// all: for error reporting after fail(), etc
+	/// all: for error reporting after fail(), etc
 	const char *type() const { return "wcontext"; }
-	// WContext: accumulated fstring
+	/// WContext: accumulated fstring
 	const String *get_string() { return &fstring; };
 
-	// WContext: none yet | transparent
+	/// WContext: none yet | transparent
 	VStateless_class *get_class() { return fvalue?fvalue->get_class():0; }
-	// wcontext: transparent
+	/// WContext: transparent
 	VAliased *get_aliased() { return fvalue?fvalue->get_aliased():0; }
 
 public: // WContext
 
-	// appends a fstring to result
+	/// appends a fstring to result
 	virtual void write(const String& astring, String::Untaint_lang lang);
 
-	// writes Value; raises an error if already
+	/// writes Value; raises an error if already
 	virtual void write(Value& avalue);
 
-	// if value is VString writes fstring,
-	// else writes Value; raises an error if already
+	/**
+		if value is VString writes fstring,
+		else writes Value; raises an error if already
+	*/
 	virtual void write(Value& avalue, String::Untaint_lang lang);
 
-	// retrives the resulting value
-	// that can be VString if value==0 or the Value object
-	// wmethod_frame first checks for $result and if there is one, returns it instead
+	/**
+		retrives the resulting value
+		that can be VString if value==0 or the Value object
+		wmethod_frame first checks for $result and if there is one, returns it instead
+	*/
 	virtual Value *result() {
 		// not constructing anymore [if were constructing]
 		// so to allow method calls after real constructor-method call

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.64 2001/04/23 10:58:27 paf Exp $
+	$Id: table.C,v 1.65 2001/04/26 14:55:13 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -218,6 +218,7 @@ static void _empty(Request& r, const String& method_name, MethodParams *params) 
 		r.write_pass_lang(r.process(params->get(1)));
 }
 
+/// used by table: _record / store_column_item_to_hash
 struct Record_info {
 	Pool *pool;
 	Table *table;

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile_tools.h,v 1.37 2001/04/19 18:30:40 paf Exp $
+	$Id: compile_tools.h,v 1.38 2001/04/26 14:55:28 paf Exp $
 */
 
 #ifndef COMPILE_TOOLS
@@ -37,8 +37,10 @@ enum lexical_state {
 	LS_METHOD_ROUND,
 	LS_METHOD_AFTER
 };
+/// compiler status
 struct parse_control {
-	// input
+	//@{
+	/// @name input
 	Pool *pool;
 	Request *request;
 	VStateless_class *cclass;
@@ -47,15 +49,18 @@ struct parse_control {
 	const char *file;
 	int line, col;
 #endif
-	// state
-	int pending_state; //=0
-	String *string; //=new(pool) String(pool)
+	//@}
+	//@{
+	/// @name state; initially
+	int pending_state; ///< i=0
+	String *string; ///< =new(pool) String(pool)
 	
 #define MAX_LEXICAL_STATES 100
-	enum lexical_state ls; //=LS_USER;
-	int sp; //=0
+	enum lexical_state ls; ///< =LS_USER;
+	int sp; ///< =0
 	enum lexical_state stack[MAX_LEXICAL_STATES];
-	int brackets_nestages[MAX_LEXICAL_STATES];
+	int brackets_nestages[MAX_LEXICAL_STATES]; ///< brackets nestage on each state
+	//@}
 	
 	/// output: filled input 'methods' and 'error' if any
 	char error[MAX_STRING];

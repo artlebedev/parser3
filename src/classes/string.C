@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.39 2001/04/20 14:18:29 paf Exp $
+	$Id: string.C,v 1.40 2001/04/26 14:55:13 paf Exp $
 */
 
 #include "pa_request.h"
@@ -136,6 +136,7 @@ static void search_action(Table& table, Array *row, int, int, void *) {
 		table+=row;
 }
 
+/// used by string: _match / replace_action
 struct Replace_action_info {
 	Request *request;  const String *origin;
 	const String *src;  String *dest;

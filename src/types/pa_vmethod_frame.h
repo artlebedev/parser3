@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vmethod_frame.h,v 1.3 2001/04/15 12:33:01 paf Exp $
+	$Id: pa_vmethod_frame.h,v 1.4 2001/04/26 14:55:35 paf Exp $
 */
 
 #ifndef PA_VMETHOD_FRAME_H
@@ -15,16 +15,16 @@
 #include "pa_vunknown.h"
 #include "pa_vjunction.h"
 
-/*
-	this value type accepts values written by method code
-	also it handles method parameters and local variables
+/**	Method frame write context
+	accepts values written by method code
+	also handles method parameters and local variables
 */
 class VMethodFrame : public WContext {
 public: // Value
 
-	// all: for error reporting after fail(), etc
+	/// all: for error reporting after fail(), etc
 	const char *type() const { return "method_frame"; }
-	// frame: my or self_transparent
+	/// VMethodFrame: my or self_transparent
 	Value *get_element(const String& name) { 
 		if(my) {
 			Value *result=static_cast<Value *>(my->get(name));
@@ -33,16 +33,16 @@ public: // Value
 		}
 		return fself->get_element(name); 
 	}
-	// frame: my or self_transparent
+	/// VMethodFrame: my or self_transparent
 	void put_element(const String& name, Value *value){ 
 		if(!(my && my->put_replace(name, value)))
 			fself->put_element(name, value);
 	}
 
-	// frame: self_transparent
+	/// VMethodFrame: self_transparent
 	VStateless_class* get_class() { return fself->get_class(); }
 
-	// methodframe: self_transparent
+	/// VMethodFrame: self_transparent
 	VAliased *get_aliased() { return fself->get_aliased(); }
 
 public: // wcontext

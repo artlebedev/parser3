@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: smtp.h,v 1.2 2001/04/10 06:57:24 paf Exp $
+	$Id: smtp.h,v 1.3 2001/04/26 14:55:20 paf Exp $
 */
 
 #include <winsock.h>
@@ -26,6 +26,7 @@
 
 //////////////////////////////////////////////////////////////////////////////
 
+/// SIMPLE MAIL TRANSPORT PROTOCOL Win32 realization
 class SMTP : public Pooled {
     char            *in_buffer;
     char            *out_buffer;
