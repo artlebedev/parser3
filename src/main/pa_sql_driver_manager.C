@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_sql_driver_manager.C,v 1.34 2001/09/14 15:41:59 parser Exp $"; 
+static const char *RCSId="$Id: pa_sql_driver_manager.C,v 1.35 2001/09/14 15:49:06 parser Exp $"; 
 
 #include "pa_sql_driver_manager.h"
 #include "ltdl.h"
@@ -13,8 +13,6 @@ static const char *RCSId="$Id: pa_sql_driver_manager.C,v 1.34 2001/09/14 15:41:5
 #include "pa_exception.h"
 #include "pa_common.h"
 #include "pa_threads.h"
-
-//#include "pa_sapi.h"
 
 // globals
 

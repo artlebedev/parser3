@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_xslt_stylesheet_manager.C,v 1.1 2001/09/14 15:41:59 parser Exp $"; 
+static const char *RCSId="$Id: pa_xslt_stylesheet_manager.C,v 1.2 2001/09/14 15:49:06 parser Exp $"; 
 
 #include "pa_xslt_stylesheet_manager.h"
 #include "pa_stylesheet_connection.h"
@@ -14,7 +14,10 @@ static const char *RCSId="$Id: pa_xslt_stylesheet_manager.C,v 1.1 2001/09/14 15:
 #include "pa_common.h"
 #include "pa_threads.h"
 
-//#include "pa_sapi.h"
+#if _MSC_VER
+#	pragma warning(disable:4291)   // disable warning 
+//	"no matching operator delete found; memory will not be freed if initialization throws an exception
+#endif
 
 // globals
 
@@ -22,7 +25,7 @@ XSLT_Stylesheet_manager *XSLT_stylesheet_manager;
 
 // consts
 
-const int EXPIRE_UNUSED_CONNECTION_SECONDS=60*5;
+const int EXPIRE_UNUSED_CONNECTION_SECONDS=5*60;
 const int CHECK_EXPIRED_CONNECTION_SECONDS=EXPIRE_UNUSED_CONNECTION_SECONDS*2;
 
 
