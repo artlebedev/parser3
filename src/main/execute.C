@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.80 2001/03/09 08:19:51 paf Exp $
+  $Id: execute.C,v 1.81 2001/03/09 08:28:34 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -116,7 +116,7 @@ void Request::execute(const Array& ops) {
 					root, frame, frame, local_ops);
 				
 				Value *value=NEW VJunction(j);
-				value->set_name(frame->name());
+				///value->set_name(frame->name());
 
 				// store param
 				frame->store_param(value);
@@ -163,8 +163,8 @@ void Request::execute(const Array& ops) {
 				Value *value=POP();
 				String& name=POP_NAME();
 				Value *ncontext=POP();
-				value->set_name(name);
 				ncontext->put_element(name, value);
+				value->set_name(name);
 				break;
 			}
 		case OP_CONSTRUCT_EXPR:
@@ -172,8 +172,8 @@ void Request::execute(const Array& ops) {
 				Value *value=POP();
 				String& name=POP_NAME();
 				Value *ncontext=POP();
-				value->set_name(name);
 				ncontext->put_element(name, value->get_expr_result());
+				value->set_name(name);
 				break;
 			}
 		case OP_WRITE:

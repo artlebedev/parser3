@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vmframe.h,v 1.21 2001/03/09 08:19:47 paf Exp $
+  $Id: pa_vmframe.h,v 1.22 2001/03/09 08:28:33 paf Exp $
 */
 
 #ifndef PA_VMFRAME_H
@@ -58,8 +58,8 @@ public: // usage
 			for(int i=0; i<method.locals_names->size(); i++) {
 				Value *value=NEW VUnknown(pool());
 				String& name=*static_cast<String *>(method.locals_names->get(i));
-				value->set_name(name);
 				my->put(name, value);
+				value->set_name(name);
 			}
 		}
 	}
@@ -96,8 +96,8 @@ public: // usage
 				Value *value=NEW VUnknown(pool());
 				String& name=*static_cast<String *>(
 					method.params_names->get(store_param_index));
-				value->set_name(name);
 				my->put(name, value);
+				value->set_name(name);
 			}
 	}
 
