@@ -1,5 +1,5 @@
 /*
-  $Id: pa_table.h,v 1.4 2001/01/29 21:51:52 paf Exp $
+  $Id: pa_table.h,v 1.5 2001/01/29 22:34:57 paf Exp $
 */
 
 /*
@@ -19,32 +19,45 @@
 class Table : public Array {
 public:
 
-	// request I'm processed on
-	Request& request;
-
-	// the base origin of table data
-	Origin origin;
-
-	int current;
-
-	// columns
-	Array *columns;
-
 	Table(Request& request,
 		char *afile, uint aline,
 		Array *acolumns,
 		int initial_rows=CR_INITIAL_ROWS_DEFAULT);
 
-	const char *item(int column_index);
-	const char *item(String& column_name);
+	// the base origin of table's data
+	//const Origin& origin() { return forigin; }
+
+	const Array *columns() { return fcolumns; }
+
+	void set_current(int acurrent) { fcurrent=acurrent; }
+	int get_current() { return fcurrent; }
+	void inc_current() { fcurrent++; }
+
+	void read_item(String& result, const String& column_name) {
+		result.APPEND(item(column_name), forigin.file, forigin.line+fcurrent);
+	}
 
 protected:
+
+	// request I'm processed on
+	Request& request;
+
+	// the base origin of table's data
+	Origin forigin;
 
 	// column name->number lookup table
 	Hash name2number;
 
+	// current row
+	int fcurrent;
+
+	// columns
+	Array *fcolumns;
+
 	const Array *at(int index);
 
+	const char *item(int column_index);
+	const char *item(const String& column_name);
 };
 
 #endif

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_table.C,v 1.4 2001/01/29 21:51:52 paf Exp $
+  $Id: pa_table.C,v 1.5 2001/01/29 22:34:58 paf Exp $
 */
 
 #include <stdlib.h>
@@ -13,18 +13,18 @@ Table::Table(Request& arequest,
 			 int initial_rows) :
 	Array(arequest.pool, initial_rows),
 	request(arequest),
-	current(0),
-	columns(acolumns), 
+	fcurrent(0),
+	fcolumns(acolumns), 
 	name2number(arequest.pool, false) {
 #ifndef NO_STRING_ORIGIN
-	origin.file=afile;
-	origin.line=aline;
+	forigin.file=afile;
+	forigin.line=aline;
 #endif
 
-	if(columns)
-		for(int i=0; i<columns->size(); i++) {
+	if(fcolumns)
+		for(int i=0; i<fcolumns->size(); i++) {
 			String name(pool);
-			name.APPEND(columns->get_cstr(i), 0, 0);
+			name.APPEND(fcolumns->get_cstr(i), 0, 0);
 			name2number.put(name, i+1);
 		}
 }
@@ -39,13 +39,13 @@ const Array *Table::at(int index) {
 }
 
 const char *Table::item(int index) {
-	const Array *row=at(current);
+	const Array *row=at(fcurrent);
 	return row->get_cstr(index);
 }
 
-const char *Table::item(String& column_name) {
+const char *Table::item(const String& column_name) {
 	int column_index;
-	if(columns) {
+	if(fcolumns) {
 		int found_index=name2number.get_int(column_name);
 		if(found_index)
 			column_index=found_index-1;
@@ -53,7 +53,7 @@ const char *Table::item(String& column_name) {
 			request.operator_error.raise(&column_name, "column not found");
 	} else {
 		column_index=atoi(column_name.cstr());
-		const Array *row=at(current);
+		const Array *row=at(fcurrent);
 		if(column_index<0 || column_index>=row->size())
 			request.operator_error.raise(&column_name, 
 				"table column index %d is out of range [0..%d]", 
@@ -62,3 +62,4 @@ const char *Table::item(String& column_name) {
 
 	return item(column_index);
 }
+

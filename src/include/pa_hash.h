@@ -1,5 +1,5 @@
 /*
-  $Id: pa_hash.h,v 1.12 2001/01/29 20:46:22 paf Exp $
+  $Id: pa_hash.h,v 1.13 2001/01/29 22:34:57 paf Exp $
 */
 
 /*
@@ -32,16 +32,16 @@ public:
 	static uint generic_code(uint aresult, const char *start, uint size);
 
 	// put a [value] under the [key]
-	/*SYNCHRONIZED*/ void put(Key& key, Value *value);
+	/*SYNCHRONIZED*/ void put(const Key& key, Value *value);
 
 	// get associated [value] by the [key]
-	/*SYNCHRONIZED*/ Value *get(Key& key);
+	/*SYNCHRONIZED*/ Value *get(const Key& key);
 
-	void put(Key& key, int     value) { put(key, reinterpret_cast<Value *>(value)); }
-	void put(Key& key, String *value) { put(key, static_cast<Value *>(value)); }
+	void put(const Key& key, int     value) { put(key, reinterpret_cast<Value *>(value)); }
+	void put(const Key& key, String *value) { put(key, static_cast<Value *>(value)); }
 
-	int get_int(Key& key) { return reinterpret_cast<int>(get(key)); }
-	String *get_string(Key& key) { return static_cast<String *>(get(key)); }
+	int get_int(const Key& key) { return reinterpret_cast<int>(get(key)); }
+	String *get_string(const Key& key) { return static_cast<String *>(get(key)); }
 
 protected:
 
@@ -85,7 +85,7 @@ private:
 		
 		void *operator new(size_t size, Pool& apool);
 
-		Pair(uint acode, Key& akey, Value *avalue, Pair *alink) :
+		Pair(uint acode, const Key& akey, Value *avalue, Pair *alink) :
 			code(acode),
 			key(akey),
 			value(avalue),

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_error.C,v 1.2 2001/01/29 21:51:52 paf Exp $
+  $Id: pa_error.C,v 1.3 2001/01/29 22:34:58 paf Exp $
 */
 
 #include <stdio.h>
@@ -20,7 +20,7 @@ void Error::prepare_begin() {
 	valid=true;
 }
 
-void Error::raise(String *aproblem_source, char *comment_fmt, ...) {
+void Error::raise(const String *aproblem_source, const char *comment_fmt, ...) {
 	if(!valid)
 		die("Error::raise(...) -- without begin()");
 
@@ -34,14 +34,14 @@ void Error::raise(String *aproblem_source, char *comment_fmt, ...) {
 	longjmp(mark, 1);
 }
 
-String *Error::problem_source() {
+const String *Error::problem_source() {
 	if(!valid)
 		die("Error::problem_source() -- without begin()");
 	
 	return fproblem_source;
 }
 
-char *Error::comment() {
+const char *Error::comment() {
 	if(!valid)
 		die("Error::comment() -- without begin()");
 	

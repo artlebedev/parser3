@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.C,v 1.15 2001/01/29 20:10:32 paf Exp $
+  $Id: pa_string.C,v 1.16 2001/01/29 22:34:58 paf Exp $
 */
 
 #include <string.h>
@@ -32,7 +32,7 @@ void String::expand() {
 	link_row->link=0;
 }
 
-String::String(String& src) :
+String::String(const String& src) :
 	pool(src.pool) {
 	head.count=CR_PREALLOCATED_COUNT;
 	
@@ -111,13 +111,13 @@ String& String::real_append(STRING_APPEND_PARAMS) {
 	return *this;
 }
 
-char *String::cstr() {
+char *String::cstr() const {
 	char *result=static_cast<char *>(pool.malloc(size()+1));
 
 	char *copy_here=result;
-	Chunk *chunk=&head; 
+	const Chunk *chunk=&head; 
 	do {
-		Chunk::Row *row=chunk->rows;
+		const Chunk::Row *row=chunk->rows;
 		for(int i=0; i<chunk->count; i++) {
 			if(row==append_here)
 				goto break2;
@@ -133,12 +133,12 @@ break2:
 	return result;
 }
 
-uint String::hash_code() {
+uint String::hash_code() const {
 	uint result=0;
 
-	Chunk *chunk=&head; 
+	const Chunk *chunk=&head; 
 	do {
-		Chunk::Row *row=chunk->rows;
+		const Chunk::Row *row=chunk->rows;
 		for(int i=0; i<chunk->count; i++) {
 			if(row==append_here)
 				goto break2;
@@ -152,14 +152,14 @@ break2:
 	return result;
 }
 
-bool String::operator == (String& src) {
+bool String::operator == (const String& src) const {
 	if(size() != src.size())
 		return false;
 
-	Chunk *a_chunk=&head;
-	Chunk *b_chunk=&src.head;
-	Chunk::Row *a_row=a_chunk->rows;
-	Chunk::Row *b_row=b_chunk->rows;
+	const Chunk *a_chunk=&head;
+	const Chunk *b_chunk=&src.head;
+	const Chunk::Row *a_row=a_chunk->rows;
+	const Chunk::Row *b_row=b_chunk->rows;
 	int a_offset=0;
 	int b_offset=0;
 	Chunk::Row *a_end=append_here;

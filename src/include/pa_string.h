@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.h,v 1.13 2001/01/29 21:51:51 paf Exp $
+  $Id: pa_string.h,v 1.14 2001/01/29 22:34:57 paf Exp $
 */
 
 /*
@@ -48,14 +48,14 @@ public:
 
 	void *operator new(size_t size, Pool& apool);
 	String(Pool& apool);
-	String(String& src);
-	size_t size() { return fsize; }
-	int used_rows() { return fused_rows; }
-	char *cstr();
+	String(const String& src);
+	size_t size() const { return fsize; }
+	int used_rows() const { return fused_rows; }
+	char *cstr() const;
 	String& real_append(STRING_APPEND_PARAMS);
-	bool operator == (String& src);
+	bool operator == (const String& src) const;
 
-	uint hash_code();
+	uint hash_code() const;
 
 	const Origin& origin() const { return head.rows[0].item.origin; }
 

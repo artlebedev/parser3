@@ -1,5 +1,5 @@
 /*
-  $Id: pa_error.h,v 1.2 2001/01/29 21:51:51 paf Exp $
+  $Id: pa_error.h,v 1.3 2001/01/29 22:34:57 paf Exp $
 */
 
 #ifndef PA_ERROR_H
@@ -19,16 +19,16 @@ public:
 	Error() : valid(false) {}
 	static void die(char *acomment);
 	void prepare_begin();
-	void raise(String *aproblem_source, char *comment_fmt, ...);
+	void raise(const String *aproblem_source, const char *comment_fmt, ...);
 
-	String *problem_source();
-	char *comment();
+	const String *problem_source();
+	const char *comment();
 
 private:
 
 	bool valid;
 
-	String *fproblem_source;
+	const String *fproblem_source;
 	char fcomment[MAX_STRING];
 };
 
