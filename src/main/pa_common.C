@@ -6,7 +6,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.29 2001/03/24 20:08:14 paf Exp $
+	$Id: pa_common.C,v 1.30 2001/03/26 10:36:55 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -107,6 +107,13 @@ void file_write(Pool& pool,
 	PTHROW(0, 0,
 		&file_spec,
 		"write failed: %s (#%d)", strerror(errno), errno);
+}
+
+void file_delete(Pool& pool, const String& file_spec) {
+	if(unlink(file_spec.cstr())!=0)
+		PTHROW(0, 0,
+			&file_spec,
+			"unlink failed: %s (#%d)", strerror(errno), errno);
 }
 
 char *getrow(char **row_ref, char delim) {

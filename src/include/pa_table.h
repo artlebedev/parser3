@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_table.h,v 1.22 2001/03/26 09:53:42 paf Exp $
+	$Id: pa_table.h,v 1.23 2001/03/26 10:36:53 paf Exp $
 */
 
 #ifndef PA_TABLE_H
@@ -50,6 +50,9 @@ public:
 
 	/// @return item from @a column_name
 	const String *item(const String& column_name);
+
+	/// saves to text file
+	void save(bool nameless_save, const String& file_spec);
 
 private:
 	

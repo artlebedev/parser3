@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.34 2001/03/25 09:57:11 paf Exp $
+	$Id: pa_globals.C,v 1.35 2001/03/26 10:36:55 paf Exp $
 */
 
 #include "pa_globals.h"
@@ -42,6 +42,7 @@ String *root_class_name;
 String *main_class_name;
 String *env_class_name;
 String *table_class_name;
+String *file_class_name;
 String *form_class_name;
 String *request_class_name;
 String *response_class_name;
@@ -118,6 +119,7 @@ void pa_globals_init(Pool& pool) {
 	root_class_name=NEW String(pool, ROOT_CLASS_NAME);
 	main_class_name=NEW String(pool, MAIN_CLASS_NAME);
 	table_class_name=NEW String(pool, TABLE_CLASS_NAME);
+	file_class_name=NEW String(pool, FILE_CLASS_NAME);
 	env_class_name=NEW String(pool, ENV_CLASS_NAME);	
 	form_class_name=NEW String(pool, FORM_CLASS_NAME);	
 	request_class_name=NEW String(pool, REQUEST_CLASS_NAME);	

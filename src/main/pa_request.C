@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.81 2001/03/25 10:29:40 paf Exp $
+	$Id: pa_request.C,v 1.82 2001/03/26 10:36:55 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -17,6 +17,7 @@
 #include "pa_vclass.h"
 #include "_root.h"
 #include "_table.h"
+#include "_file.h"
 #include "pa_globals.h"
 #include "pa_vint.h"
 #include "pa_vmframe.h"
@@ -25,6 +26,12 @@
 
 /// $limits.post_max_size default 10M
 const size_t MAX_POST_SIZE_DEFAULT=10*0x400*400;
+
+/// content type of exception response, when no @MAIN:exception handler defined
+const char *UNHANDLED_EXCEPTION_CONTENT_TYPE="text/plain";
+
+/// content type of response when no $MAIN:defaults.content-type defined
+const char *DEFAULT_CONTENT_TYPE="text/html";
 
 //
 Request::Request(Pool& apool,
@@ -50,7 +57,8 @@ Request::Request(Pool& apool,
 	classes().put(*root_class_name, &ROOT);
 	// table class
 	classes().put(*table_class_name, table_class);	
-
+	// file class
+	classes().put(*file_class_name, file_class);	
 	// env class
 	classes().put(*env_class_name, &env);
 	// form class
@@ -343,7 +351,7 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 
 				// future $response:content-type
 				response.fields().put(*content_type_name, 
-					NEW VString(*NEW String(pool(), "text/plain")));
+					NEW VString(*NEW String(pool(), UNHANDLED_EXCEPTION_CONTENT_TYPE)));
 				// future $response:body
 				body_string=NEW String(pool(), buf);
 			}
@@ -436,7 +444,7 @@ void Request::output_result(const String& body_string, bool header_only) {
 	// set default content-type
 	response.fields().put_dont_replace(*content_type_name, 
 		default_content_type?default_content_type
-		:NEW VString(*NEW String(pool(), "text/html")));
+		:NEW VString(*NEW String(pool(), DEFAULT_CONTENT_TYPE)));
 
 	// prepare header: $response:fields without :body
 	response.fields().for_each(add_header_attribute, /*excluding*/ body_name);

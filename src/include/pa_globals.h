@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.h,v 1.27 2001/03/25 08:52:34 paf Exp $
+	$Id: pa_globals.h,v 1.28 2001/03/26 10:36:53 paf Exp $
 */
 
 #ifndef PA_GLOBALS_H
@@ -42,6 +42,7 @@ class Table;
 #define ROOT_CLASS_NAME "ROOT"
 #define MAIN_CLASS_NAME "MAIN"
 #define TABLE_CLASS_NAME "table"
+#define FILE_CLASS_NAME "file"
 #define ENV_CLASS_NAME "env"
 #define FORM_CLASS_NAME "form"
 #define REQUEST_CLASS_NAME "request"
@@ -85,6 +86,7 @@ extern String *root_class_name;
 extern String *main_class_name;
 extern String *env_class_name;
 extern String *table_class_name;
+extern String *file_class_name;
 extern String *form_class_name;
 extern String *request_class_name;
 extern String *response_class_name;

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: root.C,v 1.49 2001/03/24 15:57:57 paf Exp $
+	$Id: root.C,v 1.50 2001/03/26 10:36:52 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -99,7 +99,9 @@ static void _process(Request& r, const String& method_name, Array *params) {
 	VStateless_class& self_class=*r.self->get_class();
 	{
 		// temporary zero @main so to maybe-replace it in processed code
-		Temp_method temp_method(self_class, *main_method_name, 0);
+		Temp_method temp_method_main(self_class, *main_method_name, 0);
+		// temporary zero @auto so it wouldn't be auto-called in Request::use_buf
+		Temp_method temp_method_auto(self_class, *auto_method_name, 0);
 		
 		// evaluate source to process
 		const String& source=
