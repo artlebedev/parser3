@@ -1,3 +1,8 @@
+/*
+  $Id: core.C,v 1.18 2001/02/14 16:13:28 paf Exp $
+*/
+
+
 // TODO: 
 //   $RESULT
 //   ^menu[!unevaluated!]
@@ -345,8 +350,10 @@ void get_params(
 			else if(c!=']')
 				pool.exception().raise("params: closing backstick doesn't adjoin semicolon or closing bracket");
 			break;
+/*
 		default:
 			break; // ']'  or eof: ^method[params;...;eof which would'nt process honestly
+*/
 		}
 
 		// emit resulting param's value
