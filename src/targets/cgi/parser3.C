@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3.C,v 1.3 2001/03/13 18:32:48 paf Exp $
+	$Id: parser3.C,v 1.4 2001/03/13 19:35:07 paf Exp $
 */
 
 #include "pa_config.h"
@@ -13,6 +13,9 @@
 #	include <io.h>
 #endif
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <fcntl.h>
 
 #include "core.h"
 #include "pa_request.h"
@@ -25,9 +28,9 @@
 int main(int argc, char *argv[]) {
 #ifdef WIN32
 	_fmode=_O_BINARY;			/*sets default for file streams to binary */
-	setmode(_fileno(stdin), O_BINARY);		/* make the stdio mode be binary */
-	setmode(_fileno(stdout), O_BINARY);		/* make the stdio mode be binary */
-	setmode(_fileno(stderr), O_BINARY);		/* make the stdio mode be binary */
+	setmode(_fileno(stdin), _O_BINARY);		/* make the stdio mode be binary */
+	setmode(_fileno(stdout), _O_BINARY);		/* make the stdio mode be binary */
+	setmode(_fileno(stderr), _O_BINARY);		/* make the stdio mode be binary */
 
 	//TODO:	SetUnhandledExceptionFilter(&TopLevelExceptionFilter);
 	//TODO: initSocks();
@@ -55,37 +58,49 @@ int main(int argc, char *argv[]) {
 		page_filespec
 		);
 	
-	bool error;
 	// some root-controlled location
 	char *sys_auto_path1;
 #ifdef WIN32
 	sys_auto_path1=(char *)pool.malloc(MAX_STRING);
 	GetWindowsDirectory(sys_auto_path1, MAX_STRING-1/*for \*/);
-	strcat(sys_auto_path1, '\\');
+	strcat(sys_auto_path1, "\\");
 #else
 	sys_auto_path1=getenv("HOME");
 #endif
 	
 	// beside by binary
-	const char *sys_auto_path2=(char *)pool.malloc(MAX_STRING);
-	strncpy(sys_auto_path2, argv[0]);  // filespec of my binary
+	char *sys_auto_path2=(char *)pool.malloc(MAX_STRING);
+	strncpy(sys_auto_path2, argv[0], MAX_STRING-20);  // filespec of my binary
 	rsplit(sys_auto_path2, '\\');  rsplit(sys_auto_path2, '/'); // strip filename
 	
 	char *result=request.core(
 		sys_auto_path1, 
 		sys_auto_path2);
 	
+	const char *error="nested exception";
 	if(cgi) {
-		const char *content_type="text/html";
-		printf(
-			"Content-type: %s\n"
-			"Content-length: %d\n"
-			"\n", 
+		if(result) {
+			const char *content_type="text/html";
+			printf(
+				"Content-type: %s\n"
+				"Content-length: %d\n"
+				"\n", 
 				content_type,
 				strlen(result));
-		stdout_write(result);
+			stdout_write(result);
+		} else {
+			printf(
+				"Content-type: text/plain\n"
+				"Content-length: %d\n"
+				"\n", 
+				strlen(error));
+			stdout_write(error);
+		}
 	} else
-		printf("%s", result);
+		if(result)
+			printf("%s", result);
+		else
+			fputs(error, stderr);
 
 	return 0;
 }

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: core.h,v 1.14 2001/03/13 18:32:46 paf Exp $
+	$Id: core.h,v 1.15 2001/03/13 19:35:04 paf Exp $
 */
 
 #ifndef CORE_H
@@ -13,6 +13,8 @@
 #include "pa_hash.h"
 
 #define AUTO_FILE_NAME "auto.p"
+
+#define EXCEPTION_METHOD_NAME "exception"
 
 #define UNNAMED_NAME "unnamed"
 
@@ -29,6 +31,8 @@
 void core(Pool& pool);
 
 // global strings
+extern String *exception_method_name;
+
 extern String *unnamed_name;
 extern String *empty_string;
 

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.51 2001/03/13 18:32:46 paf Exp $
+	$Id: pa_request.h,v 1.52 2001/03/13 19:35:04 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -45,8 +45,8 @@ public:
 	Request(Pool& apool,
 		String::Untaint_lang alang,
 
-		char *adocument_root,
-		char *apage_filespec		
+		const char *adocument_root,
+		const char *apage_filespec		
 	);
 	~Request() {}
 
@@ -126,8 +126,8 @@ private: // compile.C
 
 private: // execute.C
 
-	char *execute_method(Value& aself, const Method& method, bool return_cstr);
-	char *execute_method(Value& aself, const String& method_name, bool return_cstr);
+	char *execute_method(Value& aself, const Method& method, bool return_cstr=true);
+	char *execute_method(Value& aself, const String& method_name, bool return_cstr=true);
 
 	Value *get_element();
 

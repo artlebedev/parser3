@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.29 2001/03/13 18:32:47 paf Exp $
+	$Id: pa_request.C,v 1.30 2001/03/13 19:35:06 paf Exp $
 */
 
 #include <string.h>
@@ -16,13 +16,16 @@
 #include "_env.h"
 #include "_table.h"
 #include "core.h"
+#include "pa_vint.h"
+#include "pa_vmframe.h"
 
-#include <stdio.h>
+#define NEW_STRING(name, value)  name=NEW String(pool()); name->APPEND_CONST(value)
+#define LOCAL_STRING(name, value)  String name(pool()); name.APPEND_CONST(value)
 
 Request::Request(Pool& apool,
 				 String::Untaint_lang alang,
-				 char *adocument_root,
-				 char *apage_filespec) : Pooled(apool),
+				 const char *adocument_root,
+				 const char *apage_filespec) : Pooled(apool),
 	stack(apool),
 	root_class(apool),
 	env_class(apool),
@@ -63,7 +66,7 @@ char *Request::core(const char *sys_auto_path1,
 
 		// loading system auto.p 1
 		if(sys_auto_path1) {
-			strncpy(auto_filespec, MAX_STRING-strlen(AUTO_FILE_NAME), sys_auto_path1);
+			strncpy(auto_filespec, sys_auto_path1, MAX_STRING-strlen(AUTO_FILE_NAME));
 			strcat(auto_filespec, AUTO_FILE_NAME);
 			main_class=use_file(
 				auto_filespec, false/*ignore possible read problem*/,
@@ -72,7 +75,7 @@ char *Request::core(const char *sys_auto_path1,
 
 		// loading system auto.p 2
 		if(sys_auto_path2) {
-			strncpy(auto_filespec, MAX_STRING-strlen(AUTO_FILE_NAME), sys_auto_path2);
+			strncpy(auto_filespec, sys_auto_path2, MAX_STRING-strlen(AUTO_FILE_NAME));
 			strcat(auto_filespec, AUTO_FILE_NAME);
 			VStateless_class *main_class=use_file(
 				auto_filespec, false/*ignore possible read problem*/,
@@ -98,41 +101,113 @@ char *Request::core(const char *sys_auto_path1,
 			main_class_name, main_class);
 
 		// execute @main[]
-		result=execute_method(*main_class, *main_method_name, 
-			true /*result needed*/);
+		result=execute_method(*main_class, *main_method_name);
 		if(!result)
 			THROW(0,0,
 			0, 
 			"'"MAIN_METHOD_NAME"' method not found");
 	} 
 	CATCH(e) {
-		// we're returning not result, but error explanation
-		result=(char *)malloc(MAX_STRING);
-		result[0]=0;
-		size_t printed=0;
+		TRY {
+			// we're returning not result, but error explanation
+			result=0;
+			
+			if(main_class) { // we've managed to end up with some main_class
+				// maybe we'd be lucky enough as to report an error
+				// in a gracefull way...
+				if(Value *value=main_class->get_element(*exception_method_name))
+					if(Junction *junction=value->get_junction())
+						if(const Method *method=junction->method) {
+							// preparing to pass parameters to 
+							//	@exception[origin;source;comment;type;code]
+							VMethodFrame *frame=NEW VMethodFrame(pool(), *junction);
 
-		const String *problem_source=e.problem_source();
-		if(problem_source) {
+							const String *problem_source=e.problem_source();
+							// origin
+							LOCAL_STRING(origin_name, "origin");
+							VString *origin_value=0;
 #ifndef NO_STRING_ORIGIN
-			const Origin& origin=problem_source->origin();
-			if(origin.file)
-				printed+=snprintf(result+printed, MAX_STRING-printed, "%s(%d): ", 
-					origin.file, 1+origin.line);
+							const Origin& origin=problem_source->origin();
+							if(origin.file) {
+								char *buf=(char *)malloc(MAX_STRING);
+								snprintf(buf, MAX_STRING, "%s(%d): ", 
+									origin.file, 1+origin.line);
+								String *NEW_STRING(origin_file_line, buf);
+								origin_value=NEW VString(*origin_file_line);
+							}
 #endif
-			printed+=snprintf(result+printed, MAX_STRING-printed, "'%s' ", 
-				problem_source->cstr());
+							frame->store_param(origin_name, origin_value);
+
+							// source
+							LOCAL_STRING(source_name, "source");
+							frame->store_param(source_name, 
+								NEW VString(*problem_source));
+
+							// comment
+							LOCAL_STRING(comment_name, "comment");
+							String *NEW_STRING(comment_value, e.comment());
+							frame->store_param(comment_name, 
+								NEW VString(*comment_value));
+
+							// type
+							LOCAL_STRING(type_name, "type");
+							Value *type_value;
+							if(e.type())
+								type_value=NEW VString(*e.type());
+							else
+								type_value=NEW VUnknown(pool());
+							frame->store_param(type_name, type_value);
+
+							// code
+							LOCAL_STRING(code_name, "code");
+							Value *code_value;
+							if(e.code())
+								code_value=NEW VString(*e.code());
+							else
+								code_value=NEW VUnknown(pool());
+							frame->store_param(code_name, code_value);
+
+							result=execute_method(*frame, *method);
+						}
+			}
+			
+			// couldn't report an error beautifully, doing that ugly
+			if(!result) {
+				result=(char *)malloc(MAX_STRING);
+				result[0]=0;
+				size_t printed=0;
+				const String *problem_source=e.problem_source();
+				if(problem_source) {
+#ifndef NO_STRING_ORIGIN
+					const Origin& origin=problem_source->origin();
+					if(origin.file)
+						printed+=snprintf(result+printed, MAX_STRING-printed, "%s(%d): ", 
+						origin.file, 1+origin.line);
+#endif
+					printed+=snprintf(result+printed, MAX_STRING-printed, "'%s' ", 
+						problem_source->cstr());
+				}
+				printed+=snprintf(result+printed, MAX_STRING-printed, "%s", 
+					e.comment());
+				const String *type=e.type();
+				if(type) {
+					printed+=snprintf(result+printed, MAX_STRING-printed, "  type: %s", 
+						type->cstr());
+					const String *code=e.code();
+					if(code)
+						printed+=snprintf(result+printed, MAX_STRING-printed, ", code: %s", 
+						code->cstr());
+				}
+			}
 		}
-		printed+=snprintf(result+printed, MAX_STRING-printed, "%s", 
-			e.comment());
-		const String *type=e.type();
-		if(type) {
-			printed+=snprintf(result+printed, MAX_STRING-printed, "  type: %s", 
-				type->cstr());
-			const String *code=e.code();
-			if(code)
-				printed+=snprintf(result+printed, MAX_STRING-printed, ", code: %s", 
-					code->cstr());
+		CATCH(e) {
+			// exception in exception handler occured
+			// probably totally out of memory
+			// can't say anything about such sad story
+			// would just return 0
+			result=0;
 		}
+		END_CATCH
 	}
 	END_CATCH
 

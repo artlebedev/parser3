@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: core.C,v 1.66 2001/03/13 17:54:13 paf Exp $
+	$Id: core.C,v 1.67 2001/03/13 19:35:06 paf Exp $
 */
 
 #include "core.h"
@@ -14,8 +14,7 @@
 #include "_form.h"
 #include "_env.h"
 
-#define NEW_STRING(name, value)  name=new(pool) String(pool); name->APPEND_CONST(value)
-#define LOCAL_STRING(name, value)  String name(pool); name.APPEND_CONST(value)
+String *exception_method_name;
 
 String *unnamed_name;
 String *empty_string;
@@ -33,7 +32,12 @@ Hash *untaint_lang_name2enum;
 
 
 void core(Pool& pool) {
+	#define NEW_STRING(name, value)  name=new(pool) String(pool); name->APPEND_CONST(value)
+	#define LOCAL_STRING(name, value)  String name(pool); name.APPEND_CONST(value)
+
 	// names
+	NEW_STRING(exception_method_name, EXCEPTION_METHOD_NAME);
+
 	NEW_STRING(unnamed_name, UNNAMED_NAME);
 	empty_string=new(pool) String(pool); 
 
