@@ -1,7 +1,10 @@
-$request:charset[windows-1251]
+$request:charset[koi8-r]
 $response:charset[windows-1251]
 
-^connect[mysql://root@localhost/aval?ClientCharset=koi8-r]{
-	$t[^table::sql{select * from paf2}]
-	^t.save[_bug.txt]OK
+$SQL.connect-string[odbc://DSN=nestle^;UID=nestle^;PWD=mbm32^;ClientCharset=windows-1251]
+#$SQL.connect-string[odbc://DSN=theatre_enciclop^;UID=root^;PWD=^;bug=here]
+#^bpt[]
+^connect[$SQL.connect-string]{
+	^string:sql{select question from faq}[$.limit(1)]
 }
+OK

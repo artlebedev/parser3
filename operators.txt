@@ -126,7 +126,8 @@ Xне сделано, видимо, не будет сделано
             ORA_ENCRYPT_LOGIN=TRUE
             ClientCharset=parser-charset << charset in which parser thinks client works
 
-        !odbc://DSN=dsn^;UID=user^;PWD=password
+        !odbc://DSN=dsn^;UID=user^;PWD=password^;ClientCharset=parser-charset
+            ClientCharset << charset in which parser thinks client works
 
         для работы connect нужно, чтобы заранее(рекомендуется в системном parser3)
         была определена таблица
