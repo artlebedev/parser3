@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: dom.C,v 1.6 2001/09/10 09:34:51 parser Exp $"; 
+static const char *RCSId="$Id: dom.C,v 1.7 2001/09/10 09:49:45 parser Exp $"; 
 
 #if _MSC_VER
 #	pragma warning(disable:4291)   // disable warning 
@@ -100,26 +100,17 @@ static void _throw(Pool& pool, const String *source, const XSLException& e) {
 class ParserStringOutputStream: public XalanOutputStream {
 public:
 	
-	explicit
-		ParserStringOutputStream(String& astring) : fstring(astring) {}
-/*	
-	virtual
-		~XalanNullOutputStream() {}
-*/	
-protected:
-	
-	// These are inherited from XalanOutputStream...
-	virtual void
-		writeData(
-		const char*     theBuffer,
-		unsigned long   theBufferLength) {
+	explicit ParserStringOutputStream(String& astring) : fstring(astring) {}
+
+protected: // XalanOutputStream
+
+	virtual void writeData(const char *theBuffer, unsigned long theBufferLength) {
 		char *copy=(char *)fstring.malloc((size_t)theBufferLength);
 		memcpy(copy, theBuffer, (size_t)theBufferLength);
 		fstring.APPEND_CLEAN(copy, (size_t)theBufferLength, "dom", -1);
 	}
 
-	virtual void
-		doFlush() {}
+	virtual void doFlush() {}
 
 private:
 
@@ -132,10 +123,11 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	VDOM& vDOM=*static_cast<VDOM *>(r.self);
 
-	// filename
-	const String& filename=params->as_string(0, "file name must not be code");
+	// encoding
+	const char *encoding=params->as_string(0, "encoding must not be code").cstr();
 
 	// filespec
+	const String& filename=params->as_string(1, "file name must not be code");
 	const char *filespec=r.absolute(filename).cstr(String::UL_FILE_NAME);
 	
 	XalanParsedSource* parsedSource=vDOM.getParsedSource();
@@ -148,7 +140,12 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 		XalanDocument *document=parsedSource->getDocument();
 		XalanFileOutputStream stream(XalanDOMString(filespec, strlen(filespec)));
 		XalanOutputStreamPrintWriter writer(stream);
-		FormatterToXML formatterListener(writer);
+		FormatterToXML formatterListener(writer,
+			XalanDOMString(),  // version
+			true , // doIndent
+			4, // indent 
+			XalanDOMString(encoding, strlen(encoding))  // encoding
+		);
 		FormatterTreeWalker treeWalker(formatterListener);
 		treeWalker.traverse(document); // Walk the document and produce the XML...
 	} catch(const XSLException& e) {
@@ -159,6 +156,9 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 static void _string(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	VDOM& vDOM=*static_cast<VDOM *>(r.self);
+
+	// encoding
+	const char *encoding=params->as_string(0, "encoding must not be code").cstr();
 
 	XalanParsedSource* parsedSource=vDOM.getParsedSource();
 	if(!parsedSource)
@@ -171,7 +171,16 @@ static void _string(Request& r, const String& method_name, MethodParams *params)
 		String *parserString=new(pool) String(pool);
 		ParserStringOutputStream stream(*parserString);
 		XalanOutputStreamPrintWriter writer(stream);
-		FormatterToXML formatterListener(writer);
+		FormatterToXML formatterListener(writer,
+			XalanDOMString(),  // version
+			true , // doIndent
+			4, // indent 
+			XalanDOMString(encoding, strlen(encoding)),  // encoding
+			XalanDOMString(),  // mediaType
+			XalanDOMString(),  // doctypeSystem
+			XalanDOMString(),  // doctypePublic
+			false // xmlDecl 
+		);
 		FormatterTreeWalker treeWalker(formatterListener);
 		treeWalker.traverse(document); // Walk the document and produce the XML...
 
@@ -193,8 +202,8 @@ MDom::MDom(Pool& apool) : Methoded(apool) {
 	// ^dom.save[some.xml]
 	add_native_method("save", Method::CT_DYNAMIC, _save, 1, 1);
 
-	// ^dom.string[] <doc/>
-	add_native_method("string", Method::CT_DYNAMIC, _string, 0, 0);
+	// ^dom.string[windows-1251] <doc/>
+	add_native_method("string", Method::CT_DYNAMIC, _string, 1, 1);
 
 }
 // global variable
@@ -208,7 +217,6 @@ Methoded *MDom_create(Pool& pool) {
 	// You must initialize Xerces-C++ once per process
 	XMLPlatformUtils::Initialize();
 	XalanTransformer::initialize();
-
 
 	return Dom_class=new(pool) MDom(pool);
 }
