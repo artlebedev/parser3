@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.149 2001/04/28 08:43:57 paf Exp $
+	$Id: execute.C,v 1.150 2001/04/28 09:14:49 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -221,6 +221,10 @@ void Request::execute(const Array& ops) {
 			{
 				Value *value=POP();
 				write_assign_lang(*value);
+
+				// forget the fact they've entered some ^object.method[].
+				// see OP_GET_ELEMENT
+				wcontext->clear_somebody_entered_some_object();
 				break;
 			}
 		case OP_WRITE_EXPR_RESULT:
@@ -239,6 +243,9 @@ void Request::execute(const Array& ops) {
 			
 		case OP_GET_ELEMENT:
 			{
+				// maybe they do ^object.method[] call, remember the fact
+				wcontext->inc_somebody_entered_some_object();
+
 				Value *value=get_element();
 				PUSH(value);
 				break;
@@ -357,9 +364,12 @@ void Request::execute(const Array& ops) {
 				PUSH(wcontext); 
 				
 				VStateless_class *called_class=frame->junction.self.get_class();
+				// not ^name.method call and
 				// is context object or class & is it my class or my parent's class?
 				VStateless_class *read_class=rcontext->get_class();
-				if(read_class && read_class->is_or_derived_from(*called_class)) // yes
+				if(
+					!wcontext->somebody_entered_some_object() && 
+					read_class && read_class->is_or_derived_from(*called_class)) // yes
 					self=rcontext; // class dynamic call
 				else // no, not me or relative of mine (total stranger)
 					if(frame->is_constructor) {

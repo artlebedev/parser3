@@ -4,17 +4,17 @@ $d[^table:dir[/]]
 $d{^menu{$name &nbsp^;&nbsp^;&nbsp^;&nbsp^;^if(-f $name){-f} ^if(-d $name){-d};<BR>}}
 <HR>
 
-
 $files[^table:set{name}]
-^d.menu{
-    ^if(-d "$d.name"){
-        ^files.append{$d.name}
+$d{^menu{
+    ^if(-d "$name"){
+        ^:files.append{$name}
     }
-}
+}}
+
 $files{^menu{$name}[,]}
 <HR>
 
-@exception[origin;source;comment;type;code]
+@exception[origin;source;comment;type;code][i;j]
 <body bgcolor=black>
 <font color=white>
 ERROR:
