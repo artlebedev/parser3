@@ -8,7 +8,7 @@
 #ifndef PA_CHARSET_H
 #define PA_CHARSET_H
 
-static const char* IDENT_CHARSET_H="$Date: 2003/01/21 15:51:09 $";
+static const char* IDENT_CHARSET_H="$Date: 2003/03/21 09:43:48 $";
 
 #include "pa_pool.h"
 #include "pa_exception.h"
@@ -55,6 +55,21 @@ public:
 		const Charset& source_transcoder, const void *source_body, size_t source_content_length,
 		const Charset& dest_transcoder, const void *& dest_body, size_t& dest_content_length
 	);
+
+	static String& transcode(Pool& pool, 
+		const Charset& source_transcoder, 
+		const Charset& dest_transcoder, 
+		const String& src);
+
+	static void transcode(Pool& pool, 
+		const Charset& source_transcoder, 
+		const Charset& dest_transcoder, 
+		Array& src);
+
+	static void transcode(Pool& pool, 
+		const Charset& source_transcoder, 
+		const Charset& dest_transcoder, 
+		Hash& src);
 
 #ifdef XML
 	xmlCharEncodingHandler *transcoder(const String *source);

@@ -5,9 +5,11 @@
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char* IDENT_CHARSET_C="$Date: 2003/01/21 15:51:13 $";
+static const char* IDENT_CHARSET_C="$Date: 2003/03/21 09:43:48 $";
 
 #include "pa_charset.h"
+#include "pa_array.h"
+#include "pa_hash.h"
 
 #ifdef XML
 #include "libxml/encoding.h"
@@ -650,3 +652,51 @@ GdomeDOMString_auto_ptr Charset::transcode(const String& s) {
 	return transcode_buf2dom(cstr, strlen(cstr)); 
 }
 #endif
+
+String& Charset::transcode(Pool& pool, 
+	const Charset& source_transcoder, 
+	const Charset& dest_transcoder, 
+	const String& src) {
+
+	const char *src_ptr=src.cstr(String::UL_UNSPECIFIED);
+	size_t src_size=strlen(src_ptr);
+
+	const void *dest_ptr;
+	size_t dest_size;
+
+	Charset::transcode(pool, 
+		source_transcoder, (const void*)src_ptr, src_size,
+		dest_transcoder, dest_ptr, dest_size);
+
+	return *new(pool) String(pool, (const char*)dest_ptr, dest_size);
+}
+
+void Charset::transcode(Pool& pool, 
+	const Charset& source_transcoder, 
+	const Charset& dest_transcoder, 
+	Array& src) {
+	for(int i=0; i<src.size(); i++)
+		src.put(i, &transcode(pool, source_transcoder, dest_transcoder, *src.get_string(i)));
+}
+
+#ifndef DOXYGEN
+struct Transcode_pair_info {
+	Pool* pool;
+	const Charset* source_transcoder;
+	const Charset* dest_transcoder;
+};
+#endif
+static void transcode_pair(const Hash::Key& key, Hash::Val *& value, void *raw_info) {
+	Transcode_pair_info& info=*static_cast<Transcode_pair_info*>(raw_info);
+	value=&Charset::transcode(*info.pool, 
+		*info.source_transcoder, 
+		*info.dest_transcoder, 
+		*static_cast<String*>(value));
+}
+void Charset::transcode(Pool& pool, 
+	const Charset& source_transcoder, 
+	const Charset& dest_transcoder, 
+	Hash& src) {
+	Transcode_pair_info info={&pool, &source_transcoder, &dest_transcoder};
+	src.for_each(transcode_pair, &info);
+}

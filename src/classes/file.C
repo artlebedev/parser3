@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_FILE_C="$Date: 2003/03/21 07:19:42 $";
+static const char* IDENT_FILE_C="$Date: 2003/03/21 09:43:48 $";
 
 #include "pa_config_includes.h"
 
@@ -21,11 +21,13 @@ static const char* IDENT_FILE_C="$Date: 2003/03/21 07:19:42 $";
 #include "pa_dir.h"
 #include "pa_vtable.h"
 #include "pa_charset.h"
+#include "pa_charsets.h"
 
 // defines
 
 #define TEXT_MODE_NAME "text"
 #define STDIN_EXEC_PARAM_NAME "stdin"
+#define CHARSET_EXEC_PARAM_NAME "charset"
 
 // consts
 
@@ -190,6 +192,7 @@ static bool is_safe_env_key(const char *key) {
 struct Append_env_pair_info {
 	Hash* hash;
 	Value* vstdin;
+	Value* vcharset;
 };
 #endif
 static void append_env_pair(const Hash::Key& key, Hash::Val *avalue, void *info) {
@@ -198,6 +201,8 @@ static void append_env_pair(const Hash::Key& key, Hash::Val *avalue, void *info)
 
 	if(key==STDIN_EXEC_PARAM_NAME) {
 		pi.vstdin=&value;
+	} else if(key==CHARSET_EXEC_PARAM_NAME) {
+		pi.vcharset=&value;
 	} else {
 		if(!is_safe_env_key(key.cstr()))
 			throw Exception("parser.runtime",
@@ -270,24 +275,29 @@ static void _exec_cgi(Request& r, const String& method_name, MethodParams *param
 	//env.put(*new(pool) String(pool, "SCRIPT_FILENAME"), ??&script_name);
 
 	// environment & stdin from param
-	String in(pool);
+	String raw_in(pool);
+	Charset *charset=0; // default script works raw_in 'source' charset = no transcoding needed
 	if(params->size()>1) {
 		Value& venv=params->as_no_junction(1, "env must not be code");
 		if(Hash *user_env=venv.get_hash(&method_name)) {
 			Append_env_pair_info info={&env};
 			user_env->for_each(append_env_pair, &info);
+			// $.stdin
 			if(info.vstdin) {
 				if(const String *sstdin=info.vstdin->get_string()) {
-					in.append(*sstdin, String::UL_CLEAN, true);
+					raw_in.append(*sstdin, String::UL_CLEAN, true);
 				} else
 					if(VFile *vfile=static_cast<VFile *>(info.vstdin->as("file", false)))
-						in.APPEND_TAINTED((const char *)vfile->value_ptr(), vfile->value_size(),
+						raw_in.APPEND_TAINTED((const char *)vfile->value_ptr(), vfile->value_size(),
 							"$.stdin[assigned]", 0);
 					else
 						throw Exception("parser.runtime",
 							&method_name,
 							STDIN_EXEC_PARAM_NAME " parameter must be string or file");
 			}
+			// $.charset
+			if(info.vcharset)
+				charset=&charsets->get_charset(info.vcharset->as_string());
 		}
 	}
 
@@ -299,21 +309,40 @@ static void _exec_cgi(Request& r, const String& method_name, MethodParams *param
 			*argv+=&params->as_string(i, "parameter must be string");
 	}
 
+	// transcode if necessary
+	String* real_in=&raw_in;
+	if(charset) {
+		Charset::transcode(pool, pool.get_source_charset(), *charset, env);
+		if(argv)
+			Charset::transcode(pool, pool.get_source_charset(), *charset, *argv);
+		real_in=&Charset::transcode(pool, pool.get_source_charset(), *charset, raw_in);
+	}
+
 	// exec!
-	String out(pool);
-	String& err=*new(pool) String(pool);
-	int status=pa_exec(false/*forced_allow*/, script_name, &env, argv, in, out, err);
+	String raw_out(pool);
+	String& raw_err=*new(pool) String(pool);
+	int status=pa_exec(false/*forced_allow*/, script_name, &env, argv, *real_in, raw_out, raw_err);
+
+	String *real_out=&raw_out;
+	String *real_err=&raw_err;
+
+	// transcode if necessary
+	if(charset) {
+		real_out=&Charset::transcode(pool, *charset, pool.get_source_charset(), raw_out);
+		real_err=&Charset::transcode(pool, *charset, pool.get_source_charset(), raw_err);
+	}
+
 
 	VFile& self=*static_cast<VFile *>(r.get_self());
 
-	const String *body=&out; // ^file:exec
+	const String *body=real_out; // ^file:exec
 	Value *content_type=0;
 	const char *eol_marker=0; size_t eol_marker_size;
 	const String *header=0;
 	if(cgi) { // ^file:cgi
 		// construct with 'out' body and header
-		int dos_pos=out.pos("\r\n\r\n", 4);
-		int unix_pos=out.pos("\n\n", 2);
+		int dos_pos=real_out->pos("\r\n\r\n", 4);
+		int unix_pos=real_out->pos("\n\n", 2);
 
 		bool unix_header_break;
 		switch((dos_pos >= 0?10:00) + (unix_pos >= 0?01:00)) {
@@ -333,8 +362,8 @@ static void _exec_cgi(Request& r, const String& method_name, MethodParams *param
 				"output does not contain CGI header; "
 				"exit status=%d; stdoutsize=%u; stdout: \"%s\"; stderrsize=%u; stderr: \"%s\"", 
 					status, 
-					(uint)out.size(), out.cstr(),
-					(uint)err.size(), err.cstr());
+					(uint)real_out->size(), real_out->cstr(),
+					(uint)real_err->size(), real_err->cstr());
 			break; //never reached
 		}
 
@@ -347,8 +376,8 @@ static void _exec_cgi(Request& r, const String& method_name, MethodParams *param
 			eol_marker="\r\n"; eol_marker_size=2;
 		}
 
-		header=&out.mid(0, header_break_pos);
-		body=&out.mid(header_break_pos+eol_marker_size*2, out.size());
+		header=&real_out->mid(0, header_break_pos);
+		body=&real_out->mid(header_break_pos+eol_marker_size*2, real_out->size());
 	}
 	// body
 	self.set(false/*not tainted*/, body->cstr(), body->size());
@@ -369,10 +398,10 @@ static void _exec_cgi(Request& r, const String& method_name, MethodParams *param
 		new(pool) VInt(pool, status));
 	
 	// $stderr
-	if(err.size()) {
+	if(real_err->size()) {
 		self.fields().put(
 			*new(pool) String(pool, "stderr"),
-			new(pool) VString(err));
+			new(pool) VString(*real_err));
 	}
 }
 static void _exec(Request& r, const String& method_name, MethodParams *params) {
