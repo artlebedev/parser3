@@ -1,5 +1,5 @@
 /*
-  $Id: pa_value.h,v 1.17 2001/02/23 10:17:28 paf Exp $
+  $Id: pa_value.h,v 1.18 2001/02/23 11:39:57 paf Exp $
 */
 
 /*
@@ -10,7 +10,6 @@
 #define PA_VALUE_H
 
 #include "pa_pool.h"
-#include "pa_exception.h"
 #include "pa_string.h"
 #include "pa_array.h"
 //#include "pa_voperator.h"
@@ -69,6 +68,7 @@ public: // Value
 
 	// all: for error reporting after fail(), etc
 	virtual const char *type() const =0;
+	const String *name() const { return fname; }
 
 	// string: value
 	// unknown: ""
@@ -105,22 +105,24 @@ public: // Value
 
 public: // usage
 
-	Value(Pool& apool) : Pooled(apool) {}
+	Value(Pool& apool) : Pooled(apool), fname(0) {}
 
-	operator String() { 
+	void set_name(const String& aname) { fname=&aname; }
+
+	String& as_string() {
 		String *result=get_string(); 
 		if(!result)
 			failed("getting string of %s");
 		return *result;
 	}
 
+private:
+
+	const String *fname;
+
 private: 
 
-	void failed(char *action) {
-		THROW(0,0,
-			0,
-			action, type());
-	}
+	void failed(char *action);
 };
 
 /*

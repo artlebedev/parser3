@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.24 2001/02/23 10:17:29 paf Exp $
+  $Id: execute.C,v 1.25 2001/02/23 11:39:58 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -113,9 +113,10 @@ void Request::execute(Array& ops) {
 		case OP_CONSTRUCT:
 			{
 				Value *value=POP();
-				Value *name=POP();
+				String& name=POP()->as_string();
 				Value *ncontext=POP();
-				ncontext->put_element(*name, value);
+				value->set_name(name);
+				ncontext->put_element(name, value);
 				break;
 			}
 			
@@ -149,7 +150,7 @@ void Request::execute(Array& ops) {
 		case OP_REDUCE_EWPOOL:
 			{
 				Value *value=wcontext->value();
-				wcontext=static_cast<WContext *>(stack.pop());
+				wcontext=static_cast<WContext *>(POP());
 				PUSH(value);
 				break;
 			}
@@ -163,15 +164,16 @@ void Request::execute(Array& ops) {
 }
 
 Value *Request::get_element() {
-	Value *name=POP();
+	String& name=POP()->as_string();
 	Value *ncontext=POP();
-	Value *value=ncontext->get_element(*name); // name áûâàåò method, òîãäà âûäà¸ò new junction(ÀÂÒÎÂÛ×ÈÑËßÒÜ=false, root,self,rcontext,wcontext,code)
+	Value *value=ncontext->get_element(name); // name áûâàåò method, òîãäà âûäà¸ò new junction(ÀÂÒÎÂÛ×ÈÑËßÒÜ=false, root,self,rcontext,wcontext,code)
 	// name áûâàåò èìÿ junction, òîãäà èëè îñòàâëÿåò â ïîêîå, èëè âû÷èñëÿåò â çàâèñèìîñòè îò ôëàãà ÀÂÒÎÂÛ×ÈÑËßÒÜ
 
 	if(!value) {
 //		value=NEW VHash(pool());
 //		ncontext->put_element(*name, value);
 		value=NEW VUnknown(pool());
+		value->set_name(name);
 	}
 	return value;
 }

@@ -1,5 +1,5 @@
 /*
-$Id: core.C,v 1.26 2001/02/22 12:43:55 paf Exp $
+$Id: core.C,v 1.27 2001/02/23 11:39:58 paf Exp $
 */
 
 #include "pa_request.h"
@@ -38,7 +38,7 @@ void Request::core() {
 				problem_source->cstr());
 			if(origin.file)
 				printf(" [%s:%d]",
-				origin.file, origin.line);
+				origin.file, 1+origin.line);
 			printf("\n");
 		}
 	}
