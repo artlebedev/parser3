@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_charset_connection.C,v 1.6 2001/10/02 13:32:38 parser Exp $
+	$Id: pa_charset_connection.C,v 1.7 2001/10/05 07:29:33 parser Exp $
 */
 
 #include "pa_charset_connection.h"
@@ -84,16 +84,9 @@ static void element2case(unsigned char from, unsigned char to,
 #ifdef XML
 
 static int sort_cmp_Trans_rec_intCh(const void *a, const void *b) {
-	const XMLCh ca=static_cast<const XMLTransService::TransRec *>(a)->intCh;
-	const XMLCh cb=static_cast<const XMLTransService::TransRec *>(b)->intCh;
-	// move zeros to end of table
-	if(ca==0)
-		return +1;
-	if(cb==0)
-		return -1;
-
-	//
-	return ca-cb;
+	return 
+		static_cast<const XMLTransService::TransRec *>(a)->intCh-
+		static_cast<const XMLTransService::TransRec *>(b)->intCh;
 }
 
 template <class TType> class ENameMapFor2 : public ENameMap
@@ -166,6 +159,10 @@ void Charset_connection::load(Pool& pool, time_t new_disk_time) {
 	XMLTransService::TransRec *toTable=(XMLTransService::TransRec *)calloc(
 			sizeof(XMLTransService::TransRec)*MAX_CHARSET_UNI_CODES);
 	unsigned int toTableSz=0;
+	// strangly vital
+	toTable[toTableSz].intCh=0;
+	toTable[toTableSz].extCh=(XMLByte)0;
+	toTableSz++;
 #endif
 
 	// loading text
@@ -223,6 +220,10 @@ void Charset_connection::load(Pool& pool, time_t new_disk_time) {
 	// sort by the Unicode code point
 	_qsort(toTable, toTableSz, sizeof(*toTable), 
 		sort_cmp_Trans_rec_intCh);
+	//FILE *f=fopen("c:\\temp\\a", "wb");
+	//fwrite(toTable, toTableSz, sizeof(*toTable), f);
+	//fclose(f);
+
 
 	// addEncoding
 	XalanDOMString sencoding(fname.cstr());
