@@ -5,12 +5,10 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.71 2001/04/05 13:27:14 paf Exp $
+	$Id: pa_string.C,v 1.72 2001/04/05 18:18:41 paf Exp $
 */
 
 #include "pa_config_includes.h"
-
-#include <locale.h>
 
 #include "pcre.h"
 
@@ -491,7 +489,6 @@ static void regex_options(char *options, int *result){
 	@verbatim
 		pre-match/match/post-match/1/2/3/...
 	@endverbatim
-	@test setlocale param to auto.p
 */
 bool String::match(const String *aorigin,
 				   const String& regexp, 
@@ -500,10 +497,8 @@ bool String::match(const String *aorigin,
 				   Row_action row_action, void *info) const { 
 
 	static const unsigned char *tables=0; {	SYNCHRONIZED(true);
-		if(!tables) {
-			setlocale(LC_CTYPE, "ru");
+		if(!tables)
 			tables=pcre_maketables();
-		}
 	}
 	const char *pattern=regexp.cstr(UL_AS_IS);
 	const char *errptr;

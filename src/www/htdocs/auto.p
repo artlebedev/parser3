@@ -9,6 +9,10 @@ $DEFAULTS[
 		$charset[windows-1251]
 	]
 ]
+$LOCALE[
+#for ^match{}[i]
+	$ctype[Russian_Russia.1251]
+]
 $SQL[
 	$connect-string[mysql://test:test@localhost/test/cp1251_koi8]
 	$drivers[^table:set{protocol	library

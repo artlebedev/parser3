@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.42 2001/04/04 10:50:36 paf Exp $
+	$Id: pa_globals.C,v 1.43 2001/04/05 18:18:41 paf Exp $
 */
 
 #include "pa_globals.h"
@@ -64,6 +64,8 @@ String *limits_name;
 String *post_max_size_name;
 
 String *defaults_name;
+String *locale_name;
+String *locale_ctype_name;
 String *mime_types_name;
 String *vfile_mime_type_name;
 
@@ -156,6 +158,8 @@ void pa_globals_init(Pool& pool) {
 	post_max_size_name=NEW String(pool, POST_MAX_SIZE_NAME);
 
 	defaults_name=NEW String(pool, DEFAULTS_NAME);
+	locale_name=NEW String(pool, LOCALE_NAME);
+	locale_ctype_name=NEW String(pool, LOCALE_CTYPE_NAME);
 	mime_types_name=NEW String(pool, MIME_TYPES_NAME);
 	vfile_mime_type_name=NEW String(pool, VFILE_MIME_TYPE_NAME);
 

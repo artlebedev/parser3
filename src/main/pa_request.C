@@ -5,10 +5,12 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.95 2001/04/04 10:50:36 paf Exp $
+	$Id: pa_request.C,v 1.96 2001/04/05 18:18:41 paf Exp $
 */
 
 #include "pa_config_includes.h"
+
+#include <locale.h>
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -99,6 +101,8 @@ static void add_header_attribute(const Hash::Key& aattribute, Hash::Val *ameanin
 	the file user requested us to process
 	all located classes become children of one another,
 	composing class we name 'MAIN'
+
+	@todo figure out 'setlocale' thread safety
 */
 void Request::core(const char *root_auto_path, bool root_auto_fail,
 				   const char *site_auto_path, bool site_auto_fail,
@@ -204,6 +208,24 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 		if(Value *element=main_class->get_element(*mime_types_name))
 			if(Table *table=element->get_table())
 				mime_types=table;			
+
+		// $MAIN:LOCALE.ctype[Russian_Russia.1251]
+/*
+#define LC_ALL	    0
+#define LC_COLLATE  1
+#define LC_CTYPE    2
+#define LC_MONETARY 3
+#define LC_NUMERIC  4
+#define LC_TIME     5
+*/
+		if(Value *locale=main_class->get_element(*locale_name))
+			if(Value *element=locale->get_element(*locale_ctype_name)) {
+				const String& name=element->as_string();
+				if(!setlocale(LC_CTYPE, name.cstr()))
+					THROW(0, 0,
+						&name,
+						"is invalid locale");
+			}
 
 		// execute @main[]
 		const String *body_string=execute_method(*main_class, *main_method_name);
