@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_table.h,v 1.33 2001/05/17 10:22:24 parser Exp $
+	$Id: pa_table.h,v 1.34 2001/08/10 07:02:43 parser Exp $
 */
 
 #ifndef PA_TABLE_H
@@ -36,7 +36,7 @@ public:
 
 	Table(Pool& apool,
 		const String *aorigin,
-		Array *acolumns,
+		const Array *acolumns,
 		int initial_rows=CR_INITIAL_ROWS_DEFAULT);
 
 	/// where this table came from, may be NULL
@@ -88,7 +88,7 @@ private:
 	int fcurrent;
 
 	// columns
-	Array *fcolumns;
+	const Array *fcolumns;
 
 	bool valid(int index) const { return index>=0 && index<size(); }
 

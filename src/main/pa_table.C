@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_table.C,v 1.34 2001/07/02 13:24:32 parser Exp $"; 
+static const char *RCSId="$Id: pa_table.C,v 1.35 2001/08/10 07:04:44 parser Exp $"; 
 
 #include <stdlib.h>
 
@@ -15,7 +15,7 @@ static const char *RCSId="$Id: pa_table.C,v 1.34 2001/07/02 13:24:32 parser Exp 
 
 Table::Table(Pool& apool, 
 			 const String *aorigin_string,
-			 Array *acolumns, 
+			 const Array *acolumns, 
 			 int initial_rows) :
 	Array(apool, initial_rows),
 

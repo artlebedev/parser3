@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: table.C,v 1.100 2001/08/07 13:54:13 parser Exp $"; 
+static const char *RCSId="$Id: table.C,v 1.101 2001/08/10 07:02:43 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -437,27 +437,27 @@ static int sort_cmp_double(const void *a, const void *b) {
 		return 0;
 }
 static void _sort(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
 	Value& key_maker=params->as_junction(0, "key-maker must be code");
 
 	bool reverse=params->size()==2/*..[asc|desc]*/?
 		reverse=params->as_no_junction(1, "order must not be code").as_string()=="desc":
 		false;
 
-	Table& table=static_cast<VTable *>(r.self)->table();
+	Table& old_table=static_cast<VTable *>(r.self)->table();
+	Table& new_table=*new(pool) Table(pool, &method_name, old_table.columns());
 
-	// anything to sort?
-	if(!table.size())
-		return;
-
-	Table_seq_item *seq=(Table_seq_item *)malloc(sizeof(Table_seq_item)*table.size());
+	Table_seq_item *seq=(Table_seq_item *)pool.malloc(sizeof(Table_seq_item)*old_table.size());
 	int i;
 
 	// calculate key values
 	bool key_values_are_strings=true;
-	for(i=0; i<table.size(); i++) {
-		table.set_current(i);
+	// save 'current'
+	int saved_current=old_table.current();
+	for(i=0; i<old_table.size(); i++) {
+		old_table.set_current(i);
 		// calculate key value
-		seq[i].row=(MethodParams *)table.get(i);
+		seq[i].row=(MethodParams *)old_table.get(i);
 		Value& value=*r.process(key_maker).as_expr_result(true/*return string as-is*/);
 		if(i==0) // determining key values type by first one
 			key_values_are_strings=value.is_string();
@@ -467,16 +467,17 @@ static void _sort(Request& r, const String& method_name, MethodParams *params) {
 		else
 			seq[i].value.d=value.as_double();
 	}
+	// restore 'current'
+	old_table.set_current(saved_current);
 	// sort keys
-	_qsort(seq, table.size(), sizeof(Table_seq_item), 
+	_qsort(seq, old_table.size(), sizeof(Table_seq_item), 
 		key_values_are_strings?sort_cmp_string:sort_cmp_double);
 
 	// reorder table as they require in 'seq'
-	for(i=0; i<table.size(); i++)
-		table.put(i, seq[reverse?table.size()-1-i:i].row);
+	for(i=0; i<old_table.size(); i++)
+		new_table+=seq[reverse?old_table.size()-1-i:i].row;
 
-	// reset 'current'
-	table.set_current(0);
+	r.write_no_lang(*new(pool) VTable(pool, &new_table));
 }
 
 static void _locate(Request& r, const String& method_name, MethodParams *params) {
