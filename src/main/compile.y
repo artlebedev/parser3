@@ -6,7 +6,7 @@
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
 %{
-static char *RCSId="$Id: compile.y,v 1.155 2001/07/26 12:25:37 parser Exp $"; 
+static char *RCSId="$Id: compile.y,v 1.156 2001/07/26 14:15:45 parser Exp $"; 
 
 /**
 	@todo parser4: 
@@ -274,6 +274,7 @@ put: '$' name_expr_wdive construct {
 };
 name_expr_wdive: 
 	name_expr_wdive_write
+|	name_expr_wdive_root
 |	name_expr_wdive_class;
 name_expr_wdive_write: name_expr_dive_code {
 	$$=N(POOL);
@@ -289,6 +290,11 @@ name_expr_wdive_write: name_expr_dive_code {
 		P($$, diving_code);
 	}
 	/* diving code; stack: current context */
+};
+name_expr_wdive_root: ':' name_expr_dive_code {
+	$$=N(POOL); 
+	O($$, OP_WITH_ROOT); /* stack: starting context */
+	P($$, $2); /* diving code; stack: context,name */
 };
 name_expr_wdive_class: class_prefix name_expr_dive_code { $$=$1; P($$, $2) };
 

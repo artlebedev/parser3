@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: execute.C,v 1.186 2001/07/26 12:25:37 parser Exp $"; 
+static const char *RCSId="$Id: execute.C,v 1.187 2001/07/26 14:15:45 parser Exp $"; 
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -32,7 +32,7 @@ char *opcode_name[]={
 	"VALUE",  "CURLY_CODE__STORE_PARAM",  "EXPR_CODE__STORE_PARAM",
 
 	// actions
-	"WITH_SELF",	"WITH_READ",	"WITH_WRITE",
+	"WITH_ROOT",	"WITH_SELF",	"WITH_READ",	"WITH_WRITE",
 	"GET_CLASS",
 	"CONSTRUCT_VALUE", "CONSTRUCT_EXPR", "CURLY_CODE__CONSTRUCT",
 	"WRITE_VALUE",  "WRITE_EXPR_RESULT",  "STRING__WRITE",
@@ -184,6 +184,11 @@ void Request::execute(const Array& ops) {
 			}
 			
 		// OP_WITH
+		case OP_WITH_ROOT:
+			{
+				PUSH(root);
+				break;
+			}
 		case OP_WITH_SELF: 
 			{
 				PUSH(self);

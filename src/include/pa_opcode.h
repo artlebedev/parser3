@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_opcode.h,v 1.5 2001/07/26 12:25:37 parser Exp $
+	$Id: pa_opcode.h,v 1.6 2001/07/26 14:15:45 parser Exp $
 */
 
 #ifndef CODE_H
@@ -27,7 +27,7 @@ enum OPCODE {
 
 	//@{
 	/// @name actions
-	OP_WITH_SELF,	OP_WITH_READ,	OP_WITH_WRITE,
+	OP_WITH_ROOT,	OP_WITH_SELF,	OP_WITH_READ,	OP_WITH_WRITE,
 	OP_GET_CLASS,
 	OP_CONSTRUCT_VALUE, OP_CONSTRUCT_EXPR, OP_CURLY_CODE__CONSTRUCT,
 	OP_WRITE_VALUE,  OP_WRITE_EXPR_RESULT, OP_STRING__WRITE,
