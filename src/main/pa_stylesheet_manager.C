@@ -7,7 +7,7 @@
 #include "pa_config_includes.h"
 #ifdef XML
 
-static const char * const IDENT_STYLESHEET_MANAGER_C="$Date: 2003/12/10 14:28:46 $";
+static const char * const IDENT_STYLESHEET_MANAGER_C="$Date: 2003/12/11 09:22:09 $";
 
 #include "pa_stylesheet_manager.h"
 #include "pa_exception.h"
@@ -19,7 +19,7 @@ static const char * const IDENT_STYLESHEET_MANAGER_C="$Date: 2003/12/10 14:28:46
 
 // globals
 
-Stylesheet_manager stylesheet_manager;
+Stylesheet_manager* stylesheet_manager=0;
 
 // consts
 
@@ -50,8 +50,6 @@ void Stylesheet_connection::close() {
 // Stylesheet_manager methods
 
 Stylesheet_manager::Stylesheet_manager(): prev_expiration_pass_time(0) {
-
-	cache_managers.put(String::Body("stylesheet"), this);
 }
 
 Stylesheet_manager::~Stylesheet_manager() {
