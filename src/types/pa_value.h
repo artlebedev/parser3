@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-static const char* IDENT_VALUE_H="$Date: 2002/09/17 15:20:35 $";
+static const char* IDENT_VALUE_H="$Date: 2002/09/17 15:53:46 $";
 
 #include "pa_pool.h"
 #include "pa_string.h"
@@ -287,7 +287,7 @@ public:
 
 	Junction(Pool& apool,
 		Value *aself,
-		VStateless_class *avclass, const Method *amethod,
+		const Method *amethod,
 		VMethodFrame *amethod_frame,
 		Value *arcontext,
 		WContext *awcontext,
@@ -299,7 +299,7 @@ public:
 	Value *self;
 	//@{
 	/// @name either these // so called 'method-junction'
-	VStateless_class *vclass;  const Method *method;
+	const Method *method;
 	//@}
 	//@{
 	/// @name or these are present // so called 'code-junction'

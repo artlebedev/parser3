@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_EXECUTE_C="$Date: 2002/09/17 15:20:34 $";
+static const char* IDENT_EXECUTE_C="$Date: 2002/09/17 15:53:45 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -212,7 +212,7 @@ void Request::execute(const Array& ops) {
 				debug_dump(pool(), 1, *local_ops);
 #endif				
 				Junction& j=*NEW Junction(pool(), 
-					self, 0, 0,
+					self, 0,
 					method_frame, 
 					rcontext, 
 					wcontext, 
@@ -352,7 +352,7 @@ void Request::execute(const Array& ops) {
 				// in .process we would test that field 
 				// in decision "which wwrapper to use"
 				Junction& j=*NEW Junction(pool(), 
-					self, 0, 0,
+					self, 0,
 					method_frame, 
 					rcontext, 
 					op.code==OP_EXPR_CODE__STORE_PARAM?0:wcontext, 
@@ -810,7 +810,7 @@ Value *Request::get_element(const String *& remember_name, bool can_call_operato
 		if(Method* method=OP.get_method(name)) { // looking operator of that name FIRST
 			// as if that method were in self and we have normal dynamic method here
 			Junction& junction=*NEW Junction(pool(), 
-				0, 0, method, 0,0,0,0);
+				method->parser_code?method_frame/*for ^process*/:0, method, 0,0,0,0);
 			value=NEW VJunction(junction);
 		}
 	}
@@ -951,7 +951,7 @@ void Request::execute_method(Value& aself,
 	self=&aself;	
 //	WWrapper local(pool(), &aself, wcontext);
 //	wcontext=&local; 
-	Junction local_junction(pool(), self, self->get_class(), &method, 0,0,0,0);
+	Junction local_junction(pool(), self, &method, 0,0,0,0);
 	VMethodFrame local_frame(pool(), method.name, local_junction);
 	if(optional_param && local_frame.can_store_param()) {
 		local_frame.store_param(optional_param);

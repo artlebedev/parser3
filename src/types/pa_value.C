@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VALUE_C="$Date: 2002/09/17 15:20:35 $";
+static const char* IDENT_VALUE_C="$Date: 2002/09/17 15:53:46 $";
 
 #include "pa_value.h"
 #include "pa_vstateless_class.h"
@@ -29,14 +29,14 @@ void Method::check_actual_numbered_params(
 
 Junction::Junction(Pool& apool,
 	Value *aself,
-	VStateless_class *avclass, const Method *amethod,
+	const Method *amethod,
 	VMethodFrame *amethod_frame,
 	Value *arcontext,
 	WContext *awcontext,
 	const Array *acode) : Pooled(apool),
 	
 	self(aself),
-	vclass(avclass), method(amethod),
+	method(amethod),
 	method_frame(amethod_frame),
 	rcontext(arcontext),
 	wcontext(awcontext),
