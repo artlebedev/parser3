@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: gif.C,v 1.14 2001/10/10 12:22:17 parser Exp $
+	$Id: gif.C,v 1.15 2001/10/10 12:35:51 parser Exp $
 
 	based on: gd
 
@@ -273,6 +273,7 @@ void gdImage::Line(int x1, int y1, int x2, int y2, int color)
 
 void gdImage::Arc(int cx, int cy, int w, int h, int s, int e, int color)
 {
+#if 0
 	if(s==0 && e==360) { // full 
 		if(w==h) { // circle?
 			/* Bresenham octant code, which I should use eventually */
@@ -330,6 +331,7 @@ void gdImage::Arc(int cx, int cy, int w, int h, int s, int e, int color)
 			};
 		}
 	} else {
+#endif
 		int i;
 		int lx = 0, ly = 0;
 		int w2, h2;
@@ -348,7 +350,9 @@ void gdImage::Arc(int cx, int cy, int w, int h, int s, int e, int color)
 			lx = x;
 			ly = y;
 		}
+#if 0
 	}
+#endif
 }
 
 /*
