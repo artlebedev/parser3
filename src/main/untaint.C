@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_UNTAINT_C="$Date: 2003/01/21 15:51:15 $";
+static const char* IDENT_UNTAINT_C="$Date: 2003/04/18 10:12:05 $";
 
 #include "pa_pool.h"
 #include "pa_string.h"
@@ -52,7 +52,7 @@ inline bool need_file_encode(unsigned char c){
 	return strchr(
 			  "*?'\"<>|"
 #ifndef WIN32
-			  ":\\~"
+			  ":\\"
 #endif
 			  , c)!=0;
 }
