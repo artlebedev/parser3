@@ -69,7 +69,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 1
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "PARSER3MYSQL_EXPORTS" /YX /FD /GZ  /c
-# ADD CPP /nologo /MDd /W3 /Gm /GX- /Zi /Od /I "../../include" /D "WIN32" /D "_DEBUG" /YX /FD /GZ /TP /c
+# ADD CPP /nologo /MDd /W3 /Gm /GX- /Zi /Od /I "../../include" /I "mySQL32/include" /D "WIN32" /D "_DEBUG" /YX /FD /GZ /TP /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x419 /d "_DEBUG"
@@ -102,6 +102,10 @@ SOURCE=.\parser3mysql.C
 # Begin Source File
 
 SOURCE=.\parser3mysql.def
+# End Source File
+# Begin Source File
+
+SOURCE=.\mySQL32\lib\debug\libmySQL.lib
 # End Source File
 # End Target
 # End Project
