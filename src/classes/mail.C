@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_MAIL_C="$Date: 2003/11/20 17:07:44 $";
+static const char * const IDENT_MAIL_C="$Date: 2003/11/21 12:38:20 $";
 
 #include "pa_config_includes.h"
 #include "pa_vmethod_frame.h"
@@ -122,7 +122,7 @@ static void sendmail(Request& r,
 #endif
 	} else {
 #ifdef PA_FORCED_SENDMAIL
-		sendmail_command<<PA_FORCED_SENDMAIL;
+		*sendmail_command<<PA_FORCED_SENDMAIL;
 #else
 		String* test=new String("/usr/sbin/sendmail");
 		if(!file_executable(*test))
