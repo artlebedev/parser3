@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-static const char* IDENT_VALUE_H="$Date: 2002/09/17 17:14:32 $";
+static const char* IDENT_VALUE_H="$Date: 2002/10/15 07:52:37 $";
 
 #include "pa_pool.h"
 #include "pa_string.h"
@@ -34,7 +34,7 @@ class VMethodFrame;
 class Value : public Pooled {
 public: // Value
 
-	/// all: value type, used for error reporting and 'is' expression operator
+	/// value type, used for error reporting and 'is' expression operator
 	virtual const char *type() const =0;
 
 	/** remember derived class instance 
@@ -52,109 +52,39 @@ public: // Value
 	/// type checking helper, uses Value::as
 	bool is(const char *atype) { return as(atype, false)!=0; }
 	
-	/** is this value defined?
-		@return for
-		- VVoid: false
-		- VString: eq ''=false, ne ''=true
-		- VHash: count!=0
-		- VTable: count!=0
-		- others: true
-	*/
+	/// is this value defined?
 	virtual bool is_defined() const { return true; }
 	
-	/** is this value string?
-		@return for
-		- VString: true
-		- others: false
-	*/
+	/// is this value string?
 	virtual bool is_string() const { return false; }
 	
-	/** what's the meaning of this value in context of expression?
-		@return for
-		- VString: fstring as VDouble or this depending on return_string_as_is
-		- VBool: clone
-		- VDouble: clone
-		- VInt: clone
-		- VVoid: this
-		- VFile: this
-		- VImage: this
-		- VDate: ftime -> float days
-		- VTable: count
-		- VHash: count
-	*/
+	/// what's the meaning of this value in context of expression?
 	virtual Value *as_expr_result(bool /*return_string_as_is*/=false) { 
 		bark("(%s) can not be used in expression"); return 0; 
 	}
 	
-	/** extract Hash
-		@return for
-		- VHash: fhash
-		- VResponse: ffields
-	*/
+	/// extract Hash
 	virtual Hash *get_hash(const String * /*source*/) { return 0; }
 	
-	/** extract const String
-		@return for
-		- VString: value
-		- VVoid: ""
-		- VDouble: value
-		- VInt: value
-		- VBool: must be 0: so in ^if(1>2) it would'nt become "FALSE" string which is 'true'
-		- others: 0
-		- WContext: accumulated fstring
-	*/
+	/// extract const String
 	virtual const String *get_string() { return 0; }
 	
-	/** extract double
-		@return for
-		- VString: value
-		- VDouble: value
-		- VInt: value
-		- VBool: value
-		- VVoid: 0
-		- VDate: ftime -> float days
-	*/
+	/// extract double
 	virtual double as_double() const { bark("(%s) does not have numerical (double) value"); return 0; }
 	
-	/**	extract integer
-		- VString: value
-		- VDouble: value
-		- VInt: value
-		- VBool: value
-		- VVoid: 0
-		- VTable: count
-		- VHash: count
-	*/
+	/// extract integer
 	virtual int as_int () const { bark("(%s) does not have numerical (int) value"); return 0; }
 
-	/** extract bool
-		@return for
-		- VVoid: false
-		- VBool: value
-		- VInt: 0 or !0
-		- VDouble: 0 or !0
-		- VFile: true
-		- VDate: 0 or !0
-		- VTable: count
-		- VHash: count
-	*/
+	/// extract bool
 	virtual bool as_bool() const { bark("(%s) does not have logical value"); return 0; }
 	
-	/** extract file
-		@return for
-		- VFile: this
-		- VString: vfile
-		- VImage: true
-	*/
+	/// extract file
 	virtual VFile *as_vfile(String::Untaint_lang /*lang*/=String::UL_UNSPECIFIED,
 		bool /*origins_mode*/=false) { 
 		bark("(%s) does not have file value"); return 0; 
 	}
 	
-	/** extract Junction
-		@return for
-		- junction: itself
-	*/
+	/// extract Junction
 	virtual Junction *get_junction() { return 0; }
 	
 	/** extract base object of Value
@@ -163,38 +93,10 @@ public: // Value
 	*/
 	virtual Value *base_object() { bark("(%s) has no base object"); return 0; }
 	
-	/** extract Value element
-		@a self =0 means =this
-		@return for
-		- VHash: (key)=value
-		- VStateless_class: +$method
-		- VStateless_object: +$method
-		- VClass: (field)=STATIC value;(method)=method_ref with self=object_class
-		- VCodeFrame: wcontext_transparent
-		- VMethodFrame: my or self_transparent
-		- VTable: columns,methods
-		- VEnv: field
-		- VForm: CLASS,method,field
-		- VString: $method
-		- VRequest: fields
-		- VResponse: method,fields
-		- VCookie: field
-		- VFile: method,field
-		- VDate: CLASS,method,field
-		*/
+	/// extract Value element
 	virtual Value *get_element(const String& /*aname*/, Value * /*aself*/, bool /*looking_up*/) { bark("(%s) has no elements"); return 0; }
 
-	/** store Value element under @a name
-		@return for
-		- VHash: (key)=value
-		- VStateless_object: (CLASS)=vclass;(method)=method_ref
-		- VStateless_class: (field)=value - static values only
-		- VStateless_object: (field)=value
-		- VCodeFrame: wcontext_transparent
-		- VMethodFrame: my or self_transparent
-		- VResponse: (attribute)=value
-		- VCookie: field
-	*/
+	/// store Value element under @a name
 	virtual bool put_element(const String& name, Value * /*value*/, bool /*replace*/) { 
 		// to prevent modification of system classes,
 		// created at system startup, and not having exception
@@ -204,26 +106,10 @@ public: // Value
 		return false;
 	}
 	
-	/** extract VStateless_class
-		@return for
-		- VX: x_class
-		- VStateless_class: this
-		- VObject: fclass
-		- WContext: none yet | transparent
-		these are methodless classes:
-		- VBool: 0
-		- VJunction: 0
-		- VEnv: 0
-		- VRequest: 0
-		- VCookie: 0
-	*/
+	/// extract VStateless_class
 	virtual VStateless_class *get_class()=0;
 
-	/** extract VTable
-		@return for
-		- VTable: ftable
-		- VObject: from possible 'table' parent
-	*/
+	/// extract VTable
 	virtual Table *get_table() { return 0; }
 
 public: // usage
