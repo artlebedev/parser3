@@ -1,2 +1,89 @@
-^bug[]
+# 20040623 paf@design.ru
 
+#neptune: parser upgraded, теперь $.bind[
+#$.name[^taint[uri][москва]] придёт в виде %xx%xx...
+
+
+@main[]
+^connect[oracle://igs:pwd@oracle]{
+
+
+
+^rem{
+    $vars[
+        $.puserisn(1)
+        $.poper[create]
+        $.pform[name1=value1&name2=value2]
+        $.pPremium(0)
+        $.pid(0)
+        $.pisn(0)
+    ]
+	^void:sql{call iagency.doMotorAgr(
+        :puserisn, -- идентификатор пользователя (страхователя), необходим для создания договора
+        :poper,    -- тип операции calc - расчет премии, create - расчет и создание договора
+        :pform,    -- строка параметров вида параметр=значение&:
+        :pPremium, -- премия по договору
+        :pid,      -- номер договора (после создания)
+        :pisn,     -- системный номер договора (после создания)
+        null,      -- в текущей версии не используется         
+        null       -- в текущей версии не используется         
+	)}[
+		$.bind[$vars]
+	]
+	^show[puserisn]
+	^show[poper]
+	^show[pid]
+	^show[pisn]
+	<hr>
+
+	OK
+}
+
+	$varsl[
+		$.pname[igs]
+		$.pwd[create]
+		$.pisn[x]
+		$.pres[]
+	]
+
+	^void:sql{call iagency.login(
+		:pname,
+		:pwd,
+		:pisn,
+		:pres
+	)}[
+		$.bind[$varsl]
+	]
+	
+	$varsl.pisn<br>
+	$varsl.pres<br>
+
+
+
+}
+
+@show[name]
+$name=$vars.$name<br>
+         
+
+@x[]
+	$MotorBrands[
+		$.v[2]
+	]
+
+	$a[^table::sql{
+		SELECT
+			isn,
+			shortname name,
+			nvl(code,'0') code
+		FROM
+			ais.dicti
+		WHERE
+			parentisn=:v
+			and active is not null
+		ORDER BY
+			shortname
+	}[
+		$.bind[$MotorBrands]
+	]
+	]
