@@ -3,13 +3,17 @@ t.p
 dtf.p
 
 @main[]
-^ffcheck[]
-^[^]
+^process_check[]
+#^ffcheck[]^[xxx]
 
 #$ORIGINS(1)
 #^list[]
 #^tests[]
 #^func(0)<hr>
+
+@process_check[]
+$f[^file::load[text;process.tpl]]
+^process[$f.text]
 
 @ffcheck[]
 ^file:find[bug/index.html]{not found}

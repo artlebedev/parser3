@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vfile.C,v 1.17 2001/05/17 19:33:33 parser Exp $
+	$Id: pa_vfile.C,v 1.18 2001/08/22 14:03:18 parser Exp $
 */
 
 #include "pa_vfile.h"
@@ -45,9 +45,9 @@ void VFile::set(bool tainted,
 		char *premature_zero_pos=(char *)memchr(fvalue_ptr, 0, fvalue_size);
 		if(premature_zero_pos!=fvalue_ptr)
 			text.APPEND((char *)fvalue_ptr, 
-			premature_zero_pos?premature_zero_pos-(char *)fvalue_ptr:fvalue_size, 
-			tainted? String::UL_TAINTED : String::UL_CLEAN,
-			origin_file, 0);
+				premature_zero_pos?premature_zero_pos-(char *)fvalue_ptr:fvalue_size, 
+				tainted? String::UL_TAINTED : String::UL_CLEAN,
+				origin_file, 0);
 		ffields.put(*text_name, NEW VString(text));
 	}
 	// $mime-type

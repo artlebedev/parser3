@@ -5,9 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.47 2001/08/21 11:12:20 parser Exp $
+	$Id: file.C,v 1.48 2001/08/22 14:03:18 parser Exp $
 */
-static const char *RCSId="$Id: file.C,v 1.47 2001/08/21 11:12:20 parser Exp $"; 
+static const char *RCSId="$Id: file.C,v 1.48 2001/08/22 14:03:18 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -28,6 +28,8 @@ static const char *RCSId="$Id: file.C,v 1.47 2001/08/21 11:12:20 parser Exp $";
 // defines
 
 #define FILE_CLASS_NAME "file"
+
+#define TEXT_MODE_NAME "text"
 
 // class
 
@@ -51,10 +53,12 @@ const int FIND_MONKEY_MAX_HOPS=10;
 // methods
 
 static void _save(Request& r, const String&, MethodParams *params) {
+	Value& vmode_name=params-> as_no_junction(0, "mode must not be code");
 	Value& vfile_name=params->as_no_junction(0, "file name must not be code");
 
 	// save
-	static_cast<VFile *>(r.self)->save(r.absolute(vfile_name.as_string()));
+	static_cast<VFile *>(r.self)->save(r.absolute(vfile_name.as_string()),
+		vmode_name.as_string()==TEXT_MODE_NAME);
 }
 
 static void _delete(Request& r, const String&, MethodParams *params) {
@@ -109,15 +113,17 @@ static void _find(Request& r, const String& method_name, MethodParams *params) {
 
 static void _load(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	Value& vfile_name=params->as_no_junction(0, "file name must not be code");
+	Value& vmode_name=params-> as_no_junction(0, "mode must not be code");
+	Value& vfile_name=params->as_no_junction(1, "file name must not be code");
 
 	const String& lfile_name=vfile_name.as_string();
 
 	void *data;  size_t size;
-	file_read(pool, r.absolute(lfile_name), data, size, false/*binary*/);
+	file_read(pool, r.absolute(lfile_name), data, size, 
+		vmode_name.as_string()==TEXT_MODE_NAME);
 
-	char *user_file_name=params->size()==1?lfile_name.cstr(String::UL_FILE_NAME)
-		:params->get(1).as_string().cstr();
+	char *user_file_name=params->size()>2?params->get(2).as_string().cstr()
+		:lfile_name.cstr(String::UL_FILE_NAME);
 	
 	static_cast<VFile *>(r.self)->set(true/*tainted*/, data, size, 
 		user_file_name, &r.mime_type_of(user_file_name));
@@ -367,8 +373,8 @@ MFile::MFile(Pool& apool) : Methoded(apool) {
 	set_name(*NEW String(pool(), FILE_CLASS_NAME));
 
 
-	// ^save[file-name]
-	add_native_method("save", Method::CT_DYNAMIC, _save, 1, 1);
+	// ^save[mode;file-name]
+	add_native_method("save", Method::CT_DYNAMIC, _save, 2, 2);
 
 	// ^delete[file-name]
 	add_native_method("delete", Method::CT_STATIC, _delete, 1, 1);
@@ -380,9 +386,9 @@ MFile::MFile(Pool& apool) : Methoded(apool) {
 	// ^find[file-name]{when-not-found}
 	add_native_method("find", Method::CT_STATIC, _find, 1, 2);
 
-	// ^load[disk-name]
-	// ^load[disk-name;user-name]
-	add_native_method("load", Method::CT_DYNAMIC, _load, 1, 2);
+	// ^load[mode;disk-name]
+	// ^load[mode;disk-name;user-name]
+	add_native_method("load", Method::CT_DYNAMIC, _load, 2, 3);
 
 	// ^stat[disk-name]
 	add_native_method("stat", Method::CT_DYNAMIC, _stat, 1, 1);
