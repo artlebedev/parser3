@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vmframe.h,v 1.18 2001/03/08 16:54:25 paf Exp $
+  $Id: pa_vmframe.h,v 1.19 2001/03/08 17:14:51 paf Exp $
 */
 
 #ifndef PA_VMFRAME_H
@@ -80,12 +80,10 @@ public: // usage
 		if(method.numbered_params_count) { // are this method params numbered?
 			*fnumbered_params+=value;
 		} else { // named param
-			// clone it
 			String& name=*static_cast<String *>(
 				method.params_names->get(store_param_index++));
-			Value *copy=value->clone(); // make a copy of a value so to safely rename it
-			my->put(name, copy); // remember param
-			copy->set_name(name); // rename 'copy' to param's 'name'
+			my->put(name, value); // remember param
+			value->set_name(name); // set param's 'name'
 		}
 	}
 	void fill_unspecified_params() {

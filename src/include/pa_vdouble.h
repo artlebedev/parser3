@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vdouble.h,v 1.8 2001/03/08 17:08:13 paf Exp $
+  $Id: pa_vdouble.h,v 1.9 2001/03/08 17:14:51 paf Exp $
 */
 
 #ifndef PA_VDOUBLE_H
@@ -7,7 +7,6 @@
 
 #include "pa_value.h"
 #include "pa_common.h"
-#include "pa_double.h"
 
 #define MAX_DOUBLE_AS_STRING 20
 
@@ -16,31 +15,29 @@ public: // Value
 
 	// all: for error reporting after fail(), etc
 	const char *type() const { return "double"; }
-	// clone
-	Value *clone() const { return NEW VDouble(fdouble); }
 
 	// double: fdouble
 	String *get_string() {
 		char *buf=static_cast<char *>(pool().malloc(MAX_DOUBLE_AS_STRING));
-		snprintf(buf, MAX_DOUBLE_AS_STRING, "%g", fdouble.value);
+		snprintf(buf, MAX_DOUBLE_AS_STRING, "%g", fdouble);
 		String *result=NEW String(pool());
 		result->APPEND_CONST(buf);
 		return result;
 	}
 	// double: fdouble
-	double get_double() { return fdouble.value; }
+	double get_double() { return fdouble; }
 	// double: 0 or !0
-	bool get_bool() { return fdouble.value!=0; }
+	bool get_bool() { return fdouble!=0; }
 
 public: // usage
 
-	VDouble(Double& adouble) : Value(adouble.pool()), 
+	VDouble(Pool& apool, double adouble) : Value(apool), 
 		fdouble(adouble) {
 	}
 
 private:
 
-	Double& fdouble;
+	double fdouble;
 
 };
 

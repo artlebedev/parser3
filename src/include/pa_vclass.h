@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vclass.h,v 1.23 2001/03/08 16:54:25 paf Exp $
+  $Id: pa_vclass.h,v 1.24 2001/03/08 17:14:51 paf Exp $
 */
 
 #ifndef PA_VCLASS_H
@@ -18,9 +18,6 @@ public: // Value
 	
 	// all: for error reporting after fail(), etc
 	const char *type() const { return "class"; }
-
-	// clone
-	Value *clone() const { return NEW VClass(pool(), fbase, ffields, fmethods); };
 
 	// object_class: (field)=STATIC.value;(STATIC)=hash;(method)=method_ref with self=object_class
 	Value *get_element(const String& aname) {
