@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: op.C,v 1.87 2002/04/16 08:05:09 paf Exp $
+	$Id: op.C,v 1.88 2002/04/16 08:17:42 paf Exp $
 */
 
 #include "classes.h"
@@ -103,15 +103,19 @@ static void _taint(Request& r, const String&, MethodParams *params) {
 static void _process(Request& r, const String& method_name, MethodParams *params) {
 	// calculate pseudo file name of processed chars
 	// would be something like "/some/file(4) process"
-	char place[MAX_STRING];
+	char local_place[MAX_STRING];
 #ifndef NO_STRING_ORIGIN
 	const Origin& origin=method_name.origin();
-	snprintf(place, MAX_STRING, "%s(%d) %s", 
+	size_t place_size=snprintf(local_place, MAX_STRING, "%s(%d) %s", 
 		origin.file?origin.file:"unknown_file", 1+origin.line,
-		method_name.cstr());
+		method_name.cstr())+1;
 #else
-	strncpy(place, method_name.cstr(), MAX_STRING-1); place[MAX_STRING-1]=0;
-#endif	
+	strncpy(local_place, method_name.cstr(), MAX_STRING-1); place[MAX_STRING-1]=0;
+	size_t place_size=strlen(local_place)+1;
+#endif
+	char *heap_place=(char *)r.malloc(place_size);
+	memcpy(heap_place, local_place, place_size);
+
 
 	VStateless_class& self_class=*r.self->get_class();
 	const Method *main_method;
@@ -130,7 +134,7 @@ static void _process(Request& r, const String& method_name, MethodParams *params
 		// maybe-define new @main
 		r.use_buf(
 			source.cstr(String::UL_UNSPECIFIED, r.connection(0)), 
-			place, 
+			heap_place, 
 			&self_class);
 		
 		// main_method

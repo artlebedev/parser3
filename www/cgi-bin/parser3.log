@@ -56,3 +56,7 @@
 ] c:/drives/y/parser3project/parser3/www/htdocs//../data/classes/engine.p(629): '|	SELECT|		block.name,|		block.block_id AS id,|		block.is_not_empty,|		block.sort_order|	FROM|		block,|		block_to_object|	WHERE|		block.is_published = 1 AND|		block_to_object.object_id =  AND|		block.block_id = block_to_object.block_id|	ORDER BY|		block.sort_order|' You have an error in your SQL syntax near 'AND|		block.block_id = block_to_object.block_id|	ORDER BY|		block.sort_order|' at line 12 [sql.execute]
 [Tue Apr 16 11:30:59 2002
 ] c:/drives/y/parser3project/parser3/www/htdocs//../data/classes/engine.p(629): '|	SELECT|		block.name,|		block.block_id AS id,|		block.is_not_empty,|		block.sort_order|	FROM|		block,|		block_to_object|	WHERE|		block.is_published = 1 AND|		block_to_object.object_id =  AND|		block.block_id = block_to_object.block_id|	ORDER BY|		block.sort_order|' You have an error in your SQL syntax near 'AND|		block.block_id = block_to_object.block_id|	ORDER BY|		block.sort_order|' at line 12 [sql.execute]
+[Tue Apr 16 12:08:47 2002
+] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(11) process(1): 'izf' (void) not a method or junction, can not call it [parser.runtime]
+[Tue Apr 16 12:10:00 2002
+] c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(11) process(1): 'hren' (void) not a method or junction, can not call it [parser.runtime]
