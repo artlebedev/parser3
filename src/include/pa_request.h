@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.84 2001/04/28 08:43:53 paf Exp $
+	$Id: pa_request.h,v 1.85 2001/04/28 10:58:30 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -162,6 +162,9 @@ public:
 	Value *self, *root, *rcontext;
 	/// contexts
 	WContext *wcontext;
+
+	/// main class conglomerat
+	VStateless_class *main_class;
 
 	/// connection
 	SQL_Connection *connection;

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.123 2001/04/28 08:43:57 paf Exp $
+	$Id: pa_request.C,v 1.124 2001/04/28 10:58:33 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -24,9 +24,6 @@
 #include "pa_types.h"
 #include "pa_vtable.h"
 #include "pa_vfile.h"
-
-/// $LIMITS.post_max_size default 10M
-const size_t MAX_POST_SIZE_DEFAULT=10*0x400*400;
 
 /// content type of exception response, when no @MAIN:exception handler defined
 const char *UNHANDLED_EXCEPTION_CONTENT_TYPE="text/plain";
@@ -54,6 +51,7 @@ Request::Request(Pool& apool,
 	used_files(apool),
 	default_content_type(0),
 	mime_types(0),
+	main_class(0),
 	connection(0), protocol2library(0),
 	mail(0), 
 	pcre_tables(0)
@@ -155,7 +153,6 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 				   const char *site_auto_path, bool site_auto_fail,
 				   bool header_only) {
 	//_asm { int 3 }
-	VStateless_class *main_class=0;
 	bool need_rethrow=false;  Exception rethrow_me;
 	TRY {
 		char *auto_filespec=(char *)malloc(MAX_STRING);
@@ -170,34 +167,9 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 				main_class_name, main_class);
 		}
 
-		// $MAIN:LIMITS hash used here,
+		// configure root options
 		//	until someone with less privileges have overriden them
-		methoded_array->configure(*this);
-		{
-			Value *limits=main_class?main_class->get_element(*limits_name):0;
-			if(info.method && StrEqNc(info.method, "post", true)) {
-				// $limits.post_max_size default 10M
-				Value *element=limits?limits->get_element(*post_max_size_name):0;
-				size_t value=element?(size_t)element->as_double():0;
-				size_t post_max_size=value?value:MAX_POST_SIZE_DEFAULT;
-				
-				if(size_t limit=max(0, min(info.content_length, post_max_size))) {
-					// read POST data
-					post_data=(char *)malloc(limit);
-					post_size=SAPI::read_post(pool(), post_data, limit);
-					if(post_size!=limit)
-						THROW(0, 0, 
-							0, 
-							"post_size(%d)!=limit(%d)", 
-								post_size, limit);
-				}
-			}
-
-			form.fill_fields(*this);
-		}
-
-		// filling cookies
-		cookie.fill_fields(*this);
+		methoded_array->configure_admin(*this);
 
 		// loading site auto.p
 		if(site_auto_path) {
@@ -245,6 +217,9 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 		spath_translated.APPEND_CLEAN(info.path_translated, 0, "user-request", 0);
 		main_class=use_file(spath_translated, true/*don't ignore read problem*/,
 			main_class_name, main_class);
+
+		// configure not-root=user options
+		methoded_array->configure_user(*this);
 
 		// $MAIN:DEFAULTS
 		Value *defaults=main_class->get_element(*defaults_name);
@@ -299,13 +274,11 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 			element2case(pcre_tables, *ctype, *ctype_lowercase_name);
 		}
 
-		// $MAIN:MAIL[$SMTP[mail.design.ru]]
-		if(Value *mail_element=main_class->get_element(*mail_name))
-			if(!(mail=mail_element->get_hash()))
-				THROW(0, 0,
-					0,
-					"$MAIN:MAIL is not hash");
+		// filling form fields
+		form.fill_fields(*this);
 
+		// filling cookies
+		cookie.fill_fields(*this);
 
 		// execute @main[]
 		const String *body_string=execute_method(*main_class, *main_method_name);

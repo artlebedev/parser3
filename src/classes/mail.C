@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mail.C,v 1.23 2001/04/28 08:43:47 paf Exp $
+	$Id: mail.C,v 1.24 2001/04/28 10:58:26 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -28,7 +28,9 @@
 class MMail : public Methoded {
 public:
 	MMail(Pool& pool);
+public: // Methoded
 	bool used_directly() { return true; }
+	void configure_user(Request& r);
 };
 
 // helpers
@@ -394,7 +396,7 @@ static void sendmail(Request& r, const String& method_name,
 	} else
 		PTHROW(0, 0,
 			&method_name,
-			"$"MAIN_CLASS_NAME":"MAIL_NAME" not defined");
+			"$" MAIN_CLASS_NAME ":" MAIL_NAME " not defined");
 #endif
 }
 
@@ -419,13 +421,24 @@ static void _send(Request& r, const String& method_name, MethodParams *params) {
 	sendmail(r, method_name, letter, from, to);
 }
 
-// constructor
+// constructor & configurator
 
 MMail::MMail(Pool& apool) : Methoded(apool) {
 	set_name(*NEW String(pool(), MAIL_CLASS_NAME));
 
 	/// ^mail:send{hash}
 	add_native_method("send", Method::CT_STATIC, _send, 1, 1);
+}
+
+void MMail::configure_user(Request& r) {
+	Pool& pool=r.pool();
+
+	// $MAIN:MAIL[$SMTP[mail.design.ru]]
+	if(Value *mail_element=r.main_class->get_element(*mail_name))
+		if(!(r.mail=mail_element->get_hash()))
+			PTHROW(0, 0,
+				0,
+				"$" MAIL_CLASS_NAME ":" MAIL_NAME " is not hash");
 }
 
 // global variable

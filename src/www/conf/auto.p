@@ -47,6 +47,15 @@ $MAIL[
 #	$prog2[/usr/lib/sendmail -t]
 ]
 
+@exception[origin;source;comment;type;code][i;j]
+<body bgcolor=yellow>
+<font color=black>
+CONF_ERROR:
+^if(def $source){$origin '$source'}
+${comment}.
+^if(def $type){type=$type}
+^if(def $code){code=$code}
+
 @auto_test[]
 <li>ROOT
 

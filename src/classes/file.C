@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.32 2001/04/28 08:43:47 paf Exp $
+	$Id: file.C,v 1.33 2001/04/28 10:58:25 paf Exp $
 */
 
 #include "classes.h"
@@ -14,6 +14,8 @@
 #include "pa_table.h"
 #include "pa_vint.h"
 #include "pa_exec.h"
+
+// consts
 
 // defines
 
@@ -26,9 +28,12 @@ public: // VStateless_class
 	
 	Value *create_new_value(Pool& pool) { return new(pool) VFile(pool); }
 
+public: // Methoded
+	bool used_directly() { return true; }
+
 public:
 	MFile(Pool& pool);
-	bool used_directly() { return true; }
+
 };
 
 // consts

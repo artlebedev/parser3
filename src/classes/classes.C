@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: classes.C,v 1.2 2001/04/28 08:45:15 paf Exp $
+	$Id: classes.C,v 1.3 2001/04/28 10:58:25 paf Exp $
 */
 
 #include "classes.h"
@@ -30,14 +30,24 @@ Methoded_array::Methoded_array(Pool& apool) : Array(apool) {
 #	include "classes.inc"
 }
 
-static void configure_one(Array::Item *value, void *info) {
+static void configure_admin_one(Array::Item *value, void *info) {
 	Request& r=*static_cast<Request *>(info);
 	Methoded *methoded=static_cast<Methoded *>(value);
-	methoded->configure(r);
+	methoded->configure_admin(r);
 }
 
-void Methoded_array::configure(Request& r) {
-	for_each(configure_one, &r);
+void Methoded_array::configure_admin(Request& r) {
+	for_each(configure_admin_one, &r);
+}
+
+static void configure_user_one(Array::Item *value, void *info) {
+	Request& r=*static_cast<Request *>(info);
+	Methoded *methoded=static_cast<Methoded *>(value);
+	methoded->configure_user(r);
+}
+
+void Methoded_array::configure_user(Request& r) {
+	for_each(configure_user_one, &r);
 }
 
 static void register_one(Array::Item *value, void *info) {
