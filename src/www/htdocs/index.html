@@ -1,5 +1,6 @@
 @main[]
-^ford[]
+^tdef[]
+#^ford[]
 #^tif[]
 #^image[]
 #^mail2[]
@@ -17,6 +18,12 @@
 #^xml[]
 #^header[]
 OK
+
+@tdef[]
+$s[0]
+if 0=^if($s){}{n}<br>
+if def 0=^if(def $s){y}{}<br>
+<hr>
 
 @ford[]
 ^for[i](0;5){$i}[!]
