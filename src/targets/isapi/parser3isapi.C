@@ -16,14 +16,14 @@
 //@{
 /// service func decl
 
-struct Service_func_context {
+struct sapi_func_context {
 	LPEXTENSION_CONTROL_BLOCK lpECB;
 	String *header;
 	DWORD http_response_code;
 };
 
-static const char *get_env(Pool& pool, const char *name) {
-	Service_func_context& ctx=*static_cast<Service_func_context *>(pool.context());
+static const char *sapi_get_env(Pool& pool, const char *name) {
+	sapi_func_context& ctx=*static_cast<sapi_func_context *>(pool.context());
 
 	char *variable_buf=(char *)pool.malloc(MAX_STRING);
 	DWORD variable_len = MAX_STRING-1;
@@ -45,8 +45,8 @@ static const char *get_env(Pool& pool, const char *name) {
 	return 0;
 }
 
-static uint read_post(Pool& pool, char *buf, uint max_bytes) {
-	Service_func_context& ctx=*static_cast<Service_func_context *>(pool.context());
+static uint sapi_read_post(Pool& pool, char *buf, uint max_bytes) {
+	sapi_func_context& ctx=*static_cast<sapi_func_context *>(pool.context());
 
 	DWORD read_from_buf=0;
 	DWORD read_from_input=0;
@@ -75,8 +75,8 @@ static uint read_post(Pool& pool, char *buf, uint max_bytes) {
 	return total_read;
 }
 
-static void add_header_attribute(Pool& pool, const char *key, const char *value) {
-	Service_func_context& ctx=*static_cast<Service_func_context *>(pool.context());
+static void sapi_add_header_attribute(Pool& pool, const char *key, const char *value) {
+	sapi_func_context& ctx=*static_cast<sapi_func_context *>(pool.context());
 
 	if(strcasecmp(key, "location")==0) 
 		ctx.http_response_code=302;
@@ -92,12 +92,11 @@ static void add_header_attribute(Pool& pool, const char *key, const char *value)
 }
 
 /// @todo intelligent cache-control
-static void send_header(Pool& pool) {
-	Service_func_context& ctx=*static_cast<Service_func_context *>(pool.context());
+static void sapi_send_header(Pool& pool) {
+	sapi_func_context& ctx=*static_cast<sapi_func_context *>(pool.context());
 
 	ctx.header->APPEND_CONST(
-		"Connection: keep-alive\n"
-		"Cache-Control: no-cache\n"
+		"Expires: Fri, 23 Mar 2001 09:32:23 GMT\n"
 		"\n");
 	HSE_SEND_HEADER_EX_INFO header_info;
 
@@ -109,9 +108,9 @@ static void send_header(Pool& pool) {
 		case 302:
 			header_info.pszStatus="302 Moved Temporarily";
 			break;
-		/*case 401:
+		case 401:// useless untill parser auth mech
 			header_info.pszStatus="401 Authorization Required";
-			break;*/
+			break;
 		default:
 			snprintf(status_buf, MAX_STATUS_LENGTH, 
 				"%d Undescribed", ctx.http_response_code);
@@ -129,8 +128,8 @@ static void send_header(Pool& pool) {
 		HSE_REQ_SEND_RESPONSE_HEADER_EX, &header_info, NULL, NULL);
 }
 
-static void send_body(Pool& pool, const char *buf, size_t size) {
-	Service_func_context& ctx=*static_cast<Service_func_context *>(pool.context());
+static void sapi_send_body(Pool& pool, const char *buf, size_t size) {
+	sapi_func_context& ctx=*static_cast<sapi_func_context *>(pool.context());
 
 	DWORD num_bytes=size;
 	ctx.lpECB->WriteClient(ctx.lpECB->ConnID, 
@@ -138,13 +137,13 @@ static void send_body(Pool& pool, const char *buf, size_t size) {
 }
 //@}
 
-/// Service funcs 
-Service_funcs service_funcs={
-	get_env,
-	read_post,
-	add_header_attribute,
-	send_header,
-	send_body
+/// SAPI
+SAPI sapi={
+	sapi_get_env,
+	sapi_read_post,
+	sapi_add_header_attribute,
+	sapi_send_header,
+	sapi_send_body
 };
 
 // 
@@ -190,7 +189,7 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 	
 	bool header_only=strcasecmp(lpECB->lpszMethod, "HEAD")==0;
 	PTRY { // global try
-		Service_func_context ctx={
+		sapi_func_context ctx={
 			lpECB,
 			new(pool) String(pool),
 			200
@@ -200,7 +199,7 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 		// Request info
 		Request::Info request_info;
 		
-		if(!(request_info.document_root=get_env(pool, "APPL_PHYSICAL_PATH")))
+		if(!(request_info.document_root=sapi_get_env(pool, "APPL_PHYSICAL_PATH")))
 			PTHROW(0, 0,
 				0,
 				"can not get server variable APPL_PHYSICAL_PATH (error #%lu)",
@@ -222,7 +221,7 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 		
 		request_info.content_type=lpECB->lpszContentType;
 		request_info.content_length=lpECB->cbTotalBytes;
-		request_info.cookie=get_env(pool, "HTTP_COOKIE");
+		request_info.cookie=sapi_get_env(pool, "HTTP_COOKIE");
 		
 		// prepare to process request
 		Request request(pool,
@@ -249,17 +248,17 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 		int content_length=strlen(body);
 
 		// prepare header
-		add_header_attribute(pool, "content-type", "text/plain");
+		sapi_add_header_attribute(pool, "content-type", "text/plain");
 		char content_length_cstr[MAX_NUMBER];
 		snprintf(content_length_cstr, MAX_NUMBER, "%lu", content_length);
-		add_header_attribute(pool, "content-length", content_length_cstr);
+		sapi_add_header_attribute(pool, "content-length", content_length_cstr);
 
 		// send header
-		send_header(pool);
+		sapi_send_header(pool);
 
 		// send body
 		if(!header_only)
-			send_body(pool, body, content_length);
+			sapi_send_body(pool, body, content_length);
 
 		// unsuccessful finish
 		_endthread();

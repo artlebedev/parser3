@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mod_parser3.C,v 1.13 2001/03/23 08:47:48 paf Exp $
+	$Id: mod_parser3.C,v 1.14 2001/03/23 10:14:35 paf Exp $
 */
 
 #include "httpd.h"
@@ -16,71 +16,15 @@
 #include "http_protocol.h"
 #include "util_script.h"
 
-#include <stdio.h>
-
-
 #include "pa_common.h"
 #include "pa_globals.h"
 #include "pa_request.h"
 #include "pa_version.h"
 
-/*--------------------------------------------------------------------------*/
-/*                                                                          */
-/* Data declarations.                                                       */
-/*                                                                          */
-/* Here are the static cells and structure declarations private to our      */
-/* module.                                                                  */
-/*                                                                          */
-/*--------------------------------------------------------------------------*/
-
-/*
- * Sample configuration record.  Used for both per-directory and per-server
- * configuration data.
- *
- * It's perfectly reasonable to have two different structures for the two
- * different environments.  The same command handlers will be called for
- * both, though, so the handlers need to be able to tell them apart.  One
- * possibility is for both structures to start with an int which is zero for
- * one and 1 for the other.
- *
- * Note that while the per-directory and per-server configuration records are
- * available to most of the module handlers, they should be treated as
- * READ-ONLY by all except the command and merge handlers.  Sometimes handlers
- * are handed a record that applies to the current location by implication or
- * inheritance, and modifying it will change the rules for other locations.
- */
 struct Parser_module_config {
-    int cmode;                  /* Environment to which record applies (directory,
-                                 * server, or combination).
-                                 */
-#define CONFIG_MODE_SERVER 1
-#define CONFIG_MODE_DIRECTORY 2
-#define CONFIG_MODE_COMBO 3     /* Shouldn't ever happen. */
     const char* parser_root_auto_path; /// filespec of admin's auto.p file
     const char* parser_site_auto_path; /// filespec of site's auto.p file
-    char *trace;                /* Pointer to trace string. */
-    char *loc;                  /* Location to which this record applies. */
 };
-
-/*
- * Let's set up a module-local static cell to point to the accreting callback
- * trace.  As each API callback is made to us, we'll tack on the particulars
- * to whatever we've already recorded.  To avoid massive memory bloat as
- * directories are walked again and again, we record the routine/environment
- * the first time (non-request context only), and ignore subsequent calls for
- * the same routine/environment.
- */
-static const char *trace = NULL;
-static table *static_calls_made = NULL;
-
-/*
- * To avoid leaking memory from pools other than the per-request one, we
- * allocate a module-private pool, and then use a sub-pool of that which gets
- * freed each time we modify the trace.  That way previous layers of trace
- * data don't get lost.
- */
-static pool *parser_pool = NULL;
-static pool *parser_subpool = NULL;
 
 /*
  * Declare ourselves so the configuration routines can find and know us.
@@ -88,312 +32,18 @@ static pool *parser_subpool = NULL;
  */
 extern "C" module MODULE_VAR_EXPORT parser3_module;
 
-/*--------------------------------------------------------------------------*/
-/*                                                                          */
-/* The following pseudo-prototype declarations illustrate the parameters    */
-/* passed to command handlers for the different types of directive          */
-/* syntax.  If an argument was specified in the directive definition        */
-/* (look for "command_rec" below), it's available to the command handler    */
-/* via the (void *) info field in the cmd_parms argument passed to the      */
-/* handler (cmd->info for the examples below).                              */
-/*                                                                          */
-/*--------------------------------------------------------------------------*/
-
-/*
- * Command handler for a NO_ARGS directive.
- *
- * static const char *handle_NO_ARGS(cmd_parms *cmd, void *mconfig);
- */
-
-/*
- * Command handler for a RAW_ARGS directive.  The "args" argument is the text
- * of the commandline following the directive itself.
- *
- * static const char *handle_RAW_ARGS(cmd_parms *cmd, void *mconfig,
- *                                    const char *args);
- */
-
-/*
- * Command handler for a FLAG directive.  The single parameter is passed in
- * "bool", which is either zero or not for Off or On respectively.
- *
- * static const char *handle_FLAG(cmd_parms *cmd, void *mconfig, int bool);
- */
-
-/*
- * Command handler for a TAKE1 directive.  The single parameter is passed in
- * "word1".
- *
- * static const char *handle_TAKE1(cmd_parms *cmd, void *mconfig,
- *                                 char *word1);
- */
-
-/*
- * Command handler for a TAKE2 directive.  TAKE2 commands must always have
- * exactly two arguments.
- *
- * static const char *handle_TAKE2(cmd_parms *cmd, void *mconfig,
- *                                 char *word1, char *word2);
- */
-
-/*
- * Command handler for a TAKE3 directive.  Like TAKE2, these must have exactly
- * three arguments, or the parser complains and doesn't bother calling us.
- *
- * static const char *handle_TAKE3(cmd_parms *cmd, void *mconfig,
- *                                 char *word1, char *word2, char *word3);
- */
-
-/*
- * Command handler for a TAKE12 directive.  These can take either one or two
- * arguments.
- * - word2 is a NULL pointer if no second argument was specified.
- *
- * static const char *handle_TAKE12(cmd_parms *cmd, void *mconfig,
- *                                  char *word1, char *word2);
- */
-
-/*
- * Command handler for a TAKE123 directive.  A TAKE123 directive can be given,
- * as might be expected, one, two, or three arguments.
- * - word2 is a NULL pointer if no second argument was specified.
- * - word3 is a NULL pointer if no third argument was specified.
- *
- * static const char *handle_TAKE123(cmd_parms *cmd, void *mconfig,
- *                                   char *word1, char *word2, char *word3);
- */
-
-/*
- * Command handler for a TAKE13 directive.  Either one or three arguments are
- * permitted - no two-parameters-only syntax is allowed.
- * - word2 and word3 are NULL pointers if only one argument was specified.
- *
- * static const char *handle_TAKE13(cmd_parms *cmd, void *mconfig,
- *                                  char *word1, char *word2, char *word3);
- */
-
-/*
- * Command handler for a TAKE23 directive.  At least two and as many as three
- * arguments must be specified.
- * - word3 is a NULL pointer if no third argument was specified.
- *
- * static const char *handle_TAKE23(cmd_parms *cmd, void *mconfig,
- *                                  char *word1, char *word2, char *word3);
- */
-
-/*
- * Command handler for a ITERATE directive.
- * - Handler is called once for each of n arguments given to the directive.
- * - word1 points to each argument in turn.
- *
- * static const char *handle_ITERATE(cmd_parms *cmd, void *mconfig,
- *                                   char *word1);
- */
-
-/*
- * Command handler for a ITERATE2 directive.
- * - Handler is called once for each of the second and subsequent arguments
- *   given to the directive.
- * - word1 is the same for each call for a particular directive instance (the
- *   first argument).
- * - word2 points to each of the second and subsequent arguments in turn.
- *
- * static const char *handle_ITERATE2(cmd_parms *cmd, void *mconfig,
- *                                    char *word1, char *word2);
- */
-
-/*--------------------------------------------------------------------------*/
-/*                                                                          */
-/* These routines are strictly internal to this module, and support its     */
-/* operation.  They are not referenced by any external portion of the       */
-/* server.                                                                  */
-/*                                                                          */
-/*--------------------------------------------------------------------------*/
-
 /*
  * Locate our directory configuration record for the current request.
  */
-static Parser_module_config *our_dconfig(request_rec *r)
-{
-
-    return (Parser_module_config *) ap_get_module_config(r->per_dir_config, &parser3_module);
+static Parser_module_config *our_dconfig(request_rec *r) {
+    return (Parser_module_config *) 
+		ap_get_module_config(r->per_dir_config, &parser3_module);
 }
 
-#if 0
-/*
- * Locate our server configuration record for the specified server.
- */
-static Parser_module_config *our_sconfig(server_rec *s)
-{
-
-    return (Parser_module_config *) ap_get_module_config(s->module_config, &parser3_module);
-}
-
-/*
- * Likewise for our configuration record for the specified request.
- */
-static Parser_module_config *our_rconfig(request_rec *r)
-{
-
-    return (Parser_module_config *) ap_get_module_config(r->request_config, &parser3_module);
-}
-#endif
-
-/*
- * This routine sets up some module-wide cells if they haven't been already.
- */
-static void setup_module_cells()
-{
-    /*
-     * If we haven't already allocated our module-private pool, do so now.
-     */
-    if (parser_pool == NULL) {
-        parser_pool = ap_make_sub_pool(NULL);
-    };
-    /*
-     * Likewise for the table of routine/environment pairs we visit outside of
-     * request context.
-     */
-    if (static_calls_made == NULL) {
-        static_calls_made = ap_make_table(parser_pool, 16);
-    };
-}
-
-/*
- * This routine is used to add a trace of a callback to the list.  We're
- * passed the server record (if available), the request record (if available),
- * a pointer to our private configuration record (if available) for the
- * environment to which the callback is supposed to apply, and some text.  We
- * turn this into a textual representation and add it to the tail of the list.
- * The list can be displayed by the parser_handler() routine.
- *
- * If the call occurs within a request context (i.e., we're passed a request
- * record), we put the trace into the request pool and attach it to the
- * request via the notes mechanism.  Otherwise, the trace gets added
- * to the static (non-request-specific) list.
- *
- * Note that the r->notes table is only for storing strings; if you need to
- * maintain per-request data of any other type, you need to use another
- * mechanism.
- */
-
-#define TRACE_NOTE "example-trace"
-
-static void trace_add(server_rec *s, request_rec *r, Parser_module_config *mconfig,
-                      const char *note)
-{
-
-    const char *sofar;
-    char *addon;
-    char *where;
-    pool *p;
-    const char *trace_copy;
-
-    /*
-     * Make sure our pools and tables are set up - we need 'em.
-     */
-    setup_module_cells();
-    /*
-     * Now, if we're in request-context, we use the request pool.
-     */
-    if (r != NULL) {
-        p = r->pool;
-        if ((trace_copy = ap_table_get(r->notes, TRACE_NOTE)) == NULL) {
-            trace_copy = "";
-        }
-    }
-    else {
-        /*
-         * We're not in request context, so the trace gets attached to our
-         * module-wide pool.  We do the create/destroy every time we're called
-         * in non-request context; this avoids leaking memory in some of
-         * the subsequent calls that allocate memory only once (such as the
-         * key formation below).
-         *
-         * Make a new sub-pool and copy any existing trace to it.  Point the
-         * trace cell at the copied value.
-         */
-        p = ap_make_sub_pool(parser_pool);
-        if (trace != NULL) {
-            trace = ap_pstrdup(p, trace);
-        }
-        /*
-         * Now, if we have a sub-pool from before, nuke it and replace with
-         * the one we just allocated.
-         */
-        if (parser_subpool != NULL) {
-            ap_destroy_pool(parser_subpool);
-        }
-        parser_subpool = p;
-        trace_copy = trace;
-    }
-    /*
-     * If we weren't passed a configuration record, we can't figure out to
-     * what location this call applies.  This only happens for co-routines
-     * that don't operate in a particular directory or server context.  If we
-     * got a valid record, extract the location (directory or server) to which
-     * it applies.
-     */
-    where = (mconfig != NULL) ? mconfig->loc : "nowhere";
-    where = (where != NULL) ? where : "";
-    /*
-     * Now, if we're not in request context, see if we've been called with
-     * this particular combination before.  The table is allocated in the
-     * module's private pool, which doesn't get destroyed.
-     */
-    if (r == NULL) {
-        char *key;
-
-        key = ap_pstrcat(p, note, ":", where, NULL);
-        if (ap_table_get(static_calls_made, key) != NULL) {
-            /*
-             * Been here, done this.
-             */
-            return;
-        }
-        else {
-            /*
-             * First time for this combination of routine and environment -
-             * log it so we don't do it again.
-             */
-            ap_table_set(static_calls_made, key, "been here");
-        }
-    }
-    addon = ap_pstrcat(p, "   <LI>\n", "    <DL>\n", "     <DT><SAMP>",
-                    note, "</SAMP>\n", "     </DT>\n", "     <DD><SAMP>[",
-                    where, "]</SAMP>\n", "     </DD>\n", "    </DL>\n",
-                    "   </LI>\n", NULL);
-    sofar = (trace_copy == NULL) ? "" : trace_copy;
-    trace_copy = ap_pstrcat(p, sofar, addon, NULL);
-    if (r != NULL) {
-        ap_table_set(r->notes, TRACE_NOTE, trace_copy);
-    }
-    else {
-        trace = trace_copy;
-    }
-    /*
-     * You *could* change the following if you wanted to see the calling
-     * sequence reported in the server's error_log, but beware - almost all of
-     * these co-routines are called for every single request, and the impact
-     * on the size (and readability) of the error_log is considerable.
-     */
-#define parser_LOG_EACH 0
-#if parser_LOG_EACH
-    if (s != NULL) {
-        ap_log_error(APLOG_MARK, APLOG_DEBUG, s, "mod_example: %s", note);
-    }
-#endif
-}
-
-static const char *cmd_parser_auto_path(cmd_parms *cmd, void *mconfig, char *file_spec)
-{
+static const char *cmd_parser_auto_path(cmd_parms *cmd, void *mconfig, char *file_spec) {
     Parser_module_config *cfg = (Parser_module_config *) mconfig;
 
 	// remember assigned filespec into cfg
-/*	if(cmd->info)
-		cfg->parser_root_auto_path=file_spec;
-	else
-		cfg->parser_site_auto_path=file_spec;*/
 	(cmd->info?cfg->parser_root_auto_path:cfg->parser_site_auto_path)=file_spec;
 
     return NULL;
@@ -428,16 +78,16 @@ static const char *cmd_parser_auto_path(cmd_parms *cmd, void *mconfig, char *fil
 
 //@{
 /// service func decl
-static const char *get_env(Pool& pool, const char *name) {
+static const char *sapi_get_env(Pool& pool, const char *name) {
 	request_rec *r=static_cast<request_rec *>(pool.context());
  	return (const char *)ap_table_get(r->subprocess_env, name);
 }
 
-static uint read_post(Pool& pool, char *buf, uint max_bytes) {
+static uint sapi_read_post(Pool& pool, char *buf, uint max_bytes) {
 	request_rec *r=static_cast<request_rec *>(pool.context());
 
 /*    ap_log_error(APLOG_MARK, APLOG_DEBUG, r->server, 
-		"mod_parser3: read_post(max=%u)", max_bytes);
+		"mod_parser3: sapi_read_post(max=%u)", max_bytes);
 */
 	int retval;
     if((retval = ap_setup_client_block(r, REQUEST_CHUNKED_ERROR)))
@@ -460,7 +110,7 @@ static uint read_post(Pool& pool, char *buf, uint max_bytes) {
 	return total_read_bytes;
 }
 
-static void add_header_attribute(Pool& pool, const char *key, const char *value) {
+static void sapi_add_header_attribute(Pool& pool, const char *key, const char *value) {
 	request_rec *r=static_cast<request_rec *>(pool.context());
 
 	if(strcasecmp(key, "content-type")==0) {
@@ -474,7 +124,7 @@ static void add_header_attribute(Pool& pool, const char *key, const char *value)
 		ap_table_merge(r->headers_out, key, value);
 }
 
-static void send_header(Pool& pool) {
+static void sapi_send_header(Pool& pool) {
 	request_rec *r=static_cast<request_rec *>(pool.context());
 
     ap_hard_timeout("Send header", r);
@@ -482,7 +132,7 @@ static void send_header(Pool& pool) {
 	ap_kill_timeout(r);
 }
 
-static void send_body(Pool& pool, const char *buf, size_t size) {
+static void sapi_send_body(Pool& pool, const char *buf, size_t size) {
 	request_rec *r=static_cast<request_rec *>(pool.context());
 
     ap_hard_timeout("Send body", r);
@@ -491,13 +141,13 @@ static void send_body(Pool& pool, const char *buf, size_t size) {
 }
 //@}
 
-/// Service funcs 
-Service_funcs service_funcs={
-	get_env,
-	read_post,
-	add_header_attribute,
-	send_header,
-	send_body
+/// SAPI
+SAPI sapi={
+	sapi_get_env,
+	sapi_read_post,
+	sapi_add_header_attribute,
+	sapi_send_header,
+	sapi_send_body
 };
 
 /**
@@ -520,34 +170,25 @@ static int parser_handler(request_rec *r)
 	r->no_cache=1;
 
 	PTRY { // global try
-		const char *filespec_to_process=r->filename;
-
 		ap_add_common_vars(r);
 		ap_add_cgi_vars(r);
 
 		// Request info
 		Request::Info request_info;
-		const char *document_root=
-			(const char *)ap_table_get(r->subprocess_env, "DOCUMENT_ROOT");
-		if(!document_root) {
-			static char fake_document_root[MAX_STRING];
-			strncpy(fake_document_root, filespec_to_process, MAX_STRING);
-			rsplit(fake_document_root, '/');  rsplit(fake_document_root, '\\');// strip filename
-			document_root=fake_document_root;
-		}
-		request_info.document_root=document_root;
-		request_info.path_translated=filespec_to_process;
+		request_info.document_root=(const char *)
+			ap_table_get(r->subprocess_env, "DOCUMENT_ROOT");
+		request_info.path_translated=r->filename;
 		request_info.method=r->method;
 		request_info.query_string=r->args;
-		request_info.uri=
-			(const char *)ap_table_get(r->subprocess_env, "REQUEST_URI");
-		request_info.content_type=
-			(const char *)ap_table_get(r->subprocess_env, "CONTENT_TYPE");
-		const char *content_length = 
-			(const char *)ap_table_get(r->subprocess_env, "CONTENT_LENGTH");
+		request_info.uri=(const char *)
+			ap_table_get(r->subprocess_env, "REQUEST_URI");
+		request_info.content_type=(const char *)
+			ap_table_get(r->subprocess_env, "CONTENT_TYPE");
+		const char *content_length=(const char *)
+			ap_table_get(r->subprocess_env, "CONTENT_LENGTH");
 		request_info.content_length=(content_length?atoi(content_length):0);
-		request_info.cookie=
-			(const char *)ap_table_get(r->subprocess_env, "HTTP_COOKIE");
+		request_info.cookie=(const char *)
+			ap_table_get(r->subprocess_env, "HTTP_COOKIE");
 
 		// prepare to process request
 		Request request(pool,
@@ -570,17 +211,17 @@ static int parser_handler(request_rec *r)
 		int content_length=strlen(body);
 
 		// prepare header
-		add_header_attribute(pool, "content-type", "text/plain");
+		sapi_add_header_attribute(pool, "content-type", "text/plain");
 		char content_length_cstr[MAX_NUMBER];
 		snprintf(content_length_cstr, MAX_NUMBER, "%lu", content_length);
-		add_header_attribute(pool, "content-length", content_length_cstr);
+		sapi_add_header_attribute(pool, "content-length", content_length_cstr);
 
 		// send header
-		send_header(pool);
+		sapi_send_header(pool);
 
 		// send body
 		if(!r->header_only)
-			send_body(pool, body, content_length);
+			sapi_send_body(pool, body, content_length);
 
 		// unsuccessful finish
 	}
@@ -629,20 +270,20 @@ static int parser_handler(request_rec *r)
  *
  * There is no return value.
  */
-/// @todo answer this: "why when it's called second time all globals are cleared?"
-static void parser_init(server_rec *s, pool *p)
-{
-#if MODULE_MAGIC_NUMBER >= 19980527
-	ap_add_version_component("Parser/" PARSER_VERSION);
-#endif	
-	
+
+static void setup_module_cells() {
 	static bool globals_inited=false;
 	if(globals_inited)
 		return;
 	globals_inited=true;
 
+	/*
+     * allocate our module-private pool.
+     */
+    pool *module_pool=ap_make_sub_pool(NULL);
+
 	static Pool pool; // global pool
-	pool.set_storage(p);
+	pool.set_storage(module_pool);
 	PTRY {
 		// init global variables
 		globals_init(pool);
@@ -655,31 +296,15 @@ static void parser_init(server_rec *s, pool *p)
 	PEND_CATCH
 }
 
-/* 
- * This function is called when an heavy-weight process (such as a child) is
- * being run down or destroyed.  As with the child-initialisation function,
- * any information that needs to be recorded must be in static cells, since
- * there's no configuration record.
- *
- * There is no return value.
- */
-
-/*
- * All our process-death routine does is add its trace to the log.
- */
-static void parser_child_exit(server_rec *s, pool *p)
-{
-
-    char *note;
-    char *sname = s->server_hostname;
+static void parser_server_init(server_rec *s, pool *p) {
+#if MODULE_MAGIC_NUMBER >= 19980527
+	ap_add_version_component("Parser/" PARSER_VERSION);
+#endif	
 
     /*
-     * The arbitrary text we add to our trace entry indicates for which server
-     * we're being called.
+     * Set up any module cells that ought to be initialised.
      */
-    sname = (sname != NULL) ? sname : "";
-    note = ap_pstrcat(p, "parser_child_exit(", sname, ")", NULL);
-    trace_add(s, NULL, NULL, note);
+    setup_module_cells();
 }
 
 /*
@@ -694,29 +319,18 @@ static void parser_child_exit(server_rec *s, pool *p)
  * The return value is a pointer to the created module-specific
  * structure.
  */
-static void *parser_create_dir_config(pool *p, char *dirspec)
-{
-
-    Parser_module_config *cfg;
-    char *dname = dirspec;
-
-    /*
+static void *parser_create_dir_config(pool *p, char *dirspec) {
+	/*
      * Allocate the space for our record from the pool supplied.
      */
-    cfg = (Parser_module_config *) ap_pcalloc(p, sizeof(Parser_module_config));
+    Parser_module_config *cfg=
+		(Parser_module_config *) ap_pcalloc(p, sizeof(Parser_module_config));
     /*
      * Now fill in the defaults.  If there are any `parent' configuration
      * records, they'll get merged as part of a separate callback.
      */
     cfg->parser_root_auto_path = 0;
 	cfg->parser_site_auto_path = 0;
-    cfg->cmode = CONFIG_MODE_DIRECTORY;
-    /*
-     * Finally, add our trace to the callback list.
-     */
-    dname = (dname != NULL) ? dname : "";
-    cfg->loc = ap_pstrcat(p, "DIR(", dname, ")", NULL);
-    trace_add(NULL, NULL, cfg, "parser_create_dir_config()");
     return (void *) cfg;
 }
 
@@ -736,14 +350,11 @@ static void *parser_create_dir_config(pool *p, char *dirspec)
  * containing the merged values.
  */
 static void *parser_merge_dir_config(pool *p, void *parent_conf,
-                                      void *newloc_conf)
-{
-
-    Parser_module_config *merged_config = (Parser_module_config *) ap_pcalloc(p, sizeof(Parser_module_config));
+                                      void *newloc_conf) {
+    Parser_module_config *merged_config = 
+		(Parser_module_config *) ap_pcalloc(p, sizeof(Parser_module_config));
     Parser_module_config *pconf = (Parser_module_config *) parent_conf;
     Parser_module_config *nconf = (Parser_module_config *) newloc_conf;
-    char *note;
-
 
 	// always from parent
     merged_config->parser_root_auto_path = ap_pstrdup(p, pconf->parser_root_auto_path);
@@ -754,21 +365,6 @@ static void *parser_merge_dir_config(pool *p, void *parent_conf,
     merged_config->parser_site_auto_path = ap_pstrdup(p, nconf->parser_site_auto_path?
 		nconf->parser_site_auto_path:pconf->parser_site_auto_path);
 
-    merged_config->loc = ap_pstrdup(p, nconf->loc);
-    /*
-     * If we're merging records for two different types of environment (server
-     * and directory), mark the new record appropriately.  Otherwise, inherit
-     * the current value.
-     */
-    merged_config->cmode =
-        (pconf->cmode == nconf->cmode) ? pconf->cmode : CONFIG_MODE_COMBO;
-    /*
-     * Now just record our being called in the trace list.  Include the
-     * locations we were asked to merge.
-     */
-    note = ap_pstrcat(p, "parser_merge_dir_config(\"", pconf->loc, "\",\"",
-                   nconf->loc, "\")", NULL);
-    trace_add(NULL, NULL, merged_config, note);
     return (void *) merged_config;
 }
 
@@ -779,26 +375,17 @@ static void *parser_merge_dir_config(pool *p, void *parent_conf,
  * The return value is a pointer to the created module-specific
  * structure.
  */
-static void *parser_create_server_config(pool *p, server_rec *s)
-{
-
-    Parser_module_config *cfg;
-    char *sname = s->server_hostname;
-
+static void *parser_create_server_config(pool *p, server_rec *s) {
     /*
      * As with the parser_create_dir_config() reoutine, we allocate and fill
      * in an empty record.
      */
-    cfg = (Parser_module_config *) ap_pcalloc(p, sizeof(Parser_module_config));
+    Parser_module_config *cfg=
+		(Parser_module_config *) ap_pcalloc(p, sizeof(Parser_module_config));
+
     cfg->parser_root_auto_path = 0;
 	cfg->parser_site_auto_path = 0;
-    cfg->cmode = CONFIG_MODE_SERVER;
-    /*
-     * Note that we were called in the trace list.
-     */
-    sname = (sname != NULL) ? sname : "";
-    cfg->loc = ap_pstrcat(p, "SVR(", sname, ")", NULL);
-    trace_add(s, NULL, cfg, "parser_create_server_config()");
+
     return (void *) cfg;
 }
 
@@ -819,7 +406,8 @@ static void *parser_merge_server_config(pool *p, void *server1_conf,
                                          void *server2_conf)
 {
 
-    Parser_module_config *merged_config = (Parser_module_config *) ap_pcalloc(p, sizeof(Parser_module_config));
+    Parser_module_config *merged_config = 
+		(Parser_module_config *) ap_pcalloc(p, sizeof(Parser_module_config));
     Parser_module_config *s1conf = (Parser_module_config *) server1_conf;
     Parser_module_config *s2conf = (Parser_module_config *) server2_conf;
 
@@ -827,13 +415,10 @@ static void *parser_merge_server_config(pool *p, void *server1_conf,
      * Our inheritance rules are our own, and part of our module's semantics.
      * Basically, just note whence we came.
      */
-    merged_config->cmode =
-        (s1conf->cmode == s2conf->cmode) ? s1conf->cmode : CONFIG_MODE_COMBO;
     merged_config->parser_root_auto_path = ap_pstrdup(p, s2conf->parser_root_auto_path?
 		s2conf->parser_root_auto_path:s1conf->parser_root_auto_path);
     merged_config->parser_site_auto_path = ap_pstrdup(p, s2conf->parser_site_auto_path?
 		s2conf->parser_site_auto_path:s1conf->parser_site_auto_path);
-    merged_config->loc = ap_pstrdup(p, s2conf->loc);
  
 	return (void *) merged_config;
 }
@@ -846,17 +431,8 @@ static void *parser_merge_server_config(pool *p, void *server1_conf,
  * The return value is OK, DECLINED, or HTTP_mumble.  If we return OK, no
  * further modules are called for this phase.
  */
-static int parser_translate_handler(request_rec *r)
-{
-
-    Parser_module_config *cfg;
-
-    cfg = our_dconfig(r);
-    /*
-     * We don't actually *do* anything here, except note the fact that we were
-     * called.
-     */
-    trace_add(r->server, r, cfg, "parser_translate_handler()");
+static int parser_translate_handler(request_rec *r) {
+    Parser_module_config *cfg=our_dconfig(r);
     return DECLINED;
 }
 
@@ -869,16 +445,8 @@ static int parser_translate_handler(request_rec *r)
  * HTTP_UNAUTHORIZED).  If we return OK, no other modules are given a chance
  * at the request during this phase.
  */
-static int parser_check_user_id(request_rec *r)
-{
-
-    Parser_module_config *cfg;
-
-    cfg = our_dconfig(r);
-    /*
-     * Don't do anything except log the call.
-     */
-    trace_add(r->server, r, cfg, "parser_check_user_id()");
+static int parser_check_user_id(request_rec *r) {
+    Parser_module_config *cfg=our_dconfig(r);
     return DECLINED;
 }
 
@@ -892,17 +460,8 @@ static int parser_check_user_id(request_rec *r)
  * If *all* modules return DECLINED, the request is aborted with a server
  * error.
  */
-static int parser_auth_checker(request_rec *r)
-{
-
-    Parser_module_config *cfg;
-
-    cfg = our_dconfig(r);
-    /*
-     * Log the call and return OK, or access will be denied (even though we
-     * didn't actually do anything).
-     */
-    trace_add(r->server, r, cfg, "parser_auth_checker()");
+static int parser_auth_checker(request_rec *r) {
+    Parser_module_config *cfg=our_dconfig(r);
     return DECLINED;
 }
 
@@ -915,13 +474,9 @@ static int parser_auth_checker(request_rec *r)
  * return OK or DECLINED.  The first one to return any other status, however,
  * will abort the sequence (and the request) as usual.
  */
-static int parser_access_checker(request_rec *r)
-{
+static int parser_access_checker(request_rec *r) {
 
-    Parser_module_config *cfg;
-
-    cfg = our_dconfig(r);
-    trace_add(r->server, r, cfg, "parser_access_checker()");
+    Parser_module_config *cfg=our_dconfig(r);
     return DECLINED;
 }
 
@@ -998,30 +553,18 @@ static const handler_rec parser_handlers[] =
 module MODULE_VAR_EXPORT parser3_module =
 {
     STANDARD_MODULE_STUFF,
-    parser_init,               /* module initializer */
-    parser_create_dir_config,  /* per-directory config creator */
-    parser_merge_dir_config,   /* dir config merger */
-    parser_create_server_config,       /* server config creator */
-    parser_merge_server_config,        /* server config merger */
-    parser_cmds,               /* command table */
-    parser_handlers,           /* [9] list of handlers */
-    parser_translate_handler,  /* [2] filename-to-URI translation */
-    parser_check_user_id,      /* [5] check/validate user_id */
-    parser_auth_checker,       /* [6] check user_id is valid *here* */
-    parser_access_checker,     /* [4] check access by host address */
-    0,                          /* [7] MIME type checker/setter */
-    0,                          /* [8] fixups */
-    0                          /* [10] logger */
-#if MODULE_MAGIC_NUMBER >= 19970103
-    ,0                          /* [3] header parser */
-#endif
-#if MODULE_MAGIC_NUMBER >= 19970719
-    ,0                          /* process initializer */
-#endif
-#if MODULE_MAGIC_NUMBER >= 19970728
-    ,parser_child_exit         /* process exit/cleanup */
-#endif
-#if MODULE_MAGIC_NUMBER >= 19970902
-    ,0   /* [1] post read_request handling */
-#endif
+    parser_server_init,          /* module initializer */
+    parser_create_dir_config,    /* per-directory config creator */
+    parser_merge_dir_config,     /* dir config merger */
+    parser_create_server_config, /* server config creator */
+    parser_merge_server_config,  /* server config merger */
+    parser_cmds,                 /* command table */
+    parser_handlers,             /* [9] list of handlers */
+    parser_translate_handler,    /* [2] filename-to-URI translation */
+    parser_check_user_id,        /* [5] check/validate user_id */
+    parser_auth_checker,         /* [6] check user_id is valid *here* */
+    parser_access_checker,       /* [4] check access by host address */
+    0,                           /* [7] MIME type checker/setter */
+    0,                           /* [8] fixups */
+    0                            /* [10] logger */
 };

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3.C,v 1.35 2001/03/23 08:47:49 paf Exp $
+	$Id: parser3.C,v 1.36 2001/03/23 10:14:36 paf Exp $
 */
 
 #ifdef HAVE_CONFIG_H
@@ -37,15 +37,12 @@
 Pool pool; // global pool
 bool cgi; ///< we were started as CGI?
 
-#ifdef WIN32
-#	if _MSC_VER
+#if defined(WIN32) && _MSC_VER
 // intercept global system errors
-static LONG WINAPI TopLevelExceptionFilter (
-									 struct _EXCEPTION_POINTERS *ExceptionInfo
-									 ) {
+static LONG WINAPI TopLevelExceptionFilter (struct _EXCEPTION_POINTERS *ExceptionInfo) {
 	char buf[MAX_STRING];
 	if(ExceptionInfo && ExceptionInfo->ExceptionRecord) {
-		struct _EXCEPTION_RECORD *rr=ExceptionInfo->ExceptionRecord;
+		struct _EXCEPTION_RECORD *er=ExceptionInfo->ExceptionRecord;
 		snprintf(buf, MAX_STRING, "Exception %#X at %p", 
 			er->ExceptionCode, 
 			er->ExceptionAddress);
@@ -58,8 +55,6 @@ static LONG WINAPI TopLevelExceptionFilter (
 
 	return EXCEPTION_EXECUTE_HANDLER; // never reached
 }
-#	endif
-
 #endif
 
 //\if
@@ -73,15 +68,15 @@ static void fix_slashes(char *s) {
 
 // service funcs
 
-static const char *get_env(Pool& pool, const char *name) {
+static const char *sapi_get_env(Pool& pool, const char *name) {
  	return getenv(name);
 }
 
-static uint read_post(char *buf, uint max_bytes) {
-	int read_size=0;
+static uint sapi_read_post(Pool& pool, char *buf, uint max_bytes) {
+	uint read_size=0;
 	do {
-		int chunk_size=read
-			(fileno(stdin), buf+read_size, min(0x400*0x400, max_bytes-read_size));
+		int chunk_size=read(fileno(stdin), 
+			buf+read_size, min(0x400*0x400, max_bytes-read_size));
 		if(chunk_size<0)
 			break;
 		read_size+=chunk_size;
@@ -90,33 +85,33 @@ static uint read_post(char *buf, uint max_bytes) {
 	return read_size;
 }
 
-static void add_header_attribute(const char *key, const char *value) {
+static void sapi_add_header_attribute(Pool& pool, const char *key, const char *value) {
 	if(cgi)
 		printf("%s: %s\n", key, value);
 }
 
 /// @todo intelligent cache-control
-static void send_header(const char *buf, size_t size) {
+static void sapi_send_header(Pool& pool) {
 	if(cgi) {
-		puts("Cache-Control: no-cache");
+		puts("Expires: Fri, 23 Mar 2001 09:32:23 GMT");
 
 		// header | body  delimiter
 		puts("");
 	}
 }
 
-static void send_body(const char *buf, size_t size) {
+static void sapi_send_body(Pool& pool, const char *buf, size_t size) {
 	stdout_write(buf, size);
 }
 
-/// Service funcs 
- Service_funcs service_funcs={
-		get_env,
-		read_post,
-		add_header_attribute,
-		send_header,
-		send_body
- };
+/// SAPI
+SAPI sapi={
+	sapi_get_env,
+	sapi_read_post,
+	sapi_add_header_attribute,
+	sapi_send_header,
+	sapi_send_body
+};
 
 
 // main
@@ -146,19 +141,17 @@ int main(int argc, char *argv[]) {
 	}
 
 	char *filespec_to_process=cgi?getenv("PATH_TRANSLATED"):argv[1];
-//\#ifdef WIN32
+#ifdef WIN32
 	fix_slashes(filespec_to_process);
-//\#endif
+#endif
 
 	const char *request_method=getenv("REQUEST_METHOD");
 	bool header_only=request_method && strcasecmp(request_method, "HEAD")==0;
 	PTRY { // global try
 		// must be first in PTRY{}PCATCH
-#ifdef WIN32
-#	if _MSC_VER
+#if defined(WIN32) && _MSC_VER
 		SetUnhandledExceptionFilter(&TopLevelExceptionFilter);
 		//TODO: initSocks();
-#	endif
 #endif
 
 		// init global variables
@@ -171,14 +164,14 @@ int main(int argc, char *argv[]) {
 
 		// Request info
 		Request::Info request_info;
-		const char *document_root=getenv("DOCUMENT_ROOT");
-		if(!document_root) {
-			static char fake_document_root[MAX_STRING];
-			strncpy(fake_document_root, filespec_to_process, MAX_STRING);
-			rsplit(fake_document_root, '/');  rsplit(fake_document_root, '\\');// strip filename
-			document_root=fake_document_root;
+		if(cgi)
+			request_info.document_root=getenv("DOCUMENT_ROOT");
+		else {
+			static char document_root[MAX_STRING];
+			strncpy(document_root, filespec_to_process, MAX_STRING);
+			rsplit(document_root, '/');  rsplit(document_root, '\\');// strip filename
+			request_info.document_root=document_root;
 		}
-		request_info.document_root=document_root;
 		request_info.path_translated=filespec_to_process;
 		request_info.method=request_method;
 		request_info.query_string=getenv("QUERY_STRING");
@@ -196,18 +189,17 @@ int main(int argc, char *argv[]) {
 			);
 		
 		// some root-controlled location
-		char *root_auto_path;
 #ifdef WIN32
 		// c:\windows
-		root_auto_path=(char *)pool.malloc(MAX_STRING);
+		static char root_auto_path[MAX_STRING];
 		GetWindowsDirectory(root_auto_path, MAX_STRING);
 #else
 		// ~nobody
-		root_auto_path=getenv("HOME");
+		char *root_auto_path=getenv("HOME");
 #endif
 		
 		// beside by binary
-		char *site_auto_path=(char *)pool.malloc(MAX_STRING);
+		static char site_auto_path[MAX_STRING];
 		strncpy(site_auto_path, argv[0], MAX_STRING);  // filespec of my binary
 		rsplit(site_auto_path, '/');  rsplit(site_auto_path, '\\');// strip filename
 		
@@ -218,10 +210,8 @@ int main(int argc, char *argv[]) {
 			header_only);
 
 		// must be last in PTRY{}PCATCH
-#ifdef WIN32
-#	if _MSC_VER
+#if defined(WIN32) && _MSC_VER
 		SetUnhandledExceptionFilter(0);
-#	endif
 #endif
 		// successful finish
 		return 0;
@@ -230,17 +220,17 @@ int main(int argc, char *argv[]) {
 		int content_length=strlen(body);
 
 		// prepare header
-		add_header_attribute("content-type", "text/plain");
+		sapi_add_header_attribute(pool, "content-type", "text/plain");
 		char content_length_cstr[MAX_NUMBER];
 		snprintf(content_length_cstr, MAX_NUMBER, "%lu", content_length);
-		add_header_attribute("content-length", content_length_cstr);
+		sapi_add_header_attribute(pool, "content-length", content_length_cstr);
 
 		// send header
-		send_header(pool);
+		sapi_send_header(pool);
 
 		// body
 		if(!header_only)
-			send_body(body, content_length);
+			sapi_send_body(pool, body, content_length);
 
 		// unsuccessful finish
 		return 1;

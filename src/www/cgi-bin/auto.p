@@ -7,6 +7,7 @@ ${comment}.
 
 
 @auto[]
+$site_test[beside_cgi_binary]
 $limits[
 	$post_max_size(10*0x400*0x400)
 ]	
