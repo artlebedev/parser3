@@ -1,5 +1,5 @@
 /*
-  $Id: pa_request.h,v 1.30 2001/03/10 15:56:14 paf Exp $
+  $Id: pa_request.h,v 1.31 2001/03/10 16:15:37 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -22,11 +22,11 @@
 #define ENV_CLASS_NAME "ENV"
 
 #ifndef NO_STRING_ORIGIN
-#	define COMPILE_PARAMS char *source, String *name, char *file
-#	define COMPILE(source, name, file) real_compile(source, name, file)
+#	define COMPILE_PARAMS char *source, String *name, VClass *base_class, char *file
+#	define COMPILE(source, name, base_class, file) real_compile(source, name, base_class, file)
 #else
-#	define COMPILE_PARAMS char *source, String *name
-#	define COMPILE(source, name, file) real_compile(source, name)
+#	define COMPILE_PARAMS char *source, String *name, VClass *base_class
+#	define COMPILE(source, name, base_class, file) real_compile(source, name, base_class)
 #endif
 
 class Local_request_exception;
@@ -44,8 +44,12 @@ public:
 	// core request processing
 	void core();
 
-	VClass *use(char *file, String *name, bool fail_on_read_problem=true); // core.C
-	Value& autocalc(Value& value, const String *name=0, bool make_string=true); // execute.C
+	VClass *use(char *file, 
+		String *name=0, 
+		VClass *base_class=0, 
+		bool fail_on_read_problem=true); // core.C
+	Value& autocalc(Value& value, const String *name=0, 
+		bool make_string=true); // execute.C
 
 	void write(const String& astring) {
 		wcontext->write(astring, String::Untaint_lang::NO);  // write(const) = clean

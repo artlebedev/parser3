@@ -1,5 +1,5 @@
 /*
-$Id: pa_request.C,v 1.6 2001/03/10 15:56:16 paf Exp $
+$Id: pa_request.C,v 1.7 2001/03/10 16:15:38 paf Exp $
 */
 
 #include "pa_request.h"
@@ -34,12 +34,31 @@ Request::Request(Pool& apool) : Pooled(apool),
 
 void Request::core() {
 	TRY {
-		char *auto_file="Y:\\parser3\\src\\auto.p";
-		use(auto_file, auto_class_name, false/*ignore possible error*/);
+		// loading system auto.p
+		char *sys_auto_file="C:\\temp\\auto.p";
+		VClass *sys_auto_class=use(
+			sys_auto_file, 
+			auto_class_name, 0, 
+			false/*ignore possible error*/);
 
+		// TODO: load site auto.p files, all assigned bases from upper dir
+		char *site_auto_file="Y:\\parser3\\src\\auto.p";
+		VClass *site_auto_class=use(
+			site_auto_file, 
+			auto_class_name, sys_auto_class, 
+			false/*ignore possible error*/);
+
+		// there must be some auto.p
+		if(!sys_auto_class && !site_auto_class)
+			THROW(0,0,
+				0,
+				"'auto.p' not found");
+
+		// compiling requested file
 		char *test_file="Y:\\parser3\\src\\test.p";
 		use(test_file, run_class_name);
 
+		// executing some @main[]
 		char *result=execute_MAIN();
 		printf("result-----------------\n%sEOF----------------\n", result);
 	} 
@@ -67,14 +86,14 @@ void Request::core() {
 	END_CATCH
 }
 
-VClass *Request::use(char *file, String *name, bool fail_on_read_problem) {
+VClass *Request::use(char *file, String *name, VClass *base_class, bool fail_on_read_problem) {
 	// TODO: обнаружить|решить cyclic dependences
 	char *source=file_read(pool(), file, fail_on_read_problem);
 	if(!source)
 		return 0;
 
 	// compile loaded class
-	VClass& vclass=COMPILE(source, name, file);
+	VClass& vclass=COMPILE(source, name, base_class, file);
 
 	// locate and execute possible @auto[] static method
 	execute_static_method(vclass, *auto_method_name, false /*no result needed*/);

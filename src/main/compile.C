@@ -1,5 +1,5 @@
 /*
-  $Id: compile.C,v 1.22 2001/03/09 08:28:34 paf Exp $
+  $Id: compile.C,v 1.23 2001/03/10 16:15:38 paf Exp $
 */
 
 #include "pa_request.h"
@@ -22,11 +22,11 @@ VClass& Request::real_compile(COMPILE_PARAMS) {
 	pc.pool=&pool();
 	pc.request=this;
 	VClass *vclass;
-	if(name) { // we were told the name of a class?
+	if(name) { // we were told the name of compiled class?
 		// yes. create it
 		vclass=NEW VClass(pool());
 		// defaulting base. may change with @BASE
-		vclass->set_base(root_class);
+		vclass->set_base(base_class?*base_class:root_class);
 		// append to request's classes
 		classes_array()+=vclass;
 		classes().put(*name, vclass);

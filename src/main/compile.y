@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.85 2001/03/10 15:56:16 paf Exp $
+  $Id: compile.y,v 1.86 2001/03/10 16:15:38 paf Exp $
 */
 
 %{
@@ -140,11 +140,13 @@ control_method: '@' STRING '\n'
 			for(int i=0; i<strings_code->size(); i+=2) {
 				String file(*SLA2S(strings_code, i));
 				file.APPEND_CONST(".p");
-				PC->request->use(file.cstr(), 0);
+				PC->request->use(file.cstr());
 			}
 		} else if(command==BASE_NAME) {
 			if(PC->vclass->base()!=&PC->request->root_class) { // already changed from default?
-				strcpy(PC->error, "there must be only one @"BASE_NAME);
+				strcpy(PC->error, "class already have a base '");
+				strncat(PC->error, PC->vclass->base()->name().cstr(), 100);
+				strcat(PC->error, "'");
 				YYERROR;
 			}
 			if(strings_code->size()==1*2) {
