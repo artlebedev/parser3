@@ -7,7 +7,7 @@
 #include "pa_config_includes.h"
 #ifdef XML
 
-static const char * const IDENT_STYLESHEET_MANAGER_C="$Date: 2003/12/11 09:25:50 $";
+static const char * const IDENT_STYLESHEET_MANAGER_C="$Date: 2004/02/06 11:54:11 $";
 
 #include "pa_stylesheet_manager.h"
 #include "pa_exception.h"
@@ -23,7 +23,6 @@ Stylesheet_manager* stylesheet_manager=0;
 
 // consts
 
-const time_t SECOND=1;
 const time_t EXPIRE_UNUSED_CONNECTION_SECONDS=5*60;
 const time_t CHECK_EXPIRED_CONNECTION_SECONDS=EXPIRE_UNUSED_CONNECTION_SECONDS*2;
 
@@ -53,7 +52,7 @@ Stylesheet_manager::Stylesheet_manager(): prev_expiration_pass_time(0) {
 }
 
 Stylesheet_manager::~Stylesheet_manager() {
-	connection_cache.for_each(expire_connections, time(0)+SECOND/*=in future=expire all*/);
+	connection_cache.for_each(expire_connections, time(0)+(time_t)10/*=in future=expire all*/);
 }
 
 Stylesheet_connection_ptr Stylesheet_manager::get_connection(String::Body file_spec) {

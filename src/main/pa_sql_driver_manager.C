@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_SQL_DRIVER_MANAGER_C="$Date: 2003/12/22 11:44:35 $";
+static const char * const IDENT_SQL_DRIVER_MANAGER_C="$Date: 2004/02/06 11:54:11 $";
 
 #include "pa_sql_driver_manager.h"
 #include "ltdl.h"
@@ -78,7 +78,7 @@ SQL_Driver_manager::SQL_Driver_manager():
 }
 
 SQL_Driver_manager::~SQL_Driver_manager() {
-	connection_cache.for_each(expire_connections, time(0)+(time_t)1/*=in future=expire all*/);
+	connection_cache.for_each(expire_connections, time(0)+(time_t)10/*=in future=expire all*/);
 
 	if(is_dlinited)
 		lt_dlexit();
