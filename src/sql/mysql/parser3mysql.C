@@ -5,18 +5,24 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3mysql.C,v 1.10 2001/04/05 16:30:43 paf Exp $
+	$Id: parser3mysql.C,v 1.11 2001/04/05 20:01:27 paf Exp $
 */
 
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "pa_sql_driver.h"
 #include "mysql.h"
 
 #define MAX_STRING 0x400
+#define MAX_NUMBER 20
 
-char *lsplit(char *string, char delim) {
+#if _MSC_VER
+#	define snprintf _snprintf
+#endif
+
+static char *lsplit(char *string, char delim) {
     if(string) {
 		char *v=strchr(string, delim);
 		if(v) {
@@ -61,7 +67,7 @@ public:
 	    MYSQL *mysql=mysql_init(NULL);
 		if(!mysql_real_connect(mysql, 
 			host, user, pwd, db, port?port:MYSQL_PORT, NULL, 0))
-			fservices->_throw(mysql_error(mysql));
+			services->_throw(mysql_error(mysql));
 
 		if(charset) { 
 			// set charset
@@ -69,7 +75,7 @@ public:
 			strncat(statement, charset, MAX_STRING);
 			
 			if(mysql_query(mysql, statement)) 
-				fservices->_throw(mysql_error(mysql));
+				services->_throw(mysql_error(mysql));
 			mysql_store_result(mysql); // throw out the result [don't need but must call]
 		}
 
@@ -99,17 +105,33 @@ public:
 		return mysql_escape_string(to, from, length);
 	}
 	void query(void *connection, 
-		const char *statement, unsigned long offset, unsigned long limit,
+		const char *astatement, unsigned long offset, unsigned long limit,
 		unsigned int *column_count, Cell **columns, 
 		unsigned long *row_count, Cell ***rows) {
 
 		MYSQL *mysql=(MYSQL *)connection;
 		MYSQL_RES *res=NULL;
 
+		const char *statement;
+		if(offset || limit) {
+			size_t statement_size=strlen(astatement);
+			char *statement_limited=(char *)services->malloc(
+				statement_size+MAX_NUMBER*2+8/* limit #,#*/+1);
+			char *cur=statement_limited;
+			memcpy(cur, astatement, statement_size); cur+=statement_size;
+			cur+=sprintf(cur, " limit ");
+			if(offset)
+				cur+=snprintf(cur, MAX_NUMBER+1, "%lu,", offset);
+			if(limit)
+				cur+=snprintf(cur, MAX_NUMBER, "%lu", limit);
+			statement=statement_limited;
+		} else
+			statement=astatement;
+
 		if(mysql_query(mysql, statement)) 
-			fservices->_throw(mysql_error(mysql));
+			services->_throw(mysql_error(mysql));
 		if(!(res=mysql_store_result(mysql)) && mysql_field_count(mysql)) 
-			fservices->_throw(mysql_error(mysql));
+			services->_throw(mysql_error(mysql));
 		if(!res) {
 			// empty result
 			*row_count=0;
@@ -118,16 +140,16 @@ public:
 		}
 		
 		*column_count=mysql_num_fields(res);
-		*columns=(Cell *)fservices->malloc(sizeof(Cell)*(*column_count));
+		*columns=(Cell *)services->malloc(sizeof(Cell)*(*column_count));
 
 		*row_count=(unsigned long)mysql_num_rows(res);
-		*rows=(Cell **)fservices->malloc(sizeof(Cell *)*(*row_count));
+		*rows=(Cell **)services->malloc(sizeof(Cell *)*(*row_count));
 		
 		for(unsigned int i=0; i<(*column_count); i++){
 			MYSQL_FIELD *field=mysql_fetch_field(res);
 			size_t size=strlen(field->name);
 			(*columns)[i].size=size;
-			(*columns)[i].ptr=fservices->malloc(size);
+			(*columns)[i].ptr=services->malloc(size);
 			memcpy((*columns)[i].ptr, field->name, size);
 		}
 		
@@ -139,7 +161,7 @@ public:
 				for(unsigned int i=0; i<(*column_count); i++){
 					size_t size=(size_t)lengths[i];
 					row[i].size=size;
-					row[i].ptr=fservices->malloc(size);
+					row[i].ptr=services->malloc(size);
 					memcpy(row[i].ptr, mysql_row[i], size);
 				}
 		}

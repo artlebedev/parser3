@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.98 2001/04/05 19:35:16 paf Exp $
+	$Id: pa_request.C,v 1.99 2001/04/05 20:01:22 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -278,17 +278,17 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 					problem_source->origin().file?problem_source->origin().file:"global",
 					problem_source->origin().line,
 #endif
-					problem_source->cstr(),
+					problem_source->cstr(String::UL_AS_IS),
 					e.comment(),
-					e.type()?e.type()->cstr():"-",
-					e.code()?e.code()->cstr():"-"
+					e.type()?e.type()->cstr(String::UL_AS_IS):"-",
+					e.code()?e.code()->cstr(String::UL_AS_IS):"-"
 				);
 			else
 				SAPI::log(pool(),
 					"%s [%s %s]",
 					e.comment(),
-					e.type()?e.type()->cstr():"-",
-					e.code()?e.code()->cstr():"-"
+					e.type()?e.type()->cstr(String::UL_AS_IS):"-",
+					e.code()?e.code()->cstr(String::UL_AS_IS):"-"
 					);
 
 			// reset language to default
@@ -388,18 +388,18 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 						origin.file, 1+origin.line);
 #endif
 					printed+=snprintf(buf+printed, MAX_STRING-printed, "'%s' ", 
-						problem_source->cstr());
+						problem_source->cstr(String::UL_AS_IS));
 				}
 				printed+=snprintf(buf+printed, MAX_STRING-printed, "%s", 
 					e.comment());
 				const String *type=e.type();
 				if(type) {
 					printed+=snprintf(buf+printed, MAX_STRING-printed, "  type: %s", 
-						type->cstr());
+						type->cstr(String::UL_AS_IS));
 					const String *code=e.code();
 					if(code)
 						printed+=snprintf(buf+printed, MAX_STRING-printed, ", code: %s", 
-						code->cstr());
+						code->cstr(String::UL_AS_IS));
 				}
 
 				// future $response:content-type
