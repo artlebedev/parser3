@@ -367,10 +367,6 @@ SOURCE=..\types\pa_wwrapper.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\classes\_cookie.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\classes\_double.h
 # End Source File
 # Begin Source File
@@ -408,10 +404,6 @@ SOURCE=..\classes\_string.h
 # Begin Source File
 
 SOURCE=..\classes\_table.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\classes\cookie.C
 # End Source File
 # Begin Source File
 

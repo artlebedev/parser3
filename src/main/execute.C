@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.119 2001/03/19 19:17:44 paf Exp $
+	$Id: execute.C,v 1.120 2001/03/19 21:59:17 paf Exp $
 */
 
 #include "code.h"
@@ -156,13 +156,13 @@ void Request::execute(const Array& ops) {
 				wcontext->set_somebody_entered_some_class();
 
 				const String& name=POP_NAME();
-				VClass *vclass=static_cast<VClass *>(classes().get(name));
-				if(!vclass) 
+				Value *value=static_cast<Value *>(classes().get(name));
+				if(!value) 
 					THROW(0,0,
 						&name,
 						": undefined class"); 
 
-				PUSH(vclass);
+				PUSH(value);
 				break;
 			}
 			

@@ -3,7 +3,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vcookie.C,v 1.4 2001/03/19 17:56:29 paf Exp $
+	$Id: pa_vcookie.C,v 1.5 2001/03/19 21:59:18 paf Exp $
 */
 
 #include <string.h>
@@ -20,12 +20,7 @@
 // VCookie
 
 Value *VCookie::get_element(const String& aname) {
-	// $CLASS,$BASE,$method
-	if(Value *result=VStateless_class::get_element(aname))
-		return result;
-	
 	// $cookie
-
 	if(deleted.get(aname)) // deleted?
 		return 0;
 	

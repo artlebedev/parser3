@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.18 2001/03/19 21:39:34 paf Exp $
+	$Id: pa_globals.C,v 1.19 2001/03/19 21:59:17 paf Exp $
 */
 
 #include "pa_globals.h"
@@ -17,7 +17,6 @@
 #include "_env.h"
 #include "_request.h"
 #include "_response.h"
-#include "_cookie.h"
 #include "_file.h"
 
 Service_funcs service_funcs;
@@ -158,5 +157,4 @@ void globals_init(Pool& pool) {
 	initialize_form_base_class(pool, *(form_base_class=new(pool) VStateless_class(pool)));  form_base_class->set_name(*form_class_name);  form_base_class->freeze();
 	initialize_request_base_class(pool, *(request_base_class=new(pool) VStateless_class(pool)));  request_base_class->set_name(*request_class_name);  request_base_class->freeze();
 	initialize_response_base_class(pool, *(response_base_class=new(pool) VStateless_class(pool)));  response_base_class->set_name(*response_class_name);  response_base_class->freeze();
-	initialize_cookie_base_class(pool, *(cookie_base_class=new(pool) VStateless_class(pool)));  cookie_base_class->set_name(*cookie_class_name);  cookie_base_class->freeze();
 }

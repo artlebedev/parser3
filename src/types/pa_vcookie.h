@@ -3,19 +3,18 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vcookie.h,v 1.4 2001/03/19 20:07:39 paf Exp $
+	$Id: pa_vcookie.h,v 1.5 2001/03/19 21:59:18 paf Exp $
 */
 
 #ifndef PA_VCOOKIE_H
 #define PA_VCOOKIE_H
 
 #include "pa_common.h"
-#include "pa_vstateless_class.h"
-#include "_cookie.h"
+#include "pa_value.h"
 
 class Request;
 
-class VCookie : public VStateless_class {
+class VCookie : public Value {
 public: // Value
 	
 	// all: for error reporting after fail(), etc
@@ -28,7 +27,7 @@ public: // Value
 
 public: // usage
 
-	VCookie(Pool& apool) : VStateless_class(apool, cookie_base_class),
+	VCookie(Pool& apool) : Value(apool),
 		before(apool), after(apool), deleted(apool) {
 	}
 
