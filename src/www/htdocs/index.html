@@ -1,5 +1,6 @@
 @main[]
-^sappend[]
+^tappend[]
+#^sappend[]
 #^eval(10\3)<br>
 #^tform[]
 #^formattest[]
@@ -56,6 +57,13 @@ $test[123]
 ^test.save[test]
 ^test.save[append;test]
 
+@tappend[]
+$test[^table::set{a	b
+a1	b1}]
+^test.save[test]
+$test[^table::set{a	b
+a2	b2}]
+^test.save[append;test]
 
 
 @tform[]

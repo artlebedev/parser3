@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.128 2001/10/23 14:43:44 parser Exp $
+	$Id: table.C,v 1.129 2001/10/31 14:08:36 paf Exp $
 */
 
 #include "classes.h"
@@ -129,6 +129,7 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 	static_cast<VTable *>(r.self)->set_table(table);
 }
 
+/// @todo "z\nz" "zzz""zz"
 static void _save(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	Value& vfile_name=params->as_no_junction(params->size()-1, 
@@ -136,8 +137,9 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 
 	Table& table=static_cast<VTable *>(r.self)->table();
 
+	bool do_append=false;
 	String sdata(pool);
-	if(params->size()==1) { // not nameless=named output
+	if(params->size()==1) { // named output
 		// write out names line
 		if(table.columns()) { // named table
 			Array_iter i(*table.columns());
@@ -158,6 +160,17 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 				sdata.APPEND_CONST("empty nameless table");
 		}
 		sdata.APPEND_CONST("\n");
+	} else { // mode specified
+		const String& mode=params->as_string(0, "mode must be string");
+		if(mode=="append")
+			do_append=true;
+		else if(mode=="nameless")
+			/*ok, already skipped names output*/;
+		else
+			throw Exception(0, 0,
+				&mode,
+				"unknown mode, must be 'append'");
+
 	}
 	// data lines
 	Array_iter i(table);
@@ -174,7 +187,7 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 
 	// write
 	file_write(pool, r.absolute(vfile_name.as_string()), 
-		sdata.cstr(), sdata.size(), true);
+		sdata.cstr(), sdata.size(), true, do_append);
 }
 
 static void _count(Request& r, const String& method_name, MethodParams *) {
