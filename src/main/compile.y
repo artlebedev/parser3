@@ -6,7 +6,7 @@
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
 %{
-static char *RCSId="$Id: compile.y,v 1.159 2001/08/06 16:18:26 parser Exp $"; 
+static char *RCSId="$Id: compile.y,v 1.160 2001/08/10 12:36:56 parser Exp $"; 
 
 /**
 	@todo parser4: 
@@ -422,7 +422,8 @@ name_advance2: name_expr_value {
 name_expr_value: 
 	STRING /* subname_is_const */
 |	name_expr_subvar_value /* $subname_is_var_value */
-|	name_expr_with_subvar_value /* xxx$part_of_subname_is_var_value[$...] */
+|	name_expr_with_subvar_value /* xxx$part_of_subname_is_var_value */
+|	name_curly_code_value /* (codes) */
 ;
 name_expr_subvar_value: '$' subvar_ref_name_rdive {
 	$$=$2;
@@ -433,6 +434,12 @@ name_expr_with_subvar_value: STRING subvar_get_writes {
 	O($$, OP_CREATE_EWPOOL);
 	P($$, $1);
 	O($$, OP_WRITE_VALUE);
+	P($$, $2);
+	O($$, OP_REDUCE_EWPOOL);
+};
+name_curly_code_value: '(' codes ')' {
+	$$=N(POOL); 
+	O($$, OP_CREATE_EWPOOL);
 	P($$, $2);
 	O($$, OP_REDUCE_EWPOOL);
 };
@@ -655,6 +662,12 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 			case '@':
 				if(PC.col==0+1) {
 					push_LS(PC, LS_DEF_NAME);
+					RC;
+				}
+				break;
+			case ')': // $name.(code<)>
+				if(--lexical_brackets_nestage==0) {
+					pop_LS(PC);
 					RC;
 				}
 				break;
@@ -934,12 +947,18 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 
 				RC;
 			case '(':
+				// $name.<(>code)
+				if(PC.col>1/*not first column*/ && end[-1]=='.'/*was dot */) {
+					push_LS(PC, LS_USER);
+					lexical_brackets_nestage=1;
+					RC;
+				}
 				PC.ls=LS_VAR_ROUND;
 				lexical_brackets_nestage=1;
 				RC;
 			case '.': // name part delim
 			case '$': // name part subvar
-			case ':': // ':name' or 'class:name'
+			case ':': // class<:>name
 				PC.ls=LS_VAR_NAME_NO_COLON; // stop before next ':'
 				RC;
 			}
@@ -947,6 +966,11 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 
 		case LS_VAR_NAME_CURLY:
 			switch(c) {
+			case '(':
+				// ${name.<(>code)}
+				push_LS(PC, LS_USER);
+				lexical_brackets_nestage=1;
+				RC;
 			case '}': // ${name} finished, restoring LS
 				pop_LS(PC);
 				RC;
@@ -1011,6 +1035,12 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 				lexical_brackets_nestage=1;
 				RC;
 			case '(':
+				// $name.<(>code)
+				if(PC.col>1/*not first column*/ && end[-1]=='.'/*was dot */) {
+					push_LS(PC, LS_USER);
+					lexical_brackets_nestage=1;
+					RC;
+				}
 				PC.ls=LS_METHOD_ROUND;
 				lexical_brackets_nestage=1;
 				RC;
