@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 1
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "PARSER3ISAPI_EXPORTS" /Yu"stdafx.h" /FD /c
-# ADD CPP /nologo /MD /W3 /GX /O2 /I "..\..\..\..\sql" /I "..\..\..\..\include" /I "..\..\..\.." /I "..\..\..\..\types" /I "..\..\..\..\classes" /I "..\..\.." /I "..\..\types" /I "..\..\sql" /I "..\..\include" /I "..\..\classes" /I "\parser3project\win32xml\xml-xerces\c\src" /I "\parser3project\win32xml\xml-xalan\c\src" /D "WIN32" /FD /TP /c
+# ADD CPP /nologo /MD /W3 /GX /Zi /O2 /I "..\..\..\..\sql" /I "..\..\..\..\include" /I "..\..\..\.." /I "..\..\..\..\types" /I "..\..\..\..\classes" /I "..\..\.." /I "..\..\types" /I "..\..\sql" /I "..\..\include" /I "..\..\classes" /I "\parser3project\win32xml\xml-xerces\c\src" /I "\parser3project\win32xml\xml-xalan\c\src" /D "WIN32" /FD /TP /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x419 /d "NDEBUG"

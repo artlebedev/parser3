@@ -4,7 +4,7 @@
 	Copyright (c) 2000,2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3isapi.C,v 1.49 2001/10/09 14:30:19 parser Exp $
+	$Id: parser3isapi.C,v 1.50 2001/10/12 12:15:32 parser Exp $
 */
 
 #ifndef _MSC_VER
@@ -67,6 +67,24 @@ struct SAPI_func_context {
 	String *header;
 	DWORD http_response_code;
 };
+#endif
+
+#ifdef XML
+/**
+ * Terminate Xalan and Xerces.
+ *
+ * Should be called only once per process after deleting all
+ * instances of XalanTransformer.  Once a process has called
+ * this function, it cannot use the API for the remaining
+ * lifetime of the process.
+
+	
+	this requirement is fullfilled by using Pool::register_cleanup
+ */
+void callXalanTerminate(void *) {
+	//_asm int 3;
+	XalanTerminate();
+}
 #endif
 
 // goes to 'cs-uri-query' log file field. webmaster: switch it ON[default OFF].
@@ -213,6 +231,18 @@ static bool parser_init() {
 		// init socks
 		init_socks(pool);
 
+#ifdef XML
+		/**
+		* Initialize Xerces and Xalan.
+		*
+		* Should be called only once per process before making
+		* any other API calls.
+		*/
+		//_asm int 3;
+		XalanInitialize();
+		pool.register_cleanup(callXalanTerminate, 0);
+#endif
+
 		// init global classes
 		init_methoded_array(pool);
 		// init global variables
@@ -259,6 +289,19 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 	_asm nop; // int 3;
 	pool.set_context(&ctx);// no allocations before this line!
 	
+#ifdef XML
+	/**
+	 * Initialize Xerces and Xalan.
+	 *
+	 * Should be called only once per process before making
+	 * any other API calls.
+	 */
+	//_asm int 3;
+	XalanInitialize();
+	pool.register_cleanup(callXalanTerminate, 0);
+#endif
+
+
 	bool header_only=strcasecmp(lpECB->lpszMethod, "HEAD")==0;
 	PTRY { // global try
 		ctx.header=new(pool) String(pool);

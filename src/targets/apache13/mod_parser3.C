@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mod_parser3.C,v 1.1 2001/10/11 08:29:21 parser Exp $
+	$Id: mod_parser3.C,v 1.2 2001/10/12 12:15:32 parser Exp $
 */
 
 #include "httpd.h"
@@ -22,6 +22,10 @@
 #include "pa_request.h"
 #include "pa_version.h"
 #include "pa_socks.h"
+
+#ifdef XML
+#include <XalanTransformer/XalanCAPI.h>
+#endif
 
 #ifdef _DEBUG
 #	define DEBUG_PREFIX "debug_"
@@ -65,6 +69,24 @@ struct Parser_module_config {
     const char* parser_root_config_filespec; ///< filespec of admin's config file
     const char* parser_site_config_filespec; ///< filespec of site's config file
 };
+
+#ifdef XML
+/**
+ * Terminate Xalan and Xerces.
+ *
+ * Should be called only once per process after deleting all
+ * instances of XalanTransformer.  Once a process has called
+ * this function, it cannot use the API for the remaining
+ * lifetime of the process.
+
+	
+	this requirement is fullfilled by using Pool::register_cleanup
+ */
+void callXalanTerminate(void *) {
+	//_asm int 3;
+	XalanTerminate();
+}
+#endif
 
 /*
  * Declare ourselves so the configuration routines can find and know us.
@@ -212,6 +234,18 @@ static int parser_handler(request_rec *r) {
 	Pool pool(r->pool);
 	pool.set_context(r);
 
+#ifdef XML
+	/**
+	 * Initialize Xerces and Xalan.
+	 *
+	 * Should be called only once per process before making
+	 * any other API calls.
+	 */
+	//_asm int 3;
+	XalanInitialize();
+	pool.register_cleanup(callXalanTerminate, 0);
+#endif
+
     Parser_module_config *dcfg=our_dconfig(r);
 
 
@@ -339,6 +373,17 @@ static void setup_module_cells() {
 	PTRY {
 		// init socks
 		init_socks(pool);
+
+#ifdef XML
+		/**
+		* Initialize Xerces and Xalan.
+		*
+		* Should be called only once per process before making
+		* any other API calls.
+		*/
+		XalanInitialize();
+		pool.register_cleanup(callXalanTerminate, 0);
+#endif
 
 		// init global classes
 		init_methoded_array(pool);

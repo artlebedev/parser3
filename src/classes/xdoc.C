@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: xdoc.C,v 1.14 2001/10/11 14:57:53 parser Exp $
+	$Id: xdoc.C,v 1.15 2001/10/12 12:15:32 parser Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -322,6 +322,7 @@ static void _file(Request& r, const String& method_name, MethodParams *params) {
 }
 
 static void _set(Request& r, const String& method_name, MethodParams *params) {
+	//_asm int 3;
 	Pool& pool=r.pool();
 	VXdoc& vdoc=*static_cast<VXdoc *>(r.self);
 

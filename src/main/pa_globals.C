@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.81 2001/10/11 10:21:44 parser Exp $
+	$Id: pa_globals.C,v 1.82 2001/10/12 12:15:32 parser Exp $
 */
 
 #include "pa_globals.h"
@@ -14,11 +14,6 @@
 #include "pa_dictionary.h"
 #include "pa_xslt_stylesheet_manager.h"
 #include "pa_charset_manager.h"
-
-#ifdef XML
-#include <util/PlatformUtils.hpp>
-#include <XalanTransformer/XalanTransformer.hpp>
-#endif
 
 String *user_html_name;
 String *content_type_name;
@@ -196,13 +191,6 @@ void pa_globals_init(Pool& pool) {
  	SQL_driver_manager=NEW SQL_Driver_manager(pool);
 
 #ifdef XML
-	// Xerces & Xalan
-
-	// Use the static initializers to initialize the Xalan-C++ and Xerces-C++ platforms. 
-	// You must initialize Xerces-C++ once per process
-	XMLPlatformUtils::Initialize();
-	XalanTransformer::initialize();
-
 	// XSLT stylesheet driver manager
  	XSLT_stylesheet_manager=NEW XSLT_Stylesheet_manager(pool);
 #endif

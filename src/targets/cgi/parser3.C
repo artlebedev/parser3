@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3.C,v 1.119 2001/10/09 14:30:19 parser Exp $
+	$Id: parser3.C,v 1.120 2001/10/12 12:15:32 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -19,6 +19,10 @@
 #include "pa_request.h"
 #include "pa_socks.h"
 #include "pa_version.h"
+
+#ifdef XML
+#include <XalanTransformer/XalanCAPI.h>
+#endif
 
 //#define DEBUG_POOL_MALLOC
 
@@ -220,9 +224,19 @@ int main(int argc, char *argv[]) {
 #ifdef WIN32
 		SetUnhandledExceptionFilter(&TopLevelExceptionFilter);
 #endif
-
 		// init socks
 		init_socks(pool);
+
+#ifdef XML
+		/**
+		* Initialize Xerces and Xalan.
+		*
+		* Should be called only once per process before making
+		* any other API calls.
+		*/
+		//_asm int 3;
+		XalanInitialize();
+#endif
 
 		// init global classes
 		init_methoded_array(pool);

@@ -1,5 +1,7 @@
 @main[]
-^replace[]
+^ifpasshash[]
+#^movedir[]
+#^replace[]
 #^set[]
 #^hash[]<hr>
 #$t[^methresult[]] ->$t
@@ -26,6 +28,19 @@
 #^xml[]
 #^header[]
 OK
+
+@ifpasshash[]
+$a[$.e[a]]
+$b[$.e[b]]
+^ifpasshashdest[^if(1){$a}{$b}]
+#$x[^if(1){$a}{$b}]
+#^ifpasshashdest[$x]
+
+@ifpasshashdest[p]
+$p.e
+
+@movedir[]
+^file:move[a;deeper/a]
 
 @replace[]
 $a[12^;3]
