@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.76 2001/05/08 09:16:10 paf Exp $
+	$Id: table.C,v 1.77 2001/05/08 09:44:28 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -284,7 +284,7 @@ static void table_row_to_hash(Array::Item *value, void *info) {
 					new(pool) VString(*row.get_string(value_field)));
 		}
 		
-		ri.hash->put(*row.get_string(ri.key_field), result);
+		ri.hash->put(*row.get_string(ri.key_field), &result);
 	}
 }
 static void _hash(Request& r, const String& method_name, MethodParams *params) {
