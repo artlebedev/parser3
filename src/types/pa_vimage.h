@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vimage.h,v 1.19 2001/10/09 08:13:04 parser Exp $
+	$Id: pa_vimage.h,v 1.20 2001/10/16 06:46:25 parser Exp $
 */
 
 #ifndef PA_VIMAGE_H
@@ -14,7 +14,15 @@
 #include "pa_common.h"
 #include "pa_vstateless_object.h"
 
+// defines
+
+#define VIMAGE_TYPE "image"
+
+// forwards
+
 class gdImage; class Font;
+
+// externs
 
 extern Methoded *image_class;
 
@@ -24,7 +32,7 @@ extern Methoded *image_class;
 class VImage : public VStateless_object {
 public: // Value
 	
-	const char *type() const { return "image"; }
+	const char *type() const { return VIMAGE_TYPE; }
 
 	/// VImage: true
 	bool as_bool() const { return true; }

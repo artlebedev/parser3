@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: image.C,v 1.52 2001/10/09 07:06:00 parser Exp $
+	$Id: image.C,v 1.53 2001/10/16 06:46:25 parser Exp $
 */
 
 /*
@@ -761,6 +761,52 @@ static void _circle(Request& r, const String& method_name, MethodParams *params)
 		image->Color(params->as_int(3, "color must be int", r)));
 }
 
+gdImage& as_image(Pool& pool, const String& method_name, MethodParams *params, 
+						int index, const char *msg) {
+	Value& value=params->as_no_junction(index, msg);
+
+	if(strcmp(value.type(), VIMAGE_TYPE)!=0)
+		PTHROW(0, 0, 
+			&method_name, 
+			msg);
+
+	gdImage *src=static_cast<VImage *>(&value)->image;
+	if(!src)
+		PTHROW(0, 0, 
+			&method_name, 
+			msg);
+
+	return *src;
+}
+
+// ^image.copy[source](src x;src y;src w;src h;dst x;dst y[;dest w[;dest h]])
+static void _copy(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+
+	gdImage *dest=static_cast<VImage *>(r.self)->image;
+	if(!dest)
+		PTHROW(0, 0, 
+			&method_name, 
+			"self does not contain an image");
+
+	gdImage& src=as_image(pool, method_name, params, 0, "src must be image");
+
+	int sx=params->as_int(1, "src_x must be int", r);
+	int sy=params->as_int(2, "src_y must be int", r);
+	int sw=params->as_int(3, "src_w must be int", r);
+	int sh=params->as_int(4, "src_h must be int", r);
+	int dx=params->as_int(5, "dest_x must be int", r);
+	int dy=params->as_int(6, "dest_y must be int", r);
+	if(params->size()>1+2+2+2) {
+		int dw=params->as_int(1+2+2+2, "dest_w must be int", r);
+		int dh=params->size()>1+2+2+2+1?params->as_int(1+2+2+2+1, "dest_h must be int", r):dw;
+
+		src.CopyResized(*dest, sx, sy, sw, sh, dx, dy, dw, dh);
+	} else
+		src.Copy(*dest, sx, sy, sw, sh, dx, dy);
+}
+
+
 // constructor
 
 MImage::MImage(Pool& apool) : Methoded(apool) {
@@ -827,6 +873,8 @@ MImage::MImage(Pool& apool) : Methoded(apool) {
 	// ^image.circle(center x;center y;r;color)
 	add_native_method("circle", Method::CT_DYNAMIC, _circle, 4, 4);
 
+	// ^image.copy[source](src x;src y;src w;src h;dst x;dst y[;dest w[;dest h]])
+	add_native_method("copy", Method::CT_DYNAMIC, _copy, 1+2+2+2, (1+2+2+2)+2);
 }
 
 // global variable
