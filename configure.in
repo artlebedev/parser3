@@ -50,17 +50,6 @@ AC_LANG_CPLUSPLUS
 
 dnl Arguments
 
-AC_ARG_ENABLE(link-libstdcpp, [  --disable-link-libstdcpp to disable libstdc++ linkage,
-                          if you belive you do not need one],
-[
-LINK_LIBSTDCPP_FLAG=$enableval
-if test "$enableval" = "no"; then
-	AC_MSG_WARN(disabling libstdc++ linkage)
-fi
-]
-)
-AM_CONDITIONAL(DO_NOT_LINK_LIBSTDCPP, test "$LINK_LIBSTDCPP_FLAG" = "no")
-
 AC_ARG_ENABLE(string-origins, [  --disable-string-origins to switch off string origin tracking],
 [
 if test "$enableval" = "no"; then
@@ -202,6 +191,27 @@ AC_ARG_WITH(pathlink,[  --with-pathlink=LKEY    put dynamic libraries paths to b
                           using linker key (-R, -rpath-link)],
 	LD_PATHLINK=$withval
 )
+AC_ARG_WITH(link-stdcpp, [  --with-link-stdcpp=PATH to directory with libstdc++
+  --without-link-stdcpp   to disable libstdc++ linkage,
+                          if you belive you do not need one],
+[
+LIBSTDCPP_PATH=$withval
+if test "$LIBSTDCPP_PATH" = "no"; then
+	AC_MSG_WARN(disabling libstdc++ linkage)
+else
+	if test -z "$LD_PATHLINK"; then
+	    AC_MSG_ERROR(when using --with-link-stdcpp one must specify --with-pathlink)
+	fi
+	LIBS="$LIBS -Wl,$LD_PATHLINK -Wl,$LIBSTDCPP_PATH"
+fi
+],
+#pseudo path, meaning still link libstdcpp. value needed to trick next _CONDITIONAL
+LIBSTDCPP_PATH=" "
+)
+AM_CONDITIONAL(DO_NOT_LINK_LIBSTDCPP, test "$LIBSTDCPP_PATH" = "no")
+
+
+
 AC_ARG_WITH(sjlj-exceptions,[  --with-sjlj-exceptions  enable simple 'throw' from dynamic library],
 	AC_DEFINE(PA_WITH_SJLJ_EXCEPTIONS,,one can throw from dynamic library)
 )
