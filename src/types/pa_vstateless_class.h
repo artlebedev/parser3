@@ -5,14 +5,14 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vstateless_class.h,v 1.12 2001/05/07 14:00:54 paf Exp $
+	$Id: pa_vstateless_class.h,v 1.13 2001/05/08 10:24:04 paf Exp $
 */
 
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
 #include "pa_valiased.h"
-#include "pa_vhash.h"
+#include "pa_hash.h"
 #include "pa_vjunction.h"
 
 class Temp_method;

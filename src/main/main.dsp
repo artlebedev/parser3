@@ -476,6 +476,10 @@ SOURCE=..\classes\form.C
 # End Source File
 # Begin Source File
 
+SOURCE=..\classes\hash.C
+# End Source File
+# Begin Source File
+
 SOURCE=..\classes\image.C
 # End Source File
 # Begin Source File

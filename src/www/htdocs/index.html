@@ -1,8 +1,16 @@
 @main[]
+$t1[^table:set{key	value
+1	v1
+2	v2}]
+$h1[^t1.hash[key]]
+^h1.default[$value[nothing]]
+^$h1.2.value=$h1.2.value
+<hr>
 $t2[^table:set{key	a	b
 1	a1
 2	a2	b2
 }]
+t2 ^if(^t2.empty[]){empty}{not empty}<br>
 ^t2.offset(1)
 $t2.b
 $r[^t2.record[]]

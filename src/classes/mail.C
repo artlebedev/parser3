@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mail.C,v 1.27 2001/05/07 15:31:36 paf Exp $
+	$Id: mail.C,v 1.28 2001/05/08 10:23:49 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -206,19 +206,19 @@ static void add_header_attribute(const Hash::Key& aattribute, Hash::Val *ameanin
 }
 
 /// used in mail: _send / letter_hash_to_string / add_part
-struct Seq_item {
+struct Mail_seq_item {
 	const String *part_name;
 	Value *part_value;
 };
 static void add_part(const Hash::Key& part_name, Hash::Val *part_value, 
 					 void *info) {
-	Seq_item **seq_ref=static_cast<Seq_item **>(info);
+	Mail_seq_item **seq_ref=static_cast<Mail_seq_item **>(info);
 	(**seq_ref).part_name=&part_name;
 	(**seq_ref).part_value=static_cast<Value *>(part_value);
 	(*seq_ref)++;
 }
 static double key_of_part(const void *item) {
-	const char *cstr=static_cast<const Seq_item *>(item)->part_name->cstr();
+	const char *cstr=static_cast<const Mail_seq_item *>(item)->part_name->cstr();
 	char *error_pos;
 	return strtod(cstr, &error_pos);
 }
@@ -275,10 +275,10 @@ static const String& letter_hash_to_string(Request& r, const String& method_name
 
 			// body parts..
 			// ..collect
-			Seq_item *seq=(Seq_item *)malloc(sizeof(Seq_item)*body_hash->size());
-			Seq_item *seq_ref=seq;  body_hash->for_each(add_part, &seq_ref);
+			Mail_seq_item *seq=(Mail_seq_item *)malloc(sizeof(Mail_seq_item)*body_hash->size());
+			Mail_seq_item *seq_ref=seq;  body_hash->for_each(add_part, &seq_ref);
 			// ..sort
-			_qsort(seq, body_hash->size(), sizeof(Seq_item), 
+			_qsort(seq, body_hash->size(), sizeof(Mail_seq_item), 
 				sort_cmp_string_double_value);
 			// ..insert in 'seq' order
 			for(int i=0; i<body_hash->size(); i++) {

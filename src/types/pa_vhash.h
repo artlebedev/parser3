@@ -4,17 +4,20 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vhash.h,v 1.12 2001/05/07 14:00:54 paf Exp $
+	$Id: pa_vhash.h,v 1.13 2001/05/08 10:24:03 paf Exp $
 */
 
 #ifndef PA_VHASH_H
 #define PA_VHASH_H
 
+#include "classes.h"
 #include "pa_value.h"
 #include "pa_hash.h"
 
+extern Methoded *hash_base_class;
+
 /// value of type 'hash', implemented with Hash
-class VHash : public Value {
+class VHash : public VStateless_class {
 public: // value
 
 	const char *type() const { return "hash"; }
@@ -24,7 +27,13 @@ public: // value
 
 	/// VHash: (key)=value
 	Value *get_element(const String& name) { 
-		return static_cast<Value *>(fhash.get(name));
+		// $CLASS,$BASE,$method
+		if(Value *result=VStateless_class::get_element(name))
+			return result;
+
+		// $element
+		Value *result=static_cast<Value *>(fhash.get(name));
+		return result?result:fdefault;
 	}
 	
 	/// VHash: (key)=value
@@ -34,14 +43,20 @@ public: // value
 
 public: // usage
 
-	VHash(Pool& apool) : Value(apool), 
-		fhash(apool) {}
+	VHash(Pool& apool) : VStateless_class(apool, hash_base_class), 
+		fhash(apool), 
+		fdefault(0) {
+	}
 
 	Hash& hash() { return fhash; }
+
+	void set_default(Value& adefault) { fdefault=&adefault; }
+	Value *get_default() { return fdefault; }
 
 private:
 
 	Hash fhash;
+	Value *fdefault;
 
 };
 

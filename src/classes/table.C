@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.77 2001/05/08 09:44:28 paf Exp $
+	$Id: table.C,v 1.78 2001/05/08 10:23:50 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -323,7 +323,7 @@ static void _hash(Request& r, const String& method_name, MethodParams *params) {
 }
 
 /// used by table: _sort / sort_cmp_string|sort_cmp_double
-struct Seq_item {
+struct Table_seq_item {
 	Array *row;
 	union {
 		char *c_str;
@@ -332,13 +332,13 @@ struct Seq_item {
 };
 static int sort_cmp_string(const void *a, const void *b) {
 	return strcmp(
-		static_cast<const Seq_item *>(a)->value.c_str, 
-		static_cast<const Seq_item *>(b)->value.c_str
+		static_cast<const Table_seq_item *>(a)->value.c_str, 
+		static_cast<const Table_seq_item *>(b)->value.c_str
 	);
 }
 static int sort_cmp_double(const void *a, const void *b) {
-	double va=static_cast<const Seq_item *>(a)->value.d;
-	double vb=static_cast<const Seq_item *>(b)->value.d;
+	double va=static_cast<const Table_seq_item *>(a)->value.d;
+	double vb=static_cast<const Table_seq_item *>(b)->value.d;
 	if(va<vb)
 		return -1;
 	else if(va>vb)
@@ -359,7 +359,7 @@ static void _sort(Request& r, const String& method_name, MethodParams *params) {
 	if(!table.size())
 		return;
 
-	Seq_item *seq=(Seq_item *)malloc(sizeof(Seq_item)*table.size());
+	Table_seq_item *seq=(Table_seq_item *)malloc(sizeof(Table_seq_item)*table.size());
 	int i;
 
 	// calculate key values
@@ -378,7 +378,7 @@ static void _sort(Request& r, const String& method_name, MethodParams *params) {
 			seq[i].value.d=value.as_double();
 	}
 	// sort keys
-	_qsort(seq, table.size(), sizeof(Seq_item), 
+	_qsort(seq, table.size(), sizeof(Table_seq_item), 
 		key_values_are_strings?sort_cmp_string:sort_cmp_double);
 
 	// reorder table as they require in 'seq'
