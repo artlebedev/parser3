@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.126 2001/04/28 13:25:03 paf Exp $
+	$Id: pa_request.C,v 1.127 2001/05/03 15:05:23 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -146,8 +146,6 @@ static void element2case(unsigned char *tables, Value& ctype, const String& name
 	the file user requested us to process
 	all located classes become children of one another,
 	composing class we name 'MAIN'
-
-	@test move configure to M-class
 */
 void Request::core(const char *root_auto_path, bool root_auto_fail,
 				   const char *site_auto_path, bool site_auto_fail,

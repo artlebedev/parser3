@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: classes.h,v 1.5 2001/04/28 15:22:38 paf Exp $
+	$Id: classes.h,v 1.6 2001/05/03 15:05:15 paf Exp $
 */
 
 #ifndef CLASSES_H
@@ -24,8 +24,15 @@ public: // Value
 
 public: // Methoded
 
+	/** should Methoded_array::register_directly_used register this class in
+		Request::classes() or not. 
+		if not - global variable with Methoded descendant 
+		is used in VStateless_class parameter
+	*/
 	virtual bool used_directly() =0;
+	/// use this method to read parameters from root "auto.p"; access r.main_class
 	virtual void configure_admin(Request& r) {}
+	/// use this method to read parameters from 'MAIN' class; access r.main_class
 	virtual void configure_user(Request& r) {}
 
 public: // usage

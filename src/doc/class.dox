@@ -1,0 +1,12 @@
+/**	@page Class  Класс: родитель+методы+поля
+
+Класс хранит
+- родителя: VStateless_class::base();
+- ворох методов: VStateless_class::fmethods, Method.
+- поля: VClass::ffields
+
+в VStateless_class::get_element отдаётся метод+self[VJunction].
+в VClass_class::get_element отдаются статические поля
+
+
+*/
