@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: untaint.C,v 1.74 2001/11/05 11:46:29 paf Exp $
+	$Id: untaint.C,v 1.75 2001/11/16 12:38:44 paf Exp $
 */
 
 #include "pa_pool.h"
@@ -91,17 +91,6 @@ static const char * String_Untaint_lang_name[]={
 
 // String
 
-static bool typo_present(Array::Item *value, const void *info) {
-	Array *row=static_cast<Array *>(value);
-	const char *src=static_cast<const char *>(info);
-
-	int partial;
-	row->get_string(0)->cmp(partial, src);
-	return 
-		partial==0 || // full match
-		partial==1; // typo left column starts 'src'
-}
-
 /*
 
 HTTP-header    = field-name ":" [ field-value ] CRLF
@@ -144,30 +133,130 @@ inline bool need_quote_http_header(const char *ptr, size_t size) {
 	return false;
 }
 
-/** @todo maybe additional check "are all pieces are clean?" would be profitable?
-	@todo fix potential forigins_mode buf overrun
-*/
-size_t String::cstr_bufsize(Untaint_lang lang) const {
-	return  (
-			lang==UL_AS_IS?
-				size()
-			:
-				size()
-				*UNTAINT_TIMES_BIGGER
-				*(forigins_mode?10:1)
-		) 
-		+1;
+/// @test UL_OPTIMIZED_HTML optimize
+size_t String::cstr_bufsize(Untaint_lang lang,
+							SQL_Connection *connection,
+							const char *charset) const {
+	size_t dest=1;
+	bool whitespace=true;
+	const Chunk *chunk=&head; 
+	do {
+		const Chunk::Row *row=chunk->rows;
+		for(uint i=0; i<chunk->count; i++, row++) {
+			if(row==append_here)
+				goto break2;
+
+			Untaint_lang to_lang=lang==UL_UNSPECIFIED?(Untaint_lang)row->item.lang:lang;
+
+			if(forigins_mode) {
+#ifndef NO_STRING_ORIGIN
+				dest+=MAX_STRING;
+#endif
+				dest+=MAX_STRING;
+			}
+
+			switch(to_lang) {
+			case UL_CLEAN:
+				// clean piece
+				{ // optimizing whitespace
+					escape(switch(*src) {
+						case ' ': case '\n': case '\t':
+							if(!whitespace) {
+								dest++;
+								whitespace=true;
+							}
+							break;
+						default:
+							whitespace=false;
+							dest++;
+							break;
+					});
+				}
+				break;
+			case UL_TAINTED:
+				// tainted piece, but undefined untaint language
+				// for VString.as_double of tainted values
+				// for ^process{body} evaluation
+			case UL_AS_IS:
+				// tainted, untaint language: as-is
+				dest+=row->item.size;
+				break;
+			case UL_FILE_SPEC:
+				// tainted, untaint language: file [name]
+				dest+=row->item.size*3/* worst: Z->%XX */;
+				break;
+			case UL_URI:
+				// tainted, untaint language: uri
+				dest+=row->item.size*3/* worst: Z->%XX */;
+				break;
+			case UL_HTTP_HEADER:
+				// tainted, untaint language: http-field-content-text
+				dest+=row->item.size*3/* worst: Z->%XX */;
+				break;
+			case UL_MAIL_HEADER:
+				// tainted, untaint language: mail-header
+				if(charset) {
+					// Subject: Re: parser3: =?koi8-r?Q?=D3=C5=CD=C9=CE=C1=D2?=
+					dest+=row->item.size*3+MAX_STRING/* worst: =?charset?Q?=%XX?= */;
+				} else {
+					dest+=row->item.size;
+				}
+				break;
+			case UL_TABLE: 
+				// tainted, untaint language: table
+				dest+=row->item.size;
+				break;
+			case UL_SQL:
+				// tainted, untaint language: sql
+				if(connection)
+					dest+=connection->quote(0, row->item.ptr, row->item.size);
+				break;
+			case UL_JS:
+				escape(switch(*src) {
+					case '"': case '\'': case '\n': case '\\': case '\xFF':
+						dest+=2;  break;
+					default: 
+						dest++;  break;
+				});
+				break;
+			case UL_XML:
+				escape(switch(*src) {
+					case '&': case '>': case '<': case '"': case '\'': 
+						dest+= 6;  break;
+					default: 
+						dest++;  break;
+				});
+				break;
+			case UL_HTML:
+			case UL_OPTIMIZED_HTML:
+				escape(switch(*src) {
+					case '&': 
+					case '>': 
+					case '<': 
+					case '"': 
+						dest+=6;  break;
+					default: 
+						dest++;  break;
+				});
+				break;
+			}
+
+			if((lang==UL_UNSPECIFIED?row->item.lang:lang)!=UL_CLEAN)
+				whitespace=false;
+		}
+		chunk=row->link;
+	} while(chunk);
+
+break2:
+	return dest;
 }
 
-/** @todo fix theoretical \n mem overrun in TYPO replacements
-*/
+/// @test UL_OPTIMIZED_HTML optimize
 char *String::store_to(char *dest, Untaint_lang lang, 
 					   SQL_Connection *connection,
 					   const char *charset) const {
-	// $MAIN:html-typo table
-	Dictionary *user_typo_dict=static_cast<Dictionary *>(pool().tag());
-	Dictionary *typo_dict=user_typo_dict?user_typo_dict:default_typo_dict;
-
+	// WARNING:
+	//	 before any changes check cstr_bufsize first!!!
 	bool whitespace=true;
 	const Chunk *chunk=&head; 
 	do {
@@ -183,26 +272,22 @@ char *String::store_to(char *dest, Untaint_lang lang,
 			if(forigins_mode) {
 #ifndef NO_STRING_ORIGIN
 				if(row->item.origin.file)
-					dest+=sprintf(dest, "%s(%d)",
+					dest+=sprintf(dest, ORIGIN_FILE_LINE_FORMAT,
 						row->item.origin.file,
 						1+row->item.origin.line);
 				else
-					dest+=sprintf(dest, "unknown");
+					dest+=sprintf(dest, "<unknown>");
 #endif
 				dest+=sprintf(dest, "#%s: ",
 					String_Untaint_lang_name[to_lang]);
 			}
 			char *dest_after_origins=dest;
 
-			// WARNING:
-			//	string can grow only UNTAINT_TIMES_BIGGER
 			switch(to_lang) {
 			case UL_CLEAN:
 				// clean piece
 				{ // optimizing whitespace
-					const char *src=row->item.ptr; 
-					for(int size=row->item.size; size--; src++)
-						switch(*src) {
+					escape(switch(*src) {
 						case ' ': case '\n': case '\t':
 							if(!whitespace) {
 								*dest++=*src;
@@ -213,7 +298,7 @@ char *String::store_to(char *dest, Untaint_lang lang,
 							whitespace=false;
 							*dest++=*src;
 							break;
-						}
+					});
 				}
 				break;
 			case UL_TAINTED:
@@ -308,6 +393,7 @@ char *String::store_to(char *dest, Untaint_lang lang,
 				});
 				break;
 			case UL_HTML:
+			case UL_OPTIMIZED_HTML:
 				escape(switch(*src) {
 					case '&': to_string("&amp;", 5);  break;
 					case '>': to_string("&gt;", 4);  break;
@@ -316,66 +402,6 @@ char *String::store_to(char *dest, Untaint_lang lang,
 					_default;
 				});
 				break;
-			case UL_USER_HTML: {
-				// tainted, untaint language: html-typo
-				if(!typo_dict) // never, always has default
-					throw Exception(0, 0,
-						this,
-						"untaint to user-html lang failed, no typo table");
-
-				char *html_for_typo=
-					(char *)malloc(row->item.size*2/* '\n' -> '\' 'n' */+1,16);
-				// note:
-				//   there still is a possibility that user 
-				//   would not replace \n as she supposed to
-				//   and rather replace \ and n into huge strings
-				//   thus causing memory overrun
-				//   this can be dealed by allocating *2 memory, but that's too expensive
-				size_t html_for_typo_size;
-				{ // local dest
-					char *dest=html_for_typo;
-					escape(switch(*src) {
-						// convinient name for typo match "\n"
-						case '\n': 
-							to_string("\\n", 2);
-							break;
-						_default;
-					});
-					*dest=0;
-					html_for_typo_size=dest-html_for_typo;
-				}
-				// typo table replacements
-				const char *src=html_for_typo;
-				do {
-					// there is a row where first column starts 'src'
-					if(Table::Item *item=typo_dict->first_that_starts(src)) {
-						// get a=>b values
-						const String& a=*static_cast<Array *>(item)->get_string(0);
-						const String& b=*static_cast<Array *>(item)->get_string(1);
-						// overflow check:
-						//   b allowed to be max UNTAINT_TIMES_BIGGER then a
-						if(b.size()>UNTAINT_TIMES_BIGGER*a.size()) {
-							pool().set_tag(0); // avoid recursion
-							throw Exception(0, 0, 
-								&b, 
-								"is %g times longer then '%s', "
-								"while maximum, handled by Parser, is %d", 
-									((double)b.size())/a.size(), 
-									a.cstr(), 
-									UNTAINT_TIMES_BIGGER);
-						}
-						
-						// skip 'a' in 'src'
-						src+=a.size();
-						// write 'b' to 'dest'
-						b.store_to(dest);
-						// skip 'b' in 'dest'
-						dest+=b.size();
-					} else
-						*dest++=*src++;
-				} while(*src);
-				break;
-				}
 			default:
 				throw Exception(0, 0, 
 					this, 

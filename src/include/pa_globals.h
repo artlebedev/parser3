@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_globals.h,v 1.68 2001/11/05 11:46:24 paf Exp $
+	$Id: pa_globals.h,v 1.69 2001/11/16 12:38:43 paf Exp $
 */
 
 #ifndef PA_GLOBALS_H
@@ -21,8 +21,6 @@ class Dictionary;
 /// constant string. class name, predefined method & co
 #define CONFIG_FILE_NAME "parser3.conf"
 #define AUTO_FILE_NAME "auto.p"
-
-#define USER_HTML_NAME "user-html"
 
 #define CONTENT_TYPE_NAME "content-type"
 #define CHARSET_NAME "charset"
@@ -82,7 +80,7 @@ extern short hex_value[0x100];
 
 //@{
 /// global string
-extern String *user_html_name;
+extern String *optimized_html_name;
 extern String *content_type_name;
 extern String *charset_name;
 extern String *body_name;

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.h,v 1.115 2001/11/05 11:46:25 paf Exp $
+	$Id: pa_string.h,v 1.116 2001/11/16 12:38:43 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -15,15 +15,6 @@
 #include "pa_types.h"
 
 class Table;
-
-/**
-	$MAIN:html-typo table elements must enlarge string not more that that.
-
-	that's a tradeoff - otherwise we'd have to scan string twice:
-	- first for buffer length
-	- second for replacements themselves
-*/
-#define UNTAINT_TIMES_BIGGER 10
 
 #ifndef NO_STRING_ORIGIN
 #	define STRING_APPEND_PARAMS \
@@ -110,7 +101,7 @@ public:
 		UL_JS,        ///< JavaScript code
 		UL_XML,		///< ^dom:set xml
 		UL_HTML,      ///< HTML code (for editing)
-		UL_USER_HTML  ///< HTML code with USER chars
+		UL_OPTIMIZED_HTML  ///< optimized HTML code, adjucent whitespaces joined
 	};
 
 public:
@@ -125,7 +116,7 @@ public:
 		SQL_Connection *connection=0,
 		const char *charset=0) const {
 
-		char *result=(char *)malloc(cstr_bufsize(lang));
+		char *result=(char *)malloc(cstr_bufsize(lang, connection, charset));
 		char *eol=store_to(result, lang, connection, charset);
 		*eol=0;
 		return result;
@@ -288,7 +279,9 @@ private:
 	uint used_rows() const;
 	void expand();
 
-	size_t cstr_bufsize(Untaint_lang lang) const;
+	size_t cstr_bufsize(Untaint_lang lang,
+		SQL_Connection *connection,
+		const char *charset) const;
 	/// convert to C string, store to 'dest' which must be big enough for proper untaint
 	char *store_to(char *dest, Untaint_lang lang=UL_UNSPECIFIED, 
 		SQL_Connection *connection=0,

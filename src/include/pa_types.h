@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_types.h,v 1.31 2001/11/05 11:46:26 paf Exp $
+	$Id: pa_types.h,v 1.32 2001/11/16 12:38:43 paf Exp $
 */
 
 #ifndef PA_TYPES_H
@@ -48,6 +48,8 @@ struct Origin {
 	const char *file;  ///< macros file name | load file name | sql query text
 	unsigned short line; ///< file line no | record no
 };
+#define ORIGIN_FILE_LINE_FORMAT "%.300s(%d)"
+
 #include "pa_pragma_pack_end.h"
 
 #endif

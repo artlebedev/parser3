@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_pool.C,v 1.43 2001/11/16 11:51:25 paf Exp $
+	$Id: pa_pool.C,v 1.44 2001/11/16 12:38:43 paf Exp $
 */
 
 #include "pa_pool.h"
@@ -37,8 +37,8 @@ Pool::~Pool() {
 }
 
 void Pool::fail_alloc(size_t size) const {
-	SAPI::die("out of pooled memory: failed to allocate %u bytes, "
-		"total allocated %u in %u times", 
+	SAPI::die("out of pool memory: failed to allocate %u bytes, "
+		"totally allocated on pool: %u in %u times", 
 		size, 
 		ftotal_allocated, ftotal_times);
 }

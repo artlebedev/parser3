@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_sql_driver.h,v 1.23 2001/11/11 12:19:37 paf Exp $
+	$Id: pa_sql_driver.h,v 1.24 2001/11/16 12:38:44 paf Exp $
 
 
 	driver dynamic library must look like this:
@@ -46,8 +46,8 @@ public:
 	jmp_buf mark;
 };
 
-#define SQL_DRIVER_API_VERSION 0x0002
-#define SQL_DRIVER_CREATE create
+#define SQL_DRIVER_API_VERSION 0x0003
+#define SQL_DRIVER_CREATE create /* used in driver implementation */
 #define SQL_DRIVER_CREATE_NAME "create" /* could not figure out how to # it :( */
 
 /// events, occuring when SQL_Driver::query()-ing

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.C,v 1.180 2001/11/14 11:36:39 paf Exp $
+	$Id: pa_request.C,v 1.181 2001/11/16 12:38:44 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -25,10 +25,6 @@ extern "C" unsigned char pcre_default_tables[]; // pcre/chartables.c
 #include "pa_dictionary.h"
 #include "pa_charset_manager.h"
 #include "pa_charset_connection.h"
-
-// defines
-
-#define ORIGIN_FILE_LINE_FORMAT "%.300s(%d)"
 
 /// content type of exception response, when no @MAIN:exception handler defined
 const char *UNHANDLED_EXCEPTION_CONTENT_TYPE="text/plain";
@@ -221,10 +217,6 @@ void Request::core(
 				if(Value *vcharset=(Value *)hash->get(*charset_name))
 					pool().set_charset(vcharset->as_string());		
 
-		if(Value *element=main_class->get_element(*user_html_name))
-			if(Table *table=element->get_table())
-				pool().set_tag(NEW Dictionary(*table));
-
 		// $MAIN:MIME-TYPES
 		if(Value *element=main_class->get_element(*mime_types_name))
 			if(Table *table=element->get_table())
@@ -308,8 +300,6 @@ void Request::core(
 
 			// reset language to default
 			flang=fdefault_lang;
-			if(flang==String::UL_USER_HTML)
-				flang=String::UL_HTML; // no _ & Co conversions in @exception[params]
 			
 			// reset response
 			response.fields().clear();

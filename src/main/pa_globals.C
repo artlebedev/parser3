@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_globals.C,v 1.90 2001/11/08 11:04:13 paf Exp $
+	$Id: pa_globals.C,v 1.91 2001/11/16 12:38:43 paf Exp $
 */
 
 #include "pa_globals.h"
@@ -21,7 +21,6 @@
 #include "pa_db_manager.h"
 #endif
 
-String *user_html_name;
 String *content_type_name;
 String *charset_name;
 String *body_name;
@@ -138,7 +137,6 @@ void pa_globals_init(Pool& pool) {
 	setup_hex_value();
 
 	// names
-	user_html_name=NEW String(pool, USER_HTML_NAME);
 	content_type_name=NEW String(pool, CONTENT_TYPE_NAME);
 	charset_name=NEW String(pool, CHARSET_NAME);
 	body_name=NEW String(pool, BODY_NAME);
@@ -204,7 +202,7 @@ void pa_globals_init(Pool& pool) {
 	ULN("js", JS);
 	ULN("xml", XML);
 	ULN("html", HTML);
-	ULN("user-html", USER_HTML);
+	ULN("optimized-html", OPTIMIZED_HTML);
 
 	// tables
 	Table *default_typo_table=NEW Table(pool, 0, 0);
