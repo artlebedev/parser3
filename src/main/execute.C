@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_EXECUTE_C="$Date: 2002/08/15 09:07:49 $";
+static const char* IDENT_EXECUTE_C="$Date: 2002/08/21 10:18:35 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -857,7 +857,7 @@ Value *Request::get_element(const String *& remember_name, bool can_call_operato
 				if(VStateless_class *read_class=rcontext->get_class())
 					if(read_class->derived_from(*called_class)) // current derived from called
 						if(Value *base_object=self->base_object()) { // doing DYNAMIC call
-							Temp_derived(*base_object, 0); // temporarily prevent go-back-down virtual calls
+							Temp_derived temp_derived(*base_object, 0); // temporarily prevent go-back-down virtual calls
 							value=base_object->get_element(name, base_object, false); // virtual-up lookup starting from parent
 							goto _void;
 						}

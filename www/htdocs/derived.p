@@ -1,30 +1,19 @@
-#@USE
-#/base.p
+@USE
+/base.p
 
 @CLASS
 derived
 
 @BASE
-table
-
-@auto[]
-$derived_var[derived_var_val]
+base
 
 @create[aderived_param]
-^table:create{a
-aval}
+^base:create[base create actual param]
+$derived_var[$aderived_param]
 
 @test[]
-$a[overridden]
-^^append{appeded} ^append{appeded}<br>
-^^count[]=^count[]<br>
-^offset(+1)
-^$table:a=$table:a<br>
-^$a=$a<br>
-$x[x] ^$x=$x<br>
-#^$table:x=$table:x<br> sould be error
-^$CLASS.derived_var=$CLASS.derived_var<br>
 ^$derived_var=$derived_var<br>
+^base:test[]
 
 @test2[]
 derived_test2

@@ -8,7 +8,7 @@
 #ifndef PA_VOBJECT_H
 #define PA_VOBJECT_H
 
-static const char* IDENT_VOBJECT_H="$Date: 2002/08/15 09:07:49 $";
+static const char* IDENT_VOBJECT_H="$Date: 2002/08/21 10:18:36 $";
 
 #include "pa_vjunction.h"
 #include "pa_vclass.h"
@@ -51,7 +51,7 @@ public: // Value
 	/*override*/ VObject *set_derived(VObject *aderived) { 
 		VObject *result=fderived;
 		fderived=aderived;
-		return fderived;
+		return result;
 	}
 
 public: // creation

@@ -217,9 +217,15 @@ $selffilespec[$filespec]
 #^cookie[]
 #^cookieexpirestest[]
 #^postest[]
-^voidpostest[]
+#^voidpostest[]
+^virtualtest[]
 <hr>
 OK
+
+@virtualtest[]
+$derived[^derived::create[derived create actual param]]
+^derived.test[]
+
 
 @voidpostest[]
 $s[]
