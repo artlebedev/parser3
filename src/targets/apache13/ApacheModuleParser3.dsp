@@ -60,7 +60,7 @@ SOURCE="$(InputPath)"
 PreLink_Desc=Stopping apache...
 PreLink_Cmds=net stop apache_release	dir>nul
 PostBuild_Desc=Starting apache...
-PostBuild_Cmds=net start apache_release
+PostBuild_Cmds=net start apache_release	dir>nul
 # End Special Build Tool
 
 !ELSEIF  "$(CFG)" == "ApacheModuleParser3 - Win32 Debug"
@@ -95,7 +95,7 @@ SOURCE="$(InputPath)"
 PreLink_Desc=Stopping apache...
 PreLink_Cmds=net stop apache_debug	dir>nul
 PostBuild_Desc=Starting apache...
-PostBuild_Cmds=net start apache_debug
+PostBuild_Cmds=net start apache_debug	dir>nul
 # End Special Build Tool
 
 !ENDIF 

@@ -57,9 +57,9 @@ LINK32=link.exe
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PreLink_Desc=Stopping inetinfo...
-PreLink_Cmds=CD \parser3project\win32\tools	istop
+PreLink_Cmds=CD \parser3project\win32\tools	istop	dir>nul
 PostBuild_Desc=Starting inetinfo...
-PostBuild_Cmds=CD \parser3project\win32\tools	istart
+PostBuild_Cmds=CD \parser3project\win32\tools	istart	dir>nul
 # End Special Build Tool
 
 !ELSEIF  "$(CFG)" == "parser3isapi - Win32 Debug"
@@ -90,9 +90,9 @@ LINK32=link.exe
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PreLink_Desc=Stopping inetinfo...
-PreLink_Cmds=CD \parser3project\win32\tools	istop
+PreLink_Cmds=CD \parser3project\win32\tools	istop	dir>nul
 PostBuild_Desc=Starting inetinfo...
-PostBuild_Cmds=CD \parser3project\win32\tools	istart
+PostBuild_Cmds=CD \parser3project\win32\tools	istart	dir>nul
 # End Special Build Tool
 
 !ENDIF 

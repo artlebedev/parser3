@@ -1,3 +1,363 @@
+2002-06-26  paf
+	* configure:
+	* configure.in:
+	* src/include/pa_version.h:
+	* src/lib/libltdl/Makefile.in:
+		 release_3_0_0004
+
+	* src/main/pa_string.C:
+		blank string '', ' <whitespace>' considered 0 now
+
+	* src/lib/libltdl/config.guess:
+	* src/lib/libltdl/config.sub:
+	* src/lib/md5/Makefile.in:
+		*** empty log message ***
+
+	* src/targets/cgi/parser3.C:
+	* www/cgi-bin/parser3.log:
+		/cgi-bin/parser empty filename checked
+
+2002-06-25  paf
+	* operators.txt:
+	* src/classes/xdoc.C:
+	* www/cgi-bin/parser3.log:
+	* www/cgi-bin/parser3.log:
+	* www/htdocs/index.html:
+	* www/htdocs/index.html:
+		^xdoc.transform[xdoc <<can be now
+
+	* bin/auto.p.dist.in:
+	* operators.txt:
+	* src/classes/math.C:
+	* src/types/pa_vmail.C:
+	* www/cgi-bin/parser3.log:
+	* www/htdocs/index.html:
+		math:crypt updated to generate random salt when needed and to
+		call system crypt() if not $apr1$ prefix
+
+	* configure:
+	* configure.in:
+	* src/include/pa_config_auto.h.in:
+		crypt library configured
+
+	* operators.txt:
+	* src/classes/string.C:
+	* www/htdocs/index.html:
+		^string.normalize  [old name: optimize
+
+	* src/main/pa_string.C:
+	* www/cgi-bin/parser3.log:
+	* www/htdocs/index.html:
+		emtpy string, or string of whitespaces considered bad number now
+
+	* src/main/pa_request.C:
+		configure_admin forced if no @conf
+
+2002-06-24  paf
+	* Makefile.in:
+	* bin/Makefile.in:
+	* configure:
+	* configure.in:
+	* etc/Makefile.in:
+	* etc/parser3.charsets/Makefile.in:
+	* src/Makefile.in:
+	* src/classes/Makefile.in:
+	* src/classes/gd/Makefile.in:
+	* src/classes/smtp/Makefile.in:
+	* src/include/Makefile.in:
+	* src/include/pa_config_auto.h.in:
+	* src/lib/Makefile.in:
+	* src/lib/libltdl/Makefile.in:
+	* src/lib/patches/Makefile.in:
+	* src/lib/pcre/Makefile.in:
+	* src/main/Makefile.in:
+	* src/sql/Makefile.in:
+	* src/targets/Makefile.in:
+	* src/targets/apache13/Makefile.in:
+	* src/targets/apache13/p3runConfigure.in:
+	* src/targets/cgi/Makefile.am:
+	* src/targets/cgi/Makefile.in:
+	* src/targets/isapi/Makefile.in:
+	* src/types/Makefile.am:
+	* src/types/Makefile.in:
+	* src/types/pa_vmail.C:
+		$mail:received makes update
+
+	* src/targets/cgi/getopt.c:
+	* src/targets/cgi/getopt.h:
+		introducing parser -m option, for $mail:receive
+
+	* src/include/pa_config_fixed.h:
+		ssize_t fixed
+
+	* INSTALL:
+		--with-static/shared-mailreceive described
+
+	* operators.txt:
+	* src/classes/mail.C:
+	* src/include/Makefile.am:
+	* src/include/pa_charset.h:
+	* src/include/pa_config_fixed.h:
+	* src/include/pa_request.h:
+	* src/include/pa_string.h:
+	* src/include/pa_uue.h:
+	* src/main/Makefile.am:
+	* src/main/main.dsp:
+	* src/main/pa_globals.C:
+	* src/main/pa_request.C:
+	* src/main/pa_string.C:
+	* src/main/pa_uue.C:
+	* src/targets/apache13/mod_parser3.C:
+	* src/targets/cgi/Makefile.am:
+	* src/targets/cgi/parser3.C:
+	* src/targets/cgi/parser3.dsp:
+	* src/targets/isapi/parser3isapi.C:
+	* src/types/pa_vform.C:
+	* src/types/pa_vform.h:
+	* src/types/pa_vmail.C:
+	* src/types/pa_vmail.h:
+	* src/types/types.dsp:
+	* www/cgi-bin/parser3.log:
+	* www/htdocs/index.html:
+		uue to separate file
+		introducting $message:received
+		^mail:send rewritten with backward comp
+
+	* src/classes/classes.dsp:
+	* src/classes/gd/gd.dsp:
+	* src/classes/smtp/smtp.dsp:
+	* src/main/main.dsp:
+	* src/main/pa_globals.C:
+	* src/targets/apache13/ApacheModuleParser3.dsp:
+	* src/targets/cgi/parser3.dsp:
+	* src/targets/isapi/parser3isapi.dsp:
+	* src/types/types.dsp:
+		win32xml win32mailreceive pseudomodules paths now
+
+	* src/include/pa_config_fixed.h:
+	* src/targets/cgi/parser3.C:
+	* src/types/pa_vmail.C:
+		#ifdef WITH_MAILRECEIVE
+
+	* acconfig.h:
+	* configure:
+	* configure.in:
+	* src/include/pa_config_auto.h.in:
+		*** empty log message ***
+
+2002-06-21  paf
+	* Makefile.in:
+	* configure:
+	* configure.in:
+	* src/Makefile.in:
+	* src/classes/Makefile.in:
+	* src/lib/Makefile.in:
+	* src/lib/libltdl/Makefile.in:
+	* src/lib/libltdl/install-sh:
+	* src/lib/md5/Makefile.am:
+	* src/lib/md5/pa_md5c.c:
+	* src/lib/patches/Makefile.in:
+	* src/lib/pcre/Makefile.in:
+	* src/main/Makefile.in:
+	* src/targets/apache13/Makefile.in:
+	* src/targets/cgi/Makefile.am:
+	* src/targets/cgi/Makefile.in:
+	* src/types/Makefile.in:
+		lib restructure .in and .am files appropriate changes
+
+	* src/lib/Makefile.am:
+	* src/lib/Makefile.in:
+	* src/lib/libltdl/Makefile.in:
+	* src/lib/md5/pa_md5.h:
+	* src/targets/apache13/p3runConfigure.in:
+	* src/targets/apache13/pa_md5c.c:
+		lib restructure apache .am & co changes
+
+	* INSTALL:
+	* configure.in:
+	* operators.txt:
+	* parser3.dsw:
+	* src/Makefile.am:
+	* src/classes/Makefile.am:
+	* src/classes/classes.dsp:
+	* src/classes/math.C:
+	* src/lib/Makefile.am:
+	* src/lib/libltdl/Makefile.am:
+	* src/lib/libltdl/Makefile.in:
+	* src/lib/libltdl/README:
+	* src/lib/libltdl/acinclude.m4:
+	* src/lib/libltdl/config.h:
+	* src/lib/libltdl/config_auto.h.in:
+	* src/lib/libltdl/config_fixed.h:
+	* src/lib/libltdl/configure:
+	* src/lib/libltdl/configure.in:
+	* src/lib/libltdl/libltdl.dsp:
+	* src/lib/libltdl/ltdl.c:
+	* src/lib/libltdl/ltdl.h:
+	* src/lib/md5/Makefile.am:
+	* src/lib/md5/md5.dsp:
+	* src/lib/md5/pa_md5.h:
+	* src/lib/md5/pa_md5c.c:
+	* src/lib/patches/Makefile.am:
+	* src/lib/patches/Makefile.in:
+	* src/lib/patches/libgdome_cpp_syntax1.patch:
+	* src/lib/patches/libgdome_cpp_syntax2.patch:
+	* src/lib/patches/libgdome_morestatic.patch:
+	* src/lib/patches/libxml_error_column_tab.patch:
+	* src/lib/patches/libxml_htmloutput_of_xslemptyattr_emptyquotes.patch:
+	* src/lib/patches/libxml_transcoder_context1.patch:
+	* src/lib/patches/libxml_transcoder_context2.patch:
+	* src/lib/patches/libxml_transcoder_context3.patch:
+	* src/lib/patches/libxml_transcoder_context4.patch:
+	* src/lib/patches/libxslt_html_output_no_charset_meta.patch:
+	* src/lib/pcre/LICENCE:
+	* src/lib/pcre/Makefile.am:
+	* src/lib/pcre/Makefile.in:
+	* src/lib/pcre/README:
+	* src/lib/pcre/Tech.Notes:
+	* src/lib/pcre/dftables.c:
+	* src/lib/pcre/get.c:
+	* src/lib/pcre/ibm-1250.ucm:
+	* src/lib/pcre/ibm-1251.ucm:
+	* src/lib/pcre/ibm-1257.ucm:
+	* src/lib/pcre/internal.h:
+	* src/lib/pcre/maketables.c:
+	* src/lib/pcre/pcre-2_08.tar.gz:
+	* src/lib/pcre/pcre.3:
+	* src/lib/pcre/pcre.3.html:
+	* src/lib/pcre/pcre.3.txt:
+	* src/lib/pcre/pcre.c:
+	* src/lib/pcre/pcre.dsp:
+	* src/lib/pcre/pcre.h:
+	* src/lib/pcre/pcre_dftables.dsp:
+	* src/lib/pcre/pcre_parser_ctype.c:
+	* src/lib/pcre/pcre_parser_ctype.dsp:
+	* src/lib/pcre/ruspart_win2koi.pl:
+	* src/lib/pcre/study.c:
+	* src/lib/pcre/win-koi.tab:
+	* src/main/Makefile.am:
+	* src/main/compile.tab.C:
+	* src/main/main.dsp:
+	* src/patches/Makefile.am:
+	* src/patches/Makefile.in:
+	* src/patches/libgdome_cpp_syntax1.patch:
+	* src/patches/libgdome_cpp_syntax2.patch:
+	* src/patches/libgdome_morestatic.patch:
+	* src/patches/libxml_error_column_tab.patch:
+	* src/patches/libxml_htmloutput_of_xslemptyattr_emptyquotes.patch:
+	* src/patches/libxml_transcoder_context1.patch:
+	* src/patches/libxml_transcoder_context2.patch:
+	* src/patches/libxml_transcoder_context3.patch:
+	* src/patches/libxml_transcoder_context4.patch:
+	* src/patches/libxslt_html_output_no_charset_meta.patch:
+	* src/pcre/LICENCE:
+	* src/pcre/Makefile.am:
+	* src/pcre/Makefile.in:
+	* src/pcre/README:
+	* src/pcre/Tech.Notes:
+	* src/pcre/dftables.c:
+	* src/pcre/get.c:
+	* src/pcre/ibm-1250.ucm:
+	* src/pcre/ibm-1251.ucm:
+	* src/pcre/ibm-1257.ucm:
+	* src/pcre/internal.h:
+	* src/pcre/maketables.c:
+	* src/pcre/pcre-2_08.tar.gz:
+	* src/pcre/pcre.3:
+	* src/pcre/pcre.3.html:
+	* src/pcre/pcre.3.txt:
+	* src/pcre/pcre.c:
+	* src/pcre/pcre.dsp:
+	* src/pcre/pcre.h:
+	* src/pcre/pcre_dftables.dsp:
+	* src/pcre/pcre_parser_ctype.c:
+	* src/pcre/pcre_parser_ctype.dsp:
+	* src/pcre/ruspart_win2koi.pl:
+	* src/pcre/study.c:
+	* src/pcre/win-koi.tab:
+	* src/targets/apache13/ApacheModuleParser3.dsp:
+	* src/targets/apache13/Makefile.am:
+	* src/targets/apache13/pa_md5c.c:
+	* src/targets/cgi/Makefile.am:
+	* src/targets/cgi/parser3.dsp:
+	* src/targets/isapi/parser3isapi.dsp:
+	* src/types/Makefile.am:
+	* src/types/types.dsp:
+	* www/cgi-bin/parser3.log:
+	* www/htdocs/.htaccess:
+	* www/htdocs/index.html:
+		moved libltdl and pcre to libs/
+		added libs/md5 which is linked to non-apache targets
+		^math:crypt[password;$apr1$salt]
+
+2002-06-20  paf
+	* INSTALL:
+	* bin/Makefile.am:
+	* bin/Makefile.in:
+	* bin/auto.p.dist.in:
+	* bin/parser3.conf.dist.in:
+	* configure:
+	* configure.in:
+	* operators.txt:
+	* src/classes/file.C:
+	* src/classes/op.C:
+	* src/doc/doxygen.cfg:
+	* src/include/pa_globals.h:
+	* src/include/pa_request.h:
+	* src/main/execute.C:
+	* src/main/pa_request.C:
+	* src/targets/apache13/mod_parser3.C:
+	* src/targets/cgi/parser3.C:
+	* src/targets/isapi/parser3isapi.C:
+	* src/types/pa_vmethod_frame.h:
+	* www/htdocs/auto.p:
+	* www/htdocs/index.html:
+		marged latest HEAD updates, mainly file:justname&co & @auto
+		conf[filespec
+
+	* INSTALL:
+	* bin/Makefile.am:
+	* bin/auto.p.dist.in:
+	* bin/parser3.conf.dist.in:
+	* configure.in:
+	* operators.txt:
+	* src/doc/doxygen.cfg:
+	* src/include/pa_globals.h:
+	* src/targets/apache13/mod_parser3.C:
+	* src/targets/cgi/parser3.C:
+	* src/targets/isapi/parser3isapi.C:
+	* www/htdocs/auto.p:
+	* www/htdocs/index.html:
+		parser3.conf renamed to auto.p
+
+	* operators.txt:
+	* src/classes/file.C:
+	* www/cgi-bin/parser3.log:
+	* www/htdocs/auto.p:
+	* www/htdocs/index.html:
+		    !^file:dirname[/a/some.tar.gz]=/a
+		    !^file:dirname[/a/b/]=/a
+		    !^file:basename[/a/some.tar.gz]=some.tar.gz
+		    !^file:justname[/a/some.tar.gz]=some.tar
+		    !^file:justext[/a/some.tar.gz]=gz
+
+	* bin/Makefile.in:
+	* configure:
+		parser3.conf renamed to auto.p autoconf changes
+
+	* src/classes/op.C:
+	* src/include/pa_request.h:
+	* src/main/execute.C:
+	* src/main/pa_request.C:
+	* src/types/pa_vmethod_frame.h:
+	* www/cgi-bin/parser3.log:
+	* www/htdocs/auto.p:
+	* www/htdocs/index.html:
+		introducing @conf/auto[filespec]
+
+	* bin/auto.p.dist.in:
+		<noindex>
+
 2002-06-18  paf
 	* bin/Makefile.am:
 	* bin/Makefile.in:
@@ -10,6 +370,11 @@
 	* src/classes/file.C:
 	* www/cgi-bin/parser3.log:
 		^file::exec[script;$.bad error case insensitive check now
+
+	* configure:
+	* configure.in:
+	* src/include/pa_version.h:
+		version to configure.in
 
 	* src/classes/file.C:
 	* www/cgi-bin/parser3.log:
@@ -69,7 +434,6 @@
 	* src/classes/gd/Makefile.in:
 	* src/classes/smtp/Makefile.in:
 	* src/include/Makefile.in:
-	* src/libltdl/Makefile.in:
 	* src/main/Makefile.in:
 	* src/patches/Makefile.in:
 	* src/pcre/Makefile.in:
@@ -298,8 +662,6 @@
 	* src/include/pa_request.h:
 	* src/include/pa_table.h:
 	* src/include/pa_table.h:
-	* src/libltdl/libltdl.dsp:
-	* src/libltdl/libltdl.dsp:
 	* src/main/compile.tab.C:
 	* src/main/compile.tab.C:
 	* src/main/compile.y:
@@ -411,7 +773,6 @@
 	* src/classes/classes.dsp:
 	* src/classes/gd/gd.dsp:
 	* src/classes/smtp/smtp.dsp:
-	* src/libltdl/libltdl.dsp:
 	* src/main/compile.tab.C:
 	* src/main/main.dsp:
 	* src/pcre/pcre.dsp:
@@ -921,7 +1282,6 @@
 	* etc/parser3.conf.in:
 	* src/Makefile.in:
 	* src/include/Makefile.in:
-	* src/libltdl/Makefile.in:
 	* src/main/Makefile.in:
 	* src/pcre/Makefile.in:
 		root config configure options
@@ -1305,7 +1665,6 @@
 	* src/include/pa_db_connection.h:
 	* src/include/pa_db_manager.h:
 	* src/include/pa_db_table.h:
-	* src/libltdl/Makefile.in:
 	* src/main/Makefile.am:
 	* src/main/Makefile.in:
 	* src/main/pa_db_connection.C:
@@ -1328,7 +1687,6 @@
 		removed hashfile support for now
 
 	* acconfig.h:
-	* src/libltdl/acconfig.h:
 		acconfig move in cvs[from src/libltdl to /]
 
 	* etc/parser3.charsets/windows-1251.cfg:
@@ -1478,12 +1836,6 @@
 	* src/include/Makefile.in:
 	* src/include/pa_config_auto.h.in:
 	* src/include/pa_config_includes.h:
-	* src/libltdl/Makefile.am:
-	* src/libltdl/Makefile.in:
-	* src/libltdl/config.h:
-	* src/libltdl/config_auto.h.in:
-	* src/libltdl/configure:
-	* src/libltdl/configure.in:
 	* src/main/Makefile.in:
 	* src/patches/Makefile.in:
 	* src/pcre/Makefile.in:
@@ -1554,10 +1906,6 @@
 	* src/types/types.dsp:
 		win32xml now contains gnome xml libs
 		parser .dsp-s changed accordingly
-
-	* src/libltdl/Makefile.am:
-	* src/libltdl/Makefile.in:
-		make dist for libltdl updated
 
 	* operators.txt:
 		\ comment
@@ -1762,10 +2110,6 @@
 	* src/targets/isapi/Makefile.in:
 		forgotten makes
 
-	* src/libltdl/Makefile.am:
-	* src/libltdl/Makefile.in:
-		makes
-
 	* AUTHORS:
 	* COPYING:
 	* INSTALL:
@@ -1785,8 +2129,6 @@
 	* src/classes/Makefile.in:
 	* src/classes/gd/Makefile.am:
 	* src/classes/gd/Makefile.in:
-	* src/libltdl/Makefile.am:
-	* src/libltdl/Makefile.in:
 	* src/main/Makefile.am:
 	* src/main/Makefile.in:
 	* src/main/pa_status_provider.C:
@@ -1975,7 +2317,6 @@
 	* src/classes/Makefile.in:
 	* src/classes/gd/Makefile.in:
 	* src/include/pa_config_auto.h.in:
-	* src/libltdl/Makefile.in:
 	* src/main/Makefile.in:
 	* src/main/pa_common.C:
 	* src/main/pa_socks.C:
@@ -1988,7 +2329,6 @@
 
 	* src/classes/Makefile.in:
 	* src/classes/gd/Makefile.in:
-	* src/libltdl/Makefile.in:
 	* src/main/Makefile.in:
 	* src/pcre/Makefile.in:
 	* src/targets/Makefile.in:
@@ -2142,7 +2482,6 @@
 	* src/classes/Makefile.in:
 	* src/classes/gd/Makefile.am:
 	* src/classes/gd/Makefile.in:
-	* src/libltdl/Makefile.in:
 	* src/main/Makefile.am:
 	* src/main/Makefile.in:
 	* src/pcre/Makefile.in:
@@ -2198,51 +2537,25 @@
 	* operators.txt:
 	* parser3.dsw:
 	* sql.txt:
-	* src/AUTHORS:
-	* src/COPYING:
-	* src/ChangeLog:
 	* src/Makefile.am:
 	* src/Makefile.in:
-	* src/NEWS:
-	* src/README:
-	* src/acinclude.m4:
-	* src/aclocal.m4:
-	* src/asm.txt:
 	* src/classes/Makefile.am:
 	* src/classes/Makefile.in:
 	* src/classes/gd/Makefile.am:
 	* src/classes/gd/Makefile.in:
-	* src/config.guess:
-	* src/config.sub:
-	* src/configure:
-	* src/configure.in:
-	* src/form.txt:
 	* src/ident.awk:
 	* src/include/pa_config_auto.h.in:
-	* src/install-sh:
-	* src/lang.txt:
-	* src/libltdl/Makefile.in:
-	* src/libltdl/acinclude.m4:
-	* src/libltdl/configure:
-	* src/ltconfig:
-	* src/ltmain.sh:
 	* src/main/Makefile.am:
 	* src/main/Makefile.in:
-	* src/missing:
-	* src/mkinstalldirs:
-	* src/operators.txt:
-	* src/parser3.dsw:
 	* src/pcre/Makefile.in:
 	* src/pcre/ruspart_win2koi.pl:
 	* src/pcre/win-koi.tab:
-	* src/sql.txt:
 	* src/targets/Makefile.in:
 	* src/targets/apache13/Makefile.am:
 	* src/targets/apache13/Makefile.in:
 	* src/targets/cgi/Makefile.am:
 	* src/targets/cgi/Makefile.in:
 	* src/targets/cgi/parser3.C:
-	* src/types.txt:
 	* src/types/Makefile.am:
 	* src/types/Makefile.in:
 	* types.txt:
@@ -2271,7 +2584,6 @@
 		rewritten. now check is done at compile time
 
 	* etc/parser3.charsets/Makefile.in:
-	* src/INSTALL:
 	* src/ident.awk:
 		*** empty log message ***
 
@@ -2310,36 +2622,12 @@
 
 2002-01-30  paf
 	* src/classes/xdoc.C:
-	* src/libltdl/acconfig.h:
-	* src/libltdl/config_auto.h.in:
 		acconfig.h changed [comments before #undefs removed]
 		those comments were a mistake, and prevented libltdl from function properly
-
-	* src/INSTALL:
-	* src/README:
-		started 'INSTALL'
 
 	* src/patches/libgdome_cpp_syntax1.patch:
 	* src/patches/libgdome_cpp_syntax2.patch:
 		libgdome patches so that those headers would compile with c++ compiler
-
-	* src/INSTALL:
-	* src/README:
-		described gdome patches
-
-	* src/INSTALL:
-		INSTALL -10
-
-	* src/INSTALL:
-		could not find out how to disable threads in glib, tried both
-		configure keys, but still libgthreads got created.
-
-	* src/README:
-		small greeting
-
-	* src/configure:
-	* src/configure.in:
-		minor mistake with /bin/glib-config fixed
 
 2002-01-29  paf
 	* src/Makefile.am:
@@ -2347,15 +2635,6 @@
 	* src/classes/Makefile.am:
 	* src/classes/Makefile.in:
 	* src/classes/gd/Makefile.in:
-	* src/configure:
-	* src/configure.in:
-	* src/libltdl/Makefile.am:
-	* src/libltdl/Makefile.in:
-	* src/libltdl/acconfig.h:
-	* src/libltdl/acinclude.m4:
-	* src/libltdl/config_auto.h.in:
-	* src/libltdl/configure:
-	* src/libltdl/configure.in:
 	* src/main/Makefile.in:
 	* src/pcre/Makefile.am:
 	* src/pcre/Makefile.in:
@@ -2379,14 +2658,10 @@
 	* src/classes/xdoc.C:
 	* src/classes/xnode.h:
 	* src/main/pa_exception.C:
-	* src/operators.txt:
 		xdoc.importNode 0
 
 	* src/classes/xdoc.C:
 		xdoc::set now untaints OK
-
-	* src/aclocal.m4:
-		without this one commited, stupid make runs autoconf
 
 	* src/Makefile.in:
 		stupid make runs automake on ths
@@ -2411,13 +2686,11 @@
 		xdoc.importNode 3 [check err]
 
 2002-01-25  paf
-	* src/ChangeLog:
 	* src/include/pa_charset.h:
 	* src/main/pa_globals.C:
 		http://localhost/abc -> $ENV{DOCUMENT_ROOT}/abc | ./abc
 
 	* src/classes/hash.C:
-	* src/operators.txt:
 		unified  hash::sql, now
 		^hash::sql{query}[[$.limit(2) $.offset(4)]]
 
@@ -2434,7 +2707,6 @@
 	* src/classes/file.C:
 	* src/include/pa_common.h:
 	* src/main/pa_common.C:
-	* src/operators.txt:
 		^file:lock[filename]{code}
 
 	* src/include/pa_charset.h:
@@ -2449,23 +2721,16 @@
 		#comment  before @ after @SPECIAL
 		now works OK
 
-	* src/configure:
-		version
-
 	* src/patches/libxml_error_column_tab.patch:
 		error position in line with \t-s was badly pointed by ^, tabs
 		changed to spaces
 
 	* src/main/pa_exec.C:
-	* src/operators.txt:
 		max arg count now 10, and proper message on violation that added
 
 	* src/main/pa_exec.C:
 	* src/main/pa_exec.C:
 		unix: exec now does chdir to script dir
-
-	* src/operators.txt:
-		table sort comment
 
 2002-01-24  paf
 	* src/classes/hashfile.C:
@@ -2478,7 +2743,6 @@
 	* src/main/execute.C:
 	* src/main/pa_db_connection.C:
 	* src/main/pa_db_table.C:
-	* src/operators.txt:
 	* src/types/pa_vhashfile.C:
 	* src/types/pa_vhashfile.h:
 		merged from r17 - hashfile without logfiles
@@ -2488,11 +2752,9 @@
 		"]
 
 	* src/classes/xnode.C:
-	* src/operators.txt:
 		xnode.select returns array always now, in case 'nothing found' 
 		returns empty array
 
-	* src/configure.in:
 	* src/include/pa_version.h:
 		changed version number
 
@@ -2504,7 +2766,6 @@
 	* src/main/compile.tab.C:
 	* src/main/pa_db_connection.C:
 	* src/main/pa_db_table.C:
-	* src/operators.txt:
 	* src/types/pa_vhashfile.C:
 	* src/types/pa_vhashfile.h:
 		hashfile:
@@ -2564,27 +2825,21 @@
 		
 		todo: think up some way to remove double->string string->double twice-converting
 
-	* src/patches/libxml_html_output_no_charset_meta.patch:
 	* src/patches/libxslt_html_output_no_charset_meta.patch:
 		no meta2
 
 	* src/types/pa_vdouble.h:
 		double prec. todo: get rid of twice-converting
 
+	* src/patches/libxslt_html_output_no_charset_meta.patch:
+		no meta3
+
 	* src/patches/libxml_transcoder_context1.patch:
 	* src/patches/libxml_transcoder_context2.patch:
 	* src/patches/libxml_transcoder_context3.patch:
 	* src/patches/libxml_transcoder_context4.patch:
-	* src/patches/xalan-DoubleSupport-arithmetic-overflow-on-negative-sqrt.patch:
-	* src/patches/xalan-FormatterToHTML-attribute-digitalentitifying-and-noheadcharset.patch:
-	* src/patches/xalan-XalanDOMString-systaxerr.patch:
-	* src/patches/xalan-XalanTranscodingServices-digitalentitifying.patch:
-	* src/patches/xerces-XMLURL-http-localhost-eq-documentroot-relative-file.patch:
 		removed xalan&xerces patches, started gnome xml lib patches.
 		first patch series aimed at providing transcoder with context
-
-	* src/patches/libxslt_html_output_no_charset_meta.patch:
-		no meta3
 
 	* src/classes/xdoc.C:
 	* src/include/pa_stylesheet_connection.h:
@@ -2632,8 +2887,6 @@
 	* src/classes/Makefile.in:
 	* src/classes/xdoc.C:
 	* src/classes/xnode.C:
-	* src/configure:
-	* src/configure.in:
 	* src/include/pa_stylesheet_connection.h:
 	* src/main/pa_charset.C:
 	* src/main/pa_globals.C:
@@ -2679,7 +2932,6 @@
 
 2002-01-16  paf
 	* src/classes/xdoc.C:
-	* src/operators.txt:
 		few comments
 
 	* src/classes/hash.C:
@@ -2705,11 +2957,9 @@
 	* src/classes/xdoc.C:
 	* src/include/pa_charset.h:
 	* src/main/pa_charset.C:
-	* src/operators.txt:
 		started output options parsing
 
 	* src/classes/xdoc.C:
-	* src/operators.txt:
 		xdoc
 		  file
 		  save
@@ -2744,8 +2994,6 @@
 
 	* src/classes/xdoc.C:
 	* src/classes/xnode.C:
-	* src/operators.txt:
-	* src/operators.txt:
 		^xdoc.file
 
 2002-01-11  paf
@@ -2783,12 +3031,7 @@
 	* src/include/pa_pool.h:
 	* src/main/pa_charset.C:
 	* src/main/pa_pool.C:
-	* src/operators.txt:
 		GdomeDOMString_auto_ptr  c++ wrapper [calls refcounter]
-
-2002-01-09  paf
-	* src/operators.txt:
-		removed ^hashfile.transaction
 
 2001-12-29  paf
 	* src/classes/xdoc.C:
@@ -2825,7 +3068,6 @@
 	* src/main/pa_exec.C:
 	* src/main/pa_globals.C:
 	* src/main/pa_socks.C:
-	* src/operators.txt:
 	* src/targets/cgi/parser3.C:
 	* src/targets/cgi/parser3.dsp:
 	* src/types/pa_vxdoc.C:
@@ -2845,7 +3087,6 @@
 		started glib transcoders
 
 2001-12-27  paf
-	* src/configure.in:
 	* src/include/pa_charset.h:
 	* src/include/pa_common.h:
 	* src/include/pa_exception.h:
@@ -2856,7 +3097,6 @@
 	* src/main/pa_charsets.C:
 	* src/main/pa_globals.C:
 	* src/main/pa_pool.C:
-	* src/parser3.dsw:
 	* src/pcre/internal.h:
 	* src/targets/cgi/parser3.C:
 	* src/targets/cgi/parser3.dsp:
@@ -2890,24 +3130,12 @@
 		table set & append changed splitting languages, separators now can be clean AND as-is
 		same to mail command line $MAIN:MAIL.progX arguments
 
-	* src/patches/xerces-XMLURL-http-localhost-eq-documentroot-relative-file.patch:
-		checked no-DOCUMENT_ROOT situation
-
 2001-12-24  paf
 	* src/classes/hashfile.C:
 	* src/classes/op.C:
 	* src/main/pa_db_table.C:
 	* src/main/pa_string.C:
 		read from cache size check updated
-
-	* src/patches/xerces-XMLURL-http-localhost-eq-documentroot-relative-file.patch:
-	* src/patches/xerces-http-localhost-eq-documentroot-relative-file.patch:
-	* src/patches/xerces-http-localhost-eq-documentroot-relative-file.patch:
-		xerces http://localhost/hren equals reading from $DOCUMENT_ROOT
-		hren file
-
-	* src/operators.txt:
-		comment on message part ordering
 
 	* src/main/pa_string.C:
 	* src/main/pa_string.C:
@@ -2917,9 +3145,6 @@
 		one parted text messages - no multipart mime-type anymore.
 		for convinient if $.attach-ments
 
-	* src/operators.txt:
-		comment on "multipart" messages with one part
-
 2001-12-21  paf
 	* src/main/pa_request.C:
 		$result in @main actually not working, to hell with it for now
@@ -2928,7 +3153,6 @@
 		junction evaluation canceled - endless recursion detected
 
 	* src/classes/date.C:
-	* src/operators.txt:
 		date:sql-string now returns localtime
 
 	* src/include/pa_request.h:
@@ -2937,9 +3161,6 @@
 	* src/types/pa_vmethod_frame.h:
 	* src/types/pa_wcontext.h:
 		$result in @main @postprocess @exception
-
-	* src/operators.txt:
-		date localtime comment
 
 2001-12-19  paf
 	* src/main/pa_request.C:
@@ -2951,36 +3172,15 @@
 	* src/classes/hashfile.C:
 		^hashfile.open DB_HOME now relative
 
-	* src/operators.txt:
-		UTF8, charset name case sensitivity comment
-
 	* src/main/pa_charset.C:
-	* src/operators.txt:
 		charset->charset transcoding via unicode intermediate
 
 	* src/classes/mail.C:
 	* src/include/pa_config_fixed.h:
-	* src/operators.txt:
 		to/from 0 check were missing
-
-	* src/patches/xalan-FormatterToHTML-attribute-digitalentitifying-and-noheadcharset.patch:
-	* src/patches/xalan-FormatterToHTML-attribute-digitalentitifying.patch:
-		xalan-FormatterToHTML...noheadcharset.patch
-
-	* src/ChangeLog:
-	* src/operators.txt:
-		^mail:send charset comment
-
-	* src/configure:
-	* src/configure.in:
-		--with-pathlink=-R or -rpath-link
 
 	* src/classes/mail.C:
 		changed weighting prior to sort
-
-	* src/configure:
-	* src/configure.in:
-		comment
 
 2001-12-17  paf
 	* src/classes/mail.C:
@@ -2988,7 +3188,6 @@
 	* src/include/pa_string.h:
 	* src/main/pa_charsets.C:
 	* src/main/untaint.C:
-	* src/operators.txt:
 	* src/types/pa_vrequest.C:
 	* src/types/pa_vresponse.C:
 		^mail:send[
@@ -2998,9 +3197,6 @@
 	* src/include/pa_db_table.h:
 	* src/main/pa_db_table.C:
 		db_table used outdated unset services_pool
-
-	* src/operators.txt:
-		warning about form:fields and $request/response:charset
 
 	* src/main/pa_charset.C:
 		ifndef XML were bad type
@@ -3077,12 +3273,6 @@
 	* src/main/pa_charset.C:
 		name_cstr 0
 
-	* src/configure.in:
-	* src/configure.in:
-		-R returned
-		tothink of: rpath-link
-
-	* src/configure:
 	* src/main/Makefile.in:
 	* src/targets/apache13/Makefile.in:
 	* src/targets/cgi/Makefile.in:
@@ -3098,14 +3288,8 @@
 	* src/types/Makefile.am:
 		charset_connection&manager replaced by charset&charsets
 
-	* src/patches/xalan-DoubleSupport-arithmetic-overflow-on-negative-sqrt.patch:
-		some strange empty line removal killed
-
 	* src/main/untaint.C:
 		uri lang now knows about client/source charsets
-
-	* src/configure.in:
-		-rpath-link
 
 2001-12-14  paf
 	* src/include/pa_request.h:
@@ -3131,7 +3315,6 @@
 	* src/main/pa_charset_manager.C:
 	* src/main/pa_request.C:
 	* src/main/pa_transcoder.C:
-	* src/operators.txt:
 	* src/types/Makefile.am:
 	* src/types/pa_vrequest.C:
 	* src/types/pa_vrequest.h:
@@ -3220,7 +3403,6 @@
 		couple cache expiratiors were wrong [past/future prob]
 
 	* src/classes/xdoc.C:
-	* src/operators.txt:
 		lang list updated
 
 	* src/targets/cgi/pa_pool.C:
@@ -3230,13 +3412,6 @@
 	* src/classes/file.C:
 		file::cgi bug, request_method were passed to SERVER_PROTOCOL
 		but SERVER_PROTOCOL were forgotten
-
-2001-12-11  paf
-	* src/configure.in:
-		so extension const removed
-
-	* src/configure:
-		makes
 
 2001-12-10  paf
 	* src/main/untaint.C:
@@ -3261,27 +3436,22 @@
 		bus error,
 		fixed that
 
-	* src/configure:
 	* src/include/pa_config_auto.h.in:
 		makes
 
 	* src/main/pa_string.C:
 		strange string deserialize bug on client[pmts], a bit shortened,
 
-	* src/configure.in:
 	* src/include/pa_common.h:
 	* src/include/pa_config_fixed.h:
 	* src/include/pa_config_includes.h:
 	* src/main/pa_common.C:
-	* src/operators.txt:
 		exclusive lock file write
 		shared lock file read
 
 	* src/classes/hashfile.C:
 	* src/classes/op.C:
 	* src/classes/table.C:
-	* src/configure:
-	* src/configure.in:
 	* src/include/pa_common.h:
 	* src/include/pa_config_auto.h.in:
 	* src/include/pa_config_fixed.h:
@@ -3292,9 +3462,6 @@
 	* src/main/pa_db_table.C:
 	* src/main/pa_request.C:
 	* src/main/pa_string.C:
-	* src/operators.txt:
-	* src/patches/xalan-FormatterToHTML-attribute-digitalentitifying.patch:
-	* src/patches/xalan-FormatterToHTML-attribute-digitalentitifying.patch:
 	* src/types/pa_vhashfile.C:
 		merged from r14_simple_cache
 
@@ -3319,7 +3486,6 @@
 		removed transaction from ^cache
 
 2001-12-05  paf
-	* src/operators.txt:
 	* src/targets/cgi/parser3.C:
 	* src/targets/cgi/parser3.C:
 		fatal error reporting fixed.
@@ -3332,29 +3498,11 @@
 	* src/main/pa_request.C:
 		measures to log
 
-2001-11-27  paf
-	* src/patches/xalan-FormatterToHTML-attribute-digitalentitifying.patch:
-	* src/patches/xalan-XalanDOMString-systaxerr.patch:
-		forgot to add
-
-	* src/patches/xalan-FormatterToHTML-attribute-digitalentitifying.patch:
-		forgot to cvs that buggy thing
-
 2001-11-26  paf
-	* src/patches/xalan-XalanDOMString-systaxerr.patch:
-		case
-
 	* src/targets/apache13/mod_parser3.C:
 		merge dir config now works OK with parser_root_config_filespec
 		
 		20011126 paf: noticed, that this is called even on virtual root merge with something "parent", while thought that that is part of merge_server...
-
-	* src/operators.txt:
-		about image measure/load format limits
-
-2001-11-24  paf
-	* src/patches/xalan-XalanDOMString-systaxerr.patch:
-		commented out some syntax error
 
 2001-11-23  paf
 	* src/classes/hashfile.C:
@@ -3384,23 +3532,15 @@
 		cache bugfix [wrong types after pa_string optimization]
 
 2001-11-22  paf
-	* src/patches/xml-xalan.patch:
-		superceeded by xalan-XalanTranscodingServices
-		digitalentitifying.patch
-
 	* src/main/untaint.C:
 		ORIGINS mode removed UHTML
 
 	* src/classes/op.C:
 		process cstr(,connection)
 
-	* src/configure:
-		configs
-
 	* src/Makefile.in:
 	* src/classes/gd/Makefile.in:
 	* src/classes/xdoc.C:
-	* src/libltdl/Makefile.in:
 	* src/pcre/Makefile.in:
 	* src/targets/Makefile.in:
 	* src/targets/apache13/Makefile.in:
@@ -3410,30 +3550,24 @@
 	* src/classes/op.C:
 		process now gets its body on current language, not as-is
 
-	* src/configure.in:
-		configure line
-
 	* src/main/untaint.C:
 		ORIGINS mode was bad - forgot about optimize bit
 
 	* src/classes/table.C:
 	* src/include/pa_table.h:
 	* src/main/pa_table.C:
-	* src/operators.txt:
 		table.offset[whence]
 
 2001-11-21  paf
 	* src/classes/table.C:
 	* src/main/pa_string.C:
 	* src/main/untaint.C:
-	* src/parser3.dsw:
 	* src/targets/cgi/parser3.C:
 		table.append bug fixed: forgot to switch default language for {
 		code}, it happen to change it's language from CLEAN, so later
 		refused to split by CLEAN \t
 
 	* src/classes/xdoc.C:
-	* src/operators.txt:
 	* src/types/pa_vxdoc.C:
 	* src/types/pa_vxdoc.h:
 		<xsl:output
@@ -3484,7 +3618,6 @@
 
 	* src/classes/Makefile.in:
 	* src/classes/gd/Makefile.in:
-	* src/libltdl/Makefile.in:
 	* src/main/Makefile.in:
 	* src/pcre/Makefile.in:
 	* src/targets/Makefile.am:
@@ -3495,9 +3628,6 @@
 	* src/targets/cgi/parser3.C:
 	* src/types/Makefile.in:
 		#if _MSC_VER _set_new_handler
-
-	* src/operators.txt:
-		few words about content-type.charset
 
 	* src/Makefile.in:
 	* src/targets/apache13/mod_parser3.C:
@@ -3545,8 +3675,6 @@
 
 2001-11-15  paf
 	* src/Makefile.in:
-	* src/configure:
-	* src/configure.in:
 		configure set_new_handler check added
 
 	* src/targets/cgi/parser3.C:
@@ -3569,8 +3697,6 @@
 		exception with static buffer back
 
 	* src/classes/classes.awk:
-	* src/configure:
-	* src/configure.in:
 	* src/include/pa_config_auto.h.in:
 	* src/include/pa_config_includes.h:
 		setnewhandler check
@@ -3606,7 +3732,6 @@
 		merged with no_bad_constructors_try
 
 	* src/classes/op.C:
-	* src/operators.txt:
 		^untaint{body} as-is default now
 
 	* src/main/pa_request.C:
@@ -3620,9 +3745,6 @@
 		solaris >buffer_size
 		
 		checked all that
-
-	* src/operators.txt:
-		doc
 
 2001-11-13  paf
 	* src/classes/classes.C:
@@ -3650,17 +3772,11 @@
 		changed xdoc createXXX politics, now string passed as-is to
 		method, xalan makes & into &amp; itself
 
-	* src/operators.txt:
-	* src/operators.txt:
-	* src/operators.txt:
-		doc
-
 2001-11-11  paf
 	* src/main/pa_sql_driver_manager.C:
 	* src/sql/pa_sql_driver.h:
 		sql driver initialize not const
 
-	* src/operators.txt:
 	* src/sql/pa_sql_driver.h:
 		removed extra constructor, doc
 
@@ -3670,12 +3786,10 @@
 
 2001-11-10  paf
 	* src/main/pa_exec.C:
-	* src/operators.txt:
 		doc
 
 2001-11-09  paf
 	* src/main/pa_common.C:
-	* src/operators.txt:
 		line endings fixing fixed last piece[was still cstr oriented]
 
 	* src/include/pa_common.h:
@@ -3706,7 +3820,6 @@
 		</Location>
 
 	* src/Makefile.in:
-	* src/configure:
 	* src/include/pa_common.h:
 	* src/main/Makefile.am:
 	* src/main/Makefile.in:
@@ -3725,9 +3838,6 @@
 		restructured Cache manager to be simple parent, not second
 		parent [gcc 2.96 strangly refused to call virtual from second
 		parent]
-
-	* src/operators.txt:
-		doc
 
 	* src/include/pa_cache_managers.h:
 	* src/include/pa_charset_manager.h:
@@ -3752,7 +3862,6 @@
 	* src/include/pa_stylesheet_connection.h:
 	* src/include/pa_stylesheet_manager.h:
 	* src/main/pa_stylesheet_manager.C:
-	* src/operators.txt:
 	* src/types/pa_vstatus.h:
 		$status:stylesheet
 
@@ -3774,7 +3883,6 @@
 
 	* src/include/pa_charset_connection.h:
 	* src/main/pa_charset_manager.C:
-	* src/operators.txt:
 		$status:charset
 
 	* src/classes/classes.C:
@@ -3861,7 +3969,6 @@
 	* src/main/pa_stylesheet_manager.C:
 	* src/main/pa_table.C:
 	* src/main/untaint.C:
-	* src/operators.txt:
 	* src/pcre/pcre_parser_ctype.c:
 	* src/sql/pa_sql_driver.h:
 	* src/targets/apache13/mod_parser3.C:
@@ -3937,7 +4044,6 @@
 	* src/main/pa_sql_driver_manager.C:
 	* src/main/pa_status_provider.C:
 	* src/main/pa_stylesheet_manager.C:
-	* src/operators.txt:
 	* src/types/pa_vstatus.h:
 	* src/types/pa_vxnode.C:
 	* src/types/types.dsp:
@@ -3951,30 +4057,22 @@
 	* src/main/pa_db_manager.C:
 		expiration from debug to normal
 
-	* src/operators.txt:
-	* src/operators.txt:
-		doc
-
 2001-11-01  paf
 	* src/classes/hash.C:
 	* src/classes/op.C:
-	* src/operators.txt:
 	* src/types/pa_vmethod_frame.h:
 	* src/types/pa_vstring.C:
 	* src/types/pa_vstring.h:
 		^foreach[key|value]{body}[[separator]|{separator}]
 
-	* src/ChangeLog:
 	* src/classes/hash.C:
 	* src/include/pa_hash.h:
 	* src/main/pa_hash.C:
-	* src/operators.txt:
 	* src/types/pa_vcookie.C:
 		^hash.delete[key]
 
 	* src/classes/gd/gif.C:
 	* src/classes/math.C:
-	* src/configure.in:
 	* src/include/pa_common.h:
 		HAVE_TRUNC HAVE_ROUND checks [for hp, there are such in math.h]
 
@@ -3984,9 +4082,7 @@
 	* src/Makefile.in:
 	* src/classes/Makefile.in:
 	* src/classes/gd/Makefile.in:
-	* src/configure:
 	* src/include/pa_config_auto.h.in:
-	* src/libltdl/Makefile.in:
 	* src/main/Makefile.in:
 	* src/pcre/Makefile.in:
 	* src/targets/Makefile.in:
@@ -4011,7 +4107,6 @@
 
 	* src/classes/hash.C:
 	* src/classes/hashfile.C:
-	* src/operators.txt:
 	* src/types/pa_vhashfile.C:
 		^hashfile.foreach[key|value]{body}[[separator]|{separator}]
 		prev were hash.foreach
@@ -4026,17 +4121,26 @@
 		detected for var storage bug, fixed. todo:foreach
 
 2001-10-31  paf
-	* src/configure:
-		configure
-
-	* src/classes/table.C:
-	* src/operators.txt:
-		^table.save[[nameless|+append;]path]
+	* src/main/pa_sql_driver_manager.C:
+		hiding passwords and addresses from accidental show [imagine
+		user forgot @exception]
 
 	* src/main/pa_db_connection.C:
 	* src/main/pa_sql_driver_manager.C:
 			// lockdetector flags
 			dbenv.lk_detect=DB_LOCK_RANDOM;
+
+	* src/include/pa_opcode.h:
+	* src/main/compile.tab.C:
+	* src/main/compile.y:
+	* src/main/execute.C:
+		\ in expression: int divide 10/3=3
+
+	* src/main/pa_common.C:
+		typing bug in common - bad ifdeff
+
+	* src/types/pa_vhashfile.h:
+		hashfile  ^delete to do something only inside of ^cache
 
 	* src/include/pa_threads.h:
 	* src/main/pa_db_connection.C:
@@ -4045,21 +4149,6 @@
 	* src/targets/cgi/pa_threads.C:
 	* src/targets/isapi/pa_threads.C:
 		libdb DB_THREAD flag only when really needed
-
-	* src/configure.in:
-	* src/main/pa_sql_driver_manager.C:
-		hiding passwords and addresses from accidental show [imagine
-		user forgot @exception]
-
-	* src/include/pa_opcode.h:
-	* src/main/compile.tab.C:
-	* src/main/compile.y:
-	* src/main/execute.C:
-	* src/operators.txt:
-		\ in expression: int divide 10/3=3
-
-	* src/main/pa_common.C:
-		typing bug in common - bad ifdeff
 
 	* src/main/pa_db_connection.C:
 		z
@@ -4071,16 +4160,15 @@
 	* src/classes/xnode.C:
 	* src/include/pa_common.h:
 	* src/main/pa_common.C:
-	* src/operators.txt:
 		^string.save[[append;]path]
-
-	* src/types/pa_vhashfile.h:
-		hashfile  ^delete to do something only inside of ^cache
 
 	* src/main/compile.C:
 	* src/main/pa_common.C:
 		completely empty file now considered "read", not ignored [not
 		perfect trick used]
+
+	* src/classes/table.C:
+		^table.save[[nameless|+append;]path]
 
 	* src/main/pa_common.C:
 		simplier common ifdefs
@@ -4094,16 +4182,10 @@
 	* src/classes/xdoc.C:
 		rolled back {} in xdoc.createTextNode for now
 
-	* src/configure.in:
-		rtti needed on solaris for exceptions to work OK, removing -fno
-		rtti from everywhere
-
 	* src/classes/classes.dsp:
 	* src/classes/gd/gd.dsp:
 	* src/classes/smtp/smtp.dsp:
-	* src/libltdl/libltdl.dsp:
 	* src/main/main.dsp:
-	* src/parser3.dsw:
 	* src/pcre/pcre.dsp:
 	* src/pcre/pcre_dftables.dsp:
 	* src/pcre/pcre_parser_ctype.dsp:
@@ -4141,8 +4223,6 @@
 		String & Origin packed with #pragma pack
 
 	* src/Makefile.in:
-	* src/configure:
-	* src/configure.in:
 	* src/include/pa_config_auto.h.in:
 		pragma detection
 
@@ -4150,12 +4230,6 @@
 		rolled back {} in xdoc.createElement for now
 
 2001-10-29  paf
-	* src/configure.in:
-	* src/configure.in:
-	* src/configure.in:
-		if...
-		AC_DEFINE(HAVE_PRAGMA_PACK,,compiler supports #pragma pack(1))
-
 	* src/types/pa_wcontext.h:
 		bitfield syntax stricter
 
@@ -4295,8 +4369,6 @@
 		13 169 394
 
 2001-10-28  paf
-	* src/configure:
-	* src/configure.in:
 	* src/include/pa_config_auto.h.in:
 	* src/include/pa_config_fixed.h:
 	* src/include/pa_db_connection.h:
@@ -4315,8 +4387,6 @@
 
 	* src/classes/Makefile.am:
 	* src/classes/Makefile.in:
-	* src/configure:
-	* src/configure.in:
 	* src/targets/apache13/p3runConfigure.in:
 	* src/targets/cgi/Makefile.am:
 	* src/targets/cgi/Makefile.in:
@@ -4329,7 +4399,6 @@
 		removed old consts
 
 2001-10-27  paf
-	* src/ChangeLog:
 	* src/classes/hashfile.C:
 	* src/include/pa_db_connection.h:
 	* src/include/pa_db_table.h:
@@ -4344,10 +4413,7 @@
 	* src/classes/Makefile.am:
 	* src/classes/Makefile.in:
 	* src/classes/gd/Makefile.in:
-	* src/configure:
-	* src/configure.in:
 	* src/include/pa_config_fixed.h:
-	* src/libltdl/Makefile.in:
 	* src/main/Makefile.am:
 	* src/main/Makefile.in:
 	* src/pcre/Makefile.in:
@@ -4373,14 +4439,9 @@
 	* src/main/pa_db_manager.C:
 		db expiration connection&table [forgotten calls]
 
-	* src/operators.txt:
-		^hashfile.clear[] doced
-
 	* src/Makefile.in:
 	* src/classes/Makefile.in:
 	* src/classes/gd/Makefile.in:
-	* src/configure:
-	* src/configure.in:
 	* src/include/pa_config_auto.h.in:
 	* src/main/Makefile.am:
 	* src/main/Makefile.in:
@@ -4397,7 +4458,6 @@
 	* src/include/pa_db_table.h:
 	* src/main/pa_db_connection.C:
 	* src/main/pa_db_table.C:
-	* src/operators.txt:
 		^hashfile.clear[]
 
 2001-10-26  paf
@@ -4435,7 +4495,6 @@
 		db checkpoints
 
 	* src/main/pa_db_connection.C:
-	* src/operators.txt:
 		about to remove connection from vhashfile
 
 	* src/main/pa_db_connection.C:
@@ -4451,8 +4510,6 @@
 	* src/main/pa_db_connection.C:
 	* src/main/pa_db_manager.C:
 	* src/main/pa_db_table.C:
-	* src/operators.txt:
-	* src/parser3.dsw:
 	* src/types/pa_vhashfile.C:
 	* src/types/pa_vhashfile.h:
 		started db_home [multiple, cached]
@@ -4483,7 +4540,6 @@
 	* src/types/pa_vhashfile.C:
 		db_cursor constructor public now
 
-	* src/ChangeLog:
 	* src/include/pa_common.h:
 	* src/main/Makefile.am:
 	* src/main/pa_common.C:
@@ -4493,7 +4549,6 @@
 
 	* src/classes/hashfile.C:
 	* src/include/pa_request.h:
-	* src/operators.txt:
 		hashfile.cache 0
 
 	* src/main/pa_db_connection.C:
@@ -4511,7 +4566,6 @@
 	* src/types/pa_vform.h:
 		form fix_line_breaks
 
-	* src/operators.txt:
 	* src/types/pa_vhashfile.C:
 	* src/types/pa_vhashfile.h:
 		hashfile expiring 0
@@ -4526,12 +4580,9 @@
 		hashfile expired deleted from db when get & iterate
 
 	* src/classes/hashfile.C:
-	* src/operators.txt:
 	* src/types/pa_vhashfile.h:
 		hashfile 1
 
-	* src/operators.txt:
-	* src/operators.txt:
 	* src/targets/apache13/ApacheModuleParser3.dsp:
 	* src/targets/isapi/parser3isapi.dsp:
 		doc
@@ -4549,7 +4600,6 @@
 	* src/include/pa_string.h:
 	* src/main/pa_db_connection.C:
 	* src/main/pa_string.C:
-	* src/operators.txt:
 		hashfile pieced serialize. todo stamp
 
 	* src/main/pa_db_connection.C:
@@ -4573,7 +4623,6 @@
 	* src/main/pa_common.C:
 	* src/main/pa_db_connection.C:
 	* src/main/pa_request.C:
-	* src/operators.txt:
 	* src/types/pa_value.h:
 	* src/types/pa_vcookie.C:
 	* src/types/pa_vhash.h:
@@ -4588,7 +4637,6 @@
 	* src/include/pa_db_manager.h:
 	* src/main/pa_db_connection.C:
 	* src/main/pa_db_manager.C:
-	* src/operators.txt:
 	* src/types/pa_vhashfile.h:
 		^hashfile.transaction{code}
 		^hashfile:clear[filename]
@@ -4599,7 +4647,6 @@
 	* src/include/pa_config_fixed.h:
 	* src/main/pa_db_manager.C:
 	* src/main/pa_globals.C:
-	* src/operators.txt:
 		ifdefs so it compiled without db
 
 2001-10-22  parser
@@ -4626,7 +4673,6 @@
 	* src/main/pa_sql_driver_manager.C:
 	* src/main/pa_stylesheet_manager.C:
 	* src/main/pa_xslt_stylesheet_manager.C:
-	* src/operators.txt:
 	* src/targets/apache13/mod_parser3.C:
 	* src/targets/cgi/parser3.C:
 	* src/targets/isapi/parser3isapi.C:
@@ -4655,7 +4701,6 @@
 	* src/classes/hashfile.C:
 	* src/include/pa_config_fixed.h:
 	* src/main/execute.C:
-	* src/operators.txt:
 	* src/targets/cgi/parser3.dsp:
 	* src/types/pa_vhashfile.C:
 	* src/types/pa_vhashfile.h:
@@ -4673,13 +4718,8 @@
 	* src/types/pa_vobject.h:
 		stack backtrace
 
-	* src/operators.txt:
-	* src/parser3.dsw:
 	* src/types/pa_vhashfile.C:
 		z
-
-	* src/operators.txt:
-		comment
 
 2001-10-19  parser
 	* src/main/pa_request.C:
@@ -4712,7 +4752,6 @@
 	* src/include/pa_pool.h:
 	* src/include/pa_request.h:
 	* src/include/pa_types.h:
-	* src/libltdl/libltdl.dsp:
 	* src/main/compile.C:
 	* src/main/compile_tools.C:
 	* src/main/execute.C:
@@ -4728,7 +4767,6 @@
 	* src/main/pa_string.C:
 	* src/main/pa_table.C:
 	* src/main/untaint.C:
-	* src/parser3.dsw:
 	* src/pcre/pcre_dftables.dsp:
 	* src/pcre/pcre_parser_ctype.dsp:
 	* src/targets/apache13/ApacheModuleParser3.dsp:
@@ -4752,9 +4790,7 @@
 
 	* src/Makefile.in:
 	* src/classes/Makefile.in:
-	* src/configure:
 	* src/include/pa_pool.h:
-	* src/libltdl/Makefile.in:
 	* src/main/Makefile.in:
 	* src/main/pa_common.C:
 	* src/pcre/Makefile.in:
@@ -4781,7 +4817,6 @@
 	* src/classes/Makefile.am:
 	* src/classes/xdoc.C:
 	* src/classes/xnode.C:
-	* src/configure.in:
 	* src/include/pa_config_fixed.h:
 	* src/include/pa_exception.h:
 	* src/include/pa_stylesheet_connection.h:
@@ -4807,9 +4842,6 @@
 	* src/classes/image.C:
 		comment
 
-	* src/operators.txt:
-		going to switch to c++ exceptions
-
 2001-10-18  parser
 	* src/classes/xdoc.C:
 	* src/types/pa_vxdoc.h:
@@ -4831,7 +4863,6 @@
 	* src/classes/xdoc.C:
 	* src/classes/xnode.C:
 	* src/main/compile.tab.C:
-	* src/operators.txt:
 		xdoc create now uses XercesDocumentBridge, appendChild&co now works
 
 	* src/classes/xdoc.C:
@@ -4851,13 +4882,11 @@
 
 	* src/classes/classes.dsp:
 	* src/classes/xdoc.C:
-	* src/operators.txt:
 	* src/types/types.dsp:
 		fiew leechy-found bugs in code&doc fixed
 
 	* src/classes/xdoc.C:
 	* src/classes/xnode.C:
-	* src/operators.txt:
 		xdoc::create[] now. and all dom tag names forced to XML lang
 
 	* src/main/main.dsp:
@@ -4866,7 +4895,6 @@
 	* src/main/compile.tab.C:
 	* src/main/compile.y:
 	* src/main/pa_request.C:
-	* src/operators.txt:
 		^:
 		no colon in $origin @exception[
 
@@ -4874,20 +4902,14 @@
 	* src/types/pa_vimage.h:
 		removed unused vimage::save
 
-	* src/operators.txt:
-		hashfile planned
-
 	* src/classes/classes.dsp:
 	* src/classes/string.C:
 	* src/main/pa_string.C:
-	* src/operators.txt:
 	* src/types/pa_vxnode.h:
 	* src/types/types.dsp:
 		string::mid fixed, string.mid n functionality preserved
 
 2001-10-16  parser
-	* src/operators.txt:
-	* src/parser3.dsw:
 	* src/types/pa_vhash.h:
 	* src/types/pa_vtable.h:
 		hash can be used as boolean
@@ -4906,7 +4928,6 @@
 
 	* src/classes/xnode.C:
 	* src/classes/xnode.C:
-	* src/operators.txt:
 		removed few dom returns & changed op.txt
 
 	* src/classes/classes.dsp:
@@ -4922,7 +4943,6 @@
 	* src/classes/gd/gif.C:
 	* src/classes/gd/gif.h:
 	* src/classes/image.C:
-	* src/operators.txt:
 		image.copy tolerance
 
 	* src/classes/gd/gif.C:
@@ -4930,7 +4950,6 @@
 
 	* src/classes/string.C:
 	* src/main/pa_string.C:
-	* src/operators.txt:
 		$string.mid(p[;n])
 
 	* src/main/pa_common.C:
@@ -4942,21 +4961,17 @@
 		couple casts
 
 	* src/classes/image.C:
-	* src/operators.txt:
 	* src/types/pa_vimage.h:
 		image.copy[source](src x;src y;src w;src h;dst x;dst y[;dest w
 		;dest h]])
 
 2001-10-15  parser
-	* src/ChangeLog:
 	* src/Makefile.in:
-	* src/operators.txt:
 	* src/types/pa_vcode_frame.h:
 	* src/types/pa_wcontext.C:
 		code_frame fixed - ::write badly passed string too
 		transparently [failed to intercept it]
 
-	* src/operators.txt:
 	* src/types/pa_vxnode.C:
 		    document_type_node.
 		        !readonly attribute DOMString name
@@ -4969,7 +4984,6 @@
 	* src/include/pa_config_fixed.h:
 	* src/include/pa_request.h:
 	* src/main/pa_sql_driver_manager.C:
-	* src/operators.txt:
 	* src/types/pa_vxdoc.C:
 	* src/types/pa_vxdoc.h:
 	* src/types/pa_vxnode.C:
@@ -4981,7 +4995,6 @@
 
 	* src/classes/xdoc.C:
 	* src/classes/xdoc.C:
-	* src/operators.txt:
 		    !::create{qualifiedName}
 
 2001-10-13  parser
@@ -4992,7 +5005,6 @@
 	* src/include/pa_config_fixed.h:
 	* src/main/execute.C:
 	* src/main/pa_exception.C:
-	* src/operators.txt:
 		noticed that vcodeframe not transparent enough, would change now
 
 	* src/types/pa_vcode_frame.h:
@@ -5018,12 +5030,9 @@
 	* src/classes/gd/gd.dsp:
 	* src/classes/smtp/smtp.dsp:
 	* src/classes/xdoc.C:
-	* src/libltdl/libltdl.dsp:
 	* src/main/compile.tab.C:
 	* src/main/main.dsp:
 	* src/main/pa_globals.C:
-	* src/operators.txt:
-	* src/operators.txt:
 	* src/pcre/pcre.dsp:
 	* src/pcre/pcre_dftables.dsp:
 	* src/pcre/pcre_parser_ctype.dsp:
@@ -5049,15 +5058,8 @@
 	* src/classes/Makefile.in:
 	* src/classes/gd/Makefile.in:
 	* src/classes/gd/Makefile.in:
-	* src/configure:
-	* src/configure:
-	* src/configure:
-	* src/configure.in:
-	* src/configure.in:
 	* src/ident.awk:
 	* src/include/pa_config_auto.h.in:
-	* src/libltdl/Makefile.in:
-	* src/libltdl/Makefile.in:
 	* src/main/Makefile.in:
 	* src/main/Makefile.in:
 	* src/pcre/Makefile.in:
@@ -5074,7 +5076,6 @@
 		makes
 
 	* src/classes/xnode.C:
-	* src/operators.txt:
 		xnode.selectSingle now
 
 	* src/targets/apache13/ApacheModuleParser3.dsp:
@@ -5092,12 +5093,9 @@
 	* src/Makefile.in:
 	* src/classes/Makefile.in:
 	* src/classes/gd/Makefile.in:
-	* src/configure:
-	* src/configure.in:
 		makes. stdc++ lib added to apache libraries
 
 	* src/classes/hash.C:
-	* src/operators.txt:
 		    !^hash.add[addme]
 		    !^hash.sub[subme]
 		    !^a.union[b] = new
@@ -5108,12 +5106,10 @@
 		const
 
 	* src/classes/hash.C:
-	* src/operators.txt:
 	* src/types/pa_vhash.h:
 		    !^hash::create[[copy_from]]
 
 	* src/classes/hash.C:
-	* src/operators.txt:
 		    !^hash::append[append_from]
 
 	* src/targets/apache13/Makefile.am:
@@ -5161,7 +5157,6 @@
 
 	* src/classes/op.C:
 	* src/main/compile.tab.C:
-	* src/operators.txt:
 		^error[msg]
 
 2001-10-09  parser
@@ -5169,8 +5164,6 @@
 	* src/classes/xdoc.C:
 	* src/include/pa_stylesheet_connection.h:
 	* src/main/main.dsp:
-	* src/operators.txt:
-	* src/parser3.dsw:
 	* src/targets/cgi/parser3.C:
 	* src/targets/isapi/parser3isapi.C:
 	* src/types/pa_vxdoc.h:
@@ -5196,10 +5189,6 @@
 	* src/classes/Makefile.in:
 	* src/classes/gd/Makefile.in:
 	* src/classes/gd/Makefile.in:
-	* src/configure:
-	* src/configure.in:
-	* src/libltdl/Makefile.in:
-	* src/libltdl/Makefile.in:
 	* src/main/Makefile.am:
 	* src/main/Makefile.in:
 	* src/main/Makefile.in:
@@ -5234,11 +5223,7 @@
 
 	* src/classes/op.C:
 	* src/classes/table.C:
-	* src/operators.txt:
 		table.hash[key field;value field(s) string/table]  now
-
-	* src/operators.txt:
-		for delim desc
 
 	* src/classes/op.C:
 	* src/classes/table.C:
@@ -5246,12 +5231,10 @@
 
 	* src/classes/date.C:
 	* src/classes/table.C:
-	* src/operators.txt:
 		calendar moved to date
 
 	* src/classes/string.C:
 	* src/classes/table.C:
-	* src/operators.txt:
 		^string.save[file]
 
 2001-10-08  parser
@@ -5272,14 +5255,12 @@
 
 	* src/classes/gd/gif.C:
 	* src/classes/gd/mtables.h:
-	* src/operators.txt:
 		image:arc image:circle
 
 	* src/classes/gd/gd.dsp:
 	* src/classes/gd/gif.C:
 	* src/classes/gd/gif.h:
 	* src/classes/image.C:
-	* src/operators.txt:
 	* src/types/pa_vcookie.C:
 	* src/types/pa_vimage.C:
 		image:sector
@@ -5341,7 +5322,6 @@
 
 	* src/classes/xdoc.C:
 	* src/main/compile.tab.C:
-	* src/operators.txt:
 		xdoc.transform now
 
 	* src/doc/doxygen.cfg:
@@ -5378,12 +5358,8 @@
 		$result[^[$p^]z]
 		now works fine
 
-	* src/operators.txt:
-		desc
-
 2001-10-04  parser
 	* src/classes/image.C:
-	* src/operators.txt:
 		^image.length[text]
 
 2001-10-03  parser
@@ -5408,10 +5384,7 @@
 	* src/Makefile.in:
 	* src/classes/Makefile.in:
 	* src/classes/gd/Makefile.in:
-	* src/configure:
-	* src/libltdl/Makefile.in:
 	* src/main/Makefile.in:
-	* src/patches/xml-xalan.patch:
 	* src/pcre/Makefile.in:
 	* src/targets/Makefile.in:
 	* src/targets/apache13/Makefile.in:
@@ -5419,51 +5392,19 @@
 	* src/types/Makefile.in:
 		makes
 
-	* src/configure.in:
-		== wrong@solaris [strangly worked@linux] fixed
-
-	* src/operators.txt:
-		changed connect string format to support options
-		charset=cp1251_koi8
-		timeout=3
-		compress=1&
-		named_pipe=1
-
 	* src/include/pa_config_fixed.h:
 	* src/main/pa_charset_connection.C:
 		tested charset reload on file change @ apache version = OK
 		tested freeing up prev encoding on adding new = OK
 
-	* src/configure.in:
-		--rpath renamed to --R [this works on solaris too]
-
-	* src/operators.txt:
-		commented charset format
-
 	* src/classes/table.C:
-	* src/operators.txt:
-		# config comments fixed
+	* src/main/pa_charset_connection.C:
+		table:load & charset_connection
+		#comment now
 
-	* src/patches/xml-xalan.patch:
-		renamed to xalan-XalanTranscodingServices-digitalentitifying.patch
-
-	* src/patches/xalan-DoubleSupport-arithmetic-overflow-on-negative-sqrt.patch:
-		on intel solaris nan=sqrt(-2.01) caused arithmetic overflow signal = core
-		investigation revealed that compiler[or somebody else] installed FPE handler too late - in main() sqrt successfully returs NaN.
-		fixed to constant. todo: little/big endian check.
-
-	* src/patches/xalan-DoubleSupport-arithmetic-overflow-on-negative-sqrt.patch:
-		inserted gcc version
-
-	* src/configure.in:
-		changed link spec to link @ solaris
-
-	* src/configure.in:
-	* src/configure.in:
-		--rpath renamed to -R [this works on solaris too]
-
-	* src/operators.txt:
-		comment on CLASS_PATH
+	* src/classes/classes.dsp:
+	* src/types/types.dsp:
+		release projects options fixed to use release msvcrt lib
 
 	* src/include/pa_pool.h:
 	* src/include/pa_stylesheet_connection.h:
@@ -5475,23 +5416,7 @@
 		forgot non-xml pool.*charset needed
 
 	* src/classes/table.C:
-	* src/main/pa_charset_connection.C:
-	* src/operators.txt:
-		table:load & charset_connection
-		#comment now
-
-	* src/patches/xalan-XalanTranscodingServices-digitalentitifying.patch:
-		hacked - unspecified entitifying now "do not entitify"
-
-	* src/classes/classes.dsp:
-	* src/types/types.dsp:
-		release projects options fixed to use release msvcrt lib
-
-	* src/configure.in:
-		removed that overloaded-virtual warnings request
-
-	* src/patches/xml-xalan.patch:
-		created xalan patch to remove entitifying
+		# config comments fixed
 
 2001-10-01  parser
 	* src/include/pa_charset_connection.h:
@@ -5559,7 +5484,6 @@
 	* src/classes/xdoc.C:
 	* src/include/pa_stylesheet_connection.h:
 	* src/main/pa_request.C:
-	* src/operators.txt:
 	* src/pcre/pcre_parser_ctype.c:
 		letter body string passed AS-IS now
 
@@ -5570,24 +5494,15 @@
 	* src/classes/smtp/smtp.dsp:
 	* src/classes/xdoc.C:
 	* src/main/main.dsp:
-	* src/operators.txt:
 	* src/targets/cgi/parser3.dsp:
 	* src/targets/isapi/parser3isapi.dsp:
 	* src/types/types.dsp:
 		win32 ident make system so not to rebuild library [ident.C.new]
 
-	* src/operators.txt:
-		inserted piece from dom docs
-
 	* src/classes/table.C:
-	* src/operators.txt:
 		table.sort changed to sort table itself
 
-	* src/operators.txt:
-		z
-
 	* src/classes/xdoc.C:
-	* src/operators.txt:
 	* src/targets/isapi/parser3isapi.dsp:
 		X^.getElementsByTagName[tagname] = array of xnode
 		X^.getElementsByTagNameNS[namespaceURI;localName] = array of nodes
@@ -5668,7 +5583,6 @@
 	* src/include/pa_threads.h:
 	* src/include/pa_types.h:
 	* src/include/pa_xslt_stylesheet_manager.h:
-	* src/libltdl/libltdl.dsp:
 	* src/main/compile.C:
 	* src/main/compile.y:
 	* src/main/compile_tools.C:
@@ -5691,7 +5605,6 @@
 	* src/main/pa_table.C:
 	* src/main/pa_xslt_stylesheet_manager.C:
 	* src/main/untaint.C:
-	* src/parser3.dsw:
 	* src/pcre/pcre.dsp:
 	* src/pcre/pcre_dftables.dsp:
 	* src/pcre/pcre_parser_ctype.dsp:
@@ -5757,7 +5670,6 @@
 	* src/classes/xnode.C:
 	* src/classes/xnode.h:
 	* src/main/compile.tab.C:
-	* src/operators.txt:
 	* src/types/pa_vdnode.C:
 	* src/types/pa_vdnode.h:
 	* src/types/pa_vdom.C:
@@ -5777,8 +5689,6 @@
 	* src/classes/xnode.h:
 	* src/include/pa_config_fixed.h:
 	* src/main/main.dsp:
-	* src/operators.txt:
-	* src/operators.txt:
 	* src/targets/cgi/parser3.C:
 	* src/targets/cgi/parser3.C:
 	* src/targets/isapi/parser3isapi.C:
@@ -5805,10 +5715,7 @@
 	* src/classes/dom.C:
 	* src/classes/gd/Makefile.am:
 	* src/classes/gd/Makefile.in:
-	* src/configure:
-	* src/configure.in:
 	* src/include/pa_stylesheet_connection.h:
-	* src/libltdl/Makefile.in:
 	* src/main/Makefile.am:
 	* src/main/Makefile.in:
 	* src/main/pa_pool.C:
@@ -5822,10 +5729,7 @@
 	* src/types/pa_vdom.h:
 		xml configure makes
 
-	* src/configure:
-	* src/configure.in:
 	* src/include/pa_config_auto.h.in:
-	* src/libltdl/Makefile.in:
 		xml on linux[elik] works! no 1251 though, todo ICU
 
 2001-09-24  parser
@@ -5838,9 +5742,7 @@
 	* src/classes/Makefile.am:
 	* src/classes/Makefile.in:
 	* src/classes/gd/Makefile.in:
-	* src/configure:
 	* src/include/pa_config_auto.h.in:
-	* src/libltdl/Makefile.in:
 	* src/main/Makefile.in:
 	* src/pcre/Makefile.in:
 	* src/targets/Makefile.in:
@@ -5881,7 +5783,6 @@
 	* src/main/main.dsp:
 	* src/main/pa_common.C:
 	* src/main/pa_sql_driver_manager.C:
-	* src/parser3.dsw:
 	* src/targets/cgi/parser3.C:
 	* src/targets/cgi/parser3.dsp:
 	* src/types/pa_value.h:
@@ -5901,7 +5802,6 @@
 	* src/Makefile.am:
 	* src/Makefile.am:
 	* src/Makefile.am:
-	* src/configure.in:
 	* src/main/Makefile.am:
 	* src/targets/Makefile.am:
 	* src/targets/apache13/Makefile.am:
@@ -5920,7 +5820,6 @@
 
 	* src/include/pa_pool.h:
 	* src/main/pa_pool.C:
-	* src/operators.txt:
 		checked whether transcoder were created right
 		"unsupported encoding" message.
 		not @ set time, but @ use time, so until xml output functions .string, .file, .save used - no encoding name check occur
@@ -5935,12 +5834,10 @@
 	* src/include/pa_pool.h:
 	* src/include/pa_pool.h:
 	* src/main/pa_pool.C:
-	* src/operators.txt:
 	* src/types/pa_vdnode.C:
 	* src/types/pa_vresponse.h:
 		defaulted dom writing methods encoding to pool.get_charset
 
-	* src/ChangeLog:
 	* src/classes/classes.C:
 	* src/classes/date.C:
 	* src/classes/dnode.C:
@@ -5963,7 +5860,6 @@
 	* src/main/pa_pool.C:
 	* src/main/pa_request.C:
 	* src/main/pa_xslt_stylesheet_manager.C:
-	* src/parser3.dsw:
 	* src/pcre/pcre_parser_ctype.c:
 	* src/targets/cgi/pa_pool.C:
 	* src/targets/cgi/pa_threads.C:
@@ -6008,7 +5904,6 @@
 	* src/main/pa_common.C:
 	* src/main/pa_exec.C:
 	* src/main/pa_globals.C:
-	* src/operators.txt:
 	* src/targets/cgi/parser3.dsp:
 	* src/targets/isapi/parser3isapi.dsp:
 		merged with before_xml
@@ -6016,7 +5911,6 @@
 2001-09-20  parser
 	* src/classes/dnode.C:
 	* src/classes/dom.C:
-	* src/operators.txt:
 	* src/targets/cgi/parser3.dsp:
 	* src/types/pa_vstring.h:
 		dnode .file .string .save moved back to dom due to strange
@@ -6028,12 +5922,9 @@
 		charset[here]]
 
 	* src/classes/dom.C:
-	* src/operators.txt:
 		dom. string save file
 		moved output xml options to last param and made it optional
 
-	* src/operators.txt:
-	* src/operators.txt:
 	* src/types/pa_vhash.h:
 	* src/types/pa_vhash.h:
 	* src/types/pa_vstring.h:
@@ -6060,7 +5951,6 @@
 	* src/types/pa_vresponse.h:
 		Pool::transcode 0
 
-	* src/operators.txt:
 	* src/types/pa_vdnode.C:
 		    !$elementnode.attributes = hash of dnodes
 		    !$attributenode.specified = boolean
@@ -6111,7 +6001,6 @@
 	* src/main/pa_sql_driver_manager.C:
 	* src/main/pa_string.C:
 	* src/main/pa_table.C:
-	* src/operators.txt:
 	* src/targets/cgi/parser3.C:
 	* src/targets/cgi/parser3.dsp:
 	* src/targets/isapi/parser3isapi.C:
@@ -6134,7 +6023,6 @@
 	* src/types/pa_vdnode.h:
 		dom, dnode 0
 
-	* src/operators.txt:
 	* src/types/pa_vdnode.C:
 	* src/types/pa_vdom.h:
 	* src/types/pa_vhash.h:
@@ -6157,7 +6045,6 @@
 	* src/classes/hash.C:
 	* src/include/pa_stylesheet_connection.h:
 	* src/main/main.dsp:
-	* src/operators.txt:
 	* src/targets/cgi/pa_pool.C:
 	* src/types/pa_vdom.h:
 	* src/types/pa_vfile.h:
@@ -6174,7 +6061,6 @@
 	* src/classes/dom.C:
 	* src/main/main.dsp:
 	* src/main/pa_globals.C:
-	* src/operators.txt:
 	* src/types/pa_vdom.h:
 		started dnode+dom
 		
@@ -6193,7 +6079,6 @@
 	* src/classes/gd/gif.C:
 	* src/classes/gd/gif.h:
 	* src/classes/image.C:
-	* src/operators.txt:
 	* src/types/pa_vimage.C:
 		$image.line-style
 		now applies to all linear primitives
@@ -6204,7 +6089,6 @@
 	* src/main/compile.y:
 	* src/main/compile_tools.h:
 	* src/main/execute.C:
-	* src/operators.txt:
 	* src/targets/cgi/parser3.C:
 		expressions unary+
 		^hash.count[]
@@ -6214,8 +6098,6 @@
 	* src/classes/gd/gif.C:
 	* src/classes/gd/gif.h:
 	* src/classes/image.C:
-	* src/operators.txt:
-	* src/operators.txt:
 	* src/types/pa_vimage.C:
 	* src/types/pa_vimage.h:
 		image: $line-width ^line(...)[****   style]
@@ -6237,7 +6119,6 @@
 	* src/types/pa_vdom.h:
 		comments
 
-	* src/ChangeLog:
 	* src/classes/dom.C:
 	* src/targets/isapi/parser3isapi.C:
 	* src/targets/isapi/pool_storage.h:
@@ -6276,18 +6157,15 @@
 	* src/main/pa_sql_driver_manager.C:
 	* src/main/pa_xslt_stylesheet_manager.C:
 	* src/main/untaint.C:
-	* src/operators.txt:
 	* src/types/pa_vfile.C:
 		dom.xslt  stylesheet compiled&cached
 
 	* src/main/pa_sql_driver_manager.C:
 	* src/main/pa_xslt_stylesheet_manager.C:
-	* src/operators.txt:
 		z
 
 2001-09-13  parser
 	* src/classes/dom.C:
-	* src/operators.txt:
 		dom:file content-type(.method)
 
 	* src/classes/dom.C:
@@ -6311,14 +6189,9 @@
 	* src/include/pa_globals.h:
 	* src/main/pa_common.C:
 	* src/main/pa_request.C:
-	* src/operators.txt:
 		$MAIN:CLASS_PATH now
 		can be string now
 		more informative error messages
-
-	* src/operators.txt:
-	* src/operators.txt:
-		changes reflected in operators.txt
 
 2001-09-12  parser
 	* src/main/compile.y:
@@ -6327,7 +6200,6 @@
 		introduced special LS_NAME_SQUARE_PART state
 
 	* src/main/compile.tab.C:
-	* src/operators.txt:
 		fixed - subname code parts actually [] braced
 
 	* src/classes/op.C:
@@ -6344,7 +6216,6 @@
 		messages
 
 	* src/classes/dom.C:
-	* src/operators.txt:
 	* src/types/pa_vdom.h:
 		^dom:set[<some>xml</some>]
 
@@ -6369,11 +6240,9 @@
 		^dom.save[b.xml] 0
 
 	* src/classes/dom.C:
-	* src/operators.txt:
 		^dom.file[encoding] = file
 
 	* src/classes/dom.C:
-	* src/operators.txt:
 		^dom.xslt[stylesheet filename][params hash added]
 
 	* src/classes/dom.C:
@@ -6387,43 +6256,32 @@
 		^dom.xslt[stylesheet filename] 0
 
 	* src/classes/dom.C:
-	* src/operators.txt:
 		^dom.save[b.xml] 1:error handling
 
 	* src/classes/dom.C:
-	* src/operators.txt:
 		^dom:save/string/file[output options]
 		output options:
 		    $.method[xml|html|text] $.encoding[windows-1251|...]
 
 	* src/classes/dom.C:
-	* src/operators.txt:
 		^dom.string[] 0
 
 	* src/classes/dom.C:
 	* src/classes/dom.C:
-	* src/operators.txt:
-	* src/operators.txt:
 		^dom.string[encoding] 1
 		^dom.save[encoding;filename]
 
-	* src/operators.txt:
-		dom output options xml default
-
 2001-09-08  parser
-	* src/operators.txt:
 	* src/types/pa_vform.C:
 		$form:tables.name.field
 
 2001-09-07  parser
 	* src/classes/dom.C:
-	* src/operators.txt:
 	* src/types/pa_value.h:
 	* src/types/pa_vtable.h:
 		(def $table) is false when table is empty
 
 	* src/main/pa_request.C:
-	* src/operators.txt:
 	* src/types/pa_vform.C:
 	* src/types/pa_vform.h:
 		!$form:tables
@@ -6434,15 +6292,12 @@
 		file dom.C was initially added on branch xalan1_2.
 
 	* src/main/pa_exception.C:
-	* src/operators.txt:
 	* src/types/pa_vform.C:
 		getting FIRST form element [not last]
 
 	* src/classes/table.C:
-	* src/operators.txt:
 		table:empty removed, superceded by ^if(def $table)...
 
-	* src/operators.txt:
 	* src/targets/cgi/parser3.dsp:
 	* src/types/pa_vform.C:
 	* src/types/pa_vform.h:
@@ -6451,8 +6306,6 @@
 
 	* src/include/pa_hash.h:
 	* src/main/pa_hash.C:
-	* src/operators.txt:
-	* src/operators.txt:
 	* src/targets/cgi/parser3.C:
 	* src/types/pa_vfile.h:
 	* src/types/pa_vform.C:
@@ -6464,8 +6317,6 @@
 	* src/classes/dom.C:
 	* src/classes/table.C:
 	* src/main/main.dsp:
-	* src/operators.txt:
-	* src/parser3.dsw:
 	* src/types/pa_vdom.h:
 		introducing dom. dom:load[a.xml]
 
@@ -6477,7 +6328,6 @@
 	* src/classes/dom.C:
 	* src/classes/table.C:
 	* src/main/main.dsp:
-	* src/operators.txt:
 	* src/types/pa_vdom.h:
 	* src/types/pa_vform.C:
 		merged with successful start of dom
@@ -6492,7 +6342,6 @@
 	* src/classes/hash.C:
 	* src/include/pa_globals.h:
 	* src/main/pa_globals.C:
-	* src/operators.txt:
 	* src/types/pa_vhash.h:
 		now there's special hash key '_default' [instead of ^_default method]
 		$hash[
@@ -6502,14 +6351,10 @@
 		]
 		$hash.c
 
-	* src/ChangeLog:
 	* src/types/pa_vform.C:
 	* src/types/pa_vform.C:
 		a=1&a=2 would result in $form:a being a table with one column '
 		element' and two rows: 1 and 2
-
-	* src/operators.txt:
-		z
 
 	* src/classes/gd/gifio.C:
 	* src/classes/image.C:
@@ -6524,7 +6369,6 @@
 	* src/classes/void.C:
 	* src/main/pa_string.C:
 	* src/main/pa_table.C:
-	* src/parser3.dsw:
 		fixed up bad int/double conversions, and now $form:nonexistent
 		int(88) would return 88
 
@@ -6544,7 +6388,6 @@
 	* src/Makefile.in:
 	* src/classes/Makefile.in:
 	* src/classes/gd/Makefile.in:
-	* src/configure:
 	* src/main/Makefile.in:
 	* src/targets/cgi/Makefile.in:
 	* src/types/Makefile.in:
@@ -6582,8 +6425,6 @@
 	* src/targets/cgi/parser3.C:
 		zz
 
-	* src/configure:
-	* src/configure.in:
 	* src/include/pa_config_auto.h.in:
 	* src/pcre/Makefile.in:
 	* src/targets/Makefile.in:
@@ -6595,14 +6436,11 @@
 		targets/cgi/parser3, default[/usr/local/etc]
 
 	* src/Makefile.in:
-	* src/configure:
 	* src/include/pa_config_auto.h.in:
 	* src/targets/apache13/Makefile.in:
 	* src/targets/cgi/Makefile.in:
 		makes
 
-	* src/ChangeLog:
-	* src/libltdl/libltdl.dsp:
 	* src/targets/isapi/parser3isapi.C:
 		z
 
@@ -6616,22 +6454,15 @@
 		image.html now can accept void params
 
 	* src/classes/date.C:
-	* src/operators.txt:
 		date:sql-string is now without ''
 
 	* src/classes/date.C:
 		date
 
-	* src/configure.in:
-		SYSCONFDIR2
-
 	* src/targets/cgi/parser3.C:
 		getenvcheck
 
 2001-09-03  parser
-	* src/configure.in:
-	* src/operators.txt:
-	* src/parser3.dsw:
 	* src/targets/cgi/parser3.C:
 		/configure cgi SYSCONFDIR
 
@@ -6640,11 +6471,9 @@
 		letter_spacing
 
 	* src/classes/image.C:
-	* src/operators.txt:
 		image: as_int as_string used
 
 	* src/classes/image.C:
-	* src/operators.txt:
 		image: font params changed
 
 	* src/types/pa_vmethod_frame.h:
@@ -6662,7 +6491,6 @@
 		z
 
 	* src/classes/void.C:
-	* src/operators.txt:
 		void:int/double += (default)
 
 	* src/classes/string.C:
@@ -6670,7 +6498,6 @@
 		string:int/double (defaults)
 
 	* src/classes/image.C:
-	* src/operators.txt:
 		image:font added space param
 		image:font changed charwidth alg, added kerning const[for now]
 
@@ -6679,9 +6506,6 @@
 		exception redundant debug info
 
 2001-08-28  parser
-	* src/acinclude.m4:
-		acinclude
-
 	* src/classes/table.C:
 		NO_STRING_ORIGIN check
 
@@ -6691,20 +6515,15 @@
 	* src/main/pa_dictionary.C:
 	* src/main/pa_string.C:
 	* src/main/untaint.C:
-	* src/operators.txt:
 		pa_directory speeded up. moved zero 'from' check to directory constructor.
 		string:replace
 
 	* src/Makefile.in:
-	* src/configure:
 		makes
 
 	* src/Makefile.in:
-	* src/aclocal.m4:
 	* src/classes/Makefile.in:
 	* src/classes/gd/Makefile.in:
-	* src/configure:
-	* src/libltdl/Makefile.in:
 	* src/main/Makefile.in:
 	* src/pcre/Makefile.in:
 	* src/targets/Makefile.in:
@@ -6715,7 +6534,6 @@
 
 	* src/classes/file.C:
 	* src/main/pa_common.C:
-	* src/operators.txt:
 		file:move autocreate/remove dest/src dir
 
 	* src/main/compile.C:
@@ -6724,7 +6542,6 @@
 	* src/classes/image.C:
 		image: gifsize little endian
 
-	* src/configure.in:
 	* src/targets/apache13/Makefile.am:
 		COMPILE_APACHE13_MODULE
 
@@ -6737,11 +6554,17 @@
 		gcc: ../include/pa_dictionary.h:19: storage class specifiers
 		invalid in friend function declarations
 
-	* src/acinclude.m4:
 	* src/targets/apache13/Makefile.am:
 		configure to skip apache
 
-	* src/acinclude.m4:
+	* src/classes/Makefile.in:
+	* src/classes/gd/Makefile.in:
+	* src/main/Makefile.in:
+	* src/targets/apache13/Makefile.in:
+	* src/targets/cgi/Makefile.in:
+	* src/types/Makefile.in:
+		make.ins
+
 	* src/classes/op.C:
 	* src/main/compile.tab.C:
 	* src/main/pa_dir.C:
@@ -6749,16 +6572,6 @@
 	* src/targets/cgi/parser3.C:
 	* src/targets/isapi/parser3isapi.C:
 		strncpy forced with zero ending in case of limit
-
-	* src/aclocal.m4:
-	* src/classes/Makefile.in:
-	* src/classes/gd/Makefile.in:
-	* src/configure:
-	* src/main/Makefile.in:
-	* src/targets/apache13/Makefile.in:
-	* src/targets/cgi/Makefile.in:
-	* src/types/Makefile.in:
-		make.ins
 
 	* src/classes/gd/gif.h:
 	* src/classes/gd/gifio.C:
@@ -6769,29 +6582,18 @@
 
 	* src/classes/Makefile.am:
 	* src/classes/gd/Makefile.am:
-	* src/configure.in:
 	* src/main/Makefile.am:
 	* src/targets/cgi/Makefile.am:
 	* src/types/Makefile.am:
 		.am-s
 
-	* src/ChangeLog:
 	* src/doc/doxygen.cfg:
 		doxygen conf removed some garbage from under doxygeneration
 
-	* src/acinclude.m4:
-	* src/configure.in:
-		with checkes moved to configure.in -s
-
 2001-08-27  parser
 	* src/Makefile.in:
-	* src/acinclude.m4:
-	* src/aclocal.m4:
 	* src/classes/Makefile.in:
 	* src/classes/gd/Makefile.in:
-	* src/configure:
-	* src/configure.in:
-	* src/libltdl/Makefile.in:
 	* src/main/Makefile.in:
 	* src/main/pa_common.C:
 	* src/main/pa_exception.C:
@@ -6818,12 +6620,6 @@
 	* src/main/pa_common.C:
 		removed debug info from pa_common
 
-	* src/parser3.dsw:
-		odbc release compiled
-
-	* src/operators.txt:
-		$STATIC added
-
 2001-08-24  parser
 	* src/targets/cgi/parser3.C:
 		not cgi extra \n 2
@@ -6844,23 +6640,17 @@
 	* src/targets/cgi/parser3.C:
 		not cgi extra \n
 
-	* src/ChangeLog:
 	* src/main/pa_sql_driver_manager.C:
 		z
 
 	* src/include/pa_sql_connection.h:
 	* src/main/pa_sql_driver_manager.C:
-	* src/parser3.dsw:
 		sql* removed services from disconnect - cross-request
 		ideological probs.
 
 2001-08-23  parser
 	* src/main/pa_sql_driver_manager.C:
-	* src/parser3.dsw:
 		oracle: dlink
-
-	* src/parser3.dsw:
-		oracle 0
 
 	* src/classes/file.C:
 		minor bug in file:save fixed
@@ -6868,28 +6658,23 @@
 2001-08-22  parser
 	* src/classes/file.C:
 	* src/main/compile.tab.C:
-	* src/operators.txt:
 	* src/types/pa_vfile.C:
 	* src/types/pa_vfile.h:
 		file:load|save[text|binary;
 
 	* src/main/compile.tab.C:
 	* src/main/compile.y:
-	* src/operators.txt:
-	* src/parser3.dsw:
 		^method[]^[^] literals []
 
 2001-08-21  parser
 	* src/classes/file.C:
 	* src/classes/table.C:
-	* src/operators.txt:
 		^file:list
 
 2001-08-20  parser
 	* src/main/compile.tab.C:
 	* src/main/compile.y:
 	* src/main/pa_sql_driver_manager.C:
-	* src/operators.txt:
 	* src/pcre/pcre_parser_ctype.c:
 	* src/types/pa_value.h:
 	* src/types/pa_vbool.h:
@@ -6899,18 +6684,15 @@
 		123 literal!! fixed
 
 2001-08-10  parser
-	* src/ChangeLog:
 	* src/classes/table.C:
 	* src/include/pa_table.h:
 	* src/main/pa_table.C:
-	* src/operators.txt:
 		table.sort now creates new sorted table
 
 	* src/main/compile.tab.C:
 	* src/main/compile.tab.C:
 	* src/main/compile.y:
 	* src/main/compile.y:
-	* src/operators.txt:
 		(codes) name part syntax added
 
 	* src/main/compile.tab.C:
@@ -6930,7 +6712,6 @@
 
 	* src/classes/table.C:
 	* src/classes/table.C:
-	* src/operators.txt:
 		table:sort now default desc
 
 	* src/types/pa_value.h:
@@ -6958,11 +6739,9 @@
 
 	* src/classes/void.C:
 	* src/classes/void.C:
-	* src/operators.txt:
 		void: int double  copy/paste from int: bug fixed
 
 	* src/classes/hash.C:
-	* src/operators.txt:
 		hash:_default now [was hash:default]
 
 	* src/types/pa_vcookie.C:
@@ -6970,9 +6749,6 @@
 
 	* src/classes/op.C:
 		case without switch check added
-
-	* src/operators.txt:
-		0x added to operators.txt
 
 	* src/main/Makefile.in:
 		make.in
@@ -6988,20 +6764,17 @@
 	* src/classes/table.C:
 	* src/include/pa_globals.h:
 	* src/main/pa_globals.C:
-	* src/operators.txt:
 		!^int/double:sql{query}[[$.limit(2) $.offset(4) $.default(0)]]
 		string, table
 
 2001-08-06  parser
 	* src/classes/hash.C:
-	* src/operators.txt:
 		hash:keys renamed to hash:_keys :(
 
 	* src/main/pa_exec.C:
 		exec win32 real filename
 
 	* src/classes/file.C:
-	* src/operators.txt:
 		exec stderr out
 
 	* src/classes/mail.C:
@@ -7019,13 +6792,10 @@
 	* src/main/pa_hash.C:
 	* src/main/pa_request.C:
 	* src/main/pa_string.C:
-	* src/operators.txt:
 		class_path
 
 2001-08-03  parser
-	* src/ChangeLog:
 	* src/classes/table.C:
-	* src/operators.txt:
 	* src/types/pa_vtable.h:
 		vtable.locks killed
 
@@ -7071,20 +6841,12 @@
 	* src/types/Makefile.am:
 		pa_vtable.C added to .am
 
-	* src/operators.txt:
-		pgsql: oid read. write todo
-
 	* src/main/compile.tab.C:
 		added, so that could be compiled even on non-bison-enabled platforms
-
-2001-07-30  parser
-	* src/parser3.dsw:
-		pgsql 0
 
 2001-07-28  parser
 	* src/main/compile.y:
 	* src/main/untaint.C:
-	* src/operators.txt:
 		bug fix @ untaint when \r skipped \n
 
 	* src/classes/table.C:
@@ -7138,12 +6900,10 @@
 2001-07-25  parser
 	* src/classes/table.C:
 	* src/main/main.dsp:
-	* src/operators.txt:
 	* src/types/pa_vtable.C:
 	* src/types/pa_vtable.h:
 		^table.record[] now $table.fields
 
-	* src/parser3.dsw:
 	* src/types/pa_vtable.C:
 		table: get_element order changeed. now:
 		1. fields
@@ -7171,7 +6931,6 @@
 	* src/main/compile_tools.C:
 	* src/main/compile_tools.h:
 	* src/main/execute.C:
-	* src/operators.txt:
 		with killed, code storage introduced with former 'with' syntax
 
 	* src/main/compile.y:
@@ -7183,9 +6942,6 @@
 	* src/main/compile.y:
 	* src/main/compile_tools.h:
 		allowed empty lines before first method decl
-
-	* src/operators.txt:
-		z
 
 	* src/classes/table.C:
 		allowed nontable result in table:sql, results in empty table
@@ -7200,7 +6956,6 @@
 	* src/classes/file.C:
 	* src/include/pa_common.h:
 	* src/main/pa_common.C:
-	* src/parser3.dsw:
 		file:move
 
 	* src/main/compile.y:
@@ -7211,12 +6966,10 @@
 
 	* src/main/compile.C:
 	* src/main/compile.y:
-	* src/operators.txt:
 		@end handling method2
 
 2001-07-23  parser
 	* src/main/pa_sql_driver_manager.C:
-	* src/parser3.dsw:
 	* src/sql/pa_sql_driver.h:
 		sql odbc driver
 
@@ -7226,12 +6979,10 @@
 	* src/classes/table.C:
 	* src/classes/void.C:
 	* src/include/pa_sql_connection.h:
-	* src/parser3.dsw:
 	* src/sql/pa_sql_driver.h:
 		changed sql driver query interface
 
 2001-07-20  parser
-	* src/operators.txt:
 	* src/types/pa_vrequest.C:
 		X!$browser:type
 
@@ -7240,8 +6991,6 @@
 	* src/include/pa_string.h:
 	* src/main/execute.C:
 	* src/main/pa_string.C:
-	* src/operators.txt:
-	* src/operators.txt:
 	* src/types/pa_valiased.C:
 	* src/types/pa_valiased.h:
 	* src/types/pa_value.h:
@@ -7278,11 +7027,9 @@
 
 	* src/main/pa_request.C:
 	* src/main/untaint.C:
-	* src/operators.txt:
 		ORIGINS langs name abbrevations
 
 	* src/classes/file.C:
-	* src/operators.txt:
 		$file:exit-code renamed to 'status'
 
 	* src/classes/date.C:
@@ -7317,14 +7064,11 @@
 
 	* src/classes/file.C:
 	* src/main/pa_exec.C:
-	* src/operators.txt:
 		file:exec
 
 2001-07-17  parser
 	* src/Makefile.in:
 	* src/classes/Makefile.in:
-	* src/configure:
-	* src/configure.in:
 		== wrong
 
 2001-07-13  parser
@@ -7341,25 +7085,21 @@
 	* src/main/execute.C:
 	* src/main/execute.C:
 	* src/main/pa_request.C:
-	* src/operators.txt:
 		auto.p[@auto], /news/auto.p[no @auto], so that initializing
 		second would not call first @auto
 
 2001-07-12  parser
-	* src/operators.txt:
 	* src/types/pa_value.h:
 		pa_value.putelement modification of system classes prevented
 
 2001-07-11  parser
 	* src/classes/string.C:
 	* src/doc/sources2html.cmd:
-	* src/operators.txt:
 		lr split now yelds table $piece
 
 	* src/classes/file.C:
 	* src/include/pa_common.h:
 	* src/main/pa_common.C:
-	* src/operators.txt:
 	* src/types/pa_vstateless_class.h:
 		$file created by file:state += .atime .mtime .ctime
 		+found&fixed bug with exceptions on get_junction-created objects [they were on wrong pool]
@@ -7372,7 +7112,6 @@
 	* src/classes/string.C:
 	* src/classes/table.C:
 	* src/main/compile.y:
-	* src/operators.txt:
 		date format 0
 
 2001-07-07  parser
@@ -7389,7 +7128,6 @@
 	* src/classes/void.C:
 	* src/include/pa_request.h:
 	* src/main/main.dsp:
-	* src/operators.txt:
 	* src/types/pa_value.h:
 	* src/types/pa_vdate.h:
 	* src/types/pa_wcontext.C:
@@ -7400,7 +7138,6 @@
 	* src/include/pa_common.h:
 	* src/include/pa_string.h:
 	* src/main/pa_common.C:
-	* src/operators.txt:
 	* src/types/pa_vdate.h:
 		date roll
 		table calendar
@@ -7411,8 +7148,6 @@
 	* src/main/execute.C:
 	* src/main/main.dsp:
 	* src/main/pa_request.C:
-	* src/operators.txt:
-	* src/operators.txt:
 	* src/types/pa_vmath.h:
 		math 0
 
@@ -7422,35 +7157,28 @@
 	* src/classes/op.C:
 	* src/classes/random.C:
 	* src/main/main.dsp:
-	* src/operators.txt:
 		class random renamed to math, operators became methods
 
 	* src/classes/op.C:
-	* src/operators.txt:
 		 pow sqrt
 
 	* src/classes/op.C:
 	* src/main/execute.C:
-	* src/operators.txt:
 		 sin asin cos acos tan atan
 
 2001-07-02  parser
 	* src/classes/hash.C:
-	* src/operators.txt:
 		^hash.keys[]
 
 	* src/classes/table.C:
 	* src/main/pa_table.C:
-	* src/operators.txt:
 		^table:columns[]
 
 	* src/classes/table.C:
-	* src/operators.txt:
 		^table.columns column renamed from 'name' to 'column'
 
 	* src/main/compile.y:
 	* src/main/compile_tools.h:
-	* src/operators.txt:
 		in expressions now allowed 'strings'
 
 2001-06-29  parser
@@ -7506,7 +7234,7 @@
 	* src/targets/cgi/parser3.C:
 	* src/targets/isapi/parser3isapi.C:
 		*/
-		static const char *RCSId="$Id: ChangeLog,v 1.10 2002/06/18 15:18:37 paf Exp $";
+		static const char *RCSId="$Id: ChangeLog,v 1.11 2002/06/28 09:58:59 paf Exp $";
 
 	* src/main/compile.y:
 	* src/main/compile_tools.h:
@@ -7549,7 +7277,7 @@
 	* src/main/untaint.C:
 	* src/targets/cgi/parser3.C:
 	* src/targets/isapi/parser3isapi.C:
-		static char *RCSId="$Id: ChangeLog,v 1.10 2002/06/18 15:18:37 paf Exp $";
+		static char *RCSId="$Id: ChangeLog,v 1.11 2002/06/28 09:58:59 paf Exp $";
 
 2001-06-27  parser
 	* src/classes/hash.C:
@@ -7561,7 +7289,6 @@
 	* src/main/execute.C:
 	* src/main/main.dsp:
 	* src/main/pa_request.C:
-	* src/operators.txt:
 	* src/targets/cgi/pa_pool.C:
 	* src/types/pa_value.h:
 	* src/types/pa_vcode_frame.h:
@@ -7572,14 +7299,9 @@
 		nothing renamed to void
 
 	* src/classes/op.C:
-	* src/operators.txt:
 		^switch ^case
 
-	* src/operators.txt:
-		z
-
 	* src/main/compile.y:
-	* src/operators.txt:
 		lexer: $zzzz^zzzz were name part
 
 2001-05-28  parser
@@ -7597,18 +7319,12 @@
 		removed >a
 
 	* src/doc/sources2html.cmd:
-	* src/operators.txt:
 		z
-
-	* src/ChangeLog:
-		changelogs
 
 2001-05-24  parser
 	* src/Makefile.in:
 	* src/classes/Makefile.in:
 	* src/classes/gd/Makefile.in:
-	* src/configure:
-	* src/configure.in:
 	* src/main/Makefile.in:
 	* src/pcre/Makefile:
 	* src/pcre/Makefile.in:
@@ -7626,32 +7342,13 @@
 	* src/pcre/Makefile:
 		removed pcre/make
 
-	* src/configure.in:
-		no rtty test begin
-
-	* src/configure.in:
-		configure.in better lang tests
-
-	* src/configure.in:
-		no rtty -10
-
-	* src/configure.in:
-		no rtty -9
-
-	* src/ChangeLog:
-		found changelog autogenerate ability
-
 	* src/targets/cgi/parser3.dsp:
 		project file
 
 	* src/classes/op.C:
 	* src/main/pa_request.C:
-	* src/operators.txt:
 	* src/targets/cgi/parser3.C:
 		^log ^exp
-
-	* src/ChangeLog:
-		changelogs
 
 2001-05-23  parser
 	* src/classes/op.C:
@@ -7660,9 +7357,6 @@
 
 	* src/main/pa_string.C:
 		string cmp bug
-
-	* src/operators.txt:
-		.txt
 
 	* src/classes/mail.C:
 	* src/classes/op.C:
@@ -7712,7 +7406,6 @@
 	* src/main/execute.C:
 	* src/main/main.dsp:
 	* src/main/pa_request.C:
-	* src/operators.txt:
 	* src/targets/cgi/pa_pool.C:
 	* src/targets/cgi/pa_pool.C:
 	* src/types/pa_value.h:
@@ -7738,11 +7431,7 @@
 		make system timestamps
 
 	* src/classes/nothing.C:
-	* src/operators.txt:
 		resultless ^sql  moved to nothing:
-
-	* src/configure:
-		forced commit
 
 	* src/classes/Makefile.am:
 		.AM
@@ -7753,7 +7442,6 @@
 	* src/pcre/pcre.dsp:
 		.am
 
-	* src/aclocal.m4:
 	* src/pcre/Makefile:
 	* src/pcre/Makefile.in:
 		long-forgotten buddy
@@ -7767,7 +7455,6 @@
 
 	* src/classes/op.C:
 	* src/main/execute.C:
-	* src/operators.txt:
 	* src/pcre/Makefile:
 	* src/pcre/Makefile.am:
 	* src/pcre/Makefile.in:
@@ -7793,7 +7480,6 @@
 	* src/include/pa_string.h:
 	* src/main/pa_string.C:
 	* src/main/pa_string.C:
-	* src/operators.txt:
 	* src/types/pa_vstring.C:
 	* src/types/pa_vstring.h:
 		started int:sql
@@ -7825,7 +7511,6 @@
 	* src/main/compile.C:
 	* src/main/compile.y:
 	* src/main/execute.C:
-	* src/operators.txt:
 		hash:sql moved to main trunc. operators.txt updated
 
 2001-05-19  parser
@@ -7868,9 +7553,7 @@
 	* src/Makefile.in:
 	* src/classes/Makefile.in:
 	* src/classes/gd/Makefile.in:
-	* src/configure:
 	* src/include/pa_config_auto.h.in:
-	* src/libltdl/Makefile.in:
 	* src/main/Makefile.in:
 	* src/pcre/Makefile:
 	* src/pcre/Makefile.in:
@@ -7889,7 +7572,6 @@
 	* src/main/execute.C:
 		removed /*SYNCHRONIZED*/  from hash.h
 
-	* src/configure.in:
 	* src/include/pa_array.h:
 	* src/include/pa_common.h:
 	* src/include/pa_config_fixed.h:
@@ -7966,7 +7648,6 @@
 		SYNCHRONIZED moved closer to caches put/gets
 
 	* src/classes/string.C:
-	* src/configure.in:
 	* src/include/pa_config_fixed.h:
 	* src/include/pa_config_includes.h:
 	* src/main/compile.y:
@@ -8006,7 +7687,6 @@
 	* src/include/pa_sql_connection.h:
 	* src/include/pa_sql_driver_manager.h:
 	* src/main/pa_sql_driver_manager.C:
-	* src/parser3.dsw:
 	* src/sql/pa_sql_driver.h:
 		fixed problem at last: 2connections own 1driver and
 		set_services fight for driver::fservices. before fix
@@ -8089,7 +7769,6 @@
 	* src/include/pa_string.h:
 	* src/main/pa_string.C:
 	* src/main/untaint.C:
-	* src/operators.txt:
 		^string.upper|lower[]
 
 2001-05-11  paf
@@ -8097,7 +7776,6 @@
 	* src/classes/gawk.exe:
 	* src/classes/ls.exe:
 	* src/main/bison.exe:
-	* src/operators.txt:
 	* src/targets/isapi/KILL.EXE:
 	* src/targets/isapi/PSTAT.EXE:
 	* src/targets/isapi/istart.cmd:
@@ -8141,12 +7819,9 @@
 	* src/classes/Makefile.in:
 	* src/classes/gd/Makefile.in:
 	* src/classes/gd/gif.h:
-	* src/configure:
 	* src/include/pa_config_auto.h.in:
 	* src/include/pa_config_fixed.h:
 	* src/include/pa_config_includes.h:
-	* src/libltdl/Makefile.in:
-	* src/libltdl/config.h:
 	* src/main/Makefile.in:
 	* src/pcre/Makefile.in:
 	* src/targets/Makefile.in:
@@ -8166,7 +7841,6 @@
 
 	* src/include/pa_common.h:
 	* src/include/pa_config_includes.h:
-	* src/libltdl/config.h:
 		inline undefed for C++, that's all
 
 	* src/classes/gd/gif.h:
@@ -8180,13 +7854,11 @@
 
 2001-05-08  paf
 	* src/classes/table.C:
-	* src/operators.txt:
 		table:hash always hash of hash now
 
 	* src/classes/op.C:
 	* src/classes/table.C:
 	* src/main/main.dsp:
-	* src/operators.txt:
 	* src/types/pa_vtable.h:
 		removed table:find. table:locate and op:eval now return bool
 
@@ -8194,7 +7866,6 @@
 		table:empty return bool now
 
 	* src/classes/table.C:
-	* src/operators.txt:
 	* src/types/pa_value.h:
 	* src/types/pa_vhash.h:
 	* src/types/pa_vmethod_frame.h:
@@ -8212,7 +7883,6 @@
 	* src/include/pa_array.h:
 	* src/include/pa_table.h:
 	* src/main/pa_table.C:
-	* src/operators.txt:
 	* src/types/pa_value.h:
 	* src/types/pa_vtable.h:
 		table:hash
@@ -8240,11 +7910,7 @@
 	* src/types/pa_vstateless_class.h:
 		hash:default
 
-	* src/operators.txt:
-		rethought hash & undef. before change
-
 	* src/classes/table.C:
-	* src/operators.txt:
 		table:record have name
 
 2001-05-07  paf
@@ -8458,7 +8124,6 @@
 	* src/main/main.dsp:
 	* src/main/pa_globals.C:
 	* src/main/pa_request.C:
-	* src/operators.txt:
 	* src/pcre/pcre_parser_ctype.c:
 	* src/targets/cgi/parser3.C:
 	* src/targets/isapi/parser3isapi.C:
@@ -8682,7 +8347,6 @@
 	* src/main/main.dsp:
 	* src/main/pa_globals.C:
 	* src/main/pa_request.C:
-	* src/operators.txt:
 	* src/pcre/pcre_parser_ctype.c:
 	* src/targets/cgi/parser3.C:
 	* src/types/pa_value.h:
@@ -8794,7 +8458,6 @@
 	* src/targets/apache13/Makefile.in:
 		apache makefile.in s
 
-	* src/configure.in:
 	* src/targets/Makefile.am:
 	* src/targets/apache13/Makefile.am:
 		apache module lib .am
@@ -8862,7 +8525,6 @@
 
 	* src/Makefile.in:
 	* src/classes/Makefile.in:
-	* src/libltdl/Makefile.in:
 	* src/main/Makefile.in:
 	* src/pcre/Makefile.in:
 	* src/targets/cgi/Makefile.in:
@@ -8879,20 +8541,13 @@
 	* src/targets/Makefile.in:
 		makefiles&co
 
-	* src/Makefile:
 	* src/classes/Makefile:
-	* src/libltdl/Makefile:
 	* src/main/Makefile:
 	* src/targets/cgi/Makefile:
 	* src/types/Makefile:
 		makefiles removed
 
-	* src/Makefile:
 	* src/classes/Makefile:
-	* src/configure:
-	* src/libltdl/Makefile:
-	* src/libltdl/configure:
-	* src/ltconfig:
 	* src/main/Makefile:
 	* src/main/pa_string.C:
 	* src/targets/Makefile:
@@ -8906,7 +8561,6 @@
 		/// @test $a.menu{ $a[123] }
 		and $a.menu{^table:set[]...}
 
-	* src/acinclude.m4:
 	* src/targets/cgi/Makefile.am:
 		liblink
 
@@ -8915,14 +8569,10 @@
 	* src/pcre/pcre_parser_ctype.c:
 		pcre .am
 
-	* src/acinclude.m4:
-	* src/acinclude.m4:
-	* src/acinclude.m4:
 	* src/targets/cgi/Makefile.am:
 	* src/targets/cgi/Makefile.am:
 		win32 conditional
 
-	* src/configure.in:
 	* src/include/pa_config_fixed.h:
 	* src/include/pa_config_includes.h:
 	* src/main/pa_common.C:
@@ -8945,8 +8595,6 @@
 	* src/main/pa_globals.C:
 	* src/main/pa_request.C:
 	* src/main/pa_string.C:
-	* src/operators.txt:
-	* src/parser3.dsw:
 	* src/pcre/Makefile.am:
 	* src/pcre/dftables.c:
 	* src/pcre/pcre.dsp:
@@ -8983,10 +8631,8 @@
 
 2001-04-18  paf
 	* src/classes/smtp/smtp.dsp:
-	* src/libltdl/COPYING.TXT:
 	* src/main/Makefile.am:
 	* src/main/main.dsp:
-	* src/operators.txt:
 	* src/targets/cgi/Makefile.am:
 		linux @alx
 
@@ -8999,15 +8645,10 @@
 	* src/doc/doxygen.cfg:
 	* src/include/pa_sql_connection.h:
 	* src/main/pa_sql_driver_manager.C:
-	* src/pcre/Makefile0:
 	* src/sql/pa_sql_driver.h:
 		SQL_Driver_services renamed. doxygen statics enabled
 
-	* src/ltmain.sh:
-		compile4 @jav @win
-
 	* src/Makefile.am:
-	* src/acinclude.m4:
 	* src/classes/Makefile.am:
 	* src/classes/_double.h:
 	* src/classes/_exec.h:
@@ -9030,27 +8671,18 @@
 	* src/classes/mail.C:
 	* src/classes/op.C:
 	* src/classes/random.C:
-	* src/config.guess:
-	* src/config.sub:
-	* src/configure.in:
 	* src/include/pa_config_fixed.h:
 	* src/include/pa_config_includes.h:
 	* src/include/pa_hash.h:
 	* src/include/pa_sql_driver_manager.h:
 	* src/include/pa_version.h:
-	* src/libltdl/Makefile.am:
-	* src/libltdl/config_auto.h.in:
-	* src/libltdl/configure.in:
-	* src/ltmain.sh:
 	* src/main/Makefile.am:
 	* src/main/compile.y:
 	* src/main/pa_common.C:
 	* src/main/pa_exec.C:
 	* src/main/pa_socks.C:
 	* src/main/pa_sql_driver_manager.C:
-	* src/parser3.dsw:
 	* src/pcre/Makefile.am:
-	* src/pcre/Makefile0:
 	* src/sql/Makefile.am:
 	* src/sql/pa_sql_driver.h:
 	* src/targets/cgi/Makefile.am:
@@ -9063,35 +8695,22 @@
 
 	* src/include/pa_sql_driver_manager.h:
 	* src/main/pa_sql_driver_manager.C:
-	* src/parser3.dsw:
 	* src/sql/pa_sql_driver.h:
 	* src/types/pa_vimage.h:
 		sql driver interface now has initialize(client .so)
 
 2001-04-16  paf
 	* src/Makefile.am:
-	* src/config.guess:
-	* src/config.sub:
-	* src/configure.in:
-	* src/libltdl/configure.in:
-	* src/ltmain.sh:
 		compile2 cygwin
 
 	* src/pcre/Makefile.am:
 	* src/targets/cgi/Makefile.am:
 		compile0 jav
 
-	* src/pcre/Makefile0:
-		file Makefile0 was initially added on branch gcc0415.
-
 	* src/pcre/Makefile.am:
 		file Makefile.am was initially added on branch gcc0415.
 
-	* src/ltmain.sh:
-		file ltmain.sh was initially added on branch gcc0415.
-
 	* src/Makefile.am:
-	* src/acinclude.m4:
 	* src/classes/Makefile.am:
 	* src/classes/_double.h:
 	* src/classes/_exec.h:
@@ -9113,21 +8732,16 @@
 	* src/classes/mail.C:
 	* src/classes/op.C:
 	* src/classes/random.C:
-	* src/config.guess:
-	* src/config.sub:
-	* src/configure.in:
 	* src/include/pa_config_fixed.h:
 	* src/include/pa_config_includes.h:
 	* src/include/pa_hash.h:
 	* src/include/pa_version.h:
-	* src/ltmain.sh:
 	* src/main/Makefile.am:
 	* src/main/compile.y:
 	* src/main/pa_common.C:
 	* src/main/pa_exec.C:
 	* src/pcre/Makefile:
 	* src/pcre/Makefile.am:
-	* src/pcre/Makefile0:
 	* src/sql/Makefile.am:
 	* src/targets/cgi/Makefile.am:
 	* src/targets/cgi/parser3.C:
@@ -9136,11 +8750,7 @@
 	* src/types/pa_vform.C:
 		compile-1
 
-	* src/acinclude.m4:
-	* src/configure.in:
 	* src/include/pa_config_includes.h:
-	* src/libltdl/Makefile.am:
-	* src/libltdl/config_auto.h.in:
 	* src/main/pa_exec.C:
 	* src/main/pa_socks.C:
 	* src/targets/cgi/Makefile.am:
@@ -9158,9 +8768,6 @@
 
 	* src/classes/table.C:
 		table:empty +=process
-
-	* src/operators.txt:
-		about to make Params
 
 	* src/classes/op.C:
 		z
@@ -9186,25 +8793,21 @@
 	* src/include/pa_globals.h:
 	* src/main/main.dsp:
 	* src/main/pa_globals.C:
-	* src/operators.txt:
 	* src/types/pa_vunknown.h:
 		^unknown:int[]=0 double[]=0
 
 	* src/classes/gd/gif.C:
 	* src/classes/image.C:
-	* src/operators.txt:
 		image:line/fill/rectangle/bar/replace/polygon/polybar
 
 	* src/classes/image.C:
 	* src/main/pa_hash.C:
-	* src/operators.txt:
 		hash bug fixed
 
 	* src/classes/gd/gif.h:
 	* src/classes/image.C:
 	* src/classes/op.C:
 	* src/main/execute.C:
-	* src/operators.txt:
 	* src/types/pa_value.h:
 	* src/types/pa_vmethod_frame.h:
 	* src/types/pa_wcontext.h:
@@ -9212,7 +8815,6 @@
 		cleared "entered_object" state
 
 	* src/classes/image.C:
-	* src/operators.txt:
 	* src/types/pa_vimage.h:
 		image:font :text
 
@@ -9235,7 +8837,6 @@
 	* src/main/execute.C:
 	* src/main/main.dsp:
 	* src/main/pa_request.C:
-	* src/parser3.dsw:
 	* src/types/pa_vcframe.h:
 	* src/types/pa_vcode_frame.h:
 	* src/types/pa_vimage.C:
@@ -9249,22 +8850,18 @@
 	* src/classes/gd/gif.h:
 	* src/classes/gd/gifio.C:
 	* src/classes/image.C:
-	* src/parser3.dsw:
 	* src/types/pa_vimage.C:
 	* src/types/pa_vimage.h:
 		gd started porting to Pooled descendant
 
 	* src/classes/image.C:
 	* src/main/pa_request.C:
-	* src/operators.txt:
 	* src/types/pa_vform.C:
 		fixed post [broke when moved post read to core]
 
 	* src/classes/gd/gd.dsp:
 	* src/classes/smtp/smtp.dsp:
 	* src/main/main.dsp:
-	* src/operators.txt:
-	* src/parser3.dsw:
 		gd+smtp made separate libs
 
 	* src/classes/gd/gifio.C:
@@ -9287,8 +8884,6 @@
 	* src/include/pa_globals.h:
 	* src/main/main.dsp:
 	* src/main/pa_globals.C:
-	* src/operators.txt:
-	* src/parser3.dsw:
 	* src/types/pa_vimage.C:
 	* src/types/pa_vimage.h:
 		gd dead end. switching to python imaging lib
@@ -9303,11 +8898,7 @@
 	* src/classes/gd/gif.h:
 	* src/classes/gd/gifio.C:
 	* src/classes/image.C:
-	* src/operators.txt:
 		image:create image:load
-
-	* src/parser3.dsw:
-		libtdl+pcre liked separately from main libs
 
 2001-04-10  paf
 	* src/classes/_double.h:
@@ -9331,7 +8922,6 @@
 	* src/main/main.dsp:
 	* src/main/pa_common.C:
 	* src/main/pa_globals.C:
-	* src/operators.txt:
 	* src/targets/isapi/parser3isapi.C:
 	* src/types/pa_value.h:
 	* src/types/pa_vfile.C:
@@ -9348,7 +8938,6 @@
 		image forgotten!
 
 	* src/classes/image.C:
-	* src/operators.txt:
 	* src/types/pa_vimage.C:
 		jpg measure bugs fixed
 
@@ -9378,13 +8967,11 @@
 		sendmail unix skipping defaults
 
 	* src/classes/image.C:
-	* src/operators.txt:
 		z
 
 	* src/classes/mail.C:
 	* src/include/pa_common.h:
 	* src/main/pa_common.C:
-	* src/operators.txt:
 		sendmail unix added defaults
 
 	* src/classes/mail.C:
@@ -9400,10 +8987,8 @@
 		exec -2
 
 	* src/classes/file.C:
-	* src/configure.in:
 	* src/include/pa_exec.h:
 	* src/include/pa_sapi.h:
-	* src/libltdl/libltdl.dsp:
 	* src/main/main.dsp:
 	* src/main/pa_exec.C:
 	* src/targets/cgi/parser3.C:
@@ -9418,7 +9003,6 @@
 	* src/include/pa_common.h:
 	* src/main/pa_common.C:
 	* src/main/untaint.C:
-	* src/operators.txt:
 	* src/targets/pa_exec.C:
 		exec3. decided exec:cgi to move to file:cgi
 
@@ -9481,7 +9065,6 @@
 	* src/main/main.dsp:
 	* src/main/pa_dir.C:
 	* src/main/pa_globals.C:
-	* src/operators.txt:
 	* src/targets/cgi/parser3.C:
 	* src/targets/cgi/parser3.dsp:
 	* src/targets/pa_exec.C:
@@ -9499,11 +9082,7 @@
 	* src/include/pa_request.h:
 	* src/include/pa_string.h:
 	* src/main/pa_request.C:
-	* src/operators.txt:
 		uuencode. string<<
-
-	* src/operators.txt:
-		z
 
 2001-04-07  paf
 	* src/classes/_mail.h:
@@ -9531,7 +9110,6 @@
 		+=
 
 	* src/classes/mail.C:
-	* src/operators.txt:
 		^attach dead end
 
 	* src/classes/mail.C:
@@ -9572,7 +9150,6 @@
 	* src/main/execute.C:
 	* src/main/main.dsp:
 	* src/main/pa_dir.C:
-	* src/operators.txt:
 		table:dir 0 [without regexp]
 
 	* src/main/compile.C:
@@ -9585,7 +9162,6 @@
 	* src/include/pa_globals.h:
 	* src/main/pa_globals.C:
 	* src/main/pa_string.C:
-	* src/operators.txt:
 		table:dir 1
 
 	* src/classes/_op.h:
@@ -9646,7 +9222,6 @@
 	* src/main/pa_sql_driver_manager.C:
 	* src/main/pa_string.C:
 	* src/main/untaint.C:
-	* src/operators.txt:
 	* src/sql/pa_sql_driver.h:
 	* src/types/pa_vmframe.h:
 	* src/types/pa_wcontext.C:
@@ -9658,7 +9233,6 @@
 	* src/include/pa_types.h:
 	* src/main/pa_sql_driver_manager.C:
 	* src/main/untaint.C:
-	* src/operators.txt:
 	* src/sql/pa_sql_driver.h:
 	* src/targets/cgi/parser3.dsp:
 		mysql 0
@@ -9682,7 +9256,6 @@
 	* src/main/pa_request.C:
 		junction to code&expression in errors
 
-	* src/configure.in:
 	* src/include/pa_config_fixed.h:
 	* src/include/pa_config_includes.h:
 	* src/include/pa_hash.h:
@@ -9702,7 +9275,6 @@
 	* src/include/pa_pool.h:
 	* src/include/pa_request.h:
 	* src/main/pa_request.C:
-	* src/operators.txt:
 	* src/types/pa_vclass.h:
 		sql frame -10
 
@@ -9724,8 +9296,6 @@
 	* src/main/pa_string.C:
 	* src/main/pa_table.C:
 	* src/main/untaint.C:
-	* src/operators.txt:
-	* src/parser3.dsw:
 		connect&sql -1000 just compiled
 
 	* src/sql/Makefile.am:
@@ -9736,7 +9306,6 @@
 	* src/include/pa_sql_driver_manager.h:
 	* src/main/main.dsp:
 	* src/main/pa_sql_driver_manager.C:
-	* src/parser3.dsw:
 		more manager&connection&driver
 
 	* src/include/pa_sql_driver.h:
@@ -9747,17 +9316,6 @@
 
 	* src/include/pa_sql_driver.h:
 	* src/include/pa_sql_driver_manager.h:
-	* src/libltdl/COPYING.TXT:
-	* src/libltdl/Makefile.am:
-	* src/libltdl/README:
-	* src/libltdl/acinclude.m4:
-	* src/libltdl/config.h:
-	* src/libltdl/config_auto.h.in:
-	* src/libltdl/config_fixed.h:
-	* src/libltdl/configure.in:
-	* src/libltdl/libltdl.dsp:
-	* src/libltdl/ltdl.c:
-	* src/libltdl/ltdl.h:
 	* src/main/pa_sql_driver_manager.C:
 		connect&sql -1000 just compiled [forgot to add libltdl, added]
 
@@ -9775,7 +9333,6 @@
 		string:match replace 0
 
 	* src/classes/string.C:
-	* src/operators.txt:
 	* src/types/pa_vform.C:
 		string:match replace assigned lang
 
@@ -9784,7 +9341,6 @@
 	* src/main/pa_string.C:
 		string:match replace strange matches
 
-	* src/parser3.dsw:
 	* src/pcre/LICENCE:
 	* src/pcre/Makefile:
 	* src/pcre/README:
@@ -9822,7 +9378,6 @@
 	* src/main/main.dsp:
 	* src/main/pa_globals.C:
 	* src/main/pa_string.C:
-	* src/parser3.dsw:
 	* src/pcre/pcre.dsp:
 	* src/pcre/pcre_dftables.dsp:
 		string:match [search] -1 just compiled
@@ -9838,7 +9393,6 @@
 
 	* src/main/pa_common.C:
 	* src/main/untaint.C:
-	* src/operators.txt:
 	* src/targets/cgi/parser3.C:
 	* src/targets/isapi/parser3isapi.C:
 	* src/targets/isapi/pool_storage.h:
@@ -9848,7 +9402,6 @@
 	* src/include/pa_globals.h:
 	* src/main/pa_globals.C:
 	* src/main/pa_request.C:
-	* src/operators.txt:
 	* src/targets/cgi/parser3.C:
 	* src/targets/isapi/parser3isapi.C:
 	* src/types/pa_value.h:
@@ -9872,7 +9425,6 @@
 	* src/main/execute.C:
 	* src/main/pa_string.C:
 	* src/main/untaint.C:
-	* src/operators.txt:
 	* src/targets/cgi/parser3.C:
 	* src/types/pa_vcookie.C:
 		string::pos & cmp & piece bugs fixed.
@@ -9886,7 +9438,6 @@
 	* src/main/compile_tools.C:
 	* src/main/pa_common.C:
 	* src/main/pa_request.C:
-	* src/operators.txt:
 	* src/types/pa_vform.C:
 	* src/types/pa_vstring.C:
 		z
@@ -9897,7 +9448,6 @@
 	* src/main/main.dsp:
 	* src/main/pa_common.C:
 	* src/main/pa_request.C:
-	* src/operators.txt:
 	* src/targets/cgi/parser3.C:
 	* src/types/pa_value.h:
 	* src/types/pa_vfile.C:
@@ -9908,12 +9458,10 @@
 	* src/classes/string.C:
 	* src/include/pa_string.h:
 	* src/main/pa_string.C:
-	* src/operators.txt:
 		string:match replace prepared
 
 	* src/classes/string.C:
 	* src/main/compile.y:
-	* src/operators.txt:
 		grammar: fixed to allow {}[]< empty []
 
 	* src/classes/double.C:
@@ -9926,7 +9474,6 @@
 	* src/classes/table.C:
 	* src/include/pa_string.h:
 	* src/main/pa_string.C:
-	* src/operators.txt:
 		string:match -10 [frame]
 
 	* src/classes/string.C:
@@ -9940,7 +9487,6 @@
 	* src/main/main.dsp:
 	* src/main/pa_globals.C:
 	* src/main/pa_request.C:
-	* src/operators.txt:
 	* src/types/pa_value.h:
 		random:generate
 
@@ -9949,14 +9495,12 @@
 	* src/include/pa_string.h:
 	* src/include/pa_table.h:
 	* src/main/execute.C:
-	* src/operators.txt:
 	* src/types/pa_value.h:
 		table:join
 
 	* src/classes/table.C:
 	* src/include/pa_string.h:
 	* src/main/pa_string.C:
-	* src/operators.txt:
 	* src/types/pa_valiased.C:
 	* src/types/pa_valiased.h:
 	* src/types/pa_vdouble.h:
@@ -9968,7 +9512,6 @@
 		string::pos. about to use it in table:set/load
 
 	* src/classes/random.C:
-	* src/operators.txt:
 		random:generate 1
 
 2001-03-30  paf
@@ -9989,7 +9532,6 @@
 	* src/classes/table.C:
 	* src/include/pa_string.h:
 	* src/main/pa_string.C:
-	* src/operators.txt:
 		todo: table flip and append. string::pos
 
 2001-03-29  paf
@@ -10007,11 +9549,9 @@
 	* src/include/pa_request.h:
 	* src/main/pa_request.C:
 	* src/main/untaint.C:
-	* src/operators.txt:
 		pool.request
 
 	* src/classes/string.C:
-	* src/operators.txt:
 		string:xsplit forgot that they must result in 1 row N column [
 		not vice versa]
 
@@ -10020,14 +9560,12 @@
 	* src/main/execute.C:
 	* src/main/pa_array.C:
 	* src/main/pa_string.C:
-	* src/operators.txt:
 	* src/types/pa_vtable.h:
 		string: lsplit -1
 
 	* src/classes/string.C:
 	* src/include/pa_string.h:
 	* src/main/pa_string.C:
-	* src/operators.txt:
 		string: pos -1
 
 	* src/classes/string.C:
@@ -10056,14 +9594,12 @@
 	* src/main/pa_request.C:
 	* src/main/pa_string.C:
 	* src/main/untaint.C:
-	* src/operators.txt:
 		string: left right mid
 
 	* src/classes/file.C:
 	* src/classes/table.C:
 	* src/include/pa_table.h:
 	* src/main/pa_table.C:
-	* src/operators.txt:
 	* src/types/pa_vstring.h:
 	* src/types/pa_wwrapper.h:
 		table:flip
@@ -10075,7 +9611,6 @@
 	* src/classes/file.C:
 	* src/include/pa_globals.h:
 	* src/include/pa_request.h:
-	* src/operators.txt:
 	* src/targets/cgi/parser3.C:
 	* src/targets/isapi/parser3isapi.C:
 	* src/types/pa_value.h:
@@ -10089,14 +9624,12 @@
 	* src/include/pa_table.h:
 	* src/main/pa_array.C:
 	* src/main/pa_table.C:
-	* src/operators.txt:
 	* src/types/pa_vtable.h:
 		table:locate just compiled
 
 	* src/classes/file.C:
 	* src/include/pa_common.h:
 	* src/main/pa_common.C:
-	* src/operators.txt:
 	* src/types/pa_vfile.C:
 	* src/types/pa_vfile.h:
 		started file:load. wrong write. must be self.set
@@ -10106,7 +9639,6 @@
 	* src/classes/table.C:
 	* src/include/pa_table.h:
 	* src/main/pa_table.C:
-	* src/operators.txt:
 		table:locate1, file:test
 
 	* src/classes/file.C:
@@ -10119,9 +9651,6 @@
 	* src/types/pa_vform.C:
 		file:load 1. tainted
 
-	* src/operators.txt:
-		z
-
 	* src/classes/file.C:
 	* src/include/pa_globals.h:
 	* src/include/pa_request.h:
@@ -10129,7 +9658,6 @@
 	* src/main/pa_globals.C:
 	* src/main/pa_request.C:
 	* src/main/pa_table.C:
-	* src/operators.txt:
 	* src/types/pa_vfile.C:
 	* src/types/pa_vfile.h:
 	* src/types/pa_vform.C:
@@ -10157,15 +9685,12 @@
 	* src/types/pa_vunknown.h:
 		sort 0
 
-	* src/auto.p:
 	* src/classes/table.C:
 	* src/include/pa_common.h:
 	* src/main/compile.y:
 	* src/main/execute.C:
 	* src/main/pa_common.C:
 	* src/main/pa_table.C:
-	* src/tainted.txt:
-	* src/test.cfg:
 		table:save decided to have as it were. stepped back.
 		grammar: added 'in' 'is' 'lt'&co follow-space check
 
@@ -10226,7 +9751,6 @@
 	* src/main/pa_globals.C:
 	* src/main/pa_request.C:
 	* src/main/pa_table.C:
-	* src/operators.txt:
 		moved ::save to pa_table.
 		disabled @auto invocation in ^process
 
@@ -10234,7 +9758,6 @@
 	* src/include/pa_array.h:
 	* src/include/pa_table.h:
 	* src/main/pa_array.C:
-	* src/operators.txt:
 		table:record
 
 	* src/main/untaint.C:
@@ -10257,7 +9780,6 @@
 
 	* src/include/pa_pool.h:
 	* src/main/execute.C:
-	* src/operators.txt:
 	* src/types/pa_valiased.C:
 	* src/types/pa_valiased.h:
 	* src/types/pa_value.h:
@@ -10357,12 +9879,10 @@
 	* src/types/pa_vcookie.C:
 		cyclic uses ignored. defaulted default content-type
 
-	* src/asm.txt:
 	* src/doc/doxygen.cfg:
 	* src/doc/doxygen.txt:
 	* src/doc/generate.cmd:
 	* src/doc/view.cmd:
-	* src/doxygen.cmd:
 	* src/include/pa_array.h:
 	* src/include/pa_globals.h:
 	* src/include/pa_pool.h:
@@ -10374,14 +9894,10 @@
 	* src/main/pa_request.C:
 	* src/main/pa_string.C:
 	* src/main/untaint.C:
-	* src/operators.txt:
-	* src/parser3.doxygen:
-	* src/parser3_doc_index.txt:
 	* src/targets/cgi/parser3.C:
 	* src/targets/isapi/parser3isapi.C:
 	* src/types/pa_value.h:
 	* src/types/pa_vtable.h:
-	* src/viewdoxygen.cmd:
 		html-typo 0
 		html-typo 1. noticed double default content-type prob. run cgi.cmd tomorrow first
 		html-typo sample. detected << problem: they become ltlt too fast
@@ -10458,13 +9974,8 @@
 		#comment
 
 2001-03-23  paf
-	* src/acinclude.m4:
 	* src/classes/root.C:
 	* src/classes/table.C:
-	* src/config.h.bot:
-	* src/config.h.top:
-	* src/configure:
-	* src/configure.in:
 	* src/include/pa_common.h:
 	* src/include/pa_config_fixed.h:
 	* src/include/pa_config_includes.h:
@@ -10481,8 +9992,6 @@
 	* src/main/pa_request.C:
 	* src/main/pa_string.C:
 	* src/main/untaint.C:
-	* src/pa_version.h:
-	* src/stamp-h.in:
 	* src/targets/cgi/parser3.C:
 	* src/targets/isapi/parser3isapi.C:
 	* src/types/pa_vfile.C:
@@ -10528,7 +10037,6 @@
 
 	* src/include/pa_pool.h:
 	* src/main/pa_request.C:
-	* src/parser3.dsw:
 	* src/targets/cgi/pa_pool.C:
 	* src/targets/isapi/pa_pool.C:
 	* src/targets/isapi/parser3isapi.C:
@@ -10540,7 +10048,6 @@
 	* src/targets/isapi/parser3isapi.C:
 		isapi: docroot now like in cgi, not from APPL_PHYSICAL_PATH
 
-	* src/parser3.dsw:
 	* src/targets/isapi/pa_pool.C:
 		decided to continue with extension
 
@@ -10549,7 +10056,6 @@
 
 2001-03-22  paf
 	* src/main/pa_request.C:
-	* src/parser3.dsw:
 	* src/targets/cgi/parser3.C:
 	* src/targets/isapi/parser3isapi.C:
 	* src/targets/isapi/parser3isapi.dsp:
@@ -10559,7 +10065,6 @@
 		cookie attr decoded
 
 	* src/include/pa_pool.h:
-	* src/parser3.dsw:
 	* src/targets/cgi/pa_pool.C:
 	* src/targets/cgi/parser3.C:
 	* src/targets/cgi/parser3.dsp:
@@ -10581,14 +10086,12 @@
 
 	* src/include/pa_pool.h:
 	* src/main/pa_pool.C:
-	* src/parser3.dsw:
 	* src/targets/cgi/parser3.C:
 	* src/targets/isapi/parser3isapi.C:
 	* src/targets/isapi/parser3isapi.dsp:
 	* src/types/pa_vform.C:
 		isapi 0
 
-	* src/configure.in:
 	* src/include/pa_globals.h:
 	* src/include/pa_request.h:
 	* src/include/pa_types.h:
@@ -10606,7 +10109,6 @@
 	* src/include/pa_globals.h:
 	* src/main/pa_common.C:
 	* src/main/pa_request.C:
-	* src/pa_version.h:
 		some comments
 
 	* src/include/pa_pool.h:
@@ -10626,8 +10128,6 @@
 	* src/classes/file.C:
 	* src/classes/root.C:
 	* src/classes/table.C:
-	* src/configure:
-	* src/configure.in:
 	* src/include/pa_array.h:
 	* src/include/pa_common.h:
 	* src/include/pa_globals.h:
@@ -10644,8 +10144,6 @@
 	* src/main/pa_string.C:
 	* src/main/pa_table.C:
 	* src/main/untaint.C:
-	* src/parser3.doxygen:
-	* src/parser3.dsw:
 	* src/targets/Makefile.am:
 	* src/targets/cgi/Makefile.am:
 	* src/targets/cgi/parser3.C:
@@ -10655,7 +10153,6 @@
 	* src/types/pa_vform.C:
 	* src/types/pa_vstring.h:
 	* src/types/pa_wwrapper.h:
-	* src/viewdoxygen.cmd:
 		shifted apache branch on main trunc
 
 	* src/targets/cgi/parser3.C:
@@ -10668,7 +10165,6 @@
 	* src/main/main.dsp:
 	* src/main/pa_common.C:
 	* src/main/pa_request.C:
-	* src/parser3.dsw:
 	* src/targets/cgi/parser3.C:
 	* src/targets/cgi/parser3.dsp:
 	* src/types/pa_vcookie.C:
@@ -10685,7 +10181,6 @@
 		file Makefile.am was initially added on branch automake_update.
 
 	* src/main/pa_common.C:
-	* src/parser3.doxygen:
 	* src/targets/cgi/Makefile.am:
 	* src/targets/cgi/parser3.C:
 		automake compiled and works. todo:make win32 ifdefs work and
@@ -10709,7 +10204,6 @@
 	* src/main/pa_request.C:
 	* src/main/pa_table.C:
 	* src/main/untaint.C:
-	* src/operators.txt:
 	* src/targets/cgi/Makefile.am:
 	* src/targets/cgi/parser3.C:
 	* src/types/Makefile.am:
@@ -10723,7 +10217,6 @@
 	* src/main/compile.y:
 	* src/main/execute.C:
 	* src/main/pa_common.C:
-	* src/parser3.doxygen:
 	* src/types/Makefile.am:
 		removing locking
 
@@ -10731,8 +10224,6 @@
 	* src/classes/file.C:
 	* src/classes/root.C:
 	* src/classes/table.C:
-	* src/configure:
-	* src/configure.in:
 	* src/include/pa_array.h:
 	* src/include/pa_request.h:
 	* src/include/pa_string.h:
@@ -10743,20 +10234,17 @@
 	* src/main/pa_request.C:
 	* src/main/pa_string.C:
 	* src/main/untaint.C:
-	* src/parser3.doxygen:
 	* src/targets/Makefile.am:
 	* src/targets/cgi/Makefile.am:
 	* src/targets/cgi/parser3.C:
 	* src/types/pa_vcookie.C:
 	* src/types/pa_wwrapper.h:
-	* src/viewdoxygen.cmd:
 		String::UL_
 
 	* src/classes/table.C:
 	* src/include/pa_common.h:
 	* src/main/pa_common.C:
 	* src/main/pa_request.C:
-	* src/operators.txt:
 	* src/types/pa_vfile.h:
 		^table:save
 
@@ -10769,7 +10257,6 @@
 	* src/main/pa_pool.C:
 	* src/main/pa_request.C:
 	* src/main/untaint.C:
-	* src/operators.txt:
 	* src/types/pa_value.h:
 	* src/types/pa_vfile.C:
 	* src/types/pa_vfile.h:
@@ -10783,14 +10270,12 @@
 	* src/include/pa_types.h:
 	* src/main/execute.C:
 	* src/main/pa_request.C:
-	* src/parser3.doxygen:
 	* src/targets/cgi/parser3.C:
 	* src/types/pa_value.h:
 	* src/types/pa_vclass.h:
 	* src/types/pa_vform.C:
 	* src/types/pa_vstateless_class.h:
 	* src/types/pa_vstateless_object.h:
-	* src/viewdoxygen.cmd:
 		^table:set{default level: TABLE}
 
 	* src/classes/_request.h:
@@ -10810,10 +10295,8 @@
 	* src/types/pa_vrequest.h:
 		VRequest moved to :Value
 
-	* src/parser3.doxygen:
 	* src/types/pa_valiased.h:
 	* src/types/pa_vbool.h:
-	* src/viewdoxygen.cmd:
 		doc: Value and it's derivates somehow unlinked. don't know why yet
 
 	* src/classes/_env.h:
@@ -10824,14 +10307,12 @@
 	* src/main/main.dsp:
 	* src/main/pa_globals.C:
 	* src/main/pa_request.C:
-	* src/operators.txt:
 	* src/types/pa_value.h:
 	* src/types/pa_vcookie.C:
 	* src/types/pa_vcookie.h:
 	* src/types/pa_venv.h:
 		VEnv is now :Value
 
-	* src/operators.txt:
 	* src/targets/cgi/pa_vform.C:
 	* src/types/pa_valiased.C:
 	* src/types/pa_valiased.h:
@@ -10858,8 +10339,6 @@
 	* src/classes/table.C:
 	* src/main/pa_exception.C:
 	* src/main/pa_request.C:
-	* src/parser3.doxygen:
-	* src/parser3_doc_index.txt:
 	* src/targets/cgi/parser3.C:
 	* src/types/pa_vbool.h:
 	* src/types/pa_vcookie.C:
@@ -10891,7 +10370,6 @@
 	* src/main/pa_string.C:
 	* src/main/pa_table.C:
 	* src/main/untaint.C:
-	* src/parser3.doxygen:
 	* src/types/pa_value.h:
 		auto @brief
 
@@ -10905,8 +10383,6 @@
 	* src/main/main.dsp:
 	* src/main/pa_common.C:
 	* src/main/pa_globals.C:
-	* src/operators.txt:
-	* src/operators.txt:
 	* src/types/pa_value.h:
 	* src/types/pa_vcookie.h:
 	* src/types/pa_venv.h:
@@ -10932,7 +10408,6 @@
 
 	* src/classes/_request.h:
 	* src/classes/request.C:
-	* src/doxygen.cmd:
 	* src/include/code.h:
 	* src/include/pa_array.h:
 	* src/include/pa_common.h:
@@ -10951,14 +10426,9 @@
 	* src/main/pa_request.C:
 	* src/main/pa_string.C:
 	* src/main/untaint.C:
-	* src/operators.txt:
-	* src/parser.dsw:
-	* src/parser3.doxygen:
-	* src/parser3.dsw:
 	* src/targets/cgi/parser3.C:
 	* src/types/pa_value.h:
 	* src/types/pa_vform.C:
-	* src/viewdoxygen.cmd:
 		doxygen include/, Value
 
 	* src/include/code.h:
@@ -10992,9 +10462,6 @@
 	* src/main/pa_string.C:
 	* src/main/pa_table.C:
 	* src/main/untaint.C:
-	* src/parser3.doxygen:
-	* src/parser3.doxygen:
-	* src/parser3.doxygen:
 	* src/types/pa_valiased.h:
 	* src/types/pa_value.h:
 	* src/types/pa_vfile.C:
@@ -11040,7 +10507,6 @@
 	* src/main/pa_request.C:
 	* src/main/pa_string.C:
 	* src/main/untaint.C:
-	* src/operators.txt:
 	* src/targets/cgi/parser3.C:
 	* src/types/pa_value.h:
 	* src/types/pa_vcookie.C:
@@ -11109,12 +10575,10 @@
 	* src/main/pa_common.C:
 	* src/main/pa_globals.C:
 	* src/main/pa_request.C:
-	* src/operators.txt:
 	* src/targets/cgi/parser3.C:
 		^taint 0
 
 	* src/classes/cookie.C:
-	* src/operators.txt:
 	* src/types/pa_vcookie.C:
 	* src/types/pa_vcookie.h:
 		cookie: allowed access to hash-assigned
@@ -11147,7 +10611,6 @@
 
 	* src/classes/response.C:
 	* src/main/pa_request.C:
-	* src/operators.txt:
 	* src/types/pa_value.h:
 	* src/types/pa_vhash.h:
 	* src/types/pa_vresponse.h:
@@ -11192,16 +10655,12 @@
 		disabled  $string.field
 
 	* src/main/execute.C:
-	* src/operators.txt:
-	* src/sql.txt:
-	* src/tainted.txt:
 	* src/types/pa_vmframe.h:
 		if(in "/news/")
 
 	* src/include/pa_globals.h:
 	* src/main/execute.C:
 	* src/main/pa_globals.C:
-	* src/operators.txt:
 	* src/types/pa_value.h:
 	* src/types/pa_vcframe.h:
 	* src/types/pa_vmframe.h:
@@ -11212,12 +10671,10 @@
 	* src/classes/request.C:
 	* src/include/pa_globals.h:
 	* src/include/pa_request.h:
-	* src/lang.txt:
 	* src/main/execute.C:
 	* src/main/main.dsp:
 	* src/main/pa_globals.C:
 	* src/main/pa_request.C:
-	* src/operators.txt:
 	* src/targets/cgi/parser3.C:
 	* src/types/pa_vform.C:
 	* src/types/pa_vrequest.C:
@@ -11227,9 +10684,7 @@
 2001-03-15  paf
 	* src/main/compile.y:
 	* src/main/pa_request.C:
-	* src/operators.txt:
 	* src/targets/cgi/parser3.C:
-	* src/test.p:
 	* src/types/pa_vstring.h:
 		pre-pre-pre-beta cgi under win32 apache pre pre pre works
 
@@ -11237,13 +10692,10 @@
 	* src/main/execute.C:
 		z
 
-	* src/b.p:
 	* src/main/compile.y:
 	* src/main/execute.C:
 	* src/main/pa_request.C:
-	* src/n.p:
 	* src/targets/cgi/parser3.C:
-	* src/test.p:
 	* src/types/pa_vstring.h:
 		@exception
 
@@ -11323,7 +10775,6 @@
 
 2001-03-13  paf
 	* src/main/execute.C:
-	* src/test.p:
 	* src/types/pa_value.h:
 	* src/types/pa_venv.h:
 		for future methods of ENV constructor if
@@ -11338,20 +10789,16 @@
 		file pa_vstateless_class.h was initially added on branch
 		stateless_class.
 
-	* src/auto.p:
 	* src/include/code.h:
 	* src/include/pa_string.h:
 	* src/main/compile.y:
 	* src/main/execute.C:
 	* src/main/pa_string.C:
-	* src/operators.txt:
 		'value is type' expr operator
 
 	* src/classes/form.C:
 	* src/main/compile.y:
 	* src/main/core.C:
-	* src/operators.txt:
-	* src/test.p:
 	* src/types/pa_value.h:
 	* src/types/pa_vclass.h:
 	* src/types/pa_venv.h:
@@ -11444,12 +10891,10 @@
 	* src/types/pa_wcontext.h:
 		$ENV: re 0, stateless classes
 
-	* src/auto.p:
 	* src/include/pa_request.h:
 	* src/main/compile.C:
 	* src/main/execute.C:
 	* src/main/pa_request.C:
-	* src/test.p:
 	* src/types/pa_value.h:
 	* src/types/pa_vmframe.h:
 		fixed yesterdays bad decision on execute_static_method
@@ -11467,11 +10912,9 @@
 		started cgi target
 
 	* src/include/pa_request.h:
-	* src/test.p:
 	* src/types/pa_venv.h:
 		$ENV 0.1 stateless class
 
-	* src/auto.p:
 	* src/classes/_form.h:
 	* src/classes/double.C:
 	* src/classes/env.C:
@@ -11490,15 +10933,10 @@
 	* src/main/pa_request.C:
 	* src/main/pa_request.C:
 	* src/main/pa_request.C:
-	* src/operators.txt:
-	* src/operators.txt:
-	* src/parser.dsw:
 	* src/targets/cgi/parser.dsp:
 	* src/targets/cgi/parser3.C:
 	* src/targets/cgi/parser3.dsp:
 	* src/targets/cgi/parser3.dsp:
-	* src/test.p:
-	* src/test.p:
 	* src/types/pa_vhash.h:
 		z
 
@@ -11507,13 +10945,10 @@
 	* src/include/pa_exception.h:
 	* src/include/pa_pool.h:
 	* src/main/pa_request.C:
-	* src/test.p:
 		restructure_exceptions_dead_end
 
 	* src/classes/root.C:
 	* src/main/compile.y:
-	* src/operators.txt:
-	* src/test.p:
 		^if required junctions. allowed ; inside {} to break params
 
 	* src/classes/_env.h:
@@ -11528,21 +10963,17 @@
 	* src/main/main.dsp:
 	* src/main/pa_common.C:
 	* src/main/pa_request.C:
-	* src/test.p:
 	* src/types/pa_value.h:
 	* src/types/pa_venv.h:
 	* src/types/pa_vstateless_class.h:
 		started $form: [historical moment :)]
 
-	* src/test.p:
 	* src/types/pa_venv.h:
 		$ENV 1
 
 	* src/classes/double.C:
 	* src/classes/int.C:
 	* src/classes/root.C:
-	* src/operators.txt:
-	* src/test.p:
 	* src/types/pa_vdouble.h:
 	* src/types/pa_vint.h:
 		Int,Double  dec mul div mod
@@ -11553,46 +10984,32 @@
 	* src/classes/int.C:
 	* src/classes/string.C:
 	* src/main/execute.C:
-	* src/test.p:
 	* src/types/pa_wcontext.h:
 		int doube string ^format
 
 	* src/classes/root.C:
-	* src/test.p:
 	* src/types/pa_vclass.h:
 		process temp main zeroing
 
 	* src/classes/root.C:
 	* src/classes/table.C:
-	* src/operators.txt:
-	* src/test.cfg:
-	* src/test.p:
 	* src/types/pa_vtable.h:
 		table ^offset ^line ^count
 
 	* src/classes/root.C:
 	* src/classes/table.C:
-	* src/operators.txt:
-	* src/test.p:
 		^use
 
 	* src/main/execute.C:
-	* src/test.p:
 	* src/types/pa_wcontext.h:
 		constructing flag not 'bad' but not 'enough'
 
-	* src/test.p:
-		table: I really don't need cell origins, would kill them now
-
-	* src/b.p:
 	* src/classes/root.C:
 	* src/classes/table.C:
 	* src/include/pa_request.h:
 	* src/main/compile.y:
 	* src/main/core.C:
 	* src/main/execute.C:
-	* src/operators.txt:
-	* src/test.p:
 	* src/types/pa_vclass.h:
 	* src/types/pa_wcontext.C:
 	* src/types/pa_wcontext.h:
@@ -11601,21 +11018,15 @@
 		auto-vhash-constructing
 
 	* src/classes/table.C:
-	* src/operators.txt:
-	* src/test.p:
 		table ^empty
 
 	* src/classes/root.C:
-	* src/operators.txt:
-	* src/test.p:
 		^eval
 
 	* src/classes/root.C:
 	* src/classes/table.C:
 	* src/include/pa_request.h:
 	* src/main/pa_request.C:
-	* src/operators.txt:
-	* src/test.p:
 		fail_if_junction_ helper func
 
 	* src/classes/root.C:
@@ -11627,8 +11038,6 @@
 	* src/main/main.dsp:
 	* src/main/pa_request.C:
 	* src/main/pa_table.C:
-	* src/operators.txt:
-	* src/test.p:
 	* src/types/pa_value.h:
 	* src/types/pa_vclass.C:
 	* src/types/pa_vclass.h:
@@ -11638,14 +11047,13 @@
 	* src/types/pa_vstring.h:
 		freeze, ^table:create[] -1
 
-	* src/classes/root.C:
-	* src/main/execute.C:
-	* src/test.p:
-	* src/types/pa_vclass.h:
-		used get_method in couple places optimizing them
-
 	* src/types/pa_vtable.h:
 		table: no, better with string in cells...
+
+	* src/classes/root.C:
+	* src/main/execute.C:
+	* src/types/pa_vclass.h:
+		used get_method in couple places optimizing them
 
 	* src/classes/double.C:
 	* src/classes/int.C:
@@ -11661,8 +11069,6 @@
 	* src/main/execute.C:
 	* src/main/pa_common.C:
 	* src/main/pa_request.C:
-	* src/operators.txt:
-	* src/test.p:
 	* src/types/pa_value.h:
 	* src/types/pa_vmframe.h:
 		process. actual names to store param and  
@@ -11676,10 +11082,6 @@
 	* src/include/pa_table.h:
 	* src/main/pa_table.C:
 	* src/main/untaint.C:
-	* src/operators.txt:
-	* src/test.p:
-	* src/test.p:
-	* src/test.p:
 	* src/types/pa_value.h:
 		z
 
@@ -11691,20 +11093,14 @@
 	* src/main/main.dsp:
 	* src/main/pa_common.C:
 	* src/main/pa_request.C:
-	* src/operators.txt:
-	* src/test.p:
 		^process error point by actual method_name, not source.
 		^load
 
 	* src/classes/table.C:
 	* src/include/pa_table.h:
-	* src/test.cfg:
-	* src/test.p:
 		table ^menu
 
 	* src/classes/root.C:
-	* src/operators.txt:
-	* src/test.p:
 		^round()	^floor()	^ceiling()	^abs()	^sign()
 
 	* src/classes/double.C:
@@ -11714,8 +11110,6 @@
 	* src/classes/table.C:
 	* src/main/core.C:
 	* src/main/execute.C:
-	* src/operators.txt:
-	* src/test.p:
 	* src/types/pa_vint.h:
 		^for
 
@@ -11728,8 +11122,6 @@
 	* src/main/pa_common.C:
 	* src/main/pa_request.C:
 	* src/main/untaint.C:
-	* src/operators.txt:
-	* src/test.p:
 	* src/types/pa_vdouble.h:
 	* src/types/pa_vint.h:
 	* src/types/pa_vtable.h:
@@ -11745,13 +11137,8 @@
 	* src/main/pa_common.C:
 	* src/main/pa_request.C:
 	* src/main/pa_table.C:
-	* src/operators.txt:
-	* src/test.p:
 	* src/types/pa_value.h:
 		table:set 0
-
-	* src/test.p:
-		table:set 1
 
 2001-03-11  paf
 	* src/classes/double.C:
@@ -11759,13 +11146,11 @@
 	* src/classes/root.C:
 	* src/include/pa_request.h:
 	* src/main/execute.C:
-	* src/test.p:
 		intercept_string
 
 	* src/classes/double.C:
 	* src/classes/int.C:
 	* src/include/pa_request.h:
-	* src/test.p:
 		^inc-s(expr)
 
 	* src/include/pa_valiased.h:
@@ -11811,7 +11196,6 @@
 		splitted types from include/
 
 	* src/main/main.dsp:
-	* src/test.p:
 	* src/types/pa_value.h:
 	* src/types/pa_vdouble.h:
 	* src/types/pa_vint.h:
@@ -11819,7 +11203,6 @@
 	* src/types/pa_vstring.h:
 		VString VDouble VInt base now VObject_base - without fields
 
-	* src/b.p:
 	* src/include/core.h:
 	* src/include/pa_request.h:
 	* src/main/core.C:
@@ -11827,7 +11210,6 @@
 	* src/main/pa_request.C:
 		renamed AUTO: to MAIN:
 
-	* src/auto.p:
 	* src/classes/double.C:
 	* src/classes/int.C:
 	* src/classes/root.C:
@@ -11840,15 +11222,11 @@
 	* src/main/compile.C:
 	* src/main/core.C:
 	* src/main/pa_request.C:
-	* src/operators.txt:
-	* src/test.p:
 		^untaint 0
 
-	* src/auto.p:
 	* src/classes/root.C:
 	* src/main/execute.C:
 	* src/main/main.dsp:
-	* src/test.p:
 		setname for method-junctions bug fixed
 
 	* src/types/pa_vdouble.h:
@@ -11862,9 +11240,6 @@
 	* src/include/core.h:
 	* src/main/core.C:
 	* src/main/pa_request.C:
-	* src/operators.txt:
-	* src/test.p:
-	* src/test.p:
 	* src/types/pa_vhash.h:
 		z
 
@@ -11948,7 +11323,6 @@
 	* src/main/main.dsp:
 		env0
 
-	* src/b.p:
 	* src/include/code.h:
 	* src/include/pa_request.h:
 	* src/include/pa_vint.h:
@@ -11958,7 +11332,6 @@
 	* src/main/compile_tools.C:
 	* src/main/compile_tools.h:
 	* src/main/execute.C:
-	* src/test.p:
 		optimized from OP_STRING+OP_WRITE to OP_STRING__WRITE
 
 	* src/include/core.h:
@@ -11983,19 +11356,15 @@
 	* src/main/pa_wcontext.C:
 		const fight finished
 
-	* src/auto.p:
 	* src/include/core.h:
 	* src/include/pa_request.h:
 	* src/main/core.C:
 	* src/main/pa_request.C:
-	* src/test.p:
 		run+auto=run
 
 	* src/include/pa_request.h:
 	* src/main/execute.C:
 	* src/main/pa_request.C:
-	* src/operators.txt:
-	* src/test.p:
 		@auto[] realised. auto.p scan togo
 
 	* src/classes/double.C:
@@ -12009,7 +11378,6 @@
 	* src/main/execute.C:
 	* src/main/pa_string.C:
 	* src/main/pa_wcontext.C:
-	* src/test.p:
 		tainting 0
 
 	* src/classes/_double.h:
@@ -12031,28 +11399,20 @@
 	* src/main/pa_string.C:
 	* src/main/pa_vclass.C:
 	* src/main/pa_wcontext.C:
-	* src/operators.txt:
 		^lang prepare0
 
-	* src/auto.p:
 	* src/include/pa_request.h:
 	* src/main/compile.C:
 	* src/main/compile.y:
 	* src/main/pa_request.C:
-	* src/test.p:
 		auto tree0
-
-	* src/operators.txt:
-		auto.p idea
 
 	* src/classes/env.C:
 		env:file/line
 
 	* src/include/pa_vclass.h:
-	* src/test.p:
 		const fight to go
 
-	* src/auto.p:
 	* src/include/core.h:
 	* src/include/pa_common.h:
 	* src/include/pa_pool.h:
@@ -12061,23 +11421,17 @@
 	* src/main/execute.C:
 	* src/main/pa_common.C:
 	* src/main/pa_request.C:
-	* src/test.p:
 		root auto.p loaded
 
 	* src/include/pa_request.h:
 	* src/main/execute.C:
-	* src/test.p:
 		autocalc code-junctions result now have names
 
-	* src/auto.p:
 	* src/classes/root.C:
 	* src/include/pa_request.h:
-	* src/test.p:
 		minor if junction bug
 
-	* src/auto.p:
 	* src/main/pa_request.C:
-	* src/test.p:
 		auto..
 
 	* src/classes/_double.h:
@@ -12138,20 +11492,10 @@
 	* src/main/pa_wcontext.C:
 		sources header
 
-	* src/operators.txt:
-	* src/tainted.txt:
-	* src/test.p:
-		tainting thoghs. ^raw to die. linking lang=html to no space optimization
-
 2001-03-09  paf
-	* src/operators.txt:
-	* src/test.p:
-		^string.int[] ^string.double[]
-
 	* src/classes/root.C:
 	* src/include/pa_request.h:
 	* src/main/execute.C:
-	* src/test.p:
 		^string.length[]
 
 	* src/classes/root.C:
@@ -12166,14 +11510,11 @@
 	* src/main/core.C:
 	* src/main/execute.C:
 	* src/main/main.dsp:
-	* src/operators.txt:
-	* src/test.p:
 		.
 
 	* src/include/pa_vmframe.h:
 	* src/main/compile.C:
 	* src/main/execute.C:
-	* src/test.p:
 		expr construct proper naming
 
 	* src/classes/_double.h:
@@ -12196,8 +11537,6 @@
 	* src/main/core.C:
 	* src/main/execute.C:
 	* src/main/main.dsp:
-	* src/operators.txt:
-	* src/test.p:
 		Int and Double classes with ^int[] and ^double[]. fixed expr type
 
 2001-03-08  paf
@@ -12232,7 +11571,6 @@
 	* src/main/core.C:
 	* src/main/execute.C:
 	* src/main/main.dsp:
-	* src/test.p:
 		dead end: vstring can't be derivated from vobject
 
 	* src/include/pa_request.h:
@@ -12240,7 +11578,6 @@
 	* src/main/compile.y:
 	* src/main/core.C:
 	* src/main/main.dsp:
-	* src/test.p:
 		introducing ROOT_CLASS.
 		it's default @BASE.
 		changed 'RUN' assignment mech
@@ -12271,24 +11608,15 @@
 	* src/main/compile_tools.C:
 	* src/main/compile_tools.h:
 	* src/main/execute.C:
-	* src/operators.txt:
-	* src/test.p:
 		made class: dynamic, not static. so to enable runtime ^use
 
-	* src/asm.txt:
 	* src/include/code.h:
 	* src/main/compile.y:
 	* src/main/compile_tools.C:
 	* src/main/execute.C:
 		joined 2 into one OP_CODE__STORE_PARAM
 
-	* src/b.p:
-	* src/form.txt:
-	* src/n.p:
-		call1
-
 	* src/main/execute.C:
-	* src/test.p:
 		fixed problems calling operators in constructors
 
 	* src/classes/root.C:
@@ -12297,7 +11625,6 @@
 	* src/include/pa_vbool.h:
 	* src/include/pa_wwrapper.h:
 	* src/main/execute.C:
-	* src/operators.txt:
 		^if 0
 
 	* src/main/pa_vclass.C:
@@ -12306,7 +11633,6 @@
 	* src/classes/root.C:
 	* src/include/pa_stack.h:
 	* src/main/execute.C:
-	* src/test.p:
 		detected problems calling operators in constructors
 
 	* src/main/compile.y:
@@ -12318,15 +11644,12 @@
 	* src/include/pa_vobject.h:
 	* src/include/pa_vunknown.h:
 	* src/main/compile.y:
-	* src/test.p:
 		cloning dead end
 
 	* src/include/pa_vmframe.h:
-	* src/test.p:
 		fixed forgotten method_frame my check
 
 	* src/classes/root.C:
-	* src/test.p:
 		added root.c
 
 	* src/include/pa_vbool.h:
@@ -12345,13 +11668,9 @@
 	* src/main/main.dsp:
 	* src/main/pa_wcontext.C:
 	* src/main/pa_wcontext.C:
-	* src/n.p:
-	* src/operators.txt:
-	* src/test.p:
 		z
 
 	* src/main/compile.y:
-	* src/test.p:
 		minor grammar bug with OP_CODE__STORE_PARAM
 
 	* src/include/pa_bool.h:
@@ -12372,8 +11691,6 @@
 	* src/main/execute.C:
 	* src/main/main.dsp:
 	* src/main/pa_value.C:
-	* src/n.p:
-	* src/test.p:
 		value.cloning so to give params proper names
 
 	* src/classes/root.C:
@@ -12383,7 +11700,6 @@
 
 	* src/include/pa_vmframe.h:
 	* src/main/execute.C:
-	* src/test.p:
 		added names to unknown values in get_element and unfilled
 		params. removed wrong name change in get_element
 
@@ -12400,38 +11716,25 @@
 	* src/main/compile.y:
 	* src/main/execute.C:
 	* src/main/pa_hash.C:
-	* src/test.p:
 		expr def in -f
-
-	* src/lang.txt:
-	* src/sql.txt:
-	* src/test.p:
-		added some textss
 
 	* src/main/compile.y:
 	* src/main/execute.C:
 	* src/main/pa_string.C:
-	* src/test.p:
 		bug in string.cmp fixed
 
 	* src/main/compile.y:
 		.y priorities syntax shaped up a bit
 
 	* src/main/compile.y:
-	* src/test.p:
 		expr quoted code
 
 	* src/main/execute.C:
-	* src/test.p:
 		^var.menu{$field} problem detected. that $field not a $var.field
 
 	* src/main/compile.y:
 	* src/main/compile_tools.h:
-	* src/test.p:
 		^func(params)
-
-	* src/test.p:
-		z
 
 	* src/include/pa_value.h:
 	* src/include/pa_vclass.h:
@@ -12443,20 +11746,13 @@
 
 	* src/main/compile.y:
 	* src/main/execute.C:
-	* src/test.p:
 		expr whitespace solved. added "" support0
 
 	* src/include/pa_string.h:
 	* src/main/compile.y:
 	* src/main/execute.C:
 	* src/main/pa_string.C:
-	* src/operators.txt:
-	* src/test.p:
 		just compiled lt&co
-
-	* src/main/compile.y:
-	* src/test.p:
-		expr string comparisons 0
 
 	* src/include/pa_stack.h:
 	* src/include/pa_value.h:
@@ -12466,13 +11762,13 @@
 	* src/include/pa_vobject.h:
 	* src/include/pa_wwrapper.h:
 	* src/main/execute.C:
-	* src/test.p:
 		fixed rwcontext of {} params up
 
-	* src/asm.txt:
+	* src/main/compile.y:
+		expr string comparisons 0
+
 	* src/main/compile.y:
 	* src/main/execute.C:
-	* src/test.p:
 		expr calls
 
 2001-03-06  paf
@@ -12485,7 +11781,6 @@
 	* src/include/code.h:
 	* src/main/compile.y:
 	* src/main/execute.C:
-	* src/test.p:
 		1 problems with skipping whitespace in yylex fixed
 		2 xors: # bitwise ## logical
 
@@ -12499,7 +11794,6 @@
 		expr lex0 exec-1
 
 	* src/main/compile.y:
-	* src/test.p:
 		expr grammar-1
 
 	* src/include/pa_value.h:
@@ -12509,7 +11803,6 @@
 	* src/main/compile.y:
 	* src/main/execute.C:
 	* src/main/main.dsp:
-	* src/test.p:
 		!~
 
 	* src/include/code.h:
@@ -12518,7 +11811,6 @@
 		g
 
 	* src/main/compile.y:
-	* src/test.p:
 		.y expr visible-shorter
 
 	* src/include/pa_vcframe.h:
@@ -12536,7 +11828,6 @@
 	* src/main/compile_tools.C:
 	* src/main/compile_tools.h:
 	* src/main/execute.C:
-	* src/test.p:
 		+-*/
 
 	* src/main/compile.y:
@@ -12546,44 +11837,36 @@
 
 	* src/include/pa_vstring.h:
 	* src/main/compile.y:
-	* src/test.p:
 		problems with skipping whitespace in yylex
 
 	* src/include/pa_value.h:
 	* src/include/pa_vdouble.h:
 	* src/main/compile.y:
 	* src/main/execute.C:
-	* src/test.p:
 		expr grammar-1 2*2=4.000000 :)
 
 	* src/include/pa_vdouble.h:
 	* src/main/compile.y:
 	* src/main/compile_tools.C:
 	* src/main/compile_tools.h:
-	* src/test.p:
 		grammar-1.1 $a(z) $a=0
 
-	* src/asm.txt:
 	* src/include/code.h:
 	* src/main/compile.y:
 	* src/main/execute.C:
-	* src/test.p:
 		without string ops in expressions 0
 
 2001-02-26  paf
 	* src/main/compile.y:
-	* src/test.p:
 		max_string in yyerror bug fix
 
 2001-02-25  paf
 	* src/main/compile.y:
-	* src/test.p:
 		escaping bug
 
 	* src/include/pa_request.h:
 	* src/main/compile.C:
 	* src/main/core.C:
-	* src/test.p:
 		default name RUN, also alias
 
 	* src/include/pa_vcframe.h:
@@ -12594,7 +11877,6 @@
 	* src/main/core.C:
 	* src/main/execute.C:
 	* src/main/main.dsp:
-	* src/test.p:
 		would now get fields into interm VFielded class
 
 	* src/include/pa_request.h:
@@ -12602,18 +11884,15 @@
 	* src/include/pa_vmframe.h:
 	* src/include/pa_wcontext.h:
 	* src/main/execute.C:
-	* src/test.p:
 		VAliased0
 
 	* src/main/execute.C:
-	* src/test.p:
 		VAliased1
 
 	* src/include/pa_value.h:
 	* src/include/pa_vmframe.h:
 		VAliased2
 
-	* src/asm.txt:
 	* src/include/code.h:
 	* src/include/pa_value.h:
 	* src/include/pa_vclass.h:
@@ -12624,7 +11903,6 @@
 	* src/main/compile_tools.C:
 	* src/main/compile_tools.h:
 	* src/main/execute.C:
-	* src/modules.txt:
 		^class:method() just compiled
 
 	* src/include/pa_value.h:
@@ -12647,8 +11925,6 @@
 	* src/main/pa_hash.C:
 	* src/main/pa_value.C:
 	* src/main/pa_wcontext.C:
-	* src/modules.txt:
-	* src/test.p:
 		virtuals2
 
 	* src/include/pa_value.h:
@@ -12671,7 +11947,6 @@
 	* src/main/main.dsp:
 		VAliased just compiled
 
-	* src/asm.txt:
 	* src/include/pa_request.h:
 	* src/include/pa_value.h:
 	* src/include/pa_vobject.h:
@@ -12680,18 +11955,12 @@
 	* src/main/core.C:
 	* src/main/execute.C:
 	* src/main/pa_common.C:
-	* src/test.p:
 		vobject1
 
 	* src/main/compile.y:
-	* src/test.p:
 		rethought to $class:static.field.subfield
 
-	* src/test.p:
-		tested complex callbacks
-
 	* src/main/compile.y:
-	* src/test.p:
 		: 1
 
 	* src/include/pa_value.h:
@@ -12700,13 +11969,11 @@
 	* src/main/compile.y:
 	* src/main/execute.C:
 	* src/main/pa_wcontext.C:
-	* src/test.p:
 		before execute class calls rewrite
 
 	* src/include/pa_vclass.h:
 	* src/main/compile.y:
 	* src/main/execute.C:
-	* src/test.p:
 		$class:element
 
 	* src/include/pa_pool.h:
@@ -12714,12 +11981,10 @@
 	* src/include/pa_vclass.h:
 	* src/include/pa_vobject.h:
 	* src/main/execute.C:
-	* src/test.p:
 		alias dead end
 
 2001-02-24  paf
 	* src/main/compile.y:
-	* src/test.p:
 		fixed grammar bugs in constructor/params klinch
 
 	* src/main/main.dsp:
@@ -12734,7 +11999,6 @@
 
 	* src/include/pa_vframe.h:
 	* src/main/compile.y:
-	* src/test.p:
 		found junction ideology @: ^x{$a()) must construct current
 		wcontext element, so smart wcontext handling needed
 
@@ -12743,7 +12007,6 @@
 	* src/include/pa_wwrapper.h:
 	* src/main/execute.C:
 	* src/main/pa_value.C:
-	* src/test.p:
 		it works as bad as you've named it: wcontext.value() was not a
 		perfect idea
 
@@ -12772,18 +12035,14 @@
 	* src/main/compile.y:
 	* src/main/compile_tools.h:
 	* src/main/core.C:
-	* src/test.p:
 		modules0
 
 	* src/main/pa_array.C:
-	* src/test.p:
 		minor bug in expanding very small arrays. 60% from 1 were 0
 
-	* src/asm.txt:
 	* src/include/pa_vclass.h:
 	* src/main/compile.y:
 	* src/main/core.C:
-	* src/modules.txt:
 		z
 
 	* src/include/code.h:
@@ -12796,7 +12055,6 @@
 	* src/main/compile_tools.h:
 	* src/main/core.C:
 	* src/main/execute.C:
-	* src/test.p:
 		code junctions0. something wrong with last \n macrotemplate strip
 
 	* src/include/pa_value.h:
@@ -12805,15 +12063,12 @@
 	* src/main/main.dsp:
 		vobject00
 
-	* src/asm.txt:
 	* src/main/compile.y:
 	* src/main/execute.C:
-	* src/test.p:
 		fixed empty constructor optimized empty case. failed on calls -
 		produced empty string param
 
 	* src/main/execute.C:
-	* src/test.p:
 		codeframe1
 
 2001-02-23  paf
@@ -12821,12 +12076,10 @@
 	* src/main/core.C:
 	* src/main/execute.C:
 	* src/main/main.dsp:
-	* src/test.p:
 		value named
 
 	* src/main/compile.y:
 	* src/main/execute.C:
-	* src/test.p:
 		empty constructor bug fixed
 
 	* src/include/pa_vframe.h:
@@ -12837,13 +12090,11 @@
 	* src/main/execute.C:
 	* src/main/main.dsp:
 	* src/main/pa_value.C:
-	* src/test.p:
 		call0
 
 	* src/main/compile.y:
 	* src/main/compile_tools.C:
 	* src/main/compile_tools.h:
-	* src/test.p:
 		fixed wrong grammar in complex constructor case
 
 	* src/include/pa_value.h:
@@ -12852,26 +12103,21 @@
 	* src/main/core.C:
 	* src/main/execute.C:
 	* src/main/pa_value.C:
-	* src/test.p:
 		get_method RIP. junctions everywhere. call with junctions0
 
 	* src/main/compile.y:
 	* src/main/execute.C:
 	* src/main/main.dsp:
-	* src/test.p:
 		rethought some. before junction
 
 	* src/include/pa_value.h:
 	* src/include/pa_vstring.h:
 	* src/main/execute.C:
-	* src/test.p:
 		strign 2 value in 2 places in execute
 
 	* src/include/pa_wcontext.h:
-	* src/test.p:
 		z
 
-	* src/asm.txt:
 	* src/include/pa_hash.h:
 	* src/include/pa_value.h:
 	* src/include/pa_wcontext.h:
@@ -12879,22 +12125,15 @@
 	* src/main/execute.C:
 	* src/main/main.dsp:
 	* src/main/pa_hash.C:
-	* src/test.p:
 		started call. store param, vframe done
-
-	* src/test.p:
-		decided to include value name into value class
 
 	* src/include/pa_value.h:
 	* src/main/compile.C:
 	* src/main/core.C:
 	* src/main/pa_value.C:
-	* src/test.p:
 		minor error reporting format beautifyings
 
-	* src/asm.txt:
 	* src/main/execute.C:
-	* src/test.p:
 		with result rwpool
 
 	* src/include/pa_value.h:
@@ -12903,7 +12142,6 @@
 	* src/main/execute.C:
 	* src/main/main.dsp:
 	* src/main/pa_array.C:
-	* src/test.p:
 		auto VHash on wcontext.put_element when wcontext fvalue==0
 
 	* src/include/pa_value.h:
@@ -12915,7 +12153,6 @@
 2001-02-22  paf
 	* src/include/pa_request.h:
 	* src/main/compile.y:
-	* src/test.p:
 		$self.put(val)
 
 	* src/include/pa_pool.h:
@@ -12935,17 +12172,14 @@
 	* src/main/core.C:
 	* src/main/execute.C:
 	* src/main/pa_string.C:
-	* src/test.p:
 		more precise parse error line:col
 
 	* src/main/compile.C:
 	* src/main/compile.y:
 	* src/main/execute.C:
-	* src/test.p:
 		started : with $a.$:f
 
 	* src/main/compile.y:
-	* src/test.p:
 		$: wasn't finished - $:sdf(sdf) troubled a bit. finished now.
 
 	* src/include/code.h:
@@ -12976,20 +12210,17 @@
 		in process, but found that exceptions are too global
 
 	* src/main/compile.y:
-	* src/test.p:
 		$: finished
 
 	* src/main/compile.C:
 	* src/main/compile.y:
 	* src/main/compile_tools.C:
-	* src/test.p:
 		z
 
 	* src/include/pa_request.h:
 	* src/include/pa_stack.h:
 	* src/include/pa_wcontext.h:
 	* src/main/execute.C:
-	* src/test.p:
 		z about to vstring it .y all
 
 	* src/include/pa_hash.h:
@@ -13000,7 +12231,6 @@
 	* src/include/pa_wcontext.h:
 	* src/main/execute.C:
 	* src/main/main.dsp:
-	* src/test.p:
 		auto VHash in pa.th.cre.at.e
 
 	* src/include/code.h:
@@ -13009,7 +12239,6 @@
 	* src/main/compile_tools.C:
 	* src/main/compile_tools.h:
 	* src/main/execute.C:
-	* src/test.p:
 		string to vstring it .y all
 
 	* src/include/pa_array.h:
@@ -13017,7 +12246,6 @@
 	* src/main/compile_tools.C:
 	* src/main/compile_tools.h:
 	* src/main/pa_array.C:
-	* src/test.p:
 		$self.get
 
 	* src/include/pa_exception.h:
@@ -13035,19 +12263,16 @@
 	* src/main/pa_pool.C:
 	* src/main/pa_string.C:
 	* src/main/pa_table.C:
-	* src/test.p:
 		removed exception from request
 
 	* src/include/pa_vstring.h:
 	* src/main/compile.C:
 	* src/main/core.C:
-	* src/test.p:
 		added some forgotten
 
 	* src/include/pa_wcontext.h:
 	* src/main/compile.y:
 	* src/main/execute.C:
-	* src/test.p:
 		erroreos checkout
 
 2001-02-21  paf
@@ -13313,8 +12538,6 @@
 		:pooled
 
 2001-01-30  paf
-	* src/configure:
-	* src/configure.in:
 	* src/include/pa_error.h:
 	* src/include/pa_exception.h:
 	* src/include/pa_pool.h:
@@ -13358,10 +12581,6 @@
 		error re-associated. that's much better
 		even removed 'die' necessety
 
-	* src/configure:
-	* src/configure.in:
-		.am updated
-
 2001-01-29  paf
 	* src/include/pa_hash.h:
 	* src/include/pa_pool.h:
@@ -13396,7 +12615,6 @@
 		
 		rethought, would change now
 
-	* src/configure.in:
 	* src/include/pa_hash.h:
 	* src/include/pa_threads.h:
 	* src/main/main.dsp:
@@ -13488,10 +12706,6 @@
 	* src/main/pa_table.C:
 		added forgotten
 
-	* src/acinclude.m4:
-		--disable-string-origins
-
-	* src/configure:
 	* src/include/pa_array.h:
 	* src/include/pa_pool.h:
 	* src/main/Makefile.am:
@@ -13566,30 +12780,12 @@
 	* src/include/pa_string.h:
 		pa_pool split
 
-	* src/AUTHORS:
-	* src/COPYING:
-	* src/ChangeLog:
-	* src/INSTALL:
 	* src/Makefile.am:
-	* src/NEWS:
-	* src/README:
-	* src/acinclude.m4:
-	* src/config.guess:
-	* src/config.h.bot:
-	* src/config.h.top:
-	* src/config.sub:
-	* src/configure:
-	* src/configure.in:
 	* src/include/pa_pool.h:
-	* src/install-sh:
 	* src/main/Makefile.am:
 	* src/main/main.dsp:
 	* src/main/pa_pool.C:
 	* src/main/pa_string.C:
-	* src/missing:
-	* src/mkinstalldirs:
-	* src/parser.dsw:
-	* src/stamp-h.in:
 	* src/targets/Makefile.am:
 	* src/targets/parser.C:
 	* src/targets/parser.dsp:
@@ -13603,7 +12799,7 @@
 	* src/targets/parser.C:
 	* src/targets/parser.dsp:
 	* src/targets/parser.dsp:
-		$Id: ChangeLog,v 1.10 2002/06/18 15:18:37 paf Exp $ check
+		$Id: ChangeLog,v 1.11 2002/06/28 09:58:59 paf Exp $ check
 
 	* src/targets/parser.C:
 		$id$ check

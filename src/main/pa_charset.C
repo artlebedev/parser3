@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 
-	$Id: pa_charset.C,v 1.23 2002/03/27 15:30:36 paf Exp $
+	$Id: pa_charset.C,v 1.24 2002/06/28 09:59:01 paf Exp $
 */
 
 #include "pa_charset.h"
@@ -580,7 +580,7 @@ String& Charset::transcode(GdomeDOMString *s) {
 }
 
 /// @test less memory using -maybe- xmlParserInputBufferCreateMem
-GdomeDOMString_auto_ptr Charset::transcode_buf(const char *buf, size_t buf_size) { 
+xmlChar *Charset::transcode_buf2xchar(const char *buf, size_t buf_size) {
 	int outlen=buf_size*6/*max*/+1;
 	unsigned char *out=(unsigned char*)malloc(outlen*sizeof(unsigned char));
 
@@ -599,11 +599,14 @@ GdomeDOMString_auto_ptr Charset::transcode_buf(const char *buf, size_t buf_size)
 			"transcode_buf failed (%d)", size);
 
 	out[size]=0;
-	return GdomeDOMString_auto_ptr((gchar*)out);
+	return (xmlChar *)out;
+}
+GdomeDOMString_auto_ptr Charset::transcode_buf2dom(const char *buf, size_t buf_size) { 
+	return GdomeDOMString_auto_ptr((gchar*)transcode_buf2xchar(buf, buf_size));
 }
 GdomeDOMString_auto_ptr Charset::transcode(const String& s) { 
 	const char *cstr=s.cstr(String::UL_UNSPECIFIED);
 
-	return transcode_buf(cstr, strlen(cstr)); 
+	return transcode_buf2dom(cstr, strlen(cstr)); 
 }
 #endif

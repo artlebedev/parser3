@@ -6,7 +6,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 	
-	$Id: pa_vmail.C,v 1.7 2002/06/26 13:42:37 paf Exp $
+	$Id: pa_vmail.C,v 1.8 2002/06/28 09:59:02 paf Exp $
 */
 
 #include "pa_sapi.h"

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_pool.C,v 1.52 2002/03/27 15:30:36 paf Exp $
+	$Id: pa_pool.C,v 1.53 2002/06/28 09:59:01 paf Exp $
 */
 
 #include "pa_pool.h"
@@ -69,6 +69,10 @@ const char *Pool::transcode_cstr(GdomeDOMString *s) {
 
 String& Pool::transcode(GdomeDOMString *s) { 
 	return get_source_charset().transcode(s); 
+}
+
+xmlChar *Pool::transcode_buf2xchar(const char *buf, size_t buf_size) {
+	return get_source_charset().transcode_buf2xchar(buf, buf_size); 
 }
 
 GdomeDOMString_auto_ptr Pool::transcode(const String& s) {

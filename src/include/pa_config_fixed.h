@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_config_fixed.h,v 1.45 2002/06/24 15:18:43 paf Exp $
+	$Id: pa_config_fixed.h,v 1.46 2002/06/28 09:59:00 paf Exp $
 
 
 	tested only with MS Visual C++ V6
