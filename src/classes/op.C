@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: op.C,v 1.75 2002/03/25 09:40:01 paf Exp $
+	$Id: op.C,v 1.76 2002/03/26 13:08:30 paf Exp $
 */
 
 #include "classes.h"
@@ -481,12 +481,14 @@ VHash& exception2vhash(Pool& pool, const Exception& e) {
 	Hash& hash=result.hash(0);
 	if(const String *type=e.type())
 		hash.put(*exception_type_part_name, new(pool) VString(*type));
-	if(const String *source=e.problem_source()) {
-		result.set_name(*source);
+	if(const String *asource=e.problem_source()) {
+		String& source=*new(pool) String(pool); 
+		source.append(*asource, String::UL_TAINTED, true/*forced*/);
+		result.set_name(source);
 
-		hash.put(*exception_source_part_name, new(pool) VString(*source));
+		hash.put(*exception_source_part_name, new(pool) VString(source));
 #ifndef NO_STRING_ORIGIN
-		const Origin& origin=source->origin();
+		const Origin& origin=source.origin();
 		hash.put(*new(pool) String(pool, "file"), 				
 			new(pool) VString(*new(pool) String(pool, origin.file)));
 		hash.put(*new(pool) String(pool, "lineno"),
@@ -498,7 +500,7 @@ VHash& exception2vhash(Pool& pool, const Exception& e) {
 		char *pcomment=(char *)pool.malloc(comment_size);
 		memcpy(pcomment, ecomment, comment_size);
 		hash.put(*exception_comment_part_name, 
-			new(pool) VString(*new(pool) String(pool, pcomment, comment_size)));
+			new(pool) VString(*new(pool) String(pool, pcomment, comment_size, true/*tainted*/)));
 	}
 	hash.put(*exception_handled_part_name, 
 		new(pool) VBool(pool, false));

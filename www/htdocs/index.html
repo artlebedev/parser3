@@ -7,8 +7,8 @@ $response:charset[windows-1251]
 $response:content-type[$.value[text/html]$.charset[$response:charset]]
 
 @main[]
-#^roll2[]
-^rolls[]
+^roll2[]
+#^rolls[]
 #^exceptions1[]
 #^locate_by_expr[]
 #^method_junction_params{...}
@@ -113,7 +113,7 @@ OK
 
 @roll2[]
 $d[^date::create(2002;4;2;2;2;3)] ^d.sql-string[]<br>
-^d.roll[day](-2) ^d.sql-string[]<br>
+^d.roll[day](+365*3+1) ^d.sql-string[]<br>
 
 
 @rolls[]
