@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.79 2001/03/25 08:52:36 paf Exp $
+	$Id: pa_request.C,v 1.80 2001/03/25 10:25:10 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -173,14 +173,12 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 		Value *defaults=main_class->get_element(*defaults_name);
 		// value must be allocated on request's pool for that pool used on
 		// meaning constructing @see attributed_meaning_to_string
-		default_content_type=defaults?
-			defaults->get_element(*content_type_name)
-			:NEW VString(*NEW String(pool(), "text/html"));
-		Table *typo_table=0;
+		default_content_type=defaults?defaults->get_element(*content_type_name):0;
+		Table *user_typo_table=0;
 		if(Value *element=main_class->get_element(*html_typo_name))
 			if(VTable *vtable=element->get_vtable())
-				typo_table=&vtable->table();
-		pool().set_tag(typo_table?typo_table:default_typo_table);
+				user_typo_table=&vtable->table();
+		pool().set_tag(user_typo_table?user_typo_table:default_typo_table);
 
 		// execute @main[]
 		const String *body_string=execute_method(*main_class, *main_method_name);
@@ -438,7 +436,9 @@ void Request::output_result(const String& body_string, bool header_only) {
 	cookie.output_result();
 	
 	// set default content-type
-	response.fields().put_dont_replace(*content_type_name, default_content_type);
+	response.fields().put_dont_replace(*content_type_name, 
+		default_content_type?default_content_type
+		:NEW VString(*NEW String(pool(), "text/html")));
 
 	// prepare header: $response:fields without :body
 	response.fields().for_each(add_header_attribute, /*excluding*/ body_name);
