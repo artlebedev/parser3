@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char* IDENT_VMAIL_C="$Date: 2003/04/04 08:23:07 $";
+static const char* IDENT_VMAIL_C="$Date: 2003/04/04 09:43:38 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -118,7 +118,7 @@ struct MimePart2bodyInfo {
 #endif
 /// @test why no copy to global in P_HTML putReceived?
 static void MimePart2body(GMimePart *part,
-						  gpointer data) {
+			  gpointer data) {
 	MimePart2bodyInfo& i=*static_cast<MimePart2bodyInfo *>(data);
 	Pool& pool=i.body->pool();
 
@@ -126,15 +126,15 @@ static void MimePart2body(GMimePart *part,
 		if(g_mime_content_type_is_type(type, "multipart", "*"))
 			return; // skipping frames
 
-		PartType partType;
-		if(g_mime_content_type_is_type(type, "text", "plain"))
-			partType=P_TEXT;
-		else if(g_mime_content_type_is_type(type, "text", "html"))
-			partType=P_HTML;
-		else if(g_mime_content_type_is_type(type, "message", "*"))
-			partType=P_MESSAGE;
-		else
-			partType=P_FILE;
+		PartType partType=P_FILE;
+		if(g_mime_part_get_filename(part)==0) { // not attachment, both styles
+			if(g_mime_content_type_is_type(type, "text", "plain"))
+				partType=P_TEXT;
+			else if(g_mime_content_type_is_type(type, "text", "html"))
+				partType=P_HTML;
+			else if(g_mime_content_type_is_type(type, "message", "*"))
+				partType=P_MESSAGE;
+		}
 		
 		// partName
 		const char *partName;
