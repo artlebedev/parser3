@@ -46,7 +46,13 @@ define a macro for memmove() if USE_BCOPY is defined. */
 /* Standard C headers plus the external interface definition */
 
 #include <ctype.h>
-#include <limits.h>
+/* #include <limits.h> 
+PAF@design.ru removed this, for it were used only for stupid MAX_INT for
+mimimum searches, changed that to some out-of-reasonable-text-length value
+of 10M
+*/
+#define PCRE_MAX_POS (10*0x400*0x400)
+
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
