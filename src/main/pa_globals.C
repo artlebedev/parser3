@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.30 2001/03/24 11:33:27 paf Exp $
+	$Id: pa_globals.C,v 1.31 2001/03/24 19:12:20 paf Exp $
 */
 
 #include "pa_globals.h"
@@ -17,6 +17,7 @@
 #include "_response.h"
 #include "_file.h"
 
+String *html_typo_name;
 String *content_type_name;
 String *body_name;
 String *value_name;
@@ -88,6 +89,7 @@ void pa_globals_init(Pool& pool) {
 	setup_hex_value();
 
 	// names
+	html_typo_name=new(pool) String(pool, HTML_TYPO_NAME);
 	content_type_name=new(pool) String(pool, CONTENT_TYPE_NAME);
 	body_name=new(pool) String(pool, BODY_NAME);
 	value_name=new(pool) String(pool, VALUE_NAME);

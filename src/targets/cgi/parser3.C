@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3.C,v 1.45 2001/03/24 14:56:09 paf Exp $
+	$Id: parser3.C,v 1.46 2001/03/24 19:12:21 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -38,7 +38,7 @@ static LONG WINAPI TopLevelExceptionFilter(struct _EXCEPTION_POINTERS *Exception
 	char buf[MAX_STRING];
 	if(ExceptionInfo && ExceptionInfo->ExceptionRecord) {
 		struct _EXCEPTION_RECORD *er=ExceptionInfo->ExceptionRecord;
-		snprintf(buf, MAX_STRING, "Exception %#X at %p", 
+		snprintf(buf, MAX_STRING, "Exception 0x%X at %p", 
 			er->ExceptionCode, 
 			er->ExceptionAddress);
 	} else 
@@ -52,8 +52,7 @@ static LONG WINAPI TopLevelExceptionFilter(struct _EXCEPTION_POINTERS *Exception
 }
 #endif
 
-//@{
-/// SAPI funcs decl
+// SAPI
 const char *SAPI::get_env(Pool& pool, const char *name) {
  	return getenv(name);
 }
@@ -90,7 +89,7 @@ void SAPI::send_body(Pool& pool, const char *buf, size_t size) {
 	stdout_write(buf, size);
 }
 
-/// appends to parser3.log located beside my binary
+// appends to parser3.log located beside my binary
 void SAPI::log(Pool& pool, const char *fmt, ...) {
 	bool opened;
 	FILE *f=0;
@@ -122,7 +121,6 @@ void SAPI::log(Pool& pool, const char *fmt, ...) {
 	if(opened)
 		fclose(f);
 }
-//@}
 
 /**
 	main workhorse

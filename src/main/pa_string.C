@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.49 2001/03/24 15:58:01 paf Exp $
+	$Id: pa_string.C,v 1.50 2001/03/24 19:12:20 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -287,11 +287,10 @@ int String::cmp(const String& src) const {
 	return result;
 }
 
-bool String::operator == (const char* b_ptr) const {
-	size_t b_size=b_ptr?strlen(b_ptr):0;
-	if(size() != b_size)
-		return false;
+int String::cmp(const char* b_ptr, int& partial, size_t src_size) const {
+	size_t b_size=src_size?src_size:b_ptr?strlen(b_ptr):0;
 
+	partial=0;
 	const Chunk *a_chunk=&head;
 	const Chunk::Row *a_row=a_chunk->rows;
 	int a_offset=0;
@@ -306,18 +305,18 @@ bool String::operator == (const char* b_ptr) const {
 			(b_size-b_offset);
 
 		if(size_diff==0) { // a has same size as b
-			if(memcmp(a_row->item.ptr+a_offset, b_ptr+b_offset, a_row->item.size-a_offset)!=0)
-				return false;
+			if(int result=memcmp(a_row->item.ptr+a_offset, b_ptr+b_offset, a_row->item.size-a_offset)!=0)
+				return result;
 			a_row++; a_countdown--; a_offset=0;
 			b_break=true;
 		} else if (size_diff>0) { // a longer
-			if(memcmp(a_row->item.ptr+a_offset, b_ptr+b_offset, b_size-b_offset)!=0)
-				return false;
+			if(int result=memcmp(a_row->item.ptr+a_offset, b_ptr+b_offset, b_size-b_offset)!=0)
+				return result;
 			a_offset+=b_size-b_offset;
 			b_break=true;
 		} else { // b longer
-			if(memcmp(a_row->item.ptr+a_offset, b_ptr+b_offset, a_row->item.size-a_offset)!=0)
-				return false;
+			if(int result=memcmp(a_row->item.ptr+a_offset, b_ptr+b_offset, a_row->item.size-a_offset)!=0)
+				return result;
 			b_offset+=a_row->item.size-a_offset;
 			a_row++; a_countdown--; a_offset=0;
 		}
@@ -332,18 +331,24 @@ bool String::operator == (const char* b_ptr) const {
 			a_countdown=a_chunk->count;
 		}
 	}
-	return a_break==b_break;
+	if(a_break==b_break) // ended simultaneously
+		return 0;
+	else if(a_break) // first bytes equal, but a ended before b
+		return partial=-1;
+	else
+		return partial=+1;
 }
 
 #ifndef NO_STRING_ORIGIN
 const Origin& String::origin() const { 
 	if(!fused_rows)
 		THROW(0, 0, 
-		0,
-		"String::origin() of empty string called");
+			0,
+			"String::origin() of empty string called");
 	
 	// determining origin by last appended piece
-	// first frequently constant. ex: ^load[/file] "document_root" + "/file"
+	// because first one frequently constant. 
+	// ex: ^load[/file] "document_root" + "/file"
 	return append_here[-1].item.origin; 
 }
 #endif

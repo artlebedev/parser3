@@ -1,9 +1,11 @@
-/*
-	Parser
+/** @file
+	Parser: table parser class decl.
+
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vtable.h,v 1.5 2001/03/19 20:07:40 paf Exp $
+	$Id: pa_vtable.h,v 1.6 2001/03/24 19:12:23 paf Exp $
 */
 
 #ifndef PA_VTABLE_H
@@ -14,12 +16,15 @@
 #include "_table.h"
 #include "pa_vunknown.h"
 
+/// value of type 'table'. implemented with Table
 class VTable : public VStateless_object {
 public: // Value
 
-	// all: for error reporting after fail(), etc
+	/// all: for error reporting after fail(), etc
 	const char *type() const { return "table"; }
-	// table: column
+	/// extract VTable
+	VTable *get_vtable() { return this; }
+	/// VTable: column
 	Value *get_element(const String& name) {
 		// methods
 		if(Value *result=VStateless_object::get_element(name))

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.h,v 1.43 2001/03/23 19:25:15 paf Exp $
+	$Id: pa_pool.h,v 1.44 2001/03/24 19:12:18 paf Exp $
 */
 
 #ifndef PA_POOL_H
@@ -30,10 +30,13 @@ class Pool {
 	friend Temp_exception;
 public:
 
-	Pool(void *astorage) : fstorage(astorage), fcontext(0), fexception(0) {}
+	Pool(void *astorage) : fstorage(astorage), fcontext(0), ftag(0), fexception(0) {}
 
 	void set_context(void *acontext) { fcontext=acontext; }
 	void *context() { return fcontext; }
+
+	void set_tag(void *atag) { ftag=atag; }
+	void *tag() { return ftag; }
 
 	/// current exception object of the pool
 	Exception& exception() const { return *fexception; }
@@ -51,6 +54,7 @@ private:
 
 	void *fstorage;
 	void *fcontext;
+	void *ftag;
 
 private: // implementation defined
 

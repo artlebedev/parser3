@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.77 2001/03/24 15:58:01 paf Exp $
+	$Id: pa_request.C,v 1.78 2001/03/24 19:12:20 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -21,6 +21,7 @@
 #include "pa_vint.h"
 #include "pa_vmframe.h"
 #include "pa_types.h"
+#include "pa_vtable.h"
 
 /// $limits.post_max_size default 10M
 const size_t MAX_POST_SIZE_DEFAULT=10*0x400*400;
@@ -105,14 +106,17 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 
 		// $MAIN:limits hash used here,
 		//	until someone with less privileges have overriden them
-		Value *limits=main_class?main_class->get_element(*limits_name):0;
-		Value *element;
-		// $limits.post_max_size default 10M
-		element=limits?limits->get_element(*post_max_size_name):0;
-		size_t value=element?(size_t)element->get_double():0;
-		size_t post_max_size=value?value:MAX_POST_SIZE_DEFAULT;
+		{
+			Value *limits=main_class?main_class->get_element(*limits_name):0;
+			// $limits.post_max_size default 10M
+			Value *element=limits?limits->get_element(*post_max_size_name):0;
+			size_t value=element?(size_t)element->get_double():0;
+			size_t post_max_size=value?value:MAX_POST_SIZE_DEFAULT;
+			
+			form.fill_fields(*this, post_max_size);
+		}
 
-		form.fill_fields(*this, post_max_size);
+		// filling cookies
 		cookie.fill_fields(*this);
 
 		// loading site auto.p
@@ -166,12 +170,15 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 			main_class_name, main_class);
 
 		// $MAIN:defaults
-		Value *defaults=main_class?main_class->get_element(*defaults_name):0;
+		Value *defaults=main_class->get_element(*defaults_name);
 		// value must be allocated on request's pool for that pool used on
 		// meaning constructing @see attributed_meaning_to_string
 		default_content_type=defaults?
 			defaults->get_element(*content_type_name)
 			:NEW VString(*NEW String(pool(), "text/html"));
+		if(Value *element=main_class->get_element(*html_typo_name))
+			if(VTable *vtable=element->get_vtable())
+				pool().set_tag(&vtable->table());
 
 		// execute @main[]
 		const String *body_string=execute_method(*main_class, *main_method_name);

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.49 2001/03/23 13:08:09 paf Exp $
+	$Id: pa_string.h,v 1.50 2001/03/24 19:12:18 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -18,6 +18,12 @@
 #include "pa_pool.h"
 #include "pa_types.h"
 
+/**
+	$MAIN:html-typo table elements must enlarge string not more that that
+	that's a tradeoff - otherwise we'd have to scan string twice:
+	- first for buffer length
+	- second for replacements themselves
+*/
 #define UNTAINT_TIMES_BIGGER 10
 
 #ifndef NO_STRING_ORIGIN
@@ -98,7 +104,12 @@ public:
 	String(const String& src);
 	size_t size() const { return fsize; }
 	/// convert to C string
-	char *cstr() const;
+	char *cstr() const {
+		char *result=(char *)malloc(size()*UNTAINT_TIMES_BIGGER+1);
+		char *eol=store_to(result);
+		*eol=0;
+		return result;
+	}
 	/** append fragment
 		@see APPEND, APPEND_TAINTED, APPEND_CONST
 	*/
@@ -116,7 +127,21 @@ public:
 	}
 	bool operator != (const String& src) const { return cmp(src)!=0; }
 
-	bool operator == (const char* b_ptr) const;
+	/**
+		 @param partial 
+			returns partial match status. 
+			-1 means @c this starts @c src
+			+2 means @src starts @this
+	*/
+	int cmp(const char* src_ptr, int& partial, size_t src_size=0) const;
+	bool operator == (const char* src_ptr) const { 
+		size_t src_size=src_ptr?strlen(src_ptr):0;
+		if(size() != src_size)
+			return false;
+		int partial; // unused
+		return cmp(src_ptr, partial, src_size)==0; 
+	}
+
 	/** 
 		appends other String.
 
@@ -179,6 +204,7 @@ private:
 	}
 	void expand();
 	void set_lang(Chunk::Row *row, Untaint_lang lang, bool forced, size_t size);
+	char *String::store_to(char *dest) const;
 
 private: //disabled
 

@@ -1,4 +1,12 @@
+@auto[]
+$html-typo[^table:set{user	html
+_	&nbsp^;
+{	&laquo^;
+}	&raquo^;
+}]
+
 @main[]
+<HR>
 $t[^table:load[/test.cfg]]
 ^process[@b[]
 f
@@ -29,8 +37,8 @@ $response:location[http://parser3/123]
 ^$request:uri=$request:uri<BR>
 
 <form method=post>
-(^$form:name=$form:name)<BR>
-<input name=name value="^default[$form:name;не знаю]">
+<table border=1 width=250><tr><td>$form:name</td></tr></table>
+<textarea name=name rows=5 cols=40>^untaint[html]{^default[$form:name;не знаю]}</textarea><BR>
 <input type=submit>
 </form>
 

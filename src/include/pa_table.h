@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_table.h,v 1.18 2001/03/20 06:45:18 paf Exp $
+	$Id: pa_table.h,v 1.19 2001/03/24 19:12:18 paf Exp $
 */
 
 #ifndef PA_TABLE_H
@@ -18,7 +18,7 @@
 #include "pa_request.h"
 
 /** 
-	parser \b table class backend.
+	VTable backend.
 
 	holds:
 	- column names[if any]

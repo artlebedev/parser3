@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_array.h,v 1.29 2001/03/24 10:54:44 paf Exp $
+	$Id: pa_array.h,v 1.30 2001/03/24 19:12:18 paf Exp $
 */
 
 #ifndef PA_ARRAY_H
@@ -43,7 +43,7 @@ public:
 	typedef void (*For_each_func)(Item *value, void *info);
 
 	/// first_that iterator function type
-	typedef Item *(*First_that_func)(Item *value, const void *info);
+	typedef bool (*First_that_func)(Item *value, const void *info);
 
 	enum {
 		CR_INITIAL_ROWS_DEFAULT=10, ///< default preallocated row count

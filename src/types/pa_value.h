@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.31 2001/03/20 06:45:20 paf Exp $
+	$Id: pa_value.h,v 1.32 2001/03/24 19:12:23 paf Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -132,6 +132,12 @@ public: // Value
 		- VMethod_frame: self_transparent
 	*/
 	virtual VAliased *get_aliased() { return 0; }
+
+	/** extract VTable
+		@return for
+		- VTable: this
+	*/
+	virtual VTable *get_vtable() { return 0; }
 
 public: // usage
 

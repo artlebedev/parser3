@@ -1,6 +1,6 @@
 @exception[origin;source;comment;type;code]
 CGI_BIN_ERROR:
-^if(def $source){$origin '$source'}
+if(def $source){$origin '$source'}
 ${comment}.
 ^if(def $type){type=$type}
 ^if(def $code){code=$code}

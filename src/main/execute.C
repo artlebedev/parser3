@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.124 2001/03/24 09:57:51 paf Exp $
+	$Id: execute.C,v 1.125 2001/03/24 19:12:19 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -641,7 +641,7 @@ Value *Request::get_element() {
 	- false:
 		they want any result[string|object]
 		nothing goes to wcontext.
-		used in (expression) params evaluation
+		used in @c (expression) params evaluation
 */
 Value& Request::process(Value& value, const String *name, bool intercept_string) {
 	Value *result;
@@ -652,7 +652,7 @@ Value& Request::process(Value& value, const String *name, bool intercept_string)
 		PUSH(self);  
 		PUSH(root);  
 		PUSH(rcontext);  
-		PUSH(wcontext);
+			PUSH(wcontext);
 		
 		WContext *frame;
 		// for expression method params

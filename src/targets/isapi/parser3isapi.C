@@ -15,8 +15,13 @@
 
 #define MAX_STATUS_LENGTH sizeof("xxxx LONGEST STATUS DESCRIPTION")
 
-//@{
-/// SAPI funcs decl
+// SAPI
+
+/** 
+	ISAPI SAPI functions receive this context information. 
+
+	@see Pool::set_context
+*/
 struct SAPI_func_context {
 	LPEXTENSION_CONTROL_BLOCK lpECB;
 	String *header;
@@ -137,7 +142,7 @@ void SAPI::send_body(Pool& pool, const char *buf, size_t size) {
 		const_cast<char *>(buf), &num_bytes, HSE_IO_SYNC);
 }
 
-/// goes to 'cs-uri-query' log file field. webmaster: switch it ON[default OFF].
+// goes to 'cs-uri-query' log file field. webmaster: switch it ON[default OFF].
 void SAPI::log(Pool& pool, const char *fmt, ...) {
 	SAPI_func_context& ctx=*static_cast<SAPI_func_context *>(pool.context());
 	
@@ -151,7 +156,6 @@ void SAPI::log(Pool& pool, const char *fmt, ...) {
 	ctx.lpECB->ServerSupportFunction(ctx.lpECB->ConnID, 
 		HSE_APPEND_LOG_PARAMETER, buf, &size, 0);
 }
-//@}
 
 // 
 
@@ -198,8 +202,8 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 	Pool pool(&pool_storage); // no allocations until assigned context [for reporting]
 	SAPI_func_context ctx={
 		lpECB,
-			0, // filling later: so that if there would be error pool would have ctx
-			200
+		0, // filling later: so that if there would be error pool would have ctx
+		200
 	};
 	pool.set_context(&ctx);// no allocations before this line!
 	
