@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 */
-static const char *RCSId="$Id: parser3mysql.C,v 1.23 2001/06/28 07:44:17 parser Exp $"; 
+static const char *RCSId="$Id: parser3mysql.C,v 1.24 2001/06/29 08:35:26 parser Exp $"; 
 
 #include "config_includes.h"
 
@@ -180,8 +180,11 @@ public:
 					for(unsigned int i=0; i<(*column_count); i++){
 						size_t size=(size_t)lengths[i];
 						row[i].size=size;
-						row[i].ptr=services.malloc(size);
-						memcpy(row[i].ptr, mysql_row[i], size);
+						if(size) {
+							row[i].ptr=services.malloc(size);
+							memcpy(row[i].ptr, mysql_row[i], size);
+						} else
+							row[i].ptr=0;
 					}
 				}
 		} else

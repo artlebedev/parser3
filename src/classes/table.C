@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: table.C,v 1.86 2001/06/28 07:44:17 parser Exp $"; 
+static const char *RCSId="$Id: table.C,v 1.87 2001/06/29 08:35:26 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -530,9 +530,10 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 		
 		for(unsigned int i=0; i<sql_column_count; i++) {
 			String& table_cell=*new(pool) String(pool);
-			table_cell.APPEND_TAINTED(
-				(const char *)sql_cells[i].ptr, sql_cells[i].size,
-				statement_cstr, row);
+			if(sql_cells[i].size)
+				table_cell.APPEND_TAINTED(
+					(const char *)sql_cells[i].ptr, sql_cells[i].size,
+					statement_cstr, row);
 			table_row+=&table_cell;
 		}
 		table+=&table_row;
