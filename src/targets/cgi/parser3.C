@@ -4,13 +4,16 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: parser3.C,v 1.138 2001/11/19 08:00:34 paf Exp $
+	$Id: parser3.C,v 1.139 2001/11/19 08:21:39 paf Exp $
 */
 
 #include "pa_config_includes.h"
 
 #ifdef WIN32
 #	include <windows.h>
+#endif
+
+#if _MSC_VER
 #	include <new.h>
 #endif
 
@@ -379,7 +382,7 @@ void call_real_parser_handler__do_SEH(
 #endif
 }
 
-#ifdef WIN32
+#if _MSC_VER
 int failed_new(size_t size) {
 	SAPI::die("out of memory in 'new', failed to allocated %u bytes", size);
 	return 0; // not reached
@@ -423,7 +426,7 @@ int main(int argc, char *argv[]) {
 	setmode(fileno(stderr), _O_BINARY);
 #endif
 
-#ifdef WIN32
+#if _MSC_VER
 	_set_new_handler(failed_new);
 #endif
 

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: mod_parser3.C,v 1.10 2001/11/19 08:00:34 paf Exp $
+	$Id: mod_parser3.C,v 1.11 2001/11/19 08:21:38 paf Exp $
 */
 
 #include "httpd.h"
@@ -17,7 +17,7 @@
 
 #include "pa_config_includes.h"
 
-#ifdef WIN32
+#if _MSC_VER
 #	include <new.h>
 #endif
 
@@ -367,7 +367,7 @@ static int parser_handler(request_rec *r) {
     return OK;
 }
 
-#ifdef WIN32
+#if _MSC_VER
 int failed_new(size_t size) {
 	SAPI::die("out of memory in 'new', failed to allocated %u bytes", size);
 	return 0; // not reached
