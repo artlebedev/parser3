@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_FILE_C="$Date: 2002/09/18 09:44:51 $";
+static const char* IDENT_FILE_C="$Date: 2002/09/24 10:24:22 $";
 
 #include "pa_config_includes.h"
 
@@ -421,7 +421,7 @@ static void _list(Request& r, const String& method_name, MethodParams *params) {
 			char *file_name_cstr=(char *)pool.malloc(file_name_size);
 			memcpy(file_name_cstr, ffblk.ff_name, file_name_size);
 			String &file_name=*new(pool) String(pool);
-			file_name.APPEND(file_name_cstr, file_name_size, String::UL_FILE_SPEC, 
+			file_name.APPEND_TAINTED(file_name_cstr, file_name_size, 
 				method_name.origin().file, method_name.origin().line);
 		
 			Array& row=*new(pool) Array(pool);

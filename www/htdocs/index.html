@@ -255,15 +255,25 @@ $response:charset[windows-1251]
 #^emptyTransformResult[]
 #^badxdoccreate[]
 #^if(-d "CVS"){y}{n}
-^badjunctioncall[]
+#^badjunctioncall[]
+^russianindex[]
 <hr>
 OK
+
+@russianindex[]
+#dir with files with russian-lang names
+$where[dir]
+
+$dir[^file:list[$where;\.txt^$]]
+^dir.menu{
+	<a href=$where/^untaint[uri]{$dir.name}>$dir.name</a><br>
+}
 
 @badjunctioncall[]
 ^badjunctioncallinside{code}
 
 @badjunctioncallinside[code]
-^code[]
+xx^code[]
 
 @badxdoccreate[]
 $xdoc[^xdoc::create[вася]]
@@ -695,7 +705,9 @@ $sheet[^xdoc::create{<?xml version="1.0"?>
 
   <xsl:template match="people">
      <html>
-     <head>z</head>
+     <head>
+<link type='text/xml' rel='alternate' href='/Default.vsdisco'/>
+z</head>
    		para1=<xsl:copy-of select="^$param1"/>
     	<xsl:apply-templates/>
     	<hr/>

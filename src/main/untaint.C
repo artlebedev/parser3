@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_UNTAINT_C="$Date: 2002/09/16 07:08:49 $";
+static const char* IDENT_UNTAINT_C="$Date: 2002/09/24 10:24:23 $";
 
 #include "pa_pool.h"
 #include "pa_string.h"
@@ -47,20 +47,14 @@ ulong string_string_shortcut_economy=0;
 		dest+=bsize; \
 
 inline bool need_file_encode(unsigned char c){
-	// theoretical problem with, for instance, "_2B" and "." fragments, 
-	// they would yield the same 
-	// because need_file_encode('_')=false
-	// but we need to delete such files somehow, getting names from ^index
-
-    if((c>='0') &&(c<='9') ||(c>='A') &&(c<='Z') ||(c>='a') &&(c<='z')) 
-		return false;
-
-    return !strchr(
-		" _./()-"
-#ifdef WIN32
-		":\\~"
+	// russian letters and space ENABLED
+	// encoding only these...
+	return strchr(
+			  "*?'\"<>|"
+#ifndef WIN32
+			  ":\\~"
 #endif
-		, c);
+			  , c)!=0;
 }
 inline bool need_uri_encode(unsigned char c){
     if((c>='0') &&(c<='9') ||(c>='A') &&(c<='Z') ||(c>='a') &&(c<='z')) 
@@ -380,18 +374,14 @@ char *String::store_to(char *dest, Untaint_lang lang,
 			{
 				const char *src=(const char *)client_ptr;
 				for(int size=client_size; size--; src++) 
-					switch(*src) {
-						case ' ': to_char('+');  break;
-						default: encode(need_uri_encode, '%');
-					};
+					encode(need_uri_encode, '%');
 			}
 			break;
 		case UL_HTTP_HEADER:
 			// tainted, untaint language: http-field-content-text
-			escape(switch(*src) {
-				case ' ': to_char('+');  break;
-				default: encode(need_uri_encode, '%');
-			});
+			escape(
+				encode(need_uri_encode, '%');
+			);
 			break;
 		case UL_MAIL_HEADER:
 			// tainted, untaint language: mail-header
