@@ -1,5 +1,5 @@
 /*
-  $Id: pa_hash.h,v 1.8 2001/01/29 12:00:45 paf Exp $
+  $Id: pa_hash.h,v 1.9 2001/01/29 12:13:14 paf Exp $
 */
 
 /*
@@ -45,6 +45,9 @@ private:
 	// the pool I'm allocated on
 	Pool *pool;
 
+	// am I thread-safe?
+	bool thread_safe;
+
 	// the index of [size] in [sizes]
 	int size_index;
 
@@ -82,7 +85,7 @@ private:
 	// new&constructors made private to enforce factory manufacturing at pool
 	void *operator new(size_t size, Pool *apool);
 
-	Hash(Pool *apool);
+	Hash(Pool *apool, bool athread_safe);
 
 	// filled to threshold: needs expanding
 	bool full() { return used==threshold; }

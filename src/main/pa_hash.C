@@ -1,5 +1,5 @@
 /*
-  $Id: pa_hash.C,v 1.4 2001/01/29 11:53:42 paf Exp $
+  $Id: pa_hash.C,v 1.5 2001/01/29 12:13:15 paf Exp $
 */
 
 /*
@@ -30,8 +30,9 @@ void *Hash::operator new(size_t size, Pool *apool) {
 	return apool->malloc(size);
 }
 
-Hash::Hash(Pool *apool) {
-	pool=apool;
+Hash::Hash(Pool *apool, bool athread_safe) :
+	pool(apool),
+	thread_safe(athread_safe) {
 	
 	size=sizes[size_index=0];
 	threshold=size*THRESHOLD_PERCENT/100;
@@ -78,7 +79,7 @@ uint Hash::generic_code(uint aresult, char *start, uint size) {
 }
 
 void Hash::put(Key& key, Value *value) {
-	SYNCHRONIZED;
+	SYNCHRONIZED(thread_safe);
 
 	if(full()) 
 		expand();
@@ -98,7 +99,7 @@ void Hash::put(Key& key, Value *value) {
 }
 
 Hash::Value* Hash::get(Key& key) {
-	SYNCHRONIZED;
+	SYNCHRONIZED(thread_safe);
 
 	uint code=key.hash_code();
 	uint index=code%size;

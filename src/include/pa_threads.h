@@ -1,5 +1,5 @@
 /*
-  $Id: pa_threads.h,v 1.2 2001/01/29 11:53:42 paf Exp $
+  $Id: pa_threads.h,v 1.3 2001/01/29 12:13:14 paf Exp $
 */
 
 #ifndef PA_THREADS_H
@@ -26,17 +26,24 @@ public:
 extern Mutex global_mutex;
 
 class AutoSYNCHRONIZED {
+	bool thread_safe;
 public:
-	AutoSYNCHRONIZED() { global_mutex.acquire(); }
-	~AutoSYNCHRONIZED() { global_mutex.release(); }
+	AutoSYNCHRONIZED(bool athread_safe) : thread_safe(athread_safe) { 
+		if(thread_safe)
+			global_mutex.acquire(); 
+	}
+	~AutoSYNCHRONIZED() { 
+		if(thread_safe)
+			global_mutex.release(); 
+	}
 }
 
-#define SYNCHRONIZED AutoSYNCHRONIZED autoSYNCHRONIZED()
+#define SYNCHRONIZED(thread_safe) AutoSYNCHRONIZED autoSYNCHRONIZED(thread_safe)
 
 
 #else // not MULTITHREAD-ed
 
-#define SYNCHRONIZED /* do nothing */
+#define SYNCHRONIZED(thread_safe) /* do nothing */
 
 #endif
 
