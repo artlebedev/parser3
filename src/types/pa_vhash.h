@@ -8,7 +8,7 @@
 #ifndef PA_VHASH_H
 #define PA_VHASH_H
 
-static const char* IDENT_VHASH_H="$Date: 2003/01/21 15:51:19 $";
+static const char* IDENT_VHASH_H="$Date: 2003/04/04 10:46:20 $";
 
 #include "classes.h"
 #include "pa_value.h"
@@ -75,8 +75,12 @@ public: // value
 				throw Exception("parser.runtime",
 					&aname,
 					"can not insert new hash key (hash locked)");
-		} else
-			fhash.put(aname, avalue);
+		} else {
+			if(aname==*hash_default_element_name)
+				set_default(avalue);
+			else 
+				fhash.put(aname, avalue);
+		}
 
 		return true;
 	}
@@ -84,11 +88,11 @@ public: // value
 public: // usage
 
 	VHash(Pool& apool) : VStateless_object(apool), 
-		fhash(apool), locked(false) {
+		fhash(apool), locked(false), _default(0) {
 	}
 
 	VHash(Pool& apool, const Hash& source) : VStateless_object(apool), 
-		fhash(source), locked(false) {
+		fhash(source), locked(false), _default(0) {
 	}
 
 	Hash& hash(const String *source) { 
@@ -96,11 +100,11 @@ public: // usage
 		return fhash; 
 	}
 
-	void set_default(Value& adefault) { 
-		hash(0).put(*hash_default_element_name, &adefault);
+	void set_default(Value* adefault) { 
+		_default=adefault;
 	}
 	Value *get_default() { 
-		return static_cast<Value *>(fhash.get(*hash_default_element_name)); 
+		return _default;
 	}
 
 	void check_lock(const String *source) {
@@ -114,6 +118,7 @@ private:
 
 	bool locked;
 	Hash fhash;
+	Value* _default;
 
 };
 
