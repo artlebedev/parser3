@@ -32,16 +32,16 @@ static const char *get_env(Pool& pool, const char *name) {
 		variable_buf, &variable_len)) {
 		variable_buf[variable_len]=0;
 		return variable_buf;
+	} else if (GetLastError()==ERROR_INSUFFICIENT_BUFFER) {
+		variable_buf=(char *)pool.malloc(variable_len+1);
+		
+		if(ctx.lpECB->GetServerVariable(ctx.lpECB->ConnID, const_cast<char *>(name), 
+			variable_buf, &variable_len)) {
+			variable_buf[variable_len]=0;
+			return variable_buf;
+		}
 	}
-
-	variable_buf=(char *)pool.malloc(variable_len+1);
-	
-	if(ctx.lpECB->GetServerVariable(ctx.lpECB->ConnID, const_cast<char *>(name), 
-		variable_buf, &variable_len)) {
-		variable_buf[variable_len]=0;
-		return variable_buf;
-	}
-
+		
 	return 0;
 }
 
@@ -187,12 +187,9 @@ BOOL WINAPI GetExtensionVersion(HSE_VERSION_INFO *pVer) {
 */
 DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 	Pool pool;
-	// TODO r->no_cache=1;
 	
 	bool header_only=strcasecmp(lpECB->lpszMethod, "HEAD")==0;
 	PTRY { // global try
-		// must be first in PTRY{}PCATCH
-		
 		Service_func_context ctx={
 			lpECB,
 			new(pool) String(pool),
@@ -203,51 +200,29 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 		// Request info
 		Request::Info request_info;
 		
-		char document_root_buf[MAX_STRING];
-		DWORD document_root_len;
-		if (lpECB->GetServerVariable(lpECB->ConnID, "APPL_PHYSICAL_PATH", 
-			document_root_buf, &document_root_len)) {
-			document_root_buf[document_root_len]=0;
-			request_info.document_root=document_root_buf;
-		} else
+		if(!(request_info.document_root=get_env(pool, "APPL_PHYSICAL_PATH")))
 			PTHROW(0, 0,
 				0,
-				"no server variable APPL_PHYSICAL_PATH (error #%lu)",
+				"can not get server variable APPL_PHYSICAL_PATH (error #%lu)",
 					GetLastError()); // never
 
 		request_info.path_translated=lpECB->lpszPathTranslated;
 		request_info.method=lpECB->lpszMethod;
 		request_info.query_string=lpECB->lpszQueryString;
-		char reconstructed_uri[MAX_STRING];
 		if(lpECB->lpszQueryString && *lpECB->lpszQueryString) {
-			strncpy(reconstructed_uri, lpECB->lpszPathInfo, 
-				MAX_STRING-1/*'?'*/-strlen(lpECB->lpszQueryString));
+			char *reconstructed_uri=(char *)malloc(
+				strlen(lpECB->lpszPathInfo)+1/*'?'*/+
+				strlen(lpECB->lpszQueryString)+1/*0*/);
+			strcpy(reconstructed_uri, lpECB->lpszPathInfo);
 			strcat(reconstructed_uri, "?");
-			strcat(reconstructed_uri, lpECB->lpszPathInfo);
+			strcat(reconstructed_uri, lpECB->lpszQueryString);
 			request_info.uri=reconstructed_uri;
 		} else
 			request_info.uri=lpECB->lpszPathInfo;
 		
 		request_info.content_type=lpECB->lpszContentType;
 		request_info.content_length=lpECB->cbTotalBytes;
-		// cookie
-		request_info.cookie=0;
-		char cookie_buf[MAX_STRING];
-		{
-			DWORD cookie_len = MAX_STRING-1;
-			
-			if (lpECB->GetServerVariable(lpECB->ConnID, "HTTP_COOKIE", cookie_buf, &cookie_len)) {
-				cookie_buf[cookie_len]=0;
-				request_info.cookie=cookie_buf;
-			} else if (GetLastError()==ERROR_INSUFFICIENT_BUFFER) {
-				char *tmp_cookie_buf=(char *)pool.malloc(cookie_len+1);
-				
-				if (lpECB->GetServerVariable(lpECB->ConnID, "HTTP_COOKIE", tmp_cookie_buf, &cookie_len)) {
-					tmp_cookie_buf[cookie_len]=0;
-					request_info.cookie=tmp_cookie_buf;
-				}
-			}
-		}
+		request_info.cookie=get_env(pool, "HTTP_COOKIE");
 		
 		// prepare to process request
 		Request request(pool,
@@ -256,9 +231,10 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 			);
 		
 		// some root-controlled location
-		char *root_auto_path;
-		// c:\windows
-		root_auto_path=(char *)pool.malloc(MAX_STRING);
+		//   c:\windows
+		// must be dynamic: rethrowing from request.core 
+		//   may return 'source' which can be inside of 'root auto.p@exeception'
+		char *root_auto_path=(char *)pool.malloc(MAX_STRING);
 		GetWindowsDirectory(root_auto_path, MAX_STRING);
 
 		// process the request
@@ -273,18 +249,17 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 		int content_length=strlen(body);
 
 		// prepare header
-		(*service_funcs.add_header_attribute)(pool, "content-type", "text/plain");
+		add_header_attribute(pool, "content-type", "text/plain");
 		char content_length_cstr[MAX_NUMBER];
 		snprintf(content_length_cstr, MAX_NUMBER, "%lu", content_length);
-		(*service_funcs.add_header_attribute)(pool, "content-length", 
-			content_length_cstr);
+		add_header_attribute(pool, "content-length", content_length_cstr);
 
 		// send header
-		(*service_funcs.send_header)(pool);
+		send_header(pool);
 
 		// send body
 		if(!header_only)
-			(*service_funcs.send_body)(pool, body, content_length);
+			send_body(pool, body, content_length);
 
 		// unsuccessful finish
 		_endthread();

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.66 2001/03/22 21:33:33 paf Exp $
+	$Id: pa_request.C,v 1.67 2001/03/23 08:47:46 paf Exp $
 */
 
 #include <string.h>
@@ -295,8 +295,7 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 }
 
 /// @todo find|solve cyclic dependences
-VStateless_class *Request::use_file(
-									const char *file, bool fail_on_read_problem,
+VStateless_class *Request::use_file(const char *file, bool fail_on_read_problem,
 									const String *name, 
 									VStateless_class *base_class) {
 	char *source=file_read_text(pool(), file, fail_on_read_problem);
@@ -306,8 +305,7 @@ VStateless_class *Request::use_file(
 	return use_buf(source, file, 0/*new class*/, name, base_class);
 }
 
-VStateless_class *Request::use_buf(
-								   const char *source, const char *file,
+VStateless_class *Request::use_buf(const char *source, const char *file,
 								   VStateless_class *aclass, const String *name, 
 								   VStateless_class *base_class) {
 	// compile loaded class

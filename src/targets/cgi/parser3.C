@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3.C,v 1.34 2001/03/22 21:33:37 paf Exp $
+	$Id: parser3.C,v 1.35 2001/03/23 08:47:49 paf Exp $
 */
 
 #ifdef HAVE_CONFIG_H
@@ -150,6 +150,8 @@ int main(int argc, char *argv[]) {
 	fix_slashes(filespec_to_process);
 //\#endif
 
+	const char *request_method=getenv("REQUEST_METHOD");
+	bool header_only=request_method && strcasecmp(request_method, "HEAD")==0;
 	PTRY { // global try
 		// must be first in PTRY{}PCATCH
 #ifdef WIN32
@@ -178,7 +180,7 @@ int main(int argc, char *argv[]) {
 		}
 		request_info.document_root=document_root;
 		request_info.path_translated=filespec_to_process;
-		request_info.method=getenv("REQUEST_METHOD");
+		request_info.method=request_method;
 		request_info.query_string=getenv("QUERY_STRING");
 		request_info.uri=getenv("REQUEST_URI");
 		request_info.content_type=getenv("CONTENT_TYPE");
@@ -210,10 +212,10 @@ int main(int argc, char *argv[]) {
 		rsplit(site_auto_path, '/');  rsplit(site_auto_path, '\\');// strip filename
 		
 		// process the request
-		request.core(pool.exception(),
+		request.core(
 			root_auto_path, false,
 			site_auto_path, false,
-			strcasecmp(request_info.method, "HEAD")==0);
+			header_only);
 
 		// must be last in PTRY{}PCATCH
 #ifdef WIN32
@@ -227,15 +229,18 @@ int main(int argc, char *argv[]) {
 		const char *body=e.comment();
 		int content_length=strlen(body);
 
-		// header
-		(*service_funcs.output_header_attribute)("content-type", "text/plain");
+		// prepare header
+		add_header_attribute("content-type", "text/plain");
 		char content_length_cstr[MAX_NUMBER];
 		snprintf(content_length_cstr, MAX_NUMBER, "%lu", content_length);
-		(*service_funcs.output_header_attribute)("content-length", 
-			content_length_cstr);
+		add_header_attribute("content-length", content_length_cstr);
+
+		// send header
+		send_header(pool);
 
 		// body
-		(*service_funcs.output_body)(body, content_length);
+		if(!header_only)
+			send_body(body, content_length);
 
 		// unsuccessful finish
 		return 1;
