@@ -5,7 +5,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.175 2002/01/25 13:48:55 paf Exp $
+	$Id: compile.y,v 1.176 2002/01/31 15:04:38 paf Exp $
 */
 
 /**
@@ -311,7 +311,9 @@ construct_square: '[' any_constructor_code_value ']' {
 ;
 construct_round: '(' expr_value ')' { 
 	// stack: context, name
-	$$=$2; // stack: context, name, value
+	$$=N(POOL);
+	O($$, OP_PREPARE_TO_CONSTRUCT_EXPR); /* drop change execution state */
+	P($$, $2); // stack: context, name, value
 	O($$, OP_CONSTRUCT_EXPR); /* value=pop->as_expr_result; name=pop; context=pop; construct(context,name,value) */
 }
 ;

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: execute.C,v 1.212 2002/01/31 12:49:32 paf Exp $
+	$Id: execute.C,v 1.213 2002/01/31 15:04:38 paf Exp $
 */
 
 #include "pa_opcode.h"
@@ -44,6 +44,7 @@ char *opcode_name[]={
 	"GET_METHOD_FRAME",
 	"STORE_PARAM",
 	"PREPARE_TO_CONSTRUCT_OBJECT",	"CALL",
+	"PREPARE_TO_CONSTRUCT_EXPR"
 
 	// expression ops: unary
 	"NEG", "INV", "NOT", "DEF", "IN", "FEXISTS", "DEXISTS",
@@ -216,6 +217,20 @@ void Request::execute(const Array& ops) {
 				wcontext->set_somebody_entered_some_class(false);
 				break;
 			}
+		case OP_PREPARE_TO_CONSTRUCT_EXPR:
+			{
+				// here, not in OP_CONSTRUCT_EXPR
+				// because then would be too late - expression already would try to evaluate 
+				// in wrong state
+				// not the case with OP_CONSTRUCT_VALUE, there we have write pool
+				// (separate wcontext with it's own state
+
+				// forget the fact they've entered some $class/object.xxx
+				// see OP_GET_ELEMENT
+				wcontext->set_somebody_entered_some_object(false);
+				wcontext->set_somebody_entered_some_class(false);
+				break;
+			}
 		case OP_CONSTRUCT_EXPR:
 			{
 				value=POP();
@@ -223,11 +238,6 @@ void Request::execute(const Array& ops) {
 				Value *ncontext=POP();
 				ncontext->put_element(name, value->as_expr_result());
 				value->set_name(name);
-
-				// forget the fact they've entered some $class/object.xxx
-				// see OP_GET_ELEMENT
-				wcontext->set_somebody_entered_some_object(false);
-				wcontext->set_somebody_entered_some_class(false);
 				break;
 			}
 		case OP_CURLY_CODE__CONSTRUCT:
@@ -482,6 +492,11 @@ void Request::execute(const Array& ops) {
 				rcontext=POP();  
 				root=POP();  
 				self=static_cast<VAliased *>(POP());
+
+				// forget the fact they've entered some ^object/class.xxx
+				// see OP_GET_ELEMENT
+				wcontext->set_somebody_entered_some_object(false);
+				wcontext->set_somebody_entered_some_class(false);
 
 				PUSH(value);
 #ifdef DEBUG_EXECUTE
