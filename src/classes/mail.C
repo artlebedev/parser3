@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_MAIL_C="$Date: 2004/02/24 11:26:29 $";
+static const char * const IDENT_MAIL_C="$Date: 2004/05/11 15:03:49 $";
 
 #include "pa_config_includes.h"
 #include "pa_vmethod_frame.h"
@@ -56,7 +56,12 @@ static const String mail_sendmail_name(SENDMAIL_NAME);
 
 // helpers
 
-static void sendmail(Request& r, 
+static void sendmail(
+			Value* 
+#ifndef WIN32
+			vmail_conf
+#endif
+			, Value* smtp_server_port,
 		     const String& message, 
 		     const String* from, const String* to,
 			 const String* 
@@ -65,24 +70,18 @@ static void sendmail(Request& r,
 #endif
 			 ) {
 	const char* message_cstr=message.cstr(String::L_UNSPECIFIED);
-	Value* vmail_conf=static_cast<Value*>(r.classes_conf.get(mail_base_class->name()));
 
 	const char* exception_type="email.format";
 	if(!from) // we use in sendmail -f {from} && SMTP MAIL from: {from}
 		throw Exception(exception_type,
 			0,
 			"parameter does not specify 'from' header field");
-	if(!to) // we use only in SMTP RCPT to: {to}
-		throw Exception(exception_type,
-			0,
-			"parameter does not specify 'to' header field");
-
-	Value* smtp_server_port=0;
-	if(vmail_conf) {
-		// $MAIN:MAIL.SMTP[mail.yourdomain.ru[:port]]
-		smtp_server_port=vmail_conf->get_hash()->get(String::Body("SMTP"));
-	}
 	if(smtp_server_port) {
+		if(!to) // we use only in SMTP RCPT to: {to}
+			throw Exception(exception_type,
+				0,
+				"parameter does not specify 'to' header field");
+
 		SMTP smtp;
 		char* server=smtp_server_port->as_string().cstrm();
 		const char* port=rsplit(server, ':');
@@ -201,13 +200,23 @@ static void _send(Request& r, MethodParams& params) {
 	if(Value* voptions=hash->get(MAIL_OPTIONS_NAME))
 		soptions=&voptions->as_string();
 
+	Value* vmail_conf=static_cast<Value*>(r.classes_conf.get(mail_base_class->name()));
+	Value* smtp_server_port=0;
+	if(vmail_conf) {
+		// $MAIN:MAIL.SMTP[mail.yourdomain.ru[:port]]
+		smtp_server_port=vmail_conf->get_hash()->get(String::Body("SMTP"));
+	}
+
+
 	const String* from=0;
 	String* to=0;
 	const String& message=
-		GET_SELF(r, VMail).message_hash_to_string(r, hash, 0, from, to);
+		GET_SELF(r, VMail).message_hash_to_string(r, hash, 0, from, 
+			smtp_server_port?true:false /*send by SMTP=strip to?*/, to);
 
 	//r.write_pass_lang(message);
-	sendmail(r, message, from, to, soptions);
+	sendmail(vmail_conf, smtp_server_port, 
+		message, from, to, soptions);
 }
 
 // constructor & configurator

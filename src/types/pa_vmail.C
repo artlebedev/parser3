@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_VMAIL_C="$Date: 2004/02/24 11:25:38 $";
+static const char * const IDENT_VMAIL_C="$Date: 2004/05/11 15:03:49 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -451,7 +451,7 @@ struct Store_message_element_info {
 	Request_charsets& charsets;
 	String& header;
 	const String* & from;
-	String* & to;
+	bool extract_to; String* & to;
 	const String* errors_to;
 	bool mime_version_specified;
 	ArrayValue* parts[P_TYPES_COUNT];
@@ -463,13 +463,13 @@ struct Store_message_element_info {
 		Request_charsets& acharsets,
 		String& aheader,
 		const String* & afrom,
-		String* & ato
+		bool aextract_to, String* & ato
 		):
 		
 		charsets(acharsets),
 		header(aheader),
 		from(afrom),
-		to(ato),
+		extract_to(aextract_to), to(ato),
 		errors_to(0),
 		mime_version_specified(false),
 		parts_count(0),
@@ -510,7 +510,7 @@ static void store_message_element(HashStringValue::key_type raw_element_name,
 	// fetch some special headers
 	if(low_element_name=="from")
 		info->from=&extractEmails(element_value->as_string());
-	{ // extracting 'to'
+	if(info->extract_to) { // defined only when SMTP used, see mail.C [collecting info for RCPT to-s]
 		bool is_to=low_element_name=="to" ;
 		bool is_cc=low_element_name=="cc" ;
 		bool is_bcc=low_element_name=="bcc" ;
@@ -673,7 +673,7 @@ static const String& text_value_to_string(Request& r,
 /// @todo files and messages in order (file, file2, ...)
 const String& VMail::message_hash_to_string(Request& r,
 					    HashStringValue* message_hash, int level, 
-					    const String* & from, String* & to) {
+					    const String* & from, bool extract_to, String* & to) {
 	
 	if(!message_hash)
 		throw Exception("parser.runtime",
@@ -690,7 +690,7 @@ const String& VMail::message_hash_to_string(Request& r,
 	// no big deal that we leave it set. they wont miss this point which would reset it
 
 	Store_message_element_info info(r.charsets, 
-		result, from, to);
+		result, from, extract_to, to);
 	{
 		// for backward compatibilyty $.body+$.content-type -> 
 		// $.text[$.value[] $.content-type[]]
@@ -789,7 +789,7 @@ const String& VMail::message_hash_to_string(Request& r,
 			const String* dummy_from;
 			String* dummy_to;
 			result << message_hash_to_string(r, messages.get(i)->get_hash(), level+1,
-				dummy_from, dummy_to);
+				dummy_from, false, dummy_to);
 		}
 	}
 	
