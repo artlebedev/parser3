@@ -5,7 +5,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.190 2002/08/27 10:22:11 paf Exp $
+	$Id: compile.y,v 1.191 2002/09/13 10:43:26 paf Exp $
 */
 
 /**
@@ -863,7 +863,7 @@ default:
 					skip_analized=1;
 					result=DEXISTS;
 					goto break2;
-				default:
+				default: // minus
 					result=c;
 					goto break2;
 				}

@@ -232,9 +232,14 @@ $response:charset[windows-1251]
 #^ttransformsep[]
 #^calltest[]
 #^xpath3[]
-^mail2[]
+#^mail2[]
+^doubleliterals[]
 <hr>
 OK
+
+@doubleliterals[]
+#^eval(1e-10)
+^eval("1e-20")
 
 @xpath3[]
 $constr[^xdoc::create{<?xml version="1.0" encoding="$request:charset" standalone="no"?> <constructor-data><object object_type_id="1" template_id="1" data_process_id="1" is_published="1">проверка</object> <block-list> <block name="date" type="0" label="Дата" is_hide_pub="1" data_type="1"/> <block name="content" type="0" label="Текст" is_hide_pub="1" data_type=""/> </block-list></constructor-data>}]

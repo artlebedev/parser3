@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_VRESPONSE_C="$Date: 2002/08/15 12:05:37 $";
+static const char* IDENT_VRESPONSE_C="$Date: 2002/09/13 10:43:26 $";
 
 #include "pa_vresponse.h"
 #include "pa_charsets.h"
@@ -66,7 +66,7 @@ static void append_attribute_meaning(String& result,
 			size_t size=date_attribute(*static_cast<VDate *>(vdate), 
 				buf, MAX_STRING);
 
-			result.APPEND(buf, size, lang, "converted from date", 0);
+			result.APPEND_CLEAN(buf, size, "converted from date", 0);
 		} else
 			throw Exception("parser.runtime",
 				&result,
