@@ -82,7 +82,7 @@ host_os = @host_os@
 INCLUDES = -I../include -I../types -I../classes -I../sql -I../pcre -I../libltdl
 
 noinst_LIBRARIES = libmain.a
-libmain_a_SOURCES = compile.C compile.tab.C compile_tools.C execute.C pa_array.C pa_common.C pa_exception.C pa_globals.C pa_hash.C pa_pool.C pa_request.C pa_string.C pa_table.C untaint.C pa_dir.C pa_exec.C pa_socks.C pa_sql_driver_manager.C
+libmain_a_SOURCES = compile.C compile.tab.C compile_tools.C execute.C pa_array.C pa_common.C pa_exception.C pa_globals.C pa_hash.C pa_pool.C pa_request.C pa_string.C pa_table.C untaint.C pa_dir.C pa_exec.C pa_socks.C pa_sql_driver_manager.C pa_dictionary.C
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../include/pa_config_auto.h
 CONFIG_CLEAN_FILES = 
@@ -97,7 +97,7 @@ libmain_a_LIBADD =
 libmain_a_OBJECTS =  compile.o compile.tab.o compile_tools.o execute.o \
 pa_array.o pa_common.o pa_exception.o pa_globals.o pa_hash.o pa_pool.o \
 pa_request.o pa_string.o pa_table.o untaint.o pa_dir.o pa_exec.o \
-pa_socks.o pa_sql_driver_manager.o
+pa_socks.o pa_sql_driver_manager.o pa_dictionary.o
 AR = ar
 CXXFLAGS = @CXXFLAGS@
 CXXCOMPILE = $(CXX) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -109,14 +109,14 @@ DIST_COMMON =  Makefile.am Makefile.in
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = gtar
+TAR = tar
 GZIP_ENV = --best
 DEP_FILES =  .deps/compile.P .deps/compile.tab.P .deps/compile_tools.P \
-.deps/execute.P .deps/pa_array.P .deps/pa_common.P .deps/pa_dir.P \
-.deps/pa_exception.P .deps/pa_exec.P .deps/pa_globals.P .deps/pa_hash.P \
-.deps/pa_pool.P .deps/pa_request.P .deps/pa_socks.P \
-.deps/pa_sql_driver_manager.P .deps/pa_string.P .deps/pa_table.P \
-.deps/untaint.P
+.deps/execute.P .deps/pa_array.P .deps/pa_common.P \
+.deps/pa_dictionary.P .deps/pa_dir.P .deps/pa_exception.P \
+.deps/pa_exec.P .deps/pa_globals.P .deps/pa_hash.P .deps/pa_pool.P \
+.deps/pa_request.P .deps/pa_socks.P .deps/pa_sql_driver_manager.P \
+.deps/pa_string.P .deps/pa_table.P .deps/untaint.P
 SOURCES = $(libmain_a_SOURCES)
 OBJECTS = $(libmain_a_OBJECTS)
 
@@ -223,7 +223,7 @@ distdir: $(DISTFILES)
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
-	    cp -pr $$d/$$file $(distdir)/$$file; \
+	    cp -pr $$/$$file $(distdir)/$$file; \
 	  else \
 	    test -f $(distdir)/$$file \
 	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
