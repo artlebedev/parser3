@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.16 2001/03/16 11:10:21 paf Exp $
+	$Id: pa_value.h,v 1.17 2001/03/16 12:46:36 paf Exp $
 */
 
 /*
@@ -19,82 +19,13 @@
 #include "pa_exception.h"
 #include "pa_globals.h"
 
-class Value;
 class VStateless_class;
-class Junction;
 class WContext;
 class VAliased;
 class Request;
 class VTable;
-
-typedef void (*Native_code_ptr)(Request& request, const String& method_name, Array *params);
-
-class Method : public Pooled {
-public:
-	const String& name;
-	// either numbered params // for native-code methods = operators
-	int min_numbered_params_count, max_numbered_params_count;
-	// or named params&locals // for parser-code methods
-	Array *params_names;  Array *locals_names;
-	// the Code
-	const Array *parser_code;/*OR*/Native_code_ptr native_code;
-
-	Method(
-		Pool& apool,
-		const String& aname,
-		int amin_numbered_params_count, int amax_numbered_params_count,
-		Array *aparams_names, Array *alocals_names,
-		const Array *aparser_code, Native_code_ptr anative_code) : 
-
-		Pooled(apool),
-		name(aname),
-		min_numbered_params_count(amin_numbered_params_count),
-		max_numbered_params_count(amax_numbered_params_count),
-		params_names(aparams_names), locals_names(alocals_names),
-		parser_code(aparser_code), native_code(anative_code) {
-	}
-
-	void check_actual_numbered_params(
-		const String& actual_name, Array *actual_numbered_params) const {
-		int actual_count=actual_numbered_params?actual_numbered_params->size():0;
-		if(actual_count<min_numbered_params_count) // not proper count? bark
-			THROW(0, 0,
-				&actual_name,
-				"native method accepts minimum %d parameter(s)", 
-					min_numbered_params_count);
-
-	}
-};
-
-class Junction : public Pooled {
-public:
-
-	Junction(Pool& apool,
-		Value& aself,
-		VStateless_class *avclass, const Method *amethod,
-		Value *aroot,
-		Value *arcontext,
-		WContext *awcontext,
-		const Array *acode) : Pooled(apool),
-		
-		self(aself),
-		vclass(avclass), method(amethod),
-		root(aroot),
-		rcontext(arcontext),
-		wcontext(awcontext),
-		code(acode) {
-	}
-
-	// always present
-	Value& self;
-	// either these // so called 'method-junction'
-	VStateless_class *vclass;  const Method *method;
-	// or these are present // so called 'code-junction'
-	Value *root;
-	Value *rcontext;
-	WContext *wcontext;
-	const Array *code;
-};
+class Junction;
+class Method;
 
 class Value : public Pooled {
 public: // Value
@@ -149,6 +80,7 @@ public: // Value
 	// env: CLASS,BASE,method,field
 	// form: CLASS,BASE,method,field
 	// string: $CLASS,$BASE,$method
+	// request: CLASS,BASE,method,fields
 	virtual Value *get_element(const String& name) { bark("(%s) does not have elements"); return 0; }
 	
 	// hash: (key)=value
@@ -163,6 +95,7 @@ public: // Value
 	// form: this
 	// class: this
 	// env: this
+	// request: this
 	virtual VStateless_class *get_class() { return 0; }
 
 	// valiased: this
@@ -205,6 +138,78 @@ protected:
 			action, type());
 	}
 
+};
+
+typedef void (*Native_code_ptr)(Request& request, 
+								const String& method_name, Array *params);
+
+class Junction : public Pooled {
+public:
+
+	Junction(Pool& apool,
+		Value& aself,
+		VStateless_class *avclass, const Method *amethod,
+		Value *aroot,
+		Value *arcontext,
+		WContext *awcontext,
+		const Array *acode) : Pooled(apool),
+		
+		self(aself),
+		vclass(avclass), method(amethod),
+		root(aroot),
+		rcontext(arcontext),
+		wcontext(awcontext),
+		code(acode) {
+	}
+
+	// always present
+	Value& self;
+	// either these // so called 'method-junction'
+	VStateless_class *vclass;  const Method *method;
+	// or these are present // so called 'code-junction'
+	Value *root;
+	Value *rcontext;
+	WContext *wcontext;
+	const Array *code;
+};
+
+class Method : public Pooled {
+public:
+	const String& name;
+	// either numbered params // for native-code methods = operators
+	int min_numbered_params_count, max_numbered_params_count;
+	// or named params&locals // for parser-code methods
+	Array *params_names;  Array *locals_names;
+	// the Code
+	const Array *parser_code;/*OR*/Native_code_ptr native_code;
+
+	Method(
+		Pool& apool,
+		const String& aname,
+		int amin_numbered_params_count, int amax_numbered_params_count,
+		Array *aparams_names, Array *alocals_names,
+		const Array *aparser_code, Native_code_ptr anative_code) : 
+
+		Pooled(apool),
+		name(aname),
+		min_numbered_params_count(amin_numbered_params_count),
+		max_numbered_params_count(amax_numbered_params_count),
+		params_names(aparams_names), locals_names(alocals_names),
+		parser_code(aparser_code), native_code(anative_code) {
+	}
+
+	void check_actual_numbered_params(
+		Value& self, const String& actual_name, Array *actual_numbered_params) const {
+		int actual_count=actual_numbered_params?actual_numbered_params->size():0;
+		if(actual_count<min_numbered_params_count) // not proper count? bark
+			THROW(0, 0,
+				&actual_name,
+				"native method of %s (%s) accepts minimum %d parameter(s)", 
+					self.name().cstr(),
+					self.type(),
+					min_numbered_params_count);
+
+	}
 };
 
 #endif

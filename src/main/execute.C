@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.112 2001/03/16 12:30:23 paf Exp $
+	$Id: execute.C,v 1.113 2001/03/16 12:46:35 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -365,8 +365,10 @@ void Request::execute(const Array& ops) {
 					const Method& method=*frame->junction.method;
 					if(method.native_code) { // native code?
 						method.check_actual_numbered_params(
+							frame->junction.self, 
 							frame->name(), frame->numbered_params());
-						(*method.native_code)(*this, 
+						(*method.native_code)(
+							*this, 
 							frame->name(), frame->numbered_params()); // execute it
 					} else // parser code
 						execute(*method.parser_code); // execute it
