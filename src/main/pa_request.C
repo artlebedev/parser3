@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_REQUEST_C="$Date: 2003/11/10 09:28:14 $";
+static const char* IDENT_REQUEST_C="$Date: 2003/11/19 11:00:33 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -52,7 +52,6 @@ const char* ORIGINS_CONTENT_TYPE="text/plain";
 #define EXCEPTION_TYPE_PART_NAME "type"
 #define EXCEPTION_SOURCE_PART_NAME "source"
 #define EXCEPTION_COMMENT_PART_NAME "comment"
-#define EXCEPTION_HANDLED_PART_NAME "handled"
 
 // globals
 

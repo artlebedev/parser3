@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_OP_C="$Date: 2003/11/19 08:20:02 $";
+static const char* IDENT_OP_C="$Date: 2003/11/19 11:00:32 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -48,6 +48,10 @@ static const String switch_data_name(SWITCH_DATA_NAME);
 static const String cache_data_name(CACHE_DATA_NAME);
 
 static const String exception_var_name(EXCEPTION_VAR_NAME);
+
+// local defines
+
+#define CACHE_EXCEPTION_HANDLED_CACHE_NAME "cache"
 
 // helpers
 
@@ -375,6 +379,63 @@ static void _case(Request& r, MethodParams& params) {
 		}
 	}
 }
+#ifndef DOXYGEN
+struct Try_catch_result {
+	StringOrValue processed_code;
+	const String* exception_should_be_handled;
+
+	Try_catch_result(): exception_should_be_handled(0) {}
+};
+#endif
+
+/// used by ^try and ^cache, @returns $exception.handled[string] if any
+template<class I>
+static Try_catch_result try_catch(Request& r, 
+		  StringOrValue body_code(Request&, I), I info, 
+		  Value* catch_code) 
+{
+	Try_catch_result result;
+	if(!catch_code) {
+		result.processed_code=body_code(r, info);
+		return result;
+	}
+
+	// taking snapshot of try-context
+	Request_context_saver try_context(r);
+	try {
+		result.processed_code=body_code(r, info);
+	} catch(const Exception& e) {
+		Request_context_saver throw_context(r); // taking snapshot of throw-context [stack trace contains error]
+		Request::Exception_details details=r.get_details(e);
+		try_context.restore(); // restoring try-context to perform catch-code
+
+		Junction* junction=catch_code->get_junction();
+		Value* method_frame=junction->method_frame;
+		Value* saved_exception_var_value=method_frame->get_element(exception_var_name, *method_frame, false);
+		junction->method_frame->put_element(exception_var_name, &details.vhash, false);
+		result.processed_code=r.process(*catch_code);
+		
+		// retriving $exception.handled, restoring $exception var
+		Value* vhandled=details.vhash.hash().get(exception_handled_part_name);
+		junction->method_frame->put_element(exception_var_name, saved_exception_var_value, false);
+
+		bool bhandled=false;
+		if(vhandled) {
+			if(vhandled->is_string()) { // not simple $exception.handled(1/0)?
+				result.exception_should_be_handled=vhandled->get_string(); // considering 'recovered' and let the caller recover
+				return result;
+			}
+
+			bhandled=vhandled->as_bool();		
+		}
+
+		if(!bhandled) {
+			throw_context.restore(); // restoring throw-context [exception were not handled]
+			rethrow;
+		}
+	}
+	return result;
+}
 
 // cache--
 
@@ -403,10 +464,18 @@ public:
 };
 struct Locked_process_and_cache_put_action_info {
 	Request *r;
-	Cache_scope *data;
-	Value* body_code; const String* evaluated_body;
+	Cache_scope *scope;
+	Value* body_code; Value* catch_code; 
+	const String* processed_code;
 };
 #endif
+
+
+
+static StringOrValue process_cache_body_code(Request& r, Value* body_code) {
+	return StringOrValue(&r.process_to_string(*body_code), 0);
+}
+
 /* @todo maybe network order worth spending some effort?
 	don't bothering myself with network byte order,
 	am not planning to be able to move resulting file across platforms
@@ -416,31 +485,48 @@ static void locked_process_and_cache_put_action(int f, void *context) {
 		*static_cast<Locked_process_and_cache_put_action_info *>(context);
 
 	// body->process 
-	info.evaluated_body=&info.r->process_to_string(*info.body_code);
+	Try_catch_result result=try_catch(*info.r, 
+		process_cache_body_code, info.body_code,
+		info.catch_code);
+
+	if(result.exception_should_be_handled) {
+		if(*result.exception_should_be_handled==CACHE_EXCEPTION_HANDLED_CACHE_NAME) {
+			if(const String* body_from_disk=info.scope->body_from_disk) // we have something old?
+				info.processed_code=body_from_disk;
+			else
+				throw Exception(0,
+					new String("$"EXCEPTION_VAR_NAME"."EXCEPTION_HANDLED_PART_NAME"["CACHE_EXCEPTION_HANDLED_CACHE_NAME"]"),
+					"fallback failed - there is no old cached body");
+		} else
+			throw Exception("parser.runtime",
+				result.exception_should_be_handled,
+				"$"EXCEPTION_VAR_NAME"."EXCEPTION_HANDLED_PART_NAME" value must be "
+				"either boolean or string '"CACHE_EXCEPTION_HANDLED_CACHE_NAME"'");
+	} else
+		info.processed_code=&result.processed_code.as_string();
 
 	// expiration time not spoiled by ^cache(0) or something?
-	if(info.data->expires > time(0)) {
+	if(info.scope->expires > time(0)) {
 		// string -serialize> buffer
-		String::Cm serialized=info.evaluated_body->serialize(
+		String::Cm serialized=info.processed_code->serialize(
 			sizeof(Data_string_serialized_prolog));
 		Data_string_serialized_prolog& prolog=
 			*reinterpret_cast<Data_string_serialized_prolog *>(serialized.str);
 		prolog.version=DATA_STRING_SERIALIZED_VERSION;
-		prolog.expires=info.data->expires;
+		prolog.expires=info.scope->expires;
 		
 		// buffer -write> file
 		write(f, serialized.str, serialized.length);
 	} else // expired!
-		info.data->expires=0; // flag it so that could be easily checked by caller
+		info.scope->expires=0; // flag it so that could be easily checked by caller
 }
 const String* locked_process_and_cache_put(Request& r, 
 					   Value& body_code,
-					   Cache_scope& data,
-					   const String& file_spec) {
-	Locked_process_and_cache_put_action_info info={0};
-	info.r=&r;
-	info.data=&data;
-	info.body_code=&body_code;
+					   Value* catch_code,
+					   Cache_scope& scope,
+					   const String& file_spec) 
+{
+	Locked_process_and_cache_put_action_info info={&r, &scope, &body_code, catch_code};
 
 	const String* result=file_write_action_under_lock(
 		file_spec, 
@@ -448,9 +534,9 @@ const String* locked_process_and_cache_put(Request& r,
 		false/*as_text*/,
 		false/*do_append*/,
 		false/*block*/,
-		false/*fail on lock problem*/) ? info.evaluated_body: 0;
+		false/*fail on lock problem*/) ? info.processed_code: 0;
 	time_t now=time(0);
-	if(data.expires<=now)
+	if(scope.expires<=now)
 		cache_delete(file_spec);
 	return result;
 }
@@ -499,23 +585,6 @@ static const String& as_file_spec(Request& r, MethodParams& params, int index) {
 static void _cache(Request& r, MethodParams& params) {
 	time_t now=time(0);
 
-	if(params.count()==0) {
-		Cache_scope* scope=static_cast<Cache_scope*>(r.classes_conf.get(cache_data_name));
-		if(!scope)
-			throw Exception("parser.runtime",
-				0,
-				"getting old cache body without cache");
-		
-		if(const String* body_from_disk=scope->body_from_disk) // we have something old
-			r.write_assign_lang(*body_from_disk);
-		else
-			throw Exception(0,
-				0,
-				"there is no old cached body");
-
-		return;
-	}
-
 	// ^cache[filename] ^cache(seconds) ^cache[expires date]
 	if(params.count()==1) {
 		if(params[0].is_string()) { // filename?
@@ -544,7 +613,10 @@ static void _cache(Request& r, MethodParams& params) {
 
 	Temp_hash_value<const String::Body, void*> 
 		cache_scope_setter(r.classes_conf, cache_data_name, &scope);
-	Value& body_code=params.as_junction(2, "body must be code");
+	Value& body_code=params.as_junction(2, "body_code must be code");
+	Value* catch_code=0;
+	if(params.count()>3)
+		catch_code=&params.as_junction(3, "catch_code must be code");
 
 	if(scope.expires>now) { // valid 'expires' specified? try cached copy...
 		// hence we don't hope to have unary create/lockEX
@@ -565,11 +637,11 @@ static void _cache(Request& r, MethodParams& params) {
 
 		for(int retry=0; retry<2; retry++) {
 			Cache_get_result cached=cache_get(r.charsets, file_spec, now);
-			if(cached.body) { // have cached copy?
+			if(cached.body) { // have cached copy
 				if(cached.expired) 
 					scope.body_from_disk=cached.body; // storing for user to retrive it with ^cache[]
-				else 
-				{  // and it's not expired yet
+				else // and it's not expired yet
+				{
     				// write it out 
     				r.write_assign_lang(*cached.body);
     				// happy with it
@@ -579,7 +651,7 @@ static void _cache(Request& r, MethodParams& params) {
 
      		// non-blocked lock; process; cache it
      		if(const String* processed_body=
-     			locked_process_and_cache_put(r, body_code, scope, file_spec)) {
+     			locked_process_and_cache_put(r, body_code, catch_code, scope, file_spec)) {
      			// write it out 
      			r.write_assign_lang(*processed_body);
      			// happy with it
@@ -605,42 +677,24 @@ static void _cache(Request& r, MethodParams& params) {
 	// never reached
 }
 
-
-
-// also used in pa_request.C to pass param to @unhandled_exception
-
+static StringOrValue process_try_body_code(Request& r, Value* body_code) {
+	return r.process(*body_code);
+}
 static void _try_operator(Request& r, MethodParams& params) {
 	Value& body_code=params.as_junction(0, "body_code must be code");
 	Value& catch_code=params.as_junction(1, "catch_code must be code");
 
-	StringOrValue result;
-	// taking snapshot of try-context
-	Request_context_saver try_context(r);
-	try {
-		result=r.process(body_code);
-	} catch(const Exception& e) {
-		Request_context_saver throw_context(r); // taking snapshot of throw-context [stack trace contains error]
-		Request::Exception_details details=r.get_details(e);
-		try_context.restore(); // restoring try-context to perform catch-code
+	Try_catch_result result=try_catch(r, 
+		process_try_body_code, &body_code,
+		&catch_code);
+	
+	if(result.exception_should_be_handled)
+		throw Exception("parser.runtime",
+			result.exception_should_be_handled,
+			"catch block must set $exception.handled to some boolean value, not string");
 
-		Junction* junction=catch_code.get_junction();
-		Value* method_frame=junction->method_frame;
-		Value* saved_exception_var_value=method_frame->get_element(exception_var_name, *method_frame, false);
-		junction->method_frame->put_element(exception_var_name, &details.vhash, false);
-		result=r.process(catch_code);
-		bool handled=false;
-		if(Value* value=
-			details.vhash.hash().get(exception_handled_part_name))
-			handled=value->as_bool();		
-		junction->method_frame->put_element(exception_var_name, saved_exception_var_value, false);
-
-		if(!handled) {
-			throw_context.restore(); // restoring throw-context [exception were not handled]
-			rethrow;
-		}
-	}
-	// write out result
-	r.write_pass_lang(result);
+	// write out processed body_code or catch_code
+	r.write_pass_lang(result.processed_code);
 }
 
 static void _throw_operator(Request& r, MethodParams& params) {
@@ -722,10 +776,9 @@ VClassMAIN::VClassMAIN(): VClass() {
 	add_native_method("connect", Method::CT_ANY, _connect, 2, 2);
 
 
-	// ^cache[file_spec](time){code} time=0 no cache
+	// ^cache[file_spec](time){code}[{catch code}] time=0 no cache
 	// ^cache[file_spec] delete cache
-	// ^cache[] retrive old cached body, if any
-	add_native_method("cache", Method::CT_ANY, _cache, 0, 3);
+	add_native_method("cache", Method::CT_ANY, _cache, 1, 4);
 	
 	// switch
 

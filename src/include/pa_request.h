@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char* IDENT_REQUEST_H="$Date: 2003/11/19 08:20:02 $";
+static const char* IDENT_REQUEST_H="$Date: 2003/11/19 11:00:33 $";
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -495,6 +495,8 @@ public:
 #define CONTENT_DISPOSITION_NAME "content-disposition"
 #define CONTENT_DISPOSITION_VALUE "attachment"
 #define CONTENT_DISPOSITION_FILENAME_NAME "filename"
+#define EXCEPTION_HANDLED_PART_NAME "handled"
+
 
 // externs
 
