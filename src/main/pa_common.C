@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2003/10/30 12:13:44 $"; 
+static const char* IDENT_COMMON_C="$Date: 2004/01/22 07:09:50 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -1099,6 +1099,11 @@ int __vsnprintf(char* b, size_t s, const char* f, va_list l) {
 	// note: on win32& maybe somewhere else
 	// vsnprintf do not writes terminating 0 in 'buffer full' case, reducing
 	--s;
+
+	// clients do not check for negative 's', feature: ignore such prints
+	if((ssize_t)s<0)
+		return 0;
+
 #if _MSC_VER
 	/*
 	win32: 
