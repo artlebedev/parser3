@@ -7,7 +7,7 @@
 
 	2001.07.30 using PgSQL 7.1.2
 */
-static const char *RCSId="$Id: parser3pgsql.C,v 1.5 2001/07/31 12:51:45 parser Exp $"; 
+static const char *RCSId="$Id: parser3pgsql.C,v 1.6 2001/07/31 14:22:00 parser Exp $"; 
 
 #include "config_includes.h"
 
@@ -124,11 +124,6 @@ public:
 		SQL_Driver_services&, void *connection,
 		char *to, const char *from, unsigned int length) {
 		/*
-			3.23.22b
-			You must allocate the to buffer to be at least length*2+1 bytes long. 
-			(In the worse case, each character may need to be encoded as using two bytes, 
-			and you need room for the terminating null byte.)
-
 			it's already UNTAINT_TIMES_BIGGER
 		*/
 		unsigned int result=length;
@@ -149,32 +144,17 @@ public:
 		SQL_Driver_services& services, void *connection, 
 		const char *astatement, unsigned long offset, unsigned long limit,
 		SQL_Driver_query_event_handlers& handlers) {
+//		_asm int 3;
 
 		PGconn *conn=(PGconn *)connection;
-		#define PQclear_throwPQerror { \
-				PQclear(res); \
-				services._throw(PQerrorMessage(conn)); \
-			}
 		#define PQclear_throw(msg) { \
 				PQclear(res); \
 				services._throw(msg); \
-			}
-						
+			}						
+		#define PQclear_throwPQerror PQclear_throw(PQerrorMessage(conn))
 
-		const char *statement;
-		if(offset || limit) {
-			size_t statement_size=strlen(astatement);
-			char *statement_limited=(char *)services.malloc(
-				statement_size+MAX_NUMBER*2+15/* limit # offset #*/+1);
-			char *cur=statement_limited;
-			memcpy(cur, astatement, statement_size); cur+=statement_size;
-			if(limit)
-				cur+=snprintf(cur, 7+MAX_NUMBER, " limit %u", limit);
-			if(offset)
-				cur+=snprintf(cur, 8+MAX_NUMBER, " offset %u", offset);
-			statement=statement_limited;
-		} else
-			statement=astatement;
+		const char *statement=preprocess_statement(services, conn,
+			astatement, offset, limit);
 
 		PGresult *res=PQexec(conn, statement);
 		if(!res) 
@@ -186,11 +166,12 @@ public:
 			break;
 		case PGRES_COMMAND_OK:
 			// empty result: insert|delete|update|...
+			PQclear(res);
 			return;
 		case PGRES_TUPLES_OK: 
 			break;	
 		default:
-			PQclear_throw("unknown PQexec error"); 
+			PQclear_throwPQerror;
 			break;
 		}
 		
@@ -277,6 +258,74 @@ private: // private funcs
 			services._throw(PQerrorMessage(conn));
 	}
 
+	const char *preprocess_statement(SQL_Driver_services& services, PGconn *conn,
+		const char *astatement, unsigned long offset, unsigned long limit) {
+		size_t statement_size=strlen(astatement);
+		//_asm int 3;
+
+		char *result=(char *)services.malloc(statement_size
+			+MAX_NUMBER*2+15 // limit # offset #
+			+MAX_STRING // in case of short 'strings'
+			+1);
+		// offset & limit -> suffixes
+		const char *o;
+		if(offset || limit) {
+			char *cur=result;
+			memcpy(cur, astatement, statement_size); cur+=statement_size;
+			if(limit)
+				cur+=snprintf(cur, 7+MAX_NUMBER, " limit %u", limit);
+			if(offset)
+				cur+=snprintf(cur, 8+MAX_NUMBER, " offset %u", offset);
+			o=result;
+		} else 
+			o=astatement;
+
+		// /*:zzzz*/'literal' -> oid
+		char *n=result;
+		while(*o) {
+			if(
+				o[0]=='/' &&
+				o[1]=='*' && 
+				o[2]==':') { // name start
+				o+=3;
+				while(*o)
+					if(
+						o[0]=='*' &&
+						o[1]=='/' &&
+						o[2]=='\'') { // name end
+						o+=3;
+						Oid oid=lo_creat(conn, INV_READ|INV_WRITE);
+						int fd=lo_open(conn, oid, INV_WRITE);
+						const char *start=o;
+						bool escaped=false;
+						while(*o && !(o[0]=='\'' && o[1]!='\'' && !escaped)) {
+							escaped=*o=='\\' || (o[0]=='\'' && o[1]=='\'');
+							if(escaped) {
+								// write pending, skip "\" or "'"
+								if(o!=start)
+									lo_write(conn, fd, start, o-start);
+								start=++o;
+							} else
+								o++;
+						}
+						if(o!=start)
+							lo_write(conn, fd, start, o-start);
+						lo_close(conn, fd);
+						if(*o)
+							o++; // skip "'"
+
+						n+=snprintf(n, MAX_NUMBER, "%u", oid);
+						break;
+					} else
+						o++; // /*:skip*/
+			} else
+				*n++=*o++;
+		}
+		*n=0;
+
+		return result;
+	}
+
 private: // conn client library funcs
 
 	typedef PGconn* (*t_PQsetdbLogin)(
@@ -309,8 +358,8 @@ private: // conn client library funcs
 
 	typedef int	(*t_lo_open)(PGconn *conn, Oid lobjId, int mode); t_lo_open lo_open;
 	typedef int	(*t_lo_close)(PGconn *conn, int fd); t_lo_close lo_close;
-	typedef int	(*t_lo_read)(PGconn *conn, int fd, char *buf, size_t len); t_lo_read lo_read;
-	typedef int	(*t_lo_write)(PGconn *conn, int fd, char *buf, size_t len); t_lo_write lo_write;
+	typedef int	(*t_lo_read)(PGconn *conn, int fd, const/*paf*/ char *buf, size_t len); t_lo_read lo_read;
+	typedef int	(*t_lo_write)(PGconn *conn, int fd, const/*paf*/ char *buf, size_t len); t_lo_write lo_write;
 	typedef int	(*t_lo_lseek)(PGconn *conn, int fd, int offset, int whence); t_lo_lseek lo_lseek;
 	typedef Oid	(*t_lo_creat)(PGconn *conn, int mode); t_lo_creat lo_creat;
 	typedef int	(*t_lo_tell)(PGconn *conn, int fd); t_lo_tell lo_tell;

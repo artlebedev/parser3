@@ -1,14 +1,15 @@
 @main[]
 ^connect[pgsql://paf:paf123@six/paf]{
 #	^void:sql{create table lotest (test oid)}
+	^void:sql{insert into lotest (test) values (/*:test*/'пр\'иве')}
 	$проверка[^table::sql{select test from lotest}]
 	^проверка.menu{
 #		^проверка.line[]:<pre>^untaint[as-is]{$проверка.test}</pre>
-		^проверка.line[]:<pre>^untaint[html]{$проверка.test}</pre>
+#		^проверка.line[]:<pre>^untaint[html]{$проверка.test}</pre>
 #		^проверка.line[]:<pre>$проверка.test</pre>
+		^проверка.line[]:$проверка.test
 	}[<br>]
 	<hr>
-
 
 ^rem{
 #	^void:sql{create table texttest (body text)}
