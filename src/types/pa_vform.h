@@ -8,7 +8,7 @@
 #ifndef PA_VFORM_H
 #define PA_VFORM_H
 
-static const char * const IDENT_VFORM_H="$Date: 2003/11/20 16:34:29 $";
+static const char * const IDENT_VFORM_H="$Date: 2003/11/24 12:47:21 $";
 
 // includes
 
@@ -52,13 +52,12 @@ public: // Value
 
 public: // usage
 
-	VForm();
+	VForm(Request_charsets& acharsets, Request_info& arequest_info);
 	
-	void fill_fields_and_tables(Request_charsets& acharsets, Request_info& request_info);
-
 private:
 
-	Request_charsets* fcharsets;
+	Request_charsets& fcharsets;
+	Request_info& frequest_info;
 
 	char *strpart(const char* str, size_t len);
 	char *getAttributeValue(const char* data,char *attr,size_t len);
@@ -71,9 +70,13 @@ private:
 		const char* raw_cvalue_ptr, const size_t raw_cvalue_size,
 		const char* copy_me_file_name_cstr=0);
 
+	bool should_refill_fields_and_tables();
+	void refill_fields_and_tables();
+
 private:
 
-	bool filled;
+	Charset* filled_source;
+	Charset* filled_client;
 	HashStringValue fields;
 	HashStringValue tables;
 	HashStringValue imap;

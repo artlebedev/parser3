@@ -7,7 +7,7 @@
 	based on The CGI_C library, by Thomas Boutell.
 */
 
-static const char * const IDENT_VFORM_C="$Date: 2003/11/20 16:34:29 $";
+static const char * const IDENT_VFORM_C="$Date: 2003/11/24 12:47:21 $";
 
 #include "pa_sapi.h"
 #include "pa_vform.h"
@@ -60,9 +60,11 @@ static const char* searchAttribute(const char* data,
 
 extern Methoded* form_base_class;
 
-VForm::VForm(): VStateless_class(0, form_base_class),
-	fcharsets(0),
-	filled(false) {
+VForm::VForm(Request_charsets& acharsets, Request_info& arequest_info): VStateless_class(0, form_base_class),
+	fcharsets(acharsets),
+	frequest_info(arequest_info),
+	filled_source(0),
+	filled_client(0) {
 }
 
 char *VForm::strpart(const char* str, size_t len) {
@@ -91,8 +93,8 @@ char *VForm::getAttributeValue(const char* data, char *attr, size_t len) {
 String::C VForm::transcode(const char* client, size_t client_size) {
 	return Charset::transcode(
 		String::C(strdup(client, client_size), client_size),
-		fcharsets->client(),
-		fcharsets->source());
+		fcharsets.client(),
+		fcharsets.source());
 }
 
 void VForm::ParseGetFormInput(const char* query_string, size_t length) {
@@ -243,54 +245,55 @@ void VForm::AppendFormEntry(const char* cname_cstr,
 	fields.put_dont_replace(sname, value);
 }
 
-void VForm::fill_fields_and_tables(Request_charsets& acharsets, 
-				   Request_info& request_info) {
-	fcharsets=&acharsets;
-	try{
+void VForm::refill_fields_and_tables() {
+	fields.clear();
+	tables.clear();
+	imap.clear();
 
-	//request_info.query_string="a=123";
+	//frequest_info.query_string="a=123";
 	// parsing QS [GET and ?name=value from uri rewrite)]
-	if(request_info.query_string) {
-		size_t length=strlen(request_info.query_string);
-		char *buf=strdup(request_info.query_string, length);
+	if(frequest_info.query_string) {
+		size_t length=strlen(frequest_info.query_string);
+		char *buf=strdup(frequest_info.query_string, length);
 		ParseGetFormInput(buf, length);
 	}
 
 #ifdef DEBUG_POST
-	request_info.method="POST";
+	frequest_info.method="POST";
 	void *data;
 	file_read(*new String("opera.stdin"),  //"ie.stdin"), //
 			   data, request.post_size, 
 			   false/*as_text*/);	
 	request.post_data=(char*)data;
-	request_info.content_type="multipart/form-data; boundary=----------mcqY2UDNcdEAoN1mLmne2i";
-	//request_info.content_type="multipart/form-data; boundary=---------------------------7d23111f44403a4";
+	frequest_info.content_type="multipart/form-data; boundary=----------mcqY2UDNcdEAoN1mLmne2i";
+	//frequest_info.content_type="multipart/form-data; boundary=---------------------------7d23111f44403a4";
 
 #endif
 
 	// parsing POST data
-	if(request_info.method) {
-		if(const char* content_type=request_info.content_type)
-			if(StrEqNc(request_info.method, "post", true)) {
+	if(frequest_info.method) {
+		if(const char* content_type=frequest_info.content_type)
+			if(StrEqNc(frequest_info.method, "post", true)) {
 				if(StrEqNc(content_type, "application/x-www-form-urlencoded", true)) 
-					ParseFormInput(request_info.post_data, request_info.post_size);
+					ParseFormInput(frequest_info.post_data, frequest_info.post_size);
 				else if(StrEqNc(content_type, "multipart/form-data", 0))
 					ParseMimeInput(strdup(content_type), 
-						request_info.post_data, request_info.post_size);
+						frequest_info.post_data, frequest_info.post_size);
 			}
 	}
 
-	filled=true;
-	
-	fcharsets=0;
-	} catch(...) { fcharsets=0; rethrow; }
+	filled_source=&fcharsets.source();
+	filled_client=&fcharsets.client();
+}
+
+bool VForm::should_refill_fields_and_tables() {
+	return &fcharsets.source()!=filled_source
+		|| &fcharsets.client()!=filled_client;
 }
 
 Value* VForm::get_element(const String& aname, Value& aself, bool looking_up) {
-	if(!filled)
-		throw Exception("parser.runtime",
-			&aname,
-			"not determined yet");
+	if(should_refill_fields_and_tables())
+		refill_fields_and_tables();
 
 	// $fields
 	if(aname==FORM_FIELDS_ELEMENT_NAME)
@@ -300,6 +303,7 @@ Value* VForm::get_element(const String& aname, Value& aself, bool looking_up) {
 	if(aname==FORM_TABLES_ELEMENT_NAME)
 		return new VHash(tables);
 
+	// $imap
 	if(aname==FORM_IMAP_ELEMENT_NAME)
 		return new VHash(imap);
 
