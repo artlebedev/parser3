@@ -70,17 +70,13 @@ $people[^dom.select[*/man]]
 @show-dom2[dom]
 ^dom.save[save.xml;
 	$.encoding[windows-1251]
-	$.method[html]
-]
-^dom.save[save3.xml;
-	$.encoding[windows-1251]
 	$.method[xml]
 ]
 $file[^dom.file[
 	$.encoding[windows-1251]
 	$.method[html]
 ]]
-^file.save[text;save2.xml]
+^file.save[text;save_file.html]
 ^taint[^dom.string[
 	$.encoding[windows-1251]
 	$.method[html]

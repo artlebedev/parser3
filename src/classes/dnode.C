@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: dnode.C,v 1.3 2001/09/20 07:31:51 parser Exp $"; 
+static const char *RCSId="$Id: dnode.C,v 1.4 2001/09/20 14:25:06 parser Exp $"; 
 
 #if _MSC_VER
 #	pragma warning(disable:4291)   // disable warning 
@@ -67,7 +67,7 @@ static void _select(Request& r, const String& method_name, MethodParams *params)
 		result.set_name(method_name);
 		r.write_no_lang(result);
 	} catch(const XSLException& e) {
-		_throw(pool, &expression, e);
+		r._throw(&expression, e);
 	}
 }
 
@@ -98,7 +98,7 @@ static void _select_single(Request& r, const String& method_name, MethodParams *
 			r.write_no_lang(result);
 		}
 	} catch(const XSLException& e) {
-		_throw(pool, &expression, e);
+		r._throw(&expression, e);
 	}
 }
 

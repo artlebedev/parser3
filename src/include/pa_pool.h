@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.h,v 1.54 2001/09/15 13:20:22 parser Exp $
+	$Id: pa_pool.h,v 1.55 2001/09/20 14:25:06 parser Exp $
 */
 
 #ifndef PA_POOL_H
@@ -13,8 +13,18 @@
 
 #include "pa_config_includes.h"
 
+#include <XalanDOM/XalanDOMString.hpp>
+#include <util/TransService.hpp>
+#include <PlatformSupport/XSLException.hpp>
+
+
+// forwards
+
 class Exception;
 class Temp_exception;
+class String;
+
+void Pool_cleanup(void *);
 
 /** 
 	Pool mechanizm allows users not to free up allocated memory,
@@ -28,10 +38,16 @@ class Temp_exception;
 
 class Pool {
 	friend Temp_exception;
+	friend void Pool_cleanup(void *);
 public:
 
-	Pool(void *astorage) : fstorage(astorage), fcontext(0), ftag(0), fexception(0) {}
+	Pool(void *astorage);
 
+private:
+	void cleanup() {
+		delete transcoder;
+	}
+public:
 	void set_context(void *acontext) { fcontext=acontext; }
 	void *context() { return fcontext; }
 
@@ -56,11 +72,25 @@ public:
 	/// current exception object of the pool
 	Exception& exception() const { return *fexception; }
 
+	/// resets transcoder if they change charset 
+	void set_charset(const String &charset);
+	/// converts Xalan string to char *
+	const char *transcode(const XalanDOMString& s);
+	/// converts XSL exception to parser exception
+	void _throw(const String *source, const XSLException& e);
+
+private:
+
+	void set_charset(const char *charset);
+	void update_transcoder();
+
 private:
 
 	void *fstorage;
 	void *fcontext;
 	void *ftag;
+	const char *charset;
+	XMLTranscoder *transcoder;
 
 private: 
 	
@@ -151,6 +181,10 @@ public:
 	}
 	/// useful wrapper around pool
 	Exception& exception() const { return fpool->exception(); }
+	/// useful wrapper around pool
+	const char *transcode(const XalanDOMString& s) { return fpool->transcode(s); }
+	/// useful wrapper around pool
+	void _throw(const String *source, const XSLException& e) { fpool->_throw(source, e); }
 };
 /// useful macro for creating objects on current Pooled object Pooled::pool()
 #define NEW new(pool())

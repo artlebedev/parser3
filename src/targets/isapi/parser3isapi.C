@@ -5,11 +5,13 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: parser3isapi.C,v 1.42 2001/09/18 16:05:43 parser Exp $"; 
+static const char *RCSId="$Id: parser3isapi.C,v 1.43 2001/09/20 14:25:06 parser Exp $"; 
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
 #endif
+
+#include "pa_config_includes.h"
 
 #include <windows.h>
 #include <process.h>

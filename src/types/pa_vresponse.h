@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vresponse.h,v 1.10 2001/05/07 14:00:54 paf Exp $
+	$Id: pa_vresponse.h,v 1.11 2001/09/20 14:25:06 parser Exp $
 */
 
 #ifndef PA_VRESPONSE_H
@@ -14,7 +14,11 @@
 #include "pa_vstateless_object.h"
 #include "pa_string.h"
 
+// externals
+
 extern Methoded *response_class;
+
+// forwards
 
 class Response;
 
@@ -39,6 +43,12 @@ public: // Value
 
 	/// Response: (attribute)=value
 	void put_element(const String& name, Value *value) { 
+		// guard charset change
+		if(name == *content_type_name)
+			if(Hash *hash=value->get_hash())
+				if(Value *vcharset=(Value *)hash->get(*charset_name))
+					pool().set_charset(vcharset->as_string());		
+		
 		ffields.put(name, value);
 	}
 
@@ -52,8 +62,11 @@ public: // usage
 	VResponse(Pool& apool) : VStateless_object(apool, *response_class),
 		ffields(apool) {
 	}
-	
+public:	
 	Hash& fields() { return ffields; }
+
+	/// recodes using charset of 'content-type'
+	const char *transcode(const XalanDOMString& s);
 
 private:
 

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vdnode.C,v 1.3 2001/09/20 08:39:41 parser Exp $
+	$Id: pa_vdnode.C,v 1.4 2001/09/20 14:25:06 parser Exp $
 */
 
 #if _MSC_VER
@@ -32,47 +32,6 @@ void VDnode_cleanup(void *vnode) {
 }
 */
 
-/// @test pool maxBytes
-static const char *strX(const XalanDOMString& s) {
-//	return XMLString::transcode(s.c_str());
-	XMLTransService::Codes resValue;
-	XMLTranscoder& transcoder=*XMLPlatformUtils::fgTransService->makeNewTranscoderFor(
-		"windows-1251", resValue, 0x400);
-	const unsigned int maxBytes=0x100;
-	XMLByte* toFill=(XMLByte *)malloc(maxBytes*sizeof(XMLByte));
-	unsigned int charsEaten;
-	unsigned int size=transcoder.transcodeTo(
-        s.c_str(), s.length(),
-        toFill,
-        maxBytes,
-        charsEaten,
-		XMLTranscoder::UnRep_RepChar /*UnRep_Throw*/
-    );
-	toFill[size]=0;
-	return (const char *)toFill;
-}
-
-void _throw(Pool& pool, const String *source, const XSLException& e) {
-	if(e.getURI().empty())
-		PTHROW(0, 0,
-			source,
-			"%s (%s)",
-				strX(e.getMessage()),  // message for exception
-				strX(e.getType()) // type of exception
-		);
-	else
-		PTHROW(0, 0,
-			source,
-			"%s (%s) %s(%d:%d)'", 
-				strX(e.getMessage()),  // message for exception
-				strX(e.getType()), // type of exception
-				
-				strX(e.getURI()),  // URI for the associated document, if any
-				e.getLineNumber(),  // line number, or -1 if unknown
-				e.getColumnNumber() // column number, or -1 if unknown
-		);
-}
-
 /// VDnode: $CLASS,$method
 Value *VDnode::get_element(const String& aname) { 
 	// $CLASS,$method
@@ -84,27 +43,17 @@ Value *VDnode::get_element(const String& aname) {
 	XalanNode *self=&get_node(pool(), &aname);
 
 	if(aname=="name") {
-		const char *name_cstr=strX(self->getNodeName());
+		const char *name_cstr=transcode(self->getNodeName());
 		String& name=*NEW String(pool(), name_cstr);
 		return NEW VString(name);
 	} else if(aname=="value") {
-		const char *value_cstr=strX(self->getNodeValue());
+		const char *value_cstr=transcode(self->getNodeValue());
 		String& value=*NEW String(pool(), value_cstr);
 		return NEW VString(value);
 	} else if(aname=="type") {
 		static const char *type_names[]={
-			"unknown",
-			"element",    
-			"attribute",    
-			"text",    
-			"cdata",    
-			"entityref",    
-			"entity",    
-			"pi",    
-			"comment",    
-			"document",    
-			"doctype",    
-			"docfragment",    
+			"unknown", "element", "attribute", "text", "cdata", "entityref",    
+			"entity", "pi", "comment", "document", "doctype", "docfragment", 
 			"notation"
 		};
 		XalanNode::NodeType node_type=self->getNodeType();
@@ -137,7 +86,7 @@ Value *VDnode::get_element(const String& aname) {
 					for(int i=0; i<attributes->getLength(); i++) {
 						XalanNode *attr_node=attributes->item(i);
 						result->hash().put(
-							*NEW String(pool(), strX(attr_node->getNodeName())), 
+							*NEW String(pool(), transcode(attr_node->getNodeName())), 
 							NEW VDnode(pool(), attr_node));
 					}
 					return result;
@@ -159,7 +108,7 @@ Value *VDnode::get_element(const String& aname) {
 		case XalanNode::PROCESSING_INSTRUCTION_NODE: 
 			if(aname=="target")
 				return NEW VString(*NEW String(pool(), 
-					strX(static_cast<XalanProcessingInstruction *>(self)->getTarget())));
+					transcode(static_cast<XalanProcessingInstruction *>(self)->getTarget())));
 			break;
 /*
 		case XalanNode::DOCUMENT_NODE: 

@@ -5,12 +5,17 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_config_includes.h,v 1.9 2001/05/17 19:33:32 parser Exp $
+	$Id: pa_config_includes.h,v 1.10 2001/09/20 14:25:06 parser Exp $
 
 
 	when used Configure [HAVE_CONFIG_H] it uses defines from Configure,
 	fixed otherwise.
 */
+
+#if _MSC_VER
+#	pragma warning(disable:4291)   // disable warning 
+//	"no matching operator delete found; memory will not be freed if initialization throws an exception
+#endif
 
 #if HAVE_CONFIG_H
 #	include "pa_config_auto.h"

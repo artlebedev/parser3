@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_globals.C,v 1.74 2001/09/17 16:49:15 parser Exp $"; 
+static const char *RCSId="$Id: pa_globals.C,v 1.75 2001/09/20 14:25:06 parser Exp $"; 
 
 #if _MSC_VER
 #	pragma warning(disable:4291)   // disable warning 
@@ -24,6 +24,7 @@ static const char *RCSId="$Id: pa_globals.C,v 1.74 2001/09/17 16:49:15 parser Ex
 
 String *user_html_name;
 String *content_type_name;
+String *charset_name;
 String *body_name;
 String *value_name;
 String *expires_name;
@@ -117,6 +118,7 @@ void pa_globals_init(Pool& pool) {
 	// names
 	user_html_name=NEW String(pool, USER_HTML_NAME);
 	content_type_name=NEW String(pool, CONTENT_TYPE_NAME);
+	charset_name=NEW String(pool, CHARSET_NAME);
 	body_name=NEW String(pool, BODY_NAME);
 	value_name=NEW String(pool, VALUE_NAME);
 	expires_name=NEW String(pool, EXPIRES_NAME);

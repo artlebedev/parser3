@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.h,v 1.62 2001/09/18 16:05:42 parser Exp $
+	$Id: pa_globals.h,v 1.63 2001/09/20 14:25:06 parser Exp $
 */
 
 #ifndef PA_GLOBALS_H
@@ -26,6 +26,7 @@ class Dictionary;
 #define USER_HTML_NAME "user-html"
 
 #define CONTENT_TYPE_NAME "content-type"
+#define CHARSET_NAME "charset"
 #define BODY_NAME "body"
 #define VALUE_NAME "value"
 #define EXPIRES_NAME "expires"
@@ -90,6 +91,7 @@ extern short hex_value[0x100];
 /// global string
 extern String *user_html_name;
 extern String *content_type_name;
+extern String *charset_name;
 extern String *body_name;
 extern String *value_name;
 extern String *expires_name;

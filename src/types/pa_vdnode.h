@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vdnode.h,v 1.1 2001/09/18 12:25:06 parser Exp $
+	$Id: pa_vdnode.h,v 1.2 2001/09/20 14:25:06 parser Exp $
 */
 
 #ifndef PA_VDNODE_H
@@ -64,8 +64,5 @@ private:
 	XalanNode *fnode;
 
 };
-
-const char *strX(const XalanDOMString& s);
-void _throw(Pool& pool, const String *source, const XSLException& e);
 
 #endif

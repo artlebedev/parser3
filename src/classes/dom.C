@@ -5,12 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: dom.C,v 1.27 2001/09/20 09:17:55 parser Exp $"; 
-
-#if _MSC_VER
-#	pragma warning(disable:4291)   // disable warning 
-//	"no matching operator delete found; memory will not be freed if initialization throws an exception
-#endif
+static const char *RCSId="$Id: dom.C,v 1.28 2001/09/20 14:25:06 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
@@ -167,7 +162,7 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 		FormatterTreeWalker treeWalker(*formatterListener);
 		treeWalker.traverse(&node); // Walk that node and produce the XML...
 	} catch(const XSLException& e) {
-		_throw(pool, &method_name, e);
+		r._throw(&method_name, e);
 	}
 }
 
@@ -192,7 +187,7 @@ static void _string(Request& r, const String& method_name, MethodParams *params)
 		// write out result
 		r.write_no_lang(parserString);
 	} catch(const XSLException& e) {
-		_throw(pool, &method_name, e);
+		r._throw(&method_name, e);
 	}
 }
 
@@ -231,7 +226,7 @@ static void _file(Request& r, const String& method_name, MethodParams *params) {
 		vfile.set(false/*tainted*/, cstr, strlen(cstr), 0/*file_name*/, vcontent_type);
 		r.write_no_lang(vfile);
 	} catch(const XSLException& e) {
-		_throw(pool, &method_name, e);
+		r._throw(&method_name, e);
 	}
 }
 
