@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_SQL_DRIVER_MANAGER_C="$Date: 2003/12/11 09:22:09 $";
+static const char * const IDENT_SQL_DRIVER_MANAGER_C="$Date: 2003/12/19 14:30:52 $";
 
 #include "pa_sql_driver_manager.h"
 #include "ltdl.h"
@@ -131,10 +131,12 @@ SQL_Connection* SQL_Driver_manager::get_connection(const String& aurl,
 
 			const char* filename=library->cstr(String::L_FILE_SPEC);
 			lt_dlhandle handle=lt_dlopen(filename);
-			if (!handle)
+			if (!handle) {
+				const char* error=lt_dlerror();
 				throw Exception(0,
 					library,
-					"can not open the module, %s", lt_dlerror());
+					error?error:"can not open the module");
+			}
 
 			SQL_Driver_create_func create=(SQL_Driver_create_func)lt_dlsym(handle, 
 				SQL_DRIVER_CREATE_NAME);
