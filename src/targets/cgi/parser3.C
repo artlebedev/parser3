@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: parser3.C,v 1.131 2001/11/15 16:30:02 paf Exp $
+	$Id: parser3.C,v 1.132 2001/11/15 18:07:55 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -437,7 +437,7 @@ int main(int argc, char *argv[]) {
 #endif
 
 #ifdef HAVE_SET_NEW_HANDLER
-	set_new_handler(failed_new);
+	std::set_new_handler(failed_new);
 #endif
 
 	try { // global try
