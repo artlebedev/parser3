@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.101 2001/04/07 10:34:45 paf Exp $
+	$Id: pa_request.C,v 1.102 2001/04/07 13:48:42 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -90,7 +90,7 @@ Request::Request(Pool& apool,
 	all located classes become children of one another,
 	composing class we name 'MAIN'
 
-	@todo figure out 'setlocale' thread safety
+	@test get read of setlocale
 */
 void Request::core(const char *root_auto_path, bool root_auto_fail,
 				   const char *site_auto_path, bool site_auto_fail,
@@ -214,6 +214,14 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 						&name,
 						"locale is invalid");
 			}
+
+		// $MAIN:MAIL[$SMTP[mail.design.ru]]
+		if(Value *mail_element=main_class->get_element(*mail_name))
+			if(!(mail=mail_element->get_hash()))
+				THROW(0, 0,
+					0,
+					"$MAIN:MAIL is not hash");
+
 
 		// execute @main[]
 		const String *body_string=execute_method(*main_class, *main_method_name);

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mail.C,v 1.3 2001/04/07 12:13:13 paf Exp $
+	$Id: mail.C,v 1.4 2001/04/07 13:48:35 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -13,6 +13,10 @@
 #include "_mail.h"
 #include "pa_common.h"
 #include "pa_request.h"
+
+#ifdef WIN32
+#	include "smtp/smtp.h"
+#endif
 
 // global var
 
@@ -126,7 +130,7 @@ static const String& letter_hash_to_string(Request& r, const String& method_name
 			((result+="\n------=")+=boundary)+="--\n";
 		} else {
 			result+="\n"; // header|body separator
-			result+=body_element->as_string(); 
+			result+=body_element->as_string();  // body
 		}
 	} else 
 		PTHROW(0, 0,
@@ -134,6 +138,45 @@ static const String& letter_hash_to_string(Request& r, const String& method_name
 			"has no $body");
 
 	return result;
+}
+
+
+/// @test unix ver
+static void sendmail(Request& r, const String& method_name, 
+					 const String& letter, 
+					 const String *from, const String *to) {
+	Pool& pool=r.pool();
+
+#ifdef WIN32
+	if(!from)
+		PTHROW(0, 0,
+			&method_name,
+			"not specified 'from'");
+	if(!to)
+		PTHROW(0, 0,
+			&method_name,
+			"not specified 'to'");
+
+	char *letter_cstr=letter.cstr();
+	SMTP& smtp=*new(pool) SMTP(pool, method_name);
+	const String *server_port;
+	// $MAIN:MAIL.SMTP[mail.design.ru]
+	if(r.mail && (server_port=r.mail->get_string(*new(pool) String(pool, "SMTP")))) {
+		char *server=server_port->cstr();
+		char *port=rsplit(server, ':');
+		if(!port)
+			port="25";
+
+		smtp.Send(server, port, letter_cstr, from->cstr(), to->cstr());
+	} else
+		PTHROW(0, 0,
+			&method_name,
+			"$MAIN:MAIL.SMTP not defined");
+#else
+	PTHROW(0, 0,
+		&method_name,
+		"todo");
+#endif
 }
 
 static void _send(Request& r, const String& method_name, Array *params) {
@@ -150,9 +193,9 @@ static void _send(Request& r, const String& method_name, Array *params) {
 			"message must be hash");
 
 	const String *from, *to;
-	const String& string=letter_hash_to_string(r, method_name, *hash, 0, &from, &to);
+	const String& letter=letter_hash_to_string(r, method_name, *hash, 0, &from, &to);
 
-	r.write_assign_lang(*new(pool) VString(string));
+	sendmail(r, method_name, letter, from, to);
 }
 
 // initialize

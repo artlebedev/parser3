@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.78 2001/04/06 10:32:18 paf Exp $
+	$Id: pa_request.h,v 1.79 2001/04/07 13:48:39 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -168,6 +168,8 @@ public:
 	SQL_Connection *connection;
 	/// table of protocol's libraries. read from $SQL:drivers
 	Table *protocol2library;
+	/// mail options
+	Hash *mail;
 
 private: // core data
 

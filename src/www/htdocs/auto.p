@@ -19,6 +19,9 @@ $SQL[
 mysql	Y:\parser3\src\sql\mysql\Debug\parser3mysql.dll
 }]
 ]
+$MAIL[
+	$SMTP[moko]
+]
 #for ^file:load[name;user-name;mime-type << autodetection]
 $MIME-TYPES[^table:set{ext	mime-type
 zip	application/zip

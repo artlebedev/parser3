@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.47 2001/04/07 10:34:45 paf Exp $
+	$Id: pa_globals.C,v 1.48 2001/04/07 13:48:42 paf Exp $
 */
 
 #include "pcre.h"
@@ -72,6 +72,7 @@ String *locale_name;
 String *locale_ctype_name;
 String *mime_types_name;
 String *vfile_mime_type_name;
+String *mail_name;
 
 String *main_sql_name;
 String *main_sql_drivers_name;
@@ -170,6 +171,7 @@ void pa_globals_init(Pool& pool) {
 	locale_ctype_name=NEW String(pool, LOCALE_CTYPE_NAME);
 	mime_types_name=NEW String(pool, MIME_TYPES_NAME);
 	vfile_mime_type_name=NEW String(pool, VFILE_MIME_TYPE_NAME);
+	mail_name=NEW String(pool, MAIL_NAME);
 
 	main_sql_name=NEW String(pool, MAIN_SQL_NAME);
 	main_sql_drivers_name=NEW String(pool, MAIN_SQL_DRIVERS_NAME);

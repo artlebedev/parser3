@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.h,v 1.41 2001/04/07 10:34:42 paf Exp $
+	$Id: pa_globals.h,v 1.42 2001/04/07 13:48:39 paf Exp $
 */
 
 #ifndef PA_GLOBALS_H
@@ -62,6 +62,7 @@ class Table;
 #define LOCALE_CTYPE_NAME "ctype"
 #define MIME_TYPES_NAME "MIME-TYPES"
 #define VFILE_MIME_TYPE_NAME "mime-type"
+#define MAIL_NAME "MAIL"
 
 #define MAIN_SQL_NAME "SQL"
 #define MAIN_SQL_DRIVERS_NAME "drivers"
@@ -123,6 +124,7 @@ extern String *locale_name;
 extern String *locale_ctype_name;
 extern String *mime_types_name;
 extern String *vfile_mime_type_name;
+extern String *mail_name;
 
 extern String *main_sql_name;
 extern String *main_sql_drivers_name;
