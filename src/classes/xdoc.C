@@ -8,7 +8,7 @@
 #include "classes.h"
 #ifdef XML
 
-static const char* IDENT_XDOC_C="$Date: 2003/04/04 09:43:10 $";
+static const char* IDENT_XDOC_C="$Date: 2003/04/11 09:58:10 $";
 
 #include "pa_stylesheet_connection.h"
 #include "pa_request.h"
@@ -177,7 +177,7 @@ static void _createElement(Request& r, const String& method_name, MethodParams *
 	GdomeException exc;
 	GdomeNode *node=
 		(GdomeNode *)gdome_doc_createElement(vdoc.get_document(&method_name), 
-		pool.transcode(tagName).get(),
+		pool.transcode(tagName).use(),
 		&exc);
 	writeNode(r, method_name, node, exc);
 }
@@ -205,7 +205,7 @@ static void _createTextNode(Request& r, const String& method_name, MethodParams 
 	GdomeException exc;
 	GdomeNode *node=(GdomeNode *)gdome_doc_createTextNode(
 		vdoc.get_document(&method_name),
-		pool.transcode(data).get(),
+		pool.transcode(data).use(),
 		&exc);
 	writeNode(r, method_name, node, exc);
 }
@@ -220,7 +220,7 @@ static void _createComment(Request& r, const String& method_name, MethodParams *
 	GdomeException exc;
 	GdomeNode *node=(GdomeNode *)gdome_doc_createComment(
 		vdoc.get_document(&method_name),
-		pool.transcode(data).get(),
+		pool.transcode(data).use(),
 		&exc);
 	writeNode(r, method_name, node, exc);
 }
@@ -235,7 +235,7 @@ static void _createCDATASection(Request& r, const String& method_name, MethodPar
 	GdomeException exc;
 	GdomeNode *node=(GdomeNode *)gdome_doc_createCDATASection(
 		vdoc.get_document(&method_name),
-		pool.transcode(data).get(),
+		pool.transcode(data).use(),
 		&exc);
 	writeNode(r, method_name, node, exc);
 }
@@ -251,8 +251,8 @@ static void _createProcessingInstruction(Request& r, const String& method_name, 
 	GdomeException exc;
 	GdomeNode *node=(GdomeNode *)gdome_doc_createProcessingInstruction(
 		vdoc.get_document(&method_name),
-		pool.transcode(target).get(), 
-		pool.transcode(data).get(),
+		pool.transcode(target).use(), 
+		pool.transcode(data).use(),
 		&exc);
 	writeNode(r, method_name, node, exc);
 }
@@ -267,7 +267,7 @@ static void _createAttribute(Request& r, const String& method_name, MethodParams
 	GdomeException exc;
 	GdomeNode *node=(GdomeNode *)gdome_doc_createAttribute(
 		vdoc.get_document(&method_name),
-		pool.transcode(name).get(),
+		pool.transcode(name).use(),
 		&exc);
 	writeNode(r, method_name, node, exc);
 }
@@ -281,7 +281,7 @@ static void _createEntityReference(Request& r, const String& method_name, Method
 	GdomeException exc;
 	GdomeNode *node=(GdomeNode *)gdome_doc_createEntityReference(
 		vdoc.get_document(&method_name),
-		pool.transcode(name).get(),
+		pool.transcode(name).use(),
 		&exc);
 	writeNode(r, method_name, node, exc);
 }
@@ -298,7 +298,7 @@ static void _getElementsByTagName(Request& r, const String& method_name, MethodP
 	if(GdomeNodeList *nodes=
 		gdome_doc_getElementsByTagName(
 			vdoc.get_document(&method_name), 
-			pool.transcode(name).get(), 
+			pool.transcode(name).use(), 
 			&exc)) {
 		gulong length=gdome_nl_length(nodes, &exc);
 		for(gulong i=0; i<length; i++) {
@@ -333,8 +333,8 @@ static void _getElementsByTagNameNS(Request& r, const String& method_name, Metho
 	if(GdomeNodeList *nodes=
 		gdome_doc_getElementsByTagNameNS(
 			vdoc.get_document(&method_name), 
-			pool.transcode(namespaceURI).get(),
-			pool.transcode(localName).get(),
+			pool.transcode(namespaceURI).use(),
+			pool.transcode(localName).use(),
 			&exc)) {
 		gulong length=gdome_nl_length(nodes, &exc);
 		for(gulong i=0; i<length; i++) {
@@ -363,7 +363,7 @@ static void _getElementById(Request& r, const String& method_name, MethodParams 
 	GdomeException exc;
 	if(GdomeNode *node=(GdomeNode *)gdome_doc_getElementById(
 		vdoc.get_document(&method_name),
-		pool.transcode(elementId).get(),
+		pool.transcode(elementId).use(),
 		&exc)) {
 		// write out result
 		VXnode& result=*new(pool) VXnode(pool, node);
@@ -439,7 +439,7 @@ static void _create(Request& r, const String& method_name, MethodParams *params)
 		*/
 		document=gdome_di_createDocument (domimpl, 
 			0/*namespaceURI*/, 
-			pool.transcode(qualifiedName).get(), 
+			pool.transcode(qualifiedName).use(), 
 			0/*doctype*/, 
 			&exc);
 		if(!document || exc || xmlHaveGenericErrors())

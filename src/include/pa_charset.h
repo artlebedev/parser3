@@ -8,7 +8,7 @@
 #ifndef PA_CHARSET_H
 #define PA_CHARSET_H
 
-static const char* IDENT_CHARSET_H="$Date: 2003/03/21 09:43:48 $";
+static const char* IDENT_CHARSET_H="$Date: 2003/04/11 09:58:10 $";
 
 #include "pa_pool.h"
 #include "pa_exception.h"
@@ -162,15 +162,20 @@ public:
 	~GdomeDOMString_auto_ptr() {
 		gdome_str_unref(fstring);
 	}
-	GdomeDOMString* get() {
+/*	GdomeDOMString* get() {
+		return fstring;
+	}*/
+	GdomeDOMString* use() {
+		if(fstring)
+			gdome_str_ref(fstring);
 		return fstring;
 	}
 	GdomeDOMString* operator->() {
 		return fstring;
 	}
-	GdomeDOMString& operator*() {
+/*	GdomeDOMString& operator*() {
 		return *fstring;
-	}
+	}*/
 
 	// copying
 	GdomeDOMString_auto_ptr(const GdomeDOMString_auto_ptr& src) : fstring(src.fstring) {
@@ -180,9 +185,11 @@ public:
 		if(this == &src)
 			return *this;
 
-		gdome_str_unref(fstring);
+		if(fstring)
+			gdome_str_unref(fstring);
 		fstring=src.fstring;
-		gdome_str_ref(fstring);
+		if(fstring)
+			gdome_str_ref(fstring);
 
 		return *this;
 	}

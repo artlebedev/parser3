@@ -7,7 +7,7 @@
 #include "classes.h"
 #ifdef XML
 
-static const char* IDENT_XNODE_C="$Date: 2003/01/21 15:51:08 $";
+static const char* IDENT_XNODE_C="$Date: 2003/04/11 09:58:10 $";
 
 #include "pa_charset.h"
 #include "pa_request.h"
@@ -243,7 +243,7 @@ static void _getAttribute(Request& r, const String& method_name, MethodParams *p
 
 	GdomeException exc;
 	GdomeDOMString *attribute_value=
-		gdome_el_getAttribute(element, pool.transcode(name).get(), &exc);
+		gdome_el_getAttribute(element, pool.transcode(name).use(), &exc);
 	// write out result
 	r.write_no_lang(pool.transcode(attribute_value, &name));
 }
@@ -257,8 +257,8 @@ static void _setAttribute(Request& r, const String& method_name, MethodParams *p
 
 	GdomeException exc;
 	gdome_el_setAttribute(element,
-		pool.transcode(name).get(), 
-		pool.transcode(attribute_value).get(),
+		pool.transcode(name).use(), 
+		pool.transcode(attribute_value).use(),
 		&exc);
 	if(exc)
 		throw Exception(
@@ -273,7 +273,7 @@ static void _removeAttribute(Request& r, const String& method_name, MethodParams
 	const String& name=params->as_string(0, "name must be string");
 
 	GdomeException exc;
-	gdome_el_removeAttribute(element, pool.transcode(name).get(), &exc);
+	gdome_el_removeAttribute(element, pool.transcode(name).use(), &exc);
 	if(exc)
 		throw Exception(
 			&method_name, 
@@ -287,7 +287,7 @@ static void _getAttributeNode(Request& r, const String& method_name, MethodParam
 	const String& name=params->as_string(0, "name must be string");
 
 	GdomeException exc;
-	if(GdomeAttr *attr=gdome_el_getAttributeNode(element, pool.transcode(name).get(), &exc)) {
+	if(GdomeAttr *attr=gdome_el_getAttributeNode(element, pool.transcode(name).use(), &exc)) {
 		// write out result
 		VXnode& result=*new(pool) VXnode(pool, (GdomeNode *)attr);
 		r.write_no_lang(result);
@@ -338,7 +338,7 @@ static void _getElementsByTagName(Request& r, const String& method_name, MethodP
 	VHash& result=*new(pool) VHash(pool);
 	GdomeException exc;
 	if(GdomeNodeList *nodes=
-		gdome_el_getElementsByTagName(element, pool.transcode(name).get(), &exc)) {
+		gdome_el_getElementsByTagName(element, pool.transcode(name).use(), &exc)) {
 		gulong length=gdome_nl_length(nodes, &exc);
 		for(gulong i=0; i<length; i++) {
 			String& skey=*new(pool) String(pool);
@@ -372,8 +372,8 @@ static void _getElementsByTagNameNS(Request& r, const String& method_name, Metho
 	if(GdomeNodeList *nodes=
 		gdome_el_getElementsByTagNameNS(
 			element, 
-			pool.transcode(namespaceURI).get(),
-			pool.transcode(localName).get(),
+			pool.transcode(namespaceURI).use(),
+			pool.transcode(localName).use(),
 			&exc)) {
 		gulong length=gdome_nl_length(nodes, &exc);
 		for(gulong i=0; i<length; i++) {
@@ -502,7 +502,7 @@ static void selectNodeHandler(Pool& pool,
 		result=new(pool) VString(
 			pool.transcode(
 				GdomeDOMString_auto_ptr(
-					gdome_str_mkref_dup((const gchar *)res->stringval)).get(), &expression));
+					gdome_str_mkref_dup((const gchar *)res->stringval)).use(), &expression));
 		break;
 	default: 
 		throw Exception("parser.runtime",
@@ -563,7 +563,7 @@ static void selectStringHandler(Pool& pool,
 		result=new(pool) VString(
 			pool.transcode(
 				GdomeDOMString_auto_ptr(
-					gdome_str_mkref_dup((const gchar *)res->stringval)).get(), &expression));
+					gdome_str_mkref_dup((const gchar *)res->stringval)).use(), &expression));
 		break;
 	case XPATH_NODESET: 
 		if(!(res->nodesetval && res->nodesetval->nodeNr))
