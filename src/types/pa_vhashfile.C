@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT="$Date: 2003/11/06 12:07:11 $";
+static const char* IDENT="$Date: 2003/11/06 12:11:51 $";
 
 #include "pa_vtable.h"
 #include "pa_vstring.h"
@@ -104,19 +104,24 @@ void VHashfile::remove(const String& aname) {
 }
 
 void VHashfile::for_each(void callback(apr_sdbm_datum_t, void*), void* info) const {
+	Array<apr_sdbm_datum_t> keys;
+
+	// collect keys
 	check("apr_sdbm_lock", apr_sdbm_lock(db, APR_FLOCK_SHARED));
 	try {
-		apr_sdbm_datum_t apkey;
-		if(apr_sdbm_firstkey(db, &apkey)==APR_SUCCESS)
+		apr_sdbm_datum_t key;
+		if(apr_sdbm_firstkey(db, &key)==APR_SUCCESS)
 			do {
-				callback(apkey, info);
-			} while(apr_sdbm_nextkey(db, &apkey)==APR_SUCCESS);
+				keys+=key;
+			} while(apr_sdbm_nextkey(db, &key)==APR_SUCCESS);
 	} catch(...) {
 			check("apr_sdbm_unlock", apr_sdbm_unlock(db));
 			rethrow;
 	}
-
 	check("apr_sdbm_unlock", apr_sdbm_unlock(db));
+
+	// iterate them
+	keys.for_each(callback, info);
 }
 
 #ifndef DOXYGEN
@@ -147,20 +152,13 @@ void VHashfile::for_each(void callback(const String::Body, const String&, void*)
 	for_each(for_each_string_callback, &info);
 }
 
-typedef Array<apr_sdbm_datum_t> apr_sdbm_datum_array_t;
-static void clear_collect_key(apr_sdbm_datum_array_t::element_type key, 
-							  void* aapr_sdbm_datum_array) {
-	*static_cast<apr_sdbm_datum_array_t *>(aapr_sdbm_datum_array)+=key;
-}
-static void clear_delete_key(apr_sdbm_datum_t key, apr_sdbm_t *db) {
-	check("apr_sdbm_delete", apr_sdbm_delete(db, key));
+static void clear_delete_key(apr_sdbm_datum_t key, void* adb) {
+	check("apr_sdbm_delete", apr_sdbm_delete(static_cast<apr_sdbm_t*>(adb), key));
 }
 void VHashfile::clear() {
 	make_writable();
 
-	apr_sdbm_datum_array_t keys;
-	for_each(clear_collect_key, &keys);
-	keys.for_each(clear_delete_key, db);
+	for_each(clear_delete_key, db);
 }
 
 
