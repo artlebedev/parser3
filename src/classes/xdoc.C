@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT_XDOC_C="$Date: 2004/02/17 15:08:51 $";
+static const char * const IDENT_XDOC_C="$Date: 2004/02/18 11:47:04 $";
 
 #include "gdome.h"
 #include "libxml/tree.h"
@@ -53,6 +53,41 @@ public:
 // global variable
 
 DECLARE_CLASS_VAR(xdoc, new MXdoc, 0);
+
+// helper classes
+
+class xmlOutputBuffer_auto_ptr {
+public:
+	explicit xmlOutputBuffer_auto_ptr(xmlOutputBuffer *_APtr = 0) 
+		: _Owns(_APtr != 0), _Ptr(_APtr) {}
+	xmlOutputBuffer_auto_ptr(const xmlOutputBuffer_auto_ptr& _Y) 
+		: _Owns(_Y._Owns), _Ptr(_Y.release()) {}
+	xmlOutputBuffer_auto_ptr& operator=(const xmlOutputBuffer_auto_ptr& _Y) 
+		{if (this != &_Y)
+			{if (_Ptr != _Y.get())
+				{if (_Owns && _Ptr)
+					xmlOutputBufferClose(_Ptr);
+				_Owns = _Y._Owns; }
+			else if (_Y._Owns)
+				_Owns = true;
+			_Ptr = _Y.release(); }
+		return (*this); }
+	~xmlOutputBuffer_auto_ptr()
+		{if (_Owns && _Ptr)
+			xmlOutputBufferClose(_Ptr); }
+	xmlOutputBuffer& operator*() const 
+		{return (*get()); }
+	xmlOutputBuffer *operator->() const 
+		{return (get()); }
+	xmlOutputBuffer *get() const 
+		{return (_Ptr); }
+	xmlOutputBuffer *release() const 
+		{((xmlOutputBuffer_auto_ptr *)this)->_Owns = false;
+		return (_Ptr); }
+private:
+	bool _Owns;
+	xmlOutputBuffer *_Ptr;
+};
 
 class xsltTransformContext_auto_ptr {
 public:
@@ -560,59 +595,76 @@ static void prepare_output_options(Request& r,
 	}
 }
 
-/// patching piece from libxslt not to set meta encoding
-static void
-pa_xsltSaveResultToMem(	
-					   xmlChar*& doc_txt_ptr, 	int& doc_txt_len,
-					   xmlDocPtr result,
-					   xsltStylesheetPtr style,
-					   xmlCharEncodingHandler* encoder) 
-{
+/// patching piecees from libxslt and libxml not to set meta encoding
+static int
+pa_xsltSaveResultTo(xmlOutputBufferPtr buf, xmlDocPtr result,
+	       xsltStylesheetPtr style) {
     const xmlChar *encoding;
     int base;
     const xmlChar *method;
     int indent;
-	xmlOutputBufferPtr buf = 0;
 
-    if ((result == NULL) || (style == NULL))
-	return;
+    if ((buf == NULL) || (result == NULL) || (style == NULL))
+	return(-1);
     if ((result->children == NULL) ||
 	((result->children->type == XML_DTD_NODE) &&
 	 (result->children->next == NULL)))
-	return;
+	return(0);
 
     if ((style->methodURI != NULL) &&
 	((style->method == NULL) ||
 	 (!xmlStrEqual(style->method, (const xmlChar *) "xhtml")))) {
         xsltGenericError(xsltGenericErrorContext,
 		"xsltSaveResultTo : unknown ouput method\n");
-        return;
+        return(-1);
     }
+
+    base = buf->written;
 
     XSLT_GET_IMPORT_PTR(method, style, method)
     XSLT_GET_IMPORT_PTR(encoding, style, encoding)
     XSLT_GET_IMPORT_INT(indent, style, indent);
 
     if ((method == NULL) && (result->type == XML_HTML_DOCUMENT_NODE))
-	method = (const xmlChar *) "html";
+	method = BAD_CAST "html";
 
     if ((method != NULL) &&
-	(xmlStrEqual(method, (const xmlChar *) "html")
-	||xmlStrEqual(method, (const xmlChar *) "xhtml"))) {
+	(xmlStrEqual(method, (const xmlChar *) "html"))) {
 	if (indent == -1)
 	    indent = 1;
-	//
-	// * xmlDocDumpFormatMemoryEnc:
-	// Note it is up to the caller of this function to free the
-	// allocated memory with xmlFree()
-	// 
-	// we wont free anything, and wont copy that data anymore [already done inside and zeroterminated]
-	xmlDocDumpFormatMemoryEnc(result, &doc_txt_ptr, &doc_txt_len, (const char *) encoding,
+
+    int is_xhtml = 0;
+    xmlDtdPtr dtd = xmlGetIntSubset(result);
+    if (dtd != NULL) {
+        is_xhtml = xmlIsXHTML(dtd->SystemID, dtd->ExternalID);
+        if (is_xhtml < 0)
+            is_xhtml = 0;
+	}
+	xmlNodePtr cur=result->last;
+	if(!cur) {
+		is_xhtml=0;
+	}
+
+	if(is_xhtml) {
+		// xhtmlNodeDumpOutput is static :(
+		if((cur->parent == (xmlNodePtr) result) &&
+            (cur->type == XML_ELEMENT_NODE) &&
+			(xmlStrEqual(cur->name, BAD_CAST "html"))) {
+			//cur->name=BAD_CAST "html ";
+		}
+
+		method = BAD_CAST "xml";
+	} else {
+		htmlDocContentDumpFormatOutput(buf, result, (const char *) encoding,
 		                       indent);
-    } else if ((method != NULL) &&
+		xmlOutputBufferFlush(buf);
+		goto finish;
+	}
+	}
+    
+	if ((method != NULL) &&
 	       (xmlStrEqual(method, (const xmlChar *) "text"))) {
 	xmlNodePtr cur;
-	buf = xmlAllocOutputBuffer(encoder);
 
 	cur = result->children;
 	while (cur != NULL) {
@@ -649,10 +701,10 @@ pa_xsltSaveResultToMem(
 		}
 	    } while (cur != NULL);
 	}
+	xmlOutputBufferFlush(buf);
     } else {
 	int omitXmlDecl;
 	int standalone;
-	buf = xmlAllocOutputBuffer(encoder);
 
 	XSLT_GET_IMPORT_INT(omitXmlDecl, style, omitXmlDeclaration);
 	XSLT_GET_IMPORT_INT(standalone, style, standalone);
@@ -699,24 +751,12 @@ pa_xsltSaveResultToMem(
 	    }
 	    xmlOutputBufferWriteString(buf, "\n");
 	}
+	xmlOutputBufferFlush(buf);
     }
-
-	if(buf) {
-		xmlOutputBufferFlush(buf);
-		if(buf->conv) {
-			doc_txt_len=buf->conv->use;
-			doc_txt_ptr=buf->conv->content;
-		} else {
-			doc_txt_len=buf->buffer->use;
-			doc_txt_ptr=buf->buffer->content;
-		}
-
-		if(doc_txt_ptr && doc_txt_len)
-			doc_txt_ptr=BAD_CAST pa_strdup((const char*)doc_txt_ptr, doc_txt_len);
-
-		xmlOutputBufferClose(buf);
-	}
+finish:
+    return(buf->written - base);
 }
+
 
 struct Xdoc2buf_result {
 	char* str;
@@ -743,6 +783,8 @@ static Xdoc2buf_result xdoc2buf(Request& r, VXdoc& vdoc,
 	if(strcmp(encoder_name, "UTF-8")==0)
 		encoder=0;
 
+	xmlOutputBuffer_auto_ptr outputBuffer(xmlAllocOutputBuffer(encoder));
+
 	xsltStylesheet_auto_ptr stylesheet(xsltNewStylesheet());
 	if(!stylesheet.get())
 		throw Exception(0,
@@ -766,21 +808,29 @@ static Xdoc2buf_result xdoc2buf(Request& r, VXdoc& vdoc,
 
 	xmlDoc *document=gdome_xml_doc_get_xmlDoc(vdoc.get_document());
 	document->encoding=BAD_CAST xmlMemStrdup(encoder_name);
-
-	xmlChar* doc_txt_ptr=0;
-	int doc_txt_len=0;
-	pa_xsltSaveResultToMem(doc_txt_ptr, doc_txt_len, document, stylesheet.get(), encoder);
-	if(xmlHaveGenericErrors()) {
+	if(pa_xsltSaveResultTo(outputBuffer.get(), document, stylesheet.get())<0) {
 		GdomeException exc=0;
 		throw XmlException(0, exc);
 	}
 
-	result.length=doc_txt_len;
-	result.str=(char*)doc_txt_ptr;
+	// write out result
+	char *gnome_str;  size_t gnome_length;
+	if(outputBuffer->conv) {
+		gnome_length=outputBuffer->conv->use;
+		gnome_str=(char *)outputBuffer->conv->content;
+	} else {
+		gnome_length=outputBuffer->buffer->use;
+		gnome_str=(char *)outputBuffer->buffer->content;
+	}
+
+	if((result.length=gnome_length)) {
+		result.str=pa_strdup(gnome_str, gnome_length);
+	} else
+		result.str=0;
 
 	if(file_spec)
 		file_write(*file_spec,
-		result.str, result.length, 
+			gnome_str, gnome_length, 
 			true/*as_text*/);
 
 	return result;
