@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_PARSER3ISAPI_C="$Date: 2002/08/23 07:32:25 $";
+static const char* IDENT_PARSER3ISAPI_C="$Date: 2002/10/29 11:28:19 $";
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -423,7 +423,7 @@ inline DWORD RealHttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 	SAPI_func_context ctx={
 		lpECB,
 		0, // filling later: so that if there would be error pool would have ctx
-		200 // default http_response_code
+		200 // default http_response_code [lpECB->dwHttpStatusCode seems to be always 0, even on 404 redirect to /404.html]
 	};
 	pool.set_context(&ctx);// no allocations before this line!
 
