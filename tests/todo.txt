@@ -45,6 +45,34 @@ v]}]
 
 ----------------
 
+@main[]
+^test[]
+#^memory:compact[]
+
+@test[]
 $hf[^hashfile::open[hf]]
+$hf.bomb[$.value[alive]$.expires(1/24/60/60*3)]
+=$hf.bomb=
+
+@other[]
 $hf.paf[works]
-$hf.paf
+#clear!^hf.clear[]<br>
+=$hf.paf=
+
+$hf.pif[pworks]
+<hr>
+#^hf.delete[paf]
+=$hf.paf=
+<hr>
+hash:<br>
+$h[^hf.hash[]]
+^h.foreach[k;v]{
+$k=$v<br>
+}
+<hr>
+hashfile:<br>
+
+^hf.foreach[k;v]{
+$k=$v<br>
+}
+
