@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.76 2001/03/24 14:30:59 paf Exp $
+	$Id: pa_request.C,v 1.77 2001/03/24 15:58:01 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -95,10 +95,11 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 		
 		// loading root auto.p 
 		if(root_auto_path) {
-			strncpy(auto_filespec, root_auto_path, MAX_STRING-strlen("/" AUTO_FILE_NAME));
-			strcat(auto_filespec, "/" AUTO_FILE_NAME);
+			String& filespec=*NEW String(pool());
+			filespec.APPEND(root_auto_path, 0, "root_auto", 0);
+			filespec.APPEND_CONST("/" AUTO_FILE_NAME);
 			main_class=use_file(
-				auto_filespec, root_auto_fail,
+				filespec, root_auto_fail,
 				main_class_name, main_class);
 		}
 
@@ -116,10 +117,11 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 
 		// loading site auto.p
 		if(site_auto_path) {
-			strncpy(auto_filespec, site_auto_path, MAX_STRING-strlen("/" AUTO_FILE_NAME));
-			strcat(auto_filespec, "/" AUTO_FILE_NAME);
+			String& filespec=*NEW String(pool());
+			filespec.APPEND(site_auto_path, 0, "site_auto", 0);
+			filespec.APPEND_CONST("/" AUTO_FILE_NAME);
 			main_class=use_file(
-				auto_filespec, site_auto_fail,
+				filespec, site_auto_fail,
 				main_class_name, main_class);
 		}
 
@@ -128,16 +130,16 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 		// all assigned bases from upper dir
 		{
 			/* /document/root */
-			char *monkey_auto_path=
+			char *file_spec=
 				(char *)malloc(strlen(info.path_translated)+strlen(AUTO_FILE_NAME)+1);
-			strcpy(monkey_auto_path, info.document_root);
+			strcpy(file_spec, info.document_root);
 
 			/* /requested/file.html */
 			char *branches=(char *)malloc(strlen(info.path_translated)+1);
 			strcpy(branches, info.path_translated+strlen(info.document_root));
 			char *next=branches;
 
-			char *append_here=monkey_auto_path+strlen(monkey_auto_path);
+			char *append_here=file_spec+strlen(file_spec);
 			size_t slash_auto_p_size=strlen("/" AUTO_FILE_NAME);
 			while(true) {
 				char *step=lsplit(&next, '/');
@@ -148,7 +150,9 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 					memcpy(append_here, "/" AUTO_FILE_NAME, slash_auto_p_size+1);
 					append_here++/* / */;
 
-					main_class=use_file(monkey_auto_path, false/*ignore read problem*/,
+					String& sfile_spec=*NEW String(pool());
+					sfile_spec.APPEND(file_spec, 0, "scanned", 0);
+					main_class=use_file(sfile_spec, false/*ignore read problem*/,
 						main_class_name, main_class);
 				} else
 					break;
@@ -156,7 +160,9 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 		}
 
 		// compiling requested file
-		main_class=use_file(info.path_translated, true/*don't ignore read problem*/,
+		String& spath_translated=*NEW String(pool());
+		spath_translated.APPEND(info.path_translated, 0, "user-request", 0);
+		main_class=use_file(spath_translated, true/*don't ignore read problem*/,
 			main_class_name, main_class);
 
 		// $MAIN:defaults
@@ -354,21 +360,20 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 
 }
 
-VStateless_class *Request::use_file(const char *file, bool fail_on_read_problem,
+VStateless_class *Request::use_file(const String& file_spec, bool fail_on_read_problem,
 									const String *name, 
 									VStateless_class *base_class) {
 	// cyclic dependence check
-	String& sfile=*NEW String(pool(), file);
-	if(used_files.get(sfile))
+	if(used_files.get(file_spec))
 		return base_class;
-	used_files.put(sfile, (Hash::Val *)true);
+	used_files.put(file_spec, (Hash::Val *)true);
 
 
-	char *source=file_read_text(pool(), file, fail_on_read_problem);
+	char *source=file_read_text(pool(), file_spec, fail_on_read_problem);
 	if(!source)
 		return base_class;
 
-	return use_buf(source, file, 0/*new class*/, name, base_class);
+	return use_buf(source, file_spec.cstr(), 0/*new class*/, name, base_class);
 }
 
 VStateless_class *Request::use_buf(const char *source, const char *file,
@@ -395,23 +400,25 @@ void Request::fail_if_junction_(bool is, Value& value,
 			msg);
 }
 
-char *Request::relative(const char *path, const char *file) {
-    char *result=(char *)malloc(strlen(path)+strlen(file)+1);
-	strcpy(result, path);
-    rsplit(result, '/');
-    strcat(result, "/");
-    strcat(result, file);
+const String& Request::relative(const char *apath, const String& relative_name) {
+	int lpath_buf_size=strlen(apath)+1;
+    char *lpath=(char *)malloc(lpath_buf_size);
+	memcpy(lpath, apath, lpath_buf_size);
+    rsplit(lpath, '/');
+	String& result=*NEW String(pool(), lpath);
+    result.APPEND_CONST("/");
+	result.append(relative_name, String::UL_PASS_APPENDED);
     return result;
 }
 
-char *Request::absolute(const char *name) {
-	if(name[0]=='/') {
-		char *result=(char *)malloc(strlen(info.document_root)+strlen(name)+1);
-		strcpy(result, info.document_root);
-		strcat(result, name);
+const String& Request::absolute(const String& relative_name) {
+	char *relative_name_cstr=relative_name.cstr();
+	if(relative_name_cstr[0]=='/') {
+		String& result=*NEW String(pool(), info.document_root);
+		result.append(relative_name, String::UL_PASS_APPENDED);
 		return result;
 	} else 
-		return relative(info.path_translated, name);
+		return relative(info.path_translated, relative_name);
 }
 
 void Request::output_result(const String& body_string, bool header_only) {

@@ -6,7 +6,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.27 2001/03/24 14:30:59 paf Exp $
+	$Id: pa_common.C,v 1.28 2001/03/24 15:58:00 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -44,10 +44,11 @@ int __snprintf(char *b, size_t s, const char *f, ...) {
 #endif
 
 
-char *file_read_text(Pool& pool, const char *fname, bool fail_on_read_problem) {
+char *file_read_text(Pool& pool, const String& file_spec, bool fail_on_read_problem) {
     int f;
     struct stat finfo;
-    if(fname && !stat(fname,&finfo) &&(f=open(fname,O_RDONLY
+	char *fname=file_spec.cstr();
+    if(!stat(fname,&finfo) &&(f=open(fname,O_RDONLY
 #ifdef WIN32
 		|O_TEXT
 #endif
@@ -65,60 +66,47 @@ char *file_read_text(Pool& pool, const char *fname, bool fail_on_read_problem) {
 		return result;//prepare_config(result, remove_empty_lines);
     }
 	if(fail_on_read_problem)
-		if(fname)
-			PTHROW(0, 0,
-				0,
-				"file_read('%s'): %s (#%d)", 
-					fname, strerror(errno), errno);
-		else
-			PTHROW(0, 0,
-				0,
-				"file_read: no filename specified");
+		PTHROW(0, 0,
+			&file_spec,
+			"read %s (#%d)", strerror(errno), errno);
     return 0;
 }
 
 void file_write(Pool& pool, 
-				const char *fname, 
+				const String& file_spec, 
 				const char *data, size_t size, 
 				bool as_text/*,
 				bool exclusive*/) {
-	if(fname) {
-		int f;
-		if(access(fname, F_OK)!=0) {/*no*/
-			if((f=open(fname,O_WRONLY|O_CREAT|_O_BINARY,0666))>0)
-				close(f);
-		}
-		if(access(fname, R_OK|W_OK)==0) {
-			int mode=O_RDWR
+	char *fname=file_spec.cstr();
+	int f;
+	if(access(fname, F_OK)!=0) {/*no*/
+		if((f=open(fname,O_WRONLY|O_CREAT|_O_BINARY,0666))>0)
+			close(f);
+	}
+	if(access(fname, R_OK|W_OK)==0) {
+		int mode=O_RDWR
 #ifdef WIN32
-				|O_TRUNC
+			|O_TRUNC
 #endif
-			;
-			mode|=as_text?_O_TEXT:_O_BINARY;
-			if((f=open(fname,mode,0666))>=0) {
-				/*if(exclusive)
-					flock(f, LOCK_EX);*/
-				
-				if(size) write(f,data,size);
+		;
+		mode|=as_text?_O_TEXT:_O_BINARY;
+		if((f=open(fname,mode,0666))>=0) {
+			/*if(exclusive)
+				flock(f, LOCK_EX);*/
+			
+			if(size) write(f,data,size);
 #ifndef WIN32
-				ftruncate(f,size);
+			ftruncate(f,size);
 #endif
-				/*if(exclusive)
-					flock(f, LOCK_UN);*/
-				close(f);
-				return;
-			}
+			/*if(exclusive)
+				flock(f, LOCK_UN);*/
+			close(f);
+			return;
 		}
 	}
-	if(fname)
-		PTHROW(0, 0,
-			0,
-			"file_write('%s'): %s (#%d)", 
-				fname, strerror(errno), errno);
-	else
-		PTHROW(0, 0,
-			0,
-			"file_write: no filename specified");
+	PTHROW(0, 0,
+		&file_spec,
+		"write %s (#%d)", strerror(errno), errno);
 }
 
 char *getrow(char **row_ref, char delim) {

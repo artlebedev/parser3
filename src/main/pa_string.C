@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.48 2001/03/23 13:08:11 paf Exp $
+	$Id: pa_string.C,v 1.49 2001/03/24 15:58:01 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -342,6 +342,8 @@ const Origin& String::origin() const {
 		0,
 		"String::origin() of empty string called");
 	
-	return head.rows[0].item.origin; 
+	// determining origin by last appended piece
+	// first frequently constant. ex: ^load[/file] "document_root" + "/file"
+	return append_here[-1].item.origin; 
 }
 #endif

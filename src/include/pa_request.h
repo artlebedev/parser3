@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.68 2001/03/24 10:59:47 paf Exp $
+	$Id: pa_request.h,v 1.69 2001/03/24 15:57:59 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -87,7 +87,7 @@ public:
 
 	/// compiles the file, maybe forcing it's class @a name and @a base_class.
 	VStateless_class *use_file(
-		const char *file, bool fail_on_read_problem=true,
+		const String& file_spec, bool fail_on_read_problem=true,
 		const String *name=0, 
 		VStateless_class *base_class=0); // core.C
 	/// compiles a @a source buffer
@@ -131,10 +131,10 @@ public:
 		const String& method_name, const char *msg);
 
 	/// returns relative to @a path  path to @a file 
-	char *relative(const char *path, const char *file);
+	const String& relative(const char *apath, const String& relative_name);
 
 	/// returns an absolute @a path to relative @a name
-	char *absolute(const char *name);
+	const String& absolute(const String& relative_name);
 
 public:
 	

@@ -13,8 +13,6 @@
 #include "pa_version.h"
 #include "pool_storage.h"
 
-#include "nt_log_events.h"
-
 #define MAX_STATUS_LENGTH sizeof("xxxx LONGEST STATUS DESCRIPTION")
 
 //@{

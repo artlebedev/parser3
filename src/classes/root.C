@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: root.C,v 1.48 2001/03/23 13:08:07 paf Exp $
+	$Id: root.C,v 1.49 2001/03/24 15:57:57 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -161,8 +161,7 @@ static void _use(Request& r, const String& method_name, Array *params) {
 	r.fail_if_junction_(true, vfile, 
 		method_name, "file name must not be junction");
 
-	char *file=vfile.as_string().cstr();
-	r.use_file(r.absolute(file));
+	r.use_file(r.absolute(vfile.as_string()));
 }
 
 static void _for(Request& r, const String& method_name, Array *params) {

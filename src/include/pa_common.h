@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_common.h,v 1.24 2001/03/24 11:33:24 paf Exp $
+	$Id: pa_common.h,v 1.25 2001/03/24 15:57:59 paf Exp $
 */
 
 #ifndef PA_COMMON_H
@@ -73,7 +73,7 @@ int __snprintf(char *, size_t, const char *, ...);
 	if fail_on_read_problem is true[default] throws an exception
 */
 char *file_read_text(Pool& pool, 
-					 const char *fname, 
+					 const String& file_spec, 
 					 bool fail_on_read_problem=true);
 
 /**
@@ -81,7 +81,7 @@ char *file_read_text(Pool& pool,
 	throws an exception in case of problems
 */
 void file_write(Pool& pool, 
-				const char *fname,
+				const String& file_spec,
 				const char *data, size_t size, 
 				bool as_text/*,
 				bool exclusive=false*/);

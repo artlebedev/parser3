@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.24 2001/03/23 13:08:08 paf Exp $
+	$Id: table.C,v 1.25 2001/03/24 15:57:57 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -35,21 +35,18 @@ static void set_or_load(
 		method_name, is_load?"file name must not be junction":"body must be junction");
 
 	// data or file_name
-	char *ldata_or_filename;
+	char *data;
 	if(is_load) {
 		// forcing untaint language
 		String lfile_name(pool);
-		lfile_name.append(vdata_or_filename->as_string(),
-			String::UL_FILE_NAME, true);
-		ldata_or_filename=lfile_name.cstr();
+		lfile_name.append(vdata_or_filename->as_string(), String::UL_FILE_NAME, true);
+		// loading text
+		data=file_read_text(pool, r.absolute(lfile_name));
 	} else {
 		// suggesting untaint language
 		Temp_lang temp_lang(r, String::UL_TABLE);
-		ldata_or_filename=r.process(*vdata_or_filename).as_string().cstr();
+		data=r.process(*vdata_or_filename).as_string().cstr();
 	}
-	// data
-	char *data=is_load?
-		file_read_text(pool, r.absolute(ldata_or_filename)/*\, false*/):ldata_or_filename;
 
 	// parse columns
 	Array *columns;
@@ -150,7 +147,7 @@ static void _save(Request& r, const String& method_name, Array *params) {
 
 	// write
 	char *cdata=sdata.cstr();
-	file_write(pool, r.absolute(lfile_name.cstr()), cdata, strlen(cdata), true);
+	file_write(pool, r.absolute(lfile_name), cdata, strlen(cdata), true);
 }
 
 static void _count(Request& r, const String&, Array *) {

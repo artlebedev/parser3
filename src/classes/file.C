@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.5 2001/03/21 14:06:42 paf Exp $
+	$Id: file.C,v 1.6 2001/03/24 15:57:57 paf Exp $
 */
 
 #include "pa_request.h"
@@ -29,7 +29,7 @@ static void _save(Request& r, const String& method_name, Array *params) {
 	lfile_name.append(vfile_name->as_string(),
 		String::UL_FILE_NAME, true);
 		
-	static_cast<VFile *>(r.self)->save(r.absolute(lfile_name.cstr()));
+	static_cast<VFile *>(r.self)->save(r.absolute(lfile_name));
 }
 
 // initialize
