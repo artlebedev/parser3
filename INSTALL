@@ -70,7 +70,7 @@
 
     Installation sequence of these libraries to $D/gnome:
 
-    libxml2: 
+    libxml2:  [ftp://ftp.gnome.org/pub/GNOME/stable/sources/libxml/libxml2-2.4.12.tar.gz]
 
     cd libxml2-x.x.x
     patch -p0 < $D/parser3project/parser3/src/patches/libxml_error_column_tab.patch
@@ -82,41 +82,50 @@
     ./configure --prefix=$D/gnome --without-zlib
     make install
 
-    libxslt:
+    libxslt:  [ftp://ftp.gnome.org/pub/GNOME/stable/sources/libxslt/libxslt-1.0.9.tar.gz]
 
     cd libxslt-x.x.x
     patch -p0 < $D/parser3project/parser3/src/patches/libxslt_html_output_no_charset_meta.patch
     ./configure --with-libxml-prefix=$D/gnome --prefix=$D/gnome --without-debug --without-debugger
     make install
 
-    glib: [ftp://ftp.gtk.org/pub/gtk/v1.2/glib-1.2.10.tar.gz]
+    glib:  [ftp://ftp.gtk.org/pub/gtk/v1.2/glib-1.2.10.tar.gz]
 
     cd glib-x.x.x
     ./configure --prefix=$D/gnome 
     make install
 
-    gdome2:
+    gdome2:  [http://phd.cs.unibo.it/gdome2/tarball/gdome2-0.7.0.tar.gz]
 
+    cd gdome2-x.x.x
+	patch -p0 < $D/parser3project/parser3/src/patches/libgdome_cpp_syntax1.patch
+	patch -p0 < $D/parser3project/parser3/src/patches/libgdome_cpp_syntax2.patch
+	patch -p0 < $D/parser3project/parser3/src/patches/libgdome_morestatic.patch
     ./configure --with-glib-prefix=$D/gnome --disable-glibtest --with-libxml-prefix=$D/gnome --prefix=$D/gnome
     make install
 
-    And patch+copy these additional headers into install includes directory
+    And copy these additional headers into install includes directory
 
-	patch -p0 < $D/parser3project/parser3/src/patches/libgdome_cpp_syntax1.patch
-	patch -p0 < $D/parser3project/parser3/src/patches/libgdome_cpp_syntax2.patch
     mkdir $D/gnome/include/libgdome/gdomecore
     cp libgdome/gdomecore/gdome-xml-node.h $D/gnome/include/libgdome/gdomecore
     cp libgdome/gdomecore/gdome-xml-document.h $D/gnome/include/libgdome/gdomecore
     
 
-    Parser3 configure option:
-        --with-gnome-xml=$D/gnome
+    Parser3 configure options, choose whether you need static or dynamic linkage with xml libs:
+        --with-static-xml=$D/gnome
+        --with-shared-xml=$D/gnome
 
     NOTE:
     In case your glib as installed into some other prefix,
     specify it's configuration file with
         --with-glib-config=/path/to/your/glib-config
+	NOTE:
+	In case you are using SHARED xml libraries, you may want to link in direct path to them,
+    use this key to specify which linker key to use do do that:
+        --with-pathlink=LKEY    put dynamic libraries paths to binary
+                                using linker key (-R, -rpath-link)
+
  
 Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-$Id: INSTALL,v 1.8 2002/02/22 16:05:58 paf Exp $
+$Id: INSTALL,v 1.9 2002/02/27 16:23:27 paf Exp $
