@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vcookie.C,v 1.38 2002/02/08 15:19:28 paf Exp $
+	$Id: pa_vcookie.C,v 1.39 2002/02/08 15:20:07 paf Exp $
 */
 
 #include "pa_sapi.h"
@@ -74,7 +74,7 @@ static char *search_stop(char*& current, char cstop_at) {
 //#include <stdio.h>
 void VCookie::fill_fields(Request& request) {
 	//request.info.cookie="test-session=value%3D5; test-default1=value%3D1; test-default2=value%3D2; test-tomorrow=value%3D3";
-	//mdm request.info.cookie="enabled=yes; auth.uid=196325308053599810; enabled=yes; msnames; msuri";
+	//request.info.cookie="enabled=yes; auth.uid=196325308053599810; enabled=yes; msnames; msuri"; // mdm 
 	if(!request.info.cookie)
 		return;
 /*
