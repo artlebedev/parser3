@@ -113,7 +113,7 @@ SOURCE=..\..\..\..\ident.awk
 
 !IF  "$(CFG)" == "ApacheModuleParser3 - Win32 Release"
 
-# Begin Custom Build - Collecting $Id: ApacheModuleParser3.dsp,v 1.35 2001/09/26 11:24:07 parser Exp $, creating ident.C...
+# Begin Custom Build - Collecting $Id: ApacheModuleParser3.dsp,v 1.36 2001/09/26 11:45:00 parser Exp $, creating ident.C...
 InputPath=..\..\..\..\ident.awk
 
 "ident.C" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
@@ -128,7 +128,7 @@ InputPath=..\..\..\..\ident.awk
 
 !ELSEIF  "$(CFG)" == "ApacheModuleParser3 - Win32 Debug"
 
-# Begin Custom Build - Collecting $Id: ApacheModuleParser3.dsp,v 1.35 2001/09/26 11:24:07 parser Exp $, creating ident.C...
+# Begin Custom Build - Collecting $Id: ApacheModuleParser3.dsp,v 1.36 2001/09/26 11:45:00 parser Exp $, creating ident.C...
 InputPath=..\..\..\..\ident.awk
 
 "ident.C" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"

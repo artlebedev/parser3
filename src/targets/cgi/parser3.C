@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3.C,v 1.113 2001/09/26 10:32:26 parser Exp $
+	$Id: parser3.C,v 1.114 2001/09/26 11:45:00 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -25,14 +25,18 @@
 // consts
 
 extern const char *main_RCSIds[];
+#ifdef SMTP
 extern const char *smtp_RCSIds[];
+#endif
 extern const char *gd_RCSIds[];
 extern const char *classes_RCSIds[];
 extern const char *types_RCSIds[];
 extern const char *parser_RCSIds[];
 const char **RCSIds[]={
 	main_RCSIds,
+#ifdef SMTP
 	smtp_RCSIds,
+#endif
 	gd_RCSIds,
 	classes_RCSIds,
 	types_RCSIds,
