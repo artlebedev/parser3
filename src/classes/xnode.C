@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xnode.C,v 1.30 2002/01/24 13:26:01 paf Exp $
+	$Id: xnode.C,v 1.31 2002/01/24 13:57:19 paf Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -425,12 +425,12 @@ static void selectNodesHandler(Pool& pool,
 							  const String& expression,
 							  xmlXPathObject_auto_ptr res,
 							  Value *& result) {
+	VHash *vhash=new(pool) VHash(pool);  result=vhash;
 	switch(res->type) {
 	case XPATH_UNDEFINED: 
 		break;
 	case XPATH_NODESET:
 		if(int size=res->nodesetval->nodeNr) {
-			VHash *vhash=new(pool) VHash(pool);
 			Hash& hash=vhash->hash(0);
 			for(int i=0; i<size; i++) {
 				String& skey=*new(pool) String(pool);
@@ -443,7 +443,6 @@ static void selectNodesHandler(Pool& pool,
 				hash.put(skey, new(pool) VXnode(pool, 
 					gdome_xml_n_mkref(res->nodesetval->nodeTab[i])));
 			}
-			result=vhash;
 		}
 		break;
 	default: 
