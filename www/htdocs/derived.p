@@ -5,7 +5,7 @@
 derived
 
 @BASE
-zbase
+base
 
 @create[aderived_param]
 ^BASE:create[base create actual param]
