@@ -57,6 +57,12 @@ AC_C_INLINE
 
 dnl Arguments
 
+AC_ARG_WITH(build-warnings, [  --with-build-warnings   to enable build-time compiler warnings if gcc is used],
+	AC_MSG_WARN(enabling compiler warnings)
+	CXXFLAGS="$CXXFLAGS -W -Wall -Wstrict-prototypes -Wmissing-prototypes"
+)
+
+
 AC_ARG_WITH(assertions, [  --with-assertions       to enable assertions],
 	AC_MSG_WARN(enabling assertions)
 ,
