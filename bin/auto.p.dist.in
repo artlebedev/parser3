@@ -1,4 +1,4 @@
-#$Id: auto.p.dist.in,v 1.5 2002/08/12 08:11:06 paf Exp $
+#$Id: auto.p.dist.in,v 1.6 2002/08/12 08:19:37 paf Exp $
 
 @conf[]
 $charsetsdir[@charsetsdir@]
@@ -61,18 +61,20 @@ $LIMITS[
 #	    /usr/lib/sendmail -t -i -f postmaster
 #]
 
-@unhandled_exception[exception;stack]
-^fatal_error[Unhandled Exception;
-
-<p>The server encountered an unhandled exception 
-and was unable to complete your request.</p>
-<p>Please contact the server administrator,
-$env:SERVER_ADMIN
-and inform them of the time the error occurred, 
-and anything you might have done that may have caused the error.</p>
-<p>More information about this error may be available in the Parser error log.</p>
-
+@fatal_error[title;body]
+$response:status(500)
+$response:content-type[
+        $.value[text/html]
+        $.charset[$response:charset]
 ]
+<html>
+<head><title>$title</title></head>
+<body>
+<H1>$title</H1>
+$body
+#for [x] MSIE friendly
+^for[i](0;512/8){<!-- -->}
+</body>
 
 @unhandled_exception_debug[exception;stack]
 ^fatal_error[Unhandled Exception (Debug);
@@ -92,20 +94,22 @@ and anything you might have done that may have caused the error.</p>
 
 ]
 
-@fatal_error[title;body]
-$response:status(500)
-$response:content-type[
-        $.value[text/html]
-        $.charset[$response:charset]
+@unhandled_exception_release[exception;stack]
+^fatal_error[Unhandled Exception;
+
+<p>The server encountered an unhandled exception 
+and was unable to complete your request.</p>
+<p>Please contact the server administrator, $env:SERVER_ADMIN
+and inform them of the time the error occurred, 
+and anything you might have done that may have caused the error.</p>
+<p>More information about this error may be available in the Parser error log
+or in debug version of unhandled_exception.</p>
+
 ]
-<html>
-<head><title>$title</title></head>
-<body>
-<H1>$title</H1>
-$body
-#for [x] MSIE friendly
-^for[i](0;512/8){<!-- -->}
-</body>
+
+@unhandled_exception[exception;stack]
+^unhandled_exception_release[$exception;$stack]
+
 
 @auto[]
 #source/client charsets
