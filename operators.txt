@@ -663,7 +663,15 @@ math
     !^math:degrees radians
     !^math:pow sqrt
     !^math:random(ширина диапазона)
-    ^math:GUID {C2C0983C-E26E-4169-BD07-77ECE9405BA5}
+    !^math:uuid 
+        22C0983C-E26E-4169-BD07-77ECE9405BA5
+        win32: пользуется cryptapi
+        unix: пользуется /dev/urandom, 
+            если нет, /dev/random, 
+            если нет, rand 
+            [на solaris /dev/random можно добавить]
+    ^math:id64[]
+        4507055078884095953
     !^math:md5[string]
         выдает digest строки, длиной 16 байт в виде строки, 
         где байты digest выданы в hex виде, впритык, в нижнем регистре

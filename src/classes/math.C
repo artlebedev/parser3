@@ -3,19 +3,24 @@
 
 	Copyright(c) 2001, 2003 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
+
+	portions from gen_uuid.c,
+	Copyright (C) 1996, 1997, 1998, 1999 Theodore Ts'o.
 */
 
-static const char* IDENT_MATH_C="$Date: 2003/04/15 07:17:42 $";
+static const char* IDENT_MATH_C="$Date: 2003/04/15 11:34:03 $";
 
 #include "pa_common.h"
 #include "pa_vint.h"
 #include "pa_vmath.h"
 #include "pa_request.h"
 #include "pa_md5.h"
+#include "pa_threads.h"
 
 #ifdef WIN32
-// for threadID
+#	define _WIN32_WINNT 0x400
 #	include <windows.h>
+#	include <wincrypt.h>
 #endif
 
 #ifdef HAVE_CRYPT_H
@@ -32,16 +37,118 @@ static const char* IDENT_MATH_C="$Date: 2003/04/15 07:17:42 $";
 class MMath : public Methoded {
 public:
 	MMath(Pool& pool);
-	void configure_admin(Request& r);
 
 public: // Methoded
 	bool used_directly() { return false; }
 };
 
+#ifdef WIN32
+class Random_provider {
+	HCRYPTPROV fhProv;
+	
+	void acquire() {
+		SYNCHRONIZED;
+
+		if(fhProv)
+			return;
+
+		if(!CryptAcquireContext(&fhProv, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT))
+			throw Exception(0,
+				0,
+				"CryptAcquireContext failed");
+	}
+	void release() {
+		if(fhProv)
+			CryptReleaseContext(fhProv, 0);
+	}
+	
+public:
+	Random_provider(): fhProv(0) {}
+	~Random_provider() { release(); }
+	void generate(void *buffer, size_t size) {
+		acquire();
+
+		if(!CryptGenRandom(fhProv, size, (BYTE*)buffer))
+			throw Exception(0,
+				0,
+				"CryptGenRandom failed");
+	}
+}
+	random_provider;
+
+#else
+
+/// from gen_uuid.c
+static int get_random_fd(void)
+{
+        struct timeval  tv;
+        static int      fd = -2;
+        int             i;
+
+        if (fd == -2) {
+                gettimeofday(&tv, 0);
+                fd = open("/dev/urandom", O_RDONLY);
+                if (fd == -1)
+                        fd = open("/dev/random", O_RDONLY | O_NONBLOCK);
+                srand((getpid() << 16) ^ getuid() ^ tv.tv_sec ^ tv.tv_usec);
+        }
+        /* Crank the random number generator a few times */
+        gettimeofday(&tv, 0);
+        for (i = (tv.tv_sec ^ tv.tv_usec) & 0x1F; i > 0; i--)
+                rand();
+        return fd;
+}
+
+
+/*
+ * Generate a series of random bytes.  Use /dev/urandom if possible,
+ * and if not, use srandom/random.
+ */
+static void get_random_bytes(void *buf, int nbytes)
+{
+        int i, fd = get_random_fd();
+        int lose_counter = 0;
+        char *cp = (char *) buf;
+
+        if (fd >= 0) {
+                while (nbytes > 0) {
+                        i = read(fd, cp, nbytes);
+                        if (i <= 0) {
+                                if (lose_counter++ > 16)
+                                        break;
+                                continue;
+                        }
+                        nbytes -= i;
+                        cp += i;
+                        lose_counter = 0;
+                }
+        }
+
+        /* XXX put something better here if no /dev/random! */
+        for (i = 0; i < nbytes; i++)
+                *cp++ = rand() & 0xFF;
+        return;
+}
+
+
+#endif
+
+
+// helpers
+
+static void random(void *buffer, size_t size) {
+#ifdef WIN32
+	random_provider.generate(buffer, size);
+#else
+	get_random_bytes(buffer, size);
+#endif
+}
+
 // methods
-static unsigned int randomizer=0;
 static inline int _random(uint top) {
-	return (int)(((double)((randomizer=rand())% RAND_MAX)) / RAND_MAX * top );
+	uint raw;
+	random(&raw, sizeof(raw));
+	return int(double(raw) / 0x100000000 * top );
 }
 static void _random(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
@@ -196,12 +303,59 @@ static void _md5(Request& r, const String& method_name, MethodParams *params) {
 	r.write_pass_lang(*new(pool) String(pool, digest_bytes_hex));
 }
 
+/// to hell with extra bytes on 64bit platforms
+struct uuid {
+        unsigned int   time_low;
+        unsigned short   time_mid;
+        unsigned short   time_hi_and_version;
+        unsigned short   clock_seq;
+        unsigned char    node[6];
+};
+static void _guid(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+
+	// random
+	struct uuid uuid;
+	random(&uuid, sizeof(uuid));
+
+	// http://www.opengroup.org/onlinepubs/9629399/apdxa.htm#tagtcjh_35
+	// ~
+	// version = DCE Security version, with embedded POSIX UIDs.  
+	// variant = DCE
+	//
+	// DCE=Distributed Computing Environment
+	// http://www.opengroup.org/dce/
+	//
+	// they say this influences comparison&such,
+	// but could not figure out how, hence structure layout specified strictly
+	// anyhow, uuidgen on Win32 yield those values
+	// 
+	// xxxxxxxx-xxxx-4xxx-{8,9,A,B}xxx-xxxxxxxxxxxx
+	uuid.clock_seq = (uuid.clock_seq & 0x3FFF) | 0x8000;
+        uuid.time_hi_and_version = (uuid.time_hi_and_version & 0x0FFF) | 0x4000;
+ 
+	// format 
+	const int guid_cstr_bufsize=32+1/*for zero-teminator*/;
+	char *guid_cstr=(char *)pool.malloc(guid_cstr_bufsize);
+        snprintf(guid_cstr, guid_cstr_bufsize,
+                "%08X-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X",
+                uuid.time_low, uuid.time_mid, uuid.time_hi_and_version,
+                uuid.clock_seq >> 8, uuid.clock_seq & 0xFF,
+                uuid.node[0], uuid.node[1], uuid.node[2],
+                uuid.node[3], uuid.node[4], uuid.node[5]);
+
+	r.write_pass_lang(*new(pool) String(pool, guid_cstr));
+}
+
 // constructor
 
 MMath::MMath(Pool& apool) : Methoded(apool, "math") {
 	// ^FUNC(expr)	
-#define ADD1(name) \
-	add_native_method(#name, Method::CT_STATIC, _##name, 1, 1)
+#define ADDX(name, X) \
+	add_native_method(#name, Method::CT_STATIC, _##name, X, X)
+#define ADD0(name) ADDX(name, 0)
+#define ADD1(name) ADDX(name, 1)
+#define ADD2(name) ADDX(name, 2)
 
 	ADD1(round);	ADD1(floor);	ADD1(ceiling);
 	ADD1(trunc);	ADD1(frac);
@@ -214,9 +368,6 @@ MMath::MMath(Pool& apool) : Methoded(apool, "math") {
 	ADD1(sqrt);
 	ADD1(random);
 
-#define ADD2(name) \
-	add_native_method(#name, Method::CT_STATIC, _##name, 2, 2)
-
 	// ^pow(x;y)
 	ADD2(pow);
 
@@ -225,24 +376,9 @@ MMath::MMath(Pool& apool) : Methoded(apool, "math") {
 
 	// ^md5[string]
 	ADD1(md5);
-}
 
-// in MSVC each thread has it's own pseudo-random sequence
-// in win32 apache each thread can handle multiple requests
-// so to get proper randoms we remember random generated in one thread
-void MMath::configure_admin(Request&) {
-	// setting seed
-	srand(
-		randomizer
-#ifdef WIN32
-		^ GetCurrentThreadId()
-#else
-		^ getpid()
-#endif
-		^(unsigned int)time(NULL)
-	);
-	if(!randomizer)
-		randomizer=rand();
+	// ^guid[]
+	ADD0(guid);
 }
 
 // global variables
