@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3.C,v 1.21 2001/03/18 20:31:29 paf Exp $
+	$Id: parser3.C,v 1.22 2001/03/18 20:32:53 paf Exp $
 */
 
 #ifdef HAVE_CONFIG_H
@@ -184,7 +184,7 @@ int main(int argc, char *argv[]) {
 		// request.exception not not handled here, but all
 		// request' data are associated with it's pool=exception
 
-			// must be last in PTRY{}PCATCH
+		// must be last in PTRY{}PCATCH
 #ifdef WIN32
 #	if _MSC_VER
 		SetUnhandledExceptionFilter(0);
@@ -193,11 +193,6 @@ int main(int argc, char *argv[]) {
 		return 0;
 #endif
 	} PCATCH(e) { // global problem 
-		// @globals fill 
-		// @Request create 
-		// @prepare to .core()
-		// @request.core when reporting request exception
-		// @write result
 		const char *body=e.comment();
 		int content_length=strlen(body);
 
