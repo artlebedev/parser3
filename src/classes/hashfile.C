@@ -2,9 +2,9 @@
 	Parser: @b hashfile parser class.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: hashfile.C,v 1.14 2001/11/01 15:11:36 paf Exp $
+	$Id: hashfile.C,v 1.15 2001/11/05 11:46:20 paf Exp $
 */
 
 #include "pa_config_includes.h"

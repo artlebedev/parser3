@@ -2,9 +2,9 @@
 	Parser: ISAPI: pool storage class decl.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pool_storage.h,v 1.12 2001/10/24 16:52:25 parser Exp $
+	$Id: pool_storage.h,v 1.13 2001/11/05 11:46:31 paf Exp $
 */
 
 #ifndef PA_POOL_STORAGE_H

@@ -2,9 +2,9 @@
 	Parser: exception class.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_exception.C,v 1.23 2001/10/29 08:05:37 paf Exp $
+	$Id: pa_exception.C,v 1.24 2001/11/05 11:46:28 paf Exp $
 */
 
 #include "pa_common.h"

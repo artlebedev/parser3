@@ -2,9 +2,9 @@
 	Parser: globals.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_globals.C,v 1.88 2001/11/05 10:21:27 paf Exp $
+	$Id: pa_globals.C,v 1.89 2001/11/05 11:46:28 paf Exp $
 */
 
 #include "pa_globals.h"

@@ -2,9 +2,9 @@
 	Parser: Stylesheet manager decl.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_stylesheet_manager.h,v 1.4 2001/11/05 10:42:59 paf Exp $
+	$Id: pa_stylesheet_manager.h,v 1.5 2001/11/05 11:46:25 paf Exp $
 
 
 	global sql driver manager, must be thread-safe

@@ -2,9 +2,9 @@
 	Parser: @b string parser class decl.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vstring.h,v 1.38 2001/11/01 14:59:57 paf Exp $
+	$Id: pa_vstring.h,v 1.39 2001/11/05 11:46:34 paf Exp $
 */
 
 #ifndef PA_VSTRING_H

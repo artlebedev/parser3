@@ -2,9 +2,9 @@
 	Parser: Charset connection implementation.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_charset_connection.C,v 1.10 2001/10/19 14:15:23 parser Exp $
+	$Id: pa_charset_connection.C,v 1.11 2001/11/05 11:46:27 paf Exp $
 */
 
 #include "pa_charset_connection.h"

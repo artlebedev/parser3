@@ -2,9 +2,9 @@
 	Parser: commonly used functions.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_common.h,v 1.59 2001/11/01 16:41:52 paf Exp $
+	$Id: pa_common.h,v 1.60 2001/11/05 11:46:23 paf Exp $
 */
 
 #ifndef PA_COMMON_H

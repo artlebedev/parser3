@@ -2,9 +2,9 @@
 	Parser: sql driver manager implementation.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_charset_manager.C,v 1.5 2001/11/05 10:56:46 paf Exp $
+	$Id: pa_charset_manager.C,v 1.6 2001/11/05 11:46:27 paf Exp $
 */
 #include "pa_config_includes.h"
 
@@ -84,8 +84,9 @@ static void add_connection_to_status_cache_table(const Hash::Key& key, Hash::Val
 	Table& table=*static_cast<Table *>(info);
 
 	Pool& pool=table.pool();
-	Array& row=*new(pool) Array(pool, 3);
+	Array& row=*new(pool) Array(pool);
 
+	// file
 	row+=&connection.get_file_spec();
 
 	table+=&row;
@@ -95,7 +96,7 @@ Value& Charset_manager::get_status(Pool& pool, const String *source) {
 	
 	// cache
 	{
-		Array& columns=*new(pool) Array(pool, 3);
+		Array& columns=*new(pool) Array(pool);
 		columns+=new(pool) String(pool, "file");
 		Table& table=*new(pool) Table(pool, 0, &columns, cache.size());
 

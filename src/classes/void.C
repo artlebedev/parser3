@@ -2,9 +2,9 @@
 	Parser: @b VOID parser class.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: void.C,v 1.12 2001/10/19 12:43:30 parser Exp $
+	$Id: void.C,v 1.13 2001/11/05 11:46:21 paf Exp $
 */
 
 #include "classes.h"

@@ -2,9 +2,9 @@
 	Parser: Array & Array_iter classes decls.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_array.h,v 1.46 2001/10/29 15:27:02 paf Exp $
+	$Id: pa_array.h,v 1.47 2001/11/05 11:46:23 paf Exp $
 */
 
 #ifndef PA_ARRAY_H

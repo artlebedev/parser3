@@ -2,9 +2,9 @@
 	Parser: compiler support helper functions.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: compile_tools.C,v 1.39 2001/10/19 12:43:30 parser Exp $
+	$Id: compile_tools.C,v 1.40 2001/11/05 11:46:26 paf Exp $
 */
 
 #include "compile_tools.h"

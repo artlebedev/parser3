@@ -2,9 +2,9 @@
 	Parser: @b double parser class.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: double.C,v 1.40 2001/10/19 12:43:29 parser Exp $
+	$Id: double.C,v 1.41 2001/11/05 11:46:20 paf Exp $
 */
 
 #include "classes.h"

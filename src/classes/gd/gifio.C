@@ -2,9 +2,9 @@
 	Parser: image manipulations impl2.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: gifio.C,v 1.14 2001/09/27 07:26:27 parser Exp $
+	$Id: gifio.C,v 1.15 2001/11/05 11:46:22 paf Exp $
 
 	based on: gd
 

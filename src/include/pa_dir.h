@@ -2,9 +2,9 @@
 	Parser: directory scanning for different OS-es decls.
 
 	Copyright (c) 2000,2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_dir.h,v 1.7 2001/10/30 14:27:19 paf Exp $
+	$Id: pa_dir.h,v 1.8 2001/11/05 11:46:24 paf Exp $
 */
 
 #ifndef PA_DIR_H

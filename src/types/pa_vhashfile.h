@@ -2,9 +2,9 @@
 	Parser: @b hashfile parser type decl.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vhashfile.h,v 1.11 2001/10/31 12:50:24 paf Exp $
+	$Id: pa_vhashfile.h,v 1.12 2001/11/05 11:46:33 paf Exp $
 */
 
 #ifndef PA_VHASHFILE_H

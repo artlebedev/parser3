@@ -2,9 +2,9 @@
 	Parser: commonly functions.
 
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: pa_common.C,v 1.84 2001/11/05 10:21:27 paf Exp $
+	$Id: pa_common.C,v 1.85 2001/11/05 11:46:27 paf Exp $
 */
 
 #include "pa_common.h"

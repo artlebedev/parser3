@@ -2,9 +2,9 @@
 	Parser: executor part of request class.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: execute.C,v 1.202 2001/11/01 16:27:20 paf Exp $
+	$Id: execute.C,v 1.203 2001/11/05 11:46:27 paf Exp $
 */
 
 #include "pa_opcode.h"

@@ -2,9 +2,9 @@
 	Parser: Charset table implementation.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_db_table.C,v 1.10 2001/10/31 11:23:39 paf Exp $
+	$Id: pa_db_table.C,v 1.11 2001/11/05 11:46:27 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -57,7 +57,7 @@ DB_Table::DB_Table(Pool& pool, const String& afile_name, DB_Connection& aconnect
 	fconnection(aconnection),
 	dbenv(aconnection.dbenv),
 	ffile_name(afile_name), file_name_cstr(afile_name.cstr(String::UL_FILE_SPEC)),
-	db(0) {
+	db(0), used(0) {
 
 	// open
 	DB_INFO dbinfo;

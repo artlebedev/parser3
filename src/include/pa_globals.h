@@ -2,9 +2,9 @@
 	Parser: global decls.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_globals.h,v 1.67 2001/10/11 10:21:44 parser Exp $
+	$Id: pa_globals.h,v 1.68 2001/11/05 11:46:24 paf Exp $
 */
 
 #ifndef PA_GLOBALS_H

@@ -2,9 +2,9 @@
 	Parser: program executing for different OS-es decls.
 
 	Copyright (c) 2000,2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_exec.h,v 1.3 2001/09/26 10:32:25 parser Exp $
+	$Id: pa_exec.h,v 1.4 2001/11/05 11:46:24 paf Exp $
 */
 
 #ifndef PA_EXEC_H

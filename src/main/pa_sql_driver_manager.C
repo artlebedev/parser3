@@ -2,9 +2,9 @@
 	Parser: sql driver manager implementation.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_sql_driver_manager.C,v 1.49 2001/11/05 10:21:28 paf Exp $
+	$Id: pa_sql_driver_manager.C,v 1.50 2001/11/05 11:46:28 paf Exp $
 */
 
 #include "pa_sql_driver_manager.h"
@@ -304,9 +304,11 @@ static void add_connection_to_status_cache_table(Array::Item *value, void *info)
 
 	if(connection.connected()) {
 		Pool& pool=table.pool();
-		Array& row=*new(pool) Array(pool, 3);
+		Array& row=*new(pool) Array(pool);
 
+		// url
 		row+=&url_without_login(pool, connection.get_url());
+		// time
 		time_t time_stamp=connection.get_time_stamp();
 		const char *unsafe_time_cstr=ctime(&time_stamp);
 		int time_buf_size=strlen(unsafe_time_cstr);
@@ -330,7 +332,7 @@ Value& SQL_Driver_manager::get_status(Pool& pool, const String *source) {
 	
 	// cache
 	{
-		Array& columns=*new(pool) Array(pool, 3);
+		Array& columns=*new(pool) Array(pool);
 		columns+=new(pool) String(pool, "url");
 		columns+=new(pool) String(pool, "time");
 		Table& table=*new(pool) Table(pool, 0, &columns, connection_cache.size());

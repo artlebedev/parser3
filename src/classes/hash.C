@@ -2,9 +2,9 @@
 	Parser: @b hash parser class.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: hash.C,v 1.29 2001/11/01 16:27:19 paf Exp $
+	$Id: hash.C,v 1.30 2001/11/05 11:46:20 paf Exp $
 */
 
 #include "classes.h"

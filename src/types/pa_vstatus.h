@@ -2,9 +2,9 @@
 	Parser: @b status class decl.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vstatus.h,v 1.2 2001/11/05 10:42:59 paf Exp $
+	$Id: pa_vstatus.h,v 1.3 2001/11/05 11:46:34 paf Exp $
 */
 
 #ifndef PA_VSTATUS_H

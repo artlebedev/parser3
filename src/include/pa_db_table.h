@@ -2,9 +2,9 @@
 	Parser: sql db decl.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_db_table.h,v 1.7 2001/10/29 08:23:49 paf Exp $
+	$Id: pa_db_table.h,v 1.8 2001/11/05 11:46:24 paf Exp $
 */
 
 #ifndef PA_DB_TABLE_H
@@ -50,6 +50,8 @@ public:
 	bool expired(time_t older_dies) {
 		return !used && time_used<older_dies;
 	}
+	time_t get_time_used() { return time_used; }
+	int get_users_count() { return used; }
 
 	void put(DB_Transaction *t, const String& key, const String& data, time_t time_to_die);
 	String *get(DB_Transaction *t, Pool& pool, const String& key);

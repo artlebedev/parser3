@@ -2,9 +2,9 @@
 	Parser: web server api interface object decl.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_sapi.h,v 1.14 2001/10/22 16:44:42 parser Exp $
+	$Id: pa_sapi.h,v 1.15 2001/11/05 11:46:25 paf Exp $
 */
 
 #ifndef PA_SAPI_H

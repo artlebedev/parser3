@@ -2,9 +2,9 @@
 	Parser: sql fconnection decl.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_sql_connection.h,v 1.18 2001/11/05 10:21:26 paf Exp $
+	$Id: pa_sql_connection.h,v 1.19 2001/11/05 11:46:25 paf Exp $
 */
 
 #ifndef PA_SQL_CONNECTION_H

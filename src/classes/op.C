@@ -2,9 +2,9 @@
 	Parser: parser @b operators.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: op.C,v 1.57 2001/11/01 16:30:14 paf Exp $
+	$Id: op.C,v 1.58 2001/11/05 11:46:21 paf Exp $
 */
 
 #include "classes.h"

@@ -3,9 +3,9 @@
 	global sql driver connection, must be thread-safe
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_db_connection.h,v 1.16 2001/11/05 10:42:59 paf Exp $
+	$Id: pa_db_connection.h,v 1.17 2001/11/05 11:46:23 paf Exp $
 */
 
 #ifndef PA_DB_CONNECTION_H
@@ -15,6 +15,7 @@
 #include "pa_pool.h"
 #include "pa_hash.h"
 #include "pa_db_table.h"
+#include "pa_value.h"
 
 // defines
 
@@ -35,6 +36,7 @@ public:
 	bool expired(time_t older_dies) {
 		return !used && time_used<older_dies;
 	}
+	const String& db_home() { return fdb_home; }
 	time_t get_time_used() { return time_used; }
 	int get_users_count() { return used; }
 
@@ -81,6 +83,10 @@ private:
 private:
 
 	void check(const char *operation, const String *source, int error);
+
+public: 
+
+	Value& get_status(Pool& pool, const String *source);
 };
 
 /// Auto-object used to track DB_Connection usage

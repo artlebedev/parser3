@@ -2,9 +2,9 @@
 	Parser: stack class decl.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_stack.h,v 1.10 2001/09/26 10:32:25 parser Exp $
+	$Id: pa_stack.h,v 1.11 2001/11/05 11:46:25 paf Exp $
 */
 
 #ifndef PA_STACK_H

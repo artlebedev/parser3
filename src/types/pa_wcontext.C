@@ -2,9 +2,9 @@
 	Parser: write context class.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_wcontext.C,v 1.11 2001/10/19 12:43:30 parser Exp $
+	$Id: pa_wcontext.C,v 1.12 2001/11/05 11:46:35 paf Exp $
 */
 
 #include "pa_wcontext.h"

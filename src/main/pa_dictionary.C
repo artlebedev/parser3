@@ -2,9 +2,9 @@
 	Parser: dictionary class  impl.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_dictionary.C,v 1.8 2001/10/19 12:43:30 parser Exp $
+	$Id: pa_dictionary.C,v 1.9 2001/11/05 11:46:27 paf Exp $
 */
 
 #include "pa_dictionary.h"

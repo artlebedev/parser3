@@ -3,9 +3,9 @@
 	@see pa_pragma_pack_begin.h
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_pragma_pack_end.h,v 1.1 2001/10/30 07:41:29 paf Exp $
+	$Id: pa_pragma_pack_end.h,v 1.2 2001/11/05 11:46:25 paf Exp $
 */
 
 #include "pa_config_includes.h"

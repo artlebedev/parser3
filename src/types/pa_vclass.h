@@ -2,9 +2,9 @@
 	Parser: @b class parser class decl.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vclass.h,v 1.20 2001/10/22 08:27:44 parser Exp $
+	$Id: pa_vclass.h,v 1.21 2001/11/05 11:46:31 paf Exp $
 */
 
 #ifndef PA_VCLASS_H

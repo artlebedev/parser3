@@ -2,9 +2,9 @@
 	Parser: SMTP sender decl.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: smtp.h,v 1.4 2001/09/26 10:32:25 parser Exp $
+	$Id: smtp.h,v 1.5 2001/11/05 11:46:23 paf Exp $
 */
 
 #include <winsock.h>

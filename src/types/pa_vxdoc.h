@@ -2,9 +2,9 @@
 	Parser: @b xdoc parser class decl.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vxdoc.h,v 1.11 2001/10/26 12:21:42 paf Exp $
+	$Id: pa_vxdoc.h,v 1.12 2001/11/05 11:46:35 paf Exp $
 */
 
 #ifndef PA_VXDOC_H

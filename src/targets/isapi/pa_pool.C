@@ -2,9 +2,9 @@
 	Parser: ISAPI memory manager impl.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_pool.C,v 1.8 2001/10/29 17:02:22 paf Exp $
+	$Id: pa_pool.C,v 1.9 2001/11/05 11:46:30 paf Exp $
 */
 
 #include <stdlib.h>

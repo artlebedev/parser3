@@ -2,9 +2,9 @@
 	Parser: @b xdoc parser class.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xdoc.C,v 1.42 2001/11/05 10:42:59 paf Exp $
+	$Id: xdoc.C,v 1.43 2001/11/05 11:46:22 paf Exp $
 */
 #include "pa_types.h"
 #include "classes.h"

@@ -2,9 +2,9 @@
 	Parser: pool class.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_pool.C,v 1.38 2001/10/22 16:44:42 parser Exp $
+	$Id: pa_pool.C,v 1.39 2001/11/05 11:46:28 paf Exp $
 */
 
 #include "pa_pool.h"

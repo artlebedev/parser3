@@ -2,9 +2,9 @@
 	Parser: sql driver connection implementation.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_db_connection.C,v 1.27 2001/10/31 15:00:05 paf Exp $
+	$Id: pa_db_connection.C,v 1.28 2001/11/05 11:46:27 paf Exp $
 
 	developed with LIBDB 2.7.4
 */
@@ -18,6 +18,7 @@
 #include "pa_threads.h"
 #include "pa_stack.h"
 #include "pa_common.h"
+#include "pa_vtable.h"
 
 // defines
 
@@ -58,7 +59,7 @@ static void expire_table(const Hash::Key& key, Hash::Val *& value, void *info) {
 
 DB_Connection::DB_Connection(Pool& apool, const String& adb_home) : Pooled(apool),
 	time_used(0),
-	fdb_home(adb_home), 
+	fdb_home(adb_home), used(0),
 	table_cache(apool),
 	prev_expiration_pass_time(0) {
 	//_asm  int 3;
@@ -103,6 +104,12 @@ DB_Connection::DB_Connection(Pool& apool, const String& adb_home) : Pooled(apool
 		&dbenv, 
 		flags
 		));
+
+	// after some hang noticed this to be null
+	if(!dbenv.tx_info) 
+		throw Exception(0, 0,
+			&fdb_home,
+			"transaction system failed to initialize");
 }
 
 DB_Connection::~DB_Connection() {
@@ -137,7 +144,7 @@ void DB_Connection::check(const char *operation, const String *source, int error
 
 DB_Table_ptr DB_Connection::get_table_ptr(const String& request_file_name, const String *source) {
 	// checkpoint
-	{
+	{ 
 		int error=txn_checkpoint(dbenv.tx_info, 0/*kbyte*/, DB_CHECKPOINT_MINUTES/*min*/);
 		/*
 		DB_INCOMPLETE if there were pages that needed to be written 
@@ -197,6 +204,41 @@ void DB_Connection::maybe_expire_table_cache() {
 
 		prev_expiration_pass_time=now;
 	}
+}
+
+static void add_table_to_status_table(const Hash::Key& key, Hash::Val *& value, void *info) {
+	DB_Table& db_table=*static_cast<DB_Table *>(value);
+	Table& status_table=*static_cast<Table *>(info);
+	Pool& pool=status_table.pool();
+
+	Array& row=*new(pool) Array(pool);
+
+	// name
+	row+=&db_table.file_name();
+	// time
+	time_t time_stamp=db_table.get_time_used();
+	const char *unsafe_time_cstr=ctime(&time_stamp);
+	int time_buf_size=strlen(unsafe_time_cstr);
+	char *safe_time_buf=(char *)pool.malloc(time_buf_size);
+	memcpy(safe_time_buf, unsafe_time_cstr, time_buf_size);
+	row+=new(pool) String(pool, safe_time_buf, time_buf_size);
+	// users
+	char *users_buf=(char *)pool.malloc(MAX_NUMBER);
+	row+=new(pool) String(pool, 
+		users_buf, snprintf(users_buf, MAX_NUMBER, "%d", db_table.get_users_count()));
+
+	status_table+=&row;
+}
+Value& DB_Connection::get_status(Pool& pool, const String *source) {
+	Array& columns=*new(pool) Array(pool);
+	columns+=new(pool) String(pool, "name");
+	columns+=new(pool) String(pool, "time");
+	columns+=new(pool) String(pool, "users");
+	Table& table=*new(pool) Table(pool, 0, &columns, table_cache.size());
+
+	table_cache.for_each(add_table_to_status_table, &table);
+
+	return *new(pool) VTable(pool, &table);
 }
 
 #endif

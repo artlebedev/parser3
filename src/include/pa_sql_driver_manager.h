@@ -3,9 +3,9 @@
 	global sql driver manager, must be thread-safe
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_sql_driver_manager.h,v 1.15 2001/11/05 10:21:27 paf Exp $
+	$Id: pa_sql_driver_manager.h,v 1.16 2001/11/05 11:46:25 paf Exp $
 */
 
 #ifndef PA_SQL_DRIVER_MANAGER_H

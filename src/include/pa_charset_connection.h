@@ -2,9 +2,9 @@
 	Parser: Charset connection decl.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_charset_connection.h,v 1.3 2001/11/05 10:56:46 paf Exp $
+	$Id: pa_charset_connection.h,v 1.4 2001/11/05 11:46:23 paf Exp $
 */
 
 #ifndef PA_CHARSET_CONNECTION_H

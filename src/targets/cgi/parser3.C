@@ -2,9 +2,9 @@
 	Parser: scripting and CGI main.
 
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: parser3.C,v 1.127 2001/10/29 17:01:38 paf Exp $
+	$Id: parser3.C,v 1.128 2001/11/05 11:46:30 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -366,7 +366,7 @@ int main(int argc, char *argv[]) {
 		if(argc<2) {
 			printf(
 				"Parser/%s Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)\n"
-				"Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)\n"
+				"Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)\n"
 				"\n"
 				"Usage: %s <file>\n",
 				PARSER_VERSION, 

@@ -3,9 +3,9 @@
 	based on The CGI_C library, by Thomas Boutell.
 
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 	
-	$Id: pa_vform.C,v 1.45 2001/10/30 16:30:08 paf Exp $
+	$Id: pa_vform.C,v 1.46 2001/11/05 11:46:32 paf Exp $
 
 	based on The CGI_C library, by Thomas Boutell.
 */

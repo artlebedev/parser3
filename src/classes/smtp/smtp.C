@@ -2,9 +2,9 @@
 	Parser: SMTP sender.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: smtp.C,v 1.5 2001/10/19 12:43:30 parser Exp $
+	$Id: smtp.C,v 1.6 2001/11/05 11:46:23 paf Exp $
 
 	Parts of the code here is based upon an early gensock and blat
 */

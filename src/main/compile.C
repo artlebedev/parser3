@@ -2,9 +2,9 @@
 	Parser: compiler part of request class.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: compile.C,v 1.52 2001/10/31 16:19:58 paf Exp $
+	$Id: compile.C,v 1.53 2001/11/05 11:46:26 paf Exp $
 */
 
 #include "pa_opcode.h"

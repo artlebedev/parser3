@@ -2,9 +2,9 @@
 	Parser: sql driver manager implementation.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_db_manager.C,v 1.11 2001/11/05 10:21:27 paf Exp $
+	$Id: pa_db_manager.C,v 1.12 2001/11/05 11:46:27 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -109,22 +109,25 @@ void DB_Manager::maybe_expire_connection_cache() {
 	}
 }
 
+static void add_connection_to_status_status_cache(const Hash::Key& key, Hash::Val *value, void *info) {
+	DB_Connection& connection=*static_cast<DB_Connection *>(value);
+	VHash& status_cache=*static_cast<VHash *>(info);
+	Pool& pool=status_cache.pool();
+	
+	// file => tables table
+	status_cache.hash(0).put(connection.db_home(), &connection.get_status(pool, 0));
+}
 Value& DB_Manager::get_status(Pool& pool, const String *source) {
 	VHash& result=*new(pool) VHash(pool);
-/*	
-	// cache
+	
+	// db_homes
 	{
-		Array& columns=*new(pool) Array(pool, 3);
-		columns+=new(pool) String(pool, "protocol");
-		columns+=new(pool) String(pool, "time");
-		columns+=new(pool) String(pool, "times");
-		Table& table=*new(pool) Table(pool, 0, &columns, connection_cache.size());
+		VHash& status_cache=*new(pool) VHash(pool);
+		connection_cache.for_each(add_connection_to_status_status_cache, &status_cache);
 
-		connection_cache.for_each(add_connections_to_status_cache_table, &table);
-
-		result.hash(source).put(*new(pool) String(pool, "cache"), new(pool) VTable(pool, &table));
+		result.hash(source).put(*new(pool) String(pool, "cache"), &status_cache);
 	}
-*/
+
 	return result;
 }
 

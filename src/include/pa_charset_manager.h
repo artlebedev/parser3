@@ -2,9 +2,9 @@
 	Parser: sql driver manager decl.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_charset_manager.h,v 1.3 2001/11/05 10:21:26 paf Exp $
+	$Id: pa_charset_manager.h,v 1.4 2001/11/05 11:46:23 paf Exp $
 
 
 	global sql driver manager, must be thread-safe

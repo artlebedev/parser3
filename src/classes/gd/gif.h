@@ -2,9 +2,9 @@
 	Parser: image manipulations decls.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: gif.h,v 1.17 2001/10/16 10:26:09 parser Exp $
+	$Id: gif.h,v 1.18 2001/11/05 11:46:22 paf Exp $
 
 	based on:
 	gd.h: declarations file for the gifdraw module.

@@ -2,9 +2,9 @@
 	Parser: @b table class.
 
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: pa_vtable.C,v 1.8 2001/10/23 14:43:44 parser Exp $
+	$Id: pa_vtable.C,v 1.9 2001/11/05 11:46:34 paf Exp $
 */
 
 #include "pa_vtable.h"

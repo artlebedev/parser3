@@ -2,9 +2,9 @@
 	Parser: hash class.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_hash.C,v 1.46 2001/11/01 17:21:52 paf Exp $
+	$Id: pa_hash.C,v 1.47 2001/11/05 11:46:28 paf Exp $
 */
 
 /*
