@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_connection.C,v 1.15 2001/10/26 16:27:17 paf Exp $
+	$Id: pa_db_connection.C,v 1.16 2001/10/26 16:39:44 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -86,50 +86,20 @@ DB_Connection::DB_Connection(Pool& apool, const String& adb_home) : Pooled(apool
 		| DB_CREATE 
 		| DB_INIT_MPOOL | DB_INIT_LOCK | DB_INIT_LOG | DB_INIT_TXN;
 
-	try {
-		// 1: trying to open with SOFT RECOVER option set
-		memset(&dbenv, 0, sizeof(dbenv));
-		check("db_appinit soft recover", &fdb_home, db_appinit(
-			db_home_cstr,
-			db_config, 
-			&dbenv, 
-			flags | DB_RECOVER
-		));
-	} catch(const Exception& e) {
-		if(
-			strncmp(
-				e.comment(), 
-				DB_EXCEPTION_NO_LOG_MESSAGE1, 
-				strlen(DB_EXCEPTION_NO_LOG_MESSAGE1))==0 || 
-			strncmp(
-				e.comment(), 
-				DB_EXCEPTION_NO_LOG_MESSAGE2, 
-				strlen(DB_EXCEPTION_NO_LOG_MESSAGE2))==0) {
-			// no log = no SOFT RECOVER
-			// 2.1: trying to open with NO RECOVER option set
-			memset(&dbenv, 0, sizeof(dbenv));
-			check("db_appinit no recover", &fdb_home, db_appinit(
-				db_home_cstr,
-				db_config, 
-				&dbenv, 
-				flags
-			));
-		} else {
-			// some serious error
-			// 2.2: trying to open with FATAL RECOVER option set
-			memset(&dbenv, 0, sizeof(dbenv));
-			check("db_appinit fatal recover", &fdb_home, db_appinit(
-				db_home_cstr,
-				db_config, 
-				&dbenv, 
-				flags | DB_RECOVER_FATAL
-			));
-		}
-	}
-
+	// trying to open with SOFT RECOVER option set
+	memset(&dbenv, 0, sizeof(dbenv));
+	
 	// error handlers
 	dbenv.db_paniccall=db_paniccall;
 	dbenv.db_errcall=db_errcall;
+
+	// init
+	check("db_appinit", &fdb_home, db_appinit(
+		db_home_cstr,
+		db_config, 
+		&dbenv, 
+		flags
+		));
 }
 
 DB_Connection::~DB_Connection() {
