@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.C,v 1.215 2002/07/01 14:33:37 paf Exp $
+	$Id: pa_request.C,v 1.216 2002/07/30 13:37:08 paf Exp $
 */
 
 #include "pa_sapi.h"
@@ -283,7 +283,7 @@ gettimeofday(&mt[2],NULL);
 		// extract response body
 		Value *body_value=static_cast<Value *>(
 			response.fields().get(*body_name));
-		if(body_value) // there is some $response.body
+		if(body_value) // there is some $response:body
 			body_file=body_value->as_vfile();
 		else if(lorigins_mode)
 			response.fields().put(*content_type_name, 
