@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_driver.h,v 1.12 2001/07/23 13:59:52 parser Exp $
+	$Id: pa_sql_driver.h,v 1.13 2001/08/24 07:04:25 parser Exp $
 
 
 	driver dynamic library must look like this:
@@ -42,7 +42,7 @@ public:
 	virtual void _throw(const char *comment) =0;
 };
 
-#define SQL_DRIVER_API_VERSION 0x0303
+#define SQL_DRIVER_API_VERSION 0x0304
 
 /// events, occuring when SQL_Driver::query()-ing
 class SQL_Driver_query_event_handlers {
@@ -71,8 +71,7 @@ public:
 	*/
 	virtual void connect(char *used_only_in_connect_url_cstr, 
 		SQL_Driver_services& services, void **connection) =0;
-	virtual void disconnect(
-		SQL_Driver_services& services, void *connection) =0;
+	virtual void disconnect(void *connection) =0;
 	virtual void commit(
 		SQL_Driver_services& services, void *connection) =0;
 	virtual void rollback(

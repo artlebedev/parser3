@@ -5,9 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	2001.07.30 using Oracle 8.1.6, tested with Oracle 7.x.x
+	2001.07.30 using Oracle 8.1.6 [@test tested with Oracle 7.x.x]
 */
-static const char *RCSId="$Id: parser3oracle.C,v 1.10 2001/08/23 14:15:44 parser Exp $"; 
+static const char *RCSId="$Id: parser3oracle.C,v 1.11 2001/08/24 07:04:25 parser Exp $"; 
 
 #include "config_includes.h"
 
@@ -31,6 +31,7 @@ static const char *RCSId="$Id: parser3oracle.C,v 1.10 2001/08/23 14:15:44 parser
 #	define snprintf _snprintf
 #	define strcasecmp _stricmp
 #	define strncasecmp _strnicmp
+#	define STOP _asm int 3
 #endif
 
 #ifndef max
@@ -139,12 +140,13 @@ public:
 		SQL_Driver_services& services, 
 		void **connection ///< output: OracleSQL_connection_struct *
 		) {
+		// connections are cross-request, do not use services._alloc [linked with request]
+		OracleSQL_connection_struct &cs=
+			*(OracleSQL_connection_struct  *)::calloc(sizeof(OracleSQL_connection_struct), 1);
+
 		char *user=used_only_in_connect_url;
 		char *service=lsplit(user, '@');
 		char *pwd=lsplit(user, ':');
-
-		OracleSQL_connection_struct &cs=
-			*(OracleSQL_connection_struct  *)services.calloc(sizeof(OracleSQL_connection_struct));
 
 		if(!(user && pwd && service))
 			services._throw("mailformed connect part, must be 'user:pass@service'");
@@ -215,26 +217,26 @@ public:
 		// return created connection
 		*(OracleSQL_connection_struct **)connection=&cs;
 	}
-	void disconnect(SQL_Driver_services& services, void *connection) {
+	void disconnect(void *connection) {
 	    OracleSQL_connection_struct &cs=*(OracleSQL_connection_struct *)connection;
-		if(setjmp(cs.mark))
-			services._throw(cs.error);
-
 		// Terminate a user session
-		check(services, cs, "SessionEnd", OCISessionEnd(
-			cs.svchp, cs.errhp, cs.usrhp, (ub4)OCI_DEFAULT));
+		OCISessionEnd(
+			cs.svchp, cs.errhp, cs.usrhp, (ub4)OCI_DEFAULT)!=OCI_SUCCESS);
 		// Detach from a server; uninitialize server context handle
-		check(services, cs, "ServerDetach", OCIServerDetach(
-			cs.srvhp, cs.errhp, (ub4)OCI_DEFAULT));
-		// Free a previously allocated handle 
-		check(services, cs, "HandleFree srvhp", OCIHandleFree(
-			(dvoid *)cs.srvhp, (ub4)OCI_HTYPE_SERVER));
-		check(services, cs, "HandleFree svchp", OCIHandleFree(
-			(dvoid *)cs.svchp, (ub4)OCI_HTYPE_SVCCTX));
-		check(services, cs, "HandleFree errhp", OCIHandleFree(
-			(dvoid *)cs.errhp, (ub4)OCI_HTYPE_ERROR)); cs.errhp=0;
-		check(services, cs, "HandleFree envhp", OCIHandleFree(
-			(dvoid *)cs.envhp, (ub4)OCI_HTYPE_ENV));
+		OCIServerDetach(
+			cs.srvhp, cs.errhp, (ub4)OCI_DEFAULT)!=OCI_SUCCESS);
+		// Free a previously allocated handles
+		OCIHandleFree(
+			(dvoid *)cs.srvhp, (ub4)OCI_HTYPE_SERVER)!=OCI_SUCCESS);
+		OCIHandleFree(
+			(dvoid *)cs.svchp, (ub4)OCI_HTYPE_SVCCTX)!=OCI_SUCCESS);
+		OCIHandleFree(
+			(dvoid *)cs.errhp, (ub4)OCI_HTYPE_ERROR)!=OCI_SUCCESS);
+		OCIHandleFree(
+			(dvoid *)cs.envhp, (ub4)OCI_HTYPE_ENV)!=OCI_SUCCESS);
+
+		// connections are cross-request, do not use services._alloc [linked with request]
+		::free(&cs);
 	}
 	void commit(SQL_Driver_services& services, void *connection) {
 	    OracleSQL_connection_struct &cs=*(OracleSQL_connection_struct *)connection;

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 */
-static const char *RCSId="$Id: parser3odbc.C,v 1.2 2001/07/25 12:46:45 parser Exp $"; 
+static const char *RCSId="$Id: parser3odbc.C,v 1.3 2001/08/24 07:04:25 parser Exp $"; 
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -74,12 +74,12 @@ public:
 
 		*(CDatabase **)connection=db;
 	}
-	void disconnect(SQL_Driver_services& services, void *connection) {
+	void disconnect(void *connection) {
 		CDatabase *db=static_cast<CDatabase *>(connection);
 		TRY
 			delete db;
 		CATCH_ALL (e) {
-			_throw(services, e);
+			// nothing
 		}
 		END_CATCH_ALL
 	}

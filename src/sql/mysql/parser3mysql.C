@@ -7,7 +7,7 @@
 
 	2001.07.30 using MySQL 3.23.22b
 */
-static const char *RCSId="$Id: parser3mysql.C,v 1.27 2001/07/30 15:32:42 parser Exp $"; 
+static const char *RCSId="$Id: parser3mysql.C,v 1.28 2001/08/24 07:04:25 parser Exp $"; 
 
 #include "config_includes.h"
 
@@ -97,7 +97,7 @@ public:
 
 		*(MYSQL **)connection=mysql;
 	}
-	void disconnect(SQL_Driver_services&, void *connection) {
+	void disconnect(void *connection) {
 	    mysql_close((MYSQL *)connection);
 	}
 	void commit(SQL_Driver_services&, void *) {}

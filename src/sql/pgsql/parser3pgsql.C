@@ -7,7 +7,7 @@
 
 	2001.07.30 using PgSQL 7.1.2
 */
-static const char *RCSId="$Id: parser3pgsql.C,v 1.11 2001/08/01 09:53:00 parser Exp $"; 
+static const char *RCSId="$Id: parser3pgsql.C,v 1.12 2001/08/24 07:04:25 parser Exp $"; 
 
 #include "config_includes.h"
 
@@ -96,7 +96,7 @@ public:
 		*(PGconn **)connection=conn;
 		begin_transaction(services, conn);
 	}
-	void disconnect(SQL_Driver_services&, void *connection) {
+	void disconnect(void *connection) {
 	    PQfinish((PGconn *)connection);
 	}
 	void commit(SQL_Driver_services& services, void *connection) {

@@ -119,5 +119,45 @@ SOURCE=.\parser3odbc.def
 
 # PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 # End Group
+# Begin Group "MFCPatches"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\MFCpatches\AFXIMPL.H
+# End Source File
+# Begin Source File
+
+SOURCE=.\MFCpatches\CTLIMPL.H
+# End Source File
+# Begin Source File
+
+SOURCE=.\MFCpatches\DAOIMPL.H
+# End Source File
+# Begin Source File
+
+SOURCE=.\MFCpatches\DBCORE.CPP
+# End Source File
+# Begin Source File
+
+SOURCE=.\MFCpatches\DBIMPL.H
+# End Source File
+# Begin Source File
+
+SOURCE=.\MFCpatches\OLEIMPL2.H
+# End Source File
+# Begin Source File
+
+SOURCE=.\MFCpatches\SOCKIMPL.H
+# End Source File
+# Begin Source File
+
+SOURCE=.\MFCpatches\STDAFX.H
+# End Source File
+# Begin Source File
+
+SOURCE=.\MFCpatches\WINHAND_.H
+# End Source File
+# End Group
 # End Target
 # End Project
