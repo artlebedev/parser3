@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.11 2001/03/13 11:15:03 paf Exp $
+	$Id: table.C,v 1.12 2001/03/13 11:19:29 paf Exp $
 */
 
 #include "pa_request.h"
@@ -126,13 +126,7 @@ static void _menu(Request& r, const String& method_name, Array *params) {
 	for(int i=0; i<table.size(); i++) {
 		table.set_current(i);
 
-		RTRY 
-			Value& processed_body=r.process(body_code);
-		RCATCH(e)
-			if(e.type()==ET_SILENT && e.code()==EC_BREAK)
-				e.set_handled();
-		RFINALLY
-		REND_TRY
+		Value& processed_body=r.process(body_code);
 		if(delim_code) { // delimiter set?
 			const String *string=processed_body.get_string();
 			if(need_delim && string && string->size()) // need delim & iteration produced string?

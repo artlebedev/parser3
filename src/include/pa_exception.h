@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_exception.h,v 1.8 2001/03/13 11:15:03 paf Exp $
+	$Id: pa_exception.h,v 1.9 2001/03/13 11:19:30 paf Exp $
 */
 
 #ifndef PA_EXCEPTION_H
@@ -16,9 +16,6 @@
 
 class Exception {
 public:
-
-	Exception() : fhandled(false) {
-	}
 
 	// address for long jump to jump to 
 	// regretfully public:
@@ -36,12 +33,8 @@ public:
 	const String *problem_source() const { return fproblem_source; }
 	const char *comment() const { return fcomment[0]?fcomment:0; }
 
-	bool is_handled() { return fhandled; }
-	void set_handled() { fhandled=true; }
-
 private:
 
-	bool fhandled;
 	mutable const String *ftype, *fcode, *fproblem_source;
 	mutable char fcomment[MAX_STRING];
 };

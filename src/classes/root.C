@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: root.C,v 1.35 2001/03/13 11:15:03 paf Exp $
+	$Id: root.C,v 1.36 2001/03/13 11:19:29 paf Exp $
 */
 
 #include <string.h>
@@ -19,10 +19,10 @@ static void _if(Request& r, const String& method_name, Array *params) {
 	// forcing ^if(this param type)
 	r.fail_if_junction_(false, condition_code, 
 		method_name, "condition must be junction");
+
 	bool condition=r.process(condition_code, 
 		0/*no name*/,
 		false/*don't intercept string*/).get_bool();
-
 	if(condition) {
 		Value& then_code=*static_cast<Value *>(params->get(1));
 		// forcing ^if(this param type)

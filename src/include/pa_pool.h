@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.h,v 1.30 2001/03/13 11:15:03 paf Exp $
+	$Id: pa_pool.h,v 1.31 2001/03/13 11:19:30 paf Exp $
 */
 
 #ifndef PA_POOL_H
@@ -18,30 +18,16 @@ class Pool {
 	friend Temp_exception;
 public:
 
-	Pool() : 
-		fexception_to_trhow(0),
-		fpending_exception(0) {
-	}
+	Pool() : fexception(0) {}
 	~Pool() {}
 
-	Exception& exception_to_throw() const { return *fexception_to_throw; }
-	//Exception *pending_exception() const { return fpending_exception; }
+	Exception& exception() const { return *fexception; }
 
 	void *malloc(size_t size) {
 		return check(real_malloc(size), size);
 	}
 	void *calloc(size_t size) {
 		return check(real_calloc(size), size);
-	}
-
-	void maybe_rethrow_pending_exception() {
-		if(fpending_exception)
-			fexception_to_throw._throw(
-				fpending_exception.type(),
-				fpending_exception.code(),
-				fpending_exception.problem_source(),
-				fpending_exception.comment()
-			);
 	}
 
 private: // implementation defined
@@ -69,22 +55,18 @@ protected: // exception handling
 	// exception replacement mechanism is 'protected' from direct usage
 	// Temp_exception_change object enforces paired set/restore
 	Exception *set_exception(Exception *e){
-		Exception *r=fexception_to_throw;
-		fexception_to_throw=e;
+		Exception *r=fexception;
+		fexception=e;
 		return r;
 	}
 	void restore_exception(Exception *e) {
-		fpending_exception=fexception_to_throw.is_handled()?0:fexception_to_throw;
-		fexception_to_throw=e;
+		fexception=e;
 	}
 
 private:
 
 	// current request's exception object
-	Exception *fexception_to_throw;
-
-	// just catched request's exception object
-	Exception *fpending_exception;
+	Exception *fexception;
 
 private: //disabled
 
@@ -108,6 +90,7 @@ public:
 
 	void *malloc(size_t size) const { return fpool.malloc(size); }
 	void *calloc(size_t size) const { return fpool.calloc(size); }
+	Exception& exception() const { return fpool.exception(); }
 };
 #define NEW new(pool())
 
@@ -122,44 +105,25 @@ public:
 	~Temp_exception() { 
 		fpool.restore_exception(saved_exception); 
 	}
-public:
-	bool triggered;
 };
 
-#define XTRY(p) \
+#define TRY \
 	{ \
 		Exception temp_exception; \
-		Temp_exception le(p, temp_exception); \
+		Temp_exception le(pool(), temp_exception); \
 		if(setjmp(temp_exception.mark)==0)
-#define XTHROW(p) p.exception_to_throw()._throw
-#define XCATCH(e) \
+
+#define THROW exception()._throw
+#define POOL_THROW pool.exception()._throw
+#define R_THROW r.pool().exception()._throw
+#define CATCH(e) \
 		else{ \
 			Exception& e=temp_exception;
-#define XFINALLY(p) \
+
+#define END_CATCH \
 		} \
-		p.maybe_rethrow_pending_exception();
-#define XEND_TRY \
 	}
-
 // usage:
-//   TRY { ...; if(?) RAISE(?); ...; } CATCH(e) { catch-code e.comment() } END_TRY
-
-#define TRY XTRY(pool())
-#define THROW XTHROW(pool())
-#define CATCH(e) XCATCH(e)
-#define FINALLY(p) XFINALLY(pool())
-#define END_TRY XEND_TRY
-
-#define PTRY XTRY(pool)
-#define PTHROW XTHROW(pool)
-#define PCATCH(e) XCATCH(e)
-#define PINALLY(p) XFINALLY(pool)
-#define PEND_TRY XEND_TRY
-
-#define RTRY XTRY(r.pool())
-#define RTHROW XTHROW(r.pool())
-#define RCATCH(e) XCATCH(e)
-#define RFINALLY(p) XFINALLY(r.pool())
-#define REND_TRY XEND_TRY
+//   TRY { ...; if(?) RAISE(?); ...; } CATCH(e) { catch-code e.comment() } END_CATCH
 
 #endif
