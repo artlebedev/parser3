@@ -3,7 +3,8 @@ t.p
 dtf.p
 
 @main[]
-^measuretest[]
+^treplace[]
+#^measuretest[]
 #^savetest[]
 #^oratestinsert[]
 #^oratestread[]
@@ -14,6 +15,13 @@ dtf.p
 #^list[]
 #^tests[]
 #^func(0)<hr>
+
+@treplace[]
+$шило-на-мыло[^table::set{a	b
+шило	мыло
+}]
+$строка[бывает шило в задице]
+^строка.replace[$шило-на-мыло]<BR>
 
 @measuretest[]
 $im[^image::measure[mm2.jpg]]

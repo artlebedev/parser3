@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_string.C,v 1.100 2001/08/10 08:10:13 parser Exp $"; 
+static const char *RCSId="$Id: pa_string.C,v 1.101 2001/08/28 09:27:42 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -20,6 +20,7 @@ static const char *RCSId="$Id: pa_string.C,v 1.100 2001/08/10 08:10:13 parser Ex
 #include "pa_array.h"
 #include "pa_globals.h"
 #include "pa_table.h"
+#include "pa_dictionary.h"
 
 String::String(Pool& apool, const char *src, size_t src_size, bool tainted) :
 	Pooled(apool),
@@ -650,6 +651,51 @@ String& String::change_case(Pool& pool, const unsigned char *tables,
 	} while(chunk);
 break2:
 
+	return result;
+}
+
+String& String::replace(Pool& pool, Dictionary& dict) const {
+	String& result=*new(pool) String(pool);
+	const Chunk *chunk=&head; 
+	do {
+		const Chunk::Row *row=chunk->rows;
+		for(size_t i=0; i<chunk->count; i++, row++) {
+			if(row==append_here)
+				goto break2;
+
+			const char *src=row->item.ptr; 
+			size_t src_size=row->item.size;
+			char *new_cstr=(char *)pool.malloc((size_t)ceil(src_size*dict.max_ratio()));
+			char *dest=new_cstr;
+			while(src_size) {
+				// there is a row where first column starts 'src'
+				if(Table::Item *item=dict.first_that_starts(src)) {
+					// get a=>b values
+					const String& a=*static_cast<Array *>(item)->get_string(0);
+					const String& b=*static_cast<Array *>(item)->get_string(1);
+					// skip 'a' in 'src'
+					src+=a.size();
+					// write 'b' to 'dest'
+					b.store_to(dest);
+					// skip 'b' in 'dest'
+					dest+=b.size();
+					// reduce work size
+					src_size-=a.size();
+				} else {
+					*dest++=*src++;
+					// reduce work size
+					src_size--;
+				}
+			}
+
+			result.APPEND(new_cstr, dest-new_cstr, 
+				row->item.lang,
+				row->item.origin.file, row->item.origin.line);
+		}
+		chunk=row->link;
+	} while(chunk);
+
+break2:
 	return result;
 }
 

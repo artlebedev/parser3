@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: string.C,v 1.70 2001/08/07 13:54:13 parser Exp $"; 
+static const char *RCSId="$Id: string.C,v 1.71 2001/08/28 09:27:42 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
@@ -15,6 +15,7 @@ static const char *RCSId="$Id: string.C,v 1.70 2001/08/07 13:54:13 parser Exp $"
 #include "pa_vbool.h"
 #include "pa_string.h"
 #include "pa_sql_connection.h"
+#include "pa_dictionary.h"
 
 // defines
 
@@ -386,6 +387,19 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 	r.write_assign_lang(result);
 }
 
+static void _replace(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+	const String& src=*static_cast<VString *>(r.self)->get_string();
+
+	Table *table=params->as_no_junction(0, "parameter must not be code").get_table();
+	if(!table)
+		PTHROW(0, 0,
+			&method_name,
+			"parameter must be table");
+
+	Dictionary dict(*table);
+	r.write_assign_lang(*new(pool) VString(src.replace(pool, dict)));
+}
 // constructor
 
 MString::MString(Pool& apool) : Methoded(apool) {
@@ -431,6 +445,9 @@ MString::MString(Pool& apool) : Methoded(apool) {
 	// ^sql[query]
 	// ^sql[query][$.limit(1) $.offset(2) $.default[n/a]]
 	add_native_method("sql", Method::CT_STATIC, _sql, 1, 2);
+
+	// ^string.replace[table]
+	add_native_method("replace", Method::CT_DYNAMIC, _replace, 1, 1);
 }	
 
 // global variable

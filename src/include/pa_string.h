@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.100 2001/08/01 12:08:40 parser Exp $
+	$Id: pa_string.h,v 1.101 2001/08/28 09:27:42 parser Exp $
 */
 
 #ifndef PA_STRING_H
@@ -57,6 +57,7 @@ class Table;
 
 class Array;
 class SQL_Connection;
+class Dictionary;
 
 /** 
 	Pooled string.
@@ -224,6 +225,7 @@ public:
 	};
 	String& change_case(Pool& pool, const unsigned char *pcre_tables, 
 		Change_case_kind kind) const;
+	String& replace(Pool& pool, Dictionary& dict) const;
 	double as_double() const;
 	int as_int() const;
 

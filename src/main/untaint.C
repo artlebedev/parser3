@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 */
-static const char *RCSId="$Id: untaint.C,v 1.58 2001/08/01 12:08:40 parser Exp $"; 
+static const char *RCSId="$Id: untaint.C,v 1.59 2001/08/28 09:27:42 parser Exp $"; 
 
 #include "pa_pool.h"
 #include "pa_string.h"
@@ -150,7 +150,6 @@ size_t String::cstr_bufsize(Untaint_lang lang) const {
 }
 
 /** @todo fix theoretical \n mem overrun in TYPO replacements
-@todo rename base_64 to quoted_printable [invalid name now]
 */
 char *String::store_to(char *dest, Untaint_lang lang, 
 					   SQL_Connection *connection,
@@ -249,19 +248,19 @@ char *String::store_to(char *dest, Untaint_lang lang,
 				if(charset) {
 					// Subject: Re: parser3: =?koi8-r?Q?=D3=C5=CD=C9=CE=C1=D2?=
 					const char *src=row->item.ptr; 
-					bool to_base_64=false;
+					bool to_quoted_printable=false;
 					for(int size=row->item.size; size--; src++) {
 						if(*src & 0x80) {
-							if(!to_base_64) {
+							if(!to_quoted_printable) {
 								dest+=sprintf(dest, "=?%.15s?Q?", charset);
-								to_base_64=true;
+								to_quoted_printable=true;
 							}
 							dest+=sprintf(dest, "=%02X", *src & 0xFF);
 						} else {
 							*dest++=*src;						
 						}
 					}
-					if(to_base_64) // close
+					if(to_quoted_printable) // close
 						dest+=sprintf(dest, "?=");
 				} else {
 					memcpy(dest, row->item.ptr, row->item.size); 
@@ -348,13 +347,6 @@ char *String::store_to(char *dest, Untaint_lang lang,
 						// get a=>b values
 						const String& a=*static_cast<Array *>(item)->get_string(0);
 						const String& b=*static_cast<Array *>(item)->get_string(1);
-						// empty 'a' | 'b' checks
-						if(a.size()==0 || b.size()==0) {
-							pool().set_tag(0); // avoid recursion
-							THROW(0, 0, 
-								typo_dict->origin_string(), 
-								"typo table column elements must not be empty");
-						}
 						// overflow check:
 						//   b allowed to be max UNTAINT_TIMES_BIGGER then a
 						if(b.size()>UNTAINT_TIMES_BIGGER*a.size()) {
@@ -372,6 +364,7 @@ char *String::store_to(char *dest, Untaint_lang lang,
 						src+=a.size();
 						// write 'b' to 'dest'
 						b.store_to(dest);
+						// skip 'b' in 'dest'
 						dest+=b.size();
 					} else
 						*dest++=*src++;
