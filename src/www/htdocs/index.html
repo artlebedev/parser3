@@ -1,12 +1,19 @@
 @main[]
-$response:content-type[$.value[text/html] $.charset[windows-1251]]
+#$response:content-type[$.value[text/html] $.charset[windows-1251]]
 #^pcre[]
 #^regexp[]<hr>
 #^mail[]
 #^exec[]
 #^fori[]
-#^connect[mysql://hren]{^void:sql{nothing}}
-^xslt[]
+^connect[mysql://test:test@paf/test?charset=cp1251_koi8&compress=1&named_pipe=1]{
+$tables[^table::sql{show tables}]
+#$cols[^tables.columns[]]
+#$cols.column
+^tables.menu{
+	$tables.[Tables_in_test]<br>
+}
+}
+#^xslt[]
 OK
 
 @pcre[]
