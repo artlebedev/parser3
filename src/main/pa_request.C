@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.C,v 1.202 2002/04/18 11:41:29 paf Exp $
+	$Id: pa_request.C,v 1.203 2002/04/18 14:35:13 paf Exp $
 */
 
 #include "pa_sapi.h"
@@ -469,7 +469,7 @@ VStateless_class *Request::use_file(const String& file_name,
 		if(!file_spec)
 			throw Exception("parser.runtime",
 				&file_name,
-				"usage failed - no " MAIN_CLASS_NAME  ":" CLASS_PATH_NAME " were specified");
+				"usage failed - no $" MAIN_CLASS_NAME  ":" CLASS_PATH_NAME " were specified");
 	}
 
 	char *source=file_read_text(pool(), *file_spec, fail_on_read_problem);

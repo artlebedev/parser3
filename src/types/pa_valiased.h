@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_valiased.h,v 1.19 2002/04/18 13:55:06 paf Exp $
+	$Id: pa_valiased.h,v 1.20 2002/04/18 14:35:13 paf Exp $
 */
 
 #ifndef PA_VALIASED_H
@@ -52,7 +52,7 @@ class VAliased : public Value {
 	friend class Temp_alias;
 public: // creation
 
-	VAliased(Pool& apool, VStateless_class& aclass_alias) : Value(apool) {}
+	VAliased(Pool& apool) : Value(apool) {}
 
 	/// VAliased: this
 	VAliased *get_aliased() { return this; }

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vstateless_class.h,v 1.24 2002/04/18 10:51:02 paf Exp $
+	$Id: pa_vstateless_class.h,v 1.25 2002/04/18 14:35:13 paf Exp $
 */
 
 #ifndef PA_VSTATELESS_CLASS_H
@@ -49,7 +49,7 @@ public: // usage
 
 	VStateless_class(Pool& apool, 
 		const String *aname=0, 
-		VStateless_class *abase=0) : VAliased(apool, *this), 
+		VStateless_class *abase=0) : VAliased(apool), 
 		fname(aname),
 		fbase(abase),
 		fmethods(apool) {
