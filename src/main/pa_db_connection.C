@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_db_connection.C,v 1.33 2001/11/12 10:00:31 paf Exp $
+	$Id: pa_db_connection.C,v 1.34 2001/12/13 11:29:21 paf Exp $
 
 	developed with LIBDB 2.7.4
 */
@@ -115,7 +115,7 @@ DB_Connection::DB_Connection(Pool& apool, const String& adb_home) : Pooled(apool
 DB_Connection::~DB_Connection() {
 	// close tables
 	table_cache.for_each(expire_table, 
-		reinterpret_cast<void *>(time(0)/* =now= expire[close] all*/));
+		reinterpret_cast<void *>(time(0)+1/* =future= expire[close] all*/));
 	
 	// destroy connection data
 	check("db_appexit", &fdb_home, db_appexit(&dbenv));

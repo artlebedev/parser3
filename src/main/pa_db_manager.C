@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_db_manager.C,v 1.18 2001/11/12 10:00:32 paf Exp $
+	$Id: pa_db_manager.C,v 1.19 2001/12/13 11:29:21 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -47,7 +47,7 @@ DB_Manager::DB_Manager(Pool& apool) : Cache_manager(apool),
 DB_Manager::~DB_Manager() {
 	// close connections
 	connection_cache.for_each(expire_connection, 
-		reinterpret_cast<void *>(time(0)/* =now= expire[close] all*/));
+		reinterpret_cast<void *>(time(0)+1/* =future= expire[close] all*/));
 }
 
 /// @test subpools mechanizm. one connection, one subpool. ~connection destructs it

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_stylesheet_manager.C,v 1.7 2001/11/12 10:00:32 paf Exp $
+	$Id: pa_stylesheet_manager.C,v 1.8 2001/12/13 11:29:22 paf Exp $
 */
 #include "pa_config_includes.h"
 #ifdef XML
@@ -51,7 +51,7 @@ Stylesheet_manager::Stylesheet_manager(Pool& apool) : Cache_manager(apool),
 	}
 Stylesheet_manager::~Stylesheet_manager() {
 	connection_cache.for_each(expire_connections, 
-		reinterpret_cast<void *>((time_t)0/*=in past=expire all*/));
+		reinterpret_cast<void *>(time(0)+1/*=in future=expire all*/));
 }
 
 Stylesheet_connection& Stylesheet_manager::get_connection(const String& request_file_spec) {

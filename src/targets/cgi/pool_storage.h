@@ -1,10 +1,10 @@
 /** @file
-	Parser: CGI: pool storage class decl.
+	Parser: ISAPI: pool storage class decl.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pool_storage.h,v 1.5 2001/11/05 11:46:30 paf Exp $
+	$Id: pool_storage.h,v 1.6 2001/12/13 11:29:22 paf Exp $
 */
 
 #ifndef PA_POOL_STORAGE_H
@@ -17,7 +17,6 @@
 	
 	@todo implement at least simple suballocations
 */
-
 template<class T> class List {
 public:
 	List(int preallocate) : 
@@ -29,7 +28,10 @@ public:
 	}
 
 	~List() {
-		::free(items);
+		if(items)
+    		    ::free(items);
+		items=0;
+		used=0;
 	}
 
 	bool add(T item) {
@@ -48,6 +50,7 @@ public:
 			callback(items[--top]);
 	}
 
+size_t size() { return used; }
 private:
 
 	bool full() { return used==allocated; }
@@ -71,6 +74,7 @@ private:
 };
 
 class Pool_storage {
+
 	struct Cleanup_struct {
 		void (*cleanup) (void *);
 		void *data;
@@ -80,7 +84,24 @@ class Pool_storage {
 public:
 
 	Pool_storage() : 
-		cleanups(100) {
+		cleanups(100),
+		allocations(10*0x400) {
+	}
+
+	void *malloc(size_t size) { 
+//fprintf(stderr, "malloc: %d\n", size);
+		void *result=::malloc(size);
+		if(result && !allocations.add(result)) {
+			::free(result); result=0;
+		}
+		return result;
+	}
+	void *calloc(size_t size) { 
+		void *result=::calloc(size, 1);
+		if(result && !allocations.add(result)) {
+			::free(result); result=0;
+		}
+		return result;
 	}
 
 	bool register_cleanup(void (*cleanup) (void *), void *data) {
@@ -92,14 +113,25 @@ public:
 		item.cleanup(item.data);
 	}
 
+	static void free(void *& item) {
+		::free(item);  item=0;
+	}
+
 	~Pool_storage() {
+//	__asm__("int3");
+//fprintf(stderr, "cleanups: %d\n", cleanups.size());
 		// cleanups first, because they use some object's memory pointers
 		cleanups.for_each_reverse(cleanup);
+		
+//fprintf(stderr, "allocs: %d\n", allocations.size());
+		// allocations
+		allocations.for_each_reverse(free);
 	}
 
 private:
 
 	List<Cleanup_struct> cleanups;
+	List<void *> allocations;
 
 };
 

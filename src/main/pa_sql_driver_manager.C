@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_sql_driver_manager.C,v 1.55 2001/11/12 10:00:32 paf Exp $
+	$Id: pa_sql_driver_manager.C,v 1.56 2001/12/13 11:29:22 paf Exp $
 */
 
 #include "pa_sql_driver_manager.h"
@@ -96,7 +96,7 @@ SQL_Driver_manager::SQL_Driver_manager(Pool& apool) : Cache_manager(apool),
 
 SQL_Driver_manager::~SQL_Driver_manager() {
 	connection_cache.for_each(expire_connections, 
-		reinterpret_cast<void *>((time_t)0/*=in past=expire all*/));
+		reinterpret_cast<void *>(time(0)+1/*=in future=expire all*/));
 }
 
 /// @param request_url protocol://[driver-dependent]
