@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: dom.C,v 1.22 2001/09/15 14:22:47 parser Exp $"; 
+static const char *RCSId="$Id: dom.C,v 1.23 2001/09/17 14:46:49 parser Exp $"; 
 
 #if _MSC_VER
 #	pragma warning(disable:4291)   // disable warning 
@@ -18,11 +18,11 @@ static const char *RCSId="$Id: dom.C,v 1.22 2001/09/15 14:22:47 parser Exp $";
 #include "pa_vfile.h"
 #include "pa_xslt_stylesheet_manager.h"
 #include "pa_stylesheet_connection.h"
+#include "dnode.h"
 
 #include <strstream>
 #include <Include/PlatformDefinitions.hpp>
 #include <util/PlatformUtils.hpp>
-#include <util/XMLString.hpp>
 #include <XalanTransformer/XalanTransformer.hpp>
 #include <XalanTransformer/XalanParsedSource.hpp>
 #include <PlatformSupport/XalanFileOutputStream.hpp>
@@ -48,7 +48,7 @@ static const char *RCSId="$Id: dom.C,v 1.22 2001/09/15 14:22:47 parser Exp $";
 
 // class
 
-class MDom : public Methoded {
+class MDom : public MDNode {
 public: // VStateless_class
 	Value *create_new_value(Pool& pool) { return new(pool) VDom(pool); }
 
@@ -100,31 +100,6 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 
 	// replace any previous parsed source
 	vDom.set_parsed_source(*parsedSource);
-}
-
-static const char *strX(const XalanDOMString& s) {
-	return XMLString::transcode(s.c_str());
-}
-
-static void _throw(Pool& pool, const String *source, const XSLException& e) {
-	if(e.getURI().empty())
-		PTHROW(0, 0,
-			source,
-			"%s (%s)",
-				strX(e.getMessage()),  // message for exception
-				strX(e.getType()) // type of exception
-		);
-	else
-		PTHROW(0, 0,
-			source,
-			"%s (%s) %s(%d:%d)'", 
-				strX(e.getMessage()),  // message for exception
-				strX(e.getType()), // type of exception
-				
-				strX(e.getURI()),  // URI for the associated document, if any
-				e.getLineNumber(),  // line number, or -1 if unknown
-				e.getColumnNumber() // column number, or -1 if unknown
-		);
 }
 
 class ParserStringXalanOutputStream: public XalanOutputStream {
@@ -308,8 +283,8 @@ static void add_xslt_param(const Hash::Key& aattribute, Hash::Val *ameaning,
 	const char *meaning_cstr=static_cast<Value *>(ameaning)->as_string().cstr();
 
 	transformer.setStylesheetParam(
-		XalanDOMString(attribute_cstr, strlen(attribute_cstr)),  
-		XalanDOMString(meaning_cstr, strlen(meaning_cstr)));
+		XalanDOMString(attribute_cstr),  
+		XalanDOMString(meaning_cstr));
 }
 static void _xslt(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
@@ -359,7 +334,7 @@ static void _xslt(Request& r, const String& method_name, MethodParams *params) {
 
 // constructor
 
-MDom::MDom(Pool& apool) : Methoded(apool) {
+MDom::MDom(Pool& apool) : MDNode(apool) {
 	set_name(*NEW String(pool(), DOM_CLASS_NAME));
 
 	// ^dom::set[<some>xml</some>]

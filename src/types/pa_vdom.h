@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vdom.h,v 1.9 2001/09/15 14:22:47 parser Exp $
+	$Id: pa_vdom.h,v 1.10 2001/09/17 14:46:49 parser Exp $
 */
 
 #ifndef PA_VDOM_H
@@ -14,6 +14,7 @@
 #include "classes.h"
 #include "pa_common.h"
 #include "pa_vstateless_object.h"
+#include "pa_vdnode.h"
 
 #include <XercesParserLiaison/XercesParserLiaison.hpp>
 #include <XalanTransformer/XalanTransformer.hpp>
@@ -24,23 +25,34 @@ extern Methoded *Dom_class;
 
 void VDom_cleanup(void *);
 
-/// value of type 'dom'. implemented with Xalan
-class VDom : public VStateless_object {
+/// value of type 'dom'. implemented with XalanDocument & co
+class VDom : public VDNode {
 	friend void VDom_cleanup(void *);
 public: // Value
 
 	const char *type() const { return "dom"; }
-	/// VDom: this
-	Value *as_expr_result(bool return_string_as_is=false) { return this; }
-
+/*
+	/// VDom: CLASS,method
+	Value *get_element(const String& aname) {
+		// VStateless_object $CLASS,$method
+		if(Value *result=VStateless_object::get_element(aname))
+			return result;
+	}
+*/
 protected: // VAliased
 
 	/// disable .CLASS element. @see VAliased::get_element
 	bool hide_class() { return true; }
 
+public: // VDNode
+
+	XalanNode &get_node(Pool& pool, const String *source) { 
+		return get_document(pool, source);
+	}
+
 public: // usage
 
-	VDom(Pool& apool) : VStateless_object(apool, *Dom_class), 
+	VDom(Pool& apool) : VDNode(apool, *Dom_class), 
 		ftransformer(0),
 		fparser_liaison(0),
 		fparsed_source(0),

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_stylesheet_connection.h,v 1.2 2001/09/15 11:48:41 parser Exp $
+	$Id: pa_stylesheet_connection.h,v 1.3 2001/09/17 14:46:49 parser Exp $
 */
 
 #ifndef PA_STYLESHEET_CONNECTION_H
@@ -36,7 +36,8 @@ public:
 		ffile_spec(afile_spec),
 		time_used(0),
 		prev_disk_time(0),
-		fservices_pool(0) {
+		fservices_pool(0),
+		fstylesheet(0) {
 	}
 	
 	const String& file_spec() { return ffile_spec; }
@@ -92,12 +93,13 @@ private:
 		time_t atime, mtime, ctime;
 		String stamp_file_spec(ffile_spec); 
 		stamp_file_spec << STYLESHEET_FILENAME_STAMP_SUFFIX;
-		// {file_spec}.stamp modification time OR {file_spec} mtime 
-		if(!file_stat(file_readable(stamp_file_spec)?stamp_file_spec:ffile_spec, 
+		// {file_spec}.stamp modification time OR {file_spec}
+		const String& stat_file_spec=file_readable(stamp_file_spec)?stamp_file_spec:ffile_spec;
+		if(!file_stat(stat_file_spec, 
 			size,
 			atime, mtime, ctime,
-			false/*no exceptions on global pool, please*/))
-			mtime=0; // no file=no time
+			false/*no exception on global pool[stat_file_spec], please*/))
+			mtime=1; //no file=pseudo non-zero time, see get_new_disk_time
 		return mtime;
 	}
 

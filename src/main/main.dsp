@@ -352,6 +352,23 @@ SOURCE=..\types\pa_vdate.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\types\pa_vdnode.C
+
+!IF  "$(CFG)" == "main - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "main - Win32 Debug"
+
+# ADD CPP /GX
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\types\pa_vdnode.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\types\pa_vdom.C
 
 !IF  "$(CFG)" == "main - Win32 Release"
@@ -526,6 +543,23 @@ SOURCE=..\classes\date.C
 # End Source File
 # Begin Source File
 
+SOURCE=..\classes\dnode.C
+
+!IF  "$(CFG)" == "main - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "main - Win32 Debug"
+
+# ADD CPP /GX
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=..\classes\dnode.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\classes\dom.C
 
 !IF  "$(CFG)" == "main - Win32 Release"
@@ -641,8 +675,6 @@ SOURCE="..\classes\xml-xalan\c\Build\Win32\VC6\Debug\XalanSourceTreeD.lib"
 !IF  "$(CFG)" == "main - Win32 Release"
 
 !ELSEIF  "$(CFG)" == "main - Win32 Debug"
-
-# PROP Exclude_From_Build 1
 
 !ENDIF 
 

@@ -1,3 +1,3 @@
-#AddHandler parser-cgi-html .html
-#Action parser-cgi-html /cgi-bin/parser3.exe
+AddHandler parser-cgi-html .cgihtml
+Action parser-cgi-html /cgi-bin/parser3.exe
 addHandler debug_parser3-handler .html

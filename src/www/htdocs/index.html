@@ -1,3 +1,22 @@
-<?xml version="1.0" encoding="windows-1251"?>
+@main[]
+^xslt[]
 
-<doc>testing проверка <important>ПРОВЕРКА</important>. ^$form:a='$form:a'</doc>
+@xslt[]
+$dom[^dom::set{<?xml version="1.0" encoding="windows-1251"?>
+
+<people>
+	<man id="1">
+		<name>PAF</name>
+	</man>
+	<man id="2">
+		<name>ПИФ</name>
+	</man>
+</people>
+}]
+
+$people[^dom.xpath[/people/man/name]]
+
+^for[i](0;^people._count[]-1){
+	z$people.$i<br>	
+}
+OK

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vimage.h,v 1.13 2001/05/07 14:00:54 paf Exp $
+	$Id: pa_vimage.h,v 1.14 2001/09/17 14:46:49 parser Exp $
 */
 
 #ifndef PA_VIMAGE_H
@@ -26,9 +26,6 @@ class VImage : public VStateless_object {
 public: // Value
 	
 	const char *type() const { return "image"; }
-
-	/// VImage: this
-	Value *as_expr_result(bool return_string_as_is=false) { return this; }
 
 	/// VImage: true
 	bool as_bool() { return true; }

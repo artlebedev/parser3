@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vfile.h,v 1.31 2001/09/13 14:10:54 parser Exp $
+	$Id: pa_vfile.h,v 1.32 2001/09/17 14:46:49 parser Exp $
 */
 
 #ifndef PA_VFILE_H
@@ -26,9 +26,6 @@ class VFile : public VStateless_object {
 public: // Value
 	
 	const char *type() const { return "file"; }
-
-	/// VFile: this
-	Value *as_expr_result(bool return_string_as_is=false) { return this; }
 
 	/// VFile: true
 	bool as_bool() { return true; }

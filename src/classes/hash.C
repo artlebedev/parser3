@@ -5,9 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: hash.C,v 1.15 2001/09/06 08:25:08 parser Exp $
+	$Id: hash.C,v 1.16 2001/09/17 14:46:49 parser Exp $
 */
-static const char *RCSId="$Id: hash.C,v 1.15 2001/09/06 08:25:08 parser Exp $"; 
+static const char *RCSId="$Id: hash.C,v 1.16 2001/09/17 14:46:49 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
@@ -15,6 +15,7 @@ static const char *RCSId="$Id: hash.C,v 1.15 2001/09/06 08:25:08 parser Exp $";
 #include "pa_vvoid.h"
 #include "pa_sql_connection.h"
 #include "pa_vtable.h"
+#include "pa_vint.h"
 
 // defines
 
@@ -159,6 +160,14 @@ static void _keys(Request& r, const String& method_name, MethodParams *) {
 	r.write_no_lang(result);
 }
 
+static void _count(Request& r, const String& method_name, MethodParams *) {
+	Pool& pool=r.pool();
+
+	Value& value=*new(pool) VInt(pool, static_cast<VHash *>(r.self)->hash().size());
+	value.set_name(method_name);
+	r.write_no_lang(value);
+}
+
 // constructor
 
 MHash::MHash(Pool& apool) : Methoded(apool) {
@@ -169,6 +178,9 @@ MHash::MHash(Pool& apool) : Methoded(apool) {
 
 	// ^hash._keys[]
 	add_native_method("_keys", Method::CT_DYNAMIC, _keys, 0, 0);	
+
+	// ^hash._count[]
+	add_native_method("_count", Method::CT_DYNAMIC, _count, 0, 0);	
 }
 
 // global variable
