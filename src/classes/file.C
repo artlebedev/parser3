@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: file.C,v 1.80 2002/04/18 10:50:59 paf Exp $
+	$Id: file.C,v 1.81 2002/04/19 11:18:04 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -299,8 +299,8 @@ static void _list(Request& r, const String& method_name, MethodParams *params) {
 
 	const String *regexp;
 	pcre *regexp_code;
-	int ovecsize;
-	int *ovector;
+	const int ovecsize=(1/*match*/)*3;
+	int ovector[ovecsize];
 	if(params->size()>1) {
 		regexp=&params->as_no_junction(1, "regexp must not be code").as_string();
 
@@ -315,8 +315,6 @@ static void _list(Request& r, const String& method_name, MethodParams *params) {
 			throw Exception(0, 
 				&regexp->mid(erroffset, regexp->size()), 
 				"regular expression syntax error - %s", errptr);
-
-		ovector=(int *)pool.malloc(sizeof(int)*(ovecsize=(1/*match*/)*3));
 	} else 
 		regexp_code=0;
 
