@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2002/08/15 12:05:36 $";
+static const char* IDENT_COMMON_C="$Date: 2002/08/23 07:32:24 $";
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -119,7 +119,6 @@ bool file_read(Pool& pool, const String& file_spec,
 			   bool fail_on_read_problem,
 			   size_t offset, size_t limit) {
 	const char *fname=file_spec.cstr(String::UL_FILE_SPEC);
-//printf("file_read(%s)\n", fname);
 	int f;
     struct stat finfo;
 
@@ -198,13 +197,14 @@ bool file_read(Pool& pool, const String& file_spec,
 			((char*&)data)[data_size]=0;
 		}
 		return true;
-    }
-	if(fail_on_read_problem)
-		throw Exception(errno==EACCES?"file.access":errno==ENOENT?"file.missing":0,
-			&file_spec, 
-			"read failed: %s (%d), actual filename '%s'", 
-				strerror(errno), errno, fname);
-    return false;
+    } else {
+		if(fail_on_read_problem)
+			throw Exception(errno==EACCES?"file.access":errno==ENOENT?"file.missing":0,
+				&file_spec, 
+				"read failed: %s (%d), actual filename '%s'", 
+					strerror(errno), errno, fname);
+		return false;
+	}
 }
 
 static void create_dir_for_file(const String& file_spec) {
@@ -336,10 +336,18 @@ void file_move(const String& old_spec, const String& new_spec) {
 }
 
 
+bool entry_exists(const char *fname, struct stat *afinfo) {
+	struct stat lfinfo;
+	bool result=stat(fname, &lfinfo)==0;
+	if(afinfo)
+		*afinfo=lfinfo;
+	return result;
+}
+
 static bool entry_readable(const String& file_spec, bool need_dir) {
     const char *fname=file_spec.cstr(String::UL_FILE_SPEC);
 	struct stat finfo;
-	if(access(fname, R_OK)==0 && stat(fname, &finfo)==0) {
+	if(access(fname, R_OK)==0 && entry_exists(fname, &finfo)) {
 		bool is_dir=(finfo.st_mode&S_IFDIR) != 0;
 		return is_dir==need_dir;
 	}

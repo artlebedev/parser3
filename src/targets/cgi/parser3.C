@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_PARSER3_C="$Date: 2002/08/21 06:24:07 $";
+static const char* IDENT_PARSER3_C="$Date: 2002/08/23 07:32:24 $";
 
 #include "pa_config_includes.h"
 
@@ -336,7 +336,7 @@ static void real_parser_handler(
 				"%s/%s", 
 				beside_binary_path, AUTO_FILE_NAME);
 			config_filespec_cstr=config_filespec_buf;
-			fail_on_config_read_problem=false;
+			fail_on_config_read_problem=entry_exists(config_filespec_cstr);
 		}
 	}
 	
