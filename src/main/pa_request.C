@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.93 2001/04/03 07:54:25 paf Exp $
+	$Id: pa_request.C,v 1.94 2001/04/04 06:16:21 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -51,7 +51,8 @@ Request::Request(Pool& apool,
 	info(ainfo),
 	used_files(apool),
 	default_content_type(0),
-	mime_types(0)
+	mime_types(0),
+	connection(0)
 {
 	// root superclass, 
 	//   parent of all classes, 
@@ -401,7 +402,6 @@ void Request::core(const char *root_auto_path, bool root_auto_fail,
 		THROW(rethrow_me.type(), rethrow_me.code(),
 			rethrow_me.problem_source(),
 			rethrow_me.comment());
-
 }
 
 VStateless_class *Request::use_file(const String& file_spec, bool fail_on_read_problem,

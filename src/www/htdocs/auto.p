@@ -8,9 +8,10 @@ $DEFAULTS[
 		$value[text/html]
 		$charset[windows-1251]
 	]
+	$connect-string[mysql://user:pass@host:port/database]
 ]
 #for ^file:load[name;user-name;mime-type << autodetection]
-$MIME_TYPES[^table:set{ext	mime-type
+$MIME-TYPES[^table:set{ext	mime-type
 zip	application/zip
 doc	application/msword
 xls	application/vnd.ms-excel

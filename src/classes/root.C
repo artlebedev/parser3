@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: root.C,v 1.55 2001/04/03 08:23:06 paf Exp $
+	$Id: root.C,v 1.56 2001/04/04 06:16:18 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -41,11 +41,13 @@ static void _if(Request& r, const String& method_name, Array *params) {
 }
 
 static void _untaint(Request& r, const String& method_name, Array *params) {
+	Pool& pool=r.pool();
+
 	const String& lang_name=r.process(*static_cast<Value *>(params->get(0))).as_string();
 	String::Untaint_lang lang=static_cast<String::Untaint_lang>(
 		untaint_lang_name2enum->get_int(lang_name));
 	if(!lang)
-		RTHROW(0, 0,
+		PTHROW(0, 0,
 			&lang_name,
 			"invalid untaint language");
 
@@ -61,6 +63,8 @@ static void _untaint(Request& r, const String& method_name, Array *params) {
 }
 
 static void _taint(Request& r, const String& method_name, Array *params) {
+	Pool& pool=r.pool();
+
 	String::Untaint_lang lang;
 	if(params->size()==1)
 		lang=String::UL_TAINTED; // mark as simply 'tainted'. useful in table:set
@@ -69,7 +73,7 @@ static void _taint(Request& r, const String& method_name, Array *params) {
 		lang=static_cast<String::Untaint_lang>(
 			untaint_lang_name2enum->get_int(lang_name));
 		if(!lang)
-			RTHROW(0, 0,
+			PTHROW(0, 0,
 			&lang_name,
 			"invalid taint language");
 	}
@@ -132,6 +136,8 @@ static void _rem(Request& r, const String& method_name, Array *params) {
 }
 
 static void _while(Request& r, const String& method_name, Array *params) {
+	Pool& pool=r.pool();
+
 	Value& vcondition=*static_cast<Value *>(params->get(0));
 	// forcing ^while(this param type){}
 	r.fail_if_junction_(false, vcondition, 
@@ -146,7 +152,7 @@ static void _while(Request& r, const String& method_name, Array *params) {
 	int endless_loop_count=0;
 	while(true) {
 		if(++endless_loop_count>=1973) // endless loop?
-			RTHROW(0, 0,
+			PTHROW(0, 0,
 				&method_name,
 				"endless loop detected");
 
@@ -190,7 +196,7 @@ static void _for(Request& r, const String& method_name, Array *params) {
 	int endless_loop_count=0;
 	for(int i=from; i<=to; i++) {
 		if(++endless_loop_count>=2001) // endless loop?
-			RTHROW(0, 0,
+			PTHROW(0, 0,
 				&method_name,
 				"endless loop detected");
 		vint->set_int(i);
@@ -269,6 +275,50 @@ static void _sign(Request& r, const String& method_name, Array *params) {
 	double_one_op(r, method_name, params,	&sign);
 }
 
+/// ^connect[protocol://user:pass@host[:port]/database]{code with ^sql-s}
+/**
+	@test make params not Array but something with useful method for extracting,
+	with typecast and junction/not test
+*/
+static void _connect(Request& r, const String& method_name, Array *params) {
+	Pool& pool=r.pool();
+
+	Value& connect_string=*static_cast<Value *>(params->get(0));
+	r.fail_if_junction_(true, connect_string, 
+		method_name, "connect string must not be junction");
+
+	Value& body_code=*static_cast<Value *>(params->get(1));
+	r.fail_if_junction_(false, body_code, 
+		method_name, "body must be junction");
+
+	// remember/set current connection
+	const String *saved_connection=r.connection;
+	r.connection=&connect_string.as_string();
+
+	bool need_rethrow=false;  Exception rethrow_me;
+	PTRY {
+		r.write_assign_lang(r.process(body_code));
+	} 
+	PCATCH(e) { // connect/process problem
+		rethrow_me=e;  need_rethrow=true; 
+	}
+	PEND_CATCH
+
+	// FINALLY
+	if(need_rethrow)
+		;//rollback
+	else
+		;//commit
+	
+	// recall current connection from remembered
+	r.connection=saved_connection;
+
+	if(need_rethrow) // were there an exception for us to rethrow?
+		PTHROW(rethrow_me.type(), rethrow_me.code(),
+			rethrow_me.problem_source(),
+			rethrow_me.comment());
+}
+
 // initialize
 
 void initialize_root_class(Pool& pool, VStateless_class& vclass) {
@@ -318,4 +368,11 @@ void initialize_root_class(Pool& pool, VStateless_class& vclass) {
 
 	// ^sign(expr)
 	vclass.add_native_method("sign", Method::CT_ANY, _sign, 1, 1);
+
+	
+	// connect
+
+	// ^connect[protocol://user:pass@host[:port]/database]{code with ^sql-s}
+	vclass.add_native_method("connect", Method::CT_ANY, _connect, 2, 2);
+
 }

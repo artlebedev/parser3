@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.75 2001/04/03 06:23:04 paf Exp $
+	$Id: pa_request.h,v 1.76 2001/04/04 06:16:19 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -162,6 +162,9 @@ public:
 	Value *self, *root, *rcontext;
 	/// contexts
 	WContext *wcontext;
+
+	/// connection
+	const String *connection;
 
 private: // core data
 

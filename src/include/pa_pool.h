@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.h,v 1.47 2001/03/29 08:34:47 paf Exp $
+	$Id: pa_pool.h,v 1.48 2001/04/04 06:16:19 paf Exp $
 */
 
 #ifndef PA_POOL_H
@@ -191,8 +191,6 @@ public:
 #define PTHROW XTHROW(pool.exception())
 #define PCATCH(e) XCATCH(e)
 #define PEND_CATCH XEND_CATCH 
-
-#define RTHROW XTHROW(r.pool().exception())
 //@}
 
 #endif

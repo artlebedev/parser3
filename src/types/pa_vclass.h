@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vclass.h,v 1.11 2001/03/24 09:44:20 paf Exp $
+	$Id: pa_vclass.h,v 1.12 2001/04/04 06:16:22 paf Exp $
 */
 
 #ifndef PA_VCLASS_H
@@ -39,16 +39,16 @@ public: // usage
 		ffields(apool) {
 	}
 
+private:
+
 	void set_field(const String& name, Value *value) {
-		if(value) // used in ^process to temporarily remove @main
-			value->set_name(name);
+		//if(value) // used in ^process to temporarily remove @main
+			//value->set_name(name);
 		if(fbase && fbase->replace_field(name, value))
 			return;
 
 		ffields.put(name, value);
 	}
-
-private:
 
 	Value *get_field(const String& name) {
 		Value *result=static_cast<Value *>(ffields.get(name));

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.48 2001/04/03 17:01:01 paf Exp $
+	$Id: table.C,v 1.49 2001/04/04 06:16:18 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -394,14 +394,14 @@ static void _join(Request& r, const String& method_name, Array *params) {
 
 	Table *maybe_src=value->get_table();
 	if(!maybe_src)
-		RTHROW(0, 0,
+		PTHROW(0, 0,
 			&method_name,
 			"source is not a table");
 
 	Table& src=*maybe_src;
 	Table& dest=static_cast<VTable *>(r.self)->table();
 	if(&src == &dest)
-		RTHROW(0, 0,
+		PTHROW(0, 0,
 			&method_name,
 			"source and destination are same table");
 
@@ -421,15 +421,61 @@ static void _join(Request& r, const String& method_name, Array *params) {
 	}
 }
 
+// ^table:sql{query}[(count[;offset])]
+static void _sql(Request& r, const String& method_name, Array *params) {
+	Pool& pool=r.pool();
+
+	if(!r.connection)
+		PTHROW(0, 0,
+			&method_name,
+			"without connect");
+
+	Value& query=*static_cast<Value *>(params->get(0));
+	// forcing {this query param type}
+	r.fail_if_junction_(false, query, method_name, "query must be junction");
+
+	int count=0;
+	if(params->size()>1) {
+		Value& count_code=*static_cast<Value *>(params->get(1));
+		// forcing (this count param type)
+		r.fail_if_junction_(false, count_code, method_name, "count must be expression");
+		count=(int)r.process(count_code).as_double();
+	}
+
+	int limit=0;
+	if(params->size()>2) {
+		Value& limit_code=*static_cast<Value *>(params->get(2));
+		// forcing (this limit param type)
+		r.fail_if_junction_(false, limit_code, method_name, "limit must be expression");
+		limit=(int)r.process(limit_code).as_double();
+	}
+
+	Table& table=*new(pool) Table(pool, &method_name, 0);
+	Array& row=*new(pool) Array(pool);
+
+	Temp_lang temp_lang(r, String::UL_SQL);
+	char *buf=(char *)malloc(MAX_STRING);
+	snprintf(buf, MAX_STRING, "[sql %s,%s,%d,%d]", 
+		r.connection->cstr(),
+		r.process(query).as_string().cstr(),
+		count,
+		limit);
+	row+=new(pool) String(pool, buf);
+	table+=&row;
+
+	// replace any previous table value
+	static_cast<VTable *>(r.self)->set_table(table);
+}
+
 // initialize
 
 void initialize_table_class(Pool& pool, VStateless_class& vclass) {
-	// ^table.set{data}
-	// ^table.set[nameless]{data}
+	// ^table:set{data}
+	// ^table:set[nameless]{data}
 	vclass.add_native_method("set", Method::CT_DYNAMIC, _set, 1, 2);
 
-	// ^table.load[file]  
-	// ^table.load[nameless;file]
+	// ^table:load[file]  
+	// ^table:load[nameless;file]
 	vclass.add_native_method("load", Method::CT_DYNAMIC, _load, 1, 2);
 
 	// ^table.save[file]  
@@ -475,4 +521,8 @@ void initialize_table_class(Pool& pool, VStateless_class& vclass) {
 
 	// ^table.join[table]
 	vclass.add_native_method("join", Method::CT_DYNAMIC, _join, 1, 1);
+
+
+	// ^table:sql{query}[(count[;offset])]
+	vclass.add_native_method("sql", Method::CT_DYNAMIC, _sql, 1, 3);
 }

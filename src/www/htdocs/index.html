@@ -31,6 +31,25 @@ $n
 $m ^if(^s.match[$:m][i]){matches}{do not match} $s<BR>
 
 @main[]
+^connect[$DEFAULTS.connect-string]{
+	$news[^table:sql{select * from news}(1;4)]
+	^$news.0=$news.0<BR>
+	^connect[2$DEFAULTS.connect-string]{
+		$news[^table:sql{select * from news}(1;4)]
+		^$news.0=$news.0<BR>
+	}
+	$news[^table:sql{select * from news}(1;4)]
+	^$news.0=$news.0<BR>
+}
+
+<HR>
+
+$with-cr[^table:set{a	b
+^taint[<1
+2>]	3
+}]
+"$with-cr.a"<BR>
+<HR>
 ^if(def $form:s){
 	$form:s<BR>
 	^form:s.match[!][g]{<b>!</b>}<BR>
@@ -205,7 +224,8 @@ $response:location[http://parser3/123]
 
 <form method=post>
 <table border=1 width=250><tr><td>$form:name</td></tr></table>
-<textarea name=name rows=5 cols=40>^untaint[html]{^default[$form:name;не знаю]}</textarea><BR>
+<textarea name=name rows=5 cols=40>^untaint[html]{^default[$form:name;Пробный текст: А.Ф._Петросян <<Жизнь в Аду>>
+нажми Submit]}</textarea><BR>
 <input type=submit>
 </form>
 
