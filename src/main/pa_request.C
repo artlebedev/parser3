@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_REQUEST_C="$Date: 2002/10/15 08:31:57 $";
+static const char* IDENT_REQUEST_C="$Date: 2002/10/16 07:32:51 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -79,7 +79,7 @@ Request::Request(Pool& apool,
 	
 	/// directly used
 	// MAIN class, operators
-	classes().put(*NEW String(pool(), MAIN_CLASS_NAME), &main_class);
+	classes().put(main_class.name(), &main_class);
 	// classes:
 	// table, file, random, mail, image, ...
 	methoded_array->register_directly_used(*this);

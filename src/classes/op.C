@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_OP_C="$Date: 2002/10/15 14:28:56 $";
+static const char* IDENT_OP_C="$Date: 2002/10/16 07:32:51 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -647,6 +647,8 @@ static void _throw_operator(Request& r, const String& method_name, MethodParams 
 // constructor
 
 VClassMAIN::VClassMAIN(Pool& apool): VClass(apool) {
+	set_name(*NEW String(pool(), MAIN_CLASS_NAME));
+
 	// ^if(condition){code-when-true}
 	// ^if(condition){code-when-true}{code-when-false}
 	add_native_method("if", Method::CT_ANY, _if, 2, 3);
