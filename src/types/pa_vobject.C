@@ -9,7 +9,7 @@
 #include "pa_vhash.h"
 #include "pa_vtable.h"
 
-static const char* IDENT_VOBJECT_C="$Date: 2002/08/15 09:07:49 $";
+static const char* IDENT_VOBJECT_C="$Date: 2002/09/12 11:57:43 $";
 
 Value *VObject::as(const char *atype, bool looking_up) { 
 	if(!looking_up)
@@ -71,6 +71,10 @@ Table *VObject::get_table() {
 
 /// VObject: (field)=value;(CLASS)=vclass;(method)=method_ref
 Value *VObject::get_element(const String& aname, Value * /*aself*/, bool looking_up) {
+	// simple things first: $field=ffields.field
+	if(Value *result=static_cast<Value *>(ffields.get(aname)))
+		return result;
+
 	// gets element from last_derivate upwards
 	if(!looking_up) {
 		// $CLASS
@@ -88,10 +92,6 @@ Value *VObject::get_element(const String& aname, Value * /*aself*/, bool looking
 		if(Value *result=VStateless_object::get_element(aname, this, true))
 			return result;
 	}
-
-	// $field=ffields.field
-	if(Value *result=static_cast<Value *>(ffields.get(aname)))
-		return result;
 
 	// up the tree...
 	if(fbase)

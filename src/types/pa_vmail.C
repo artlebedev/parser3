@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char* IDENT_VMAIL_C="$Date: 2002/09/10 08:41:00 $";
+static const char* IDENT_VMAIL_C="$Date: 2002/09/12 11:57:43 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -427,8 +427,8 @@ static const String& file_value_to_string(Request& r, const String *source,
 										 Value& send_value) {
 	Pool& pool=r.pool();
 	const VFile *vfile;
-	const String *file_name;
-	Value *vformat;
+	const String *file_name=0;
+	Value *vformat=0;
 	if(Hash *send_hash=send_value.get_hash(source)) { // hash
 		// $.value
 		if(Value *value=static_cast<Value *>(send_hash->get(*value_name)))
@@ -445,11 +445,12 @@ static const String& file_value_to_string(Request& r, const String *source,
 		if(Value *vfile_name=static_cast<Value *>(send_hash->get(
 			*new(pool) String(pool, "name")))) // specified $name
 			file_name=&vfile_name->as_string();
-	} else {  // must be VFile
+	} else  // must be VFile then
 		vfile=send_value.as_vfile(String::UL_AS_IS);
+
+	if(!file_name)
 		file_name=&static_cast<Value *>(vfile->fields().get(*name_name))->as_string();
-		vformat=0;
-	}
+
 	const char *file_name_cstr=file_name->cstr();
 
 	String& result=*new(pool) String(pool);
