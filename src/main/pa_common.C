@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_common.C,v 1.63 2001/08/28 09:39:30 parser Exp $"; 
+static const char *RCSId="$Id: pa_common.C,v 1.64 2001/09/14 15:41:59 parser Exp $"; 
 
 #include "pa_common.h"
 #include "pa_types.h"
@@ -53,7 +53,7 @@ bool file_read(Pool& pool, const String& file_spec,
 			   void*& data, size_t& read_size, bool as_text,
 			   bool fail_on_read_problem,
 			   size_t offset, size_t limit) {
-	const char *fname=file_spec.cstr(String::UL_FILE_NAME);
+	const char *fname=file_spec.cstr(String::UL_FILE_SPEC);
 //printf("file_read(%s)\n", fname);
 	int f;
     struct stat finfo;
@@ -110,7 +110,7 @@ static void create_dir_for_file(const String& file_spec) {
 	size_t pos_after=1;
 	int pos_before;
 	while((pos_before=file_spec.pos("/", 1, pos_after))>=0) {
-		mkdir(file_spec.mid(0, pos_before).cstr(String::UL_FILE_NAME), 0775);
+		mkdir(file_spec.mid(0, pos_before).cstr(String::UL_FILE_SPEC), 0775);
 		pos_after=pos_before+1;
 	}
 }
@@ -120,7 +120,7 @@ void file_write(Pool& pool,
 				const void *data, size_t size, 
 				bool as_text/*, 
 				bool exclusive*/) {
-	const char *fname=file_spec.cstr(String::UL_FILE_NAME);
+	const char *fname=file_spec.cstr(String::UL_FILE_SPEC);
 	int f;
 	if(access(fname, W_OK)!=0) {/*no*/
 		create_dir_for_file(file_spec);
@@ -160,10 +160,10 @@ static void rmdir(const String& file_spec, size_t pos_after) {
 	if((pos_before=file_spec.pos("/", 1, pos_after))>=0)
 		rmdir(file_spec, pos_before+1);
 	
-	rmdir(file_spec.mid(0, pos_after-1/* / */).cstr(String::UL_FILE_NAME));
+	rmdir(file_spec.mid(0, pos_after-1/* / */).cstr(String::UL_FILE_SPEC));
 }
 void file_delete(Pool& pool, const String& file_spec) {
-	const char *fname=file_spec.cstr(String::UL_FILE_NAME);
+	const char *fname=file_spec.cstr(String::UL_FILE_SPEC);
 	if(unlink(fname)!=0)
 		PTHROW(0, 0, 
 			&file_spec, 
@@ -173,8 +173,8 @@ void file_delete(Pool& pool, const String& file_spec) {
 	rmdir(file_spec, 1);
 }
 void file_move(Pool& pool, const String& old_spec, const String& new_spec) {
-	const char *old_spec_cstr=old_spec.cstr(String::UL_FILE_NAME);
-	const char *new_spec_cstr=new_spec.cstr(String::UL_FILE_NAME);
+	const char *old_spec_cstr=old_spec.cstr(String::UL_FILE_SPEC);
+	const char *new_spec_cstr=new_spec.cstr(String::UL_FILE_SPEC);
 	
 	create_dir_for_file(new_spec);
 
@@ -189,7 +189,7 @@ void file_move(Pool& pool, const String& old_spec, const String& new_spec) {
 
 
 static bool entry_readable(const String& file_spec, bool need_dir) {
-    const char *fname=file_spec.cstr(String::UL_FILE_NAME);
+    const char *fname=file_spec.cstr(String::UL_FILE_SPEC);
 	struct stat finfo;
 	if(access(fname, R_OK)==0 && stat(fname, &finfo)==0) {
 		bool is_dir=(bool)(finfo.st_mode&S_IFDIR);
@@ -204,26 +204,31 @@ bool dir_readable(const String& file_spec) {
 	return entry_readable(file_spec, true);
 }
 bool file_executable(const String& file_spec) {
-    return access(file_spec.cstr(String::UL_FILE_NAME), X_OK)==0;
+    return access(file_spec.cstr(String::UL_FILE_SPEC), X_OK)==0;
 }
 
-void file_stat(const String& file_spec, 
+bool file_stat(const String& file_spec, 
 			   size_t& rsize, 
 			   time_t& ratime,
 			   time_t& rmtime,
-			   time_t& rctime) {
+			   time_t& rctime,
+			   bool fail_on_read_problem) {
 	Pool& pool=file_spec.pool();
-	const char *fname=file_spec.cstr(String::UL_FILE_NAME);
+	const char *fname=file_spec.cstr(String::UL_FILE_SPEC);
     struct stat finfo;
 	if(stat(fname, &finfo)!=0)
-		PTHROW(0, 0, 
-			&file_spec, 
-			"getting file size failed: %s (%d), real filename '%s'", 
-				strerror(errno), errno, fname);
+		if(fail_on_read_problem)
+			PTHROW(0, 0, 
+				&file_spec, 
+				"getting file size failed: %s (%d), real filename '%s'", 
+					strerror(errno), errno, fname);
+		else
+			return false;
 	rsize=finfo.st_size;
 	ratime=finfo.st_atime;
 	rmtime=finfo.st_mtime;
 	rctime=finfo.st_ctime;
+	return true;
 }
 
 char *getrow(char **row_ref, char delim) {

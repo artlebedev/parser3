@@ -5,12 +5,13 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_globals.C,v 1.72 2001/09/11 09:20:57 parser Exp $"; 
+static const char *RCSId="$Id: pa_globals.C,v 1.73 2001/09/14 15:41:59 parser Exp $"; 
 
 #include "pa_globals.h"
 #include "pa_string.h"
 #include "pa_hash.h"
 #include "pa_sql_driver_manager.h"
+#include "pa_xslt_stylesheet_manager.h"
 #include "pa_dictionary.h"
 
 String *user_html_name;
@@ -170,7 +171,7 @@ void pa_globals_init(Pool& pool) {
 		String var(pool, cstr); \
 		untaint_lang_name2enum->put(var, (int)String::UL_##LANG);
 	ULN(as_is, "as-is", AS_IS);
-	ULN(file_name, "file-name", FILE_NAME);
+	ULN(file_name, "file-spec", FILE_SPEC);
 	ULN(http_header, "http-header", HTTP_HEADER);
 	ULN(mail_header, "mail-header", MAIL_HEADER);
 	ULN(uri, "uri", URI);
@@ -197,6 +198,9 @@ void pa_globals_init(Pool& pool) {
 	DT_ROW("\\n", "<br>");
 	default_typo_dict=NEW Dictionary(*default_typo_table);
 
-	// SQL_Driver_manager
+	// SQL driver manager
  	SQL_driver_manager=NEW SQL_Driver_manager(pool);
+
+	// XSLT stylesheet driver manager
+ 	XSLT_stylesheet_manager=NEW XSLT_Stylesheet_manager(pool);
 }

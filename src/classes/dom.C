@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: dom.C,v 1.19 2001/09/13 14:10:54 parser Exp $"; 
+static const char *RCSId="$Id: dom.C,v 1.20 2001/09/14 15:41:59 parser Exp $"; 
 
 #if _MSC_VER
 #	pragma warning(disable:4291)   // disable warning 
@@ -16,6 +16,8 @@ static const char *RCSId="$Id: dom.C,v 1.19 2001/09/13 14:10:54 parser Exp $";
 #include "pa_request.h"
 #include "pa_vdom.h"
 #include "pa_vfile.h"
+#include "pa_xslt_stylesheet_manager.h"
+#include "pa_stylesheet_connection.h"
 
 #include <strstream>
 #include <Include/PlatformDefinitions.hpp>
@@ -85,15 +87,15 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 	VDom& vDom=*static_cast<VDom *>(r.self);
 
 	// filespec
-	const String& filename=params->as_string(0, "file name must not be code");
-	const char *filespec=r.absolute(filename).cstr(String::UL_FILE_NAME);
+	const String& file_name=params->as_string(0, "file name must not be code");
+	const char *filespec=r.absolute(file_name).cstr(String::UL_FILE_SPEC);
 	
 	XalanParsedSource* parsedSource;
 	int error=vDom.get_transformer().parseSource(filespec, parsedSource);
 
 	if(error)
 		PTHROW(0, 0,
-			&filename,
+			&file_name,
 			vDom.get_transformer().getLastError());
 
 	// replace any previous parsed source
@@ -214,8 +216,8 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 	VDom& vDom=*static_cast<VDom *>(r.self);
 
 	// filespec
-	const String& filename=params->as_string(1, "file name must not be code");
-	const char *filespec=r.absolute(filename).cstr(String::UL_FILE_NAME);
+	const String& file_name=params->as_string(1, "file name must not be code");
+	const char *filespec=r.absolute(file_name).cstr(String::UL_FILE_SPEC);
 	
 	// document
 	XalanDocument& document=vDom.get_document(pool, &method_name);
@@ -291,7 +293,7 @@ static void _file(Request& r, const String& method_name, MethodParams *params) {
 			vcontent_type=vhcontent_type;
 		} else
 			vcontent_type=new(pool) VString(*scontent_type);
-		vfile.set(false/*tainted*/, cstr, strlen(cstr), 0/*filename*/, vcontent_type);
+		vfile.set(false/*tainted*/, cstr, strlen(cstr), 0/*file_name*/, vcontent_type);
 		r.write_no_lang(vfile);
 	} catch(const XSLException& e) {
 		_throw(pool, &method_name, e);
@@ -300,7 +302,7 @@ static void _file(Request& r, const String& method_name, MethodParams *params) {
 
 
 static void add_xslt_param(const Hash::Key& aattribute, Hash::Val *ameaning, 
-								 void *info) {
+						   void *info) {
 	XalanTransformer& transformer=*static_cast<XalanTransformer *>(info);
 	const char *attribute_cstr=aattribute.cstr();
 	const char *meaning_cstr=static_cast<Value *>(ameaning)->as_string().cstr();
@@ -329,18 +331,24 @@ static void _xslt(Request& r, const String& method_name, MethodParams *params) {
 	XalanParsedSource &parsed_source=vDom.get_parsed_source(pool, &method_name);
 
 	// stylesheet
-	const String& stylesheet_filename=params->as_string(0, "file name must not be code");
-	const char *stylesheet_filespec=r.absolute(stylesheet_filename).cstr(String::UL_FILE_NAME);
+	const String& stylesheet_file_name=params->as_string(0, "file name must not be code");
+	const String& stylesheet_filespec=r.absolute(stylesheet_file_name);
+	//_asm int 3;
+	Stylesheet_connection& connection=XSLT_stylesheet_manager->get_connection(stylesheet_filespec);
 
 	// target
 	XalanDocument* target=vDom.get_parser_liaison().createDocument();
 	XSLTResultTarget domResultTarget(target);
 
 	// transform
-	int error=vDom.get_transformer().transform(parsed_source, stylesheet_filespec, domResultTarget);
+	int error=vDom.get_transformer().transform(
+		parsed_source, 
+		&connection.stylesheet(), 
+		domResultTarget);
+	connection.close();
 	if(error)
 		PTHROW(0, 0,
-			&stylesheet_filename,
+			&stylesheet_file_name,
 			vDom.get_transformer().getLastError());
 
 	// write out result
@@ -369,8 +377,8 @@ MDom::MDom(Pool& apool) : Methoded(apool) {
 	// ^dom.file[options hash] file with "<doc/>"
 	add_native_method("file", Method::CT_DYNAMIC, _file, 1, 1);
 
-	// ^dom.xslt[stylesheet filename]
-	// ^dom.xslt[stylesheet filename;params hash]
+	// ^dom.xslt[stylesheet file_name]
+	// ^dom.xslt[stylesheet file_name;params hash]
 	add_native_method("xslt", Method::CT_DYNAMIC, _xslt, 1, 2);
 
 }

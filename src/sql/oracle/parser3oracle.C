@@ -7,7 +7,7 @@
 
 	2001.07.30 using Oracle 8.1.6 [@test tested with Oracle 7.x.x]
 */
-static const char *RCSId="$Id: parser3oracle.C,v 1.18 2001/09/06 06:11:13 parser Exp $"; 
+static const char *RCSId="$Id: parser3oracle.C,v 1.19 2001/09/14 15:41:59 parser Exp $"; 
 
 #include "config_includes.h"
 
@@ -108,6 +108,7 @@ void tolower(char *out, const char *in, size_t size);
 
 /**
 	OracleSQL server driver
+	@test NLS_LANG=AMERICAN_AMERICA.CL8MSWIN1251
 */
 class OracleSQL_Driver : public SQL_Driver {
 public:

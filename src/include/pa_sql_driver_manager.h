@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_driver_manager.h,v 1.8 2001/09/05 09:02:52 parser Exp $
+	$Id: pa_sql_driver_manager.h,v 1.9 2001/09/14 15:41:59 parser Exp $
 
 
 	global sql driver manager, must be thread-safe
@@ -32,7 +32,11 @@
 
 class SQL_Connection;
 
-/// sql driver manager
+/**	sql driver manager
+		maintains 
+		- driver cache  which never expires
+		- connection cache  unused connections got expired
+*/
 class SQL_Driver_manager : public Pooled {
 	friend SQL_Connection;
 public:

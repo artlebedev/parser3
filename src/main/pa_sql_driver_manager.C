@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_sql_driver_manager.C,v 1.33 2001/09/05 09:32:40 parser Exp $"; 
+static const char *RCSId="$Id: pa_sql_driver_manager.C,v 1.34 2001/09/14 15:41:59 parser Exp $"; 
 
 #include "pa_sql_driver_manager.h"
 #include "ltdl.h"
@@ -14,7 +14,7 @@ static const char *RCSId="$Id: pa_sql_driver_manager.C,v 1.33 2001/09/05 09:32:4
 #include "pa_common.h"
 #include "pa_threads.h"
 
-#include "pa_sapi.h"
+//#include "pa_sapi.h"
 
 // globals
 
@@ -120,7 +120,7 @@ SQL_Connection& SQL_Driver_manager::get_connection(const String& request_url,
 					library,
 					"prepare to dynamic loading failed, %s", lt_dlerror());
 
-			const char *filename=library->cstr(String::UL_FILE_NAME);
+			const char *filename=library->cstr(String::UL_FILE_SPEC);
 			lt_dlhandle handle=lt_dlopen(filename);
 			if (!handle)
 				PTHROW(0, 0,
@@ -149,7 +149,7 @@ SQL_Connection& SQL_Driver_manager::get_connection(const String& request_url,
 			bool specified_dlopen_file_spec=dlopen_file_spec && dlopen_file_spec->size();
 			const char *dlopen_file_spec_cstr=
 				specified_dlopen_file_spec?
-				dlopen_file_spec->cstr(String::UL_FILE_NAME):0;
+				dlopen_file_spec->cstr(String::UL_FILE_SPEC):0;
 			if(const char *error=driver->initialize(
 				dlopen_file_spec_cstr))
 				PTHROW(0, 0,

@@ -5,9 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: image.C,v 1.41 2001/09/13 14:10:54 parser Exp $
+	$Id: image.C,v 1.42 2001/09/14 15:41:59 parser Exp $
 */
-static const char *RCSId="$Id: image.C,v 1.41 2001/09/13 14:10:54 parser Exp $"; 
+static const char *RCSId="$Id: image.C,v 1.42 2001/09/14 15:41:59 parser Exp $"; 
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -334,7 +334,7 @@ static gdImage *load(Request& r, const String& method_name,
 					 const String& file_name){
 	Pool& pool=r.pool();
 
-	const char *file_name_cstr=r.absolute(file_name).cstr(String::UL_FILE_NAME);
+	const char *file_name_cstr=r.absolute(file_name).cstr(String::UL_FILE_SPEC);
 	if(FILE *f=fopen(file_name_cstr, "rb")) {
 		gdImage& image=*new(pool) gdImage(pool);
 		bool ok=image.CreateFromGif(f);

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_exec.C,v 1.11 2001/08/06 16:18:26 parser Exp $"; 
+static const char *RCSId="$Id: pa_exec.C,v 1.12 2001/09/14 15:41:59 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -303,12 +303,12 @@ int pa_exec(const String& file_spec,
 
 	char pwd[MAX_STRING];
 	GetCurrentDirectory(sizeof(pwd), pwd);
-	char *dir=file_spec.cstr(String::UL_FILE_NAME);
+	char *dir=file_spec.cstr(String::UL_FILE_SPEC);
 	rsplit(dir, '/'); SetCurrentDirectory(dir);
 
 	PROCESS_INFORMATION pi;	
 	HANDLE hInWrite, hOutRead, hErrRead;
-	char *file_spec_cstr=file_spec.cstr(String::UL_FILE_NAME); 
+	char *file_spec_cstr=file_spec.cstr(String::UL_FILE_SPEC); 
 	const char *cmd=buildCommand(file_spec.pool(), file_spec, file_spec_cstr, argv);
 	char *env_cstr=0;
 	if(env) {
@@ -367,7 +367,7 @@ from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?r
 		for(int i=0; i<size; i++)
 			argv_cstrs[i]=argv->get_string(i)->cstr(String::UL_AS_IS);
 	}
-	const char *file_spec_cstr=file_spec.cstr(String::UL_FILE_NAME);
+	const char *file_spec_cstr=file_spec.cstr(String::UL_FILE_SPEC);
 	char **env_cstrs=0;
 	if(env) {
 		env_cstrs=

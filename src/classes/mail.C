@@ -5,9 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mail.C,v 1.36 2001/09/05 08:35:04 parser Exp $
+	$Id: mail.C,v 1.37 2001/09/14 15:41:59 parser Exp $
 */
-static const char *RCSId="$Id: mail.C,v 1.36 2001/09/05 08:35:04 parser Exp $"; 
+static const char *RCSId="$Id: mail.C,v 1.37 2001/09/14 15:41:59 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -147,7 +147,7 @@ static const String& attach_hash_to_string(Request& r, const String& origin_stri
 		file_name=&vfile_name->as_string();
 	else // no $file-name, VFile surely knows name
 		file_name=&static_cast<Value *>(vfile->fields().get(*name_name))->as_string();
-	const char *file_name_cstr=file_name->cstr(String::UL_FILE_NAME);
+	const char *file_name_cstr=file_name->cstr(String::UL_FILE_SPEC);
 
 	String& result=*new(pool) String(pool);
 

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vfile.C,v 1.19 2001/09/13 14:10:54 parser Exp $
+	$Id: pa_vfile.C,v 1.20 2001/09/14 15:41:59 parser Exp $
 */
 
 #include "pa_vfile.h"
@@ -35,7 +35,7 @@ void VFile::set(bool tainted,
 	} else
 		lfile_name=NONAME_DAT;
 	String& sfile_name=*NEW String(pool());
-	sfile_name.APPEND(lfile_name, 0, String::UL_FILE_NAME, origin_file, 0);
+	sfile_name.APPEND(lfile_name, 0, String::UL_FILE_SPEC, origin_file, 0);
 	ffields.put(*name_name, NEW VString(sfile_name));
 	// $size
 	ffields.put(*size_name, NEW VInt(pool(), fvalue_size));

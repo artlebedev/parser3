@@ -5,9 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.52 2001/09/13 14:10:54 parser Exp $
+	$Id: file.C,v 1.53 2001/09/14 15:41:59 parser Exp $
 */
-static const char *RCSId="$Id: file.C,v 1.52 2001/09/13 14:10:54 parser Exp $"; 
+static const char *RCSId="$Id: file.C,v 1.53 2001/09/14 15:41:59 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -123,7 +123,7 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 		vmode_name.as_string()==TEXT_MODE_NAME);
 
 	char *user_file_name=params->size()>2?params->get(2).as_string().cstr()
-		:lfile_name.cstr(String::UL_FILE_NAME);
+		:lfile_name.cstr(String::UL_FILE_SPEC);
 	
 	static_cast<VFile *>(r.self)->set(true/*tainted*/, data, size, 
 		user_file_name, new(pool) VString(r.mime_type_of(user_file_name)));
@@ -321,7 +321,7 @@ static void _list(Request& r, const String& method_name, MethodParams *params) {
 
 
 	const char* absolute_path_cstr=r.absolute(relative_path.as_string())
-		.cstr(String::UL_FILE_NAME);
+		.cstr(String::UL_FILE_SPEC);
 
 	Array& columns=*new(pool) Array(pool);
 	columns+=new(pool) String(pool, "name");	
@@ -350,7 +350,7 @@ static void _list(Request& r, const String& method_name, MethodParams *params) {
 			char *file_name_cstr=(char *)pool.malloc(file_name_size);
 			memcpy(file_name_cstr, ffblk.ff_name, file_name_size);
 			String &file_name=*new(pool) String(pool);
-			file_name.APPEND(file_name_cstr, file_name_size, String::UL_FILE_NAME, 
+			file_name.APPEND(file_name_cstr, file_name_size, String::UL_FILE_SPEC, 
 				method_name.origin().file, method_name.origin().line);
 		
 			Array& row=*new(pool) Array(pool);

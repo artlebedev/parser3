@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 */
-static const char *RCSId="$Id: untaint.C,v 1.61 2001/09/11 09:20:57 parser Exp $"; 
+static const char *RCSId="$Id: untaint.C,v 1.62 2001/09/14 15:41:59 parser Exp $"; 
 
 #include "pa_pool.h"
 #include "pa_string.h"
@@ -215,7 +215,7 @@ char *String::store_to(char *dest, Untaint_lang lang,
 				memcpy(dest, row->item.ptr, row->item.size); 
 				dest+=row->item.size;
 				break;
-			case UL_FILE_NAME:
+			case UL_FILE_SPEC:
 				// tainted, untaint language: file [name]
 				escape(switch(*src) {
 					case ' ': to_char('_');  break;

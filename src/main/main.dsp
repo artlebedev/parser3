@@ -162,6 +162,10 @@ SOURCE=..\include\pa_string.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\include\pa_stylesheet_connection.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\include\pa_table.h
 # End Source File
 # Begin Source File
@@ -171,6 +175,10 @@ SOURCE=..\include\pa_threads.h
 # Begin Source File
 
 SOURCE=..\include\pa_types.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\pa_xslt_stylesheet_manager.h
 # End Source File
 # End Group
 # Begin Group "main"
@@ -284,6 +292,19 @@ SOURCE=.\pa_string.C
 # Begin Source File
 
 SOURCE=.\pa_table.C
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_xslt_stylesheet_manager.C
+
+!IF  "$(CFG)" == "main - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "main - Win32 Debug"
+
+# ADD CPP /GX
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
@@ -599,13 +620,6 @@ SOURCE="..\classes\xml-xalan\c\Build\Win32\VC6\Debug\XMLSupportD.lib"
 # Begin Source File
 
 SOURCE="..\classes\xml-xalan\c\Build\Win32\VC6\Debug\XercesParserLiaisonD.lib"
-
-!IF  "$(CFG)" == "main - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "main - Win32 Debug"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 

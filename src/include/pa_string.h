@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.102 2001/09/11 09:20:57 parser Exp $
+	$Id: pa_string.h,v 1.103 2001/09/14 15:41:59 parser Exp $
 */
 
 #ifndef PA_STRING_H
@@ -99,7 +99,7 @@ public:
 				just a flag, that value not stored
 			*/
 		UL_AS_IS,     ///< leave all characters intact
-		UL_FILE_NAME, ///< filename
+		UL_FILE_SPEC, ///< file specification
 		UL_HTTP_HEADER,    ///< text in HTTP response header
 		UL_MAIL_HEADER,    ///< text in mail header
 		UL_URI,       ///< text in uri
