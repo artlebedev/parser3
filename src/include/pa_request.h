@@ -1,5 +1,5 @@
 /*
-  $Id: pa_request.h,v 1.17 2001/03/08 11:27:47 paf Exp $
+  $Id: pa_request.h,v 1.18 2001/03/08 13:13:39 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -42,7 +42,7 @@ public:
 
 public:
 
-	VClass ROOT_CLASS; // default base
+	VClass root_class; // default base
 
 private: // core data
 
@@ -57,9 +57,11 @@ private: // core data
 	// execution stack
 	Stack stack;
 
-public: // core.C
+public:
 
-	void use(char *file, String *alias);
+	void use(char *file, String *alias); // core.C
+	Value& autocalc(Value& value); // execute.C
+	void write(Value& avalue); // execute.C
 
 private: // core.C
 

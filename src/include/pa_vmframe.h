@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vmframe.h,v 1.15 2001/03/08 12:19:20 paf Exp $
+  $Id: pa_vmframe.h,v 1.16 2001/03/08 13:13:39 paf Exp $
 */
 
 #ifndef PA_VMFRAME_H
@@ -16,14 +16,14 @@ public: // Value
 	const char *type() const { return "method_frame"; }
 	// frame: my or self_transparent
 	Value *get_element(const String& name) { 
-		Value *result=static_cast<Value *>(my.get(name));
+		Value *result=static_cast<Value *>(my->get(name));
 		if(!result)
 			result=fself->get_element(name);
 		return result; 
 	}
 	// frame: my or self_transparent
 	void put_element(const String& name, Value *value){ 
-		if(!my.put_replace(name, value))
+		if(!my->put_replace(name, value))
 			fself->put_element(name, value);
 	}
 
@@ -35,22 +35,27 @@ public: // Value
 
 public: // usage
 
-	VMethodFrame(Pool& apool, const Junction& ajunction) : 
+	VMethodFrame(Pool& apool, const Junction& ajunction/*info: always method-junction*/) : 
 		WContext(apool, 0 /* empty */, false /* not constructing */),
 
 		junction(ajunction),
 		store_param_index(0),
-		my(apool),
-		fself(0) {
-		if(Method* method=junction.method) { // method junction?
-			if(method->locals_names) { // there are any local var names?
-				// remember them
-				// those are flags that name is local == to be looked up in 'my'
-				for(int i=0; i<method->locals_names->size(); i++) {
-					my.put(
-						*static_cast<String *>(method->locals_names->get(i)), 
-						NEW VUnknown(pool()));
-				}
+		my(0), fself(0) {
+
+		Method &method=*junction.method;
+
+		if(method.numbered_params_count) // are this method params numbered?
+			fnumbered_params=NEW Array(pool()); // create storage
+		else // named params
+			my=NEW Hash(pool()); // create storage
+
+		if(method.locals_names) { // there are any local var names?
+			// remember them
+			// those are flags that name is local == to be looked up in 'my'
+			for(int i=0; i<method.locals_names->size(); i++) {
+				my->put(
+					*static_cast<String *>(method.locals_names->get(i)), 
+					NEW VUnknown(pool()));
 			}
 		}
 	}
@@ -58,28 +63,43 @@ public: // usage
 	void set_self(Value& aself) { fself=&aself; }
 
 	void store_param(Value *value) {
-		Method *method=junction.method;
-		int max_params=method->params_names?method->params_names->size():0;
+		Method& method=*junction.method;
+		int max_params=
+			method.numbered_params_count?method.numbered_params_count:
+			method.params_names?method.params_names->size():
+			0;
 		if(store_param_index==max_params)
 			THROW(0,0,
 				&junction.self.name(),
 				"%s method '%s' accepts maximum %d parameters", 
 					junction.self.type(),
-					method->name.cstr(),
+					method.name.cstr(),
 					max_params);
 		
-		String& name=*static_cast<String *>(method->params_names->get(store_param_index++));
-		my.put(name, value);
-		value->set_name(name);
+		if(method.numbered_params_count) { // are this method params numbered?
+			*fnumbered_params+=value;
+		} else { // named params
+			String& name=*static_cast<String *>(
+				method.params_names->get(store_param_index++));
+			my->put(name, value);
+			value->set_name(name);
+		}
 	}
 	void fill_unspecified_params() {
-		Array *params_names=junction.method->params_names;
-		if(params_names) // there are any parameters might need filling?
-			for(; store_param_index<params_names->size(); store_param_index++)
-				my.put(
-					*static_cast<String *>(params_names->get(store_param_index)), 
-					NEW VUnknown(pool()));
+		Method &method=*junction.method;
+		if(method.numbered_params_count) { // are this method params numbered?
+			for(; store_param_index<method.numbered_params_count; store_param_index++)
+				*fnumbered_params+=NEW VUnknown(pool());
+		} else { // named params
+			if(method.params_names) // there are any parameters might need filling?
+				for(; store_param_index<method.params_names->size(); store_param_index++)
+					my->put(
+						*static_cast<String *>(method.params_names->get(store_param_index)), 
+						NEW VUnknown(pool()));
+		}
 	}
+
+	Array& numbered_params() { return *fnumbered_params; }
 
 public:
 	
@@ -87,7 +107,7 @@ public:
 
 private:
 	int store_param_index;
-	Hash my;
+	Hash *my;/*OR*/Array *fnumbered_params;
 	Value *fself;
 
 };

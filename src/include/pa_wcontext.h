@@ -1,5 +1,5 @@
 /*
-  $Id: pa_wcontext.h,v 1.22 2001/03/08 12:19:20 paf Exp $
+  $Id: pa_wcontext.h,v 1.23 2001/03/08 13:13:39 paf Exp $
 */
 
 #ifndef PA_WCONTEXT_H
@@ -25,11 +25,11 @@ public: // Value
 public: // WContext
 
 	// appends a fstring to result
-	virtual void write(String *astring);
+	virtual void write(String& astring);
 
 	// if value is VString writes fstring,
 	// else writes Value; raises an error if already
-	virtual void write(Value *avalue);
+	virtual void write(Value& avalue);
 
 public: // usage
 
@@ -41,10 +41,10 @@ public: // usage
 
 	bool constructing() { return fconstructing; }
 
-	// retrives the resulting value
+/*	// retrives the resulting value
 	Value *object() const {
 		return fvalue;
-	}
+	}*/
 	// retrives the resulting value
 	// that can be VString if value==0 or the Value object
 	Value *result() const {

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vcframe.h,v 1.3 2001/03/06 15:02:46 paf Exp $
+  $Id: pa_vcframe.h,v 1.4 2001/03/08 13:13:39 paf Exp $
 */
 
 #ifndef PA_VCFRAME_H
@@ -20,7 +20,7 @@ public: // Value
 public: // WContext
 
 	// codeframe: intercepting string writes 
-	void write(String *astring);
+	void write(String& astring);
 
 public: // usage
 

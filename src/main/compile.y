@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.75 2001/03/08 12:13:36 paf Exp $
+  $Id: compile.y,v 1.76 2001/03/08 13:13:40 paf Exp $
 */
 
 %{
@@ -92,6 +92,7 @@ all: /* TODO: у ^execute непременно задать какой-то name, см. 'RUN' */
 	MAIN.APPEND_CONST(MAIN_METHOD_NAME);
 	Method& method=*NEW Method(POOL, 
 		MAIN, 
+		0, /*numbered_params_count*/
 		0/*param_names*/, 0/*local_names*/, 
 		$1/*parser_code*/, 0/*native_code*/);
 	PC->vclass->add_method(MAIN, method);
@@ -114,7 +115,7 @@ control_method: '@' STRING '\n'
 		YYERROR;
 	}
 	if(command==CLASS_NAME) {
-		if(PC->vclass!=&PC->request->ROOT_CLASS) { // already changed from default?
+		if(PC->vclass!=&PC->request->root_class) { // already changed from default?
 			strcpy(PC->error, "class already have a name '");
 			strncat(PC->error, PC->vclass->name().cstr(), 100);
 			strcat(PC->error, "'");
@@ -127,7 +128,7 @@ control_method: '@' STRING '\n'
 			PC->vclass=NEW VClass(POOL);
 			PC->vclass->set_name(*name);
 			// defaulting base. may change with @BASE
-			PC->vclass->set_base(PC->request->ROOT_CLASS);
+			PC->vclass->set_base(PC->request->root_class);
 			// append to request's classes
 			PC->request->classes_array()+=PC->vclass;
 			PC->request->classes().put(*name, PC->vclass);
@@ -143,7 +144,7 @@ control_method: '@' STRING '\n'
 				PC->request->use(file->cstr(), 0);
 			}
 		} else if(command==BASE_NAME) {
-			if(PC->vclass->base()!=&PC->request->ROOT_CLASS) { // already changed from default?
+			if(PC->vclass->base()!=&PC->request->root_class) { // already changed from default?
 				strcpy(PC->error, "there must be only one @"BASE_NAME);
 				YYERROR;
 			}
@@ -194,7 +195,11 @@ code_method: '@' STRING bracketed_maybe_strings maybe_bracketed_strings maybe_co
 			*locals_names+=SLA2S(locals_names_code, i);
 	}
 
-	Method& method=*NEW Method(POOL, *name, params_names, locals_names, $7, 0);
+	Method& method=*NEW Method(POOL, 
+		*name, 
+		0/*numbered_params_count*/, 
+		params_names, locals_names, 
+		$7, 0);
 	PC->vclass->add_method(*name, method);
 };
 

@@ -1,5 +1,5 @@
 /*
-$Id: core.C,v 1.44 2001/03/08 12:13:36 paf Exp $
+$Id: core.C,v 1.45 2001/03/08 13:13:41 paf Exp $
 */
 
 #include "pa_request.h"
@@ -17,7 +17,7 @@ void core() {
 
 Request::Request(Pool& apool) : Pooled(apool),
 	stack(apool),
-	ROOT_CLASS(apool),
+	root_class(apool),
 	fclasses(apool),
 	fclasses_array(apool)
 {
@@ -33,7 +33,7 @@ Request::Request(Pool& apool) : Pooled(apool),
 	//   parent of all classes, 
 	//   operators holder
 	String ROOT(pool()); ROOT.APPEND_CONST(ROOT_NAME);
-	classes().put(ROOT, &ROOT_CLASS);
+	classes().put(ROOT, &root_class);
 }
 
 void Request::core() {

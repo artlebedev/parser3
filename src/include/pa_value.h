@@ -1,5 +1,5 @@
 /*
-  $Id: pa_value.h,v 1.43 2001/03/08 12:13:35 paf Exp $
+  $Id: pa_value.h,v 1.44 2001/03/08 13:13:39 paf Exp $
 */
 
 /*
@@ -22,26 +22,29 @@ class WContext;
 class VAliased;
 class Request;
 
-typedef void (*Native_code_ptr)(Request& request);
+typedef void (*Native_code_ptr)(Request& request, Array& params);
 
 class Method : public Pooled {
 public:
 	const String& name;
-	Array *params_names;
-	Array *locals_names;
+	// either numbered params // for native-code methods = operators
+	int numbered_params_count;
+	// or named params&locals // for parser-code methods
+	Array *params_names;  Array *locals_names;
+	// the Code
 	const Array *parser_code;/*OR*/Native_code_ptr native_code;
 
 	Method(
 		Pool& apool,
 		const String& aname,
-		Array *aparams_names,
-		Array *alocals_names,
+		int anumbered_params_count,
+		Array *aparams_names, Array *alocals_names,
 		const Array *aparser_code, Native_code_ptr anative_code) : 
 
 		Pooled(apool),
 		name(aname),
-		params_names(aparams_names),
-		locals_names(alocals_names),
+		numbered_params_count(anumbered_params_count),
+		params_names(aparams_names), locals_names(alocals_names),
 		parser_code(aparser_code), native_code(anative_code) {
 	}
 };

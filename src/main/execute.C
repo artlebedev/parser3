@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.69 2001/03/08 12:19:21 paf Exp $
+  $Id: execute.C,v 1.70 2001/03/08 13:13:41 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -170,7 +170,7 @@ void Request::execute(const Array& ops) {
 		case OP_WRITE:
 			{
 				Value *value=POP();
-				wcontext->write(value);
+				wcontext->write(*value);
 				break;
 			}
 			
@@ -184,7 +184,7 @@ void Request::execute(const Array& ops) {
 		case OP_GET_ELEMENT__WRITE:
 			{
 				Value *value=get_element();
-				wcontext->write(value);
+				wcontext->write(*value);
 				break;
 			}
 
@@ -242,14 +242,14 @@ void Request::execute(const Array& ops) {
 		case OP_GET_METHOD_FRAME:
 			{
 				Value *value=POP();
-				// [self/class?;params;local;code/native_code](name)
+				// info: this one's always method-junction, not a code-junction
 				Junction *junction=value->get_junction();
 				if(!junction)
 					THROW(0,0,
 						&value->name(),
 						"type is '%s', can not call it (must be method or junction)",
 							value->type()); 
-				//unless(method) method=operators.get_method[...;code/native_code](name)
+
 				VMethodFrame *frame=NEW VMethodFrame(pool(), *junction);
 				frame->set_name(junction->self.name());
 				PUSH(frame);
@@ -277,7 +277,8 @@ void Request::execute(const Array& ops) {
 				// constructing?
 				if(wcontext->constructing()) {  // yes
 					// constructor call: $some(^class:method(..))
-					frame->write(self=NEW VObject(pool(), *called_class));
+					self=NEW VObject(pool(), *called_class);
+					frame->write(*self);
 				} else {  // no
 					// context is object or class & is it my class or my parent's class?
 					VClass *read_class=rcontext->get_class();
@@ -296,7 +297,7 @@ void Request::execute(const Array& ops) {
 
 					Method& method=*frame->junction.method;
 					if(method.native_code) // native code?
-						(*method.native_code)(*this); // execute it
+						(*method.native_code)(*this, frame->numbered_params()); // execute it
 					else // parser code
 						execute(*method.parser_code); // execute it
 				}
@@ -542,38 +543,46 @@ Value *Request::get_element() {
 	Value *ncontext=POP();
 	Value *value=ncontext->get_element(name);
 
-	if(value) {
-		Junction *junction=value->get_junction();
-		if(junction && junction->code) { // is it a code-junction?
-			// autocalc it
-			fprintf(stderr, "ja->\n");
-			PUSH(self);  
-			PUSH(root);  
-			PUSH(rcontext);  
-			PUSH(wcontext);
-
-			// almost plain wwrapper about junction wcontext, 
-			// BUT intercepts string writes
-			VCodeFrame frame(pool(), *junction->wcontext);  wcontext=&frame;
-			self=&junction->self;
-			root=junction->root;
-			rcontext=junction->rcontext;
-			execute(*junction->code);
-			// CodeFrame soul:
-			//   string writes were intercepted
-			//   returning them as the result of getting code-junction
-			value=NEW VString(*frame.get_string());
-
-			wcontext=static_cast<WContext *>(POP());  
-			rcontext=POP();  
-			root=POP();  
-			self=static_cast<VAliased *>(POP());
-
-			fprintf(stderr, "<-ja returned");
-		}
-	} else
-		value=NEW VUnknown(pool());
+	// autocalc possible code-junction
+	value=value?&autocalc(*value):NEW VUnknown(pool());
 
 	value->set_name(name);
 	return value;
+}
+
+Value& Request::autocalc(Value& value) {
+	Junction *junction=value.get_junction();
+	if(junction && junction->code) { // is it a code-junction?
+		// autocalc it
+		fprintf(stderr, "ja->\n");
+		PUSH(self);  
+		PUSH(root);  
+		PUSH(rcontext);  
+		PUSH(wcontext);
+		
+		// almost plain wwrapper about junction wcontext, 
+		// BUT intercepts string writes
+		VCodeFrame frame(pool(), *junction->wcontext);  wcontext=&frame;
+		self=&junction->self;
+		root=junction->root;
+		rcontext=junction->rcontext;
+		execute(*junction->code);
+		// CodeFrame soul:
+		//   string writes were intercepted
+		//   returning them as the result of getting code-junction
+		Value& result=*NEW VString(*frame.get_string());
+		
+		wcontext=static_cast<WContext *>(POP());  
+		rcontext=POP();  
+		root=POP();  
+		self=static_cast<VAliased *>(POP());
+		
+		fprintf(stderr, "<-ja returned");
+		return result;
+	} else
+		return value;
+}
+
+void Request::write(Value& avalue) {
+	wcontext->write(avalue);
 }
