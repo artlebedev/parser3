@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: dom.C,v 1.31 2001/09/21 09:03:10 parser Exp $"; 
+static const char *RCSId="$Id: dom.C,v 1.32 2001/09/21 09:04:18 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
@@ -82,7 +82,7 @@ static void create_optioned_listener(
 									 Pool& pool, 
 									 const String& method_name, MethodParams *params, int index, Writer& writer) {
 	// default encoding from pool
-	scharset=pool.get_charset();
+	const String *scharset=&pool.get_charset();
 	const String *method=0;
 	XalanDOMString xalan_encoding;
 
@@ -98,7 +98,7 @@ static void create_optioned_listener(
 				// $.encoding[windows-1251|...]
 				if(Value *vencoding=static_cast<Value *>(options->get(*new(pool) 
 					String(pool, DOM_OUTPUT_ENCODING_OPTION_NAME)))) {
-					charset=vencoding->as_string();
+					scharset=&vencoding->as_string();
 				}
 			} else
 				PTHROW(0, 0,
@@ -107,7 +107,7 @@ static void create_optioned_listener(
 		}
 	}
 
-	xalan_encoding.append(charset=scharset.cstr());
+	xalan_encoding.append(charset=scharset->cstr());
 	if(!method/*default='xml'*/ || *method == DOM_OUTPUT_METHOD_OPTION_VALUE_XML) {
 		content_type="text/xml";
 		listener=new FormatterToXML(writer,
