@@ -193,7 +193,7 @@ InputName=compile
 
 "compile.tab.C" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	cd $(InputDir) 
-	bison -v $(InputName).y -o compile.tab.C 
+	..\win32tools\bison -v $(InputName).y -o compile.tab.C 
 	
 # End Custom Build
 
