@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_HASH_C="$Date: 2003/01/21 15:51:06 $";
+static const char* IDENT_HASH_C="$Date: 2003/04/04 10:38:26 $";
 
 #include "classes.h"
 #include "pa_request.h"
@@ -119,15 +119,36 @@ static void copy_all_overwrite_to(const Hash::Key& key, Hash::Val *value, void *
 	Hash& dest=*static_cast<Hash *>(info);
 	dest.put(key, value);
 }
-static void _create_or_add(Request& r, const String& method_name, MethodParams *params) {
+static void _create_or_add(Request& r, const String& method_name, MethodParams *params, 
+			   bool is_create) {
 	Pool& pool=r.pool();
 	
 	if(params->size()) {
-		Value& vb=params->as_no_junction(0, "param must be hash");
-		if(Hash *b=vb.get_hash(&method_name))
-			b->for_each(copy_all_overwrite_to, &static_cast<VHash *>(r.get_self())->hash(&method_name));
+		Value& vb_maybehash=params->as_no_junction(0, "param must be hash");
+		if(VHash* vbh=static_cast<VHash*>(vb_maybehash.as("hash", false))) {
+			VHash& vah=*static_cast<VHash *>(r.get_self());
+
+			Hash& a=vah.hash(&method_name);
+			Hash& b=vbh->hash(&method_name);
+			b.for_each(copy_all_overwrite_to, &a);
+
+			if(is_create)
+				vah.set_default(vbh->get_default());
+		} else
+			throw Exception("parser.runtime",
+				&method_name,
+				"param must be hash");
+
+		
 	}
 }
+static void _create(Request& r, const String& method_name, MethodParams *params) {
+	_create_or_add(r, method_name, params, true);
+}
+static void _add(Request& r, const String& method_name, MethodParams *params) {
+	_create_or_add(r, method_name, params, false);
+}
+
 
 static void remove_key_from(const Hash::Key& key, Hash::Val *value, void *info) {
 	Hash& dest=*static_cast<Hash *>(info);
@@ -356,9 +377,9 @@ static void _foreach(Request& r, const String& method_name, MethodParams *params
 MHash::MHash(Pool& apool) : Methoded(apool, "hash") 
 {
 	// ^hash::create[[copy_from]]
-	add_native_method("create", Method::CT_DYNAMIC, _create_or_add, 0, 1);
+	add_native_method("create", Method::CT_DYNAMIC, _create, 0, 1);
 	// ^hash.add[add_from]
-	add_native_method("add", Method::CT_DYNAMIC, _create_or_add, 1, 1);
+	add_native_method("add", Method::CT_DYNAMIC, _add, 1, 1);
 	// ^hash.sub[sub_from]
 	add_native_method("sub", Method::CT_DYNAMIC, _sub, 1, 1);
 	// ^a.union[b] = hash
