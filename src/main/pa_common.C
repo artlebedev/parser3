@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://paf.design.ru)
 
-	$Id: pa_common.C,v 1.95 2002/01/25 11:33:46 paf Exp $
+	$Id: pa_common.C,v 1.96 2002/01/25 12:09:04 paf Exp $
 */
 
 #include "pa_common.h"
@@ -205,9 +205,9 @@ static void create_dir_for_file(const String& file_spec) {
 	}
 }
 
-void file_write(
+void file_action_under_lock(
 				const String& file_spec, 
-				const void *data, size_t size, 
+				const char *action_name, void (*action)(int, void *), void *context,
 				bool as_text,
 				bool do_append) {
 	const char *fname=file_spec.cstr(String::UL_FILE_SPEC);
@@ -220,18 +220,49 @@ void file_write(
 		|(as_text?_O_TEXT:_O_BINARY)
 		|(do_append?O_APPEND:O_TRUNC), 0664))>=0) {
 		flock(f, LOCK_EX);
+
+		try {
+			action(f, context);
+		} catch(...) {
+			flock(f, LOCK_UN);
+			close(f);
+			/*re*/throw;
+		}
 		
-		if(size) write(f, data, size);
-#if O_TRUNC==0
-		ftruncate(f, size);
-#endif
 		flock(f, LOCK_UN);
 		close(f);
 	} else
 		throw Exception(0, 0, 
 			&file_spec, 
-			"write failed: %s (%d), actual filename '%s'", 
-				strerror(errno), errno, fname);
+			"%s failed: %s (%d), actual filename '%s'", 
+				action_name, strerror(errno), errno, fname);
+	// here should be nothing, see rethrow above
+}
+
+#ifndef DOXYGEN
+struct File_write_action_info {
+	const void *data; size_t size;
+};
+#endif
+static void file_write_action(int f, void *context) {
+	File_write_action_info& info=*static_cast<File_write_action_info *>(context);
+	if(info.size) 
+		write(f, info.data, info.size);
+#if O_TRUNC==0
+	ftruncate(f, info.size);
+#endif
+}
+void file_write(
+				const String& file_spec, 
+				const void *data, size_t size, 
+				bool as_text,
+				bool do_append) {
+	File_write_action_info info={data, size};
+	file_action_under_lock(
+				file_spec, 
+				"write", file_write_action, &info,
+				as_text,
+				do_append);
 }
 
 // throws nothing! [this is required in file_move & file_delete]

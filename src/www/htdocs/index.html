@@ -4,6 +4,7 @@ $response:charset[windows-1251]
 $response:content-type[$.value[text/html]$.charset[$response:charset]]
 
 @main[]
+^tlock[]
 #^xmloutattrwithoutvalue[]
 #^precisionProblem[]
 #^xpath[]
@@ -12,7 +13,7 @@ $response:content-type[$.value[text/html]$.charset[$response:charset]]
 #^ttime[]
 #^tupper[]
 #^treplace[]
-^xslt2[]
+#^xslt2[]
 #^tcache2[]
 #$ORIGINS(1)
 #$t[^table::set{a b} ^table::set{c d}]
@@ -88,6 +89,11 @@ $response:content-type[$.value[text/html]$.charset[$response:charset]]
 #^header[]
 <hr>
 OK
+
+@tlock[]
+^file:lock[lockfile]{
+	code
+}
 
 @xmloutattrwithoutvalue[]
 #$ORIGINS(1)

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: file.C,v 1.68 2002/01/25 11:33:45 paf Exp $
+	$Id: file.C,v 1.69 2002/01/25 12:09:03 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -371,6 +371,26 @@ static void _list(Request& r, const String& method_name, MethodParams *params) {
 	r.write_no_lang(result);
 }
 
+#ifndef DOXYGEN
+struct Lock_execute_body_info {
+	Request *r;
+	Value *body_code;
+};
+#endif
+static void lock_execute_body(int , void *context) {
+	Lock_execute_body_info& info=*static_cast<Lock_execute_body_info *>(context);
+
+	// execute body
+	info.r->write_assign_lang(info.r->process(*info.body_code));
+};
+static void _lock(Request& r, const String& method_name, MethodParams *params) {
+	const String& file_spec=r.absolute(params->as_string(0, "file name must be string"));
+	Value& body_code=params->as_junction(1, "body must be code");
+
+	Lock_execute_body_info info={&r, &body_code};
+	file_action_under_lock(file_spec, "lock", lock_execute_body, &info);
+}
+
 // constructor
 
 MFile::MFile(Pool& apool) : Methoded(apool) {
@@ -410,6 +430,9 @@ MFile::MFile(Pool& apool) : Methoded(apool) {
 	// ^file:list[path]
 	// ^file:list[path][regexp]
 	add_native_method("list", Method::CT_STATIC, _list, 1, 2);
+
+	// ^file:lock[path]{code}
+	add_native_method("lock", Method::CT_STATIC, _lock, 2, 2);
 
 }
 

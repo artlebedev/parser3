@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_common.h,v 1.70 2002/01/25 11:33:46 paf Exp $
+	$Id: pa_common.h,v 1.71 2002/01/25 12:09:04 paf Exp $
 */
 
 #ifndef PA_COMMON_H
@@ -106,7 +106,18 @@ bool file_read(Pool& pool, const String& file_spec,
 			   size_t offset=0, size_t limit=0);
 
 /**
-	write data to specified file using pool, 
+	lock specified file exclusively, 
+	do actions under lock.
+	throws an exception in case of problems
+*/
+void file_action_under_lock(
+				const String& file_spec, 
+				const char *action_name, void (*action)(int, void *), void *context=0,
+				bool as_text=false,
+				bool do_append=false);
+
+/**
+	write data to specified file, 
 	throws an exception in case of problems
 */
 void file_write(
