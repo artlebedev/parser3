@@ -5,7 +5,7 @@ Parser: apache 1.3 module, part, compiled by parser3project.
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_MOD_PARSER3_MAIN_C="$Date: 2003/09/01 07:12:40 $";
+static const char* IDENT_MOD_PARSER3_MAIN_C="$Date: 2003/09/30 08:38:04 $";
 
 #include "pa_globals.h"
 
@@ -156,7 +156,7 @@ void SAPI::add_header_attribute(SAPI_Info& SAPI_info,
 	* "text/plain").  You *must* also ensure that r->content_type is lower
 	* case.
 		*/
-		SAPI_info.r->content_type = pa_ap_pstrdup(SAPI_info.r->pool, dont_store_value);
+		*SAPI_info.r->content_type = pa_ap_pstrdup(SAPI_info.r->pool, dont_store_value);
 	} else if(strcasecmp(dont_store_key, "status")==0) 
 		*SAPI_info.r->status=atoi(dont_store_value);
 	else
@@ -294,4 +294,3 @@ int pa_parser_handler(pa_request_rec *r, Parser_module_config *dcfg) {
 	*/
 	return PA_OK;
 }
-

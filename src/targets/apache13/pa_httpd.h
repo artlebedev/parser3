@@ -8,7 +8,7 @@
 #ifndef PA_HTTPD_H
 #define PA_HTTPD_H
 
-static const char* IDENT_HTTPD_H="$Date: 2003/08/19 13:52:18 $";
+static const char* IDENT_HTTPD_H="$Date: 2003/09/30 08:38:04 $";
 
 #ifdef __cplusplus
 extern "C" {
@@ -30,7 +30,7 @@ typedef struct pa_request_rec_tag {
 
 	pa_table *headers_out;
 	void* subprocess_env;
-	const char *content_type;
+	const char ** content_type;
 
 	char *uri;			/* the path portion of the URI */
 	char *filename;		/* filename if found, otherwise NULL */
