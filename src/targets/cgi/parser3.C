@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: parser3.C,v 1.180 2002/06/11 12:20:42 paf Exp $
+	$Id: parser3.C,v 1.181 2002/06/12 14:09:50 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -64,8 +64,7 @@ const char **RCSIds[]={
 #endif
 
 #define REDIRECT_PREFIX "REDIRECT_"
-#define PARSER_ROOT_CONFIG_ENV_NAME "HTTP_PARSER_ROOT_CONFIG"
-#define PARSER_SITE_CONFIG_ENV_NAME "HTTP_PARSER_SITE_CONFIG"
+#define PARSER_CONFIG_ENV_NAME "CGI_PARSER_CONFIG"
 
 /// IIS refuses to read bigger chunks
 const size_t READ_POST_CHUNK_SIZE=0x400*0x400; // 1M 
@@ -322,42 +321,13 @@ void real_parser_handler(
 		,
 		true /* status_allowed */);
 	
-	// some root-controlled location
-	const char *root_config_filespec_cstr;
-	char root_config_filespec_buf[MAX_STRING];
-	const char *root_config_by_env=getenv(PARSER_ROOT_CONFIG_ENV_NAME);
-	if(!root_config_by_env)
-		root_config_by_env=getenv(REDIRECT_PREFIX PARSER_ROOT_CONFIG_ENV_NAME);
-	if(root_config_by_env)
-		root_config_filespec_cstr=root_config_by_env;
-	else {
-#ifdef ROOT_CONFIG_DIR
-		root_config_filespec_cstr=ROOT_CONFIG_DIR "/" CONFIG_FILE_NAME;
-#else
-#	ifdef WIN32
-		// c:\windows
-		char windows_dir[MAX_STRING];
-		GetWindowsDirectory(windows_dir, MAX_STRING);
-
-		
-		snprintf(root_config_filespec_buf, MAX_STRING, 
-			"%s/%s", 
-			windows_dir, CONFIG_FILE_NAME);
-		
-		root_config_filespec_cstr=root_config_filespec_buf;
-#	else
-#error must be compiled either configure/make or MSVC++
-#	endif
-#endif
-	}
-	
-	const char *site_config_filespec_cstr;
-	char site_config_filespec_buf[MAX_STRING];
-	const char *site_config_by_env=getenv(PARSER_SITE_CONFIG_ENV_NAME);
-	if(!site_config_by_env)
-		site_config_by_env=getenv(REDIRECT_PREFIX PARSER_SITE_CONFIG_ENV_NAME);
-	if(site_config_by_env)
-		site_config_filespec_cstr=site_config_by_env;
+	const char *config_filespec_cstr;
+	char config_filespec_buf[MAX_STRING];
+	const char *config_by_env=getenv(PARSER_CONFIG_ENV_NAME);
+	if(!config_by_env)
+		config_by_env=getenv(REDIRECT_PREFIX PARSER_CONFIG_ENV_NAME);
+	if(config_by_env)
+		config_filespec_cstr=config_by_env;
 	else {
 	// beside by binary
 	// @todo full path, not ./!
@@ -369,16 +339,15 @@ void real_parser_handler(
 			// no path, just filename
 			beside_binary_path[0]='.'; beside_binary_path[1]=0;
 		}
-		snprintf(site_config_filespec_buf, MAX_STRING, 
+		snprintf(config_filespec_buf, MAX_STRING, 
 			"%s/%s", 
 			beside_binary_path, CONFIG_FILE_NAME);
-		site_config_filespec_cstr=site_config_filespec_buf;
+		config_filespec_cstr=config_filespec_buf;
 	}
 	
 	// process the request
 	request.core(
-		root_config_filespec_cstr, false /*fail_on_read_problem*/,
-		site_config_filespec_cstr, false /*fail_on_read_problem*/,
+		config_filespec_cstr, false /*fail_on_read_problem*/,
 		header_only);
 	
 	//

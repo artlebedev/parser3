@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.h,v 1.137 2002/06/12 11:40:31 paf Exp $
+	$Id: pa_request.h,v 1.138 2002/06/12 14:09:49 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -99,10 +99,8 @@ public:
 		BEWARE: may throw exception to you: catch it!
 	*/
 	void core(
-		const char *root_config_filespec, ///< system config filespec
-		bool root_config_fail_on_read_problem, ///< fail if system config file not found
-		const char *site_config_filespec, ///< site config filespec
-		bool site_config_fail_on_read_problem, ///< fail if site config file not found
+		const char *config_filespec, ///< system config filespec
+		bool config_fail_on_read_problem, ///< fail if system config file not found
 		bool header_only);
 
 	/// executes ops

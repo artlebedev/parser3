@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_globals.C,v 1.129 2002/06/12 11:40:32 paf Exp $
+	$Id: pa_globals.C,v 1.130 2002/06/12 14:09:49 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -42,7 +42,7 @@ String *text_name;
 String *content_disposition_name;
 String *content_disposition_filename_name;
 
-String *rootconf_method_name;
+String *conf_method_name;
 String *auto_method_name;
 
 String *main_class_name;
@@ -318,7 +318,7 @@ void pa_globals_init(Pool& pool) {
 	content_disposition_name=NEW String(pool, CONTENT_DISPOSITION_NAME);
 	content_disposition_filename_name=NEW String(pool, CONTENT_DISPOSITION_FILENAME_NAME);
 
-	rootconf_method_name=NEW String(pool, ROOTCONF_METHOD_NAME);
+	conf_method_name=NEW String(pool, CONF_METHOD_NAME);
 	auto_method_name=NEW String(pool, AUTO_METHOD_NAME);
 
 	main_class_name=NEW String(pool, MAIN_CLASS_NAME);

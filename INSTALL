@@ -35,7 +35,7 @@
     $prefix/bin/
       parser3             -- CGI and command line Parser3 interpreter
     $prefix/etc/
-      parser3.conf        -- main configuration file
+      parser3.conf.sample -- configuration file sample
       parser3.charsets/   -- charset definition files
         koi8-r.cfg        -- cyrillic charset [KOI8-R encoding]
         windows-1250.cfg  -- central europian charset [windows-1250 encoding]
@@ -164,4 +164,4 @@
  
 Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-$Id: INSTALL,v 1.19 2002/04/29 11:48:12 paf Exp $
+$Id: INSTALL,v 1.20 2002/06/12 14:09:48 paf Exp $

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.C,v 1.210 2002/06/12 12:50:32 paf Exp $
+	$Id: pa_request.C,v 1.211 2002/06/12 14:09:49 paf Exp $
 */
 
 #include "pa_sapi.h"
@@ -160,8 +160,7 @@ void Request::configure_admin(VStateless_class& conf_class, const String *source
 
 */
 void Request::core(
-				   const char *root_config_filespec, bool root_config_fail_on_read_problem,
-				   const char *site_config_filespec, bool site_config_fail_on_read_problem,
+				   const char *config_filespec, bool config_fail_on_read_problem,
 				   bool header_only) {
 
 #ifdef RESOURCES_DEBUG
@@ -173,23 +172,13 @@ gettimeofday(&mt[0],NULL);
 	try {
 		char *auto_filespec=(char *)malloc(MAX_STRING);
 		
-		// loading root config
-		if(root_config_filespec) {
+		// loading config
+		if(config_filespec) {
 			String& filespec=*NEW String(pool());
-			filespec.APPEND_CLEAN(root_config_filespec, 0, "root_config", 0);
+			filespec.APPEND_CLEAN(config_filespec, 0, "config", 0);
 			main_class=use_file(
 				filespec, 
-				true/*ignore class_path*/, root_config_fail_on_read_problem,
-				main_class_name, main_class);
-		}
-
-		// loading site config
-		if(site_config_filespec) {
-			String& filespec=*NEW String(pool());
-			filespec.APPEND_CLEAN(site_config_filespec, 0, "site_config", 0);
-			main_class=use_file(
-				filespec, 
-				true/*ignore class_path*/, site_config_fail_on_read_problem,
+				true/*ignore class_path*/, config_fail_on_read_problem,
 				main_class_name, main_class);
 		}
 
@@ -497,7 +486,7 @@ VStateless_class *Request::use_buf(const char *source, const char *file,
 
 	// locate and execute possible @conf[] static
 	const Method *method_called;
-	execute_nonvirtual_method(cclass, *rootconf_method_name, 0/*no result needed*/, 
+	execute_nonvirtual_method(cclass, *conf_method_name, 0/*no result needed*/, 
 		&method_called);
 	if(method_called)
 		configure_admin(cclass, &method_called->name);

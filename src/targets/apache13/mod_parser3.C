@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: mod_parser3.C,v 1.21 2002/06/11 12:20:42 paf Exp $
+	$Id: mod_parser3.C,v 1.22 2002/06/12 14:09:49 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -56,8 +56,7 @@ const char **RCSIds[]={
 
 /// apache parser module configuration [httpd.conf + .htaccess-es]
 struct Parser_module_config {
-    const char* parser_root_config_filespec; ///< filespec of admin's config file
-    const char* parser_site_config_filespec; ///< filespec of site's config file
+    const char* parser_config_filespec; ///< filespec of site's config file
 	bool parser_status_allowed;
 };
 
@@ -79,7 +78,7 @@ static const char *cmd_parser_config(cmd_parms *cmd, void *mconfig, char *file_s
     Parser_module_config *cfg = (Parser_module_config *) mconfig;
 
 	// remember assigned filespec into cfg
-	(cmd->info?cfg->parser_root_config_filespec:cfg->parser_site_config_filespec)=file_spec;
+	cfg->parser_config_filespec=file_spec;
 
     return NULL;
 }
@@ -278,8 +277,7 @@ static void real_parser_handler(Pool& pool, request_rec *r) {
 	
 	// process the request
 	request.core(
-		dcfg->parser_root_config_filespec, true, // /path/to/admin/config
-		dcfg->parser_site_config_filespec, true, // /path/to/site/config
+		dcfg->parser_config_filespec, true, // /path/to/config
 		r->header_only!=0);
 }
 
@@ -506,10 +504,8 @@ static void *parser_merge_dir_config(pool *p, void *parent_conf,
     Parser_module_config *pconf = (Parser_module_config *) parent_conf;
     Parser_module_config *nconf = (Parser_module_config *) newloc_conf;
 
-    merged_config->parser_root_config_filespec = ap_pstrdup(p, nconf->parser_root_config_filespec?
-		nconf->parser_root_config_filespec:pconf->parser_root_config_filespec);
-    merged_config->parser_site_config_filespec = ap_pstrdup(p, nconf->parser_site_config_filespec?
-		nconf->parser_site_config_filespec:pconf->parser_site_config_filespec);
+    merged_config->parser_config_filespec = ap_pstrdup(p, nconf->parser_config_filespec?
+		nconf->parser_config_filespec:pconf->parser_config_filespec);
 	merged_config->parser_status_allowed=
 		pconf->parser_status_allowed ||
 		nconf->parser_status_allowed;
@@ -568,10 +564,8 @@ static void *parser_merge_server_config(pool *p, void *server1_conf,
      * Our inheritance rules are our own, and part of our module's semantics.
      * Basically, just note whence we came.
      */
-    merged_config->parser_root_config_filespec = ap_pstrdup(p, s2conf->parser_root_config_filespec?
-		s2conf->parser_root_config_filespec:s1conf->parser_root_config_filespec);
-    merged_config->parser_site_config_filespec = ap_pstrdup(p, s2conf->parser_site_config_filespec?
-		s2conf->parser_site_config_filespec:s1conf->parser_site_config_filespec);
+    merged_config->parser_config_filespec = ap_pstrdup(p, s2conf->parser_config_filespec?
+		s2conf->parser_config_filespec:s1conf->parser_config_filespec);
 	merged_config->parser_status_allowed=
 		s1conf->parser_status_allowed || 
 		s2conf->parser_status_allowed;
@@ -651,17 +645,9 @@ static int parser_access_checker(request_rec *r) {
 static const command_rec parser_cmds[] =
 {
     {
-        "ParserRootConfig",              /* directive name */
+        "ParserConfig",              /* directive name */
         (const char *(*)(void))((void *)cmd_parser_config), // config action routine
-        (void*)true,                   /* argument to include in call */
-        (int)(ACCESS_CONF|RSRC_CONF),             /* where available */
-        TAKE1,                /* arguments */
-        "Parser root config filespec (Admin)" // directive description
-    },
-    {
-        "ParserSiteConfig",              /* directive name */
-        (const char *(*)(void))((void *)cmd_parser_config), // config action routine
-        (void*)false,                   /* argument to include in call */
+        (void*)0,                   /* argument to include in call */
         (int)(OR_OPTIONS),             /* where available */
         TAKE1,                /* arguments */
         "Parser site config filespec" // directive description

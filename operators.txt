@@ -787,14 +787,11 @@ xdoc(xnode)
     кучи auto.p и запрашиваемого документа:
         !parser3.conf 
             cgi: 
-                1. или полный путь из переменной окружения HTTP_PARSER_ROOT_CONFIG
-                   или configure sysconfdir|windows directory 
-                2. или полный путь из переменной окружения HTTP_PARSER_SITE_CONFIG
+                1. или полный путь из переменной окружения CGI_PARSER_SITE_CONFIG
                    или рядом с бинарником parser'а 
             isapi: windows directory
             apache module: 
-                1) ParserRootConfig [httpd.conf only] 
-                2) ParserSiteConfig [can be in .htaccess]
+                1) ParserConfig [can be in .htaccess]
         !auto.p вниз от DOCUMENT_ROOT/ по дереву до каталога с обрабатываемым файлом включительно
     класс собирается из всех этих файлов, последующие становятся родителями предыдущих
     имя последнего загруженного MAIN, имён у предыдущих нет

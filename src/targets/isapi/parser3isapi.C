@@ -4,7 +4,7 @@
 	Copyright (c) 2000,2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: parser3isapi.C,v 1.73 2002/06/11 14:14:16 paf Exp $
+	$Id: parser3isapi.C,v 1.74 2002/06/12 14:09:50 paf Exp $
 */
 
 #ifndef _MSC_VER
@@ -389,17 +389,6 @@ void real_parser_handler(Pool& pool, LPEXTENSION_CONTROL_BLOCK lpECB, bool heade
 #endif
 			/* status_allowed */);
 
-	// some root-controlled location
-	//   c:\windows
-	char root_config_path[MAX_STRING];
-	GetWindowsDirectory(root_config_path, MAX_STRING);
-	// must be dynamic: rethrowing from request.core 
-	//   may return 'source' which can be inside of 'root auto.p@exeception'
-	char *root_config_filespec=(char *)pool.malloc(MAX_STRING);
-	snprintf(root_config_filespec, MAX_STRING, 
-		"%s/%s", 
-		root_config_path, CONFIG_FILE_NAME);
-
 	// beside by binary
 	static char site_config_path[MAX_STRING];
 	strncpy(site_config_path, argv0, MAX_STRING-1);  site_config_path[MAX_STRING-1]=0; // filespec of my binary
@@ -409,15 +398,14 @@ void real_parser_handler(Pool& pool, LPEXTENSION_CONTROL_BLOCK lpECB, bool heade
 		// no path, just filename
 		site_config_path[0]='.'; site_config_path[1]=0;
 	}	
-	char site_config_filespec[MAX_STRING];
-	snprintf(site_config_filespec, MAX_STRING, 
+	char config_filespec[MAX_STRING];
+	snprintf(config_filespec, MAX_STRING, 
 		"%s/%s", 
 		site_config_path, CONFIG_FILE_NAME);
 
 	// process the request
 	request.core(
-		root_config_filespec, false /*fail_on_read_problem*/, // /path/to/root/parser3.conf
-		site_config_filespec, false /*fail_on_read_problem*/, // /path/to/site/parser3.conf
+		config_filespec, false /*fail_on_read_problem*/, // /path/to/parser3.conf
 		header_only);
 }
 
