@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3mysql.C,v 1.20 2001/05/17 17:10:12 parser Exp $
+	$Id: parser3mysql.C,v 1.21 2001/05/17 19:03:00 parser Exp $
 */
 
 #include "config_includes.h"
@@ -51,7 +51,7 @@ public:
 	}
 	/**	connect
 		@param used_only_in_connect_url
-			format: @b user:pass@{host[:port]|[/unix/socket]}/database/charset 
+			format: @b user:pass@host[:port]|[/unix/socket]/database/charset 
 			3.23.22b
 			Currently the only option for @b character_set_name is cp1251_koi8.
 			WARNING: must be used only to connect, for buffer doesn't live long

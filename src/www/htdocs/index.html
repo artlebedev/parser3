@@ -137,7 +137,7 @@ ${comment}.
 
 @sql_test[connect-string]
 #^rem{
-^for[i](1;2){
+#^for[i](1;2){
 ^connect[$connect-string]{
 	$shit[^taint[our's]]
 #	$paf[^table:sql{insert into paf (name, age) values ('$shit', ^random:generate(10000))}]
@@ -150,6 +150,6 @@ ${comment}.
 	</table>
 	}}
 }
-}
+#}
 #}
 
