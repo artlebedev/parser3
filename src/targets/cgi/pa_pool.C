@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.C,v 1.25 2001/10/29 13:04:47 paf Exp $
+	$Id: pa_pool.C,v 1.26 2001/10/29 14:13:15 paf Exp $
 */
 
 #include <stdlib.h>
@@ -162,7 +162,7 @@ place=0;
 	int index=min(MALLOC_STAT_MAXSIZE-1, size);
 	malloc_times[place][index]++;
 	malloc_places[place]++;
-/*	if(size<5 && place==0)
+/*	if(size==40 && place==0)
 		__asm int 3;*/
 #endif
 	return ::malloc(size);

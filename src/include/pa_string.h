@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.109 2001/10/29 13:04:46 paf Exp $
+	$Id: pa_string.h,v 1.110 2001/10/29 14:13:14 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -271,13 +271,13 @@ private:
 	Chunk::Row *link_row;
 
 private:
-	// last chunk
+	/// last chunk
 	Chunk *last_chunk;
 
-	// string size
+	/// string size
 	size_t fsize;
 
-	// used rows in all chunks
+	/// used rows in all chunks
 	int fused_rows;
 
 	/// origins_mode changes behaviour of store_to[cstr()]

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.86 2001/10/27 13:00:10 paf Exp $
+	$Id: pa_globals.C,v 1.87 2001/10/29 14:13:15 paf Exp $
 */
 
 #include "pa_globals.h"
@@ -191,20 +191,19 @@ void pa_globals_init(Pool& pool) {
 
 	// hashes
 	untaint_lang_name2enum=NEW Hash(pool);
-	#define ULN(var, cstr, LANG) \
-		String var(pool, cstr); \
-		untaint_lang_name2enum->put(var, (int)String::UL_##LANG);
-	ULN(as_is, "as-is", AS_IS);
-	ULN(file_name, "file-spec", FILE_SPEC);
-	ULN(http_header, "http-header", HTTP_HEADER);
-	ULN(mail_header, "mail-header", MAIL_HEADER);
-	ULN(uri, "uri", URI);
-	ULN(table, "table", TABLE);
-	ULN(sql, "sql", SQL);
-	ULN(js, "js", JS);
-	ULN(xml, "xml", XML);
-	ULN(html, "html", HTML);
-	ULN(user_html, "user-html", USER_HTML);
+	#define ULN(cstr, LANG) \
+		untaint_lang_name2enum->put(*NEW String(pool, cstr), (int)String::UL_##LANG);
+	ULN("as-is", AS_IS);
+	ULN("file-spec", FILE_SPEC);
+	ULN("http-header", HTTP_HEADER);
+	ULN("mail-header", MAIL_HEADER);
+	ULN("uri", URI);
+	ULN("table", TABLE);
+	ULN("sql", SQL);
+	ULN("js", JS);
+	ULN("xml", XML);
+	ULN("html", HTML);
+	ULN("user-html", USER_HTML);
 
 	// tables
 	Table *default_typo_table=NEW Table(pool, 0, 0);

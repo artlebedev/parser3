@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.61 2001/10/29 13:04:45 paf Exp $
+	$Id: file.C,v 1.62 2001/10/29 14:13:14 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -161,7 +161,9 @@ static void pass_cgi_header_attribute(Array::Item *value, void *info) {
 		hash.put(string.mid(0, colon_pos), 
 		new(string.pool()) VString(string.mid(colon_pos+1, string.size())));
 }
-/// @todo fix `` in perl - they produced flipping consoles and no output to perl
+/** @todo fix `` in perl - they produced flipping consoles and no output to perl
+	@test EPASS, ECSTR [touched them when optimized hash]
+*/
 static void _exec_cgi(Request& r, const String& method_name, MethodParams *params,
 					  bool cgi) {
 	Pool& pool=r.pool();
@@ -171,47 +173,49 @@ static void _exec_cgi(Request& r, const String& method_name, MethodParams *param
 	const String& script_name=r.absolute(vfile_name.as_string());
 
 	Hash env(pool);
-	#define PASS(key) \
-		String key(pool); \
-		if(const char *value=SAPI::get_env(pool, #key)) { \
-			key.APPEND_CONST(value); \
-			env.put(String(pool, #key), &key); \
+	#define ECSTR(name, value_cstr) \
+		String name##key(pool, #name); \
+		String name##value(pool); \
+		if(value_cstr) { \
+			name##value.APPEND_CONST(value_cstr); \
+			env.put(name##key, &name##value); \
 		}
-	#define INFO(key, value) \
-		String value(pool); \
-		if(r.info.value) { \
-			value.APPEND_CONST(r.info.value); \
-			env.put(String(pool, key), &value); \
+	#define EPASS(name) \
+		String name##key(pool, #name); \
+		String name##value(pool); \
+		if(const char *value_cstr=SAPI::get_env(pool, #name)) { \
+			name##value.APPEND_CONST(value_cstr); \
+			env.put(name##key, &name##value); \
 		}
 
 	// const
 	String gateway_interface(pool, "CGI/1.1");
 	env.put(String(pool, "GATEWAY_INTERFACE"), &gateway_interface);
 	// from Request.info
-	INFO("DOCUMENT_ROOT", document_root);
-	INFO("PATH_TRANSLATED", path_translated);
-	INFO("SERVER_PROTOCOL", method);
-	INFO("QUERY_STRING", query_string);
-	INFO("REQUEST_URI", uri);
-	INFO("CONTENT_TYPE", content_type);
+	ECSTR(DOCUMENT_ROOT, r.info.document_root);
+	ECSTR(PATH_TRANSLATED, r.info.path_translated);
+	ECSTR(SERVER_PROTOCOL, r.info.method);
+	ECSTR(QUERY_STRING, r.info.query_string);
+	ECSTR(REQUEST_URI, r.info.uri);
+	ECSTR(CONTENT_TYPE, r.info.content_type);
 	char content_length_cstr[MAX_NUMBER];  
 	snprintf(content_length_cstr, MAX_NUMBER, "%u", r.info.content_length);
 	String content_length(pool, content_length_cstr);
-	env.put(String(pool, "CONTENT_LENGTH"), &content_length);
-	INFO("HTTP_COOKIE", cookie);
-	INFO("HTTP_USER_AGENT", user_agent);
+	ECSTR(CONTENT_LENGTH, content_length_cstr);
+	ECSTR(HTTP_COOKIE, r.info.cookie);
+	ECSTR(HTTP_USER_AGENT, r.info.user_agent);
 	// passing some SAPI:get_env-s
-	PASS(SERVER_NAME);
-	PASS(SERVER_PORT);
-	PASS(HTTP_REFERER);
-	PASS(REMOTE_ADDR);
-	PASS(REMOTE_HOST);
-	PASS(REMOTE_USER);
+	EPASS(SERVER_NAME);
+	EPASS(SERVER_PORT);
+	EPASS(HTTP_REFERER);
+	EPASS(REMOTE_ADDR);
+	EPASS(REMOTE_HOST);
+	EPASS(REMOTE_USER);
 	// SCRIPT_NAME
 	env.put(String(pool, "SCRIPT_NAME"), &script_name);
 #ifdef WIN32
 	// WIN32 shell
-	PASS(COMSPEC);
+	EPASS(COMSPEC);
 #endif
 
 	if(params->size()>1) {
