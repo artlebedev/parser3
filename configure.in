@@ -59,7 +59,7 @@ AC_ARG_ENABLE(safe-mode, [  --disable-safe-mode     to enable reading and execut
 if test "$SAFE_MODE" = "no"; then
 	AC_MSG_WARN(enabling reading of files belonging to group+user other then effective)
 else
-	AC_DEFINE(PA_SAFE_MODE,,reading of files belonging to group+user other then effective)
+	AC_DEFINE(PA_SAFE_MODE,,disabled reading of files belonging to group+user other then effective)
 fi
 
 AC_ARG_ENABLE(execs, [  --disable-execs         to disable any execs
