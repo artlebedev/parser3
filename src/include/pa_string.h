@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-static const char* IDENT_STRING_H="$Date: 2003/09/25 09:41:24 $";
+static const char* IDENT_STRING_H="$Date: 2003/09/26 06:53:27 $";
 
 // includes
 
@@ -24,6 +24,7 @@ extern "C" { // cord's author forgot to do that
 /* Returns true if x does contain                                       */
 /* char not_c at positions i..i+n. Value i,i+n must be < CORD_len(x).	*/
 int CORD_range_contains_chr_greater_then(CORD x, size_t i, size_t n, int c);
+size_t CORD_block_count(CORD x);
 
 // forwards
 
@@ -55,29 +56,41 @@ public:
 
 	/** piece is tainted or not. the lang to use when detaint
 		remember to change String_Untaint_lang_name @ untaint.C along
+
+		WARNING WARNING WARNING WARNING WARNING WARNING 
+		
+		pos function compares(<=) languages, that is used in searching
+		for table column separator being L_CLEAN or L_AS_IS.
+		they search for AS_IS, meaning AS_IS|CLEAN [doing <=L_AS_IS check].
+		
+		letters assigned for debugging, but it's important for no language-letter
+		come before L_AS_IS other then L_CLEAN
+
+		WARNING WARNING WARNING WARNING WARNING WARNING 
 	*/
 	enum Language {
 		L_UNSPECIFIED=0, ///< no real string has parts of this lange: it's just convinient to check when string's empty
 		// these two must go before others, there are checks for >L_AS_IS
-		L_CLEAN='1', ///< clean
-		L_AS_IS,     ///< leave all characters intact
+		L_CLEAN='0', ///< clean  WARNING: read above warning before changing
+		L_AS_IS='A',     ///< leave all characters intact  WARNING: read above warning before changing
 
-		L_PASS_APPENDED,
+		L_PASS_APPENDED='P',
 			/**<
 				leave lang built into string being appended.
 				just a flag, that value not stored
 			*/
-		L_TAINTED,  ///< tainted, untaint lang as assigned later 
+		L_TAINTED='T',  ///< tainted, untaint lang as assigned later 
 		// untaint langs. assigned by ^untaint[lang]{...}
-		L_FILE_SPEC, ///< file specification
-		L_HTTP_HEADER,    ///< text in HTTP response header
-		L_MAIL_HEADER,    ///< text in mail header
-		L_URI,       ///< text in uri
-		L_TABLE,     ///< ^table:set body
-		L_SQL,       ///< ^table:sql body
-		L_JS,        ///< JavaScript code
-		L_XML,		///< ^dom:set xml
-		L_HTML,      ///< HTML code (for editing)
+		L_FILE_SPEC='F', ///< file specification
+		L_HTTP_HEADER='h',    ///< text in HTTP response header
+		L_MAIL_HEADER='m',    ///< text in mail header
+		L_URI='U',       ///< text in uri
+		L_TABLE='L',     ///< ^table:set body
+		L_SQL='Q',       ///< ^table:sql body
+		L_JS='J',        ///< JavaScript code
+		L_XML='X',		///< ^dom:set xml
+		L_HTML='H',      ///< HTML code (for editing)
+		// READ WARNING ABOVE BEFORE ADDING ANYTHING
 		L_OPTIMIZE_BIT = 0x80  ///< flag, requiring cstr whitespace optimization
 	};
 
@@ -190,6 +203,16 @@ public:
 				return opt.lang<=alang;
 		}
 
+		/// @returns count of blocks
+		/// @todo currently there can be adjucent blocks of same language. someday merge them
+		size_t count() const {
+			return opt.is_not_just_lang?
+				CORD_block_count(langs)
+				: opt.lang?
+					1
+					: 0;
+		};
+
 		template<typename C, typename I> 
 		void for_each(C current, 
 			int callback(char, size_t, I), I info) const {
@@ -282,9 +305,9 @@ public:
 			return CORD_chr(body, offset, c);
 		}
 
-	/*	template<typename I> void for_each(int (*callback)(const char* s, I), I info) const {
+		template<typename I> void for_each(int (*callback)(const char* s, I), I info) const {
 			CORD_iter5(body, 0, 0, (CORD_batched_iter_fn)callback, info);
-		}*/
+		}
 
 		void set_pos(CORD_pos& pos, size_t index) const { CORD_set_pos(pos, body, index); }
 

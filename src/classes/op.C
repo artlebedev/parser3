@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_OP_C="$Date: 2003/09/25 09:15:02 $";
+static const char* IDENT_OP_C="$Date: 2003/09/26 06:53:27 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -379,7 +379,7 @@ static void _case(Request& r, MethodParams& params) {
 
 // consts
 
-const int DATA_STRING_SERIALIZED_VERSION=0x0004;
+const int DATA_STRING_SERIALIZED_VERSION=0x0005;
 
 // helper types
 

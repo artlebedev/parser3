@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_STRING_C="$Date: 2003/09/25 09:41:24 $";
+static const char* IDENT_STRING_C="$Date: 2003/09/26 06:53:27 $";
 
 #include "pcre.h"
 
@@ -39,6 +39,19 @@ int CORD_range_contains_chr_greater_then(CORD x, size_t i, size_t n, int c)
     d.countdown = n;
     d.target = c;
     return(CORD_block_iter(x, i, CORD_range_contains_chr_greater_then_proc, &d) == 1/*alternatives: 0 normally ended, 2=struck 'n'*/);
+}
+
+static int CORD_block_count_proc(char c, size_t size, void* client_data)
+{
+    int* result=(int*)client_data;
+    (*result)++;
+    return(0); // 0=continue
+}
+size_t CORD_block_count(CORD x)
+{
+	size_t result=0;
+	CORD_block_iter(x, 0, CORD_block_count_proc, &result);
+    return result;
 }
 
 // helpers
@@ -483,63 +496,46 @@ int String::as_int() const {
 	return result;
 }
 
-inline void uint2uchars(uint word, uchar *bytes) {
-	bytes[0]=word&0xFF;
-	bytes[1]=(word>>8)&0xFF;
-	bytes[2]=(word>>16)&0xFF;
-	bytes[3]=(word>>24)&0xFF;
-}
-inline uint uchars2uint(uchar *bytes) {
-	return bytes[3]<<24
-		| bytes[2]<<16
-		| bytes[1]<<8
-		| bytes[0];
-}
-
 static int serialize_body_piece(const char* s, char** cur) {
 	size_t length=strlen(s);
 	memcpy(*cur, s, length);  *cur+=length;
-	return 0;
+	return 0; // 0=continue
 };
+static int serialize_lang_piece(char alang, size_t asize, char** cur) {
+	// lang
+	memcpy(*cur, &alang, sizeof(alang));  *cur+=sizeof(alang);
+	// length
+	memcpy(*cur, &asize, sizeof(asize));  *cur+=sizeof(asize);
+
+	return 0; // 0=continue
+}
 String::Cm String::serialize(size_t prolog_length) const {
-#if TODO
-	//_asm int 3;
+	size_t fragments_count=langs.count();
 	size_t buf_length=
-		prolog_length
-		+sizeof(size_t)
-		+langs.count()*(sizeof(Language)+sizeof(size_t))
-		+length();
+		prolog_length //1
+		+sizeof(size_t) //2
+		+fragments_count*(sizeof(char)+sizeof(size_t)) //3
+		+body.length() //4
+		+1; // for zero terminator used in deserialize
 	String::Cm result(new(PointerFreeGC) char[buf_length], buf_length);
 
 	// 1: prolog
 	char *cur=result.str+prolog_length;
-
-
 	// 2: langs.count
-	size_t fragments_count=langs.count();
 	memcpy(cur, &fragments_count, sizeof(fragments_count));  cur+=sizeof(fragments_count);
-
 	// 3: lang info
-	for(Array_iterator<ArrayFragment::element_type> i(langs); i.has_next(); ) {
-		const Fragment fragment=i.next();
-		// lang
-		memcpy(cur, &fragment.lang, sizeof(fragment.lang));  cur+=sizeof(fragment.lang);
-		// length
-		memcpy(cur, &fragment.length, sizeof(fragment.length));  cur+=sizeof(fragment.length);
-	}
-
+	langs.for_each(body, serialize_lang_piece, &cur);
 	// 4: letters
 	body.for_each(serialize_body_piece, &cur);
+	// 5: zero terminator already there put by new(PointerFreeGC)
 
 	return result;
-#endif
-	return String::Cm(0, 0);
 }
 bool String::deserialize(size_t prolog_length, void *buf, size_t buf_length) {
-#if TODO
 	if(buf_length<=prolog_length)
 		return false;
 	buf_length-=prolog_length;
+	buf_length-=1; // 5: zero terminator
 
 	// 1: prolog
 	const char* cur=(const char* )buf+prolog_length;
@@ -554,13 +550,13 @@ bool String::deserialize(size_t prolog_length, void *buf, size_t buf_length) {
 		// 3: lang info
 		size_t total_length=0;
 		for(size_t f=0; f<fragments_count; f++) {
-			size_t piece_length=sizeof(Language)+sizeof(size_t);
+			size_t piece_length=sizeof(char)+sizeof(size_t);
 			if(buf_length<piece_length) // lang+length
 				return false;
 
-			Language lang=*reinterpret_cast<const Language *>(cur);  cur+=sizeof(Language);
+			Language lang=*reinterpret_cast<const Language *>(cur);  cur+=sizeof(char);
 			size_t fragment_length=*reinterpret_cast<const size_t*>(cur);  cur+=sizeof(size_t);
-			langs+=Fragment(lang, fragment_length);
+			langs.append(total_length, lang, fragment_length);
 			total_length+=fragment_length;
 
 			buf_length-=piece_length;
@@ -570,13 +566,12 @@ bool String::deserialize(size_t prolog_length, void *buf, size_t buf_length) {
 		if(buf_length!=total_length)
 			return false;
 
+		// serialize wrote extra zero byte there, we can rely on that
 		body=String::Body(cur, buf_length);
 	}
 
 	ASSERT_STRING_INVARIANT(*this);
 	return true;
-#endif
-	return false;
 }
 
 const char* String::Body::v() const {
@@ -594,9 +589,9 @@ const char* String::v() const {
 	const char*body_view=body.v();
 	const char*langs_view=langs.v();
 	snprintf(buf, MAX_STRING, 
-		"%.*s%s}   "
+		"%d:%.*s%s}   "
 		"{%d:%s",
-		LIMIT_VIEW, langs_view, strlen(langs_view)>LIMIT_VIEW?"...":"",
+		langs.count(), LIMIT_VIEW, langs_view, strlen(langs_view)>LIMIT_VIEW?"...":"",
 		strlen(body_view), body_view
 	);
 
