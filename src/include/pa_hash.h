@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_hash.h,v 1.42 2001/08/06 16:18:26 parser Exp $
+	$Id: pa_hash.h,v 1.43 2001/09/07 11:05:02 parser Exp $
 */
 
 #ifndef PA_HASH_H
@@ -37,7 +37,11 @@ public:
 public:
 
 	Hash(Pool& apool) : Pooled(apool) { 
-		construct(apool); 
+		construct_new(); 
+	}
+
+	Hash(const Hash& source) : Pooled(source.pool()){
+		construct_copy(source);
 	}
 
 	/// useful generic hash function
@@ -88,7 +92,8 @@ public:
 
 protected:
 
-	void construct(Pool& apool);
+	void construct_new();
+	void construct_copy(const Hash& source);
 
 private:
 
@@ -139,7 +144,6 @@ private:
 
 private: //disabled
 
-	//Hash(Hash&) {}
 	Hash& operator = (const Hash&) { return *this; }
 };
 

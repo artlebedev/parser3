@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_hash.C,v 1.38 2001/08/06 16:18:26 parser Exp $"; 
+static const char *RCSId="$Id: pa_hash.C,v 1.39 2001/09/07 11:05:02 parser Exp $"; 
 
 /*
 	The prime numbers used from zend_hash.c,
@@ -31,11 +31,20 @@ int Hash::allocates_count=
 	sizeof(allocates)/sizeof(uint);
 
 
-void Hash::construct(Pool& apool) {
+void Hash::construct_new() {
 	allocated=allocates[allocates_index=0];
 	threshold=allocated*THRESHOLD_PERCENT/100;
 	used=0;
 	refs=static_cast<Pair **>(calloc(sizeof(Pair *)*allocated));
+}
+
+void Hash::construct_copy(const Hash& source) {
+	allocates_index=source.allocates_index;
+	allocated=source.allocated;
+	threshold=source.threshold;
+	used=source.used;
+	size_t size=sizeof(Pair *)*allocated;
+	refs=static_cast<Pair **>(malloc(size));  memcpy(refs, source.refs, size);
 }
 
 void Hash::expand() {

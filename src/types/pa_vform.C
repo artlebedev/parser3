@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vform.C,v 1.32 2001/09/07 10:21:59 parser Exp $
+	$Id: pa_vform.C,v 1.33 2001/09/07 11:05:02 parser Exp $
 
 	
 	based on The CGI_C library, by Thomas Boutell.
@@ -166,7 +166,7 @@ void VForm::AppendFormEntry(const char *aname,
 	} else {
 		String& string=*NEW String(pool());
 		string.APPEND_TAINTED(value_ptr, value_size, "form", 0);
-		
+		/*
 		if(Value *valready=(Value *)fields.get(sname)) {
 			Table *table=valready->get_table(); // already table?
 			bool existed=table!=0;
@@ -187,9 +187,9 @@ void VForm::AppendFormEntry(const char *aname,
 			if(existed)
 				return; // table already existed, we've just added one line & we're through
 			value=NEW VTable(pool(), table);
-		} else { // first appearence
+		} else { // first appearence*/
 			value=NEW VString(string);
-		}
+		//}
 	}
 
 	fields.put_dont_replace(sname, value);
@@ -215,3 +215,25 @@ void VForm::fill_fields(Request& request) {
 	} else
 		; // letter?
 }
+
+Value *VForm::fields_element() {
+	Value *result=NEW VHash(pool());
+
+	fields().for_each
+
+}
+
+// form: CLASS,method,field
+Value *VForm::get_element(const String& aname) {
+	// fields
+	if(name==FORM_FIELDS_ELEMENT_NAME)
+		return fields_element();
+
+	// $CLASS,$method
+	if(Value *result=VStateless_class::get_element(aname))
+		return result;
+
+	// $element
+	return static_cast<Value *>(fields.get(aname));
+}
+

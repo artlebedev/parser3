@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vform.h,v 1.21 2001/07/20 09:40:46 parser Exp $
+	$Id: pa_vform.h,v 1.22 2001/09/07 11:05:02 parser Exp $
 */
 
 #ifndef PA_VFORM_H
@@ -13,6 +13,8 @@
 
 #include "classes.h"
 #include "pa_common.h"
+
+#define FORM_FIELDS_ELEMENT_NAME "fields"
 
 extern Methoded *form_base_class;
 
@@ -37,16 +39,6 @@ class VForm : public VStateless_class {
 public: // Value
 	
 	const char *type() const { return "form"; }
-
-	// form: CLASS,method,field
-	Value *get_element(const String& aname) {
-		// $CLASS,$method
-		if(Value *result=VStateless_class::get_element(aname))
-			return result;
-
-		// $element
-		return static_cast<Value *>(fields.get(aname));
-	}
 
 public: // usage
 

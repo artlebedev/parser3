@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vfile.h,v 1.29 2001/08/22 14:03:18 parser Exp $
+	$Id: pa_vfile.h,v 1.30 2001/09/07 11:05:02 parser Exp $
 */
 
 #ifndef PA_VFILE_H
@@ -86,6 +86,10 @@ public: // usage
 	size_t value_size() const { return fvalue_size; }
 	Hash& fields() { return ffields; }
 	const Hash& fields() const { return ffields; }
+
+private:
+
+	Value *fields_element();
 
 private:
 
