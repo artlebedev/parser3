@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: double.C,v 1.35 2001/07/27 12:59:36 parser Exp $"; 
+static const char *RCSId="$Id: double.C,v 1.36 2001/08/07 13:54:13 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
@@ -75,21 +75,30 @@ static void _mod(Request& r, const String&, MethodParams *params) { vdouble_op(r
 // from string.C
 extern 
 const String* sql_result_string(Request& r, const String& method_name, 
-								MethodParams *params);
+								MethodParams *params,
+								Hash *&options);
 
 static void _sql(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
 	double val;
-	if(const String *string=sql_result_string(r, method_name, params))
+	Hash *options;
+	if(const String *string=sql_result_string(r, method_name, params, options))
 		val=string->as_double();
 	else
-		if(params->size()>1)
-			val=params->as_double(1, r);
-		else {
+		if(options) {
+			if(Value *vdefault=(Value *)options->get(*sql_default_name))
+				val=r.process(*vdefault).as_double();
+			else {
+				PTHROW(0, 0,
+					&method_name,
+					"produced no result, but no default option specified");
+				val=0; //calm, compiler
+			}
+		} else {
 			PTHROW(0, 0,
 				&method_name,
-				"produced no result, but no default specified");
+				"produced no result, but no options (no default) specified");
 			val=0; //calm, compiler
 		}
 	VDouble& result=*new(pool) VDouble(pool, val);
@@ -125,8 +134,8 @@ MDouble::MDouble(Pool& apool) : Methoded(apool) {
 	// ^double.format{format}
 	add_native_method("format", Method::CT_DYNAMIC, _string_format, 1, 1);
 	
-	// ^double:sql[query]
-	// ^double:sql[query](default)
+	// ^sql[query]
+	// ^sql[query][$.limit(1) $.offset(2) $.default(0.0)]
 	add_native_method("sql", Method::CT_STATIC, _sql, 1, 2);
 }
 // global variable

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: table.C,v 1.99 2001/08/03 11:54:19 parser Exp $"; 
+static const char *RCSId="$Id: table.C,v 1.100 2001/08/07 13:54:13 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -616,15 +616,18 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 	Value& statement=params->as_junction(0, "statement must be code");
 
 	ulong limit=0;
-	if(params->size()>1) {
-		Value& limit_code=params->as_junction(1, "limit must be expression");
-		limit=(uint)r.process(limit_code).as_double();
-	}
-
 	ulong offset=0;
-	if(params->size()>2) {
-		Value& offset_code=params->as_junction(2, "offset must be expression");
-		offset=(ulong)r.process(offset_code).as_double();
+	if(params->size()>1) {
+		Value& options_param=params->as_no_junction(1, "options must be hash, not code");
+		if(Hash *options=options_param.get_hash()) {
+			if(Value *vlimit=(Value *)options->get(*sql_limit_name))
+				limit=(ulong)r.process(*vlimit).as_double();
+			if(Value *voffset=(Value *)options->get(*sql_offset_name))
+				offset=(ulong)r.process(*voffset).as_double();
+		} else
+			PTHROW(0, 0,
+				&method_name,
+				"options must be hash");
 	}
 
 	Temp_lang temp_lang(r, String::UL_SQL);
@@ -812,8 +815,9 @@ MTable::MTable(Pool& apool) : Methoded(apool) {
 	add_native_method("join", Method::CT_DYNAMIC, _join, 1, 1);
 
 
-	// ^table:sql[query][(count[;offset])]
-	add_native_method("sql", Method::CT_DYNAMIC, _sql, 1, 3);
+	// ^table:sql[query]
+	// ^table:sql[query][$.limit(1) $.offset(2)]
+	add_native_method("sql", Method::CT_DYNAMIC, _sql, 1, 2);
 
 	// ^table:dir[path]
 	// ^table:dir[path][regexp]

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_globals.C,v 1.69 2001/08/06 16:18:26 parser Exp $"; 
+static const char *RCSId="$Id: pa_globals.C,v 1.70 2001/08/07 13:54:13 parser Exp $"; 
 
 #include "pa_globals.h"
 #include "pa_string.h"
@@ -59,6 +59,11 @@ String *class_path_name;
 
 String *switch_data_name;
 String *case_default_value;
+
+String *sql_limit_name;
+String *sql_offset_name;
+String *sql_default_name;
+
 
 
 Hash *untaint_lang_name2enum;
@@ -149,6 +154,12 @@ void pa_globals_init(Pool& pool) {
 	//^switch ^case
 	switch_data_name=NEW String(pool, SWITCH_DATA_NAME);
 	case_default_value=NEW String(pool, CASE_DEFAULT_VALUE);
+
+	// sql
+	sql_limit_name=NEW String(pool, SQL_LIMIT_NAME);
+	sql_offset_name=NEW String(pool, SQL_OFFSET_NAME);
+	sql_default_name=NEW String(pool, SQL_DEFAULT_NAME);
+
 
 	// hashes
 	untaint_lang_name2enum=NEW Hash(pool);

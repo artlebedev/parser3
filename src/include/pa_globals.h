@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.h,v 1.59 2001/08/06 16:18:26 parser Exp $
+	$Id: pa_globals.h,v 1.60 2001/08/07 13:54:13 parser Exp $
 */
 
 #ifndef PA_GLOBALS_H
@@ -71,6 +71,10 @@ class Dictionary;
 
 #define CLASS_PATH_NAME "class_path"
 
+#define SQL_LIMIT_NAME "limit"
+#define SQL_OFFSET_NAME "offset"
+#define SQL_DEFAULT_NAME "default"
+
 //@}
 
 /// core func
@@ -131,6 +135,10 @@ extern String *class_path_name;
 
 extern String *switch_data_name;
 extern String *case_default_value;
+
+extern String *sql_limit_name;
+extern String *sql_offset_name;
+extern String *sql_default_name;
 
 //@}
 

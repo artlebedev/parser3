@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: string.C,v 1.69 2001/08/02 09:58:33 parser Exp $"; 
+static const char *RCSId="$Id: string.C,v 1.70 2001/08/07 13:54:13 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
@@ -304,7 +304,8 @@ public:
 	String *result;
 };
 #endif
-const String* sql_result_string(Request& r, const String& method_name, MethodParams *params) {
+const String* sql_result_string(Request& r, const String& method_name, MethodParams *params,
+								Hash *&options) {
 	Pool& pool=r.pool();
 
 	if(!r.connection)
@@ -314,6 +315,22 @@ const String* sql_result_string(Request& r, const String& method_name, MethodPar
 
 	Value& statement=params->as_junction(0, "statement must be code");
 
+	ulong limit=0;
+	ulong offset=0;
+	if(params->size()>1) {
+		Value& options_param=params->as_no_junction(1, "options must be hash, not code");
+		if(options=options_param.get_hash()) {
+			if(Value *vlimit=(Value *)options->get(*sql_limit_name))
+				limit=(ulong)r.process(*vlimit).as_double();
+			if(Value *voffset=(Value *)options->get(*sql_offset_name))
+				offset=(ulong)r.process(*voffset).as_double();
+		} else
+			PTHROW(0, 0,
+				&method_name,
+				"options must be hash");
+	} else
+		options=0;
+
 	Temp_lang temp_lang(r, String::UL_SQL);
 	const String& statement_string=r.process(statement).as_string();
 	const char *statement_cstr=
@@ -322,7 +339,7 @@ const String* sql_result_string(Request& r, const String& method_name, MethodPar
 	bool need_rethrow=false; Exception rethrow_me;
 	PTRY {
 		r.connection->query(
-			statement_cstr, 0, 0,
+			statement_cstr, offset, limit, 
 			handlers);
 	}
 	PCATCH(e) { // query problem
@@ -343,18 +360,26 @@ const String* sql_result_string(Request& r, const String& method_name, MethodPar
 static void _sql(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	const String *string=sql_result_string(r, method_name, params);
+	Hash *options;
+	const String *string=sql_result_string(r, method_name, params, options);
 	if(!string) {
-		if(params->size()>1) {
-			Value& default_code=params->as_junction(1, "default result must code");
-			Value& processed_code=r.process(default_code);
-			string=processed_code.get_string();
-			if(!string)
-				string=empty_string;
+		if(options) {
+			if(Value *vdefault=(Value *)options->get(*sql_default_name)) {
+				if(!vdefault->get_junction())
+					PTHROW(0, 0,
+						&method_name,
+						"default option must be code");
+				string=r.process(*vdefault).get_string();
+				if(!string)
+					string=empty_string;
+			} else
+				PTHROW(0, 0,
+					&method_name,
+					"produced no result, but no default option specified");
 		} else
 			PTHROW(0, 0,
 				&method_name,
-				"produced no result, but no default specified");
+				"produced no result, but no options (no default) specified");
 	}
 	VString& result=*new(pool) VString(*string);
 	result.set_name(method_name);
@@ -403,8 +428,8 @@ MString::MString(Pool& apool) : Methoded(apool) {
 	// ^string.tolower[]
 	add_native_method("lower", Method::CT_DYNAMIC, _lower, 0, 0);
 
-	// ^string:sql[query]
-	// ^string:sql[query]{default}
+	// ^sql[query]
+	// ^sql[query][$.limit(1) $.offset(2) $.default[n/a]]
 	add_native_method("sql", Method::CT_STATIC, _sql, 1, 2);
 }	
 

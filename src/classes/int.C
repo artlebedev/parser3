@@ -5,9 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: int.C,v 1.31 2001/07/27 12:59:36 parser Exp $
+	$Id: int.C,v 1.32 2001/08/07 13:54:13 parser Exp $
 */
-static const char *RCSId="$Id: int.C,v 1.31 2001/07/27 12:59:36 parser Exp $"; 
+static const char *RCSId="$Id: int.C,v 1.32 2001/08/07 13:54:13 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
@@ -77,21 +77,30 @@ static void _mod(Request& r, const String&, MethodParams *params) { vint_op(r, p
 // from string.C
 extern 
 const String* sql_result_string(Request& r, const String& method_name, 
-								MethodParams *params);
+								MethodParams *params,
+								Hash *&options);
 
 static void _sql(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
 	int val;
-	if(const String *string=sql_result_string(r, method_name, params))
+	Hash *options;
+	if(const String *string=sql_result_string(r, method_name, params, options))
 		val=string->as_int();
 	else
-		if(params->size()>1)
-			val=params->as_int(1, r);
-		else {
+		if(options) {
+			if(Value *vdefault=(Value *)options->get(*sql_default_name))
+				val=r.process(*vdefault).as_int();
+			else {
+				PTHROW(0, 0,
+					&method_name,
+					"produced no result, but no default option specified");
+				val=0; //calm, compiler
+			}
+		} else {
 			PTHROW(0, 0,
 				&method_name,
-				"produced no result, but no default specified");
+				"produced no result, but no options (no default) specified");
 			val=0; //calm, compiler
 		}
 	VInt& result=*new(pool) VInt(pool, val);
@@ -128,8 +137,8 @@ MInt::MInt(Pool& apool) : Methoded(apool) {
 	// ^int.format{format}
 	add_native_method("format", Method::CT_DYNAMIC, _string_format, 1, 1);
 
-	// ^int:sql[query]
-	// ^int:sql[query](default)
+	// ^sql[query]
+	// ^sql[query][$.limit(1) $.offset(2) $.default(0)]
 	add_native_method("sql", Method::CT_STATIC, _sql, 1, 2);
 }
 // global variable
