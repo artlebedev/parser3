@@ -316,7 +316,28 @@ OK
 	$.from[paf@design.ru]
 	$.to[паф <paf@design.ru>, паф дома <pafhome@design.ru>]
 #	$.bcc[pafhome@design.ru]
-	$.subject[проверка,тут2]
+#	$.cc[pafhome@design.ru]
+	$.subject[проверка два в to]
+	$.text[привет]
+]
+
+@manyto[]
+^mail:send[
+	$.from[paf@design.ru]
+	$.to[паф <paf@design.ru>]
+	$.bcc[паф дома <pafhome@design.ru>]
+#	$.cc[pafhome@design.ru]
+	$.subject[проверка to,bcc]
+	$.text[привет]
+]
+
+@manyto[]
+^mail:send[
+	$.from[paf@design.ru]
+	$.to[паф <paf@design.ru>]
+#	$.bcc[паф дома <pafhome@design.ru>]
+	$.cc[паф дома <pafhome@design.ru>]
+	$.subject[проверка to,cc]
 	$.text[привет]
 ]
 

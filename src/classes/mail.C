@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_MAIL_C="$Date: 2002/12/05 09:41:56 $";
+static const char* IDENT_MAIL_C="$Date: 2002/12/05 15:00:00 $";
 
 #include "pa_config_includes.h"
 
@@ -96,13 +96,14 @@ static const String& attach_hash_to_string(Request& r, const String& origin_stri
 struct Mail_info {
 	Charset *charset; const char *content_charset_name;
 	String *header;
-	const String **from, **to;
+	const String **from;
+	String **to;
 	const String *errors_to;
 	bool mime_version_specified;
 };
 #endif
 
-const String& extractEmail(const String& string);
+String& extractEmails(const String& string);
 static void add_header_attribute(const Hash::Key& raw_element_name, Hash::Val *aelement_value, 
 								 void *info) {
 	Value& element_value=*static_cast<Value *>(aelement_value);
@@ -116,11 +117,11 @@ static void add_header_attribute(const Hash::Key& raw_element_name, Hash::Val *a
 
 	// fetch from & to from header for SMTP
 	if(mi.from && low_element_name=="from")
-		*mi.from=&extractEmail(element_value.as_string());
+		*mi.from=&extractEmails(element_value.as_string());
 	if(mi.to && low_element_name=="to")
-		*mi.to=&extractEmail(element_value.as_string());
+		*mi.to=&extractEmails(element_value.as_string());
 	if(low_element_name=="errors-to")
-		mi.errors_to=&extractEmail(element_value.as_string());
+		mi.errors_to=&extractEmails(element_value.as_string());
 	if(low_element_name=="mime-version")
 		mi.mime_version_specified=true;
 
@@ -171,7 +172,7 @@ static int sort_cmp_string_double_value(const void *a, const void *b) {
 }
 static const String& message_hash_to_string(Request& r, const String& method_name, 
 										   Hash& message_hash, int level,
-										   const String **from, const String **to) {
+										   const String **from, String **to) {
 	Pool& pool=r.pool();
 
 	// prepare header: 'hash' without "body"
@@ -402,10 +403,18 @@ static void _send(Request& r, const String& method_name, MethodParams *params) {
 			&method_name,
 			"message must be hash");
 
-	const String *from, *to;
+	const String *from;
+	String *to;
+	String **to_param=
+#ifdef WIN32
+		&to
+#else
+		0
+#endif
+		;
 	const String& message=hash->get(*body_name)/*old format*/?
-		message_hash_to_string(r, method_name, *hash, 0, &from, &to) : // old
-		static_cast<VMail *>(r.get_self())->message_hash_to_string(r, &method_name, hash, 0, &from, &to); // new
+		message_hash_to_string(r, method_name, *hash, 0, &from, to_param) : // old
+		static_cast<VMail *>(r.get_self())->message_hash_to_string(r, &method_name, hash, 0, &from, to_param); // new
 
 	//r.write_pass_lang(message);
 	sendmail(r, method_name, message, from, to);

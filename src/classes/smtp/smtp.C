@@ -7,7 +7,7 @@
 	Parts of the code here is based upon an early gensock and blat
 */
 
-static const char* IDENT_SMTP_C="$Date: 2002/12/05 13:00:53 $";
+static const char* IDENT_SMTP_C="$Date: 2002/12/05 15:00:01 $";
 
 #include "pa_exception.h"
 #include "smtp.h"
@@ -506,7 +506,7 @@ void SMTP::
 Send(const char *server, const char *service, const char *msg, char *from, char *to)
 {
 #ifdef DEBUG_SHOW
-	throw Exception("paf.debug",0,"%s|%s|%s", from, to, msg);
+	throw Exception("paf.debug",0,"from=%s|to=%s|msg=%s", from,to,msg);
 #endif
 
     prepare_message( from, to, server, service);

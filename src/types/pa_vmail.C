@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char* IDENT_VMAIL_C="$Date: 2002/12/05 12:53:48 $";
+static const char* IDENT_VMAIL_C="$Date: 2002/12/05 15:00:01 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -330,7 +330,8 @@ void VMail::fill_received(Request& r) {
 struct Store_message_element_info {
 	Charset *charset;
 	String *header;
-	const String **from, **to;
+	const String **from;
+	String **to;
 	const String *errors_to;
 	bool mime_version_specified;
 	Array *parts[P_TYPES_COUNT];
@@ -366,18 +367,9 @@ static char *trimBoth(char *s) {
 	// return it
 	return s;
 }
-/*nonstatic*/const String& extractEmail(const String& string) { // used in classes/mail.C, which supported for backward compatibility 
-	Pool& pool=string.pool();
-
-	char *email=string.cstr();
-	rsplit(email, ','); // take first email of the list,of,emails
-	rsplit(email, '>');
-	char *next=rsplit(email, '<');
-	if(next) email=next;
+static void extractEmail(String& result, char *email, const String& origin_string) {
 	email=trimBoth(email);
-
-	String& result=*new(pool) String(pool);
-	result.APPEND_TAINTED(email, 0, string.origin().file, string.origin().line);
+	result.APPEND_TAINTED(email, 0, origin_string.origin().file, origin_string.origin().line);
 
 	/*
 		http://www.faqs.org/rfcs/rfc822.html
@@ -416,8 +408,23 @@ static char *trimBoth(char *s) {
 			"email contains bad characters (control)");
 	if(result.is_empty())
 		throw Exception(exception_type,
-			&string,
+			&origin_string,
 			"email is empty");
+}
+
+/*nonstatic*/String& extractEmails(const String& string) { // used in classes/mail.C, which supported for backward compatibility 
+	Pool& pool=string.pool();
+
+	char *emails=string.cstr();
+	String& result=*new(pool) String(pool);
+	while(char *email=lsplit(&emails, ',')) {
+		rsplit(email, '>');
+		if(char *in_brackets=lsplit(email, '<'))
+			email=in_brackets;
+		if(!result.is_empty())
+			result<<",";
+		extractEmail(result, email, string);
+	}
 
 	return result;
 }
@@ -450,22 +457,40 @@ static void store_message_element(const Hash::Key& raw_element_name, Hash::Val *
 		}
 	}
 
+	bool skip=false;
+
 	// fetch some special headers
 	if(i.from && low_element_name=="from")
-		*i.from=&extractEmail(element_value.as_string());
-	if(i.to && low_element_name=="to")
-		*i.to=&extractEmail(element_value.as_string());
+		*i.from=&extractEmails(element_value.as_string());
+	if(i.to) { // defined only on WIN32, see mail.C [collecting info for RCPT to-s]
+		bool is_to=low_element_name=="to" ;
+		bool is_cc=low_element_name=="cc" ;
+		bool is_bcc=low_element_name=="bcc" ;
+		if(is_to||is_cc||is_bcc) {
+			Pool& pool=element_value.pool();
+			if(!*i.to)
+				*i.to=new(pool) String(pool);
+			else
+				**i.to << ",";
+			**i.to << extractEmails(element_value.as_string());
+		}
+
+		if(is_bcc) // blinding it
+			skip=true;
+	}
 	if(low_element_name=="errors-to")
-		i.errors_to=&extractEmail(element_value.as_string());	
+		i.errors_to=&extractEmails(element_value.as_string());	
 	if(low_element_name=="mime-version")
 		i.mime_version_specified=true;
 
-	// append header line
-	*i.header << 
-		raw_element_name << ":" << 
-		attributed_meaning_to_string(element_value, String::UL_MAIL_HEADER, true).
-			cstr(String::UL_UNSPECIFIED, 0, i.charset, i.charset?i.charset->name().cstr():0) << 
-		"\n";
+	if(!skip) {
+		// append header line
+		*i.header << 
+			raw_element_name << ":" << 
+			attributed_meaning_to_string(element_value, String::UL_MAIL_HEADER, true).
+				cstr(String::UL_UNSPECIFIED, 0, i.charset, i.charset?i.charset->name().cstr():0) << 
+			"\n";
+	}
 
 	// has content type?
 	if(low_element_name==CONTENT_TYPE_NAME)
@@ -578,7 +603,7 @@ static const String& text_value_to_string(Request& r, const String *source,
 /// @todo files and messages in order (file, file2, ...)
 const String& VMail::message_hash_to_string(Request& r, const String *source,
 											Hash *message_hash, int level, 
-											const String **from, const String **to) {
+											const String **from, String **to) {
 	Pool& pool=r.pool();
 	
 	if(!message_hash)
