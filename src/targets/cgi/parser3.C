@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 */
-static const char *RCSId="$Id: parser3.C,v 1.101 2001/09/03 17:07:02 parser Exp $"; 
+static const char *RCSId="$Id: parser3.C,v 1.102 2001/09/04 07:02:33 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -272,15 +272,15 @@ int main(int argc, char *argv[]) {
 			);
 		
 		// some root-controlled location
-#ifdef WIN32
+#ifdef SYSCONFDIR
+		const char *root_auto_path=SYSCONFDIR;
+#else
+#	ifdef WIN32
 		// c:\windows
 		static char root_auto_path[MAX_STRING];
 		GetWindowsDirectory(root_auto_path, MAX_STRING);
-#else
-#	ifdef SYSCONFDIR
-		const char *root_auto_path=SYSCONFDIR;
 #	else
-		const char *root_auto_path="/etc";
+		#error must be compiled either configure/make or MSVC++
 #	endif
 #endif
 		

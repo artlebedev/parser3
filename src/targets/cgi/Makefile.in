@@ -75,12 +75,14 @@ MAKEINFO = @MAKEINFO@
 OBJDUMP = @OBJDUMP@
 PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
-SYSCONFDIR = @SYSCONFDIR@
 VERSION = @VERSION@
 YACC = @YACC@
 host_os = @host_os@
 
 INCLUDES = -I../../classes -I../../types -I$(INCLTDL) -I../../sql
+
+#for sysadmin-controlled auto.p
+CPPFLAGS =  -DSYSCONFDIR=\"$(sysconfdir)\"
 
 bin_PROGRAMS = parser3
 parser3_SOURCES = pa_pool.C pa_threads.C parser3.C
@@ -92,7 +94,6 @@ PROGRAMS =  $(bin_PROGRAMS)
 
 
 DEFS = @DEFS@ -I. -I$(srcdir) -I../../include
-CPPFLAGS = @CPPFLAGS@
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
 parser3_OBJECTS =  pa_pool.o pa_threads.o parser3.o
