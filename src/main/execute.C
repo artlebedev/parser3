@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: execute.C,v 1.188 2001/08/02 06:54:12 parser Exp $"; 
+static const char *RCSId="$Id: execute.C,v 1.189 2001/08/02 08:58:59 parser Exp $"; 
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -117,11 +117,12 @@ void Request::execute(const Array& ops) {
 	debug_printf(pool(), "execution-------------------------\n");
 #endif
 
-	int size=ops.quick_size();
+	//int size=ops.quick_size();
 	//debug_printf(pool(), "size=%d\n", size);
-	for(int i=0; i<size; i++) {
+	for(int i=0; i<ops.size(); i++) {
 		Operation op;
-		op.cast=ops.quick_get(i);
+		//op.cast=ops.quick_get(i);
+		op.cast=ops.get(i);
 #ifdef DEBUG_EXECUTE
 		debug_printf(pool(), "%d:%s", stack.top_index()+1, opcode_name[op.code]);
 #endif
