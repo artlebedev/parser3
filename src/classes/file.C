@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_FILE_C="$Date: 2002/11/25 14:57:32 $";
+static const char* IDENT_FILE_C="$Date: 2002/12/26 12:39:25 $";
 
 #include "pa_config_includes.h"
 
@@ -578,8 +578,12 @@ static void _fullpath(Request& r, const String& method_name, MethodParams *param
 		// /some/page.html: ^file:fullpath[a.gif] => /some/a.gif
 		const String& full_disk_path=r.absolute(file_spec);
 		size_t document_root_length=strlen(r.info.document_root);
-		if(document_root_length>0)
-			--document_root_length;
+
+		if(document_root_length>0) {
+			char last_char=r.info.document_root[document_root_length-1];
+			if(last_char == '/' || last_char == '\\')
+				--document_root_length;
+		}
 		result=&full_disk_path.mid(document_root_length,  full_disk_path.size());
 	}
 	r.write_assign_lang(*result);
