@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: root.C,v 1.20 2001/03/12 09:35:01 paf Exp $
+	$Id: root.C,v 1.21 2001/03/12 09:40:59 paf Exp $
 */
 
 #include <string.h>
@@ -65,7 +65,7 @@ static void _process(Request& r, const String& name, Array *params) {
 #endif	
 
 	VClass& self_class=*r.self->get_class();
-	// temporarily zero @main so to maybe-replace it in processed code
+	// temporary zero @main so to maybe-replace it in processed code
 	Temp_method temp_method(self_class, *main_method_name, 0);
 
 	// process source code, append processed methods to 'self' class
@@ -73,12 +73,9 @@ static void _process(Request& r, const String& name, Array *params) {
 	r.use_buf(source.cstr(), place, &self_class);
 
 	// maybe-execute @main[]
-	if(Value *value=r.self->get_element(*main_method_name)) { // found some 'main' element
-		if(Junction *junction=value->get_junction()) // it even has junction!
-			if(const Method *method=junction->method) { // and junction is method-junction! call it
-				// execute!	
-				r.execute(*method->parser_code);
-			}
+	if(const Method *method=self_class.get_method(*main_method_name)) {
+		// execute!	
+		r.execute(*method->parser_code);
 	}
 }
 	

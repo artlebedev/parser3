@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.92 2001/03/12 09:08:51 paf Exp $
+	$Id: execute.C,v 1.93 2001/03/12 09:41:00 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -642,37 +642,33 @@ Value& Request::process(Value& value, const String *name, bool intercept_string)
 }
 
 char *Request::execute_static_method(VClass& vclass, String& method_name, bool return_cstr) {
-	if(Value *value=vclass.get_element(method_name)) { // found some 'METHOD_NAME' element
-		if(Junction *junction=value->get_junction()) {// it even has junction!
-			if(const Method *method=junction->method) { // and junction is method-junction! call it
-				PUSH(self);  
-				PUSH(root);  
-				PUSH(rcontext);  
-				PUSH(wcontext);
-				
-				// initialize contexts
-				root=rcontext=self=&vclass;
-				wcontext=NEW WWrapper(pool(), &vclass, false /* not constructing */);
-				
-				// execute!	
-				execute(*method->parser_code);
-				
-				// result
-				char *result;
-				if(return_cstr)
-					result=wcontext->get_string()->cstr(); // chars
-				else
-					result=0; // ignore result
-
-				wcontext=static_cast<WContext *>(POP());  
-				rcontext=POP();  
-				root=POP();  
-				self=static_cast<VAliased *>(POP());
-
-				// return
-				return result;
-			}
-		}
+	if(const Method *method=vclass.get_method(method_name)) {
+		PUSH(self);  
+		PUSH(root);  
+		PUSH(rcontext);  
+		PUSH(wcontext);
+		
+		// initialize contexts
+		root=rcontext=self=&vclass;
+		wcontext=NEW WWrapper(pool(), &vclass, false /* not constructing */);
+		
+		// execute!	
+		execute(*method->parser_code);
+		
+		// result
+		char *result;
+		if(return_cstr)
+			result=wcontext->get_string()->cstr(); // chars
+		else
+			result=0; // ignore result
+		
+		wcontext=static_cast<WContext *>(POP());  
+		rcontext=POP();  
+		root=POP();  
+		self=static_cast<VAliased *>(POP());
+		
+		// return
+		return result;
 	}
 	return 0;
 }

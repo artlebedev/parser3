@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vclass.h,v 1.4 2001/03/12 09:31:26 paf Exp $
+	$Id: pa_vclass.h,v 1.5 2001/03/12 09:41:00 paf Exp $
 */
 
 #ifndef PA_VCLASS_H
@@ -40,6 +40,10 @@ public: // usage
 		fbase(0),
 		ffields(apool),
 		fmethods(apool) {
+	}
+
+	Method *get_method(const String& name) { 
+		return static_cast<Method *>(fmethods.get(name)); 
 	}
 
 	void add_method(const String& name, Method& method) {
@@ -97,12 +101,6 @@ private:
 
 private: // Temp_method
 
-	// object_class: (field)=STATIC.value;(STATIC)=hash;(method)=method_ref with self=object_class
-	Method *get_method(const String& name) { 
-		return static_cast<Method *>(fmethods.get(name)); 
-	}
-
-	// object_class, operator_class: (field)=value - static values only
 	void put_method(const String& name, Method *method) { fmethods.put(name, method); }
 	
 private:
