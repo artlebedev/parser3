@@ -1,5 +1,5 @@
 /*
-$Id: core.C,v 1.33 2001/02/24 13:21:59 paf Exp $
+$Id: core.C,v 1.34 2001/02/24 14:20:51 paf Exp $
 */
 
 #include "pa_request.h"
@@ -19,7 +19,7 @@ void Request::core() {
 	TRY {
 		String name_RUN(pool()); name_RUN.APPEND_CONST("RUN");
 		char *result=execute_MAIN(construct_class(name_RUN, load_and_compile_RUN()));
-		printf("result-----------------\n%s\nEOF----------------\n", result);
+		printf("result-----------------\n%sEOF----------------\n", result);
 	} 
 	CATCH(e) {
 		printf("\nERROR: ");

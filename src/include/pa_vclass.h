@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vclass.h,v 1.12 2001/02/24 13:21:58 paf Exp $
+  $Id: pa_vclass.h,v 1.13 2001/02/24 14:17:08 paf Exp $
 */
 
 #ifndef PA_VCLASS_H
@@ -7,6 +7,7 @@
 
 #include "pa_value.h"
 #include "pa_vhash.h"
+#include "pa_vstring.h"
 #include "pa_vjunction.h"
 
 class VClass : public Value {
@@ -17,9 +18,15 @@ public: // Value
 
 	// object_class: (field)=STATIC.value;(STATIC)=hash;(method)=method_ref with self=object_class
 	Value *get_element(const String& name) {
+		// $NAME=name()
+		if(name==NAME_NAME)
+			return NEW VString(VClass::name());
+		// $PARENTS=parents table
+		if(name==PARENTS_NAME)
+			return 0;// TODO: table of parents
 		// $STATIC=STATIC hash
-		if(name==STATIC_NAME)
-			return &STATIC;
+		if(name==STATICS_NAME)
+			return &STATICS;
 
 		// $method=junction(this+method)
 		if(Method *method=static_cast<Method *>(methods.get(name))) {
@@ -31,12 +38,12 @@ public: // Value
 		}
 
 		// $field=STATIC.field
-		return STATIC.get_element(name);
+		return STATICS.get_element(name);
 	}
 
 	// object_class, operator_class: (field)=value - static values only
 	void put_element(const String& name, Value *value) {
-		STATIC.put_element(name, value);
+		STATICS.put_element(name, value);
 	}
 
 	// object_class, object_instance: object_class
@@ -54,7 +61,7 @@ public: // usage
 
 	VClass(Pool& apool, const Array& immediate_parents) : 
 		Value(apool), 
-		STATIC(apool),
+		STATICS(apool),
 		methods(apool),
 		parents(apool),
 		parents_hash(apool) {
@@ -72,7 +79,7 @@ public: // usage
 
 public: //usage
 
-	VHash STATIC;
+	VHash STATICS;
 
 private:
 

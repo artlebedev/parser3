@@ -1,5 +1,5 @@
 /*
-  $Id: pa_value.h,v 1.26 2001/02/24 13:18:19 paf Exp $
+  $Id: pa_value.h,v 1.27 2001/02/24 14:17:08 paf Exp $
 */
 
 /*
@@ -13,6 +13,11 @@
 #include "pa_string.h"
 #include "pa_array.h"
 //#include "pa_voperator.h"
+
+#define NAME_NAME "NAME"
+#define PARENTS_NAME "PARENTS"
+#define STATIC_NAME "STATIC"
+#define STATICS_NAME "STATICS"
 
 class Value;
 class VClass;
@@ -81,7 +86,7 @@ public: // Value
 
 	// all: for error reporting after fail(), etc
 	virtual const char *type() const =0;
-	const String *name() const { return fname; }
+	/*const*/ String *name() const { return fname; }
 
 	// string: value
 	// unknown: ""
@@ -127,7 +132,7 @@ public: // usage
 
 	Value(Pool& apool) : Pooled(apool), fname(0) {}
 
-	void set_name(const String& aname) { fname=&aname; }
+	void set_name(String& aname) { fname=&aname; }
 
 	String& as_string() {
 		String *result=get_string(); 
@@ -138,7 +143,7 @@ public: // usage
 
 private:
 
-	const String *fname;
+	String *fname;
 
 private: 
 

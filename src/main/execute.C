@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.36 2001/02/24 11:46:03 paf Exp $
+  $Id: execute.C,v 1.37 2001/02/24 14:20:51 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -101,14 +101,9 @@ void Request::execute(const Array& ops) {
 			}
 			
 			// OP_WITH
-		case OP_WITH_WRITE: 
+		case OP_WITH_SELF: 
 			{
-				PUSH(wcontext);
-				break;
-			}
-		case OP_WITH_READ: 
-			{
-				PUSH(rcontext);
+				PUSH(self);
 				break;
 			}
 		case OP_WITH_ROOT: 
@@ -116,13 +111,28 @@ void Request::execute(const Array& ops) {
 				PUSH(root);
 				break;
 			}
-		case OP_WITH_SELF: 
+		case OP_WITH_READ: 
 			{
-				PUSH(self);
+				PUSH(rcontext);
+				break;
+			}
+		case OP_WITH_WRITE: 
+			{
+				PUSH(wcontext);
 				break;
 			}
 			
 			// ...
+		case OP_CONSTRUCT:
+			{
+				Value *value=POP();
+				String& name=POP_NAME();
+				Value *ncontext=POP();
+				value->set_name(name);
+				ncontext->put_element(name, value);
+				break;
+			}
+			// TODO: OP_EXPRESSION_EVAL,	OP_MODIFY_EVAL,
 		case OP_WRITE:
 			{
 				Value *value=POP();
@@ -144,15 +154,6 @@ void Request::execute(const Array& ops) {
 				break;
 			}
 
-		case OP_CONSTRUCT:
-			{
-				Value *value=POP();
-				String& name=POP_NAME();
-				Value *ncontext=POP();
-				value->set_name(name);
-				ncontext->put_element(name, value);
-				break;
-			}
 
 		case OP_CREATE_EWPOOL:
 			{
@@ -187,6 +188,7 @@ void Request::execute(const Array& ops) {
 				break;
 			}
 
+			// CALL
 		case OP_GET_METHOD_FRAME:
 			{
 				Value *value=POP();

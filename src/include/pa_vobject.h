@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vobject.h,v 1.1 2001/02/24 13:18:19 paf Exp $
+  $Id: pa_vobject.h,v 1.2 2001/02/24 14:17:08 paf Exp $
 */
 
 #ifndef PA_VOBJECT_H
@@ -18,7 +18,7 @@ public: // Value
 	Value *get_element(const String& name) {
 		// $STATIC=STATIC hash
 		if(name==STATIC_NAME)
-			return &vclass.STATIC;
+			return &vclass.STATICS;
 
 		// $method=junction(this+method)
 		if(Method *method=static_cast<Method *>(vclass.methods.get(name))) {
