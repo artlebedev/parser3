@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: table.C,v 1.103 2001/08/10 07:13:07 parser Exp $"; 
+static const char *RCSId="$Id: table.C,v 1.104 2001/08/10 10:45:50 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -442,7 +442,7 @@ static void _sort(Request& r, const String& method_name, MethodParams *params) {
 
 	bool reverse=params->size()==2/*..[desc|asc|]*/?
 		reverse=params->as_no_junction(1, "order must not be code").as_string()=="desc":
-		true;
+		false; // default=asc
 
 	Table& old_table=static_cast<VTable *>(r.self)->table();
 	Table& new_table=*new(pool) Table(pool, &method_name, old_table.columns());
