@@ -6,3 +6,11 @@
 
 /* Define if you have the shl_load function.  */
 #undef HAVE_SHL_LOAD
+
+
+
+/* Define to `unsigned int' if <sys/types.h> does not define. */
+#undef size_t
+
+/* Define to `int' if <sys/types.h> does not define. */
+#undef ssize_t

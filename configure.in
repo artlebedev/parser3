@@ -248,7 +248,7 @@ AC_ARG_WITH(shared-mailreceive,[  --with-shared-mailreceive=D is the directory w
     	AC_MSG_ERROR($GNOME_MIME does not seem to be valid Gnome installation directory)
     fi
 
-    AC_DEFINE(WITH_MAILRECEIVE,,has $mail:received (uses shared library))
+    AC_DEFINE(WITH_MAILRECEIVE,,has \$mail:received (uses shared library))
     
     LIBMIME_SO_NAME=`cd $MIMELIB ; ls libgmime.?? libgmime.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
 
@@ -278,7 +278,7 @@ AC_ARG_WITH(static-mailreceive,[  --with-static-mailreceive=D is the directory w
     	AC_MSG_ERROR($GNOME_MIME does not seem to be valid Gnome installation directory)
     fi
 
-    AC_DEFINE(WITH_MAILRECEIVE,,has $mail:received (uses static library))
+    AC_DEFINE(WITH_MAILRECEIVE,,has \$mail:received (uses static library))
 
     if test -z "$GLIB_CONFIG"; then
 	    GLIB_CONFIG=$MIMEBIN/glib-config
@@ -372,6 +372,10 @@ fi
 dnl Checks for typedefs, structures, and compiler characteristics.
 
 AC_TYPE_SIZE_T
+dnl gmime
+AC_CHECK_TYPE(off_t, long)
+AC_CHECK_TYPE(ssize_t, int)
+
 
 dnl Checks for header files.
 
