@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.39 2001/02/25 08:50:13 paf Exp $
+  $Id: compile.y,v 1.40 2001/02/25 09:03:17 paf Exp $
 */
 
 %{
@@ -409,21 +409,23 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 		} else
 			PC->col++;
 
-		/* escaping: ^^ ^$ ^; ^) ^} ^( ^{ */
+		// escaping: ^^ ^$ ^; ^) ^} ^( ^{
 		if(c=='^') {
-			char pending_c=*PC->source;
+			char next_c=*PC->source;
 
-			if(pending_c=='^' || pending_c=='$' || pending_c==';' ||
-				pending_c=='(' || pending_c==')' ||
-				pending_c=='{' || pending_c=='}') {
-				/* append piece till ^ */
-				PC->string->APPEND(begin, end-begin, PC->file, begin_line);
-				/* reset piece 'start' position & line */
-				begin=PC->source/*^*/;
+			if(next_c=='^' || next_c=='$' || next_c==';' ||
+				next_c=='(' || next_c==')' ||
+				next_c=='{' || next_c=='}') {
+				if(end!=begin) {
+					// append piece till ^
+					PC->string->APPEND(begin, end-begin, PC->file, begin_line);
+				}
+				// reset piece 'start' position & line
+				begin=PC->source; // ^
 				begin_line=PC->line;
-				/* skip over ^ and _ */
-				PC->source+=2;
-				/* skip analysis = forced literal */
+				// skip over ^ and _
+				PC->source++;
+				// skip analysis = forced literal
 				continue;
 			}
 		}
