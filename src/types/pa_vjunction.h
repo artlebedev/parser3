@@ -8,7 +8,7 @@
 #ifndef PA_VJUNCTION_H
 #define PA_VJUNCTION_H
 
-static const char* IDENT_VJUNCTION_H="$Date: 2002/10/15 08:31:57 $";
+static const char* IDENT_VJUNCTION_H="$Date: 2002/10/15 15:37:11 $";
 
 #include "pa_value.h"
 #include "pa_vbool.h"
@@ -22,10 +22,13 @@ public: // VJunction
 	/// VJunction: 0
 	VStateless_class *get_class() { return 0; }
 
-	/// VJunction: true
-	bool as_bool() const { return true; }
+	/// VJunction: false
+	/*override*/ bool is_defined() const { return false; }
 
-	/// VJunction: true
+	/// VJunction: false
+	/*override*/ bool as_bool() const { return is_defined(); }
+
+	/// VJunction: false
 	Value *as_expr_result(bool) { return NEW VBool(pool(), as_bool()); }
 
 	/// VJunction: method, root,self,rcontext, code

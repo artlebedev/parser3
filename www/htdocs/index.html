@@ -268,7 +268,12 @@ $response:charset[windows-1251]
 #^fortestsep[]
 #^derived:inclass_process_test[]
 #$derived[^derived::create[]]^derived.inclass_process_test[]
-^domorigint[]
+#^domorigint[]
+^junctiontest2[]
+
+@junctiontest2[]
+^if($if is junction){is junction;not junction}<br>
+^if(def $if){defined;not defined}<br>
 
 @domorigint[]
 $xdoc[^xdoc::create[вася]]
