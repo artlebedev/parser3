@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: untaint.C,v 1.9 2001/03/19 20:46:38 paf Exp $
+	$Id: untaint.C,v 1.10 2001/03/20 06:45:19 paf Exp $
 */
 
 #include <string.h>
@@ -89,7 +89,7 @@ char *String::cstr() const {
 				memcpy(copy_here, row->item.ptr, row->item.size); 
 				copy_here+=row->item.size;
 				break;
-			case FILE:
+			case FILE_NAME:
 				// tainted, untaint language: file [name]
 				escape(
 					escape_value(' ', '_');

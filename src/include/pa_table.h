@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_table.h,v 1.17 2001/03/19 20:07:37 paf Exp $
+	$Id: pa_table.h,v 1.18 2001/03/20 06:45:18 paf Exp $
 */
 
 #ifndef PA_TABLE_H
@@ -43,12 +43,12 @@ public:
 	/// column names
 	const Array *columns() { return fcolumns; }
 
-	/// moves \a current pointer
+	/// moves @a current pointer
 	void set_current(int acurrent) { fcurrent=acurrent; }
 	/// @return current pointer
 	int get_current() { return fcurrent; }
 
-	/// @return item from \a column_name
+	/// @return item from @a column_name
 	const String *item(const String& column_name);
 
 private:

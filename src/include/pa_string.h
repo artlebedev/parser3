@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.46 2001/03/19 23:12:48 paf Exp $
+	$Id: pa_string.h,v 1.47 2001/03/20 06:45:18 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -47,17 +47,16 @@
 /** 
 	Pooled string.
 
-	Internal structure: @verbatim	
-
-	String				Chunk0
-	======				========
-	head--------------->[ptr, size, ...]
-	append_here-------->[ptr, size, ...]
-						.
-						.
-						[ptr, size, ...]
-	link_row----------->[link to the next chunk]
-
+	Internal structure:
+	@verbatim
+		String				Chunk0
+		======				========
+		head--------------->[ptr, size, ...]
+		append_here-------->[ptr, size, ...]
+							.
+							.
+							[ptr, size, ...]
+		link_row----------->[link to the next chunk]
 	@endverbatim
 
 	All pieces remember 
@@ -83,15 +82,15 @@ public:
 				leave language built into string being appended.
 				just a flag, that value not stored
 			*/
-		AS_IS,  ///< leave all characters intact
-		FILE,   ///< filename
-		HEADER, ///< text in response header
-		URI,    ///< text in uri
-		TABLE,  ///< ^table:set body
-		SQL,    ///< ^table:sql body
-		JS,     ///< JavaScript code
-		HTML,   ///< HTML code (for editing)
-		HTML_TYPO ///< HTML code with TYPOgraphic replacements (for showing)
+		AS_IS,     ///< leave all characters intact
+		FILE_NAME, ///< filename
+		HEADER,    ///< text in response header
+		URI,       ///< text in uri
+		TABLE,     ///< ^table:set body
+		SQL,       ///< ^table:sql body
+		JS,        ///< JavaScript code
+		HTML,      ///< HTML code (for editing)
+		HTML_TYPO  ///< HTML code with TYPOgraphic replacements (for showing)
 	};
 
 public:
@@ -122,8 +121,8 @@ public:
 	/** 
 		appends other String.
 
-		marking all tainted pieces of it with \a lang.
-		or marking ALL pieces of it with a \a lang when \a forced to.
+		marking all tainted pieces of it with @a lang.
+		or marking ALL pieces of it with a @a lang when @a forced to.
 	*/
 	String& append(const String& src, Untaint_lang lang, bool forced=false);
 

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.3 2001/03/19 21:39:30 paf Exp $
+	$Id: file.C,v 1.4 2001/03/20 06:45:16 paf Exp $
 */
 
 #include "pa_request.h"
@@ -17,17 +17,19 @@ VStateless_class *file_class;
 // methods
 
 static void _save(Request& r, const String& method_name, Array *params) {
-	//\Pool& pool=r.pool();
+	Pool& pool=r.pool();
 	Value *vfile_name=static_cast<Value *>(params->get(0));
 	// forcing
-	// ^save{this body type}
-	r.fail_if_junction_(false, *vfile_name, method_name, "file name must be junction");
+	// ^save[this body type]
+	r.fail_if_junction_(true, *vfile_name, 
+		method_name, "file name must not be junction");
 
-	{
-		Temp_lang temp_lang(r, String::Untaint_lang::FILE);
-		static_cast<VFile *>(r.self)->save(
-			r.absolute(r.process(*vfile_name).as_string().cstr()));
-	}
+	// forcing untaint language
+	String lfile_name(pool);
+	lfile_name.append(vfile_name->as_string(),
+		String::Untaint_lang::FILE_NAME, true);
+		
+	static_cast<VFile *>(r.self)->save(r.absolute(lfile_name.cstr()));
 }
 
 // initialize

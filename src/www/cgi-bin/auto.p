@@ -1,5 +1,5 @@
 @exception[origin;source;comment;type;code]
-ERROR: $origin '$source' ${comment}. ^if($type){type=$type }^if($code){code=$code}
+ERROR: ^if($source){$origin '$source' }${comment}. ^if($type){type=$type }^if($code){code=$code}
 
 @auto[]
 $limits[

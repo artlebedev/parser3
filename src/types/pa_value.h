@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.30 2001/03/19 23:07:24 paf Exp $
+	$Id: pa_value.h,v 1.31 2001/03/20 06:45:20 paf Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -26,7 +26,7 @@ class Junction;
 class Method;
 class Hash;
 
-///	grandfather of all \a values in \b Parser
+///	grandfather of all @a values in @b Parser
 class Value : public Pooled {
 public: // Value
 
@@ -106,7 +106,7 @@ public: // Value
 		- VFile: CLASS,BASE,method,field
 		*/
 	virtual Value *get_element(const String& name) { bark("(%s) does not have elements"); return 0; }
-	/** store Value element under \a name
+	/** store Value element under @a name
 		@return for
 		- VHash: (key)=value
 		- VStateless_object: (CLASS)=vclass;(BASE)=base;(method)=method_ref

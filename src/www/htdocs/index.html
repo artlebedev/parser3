@@ -1,4 +1,6 @@
-$request:uri
+$t[^table:load[проверка.cfg]]
+$t.a
+
 <form method=post enctype=multipart/form-data>
 <input name=photo type=file>
 <input type=submit>
@@ -9,6 +11,6 @@ $request:uri
 	^$form:photo.name='$form:photo.name'
 	^$form:photo.size='$form:photo.size'
 	^$form:photo.text='$form:photo.text'
-	^form:photo.save{paf.txt}
+	^form:photo.save[-вовка.txt]
 	</pre>
 }

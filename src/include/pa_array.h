@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_array.h,v 1.26 2001/03/19 17:42:12 paf Exp $
+	$Id: pa_array.h,v 1.27 2001/03/20 06:45:18 paf Exp $
 */
 
 #ifndef PA_ARRAY_H
@@ -20,17 +20,16 @@
 /**	
 	Pooled Array.
 
-	Internal structure: @verbatim	
-
-	Array               Chunk0
-	======              ========
-	head--------------->[ptr]
-	append_here-------->[ptr]
-	link_row            ........
-			.			.
-			.			[ptr]
-			...........>[link to the next chunk]
-
+	Internal structure:
+	@verbatim
+		Array               Chunk0
+		======              ========
+		head--------------->[ptr]
+		append_here-------->[ptr]
+		link_row            ........
+				.			.
+				.			[ptr]
+				...........>[link to the next chunk]
 	@endverbatim
 */
 

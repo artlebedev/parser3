@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_valiased.h,v 1.7 2001/03/19 22:38:11 paf Exp $
+	$Id: pa_valiased.h,v 1.8 2001/03/20 06:45:20 paf Exp $
 */
 
 #ifndef PA_VALIASED_H
@@ -40,7 +40,7 @@ class Temp_alias;
 		$na[^news_article:load[]]
 		^na.display[]
 	@endverbatim
-	here ^na.display[] call would go to \a article class
+	here ^na.display[] call would go to @a article class
 	then back to news_article:display_tail.
 
 	basically object's effective class changed twice:

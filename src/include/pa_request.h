@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.63 2001/03/19 19:17:43 paf Exp $
+	$Id: pa_request.h,v 1.64 2001/03/20 06:45:18 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -77,17 +77,17 @@ public:
 	/// executes ops
 	void execute(const Array& ops);
 
-	/// compiles the file, maybe forcing it's class \a name and \a base_class.
+	/// compiles the file, maybe forcing it's class @a name and @a base_class.
 	VStateless_class *use_file(
 		const char *file, bool fail_on_read_problem=true,
 		const String *name=0, 
 		VStateless_class *base_class=0); // core.C
-	/// compiles a \a source buffer
+	/// compiles a @a source buffer
 	VStateless_class *use_buf(
 		const char *source, const char *file,
 		VStateless_class *aclass=0, const String *name=0, 
 		VStateless_class *base_class=0); // core.C
-	/// processes any code-junction there may be inside of \a value
+	/// processes any code-junction there may be inside of @a value
 	Value& process(
 		Value& value, 
 		const String *name=0,
@@ -125,10 +125,10 @@ public:
 	/// handy is-value-a-junction ensurer
 	void fail_if_junction_(bool is, Value& value, const String& method_name, char *msg);
 
-	/// returns relative to \a path  path to \a file 
+	/// returns relative to @a path  path to @a file 
 	char *relative(const char *path, const char *file);
 
-	/// returns an absolute \a path to relative \a name
+	/// returns an absolute @a path to relative @a name
 	char *absolute(const char *name);
 
 public:

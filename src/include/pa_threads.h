@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_threads.h,v 1.9 2001/03/19 17:42:13 paf Exp $
+	$Id: pa_threads.h,v 1.10 2001/03/20 06:45:18 paf Exp $
 */
 
 #ifndef PA_THREADS_H
@@ -52,14 +52,13 @@ public:
 
 /** 
 	put it to first line of a function to ensure thread safety.
-
 	@verbatim
-	void someclass::somefunc(...) { SYNCHRONIZED(thread_safe);
-		...
-	}
+		void someclass::somefunc(...) { SYNCHRONIZED(thread_safe);
+			...
+		}
 	@endverbatim
 
-	considering \a thread_safe to be the object field to flag 
+	considering @a thread_safe to be the object field to flag 
 	whether safety is really needed in this particular object instance
 */
 #define SYNCHRONIZED(athread_safe) AutoSYNCHRONIZED autoSYNCHRONIZED(athread_safe)

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.20 2001/03/19 22:11:07 paf Exp $
+	$Id: table.C,v 1.21 2001/03/20 06:45:16 paf Exp $
 */
 
 #include "pa_common.h"
@@ -26,21 +26,29 @@ static void set_or_load(
 						bool is_load) {
 	Pool& pool=r.pool();
 	// data is last parameter
-	Value *vdata=static_cast<Value *>(params->get(params->size()-1));
+	Value *vdata_or_filename=static_cast<Value *>(params->get(params->size()-1));
 	// forcing
-	// ^load{this body type}
+	// ^load[this file name type]
 	// ^set{this body type}
-	r.fail_if_junction_(false, *vdata, method_name, "body must be junction");
+	r.fail_if_junction_(is_load, *vdata_or_filename, 
+		method_name, is_load?"file name must not be junction":"body must be junction");
 
 	// data or file_name
-	char *data_or_filename;
-	{
-		Temp_lang temp_lang(r, 
-			is_load ? String::Untaint_lang::FILE : String::Untaint_lang::TABLE);
-		data_or_filename=r.process(*vdata).as_string().cstr();
+	char *ldata_or_filename;
+	if(is_load) {
+		// forcing untaint language
+		String lfile_name(pool);
+		lfile_name.append(vdata_or_filename->as_string(),
+			String::Untaint_lang::FILE_NAME, true);
+		ldata_or_filename=lfile_name.cstr();
+	} else {
+		// suggesting untaint language
+		Temp_lang temp_lang(r, String::Untaint_lang::TABLE);
+		ldata_or_filename=r.process(*vdata_or_filename).as_string().cstr();
 	}
 	// data
-	char *data=is_load?file_read(pool, r.absolute(data_or_filename)):data_or_filename;
+	char *data=is_load?
+		file_read(pool, r.absolute(ldata_or_filename)/*\, false*/):ldata_or_filename;
 
 	// parse columns
 	Array *columns;

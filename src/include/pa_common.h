@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_common.h,v 1.17 2001/03/19 20:07:36 paf Exp $
+	$Id: pa_common.h,v 1.18 2001/03/20 06:45:18 paf Exp $
 */
 
 #ifndef PA_COMMON_H
@@ -89,10 +89,10 @@ void file_write(Pool& pool,
 				bool exclusive=false);
 
 /**
-	scans for \a delim[default \n] in \a *row_ref, 
-	@return piece of line before it or end of string, if no \a delim found
-	assigns \a *row_ref to point right after delimiter if there were one
-	or to zero if no \a delim were found.
+	scans for @a delim[default \n] in @a *row_ref, 
+	@return piece of line before it or end of string, if no @a delim found
+	assigns @a *row_ref to point right after delimiter if there were one
+	or to zero if no @a delim were found.
 */
 char *getrow(char **row_ref,char delim='\n');
 //char *lsplit(char *,char);

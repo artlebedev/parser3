@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.23 2001/03/19 23:07:22 paf Exp $
+	$Id: pa_globals.C,v 1.24 2001/03/20 06:45:19 paf Exp $
 */
 
 #include "pa_globals.h"
@@ -128,6 +128,8 @@ void globals_init(Pool& pool) {
 	untaint_lang_name2enum=new(pool) Hash(pool);
 	String as_is(pool, "as-is");  
 	untaint_lang_name2enum->put(as_is, (int)String::Untaint_lang::AS_IS);
+	String file_name(pool, "file-name");  
+	untaint_lang_name2enum->put(file_name, (int)String::Untaint_lang::FILE_NAME);
 	String header(pool, "header");  
 	untaint_lang_name2enum->put(header, (int)String::Untaint_lang::HEADER);
 	String uri(pool, "uri");  
