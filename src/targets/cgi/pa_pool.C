@@ -5,13 +5,16 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.C,v 1.13 2001/05/19 19:10:20 parser Exp $
+	$Id: pa_pool.C,v 1.14 2001/05/19 19:52:38 parser Exp $
 */
 
 #include <stdlib.h>
 
 #include "pa_pool.h"
 
+//#define DEBUG_POOL_MALLOC
+
+#ifdef DEBUG_POOL_MALLOC
 #include "pa_sapi.h"
 #include "pa_common.h"
 #include "pa_value.h"
@@ -64,9 +67,6 @@
 #include "pa_wwrapper.h"
 
 
-//#define DEBUG_POOL_MALLOC
-
-#ifdef DEBUG_POOL_MALLOC
 #define MALLOC_STAT_MAXSIZE (0x400*0x400)
 #define MALLOC_STAT_PLACES 10
 
@@ -163,8 +163,8 @@ void *Pool::real_malloc(size_t size/*, int place*/) {
 	int place=0;
 	malloc_times[place][index]++;
 	malloc_places[place]++;
-	if(size==28123)
-		__asm int 3;
+/*	if(size==9271)
+		__asm int 3;*/
 #endif
 	return ::malloc(size);
 }

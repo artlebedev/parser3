@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.93 2001/05/17 10:22:24 parser Exp $
+	$Id: pa_string.h,v 1.94 2001/05/19 19:52:38 parser Exp $
 */
 
 #ifndef PA_STRING_H
@@ -119,7 +119,7 @@ public:
 		SQL_Connection *connection=0,
 		const char *charset=0) const {
 
-		char *result=(char *)malloc(size()*UNTAINT_TIMES_BIGGER+1);
+		char *result=(char *)malloc(cstr_bufsize(lang));
 		char *eol=store_to(result, lang, connection, charset);
 		*eol=0;
 		return result;
@@ -271,6 +271,7 @@ private:
 	}
 	void expand();
 
+	size_t cstr_bufsize(Untaint_lang lang) const;
 	/// convert to C string, store to 'dest' which must be big enough for proper untaint
 	char *store_to(char *dest, Untaint_lang lang=UL_UNSPECIFIED, 
 		SQL_Connection *connection=0,

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: untaint.C,v 1.50 2001/05/19 19:10:20 parser Exp $
+	$Id: untaint.C,v 1.51 2001/05/19 19:52:38 parser Exp $
 */
 
 #include "pa_pool.h"
@@ -117,9 +117,12 @@ inline bool need_quote_http_header(const char *ptr, size_t size) {
 	return false;
 }
 
-/**
-	@todo fix theoretical \n mem overrun in TYPO replacements
-*/
+/// @todo maybe additional check "are all pieces are clean?" would be profitable?
+size_t String::cstr_bufsize(Untaint_lang lang) const {
+	return (lang==UL_AS_IS?size():size()*UNTAINT_TIMES_BIGGER) +1;
+}
+
+///	@todo fix theoretical \n mem overrun in TYPO replacements
 char *String::store_to(char *dest, Untaint_lang lang, 
 					   SQL_Connection *connection,
 					   const char *charset) const {
