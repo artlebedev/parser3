@@ -1,11 +1,11 @@
-/*
-	Parser: @b exec parser class decls.
+/** @file
+	Parser: @b op[operators] parser class decls.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: _op.h,v 1.3 2001/04/09 08:55:26 paf Exp $
+	$Id: _op.h,v 1.4 2001/04/10 10:32:03 paf Exp $
 */
 
 #ifndef _OP_H

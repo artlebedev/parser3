@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mail.C,v 1.15 2001/04/10 07:47:38 paf Exp $
+	$Id: mail.C,v 1.16 2001/04/10 10:32:04 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -44,15 +44,13 @@ static void uuencode(String& result, const char *file_name_cstr, const VFile& vf
 	result << "begin 644 " << file_name_cstr << "\n";
 
 	//body
-	const unsigned char *itemp;
-
-	int index;
-	int count=45;
-
 	const unsigned char *in=(const unsigned char *)vfile.value_ptr();
 	size_t in_length=vfile.value_size();
 
-	for(itemp=in; itemp<(in+in_length); itemp+=count) {
+	int count=45;
+	for(const unsigned char *itemp=in; itemp<(in+in_length); itemp+=count) {
+		int index;	
+
 		if((itemp+count)>(in+in_length)) 
 			count=in_length-(itemp-in);
 
@@ -125,11 +123,8 @@ static const String& attach_hash_to_string(Request& r, const String& origin_stri
 	if(Value *vfile_name=static_cast<Value *>(attach_hash.get(
 		*new(pool) String(pool, "file-name")))) // specified $file-name
 		file_name=&vfile_name->as_string();
-	else // no $file-name
-		if(Value *vfile_name=static_cast<Value *>(vfile->fields().get(*name_name)))
-			file_name=&vfile_name->as_string(); // VFile knows name
-		else // vfile doesn't know name
-			file_name=new(pool) String(pool, "noname.dat");
+	else // no $file-name, VFile surely knows name
+		file_name=&static_cast<Value *>(vfile->fields().get(*name_name))->as_string();
 	const char *file_name_cstr=file_name->cstr(String::UL_FILE_NAME);
 
 	String& result=*new(pool) String(pool);

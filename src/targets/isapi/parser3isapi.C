@@ -291,7 +291,7 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 		char header_buf[MAX_STRING];
 		int header_len=snprintf(header_buf, MAX_STRING,
 			"content-type: text/plain\n"
-			"content-length: %ul\n"
+			"content-length: %lu\n"
 			"expires: Fri, 23 Mar 2001 09:32:23 GMT\n"
 			"\n",
 			content_length);

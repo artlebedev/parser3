@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.143 2001/04/09 11:30:40 paf Exp $
+	$Id: execute.C,v 1.144 2001/04/10 10:32:10 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -22,6 +22,7 @@
 #include "pa_vbool.h"
 #include "pa_vtable.h"
 #include "pa_vfile.h"
+#include "pa_vimage.h"
 
 #include <stdio.h>
 
@@ -379,6 +380,8 @@ void Request::execute(const Array& ops) {
 							self=NEW VTable(pool());
 						else if(called_class==file_class)
 							self=NEW VFile(pool());
+						else if(called_class==image_class)
+							self=NEW VImage(pool());
 						else // stateful object
 							self=NEW VObject(pool(), *called_class);
 						frame->write(*self, 

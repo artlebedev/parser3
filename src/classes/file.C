@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.24 2001/04/09 16:04:45 paf Exp $
+	$Id: file.C,v 1.25 2001/04/10 10:32:04 paf Exp $
 */
 
 #include "pa_request.h"
@@ -105,6 +105,21 @@ static void _load(Request& r, const String& method_name, Array *params) {
 	
 	static_cast<VFile *>(r.self)->set(true/*tainted*/, data, size, 
 		user_file_name, &r.mime_type_of(user_file_name));
+}
+
+static void _stat(Request& r, const String& method_name, Array *params) {
+	Pool& pool=r.pool();
+	Value& vfile_name=*static_cast<Value *>(params->get(0));
+
+	// forcing ^load[this body type]
+	r.fail_if_junction_(true, vfile_name, 
+		method_name, "file name must not be code");
+
+	const String& lfile_name=vfile_name.as_string();
+
+	size_t size=file_size(r.absolute(lfile_name));
+	
+	static_cast<VFile *>(r.self)->set(true/*tainted*/, 0/*no bytes*/, size);
 }
 
 static void append_env_pair(const Hash::Key& key, Hash::Val *value, void *info) {
@@ -243,6 +258,9 @@ void initialize_file_class(Pool& pool, VStateless_class& vclass) {
 	// ^load[disk-name]
 	// ^load[disk-name;user-name]
 	vclass.add_native_method("load", Method::CT_DYNAMIC, _load, 1, 2);
+
+	// ^stat[disk-name]
+	vclass.add_native_method("stat", Method::CT_DYNAMIC, _stat, 1, 1);
 
 	// ^exec[file-name]
 	// ^exec[file-name;env hash]

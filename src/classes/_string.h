@@ -1,9 +1,11 @@
-/*
-	Parser
+/** @file
+	Parser: @b string parser class decls.
+
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: _string.h,v 1.6 2001/03/13 13:43:27 paf Exp $
+	$Id: _string.h,v 1.7 2001/04/10 10:32:03 paf Exp $
 */
 
 #ifndef _STRING_H

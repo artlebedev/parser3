@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.44 2001/04/05 19:35:18 paf Exp $
+	$Id: pa_value.h,v 1.45 2001/04/10 10:32:14 paf Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -55,6 +55,7 @@ public: // Value
 		- VInt: this
 		- VUnknown: this
 		- VFile: this
+		- VImage: this
 	*/
 	virtual Value *as_expr_result(bool return_string_as_is=false) { 
 		bark("(%s) can not be used in expression"); return 0; 
@@ -97,6 +98,7 @@ public: // Value
 		@return for
 		- VFile: this
 		- VString: vfile
+		- VImage: true
 	*/
 	virtual const VFile *as_vfile() const { 
 		bark("(%s) does not have file value"); return 0; 
@@ -109,7 +111,7 @@ public: // Value
 	/** extract Value element
 		@return for
 		- VHash: (key)=value
-		- VAliased: $CLASS, $BASE
+		- VAliased: sometimes $CLASS, $BASE [@see VAliased::hide_class()]
 		- VStateless_class: +$method
 		- VStateless_object: +$method
 		- VCode_frame: wcontext_transparent
@@ -117,11 +119,11 @@ public: // Value
 		- VTable: column
 		- VEnv: field
 		- VForm: CLASS,BASE,method,field
-		- VString: $CLASS,$BASE,$method
+		- VString: $method
 		- VRequest: fields
-		- VResponse: CLASS,BASE,method,fields
+		- VResponse: method,fields
 		- VCookie: field
-		- VFile: CLASS,BASE,method,field
+		- VFile: method,field
 		*/
 	virtual Value *get_element(const String& name) { bark("(%s) has no elements"); return 0; }
 	/** store Value element under @a name

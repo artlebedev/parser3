@@ -345,6 +345,14 @@ SOURCE=..\types\pa_vhash.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\types\pa_vimage.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\types\pa_vimage.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\types\pa_vint.h
 # End Source File
 # Begin Source File
@@ -431,6 +439,22 @@ SOURCE=..\classes\smtp\smtp.C
 SOURCE=..\classes\smtp\smtp.h
 # End Source File
 # End Group
+# Begin Group "gd"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\classes\gd\gif.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\classes\gd\gif.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\classes\gd\gifio.C
+# End Source File
+# End Group
 # Begin Source File
 
 SOURCE=..\classes\_double.h
@@ -442,6 +466,10 @@ SOURCE=..\classes\_file.h
 # Begin Source File
 
 SOURCE=..\classes\_form.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\classes\_image.h
 # End Source File
 # Begin Source File
 
@@ -482,6 +510,10 @@ SOURCE=..\classes\file.C
 # Begin Source File
 
 SOURCE=..\classes\form.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\classes\image.C
 # End Source File
 # Begin Source File
 

@@ -1,11 +1,11 @@
 /** @file
-	Parser: file object decl.
+	Parser: @b file parser type decl.
 
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vfile.h,v 1.17 2001/04/09 11:30:44 paf Exp $
+	$Id: pa_vfile.h,v 1.18 2001/04/10 10:32:15 paf Exp $
 */
 
 #ifndef PA_VFILE_H
@@ -68,10 +68,17 @@ public: // usage
 		else
 			THROW(0, 0,
 				&file_spec,
-				"saving unassigned file"); //never
+				"saving stat-ed file");
 	}
 
-	const void *value_ptr() const { return fvalue_ptr; }
+	const void *value_ptr() const { 
+		if(!fvalue_ptr)
+			THROW(0, 0,
+				0,
+				"getting value of stat-ed file");
+
+		return fvalue_ptr; 
+	}
 	size_t value_size() const { return fvalue_size; }
 	Hash fields() const { return ffields; }
 

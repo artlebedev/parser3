@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vresponse.h,v 1.7 2001/04/02 16:00:17 paf Exp $
+	$Id: pa_vresponse.h,v 1.8 2001/04/10 10:32:15 paf Exp $
 */
 
 #ifndef PA_VRESPONSE_H
@@ -27,9 +27,9 @@ public: // Value
 	/// Response: ffields
 	Hash *get_hash() { return &ffields; }
 
-	/// Response: CLASS,BASE,method,fields
+	/// Response: method,fields
 	Value *get_element(const String& name) {
-		// $CLASS,$BASE,$method
+		// $method
 		if(Value *result=VStateless_object::get_element(name))
 			return result;
 		

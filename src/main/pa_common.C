@@ -6,7 +6,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.43 2001/04/10 07:40:50 paf Exp $
+	$Id: pa_common.C,v 1.44 2001/04/10 10:32:10 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -52,9 +52,10 @@ char *file_read_text(Pool& pool, const String& file_spec, bool fail_on_read_prob
 		fail_on_read_problem)?(char *)result:0;
 }
 bool file_read(Pool& pool, const String& file_spec, 
-			   void*& data, size_t& size, bool as_text,
-			   bool fail_on_read_problem) {
-	char *fname=file_spec.cstr(String::UL_FILE_NAME);
+			   void*& data, size_t& read_size, bool as_text,
+			   bool fail_on_read_problem,
+			   size_t offset, size_t limit) {
+	const char *fname=file_spec.cstr(String::UL_FILE_NAME);
 	int f;
     struct stat finfo;
 
@@ -71,20 +72,21 @@ bool file_read(Pool& pool, const String& file_spec,
 		stat(fname, &finfo)==0) {
 		/*if(exclusive)
 			flock(f, LOCK_EX);*/
-		data=pool.malloc(finfo.st_size+(as_text?1:0));
-		size=read(f, data, finfo.st_size);
+		size_t max_size=limit?min(offset+limit, finfo.st_size)-offset:finfo.st_size;
+		data=pool.malloc(max_size+(as_text?1:0));
+		read_size=read(f, data, max_size);
 		/*if(exclusive)
 			flock(f, LOCK_UN);*/
 		close(f);
 
-		if(size>=0 && size<=(size_t)finfo.st_size) {
+		if(read_size>=0 && read_size<=max_size) {
 			if(as_text)
-				((char *)data)[size]=0;
+				((char *)data)[read_size]=0;
 		} else
 			PTHROW(0, 0, 
 				&file_spec, 
-				"read failed: actually read %d bytes count not in [0..%ul] valid range", 
-					size, (unsigned long)finfo.st_size); //never
+				"read failed: actually read %d bytes count not in [0..%lu] valid range", 
+					read_size, (unsigned long)max_size); //never
 		
 		return true;//prepare_config(result, remove_empty_lines);
     }
@@ -101,7 +103,7 @@ void file_write(Pool& pool,
 				const void *data, size_t size, 
 				bool as_text/*, 
 				bool exclusive*/) {
-	char *fname=file_spec.cstr(String::UL_FILE_NAME);
+	const char *fname=file_spec.cstr(String::UL_FILE_NAME);
 	int f;
 	if(access(fname, F_OK)!=0) {/*no*/
 		if((f=open(fname, O_WRONLY|O_CREAT|_O_BINARY, 0666))>0)
@@ -144,6 +146,17 @@ bool file_readable(const String& file_spec) {
 }
 bool file_executable(const String& file_spec) {
     return access(file_spec.cstr(String::UL_FILE_NAME), X_OK)==0;
+}
+
+size_t file_size(const String& file_spec) {
+	Pool& pool=file_spec.pool();
+	const char *fname=file_spec.cstr(String::UL_FILE_NAME);
+    struct stat finfo;
+	if(stat(fname, &finfo)!=0)
+		PTHROW(0, 0, 
+			&file_spec, 
+			"write failed: %s (#%d)", strerror(errno), errno);
+	return finfo.st_size;
 }
 
 char *getrow(char **row_ref, char delim) {

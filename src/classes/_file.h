@@ -1,9 +1,11 @@
-/*
-	Parser
+/** @file
+	Parser: @b file parser class decls.
+
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: _file.h,v 1.2 2001/03/19 21:39:30 paf Exp $
+	$Id: _file.h,v 1.3 2001/04/10 10:32:03 paf Exp $
 */
 
 #ifndef _FILE_H

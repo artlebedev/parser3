@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_common.h,v 1.36 2001/04/10 07:40:48 paf Exp $
+	$Id: pa_common.h,v 1.37 2001/04/10 10:32:08 paf Exp $
 */
 
 #ifndef PA_COMMON_H
@@ -84,7 +84,8 @@ char *file_read_text(Pool& pool,
 bool file_read(Pool& pool, const String& file_spec, 
 			   void*& data, size_t& size, 
 			   bool as_text,
-			   bool fail_on_read_problem=true);
+			   bool fail_on_read_problem=true,
+			   size_t offset=0, size_t limit=0);
 
 /**
 	write data to specified file using pool, 
@@ -104,6 +105,8 @@ void file_delete(Pool& pool, const String& file_spec);
 
 bool file_readable(const String& file_spec);
 bool file_executable(const String& file_spec);
+
+size_t file_size(const String& file_spec);
 
 /**
 	scans for @a delim[default \n] in @a *row_ref, 

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.52 2001/04/10 06:57:26 paf Exp $
+	$Id: pa_globals.C,v 1.53 2001/04/10 10:32:10 paf Exp $
 */
 
 #include "pcre.h"
@@ -24,6 +24,7 @@
 #include "_random.h"
 #include "pa_sql_driver_manager.h"
 #include "_mail.h"
+#include "_image.h"
 
 String *html_typo_name;
 String *content_type_name;
@@ -58,6 +59,7 @@ String *response_class_name;
 String *cookie_class_name;
 String *random_class_name;
 String *mail_class_name;
+String *image_class_name;
 
 String *result_var_name;
 String *string_pre_match_name;
@@ -155,6 +157,7 @@ void pa_globals_init(Pool& pool) {
 	cookie_class_name=NEW String(pool, COOKIE_CLASS_NAME);
 	random_class_name=NEW String(pool, RANDOM_CLASS_NAME);
 	mail_class_name=NEW String(pool, MAIL_CLASS_NAME);
+	image_class_name=NEW String(pool, IMAGE_CLASS_NAME);
 
 	result_var_name=NEW String(pool, RESULT_VAR_NAME);
 	string_pre_match_name=NEW String(pool, STRING_PRE_MATCH_NAME);
@@ -171,6 +174,7 @@ void pa_globals_init(Pool& pool) {
 	mime_types_name=NEW String(pool, MIME_TYPES_NAME);
 	vfile_mime_type_name=NEW String(pool, VFILE_MIME_TYPE_NAME);
 	mail_name=NEW String(pool, MAIL_NAME);
+	
 
 	main_sql_name=NEW String(pool, MAIN_SQL_NAME);
 	main_sql_drivers_name=NEW String(pool, MAIN_SQL_DRIVERS_NAME);
@@ -258,6 +262,7 @@ void pa_globals_init(Pool& pool) {
 	initialize_response_class(pool, *(response_class=NEW VStateless_class(pool)));
 	initialize_random_class(pool, *(random_class=NEW VStateless_class(pool)));
 	initialize_mail_class(pool, *(mail_class=NEW VStateless_class(pool)));
+	initialize_image_class(pool, *(image_class=NEW VStateless_class(pool)));
 
 	// stateless base classes
 	initialize_form_base_class(pool, *(form_base_class=NEW VStateless_class(pool)));  form_base_class->set_name(*form_class_name);
