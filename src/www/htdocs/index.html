@@ -4,17 +4,19 @@ $response:charset[windows-1251]
 $response:content-type[$.value[text/html]$.charset[$response:charset]]
 
 @main[]
-$stuff[^table::set{name	pos
-Alexander	boss
-Sergey	coder}]
+$paint_nodes[^table::set{x	y
+50	0
+100	50
+}
+]
 
-$people[^table::set{name	position
-Tema	art-director}]
+$square[^image::create(100;100;0x000000)]
+^square.line(0;0;100;100;0xFFFFFF)
+^square.line(100;0;0;100;0xFFFFFF)
 
-^stuff.join[$people]
-
-^stuff.save[join.txt]
-
+^square.replace(0x000000;0xFF00FF)[$paint_nodes]
+$response:body[^square.gif[]]
+^response:body.save[binary;square.gif]
 
 #^xpath[]
 #^ttablesetlang[]

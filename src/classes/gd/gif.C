@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: gif.C,v 1.22 2001/11/05 11:46:22 paf Exp $
+	$Id: gif.C,v 1.23 2002/01/22 09:08:41 paf Exp $
 
 	based on: gd
 
@@ -939,11 +939,12 @@ void gdImage::LineReplaceColor(int x1, int y1, int x2, int y2, int a, int b) {
 	if(y1!=y2)
 		return;
 
-	for(int x=x1; x<=x2; x++) {
-		unsigned char *pixel=&pixels[x][y1];
-		if(*pixel==a)
-			*pixel=b;
-	}
+	for(int x=x1; x<=x2; x++) 
+		if(BoundsSafe(x, y1)) {
+			unsigned char *pixel=&pixels[x][y1];
+			if(*pixel==a)
+				*pixel=b;
+		}
 }
 
 void gdImage::FilledPolygonReplaceColor(Point *p, int n, int a, int b)
