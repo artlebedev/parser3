@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 
-	$Id: pa_charset.C,v 1.20 2002/02/08 08:32:34 paf Exp $
+	$Id: pa_charset.C,v 1.21 2002/02/27 16:37:38 paf Exp $
 */
 
 #include "pa_charset.h"
@@ -505,8 +505,8 @@ static int         xml256CharEncodingInputFunc     (
 													int *inlen, 
 													void *info) {
 	return transcodeToUTF8(
-							in, *(unsigned int*)inlen,
-							out, *(unsigned int*)outlen,
+							in, *(size_t*)inlen,
+							out, *(size_t*)outlen,
 							*(const Charset::Tables *)info);
 }
 
@@ -517,8 +517,8 @@ static int         xml256CharEncodingOutputFunc    (
 													int *inlen, 
 													void *info) {
 	return transcodeFromUTF8(
-							in, *(unsigned int*)inlen,
-							out, *(unsigned int*)outlen,
+							in, *(size_t*)inlen,
+							out, *(size_t*)outlen,
 							*(const Charset::Tables *)info);
 }
 
