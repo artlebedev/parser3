@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2004/02/11 15:33:18 $";
+static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2004/04/06 07:53:57 $";
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
@@ -18,6 +18,7 @@ static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2004/02/11 15:33:18 $";
 
 #define CALLER_ELEMENT_NAME "caller"
 #define SELF_ELEMENT_NAME "self"
+#define RESULT_VAR_NAME "result"
 
 // forwards
 

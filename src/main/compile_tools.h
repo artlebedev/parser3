@@ -8,7 +8,7 @@
 #ifndef COMPILE_TOOLS
 #define COMPILE_TOOLS
 
-static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2004/02/26 14:37:30 $";
+static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2004/04/06 07:53:57 $";
 
 #include "pa_opcode.h"
 #include "pa_types.h"
@@ -80,6 +80,7 @@ public:
 	int brackets_nestages[MAX_LEXICAL_STATES]; ///< brackets nestage on each state
 
 	bool in_call_value;
+	bool explicit_result;
 	//@}
 	
 	/// output: filled input 'methods' and 'error' if any
@@ -106,7 +107,8 @@ public:
 		pending_state(0),
 		ls(LS_USER),
 		ls_sp(0),
-		in_call_value(false) {}
+		in_call_value(false),
+		explicit_result(false) {}
 
 	void pos_next_line() {
 		pos.line++;

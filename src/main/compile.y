@@ -5,7 +5,7 @@
 	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.207 2003/10/07 14:29:03 paf Exp $
+	$Id: compile.y,v 1.208 2004/04/06 07:53:57 paf Exp $
 */
 
 /**
@@ -47,7 +47,7 @@
 static int real_yyerror(Parse_control* pc, char* s);
 static void yyprint(FILE* file, int type, YYSTYPE value);
 static int yylex(YYSTYPE* lvalp, void* pc);
-
+static int is_not_whitespace(char c, int);
 
 // local convinient inplace typecast & var
 #undef PC
@@ -210,8 +210,8 @@ control_strings: control_string | control_strings control_string { $$=$1; P(*$$,
 control_string: maybe_string '\n';
 maybe_string: empty | STRING;
 
-code_method: '@' STRING bracketed_maybe_strings maybe_bracketed_strings maybe_comment '\n' 
-			maybe_codes {
+code_method: '@' STRING bracketed_maybe_strings maybe_bracketed_strings maybe_comment '\n' { 
+	PC.explicit_result=false;
 	const String& name=*LA2S(*$2);
 
 	YYSTYPE params_names_code=$3;
@@ -226,17 +226,28 @@ code_method: '@' STRING bracketed_maybe_strings maybe_bracketed_strings maybe_co
 	ArrayString* locals_names=0;
 	if(int size=locals_names_code->count()) {
 		locals_names=new ArrayString;
-		for(int i=0; i<size; i+=OPERATIONS_PER_OPVALUE)
-			*locals_names+=LA2S(*locals_names_code, i);
+		for(int i=0; i<size; i+=OPERATIONS_PER_OPVALUE) {
+			const String* local_name=LA2S(*locals_names_code, i);
+			if(*local_name==RESULT_VAR_NAME)
+				PC.explicit_result=true;
+			else
+				*locals_names+=local_name;
+		}
 	}
 
-	Method& method=*new Method(
+	Method* method=new Method(
 		//name, 
 		Method::CT_ANY,
 		0, 0/*min,max numbered_params_count*/, 
 		params_names, locals_names, 
-		$7, 0);
-	PC.cclass->add_method(PC.alias_method(name), method);
+		0/*to be filled later in next {} */, 0);
+	PC.cclass->add_method(PC.alias_method(name), *method);
+	*reinterpret_cast<Method**>(&$$)=method;
+
+	// todo: check [][;result;]
+} maybe_codes {
+	// fill in the code
+	reinterpret_cast<Method*>($7)->parser_code=$8;
 };
 
 maybe_bracketed_strings: empty | bracketed_maybe_strings;
@@ -252,7 +263,14 @@ maybe_codes: empty | codes;
 
 codes: code | codes code { $$=$1; P(*$$, *$2) };
 code: write_string | action;
-action: get | put | call;
+action: {
+	*reinterpret_cast<bool*>(&$$)=PC.explicit_result;
+	PC.explicit_result=false;
+} real_action {
+	PC.explicit_result=reinterpret_cast<bool>($1);
+	$$=$2;
+};
+real_action: get | put | call;
 
 /* get */
 
@@ -587,8 +605,18 @@ string_inside_quotes_value: maybe_codes {
 /* basics */
 
 write_string: STRING {
-	// optimized from OP_STRING+OP_WRITE_VALUE to OP_STRING__WRITE
-	change_string_literal_to_write_string_literal(*($$=$1))
+	// $1=OP_STRING+origin+OP_WRITE_VALUE 
+	if(PC.explicit_result) { // only allow decoration whitespaces, no byte code actually produced
+		String::Body body=static_cast<VString*>($1->get(2).value)->string();
+		if(body.for_each/*first_that, actually*/(is_not_whitespace, 0)) {
+			strcpy(PC.error, "only whitespaces are allowed here (explicit result mode), look before this point");
+			YYERROR;
+		}
+		$$=N();
+	} else {
+		// optimized from OP_STRING+origin+OP_WRITE_VALUE to OP_STRING__WRITE
+		change_string_literal_to_write_string_literal(*($$=$1));
+	}
 };
 
 void_value: /* empty */ { $$=VL(new VVoid(), 0, 0, 0) };
@@ -644,12 +672,13 @@ static int yylex(YYSTYPE *lvalp, void *apc) {
 		c=*(end=(pc.source++));
 //		fprintf(stderr, "\nchar: %c %02X; nestage: %d, sp=%d", c, c, lexical_brackets_nestage, pc.sp);
 
-		if(c=='\n') {
+		if(c=='\n')
 			pc.pos_next_line();
-		} else
+		else
 			pc.pos_next_c(c);
+//		fprintf(stderr, "\nchar: %c file(%d:%d)", c, pc.pos.line, pc.pos.col);
 
-		if(c=='@' && pc.pos.col==0+1) {
+		if(pc.pos.col==0+1 && c=='@') {
 			if(pc.ls==LS_DEF_SPECIAL_BODY) {
 				// @SPECIAL
 				// ...
@@ -1350,4 +1379,8 @@ static int real_yyerror(Parse_control *pc, char *s) {  // Called by yyparse on e
 static void yyprint(FILE *file, int type, YYSTYPE value) {
 	if(type==STRING)
 		fprintf(file, " \"%s\"", LA2S(*value)->cstr());
+}
+
+static int is_not_whitespace(char c, int) {
+	return !isspace(c);
 }

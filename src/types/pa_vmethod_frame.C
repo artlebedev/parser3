@@ -5,14 +5,10 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)\
 */
 
-static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2004/02/11 15:33:18 $";
+static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2004/04/06 07:53:57 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
-
-// defines
-
-#define RESULT_VAR_NAME "result"
 
 // globals
 
