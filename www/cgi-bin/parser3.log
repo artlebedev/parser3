@@ -64,3 +64,5 @@
 [Tue Apr 30 13:46:04 2002] /t.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/t.cgihtml(1): 'hren' (void) not a method or junction, can not call it [parser.runtime]
 [Tue Apr 30 13:46:07 2002] /t.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/t.cgihtml(1): 'tree' (xdoc) not a method or junction, can not call it [parser.runtime]
 [Tue Apr 30 13:46:33 2002] /t.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/t.cgihtml(5): 'addNode' contains illegal assignment attempt of xnode to MAIN class, use constructor [parser.runtime]
+[Wed May 15 12:51:41 2002] /index.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(158): '4000' invalid datetime [<no type>]
+[Wed May 15 12:51:46 2002] /index.cgihtml: c:/drives/y/parser3project/parser3/www/htdocs/index.cgihtml(158): '4000' invalid datetime [<no type>]

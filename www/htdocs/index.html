@@ -1,5 +1,5 @@
-@USE
-t.p
+#@USE
+#t.p
 
 @autoz[]
 $request:charset[windows-1251]
@@ -145,11 +145,60 @@ OK
 #^xml[]
 #^header[]
 #^tablehasht[]
-
 #^datecreatestring[]
 #^mssqltypes1[]
 #^badthrows[]
-^xmlspace[]
+#^xmlspace[]
+#^counter[main.counter]
+#^xpath2[]
+#^callindirect[]
+#^junctionprob[]
+^datecreatestring2[]
+
+@datecreatestring2[]
+$date[^date::create[2000]]
+^date.sql-string[]	
+
+@junctionprob[][l]
+$l[123]
+$a{$l}
+^junctionprobnested[$a]
+@junctionprobnested[p]
+$p
+
+
+@callindirecttarget[]
+callindirecttarget called
+@callindirect[]
+$f[$callindirecttarget]
+^f[]
+
+@xpath2[]
+$xdoc[^xdoc::create{<?xml version="1.0" encoding="windows-1251"?>
+<doc>
+<field-list>
+<field name="aa"/>
+<field name="bb"/>
+</field-list>
+</doc>
+}]
+
+#^xdoc.string[]
+
+$fieldList[^xdoc.selectSingle[/doc/field-list]]
+#^fieldList.childNodes._count[]
+$fields[^fieldList.select[field]]
+#^fields._count[]
+^fields.foreach[k;node]{
+	$node.nodeName<br>
+}
+@counter[filespec][f;s]
+^file:lock[$filespec]{
+	$f[^file::load[text;$filespec]]
+	$s[^eval($f.text+1)]
+	^s.save[$filespec]	
+}
+$s
 
 @xmlspace[]
 $xdoc[^xdoc::set{^process{<?xml version="1.0" encoding="windows-1251"?>

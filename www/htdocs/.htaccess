@@ -1,5 +1,7 @@
-setenv HTTP_TEST /foo/bin3!
+#setenv TEST /foo/bin2
+#setenv HTTP_TEST /foo/bin3!2
 #setenv HTTP_PARSER_SITE_CONFIG /foo/bin3!
+#setenv DOCUMENT_ROOT /test/3
 
 
 addhandler parser3-handler html

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: date.C,v 1.29 2002/04/25 14:40:24 paf Exp $
+	$Id: date.C,v 1.30 2002/05/15 08:58:00 paf Exp $
 */
 
 #include "classes.h"
@@ -56,10 +56,6 @@ static void _create(Request& r, const String& method_name, MethodParams *params)
 		if(const String *sdate=params->get(0).get_string()) { // ^create[2002-04-25 18:14:00]
 			char *cstr=sdate->cstr();
 			const char *year=lsplit(&cstr, '-');
-			if(!cstr) // there were no '-'
-				throw Exception(0,
-					sdate,
-					"year&month parts of date abscent, must be in YYYY-NN-DD HH-MM-SS format");
 			const char *month=lsplit(&cstr, '-');
 			const char *mday=lsplit(&cstr, ' ');
 			const char *hour=lsplit(&cstr, ':');
@@ -306,7 +302,7 @@ MDate::MDate(Pool& apool) : Methoded(apool, "date") {
 	// ^now[]
 	add_native_method("now", Method::CT_DYNAMIC, _now, 0, 1);
 
-	// ^set(float days)
+	// ^create(float days)
 	add_native_method("create", Method::CT_DYNAMIC, _create, 1, 6);
 	// old name for compatibility with <= v1.17 2002/2/18 12:13:42 paf
 	add_native_method("set", Method::CT_DYNAMIC, _create, 1, 6);
