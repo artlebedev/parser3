@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_wwrapper.h,v 1.12 2001/10/19 12:43:30 parser Exp $
+	$Id: pa_wwrapper.h,v 1.13 2001/10/29 16:07:36 paf Exp $
 */
 
 #ifndef PA_WWRAPPER_H
@@ -31,7 +31,7 @@ public: // Value
 			//		$key1[$i]
 			//		^i.inc[]  ^rem{allow such calls}
 			//		$key2[$1]
-			fconstructing=false;
+			set_constructing(false);
 
 			String& auto_created_hash_name=*NEW String(aname);
 			fvalue->set_name(auto_created_hash_name.APPEND_CONST(" storage"));

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.199 2001/10/29 13:04:46 paf Exp $
+	$Id: execute.C,v 1.200 2001/10/29 16:07:36 paf Exp $
 */
 
 #include "pa_opcode.h"
@@ -244,7 +244,7 @@ void Request::execute(const Array& ops) {
 
 				// forget the fact they've entered some ^object.method[].
 				// see OP_GET_ELEMENT
-				wcontext->clear_somebody_entered_some_object();
+				wcontext->set_somebody_entered_some_object(false);
 				break;
 			}
 		case OP_WRITE_EXPR_RESULT:
@@ -266,7 +266,7 @@ void Request::execute(const Array& ops) {
 		case OP_GET_ELEMENT:
 			{
 				// maybe they do ^object.method[] call, remember the fact
-				wcontext->inc_somebody_entered_some_object();
+				wcontext->set_somebody_entered_some_object(true);
 
 				//_asm int 3;
 				value=get_element();
@@ -349,7 +349,7 @@ void Request::execute(const Array& ops) {
 
 		case OP_PREPARE_TO_CONSTRUCT_OBJECT:
 			{
-				wcontext->constructing(true);
+				wcontext->set_constructing(true);
 				break;
 			}
 		case OP_CALL:
@@ -365,8 +365,8 @@ void Request::execute(const Array& ops) {
 				PUSH(wcontext); 
 				
 				VStateless_class *called_class=frame->junction.self.get_class();
-				if(wcontext->constructing()) {
-					wcontext->constructing(false);
+				if(wcontext->get_constructing()) {
+					wcontext->set_constructing(false);
 					if(frame->junction.method->call_type!=Method::CT_STATIC) {
 						// this is a constructor call
 
@@ -391,8 +391,8 @@ void Request::execute(const Array& ops) {
 					// is context object or class & is it my class or my parent's class and?
 					VStateless_class *read_class=rcontext->get_class();
 					if(
-						!(wcontext->somebody_entered_some_object() &&
-						!wcontext->somebody_entered_some_class()) && 
+						!(wcontext->get_somebody_entered_some_object() &&
+						!wcontext->get_somebody_entered_some_class()) && 
 						read_class && read_class->is_or_derived_from(*called_class)) // yes
 						self=rcontext; // dynamic call
 					else // no, not me or relative of mine (=total stranger)

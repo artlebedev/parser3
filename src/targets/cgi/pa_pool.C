@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.C,v 1.27 2001/10/29 15:15:12 paf Exp $
+	$Id: pa_pool.C,v 1.28 2001/10/29 16:07:36 paf Exp $
 */
 
 #include <stdlib.h>
@@ -65,7 +65,7 @@
 #include "pa_vvoid.h"
 #include "pa_wcontext.h"
 #include "pa_wwrapper.h"
-
+#include "pa_dictionary.h"
 
 #define MALLOC_STAT_MAXSIZE (0x400*0x400)
 #define MALLOC_STAT_PLACES 20
@@ -129,7 +129,7 @@ ST(VTable);
 ST(VVoid);
 ST(WContext);
 ST(WWrapper);
-
+ST(Dictionary);
 
 	for(int place=0; place<MALLOC_STAT_PLACES; place++)
 		if(malloc_places[place]) {
@@ -162,7 +162,7 @@ void *Pool::real_malloc(size_t size, int place) {
 	int index=min(MALLOC_STAT_MAXSIZE-1, size);
 	malloc_times[place][index]++;
 	malloc_places[place]++;
-/*	if(size==40 && place==0)
+/*	if(size==880 && place==1)
 		__asm int 3;*/
 #endif
 	return ::malloc(size);

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_wcontext.h,v 1.18 2001/10/29 08:23:50 paf Exp $
+	$Id: pa_wcontext.h,v 1.19 2001/10/29 16:07:36 paf Exp $
 */
 
 #ifndef PA_WCONTEXT_H
@@ -22,6 +22,7 @@ class Request;
 */
 class WContext : public Value {
 	friend class Request;
+
 public: // Value
 
 	const char *type() const { return "wcontext"; }
@@ -60,26 +61,29 @@ public: // usage
 
 	WContext(Pool& apool, Value *avalue) : Value(apool), 
 		fstring(*new(apool) String(apool)),
-		fconstructing(false), fvalue(avalue),
-		fsomebody_entered_some_class(false),
-		fsomebody_entered_some_object(0){
+		fvalue(avalue),
+		fconstructing(false), fentered_object(false), fentered_class(false) {
 	}
 
-	bool constructing() { return fconstructing; }
-	void constructing(bool aconstructing) { fconstructing=aconstructing; }
-	void set_somebody_entered_some_class() { fsomebody_entered_some_class=true; }
-	bool somebody_entered_some_class() { return fsomebody_entered_some_class; }
+	void set_constructing(bool aconstructing) { fconstructing=aconstructing; }
+	bool get_constructing() { return fconstructing; }
 
-	void inc_somebody_entered_some_object() { fsomebody_entered_some_object++; }
-	int somebody_entered_some_object() { return fsomebody_entered_some_object; }
-	void clear_somebody_entered_some_object() { fsomebody_entered_some_object=0; }
+	void set_somebody_entered_some_class() { fentered_class=true; }
+	bool get_somebody_entered_some_class() { return fentered_class; }
+
+	void set_somebody_entered_some_object(bool aentered_object) {   
+		fentered_object=aentered_object; }
+	bool get_somebody_entered_some_object() { return fentered_object; }
 
 protected:
 	String& fstring;
-	bool fconstructing;  Value *fvalue;
+	Value *fvalue;
 private:
-	bool fsomebody_entered_some_class;
-	int fsomebody_entered_some_object;
+	struct {
+		bool fconstructing:1;
+		bool fentered_object:1;
+		bool fentered_class:1;
+	};
 };
 
 #endif
