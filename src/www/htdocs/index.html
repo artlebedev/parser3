@@ -17,6 +17,6 @@ $dom[^dom::set{<?xml version="1.0" encoding="windows-1251"?>
 $people[^dom.xpath[/people/man/name]]
 
 ^for[i](0;^people._count[]-1){
-	z$people.$i<br>	
+	z$people.$i.first-child.value<br>	
 }
 OK

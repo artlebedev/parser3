@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vdom.h,v 1.10 2001/09/17 14:46:49 parser Exp $
+	$Id: pa_vdom.h,v 1.11 2001/09/17 16:49:15 parser Exp $
 */
 
 #ifndef PA_VDOM_H
@@ -26,7 +26,7 @@ extern Methoded *Dom_class;
 void VDom_cleanup(void *);
 
 /// value of type 'dom'. implemented with XalanDocument & co
-class VDom : public VDNode {
+class VDom : public VDnode {
 	friend void VDom_cleanup(void *);
 public: // Value
 
@@ -52,7 +52,7 @@ public: // VDNode
 
 public: // usage
 
-	VDom(Pool& apool) : VDNode(apool, *Dom_class), 
+	VDom(Pool& apool) : VDnode(apool, 0, *Dom_class), 
 		ftransformer(0),
 		fparser_liaison(0),
 		fparsed_source(0),

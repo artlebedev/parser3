@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: dom.C,v 1.23 2001/09/17 14:46:49 parser Exp $"; 
+static const char *RCSId="$Id: dom.C,v 1.24 2001/09/17 16:49:15 parser Exp $"; 
 
 #if _MSC_VER
 #	pragma warning(disable:4291)   // disable warning 
@@ -48,7 +48,7 @@ static const char *RCSId="$Id: dom.C,v 1.23 2001/09/17 14:46:49 parser Exp $";
 
 // class
 
-class MDom : public MDNode {
+class MDom : public MDnode {
 public: // VStateless_class
 	Value *create_new_value(Pool& pool) { return new(pool) VDom(pool); }
 
@@ -334,7 +334,7 @@ static void _xslt(Request& r, const String& method_name, MethodParams *params) {
 
 // constructor
 
-MDom::MDom(Pool& apool) : MDNode(apool) {
+MDom::MDom(Pool& apool) : MDnode(apool) {
 	set_name(*NEW String(pool(), DOM_CLASS_NAME));
 
 	// ^dom::set[<some>xml</some>]
@@ -364,10 +364,5 @@ Methoded *Dom_class;
 // creator
 
 Methoded *MDom_create(Pool& pool) {
-	// Use the static initializers to initialize the Xalan-C++ and Xerces-C++ platforms. 
-	// You must initialize Xerces-C++ once per process
-	XMLPlatformUtils::Initialize();
-	XalanTransformer::initialize();
-
 	return Dom_class=new(pool) MDom(pool);
 }

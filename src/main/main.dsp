@@ -264,6 +264,15 @@ SOURCE=.\pa_exec.C
 # Begin Source File
 
 SOURCE=.\pa_globals.C
+
+!IF  "$(CFG)" == "main - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "main - Win32 Debug"
+
+# ADD CPP /GX
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 
@@ -671,13 +680,6 @@ SOURCE="..\classes\xml-xalan\c\Build\Win32\VC6\Debug\XercesParserLiaisonD.lib"
 # Begin Source File
 
 SOURCE="..\classes\xml-xalan\c\Build\Win32\VC6\Debug\XalanSourceTreeD.lib"
-
-!IF  "$(CFG)" == "main - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "main - Win32 Debug"
-
-!ENDIF 
-
 # End Source File
 # End Target
 # End Project

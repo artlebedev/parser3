@@ -5,7 +5,15 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_globals.C,v 1.73 2001/09/14 15:41:59 parser Exp $"; 
+static const char *RCSId="$Id: pa_globals.C,v 1.74 2001/09/17 16:49:15 parser Exp $"; 
+
+#if _MSC_VER
+#	pragma warning(disable:4291)   // disable warning 
+//	"no matching operator delete found; memory will not be freed if initialization throws an exception
+#endif
+
+#include <util/PlatformUtils.hpp>
+#include <XalanTransformer/XalanTransformer.hpp>
 
 #include "pa_globals.h"
 #include "pa_string.h"
@@ -200,6 +208,13 @@ void pa_globals_init(Pool& pool) {
 
 	// SQL driver manager
  	SQL_driver_manager=NEW SQL_Driver_manager(pool);
+
+	// Xerces & Xalan
+
+	// Use the static initializers to initialize the Xalan-C++ and Xerces-C++ platforms. 
+	// You must initialize Xerces-C++ once per process
+	XMLPlatformUtils::Initialize();
+	XalanTransformer::initialize();
 
 	// XSLT stylesheet driver manager
  	XSLT_stylesheet_manager=NEW XSLT_Stylesheet_manager(pool);
