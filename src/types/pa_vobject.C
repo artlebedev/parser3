@@ -7,7 +7,7 @@
 
 #include "pa_vobject.h"
 
-static const char* IDENT_VOBJECT_C="$Date: 2002/08/13 15:55:44 $";
+static const char* IDENT_VOBJECT_C="$Date: 2002/08/13 16:31:31 $";
 
 /// VObject: true, todo: z base table can be 33
 Value *VObject::as_expr_result(bool) { return NEW VBool(pool(), as_bool()); }
@@ -73,17 +73,7 @@ bool VObject::put_element(const String& aname, Value *avalue, bool replace) {
 			return true; // replaced in base
 
 		return ffields.put_replace(aname, avalue);
-	} catch(Exception) { 
-		/* ignore "can not store to table&co errors for nonexistent elements */ 
-		bool error;
-		try {
-			error=get_element(aname, this, false)!=0;
-		} catch(Exception) { 
-			error=false;
-		}
-		if(error)
-			/*re*/throw;
-	}
+	} catch(Exception) { /* allow override parent variables, useful for form descendants */ }
 
 	// could not put to any base of last child
 	return false;

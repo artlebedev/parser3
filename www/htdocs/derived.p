@@ -5,7 +5,7 @@
 derived
 
 @BASE
-form
+table
 
 @auto[]
 $derived_var[derived_var_val]
@@ -15,7 +15,7 @@ $derived_var[derived_var_val]
 aval}
 
 @test[]
-#$a[overridden] should be error
+$a[overridden] should be error
 ^^append{appeded} ^append{appeded}<br>
 ^^count[]=^count[]<br>
 ^offset(+1)
