@@ -60,23 +60,23 @@ AC_ARG_WITH(glib-config,[  --with-glib-config=FILE FILE is glib library
 AC_ARG_WITH(shared-xml,[  --with-shared-xml=D     D is the directory where
                           Gnome XML libraries are installed (shared libs)],[
     GNOME_XML=$withval
-    XMLBIN_DIR="$GNOME_XML/bin"
-    XMLINC_DIR="$GNOME_XML/include"
-    XMLLIB_DIR="$GNOME_XML/lib"
+    XMLBIN="$GNOME_XML/bin"
+    XMLINC="$GNOME_XML/include"
+    XMLLIB="$GNOME_XML/lib"
 
-    if test \! -d $XMLBIN_DIR -o \! -d $XMLINC_DIR -o \! -d $XMLLIB_DIR; then
+    if test \! -d $XMLBIN -o \! -d $XMLINC -o \! -d $XMLLIB; then
     	AC_MSG_ERROR($GNOME_XML does not seem to be valid Gnome installation directory)
     fi
 
     AC_DEFINE(XML,,xml-abled parser)
     
-    LIBXML2_SO_NAME=`cd $XMLLIB_DIR ; ls libxml2.?? libxml2.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
-    LIBGDOME_SO_NAME=`cd $XMLLIB_DIR ; ls libgdome.?? libgdome.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
-    LIBXSLT_SO_NAME=`cd $XMLLIB_DIR ; ls libxslt.?? libxslt.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
-    LIBEXSLT_SO_NAME=`cd $XMLLIB_DIR ; ls libexslt.?? libexslt.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
+    LIBXML2_SO_NAME=`cd $XMLLIB ; ls libxml2.?? libxml2.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
+    LIBGDOME_SO_NAME=`cd $XMLLIB ; ls libgdome.?? libgdome.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
+    LIBXSLT_SO_NAME=`cd $XMLLIB ; ls libxslt.?? libxslt.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
+    LIBEXSLT_SO_NAME=`cd $XMLLIB ; ls libexslt.?? libexslt.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
 
     if test -z "$GLIB_CONFIG"; then
-	    GLIB_CONFIG=$XMLBIN_DIR/glib-config
+	    GLIB_CONFIG=$XMLBIN/glib-config
 	    if test \! -x $GLIB_CONFIG; then
 	        GLIB_CONFIG=glib-config
 	    fi
@@ -84,38 +84,41 @@ AC_ARG_WITH(shared-xml,[  --with-shared-xml=D     D is the directory where
     GLIB_CFLAGS=`$GLIB_CONFIG --cflags`
     GLIB_LIBS=`$GLIB_CONFIG --libs`
 
-    XML_INCLUDES="$GLIB_CFLAGS -I$XMLINC_DIR -I$XMLINC_DIR/libgdome -I$XMLINC_DIR/libxml2"
-    XML_LIBS="$GLIB_LIBS -L$XMLLIB_DIR -l$LIBXML2_SO_NAME -l$LIBGDOME_SO_NAME -l$LIBXSLT_SO_NAME -l$LIBEXSLT_SO_NAME"
+    XML_INCLUDES="$GLIB_CFLAGS -I$XMLINC -I$XMLINC/libgdome -I$XMLINC/libxml2"
+    XML_LIBS="$GLIB_LIBS -L$XMLLIB -l$LIBXML2_SO_NAME -l$LIBGDOME_SO_NAME -l$LIBXSLT_SO_NAME -l$LIBEXSLT_SO_NAME"
     if test \! -z "$LD_PATHLINK"; then
-	XML_LIBS="$XML_LIBS -Wl,$LD_PATHLINK -Wl,$XMLLIB_DIR"
+	XML_LIBS="$XML_LIBS -Wl,$LD_PATHLINK -Wl,$XMLLIB"
     fi
 ])
 
 AC_ARG_WITH(static-xml,[  --with-static-xml=D     D is the directory where
                           Gnome XML libraries are installed (static libs)],[
     GNOME_XML=$withval
-    XMLBIN_DIR="$GNOME_XML/bin"
-    XMLINC_DIR="$GNOME_XML/include"
-    XMLLIB_DIR="$GNOME_XML/lib"
+    XMLBIN="$GNOME_XML/bin"
+    XMLINC="$GNOME_XML/include"
+    XMLLIB="$GNOME_XML/lib"
 
-    if test \! -d $XMLBIN_DIR -o \! -d $XMLINC_DIR -o \! -d $XMLLIB_DIR; then
+    if test \! -d $XMLBIN -o \! -d $XMLINC -o \! -d $XMLLIB; then
     	AC_MSG_ERROR($GNOME_XML does not seem to be valid Gnome installation directory)
     fi
 
     AC_DEFINE(XML,,xml-abled parser)
 
     if test -z "$GLIB_CONFIG"; then
-	    GLIB_CONFIG=$XMLBIN_DIR/glib-config
+	    GLIB_CONFIG=$XMLBIN/glib-config
 	    if test \! -x $GLIB_CONFIG; then
 	        GLIB_CONFIG=glib-config
 	    fi
     fi
     GLIB_CFLAGS=`$GLIB_CONFIG --cflags`
-dnl  '-L/usr/local/lib -lglib' -> /usr/local/lib
-    GLIB_DIR=`$GLIB_CONFIG --libs | sed 's/-L//' | sed 's/-lglib//' | sed 's/ //g'`
 
-    XML_INCLUDES="$GLIB_CFLAGS -I$XMLINC_DIR -I$XMLINC_DIR/libgdome -I$XMLINC_DIR/libxml2"
-    XML_LIBS="$XMLLIB_DIR/libgdome.a $XMLLIB_DIR/libxslt.a $XMLLIB_DIR/libexslt.a $XMLLIB_DIR/libxml2.a $GLIB_DIR/libglib.a"
+dnl  '-L/usr/local/lib -lglib' -> /usr/local/lib
+changequote(, )dnl
+    GLIB_DIR=`$GLIB_CONFIG --libs | sed 's/.*-L\([^ ]*\).*/\1/'`
+    GLIB_NAME=`$GLIB_CONFIG --libs | sed 's/.*-l\([^ ]*\).*/\1/'`
+changequote([, ])dnl
+    XML_INCLUDES="$GLIB_CFLAGS -I$XMLINC -I$XMLINC/libgdome -I$XMLINC/libxml2"
+    XML_LIBS="$XMLLIB/libgdome.a $XMLLIB/libxslt.a $XMLLIB/libexslt.a $XMLLIB/libxml2.a $GLIB_DIR/lib$GLIB_NAME.a"
 ])
 AC_SUBST(XML_INCLUDES)
 AC_SUBST(XML_LIBS)
