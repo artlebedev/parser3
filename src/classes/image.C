@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_IMAGE_C="$Date: 2002/11/21 09:18:18 $";
+static const char* IDENT_IMAGE_C="$Date: 2002/11/21 09:47:34 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -153,20 +153,20 @@ struct JPG_Size_segment_body {
 
 //
 
-inline short x_endian_to_int(unsigned char L, unsigned char H) {
+inline ushort x_endian_to_ushort(unsigned char L, unsigned char H) {
 	return(short)((H<<8) + L);
 }
 
-inline short big_endian_to_int(unsigned char b[2]) {
-	return x_endian_to_int(b[1], b[0]);
+inline ushort big_endian_to_ushort(unsigned char b[2]) {
+	return x_endian_to_ushort(b[1], b[0]);
 }
 
-inline short little_endian_to_int(unsigned char b[2]) {
-	return x_endian_to_int(b[0], b[1]);
+inline ushort little_endian_to_ushort(unsigned char b[2]) {
+	return x_endian_to_ushort(b[0], b[1]);
 }
 
 void measure_gif(Pool& pool, const String *origin_string, 
-			 Measure_reader& reader, int& width, int& height) {
+			 Measure_reader& reader, ushort& width, ushort& height) {
 
 	void *buf;
 	const int head_size=sizeof(GIF_Header);
@@ -181,13 +181,13 @@ void measure_gif(Pool& pool, const String *origin_string,
 			origin_string, 
 			"not GIF file - wrong signature");	
 
-	width=little_endian_to_int(head->width);
-	height=little_endian_to_int(head->height);
+	width=little_endian_to_ushort(head->width);
+	height=little_endian_to_ushort(head->height);
 }
 
 /// @test remove ugly mech in reader - 20K limit
 void measure_jpeg(Pool& pool, const String *origin_string, 
-			 Measure_reader& reader, int& width, int& height) {
+			 Measure_reader& reader, ushort& width, ushort& height) {
 	// JFIF format markers
 	const unsigned char MARKER=0xFF;
 	const unsigned char CODE_SIZE_FIRST=0xC0;
@@ -224,13 +224,13 @@ void measure_jpeg(Pool& pool, const String *origin_string,
 				break;
 			JPG_Size_segment_body *body=(JPG_Size_segment_body *)buf;
 			
-			width=big_endian_to_int(body->width);
-			height=big_endian_to_int(body->height);
+			width=big_endian_to_ushort(body->width);
+			height=big_endian_to_ushort(body->height);
 			found=true;
 			break;
 		} else {
             // Dummy read to skip over data
-            long offset=big_endian_to_int(head->length) - 2;
+            long offset=big_endian_to_ushort(head->length) - 2;
 			reader.seek(offset);
         }
 	}
@@ -242,7 +242,7 @@ void measure_jpeg(Pool& pool, const String *origin_string,
 }
 
 void measure_png(Pool& pool, const String *origin_string, 
-			 Measure_reader& reader, int& width, int& height) {
+			 Measure_reader& reader, ushort& width, ushort& height) {
 
 	void *buf;
 	const int head_size=sizeof(PNG_Header);
@@ -257,14 +257,14 @@ void measure_png(Pool& pool, const String *origin_string,
 			origin_string, 
 			"not PNG file - wrong signature");	
 
-	width=big_endian_to_int(head->width);
-	height=big_endian_to_int(head->height);
+	width=big_endian_to_ushort(head->width);
+	height=big_endian_to_ushort(head->height);
 }
 
 // measure center
 
 void measure(Pool& pool, const String& file_name, 
-			 Measure_reader& reader, int& width, int& height) {
+			 Measure_reader& reader, ushort& width, ushort& height) {
 	if(const char *cext=strrchr(file_name.cstr(String::UL_FILE_SPEC), '.')) {
 		cext++;
 		if(strcasecmp(cext, "GIF")==0)
@@ -287,8 +287,8 @@ void measure(Pool& pool, const String& file_name,
 
 #ifndef DOXYGEN
 struct File_measure_action_info {
-	int *width;
-	int *height;
+	ushort *width;
+	ushort *height;
 	const String *file_name;
 };
 #endif
@@ -307,8 +307,8 @@ static void _measure(Request& r, const String& method_name, MethodParams *params
 
 	Value& data=params->as_no_junction(0, "data must not be code");
 
-	int width=0;
-	int height=0;
+	ushort width=0;
+	ushort height=0;
 	const String *file_name;
 	if(file_name=data.get_string()) {
 		File_measure_action_info info={&width, &height, file_name};
