@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.h,v 1.24 2001/02/21 12:43:41 paf Exp $
+  $Id: pa_string.h,v 1.25 2001/02/22 08:16:09 paf Exp $
 */
 
 /*
@@ -36,10 +36,7 @@
 #endif
 #define	APPEND_CONST(src) APPEND(src, 0, 0, 0)
 
-//class String_iterator;
-
 class String : public Pooled {
-//	friend String_iterator;
 public:
 	enum {
 		CR_PREALLOCATED_COUNT=5,
@@ -50,14 +47,13 @@ public:
 
 	String(Pool& apool);
 	String(const String& src);
-	//String(const String_iterator& begin, const String_iterator& end);
 	size_t size() const { return fsize; }
 	int used_rows() const { return fused_rows; }
 	char *cstr() const;
 	String& real_append(STRING_APPEND_PARAMS);
 	bool operator == (const String& src) const;
 	bool operator == (char* src) const;
-//	String& append(const String_iterator& begin, const String_iterator& end);
+	String& operator += (const String& src);
 
 	uint hash_code() const;
 
@@ -90,8 +86,8 @@ private:
 	Chunk::Row *link_row;
 
 private:
-	// last chank allocated count
-	int curr_chunk_rows;
+	// last chunk
+	Chunk *last_chunk;
 
 	// string size
 	size_t fsize;
@@ -111,53 +107,5 @@ private: //disabled
 	String& operator = (const String&) { return *this; }
 
 };
-
-/*
-class Char_types {
-public:
-	Char_types();
-	void set(char from, char to, int type);
-	void set(char c, int type) { 
-		types[static_cast<unsigned int>(c)]=static_cast<char>(type); 
-	}
-	int get(char c) { 
-		return static_cast<int>(types[static_cast<unsigned int>(c)]); 
-	}
-private:	
-	char types[0x100];
-};
-
-class String_iterator {
-public:
-	String_iterator(String& astring);
-	String_iterator(String_iterator& asi);
-
-	void operator ++() { skip(); }
-	void operator ++(int) { skip(); }
-
-	int skip_to(Char_types& types);
-	bool skip_to(char c);
-
-	bool eof() { return position==0; }
-
-	// current char
-	char operator() () const;
-
-protected:
-	// home string
-	String& string;
-	// the row in which we are
-	String::Chunk::Row *read_here;
-	// position in text, eof when 0 
-	const char *position;
-	// when read_here reaches this row, move to the next chunk
-	String::Chunk::Row *link_row;
-
-protected:
-
-	// advances position by one char
-	void skip();
-};
-*/
 
 #endif

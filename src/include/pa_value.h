@@ -1,5 +1,5 @@
 /*
-  $Id: pa_value.h,v 1.11 2001/02/21 14:59:41 paf Exp $
+  $Id: pa_value.h,v 1.12 2001/02/22 08:16:09 paf Exp $
 */
 
 /*
@@ -76,7 +76,7 @@ public:
 
 	// text: value
 	// object_class: [class classname]
-	virtual String *get_string() { failed("getting string representation"); return 0; }
+	virtual String *get_string() { /*vclass: failed("getting string representation"); */return 0; }
 	
 	// text: value
 	virtual void put_string(const String *astring) { failed("storing string"); }

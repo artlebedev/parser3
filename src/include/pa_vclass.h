@@ -1,5 +1,5 @@
 /*
-  $Id: pa_vclass.h,v 1.2 2001/02/21 17:36:30 paf Exp $
+  $Id: pa_vclass.h,v 1.3 2001/02/22 08:16:09 paf Exp $
 */
 
 /*
@@ -23,13 +23,13 @@ public: // Value
 	/*virtual*/ const char *get_type() const { return "Class"; }
 
 	// object_class: [class classname]
-	/*virtual*/ String *get_string() const { 
+	/*virtual*/ /*String *get_string() const { 
 		String *result=new(pool()) String(pool()); 
 		result->APPEND("[class ", 0, 0, 0);
 		result->APPEND(name().cstr(), 0, 0, 0);
 		result->APPEND("]", 0, 0, 0);
 		return result;
-	}
+	}*/
 
 	// object_class: (field)=STATIC.value;(STATIC)=hash;(method)=method_ref with self=object_class
 	/*virtual*/ Value *get_element(const String& name) const {

@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.13 2001/02/21 17:53:02 paf Exp $
+  $Id: execute.C,v 1.14 2001/02/22 08:16:31 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -15,8 +15,8 @@ char *opcode_name[]={
 	"WITH_ROOT",	"WITH_SELF",	"WITH_READ",	"WITH_WRITE",
 	"CONSTRUCT",
 	"EXPRESSION_EVAL",	"MODIFY_EVAL",
-	"WRITE",
-	"GET_ELEMENT",	"GET_ELEMENT__WRITE",
+	"WRITE_STRING",  "WRITE_VALUE",
+	"GET_ELEMENT",	"GET_ELEMENT__WRITE_VALUE",
 	"CREATE_EWPOOL",	"REDUCE_EWPOOL",
 	"CREATE_RWPOOL",	"REDUCE_RWPOOL",
 	"GET_METHOD_FRAME",
@@ -84,12 +84,19 @@ void Request::execute(Array& ops) {
 				break;
 			}
 			
-		/*case OP_WRITE:
+		case OP_WRITE_STRING:
+			{
+				String *string=static_cast<String *>(stack.pop());
+				wcontext->write(string);
+				break;
+			}
+			
+		case OP_WRITE_VALUE:
 			{
 				Value *value=static_cast<Value *>(stack.pop());
-				wcontext.write(value);
+				wcontext->write(value);
 				break;
-			}*/
+			}
 			
 		/*case OP_GET_ELEMENT:
 			{

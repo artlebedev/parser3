@@ -1,5 +1,5 @@
 /*
-  $Id: pa_wcontext.h,v 1.2 2001/02/21 17:36:30 paf Exp $
+  $Id: pa_wcontext.h,v 1.3 2001/02/22 08:16:09 paf Exp $
 */
 
 /*
@@ -38,16 +38,38 @@ public: // usage
 
 	// appends a string to result
 	// until Value written, ignores afterwards
-	void write(String& astring);
+	void write(String *astring) {
+		if(!astring)
+			return;
+
+		if(fvalue)  // already have value?
+			return;  // don't need any strings anymore
+
+		string+=*astring;
+	}
 	// if value.string!=0 writes string altogether[for showing class names, etc]
 	// writes Value; raises an error if already
-	void write(Value& avalue);
+	void write(Value *avalue) {
+		if(!avalue)
+			return;
+
+		String *string=avalue->get_string();
+		if(string)
+			write(string);
+		else
+			if(fvalue) // already have value?
+				pool().exception().raise(0,0,  // don't need to construct twice
+					0,
+					"value already assigned");
+			else
+				fvalue=avalue;
+	}
 	//void write(String_iterator& from, String_iterator& to);
 
 	// retrives the resulting value
-	// that can be Text if value==0 or the Value object
+	// that can be VString if value==0 or the Value object
 	Value *value() const {
-		return fvalue?fvalue:0;//TODO: new Text(string);
+		return fvalue?fvalue:0;//TODO: new VString(string);
 	}
 	
 private:

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_string.C,v 1.27 2001/02/21 12:44:02 paf Exp $
+  $Id: pa_string.C,v 1.28 2001/02/22 08:16:31 paf Exp $
 */
 
 #include <string.h>
@@ -13,21 +13,22 @@
 
 String::String(Pool& apool) :
 	Pooled(apool) {
-	head.count=curr_chunk_rows=CR_PREALLOCATED_COUNT;
+	last_chunk=&head;
+	head.count=CR_PREALLOCATED_COUNT;
 	append_here=head.rows;
 	head.preallocated_link=0;
-	link_row=&head.rows[curr_chunk_rows];
+	link_row=&head.rows[head.count];
 	fused_rows=fsize=0;
 }
 
 void String::expand() {
-	curr_chunk_rows+=curr_chunk_rows*CR_GROW_PERCENT/100;
-	Chunk *chunk=static_cast<Chunk *>(
-		pool().malloc(sizeof(int)+sizeof(Chunk::Row)*curr_chunk_rows+sizeof(Chunk *)));
-	chunk->count=curr_chunk_rows;
-	link_row->link=chunk;
-	append_here=chunk->rows;
-	link_row=&chunk->rows[curr_chunk_rows];
+	int new_chunk_count=last_chunk->count+last_chunk->count*CR_GROW_PERCENT/100;
+	last_chunk=static_cast<Chunk *>(
+		pool().malloc(sizeof(int)+sizeof(Chunk::Row)*new_chunk_count+sizeof(Chunk *)));
+	last_chunk->count=new_chunk_count;
+	link_row->link=last_chunk;
+	append_here=last_chunk->rows;
+	link_row=&last_chunk->rows[last_chunk->count];
 	link_row->link=0;
 }
 
@@ -38,7 +39,7 @@ String::String(const String& src) :
 	int src_used_rows=src.used_rows();
 	if(src_used_rows<=head.count) {
 		// all new rows fit into preallocated area
-		curr_chunk_rows=head.count;
+		int curr_chunk_rows=head.count;
 		memcpy(head.rows, src.head.rows, sizeof(Chunk::Row)*src_used_rows);
 		append_here=&head.rows[src_used_rows];
 		link_row=&head.rows[curr_chunk_rows];
@@ -55,16 +56,16 @@ String::String(const String& src) :
 		// preallocated chunk src to constructing head
 		memcpy(head.rows, src.head.rows, sizeof(Chunk::Row)*head.count);
 		// remaining rows into new_chunk
-		curr_chunk_rows=src_used_rows-head.count;
+		int curr_chunk_rows=src_used_rows-head.count;
 		Chunk *new_chunk=static_cast<Chunk *>(
 			pool().malloc(sizeof(int)+sizeof(Chunk::Row)*curr_chunk_rows+sizeof(Chunk *)));
 		new_chunk->count=curr_chunk_rows;
 		head.preallocated_link=new_chunk;
-		append_here=link_row=&new_chunk->rows[curr_chunk_rows];
+		append_here=link_row=&new_chunk->rows[new_chunk->count];
 
 		Chunk *old_chunk=src.head.preallocated_link; 
 		Chunk::Row *new_rows=new_chunk->rows;
-		int rows_left_to_copy=curr_chunk_rows;
+		int rows_left_to_copy=new_chunk->count;
 		while(true) {
 			int old_count=old_chunk->count;
 			Chunk *next_chunk=old_chunk->rows[old_count].link;
@@ -88,11 +89,56 @@ String::String(const String& src) :
 	fused_rows=src_used_rows;
 	fsize=src.fsize;
 }
-/*
-String(const String_iterator& begin, const String_iterator& end) {
-	;//TODO
+
+String& String::operator += (const String& src) {
+	int src_used_rows=src.used_rows();
+	int dst_free_rows=link_row-append_here;
+	
+	if(src_used_rows<=dst_free_rows) {
+		// all new rows fit into last chunk
+		memcpy(append_here, src.head.rows, sizeof(Chunk::Row)*src_used_rows);
+		append_here+=src_used_rows;
+	} else {
+		// not all new rows don't fit into last chunk: shrinking it to used part,
+		int used_rows=last_chunk->count-dst_free_rows;
+		//int *countp=append_here
+		link_row=&last_chunk->rows[last_chunk->count=used_rows];
+		//   allocating only enough mem to fit src string rows
+		//   next append would allocate a new chunk
+		last_chunk=static_cast<Chunk *>(
+			pool().malloc(sizeof(int)+sizeof(Chunk::Row)*src_used_rows+sizeof(Chunk *)));
+		last_chunk->count=src_used_rows;
+		link_row->link=last_chunk;
+		append_here=link_row=&last_chunk->rows[src_used_rows];
+
+		Chunk *old_chunk=src.head.preallocated_link; 
+		Chunk::Row *new_rows=last_chunk->rows;
+		int rows_left_to_copy=src_used_rows;
+		while(true) {
+			int old_count=old_chunk->count;
+			Chunk *next_chunk=old_chunk->rows[old_count].link;
+			if(next_chunk) {
+				// not last source chunk
+				// taking it all
+				memcpy(new_rows, old_chunk->rows, sizeof(Chunk::Row)*old_count);
+				new_rows+=old_count;
+				rows_left_to_copy-=old_count;
+
+				old_chunk=next_chunk;
+			} else {
+				// the last source chunk
+				// taking only those rows of chunk that _left_to_copy
+				memcpy(new_rows, old_chunk->rows, sizeof(Chunk::Row)*rows_left_to_copy);
+				break;
+			}
+		}
+	}
+	link_row->link=0;
+	fused_rows+=src_used_rows;
+	fsize+=src.fsize;
+
+	return *this;
 }
-*/
 
 String& String::real_append(STRING_APPEND_PARAMS) {
 	if(!src)
@@ -261,124 +307,3 @@ bool String::operator == (char* b_ptr) const {
 	}
 	return a_break==b_break;
 }
-/*
-String& String::append(const String_iterator& begin, const String_iterator& end) {
-	//TODO
-	return *this;
-}
-
-// Char_types
-
-Char_types::Char_types() {
-	memset(types, 0, sizeof(types));
-}
-
-void Char_types::set(char from, char to, int type) {
-	memset(&types[static_cast<unsigned int>(from)], type, to-from+1);
-}
-
-// String_iterator 
-
-String_iterator::String_iterator(String& astring) :	string(astring) {
-	read_here=string.head.rows;
-	position=string.size()==0?0:read_here->item.ptr;
-	link_row=reinterpret_cast<String::Chunk::Row*>(string.head.preallocated_link);
-}
-/*
-String_iterator::String_iterator(String_iterator& asi) {
-	//TODO
-}
-
-char String_iterator::operator()() const {
-	return position?*position:0;
-}
-
-void String_iterator::skip() {
-	if(!position)
-		return;
-
-	if(++position==
-		read_here->item.ptr+
-		read_here->item.size) {
-
-		// next row
-		if(++read_here==string.append_here) {
-			position=0;
-			return;
-		}
-		if(read_here==link_row) {
-			String::Chunk *chunk=link_row->link;
-			if(!chunk)
-				string.pool().exception().raise(0, 0,
-					&string,
-					"String_iterator::skip() missed "
-					"read_here==string.append_here check");
-
-			read_here=chunk->rows;
-			link_row=&chunk->rows[chunk->count];
-		}
-		position=read_here->item.ptr;
-	}
-}
-
-bool String_iterator::skip_to(char c) {
-	if(!position)
-		return false;
-
-	while(true) {
-		if(char *found=static_cast<char *>(
-			memchr(position, c, read_here->item.size-(position-read_here->item.ptr)))) {
-			position=found;
-			return true;
-		}
-
-		// next row
-		if(++read_here==string.append_here) {
-			position=0;
-			return false;
-		}
-		if(read_here==link_row) {
-			String::Chunk *chunk=link_row->link;
-			if(!chunk)
-				string.pool().exception().raise(0, 0,
-					&string,
-					"String_iterator::skip_to(char) missed "
-					"read_here==string.append_here check");
-
-			read_here=chunk->rows;
-			link_row=&chunk->rows[chunk->count];
-		}
-		position=read_here->item.ptr;
-	}
-}
-
-int String_iterator::skip_to(Char_types& types) {
-	if(!position)
-		return false;
-
-	while(true) {
-		int countdown=read_here->item.size-(position-read_here->item.ptr);
-		for(; countdown--; position++)
-			if(int type=types.get(*position))
-				return type;
-
-		// next row
-		if(++read_here==string.append_here) {
-			position=0;
-			return -1;
-		}
-		if(read_here==link_row) {
-			String::Chunk *chunk=link_row->link;
-			if(!chunk)
-				string.pool().exception().raise(0, 0,
-					&string,
-					"String_iterator::skip_to(Char_type) missed "
-					"read_here==string.append_here check");
-
-			read_here=chunk->rows;
-			link_row=&chunk->rows[chunk->count];
-		}
-		position=read_here->item.ptr;
-	}
-}
-*/
