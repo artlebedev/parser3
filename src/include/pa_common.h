@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-static const char* IDENT_COMMON_H="$Date: 2003/11/06 08:48:59 $";
+static const char* IDENT_COMMON_H="$Date: 2003/11/10 06:51:06 $";
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -151,7 +151,7 @@ void file_write(
 	delete specified file 
 	throws an exception in case of problems
 */
-bool file_delete(const String& file_spec, bool fail_on_read_problem=true);
+bool file_delete(const String& file_spec, bool fail_on_problem=true);
 /**
 	move specified file 
 	throws an exception in case of problems

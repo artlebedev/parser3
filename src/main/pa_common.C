@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2003/11/06 14:11:14 $"; 
+static const char* IDENT_COMMON_C="$Date: 2003/11/10 06:51:06 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -754,10 +754,10 @@ static void rmdir(const String& file_spec, size_t pos_after) {
 	
 	rmdir(file_spec.mid(0, pos_after-1/* / */).cstr(String::L_FILE_SPEC)); 
 }
-bool file_delete(const String& file_spec, bool fail_on_read_problem) {
+bool file_delete(const String& file_spec, bool fail_on_problem) {
 	const char* fname=file_spec.cstr(String::L_FILE_SPEC); 
 	if(unlink(fname)!=0)
-		if(fail_on_read_problem)
+		if(fail_on_problem)
 			throw Exception(errno==EACCES?"file.access":errno==ENOENT?"file.missing":0, 
 				&file_spec, 
 				"unlink failed: %s (%d), actual filename '%s'", 

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT="$Date: 2003/11/10 06:15:10 $";
+static const char* IDENT="$Date: 2003/11/10 06:51:06 $";
 
 #include "pa_globals.h"
 #include "pa_threads.h"
@@ -31,23 +31,47 @@ void check(const char *step, apr_status_t status) {
 }
 
 void VHashfile::open(const String& afile_name) {
-	check("apr_sdbm_open(shared)", apr_sdbm_open(&db, file_name=afile_name.cstr(String::L_FILE_SPEC), 
+	check("apr_sdbm_open(shared)", apr_sdbm_open(&m_db, file_name=afile_name.cstr(String::L_FILE_SPEC), 
                                         APR_CREATE|APR_READ|APR_SHARELOCK, 
                                         0664, 0));
 }
 
-void VHashfile::make_writable() {
-	if(db && apr_sdbm_rdonly(db)) {
-		check("apr_sdbm_close", apr_sdbm_close(db));
-		check("apr_sdbm_open(exclusive)", apr_sdbm_open(&db, file_name, 
+void VHashfile::close() {
+	check_db();
+
+	check("apr_sdbm_close", apr_sdbm_close(m_db));  m_db=0;
+}
+
+void VHashfile::check_db() const {
+	if(!m_db)
+		throw Exception(0,
+			0,
+			"%s is closed", type());
+}
+
+apr_sdbm_t *VHashfile::get_db_for_reading() const {
+	check_db();
+
+	return m_db;
+}
+
+apr_sdbm_t *VHashfile::get_db_for_writing() {
+	check_db();
+
+	if(apr_sdbm_rdonly(m_db)) {
+		// reopen in write mode & exclusive lock
+		close();
+		check("apr_sdbm_open(exclusive)", apr_sdbm_open(&m_db, file_name, 
 											APR_WRITE, 
 											0664, 0));
 	}
+
+	return m_db;
 }
 
 VHashfile::~VHashfile() {
-	if(db)
-		check("apr_sdbm_close", apr_sdbm_close(db));
+	if(m_db)
+		close();
 }
 
 struct Hashfile_value_serialized_prolog {
@@ -91,7 +115,7 @@ static const String* deserialize_value(const apr_sdbm_datum_t datum) {
 }
 
 void VHashfile::put_field(const String& aname, Value *avalue) {
-	make_writable();
+	apr_sdbm_t *db=get_db_for_writing();
 
 	time_t time_to_die=0;
 	const String *value_string;
@@ -128,6 +152,8 @@ void VHashfile::put_field(const String& aname, Value *avalue) {
 }
 
 Value *VHashfile::get_field(const String& aname) {
+	apr_sdbm_t *db=get_db_for_reading();
+
 	apr_sdbm_datum_t key;
 	key.dptr=const_cast<char*>(aname.cstr());
 	key.dsize=aname.length();
@@ -141,7 +167,7 @@ Value *VHashfile::get_field(const String& aname) {
 }
 
 void VHashfile::remove(const String& aname) {
-	make_writable();
+	apr_sdbm_t *db=get_db_for_writing();
 
 	apr_sdbm_datum_t key;
 	key.dptr=const_cast<char*>(aname.cstr());
@@ -151,6 +177,8 @@ void VHashfile::remove(const String& aname) {
 }
 
 void VHashfile::for_each(void callback(apr_sdbm_datum_t, void*), void* info) const {
+	apr_sdbm_t *db=get_db_for_reading();
+
 	Array<apr_sdbm_datum_t> keys;
 
 	// collect keys
@@ -189,6 +217,8 @@ static void for_each_string_callback(apr_sdbm_datum_t apkey, void* ainfo) {
 		info.nested_callback(clkey, *svalue, info.nested_info);
 }
 void VHashfile::for_each(void callback(const String::Body, const String&, void*), void* ainfo) const {
+	apr_sdbm_t *db=get_db_for_reading();
+
 	For_each_string_callback_info info;
 	
 	info.db=db;
@@ -202,7 +232,7 @@ static void clear_delete_key(apr_sdbm_datum_t key, void* adb) {
 	check("apr_sdbm_delete", apr_sdbm_delete(static_cast<apr_sdbm_t*>(adb), key));
 }
 void VHashfile::clear() {
-	make_writable();
+	apr_sdbm_t *db=get_db_for_writing();
 
 	for_each(clear_delete_key, db);
 }
@@ -216,4 +246,16 @@ HashStringValue *VHashfile::get_hash() {
 
 	for_each(get_hash__put, &result);
 	return &result;
+}
+
+static void delete_file(const char* base_name, const char* ext) {
+	String sfile_name(base_name, false/*already removed tainting at ::open*/);
+	sfile_name<<ext;
+	file_delete(sfile_name);
+}
+
+void VHashfile::delete_files() {
+	close();
+	delete_file(file_name, APR_SDBM_DIRFEXT);
+	delete_file(file_name, APR_SDBM_PAGFEXT);
 }

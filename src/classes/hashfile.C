@@ -6,7 +6,7 @@
 */
 
 
-static const char* IDENT="$Id: hashfile.C,v 1.29 2003/11/07 13:59:21 paf Exp $";
+static const char* IDENT="$Id: hashfile.C,v 1.30 2003/11/10 06:51:05 paf Exp $";
 
 #include "classes.h"
 
@@ -50,6 +50,11 @@ static void _hash(Request& r, MethodParams& params) {
 static void _delete(Request& r, MethodParams& params) {
 	VHashfile& self=GET_SELF(r, VHashfile);
 	
+	if(!params.count()) {
+		// ^hashfile.delete[] asked to delete hashfile itself
+		self.delete_files();
+		return;
+	}
 	// key
 	const String &key=params.as_string(0, "key must be string");
 	// remove
@@ -119,7 +124,7 @@ MHashfile::MHashfile(): Methoded("hashfile") {
 	// ^hash[]
 	add_native_method("hash", Method::CT_DYNAMIC, _hash, 0, 0);
 	// ^hashfile.delete[key]
-	add_native_method("delete", Method::CT_DYNAMIC, _delete, 1, 1);
+	add_native_method("delete", Method::CT_DYNAMIC, _delete, 0, 1);
 	// ^hashfile.clear[]
 	add_native_method("clear", Method::CT_DYNAMIC, _clear, 0, 0);
 	// ^hashfile.foreach[key;value]{code}[delim]
