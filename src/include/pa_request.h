@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.h,v 1.130 2002/04/15 11:34:24 paf Exp $
+	$Id: pa_request.h,v 1.131 2002/04/15 12:03:32 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -133,7 +133,7 @@ public:
 		VStateless_class *base_class=0); // core.C
 
 	/// processes any code-junction there may be inside of @a value
-	StringOrValue process(Value& input_value, bool intercept_string); // execute.C
+	StringOrValue process(Value& input_value, bool intercept_string=true); // execute.C
 	//@{ convinient helpers
 	const String& process_to_string(Value& input_value) {
 		return process(input_value, true/*intercept_string*/).as_string();
@@ -142,27 +142,20 @@ public:
 		return process(input_value, intercept_string).as_value();
 	}
 	//@}
+
 	
+#define DEFINE_DUAL(modification) \
+	void write_##modification##_lang(StringOrValue dual) { \
+		if(const String *string=dual.get_string()) \
+			write_##modification##_lang(*string); \
+		else \
+			write_##modification##_lang(*dual.get_value()); \
+	}
+
 	/// appending, sure of clean string inside
 	void write_no_lang(const String& astring) {
 		wcontext->write(astring, 
 			String::UL_CLEAN | flang&String::UL_OPTIMIZE_BIT);
-	}
-	/// appending string, passing language built into string being written
-	void write_pass_lang(const String& astring) {
-		wcontext->write(astring, String::UL_PASS_APPENDED); 
-	}
-	/// appending possible string, assigning untaint language
-	void write_assign_lang(Value& avalue) {
-		wcontext->write(avalue, flang); 
-	}
-	/// appending string, assigning untaint language
-	void write_assign_lang(const String& astring) {
-		wcontext->write(astring, flang); 
-	}
-	/// appending possible string, passing language built into string being written
-	void write_pass_lang(Value& avalue) {
-		wcontext->write(avalue, String::UL_PASS_APPENDED); 
 	}
 	/// appending sure value, that would be converted to clean string
 	void write_no_lang(Value& avalue) {
@@ -172,10 +165,27 @@ public:
 			wcontext->write(avalue, 
 				String::UL_CLEAN | flang&String::UL_OPTIMIZE_BIT);
 	}
-	/// appending sure value, not VString
-	void write_expr_result(Value& avalue) {
-		wcontext->write(avalue); 
+	//DEFINE_DUAL(no)
+
+	/// appending string, passing language built into string being written
+	void write_pass_lang(const String& astring) {
+		wcontext->write(astring, String::UL_PASS_APPENDED); 
 	}
+	/// appending possible string, passing language built into string being written
+	void write_pass_lang(Value& avalue) {
+		wcontext->write(avalue, String::UL_PASS_APPENDED); 
+	}
+	DEFINE_DUAL(pass)
+
+	/// appending possible string, assigning untaint language
+	void write_assign_lang(Value& avalue) {
+		wcontext->write(avalue, flang); 
+	}
+	/// appending string, assigning untaint language
+	void write_assign_lang(const String& astring) {
+		wcontext->write(astring, flang); 
+	}
+	DEFINE_DUAL(assign)
 
 	/// returns relative to @a path  path to @a file 
 	const String& relative(const char *apath, const String& relative_name);

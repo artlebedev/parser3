@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_wcontext.h,v 1.30 2002/04/15 11:34:24 paf Exp $
+	$Id: pa_wcontext.h,v 1.31 2002/04/15 12:03:32 paf Exp $
 */
 
 #ifndef PA_WCONTEXT_H
@@ -23,6 +23,8 @@ public:
 	StringOrValue(const String *astring, Value *avalue) : fstring(astring), fvalue(avalue) {}
 	void set_string(const String& astring) { fstring=&astring; }
 	void set_value(Value& avalue) { fvalue=&avalue; }
+	const String *get_string() { return fstring; }
+	Value *get_value() { return fvalue; }
 	Value& as_value() const {
 		return *(fvalue?fvalue:new(fstring->pool()) VString(*fstring));
 	}

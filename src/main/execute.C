@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: execute.C,v 1.229 2002/04/15 11:33:31 paf Exp $
+	$Id: execute.C,v 1.230 2002/04/15 12:03:32 paf Exp $
 */
 
 #include "pa_opcode.h"
@@ -274,11 +274,12 @@ void Request::execute(const Array& ops) {
 			}
 		case OP_WRITE_EXPR_RESULT:
 			{
+				value=POP();
+				write_no_lang(*value->as_expr_result());
+
+				// must be after write(result) and 
 				// see OP_PREPARE_TO_EXPRESSION
 				wcontext->set_in_expression(false);
-
-				value=POP();
-				write_expr_result(*value->as_expr_result());
 				break;
 			}
 		case OP_STRING__WRITE:

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: hash.C,v 1.37 2002/04/10 09:53:14 paf Exp $
+	$Id: hash.C,v 1.38 2002/04/15 12:03:31 paf Exp $
 */
 
 #include "classes.h"
@@ -286,11 +286,11 @@ static void one_foreach_cycle(const Hash::Key& akey, Hash::Val *avalue,
 	i.r->root->put_element(*i.key_var_name, i.vkey);
 	i.r->root->put_element(*i.value_var_name, static_cast<Value *>(avalue));
 
-	Value& processed_body=i.r->process_to_value(*i.body_code);
+	StringOrValue processed_body=i.r->process(*i.body_code);
 	if(i.delim_maybe_code) { // delimiter set?
 		const String *string=processed_body.get_string();
 		if(i.need_delim && string && string->size()) // need delim & iteration produced string?
-			i.r->write_pass_lang(i.r->process_to_string(*i.delim_maybe_code));
+			i.r->write_pass_lang(i.r->process(*i.delim_maybe_code));
 		i.need_delim=true;
 	}
 	i.r->write_pass_lang(processed_body);

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: file.C,v 1.76 2002/04/15 11:34:24 paf Exp $
+	$Id: file.C,v 1.77 2002/04/15 12:03:31 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -104,7 +104,7 @@ static void _find(Request& r, const String& method_name, MethodParams *params) {
 	// not found
 	if(params->size()==2) {
 		Value& not_found_code=params->as_junction(1, "not-found param must be code");
-		r.write_pass_lang(r.process_to_value(not_found_code));
+		r.write_pass_lang(r.process(not_found_code));
 	}
 }
 

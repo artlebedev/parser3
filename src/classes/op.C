@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: op.C,v 1.84 2002/04/15 10:36:43 paf Exp $
+	$Id: op.C,v 1.85 2002/04/15 12:03:31 paf Exp $
 */
 
 #include "classes.h"
@@ -46,9 +46,9 @@ static void _if(Request& r, const String&, MethodParams *params) {
 		/*0/*no name* /,*/
 		false/*don't intercept string*/).as_bool();
 	if(condition)
-		r.write_pass_lang(r.process_to_value(params->as_junction(1, "'then' parameter must be code")));
+		r.write_pass_lang(r.process(params->as_junction(1, "'then' parameter must be code")));
 	else if(params->size()>2)
-		r.write_pass_lang(r.process_to_value(params->as_junction(2, "'else' parameter must be code")));
+		r.write_pass_lang(r.process(params->as_junction(2, "'else' parameter must be code")));
 }
 
 static void _untaint(Request& r, const String& method_name, MethodParams *params) {
