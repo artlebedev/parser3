@@ -1,5 +1,5 @@
 /*
-  $Id: pa_array.h,v 1.2 2001/01/27 15:21:05 paf Exp $
+  $Id: pa_array.h,v 1.3 2001/01/27 15:45:24 paf Exp $
 */
 
 /*
@@ -64,10 +64,8 @@ private:
 	// array size
 	int fused_rows;
 
-	int cache_index;
-	Chunk::Row *cache_row;
-	int cache_countdown;
-	Chunk::Row *cache_link_row;
+	int cache_chunk_base;
+	Chunk *cache_chunk;
 	
 private:
 	// new&constructors made private to enforce factory manufacturing at pool

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_array.C,v 1.2 2001/01/27 15:21:05 paf Exp $
+  $Id: pa_array.C,v 1.3 2001/01/27 15:45:24 paf Exp $
 */
 
 #include <string.h>
@@ -15,15 +15,14 @@ void Array::construct(Pool *apool, int initial_rows) {
 	curr_chunk_rows=initial_rows;
 	head=static_cast<Chunk *>(
 		pool->malloc(sizeof(int)+sizeof(Chunk::Row)*curr_chunk_rows+sizeof(Chunk *)));
+	head->count=curr_chunk_rows;
 	append_here=head->rows;
 	link_row=&head->rows[curr_chunk_rows];
 	link_row->link=0;
 	fused_rows=0;
 
-	cache_index=0;
-	cache_row=0;
-	cache_countdown=curr_chunk_rows;
-	cache_link_row=link_row;
+	cache_chunk_base=0;
+	cache_chunk=head;
 }
 
 void Array::expand() {
@@ -80,14 +79,24 @@ Array::Item Array::get(int index) {
 */
 
 Array::Item& Array::operator [] (int index) {
-	// we have cached row&index?
-	if(index>=cache_index && index<cache_index+cache_countdown) {
+	if(!(index>=0 && index<size())) {
+		// FIX: some sort of thread-global error
+		Item *result=0;
+		return *result;
 	}
 
-	int cache_index;
-	Chunk::Row *cache_row;
-	int cache_countdown;
-	Chunk::Row *cache_link_row;
-	
-	return 0;
+	// if they ask index to the left of cached position, forget cache
+	if(index<cache_chunk_base) {
+		cache_chunk_base=0;
+		cache_chunk=head;
+	}
+
+	// navigate to chunk with "index" row
+	while(!(index>=cache_chunk_base && index<cache_chunk_base+cache_chunk->count)) {
+		int count=cache_chunk->count;
+		cache_chunk_base+=count;
+		cache_chunk=cache_chunk->rows[count].link;
+	}
+
+	return cache_chunk->rows[index-cache_chunk_base].item;
 }
