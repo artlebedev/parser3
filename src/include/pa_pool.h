@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.h,v 1.59 2001/09/21 14:46:09 parser Exp $
+	$Id: pa_pool.h,v 1.60 2001/10/02 17:05:49 parser Exp $
 */
 
 #ifndef PA_POOL_H
@@ -66,11 +66,17 @@ public:
 	/// current exception object of the pool
 	Exception& exception() const { return *fexception; }
 
+	/// resets transcoder if they change charset 
+	void set_charset(const String &charset);
+	/// returns current charset
+	const String& get_charset() { return *charset; }
+
 private:
 
 	void *fstorage;
 	void *fcontext;
 	void *ftag;
+	const String *charset;
 
 private: 
 	
@@ -120,10 +126,6 @@ private:
 #ifdef XML
 
 public:
-	/// resets transcoder if they change charset 
-	void set_charset(const String &charset);
-	/// returns current charset
-	const String& get_charset() { return *charset; }
 	/// converts Xalan string to char *
 	const char *transcode_cstr(const XalanDOMString& s);
 	/// converts Xalan string to parser String
@@ -138,7 +140,6 @@ private:
 
 private:
 
-	const String *charset;
 	XMLTranscoder *transcoder;
 
 #endif

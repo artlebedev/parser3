@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.C,v 1.28 2001/09/26 10:32:26 parser Exp $
+	$Id: pa_pool.C,v 1.29 2001/10/02 17:05:49 parser Exp $
 */
 
 #include "pa_pool.h"
@@ -24,6 +24,8 @@ Pool::Pool(void *astorage) :
 	{
 #ifdef XML
 	charset=new(*this) String(*this, "UTF-8");
+#else
+	charset=new(*this) String(*this, "");
 #endif
 }
 
@@ -45,14 +47,16 @@ void Pool::fail_register_cleanup() const {
 		"failed to register cleanup");
 }
 
-#ifdef XML
 void Pool::set_charset(const String &new_charset) {
 	if(new_charset!=*charset) {
+#ifdef XML
 		delete transcoder;  transcoder=0; // flag "we need new transcoder"
+#endif
 		charset=&new_charset; // for this charset
 	}
 }
 
+#ifdef XML
 void Pool::update_transcoder() {
 	if(transcoder)
 		return;

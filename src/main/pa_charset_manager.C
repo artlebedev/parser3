@@ -4,10 +4,9 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_charset_manager.C,v 1.1 2001/10/01 10:53:16 parser Exp $
+	$Id: pa_charset_manager.C,v 1.2 2001/10/02 17:10:41 parser Exp $
 */
 #include "pa_config_includes.h"
-#ifdef XML
 
 #include "pa_charset_manager.h"
 #include "pa_stylesheet_connection.h"
@@ -71,5 +70,3 @@ void Charset_manager::put_connection_to_cache(const String& file_spec,
 
 	cache.put(file_spec, &connection);
 }
-
-#endif
