@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: dom.C,v 1.17 2001/09/11 09:20:57 parser Exp $"; 
+static const char *RCSId="$Id: dom.C,v 1.18 2001/09/13 12:40:03 parser Exp $"; 
 
 #if _MSC_VER
 #	pragma warning(disable:4291)   // disable warning 
@@ -125,10 +125,10 @@ static void _throw(Pool& pool, const String *source, const XSLException& e) {
 		);
 }
 
-class ParserStringOutputStream: public XalanOutputStream {
+class ParserStringXalanOutputStream: public XalanOutputStream {
 public:
 	
-	explicit ParserStringOutputStream(String& astring) : fstring(astring) {}
+	explicit ParserStringXalanOutputStream(String& astring) : fstring(astring) {}
 
 protected: // XalanOutputStream
 
@@ -147,9 +147,10 @@ private:
 };
 
 
-FormatterListener *create_optioned_listener(Pool& pool, 
-								   const String& method_name, MethodParams *params, int index,
-								   Writer& writer) {
+void create_optioned_listener(
+							  const char *& content_type, FormatterListener *& listener, 
+							  Pool& pool, 
+							  const String& method_name, MethodParams *params, int index, Writer& writer) {
 	const String *method=0;
 	XalanDOMString xalan_encoding;
 
@@ -173,15 +174,17 @@ FormatterListener *create_optioned_listener(Pool& pool,
 				"options must be hash");
 	}
 
-	if(!method/*default='xml'*/ || *method == DOM_OUTPUT_METHOD_OPTION_VALUE_XML)
-		return new FormatterToXML(writer,
+	if(!method/*default='xml'*/ || *method == DOM_OUTPUT_METHOD_OPTION_VALUE_XML) {
+		content_type="text/xml";
+		listener=new FormatterToXML(writer,
 			XalanDOMString(),  // version
 			true, // doIndent
 			DOM_OUTPUT_DEFAULT_INDENT, // indent 
 			xalan_encoding  // encoding
 		);
-	else if(*method == DOM_OUTPUT_METHOD_OPTION_VALUE_HTML)
-		return new FormatterToHTML(writer,
+	} else if(*method == DOM_OUTPUT_METHOD_OPTION_VALUE_HTML) {
+		content_type="text/html";
+		listener=new FormatterToHTML(writer,
 			xalan_encoding,  // encoding
 			XalanDOMString(),  // mediaType 
 			XalanDOMString(),  // doctypeSystem; String to be printed at the top of the document 
@@ -189,11 +192,12 @@ FormatterListener *create_optioned_listener(Pool& pool,
 			true, // doIndent 
 			DOM_OUTPUT_DEFAULT_INDENT // indent 
 		);
-	else if(*method == DOM_OUTPUT_METHOD_OPTION_VALUE_TEXT)
-		return new FormatterToText(writer,
+	} else if(*method == DOM_OUTPUT_METHOD_OPTION_VALUE_TEXT) {
+		content_type="text/plain";
+		listener=new FormatterToText(writer,
 			xalan_encoding  // encoding
 		);
-	else
+	} else
 		PTHROW(0, 0,
 			method,
 			DOM_OUTPUT_METHOD_OPTION_NAME " option is invalid; valid methods are: "
@@ -202,7 +206,6 @@ FormatterListener *create_optioned_listener(Pool& pool,
 				"'" DOM_OUTPUT_METHOD_OPTION_VALUE_TEXT "'");			
 
 	// never reached
-	return 0; // calm, compiler
 }
 
 static void _save(Request& r, const String& method_name, MethodParams *params) {
@@ -219,9 +222,11 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 	try {
 		XalanFileOutputStream stream(XalanDOMString(filespec, strlen(filespec)));
 		XalanOutputStreamPrintWriter writer(stream);
-		FormatterListener& formatterListener=*create_optioned_listener(pool, method_name, params, 0,
-			writer);
-		FormatterTreeWalker treeWalker(formatterListener);
+		const char *content_type;
+		FormatterListener *formatterListener;
+		create_optioned_listener(content_type, formatterListener, 
+			pool, method_name, params, 0, writer);
+		FormatterTreeWalker treeWalker(*formatterListener);
 		treeWalker.traverse(&document); // Walk the document and produce the XML...
 	} catch(const XSLException& e) {
 		_throw(pool, &method_name, e);
@@ -237,11 +242,13 @@ static void _string(Request& r, const String& method_name, MethodParams *params)
 
 	try {
 		String parserString=*new(pool) String(pool);
-		ParserStringOutputStream stream(parserString);
+		ParserStringXalanOutputStream stream(parserString);
 		XalanOutputStreamPrintWriter writer(stream);
-		FormatterListener& formatterListener=*create_optioned_listener(pool, method_name, params, 0,
-			writer);
-		FormatterTreeWalker treeWalker(formatterListener);
+		const char *content_type;
+		FormatterListener *formatterListener;
+		create_optioned_listener(content_type, formatterListener, 
+			pool, method_name, params, 0, writer);
+		FormatterTreeWalker treeWalker(*formatterListener);
 		treeWalker.traverse(&document); // Walk the document and produce the XML...
 
 		// write out result
@@ -261,17 +268,19 @@ static void _file(Request& r, const String& method_name, MethodParams *params) {
 
 	try {
 		String& parserString=*new(pool) String(pool);
-		ParserStringOutputStream stream(parserString);
+		ParserStringXalanOutputStream stream(parserString);
 		XalanOutputStreamPrintWriter writer(stream);
-		FormatterListener& formatterListener=*create_optioned_listener(pool, method_name, params, 0,
-			writer);
-		FormatterTreeWalker treeWalker(formatterListener);
+		const char *content_type;
+		FormatterListener *formatterListener;
+		create_optioned_listener(content_type, formatterListener, 
+			pool, method_name, params, 0, writer);
+		FormatterTreeWalker treeWalker(*formatterListener);
 		treeWalker.traverse(&document); // Walk the document and produce the XML...
 
 		// write out result
 		VFile& vfile=*new(pool) VFile(pool);
 		const char *cstr=parserString.cstr();
-		vfile.set(false/*tainted*/, cstr, strlen(cstr), 0/*filename*/, new(pool) String(pool, "text/xml"));
+		vfile.set(false/*tainted*/, cstr, strlen(cstr), 0/*filename*/, new(pool) String(pool, content_type));
 		r.write_no_lang(vfile);
 	} catch(const XSLException& e) {
 		_throw(pool, &method_name, e);
@@ -295,14 +304,14 @@ static void _xslt(Request& r, const String& method_name, MethodParams *params) {
 
 	// params
 	if(params->size()>1) {
-		Value& vparams=params->as_no_junction(1, "params must not be code");
+		Value& vparams=params->as_no_junction(1, "transform parameters parameter must not be code");
 		if(vparams.is_defined())
 			if(Hash *params=vparams.get_hash())
 				params->for_each(add_xslt_param, &vDom.get_transformer());
 			else
 				PTHROW(0, 0,
 					&method_name,
-					"params must be hash");
+					"transform parameters parameter must be hash");
 	}
 
 	// source
