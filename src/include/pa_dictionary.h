@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_dictionary.h,v 1.2 2001/08/28 09:27:42 parser Exp $
+	$Id: pa_dictionary.h,v 1.3 2001/08/28 10:32:08 parser Exp $
 */
 
 #ifndef PA_DICTIONARY_H
@@ -16,7 +16,7 @@
 
 /// simple dictionary, speding up lookups on contained two columned table
 class Dictionary : public Pooled {
-	friend static void add_first(Array::Item *value, void *info);
+	friend void add_first(Array::Item *value, void *info);
 public:
 
 	/// construct wrapper, grabbing first letters of first column into @b first
