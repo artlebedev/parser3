@@ -120,26 +120,7 @@
 	</References>
 	<Files>
 		<File
-			RelativePath="mod_parser3.C">
-			<FileConfiguration
-				Name="Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
+			RelativePath=".\mod_parser3.C">
 		</File>
 		<File
 			RelativePath="pa_threads.C">

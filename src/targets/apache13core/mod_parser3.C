@@ -5,7 +5,7 @@ Parser: apache 1.3 module, part, compiled by parser3project.
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_MOD_PARSER3_MAIN_C="$Date: 2003/08/19 13:52:18 $";
+static const char* IDENT_MOD_PARSER3_MAIN_C="$Date: 2003/09/01 07:12:40 $";
 
 #include "pa_globals.h"
 
@@ -244,6 +244,8 @@ void call_real_parser_handler__do_SEH(SAPI_Info& SAPI_info, Parser_module_config
 
 /// @test r->finfo.st_mode check seems to work only on win32
 int pa_parser_handler(pa_request_rec *r, Parser_module_config *dcfg) {
+	//_asm int 3;
+
 	// SAPI info
 	SAPI_Info SAPI_info; SAPI_info.r=r;
 	
