@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.39 2001/03/11 12:04:43 paf Exp $
+	$Id: pa_request.h,v 1.40 2001/03/12 09:08:47 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -25,11 +25,20 @@
 #define ENV_CLASS_NAME "ENV"
 
 #ifndef NO_STRING_ORIGIN
-#	define COMPILE_PARAMS char *source, String *name, VClass *base_class, char *file
-#	define COMPILE(source, name, base_class, file) real_compile(source, name, base_class, file)
+#	define COMPILE_PARAMS  \
+		const char *source, \
+		VClass *aclass, const String *name, \
+		VClass *base_class, \
+		const char *file
+#	define COMPILE(source, aclass, name, base_class, file)  \
+		real_compile(source, aclass, name, base_class, file)
 #else
-#	define COMPILE_PARAMS char *source, String *name, VClass *base_class
-#	define COMPILE(source, name, base_class, file) real_compile(source, name, base_class)
+#	define COMPILE_PARAMS  \
+		const char *source, \
+		VClass *aclass, const String *name, \
+		VClass *base_class
+#	define COMPILE(source, aclass, name, base_class, file)  \
+		real_compile(source, aclass, name, base_class)
 #endif
 
 class Temp_lang;
@@ -48,11 +57,17 @@ public:
 	// core request processing
 	void core();
 
-	VClass *use(char *file, 
-		String *name=0, 
-		VClass *base_class=0, 
-		bool fail_on_read_problem=true); // core.C
-	Value& autocalc(
+	void execute(const Array& ops);
+
+	VClass *use_file(
+		const char *file, bool fail_on_read_problem=true,
+		VClass *aclass=0, const String *name=0, 
+		VClass *base_class=0); // core.C
+	VClass *use_buf(
+		const char *source, const char *file,
+		VClass *aclass=0, const String *name=0, 
+		VClass *base_class=0); // core.C
+	Value& process(
 		Value& value, 
 		const String *name=0,
 		bool intercept_string=true); // execute.C
@@ -61,9 +76,13 @@ public:
 		wcontext->write(astring, String::Untaint_lang::NO);  // write(const) = clean
 	}
 
-	void write(Value& avalue) {
+	void write_assign_lang(Value& avalue) {
 		// appending possible string, assigning untaint language
 		wcontext->write(avalue, flang); 
+	}
+	void write_pass_lang(Value& avalue) {
+		// appending possible string, passing language built into string being written
+		wcontext->write(avalue, String::Untaint_lang::PASS_APPENDED); 
 	}
 
 public:
@@ -97,7 +116,6 @@ private: // compile.C
 private: // execute.C
 
 	char *execute_static_method(VClass& vclass, String& method_name, bool return_cstr);
-	void execute(const Array& ops);
 
 	Value *get_element();
 

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_types.h,v 1.9 2001/03/11 08:16:33 paf Exp $
+	$Id: pa_types.h,v 1.10 2001/03/12 09:08:48 paf Exp $
 */
 
 #ifndef PA_TYPES_H
@@ -30,7 +30,7 @@ typedef unsigned int uint;
 
 #ifndef NO_STRING_ORIGIN
 struct Origin {
-	char *file;  // macros file name | load file name | sql query text
+	const char *file;  // macros file name | load file name | sql query text
 	uint line; // file line no | record no
 };
 #endif

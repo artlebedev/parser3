@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vmframe.h,v 1.2 2001/03/11 08:16:38 paf Exp $
+	$Id: pa_vmframe.h,v 1.3 2001/03/12 09:08:52 paf Exp $
 */
 
 #ifndef PA_VMFRAME_H
@@ -70,7 +70,7 @@ public: // usage
 
 	void set_self(Value& aself) { fself=&aself; }
 
-	void store_param(Value *value) {
+	void store_param(const String& actual_method_name, Value *value) {
 		Method& method=*junction.method;
 		int max_params=
 			method.max_numbered_params_count?method.max_numbered_params_count:
@@ -78,10 +78,10 @@ public: // usage
 			0;
 		if(store_param_index==max_params)
 			THROW(0,0,
-				&junction.self.name(),
-				"(%s) method '%s' accepts maximum %d parameter(s)", 
+				&actual_method_name,
+				"method of %s (%s) accepts maximum %d parameter(s)", 
+					junction.self.name().cstr(),
 					junction.self.type(),
-					method.name.cstr(),
 					max_params);
 		
 		if(method.max_numbered_params_count) { // are this method params numbered?

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.31 2001/03/11 12:04:44 paf Exp $
+	$Id: pa_string.h,v 1.32 2001/03/12 09:08:48 paf Exp $
 */
 
 /*
@@ -34,7 +34,7 @@
 #define UNTAINT_TIMES_BIGGER 10
 
 #ifndef NO_STRING_ORIGIN
-#	define STRING_APPEND_PARAMS const char *src, size_t size, bool tainted, char *file, uint line
+#	define STRING_APPEND_PARAMS const char *src, size_t size, bool tainted, const char *file, uint line
 #	define APPEND(src, size, file, line) real_append(src, size, false, file, line)
 #	define APPEND_TAINTED(src, size, file, line) real_append(src, size, true, file, line)
 #else

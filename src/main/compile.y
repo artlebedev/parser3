@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.90 2001/03/11 09:30:45 paf Exp $
+	$Id: compile.y,v 1.91 2001/03/12 09:08:50 paf Exp $
 */
 
 /*
@@ -108,7 +108,7 @@ all:
 		0, 0, /*min, max numbered_params_count*/
 		0/*param_names*/, 0/*local_names*/, 
 		$1/*parser_code*/, 0/*native_code*/);
-	PC->vclass->add_method(*main_method_name, method);
+	PC->cclass->add_method(*main_method_name, method);
 }
 |	methods;
 
@@ -128,9 +128,9 @@ control_method: '@' STRING '\n'
 		YYERROR;
 	}
 	if(command==CLASS_NAME) {
-		if(PC->vclass!=&PC->request->root_class) { // already changed from default?
+		if(PC->cclass!=&PC->request->root_class) { // already changed from default?
 			strcpy(PC->error, "class already have a name '");
-			strncat(PC->error, PC->vclass->name().cstr(), 100);
+			strncat(PC->error, PC->cclass->name().cstr(), 100);
 			strcat(PC->error, "'");
 			YYERROR;
 		}
@@ -138,13 +138,13 @@ control_method: '@' STRING '\n'
 			// new class' name
 			const String *name=SLA2S(strings_code);
 			// creating the class
-			PC->vclass=NEW VClass(POOL);
-			PC->vclass->set_name(*name);
+			PC->cclass=NEW VClass(POOL);
+			PC->cclass->set_name(*name);
 			// defaulting base. may change with @BASE
-			PC->vclass->set_base(PC->request->root_class);
+			PC->cclass->set_base(PC->request->root_class);
 			// append to request's classes
-			PC->request->classes_array()+=PC->vclass;
-			PC->request->classes().put(*name, PC->vclass);
+			PC->request->classes_array()+=PC->cclass;
+			PC->request->classes().put(*name, PC->cclass);
 		} else {
 			strcpy(PC->error, "@"CLASS_NAME" must contain sole name");
 			YYERROR;
@@ -154,12 +154,12 @@ control_method: '@' STRING '\n'
 			for(int i=0; i<strings_code->size(); i+=2) {
 				String file(*SLA2S(strings_code, i));
 				file.APPEND_CONST(".p");
-				PC->request->use(file.cstr());
+				PC->request->use_file(file.cstr());
 			}
 		} else if(command==BASE_NAME) {
-			if(PC->vclass->base()!=&PC->request->root_class) { // already changed from default?
+			if(PC->cclass->base()!=&PC->request->root_class) { // already changed from default?
 				strcpy(PC->error, "class already have a base '");
-				strncat(PC->error, PC->vclass->base()->name().cstr(), 100);
+				strncat(PC->error, PC->cclass->base()->name().cstr(), 100);
 				strcat(PC->error, "'");
 				YYERROR;
 			}
@@ -173,7 +173,7 @@ control_method: '@' STRING '\n'
 					strcat(PC->error, ": undefined class in @"BASE_NAME);
 					YYERROR;
 				}
-				PC->vclass->set_base(*base);
+				PC->cclass->set_base(*base);
 			} else {
 				strcpy(PC->error, "@"BASE_NAME" must contain sole name");
 				YYERROR;
@@ -215,7 +215,7 @@ code_method: '@' STRING bracketed_maybe_strings maybe_bracketed_strings maybe_co
 		0, 0/*min,max numbered_params_count*/, 
 		params_names, locals_names, 
 		$7, 0);
-	PC->vclass->add_method(*name, method);
+	PC->cclass->add_method(*name, method);
 };
 
 maybe_bracketed_strings: empty | bracketed_maybe_strings;
@@ -542,8 +542,8 @@ int yylex(YYSTYPE *lvalp, void *pc) {
 		return result;
 	}
 	
-	char *begin=PC->source;
-	char *end;
+	const char *begin=PC->source;
+	const char *end;
 	int begin_line=PC->line;
 	int skip_analized=0;
 	while(true) {

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.3 2001/03/11 12:22:00 paf Exp $
+	$Id: pa_value.h,v 1.4 2001/03/12 09:08:52 paf Exp $
 */
 
 /*
@@ -28,7 +28,7 @@ class WContext;
 class VAliased;
 class Request;
 
-typedef void (*Native_code_ptr)(Request& request, Array *params);
+typedef void (*Native_code_ptr)(Request& request, const String& name, Array *params);
 
 class Method : public Pooled {
 public:
@@ -55,11 +55,12 @@ public:
 		parser_code(aparser_code), native_code(anative_code) {
 	}
 
-	void check_actual_numbered_params(Array *actual_numbered_params) {
+	void check_actual_numbered_params(
+		const String& actual_name, Array *actual_numbered_params) {
 		int actual_count=actual_numbered_params?actual_numbered_params->size():0;
 		if(actual_count<min_numbered_params_count) // not proper count? bark
 			THROW(0, 0,
-				&name,
+				&actual_name,
 				"native method accepts minimum %d parameters", 
 					min_numbered_params_count);
 

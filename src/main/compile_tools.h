@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile_tools.h,v 1.28 2001/03/11 09:30:45 paf Exp $
+	$Id: compile_tools.h,v 1.29 2001/03/12 09:08:50 paf Exp $
 */
 
 #ifndef COMPILE_TOOLS
@@ -38,10 +38,10 @@ struct parse_control {
 	// input
 	Pool *pool;
 	Request *request;
-	VClass *vclass;
+	VClass *cclass;
 #ifndef NO_CSTRING_ORIGIN
-	char *source;
-	char *file;
+	const char *source;
+	const char *file;
 	int line, col;
 #endif
 	// state

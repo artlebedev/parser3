@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_common.h,v 1.5 2001/03/11 08:16:32 paf Exp $
+	$Id: pa_common.h,v 1.6 2001/03/12 09:08:47 paf Exp $
 */
 
 #ifndef PA_COMMON_H
@@ -20,6 +20,6 @@ int __vsnprintf(char *, size_t, const char *, va_list);
 int __snprintf(char *, size_t, const char *, ...);
 #endif
 
-char *file_read(Pool& pool, char *fname, bool fail_on_read_problem);
+char *file_read(Pool& pool, const char *fname, bool fail_on_read_problem);
 
 #endif

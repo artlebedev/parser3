@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.C,v 1.26 2001/03/11 12:04:44 paf Exp $
+	$Id: compile.C,v 1.27 2001/03/12 09:08:49 paf Exp $
 */
 
 #include "pa_request.h"
@@ -25,19 +25,21 @@ VClass& Request::real_compile(COMPILE_PARAMS) {
 	// input 
 	pc.pool=&pool();
 	pc.request=this;
-	VClass *vclass;
-	if(name) { // we were told the name of compiled class?
+	VClass *cclass;
+	if(aclass) // we were told the class to compile to?
+		cclass=aclass; // yes, remember it
+	else if(name) { // we were told the name of compiled class?
 		// yes. create it
-		vclass=NEW VClass(pool());
+		cclass=NEW VClass(pool());
 		// defaulting base. may change with @BASE
-		vclass->set_base(base_class?*base_class:root_class);
+		cclass->set_base(base_class?*base_class:root_class);
 		// append to request's classes
-		classes_array()+=vclass;
-		classes().put(*name, vclass);
-		vclass->set_name(*name);
+		classes_array()+=cclass;
+		classes().put(*name, cclass);
+		cclass->set_name(*name);
 	} else
-		vclass=&root_class; // until changed with @CLASS would consider operators loading
-	pc.vclass=vclass;
+		cclass=&root_class; // until changed with @CLASS would consider operators loading
+	pc.cclass=cclass;
 
 	pc.source=source;
 #ifndef NO_STRING_ORIGIN
@@ -64,5 +66,5 @@ VClass& Request::real_compile(COMPILE_PARAMS) {
 	}
 
 	// result
-	return *pc.vclass;
+	return *pc.cclass;
 }

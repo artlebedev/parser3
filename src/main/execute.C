@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.91 2001/03/11 21:41:04 paf Exp $
+	$Id: execute.C,v 1.92 2001/03/12 09:08:51 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -122,7 +122,7 @@ void Request::execute(const Array& ops) {
 				Value *value=NEW VJunction(j);
 
 				// store param
-				frame->store_param(value);
+				frame->store_param(frame->name(), value);
 				break;
 			}
 		case OP_GET_CLASS:
@@ -182,7 +182,7 @@ void Request::execute(const Array& ops) {
 		case OP_WRITE:
 			{
 				Value *value=POP();
-				write(*value);
+				write_assign_lang(*value);
 				break;
 			}
 		case OP_STRING__WRITE:
@@ -203,7 +203,7 @@ void Request::execute(const Array& ops) {
 		case OP_GET_ELEMENT__WRITE:
 			{
 				Value *value=get_element();
-				write(*value);
+				write_assign_lang(*value);
 				break;
 			}
 
@@ -278,7 +278,8 @@ void Request::execute(const Array& ops) {
 							value->type()); 
 
 				VMethodFrame *frame=NEW VMethodFrame(pool(), *junction);
-				frame->set_name(junction->self.name());
+				//frame->set_name(junction->self.name());
+				frame->set_name(value->name());
 				PUSH(frame);
 				break;
 			}
@@ -286,7 +287,7 @@ void Request::execute(const Array& ops) {
 			{
 				Value *value=POP();
 				VMethodFrame *frame=static_cast<VMethodFrame *>(stack.top_value());
-				frame->store_param(value);
+				frame->store_param(frame->name(), value);
 				break;
 			}
 
@@ -325,8 +326,10 @@ void Request::execute(const Array& ops) {
 
 					Method& method=*frame->junction.method;
 					if(method.native_code) { // native code?
-						method.check_actual_numbered_params(frame->numbered_params());
-						(*method.native_code)(*this, frame->numbered_params()); // execute it
+						method.check_actual_numbered_params(
+							frame->name(), frame->numbered_params());
+						(*method.native_code)(*this, 
+							frame->name(), frame->numbered_params()); // execute it
 					} else // parser code
 						execute(*method.parser_code); // execute it
 				}
@@ -572,7 +575,7 @@ Value *Request::get_element() {
 	Value *value=ncontext->get_element(name);
 
 	if(value)
-		value=&autocalc(*value, &name); // autocalc possible code-junction
+		value=&process(*value, &name); // process possible code-junction
 	else {
 		value=NEW VUnknown(pool());
 		value->set_name(name);
@@ -581,7 +584,7 @@ Value *Request::get_element() {
 	return value;
 }
 
-Value& Request::autocalc(Value& value, const String *name, bool intercept_string) {
+Value& Request::process(Value& value, const String *name, bool intercept_string) {
 	// intercept_string:
 	//	true:
 	//		they want result=string value, 
@@ -594,7 +597,7 @@ Value& Request::autocalc(Value& value, const String *name, bool intercept_string
 	Value *result;
 	Junction *junction=value.get_junction();
 	if(junction && junction->code) { // is it a code-junction?
-		// autocalc it
+		// process it
 		fprintf(stderr, "ja->\n");
 		PUSH(self);  
 		PUSH(root);  
@@ -639,12 +642,9 @@ Value& Request::autocalc(Value& value, const String *name, bool intercept_string
 }
 
 char *Request::execute_static_method(VClass& vclass, String& method_name, bool return_cstr) {
-	Value *value=vclass.get_element(method_name);
-	if(value) { // found some 'METHOD_NAME' element
-		Junction *junction=value->get_junction();
-		if(junction) {// it even has junction!
-			const Method *method=junction->method;
-			if(method) { // and junction is method-junction! call it
+	if(Value *value=vclass.get_element(method_name)) { // found some 'METHOD_NAME' element
+		if(Junction *junction=value->get_junction()) {// it even has junction!
+			if(const Method *method=junction->method) { // and junction is method-junction! call it
 				PUSH(self);  
 				PUSH(root);  
 				PUSH(rcontext);  

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_common.C,v 1.6 2001/03/11 08:16:35 paf Exp $
+	$Id: pa_common.C,v 1.7 2001/03/12 09:08:51 paf Exp $
 */
 
 #ifdef HAVE_CONFIG_H
@@ -37,7 +37,7 @@ int __snprintf(char *b, size_t s, const char *f, ...) {
 
 #endif
 
-char *file_read(Pool& pool, char *fname, bool fail_on_read_problem) {
+char *file_read(Pool& pool, const char *fname, bool fail_on_read_problem) {
     int f;
     struct stat finfo;
     if (fname && !stat(fname,&finfo) && (f=open(fname,O_RDONLY
