@@ -10,7 +10,7 @@
 # even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 # PARTICULAR PURPOSE.
 
-#  $Id: Makefile.in,v 1.6 2001/05/21 17:41:50 parser Exp $
+#  $Id: Makefile.in,v 1.7 2001/05/24 11:05:08 parser Exp $
 
 
 SHELL = @SHELL@
@@ -81,7 +81,7 @@ WIN32_ADDITIONAL_LIBS = @WIN32_ADDITIONAL_LIBS@
 YACC = @YACC@
 host_os = @host_os@
 
-APACHE13_SRC = ../../../../../../apache-1.3/src/
+APACHE13_SRC = ../../../../../../apache-1.3/src
 
 INCLUDES = -I../../../../include -I../../../../classes -I../../../../types $(INCLTDL) -I../../../../sql -I$(APACHE13_SRC)/include -I$(APACHE13_SRC)/os/unix
 
