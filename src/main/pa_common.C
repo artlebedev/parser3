@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2003/07/24 11:31:23 $"; 
+static const char* IDENT_COMMON_C="$Date: 2003/09/19 09:58:26 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -19,6 +19,8 @@ static const char* IDENT_COMMON_C="$Date: 2003/07/24 11:31:23 $";
 #ifdef PA_HTTP
 #include "pa_vstring.h"
 #include "pa_vint.h"
+#include "pa_vhash.h"
+#include "pa_vtable.h"
 
 #ifdef CYGWIN
 #define _GNU_H_WINDOWS32_SOCKETS
@@ -133,6 +135,7 @@ const String file_status_name(FILE_STATUS_NAME);
 #define HTTP_HEADERS_NAME "headers"
 #define HTTP_ANY_STATUS_NAME "any-status"
 #define HTTP_CHARSET_NAME "charset"
+#define HTTP_TABLES_NAME "tables"
 
 // statics
 
@@ -141,6 +144,7 @@ static const String http_timeout_name(HTTP_TIMEOUT_NAME);
 static const String http_headers_name(HTTP_HEADERS_NAME);
 static const String http_any_status_name(HTTP_ANY_STATUS_NAME);
 static const String http_charset_name(HTTP_CHARSET_NAME);
+static const String http_tables_name(HTTP_TABLES_NAME);
 
 // defines
 
@@ -375,6 +379,7 @@ struct File_read_http_result {
 	HashStringValue* headers;
 }; 
 #endif
+/// @todo build .cookies field. use ^file.tables.SET-COOKIES.menu{ for now
 static File_read_http_result file_read_http(Request_charsets& charsets, 
 					    const String& file_spec, 
 					    HashStringValue *options=0) {
@@ -496,6 +501,10 @@ static File_read_http_result file_read_http(Request_charsets& charsets,
 	
 	ArrayString aheaders;
 	result.headers=new HashStringValue;
+	VHash* vtables=new VHash;
+	result.headers->put(http_tables_name, vtables);
+	HashStringValue& tables=vtables->hash();
+
 	size_t pos_after=0;
 	header_block.split(aheaders, pos_after, CRLF); 
 	
@@ -514,6 +523,30 @@ static File_read_http_result file_read_http(Request_charsets& charsets,
 		const String& header_value=line.mid(pos+2, line.length());
 		if(HEADER_NAME=="CONTENT-TYPE")
 			real_remote_charset=detect_charset(charsets.source(), header_value);
+
+		// tables
+		{
+			Value *valready=(Value *)tables.get(HEADER_NAME);
+			bool existed=valready!=0;
+			Table *table;
+			if(existed) {
+				// second+ appearence
+				table=valready->get_table();
+			} else {
+				// first appearence
+				Table::columns_type columns =new ArrayString(1);
+				*columns+=new String("value");
+				table=new Table(columns);
+			}
+			// this string becomes next row
+			ArrayString& row=*new ArrayString(1);
+			row+=&header_value;
+			*table+=&row;
+			// not existed before? add it
+			if(!existed)
+				tables.put(HEADER_NAME, new VTable(table));
+		}
+
 		result.headers->put(HEADER_NAME, new VString(header_value));
 	}
 	// defaulting to used-asked charset [it's never empty!]
