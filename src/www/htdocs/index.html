@@ -38,6 +38,13 @@ $m ^if(^s.match[$:m][i]){matches}{do not match} $s<BR>
 		^paf.menu{<tr><td>$id</td><td>$name</td><td>$age</td></tr>}
 	</table>
 }
+^connect[$SQL.connect-string]{
+	$paf[^table:sql[select * from paf](1;4)]
+	<table border=1>
+		<tr><td>id</td><td>name</td><td>age</td></tr>
+		^paf.menu{<tr><td>$id</td><td>$name</td><td>$age</td></tr>}
+	</table>
+}
 
 <HR>
 

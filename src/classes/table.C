@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.52 2001/04/05 11:36:51 paf Exp $
+	$Id: table.C,v 1.53 2001/04/05 11:50:06 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -435,12 +435,12 @@ static void _sql(Request& r, const String& method_name, Array *params) {
 	// forcing {this query param type}
 	r.fail_if_junction_(true, statement, method_name, "statement must not be junction");
 
-	ulong count=0;
+	ulong limit=0;
 	if(params->size()>1) {
-		Value& count_code=*static_cast<Value *>(params->get(1));
-		// forcing (this count param type)
-		r.fail_if_junction_(false, count_code, method_name, "count must be expression");
-		count=(uint)r.process(count_code).as_double();
+		Value& limit_code=*static_cast<Value *>(params->get(1));
+		// forcing (this limit param type)
+		r.fail_if_junction_(false, limit_code, method_name, "limit must be expression");
+		limit=(uint)r.process(limit_code).as_double();
 	}
 
 	ulong offset=0;
@@ -458,7 +458,7 @@ static void _sql(Request& r, const String& method_name, Array *params) {
 	bool need_rethrow=false; Exception rethrow_me;
 	PTRY {
 		r.connection->query(
-			statement_cstr, 
+			statement_cstr, offset, limit,
 			&sql_column_count, &sql_columns,
 			&sql_row_count, &sql_rows);
 	}
@@ -468,7 +468,7 @@ static void _sql(Request& r, const String& method_name, Array *params) {
 	PEND_CATCH
 	if(need_rethrow)
 		PTHROW(rethrow_me.type(), rethrow_me.code(),
-			&statement_string,
+			&statement_string, // setting more specific source [were url]
 			rethrow_me.comment());
 	
 	Array& table_columns=*new(pool) Array(pool);

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3mysql.C,v 1.7 2001/04/05 11:01:59 paf Exp $
+	$Id: parser3mysql.C,v 1.8 2001/04/05 11:50:11 paf Exp $
 */
 
 #include <stdlib.h>
@@ -67,13 +67,22 @@ public:
 	void commit(void *connection) {}
 	void rollback(void *connection) {}
 
+	bool ping(void *connection) {
+		return false;
+		return mysql_ping((MYSQL *)connection)==0;
+	}
+
 	void query(void *connection, 
-		const char *statement, 
+		const char *statement, unsigned long offset, unsigned long limit,
 		unsigned int *column_count, Cell **columns, 
 		unsigned long *row_count, Cell ***rows) {
 
 		MYSQL *mysql=(MYSQL *)connection;
 		MYSQL_RES *res=NULL;
+
+		//mysql_character_set_name
+		//mysql_real_escape_string
+		//mysql_escape_string
 		
 		if(mysql_query(mysql, statement)) 
 			fservices->_throw(mysql_error(mysql));

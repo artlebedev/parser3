@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_driver_manager.C,v 1.4 2001/04/05 11:01:57 paf Exp $
+	$Id: pa_sql_driver_manager.C,v 1.5 2001/04/05 11:50:09 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -66,7 +66,10 @@ SQL_Connection& SQL_Driver_manager::get_connection(const String& url,
 
 	// first trying to get cached connection
 	if(SQL_Connection *result=get_connection_from_cache(url))
-		return *result;
+		if(result->ping())
+			return *result;
+		else
+			result->disconnect(); // kill unpingabe=dead connection
 	// no cached connection
 
 	int pos=url.pos("://", 3);
