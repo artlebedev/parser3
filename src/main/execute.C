@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.26 2001/02/23 11:53:06 paf Exp $
+  $Id: execute.C,v 1.27 2001/02/23 12:03:51 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -33,7 +33,7 @@ char *opcode_name[]={
 void dump(int level, const Array& ops) {
 	if(0){
 		int size=ops.size();
-		printf("size=%d\n", size);
+		//printf("size=%d\n", size);
 		for(int i=0; i<size; i++) {
 			Operation op;
 			op.cast=ops.quick_get(i);
@@ -42,7 +42,7 @@ void dump(int level, const Array& ops) {
 	}
 
 	int size=ops.size();
-	printf("size=%d\n", size);
+	//printf("size=%d\n", size);
 	for(int i=0; i<size; i++) {
 		Operation op;
 		op.cast=ops.quick_get(i);
@@ -69,7 +69,7 @@ void Request::execute(Array& ops) {
 	}
 
 	int size=ops.size();
-	printf("size=%d\n", size);
+	//printf("size=%d\n", size);
 	for(int i=0; i<size; i++) {
 		Operation op;
 		op.cast=ops.quick_get(i);

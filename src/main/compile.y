@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.25 2001/02/23 09:43:14 paf Exp $
+  $Id: compile.y,v 1.26 2001/02/23 12:03:51 paf Exp $
 */
 
 %{
@@ -162,7 +162,7 @@ constructor_value:
 |	constructor_two_params_value /* $var(=;2*2) $var(%d;2*2) $var(+;1) */
 ;
 constructor_one_param_value: 
-	empty /* optimized $var() case */
+	empty_value /* optimized $var() case */
 |	STRING /* optimized $var(STRING) case */
 |	complex_constructor_param_value /* $var(something complex) */
 ;
@@ -323,6 +323,9 @@ write_str_literal: STRING {
 
 /* */
 
+empty_value: empty {
+	$$=L(NEW VString(POOL));
+};
 empty: /* empty */ { $$=N(POOL) };
 
 %%
