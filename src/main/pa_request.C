@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_request.C,v 1.140 2001/06/28 07:44:17 parser Exp $"; 
+static const char *RCSId="$Id: pa_request.C,v 1.141 2001/07/06 11:13:35 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -41,6 +41,7 @@ Request::Request(Pool& apool,
 	OP(*MOP_create(apool)),
 	env(apool),
 	form(apool),
+	math(apool),
 	request(apool, *this),
 	response(apool),
 	cookie(apool),
@@ -79,6 +80,8 @@ Request::Request(Pool& apool,
 	/// bases used
 	// form class
 	classes().put(form.get_class()->base()->name(), &form);	
+	// math class
+	classes().put(math.get_class()->base()->name(), &math);	
 }
 
 static void element2ctypes(unsigned char *tables, 

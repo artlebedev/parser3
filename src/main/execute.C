@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: execute.C,v 1.173 2001/07/03 09:20:55 parser Exp $"; 
+static const char *RCSId="$Id: execute.C,v 1.174 2001/07/06 11:13:35 parser Exp $"; 
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -253,6 +253,7 @@ void Request::execute(const Array& ops) {
 				// maybe they do ^object.method[] call, remember the fact
 				wcontext->inc_somebody_entered_some_object();
 
+				//_asm int 3;
 				Value *value=get_element();
 				PUSH(value);
 				break;

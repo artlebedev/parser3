@@ -5,11 +5,12 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: math.C,v 1.1 2001/07/03 10:10:21 parser Exp $"; 
+static const char *RCSId="$Id: math.C,v 1.2 2001/07/06 11:13:35 parser Exp $"; 
 
 #include "pa_config_includes.h"
 #include "pa_common.h"
 #include "pa_vint.h"
+#include "pa_vmath.h"
 #include "pa_request.h"
 
 // defines
@@ -125,8 +126,18 @@ MMath::MMath(Pool& apool) : Methoded(apool) {
 
 }
 
+// global variables
+
+Methoded *math_base_class;
+Hash *math_consts;
+
 // creator
 
 Methoded *MMath_create(Pool& pool) {
-	return new(pool) MMath(pool);
+	math_consts=new(pool) Hash(pool);
+	math_consts->put(
+		*new(pool) String(pool, "PI"), 
+		new(pool) VDouble(pool, 3.1415926535));
+
+	return math_base_class=new(pool) MMath(pool);
 }

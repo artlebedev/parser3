@@ -363,6 +363,10 @@ SOURCE=..\types\pa_vjunction.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\types\pa_vmath.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\types\pa_vmethod_frame.h
 # End Source File
 # Begin Source File

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.89 2001/05/17 15:20:15 parser Exp $
+	$Id: pa_request.h,v 1.90 2001/07/06 11:13:35 parser Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -21,6 +21,7 @@
 #include "pa_vobject.h"
 #include "pa_venv.h"
 #include "pa_vform.h"
+#include "pa_vmath.h"
 #include "pa_vrequest.h"
 #include "pa_vresponse.h"
 #include "pa_vcookie.h"
@@ -152,6 +153,8 @@ public:
 	VEnv env;
 	/// $form:elements
 	VForm form;
+	/// $math:constants
+	VMath math;
 	/// $request:elements
 	VRequest request;
 	/// $response:elements
