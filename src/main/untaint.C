@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: untaint.C,v 1.45 2001/04/23 09:46:17 paf Exp $
+	$Id: untaint.C,v 1.46 2001/04/23 10:23:40 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -198,7 +198,7 @@ char *String::store_to(char *dest, Untaint_lang lang,
 				break;
 			case UL_MAIL_HEADER:
 				// tainted, untaint language: mail-header
-				{
+				if(charset) {
 					// Subject: Re: parser3: =?koi8-r?Q?=D3=C5=CD=C9=CE=C1=D2?=
 					const char *src=row->item.ptr; 
 					bool to_base_64=false;
@@ -215,6 +215,9 @@ char *String::store_to(char *dest, Untaint_lang lang,
 					}
 					if(to_base_64) // close
 						dest+=sprintf(dest, "?=");
+				} else {
+					memcpy(dest, row->item.ptr, row->item.size); 
+					dest+=row->item.size;
 				}
 				break;
 			case UL_TABLE: 
