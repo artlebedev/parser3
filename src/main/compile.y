@@ -13,7 +13,7 @@
 
 #include "compile_tools.h"
 #include "pa_value.h"
-#include "compile.h"
+#include "pa_request.h"
 
 int real_yyerror(parse_control *pc, char *s);
 static void yyprint(FILE *file, int type, YYSTYPE value);

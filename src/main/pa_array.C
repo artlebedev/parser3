@@ -1,5 +1,5 @@
 /*
-  $Id: pa_array.C,v 1.15 2001/02/21 11:19:20 paf Exp $
+  $Id: pa_array.C,v 1.16 2001/02/21 17:36:58 paf Exp $
 */
 
 #include <string.h>
@@ -64,6 +64,29 @@ Array::Item *Array::get(int index) const {
 	}
 
 	return cache_chunk->rows[index-cache_chunk_base].item;
+}
+
+void Array::put(int index, Item *item) {
+	if(!(index>=0 && index<size())) {
+		pool().exception().raise(0, 0, 0, 
+			"Array::put(%d) out of range [0..%d]", index, size()-1);
+		return;
+	}
+
+	// if they ask index to the left of cached position, forget cache
+	if(index<cache_chunk_base) {
+		cache_chunk_base=0;
+		cache_chunk=head;
+	}
+
+	// navigate to chunk with "index" row
+	while(!(index>=cache_chunk_base && index<cache_chunk_base+cache_chunk->count)) {
+		int count=cache_chunk->count;
+		cache_chunk_base+=count;
+		cache_chunk=cache_chunk->rows[count].link;
+	}
+
+	cache_chunk->rows[index-cache_chunk_base].item=item;
 }
 
 Array& Array::append_array(const Array& src) {

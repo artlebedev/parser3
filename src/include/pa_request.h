@@ -1,5 +1,5 @@
 /*
-  $Id: pa_request.h,v 1.6 2001/02/21 16:11:49 paf Exp $
+  $Id: pa_request.h,v 1.7 2001/02/21 17:36:30 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -8,34 +8,44 @@
 #include "pa_pool.h"
 #include "pa_exception.h"
 #include "pa_hash.h"
-#include "pa_context.h"
+#include "pa_wcontext.h"
 #include "pa_value.h"
+#include "pa_stack.h"
+
+#define MAIN_METHOD_NAME "main"
+
+#ifndef NO_STRING_ORIGIN
+#	define COMPILE_PARAMS char *source, char *file
+#	define COMPILE(source, file) real_compile(source, file)
+#else
+#	define COMPILE_PARAMS char *source
+#	define COMPILE(source, file) real_compile(source)
+#endif
 
 class Local_request_exception;
 
-class Request {
+class Request : public Pooled {
 	friend Local_request_exception;
 public:
 	
-	Request(Pool& apool, 
-		Value *aroot, Value *aself, Value *arcontext, WContext *awcontext) : 
+	Request(Pool& apool) : Pooled(apool),
 		fpool(apool), 
-		root(aroot), self(aself), rcontext(arcontext), wcontext(awcontext),
+		stack(apool),
 		fclasses(apool)
 		{
 	}
 	~Request() {}
 
-	// IMPORTANT: don't use pool without  Local_request_exception 
-	Pool& pool() { return fpool; }
-
+	// IMPORTANT: don't use without  Local_request_exception 
 	Exception& exception() { return *fexception; }
+
+	// global classes
 	Hash& classes() { return fclasses; }
 
 	// core request processing
 	void core();
 
-protected: // core
+private: // core data
 
 	// classes
 	Hash fclasses;
@@ -44,9 +54,22 @@ protected: // core
 	Value *root, *self, *rcontext;
 	WContext *wcontext;
 	
+	// execution stack
+	Stack stack;
+
+private: // core.C
+
 	Array& load_and_compile_RUN();
 	VClass *construct_class(String& name, Array& compiled_methods);
-	char *execute_MAIN(Value *class_RUN);
+	char *execute_MAIN(VClass *class_RUN);
+
+private: // compile.C
+
+	Array& real_compile(COMPILE_PARAMS);
+
+private: // execute.C
+
+	void execute(Array& ops);
 
 protected:
 
@@ -81,5 +104,7 @@ public:
 	~Local_request_exception() { request.restore_exception(saved_exception); }
 };
 
+// core func
+void core();
 
 #endif

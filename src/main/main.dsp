@@ -124,13 +124,6 @@ SOURCE=.\compile_tools.h
 # Begin Source File
 
 SOURCE=.\core.C
-
-!IF  "$(CFG)" == "main - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "main - Win32 Debug"
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
@@ -158,10 +151,6 @@ SOURCE=.\pa_pool.C
 # End Source File
 # Begin Source File
 
-SOURCE=.\pa_request.C
-# End Source File
-# Begin Source File
-
 SOURCE=.\pa_string.C
 # End Source File
 # Begin Source File
@@ -175,18 +164,6 @@ SOURCE=.\pa_table.C
 # Begin Source File
 
 SOURCE=..\include\code.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\compile.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\core.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\include\execute.h
 # End Source File
 # Begin Source File
 
@@ -211,6 +188,10 @@ SOURCE=..\include\pa_pool.h
 # Begin Source File
 
 SOURCE=..\include\pa_request.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\pa_stack.h
 # End Source File
 # Begin Source File
 

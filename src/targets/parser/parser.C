@@ -1,5 +1,5 @@
 /*
-  $Id: parser.C,v 1.14 2001/02/21 16:12:16 paf Exp $
+  $Id: parser.C,v 1.15 2001/02/21 17:37:04 paf Exp $
 */
 
 #include <stdio.h>
@@ -10,8 +10,6 @@
 #include "pa_table.h"
 #include "pa_common.h"
 #include "pa_pool.h"
-#include "compile.h"
-#include "execute.h"
 #include "pa_vclass.h"
 
 #include "core.h"
@@ -23,7 +21,7 @@ char *itoa(int n, char *buf){
 
 int main(int argc, char *argv[]) {
 	core();
-	exit 0;
+	return 0;
 
 	Exception fatal_exception;
 	if(EXCEPTION_TRY(fatal_exception)) {

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_array.h,v 1.16 2001/02/21 15:26:32 paf Exp $
+  $Id: pa_array.h,v 1.17 2001/02/21 17:36:29 paf Exp $
 */
 
 /*
@@ -58,6 +58,7 @@ public:
 	}
 
 	Item *get(int index) const;
+	void put(int index, Item *item);
 	const char *get_cstr(int index) const { 
 		return static_cast<const char *>(get(index)); 
 	}

@@ -1,5 +1,5 @@
 /*
-  $Id: pa_wcontext.h,v 1.1 2001/02/21 16:11:49 paf Exp $
+  $Id: pa_wcontext.h,v 1.2 2001/02/21 17:36:30 paf Exp $
 */
 
 /*
@@ -12,8 +12,29 @@
 #include "pa_value.h"
 
 class WContext : public Value {
-public:
-	WContext(Pool& apool) : Pooled(apool), string(apool) {}
+public: // Value
+
+	// all: for error reporting after fail(), etc
+	/*virtual*/ const char *get_type() const { return "WContext"; }
+	// wcontext: accumulated string
+	/*virtual*/ String *get_string() { return &string; };
+	// wcontext: transparent
+	/*virtual*/ Value *get_element(const String& name) const { return check_value()->get_element(name); }
+	// wcontext: transparent
+	/*virtual*/ void put_element(const String& name, Value *avalue){ check_value()->put_element(name, avalue); }
+	// wcontext: transparent
+	/*virtual*/ Method *get_method(const String& name) const { return check_value()->get_method(name); }
+	// wcontext: none yet | transparent
+	/*virtual*/ VClass *get_class() const { return fvalue?fvalue->get_class():0; }
+	// wcontext: none yet | transparent
+	/*virtual*/ bool is_or_derived_from(VClass& ancestor) { return fvalue?fvalue->is_or_derived_from(ancestor):false; }
+
+public: // usage
+
+	WContext(Pool& apool, Value *avalue) : Value(apool), 
+		fvalue(avalue),
+		string(apool) {
+	}
 
 	// appends a string to result
 	// until Value written, ignores afterwards
@@ -26,33 +47,23 @@ public:
 	// retrives the resulting value
 	// that can be Text if value==0 or the Value object
 	Value *value() const {
-		return value?value:new Text(string);
+		return fvalue?fvalue:0;//TODO: new Text(string);
 	}
 	
-public: //implement by replicating to value->calls
-
-	const char *get_type() const { return "WContext"; }
-
-	String *get_string() const { return &string };
-	void put_string(const String *astring) { check(value)->put_string(astring); };
-
-	Method_ref *get_method_ref() const { return check(value)->get_method_ref(); }
-
-	Value *get_element(const String& name) const { return check(value)->get_element(name); }
-	void put_element(const String& name, const Value *avalue){ check(value)->put_element(name, avalue); }
-
-	Method *get_method(const String& name) const { return check(value)->get_method(name); }
-
-	Class *get_class() const { return value?value->get_class():0; }
-	bool has_parent(Class *aparent) { return value?value->has_parent(aparent):false; }
-
 private:
 	String string;
-	Value *value;
+	Value *fvalue;
 
 private:
 	// raises an exception on 0 value
-	Value *check(const Value *value);
+	Value *check_value() const {
+		if(!fvalue)
+			pool().exception().raise(0,0,
+				0,
+				"accessing wcontext without value");
+
+		return fvalue;
+	}
 };
 
 #endif
