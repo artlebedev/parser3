@@ -19,10 +19,10 @@ dnl Substitute INCLTDL and LIBLTDL in the Makefiles
 AC_SUBST(INCLTDL)
 AC_SUBST(LIBLTDL)
 AC_SUBST(LIBADD_DL)
+dnl Check for dlopen support
+AC_LIBTOOL_DLOPEN
 dnl Configure libtool
 AM_PROG_LIBTOOL
-AC_SUBST(LIBTOOL_DEPS)
-
 dnl Configure libltdl
 AC_CONFIG_SUBDIRS(libltdl)
 
