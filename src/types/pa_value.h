@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.27 2001/03/19 20:46:39 paf Exp $
+	$Id: pa_value.h,v 1.28 2001/03/19 22:11:11 paf Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -98,12 +98,12 @@ public: // Value
 		- VCode_frame: wcontext_transparent
 		- VMethod_frame: my or self_transparent
 		- VTable: column
-		- VEnv: CLASS,BASE,method,field
+		- VEnv: field
 		- VForm: CLASS,BASE,method,field
 		- VString: $CLASS,$BASE,$method
 		- VRequest: CLASS,BASE,method,fields
 		- VResponse: CLASS,BASE,method,fields
-		- VCookie: CLASS,BASE,method,field
+		- VCookie: field
 		- VFile: CLASS,BASE,method,field
 		*/
 	virtual Value *get_element(const String& name) { bark("(%s) does not have elements"); return 0; }

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.19 2001/03/19 21:59:17 paf Exp $
+	$Id: pa_globals.C,v 1.20 2001/03/19 22:11:09 paf Exp $
 */
 
 #include "pa_globals.h"
@@ -14,7 +14,6 @@
 #include "_int.h"
 #include "_table.h"
 #include "_form.h"
-#include "_env.h"
 #include "_request.h"
 #include "_response.h"
 #include "_file.h"
@@ -153,7 +152,6 @@ void globals_init(Pool& pool) {
 	initialize_file_class(pool, *(file_class=new(pool) VStateless_class(pool)));  file_class->freeze();
 
 	// read-only stateless base classes
-	initialize_env_base_class(pool, *(env_base_class=new(pool) VStateless_class(pool)));  env_base_class->set_name(*env_class_name);  env_base_class->freeze();
 	initialize_form_base_class(pool, *(form_base_class=new(pool) VStateless_class(pool)));  form_base_class->set_name(*form_class_name);  form_base_class->freeze();
 	initialize_request_base_class(pool, *(request_base_class=new(pool) VStateless_class(pool)));  request_base_class->set_name(*request_class_name);  request_base_class->freeze();
 	initialize_response_base_class(pool, *(response_base_class=new(pool) VStateless_class(pool)));  response_base_class->set_name(*response_class_name);  response_base_class->freeze();

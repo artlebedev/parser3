@@ -1,31 +1,29 @@
-/*
-	Parser
+/** @file
+	Parser: env class decl.
+
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_venv.h,v 1.9 2001/03/19 20:07:39 paf Exp $
+	$Id: pa_venv.h,v 1.10 2001/03/19 22:11:11 paf Exp $
 */
 
 #ifndef PA_VENV_H
 #define PA_VENV_H
 
 #include "pa_common.h"
-#include "pa_vstateless_class.h"
+#include "pa_value.h"
 #include "pa_string.h"
-#include "_env.h"
 
-class VEnv : public VStateless_class {
+/// env class
+class VEnv : public Value {
 public: // Value
 	
 	// all: for error reporting after fail(), etc
 	const char *type() const { return "env"; }
 
-	// env: CLASS,BASE,method,field
+	// VEnv: field
 	Value *get_element(const String& aname) {
-		// $CLASS,$BASE,$method
-		if(Value *result=VStateless_class::get_element(aname))
-			return result;
-
 		// getenv
 		String& string=*NEW String(pool());
 		string.APPEND_TAINTED(getenv(aname.cstr()), 0, "environment", 0);
@@ -34,7 +32,7 @@ public: // Value
 
 public: // usage
 
-	VEnv(Pool& apool) : VStateless_class(apool, env_base_class) {
+	VEnv(Pool& apool) : Value(apool) {
 	}
 
 };

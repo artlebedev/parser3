@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.59 2001/03/19 21:39:34 paf Exp $
+	$Id: pa_request.C,v 1.60 2001/03/19 22:11:09 paf Exp $
 */
 
 #include <string.h>
@@ -15,7 +15,6 @@
 #include "pa_wwrapper.h"
 #include "pa_vclass.h"
 #include "_root.h"
-#include "_env.h"
 #include "_table.h"
 #include "pa_globals.h"
 #include "pa_vint.h"

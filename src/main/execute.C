@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.120 2001/03/19 21:59:17 paf Exp $
+	$Id: execute.C,v 1.121 2001/03/19 22:11:09 paf Exp $
 */
 
 #include "code.h"
@@ -349,9 +349,7 @@ void Request::execute(const Array& ops) {
 						// some stateless_object derivates with constructors
 						if(called_class==table_class)///called_class->name()==TABLE_CLASS_NAME)
 							self=NEW VTable(pool());
-						else /*if(called_class->name()==ENV_CLASS_NAME)
-							self=NEW VEnv(pool());
-						else */ // stateful object
+						else // stateful object
 							self=NEW VObject(pool(), *called_class);
 						frame->write(*self, 
 							String::Untaint_lang::NO  // not used, always an object, not string

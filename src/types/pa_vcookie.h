@@ -1,9 +1,11 @@
-/*
-	Parser
+/** @file
+	Parser: cookie class decls.
+
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vcookie.h,v 1.5 2001/03/19 21:59:18 paf Exp $
+	$Id: pa_vcookie.h,v 1.6 2001/03/19 22:11:11 paf Exp $
 */
 
 #ifndef PA_VCOOKIE_H
@@ -14,6 +16,7 @@
 
 class Request;
 
+/// cookie class
 class VCookie : public Value {
 public: // Value
 	

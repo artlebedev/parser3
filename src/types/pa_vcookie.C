@@ -1,9 +1,11 @@
-/*
-	Parser
+/** @file
+	Parser: cookie class.
+
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
+
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vcookie.C,v 1.5 2001/03/19 21:59:18 paf Exp $
+	$Id: pa_vcookie.C,v 1.6 2001/03/19 22:11:11 paf Exp $
 */
 
 #include <string.h>
@@ -47,7 +49,7 @@ void VCookie::put_element(const String& aname, Value *avalue) {
 	(remove?after:deleted).put(aname, 0);
 }
 
-#include <stdio.h>
+//#include <stdio.h>
 void VCookie::fill_fields(Request& request) {
 //	request.info.cookie="test-session=value%3D5; test-default1=value%3D1; test-default2=value%3D2; test-tomorrow=value%3D3";
 	if(!request.info.cookie)

@@ -1,9 +1,11 @@
-/*
-	Parser
+/** @file
+	Parser: table parser class.
+
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.19 2001/03/19 20:46:35 paf Exp $
+	$Id: table.C,v 1.20 2001/03/19 22:11:07 paf Exp $
 */
 
 #include "pa_common.h"
