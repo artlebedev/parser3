@@ -98,6 +98,14 @@ SOURCE=..\include\pa_common.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\include\pa_config_fixed.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\pa_config_includes.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\include\pa_exception.h
 # End Source File
 # Begin Source File
@@ -438,9 +446,5 @@ SOURCE=..\classes\string.C
 SOURCE=..\classes\table.C
 # End Source File
 # End Group
-# Begin Source File
-
-SOURCE=..\pa_config.h
-# End Source File
 # End Target
 # End Project

@@ -169,16 +169,9 @@ BOOL WINAPI GetExtensionVersion(HSE_VERSION_INFO *pVer) {
 	ISAPI // main workhorse
 
 	@todo 
-		think of a better way than @c APPL_PHYSICAL_PATH
-		of obtaining the @c DOCUMENT_ROOT
-		because this only gets "the place where last IIS Application was set"
-		and if someone would redefine Application settings below the /
-		all ^table:load[/test] would open not /test but /below/test
-
-	@todo 
 		IIS: remove trailing default-document[index.html] from $request.uri.
 		to do that we need to consult metabase,
-		wich is tested but seems slow.
+		wich is tested&works but seems slow.
 */
 DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 	Pool pool;
@@ -195,13 +188,20 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 		// Request info
 		Request::Info request_info;
 		
-		if(!(request_info.document_root=SAPI::get_env(pool, "APPL_PHYSICAL_PATH")))
+		const char *filespec_to_process=lpECB->lpszPathTranslated;
+		if(const char *path_info=SAPI::get_env(pool, "PATH_INFO")) {
+			// IIS
+			size_t len=strlen(filespec_to_process)-strlen(path_info);
+			char *buf=(char *)pool.malloc(len+1);
+			strncpy(buf, filespec_to_process, len);
+			buf[len]=0;
+			request_info.document_root=buf;
+		} else
 			PTHROW(0, 0,
 				0,
-				"can not get server variable APPL_PHYSICAL_PATH (error #%lu)",
-					GetLastError()); // never
+				"ISAPI: no PATH_INFO defined (in reinventing DOCUMENT_ROOT)");
 
-		request_info.path_translated=lpECB->lpszPathTranslated;
+		request_info.path_translated=filespec_to_process;
 		request_info.method=lpECB->lpszMethod;
 		request_info.query_string=lpECB->lpszQueryString;
 		if(lpECB->lpszQueryString && *lpECB->lpszQueryString) {
