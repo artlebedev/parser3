@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.h,v 1.117 2001/11/16 13:51:14 paf Exp $
+	$Id: pa_string.h,v 1.118 2001/11/16 14:25:02 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -234,13 +234,13 @@ private:
 
 	/// several String fragments
 	struct Chunk {
-		uint count; ///< the number of rows in chunk
+		ushort count; ///< the number of rows in chunk
 		/// string fragment or a link to next chunk union
 		union Row {
 			/// fragment
 			struct { 
 				const char *ptr;  ///< pointer to the start
-				size_t size;  ///< length
+				ushort size;  ///< length
 				unsigned char/*Untaint_lang*/ lang; ///< untaint flag, later untaint language
 #ifndef NO_STRING_ORIGIN
 				Origin origin;  ///< origin

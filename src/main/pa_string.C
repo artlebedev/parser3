@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_string.C,v 1.121 2001/11/16 13:58:28 paf Exp $
+	$Id: pa_string.C,v 1.122 2001/11/16 14:25:02 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -133,6 +133,9 @@ break2:
 }
 void String::expand() {
 	uint new_chunk_count=last_chunk->count+CR_GROW_COUNT;
+	if(new_chunk_count>MAX_USHORT)
+		new_chunk_count=MAX_USHORT;
+
 	last_chunk=static_cast<Chunk *>(
 		malloc(sizeof(uint)+sizeof(Chunk::Row)*new_chunk_count+sizeof(Chunk *), 10));
 	last_chunk->count=new_chunk_count;
@@ -167,6 +170,23 @@ String& String::real_append(STRING_APPEND_PARAMS) {
 		size=strlen(src);
 	if(!size)
 		return *this;
+
+	while(size>MAX_USHORT) {
+		if(chunk_is_full())
+			expand();
+
+		append_here->item.ptr=src;
+		append_here->item.size=MAX_USHORT;
+		append_here->item.lang=lang;
+#ifndef NO_STRING_ORIGIN
+		append_here->item.origin.file=file;
+		append_here->item.origin.line=line;
+#endif
+		append_here++;
+
+		src+=MAX_USHORT;
+		size-=MAX_USHORT;
+	}
 
 	if(chunk_is_full())
 		expand();
