@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.12 2001/02/21 17:50:02 paf Exp $
+  $Id: execute.C,v 1.13 2001/02/21 17:53:02 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -60,40 +60,47 @@ void Request::execute(Array& ops) {
 			const Array *local_ops=reinterpret_cast<const Array *>(ops.quick_get(++i));
 			//dump(level+1, *local_ops);
 		}
-
+		
 		switch(code) {
 		case OP_WITH_WRITE: 
 			{
-			stack.push(wcontext);
-			break;
+				stack.push(wcontext);
+				break;
 			}
-
+			
 		case OP_STRING:
 			{
-			String *string=static_cast<String *>(ops.quick_get(++i));
-			stack.push(string);
-			break;
+				String *string=static_cast<String *>(ops.quick_get(++i));
+				stack.push(string);
+				break;
 			}
-
+			
 		case OP_CONSTRUCT:
 			{
-			Value *value=static_cast<Value *>(stack.pop());
-			String *name=static_cast<String *>(stack.pop());
-			Value *ncontext=static_cast<Value *>(stack.pop());
-			ncontext->put_element(*name, value);
-			break;
+				Value *value=static_cast<Value *>(stack.pop());
+				String *name=static_cast<String *>(stack.pop());
+				Value *ncontext=static_cast<Value *>(stack.pop());
+				ncontext->put_element(*name, value);
+				break;
 			}
-
-		case OP_GET_ELEMENT:
+			
+		/*case OP_WRITE:
 			{
-			String *name=static_cast<String *>(stack.pop());
-			Value *ncontext=static_cast<Value *>(stack.pop());
-			Value *value=ncontext->get_element(*name); // name бывает method, тогда выдаЄт new junction(ј¬“ќ¬џ„»—Ћя“№=false, root,self,rcontext,wcontext,code)
-			// name бывает им€ junction, тогда или оставл€ет в покое, или вычисл€ет в зависимости от флага ј¬“ќ¬џ„»—Ћя“№
-			stack.push(value);
-			break;
-			}
-
+				Value *value=static_cast<Value *>(stack.pop());
+				wcontext.write(value);
+				break;
+			}*/
+			
+		/*case OP_GET_ELEMENT:
+			{
+				String *name=static_cast<String *>(stack.pop());
+				Value *ncontext=static_cast<Value *>(stack.pop());
+				Value *value=ncontext->get_element(*name); // name бывает method, тогда выдаЄт new junction(ј¬“ќ¬џ„»—Ћя“№=false, root,self,rcontext,wcontext,code)
+				// name бывает им€ junction, тогда или оставл€ет в покое, или вычисл€ет в зависимости от флага ј¬“ќ¬џ„»—Ћя“№
+				stack.push(value);
+				break;
+			}*/
+			
 		default:
 			printf("\tTODO\n");
 			break;
