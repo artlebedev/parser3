@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_COMMON_C="$Date: 2003/03/21 07:07:06 $"; 
+static const char* IDENT_COMMON_C="$Date: 2003/03/21 07:08:28 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -238,6 +238,7 @@ static int http_request(String& response,
 #ifdef PA_USE_ALARM
 			alarm(0); 
 #endif
+			return result;
 		} catch(...) {
 #ifdef PA_USE_ALARM
 			alarm(0); 
@@ -246,7 +247,6 @@ static int http_request(String& response,
 				closesocket(sock); 
 			/*re*/throw;
 		}
-		return result;
 	}
 }
 

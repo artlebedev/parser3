@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_PARSER3_C="$Date: 2003/01/21 15:51:17 $";
+static const char* IDENT_PARSER3_C="$Date: 2003/03/21 07:08:28 $";
 
 #include "pa_config_includes.h"
 
@@ -500,7 +500,18 @@ static void usage(const char *program) {
 	exit(EINVAL);
 }
 
+
+class C {
+public:
+        C() {}
+};
+C *trick() {
+    return new C;
+}
+
 int main(int argc, char *argv[]) {
+    delete trick();
+
 #ifdef SIGUSR1
     if(signal(SIGUSR1, SIGUSR1_handler)==SIG_ERR)
 		SAPI::die("Can not set handler for SIGUSR1");
