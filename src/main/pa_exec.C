@@ -7,7 +7,7 @@
 	@todo setrlimit
 */
 
-static const char * const IDENT_EXEC_C="$Date: 2004/02/27 10:52:16 $";
+static const char * const IDENT_EXEC_C="$Date: 2004/05/25 06:20:48 $";
 
 #include "pa_config_includes.h"
 
@@ -445,10 +445,12 @@ from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?r
 		close(pipe_err);
 
 		result.status=get_exit_status(pid); // negative may mean "-errno[execl()]"
-	} else 
+	} else { 
+		const char* str=strerror(errno);
 		throw Exception(0,
 			&file_spec,
-			"%s error: %s (%d)", pid<0?"fork":"pipe", strerror(errno), errno); 
+			"%s error: %s (%d)", pid<0?"fork":"pipe", str?str:"<unknown>", errno); 
+	}
 #endif
 
 	return result;
