@@ -4,17 +4,91 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xnode.C,v 1.20 2002/01/10 15:41:49 paf Exp $
+	$Id: xnode.C,v 1.21 2002/01/10 17:18:45 paf Exp $
 */
 #include "classes.h"
 #ifdef XML
 
+#include "pa_charset.h"
 #include "pa_request.h"
 #include "pa_vxnode.h"
 
 #include "xnode.h"
 
+extern "C" {
+#include "gdomecore/gdome-xml-node.h"
+};
+#include "gdomecore/gdome-xml-document.h"
 #include "gdome.h"
+#include "libxml/xpath.h"
+
+// classes
+
+class xmlXPathObject_auto_ptr {
+public:
+	explicit xmlXPathObject_auto_ptr(xmlXPathObject *_P = 0) 
+		: _Owns(_P != 0), _Ptr(_P) {}
+	xmlXPathObject_auto_ptr(const xmlXPathObject_auto_ptr& _Y) 
+		: _Owns(_Y._Owns), _Ptr(_Y.release()) {}
+	xmlXPathObject_auto_ptr& operator=(const xmlXPathObject_auto_ptr& _Y) 
+		{if (this != &_Y)
+			{if (_Ptr != _Y.get())
+				{if (_Owns && _Ptr)
+					xmlXPathFreeObject(_Ptr);
+				_Owns = _Y._Owns; }
+			else if (_Y._Owns)
+				_Owns = true;
+			_Ptr = _Y.release(); }
+		return (*this); }
+	~xmlXPathObject_auto_ptr()
+		{if (_Owns && _Ptr)
+			xmlXPathFreeObject(_Ptr); }
+	xmlXPathObject& operator*() const 
+		{return (*get()); }
+	xmlXPathObject *operator->() const 
+		{return (get()); }
+	xmlXPathObject *get() const 
+		{return (_Ptr); }
+	xmlXPathObject *release() const 
+		{((xmlXPathObject_auto_ptr *)this)->_Owns = false;
+		return (_Ptr); }
+private:
+	bool _Owns;
+	xmlXPathObject *_Ptr;
+};
+
+class xmlXPathContext_auto_ptr {
+public:
+	explicit xmlXPathContext_auto_ptr(xmlXPathContext *_P = 0) 
+		: _Owns(_P != 0), _Ptr(_P) {}
+	xmlXPathContext_auto_ptr(const xmlXPathContext_auto_ptr& _Y) 
+		: _Owns(_Y._Owns), _Ptr(_Y.release()) {}
+	xmlXPathContext_auto_ptr& operator=(const xmlXPathContext_auto_ptr& _Y) 
+		{if (this != &_Y)
+			{if (_Ptr != _Y.get())
+				{if (_Owns && _Ptr)
+					xmlXPathFreeContext(_Ptr);
+				_Owns = _Y._Owns; }
+			else if (_Y._Owns)
+				_Owns = true;
+			_Ptr = _Y.release(); }
+		return (*this); }
+	~xmlXPathContext_auto_ptr()
+		{if (_Owns && _Ptr)
+			xmlXPathFreeContext(_Ptr); }
+	xmlXPathContext& operator*() const 
+		{return (*get()); }
+	xmlXPathContext *operator->() const 
+		{return (get()); }
+	xmlXPathContext *get() const 
+		{return (_Ptr); }
+	xmlXPathContext *release() const 
+		{((xmlXPathContext_auto_ptr *)this)->_Owns = false;
+		return (_Ptr); }
+private:
+	bool _Owns;
+	xmlXPathContext *_Ptr;
+};
 
 // defines
 
@@ -176,7 +250,7 @@ static void _getAttribute(Request& r, const String& method_name, MethodParams *p
 
 	GdomeException exc;
 	GdomeDOMString *attribute_value=
-		gdome_el_getAttribute(element, pool.transcode(name), &exc);
+		gdome_el_getAttribute(element, pool.transcode(name).get(), &exc);
 	// write out result
 	r.write_no_lang(*new(pool) VString(pool.transcode(attribute_value)));
 }
@@ -190,8 +264,8 @@ static void _setAttribute(Request& r, const String& method_name, MethodParams *p
 
 	GdomeException exc;
 	gdome_el_setAttribute(element,
-		pool.transcode(name), 
-		pool.transcode(attribute_value),
+		pool.transcode(name).get(), 
+		pool.transcode(attribute_value).get(),
 		&exc);
 	if(exc)
 		throw Exception(0, 0, 
@@ -206,7 +280,7 @@ static void _removeAttribute(Request& r, const String& method_name, MethodParams
 	const String& name=params->as_string(0, "name must be string");
 
 	GdomeException exc;
-	gdome_el_removeAttribute(element, pool.transcode(name), &exc);
+	gdome_el_removeAttribute(element, pool.transcode(name).get(), &exc);
 	if(exc)
 		throw Exception(0, 0, 
 			&method_name, 
@@ -220,7 +294,7 @@ static void _getAttributeNode(Request& r, const String& method_name, MethodParam
 	const String& name=params->as_string(0, "name must be string");
 
 	GdomeException exc;
-	if(GdomeAttr *attr=gdome_el_getAttributeNode(element, pool.transcode(name), &exc)) {
+	if(GdomeAttr *attr=gdome_el_getAttributeNode(element, pool.transcode(name).get(), &exc)) {
 		// write out result
 		VXnode& result=*new(pool) VXnode(pool, (GdomeNode *)attr);
 		r.write_no_lang(result);
@@ -271,7 +345,7 @@ static void _getElementsByTagName(Request& r, const String& method_name, MethodP
 	VHash& result=*new(pool) VHash(pool);
 	GdomeException exc;
 	if(GdomeNodeList *nodes=
-		gdome_el_getElementsByTagName(element, pool.transcode(name), &exc)) {
+		gdome_el_getElementsByTagName(element, pool.transcode(name).get(), &exc)) {
 		gulong length=gdome_nl_length(nodes, &exc);
 		for(gulong i=0; i<length; i++) {
 			String& skey=*new(pool) String(pool);
@@ -305,7 +379,7 @@ static void _normalize(Request& r, const String& method_name, MethodParams *) {
 		&method_name, 
 		exc);
 }
-
+/*
 static void _select(Request& r, const String& method_name, MethodParams *params) {
 //	_asm int 3;
 	Pool& pool=r.pool();
@@ -343,7 +417,7 @@ static void _select(Request& r, const String& method_name, MethodParams *params)
 		Exception::provide_source(pool, &expression, e);
 	}
 }
-
+*/
 static void _selectSingle(Request& r, const String& method_name, MethodParams *params) {
 //	_asm int 3;
 	Pool& pool=r.pool();
@@ -353,46 +427,41 @@ static void _selectSingle(Request& r, const String& method_name, MethodParams *p
 	const String& expression=params->as_string(0, "expression must be string");
 
 	GdomeException exc;
-	GdomeDocument *document=gdome_n_ownerDocument(vnode, &exc);
-    xmlXPathContext *ctxt=xmlXPathNewContext(document);
-	ctxt->node = xmlDocGetRootElement(document);
-	xmlXPathObject *res = xmlXPathEvalExpression(BAD_CAST str, ctxt);
-    if(ctxt->error) {
-		if(res)
-			xmlXPathFreeObject(res);
-		xmlXPathFreeContext(ctxt);
+	xmlDoc *document=
+		((_Gdome_xml_Document *)gdome_n_ownerDocument(
+			vnode.get_node(&method_name), &exc))->n;
+    xmlXPathContext_auto_ptr ctxt(xmlXPathNewContext(document));
+	ctxt->node=xmlDocGetRootElement(document);
+	/*error to stderr for now*/
+	xmlXPathObject_auto_ptr res(
+		xmlXPathEvalExpression(BAD_CAST pool.transcode(expression)->str, ctxt.get()));
 
-		throw Exception(0, 0,
-			expression,
-			"bad xpath expression (%d)", ctxt->error);
-	}
-
-	xmlXPathFreeObject(res);
-    xmlXPathFreeContext(ctxt);
-zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz	
-	
-	const char *expression_cstr=expression.cstr();
-	XalanDOMString dstring(expression_cstr);
-	const XalanDOMChar *expression_dcstr=dstring.c_str();
-
-	XPathEvaluator evaluator;
-	// Initialize the XalanSourceTree subsystem...
-//	XalanSourceTreeInit		theSourceTreeInit;
-	// We'll use these to parse the XML file.
-	XalanSourceTreeDOMSupport dom_support;
-
-	try {
-		 if(GdomeNode *node=evaluator.selectSingleNode(dom_support, 
-			&vnode.get_node(&method_name), 
-			expression_dcstr)) {
-
-			VXnode& result=*new(pool) VXnode(pool, node, false);
-			result.set_name(method_name);
-			r.write_no_lang(result);
+   	if(res.get())
+		switch(res->type) {
+		case XPATH_UNDEFINED: break;
+		case XPATH_NODESET: 
+			{
+				if(res->nodesetval->nodeNr>1)
+					throw Exception(0, 0,
+					&expression,
+					"resulted not in a single node (%d)", res->nodesetval->nodeNr);
+				
+				VXnode& result=*new(pool) VXnode(
+					pool, 
+					gdome_xml_n_mkref(res->nodesetval->nodeTab[0]));
+				result.set_name(method_name);
+				r.write_no_lang(result);
+				break;
+			}
+		//case XPATH_BOOLEAN: nothing; break;
+		//case XPATH_NUMBER: nothing; break;
+		//case XPATH_STRING: nothing; break;
+		default: 
+			throw Exception(0, 0,
+				&expression,
+				"unrecognized xmlXPathEvalExpression result type (%d)", res->type);
+			break; // never
 		}
-	} catch(const XSLException& e) {
-		Exception::provide_source(pool, &expression, e);
-	}
 }
 
 // constructor
@@ -437,7 +506,7 @@ MXnode::MXnode(Pool& apool) : Methoded(apool),
 
 	/// parser
 	// ^node.select[/some/xpath/query] = hash $.#[dnode]
-	add_native_method("select", Method::CT_DYNAMIC, _select, 1, 1);
+//	add_native_method("select", Method::CT_DYNAMIC, _select, 1, 1);
 
 	// ^node.selectSingle[/some/xpath/query] = first dnode
 	add_native_method("selectSingle", Method::CT_DYNAMIC, _selectSingle, 1, 1);
