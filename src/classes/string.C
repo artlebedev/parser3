@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: string.C,v 1.67 2001/07/26 12:25:37 parser Exp $"; 
+static const char *RCSId="$Id: string.C,v 1.68 2001/07/27 12:59:36 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
@@ -345,11 +345,16 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 
 	const String *string=sql_result_string(r, method_name, params);
 	if(!string) {
-		Value& default_code=params->as_junction(1, "default result must code");
-		Value& processed_code=r.process(default_code);
-		string=processed_code.get_string();
-		if(!string)
-			string=empty_string;
+		if(params->size()>1) {
+			Value& default_code=params->as_junction(1, "default result must code");
+			Value& processed_code=r.process(default_code);
+			string=processed_code.get_string();
+			if(!string)
+				string=empty_string;
+		} else
+			PTHROW(0, 0,
+				&method_name,
+				"produced no result, but no default specified");
 	}
 	VString& result=*new(pool) VString(*string);
 	result.set_name(method_name);

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: double.C,v 1.34 2001/07/26 12:25:37 parser Exp $"; 
+static const char *RCSId="$Id: double.C,v 1.35 2001/07/27 12:59:36 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
@@ -80,8 +80,18 @@ const String* sql_result_string(Request& r, const String& method_name,
 static void _sql(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	const String *string=sql_result_string(r, method_name, params);
-	double val=string?string->as_double():params->as_double(1, r);
+	double val;
+	if(const String *string=sql_result_string(r, method_name, params))
+		val=string->as_double();
+	else
+		if(params->size()>1)
+			val=params->as_double(1, r);
+		else {
+			PTHROW(0, 0,
+				&method_name,
+				"produced no result, but no default specified");
+			val=0; //calm, compiler
+		}
 	VDouble& result=*new(pool) VDouble(pool, val);
 	result.set_name(method_name);
 	r.write_assign_lang(result);
