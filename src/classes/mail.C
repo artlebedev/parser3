@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_MAIL_C="$Date: 2002/08/13 13:02:39 $";
+static const char* IDENT_MAIL_C="$Date: 2002/08/13 15:55:41 $";
 
 #include "pa_config_includes.h"
 
@@ -419,7 +419,7 @@ void MMail::configure_user(Request& r) {
 	Pool& pool=r.pool();
 
 	// $MAIN:MAIL[$SMTP[mail.design.ru]]
-	if(Value *mail_element=r.main_class->get_element(mail_name, r.main_class))
+	if(Value *mail_element=r.main_class->get_element(mail_name, r.main_class, false))
 		if(Hash *mail_conf=mail_element->get_hash(0))
 			r.classes_conf.put(name(), mail_conf);
 		else

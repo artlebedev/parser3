@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-static const char* IDENT_VALUE_H="$Date: 2002/08/13 13:02:40 $";
+static const char* IDENT_VALUE_H="$Date: 2002/08/13 15:55:42 $";
 
 #include "pa_pool.h"
 #include "pa_string.h"
@@ -184,7 +184,7 @@ public: // Value
 		- VFile: method,field
 		- VDate: CLASS,method,field
 		*/
-	virtual Value *get_element(const String& /*aname*/, Value * /*aself*/) { bark("(%s) has no elements"); return 0; }
+	virtual Value *get_element(const String& /*aname*/, Value * /*aself*/, bool /*looking_down*/) { bark("(%s) has no elements"); return 0; }
 
 	/** store Value element under @a name
 		@return for
@@ -388,7 +388,7 @@ public:
 	Temp_value_element(Value& awhere, const String& aname, Value *awhat) : 
 		fwhere(awhere),
 		fname(aname),
-		saved(awhere.get_element(aname, &awhere)) {
+		saved(awhere.get_element(aname, &awhere, false)) {
 		fwhere.put_element(aname, awhat, false);
 	}
 	~Temp_value_element() { 

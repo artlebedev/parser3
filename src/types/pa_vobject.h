@@ -8,7 +8,7 @@
 #ifndef PA_VOBJECT_H
 #define PA_VOBJECT_H
 
-static const char* IDENT_VOBJECT_H="$Date: 2002/08/13 15:19:40 $";
+static const char* IDENT_VOBJECT_H="$Date: 2002/08/13 15:55:44 $";
 
 #include "pa_vjunction.h"
 #include "pa_vclass.h"
@@ -36,7 +36,7 @@ public: // Value
 	/*override*/ Value *base_object() { return fbase; }
 	Value *as_expr_result(bool);
 	bool as_bool() const;
-	/*override*/ Value *get_element(const String& aname, Value *aself);
+	/*override*/ Value *get_element(const String& aname, Value *aself, bool /*looking_down*/);
 	/*override*/ bool put_element(const String& aname, Value *avalue, bool replace);
 
 	/// VObject: remember derived [the only client] */

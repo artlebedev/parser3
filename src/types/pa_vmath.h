@@ -8,7 +8,7 @@
 #ifndef PA_VMATH_H
 #define PA_VMATH_H
 
-static const char* IDENT_VMATH_H="$Date: 2002/08/13 13:02:42 $";
+static const char* IDENT_VMATH_H="$Date: 2002/08/13 15:55:44 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -26,9 +26,9 @@ public: // Value
 	const char *type() const { return "math"; }
 
 	// math: CLASS,method,field
-	Value *get_element(const String& aname, Value *aself) {
+	Value *get_element(const String& aname, Value *aself, bool looking_down) {
 		// $CLASS,$method
-		if(Value *result=VStateless_class::get_element(aname, aself))
+		if(Value *result=VStateless_class::get_element(aname, aself, looking_down))
 			return result;
 
 		// $const

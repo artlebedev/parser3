@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_OP_C="$Date: 2002/08/13 13:02:39 $";
+static const char* IDENT_OP_C="$Date: 2002/08/13 15:55:41 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -595,7 +595,7 @@ static void _try_operator(Request& r, const String& method_name, MethodParams *p
 
 		Junction *junction=catch_code.get_junction();
 		Value *root=junction->root;
-		Value *saved_exception_var_value=root->get_element(*exception_var_name, root);
+		Value *saved_exception_var_value=root->get_element(*exception_var_name, root, false);
 		junction->root->put_element(*exception_var_name, &vhash, false);
 		result=r.process(catch_code);
 		bool handled=false;
@@ -713,8 +713,8 @@ void MOP::configure_user(Request& r) {
 	Pool& pool=r.pool();
 
 	// $MAIN:SQL.drivers
-	if(Value *sql=r.main_class->get_element(main_sql_name, r.main_class))
-		if(Value *element=sql->get_element(main_sql_drivers_name, sql))
+	if(Value *sql=r.main_class->get_element(main_sql_name, r.main_class, false))
+		if(Value *element=sql->get_element(main_sql_drivers_name, sql, false))
 			if(Table *protocol2library=element->get_table())
 				r.classes_conf.put(name(), protocol2library);
 }

@@ -7,7 +7,7 @@
 
 #include "pa_vobject.h"
 
-static const char* IDENT_VOBJECT_C="$Date: 2002/08/13 15:35:45 $";
+static const char* IDENT_VOBJECT_C="$Date: 2002/08/13 15:55:44 $";
 
 /// VObject: true, todo: z base table can be 33
 Value *VObject::as_expr_result(bool) { return NEW VBool(pool(), as_bool()); }
@@ -15,21 +15,22 @@ Value *VObject::as_expr_result(bool) { return NEW VBool(pool(), as_bool()); }
 bool VObject::as_bool() const { return true; }
 
 /// VObject: (field)=value;(CLASS)=vclass;(method)=method_ref
-Value *VObject::get_element(const String& aname, Value *aself) {
+Value *VObject::get_element(const String& aname, Value * /*aself*/, bool looking_down) {
 	// gets element from last_derivate upwards
-	if(aself) {
+	if(!looking_down) {
 		// $CLASS
 		if(aname==CLASS_NAME)
 			return get_class();
 
 		// for first call, pass call to last derived VObject
-		return get_last_derived()->get_element(aname, 0/*mark this call as 'not first'*/);
+		return get_last_derived()->get_element(aname, 
+			0, true/*the only user*/);
 	}
 
 	// $method, $CLASS_field
 	{
 		Temp_base temp_base(*get_class(), 0);
-		if(Value *result=VStateless_object::get_element(aname, this))
+		if(Value *result=VStateless_object::get_element(aname, this, true))
 			return result;
 	}
 
@@ -39,7 +40,7 @@ Value *VObject::get_element(const String& aname, Value *aself) {
 
 	// up the tree...
 	if(fbase)
-		if(Value *result=fbase->get_element(aname, fbase))
+		if(Value *result=fbase->get_element(aname, fbase, true))
 			return result;
 
 	return 0;
@@ -76,7 +77,7 @@ bool VObject::put_element(const String& aname, Value *avalue, bool replace) {
 		/* ignore "can not store to table&co errors for nonexistent elements */ 
 		bool error;
 		try {
-			error=get_element(aname, this)!=0;
+			error=get_element(aname, this, false)!=0;
 		} catch(Exception) { 
 			error=false;
 		}

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_REQUEST_C="$Date: 2002/08/13 13:02:40 $";
+static const char* IDENT_REQUEST_C="$Date: 2002/08/13 15:55:42 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -136,7 +136,7 @@ void Request::configure_admin(VStateless_class& conf_class, const String *source
 			...
 		]
 	*/
-	if(Value *vcharsets=conf_class.get_element(*charsets_name, &conf_class)) {
+	if(Value *vcharsets=conf_class.get_element(*charsets_name, &conf_class, false)) {
 		if(Hash *charsets=vcharsets->get_hash(0))
 			charsets->for_each(load_charset);
 		else if(!vcharsets->get_string())
@@ -230,7 +230,7 @@ gettimeofday(&mt[0],NULL);
 		methoded_array->configure_user(*this);
 
 		// $MAIN:MIME-TYPES
-		if(Value *element=main_class->get_element(*mime_types_name, main_class))
+		if(Value *element=main_class->get_element(*mime_types_name, main_class, false))
 			if(Table *table=element->get_table())
 				mime_types=table;			
 
@@ -262,7 +262,10 @@ gettimeofday(&mt[2],NULL);
 		VString body_vstring_before_post_process(*body_string);
 		VString *body_vstring_after_post_process=&body_vstring_before_post_process;
 		// @postprocess
-		if(Value *value=main_class->get_element(*NEW String(pool(), POST_PROCESS_METHOD_NAME), main_class))
+		if(Value *value=main_class->get_element(
+				*NEW String(pool(), POST_PROCESS_METHOD_NAME), 
+				main_class, 
+				false))
 			if(Junction *junction=value->get_junction())
 				if(const Method *method=junction->method) {
 					// preparing to pass parameters to 
@@ -356,7 +359,9 @@ t[9]-t[3]
 				// maybe we'd be lucky enough as to report an error
 				// in a gracefull way...
 				if(Value *value=main_class->get_element(
-					*NEW String(pool(), UNHANDLED_EXCEPTION_METHOD_NAME), main_class))
+						*NEW String(pool(), UNHANDLED_EXCEPTION_METHOD_NAME), 
+						main_class,
+						false))
 					if(Junction *junction=value->get_junction())
 						if(const Method *method=junction->method) {
 		 					// preparing to pass parameters to 
@@ -455,7 +460,7 @@ VStateless_class *Request::use_file(const String& file_name,
 	else {
 		file_spec=0;
 		if(main_class)
-			if(Value *element=main_class->get_element(*class_path_name, main_class)) {
+			if(Value *element=main_class->get_element(*class_path_name, main_class, false)) {
 				if(element->is_string()) {
 					file_spec=file_readable(absolute(element->as_string()), file_name); // found at class_path?
 				} else if(Table *table=element->get_table()) {

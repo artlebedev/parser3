@@ -8,7 +8,7 @@
 #ifndef PA_VCLASS_H
 #define PA_VCLASS_H
 
-static const char* IDENT_VCLASS_H="$Date: 2002/08/13 15:19:40 $";
+static const char* IDENT_VCLASS_H="$Date: 2002/08/13 15:55:43 $";
 
 #include "pa_vstateless_class.h"
 #include "pa_vjunction.h"
@@ -34,7 +34,7 @@ public: // Value
 	/// VClass: true
 	bool as_bool() const { return true; }
 
-	/*override*/ Value *get_element(const String& aname, Value *aself);
+	/*override*/ Value *get_element(const String& aname, Value *aself, bool /*looking_down*/);
 	/*override*/ bool put_element(const String& aname, Value *avalue, bool replace);
 	/*override*/ Value *create_new_value(Pool& );
 

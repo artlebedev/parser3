@@ -8,7 +8,7 @@
 #ifndef PA_VSTATUS_H
 #define PA_VSTATUS_H
 
-static const char* IDENT_VSTATUS_H="$Date: 2002/08/13 13:02:43 $";
+static const char* IDENT_VSTATUS_H="$Date: 2002/08/13 15:55:45 $";
 
 #define STATUS_CLASS_NAME "status"
 
@@ -22,7 +22,7 @@ public: // Value
 	VStateless_class *get_class() { return 0; }
 
 	// VStatus: field
-	Value *get_element(const String& aname, Value *aself);
+	Value *get_element(const String& aname, Value *aself, bool /*looking_down*/);
 
 public: // usage
 
