@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: double.C,v 1.8 2001/03/11 09:24:41 paf Exp $
+	$Id: double.C,v 1.9 2001/03/11 12:04:42 paf Exp $
 */
 
 #include "pa_request.h"
@@ -42,8 +42,14 @@ static void _inc(Request& r, Array *params) {
 }
 
 void initialize_double_class(Pool& pool, VClass& vclass) {
-	vclass.add_native_method("int", _int, 0, 0); // ^double.int[]
-	vclass.add_native_method("double", _double, 0, 0); // ^double.double[]
-	vclass.add_native_method("inc", _inc, 0, 1); // ^double.inc[] ^double.inc[offset]
+	// ^double.int[]
+	vclass.add_native_method("int", _int, 0, 0);
+
+	// ^double.double[]
+	vclass.add_native_method("double", _double, 0, 0);
+	
+	// ^double.inc[]
+	// ^double.inc[offset]
+	vclass.add_native_method("inc", _inc, 0, 1);
 }
 

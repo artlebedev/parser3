@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: int.C,v 1.8 2001/03/11 09:24:41 paf Exp $
+	$Id: int.C,v 1.9 2001/03/11 12:04:42 paf Exp $
 */
 
 #include "pa_request.h"
@@ -42,7 +42,13 @@ static void _inc(Request& r, Array *params) {
 }
 
 void initialize_int_class(Pool& pool, VClass& vclass) {
-	vclass.add_native_method("int", _int, 0, 0); // ^int.int[]
-	vclass.add_native_method("double", _double, 0, 0); // ^int.double[]
-	vclass.add_native_method("inc", _inc, 0, 1); // ^int.inc[] ^int.inc[offset]
+	// ^int.int[]
+	vclass.add_native_method("int", _int, 0, 0);
+
+	// ^int.double[]
+	vclass.add_native_method("double", _double, 0, 0);
+
+	// ^int.inc[] 
+	// ^int.inc[offset]
+	vclass.add_native_method("inc", _inc, 0, 1);
 }

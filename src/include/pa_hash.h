@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_hash.h,v 1.22 2001/03/11 08:16:32 paf Exp $
+	$Id: pa_hash.h,v 1.23 2001/03/11 12:04:43 paf Exp $
 */
 
 #ifndef PA_HASH_H
@@ -15,7 +15,7 @@
 #include "pa_types.h"
 #include "pa_string.h"
 
-class Hash : virtual public Pooled {
+class Hash : public Pooled {
 public:
 
 	typedef String Key;

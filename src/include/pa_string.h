@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.30 2001/03/11 08:16:33 paf Exp $
+	$Id: pa_string.h,v 1.31 2001/03/11 12:04:44 paf Exp $
 */
 
 /*
@@ -31,6 +31,8 @@
 #include "pa_pool.h"
 #include "pa_types.h"
 
+#define UNTAINT_TIMES_BIGGER 10
+
 #ifndef NO_STRING_ORIGIN
 #	define STRING_APPEND_PARAMS const char *src, size_t size, bool tainted, char *file, uint line
 #	define APPEND(src, size, file, line) real_append(src, size, false, file, line)
@@ -50,6 +52,7 @@ public:
 	};
 
 	enum Untaint_lang {
+		UNKNOWN=0, // when get by name fails
 		NO, // clean
 		YES,  // tainted, untaint language as assigned later 
 		// untaint languages. assigned by ^untaint[lang]{...}

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.C,v 1.25 2001/03/11 08:16:34 paf Exp $
+	$Id: compile.C,v 1.26 2001/03/11 12:04:44 paf Exp $
 */
 
 #include "pa_request.h"
@@ -51,7 +51,7 @@ VClass& Request::real_compile(COMPILE_PARAMS) {
 	pc.sp=0;
 	
 	// parse=compile! 
-	yydebug=1;
+//	yydebug=1;
 	if(yyparse(&pc)) { // error?
 		if(pc.col==0) { // expecting something after EOL means they've expected it BEFORE
 			// step back.  -1 col means EOL

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.h,v 1.28 2001/03/11 08:16:32 paf Exp $
+	$Id: pa_pool.h,v 1.29 2001/03/11 12:04:43 paf Exp $
 */
 
 #ifndef PA_POOL_H
@@ -95,15 +95,15 @@ public:
 #define NEW new(pool())
 
 class Temp_exception {
-	Pool pool;
+	Pool& fpool;
 	Exception *saved_exception;
 public:
 	Temp_exception(Pool& apool, Exception& exception) : 
-		pool(apool),
+		fpool(apool),
 		saved_exception(apool.set_exception(&exception)) {
 	}
 	~Temp_exception() { 
-		pool.restore_exception(saved_exception); 
+		fpool.restore_exception(saved_exception); 
 	}
 };
 
@@ -115,6 +115,7 @@ public:
 
 #define THROW exception()._throw
 #define POOL_THROW pool.exception()._throw
+#define R_THROW r.pool().exception()._throw
 #define CATCH(e) \
 		else{ \
 			Exception& e=temp_exception;

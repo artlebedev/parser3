@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.14 2001/03/11 08:16:35 paf Exp $
+	$Id: pa_request.C,v 1.15 2001/03/11 12:04:45 paf Exp $
 */
 
 #include "pa_request.h"
@@ -22,7 +22,7 @@ Request::Request(Pool& apool) : Pooled(apool),
 	env_class(apool),
 	fclasses(apool),
 	fclasses_array(apool),
-	lang(String::Untaint_lang::HTML_TYPO)
+	flang(String::Untaint_lang::HTML_TYPO)
 {
 	// root class
 	initialize_root_class(pool(), root_class);

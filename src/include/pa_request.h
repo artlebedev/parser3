@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.h,v 1.38 2001/03/11 09:24:42 paf Exp $
+	$Id: pa_request.h,v 1.39 2001/03/11 12:04:43 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -32,9 +32,10 @@
 #	define COMPILE(source, name, base_class, file) real_compile(source, name, base_class)
 #endif
 
-class Local_request_exception;
+class Temp_lang;
 
 class Request : public Pooled {
+	friend Temp_lang;
 public:
 	
 	Request(Pool& apool);
@@ -62,7 +63,7 @@ public:
 
 	void write(Value& avalue) {
 		// appending possible string, assigning untaint language
-		wcontext->write(avalue, lang); 
+		wcontext->write(avalue, flang); 
 	}
 
 public:
@@ -102,11 +103,32 @@ private: // execute.C
 
 private: // lang&raw 
 	
-	String::Untaint_lang lang;
+	String::Untaint_lang flang;
 
-private: // lang&raw manipulation
+private: // lang manipulation
 
-	// TODO
+	String::Untaint_lang set_lang(String::Untaint_lang alang) {
+		String::Untaint_lang result=flang;
+		flang=alang;
+		return result;
+	}
+	void restore_lang(String::Untaint_lang alang) {
+		flang=alang;
+	}
+
+};
+
+class Temp_lang {
+	Request& frequest;
+	String::Untaint_lang saved_lang;
+public:
+	Temp_lang(Request& arequest, String::Untaint_lang alang) : 
+		frequest(arequest),
+		saved_lang(arequest.set_lang(alang)) {
+	}
+	~Temp_lang() { 
+		frequest.restore_lang(saved_lang); 
+	}
 };
 
 #endif
