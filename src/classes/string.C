@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.44 2001/05/04 10:42:37 paf Exp $
+	$Id: string.C,v 1.45 2001/05/07 13:29:47 paf Exp $
 */
 
 #include "classes.h"
@@ -100,11 +100,9 @@ static void _pos(Request& r, const String& method_name, MethodParams *params) {
 static void split_list(Request& r, const String& method_name, MethodParams *params,
 					   const String& string, 
 					   Array& result) {
-	Pool& pool=r.pool();
-
 	Value& delim_value=params->get_no_junction(0, "delimiter must not be code");
 
-	string.split(result, 0, delim_value.as_string(), String::UL_CLEAN, -1);
+	string.split(result, 0, delim_value.as_string());
 }
 
 static void _lsplit(Request& r, const String& method_name, MethodParams *params) {

@@ -3,7 +3,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: gifio.C,v 1.8 2001/04/26 14:55:17 paf Exp $
+	$Id: gifio.C,v 1.9 2001/05/07 13:29:51 paf Exp $
 
 
 	based on:
@@ -593,7 +593,7 @@ void
 }
 
 void
-	gdGifEncoder::cl_hash(register count_int hsize)          /* reset code table */
+	gdGifEncoder::cl_hash(count_int hsize)          /* reset code table */
 	
 {
 	

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.127 2001/05/03 15:05:23 paf Exp $
+	$Id: pa_request.C,v 1.128 2001/05/07 13:30:03 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -60,7 +60,7 @@ Request::Request(Pool& apool,
 	// operators
 	OP.register_directly_used(*this);
 	// classes:
-	// table, file, random, mail, image
+	// table, file, random, mail, image, ...
 	methoded_array->register_directly_used(*this);
 
 	/// methodless

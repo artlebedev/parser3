@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.85 2001/04/28 13:38:12 paf Exp $
+	$Id: pa_string.h,v 1.86 2001/05/07 13:30:00 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -193,11 +193,11 @@ public:
 	void split(Array& result, 
 		size_t *pos_after_ref, 
 		const char *delim, size_t delim_size, 
-		Untaint_lang lang, int limit=-1) const;
+		Untaint_lang lang=UL_UNSPECIFIED, int limit=-1) const;
 	void split(Array& result, 
 		size_t *pos_after_ref, 
 		const String& delim, 
-		Untaint_lang lang, int limit=-1) const;
+		Untaint_lang lang=UL_UNSPECIFIED, int limit=-1) const;
 
 	typedef void (*Row_action)(Table& table, Array *row, int start, int finish, 
 		void *info);

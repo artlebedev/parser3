@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_hash.h,v 1.38 2001/04/23 08:52:19 paf Exp $
+	$Id: pa_hash.h,v 1.39 2001/05/07 13:30:00 paf Exp $
 */
 
 #ifndef PA_HASH_H
@@ -93,28 +93,28 @@ protected:
 
 private:
 
-	// expand when these %% of allocated exausted
+	/// expand when these %% of allocated exausted
 	enum {
 		THRESHOLD_PERCENT=75
 	};
 
-	// the index of [allocated] in [allocates]
+	/// the index of [allocated] in [allocates]
 	int allocates_index;
 
-	// possible [allocates]. prime numbers
+	/// possible [allocates]. prime numbers
 	static uint allocates[];
 	static int allocates_count;
 
-	// number of allocated pairs
+	/// number of allocated pairs
 	int allocated;
 
-	// helper: expanding when used == threshold
+	/// helper: expanding when used == threshold
 	int threshold;
 
-	// used pairs
+	/// used pairs
 	int used;
 
-	// main storage
+	/// pair storage
 	class Pair {
 		friend Hash;
 
@@ -132,10 +132,10 @@ private:
 			link(alink) {}
 	} **refs;
 
-	// filled to threshold: needs expanding
+	/// filled to threshold: needs expanding
 	bool full() { return used==threshold; }
 
-	// allocate larger buffer & rehash
+	/// allocate larger buffer & rehash
 	void expand();
 
 private: //disabled

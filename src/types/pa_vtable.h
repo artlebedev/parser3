@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vtable.h,v 1.18 2001/05/07 08:29:48 paf Exp $
+	$Id: pa_vtable.h,v 1.19 2001/05/07 13:30:07 paf Exp $
 */
 
 #ifndef PA_VTABLE_H
@@ -30,8 +30,9 @@ public: // Value
 		// columns
 		if(ftable) {
 			int index=ftable->column_name2index(name);
-			if(index>=0) // there is such column
-				return NEW VString(*ftable->item(index));
+			if(index>=0) // column name|number valid
+				if(const String *string=ftable->item(index)) // there is such column
+					return NEW VString(*string);
 		}
 
 		// methods

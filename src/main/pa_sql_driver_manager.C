@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_driver_manager.C,v 1.9 2001/04/26 10:16:07 paf Exp $
+	$Id: pa_sql_driver_manager.C,v 1.10 2001/05/07 13:30:04 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -194,7 +194,7 @@ SQL_Connection *SQL_Driver_manager::get_connection_from_cache(const String& url)
 	return 0;
 }
 
-/// @todo cache expiration[use SQL_Driver::disconnect], pinging. 
+/// @todo cache expiration[use SQL_Driver::disconnect]
 void SQL_Driver_manager::put_connection_to_cache(const String& url, 
 												 SQL_Connection& connection) { 
 	Stack *connections;

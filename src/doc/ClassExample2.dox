@@ -1,12 +1,10 @@
-/**	@page ClassExample2  рТЙНЕТ УПЪДБОЙС РТПУФПЗП ЛМБУУБ (ФПМШЛП РПМС)
+/**	@page ClassExample2  Пример создания простого класса (только поля)
 
-юФПВЩ УПЪДБФШ УЧПК ЛМБУУ, ОЕ УПДЕТЦБЭЙК НЕФПДПЧ[ФБЛПЧ, ОБРТЙНЕТ, env; УН. VEnv], 
-УМЕДХЕФ УПЪДБФШ РПФПНЛБ Value, Ч ЛПФПТПН РЕТЕПРТЕДЕМЙФШ Value::type,
-Б ФБЛЦЕ Value::get_element Й/ЙМЙ Value::put_element.
+Чтобы создать свой класс, не содержащий методов[таков, например, env; см. VEnv], 
+следует создать потомка Value, в котором переопределить Value::type,
+а также Value::get_element и/или Value::put_element.
 
-@test 2
-
-жБКМ vexample2.C Ч ЛБФБМПЗЕ types/:
+Файл pa_vexample2.h в каталоге types/:
 @code
 #define EXAMPLE2_CLASS_NAME "example2"
 
@@ -19,8 +17,8 @@ public: // Value
 
 	// VEnv: field
 	Value *get_element(const String& aname) {
-		// getenv
-		double temperature=25; // УЮЙФБФШ РПЛБЪБОЙС ДБФЮЙЛБ
+		// показания датчика
+		double temperature=25;
 		return NEW VDouble(temperature);
 	}
 
@@ -32,6 +30,12 @@ public: // usage
 };
 @endcode
 
+Зарегистрируйте ваш класс в Request::classes(), добавив в конструктор Request [файл pa_request.C]:
 
+@code
+	/// methodless
+	// example2 class
+	classes().put(*NEW String(pool(), EXAMPLE2_CLASS_NAME), &example2);
+@endcode
 
 */

@@ -1,35 +1,35 @@
-/**	@page ClassExample1  рТЙНЕТ УПЪДБОЙС РТПУФПЗП ЛМБУУБ (ФПМШЛП НЕФПДЩ)
+/**	@page ClassExample1  Пример создания простого класса (только методы)
 
-юФПВЩ УПЪДБФШ УЧПК ЛМБУУ, УПУФПСЭЙК ФПМШЛП ЙЪ НЕФПДПЧ[ФБЛПЧ, ОБРТЙНЕТ, ЛМБУУ random], 
-ОХЦОП РПМПЦЙФШ Ч ЛБФБМПЗ classes/ НПДХМШ ОБ C++ У ТБУЫЙТЕОЙЕН .у,
-Ч ЛПФПТПН...
+Чтобы создать свой класс, состоящий только из методов[таков, например, класс random], 
+нужно положить в каталог classes/ модуль на C++ с расширением .С,
+в котором...
 
-1. пРТЕДЕМЙФШ РПФПНЛБ Methoded, ПРТЕДЕМСАЭЕЗП Methoded::used_directly Ч true.
+1. Определить потомка Methoded, определяющего Methoded::used_directly в true.
 
-2. пЖПТНЙФШ НЕФПДЩ ПВЯЕЛФБ ФБЛ[ Native_code_ptr ]:
+2. Оформить методы объекта так[ Native_code_ptr ]:
 @code
 static void _test(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
 	...
 
-	// ПЫЙВЛЙ ЗЕОЕТЙТПЧБФШ ФБЛ:
+	// ошибки генерировать так:
 	if(error_code)
 		PTHROW(0, 0,
-			&method_name, // БДТЕУ String, УПДЕТЦБЭЕК ФЕЛУФ/НЕУФП ПЫЙВЛЙ
-			"РТПВМЕНБ %d", error_code);
+			&method_name, // адрес String, содержащей текст/место ошибки
+			"проблема %d", error_code);
 
-	// ЧЩДБЧБФШ ФЕЛУФ ФБЛ:
+	// выдавать текст так:
 	if(text_result)
-		r.write_assign_lang(*new(pool) VString(pool, "ФЕУФ"));
+		r.write_assign_lang(*new(pool) VString(pool, "тест"));
 
-	// ЧЩДБЧБФШ ПВЯЕЛФЩ ФБЛ:
+	// выдавать объекты так:
 	if(object_result)
 		r.write_no_lang(*new(pool) VInt(pool, 48));
 }
 @endcode
 
-3. ч ЛПОУФТХЛФПТЕ ЪБДБФШ ЙНС ЛМБУУБ Й ЪБТЕЗЙУФТЙТПЧБФШ НЕФПДЩ:
+3. В конструкторе задать имя класса и зарегистрировать методы:
 
 @code
 MExample1::MExample1(Pool& apool) : Methoded(apool) {
@@ -43,11 +43,14 @@ MExample1::MExample1(Pool& apool) : Methoded(apool) {
 
 @see Value::set_name, VStateless_class::add_native_method
 
-4. й, ОБЛПОЕГ, ПРТЕДЕМЙФШ РТПЙЪЧПДСЭХА ЖХОЛГЙА, У ЙНЕОЕН M{ЙНС_ЖБКМБ_У_ЪБЗМБЧОПК_ВХЛЧЩ}_create:
+4. И, наконец, определить производящую функцию, с именем M{имя_файла_с_заглавной_буквы}_create:
 @code
 Methoded *MExample1_create(Pool& pool) {
 	return new(pool) MExample1(pool);
 }
 @endcode
+
+5. Если для работы классу необходимы какие-то настройки, то их можно принять из системного auto.p,
+или из пользовательского MAIN класса, переопределив Methoded::configure_admin и/или Methoded::configure_user.
 
 */

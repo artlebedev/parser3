@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.70 2001/05/04 10:42:37 paf Exp $
+	$Id: table.C,v 1.71 2001/05/07 13:29:47 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -411,7 +411,6 @@ static void _join(Request& r, const String& method_name, MethodParams *params) {
 	}
 }
 
-/// ^table:sql{query}[(count[;offset])]
 static void _sql(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
@@ -487,8 +486,6 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 	static_cast<VTable *>(r.self)->set_table(table);
 }
 
-/// ^table:dir[path]
-/// ^table:dir[path][regexp]
 static void _dir(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 

@@ -1,11 +1,25 @@
-/**	@page ClassExample2  рТЙНЕТ УПЪДБОЙС ЛМБУУБ (НЕФПДЩ Й РПМС)
+/**	@page ClassExample3  Пример создания класса (методы и поля)
 
-юФПВЩ УПЪДБФШ УЧПК ЛМБУУ, УПУФПСЭЙК ОЕ ФПМШЛП ЙЪ НЕФПДПЧ[ФБЛПЧ, ОБРТЙНЕТ, ЛМБУУ image], 
-ОХЦОП УПЪДБФШ РТПУФПК ЛМБУУ(УН. @ref ClassExample1), ПРТЕДЕМСАЭЙК Methoded::used_directly Ч false.
+Чтобы создать свой класс, который 
+- смогут создавать пользователи,
+- состоящий и из методов 
+- и из полей
+[таков, например, класс image], 
+нужно создать простой класс, см. @ref ClassExample1, переопределив Methoded::create_new_value в 
 
-рПУМЕ ЮЕЗП УПЪДБФШ РПФПНЛБ Value, Ч ЛПФПТПН РЕТЕПРТЕДЕМЙФШ Value::get_element Й/ЙМЙ Value::put_element,
-Ч ЛПОУФТХЛФПТЕ ЛПФПТПЗП РТЙ ЧЩЪПЧЕ ВБЪПЧПЗП ЛПОУФТХЛФПТБ
+@code
+class MExample3 : public Methoded {
+public: // VStateless_class
+	
+	Value *create_new_value(Pool& pool) { return new(pool) VExample3(pool); }
+@endcode
 
-@test 3
+Этот метод будет вызван при создании пользователем значений этого типа:
+@verbatim
+$variable[^example3:create[]]
+@endverbatim
+
+Здесь VExample3, это класс значения, см. ClassExample2.
+Его не нужно регистрировать, поскольку он Methoded::used_directly true.
 
 */

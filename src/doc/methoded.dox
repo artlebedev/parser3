@@ -1,19 +1,19 @@
-/**	@page Methoded  Methoded: конфигурируемый класс
+/**	@page Methoded  Methoded: ЙНМТХЦСПХПСЕЛШИ ЙКЮЯЯ
 
-Системные классы[mail, string, ...], это или напрямую используемый,
-или используемый в качестве базового класса потомок Methoded.
+йКЮЯЯШ[mail, string, ...], ЩРН ХКХ МЮОПЪЛСЧ ХЯОНКЭГСЕЛШИ,
+ХКХ ХЯОНКЭГСЕЛШИ Б ЙЮВЕЯРБЕ АЮГНБНЦН ЙКЮЯЯЮ ОНРНЛНЙ Methoded.
 
-Methoded могут быть испольнованы напрямую [Methoded::used_directly()=true],
-тогда в начале обработки запроса Methoded_array::register_directly_used 
-регистрирует их в Request::classes().
-Пример: класс mail [MMail].
+Methoded ЛНЦСР АШРЭ ХЯОНКЭМНБЮМШ МЮОПЪЛСЧ [Methoded::used_directly()=true],
+РНЦДЮ Б МЮВЮКЕ НАПЮАНРЙХ ГЮОПНЯЮ Methoded_array::register_directly_used 
+ПЕЦХЯРПХПСЕР ХУ Б Request::classes().
+оПХЛЕП: ЙКЮЯЯ mail [MMail].
 
-Или не напрямую, тогда они[глобальная переменная] используются при указании родителя
-в вызове констуктора VStateless_class.
-Пример: класс string [экземпляр MString в конструкторе VString].
+хКХ МЕ МЮОПЪЛСЧ, РНЦДЮ НМХ[ЦКНАЮКЭМЮЪ ОЕПЕЛЕММЮЪ] ХЯОНКЭГСЧРЯЪ ОПХ СЙЮГЮМХХ ПНДХРЕКЪ
+Б БШГНБЕ ЙНМЯРСЙРНПЮ VStateless_class.
+оПХЛЕП: ЙКЮЯЯ string [ЩЙГЕЛОКЪП MString Б ЙНМЯРПСЙРНПЕ VString].
 
 
-Системный класс также может иметь auto.p параметры, для работы с ними 
-следует переопределить Methoded::configure_admin и/или Methoded::configure_user.
+йКЮЯЯ РЮЙФЕ ЛНФЕР ХЛЕРЭ auto.p ОЮПЮЛЕРПШ, ДКЪ ПЮАНРШ Я МХЛХ 
+ЯКЕДСЕР ОЕПЕНОПЕДЕКХРЭ Methoded::configure_admin Х/ХКХ Methoded::configure_user.
 
 */

@@ -1,14 +1,14 @@
 /**	@page Value Value
 
-ъОБЮЕОЙС, ЛПФПТЩНЙ ПРЕТЙТХЕФ Parser, ЕУФШ ЬЛЪЕНРМСТЩ ЛМБУУПЧ, РТПЙЪЧПДОЩИ ПФ Value.
-Value ЪОБЕФ УЧПЈ ЙНС [Value::name] Й ФЙР [Value::type], ЛПФПТЩЕ ЙУРПМШЪХАФУС ДМС ЧЩЧПДПЧ УППВЭЕОЙК ПВ ПЫЙВЛБИ.
-фЙР ФБЛЦЕ НПЦОП РТПЧЕТЙФШ Ч
+Значения, которыми оперирует Parser, есть экземпляры классов, производных от Value.
+Value знает своё имя [Value::name] и тип [Value::type], которые используются для выводов сообщений об ошибках.
+Тип также можно проверить в
 @verbatim
-^if($variable is hash){ЛПЗДБ Ч РЕТЕНЕООПК hash}{ЛПЗДБ ОЕ hash}
+^if($variable is hash){когда в переменной hash}{когда не hash}
 @endverbatim
 
-Value НПЦЕФ ИТБОЙФШ ЬМЕНЕОФЩ [Value::get_element, Value::put_element].
-уБНЩК РТПУФПК УМХЮБК - hash[VHash].
+Value может хранить элементы [Value::get_element, Value::put_element].
+Самый простой случай - hash[VHash].
 
 
 */

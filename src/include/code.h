@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: code.h,v 1.27 2001/04/25 11:02:52 paf Exp $
+	$Id: code.h,v 1.28 2001/05/07 13:29:59 paf Exp $
 */
 
 #ifndef CODE_H
@@ -19,13 +19,12 @@ class Array;
 
 ///	Compiled operation code
 enum OPCODE {
-	//@{
-	/// literal
+	//@{ @name literals
 	OP_VALUE,  OP_CURLY_CODE__STORE_PARAM,  OP_EXPR_CODE__STORE_PARAM,
 	//@}
 
 	//@{
-	/// action
+	/// @name actions
 	OP_WITH_SELF,	OP_WITH_ROOT,	OP_WITH_READ,	OP_WITH_WRITE,
 	OP_GET_CLASS,
 	OP_CONSTRUCT_VALUE, OP_CONSTRUCT_EXPR,
@@ -40,12 +39,12 @@ enum OPCODE {
 	//@}
 
 	//@{
-	/// expression op: unary
+	/// @name expression ops: unary
 	OP_NEG, OP_INV, OP_NOT, OP_DEF, OP_IN, OP_FEXISTS, OP_DEXISTS,
 	//@}
 
 	//@{
-	/// expression op: binary
+	/// @name expression ops: binary
 	OP_SUB, OP_ADD, OP_MUL, OP_DIV, OP_MOD,
 	OP_BIN_AND, OP_BIN_OR, OP_BIN_XOR,
 	OP_LOG_AND, OP_LOG_OR, OP_LOG_XOR,
