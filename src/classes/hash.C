@@ -5,9 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: hash.C,v 1.10 2001/07/07 16:38:01 parser Exp $
+	$Id: hash.C,v 1.11 2001/07/23 11:19:25 parser Exp $
 */
-static const char *RCSId="$Id: hash.C,v 1.10 2001/07/07 16:38:01 parser Exp $"; 
+static const char *RCSId="$Id: hash.C,v 1.11 2001/07/23 11:19:25 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
@@ -46,6 +46,62 @@ static void _default(Request& r, const String&, MethodParams *params) {
 	}
 }
 
+#ifndef DOXYGEN
+class Hash_sql_event_handlers : public SQL_Driver_query_event_handlers {
+public:
+	Hash_sql_event_handlers(Pool& apool, const String& amethod_name,
+		const String& astatement_string, const char *astatement_cstr,
+		Hash& arows_hash) :
+		pool(apool), 
+		method_name(amethod_name),
+		statement_string(astatement_string),
+		statement_cstr(astatement_cstr),
+		rows_hash(arows_hash),
+		columns(pool),
+		row_index(0) {
+	}
+	void add_column(void *ptr, size_t size) {
+		String *column=new(pool) String(pool);
+		column->APPEND_TAINTED(
+			(const char *)ptr, size, 
+			statement_cstr, 0);
+		columns+=column;
+	}
+	void before_rows() { 
+		if(columns.size()<=1)
+			PTHROW(0, 0,
+				&method_name,
+				"column count must be more than 1 to create a hash");
+	}
+	void add_row() {
+		column_index=0;
+	}
+	void add_row_cell(void *ptr, size_t size) {
+		String *cell=new(pool) String(pool);
+		if(size)
+			cell->APPEND_TAINTED(
+				(const char *)ptr, size, 
+				statement_cstr, row_index++);
+		if(column_index==0) {
+			VHash *row_vhash=new(pool) VHash(pool);
+			row_hash=row_vhash->get_hash();
+			rows_hash.put(*cell, row_vhash);
+		} else
+			row_hash->put(*columns.get_string(column_index), new(pool) VString(*cell));
+	}
+
+private:
+	Pool& pool;
+	const String& method_name;
+	const String& statement_string; const char *statement_cstr;
+	Hash& rows_hash;
+	Hash *row_hash;
+	int column_index;
+	Array columns;
+	int row_index;
+};
+#endif
+
 static void _sql(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
@@ -72,14 +128,15 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 	const String& statement_string=r.process(statement).as_string();
 	const char *statement_cstr=
 		statement_string.cstr(String::UL_UNSPECIFIED, r.connection);
-	unsigned int sql_column_count; SQL_Driver::Cell *sql_columns;
-	unsigned long sql_row_count; SQL_Driver::Cell **sql_rows;
+	Hash& hash=static_cast<VHash *>(r.self)->hash();
+	hash.clear();	
+	Hash_sql_event_handlers handlers(pool, method_name,
+		statement_string, statement_cstr, hash);
 	bool need_rethrow=false; Exception rethrow_me;
 	PTRY {
 		r.connection->query(
 			statement_cstr, offset, limit,
-			&sql_column_count, &sql_columns,
-			&sql_row_count, &sql_rows);
+			handlers);
 	}
 	PCATCH(e) { // query problem
 		rethrow_me=e;  need_rethrow=true;
@@ -89,41 +146,6 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 		PTHROW(rethrow_me.type(), rethrow_me.code(),
 			&statement_string, // setting more specific source [were url]
 			rethrow_me.comment());
-
-	Hash& rows_hash=static_cast<VHash *>(r.self)->hash();
-	rows_hash.clear();	
-
-	if(sql_column_count<=1)
-		return;
-
-	Array& columns=*new(pool) Array(pool);
-	for(unsigned int i=0+1; i<sql_column_count; i++) {
-		String& column=*new(pool) String(pool);
-		column.APPEND_TAINTED(
-			(const char *)sql_columns[i].ptr, sql_columns[i].size,
-			statement_cstr, 0);
-		columns+=&column;
-	}
-	
-	for(unsigned long row=0; row<sql_row_count; row++) {
-		SQL_Driver::Cell *sql_cells=sql_rows[row];			
-		
-		VHash& row_vhash=*new(pool) VHash(pool);
-		Hash& row_hash=*row_vhash.get_hash();
-		String *key=0; // calm, compiler
-		String *cell;
-		for(unsigned int i=0; i<sql_column_count; i++) {
-			cell=new(pool) String(pool);
-			cell->APPEND_TAINTED(
-				(const char *)sql_cells[i].ptr, sql_cells[i].size,
-				statement_cstr, row);
-			if(i==0)
-				key=cell;
-			else
-				row_hash.put(*columns.get_string(i-1), new(pool) VString(*cell));
-		}
-		rows_hash.put(*key, &row_vhash);
-	}
 }
 
 static void keys_collector(const Hash::Key& key, Hash::Val *value, void *info) {

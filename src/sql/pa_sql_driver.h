@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_driver.h,v 1.10 2001/05/17 13:23:28 parser Exp $
+	$Id: pa_sql_driver.h,v 1.11 2001/07/23 11:19:25 parser Exp $
 
 
 	driver dynamic library must look like this:
@@ -42,18 +42,19 @@ public:
 	virtual void _throw(const char *comment) =0;
 };
 
-#define SQL_DRIVER_API_VERSION 0x0301
+#define SQL_DRIVER_API_VERSION 0x0302
+
+/// events, occuring when SQL_Driver::query()-ing
+class SQL_Driver_query_event_handlers {
+public:
+	virtual void add_column(void *ptr, size_t size) =0;
+	virtual void before_rows() =0;
+	virtual void add_row() =0;
+	virtual void add_row_cell(void *ptr, size_t size) =0;
+};
 
 /// SQL driver API
 class SQL_Driver {
-public:
-
-	/// row cell & column title  storage
-	struct Cell {
-		void *ptr;
-		size_t size;
-	};
-
 public:
 
 	SQL_Driver() {}
@@ -86,11 +87,7 @@ public:
 	virtual void query(
 		SQL_Driver_services& services, void *connection,
 		const char *statement, unsigned long offset, unsigned long limit,
-		unsigned int *column_count, Cell **columns,
-		unsigned long *row_count, Cell ***rows) =0;
-	/// log error message
-	//static void log(Pool& pool, const char *fmt, ...);
-
+		SQL_Driver_query_event_handlers& handlers) =0;
 };
 
 typedef SQL_Driver *(*SQL_Driver_create_func)();

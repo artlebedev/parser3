@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: table.C,v 1.93 2001/07/18 10:06:04 parser Exp $"; 
+static const char *RCSId="$Id: table.C,v 1.94 2001/07/23 11:19:25 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -586,6 +586,54 @@ static void _join(Request& r, const String& method_name, MethodParams *params) {
 	}
 }
 
+#ifndef DOXYGEN
+class Table_sql_event_handlers : public SQL_Driver_query_event_handlers {
+public:
+	Table_sql_event_handlers(Pool& apool, const String& amethod_name,
+		const String& astatement_string, const char *astatement_cstr) :
+		pool(apool), 
+		method_name(amethod_name),
+		statement_string(astatement_string),
+		statement_cstr(astatement_cstr),
+		columns(*new(pool) Array(pool)),
+		row(0), row_index(0),
+		table(0)
+	{
+	}
+
+	void add_column(void *ptr, size_t size) {
+		String *column=new(pool) String(pool);
+		column->APPEND_TAINTED(
+			(const char *)ptr, size, 
+			statement_cstr, 0);
+		columns+=column;
+	}
+	void before_rows() { 
+		table=new(pool) Table(pool, &method_name, &columns);
+	}
+	void add_row() {
+		(*table)+=(row=new(pool) Array(pool));
+	}
+	void add_row_cell(void *ptr, size_t size) {
+		String *cell=new(pool) String(pool);
+		if(size)
+			cell->APPEND_TAINTED(
+				(const char *)ptr, size, 
+				statement_cstr, row_index++);
+		(*row)+=cell;
+	}
+
+private:
+	Pool& pool;
+	const String& method_name;
+	const String& statement_string; const char *statement_cstr;
+	Array& columns;
+	Array *row;
+	uint row_index;
+public:
+	Table *table;
+};
+#endif
 static void _sql(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
@@ -612,14 +660,13 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 	const String& statement_string=r.process(statement).as_string();
 	const char *statement_cstr=
 		statement_string.cstr(String::UL_UNSPECIFIED, r.connection);
-	unsigned int sql_column_count; SQL_Driver::Cell *sql_columns;
-	unsigned long sql_row_count; SQL_Driver::Cell **sql_rows;
+	Table_sql_event_handlers handlers(pool, method_name,
+		statement_string, statement_cstr);
 	bool need_rethrow=false; Exception rethrow_me;
 	PTRY {
 		r.connection->query(
 			statement_cstr, offset, limit, 
-			&sql_column_count, &sql_columns, 
-			&sql_row_count, &sql_rows);
+			handlers);
 	}
 	PCATCH(e) { // query problem
 		rethrow_me=e;  need_rethrow=true;
@@ -630,34 +677,13 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 			&statement_string, // setting more specific source [were url]
 			rethrow_me.comment());
 	
-	Array& table_columns=*new(pool) Array(pool);
-	for(unsigned int i=0; i<sql_column_count; i++) {
-		String& table_column=*new(pool) String(pool);
-		table_column.APPEND_TAINTED(
-			(const char *)sql_columns[i].ptr, sql_columns[i].size, 
-			statement_cstr, 0);
-		table_columns+=&table_column;
-	}
-
-	Table& table=*new(pool) Table(pool, &method_name, &table_columns);
-
-	for(unsigned long row=0; row<sql_row_count; row++) {
-		SQL_Driver::Cell *sql_cells=sql_rows[row];
-		Array& table_row=*new(pool) Array(pool);
-		
-		for(unsigned int i=0; i<sql_column_count; i++) {
-			String& table_cell=*new(pool) String(pool);
-			if(sql_cells[i].size)
-				table_cell.APPEND_TAINTED(
-					(const char *)sql_cells[i].ptr, sql_cells[i].size, 
-					statement_cstr, row);
-			table_row+=&table_cell;
-		}
-		table+=&table_row;
-	}
+	if(!handlers.table)
+		PTHROW(0, 0, 
+			&statement_string, 
+			"no table result");
 
 	// replace any previous table value
-	static_cast<VTable *>(r.self)->set_table(table);
+	static_cast<VTable *>(r.self)->set_table(*handlers.table);
 }
 
 static void _dir(Request& r, const String& method_name, MethodParams *params) {

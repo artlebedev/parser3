@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 */
-static const char *RCSId="$Id: parser3mysql.C,v 1.24 2001/06/29 08:35:26 parser Exp $"; 
+static const char *RCSId="$Id: parser3mysql.C,v 1.25 2001/07/23 11:19:25 parser Exp $"; 
 
 #include "config_includes.h"
 
@@ -120,8 +120,7 @@ public:
 	void query(
 		SQL_Driver_services& services, void *connection, 
 		const char *astatement, unsigned long offset, unsigned long limit,
-		unsigned int *column_count, Cell **columns, 
-		unsigned long *row_count, Cell ***rows) {
+		SQL_Driver_query_event_handlers& handlers) {
 
 		MYSQL *mysql=(MYSQL *)connection;
 		MYSQL_RES *res=NULL;
@@ -146,49 +145,42 @@ public:
 			services._throw(mysql_error(mysql));
 		if(!(res=mysql_store_result(mysql)) && mysql_field_count(mysql)) 
 			services._throw(mysql_error(mysql));
-		if(!res) {
-			// empty result
-			*row_count=0;
-			*column_count=0;
+		if(!res) // empty result: insert|delete|update|...
 			return;
-		}
 		
-		*column_count=mysql_num_fields(res);
-		if(!*column_count) // old client
-			*column_count=mysql_field_count(mysql);
+		unsigned int column_count=mysql_num_fields(res);
+		if(!column_count) // old client
+			column_count=mysql_field_count(mysql);
 
-		if(!*column_count)
+		if(!column_count)
 			services._throw("result contains no columns");
 
-		*columns=(Cell *)services.malloc(sizeof(Cell)*(*column_count));
-		for(unsigned int i=0; i<(*column_count); i++){
+		for(unsigned int i=0; i<column_count; i++){
 			MYSQL_FIELD *field=mysql_fetch_field(res);
 			size_t size=strlen(field->name);
-			(*columns)[i].size=size;
-			(*columns)[i].ptr=services.malloc(size);
-			memcpy((*columns)[i].ptr, field->name, size);
+			void *ptr=services.malloc(size);
+			memcpy(ptr, field->name, size);
+			handlers.add_column(ptr, size);
 		}
+
+		handlers.before_rows();
 		
-		if(*row_count=(unsigned long)mysql_num_rows(res)) {
-			*rows=(Cell **)services.malloc(sizeof(Cell *)*(*row_count));
-			
-			for(unsigned long r=0; r<(*row_count); r++) 
+		if(unsigned long row_count=(unsigned long)mysql_num_rows(res))
+			for(unsigned long r=0; r<row_count; r++) 
 				if(MYSQL_ROW mysql_row=mysql_fetch_row(res)) { // never false..
+					handlers.add_row();
 					unsigned long *lengths=mysql_fetch_lengths(res);
-					Cell *row=(Cell *)malloc(sizeof(Cell)*(*column_count));
-					(*rows)[r]=row;
-					for(unsigned int i=0; i<(*column_count); i++){
+					for(unsigned int i=0; i<column_count; i++){
 						size_t size=(size_t)lengths[i];
-						row[i].size=size;
+						void *ptr;
 						if(size) {
-							row[i].ptr=services.malloc(size);
-							memcpy(row[i].ptr, mysql_row[i], size);
+							ptr=services.malloc(size);
+							memcpy(ptr, mysql_row[i], size);
 						} else
-							row[i].ptr=0;
+							ptr=0;
+						handlers.add_row_cell(ptr, size);
 					}
 				}
-		} else
-			*rows=0;
 
 		mysql_free_result(res);
 	}

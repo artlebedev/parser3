@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: void.C,v 1.4 2001/07/07 16:38:01 parser Exp $"; 
+static const char *RCSId="$Id: void.C,v 1.5 2001/07/23 11:19:25 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
@@ -43,6 +43,27 @@ static void _double(Request& r, const String&, MethodParams *) {
 	r.write_no_lang(value);
 }
 
+#ifndef DOXYGEN
+class Void_sql_event_handlers : public SQL_Driver_query_event_handlers {
+public:
+	Void_sql_event_handlers(Pool& apool, const String& astatement_string) :
+		pool(apool), statement_string(astatement_string) {
+	}
+	void add_column(void *ptr, size_t size) { /* ignore */ }
+	void before_rows() {
+		// there are some result rows, which is wrong
+		PTHROW(0, 0,
+			&statement_string,
+			"must return nothing");
+	}
+	void add_row() { /* never */ }
+	void add_row_cell(void *ptr, size_t size) { /* never */ }
+
+private:
+	Pool& pool;
+	const String& statement_string;
+};
+#endif
 static void _sql(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
@@ -57,16 +78,14 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 	const String& statement_string=r.process(statement).as_string();
 	const char *statement_cstr=
 		statement_string.cstr(String::UL_UNSPECIFIED, r.connection);
-	unsigned int sql_column_count; SQL_Driver::Cell *sql_columns;
-	unsigned long sql_row_count; SQL_Driver::Cell **sql_rows;
+	Void_sql_event_handlers handlers(pool, statement_string);
 	bool need_rethrow=false; Exception rethrow_me;
 	PTRY {
 		r.connection->query(
 			statement_cstr, 0, 0,
-			&sql_column_count, &sql_columns,
-			&sql_row_count, &sql_rows);
+			handlers);
 	}
-	PCATCH(e) { // connect/process problem
+	PCATCH(e) {
 		rethrow_me=e;  need_rethrow=true;
 	}
 	PEND_CATCH
@@ -74,12 +93,6 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 		PTHROW(rethrow_me.type(), rethrow_me.code(),
 			&statement_string, // setting more specific source [were url]
 			rethrow_me.comment());
-
-	// there are some result rows, which is wrong
-	if(sql_row_count)
-		PTHROW(0, 0,
-			&statement_string,
-			"must not return result");
 }
 
 // constructor

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: string.C,v 1.64 2001/07/20 09:40:46 parser Exp $"; 
+static const char *RCSId="$Id: string.C,v 1.65 2001/07/23 11:19:25 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
@@ -263,6 +263,46 @@ static void _lower(Request& r, const String& method_name, MethodParams *params) 
 	change_case(r, method_name, params, String::CC_LOWER);
 }
 
+#ifndef DOXYGEN
+class String_sql_event_handlers : public SQL_Driver_query_event_handlers {
+public:
+	String_sql_event_handlers(Pool& apool, 
+		const String& astatement_string, const char *astatement_cstr) :
+		pool(apool), 
+		statement_string(astatement_string),
+		statement_cstr(astatement_cstr),
+		got_column(false), got_cell(false) {
+		result=new(pool) String(pool);
+	}
+
+	void add_column(void *ptr, size_t size) {
+		if(got_column)
+			PTHROW(0, 0,
+				&statement_string,
+				"result must contain exactly one column");
+		got_column=true;
+	}
+	void before_rows() { /* ignore */ }
+	void add_row() { /* ignore */ }
+	void add_row_cell(void *ptr, size_t size) {
+		if(got_cell)
+			PTHROW(0, 0,
+				&statement_string,
+				"result must not contain more then one row");
+		got_cell=true;
+
+		result->APPEND_TAINTED((const char *)ptr, size, statement_cstr, 0);
+	}
+
+private:
+	Pool& pool;
+	const String& statement_string; const char *statement_cstr;
+	bool got_column;
+public:
+	bool got_cell;
+	String *result;
+};
+#endif
 const String* sql_result_string(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
@@ -279,14 +319,12 @@ const String* sql_result_string(Request& r, const String& method_name, MethodPar
 	const String& statement_string=r.process(statement).as_string();
 	const char *statement_cstr=
 		statement_string.cstr(String::UL_UNSPECIFIED, r.connection);
-	unsigned int sql_column_count; SQL_Driver::Cell *sql_columns;
-	unsigned long sql_row_count; SQL_Driver::Cell **sql_rows;
+	String_sql_event_handlers handlers(pool, statement_string, statement_cstr);
 	bool need_rethrow=false; Exception rethrow_me;
 	PTRY {
 		r.connection->query(
 			statement_cstr, offset, 0,
-			&sql_column_count, &sql_columns,
-			&sql_row_count, &sql_rows);
+			handlers);
 	}
 	PCATCH(e) { // query problem
 		rethrow_me=e;  need_rethrow=true;
@@ -297,26 +335,10 @@ const String* sql_result_string(Request& r, const String& method_name, MethodPar
 			&statement_string, // setting more specific source [were url]
 			rethrow_me.comment());
 	
-	if(sql_column_count!=1)
-		PTHROW(0, 0,
-			&statement_string,
-			"result must contain exactly one column");
+	if(!handlers.got_cell)
+		return 0; // no lines, caller should return second param[default value]
 
-	if(!sql_row_count)
-		return 0; // no lines, should return second param[default value]
-
-	if(sql_row_count>1)
-		PTHROW(0, 0,
-			&statement_string,
-			"result must not contain more then one row");	
-
-	String *result=new(pool) String(pool);
-	SQL_Driver::Cell& cell=sql_rows[0][0];
-	result->APPEND_TAINTED(
-		(const char *)cell.ptr, cell.size,
-		statement_cstr, 0);
-	
-	return result;
+	return handlers.result;
 }
 
 static void _sql(Request& r, const String& method_name, MethodParams *params) {

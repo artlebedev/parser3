@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_connection.h,v 1.10 2001/05/17 18:26:22 parser Exp $
+	$Id: pa_sql_connection.h,v 1.11 2001/07/23 11:19:25 parser Exp $
 */
 
 #ifndef PA_SQL_CONNECTION_H
@@ -53,12 +53,10 @@ public:
 
 	void query(
 		const char *statement, unsigned long offset, unsigned long limit,
-		unsigned int *column_count, SQL_Driver::Cell **columns,
-		unsigned long *row_count, SQL_Driver::Cell ***rows) { 
+		SQL_Driver_query_event_handlers& handlers) { 
 		fdriver.query(*fservices, fconnection, 
 			statement, offset, limit, 
-			column_count, columns,
-			row_count, rows);
+			handlers);
 	}
 
 
