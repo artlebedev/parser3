@@ -1,5 +1,5 @@
-@USE
-t.p
+#@USE
+#t.p
 
 @autoz[]
 $request:charset[windows-1251]
@@ -11,10 +11,10 @@ $response:content-type[$.value[text/html]$.charset[$response:charset]]
 #$result[123]
 
 @main[]
-^connect[mysql://mdm:4b833ljq@db-mysql/mdm]{
-	^int:sql{select news_id from news where news_id=-1}[$.default{2}]<br>
-    ^string:sql{select news_id from news where news_id=-1}[$.default{2}]
-}
+#^connect[mysql://mdm:4b833ljq@db-mysql/mdm]{
+#	^int:sql{select news_id from news where news_id=-1}[$.default{2}]<br>
+#    ^string:sql{select news_id from news where news_id=-1}[$.default{2}]
+#}
 #^eval(2)
 #^tcrashlocaljunctionsv2[]
 #^tcrashlocaljunctions[]
@@ -143,7 +143,6 @@ $response:content-type[$.value[text/html]$.charset[$response:charset]]
 #^xslt[]
 #^xml[]
 #^header[]
-<<<<<<< index.html
 #^tablehasht[]
 #^datecreatestring[]
 #^mssqltypes1[]
@@ -158,7 +157,17 @@ $response:content-type[$.value[text/html]$.charset[$response:charset]]
 #^tstoredproc2[]
 #^forkeys[]
 #^pngsize[]
-^checkList[]
+#^checkList[]
+^datetest[]
+
+@datetest[]
+	$f[^file::stat[some.zip]]
+Размер в байтах: $f.size<br>
+Год создания: $f.cdate.year<br>
+$now[^date::now[]]
+$DAYS_CONSIDERED_NEW(3)
+Статус: ^if($f.mdate >= $now-$DAYS_CONSIDERED_NEW){новый;старый}
+
 
 @checkList[]
 ...^oneOf[a;a,b,c]...<br>
