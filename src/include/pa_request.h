@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.h,v 1.109 2001/11/05 11:46:25 paf Exp $
+	$Id: pa_request.h,v 1.110 2001/11/08 11:52:34 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -68,7 +68,8 @@ public:
 	
 	Request(Pool& apool,
 		Info& ainfo,
-		String::Untaint_lang adefault_lang ///< all tainted data default untainting lang
+		String::Untaint_lang adefault_lang, ///< all tainted data default untainting lang
+		bool status_allowed ///<  status class allowed
 	);
 	~Request() {}
 

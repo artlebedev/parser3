@@ -4,7 +4,7 @@
 	Copyright (c) 2000,2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: parser3isapi.C,v 1.57 2001/11/05 11:46:30 paf Exp $
+	$Id: parser3isapi.C,v 1.58 2001/11/08 11:52:34 paf Exp $
 */
 
 #ifndef _MSC_VER
@@ -334,8 +334,8 @@ void real_parser_handler(Pool& pool, LPEXTENSION_CONTROL_BLOCK lpECB, bool heade
 	// prepare to process request
 	Request request(pool,
 		request_info,
-		String::UL_USER_HTML
-		);
+		String::UL_USER_HTML,
+		false /* status_allowed */);
 
 	// some root-controlled location
 	//   c:\windows

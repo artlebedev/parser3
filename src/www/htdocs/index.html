@@ -1,6 +1,4 @@
 @main[]
-^status[]
-<hr>
 #^xchildren[]
 #^thashforeach3[]
 #^thashforeach2[]
@@ -58,78 +56,8 @@
 ^xslt[]
 #^xml[]
 #^header[]
-<hr>
-^status[]
 OK
 
-@status[]
-$c[$status:sql.cache]
-sql.cache:<br>
-<table border=1>
-<tr>
-	<td>url</td>
-	<td>time</td>
-</tr>
-^c.menu{
-<tr>
-	<td>$c.url</td>
-	<td>$c.time</td>
-</tr>
-}
-</table>
-
-$c[$status:stylesheet.cache]
-stylesheet.cache:<br>
-<table border=1>
-<tr>
-	<td>file</td>
-	<td>time</td>
-</tr>
-^c.menu{
-<tr>
-	<td>$c.file</td>
-	<td>$c.time</td>
-</tr>
-}
-</table>
-
-$c[$status:charset.cache]
-charset.cache:<br>
-<table border=1>
-<tr>
-	<td>file</td>
-</tr>
-^c.menu{
-<tr>
-	<td>$c.file</td>
-</tr>
-}
-</table>
-
-
-$db_homes[$status:db.cache]
-db.cache:<br>
-^db_homes.foreach[db_home;tables]{
-<table border=1>
-<tr>
-	<td colspan=3>$db_home</td>
-</tr>
-<tr>
-	<td>name</td>
-	<td>time</td>
-	<td>users</td>
-</tr>
-^tables.menu{
-<tr>
-	<td>$tables.name</td>
-	<td>$tables.time</td>
-	<td>$tables.users</td>
-</tr>
-}
-</table>
-}
-
-@xchildren[]
 $constructor[
 <block1 name="main_srvr" type="0" label="Основное тело" />
 <block2 name="main_srvr2" type="0" label="Основное тело" />

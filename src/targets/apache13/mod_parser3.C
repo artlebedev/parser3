@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: mod_parser3.C,v 1.8 2001/11/05 11:46:29 paf Exp $
+	$Id: mod_parser3.C,v 1.9 2001/11/08 11:52:34 paf Exp $
 */
 
 #include "httpd.h"
@@ -25,14 +25,6 @@
 
 #ifdef XML
 #include <XalanTransformer/XalanCAPI.h>
-#endif
-
-#ifdef _DEBUG
-#	define DEBUG_PREFIX "debug_"
-#	define PARSER3_MODULE debug_parser3_module
-#else
-#	define DEBUG_PREFIX
-#	define PARSER3_MODULE parser3_module
 #endif
 
 // consts
@@ -68,6 +60,7 @@ const char **RCSIds[]={
 struct Parser_module_config {
     const char* parser_root_config_filespec; ///< filespec of admin's config file
     const char* parser_site_config_filespec; ///< filespec of site's config file
+	bool parser_status_allowed;
 };
 
 #ifdef XML
@@ -92,14 +85,14 @@ void callXalanTerminate(void *) {
  * Declare ourselves so the configuration routines can find and know us.
  * We'll fill it in at the end of the module.
  */
-extern "C" module MODULE_VAR_EXPORT PARSER3_MODULE;
+extern "C" module MODULE_VAR_EXPORT parser3_module;
 
 /*
  * Locate our directory configuration record for the current request.
  */
 static Parser_module_config *our_dconfig(request_rec *r) {
     return (Parser_module_config *) 
-		ap_get_module_config(r->per_dir_config, &PARSER3_MODULE);
+		ap_get_module_config(r->per_dir_config, &parser3_module);
 }
 
 static const char *cmd_parser_config(cmd_parms *cmd, void *mconfig, char *file_spec) {
@@ -107,6 +100,14 @@ static const char *cmd_parser_config(cmd_parms *cmd, void *mconfig, char *file_s
 
 	// remember assigned filespec into cfg
 	(cmd->info?cfg->parser_root_config_filespec:cfg->parser_site_config_filespec)=file_spec;
+
+    return NULL;
+}
+static const char *cmd_parser_status_allowed(cmd_parms *cmd, void *mconfig, char *file_spec) {
+	//_asm int 3;
+    Parser_module_config *cfg = (Parser_module_config *) mconfig;
+
+	cfg->parser_status_allowed=true;
 
     return NULL;
 }
@@ -255,15 +256,18 @@ static void real_parser_handler(Pool& pool, request_rec *r) {
 	request_info.cookie=SAPI::get_env(pool, "HTTP_COOKIE");
 	request_info.user_agent=SAPI::get_env(pool, "HTTP_USER_AGENT");
 
+    // config
+	Parser_module_config *dcfg=our_dconfig(r);
+
 	//_asm int 3;
 	// prepare to process request
 	Request request(pool,
 		request_info,
-		String::UL_USER_HTML
+		String::UL_USER_HTML,
+		dcfg->parser_status_allowed
 		);
 	
 	// process the request
-    Parser_module_config *dcfg=our_dconfig(r);
 	request.core(
 		dcfg->parser_root_config_filespec, true, // /path/to/admin/config
 		dcfg->parser_site_config_filespec, true, // /path/to/site/config
@@ -464,6 +468,8 @@ static void *parser_create_dir_config(pool *p, char *dirspec) {
      */
     cfg->parser_root_config_filespec = 0;
 	cfg->parser_site_config_filespec = 0;
+	cfg->parser_status_allowed=false;
+
     return (void *) cfg;
 }
 
@@ -491,6 +497,9 @@ static void *parser_merge_dir_config(pool *p, void *parent_conf,
 
 	// always from parent
     merged_config->parser_root_config_filespec = ap_pstrdup(p, pconf->parser_root_config_filespec);
+	merged_config->parser_status_allowed=
+		pconf->parser_status_allowed ||
+		nconf->parser_status_allowed;
     /*
      * Some things get copied directly from the more-specific record, rather
      * than getting merged.
@@ -518,6 +527,7 @@ static void *parser_create_server_config(pool *p, server_rec *s) {
 
     cfg->parser_root_config_filespec = 0;
 	cfg->parser_site_config_filespec = 0;
+	cfg->parser_status_allowed=false;
 
     return (void *) cfg;
 }
@@ -552,6 +562,9 @@ static void *parser_merge_server_config(pool *p, void *server1_conf,
 		s2conf->parser_root_config_filespec:s1conf->parser_root_config_filespec);
     merged_config->parser_site_config_filespec = ap_pstrdup(p, s2conf->parser_site_config_filespec?
 		s2conf->parser_site_config_filespec:s1conf->parser_site_config_filespec);
+	merged_config->parser_status_allowed=
+		s1conf->parser_status_allowed || 
+		s2conf->parser_status_allowed;
  
 	return (void *) merged_config;
 }
@@ -628,7 +641,7 @@ static int parser_access_checker(request_rec *r) {
 static const command_rec parser_cmds[] =
 {
     {
-        DEBUG_PREFIX"ParserRootConfig",              /* directive name */
+        "ParserRootConfig",              /* directive name */
         (const char *(*)(void))((void *)cmd_parser_config), // config action routine
         (void*)true,                   /* argument to include in call */
         (int)(ACCESS_CONF|RSRC_CONF),             /* where available */
@@ -636,13 +649,21 @@ static const command_rec parser_cmds[] =
         "Parser root config filespec (Admin)" // directive description
     },
     {
-        DEBUG_PREFIX"ParserSiteConfig",              /* directive name */
+        "ParserSiteConfig",              /* directive name */
         (const char *(*)(void))((void *)cmd_parser_config), // config action routine
         (void*)false,                   /* argument to include in call */
         (int)(OR_OPTIONS),             /* where available */
         TAKE1,                /* arguments */
         "Parser site config filespec" // directive description
     },
+	{
+		"ParserStatusAllowed",              /* directive name */
+        (const char *(*)(void))((void *)cmd_parser_status_allowed), // config action routine
+        (void*)0,                   /* argument to include in call */
+        (int)(ACCESS_CONF),             /* where available */
+        NO_ARGS,                /* arguments */
+        "Parser status class can be used" // directive description
+	},
     {NULL}
 };
 
@@ -665,7 +686,7 @@ static const command_rec parser_cmds[] =
  */
 static const handler_rec parser_handlers[] =
 {
-    {DEBUG_PREFIX"parser3-handler", parser_handler},
+    {"parser3-handler", parser_handler},
     {NULL}
 };
 
@@ -683,7 +704,7 @@ static const handler_rec parser_handlers[] =
  * during request processing.  Note that not all routines are necessarily
  * called (such as if a resource doesn't have access restrictions).
  */
-module MODULE_VAR_EXPORT PARSER3_MODULE =
+module MODULE_VAR_EXPORT parser3_module =
 {
     STANDARD_MODULE_STUFF,
     parser_server_init,          /* module initializer */

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.C,v 1.178 2001/11/08 11:04:13 paf Exp $
+	$Id: pa_request.C,v 1.179 2001/11/08 11:52:34 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -52,7 +52,8 @@ static void load_charset(const Hash::Key& akey, Hash::Val *avalue,
 //
 Request::Request(Pool& apool,
 				 Info& ainfo,
-				 String::Untaint_lang adefault_lang) : Pooled(apool),
+				 String::Untaint_lang adefault_lang,
+				 bool status_allowed) : Pooled(apool),
 	stack(apool),
 	OP(*MOP_create(apool)),
 	env(apool),
@@ -90,7 +91,8 @@ Request::Request(Pool& apool,
 	// env class
 	classes().put(*NEW String(pool(), ENV_CLASS_NAME), &env);
 	// status class
-	classes().put(*NEW String(pool(), STATUS_CLASS_NAME), &status);
+	if(status_allowed)
+		classes().put(*NEW String(pool(), STATUS_CLASS_NAME), &status);
 	// request class
 	classes().put(*NEW String(pool(), REQUEST_CLASS_NAME), &request);	
 	// cookie class

@@ -1,0 +1,46 @@
+@main[]
+^status[]
+
+@status[]
+$c[$status:sql.cache]
+sql.cache:<br>
+<table border=1>
+<tr>
+	<td>url</td>
+	<td>time</td>
+</tr>
+^c.menu{
+<tr>
+	<td>$c.url</td>
+	<td>$c.time</td>
+</tr>
+}
+</table>
+
+$c[$status:stylesheet.cache]
+stylesheet.cache:<br>
+<table border=1>
+<tr>
+	<td>file</td>
+	<td>time</td>
+</tr>
+^c.menu{
+<tr>
+	<td>$c.file</td>
+	<td>$c.time</td>
+</tr>
+}
+</table>
+
+$c[$status:charset.cache]
+charset.cache:<br>
+<table border=1>
+<tr>
+	<td>file</td>
+</tr>
+^c.menu{
+<tr>
+	<td>$c.file</td>
+</tr>
+}
+</table>
