@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.45 2001/03/18 14:45:27 paf Exp $
+	$Id: pa_request.C,v 1.46 2001/03/18 16:32:25 paf Exp $
 */
 
 #include <string.h>
@@ -53,20 +53,20 @@ Request::Request(Pool& apool,
 	classes().put(*response_class_name, &response);	
 }
 
-void output_response_attribute(const Hash::Key& key, Hash::Value *value, void *info) {
+void output_response_attribute(const Hash::Key& akey, Hash::Value *avalue, void *info) {
 	String *key_to_exclude=static_cast<String *>(info);
-	if(key==*key_to_exclude || !value)
+	if(akey==*key_to_exclude || !avalue)
 		return;
 
-	String key_string(key);
-	key_string.change_lang(String::Untaint_lang::URI);
+	String key(akey);
+	key.change_lang(String::Untaint_lang::URI);
 
-	String value_string=static_cast<Value *>(value)->as_string();
-	value_string.change_lang(String::Untaint_lang::URI);
+	String value=static_cast<Value *>(avalue)->as_string();
+	value.change_lang(String::Untaint_lang::URI);
 
 	(*service_funcs.output_header_attribute)(
 		key.cstr(), 
-		value_string.cstr());
+		value.cstr());
 }
 
 void Request::core(Exception& system_exception,

@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: untaint.C,v 1.3 2001/03/18 13:22:07 paf Exp $
+	$Id: untaint.C,v 1.4 2001/03/18 16:32:25 paf Exp $
 */
 
 #include <string.h>
@@ -19,17 +19,22 @@
 		for (int size=row->item.size; size--; ptr++) \
 			switch(*ptr) { \
 				cases \
-				default: *copy_here++=*ptr; break; \
 			} \
 	}
-#define escape_value(a, c)  case a: *copy_here++=c; break;
+#define escape_value(a, c)  case a: *copy_here++=c; break
+#define escape_default  default: *copy_here++=*ptr; break
 #define escape_subst(a, b, bsize)  \
-	case a: \
-		{ \
+		case a: \
 			strncpy(copy_here, b, bsize); \
 			copy_here+=bsize; \
-		} \
-		break;
+		break
+
+inline bool need_encode(unsigned char c){
+    if ((c>='0') && (c<='9') || (c>='A') && (c<='Z') || (c>='a') && (c<='z')) 
+		return false;
+
+    return strchr("_-./", c)==0;
+}
 
 // String
 
@@ -59,10 +64,28 @@ char *String::cstr() const {
 				memcpy(copy_here, row->item.ptr, row->item.size); 
 				copy_here+=row->item.size;
 				break;
+			case URI:
+				// tainted, untaint language: uri
+				escape(
+					escape_value(' ', '+');
+					default: 
+						if(need_encode(*ptr)) {
+							static const char *hex="0123456789ABCDEF";
+							char chunk[3]={'%'};
+							chunk[1]=hex[((unsigned char)*ptr)/0x10];
+							chunk[2]=hex[((unsigned char)*ptr)%0x10];
+							strncpy(copy_here, chunk, 3);  copy_here+=3;
+						} else 
+							*copy_here++=*ptr;
+
+						break;
+				);
+				break;
 			case TABLE: 
 				escape(
-					escape_value('\t', ' ')
-					escape_value('\n', ' ')
+					escape_value('\t', ' ');
+					escape_value('\n', ' ');
+					escape_default;
 				);
 				break;
 			case SQL:
@@ -73,33 +96,36 @@ char *String::cstr() const {
 				break;
 			case JS:
 				escape(
-					escape_subst('"', "\\\"", 2)
-					escape_subst('\'', "\\'", 2)
-					escape_subst('\n', "\\n", 2)
-					escape_subst('\r', "\\r", 2)
-					escape_subst('\\', "\\\\", 2)
-					escape_subst('ÿ', "\\ÿ", 2)
+					escape_subst('"', "\\\"", 2);
+					escape_subst('\'', "\\'", 2);
+					escape_subst('\n', "\\n", 2);
+					escape_subst('\r', "\\r", 2);
+					escape_subst('\\', "\\\\", 2);
+					escape_subst('ÿ', "\\ÿ", 2);
+					escape_default;
 				);
 				break;
 			case HTML:
 				escape(
-					escape_subst('&', "&amp;", 5) // BEFORE consequent relpaces yelding '&'
-					escape_subst('>', "&gt;", 4)
-					escape_subst('<', "&lt;",4)
-					escape_subst('"', "&quot;",6)
-					escape_value('\t', ' ')
+					escape_subst('&', "&amp;", 5); // BEFORE consequent relpaces yelding '&'
+					escape_subst('>', "&gt;", 4);
+					escape_subst('<', "&lt;",4);
+					escape_subst('"', "&quot;",6);
+					escape_value('\t', ' ');
 					//TODO: XSLT escape_subst('\'', "&apos;", 6)
+					escape_default;
 				);
 				break;
 			case HTML_TYPO: 
 				// tainted, untaint language: html-typo
 				escape(
-					escape_subst('&', "&amp;", 5) // BEFORE consequent relpaces yelding '&'
-					escape_subst('>', "&gt;", 4)
-					escape_subst('<', "&lt;",4)
-					escape_subst('"', "&quot;",6)
-					escape_value('\t', ' ')
+					escape_subst('&', "&amp;", 5); // BEFORE consequent relpaces yelding '&'
+					escape_subst('>', "&gt;", 4);
+					escape_subst('<', "&lt;",4);
+					escape_subst('"', "&quot;",6);
+					escape_value('\t', ' ');
 					//TODO: $MAIN:html-type table replace, max length(b)==UNTAINT_TIMES_BIGGER*length(a)
+					escape_default;
 				);
 				break;
 			default:

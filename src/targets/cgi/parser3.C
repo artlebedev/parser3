@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3.C,v 1.19 2001/03/18 14:45:30 paf Exp $
+	$Id: parser3.C,v 1.20 2001/03/18 16:32:26 paf Exp $
 */
 
 #ifdef HAVE_CONFIG_H
@@ -25,6 +25,7 @@
 #include "pa_common.h"
 
 Pool pool; // global pool
+bool cgi;
 
 #ifdef WIN32
 #	if _MSC_VER
@@ -71,11 +72,14 @@ int read_post(char *buf, int max_bytes) {
 }
 
 void output_header_attribute(const char *key, const char *value) {
-	printf("%s: %s\n", key, value);
+	if(cgi)
+		printf("%s: %s\n", key, value);
 }
 
 void output_body(const char *buf, size_t size) {
-	puts(""); // header | body  delimiter
+	if(cgi) // header | body  delimiter
+		puts("");
+
 	stdout_write(buf, size);
 }
 
@@ -95,7 +99,7 @@ int main(int argc, char *argv[]) {
 	service_funcs.output_body=output_body;
 	
 	// were we started as CGI?
-	bool cgi=
+	cgi=
 		getenv("SERVER_SOFTWARE") || 
 		getenv("SERVER_NAME") || 
 		getenv("GATEWAY_INTERFACE") || 
@@ -150,7 +154,7 @@ int main(int argc, char *argv[]) {
 		// prepare to process request
 		Request request(Pool(),
 			request_info,
-			1||cgi ? String::Untaint_lang::HTML_TYPO : String::Untaint_lang::NO
+			cgi ? String::Untaint_lang::HTML_TYPO : String::Untaint_lang::NO
 			);
 		
 		// some root-controlled location
