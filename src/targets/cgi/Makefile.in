@@ -75,7 +75,6 @@ OBJDUMP = @OBJDUMP@
 PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
 VERSION = @VERSION@
-WIN32_ADDITIONAL_LIBS = @WIN32_ADDITIONAL_LIBS@
 YACC = @YACC@
 host_os = @host_os@
 
@@ -83,7 +82,7 @@ INCLUDES = -I../../include -I../../classes -I../../types -I$(INCLTDL) -I../../sq
 
 bin_PROGRAMS = parser3
 parser3_SOURCES = pa_pool.C pa_threads.C parser3.C
-parser3_LDADD = ../../main/libmain.a ../../classes/libclasses.a ../../main/libmain.a ../../types/libtypes.a $(LIBLTDL) ../../classes/gd/libgd.a ../../pcre/libpcre.a $(WIN32_ADDITIONAL_LIBS)
+parser3_LDADD = ../../main/libmain.a ../../classes/libclasses.a ../../main/libmain.a ../../types/libtypes.a $(LIBLTDL) ../../classes/gd/libgd.a ../../pcre/libpcre.a
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../include/pa_config_auto.h
 CONFIG_CLEAN_FILES = 
@@ -109,7 +108,7 @@ DIST_COMMON =  Makefile.am Makefile.in
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = gtar
+TAR = tar
 GZIP_ENV = --best
 DEP_FILES =  .deps/pa_pool.P .deps/pa_threads.P .deps/parser3.P
 SOURCES = $(parser3_SOURCES)
@@ -233,7 +232,7 @@ distdir: $(DISTFILES)
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
-	    cp -pr $$d/$$file $(distdir)/$$file; \
+	    cp -pr $$/$$file $(distdir)/$$file; \
 	  else \
 	    test -f $(distdir)/$$file \
 	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \

@@ -75,14 +75,13 @@ OBJDUMP = @OBJDUMP@
 PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
 VERSION = @VERSION@
-WIN32_ADDITIONAL_LIBS = @WIN32_ADDITIONAL_LIBS@
 YACC = @YACC@
 host_os = @host_os@
 
 INCLUDES = -I../include -I../classes -I../sql
 
 noinst_LIBRARIES = libtypes.a
-libtypes_a_SOURCES = pa_valiased.C pa_vcookie.C pa_vfile.C pa_vform.C pa_vimage.C pa_vrequest.C pa_vstateless_class.C pa_vstring.C pa_wcontext.C
+libtypes_a_SOURCES = pa_valiased.C pa_vcookie.C pa_vfile.C pa_vform.C pa_vimage.C pa_vrequest.C pa_vstateless_class.C pa_vstring.C pa_wcontext.C pa_vtable.C
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../include/pa_config_auto.h
 CONFIG_CLEAN_FILES = 
@@ -96,7 +95,7 @@ LIBS = @LIBS@
 libtypes_a_LIBADD = 
 libtypes_a_OBJECTS =  pa_valiased.o pa_vcookie.o pa_vfile.o pa_vform.o \
 pa_vimage.o pa_vrequest.o pa_vstateless_class.o pa_vstring.o \
-pa_wcontext.o
+pa_wcontext.o pa_vtable.o
 AR = ar
 CXXFLAGS = @CXXFLAGS@
 CXXCOMPILE = $(CXX) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -108,11 +107,12 @@ DIST_COMMON =  Makefile.am Makefile.in
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = gtar
+TAR = tar
 GZIP_ENV = --best
 DEP_FILES =  .deps/pa_valiased.P .deps/pa_vcookie.P .deps/pa_vfile.P \
 .deps/pa_vform.P .deps/pa_vimage.P .deps/pa_vrequest.P \
-.deps/pa_vstateless_class.P .deps/pa_vstring.P .deps/pa_wcontext.P
+.deps/pa_vstateless_class.P .deps/pa_vstring.P .deps/pa_vtable.P \
+.deps/pa_wcontext.P
 SOURCES = $(libtypes_a_SOURCES)
 OBJECTS = $(libtypes_a_OBJECTS)
 
@@ -219,7 +219,7 @@ distdir: $(DISTFILES)
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
-	    cp -pr $$d/$$file $(distdir)/$$file; \
+	    cp -pr $$/$$file $(distdir)/$$file; \
 	  else \
 	    test -f $(distdir)/$$file \
 	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \

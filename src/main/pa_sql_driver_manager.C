@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: pa_sql_driver_manager.C,v 1.27 2001/08/24 08:16:15 parser Exp $"; 
+static const char *RCSId="$Id: pa_sql_driver_manager.C,v 1.28 2001/08/27 12:02:24 parser Exp $"; 
 
 #include "pa_sql_driver_manager.h"
 #include "ltdl.h"
@@ -115,6 +115,11 @@ SQL_Connection& SQL_Driver_manager::get_connection(const String& request_url,
 					&request_url,
 					"undefined protocol '%s'", 
 						request_protocol_cstr);
+
+			if(lt_dlinit())
+				PTHROW(0, 0,
+					library,
+					"prepare to dynamic loading failed, %s", lt_dlerror());
 
 			const char *filename=library->cstr(String::UL_FILE_NAME);
 			lt_dlhandle handle=lt_dlopen(filename);

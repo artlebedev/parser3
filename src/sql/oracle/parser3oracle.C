@@ -7,7 +7,7 @@
 
 	2001.07.30 using Oracle 8.1.6 [@test tested with Oracle 7.x.x]
 */
-static const char *RCSId="$Id: parser3oracle.C,v 1.13 2001/08/24 09:14:32 parser Exp $"; 
+static const char *RCSId="$Id: parser3oracle.C,v 1.14 2001/08/27 12:02:24 parser Exp $"; 
 
 #include "config_includes.h"
 
@@ -31,7 +31,6 @@ static const char *RCSId="$Id: parser3oracle.C,v 1.13 2001/08/24 09:14:32 parser
 #	define snprintf _snprintf
 #	define strcasecmp _stricmp
 #	define strncasecmp _strnicmp
-#	define STOP _asm int 3
 #endif
 
 #ifndef max
@@ -122,10 +121,12 @@ public:
 		const char *error=dlopen_file_spec?
 			dlink(dlopen_file_spec):"client library column is empty";
 		if(!error) {
+//			error="OCIInitialize replacer";/*
 			OCIInitialize((ub4)OCI_THREADED, (dvoid *)0, 
 				(dvoid * (*)(void *, unsigned int))0, 
 				(dvoid * (*)(void*, void*, unsigned int))0,  
 				(void (*)(void*, void*))0 );
+//			*/
 		}
 
 		return error;
@@ -218,6 +219,8 @@ public:
 		*(OracleSQL_connection_struct **)connection=&cs;
 	}
 	void disconnect(void *connection) {
+		return;
+
 	    OracleSQL_connection_struct &cs=*(OracleSQL_connection_struct *)connection;
 		// Terminate a user session
 		OCISessionEnd(
@@ -226,12 +229,15 @@ public:
 		OCIServerDetach(
 			cs.srvhp, cs.errhp, (ub4)OCI_DEFAULT);
 		// Free a previously allocated handles
+		/* 
+		oci will free them up as belonging to env
 		OCIHandleFree(
 			(dvoid *)cs.srvhp, (ub4)OCI_HTYPE_SERVER);
 		OCIHandleFree(
 			(dvoid *)cs.svchp, (ub4)OCI_HTYPE_SVCCTX);
 		OCIHandleFree(
 			(dvoid *)cs.errhp, (ub4)OCI_HTYPE_ERROR);
+		*/
 		OCIHandleFree(
 			(dvoid *)cs.envhp, (ub4)OCI_HTYPE_ENV);
 
@@ -759,32 +765,36 @@ private: // conn client library funcs
 private: // conn client library funcs linking
 
 	const char *dlink(const char *dlopen_file_spec) {
+		if(lt_dlinit())
+			return lt_dlerror();
+
         lt_dlhandle handle=lt_dlopen(dlopen_file_spec);
+		//return "hren31";
         if(!handle)
-			return "can not open the dynamic link module";
+			return lt_dlerror(); //"can not open the dynamic link module";
 
 		#define DSLINK(name, action) \
 			name=(t_##name)lt_dlsym(handle, #name); \
 				if(!name) \
 					action;
 
-		#define OLINK(name) DSLINK(OCI##name, return "function OCI" #name " was not found")
+		#define OCI_LINK(name) DSLINK(OCI##name, return "function OCI" #name " was not found")
 		
-		OLINK(Initialize);
-		OLINK(EnvInit);
-		OLINK(AttrGet);		OLINK(AttrSet);
-		OLINK(BindByPos);		OLINK(BindDynamic);
-		OLINK(DefineByPos);
-		OLINK(DescriptorAlloc);		OLINK(DescriptorFree);
-		OLINK(ErrorGet);
-		OLINK(HandleAlloc);		OLINK(HandleFree);
-		OLINK(LobGetLength);
-		OLINK(LobRead);		OLINK(LobWrite);
-		OLINK(ParamGet);
-		OLINK(ServerAttach);		OLINK(ServerDetach);
-		OLINK(SessionBegin);		OLINK(SessionEnd);
-		OLINK(StmtExecute);		OLINK(StmtFetch);		OLINK(StmtPrepare);
-		OLINK(TransCommit);		OLINK(TransRollback);
+		OCI_LINK(Initialize);
+		OCI_LINK(EnvInit);
+		OCI_LINK(AttrGet);		OCI_LINK(AttrSet);
+		OCI_LINK(BindByPos);		OCI_LINK(BindDynamic);
+		OCI_LINK(DefineByPos);
+		OCI_LINK(DescriptorAlloc);		OCI_LINK(DescriptorFree);
+		OCI_LINK(ErrorGet);
+		OCI_LINK(HandleAlloc);		OCI_LINK(HandleFree);
+		OCI_LINK(LobGetLength);
+		OCI_LINK(LobRead);		OCI_LINK(LobWrite);
+		OCI_LINK(ParamGet);
+		OCI_LINK(ServerAttach);		OCI_LINK(ServerDetach);
+		OCI_LINK(SessionBegin);		OCI_LINK(SessionEnd);
+		OCI_LINK(StmtExecute);		OCI_LINK(StmtFetch);		OCI_LINK(StmtPrepare);
+		OCI_LINK(TransCommit);		OCI_LINK(TransRollback);
 
 		return 0;
 	}
