@@ -53,7 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib wsock32.lib /nologo /dll /machine:I386 /out:"W:\nestle\parser3\parser3isapi.dll"
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib wsock32.lib /nologo /dll /machine:I386
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PreLink_Desc=Stopping inetinfo...
@@ -76,7 +76,7 @@ PostBuild_Cmds=CD \parser3project\win32tools	istart
 # PROP Ignore_Export_Lib 1
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "PARSER3ISAPI_EXPORTS" /Yu"stdafx.h" /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /Gm /Gi /GR- /GX /Zi /Od /I "..\.." /I "..\..\types" /I "..\..\include" /I "..\..\classes" /I "..\..\sql" /I "..\..\pcre" /I "\parser3project\win32xml\glib\include" /I "\parser3project\win32xml\glib\include\glib" /I "\parser3project\win32xml\gdome2-x.x.x\libgdome" /I "\parser3project\win32xml\libxml2-x.x.x\include" /I "\parser3project\win32xml\libxslt-x.x.x" /D "_DEBUG" /D "WIN32" /FD /GZ /TP /c
+# ADD CPP /nologo /MDd /W3 /Gm /Gi /GX /Zi /Od /I "..\.." /I "..\..\types" /I "..\..\include" /I "..\..\classes" /I "..\..\sql" /I "..\..\pcre" /I "\parser3project\win32xml\glib\include" /I "\parser3project\win32xml\glib\include\glib" /I "\parser3project\win32xml\gdome2-x.x.x\libgdome" /I "\parser3project\win32xml\libxml2-x.x.x\include" /I "\parser3project\win32xml\libxslt-x.x.x" /D "_DEBUG" /D "WIN32" /FD /GZ /TP /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x419 /d "_DEBUG"

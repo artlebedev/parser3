@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: string.C,v 1.110 2002/04/23 10:30:03 paf Exp $
+	$Id: string.C,v 1.111 2002/04/24 13:17:13 paf Exp $
 */
 
 #include "classes.h"
@@ -238,7 +238,6 @@ static void _match(Request& r, const String& method_name, MethodParams *params) 
 			result=new(pool) VBool(pool, matched);			
 		r.write_assign_lang(*result);
 	} else { // replace
-		char* src_cstr;
 		const String& src=*r.self->get_string();
 
 		Value& replacement_code=params->as_junction(2, "replacement param must be code");
