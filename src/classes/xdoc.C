@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xdoc.C,v 1.59 2002/01/14 17:48:56 paf Exp $
+	$Id: xdoc.C,v 1.60 2002/01/14 18:26:56 paf Exp $
 */
 #include "pa_types.h"
 #ifdef XML
@@ -662,12 +662,13 @@ static void _transform(Request& r, const String& method_name, MethodParams *para
 	memset(&result.output_options, 0, sizeof(result.output_options));
 	VXdoc::Output_options& oo=result.output_options;
 
-	oo.encoding=&pool.transcode(stylesheet->encoding);
-	oo.mediaType=&pool.transcode(stylesheet->mediaType);
-	oo.doctypeSystem=&pool.transcode(stylesheet->doctypeSystem);
-	oo.doctypePublic=&pool.transcode(stylesheet->doctypePublic);
+	oo.method=stylesheet->method?&pool.transcode(stylesheet->method):0;
+	oo.encoding=stylesheet->encoding?&pool.transcode(stylesheet->encoding):0;
+	oo.mediaType=stylesheet->mediaType?&pool.transcode(stylesheet->mediaType):0;
+	oo.doctypeSystem=stylesheet->doctypeSystem?&pool.transcode(stylesheet->doctypeSystem):0;
+	oo.doctypePublic=stylesheet->doctypePublic?&pool.transcode(stylesheet->doctypePublic):0;
 	oo.indent=stylesheet->indent!=0;
-	oo.version=&pool.transcode(stylesheet->version);
+	oo.version=stylesheet->version?&pool.transcode(stylesheet->version):0;
 	oo.standalone=stylesheet->standalone!=0;
 	oo.omitXmlDeclaration=stylesheet->omitXmlDeclaration!=0;
 
