@@ -3,7 +3,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: gif.C,v 1.3 2001/04/11 18:07:17 paf Exp $
+	$Id: gif.C,v 1.4 2001/04/12 14:07:34 paf Exp $
 */
 
 #include <string.h>
@@ -350,6 +350,9 @@ void gdImage::DashedLine(int x1, int y1, int x2, int y2, int color)
 
 void gdImage::FillToBorder(int x, int y, int border, int color)
 {
+	if(!BoundsSafe(x, y)) //PAF
+		return;
+
 	int lastBorder;
 	/* Seek left */
 	int leftLimit, rightLimit;
@@ -417,6 +420,9 @@ void gdImage::FillToBorder(int x, int y, int border, int color)
 
 void gdImage::Fill(int x, int y, int color)
 {
+	if(!BoundsSafe(x, y)) //PAF
+		return;
+
 	int lastBorder;
 	int old;
 	int leftLimit, rightLimit;

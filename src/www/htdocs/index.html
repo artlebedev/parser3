@@ -39,6 +39,14 @@ $drawing{
 ^for[i](0;$width/4){
 ^line(0;0;$:i*4;$height-1;0)
 }
+
+^rectangle(100;10;180;40;0xFF0000)
+^bar(100+20;10+20;180+20;40+20;0x00FF00)
+^fill(0;30;0x0000FF)
+^replace(0xFFffFF;0x00FF00)(30;0)(150;99)(200;50)
+^polybar(0x00FFFF)(200;100)(170;99)(280;50)
+^polygon(0xFFFF00)(210;100)(160;90)(250;50)
+
 }
 <HR>
 #$response:body[^drawing.gif[]]

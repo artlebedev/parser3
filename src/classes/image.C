@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: image.C,v 1.12 2001/04/12 13:15:18 paf Exp $
+	$Id: image.C,v 1.13 2001/04/12 14:07:33 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -405,7 +405,137 @@ static void _line(Request& r, const String& method_name, Array *params) {
 		(int)r.process(*static_cast<Value *>(params->get(2))).as_double(),
 		(int)r.process(*static_cast<Value *>(params->get(3))).as_double(),
 		image->Color((int)r.process(*static_cast<Value *>(params->get(4))).as_double()));
+}
 
+/// ^image.fill(x;y;color)
+static void _fill(Request& r, const String& method_name, Array *params) {
+	Pool& pool=r.pool();
+
+	gdImage *image=static_cast<VImage *>(r.self)->image;
+	if(!image)
+		PTHROW(0, 0,
+			&method_name,
+			"does not contain an image");
+
+	image->Fill(
+		(int)r.process(*static_cast<Value *>(params->get(0))).as_double(),
+		(int)r.process(*static_cast<Value *>(params->get(1))).as_double(),
+		image->Color((int)r.process(*static_cast<Value *>(params->get(2))).as_double()));
+}
+
+/// ^image.rectangle(x0;y0;x1;y1;color)
+static void _rectangle(Request& r, const String& method_name, Array *params) {
+	Pool& pool=r.pool();
+
+	gdImage *image=static_cast<VImage *>(r.self)->image;
+	if(!image)
+		PTHROW(0, 0,
+			&method_name,
+			"does not contain an image");
+
+	image->Rectangle(
+		(int)r.process(*static_cast<Value *>(params->get(0))).as_double(),
+		(int)r.process(*static_cast<Value *>(params->get(1))).as_double(),
+		(int)r.process(*static_cast<Value *>(params->get(2))).as_double(),
+		(int)r.process(*static_cast<Value *>(params->get(3))).as_double(),
+		image->Color((int)r.process(*static_cast<Value *>(params->get(4))).as_double()));
+}
+
+/// ^image.bar(x0;y0;x1;y1;color)
+static void _bar(Request& r, const String& method_name, Array *params) {
+	Pool& pool=r.pool();
+
+	gdImage *image=static_cast<VImage *>(r.self)->image;
+	if(!image)
+		PTHROW(0, 0,
+			&method_name,
+			"does not contain an image");
+
+	image->FilledRectangle(
+		(int)r.process(*static_cast<Value *>(params->get(0))).as_double(),
+		(int)r.process(*static_cast<Value *>(params->get(1))).as_double(),
+		(int)r.process(*static_cast<Value *>(params->get(2))).as_double(),
+		(int)r.process(*static_cast<Value *>(params->get(3))).as_double(),
+		image->Color((int)r.process(*static_cast<Value *>(params->get(4))).as_double()));
+}
+
+/// ^image.replace(color-source;color-dest)(x;y)... point coord pairs
+static void _replace(Request& r, const String& method_name, Array *params) {
+	Pool& pool=r.pool();
+
+	gdImage *image=static_cast<VImage *>(r.self)->image;
+	if(!image)
+		PTHROW(0, 0,
+			&method_name,
+			"does not contain an image");
+
+	if((params->size()-2)%2) // I see your thoughts, but that's more readable
+		PTHROW(0, 0,
+			&method_name,
+			"y coordinate missing");
+
+	int n=(params->size()-2)/2;
+	
+	gdImage::Point *p=(gdImage::Point *)pool.malloc(sizeof(gdImage::Point)*n);
+	for(int i=0; i<n; i++) {
+		p[i].x=(int)r.process(*static_cast<Value *>(params->get(2+i*2+0))).as_double();
+		p[i].y=(int)r.process(*static_cast<Value *>(params->get(2+i*2+1))).as_double();
+	}
+	image->FilledPolygonReplaceColor(p, n,
+		image->Color((int)r.process(*static_cast<Value *>(params->get(0))).as_double()), // src color
+		image->Color((int)r.process(*static_cast<Value *>(params->get(1))).as_double())); // dest color
+}
+
+/// ^image.polygon(color)(x;y)... point coord pairs
+static void _polygon(Request& r, const String& method_name, Array *params) {
+	Pool& pool=r.pool();
+
+	gdImage *image=static_cast<VImage *>(r.self)->image;
+	if(!image)
+		PTHROW(0, 0,
+			&method_name,
+			"does not contain an image");
+
+	if((params->size()-1)%2) // [I see..] see now?
+		PTHROW(0, 0,
+			&method_name,
+			"y coordinate missing");
+
+	int n=(params->size()-1)/2;
+	
+	gdImage::Point *p=(gdImage::Point *)pool.malloc(sizeof(gdImage::Point)*n);
+	for(int i=0; i<n; i++) {
+		p[i].x=(int)r.process(*static_cast<Value *>(params->get(1+i*2+0))).as_double();
+		p[i].y=(int)r.process(*static_cast<Value *>(params->get(1+i*2+1))).as_double();
+	}
+	image->Polygon(p, n,
+		image->Color((int)r.process(*static_cast<Value *>(params->get(0))).as_double()));
+}
+
+/// ^image.polybar(color)(x;y)... point coord pairs
+static void _polybar(Request& r, const String& method_name, Array *params) {
+	Pool& pool=r.pool();
+
+	gdImage *image=static_cast<VImage *>(r.self)->image;
+	if(!image)
+		PTHROW(0, 0,
+			&method_name,
+			"does not contain an image");
+
+	if((params->size()-1)%2) // [I see..] see now?
+		PTHROW(0, 0,
+			&method_name,
+			"y coordinate missing");
+
+	int n=(params->size()-1)/2;
+	
+	gdImage::Point *p=(gdImage::Point *)pool.malloc(sizeof(gdImage::Point)*n);
+	for(int i=0; i<n; i++) {
+		p[i].x=(int)r.process(*static_cast<Value *>(params->get(1+i*2+0))).as_double();
+		p[i].y=(int)r.process(*static_cast<Value *>(params->get(1+i*2+1))).as_double();
+	}
+	image->FilledPolygon(p, n,
+		image->Color((int)r.process(*static_cast<Value *>(params->get(0))).as_double()));
 }
 
 // initialize
@@ -430,4 +560,23 @@ void initialize_image_class(Pool& pool, VStateless_class& vclass) {
 
 	/// ^image.line(x0;y0;x1;y1;color)
 	vclass.add_native_method("line", Method::CT_DYNAMIC, _line, 5, 5);
+
+	/// ^image.fill(x;y;color)
+	vclass.add_native_method("fill", Method::CT_DYNAMIC, _fill, 3, 3);
+
+	/// ^image.rectangle(x0;y0;x1;y1;color)
+	vclass.add_native_method("rectangle", Method::CT_DYNAMIC, _rectangle, 5, 5);
+
+	/// ^image.bar(x0;y0;x1;y1;color)
+	vclass.add_native_method("bar", Method::CT_DYNAMIC, _bar, 5, 5);
+
+	/// ^image.replace(color-source;color-dest)(x;y)... point coord pairs
+	vclass.add_native_method("replace", Method::CT_DYNAMIC, _replace, 2+3*2, 2+100*2);
+
+	/// ^image.polygon(color)(x;y)... point coord pairs
+	vclass.add_native_method("polygon", Method::CT_DYNAMIC, _polygon, 1+3*2, 1+100*2);
+
+	/// ^image.polybar(color)(x;y)... point coord pairs
+	vclass.add_native_method("polybar", Method::CT_DYNAMIC, _polybar, 1+3*2, 1+100*2);
+
 }
