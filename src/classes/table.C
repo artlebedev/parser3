@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: table.C,v 1.107 2001/08/28 10:33:32 parser Exp $"; 
+static const char *RCSId="$Id: table.C,v 1.108 2001/08/31 09:26:12 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_config_includes.h"
@@ -636,7 +636,7 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 	Table_sql_event_handlers handlers(pool, method_name,
 		statement_string, statement_cstr);
 	bool need_rethrow=false; Exception rethrow_me;
-	PTRY {
+		PTRY {
 		r.connection->query(
 			statement_cstr, offset, limit, 
 			handlers);

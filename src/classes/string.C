@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: string.C,v 1.71 2001/08/28 09:27:42 parser Exp $"; 
+static const char *RCSId="$Id: string.C,v 1.72 2001/08/31 09:26:12 parser Exp $"; 
 
 #include "classes.h"
 #include "pa_request.h"
@@ -39,16 +39,52 @@ static void _length(Request& r, const String& method_name, MethodParams *) {
 	r.write_no_lang(result);
 }
 
-static void _int(Request& r, const String& method_name, MethodParams *) {
+static void _int(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	Value& result=*new(pool) VInt(pool, r.self->as_int());
+	bool convert_problem=false; Exception rethrow_me;
+	int converted;
+	PTRY {
+		converted=r.self->as_int();
+	}
+	PCATCH(e) { // convert problem
+		if(convert_problem=params->size()==0) { // we have a problem when do not have default
+			rethrow_me=e;  
+			converted=0;
+		} else
+			converted=params->as_int(0, r); // (default)
+	}
+	PEND_CATCH
+	if(convert_problem)
+		PTHROW(rethrow_me.type(), rethrow_me.code(), 
+			rethrow_me.problem_source(),
+			rethrow_me.comment());
+
+	Value& result=*new(pool) VInt(pool, converted);
 	result.set_name(method_name);
 	r.write_no_lang(result);
 }
 
-static void _double(Request& r, const String& method_name, MethodParams *) {
+static void _double(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	Value& result=*new(pool) VDouble(pool, r.self->as_double());
+	bool convert_problem=false; Exception rethrow_me;
+	double converted;
+	PTRY {
+		converted=r.self->as_double();
+	}
+	PCATCH(e) { // convert problem
+		if(convert_problem=params->size()==0) { // we have a problem when do not have default
+			rethrow_me=e;  
+			converted=0;
+		} else
+			converted=params->as_double(0, r); // (default)
+	}
+	PEND_CATCH
+	if(convert_problem)
+		PTHROW(rethrow_me.type(), rethrow_me.code(), 
+			rethrow_me.problem_source(),
+			rethrow_me.comment());
+
+	Value& result=*new(pool) VDouble(pool, converted);
 	result.set_name(method_name);
 	r.write_no_lang(result);
 }
@@ -410,10 +446,11 @@ MString::MString(Pool& apool) : Methoded(apool) {
 	add_native_method("length", Method::CT_DYNAMIC, _length, 0, 0);
 	
 	// ^string.int[]
-	add_native_method("int", Method::CT_DYNAMIC, _int, 0, 0);
-	
+	// ^string.int(default)
+	add_native_method("int", Method::CT_DYNAMIC, _int, 0, 1);
 	// ^string.double[]
-	add_native_method("double", Method::CT_DYNAMIC, _double, 0, 0);
+	// ^string.double(default)
+	add_native_method("double", Method::CT_DYNAMIC, _double, 0, 1);
 
 	// ^string.format{format}
 	add_native_method("format", Method::CT_DYNAMIC, _string_format, 1, 1);
