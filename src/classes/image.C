@@ -5,9 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: image.C,v 1.35 2001/08/31 10:18:08 parser Exp $
+	$Id: image.C,v 1.36 2001/09/01 14:39:25 parser Exp $
 */
-static const char *RCSId="$Id: image.C,v 1.35 2001/08/31 10:18:08 parser Exp $"; 
+static const char *RCSId="$Id: image.C,v 1.36 2001/09/01 14:39:25 parser Exp $"; 
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -362,11 +362,11 @@ static void _load(Request& r, const String& method_name, MethodParams *params) {
 static void _create(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	int width=r.process(params->get(0)).as_int();
-	int height=r.process(params->get(1)).as_int();
+	int width=params->as_int(0, r);
+	int height=params->as_int(1, r);
 	int bgcolor_value=0xffFFff;
 	if(params->size()>2)
-		bgcolor_value=r.process(params->get(2)).as_int();
+		bgcolor_value=params->as_int(2, r);
 	gdImage& image=*new(pool) gdImage(pool);
 	image.Create(width, height);
 	image.FilledRectangle(0, 0, width-1, height-1, image.Color(bgcolor_value));
@@ -404,11 +404,11 @@ static void _line(Request& r, const String& method_name, MethodParams *params) {
 			"does not contain an image");
 
 	image->Line(
-		r.process(params->get(0)).as_int(), 
-		r.process(params->get(1)).as_int(), 
-		r.process(params->get(2)).as_int(), 
-		r.process(params->get(3)).as_int(), 
-		image->Color(r.process(params->get(4)).as_int()));
+		params->as_int(0, r), 
+		params->as_int(1, r), 
+		params->as_int(2, r), 
+		params->as_int(3, r), 
+		image->Color(params->as_int(4, r)));
 }
 
 static void _fill(Request& r, const String& method_name, MethodParams *params) {
@@ -421,9 +421,9 @@ static void _fill(Request& r, const String& method_name, MethodParams *params) {
 			"does not contain an image");
 
 	image->Fill(
-		r.process(params->get(0)).as_int(), 
-		r.process(params->get(1)).as_int(), 
-		image->Color(r.process(params->get(2)).as_int()));
+		params->as_int(0, r), 
+		params->as_int(1, r), 
+		image->Color(params->as_int(2, r)));
 }
 
 static void _rectangle(Request& r, const String& method_name, MethodParams *params) {
@@ -436,11 +436,11 @@ static void _rectangle(Request& r, const String& method_name, MethodParams *para
 			"does not contain an image");
 
 	image->Rectangle(
-		r.process(params->get(0)).as_int(), 
-		r.process(params->get(1)).as_int(), 
-		r.process(params->get(2)).as_int(), 
-		r.process(params->get(3)).as_int(), 
-		image->Color(r.process(params->get(4)).as_int()));
+		params->as_int(0, r), 
+		params->as_int(1, r), 
+		params->as_int(2, r), 
+		params->as_int(3, r), 
+		image->Color(params->as_int(4, r)));
 }
 
 static void _bar(Request& r, const String& method_name, MethodParams *params) {
@@ -453,11 +453,11 @@ static void _bar(Request& r, const String& method_name, MethodParams *params) {
 			"does not contain an image");
 
 	image->FilledRectangle(
-		r.process(params->get(0)).as_int(), 
-		r.process(params->get(1)).as_int(), 
-		r.process(params->get(2)).as_int(), 
-		r.process(params->get(3)).as_int(), 
-		image->Color(r.process(params->get(4)).as_int()));
+		params->as_int(0, r), 
+		params->as_int(1, r), 
+		params->as_int(2, r), 
+		params->as_int(3, r), 
+		image->Color(params->as_int(4, r)));
 }
 
 static void _replace(Request& r, const String& method_name, MethodParams *params) {
@@ -478,12 +478,12 @@ static void _replace(Request& r, const String& method_name, MethodParams *params
 	
 	gdImage::Point *p=(gdImage::Point *)pool.malloc(sizeof(gdImage::Point)*n);
 	for(int i=0; i<n; i++) {
-		p[i].x=r.process(params->get(2+i*2+0)).as_int();
-		p[i].y=r.process(params->get(2+i*2+1)).as_int();
+		p[i].x=params->as_int(2+i*2+0, r);
+		p[i].y=params->as_int(2+i*2+1, r);
 	}
 	image->FilledPolygonReplaceColor(p, n, 
-		image->Color(r.process(params->get(0)).as_int()), // src color
-		image->Color(r.process(params->get(1)).as_int()));// dest color
+		image->Color(params->as_int(0, r)), // src color
+		image->Color(params->as_int(1, r)));// dest color
 }
 
 static void _polygon(Request& r, const String& method_name, MethodParams *params) {
@@ -504,11 +504,11 @@ static void _polygon(Request& r, const String& method_name, MethodParams *params
 	
 	gdImage::Point *p=(gdImage::Point *)pool.malloc(sizeof(gdImage::Point)*n);
 	for(int i=0; i<n; i++) {
-		p[i].x=r.process(params->get(1+i*2+0)).as_int();
-		p[i].y=r.process(params->get(1+i*2+1)).as_int();
+		p[i].x=params->as_int(2+i*2+0, r);
+		p[i].y=params->as_int(2+i*2+1, r);
 	}
 	image->Polygon(p, n, 
-		image->Color(r.process(params->get(0)).as_int()));
+		image->Color(params->as_int(0, r)));
 }
 
 static void _polybar(Request& r, const String& method_name, MethodParams *params) {
@@ -529,11 +529,11 @@ static void _polybar(Request& r, const String& method_name, MethodParams *params
 	
 	gdImage::Point *p=(gdImage::Point *)pool.malloc(sizeof(gdImage::Point)*n);
 	for(int i=0; i<n; i++) {
-		p[i].x=r.process(params->get(1+i*2+0)).as_int();
-		p[i].y=r.process(params->get(1+i*2+1)).as_int();
+		p[i].x=params->as_int(2+i*2+0, r);
+		p[i].y=params->as_int(2+i*2+1, r);
 	}
 	image->FilledPolygon(p, n, 
-		image->Color(r.process(params->get(0)).as_int()));
+		image->Color(params->as_int(0, r)));
 }
 
 // font
@@ -610,23 +610,22 @@ static void _font(Request& r, const String& method_name, MethodParams *params) {
 
 	Value& valphabet=params->as_no_junction(0, "alphabet must not be code");
 	Value& file_name=params->as_no_junction(1, "file_name must not be code");
-	int height=r.process(params->get(2)).as_int();
-	int spacebar_width=r.process(params->get(3)).as_int();
+	int spacebar_width=params->as_int(2, r);
 
-	int monospace_width=params->size()>4?r.process(params->get(4)).as_int():0;
-
+	int monospace_width=params->size()>3?params->as_int(3, r):0;
+	gdImage& image=*load(r, method_name, file_name.as_string());
 	static_cast<VImage *>(r.self)->font=new(pool) Font(pool, 
 		valphabet.as_string(), 
-		*load(r, method_name, file_name.as_string()), 
-		height, monospace_width, spacebar_width);
+		image, 
+		image.SY(), monospace_width, spacebar_width);
 }
 
 static void _text(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
-	int x=r.process(params->get(0)).as_int();
-	int y=r.process(params->get(1)).as_int();
-	const String& s=r.process(params->get(2)).as_string();
+	int x=params->as_int(0, r);
+	int y=params->as_int(1, r);
+	const String& s=params->as_string(2, "text must not be code");
 
 	VImage& vimage=*static_cast<VImage *>(r.self);
 	if(vimage.image)
@@ -686,9 +685,9 @@ MImage::MImage(Pool& apool) : Methoded(apool) {
 	// ^image.polybar(color)(x;y)... point coord pairs
 	add_native_method("polybar", Method::CT_DYNAMIC, _polybar, 1+3*2, 1+100*2);
 
-    // ^image.font[alPHAbet;font-file-name.gif](height;spacebar_width)
-    // ^image.font[alPHAbet;font-file-name.gif](height;spacebar_width;width)
-	add_native_method("font", Method::CT_DYNAMIC, _font, 4, 5);
+    // ^image.font[alPHAbet;font-file-name.gif](spacebar_width)
+    // ^image.font[alPHAbet;font-file-name.gif](spacebar_width;width)
+	add_native_method("font", Method::CT_DYNAMIC, _font, 3, 4);
 
     // ^image.text(x;y)[text]
 	add_native_method("text", Method::CT_DYNAMIC, _text, 3, 3);
