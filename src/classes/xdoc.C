@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT_XDOC_C="$Date: 2003/12/11 09:36:51 $";
+static const char * const IDENT_XDOC_C="$Date: 2003/12/15 14:56:19 $";
 
 #include "gdome.h"
 #include "libxml/tree.h"
@@ -413,7 +413,7 @@ static void _create(Request& r, MethodParams& params) {
 		Temp_lang temp_lang(r, String::L_XML);
 		const String& xml=r.process_to_string(param);
 
-		const char* cstr=xml.cstr(String::L_UNSPECIFIED);
+		const char* cstr=xml.cstr(String::L_UNSPECIFIED, 0, &r.charsets);
 		document=(GdomeDocument *)
 			gdome_xml_n_mkref((xmlNode *)xmlParseMemory(
 				cstr, strlen(cstr)
