@@ -34,21 +34,14 @@
   Installation layout:
     $prefix/bin/
       parser3             -- CGI and command line Parser3 interpreter
+      parser3.conf.dist   -- configuration file sample, 
+                             copy it to parser3.conf and adjust to your needs
     $prefix/etc/
-      parser3.conf.sample -- configuration file sample
       parser3.charsets/   -- charset definition files
         koi8-r.cfg        -- cyrillic charset [KOI8-R encoding]
         windows-1250.cfg  -- central europian charset [windows-1250 encoding]
         windows-1251.cfg  -- cyrillic charset [windows-1251 encoding]
         windows-1257.cfg  -- baltic charset [windows-1257 encoding]
-
-  NOTE:
-    For subsequent compilations+installs 
-    to prevent configuration files to be overwritten use
-  
-    make install-exec
-    
-    it will update parser3 binary only.
 
 3.What other libraries are needed to compile/install parser? 
 
@@ -157,11 +150,11 @@
   --with-charsets=CHARSET[,CHARSET,...]  Enables charsets in root config (windows-1251,
                           windows-1250 windows-1257 koi8-r; Default is windows-1251)
   SQL clients:
-  --with-mysql-client=mysqlclientlib?withparams
-  --with-pgsql-client=pgsqlclientlib?withparams
-  --with-oracle-client=oracleclientlib?withparams
+  --with-mysql-client=mysqlclientlib?params
+  --with-pgsql-client=pgsqlclientlib?params
+  --with-oracle-client=oracleclientlib?params
   
  
 Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-$Id: INSTALL,v 1.20 2002/06/12 14:09:48 paf Exp $
+$Id: INSTALL,v 1.21 2002/06/18 15:16:15 paf Exp $
