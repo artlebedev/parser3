@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_table.C,v 1.25 2001/04/04 10:50:36 paf Exp $
+	$Id: pa_table.C,v 1.26 2001/04/05 16:30:42 paf Exp $
 */
 
 #include <stdlib.h>
@@ -23,7 +23,7 @@ Table::Table(Pool& apool,
 	forigin_string(aorigin_string),
 	fcurrent(0),
 	fcolumns(acolumns), 
-	name2number(pool(), false) {
+	name2number(pool()) {
 
 	if(fcolumns)
 		for(int i=0; i<fcolumns->size(); i++) {

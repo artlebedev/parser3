@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.72 2001/04/05 13:27:12 paf Exp $
+	$Id: pa_string.h,v 1.73 2001/04/05 16:30:41 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -13,6 +13,7 @@
 
 #include "pa_config_includes.h"
 
+#include <string.h>
 #include <stddef.h>
 
 #include "pa_pool.h"

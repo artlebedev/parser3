@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_hash.h,v 1.34 2001/04/04 10:50:34 paf Exp $
+	$Id: pa_hash.h,v 1.35 2001/04/05 16:30:41 paf Exp $
 */
 
 #ifndef PA_HASH_H
@@ -22,9 +22,6 @@
 	Pooled hash.
 
 	Automatically rehashed when almost full.
-
-	can be thread safe, wich is specified in constructor,
-	default 'not safe'.
 */
 class Hash : public Pooled {
 public:
@@ -37,8 +34,8 @@ public:
 
 public:
 
-	Hash(Pool& apool,bool athread_safe=false) : Pooled(apool) { 
-		construct(apool, athread_safe); 
+	Hash(Pool& apool) : Pooled(apool) { 
+		construct(apool); 
 	}
 
 	/// useful generic hash function
@@ -84,7 +81,7 @@ public:
 
 protected:
 
-	void construct(Pool& apool, bool athread_safe);
+	void construct(Pool& apool);
 
 private:
 
@@ -92,9 +89,6 @@ private:
 	enum {
 		THRESHOLD_PERCENT=75
 	};
-
-	// am I thread-safe?
-	bool fthread_safe;
 
 	// the index of [allocated] in [allocates]
 	int allocates_index;

@@ -5,14 +5,14 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3mysql.C,v 1.9 2001/04/05 13:19:45 paf Exp $
+	$Id: parser3mysql.C,v 1.10 2001/04/05 16:30:43 paf Exp $
 */
 
 #include <stdlib.h>
+#include <string.h>
 
 #include "pa_sql_driver.h"
 #include "mysql.h"
-#include "pa_common.h" //
 
 #define MAX_STRING 0x400
 
@@ -30,10 +30,9 @@ char *lsplit(char *string, char delim) {
 /**
 	MySQL server driver
 	
-	@todo 
-		figure out about memory for errors:
-		- static=add multithread locks
-		- dynamic=who should free it up?
+	@todo figure out about memory for errors:
+		static=add multithread locks;
+		dynamic=who should free it up?
 */
 class MySQL_Driver : public SQL_Driver {
 public:
