@@ -8,7 +8,7 @@
 #ifndef PA_WWRAPPER_H
 #define PA_WWRAPPER_H
 
-static const char* IDENT_WWRAPPER_H="$Date: 2002/09/10 12:02:24 $";
+static const char* IDENT_WWRAPPER_H="$Date: 2002/09/10 12:14:41 $";
 
 #include "pa_wcontext.h"
 #include "pa_exception.h"
@@ -41,8 +41,8 @@ public: // Value
 
 public: // usage
 
-	WWrapper(Pool& apool, Value *avalue) : 
-		WContext(apool, avalue, 0) {
+	WWrapper(Pool& apool, Value *avalue, WContext *aparent) : 
+		WContext(apool, avalue, aparent) {
 	}
 	
 private:

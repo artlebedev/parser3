@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-static const char* IDENT_VALUE_H="$Date: 2002/09/10 12:02:24 $";
+static const char* IDENT_VALUE_H="$Date: 2002/09/10 12:14:40 $";
 
 #include "pa_pool.h"
 #include "pa_string.h"
@@ -276,8 +276,11 @@ protected:
 	^junction[]
 @endcode
 
-	On scope exit (VMethodFrame::~VMethodFrame()) got cleaned - Junction::method_frame becomes 0,
-	which later in Request::process triggers exception
+	On wcontext[most dynamic context of all] scope exit (WContext::~WContext()) got cleaned - 
+	Junction::wcontext becomes WContext.fparent (if any), 
+	or Junction::method_frame becomes 0 (if no parent), which later in Request::process triggers exception
+
+	parent changing helps ^switch implementation to remain simple
 */
 class Junction : public Pooled {
 public:

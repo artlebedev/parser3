@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_EXECUTE_C="$Date: 2002/09/10 12:05:37 $";
+static const char* IDENT_EXECUTE_C="$Date: 2002/09/10 12:14:40 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -286,7 +286,7 @@ void Request::execute(const Array& ops) {
 				WContext *saved_wcontext=wcontext;
 				uchar saved_lang= flang;
 				flang=String::UL_PASS_APPENDED;
-				WWrapper local(pool(), 0 /*empty*/);
+				WWrapper local(pool(), 0 /*empty*/, wcontext);
 				wcontext=&local;
 
 				execute(*local_ops);
@@ -303,7 +303,7 @@ void Request::execute(const Array& ops) {
 				const Array *local_ops=reinterpret_cast<const Array *>(i.next());
 
 				WContext *saved_wcontext=wcontext;
-				WWrapper local(pool(), 0 /*empty*/);
+				WWrapper local(pool(), 0 /*empty*/, wcontext);
 				wcontext=&local;
 
 				execute(*local_ops);
@@ -887,7 +887,7 @@ StringOrValue Request::process(Value& input_value, bool intercept_string) {
 			result.set_string(*wcontext->get_string());
 		} else {
 			// plain wwrapper
-			WWrapper local(pool(), 0/*empty*/);
+			WWrapper local(pool(), 0/*empty*/, wcontext);
 			wcontext=&local;
 		
 			// execute it
@@ -945,7 +945,7 @@ void Request::execute_method(Value& aself,
 	// initialize contexts
 	//method_frame=rcontext=self=&aself;
 	self=&aself;	
-//	WWrapper local(pool(), &aself);
+//	WWrapper local(pool(), &aself, wcontext);
 //	wcontext=&local; 
 	Junction local_junction(pool(), *self, self->get_class(), &method, 0,0,0,0);
 	VMethodFrame local_frame(pool(), method.name, local_junction);
