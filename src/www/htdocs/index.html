@@ -3,7 +3,8 @@ t.p
 dtf.p
 
 @main[]
-^oratest[]
+^oratestinsert[]
+#^oratestread[]
 #^process_check[]
 #^ffcheck[]^[xxx]
 
@@ -12,7 +13,15 @@ dtf.p
 #^tests[]
 #^func(0)<hr>
 	
-@oratest[]
+@oratestinsert[]
+^connect[oracle://mts_admin:admin_pwd@ORACLE.PAF.OFFICE.DESIGN.RU]{
+#^void:sql{create table lobtest(test clob)}
+^void:sql{insert into lobtest values (/**test**/'буквы')}
+$table[^table::sql{select * from lobtest}]
+^table.menu{<hr>$table.test}
+}
+
+@oratestread[]
 ^connect[oracle://mts_admin:admin_pwd@ORACLE.PAF.OFFICE.DESIGN.RU]{
 ^rem{
 $tables[^table::sql{select table_name from user_tables}]

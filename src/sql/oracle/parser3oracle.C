@@ -7,7 +7,7 @@
 
 	2001.07.30 using Oracle 8.1.6, tested with Oracle 7.x.x
 */
-static const char *RCSId="$Id: parser3oracle.C,v 1.7 2001/08/23 11:59:15 parser Exp $"; 
+static const char *RCSId="$Id: parser3oracle.C,v 1.8 2001/08/23 12:10:30 parser Exp $"; 
 
 #include "config_includes.h"
 
@@ -807,6 +807,7 @@ void check(
 			msg=reason;
 		else
 			msg="[can not get error description]";
+		break;
 		}
 	case OCI_SUCCESS_WITH_INFO:
 		msg="SUCCESS_WITH_INFO"; break;

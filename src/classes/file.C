@@ -5,9 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.48 2001/08/22 14:03:18 parser Exp $
+	$Id: file.C,v 1.49 2001/08/23 12:10:30 parser Exp $
 */
-static const char *RCSId="$Id: file.C,v 1.48 2001/08/22 14:03:18 parser Exp $"; 
+static const char *RCSId="$Id: file.C,v 1.49 2001/08/23 12:10:30 parser Exp $"; 
 
 #include "pa_config_includes.h"
 
@@ -54,7 +54,7 @@ const int FIND_MONKEY_MAX_HOPS=10;
 
 static void _save(Request& r, const String&, MethodParams *params) {
 	Value& vmode_name=params-> as_no_junction(0, "mode must not be code");
-	Value& vfile_name=params->as_no_junction(0, "file name must not be code");
+	Value& vfile_name=params->as_no_junction(1, "file name must not be code");
 
 	// save
 	static_cast<VFile *>(r.self)->save(r.absolute(vfile_name.as_string()),
