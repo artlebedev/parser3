@@ -4,7 +4,7 @@
 	Copyright(c) 2000,2001, 2002 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_exec.C,v 1.30 2002/03/22 14:30:07 paf Exp $
+	$Id: pa_exec.C,v 1.31 2002/03/25 11:36:24 paf Exp $
 
 
 	@todo setrlimit
@@ -70,6 +70,12 @@ static BOOL WINAPI CreateHiddenConsoleProcess(LPCTSTR szCmdLine,
     si.hStdOutput=hOutWrite;
     si.hStdError=hErrWrite;
 
+	// calculating script's directory
+	char dir[MAX_STRING];
+	strncpy(dir, szCmdLine, MAX_STRING-1); dir[MAX_STRING-1]=0;
+	rsplit(dir,'/'); rsplit(dir,'\\'); // trim filename
+	chdir(dir);
+
     // Create a child process (suspended)
     fCreated=CreateProcess(NULL,
                               (LPTSTR)szCmdLine,
@@ -78,7 +84,7 @@ static BOOL WINAPI CreateHiddenConsoleProcess(LPCTSTR szCmdLine,
                               TRUE,
                               CREATE_NO_WINDOW,
                               szEnv,
-                              NULL,
+                              dir,
                               &si,
                               ppi);
 
@@ -153,7 +159,7 @@ static const char *buildCommand(Pool& pool,
 
 #else
 
-static int execve_piped(const char *path, 
+static int execve_piped(const char *file_spec_cstr, 
 			char * const argv[], char * const env[],
 			int *pipe_in, int *pipe_out, int *pipe_err) {
 	int pid;
@@ -228,7 +234,14 @@ static int execve_piped(const char *path,
 		/* HP-UX SIGCHLD fix goes here, if someone will remind me what it is... */
 		signal(SIGCHLD, SIG_DFL);	/* Was that it? */
 	
-		execve(path, argv, env);
+		// chdir to script's directory
+		char dir[MAX_STRING];
+		strncpy(dir, file_spec_cstr, MAX_STRING-1); dir[MAX_STRING-1]=0;
+		rsplit(dir,'/'); // trim filename
+		chdir(dir);
+
+		//  execute
+		execve(file_spec_cstr, argv, env);
 		exit(-errno);
 	}
 	
@@ -287,11 +300,7 @@ static void append_env_pair(const Hash::Key& key, Hash::Val *value, void *info) 
 	**env_ref=string.cstr();  (*env_ref)++;
 #endif
 }
-/**
-	@test thread safety: SetCurrentDirectory works per-process, not .
-	there's a field in createprocess, which is.
-	@test thread safety: on unix we sould change dir after fork!
-*/
+
 int pa_exec(const String& file_spec, 
 			const Hash *env,
 			const Array *argv,
@@ -308,11 +317,6 @@ int pa_exec(const String& file_spec,
 
 #ifdef WIN32
 
-	char pwd[MAX_STRING];
-	GetCurrentDirectory(sizeof(pwd), pwd);
-	char *dir=file_spec.cstr(String::UL_FILE_SPEC);
-	rsplit(dir, '/'); SetCurrentDirectory(dir);
-
 	PROCESS_INFORMATION pi;	
 	HANDLE hInWrite, hOutRead, hErrRead;
 	char *file_spec_cstr=file_spec.cstr(String::UL_FILE_SPEC); 
@@ -324,8 +328,6 @@ int pa_exec(const String& file_spec,
 		env_cstr=string.cstr();
 	}
 	if(CreateHiddenConsoleProcess(cmd, env_cstr, &pi, &hInWrite, &hOutRead, &hErrRead)) {
-		SetCurrentDirectory(pwd);
-
 		const char *in_cstr=in.cstr();
 		DWORD written_size;
 		WriteFile(hInWrite, in_cstr, in.size(), &written_size, NULL);
@@ -347,8 +349,6 @@ from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?r
 		CloseHandle(pi.hProcess);
         CloseHandle(pi.hThread);
 	} else {
-		SetCurrentDirectory(pwd);
-
 		DWORD error=GetLastError();
 		char szErrorDesc[MAX_STRING];
 		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, error,
@@ -369,6 +369,23 @@ from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?r
 
 	int pipe_write, pipe_read, pipe_err;
 	char *file_spec_cstr=file_spec.cstr(String::UL_FILE_SPEC);
+
+#ifdef NO_FOREIGN_GROUP_FILES
+    struct stat finfo;
+	if(stat(file_spec_cstr, &finfo)!=0)
+		throw Exception(0, 0, 
+				&file_spec, 
+				"stat failed: %s (%d), actual filename '%s'", 
+					strerror(errno), errno, file_spec_cstr);
+
+	if(finfo.st_gid/*foreign?*/!=getegid())
+		throw Exception(0, 0,
+			&file_spec,
+			"parser executing files of foreign group is	disabled [recompile parser without --disable-foreign-group-files configure option], actual filename '%s'", 
+				file_spec_cstr);
+
+#endif
+
 	char *argv_cstrs[1+10+1]={file_spec_cstr, 0};
 	if(argv) {
 		const int argv_size=argv->size();
@@ -389,17 +406,11 @@ from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?r
 		env->for_each(append_env_pair, &env_ref);
 		*env_ref=0;
 	}
-	const char *pwd=getcwd(NULL, 0);
-	char dir[MAX_STRING];
-	strncpy(dir, file_spec_cstr, MAX_STRING);
-	rsplit(dir,'/'); // trim filename
-    chdir(dir);
+
 	int pid=execve_piped(
 		file_spec_cstr,
 		argv_cstrs, env_cstrs,
 		&pipe_write, &pipe_read, &pipe_err);
-    if (pwd) 
-		chdir(pwd);
 	if(pid) {
 		// in child
 		const char *in_cstr=in.cstr();

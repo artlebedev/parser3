@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: mail.C,v 1.54 2002/02/08 08:30:10 paf Exp $
+	$Id: mail.C,v 1.55 2002/03/25 11:36:23 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -368,8 +368,11 @@ static void sendmail(Request& r, const String& method_name,
 	// $MAIN:MAIL.sendmail["/usr/sbin/sendmail -t"] default
 	// $MAIN:MAIL.sendmail["/usr/lib/sendmail -t"] default
 
-	const char *sendmailkey_cstr="sendmail";
 	const String *sendmail_command;
+#ifdef PA_FORCED_SENDMAIL
+	sendmail_command=PA_FORCED_SENDMAIL;
+#else
+	const char *sendmailkey_cstr="sendmail";
 	if(mail_conf) {
 		if(Value *sendmail_value=static_cast<Value *>(mail_conf->get(String(pool, sendmailkey_cstr))))
 			sendmail_command=&sendmail_value->as_string();
@@ -385,6 +388,7 @@ static void sendmail(Request& r, const String& method_name,
 		test->APPEND_CONST(" -t");
 		sendmail_command=test;
 	}
+#endif
 
 	// we know sendmail_command here
 	Array argv(pool);
@@ -400,9 +404,16 @@ static void sendmail(Request& r, const String& method_name,
 
 	if(!file_executable(*file_spec))
 		throw Exception(0, 0,
-			file_spec,
-			"is not executable. Set $"MAIN_CLASS_NAME":"MAIL_NAME".%s with appropriate sendmail command", 
-				sendmailkey_cstr);
+			file_spec, 
+			"is not executable."
+#ifdef PA_FORCED_SENDMAIL
+			" Set $"MAIN_CLASS_NAME":"MAIL_NAME".%s with appropriate sendmail command", 
+				sendmailkey_cstr
+#else
+			" Use configure key --with-sendmail=\"appropriate sendmail command\""
+#endif
+		);
+
 
 	String in(pool, letter_cstr); String out(pool); String err(pool);
 	int exit_status=pa_exec(*file_spec,

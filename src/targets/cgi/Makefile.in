@@ -81,8 +81,8 @@ charsetsdir = @charsetsdir@
 host_os = @host_os@
 rootconfigdir = @rootconfigdir@
 sqldriversdir = @sqldriversdir@
-
 @DO_NOT_LINK_LIBSTDCPP_TRUE@CXXLD = $(CC)
+@DO_NOT_LINK_LIBSTDCPP_FALSE@CXXLD = $(CXX)
 
 INCLUDES = -I../../classes -I../../types -I../../sql -I../../pcre -I$(INCLTDL) @XML_INCLUDES@
 

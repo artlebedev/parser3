@@ -1,6 +1,8 @@
 #this read configure.in comment on stdc++ about next line
 if DO_NOT_LINK_LIBSTDCPP
 CXXLD=$(CC)
+else
+CXXLD=$(CXX)
 endif
 
 INCLUDES = -I../../classes -I../../types -I../../sql -I../../pcre -I$(INCLTDL) @XML_INCLUDES@

@@ -147,7 +147,7 @@
 /* pa_exec disabled */
 #undef NO_PA_EXECS
 
-/* disabled reading of files of non-process-effective-group */
+/* disabled reading and executing files of non-process-effective-group */
 #undef NO_FOREIGN_GROUP_FILES
 
 /* xml-abled parser */
@@ -155,6 +155,9 @@
 
 /* xml-abled parser */
 #undef XML
+
+/* parser uses this command instead of user-defined sendmail commands */
+#undef PA_FORCED_SENDMAIL
 
 /* Windows32 target platform */
 #undef WIN32

@@ -43,7 +43,7 @@
   file::exec, file::cgi and mail:send (unix version) methods would be disabled.
   
   NOTE:
-  You can disable reading of files, belonging to group 
+  You can disable reading and executing files, belonging to group 
   other then current by setting
   --disable-foreign-group-files
   option to configure.
@@ -149,4 +149,4 @@
  
 Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-$Id: INSTALL,v 1.14 2002/03/25 10:26:12 paf Exp $
+$Id: INSTALL,v 1.15 2002/03/25 11:36:23 paf Exp $

@@ -57,12 +57,12 @@ fi
 ]
 )
 
-AC_ARG_ENABLE(foreign-group-files, [  --disable-foreign-group-files to disable reads
-                          of files belonging to group other then effective],
+AC_ARG_ENABLE(foreign-group-files, [  --disable-foreign-group-files to disable read and executing
+                          files belonging to group other then effective],
 [
 if test "$enableval" = "no"; then
 	AC_MSG_WARN(disabling reading of files belonging to group other then effective)
-	AC_DEFINE(NO_FOREIGN_GROUP_FILES,,disabled reading of files of non-process-effective-group)
+	AC_DEFINE(NO_FOREIGN_GROUP_FILES,,disabled reading and executing files of non-process-effective-group)
 fi
 ]
 )
@@ -143,6 +143,14 @@ changequote([, ])dnl
 ])
 AC_SUBST(XML_INCLUDES)
 AC_SUBST(XML_LIBS)
+
+
+AC_ARG_WITH(sendmail,[  \"--with-sendmail=COMMAND\" forces this command to send mail.
+                          example: \"--with-sendmail=/usr/sbin/sendmail -t\"
+                          (makes parser ignore user-defined sendmail commands)],
+	AC_DEFINE_UNQUOTED(PA_FORCED_SENDMAIL,"$withval",parser uses this command instead of user-defined sendmail commands)
+)
+
 
 AC_ARG_WITH(apache13,[  --with-apache13=D       D is the Apache13 source distribution directory
                           builds library for apache_module using that dir
