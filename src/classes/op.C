@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: op.C,v 1.18 2001/05/11 17:45:10 parser Exp $
+	$Id: op.C,v 1.19 2001/05/17 08:42:22 parser Exp $
 */
 
 #include "classes.h"
@@ -266,11 +266,12 @@ static void _connect(Request& r, const String&, MethodParams *params) {
 	Value& url=params->get_no_junction(0, "url must not be code");
 	Value& body_code=params->get_junction(1, "body must be code");
 
-	Table *protocol2library=static_cast<Table *>(r.classes_conf.get(OP->name()));
+	Table *protocol2driver_and_client=
+		static_cast<Table *>(r.classes_conf.get(OP->name()));
 
 	// connect
 	SQL_Connection& connection=SQL_driver_manager->get_connection(
-		url.as_string(), protocol2library);
+		url.as_string(), protocol2driver_and_client);
 
 	Exception rethrow_me;
 	// remember/set current connection

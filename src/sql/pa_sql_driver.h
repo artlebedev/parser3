@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_driver.h,v 1.8 2001/04/26 14:55:31 paf Exp $
+	$Id: pa_sql_driver.h,v 1.9 2001/05/17 08:42:22 parser Exp $
 
 
 	driver dynamic library must look like this:
@@ -66,8 +66,14 @@ public:
 	virtual int api_version() =0;
 	/// initialize driver by loading sql dynamic link library
 	virtual const char *initialize(const char *dlopen_file_spec) =0;
-	/// connect. @returns true+'connection' on success. 'error' on failure
-	virtual void connect(char *url, void **connection) =0;
+	/**	connect to sql database using 
+		@param used_only_to_connect_url 
+			format is driver specific
+			WARNING: must be used only to connect, for buffer doesn't live long enough
+
+		@returns true+'connection' on success. 'error' on failure
+	*/
+	virtual void connect(char *used_only_to_connect_url, void **connection) =0;
 	virtual void disconnect(void *connection) =0;
 	virtual void commit(void *connection) =0;
 	virtual void rollback(void *connection) =0;

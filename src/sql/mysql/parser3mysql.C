@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: parser3mysql.C,v 1.15 2001/04/26 15:09:08 paf Exp $
+	$Id: parser3mysql.C,v 1.16 2001/05/17 08:42:22 parser Exp $
 */
 
 #include "config_includes.h"
@@ -53,14 +53,18 @@ public:
 	const char *initialize(const char *dlopen_file_spec) {
 		return dlink(dlopen_file_spec);
 	}
-	/// connect
+	/**	connect
+		@param used_only_to_connect_url 
+			format: @b user:pass@host[:port]/database/charset 
+			3.23.22b
+			Currently the only option for @b character_set_name is cp1251_koi8.
+			WARNING: must be used only to connect, for buffer doesn't live long
+	*/
 	void connect(
-		char *url, /**< @b user:pass@host[:port]/database/charset 
-				   3.23.22b
-				   Currently the only option for character_set_name is cp1251_koi8 */
+		char *used_only_to_connect_url, 
 		void **connection ///< output: MYSQL *
 		) {
-		char *user=url;
+		char *user=used_only_to_connect_url;
 		char *host=lsplit(user, '@');
 		char *db=lsplit(host, '/');
 		char *pwd=lsplit(user, ':');
