@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.48 2001/04/15 12:33:01 paf Exp $
+	$Id: pa_value.h,v 1.49 2001/04/15 13:21:47 paf Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -243,18 +243,18 @@ public:
 	}
 
 	/// handy typecast. I long for templates
-	Value& get(int index) { return *static_cast<Value *>(Array::get(0)); }
+	Value& get(int index) { return *static_cast<Value *>(Array::get(index)); }
 	/// handy is-value-a-junction ensurer
-	Value& get_junction(int index, const char *msg) { return as(true, index, msg); }
+	Value& get_junction(int index, const char *msg) { return get_as(index, true, msg); }
 	/// handy value-is-not-a-junction ensurer
-	Value& get_no_junction(int index, const char *msg) { return as(false, index, msg); }
+	Value& get_no_junction(int index, const char *msg) { return get_as(index, false, msg); }
 
 private:
 
 	/// handy value-is/not-a-junction ensurer
-	Value& as(bool is, int index, const char *msg) { 
+	Value& get_as(int index, bool as_junction, const char *msg) { 
 		Value& result=get(index);
-		if((result.get_junction()!=0) ^ !is)
+		if((result.get_junction()!=0) ^ as_junction)
 			THROW(0, 0,
 				&fmethod_name,
 				msg);
