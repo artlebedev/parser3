@@ -8,7 +8,7 @@
 #ifndef PA_VFORM_H
 #define PA_VFORM_H
 
-static const char* IDENT_VFORM_H="$Date: 2002/10/21 14:25:45 $";
+static const char* IDENT_VFORM_H="$Date: 2002/10/22 10:31:43 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -60,7 +60,6 @@ private:
 		const char *name, 
 		const char *value_ptr, const size_t value_size,
 		const char *file_name=0);
-	void AppendFormEntry(const char *name, Value *value);
 
 private:
 
