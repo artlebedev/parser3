@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: execute.C,v 1.201 2001/10/31 13:07:35 paf Exp $
+	$Id: execute.C,v 1.202 2001/11/01 16:27:20 paf Exp $
 */
 
 #include "pa_opcode.h"
@@ -400,7 +400,7 @@ void Request::execute(const Array& ops) {
 				}
 
 				frame->set_self(*self);
-				root=rcontext=wcontext=frame;
+				rcontext=wcontext=frame;
 				{
 					// take object or class from any wrappers
 					// and substitute class alias to the class they are called AS
@@ -414,6 +414,7 @@ void Request::execute(const Array& ops) {
 						method.call_type==call_type) { // allowed call type?
 						try {
 							if(method.native_code) { // native code?
+								// root unchanged, so that ^for ^foreach & co may write to locals
 								method.check_actual_numbered_params(
 									frame->junction.self, 
 									frame->name(), frame->numbered_params());
@@ -421,6 +422,7 @@ void Request::execute(const Array& ops) {
 									*this, 
 									frame->name(), frame->numbered_params()); // execute it
 							} else { // parser code
+								root=frame;
 								if(++anti_endless_execute_recoursion==ANTI_ENDLESS_EXECUTE_RECOURSION) {
 									anti_endless_execute_recoursion=0; // give @exception a chance
 									throw Exception(0, 0,
@@ -758,7 +760,7 @@ Value *Request::get_element() {
 		if(Method* method=OP.get_method(name)) { // maybe operator?
 			// as if that method were in self and we have normal dynamic method here
 			Junction& junction=*NEW Junction(pool(), 
-				*root/*self*/, self->get_class(), method, 0,0,0,0);
+				*root, self->get_class(), method, 0,0,0,0);
 			value=NEW VJunction(junction);
 		}
 	if(value)

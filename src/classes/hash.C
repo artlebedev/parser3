@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: hash.C,v 1.28 2001/11/01 15:45:27 paf Exp $
+	$Id: hash.C,v 1.29 2001/11/01 16:27:19 paf Exp $
 */
 
 #include "classes.h"
@@ -278,7 +278,6 @@ struct Foreach_info {
 	Value *body_code;
 	Value *delim_maybe_code;
 
-	Value *var_context;
 	VString *vkey;
 	bool need_delim;
 };
@@ -289,8 +288,8 @@ static void one_foreach_cycle(const Hash::Key& akey, Hash::Val *avalue,
 	Foreach_info& i=*static_cast<Foreach_info *>(info);
 
 	i.vkey->set_string(akey);
-	i.var_context->put_element(*i.key_var_name, i.vkey);
-	i.var_context->put_element(*i.value_var_name, static_cast<Value *>(avalue));
+	i.r->root->put_element(*i.key_var_name, i.vkey);
+	i.r->root->put_element(*i.value_var_name, static_cast<Value *>(avalue));
 
 	Value& processed_body=i.r->process(*i.body_code);
 	if(i.delim_maybe_code) { // delimiter set?
@@ -314,7 +313,6 @@ static void _foreach(Request& r, const String& method_name, MethodParams *params
 		&body_code,
 		delim_maybe_code,
 
-		body_code.get_junction()->wcontext, 
 		new(pool) VString(pool),
 		false
 	};

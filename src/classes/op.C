@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: op.C,v 1.55 2001/11/01 16:11:03 paf Exp $
+	$Id: op.C,v 1.56 2001/11/01 16:27:19 paf Exp $
 */
 
 #include "classes.h"
@@ -185,7 +185,7 @@ static void _for(Request& r, const String& method_name, MethodParams *params) {
 				&method_name,
 				"endless loop detected");
 		vint->set_int(i);
-		r.self/*root*/->put_element(var_name, vint);
+		r.root->put_element(var_name, vint);
 
 		Value& processed_body=r.process(body_code);
 		if(delim_maybe_code) { // delimiter set?
