@@ -1,5 +1,5 @@
 /*
-  $Id: pa_wwrapper.h,v 1.3 2001/02/24 11:20:32 paf Exp $
+  $Id: pa_wwrapper.h,v 1.4 2001/02/24 11:46:03 paf Exp $
 */
 
 #ifndef PA_WWRAPPER_H
@@ -13,18 +13,18 @@ public: // Value
 
 	// all: for error reporting after fail(), etc
 	const char *type() const { return "WWrapper"; }
-	// wcontext: transparent
+	// wwrapper: transparent
 	Value *get_element(const String& name) { return check_value()->get_element(name); }
-	// wcontext: transparent
+	// wwrapper: transparent
 	void put_element(const String& name, Value *avalue){ 
 		if(!fvalue)
 			fvalue=NEW VHash(pool());
 		fvalue->put_element(name, avalue); 
 	}
 
-	// wcontext: none yet | transparent
+	// wwrapper: none yet | transparent
 	VClass *get_class() const { return fvalue?fvalue->get_class():0; }
-	// wcontext: none yet | transparent
+	// wwrapper: none yet | transparent
 	bool is_or_derived_from(VClass& ancestor) { return fvalue?fvalue->is_or_derived_from(ancestor):false; }
 
 public: // usage

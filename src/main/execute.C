@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.35 2001/02/24 11:30:10 paf Exp $
+  $Id: execute.C,v 1.36 2001/02/24 11:46:03 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -162,7 +162,7 @@ void Request::execute(const Array& ops) {
 			}
 		case OP_REDUCE_EWPOOL:
 			{
-				Value *value=wcontext->value_or_string();
+				Value *value=wcontext->result();
 				wcontext=static_cast<WContext *>(POP());
 				PUSH(value);
 				break;
@@ -223,7 +223,7 @@ void Request::execute(const Array& ops) {
 				frame->set_self(self);
 				root=rcontext=wcontext=frame;
 				execute(frame->junction.method->code);
-				Value *value=wcontext->value();
+				Value *value=wcontext->result();
 				wcontext=static_cast<WContext *>(POP());  rcontext=POP();  root=POP();  self=POP();
 				wcontext->write(value);
 				printf("<-returned");
@@ -246,7 +246,7 @@ Value *Request::get_element() {
 
 	if(value) {
 		Junction *junction=value->get_junction();
-		if(junction && junction->code) { // is it a code junction?
+		if(junction && junction->code) { // is it a code-junction?
 			// autocalc it
 			printf("ja->\n");
 			PUSH(self);  PUSH(root);  PUSH(rcontext);  PUSH(wcontext);
@@ -258,8 +258,8 @@ Value *Request::get_element() {
 			rcontext=junction->rcontext;
 			execute(*junction->code);
 			// CodeFrame soul:
-			//    string writes intercepted
-			//   and they are the result of getting code junction
+			//   string writes were intercepted
+			//   returning them as the result of getting code-junction
 			value=NEW VString(frame.get_string());
 			wcontext=static_cast<WContext *>(POP());  rcontext=POP();  root=POP();  self=POP();
 			printf("<-ja returned");

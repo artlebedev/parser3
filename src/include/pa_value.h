@@ -1,5 +1,5 @@
 /*
-  $Id: pa_value.h,v 1.24 2001/02/24 11:20:32 paf Exp $
+  $Id: pa_value.h,v 1.25 2001/02/24 11:46:03 paf Exp $
 */
 
 /*
@@ -89,7 +89,7 @@ public: // Value
 	virtual String *get_string() { return 0; }
 	
 	// string: value
-	virtual void put_string(String *astring) { failed("storing string to %s:%s"); }
+	virtual void put_string(String *astring) { failed("storing string to '%s'"); }
 
 	// junction: auto_calc,root,self,rcontext,wcontext, code
 	virtual Junction *get_junction() { return 0; }
@@ -101,14 +101,14 @@ public: // Value
 	// wcontext: transparent
 	// frame: my or self_transparent
 	// codeframe: wcontext_transparent
-	virtual Value *get_element(const String& name) { failed("getting element from %s:%s"); return 0; }
+	virtual Value *get_element(const String& name) { failed("is '%s', can not get element from it"); return 0; }
 	
 	// hash: (key)=value
 	// object_class, operator_class: (field)=value - static values only
 	// wcontext: transparent
 	// frame: my or self_transparent
 	// codeframe: wcontext_transparent
-	virtual void put_element(const String& name, Value *value) { failed("putting element to %s:%s"); }
+	virtual void put_element(const String& name, Value *value) { failed("is '%s', can not put element to it"); }
 
 	// object_class, object_instance: object_class
 	// frame: transparent
@@ -120,7 +120,7 @@ public: // Value
 	// frame: transparent
 	// wcontext: transparent
 	// codeframe: wcontext_transparent
-	virtual bool is_or_derived_from(VClass& ancestor) { failed("thoghts of ancestors of %s:%s"); return false; }
+	virtual bool is_or_derived_from(VClass& ancestor) { failed("thoghts of ancestors of '%s'"); return false; }
 
 public: // usage
 
@@ -131,7 +131,7 @@ public: // usage
 	String& as_string() {
 		String *result=get_string(); 
 		if(!result)
-			failed("getting string of %s:%s");
+			failed("getting string of '%s'");
 		return *result;
 	}
 
