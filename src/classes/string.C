@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2004/03/01 09:36:37 $";
+static const char * const IDENT_STRING_C="$Date: 2004/03/01 12:53:17 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -104,14 +104,25 @@ static void _double(Request& r, MethodParams& params) {
 }
 
 static void _left(Request& r, MethodParams& params) {
-	size_t n=(size_t)params.as_int(0, "n must be int", r);
-	
+	ssize_t sn=params.as_int(0, "n must be int", r);
+	if(sn<0)
+		throw Exception("parser.runtime",
+			0, 
+			"n(%d) must be >=0", sn);
+	size_t n=(size_t)sn;
+
 	const String& string=GET_SELF(r, VString).string();
 	r.write_assign_lang(string.mid(0, n));
 }
 
 static void _right(Request& r, MethodParams& params) {
-	size_t n=(size_t)params.as_int(0, "n must be int", r);
+	ssize_t sn=(size_t)params.as_int(0, "n must be int", r);
+	if(sn<0)
+		throw Exception("parser.runtime",
+			0, 
+			"n(%d) must be >=0", sn);
+	size_t n=(size_t)sn;
+	
 	
 	const String& string=GET_SELF(r, VString).string();
 	size_t length=string.length();
@@ -121,11 +132,25 @@ static void _right(Request& r, MethodParams& params) {
 static void _mid(Request& r, MethodParams& params) {
 	const String& string=GET_SELF(r, VString).string();
 
-	size_t p=(size_t)max(0, params.as_int(0, "p must be int", r));
-	size_t n=params.count()>1?
-		(size_t)max(0, params.as_int(1, "n must be int", r)):string.length();
+	ssize_t sbegin=params.as_int(0, "p must be int", r);
+	if(sbegin<0)
+		throw Exception("parser.runtime",
+			0, 
+			"p(%d) must be >=0", sbegin);
+	size_t begin=(size_t)sbegin;
+
+	size_t end;
+	if(params.count()>1) {
+		ssize_t sn=params.as_int(1, "n must be int", r);
+		if(sn<0)
+			throw Exception("parser.runtime",
+				0, 
+				"n(%d) must be >=0", sn);
+		end=begin+(size_t)sn;
+	} else 
+		end=string.length();
 	
-	r.write_assign_lang(string.mid(p, p+n));
+	r.write_assign_lang(string.mid(begin, end));
 }
 
 static void _pos(Request& r, MethodParams& params) {
