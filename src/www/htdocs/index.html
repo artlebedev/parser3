@@ -5,7 +5,17 @@ input_date.p
 @href[href zzz;title xxxx;ставить]
 ^if($ставить){y;n}
 
+
+@call[name][method]
+$method[$$name]
+^if(def $method){^method[]}
+
+@test1[]
+test1 result
+
 @main[]
+^call[test1]
+<hr>
 $input_date:input_date_auto_test
 <hr>
 #$string:z[1]
@@ -340,9 +350,9 @@ ${comment}.
 		^menu{<tr><td>$id</td><td>$name</td><td>$age</td></tr>}
 	</table>
 	}}
-	^^string:sql{select name from paf where id=1}=^string:sql{select name from paf where id=1}{n/a}<br>
-	^^int:sql{select age from paf where id=1}=^int:sql{select age from paf where id=1}(111)<br>
-	^^double:sql{select age from paf where id=1}=^double:sql{select age from paf where id=1}(222)<br>
+#	^^string:sql{select name from paf where id=1}=^string:sql{select name from paf where id=1}{n/a}<br>
+#	^^int:sql{select age from paf where id=1}=^int:sql{select age from paf where id=1}(111)<br>
+#	^^double:sql{select age from paf where id=1}=^double:sql{select age from paf where id=1}(222)<br>
 
 	$paf[^hash:sql{select id,age from paf}]
 	^$paf.2.age=$paf.2.age<br>

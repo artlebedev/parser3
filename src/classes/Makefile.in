@@ -10,7 +10,7 @@
 # even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 # PARTICULAR PURPOSE.
 
-#  $Id: Makefile.in,v 1.9 2001/06/29 08:47:20 parser Exp $
+#  $Id: Makefile.in,v 1.10 2001/07/17 13:55:14 parser Exp $
 
 
 SHELL = @SHELL@
@@ -89,7 +89,7 @@ CLASSES_INC = classes.inc
 CLASSES_C = classes.C
 
 noinst_LIBRARIES = libclasses.a
-libclasses_a_SOURCES = $(CLASSES_C) double.C file.C form.C image.C int.C mail.C op.C random.C response.C string.C table.C void.C hash.C
+libclasses_a_SOURCES = $(CLASSES_C) double.C file.C form.C image.C int.C mail.C op.C math.C response.C string.C table.C void.C hash.C
 CLEANFILES = $(CLASSES_INC)
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../include/pa_config_auto.h
@@ -103,7 +103,7 @@ LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
 libclasses_a_LIBADD = 
 libclasses_a_OBJECTS =  classes.o double.o file.o form.o image.o int.o \
-mail.o op.o random.o response.o string.o table.o void.o hash.o
+mail.o op.o math.o response.o string.o table.o void.o hash.o
 AR = ar
 CXXFLAGS = @CXXFLAGS@
 CXXCOMPILE = $(CXX) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -118,9 +118,8 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 TAR = gtar
 GZIP_ENV = --best
 DEP_FILES =  .deps/classes.P .deps/double.P .deps/file.P .deps/form.P \
-.deps/hash.P .deps/image.P .deps/int.P .deps/mail.P .deps/op.P \
-.deps/random.P .deps/response.P .deps/string.P .deps/table.P \
-.deps/void.P
+.deps/hash.P .deps/image.P .deps/int.P .deps/mail.P .deps/math.P \
+.deps/op.P .deps/response.P .deps/string.P .deps/table.P .deps/void.P
 SOURCES = $(libclasses_a_SOURCES)
 OBJECTS = $(libclasses_a_OBJECTS)
 
