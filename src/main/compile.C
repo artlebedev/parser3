@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMPILE_C="$Date: 2004/02/27 13:38:37 $";
+static const char * const IDENT_COMPILE_C="$Date: 2004/04/06 09:01:20 $";
 
 #include "pa_opcode.h"
 #include "pa_request.h"
@@ -25,8 +25,9 @@ VStateless_class& Request::compile(VStateless_class* aclass,
 	//yydebug=1;
 	if(yyparse(&pc)) { // error?
 		pc.pos_prev_c();
-		if(pc.pos.col==0) // expecting something after EOL means they've expected it BEFORE
-			pc.pos_prev_c();
+		if(!pc.explicit_result)
+			if(pc.pos.col==0) // expecting something after EOL means they've expected it BEFORE
+				pc.pos_prev_c();
 
 		throw Exception("parser.compile",
 			0,

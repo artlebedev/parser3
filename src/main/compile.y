@@ -5,7 +5,7 @@
 	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.208 2004/04/06 07:53:57 paf Exp $
+	$Id: compile.y,v 1.209 2004/04/06 09:01:21 paf Exp $
 */
 
 /**
@@ -47,7 +47,6 @@
 static int real_yyerror(Parse_control* pc, char* s);
 static void yyprint(FILE* file, int type, YYSTYPE value);
 static int yylex(YYSTYPE* lvalp, void* pc);
-static int is_not_whitespace(char c, int);
 
 // local convinient inplace typecast & var
 #undef PC
@@ -67,7 +66,7 @@ static int is_not_whitespace(char c, int);
 %token BAD_HEX_LITERAL
 %token BAD_METHOD_DECL_START
 %token BAD_METHOD_PARAMETER_NAME_CHARACTER
-%token BAD_MATH_OPERATOR_CHARACTER
+%token BAD_NONWHITESPACE_CHARACTER_IN_EXPLICIT_RESULT_MODE
 
 %token LAND "&&"
 %token LOR "||"
@@ -263,14 +262,7 @@ maybe_codes: empty | codes;
 
 codes: code | codes code { $$=$1; P(*$$, *$2) };
 code: write_string | action;
-action: {
-	*reinterpret_cast<bool*>(&$$)=PC.explicit_result;
-	PC.explicit_result=false;
-} real_action {
-	PC.explicit_result=reinterpret_cast<bool>($1);
-	$$=$2;
-};
-real_action: get | put | call;
+action: get | put | call;
 
 /* get */
 
@@ -605,18 +597,8 @@ string_inside_quotes_value: maybe_codes {
 /* basics */
 
 write_string: STRING {
-	// $1=OP_STRING+origin+OP_WRITE_VALUE 
-	if(PC.explicit_result) { // only allow decoration whitespaces, no byte code actually produced
-		String::Body body=static_cast<VString*>($1->get(2).value)->string();
-		if(body.for_each/*first_that, actually*/(is_not_whitespace, 0)) {
-			strcpy(PC.error, "only whitespaces are allowed here (explicit result mode), look before this point");
-			YYERROR;
-		}
-		$$=N();
-	} else {
-		// optimized from OP_STRING+origin+OP_WRITE_VALUE to OP_STRING__WRITE
-		change_string_literal_to_write_string_literal(*($$=$1));
-	}
+	// optimized from OP_STRING+OP_WRITE_VALUE to OP_STRING__WRITE
+	change_string_literal_to_write_string_literal(*($$=$1))
 };
 
 void_value: /* empty */ { $$=VL(new VVoid(), 0, 0, 0) };
@@ -691,7 +673,8 @@ static int yylex(YYSTYPE *lvalp, void *apc) {
 			} else // @ in first column inside some code [when could that be?]
 				result=BAD_METHOD_DECL_START;
 			goto break2;
-		} else if(c=='^') {
+		}
+		if(c=='^') {
 			if(pc.ls==LS_METHOD_AFTER) {
 				// handle after-method situation
 				pop_LS(pc);
@@ -810,6 +793,16 @@ default:
 					lexical_brackets_nestage++;
 				break;
 			}
+			if(pc.explicit_result && c)
+				switch(c) {
+				case '\n': case ' ': case '\t':
+					begin=pc.source;
+					begin_pos=pc.pos;
+					continue; // skip it
+				default:
+					result=BAD_NONWHITESPACE_CHARACTER_IN_EXPLICIT_RESULT_MODE;
+					goto break2;
+				}
 			break;
 			
 		// #COMMENT
@@ -1310,6 +1303,16 @@ default:
 				lexical_brackets_nestage++;
 				break;
 			}
+			if(pc.explicit_result && c)
+				switch(c) {
+				case '\n': case ' ': case '\t':
+					begin=pc.source;
+					begin_pos=pc.pos;
+					continue; // skip it
+				default:
+					result=BAD_NONWHITESPACE_CHARACTER_IN_EXPLICIT_RESULT_MODE;
+					goto break2;
+				}
 			break;
 
 		case LS_METHOD_AFTER:
@@ -1379,8 +1382,4 @@ static int real_yyerror(Parse_control *pc, char *s) {  // Called by yyparse on e
 static void yyprint(FILE *file, int type, YYSTYPE value) {
 	if(type==STRING)
 		fprintf(file, " \"%s\"", LA2S(*value)->cstr());
-}
-
-static int is_not_whitespace(char c, int) {
-	return !isspace(c);
 }
