@@ -6,7 +6,7 @@
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
 %{
-static char *RCSId="$Id: compile.y,v 1.147 2001/07/24 12:26:22 parser Exp $"; 
+static char *RCSId="$Id: compile.y,v 1.148 2001/07/24 12:26:38 parser Exp $"; 
 
 /**
 	@todo parser4: 
@@ -642,19 +642,6 @@ static int yylex(YYSTYPE *lvalp, void *pc) {
 				RC;
 			case '@':
 				if(PC.col==0+1) {
-					if(
-						PC.source[0]=='e' && 
-						PC.source[1]=='n' && 
-						PC.source[2]=='d' &&
-						PC.source[3]=='\n') {
-						if(end!=begin) {
-							// append piece till @
-							PC.string->APPEND_CLEAN(begin, end-begin, PC.file, begin_line);
-						}
-						PC.source+=3+1; begin=PC.source;
-						PC.line++; begin_line=PC.line;
-						continue;
-					}
 					push_LS(PC, LS_DEF_NAME);
 					RC;
 				}
