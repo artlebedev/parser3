@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_FILE_C="$Date: 2002/09/10 10:55:32 $";
+static const char* IDENT_FILE_C="$Date: 2002/09/16 15:21:36 $";
 
 #include "pa_config_includes.h"
 
@@ -281,18 +281,26 @@ static void _exec_cgi(Request& r, const String& method_name, MethodParams *param
 
 	const String *body=&out; // ^file:exec
 	Value *content_type=0;
-	const char *eol_marker="\r\n"; size_t eol_marker_size=2;
+	const char *eol_marker=0; size_t eol_marker_size;
 	const String *header=0;
 	if(cgi) { // ^file:cgi
 		// construct with 'out' body and header
-		int delim_size;
-		int pos=out.pos("\r\n\r\n", delim_size=4);
-		if(pos<0) {
-			eol_marker="\n"; eol_marker_size=1;
-			pos=out.pos("\n\n", delim_size=2);
-		}
-		if(pos<0) {
-			delim_size=0; // calm down, compiler
+		int dos_pos=out.pos("\r\n\r\n", 4);
+		int unix_pos=out.pos("\n\n", 2);
+
+		bool unix_header_break;
+		switch((dos_pos >= 0?10:00) + (unix_pos >= 0?01:00)) {
+		case 10: // dos
+			unix_header_break=false;
+			break;
+		case 01: // unix
+			unix_header_break=true;
+			break;
+		case 11: // dos & unix
+			unix_header_break=unix_pos<dos_pos;
+			break;
+		default: // 00
+			unix_header_break=false; // calm down, compiler
 			throw Exception(0,
 				&method_name,
 				"output does not contain CGI header; "
@@ -300,16 +308,26 @@ static void _exec_cgi(Request& r, const String& method_name, MethodParams *param
 					status, 
 					(uint)out.size(), out.cstr(),
 					(uint)err.size(), err.cstr());
+			break; //never reached
 		}
 
-		header=&out.mid(0, pos);
-		body=&out.mid(pos+delim_size, out.size());
+		int header_break_pos;
+		if(unix_header_break) {
+			header_break_pos=unix_pos;
+			eol_marker="\n"; eol_marker_size=1;
+		} else {
+			header_break_pos=dos_pos;
+			eol_marker="\r\n"; eol_marker_size=2;
+		}
+
+		header=&out.mid(0, header_break_pos);
+		body=&out.mid(header_break_pos+eol_marker_size*2, out.size());
 	}
 	// body
 	self.set(false/*not tainted*/, body->cstr(), body->size());
 
 	// $fields << header
-	if(header) {
+	if(header && eol_marker) {
 		Array rows(pool);
 		header->split(rows, 0, eol_marker, eol_marker_size);
 		Pass_cgi_header_attribute_info info={&self.fields()};

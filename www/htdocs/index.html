@@ -152,7 +152,6 @@ $response:charset[windows-1251]
 #^pcre[]
 #^regexp[]<hr>
 #^mail[]
-#^exec[]
 #^fori[]
 #^tconnect[]
 #^xslt[]
@@ -232,11 +231,33 @@ $response:charset[windows-1251]
 #^ttransformsep[]
 #^calltest[]
 #^xpath3[]
-#^mail2[]
 #^doubleliterals[]
-^newxor[]
+#^newxor[]
+#^mail2[]
+#^exec[]
+^passpost[]
 <hr>
 OK
+
+@passpost[]
+<form method=post name="test" id="test">
+<textarea name="text" cols=20 rows =6>^taint[html][1
+2
+
+3]</textarea><br>
+<input type=submit>
+</form>
+
+^if(def $form:text){
+	$a[^file::cgi[a.pl]]
+	$a.text|$a.status|$a.stderr<hr>
+}
+
+@exec[]
+#$a[^file::exec[a.cmd]]
+$a[^file::cgi[a.cmd]]
+$a.text|$a.status|$a.stderr<hr>
+
 
 @newxor[]
 ^eval(1!|2 #примечание()zzz
@@ -1913,6 +1934,7 @@ $response:body[^pict.gif[]]
 
 @mail2[]
 ^mail:send[
+	$.message-id[<6615%1@parser.ru>]
 	$.content-type[$.value[text/plain] $.charset[windows-1251]]
 	$.from[Александр Петросян <paf@design.ru>]
 	$.to[Александр Петросян <paf@design.ru>]
@@ -1986,10 +2008,6 @@ $s[abcАБВ]
 	
 		3]
 ]
-
-@exec[]
-$a[^file::exec[fc.exe;;a;b]]
-$a.status|$a.stderr<hr>
 
 @fori[][i]
 ^for[i](1;3){... =$i= ...}
