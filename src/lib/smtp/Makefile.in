@@ -14,8 +14,6 @@
 
 @SET_MAKE@
 
-#do not automake, desined to be compiled with MSVC only
-
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
 VPATH = @srcdir@
@@ -144,25 +142,91 @@ sharedstatedir = @sharedstatedir@
 subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
+INCLUDES = -I../gc/include -I../cord/include
 
+# @XML_INCLUDES@
+noinst_LIBRARIES = libsmtp.a
 noinst_HEADERS = smtp.h
-EXTRA_DIST = comms.C smtp.C smtp.vcproj
+libsmtp_a_SOURCES = comms.C smtp.C
+EXTRA_DIST = smtp.vcproj
 subdir = src/lib/smtp
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/src/include/pa_config_auto.h
 CONFIG_CLEAN_FILES =
-DIST_SOURCES =
+LIBRARIES = $(noinst_LIBRARIES)
+
+libsmtp_a_AR = $(AR) cru
+libsmtp_a_LIBADD =
+am_libsmtp_a_OBJECTS = comms.$(OBJEXT) smtp.$(OBJEXT)
+libsmtp_a_OBJECTS = $(am_libsmtp_a_OBJECTS)
+
+DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)/src/include
+depcomp = $(SHELL) $(top_srcdir)/depcomp
+am__depfiles_maybe = depfiles
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/comms.Po ./$(DEPDIR)/smtp.Po
+CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
+	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
+CXXLD = $(CXX)
+CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
+	-o $@
+DIST_SOURCES = $(libsmtp_a_SOURCES)
 HEADERS = $(noinst_HEADERS)
 
 DIST_COMMON = $(noinst_HEADERS) Makefile.am Makefile.in
+SOURCES = $(libsmtp_a_SOURCES)
+
 all: all-am
 
 .SUFFIXES:
+.SUFFIXES: .C .o .obj
 $(srcdir)/Makefile.in:  Makefile.am  $(top_srcdir)/configure.in $(ACLOCAL_M4)
 	cd $(top_srcdir) && \
 	  $(AUTOMAKE) --gnu  src/lib/smtp/Makefile
 Makefile:  $(srcdir)/Makefile.in  $(top_builddir)/config.status
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)
+
+AR = ar
+
+clean-noinstLIBRARIES:
+	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
+libsmtp.a: $(libsmtp_a_OBJECTS) $(libsmtp_a_DEPENDENCIES) 
+	-rm -f libsmtp.a
+	$(libsmtp_a_AR) libsmtp.a $(libsmtp_a_OBJECTS) $(libsmtp_a_LIBADD)
+	$(RANLIB) libsmtp.a
+
+mostlyclean-compile:
+	-rm -f *.$(OBJEXT) core *.core
+
+distclean-compile:
+	-rm -f *.tab.c
+
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/comms.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smtp.Po@am__quote@
+
+distclean-depend:
+	-rm -rf ./$(DEPDIR)
+
+.C.o:
+@am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" \
+@am__fastdepCXX_TRUE@	  -c -o $@ `test -f '$<' || echo '$(srcdir)/'`$<; \
+@am__fastdepCXX_TRUE@	then mv "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Po"; \
+@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; \
+@am__fastdepCXX_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXXCOMPILE) -c -o $@ `test -f '$<' || echo '$(srcdir)/'`$<
+
+.C.obj:
+@am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" \
+@am__fastdepCXX_TRUE@	  -c -o $@ `if test -f '$<'; then $(CYGPATH_W) '$<'; else $(CYGPATH_W) '$(srcdir)/$<'; fi`; \
+@am__fastdepCXX_TRUE@	then mv "$(DEPDIR)/$*.Tpo" "$(DEPDIR)/$*.Po"; \
+@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/$*.Tpo"; exit 1; \
+@am__fastdepCXX_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXXCOMPILE) -c -o $@ `if test -f '$<'; then $(CYGPATH_W) '$<'; else $(CYGPATH_W) '$(srcdir)/$<'; fi`
 uninstall-info-am:
 
 ETAGS = etags
@@ -252,7 +316,7 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(HEADERS)
+all-am: Makefile $(LIBRARIES) $(HEADERS)
 
 installdirs:
 
@@ -282,11 +346,12 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic mostlyclean-am
+clean-am: clean-generic clean-noinstLIBRARIES mostlyclean-am
 
 distclean: distclean-am
 
-distclean-am: clean-am distclean-generic distclean-tags
+distclean-am: clean-am distclean-compile distclean-depend \
+	distclean-generic distclean-tags
 
 dvi: dvi-am
 
@@ -312,7 +377,7 @@ maintainer-clean-am: distclean-am maintainer-clean-generic
 
 mostlyclean: mostlyclean-am
 
-mostlyclean-am: mostlyclean-generic
+mostlyclean-am: mostlyclean-compile mostlyclean-generic
 
 pdf: pdf-am
 
@@ -324,14 +389,16 @@ ps-am:
 
 uninstall-am: uninstall-info-am
 
-.PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic ctags \
-	distclean distclean-generic distclean-tags distdir dvi dvi-am \
-	info info-am install install-am install-data install-data-am \
-	install-exec install-exec-am install-info install-info-am \
-	install-man install-strip installcheck installcheck-am \
-	installdirs maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-generic pdf pdf-am ps ps-am tags \
-	uninstall uninstall-am uninstall-info-am
+.PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
+	clean-noinstLIBRARIES ctags distclean distclean-compile \
+	distclean-depend distclean-generic distclean-tags distdir dvi \
+	dvi-am info info-am install install-am install-data \
+	install-data-am install-exec install-exec-am install-info \
+	install-info-am install-man install-strip installcheck \
+	installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic pdf pdf-am ps ps-am tags uninstall \
+	uninstall-am uninstall-info-am
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

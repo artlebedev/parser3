@@ -5,12 +5,46 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_SMTP_H="$Date: 2004/02/11 15:33:15 $";
+static const char * const IDENT_SMTP_H="$Date: 2004/02/24 10:36:16 $";
 
 
 #include "pa_string.h"
 
-#include <winsock.h>
+#ifdef CYGWIN
+#define _GNU_H_WINDOWS32_SOCKETS
+// for PASCAL
+#include <windows.h>
+// SOCKET
+typedef u_int	SOCKET;
+int PASCAL closesocket(SOCKET);
+#else
+#	if defined(WIN32)
+#		include <windows.h>
+#	else
+		typedef char    CHAR;
+		typedef u_int	SOCKET;
+#		define closesocket close
+		inline int WSAGetLastError() { return errno; }
+#		define WSAEPROTONOSUPPORT EPROTONOSUPPORT
+#		define WSAESOCKTNOSUPPORT ESOCKTNOSUPPORT
+#		define WSAENOTCONN ENOTCONN
+#		define WSAENETDOWN ESHUTDOWN
+#		define WSAENETUNREACH EHOSTUNREACH
+#		define WSAENETRESET ENETRESET
+#		define WSAECONNABORTED ECONNABORTED
+#		define WSAECONNRESET ECONNRESET
+#		define WSAEWOULDBLOCK EWOULDBLOCK
+#		define WSAECONNREFUSED ECONNREFUSED
+
+#		define WSAHOST_NOT_FOUND (2)
+#		ifndef INADDR_NONE
+#			define INADDR_NONE ((unsigned long) -1)
+#		endif
+#		ifndef INVALID_SOCKET
+#			define INVALID_SOCKET  (SOCKET)(~0)
+#		endif
+#	endif
+#endif
 
 //////////////////////////////////////////////////////////////////////////////
 
@@ -61,7 +95,7 @@ public:
 
     // smtp.C
 	void	Send(const char* , const char* , const char* ,  char *, char *);
-	BOOL	MakeSmtpHeader(char *, char *, char *, char *);
+	bool	MakeSmtpHeader(char *, char *, char *, char *);
 	void	prepare_message(char *, char *,  const char* , const char* );
 	void	open_socket(const char* , const char* );
 	int		get_line(void);
@@ -74,7 +108,7 @@ public:
 	void	SendLine(const char* , unsigned long);
 	void	SendBuffer(const char* , unsigned long);
 	void	FlushBuffer();
-	BOOL	CloseConnect();
+	bool	CloseConnect();
 
     // comms.C
     int      IsAddressARawIpaddress(const char* );

@@ -149,7 +149,7 @@ target_alias = @target_alias@
 CXXLD = $(CC)
 
 INCLUDES = -I../../classes -I../../types -I../../sql -I../../lib/gc/include -I../../lib/cord/include -I../../lib/pcre -I../../lib/md5 -I$(INCLTDL) @XML_INCLUDES@
-PA_LIBS = ../../main/libmain.a ../../classes/libclasses.a ../../types/libtypes.a ../../main/libmain.a ../../lib/gd/libgd.a ../../lib/cord/libcord.a ../../lib/pcre/libpcre.a ../../lib/md5/libmd5.a ../../lib/sdbm/libsdbm.a $(LIBLTDL)
+PA_LIBS = ../../main/libmain.a ../../classes/libclasses.a ../../types/libtypes.a ../../main/libmain.a ../../lib/gd/libgd.a ../../lib/cord/libcord.a ../../lib/pcre/libpcre.a ../../lib/md5/libmd5.a ../../lib/sdbm/libsdbm.a ../../lib/smtp/libsmtp.a $(LIBLTDL)
 
 bin_PROGRAMS = parser3
 noinst_HEADERS = getopt.h

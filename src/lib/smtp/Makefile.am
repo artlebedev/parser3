@@ -1,4 +1,7 @@
-#do not automake, desined to be compiled with MSVC only
+INCLUDES = -I../gc/include -I../cord/include
+# @XML_INCLUDES@
 
+noinst_LIBRARIES = libsmtp.a
 noinst_HEADERS = smtp.h
-EXTRA_DIST = comms.C smtp.C smtp.vcproj
+libsmtp_a_SOURCES = comms.C smtp.C
+EXTRA_DIST =  smtp.vcproj

@@ -5,10 +5,9 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMMS_C="$Date: 2004/02/11 15:33:15 $";
+static const char * const IDENT_COMMS_C="$Date: 2004/02/24 10:36:16 $";
 
 #include "smtp.h"
-#include <winsock.h>
 
 // ---------------------------------------------------------------------------
 int SMTP:: 
@@ -26,11 +25,11 @@ IsAddressARawIpaddress(const char*  string)
 }
 
 //---------------------------------------------------------------------------
+///@bug getservbyname is not reenterant
 int SMTP:: 
 ResolveService(const char* service, u_short *our_port)
 {
-    struct servent FAR  *serventry = NULL;
-    int                 retval = 0;
+    struct servent  *serventry = NULL;
 
     if( IsAddressARawIpaddress(service) ) 
     {
@@ -49,13 +48,14 @@ ResolveService(const char* service, u_short *our_port)
     } 
     else 
     {
-        serventry = getservbyname(service, (LPSTR)"tcp");
+        serventry = getservbyname(service, "tcp");
     
         if( serventry )
             *our_port = serventry->s_port;
         else 
         {
-            retval = WSAGetLastError();
+#ifdef WIN32
+            int retval = WSAGetLastError();
             if( (retval == WSANO_DATA) || (retval == WSANO_RECOVERY) ) 
             {
                 return WSAEPROTONOSUPPORT;
@@ -64,6 +64,9 @@ ResolveService(const char* service, u_short *our_port)
             {
 	            return (retval - 5000);
             }
+#else 
+		return WSAEPROTONOSUPPORT;
+#endif
         }
     }
 
@@ -71,10 +74,11 @@ ResolveService(const char* service, u_short *our_port)
 }
 
 //---------------------------------------------------------------------------
+/// @bug gethostbyname is not reenterant
 int SMTP:: 
 ResolveHostname(const char* hostname, struct sockaddr_in *sa_in)
 {
-    struct hostent FAR *hostentry = NULL;
+    struct hostent *hostentry = NULL;
     unsigned long 	    ip_address;
 
     if( (ip_address = inet_addr(hostname)) != INADDR_NONE ) 
@@ -88,7 +92,7 @@ ResolveHostname(const char* hostname, struct sockaddr_in *sa_in)
             return WSAHOST_NOT_FOUND;
         }
 
-        sa_in->sin_addr.s_addr = *(long far *)hostentry->h_addr;
+        sa_in->sin_addr.s_addr = *(long *)hostentry->h_addr;
     }
 
     return 0;
@@ -98,15 +102,14 @@ ResolveHostname(const char* hostname, struct sockaddr_in *sa_in)
 int SMTP:: 
 GetAndSetTheSocket(SOCKET *the_socket)
 {
-    int not = 0;
+    int _not = 0;
 
     if( INVALID_SOCKET == (*the_socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP/*был 0, вложенно не работал*/)) )
     {
-		//return h_errno;
 		return WSAESOCKTNOSUPPORT;
     }
 
-    setsockopt(*the_socket, SOL_SOCKET, SO_DONTLINGER, (char *)&not, sizeof(not));
+    setsockopt(*the_socket, SOL_SOCKET, SO_DONTLINGER, (char *)&_not, sizeof(_not));
 
     return 0;
 }
@@ -115,14 +118,13 @@ GetAndSetTheSocket(SOCKET *the_socket)
 int SMTP:: 
 GetConnection(SOCKET the_socket, struct sockaddr_in *sa_in)
 {
-    int     retval = 0;
-    //char    message[512];
 
-    if( SOCKET_ERROR == connect(the_socket,
+    if( connect(the_socket,
 			                    (struct sockaddr *)sa_in,
-			                    sizeof(struct sockaddr_in) )
+			                    sizeof(struct sockaddr_in)<0 )
       ) 
     {
+	int     retval = 0;
         switch( (retval = WSAGetLastError()) )
         {
             case WSAEWOULDBLOCK:
@@ -145,9 +147,10 @@ GetConnection(SOCKET the_socket, struct sockaddr_in *sa_in)
 void SMTP:: 
 MiscSocketSetup(SOCKET soc, fd_set *fds, struct timeval *timeout)
 {
+#ifdef FIONBIO
     unsigned long   ioctl_blocking = 1;
-
     ioctlsocket(soc, FIONBIO, &ioctl_blocking);
+#endif
 
     FD_ZERO(fds);
     FD_SET(soc, fds);

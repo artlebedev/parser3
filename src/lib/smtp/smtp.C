@@ -7,7 +7,7 @@
 	Parts of the code here is based upon an early gensock and blat
 */
 
-static const char * const IDENT_SMTP_C="$Date: 2004/02/11 15:33:15 $";
+static const char * const IDENT_SMTP_C="$Date: 2004/02/24 10:36:16 $";
 
 #include "pa_exception.h"
 #include "smtp.h"
@@ -90,23 +90,19 @@ GetBuffer(int wait)
         timeout.tv_sec = 30;
     }
 
-    if( SOCKET_ERROR == (retval = select(0, &fds, NULL, NULL, &timeout)) )
+    if( (retval = select(0, &fds, NULL, NULL, &timeout))<0 )
     {
-        //char    what_error[256];
+#ifdef WIN32
         int     error_code = WSAGetLastError();
 
         if( error_code == WSAEINPROGRESS && wait ) 
         {
             return WAIT_A_BIT;
         }
-
-		/*
-        wsprintf(what_error,
-	            "GetBuffer() unexpected error from select: %d",
-	            error_code);
-
-        ShowError(what_error);
-		*/
+#else
+	if( errno == EAGAIN && wait )
+		return WAIT_A_BIT;
+#endif
     }
 
     // if we don't want to wait
@@ -128,7 +124,7 @@ GetBuffer(int wait)
         return WSAENOTCONN;
     }
 
-    if( SOCKET_ERROR == bytes_read ) 
+    if( bytes_read <0 ) 
     {
         //char    what_error[256];
         int     ws_error = WSAGetLastError();
@@ -226,7 +222,7 @@ SendLine(const char* data, unsigned long length)
 
     while( length > 0 ) 
     {
-        if( SOCKET_ERROR == select(0, NULL, &fds, NULL, &timeout) ) 
+        if( select(0, NULL, &fds, NULL, &timeout)<0 ) 
             throw Exception("smtp.execute",
 				0,
 		        "connection::put_data() unexpected error from select: %d",
@@ -237,7 +233,7 @@ SendLine(const char* data, unsigned long length)
 		                length > 1024 ? 1024 : (int)length,
 		                0);
 
-        if( SOCKET_ERROR == num_sent ) 
+        if( num_sent<0 ) 
         {
             int  ws_error = WSAGetLastError();
             
@@ -307,13 +303,13 @@ FlushBuffer()
 }
 
 //---------------------------------------------------------------------------
-BOOL SMTP:: 
+bool SMTP:: 
 CloseConnect()
 {
-    if( closesocket(the_socket) == SOCKET_ERROR )
-        return FALSE;
+    if( closesocket(the_socket) <0 )
+        return false;
 
-    return TRUE;
+    return true;
 }
 
 //----------------------------------------------------------------------
@@ -338,9 +334,9 @@ transform_and_send_edit_data(const char*  editptr )
 	const char      *index;
 	char            previous_char = 'x';
 	unsigned int    send_len;
-	BOOL            done = 0;
+	bool            done = false;
 
-	send_len = lstrlen(editptr);
+	send_len = strlen(editptr);
 	index = editptr;
 
 	while( !done )
@@ -372,7 +368,7 @@ transform_and_send_edit_data(const char*  editptr )
 		}
 
 		if( (unsigned int)(index - editptr) == send_len )
-            done = 1;
+            done = true;
 	}
 
 	// this handles the case where the user doesn't end the last
@@ -429,14 +425,14 @@ prepare_message(char *from, char *to, const char* server, const char* service)
 	if( 220 != get_line() )
 		SendSmtpError("SMTP server error");
 
-	wsprintf(out_data, "HELO %s\r\n", my_hostname );
-	SendLine(out_data, lstrlen(out_data) );
+	snprintf(out_data, sizeof(out_data), "HELO %s\r\n", my_hostname );
+	SendLine(out_data, strlen(out_data) );
 
 	if( 250 != get_line() )
 	    SendSmtpError("SMTP server error");
 
-	wsprintf(out_data, "MAIL From: <%s>\r\n", from);
-	SendLine(out_data, lstrlen(out_data) );
+	snprintf(out_data, sizeof(out_data), "MAIL From: <%s>\r\n", from);
+	SendLine(out_data, strlen(out_data) );
 
 	if( 250 != get_line() )
 		SendSmtpError("The mail server doesn't like the sender name, have you set your mail address correctly?");
@@ -446,7 +442,7 @@ prepare_message(char *from, char *to, const char* server, const char* service)
 	{
 		// if there's only one token left, then len will = startLen,
 		// and we'll iterate once only
-		startLen = lstrlen(ptr);
+		startLen = strlen(ptr);
 		if( (len = strcspn(ptr, " ,\n\t\r")) != startLen )
 		{
 			ptr[len] = '\0';			// replace delim with NULL char
@@ -454,8 +450,8 @@ prepare_message(char *from, char *to, const char* server, const char* service)
 				ptr[len++] = '\0';
 		}
 
-		wsprintf(out_data, "RCPT To: <%s>\r\n", ptr);
-		SendLine(out_data, lstrlen(out_data) );
+		snprintf(out_data, sizeof(out_data), "RCPT To: <%s>\r\n", ptr);
+		SendLine(out_data, strlen(out_data) );
 
 		if( 250 != get_line() )
 			throw Exception("smtp.execute",
@@ -467,34 +463,13 @@ prepare_message(char *from, char *to, const char* server, const char* service)
 			break;
 	}
 
-	wsprintf(out_data, "DATA\r\n");
-	SendLine(out_data, lstrlen(out_data));
+	snprintf(out_data, sizeof(out_data), "DATA\r\n");
+	SendLine(out_data, strlen(out_data));
 
 	if( 354 != get_line() )
 		SendSmtpError("Mail server error accepting message data");
 }
 
-
-static char *lsplit(char *string, char delim) {
-    if(string) {
-		char *v=strchr(string, delim);
-		if(v) {
-			*v=0;
-			return v+1;
-		}
-    }
-    return 0;
-}
-static char *rsplit(char *string, char delim) {
-    if(string) {
-		char *v=strrchr(string, delim);
-		if(v) {
-			*v=0;
-			return v+1;
-		}
-    }
-    return NULL;	
-}
 
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
