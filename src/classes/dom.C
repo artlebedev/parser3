@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 */
-static const char *RCSId="$Id: dom.C,v 1.3 2001/09/07 16:51:24 parser Exp $"; 
+static const char *RCSId="$Id: dom.C,v 1.4 2001/09/10 08:23:49 parser Exp $"; 
 
 #if _MSC_VER
 #	pragma warning(disable:4291)   // disable warning 
@@ -19,10 +19,16 @@ static const char *RCSId="$Id: dom.C,v 1.3 2001/09/07 16:51:24 parser Exp $";
 #include <Include/PlatformDefinitions.hpp>
 #include <util/PlatformUtils.hpp>
 #include <XalanTransformer/XalanTransformer.hpp>
+#include <XalanTransformer/XalanParsedSource.hpp>
+//#include <DOMSupport/DOMServices.hpp> 
+#include <PlatformSupport/XalanFileOutputStream.hpp>
+#include <PlatformSupport/XalanOutputStreamPrintWriter.hpp>
+#include <XMLSupport/FormatterToXML.hpp>
+#include <XMLSupport/FormatterTreeWalker.hpp>
 
 // defines
 
-#define Dom_CLASS_NAME "dom"
+#define DOM_CLASS_NAME "dom"
 
 // class
 
@@ -74,23 +80,54 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 	// filespec
 	const char *filespec=r.absolute(filename).cstr(String::UL_FILE_NAME);
 	
-	XSLTInputSource inputSource(filespec);
-	XalanParsedSource* parsedSource;
-	int error=vDOM.getXalanTransformer().parseSource(inputSource, parsedSource);
-
-	if(error)
+	XalanParsedSource* parsedSource=vDOM.getParsedSource();
+	if(!parsedSource)
 		PTHROW(0, 0,
-			&filename,
-			vDOM.getXalanTransformer().getLastError());
+			&method_name,
+			"on empty document");
 
-	// replace any previous node value
-	vDOM.setParsedSource(parsedSource);
+	XalanDocument *document=parsedSource->getDocument();
+
+/*
+	XalanDOMString data;
+	DOMServices::getNodeData(*document, data);
+	const XalanDOMChar *cstr=data.c_str();
+^^^^^^^^^^^just a text from one node
+*/
+
+	  //const XalanDOMString & theFileName
+	XalanFileOutputStream fileOutputStream(XalanDOMString(filespec, strlen(filespec)));
+	XalanOutputStreamPrintWriter outputStreamPrintWriter(fileOutputStream);
+	FormatterToXML formatterListener(outputStreamPrintWriter);
+/*
+	// Sends the data for a node to a FormatterListener
+	DOMServices::getNodeData(*document, formatterListener, 
+		(DOMServices::MemberFunctionPtr)formatterListener.characters);
+	formatterListener.endDocument();
+*/
+	// Create a FormatterTreeWalker with the the
+	// new formatter...
+	FormatterTreeWalker theTreeWalker(formatterListener);
+
+	// Walk the document and produce the XML...
+	theTreeWalker.traverse(document);
+/*
+	// Set up a XercesParserLiaison and use it to wrap the DOM_Document
+	// in a XalanDocument.
+	XercesDOMSupport   theDOMSupport;
+	XercesParserLiaison	theParserLiaison(theDOMSupport);
+
+	// You can also convert the XalanDocument to a Xerces DOM_Document.
+	DOM_Document xercesDocument = theParserLiaison.mapXercesDocument(xalanDocument);
+	//DOMPrint sample
+*/
+	// TODO error handling ...
 }
 
 // constructor
 
 MDom::MDom(Pool& apool) : Methoded(apool) {
-	set_name(*NEW String(pool(), Dom_CLASS_NAME));
+	set_name(*NEW String(pool(), DOM_CLASS_NAME));
 
 	// ^dom::load[some.xml]
 	add_native_method("load", Method::CT_DYNAMIC, _load, 1, 1);
@@ -110,6 +147,8 @@ Methoded *MDom_create(Pool& pool) {
 	// You must initialize Xerces-C++ once per process
 	XMLPlatformUtils::Initialize();
 	XalanTransformer::initialize();
+	// Must be called before any other functions are called. 
+//	DOMServices::initialize (); 
 
 
 	return Dom_class=new(pool) MDom(pool);

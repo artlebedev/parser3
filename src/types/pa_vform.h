@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vform.h,v 1.22 2001/09/07 11:05:02 parser Exp $
+	$Id: pa_vform.h,v 1.23 2001/09/10 08:23:49 parser Exp $
 */
 
 #ifndef PA_VFORM_H
@@ -39,6 +39,8 @@ class VForm : public VStateless_class {
 public: // Value
 	
 	const char *type() const { return "form"; }
+
+	Value *get_element(const String& aname);
 
 public: // usage
 

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vform.C,v 1.34 2001/09/07 12:46:19 parser Exp $
+	$Id: pa_vform.C,v 1.35 2001/09/10 08:23:49 parser Exp $
 
 	
 	based on The CGI_C library, by Thomas Boutell.
@@ -216,19 +216,8 @@ void VForm::fill_fields(Request& request) {
 		; // letter?
 }
 
-Value *VForm::fields_element() {
-	Value *result=NEW VHash(pool());
-
-	fields().for_each
-
-}
-
 // form: CLASS,method,field
 Value *VForm::get_element(const String& aname) {
-	// fields
-	if(name==FORM_FIELDS_ELEMENT_NAME)
-		return fields_element();
-
 	// $CLASS,$method
 	if(Value *result=VStateless_class::get_element(aname))
 		return result;

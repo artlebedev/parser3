@@ -580,5 +580,21 @@ SOURCE="..\classes\xml-xalan\c\Build\Win32\VC6\Debug\XPathD.lib"
 
 SOURCE="..\classes\xml-xalan\c\Build\Win32\VC6\Debug\XalanTransformerD.lib"
 # End Source File
+# Begin Source File
+
+SOURCE="..\classes\xml-xalan\c\Build\Win32\VC6\Debug\XalanDOMD.lib"
+# End Source File
+# Begin Source File
+
+SOURCE="..\classes\xml-xalan\c\Build\Win32\VC6\Debug\DOMSupportD.lib"
+# End Source File
+# Begin Source File
+
+SOURCE="..\classes\xml-xalan\c\Build\Win32\VC6\Debug\PlatformSupportD.lib"
+# End Source File
+# Begin Source File
+
+SOURCE="..\classes\xml-xalan\c\Build\Win32\VC6\Debug\XMLSupportD.lib"
+# End Source File
 # End Target
 # End Project
