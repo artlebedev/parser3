@@ -5,9 +5,13 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.46 2001/08/06 12:23:11 parser Exp $
+	$Id: file.C,v 1.47 2001/08/21 11:12:20 parser Exp $
 */
-static const char *RCSId="$Id: file.C,v 1.46 2001/08/06 12:23:11 parser Exp $"; 
+static const char *RCSId="$Id: file.C,v 1.47 2001/08/21 11:12:20 parser Exp $"; 
+
+#include "pa_config_includes.h"
+
+#include "pcre.h"
 
 #include "classes.h"
 #include "pa_request.h"
@@ -16,6 +20,8 @@ static const char *RCSId="$Id: file.C,v 1.46 2001/08/06 12:23:11 parser Exp $";
 #include "pa_vint.h"
 #include "pa_exec.h"
 #include "pa_vdate.h"
+#include "pa_dir.h"
+#include "pa_vtable.h"
 
 // consts
 
@@ -279,6 +285,81 @@ static void _cgi(Request& r, const String& method_name, MethodParams *params) {
 	_exec_cgi(r, method_name, params, true);
 }
 
+static void _list(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+
+	Value& relative_path=params->as_no_junction(0, "path must not be code");
+
+	const String *regexp;
+	pcre *regexp_code;
+	int ovecsize;
+	int *ovector;
+	if(params->size()>1) {
+		regexp=&params->as_no_junction(1, "regexp must not be code").as_string();
+
+		const char *pattern=regexp->cstr(String::UL_AS_IS);
+		const char *errptr;
+		int erroffset;
+		regexp_code=pcre_compile(pattern, PCRE_EXTRA | PCRE_DOTALL, 
+			&errptr, &erroffset, 
+			r.pcre_tables);
+
+		if(!regexp_code)
+			PTHROW(0, 0, 
+				&regexp->mid(erroffset, regexp->size()), 
+				"regular expression syntax error - %s", errptr);
+
+		ovector=(int *)malloc(sizeof(int)*(ovecsize=(1/*match*/)*3));
+	} else 
+		regexp_code=0;
+
+
+	const char* absolute_path_cstr=r.absolute(relative_path.as_string())
+		.cstr(String::UL_FILE_NAME);
+
+	Array& columns=*new(pool) Array(pool);
+	columns+=new(pool) String(pool, "name");	
+	Table& table=*new(pool) Table(pool, &method_name, &columns);
+
+	LOAD_DIR(absolute_path_cstr, 
+		size_t file_name_size=strlen(ffblk.ff_name);
+		bool suits=true;
+		if(regexp_code) {
+			int exec_result=pcre_exec(regexp_code, 0, 
+				ffblk.ff_name, file_name_size, 0, 
+				0, ovector, ovecsize);
+			
+			if(exec_result==PCRE_ERROR_NOMATCH)
+				suits=false;
+			else if(exec_result<0) {
+				(*pcre_free)(regexp_code);
+				PTHROW(0, 0, 
+					regexp, 
+					"regular expression execute (%d)", 
+						exec_result);
+			}
+		}
+
+		if(suits) {
+			char *file_name_cstr=(char *)r.malloc(file_name_size);
+			memcpy(file_name_cstr, ffblk.ff_name, file_name_size);
+			String &file_name=*new(pool) String(pool);
+			file_name.APPEND(file_name_cstr, file_name_size, String::UL_FILE_NAME, 
+				method_name.origin().file, method_name.origin().line);
+		
+			Array& row=*new(pool) Array(pool);
+			row+=&file_name;
+			table+=&row;
+		}
+	);
+
+	if(regexp_code)
+		(*pcre_free)(regexp_code);
+
+	VTable& result=*new(pool) VTable(pool, &table);
+	result.set_name(method_name);
+	r.write_no_lang(result);
+}
 
 // constructor
 
@@ -315,6 +396,11 @@ MFile::MFile(Pool& apool) : Methoded(apool) {
 	// ^exec[file-name;env hash]
 	// ^exec[file-name;env hash;1cmd;2line;3ar;4g;5s]
 	add_native_method("exec", Method::CT_DYNAMIC, _exec, 1, 2+10);
+
+	// ^file:list[path]
+	// ^file:list[path][regexp]
+	add_native_method("list", Method::CT_STATIC, _list, 1, 2);
+
 }
 
 // global variable

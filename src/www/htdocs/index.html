@@ -4,16 +4,22 @@ dtf.p
 
 @main[]
 #$ORIGINS(1)
-^func(0)<hr>
+#^func(0)<hr>
 #^tests[]
+^list[]
+
+@list[]
+$list[^file:list[.;.*\.html^$]]
+^list.menu{$list.name<br>}
+#^list.count[]
 
 @func[param]
 #[local]
 $local(0)
 ^local.inc(1)
 #$local($local+1)
-=$local=
 ^if($param<10){^func($param+1)}
+=$local=
 
 @bannerSSI[][code]
 $code[^file::cgi[/../cgi-bin/bbssi.pl;
