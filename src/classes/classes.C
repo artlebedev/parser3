@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: classes.C,v 1.12 2001/11/12 10:00:31 paf Exp $
+	$Id: classes.C,v 1.13 2001/11/13 15:56:39 paf Exp $
 */
 
 #include "classes.h"
@@ -31,7 +31,8 @@ Methoded_array::Methoded_array(Pool& apool) : Array(apool) {
 
 static void configure_admin_one(Array::Item *value, void *info) {
 	Request& r=*static_cast<Request *>(info);
-	static_cast<Methoded *>(value)->configure_admin(r);
+	if(Methoded *methoded=static_cast<Methoded *>(value))
+		methoded->configure_admin(r);
 }
 
 void Methoded_array::configure_admin(Request& r) {
@@ -40,7 +41,8 @@ void Methoded_array::configure_admin(Request& r) {
 
 static void configure_user_one(Array::Item *value, void *info) {
 	Request& r=*static_cast<Request *>(info);
-	static_cast<Methoded *>(value)->configure_user(r);
+	if(Methoded *methoded=static_cast<Methoded *>(value))
+		methoded->configure_user(r);
 }
 
 void Methoded_array::configure_user(Request& r) {
@@ -49,7 +51,8 @@ void Methoded_array::configure_user(Request& r) {
 
 static void register_one(Array::Item *value, void *info) {
 	Request& r=*static_cast<Request *>(info);
-	static_cast<Methoded *>(value)->register_directly_used(r);
+	if(Methoded *methoded=static_cast<Methoded *>(value))
+		methoded->register_directly_used(r);
 }
 
 void Methoded_array::register_directly_used(Request& r) {
