@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: image.C,v 1.47 2001/10/04 14:56:29 parser Exp $
+	$Id: image.C,v 1.48 2001/10/08 15:14:07 parser Exp $
 */
 
 /*
@@ -700,6 +700,45 @@ static void _length(Request& r, const String& method_name, MethodParams *params)
 			"does not contain an image");
 }
 
+static void _arc(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+
+	gdImage *image=static_cast<VImage *>(r.self)->image;
+	if(!image)
+		PTHROW(0, 0, 
+			&method_name, 
+			"does not contain an image");
+
+	image->Arc(
+		params->as_int(0, r), //cx
+		params->as_int(1, r), //cy
+		params->as_int(2, r), //w
+		params->as_int(3, r), //h
+		params->as_int(4, r), //s
+		params->as_int(5, r), //e
+		image->Color(params->as_int(6, r)));
+}
+
+static void _circle(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+
+	gdImage *image=static_cast<VImage *>(r.self)->image;
+	if(!image)
+		PTHROW(0, 0, 
+			&method_name, 
+			"does not contain an image");
+
+	int radius=params->as_int(2, r);
+	image->Arc(
+		params->as_int(0, r), //cx
+		params->as_int(1, r), //cy
+		radius, //w
+		radius, //h
+		0, //s
+		360, //e
+		image->Color(params->as_int(3, r)));
+}
+
 // constructor
 
 MImage::MImage(Pool& apool) : Methoded(apool) {
@@ -757,6 +796,12 @@ MImage::MImage(Pool& apool) : Methoded(apool) {
     // ^image.ngth[text]
 	add_native_method("length", Method::CT_DYNAMIC, _length, 1, 1);
 	
+	// ^image.arc(center x;center y;width;height;start in degrees;end in degrees;color)
+	add_native_method("arc", Method::CT_DYNAMIC, _arc, 7, 7);
+
+	// ^image.circle(center x;center y;r;color)
+	add_native_method("circle", Method::CT_DYNAMIC, _circle, 4, 4);
+
 }
 
 // global variable

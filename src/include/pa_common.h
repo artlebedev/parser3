@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_common.h,v 1.52 2001/10/08 09:04:08 parser Exp $
+	$Id: pa_common.h,v 1.53 2001/10/08 15:14:07 parser Exp $
 */
 
 #ifndef PA_COMMON_H
@@ -159,7 +159,6 @@ void back_slashes_to_slashes(char *s);
 #endif
 
 bool StrEqNc(const char *s1, const char *s2, bool strict=true);
-char *unquote(char*& current, char stop_at);
 
 #define SECS_PER_DAY (60*60*24)
 int getMonthDays(int year, int month);

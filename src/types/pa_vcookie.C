@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vcookie.C,v 1.25 2001/10/08 14:21:05 parser Exp $
+	$Id: pa_vcookie.C,v 1.26 2001/10/08 15:14:07 parser Exp $
 */
 
 #include "pa_sapi.h"
@@ -46,6 +46,23 @@ void VCookie::put_element(const String& aname, Value *avalue) {
 	(remove?after:deleted).put(aname, 0);
 }
 
+static char *search_stop(char*& current, char cstop_at) {
+	// skip leading WS
+	while(*current==' ' || *current=='\t')
+		current++;
+	if(!*current)
+		return current=0;
+
+	char *result=current;
+	if(char *pstop_at=strchr(current, cstop_at)) {
+		*pstop_at=0;
+		current=pstop_at+1;
+	} else
+		current=0;
+	return result;
+}
+
+
 //#include <stdio.h>
 void VCookie::fill_fields(Request& request) {
 	//request.info.cookie="test-session=value%3D5; test-default1=value%3D1; test-default2=value%3D2; test-tomorrow=value%3D3";
@@ -60,13 +77,16 @@ void VCookie::fill_fields(Request& request) {
 	strcpy(cookies, request.info.cookie);
     char *current=cookies;
 	uint line=0;
+	//_asm int 3;
     do {
-		if(char *attribute=unquote(current, '='))
-			if(char *meaning=unquote(current, ';')) {
+		if(char *attribute=search_stop(current, '='))
+			if(char *meaning=search_stop(current, ';')) {
 				String& sattribute=*NEW String(pool());
 				String& smeaning=*NEW String(pool());
-				sattribute.APPEND_TAINTED(attribute, 0, "cookie_name", line);
-				smeaning.APPEND_TAINTED(meaning, 0, "cookie_value", line);
+				sattribute.APPEND_TAINTED(unescape_chars(pool(), attribute, strlen(attribute)), 0, 
+					"cookie_name", line);
+				smeaning.APPEND_TAINTED(unescape_chars(pool(), meaning, strlen(meaning)), 0, 
+					"cookie_value", line);
 				before.put(sattribute, NEW VString(smeaning));
 				line++;
 			}
@@ -152,7 +172,7 @@ static void output_set_cookie(const Hash::Key& aattribute, Hash::Val *ameaning) 
 
 		// Set-Cookie: (attribute)=; path=/
 		meaning=new(pool) VHash(pool);
-		wrap_meaning->get_hash()->put(*expires_name, 
+		meaning->get_hash()->put(*expires_name, 
 			expires_timestamp(pool, -DEFAULT_EXPIRES_DAYS));
 	}
 	// defaulting path
