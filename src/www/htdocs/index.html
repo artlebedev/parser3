@@ -42,8 +42,8 @@ $pict.line-width(2)
 #$response:body[^pict.gif[]]
 
 $small[^image::create($pict.width/$k;$pict.height/$k)]
-#^small.copy[$pict](0;0;$pict.width;$pict.height;0;0;$pict.width;$pict.height)
-^small.copy[$pict](0;0;200;100;0;0)
+#^small.copy[$pict](0;0;$pict.width;$pict.height;0;0)
+^small.copy[$pict](0;0;$pict.width;$pict.height;0;0;$small.width;$small.height)
 
 $response:body[^small.gif[]]
 
