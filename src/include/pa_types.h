@@ -3,14 +3,14 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_types.h,v 1.12 2001/03/13 12:07:15 paf Exp $
+	$Id: pa_types.h,v 1.13 2001/03/14 08:50:01 paf Exp $
 */
 
 #ifndef PA_TYPES_H
 #define PA_TYPES_H
 
 #ifdef HAVE_CONFIG_H
-#include "pa_config.h"
+#	include "pa_config.h"
 #endif
 
 #ifdef WIN32
@@ -18,6 +18,14 @@
 #define close _close
 #define read _read
 #define stat _stat
+
+
+#if _MSC_VER
+#pragma warning(disable:4355)   // disable C4355 warning about using this
+	                            // in calls to parent constructors
+#endif
+
+
 #endif
 
 // for now: used in Exception::fcomment

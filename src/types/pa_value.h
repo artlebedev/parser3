@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.12 2001/03/13 20:02:11 paf Exp $
+	$Id: pa_value.h,v 1.13 2001/03/14 08:50:06 paf Exp $
 */
 
 /*
@@ -17,7 +17,7 @@
 #include "pa_string.h"
 #include "pa_array.h"
 #include "pa_exception.h"
-#include "core.h"
+#include "pa_globals.h"
 
 class Value;
 class VStateless_class;

@@ -3,10 +3,13 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: parser3.C,v 1.4 2001/03/13 19:35:07 paf Exp $
+	$Id: parser3.C,v 1.5 2001/03/14 08:50:05 paf Exp $
 */
 
-#include "pa_config.h"
+#ifdef HAVE_CONFIG_H
+#	include "pa_config.h"
+#endif
+
 
 #ifdef WIN32
 #	include <windows.h>
@@ -17,67 +20,115 @@
 #include <string.h>
 #include <fcntl.h>
 
-#include "core.h"
+#include "pa_globals.h"
 #include "pa_request.h"
 #include "pa_common.h"
 
+Pool pool; // global pool
+
 #ifdef WIN32
-// TODO:  LONG WINAPI TopLevelExceptionFilter (
+// intercept global system errors
+LONG WINAPI TopLevelExceptionFilter (
+									 struct _EXCEPTION_POINTERS *ExceptionInfo
+									 ) {
+	char buf[MAX_STRING];
+	if(ExceptionInfo && ExceptionInfo->ExceptionRecord) {
+		struct _EXCEPTION_RECORD *r=ExceptionInfo->ExceptionRecord;
+		
+		int printed=0;
+		printed+=snprintf(buf+printed, MAX_STRING-printed, "Exception 0x%X at 0x%p", 
+			r->ExceptionCode, 
+			r->ExceptionAddress);
+		for(unsigned int i=0; i<r->NumberParameters; i++)
+			printed+=snprintf(buf+printed, MAX_STRING-printed, ", 0x%X", 
+				r->ExceptionInformation[i]);
+	} else 
+		strcpy(buf, "Exception <unknown>");
+	
+	PTHROW(0, 0,
+		0,
+		buf);
+
+	return EXCEPTION_EXECUTE_HANDLER; // never reached
+}
 #endif
+
+void fill_vform_fields(Pool& pool, bool cgi, Hash& fields) {
+	String& ename=*new(pool) String(pool);
+	ename.APPEND_CONST("test");
+
+	String& evalue=*new(pool) String(pool);
+	evalue.APPEND_TAINTED("<value>", 0, "form", 0);
+
+	fields.put(ename, new(pool) VString(evalue));
+}
 
 int main(int argc, char *argv[]) {
-#ifdef WIN32
-	_fmode=_O_BINARY;			/*sets default for file streams to binary */
-	setmode(_fileno(stdin), _O_BINARY);		/* make the stdio mode be binary */
-	setmode(_fileno(stdout), _O_BINARY);		/* make the stdio mode be binary */
-	setmode(_fileno(stderr), _O_BINARY);		/* make the stdio mode be binary */
-
-	//TODO:	SetUnhandledExceptionFilter(&TopLevelExceptionFilter);
-	//TODO: initSocks();
-#endif
-
-	
-	Pool pool;
-	core(pool);
-
 	// were we started as CGI?
 	bool cgi=
 		getenv("SERVER_SOFTWARE") || 
 		getenv("SERVER_NAME") || 
 		getenv("GATEWAY_INTERFACE") || 
 		getenv("REQUEST_METHOD");
-
-	// TODO: ifdef WIN32 flip \\ to /
-	const char *document_root="Y:/parser3/src/";
-	const char *page_filespec="Y:/parser3/src/test.p";
-
-	// request
-	Request request(pool,
-		cgi ? String::Untaint_lang::HTML_TYPO : String::Untaint_lang::NO,
-		document_root,
-		page_filespec
-		);
 	
-	// some root-controlled location
-	char *sys_auto_path1;
+	char *result;  char error[MAX_STRING];  error[0]=0;
+	PTRY { // global try
+		// must be first in PTRY{}PCATCH
 #ifdef WIN32
-	sys_auto_path1=(char *)pool.malloc(MAX_STRING);
-	GetWindowsDirectory(sys_auto_path1, MAX_STRING-1/*for \*/);
-	strcat(sys_auto_path1, "\\");
-#else
-	sys_auto_path1=getenv("HOME");
+		SetUnhandledExceptionFilter(&TopLevelExceptionFilter);
+		//TODO: initSocks();
 #endif
-	
-	// beside by binary
-	char *sys_auto_path2=(char *)pool.malloc(MAX_STRING);
-	strncpy(sys_auto_path2, argv[0], MAX_STRING-20);  // filespec of my binary
-	rsplit(sys_auto_path2, '\\');  rsplit(sys_auto_path2, '/'); // strip filename
-	
-	char *result=request.core(
-		sys_auto_path1, 
-		sys_auto_path2);
-	
-	const char *error="nested exception";
+
+		fill_globals(pool);
+		
+		Pool request_pool; // request pool
+		// TODO: ifdef WIN32 flip \\ to /
+		const char *document_root="Y:/parser3/src/";
+		const char *page_filespec="Y:/parser3/src/test.p";
+		
+		// prepare to process request
+		Request request(request_pool,
+			cgi ? String::Untaint_lang::HTML_TYPO : String::Untaint_lang::NO,
+			document_root,
+			page_filespec
+			);
+		
+		// fill user passed forms
+		fill_vform_fields(pool, cgi, request.form_class.fields());
+		
+		// some root-controlled location
+		char *sys_auto_path1;
+#ifdef WIN32
+		sys_auto_path1=(char *)pool.malloc(MAX_STRING);
+		GetWindowsDirectory(sys_auto_path1, MAX_STRING-1/*for \*/);
+		strcat(sys_auto_path1, "\\");
+#else
+		sys_auto_path1=getenv("HOME");
+#endif
+		
+		// beside by binary
+		char *sys_auto_path2=(char *)pool.malloc(MAX_STRING);
+		strncpy(sys_auto_path2, argv[0], MAX_STRING-20);  // filespec of my binary
+		rsplit(sys_auto_path2, '\\');  rsplit(sys_auto_path2, '/'); // strip filename
+		
+		// process the request
+		result=request.core(
+			sys_auto_path1, 
+			sys_auto_path2);
+		// set error, will be reported in case result==0
+		strcpy(error, "exception occured in request exception handler");
+
+		// must be last in PTRY{}PCATCH
+#ifdef WIN32
+		SetUnhandledExceptionFilter(0);
+#endif
+	} PCATCH(e) { // global problem, such as out of memory when creating Request
+		result=0;
+		strcpy(error, e.comment());
+	}
+	PEND_CATCH
+
+	// write out the result	
 	if(cgi) {
 		if(result) {
 			const char *content_type="text/html";

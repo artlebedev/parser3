@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_request.C,v 1.30 2001/03/13 19:35:06 paf Exp $
+	$Id: pa_request.C,v 1.31 2001/03/14 08:50:04 paf Exp $
 */
 
 #include <string.h>
@@ -15,7 +15,7 @@
 #include "_root.h"
 #include "_env.h"
 #include "_table.h"
-#include "core.h"
+#include "pa_globals.h"
 #include "pa_vint.h"
 #include "pa_vmframe.h"
 

@@ -41,7 +41,7 @@ RSC=rc.exe
 # PROP Intermediate_Dir "Release"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /nologo /Ze /w /W0 /O2 /I ".." /I "..\include" /I "..\types" /I "..\classes" /D "NDEBUG" /D "_LIB" /D "WIN32" /FD /TP /c
+# ADD CPP /nologo /W3 /O2 /I ".." /I "..\include" /I "..\types" /I "..\classes" /D "NDEBUG" /D "_LIB" /D "WIN32" /FD /TP /c
 # ADD BASE RSC /l 0x419 /d "NDEBUG"
 # ADD RSC /l 0x419 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -64,7 +64,7 @@ LIB32=link.exe -lib
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /Ze /W3 /Gm /GR- /GX- /Zi /Od /I ".." /I "..\include" /I "..\types" /I "..\classes" /D "_DEBUG" /D "_LIB" /D "WIN32" /FD /TP /GZ /c
+# ADD CPP /nologo /W3 /Gm /Zi /Od /I ".." /I "..\include" /I "..\types" /I "..\classes" /D "_DEBUG" /D "_LIB" /D "WIN32" /FD /TP /GZ /c
 # SUBTRACT CPP /Fr
 # ADD BASE RSC /l 0x419 /d "_DEBUG"
 # ADD RSC /l 0x419 /d "_DEBUG"
@@ -90,10 +90,6 @@ SOURCE=..\include\code.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\include\core.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\include\pa_array.h
 # End Source File
 # Begin Source File
@@ -103,6 +99,10 @@ SOURCE=..\include\pa_common.h
 # Begin Source File
 
 SOURCE=..\include\pa_exception.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\pa_globals.h
 # End Source File
 # Begin Source File
 
@@ -191,10 +191,6 @@ SOURCE=.\compile_tools.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\core.C
-# End Source File
-# Begin Source File
-
 SOURCE=.\execute.C
 # End Source File
 # Begin Source File
@@ -208,6 +204,10 @@ SOURCE=.\pa_common.C
 # Begin Source File
 
 SOURCE=.\pa_exception.C
+# End Source File
+# Begin Source File
+
+SOURCE=.\pa_globals.C
 # End Source File
 # Begin Source File
 
@@ -390,5 +390,9 @@ SOURCE=..\classes\string.C
 SOURCE=..\classes\table.C
 # End Source File
 # End Group
+# Begin Source File
+
+SOURCE=..\pa_config.h
+# End Source File
 # End Target
 # End Project

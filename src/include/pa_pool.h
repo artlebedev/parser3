@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.h,v 1.32 2001/03/13 16:38:22 paf Exp $
+	$Id: pa_pool.h,v 1.33 2001/03/14 08:50:01 paf Exp $
 */
 
 #ifndef PA_POOL_H
@@ -107,23 +107,33 @@ public:
 	}
 };
 
-#define TRY \
+#define XTRY(pool) \
 	{ \
 		Exception temp_exception; \
-		Temp_exception le(pool(), temp_exception); \
+		Temp_exception le(pool, temp_exception); \
 		if(setjmp(temp_exception.mark)==0)
 
-#define THROW exception()._throw
-#define PTHROW pool.exception()._throw
-#define RTHROW r.pool().exception()._throw
-#define CATCH(e) \
+#define XTHROW(exception) exception._throw
+#define XCATCH(e) \
 		else{ \
 			Exception& e=temp_exception;
 
-#define END_CATCH \
+#define XEND_CATCH \
 		} \
 	}
 // usage:
 //   TRY { ...; if(?) RAISE(?); ...; } CATCH(e) { catch-code e.comment() } END_CATCH
+
+#define TRY XTRY(pool())
+#define THROW XTHROW(exception())
+#define CATCH(e) XCATCH(e)
+#define END_CATCH XEND_CATCH 
+
+#define PTRY XTRY(pool)
+#define PTHROW XTHROW(pool.exception())
+#define PCATCH(e) XCATCH(e)
+#define PEND_CATCH XEND_CATCH 
+
+#define RTHROW XTHROW(r.pool().exception())
 
 #endif

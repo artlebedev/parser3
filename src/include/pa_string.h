@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.34 2001/03/13 14:28:50 paf Exp $
+	$Id: pa_string.h,v 1.35 2001/03/14 08:50:01 paf Exp $
 */
 
 /*
@@ -23,7 +23,7 @@
 #define PA_STRING_H
 
 #ifdef HAVE_CONFIG_H
-#include "pa_config.h"
+#	include "pa_config.h"
 #endif
 
 #include <stddef.h>

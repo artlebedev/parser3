@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vform.h,v 1.2 2001/03/13 20:02:11 paf Exp $
+	$Id: pa_vform.h,v 1.3 2001/03/14 08:50:06 paf Exp $
 */
 
 #ifndef PA_VFORM_H
@@ -37,14 +37,14 @@ public: // usage
 	VForm(Pool& apool) : VStateless_class(apool, form_base_class),
 		ffields(apool) {
 
-		construct_fields();
+		//construct_fields();
 	}
 
-//	Hash& fields() { return ffields; }
+	Hash& fields() { return ffields; }
 
 private:
 
-	void construct_fields();
+	//void construct_fields();
 
 private:
 

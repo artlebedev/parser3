@@ -3,10 +3,10 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: core.C,v 1.68 2001/03/13 20:02:10 paf Exp $
+	$Id: pa_globals.C,v 1.1 2001/03/14 08:50:04 paf Exp $
 */
 
-#include "core.h"
+#include "pa_globals.h"
 #include "_string.h"
 #include "_double.h"
 #include "_int.h"
@@ -31,7 +31,7 @@ String *form_class_name;
 Hash *untaint_lang_name2enum;
 
 
-void core(Pool& pool) {
+void fill_globals(Pool& pool) {
 	#define NEW_STRING(name, value)  name=new(pool) String(pool); name->APPEND_CONST(value)
 	#define LOCAL_STRING(name, value)  String name(pool); name.APPEND_CONST(value)
 

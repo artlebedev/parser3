@@ -3,11 +3,11 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: core.h,v 1.15 2001/03/13 19:35:04 paf Exp $
+	$Id: pa_globals.h,v 1.1 2001/03/14 08:50:00 paf Exp $
 */
 
-#ifndef CORE_H
-#define CORE_H
+#ifndef PA_GLOBALS_H
+#define PA_GLOBALS_H
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -28,7 +28,7 @@
 #define FORM_CLASS_NAME "form"
 
 // core func
-void core(Pool& pool);
+void fill_globals(Pool& pool);
 
 // global strings
 extern String *exception_method_name;

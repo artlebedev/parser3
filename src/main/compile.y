@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.97 2001/03/13 20:02:10 paf Exp $
+	$Id: compile.y,v 1.98 2001/03/14 08:50:03 paf Exp $
 */
 
 /*
@@ -35,7 +35,7 @@
 #include "pa_request.h"
 #include "pa_vobject.h"
 #include "pa_vdouble.h"
-#include "core.h"
+#include "pa_globals.h"
 
 #define SELF_ELEMENT_NAME "self"
 #define USE_CONTROL_METHOD_NAME "USE"
