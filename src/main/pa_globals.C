@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.C,v 1.58 2001/04/28 13:25:03 paf Exp $
+	$Id: pa_globals.C,v 1.59 2001/04/28 13:31:14 paf Exp $
 */
 
 #include "pa_globals.h"
@@ -42,7 +42,6 @@ String *string_pre_match_name;
 String *string_match_name;
 String *string_post_match_name;
 
-String *limits_name;
 String *post_max_size_name;
 
 String *defaults_name;

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_globals.h,v 1.52 2001/04/28 13:25:00 paf Exp $
+	$Id: pa_globals.h,v 1.53 2001/04/28 13:31:11 paf Exp $
 */
 
 #ifndef PA_GLOBALS_H
@@ -62,8 +62,6 @@ class Table;
 
 #define CONTENT_DISPOSITION_NAME "content-disposition"
 #define CONTENT_DISPOSITION_FILENAME_NAME "filename"
-
-#define LIMITS_NAME "LIMITS"
 
 //@}
 
