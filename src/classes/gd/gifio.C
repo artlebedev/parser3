@@ -3,7 +3,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: gifio.C,v 1.9 2001/05/07 13:29:51 paf Exp $
+	$Id: gifio.C,v 1.10 2001/08/28 13:49:19 parser Exp $
 
 
 	based on:
@@ -353,9 +353,9 @@ void gdGifEncoder::Write(void *buf, size_t size) {
 
 #ifdef NO_UCHAR
 typedef char   char_type;
-#else /*NO_UCHAR*/
+#else
 typedef        unsigned char   char_type;
-#endif /*NO_UCHAR*/
+#endif
 
 /*
 *
@@ -373,9 +373,9 @@ typedef        unsigned char   char_type;
 */
 #ifdef COMPATIBLE               /* But wrong! */
 # define MAXCODE(n_bits)      ((code_int) 1 <<(n_bits) - 1)
-#else /*COMPATIBLE*/
+#else
 # define MAXCODE(n_bits)      (((code_int) 1 <<(n_bits)) - 1)
-#endif /*COMPATIBLE*/
+#endif
 
 #define HashTabOf(i)       htab[i]
 #define CodeTabOf(i)    codetab[i]
@@ -454,9 +454,9 @@ gdGifEncoder::compress(int init_bits)
 	
 #ifdef SIGNED_COMPARE_SLOW
     while((c = GIFNextPixel( )) !=(unsigned) EOF ) {
-#else /*SIGNED_COMPARE_SLOW*/
+#else
 	while((c = GIFNextPixel( )) != EOF ) {  /* } */
-#endif /*SIGNED_COMPARE_SLOW*/
+#endif
 		
 	++in_count;
 	
@@ -487,9 +487,9 @@ nomatch:
 	ent = c;
 #ifdef SIGNED_COMPARE_SLOW
 	if((unsigned) free_ent <(unsigned) maxmaxcode) {
-#else /*SIGNED_COMPARE_SLOW*/
+#else
 		if( free_ent < maxmaxcode ) {  /* } */
-#endif /*SIGNED_COMPARE_SLOW*/
+#endif
 			CodeTabOf(i) = free_ent++; /* code -> hashtable */
 			HashTabOf(i) = fcode;
 		} else

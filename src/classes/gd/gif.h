@@ -3,7 +3,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: gif.h,v 1.9 2001/05/10 17:28:08 paf Exp $
+	$Id: gif.h,v 1.10 2001/08/28 13:49:19 parser Exp $
 
 
 	based on:
@@ -146,12 +146,12 @@ private:
 
 	/// a code_int must be able to hold 2**GIFBITS values of type int, and also -1
 	typedef int             code_int;
-	#ifdef SIGNED_COMPARE_SLOW
+#ifdef SIGNED_COMPARE_SLOW
 	typedef unsigned long int count_int;
 	typedef unsigned short int count_short;
-	#else /*SIGNED_COMPARE_SLOW*/
+#else
 	typedef long int          count_int;
-	#endif /*SIGNED_COMPARE_SLOW*/
+#endif
 
 private:
 
