@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: execute.C,v 1.213 2002/01/31 15:04:38 paf Exp $
+	$Id: execute.C,v 1.214 2002/01/31 15:16:01 paf Exp $
 */
 
 #include "pa_opcode.h"
@@ -238,6 +238,12 @@ void Request::execute(const Array& ops) {
 				Value *ncontext=POP();
 				ncontext->put_element(name, value->as_expr_result());
 				value->set_name(name);
+
+				// forget the fact that they've entered some ^class/object.xxx or $class/object.xxx
+				// during expression evaluation
+				// see OP_GET_ELEMENT
+				wcontext->set_somebody_entered_some_object(false);
+				wcontext->set_somebody_entered_some_class(false);
 				break;
 			}
 		case OP_CURLY_CODE__CONSTRUCT:
