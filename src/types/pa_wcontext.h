@@ -8,7 +8,7 @@
 #ifndef PA_WCONTEXT_H
 #define PA_WCONTEXT_H
 
-static const char* IDENT_WCONTEXT_H="$Date: 2002/09/10 14:57:10 $";
+static const char* IDENT_WCONTEXT_H="$Date: 2002/09/10 14:56:34 $";
 
 #include "pa_value.h"
 #include "pa_vstring.h"
@@ -108,6 +108,8 @@ public: // usage
 
 	void set_somebody_entered_some_class() { flags.entered_class=1; }
 	bool get_somebody_entered_some_class() { return flags.entered_class!=0; }
+
+	WContext *parent() { return fparent; }
 
 private:
 
