@@ -7,13 +7,20 @@
 
 	2001.07.30 using PgSQL 7.1.2
 */
-static const char *RCSId="$Id: parser3pgsql.C,v 1.3 2001/07/31 07:58:47 parser Exp $"; 
+static const char *RCSId="$Id: parser3pgsql.C,v 1.4 2001/07/31 12:44:36 parser Exp $"; 
 
 #include "config_includes.h"
 
 #include "pa_sql_driver.h"
 
 #include <libpq-fe.h>
+#include <libpq-fs.h>
+
+// #include <catalog/pg_type.h>
+#define OIDOID			26
+#define LO_BUFSIZE		  8192
+
+
 #include "ltdl.h"
 
 #define MAX_STRING 0x400
@@ -22,6 +29,11 @@ static const char *RCSId="$Id: parser3pgsql.C,v 1.3 2001/07/31 07:58:47 parser E
 #if _MSC_VER
 #	define snprintf _snprintf
 #	define strcasecmp _stricmp
+#endif
+
+#ifndef max
+inline int max(int a,int b) { return a>b?a:b; }
+inline int min(int a,int b){ return a<b?a:b; }
 #endif
 
 static char *lsplit(char *string, char delim) {
@@ -70,21 +82,39 @@ public:
 		char *port=lsplit(host, ':');
 
 //		_asm  int 3; 
-		PGconn *pgsql=PQsetdbLogin(
+		PGconn *conn=PQsetdbLogin(
 			strcasecmp(host, "local")==0?NULL/* local Unix domain socket */:host, port, 
 			NULL, NULL, db, user, pwd);
-		if(!pgsql)
+		if(!conn)
 			services._throw("PQsetdbLogin failed");
-		if(PQstatus(pgsql)!=CONNECTION_OK)  
-			services._throw(PQerrorMessage(pgsql));
+		if(PQstatus(conn)!=CONNECTION_OK)  
+			services._throw(PQerrorMessage(conn));
 
-		*(PGconn **)connection=pgsql;
+		*(PGconn **)connection=conn;
+		begin_transaction(services, conn);
 	}
 	void disconnect(SQL_Driver_services&, void *connection) {
+//		_asm int 3;
 	    PQfinish((PGconn *)connection);
 	}
-	void commit(SQL_Driver_services&, void *) {}
-	void rollback(SQL_Driver_services&, void *) {}
+	void commit(SQL_Driver_services& services, void *connection) {
+//		_asm int 3;
+		PGconn *conn=(PGconn *)connection;
+		if(PGresult *res=PQexec(conn, "COMMIT"))
+			PQclear(res);
+		else
+			services._throw(PQerrorMessage(conn));
+		begin_transaction(services, conn);
+	}
+	void rollback(SQL_Driver_services& services, void *connection) {
+//		_asm int 3;
+		PGconn *conn=(PGconn *)connection;
+		if(PGresult *res=PQexec(conn, "ROLLBACK"))
+			PQclear(res);
+		else
+			services._throw(PQerrorMessage(conn));
+		begin_transaction(services, conn);
+	}
 
 	bool ping(SQL_Driver_services&, void *connection) {
 		return PQstatus((PGconn *)connection)==CONNECTION_OK;
@@ -120,7 +150,7 @@ public:
 		const char *astatement, unsigned long offset, unsigned long limit,
 		SQL_Driver_query_event_handlers& handlers) {
 
-		PGconn *pgsql=(PGconn *)connection;
+		PGconn *conn=(PGconn *)connection;
 
 		const char *statement;
 		if(offset || limit) {
@@ -137,9 +167,9 @@ public:
 		} else
 			statement=astatement;
 
-		PGresult *res=PQexec(pgsql, statement);
+		PGresult *res=PQexec(conn, statement);
 		if(!res) 
-			services._throw(PQerrorMessage(pgsql));
+			services._throw(PQerrorMessage(conn));
 
 		switch(PQresultStatus(res)) {
 		case PGRES_EMPTY_QUERY: 
@@ -172,18 +202,67 @@ public:
 		}
 
 		handlers.before_rows();
-		
+
 		if(unsigned long row_count=(unsigned long)PQntuples(res))
 			for(unsigned long r=0; r<row_count; r++) {
 				handlers.add_row();
 				for(int i=0; i<column_count; i++){
-					size_t size=(size_t)PQgetlength(res, r, i);
+					const char *cell=PQgetvalue(res, r, i);
+					size_t size;
 					void *ptr;
-					if(size) {
-						ptr=services.malloc(size);
-						memcpy(ptr, PQgetvalue(res, r, i), size);
-					} else
-						ptr=0;
+					if(PQftype(res, i)==OIDOID) {
+						// ObjectID column, read object bytes
+//						_asm int 3;
+
+						#define PQclear_n_throw { \
+								PQclear(res); \
+								services._throw(PQerrorMessage(conn)); \
+							}
+						
+						char *error_pos=0;
+						Oid oid=cell?atoi(cell):0;
+						int fd=lo_open(conn, oid, INV_READ);
+						if(fd>=0) {
+							// seek to end
+							if(lo_lseek(conn, fd, 0, SEEK_END)<0)
+								PQclear_n_throw;
+							// get size
+							int size_tell=lo_tell(conn, fd);
+							if(size_tell<0)
+								PQclear_n_throw;
+							// seek to begin
+							if(lo_lseek(conn, fd, 0, SEEK_SET)<0)
+								PQclear_n_throw;
+							size=(size_t)size_tell;
+							if(size) {
+								// read 
+								ptr=services.malloc(size);
+								char *buf=(char *)ptr;
+								int countdown=size_tell;
+								int size_read;
+								while(countdown && (size_read=lo_read(conn, fd, buf, min(LO_BUFSIZE, countdown)))>0) {
+									buf+=size_read;
+									countdown-=size_read;									
+								}
+								if(countdown) {
+									PQclear(res);
+									services._throw("lo_read can not read all of object bytes");
+								}
+							} else
+								ptr=0;
+							if(lo_close(conn, fd)<0)
+								PQclear_n_throw;
+						} else
+							PQclear_n_throw;
+					} else {
+						// normal column, read it as ASCII string
+						size=(size_t)PQgetlength(res, r, i);
+						if(size) {
+							ptr=services.malloc(size);
+							memcpy(ptr, cell, size);
+						} else
+							ptr=0;
+					}
 					handlers.add_row_cell(ptr, size);
 				}
 			}
@@ -191,7 +270,16 @@ public:
 		PQclear(res);
 	}
 
-private: // pgsql client library funcs
+private: // private funcs
+
+	void begin_transaction(SQL_Driver_services& services, PGconn *conn) {
+		if(PGresult *res=PQexec(conn, "BEGIN"))
+			PQclear(res);
+		else
+			services._throw(PQerrorMessage(conn));
+	}
+
+private: // conn client library funcs
 
 	typedef PGconn* (*t_PQsetdbLogin)(
 		const char *pghost,
@@ -219,8 +307,20 @@ private: // pgsql client library funcs
 	typedef int (*t_PQnfields)(const PGresult *res); t_PQnfields PQnfields;
 	typedef void (*t_PQclear)(PGresult *res); t_PQclear PQclear;
 
+	typedef Oid	(*t_PQftype)(const PGresult *res, int field_num); t_PQftype PQftype;
 
-private: // pgsql client library funcs linking
+	typedef int	(*t_lo_open)(PGconn *conn, Oid lobjId, int mode); t_lo_open lo_open;
+	typedef int	(*t_lo_close)(PGconn *conn, int fd); t_lo_close lo_close;
+	typedef int	(*t_lo_read)(PGconn *conn, int fd, char *buf, size_t len); t_lo_read lo_read;
+	typedef int	(*t_lo_write)(PGconn *conn, int fd, char *buf, size_t len); t_lo_write lo_write;
+	typedef int	(*t_lo_lseek)(PGconn *conn, int fd, int offset, int whence); t_lo_lseek lo_lseek;
+	typedef Oid	(*t_lo_creat)(PGconn *conn, int mode); t_lo_creat lo_creat;
+	typedef int	(*t_lo_tell)(PGconn *conn, int fd); t_lo_tell lo_tell;
+	typedef int	(*t_lo_unlink)(PGconn *conn, Oid lobjId); t_lo_unlink lo_unlink;
+	typedef Oid	(*t_lo_import)(PGconn *conn, const char *filename); t_lo_import lo_import;
+	typedef int	(*t_lo_export)(PGconn *conn, Oid lobjId, const char *filename); t_lo_export lo_export;
+
+private: // conn client library funcs linking
 
 	const char *dlink(const char *dlopen_file_spec) {
         lt_dlhandle handle=lt_dlopen(dlopen_file_spec);
@@ -246,6 +346,12 @@ private: // pgsql client library funcs linking
 		DLINK(PQclear);
 		DLINK(PQresultStatus);
 		DLINK(PQexec);
+		DLINK(PQftype);
+		DLINK(lo_open);		DLINK(lo_close);
+		DLINK(lo_read);		DLINK(lo_write);
+		DLINK(lo_lseek);		DLINK(lo_creat);
+		DLINK(lo_tell);		DLINK(lo_unlink);
+		DLINK(lo_import);		DLINK(lo_export);
 
 		return 0;
 	}
