@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_UNTAINT_C="$Date: 2003/09/26 15:10:39 $";
+static const char* IDENT_UNTAINT_C="$Date: 2003/09/26 15:45:24 $";
 
 
 #include "pa_string.h"
@@ -170,7 +170,6 @@ inline bool need_quote_http_header(const char* ptr, size_t size) {
 #ifndef DOXYGEN
 struct Append_fragment_info {
 	String::Language lang;
-	String::Body dest_body;
 	String::Languages* dest_languages;
 	size_t dest_body_plan_length;
 };
@@ -222,7 +221,7 @@ String& String::append_to(String& dest, Language lang, bool forced) const {
 	else if(forced) //forcing passed lang?
 		dest.langs.append(dest.body, lang, length());
 	else { 
-		Append_fragment_info info={lang, dest.body, &dest.langs, dest.body.length()};
+		Append_fragment_info info={lang, &dest.langs, dest.body.length()};
 	    langs.for_each(body, lang&L_OPTIMIZE_BIT?
 			append_fragment_optimizing
 			:append_fragment_nonoptimizing, &info);
