@@ -1,4 +1,41 @@
+2002-06-10  paf
+	* src/main/pa_common.C:
+		fixed -d (bug)
+
+	* src/main/pa_common.C:
+		merged fixed -d (bug)
+
+	* configure:
+	* configure.in:
+	* src/include/pa_version.h:
+		makes
+
+	* src/main/untaint.C:
+		bug#2) mail subject got always prepended with charset even when
+		all letters were 7bit one
+
+2002-06-04  paf
+	* src/targets/apache13/mod_parser3.C:
+	* src/targets/apache13/mod_parser3.C:
+		fixed .dsp-s along with reorganized cvs modules dirs structure
+
 2002-06-03  paf
+	* etc/parser3.charsets/windows-1251.cfg:
+	* operators.txt:
+	* src/classes/classes.dsp:
+	* src/classes/gd/gd.dsp:
+	* src/classes/smtp/smtp.dsp:
+	* src/main/compile.tab.C:
+	* src/main/main.dsp:
+	* src/main/pa_globals.C:
+	* src/targets/apache13/ApacheModuleParser3.dsp:
+	* src/targets/cgi/parser3.C:
+	* src/targets/cgi/parser3.dsp:
+	* src/targets/isapi/parser3isapi.dsp:
+	* src/types/types.dsp:
+	* www/htdocs/index.html:
+		fixed .dsp-s along with reorganized cvs modules dirs structure
+
 	* src/classes/classes.dsp:
 	* src/classes/gd/gd.dsp:
 	* src/classes/smtp/smtp.dsp:
@@ -7273,7 +7310,7 @@
 	* src/targets/cgi/parser3.C:
 	* src/targets/isapi/parser3isapi.C:
 		*/
-		static const char *RCSId="$Id: ChangeLog,v 1.7 2002/06/03 15:02:39 paf Exp $";
+		static const char *RCSId="$Id: ChangeLog,v 1.8 2002/06/10 11:15:51 paf Exp $";
 
 	* src/main/compile.y:
 	* src/main/compile_tools.h:
@@ -7316,7 +7353,7 @@
 	* src/main/untaint.C:
 	* src/targets/cgi/parser3.C:
 	* src/targets/isapi/parser3isapi.C:
-		static char *RCSId="$Id: ChangeLog,v 1.7 2002/06/03 15:02:39 paf Exp $";
+		static char *RCSId="$Id: ChangeLog,v 1.8 2002/06/10 11:15:51 paf Exp $";
 
 2001-06-27  parser
 	* src/classes/hash.C:
@@ -13370,7 +13407,7 @@
 	* src/targets/parser.C:
 	* src/targets/parser.dsp:
 	* src/targets/parser.dsp:
-		$Id: ChangeLog,v 1.7 2002/06/03 15:02:39 paf Exp $ check
+		$Id: ChangeLog,v 1.8 2002/06/10 11:15:51 paf Exp $ check
 
 	* src/targets/parser.C:
 		$id$ check
