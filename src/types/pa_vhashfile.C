@@ -4,7 +4,7 @@
 	Copyright(c) 2001 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vhashfile.C,v 1.8 2001/10/24 10:04:54 parser Exp $
+	$Id: pa_vhashfile.C,v 1.9 2001/10/24 10:09:13 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -30,7 +30,7 @@ void VHashfile::put_field(const String& aname, Value *avalue) {
 
 	if(Hash *hash=avalue->get_hash(&aname)) {
 		if(Value *value_value=(Value *)hash->get(*value_name)) {
-			if(!value_value->get_junction())
+			if(value_value->get_junction())
 				throw Exception(0, 0,
 					&value_value->name(),
 					"must not be code");

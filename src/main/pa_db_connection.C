@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_connection.C,v 1.7 2001/10/24 09:40:01 parser Exp $
+	$Id: pa_db_connection.C,v 1.8 2001/10/24 10:09:12 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -96,7 +96,7 @@ String *DB_Connection::data_dbt_to_string(const DBT& data_dbt) {
 			"data string version 0x%04X not equal to 0x%04X, recreate file",
 				prolog.version, DATA_STRING_SERIALIZED_VERSION);
 
-	if(prolog.time_to_die/*specified*/ && prolog.time_to_die >= time(0)/*expired*/)
+	if(prolog.time_to_die/*specified*/ && prolog.time_to_die <= time(0)/*expired*/)
 		return 0;
 
 	String& result=*new(*fservices_pool) String(*fservices_pool);
