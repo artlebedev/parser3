@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REQUEST_C="$Date: 2004/10/05 10:55:36 $";
+static const char * const IDENT_REQUEST_C="$Date: 2004/10/05 11:07:48 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -271,6 +271,20 @@ const char* Request::get_exception_cstr(
 
 	return result;
 }
+
+void Request::configure() {
+	// configure admin options if not configured yet
+	if(!configure_admin_done)
+		configure_admin(main_class);
+
+	// configure not-admin=user options
+	methoded_array().configure_user(*this);
+
+	// $MAIN:MIME-TYPES
+	if(Value* element=main_class.get_element(mime_types_name, main_class, false))
+		if(Table *table=element->get_table())
+			mime_types=table;			
+}
 /**
 	load MAIN class, execute @main.
 	MAIN class consists of all the auto.p files we'd manage to find
@@ -337,25 +351,20 @@ gettimeofday(&mt[0],NULL);
 			}
 		}
 
-		// compile requested file
-		String& spath_translated=*new String;
-		spath_translated.append_help_length(request_info.path_translated, 0, String::L_TAINTED);
-		use_file(main_class,
-			spath_translated, 
-			0 /*main_alias*/,
-			true /*ignore class_path*/);
+		try {
+			// compile requested file
+			String& spath_translated=*new String;
+			spath_translated.append_help_length(request_info.path_translated, 0, String::L_TAINTED);
+			use_file(main_class,
+				spath_translated, 
+				0 /*main_alias*/,
+				true /*ignore class_path*/);
 
-		// configure method_frame options if not configured yet
-		if(!configure_admin_done)
-			configure_admin(main_class);
-
-		// configure not-method_frame=user options
-		methoded_array().configure_user(*this);
-
-		// $MAIN:MIME-TYPES
-		if(Value* element=main_class.get_element(mime_types_name, main_class, false))
-			if(Table *table=element->get_table())
-				mime_types=table;			
+			configure();
+		} catch(...) {
+			configure(); // configure anyway, useful in @unhandled_exception [say, if they would want to mail by SMTP something]
+			rethrow;
+		}
 
 #ifdef RESOURCES_DEBUG
 //measure:after compile

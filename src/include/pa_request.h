@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char * const IDENT_REQUEST_H="$Date: 2004/07/30 10:55:21 $";
+static const char * const IDENT_REQUEST_H="$Date: 2004/10/05 11:07:48 $";
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -375,6 +375,8 @@ private:
 	bool configure_admin_done;
 
 	void configure_admin(VStateless_class& conf_class);
+
+	void configure();
 
 private: // compile.C
 
