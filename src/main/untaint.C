@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: untaint.C,v 1.101 2002/04/10 08:53:55 paf Exp $
+	$Id: untaint.C,v 1.102 2002/06/10 09:37:06 paf Exp $
 */
 
 #include "pa_pool.h"
@@ -406,7 +406,7 @@ char *String::store_to(char *dest, Untaint_lang lang,
 				const char *src=(const char *)mail_ptr;
 				bool to_quoted_printable=false;
 				for(int size=mail_size; size--; src++) {
-					if(*src & 0x80  // starting quote-printable-encoding on first 8bit char
+					if((*src & 0x80)  // starting quote-printable-encoding on first 8bit char
 						|| (to_quoted_printable && (*src=='?' || *src=='=')) // additionally encoding '?' and '|'
 						) {
 						if(!to_quoted_printable) {
