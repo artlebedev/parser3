@@ -4,7 +4,7 @@ bin_PROGRAMS = parser3
 parser3_SOURCES = pa_config_paths.h pa_pool.C pa_threads.C parser3.C ident.C
 parser3_LDADD=../../main/libmain.a ../../classes/libclasses.a ../../main/libmain.a ../../types/libtypes.a $(LIBLTDL) ../../classes/gd/libgd.a ../../pcre/libpcre.a @XML_LIBS@ @DB2_LIBS@
 
-IDENT_AWK = $(top_srcdir)/ident.awk
+IDENT_AWK = $(top_srcdir)/src/ident.awk
 IDENT_DEPS = *.C
 
 ident.C: $(IDENT_AWK) $(IDENT_DEPS) Makefile.am

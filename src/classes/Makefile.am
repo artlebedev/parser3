@@ -15,7 +15,7 @@ CLEANFILES = classes.inc
 
 classes.C: classes.inc
 
-IDENT_AWK = $(top_srcdir)/ident.awk
+IDENT_AWK = $(top_srcdir)/src/ident.awk
 IDENT_DEPS = *.awk *.h *.C
 
 ident.C: $(IDENT_AWK) $(IDENT_DEPS) Makefile.am

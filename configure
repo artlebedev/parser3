@@ -2871,7 +2871,7 @@ e_sysconfdir=$sysconfdir
 test "$e_sysconfdir" = "\${prefix}/etc" && e_sysconfdir="${prefix}/etc"
 
 
-PARSER_ROOT_CONFIG_DIR=$e_sysconfdir
+rootconfigdir=$e_sysconfdir
 
 
 
@@ -3074,7 +3074,7 @@ s%@LIBTOOL_DEPS@%$LIBTOOL_DEPS%g
 s%@subdirs@%$subdirs%g
 s%@CXXCPP@%$CXXCPP%g
 s%@APACHE_LIBS@%$APACHE_LIBS%g
-s%@PARSER_ROOT_CONFIG_DIR@%$PARSER_ROOT_CONFIG_DIR%g
+s%@rootconfigdir@%$rootconfigdir%g
 s%@charsetsdir@%$charsetsdir%g
 s%@sqldriversdir@%$sqldriversdir%g
 

@@ -78,7 +78,6 @@ MAKEINFO = @MAKEINFO@
 OBJDUMP = @OBJDUMP@
 P3S = @P3S@
 PACKAGE = @PACKAGE@
-PARSER_ROOT_CONFIG_DIR = @PARSER_ROOT_CONFIG_DIR@
 RANLIB = @RANLIB@
 VERSION = @VERSION@
 XML_INCLUDES = @XML_INCLUDES@
@@ -90,11 +89,12 @@ sqldriversdir = @sqldriversdir@
 
 SUBDIRS = parser3.charsets
 
-sysconf_DATA = parser3.conf
+rootconfigdir = @rootconfigdir@
+rootconfig_DATA = parser3.conf
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../src/include/pa_config_auto.h
 CONFIG_CLEAN_FILES =  parser3.conf
-DATA =  $(sysconf_DATA)
+DATA =  $(rootconfig_DATA)
 
 DIST_COMMON =  Makefile.am Makefile.in parser3.conf.in
 
@@ -115,23 +115,23 @@ Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 parser3.conf: $(top_builddir)/config.status parser3.conf.in
 	cd $(top_builddir) && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
-install-sysconfDATA: $(sysconf_DATA)
+install-rootconfigDATA: $(rootconfig_DATA)
 	@$(NORMAL_INSTALL)
-	$(mkinstalldirs) $(DESTDIR)$(sysconfdir)
-	@list='$(sysconf_DATA)'; for p in $$list; do \
+	$(mkinstalldirs) $(DESTDIR)$(rootconfigdir)
+	@list='$(rootconfig_DATA)'; for p in $$list; do \
 	  if test -f $(srcdir)/$$p; then \
-	    echo " $(INSTALL_DATA) $(srcdir)/$$p $(DESTDIR)$(sysconfdir)/$$p"; \
-	    $(INSTALL_DATA) $(srcdir)/$$p $(DESTDIR)$(sysconfdir)/$$p; \
+	    echo " $(INSTALL_DATA) $(srcdir)/$$p $(DESTDIR)$(rootconfigdir)/$$p"; \
+	    $(INSTALL_DATA) $(srcdir)/$$p $(DESTDIR)$(rootconfigdir)/$$p; \
 	  else if test -f $$p; then \
-	    echo " $(INSTALL_DATA) $$p $(DESTDIR)$(sysconfdir)/$$p"; \
-	    $(INSTALL_DATA) $$p $(DESTDIR)$(sysconfdir)/$$p; \
+	    echo " $(INSTALL_DATA) $$p $(DESTDIR)$(rootconfigdir)/$$p"; \
+	    $(INSTALL_DATA) $$p $(DESTDIR)$(rootconfigdir)/$$p; \
 	  fi; fi; \
 	done
 
-uninstall-sysconfDATA:
+uninstall-rootconfigDATA:
 	@$(NORMAL_UNINSTALL)
-	list='$(sysconf_DATA)'; for p in $$list; do \
-	  rm -f $(DESTDIR)$(sysconfdir)/$$p; \
+	list='$(rootconfig_DATA)'; for p in $$list; do \
+	  rm -f $(DESTDIR)$(rootconfigdir)/$$p; \
 	done
 
 # This directory's subdirectories are mostly independent; you can cd
@@ -261,16 +261,16 @@ check-am: all-am
 check: check-recursive
 installcheck-am:
 installcheck: installcheck-recursive
-install-exec-am: install-sysconfDATA
+install-exec-am:
 install-exec: install-exec-recursive
 
-install-data-am:
+install-data-am: install-rootconfigDATA
 install-data: install-data-recursive
 
 install-am: all-am
 	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
 install: install-recursive
-uninstall-am: uninstall-sysconfDATA
+uninstall-am: uninstall-rootconfigDATA
 uninstall: uninstall-recursive
 all-am: Makefile $(DATA)
 all-redirect: all-recursive
@@ -278,7 +278,7 @@ install-strip:
 	$(MAKE) $(AM_MAKEFLAGS) AM_INSTALL_PROGRAM_FLAGS=-s install
 installdirs: installdirs-recursive
 installdirs-am:
-	$(mkinstalldirs)  $(DESTDIR)$(sysconfdir)
+	$(mkinstalldirs)  $(DESTDIR)$(rootconfigdir)
 
 
 mostlyclean-generic:
@@ -310,8 +310,8 @@ maintainer-clean-am:  maintainer-clean-tags maintainer-clean-generic \
 
 maintainer-clean: maintainer-clean-recursive
 
-.PHONY: uninstall-sysconfDATA install-sysconfDATA install-data-recursive \
-uninstall-data-recursive install-exec-recursive \
+.PHONY: uninstall-rootconfigDATA install-rootconfigDATA \
+install-data-recursive uninstall-data-recursive install-exec-recursive \
 uninstall-exec-recursive installdirs-recursive uninstalldirs-recursive \
 all-recursive check-recursive installcheck-recursive info-recursive \
 dvi-recursive mostlyclean-recursive distclean-recursive clean-recursive \

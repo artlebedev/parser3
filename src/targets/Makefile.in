@@ -78,7 +78,6 @@ MAKEINFO = @MAKEINFO@
 OBJDUMP = @OBJDUMP@
 P3S = @P3S@
 PACKAGE = @PACKAGE@
-PARSER_ROOT_CONFIG_DIR = @PARSER_ROOT_CONFIG_DIR@
 RANLIB = @RANLIB@
 VERSION = @VERSION@
 XML_INCLUDES = @XML_INCLUDES@
@@ -86,6 +85,7 @@ XML_LIBS = @XML_LIBS@
 YACC = @YACC@
 charsetsdir = @charsetsdir@
 host_os = @host_os@
+rootconfigdir = @rootconfigdir@
 sqldriversdir = @sqldriversdir@
 #don't compile apache
 @COMPILE_APACHE13_MODULE_TRUE@SUBDIRS = cgi apache13

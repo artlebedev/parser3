@@ -78,7 +78,6 @@ MAKEINFO = @MAKEINFO@
 OBJDUMP = @OBJDUMP@
 P3S = @P3S@
 PACKAGE = @PACKAGE@
-PARSER_ROOT_CONFIG_DIR = @PARSER_ROOT_CONFIG_DIR@
 RANLIB = @RANLIB@
 VERSION = @VERSION@
 XML_INCLUDES = @XML_INCLUDES@
@@ -86,6 +85,7 @@ XML_LIBS = @XML_LIBS@
 YACC = @YACC@
 charsetsdir = @charsetsdir@
 host_os = @host_os@
+rootconfigdir = @rootconfigdir@
 sqldriversdir = @sqldriversdir@
 
 INCLUDES = -I../classes -I../sql -I../pcre -I../classes/gd @XML_INCLUDES@ @DB2_INCLUDES@
@@ -93,7 +93,7 @@ INCLUDES = -I../classes -I../sql -I../pcre -I../classes/gd @XML_INCLUDES@ @DB2_I
 noinst_LIBRARIES = libtypes.a
 libtypes_a_SOURCES = pa_valiased.C pa_vcookie.C pa_vfile.C pa_vform.C pa_vimage.C pa_vrequest.C pa_vresponse.C pa_vstateless_class.C pa_vstring.C pa_wcontext.C pa_vtable.C pa_vxnode.C pa_vxdoc.C pa_vhashfile.C ident.C
 
-IDENT_AWK = $(top_srcdir)/ident.awk
+IDENT_AWK = $(top_srcdir)/src/ident.awk
 IDENT_DEPS = *.h *.C
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../src/include/pa_config_auto.h

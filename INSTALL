@@ -3,18 +3,22 @@
 
 1.What is the process to compile Parser3? 
 
-  As most UNIX libraries libxml follows the "standard":
+  As most UNIX libraries Parser3 follows the "standard":
 
   mkdir $D/parser3project
   cd $D/parser3project
   gunzip -c parser3src.xxx.tar.gz | tar xvf -
-  cd parser3/src
+  cd parser3
   ./configure --prefix=/usr/local
-  make install
-
+  make
+  
   By default your would get 'parser3' binary without support of these features:
 	* cache(hashfile class) 
 	* xml(xdoc and xnode classes)
+
+2.What is the process to install Parser3?
+
+  make install
 
   Installation layout:
     $prefix/bin/
@@ -22,8 +26,17 @@
     $prefix/etc/
       parser3.conf        -- main configuration file
       parser3.charsets/   -- charset definition files
-        windows-1251.cfg
-        koi8-r.cfg 
+        windows-1251.cfg  -- cyrillic charset [windows-1251 encoding]
+        koi8-r.cfg        -- cyrillic charset [KOI8-R encoding]
+        windows-1250.cfg  -- central europian charset [windows-1250 encoding]
+
+  NOTE:
+    For subsequent compilations+installs 
+    to prevent configuration files to be overwritten use
+  
+    make install-exec
+    
+    it will update parser3 binary only.
 
 2.What other libraries are needed to compile/install libxml ? 
 
@@ -102,4 +115,4 @@
  
 Alexandr Petrosian(PAF) <paf@design.ru>
 
-$Id: INSTALL,v 1.1 2002/01/31 10:20:14 paf Exp $
+$Id: INSTALL,v 1.2 2002/01/31 11:11:43 paf Exp $

@@ -5,7 +5,7 @@ noinst_LIBRARIES = libmod_parser3.a
 libmod_parser3_a_SOURCES = pa_pool.C pa_threads.C mod_parser3.C ident.C
 noinst_DATA = apache_build_instruction
 
-IDENT_AWK = $(top_srcdir)/ident.awk
+IDENT_AWK = $(top_srcdir)/src/ident.awk
 IDENT_DEPS = *.C
 
 ident.C: $(IDENT_AWK) $(IDENT_DEPS) Makefile.am

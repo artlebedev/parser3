@@ -7,7 +7,7 @@ compile.tab.C: compile.y
 	bison -v $< -o $@
 
 
-IDENT_AWK = $(top_srcdir)/ident.awk
+IDENT_AWK = $(top_srcdir)/src/ident.awk
 IDENT_DEPS = *.h *.C
 
 ident.C: $(IDENT_AWK) $(IDENT_DEPS) Makefile.am

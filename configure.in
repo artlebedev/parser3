@@ -292,8 +292,8 @@ test "$e_sysconfdir" = "\${prefix}/etc" && e_sysconfdir="${prefix}/etc"
 
 dnl this is used in targets/cgi/parser3.C to load root config
 
-PARSER_ROOT_CONFIG_DIR=$e_sysconfdir
-AC_SUBST(PARSER_ROOT_CONFIG_DIR)
+rootconfigdir=$e_sysconfdir
+AC_SUBST(rootconfigdir)
 
 dnl these are used to fill in etc/parser3.conf
 

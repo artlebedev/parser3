@@ -78,7 +78,6 @@ MAKEINFO = @MAKEINFO@
 OBJDUMP = @OBJDUMP@
 P3S = @P3S@
 PACKAGE = @PACKAGE@
-PARSER_ROOT_CONFIG_DIR = @PARSER_ROOT_CONFIG_DIR@
 RANLIB = @RANLIB@
 VERSION = @VERSION@
 XML_INCLUDES = @XML_INCLUDES@
@@ -86,6 +85,7 @@ XML_LIBS = @XML_LIBS@
 YACC = @YACC@
 charsetsdir = @charsetsdir@
 host_os = @host_os@
+rootconfigdir = @rootconfigdir@
 sqldriversdir = @sqldriversdir@
 
 SUBDIRS = gd
@@ -98,7 +98,7 @@ libclasses_a_SOURCES = double.C file.C form.C image.C int.C mail.C op.C math.C r
 CLASSES_INC_DEPS = *.C
 CLEANFILES = classes.inc
 
-IDENT_AWK = $(top_srcdir)/ident.awk
+IDENT_AWK = $(top_srcdir)/src/ident.awk
 IDENT_DEPS = *.awk *.h *.C
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../src/include/pa_config_auto.h

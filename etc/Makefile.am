@@ -1,3 +1,4 @@
 SUBDIRS = parser3.charsets
 
-sysconf_DATA=parser3.conf
+rootconfigdir=@rootconfigdir@
+rootconfig_DATA=parser3.conf
