@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_STRING_C="$Date: 2003/10/03 09:40:57 $";
+static const char* IDENT_STRING_C="$Date: 2003/10/21 05:11:00 $";
 
 #include "pcre.h"
 
@@ -14,6 +14,8 @@ static const char* IDENT_STRING_C="$Date: 2003/10/03 09:40:57 $";
 #include "pa_table.h"
 #include "pa_dictionary.h"
 #include "pa_charset.h"
+
+const String String::Empty;
 
 // cord lib extension
 
@@ -341,9 +343,9 @@ Table* String::match(Charset& source_charset,
 			*row+=&mid(prefinish, poststart); // .match
 			*row+=&mid(poststart, postfinish); // .postmatch
 		} else {
-			*row+=0; // .prematch column value
-			*row+=0; // .match
-			*row+=0; // .postmatch
+			*row+=&Empty; // .prematch column value
+			*row+=&Empty; // .match
+			*row+=&Empty; // .postmatch
 		}
 		
 		for(int i=1; i<exec_substrings; i++) {

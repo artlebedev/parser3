@@ -272,6 +272,7 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         s singleline = $ считается концом всего текста
         m multiline = $ считается концом строки[\n], не концом всего текста
         g найти все вхождения, а не одно
+        ' создавать столбцы prematch, match, postmatch
     !^строка.match[шаблон][опции поиска]{замена}
         опции поиска+=
         g заменить все вхождения, а не одно
