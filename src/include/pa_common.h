@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_common.h,v 1.60 2001/11/05 11:46:23 paf Exp $
+	$Id: pa_common.h,v 1.61 2001/11/08 14:08:54 paf Exp $
 */
 
 #ifndef PA_COMMON_H
@@ -57,13 +57,26 @@ int __snprintf(char *, size_t, const char *, ...);
 
 #endif
 
-#ifndef HAVE_TRUNC
+#ifdef HAVE_TRUNC
+#	ifndef trunc
+extern "C" double trunc(double);
+#	endif
+#else
 inline double trunc(double param) { return param > 0? floor(param) : ceil(param); }
 #endif
-#ifndef HAVE_ROUND
+
+#ifdef HAVE_ROUND
+#	ifndef round
+extern "C" double round(double);
+#	endif
+#else
 inline double round(double param) { return floor(param+0.5); }
 #endif
-#ifndef HAVE_SIGN
+#ifdef HAVE_SIGN
+#	ifndef sign
+extern "C" double sign(double);
+#	endif
+#else
 inline double sign(double param) { return param > 0 ? 1 : ( param < 0 ? -1 : 0 ); }
 #endif
 

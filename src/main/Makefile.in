@@ -88,7 +88,7 @@ host_os = @host_os@
 INCLUDES = -I../types -I../classes -I../classes/xalan-patched -I../sql -I../pcre $(INCLTDL) @XML_INCLUDES@ @DB2_INCLUDES@
 
 noinst_LIBRARIES = libmain.a
-libmain_a_SOURCES = compile.C compile.tab.C compile_tools.C execute.C pa_array.C pa_common.C pa_exception.C pa_globals.C pa_hash.C pa_pool.C pa_request.C pa_string.C pa_table.C untaint.C pa_dir.C pa_exec.C pa_socks.C pa_sql_driver_manager.C pa_dictionary.C pa_stylesheet_manager.C ident.C pa_charset_connection.C pa_charset_manager.C pa_db_connection.C pa_db_manager.C pa_db_table.C
+libmain_a_SOURCES = compile.C compile.tab.C compile_tools.C execute.C pa_array.C pa_common.C pa_exception.C pa_globals.C pa_hash.C pa_pool.C pa_request.C pa_string.C pa_table.C untaint.C pa_dir.C pa_exec.C pa_socks.C pa_sql_driver_manager.C pa_dictionary.C pa_stylesheet_manager.C ident.C pa_charset_connection.C pa_charset_manager.C pa_db_connection.C pa_db_manager.C pa_db_table.C pa_cache_managers.C
 
 IDENT_AWK = ../ident.awk
 IDENT_DEPS = *.h *.C
@@ -108,7 +108,8 @@ pa_array.o pa_common.o pa_exception.o pa_globals.o pa_hash.o pa_pool.o \
 pa_request.o pa_string.o pa_table.o untaint.o pa_dir.o pa_exec.o \
 pa_socks.o pa_sql_driver_manager.o pa_dictionary.o \
 pa_stylesheet_manager.o ident.o pa_charset_connection.o \
-pa_charset_manager.o pa_db_connection.o pa_db_manager.o pa_db_table.o
+pa_charset_manager.o pa_db_connection.o pa_db_manager.o pa_db_table.o \
+pa_cache_managers.o
 AR = ar
 CXXFLAGS = @CXXFLAGS@
 CXXCOMPILE = $(CXX) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -120,15 +121,15 @@ DIST_COMMON =  Makefile.am Makefile.in
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = tar
+TAR = gtar
 GZIP_ENV = --best
 DEP_FILES =  .deps/compile.P .deps/compile.tab.P .deps/compile_tools.P \
 .deps/execute.P .deps/ident.P .deps/pa_array.P \
-.deps/pa_charset_connection.P .deps/pa_charset_manager.P \
-.deps/pa_common.P .deps/pa_db_connection.P .deps/pa_db_manager.P \
-.deps/pa_db_table.P .deps/pa_dictionary.P .deps/pa_dir.P \
-.deps/pa_exception.P .deps/pa_exec.P .deps/pa_globals.P .deps/pa_hash.P \
-.deps/pa_pool.P .deps/pa_request.P .deps/pa_socks.P \
+.deps/pa_cache_managers.P .deps/pa_charset_connection.P \
+.deps/pa_charset_manager.P .deps/pa_common.P .deps/pa_db_connection.P \
+.deps/pa_db_manager.P .deps/pa_db_table.P .deps/pa_dictionary.P \
+.deps/pa_dir.P .deps/pa_exception.P .deps/pa_exec.P .deps/pa_globals.P \
+.deps/pa_hash.P .deps/pa_pool.P .deps/pa_request.P .deps/pa_socks.P \
 .deps/pa_sql_driver_manager.P .deps/pa_string.P \
 .deps/pa_stylesheet_manager.P .deps/pa_table.P .deps/untaint.P
 SOURCES = $(libmain_a_SOURCES)
@@ -237,7 +238,7 @@ distdir: $(DISTFILES)
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
-	    cp -pr $$/$$file $(distdir)/$$file; \
+	    cp -pr $$d/$$file $(distdir)/$$file; \
 	  else \
 	    test -f $(distdir)/$$file \
 	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
