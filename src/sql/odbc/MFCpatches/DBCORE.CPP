@@ -4673,9 +4673,9 @@ static char _szAfxDbInl[] = "afxdb.inl";
 #pragma code_seg(AFX_INIT_SEG)
 #endif
 
-IMPLEMENT_DYNAMIC(CDBException, CException)
-IMPLEMENT_DYNAMIC(CDatabase, CObject)
-IMPLEMENT_DYNAMIC(CRecordset, CObject)
+//IMPLEMENT_DYNAMIC(CDBException, CException)
+//IMPLEMENT_DYNAMIC(CDatabase, CObject)
+//IMPLEMENT_DYNAMIC(CRecordset, CObject)
 
 #pragma warning(disable: 4074)
 #pragma init_seg(lib)

@@ -58,9 +58,9 @@ LINK32=link.exe
 # Begin Special Build Tool
 SOURCE="$(InputPath)"
 PreLink_Desc=Stopping apache...
-PreLink_Cmds=net stop apache_debug
+PreLink_Cmds=net stop apache_release
 PostBuild_Desc=Starting apache...
-PostBuild_Cmds=net start apache_debug
+PostBuild_Cmds=net start apache_release
 # End Special Build Tool
 
 !ELSEIF  "$(CFG)" == "ApacheModuleParser3 - Win32 Debug"

@@ -7,7 +7,7 @@
 
 	2001.07.30 using Oracle 8.1.6 [@test tested with Oracle 7.x.x]
 */
-static const char *RCSId="$Id: parser3oracle.C,v 1.14 2001/08/27 12:02:24 parser Exp $"; 
+static const char *RCSId="$Id: parser3oracle.C,v 1.15 2001/08/27 15:56:46 parser Exp $"; 
 
 #include "config_includes.h"
 
@@ -118,14 +118,17 @@ public:
 	int api_version() { return SQL_DRIVER_API_VERSION; }
 	/// initialize driver by loading sql dynamic link library
 	const char *initialize(const char *dlopen_file_spec) {
+
 		const char *error=dlopen_file_spec?
 			dlink(dlopen_file_spec):"client library column is empty";
 		if(!error) {
+
 //			error="OCIInitialize replacer";/*
 			OCIInitialize((ub4)OCI_THREADED, (dvoid *)0, 
 				(dvoid * (*)(void *, unsigned int))0, 
 				(dvoid * (*)(void*, void*, unsigned int))0,  
 				(void (*)(void*, void*))0 );
+
 //			*/
 		}
 
@@ -219,7 +222,9 @@ public:
 		*(OracleSQL_connection_struct **)connection=&cs;
 	}
 	void disconnect(void *connection) {
+
 		return;
+
 
 	    OracleSQL_connection_struct &cs=*(OracleSQL_connection_struct *)connection;
 		// Terminate a user session
@@ -766,10 +771,15 @@ private: // conn client library funcs linking
 
 	const char *dlink(const char *dlopen_file_spec) {
 		if(lt_dlinit())
+
 			return lt_dlerror();
 
+
+
         lt_dlhandle handle=lt_dlopen(dlopen_file_spec);
+
 		//return "hren31";
+
         if(!handle)
 			return lt_dlerror(); //"can not open the dynamic link module";
 

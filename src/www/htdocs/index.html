@@ -3,8 +3,9 @@ t.p
 dtf.p
 
 @main[]
+^measuretest[]
 #^savetest[]
-^oratestinsert[]
+#^oratestinsert[]
 #^oratestread[]
 #^process_check[]
 #^ffcheck[]^[xxx]
@@ -13,6 +14,10 @@ dtf.p
 #^list[]
 #^tests[]
 #^func(0)<hr>
+
+@measuretest[]
+$im[^image::measure[mm2.jpg]]
+x:y=${im.width}:${im.height}<BR>
 
 @savetest[]
 $file[^file::load[text;index.html]]
