@@ -1,5 +1,5 @@
 /*
-  $Id: compile_tools.C,v 1.17 2001/03/06 15:02:48 paf Exp $
+  $Id: compile_tools.C,v 1.18 2001/03/08 09:31:47 paf Exp $
 */
 
 #include "compile_tools.h"
@@ -20,7 +20,7 @@ void PV(Array/*<op>*/ *result, Value *value) {
 
 void PCA(Array/*<op>*/ *result, Array/*<op>*/ *code_array) {
 	// append OP_CODE
-	Operation op; op.code=OP_CODE;
+	Operation op; op.code=OP_CODE__STORE_PARAM;
 	*result+=op.cast;
 
 	// append 'vstring'

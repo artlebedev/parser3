@@ -1,5 +1,5 @@
 /*
-  $Id: execute.C,v 1.64 2001/03/08 09:13:33 paf Exp $
+  $Id: execute.C,v 1.65 2001/03/08 09:31:48 paf Exp $
 */
 
 #include "pa_array.h" 
@@ -23,7 +23,7 @@
 
 char *opcode_name[]={
 	// literals
-	"VALUE",  "CODE",  "CLASS",
+	"VALUE",  "CODE__STORE_PARAM",  "CLASS",
 
 	// actions
 	"WITH_SELF",	"WITH_ROOT",	"WITH_READ",	"WITH_WRITE",
@@ -75,7 +75,7 @@ void dump(int level, const Array& ops) {
 		}
 		fprintf(stderr, "\n");
 
-		if(op.code==OP_CODE) {
+		if(op.code==OP_CODE__STORE_PARAM) {
 			const Array *local_ops=reinterpret_cast<const Array *>(ops.quick_get(++i));
 			dump(level+1, *local_ops);
 		}
@@ -106,9 +106,10 @@ void Request::execute(const Array& ops) {
 				PUSH(value);
 				break;
 			}
-		case OP_CODE:
+		case OP_CODE__STORE_PARAM:
 			{
 				VMethodFrame *frame=static_cast<VMethodFrame *>(stack[stack.top()]);
+				// code
 				const Array *local_ops=reinterpret_cast<const Array *>(ops.quick_get(++i));
 				fprintf(stderr, " (%d)\n", local_ops->size());
 				dump(1, *local_ops);
@@ -119,7 +120,9 @@ void Request::execute(const Array& ops) {
 				
 				Value *value=NEW VJunction(j);
 				value->set_name(frame->name());
-				PUSH(value);
+
+				// store param
+				frame->store_param(value);
 				break;
 			}
 		case OP_CLASS:

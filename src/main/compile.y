@@ -1,5 +1,5 @@
 /*
-  $Id: compile.y,v 1.69 2001/03/07 12:11:29 paf Exp $
+  $Id: compile.y,v 1.70 2001/03/08 09:31:47 paf Exp $
 */
 
 %{
@@ -302,7 +302,6 @@ store_round_param: '(' store_expr_param_parts ')' {$$=$2};
 store_curly_param: '{' maybe_codes '}' {
 	$$=N(POOL); 
 	PCA($$, $2);
-	O($$, OP_STORE_PARAM);
 };
 store_code_param_parts:
 	store_code_param_part
@@ -320,7 +319,6 @@ store_code_param_part:
 }
 |	constructor_code_value { /* (something complex) */
 	$$=$1;
-	O($$, OP_STORE_PARAM);
 }
 ;
 store_expr_param_part: write_expr_value {

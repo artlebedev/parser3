@@ -1,5 +1,5 @@
 /*
-  $Id: code.h,v 1.14 2001/03/06 17:18:56 paf Exp $
+  $Id: code.h,v 1.15 2001/03/08 09:31:42 paf Exp $
 */
 
 #ifndef CODE_H
@@ -10,7 +10,7 @@
 
 enum OPCODE {
 	// literals
-	OP_VALUE,  OP_CODE,  OP_CLASS,
+	OP_VALUE,  OP_CODE__STORE_PARAM,  OP_CLASS,
 
 	// actions
 	OP_WITH_SELF,	OP_WITH_ROOT,	OP_WITH_READ,	OP_WITH_WRITE,
