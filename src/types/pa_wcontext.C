@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_WCONTEXT_C="$Date: 2004/02/11 15:33:19 $";
+static const char * const IDENT_WCONTEXT_C="$Date: 2004/03/19 12:22:56 $";
 
 #include "pa_wcontext.h"
 
@@ -15,9 +15,9 @@ void WContext::write(Value& avalue) {
 		// must not construct twice
 		throw Exception("parser.runtime",
 			fvalue->get_class()?&fvalue->get_class()->name():0,
-			"%s may not be overwritten with %s (%s), store it to variable instead",
-			fvalue->type(), 
-				avalue.get_class()->name_cstr(), avalue.type());
+			"%s may not be overwritten with %s, store it to variable instead",
+				fvalue->type(), 
+				avalue.type());
 	} else 
 		fvalue=&avalue;
 }
