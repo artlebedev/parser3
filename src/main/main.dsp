@@ -86,10 +86,6 @@ LIB32=link.exe -lib
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
-SOURCE=..\include\code.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\include\pa_array.h
 # End Source File
 # Begin Source File
@@ -123,6 +119,10 @@ SOURCE=..\include\pa_globals.h
 # Begin Source File
 
 SOURCE=..\include\pa_hash.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\pa_opcode.h
 # End Source File
 # Begin Source File
 

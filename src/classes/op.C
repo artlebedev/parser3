@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: op.C,v 1.14 2001/05/04 10:42:36 paf Exp $
+	$Id: op.C,v 1.15 2001/05/08 06:00:34 paf Exp $
 */
 
 #include "classes.h"
@@ -202,11 +202,11 @@ static void _for(Request& r, const String& method_name, MethodParams *params) {
 	}
 }
 
-static void _eval(Request& r, const String&, MethodParams *params) {
+static void _eval(Request& r, const String& method_name, MethodParams *params) {
 	Value& expr=params->get_junction(0, "need expression");
 	// evaluate expresion
 	Value *result=r.process(expr, 
-		0/*no name*/,
+		&method_name,
 		true/*don't intercept string*/).as_expr_result();
 	if(params->size()==2) {
 		Value& fmt=params->get_no_junction(1, "fmt must not be code");

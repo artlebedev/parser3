@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: table.C,v 1.71 2001/05/07 13:29:47 paf Exp $
+	$Id: table.C,v 1.72 2001/05/08 06:00:34 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -19,6 +19,7 @@
 #include "pa_vint.h"
 #include "pa_sql_connection.h"
 #include "pa_dir.h"
+#include "pa_vbool.h"
 
 // defines
 
@@ -328,18 +329,15 @@ static void _sort(Request& r, const String& method_name, MethodParams *params) {
 }
 
 static void _locate(Request& r, const String& method_name, MethodParams *params) {
+	Pool& pool=r.pool();
+
 	VTable& vtable=*static_cast<VTable *>(r.self);
 	Table& table=vtable.table();
-	vtable.last_locate_was_successful=table.locate(
+	Value& result=*new(pool) VBool(pool, table.locate(
 		params->get(0).as_string(),
-		params->get(1).as_string());
-}
-
-static void _found(Request& r, const String& method_name, MethodParams *params) {
-	if(static_cast<VTable *>(r.self)->last_locate_was_successful)
-		r.write_pass_lang(r.process(params->get_junction(0, "found-parameter must be code")));
-	else if(params->size()==2)
-		r.write_pass_lang(r.process(params->get_junction(0, "else-parameter must be code")));
+		params->get(1).as_string()));
+	result.set_name(method_name);
+	r.write_no_lang(result);
 }
 
 static void _flip(Request& r, const String& method_name, MethodParams *params) {
@@ -605,9 +603,6 @@ MTable::MTable(Pool& apool) : Methoded(apool) {
 
 	// ^table.locate[field;value]
 	add_native_method("locate", Method::CT_DYNAMIC, _locate, 2, 2);
-	// ^table.found{when-found}
-	// ^table.found{when-found}{when-not-found}
-	add_native_method("found", Method::CT_DYNAMIC, _found, 1, 2);
 
 	// ^table.flip[]
 	add_native_method("flip", Method::CT_DYNAMIC, _flip, 0, 0);

@@ -1,14 +1,16 @@
 @main[]
-$filelist[^table:dir[]]
+^eval(1<2)
+
+$filelist[^table:dir[.]]
 <hr>
 $path[/news/tululu/]
-^path.flip[]
+#^path.flip[]
 <hr>
 $branches[^table:set{name	val
 index.cgihtml	123
 }]
 $splitURI[^request:uri.lsplit[/]]
-					^branches.locate[name2;$splitURI.1]
+					^branches.locate[name;$splitURI.1]
 					$branches.name
 <HR>
 $splitURI[^request:uri.lsplit[/]]
