@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: mod_parser3.C,v 1.23 2001/04/09 09:48:24 paf Exp $
+	$Id: mod_parser3.C,v 1.24 2001/04/09 13:21:16 paf Exp $
 */
 
 #include "httpd.h"
@@ -87,7 +87,7 @@ const char *SAPI::get_env(Pool& pool, const char *name) {
  	return (const char *)ap_table_get(r->subprocess_env, name);
 }
 
-size_t SAPI::read_post(Pool& pool, void *buf, size_t max_bytes) {
+size_t SAPI::read_post(Pool& pool, char *buf, size_t max_bytes) {
 	request_rec *r=static_cast<request_rec *>(pool.context());
 
 /*    ap_log_error(APLOG_MARK, APLOG_DEBUG, r->server, 

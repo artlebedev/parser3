@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_hash.h,v 1.35 2001/04/05 16:30:41 paf Exp $
+	$Id: pa_hash.h,v 1.36 2001/04/09 13:21:11 paf Exp $
 */
 
 #ifndef PA_HASH_H
@@ -62,7 +62,9 @@ public:
 	/*SYNCHRONIZED*/ void merge_dont_replace(const Hash& src);
 
 	void put(const Key& key, int     value) { put(key, reinterpret_cast<Val *>(value)); }
-	void put(const Key& key, String *value) { put(key, static_cast<Val *>(value)); }
+	void put(const Key& key, const String *value) { 
+		put(key, static_cast<Val *>(const_cast<String *>(value))); 
+	}
 
 	//@{
 	/// handy get, longing for Hash<int>, Hash<String *>
@@ -74,7 +76,7 @@ public:
 	int size() { return used; }
 
 	/// iterate over all not zero elements
-	void for_each(For_each_func func, void *info=0);
+	void for_each(For_each_func func, void *info=0) const;
 
 	/// remove all elements
 	void clear();

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.21 2001/04/09 11:30:35 paf Exp $
+	$Id: file.C,v 1.22 2001/04/09 13:21:08 paf Exp $
 */
 
 #include "pa_request.h"
@@ -106,6 +106,10 @@ static void _load(Request& r, const String& method_name, Array *params) {
 		user_file_name, &r.mime_type_of(user_file_name));
 }
 
+static void append_env_pair(const Hash::Key& key, Hash::Val *value, void *info) {
+	Hash& hash=*static_cast<Hash *>(info);
+	hash.put(key, &static_cast<Value *>(value)->as_string());
+}
 /// ^exec[file-name]
 /// ^exec[file-name;env hash]
 /// ^exec[file-name;env hash;cmd;line;arg;s]
@@ -124,8 +128,10 @@ static void _cgi(Request& r, const String& method_name, Array *params) {
 		// forcing [this param type]
 		r.fail_if_junction_(true, venv, 
 			method_name, "env must not be code");
-		env=venv.get_hash();
-		if(!env)
+		if(Hash *user_env=venv.get_hash()) {
+			env=new(pool) Hash(pool);
+			user_env->for_each(append_env_pair, env);
+		} else
 			PTHROW(0, 0,
 				&method_name,
 				"env must be hash");
@@ -151,7 +157,7 @@ static void _cgi(Request& r, const String& method_name, Array *params) {
 	if(pos<0)
 		pos=out.pos("\r\n\r\n", delim_size=4);
 	if(pos<0) {
-		delim_size=0; // calm, compiler
+		delim_size=0; // calm down, compiler
 		PTHROW(0, 0,
 			&method_name,
 			"output does not contain CGI header");
