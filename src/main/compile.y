@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.139 2001/06/27 10:07:53 parser Exp $
+	$Id: compile.y,v 1.140 2001/06/27 12:44:32 parser Exp $
 */
 
 /**
@@ -344,9 +344,9 @@ call_value: '^' call_name store_params EON { /* ^field.$method{vasya} */
 	O($$, OP_GET_METHOD_FRAME); /* stack: context,method_frame */
 
 	YYSTYPE params_code=$3;
-	if(params_code->size()==3) // probably [] case. [OP_VALUE + Nothing + STORE_PARAM]
+	if(params_code->size()==3) // probably [] case. [OP_VALUE + Void + STORE_PARAM]
 		if(Value *value=LA2V(params_code)) // it is OP_VALUE + value?
-			if(!value->is_defined()) // value is VNothing?
+			if(!value->is_defined()) // value is VVoid?
 				params_code=0; // ^zzz[] case. don't append lone empty param.
 	if(params_code)
 		P($$, params_code); // filling method_frame.store_params
@@ -527,7 +527,7 @@ write_string: STRING {
 	change_string_literal_to_write_string_literal($$=$1)
 };
 
-unknown_value: /* empty */ { $$=VL(NEW VNothing(POOL)) };
+unknown_value: /* empty */ { $$=VL(NEW VVoid(POOL)) };
 empty: /* empty */ { $$=N(POOL) };
 
 %%
