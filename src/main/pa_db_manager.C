@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_db_manager.C,v 1.14 2001/11/05 16:07:16 paf Exp $
+	$Id: pa_db_manager.C,v 1.15 2001/11/05 17:00:44 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -23,7 +23,7 @@ DB_Manager *DB_manager;
 
 // consts
 
-const int EXPIRE_UNUSED_CONNECTION_SECONDS=3;//60;
+const int EXPIRE_UNUSED_CONNECTION_SECONDS=60;
 const int CHECK_EXPIRED_CONNECTIONS_SECONDS=EXPIRE_UNUSED_CONNECTION_SECONDS*2;
 
 // callbacks
