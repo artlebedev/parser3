@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_connection.h,v 1.4 2001/04/05 13:19:41 paf Exp $
+	$Id: pa_sql_connection.h,v 1.5 2001/04/17 19:31:11 paf Exp $
 */
 
 #ifndef PA_SQL_CONNECTION_H
@@ -20,13 +20,13 @@ class SQL_Connection : public Pooled {
 
 public:
 
-	void set_services(Services_for_SQL_driver *services) {
+	void set_services(SQL_Driver_services *services) {
 		fdriver.set_services(services);
 	}
 
 	SQL_Connection(Pool& pool,
 		const String& aurl, 
-		SQL_Driver& adriver, Services_for_SQL_driver& services, 
+		SQL_Driver& adriver, SQL_Driver_services& services, 
 		char *url_cstr) : Pooled(pool),
 		furl(aurl),
 		fdriver(adriver) {

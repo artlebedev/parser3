@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: image.C,v 1.18 2001/04/17 19:00:27 paf Exp $
+	$Id: image.C,v 1.19 2001/04/17 19:31:06 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -593,8 +593,10 @@ public:
 	}
 	
 };
-/// ^image.font[alPHAbet;font-file-name.gif](height)
-/// ^image.font[alPHAbet;font-file-name.gif](height;width)
+/**
+	^image.font[alPHAbet;font-file-name.gif](height)
+	^image.font[alPHAbet;font-file-name.gif](height;width)
+*/
 static void _font(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 

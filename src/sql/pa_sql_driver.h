@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_driver.h,v 1.6 2001/04/17 19:00:46 paf Exp $
+	$Id: pa_sql_driver.h,v 1.7 2001/04/17 19:31:19 paf Exp $
 
 
 	driver dynamic library must look like this:
@@ -32,7 +32,7 @@
 #include <sys/types.h>
 
 /// service functions for SQL driver to use
-class Services_for_SQL_driver {
+class SQL_Driver_services {
 public:
 	/// allocates some bytes on pool
 	virtual void *malloc(size_t size) =0;
@@ -56,7 +56,7 @@ public:
 public:
 
 	/// assignes services to driver. you can not use driver until this
-	void set_services(Services_for_SQL_driver *aservices) { services=aservices; }
+	void set_services(SQL_Driver_services *aservices) { services=aservices; }
 
 	SQL_Driver() :
 		services(0) {
@@ -84,7 +84,7 @@ public:
 
 protected:
 
-	Services_for_SQL_driver *services;
+	SQL_Driver_services *services;
 };
 
 typedef SQL_Driver *(*SQL_Driver_create_func)();

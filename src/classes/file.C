@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: file.C,v 1.27 2001/04/17 19:00:27 paf Exp $
+	$Id: file.C,v 1.28 2001/04/17 19:31:06 paf Exp $
 */
 
 #include "pa_request.h"
@@ -102,10 +102,13 @@ static void append_env_pair(const Hash::Key& key, Hash::Val *value, void *info) 
 	Hash& hash=*static_cast<Hash *>(info);
 	hash.put(key, &static_cast<Value *>(value)->as_string());
 }
-/// ^exec[file-name]
-/// ^exec[file-name;env hash]
-/// ^exec[file-name;env hash;cmd;line;arg;s]
-/// @test header to $fields. waits for header '\' tricks
+/**
+	^exec[file-name]
+	^exec[file-name;env hash]
+	^exec[file-name;env hash;cmd;line;arg;s]
+	@test header to $fields. waits for header '\' tricks
+	@todo fix `` in perl - they produced flipping consoles and no output to perl
+*/
 static void _cgi(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 

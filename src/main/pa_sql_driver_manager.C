@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_sql_driver_manager.C,v 1.7 2001/04/17 19:00:41 paf Exp $
+	$Id: pa_sql_driver_manager.C,v 1.8 2001/04/17 19:31:14 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -25,10 +25,10 @@ const int MAX_PROTOCOL=20;
 const char *LIBRARY_CREATE_FUNC_NAME="create";
 
 
-/// Services_for_SQL_driver implementation
-class Services_for_SQL_driver_impl : public Services_for_SQL_driver, public Pooled {
+/// SQL_Driver_services Pooled implementation
+class SQL_Driver_services_impl : public SQL_Driver_services, public Pooled {
 public:
-	Services_for_SQL_driver_impl(Pool& apool, const String& aurl) : Pooled(apool),
+	SQL_Driver_services_impl(Pool& apool, const String& aurl) : Pooled(apool),
 		furl(aurl) {
 	}
 
@@ -148,8 +148,8 @@ SQL_Connection& SQL_Driver_manager::get_connection(const String& url,
 	}
 	
 	// services associated with request
-	Services_for_SQL_driver_impl& services=
-		*new(pool) Services_for_SQL_driver_impl(pool, url);
+	SQL_Driver_services_impl& services=
+		*new(pool) SQL_Driver_services_impl(pool, url);
 
 	// allocate in global pool 
 	// associate with services[request], deassociates at close
