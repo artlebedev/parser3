@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_vstring.h,v 1.26 2001/05/11 17:45:10 parser Exp $
+	$Id: pa_vstring.h,v 1.27 2001/05/21 16:38:46 parser Exp $
 */
 
 #ifndef PA_VSTRING_H
@@ -33,43 +33,11 @@ public: // Value
 			return NEW VDouble(pool(), as_double()); 
 	}
 	/// VString: fstring
-	const String *get_string() { return &fstring; };
+	const String *get_string() { return fstring; };
 	/// VString: fstring
-	double as_double() { 
-		double result;
-		const char *cstr=fstring.cstr();
-		char *error_pos=0;
-		// 0xABC
-		if(cstr[0]=='0' && (cstr[1]=='x' || cstr[1]=='X'))
-			result=(double)(unsigned long)strtol(cstr, &error_pos, 0);
-		else
-			result=strtod(cstr, &error_pos);
-
-		if(error_pos && *error_pos)
-			THROW(0, 0,
-				&fstring,
-				"invalid number (double)");
-
-		return result;
-	}
+	double as_double() { return fstring->as_double(); }
 	/// VString: fstring
-	int as_int() { 
-		int result;
-		const char *cstr=fstring.cstr();
-		char *error_pos=0;
-		// 0xABC
-		if(cstr[0]=='0' && (cstr[1]=='x' || cstr[1]=='X'))
-			result=(int)(unsigned long)strtol(cstr, &error_pos, 0);
-		else
-			result=(int)strtol(cstr, &error_pos, 0);
-
-		if(error_pos && *error_pos)
-			THROW(0, 0,
-				&fstring,
-				"invalid number (int)");
-
-		return result;
-	}
+	int as_int() { return fstring->as_int(); }
 
 	/// VString: vfile
 	const VFile *as_vfile(String::Untaint_lang lang=String::UL_UNSPECIFIED) const;
@@ -92,17 +60,18 @@ protected: // VAliased
 public: // usage
 
 	VString(Pool& apool) : VStateless_object(apool, *string_class), 
-		fstring(*new(apool) String(apool)) {
+		fstring(new(apool) String(apool)) {
 	}
 
 	VString(const String& avalue) : VStateless_object(avalue.pool(), *string_class),
-		fstring(avalue) {
+		fstring(&avalue) {
 	}
 
-	const String& string() { return fstring; }
+	const String& string() { return *fstring; }
+	void set_string(const String& astring) { fstring=&astring; }
 
 private:
-	const String& fstring;
+	const String *fstring;
 
 };
 

@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: pa_vstring.C,v 1.5 2001/04/26 15:01:52 paf Exp $
+	$Id: pa_vstring.C,v 1.6 2001/05/21 16:38:46 parser Exp $
 */
 
 #include "pa_vstring.h"
@@ -13,7 +13,7 @@
 
 const VFile *VString::as_vfile(String::Untaint_lang lang) const {
 	VFile& result=*NEW VFile(pool());
-	const char *cstr=fstring.cstr(lang);
+	const char *cstr=fstring->cstr(lang);
 	result.set(false/*not tainted*/, cstr, strlen(cstr));
 	return &result;
 }

@@ -153,6 +153,9 @@ ${comment}.
 		^menu{<tr><td>$id</td><td>$name</td><td>$age</td></tr>}
 	</table>
 	}}
+	$age1[^string:sql{select age from paf where id=1}]
+	^$age1=$age1<br>
+
 	$paf[^hash:sql{select id,age from paf}]
 	^$paf.2.age=$paf.2.age<br>
 }

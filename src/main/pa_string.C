@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.89 2001/05/21 16:38:46 parser Exp $
+	$Id: pa_string.C,v 1.90 2001/05/21 16:39:32 parser Exp $
 */
 
 #include "pa_config_includes.h"
@@ -637,7 +637,7 @@ break2:
 	return result;
 }
 
-double String::as_double() { 
+double String::as_double() const { 
 	double result;
 	const char *cstr=this->cstr();
 	char *error_pos=0;
@@ -654,7 +654,7 @@ double String::as_double() {
 
 	return result;
 }
-int String::as_int() { 
+int String::as_int() const { 
 	int result;
 	const char *cstr=this->cstr();
 	char *error_pos=0;

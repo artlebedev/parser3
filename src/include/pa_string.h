@@ -5,7 +5,7 @@
 
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.94 2001/05/19 19:52:38 parser Exp $
+	$Id: pa_string.h,v 1.95 2001/05/21 16:38:46 parser Exp $
 */
 
 #ifndef PA_STRING_H
@@ -218,6 +218,8 @@ public:
 	};
 	String& change_case(Pool& pool, const unsigned char *pcre_tables, 
 		Change_case_kind kind) const;
+	double as_double();
+	int as_int();
 
 #ifndef NO_STRING_ORIGIN
 	/// origin of string. calculated by first row
