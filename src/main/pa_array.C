@@ -1,9 +1,11 @@
 /** @file
-	Parser
+	Parser: array class.
+
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_array.C,v 1.23 2001/03/19 16:44:01 paf Exp $
+	$Id: pa_array.C,v 1.24 2001/03/19 17:42:15 paf Exp $
 */
 
 #include <string.h>

@@ -1,9 +1,11 @@
 /** @file
-	Parser
+	Parser: Value, Method, Junction class decls.
+
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_value.h,v 1.23 2001/03/19 16:44:04 paf Exp $
+	$Id: pa_value.h,v 1.24 2001/03/19 17:42:18 paf Exp $
 */
 
 #ifndef PA_VALUE_H

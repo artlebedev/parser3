@@ -3,7 +3,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_valiased.h,v 1.4 2001/03/19 16:57:24 paf Exp $
+	$Id: pa_valiased.h,v 1.5 2001/03/19 17:42:17 paf Exp $
 */
 
 #ifndef PA_VALIASED_H
@@ -13,7 +13,7 @@
 
 class Temp_alias;
 
-class VAliased : public Value2 {
+class VAliased : public Value {
 	friend Temp_alias;
 public: // creation
 

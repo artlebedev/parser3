@@ -1,9 +1,11 @@
 /** @file
-	Parser
+	Parser: string class decl.
+
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.h,v 1.42 2001/03/19 16:44:00 paf Exp $
+	$Id: pa_string.h,v 1.43 2001/03/19 17:42:12 paf Exp $
 */
 
 #ifndef PA_STRING_H
@@ -126,14 +128,7 @@ public:
 
 #ifndef NO_STRING_ORIGIN
 	/// origin of string. calculated by first row
-	const Origin& origin() const { 
-		if(!fused_rows)
-			THROW(0, 0, 
-				0,
-				"String::origin() of empty string called");
-
-		return head.rows[0].item.origin; 
-	}
+	const Origin& origin() const;
 #endif
 
 private:

@@ -1,9 +1,11 @@
 /** @file
-	Parser
+	Parser: String class part: untaint mechanizm.
+
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: untaint.C,v 1.7 2001/03/19 16:44:03 paf Exp $
+	$Id: untaint.C,v 1.8 2001/03/19 17:42:16 paf Exp $
 */
 
 #include <string.h>

@@ -1,9 +1,11 @@
 /** @file
-	Parser
+	Parser: hash class decl.
+
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_hash.h,v 1.28 2001/03/19 15:29:38 paf Exp $
+	$Id: pa_hash.h,v 1.29 2001/03/19 17:42:12 paf Exp $
 */
 
 #ifndef PA_HASH_H
@@ -15,12 +17,22 @@
 #include "pa_types.h"
 #include "pa_string.h"
 
+
+/** 
+	Pooled hash.
+
+	Automatically rehashed when almost full.
+
+	The only object that can be thread safe, wich is specified in constructor,
+	default 'not safe'.
+*/
 class Hash : public Pooled {
 public:
 
-	typedef String Key;
-	typedef void Value;
+	typedef String Key; ///< hash Key type. longing for templates
+	typedef void Value; ///< hash Value type. longing for templates
 
+	/// foreach iterator function type
 	typedef void (*Foreach_func)(const Key& key, Value *value, void *info);
 
 public:
@@ -29,34 +41,40 @@ public:
 		construct(apool, athread_safe); 
 	}
 
-	// useful generic hash function
+	/// useful generic hash function
 	static uint generic_code(uint aresult, const char *start, uint allocated);
 
-	// put a [value] under the [key], return existed or not
+	/// put a [value] under the [key], return existed or not
 	/*SYNCHRONIZED*/ bool put(const Key& key, Value *value);
 
-	// get associated [value] by the [key]
+	/// get associated [value] by the [key]
 	/*SYNCHRONIZED*/ Value *get(const Key& key) const;
 
-	// put a [value] under the [key] if that [key] existed, return existed or not
+	/// put a [value] under the [key] if that [key] existed, return existed or not
 	/*SYNCHRONIZED*/ bool put_replace(const Key& key, Value *value);
 
-	// put a [value] under the [key] if that [key] NOT existed, return existed or not
+	/// put a [value] under the [key] if that [key] NOT existed, return existed or not
 	/*SYNCHRONIZED*/ bool put_dont_replace(const Key& key, Value *value);
 
-	// put all 'src' values if NO with same key existed
+	/// put all 'src' values if NO with same key existed
 	/*SYNCHRONIZED*/ void merge_dont_replace(const Hash& src);
 
 	void put(const Key& key, int     value) { put(key, reinterpret_cast<Value *>(value)); }
 	void put(const Key& key, String *value) { put(key, static_cast<Value *>(value)); }
 
+	//@{
+	/// handy get, longing for Hash<int>, Hash<String *>
 	int get_int(const Key& key) { return reinterpret_cast<int>(get(key)); }
 	const String *get_string(const Key& key) { return static_cast<String *>(get(key)); }
+	//@}
 
+	/// number of elements in hash
 	int size() { return used; }
 
+	/// iterate over all not zero elements
 	void foreach(Foreach_func func, void *info=0);
 
+	/// remove all elements
 	void clear();
 
 protected:

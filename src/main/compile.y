@@ -1,20 +1,22 @@
 /** @file
-	Parser
+	Parser: compiler(lexical parser and grammar).
+
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.105 2001/03/19 16:44:01 paf Exp $
+	$Id: compile.y,v 1.106 2001/03/19 17:42:14 paf Exp $
 */
 
-/*
-	TODO.parser4: 
-		cache compiled code from request to request. to do that...
-		1:	make method definitions, @CLASS, @BASE, @USE instructions,
+/**
+	@todo parser4: 
+	- cache compiled code from request to request. to do that...
+		-#:	make method definitions, @CLASS, @BASE, @USE instructions,
 			which would be executed afterwards, and actions
 			now performed at compile time would be delayed to run time.
-		2:	make cache expiration on time and on disk-change of class source
-		3:	in apache use subpools for compiled class storage
-		4:	in iis make up specialized Pool object for that
+		-#:	make cache expiration on time and on disk-change of class source
+		-#:	in apache use subpools for compiled class storage
+		-#:	in iis make up specialized Pool object for that
 */
 
 %{
@@ -22,7 +24,7 @@
 #define YYPARSE_PARAM  pc
 #define YYLEX_PARAM  pc
 #define YYDEBUG  1
-#define YYERROR_VERBOSE
+#define YYERROR_VERBOSE	1
 #define yyerror(msg)  real_yyerror((parse_control *)pc, msg)
 #define YYPRINT(file, type, value)  yyprint(file, type, value)
 

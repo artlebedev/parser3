@@ -1,9 +1,11 @@
 /** @file
-	Parser
+	Parser: string class. @see untaint.C.
+
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_string.C,v 1.45 2001/03/19 16:44:02 paf Exp $
+	$Id: pa_string.C,v 1.46 2001/03/19 17:42:16 paf Exp $
 */
 
 #include <string.h>
@@ -332,3 +334,14 @@ bool String::operator == (const char* b_ptr) const {
 	}
 	return a_break==b_break;
 }
+
+#ifndef NO_STRING_ORIGIN
+const Origin& String::origin() const { 
+	if(!fused_rows)
+		THROW(0, 0, 
+		0,
+		"String::origin() of empty string called");
+	
+	return head.rows[0].item.origin; 
+}
+#endif

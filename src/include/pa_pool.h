@@ -1,9 +1,11 @@
 /** @file
-	Parser
+	Parser: pool class decl.
+
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_pool.h,v 1.35 2001/03/19 16:44:00 paf Exp $
+	$Id: pa_pool.h,v 1.36 2001/03/19 17:42:12 paf Exp $
 */
 
 #ifndef PA_POOL_H

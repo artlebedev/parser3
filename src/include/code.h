@@ -1,9 +1,11 @@
 /** @file
-	Parser
+	Parser: compiled code related decls.
+
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: code.h,v 1.25 2001/03/19 16:43:59 paf Exp $
+	$Id: code.h,v 1.26 2001/03/19 17:42:11 paf Exp $
 */
 
 #ifndef CODE_H
