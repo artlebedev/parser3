@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_STRING_C="$Date: 2002/08/01 11:41:19 $";
+static const char* IDENT_STRING_C="$Date: 2002/08/07 13:44:00 $";
 
 #include "pcre.h"
 
@@ -343,8 +343,8 @@ const Origin& String::origin() const {
 String& String::mid(size_t start, size_t finish) const {
 	String& result=*NEW String(pool());
 
-	start=max(size_t(0), start);
-	finish=min(size(), finish);
+	start=min(start, size());
+	finish=max(finish, start);
 	if(start==finish)
 		return result;
 

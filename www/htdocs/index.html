@@ -195,9 +195,15 @@ $selffilespec[$filespec]
 #^tableclonelimit[]
 #^transparams[]
 #^sendtests[]
-^wwrapperpass[]
+#^wwrapperpass[]
+^badpos[]
 <hr>
 OK
+
+
+@badpos[]
+$s[123]
+^s.mid(1;23)
 
 @wwrapperpass[]
 $h[^hash::create[]]
