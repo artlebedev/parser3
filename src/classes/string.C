@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: string.C,v 1.80 2001/10/11 10:21:44 parser Exp $
+	$Id: string.C,v 1.81 2001/10/12 12:48:22 parser Exp $
 */
 
 #include "classes.h"
@@ -43,15 +43,17 @@ static void _int(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 	bool convert_problem=false; Exception rethrow_me;
 	int converted;
+	Value *default_code=params->size()>0?
+		default_code=&params->as_junction(0, "default must be int"):0; // (default)
 	PTRY {
 		converted=r.self->as_int();
 	}
 	PCATCH(e) { // convert problem
-		if(convert_problem=params->size()==0) { // we have a problem when do not have default
+		if(convert_problem=!default_code) { // we have a problem when no default
 			rethrow_me=e;  
 			converted=0;
 		} else
-			converted=params->as_int(0, "default must be int", r); // (default)
+			converted=r.process(*default_code).as_int();
 	}
 	PEND_CATCH
 	if(convert_problem)
@@ -68,15 +70,17 @@ static void _double(Request& r, const String& method_name, MethodParams *params)
 	Pool& pool=r.pool();
 	bool convert_problem=false; Exception rethrow_me;
 	double converted;
+	Value *default_code=params->size()>0?
+		default_code=&params->as_junction(0, "default must be double"):0; // (default)
 	PTRY {
 		converted=r.self->as_double();
 	}
 	PCATCH(e) { // convert problem
-		if(convert_problem=params->size()==0) { // we have a problem when do not have default
+		if(convert_problem=!default_code) { // we have a problem when no default
 			rethrow_me=e;  
 			converted=0;
 		} else
-			converted=params->as_double(0, "default must be double", r); // (default)
+			converted=r.process(*default_code).as_double();
 	}
 	PEND_CATCH
 	if(convert_problem)
@@ -343,7 +347,7 @@ public:
 };
 #endif
 const String* sql_result_string(Request& r, const String& method_name, MethodParams *params,
-								Hash *&options) {
+								Hash *& options, Value *& default_code) {
 	Pool& pool=r.pool();
 
 	if(!r.connection)
@@ -355,6 +359,7 @@ const String* sql_result_string(Request& r, const String& method_name, MethodPar
 
 	ulong limit=0;
 	ulong offset=0;
+	default_code=0;
 	if(params->size()>1) {
 		Value& voptions=params->as_no_junction(1, "options must be hash, not code");
 		if(voptions.is_defined())
@@ -363,6 +368,12 @@ const String* sql_result_string(Request& r, const String& method_name, MethodPar
 					limit=(ulong)r.process(*vlimit).as_double();
 				if(Value *voffset=(Value *)options->get(*sql_offset_name))
 					offset=(ulong)r.process(*voffset).as_double();
+				if(default_code=(Value *)options->get(*sql_default_name)) {
+					if(!default_code->get_junction())
+						PTHROW(0, 0,
+							&method_name,
+							"default option must be code");
+				}
 			} else
 				PTHROW(0, 0,
 					&method_name,
@@ -400,25 +411,17 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
 	Hash *options;
-	const String *string=sql_result_string(r, method_name, params, options);
+	Value *default_code;
+	const String *string=sql_result_string(r, method_name, params, options, default_code);
 	if(!string) {
-		if(options) {
-			if(Value *vdefault=(Value *)options->get(*sql_default_name)) {
-				if(!vdefault->get_junction())
-					PTHROW(0, 0,
-						&method_name,
-						"default option must be code");
-				string=r.process(*vdefault).get_string();
-				if(!string)
-					string=new(pool) String(pool);
-			} else
-				PTHROW(0, 0,
-					&method_name,
-					"produced no result, but no default option specified");
+		if(default_code) {
+			string=r.process(*default_code).get_string();
+			if(!string)
+				string=new(pool) String(pool);
 		} else
 			PTHROW(0, 0,
 				&method_name,
-				"produced no result, but no options (no default) specified");
+				"produced no result, but no default option specified");
 	}
 	VString& result=*new(pool) VString(*string);
 	result.set_name(method_name);

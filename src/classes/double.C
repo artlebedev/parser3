@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: double.C,v 1.38 2001/10/09 07:06:00 parser Exp $
+	$Id: double.C,v 1.39 2001/10/12 12:48:22 parser Exp $
 */
 
 #include "classes.h"
@@ -71,31 +71,24 @@ static void _mod(Request& r, const String&, MethodParams *params) { vdouble_op(r
 
 // from string.C
 extern 
-const String* sql_result_string(Request& r, const String& method_name, 
-								MethodParams *params,
-								Hash *&options);
+const String* sql_result_string(Request& r, const String& method_name, MethodParams *params,
+								Hash *& options, Value *& default_code);
 
 static void _sql(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
 
 	double val;
 	Hash *options;
-	if(const String *string=sql_result_string(r, method_name, params, options))
+	Value *default_code;
+	if(const String *string=sql_result_string(r, method_name, params, options, default_code))
 		val=string->as_double();
 	else
-		if(options) {
-			if(Value *vdefault=(Value *)options->get(*sql_default_name))
-				val=r.process(*vdefault).as_double();
-			else {
-				PTHROW(0, 0,
-					&method_name,
-					"produced no result, but no default option specified");
-				val=0; //calm, compiler
-			}
-		} else {
+		if(default_code)
+			val=r.process(*default_code).as_double();
+		else {
 			PTHROW(0, 0,
 				&method_name,
-				"produced no result, but no options (no default) specified");
+				"produced no result, but no default option specified");
 			val=0; //calm, compiler
 		}
 	VDouble& result=*new(pool) VDouble(pool, val);

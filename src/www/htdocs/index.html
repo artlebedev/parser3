@@ -1,5 +1,7 @@
 @main[]
-^ifpasshash[]
+^tintdefault[]
+#$response:status[404]
+#^ifpasshash[]
 #^movedir[]
 #^replace[]
 #^set[]
@@ -28,6 +30,12 @@
 #^xml[]
 #^header[]
 OK
+
+@tintdefault[]
+#$abc[abc]
+$abc[33]
+^abc.int[z]
+#^abc.int(123)
 
 @ifpasshash[]
 $a[$.e[a]]
