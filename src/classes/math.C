@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: math.C,v 1.17 2002/04/10 09:53:14 paf Exp $
+	$Id: math.C,v 1.18 2002/04/18 10:51:00 paf Exp $
 */
 
 #include "pa_common.h"
@@ -19,7 +19,6 @@
 // defines
 
 #define PI 3.1415926535
-#define MATH_CLASS_NAME "math"
 
 // class
 
@@ -44,10 +43,8 @@ static void _random(Request& r, const String& method_name, MethodParams *params)
 			&method_name,
 			"top must be above 1 (%g)", top);
 	
-	Value& result=*new(pool) VInt(pool, (int)(
-		((double)((randomizer=rand())% RAND_MAX)) / RAND_MAX * uint(top) ));
-	result.set_name(method_name);
-	r.write_no_lang(result);
+	int result=(int)( ((double)((randomizer=rand())% RAND_MAX)) / RAND_MAX * uint(top) );
+	r.write_no_lang(*new(pool) VInt(pool, result));
 }
 
 
@@ -62,9 +59,8 @@ static void math1(Request& r,
 	Pool& pool=r.pool();
 	Value& param=params->as_junction(0, "parameter must be expression");
 
-	Value& result=*new(pool) VDouble(pool, (*func)(r.process_to_value(param).as_double()));
-	result.set_name(method_name);
-	r.write_no_lang(result);
+	double result=(*func)(r.process_to_value(param).as_double());
+	r.write_no_lang(*new(pool) VDouble(pool, result));
 }
 
 #define MATH1(name) \
@@ -94,11 +90,10 @@ static void math2(Request& r,
 	Value& a=params->as_junction(0, "parameter must be expression");
 	Value& b=params->as_junction(1, "parameter must be expression");
 
-	Value& result=*new(pool) VDouble(pool, (*func)(
+	double result=(*func)(
 		r.process_to_value(a).as_double(),
-		r.process_to_value(b).as_double()));
-	result.set_name(method_name);
-	r.write_no_lang(result);
+		r.process_to_value(b).as_double());
+	r.write_no_lang(*new(pool) VDouble(pool, result));
 }
 
 #define MATH2(name) \
@@ -109,9 +104,7 @@ MATH2(pow);
 
 // constructor
 
-MMath::MMath(Pool& apool) : Methoded(apool) {
-	set_name(*NEW String(pool(), MATH_CLASS_NAME));
-	
+MMath::MMath(Pool& apool) : Methoded(apool, "math") {
 	// ^FUNC(expr)	
 #define ADD1(name) \
 	add_native_method(#name, Method::CT_STATIC, _##name, 1, 1)

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_wcontext.h,v 1.31 2002/04/15 12:03:32 paf Exp $
+	$Id: pa_wcontext.h,v 1.32 2002/04/18 10:51:02 paf Exp $
 */
 
 #ifndef PA_WCONTEXT_H
@@ -61,12 +61,29 @@ public: // WContext
 
 	/// writes Value; raises an error if already
 	virtual void write(Value& avalue);
+	/// writes Value; raises an error if already, providing origin
+	virtual void write(Value& avalue, const String* origin);
 
 	/**
 		if value is VString writes fstring,
 		else writes Value; raises an error if already
 	*/
-	virtual void write(Value& avalue, uchar lang);
+	virtual void write(Value& avalue, uchar lang) {
+		if(const String *fstring=avalue.get_string())
+			write(*fstring, lang);
+		else
+			write(avalue);
+	}
+	/**
+		if value is VString writes fstring,
+		else writes Value; raises an error if already, providing origin
+	*/
+	virtual void write(Value& avalue, uchar lang, const String* origin) {
+		if(const String *fstring=avalue.get_string())
+			write(*fstring, lang);
+		else
+			write(avalue, origin);
+	}
 
 	/**
 		retrives the resulting value

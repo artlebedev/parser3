@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vmath.h,v 1.6 2002/02/08 08:30:20 paf Exp $
+	$Id: pa_vmath.h,v 1.7 2002/04/18 10:51:02 paf Exp $
 */
 
 #ifndef PA_VMATH_H
@@ -37,7 +37,7 @@ public: // Value
 
 public: // usage
 
-	VMath(Pool& apool) : VStateless_class(apool, math_base_class),
+	VMath(Pool& apool) : VStateless_class(apool, 0, math_base_class),
 		fconsts(*math_consts) {
 	}
 

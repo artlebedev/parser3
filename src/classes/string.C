@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: string.C,v 1.102 2002/04/15 11:34:24 paf Exp $
+	$Id: string.C,v 1.103 2002/04/18 10:51:00 paf Exp $
 */
 
 #include "classes.h"
@@ -16,10 +16,6 @@
 #include "pa_string.h"
 #include "pa_sql_connection.h"
 #include "pa_dictionary.h"
-
-// defines
-
-#define STRING_CLASS_NAME "string"
 
 // class
 
@@ -34,9 +30,8 @@ public: // Methoded
 
 static void _length(Request& r, const String& method_name, MethodParams *) {
 	Pool& pool=r.pool();
-	Value& result=*new(pool) VDouble(pool, r.self->get_string()->size());
-	result.set_name(method_name);
-	r.write_no_lang(result);
+	double result=r.self->get_string()->size();
+	r.write_no_lang(*new(pool) VDouble(pool, result));
 }
 
 static void _int(Request& r, const String& method_name, MethodParams *params) {
@@ -52,10 +47,7 @@ static void _int(Request& r, const String& method_name, MethodParams *params) {
 		else
 			converted=r.process_to_value(*default_code).as_int();
 	}
-
-	Value& result=*new(pool) VInt(pool, converted);
-	result.set_name(method_name);
-	r.write_no_lang(result);
+	r.write_no_lang(*new(pool) VInt(pool, converted));
 }
 
 static void _double(Request& r, const String& method_name, MethodParams *params) {
@@ -72,9 +64,7 @@ static void _double(Request& r, const String& method_name, MethodParams *params)
 			converted=r.process_to_value(*default_code).as_double();
 	}
 
-	Value& result=*new(pool) VDouble(pool, converted);
-	result.set_name(method_name);
-	r.write_no_lang(result);
+	r.write_no_lang(*new(pool) VDouble(pool, converted));
 }
 
 /*not static*/void _string_format(Request& r, const String& method_name, MethodParams *params) {
@@ -209,7 +199,6 @@ static void replace_action(Table& table, Array *row, int start, int finish,
 			table+=row;
 		{ // execute 'replacement_code' in 'table' context
 			VTable& vtable=*new(table.pool()) VTable(table.pool(), &table);
-			vtable.set_name(*ai.origin);
 
 			Junction *junction=ai.replacement_code->get_junction();
 			Value *saved_match_var_value=junction->root->get_element(*match_var_name);
@@ -257,7 +246,6 @@ static void _match(Request& r, const String& method_name, MethodParams *params) 
 			result=new(pool) VTable(pool, table); // table of pre/match/post+substrings
 		else 
 			result=new(pool) VBool(pool, matched);			
-		result->set_name(method_name);
 		r.write_assign_lang(*result);
 	} else { // replace
 		Value& replacement_code=params->as_junction(2, "replacement param must be code");
@@ -443,10 +431,7 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 
 // constructor
 
-MString::MString(Pool& apool) : Methoded(apool) {
-	set_name(*NEW String(pool(), STRING_CLASS_NAME));
-
-
+MString::MString(Pool& apool) : Methoded(apool, "string") {
 	// ^string.length[]
 	add_native_method("length", Method::CT_DYNAMIC, _length, 0, 0);
 	

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vstateless_class.h,v 1.23 2002/02/08 08:30:20 paf Exp $
+	$Id: pa_vstateless_class.h,v 1.24 2002/04/18 10:51:02 paf Exp $
 */
 
 #ifndef PA_VSTATELESS_CLASS_H
@@ -47,9 +47,31 @@ public: // Value
 
 public: // usage
 
-	VStateless_class(Pool& apool, VStateless_class *abase=0) : VAliased(apool, *this), 
+	VStateless_class(Pool& apool, 
+		const String *aname=0, 
+		VStateless_class *abase=0) : VAliased(apool, *this), 
+		fname(aname),
 		fbase(abase),
 		fmethods(apool) {
+	}
+
+	const String& name() const { 
+		if(!fname) {
+			if(fbase)
+				return fbase->name();
+
+			throw Exception("parser.runtime",
+				0,
+				"getting name of nameless class");
+		}
+
+		return *fname; 
+	}
+	const char *name_cstr() const {
+		return this?name().cstr():"<unknown>";
+	}
+	void set_name(const String& aname) {
+		fname=&aname; 
 	}
 
 	Method *get_method(const String& name) { 
@@ -103,6 +125,7 @@ private: // Temp_method
 	
 private:
 
+	const String *fname;
 	Hash fmethods;
 
 protected:

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.h,v 1.131 2002/04/15 12:03:32 paf Exp $
+	$Id: pa_request.h,v 1.132 2002/04/18 10:51:00 paf Exp $
 */
 
 #ifndef PA_REQUEST_H
@@ -151,6 +151,13 @@ public:
 		else \
 			write_##modification##_lang(*dual.get_value()); \
 	}
+#define DEFINE_DUAL_CHECKED(modification) \
+	void write_##modification##_lang(StringOrValue dual, const String *origin) { \
+		if(const String *string=dual.get_string()) \
+			write_##modification##_lang(*string); \
+		else \
+			write_##modification##_lang(*dual.get_value(), origin); \
+	}
 
 	/// appending, sure of clean string inside
 	void write_no_lang(const String& astring) {
@@ -181,11 +188,16 @@ public:
 	void write_assign_lang(Value& avalue) {
 		wcontext->write(avalue, flang); 
 	}
+	/// appending possible string, assigning untaint language
+	void write_assign_lang(Value& avalue, const String *origin) {
+		wcontext->write(avalue, flang, origin); 
+	}
 	/// appending string, assigning untaint language
 	void write_assign_lang(const String& astring) {
 		wcontext->write(astring, flang); 
 	}
 	DEFINE_DUAL(assign)
+	DEFINE_DUAL_CHECKED(assign)
 
 	/// returns relative to @a path  path to @a file 
 	const String& relative(const char *apath, const String& relative_name);
@@ -274,7 +286,7 @@ private: // execute.C
 		const String& method_name,
 		bool return_cstr);
 
-	Value *get_element(bool can_call_operator);
+	Value *get_element(const String *& remember_name, bool can_call_operator);
 
 private: // defaults
 

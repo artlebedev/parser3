@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_wcontext.C,v 1.17 2002/03/27 15:30:39 paf Exp $
+	$Id: pa_wcontext.C,v 1.18 2002/04/18 10:51:02 paf Exp $
 */
 
 #include "pa_wcontext.h"
@@ -19,25 +19,30 @@ void WContext::write(const String& astring, uchar lang) {
 void WContext::write(Value& avalue) {
 	if(fvalue) { // already have value?
 		// must not construct twice
-		if(avalue.name()==UNNAMED_NAME)
-			throw Exception("parser.runtime",
-				&fvalue->name(),
-				"(%s) may not be overwritten with '%s' (%s), use constructor instead",
-				fvalue->type(), avalue.name().cstr(), avalue.type());
-		else
-			throw Exception("parser.runtime",
-				&avalue.name(),
-				"(%s) illegal assignment attempt to '%s' (%s), use constructor instead",
-				avalue.type(), fvalue->name().cstr(), fvalue->type());
+		throw Exception("parser.runtime",
+			fvalue->get_class()?&fvalue->get_class()->name():0,
+			"(%s) may not be overwritten with '%s' (%s), use constructor",
+			fvalue->type(), 
+				avalue.get_class()->name_cstr(), avalue.type());
 	} else 
 		fvalue=&avalue;
 }
 
-// if value is VString writes fstring,
-// else writes Value; raises an error if already
-void WContext::write(Value& value, uchar lang) {
-	if(const String *fstring=value.get_string())
-		write(*fstring, lang);
-	else
-		write(value);
+void WContext::write(Value& avalue, const String* origin) {
+	if(fvalue) { // already have value?
+		// must not construct twice
+		if(origin)
+			throw Exception("parser.runtime",
+				origin,
+				"contains illegal assignment attempt of %s to '%s' (%s), use constructor",
+				avalue.type(), 
+					fvalue->get_class()->name_cstr(), fvalue->type());
+		else		
+			throw Exception("parser.runtime",
+				fvalue->get_class()?&fvalue->get_class()->name():0,
+				"(%s) may not be overwritten with '%s' (%s), use constructor",
+				fvalue->type(), 
+					avalue.get_class()->name_cstr(), avalue.type());
+	} else 
+		fvalue=&avalue;
 }

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vmethod_frame.h,v 1.24 2002/04/15 10:35:22 paf Exp $
+	$Id: pa_vmethod_frame.h,v 1.25 2002/04/18 10:51:02 paf Exp $
 */
 
 #ifndef PA_VMETHOD_FRAME_H
@@ -32,18 +32,18 @@ public: // Value
 	}
 	
 	/// VMethodFrame: my or self_transparent
-	Value *get_element(const String& name) { 
-		if(my) {
-			Value *result=static_cast<Value *>(my->get(name));
+	Value *get_element(const String& fname) { 
+		if(junction.method->max_numbered_params_count==0) {
+			Value *result=static_cast<Value *>(my.get(fname));
 			if(result)
 				return result;
 		}
-		return fself->get_element(name); 
+		return fself->get_element(fname); 
 	}
 	/// VMethodFrame: my or self_transparent
-	void put_element(const String& name, Value *value){ 
-		if(!(my && my->put_replace(name, value)))
-			fself->put_element(name, value);
+	void put_element(const String& fname, Value *value){ 
+		if(!(junction.method->max_numbered_params_count==0 && my.put_replace(fname, value)))
+			fself->put_element(fname, value);
 	}
 
 	/// VMethodFrame: self_transparent
@@ -64,33 +64,30 @@ public: // wcontext
 public: // usage
 
 	VMethodFrame(Pool& apool, 
-		const String& name,
+		const String& aname,
 		const Junction& ajunction/*info: always method-junction*/) : 
 		WContext(apool, 0 /* empty */),
 
+		fname(aname),
 		junction(ajunction),
 		store_param_index(0),
+
+		my(apool),
+		fnumbered_params(apool, aname),
+
 		fself(0),
 		fresult_initial_void(0) {
-		set_name(name);
 
-		const Method &method=*junction.method;
-
-		if(method.max_numbered_params_count) { // are this method params numbered?
-			my=0; // no named parameters
-			fnumbered_params=NEW MethodParams(pool(), name); // create storage
-		} else { // named params
-			my=NEW Hash(pool()); // create storage
-			fnumbered_params=0; // no numbered parameters
-			
+		if(has_my()) { // this method uses named params?
+			const Method &method=*junction.method;
 			if(method.locals_names) { // are there any local var names?
 				// remember them
-				// those are flags that name is local == to be looked up in 'my'
+				// those are flags that fname is local == to be looked up in 'my'
 				for(int i=0; i<method.locals_names->size(); i++) {
-					// speedup: not checking for clash with "result" name
+					// speedup: not checking for clash with "result" fname
 					Value *value=NEW VVoid(pool());
-					const String& name=*method.locals_names->get_string(i);
-					set_my_variable(name, value);
+					const String& fname=*method.locals_names->get_string(i);
+					set_my_variable(fname, value);
 				}
 			}
 			{ // always there is one local: $result
@@ -99,6 +96,8 @@ public: // usage
 			}
 		}
 	}
+
+	const String& name() { return fname; }
 
 	void set_self(Value& aself) { fself=&aself; }
 	Value *self() { return fself; }
@@ -113,16 +112,16 @@ public: // usage
 			throw Exception("parser.runtime",
 				&actual_method_name,
 				"method of %s (%s) accepts maximum %d parameter(s)", 
-					junction.self.name().cstr(),
+					junction.self.get_class()->name_cstr(),
 					junction.self.type(),
 					max_params);
 		
 		if(method.max_numbered_params_count) { // are this method params numbered?
-			*fnumbered_params+=value;
+			fnumbered_params+=value;
 		} else { // named param
-			// speedup: not checking for clash with "result" name
-			const String& name=*method.params_names->get_string(store_param_index);
-			set_my_variable(name, value);
+			// speedup: not checking for clash with "result" fname
+			const String& fname=*method.params_names->get_string(store_param_index);
+			set_my_variable(fname, value);
 		}
 		store_param_index++;
 	}
@@ -130,24 +129,25 @@ public: // usage
 		const Method &method=*junction.method;
 		if(method.params_names) // there are any named parameters might need filling?
 			for(; store_param_index<method.params_names->size(); store_param_index++) {
-				Value *value=NEW VVoid(pool());
-				const String& name=*method.params_names->get_string(store_param_index);
-				my->put(name, value);
-				value->set_name(name);
+				const String& fname=*method.params_names->get_string(store_param_index);
+				my.put(fname, NEW VVoid(pool()));
 			}
 	}
 
-	MethodParams *numbered_params() { return fnumbered_params; }
+	MethodParams *numbered_params() { return &fnumbered_params; }
 
 private:
 
-	void set_my_variable(const String& name, Value *value) {
-		my->put(name, value); // remember param
-		value->set_name(name); // set param's 'name'
+	bool has_my() {
+		return junction.method->max_numbered_params_count==0;
+	}
+
+	void set_my_variable(const String& fname, Value *value) {
+		my.put(fname, value); // remember param
 	}
 
 	Value *get_result_variable() {
-		Value *result=my?static_cast<Value*>(my->get(*result_var_name)):0;
+		Value *result=has_my()?static_cast<Value*>(my.get(*result_var_name)):0;
 		return result && result!=fresult_initial_void ? result : 0;
 	}
 
@@ -156,8 +156,10 @@ public:
 	const Junction& junction;
 
 private:
+	const String& fname;
+
 	int store_param_index;
-	Hash *my;/*OR*/MethodParams *fnumbered_params;
+	Hash my;/*OR*/MethodParams fnumbered_params;
 	Value *fself;
 
 private:

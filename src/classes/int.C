@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: int.C,v 1.43 2002/04/10 09:53:14 paf Exp $
+	$Id: int.C,v 1.44 2002/04/18 10:50:59 paf Exp $
 */
 
 #include "classes.h"
@@ -15,10 +15,6 @@
 // externs
 
 void _string_format(Request& r, const String& method_name, MethodParams *);
-
-// defines
-
-#define INT_CLASS_NAME "int"
 
 // class
 
@@ -33,24 +29,22 @@ public: // Methoded
 
 static void _int(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	Value *default_code=params->size()>0?
-		default_code=&params->as_junction(0, "default must be int"):0; // (default)
+	 // just checking (default) syntax validity, never really using it  here, just for string.int compatibility
+	if(params->size()>0)
+		params->as_junction(0, "default must be int");
 
 	VInt *vint=static_cast<VInt *>(r.self);
-	Value& result=*new(pool) VInt(pool, vint->get_int());
-	result.set_name(method_name);
-	r.write_no_lang(result);
+	r.write_no_lang(*new(pool) VInt(pool, vint->get_int()));
 }
 
 static void _double(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	Value *default_code=params->size()>0?
-		default_code=&params->as_junction(0, "default must be double"):0; // (default)
+	 // just checking (default) syntax validity, never really using it  here, just for string.doube compatibility
+	if(params->size()>0)
+		params->as_junction(0, "default must be double");
 
 	VInt *vint=static_cast<VInt *>(r.self);
-	Value& result=*new(pool) VDouble(pool, vint->as_double());
-	result.set_name(method_name);
-	r.write_no_lang(result);
+	r.write_no_lang(*new(pool) VDouble(pool, vint->as_double()));
 }
 
 typedef void (*vint_op_func_ptr)(VInt& vint, double param);
@@ -96,17 +90,12 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 				"produced no result, but no default option specified");
 			val=0; //calm, compiler
 		}
-	VInt& result=*new(pool) VInt(pool, val);
-	result.set_name(method_name);
-	r.write_assign_lang(result);
+	r.write_no_lang(*new(pool) VInt(pool, val));
 }
 
 // constructor
 
-MInt::MInt(Pool& apool) : Methoded(apool) {
-	set_name(*NEW String(pool(), INT_CLASS_NAME));
-
-
+MInt::MInt(Pool& apool) : Methoded(apool, "int") {
 	// ^int.int[]
 	add_native_method("int", Method::CT_DYNAMIC, _int, 0, 1);
 

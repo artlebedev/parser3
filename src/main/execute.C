@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: execute.C,v 1.235 2002/04/16 14:33:18 paf Exp $
+	$Id: execute.C,v 1.236 2002/04/18 10:51:01 paf Exp $
 */
 
 #include "pa_opcode.h"
@@ -119,6 +119,8 @@ void Request::execute(const Array& ops) {
 	debug_printf(pool(), "execution-------------------------\n");
 #endif
 
+	const String *last_get_element_name=0;
+
 	Array_iter i(ops);
 	while(i.has_next()) {
 		Operation op;
@@ -216,7 +218,6 @@ void Request::execute(const Array& ops) {
 				const String& name=POP_NAME();
 				Value *ncontext=POP();
 				ncontext->put_element(name, value);
-				value->set_name(name);
 				break;
 			}
 		case OP_CONSTRUCT_EXPR:
@@ -228,7 +229,6 @@ void Request::execute(const Array& ops) {
 				const String& name=POP_NAME();
 				Value *ncontext=POP();
 				ncontext->put_element(name, value->as_expr_result());
-				value->set_name(name);
 				break;
 			}
 		case OP_CURLY_CODE__CONSTRUCT:
@@ -249,7 +249,6 @@ void Request::execute(const Array& ops) {
 				const String& name=POP_NAME();
 				Value *ncontext=POP();
 				ncontext->put_element(name, value);
-				value->set_name(name);
 				break;
 			}
 		case OP_NESTED_CODE:
@@ -265,7 +264,7 @@ void Request::execute(const Array& ops) {
 		case OP_WRITE_VALUE:
 			{
 				value=POP();
-				write_assign_lang(*value);
+				write_assign_lang(*value, last_get_element_name);
 				break;
 			}
 		case OP_WRITE_EXPR_RESULT:
@@ -294,7 +293,7 @@ void Request::execute(const Array& ops) {
 				wcontext->set_somebody_entered_some_object(true);
 
 				//_asm int 3;
-				value=get_element(true);
+				value=get_element(last_get_element_name, true);
 				PUSH(value);
 				break;
 			}
@@ -304,15 +303,15 @@ void Request::execute(const Array& ops) {
 				wcontext->set_somebody_entered_some_object(true);
 
 				//_asm int 3;
-				value=get_element(false);
+				value=get_element(last_get_element_name, false);
 				PUSH(value);
 				break;
 			}
 
 		case OP_GET_ELEMENT__WRITE:
 			{
-				value=get_element(false);
-				write_assign_lang(*value);
+				value=get_element(last_get_element_name/*not followed by call, not needed really*/, false);
+				write_assign_lang(*value, last_get_element_name);
 				break;
 			}
 
@@ -370,11 +369,11 @@ void Request::execute(const Array& ops) {
 				Junction *junction=value->get_junction();
 				if(!junction)
 					throw Exception("parser.runtime",
-						&value->name(),
+						last_get_element_name, 
 						"(%s) not a method or junction, can not call it",
 							value->type()); 
 
-				VMethodFrame *frame=NEW VMethodFrame(pool(), value->name(), *junction);
+				VMethodFrame *frame=NEW VMethodFrame(pool(), *last_get_element_name, *junction);
 				PUSH(frame);
 				break;
 			}
@@ -504,7 +503,7 @@ void Request::execute(const Array& ops) {
 #endif
 
 				if(op.code==OP_CALL__WRITE) {
-					write_assign_lang(result);
+					write_assign_lang(result, last_get_element_name);
 					// forget the fact they've entered some ^object.method[].
 					// see OP_GET_ELEMENT
 					wcontext->set_somebody_entered_some_object(false);
@@ -605,10 +604,6 @@ void Request::execute(const Array& ops) {
 
 				if(b_double == 0) {
 					const String *problem_source=&b->as_string();
-#ifndef NO_STRING_ORIGIN
-					if(!problem_source->origin().file)
-						problem_source=&b->name();
-#endif
 					throw Exception("number.zerodivision",
 						problem_source,
 						"Division by zero");
@@ -627,10 +622,6 @@ void Request::execute(const Array& ops) {
 
 				if(b_double == 0) {
 					const String *problem_source=&b->as_string();
-#ifndef NO_STRING_ORIGIN
-					if(!problem_source->origin().file)
-						problem_source=&b->name();
-#endif
 					throw Exception("number.zerodivision",
 						problem_source,
 						"Modulus by zero");
@@ -649,10 +640,6 @@ void Request::execute(const Array& ops) {
 
 				if(b_int == 0) {
 					const String *problem_source=&b->as_string();
-#ifndef NO_STRING_ORIGIN
-					if(!problem_source->origin().file)
-						problem_source=&b->name();
-#endif
 					throw Exception("number.zerodivision",
 						problem_source,
 						"Division by zero");
@@ -827,8 +814,8 @@ void Request::execute(const Array& ops) {
 }
 
 /// @test cache|prepare junctions 
-Value *Request::get_element(bool can_call_operator) {
-	const String& name=POP_NAME();
+Value *Request::get_element(const String *& remember_name, bool can_call_operator) {
+	const String& name=POP_NAME();  remember_name=&name;
 	Value *ncontext=POP();
 	Value *value=0;
 	if(can_call_operator)
@@ -840,13 +827,10 @@ Value *Request::get_element(bool can_call_operator) {
 		}
 	if(!value)
 		value=ncontext->get_element(name);
-	if(value) {
+	if(value)
 		value=&process_to_value(*value); // process possible code-junction
-		value->update_name(name);
-	} else {
+	else
 		value=NEW VVoid(pool());
-		value->set_name(name);
-	}
 
 	return value;
 }

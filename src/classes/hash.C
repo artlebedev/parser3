@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: hash.C,v 1.38 2002/04/15 12:03:31 paf Exp $
+	$Id: hash.C,v 1.39 2002/04/18 10:50:59 paf Exp $
 */
 
 #include "classes.h"
@@ -15,10 +15,6 @@
 #include "pa_vtable.h"
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
-
-// defines
-
-#define HASH_CLASS_NAME "hash"
 
 // class
 
@@ -133,7 +129,6 @@ static void _union(Request& r, const String& method_name, MethodParams *params) 
 
 	// return result
 	Value& result=*new(pool) VHash(pool, dest);
-	result.set_name(method_name);
 	r.write_no_lang(result);
 }
 
@@ -166,9 +161,7 @@ static void _intersection(Request& r, const String& method_name, MethodParams *p
 	}
 
 	// return result
-	Value& result=*new(pool) VHash(pool, dest);
-	result.set_name(method_name);
-	r.write_no_lang(result);
+	r.write_no_lang(*new(pool) VHash(pool, dest));
 }
 
 static void *intersects(const Hash::Key& key, Hash::Val *value, void *info) {
@@ -188,9 +181,7 @@ static void _intersects(Request& r, const String& method_name, MethodParams *par
 		yes=static_cast<VHash *>(r.self)->hash(&method_name).first_that(intersects, b)!=0;
 
 	// return result
-	Value& result=*new(pool) VBool(pool, yes);
-	result.set_name(method_name);
-	r.write_no_lang(result);
+	r.write_no_lang(*new(pool) VBool(pool, yes));
 }
 
 
@@ -246,17 +237,14 @@ static void _keys(Request& r, const String& method_name, MethodParams *) {
 
 	static_cast<VHash *>(r.self)->hash(&method_name).for_each(keys_collector, &table);
 
-	VTable& result=*new(pool) VTable(pool, &table);
-	result.set_name(method_name);
-	r.write_no_lang(result);
+	r.write_no_lang(*new(pool) VTable(pool, &table));
 }
 
 static void _count(Request& r, const String& method_name, MethodParams *) {
 	Pool& pool=r.pool();
 
-	Value& result=*new(pool) VInt(pool, static_cast<VHash *>(r.self)->hash(&method_name).size());
-	result.set_name(method_name);
-	r.write_no_lang(result);
+	r.write_no_lang(
+		*new(pool) VInt(pool, static_cast<VHash *>(r.self)->hash(&method_name).size()));
 }
 
 static void _delete(Request& r, const String& method_name, MethodParams *params) {
@@ -319,9 +307,8 @@ static void _foreach(Request& r, const String& method_name, MethodParams *params
 
 // constructor
 
-MHash::MHash(Pool& apool) : Methoded(apool) {
-	set_name(*NEW String(pool(), HASH_CLASS_NAME));
-
+MHash::MHash(Pool& apool) : Methoded(apool, "hash") 
+{
 	// ^hash::create[[copy_from]]
 	add_native_method("create", Method::CT_DYNAMIC, _create_or_add, 0, 1);
 	// ^hash.add[add_from]

@@ -4,7 +4,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: image.C,v 1.70 2002/04/15 10:35:21 paf Exp $
+	$Id: image.C,v 1.71 2002/04/18 10:50:59 paf Exp $
 */
 
 /*
@@ -24,10 +24,6 @@
 #include "pa_request.h"
 #include "pa_vfile.h"
 #include "pa_vimage.h"
-
-// defines
-
-#define IMAGE_CLASS_NAME "image"
 
 // class
 
@@ -693,9 +689,7 @@ static void _length(Request& r, const String& method_name, MethodParams *params)
 	VImage& vimage=*static_cast<VImage *>(r.self);
 	if(vimage.image)
 		if(vimage.font) {
-			VInt& result=*new(pool) VInt(pool, vimage.font->string_width(s));
-			result.set_name(method_name);
-			r.write_assign_lang(result);
+			r.write_no_lang(*new(pool) VInt(pool, vimage.font->string_width(s)));
 		} else
 			throw Exception("parser.runtime",
 				&method_name,
@@ -814,10 +808,7 @@ static void _copy(Request& r, const String& method_name, MethodParams *params) {
 
 // constructor
 
-MImage::MImage(Pool& apool) : Methoded(apool) {
-	set_name(*NEW String(pool(), IMAGE_CLASS_NAME));
-
-
+MImage::MImage(Pool& apool) : Methoded(apool, "image") {
 	// ^image:measure[DATA]
 	add_native_method("measure", Method::CT_DYNAMIC, _measure, 1, 1);
 

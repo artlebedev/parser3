@@ -11,6 +11,8 @@ $response:content-type[$.value[text/html]$.charset[$response:charset]]
 #$result[123]
 
 @main[]
+^errort[]
+#^tselectNumber[]
 #$result[hello]
 #^invaliddate2[]
 #^process2[]
@@ -128,6 +130,17 @@ $response:content-type[$.value[text/html]$.charset[$response:charset]]
 #^header[]
 <hr>
 OK
+
+@errort[]
+^xdoc::create[a]
+#^throw[user;here;this]
+
+@tselectNumber[]
+$d[^xdoc::set{<?xml version="1.0" encoding="windows-1251"?><d attr="привет" n="123"/>}]
+^d.selectString[string(d/@attr)]<br>
+^d.selectNumber[2*2]<br>
+^d.selectNumber[number(/d/@n)+1]<br>
+
 
 @invaliddate2[]
 $d[^date::create(1018946575/60/60)] ^d.sql-string[]

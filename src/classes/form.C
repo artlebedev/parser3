@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: form.C,v 1.22 2002/03/27 15:30:33 paf Exp $
+	$Id: form.C,v 1.23 2002/04/18 10:50:59 paf Exp $
 */
 
 #include "classes.h"
@@ -15,8 +15,6 @@
 const size_t MAX_POST_SIZE_DEFAULT=10*0x400*400;
 
 // defines
-
-#define FORM_CLASS_NAME "form"
 
 #define LIMITS_NAME "LIMITS"
 
@@ -39,11 +37,9 @@ private:
 
 // constructor & configurator
 
-MForm::MForm(Pool& apool) : Methoded(apool),
+MForm::MForm(Pool& apool) : Methoded(apool, "form"),
 	max_post_size_name(apool, MAX_POST_SIZE_NAME),
-	limits_name(apool, LIMITS_NAME)
-{
-	set_name(*NEW String(pool(), FORM_CLASS_NAME));
+	limits_name(apool, LIMITS_NAME) {
 }
 
 void MForm::configure_admin(Request& r) {

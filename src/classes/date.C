@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: date.C,v 1.26 2002/04/16 08:59:25 paf Exp $
+	$Id: date.C,v 1.27 2002/04/18 10:50:59 paf Exp $
 */
 
 #include "classes.h"
@@ -12,10 +12,6 @@
 #include "pa_vdouble.h"
 #include "pa_vdate.h"
 #include "pa_vtable.h"
-
-// defines
-
-#define DATE_CLASS_NAME "date"
 
 // class
 
@@ -270,16 +266,12 @@ static void _calendar(Request& r, const String& method_name, MethodParams *param
 		table=fill_week_days(r, method_name, params, rus);
 
 	VTable& result=*new(pool) VTable(pool, table);
-	result.set_name(method_name);
 	r.write_no_lang(result);
 }
 
 // constructor
 
-MDate::MDate(Pool& apool) : Methoded(apool) {
-	set_name(*NEW String(pool(), DATE_CLASS_NAME));
-
-
+MDate::MDate(Pool& apool) : Methoded(apool, "date") {
 	// ^now[]
 	add_native_method("now", Method::CT_DYNAMIC, _now, 0, 1);
 

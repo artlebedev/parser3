@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: file.C,v 1.79 2002/04/16 09:38:49 paf Exp $
+	$Id: file.C,v 1.80 2002/04/18 10:50:59 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -25,8 +25,6 @@
 // consts
 
 // defines
-
-#define FILE_CLASS_NAME "file"
 
 #define TEXT_MODE_NAME "text"
 
@@ -367,7 +365,6 @@ static void _list(Request& r, const String& method_name, MethodParams *params) {
 
 	// write out result
 	VTable& result=*new(pool) VTable(pool, &table);
-	result.set_name(method_name);
 	r.write_no_lang(result);
 }
 
@@ -393,10 +390,7 @@ static void _lock(Request& r, const String& method_name, MethodParams *params) {
 
 // constructor
 
-MFile::MFile(Pool& apool) : Methoded(apool) {
-	set_name(*NEW String(pool(), FILE_CLASS_NAME));
-
-
+MFile::MFile(Pool& apool) : Methoded(apool, "file") {
 	// ^save[mode;file-name]
 	add_native_method("save", Method::CT_DYNAMIC, _save, 2, 2);
 

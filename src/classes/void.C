@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: void.C,v 1.18 2002/04/10 09:53:14 paf Exp $
+	$Id: void.C,v 1.19 2002/04/18 10:51:00 paf Exp $
 */
 
 #include "classes.h"
@@ -13,10 +13,6 @@
 #include "pa_vdouble.h"
 #include "pa_vvoid.h"
 #include "pa_sql_connection.h"
-
-// defines
-
-#define VOID_CLASS_NAME "void"
 
 // class
 
@@ -88,10 +84,7 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 
 // constructor
 
-MVoid::MVoid(Pool& apool) : Methoded(apool) {
-	set_name(*NEW String(pool(), VOID_CLASS_NAME));
-
-
+MVoid::MVoid(Pool& apool) : Methoded(apool, "void") {
 	// ^void.int[] 
 	// ^void.int(default)
 	add_native_method("int", Method::CT_DYNAMIC, _int, 0, 1);

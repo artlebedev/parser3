@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_globals.h,v 1.81 2002/04/15 06:45:56 paf Exp $
+	$Id: pa_globals.h,v 1.82 2002/04/18 10:51:00 paf Exp $
 */
 
 #ifndef PA_GLOBALS_H
@@ -35,8 +35,6 @@ class Charset;
 
 #define UNHANDLED_EXCEPTION_METHOD_NAME "unhandled_exception"
 #define POST_PROCESS_METHOD_NAME "postprocess"
-
-#define UNNAMED_NAME "unnamed"
 
 #define MAIN_METHOD_NAME "main"
 #define AUTO_METHOD_NAME "auto"
@@ -103,8 +101,6 @@ extern String *text_name;
 
 extern String *unhandled_exception_method_name;
 extern String *post_process_method_name;
-
-extern String *unnamed_name;
 
 extern String *auto_method_name;
 extern String *main_method_name;

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: table.C,v 1.150 2002/04/15 13:17:04 paf Exp $
+	$Id: table.C,v 1.151 2002/04/18 10:51:00 paf Exp $
 */
 
 #include "classes.h"
@@ -14,10 +14,6 @@
 #include "pa_vint.h"
 #include "pa_sql_connection.h"
 #include "pa_vbool.h"
-
-// defines
-
-#define TABLE_CLASS_NAME "table"
 
 // class
 
@@ -203,16 +199,14 @@ static void _save(Request& r, const String& method_name, MethodParams *params) {
 
 static void _count(Request& r, const String& method_name, MethodParams *) {
 	Pool& pool=r.pool();
-	Value& value=*new(pool) VInt(pool, static_cast<VTable *>(r.self)->table().size());
-	value.set_name(method_name);
-	r.write_no_lang(value);
+	int result=static_cast<VTable *>(r.self)->table().size();
+	r.write_no_lang(*new(pool) VInt(pool, result));
 }
 
 static void _line(Request& r, const String& method_name, MethodParams *) {
 	Pool& pool=r.pool();
-	Value& value=*new(pool) VInt(pool, 1+static_cast<VTable *>(r.self)->table().current());
-	value.set_name(method_name);
-	r.write_no_lang(value);
+	int result=1+static_cast<VTable *>(r.self)->table().current();
+	r.write_no_lang(*new(pool) VInt(pool, result));
 }
 
 static void _offset(Request& r, const String& method_name, MethodParams *params) {
@@ -234,11 +228,8 @@ static void _offset(Request& r, const String& method_name, MethodParams *params)
 		
 		Value& offset_expr=params->as_junction(params->size()-1, "offset must be expression");
 		table.offset(absolute, r.process_to_value(offset_expr).as_int());
-	} else {
-		Value& value=*new(pool) VInt(pool, table.current());
-		value.set_name(method_name);
-		r.write_no_lang(value);
-	}
+	} else
+		r.write_no_lang(*new(pool) VInt(pool, table.current()));
 }
 
 static void _menu(Request& r, const String& method_name, MethodParams *params) {
@@ -327,7 +318,6 @@ static void _hash(Request& r, const String& method_name, MethodParams *params) {
 			Row_info row_info={&self_table, key_field, &value_fields, result.get_hash(0)};
 			self_table.for_each(table_row_to_hash, &row_info);
 		}
-	result.set_name(method_name);
 	r.write_no_lang(result);
 }
 
@@ -435,12 +425,10 @@ static bool _locate_name_value(Request& r, const String& method_name, MethodPara
 }
 static void _locate(Request& r, const String& method_name, MethodParams *params) {
 	Pool& pool=r.pool();
-	Value& result=*new(pool) VBool(pool, 
-		params->get(0).get_junction()?
+	bool result=params->get(0).get_junction()?
 		_locate_expression(r, method_name, params) :
-		_locate_name_value(r, method_name, params));
-	result.set_name(method_name);
-	r.write_no_lang(result);
+		_locate_name_value(r, method_name, params);
+	r.write_no_lang(*new(pool) VBool(pool, result));
 }
 
 static void _flip(Request& r, const String& method_name, MethodParams *params) {
@@ -635,9 +623,7 @@ static void _columns(Request& r, const String& method_name, MethodParams *) {
 		}
 	}
 
-	VTable& result=*new(pool) VTable(pool, &result_table);
-	result.set_name(method_name);
-	r.write_no_lang(result);
+	r.write_no_lang(*new(pool) VTable(pool, &result_table));
 }
 
 static void _select(Request& r, const String& method_name, MethodParams *params) {
@@ -665,16 +651,12 @@ static void _select(Request& r, const String& method_name, MethodParams *params)
 	}
 	source_table.set_current(saved_current);
 
-	VTable& result=*new(pool) VTable(pool, &result_table);
-	result.set_name(method_name);
-	r.write_no_lang(result);
+	r.write_no_lang(*new(pool) VTable(pool, &result_table));
 }
 
 // constructor
 
-MTable::MTable(Pool& apool) : Methoded(apool) {
-	set_name(*NEW String(pool(), TABLE_CLASS_NAME));
-
+MTable::MTable(Pool& apool) : Methoded(apool, "table") {
 	// ^table::create{data}
 	// ^table::create[nameless]{data}
 	// ^table::create[table]

@@ -4,15 +4,11 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: response.C,v 1.18 2002/02/08 08:30:10 paf Exp $
+	$Id: response.C,v 1.19 2002/04/18 10:51:00 paf Exp $
 */
 
 #include "classes.h"
 #include "pa_request.h"
-
-// defines
-
-#define RESPONSE_CLASS_NAME "response"
 
 // class
 
@@ -31,10 +27,7 @@ static void _clear(Request& r, const String& method_name, MethodParams *) {
 
 // constructor
 
-MResponse::MResponse(Pool& apool) : Methoded(apool) {
-	set_name(*NEW String(pool(), RESPONSE_CLASS_NAME));
-
-
+MResponse::MResponse(Pool& apool) : Methoded(apool,  "response") {
 	// ^clear[]
 	add_native_method("clear", Method::CT_DYNAMIC, _clear, 0, 0);
 }

@@ -5,7 +5,7 @@
 	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 	
-	$Id: pa_vform.C,v 1.54 2002/03/27 15:30:38 paf Exp $
+	$Id: pa_vform.C,v 1.55 2002/04/18 10:51:01 paf Exp $
 
 	based on The CGI_C library, by Thomas Boutell.
 */
@@ -52,7 +52,7 @@ static char *searchAttribute(char *data, const char *attr, size_t len){
 
 // VForm
 
-VForm::VForm(Pool& apool) : VStateless_class(apool, form_base_class),
+VForm::VForm(Pool& apool) : VStateless_class(apool, 0, form_base_class),
 	fields(apool),
 	tables(apool) {
 }

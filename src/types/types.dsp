@@ -157,6 +157,10 @@ SOURCE=.\pa_valiased.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\pa_value.C
+# End Source File
+# Begin Source File
+
 SOURCE=.\pa_value.h
 # End Source File
 # Begin Source File

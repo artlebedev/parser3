@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vint.h,v 1.32 2002/04/09 08:10:37 paf Exp $
+	$Id: pa_vint.h,v 1.33 2002/04/18 10:51:02 paf Exp $
 */
 
 #ifndef PA_VINT_H
@@ -34,8 +34,8 @@ public: // Value
 		
 		String *result=NEW String(pool());
 		result->APPEND_CLEAN(
-			pool_buf, size, 
-			name().origin().file, name().origin().line);
+			pool_buf, size/*, 
+			name().origin().file, name().origin().line*/,0,0);
 		return result;
 	}
 	/// VInt: finteger

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: op.C,v 1.90 2002/04/17 12:20:14 paf Exp $
+	$Id: op.C,v 1.91 2002/04/18 10:51:00 paf Exp $
 */
 
 #include "classes.h"
@@ -20,7 +20,6 @@
 
 // defines
 
-#define OP_CLASS_NAME "OP"
 #define CASE_DEFAULT_VALUE "DEFAULT"
 
 // class
@@ -215,7 +214,7 @@ static void _for(Request& r, const String& method_name, MethodParams *params) {
 static void _eval(Request& r, const String& method_name, MethodParams *params) {
 	Value& expr=params->as_junction(0, "need expression");
 	// evaluate expresion
-	Value *result=r.process_to_value(expr, 
+	Value *value_result=r.process_to_value(expr, 
 		/*0/*no name YET* /,*/
 		true/*don't intercept string*/).as_expr_result();
 	if(params->size()>1) {
@@ -223,11 +222,10 @@ static void _eval(Request& r, const String& method_name, MethodParams *params) {
 
 		Pool& pool=r.pool();
 		String& string=*new(pool) String(pool);
-		string.APPEND_CONST(format(pool, result->as_double(), fmt.as_string().cstr()));
-		result=new(pool) VString(string);
-	}
-	result->set_name(method_name);
-	r.write_no_lang(*result);
+		string.APPEND_CONST(format(pool, value_result->as_double(), fmt.as_string().cstr()));
+		r.write_no_lang(string);
+	} else
+		r.write_no_lang(*value_result);
 }
 
 static void _connect(Request& r, const String& method_name, MethodParams *params) {
@@ -540,7 +538,6 @@ VHash& exception2vhash(Pool& pool, const Exception& e) {
 	if(const String *asource=e.problem_source()) {
 		String& source=*new(pool) String(pool); 
 		source.append(*asource, String::UL_TAINTED, true/*forced*/);
-		result.set_name(source);
 
 		hash.put(*exception_source_part_name, new(pool) VString(source));
 #ifndef NO_STRING_ORIGIN
@@ -638,12 +635,10 @@ static void _throw_operator(Request& r, const String& method_name, MethodParams 
 	
 // constructor
 
-MOP::MOP(Pool& apool) : Methoded(apool),
+MOP::MOP(Pool& apool) : Methoded(apool, "OP"),
 	main_sql_name(apool, MAIN_SQL_NAME),
 	main_sql_drivers_name(apool, MAIN_SQL_DRIVERS_NAME)
 {
-	set_name(*NEW String(pool(), OP_CLASS_NAME));
-
 	// ^if(condition){code-when-true}
 	// ^if(condition){code-when-true}{code-when-false}
 	add_native_method("if", Method::CT_ANY, _if, 2, 3);

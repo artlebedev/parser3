@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: xnode.C,v 1.43 2002/04/15 11:34:24 paf Exp $
+	$Id: xnode.C,v 1.44 2002/04/18 10:51:00 paf Exp $
 */
 #include "classes.h"
 #ifdef XML
@@ -23,10 +23,6 @@ extern "C" {
 };
 #include "gdome.h"
 #include "libxml/xpath.h"
-
-// defines 
-
-#define XNODE_CLASS_NAME "xnode"
 
 // classes
 
@@ -208,9 +204,8 @@ static void _hasChildNodes(Request& r, const String& method_name, MethodParams *
 
 	GdomeException exc;
 	// write out result
-	VBool& result=*new(pool) VBool(pool, gdome_n_hasChildNodes(node, &exc)!=0);
-	result.set_name(method_name);
-	r.write_no_lang(result);
+	bool result=gdome_n_hasChildNodes(node, &exc)!=0;
+	r.write_no_lang(*new(pool) VBool(pool, result));
 }
 
 // Node cloneNode(in boolean deep);
@@ -223,9 +218,7 @@ static void _cloneNode(Request& r, const String& method_name, MethodParams *para
 
 	GdomeException exc;
 	// write out result
-	VXnode& result=*new(pool) VXnode(pool, gdome_n_cloneNode(node, deep, &exc));
-	result.set_name(method_name);
-	r.write_no_lang(result);
+	r.write_no_lang(*new(pool) VXnode(pool, gdome_n_cloneNode(node, deep, &exc)));
 }
 
 // DOM1 element
@@ -447,10 +440,8 @@ static void _selectX(Request& r, const String& method_name, MethodParams *params
 	Value *result=0;
    	if(res.get())
 		handler(pool, expression, res, result);
-	if(result) {
-		result->set_name(method_name);
+	if(result)
 		r.write_no_lang(*result);
-	}
 }
 
 static void selectNodesHandler(Pool& pool,
@@ -615,10 +606,9 @@ static void _selectString(Request& r, const String& method_name, MethodParams *p
 
 // constructor
 
-MXnode::MXnode(Pool& apool) : Methoded(apool), 
-	consts(apool) {
-	set_name(*NEW String(pool(), XNODE_CLASS_NAME));
-
+MXnode::MXnode(Pool& apool) : Methoded(apool, "xnode"), 
+	consts(apool) 
+{
 	/// DOM1 node
 
 	// Node insertBefore(in Node newChild,in Node refChild) raises(DOMException);

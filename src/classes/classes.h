@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: classes.h,v 1.16 2002/02/08 08:30:09 paf Exp $
+	$Id: classes.h,v 1.17 2002/04/18 10:50:59 paf Exp $
 */
 
 #ifndef CLASSES_H
@@ -34,7 +34,9 @@ public: // Methoded
 
 public: // usage
 
-	Methoded(Pool& pool) : VStateless_class(pool) {
+	Methoded(Pool& apool, const char *aname) : 
+		VStateless_class(apool, new(apool) String(apool, aname)) 
+	{
 	}
 
 	void register_directly_used(Request& r);

@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_vhash.h,v 1.31 2002/04/17 12:47:48 paf Exp $
+	$Id: pa_vhash.h,v 1.32 2002/04/18 10:51:02 paf Exp $
 */
 
 #ifndef PA_VHASH_H
@@ -82,7 +82,7 @@ public: // usage
 	}
 
 	void set_default(Value& adefault) { 
-		hash(&adefault.name()).put(*hash_default_element_name, &adefault);
+		hash(0).put(*hash_default_element_name, &adefault);
 	}
 	Value *get_default() { 
 		return static_cast<Value *>(fhash.get(*hash_default_element_name)); 

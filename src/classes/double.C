@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: double.C,v 1.46 2002/04/10 09:53:13 paf Exp $
+	$Id: double.C,v 1.47 2002/04/18 10:50:59 paf Exp $
 */
 
 #include "classes.h"
@@ -15,10 +15,6 @@
 // externs
 
 void _string_format(Request& r, const String& method_name, MethodParams *);
-
-// defines
-
-#define DOUBLE_CLASS_NAME "double"
 
 // class
 
@@ -38,7 +34,6 @@ static void _int(Request& r, const String& method_name, MethodParams *params) {
 
 	VDouble *vdouble=static_cast<VDouble *>(r.self);
 	Value& result=*new(pool) VInt(pool, vdouble->as_int());
-	result.set_name(method_name);
 	r.write_no_lang(result);
 }
 
@@ -49,7 +44,6 @@ static void _double(Request& r, const String& method_name, MethodParams *params)
 
 	VDouble *vdouble=static_cast<VDouble *>(r.self);
 	Value& result=*new(pool) VDouble(pool, vdouble->as_double());
-	result.set_name(method_name);
 	r.write_no_lang(result);
 }
 
@@ -98,16 +92,12 @@ static void _sql(Request& r, const String& method_name, MethodParams *params) {
 			val=0; //calm, compiler
 		}
 	VDouble& result=*new(pool) VDouble(pool, val);
-	result.set_name(method_name);
 	r.write_assign_lang(result);
 }
 
 // constructor
 
-MDouble::MDouble(Pool& apool) : Methoded(apool) {
-	set_name(*NEW String(pool(), DOUBLE_CLASS_NAME));
-
-
+MDouble::MDouble(Pool& apool) : Methoded(apool, "double") {
 	// ^double.int[]
 	add_native_method("int", Method::CT_DYNAMIC, _int, 0, 1);
 

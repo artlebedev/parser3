@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: mail.C,v 1.62 2002/04/15 11:34:24 paf Exp $
+	$Id: mail.C,v 1.63 2002/04/18 10:50:59 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -464,13 +464,11 @@ static void _send(Request& r, const String& method_name, MethodParams *params) {
 
 // constructor & configurator
 
-MMail::MMail(Pool& apool) : Methoded(apool),
+MMail::MMail(Pool& apool) : Methoded(apool, MAIL_CLASS_NAME),
 	mail_name(apool, MAIL_NAME),
 	content_disposition_name(apool, CONTENT_DISPOSITION_NAME),
 	content_disposition_filename_name(apool, CONTENT_DISPOSITION_FILENAME_NAME)
 {
-	set_name(*NEW String(pool(), MAIL_CLASS_NAME));
-
 	// ^mail:send{hash}
 	add_native_method("send", Method::CT_STATIC, _send, 1, 1);
 }

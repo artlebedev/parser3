@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_request.C,v 1.200 2002/04/16 14:41:39 paf Exp $
+	$Id: pa_request.C,v 1.201 2002/04/18 10:51:01 paf Exp $
 */
 
 #include "pa_sapi.h"
@@ -163,8 +163,8 @@ gettimeofday(&mt[0],NULL);
 					charsets->for_each(load_charset);
 				else
 					throw Exception("parser.runtime",
-						&vcharsets->name(),
-						"must be hash");
+						0,
+						"$" CHARSETS_NAME " must be hash");
 			}
 		}
 		// configure root options
@@ -257,7 +257,7 @@ gettimeofday(&mt[2],NULL);
 				if(const Method *method=junction->method) {
 					// preparing to pass parameters to 
 					//	@postprocess[data]
-					VMethodFrame frame(pool(), value->name(), *junction);
+					VMethodFrame frame(pool(), method->name, *junction);
 					frame.set_self(*main_class);
 
 					frame.store_param(method->name, 
@@ -353,7 +353,7 @@ t[9]-t[3]
 						if(const Method *method=junction->method) {
 		 					// preparing to pass parameters to 
 							//	@unhandled_exception[exception;stack]
-							VMethodFrame frame(pool(), value->name(), *junction);
+							VMethodFrame frame(pool(), method->name, *junction);
 							frame.set_self(*main_class);
 
 							// $exception
@@ -461,8 +461,8 @@ VStateless_class *Request::use_file(const String& file_name,
 					}
 				} else
 					throw Exception("parser.runtime",
-						&element->name(),
-						"must be string or table");
+						0,
+						"$" CLASS_PATH_NAME " must be string or table");
 				if(!file_spec)
 					throw Exception("parser.runtime",
 						&file_name,

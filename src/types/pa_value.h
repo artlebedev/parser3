@@ -4,7 +4,7 @@
 	Copyright (c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-	$Id: pa_value.h,v 1.83 2002/04/15 13:39:54 paf Exp $
+	$Id: pa_value.h,v 1.84 2002/04/18 10:51:01 paf Exp $
 */
 
 #ifndef PA_VALUE_H
@@ -33,8 +33,6 @@ public: // Value
 
 	/// all: value type, used for error reporting and 'is' expression operator
 	virtual const char *type() const =0;
-	
-	const String& name() const { return *fname; }
 	
 	/** is this value defined?
 		@return for
@@ -206,18 +204,7 @@ public: // Value
 
 public: // usage
 
-	Value(Pool& apool) : Pooled(apool), fname(unnamed_name) {
-	}
-
-	/// updates the name which is used in error messages [sets only when were unnamed]
-	void update_name(const String& aname) {
-		if(fname==unnamed_name)
-			fname=&aname; 
-	}
-	
-	/// sets the name which is used in error messages
-	void set_name(const String& aname) {
-		fname=&aname; 
+	Value(Pool& apool) : Pooled(apool) {
 	}
 
 	/// @return sure String. if it doesn't have string value barks
@@ -229,18 +216,14 @@ public: // usage
 		return *result;
 	}
 
-private:
-
-	const String *fname;
-
 protected: 
 
 	/// throws exception specifying bark-reason and name() type() of problematic value
 	void bark(char *reason, 
 		const char *alt_reason=0, const String *problem_source=0) const {
 		throw Exception("parser.runtime",
-			problem_source?problem_source:&name(),
-			problem_source?alt_reason:reason, type());
+			problem_source,
+			alt_reason?alt_reason:reason, type());
 	}
 
 };
@@ -368,19 +351,7 @@ public:
 
 	/// call this before invoking to ensure proper actual numbered params count
 	void check_actual_numbered_params(
-		Value& self, const String& actual_name, Array *actual_numbered_params) const {
-
-		int actual_count=actual_numbered_params?actual_numbered_params->size():0;
-		if(actual_count<min_numbered_params_count) // not proper count? bark
-			throw Exception("parser.runtime",
-				&actual_name,
-				"native method of %s (%s) accepts minimum %d parameter(s) (%d present)", 
-					self.name().cstr(),
-					self.type(),
-					min_numbered_params_count,
-					actual_count);
-
-	}
+		Value& self, const String& actual_name, Array *actual_numbered_params) const;
 };
 
 #endif
