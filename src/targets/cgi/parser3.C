@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_PARSER3_C="$Date: 2004/06/16 15:56:19 $";
+static const char * const IDENT_PARSER3_C="$Date: 2004/06/18 09:17:11 $";
 
 #include "pa_config_includes.h"
 
@@ -277,12 +277,11 @@ static void SIGPIPE_handler(int /*sig*/){
 #ifdef WIN32
 const char* maybe_reconstruct_IIS_status_in_qs(const char* original) 
 {
-	// 404;http://servername/page?param=value...
+	// 404;http://servername/page[?param=value...]
 	// ';' should be urlencoded by HTTP standard, so we shouldn't get it from browser 
 	// and can consider that as an indication that this is IIS way to report errors
-	const char* qmark_at;
 
-	if(original && (qmark_at=strchr(original, '?')) 
+	if(original 
 		&& isdigit(original[0])
 		&& isdigit(original[1])
 		&& isdigit(original[2])
@@ -298,6 +297,7 @@ const char* maybe_reconstruct_IIS_status_in_qs(const char* original)
 		memcpy(cur, original, 3); cur+=3;
 		*cur++='&';
 
+		const char* qmark_at=strchr(original, '?');
 		memcpy(cur, "IIS-DOCUMENT=", 13);  cur+=13;
 		{
 			size_t value_len=(qmark_at? qmark_at-original: original_len)-4;
