@@ -5,9 +5,9 @@
 
 	Author: Alexander Petrosyan <paf@design.ru>(http://design.ru/paf)
 
-	$Id: image.C,v 1.31 2001/08/27 15:17:15 parser Exp $
+	$Id: image.C,v 1.32 2001/08/27 15:47:13 parser Exp $
 */
-static const char *RCSId="$Id: image.C,v 1.31 2001/08/27 15:17:15 parser Exp $"; 
+static const char *RCSId="$Id: image.C,v 1.32 2001/08/27 15:47:13 parser Exp $"; 
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -111,8 +111,8 @@ struct JPG_Size_segment_body {
 
 //
 
-inline short bytes_to_int(unsigned char chars[2]) {
-	return(short)((chars[1]<<8) + chars[0]);
+inline short big_endian_to_int(unsigned char chars[2]) {
+	return(short)((chars[0]<<8) + chars[1]);
 }
 
 void measure_gif(Pool& pool, const String *origin_string, 
@@ -131,8 +131,8 @@ void measure_gif(Pool& pool, const String *origin_string,
 			origin_string, 
 			"bad image file - GIF signature not found");	
 
-	width=bytes_to_int(head->width);
-	height=bytes_to_int(head->height);
+	width=big_endian_to_int(head->width);
+	height=big_endian_to_int(head->height);
 }
 
 void measure_jpeg(Pool& pool, const String *origin_string, 
@@ -173,13 +173,13 @@ void measure_jpeg(Pool& pool, const String *origin_string,
 				break;
 			JPG_Size_segment_body *body=(JPG_Size_segment_body *)buf;
 			
-			width=bytes_to_int(body->width);
-			height=bytes_to_int(body->height);
+			width=big_endian_to_int(body->width);
+			height=big_endian_to_int(body->height);
 			found=true;
 			break;
 		} else {
             // Dummy read to skip over data
-            size_t limit=bytes_to_int(head->length) - 2;
+            size_t limit=big_endian_to_int(head->length) - 2;
 			if(reader.read(buf, limit)<limit)
 				break;
         }
