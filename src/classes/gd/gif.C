@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: gif.C,v 1.9 2001/09/26 10:32:25 parser Exp $
+	$Id: gif.C,v 1.10 2001/10/08 14:05:15 parser Exp $
 
 	based on: gd
 
@@ -419,7 +419,18 @@ void gdImage::Rectangle(int x1, int y1, int x2, int y2, int color)
 
 void gdImage::FilledRectangle(int x1, int y1, int x2, int y2, int color)
 {
+	if(x1>x2) {
+		int t=x1;
+		x1=x2;
+		x2=t;
+	}
+	if(y1>y2) {
+		int t=y1;
+		y1=y2;
+		y2=t;
+	}
 	int x, y;
+
 	for (y=y1; (y<=y2); y++)
 		for (x=x1; (x<=x2); x++)
 			SetPixel(x, y, color);
