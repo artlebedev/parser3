@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-static const char* IDENT_VMETHOD_FRAME_H="$Date: 2002/09/10 12:02:24 $";
+static const char* IDENT_VMETHOD_FRAME_H="$Date: 2002/09/17 15:20:35 $";
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
@@ -38,18 +38,18 @@ public: // Value
 			if(Value *result=static_cast<Value *>(my.get(aname)))
 				return result;
 		}
-		return fself->get_element(aname, aself, looking_up); 
+		return self(&aname).get_element(aname, aself, looking_up); 
 	}
 	/// VMethodFrame: my or self_transparent
 	/*override*/ bool put_element(const String& aname, Value *avalue, bool replace) { 
 		if(junction.method->max_numbered_params_count==0 && my.put_replace(aname, avalue))
 			return true;
 
-		return fself->put_element(aname, avalue, replace);
+		return self(&aname).put_element(aname, avalue, replace);
 	}
 
 	/// VMethodFrame: self_transparent
-	VStateless_class* get_class() { return fself->get_class(); }
+	VStateless_class* get_class() { return fself?fself->get_class():0; }
 
 public: // WContext
 
@@ -98,8 +98,14 @@ public: // usage
 
 	const String& name() { return fname; }
 
-	void set_self(Value& aself) { fself=&aself; }
-	Value *self() { return fself; }
+	void set_self(Value *aself) { fself=aself; }
+	Value& self(const String *source) { 
+		if(!fself)
+			throw Exception("parser.runtime",
+				source,
+				"you can not access nonlocal variables here");
+		return *fself; 
+	}
 
 	bool can_store_param() {
 		const Method& method=*junction.method;
@@ -115,8 +121,8 @@ public: // usage
 			throw Exception("parser.runtime",
 				&name(),
 				"method of %s (%s) accepts maximum %d parameter(s)", 
-					junction.self.get_class()->name_cstr(),
-					junction.self.type(),
+					junction.self?junction.self->get_class()->name_cstr():"<unknown class>",
+					junction.self?junction.self->type():"<unknown type>",
 					max_params);
 		
 		if(method.max_numbered_params_count) { // are this method params numbered?

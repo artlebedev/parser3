@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
-static const char* IDENT_VSTATELESS_CLASS_H="$Date: 2002/08/14 14:18:31 $";
+static const char* IDENT_VSTATELESS_CLASS_H="$Date: 2002/09/17 15:20:35 $";
 
 #include "pa_hash.h"
 #include "pa_vjunction.h"
@@ -36,7 +36,7 @@ public: // Value
 		// $method=junction(self+class+method)
 		if(Method *method=static_cast<Method *>(fmethods.get(aname)))
 			return new(aname.pool()) VJunction(
-				*new(aname.pool()) Junction(aname.pool(), *aself, this, method, 0,0,0,0));
+				*new(aname.pool()) Junction(aname.pool(), aself, this, method, 0,0,0,0));
 		if(fbase)
 			return fbase->get_element(aname, aself, looking_up);
 		return 0;

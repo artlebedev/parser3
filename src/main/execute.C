@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char* IDENT_EXECUTE_C="$Date: 2002/09/10 14:56:34 $";
+static const char* IDENT_EXECUTE_C="$Date: 2002/09/17 15:20:34 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -166,6 +166,10 @@ void Request::execute(const Array& ops) {
 			}
 		case OP_WITH_SELF: 
 			{
+				if(!self)
+					throw Exception("parser.runtime",
+						0,
+						"you do not have 'self' here, use local variables");
 				PUSH(self);
 				break;
 			}
@@ -208,7 +212,7 @@ void Request::execute(const Array& ops) {
 				debug_dump(pool(), 1, *local_ops);
 #endif				
 				Junction& j=*NEW Junction(pool(), 
-					*self, 0, 0,
+					self, 0, 0,
 					method_frame, 
 					rcontext, 
 					wcontext, 
@@ -348,7 +352,7 @@ void Request::execute(const Array& ops) {
 				// in .process we would test that field 
 				// in decision "which wwrapper to use"
 				Junction& j=*NEW Junction(pool(), 
-					*self, 0, 0,
+					self, 0, 0,
 					method_frame, 
 					rcontext, 
 					op.code==OP_EXPR_CODE__STORE_PARAM?0:wcontext, 
@@ -408,7 +412,7 @@ void Request::execute(const Array& ops) {
 				Value *saved_rcontext=rcontext;
 				WContext *saved_wcontext=wcontext;
 				
-				VStateless_class *called_class=frame.junction.self.get_class();
+				VStateless_class *called_class=frame.junction.self?frame.junction.self->get_class():0;
 				if(wcontext->get_constructing()) {
 					wcontext->set_constructing(false);
 					if(frame.junction.method->call_type!=Method::CT_STATIC) {
@@ -431,9 +435,9 @@ void Request::execute(const Array& ops) {
 							&frame.name(),
 							"method is static and can not be used as constructor");
 				} else
-					self=&frame.junction.self;
+					self=frame.junction.self;
 
-				frame.set_self(*self);
+				frame.set_self(self);
 
 				// see OP_PREPARE_TO_EXPRESSION
 				frame.set_in_expression(wcontext->get_in_expression());
@@ -806,7 +810,7 @@ Value *Request::get_element(const String *& remember_name, bool can_call_operato
 		if(Method* method=OP.get_method(name)) { // looking operator of that name FIRST
 			// as if that method were in self and we have normal dynamic method here
 			Junction& junction=*NEW Junction(pool(), 
-				*method_frame, self->get_class(), method, 0,0,0,0);
+				0, 0, method, 0,0,0,0);
 			value=NEW VJunction(junction);
 		}
 	}
@@ -864,7 +868,7 @@ StringOrValue Request::process(Value& input_value, bool intercept_string) {
 		Value *saved_rcontext=rcontext;  
 		WContext *saved_wcontext=wcontext;
 		
-		self=&junction->self;
+		self=junction->self;
 		method_frame=junction->method_frame;
 		rcontext=junction->rcontext;
 
@@ -947,13 +951,13 @@ void Request::execute_method(Value& aself,
 	self=&aself;	
 //	WWrapper local(pool(), &aself, wcontext);
 //	wcontext=&local; 
-	Junction local_junction(pool(), *self, self->get_class(), &method, 0,0,0,0);
+	Junction local_junction(pool(), self, self->get_class(), &method, 0,0,0,0);
 	VMethodFrame local_frame(pool(), method.name, local_junction);
 	if(optional_param && local_frame.can_store_param()) {
 		local_frame.store_param(optional_param);
 		local_frame.fill_unspecified_params();
 	}
-	local_frame.set_self(*self);
+	local_frame.set_self(self);
 	rcontext=wcontext=method_frame=&local_frame; 
 
 	// prevent non-string writes for better error reporting
