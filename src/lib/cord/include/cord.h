@@ -243,6 +243,9 @@ size_t CORD_str(CORD x, size_t start, CORD s);
 CORD CORD_chars(char c, size_t i);
 # define CORD_nul(i) CORD_chars('\0', (i))
 
+/* paf:optimized version, always returning functional block*/
+CORD CORD_chars_block(char c, size_t i);
+
 /* Turn a file into cord.  The file must be seekable.  Its contents	*/
 /* must remain constant.  The file may be accessed as an immediate	*/
 /* result of this call and/or as a result of subsequent accesses to 	*/

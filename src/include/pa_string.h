@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-static const char * const IDENT_STRING_H="$Date: 2004/05/24 10:21:45 $";
+static const char * const IDENT_STRING_H="$Date: 2004/05/24 10:45:08 $";
 
 // includes
 
@@ -124,13 +124,13 @@ public:
 		CORD make_langs(C current) const {
 			return opt.is_not_just_lang?
 				langs
-				:CORD_chars((char)opt.lang, get_length(current));
+				:CORD_chars_block((char)opt.lang, get_length(current));
 		}
 
 		CORD make_langs(size_t aoffset, size_t alength)  const {
 			return opt.is_not_just_lang?
 				CORD_substr(langs, aoffset, alength)
-				:CORD_chars((char)opt.lang, alength);
+				:CORD_chars_block((char)opt.lang, alength);
 		}
 
 		/// appending when 'langs' already contain something [simple cases handled elsewhere]
@@ -145,7 +145,7 @@ public:
 				size_t current_size=get_length(current);
 				assert(current_size);
 				langs=CORD_cat(
-					CORD_chars((char)opt.lang, current_size),  // first piece [making from just 'lang']
+					CORD_chars_block((char)opt.lang, current_size),  // first piece [making from just 'lang']
 					to_nonempty_target_langs); // new piece
 			}
 		}
@@ -175,7 +175,7 @@ public:
 					return;
 				}
 
-			append(current, CORD_chars((char)alang, asize));
+			append(current, CORD_chars_block((char)alang, asize));
 		}
 
 		/// MUST be called exactly prior to modification of current [uses it's length]
