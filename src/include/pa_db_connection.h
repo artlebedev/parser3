@@ -5,7 +5,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_connection.h,v 1.10 2001/10/26 13:48:18 paf Exp $
+	$Id: pa_db_connection.h,v 1.11 2001/10/26 16:27:17 paf Exp $
 */
 
 #ifndef PA_DB_CONNECTION_H
@@ -45,7 +45,7 @@ public:
 		using driver dynamic library found in table, if not loaded yet
 		checks driver version
 	*/
-	DB_Table_ptr get_table_ptr(const String& file_name, const String *origin);
+	DB_Table_ptr get_table_ptr(const String& file_name, const String *source);
 	void clear_dbfile(const String& file_name);
 
 private: // connection usage methods

@@ -4,7 +4,7 @@
 	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: pa_db_connection.C,v 1.14 2001/10/26 15:26:37 paf Exp $
+	$Id: pa_db_connection.C,v 1.15 2001/10/26 16:27:17 paf Exp $
 */
 
 #include "pa_config_includes.h"
@@ -24,6 +24,9 @@
 #define DB_EXCEPTION_NO_LOG_MESSAGE2 DB_ERROR_PREFIX"log_get: unable to find checkpoint record"
 
 // consts
+
+/// @test increase
+const int DB_CHECKPOINT_MINUTES=1; 
 
 const int EXPIRE_UNUSED_TABLE_SECONDS=60;
 const int CHECK_EXPIRED_TABLES_SECONDS=EXPIRE_UNUSED_TABLE_SECONDS*2;
@@ -153,11 +156,10 @@ void DB_Connection::check(const char *operation, const String *source, int error
 	}
 }
 
-DB_Table_ptr DB_Connection::get_table_ptr(const String& request_file_name, const String *origin) {
-	if(!used)
-		throw(0, 0,
-			origin,
-			"note to parser3 programmer: your forgot about DB_Connection_usage");
+DB_Table_ptr DB_Connection::get_table_ptr(const String& request_file_name, const String *source) {
+	// checkpoint
+	check("checkpoint", source, 
+		txn_checkpoint(dbenv.tx_info, 0/*kbyte*/, DB_CHECKPOINT_MINUTES/*min*/));
 
 	// first trying to get cached table
 	DB_Table *result=get_table_from_cache(request_file_name);
