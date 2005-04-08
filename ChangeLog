@@ -1,4 +1,74 @@
-2004-12-24	paf
+2005-04-08  paf
+	* src/main/pa_charset.C 1.51:
+		bugfix: UTF8->one-byte-per-char-encoding bugfix: when there is
+		no char in charset one byte produces 6 (&#255; <<max).
+		increased buffer size!
+
+2005-03-23  paf
+	* src/classes/date.C 1.69:
+	* src/types/pa_vdate.h 1.35:
+		! bugfix: ^date.sql-string now takes TZ into account
+
+2005-03-16  paf
+	* src/types/pa_vhash.C 1.7:
+		. warning about eof eol
+
+	* INSTALL 1.40:
+	* src/include/pa_stack.h 1.23:
+	* www/htdocs/.htaccess 1.43:
+	* www/htdocs/_bug.html 1.82:
+		. compiled on freebsd 5.3 with gcc 3.4
+
+2005-02-17  paf
+	* operators.txt 1.178:
+	* src/classes/op.C 1.150:
+	* src/classes/op.C 1.151:
+		+ operator ^sleep(double seconds)
+
+2005-02-02  paf
+	* src/classes/xnode.C 1.69:
+	* www/htdocs/_bug.html 1.81:
+		beauty: removed needless includes
+
+2005-01-31  paf
+	* src/types/pa_vmail.C 1.71:
+		change: $.partX now always 1...
+		change: $.partNoNumber now alias to $.part1
+
+	* INSTALL 1.39:
+		updatet to latest working versions available
+
+	* src/types/pa_vmail.C 1.70:
+		change: incoming letter part contains "content-disposition" header with any value?
+		now considering that part to be "file#" [for text/plain text/html were $.text# $.html#]
+
+2005-01-20  paf
+	* configure.in 1.83:
+	* src/include/pa_version.h 1.19:
+	* www/htdocs/_bug.html 1.80:
+		version
+
+2005-01-19  paf
+	* src/lib/gd/Makefile.am 1.2:
+	* src/lib/gd/Makefile.in 1.4:
+	* src/lib/ltdl/Makefile.am 1.2:
+	* src/lib/ltdl/Makefile.in 1.7:
+	* src/targets/cgi/parser3.C 1.236:
+	* src/types/Makefile.am 1.38:
+	* src/types/Makefile.in 1.58:
+		forgotten makefiles.
+		couple warnings in parser3.C
+
+	* Makefile.am 1.48:
+	* Makefile.in 1.62:
+	* acinclude.m4 1.35:
+	* aclocal.m4 1.38:
+	* acsite.m4 1.13:
+	* configure 1.82:
+	* configure.in 1.82:
+		*** empty log message ***
+
+2004-12-24  paf
 	* Makefile.am [release_3_1_4] 1.47.2.1:
 	* Makefile.in [release_3_1_4] 1.61.2.1:
 	* acinclude.m4 [release_3_1_4] 1.34.2.1:
@@ -8,9 +78,24 @@
 	* configure.in [release_3_1_4] 1.81.2.1:
 		*** empty log message ***
 
-2004-12-23	paf
-	* src/include/pa_version.h 1.18:
-		compiled on win32...
+2004-12-23  paf
+	* src/types/pa_vhashfile.C 1.47:
+	* www/htdocs/_bug.html 1.72:
+		bugfix: reading empty string from hashfile produced bad cord
+
+	* src/main/pa_exec.C 1.65:
+	* www/htdocs/_bug.html 1.78:
+		win32: bugfix: file::cgi/exec now set current dir to directory
+		of script (when shbang used), not to directory of its interpreter
+
+	* src/targets/cgi/parser3.C 1.235:
+		now, when version (compiled on HOST), we need more hspace
+
+	* src/types/pa_vmethod_frame.h 1.51:
+	* www/htdocs/_bug.html 1.73:
+		bugfix: when method junction was created by accessing $
+		name_of_method it acquired bad self=closest methodframe; 
+		instead of proper self (current class)
 
 	* src/include/pa_common.h 1.101:
 	* src/main/pa_common.C 1.202:
@@ -18,34 +103,10 @@
 	* www/htdocs/_bug.html 1.75:
 		beauty: hashfile::open now creates dir for new file
 
-	* src/types/pa_vmethod_frame.h 1.51:
-	* www/htdocs/_bug.html 1.73:
-		bugfix: when method junction was created by accessing $
-		name_of_method it acquired bad self=closest methodframe; instead 
-		of proper self (current class)
-
-	* src/types/pa_vhashfile.C 1.47:
-	* www/htdocs/_bug.html 1.72:
-		bugfix: reading empty string from hashfile produced bad cord
-
 	* src/main/pa_request.C 1.273:
 	* www/htdocs/_bug.html 1.77:
-		new: @unhandled_exception can prevent exception from being 
+		new: @unhandled_exception can prevent exception from being
 		logged by setting $exception.handled(1)
-
-	* src/main/pa_exec.C 1.65:
-	* www/htdocs/_bug.html 1.78:
-		win32: bugfix: file::cgi/exec now set current dir to directory 
-		of script (when shbang used), not to directory of its 
-		interpreter
-
-	* configure 1.81:
-	* configure.in 1.81:
-	* src/include/pa_version.h 1.17:
-		configured host to pa_version. will be displayed everywhere
-
-	* src/targets/cgi/parser3.C 1.235:
-		now, when version (compiled on HOST), we need more hspace
 
 	* src/classes/table.C 1.207:
 	* src/types/pa_vhash.C 1.6:
@@ -65,21 +126,30 @@
 	* www/htdocs/_bug.html 1.79:
 		sql connect string, rsplit @
 
-2004-12-10	paf
-	* src/main/pa_common.C 1.198:
-		http: timeout setsockopt [if possible] on unix too
+	* configure 1.81:
+	* configure.in 1.81:
+	* src/include/pa_version.h 1.17:
+		configured host to pa_version. will be displayed everywhere
 
+	* src/include/pa_version.h 1.18:
+		compiled on win32...
+
+2004-12-10  paf
 	* src/main/pa_common.C 1.197:
-		http: exception status of send/recv errors change to most 
+		http: exception status of send/recv errors change to most
 		probable http.timeout
 
 	* src/main/pa_common.C 1.200:
 		comment on volatile
 
-	* src/include/pa_config_auto.h.in 1.42:
-	* src/main/pa_common.C 1.199:
-		http: unix: alarm function were not used since the beginning due 
-		to stupid error [setsigjmp were not checked in configure.in]
+	* src/main/pa_common.C 1.196:
+	* www/htdocs/_bug.html 1.71:
+		win32: http connection $.timeout option now works [setsockopt
+		on send/receive]
+
+	* src/lib/smtp/comms.C 1.7:
+	* src/main/pa_common.C 1.201:
+		DONT_LINGER can cause subsequent failures though defined in .h
 
 	* Makefile.am 1.47:
 	* Makefile.in 1.61:
@@ -90,25 +160,24 @@
 	* configure.in 1.80:
 		*** empty log message ***
 
-	* src/lib/smtp/comms.C 1.7:
-	* src/main/pa_common.C 1.201:
-		DONT_LINGER can cause subsequent failures though defined in .h
+	* src/main/pa_common.C 1.198:
+		http: timeout setsockopt [if possible] on unix too
 
-	* src/main/pa_common.C 1.196:
-	* www/htdocs/_bug.html 1.71:
-		win32: http connection $.timeout option now works [setsockopt on 
-		send/receive]
+	* src/include/pa_config_auto.h.in 1.42:
+	* src/main/pa_common.C 1.199:
+		http: unix: alarm function were not used since the beginning
+		due to stupid error [setsigjmp were not checked in configure.in]
 
-2004-12-08	paf
+2004-12-08  paf
 	* src/classes/mail.C 1.108:
 	* src/types/pa_vmail.C 1.69:
 	* www/htdocs/.htaccess 1.42:
 	* www/htdocs/_bug.html 1.70:
 	* www/htdocs/_bug.xsl 1.14:
-		bugfix: mail body now cstr-ed knowing mail charset, and 
+		bugfix: mail body now cstr-ed knowing mail charset, and
 		untainting uri lang now knows proper charset
 
-2004-11-24	paf
+2004-11-24  paf
 	* src/classes/hash.C 1.72:
 		hash: adding/cloning adds/clones _default now
 		
@@ -121,41 +190,32 @@
 		^hash2.add[$hash]
 		$hash2.shit
 
-2004-11-12	paf
+2004-11-12  paf
 	* src/types/pa_vmail.C 1.68:
 		bugfix: mail:send[$.date[]] were ignored [since 3.0.4]
 
-2004-11-09	paf
+2004-11-09  paf
 	* src/targets/cgi/parser3.C 1.233:
 		debug: PA_DEBUG_CGI_ENTRY_EXIT
 		if on, writes basics to c:\parser3.log
 
-2004-10-21	paf
+2004-10-21  paf
 	* src/classes/xnode.C 1.68:
-		bugfix: xnode.getAttribute[NS] now return tainted strings [were 
+		bugfix: xnode.getAttribute[NS] now return tainted strings [were
 		returning clean onces]
 
-2004-10-15	paf
+2004-10-15  paf
 	* src/types/pa_vdouble.h 1.46:
-		bugfix: ^for[i](1;1.5){} << did two cycles(i=1; i=2), which was 
+		bugfix: ^for[i](1;1.5){} << did two cycles(i=1; i=2), which was
 		wrong, now does ONE
 
-2004-10-12	paf
+2004-10-12  paf
 	* etc/parser3.charsets/windows-1251.cfg 1.12:
 		euro
 		promille
 		+/-
 
-2004-10-07	paf
-	* src/lib/cord/cordbscs.c 1.5:
-		debugger help: CORD_dump now dumpts \t\r\n as @#| and truncates 
-		long char sequences less
-
-	* src/include/pa_string.h 1.164:
-	* src/main/pa_string.C 1.201:
-		debugger help: String.dump() to stdout in detailed form  [were 
-		String.v() in short form]
-
+2004-10-07  paf
 	* src/include/pa_config_fixed.h 1.67:
 	* src/include/pa_config_includes.h 1.30:
 	* src/main/pa_globals.C 1.176:
@@ -164,23 +224,32 @@
 	* www/htdocs/_bug.pl 1.2:
 		debugger help: PA_RELEASE_ASSERTS enables release asserts
 
-2004-10-06	paf
+	* src/lib/cord/cordbscs.c 1.5:
+		debugger help: CORD_dump now dumpts \t\r\n as @#| and truncates
+		long char sequences less
+
+	* src/include/pa_string.h 1.164:
+	* src/main/pa_string.C 1.201:
+		debugger help: String.dump() to stdout in detailed form  [were
+		String.v() in short form]
+
+2004-10-06  paf
 	* src/include/pa_socks.h 1.16:
 	* src/main/pa_common.C 1.195:
 	* src/main/pa_socks.C 1.23:
 		win32 beauty: socket errors properly decoded
 
-2004-10-05	paf
-	* src/main/pa_request.C 1.271:
-		bugfix: cookie(and mail:recieved) fills now performed prior to file loading [and @auto executing]
-		thus making $cookie:value available in @auto and in @unhandled_exception when IIS is configured to run interpreter even if no file exist
-
+2004-10-05  paf
 	* src/include/pa_request.h 1.177:
 	* src/main/pa_request.C 1.272:
 		bugfix: request::configure_user/admin done always, even if no file-to-process
 		useful in @unhandled_exception [say, if they would want to mail by SMTP something]
 
-2004-09-20	paf
+	* src/main/pa_request.C 1.271:
+		bugfix: cookie(and mail:recieved) fills now performed prior to file loading [and @auto executing]
+		thus making $cookie:value available in @auto and in @unhandled_exception when IIS is configured to run interpreter even if no file exist
+
+2004-09-20  paf
 	* src/main/pa_globals.C 1.175:
 		libxml has bugs: it calls xmlMallocAtomic somewhere where it should have called xmlMalloc
 		and it calls xmlFree when it should have not called it.
@@ -189,37 +258,31 @@
 		until that day: we have SLOW garbage collecting when many xml objects are alive
 		hint: do ^memory:compact[] before xdoc::create
 
-2004-09-17	paf
+2004-09-17  paf
 	* src/classes/file.C 1.130:
-		bugfix: file::cgi headers were lost [typo error from 3.0.8 
+		bugfix: file::cgi headers were lost [typo error from 3.0.8
 		version]
 
-2004-09-14	paf
+2004-09-14  paf
 	* src/types/pa_vhashfile.C 1.46:
 		bugfix: hashfile.clear deleted only part
 		bugfix: hashfile.foreach iterated only part if hashfile were modified inside
 
-2004-09-13	paf
-	* src/types/pa_vhashfile.C 1.44:
-		change: empty keys now error in parser [not something obscure 
-		from sdbm lib]
+2004-09-13  paf
+	* src/lib/sdbm/apr-include/apr.h 1.5:
+	* src/types/pa_vhashfile.C 1.43:
+	* www/htdocs/_bug.html 1.66:
+		bugfix: error numbers now from errno.h = strerror now returnes
+		something and we can properly report that to client
 
 	* src/types/pa_vhashfile.C 1.45:
 	* www/htdocs/_bug.html 1.67:
 		beauty: not reproduced $hashfile.key[$novalue] bug [reported by motorin],
 		inserted safety-check
 
-	* src/classes/mail.C 1.107:
-		bugfix: typo error
-
-	* src/classes/xdoc.C 1.145:
-		change: ^xdoc.string now outputted as-is  [tainted as-is]
-
-	* src/lib/sdbm/apr-include/apr.h 1.5:
-	* src/types/pa_vhashfile.C 1.43:
-	* www/htdocs/_bug.html 1.66:
-		bugfix: error numbers now from errno.h = strerror now returnes 
-		something and we can properly report that to client
+	* src/types/pa_vhashfile.C 1.44:
+		change: empty keys now error in parser [not something obscure
+		from sdbm lib]
 
 	* src/classes/xdoc.C 1.146:
 	* www/htdocs/_bug.html 1.65:
@@ -227,26 +290,32 @@
 		change: ^xdoc.string now outputted as-is  [tainted as-is]
 		this helps //[space][newline] to remain as-is and not be unnecessary optimized away [ruining javascript]
 
-	* src/lib/sdbm/sdbm_private.h 1.2:
-		change: limit on length(key+value) now 8008 bytes, were 1008. 
-		perl sdbm compatibility now ruined
+	* src/classes/mail.C 1.107:
+		bugfix: typo error
 
 	* src/main/pa_string.C 1.200:
 	* www/htdocs/_bug.html 1.68:
 		bugfix: $s[+008] ^eval($s) now parsed OK [were as octal]
 
-2004-09-09	paf
+	* src/classes/xdoc.C 1.145:
+		change: ^xdoc.string now outputted as-is  [tainted as-is]
+
+	* src/lib/sdbm/sdbm_private.h 1.2:
+		change: limit on length(key+value) now 8008 bytes, were 1008. 
+		perl sdbm compatibility now ruined
+
+2004-09-09  paf
 	* src/main/pa_common.C 1.194:
 		bugfix: loads headers with both \r\n and \n separators
 		bugfix: loads header with endings \r\n\r\n and \n\n
 		(bloody yandex.server)
 
-2004-09-06	paf
+2004-09-06  paf
 	* src/main/pa_charset.C 1.50:
-		bugfix: two-bytes invalid chars in TranscodeFromUTF8 considered 
+		bugfix: two-bytes invalid chars in TranscodeFromUTF8 considered
 		valid. only >2bytes-long now %HH encoded
 
-2004-09-01	paf
+2004-09-01  paf
 	* src/classes/mail.C 1.105:
 	* src/include/pa_config_fixed.h 1.66:
 	* src/types/pa_value.C 1.18:
@@ -12708,7 +12777,7 @@
 	* src/types/pa_wcontext.C 1.21:
 	* src/types/pa_wcontext.h 1.34:
 	* src/types/pa_wwrapper.h 1.20:
-		$Date: 2004/12/27 07:20:02 $
+		$Date: 2005/04/08 11:20:58 $
 
 	* src/Makefile.am 1.17:
 	* src/classes/Makefile.am 1.40:
@@ -19868,7 +19937,7 @@
 	* src/targets/cgi/parser3.C 1.93:
 	* src/targets/isapi/parser3isapi.C 1.35:
 		*/
-		static const char *RCSId="$Id: ChangeLog,v 1.41 2004/12/27 07:20:02 paf Exp $";
+		static const char *RCSId="$Id: ChangeLog,v 1.42 2005/04/08 11:20:58 paf Exp $";
 
 	* src/main/compile.y 1.142:
 	* src/main/compile_tools.h 1.41:
@@ -19911,7 +19980,7 @@
 	* src/main/untaint.C 1.52:
 	* src/targets/cgi/parser3.C 1.92:
 	* src/targets/isapi/parser3isapi.C 1.34:
-		static char *RCSId="$Id: ChangeLog,v 1.41 2004/12/27 07:20:02 paf Exp $";
+		static char *RCSId="$Id: ChangeLog,v 1.42 2005/04/08 11:20:58 paf Exp $";
 
 2001-06-27  parser
 	* src/classes/hash.C 1.6:
@@ -25274,7 +25343,7 @@
 	* src/main/pa_pool.C 1.2:
 	* src/main/pa_string.C 1.3:
 	* src/main/pa_string.C 1.4:
-		$Id: ChangeLog,v 1.41 2004/12/27 07:20:02 paf Exp $ check
+		$Id: ChangeLog,v 1.42 2005/04/08 11:20:58 paf Exp $ check
 
 	* src/include/pa_pool.h 1.5:
 	* src/include/pa_string.h 1.2:
