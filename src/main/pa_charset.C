@@ -5,7 +5,7 @@
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_CHARSET_C="$Date: 2004/09/06 15:15:45 $";
+static const char * const IDENT_CHARSET_C="$Date: 2005/04/08 10:40:18 $";
 
 #include "pa_charset.h"
 #include "pa_charsets.h"
@@ -731,7 +731,7 @@ String::C Charset::transcode_cstr(xmlChar* s) {
 		return String::C("", 0);
 
 	int inlen=strlen((const char*)s);
-	int outlen=inlen; // max
+	int outlen=inlen*6/*strlen("&#255;")*/; // max
 #ifndef NDEBUG
 	int saved_outlen=outlen;
 #endif
@@ -780,7 +780,7 @@ xmlChar* Charset::transcode_buf2xchar(const char* buf, size_t buf_size) {
 	int saved_outlen;
 #endif
 	if(xmlCharEncodingInputFunc input=transcoder(FNAME).input) {
-		outlen=buf_size*6/*max*/;
+		outlen=buf_size*6/*max UTF8 bytes per char*/;
 #ifndef NDEBUG
 		saved_outlen=outlen;
 #endif
