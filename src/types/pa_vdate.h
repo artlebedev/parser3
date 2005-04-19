@@ -8,7 +8,7 @@
 #ifndef PA_VDATE_H
 #define PA_VDATE_H
 
-static const char * const IDENT_VDATE_H="$Date: 2005/04/19 10:59:38 $";
+static const char * const IDENT_VDATE_H="$Date: 2005/04/19 11:39:27 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -73,7 +73,7 @@ public: // Value
 
 		// $TZ
 		if(aname=="TZ") 
-			return new VString(*ftz);
+			return ftz? new VString(*ftz): new VString();
 
 		// $year month day  hour minute second  weekday
 		tm *tmOut=get_localtime();
