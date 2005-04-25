@@ -8,7 +8,7 @@
 #ifndef PA_VDATE_H
 #define PA_VDATE_H
 
-static const char * const IDENT_VDATE_H="$Date: 2005/04/19 11:39:27 $";
+static const char * const IDENT_VDATE_H="$Date: 2005/04/25 12:17:37 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -24,8 +24,11 @@ static const char * const IDENT_VDATE_H="$Date: 2005/04/19 11:39:27 $";
 extern Methoded* date_class;
 
 inline void set_tz(const char* tz, char* buf, size_t buf_size) {
-	snprintf(buf, buf_size, "TZ=%s", tz?tz:"");
-	putenv(buf);
+	if(tz){
+	    snprintf(buf, buf_size, "TZ=%s", tz);
+	    putenv(buf);
+	} else
+	    putenv("TZ");
 	tzset();
 }
 
@@ -54,8 +57,9 @@ public: // Value
 			::set_tz(ftz_cstr, temp_tz_pair, sizeof(temp_tz_pair));
 		}
 		tm *result=::localtime(&ftime);
-		if(ftz_cstr)
+		if(ftz_cstr) {
 			::set_tz(saved_tz, saved_tz_pair, sizeof(saved_tz_pair));
+		}			
 		if(!result)
 			throw Exception(0,
 				0,
