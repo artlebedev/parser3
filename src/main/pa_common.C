@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMMON_C="$Date: 2005/05/12 10:35:01 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2005/05/12 11:29:46 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -165,7 +165,9 @@ static int http_read_response(char*& response, size_t& response_size, int sock, 
 	while(true) {
 		char buf[MAX_STRING*10]; 
 		ssize_t received_size=recv(sock, buf, sizeof(buf), 0); 
-		if(received_size<=0) {
+		if(received_size==0)
+			break;
+		if(received_size<0) {
 			if(int no=pa_socks_errno())
 				throw Exception("http.timeout", 
 					0, 
