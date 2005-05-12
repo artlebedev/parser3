@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMMON_C="$Date: 2004/12/23 15:01:03 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2005/05/12 10:35:01 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -733,6 +733,11 @@ File_read_result file_read(Request_charsets& charsets, const String& file_spec,
 	File_read_result result={false, 0, 0, 0};
 #ifdef PA_HTTP
 	if(file_spec.starts_with("http://")) {
+		if(offset || count)
+			throw Exception("parser.runtime",
+				0,
+				"offset and load options are not supported for HTTP:// file load");
+
 		// fail on read problem
 		File_read_http_result http=file_read_http(charsets, file_spec, as_text, params);
 		result.success=true;
