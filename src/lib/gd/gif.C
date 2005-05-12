@@ -14,7 +14,7 @@
 	can incorporate them into new versions. 
 */
 
-static const char * const IDENT_GIF_C="$Date: 2004/03/25 11:50:57 $";
+static const char * const IDENT_GIF_C="$Date: 2005/05/12 09:34:50 $";
 
 #include "gif.h"
 
@@ -522,7 +522,7 @@ void gdImage::Fill(int x, int y, int color)
 		if (GetPixel(i, y) != old) {
 			break;
 		}
-		SetPixel(i, y, color);
+		DoSetPixel(i, y, color); // PAF, was SetPixel
 		leftLimit = i;
 	}
 	if (leftLimit == (-1)) {
@@ -534,7 +534,7 @@ void gdImage::Fill(int x, int y, int color)
 		if (GetPixel(i, y) != old) {
 			break;
 		}
-		SetPixel(i, y, color);
+		DoSetPixel(i, y, color); // PAF, was SetPixel
 		rightLimit = i;
 	}
 	/* Look at lines above and below and start paints */
