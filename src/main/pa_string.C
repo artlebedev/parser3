@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2004/10/07 09:22:01 $";
+static const char * const IDENT_STRING_C="$Date: 2005/05/24 10:56:57 $";
 
 #include "pcre.h"
 
@@ -609,52 +609,75 @@ static int serialize_lang_piece(char alang, size_t asize, char** cur) {
 }
 String::Cm String::serialize(size_t prolog_length) const {
 	size_t fragments_count=langs.count();
+	size_t body_length=body.length();
 	size_t buf_length=
 		prolog_length //1
 		+sizeof(size_t) //2
-		+fragments_count*(sizeof(char)+sizeof(size_t)) //3
-		+body.length() //4
-		+1; // for zero terminator used in deserialize
+		+body_length //3
+		+1 // 4 for zero terminator used in deserialize
+		+sizeof(size_t) //5
+		+fragments_count*(sizeof(char)+sizeof(size_t)); //6
+
 	String::Cm result(new(PointerFreeGC) char[buf_length], buf_length);
 
 	// 1: prolog
 	char *cur=result.str+prolog_length;
-	// 2: langs.count [WARNING: not cast, addresses must be %4=0 on sparc]
-	memcpy(cur, &fragments_count, sizeof(fragments_count));  cur+=sizeof(fragments_count);
-	// 3: lang info
-	langs.for_each(body, serialize_lang_piece, &cur);
-	// 4: letters
+	// 2: chars.count [WARNING: not cast, addresses must be %4=0 on sparc]
+	memcpy(cur, &body_length, sizeof(body_length));  cur+=sizeof(body_length);
+	// 3: letters
 	body.for_each(serialize_body_char, serialize_body_piece, &cur);
-	// 5: zero terminator
-	*cur=0;
+	// 4: zero terminator
+	*cur++=0;
+	// 5: langs.count [WARNING: not cast, addresses must be %4=0 on sparc]
+	memcpy(cur, &fragments_count, sizeof(fragments_count));  cur+=sizeof(fragments_count);
+	// 6: lang info
+	langs.for_each(body, serialize_lang_piece, &cur);
 
 	return result;
 }
-bool String::deserialize(size_t prolog_length, void *buf, size_t buf_length) {
-	if(buf_length<=prolog_length)
+bool String::deserialize(size_t prolog_size, void *buf, size_t buf_size) {
+	size_t in_buf=buf_size;
+	if(in_buf<=prolog_size)
 		return false;
-	buf_length-=prolog_length;
-	buf_length-=1; // 5: zero terminator
+	in_buf-=prolog_size;
 
 	// 1: prolog
-	const char* cur=(const char* )buf+prolog_length;
+	const char* cur=(const char* )buf+prolog_size;
 
 	// 2: langs.count
+	size_t body_length;
+	if(in_buf<sizeof(body_length)) // body.length don't fit?
+		return false;
+	// [WARNING: not cast, addresses must be %4=0 on sparc]
+	memcpy(&body_length, cur, sizeof(body_length));  cur+=sizeof(body_length);
+	in_buf-=sizeof(body_length);
+
+	if(in_buf<body_length+1) // letters+terminator don't fit?
+		return false;
+	// 4: zero terminator
+	if(cur[body_length] != 0) // in place?
+		return false;
+	// 3: letters
+	body=String::Body(cur, body_length);  
+	cur+=body_length+1;
+	in_buf-=body_length+1;
+
+	// 5: langs.count
 	size_t fragments_count;
-	if(buf_length<sizeof(fragments_count)) // langs.count don't fit?
+	if(in_buf<sizeof(fragments_count)) // langs.count don't fit?
 		return false;
 	// [WARNING: not cast, addresses must be %4=0 on sparc]
 	memcpy(&fragments_count, cur, sizeof(fragments_count));  cur+=sizeof(fragments_count);
-	buf_length-=sizeof(fragments_count);
+	in_buf-=sizeof(fragments_count);
 	
 	if(fragments_count) {
-		// 3: lang info
+		// 6: lang info
 		size_t total_length=0;
 		for(size_t f=0; f<fragments_count; f++) {
 			char lang;
 			size_t fragment_length;
 			size_t piece_length=sizeof(lang)+sizeof(fragment_length);
-			if(buf_length<piece_length) // lang+length
+			if(in_buf<piece_length) // lang+length
 				return false;
 
 			// lang
@@ -665,17 +688,14 @@ bool String::deserialize(size_t prolog_length, void *buf, size_t buf_length) {
 			// uchar needed to prevent propagating 0x80 bit to upper bytes
 			langs.append(total_length, (String::Language)(uchar)lang, fragment_length);
 			total_length+=fragment_length;
-
-			buf_length-=piece_length;
+			in_buf-=piece_length;
 		}
 
-		// 4: letters
-		if(buf_length!=total_length)
+		if(total_length!=body_length) // length(all language fragments) vs length(letters)
 			return false;
-
-		// serialize wrote extra zero byte there, we can rely on that
-		body=String::Body(cur, buf_length);
 	}
+	if(in_buf!=0) // some strange extra bytes
+		return false;
 
 	ASSERT_STRING_INVARIANT(*this);
 	return true;
