@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2004/12/23 15:36:12 $";
+static const char * const IDENT_FILE_C="$Date: 2005/05/24 10:57:48 $";
 
 #include "pa_config_includes.h"
 
@@ -34,6 +34,11 @@ static const char * const IDENT_FILE_C="$Date: 2004/12/23 15:36:12 $";
 #define CHARSET_EXEC_PARAM_NAME "charset"
 
 #define NAME_NAME "name"
+
+// externs
+
+extern String sql_limit_name;
+extern String sql_offset_name;
 
 // class
 
@@ -160,9 +165,24 @@ static void _load(Request& r, MethodParams& params) {
 	if(third_param_hash)
 		alt_filename_param_index++;
 
+	HashStringValue* options=third_param_hash;
+	size_t offset=0;
+	size_t limit=0;
+	if(options) {
+		options=new HashStringValue(*options);
+		if(Value *voffset=(Value *)options->get(sql_offset_name)) {
+			options->remove(sql_offset_name);
+			offset=r.process_to_value(*voffset).as_int();
+		}
+		if(Value *vlimit=(Value *)options->get(sql_limit_name)) {
+			options->remove(sql_limit_name);
+			limit=r.process_to_value(*vlimit).as_int();
+		}
+		// no check on options count here, see file_read
+	}
 	File_read_result file=file_read(r.charsets, lfile_name,
 		is_text_mode(vmode_name.as_string()),
-		third_param_hash
+		options, true, 0, offset, limit
 	);
 
 	const char *user_file_name=params.count()>alt_filename_param_index?
