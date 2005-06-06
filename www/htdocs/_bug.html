@@ -1,4 +1,3 @@
-$url[http://www.parser.ru]
-$url[^taint[$url]]
-$f[^file::load[text;^untaint{$url}]]
-$f.text
+^connect[$SQL.connect-string]{
+^string:sql{select 2*:a from dual}[$.bind[$.a(5)]]
+}

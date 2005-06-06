@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2004/12/23 14:51:31 $";
+static const char * const IDENT_TABLE_C="$Date: 2005/06/06 08:45:11 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -981,7 +981,7 @@ static void _sql(Request& r, MethodParams& params) {
 #endif	
 	r.connection()->query(
 		statement_cstr, 
-		0, 0,
+		placeholders_count, placeholders,
 		offset, limit, 
 		handlers,
 		statement_string);
