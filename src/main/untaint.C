@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_UNTAINT_C="$Date: 2004/07/01 07:20:10 $";
+static const char * const IDENT_UNTAINT_C="$Date: 2005/06/28 14:43:46 $";
 
 
 #include "pa_string.h"
@@ -478,6 +478,8 @@ int cstr_to_string_body_block(char alang, size_t fragment_length, Cstr_to_string
 String::Body String::cstr_to_string_body(Language lang, 
 		  SQL_Connection* connection,
 		  const Request_charsets *charsets) const {
+	if(is_empty())
+		return String::Body();
 
 	Cstr_to_string_body_block_info info;
 	// input
@@ -492,8 +494,6 @@ String::Body String::cstr_to_string_body(Language lang,
 	info.fragment_begin=0;
 	info.whitespace=true;
 
-	if(!is_empty())
-		langs.for_each(body, cstr_to_string_body_block, &info);
-
+	langs.for_each(body, cstr_to_string_body_block, &info);
 	return String::Body(CORD_ec_to_cord(info.result));
 }
