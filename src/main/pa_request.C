@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REQUEST_C="$Date: 2004/12/23 15:50:27 $";
+static const char * const IDENT_REQUEST_C="$Date: 2005/07/08 14:06:11 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -813,14 +813,17 @@ void Request::output_result(VFile* body_file, bool header_only, bool as_attachme
 	Value* vfile_name=body_file->fields().get(name_name);
 	if(!vfile_name) {
 		vfile_name=body_file->fields().get(response_body_file_name);
-		const String& sfile_name=vfile_name->as_string();
+		if(vfile_name)
+		{
+			const String& sfile_name=vfile_name->as_string();
 
-		char* name_cstr=sfile_name.cstrm();
-		if(char *after_slash=rsplit(name_cstr, '\\'))
-			name_cstr=after_slash;
-		if(char *after_slash=rsplit(name_cstr, '/'))
-			name_cstr=after_slash;
-		vfile_name=new VString(*new String(name_cstr));	
+			char* name_cstr=sfile_name.cstrm();
+			if(char *after_slash=rsplit(name_cstr, '\\'))
+				name_cstr=after_slash;
+			if(char *after_slash=rsplit(name_cstr, '/'))
+				name_cstr=after_slash;
+			vfile_name=new VString(*new String(name_cstr));	
+		}
 	}
 	if(vfile_name) {
 		const String& sfile_name=vfile_name->as_string();
