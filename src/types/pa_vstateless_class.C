@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)\
 */
 
-static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2004/02/11 15:33:19 $";
+static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2005/07/15 06:16:42 $";
 
 #include "pa_vstateless_class.h"
 
@@ -43,7 +43,7 @@ Value* VStateless_class::get_element(const String& aname, Value& aself, bool loo
 		return this;
 	// $method=junction(self+class+method)
 	if(Method* method=get_method(aname))
-		return new VJunction(new Junction(aself, method, 0, 0, 0, 0));
+		return new VJunction(new Junction(aself, method));
 
 	// base monkey
 	if(fbase)
@@ -51,4 +51,23 @@ Value* VStateless_class::get_element(const String& aname, Value& aself, bool loo
 			return fbase->get_element(aname, *lbase, looking_up);
 
 	return 0;
+}
+
+inline Property& register_property(const String& aname, Hash<const String::Body, Property*>& aprops) {
+	String prop_name=aname.mid(4, aname.length());
+	Property* result=aprops.get(prop_name);
+	if(!result) {
+		result=new Property();
+		aprops.put(prop_name, result);
+	}
+	return *result;
+}
+
+void VStateless_class::put_method(const String& aname, Method* amethod) {
+	if(aname.starts_with("get_"))
+		register_property(aname, fprops).getter=amethod;
+	else if(aname.starts_with("put_") )
+		register_property(aname, fprops).setter=amethod;
+	else
+		fmethods.put(aname, amethod); 
 }

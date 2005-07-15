@@ -8,7 +8,7 @@
 #ifndef PA_VHASH_H
 #define PA_VHASH_H
 
-static const char * const IDENT_VHASH_H="$Date: 2004/12/23 14:51:32 $";
+static const char * const IDENT_VHASH_H="$Date: 2005/07/15 06:16:42 $";
 
 #include "classes.h"
 #include "pa_value.h"
@@ -72,7 +72,7 @@ public: // value
 	}
 	
 	/// VHash: (key)=value
-	override bool put_element(const String& aname, Value* avalue, bool /*replace*/) { 
+	override const Method* put_element(const String& aname, Value* avalue, bool /*replace*/) { 
 		if(aname==HASH_DEFAULT_ELEMENT_NAME)
 			set_default(avalue);
 		else 
@@ -84,7 +84,7 @@ public: // value
 			} else
 					fhash.put(aname, avalue);
 
-		return true;
+		return PUT_ELEMENT_REPLACED_ELEMENT;
 	}
 
 	override VFile* as_vfile(String::Language lang=String::L_UNSPECIFIED,

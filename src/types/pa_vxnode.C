@@ -7,7 +7,7 @@
 #include "pa_config_includes.h"
 #ifdef XML
 
-static const char * const IDENT_VXNODE_C="$Date: 2004/03/10 10:42:12 $";
+static const char * const IDENT_VXNODE_C="$Date: 2005/07/15 06:16:42 $";
 
 #include "pa_vxnode.h"
 #include "pa_vxdoc.h"
@@ -143,7 +143,7 @@ Value* VXnode::get_element(const String& aname, Value& aself, bool looking_up) {
 	return bark("%s field not found", &aname);
 }
 
-bool VXnode::put_element(const String& aname, Value* avalue, bool /*replace*/)
+const Method* VXnode::put_element(const String& aname, Value* avalue, bool /*replace*/)
 { 
 	GdomeNode* selfNode=get_node();
 	GdomeException exc;
@@ -155,10 +155,10 @@ bool VXnode::put_element(const String& aname, Value* avalue, bool /*replace*/)
 		if(exc)
 			throw XmlException(&aname, exc);
 
-		return true;
+		return PUT_ELEMENT_REPLACED_ELEMENT;
 	}
 
 	bark("element can not be stored to %s", &aname);
-	return false;
+	return 0;
 }
 #endif

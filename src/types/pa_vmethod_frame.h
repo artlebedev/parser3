@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2004/12/23 14:40:54 $";
+static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2005/07/15 06:16:42 $";
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
@@ -120,9 +120,9 @@ public: // Value
 		return 0;
 	}
 	/// VMethodFrame: my or self_transparent
-	override bool put_element(const String& aname, Value* avalue, bool replace) { 
+	override const Method* put_element(const String& aname, Value* avalue, bool replace) { 
 		if(my && my->put_replace(aname, avalue))
-			return true;
+			return PUT_ELEMENT_REPLACED_ELEMENT;
 
 		return self().put_element(aname, avalue, replace);
 	}
@@ -139,7 +139,7 @@ public: // WContext
 		// check the $result value
 		Value* result_value=get_result_variable();
 		// if we have one, return it, else return as usual: accumulated fstring or fvalue
-		return result_value ? StringOrValue(0, result_value) : WContext::result();
+		return result_value ? StringOrValue(*result_value) : WContext::result();
 	}
 
 	void write(Value& avalue, String::Language alang) {
@@ -149,11 +149,9 @@ public: // WContext
 public: // usage
 
 	VMethodFrame(
-		//const String& aname,
 		const Junction& ajunction/*info: always method-junction*/,
 		VMethodFrame *acaller);
 
-//	const String& name() { return fname; }
 	VMethodFrame *caller() { return fcaller; }
 
 	void set_self(Value& aself) { fself=&aself; }

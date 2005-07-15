@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2005/05/24 10:57:36 $";
+static const char * const IDENT_OP_C="$Date: 2005/07/15 06:16:41 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -498,7 +498,7 @@ struct Locked_process_and_cache_put_action_info {
 
 
 static StringOrValue process_cache_body_code(Request& r, Value* body_code) {
-	return StringOrValue(&r.process_to_string(*body_code), 0);
+	return StringOrValue(r.process_to_string(*body_code));
 }
 
 /* @todo maybe network order worth spending some effort?

@@ -8,7 +8,7 @@
 #ifndef PA_WCONTEXT_H
 #define PA_WCONTEXT_H
 
-static const char * const IDENT_WCONTEXT_H="$Date: 2004/02/11 15:33:19 $";
+static const char * const IDENT_WCONTEXT_H="$Date: 2005/07/15 06:16:42 $";
 
 #include "pa_value.h"
 #include "pa_vstring.h"
@@ -20,7 +20,9 @@ class StringOrValue {
 public:
 	StringOrValue() : fstring(0), fvalue(0) {}
 	/// anticipating either String or Value [must not be 0&0]
-	StringOrValue(const String* astring, Value* avalue) : fstring(astring), fvalue(avalue) {}
+	StringOrValue(const String& astring) : fstring(&astring), fvalue(0) {}
+	StringOrValue(Value& avalue) : fstring(0), fvalue(&avalue) {}
+
 	void set_string(const String& astring) { fstring=&astring; }
 	void set_value(Value& avalue) { fvalue=&avalue; }
 	const String* get_string() { return fstring; }
@@ -80,7 +82,7 @@ public: // WContext
 		wmethod_frame first checks for $result and if there is one, returns it instead
 	*/
 	virtual StringOrValue result() {
-		return fvalue?StringOrValue(0, fvalue):StringOrValue(&fstring, 0);
+		return fvalue?StringOrValue(*fvalue):StringOrValue(fstring);
 	}
 
 	void attach_junction(Junction* ajunction) {

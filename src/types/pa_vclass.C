@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VCLASS_C="$Date: 2004/02/11 15:33:17 $";
+static const char * const IDENT_VCLASS_C="$Date: 2005/07/15 06:16:42 $";
 
 #include "pa_vclass.h"
 
@@ -22,6 +22,25 @@ Value* VClass::get_element(const String& aname, Value& aself, bool looking_up) {
 	if(Value* result=ffields.get(aname))
 		return result;
 
+	// $property
+	if(Property* prop=get_property(aname))
+	{
+		Method* method=prop->getter;
+		if(!method)
+			throw Exception("parser.runtime",
+				&aname,
+				"this property has no getter method (get_%s)", aname.cstr());
+
+		Value* result=new VJunction(new Junction(aself, method, true /*is_getter*/));
+		// cache for future use
+		if(ffields.put_dont_replace(aname, result))
+			throw Exception("parser.runtime",
+				&aname,
+				"variable exists, can not create property with this name");
+
+		return result;
+	}
+
 	// $CLASS, $method, or other base element
 	if(Value* result=VStateless_class::get_element(aname, aself, looking_up))
 		return result;
@@ -30,17 +49,17 @@ Value* VClass::get_element(const String& aname, Value& aself, bool looking_up) {
 }
 
 /// VClass: (field)=value - static values only
-bool VClass::put_element(const String& aname, Value* avalue, bool replace) {
+const Method* VClass::put_element(const String& aname, Value* avalue, bool replace) {
 	try {
 		if(fbase && fbase->put_element(aname, avalue, true))
-			return true; // replaced in base
+			return PUT_ELEMENT_REPLACED_ELEMENT; // replaced in base
 	} catch(Exception) {  /* allow override parent variables, useful for form descendants */ }
 
 	if(replace)
-		return ffields.put_replace(aname, avalue);
+		return ffields.put_replace(aname, avalue)? PUT_ELEMENT_REPLACED_ELEMENT: 0;
 	else {
 		ffields.put(aname, avalue);
-		return false;
+		return 0;
 	}
 }
 

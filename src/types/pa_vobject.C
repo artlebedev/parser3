@@ -9,7 +9,7 @@
 #include "pa_vhash.h"
 #include "pa_vtable.h"
 
-static const char * const IDENT_VOBJECT_C="$Date: 2004/02/11 15:33:18 $";
+static const char * const IDENT_VOBJECT_C="$Date: 2005/07/15 06:16:42 $";
 
 Value* VObject::as(const char* atype, bool looking_up) { 
 	if(!looking_up)
@@ -100,15 +100,15 @@ Value* VObject::stateless_object__get_element(const String& aname, Value& aself)
 }
 
 /// VObject: (field)=value
-bool VObject::put_element(const String& aname, Value* avalue, bool replace) {
+const Method* VObject::put_element(const String& aname, Value* avalue, bool replace) {
 	if(fbase && fbase->put_element(aname, avalue, true))
-		return true; // replaced in base dynamic fields
+		return PUT_ELEMENT_REPLACED_ELEMENT; // replaced in base dynamic fields
 
 	if(replace)
-		return ffields.put_replace(aname, avalue);
+		return ffields.put_replace(aname, avalue)? PUT_ELEMENT_REPLACED_ELEMENT: 0;
 	else {
 		if(VStateless_object::put_element(aname, avalue, true))
-			return true; // replaced in base statics fields
+			return PUT_ELEMENT_REPLACED_ELEMENT; // replaced in base statics fields
 
 		ffields.put(aname, avalue);
 		return false;

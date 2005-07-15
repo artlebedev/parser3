@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
-static const char * const IDENT_VSTATELESS_CLASS_H="$Date: 2004/02/11 15:33:19 $";
+static const char * const IDENT_VSTATELESS_CLASS_H="$Date: 2005/07/15 06:16:42 $";
 
 // include
 
@@ -16,6 +16,7 @@ static const char * const IDENT_VSTATELESS_CLASS_H="$Date: 2004/02/11 15:33:19 $
 #include "pa_hash.h"
 #include "pa_vjunction.h"
 #include "pa_method.h"
+#include "pa_vproperty.h"
 
 // defines
 
@@ -40,6 +41,7 @@ class VStateless_class: public Value {
 	const String* fname;
 	mutable const char* fname_cstr;
 	Hash<const String::Body, Method*> fmethods;
+	Hash<const String::Body, Property*> fprops;
 
 	bool flocked;
 
@@ -97,6 +99,10 @@ public: // usage
 		return fmethods.get(aname);
 	}
 
+	Property* get_property(const String& aname) const { 
+		return fprops.get(aname);
+	}
+
 	void add_method(const String& name, Method& method);
 	
 	void add_native_method(
@@ -126,12 +132,9 @@ public: // usage
 	/// @returns new value for current class, used in classes/ & VClass
 	virtual Value* create_new_value(Pool&) { return 0; }
 
-private: // Temp_method
+private:
 
-	void put_method(const String& aname, Method* amethod) {
-		fmethods.put(aname, amethod); 
-	}
-	
+	void put_method(const String& aname, Method* amethod);	
 };
 
 ///	Auto-object used for temporarily substituting/removing class method

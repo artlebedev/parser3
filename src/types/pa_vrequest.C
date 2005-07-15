@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VREQUEST_C="$Date: 2004/02/11 15:33:18 $";
+static const char * const IDENT_VREQUEST_C="$Date: 2005/07/15 06:16:42 $";
 
 #include "pa_vrequest.h"
 #include "pa_request_info.h"
@@ -42,18 +42,18 @@ Value* VRequest::get_element(const String& aname, Value&  /*aself*/, bool /*look
 	return new VString(*new String(buf?buf:"", size, true));
 }
 
-bool VRequest::put_element(const String& aname, Value* avalue, bool replace) {
+const Method* VRequest::put_element(const String& aname, Value* avalue, bool replace) {
 	// $charset
 	if(aname==CHARSET_NAME) {
 		fcharsets.set_source(charsets.get(avalue->as_string().
 			change_case(UTF8_charset, String::CC_UPPER)));
-		return true;
+		return PUT_ELEMENT_REPLACED_ELEMENT;
 	} 
 
 	// $document-root
 	if(aname==DOCUMENT_ROOT_NAME) {
 		finfo.document_root=avalue->as_string().cstr(String::L_FILE_SPEC);
-		return true;
+		return PUT_ELEMENT_REPLACED_ELEMENT;
 	} 
 
 	return Value::put_element(aname, avalue, replace);

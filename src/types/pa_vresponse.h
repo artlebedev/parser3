@@ -8,7 +8,7 @@
 #ifndef PA_VRESPONSE_H
 #define PA_VRESPONSE_H
 
-static const char * const IDENT_VRESPONSE_H="$Date: 2004/02/11 15:33:19 $";
+static const char * const IDENT_VRESPONSE_H="$Date: 2005/07/15 06:16:42 $";
 
 #include "pa_vstateless_object.h"
 #include "pa_string.h"
@@ -44,7 +44,7 @@ public: // Value
 	override Value* get_element(const String& aname, Value& aself, bool /*looking_up*/);
 
 	/// Response: (attribute)=value
-	override bool put_element(const String& aname, Value* avalue, bool replace);
+	override const Method* put_element(const String& aname, Value* avalue, bool replace);
 
 public:	// usage
 

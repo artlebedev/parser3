@@ -8,7 +8,7 @@
 #ifndef PA_JUNCTION_H
 #define PA_JUNCTION_H
 
-static const char * const IDENT_JUNCTION_H="$Date: 2004/02/11 15:33:17 $";
+static const char * const IDENT_JUNCTION_H="$Date: 2005/07/15 06:16:41 $";
 
 
 #include "pa_string.h"
@@ -50,13 +50,21 @@ static const char * const IDENT_JUNCTION_H="$Date: 2004/02/11 15:33:17 $";
 class Junction: public PA_Object {
 public:
 
-	Junction(
-		Value& aself,
+	/// Code-Junction constructor
+	Junction(Value& aself,
 		const Method* amethod,
 		VMethodFrame* amethod_frame,
 		Value* arcontext,
 		WContext* awcontext,
 		ArrayOperation* acode);
+
+	/// Method-Junction or Getter-Junction constructor
+	Junction(Value& aself,
+		const Method* amethod,
+		bool ais_getter=false): self(aself),
+		method(amethod),
+		is_getter(ais_getter) {}
+
 
 	void reattach(WContext *new_wcontext);
 
@@ -72,6 +80,9 @@ public:
 	Value* rcontext;
 	WContext* wcontext;
 	ArrayOperation* code;
+	//@}
+	//@{
+	bool is_getter;
 	//@}
 };
 

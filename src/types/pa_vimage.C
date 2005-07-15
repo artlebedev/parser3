@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VIMAGE_C="$Date: 2004/03/01 13:22:25 $";
+static const char * const IDENT_VIMAGE_C="$Date: 2005/07/15 06:16:42 $";
 
 #include "pa_vimage.h"
 #include "pa_vint.h"
@@ -50,7 +50,7 @@ Value* VImage::get_element(const String& aname, Value& aself, bool looking_up) {
 	return ffields.get(aname);
 }
 
-bool VImage::put_element(const String& aname, Value* avalue, bool /*replace*/) {
+const Method* VImage::put_element(const String& aname, Value* avalue, bool /*replace*/) {
 	ffields.put(aname, avalue);
 
 	if(fimage) {
@@ -62,5 +62,5 @@ bool VImage::put_element(const String& aname, Value* avalue, bool /*replace*/) {
 		}
 	}
 
-	return true;	
+	return PUT_ELEMENT_REPLACED_ELEMENT;	
 }

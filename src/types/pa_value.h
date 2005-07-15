@@ -8,11 +8,12 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-static const char * const IDENT_VALUE_H="$Date: 2004/09/01 09:16:58 $";
+static const char * const IDENT_VALUE_H="$Date: 2005/07/15 06:16:41 $";
 
 #include "pa_string.h"
 #include "pa_array.h"
 #include "pa_exception.h"
+#include "pa_property.h"
 
 // forwards
 
@@ -91,22 +92,28 @@ public: // Value
 	/// extract Junction
 	virtual Junction* get_junction();
 	
+	/// extract Property
+	virtual Property* get_property() { return 0; }
+	
 	/** extract base object of Value
 		@return for
 		- VObject: fbase
 	*/
 	virtual Value* base_object();
 	
-	/// extract Value element
+	/// @return Value element; can return Junction for methods; Code-Junction for code; Getter-Junction for property
 	virtual Value* get_element(const String& /*aname*/, Value& /*aself*/, bool /*looking_up*/);
 
+	/// put_element can return 
+	#define PUT_ELEMENT_REPLACED_ELEMENT reinterpret_cast<const Method*>(1)
 	/// store Value element under @a name
-	virtual bool put_element(const String& aname, Value* /*avalue*/, bool /*areplace*/) { 
+	/// @returns putter method, or it can just report[with this value] that it replaced something in base fields 
+	virtual const Method* put_element(const String& aname, Value* /*avalue*/, bool /*areplace*/) { 
 		// to prevent modification of system classes,
 		// created at system startup, and not having exception
 		// handler installed, we neet to bark using request.pool
 		bark("element can not be stored to %s", &aname); 
-		return false;
+		return 0;
 	}
 	
 	/// extract VStateless_class

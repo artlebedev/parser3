@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2004/07/30 10:01:14 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2005/07/15 06:16:41 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -425,9 +425,10 @@ void Request::execute(ArrayOperation& ops) {
 				WContext *saved_wcontext=wcontext;
 				
 				VStateless_class& called_class=*frame.junction.self.get_class();
-				Value* new_self=&get_self();
+				Value* new_self;
 				if(wcontext->get_constructing()) {
 					wcontext->set_constructing(false);
+					new_self=&get_self();
 					if(frame.junction.method->call_type!=Method::CT_STATIC) {
 						// this is a constructor call
 
@@ -472,7 +473,7 @@ void Request::execute(ArrayOperation& ops) {
 								*this, 
 								*frame.numbered_params()); // execute it
 						} else // parser code, execute it
-							recoursion_checked_execute(/*frame.name(), */*method.parser_code);
+							recoursion_checked_execute(*method.parser_code);
 					} else
 						throw Exception("parser.runtime",
 							0, //&frame.name(),
@@ -828,8 +829,7 @@ Value& Request::get_element(Value& ncontext, const String& name, bool can_call_o
 	Value* value=0;
 	if(can_call_operator) {
 		if(Method* method=main_class.get_method(name)) // looking operator of that name FIRST
-			value=new VJunction(new Junction(
-				main_class, method, 0,0,0, 0));
+			value=new VJunction(new Junction(main_class, method));
 	}
 	if(!value) {
 		if(!wcontext->get_constructing() // not constructing
@@ -876,65 +876,98 @@ value_ready:
     using the fact it's either string_ or value_ result requested to speed up checkes
 */
 StringOrValue Request::process(Value& input_value, bool intercept_string) {
-	StringOrValue result;
 	Junction* junction=input_value.get_junction();
-	if(junction && junction->code) { // is it a code-junction?
-		// process it
+	if(junction) {
+		if(junction->is_getter) { // is it a getter-junction?
+			// process it
+
+			VMethodFrame frame(*junction, method_frame/*caller*/);
+			if(junction->method->params_names)
+				throw Exception("parser.runtime",
+					0,
+					"getter method must have no parameters");
+
+			frame.set_self(frame.junction.self);
+
+			VMethodFrame *saved_method_frame=method_frame;
+			Value* saved_rcontext=rcontext;
+			WContext *saved_wcontext=wcontext;
+
+			rcontext=wcontext=&frame;
+			method_frame=&frame;
+
+			recoursion_checked_execute(*frame.junction.method->parser_code); // parser code, execute it
+			StringOrValue result=wcontext->result();
+
+			method_frame=saved_method_frame;
+			wcontext=saved_wcontext;
+			rcontext=saved_rcontext;
+
+			return result;
+		}
+
+		if(junction->code) { // is it a code-junction?
+			// process it
+			StringOrValue result;
 #ifdef DEBUG_EXECUTE
-		debug_printf(sapi_info, "ja->\n");
+			debug_printf(sapi_info, "ja->\n");
 #endif
 
-		if(!junction->method_frame)
-			throw Exception("parser.runtime",
+			if(!junction->method_frame)
+				throw Exception("parser.runtime",
 				0,
 				"junction used outside of context");
 
-		VMethodFrame *saved_method_frame=method_frame;  
-		Value* saved_rcontext=rcontext;  
-		WContext *saved_wcontext=wcontext;
-		
-		method_frame=junction->method_frame;
-		rcontext=junction->rcontext;
+			VMethodFrame *saved_method_frame=method_frame;  
+			Value* saved_rcontext=rcontext;  
+			WContext *saved_wcontext=wcontext;
 
-		// for expression method params
-		// wcontext is set 0
-		// using the fact in decision "which wwrapper to use"
-		bool using_code_frame=intercept_string && junction->wcontext;
-		if(using_code_frame) {
-			// almost plain wwrapper about junction wcontext, 
-			// BUT intercepts string writes
-			VCodeFrame local(*junction->wcontext, junction->wcontext);
-			wcontext=&local;
+			method_frame=junction->method_frame;
+			rcontext=junction->rcontext;
 
-			// execute it
-			recoursion_checked_execute(*junction->code);
-			
-			// CodeFrame soul:
-			//   string writes were intercepted
-			//   returning them as the result of getting code-junction
-			result.set_string(*wcontext->get_string());
-		} else {
-			// plain wwrapper
-			WWrapper local(0/*empty*/, wcontext);
-			wcontext=&local;
-		
-			// execute it
-			recoursion_checked_execute(*junction->code);
-		
-			result=wcontext->result();
-		}
-		
-		wcontext=saved_wcontext;
-		rcontext=saved_rcontext;
-		method_frame=saved_method_frame;
-		
+			// for expression method params
+			// wcontext is set 0
+			// using the fact in decision "which wwrapper to use"
+			bool using_code_frame=intercept_string && junction->wcontext;
+			if(using_code_frame) {
+				// almost plain wwrapper about junction wcontext, 
+				// BUT intercepts string writes
+				VCodeFrame local(*junction->wcontext, junction->wcontext);
+				wcontext=&local;
+
+				// execute it
+				recoursion_checked_execute(*junction->code);
+
+				// CodeFrame soul:
+				//   string writes were intercepted
+				//   returning them as the result of getting code-junction
+				result.set_string(*wcontext->get_string());
+			} else {
+				// plain wwrapper
+				WWrapper local(0/*empty*/, wcontext);
+				wcontext=&local;
+
+				// execute it
+				recoursion_checked_execute(*junction->code);
+
+				result=wcontext->result();
+			}
+
+			wcontext=saved_wcontext;
+			rcontext=saved_rcontext;
+			method_frame=saved_method_frame;
+
 #ifdef DEBUG_EXECUTE
-		debug_printf(sapi_info, "<-ja returned");
+			debug_printf(sapi_info, "<-ja returned");
 #endif
-	} else {
-		result.set_value(input_value);
-	}
-	return result;
+			return result;
+		}
+
+		// it is then method-junction, do not explode it
+		// just return it as we do for usual objects
+	}	
+
+	return input_value;
 }
 
 StringOrValue Request::execute_method(VMethodFrame& amethod_frame, const Method& method) {
@@ -966,7 +999,7 @@ const String* Request::execute_method(Value& aself,
 	Value* saved_rcontext=rcontext;  
 	WContext *saved_wcontext=wcontext;
 	
-	Junction local_junction(aself, &method, 0,0,0, 0);
+	Junction local_junction(aself, &method);
 	VMethodFrame local_frame(local_junction, method_frame/*caller*/);
 	if(optional_param && local_frame.can_store_param()) {
 		local_frame.store_param(*optional_param);

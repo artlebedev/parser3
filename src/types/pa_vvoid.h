@@ -8,7 +8,7 @@
 #ifndef PA_VVOID_H
 #define PA_VVOID_H
 
-static const char * const IDENT_VVOID_H="$Date: 2004/05/14 10:29:37 $";
+static const char * const IDENT_VVOID_H="$Date: 2005/07/15 06:16:42 $";
 
 #include "classes.h"
 #include "pa_vstateless_object.h"
@@ -50,7 +50,7 @@ public: // Value
 	}
 
 	/// VVoid: bark
-	override bool put_element(const String& aname, Value* avalue, bool areplace) { 
+	override const Method* put_element(const String& aname, Value* avalue, bool areplace) { 
 		return Value::put_element(aname, avalue, areplace);
 	}
 
