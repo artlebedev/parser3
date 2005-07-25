@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)\
 */
 
-static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2005/07/25 07:44:02 $";
+static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2005/07/25 09:39:54 $";
 
 #include "pa_vstateless_class.h"
 #include "pa_vproperty.h"
@@ -54,34 +54,6 @@ Value* VStateless_class::get_element(const String& aname, Value& aself, bool loo
 	return 0;
 }
 
-inline Property& register_property(const String& aname, Hash<const String::Body, Property*>& aprops) {
-	String prop_name=aname.mid(4, aname.length());
-	Property* result=aprops.get(prop_name);
-	if(!result) {
-		result=new Property();
-		aprops.put(prop_name, result);
-	}
-	return *result;
-}
-
 void VStateless_class::put_method(const String& aname, Method* amethod) {
-	if(aname.starts_with("get_"))
-		register_property(aname, fprops).getter=amethod;
-	else if(aname.starts_with("put_") )
-		register_property(aname, fprops).setter=amethod;
-	else
-		fmethods.put(aname, amethod); 
-}
-
-static void forward_cache_properties_one(const String::Body akey, Property* avalue, 
-										 HashStringValue* acache) {
-	acache->put(akey, new VProperty(*avalue));
-}
-
-void VStateless_class::fill_properties(HashStringValue& acache) {
-	// base monkey
-	if(fbase)
-		fbase->fill_properties(acache);
-
-	fprops.for_each(forward_cache_properties_one, &acache);
+	fmethods.put(aname, amethod); 
 }

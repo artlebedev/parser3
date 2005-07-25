@@ -5,15 +5,40 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VCLASS_C="$Date: 2005/07/25 08:53:12 $";
+static const char * const IDENT_VCLASS_C="$Date: 2005/07/25 09:39:54 $";
 
 #include "pa_vclass.h"
 
+Property& VClass::add_property(const String& aname) {
+	String prop_name=aname.mid(4, aname.length());
+	
+	Property* result;
+	if(Value* value=ffields.get(prop_name)) {
+		result=value->get_property();
+		if(!result) // can occur in ^process
+			throw Exception("parser.compile",
+				&prop_name,
+				"property can not be created, already exists field (%s) with that name", value->get_class()->name_cstr());
+	} else {
+		VProperty* vproperty=new VProperty();
+		ffields.put(prop_name, vproperty);
+		result=&vproperty->get();
+	}
+	return *result;
+}
+
 /// preparing property accessors to fields
-void VClass::fill_properties()
+void VClass::add_method(const String& aname, Method& amethod)
 {
-	// TODO: refresh properties list on ^execute [maybe]
-	VStateless_class::fill_properties(ffields);
+	if(aname.starts_with("get_"))
+		add_property(aname).getter=&amethod;
+	else if(aname.starts_with("put_") )
+		add_property(aname).setter=&amethod;
+	// support non-backward compatiblilty: 
+	// if someone used @get_xxx names to name regular methods
+	// still register method:
+
+	VStateless_class::add_method(aname, amethod);
 }
 
 Value* VClass::as(const char* atype, bool looking_up) {

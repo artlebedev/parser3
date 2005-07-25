@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
-static const char * const IDENT_VSTATELESS_CLASS_H="$Date: 2005/07/25 07:44:02 $";
+static const char * const IDENT_VSTATELESS_CLASS_H="$Date: 2005/07/25 09:39:54 $";
 
 // include
 
@@ -41,7 +41,6 @@ class VStateless_class: public Value {
 	const String* fname;
 	mutable const char* fname_cstr;
 	Hash<const String::Body, Method*> fmethods;
-	Hash<const String::Body, Property*> fprops;
 
 	bool flocked;
 
@@ -99,11 +98,8 @@ public: // usage
 		return fmethods.get(aname);
 	}
 
-/*	Property* get_property(const String& aname) const { 
-		return fprops.get(aname);
-	}
-*/
-	void add_method(const String& name, Method& method);
+	/// virtual for VClass to override to pre-cache property accessors into fields
+	virtual void add_method(const String& name, Method& method);
 	
 	void add_native_method(
 		const char* cstr_name,
