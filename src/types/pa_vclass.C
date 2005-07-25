@@ -5,14 +5,15 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VCLASS_C="$Date: 2005/07/25 07:44:02 $";
+static const char * const IDENT_VCLASS_C="$Date: 2005/07/25 08:53:12 $";
 
 #include "pa_vclass.h"
 
 /// preparing property accessors to fields
-VClass::VClass()
+void VClass::fill_properties()
 {
-	fill_properties(ffields);
+	// TODO: refresh properties list on ^execute [maybe]
+	VStateless_class::fill_properties(ffields);
 }
 
 Value* VClass::as(const char* atype, bool looking_up) {

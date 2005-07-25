@@ -1,2 +1,5 @@
-here:
-^bug[]
+@CLASS
+bug
+
+@get_prop[]
+works!

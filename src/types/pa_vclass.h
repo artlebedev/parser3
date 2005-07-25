@@ -8,7 +8,7 @@
 #ifndef PA_VCLASS_H
 #define PA_VCLASS_H
 
-static const char * const IDENT_VCLASS_H="$Date: 2005/07/25 07:44:02 $";
+static const char * const IDENT_VCLASS_H="$Date: 2005/07/25 08:53:12 $";
 
 // includes
 
@@ -35,6 +35,10 @@ public: // Value
 	override const Method* put_element(const String& aname, Value* avalue, bool replace);
 	override Value* create_new_value(Pool& apool);
 
+public: // compile.C
+
+	void fill_properties();
+
 protected:
 		
 	bool replace_field(const String& name, Value* value) {
@@ -42,10 +46,6 @@ protected:
 			(fbase && fbase->replace_field(name, value)) ||
 			ffields.put_replace(name, value);
 	}
-
-public:
-
-	VClass();
 
 private: // self
 

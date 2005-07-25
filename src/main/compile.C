@@ -5,11 +5,12 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMPILE_C="$Date: 2004/04/06 09:01:20 $";
+static const char * const IDENT_COMPILE_C="$Date: 2005/07/25 08:53:12 $";
 
 #include "pa_opcode.h"
 #include "pa_request.h"
 #include "compile_tools.h"
+#include "pa_vclass.h"
 
 extern int yydebug;
 extern int yyparse (void *);
@@ -33,6 +34,9 @@ VStateless_class& Request::compile(VStateless_class* aclass,
 			0,
 			"%s(%d:%d): %s",  file_list[file_no].cstr(), 1+pc.pos.line, 1+pc.pos.col,  pc.error);
 	}
+
+	// fill properties
+	static_cast<VClass*>(pc.cclass)->fill_properties();
 
 	// result
 	return *pc.cclass;
