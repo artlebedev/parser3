@@ -8,7 +8,7 @@
 #ifndef PA_VCLASS_H
 #define PA_VCLASS_H
 
-static const char * const IDENT_VCLASS_H="$Date: 2005/07/15 06:16:42 $";
+static const char * const IDENT_VCLASS_H="$Date: 2005/07/25 07:44:02 $";
 
 // includes
 
@@ -42,6 +42,10 @@ protected:
 			(fbase && fbase->replace_field(name, value)) ||
 			ffields.put_replace(name, value);
 	}
+
+public:
+
+	VClass();
 
 private: // self
 

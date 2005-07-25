@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
-static const char * const IDENT_VSTATELESS_CLASS_H="$Date: 2005/07/15 06:16:42 $";
+static const char * const IDENT_VSTATELESS_CLASS_H="$Date: 2005/07/25 07:44:02 $";
 
 // include
 
@@ -99,10 +99,10 @@ public: // usage
 		return fmethods.get(aname);
 	}
 
-	Property* get_property(const String& aname) const { 
+/*	Property* get_property(const String& aname) const { 
 		return fprops.get(aname);
 	}
-
+*/
 	void add_method(const String& name, Method& method);
 	
 	void add_native_method(
@@ -131,6 +131,10 @@ public: // usage
 
 	/// @returns new value for current class, used in classes/ & VClass
 	virtual Value* create_new_value(Pool&) { return 0; }
+
+protected:
+
+	void fill_properties(HashStringValue& acache);
 
 private:
 

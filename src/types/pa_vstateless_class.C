@@ -5,11 +5,12 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)\
 */
 
-static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2005/07/15 06:16:42 $";
+static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2005/07/25 07:44:02 $";
 
 #include "pa_vstateless_class.h"
+#include "pa_vproperty.h"
 
-/// @TODO why? request must be different ptr from global [used in VStateless_class.add_method]
+/// @TODO why?! request must be different ptr from global [used in VStateless_class.add_method]
 void VStateless_class::add_method(const String& name, Method& method) {
 	if(flocked)
 		throw Exception("parser.runtime",
@@ -70,4 +71,17 @@ void VStateless_class::put_method(const String& aname, Method* amethod) {
 		register_property(aname, fprops).setter=amethod;
 	else
 		fmethods.put(aname, amethod); 
+}
+
+static void forward_cache_properties_one(const String::Body akey, Property* avalue, 
+										 HashStringValue* acache) {
+	acache->put(akey, new VProperty(*avalue));
+}
+
+void VStateless_class::fill_properties(HashStringValue& acache) {
+	// base monkey
+	if(fbase)
+		fbase->fill_properties(acache);
+
+	fprops.for_each(forward_cache_properties_one, &acache);
 }

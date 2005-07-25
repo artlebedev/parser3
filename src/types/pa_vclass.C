@@ -5,9 +5,15 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VCLASS_C="$Date: 2005/07/15 06:16:42 $";
+static const char * const IDENT_VCLASS_C="$Date: 2005/07/25 07:44:02 $";
 
 #include "pa_vclass.h"
+
+/// preparing property accessors to fields
+VClass::VClass()
+{
+	fill_properties(ffields);
+}
 
 Value* VClass::as(const char* atype, bool looking_up) {
 	if(Value* result=Value::as(atype, looking_up))
@@ -16,34 +22,26 @@ Value* VClass::as(const char* atype, bool looking_up) {
 		return fbase?fbase->as(atype, looking_up):0;
 }
 
-/// VClass: $CLASS, (field)=STATIC value;(method)=method_ref with self=object_class
+/// VClass: $CLASS, (field/property)=STATIC value;(method)=method_ref with self=object_class
 Value* VClass::get_element(const String& aname, Value& aself, bool looking_up) {
-	// simple things first: $field=static field
-	if(Value* result=ffields.get(aname))
-		return result;
+	// simple things first: $field=static field/property
+	if(Value* result=ffields.get(aname)) {
+		if(Property* prop=result->get_property()) // it is property?
+		{
+			Method* method=prop->getter;
+			if(!method)
+				throw Exception("parser.runtime",
+					&aname,
+					"this property has no getter method (get_%s)", aname.cstr());
 
-	// $property
-	if(Property* prop=get_property(aname))
-	{
-		Method* method=prop->getter;
-		if(!method)
-			throw Exception("parser.runtime",
-				&aname,
-				"this property has no getter method (get_%s)", aname.cstr());
-
-		Value* result=new VJunction(new Junction(aself, method, true /*is_getter*/));
-		// cache for future use
-		if(ffields.put_dont_replace(aname, result))
-			throw Exception("parser.runtime",
-				&aname,
-				"variable exists, can not create property with this name");
-
+			return new VJunction(new Junction(aself, method, true /*is_getter*/));
+		}
 		return result;
 	}
 
 	// $CLASS, $method, or other base element
 	if(Value* result=VStateless_class::get_element(aname, aself, looking_up))
-		return result;
+		return result; // TODO: this can be SIGNIFICANTLY sped up by caching in ffields! [THOUGH decide about different aself] // what REALLY would speed up things is to join storage of properties/methods/fields of all vobject parents into last descenant [sort of vmt + all fields as in other langs]
 
 	return 0;
 }
