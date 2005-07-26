@@ -1,14 +1,9 @@
-@USE
-/_bug.p
-
 @main[]
-$bug:prop?<br>
 $paf<br>
-$paf[tut]
-=$_paf=
+$paf(2*2)
 
 @get_paf[]
-(still works)
+works
 
 @set_paf[value]
-$_paf[$value]
+^throw[paf;$value]	

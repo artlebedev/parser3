@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char * const IDENT_REQUEST_H="$Date: 2004/10/05 11:07:48 $";
+static const char * const IDENT_REQUEST_H="$Date: 2005/07/26 12:54:09 $";
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -387,6 +387,7 @@ private: // compile.C
 
 private: // execute.C
 
+	void put_element(Value& ncontext, const String& name, Value& value);
 	Value& get_element(Value& ncontext, const String& name, bool can_call_operator);
 
 private: // defaults
