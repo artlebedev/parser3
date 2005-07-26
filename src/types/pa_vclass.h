@@ -8,7 +8,7 @@
 #ifndef PA_VCLASS_H
 #define PA_VCLASS_H
 
-static const char * const IDENT_VCLASS_H="$Date: 2005/07/25 09:39:54 $";
+static const char * const IDENT_VCLASS_H="$Date: 2005/07/26 12:43:05 $";
 
 // includes
 
@@ -32,7 +32,7 @@ public: // Value
 	override bool as_bool() const { return true; }
 
 	override Value* get_element(const String& aname, Value& aself, bool /*looking_up*/);
-	override const Method* put_element(const String& aname, Value* avalue, bool replace);
+	override const Junction* put_element(const String& aname, Value* avalue, bool replace);
 	override Value* create_new_value(Pool& apool);
 
 public: // VStateless_class
@@ -45,7 +45,7 @@ protected:
 	bool replace_field(const String& name, Value* value) {
 		return 
 			(fbase && fbase->replace_field(name, value)) ||
-			ffields.put_replace(name, value);
+			ffields.put_replaced(name, value);
 	}
 
 private:

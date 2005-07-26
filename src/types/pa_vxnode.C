@@ -7,7 +7,7 @@
 #include "pa_config_includes.h"
 #ifdef XML
 
-static const char * const IDENT_VXNODE_C="$Date: 2005/07/15 06:16:42 $";
+static const char * const IDENT_VXNODE_C="$Date: 2005/07/26 12:43:06 $";
 
 #include "pa_vxnode.h"
 #include "pa_vxdoc.h"
@@ -143,7 +143,7 @@ Value* VXnode::get_element(const String& aname, Value& aself, bool looking_up) {
 	return bark("%s field not found", &aname);
 }
 
-const Method* VXnode::put_element(const String& aname, Value* avalue, bool /*replace*/)
+const Junction* VXnode::put_element(const String& aname, Value* avalue, bool /*replace*/)
 { 
 	GdomeNode* selfNode=get_node();
 	GdomeException exc;

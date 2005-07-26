@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VCLASS_C="$Date: 2005/07/25 09:39:54 $";
+static const char * const IDENT_VCLASS_C="$Date: 2005/07/26 12:43:05 $";
 
 #include "pa_vclass.h"
 
@@ -32,12 +32,12 @@ void VClass::add_method(const String& aname, Method& amethod)
 {
 	if(aname.starts_with("get_"))
 		add_property(aname).getter=&amethod;
-	else if(aname.starts_with("put_") )
+	else if(aname.starts_with("set_") )
 		add_property(aname).setter=&amethod;
-	// support non-backward compatiblilty: 
-	// if someone used @get_xxx names to name regular methods
+	
+	// NOT under 'else' for backward compatiblilty: 
+	// if someone used get_xxx names to name regular methods
 	// still register method:
-
 	VStateless_class::add_method(aname, amethod);
 }
 
@@ -52,8 +52,7 @@ Value* VClass::as(const char* atype, bool looking_up) {
 Value* VClass::get_element(const String& aname, Value& aself, bool looking_up) {
 	// simple things first: $field=static field/property
 	if(Value* result=ffields.get(aname)) {
-		if(Property* prop=result->get_property()) // it is property?
-		{
+		if(Property* prop=result->get_property()) { // it is property?
 			Method* method=prop->getter;
 			if(!method)
 				throw Exception("parser.runtime",
@@ -72,19 +71,34 @@ Value* VClass::get_element(const String& aname, Value& aself, bool looking_up) {
 	return 0;
 }
 
-/// VClass: (field)=value - static values only
-const Method* VClass::put_element(const String& aname, Value* avalue, bool replace) {
+static const Method* prevent_overwrite_property(Value* value) {
+	if(Property* property=value->get_property()) {
+		if(Method* result=property->setter)
+			return result;
+		
+		throw Exception("parser.runtime",
+			0,
+			"this property has no setter method (is read-only)");
+	}
+
+	return 0;
+}
+
+/// VClass: (field/property)=value - static values only
+const Junction* VClass::put_element(const String& aname, Value* avalue, bool /*replace TODO: maybe remove?*/) {
 	try {
-		if(fbase && fbase->put_element(aname, avalue, true))
-			return PUT_ELEMENT_REPLACED_ELEMENT; // replaced in base
+		if(fbase)
+			if(const Junction* result=fbase->put_element(aname, avalue, true))
+				return result; // replaced in base
 	} catch(Exception) {  /* allow override parent variables, useful for form descendants */ }
 
-	if(replace)
-		return ffields.put_replace(aname, avalue)? PUT_ELEMENT_REPLACED_ELEMENT: 0;
-	else {
-		ffields.put(aname, avalue);
-		return 0;
+	if(const Method* method=ffields.maybe_put<const Method*>(aname, avalue, prevent_overwrite_property) ) {
+		if(method==reinterpret_cast<Method*>(1)) // existed, but not were not property?
+			return PUT_ELEMENT_REPLACED_ELEMENT;
+		return new Junction(*this, method, true /*is_setter*/);
 	}
+
+	return 0; // were simply added [not existed before]
 }
 
 /// @returns object of this class

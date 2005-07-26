@@ -17,7 +17,7 @@
 #ifndef PA_HASH_H
 #define PA_HASH_H
 
-static const char * const IDENT_HASH_H="$Date: 2004/02/11 15:33:14 $";
+static const char * const IDENT_HASH_H="$Date: 2005/07/26 12:43:05 $";
 
 #include "pa_memory.h"
 #include "pa_types.h"
@@ -103,6 +103,38 @@ public:
 		return false;
 	}
 
+	/// put a [value] under the [key] @returns existed or not
+	template<typename R, typename F> R maybe_put(K key, V value, F prevent) {
+		if(!value) {
+			remove(key);
+			return 0;
+		}
+		if(is_full()) 
+			expand();
+
+		uint code=hash_code(key);
+		uint index=code%allocated;
+		Pair **ref=&refs[index];
+		for(Pair *pair=*ref; pair; pair=pair->link)
+			if(pair->code==code && pair->key==key) {
+				// found a pair with the same key
+
+				// prevent-function intercepted put?
+				if(R result=prevent(pair->value))
+					return result;
+				
+				pair->value=value;
+				return reinterpret_cast<R>(1);
+			}
+		
+		// proper pair not found -- create&link_in new pair
+		if(!*ref) // root cell were fused_refs?
+			fused_refs++; // not, we'll use it and record the fact
+		*ref=new Pair(code, key, value, *ref);
+		fpairs_count++;
+		return 0;
+	}
+
 	/// remove the [key] @returns existed or not
 	bool remove(K key) {
 		uint code=hash_code(key);
@@ -132,7 +164,7 @@ public:
 	}
 
 	/// put a [value] under the [key] if that [key] existed @returns existed or not
-	bool put_replace(K key, V value) {
+	bool put_replaced(K key, V value) {
 		if(!value) {
 			remove(key);
 			return false;

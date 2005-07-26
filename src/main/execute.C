@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2005/07/15 06:16:41 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2005/07/26 12:43:05 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -186,7 +186,42 @@ void Request::execute(ArrayOperation& ops) {
 				Value& value=stack.pop().value();
 				const String& name=stack.pop().string();  debug_name=&name;
 				Value& ncontext=stack.pop().value();
-				ncontext.put_element(name, &value, false);
+
+				// put_element can return property-setting-junction
+				if(const Junction* junction=ncontext.put_element(name, &value, false))
+					if(junction!=PUT_ELEMENT_REPLACED_ELEMENT) {
+						// process it
+						ArrayString* params_names=junction->method->params_names;
+						int param_count=params_names? params_names->count(): 0;
+						if(param_count!=1)
+							throw Exception("parser.runtime",
+								0,
+								"setter method must have one parameter (has %d parameters)", param_count);
+
+						// TODO: move that to this::execute_method [fix it's param types]
+						VMethodFrame frame(*junction, method_frame/*caller*/);
+						frame.store_param(value);
+
+						frame.set_self(frame.junction.self);
+
+						VMethodFrame *saved_method_frame=method_frame;
+						Value* saved_rcontext=rcontext;
+						WContext *saved_wcontext=wcontext;
+
+						rcontext=wcontext=&frame;
+						method_frame=&frame;
+
+						// prevent non-string writes for better error reporting
+						wcontext->write(*method_frame);
+
+						recoursion_checked_execute(*frame.junction.method->parser_code); // parser code, execute it
+						// we don't need it StringOrValue result=wcontext->result();
+
+						method_frame=saved_method_frame;
+						wcontext=saved_wcontext;
+						rcontext=saved_rcontext;
+					}
+
 				break;
 			}
 		case OP_CONSTRUCT_EXPR:
@@ -194,10 +229,16 @@ void Request::execute(ArrayOperation& ops) {
 				// see OP_PREPARE_TO_EXPRESSION
 				wcontext->set_in_expression(false);
 
-				Value& value=stack.pop().value();
+				Value& expr=stack.pop().value();
 				const String& name=stack.pop().string();  debug_name=&name;
 				Value& ncontext=stack.pop().value();
-				ncontext.put_element(name, &value.as_expr_result(), false);
+				Value& value=expr.as_expr_result();
+				if(const Junction* junction=ncontext.put_element(name, &value, false))
+					if(junction!=PUT_ELEMENT_REPLACED_ELEMENT) {
+						throw Exception("parser.runtime",
+							0,
+							"TODO:paf -- $property(value)");
+					}
 				break;
 			}
 		case OP_CURLY_CODE__CONSTRUCT:
@@ -216,7 +257,12 @@ void Request::execute(ArrayOperation& ops) {
 
 				const String& name=stack.pop().string();  debug_name=&name;
 				Value& ncontext=stack.pop().value();
-				ncontext.put_element(name, &value, false);
+				if(const Junction* junction=ncontext.put_element(name, &value, false))
+					if(junction!=PUT_ELEMENT_REPLACED_ELEMENT)
+						throw Exception("parser.runtime",
+							0,
+							"property value can not be code, use [] or () brackets");
+					
 				break;
 			}
 		case OP_NESTED_CODE:

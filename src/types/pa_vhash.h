@@ -8,7 +8,7 @@
 #ifndef PA_VHASH_H
 #define PA_VHASH_H
 
-static const char * const IDENT_VHASH_H="$Date: 2005/07/15 06:16:42 $";
+static const char * const IDENT_VHASH_H="$Date: 2005/07/26 12:43:05 $";
 
 #include "classes.h"
 #include "pa_value.h"
@@ -72,12 +72,12 @@ public: // value
 	}
 	
 	/// VHash: (key)=value
-	override const Method* put_element(const String& aname, Value* avalue, bool /*replace*/) { 
+	override const Junction* put_element(const String& aname, Value* avalue, bool /*replace*/) { 
 		if(aname==HASH_DEFAULT_ELEMENT_NAME)
 			set_default(avalue);
 		else 
 			if(flocked) {
-				if(!fhash.put_replace(aname, avalue))
+				if(!fhash.put_replaced(aname, avalue))
 					throw Exception("parser.runtime",
 						&aname,
 						"can not insert new hash key (hash flocked)");

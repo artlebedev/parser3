@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_OBJECT_H
 #define PA_VSTATELESS_OBJECT_H
 
-static const char * const IDENT_VSTATELESS_OBJECT_H="$Date: 2005/07/15 06:16:42 $";
+static const char * const IDENT_VSTATELESS_OBJECT_H="$Date: 2005/07/26 12:43:06 $";
 
 // include
 
@@ -28,7 +28,7 @@ public: // Value
 	}
 
 	/// VStateless_object: class_transparent
-	override const Method* put_element(const String& aname, Value* avalue, bool areplace) { 
+	override const Junction* put_element(const String& aname, Value* avalue, bool areplace) { 
 		return get_class()->put_element(aname, avalue, areplace);
 	}
 

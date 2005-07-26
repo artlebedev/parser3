@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-static const char * const IDENT_VALUE_H="$Date: 2005/07/15 06:16:41 $";
+static const char * const IDENT_VALUE_H="$Date: 2005/07/26 12:43:05 $";
 
 #include "pa_string.h"
 #include "pa_array.h"
@@ -105,10 +105,10 @@ public: // Value
 	virtual Value* get_element(const String& /*aname*/, Value& /*aself*/, bool /*looking_up*/);
 
 	/// put_element can return 
-	#define PUT_ELEMENT_REPLACED_ELEMENT reinterpret_cast<const Method*>(1)
+	#define PUT_ELEMENT_REPLACED_ELEMENT reinterpret_cast<const Junction*>(1)
 	/// store Value element under @a name
-	/// @returns putter method, or it can just report[with this value] that it replaced something in base fields 
-	virtual const Method* put_element(const String& aname, Value* /*avalue*/, bool /*areplace*/) { 
+	/// @returns putter method junction, or it can just report[with this value] that it replaced something in base fields 
+	virtual const Junction* put_element(const String& aname, Value* /*avalue*/, bool /*areplace*/) { 
 		// to prevent modification of system classes,
 		// created at system startup, and not having exception
 		// handler installed, we neet to bark using request.pool
