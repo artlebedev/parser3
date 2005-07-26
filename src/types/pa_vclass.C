@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VCLASS_C="$Date: 2005/07/26 12:43:05 $";
+static const char * const IDENT_VCLASS_C="$Date: 2005/07/26 12:59:09 $";
 
 #include "pa_vclass.h"
 
@@ -93,7 +93,7 @@ const Junction* VClass::put_element(const String& aname, Value* avalue, bool /*r
 	} catch(Exception) {  /* allow override parent variables, useful for form descendants */ }
 
 	if(const Method* method=ffields.maybe_put<const Method*>(aname, avalue, prevent_overwrite_property) ) {
-		if(method==reinterpret_cast<Method*>(1)) // existed, but not were not property?
+		if(method==reinterpret_cast<const Method*>(1)) // existed, but not were not property?
 			return PUT_ELEMENT_REPLACED_ELEMENT;
 		return new Junction(*this, method, true /*is_setter*/);
 	}
