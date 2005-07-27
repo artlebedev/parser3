@@ -9,7 +9,7 @@
 #include "pa_vhash.h"
 #include "pa_vtable.h"
 
-static const char * const IDENT_VOBJECT_C="$Date: 2005/07/27 06:15:34 $";
+static const char * const IDENT_VOBJECT_C="$Date: 2005/07/27 06:44:38 $";
 
 Value* VObject::as(const char* atype, bool looking_up) { 
 	if(!looking_up)
@@ -106,20 +106,17 @@ const Method* pa_prevent_overwrite_property(Value* value);
 const Junction* VObject::put_element(const String& aname, Value* avalue, bool replace) {
 	if(fbase)
 		if(const Junction* result=fbase->put_element(aname, avalue, true))
-			return result; // replaced in base dynamic(NOT static!) fields
+			return result; // replaced base dynamic(NOT static!) field(NOT property)
 
-	if(replace) {
-		// we're in some parent, we should NOT try to insert there, only IF that field/property existed there
-		if(const Method* method=ffields.maybe_put_replaced<const Method*>(aname, avalue, pa_prevent_overwrite_property) ) {
-			if(method==reinterpret_cast<const Method*>(1)) // existed, but not were not property?
-				return PUT_ELEMENT_REPLACED_ELEMENT;
-			return new Junction(*this, method, true /*is_setter*/);
+	if(replace)
+		return ffields.put_replaced(aname, avalue)? PUT_ELEMENT_REPLACED_ELEMENT: 0;
+	else {
+		// $virtual_property or any this/base $static_property [warning: we can write into static derivate fields here. prior to properties -- were NOT able to do that, now we need to find overridden setters]
+		{			
+			VObject& last_derived=get_last_derived();
+			if(const Junction* result=last_derived.stateless_object__put_element(aname, avalue, true))
+				return result; // replaced in any(derivate or base) statics fields/properties
 		}
-
-		return 0; // NOT replaced/putted anything to parent [there were NO such field/property for us to fill]
-	} else {
-		if(const Junction* result=VStateless_object::put_element(aname, avalue, true))
-			return result; // replaced in base statics fields
 
 		ffields.put(aname, avalue);
 		return 0; // were simply added [not existed before]
