@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VCLASS_C="$Date: 2005/07/26 12:59:09 $";
+static const char * const IDENT_VCLASS_C="$Date: 2005/07/27 06:15:34 $";
 
 #include "pa_vclass.h"
 
@@ -71,7 +71,8 @@ Value* VClass::get_element(const String& aname, Value& aself, bool looking_up) {
 	return 0;
 }
 
-static const Method* prevent_overwrite_property(Value* value) {
+/// also used in pa_vobject.C
+const Method* pa_prevent_overwrite_property(Value* value) {
 	if(Property* property=value->get_property()) {
 		if(Method* result=property->setter)
 			return result;
@@ -92,7 +93,7 @@ const Junction* VClass::put_element(const String& aname, Value* avalue, bool /*r
 				return result; // replaced in base
 	} catch(Exception) {  /* allow override parent variables, useful for form descendants */ }
 
-	if(const Method* method=ffields.maybe_put<const Method*>(aname, avalue, prevent_overwrite_property) ) {
+	if(const Method* method=ffields.maybe_put<const Method*>(aname, avalue, pa_prevent_overwrite_property) ) {
 		if(method==reinterpret_cast<const Method*>(1)) // existed, but not were not property?
 			return PUT_ELEMENT_REPLACED_ELEMENT;
 		return new Junction(*this, method, true /*is_setter*/);

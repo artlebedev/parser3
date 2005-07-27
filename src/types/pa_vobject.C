@@ -9,7 +9,7 @@
 #include "pa_vhash.h"
 #include "pa_vtable.h"
 
-static const char * const IDENT_VOBJECT_C="$Date: 2005/07/26 12:43:05 $";
+static const char * const IDENT_VOBJECT_C="$Date: 2005/07/27 06:15:34 $";
 
 Value* VObject::as(const char* atype, bool looking_up) { 
 	if(!looking_up)
@@ -99,19 +99,30 @@ Value* VObject::stateless_object__get_element(const String& aname, Value& aself)
 	return VStateless_object::get_element(aname, aself, false);
 }
 
-/// VObject: (field)=value
-const Junction* VObject::put_element(const String& aname, Value* avalue, bool replace) {
-	if(fbase && fbase->put_element(aname, avalue, true))
-		return PUT_ELEMENT_REPLACED_ELEMENT; // replaced in base dynamic fields
+// from pa_vclass.C
+const Method* pa_prevent_overwrite_property(Value* value);
 
-	if(replace)
-		return ffields.put_replaced(aname, avalue)? PUT_ELEMENT_REPLACED_ELEMENT: 0;
-	else {
-		if(VStateless_object::put_element(aname, avalue, true))
-			return PUT_ELEMENT_REPLACED_ELEMENT; // replaced in base statics fields
+/// VObject: (field/property)=value
+const Junction* VObject::put_element(const String& aname, Value* avalue, bool replace) {
+	if(fbase)
+		if(const Junction* result=fbase->put_element(aname, avalue, true))
+			return result; // replaced in base dynamic(NOT static!) fields
+
+	if(replace) {
+		// we're in some parent, we should NOT try to insert there, only IF that field/property existed there
+		if(const Method* method=ffields.maybe_put_replaced<const Method*>(aname, avalue, pa_prevent_overwrite_property) ) {
+			if(method==reinterpret_cast<const Method*>(1)) // existed, but not were not property?
+				return PUT_ELEMENT_REPLACED_ELEMENT;
+			return new Junction(*this, method, true /*is_setter*/);
+		}
+
+		return 0; // NOT replaced/putted anything to parent [there were NO such field/property for us to fill]
+	} else {
+		if(const Junction* result=VStateless_object::put_element(aname, avalue, true))
+			return result; // replaced in base statics fields
 
 		ffields.put(aname, avalue);
-		return false;
+		return 0; // were simply added [not existed before]
 	}
 }
 

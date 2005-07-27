@@ -17,7 +17,7 @@
 #ifndef PA_HASH_H
 #define PA_HASH_H
 
-static const char * const IDENT_HASH_H="$Date: 2005/07/26 12:43:05 $";
+static const char * const IDENT_HASH_H="$Date: 2005/07/27 06:15:34 $";
 
 #include "pa_memory.h"
 #include "pa_types.h"
@@ -105,10 +105,8 @@ public:
 
 	/// put a [value] under the [key] @returns existed or not
 	template<typename R, typename F> R maybe_put(K key, V value, F prevent) {
-		if(!value) {
-			remove(key);
-			return 0;
-		}
+		assert(value);
+
 		if(is_full()) 
 			expand();
 
@@ -180,6 +178,28 @@ public:
 
 		// proper pair not found 
 		return false;
+	}
+
+	/// put a [value] under the [key] if that [key] existed @returns existed or not
+	template<typename R, typename F> R maybe_put_replaced(K key, V value, F prevent) {
+		assert(value);
+
+		uint code=hash_code(key);
+		uint index=code%allocated;
+		for(Pair *pair=refs[index]; pair; pair=pair->link)
+			if(pair->code==code && pair->key==key) {
+				// found a pair with the same key, replacing
+
+				// prevent-function intercepted put?
+				if(R result=prevent(pair->value))
+					return result;
+				
+				pair->value=value;
+				return reinterpret_cast<R>(1);
+			}
+
+		// proper pair not found 
+		return 0;
 	}
 
 	/// put a [value] under the [key] if that [key] NOT existed @returns existed or not

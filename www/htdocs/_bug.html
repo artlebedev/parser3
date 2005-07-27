@@ -1,9 +1,8 @@
+@USE
+/_bug.p
+
 @main[]
-$paf<br>
-$paf(2*2)
-
-@get_paf[]
-works
-
-@set_paf[value]
-^throw[paf;$value]	
+$bug[^bug::create[does not work]]
+#$bug.paf<br>
+$bug.paf[works]
+$bug.paf!!
