@@ -1,4 +1,4 @@
-#!c:/perl/bin/perl
+#!/usr/bin/perl
 
 #a
 print "header:value from $0\n";

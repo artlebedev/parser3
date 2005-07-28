@@ -8,7 +8,7 @@
 #ifndef PA_VHASH_H
 #define PA_VHASH_H
 
-static const char * const IDENT_VHASH_H="$Date: 2005/07/26 12:43:05 $";
+static const char * const IDENT_VHASH_H="$Date: 2005/07/28 11:23:02 $";
 
 #include "classes.h"
 #include "pa_value.h"
@@ -72,7 +72,7 @@ public: // value
 	}
 	
 	/// VHash: (key)=value
-	override const Junction* put_element(const String& aname, Value* avalue, bool /*replace*/) { 
+	override const Junction* put_element(Value& /*aself*/, const String& aname, Value* avalue, bool /*replace*/) { 
 		if(aname==HASH_DEFAULT_ELEMENT_NAME)
 			set_default(avalue);
 		else 

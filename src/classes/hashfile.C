@@ -6,7 +6,7 @@
 */
 
 
-static const char * const IDENT="$Id: hashfile.C,v 1.33 2004/02/11 15:33:12 paf Exp $";
+static const char * const IDENT="$Id: hashfile.C,v 1.34 2005/07/28 11:23:01 paf Exp $";
 
 #include "classes.h"
 
@@ -19,7 +19,7 @@ static const char * const IDENT="$Id: hashfile.C,v 1.33 2004/02/11 15:33:12 paf 
 
 class MHashfile : public Methoded {
 public: // VStateless_class
-	Value *create_new_value(Pool& apool) { return new VHashfile(apool); }
+	Value *create_new_value(Pool& apool, HashStringValue&) { return new VHashfile(apool); }
 
 public:
 	MHashfile();
@@ -84,8 +84,8 @@ static void one_foreach_cycle(const String::Body key, const String& value, void*
 	Foreach_info& info=*static_cast<Foreach_info*>(ainfo);
 	info.vkey->set_string(*new String(key, String::L_TAINTED));
 	info.vvalue->set_string(value);
-	info.var_context->put_element(*info.key_var_name, info.vkey, false);
-	info.var_context->put_element(*info.value_var_name, info.vvalue, false);
+	info.var_context->put_element(*info.var_context, *info.key_var_name, info.vkey, false);
+	info.var_context->put_element(*info.var_context, *info.value_var_name, info.vvalue, false);
 
 	StringOrValue sv_processed=info.r->process(*info.body_code);
 	const String* s_processed=sv_processed.get_string();

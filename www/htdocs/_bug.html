@@ -1,8 +1,22 @@
-@USE
-/_bug.p
 
-@main[]
-$bug[^bug::create[does not work]]
-#$bug.paf<br>
-$bug.paf[works]
-$bug.paf!!
+$double(1.6) 
+^double.int[] <br>
+^math:round($double)
+<hr>
+
+$pdfsize[822674]
+$pdfsize($pdfsize / 1000)
+$pdfsize[^pdfsize.int[]]
+=int:$pdfsize=<br>
+^if($pdfsize > 1000){
+        $pdfsize($pdfsize / 1000)
+        $pdfsize[^pdfsize.format[%.2g]]
+        $pdfsize[^pdfsize.match[\.][]{,}]
+        $pdfsize[$pdfsize åÅ]
+}{
+        $pdfsize[$pdfsize äÅ]
+}
+
+<p>
+    $pdfsize
+</p>

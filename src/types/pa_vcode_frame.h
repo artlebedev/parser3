@@ -8,7 +8,7 @@
 #ifndef PA_VCODE_FRAME_H
 #define PA_VCODE_FRAME_H
 
-static const char * const IDENT_VCODE_FRAME_H="$Date: 2005/07/26 12:43:05 $";
+static const char * const IDENT_VCODE_FRAME_H="$Date: 2005/07/28 11:23:02 $";
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
@@ -23,10 +23,10 @@ public: // Value
 		return wcontext.get_element(aname, aself, looking_up); 
 	}
 	/// VCodeFrame: twice transparent
-	override const Junction* put_element(const String& aname, Value* avalue, bool replace) { 
+	override const Junction* put_element(Value& aself, const String& aname, Value* avalue, bool areplace) { 
 		// $hash[^if(1){$.field[]}]
 		// put goes to $hash
-		return wcontext.put_element(aname, avalue, replace); 
+		return wcontext.put_element(aself, aname, avalue, areplace); 
 	}
 
 public: // WContext

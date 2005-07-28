@@ -8,7 +8,7 @@
 #ifndef PA_VCOOKIE_H
 #define PA_VCOOKIE_H
 
-static const char * const IDENT_VCOOKIE_H="$Date: 2005/07/26 12:43:05 $";
+static const char * const IDENT_VCOOKIE_H="$Date: 2005/07/28 11:23:02 $";
 
 #include "pa_hash.h"
 #include "pa_common.h"
@@ -32,7 +32,7 @@ public: // Value
 	// cookie: CLASS,method,field
 	override Value* get_element(const String& aname, Value& aself, bool /*looking_up*/);
 	// cookie: field
-	override const Junction* put_element(const String& aname, Value* avalue, bool replace);
+	override const Junction* put_element(Value& self, const String& name, Value* value, bool replace);
 
 public: // usage
 

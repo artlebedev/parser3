@@ -8,7 +8,7 @@
 #ifndef PA_WWRAPPER_H
 #define PA_WWRAPPER_H
 
-static const char * const IDENT_WWRAPPER_H="$Date: 2005/07/26 12:43:06 $";
+static const char * const IDENT_WWRAPPER_H="$Date: 2005/07/28 11:23:03 $";
 
 #include "pa_wcontext.h"
 #include "pa_exception.h"
@@ -23,7 +23,7 @@ public: // Value
 		return as_value().get_element(aname, aself, looking_up); 
 	}
 	/// WWrapper: transparent
-	override const Junction* put_element(const String& aname, Value* avalue, bool replace) { 
+	override const Junction* put_element(Value& aself, const String& aname, Value* avalue, bool areplace) { 
 		if(!fvalue) {
 			fvalue=new VHash;
 			// not constructing anymore [if were constructing]
@@ -36,7 +36,7 @@ public: // Value
 			set_constructing(false);
 		}
 
-		return fvalue->put_element(aname, avalue, replace); 
+		return fvalue->put_element(aself, aname, avalue, areplace); 
 	}
 
 public: // usage

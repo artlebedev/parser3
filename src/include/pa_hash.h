@@ -17,7 +17,7 @@
 #ifndef PA_HASH_H
 #define PA_HASH_H
 
-static const char * const IDENT_HASH_H="$Date: 2005/07/27 06:15:34 $";
+static const char * const IDENT_HASH_H="$Date: 2005/07/28 11:23:02 $";
 
 #include "pa_memory.h"
 #include "pa_types.h"
@@ -104,8 +104,50 @@ public:
 	}
 
 	/// put a [value] under the [key] @returns existed or not
-	template<typename R, typename F> R maybe_put(K key, V value, F prevent) {
-		assert(value);
+	template<typename R, typename F, typename I> R replace_maybe_append(K key, V value, F prevent, I info) {
+		if(!value) {
+			// they can come here from somewhere (true with maybe_replace_maybe_append, keeping parallel)
+			remove(key);
+			// this has nothing to do with properties, doing no special property handling here
+			return 0; 
+		}
+
+		if(is_full()) 
+			expand();
+
+		uint code=hash_code(key);
+		uint index=code%allocated;
+		Pair **ref=&refs[index];
+		for(Pair *pair=*ref; pair; pair=pair->link)
+			if(pair->code==code && pair->key==key) {
+				// found a pair with the same key
+				pair->value=value;
+				return reinterpret_cast<R>(1);
+			}
+		
+		// proper pair not found 
+		// prevent-function intercepted append?
+		if(R result=prevent(value, info))
+			return result;
+		
+		//create&link_in new pair
+		if(!*ref) // root cell were fused_refs?
+			fused_refs++; // not, we'll use it and record the fact
+		*ref=new Pair(code, key, value, *ref);
+		fpairs_count++;
+		return 0;
+	}
+
+	/// put a [value] under the [key] @returns existed or not
+	template<typename R, typename F1, typename F2, typename I> 
+		R maybe_replace_maybe_append(K key, V value, F1 prevent_replace, F2 prevent_append, I info) 
+	{
+		if(!value) {
+			// they can come here from Temp_value_element::dctor to restore some empty value
+			remove(key);
+			// this has nothing to do with properties, doing no special property handling here
+			return 0; 
+		}
 
 		if(is_full()) 
 			expand();
@@ -117,19 +159,56 @@ public:
 			if(pair->code==code && pair->key==key) {
 				// found a pair with the same key
 
-				// prevent-function intercepted put?
-				if(R result=prevent(pair->value))
+				// prevent-function intercepted replace?
+				if(R result=prevent_replace(pair->value, info))
 					return result;
 				
 				pair->value=value;
 				return reinterpret_cast<R>(1);
 			}
 		
-		// proper pair not found -- create&link_in new pair
+		// proper pair not found 
+		// prevent-function intercepted append?
+		if(R result=prevent_append(value, info))
+			return result;
+		
+		//create&link_in new pair
 		if(!*ref) // root cell were fused_refs?
 			fused_refs++; // not, we'll use it and record the fact
 		*ref=new Pair(code, key, value, *ref);
 		fpairs_count++;
+		return 0;
+	}
+
+	/// put a [value] under the [key] @returns existed or not
+	template<typename R, typename F1, typename I> 
+		R maybe_replace_never_append(K key, V value, F1 prevent_replace, I info) 
+	{
+		if(!value) {
+			// they can come here from somewhere (true with maybe_replace_maybe_append, keeping parallel)
+			remove(key);
+			// this has nothing to do with properties, doing no special property handling here
+			return 0; 
+		}
+
+		if(is_full()) 
+			expand();
+
+		uint code=hash_code(key);
+		uint index=code%allocated;
+		Pair **ref=&refs[index];
+		for(Pair *pair=*ref; pair; pair=pair->link)
+			if(pair->code==code && pair->key==key) {
+				// found a pair with the same key
+
+				// prevent-function intercepted replace?
+				if(R result=prevent_replace(pair->value, info))
+					return result;
+				
+				pair->value=value;
+				return reinterpret_cast<R>(1);
+			}
+		
 		return 0;
 	}
 
@@ -160,7 +239,7 @@ public:
 		
 		return V(0);
 	}
-
+ 
 	/// put a [value] under the [key] if that [key] existed @returns existed or not
 	bool put_replaced(K key, V value) {
 		if(!value) {
@@ -182,14 +261,18 @@ public:
 
 	/// put a [value] under the [key] if that [key] existed @returns existed or not
 	template<typename R, typename F> R maybe_put_replaced(K key, V value, F prevent) {
-		assert(value);
+		if(!value) {
+			// they can come here from Temp_value_element::dctor to restore some empty value
+			remove(key);
+			// this has nothing to do with properties, doing no special property handling here
+			return 0; 
+		}
 
 		uint code=hash_code(key);
 		uint index=code%allocated;
 		for(Pair *pair=refs[index]; pair; pair=pair->link)
 			if(pair->code==code && pair->key==key) {
 				// found a pair with the same key, replacing
-
 				// prevent-function intercepted put?
 				if(R result=prevent(pair->value))
 					return result;

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2005/07/15 06:16:41 $";
+static const char * const IDENT_OP_C="$Date: 2005/07/28 11:23:01 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -271,7 +271,9 @@ static void _for(Request& r, MethodParams& params) {
 
 	bool need_delim=false;
 	VInt* vint=new VInt(0);
-	r.get_method_frame()->caller()->put_element(var_name, vint, false);
+
+	VMethodFrame& caller=*r.get_method_frame()->caller();
+	caller.put_element(caller, var_name, vint, false);
 	for(int i=from; i<=to; i++) {
 		vint->set_int(i);
 
@@ -437,12 +439,13 @@ static Try_catch_result try_catch(Request& r,
 		Junction* junction=catch_code->get_junction();
 		Value* method_frame=junction->method_frame;
 		Value* saved_exception_var_value=method_frame->get_element(exception_var_name, *method_frame, false);
-		junction->method_frame->put_element(exception_var_name, &details.vhash, false);
+		VMethodFrame& frame=*junction->method_frame;
+		frame.put_element(frame, exception_var_name, &details.vhash, false);
 		result.processed_code=r.process(*catch_code);
 		
 		// retriving $exception.handled, restoring $exception var
 		Value* vhandled=details.vhash.hash().get(exception_handled_part_name);
-		junction->method_frame->put_element(exception_var_name, saved_exception_var_value, false);
+		frame.put_element(frame, exception_var_name, saved_exception_var_value, false);
 
 		bool bhandled=false;
 		if(vhandled) {

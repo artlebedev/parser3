@@ -9,7 +9,7 @@
 #include "pa_vhash.h"
 #include "pa_vtable.h"
 
-static const char * const IDENT_VOBJECT_C="$Date: 2005/07/27 06:44:38 $";
+static const char * const IDENT_VOBJECT_C="$Date: 2005/07/28 11:23:02 $";
 
 Value* VObject::as(const char* atype, bool looking_up) { 
 	if(!looking_up)
@@ -88,38 +88,22 @@ Value* VObject::get_element(const String& aname, Value&, bool looking_up) {
 			return result;
 	}
 
-	// up the tree for other $virtual_field try...
-	if(fbase)
-		if(Value* result=fbase->get_element(aname, *fbase, true))
-			return result;
+	return 0;
+}
+
+const Junction* VObject::prevent_append_if_exists_in_static_or_base(Value* value, Prevent_append_if_exists_in_static_or_base_info* info)  {
+	// $virtual_property, any this/bases $static_property 
+	VObject& last_derived=info->_this->get_last_derived();
+	if(const Junction* result=last_derived.stateless_object__put_element(last_derived, *info->name, value))
+		return result; // replaced in any(derivate or base) statics fields/properties
 
 	return 0;
 }
-Value* VObject::stateless_object__get_element(const String& aname, Value& aself) {
-	return VStateless_object::get_element(aname, aself, false);
-}
-
-// from pa_vclass.C
-const Method* pa_prevent_overwrite_property(Value* value);
 
 /// VObject: (field/property)=value
-const Junction* VObject::put_element(const String& aname, Value* avalue, bool replace) {
-	if(fbase)
-		if(const Junction* result=fbase->put_element(aname, avalue, true))
-			return result; // replaced base dynamic(NOT static!) field(NOT property)
-
-	if(replace)
-		return ffields.put_replaced(aname, avalue)? PUT_ELEMENT_REPLACED_ELEMENT: 0;
-	else {
-		// $virtual_property or any this/base $static_property [warning: we can write into static derivate fields here. prior to properties -- were NOT able to do that, now we need to find overridden setters]
-		{			
-			VObject& last_derived=get_last_derived();
-			if(const Junction* result=last_derived.stateless_object__put_element(aname, avalue, true))
-				return result; // replaced in any(derivate or base) statics fields/properties
-		}
-
-		ffields.put(aname, avalue);
-		return 0; // were simply added [not existed before]
-	}
+const Junction* VObject::put_element(Value& /*aself*/, const String& aname, Value* avalue, bool /*areplace*/) {
+	Prevent_append_if_exists_in_static_or_base_info info={this, &aname};
+	return ffields.replace_maybe_append<const Junction*>(aname, avalue, 
+		prevent_append_if_exists_in_static_or_base, 
+		&info);
 }
-

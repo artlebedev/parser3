@@ -8,7 +8,7 @@
 #ifndef PA_VCONSOLE_H
 #define PA_VCONSOLE_H
 
-static const char * const IDENT_VCONSOLE_H="$Date: 2005/07/26 12:43:05 $";
+static const char * const IDENT_VCONSOLE_H="$Date: 2005/07/28 11:23:02 $";
 
 // includes
 
@@ -49,7 +49,7 @@ public: // Value
 	}
 
 	/// VConsole: $line
-	override const Junction* put_element(const String& aname, Value* avalue, bool /*replace*/) { 
+	override const Junction* put_element(Value& /*aself*/, const String& aname, Value* avalue, bool /*areplace*/) { 
 		// $line
 		if(aname==CONSOLE_LINE_NAME) {
 			const char* cstr=avalue->as_string().cstr();

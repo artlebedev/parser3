@@ -8,7 +8,7 @@
 #ifndef PA_VXNODE_H
 #define PA_VXNODE_H
 
-static const char * const IDENT_VXNODE_H="$Date: 2005/07/26 12:43:06 $";
+static const char * const IDENT_VXNODE_H="$Date: 2005/07/28 11:23:03 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -55,7 +55,7 @@ public: // Value
 	override Value* get_element(const String& aname, Value& aself, bool /*looking_up*/);
 
 	/// VXnode: $nodeValue
-	override const Junction* put_element(const String& aname, Value* avalue, bool /*replace*/);
+	override const Junction* put_element(Value& self, const String& aname, Value* avalue, bool replace);
 
 public: // usage
 

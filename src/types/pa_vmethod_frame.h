@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2005/07/26 12:43:05 $";
+static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2005/07/28 11:23:02 $";
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
@@ -120,11 +120,11 @@ public: // Value
 		return 0;
 	}
 	/// VMethodFrame: my or self_transparent
-	override const Junction* put_element(const String& aname, Value* avalue, bool replace) { 
+	override const Junction* put_element(Value& /*aself*/, const String& aname, Value* avalue, bool /*areplace*/) { 
 		if(my && my->put_replaced(aname, avalue))
 			return PUT_ELEMENT_REPLACED_ELEMENT;
 
-		return self().put_element(aname, avalue, replace);
+		return self().put_element(self(), aname, avalue, false/*=always, areplace*/);
 	}
 
 	/// VMethodFrame: self_transparent

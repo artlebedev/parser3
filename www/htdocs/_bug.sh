@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash
 
 echo Content-type: text/html
 echo Header1: lala1111

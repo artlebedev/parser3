@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_HASH_C="$Date: 2005/06/06 08:45:11 $";
+static const char * const IDENT_HASH_C="$Date: 2005/07/28 11:23:01 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -22,7 +22,7 @@ static const char * const IDENT_HASH_C="$Date: 2005/06/06 08:45:11 $";
 
 class MHash: public Methoded {
 public: // VStateless_class
-	Value* create_new_value(Pool&) { return new VHash(); }
+	Value* create_new_value(Pool&, HashStringValue&) { return new VHash(); }
 
 public:
 	MHash();
@@ -339,8 +339,8 @@ static void one_foreach_cycle(
 			      Foreach_info *info) {
 	info->vkey->set_string(*new String(akey, String::L_TAINTED));
 	Value& ncontext=*info->r->get_method_frame()->caller();
-	ncontext.put_element(*info->key_var_name, info->vkey, false);
-	ncontext.put_element(*info->value_var_name, avalue, false);
+	ncontext.put_element(ncontext, *info->key_var_name, info->vkey, false);
+	ncontext.put_element(ncontext, *info->value_var_name, avalue, false);
 
 	StringOrValue sv_processed=info->r->process(*info->body_code);
 	const String* s_processed=sv_processed.get_string();

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2005/07/26 12:54:09 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2005/07/28 11:23:02 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -218,7 +218,7 @@ void Request::execute(ArrayOperation& ops) {
 
 				const String& name=stack.pop().string();  debug_name=&name;
 				Value& ncontext=stack.pop().value();
-				if(const Junction* junction=ncontext.put_element(name, &value, false))
+				if(const Junction* junction=ncontext.put_element(ncontext, name, &value, false))
 					if(junction!=PUT_ELEMENT_REPLACED_ELEMENT)
 						throw Exception("parser.runtime",
 							0,
@@ -439,7 +439,8 @@ void Request::execute(ArrayOperation& ops) {
 					if(frame.junction.method->call_type!=Method::CT_STATIC) {
 						// this is a constructor call
 
-						if(Value* value=called_class.create_new_value(fpool)) {
+						HashStringValue& new_object_fields=*new HashStringValue();
+						if(Value* value=called_class.create_new_value(fpool, new_object_fields)) {
 							// some stateless_class creatable derivates
 							new_self=value;
 						} else 
@@ -873,7 +874,7 @@ value_ready:
 
 void Request::put_element(Value& ncontext, const String& name, Value& value) {
 	// put_element can return property-setting-junction
-	if(const Junction* junction=ncontext.put_element(name, &value, false))
+	if(const Junction* junction=ncontext.put_element(ncontext, name, &value, false))
 		if(junction!=PUT_ELEMENT_REPLACED_ELEMENT) {
 			// process it
 			ArrayString* params_names=junction->method->params_names;

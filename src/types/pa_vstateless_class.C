@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)\
 */
 
-static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2005/07/25 09:39:54 $";
+static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2005/07/28 11:23:02 $";
 
 #include "pa_vstateless_class.h"
 #include "pa_vproperty.h"
@@ -47,9 +47,10 @@ Value* VStateless_class::get_element(const String& aname, Value& aself, bool loo
 		return new VJunction(new Junction(aself, method));
 
 	// base monkey
-	if(fbase)
-		if(Value* lbase=aself.base()) // one check would be enough...
-			return fbase->get_element(aname, *lbase, looking_up);
+	if(fbase) {
+		if(Value* obase=aself.base()) // MXdoc has fbase but does not have object_base[ base() ]
+			return fbase->get_element(aname, *obase, looking_up);
+	}
 
 	return 0;
 }

@@ -8,7 +8,7 @@
 #ifndef PA_VREQUEST_H
 #define PA_VREQUEST_H
 
-static const char * const IDENT_VREQUEST_H="$Date: 2005/07/26 12:43:06 $";
+static const char * const IDENT_VREQUEST_H="$Date: 2005/07/28 11:23:02 $";
 
 // includes
 
@@ -39,7 +39,7 @@ public: // Value
 	override Value* get_element(const String& name, Value& aself, bool /*looking_up*/);
 
 	/// request: (key)=value
-	override const Junction* put_element(const String& aname, Value* avalue, bool replace);
+	override const Junction* put_element(Value& self, const String& name, Value* value, bool replace);
 
 public: // usage
 

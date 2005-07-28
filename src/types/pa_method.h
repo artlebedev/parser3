@@ -8,7 +8,7 @@
 #ifndef PA_METHOD_H
 #define PA_METHOD_H
 
-static const char * const IDENT_METHOD_H="$Date: 2004/02/11 15:33:17 $";
+static const char * const IDENT_METHOD_H="$Date: 2005/07/28 11:23:02 $";
 
 
 /*#include "pa_string.h"
@@ -99,10 +99,10 @@ public:
 		fwhere(awhere),
 		fname(aname),
 		saved(awhere.get_element(aname, awhere, false)) {
-		fwhere.put_element(aname, awhat, false);
+		fwhere.put_element(fwhere, aname, awhat, false);
 	}
 	~Temp_value_element() { 
-		fwhere.put_element(fname, saved, false);
+		fwhere.put_element(fwhere, fname, saved, false);
 	}
 };
 
