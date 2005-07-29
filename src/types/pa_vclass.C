@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VCLASS_C="$Date: 2005/07/29 07:10:09 $";
+static const char * const IDENT_VCLASS_C="$Date: 2005/07/29 07:14:34 $";
 
 #include "pa_vclass.h"
 
@@ -71,8 +71,8 @@ try_to_find_getter_up_the_tree:
 
 	if(property_but_no_getter_in_self)
 		throw Exception("parser.runtime",
-			&aname,
-			"this property has no getter method (GET_%s)", aname.cstr());
+			0,
+			"this property has no getter method (@GET_%s[])", aname.cstr());
 
 	return 0;
 }
@@ -120,7 +120,7 @@ const Junction* VClass::put_element(Value& aself, const String& aname, Value* av
 		if(property_but_no_setter_in_self)
 			throw Exception("parser.runtime",
 				0,
-				"this property has no setter method (is read-only)");
+				"this property has no setter method (@SET_%s[value])", aname.cstr());
 
 		return 0;
 	} else // append if not existed neither in fields nor in base classes
