@@ -7,14 +7,15 @@ bug_derived
 @BASE
 bug
 
-#@create[param]
-#^BASE:create[param]
+@create[param]
+^BASE:create[param]
 #$_secret[$param]
 
-#@get_paf[]
+@GET_paf[]
+derived value
 #=$_secret=
 
-#@set_paf[value]
-#^throw[debug;$value,$_secret]
+#@SET_paf[value]
+#^throw[debug;$value]
 #$_secret[$value]
 #^throw[debug;$value,$_secret]

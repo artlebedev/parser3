@@ -9,7 +9,7 @@
 #include "pa_vhash.h"
 #include "pa_vtable.h"
 
-static const char * const IDENT_VOBJECT_C="$Date: 2005/07/28 11:23:02 $";
+static const char * const IDENT_VOBJECT_C="$Date: 2005/07/29 07:04:23 $";
 
 Value* VObject::as(const char* atype, bool looking_up) { 
 	if(!looking_up)
@@ -82,7 +82,7 @@ Value* VObject::get_element(const String& aname, Value&, bool looking_up) {
 		if(aname==CLASS_NAME)
 			return get_class();
 
-		// $virtual_method
+		// $virtual_method $virtual_property
 		VObject& last_derived=get_last_derived();
 		if(Value* result=last_derived.stateless_object__get_element(aname, last_derived))
 			return result;

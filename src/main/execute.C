@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2005/07/28 11:23:02 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2005/07/29 07:04:23 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -896,7 +896,7 @@ void Request::put_element(Value& ncontext, const String& name, Value& value) {
 			rcontext=wcontext=&frame;
 			method_frame=&frame;
 
-			// prevent non-string writes for better error reporting
+			// prevent non-string writes for better error reporting [setters are not expected to return anything]
 			wcontext->write(*method_frame);
 
 			recoursion_checked_execute(*frame.junction.method->parser_code); // parser code, execute it

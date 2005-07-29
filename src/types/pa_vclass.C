@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VCLASS_C="$Date: 2005/07/28 11:23:02 $";
+static const char * const IDENT_VCLASS_C="$Date: 2005/07/29 07:04:23 $";
 
 #include "pa_vclass.h"
 
@@ -71,25 +71,22 @@ Value* VClass::get_element(const String& aname, Value& aself, bool alooking_up) 
 	return 0;
 }
 
+#define PROPERTY_BUT_NO_SETTER_IN_SELF reinterpret_cast<const Junction*>(2)
 const Junction* VClass::prevent_overwrite_property(Value* value, Prevent_info* info) {
 	if(Property* property=value->get_property()) {
 		if(Method* setter=property->setter)
 			return new Junction(*info->self, setter);
-		
-		throw Exception("parser.runtime",
-			0,
-			"this property has no setter method (is read-only)");
+
+		return PROPERTY_BUT_NO_SETTER_IN_SELF;
 	}
 
 	return 0;
 }
 const Junction* VClass::prevent_append_if_exists_in_base(Value* value, Prevent_info* info)  {
 	if(VStateless_class* cbase=info->_this->fbase) {
-		// VObject must have .base()!=0 of type VObject [contains parent OBJECT (not class)]
-		Value* obase=info->self->base();
-		assert(obase);
-		if(const Junction* result=cbase->put_element(*obase, *info->name, value, true/*try to replace! NEVER overwrite*/))
-			return result; // replaced in base
+		if(Value* obase=info->self->base()) // MXdoc has fbase but does not have object_base[ base() ]
+			if(const Junction* result=cbase->put_element(*obase, *info->name, value, true/*try to replace! NEVER overwrite*/))
+				return result; // replaced in base
 	}
 
 	return 0;
@@ -97,11 +94,30 @@ const Junction* VClass::prevent_append_if_exists_in_base(Value* value, Prevent_i
 /// VClass: (field/property)=value - static values only
 const Junction* VClass::put_element(Value& aself, const String& aname, Value* avalue, bool areplace) {
 	Prevent_info info={this, &aself, &aname};
-	if(areplace)
-		return ffields.maybe_replace_never_append<const Junction*>(aname, avalue, 
+	if(areplace) {
+		bool property_but_no_setter_in_self=false;
+		// trying to replace it in fields/properties
+		if(const Junction* result=ffields.maybe_replace_never_append<const Junction*>(aname, avalue, 
 			prevent_overwrite_property,
-			&info);
-	else // append if not existed neither in fields nor in base classes
+			&info))
+			if(result==PROPERTY_BUT_NO_SETTER_IN_SELF)
+				property_but_no_setter_in_self=true; // continue to find setter up the tree
+			else
+				return result; // replaced locally
+
+		// if not found locally, going up the tree
+		if(fbase)
+			if(Value* obase=aself.base()) // MXdoc has fbase but does not have object_base[ base() ]
+				if(const Junction* result=fbase->put_element(*obase, aname, avalue, true/*try to replace! NEVER overwrite*/))
+					return result; // replaced in base
+
+		if(property_but_no_setter_in_self)
+			throw Exception("parser.runtime",
+				0,
+				"this property has no setter method (is read-only)");
+
+		return 0;
+	} else // append if not existed neither in fields nor in base classes
 		return ffields.maybe_replace_maybe_append<const Junction*>(aname, avalue, 
 			prevent_overwrite_property,
 			prevent_append_if_exists_in_base, 
