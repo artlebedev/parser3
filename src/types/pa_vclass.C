@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VCLASS_C="$Date: 2005/07/29 07:04:23 $";
+static const char * const IDENT_VCLASS_C="$Date: 2005/07/29 07:10:09 $";
 
 #include "pa_vclass.h"
 
@@ -50,23 +50,29 @@ Value* VClass::as(const char* atype, bool looking_up) {
 
 /// VClass: $CLASS, (field/property)=STATIC value;(method)=method_ref with self=object_class
 Value* VClass::get_element(const String& aname, Value& aself, bool alooking_up) {
+	bool property_but_no_getter_in_self=false;
+
 	// simple things first: $field=static field/property
 	if(Value* result=ffields.get(aname)) {
 		if(Property* prop=result->get_property()) { // it is property?
-			Method* method=prop->getter;
-			if(!method)
-				throw Exception("parser.runtime",
-					&aname,
-					"this property has no getter method (GET_%s)", aname.cstr());
+			if(Method* method=prop->getter)
+				return new VJunction(new Junction(aself, method, true /*is_getter*/));
 
-			return new VJunction(new Junction(aself, method, true /*is_getter*/));
+			property_but_no_getter_in_self=true;
+			goto try_to_find_getter_up_the_tree;
 		}
 		return result;
 	}
 
+try_to_find_getter_up_the_tree:
 	// $CLASS, $method, or other base element
 	if(Value* result=VStateless_class::get_element(aname, aself, alooking_up))
 		return result; // TODO: this can be SIGNIFICANTLY sped up by caching in ffields! [THOUGH decide about different aself] // what REALLY would speed up things is to join storage of properties/methods/fields of all vobject parents into last descenant [sort of vmt + all fields as in other langs]
+
+	if(property_but_no_getter_in_self)
+		throw Exception("parser.runtime",
+			&aname,
+			"this property has no getter method (GET_%s)", aname.cstr());
 
 	return 0;
 }
