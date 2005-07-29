@@ -1,22 +1,10 @@
+@USE
+/_bug_derived.p
+#/_bug.p
 
-$double(1.6) 
-^double.int[] <br>
-^math:round($double)
-<hr>
+@main[]
+$bug[^bug_derived::create[value from ctor]]
+read:$bug.paf<br>
+write:$bug.paf[works]<br>
+read:$bug.paf<br>
 
-$pdfsize[822674]
-$pdfsize($pdfsize / 1000)
-$pdfsize[^pdfsize.int[]]
-=int:$pdfsize=<br>
-^if($pdfsize > 1000){
-        $pdfsize($pdfsize / 1000)
-        $pdfsize[^pdfsize.format[%.2g]]
-        $pdfsize[^pdfsize.match[\.][]{,}]
-        $pdfsize[$pdfsize åÅ]
-}{
-        $pdfsize[$pdfsize äÅ]
-}
-
-<p>
-    $pdfsize
-</p>
