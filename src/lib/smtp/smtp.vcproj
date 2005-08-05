@@ -24,7 +24,8 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
-				optimization="2" GlobalOptimizations="TRUE" 				
+				Optimization="2"
+				GlobalOptimizations="TRUE"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="..\..\include;..\..\lib\gc\include;..\..\lib\cord\include;..\..\..\..\win32\gnome\glib\include;..\..\..\..\win32\gnome\glib\include\glib;..\..\..\..\win32\gnome\gdome2-x.x.x\libgdome;..\..\..\..\win32\gnome\libxml2-x.x.x\include;..\..\..\..\win32\gnome\libxslt-x.x.x"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
@@ -141,5 +142,8 @@
 		</Filter>
 	</Files>
 	<Globals>
+		<Global
+			Name="DevPartner_IsInstrumented"
+			Value="0"/>
 	</Globals>
 </VisualStudioProject>

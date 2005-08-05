@@ -8,7 +8,7 @@
 #ifndef COMPILE_TOOLS
 #define COMPILE_TOOLS
 
-static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2004/04/06 07:53:57 $";
+static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2005/08/05 13:01:16 $";
 
 #include "pa_opcode.h"
 #include "pa_types.h"
@@ -191,7 +191,7 @@ inline void change_string_literal_to_write_string_literal(ArrayOperation& litera
 }
 
 
-void change_string_literal_to_double_literal(ArrayOperation& literal_string_array);
+void maybe_change_string_literal_to_double_literal(ArrayOperation& literal_string_array);
 
 void change_string_literal_value(ArrayOperation& literal_string_array, const String& new_value);
 

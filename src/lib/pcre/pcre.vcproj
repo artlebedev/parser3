@@ -23,7 +23,8 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
-				optimization="2" GlobalOptimizations="TRUE" 				
+				Optimization="2"
+				GlobalOptimizations="TRUE"
 				InlineFunctionExpansion="1"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				StringPooling="TRUE"
@@ -74,7 +75,8 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
-				optimization="2" GlobalOptimizations="TRUE" 				
+				Optimization="2"
+				GlobalOptimizations="TRUE"
 				InlineFunctionExpansion="1"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				StringPooling="TRUE"
@@ -226,14 +228,16 @@
 					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						optimization="2" GlobalOptimizations="TRUE" 				
+						Optimization="2"
+						GlobalOptimizations="TRUE"
 						PreprocessorDefinitions=""/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Profile Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						optimization="2" GlobalOptimizations="TRUE" 				
+						Optimization="2"
+						GlobalOptimizations="TRUE"
 						PreprocessorDefinitions=""/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -259,14 +263,16 @@
 					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						optimization="2" GlobalOptimizations="TRUE" 				
+						Optimization="2"
+						GlobalOptimizations="TRUE"
 						PreprocessorDefinitions=""/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Profile Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						optimization="2" GlobalOptimizations="TRUE" 				
+						Optimization="2"
+						GlobalOptimizations="TRUE"
 						PreprocessorDefinitions=""/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -292,14 +298,16 @@
 					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						optimization="2" GlobalOptimizations="TRUE" 				
+						Optimization="2"
+						GlobalOptimizations="TRUE"
 						PreprocessorDefinitions=""/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Profile Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						optimization="2" GlobalOptimizations="TRUE" 				
+						Optimization="2"
+						GlobalOptimizations="TRUE"
 						PreprocessorDefinitions=""/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -364,5 +372,8 @@
 		</Filter>
 	</Files>
 	<Globals>
+		<Global
+			Name="DevPartner_IsInstrumented"
+			Value="0"/>
 	</Globals>
 </VisualStudioProject>

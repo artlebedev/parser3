@@ -21,7 +21,8 @@
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
 				Name="VCCLCompilerTool"
-				optimization="2" GlobalOptimizations="TRUE" 				
+				Optimization="2"
+				GlobalOptimizations="TRUE"
 				InlineFunctionExpansion="1"
 				PreprocessorDefinitions="NDEBUG;_WIN32"
 				StringPooling="TRUE"
@@ -168,7 +169,8 @@
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
 				Name="VCCLCompilerTool"
-				optimization="2" GlobalOptimizations="TRUE" 				
+				Optimization="2"
+				GlobalOptimizations="TRUE"
 				InlineFunctionExpansion="1"
 				PreprocessorDefinitions="NDEBUG;_WIN32"
 				StringPooling="TRUE"
@@ -221,7 +223,8 @@
 					Name="Profile Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						optimization="2" GlobalOptimizations="TRUE" 				
+						Optimization="2"
+						GlobalOptimizations="TRUE"
 						PreprocessorDefinitions=""/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -246,7 +249,8 @@
 					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						optimization="2" GlobalOptimizations="TRUE" 				
+						Optimization="2"
+						GlobalOptimizations="TRUE"
 						PreprocessorDefinitions=""/>
 				</FileConfiguration>
 			</File>
@@ -266,5 +270,8 @@
 		</Filter>
 	</Files>
 	<Globals>
+		<Global
+			Name="DevPartner_IsInstrumented"
+			Value="0"/>
 	</Globals>
 </VisualStudioProject>

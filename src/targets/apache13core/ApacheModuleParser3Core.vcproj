@@ -22,7 +22,8 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
-				optimization="2" GlobalOptimizations="TRUE" 				
+				Optimization="2"
+				GlobalOptimizations="TRUE"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="..\apache13;..\..\types;..\..\include;..\..\classes;..\..\sql;..\..\lib\gc\include;..\..\lib\cord\include;..\..\lib\pcre;..\..\lib\md5;..\..\..\..\win32\gnome\glib\include;..\..\..\..\win32\gnome\glib\include\glib;..\..\..\..\win32\gnome\gdome2-x.x.x\libgdome;..\..\..\..\win32\gnome\libxml2-x.x.x\win32\release\include;..\..\..\..\win32\gnome\libxslt-x.x.x\win32\release\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
@@ -125,6 +126,16 @@
 		<File
 			RelativePath="pa_threads.C">
 			<FileConfiguration
+				Name="Release|Win32">
+				<Tool
+					Name="VCCLCompilerTool"
+					Optimization="2"
+					GlobalOptimizations="TRUE"
+					AdditionalIncludeDirectories=""
+					PreprocessorDefinitions=""
+					CompileAs="2"/>
+			</FileConfiguration>
+			<FileConfiguration
 				Name="Debug|Win32">
 				<Tool
 					Name="VCCLCompilerTool"
@@ -134,17 +145,11 @@
 					BasicRuntimeChecks="3"
 					CompileAs="2"/>
 			</FileConfiguration>
-			<FileConfiguration
-				Name="Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					optimization="2" GlobalOptimizations="TRUE" 				
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					CompileAs="2"/>
-			</FileConfiguration>
 		</File>
 	</Files>
 	<Globals>
+		<Global
+			Name="DevPartner_IsInstrumented"
+			Value="0"/>
 	</Globals>
 </VisualStudioProject>

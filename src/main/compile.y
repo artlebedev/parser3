@@ -5,7 +5,7 @@
 	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.213 2004/04/06 14:17:17 paf Exp $
+	$Id: compile.y,v 1.213.10.1 2005/08/05 13:01:16 paf Exp $
 */
 
 /**
@@ -551,13 +551,9 @@ class_constructor_prefix: class_static_prefix ':' {
 
 /* expr */
 
-expr_value: expr {
-	// see OP_PREPARE_TO_EXPRESSION!!
-	if(($$=$1)->count()==2) // only one string literal in there?
-		change_string_literal_to_double_literal(*$$); // make that string literal Double
-};
+expr_value: expr;
 expr: 
-	STRING
+	double_or_STRING
 |	get_value
 |	call_value
 |	'"' string_inside_quotes_value '"' { $$ = $2; }
@@ -601,6 +597,11 @@ expr:
 |	expr "ne" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP_STR_NE) }
 |	expr "is" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP_IS) }
 ;
+
+double_or_STRING: STRING {
+	// optimized from OP_STRING->OP_VALUE for doubles
+	maybe_change_string_literal_to_double_literal(*($$=$1));
+};
 
 string_inside_quotes_value: maybe_codes {
 	$$=N();
