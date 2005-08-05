@@ -8,7 +8,7 @@
 #ifndef PA_VDOUBLE_H
 #define PA_VDOUBLE_H
 
-static const char * const IDENT_VDOUBLE_H="$Date: 2005/08/05 13:03:04 $";
+static const char * const IDENT_VDOUBLE_H="$Date: 2005/08/05 14:13:41 $";
 
 // includes
 
@@ -40,13 +40,16 @@ public: // Value
 	/// VDouble: fdouble
 	override double as_double() const { return fdouble; }
 	/// VDouble: fdouble
-	override int as_int() const { return (int)trunc(fdouble); }
+	override int as_int() const { return get_int(); }
 	/// VDouble: 0 or !0
 	override bool as_bool() const { return fdouble!=0; }
 
 public: // usage
 
 	VDouble(double adouble): fdouble(adouble) {}
+
+	int get_int() const { return (int)trunc(fdouble); }
+	double get_double() const { return fdouble; }
 
 	void inc(double increment) { fdouble+=increment; }
 	void mul(double k) { fdouble*=k; }

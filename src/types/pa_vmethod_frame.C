@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)\
 */
 
-static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2005/08/05 13:03:05 $";
+static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2005/08/05 14:13:41 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
@@ -16,8 +16,8 @@ const String result_var_name(RESULT_VAR_NAME);
 
 // MethodParams: methods
 
-Value& MethodParams::get_processed(int index, const char* msg, Request& r) {
-		return r.process_to_value(as_junction(index, msg), 0/*no name*/);
+Value& MethodParams::get_processed(Value* value, const char* msg, int index, Request& r) {
+		return r.process_to_value(as_junction(value, msg, index), false /*do not intercept string*/);
 }
 
 // VMethodFrame: methods

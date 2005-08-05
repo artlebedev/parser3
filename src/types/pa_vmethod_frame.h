@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2005/08/05 13:03:05 $";
+static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2005/08/05 14:13:41 $";
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
@@ -37,23 +37,42 @@ public:
 
 	/// handy is-value-a-junction ensurer
 	Value& as_junction(int index, const char* msg) { 
-		return get_as(index, true, msg); 
+		Value* value=get(index);
+		return as_junction(value, msg, index); 
+	}
+	/// handy is-value-a-junction ensurer
+	Value& as_junction(Value* value, const char* msg, int index) { 
+		return get_as(value, true, msg, index); 
 	}
 	/// handy value-is-not-a-junction ensurer
 	Value& as_no_junction(int index, const char* msg) { 
-		return get_as(index, false, msg); 
+		Value* value=get(index);
+		return as_no_junction(value, msg, index); 
+	}
+	/// handy value-is-not-a-junction ensurer
+	Value& as_no_junction(Value* value, const char* msg, int index) { 
+		return get_as(value, false, msg, index); 
 	}
 	/// handy expression auto-processing to double
 	double as_double(int index, const char* msg, Request& r) { 
-		return get_processed(index, msg, r).as_double(); 
+		Value* value=get(index);
+		if(VDouble* vdouble=static_cast<VDouble*>(value->as("double", false)))
+			return vdouble->get_double();
+		return get_processed(value, msg, index, r).as_double(); 
 	}
 	/// handy expression auto-processing to int
 	int as_int(int index, const char* msg, Request& r) { 
-		return get_processed(index, msg, r).as_int(); 
+		Value* value=get(index);
+		if(VDouble* vdouble=static_cast<VDouble*>(value->as("double", false)))
+			return vdouble->get_int();
+		if(VInt* vint=static_cast<VInt*>(value->as("int", false)))
+			return vint->get_int();
+		return get_processed(value, msg, index, r).as_int(); 
 	}
 	/// handy expression auto-processing to bool
 	bool as_bool(int index, const char* msg, Request& r) { 
-		return get_processed(index, msg, r).as_bool(); 
+		Value* value=get(index);
+		return get_processed(value, msg, index, r).as_bool(); 
 	}
 	/// handy string ensurer
 	const String& as_string(int index, const char* msg) { 
@@ -63,17 +82,16 @@ public:
 private:
 
 	/// handy value-is/not-a-junction ensurer
-	Value& get_as(int index, bool as_junction, const char* msg) { 
-		Value* result=get(index);
-		if((result->get_junction()!=0) ^ as_junction)
+	Value& get_as(Value* value, bool as_junction, const char* msg, int index) { 
+		if((value->get_junction()!=0) ^ as_junction)
 			throw Exception("parser.runtime",
 				0,
 				"%s (parameter #%d)", msg, 1+index);
 
-		return *result;
+		return *value;
 	}
 
-	Value& get_processed(int index, const char* msg, Request& r);
+	Value& get_processed(Value* value, const char* msg, int index, Request& r);
 
 };
 

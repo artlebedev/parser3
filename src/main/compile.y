@@ -5,7 +5,7 @@
 	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.213.10.2 2005/08/05 13:03:00 paf Exp $
+	$Id: compile.y,v 1.213.10.3 2005/08/05 14:13:41 paf Exp $
 */
 
 /**
@@ -441,9 +441,19 @@ store_code_param_part: code_param_value {
 	$$=$1;
 	O(*$$, OP_STORE_PARAM);
 };
-store_expr_param_part: write_expr_value {
-	$$=N(); 
-	OA(*$$, OP_EXPR_CODE__STORE_PARAM, $1);
+store_expr_param_part: expr_value {
+	YYSTYPE expr_code=$1;
+	if(expr_code->count()==3) { // optimizing (double) case. [OP_VALUE+origin+Double]
+		$$=expr_code; 
+		O(*$$, OP_STORE_PARAM); // no evaluating
+	} else {
+		ArrayOperation* code=N();
+		O(*code, OP_PREPARE_TO_EXPRESSION);
+		P(*code, *expr_code);
+		O(*code, OP_WRITE_EXPR_RESULT);
+		$$=N(); 
+		OA(*$$, OP_EXPR_CODE__STORE_PARAM, code);
+	}
 };
 store_curly_param_part: maybe_codes {
 	$$=N(); 
@@ -454,12 +464,6 @@ code_param_value:
 |	STRING /* optimized [STRING] case */
 |	constructor_code_value /* [something complex] */
 ;
-write_expr_value: expr_value {
-	$$=N(); 
-	O(*$$, OP_PREPARE_TO_EXPRESSION);
-	P(*$$, *$1);
-	O(*$$, OP_WRITE_EXPR_RESULT);
-};
 
 /* name */
 
