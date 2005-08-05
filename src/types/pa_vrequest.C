@@ -1,11 +1,11 @@
 /** @file
 	Parser: @b request class.
 
-	Copyright(c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright(c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VREQUEST_C="$Date: 2005/07/28 11:23:02 $";
+static const char * const IDENT_VREQUEST_C="$Date: 2005/08/05 13:03:05 $";
 
 #include "pa_vrequest.h"
 #include "pa_request_info.h"
@@ -42,19 +42,19 @@ Value* VRequest::get_element(const String& aname, Value&  /*aself*/, bool /*look
 	return new VString(*new String(buf?buf:"", size, true));
 }
 
-const Junction* VRequest::put_element(Value& aself, const String& aname, Value* avalue, bool areplace) {
+bool VRequest::put_element(const String& aname, Value* avalue, bool replace) {
 	// $charset
 	if(aname==CHARSET_NAME) {
 		fcharsets.set_source(charsets.get(avalue->as_string().
 			change_case(UTF8_charset, String::CC_UPPER)));
-		return PUT_ELEMENT_REPLACED_ELEMENT;
+		return true;
 	} 
 
 	// $document-root
 	if(aname==DOCUMENT_ROOT_NAME) {
 		finfo.document_root=avalue->as_string().cstr(String::L_FILE_SPEC);
-		return PUT_ELEMENT_REPLACED_ELEMENT;
+		return true;
 	} 
 
-	return Value::put_element(aself, aname, avalue, areplace);
+	return Value::put_element(aname, avalue, replace);
 }

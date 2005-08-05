@@ -1,11 +1,11 @@
 /** @file
 	Parser: cookie class.
 
-	Copyright(c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright(c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VCOOKIE_C="$Date: 2005/07/28 11:23:02 $";
+static const char * const IDENT_VCOOKIE_C="$Date: 2005/08/05 13:03:04 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -49,7 +49,7 @@ Value* VCookie::get_element(const String& aname, Value& /*aself*/, bool /*lookin
 	return before.get(aname);
 }
 
-const Junction* VCookie::put_element(Value& /*aself*/, const String& aname, Value* avalue, bool /*replace*/) {
+bool VCookie::put_element(const String& aname, Value* avalue, bool /*replace*/) {
 	// $cookie
 	bool remove;
 	Value* lvalue;
@@ -70,7 +70,7 @@ const Junction* VCookie::put_element(Value& /*aself*/, const String& aname, Valu
 	(remove?deleted:after).put(aname, avalue);
 	(remove?after:deleted).put(aname, 0);
 	
-	return PUT_ELEMENT_REPLACED_ELEMENT;
+	return true;
 }
 
 static char *search_stop(char*& current, char cstop_at) {

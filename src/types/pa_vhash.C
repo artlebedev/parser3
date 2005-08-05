@@ -1,11 +1,11 @@
 /** @file
 	Parser: @b hash class.
 
-	Copyright(c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright(c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Date: 2005/03/16 14:34:46 $";
+static const char * const IDENT="$Date: 2005/08/05 13:03:04 $";
 
 #include "pa_vhash.h"
 #include "pa_vfile.h"

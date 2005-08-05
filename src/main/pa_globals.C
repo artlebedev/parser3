@@ -1,11 +1,11 @@
 /** @file
 	Parser: globals.
 
-	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_GLOBALS_C="$Date: 2004/10/07 09:23:44 $";
+static const char * const IDENT_GLOBALS_C="$Date: 2005/08/05 13:03:01 $";
 
 #include "pa_config_includes.h"
 

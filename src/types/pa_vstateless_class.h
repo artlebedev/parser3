@@ -1,14 +1,14 @@
 /** @file
 	Parser: stateless class decls.
 
-	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
-static const char * const IDENT_VSTATELESS_CLASS_H="$Date: 2005/07/28 11:23:02 $";
+static const char * const IDENT_VSTATELESS_CLASS_H="$Date: 2005/08/05 13:03:05 $";
 
 // include
 
@@ -16,7 +16,6 @@ static const char * const IDENT_VSTATELESS_CLASS_H="$Date: 2005/07/28 11:23:02 $
 #include "pa_hash.h"
 #include "pa_vjunction.h"
 #include "pa_method.h"
-#include "pa_vproperty.h"
 
 // defines
 
@@ -98,8 +97,7 @@ public: // usage
 		return fmethods.get(aname);
 	}
 
-	/// virtual for VClass to override to pre-cache property accessors into fields
-	virtual void add_method(const String& name, Method& method);
+	void add_method(const String& name, Method& method);
 	
 	void add_native_method(
 		const char* cstr_name,
@@ -126,15 +124,14 @@ public: // usage
 	//@}
 
 	/// @returns new value for current class, used in classes/ & VClass
-	virtual Value* create_new_value(Pool&, HashStringValue& /*afields*/) { return 0; }
+	virtual Value* create_new_value(Pool&) { return 0; }
 
-protected:
+private: // Temp_method
 
-	void fill_properties(HashStringValue& acache);
-
-private:
-
-	void put_method(const String& aname, Method* amethod);	
+	void put_method(const String& aname, Method* amethod) {
+		fmethods.put(aname, amethod); 
+	}
+	
 };
 
 ///	Auto-object used for temporarily substituting/removing class method

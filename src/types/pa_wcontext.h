@@ -1,14 +1,14 @@
 /**	@file
 	Parser: write context class decl.
 
-	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_WCONTEXT_H
 #define PA_WCONTEXT_H
 
-static const char * const IDENT_WCONTEXT_H="$Date: 2005/07/15 06:16:42 $";
+static const char * const IDENT_WCONTEXT_H="$Date: 2005/08/05 13:03:06 $";
 
 #include "pa_value.h"
 #include "pa_vstring.h"
@@ -20,9 +20,7 @@ class StringOrValue {
 public:
 	StringOrValue() : fstring(0), fvalue(0) {}
 	/// anticipating either String or Value [must not be 0&0]
-	StringOrValue(const String& astring) : fstring(&astring), fvalue(0) {}
-	StringOrValue(Value& avalue) : fstring(0), fvalue(&avalue) {}
-
+	StringOrValue(const String* astring, Value* avalue) : fstring(astring), fvalue(avalue) {}
 	void set_string(const String& astring) { fstring=&astring; }
 	void set_value(Value& avalue) { fvalue=&avalue; }
 	const String* get_string() { return fstring; }
@@ -82,7 +80,7 @@ public: // WContext
 		wmethod_frame first checks for $result and if there is one, returns it instead
 	*/
 	virtual StringOrValue result() {
-		return fvalue?StringOrValue(*fvalue):StringOrValue(fstring);
+		return fvalue?StringOrValue(0, fvalue):StringOrValue(&fstring, 0);
 	}
 
 	void attach_junction(Junction* ajunction) {

@@ -1,14 +1,14 @@
 /** @file
 	Parser: global decls.
 
-	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_GLOBALS_H
 #define PA_GLOBALS_H
 
-static const char * const IDENT_GLOBALS_H="$Date: 2004/06/18 15:55:47 $";
+static const char * const IDENT_GLOBALS_H="$Date: 2005/08/05 13:02:59 $";
 
 #ifdef XML
 #	include "libxml/tree.h"

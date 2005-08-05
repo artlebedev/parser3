@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b method_frame write context
 
-	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2005/07/28 11:23:02 $";
+static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2005/08/05 13:03:05 $";
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
@@ -120,11 +120,11 @@ public: // Value
 		return 0;
 	}
 	/// VMethodFrame: my or self_transparent
-	override const Junction* put_element(Value& /*aself*/, const String& aname, Value* avalue, bool /*areplace*/) { 
-		if(my && my->put_replaced(aname, avalue))
-			return PUT_ELEMENT_REPLACED_ELEMENT;
+	override bool put_element(const String& aname, Value* avalue, bool replace) { 
+		if(my && my->put_replace(aname, avalue))
+			return true;
 
-		return self().put_element(self(), aname, avalue, false/*=always, areplace*/);
+		return self().put_element(aname, avalue, replace);
 	}
 
 	/// VMethodFrame: self_transparent
@@ -139,7 +139,7 @@ public: // WContext
 		// check the $result value
 		Value* result_value=get_result_variable();
 		// if we have one, return it, else return as usual: accumulated fstring or fvalue
-		return result_value ? StringOrValue(*result_value) : WContext::result();
+		return result_value ? StringOrValue(0, result_value) : WContext::result();
 	}
 
 	void write(Value& avalue, String::Language alang) {
@@ -149,9 +149,11 @@ public: // WContext
 public: // usage
 
 	VMethodFrame(
+		//const String& aname,
 		const Junction& ajunction/*info: always method-junction*/,
 		VMethodFrame *acaller);
 
+//	const String& name() { return fname; }
 	VMethodFrame *caller() { return fcaller; }
 
 	void set_self(Value& aself) { fself=&aself; }

@@ -1,11 +1,11 @@
 /** @file
 	Parser: compiler part of request class.
 
-	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMPILE_C="$Date: 2005/07/25 09:39:54 $";
+static const char * const IDENT_COMPILE_C="$Date: 2005/08/05 13:03:00 $";
 
 #include "pa_opcode.h"
 #include "pa_request.h"

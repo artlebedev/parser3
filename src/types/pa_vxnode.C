@@ -1,13 +1,13 @@
 /** @node
 	Parser: @b dnode parser type.
 
-	Copyright(c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright(c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 #include "pa_config_includes.h"
 #ifdef XML
 
-static const char * const IDENT_VXNODE_C="$Date: 2005/07/28 11:23:02 $";
+static const char * const IDENT_VXNODE_C="$Date: 2005/08/05 13:03:06 $";
 
 #include "pa_vxnode.h"
 #include "pa_vxdoc.h"
@@ -143,7 +143,7 @@ Value* VXnode::get_element(const String& aname, Value& aself, bool looking_up) {
 	return bark("%s field not found", &aname);
 }
 
-const Junction* VXnode::put_element(Value& /*aself*/, const String& aname, Value* avalue, bool /*replace*/)
+bool VXnode::put_element(const String& aname, Value* avalue, bool /*replace*/)
 { 
 	GdomeNode* selfNode=get_node();
 	GdomeException exc;
@@ -155,10 +155,10 @@ const Junction* VXnode::put_element(Value& /*aself*/, const String& aname, Value
 		if(exc)
 			throw XmlException(&aname, exc);
 
-		return PUT_ELEMENT_REPLACED_ELEMENT;
+		return true;
 	}
 
 	bark("element can not be stored to %s", &aname);
-	return 0;
+	return false;
 }
 #endif

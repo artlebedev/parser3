@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b image parser type decl.
 
-	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VIMAGE_H
 #define PA_VIMAGE_H
 
-static const char * const IDENT_VIMAGE_H="$Date: 2005/07/28 11:23:02 $";
+static const char * const IDENT_VIMAGE_H="$Date: 2005/08/05 13:03:04 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -74,7 +74,7 @@ public: // Value
 	override Value* get_element(const String& aname, Value& aself, bool looking_up);
 
 	/// VImage: field
-	override const Junction* put_element(Value& self, const String& name, Value* value, bool replace);
+	override bool put_element(const String& aname, Value* avalue, bool replace);
 
 public: // usage
 

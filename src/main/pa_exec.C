@@ -1,13 +1,13 @@
 /** @file
 	Parser: program executing for different OS-es.
 
-	Copyright(c) 2000,2001-2004 ArtLebedev Group(http://www.artlebedev.com)
+	Copyright(c) 2000,2001-2005 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
 	@todo setrlimit
 */
 
-static const char * const IDENT_EXEC_C="$Date: 2004/12/23 16:34:50 $";
+static const char * const IDENT_EXEC_C="$Date: 2005/08/05 13:03:01 $";
 
 #include "pa_config_includes.h"
 

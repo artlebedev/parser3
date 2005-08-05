@@ -1,11 +1,11 @@
 /** @file
 	Parser: executor part of request class.
 
-	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2005/07/29 07:04:23 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2005/08/05 13:03:01 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -186,8 +186,7 @@ void Request::execute(ArrayOperation& ops) {
 				Value& value=stack.pop().value();
 				const String& name=stack.pop().string();  debug_name=&name;
 				Value& ncontext=stack.pop().value();
-				put_element(ncontext, name, value);
-
+				ncontext.put_element(name, &value, false);
 				break;
 			}
 		case OP_CONSTRUCT_EXPR:
@@ -195,11 +194,10 @@ void Request::execute(ArrayOperation& ops) {
 				// see OP_PREPARE_TO_EXPRESSION
 				wcontext->set_in_expression(false);
 
-				Value& expr=stack.pop().value();
+				Value& value=stack.pop().value();
 				const String& name=stack.pop().string();  debug_name=&name;
 				Value& ncontext=stack.pop().value();
-				Value& value=expr.as_expr_result();
-				put_element(ncontext, name, value);
+				ncontext.put_element(name, &value.as_expr_result(), false);
 				break;
 			}
 		case OP_CURLY_CODE__CONSTRUCT:
@@ -218,12 +216,7 @@ void Request::execute(ArrayOperation& ops) {
 
 				const String& name=stack.pop().string();  debug_name=&name;
 				Value& ncontext=stack.pop().value();
-				if(const Junction* junction=ncontext.put_element(ncontext, name, &value, false))
-					if(junction!=PUT_ELEMENT_REPLACED_ELEMENT)
-						throw Exception("parser.runtime",
-							0,
-							"property value can not be code, use [] or () brackets");
-					
+				ncontext.put_element(name, &value, false);
 				break;
 			}
 		case OP_NESTED_CODE:
@@ -432,15 +425,13 @@ void Request::execute(ArrayOperation& ops) {
 				WContext *saved_wcontext=wcontext;
 				
 				VStateless_class& called_class=*frame.junction.self.get_class();
-				Value* new_self;
+				Value* new_self=&get_self();
 				if(wcontext->get_constructing()) {
 					wcontext->set_constructing(false);
-					new_self=&get_self();
 					if(frame.junction.method->call_type!=Method::CT_STATIC) {
 						// this is a constructor call
 
-						HashStringValue& new_object_fields=*new HashStringValue();
-						if(Value* value=called_class.create_new_value(fpool, new_object_fields)) {
+						if(Value* value=called_class.create_new_value(fpool)) {
 							// some stateless_class creatable derivates
 							new_self=value;
 						} else 
@@ -481,7 +472,7 @@ void Request::execute(ArrayOperation& ops) {
 								*this, 
 								*frame.numbered_params()); // execute it
 						} else // parser code, execute it
-							recoursion_checked_execute(*method.parser_code);
+							recoursion_checked_execute(/*frame.name(), */*method.parser_code);
 					} else
 						throw Exception("parser.runtime",
 							0, //&frame.name(),
@@ -837,7 +828,8 @@ Value& Request::get_element(Value& ncontext, const String& name, bool can_call_o
 	Value* value=0;
 	if(can_call_operator) {
 		if(Method* method=main_class.get_method(name)) // looking operator of that name FIRST
-			value=new VJunction(new Junction(main_class, method));
+			value=new VJunction(new Junction(
+				main_class, method, 0,0,0, 0));
 	}
 	if(!value) {
 		if(!wcontext->get_constructing() // not constructing
@@ -872,42 +864,6 @@ value_ready:
 	return *value;
 }
 
-void Request::put_element(Value& ncontext, const String& name, Value& value) {
-	// put_element can return property-setting-junction
-	if(const Junction* junction=ncontext.put_element(ncontext, name, &value, false))
-		if(junction!=PUT_ELEMENT_REPLACED_ELEMENT) {
-			// process it
-			ArrayString* params_names=junction->method->params_names;
-			int param_count=params_names? params_names->count(): 0;
-			if(param_count!=1)
-				throw Exception("parser.runtime",
-					0,
-					"setter method must have ONE parameter (has %d parameters)", param_count);
-
-			VMethodFrame frame(*junction, method_frame/*caller*/);
-			frame.store_param(value);
-
-			frame.set_self(frame.junction.self);
-
-			VMethodFrame *saved_method_frame=method_frame;
-			Value* saved_rcontext=rcontext;
-			WContext *saved_wcontext=wcontext;
-
-			rcontext=wcontext=&frame;
-			method_frame=&frame;
-
-			// prevent non-string writes for better error reporting [setters are not expected to return anything]
-			wcontext->write(*method_frame);
-
-			recoursion_checked_execute(*frame.junction.method->parser_code); // parser code, execute it
-			// we don't need it StringOrValue result=wcontext->result();
-
-			method_frame=saved_method_frame;
-			wcontext=saved_wcontext;
-			rcontext=saved_rcontext;
-		}
-}
-
 /**	@param intercept_string
 	- true:
 		they want result=string value, 
@@ -920,98 +876,65 @@ void Request::put_element(Value& ncontext, const String& name, Value& value) {
     using the fact it's either string_ or value_ result requested to speed up checkes
 */
 StringOrValue Request::process(Value& input_value, bool intercept_string) {
+	StringOrValue result;
 	Junction* junction=input_value.get_junction();
-	if(junction) {
-		if(junction->is_getter) { // is it a getter-junction?
-			// process it
-
-			VMethodFrame frame(*junction, method_frame/*caller*/);
-			if(junction->method->params_names)
-				throw Exception("parser.runtime",
-					0,
-					"getter method must have no parameters");
-
-			frame.set_self(frame.junction.self);
-
-			VMethodFrame *saved_method_frame=method_frame;
-			Value* saved_rcontext=rcontext;
-			WContext *saved_wcontext=wcontext;
-
-			rcontext=wcontext=&frame;
-			method_frame=&frame;
-
-			recoursion_checked_execute(*frame.junction.method->parser_code); // parser code, execute it
-			StringOrValue result=wcontext->result();
-
-			method_frame=saved_method_frame;
-			wcontext=saved_wcontext;
-			rcontext=saved_rcontext;
-
-			return result;
-		}
-
-		if(junction->code) { // is it a code-junction?
-			// process it
-			StringOrValue result;
+	if(junction && junction->code) { // is it a code-junction?
+		// process it
 #ifdef DEBUG_EXECUTE
-			debug_printf(sapi_info, "ja->\n");
+		debug_printf(sapi_info, "ja->\n");
 #endif
 
-			if(!junction->method_frame)
-				throw Exception("parser.runtime",
+		if(!junction->method_frame)
+			throw Exception("parser.runtime",
 				0,
 				"junction used outside of context");
 
-			VMethodFrame *saved_method_frame=method_frame;  
-			Value* saved_rcontext=rcontext;  
-			WContext *saved_wcontext=wcontext;
+		VMethodFrame *saved_method_frame=method_frame;  
+		Value* saved_rcontext=rcontext;  
+		WContext *saved_wcontext=wcontext;
+		
+		method_frame=junction->method_frame;
+		rcontext=junction->rcontext;
 
-			method_frame=junction->method_frame;
-			rcontext=junction->rcontext;
+		// for expression method params
+		// wcontext is set 0
+		// using the fact in decision "which wwrapper to use"
+		bool using_code_frame=intercept_string && junction->wcontext;
+		if(using_code_frame) {
+			// almost plain wwrapper about junction wcontext, 
+			// BUT intercepts string writes
+			VCodeFrame local(*junction->wcontext, junction->wcontext);
+			wcontext=&local;
 
-			// for expression method params
-			// wcontext is set 0
-			// using the fact in decision "which wwrapper to use"
-			bool using_code_frame=intercept_string && junction->wcontext;
-			if(using_code_frame) {
-				// almost plain wwrapper about junction wcontext, 
-				// BUT intercepts string writes
-				VCodeFrame local(*junction->wcontext, junction->wcontext);
-				wcontext=&local;
-
-				// execute it
-				recoursion_checked_execute(*junction->code);
-
-				// CodeFrame soul:
-				//   string writes were intercepted
-				//   returning them as the result of getting code-junction
-				result.set_string(*wcontext->get_string());
-			} else {
-				// plain wwrapper
-				WWrapper local(0/*empty*/, wcontext);
-				wcontext=&local;
-
-				// execute it
-				recoursion_checked_execute(*junction->code);
-
-				result=wcontext->result();
-			}
-
-			wcontext=saved_wcontext;
-			rcontext=saved_rcontext;
-			method_frame=saved_method_frame;
-
-#ifdef DEBUG_EXECUTE
-			debug_printf(sapi_info, "<-ja returned");
-#endif
-			return result;
+			// execute it
+			recoursion_checked_execute(*junction->code);
+			
+			// CodeFrame soul:
+			//   string writes were intercepted
+			//   returning them as the result of getting code-junction
+			result.set_string(*wcontext->get_string());
+		} else {
+			// plain wwrapper
+			WWrapper local(0/*empty*/, wcontext);
+			wcontext=&local;
+		
+			// execute it
+			recoursion_checked_execute(*junction->code);
+		
+			result=wcontext->result();
 		}
-
-		// it is then method-junction, do not explode it
-		// just return it as we do for usual objects
-	}	
-
-	return input_value;
+		
+		wcontext=saved_wcontext;
+		rcontext=saved_rcontext;
+		method_frame=saved_method_frame;
+		
+#ifdef DEBUG_EXECUTE
+		debug_printf(sapi_info, "<-ja returned");
+#endif
+	} else {
+		result.set_value(input_value);
+	}
+	return result;
 }
 
 StringOrValue Request::execute_method(VMethodFrame& amethod_frame, const Method& method) {
@@ -1043,7 +966,7 @@ const String* Request::execute_method(Value& aself,
 	Value* saved_rcontext=rcontext;  
 	WContext *saved_wcontext=wcontext;
 	
-	Junction local_junction(aself, &method);
+	Junction local_junction(aself, &method, 0,0,0, 0);
 	VMethodFrame local_frame(local_junction, method_frame/*caller*/);
 	if(optional_param && local_frame.can_store_param()) {
 		local_frame.store_param(*optional_param);

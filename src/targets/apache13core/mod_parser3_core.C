@@ -1,11 +1,11 @@
 /** @file
 Parser: apache 1.3 module, part, compiled by parser3project.
 
-	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_MOD_PARSER3_MAIN_C="$Date: 2004/07/30 10:55:22 $";
+static const char * const IDENT_MOD_PARSER3_MAIN_C="$Date: 2005/08/05 13:03:03 $";
 
 #include "pa_config_includes.h"
 

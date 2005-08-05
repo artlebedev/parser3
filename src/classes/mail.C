@@ -1,11 +1,11 @@
 /** @file
 	Parser: @b mail parser class.
 
-	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_MAIL_C="$Date: 2004/12/08 08:47:35 $";
+static const char * const IDENT_MAIL_C="$Date: 2005/08/05 13:02:57 $";
 
 #include "pa_config_includes.h"
 #include "pa_vmethod_frame.h"

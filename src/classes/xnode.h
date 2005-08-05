@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b dnode methods class - MDnode class decl.
 
-	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef XNODE_H
 #define XNODE_H
 
-static const char * const IDENT_XNODE_H="$Date: 2005/07/28 11:23:02 $";
+static const char * const IDENT_XNODE_H="$Date: 2005/08/05 13:02:58 $";
 
 class MXnode: public Methoded {
 public: // Value
@@ -28,7 +28,7 @@ public: // Value
 
 
 public: // VStateless_class
-	Value* create_new_value(Pool&, HashStringValue&) { 
+	Value* create_new_value() { 
 		throw Exception("parser.runtime",
 			0,
 			"no constructors available, use CreateXXX DOM methods to create nodes instead"); 

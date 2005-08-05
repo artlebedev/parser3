@@ -1,14 +1,14 @@
 /** @file
 	Parser: Junction class decl.
 
-	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_JUNCTION_H
 #define PA_JUNCTION_H
 
-static const char * const IDENT_JUNCTION_H="$Date: 2005/07/15 06:16:41 $";
+static const char * const IDENT_JUNCTION_H="$Date: 2005/08/05 13:03:04 $";
 
 
 #include "pa_string.h"
@@ -50,21 +50,13 @@ static const char * const IDENT_JUNCTION_H="$Date: 2005/07/15 06:16:41 $";
 class Junction: public PA_Object {
 public:
 
-	/// Code-Junction constructor
-	Junction(Value& aself,
+	Junction(
+		Value& aself,
 		const Method* amethod,
 		VMethodFrame* amethod_frame,
 		Value* arcontext,
 		WContext* awcontext,
 		ArrayOperation* acode);
-
-	/// Method-Junction or Getter-Junction constructor
-	Junction(Value& aself,
-		const Method* amethod,
-		bool ais_getter=false): self(aself),
-		method(amethod),
-		is_getter(ais_getter) {}
-
 
 	void reattach(WContext *new_wcontext);
 
@@ -80,9 +72,6 @@ public:
 	Value* rcontext;
 	WContext* wcontext;
 	ArrayOperation* code;
-	//@}
-	//@{
-	bool is_getter;
 	//@}
 };
 

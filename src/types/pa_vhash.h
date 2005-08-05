@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b hash parser type decl.
 
-	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VHASH_H
 #define PA_VHASH_H
 
-static const char * const IDENT_VHASH_H="$Date: 2005/07/28 11:23:02 $";
+static const char * const IDENT_VHASH_H="$Date: 2005/08/05 13:03:04 $";
 
 #include "classes.h"
 #include "pa_value.h"
@@ -72,19 +72,19 @@ public: // value
 	}
 	
 	/// VHash: (key)=value
-	override const Junction* put_element(Value& /*aself*/, const String& aname, Value* avalue, bool /*replace*/) { 
+	override bool put_element(const String& aname, Value* avalue, bool /*replace*/) { 
 		if(aname==HASH_DEFAULT_ELEMENT_NAME)
 			set_default(avalue);
 		else 
 			if(flocked) {
-				if(!fhash.put_replaced(aname, avalue))
+				if(!fhash.put_replace(aname, avalue))
 					throw Exception("parser.runtime",
 						&aname,
 						"can not insert new hash key (hash flocked)");
 			} else
 					fhash.put(aname, avalue);
 
-		return PUT_ELEMENT_REPLACED_ELEMENT;
+		return true;
 	}
 
 	override VFile* as_vfile(String::Language lang=String::L_UNSPECIFIED,

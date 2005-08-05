@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b mail class decls.
 
-	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VMAIL_H
 #define PA_VMAIL_H
 
-static const char * const IDENT_VMAIL_H="$Date: 2004/05/11 15:03:49 $";
+static const char * const IDENT_VMAIL_H="$Date: 2005/08/05 13:03:04 $";
 
 #include "classes.h"
 #include "pa_common.h"

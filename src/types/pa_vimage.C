@@ -1,11 +1,11 @@
 /** @file
 	Parser: @b image parser type.
 
-	Copyright(c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright(c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VIMAGE_C="$Date: 2005/07/28 11:23:02 $";
+static const char * const IDENT_VIMAGE_C="$Date: 2005/08/05 13:03:04 $";
 
 #include "pa_vimage.h"
 #include "pa_vint.h"
@@ -50,7 +50,7 @@ Value* VImage::get_element(const String& aname, Value& aself, bool looking_up) {
 	return ffields.get(aname);
 }
 
-const Junction* VImage::put_element(Value& /*aself*/, const String& aname, Value* avalue, bool /*replace*/) {
+bool VImage::put_element(const String& aname, Value* avalue, bool /*replace*/) {
 	ffields.put(aname, avalue);
 
 	if(fimage) {
@@ -62,5 +62,5 @@ const Junction* VImage::put_element(Value& /*aself*/, const String& aname, Value
 		}
 	}
 
-	return PUT_ELEMENT_REPLACED_ELEMENT;	
+	return true;	
 }

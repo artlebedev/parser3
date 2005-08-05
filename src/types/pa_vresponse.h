@@ -1,14 +1,14 @@
 /** @file
 	Parser: response class.
 
-	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VRESPONSE_H
 #define PA_VRESPONSE_H
 
-static const char * const IDENT_VRESPONSE_H="$Date: 2005/07/28 11:23:02 $";
+static const char * const IDENT_VRESPONSE_H="$Date: 2005/08/05 13:03:05 $";
 
 #include "pa_vstateless_object.h"
 #include "pa_string.h"
@@ -44,7 +44,7 @@ public: // Value
 	override Value* get_element(const String& aname, Value& aself, bool /*looking_up*/);
 
 	/// Response: (attribute)=value
-	override const Junction* put_element(Value& self, const String& name, Value* value, bool replace);
+	override bool put_element(const String& aname, Value* avalue, bool replace);
 
 public:	// usage
 

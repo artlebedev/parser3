@@ -1,16 +1,15 @@
 /**	@file
 	Parser: stateless class.
 
-	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)\
 */
 
-static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2005/07/28 11:23:02 $";
+static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2005/08/05 13:03:05 $";
 
 #include "pa_vstateless_class.h"
-#include "pa_vproperty.h"
 
-/// @TODO why?! request must be different ptr from global [used in VStateless_class.add_method]
+/// @TODO why? request must be different ptr from global [used in VStateless_class.add_method]
 void VStateless_class::add_method(const String& name, Method& method) {
 	if(flocked)
 		throw Exception("parser.runtime",
@@ -44,17 +43,12 @@ Value* VStateless_class::get_element(const String& aname, Value& aself, bool loo
 		return this;
 	// $method=junction(self+class+method)
 	if(Method* method=get_method(aname))
-		return new VJunction(new Junction(aself, method));
+		return new VJunction(new Junction(aself, method, 0, 0, 0, 0));
 
 	// base monkey
-	if(fbase) {
-		if(Value* obase=aself.base()) // MXdoc has fbase but does not have object_base[ base() ]
-			return fbase->get_element(aname, *obase, looking_up);
-	}
+	if(fbase)
+		if(Value* lbase=aself.base()) // one check would be enough...
+			return fbase->get_element(aname, *lbase, looking_up);
 
 	return 0;
-}
-
-void VStateless_class::put_method(const String& aname, Method* amethod) {
-	fmethods.put(aname, amethod); 
 }

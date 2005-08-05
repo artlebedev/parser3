@@ -1,7 +1,7 @@
 /** @file
 	Parser: image manipulations impl1.
 
-	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 	based on: gd
 
@@ -14,7 +14,7 @@
 	can incorporate them into new versions. 
 */
 
-static const char * const IDENT_GIF_C="$Date: 2005/05/12 09:34:50 $";
+static const char * const IDENT_GIF_C="$Date: 2005/08/05 13:03:00 $";
 
 #include "gif.h"
 

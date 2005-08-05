@@ -1,14 +1,14 @@
 /**	@file
 	Parser: @b object class decl.
 
-	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VOBJECT_H
 #define PA_VOBJECT_H
 
-static const char * const IDENT_VOBJECT_H="$Date: 2005/07/28 11:23:02 $";
+static const char * const IDENT_VOBJECT_H="$Date: 2005/08/05 13:03:05 $";
 
 // includes
 
@@ -29,7 +29,7 @@ static const char * const IDENT_VOBJECT_H="$Date: 2005/07/28 11:23:02 $";
 class VObject: public VStateless_object {
 
 	VStateless_class& fclass;
-	HashStringValue& ffields;
+	HashStringValue ffields;
 	VObject* fderived;
 	Value* fbase;
 
@@ -55,7 +55,7 @@ public: // Value
 	override Table *get_table();
 
 	override Value* get_element(const String& aname, Value& aself, bool /*looking_up*/);
-	override const Junction* put_element(Value& self, const String& name, Value* value, bool replace);
+	override bool put_element(const String& aname, Value* avalue, bool replace);
 
 	/// VObject: remember derived [the only client]
 	override VObject* set_derived(VObject* aderived) { 
@@ -66,9 +66,9 @@ public: // Value
 
 public: // creation
 
-	VObject(Pool& apool, VStateless_class& aclass, HashStringValue& afields): fclass(aclass), ffields(afields), fderived(0) {
+	VObject(Pool& apool, VStateless_class& aclass): fclass(aclass), fderived(0) {
 		if(VStateless_class* base_class=fclass.base_class())
-			(fbase=base_class->create_new_value(apool, afields))->set_derived(this);
+			(fbase=base_class->create_new_value(apool))->set_derived(this);
 	}
 
 private:
@@ -77,21 +77,7 @@ private:
 		return fderived?fderived->get_last_derived():*this;
 	}
 
-	Value* stateless_object__get_element(const String& aname, Value& aself) {
-		return VStateless_object::get_element(aname, aself, false);
-	}
-
-	const Junction* stateless_object__put_element(Value& aself, const String& aname, Value* avalue) {
-		return VStateless_object::put_element(aself, aname, avalue, true/*try to replace! NEVER overwrite*/);
-	}
-
-	struct Prevent_append_if_exists_in_static_or_base_info {
-		VObject* _this;
-		const String* name;
-	};
-	static const Junction* prevent_append_if_exists_in_static_or_base(Value* value, 
-		Prevent_append_if_exists_in_static_or_base_info* info);
-
+	Value* stateless_object__get_element(const String& aname, Value& aself);
 };
 
 class Temp_derived {

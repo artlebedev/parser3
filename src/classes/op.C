@@ -1,11 +1,11 @@
 /** @file
 	Parser: parser @b operators.
 
-	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2005/07/28 11:23:01 $";
+static const char * const IDENT_OP_C="$Date: 2005/08/05 13:02:57 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -271,9 +271,7 @@ static void _for(Request& r, MethodParams& params) {
 
 	bool need_delim=false;
 	VInt* vint=new VInt(0);
-
-	VMethodFrame& caller=*r.get_method_frame()->caller();
-	caller.put_element(caller, var_name, vint, false);
+	r.get_method_frame()->caller()->put_element(var_name, vint, false);
 	for(int i=from; i<=to; i++) {
 		vint->set_int(i);
 
@@ -439,13 +437,12 @@ static Try_catch_result try_catch(Request& r,
 		Junction* junction=catch_code->get_junction();
 		Value* method_frame=junction->method_frame;
 		Value* saved_exception_var_value=method_frame->get_element(exception_var_name, *method_frame, false);
-		VMethodFrame& frame=*junction->method_frame;
-		frame.put_element(frame, exception_var_name, &details.vhash, false);
+		junction->method_frame->put_element(exception_var_name, &details.vhash, false);
 		result.processed_code=r.process(*catch_code);
 		
 		// retriving $exception.handled, restoring $exception var
 		Value* vhandled=details.vhash.hash().get(exception_handled_part_name);
-		frame.put_element(frame, exception_var_name, saved_exception_var_value, false);
+		junction->method_frame->put_element(exception_var_name, saved_exception_var_value, false);
 
 		bool bhandled=false;
 		if(vhandled) {
@@ -501,7 +498,7 @@ struct Locked_process_and_cache_put_action_info {
 
 
 static StringOrValue process_cache_body_code(Request& r, Value* body_code) {
-	return StringOrValue(r.process_to_string(*body_code));
+	return StringOrValue(&r.process_to_string(*body_code), 0);
 }
 
 /* @todo maybe network order worth spending some effort?

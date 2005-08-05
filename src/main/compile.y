@@ -2,10 +2,10 @@
 /** @file
 	Parser: compiler(lexical parser and grammar).
 
-	Copyright (c) 2001, 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.213.10.1 2005/08/05 13:01:16 paf Exp $
+	$Id: compile.y,v 1.213.10.2 2005/08/05 13:03:00 paf Exp $
 */
 
 /**

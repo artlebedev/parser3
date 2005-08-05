@@ -1,11 +1,11 @@
 /** @file
 	Parser: string class. @see untalength_t.C.
 
-	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2005/05/24 10:56:57 $";
+static const char * const IDENT_STRING_C="$Date: 2005/08/05 13:03:02 $";
 
 #include "pcre.h"
 

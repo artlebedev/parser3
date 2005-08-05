@@ -1,11 +1,11 @@
 /** @file
 	Parser: @b date parser class.
 
-	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_DATE_C="$Date: 2005/07/28 11:23:01 $";
+static const char * const IDENT_DATE_C="$Date: 2005/08/05 13:02:56 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -19,7 +19,7 @@ static const char * const IDENT_DATE_C="$Date: 2005/07/28 11:23:01 $";
 
 class MDate: public Methoded {
 public: // VStateless_class
-	Value* create_new_value(Pool&, HashStringValue&) { return new VDate(0); }
+	Value* create_new_value(Pool&) { return new VDate(0); }
 
 public:
 	MDate();

@@ -1,7 +1,7 @@
 /** @file
 	Parser: image manipulations decls.
 
-	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 	based on:
 	gd.h: declarations file for the gifdraw module.
@@ -18,7 +18,7 @@
 #ifndef GIF_H
 #define GIF_H
 
-static const char * const IDENT_GIF_H="$Date: 2004/03/01 13:33:11 $";
+static const char * const IDENT_GIF_H="$Date: 2005/08/05 13:03:00 $";
 
 #include "pa_config_includes.h"
 

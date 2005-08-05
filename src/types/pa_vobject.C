@@ -1,7 +1,7 @@
 /**	@file
 	Parser: @b object class impl.
 
-	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
@@ -9,7 +9,7 @@
 #include "pa_vhash.h"
 #include "pa_vtable.h"
 
-static const char * const IDENT_VOBJECT_C="$Date: 2005/07/29 07:04:23 $";
+static const char * const IDENT_VOBJECT_C="$Date: 2005/08/05 13:03:05 $";
 
 Value* VObject::as(const char* atype, bool looking_up) { 
 	if(!looking_up)
@@ -82,28 +82,36 @@ Value* VObject::get_element(const String& aname, Value&, bool looking_up) {
 		if(aname==CLASS_NAME)
 			return get_class();
 
-		// $virtual_method $virtual_property
+		// $virtual_method
 		VObject& last_derived=get_last_derived();
 		if(Value* result=last_derived.stateless_object__get_element(aname, last_derived))
 			return result;
 	}
 
-	return 0;
-}
-
-const Junction* VObject::prevent_append_if_exists_in_static_or_base(Value* value, Prevent_append_if_exists_in_static_or_base_info* info)  {
-	// $virtual_property, any this/bases $static_property 
-	VObject& last_derived=info->_this->get_last_derived();
-	if(const Junction* result=last_derived.stateless_object__put_element(last_derived, *info->name, value))
-		return result; // replaced in any(derivate or base) statics fields/properties
+	// up the tree for other $virtual_field try...
+	if(fbase)
+		if(Value* result=fbase->get_element(aname, *fbase, true))
+			return result;
 
 	return 0;
 }
-
-/// VObject: (field/property)=value
-const Junction* VObject::put_element(Value& /*aself*/, const String& aname, Value* avalue, bool /*areplace*/) {
-	Prevent_append_if_exists_in_static_or_base_info info={this, &aname};
-	return ffields.replace_maybe_append<const Junction*>(aname, avalue, 
-		prevent_append_if_exists_in_static_or_base, 
-		&info);
+Value* VObject::stateless_object__get_element(const String& aname, Value& aself) {
+	return VStateless_object::get_element(aname, aself, false);
 }
+
+/// VObject: (field)=value
+bool VObject::put_element(const String& aname, Value* avalue, bool replace) {
+	if(fbase && fbase->put_element(aname, avalue, true))
+		return true; // replaced in base dynamic fields
+
+	if(replace)
+		return ffields.put_replace(aname, avalue);
+	else {
+		if(VStateless_object::put_element(aname, avalue, true))
+			return true; // replaced in base statics fields
+
+		ffields.put(aname, avalue);
+		return false;
+	}
+}
+

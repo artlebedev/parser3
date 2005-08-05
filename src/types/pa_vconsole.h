@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b console class decl.
 
-	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VCONSOLE_H
 #define PA_VCONSOLE_H
 
-static const char * const IDENT_VCONSOLE_H="$Date: 2005/07/28 11:23:02 $";
+static const char * const IDENT_VCONSOLE_H="$Date: 2005/08/05 13:03:04 $";
 
 // includes
 
@@ -49,14 +49,14 @@ public: // Value
 	}
 
 	/// VConsole: $line
-	override const Junction* put_element(Value& /*aself*/, const String& aname, Value* avalue, bool /*areplace*/) { 
+	override bool put_element(const String& aname, Value* avalue, bool /*replace*/) { 
 		// $line
 		if(aname==CONSOLE_LINE_NAME) {
 			const char* cstr=avalue->as_string().cstr();
 			puts(cstr);
 			fflush(stdout);
 
-			return PUT_ELEMENT_REPLACED_ELEMENT;
+			return true;
 		}
 
 		throw Exception("parser.runtime",

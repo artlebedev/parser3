@@ -1,14 +1,14 @@
 /** @file
 	Parser: Method class decl.
 
-	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_METHOD_H
 #define PA_METHOD_H
 
-static const char * const IDENT_METHOD_H="$Date: 2005/07/28 11:23:02 $";
+static const char * const IDENT_METHOD_H="$Date: 2005/08/05 13:03:04 $";
 
 
 /*#include "pa_string.h"
@@ -99,10 +99,10 @@ public:
 		fwhere(awhere),
 		fname(aname),
 		saved(awhere.get_element(aname, awhere, false)) {
-		fwhere.put_element(fwhere, aname, awhat, false);
+		fwhere.put_element(aname, awhat, false);
 	}
 	~Temp_value_element() { 
-		fwhere.put_element(fwhere, fname, saved, false);
+		fwhere.put_element(fname, saved, false);
 	}
 };
 

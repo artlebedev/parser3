@@ -1,14 +1,14 @@
 /** @file
 	Parser: compiler support helper functions decls.
 
-	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef COMPILE_TOOLS
 #define COMPILE_TOOLS
 
-static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2005/08/05 13:01:16 $";
+static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2005/08/05 13:03:01 $";
 
 #include "pa_opcode.h"
 #include "pa_types.h"

@@ -1,14 +1,14 @@
 /**	@file
 	Parser: @b write_wrapper write context
 
-	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_WWRAPPER_H
 #define PA_WWRAPPER_H
 
-static const char * const IDENT_WWRAPPER_H="$Date: 2005/07/28 11:23:03 $";
+static const char * const IDENT_WWRAPPER_H="$Date: 2005/08/05 13:03:06 $";
 
 #include "pa_wcontext.h"
 #include "pa_exception.h"
@@ -23,7 +23,7 @@ public: // Value
 		return as_value().get_element(aname, aself, looking_up); 
 	}
 	/// WWrapper: transparent
-	override const Junction* put_element(Value& aself, const String& aname, Value* avalue, bool areplace) { 
+	override bool put_element(const String& aname, Value* avalue, bool replace) { 
 		if(!fvalue) {
 			fvalue=new VHash;
 			// not constructing anymore [if were constructing]
@@ -36,7 +36,7 @@ public: // Value
 			set_constructing(false);
 		}
 
-		return fvalue->put_element(aself, aname, avalue, areplace); 
+		return fvalue->put_element(aname, avalue, replace); 
 	}
 
 public: // usage

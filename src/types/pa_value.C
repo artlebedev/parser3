@@ -1,11 +1,11 @@
 /** @file
 	Parser: Value class.
 
-	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VALUE_C="$Date: 2004/09/01 09:16:58 $";
+static const char * const IDENT_VALUE_C="$Date: 2005/08/05 13:03:04 $";
 
 #include "pa_value.h"
 #include "pa_vstateless_class.h"

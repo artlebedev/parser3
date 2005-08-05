@@ -1,11 +1,11 @@
 /** @file
 	Parser: @b file parser class.
 
-	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2005/07/28 11:23:01 $";
+static const char * const IDENT_FILE_C="$Date: 2005/08/05 13:02:56 $";
 
 #include "pa_config_includes.h"
 
@@ -45,7 +45,7 @@ extern String sql_offset_name;
 class MFile: public Methoded {
 public: // VStateless_class
 	
-	Value* create_new_value(Pool&, HashStringValue&) { return new VFile(); }
+	Value* create_new_value(Pool&) { return new VFile(); }
 
 public: // Methoded
 	bool used_directly() { return true; }

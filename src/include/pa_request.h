@@ -1,14 +1,14 @@
 /** @file
 	Parser: request class decl.
 
-	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char * const IDENT_REQUEST_H="$Date: 2005/07/26 12:54:09 $";
+static const char * const IDENT_REQUEST_H="$Date: 2005/08/05 13:02:59 $";
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -387,7 +387,6 @@ private: // compile.C
 
 private: // execute.C
 
-	void put_element(Value& ncontext, const String& name, Value& value);
 	Value& get_element(Value& ncontext, const String& name, bool can_call_operator);
 
 private: // defaults
