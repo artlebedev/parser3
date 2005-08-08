@@ -1,8 +1,6 @@
-<?xml version="1.0" ?>
-<doc>
-<x:first xmlns:x="http://paf.design.ru/">
-	<x:second xmlns:x="http://pif.design.ru/">
-		content
-	</x:second>
-</x:first>
-</doc>
+<code>
+<?xml version="1.0" encoding="WINDOWS-1251"?>
+<games>
+<lastid>12</lastid>
+</games>
+</code>
