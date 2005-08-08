@@ -8,7 +8,7 @@
 #ifndef PA_VDOUBLE_H
 #define PA_VDOUBLE_H
 
-static const char * const IDENT_VDOUBLE_H="$Date: 2005/08/05 14:13:41 $";
+static const char * const IDENT_VDOUBLE_H="$Date: 2005/08/08 11:18:00 $";
 
 // includes
 
@@ -34,7 +34,7 @@ public: // Value
 	*/
 	override const String* get_string() {
 		char local_buf[MAX_NUMBER];
-		size_t length=snprintf(local_buf, MAX_NUMBER, "%g", fdouble);
+		size_t length=snprintf(local_buf, MAX_NUMBER, has_frac()? "%g": "%.0f", fdouble);
 		return new String(strdup(local_buf, length), length);
 	}
 	/// VDouble: fdouble
@@ -55,6 +55,12 @@ public: // usage
 	void mul(double k) { fdouble*=k; }
 	void div(double d) { fdouble/=d; }
 	void mod(int d) { fdouble=((int)fdouble)%d; }
+
+private:
+
+	bool has_frac() {
+		return fdouble-trunc(fdouble)>1e-100;
+	}
 
 private:
 
