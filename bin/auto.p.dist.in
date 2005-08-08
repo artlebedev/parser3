@@ -1,4 +1,4 @@
-#$Id: auto.p.dist.in,v 1.11 2004/02/13 13:59:51 paf Exp $
+#$Id: auto.p.dist.in,v 1.11.14.1 2005/08/08 13:45:12 paf Exp $
 
 @conf[filespec]
 $confdir[^file:dirname[$filespec]]
@@ -108,10 +108,22 @@ or in debug version of unhandled_exception.</p>
 
 ]
 
+@is_developer[]
+#change mask to your ip address
+$result(^env:REMOTE_ADDR.match[^^127\.0\.0\.1$])
+
 @unhandled_exception[exception;stack]
-#use debug version to see problem details
-^unhandled_exception_release[$exception;$stack]
-#^unhandled_exception_debug[$exception;$stack]
+#developer? use debug version to see problem details
+^if(^is_developer[])
+        ^unhandled_exception_debug[$exception;$stack]
+}{
+        ^if($exception.type eq "file.missing"){
+#                ^log404[]
+                ^location[/404/]
+        }{
+                ^unhandled_exception_release[$exception;$stack]
+        }
+}
 
 
 @auto[]
