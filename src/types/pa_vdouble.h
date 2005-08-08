@@ -8,7 +8,7 @@
 #ifndef PA_VDOUBLE_H
 #define PA_VDOUBLE_H
 
-static const char * const IDENT_VDOUBLE_H="$Date: 2004/10/15 10:54:32 $";
+static const char * const IDENT_VDOUBLE_H="$Date: 2005/08/08 11:19:31 $";
 
 // includes
 
@@ -34,13 +34,13 @@ public: // Value
 	*/
 	override const String* get_string() {
 		char local_buf[MAX_NUMBER];
-		size_t length=snprintf(local_buf, MAX_NUMBER, "%g", fdouble);
+		size_t length=snprintf(local_buf, MAX_NUMBER, has_frac()? "%g": "%.0f", fdouble);
 		return new String(strdup(local_buf, length), length);
 	}
 	/// VDouble: fdouble
 	override double as_double() const { return fdouble; }
 	/// VDouble: fdouble
-	override int as_int() const { return (int)trunc(fdouble); }
+	override int as_int() const { return get_int(); }
 	/// VDouble: 0 or !0
 	override bool as_bool() const { return fdouble!=0; }
 
@@ -48,10 +48,19 @@ public: // usage
 
 	VDouble(double adouble): fdouble(adouble) {}
 
+	int get_int() const { return (int)trunc(fdouble); }
+	double get_double() const { return fdouble; }
+
 	void inc(double increment) { fdouble+=increment; }
 	void mul(double k) { fdouble*=k; }
 	void div(double d) { fdouble/=d; }
 	void mod(int d) { fdouble=((int)fdouble)%d; }
+
+private:
+
+	bool has_frac() {
+		return fdouble-trunc(fdouble)>1e-100;
+	}
 
 private:
 
