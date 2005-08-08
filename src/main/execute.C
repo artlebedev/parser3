@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2005/07/29 07:04:23 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2005/08/08 08:41:51 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -209,17 +209,17 @@ void Request::execute(ArrayOperation& ops) {
 				debug_printf(sapi_info, " (%d)\n", local_ops.count());
 				debug_dump(sapi_info, 1, local_ops);
 #endif				
-				Value& value=*new VJunction(new Junction( 
+				Value& value=*new VJunction(
 					get_self(), 0,
 					method_frame, 
 					rcontext, 
 					wcontext, 
-					&local_ops));
+					&local_ops);
 
 				const String& name=stack.pop().string();  debug_name=&name;
 				Value& ncontext=stack.pop().value();
-				if(const Junction* junction=ncontext.put_element(ncontext, name, &value, false))
-					if(junction!=PUT_ELEMENT_REPLACED_ELEMENT)
+				if(const VJunction* vjunction=ncontext.put_element(ncontext, name, &value, false))
+					if(vjunction!=PUT_ELEMENT_REPLACED_ELEMENT)
 						throw Exception("parser.runtime",
 							0,
 							"property value can not be code, use [] or () brackets");
@@ -357,12 +357,12 @@ void Request::execute(ArrayOperation& ops) {
 				// hence, we zero junction.wcontext here, and later
 				// in .process we would test that field 
 				// in decision "which wwrapper to use"
-				Value& value=*new VJunction(new Junction(
+				Value& value=*new VJunction(
 					get_self(), 0,
 					method_frame, 
 					rcontext, 
 					opcode==OP_EXPR_CODE__STORE_PARAM?0:wcontext, 
-					&local_ops));
+					&local_ops);
 				// store param
 				// this op is executed from CALL local_ops only, so can not check method_frame_to_fill==0
 				frame.store_param(value);
@@ -837,7 +837,7 @@ Value& Request::get_element(Value& ncontext, const String& name, bool can_call_o
 	Value* value=0;
 	if(can_call_operator) {
 		if(Method* method=main_class.get_method(name)) // looking operator of that name FIRST
-			value=new VJunction(new Junction(main_class, method));
+			value=new VJunction(main_class, method);
 	}
 	if(!value) {
 		if(!wcontext->get_constructing() // not constructing
@@ -874,17 +874,18 @@ value_ready:
 
 void Request::put_element(Value& ncontext, const String& name, Value& value) {
 	// put_element can return property-setting-junction
-	if(const Junction* junction=ncontext.put_element(ncontext, name, &value, false))
-		if(junction!=PUT_ELEMENT_REPLACED_ELEMENT) {
+	if(const VJunction* vjunction=ncontext.put_element(ncontext, name, &value, false))
+		if(vjunction!=PUT_ELEMENT_REPLACED_ELEMENT) {
+			const Junction& junction=vjunction->junction();
 			// process it
-			ArrayString* params_names=junction->method->params_names;
+			ArrayString* params_names=junction.method->params_names;
 			int param_count=params_names? params_names->count(): 0;
 			if(param_count!=1)
 				throw Exception("parser.runtime",
 					0,
 					"setter method must have ONE parameter (has %d parameters)", param_count);
 
-			VMethodFrame frame(*junction, method_frame/*caller*/);
+			VMethodFrame frame(junction, method_frame/*caller*/);
 			frame.store_param(value);
 
 			frame.set_self(frame.junction.self);

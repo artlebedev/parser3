@@ -8,7 +8,7 @@
 #ifndef PA_VIMAGE_H
 #define PA_VIMAGE_H
 
-static const char * const IDENT_VIMAGE_H="$Date: 2005/07/28 11:23:02 $";
+static const char * const IDENT_VIMAGE_H="$Date: 2005/08/08 08:41:51 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -74,7 +74,7 @@ public: // Value
 	override Value* get_element(const String& aname, Value& aself, bool looking_up);
 
 	/// VImage: field
-	override const Junction* put_element(Value& self, const String& name, Value* value, bool replace);
+	override const VJunction* put_element(Value& self, const String& name, Value* value, bool replace);
 
 public: // usage
 

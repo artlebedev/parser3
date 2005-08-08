@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VRESPONSE_C="$Date: 2005/07/28 11:23:02 $";
+static const char * const IDENT_VRESPONSE_C="$Date: 2005/08/08 08:41:51 $";
 
 #include "pa_vresponse.h"
 #include "pa_request_charsets.h"
@@ -27,7 +27,7 @@ Value* VResponse::get_element(const String& aname, Value& aself, bool looking_up
 	return ffields.get(aname.change_case(fcharsets.source(), String::CC_LOWER));
 }
 
-const Junction* VResponse::put_element(Value& /*aself*/, const String& aname, Value* avalue, bool /*areplace*/) { 
+const VJunction* VResponse::put_element(Value& /*aself*/, const String& aname, Value* avalue, bool /*areplace*/) { 
 	// guard charset change
 	if(aname==CHARSET_NAME)
 		fcharsets.set_client(charsets.get(avalue->as_string().

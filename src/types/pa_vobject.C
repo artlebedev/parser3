@@ -9,7 +9,7 @@
 #include "pa_vhash.h"
 #include "pa_vtable.h"
 
-static const char * const IDENT_VOBJECT_C="$Date: 2005/07/29 07:04:23 $";
+static const char * const IDENT_VOBJECT_C="$Date: 2005/08/08 08:41:51 $";
 
 Value* VObject::as(const char* atype, bool looking_up) { 
 	if(!looking_up)
@@ -91,19 +91,19 @@ Value* VObject::get_element(const String& aname, Value&, bool looking_up) {
 	return 0;
 }
 
-const Junction* VObject::prevent_append_if_exists_in_static_or_base(Value* value, Prevent_append_if_exists_in_static_or_base_info* info)  {
+const VJunction* VObject::prevent_append_if_exists_in_static_or_base(Value* value, Prevent_append_if_exists_in_static_or_base_info* info)  {
 	// $virtual_property, any this/bases $static_property 
 	VObject& last_derived=info->_this->get_last_derived();
-	if(const Junction* result=last_derived.stateless_object__put_element(last_derived, *info->name, value))
+	if(const VJunction* result=last_derived.stateless_object__put_element(last_derived, *info->name, value))
 		return result; // replaced in any(derivate or base) statics fields/properties
 
 	return 0;
 }
 
 /// VObject: (field/property)=value
-const Junction* VObject::put_element(Value& /*aself*/, const String& aname, Value* avalue, bool /*areplace*/) {
+const VJunction* VObject::put_element(Value& /*aself*/, const String& aname, Value* avalue, bool /*areplace*/) {
 	Prevent_append_if_exists_in_static_or_base_info info={this, &aname};
-	return ffields.replace_maybe_append<const Junction*>(aname, avalue, 
+	return ffields.replace_maybe_append<const VJunction*>(aname, avalue, 
 		prevent_append_if_exists_in_static_or_base, 
 		&info);
 }

@@ -8,7 +8,7 @@
 #ifndef PA_JUNCTION_H
 #define PA_JUNCTION_H
 
-static const char * const IDENT_JUNCTION_H="$Date: 2005/07/15 06:16:41 $";
+static const char * const IDENT_JUNCTION_H="$Date: 2005/08/08 08:41:51 $";
 
 
 #include "pa_string.h"
@@ -47,7 +47,7 @@ static const char * const IDENT_JUNCTION_H="$Date: 2005/07/15 06:16:41 $";
 
 	parent changing helps ^switch implementation to remain simple
 */
-class Junction: public PA_Object {
+class Junction {
 public:
 
 	/// Code-Junction constructor

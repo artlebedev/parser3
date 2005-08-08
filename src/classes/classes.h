@@ -8,7 +8,7 @@
 #ifndef CLASSES_H
 #define CLASSES_H
 
-static const char * const IDENT_CLASSES_H="$Date: 2005/07/28 11:23:01 $";
+static const char * const IDENT_CLASSES_H="$Date: 2005/08/08 08:41:50 $";
 
 // include
 
@@ -21,7 +21,7 @@ static const char * const IDENT_CLASSES_H="$Date: 2005/07/28 11:23:01 $";
 class Methoded: public VStateless_class {
 public: // Value
 
-	override const Junction* put_element(Value& /*self*/, const String& /*name*/, Value * /*value*/) { 
+	override const VJunction* put_element(Value& /*self*/, const String& /*name*/, Value * /*value*/) { 
 		return 0; // fewer useless Exceptions
 	}
 

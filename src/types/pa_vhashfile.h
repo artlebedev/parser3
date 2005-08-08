@@ -8,7 +8,7 @@
 #ifndef PA_VHASHFILE_H
 #define PA_VHASHFILE_H
 
-static const char * const IDENT_VHASHFILE_H="$Date: 2005/07/28 11:23:02 $";
+static const char * const IDENT_VHASHFILE_H="$Date: 2005/08/08 08:41:51 $";
 
 #include "classes.h"
 #include "pa_pool.h"
@@ -47,7 +47,7 @@ public: // value
 	}
 	
 	/// VHashfile: (key)=value, (key)=(value+expires)
-	override const Junction* put_element(Value& /*aself*/, const String& aname, Value* avalue, bool /*replace*/) { 
+	override const VJunction* put_element(Value& /*aself*/, const String& aname, Value* avalue, bool /*replace*/) { 
 		put_field(aname, avalue);
 		return false; // nobody is supposed to derive from hashfile, so does not matter
 	}

@@ -4,8 +4,8 @@ bug
 @create[param]
 $field[$param]
 
-#@GET_paf[]
-#$field
+@GET_paf[]
+[base: $field]
 
 #@SET_paf[value]
 #^throw[;base set]

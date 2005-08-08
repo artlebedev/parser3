@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VCLASS_C="$Date: 2005/07/29 07:14:34 $";
+static const char * const IDENT_VCLASS_C="$Date: 2005/08/08 08:41:51 $";
 
 #include "pa_vclass.h"
 
@@ -56,7 +56,7 @@ Value* VClass::get_element(const String& aname, Value& aself, bool alooking_up) 
 	if(Value* result=ffields.get(aname)) {
 		if(Property* prop=result->get_property()) { // it is property?
 			if(Method* method=prop->getter)
-				return new VJunction(new Junction(aself, method, true /*is_getter*/));
+				return new VJunction(aself, method, true /*is_getter*/);
 
 			property_but_no_getter_in_self=true;
 			goto try_to_find_getter_up_the_tree;
@@ -77,33 +77,33 @@ try_to_find_getter_up_the_tree:
 	return 0;
 }
 
-#define PROPERTY_BUT_NO_SETTER_IN_SELF reinterpret_cast<const Junction*>(2)
-const Junction* VClass::prevent_overwrite_property(Value* value, Prevent_info* info) {
+#define PROPERTY_BUT_NO_SETTER_IN_SELF reinterpret_cast<const VJunction*>(2)
+const VJunction* VClass::prevent_overwrite_property(Value* value, Prevent_info* info) {
 	if(Property* property=value->get_property()) {
 		if(Method* setter=property->setter)
-			return new Junction(*info->self, setter);
+			return new VJunction(*info->self, setter);
 
 		return PROPERTY_BUT_NO_SETTER_IN_SELF;
 	}
 
 	return 0;
 }
-const Junction* VClass::prevent_append_if_exists_in_base(Value* value, Prevent_info* info)  {
+const VJunction* VClass::prevent_append_if_exists_in_base(Value* value, Prevent_info* info)  {
 	if(VStateless_class* cbase=info->_this->fbase) {
 		if(Value* obase=info->self->base()) // MXdoc has fbase but does not have object_base[ base() ]
-			if(const Junction* result=cbase->put_element(*obase, *info->name, value, true/*try to replace! NEVER overwrite*/))
+			if(const VJunction* result=cbase->put_element(*obase, *info->name, value, true/*try to replace! NEVER overwrite*/))
 				return result; // replaced in base
 	}
 
 	return 0;
 }
 /// VClass: (field/property)=value - static values only
-const Junction* VClass::put_element(Value& aself, const String& aname, Value* avalue, bool areplace) {
+const VJunction* VClass::put_element(Value& aself, const String& aname, Value* avalue, bool areplace) {
 	Prevent_info info={this, &aself, &aname};
 	if(areplace) {
 		bool property_but_no_setter_in_self=false;
 		// trying to replace it in fields/properties
-		if(const Junction* result=ffields.maybe_replace_never_append<const Junction*>(aname, avalue, 
+		if(const VJunction* result=ffields.maybe_replace_never_append<const VJunction*>(aname, avalue, 
 			prevent_overwrite_property,
 			&info))
 			if(result==PROPERTY_BUT_NO_SETTER_IN_SELF)
@@ -114,7 +114,7 @@ const Junction* VClass::put_element(Value& aself, const String& aname, Value* av
 		// if not found locally, going up the tree
 		if(fbase)
 			if(Value* obase=aself.base()) // MXdoc has fbase but does not have object_base[ base() ]
-				if(const Junction* result=fbase->put_element(*obase, aname, avalue, true/*try to replace! NEVER overwrite*/))
+				if(const VJunction* result=fbase->put_element(*obase, aname, avalue, true/*try to replace! NEVER overwrite*/))
 					return result; // replaced in base
 
 		if(property_but_no_setter_in_self)
@@ -124,7 +124,7 @@ const Junction* VClass::put_element(Value& aself, const String& aname, Value* av
 
 		return 0;
 	} else // append if not existed neither in fields nor in base classes
-		return ffields.maybe_replace_maybe_append<const Junction*>(aname, avalue, 
+		return ffields.maybe_replace_maybe_append<const VJunction*>(aname, avalue, 
 			prevent_overwrite_property,
 			prevent_append_if_exists_in_base, 
 			&info);

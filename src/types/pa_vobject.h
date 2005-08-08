@@ -8,7 +8,7 @@
 #ifndef PA_VOBJECT_H
 #define PA_VOBJECT_H
 
-static const char * const IDENT_VOBJECT_H="$Date: 2005/07/28 11:23:02 $";
+static const char * const IDENT_VOBJECT_H="$Date: 2005/08/08 08:41:51 $";
 
 // includes
 
@@ -55,7 +55,7 @@ public: // Value
 	override Table *get_table();
 
 	override Value* get_element(const String& aname, Value& aself, bool /*looking_up*/);
-	override const Junction* put_element(Value& self, const String& name, Value* value, bool replace);
+	override const VJunction* put_element(Value& self, const String& name, Value* value, bool replace);
 
 	/// VObject: remember derived [the only client]
 	override VObject* set_derived(VObject* aderived) { 
@@ -81,7 +81,7 @@ private:
 		return VStateless_object::get_element(aname, aself, false);
 	}
 
-	const Junction* stateless_object__put_element(Value& aself, const String& aname, Value* avalue) {
+	const VJunction* stateless_object__put_element(Value& aself, const String& aname, Value* avalue) {
 		return VStateless_object::put_element(aself, aname, avalue, true/*try to replace! NEVER overwrite*/);
 	}
 
@@ -89,7 +89,7 @@ private:
 		VObject* _this;
 		const String* name;
 	};
-	static const Junction* prevent_append_if_exists_in_static_or_base(Value* value, 
+	static const VJunction* prevent_append_if_exists_in_static_or_base(Value* value, 
 		Prevent_append_if_exists_in_static_or_base_info* info);
 
 };

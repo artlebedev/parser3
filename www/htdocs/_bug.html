@@ -1,6 +1,6 @@
 @USE
 /_bug_derived.p
-#/_bug.p
+/_bug.p
 
 @main[]
 $bug[^bug_derived::create[value from ctor]]
@@ -8,3 +8,4 @@ read:$bug.paf<br>
 write:$bug.paf[works]<br>
 read:$bug.paf<br>
 
+^taint[uri]["|&]
