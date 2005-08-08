@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2005/08/05 13:03:01 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2005/08/08 07:44:47 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -207,12 +207,12 @@ void Request::execute(ArrayOperation& ops) {
 				debug_printf(sapi_info, " (%d)\n", local_ops.count());
 				debug_dump(sapi_info, 1, local_ops);
 #endif				
-				Value& value=*new VJunction(new Junction( 
+				Value& value=*new VJunction(
 					get_self(), 0,
 					method_frame, 
 					rcontext, 
 					wcontext, 
-					&local_ops));
+					&local_ops);
 
 				const String& name=stack.pop().string();  debug_name=&name;
 				Value& ncontext=stack.pop().value();
@@ -350,12 +350,12 @@ void Request::execute(ArrayOperation& ops) {
 				// hence, we zero junction.wcontext here, and later
 				// in .process we would test that field 
 				// in decision "which wwrapper to use"
-				Value& value=*new VJunction(new Junction(
+				Value& value=*new VJunction(
 					get_self(), 0,
 					method_frame, 
 					rcontext, 
 					opcode==OP_EXPR_CODE__STORE_PARAM?0:wcontext, 
-					&local_ops));
+					&local_ops);
 				// store param
 				// this op is executed from CALL local_ops only, so can not check method_frame_to_fill==0
 				frame.store_param(value);
@@ -828,8 +828,7 @@ Value& Request::get_element(Value& ncontext, const String& name, bool can_call_o
 	Value* value=0;
 	if(can_call_operator) {
 		if(Method* method=main_class.get_method(name)) // looking operator of that name FIRST
-			value=new VJunction(new Junction(
-				main_class, method, 0,0,0, 0));
+			value=new VJunction(main_class, method, 0,0,0, 0);
 	}
 	if(!value) {
 		if(!wcontext->get_constructing() // not constructing

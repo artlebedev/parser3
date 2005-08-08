@@ -8,7 +8,7 @@
 #ifndef PA_VJUNCTION_H
 #define PA_VJUNCTION_H
 
-static const char * const IDENT_VJUNCTION_H="$Date: 2005/08/05 13:03:04 $";
+static const char * const IDENT_VJUNCTION_H="$Date: 2005/08/08 07:44:47 $";
 
 // include
 
@@ -35,15 +35,21 @@ public: // VJunction
 	override Value& as_expr_result(bool) { return *new VBool(as_bool()); }
 
 	/// VJunction: method, root,self,rcontext, code
-	override Junction* get_junction() { return fjunction; }
+	override Junction* get_junction() { return &fjunction; }
 
 public: // usage
 
-	VJunction(Junction* ajunction): fjunction(ajunction) {}
+	VJunction(
+		Value& aself,
+		const Method* amethod,
+		VMethodFrame* amethod_frame,
+		Value* arcontext,
+		WContext* awcontext,
+		ArrayOperation* acode): fjunction(aself, amethod, amethod_frame, arcontext, awcontext, acode) {}
 
 private:
 
-	Junction* fjunction;
+	Junction fjunction;
 };
 
 
