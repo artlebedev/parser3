@@ -6,7 +6,7 @@
 */
 
 
-static const char * const IDENT="$Id: hashfile.C,v 1.33.14.1 2005/08/05 13:02:57 paf Exp $";
+static const char * const IDENT="$Id: hashfile.C,v 1.33.14.2 2005/08/08 09:23:24 paf Exp $";
 
 #include "classes.h"
 
@@ -31,12 +31,30 @@ public: // Methoded
 
 DECLARE_CLASS_VAR(hashfile, new MHashfile, 0);
 
+// defines for statics
+
+#define OPEN_DATA_NAME "HASHFILE-OPEN-DATA"
+
 // methods
 
+typedef Hash<const String::Body, bool> HashStringBool;
+
 static void _open(Request& r, MethodParams& params) {
+	HashStringBool* file_list=static_cast<HashStringBool*>(r.classes_conf.get(OPEN_DATA_NAME));
+	if(!file_list) {
+		file_list=new HashStringBool();
+		r.classes_conf.put(OPEN_DATA_NAME, file_list);
+	}
+
+	const String& file_spec=r.absolute(params.as_string(0, "filename must be string"));
+	if(file_list->get(file_spec))
+		throw Exception("parser.runtime",
+			0,
+			"this hashfile is already opened, use existing variable");
+	file_list->put(file_spec, true);
+
 	VHashfile& self=GET_SELF(r, VHashfile);
-	
-	self.open(r.absolute(params.as_string(0, "filename must be string")));
+	self.open(file_spec);
 }
 
 static void _hash(Request& r, MethodParams&) {
