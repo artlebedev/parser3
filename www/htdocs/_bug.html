@@ -1,11 +1,5 @@
-@USE
-/_bug_derived.p
-/_bug.p
-
-@main[]
-$bug[^bug_derived::create[value from ctor]]
-read:$bug.paf<br>
-write:$bug.paf[works]<br>
-read:$bug.paf<br>
-
-^taint[uri]["|&]
+$document[^xdoc::load[_bug.xml]]
+$idroot[^document.selectSingle[//games]]
+$idold[^document.selectSingle[//games/lastid]]
+$idremove[^idroot.removeChild[$idold]]
+^document.save[games1.xml]

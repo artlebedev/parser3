@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMPILE_TOOLS_C="$Date: 2004/02/11 15:33:15 $";
+static const char * const IDENT_COMPILE_TOOLS_C="$Date: 2005/08/08 13:30:45 $";
 
 #include "compile_tools.h"
 #include "pa_string.h"
@@ -19,17 +19,16 @@ Value* LA2V(ArrayOperation& literal_string_array, int offset) {
 		:0;
 }
 
-void change_string_literal_to_double_literal(ArrayOperation& literal_string_array) {
-	if(literal_string_array[0].code==OP_VALUE) {
-		Value& value=literal_string_array[2/*opcode+origin*/].value->as_expr_result();
-		literal_string_array.put(1, &value);
-	}
+void maybe_change_string_literal_to_double_literal(ArrayOperation& literal_array) {
+	assert(literal_array[0].code==OP_VALUE);
+	VString& vstring=*static_cast<VString*>(literal_array[2/*opcode+origin*/].value);
+	if(isdigit(vstring.string().first_char()))
+		literal_array.put(2/*opcode+origin*/, &vstring.as_expr_result());
 }
 
 void change_string_literal_value(ArrayOperation& literal_string_array, const String& new_value) {
-	if(literal_string_array[0].code==OP_VALUE) { // extra safety
-		static_cast<VString*>(literal_string_array[2/*opcode+origin*/].value)->set_string(new_value);
-	}
+	assert(literal_string_array[0].code==OP_VALUE);
+	static_cast<VString*>(literal_string_array[2/*opcode+origin*/].value)->set_string(new_value);
 }
 
 void changetail_or_append(ArrayOperation& opcodes, 
