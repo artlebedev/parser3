@@ -1,7 +1,9 @@
-$request:charset
-$response:charset
+@inc1[]
+^i.inc(1)
 
-$f[^file::exec[_bug.pl;
-    $.charset[koi8-r]
-	$.QUERY_STRING[тест=работает];параметр]]
-$f.text
+@inc2[]
+$i($i+1)
+
+@main[]
+$i(0)
+^for[n](1;9000){^inc1[]}
