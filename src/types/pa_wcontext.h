@@ -8,7 +8,7 @@
 #ifndef PA_WCONTEXT_H
 #define PA_WCONTEXT_H
 
-static const char * const IDENT_WCONTEXT_H="$Date: 2005/08/05 13:03:06 $";
+static const char * const IDENT_WCONTEXT_H="$Date: 2005/08/09 08:11:51 $";
 
 #include "pa_value.h"
 #include "pa_vstring.h"
@@ -66,8 +66,7 @@ public: // WContext
 		if value is VString writes fstring,
 		else writes Value; raises an error if already, providing origin
 	*/
-	void write(
-		Value& avalue, String::Language alang) {
+	void write(Value& avalue, String::Language alang) {
 		if(const String* fstring=avalue.get_string())
 			write(*fstring, alang);
 		else
@@ -93,22 +92,20 @@ public: // usage
 		fstring(*new String),
 		fvalue(avalue),
 		fparent(aparent) {
-		flags.constructing=
-			flags.entered_class=
-			flags.entered_object=0;
+		constructing=in_expression=entered_class=entered_object=were_string_writes=false;
 	}
 	virtual ~WContext() {
 		detach_junctions();
 	}
 
-	void set_constructing(bool aconstructing) { flags.constructing=aconstructing?1:0; }
-	bool get_constructing() { return flags.constructing!=0; }
+	void set_constructing(bool aconstructing) { constructing=aconstructing; }
+	bool get_constructing() { return constructing; }
 
-	void set_in_expression(bool ain_expression) { flags.in_expression=ain_expression?1:0; }
-	bool get_in_expression() { return flags.in_expression!=0; }
+	void set_in_expression(bool ain_expression) { in_expression=ain_expression; }
+	bool get_in_expression() { return in_expression; }
 
-	void set_somebody_entered_some_class() { flags.entered_class=1; }
-	bool get_somebody_entered_some_class() { return flags.entered_class!=0; }
+	void set_somebody_entered_some_class() { entered_class=true; }
+	bool get_somebody_entered_some_class() { return entered_class; }
 
 private:
 
@@ -117,13 +114,13 @@ private:
 protected:
 	String& fstring;
 	Value* fvalue;
-private:
-	struct {
-		int constructing:1;
-		int in_expression:1;
-		int entered_object:1;
-		int entered_class:1;
-	} flags;
+
+private: // status
+
+	bool constructing;
+	bool in_expression;
+	bool entered_object;
+	bool entered_class;
 
 private:
 
