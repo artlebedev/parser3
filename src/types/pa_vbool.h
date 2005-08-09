@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b bool class decls.
 
-	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VBOOL_H
 #define PA_VBOOL_H
 
-static const char * const IDENT_VBOOL_H="$Date: 2004/05/12 10:16:49 $";
+static const char * const IDENT_VBOOL_H="$Date: 2005/08/09 08:14:53 $";
 
 // include
 

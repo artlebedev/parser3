@@ -1,11 +1,11 @@
 /** @file
 	Parser: sql driver manager implementation.
 
-	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_SQL_DRIVER_MANAGER_C="$Date: 2004/12/23 16:47:31 $";
+static const char * const IDENT_SQL_DRIVER_MANAGER_C="$Date: 2005/08/09 08:14:52 $";
 
 #include "pa_sql_driver_manager.h"
 #include "ltdl.h"

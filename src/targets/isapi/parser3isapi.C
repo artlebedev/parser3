@@ -1,11 +1,11 @@
 /** @file
 	Parser: IIS extension.
 
-	Copyright (c) 2000,2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2000,2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_PARSER3ISAPI_C="$Date: 2004/07/30 10:55:22 $";
+static const char * const IDENT_PARSER3ISAPI_C="$Date: 2005/08/09 08:14:53 $";
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]

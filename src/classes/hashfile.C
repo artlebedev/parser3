@@ -1,12 +1,12 @@
 /** @file
 	Parser: @b hashfile parser class.
 
-	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 
-static const char * const IDENT="$Id: hashfile.C,v 1.35 2005/08/08 09:24:27 paf Exp $";
+static const char * const IDENT="$Id: hashfile.C,v 1.36 2005/08/09 08:14:47 paf Exp $";
 
 #include "classes.h"
 

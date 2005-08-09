@@ -1,14 +1,14 @@
 /**	@file
 	Parser: @b write_wrapper write context
 
-	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_WWRAPPER_H
 #define PA_WWRAPPER_H
 
-static const char * const IDENT_WWRAPPER_H="$Date: 2005/08/08 08:41:52 $";
+static const char * const IDENT_WWRAPPER_H="$Date: 2005/08/09 08:14:56 $";
 
 #include "pa_wcontext.h"
 #include "pa_exception.h"

@@ -1,14 +1,14 @@
 /**	@file
 	Parser: @b property class decl.
 
-	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VPROPERTY_H
 #define PA_VPROPERTY_H
 
-static const char * const IDENT_VPROPERTY_H="$Date: 2005/07/28 11:23:02 $";
+static const char * const IDENT_VPROPERTY_H="$Date: 2005/08/09 08:14:55 $";
 
 // include
 

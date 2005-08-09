@@ -1,11 +1,11 @@
 /**	@file
 	Parser: method frame class.
 
-	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)\
 */
 
-static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2005/08/09 07:37:12 $";
+static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2005/08/09 08:14:55 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"

@@ -1,11 +1,11 @@
 /** @file
 	Parser: directory scanning for different OS-es.
 
-	Copyright (c) 2000,2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2000,2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_DIR_C="$Date: 2004/02/11 15:33:15 $";
+static const char * const IDENT_DIR_C="$Date: 2005/08/09 08:14:52 $";
 
 #include "pa_common.h"
 #include "pa_dir.h"

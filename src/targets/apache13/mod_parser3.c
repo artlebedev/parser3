@@ -1,11 +1,11 @@
 /** @file
 Parser: apache 1.3 module, part, compiled by Apache.
 
-	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_MOD_PARSER3_C="$Date: 2004/04/01 11:43:54 $";
+static const char * const IDENT_MOD_PARSER3_C="$Date: 2005/08/09 08:14:53 $";
 
 #ifdef WIN32
 #include <winsock2.h>

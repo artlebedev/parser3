@@ -1,7 +1,7 @@
 /** @file
 	Parser: compiled code related decls.
 
-	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
@@ -9,7 +9,7 @@
 #ifndef OPERATION_H
 #define OPERATION_H
 
-static const char * const IDENT_OPERATION_H="$Date: 2004/02/11 15:33:14 $";
+static const char * const IDENT_OPERATION_H="$Date: 2005/08/09 08:14:49 $";
 
 #include "pa_array.h"
 #include "pa_opcode.h"

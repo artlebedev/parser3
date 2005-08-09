@@ -1,14 +1,14 @@
 /** @file
 	Parser: response class.
 
-	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VRESPONSE_H
 #define PA_VRESPONSE_H
 
-static const char * const IDENT_VRESPONSE_H="$Date: 2005/08/08 08:41:51 $";
+static const char * const IDENT_VRESPONSE_H="$Date: 2005/08/09 08:14:55 $";
 
 #include "pa_vstateless_object.h"
 #include "pa_string.h"

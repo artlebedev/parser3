@@ -1,11 +1,11 @@
 /** @file
 	Parser: @b memory parser class.
 
-	Copyright(c) 2001-2004 ArtLebedev Group(http://www.artlebedev.com)
+	Copyright(c) 2001-2005 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_MATH_C="$Date: 2004/06/22 14:12:57 $";
+static const char * const IDENT_MATH_C="$Date: 2005/08/09 08:14:48 $";
 
 #include "pa_common.h"
 #include "pa_vmemory.h"

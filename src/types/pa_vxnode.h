@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b xnode parser class decl.
 
-	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VXNODE_H
 #define PA_VXNODE_H
 
-static const char * const IDENT_VXNODE_H="$Date: 2005/08/08 08:41:52 $";
+static const char * const IDENT_VXNODE_H="$Date: 2005/08/09 08:14:56 $";
 
 #include "classes.h"
 #include "pa_common.h"

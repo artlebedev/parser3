@@ -1,14 +1,14 @@
 /** @file
 	Parser: Stylesheet connection decl.
 
-	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_STYLESHEET_CONNECTION_H
 #define PA_STYLESHEET_CONNECTION_H
 
-static const char * const IDENT_STYLESHEET_CONNECTION_H="$Date: 2004/02/13 14:01:08 $";
+static const char * const IDENT_STYLESHEET_CONNECTION_H="$Date: 2005/08/09 08:14:50 $";
 
 #include "libxslt/xslt.h"
 #include "libxslt/xsltInternals.h"

@@ -1,11 +1,11 @@
 /** @file
 	Parser: @b string class.
 
-	Copyright(c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright(c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Date: 2005/08/09 08:05:09 $";
+static const char * const IDENT="$Date: 2005/08/09 08:14:56 $";
 
 #include "pa_vvoid.h"
 #include "pa_vfile.h"

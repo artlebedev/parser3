@@ -1,11 +1,11 @@
 /**	@file
 	Parser: socks initialization/finalization.
 
-	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_SOCKS_C="$Date: 2004/10/06 10:55:10 $";
+static const char * const IDENT_SOCKS_C="$Date: 2005/08/09 08:14:52 $";
 
 #define NO_UNISTD_H
 #include "pa_config_includes.h"

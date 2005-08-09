@@ -1,14 +1,14 @@
 /**	@file
 	Parser: @b junction class decl.
 
-	Copyright (c) 2001-2004 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VJUNCTION_H
 #define PA_VJUNCTION_H
 
-static const char * const IDENT_VJUNCTION_H="$Date: 2005/08/08 08:41:51 $";
+static const char * const IDENT_VJUNCTION_H="$Date: 2005/08/09 08:14:54 $";
 
 // include
 
