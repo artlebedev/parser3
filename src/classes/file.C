@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2005/08/05 13:02:56 $";
+static const char * const IDENT_FILE_C="$Date: 2005/08/09 08:07:07 $";
 
 #include "pa_config_includes.h"
 
@@ -785,12 +785,12 @@ MFile::MFile(): Methoded("file") {
 	// ^cgi[file-name]
 	// ^cgi[file-name;env hash]
 	// ^cgi[file-name;env hash;1cmd;2line;3ar;4g;5s]
-	add_native_method("cgi", Method::CT_DYNAMIC, _cgi, 1, 2+10);
+	add_native_method("cgi", Method::CT_DYNAMIC, _cgi, 1, 2+50);
 
 	// ^exec[file-name]
 	// ^exec[file-name;env hash]
 	// ^exec[file-name;env hash;1cmd;2line;3ar;4g;5s]
-	add_native_method("exec", Method::CT_DYNAMIC, _exec, 1, 2+10);
+	add_native_method("exec", Method::CT_DYNAMIC, _exec, 1, 2+50);
 
 	// ^file:list[path]
 	// ^file:list[path][regexp]
