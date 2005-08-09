@@ -8,7 +8,7 @@
 #ifndef PA_WCONTEXT_H
 #define PA_WCONTEXT_H
 
-static const char * const IDENT_WCONTEXT_H="$Date: 2005/08/09 08:11:51 $";
+static const char * const IDENT_WCONTEXT_H="$Date: 2005/08/09 08:26:36 $";
 
 #include "pa_value.h"
 #include "pa_vstring.h"
@@ -92,7 +92,7 @@ public: // usage
 		fstring(*new String),
 		fvalue(avalue),
 		fparent(aparent) {
-		constructing=in_expression=entered_class=entered_object=were_string_writes=false;
+		constructing=in_expression=entered_class=entered_object=false;
 	}
 	virtual ~WContext() {
 		detach_junctions();
