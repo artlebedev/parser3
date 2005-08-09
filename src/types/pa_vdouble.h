@@ -8,7 +8,7 @@
 #ifndef PA_VDOUBLE_H
 #define PA_VDOUBLE_H
 
-static const char * const IDENT_VDOUBLE_H="$Date: 2005/08/08 11:18:00 $";
+static const char * const IDENT_VDOUBLE_H="$Date: 2005/08/09 08:12:50 $";
 
 // includes
 
@@ -27,6 +27,8 @@ public: // Value
 	override const char* type() const { return "double"; }
 	override VStateless_class *get_class() { return double_class; }
 
+	/// VDouble: true
+	override bool is_number() const { return true; }
 	/// VDouble: clone
 	override Value& as_expr_result(bool ) { return *new VDouble(fdouble); }
 

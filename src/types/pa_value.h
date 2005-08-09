@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-static const char * const IDENT_VALUE_H="$Date: 2005/08/05 13:03:04 $";
+static const char * const IDENT_VALUE_H="$Date: 2005/08/09 08:12:50 $";
 
 #include "pa_string.h"
 #include "pa_array.h"
@@ -59,7 +59,10 @@ public: // Value
 	
 	/// is this value string?
 	virtual bool is_string() const { return false; }
-	
+
+	/// is this value number?
+	virtual bool is_number() const { return false; }
+
 	/// what's the meaning of this value in context of expression?
 	virtual Value& as_expr_result(bool /*return_string_as_is*/=false) {
 		return *bark("is '%s', can not be used in expression"); 
