@@ -1,4 +1,7 @@
-$hf[^hashfile::open[/../data/egr]]
-$hf.sort_order[asc]
-$hf1[^hashfile::open[/../data/egr]]
+$request:charset
+$response:charset
 
+$f[^file::exec[_bug.pl;
+    $.charset[koi8-r]
+	$.QUERY_STRING[тест=работает];параметр]]
+$f.text
