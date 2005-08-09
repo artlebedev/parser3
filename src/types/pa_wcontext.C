@@ -5,9 +5,13 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_WCONTEXT_C="$Date: 2004/03/23 09:43:44 $";
+static const char * const IDENT_WCONTEXT_C="$Date: 2005/08/09 08:05:09 $";
 
 #include "pa_wcontext.h"
+
+// statics
+
+VVoid WContext::empty_result;
 
 // appends a fstring to result
 void WContext::write(Value& avalue) {

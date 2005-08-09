@@ -5,10 +5,12 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Date: 2004/05/14 10:29:37 $";
+static const char * const IDENT="$Date: 2005/08/09 08:05:09 $";
 
 #include "pa_vvoid.h"
 #include "pa_vfile.h"
+
+const String VVoid::void_string_value;
 
 VFile* VVoid::as_vfile(String::Language /*lang*/, const Request_charsets* /*charsets*/) {
 	VFile& result=*new VFile;

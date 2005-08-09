@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2005/08/09 07:37:12 $";
+static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2005/08/09 08:05:09 $";
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
@@ -56,18 +56,16 @@ public:
 	/// handy expression auto-processing to double
 	double as_double(int index, const char* msg, Request& r) { 
 		Value* value=get(index);
-		if(VDouble* vdouble=static_cast<VDouble*>(value->as("double", false)))
-			return vdouble->get_double();
-		return get_processed(value, msg, index, r).as_double(); 
+		if(!value->is_number())
+			value=&get_processed(value, msg, index, r);
+		return value->as_double(); 
 	}
 	/// handy expression auto-processing to int
 	int as_int(int index, const char* msg, Request& r) { 
 		Value* value=get(index);
-		if(VDouble* vdouble=static_cast<VDouble*>(value->as("double", false)))
-			return vdouble->get_int();
-		if(VInt* vint=static_cast<VInt*>(value->as("int", false)))
-			return vint->get_int();
-		return get_processed(value, msg, index, r).as_int(); 
+		if(!value->is_number())
+			value=&get_processed(value, msg, index, r);
+		return value->as_int(); 
 	}
 	/// handy expression auto-processing to bool
 	bool as_bool(int index, const char* msg, Request& r) { 

@@ -8,11 +8,12 @@
 #ifndef PA_WCONTEXT_H
 #define PA_WCONTEXT_H
 
-static const char * const IDENT_WCONTEXT_H="$Date: 2005/07/15 06:16:42 $";
+static const char * const IDENT_WCONTEXT_H="$Date: 2005/08/09 08:05:09 $";
 
 #include "pa_value.h"
 #include "pa_vstring.h"
 #include "pa_vhash.h"
+#include "pa_vvoid.h"
 
 class Request;
 
@@ -59,6 +60,7 @@ public: // WContext
 
 	/// appends a fstring to result
 	virtual void write(const String& astring, String::Language alang) {
+		were_string_writes=true;
 		fstring.append(astring, alang);
 	}
 	/// writes Value; raises an error if already, providing origin
@@ -68,8 +70,10 @@ public: // WContext
 		if value is VString writes fstring,
 		else writes Value; raises an error if already, providing origin
 	*/
-	void write(
-		Value& avalue, String::Language alang) {
+	void write(Value& avalue, String::Language alang) {
+		if(avalue.is_void())
+			return; // ignoring $void write attempts
+
 		if(const String* fstring=avalue.get_string())
 			write(*fstring, alang);
 		else
@@ -82,7 +86,9 @@ public: // WContext
 		wmethod_frame first checks for $result and if there is one, returns it instead
 	*/
 	virtual StringOrValue result() {
-		return fvalue?StringOrValue(*fvalue):StringOrValue(fstring);
+		return fvalue?StringOrValue(*fvalue):
+			were_string_writes? StringOrValue(fstring):
+				StringOrValue(empty_result);
 	}
 
 	void attach_junction(Junction* ajunction) {
@@ -95,37 +101,40 @@ public: // usage
 		fstring(*new String),
 		fvalue(avalue),
 		fparent(aparent) {
-		flags.constructing=
-			flags.entered_class=
-			flags.entered_object=0;
+		constructing=in_expression=entered_class=entered_object=were_string_writes=false;
 	}
 	virtual ~WContext() {
 		detach_junctions();
 	}
 
-	void set_constructing(bool aconstructing) { flags.constructing=aconstructing?1:0; }
-	bool get_constructing() { return flags.constructing!=0; }
+	void set_constructing(bool aconstructing) { constructing=aconstructing; }
+	bool get_constructing() { return constructing; }
 
-	void set_in_expression(bool ain_expression) { flags.in_expression=ain_expression?1:0; }
-	bool get_in_expression() { return flags.in_expression!=0; }
+	void set_in_expression(bool ain_expression) { in_expression=ain_expression; }
+	bool get_in_expression() { return in_expression; }
 
-	void set_somebody_entered_some_class() { flags.entered_class=1; }
-	bool get_somebody_entered_some_class() { return flags.entered_class!=0; }
+	void set_somebody_entered_some_class() { entered_class=true; }
+	bool get_somebody_entered_some_class() { return entered_class; }
 
 private:
 
 	void detach_junctions(); 
 
+private:
+
+	static VVoid empty_result;
+
 protected:
 	String& fstring;
 	Value* fvalue;
-private:
-	struct {
-		int constructing:1;
-		int in_expression:1;
-		int entered_object:1;
-		int entered_class:1;
-	} flags;
+
+private: // status
+
+	bool constructing;
+	bool in_expression;
+	bool entered_object;
+	bool entered_class;
+	bool were_string_writes;
 
 private:
 
