@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_PARSER3ISAPI_C="$Date: 2005/08/05 13:03:03 $";
+static const char * const IDENT_PARSER3ISAPI_C="$Date: 2005/08/24 09:20:57 $";
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -55,7 +55,8 @@ const int IIS51var_count=sizeof(IIS51vars)/sizeof(*IIS51vars);
 
 // globals
 
-char argv0[MAX_STRING]="";
+char argv0buf[MAX_STRING]="";
+const char* argv0;
 
 // SAPI
 
@@ -542,9 +543,13 @@ BOOL WINAPI DllMain(
 
 	GetModuleFileName(
 	  hinstDLL,    // handle to module
-	  argv0,  // file name of module
-	  sizeof(argv0)         // size of buffer
+	  argv0buf,  // file name of module
+	  sizeof(argv0buf)         // size of buffer
 	);
+
+	argv0=argv0buf;
+	if(strncmp(argv0buf, "\\\\?\\", 4)==0)
+		argv0+=4;
 
 	return TRUE;
 }

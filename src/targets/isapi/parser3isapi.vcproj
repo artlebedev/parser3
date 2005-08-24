@@ -63,16 +63,16 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Starting inetinfo..."
-				CommandLine="..\..\..\..\win32\tools\istart
-dir&gt;nul
+				CommandLine="::..\..\..\..\win32\tools\istart
+::dir&gt;nul
 "/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
 				Name="VCPreLinkEventTool"
 				Description="Stopping inetinfo..."
-				CommandLine="..\..\..\..\win32\tools\istop
-dir&gt;nul
+				CommandLine="::..\..\..\..\win32\tools\istop
+::dir&gt;nul
 "/>
 			<Tool
 				Name="VCResourceCompilerTool"
