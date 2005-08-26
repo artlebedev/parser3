@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2005/08/05 13:02:58 $";
+static const char * const IDENT_STRING_C="$Date: 2005/08/26 11:08:31 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -54,8 +54,6 @@ static void _length(Request& r, MethodParams&) {
 static void _int(Request& r, MethodParams& params) {
 	const String& self_string=GET_SELF(r, VString).string();
 	int converted;
-	Value* default_code=params.count()>0?&params.as_junction(0, "default must be int")
-		:0; // (default)
 	try {
 		if(self_string.is_empty())
 			throw Exception("parser.runtime",
@@ -63,8 +61,8 @@ static void _int(Request& r, MethodParams& params) {
 				"parameter is empty string, error converting");
 		converted=self_string.as_int();
 	} catch(...) { // convert problem
-		if(default_code)
-			converted=r.process_to_value(*default_code).as_int();
+		if(params.count()>0)
+			converted=params.as_int(0, "default must be int", r); // (default)
 		else
 			rethrow; // we have a problem when no default			
 	}
@@ -74,8 +72,6 @@ static void _int(Request& r, MethodParams& params) {
 static void _double(Request& r, MethodParams& params) {
 	const String& self_string=GET_SELF(r, VString).string();
 	double converted;
-	Value* default_code=params.count()>0?&params.as_junction(0, "default must be double")
-		:0; // (default)
 	try {
 		if(self_string.is_empty())
 			throw Exception("parser.runtime",
@@ -83,8 +79,8 @@ static void _double(Request& r, MethodParams& params) {
 				"parameter is empty string, error converting");
 		converted=self_string.as_double();
 	} catch(...) { // convert problem
-		if(default_code)
-			converted=r.process_to_value(*default_code).as_double();
+		if(params.count()>0)
+			converted=params.as_double(0, "default must be double", r); // (default)
 		else
 			rethrow; // we have a problem when no default
 	}

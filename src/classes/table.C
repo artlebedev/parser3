@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2005/08/05 13:02:58 $";
+static const char * const IDENT_TABLE_C="$Date: 2005/08/26 11:08:31 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -477,8 +477,8 @@ static void _offset(Request& r, MethodParams& params) {
 					"is invalid whence, valid are 'cur' or 'set'");
 		}
 		
-		Value& offset_expr=params.as_junction(params.count()-1, "offset must be expression");
-		table.offset(absolute, r.process_to_value(offset_expr).as_int());
+		int offset=params.as_int(params.count()-1, "offset must be expression", r);
+		table.offset(absolute, offset);
 	} else
 		r.write_no_lang(*new VInt(table.current()));
 }

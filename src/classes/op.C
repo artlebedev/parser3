@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2005/08/05 13:02:57 $";
+static const char * const IDENT_OP_C="$Date: 2005/08/26 11:08:30 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -83,14 +83,11 @@ public:
 // methods
 
 static void _if(Request& r, MethodParams& params) {
-	Value& condition_code=params.as_junction(0, "condition must be expression");
-
-	bool condition=r.process_to_value(condition_code, 
-		false/*don't intercept string*/).as_bool();
+	bool condition=params.as_bool(0, "condition must be expression", r);
 	if(condition)
-		r.write_pass_lang(r.process(params.as_junction(1, "'then' parameter must be code")));
+		r.write_pass_lang(r.process(*params.get(1)));
 	else if(params.count()>2)
-		r.write_pass_lang(r.process(params.as_junction(2, "'else' parameter must be code")));
+		r.write_pass_lang(r.process(*params.get(2)));
 }
 
 static void _untaint(Request& r, MethodParams& params) {

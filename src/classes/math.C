@@ -8,7 +8,7 @@
 	Copyright (C) 1996, 1997, 1998, 1999 Theodore Ts'o.
 */
 
-static const char * const IDENT_MATH_C="$Date: 2005/08/05 13:02:57 $";
+static const char * const IDENT_MATH_C="$Date: 2005/08/26 11:08:30 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_common.h"
@@ -164,8 +164,7 @@ static inline int _random(uint top) {
 }
 
 static void _random(Request& r, MethodParams& params) {
-	Value& range=params.as_junction(0, "range must be expression");
-	double top=r.process_to_value(range).as_double();
+	double top=params.as_double(0, "range must be expression", r);
 	if(top<=0 || top>MAX_UINT)
 		throw Exception("parser.runtime",
 			0,
@@ -181,9 +180,8 @@ static double degrees(double param) { return param /PI *180; }
 static double radians(double param) { return param /180 *PI; }
 
 static void math1(Request& r, MethodParams& params, math1_func_ptr func) {
-	Value& param=params.as_junction(0, "parameter must be expression");
-
-	double result=func(r.process_to_value(param).as_double());
+	double param=params.as_double(0, "parameter must be expression", r);
+	double result=func(param);
 	r.write_no_lang(*new VDouble(result));
 }
 
@@ -208,12 +206,9 @@ MATH1(sqrt);
 
 typedef double (*math2_func_ptr)(double, double);
 static void math2(Request& r, MethodParams& params, math2_func_ptr func) {
-	Value& a=params.as_junction(0, "parameter must be expression");
-	Value& b=params.as_junction(1, "parameter must be expression");
-
-	double result=func(
-		r.process_to_value(a).as_double(),
-		r.process_to_value(b).as_double());
+	double a=params.as_double(0, "parameter must be expression", r);
+	double b=params.as_double(1, "parameter must be expression", r);
+	double result=func(a, b);
 	r.write_no_lang(*new VDouble(result));
 }
 

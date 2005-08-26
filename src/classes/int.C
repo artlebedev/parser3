@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_INT_C="$Date: 2005/08/05 13:02:57 $";
+static const char * const IDENT_INT_C="$Date: 2005/08/26 11:08:30 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -36,7 +36,7 @@ DECLARE_CLASS_VAR(int, new MInt, 0);
 static void _int(Request& r, MethodParams& params) {
 	// just checking (default) syntax validity, never really using it  here, just for string.int compatibility
 	if(params.count()>0)
-		params.as_junction(0, "default must be int");
+		params.as_int(0, "default must be int", r);
 
 	VInt& vint=GET_SELF(r, VInt);
 	r.write_no_lang(*new VInt(vint.get_int()));
@@ -45,7 +45,7 @@ static void _int(Request& r, MethodParams& params) {
 static void _double(Request& r, MethodParams& params) {
 	// just checking (default) syntax validity, never really using it  here, just for string.doube compatibility
 	if(params.count()>0)
-		params.as_junction(0, "default must be double");
+		params.as_double(0, "default must be double", r);
 
 	VInt& vint=GET_SELF(r, VInt);
 	r.write_no_lang(*new VDouble(vint.as_double()));
