@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VOID_C="$Date: 2005/08/05 13:02:58 $";
+static const char * const IDENT_VOID_C="$Date: 2005/08/26 12:00:04 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -87,7 +87,7 @@ static void _sql(Request& r, MethodParams& params) {
 	HashStringValue* bind=0;
 	if(params.count()>1) {
 		Value& voptions=params.as_no_junction(1, "options must be hash, not code");
-		if(!voptions.is_string())
+		if(voptions.is_defined() && !voptions.is_string())
 			if(HashStringValue* options=voptions.get_hash()) {
 				int valid_options=0;
 				if(Value* vbind=options->get(sql_bind_name)) {

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2005/08/26 11:08:31 $";
+static const char * const IDENT_STRING_C="$Date: 2005/08/26 12:00:04 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -429,7 +429,7 @@ const String* sql_result_string(Request& r, MethodParams& params,
 	default_code=0;
 	if(params.count()>1) {
 		Value& voptions=params.as_no_junction(1, "options must be hash, not code");
-		if(!voptions.is_string())
+		if(voptions.is_defined() && !voptions.is_string())
 			if((options=voptions.get_hash())) {
 				int valid_options=0;
 				if(Value* vbind=options->get(sql_bind_name)) {
