@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_DATE_C="$Date: 2005/08/05 13:02:56 $";
+static const char * const IDENT_DATE_C="$Date: 2005/08/26 12:35:55 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -152,7 +152,7 @@ static void _sql_string(Request& r, MethodParams&) {
 	VDate& vdate=GET_SELF(r, VDate);
 	int size=1+ 4+1+2+1+2 +1+ 2+1+2+1+2 +1 +1;
 	char *buf=new(PointerFreeGC) char[size];
-	size=strftime(buf, size, "%Y-%m-%d %H:%M:%S", vdate.get_localtime());
+	size=strftime(buf, size, "%Y-%m-%d %H:%M:%S", &vdate.get_localtime());
 	
 	r.write_assign_lang(String(buf, size));
 }
@@ -287,16 +287,12 @@ static Table& fill_month_days(Request& r, MethodParams& params, bool rus){
 				tms.tm_year=year-1900;
 				
 				/*normalize*/mktime(&tms);
-
 				weekyear=tms.tm_year+1900;
 
 				const int weekno_buf_size=2+1/*for stupid snprintfs*/ +1;
 
-				// http://www.merlyn.demon.co.uk/weekinfo.htm
-				const int FirstThurs[] = {7,5,4,3,2,7,6,5,4,2,1,7,6,4,3,2,1,6,5,4,3,1,7,6,5,3,2,1};
-				int n=1 + (tms.tm_yday-(FirstThurs[weekyear % 28]-3))/7;
 				weekno_buf=new(PointerFreeGC) char[weekno_buf_size];
-				weekno_size=snprintf(weekno_buf, weekno_buf_size, "%02d", n);
+				weekno_size=snprintf(weekno_buf, weekno_buf_size, "%02d", VDate::week_no(tms));
 			}
 		
         }
