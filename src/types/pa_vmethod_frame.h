@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2005/08/09 08:14:55 $";
+static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2005/08/26 11:36:06 $";
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
@@ -70,7 +70,9 @@ public:
 	/// handy expression auto-processing to bool
 	bool as_bool(int index, const char* msg, Request& r) { 
 		Value* value=get(index);
-		return get_processed(value, msg, index, r).as_bool(); 
+		if(!value->is_number())
+			value=&get_processed(value, msg, index, r);
+		return value->as_bool(); 
 	}
 	/// handy string ensurer
 	const String& as_string(int index, const char* msg) { 
