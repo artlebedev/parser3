@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2005/08/26 12:00:04 $";
+static const char * const IDENT_TABLE_C="$Date: 2005/08/26 12:22:43 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -147,6 +147,11 @@ static void _create(Request& r, MethodParams& params) {
 	size_t raw_pos_after=0;
 	Table::columns_type columns;
 	if(params.count()==2) {
+		String snameless=params.as_string(0, "called with two params, first param may only be string 'nameless'");
+		if(snameless!="nameless")
+			throw Exception("parser.runtime",
+				&snameless,
+				"table::create called with two params, first param may only be 'nameless'");
 		columns=Table::columns_type(0); // nameless
 	} else {
 		columns=Table::columns_type(new ArrayString);
