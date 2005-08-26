@@ -8,7 +8,7 @@
 #ifndef PA_VDATE_H
 #define PA_VDATE_H
 
-static const char * const IDENT_VDATE_H="$Date: 2005/08/09 08:14:54 $";
+static const char * const IDENT_VDATE_H="$Date: 2005/08/26 12:36:58 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -47,7 +47,7 @@ public: // Value
 	/// VDate: 0 or !0
 	override bool as_bool() const { return ftime!=0; }
 
-	tm *get_localtime()
+	tm& get_localtime()
 	{
 		const char* saved_tz=0;
 		static char saved_tz_pair[MAX_STRING];
@@ -65,7 +65,7 @@ public: // Value
 				0,
 				"invalid datetime (after changing TZ)");
 
-		return result;
+		return *result;
 	}
 
 
@@ -80,18 +80,19 @@ public: // Value
 			return ftz? new VString(*ftz): new VString();
 
 		// $year month day  hour minute second  weekday
-		tm *tmOut=get_localtime();
+		tm& tms=get_localtime();
 
 		int result;
-		if(aname=="year") result=1900+tmOut->tm_year;
-		else if(aname=="month") result=1+tmOut->tm_mon;
-		else if(aname=="day") result=tmOut->tm_mday;
-		else if(aname=="hour") result=tmOut->tm_hour;
-		else if(aname=="minute") result=tmOut->tm_min;
-		else if(aname=="second") result=tmOut->tm_sec;
-		else if(aname=="weekday") result=tmOut->tm_wday;
-		else if(aname=="yearday") result=tmOut->tm_yday;
-		else if(aname=="daylightsaving") result=tmOut->tm_isdst;
+		if(aname=="year") result=1900+tms.tm_year;
+		else if(aname=="month") result=1+tms.tm_mon;
+		else if(aname=="day") result=tms.tm_mday;
+		else if(aname=="hour") result=tms.tm_hour;
+		else if(aname=="minute") result=tms.tm_min;
+		else if(aname=="second") result=tms.tm_sec;
+		else if(aname=="weekday") result=tms.tm_wday;
+		else if(aname=="yearday") result=tms.tm_yday;
+		else if(aname=="daylightsaving") result=tms.tm_isdst;
+		else if(aname=="week") result=week_no(tms);
 		else { return bark("%s field not found", &aname); }
 		return new VInt(result);
 	}
@@ -133,6 +134,13 @@ public: // usage
 	void set_tz(const String* atz) { 
 		if((ftz=atz))
 			ftz_cstr=ftz->cstr();
+	}
+
+	static int week_no(tm& tms) {
+		// http://www.merlyn.demon.co.uk/weekinfo.htm
+		int weekyear=tms.tm_year+1900;
+		const int FirstThurs[] = {7,5,4,3,2,7,6,5,4,2,1,7,6,4,3,2,1,6,5,4,3,1,7,6,5,3,2,1};
+		return 1 + (tms.tm_yday-(FirstThurs[weekyear % 28]-3))/7;
 	}
 
 private:
