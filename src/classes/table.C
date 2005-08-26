@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2005/08/26 11:12:45 $";
+static const char * const IDENT_TABLE_C="$Date: 2005/08/26 12:01:38 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -73,6 +73,7 @@ static Table::Action_options get_action_options(Request& r, MethodParams& params
 	]
 	but there is ^table.locate[name;value]
 
+	...if(voptions.is_defined() && !voptions.is_string()))
 	if(maybe_options.is_string()) { // allow empty options
 		result.defined=true;
 		return result;
@@ -939,7 +940,7 @@ static void _sql(Request& r, MethodParams& params) {
 	ulong offset=0;
 	if(params.count()>1) {
 		Value& voptions=params.as_no_junction(1, "options must be hash, not code");
-		if(!voptions.is_string())
+		if(voptions.is_defined() && !voptions.is_string())
 			if(HashStringValue* options=voptions.get_hash()) {
 				int valid_options=0;
 				if(Value* vbind=options->get(sql_bind_name)) {
