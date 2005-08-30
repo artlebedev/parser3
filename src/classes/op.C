@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2005/08/26 11:12:45 $";
+static const char * const IDENT_OP_C="$Date: 2005/08/30 08:23:09 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -381,7 +381,7 @@ static void _case(Request& r, MethodParams& params) {
 	for(int i=0; i<count; i++) {
 		Value& value=r.process_to_value(params[i]);
 
-		if(value.as_string() == CASE_DEFAULT_VALUE) {
+		if(value.is_string() && value.as_string() == CASE_DEFAULT_VALUE) {
 			data->_default=&code;
 			break;
 		}
