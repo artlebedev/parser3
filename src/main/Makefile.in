@@ -455,7 +455,7 @@ uninstall-am: uninstall-info-am
 
 
 compile.tab.C: compile.y
-	bison -v $< -o $@
+	bison -v compile.y -o $@
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
