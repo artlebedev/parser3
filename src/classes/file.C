@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2005/08/09 08:14:47 $";
+static const char * const IDENT_FILE_C="$Date: 2005/11/16 14:49:41 $";
 
 #include "pa_config_includes.h"
 
@@ -171,11 +171,9 @@ static void _load(Request& r, MethodParams& params) {
 	if(options) {
 		options=new HashStringValue(*options);
 		if(Value *voffset=(Value *)options->get(sql_offset_name)) {
-			options->remove(sql_offset_name);
 			offset=r.process_to_value(*voffset).as_int();
 		}
 		if(Value *vlimit=(Value *)options->get(sql_limit_name)) {
-			options->remove(sql_limit_name);
 			limit=r.process_to_value(*vlimit).as_int();
 		}
 		// no check on options count here, see file_read

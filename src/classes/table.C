@@ -4,8 +4,7 @@
 	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
-
-static const char * const IDENT_TABLE_C="$Date: 2005/08/26 12:23:10 $";
+static const char * const IDENT_TABLE_C="$Date: 2005/11/16 14:49:41 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -37,8 +36,6 @@ DECLARE_CLASS_VAR(table, new MTable, 0);
 // defines for globals
 
 #define SQL_BIND_NAME "bind"
-#define SQL_LIMIT_NAME "limit"
-#define SQL_OFFSET_NAME "offset"
 #define SQL_DEFAULT_NAME "default"
 #define SQL_DISTINCT_NAME "distinct"
 #define TABLE_REVERSE_NAME "reverse"
@@ -46,17 +43,11 @@ DECLARE_CLASS_VAR(table, new MTable, 0);
 // globals
 
 String sql_bind_name(SQL_BIND_NAME);
-String sql_limit_name(SQL_LIMIT_NAME);
-String sql_offset_name(SQL_OFFSET_NAME);
+String sql_limit_name(PA_SQL_LIMIT_NAME);
+String sql_offset_name(PA_SQL_OFFSET_NAME);
 String sql_default_name(SQL_DEFAULT_NAME);
 String sql_distinct_name(SQL_DISTINCT_NAME);
 String table_reverse_name(TABLE_REVERSE_NAME);
-
-// local defines
-
-#define COLUMN_SEPARATOR_NAME "separator"
-#define COLUMN_ENCLOSER_NAME "encloser"
-
 
 // methods
 
@@ -276,25 +267,27 @@ struct TableSeparators {
 		column('\t'), scolumn(new String("\t", false)),
 		encloser(0), sencloser(0)
 	{}
-	void load( HashStringValue& options ) {
-		if(Value* vseparator=options.get(COLUMN_SEPARATOR_NAME)) {
-			options.remove(COLUMN_SEPARATOR_NAME);
+	int load( HashStringValue& options ) {
+		int result=0;
+		if(Value* vseparator=options.get(PA_COLUMN_SEPARATOR_NAME)) {
 			scolumn=&vseparator->as_string();
 			if(scolumn->length()!=1)
 				throw Exception("parser.runtime",
 					scolumn,
 					"separator must be one character long");
 			column=scolumn->first_char();
+			result++;
 		}
-		if(Value* vencloser=options.get(COLUMN_ENCLOSER_NAME)) {
-			options.remove(COLUMN_ENCLOSER_NAME);
+		if(Value* vencloser=options.get(PA_COLUMN_ENCLOSER_NAME)) {
 			sencloser=&vencloser->as_string();
 			if(sencloser->length()!=1)
 				throw Exception("parser.runtime",
 					sencloser,
 					"encloser must be one character long");
 			encloser=sencloser->first_char();
+			result++;
 		}
+		return result;
 	}
 };
 
@@ -367,7 +360,7 @@ static void maybe_enclose( String& to, const String& from, char encloser, const 
 		size_t pos_after=0;
 		for( size_t pos_before; (pos_before=from.pos( encloser, pos_after ))!=STRING_NOT_FOUND; pos_after=pos_before+1) {
             to<<from.mid(pos_before+1/*+found encloser*/, pos_after-pos_before);
-			to<<*sencloser; // doubling encloser
+			to<<*sencloser;  to<<*sencloser; // doubling encloser
 		}
 		// last piece
 		size_t from_length=from.length();
@@ -400,8 +393,8 @@ static void _save(Request& r, MethodParams& params) {
 	TableSeparators separators;
 	if(param_index<params.count()) {
 		if(HashStringValue *options=params.as_no_junction(param_index++, "additional params must be hash").get_hash()) {
-			separators.load(*options);
-			if(options->count())
+			int valid_options=separators.load(*options);
+			if(valid_options!=options->count())
 				throw Exception("parser.runtime",
 					0,
 					"invalid option passed");
