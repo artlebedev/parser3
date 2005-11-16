@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-static const char * const IDENT_COMMON_H="$Date: 2005/08/05 13:02:58 $";
+static const char * const IDENT_COMMON_H="$Date: 2005/11/16 14:18:05 $";
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -217,5 +217,12 @@ char* pa_base64(const char *in, size_t len);
 // globals
 
 extern const String file_status_name;
+
+// global defines for file options which are handled but not checked elsewhere, we check them
+
+#define PA_SQL_LIMIT_NAME "limit"
+#define PA_SQL_OFFSET_NAME "offset"
+#define PA_COLUMN_SEPARATOR_NAME "separator"
+#define PA_COLUMN_ENCLOSER_NAME "encloser"
 
 #endif

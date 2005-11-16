@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMMON_C="$Date: 2005/08/05 13:03:01 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2005/11/16 14:18:06 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -129,6 +129,21 @@ char* file_read_text(Request_charsets& charsets,
 	File_read_result file=
 		file_read(charsets, file_spec, true, params, fail_on_read_problem);
 	return file.success?file.str:0;
+}
+
+/// these options were handled but not checked elsewhere, now check them
+static int get_valid_file_options_count(HashStringValue& options)
+{
+	int result=0;
+	if(options.get(PA_SQL_LIMIT_NAME))
+		result++;
+	if(options.get(PA_SQL_OFFSET_NAME))
+		result++;
+	if(options.get(PA_COLUMN_SEPARATOR_NAME))
+		result++;
+	if(options.get(PA_COLUMN_ENCLOSER_NAME))
+		result++;
+	return result;
 }
 
 //http request stuff
@@ -458,7 +473,8 @@ static File_read_http_result file_read_http(Request_charsets& charsets,
 	const char* password_cstr=0;
 
 	if(options) {
-		int valid_options=0;
+		int valid_options=get_valid_file_options_count(*options);
+
 		if(Value* vmethod=options->get(HTTP_METHOD_NAME)) {
 			valid_options++;
 			method=vmethod->as_string().cstr();
@@ -748,10 +764,13 @@ File_read_result file_read(Request_charsets& charsets, const String& file_spec,
 		result.headers=http.headers; 
 	} else {
 #endif
-		if(params && params->count())
-			throw Exception("parser.runtime",
-				0,
-				"invalid option passed");
+		if(params) {
+			int valid_options=get_valid_file_options_count(*params);
+			if(valid_options!=params->count())
+				throw Exception("parser.runtime",
+					0,
+					"invalid option passed");
+		}
 
 		File_read_action_info info={&result.str, &result.length,
 			buf, offset, count}; 
