@@ -5,7 +5,7 @@
 	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.213.10.3 2005/08/05 14:13:41 paf Exp $
+	$Id: compile.y,v 1.213.10.4 2005/11/16 14:38:44 paf Exp $
 */
 
 /**
@@ -443,7 +443,8 @@ store_code_param_part: code_param_value {
 };
 store_expr_param_part: expr_value {
 	YYSTYPE expr_code=$1;
-	if(expr_code->count()==3) { // optimizing (double) case. [OP_VALUE+origin+Double]
+	if(expr_code->count()==3
+		&& (*expr_code)[0].code==OP_VALUE) { // optimizing (double) case. [OP_VALUE+origin+Double]
 		$$=expr_code; 
 		O(*$$, OP_STORE_PARAM); // no evaluating
 	} else {
