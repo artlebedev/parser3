@@ -8,7 +8,7 @@
 #ifndef PA_DIR_H
 #define PA_DIR_H
 
-static const char * const IDENT_DIR_H="$Date: 2005/08/05 13:02:59 $";
+static const char * const IDENT_DIR_H="$Date: 2005/11/18 10:10:46 $";
 
 #include "pa_config_includes.h"
 
@@ -73,12 +73,12 @@ bool findfirst(const char* _pathname, struct ffblk *_ffblk, int _attrib);
 bool findnext(struct ffblk *_ffblk);
 void findclose(struct ffblk *_ffblk);
 
-/// main dir workhorse: calles win32/unix unified functions findfirst/next/close
+/// main dir workhorse: calles win32/unix unified functions findfirst/next/close [skip . and ..]
 #define LOAD_DIR(dir,action) {\
     ffblk ffblk; \
     if(!findfirst(dir, &ffblk, 0)) { \
 		do \
-			if(*ffblk.ff_name && ffblk.ff_name[0]!='.') {\
+			if(*ffblk.ff_name && !(ffblk.ff_name[0]=='.' && (ffblk.ff_name[1]==0 || ffblk.ff_name[1]=='.' && ffblk.ff_name[2]==0)  )) {\
 				action; \
 			} \
 		while(!findnext(&ffblk)); \
