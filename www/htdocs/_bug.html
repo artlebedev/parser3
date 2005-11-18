@@ -1,4 +1,5 @@
-$l[^file:list[.]]
-^l.menu{
-$l.name
+^cache[cache][^date::create(^date::now[]+3)]{
+	^cache[^date::create(^date::now[]+2)]
+	$date[^cache[]]
+	^date.sql-string[]
 }
