@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2005/08/30 08:22:52 $";
+static const char * const IDENT_OP_C="$Date: 2005/11/18 11:44:04 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -608,6 +608,18 @@ static const String& as_file_spec(Request& r, MethodParams& params, int index) {
 	return r.absolute(params.as_string(index, "filespec must be string"));
 }
 static void _cache(Request& r, MethodParams& params) {
+	if(params.count()==0)
+	{
+		// return current expiration time
+		Cache_scope* scope=static_cast<Cache_scope*>(r.classes_conf.get(cache_data_name));
+		if(!scope)
+			throw Exception("parser.runtime",
+				0,
+				"expire-time get without cache");
+		r.write_no_lang(*new VDate(scope->expires));
+		return;
+	}
+
 	time_t now=time(0);
 
 	// ^cache[filename] ^cache(seconds) ^cache[expires date]
@@ -811,7 +823,8 @@ VClassMAIN::VClassMAIN(): VClass() {
 
 	// ^cache[file_spec](time){code}[{catch code}] time=0 no cache
 	// ^cache[file_spec] delete cache
-	add_native_method("cache", Method::CT_ANY, _cache, 1, 4);
+	// ^cache[] get current expiration time
+	add_native_method("cache", Method::CT_ANY, _cache, 0, 4);
 	
 	// switch
 
