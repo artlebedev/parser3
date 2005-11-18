@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMMON_C="$Date: 2005/11/18 09:11:21 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2005/11/18 09:17:09 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -216,64 +216,67 @@ static int http_read_response(char*& response, size_t& response_size, int sock, 
 			response_size=preview_size+content_length; // a little more than needed, will adjust response_size by actual received size later
 	}
 
-	// allocating initial buf
-	response=(char*)pa_malloc_atomic(response_size+1/*terminator*/); // just setting memory block type
-	char* ptr=response;
-	size_t todo_size=response_size;
-	// coping part of already received body
-	memcpy(ptr, preview_buf, received_size);
-	ptr+=received_size;
-	todo_size-=received_size;		
-
-	// we use terminator byte for two purposes here:
-	// 1. we return there zero always, not knowing: maybe they would want to create String form $file.body?
-	//     invariant: all Strings should have zero-terminated buffers
-	// 2. we use that out-of-size byte to detect if our content-length guess was wrong
-	//    when recv gets more than we expected
-	//    a) we know that the content-length guess was wrong
-	//    b) we have space to put the first byte of extra data
-	//    c) we use less code to detect normal situation: on last while-cycle recv expected to just return 0
-	while(true) {
-		received_size=recv(sock, ptr, todo_size+1/*there is always a place for terminator*/, 0); 
-		if(received_size==0) {
-			response_size-=todo_size; // in case we received less than expected, cut down the reported size
-			break;
-		}
-		if(received_size<0) {
-			if(int no=pa_socks_errno())
-				throw Exception("http.timeout", 
-					0, 
-					"error receiving response body: %s (%d)", pa_socks_strerr(no), no); 
-			break;
-		}
-		// they've touched the terminator?
-		if((size_t)received_size>todo_size)
-		{
-			// that means that our guessed response_size was not big enough
-			const size_t grow_chunk_size=0x400*0x400; // 1M
-			response_size+=grow_chunk_size;
-			size_t ptr_offset=ptr-response;
-			response=(char*)pa_realloc(response, response_size+1/*terminator*/);
-			ptr=response+ptr_offset;
-			todo_size+=grow_chunk_size;
-		}
-		// can't do this before realloc: we need <todo_size check
+	// [gcc is happier this way, see goto above]
+	{
+		// allocating initial buf
+		response=(char*)pa_malloc_atomic(response_size+1/*terminator*/); // just setting memory block type
+		char* ptr=response;
+		size_t todo_size=response_size;
+		// coping part of already received body
+		memcpy(ptr, preview_buf, received_size);
 		ptr+=received_size;
-		todo_size-=received_size;
+		todo_size-=received_size;		
 
-		char* EOLat=0;
-		if(!result && (EOLat=strstr(response, "\n"))) { // checking status in first response
-			const String status_line(pa_strdup(response, EOLat-response));
-			ArrayString astatus; 
-			size_t pos_after=0;
-			status_line.split(astatus, pos_after, " "); 
-			const String& status_code=*astatus.get(astatus.count()>1?1:0);
-			result=status_code.as_int(); 
+		// we use terminator byte for two purposes here:
+		// 1. we return there zero always, not knowing: maybe they would want to create String form $file.body?
+		//     invariant: all Strings should have zero-terminated buffers
+		// 2. we use that out-of-size byte to detect if our content-length guess was wrong
+		//    when recv gets more than we expected
+		//    a) we know that the content-length guess was wrong
+		//    b) we have space to put the first byte of extra data
+		//    c) we use less code to detect normal situation: on last while-cycle recv expected to just return 0
+		while(true) {
+			received_size=recv(sock, ptr, todo_size+1/*there is always a place for terminator*/, 0); 
+			if(received_size==0) {
+				response_size-=todo_size; // in case we received less than expected, cut down the reported size
+				break;
+			}
+			if(received_size<0) {
+				if(int no=pa_socks_errno())
+					throw Exception("http.timeout", 
+						0, 
+						"error receiving response body: %s (%d)", pa_socks_strerr(no), no); 
+				break;
+			}
+			// they've touched the terminator?
+			if((size_t)received_size>todo_size)
+			{
+				// that means that our guessed response_size was not big enough
+				const size_t grow_chunk_size=0x400*0x400; // 1M
+				response_size+=grow_chunk_size;
+				size_t ptr_offset=ptr-response;
+				response=(char*)pa_realloc(response, response_size+1/*terminator*/);
+				ptr=response+ptr_offset;
+				todo_size+=grow_chunk_size;
+			}
+			// can't do this before realloc: we need <todo_size check
+			ptr+=received_size;
+			todo_size-=received_size;
 
-			if(fail_on_status_ne_200 && result!=200)
-				throw Exception("http.status",
-					&status_code,
-					"invalid HTTP response status");
+			char* EOLat=0;
+			if(!result && (EOLat=strstr(response, "\n"))) { // checking status in first response
+				const String status_line(pa_strdup(response, EOLat-response));
+				ArrayString astatus; 
+				size_t pos_after=0;
+				status_line.split(astatus, pos_after, " "); 
+				const String& status_code=*astatus.get(astatus.count()>1?1:0);
+				result=status_code.as_int(); 
+
+				if(fail_on_status_ne_200 && result!=200)
+					throw Exception("http.status",
+						&status_code,
+						"invalid HTTP response status");
+			}
 		}
 	}
 done:
