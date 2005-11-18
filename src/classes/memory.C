@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_MATH_C="$Date: 2005/08/05 13:02:57 $";
+static const char * const IDENT_MATH_C="$Date: 2005/11/18 09:11:20 $";
 
 #include "pa_common.h"
 #include "pa_vmemory.h"
@@ -43,7 +43,7 @@ static void _compact(Request& r, MethodParams&) {
 		GC_print_backtrace(debug_print_backtrace);
 #endif
 #endif
-	}
+}
 
 // constructor
 

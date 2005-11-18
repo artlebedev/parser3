@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMMON_C="$Date: 2005/11/16 14:18:06 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2005/11/18 09:11:21 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -172,28 +172,96 @@ static bool set_addr(struct sockaddr_in *addr, const char* host, const short por
     return true;
 }
 
-static int http_read_response(char*& response, size_t& response_size, int sock, bool fail_on_status_ne_200){
-	response=(char*)pa_malloc_atomic(1/*terminator*/); // setting memory block type
-	response[(response_size=0)]=0;
+size_t guess_content_length(char* buf) {
+	char* ptr;
+	if((ptr=strstr(buf, "Content-Length:"))) // Apache
+		goto found;
+	if((ptr=strstr(buf, "content-length:"))) // Parser 3
+		goto found;
+	if((ptr=strstr(buf, "Content-length:"))) // maybe 1
+		goto found;
+	if((ptr=strstr(buf, "CONTENT-LENGTH:"))) // maybe 2
+		goto found;
+	return 0;
+found:
+	char *error_pos;
+	size_t result=(size_t)strtol(ptr+15/*strlen("CONTENT-LENGTH:")*/, &error_pos, 0);
+	
+	const size_t reasonable_initial_max=0x400*0x400*10 /*10M*/;
+	if(result>reasonable_initial_max) // sanity check
+		return reasonable_initial_max;
+	return 0;//result;
+}
+
+static int http_read_response(char*& response, size_t& response_size, int sock, bool fail_on_status_ne_200) {
 	int result=0;
-	char* EOLat=0;
+	// fetching some to local buffer, guessing on possible content-length	
+	response_size=0x400*20; // initial size if content-length could not be determined	
+	const size_t preview_size=0x400*20;
+	char preview_buf[preview_size+1/*terminator*/];  // 20K buffer to preview headers
+	ssize_t received_size=recv(sock, preview_buf, preview_size, 0); 
+	if(received_size==0)
+		goto done;
+	if(received_size<0) {
+		if(int no=pa_socks_errno())
+			throw Exception("http.timeout", 
+				0, 
+				"error receiving response header: %s (%d)", pa_socks_strerr(no), no); 
+		goto done;
+	}
+	// detecting response_size
+	{
+		preview_buf[received_size]=0; // terminator
+		if(size_t content_length=guess_content_length(preview_buf))
+			response_size=preview_size+content_length; // a little more than needed, will adjust response_size by actual received size later
+	}
+
+	// allocating initial buf
+	response=(char*)pa_malloc_atomic(response_size+1/*terminator*/); // just setting memory block type
+	char* ptr=response;
+	size_t todo_size=response_size;
+	// coping part of already received body
+	memcpy(ptr, preview_buf, received_size);
+	ptr+=received_size;
+	todo_size-=received_size;		
+
+	// we use terminator byte for two purposes here:
+	// 1. we return there zero always, not knowing: maybe they would want to create String form $file.body?
+	//     invariant: all Strings should have zero-terminated buffers
+	// 2. we use that out-of-size byte to detect if our content-length guess was wrong
+	//    when recv gets more than we expected
+	//    a) we know that the content-length guess was wrong
+	//    b) we have space to put the first byte of extra data
+	//    c) we use less code to detect normal situation: on last while-cycle recv expected to just return 0
 	while(true) {
-		char buf[MAX_STRING*10]; 
-		ssize_t received_size=recv(sock, buf, sizeof(buf), 0); 
-		if(received_size==0)
+		received_size=recv(sock, ptr, todo_size+1/*there is always a place for terminator*/, 0); 
+		if(received_size==0) {
+			response_size-=todo_size; // in case we received less than expected, cut down the reported size
 			break;
+		}
 		if(received_size<0) {
 			if(int no=pa_socks_errno())
 				throw Exception("http.timeout", 
 					0, 
-					"error receiving response: %s (%d)", pa_socks_strerr(no), no); 
+					"error receiving response body: %s (%d)", pa_socks_strerr(no), no); 
 			break;
 		}
-		response=(char*)pa_realloc(response, response_size+received_size+1/*terminator*/);
-		memcpy(response+response_size, buf, received_size);
-		response_size+=received_size;
-		response[response_size]=0;
+		// they've touched the terminator?
+		if((size_t)received_size>todo_size)
+		{
+			// that means that our guessed response_size was not big enough
+			const size_t grow_chunk_size=0x400*0x400; // 1M
+			response_size+=grow_chunk_size;
+			size_t ptr_offset=ptr-response;
+			response=(char*)pa_realloc(response, response_size+1/*terminator*/);
+			ptr=response+ptr_offset;
+			todo_size+=grow_chunk_size;
+		}
+		// can't do this before realloc: we need <todo_size check
+		ptr+=received_size;
+		todo_size-=received_size;
 
+		char* EOLat=0;
 		if(!result && (EOLat=strstr(response, "\n"))) { // checking status in first response
 			const String status_line(pa_strdup(response, EOLat-response));
 			ArrayString astatus; 
@@ -208,8 +276,12 @@ static int http_read_response(char*& response, size_t& response_size, int sock, 
 					"invalid HTTP response status");
 		}
 	}
+done:
 	if(result)
+	{
+		response[response_size]=0;
 		return result;
+	}
 	else
 		throw Exception("http.response",
 			0,
