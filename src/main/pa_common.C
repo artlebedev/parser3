@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMMON_C="$Date: 2005/11/18 09:17:09 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2005/11/18 10:17:12 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -810,11 +810,9 @@ static void file_read_action(
 				"read failed: actually read %u bytes count not in [0..%u] valid range", 
 					*info.data_size, to_read_size); 
 	} else { // empty file
-		if(as_text) {
-			*info.data=new(PointerFreeGC) char[1]; 
-			*(char*)(*info.data)=0;
-		} else 
-			*info.data=0;
+		// for both, text and binary: for text we need that terminator, for binary we need nonzero pointer to be able to save such files
+		*info.data=new(PointerFreeGC) char[1]; 
+		*(char*)(*info.data)=0;
 		*info.data_size=0;
 		return;
 	}
