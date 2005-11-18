@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Date: 2004/05/25 11:44:28 $";
+static const char * const IDENT="$Date: 2005/11/18 10:04:03 $";
 
 #include "apr_file_io.h"
 
@@ -64,7 +64,9 @@ APR_DECLARE(apr_status_t) apr_file_open(apr_file_t **new_file, const char *fname
     }
 #endif
     
-	(*new_file)->handle = open(fname, oflags, /*apr_unix_perms2mode*/(perm));
+	if(((*new_file)->handle = open(fname, oflags, /*apr_unix_perms2mode*/(perm))) <0 ) 
+		return errno;
+
     return APR_SUCCESS;
 }
 
