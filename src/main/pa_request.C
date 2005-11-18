@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REQUEST_C="$Date: 2005/08/05 13:03:02 $";
+static const char * const IDENT_REQUEST_C="$Date: 2005/11/18 09:57:03 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -389,6 +389,13 @@ gettimeofday(&mt[2],NULL);
 			body_value=response.fields().get(body_name); // $response:body
 		if(!body_value)
 			body_value=new VString(*body_string); // just result of ^main[]
+		// ensure that body_value has no just L_TAINTED parts left
+		if(body_value->is_string())
+		{
+			String& untainted=*new String();
+			untainted.append(*body_value->get_string(), flang);
+			body_value=new VString(untainted);
+		}
 
 		// @postprocess
 		if(Value* value=main_class.get_element(post_process_method_name, main_class, false))
