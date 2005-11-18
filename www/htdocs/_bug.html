@@ -1,41 +1,4 @@
-@opt[]
-$result[
-	$.encloser["]
-#	$.separator[^#09]
-]
-
-@main[]
-$filename[/t.cfg]
-$options2[
-	$.encloser["]
-#	$.separator[^#09]
-]
-
-$t1[^table::create{a	b
-1	"
-2	""
-3	"""}]
-
-^t1.save[$filename][$options2]
-
-# if we try load with $options - we receive error
-$t2[^table::load[$filename][$options2]]
-#$t2[^table::load[$filename][^opt[]]]
-#$t2[^table::load[$filename][$.encloser["]]]
-
-
-<table border="1">
-<tr>
-	<td>t1</td>
-	<td>t2</td>
-	<td>eq?</td>
-</tr>
-^t1.menu{
-	<tr>
-		<td>$t1.b</td>
-		<td>$t2.b</td>
-		<td>^if($t1.b eq $t2.b){YES}{NO}</td>
-	</tr>
-	^t2.offset(1)
+$l[^file:list[.]]
+^l.menu{
+$l.name
 }
-</table>
