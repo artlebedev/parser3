@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_DOUBLE_C="$Date: 2005/08/26 11:08:30 $";
+static const char * const IDENT_DOUBLE_C="$Date: 2005/11/18 12:51:43 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -82,7 +82,8 @@ static void _sql(Request& r, MethodParams& params) {
 	double val;
 	HashStringValue* options;
 	Value* default_code;
-	if(const String* string=sql_result_string(r, params, options, default_code))
+	const String* string=sql_result_string(r, params, options, default_code);
+	if(string && !string->is_empty())
 		val=string->as_double();
 	else
 		if(default_code)
