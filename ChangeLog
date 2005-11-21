@@ -1,11 +1,1067 @@
-2005-05-24  paf
+2005-11-21	paf
+	* src/main/compile.tab.C [release_3_1_5] 1.103.8.7:
+	* src/main/compile.y [release_3_1_5] 1.213.10.6:
+		! overoptimized void literals, reverted to just vvod, recreating 
+		empty array with each void_value token. that's absolutely needed,
+		 since that array grows
+
+	* src/classes/file.C [release_3_1_5] 1.133.6.4:
+	* www/htdocs/_bug.html [release_3_1_5] 1.84.4.12:
+		+ merged from HEAD: ^file::create[text;file.xml;^untaint[xml]{
+		data}]
+
+	* src/classes/file.C 1.138:
+	* www/htdocs/_bug.html 1.100:
+		+ ^file::create[text;file.xml;^untaint[xml]{data}]
+
+	* src/types/Makefile.am [release_3_1_5] 1.38.6.1:
+	* src/types/pa_venv.C [release_3_1_5] 1.1.2.1:
+	* src/types/pa_venv.h [release_3_1_5] 1.31.14.2:
+	* src/types/types.vcproj [release_3_1_5] 1.14.6.1:
+	* www/htdocs/_bug.html [release_3_1_5] 1.84.4.10:
+		+ $env:PARSER_VERSION reports "3.1.5beta (compiled on i386-pc-
+		win32)"
+
+	* src/types/Makefile.am 1.40:
+	* src/types/pa_venv.C 1.2:
+	* src/types/pa_venv.h 1.33:
+	* src/types/types.vcproj 1.16:
+	* www/htdocs/_bug.html 1.99:
+	* www/htdocs/_bug.txt 1.6:
+		+ merged: $env:PARSER_VERSION reports "3.1.5beta (compiled on 
+		i386-pc-win32)"
+
+	* src/main/pa_request.C [release_3_1_5] 1.274.6.3:
+		! $response:body[file] now differes from :download, it does not 
+		return content-disposition at all now [previusely it returned 
+		valueless content-disposition]
+
+	* src/main/compile.tab.C [release_3_1_5] 1.103.8.6:
+	* src/main/compile.y [release_3_1_5] 1.213.10.5:
+	* src/types/pa_value.h [release_3_1_5] 1.119.6.3:
+	* src/types/pa_vbool.h [release_3_1_5] 1.25.10.2:
+	* src/types/pa_vdouble.h [release_3_1_5] 1.46.8.5:
+	* src/types/pa_vint.h [release_3_1_5] 1.41.14.3:
+	* src/types/pa_vmethod_frame.h [release_3_1_5] 1.51.6.5:
+	* www/htdocs/_bug.html [release_3_1_5] 1.84.4.11:
+		+ expression literals: true/false. ^format[$.indent(true)]
+
+	* src/main/compile.tab.C 1.107:
+	* src/main/compile.y 1.216:
+	* src/types/pa_value.h 1.126:
+	* src/types/pa_vbool.h 1.27:
+	* src/types/pa_vdouble.h 1.50:
+	* src/types/pa_vint.h 1.44:
+	* src/types/pa_vmethod_frame.h 1.60:
+		+ merged: expression literals: true/false. ^format[$.indent(true)
+		]
+
+	* src/main/pa_request.C 1.277:
+		! merged: $response:body[file] now differes from :download, it 
+		does not return content-disposition at all now [previusely it 
+		returned valueless content-disposition]
+
+	* src/types/pa_venv.C 1.1:
+		file pa_venv.C was initially added on branch release_3_1_5.
+
+2005-11-18	paf
+	* src/main/pa_common.C 1.207:
+		! merged from 3.1.5: fixed file load memory issue: now tries to 
+		guess content-length and allocates one big piece if possible [
+		regretfully gc_realloc works as malloc+free, leaving lots of 
+		holes behind]
+
+	* src/include/pa_dir.h [release_3_1_5] 1.16.14.2:
+		! file:list now sees .xxx files, only . and .. now removed from 
+		list [were removed all .*]
+
+	* src/classes/table.C [release_3_1_5] 1.208.6.6:
+		! ^table::create[not'nameless'; failed << 
+		Exception.problem_source pointed to local var!
+
+	* src/main/pa_request.C 1.276:
+		! merged from 3.1.5: ensured proper untainting of @main result 
+		if returned by $result or $response:body
+
+	* src/classes/op.C 1.158:
+		+ merged ^cache[] << returns current cache expiration time
+
+	* src/classes/table.C 1.215:
+		! merged ^table::create[not'nameless'; failed << 
+		Exception.problem_source pointed to local var!
+
+	* src/classes/op.C [release_3_1_5] 1.152.4.4:
+	* www/htdocs/_bug.html [release_3_1_5] 1.84.4.9:
+		+ ^cache[] << returns current cache expiration time
+
+	* src/classes/double.C [release_3_1_5] 1.57.14.3:
+	* src/classes/int.C [release_3_1_5] 1.53.14.3:
+		! ^int/double:sql{select null}[$.default(123)] will now return 
+		default value
+
+	* src/lib/sdbm/apr_file_io.C 1.5:
+		! merged from 3.1.5: hashfile file open error now checked, were 
+		not :( [stole that piece from apache 1.3 sources]
+
+	* src/include/pa_dir.h 1.18:
+	* www/htdocs/_bug.html [release_3_1_5] 1.84.4.8:
+	* www/htdocs/_bug.txt [release_3_1_5] 1.5.12.2:
+		! merged: file:list now sees .xxx files, only . and .. now 
+		removed from list [were removed all .*]
+
+	* src/classes/memory.C [release_3_1_5] 1.7.8.2:
+	* src/main/compile.tab.C [release_3_1_5] 1.103.8.5:
+	* src/main/pa_common.C [release_3_1_5] 1.204.6.3:
+		! fixed file load memory issue: now tries to guess content-
+		length and allocates one big piece if possible [regretfully 
+		gc_realloc works as malloc+free, leaving lots of holes behind]
+
+	* src/main/pa_common.C 1.209:
+		! merged: file::load[binary;fileOfZeroSize] now loads VFile.ptr!=
+		0, so such files can be saved now
+
+	* src/main/pa_request.C [release_3_1_5] 1.274.6.2:
+		! ensured proper untainting of @main result if returned by $
+		result or $response:body
+
+	* src/lib/sdbm/apr_file_io.C [release_3_1_5] 1.4.10.1:
+		! hashfile file open error now checked, were not :( [stole that 
+		piece from apache 1.3 sources]
+
+	* src/main/pa_common.C [release_3_1_5] 1.204.6.5:
+		! file::load[binary;fileOfZeroSize] now loads VFile.ptr!=0, so 
+		such files can be saved now
+
+2005-11-16	paf
+	* src/classes/file.C [release_3_1_5] 1.133.6.3:
+	* src/classes/table.C [release_3_1_5] 1.208.6.5:
+	* src/include/pa_common.h [release_3_1_5] 1.101.8.2:
+	* src/main/pa_common.C [release_3_1_5] 1.204.6.2:
+	* www/htdocs/_bug.html [release_3_1_5] 1.84.4.7:
+		! table::save with enclosers now doubles them: "->""
+		! table::save/load do not remove elements from options hash
+
+	* src/main/compile.tab.C [release_3_1_5] 1.103.8.4:
+	* src/main/compile.y [release_3_1_5] 1.213.10.4:
+		! ^if(-f "...") now works [were overoptimized ^if(double_literal)
+		, compiler confused OP_VALUE+origin+double with OP_STRINGPOOL+
+		code+OP_writeXX
+
+	* src/main/compile.y 1.215:
+		! merged to HEAD: ^if(-f "...") now works [were overoptimized ^
+		if(double_literal), compiler confused OP_VALUE+origin+double 
+		with OP_STRINGPOOL+code+OP_writeXX
+
+	* src/classes/file.C 1.137:
+	* src/classes/table.C 1.214:
+	* src/include/pa_common.h 1.103:
+	* src/main/compile.tab.C 1.106:
+	* src/main/pa_common.C 1.206:
+	* www/htdocs/_bug.html 1.98:
+		merged to HEAD:
+		! table::save with enclosers now doubles them: "->""
+		! table::save/load do not remove elements from options hash
+
+2005-11-03	paf
+	* src/main/Makefile.am 1.45:
+	* src/main/Makefile.in 1.58:
+	* src/main/compile.tab.C 1.105:
+		removed $< from .y compilation, not all makefiles liked that
+
+2005-08-30	paf
+	* src/classes/op.C [release_3_1_5] 1.152.4.3:
+		. speedup check of [DEFAULT]
+
+	* src/classes/op.C 1.157:
+		merge . speedup check of [DEFAULT]
+
+2005-08-26	paf
+	* src/classes/hash.C 1.76:
+	* src/classes/string.C 1.145:
+	* src/classes/table.C 1.212:
+	* src/classes/void.C 1.36:
+		merged ! optional options were allowed to be empty. were checked 
+		if(is_string), changed to !defined||is_string to allow void
+
+	* src/classes/hash.C [release_3_1_5] 1.73.6.2:
+	* src/classes/string.C [release_3_1_5] 1.142.6.3:
+	* src/classes/table.C [release_3_1_5] 1.208.6.3:
+	* src/classes/void.C [release_3_1_5] 1.34.8.2:
+	* src/targets/isapi/parser3isapi.C 1.94:
+	* www/htdocs/_bug.html 1.96:
+		! optional options were allowed to be empty. were checked if(
+		is_string), changed to !defined||is_string to allow void
+
+	* src/classes/date.C [release_3_1_5] 1.69.6.2:
+	* src/types/pa_vdate.h [release_3_1_5] 1.38.6.2:
+	* www/htdocs/_bug.html [release_3_1_5] 1.84.4.6:
+		+ date.week
+
+	* src/classes/date.C 1.72:
+	* src/types/pa_vdate.h 1.40:
+	* www/htdocs/_bug.html 1.97:
+		merged + date.week
+
+	* src/classes/double.C [release_3_1_5] 1.57.14.2:
+	* src/classes/int.C [release_3_1_5] 1.53.14.2:
+	* src/classes/math.C [release_3_1_5] 1.39.8.2:
+	* src/classes/op.C [release_3_1_5] 1.152.4.2:
+	* src/classes/string.C [release_3_1_5] 1.142.6.2:
+	* src/classes/table.C [release_3_1_5] 1.208.6.2:
+	* src/main/compile.tab.C [release_3_1_5] 1.103.8.3:
+	* src/types/pa_vmethod_frame.h [release_3_1_5] 1.51.6.4:
+	* www/htdocs/_bug.html [release_3_1_5] 1.84.4.5:
+		! many classes/*  used as_junction where they needed as_int/
+		double, so failed with recent "(const) now no junction" 
+		optimization
+
+	* src/classes/double.C 1.59:
+	* src/classes/int.C 1.55:
+	* src/classes/math.C 1.41:
+	* src/classes/op.C 1.156:
+	* src/classes/string.C 1.144:
+	* src/classes/table.C 1.211:
+	* src/types/pa_vmethod_frame.h 1.59:
+		merged ! many classes/*  used as_junction where they needed 
+		as_int/double, so failed with recent "(const) now no junction" 
+		optimization
+
+	* src/classes/table.C 1.213:
+		merged ! ^table::create[bad]{xxx} now complains about bad!=
+		nameless
+
+	* src/classes/table.C [release_3_1_5] 1.208.6.4:
+		! ^table::create[bad]{xxx} now complains about bad!=nameless
+
+2005-08-24	paf
+	* src/targets/isapi/parser3isapi.C [release_3_1_5] 1.92.8.2:
+	* src/targets/isapi/parser3isapi.vcproj [release_3_1_5] 1.8.8.2:
+		! on windows 2003 DllMain receivese \\?\ prefix to fullspec of 
+		.dll, stripped it
+
+2005-08-09	paf
+	* src/types/pa_value.h [release_3_1_5] 1.119.6.2:
+	* src/types/pa_vdouble.h [release_3_1_5] 1.46.8.4:
+	* src/types/pa_vint.h [release_3_1_5] 1.41.14.2:
+	* src/types/pa_vmethod_frame.h [release_3_1_5] 1.51.6.3:
+		merged from HEAD ! simplified (double) speedup consequent checks 
+		in vmethod_frame
+
+	* src/classes/file.C [release_3_1_5] 1.133.6.2:
+	* src/main/pa_exec.C [release_3_1_5] 1.65.8.2:
+		+ file::cgi/exec now params: 50 max (were 10)
+
+	* src/types/pa_value.h 1.124:
+	* src/types/pa_vdouble.h 1.48:
+	* src/types/pa_vint.h 1.42:
+	* src/types/pa_vmethod_frame.h 1.57:
+	* src/types/pa_vvoid.C 1.2:
+	* src/types/pa_vvoid.h 1.27:
+	* src/types/pa_wcontext.C 1.31:
+	* src/types/pa_wcontext.h 1.48:
+	* www/htdocs/.htaccess 1.47:
+	* www/htdocs/_bug.html 1.95:
+		+ ^call[$void] param inside now is void (were: empty string)
+		! simplified (double) speedup consequent checks in vmethod_frame
+
+	* www/htdocs/_bug.html [release_3_1_5] 1.84.4.3:
+	* www/htdocs/_bug.pl [release_3_1_5] 1.3.6.1:
+	* www/htdocs/_bug.txt [release_3_1_5] 1.5.12.1:
+		. file::exec $charset transcodes env fine
+
+	* src/types/pa_wcontext.h [release_3_1_5] 1.46.12.2:
+	* src/types/pa_wcontext.h [release_3_1_5] 1.46.12.3:
+		! bugfix in_expression bit field were not cleared
+
+	* src/types/pa_vmethod_frame.C 1.7:
+	* src/types/pa_vmethod_frame.h 1.56:
+		merged
+		+ optimized constants in expressions vstring->vdouble
+		+ optimized ^call(vdouble), no junction creation, no calls later
+
+	* src/classes/classes.C 1.22:
+	* src/classes/classes.h 1.31:
+	* src/classes/date.C 1.71:
+	* src/classes/double.C 1.58:
+	* src/classes/file.C 1.136:
+	* src/classes/form.C 1.39:
+	* src/classes/hash.C 1.75:
+	* src/classes/hashfile.C 1.36:
+	* src/classes/image.C 1.113:
+	* src/classes/int.C 1.54:
+	* src/classes/mail.C 1.110:
+	* src/classes/math.C 1.40:
+	* src/classes/memory.C 1.8:
+	* src/classes/op.C 1.155:
+	* src/classes/response.C 1.27:
+	* src/classes/string.C 1.143:
+	* src/classes/table.C 1.210:
+	* src/classes/void.C 1.35:
+	* src/classes/xdoc.C 1.148:
+	* src/classes/xnode.C 1.71:
+	* src/classes/xnode.h 1.24:
+	* src/include/pa_array.h 1.65:
+	* src/include/pa_cache_managers.h 1.18:
+	* src/include/pa_charset.h 1.31:
+	* src/include/pa_charsets.h 1.13:
+	* src/include/pa_common.h 1.102:
+	* src/include/pa_config_fixed.h 1.68:
+	* src/include/pa_config_includes.h 1.31:
+	* src/include/pa_dictionary.h 1.18:
+	* src/include/pa_dir.h 1.17:
+	* src/include/pa_exception.h 1.45:
+	* src/include/pa_exec.h 1.18:
+	* src/include/pa_globals.h 1.112:
+	* src/include/pa_hash.h 1.66:
+	* src/include/pa_memory.h 1.12:
+	* src/include/pa_opcode.h 1.28:
+	* src/include/pa_operation.h 1.6:
+	* src/include/pa_os.h 1.5:
+	* src/include/pa_request.h 1.179:
+	* src/include/pa_request_charsets.h 1.5:
+	* src/include/pa_request_info.h 1.5:
+	* src/include/pa_sapi.h 1.27:
+	* src/include/pa_socks.h 1.17:
+	* src/include/pa_sql_connection.h 1.40:
+	* src/include/pa_sql_driver_manager.h 1.33:
+	* src/include/pa_stack.h 1.24:
+	* src/include/pa_string.h 1.165:
+	* src/include/pa_stylesheet_connection.h 1.40:
+	* src/include/pa_stylesheet_manager.h 1.22:
+	* src/include/pa_table.h 1.58:
+	* src/include/pa_threads.h 1.30:
+	* src/include/pa_types.h 1.49:
+	* src/include/pa_uue.h 1.8:
+	* src/include/pa_xml_exception.h 1.4:
+	* src/include/pa_xml_io.h 1.4:
+	* src/lib/gd/gif.C 1.6:
+	* src/lib/gd/gif.h 1.4:
+	* src/lib/gd/gifio.C 1.3:
+	* src/lib/md5/pa_md5.h 1.11:
+	* src/lib/md5/pa_md5c.c 1.13:
+	* src/lib/smtp/comms.C 1.8:
+	* src/lib/smtp/smtp.C 1.8:
+	* src/lib/smtp/smtp.h 1.6:
+	* src/main/compile.C 1.78:
+	* src/main/compile_tools.C 1.59:
+	* src/main/compile_tools.h 1.76:
+	* src/main/execute.C 1.313:
+	* src/main/pa_cache_managers.C 1.16:
+	* src/main/pa_charset.C 1.52:
+	* src/main/pa_charsets.C 1.16:
+	* src/main/pa_common.C 1.205:
+	* src/main/pa_dictionary.C 1.23:
+	* src/main/pa_dir.C 1.20:
+	* src/main/pa_exception.C 1.48:
+	* src/main/pa_exec.C 1.67:
+	* src/main/pa_globals.C 1.177:
+	* src/main/pa_memory.C 1.6:
+	* src/main/pa_os.C 1.8:
+	* src/main/pa_request.C 1.275:
+	* src/main/pa_socks.C 1.24:
+	* src/main/pa_sql_driver_manager.C 1.85:
+	* src/main/pa_string.C 1.203:
+	* src/main/pa_stylesheet_connection.C 1.3:
+	* src/main/pa_stylesheet_manager.C 1.27:
+	* src/main/pa_table.C 1.61:
+	* src/main/pa_uue.C 1.9:
+	* src/main/pa_xml_exception.C 1.4:
+	* src/main/pa_xml_io.C 1.19:
+	* src/main/untaint.C 1.135:
+	* src/sql/pa_sql_driver.h 1.43:
+	* src/targets/apache13/mod_parser3.c 1.12:
+	* src/targets/apache13core/mod_parser3_core.C 1.8:
+	* src/targets/apache13core/pa_threads.C 1.5:
+	* src/targets/cgi/pa_threads.C 1.16:
+	* src/targets/cgi/parser3.C 1.237:
+	* src/targets/isapi/pa_threads.C 1.17:
+	* src/targets/isapi/parser3isapi.C 1.93:
+	* src/types/pa_junction.h 1.7:
+	* src/types/pa_method.h 1.6:
+	* src/types/pa_property.h 1.2:
+	* src/types/pa_value.C 1.19:
+	* src/types/pa_value.h 1.125:
+	* src/types/pa_vbool.h 1.26:
+	* src/types/pa_vclass.C 1.33:
+	* src/types/pa_vclass.h 1.51:
+	* src/types/pa_vcode_frame.h 1.32:
+	* src/types/pa_vconsole.h 1.10:
+	* src/types/pa_vcookie.C 1.68:
+	* src/types/pa_vcookie.h 1.31:
+	* src/types/pa_vdate.h 1.39:
+	* src/types/pa_vdouble.h 1.49:
+	* src/types/pa_venv.h 1.32:
+	* src/types/pa_vfile.C 1.41:
+	* src/types/pa_vfile.h 1.58:
+	* src/types/pa_vform.C 1.84:
+	* src/types/pa_vform.h 1.50:
+	* src/types/pa_vhash.C 1.8:
+	* src/types/pa_vhash.h 1.58:
+	* src/types/pa_vhashfile.h 1.33:
+	* src/types/pa_vimage.C 1.35:
+	* src/types/pa_vimage.h 1.45:
+	* src/types/pa_vint.h 1.43:
+	* src/types/pa_vjunction.h 1.24:
+	* src/types/pa_vmail.C 1.72:
+	* src/types/pa_vmail.h 1.17:
+	* src/types/pa_vmath.C 1.8:
+	* src/types/pa_vmath.h 1.18:
+	* src/types/pa_vmemory.h 1.5:
+	* src/types/pa_vmethod_frame.C 1.8:
+	* src/types/pa_vmethod_frame.h 1.58:
+	* src/types/pa_vobject.C 1.24:
+	* src/types/pa_vobject.h 1.47:
+	* src/types/pa_vproperty.h 1.3:
+	* src/types/pa_vrequest.C 1.37:
+	* src/types/pa_vrequest.h 1.33:
+	* src/types/pa_vresponse.C 1.25:
+	* src/types/pa_vresponse.h 1.40:
+	* src/types/pa_vstateless_class.C 1.28:
+	* src/types/pa_vstateless_class.h 1.53:
+	* src/types/pa_vstateless_object.h 1.36:
+	* src/types/pa_vstatus.C 1.25:
+	* src/types/pa_vstatus.h 1.19:
+	* src/types/pa_vstring.C 1.26:
+	* src/types/pa_vstring.h 1.59:
+	* src/types/pa_vtable.C 1.26:
+	* src/types/pa_vtable.h 1.54:
+	* src/types/pa_vvoid.C 1.3:
+	* src/types/pa_vvoid.h 1.28:
+	* src/types/pa_vxdoc.C 1.29:
+	* src/types/pa_vxdoc.h 1.40:
+	* src/types/pa_vxnode.C 1.43:
+	* src/types/pa_vxnode.h 1.35:
+	* src/types/pa_wcontext.C 1.32:
+	* src/types/pa_wcontext.h 1.49:
+	* src/types/pa_wwrapper.h 1.36:
+		2005
+
+	* src/classes/file.C 1.135:
+	* src/main/pa_exec.C 1.66:
+		merged +file::cgi/exec now params: 50 max (were 10)
+
+2005-08-08	paf
+	* src/classes/classes.h 1.30:
+	* src/main/execute.C 1.312:
+	* src/types/pa_junction.h 1.6:
+	* src/types/pa_value.h 1.123:
+	* src/types/pa_vclass.C 1.32:
+	* src/types/pa_vclass.h 1.50:
+	* src/types/pa_vcode_frame.h 1.31:
+	* src/types/pa_vconsole.h 1.9:
+	* src/types/pa_vcookie.C 1.67:
+	* src/types/pa_vcookie.h 1.30:
+	* src/types/pa_vhash.h 1.57:
+	* src/types/pa_vhashfile.h 1.32:
+	* src/types/pa_vimage.C 1.34:
+	* src/types/pa_vimage.h 1.44:
+	* src/types/pa_vjunction.h 1.23:
+	* src/types/pa_vmethod_frame.h 1.55:
+	* src/types/pa_vobject.C 1.23:
+	* src/types/pa_vobject.h 1.46:
+	* src/types/pa_vrequest.C 1.36:
+	* src/types/pa_vrequest.h 1.32:
+	* src/types/pa_vresponse.C 1.24:
+	* src/types/pa_vresponse.h 1.39:
+	* src/types/pa_vstateless_class.C 1.27:
+	* src/types/pa_vstateless_object.h 1.35:
+	* src/types/pa_vvoid.h 1.26:
+	* src/types/pa_vxnode.C 1.42:
+	* src/types/pa_vxnode.h 1.34:
+	* src/types/pa_wwrapper.h 1.35:
+	* www/htdocs/_bug.html 1.93:
+	* www/htdocs/_bug.p 1.8:
+		. merged VJunction(new Junction) optimization from 3.1.4
+
+	* src/types/pa_vdouble.h [release_3_1_5] 1.46.8.3:
+		. double values without fractional part now default printed as %
+		.0f instead of %g
+
+	* src/classes/hashfile.C 1.35:
+	* www/htdocs/_bug.html [release_3_1_5] 1.84.4.2:
+	* www/htdocs/_bug.xml [release_3_1_5] 1.2.14.1:
+		. merged ! second hashfile::open would cause an exception
+
+	* bin/auto.p.dist.in [release_3_1_5] 1.11.14.1:
+		. apache bad 404 handling workaround integrated
+
+	* src/classes/hashfile.C [release_3_1_5] 1.33.14.2:
+		! second hashfile::open would cause an exception
+
+	* src/main/execute.C [release_3_1_5] 1.306.6.2:
+	* src/types/pa_junction.h [release_3_1_5] 1.4.12.2:
+	* src/types/pa_vjunction.h [release_3_1_5] 1.22.14.2:
+	* src/types/pa_vstateless_class.C [release_3_1_5] 1.22.12.2:
+		+ optimized new VJunction(new Junction(params)) to new VJunction(
+		params), thousands of mallocs removed
+
+	* src/types/pa_vdouble.h 1.47:
+		merged . double values without fractional part now default 
+		printed as %.0f instead of %g
+
+	* src/main/compile.tab.C 1.104:
+	* src/main/compile.y 1.214:
+	* src/main/compile_tools.C 1.58:
+	* src/main/compile_tools.h 1.75:
+	* www/htdocs/.htaccess 1.46:
+	* www/htdocs/_bug.html 1.94:
+	* www/htdocs/_bug.xml 1.3:
+		merged
+		+ optimized constants in expressions vstring->vdouble
+		+ optimized ^call(vdouble), no junction creation, no calls later
+
+	* bin/auto.p.dist.in 1.12:
+		merged . apache bad 404 handling workaround integrated
+
+2005-08-05	paf
+	* src/include/pa_memory.h [release_3_1_5] 1.11.14.2:
+	* src/main/compile.tab.C [release_3_1_5] 1.103.8.2:
+	* src/main/compile.y [release_3_1_5] 1.213.10.3:
+	* src/types/pa_vdouble.h [release_3_1_5] 1.46.8.2:
+	* src/types/pa_vmethod_frame.C [release_3_1_5] 1.6.12.2:
+	* src/types/pa_vmethod_frame.h [release_3_1_5] 1.51.6.2:
+		+ optimized ^call(vdouble), no junction creation, no calls later
+
+	* src/classes/classes.C [release_3_1_5] 1.21.14.1:
+	* src/classes/classes.h [release_3_1_5] 1.26.12.1:
+	* src/classes/date.C [release_3_1_5] 1.69.6.1:
+	* src/classes/double.C [release_3_1_5] 1.57.14.1:
+	* src/classes/file.C [release_3_1_5] 1.133.6.1:
+	* src/classes/form.C [release_3_1_5] 1.38.14.1:
+	* src/classes/hash.C [release_3_1_5] 1.73.6.1:
+	* src/classes/hashfile.C [release_3_1_5] 1.33.14.1:
+	* src/classes/image.C [release_3_1_5] 1.111.8.1:
+	* src/classes/int.C [release_3_1_5] 1.53.14.1:
+	* src/classes/mail.C [release_3_1_5] 1.109.8.1:
+	* src/classes/math.C [release_3_1_5] 1.39.8.1:
+	* src/classes/memory.C [release_3_1_5] 1.7.8.1:
+	* src/classes/op.C [release_3_1_5] 1.152.4.1:
+	* src/classes/response.C [release_3_1_5] 1.26.14.1:
+	* src/classes/string.C [release_3_1_5] 1.142.6.1:
+	* src/classes/table.C [release_3_1_5] 1.208.6.1:
+	* src/classes/void.C [release_3_1_5] 1.34.8.1:
+	* src/classes/xdoc.C [release_3_1_5] 1.146.8.1:
+	* src/classes/xnode.C [release_3_1_5] 1.69.6.1:
+	* src/classes/xnode.h [release_3_1_5] 1.22.14.1:
+	* src/include/pa_array.h [release_3_1_5] 1.64.14.1:
+	* src/include/pa_cache_managers.h [release_3_1_5] 1.17.12.1:
+	* src/include/pa_charset.h [release_3_1_5] 1.30.14.1:
+	* src/include/pa_charsets.h [release_3_1_5] 1.12.14.1:
+	* src/include/pa_common.h [release_3_1_5] 1.101.8.1:
+	* src/include/pa_config_fixed.h [release_3_1_5] 1.67.8.1:
+	* src/include/pa_config_includes.h [release_3_1_5] 1.30.8.1:
+	* src/include/pa_dictionary.h [release_3_1_5] 1.17.14.1:
+	* src/include/pa_dir.h [release_3_1_5] 1.16.14.1:
+	* src/include/pa_exception.h [release_3_1_5] 1.44.8.1:
+	* src/include/pa_exec.h [release_3_1_5] 1.17.10.1:
+	* src/include/pa_globals.h [release_3_1_5] 1.111.8.1:
+	* src/include/pa_hash.h [release_3_1_5] 1.62.12.1:
+	* src/include/pa_memory.h [release_3_1_5] 1.11.14.1:
+	* src/include/pa_opcode.h [release_3_1_5] 1.27.14.1:
+	* src/include/pa_operation.h [release_3_1_5] 1.5.14.1:
+	* src/include/pa_os.h [release_3_1_5] 1.4.14.1:
+	* src/include/pa_request.h [release_3_1_5] 1.177.6.1:
+	* src/include/pa_request_charsets.h [release_3_1_5] 1.4.14.1:
+	* src/include/pa_request_info.h [release_3_1_5] 1.4.14.1:
+	* src/include/pa_sapi.h [release_3_1_5] 1.26.8.1:
+	* src/include/pa_socks.h [release_3_1_5] 1.16.8.1:
+	* src/include/pa_sql_connection.h [release_3_1_5] 1.39.8.1:
+	* src/include/pa_sql_driver_manager.h [release_3_1_5] 1.32.14.1:
+	* src/include/pa_stack.h [release_3_1_5] 1.23.6.1:
+	* src/include/pa_string.h [release_3_1_5] 1.164.8.1:
+	* src/include/pa_stylesheet_connection.h [release_3_1_5] 1.39.14.1:
+	* src/include/pa_stylesheet_manager.h [release_3_1_5] 1.21.14.1:
+	* src/include/pa_table.h [release_3_1_5] 1.57.14.1:
+	* src/include/pa_threads.h [release_3_1_5] 1.29.14.1:
+	* src/include/pa_types.h [release_3_1_5] 1.48.14.1:
+	* src/include/pa_uue.h [release_3_1_5] 1.7.14.1:
+	* src/include/pa_xml_exception.h [release_3_1_5] 1.3.14.1:
+	* src/include/pa_xml_io.h [release_3_1_5] 1.3.14.1:
+	* src/lib/gd/gif.C [release_3_1_5] 1.5.6.1:
+	* src/lib/gd/gif.h [release_3_1_5] 1.3.14.1:
+	* src/lib/gd/gifio.C [release_3_1_5] 1.2.14.1:
+	* src/lib/md5/pa_md5.h [release_3_1_5] 1.10.14.1:
+	* src/lib/md5/pa_md5c.c [release_3_1_5] 1.12.14.1:
+	* src/lib/smtp/comms.C [release_3_1_5] 1.7.8.1:
+	* src/lib/smtp/smtp.C [release_3_1_5] 1.7.14.1:
+	* src/lib/smtp/smtp.h [release_3_1_5] 1.5.14.1:
+	* src/main/compile.C [release_3_1_5] 1.75.10.1:
+	* src/main/compile.y [release_3_1_5] 1.213.10.2:
+	* src/main/compile_tools.C [release_3_1_5] 1.57.14.2:
+	* src/main/compile_tools.h [release_3_1_5] 1.74.12.2:
+	* src/main/execute.C [release_3_1_5] 1.306.6.1:
+	* src/main/pa_cache_managers.C [release_3_1_5] 1.15.12.1:
+	* src/main/pa_charset.C [release_3_1_5] 1.51.6.1:
+	* src/main/pa_charsets.C [release_3_1_5] 1.15.14.1:
+	* src/main/pa_common.C [release_3_1_5] 1.204.6.1:
+	* src/main/pa_dictionary.C [release_3_1_5] 1.22.14.1:
+	* src/main/pa_dir.C [release_3_1_5] 1.19.14.1:
+	* src/main/pa_exception.C [release_3_1_5] 1.47.14.1:
+	* src/main/pa_exec.C [release_3_1_5] 1.65.8.1:
+	* src/main/pa_globals.C [release_3_1_5] 1.176.8.1:
+	* src/main/pa_memory.C [release_3_1_5] 1.5.14.1:
+	* src/main/pa_os.C [release_3_1_5] 1.7.8.1:
+	* src/main/pa_request.C [release_3_1_5] 1.274.6.1:
+	* src/main/pa_socks.C [release_3_1_5] 1.23.8.1:
+	* src/main/pa_sql_driver_manager.C [release_3_1_5] 1.84.8.1:
+	* src/main/pa_string.C [release_3_1_5] 1.202.6.1:
+	* src/main/pa_stylesheet_connection.C [release_3_1_5] 1.2.12.1:
+	* src/main/pa_stylesheet_manager.C [release_3_1_5] 1.26.14.1:
+	* src/main/pa_table.C [release_3_1_5] 1.60.14.1:
+	* src/main/pa_uue.C [release_3_1_5] 1.8.14.1:
+	* src/main/pa_xml_exception.C [release_3_1_5] 1.3.14.1:
+	* src/main/pa_xml_io.C [release_3_1_5] 1.18.10.1:
+	* src/main/untaint.C [release_3_1_5] 1.134.6.1:
+	* src/sql/pa_sql_driver.h [release_3_1_5] 1.42.8.1:
+	* src/targets/apache13/mod_parser3.c [release_3_1_5] 1.11.12.1:
+	* src/targets/apache13core/mod_parser3_core.C [release_3_1_5] 1.7.8.1:
+	* src/targets/apache13core/pa_threads.C [release_3_1_5] 1.4.14.1:
+	* src/targets/cgi/pa_threads.C [release_3_1_5] 1.15.14.1:
+	* src/targets/cgi/parser3.C [release_3_1_5] 1.236.6.1:
+	* src/targets/isapi/pa_threads.C [release_3_1_5] 1.16.14.1:
+	* src/targets/isapi/parser3isapi.C [release_3_1_5] 1.92.8.1:
+	* src/types/pa_junction.h [release_3_1_5] 1.4.12.1:
+	* src/types/pa_method.h [release_3_1_5] 1.4.14.1:
+	* src/types/pa_value.C [release_3_1_5] 1.18.8.1:
+	* src/types/pa_value.h [release_3_1_5] 1.119.6.1:
+	* src/types/pa_vbool.h [release_3_1_5] 1.25.10.1:
+	* src/types/pa_vclass.C [release_3_1_5] 1.20.12.1:
+	* src/types/pa_vclass.h [release_3_1_5] 1.43.12.1:
+	* src/types/pa_vcode_frame.h [release_3_1_5] 1.27.12.1:
+	* src/types/pa_vconsole.h [release_3_1_5] 1.5.12.1:
+	* src/types/pa_vcookie.C [release_3_1_5] 1.63.12.1:
+	* src/types/pa_vcookie.h [release_3_1_5] 1.26.12.1:
+	* src/types/pa_vdate.h [release_3_1_5] 1.38.6.1:
+	* src/types/pa_vdouble.h [release_3_1_5] 1.46.8.1:
+	* src/types/pa_venv.h [release_3_1_5] 1.31.14.1:
+	* src/types/pa_vfile.C [release_3_1_5] 1.40.14.1:
+	* src/types/pa_vfile.h [release_3_1_5] 1.57.8.1:
+	* src/types/pa_vform.C [release_3_1_5] 1.83.8.1:
+	* src/types/pa_vform.h [release_3_1_5] 1.49.14.1:
+	* src/types/pa_vhash.C [release_3_1_5] 1.7.6.1:
+	* src/types/pa_vhash.h [release_3_1_5] 1.53.6.1:
+	* src/types/pa_vhashfile.h [release_3_1_5] 1.28.8.1:
+	* src/types/pa_vimage.C [release_3_1_5] 1.30.12.1:
+	* src/types/pa_vimage.h [release_3_1_5] 1.40.12.1:
+	* src/types/pa_vint.h [release_3_1_5] 1.41.14.1:
+	* src/types/pa_vjunction.h [release_3_1_5] 1.22.14.1:
+	* src/types/pa_vmail.C [release_3_1_5] 1.71.6.1:
+	* src/types/pa_vmail.h [release_3_1_5] 1.16.10.1:
+	* src/types/pa_vmath.C [release_3_1_5] 1.7.14.1:
+	* src/types/pa_vmath.h [release_3_1_5] 1.17.14.1:
+	* src/types/pa_vmemory.h [release_3_1_5] 1.4.14.1:
+	* src/types/pa_vmethod_frame.C [release_3_1_5] 1.6.12.1:
+	* src/types/pa_vmethod_frame.h [release_3_1_5] 1.51.6.1:
+	* src/types/pa_vobject.C [release_3_1_5] 1.16.12.1:
+	* src/types/pa_vobject.h [release_3_1_5] 1.42.12.1:
+	* src/types/pa_vrequest.C [release_3_1_5] 1.32.12.1:
+	* src/types/pa_vrequest.h [release_3_1_5] 1.28.12.1:
+	* src/types/pa_vresponse.C [release_3_1_5] 1.20.12.1:
+	* src/types/pa_vresponse.h [release_3_1_5] 1.35.12.1:
+	* src/types/pa_vstateless_class.C [release_3_1_5] 1.22.12.1:
+	* src/types/pa_vstateless_class.h [release_3_1_5] 1.48.12.1:
+	* src/types/pa_vstateless_object.h [release_3_1_5] 1.31.12.1:
+	* src/types/pa_vstatus.C [release_3_1_5] 1.24.14.1:
+	* src/types/pa_vstatus.h [release_3_1_5] 1.18.14.1:
+	* src/types/pa_vstring.C [release_3_1_5] 1.25.14.1:
+	* src/types/pa_vstring.h [release_3_1_5] 1.58.14.1:
+	* src/types/pa_vtable.C [release_3_1_5] 1.25.14.1:
+	* src/types/pa_vtable.h [release_3_1_5] 1.53.10.1:
+	* src/types/pa_vvoid.C [release_3_1_5] 1.1.10.1:
+	* src/types/pa_vvoid.h [release_3_1_5] 1.22.8.1:
+	* src/types/pa_vxdoc.C [release_3_1_5] 1.28.14.1:
+	* src/types/pa_vxdoc.h [release_3_1_5] 1.39.14.1:
+	* src/types/pa_vxnode.C [release_3_1_5] 1.38.12.1:
+	* src/types/pa_vxnode.h [release_3_1_5] 1.30.12.1:
+	* src/types/pa_wcontext.C [release_3_1_5] 1.30.14.1:
+	* src/types/pa_wcontext.h [release_3_1_5] 1.46.12.1:
+	* src/types/pa_wwrapper.h [release_3_1_5] 1.31.12.1:
+		. 2005 ;)
+
+	* src/lib/cord/cord.vcproj [release_3_1_5] 1.2.8.1:
+	* src/lib/gd/gd.vcproj [release_3_1_5] 1.7.8.1:
+	* src/lib/ltdl/ltdl.vcproj [release_3_1_5] 1.3.8.1:
+	* src/lib/md5/md5.vcproj [release_3_1_5] 1.3.8.1:
+	* src/lib/pcre/pcre.vcproj [release_3_1_5] 1.3.8.1:
+	* src/lib/pcre/pcre_dftables.vcproj [release_3_1_5] 1.4.8.1:
+	* src/lib/pcre/pcre_parser_ctype.vcproj [release_3_1_5] 1.4.8.1:
+	* src/lib/sdbm/sdbm.vcproj [release_3_1_5] 1.4.14.1:
+	* src/lib/smtp/smtp.vcproj [release_3_1_5] 1.6.8.1:
+	* src/main/compile.tab.C [release_3_1_5] 1.103.8.1:
+	* src/main/compile.y [release_3_1_5] 1.213.10.1:
+	* src/main/compile_tools.C [release_3_1_5] 1.57.14.1:
+	* src/main/compile_tools.h [release_3_1_5] 1.74.12.1:
+	* src/targets/apache13/ApacheModuleParser3.vcproj [release_3_1_5] 1.7.8.1:
+	* src/targets/apache13core/ApacheModuleParser3Core.vcproj [release_3_1_5] 1.9.8.1:
+	* src/targets/cgi/parser3.vcproj [release_3_1_5] 1.12.8.1:
+	* src/targets/isapi/parser3isapi.vcproj [release_3_1_5] 1.8.8.1:
+		+ optimized constants in expressions vstring->vdouble
+
+2005-07-29	paf
+	* src/types/pa_vclass.C 1.31:
+	* www/htdocs/_bug.p 1.7:
+		. shaped up error messages a bit
+
+	* src/main/execute.C 1.311:
+	* src/types/pa_vclass.C 1.29:
+	* src/types/pa_vobject.C 1.22:
+	* www/htdocs/_bug.p 1.6:
+	* www/htdocs/_bug_derived.p 1.2:
+		! bug fix: static parent fields were not replaced in case $derived:field[put]
+		+ property setter can now be overridden
+
+	* www/htdocs/_bug.html 1.92:
+	* www/htdocs/_bug.p 1.5:
+	* www/htdocs/_bug_derived.p 1.1:
+		+ removed limit "ctor must be declared in class being created"
+
+	* src/types/pa_vclass.C 1.30:
+	* www/htdocs/_bug_derived.p 1.3:
+		+ property getter can now be overridden
+
+2005-07-28	paf
+	* src/classes/hash.C [dynamic_fields_join] 1.73.4.4:
+	* src/classes/hashfile.C [dynamic_fields_join] 1.33.12.4:
+	* src/classes/op.C [dynamic_fields_join] 1.153.2.3:
+	* src/classes/xnode.C [dynamic_fields_join] 1.69.4.2:
+	* src/include/pa_hash.h [dynamic_fields_join] 1.64.2.4:
+	* src/main/execute.C [dynamic_fields_join] 1.309.2.4:
+	* src/types/pa_method.h [dynamic_fields_join] 1.4.12.3:
+	* src/types/pa_value.h [dynamic_fields_join] 1.121.2.4:
+	* src/types/pa_vclass.C [dynamic_fields_join] 1.27.2.7:
+	* src/types/pa_vclass.h [dynamic_fields_join] 1.48.2.5:
+	* src/types/pa_vcode_frame.h [dynamic_fields_join] 1.29.2.3:
+	* src/types/pa_vconsole.h [dynamic_fields_join] 1.7.2.3:
+	* src/types/pa_vcookie.C [dynamic_fields_join] 1.65.2.3:
+	* src/types/pa_vcookie.h [dynamic_fields_join] 1.28.2.3:
+	* src/types/pa_vhash.h [dynamic_fields_join] 1.55.2.3:
+	* src/types/pa_vhashfile.h [dynamic_fields_join] 1.30.2.3:
+	* src/types/pa_vimage.C [dynamic_fields_join] 1.32.2.3:
+	* src/types/pa_vimage.h [dynamic_fields_join] 1.42.2.3:
+	* src/types/pa_vmethod_frame.h [dynamic_fields_join] 1.53.2.3:
+	* src/types/pa_vobject.C [dynamic_fields_join] 1.20.2.3:
+	* src/types/pa_vobject.h [dynamic_fields_join] 1.44.2.5:
+	* src/types/pa_vrequest.C [dynamic_fields_join] 1.34.2.3:
+	* src/types/pa_vrequest.h [dynamic_fields_join] 1.30.2.3:
+	* src/types/pa_vresponse.C [dynamic_fields_join] 1.22.2.3:
+	* src/types/pa_vresponse.h [dynamic_fields_join] 1.37.2.3:
+	* src/types/pa_vstateless_object.h [dynamic_fields_join] 1.33.2.3:
+	* src/types/pa_vvoid.h [dynamic_fields_join] 1.24.2.3:
+	* src/types/pa_vxnode.C [dynamic_fields_join] 1.40.2.3:
+	* src/types/pa_vxnode.h [dynamic_fields_join] 1.32.2.3:
+	* src/types/pa_wwrapper.h [dynamic_fields_join] 1.33.2.3:
+	* www/htdocs/.htaccess [dynamic_fields_join] 1.44.4.2:
+	* www/htdocs/auto.p [dynamic_fields_join] 1.22.8.2:
+		! restored put_element('replace' param), and restored its checks 
+		in vobject.put_element->static fields | dynamic properties
+
+	* configure 1.84:
+	* configure.in 1.84:
+	* src/classes/classes.h 1.29:
+	* src/classes/date.C 1.70:
+	* src/classes/file.C 1.134:
+	* src/classes/hash.C 1.74:
+	* src/classes/hashfile.C 1.34:
+	* src/classes/image.C 1.112:
+	* src/classes/op.C 1.154:
+	* src/classes/table.C 1.209:
+	* src/classes/xdoc.C 1.147:
+	* src/classes/xnode.C 1.70:
+	* src/classes/xnode.h 1.23:
+	* src/include/pa_hash.h 1.65:
+	* src/include/pa_version.h 1.20:
+	* src/main/execute.C 1.310:
+	* src/types/Makefile.am 1.39:
+	* src/types/Makefile.in 1.59:
+	* src/types/pa_method.h 1.5:
+	* src/types/pa_value.h 1.122:
+	* src/types/pa_vclass.C 1.28:
+	* src/types/pa_vclass.h 1.49:
+	* src/types/pa_vcode_frame.h 1.30:
+	* src/types/pa_vconsole.h 1.8:
+	* src/types/pa_vcookie.C 1.66:
+	* src/types/pa_vcookie.h 1.29:
+	* src/types/pa_vhash.h 1.56:
+	* src/types/pa_vhashfile.h 1.31:
+	* src/types/pa_vimage.C 1.33:
+	* src/types/pa_vimage.h 1.43:
+	* src/types/pa_vmethod_frame.h 1.54:
+	* src/types/pa_vobject.C 1.21:
+	* src/types/pa_vobject.h 1.45:
+	* src/types/pa_vproperty.h 1.2:
+	* src/types/pa_vrequest.C 1.35:
+	* src/types/pa_vrequest.h 1.31:
+	* src/types/pa_vresponse.C 1.23:
+	* src/types/pa_vresponse.h 1.38:
+	* src/types/pa_vstateless_class.C 1.26:
+	* src/types/pa_vstateless_class.h 1.52:
+	* src/types/pa_vstateless_object.h 1.34:
+	* src/types/pa_vvoid.h 1.25:
+	* src/types/pa_vxnode.C 1.41:
+	* src/types/pa_vxnode.h 1.33:
+	* src/types/pa_wwrapper.h 1.34:
+	* www/htdocs/.htaccess 1.45:
+	* www/htdocs/_bug.html 1.91:
+	* www/htdocs/_bug.p 1.4:
+	* www/htdocs/_bug.pl 1.4:
+	* www/htdocs/_bug.sh 1.2:
+	* www/htdocs/auto.p 1.23:
+		+ 3.2.0 beta: merged from dynamic_fields_join
+
+2005-07-27	paf
+	* src/classes/classes.h [dynamic_fields_join] 1.28.2.1:
+	* src/classes/hash.C [dynamic_fields_join] 1.73.4.2:
+	* src/classes/hashfile.C [dynamic_fields_join] 1.33.12.2:
+	* src/classes/op.C [dynamic_fields_join] 1.153.2.1:
+	* src/include/pa_hash.h [dynamic_fields_join] 1.64.2.1:
+	* src/main/execute.C [dynamic_fields_join] 1.309.2.2:
+	* src/types/pa_method.h [dynamic_fields_join] 1.4.12.1:
+	* src/types/pa_value.h [dynamic_fields_join] 1.121.2.1:
+	* src/types/pa_vclass.C [dynamic_fields_join] 1.27.2.2:
+	* src/types/pa_vclass.h [dynamic_fields_join] 1.48.2.2:
+	* src/types/pa_vcode_frame.h [dynamic_fields_join] 1.29.2.1:
+	* src/types/pa_vconsole.h [dynamic_fields_join] 1.7.2.1:
+	* src/types/pa_vcookie.C [dynamic_fields_join] 1.65.2.1:
+	* src/types/pa_vcookie.h [dynamic_fields_join] 1.28.2.1:
+	* src/types/pa_vhash.h [dynamic_fields_join] 1.55.2.1:
+	* src/types/pa_vhashfile.h [dynamic_fields_join] 1.30.2.1:
+	* src/types/pa_vimage.C [dynamic_fields_join] 1.32.2.1:
+	* src/types/pa_vimage.h [dynamic_fields_join] 1.42.2.1:
+	* src/types/pa_vmethod_frame.h [dynamic_fields_join] 1.53.2.1:
+	* src/types/pa_vobject.C [dynamic_fields_join] 1.20.2.1:
+	* src/types/pa_vobject.h [dynamic_fields_join] 1.44.2.2:
+	* src/types/pa_vrequest.C [dynamic_fields_join] 1.34.2.1:
+	* src/types/pa_vrequest.h [dynamic_fields_join] 1.30.2.1:
+	* src/types/pa_vresponse.C [dynamic_fields_join] 1.22.2.1:
+	* src/types/pa_vresponse.h [dynamic_fields_join] 1.37.2.1:
+	* src/types/pa_vstateless_class.C [dynamic_fields_join] 1.25.2.1:
+	* src/types/pa_vstateless_object.h [dynamic_fields_join] 1.33.2.1:
+	* src/types/pa_vvoid.h [dynamic_fields_join] 1.24.2.1:
+	* src/types/pa_vxnode.C [dynamic_fields_join] 1.40.2.1:
+	* src/types/pa_vxnode.h [dynamic_fields_join] 1.32.2.1:
+	* src/types/pa_wwrapper.h [dynamic_fields_join] 1.33.2.1:
+		joined_dynamic_fields: just compiled
+
+	* src/include/pa_hash.h 1.64:
+	* src/types/pa_vclass.C 1.27:
+	* src/types/pa_vobject.C 1.19:
+	* src/types/pa_vobject.C 1.20:
+	* www/htdocs/_bug.html 1.90:
+	* www/htdocs/_bug.p 1.3:
+		. object setters [only started, does not work yet]
+
+	* src/types/pa_vclass.C [dynamic_fields_join] 1.27.2.6:
+		! changed to GET_ SET_ prefixes. for there is some old code 
+		containing @set_name $name
+
+	* src/types/pa_vclass.C [dynamic_fields_join] 1.27.2.3:
+	* www/htdocs/_bug.html [dynamic_fields_join] 1.90.2.1:
+		joined_dynamic_fields: dynamic get/set works [alfa]
+
+	* src/classes/xnode.C [dynamic_fields_join] 1.69.4.1:
+	* src/include/pa_hash.h [dynamic_fields_join] 1.64.2.3:
+	* src/types/pa_vstateless_class.C [dynamic_fields_join] 1.25.2.2:
+	* www/htdocs/.htaccess [dynamic_fields_join] 1.44.4.1:
+	* www/htdocs/_bug.html [dynamic_fields_join] 1.90.2.3:
+	* www/htdocs/_bug.p [dynamic_fields_join] 1.3.2.2:
+	* www/htdocs/_bug.pl [dynamic_fields_join] 1.3.4.1:
+	* www/htdocs/_bug.sh [dynamic_fields_join] 1.1.2.1:
+	* www/htdocs/auto.p [dynamic_fields_join] 1.22.8.1:
+		! new asserts were all false. regretfully reverted them all to 
+		checks
+
+	* src/classes/classes.h [dynamic_fields_join] 1.28.2.2:
+	* src/classes/hash.C [dynamic_fields_join] 1.73.4.3:
+	* src/classes/hashfile.C [dynamic_fields_join] 1.33.12.3:
+	* src/classes/op.C [dynamic_fields_join] 1.153.2.2:
+	* src/main/execute.C [dynamic_fields_join] 1.309.2.3:
+	* src/types/pa_method.h [dynamic_fields_join] 1.4.12.2:
+	* src/types/pa_value.h [dynamic_fields_join] 1.121.2.2:
+	* src/types/pa_vclass.C [dynamic_fields_join] 1.27.2.5:
+	* src/types/pa_vclass.h [dynamic_fields_join] 1.48.2.4:
+	* src/types/pa_vcode_frame.h [dynamic_fields_join] 1.29.2.2:
+	* src/types/pa_vconsole.h [dynamic_fields_join] 1.7.2.2:
+	* src/types/pa_vcookie.C [dynamic_fields_join] 1.65.2.2:
+	* src/types/pa_vcookie.h [dynamic_fields_join] 1.28.2.2:
+	* src/types/pa_vhash.h [dynamic_fields_join] 1.55.2.2:
+	* src/types/pa_vhashfile.h [dynamic_fields_join] 1.30.2.2:
+	* src/types/pa_vimage.C [dynamic_fields_join] 1.32.2.2:
+	* src/types/pa_vimage.h [dynamic_fields_join] 1.42.2.2:
+	* src/types/pa_vmethod_frame.h [dynamic_fields_join] 1.53.2.2:
+	* src/types/pa_vobject.C [dynamic_fields_join] 1.20.2.2:
+	* src/types/pa_vobject.h [dynamic_fields_join] 1.44.2.3:
+	* src/types/pa_vrequest.C [dynamic_fields_join] 1.34.2.2:
+	* src/types/pa_vrequest.h [dynamic_fields_join] 1.30.2.2:
+	* src/types/pa_vresponse.C [dynamic_fields_join] 1.22.2.2:
+	* src/types/pa_vresponse.h [dynamic_fields_join] 1.37.2.2:
+	* src/types/pa_vstateless_object.h [dynamic_fields_join] 1.33.2.2:
+	* src/types/pa_vvoid.h [dynamic_fields_join] 1.24.2.2:
+	* src/types/pa_vxnode.C [dynamic_fields_join] 1.40.2.2:
+	* src/types/pa_vxnode.h [dynamic_fields_join] 1.32.2.2:
+	* src/types/pa_wwrapper.h [dynamic_fields_join] 1.33.2.2:
+		joined_dynamic_fields: removed unused param from put_method (
+		returned to 3 params)
+
+	* src/types/pa_vproperty.h 1.1:
+		file pa_vproperty.h was initially added on branch 
+		dynamic_fields_join.
+
+	* configure [dynamic_fields_join] 1.83.4.1:
+	* configure.in [dynamic_fields_join] 1.83.4.1:
+	* src/include/pa_version.h [dynamic_fields_join] 1.19.4.1:
+	* src/types/Makefile.am [dynamic_fields_join] 1.38.4.1:
+	* src/types/Makefile.in [dynamic_fields_join] 1.58.4.1:
+		3.2.0beta started
+
+	* src/classes/date.C [dynamic_fields_join] 1.69.4.1:
+	* src/classes/file.C [dynamic_fields_join] 1.133.4.1:
+	* src/classes/hash.C [dynamic_fields_join] 1.73.4.1:
+	* src/classes/hashfile.C [dynamic_fields_join] 1.33.12.1:
+	* src/classes/image.C [dynamic_fields_join] 1.111.6.1:
+	* src/classes/table.C [dynamic_fields_join] 1.208.4.1:
+	* src/classes/xdoc.C [dynamic_fields_join] 1.146.6.1:
+	* src/classes/xnode.h [dynamic_fields_join] 1.22.12.1:
+	* src/main/execute.C [dynamic_fields_join] 1.309.2.1:
+	* src/types/pa_vclass.C [dynamic_fields_join] 1.27.2.1:
+	* src/types/pa_vclass.h [dynamic_fields_join] 1.48.2.1:
+	* src/types/pa_vobject.h [dynamic_fields_join] 1.44.2.1:
+	* src/types/pa_vstateless_class.h [dynamic_fields_join] 1.51.2.1:
+		joined_dynamic_fields: started
+
+	* src/types/pa_vobject.h [dynamic_fields_join] 1.44.2.4:
+		. fixed warning
+
+	* src/include/pa_hash.h [dynamic_fields_join] 1.64.2.2:
+	* src/types/pa_vclass.C [dynamic_fields_join] 1.27.2.4:
+	* src/types/pa_vclass.h [dynamic_fields_join] 1.48.2.3:
+	* www/htdocs/_bug.html [dynamic_fields_join] 1.90.2.2:
+	* www/htdocs/_bug.p [dynamic_fields_join] 1.3.2.1:
+		joined_dynamic_fields: dynamic get/set works with overriding 
+		props [alpha2]
+
+2005-07-26	paf
+	* src/classes/classes.h 1.28:
+	* src/include/pa_hash.h 1.63:
+	* src/main/execute.C 1.308:
+	* src/types/pa_value.h 1.121:
+	* src/types/pa_vclass.C 1.25:
+	* src/types/pa_vclass.h 1.48:
+	* src/types/pa_vcode_frame.h 1.29:
+	* src/types/pa_vconsole.h 1.7:
+	* src/types/pa_vcookie.C 1.65:
+	* src/types/pa_vcookie.h 1.28:
+	* src/types/pa_vhash.h 1.55:
+	* src/types/pa_vhashfile.h 1.30:
+	* src/types/pa_vimage.C 1.32:
+	* src/types/pa_vimage.h 1.42:
+	* src/types/pa_vmethod_frame.h 1.53:
+	* src/types/pa_vobject.C 1.18:
+	* src/types/pa_vobject.h 1.44:
+	* src/types/pa_vrequest.C 1.34:
+	* src/types/pa_vrequest.h 1.30:
+	* src/types/pa_vresponse.C 1.22:
+	* src/types/pa_vresponse.h 1.37:
+	* src/types/pa_vstateless_object.h 1.33:
+	* src/types/pa_vvoid.h 1.24:
+	* src/types/pa_vxnode.C 1.40:
+	* src/types/pa_vxnode.h 1.32:
+	* src/types/pa_wwrapper.h 1.33:
+	* www/htdocs/_bug.html 1.88:
+		. properties: set works [alpha1]
+
+	* src/include/pa_request.h 1.178:
+	* src/main/execute.C 1.309:
+	* www/htdocs/_bug.html 1.89:
+		. properties: set works [alpha2]. for classes. todo: for objects
+
+2005-07-25	paf
+	* src/types/pa_vclass.C 1.22:
+	* src/types/pa_vclass.h 1.45:
+	* src/types/pa_vstateless_class.C 1.24:
+	* src/types/pa_vstateless_class.h 1.50:
+		. properties: started, get works [alpha]
+
+	* src/main/compile.C 1.76:
+	* src/types/pa_vclass.C 1.23:
+	* src/types/pa_vclass.h 1.46:
+	* www/htdocs/_bug.html 1.86:
+	* www/htdocs/_bug.p 1.2:
+		. properties: started, get works [alpha2]
+
+	* src/main/compile.C 1.77:
+	* src/types/pa_vclass.C 1.24:
+	* src/types/pa_vclass.h 1.47:
+	* src/types/pa_vstateless_class.C 1.25:
+	* src/types/pa_vstateless_class.h 1.51:
+	* www/htdocs/_bug.html 1.87:
+		. properties: started, get works [alpha1, other approach]
+
+2005-07-15	paf
+	* src/classes/classes.h 1.27:
+	* src/classes/op.C 1.153:
+	* src/main/execute.C 1.307:
+	* src/types/pa_junction.h 1.5:
+	* src/types/pa_property.h 1.1:
+	* src/types/pa_value.h 1.120:
+	* src/types/pa_vclass.C 1.21:
+	* src/types/pa_vclass.h 1.44:
+	* src/types/pa_vcode_frame.h 1.28:
+	* src/types/pa_vconsole.h 1.6:
+	* src/types/pa_vcookie.C 1.64:
+	* src/types/pa_vcookie.h 1.27:
+	* src/types/pa_vhash.h 1.54:
+	* src/types/pa_vhashfile.h 1.29:
+	* src/types/pa_vimage.C 1.31:
+	* src/types/pa_vimage.h 1.41:
+	* src/types/pa_vmethod_frame.h 1.52:
+	* src/types/pa_vobject.C 1.17:
+	* src/types/pa_vobject.h 1.43:
+	* src/types/pa_vrequest.C 1.33:
+	* src/types/pa_vrequest.h 1.29:
+	* src/types/pa_vresponse.C 1.21:
+	* src/types/pa_vresponse.h 1.36:
+	* src/types/pa_vstateless_class.C 1.23:
+	* src/types/pa_vstateless_class.h 1.49:
+	* src/types/pa_vstateless_object.h 1.32:
+	* src/types/pa_vvoid.h 1.23:
+	* src/types/pa_vxnode.C 1.39:
+	* src/types/pa_vxnode.h 1.31:
+	* src/types/pa_wcontext.h 1.47:
+	* src/types/pa_wwrapper.h 1.32:
+	* src/types/types.vcproj 1.15:
+		+ started property [getters work but think of changing them too 
+		to precaching]
+
+2005-07-08	paf
+	* src/main/pa_request.C 1.274:
+	* www/htdocs/_bug.html 1.84:
+		! bugfix: $response:body[nonfile] caused gpf
+
+2005-06-28	paf
+	* src/classes/file.C 1.133:
+	* src/main/untaint.C 1.134:
+		! string invariant violated in passing empty strings to file::
+		exec/cgi environment
+
+2005-06-06	paf
+	* src/classes/hash.C 1.73:
+	* src/classes/string.C 1.142:
+	* src/classes/table.C 1.208:
+	* www/htdocs/.htaccess 1.44:
+	* www/htdocs/_bug.html 1.83:
+	* www/htdocs/_bug.pl 1.3:
+	* www/htdocs/_bug.xsl 1.15:
+		! bugfix ^string:sql ^table:sql ^hash:sql now DO process $.bind 
+		option
+
+2005-05-24	paf
+	* src/classes/file.C 1.132:
+		! bugfix ^file::load[mode;name;$.offset $.limit] now work again [
+		support was broken in 3.1.4]
+
 	* src/classes/op.C 1.152:
 	* src/main/pa_string.C 1.202:
 		. steps toward removing ALL_INTERIOR_POINTERS
-
-	* src/classes/file.C 1.132:
-		 bugfix ^file::load[mode;name;$.offset $.limit] now work again
-		[support was broken in 3.1.4]
 
 2005-05-12  paf
 	* src/main/pa_common.C 1.203:
@@ -12814,7 +13870,7 @@
 	* src/types/pa_wcontext.C 1.21:
 	* src/types/pa_wcontext.h 1.34:
 	* src/types/pa_wwrapper.h 1.20:
-		$Date: 2005/05/24 11:00:41 $
+		$Date: 2005/11/21 15:07:56 $
 
 	* src/Makefile.am 1.17:
 	* src/classes/Makefile.am 1.40:
@@ -19974,7 +21030,7 @@
 	* src/targets/cgi/parser3.C 1.93:
 	* src/targets/isapi/parser3isapi.C 1.35:
 		*/
-		static const char *RCSId="$Id: ChangeLog,v 1.43 2005/05/24 11:00:41 paf Exp $";
+		static const char *RCSId="$Id: ChangeLog,v 1.43.6.1 2005/11/21 15:07:56 paf Exp $";
 
 	* src/main/compile.y 1.142:
 	* src/main/compile_tools.h 1.41:
@@ -20017,7 +21073,7 @@
 	* src/main/untaint.C 1.52:
 	* src/targets/cgi/parser3.C 1.92:
 	* src/targets/isapi/parser3isapi.C 1.34:
-		static char *RCSId="$Id: ChangeLog,v 1.43 2005/05/24 11:00:41 paf Exp $";
+		static char *RCSId="$Id: ChangeLog,v 1.43.6.1 2005/11/21 15:07:56 paf Exp $";
 
 2001-06-27  parser
 	* src/classes/hash.C 1.6:
@@ -25380,7 +26436,7 @@
 	* src/main/pa_pool.C 1.2:
 	* src/main/pa_string.C 1.3:
 	* src/main/pa_string.C 1.4:
-		$Id: ChangeLog,v 1.43 2005/05/24 11:00:41 paf Exp $ check
+		$Id: ChangeLog,v 1.43.6.1 2005/11/21 15:07:56 paf Exp $ check
 
 	* src/include/pa_pool.h 1.5:
 	* src/include/pa_string.h 1.2:
