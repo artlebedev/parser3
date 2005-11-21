@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REQUEST_C="$Date: 2005/11/18 09:57:25 $";
+static const char * const IDENT_REQUEST_C="$Date: 2005/11/21 11:30:27 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -53,7 +53,6 @@ const char* ORIGINS_CONTENT_TYPE="text/plain";
 #define EXCEPTION_TYPE_PART_NAME "type"
 #define EXCEPTION_SOURCE_PART_NAME "source"
 #define EXCEPTION_COMMENT_PART_NAME "comment"
-#define RESPONSE_BODY_FILE_NAME "file"
 
 // globals
 
@@ -67,7 +66,6 @@ const String exception_type_part_name(EXCEPTION_TYPE_PART_NAME);
 const String exception_source_part_name(EXCEPTION_SOURCE_PART_NAME);
 const String exception_comment_part_name(EXCEPTION_COMMENT_PART_NAME);
 const String exception_handled_part_name(EXCEPTION_HANDLED_PART_NAME);
-const String response_body_file_name(RESPONSE_BODY_FILE_NAME);
 
 // defines for statics
 
@@ -78,6 +76,7 @@ const String response_body_file_name(RESPONSE_BODY_FILE_NAME);
 #define POST_PROCESS_METHOD_NAME "postprocess"
 #define DOWNLOAD_NAME "download"
 #define CLASS_PATH_NAME "CLASS_PATH"
+#define RESPONSE_BODY_FILE_NAME "file"
 
 // statics
 
@@ -89,6 +88,7 @@ static const String conf_method_name(CONF_METHOD_NAME);
 static const String post_process_method_name(POST_PROCESS_METHOD_NAME);
 static const String download_name(DOWNLOAD_NAME);
 static const String class_path_name(CLASS_PATH_NAME);
+static const String response_body_file_name(RESPONSE_BODY_FILE_NAME);
 
 // defines
 
@@ -835,12 +835,14 @@ void Request::output_result(VFile* body_file, bool header_only, bool as_attachme
 	if(vfile_name) {
 		const String& sfile_name=vfile_name->as_string();
 		if(sfile_name!=NONAME_DAT) {
-			VHash& hash=*new VHash();
-			HashStringValue &h=hash.hash();
 			if(as_attachment)
+			{
+				VHash& hash=*new VHash();
+				HashStringValue &h=hash.hash();
 				h.put(value_name, new VString(content_disposition_value));
-			h.put(content_disposition_filename_name, vfile_name);
-			response.fields().put(content_disposition_name, &hash);
+				h.put(content_disposition_filename_name, vfile_name);
+				response.fields().put(content_disposition_name, &hash);
+			}
 
 			if(!body_file_content_type)
 				body_file_content_type=new VString(mime_type_of(sfile_name.cstr()));
