@@ -5,7 +5,7 @@
 	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.213.10.5 2005/11/21 09:47:35 paf Exp $
+	$Id: compile.y,v 1.213.10.6 2005/11/21 10:15:53 paf Exp $
 */
 
 /**
@@ -48,9 +48,9 @@ static int real_yyerror(Parse_control* pc, char* s);
 static void yyprint(FILE* file, int type, YYSTYPE value);
 static int yylex(YYSTYPE* lvalp, void* pc);
 
-static ArrayOperation* vlfalse=VL(new VBool(false), 0, 0, 0);
-static ArrayOperation* vltrue=VL(new VBool(true), 0, 0, 0);
-static ArrayOperation* vlvoid=VL(new VVoid(), 0, 0, 0);
+static const VBool vfalse(false);
+static const VBool vtrue(true);
+static const VVoid vvoid;
 
 // local convinient inplace typecast & var
 #undef PC
@@ -566,8 +566,8 @@ class_constructor_prefix: class_static_prefix ':' {
 expr_value: expr;
 expr: 
 	double_or_STRING
-|  "true" { $$ = vltrue }
-|  "false" { $$ = vlfalse }
+|   true_value
+|   false_value
 |	get_value
 |	call_value
 |	'"' string_inside_quotes_value '"' { $$ = $2 }
@@ -631,7 +631,10 @@ write_string: STRING {
 	change_string_literal_to_write_string_literal(*($$=$1))
 };
 
-void_value: /* empty */ { $$=vlvoid };
+void_value: /* empty */ { $$=VL(/*we know that we will not change it*/const_cast<VVoid*>(&vvoid), 0, 0, 0) }
+true_value: "true" { $$ = VL(/*we know that we will not change it*/const_cast<VBool*>(&vtrue), 0, 0, 0) }
+false_value: "false" { $$ = VL(/*we know that we will not change it*/const_cast<VBool*>(&vfalse), 0, 0, 0) }
+
 empty: /* empty */ { $$=N() };
 
 %%
