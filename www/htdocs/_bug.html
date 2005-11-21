@@ -1,4 +1,6 @@
-$response:download[
-#^bpt[]
-^file::create[text;_bug.xml;^untaint[xml]{paf ^taint[<]test}]
-]
+@USE
+/child.p
+
+@main[]
+$child[^child::create[]]
+^child.procedure[]
