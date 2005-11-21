@@ -8,7 +8,7 @@
 #ifndef PA_VINT_H
 #define PA_VINT_H
 
-static const char * const IDENT_VINT_H="$Date: 2005/08/09 08:14:54 $";
+static const char * const IDENT_VINT_H="$Date: 2005/11/21 10:13:43 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -24,7 +24,7 @@ public: // Value
 	override VStateless_class *get_class() { return int_class; }
 
 	/// VInt: true
-	override bool is_number() const { return true; }
+	override bool is_evaluated_expr() const { return true; }
 	/// VInt: clone
 	override Value& as_expr_result(bool) { return *new VInt(finteger); }
 

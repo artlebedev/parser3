@@ -46,6 +46,10 @@ static int real_yyerror(Parse_control* pc, char* s);
 static void yyprint(FILE* file, int type, YYSTYPE value);
 static int yylex(YYSTYPE* lvalp, void* pc);
 
+static const VBool vfalse(false);
+static const VBool vtrue(true);
+static const VVoid vvoid;
+
 // local convinient inplace typecast & var
 #undef PC
 #define PC  (*(Parse_control *)pc)
@@ -90,6 +94,9 @@ static int yylex(YYSTYPE* lvalp, void* pc);
 %token FEXISTS "-f"
 %token DEXISTS "-d"
 %token IS "is"
+
+%token LITERAL_TRUE "true"
+%token LITERAL_FALSE "false"
 
 /* logical */
 %left "!||"
@@ -442,7 +449,7 @@ store_code_param_part: code_param_value {
 store_expr_param_part: expr_value {
 	YYSTYPE expr_code=$1;
 	if(expr_code->count()==3
-		&& (*expr_code)[0].code==OP_VALUE) { // optimizing (double) case. [OP_VALUE+origin+Double]
+		&& (*expr_code)[0].code==OP_VALUE) { // optimizing (double/bool/incidently 'string' too) case. [OP_VALUE+origin+Double]
 		$$=expr_code; 
 		O(*$$, OP_STORE_PARAM); // no evaluating
 	} else {
@@ -557,10 +564,12 @@ class_constructor_prefix: class_static_prefix ':' {
 expr_value: expr;
 expr: 
 	double_or_STRING
+|   true_value
+|   false_value
 |	get_value
 |	call_value
-|	'"' string_inside_quotes_value '"' { $$ = $2; }
-|	'\'' string_inside_quotes_value '\'' { $$ = $2; }
+|	'"' string_inside_quotes_value '"' { $$ = $2 }
+|	'\'' string_inside_quotes_value '\'' { $$ = $2 }
 |	'(' expr ')' { $$ = $2; }
 /* stack: operand // stack: @operand */
 |	'-' expr %prec NUNARY { $$=$2;  O(*$$, OP_NEG) }
@@ -620,7 +629,10 @@ write_string: STRING {
 	change_string_literal_to_write_string_literal(*($$=$1))
 };
 
-void_value: /* empty */ { $$=VL(new VVoid(), 0, 0, 0) };
+void_value: /* empty */ { $$=VL(/*we know that we will not change it*/const_cast<VVoid*>(&vvoid), 0, 0, 0) }
+true_value: "true" { $$ = VL(/*we know that we will not change it*/const_cast<VBool*>(&vtrue), 0, 0, 0) }
+false_value: "false" { $$ = VL(/*we know that we will not change it*/const_cast<VBool*>(&vfalse), 0, 0, 0) }
+
 empty: /* empty */ { $$=N() };
 
 %%
@@ -1061,6 +1073,22 @@ default:
 					if(pc.source[0]=='e' && pc.source[1]=='f') { // def
 						skip_analized=2;
 						result=DEF;
+						goto break2;
+					}
+				break;
+			case 't':
+				if(end==begin) // right after whitespace
+					if(pc.source[0]=='r' && pc.source[1]=='u' && pc.source[2]=='e') { // def
+						skip_analized=3;
+						result=LITERAL_TRUE;
+						goto break2;
+					}
+				break;
+			case 'f':
+				if(end==begin) // right after whitespace
+					if(pc.source[0]=='a' && pc.source[1]=='l' && pc.source[2]=='s' && pc.source[3]=='e') { // def
+						skip_analized=4;
+						result=LITERAL_FALSE;
 						goto break2;
 					}
 				break;
