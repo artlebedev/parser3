@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2005/11/16 14:18:05 $";
+static const char * const IDENT_FILE_C="$Date: 2005/11/21 15:07:06 $";
 
 #include "pa_config_includes.h"
 
@@ -200,6 +200,25 @@ static void _load(Request& r, MethodParams& params) {
 	self.set(true/*tainted*/, file.str, file.length, user_file_name, vcontent_type);
 	if(file.headers)
 		file.headers->for_each(_load_pass_param, &self.fields());
+}
+
+static void _create(Request& r, MethodParams& params) {
+	Value& vmode_name=params. as_no_junction(0, "mode must not be code");
+	if(!is_text_mode(vmode_name.as_string()))
+		throw Exception("parser.runtime",
+			0,
+			"only text mode is currently supported");
+
+	const char* user_file_name_cstr=r.absolute(
+		params.as_no_junction(1, "file name must not be code").as_string()).cstr(String::L_FILE_SPEC);
+
+	const String& content=params.as_string(2, "content must be string");
+	const char* content_cstr=content.cstr(String::L_UNSPECIFIED); // explode content, honor tainting changes
+
+	VString* vcontent_type=new VString(r.mime_type_of(user_file_name_cstr));
+	
+	VFile& self=GET_SELF(r, VFile);
+	self.set(true/*tainted*/, content_cstr, strlen(content_cstr), user_file_name_cstr, vcontent_type);
 }
 
 static void _stat(Request& r, MethodParams& params) {
@@ -764,6 +783,10 @@ static void _sql(Request& r, MethodParams& params) {
 // constructor
 
 MFile::MFile(): Methoded("file") {
+	// ^create[text;user-name;string]
+	// ^create[binary;user-name;SOMEDAY SOMETHING]
+	add_native_method("create", Method::CT_DYNAMIC, _create, 3, 3);
+
 	// ^save[mode;file-name]
 	add_native_method("save", Method::CT_DYNAMIC, _save, 2, 2);
 
