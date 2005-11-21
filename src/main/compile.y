@@ -5,7 +5,7 @@
 	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.213.10.4 2005/11/16 14:38:44 paf Exp $
+	$Id: compile.y,v 1.213.10.5 2005/11/21 09:47:35 paf Exp $
 */
 
 /**
@@ -47,6 +47,10 @@
 static int real_yyerror(Parse_control* pc, char* s);
 static void yyprint(FILE* file, int type, YYSTYPE value);
 static int yylex(YYSTYPE* lvalp, void* pc);
+
+static ArrayOperation* vlfalse=VL(new VBool(false), 0, 0, 0);
+static ArrayOperation* vltrue=VL(new VBool(true), 0, 0, 0);
+static ArrayOperation* vlvoid=VL(new VVoid(), 0, 0, 0);
 
 // local convinient inplace typecast & var
 #undef PC
@@ -92,6 +96,9 @@ static int yylex(YYSTYPE* lvalp, void* pc);
 %token FEXISTS "-f"
 %token DEXISTS "-d"
 %token IS "is"
+
+%token LITERAL_TRUE "true"
+%token LITERAL_FALSE "false"
 
 /* logical */
 %left "!||"
@@ -444,7 +451,7 @@ store_code_param_part: code_param_value {
 store_expr_param_part: expr_value {
 	YYSTYPE expr_code=$1;
 	if(expr_code->count()==3
-		&& (*expr_code)[0].code==OP_VALUE) { // optimizing (double) case. [OP_VALUE+origin+Double]
+		&& (*expr_code)[0].code==OP_VALUE) { // optimizing (double/bool/incidently 'string' too) case. [OP_VALUE+origin+Double]
 		$$=expr_code; 
 		O(*$$, OP_STORE_PARAM); // no evaluating
 	} else {
@@ -559,10 +566,12 @@ class_constructor_prefix: class_static_prefix ':' {
 expr_value: expr;
 expr: 
 	double_or_STRING
+|  "true" { $$ = vltrue }
+|  "false" { $$ = vlfalse }
 |	get_value
 |	call_value
-|	'"' string_inside_quotes_value '"' { $$ = $2; }
-|	'\'' string_inside_quotes_value '\'' { $$ = $2; }
+|	'"' string_inside_quotes_value '"' { $$ = $2 }
+|	'\'' string_inside_quotes_value '\'' { $$ = $2 }
 |	'(' expr ')' { $$ = $2; }
 /* stack: operand // stack: @operand */
 |	'-' expr %prec NUNARY { $$=$2;  O(*$$, OP_NEG) }
@@ -622,7 +631,7 @@ write_string: STRING {
 	change_string_literal_to_write_string_literal(*($$=$1))
 };
 
-void_value: /* empty */ { $$=VL(new VVoid(), 0, 0, 0) };
+void_value: /* empty */ { $$=vlvoid };
 empty: /* empty */ { $$=N() };
 
 %%
@@ -1063,6 +1072,22 @@ default:
 					if(pc.source[0]=='e' && pc.source[1]=='f') { // def
 						skip_analized=2;
 						result=DEF;
+						goto break2;
+					}
+				break;
+			case 't':
+				if(end==begin) // right after whitespace
+					if(pc.source[0]=='r' && pc.source[1]=='u' && pc.source[2]=='e') { // def
+						skip_analized=3;
+						result=LITERAL_TRUE;
+						goto break2;
+					}
+				break;
+			case 'f':
+				if(end==begin) // right after whitespace
+					if(pc.source[0]=='a' && pc.source[1]=='l' && pc.source[2]=='s' && pc.source[3]=='e') { // def
+						skip_analized=4;
+						result=LITERAL_FALSE;
 						goto break2;
 					}
 				break;

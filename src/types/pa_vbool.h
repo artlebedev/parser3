@@ -8,7 +8,7 @@
 #ifndef PA_VBOOL_H
 #define PA_VBOOL_H
 
-static const char * const IDENT_VBOOL_H="$Date: 2005/08/05 13:03:04 $";
+static const char * const IDENT_VBOOL_H="$Date: 2005/11/21 09:47:35 $";
 
 // include
 
@@ -24,6 +24,8 @@ public: // Value
 	override const char* type() const { return "bool"; }
 	/// VBool: 0
 	override VStateless_class *get_class() { return 0; }
+	/// VBool: true
+	override bool is_evaluated_expr() const { return true; }
 	/// VBool: clone
 	override Value& as_expr_result(bool) { return *new VBool(fbool); }
 	/// VBool: fbool
