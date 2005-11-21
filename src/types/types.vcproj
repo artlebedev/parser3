@@ -139,9 +139,6 @@
 			RelativePath=".\pa_method.h">
 		</File>
 		<File
-			RelativePath=".\pa_property.h">
-		</File>
-		<File
 			RelativePath=".\pa_value.C">
 		</File>
 		<File
@@ -173,6 +170,9 @@
 		</File>
 		<File
 			RelativePath=".\pa_vdouble.h">
+		</File>
+		<File
+			RelativePath=".\pa_venv.C">
 		</File>
 		<File
 			RelativePath=".\pa_venv.h">
@@ -239,9 +239,6 @@
 		</File>
 		<File
 			RelativePath=".\pa_vobject.h">
-		</File>
-		<File
-			RelativePath=".\pa_vproperty.h">
 		</File>
 		<File
 			RelativePath=".\pa_vrequest.C">
