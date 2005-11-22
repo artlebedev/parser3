@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2005/11/22 11:21:35 $";
+static const char * const IDENT_FILE_C="$Date: 2005/11/22 11:31:58 $";
 
 #include "pa_config_includes.h"
 
@@ -779,25 +779,24 @@ static void _sql(Request& r, MethodParams& params) {
 	VFile& self=GET_SELF(r, VFile);
 	self.set(true/*tainted*/, handlers.value.str, handlers.value.length, user_file_name_cstr, vcontent_type);
 }
-/*
+
 static void _base64(Request& r, MethodParams& params) {
+	VFile& self=GET_SELF(r, VFile);
 	if(params.count()) {
-		// encode 
-		const char* cstr=params.as_string(0, "parameter must be string").cstr();
-		const char* encoded=pa_base64_encode(cstr, strlen(cstr));
-		r.write_assign_lang(*new String(encoded, 0, true/*once ?param=base64(something) was needed* /));
-	} else {
 		// decode
-		VString& vself=GET_SELF(r, VString);
-		const char* cstr=vself.string().cstr();
-		void* decoded_cstr=0;
+		const char* cstr=params.as_string(0, "parameter must be string").cstr();
+		char* decoded_cstr=0;
 		size_t decoded_size=0;
 		pa_base64_decode(cstr, strlen(cstr), decoded_cstr, decoded_size);
 		if(decoded_cstr && decoded_size)
-			r.write_assign_lang(*new String(static_cast<const char*>(decoded_cstr), decoded_size, true));
+			self.set(true/*tainted*/, decoded_cstr, decoded_size);
+	} else {
+		// encode 
+		const char* encoded=pa_base64_encode(self.value_ptr(), self.value_size());
+		r.write_assign_lang(*new String(encoded, 0, true/*once ?param=base64(something) was needed*/));
 	}
 }
-*/
+
 // constructor
 
 MFile::MFile(): Methoded("file") {
@@ -862,5 +861,5 @@ MFile::MFile(): Methoded("file") {
 
 	// ^file.base64[] << encode
 	// ^file::base64[string] << decode
-	//add_native_method("base64", Method::CT_DYNAMIC, _base64, 0, 1);
+	add_native_method("base64", Method::CT_DYNAMIC, _base64, 0, 1);
 }

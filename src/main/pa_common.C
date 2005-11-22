@@ -26,7 +26,7 @@
  *
  */
 
-static const char * const IDENT_COMMON_C="$Date: 2005/11/22 11:12:40 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2005/11/22 11:31:58 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -1657,15 +1657,15 @@ char* pa_base64_encode(const char *in, size_t in_size)
 	return result;
 }
 
-void pa_base64_decode(const char *in, size_t in_size, void*& result, size_t& result_size)
+void pa_base64_decode(const char *in, size_t in_size, char*& result, size_t& result_size)
 {
 	/* wont go to more than had (overly conservative) */
-	result=static_cast<void*>(new(PointerFreeGC) char[in_size+1/*terminator*/]);
+	result=new(PointerFreeGC) char[in_size+1/*terminator*/];
 	int state=0;
 	int save=0;
 	result_size=
 		g_mime_utils_base64_decode_step ((const unsigned char*)in, in_size, 
 		(unsigned char*)result, &state, &save);
 	assert(result_size <= in_size);
-	static_cast<char*>(result)[result_size]=0; // for text files
+	result[result_size]=0; // for text files
 }

@@ -1,12 +1,13 @@
-^for[i](1;200){
+^for[i](1;100){
 <hr>
 $original[^for[j](1;$i){$j}]
-$original
+$original[^file::create[text;original.txt;$original]]
+$original.text
 <br>
 $encoded[^original.base64[]]
 $encoded
 <br>
-$decoded[^string:base64[$encoded]]
-$decoded
-^if($decoded ne $original){^throw[bug;here]}
+$decoded[^file::base64[$encoded]]
+$decoded.text
+^if($decoded.text ne $original.text){^throw[bug;here]}
 }
