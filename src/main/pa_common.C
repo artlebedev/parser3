@@ -26,7 +26,7 @@
  *
 */
 
-static const char * const IDENT_COMMON_C="$Date: 2005/11/22 11:51:29 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2005/11/22 15:54:21 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -1590,10 +1590,10 @@ static unsigned char gmime_base64_rank[256] = {
 size_t
 g_mime_utils_base64_decode_step (const unsigned char *in, size_t inlen, unsigned char *out, int *state, int *save)
 {
-	const register unsigned char *inptr;
-	register unsigned char *outptr;
+	const unsigned char *inptr;
+	unsigned char *outptr;
 	const unsigned char *inend;
-	register guint32 saved;
+	int saved;
 	unsigned char c;
 	int i;
 	
