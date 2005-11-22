@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2005/11/18 12:51:18 $";
+static const char * const IDENT_STRING_C="$Date: 2005/11/22 11:38:44 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -489,6 +489,7 @@ const String* sql_result_string(Request& r, MethodParams& params,
 }
 
 static void _sql(Request& r, MethodParams& params) {
+
 	HashStringValue* options;
 	Value* default_code;
 	const String* string=sql_result_string(r, params, options, default_code);
@@ -586,6 +587,24 @@ static void _append(Request& r, MethodParams& params) {
 	va.set_string(c);
 }
 
+static void _base64(Request& r, MethodParams& params) {
+	if(params.count()) {
+		// decode
+		const char* cstr=params.as_string(0, "parameter must be string").cstr();
+		char* decoded_cstr=0;
+		size_t decoded_size=0;
+		pa_base64_decode(cstr, strlen(cstr), decoded_cstr, decoded_size);
+		if(decoded_cstr && decoded_size)
+			r.write_assign_lang(*new String(decoded_cstr, decoded_size, true));
+	} else {
+		// encode 
+		VString& self=GET_SELF(r, VString);
+		const char* cstr=self.string().cstr();
+		const char* encoded=pa_base64_encode(cstr, strlen(cstr));
+		r.write_assign_lang(*new String(encoded, 0, true/*once ?param=base64(something) was needed*/));
+	}
+}
+
 // constructor
 
 MString::MString(): Methoded("string") {
@@ -648,4 +667,8 @@ MString::MString(): Methoded("string") {
 
 	// ^string.append[string]
 	add_native_method("append", Method::CT_DYNAMIC, _append, 1, 1);
+
+	// ^string.base64[] << encode
+	// ^string:base64[encoded string] << decode	
+	add_native_method("base64", Method::CT_ANY, _base64, 0, 1);
 }	

@@ -3,9 +3,30 @@
 
 	Copyright(c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
+
+ * BASE64 part
+ *  Authors: Michael Zucchi <notzed@ximian.com>
+ *           Jeffrey Stedfast <fejj@ximian.com>
+ *
+ *  Copyright 2000-2004 Ximian, Inc. (www.ximian.com)
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Street #330, Boston, MA 02111-1307, USA.
+ *
 */
 
-static const char * const IDENT_COMMON_C="$Date: 2005/11/18 10:17:12 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2005/11/22 11:38:44 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -458,7 +479,7 @@ static const String* basic_authorization_field(const char* user, const char* pas
 	if(pass)
 		combined<<pass;
 	
-	String* result=new String("Basic "); *result<<pa_base64(combined.cstr(), combined.length());
+	String* result=new String("Basic "); *result<<pa_base64_encode(combined.cstr(), combined.length());
 	return result;
 }
 
@@ -1538,18 +1559,113 @@ g_mime_utils_base64_encode_close (const unsigned char *in, size_t inlen, unsigne
 	return (outptr - out);
 }
 
-char* pa_base64(const char *in, size_t len)
+static unsigned char gmime_base64_rank[256] = {
+	255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,
+	255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,
+	255,255,255,255,255,255,255,255,255,255,255, 62,255,255,255, 63,
+	 52, 53, 54, 55, 56, 57, 58, 59, 60, 61,255,255,255,  0,255,255,
+	255,  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14,
+	 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,255,255,255,255,255,
+	255, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
+	 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51,255,255,255,255,255,
+	255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,
+	255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,
+	255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,
+	255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,
+	255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,
+	255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,
+	255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,
+	255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,
+};
+
+/**
+ * g_mime_utils_base64_decode_step:
+ * @in: input stream
+ * @inlen: max length of data to decode
+ * @out: output stream
+ * @state: holds the number of bits that are stored in @save
+ * @save: leftover bits that have not yet been decoded
+ *
+ * Decodes a chunk of base64 encoded data.
+ *
+ * Returns the number of bytes decoded (which have been dumped in @out).
+ **/
+size_t
+g_mime_utils_base64_decode_step (const unsigned char *in, size_t inlen, unsigned char *out, int *state, int *save)
+{
+	const register unsigned char *inptr;
+	register unsigned char *outptr;
+	const unsigned char *inend;
+	register guint32 saved;
+	unsigned char c;
+	int i;
+	
+	inend = in + inlen;
+	outptr = out;
+	
+	/* convert 4 base64 bytes to 3 normal bytes */
+	saved = *save;
+	i = *state;
+	inptr = in;
+	while (inptr < inend) {
+		c = gmime_base64_rank[*inptr++];
+		if (c != 0xff) {
+			saved = (saved << 6) | c;
+			i++;
+			if (i == 4) {
+				*outptr++ = saved >> 16;
+				*outptr++ = saved >> 8;
+				*outptr++ = saved;
+				i = 0;
+			}
+		}
+	}
+	
+	*save = saved;
+	*state = i;
+	
+	/* quick scan back for '=' on the end somewhere */
+	/* fortunately we can drop 1 output char for each trailing = (upto 2) */
+	i = 2;
+	while (inptr > in && i) {
+		inptr--;
+		if (gmime_base64_rank[*inptr] != 0xff) {
+			if (*inptr == '=' && outptr > out)
+				outptr--;
+			i--;
+		}
+	}
+	
+	/* if i != 0 then there is a truncation error! */
+	return (outptr - out);
+}
+
+
+char* pa_base64_encode(const char *in, size_t in_size)
 {
 	/* wont go to more than 2x size (overly conservative) */
-	char* result=new(PointerFreeGC) char[len * 2 + 6];
+	char* result=new(PointerFreeGC) char[in_size * 2 + 6];
 	int state=0;
 	int save=0;
 #ifndef NDEBUG
 	size_t filled=
 #endif
-		g_mime_utils_base64_encode_close ((const unsigned char*)in, len, 
+		g_mime_utils_base64_encode_close ((const unsigned char*)in, in_size, 
 		(unsigned char*)result, &state, &save);
-	assert(filled <= len * 2 + 6);
+	assert(filled <= in_size * 2 + 6);
 
 	return result;
+}
+
+void pa_base64_decode(const char *in, size_t in_size, char*& result, size_t& result_size)
+{
+	/* wont go to more than had (overly conservative) */
+	result=new(PointerFreeGC) char[in_size+1/*terminator*/];
+	int state=0;
+	int save=0;
+	result_size=
+		g_mime_utils_base64_decode_step ((const unsigned char*)in, in_size, 
+		(unsigned char*)result, &state, &save);
+	assert(result_size <= in_size);
+	result[result_size]=0; // for text files
 }

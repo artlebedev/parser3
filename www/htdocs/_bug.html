@@ -1,2 +1,13 @@
-$f[^file::create[text;_bug.txt;^untaint[xml]{a^taint[<]b}]]
-$response:body[$f]
+^for[i](1;100){
+<hr>
+$original[^for[j](1;$i){$j}]
+$original[^file::create[text;original.txt;$original]]
+$original.text
+<br>
+$encoded[^original.base64[]]
+$encoded
+<br>
+$decoded[^file::base64[$encoded]]
+$decoded.text
+^if($decoded.text ne $original.text){^throw[bug;here]}
+}
