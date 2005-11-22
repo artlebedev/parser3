@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2005/11/22 11:31:58 $";
+static const char * const IDENT_STRING_C="$Date: 2005/11/22 12:14:36 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -446,10 +446,6 @@ const String* sql_result_string(Request& r, MethodParams& params,
 				}
 				if((default_code=options->get(sql_default_name))) {
 					valid_options++;
-					if(!default_code->get_junction())
-						throw Exception("parser.runtime",
-							0,
-							"default option must be code");
 				}
 				if(valid_options!=options->count())
 					throw Exception("parser.runtime",
