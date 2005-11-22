@@ -1,13 +1,13 @@
-^for[i](1;100){
-<hr>
-$original[^for[j](1;$i){$j}]
-$original[^file::create[text;original.txt;$original]]
-$original.text
-<br>
-$encoded[^original.base64[]]
-$encoded
-<br>
-$decoded[^file::base64[$encoded]]
-$decoded.text
-^if($decoded.text ne $original.text){^throw[bug;here]}
-}
+@print[dt][_tmp]
+$dt.year/$dt.month/$dt.day, ${dt.hour}:${dt.minute}:${dt.second}
+
+
+@main[]
+Сейчас: ^print[^date::now[]]<br />
+
+$dt[^date::now[]]
+^dt.roll[TZ;GMT0BST]
+В GMT : ^print[$dt]<br />
+
+Сейчас: ^print[^date::now[]]
+$env:TZ?
