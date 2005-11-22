@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Date: 2005/11/21 09:22:17 $";
+static const char * const IDENT="$Date: 2005/11/22 16:08:19 $";
 
 #include "pa_venv.h"
 #include "pa_vstring.h"
