@@ -3,10 +3,10 @@
 $original[^for[j](1;$i){$j}]
 $original
 <br>
-$encoded[^string:base64[$original]]
+$encoded[^original.base64[]]
 $encoded
 <br>
-$decoded[^encoded.base64[]]
+$decoded[^string:base64[$encoded]]
 $decoded
 ^if($decoded ne $original){^throw[bug;here]}
 }
