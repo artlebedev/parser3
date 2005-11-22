@@ -1,6 +1,6 @@
 ## modified AC_LIBLTDL_CONVENIENCE (.la -> .a) by PAF@design.ru
 
-AC_DEFUN(AC_LIBLTDL_CONVENIENCE, [AC_BEFORE([$0],[AC_LIBTOOL_SETUP])dnl
+AC_DEFUN([AC_LIBLTDL_CONVENIENCE], [AC_BEFORE([$0],[AC_LIBTOOL_SETUP])dnl
   LIBLTDL='${top_builddir}/'ifelse($#,1,[$1],['libltdl'])/libltdlc.a
   INCLTDL='-I${top_srcdir}/'ifelse($#,1,[$1],['libltdl'])
 ])

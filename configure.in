@@ -107,7 +107,7 @@ for c in $CHARSETS_REQUESTED; do
 done
 
 # Switching on commentcharset_XXX='#'
-AC_DEFUN(PA_SUBSTCHARSET, [
+AC_DEFUN([PA_SUBSTCHARSET], [
 	commentcharset_$2='#'
 	for c in $CHARSETS_REQUESTED; do
 		if test "$1" = "$c"; then
