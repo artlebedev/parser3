@@ -1,6 +1,12 @@
-@USE
-/child.p
-
-@main[]
-$child[^child::create[]]
-^child.procedure[]
+^for[i](1;200){
+<hr>
+$original[^for[j](1;$i){$j}]
+$original
+<br>
+$encoded[^string:base64[$original]]
+$encoded
+<br>
+$decoded[^encoded.base64[]]
+$decoded
+^if($decoded ne $original){^throw[bug;here]}
+}
