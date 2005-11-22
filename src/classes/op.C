@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2005/11/22 15:39:42 $";
+static const char * const IDENT_OP_C="$Date: 2005/11/22 16:12:38 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -271,7 +271,7 @@ static void _for(Request& r, MethodParams& params) {
 	VInt* vint=new VInt(0);
 
 	VMethodFrame& caller=*r.get_method_frame()->caller();
-	caller.put_element(caller, var_name, vint, false);
+	caller.put_element(var_name, vint, false);
 	for(int i=from; i<=to; i++) {
 		vint->set_int(i);
 
@@ -438,12 +438,12 @@ static Try_catch_result try_catch(Request& r,
 		Value* method_frame=junction->method_frame;
 		Value* saved_exception_var_value=method_frame->get_element(exception_var_name, *method_frame, false);
 		VMethodFrame& frame=*junction->method_frame;
-		frame.put_element(frame, exception_var_name, &details.vhash, false);
+		frame.put_element(exception_var_name, &details.vhash, false);
 		result.processed_code=r.process(*catch_code);
 		
 		// retriving $exception.handled, restoring $exception var
 		Value* vhandled=details.vhash.hash().get(exception_handled_part_name);
-		frame.put_element(frame, exception_var_name, saved_exception_var_value, false);
+		frame.put_element(exception_var_name, saved_exception_var_value, false);
 
 		bool bhandled=false;
 		if(vhandled) {
