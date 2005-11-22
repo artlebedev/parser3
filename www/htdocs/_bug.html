@@ -1,4 +1,1 @@
-$response:paf(123)
-^response:headers.foreach[k;v]{
-$k=todo<br>
-}
+^taint[regex][test \^^^$.[]|()?*+{} (test) ok]

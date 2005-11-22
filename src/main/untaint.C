@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_UNTAINT_C="$Date: 2005/08/09 08:14:53 $";
+static const char * const IDENT_UNTAINT_C="$Date: 2005/11/22 15:09:10 $";
 
 
 #include "pa_string.h"
@@ -91,6 +91,9 @@ inline bool need_http_header_encode(unsigned char c){
 		return false;
 
 	return need_uri_encode(c);
+}
+inline bool need_regex_escape(unsigned char c){
+	return strchr("\\^$.[]|()?*+{}", c)!=0;
 }
 
 // String
@@ -462,6 +465,14 @@ int cstr_to_string_body_block(char alang, size_t fragment_length, Cstr_to_string
 			case '"': to_string("&quot;");  break;
 			default: _default; break;
 		});
+		break;
+	case String::L_REGEX:
+		// tainted, untaint language: regex
+		escape(
+			if(need_regex_escape(c))
+				to_char('\\')
+			_default;
+		);
 		break;
 	default:
 		SAPI::abort("unknown untaint language #%d", 
