@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VRESPONSE_C="$Date: 2005/08/09 08:14:55 $";
+static const char * const IDENT_VRESPONSE_C="$Date: 2005/11/22 13:57:11 $";
 
 #include "pa_vresponse.h"
 #include "pa_request_charsets.h"
@@ -13,6 +13,11 @@ static const char * const IDENT_VRESPONSE_C="$Date: 2005/08/09 08:14:55 $";
 #include "pa_charset.h"
 #include "pa_vstring.h"
 #include "pa_vdate.h"
+#include "pa_vhash.h"
+
+// defines
+
+#define REQUEST_HEADERS_ELEMENT_NAME "headers"
 
 Value* VResponse::get_element(const String& aname, Value& aself, bool looking_up) {
 	// $charset
@@ -22,6 +27,10 @@ Value* VResponse::get_element(const String& aname, Value& aself, bool looking_up
 	// $method
 	if(Value* result=VStateless_object::get_element(aname, aself, looking_up))
 		return result;
+
+	// $fields
+	if(aname==REQUEST_HEADERS_ELEMENT_NAME)
+		return new VHash(ffields);
 	
 	// $field
 	return ffields.get(aname.change_case(fcharsets.source(), String::CC_LOWER));

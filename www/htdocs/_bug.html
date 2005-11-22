@@ -1,3 +1,4 @@
-^connect[$SQL.connect-string]{
-^int:sql{select name from block where name='paf'}[$.default(123)]
+$response:paf(123)
+^response:headers.foreach[k;v]{
+$k=todo<br>
 }
