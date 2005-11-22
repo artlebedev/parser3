@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2005/11/22 15:38:17 $";
+static const char * const IDENT_OP_C="$Date: 2005/11/22 15:40:17 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -828,7 +828,8 @@ VClassMAIN::VClassMAIN(): VClass() {
 
 	// ^cache[file_spec](time){code}[{catch code}] time=0 no cache
 	// ^cache[file_spec] delete cache
-	add_native_method("cache", Method::CT_ANY, _cache, 1, 4);
+	// ^cache[] get current expiration time
+	add_native_method("cache", Method::CT_ANY, _cache, 0, 4);
 	
 	// switch
 
