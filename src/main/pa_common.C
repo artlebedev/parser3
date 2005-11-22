@@ -26,7 +26,7 @@
  *
 */
 
-static const char * const IDENT_COMMON_C="$Date: 2005/11/22 11:38:44 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2005/11/22 11:51:29 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -648,10 +648,7 @@ static File_read_http_result file_read_http(Request_charsets& charsets,
 		char* error_pos=0;
 		port=port_cstr?(short)strtol(port_cstr, &error_pos, 0):80;
 
-		if(strchr(uri, '?') && form)
-			throw Exception("parser.runtime",
-				0,
-				"use either uri with ?params or $."HTTP_FORM_NAME" option");
+		bool uri_has_query_string=strchr(uri, '?')!=0;
 
 		//making request head
 		String head;
@@ -659,7 +656,7 @@ static File_read_http_result file_read_http(Request_charsets& charsets,
 		head << " " << uri;
 		if(form)
 			if(method_is_get)
-				head << "?" << form2string(*form);
+				head << (uri_has_query_string?"&":"?") << form2string(*form);
 		head <<" HTTP/1.0" CRLF
 			"host: "<< host << CRLF; 
 		if(form && !method_is_get) {
