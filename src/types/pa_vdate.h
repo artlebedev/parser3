@@ -8,7 +8,7 @@
 #ifndef PA_VDATE_H
 #define PA_VDATE_H
 
-static const char * const IDENT_VDATE_H="$Date: 2005/08/26 12:36:58 $";
+static const char * const IDENT_VDATE_H="$Date: 2005/11/22 14:27:32 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -47,13 +47,19 @@ public: // Value
 	/// VDate: 0 or !0
 	override bool as_bool() const { return ftime!=0; }
 
+	/// @TODO 'static' approach is NOT thread safe!
 	tm& get_localtime()
 	{
-		const char* saved_tz=0;
-		static char saved_tz_pair[MAX_STRING];
+		char saved_tz[MAX_STRING];
+		static char saved_tz_pair[MAX_STRING]; //TODO: this is NOT thread safe!
 		static char temp_tz_pair[MAX_STRING];
 		if(ftz_cstr) {
-			saved_tz=getenv("TZ");
+			if(const char* ltz=getenv("TZ")) {
+				strncpy(saved_tz, ltz, sizeof(saved_tz)-1);
+				saved_tz[sizeof(saved_tz)-1]=0;
+			} else 
+				saved_tz[0]=0;
+			
 			::set_tz(ftz_cstr, temp_tz_pair, sizeof(temp_tz_pair));
 		}
 		tm *result=::localtime(&ftime);
