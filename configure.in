@@ -2,7 +2,7 @@ dnl Process this file with autoconf to produce a configure script.
 AC_INIT(README)
 AC_PREREQ(2.57)
 
-AM_INIT_AUTOMAKE(parser, 3.2.0beta, nodefine)
+AM_INIT_AUTOMAKE(parser, 3.1.5beta, nodefine)
 
 dnl expand srcdir
 P3S=`cd $srcdir/src ; pwd`
@@ -107,7 +107,7 @@ for c in $CHARSETS_REQUESTED; do
 done
 
 # Switching on commentcharset_XXX='#'
-AC_DEFUN(PA_SUBSTCHARSET, [
+AC_DEFUN([PA_SUBSTCHARSET], [
 	commentcharset_$2='#'
 	for c in $CHARSETS_REQUESTED; do
 		if test "$1" = "$c"; then
