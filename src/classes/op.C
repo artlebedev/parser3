@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2005/11/22 15:09:09 $";
+static const char * const IDENT_OP_C="$Date: 2005/11/22 15:38:17 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -417,7 +417,7 @@ struct Try_catch_result {
 template<class I>
 static Try_catch_result try_catch(Request& r, 
 		  StringOrValue body_code(Request&, I), I info, 
-		  Value* catch_code) 
+		  Value* catch_code, bool could_be_handled_by_caller=false) 
 {
 	Try_catch_result result;
 	if(!catch_code) {
@@ -448,11 +448,14 @@ static Try_catch_result try_catch(Request& r,
 		bool bhandled=false;
 		if(vhandled) {
 			if(vhandled->is_string()) { // not simple $exception.handled(1/0)?
-				result.exception_should_be_handled=vhandled->get_string(); // considering 'recovered' and let the caller recover
-				return result;
-			}
-
-			bhandled=vhandled->as_bool();		
+				if(could_be_handled_by_caller) { // and we can possibly handle it
+					result.exception_should_be_handled=vhandled->get_string(); // considering 'recovered' and let the caller recover
+					return result;
+				}
+				
+				bhandled=false;
+			} else
+				bhandled=vhandled->as_bool();		
 		}
 
 		if(!bhandled) {
@@ -510,19 +513,17 @@ static void locked_process_and_cache_put_action(int f, void *context) {
 	Locked_process_and_cache_put_action_info& info=
 		*static_cast<Locked_process_and_cache_put_action_info *>(context);
 
+
+	const String* body_from_disk=info.scope->body_from_disk;
 	// body->process 
 	Try_catch_result result=try_catch(*info.r, 
 		process_cache_body_code, info.body_code,
-		info.catch_code);
+		info.catch_code, body_from_disk!=0 /*we have something old=we can handle=recover later*/);
 
 	if(result.exception_should_be_handled) {
 		if(*result.exception_should_be_handled==CACHE_EXCEPTION_HANDLED_CACHE_NAME) {
-			if(const String* body_from_disk=info.scope->body_from_disk) // we have something old?
-				info.processed_code=body_from_disk;
-			else
-				throw Exception(0,
-					new String("$"EXCEPTION_VAR_NAME"."EXCEPTION_HANDLED_PART_NAME"["CACHE_EXCEPTION_HANDLED_CACHE_NAME"]"),
-					"fallback failed - there is no old cached body");
+			assert(body_from_disk);
+			info.processed_code=body_from_disk;
 		} else
 			throw Exception("parser.runtime",
 				result.exception_should_be_handled,

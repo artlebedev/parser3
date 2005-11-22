@@ -1,1 +1,6 @@
-^taint[regex][test \^^^$.[]|()?*+{} (test) ok]
+^cache[cache](3){
+	^bug[]
+#	^math:random(100)
+}{
+	$exception.handled[cache]
+}
