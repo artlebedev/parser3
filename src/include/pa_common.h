@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-static const char * const IDENT_COMMON_H="$Date: 2005/11/22 11:38:44 $";
+static const char * const IDENT_COMMON_H="$Date: 2005/11/24 13:50:29 $";
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -214,6 +214,8 @@ void check_safe_mode(struct stat finfo, const String& file_spec, const char* fna
 
 char* pa_base64_encode(const char *in, size_t in_size);
 void pa_base64_decode(const char *in, size_t in_size, char*& result, size_t& result_size);
+
+int pa_get_valid_file_options_count(HashStringValue& options);
 
 // globals
 
