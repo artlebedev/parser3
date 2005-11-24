@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2005/08/08 07:44:47 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2005/11/24 14:05:04 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -539,14 +539,14 @@ void Request::execute(ArrayOperation& ops) {
 		case OP_FEXISTS:
 			{
 				Value& a=stack.pop().value();
-				Value& value=*new VBool(file_readable(absolute(a.as_string())));
+				Value& value=*new VBool(file_exist(absolute(a.as_string())));
 				stack.push(value);
 				break;
 			}
 		case OP_DEXISTS:
 			{
 				Value& a=stack.pop().value();
-				Value& value=*new VBool(dir_readable(absolute(a.as_string())));
+				Value& value=*new VBool(dir_exists(absolute(a.as_string())));
 				stack.push(value);
 				break;
 			}

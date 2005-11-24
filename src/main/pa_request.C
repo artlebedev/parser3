@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REQUEST_C="$Date: 2005/11/21 11:23:07 $";
+static const char * const IDENT_REQUEST_C="$Date: 2005/11/24 14:05:05 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -559,12 +559,12 @@ void Request::use_file(VStateless_class& aclass,
 		file_spec=0;
 		if(Value* element=main_class.get_element(class_path_name, main_class, false)) {
 			if(element->is_string()) {
-				file_spec=file_readable(absolute(element->as_string()), file_name); // found at class_path?
+				file_spec=file_exist(absolute(element->as_string()), file_name); // found at class_path?
 			} else if(Table *table=element->get_table()) {
 				int size=table->count();
 				for(int i=size; i--; ) {
 					const String& path=*(*table->get(i))[0];
-					if((file_spec=file_readable(absolute(path), file_name)))
+					if((file_spec=file_exist(absolute(path), file_name)))
 						break; // found along class_path
 				}
 			} else

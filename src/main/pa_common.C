@@ -26,7 +26,7 @@
  *
 */
 
-static const char * const IDENT_COMMON_C="$Date: 2005/11/24 13:50:29 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2005/11/24 14:05:04 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -430,17 +430,17 @@ static bool entry_readable(const String& file_spec, bool need_dir) {
 	}
 	return false;
 }
-bool file_readable(const String& file_spec) {
+bool file_exist(const String& file_spec) {
 	return entry_readable(file_spec, false); 
 }
-bool dir_readable(const String& file_spec) {
+bool dir_exists(const String& file_spec) {
 	return entry_readable(file_spec, true); 
 }
-const String* file_readable(const String& path, const String& name) {
+const String* file_exist(const String& path, const String& name) {
 	String& result=*new String(path);
 	result << "/"; 
 	result << name;
-	return file_readable(result)?&result:0;
+	return file_exist(result)?&result:0;
 }
 bool file_executable(const String& file_spec) {
     return access(file_spec.cstr(String::L_FILE_SPEC), X_OK)==0;

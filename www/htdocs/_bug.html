@@ -1,13 +1,1 @@
-@print[dt][_tmp]
-$dt.year/$dt.month/$dt.day, ${dt.hour}:${dt.minute}:${dt.second}
-
-
-@main[]
-Сейчас: ^print[^date::now[]]<br />
-
-$dt[^date::now[]]
-^dt.roll[TZ;GMT0BST]
-В GMT : ^print[$dt]<br />
-
-Сейчас: ^print[^date::now[]]
-$env:TZ?
+^for[i](1;3){$i}

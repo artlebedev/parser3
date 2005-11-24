@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-static const char * const IDENT_COMMON_H="$Date: 2005/11/24 13:50:29 $";
+static const char * const IDENT_COMMON_H="$Date: 2005/11/24 14:05:04 $";
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -163,9 +163,9 @@ void file_move(const String& old_spec, const String& new_spec);
 
 bool entry_exists(const char* fname, struct stat *afinfo=0);
 bool entry_exists(const String& file_spec);
-bool file_readable(const String& file_spec);
-bool dir_readable(const String& file_spec);
-const String* file_readable(const String& path, const String& name);
+bool file_exist(const String& file_spec);
+bool dir_exists(const String& file_spec);
+const String* file_exist(const String& path, const String& name);
 bool file_executable(const String& file_spec);
 
 bool file_stat(const String& file_spec, 
