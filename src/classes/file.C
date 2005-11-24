@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2005/11/22 11:31:58 $";
+static const char * const IDENT_FILE_C="$Date: 2005/11/24 13:43:51 $";
 
 #include "pa_config_includes.h"
 
@@ -259,9 +259,9 @@ static bool is_safe_env_key(const char* key) {
 }
 #ifndef DOXYGEN
 struct Append_env_pair_info {
+	Request_charsets* charsets;
 	HashStringString* env;
 	Value* vstdin;
-	Value* vcharset;
 };
 #endif
 static void append_env_pair(
@@ -271,13 +271,13 @@ static void append_env_pair(
 	if(akey==STDIN_EXEC_PARAM_NAME) {
 		info->vstdin=avalue;
 	} else if(akey==CHARSET_EXEC_PARAM_NAME) {
-		info->vcharset=avalue;
+		// ignore, already processed
 	} else {
 		if(!is_safe_env_key(akey.cstr()))
 			throw Exception("parser.runtime",
 				new String(akey, String::L_TAINTED),
 				"not safe environment variable");
-		info->env->put(akey, avalue->as_string().cstr_to_string_body(String::L_UNSPECIFIED));
+		info->env->put(akey, avalue->as_string().cstr_to_string_body(String::L_UNSPECIFIED, 0, info->charsets));
 	}
 }
 #ifndef DOXYGEN
@@ -348,8 +348,19 @@ static void _exec_cgi(Request& r, MethodParams& params,
 	if(params.count()>1) {
 		Value& venv=params.as_no_junction(1, "env must not be code");
 		if(HashStringValue* user_env=venv.get_hash()) {
-			Append_env_pair_info info={&env, 0, 0};
-			user_env->for_each(append_env_pair, &info);
+			// $.charset  [previewing to handle URI pieces]
+			if(Value* vcharset=user_env->get(CHARSET_EXEC_PARAM_NAME))
+				charset=&charsets.get(vcharset->as_string()
+					.change_case(r.charsets.source(), String::CC_UPPER));
+
+			// $.others
+			Append_env_pair_info info={&r.charsets, &env, 0};
+			{
+				// influence URLencoding of tainted pieces to String::L_URI lang
+				// main target -- $.QUERY_STRING
+				Temp_client_charset temp(r.charsets, charset? *charset: r.charsets.source());
+				user_env->for_each(append_env_pair, &info);
+			}
 			// $.stdin
 			if(info.vstdin) {
 				stdin_specified=true;
@@ -363,10 +374,6 @@ static void _exec_cgi(Request& r, MethodParams& params,
 							0,
 							STDIN_EXEC_PARAM_NAME " parameter must be string or file");
 			}
-			// $.charset
-			if(info.vcharset)
-				charset=&charsets.get(info.vcharset->as_string()
-					.change_case(r.charsets.source(), String::CC_UPPER));
 		}
 	}
 

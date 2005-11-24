@@ -1,6 +1,5 @@
-^cache[cache](3){
-	^bug[]
-#	^math:random(100)
-}{
-	$exception.handled[cache]
-}
+$f[^file::exec[_bug.pl;
+	$.charset[utf-8]
+	$.QUERY_STRING[test=работает&tricky=aa^taint[uri][тоже]bb]
+]]
+$f.text
