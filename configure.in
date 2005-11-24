@@ -279,7 +279,10 @@ AC_ARG_WITH(shared-xml,[  --with-shared-xml=D     D is the directory where
 	if test -z "$GLIB_CONFIG"; then
 		GLIB_CONFIG=$XMLBIN/glib-config
 		if test \! -x $GLIB_CONFIG; then
-			GLIB_CONFIG=glib-config
+			GLIB_CONFIG=$XMLBIN/glib2-config
+			if test \! -x $GLIB_CONFIG; then
+				GLIB_CONFIG=glib-config
+			fi
 		fi
 	fi
 	GLIB_CFLAGS=`$GLIB_CONFIG --cflags`
