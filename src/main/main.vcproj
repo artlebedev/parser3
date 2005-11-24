@@ -235,6 +235,12 @@ set BISON_SIMPLE=..\..\..\win32\tools\usr\share\bison.simple
 			RelativePath="..\include\pa_hash.h">
 		</File>
 		<File
+			RelativePath=".\pa_http.C">
+		</File>
+		<File
+			RelativePath="..\include\pa_http.h">
+		</File>
+		<File
 			RelativePath=".\pa_memory.C">
 		</File>
 		<File
