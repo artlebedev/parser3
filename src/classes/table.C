@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2005/11/25 10:47:26 $";
+static const char * const IDENT_TABLE_C="$Date: 2005/11/25 12:04:57 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -332,6 +332,7 @@ static void _load(Request& r, MethodParams& params) {
 	}
 	
 	Table& table=*new Table(columns);
+	int columns_count=columns->count();
 
 	// parse cells
 	Table::element_type row(new ArrayString(columns_count));
