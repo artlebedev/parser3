@@ -8,7 +8,7 @@
 #ifndef PA_ARRAY_H
 #define PA_ARRAY_H
 
-static const char * const IDENT_ARRAY_Y="$Date: 2005/08/09 08:14:49 $";
+static const char * const IDENT_ARRAY_Y="$Date: 2005/11/25 11:12:50 $";
 
 // includes
 
@@ -89,7 +89,7 @@ public:
 	/// append to array
 	Array& operator += (T src) {
 		if(is_full())
-			expand(2);
+			expand(fallocated/*C# ArrayList does this, why we can't?*/);
 
 		felements[fused++]=src;
 
