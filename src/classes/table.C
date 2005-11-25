@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2005/11/25 09:52:35 $";
+static const char * const IDENT_TABLE_C="$Date: 2005/11/25 10:47:26 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -334,7 +334,7 @@ static void _load(Request& r, MethodParams& params) {
 	Table& table=*new Table(columns);
 
 	// parse cells
-	Table::element_type row(new ArrayString);
+	Table::element_type row(new ArrayString(columns_count));
 	skip_empty_and_comment_lines(&data);
 	while( lsplit_result sr=lsplit(&data, separators.column, '\n', separators.encloser) ) {
 		if(!*sr.piece && !sr.delim && !row->count()) // append last empty column [if without \n]
@@ -342,7 +342,7 @@ static void _load(Request& r, MethodParams& params) {
 		*row+=new String(sr.piece, 0, true);
 		if(sr.delim=='\n') {
 			table+=row;
-			row=new ArrayString;
+			row=new ArrayString(columns_count);
 			skip_empty_and_comment_lines(&data);
 		}
 	}
@@ -846,6 +846,7 @@ static void _join(Request& r, MethodParams& params) {
 #ifndef DOXYGEN
 class Table_sql_event_handlers: public SQL_Driver_query_event_handlers {
 	ArrayString& columns;
+	int columns_count;
 	ArrayString* row;
 public:
 	Table* table;
@@ -866,6 +867,7 @@ public:
 	bool before_rows(SQL_Error& error) { 
 		try {
 			table=new Table(&columns);
+			columns_count=columns.count();
 			return false;
 		} catch(...) {
 			error=SQL_Error("exception occured in Table_sql_event_handlers::before_rows");
@@ -874,7 +876,7 @@ public:
 	}
 	bool add_row(SQL_Error& error) {
 		try {
-			*table+=row=new ArrayString;
+			*table+=row=new ArrayString(columns_count);
 			return false;
 		} catch(...) {
 			error=SQL_Error("exception occured in Table_sql_event_handlers::add_row");
