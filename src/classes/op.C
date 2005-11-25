@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2005/11/22 16:12:38 $";
+static const char * const IDENT_OP_C="$Date: 2005/11/25 11:54:27 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -22,7 +22,7 @@ static const char * const IDENT_OP_C="$Date: 2005/11/22 16:12:38 $";
 
 // limits
 
-#define MAX_LOOPS 10000
+#define MAX_LOOPS 20000
 
 // defines
 
@@ -230,10 +230,12 @@ static void _rem(Request&, MethodParams& params) {
 
 static void _while(Request& r, MethodParams& params) {
 	Value& vcondition=params.as_junction(0, "condition must be expression");
-	Value& body=params.as_junction(1, "body must be code");
+	Value& body_code=params.as_junction(1, "body must be code");
+	Value* delim_maybe_code=params.count()>2?&params[2]:0;
 
 	// while...
 	int endless_loop_count=0;
+	bool need_delim=false;
 	while(true) {
 		if(++endless_loop_count>=MAX_LOOPS) // endless loop?
 			throw Exception("parser.runtime",
@@ -245,8 +247,14 @@ static void _while(Request& r, MethodParams& params) {
 		if(!condition) // ...condition is true
 			break;
 
-		// write processed body
-		r.write_pass_lang(r.process(body));
+		StringOrValue sv_processed=r.process(body_code);
+		const String* s_processed=sv_processed.get_string();
+		if(delim_maybe_code && s_processed && s_processed->length()) { // delimiter set and we have body
+			if(need_delim) // need delim & iteration produced string?
+				r.write_pass_lang(r.process(*delim_maybe_code));
+			need_delim=true;
+		}
+		r.write_pass_lang(sv_processed);
 	}
 }
 
