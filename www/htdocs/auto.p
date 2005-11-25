@@ -42,7 +42,7 @@ $repl[^table::create{a	b
 
 
 ###########################################################################
-@postprocess[body][repl]
+@postprocessZ[body][repl]
 $result[$body]
 ^if(def $result && $result is "string"){
     ^if($MAIN:browser eq "nn" && $MAIN:browser_ver < 5){

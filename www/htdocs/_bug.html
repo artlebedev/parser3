@@ -1,5 +1,2 @@
-$f[^file::exec[_bug.pl;
-	$.charset[utf-8]
-	$.QUERY_STRING[test=работает&tricky=aa^taint[uri][тоже]bb]
-]]
-$f.text
+$i(0)
+^while($i<10){^i.inc[]$i}{,}
