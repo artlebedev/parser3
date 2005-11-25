@@ -9,7 +9,7 @@
 #ifndef PA_MEMORY_H
 #define PA_MEMORY_H
 
-static const char * const IDENT_MEMORY_H="$Date: 2005/08/09 08:14:49 $";
+static const char * const IDENT_MEMORY_H="$Date: 2005/11/25 11:11:26 $";
 
 // include
 
@@ -17,7 +17,8 @@ static const char * const IDENT_MEMORY_H="$Date: 2005/08/09 08:14:49 $";
 
 /// to debug backtrace pointers switch this on:
 #ifdef _DEBUG
-#define GC_DEBUG
+// this switches on straightforward realloc implementation, bad for profiling
+//#define GC_DEBUG
 #endif
 #include "gc.h"
 
