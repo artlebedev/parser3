@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2005/11/18 11:04:15 $";
+static const char * const IDENT_TABLE_C="$Date: 2005/11/25 09:52:35 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -447,8 +447,13 @@ static void _save(Request& r, MethodParams& params) {
 	}
 
 	// write
-	file_write(r.absolute(file_name), 
-		sdata.cstr(), sdata.length(), true, do_append);
+	{
+		const char* data_cstr=sdata.cstr();
+		file_write(r.absolute(file_name), 
+			data_cstr, sdata.length(), true, do_append);
+		if(*data_cstr) // not empty (when empty it's not heap memory)
+			pa_free((void*)data_cstr); // not needed anymore
+	}
 }
 
 static void _count(Request& r, MethodParams&) {
