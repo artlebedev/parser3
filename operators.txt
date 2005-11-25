@@ -50,11 +50,14 @@ Xне сделано, видимо, не будет сделано
            %left '-' '+'
            %left '*' '/' '%' '\\'
            %left NEG     /* negation: unary - */
+        !литералы
+           true
+           false
 
            
     !^if(условие){когда да}{когда нет}
     !^switch[значение]{^case[вариант1[;вариант2...]]{действие}^case[DEFAULT]{действие по умолчанию}}
-    !^while(условие){тело}
+    !^while(условие){тело}[[разделитель]|{разделитель который выполняется перед непустым очередным не первым телом}]
     !^for[i](0;4){тело}[[разделитель]|{разделитель который выполняется перед непустым очередным не первым телом}]
     !^use[модуль]
     !^try{
@@ -171,6 +174,7 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !^cache[expires date]
         !сигнализирует вышестоящему ^cache "уменьши до стольких-то 'секунд'/'expires'"
         !в пределе: ^cache(0) отменить кэширование
+    !^cache[] выдаёт текущую expires date
     X^cache[read] 
         сигнализирует вышестоящему ^cache "взять скэшированное насильно, игнорируя expires", <br>
         выдаёт bool "получилось/нет"
@@ -319,6 +323,8 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !^string.trim[start|both|end[;chars]] выкидывает charset из начала/конца/и начала и конца
         default 'chars' -- whitespace chars
     !^string.append[string]
+    !^string.base64[] encode
+    !^string:base64[encoded] decode
 
 !table
     в выражении 
@@ -432,6 +438,7 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
 
 !env
     !$env:переменная
+    !$env:PARSER было то же самое, что показывается при запуске parser.cgi
 
 !cookie
     !$cookie:имя считать старое или свежезаданное
@@ -464,6 +471,7 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         ! $attribute[zzz] field: abc; {attribute=zzz}<<часть
         !значение поля или атрибута может быть string или date
         ! если дата, она будет преобразована к формату "Sun, 25-Aug-2002 12:03:45 GMT"
+    !$response:headers накопленные поля
     !$response:body[DATA]  замещает стандартный ответ
     !$response:download[DATA]  замещает стандартный ответ, 
     	выставляет флаг, заставляющий browser предложить download
@@ -659,6 +667,7 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !^file:find[имя файла][{когда не нашли}]
     !^file:list[путь[;шаблон]] = table с колонкой name
     !^file::load[text|binary;!big.zip[;!domain_press_release_2001_03_01.zip][;опции]]
+    !^file::create[text;имя;^untaint[xml]{data}]
     !$файл_который_был_loaded.size
     !^file::stat[имя файла]
     !$файл_который_был_stated.size !.adate !.mdate !.cdate
@@ -696,7 +705,8 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     	первая колонка - данные
     	если есть вторая - это имя файла
     	если есть третья - это content-type
-
+    !^file.base64[] encode
+    !^file::base64[encoded string] decode
 
 !math
     !$math:PI
