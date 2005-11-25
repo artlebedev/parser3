@@ -1,3 +1,322 @@
+2005-11-25	paf
+	* src/classes/table.C 1.217:
+		. ^table.save unused buffer after save
+
+	* src/classes/op.C 1.162:
+	* www/htdocs/_bug.html 1.110:
+	* www/htdocs/auto.p 1.24:
+		+ ^while(){}[SEPARATOR]
+
+	* src/include/pa_memory.h 1.13:
+		. removed GC_DEBUG for debug version, it changed gc_malloc 
+		implementation, which obscured profiling
+
+	* src/classes/table.C 1.218:
+		+ optimized table::load/sql, now row ArrayString-s allocated 
+		with columns.count() elements and don't always grow from count=3[
+		realloc,realloc]
+
+	* src/include/pa_array.h 1.67:
+		-this reduces speed(table::load) strange. undoing for now...
+
+	* src/classes/table.C [release_3_1_5] 1.208.6.9:
+		merged from HEAD:
+		+ optimized table::load/sql, now row ArrayString-s allocated with columns.count() elements and don't always grow from count=3[realloc,realloc]
+
+	* src/classes/table.C [release_3_1_5] 1.208.6.8:
+		merged from HEAD:
+		. ^table.save unused buffer after save
+
+	* src/include/pa_version.h 1.23:
+		-this reduces speed(table::load), strange. undoing
+
+	* src/include/pa_array.h 1.66:
+		+ optimistics added: all arrays (table rows) now grow size*=2, 
+		like in .NET ArrayList.EnsureCapacity, this speeds things up and 
+		saves memory a LOT! (not noticed negative effect on syntetic 
+		tests, future will tell...)
+
+	* src/classes/op.C [release_3_1_5] 1.152.4.8:
+		merged from HEAD
+		+ ^while(){}[SEPARATOR]
+
+2005-11-24	paf
+	* src/classes/file.C [release_3_1_5] 1.133.6.6:
+	* src/include/Makefile.am [release_3_1_5] 1.9.14.1:
+	* src/include/pa_common.h [release_3_1_5] 1.101.8.4:
+	* src/include/pa_http.h [release_3_1_5] 1.1.2.1:
+	* src/main/Makefile.am [release_3_1_5] 1.44.14.1:
+	* src/main/main.vcproj [release_3_1_5] 1.15.8.1:
+	* src/main/pa_common.C [release_3_1_5] 1.204.6.9:
+	* src/main/pa_http.C [release_3_1_5] 1.1.2.1:
+		merged from HEAD:
+		+! ^file::exec/cgi[script;$.charset[changed] $.QUERY_STRING[^untaint[URI]{aaa=$form:text} << now %HH would be encoded in $.charset charset
+
+	* src/classes/file.C 1.141:
+	* www/htdocs/_bug.html 1.109:
+	* www/htdocs/_bug.pl 1.5:
+	* www/htdocs/_bug.txt 1.7:
+		+! ^file::exec/cgi[script;$.charset[changed] $.QUERY_STRING[^
+		untaint[URI]{aaa=$form:text} << now %HH would be encoded in $
+		.charset charset
+
+	* configure.in [release_3_1_5] 1.83.6.3:
+		. merged glib2-config patch
+
+	* src/classes/file.C [release_3_1_5] 1.133.6.7:
+	* src/include/pa_common.h [release_3_1_5] 1.101.8.5:
+	* src/main/execute.C [release_3_1_5] 1.306.6.3:
+	* src/main/pa_common.C [release_3_1_5] 1.204.6.10:
+	* src/main/pa_request.C [release_3_1_5] 1.274.6.4:
+	* www/htdocs/_bug.html [release_3_1_5] 1.84.4.15:
+		merged from HEAD:
+		! changed file/dir_readable to simple file/dir_exist, this would help in situations "class not found because .p file has bad rights" << in that case error would be explicit "access denied to 'this' file"
+
+	* src/include/Makefile.am 1.10:
+	* src/include/pa_common.h 1.106:
+	* src/include/pa_http.h 1.1:
+	* src/main/Makefile.am 1.46:
+	* src/main/main.vcproj 1.16:
+	* src/main/pa_common.C 1.214:
+	* src/main/pa_http.C 1.1:
+		. extracted http:// into separate file [preparation for ^file::
+		cgi[script;$.form[$.field1[]
+
+	* configure.in 1.87:
+		+ trying to find glib2-config
+
+	* Makefile.am 1.51:
+	* Makefile.am [release_3_1_5] 1.48.6.2:
+	* Makefile.in 1.65:
+	* Makefile.in [release_3_1_5] 1.62.6.3:
+	* acinclude.m4 1.38:
+	* acinclude.m4 [release_3_1_5] 1.35.6.3:
+	* aclocal.m4 1.41:
+	* aclocal.m4 [release_3_1_5] 1.38.6.3:
+	* acsite.m4 1.16:
+	* acsite.m4 [release_3_1_5] 1.13.6.2:
+	* configure 1.87:
+	* configure [release_3_1_5] 1.83.6.3:
+	* configure.in 1.88:
+	* configure.in [release_3_1_5] 1.83.6.4:
+		*** empty log message ***
+
+	* Makefile.in [release_3_1_5] 1.62.6.2:
+	* aclocal.m4 [release_3_1_5] 1.38.6.2:
+	* bin/Makefile.in [release_3_1_5] 1.11.14.1:
+	* configure [release_3_1_5] 1.83.6.2:
+	* etc/Makefile.in [release_3_1_5] 1.16.14.1:
+	* etc/parser3.charsets/Makefile.in [release_3_1_5] 1.20.14.1:
+	* src/Makefile.in [release_3_1_5] 1.57.14.1:
+	* src/classes/Makefile.in [release_3_1_5] 1.61.14.1:
+	* src/include/Makefile.in 1.20:
+	* src/include/Makefile.in [release_3_1_5] 1.18.14.1:
+	* src/include/pa_config_auto.h.in [release_3_1_5] 1.42.8.1:
+	* src/lib/Makefile.in [release_3_1_5] 1.13.14.1:
+	* src/lib/cord/Makefile.in [release_3_1_5] 1.4.14.1:
+	* src/lib/cord/include/Makefile.in [release_3_1_5] 1.3.14.1:
+	* src/lib/cord/include/private/Makefile.in [release_3_1_5] 1.3.14.1:
+	* src/lib/gc/Makefile.in [release_3_1_5] 1.3.14.1:
+	* src/lib/gc/include/Makefile.in [release_3_1_5] 1.3.14.1:
+	* src/lib/gd/Makefile.in [release_3_1_5] 1.4.6.1:
+	* src/lib/ltdl/Makefile.in [release_3_1_5] 1.7.6.1:
+	* src/lib/md5/Makefile.in [release_3_1_5] 1.9.14.1:
+	* src/lib/patches/Makefile.in [release_3_1_5] 1.13.14.1:
+	* src/lib/pcre/Makefile.in [release_3_1_5] 1.11.14.1:
+	* src/lib/sdbm/Makefile.in [release_3_1_5] 1.2.14.1:
+	* src/lib/sdbm/apr-include/Makefile.in [release_3_1_5] 1.2.14.1:
+	* src/lib/smtp/Makefile.in [release_3_1_5] 1.4.14.1:
+	* src/main/Makefile.in 1.60:
+	* src/main/Makefile.in [release_3_1_5] 1.57.14.1:
+	* src/sql/Makefile.in [release_3_1_5] 1.13.14.1:
+	* src/targets/Makefile.in [release_3_1_5] 1.44.14.1:
+	* src/targets/apache13/Makefile.in [release_3_1_5] 1.49.14.1:
+	* src/targets/apache13core/Makefile.in [release_3_1_5] 1.6.14.1:
+	* src/targets/cgi/Makefile.in [release_3_1_5] 1.68.14.1:
+	* src/targets/isapi/Makefile.in [release_3_1_5] 1.14.14.1:
+	* src/types/Makefile.in [release_3_1_5] 1.58.6.1:
+		makefiles
+
+	* src/classes/file.C 1.142:
+	* src/include/pa_common.h 1.107:
+	* src/main/execute.C 1.314:
+	* src/main/pa_common.C 1.215:
+	* src/main/pa_request.C 1.278:
+		! changed file/dir_readable to simple file/dir_exist, this would 
+		help in situations "class not found because .p file has bad 
+		rights" << in that case error would be explicit "access denied 
+		to 'this' file"
+
+2005-11-22	paf
+	* bin/Makefile.in 1.12:
+	* etc/Makefile.in 1.17:
+	* etc/parser3.charsets/Makefile.in 1.21:
+	* src/Makefile.in 1.58:
+	* src/classes/Makefile.in 1.62:
+	* src/include/Makefile.in 1.19:
+	* src/include/pa_config_auto.h.in 1.43:
+	* src/lib/Makefile.in 1.14:
+	* src/lib/cord/Makefile.in 1.5:
+	* src/lib/cord/include/Makefile.in 1.4:
+	* src/lib/cord/include/private/Makefile.in 1.4:
+	* src/lib/gc/Makefile.in 1.4:
+	* src/lib/gc/include/Makefile.in 1.4:
+	* src/lib/gd/Makefile.in 1.5:
+	* src/lib/ltdl/Makefile.in 1.8:
+	* src/lib/md5/Makefile.in 1.10:
+	* src/lib/patches/Makefile.in 1.14:
+	* src/lib/pcre/Makefile.in 1.12:
+	* src/lib/sdbm/Makefile.in 1.3:
+	* src/lib/sdbm/apr-include/Makefile.in 1.3:
+	* src/lib/smtp/Makefile.in 1.5:
+	* src/main/Makefile.in 1.59:
+	* src/sql/Makefile.in 1.14:
+	* src/targets/Makefile.in 1.45:
+	* src/targets/apache13/Makefile.in 1.50:
+	* src/targets/apache13core/Makefile.in 1.7:
+	* src/targets/cgi/Makefile.in 1.69:
+	* src/targets/isapi/Makefile.in 1.15:
+	* src/types/Makefile.in 1.60:
+		configure+makes
+
+	* src/main/compile.tab.C 1.108:
+		Makefile
+
+	* Makefile.am 1.49:
+	* Makefile.am 1.50:
+	* Makefile.am [release_3_1_5] 1.48.6.1:
+	* Makefile.in 1.63:
+	* Makefile.in 1.64:
+	* Makefile.in [release_3_1_5] 1.62.6.1:
+	* acinclude.m4 1.36:
+	* acinclude.m4 1.37:
+	* acinclude.m4 [release_3_1_5] 1.35.6.2:
+	* aclocal.m4 1.39:
+	* aclocal.m4 1.40:
+	* aclocal.m4 [release_3_1_5] 1.38.6.1:
+	* acsite.m4 1.14:
+	* acsite.m4 1.15:
+	* acsite.m4 [release_3_1_5] 1.13.6.1:
+	* configure 1.85:
+	* configure 1.86:
+	* configure [release_3_1_5] 1.83.6.1:
+	* configure.in 1.85:
+	* configure.in 1.86:
+	* configure.in [release_3_1_5] 1.83.6.2:
+		*** empty log message ***
+
+	* src/include/pa_version.h [release_3_1_5] 1.19.6.1:
+	* src/main/compile.tab.C [release_3_1_5] 1.103.8.8:
+		makefiles
+
+	* src/classes/file.C [release_3_1_5] 1.133.6.5:
+	* src/classes/string.C [release_3_1_5] 1.142.6.5:
+	* src/include/pa_common.h [release_3_1_5] 1.101.8.3:
+	* src/main/pa_common.C [release_3_1_5] 1.204.6.6:
+	* www/htdocs/_bug.html [release_3_1_5] 1.84.4.13:
+		merged from HEAD:
+		+ ^file.base64[] encode
+		+ ^file::base64[encoded] decode
+
+	* src/classes/op.C [release_3_1_5] 1.152.4.6:
+		merged from HEAD:
+		+ $exception.handled[cache] now reports original exception if we have no old cache
+
+	* src/main/pa_common.C 1.213:
+	* src/main/pa_common.C [release_3_1_5] 1.204.6.8:
+		. less gcc warnings
+
+	* src/types/pa_vresponse.C 1.26:
+	* www/htdocs/_bug.html 1.106:
+		+ $response:headers access to internal hash
+
+	* src/types/pa_vdate.h 1.41:
+		merged from 3.1.5:
+		! date TZ save/restore stored pointer to getenv-ed variable, which does not work both on win32&unix. copied old TZ value now
+
+	* acinclude.m4 [release_3_1_5] 1.35.6.1:
+	* configure.in [release_3_1_5] 1.83.6.1:
+		. merged underquting fixes
+
+	* src/classes/string.C [release_3_1_5] 1.142.6.6:
+		merged from HEAD:
+		+ removed limitation on ^string/int/double:sql{}[$.default[({param style})] ]
+
+	* src/classes/string.C 1.146:
+	* src/include/pa_common.h 1.104:
+	* src/main/pa_common.C 1.210:
+	* www/htdocs/_bug.html 1.102:
+		+ ^string:base64[in] encode
+		+ ^string.base64[] decode
+
+	* src/classes/op.C 1.160:
+	* www/htdocs/_bug.html 1.108:
+		+ $exception.handled[cache] now reports original exception if we 
+		have no old cache
+
+	* src/main/pa_common.C 1.212:
+		+ removed "use either uri with ?params or $.form option" 
+		limitation
+
+	* src/types/pa_vdate.h 1.42:
+	* src/types/pa_vdate.h [release_3_1_5] 1.38.6.3:
+		! date TZ save/restore stored pointer to getenv-ed variable, 
+		which does not work both on win32&unix. copied old TZ value now
+
+	* src/targets/apache13core/mod_parser3_core.C [release_3_1_5] 1.7.8.2:
+	* src/targets/isapi/parser3isapi.C [release_3_1_5] 1.92.8.3:
+		merged from HEAD:
+		+ GC_large_alloc_warn_suppressed=0 between requests [apache mod_, isapi]
+		this reduces number of "GC Warning: Repeated allocation of very large block" messages to only important onces
+
+	* src/main/pa_common.C [release_3_1_5] 1.204.6.7:
+		merged from HEAD:
+		+ removed "use either uri with ?params or $.form option" limitation
+
+	* src/classes/string.C 1.149:
+		+ removed limitation on ^string/int/double:sql{}[$.default[({
+		param style})] ]
+
+	* src/classes/file.C 1.139:
+	* src/classes/string.C 1.147:
+	* www/htdocs/_bug.html 1.103:
+		+ ^string.base64[] encode
+		+ ^string:base64[encoded] decode
+
+	* src/targets/apache13core/mod_parser3_core.C 1.9:
+	* src/targets/isapi/parser3isapi.C 1.95:
+	* www/htdocs/_bug.html 1.105:
+		+ GC_large_alloc_warn_suppressed=0 between requests [apache mod_, isapi]
+		this reduces number of "GC Warning: Repeated allocation of very large block" messages to only important onces
+
+	* src/types/pa_vresponse.C [release_3_1_5] 1.20.12.2:
+		merged from HEAD:
+		+ $response:headers access to internal hash
+
+	* src/classes/file.C 1.140:
+	* src/classes/string.C 1.148:
+	* src/include/pa_common.h 1.105:
+	* src/main/pa_common.C 1.211:
+	* www/htdocs/_bug.html 1.104:
+		+ ^file.base64[] encode
+		+ ^file::base64[encoded] decode
+
+	* src/classes/op.C [release_3_1_5] 1.152.4.7:
+		. overmerged a little
+
+	* src/classes/op.C [release_3_1_5] 1.152.4.5:
+	* src/include/pa_string.h [release_3_1_5] 1.164.8.2:
+	* src/main/untaint.C [release_3_1_5] 1.134.6.2:
+	* www/htdocs/_bug.html [release_3_1_5] 1.84.4.14:
+		merged from HEAD:
+		+ ^taint/untaint[regex] << escapes these: \^$.[]|()?*+{}
+
+	* src/classes/op.C 1.159:
+	* src/include/pa_string.h 1.166:
+	* src/main/untaint.C 1.136:
+	* www/htdocs/_bug.html 1.107:
+		+ ^taint/untaint[regex] << escapes these: \^$.[]|()?*+{}
+
 2005-11-21	paf
 	* src/main/compile.tab.C [release_3_1_5] 1.103.8.7:
 	* src/main/compile.y [release_3_1_5] 1.213.10.6:
@@ -13870,7 +14189,7 @@
 	* src/types/pa_wcontext.C 1.21:
 	* src/types/pa_wcontext.h 1.34:
 	* src/types/pa_wwrapper.h 1.20:
-		$Date: 2005/11/21 15:08:45 $
+		$Date: 2005/11/25 14:06:58 $
 
 	* src/Makefile.am 1.17:
 	* src/classes/Makefile.am 1.40:
@@ -21030,7 +21349,7 @@
 	* src/targets/cgi/parser3.C 1.93:
 	* src/targets/isapi/parser3isapi.C 1.35:
 		*/
-		static const char *RCSId="$Id: ChangeLog,v 1.44 2005/11/21 15:08:45 paf Exp $";
+		static const char *RCSId="$Id: ChangeLog,v 1.45 2005/11/25 14:06:58 paf Exp $";
 
 	* src/main/compile.y 1.142:
 	* src/main/compile_tools.h 1.41:
@@ -21073,7 +21392,7 @@
 	* src/main/untaint.C 1.52:
 	* src/targets/cgi/parser3.C 1.92:
 	* src/targets/isapi/parser3isapi.C 1.34:
-		static char *RCSId="$Id: ChangeLog,v 1.44 2005/11/21 15:08:45 paf Exp $";
+		static char *RCSId="$Id: ChangeLog,v 1.45 2005/11/25 14:06:58 paf Exp $";
 
 2001-06-27  parser
 	* src/classes/hash.C 1.6:
@@ -26436,7 +26755,7 @@
 	* src/main/pa_pool.C 1.2:
 	* src/main/pa_string.C 1.3:
 	* src/main/pa_string.C 1.4:
-		$Id: ChangeLog,v 1.44 2005/11/21 15:08:45 paf Exp $ check
+		$Id: ChangeLog,v 1.45 2005/11/25 14:06:58 paf Exp $ check
 
 	* src/include/pa_pool.h 1.5:
 	* src/include/pa_string.h 1.2:
