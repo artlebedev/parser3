@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
  */
 
-static const char * const IDENT_HTTP_C="$Date: 2005/11/24 13:50:29 $"; 
+static const char * const IDENT_HTTP_C="$Date: 2005/11/28 11:33:45 $"; 
 
 #include "pa_http.h"
 #include "pa_common.h"
@@ -91,9 +91,24 @@ static int http_read_response(char*& response, size_t& response_size, int sock, 
 				"error receiving response header: %s (%d)", pa_socks_strerr(no), no); 
 		goto done;
 	}
+	// terminator [helps futher string searches]
+	preview_buf[received_size]=0; 
+	// checking status
+	if(char* EOLat=strstr(preview_buf, "\n")) { 
+		const String status_line(pa_strdup(preview_buf, EOLat-preview_buf));
+		ArrayString astatus; 
+		size_t pos_after=0;
+		status_line.split(astatus, pos_after, " "); 
+		const String& status_code=*astatus.get(astatus.count()>1?1:0);
+		result=status_code.as_int(); 
+
+		if(fail_on_status_ne_200 && result!=200)
+			throw Exception("http.status",
+				&status_code,
+				"invalid HTTP response status");
+	}
 	// detecting response_size
 	{
-		preview_buf[received_size]=0; // terminator
 		if(size_t content_length=guess_content_length(preview_buf))
 			response_size=preview_size+content_length; // a little more than needed, will adjust response_size by actual received size later
 	}
@@ -144,21 +159,6 @@ static int http_read_response(char*& response, size_t& response_size, int sock, 
 			// can't do this before realloc: we need <todo_size check
 			ptr+=received_size;
 			todo_size-=received_size;
-
-			char* EOLat=0;
-			if(!result && (EOLat=strstr(response, "\n"))) { // checking status in first response
-				const String status_line(pa_strdup(response, EOLat-response));
-				ArrayString astatus; 
-				size_t pos_after=0;
-				status_line.split(astatus, pos_after, " "); 
-				const String& status_code=*astatus.get(astatus.count()>1?1:0);
-				result=status_code.as_int(); 
-
-				if(fail_on_status_ne_200 && result!=200)
-					throw Exception("http.status",
-						&status_code,
-						"invalid HTTP response status");
-			}
 		}
 	}
 done:
