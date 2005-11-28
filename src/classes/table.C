@@ -4,7 +4,7 @@
 	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
-static const char * const IDENT_TABLE_C="$Date: 2005/11/25 10:23:51 $";
+static const char * const IDENT_TABLE_C="$Date: 2005/11/28 12:50:18 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -331,7 +331,7 @@ static void _load(Request& r, MethodParams& params) {
 	}
 	
 	Table& table=*new Table(columns);
-	int columns_count=columns->count();
+	int columns_count=columns? columns->count(): 0;
 
 	// parse cells
 	Table::element_type row(new ArrayString(columns_count));
