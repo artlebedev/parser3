@@ -8,7 +8,7 @@
 #ifndef PA_VDATE_H
 #define PA_VDATE_H
 
-static const char * const IDENT_VDATE_H="$Date: 2005/11/22 14:30:06 $";
+static const char * const IDENT_VDATE_H="$Date: 2005/11/30 15:47:46 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -24,8 +24,15 @@ static const char * const IDENT_VDATE_H="$Date: 2005/11/22 14:30:06 $";
 extern Methoded* date_class;
 
 inline void set_tz(const char* tz, char* buf, size_t buf_size) {
-	snprintf(buf, buf_size, "TZ=%s", tz);
-	putenv(buf);
+#ifndef WIN32
+	if(tz && *tz){
+#endif
+		snprintf(buf, buf_size, "TZ=%s", tz);
+		putenv(buf);
+#ifndef WIN32
+	} else
+		putenv("TZ");
+#endif
 	tzset();
 }
 
