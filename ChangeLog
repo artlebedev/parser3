@@ -1,3 +1,17 @@
+2005-11-30	paf
+	* src/types/pa_vdate.h [release_3_1_5] 1.38.6.5:
+		merged from HEAD:
+		! bugfix: to drop TZ on win32 must putenv("TZ="), on unix works only putenv("TZ")
+
+2005-11-28	paf
+	* src/main/pa_http.C [release_3_1_5] 1.1.2.2:
+		merged from HEAD:
+		! status line check made earlier [was totally wrong]
+
+	* src/classes/table.C [release_3_1_5] 1.208.6.11:
+		merged from HEAD:
+		! nameless table has columns==0
+
 2005-11-25	paf
 	* src/classes/table.C [release_3_1_5] 1.208.6.8:
 		merged from HEAD:
