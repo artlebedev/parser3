@@ -104,7 +104,7 @@
     wget ftp://ftp.gtk.org/pub/gtk/v1.2/glib-1.2.10.tar.gz
 	gunzip -c glib-1.2.10.tar.gz | tar vxf -
     cd glib-1.2.10
-    ./configure --prefix=$HOME/p3p/gnome --silent
+    ./configure --prefix=$HOME/p3p/gnome --disable-debug --silent
     make install
 
     gdome2:
@@ -114,7 +114,7 @@
 	gunzip -c gdome2-0.8.1.tar.gz | tar vxf -
     cd gdome2-0.8.1
     patch -p0 < $HOME/p3p/parser3/src/lib/patches/gdome2.patch
-    ./configure --with-glib-prefix=$HOME/p3p/gnome --disable-glibtest --with-libxml-prefix=$HOME/p3p/gnome --prefix=$HOME/p3p/gnome --silent
+    ./configure --enable-glib-1 --with-glib-prefix=$HOME/p3p/gnome --disable-glibtest --with-libxml-prefix=$HOME/p3p/gnome --prefix=$HOME/p3p/gnome --silent
     make install
 
     And copy these additional headers into install includes directory
@@ -234,4 +234,4 @@
   
 Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-$Id: INSTALL,v 1.41 2005/11/30 14:56:58 paf Exp $
+$Id: INSTALL,v 1.42 2005/11/30 15:08:16 paf Exp $
