@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_GLOBALS_C="$Date: 2005/08/09 08:14:52 $";
+static const char * const IDENT_GLOBALS_C="$Date: 2005/11/30 14:56:16 $";
 
 #include "pa_config_includes.h"
 
@@ -33,11 +33,11 @@ extern "C" {
 
 //#define PA_DEBUG_XML_GC_MEMORY
 
-// 20040920 for now both workarounds needed. wait for new libxml/xsl versions
-// there is a problem with testcase, it's unstable. 
-// see paf@six/bug20040920/cgi-bin/t for it-showed-bug-on-20040920-day
-#define PA_WORKAROUND_BUGGY_FREE_IN_LIBXML_GC_MEMORY
-#define PA_WORKAROUND_BUGGY_MALLOCATOMIC_IN_LIBXML_GC_MEMORY
+//20051130 trying to remove this, author claims that fixed a lot there // 20040920 for now both workarounds needed. wait for new libxml/xsl versions
+// // there is a problem with testcase, it's unstable. 
+// // see paf@six/bug20040920/cgi-bin/t for it-showed-bug-on-20040920-day
+// #define PA_WORKAROUND_BUGGY_FREE_IN_LIBXML_GC_MEMORY
+// #define PA_WORKAROUND_BUGGY_MALLOCATOMIC_IN_LIBXML_GC_MEMORY
 
 // globals
 
