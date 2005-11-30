@@ -4,17 +4,21 @@
 1.What is the process to compile Parser3?
 
   First, you must have LIBGC installed (conservative garbage collector for C++).
-      libgc >= 6.1 [http://www.hpl.hp.com/personal/Hans_Boehm/gc/gc_source/gc6.4.tar.gz]
+      libgc >= 6.6
     
-    Installation sequence of this library to $HOME/gc:
+    Installation sequence of this library:
 
-    cd libgc-x.x
-    ./configure --prefix=$HOME/gc --disable-threads --silent
+	mkdir $HOME/p3p/src
+	cd $HOME/p3p/src
+	wget http://www.hpl.hp.com/personal/Hans_Boehm/gc/gc_source/gc6.6.tar.gz
+	gunzip -c gc6.6.tar.gz | tar vxf -
+    cd gc6.6
+    ./configure --prefix=$HOME/p3p/gc --disable-threads --silent
     make install
 
     Then you can use these Parser3 configure options to specify the location and static/dynamic linkage with libgc:
-        --with-static-gc=$HOME/gc/lib
-        --with-shared-gc=$HOME/gc/lib
+        --with-static-gc=$HOME/p3p/gc/lib
+        --with-shared-gc=$HOME/p3p/gc/lib
 
     NOTE:
     On some platforms there is special version of libgc patched to support some
@@ -24,8 +28,8 @@
 
   As most UNIX programs Parser3 follows the "standard":
 
-  mkdir $HOME/parser3project
-  cd $HOME/parser3project
+  mkdir $HOME/p3p
+  cd $HOME/p3p
   gunzip -c parser3-x.x.tar.gz | tar xvf -
   mv parser3-x.x parser3
   cd parser3
@@ -65,52 +69,64 @@
 3.What other libraries are needed to compile/install parser? 
 
 3a. In case you wish XML(xdoc and xnode classes) support, you need libraries
-      libxml2 >= 2.6.5 [ftp://xmlsoft.org/libxml2-2.6.17.tar.gz]
-      libxslt >= 1.1.2 [ftp://xmlsoft.org/libxslt-1.1.10.tar.gz]
-      glib >= 1.2.10 [ftp://ftp.gtk.org/pub/gtk/v1.2/glib-1.2.10.tar.gz] 
-      on freebsd5 this is reported to work: ftp://ftp.gtk.org/pub/gtk/v1.1/glib-1.1.16.tar.gz
-      gdome2 >= 0.7.4 [http://gdome2.cs.unibo.it/tarball/gdome2-0.8.1.tar.gz]
+      libxml2 >= 2.6.22
+      libxslt >= 1.1.15
+      glib >= 1.2.10 
+      gdome2 >= 0.8.1
     on your system, and specify path to them to Parser3 configure script.
 
     Sources of libgdome library must be patched prior to compile. [library author bug confirmation pending]
 
-    Installation sequence of these libraries to $HOME/gnome:
+    Installation sequence of these libraries to $HOME/p3p/gnome:
 
     libxml2:
 
-    cd libxml2-x.x.x
-    ./configure --prefix=$HOME/gnome --without-zlib --without-iconv --without-threads --silent
+	cd $HOME/p3p/src
+	wget ftp://xmlsoft.org/libxml2-2.6.22.tar.gz
+	gunzip -c libxml2-2.6.22.tar.gz | tar vxf -
+    cd libxml2-2.6.22
+    ./configure --prefix=$HOME/p3p/gnome --without-zlib --without-iconv --without-threads --silent
     make install
 
     libxslt:
 
-    cd libxslt-x.x.x
-    ./configure --with-libxml-prefix=$HOME/gnome --prefix=$HOME/gnome --without-debug --without-debugger --silent
+	cd $HOME/p3p/src
+	wget ftp://xmlsoft.org/libxslt-1.1.15.tar.gz
+	gunzip -c libxslt-1.1.15.tar.gz | tar vxf -
+    cd libxslt-1.1.15
+    ./configure --with-libxml-prefix=$HOME/p3p/gnome --prefix=$HOME/p3p/gnome --without-debug --without-debugger --silent
     make install
 
     glib:
 
-    cd glib-x.x.x
-    ./configure --prefix=$HOME/gnome --silent
+	cd $HOME/p3p/src
+    #on freebsd5 this is reported to work: ftp://ftp.gtk.org/pub/gtk/v1.1/glib-1.1.16.tar.gz
+    wget ftp://ftp.gtk.org/pub/gtk/v1.2/glib-1.2.10.tar.gz
+	gunzip -c glib-1.2.10.tar.gz | tar vxf -
+    cd glib-1.2.10
+    ./configure --prefix=$HOME/p3p/gnome --silent
     make install
 
     gdome2:
 
-    cd gdome2-x.x.x
-    patch -p0 < $HOME/parser3project/parser3/src/lib/patches/gdome2.patch
-    ./configure --with-glib-prefix=$HOME/gnome --disable-glibtest --with-libxml-prefix=$HOME/gnome --prefix=$HOME/gnome --silent
+	cd $HOME/p3p/src
+    wget http://gdome2.cs.unibo.it/tarball/gdome2-0.8.1.tar.gz
+	gunzip -c gdome2-0.8.1.tar.gz | tar vxf -
+    cd gdome2-0.8.1
+    patch -p0 < $HOME/p3p/parser3/src/lib/patches/gdome2.patch
+    ./configure --with-glib-prefix=$HOME/p3p/gnome --disable-glibtest --with-libxml-prefix=$HOME/p3p/gnome --prefix=$HOME/p3p/gnome --silent
     make install
 
     And copy these additional headers into install includes directory
 
-    mkdir -p $HOME/gnome/include/libgdome/gdomecore
-    cp libgdome/gdomecore/gdome-xml-node.h $HOME/gnome/include/libgdome/gdomecore
-    cp libgdome/gdomecore/gdome-xml-document.h $HOME/gnome/include/libgdome/gdomecore
+    mkdir -p $HOME/p3p/gnome/include/libgdome/gdomecore
+    cp libgdome/gdomecore/gdome-xml-node.h $HOME/p3p/gnome/include/libgdome/gdomecore
+    cp libgdome/gdomecore/gdome-xml-document.h $HOME/p3p/gnome/include/libgdome/gdomecore
     
 
     Parser3 configure options, choose whether you need static or dynamic linkage with xml libs:
-        --with-static-xml=$HOME/gnome
-        --with-shared-xml=$HOME/gnome
+        --with-static-xml=$HOME/p3p/gnome
+        --with-shared-xml=$HOME/p3p/gnome
 
     NOTE:
     In case your glib as installed into some other prefix,
@@ -123,7 +139,7 @@
                                 using linker key (-R, -rpath-link)
 
 3b. In case you wish $mail:receive support you need libraries
-      glib >= 1.2.10 [ftp://ftp.gtk.org/pub/gtk/v1.2/glib-1.2.10.tar.gz]
+      glib >= 1.2.10
       gmime >= 1.0.1 [http://spruce.sourceforge.net/gmime/sources/v1.0/gmime-1.0.8.tar.gz]
     on your system, and specify path to them to Parser3 configure script.
 
@@ -131,19 +147,23 @@
 
     glib:
 
-    cd glib-x.x.x
-    ./configure --prefix=$HOME/gnome 
+	cd $HOME/p3p/src
+    #on freebsd5 this is reported to work: ftp://ftp.gtk.org/pub/gtk/v1.1/glib-1.1.16.tar.gz
+    wget ftp://ftp.gtk.org/pub/gtk/v1.2/glib-1.2.10.tar.gz
+	gunzip -c glib-1.2.10.tar.gz | tar vxf -
+    cd glib-1.2.10
+    ./configure --prefix=$HOME/p3p/gnome --silent
     make install
 
     gmime:
 
     cd gmime-x.x.x
-    ./configure --prefix=$HOME/gnome
+    ./configure --prefix=$HOME/p3p/gnome
     make install
 
     Parser3 configure options, choose whether you need static or dynamic linkage with xml libs:
-        --with-static-mailreceive=$HOME/gnome
-        --with-shared-mailreceive=$HOME/gnome
+        --with-static-mailreceive=$HOME/p3p/gnome
+        --with-shared-mailreceive=$HOME/p3p/gnome
 
     NOTE:
     In case your glib as installed into some other prefix,
@@ -159,8 +179,8 @@
 
   In case you're not root on machine you're installing Parser,
   we recommend you to do:
-  ./configure --prefix=/your/home/parser3install
-  and afterwards copy parser3install/bin/parser3 to your CGI directory
+  ./configure --prefix=$HOME/p3i
+  and afterwards copy $HOME/p3i/bin/parser3 to your CGI directory
   or make a symlink [if your web server configured to follow symlinks].
 
   You can disable any exec operations by setting
@@ -174,8 +194,9 @@
   option to configure.
   
   You can disable user-configured sendmail commands by forcing it, setting
-  "--with=sendmail=COMMAND"
-  option to configure.
+  --with=sendmail="COMMAND"
+  option to configure, for example:
+  --with-sendmail="/usr/sbin/sendmail -i -t -f postmaster"
 
   In case you are experiencing problem with gcc runtime exception handling,
   try to configure with
@@ -213,4 +234,4 @@
   
 Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-$Id: INSTALL,v 1.40 2005/03/16 14:37:03 paf Exp $
+$Id: INSTALL,v 1.41 2005/11/30 14:56:58 paf Exp $
