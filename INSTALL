@@ -8,17 +8,19 @@
     
     Installation sequence of this library:
 
-	mkdir $HOME/parser3project/src
-	cd $HOME/parser3project/src
-	wget http://www.hpl.hp.com/personal/Hans_Boehm/gc/gc_source/gc6.6.tar.gz
-	gunzip -c gc6.6.tar.gz | tar vxf -
+    mkdir $HOME/parser3project/src
+    cd $HOME/parser3project/src
+    wget http://www.hpl.hp.com/personal/Hans_Boehm/gc/gc_source/gc6.6.tar.gz
+    gunzip -c gc6.6.tar.gz | tar vxf -
     cd gc6.6
-    ./configure --prefix=$HOME/parser3project/gc --disable-threads --silent
+    ./configure --prefix=$HOME/parser3project/gc --disable-threads --disable-shared --silent
     make install
 
-    Then you can use these Parser3 configure options to specify the location and static/dynamic linkage with libgc:
+    Then you can use these Parser3 configure options to use that statically compiled gc:
         --with-static-gc=$HOME/parser3project/gc/lib
-        --with-shared-gc=$HOME/parser3project/gc/lib
+	In case you already have libgc.so and want to link parser against it, 
+	you can this Parser3 configure option:
+        --with-shared-gc=/path/to/gc/lib
 
     NOTE:
     On some platforms there is special version of libgc patched to support some
@@ -44,7 +46,7 @@
 
   NOTE:
   By default your would get 'parser3' binary without support of these features:
-	* xml(xdoc and xnode classes)
+    * xml(xdoc and xnode classes)
   Read section (3) on getting xml-abled parser.
 
 
@@ -72,7 +74,7 @@
       libxml2 >= 2.6.22
       libxslt >= 1.1.15
       glib >= 1.2.10 
-      gdome2 >= 0.8.1
+      gdome2 => 0.8.1
     on your system, and specify path to them to Parser3 configure script.
 
     Sources of libgdome library must be patched prior to compile. [library author bug confirmation pending]
@@ -81,47 +83,63 @@
 
     libxml2:
 
-	cd $HOME/parser3project/src
-	wget ftp://xmlsoft.org/libxml2-2.6.22.tar.gz
-	gunzip -c libxml2-2.6.22.tar.gz | tar vxf -
+    cd $HOME/parser3project/src
+    wget ftp://xmlsoft.org/libxml2-2.6.22.tar.gz
+    gunzip -c libxml2-2.6.22.tar.gz | tar vxf -
     cd libxml2-2.6.22
-    ./configure --prefix=$HOME/parser3project/gnome --without-zlib --without-iconv --without-threads --silent
+    #sax1, output, tree, xinclude[in libxslt], xptr[xinclude]-- needed!
+    ./configure --prefix=$HOME/parser3project/gnome \
+      --with-html --without-iconv --without-threads --without-debug \
+      --without-iso8859x --without-legacy \
+      --without-pattern --without-push --without-python \
+      --without-reader --without-writer --without-readline --without-regexps \
+      --without-schemas --without-schematron \
+      --without-modules \
+      --without-zlib \
+      --disable-shared --silent
+	echo "int main(){return 0;}">testapi.c
+	echo "int main(){return 0;}">runtest.c
     make install
 
     libxslt:
 
-	cd $HOME/parser3project/src
-	wget ftp://xmlsoft.org/libxslt-1.1.15.tar.gz
-	gunzip -c libxslt-1.1.15.tar.gz | tar vxf -
+    cd $HOME/parser3project/src
+    wget ftp://xmlsoft.org/libxslt-1.1.15.tar.gz
+    gunzip -c libxslt-1.1.15.tar.gz | tar vxf -
     cd libxslt-1.1.15
-    ./configure --with-libxml-prefix=$HOME/parser3project/gnome --prefix=$HOME/parser3project/gnome --without-debug --without-debugger --silent
+    ./configure --with-libxml-prefix=$HOME/parser3project/gnome --prefix=$HOME/parser3project/gnome --without-debug --without-debugger --without-crypto --without-plugins --disable-shared  --silent
     make install
 
     glib:
 
-	cd $HOME/parser3project/src
-    #on freebsd5 this is reported to work: ftp://ftp.gtk.org/pub/gtk/v1.1/glib-1.1.16.tar.gz
+    cd $HOME/parser3project/src
+    #on freebsd5 this is reported to work: 
+    #wget ftp://ftp.gtk.org/pub/gtk/v1.1/glib-1.1.16.tar.gz
     wget ftp://ftp.gtk.org/pub/gtk/v1.2/glib-1.2.10.tar.gz
-	gunzip -c glib-1.2.10.tar.gz | tar vxf -
+    gunzip -c glib-1.2.10.tar.gz | tar vxf -
     cd glib-1.2.10
-    ./configure --prefix=$HOME/parser3project/gnome --disable-debug --silent
+    ./configure --prefix=$HOME/parser3project/gnome --disable-debug --disable-shared  --silent
     make install
 
     gdome2:
 
-	cd $HOME/parser3project/src
+    cd $HOME/parser3project/src
     wget http://gdome2.cs.unibo.it/tarball/gdome2-0.8.1.tar.gz
-	gunzip -c gdome2-0.8.1.tar.gz | tar vxf -
+    gunzip -c gdome2-0.8.1.tar.gz | tar vxf -
     cd gdome2-0.8.1
     patch -p0 < $HOME/parser3project/parser3/src/lib/patches/gdome2.patch
-    ./configure --enable-glib-1 --with-glib-prefix=$HOME/parser3project/gnome --disable-glibtest --with-libxml-prefix=$HOME/parser3project/gnome --prefix=$HOME/parser3project/gnome --silent
-    make install
 
-    And copy these additional headers into install includes directory
-
+    #copy these additional headers into install includes directory
     mkdir -p $HOME/parser3project/gnome/include/libgdome/gdomecore
     cp libgdome/gdomecore/gdome-xml-node.h $HOME/parser3project/gnome/include/libgdome/gdomecore
     cp libgdome/gdomecore/gdome-xml-document.h $HOME/parser3project/gnome/include/libgdome/gdomecore
+    
+    set path=($path $HOME/parser3project/gnome/bin)
+    ./configure --enable-glib-1 --disable-glibtest \
+      --prefix=$HOME/parser3project/gnome \
+      --disable-shared  --silent
+    make install
+
     
 
     Parser3 configure options, choose whether you need static or dynamic linkage with xml libs:
@@ -147,10 +165,10 @@
 
     glib:
 
-	cd $HOME/parser3project/src
+    cd $HOME/parser3project/src
     #on freebsd5 this is reported to work: ftp://ftp.gtk.org/pub/gtk/v1.1/glib-1.1.16.tar.gz
     wget ftp://ftp.gtk.org/pub/gtk/v1.2/glib-1.2.10.tar.gz
-	gunzip -c glib-1.2.10.tar.gz | tar vxf -
+    gunzip -c glib-1.2.10.tar.gz | tar vxf -
     cd glib-1.2.10
     ./configure --prefix=$HOME/parser3project/gnome --silent
     make install
@@ -234,4 +252,4 @@
   
 Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-$Id: INSTALL,v 1.43 2005/11/30 16:26:51 paf Exp $
+$Id: INSTALL,v 1.44 2005/12/01 15:09:59 paf Exp $
