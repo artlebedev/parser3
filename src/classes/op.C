@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2005/11/25 11:53:59 $";
+static const char * const IDENT_OP_C="$Date: 2005/12/01 15:51:06 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -387,6 +387,8 @@ static void _case(Request& r, MethodParams& params) {
 	int count=params.count();
 	Value& code=params.as_junction(--count, "case result must be code");
 	
+	Value& searching=data->searching;
+	bool we_are_searching_string_or_void=searching.is_string() || searching.is_void();
 	for(int i=0; i<count; i++) {
 		Value& value=r.process_to_value(params[i]);
 
@@ -396,10 +398,10 @@ static void _case(Request& r, MethodParams& params) {
 		}
 
 		bool matches;
-		if(data->searching.is_string())
-			matches=data->searching.as_string() == value.as_string();
+		if(we_are_searching_string_or_void)
+			matches=searching.as_string() == value.as_string();
 		else
-			matches=data->searching.as_double() == value.as_double();
+			matches=searching.as_double() == value.as_double();
 
 		if(matches) {
 			if(data->found)
