@@ -8,12 +8,11 @@
 #ifndef PA_WCONTEXT_H
 #define PA_WCONTEXT_H
 
-static const char * const IDENT_WCONTEXT_H="$Date: 2005/08/09 08:14:56 $";
+static const char * const IDENT_WCONTEXT_H="$Date: 2005/12/06 10:27:40 $";
 
 #include "pa_value.h"
 #include "pa_vstring.h"
 #include "pa_vhash.h"
-#include "pa_vvoid.h"
 
 class Request;
 
@@ -60,7 +59,6 @@ public: // WContext
 
 	/// appends a fstring to result
 	virtual void write(const String& astring, String::Language alang) {
-		were_string_writes=true;
 		fstring.append(astring, alang);
 	}
 	/// writes Value; raises an error if already, providing origin
@@ -70,10 +68,8 @@ public: // WContext
 		if value is VString writes fstring,
 		else writes Value; raises an error if already, providing origin
 	*/
-	void write(Value& avalue, String::Language alang) {
-		if(avalue.is_void())
-			return; // ignoring $void write attempts
-
+	void write(
+		Value& avalue, String::Language alang) {
 		if(const String* fstring=avalue.get_string())
 			write(*fstring, alang);
 		else
@@ -86,9 +82,7 @@ public: // WContext
 		wmethod_frame first checks for $result and if there is one, returns it instead
 	*/
 	virtual StringOrValue result() {
-		return fvalue?StringOrValue(*fvalue):
-			were_string_writes? StringOrValue(fstring):
-				StringOrValue(empty_result);
+		return fvalue?StringOrValue(*fvalue):StringOrValue(fstring);
 	}
 
 	void attach_junction(Junction* ajunction) {
@@ -119,10 +113,6 @@ public: // usage
 private:
 
 	void detach_junctions(); 
-
-private:
-
-	static VVoid empty_result;
 
 protected:
 	String& fstring;
