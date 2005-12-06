@@ -4,6 +4,8 @@
 
 	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
+
+	$Id: compile.y,v 1.217 2005/12/06 08:19:12 paf Exp $
 */
 
 /**
