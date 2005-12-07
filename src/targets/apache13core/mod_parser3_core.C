@@ -5,7 +5,7 @@ Parser: apache 1.3 module, part, compiled by parser3project.
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_MOD_PARSER3_MAIN_C="$Date: 2005/11/22 12:49:58 $";
+static const char * const IDENT_MOD_PARSER3_MAIN_C="$Date: 2005/12/07 13:31:30 $";
 
 #include "pa_config_includes.h"
 
@@ -193,7 +193,7 @@ size_t SAPI::send_body(SAPI_Info& SAPI_info, const void *buf, size_t size) {
 
 //@}
 
-#ifndef PA_DEBUG_DISABLE_GC
+#if !defined(PA_DEBUG_DISABLE_GC) && !defined(WIN32)
 extern long GC_large_alloc_warn_suppressed; 
 #endif
 
@@ -204,7 +204,7 @@ main workhorse
 */
 static void real_parser_handler(SAPI_Info& SAPI_info, Parser_module_config *dcfg) {
 	// collect garbage from prev request
-#ifndef PA_DEBUG_DISABLE_GC
+#if !defined(PA_DEBUG_DISABLE_GC) && !defined(WIN32)
 	{
 		int saved=GC_dont_gc;
 		GC_dont_gc=0;
