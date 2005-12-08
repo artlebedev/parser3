@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_PARSER3ISAPI_C="$Date: 2005/12/08 10:09:03 $";
+static const char * const IDENT_PARSER3ISAPI_C="$Date: 2005/12/08 10:11:22 $";
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -389,7 +389,7 @@ void real_parser_handler(SAPI_Info& SAPI_info, bool header_only) {
 	snprintf(config_filespec, MAX_STRING, 
 		"%s/%s", 
 		beside_binary_path, AUTO_FILE_NAME);
-	bool fail_on_config_read_problem=true;//entry_exists(config_filespec);
+	bool fail_on_config_read_problem=entry_exists(config_filespec);
 
 	// process the request
 	request.core(
