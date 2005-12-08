@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_VMAIL_C="$Date: 2005/08/05 13:03:04 $";
+static const char * const IDENT_VMAIL_C="$Date: 2005/12/08 10:55:43 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -562,17 +562,26 @@ static void store_message_element(HashStringValue::key_type raw_element_name,
 		info->charsets.source(), 
 		info->charsets.mail());
 	String& mail_line=*new String;
-	while(mail.length) {
-		bool too_long=mail.length>MAX_CHARS_IN_HEADER_LINE;
-		size_t length=too_long
-			? MAX_CHARS_IN_HEADER_LINE
-			: mail.length;
-		mail_line.append_strdup(mail.str, length, String::L_MAIL_HEADER);
-		mail.length-=length;
+	if(low_element_name=="to"
+		|| low_element_name=="cc" 
+		|| low_element_name=="bcc") 
+	{
+		// never wrap address lines, mailer can not handle wrapped properly
+		mail_line.append_strdup(mail.str, mail.length, String::L_MAIL_HEADER);
+	} else {
+		while(mail.length) {
+			bool too_long=mail.length>MAX_CHARS_IN_HEADER_LINE;
+			size_t length=too_long
+				? MAX_CHARS_IN_HEADER_LINE
+				: mail.length;
 
-		if(too_long)
-			mail_line << "\n "; // break header and continue it on next line
-	}	
+			mail_line.append_strdup(mail.str, length, String::L_MAIL_HEADER);
+			mail.length-=length;
+
+			if(too_long)
+				mail_line << "\n "; // break header and continue it on next line
+		}	
+	}
 
 	// append header line
 	info->header 
