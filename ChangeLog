@@ -1,3 +1,31 @@
+2005-12-08	paf
+	* src/types/pa_vmail.C [release_3_1_5] 1.71.6.2:
+		merged from 3.2.0
+		! bcc line longer then 500 chars now handled OK [were wrapped on 500th char according to rfc, but sendmail failed to unwrap it properly]
+
+2005-12-07	paf
+	* configure [release_3_1_5] 1.83.6.4:
+	* configure.in [release_3_1_5] 1.83.6.5:
+	* src/include/pa_version.h [release_3_1_5] 1.19.6.4:
+		not beta
+
+	* src/targets/apache13core/mod_parser3_core.C [release_3_1_5] 1.7.8.3:
+	* src/targets/isapi/parser3isapi.C [release_3_1_5] 1.92.8.4:
+		. now links in release mode
+
+	* src/include/pa_version.h [release_3_1_5] 1.19.6.6:
+		. not beta
+
+2005-12-06	paf
+	* src/classes/op.C [release_3_1_5] 1.152.4.10:
+		. in this version there is no ^switch[$nothing] = ^switch[void] 
+		problem
+
+2005-12-01	paf
+	* src/classes/op.C [release_3_1_5] 1.152.4.9:
+		mreged from HEAD
+		. bugfix ^switch[$void_value] caused ^case[string] to be coerced to double since searching value were not string (it was vvoid)
+
 2005-11-30	paf
 	* src/types/pa_vdate.h [release_3_1_5] 1.38.6.5:
 		merged from HEAD:
