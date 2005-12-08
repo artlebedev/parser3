@@ -15,7 +15,7 @@ int opterr = 1;
 int optopt;
 
 static int
-optiserr(int argc, char * const *argv, int oint, const char* optstr,
+optiserr(int /*argc*/, char * const *argv, int oint, const char* /*optstr*/,
          int optchr, int err)
 {
     if(opterr)

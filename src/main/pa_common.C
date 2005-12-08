@@ -26,7 +26,7 @@
  *
  */
 
-static const char * const IDENT_COMMON_C="$Date: 2005/11/24 14:00:34 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2005/12/08 10:02:45 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -553,7 +553,7 @@ char* unescape_chars(const char* cp, int len) {
 		EscapeFirst, 
 		EscapeSecond
 	} escapeState=EscapeRest;
-	uchar escapedValue=0;
+	uint escapedValue=0;
 	int srcPos=0;
 	int dstPos=0;
 	while(srcPos < len) {
@@ -569,12 +569,12 @@ char* unescape_chars(const char* cp, int len) {
 			}
 			break;
 			case EscapeFirst:
-			escapedValue=(uchar)(hex_value[ch] << 4);
+			escapedValue=hex_value[ch] << 4;
 			escapeState=EscapeSecond;
 			break;
 			case EscapeSecond:
 			escapedValue +=hex_value[ch]; 
-			s[dstPos++]=escapedValue;
+			s[dstPos++]=(char)escapedValue;
 			escapeState=EscapeRest;
 			break;
 		}
@@ -809,7 +809,7 @@ g_mime_utils_base64_encode_step (const unsigned char *in, size_t inlen, unsigned
 		case 2:	*saveout++ = *inptr++;
 		case 1:	*saveout++ = *inptr++;
 		}
-		((char *)save)[0] += inlen;
+		*(char *)save = *(char *)save+(char)inlen;
 	}
 	
 	/*d(printf ("mode = %d\nc1 = %c\nc2 = %c\n",
@@ -922,9 +922,9 @@ g_mime_utils_base64_decode_step (const unsigned char *in, size_t inlen, unsigned
 			saved = (saved << 6) | c;
 			i++;
 			if (i == 4) {
-				*outptr++ = saved >> 16;
-				*outptr++ = saved >> 8;
-				*outptr++ = saved;
+				*outptr++ = (unsigned char)saved >> 16;
+				*outptr++ = (unsigned char)saved >> 8;
+				*outptr++ = (unsigned char)saved;
 				i = 0;
 			}
 		}

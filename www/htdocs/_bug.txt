@@ -1,1 +1,3 @@
-test=работает&tricky=aa%D1%82%D0%BE%D0%B6%D0%B5bb
+product_id	name
+1	a"b"
+2	c>d

@@ -8,7 +8,7 @@
 #ifndef COMPILE_TOOLS
 #define COMPILE_TOOLS
 
-static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2005/08/09 08:14:51 $";
+static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2005/12/08 10:02:45 $";
 
 #include "pa_opcode.h"
 #include "pa_types.h"
@@ -115,7 +115,7 @@ public:
 		last_line_end_col=pos.col;
 		pos.col=0;
 	}
-	void pos_next_c(char c) {
+	void pos_next_c(int c) {
 		if(c=='\t')
 			pos.col=(pos.col+TAB_SIZE)&~(TAB_SIZE-1);
 		else
