@@ -1,8 +1,25 @@
-2005-11-30	paf
-	* src/main/pa_globals.C 1.178:
-		//20051130 trying to remove this, author claims that fixed a lot 
-		there // 20040920 for now both workarounds needed. wait for new 
-		libxml/xsl versions
+2005-12-08	paf
+	* src/include/pa_config_fixed.h [release_3_2_0] 1.68.2.1:
+		. removed outdated string origins [in current storage scheme 
+		there's no place for them. someday we can add third CORD to 
+		store origins and special version of parser which stores origins 
+		there [separate binary]]
+
+	* src/lib/patches/gc.patch [release_3_2_0] 1.2.24.1:
+		- incorporated into gc6.2
+
+2005-12-07	paf
+	* Makefile.am [release_3_2_0] 1.51.2.1:
+	* Makefile.in [release_3_2_0] 1.65.2.1:
+	* acinclude.m4 [release_3_2_0] 1.38.2.1:
+	* aclocal.m4 [release_3_2_0] 1.41.2.1:
+	* acsite.m4 [release_3_2_0] 1.16.2.1:
+	* configure [release_3_2_0] 1.87.2.1:
+	* configure.in [release_3_2_0] 1.88.2.1:
+		*** empty log message ***
+
+	* src/include/pa_version.h [release_3_2_0] 1.23.2.1:
+		makefiles
 
 2005-11-28	paf
 	* src/main/pa_http.C 1.2:
