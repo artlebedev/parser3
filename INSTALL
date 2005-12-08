@@ -158,6 +158,16 @@
         --with-pathlink=LKEY    put dynamic libraries paths to binary
                                 using linker key (-R, -rpath-link)
 
+
+    Sample:
+    cd $HOME/parser3project/parser3
+    ./configure --prefix=$HOME/parser3install \
+        --with-static-gc=$HOME/parser3project/gnome/lib \
+        --with-static-xml=$HOME/parser3project/gnome \
+        --with-sendmail="/usr/sbin/sendmail -i -t -f postmaster" \
+        --silent
+	make install
+
 3b. In case you wish $mail:receive support you need libraries
       glib >= 1.2.10
       gmime >= 1.0.1 [http://spruce.sourceforge.net/gmime/sources/v1.0/gmime-1.0.8.tar.gz]
@@ -254,4 +264,4 @@
   
 Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-$Id: INSTALL,v 1.44.2.2 2005/12/08 14:09:35 paf Exp $
+$Id: INSTALL,v 1.44.2.3 2005/12/08 14:29:55 paf Exp $
