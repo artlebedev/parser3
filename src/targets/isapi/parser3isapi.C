@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_PARSER3ISAPI_C="$Date: 2005/12/08 10:11:22 $";
+static const char * const IDENT_PARSER3ISAPI_C="$Date: 2005/12/08 10:34:47 $";
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -273,7 +273,7 @@ static bool parser_init() {
 
 		// successful finish
 		return true;
-	} catch(const Exception& e) { // global problem 
+	} catch(.../*const Exception& e*/) { // global problem 
 		//const char* body=e.comment();
 		
 		// unsuccessful finish
