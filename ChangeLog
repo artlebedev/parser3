@@ -1,4 +1,20 @@
 2005-12-08	paf
+	* src/classes/date.C [release_3_2_0] 1.72.2.1:
+	* src/include/pa_config_fixed.h [release_3_2_0] 1.68.2.2:
+	* src/main/compile.tab.C [release_3_2_0] 1.109.2.1:
+	* src/main/compile.y [release_3_2_0] 1.217.2.1:
+	* src/main/compile_tools.h [release_3_2_0] 1.76.2.1:
+	* src/main/pa_charset.C [release_3_2_0] 1.52.2.1:
+	* src/main/pa_common.C [release_3_2_0] 1.215.2.1:
+	* src/main/pa_globals.C [release_3_2_0] 1.178.2.1:
+	* src/main/pa_string.C [release_3_2_0] 1.203.2.1:
+	* src/targets/cgi/getopt.c [release_3_2_0] 1.3.24.1:
+	* src/targets/isapi/parser3isapi.C [release_3_2_0] 1.95.2.3:
+	* www/htdocs/_bug.html [release_3_2_0] 1.110.2.1:
+	* www/htdocs/_bug.txt [release_3_2_0] 1.7.2.1:
+	* www/htdocs/auto.p [release_3_2_0] 1.24.2.1:
+		. less warnings
+
 	* src/include/pa_config_fixed.h [release_3_2_0] 1.68.2.1:
 		. removed outdated string origins [in current storage scheme 
 		there's no place for them. someday we can add third CORD to 
@@ -7,6 +23,22 @@
 
 	* src/lib/patches/gc.patch [release_3_2_0] 1.2.24.1:
 		- incorporated into gc6.2
+
+	* src/targets/apache13core/mod_parser3_core.C [release_3_2_0] 1.9.2.1:
+	* src/targets/isapi/parser3isapi.C [release_3_2_0] 1.95.2.1:
+		. merged from 3.1.5 release link fixes
+
+	* src/types/pa_vmail.C [release_3_2_0] 1.72.2.1:
+		! bcc line longer then 500 chars now handled OK [were wrapped on 
+		500th char according to rfc, but sendmail failed to unwrap it 
+		properly]
+
+	* src/lib/patches/Makefile.am [release_3_2_0] 1.4.24.1:
+	* src/lib/patches/Makefile.in [release_3_2_0] 1.14.2.1:
+		*** empty log message ***
+
+	* src/targets/isapi/parser3isapi.C [release_3_2_0] 1.95.2.2:
+		. undone some strange change since 3.1.5
 
 2005-12-07	paf
 	* Makefile.am [release_3_2_0] 1.51.2.1:
