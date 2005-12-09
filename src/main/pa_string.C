@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2005/12/08 10:02:45 $";
+static const char * const IDENT_STRING_C="$Date: 2005/12/09 07:38:50 $";
 
 #include "pcre.h"
 
@@ -406,7 +406,7 @@ Table* String::match(Charset& source_charset,
 			0,
 			"regexp is empty");
 
-	const char* pattern=regexp.cstr();
+	const char* pattern=regexp.cstr(String::L_UNSPECIFIED); // fix any tainted with L_REGEX
 	const char* errptr;
 	int erroffset;
 	bool need_pre_post_match=false;
