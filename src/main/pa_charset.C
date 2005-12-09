@@ -5,7 +5,7 @@
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_CHARSET_C="$Date: 2005/08/09 08:14:51 $";
+static const char * const IDENT_CHARSET_C="$Date: 2005/12/09 07:18:07 $";
 
 #include "pa_charset.h"
 #include "pa_charsets.h"
@@ -38,7 +38,7 @@ inline void prepare_case_tables(unsigned char *tables) {
 	unsigned char *lcc_table=tables+lcc_offset;
 	unsigned char *fcc_table=tables+fcc_offset;
 	for(int i=0; i<0x100; i++)
-		lcc_table[i]=fcc_table[i]=i;
+		lcc_table[i]=fcc_table[i]=(unsigned char)i;
 }
 inline void cstr2ctypes(unsigned char *tables, const unsigned char *cstr, 
 						unsigned char bit) {
@@ -134,18 +134,18 @@ void Charset::load_definition(Request_charsets& charsets, const String& afile_sp
 			continue;
 
 		// char	white-space	digit	hex-digit	letter	word	lowercase	unicode1	unicode2	
-		unsigned int c=0;
+		unsigned char c=0;
 		char *cell;
 		for(int column=0; (cell=lsplit(&row, '\t')); column++) {
 			switch(column) {
-			case 0: c=to_wchar_code(cell); break;
+			case 0: c=(unsigned char)to_wchar_code(cell); break;
 			// pcre_tables
 			case 1: element2ctypes(c, to_bool(cell), pcre_tables, ctype_space, cbit_space); break;
 			case 2: element2ctypes(c, to_bool(cell), pcre_tables, ctype_digit, cbit_digit); break;
 			case 3: element2ctypes(c, to_bool(cell), pcre_tables, ctype_xdigit); break;
 			case 4: element2ctypes(c, to_bool(cell), pcre_tables, ctype_letter); break;
 			case 5: element2ctypes(c, to_bool(cell), pcre_tables, ctype_word, cbit_word); break;
-			case 6: element2case(c, to_wchar_code(cell), pcre_tables); break;
+			case 6: element2case(c, (unsigned char)to_wchar_code(cell), pcre_tables); break;
 			case 7:
 			case 8:
 				// charset

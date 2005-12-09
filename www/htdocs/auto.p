@@ -1,8 +1,8 @@
 @USE
-common/lib.p
-common/layout.p
-common/implode.p
-date/dtf.p
+lib.p
+layout.p
+implode.p
+dtf.p
 mysql.p
 #rotabanner.p
 
@@ -16,19 +16,27 @@ $MAIN:pSQL[^mysql::init[$SQL.connect-string;
 
 ^detectBrowser[]
 
-# эта табличка нужна для очистки всякой фигни от ентитей/тегов
+# СЌС‚Р° С‚Р°Р±Р»РёС‡РєР° РЅСѓР¶РЅР° РґР»СЏ РѕС‡РёСЃС‚РєРё РІСЃСЏРєРѕР№ С„РёРіРЅРё РѕС‚ РµРЅС‚РёС‚РµР№/С‚РµРіРѕРІ
 $repl[^table::create{a	b
 &nbsp^;	 
 &hellip^;	...
-&rdquo^;	"
-&ldquo^;	"
-&raquo^;	"
-&laquo^;	"
+&rdquo^;	^taint["]
+&ldquo^;	^taint["]
+&raquo^;	^taint["]
+&laquo^;	^taint["]
 &mdash^;	-
 &ndash^;	-
-&#8470^;	№
+&#8470^;	в„–
 &bull^;	 }]
 
+$SECTIONS[
+	$.banner_old[
+		$.image_path[/i/banners_old]
+	]
+	$.banner[
+		$.image_path[/i/banners]
+	]
+]
 #end @auto[]
 
 
@@ -42,45 +50,53 @@ $repl[^table::create{a	b
 
 
 ###########################################################################
-@postprocessZ[body][repl]
+@postprocess[body][repl]
 $result[$body]
 ^if(def $result && $result is "string"){
     ^if($MAIN:browser eq "nn" && $MAIN:browser_ver < 5){
-        $repl[^table::create[nameless]{
+        $repl[^table::create{a	b
 &hellip^;	&#133^;
 &rdquo^;	&#148^;
 &ldquo^;	&#147^;
 &mdash^;	&#151^;
 &ndash^;	&#150^;
-&bull^;	&#149^;
-}]
+&bull^;	&#149^;}]
         $result[^result.replace[$repl]]
     }
 
-	^rem{ *** это инициализация банеров *** }
-#	$banner[^rotabanner::init[название проекта;банер по умолчанию]]
-	^rem{ *** обрабатываем [parser]код[/parser] *** }
-	$result[^result.match[\[(parser)\](.+?)\[/\1\]][g]{^taint[as-is][^process{$match.2}]}]
+	^rem{ *** СЌС‚Рѕ РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ Р±Р°РЅРµСЂРѕРІ *** }
+#	$banner[^rotabanner::init[РЅР°Р·РІР°РЅРёРµ РїСЂРѕРµРєС‚Р°;Р±Р°РЅРµСЂ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ]]
+	^rem{ *** РѕР±СЂР°Р±Р°С‚С‹РІР°РµРј [parser]РєРѕРґ[/parser] *** }
+#	$result[^result.match[\[(parser)\](.+?)\[/\1\]][g]{^taint[as-is][^process{$match.2}]}]
 
-	^rem{ *** если отдаем страничку яндексу, то меняем &amp^; на &, а то у него крышу сносит *** }
+	^if(^result.pos[one-random]){
+		$result[^result.match[<(one-random)>(.+?)</\1>][g]{$_items[^match.2.match[<(random-item)>(.+?)</\1>][g]]^_items.offset(^math:random(^_items.count[]))$_items.2}]
+	}
+
+	^rem{ *** РµСЃР»Рё РѕС‚РґР°РµРј СЃС‚СЂР°РЅРёС‡РєСѓ СЏРЅРґРµРєСЃСѓ, С‚Рѕ РјРµРЅСЏРµРј &amp^; РЅР° &, Р° С‚Рѕ Сѓ РЅРµРіРѕ РєСЂС‹С€Сѓ СЃРЅРѕСЃРёС‚ *** }
 	^if(^env:HTTP_USER_AGENT.match[yandex][i]){
 		$result[^result.match[&amp^;][g]{&}]
 	}
+	
+	$repl[^table::create{a	b
+<br></br>	<br />
+></img>	 />
+}]
+	$result[^if(${response:content-type.value} eq "text/html"){<?xml version="1.0" encoding="$response:charset"?>}^result.replace[$repl]]
 }
 
-# получаем статистику по sql запросам
+# РїРѕР»СѓС‡Р°РµРј СЃС‚Р°С‚РёСЃС‚РёРєСѓ РїРѕ sql Р·Р°РїСЂРѕСЃР°Рј
 ^getSQLStat[]
 
-# вызываем rusage, который напишет в log столько страничка генерилась и сколько отожрала памяти
-#^rusage[]
-
+# РІС‹Р·С‹РІР°РµРј rusage, РєРѕС‚РѕСЂС‹Р№ РЅР°РїРёС€РµС‚ РІ log СЃС‚РѕР»СЊРєРѕ СЃС‚СЂР°РЅРёС‡РєР° РіРµРЅРµСЂРёР»Р°СЃСЊ Рё СЃРєРѕР»СЊРєРѕ РѕС‚РѕР¶СЂР°Р»Р° РїР°РјСЏС‚Рё
+^rusage[]
 #end @postprocess[]
 
 
 
 ###########################################################################
 @rusage[msg][now;s]
-^if(!in "/admin/"){
+^if(1 || !in "/admin/"){
 	$now[^date::now[]]
 	$s[[^now.sql-string[]]	$status:rusage.utime	$status:rusage.maxrss	[$status:memory.used/$status:memory.free/$status:memory.ever_allocated_since_compact/$status:memory.ever_allocated_since_start]	$env:REMOTE_ADDR	$request:uri^if(def $msg){ $msg}^#0A]
 	^s.save[append;/../data/rusage.log]
@@ -90,14 +106,14 @@ $result[$body]
 
 
 ###########################################################################
-# этот метод выведет статистику, собранную объектом $MAIN:pSQL
+# СЌС‚РѕС‚ РјРµС‚РѕРґ РІС‹РІРµРґРµС‚ СЃС‚Р°С‚РёСЃС‚РёРєСѓ, СЃРѕР±СЂР°РЅРЅСѓСЋ РѕР±СЉРµРєС‚РѕРј $MAIN:pSQL
 @getSQLStat[]
 ^if(def $MAIN:pSQL && !in "/admin/"){
 	^if(def $form:mode && ^form:tables.mode.locate[field;debug]){
-		^rem{ *** если пусканули с ?mode=debug то получаем и сохраняем информацию обо всех запросах на странице *** }
+		^rem{ *** РµСЃР»Рё РїСѓСЃРєР°РЅСѓР»Рё СЃ ?mode=debug С‚Рѕ РїРѕР»СѓС‡Р°РµРј Рё СЃРѕС…СЂР°РЅСЏРµРј РёРЅС„РѕСЂРјР°С†РёСЋ РѕР±Рѕ РІСЃРµС… Р·Р°РїСЂРѕСЃР°С… РЅР° СЃС‚СЂР°РЅРёС†Рµ *** }
 		^MAIN:pSQL.print_statistic[$.file[/../data/sql.txt]]
 	}{
-		^rem{ *** а по умолчанию в лог пишем только информацию о проблемных страницах *** }
+		^rem{ *** Р° РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ РІ Р»РѕРі РїРёС€РµРј С‚РѕР»СЊРєРѕ РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ РїСЂРѕР±Р»РµРјРЅС‹С… СЃС‚СЂР°РЅРёС†Р°С… *** }
 		^MAIN:pSQL.print_statistic[
 			$.file[/../data/sql.log]
 			$.debug_time_limit(500)

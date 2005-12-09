@@ -10,7 +10,7 @@
 #ifndef PA_CONFIG_FIXED_H
 #define PA_CONFIG_FIXED_H
 
-static const char * const IDENT_CONFIG_FIXED_H="$Date: 2005/08/09 08:14:49 $";
+static const char * const IDENT_CONFIG_FIXED_H="$Date: 2005/12/09 07:18:07 $";
 
 #define inline  __inline
 #define HAVE_ASSERT_H
@@ -42,9 +42,6 @@ static const char * const IDENT_CONFIG_FIXED_H="$Date: 2005/08/09 08:14:49 $";
 //gmime
 #define off_t _off_t
 #define ssize_t int
-
-// no string origin tracking
-//#define NO_STRING_ORIGIN
 
 // disable any execs (file::exec, file::cgi, unix mail:send)
 //#define NO_PA_EXECS

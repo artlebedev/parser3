@@ -1,1 +1,1 @@
-EXTRA_DIST = gc.patch gdome2.patch
+EXTRA_DIST = gdome2.patch

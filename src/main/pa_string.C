@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2005/08/09 08:14:52 $";
+static const char * const IDENT_STRING_C="$Date: 2005/12/09 07:18:07 $";
 
 #include "pcre.h"
 
@@ -104,7 +104,7 @@ double pa_atod(const char* str, const String* problem_source) {
 #ifndef DOXYGEN
 typedef struct {
     ssize_t countdown;
-    char target;	/* Character we're looking for	*/
+    int target;	/* Character we're looking for	*/
 } chr_data;
 #endif
 static int CORD_range_contains_chr_greater_then_proc(char c, size_t size, void* client_data)

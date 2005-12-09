@@ -157,7 +157,7 @@ sharedstatedir = @sharedstatedir@
 subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-EXTRA_DIST = gc.patch gdome2.patch
+EXTRA_DIST = gdome2.patch
 all: all-am
 
 .SUFFIXES:

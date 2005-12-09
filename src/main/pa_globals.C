@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_GLOBALS_C="$Date: 2005/11/30 14:56:16 $";
+static const char * const IDENT_GLOBALS_C="$Date: 2005/12/09 07:18:07 $";
 
 #include "pa_config_includes.h"
 
@@ -157,7 +157,7 @@ void pa_globals_destroy(void *) {
 		gdome_di_unref (domimpl, &exc);
 		// uncomment SAPI::abort below if adding potential-throw code here
 #endif
-	} catch(const Exception& e) {
+	} catch(.../*const Exception& e*/) {
 //		SAPI::abort("pa_globals_destroy failed: %s", e.comment());
 	}
 }

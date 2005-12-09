@@ -1,2 +1,2 @@
 // specified manually [would be overwritten on unix]
-#define PARSER_VERSION "3.2.0 (compiled on i386-pc-win32)"
+#define PARSER_VERSION "3.2.1b (compiled on i386-pc-win32)"

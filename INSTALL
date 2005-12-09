@@ -8,6 +8,7 @@
     
     Installation sequence of this library:
 
+    mkdir $HOME/parser3project
     mkdir $HOME/parser3project/src
     cd $HOME/parser3project/src
     wget http://www.hpl.hp.com/personal/Hans_Boehm/gc/gc_source/gc6.6.tar.gz
@@ -84,12 +85,13 @@
     libxml2:
 
     cd $HOME/parser3project/src
-    wget ftp://xmlsoft.org/libxml2-2.6.22.tar.gz
+    mkdir $HOME/parser3project
+    wget --passive-ftp ftp://xmlsoft.org/libxml2-2.6.22.tar.gz
     gunzip -c libxml2-2.6.22.tar.gz | tar vxf -
     cd libxml2-2.6.22
-    #sax1, output, tree, xinclude[in libxslt], xptr[xinclude]-- needed!
+    #sax1, output, tree, xinclude[in libxslt], html[in libxslt, mode=html?] xptr[xinclude]-- needed!
     ./configure --prefix=$HOME/parser3project/gnome \
-      --with-html --without-iconv --without-threads --without-debug \
+      --without-iconv --without-threads --without-debug \
       --without-iso8859x --without-legacy \
       --without-pattern --without-push --without-python \
       --without-reader --without-writer --without-readline --without-regexps \
@@ -104,7 +106,7 @@
     libxslt:
 
     cd $HOME/parser3project/src
-    wget ftp://xmlsoft.org/libxslt-1.1.15.tar.gz
+    wget --passive-ftp ftp://xmlsoft.org/libxslt-1.1.15.tar.gz
     gunzip -c libxslt-1.1.15.tar.gz | tar vxf -
     cd libxslt-1.1.15
     ./configure --with-libxml-prefix=$HOME/parser3project/gnome --prefix=$HOME/parser3project/gnome --without-debug --without-debugger --without-crypto --without-plugins --disable-shared  --silent
@@ -114,8 +116,8 @@
 
     cd $HOME/parser3project/src
     #on freebsd5 this is reported to work: 
-    #wget ftp://ftp.gtk.org/pub/gtk/v1.1/glib-1.1.16.tar.gz
-    wget ftp://ftp.gtk.org/pub/gtk/v1.2/glib-1.2.10.tar.gz
+    #wget --passive-ftp ftp://ftp.gtk.org/pub/gtk/v1.1/glib-1.1.16.tar.gz
+    wget --passive-ftp ftp://ftp.gtk.org/pub/gtk/v1.2/glib-1.2.10.tar.gz
     gunzip -c glib-1.2.10.tar.gz | tar vxf -
     cd glib-1.2.10
     ./configure --prefix=$HOME/parser3project/gnome --disable-debug --disable-shared  --silent
@@ -156,6 +158,15 @@
         --with-pathlink=LKEY    put dynamic libraries paths to binary
                                 using linker key (-R, -rpath-link)
 
+    Sample:
+    cd $HOME/parser3project/parser3
+    ./configure --prefix=$HOME/parser3install \
+        --with-static-gc=$HOME/parser3project/gc/lib \
+        --with-static-xml=$HOME/parser3project/gnome \
+        --with-sendmail="/usr/sbin/sendmail -i -t -f postmaster" \
+        --silent
+	make install
+
 3b. In case you wish $mail:receive support you need libraries
       glib >= 1.2.10
       gmime >= 1.0.1 [http://spruce.sourceforge.net/gmime/sources/v1.0/gmime-1.0.8.tar.gz]
@@ -167,7 +178,7 @@
 
     cd $HOME/parser3project/src
     #on freebsd5 this is reported to work: ftp://ftp.gtk.org/pub/gtk/v1.1/glib-1.1.16.tar.gz
-    wget ftp://ftp.gtk.org/pub/gtk/v1.2/glib-1.2.10.tar.gz
+    wget --passive-ftp ftp://ftp.gtk.org/pub/gtk/v1.2/glib-1.2.10.tar.gz
     gunzip -c glib-1.2.10.tar.gz | tar vxf -
     cd glib-1.2.10
     ./configure --prefix=$HOME/parser3project/gnome --silent
@@ -252,4 +263,4 @@
   
 Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-$Id: INSTALL,v 1.44 2005/12/01 15:09:59 paf Exp $
+$Id: INSTALL,v 1.45 2005/12/09 07:18:07 paf Exp $
