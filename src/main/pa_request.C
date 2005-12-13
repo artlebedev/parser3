@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REQUEST_C="$Date: 2005/11/24 14:00:34 $";
+static const char * const IDENT_REQUEST_C="$Date: 2005/12/13 10:59:32 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -495,6 +495,7 @@ frame.store_param(*new VTable(&stack_trace));
 
 // future $response:body=
 //   execute ^unhandled_exception[exception;stack]
+exception_trace.clear(); // forget all about previous life, in case there would be error inside of this method, error handled  would not be mislead by old stack contents (see extract_origin)
 body_string=&execute_method(frame, *method).as_string();
 				}
 			}
@@ -937,13 +938,15 @@ const Request::Trace Request::Exception_trace::extract_origin(const String*& pro
 	if(!is_empty()) {
 		result=bottom_value();
 		if(!problem_source) { // we don't know who trigged the bug?
-			problem_source=result.name(); // consider the stack-top-guy did that
+			problem_source=result.name(); // consider the stack-top-guy (we usually know source of next-from-throw-point exception) did that
 			fbottom++;
 		} else if(result.name()==problem_source) // it is that same guy?
 			fbottom++; // throw away that trace
-		// else stack top contains not us, 
-		//	leaving result intact
-		//	it would help ^throw
+		else {
+			// stack top contains not us, 
+			//	leaving result intact
+			//	it would help ^throw
+		}
 	}
 
 	return result;
