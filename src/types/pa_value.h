@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-static const char * const IDENT_VALUE_H="$Date: 2005/11/21 09:47:35 $";
+static const char * const IDENT_VALUE_H="$Date: 2005/12/16 14:08:02 $";
 
 #include "pa_string.h"
 #include "pa_array.h"
@@ -59,6 +59,9 @@ public: // Value
 	
 	/// is this value string?
 	virtual bool is_string() const { return false; }
+
+	/// is this value void?
+	virtual bool is_void() const { return false; }
 
 	/// is this value number?
 	virtual bool is_evaluated_expr() const { return false; }

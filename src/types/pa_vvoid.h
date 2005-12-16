@@ -8,7 +8,7 @@
 #ifndef PA_VVOID_H
 #define PA_VVOID_H
 
-static const char * const IDENT_VVOID_H="$Date: 2005/08/05 13:03:06 $";
+static const char * const IDENT_VVOID_H="$Date: 2005/12/16 14:08:02 $";
 
 #include "classes.h"
 #include "pa_vstateless_object.h"
@@ -23,6 +23,8 @@ public: // Value
 	override const char* type() const { return "void"; }
 	override VStateless_class *get_class() { return void_class; }
 
+	/// VVoid: true [the only one, that reports true]
+	override bool is_void() const { return true; }
 	/// VVoid: ""
 	override const String* get_string() { return new String; }
 	/// VVoid: false
