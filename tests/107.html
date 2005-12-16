@@ -12,15 +12,14 @@ XPath2:<br>
 ^show_xnode1[^xdoc.selectSingle[*/man[2]/name];0;1]<hr>
 
 @xdata[]
-#$response:content-type[$.value[text/html] $.charset[windows-1251]]
-$xdoc[^xdoc::create{<?xml version="1.0" encoding="windows-1251"?>
+$xdoc[^xdoc::create{<?xml version="1.0" encoding="$request:charset"?>
 <!--for getByID to work we need to enable doctype checking in pa_global.C :( <?DOCTYPE people SYSTEM "107.dtd"?>-->
 <people>
-	<man id="1" имя="word слово">
+	<man id="1" РёРјСЏ="word СЃР»РѕРІРѕ">
 		<name>P&#171^;AF	B</name>
 	</man>
 	   	<man id="2">
-            <name>ПИФ^taint[&]</name>
+            <name>РџРР¤^taint[&]</name>
 	   	</man>
 </people>
 }]
