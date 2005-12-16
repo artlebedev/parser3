@@ -1,0 +1,89 @@
+@main[]
+$xdoc[^xdoc::create[doc]]
+
+$elem[^xdoc.createElementNS[http://parser.ru/first;first:elementWithNamespace1]]
+$dummy[^xdoc.firstChild.appendChild[$elem]]
+
+#todo:someday render ns decls
+^dump[$xdoc]
+
+$elem[^xdoc.createElementNS[http://parser.ru/first;first:elementWithNamespace1]]
+$dummy[^xdoc.firstChild.appendChild[$elem]]
+
+^dump[$xdoc]
+
+$attr[^xdoc.createAttributeNS[http://parser.ru/second;second:element2WithNamespace2]]
+$dummy[^xdoc.firstChild.firstChild.appendChild[$attr]]
+
+^dump[$xdoc]
+
+$attr[^xdoc.createAttributeNS[http://parser.ru/second;second:element3WithNamespace2]]
+$dummy[^xdoc.firstChild.firstChild.appendChild[$attr]]
+
+^dump[$xdoc]
+
+$nodeList[^xdoc.getElementsByTagNameNS[http://parser.ru/first;elementWithNamespace1]]
+^show_xnodes1[$nodeList]
+<hr><hr>
+
+
+@dump[xdoc]
+^show_xdoc2[$xdoc]<hr>
+^show_xnode1[$xdoc]<hr>
+<hr>
+
+@show1[array]
+^for[i](0;$array-1){
+    $x[$array.$i]
+	$x.firstChild.nodeValue: 
+		$pattributes[$x.parentNode.attributes]
+		^if(^pattributes._count[]){
+			$pattributes.id.name=$pattributes.id.nodeValue
+		}
+	<br>
+}
+	
+@show_xnodes1[array][i]
+^for[i](0;^array._count[]-1){
+	^show_xnode1[$array.$i;0;1]
+}
+
+@show_xnode1[x;level;single][l]
+^if(def $x){
+    ^for[l](0;$level-1){&nbsp^;&nbsp^;&nbsp^;&nbsp^;}
+    ^if($x.nodeType == $xnode:ELEMENT_NODE){
+    	&lt^;$x.nodeName
+	    $pairs[$x.attributes]
+	    ^if(def $pairs){
+	    	$names[^pairs._keys[]]
+	    	^names.menu{ $names.key="$pairs.[$names.key].nodeValue"}
+	    }
+	    &gt^;
+    }{
+    	[$x.nodeType]
+    }
+    
+    ^if(def $x.nodeValue){$x.nodeValue}<br>
+    ^show_xnode1[$x.firstChild]($level+1)
+    ^if(!$single){
+	    ^show_xnode1[$x.nextSibling]($level)
+    }
+
+    ^if($x.nodeType == $xnode:ELEMENT_NODE){
+    ^for[l](0;$level-1){&nbsp^;&nbsp^;&nbsp^;&nbsp^;}&lt^;/$x.nodeName&gt^;<br>
+    }
+}
+
+@show_xdoc2[xdoc]
+#$response:body[^xdoc.file[	$.media-type[text/paf]  ]]
+<pre>^taint[html][^xdoc.string[
+#	$.method[html]
+#	$.encoding[utF-8]
+#  	$.omit-xml-declaration[yes]
+#	$.standalone[no]
+#	-$.doctype-public[-//W3C//DTD XHTML]
+#	-$.doctype-system[/a/b/c/]
+#	$.indent[yes]
+#	$.media-type[text/paf]
+]]
+</pre>

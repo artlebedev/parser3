@@ -1,0 +1,21 @@
+@main[]
+$xdoc[^xdoc::create{<?xml version="1.0" encoding="$request:charset"?>
+<!--some comment-->
+<people>
+	   	<man id="2">
+            <name>ПИФ^taint[&]</name>
+	   	</man>
+	<man id="1" имя="word слово">
+		<name>P&#171^;AF	B</name>
+	</man>
+</people>
+}]
+
+^if(^xdoc.firstChild.hasChildNodes[]){y;n}
+^if(^xdoc.firstChild.nextSibling.hasChildNodes[]){y;n}
+
+#should have dtd for this to work $Element[^xdoc.getElementById[2]] 
+# ^show_xnode1[$Element]
+#<hr><hr>
+
+

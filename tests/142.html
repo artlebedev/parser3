@@ -1,0 +1,117 @@
+@main[]
+$xdoc[^xdoc::create[doc]]
+
+$elem[^xdoc.createElement[paf]]
+$dummy[^xdoc.firstChild.appendChild[$elem]]
+
+^dump[$xdoc]
+
+$elem[^xdoc.createTextNode[this is text node (will be removed later)]]
+$appendedTextNode[^xdoc.firstChild.firstChild.appendChild[$elem]]
+
+^dump[$xdoc]
+
+$elem[^xdoc.createComment[this is comment, must go before text node(will be replaced later)]]
+$insertedComment[^xdoc.firstChild.firstChild.insertBefore[$elem;$appendedTextNode]]
+
+^dump[$xdoc]
+
+$elem[^xdoc.createCDATASection[this is CDATA, it replaced comment here!]]
+$dummy[^xdoc.firstChild.firstChild.replaceChild[$elem;$insertedComment]]
+
+^dump[$xdoc]
+
+$removedNode[^xdoc.firstChild.firstChild.removeChild[$xdoc.firstChild.firstChild.firstChild.nextSibling]]
+=$removedNode.nodeName|$removedNode.nodeValue=
+
+^dump[$xdoc]
+
+$elem[^xdoc.createProcessingInstruction[this is target;this is pi]]
+$dummy[^xdoc.firstChild.firstChild.replaceChild[$elem;$insertedComment]]
+
+^dump[$xdoc]
+
+$attr[^xdoc.createAttribute[attname]]
+$dummy[^xdoc.firstChild.setAttributeNode[$attr]]
+
+^dump[$xdoc]
+
+$attr.nodeValue[attvalue]
+
+^dump[$xdoc]
+
+$EntityReference[^xdoc.createEntityReference[nbsp]] 
+$dummy[^xdoc.firstChild.appendChild[$EntityReference]]
+
+^dump[$xdoc]
+
+$elem[^xdoc.createElement[paf]]
+$dummy[^xdoc.firstChild.firstChild.firstChild.appendChild[$elem]]
+
+^dump[$xdoc]
+
+$NodeList[^xdoc.getElementsByTagName[paf]] 
+paf count=^NodeList._count[]
+<hr><hr>
+
+
+@dump[xdoc]
+^show_xdoc2[$xdoc]<hr>
+^show_xnode1[$xdoc]<hr>
+<hr>
+
+@show1[array]
+^for[i](0;$array-1){
+    $x[$array.$i]
+	$x.firstChild.nodeValue: 
+		$pattributes[$x.parentNode.attributes]
+		^if(^pattributes._count[]){
+			$pattributes.id.name=$pattributes.id.nodeValue
+		}
+	<br>
+}
+	
+@show_xnodes1[array][i]
+^for[i](0;^array._count[]-1){
+	^show_xnode1[$array.$i;0;1]
+}
+
+@show_xnode1[x;level;single][l]
+^if(def $x){
+    ^for[l](0;$level-1){&nbsp^;&nbsp^;&nbsp^;&nbsp^;}
+    ^if($x.nodeType == $xnode:ELEMENT_NODE){
+    	&lt^;$x.nodeName
+	    $pairs[$x.attributes]
+	    ^if(def $pairs){
+	    	$names[^pairs._keys[]]
+	    	^names.menu{ $names.key="$pairs.[$names.key].nodeValue"}
+	    }
+	    &gt^;
+    }{
+    	[$x.nodeType]
+    }
+    
+    ^if(def $x.nodeValue){$x.nodeValue}<br>
+    ^show_xnode1[$x.firstChild]($level+1)
+    ^if(!$single){
+	    ^show_xnode1[$x.nextSibling]($level)
+    }
+
+    ^if($x.nodeType == $xnode:ELEMENT_NODE){
+    ^for[l](0;$level-1){&nbsp^;&nbsp^;&nbsp^;&nbsp^;}&lt^;/$x.nodeName&gt^;<br>
+    }
+}
+
+@show_xdoc2[xdoc]
+#$response:body[^xdoc.file[	$.media-type[text/paf]  ]]
+<pre>^taint[html][^xdoc.string[
+	$.method[html]
+#	$.encoding[utF-8]
+#  	$.omit-xml-declaration[yes]
+#	$.standalone[no]
+#	-$.doctype-public[-//W3C//DTD XHTML]
+#	-$.doctype-system[/a/b/c/]
+#	$.indent[yes]
+#	$.media-type[text/paf]
+]]
+</pre>
