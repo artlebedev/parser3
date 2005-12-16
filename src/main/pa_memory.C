@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_MEMORY_C="$Date: 2005/08/09 08:14:52 $";
+static const char * const IDENT_MEMORY_C="$Date: 2005/12/16 10:15:12 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -38,17 +38,11 @@ static size_t debug_size(size_t user_size) {
 
 const int BEFORE_MARK=0xBEF0BEF0;
 const int AFTER_MARK=0xAFEEAFEE;
-const char PAD_MARK='\xAD';
 
-static void* fill_return_user(void* aptr, size_t pure_size) {
+static void* fill_return_user(void* aptr, size_t /*pure_size*/) {
 	char* ptr=(char*)aptr;
 	memcpy(ptr, &BEFORE_MARK, HEADTAIL_SIZE);
-	memcpy(ptr+pure_size-HEADTAIL_SIZE, &AFTER_MARK, HEADTAIL_SIZE);
-
-	// pAD
-	size_t raw_size=GC_size(aptr);
-	for(size_t i=pure_size; i<raw_size; i++)
-		ptr[i]=PAD_MARK;
+//	memcpy(ptr+HEADTAIL_SIZE+pure_size, &AFTER_MARK, HEADTAIL_SIZE);
 
 	//if(ptr>=(char*)0x01c357e40 && ptr<=((char*)0x01c357e4+100))
 		//printf("valid:0x%p\n", ptr);
@@ -59,15 +53,10 @@ static void* check_return_debug(void* auser_ptr) {
 	char* user_ptr=(char*)auser_ptr;
 	char* ptr=user_ptr-HEADTAIL_SIZE;
 
-	size_t raw_size=GC_size(ptr);
-	assert(raw_size!=0);
-
-	size_t pure_size=raw_size;
-	while(ptr[pure_size-1]==PAD_MARK)
-		pure_size--;
-
+	assert(GC_size(ptr));
 	assert(memcmp(ptr, &BEFORE_MARK, HEADTAIL_SIZE)==0);
-	assert(memcmp(ptr+pure_size-HEADTAIL_SIZE, &AFTER_MARK, HEADTAIL_SIZE)==0);
+// don't know real size. can put it to head someday
+//	assert(memcmp(ptr+HEADTAIL_SIZE+pure_size, &AFTER_MARK, HEADTAIL_SIZE)==0);
 
 	return ptr;
 }
@@ -94,7 +83,9 @@ void* pa_gc_realloc(void* user_ptr, size_t size) {
 			size),
 		size);
 }
-void pa_gc_free(void* ptr) {
+void pa_gc_free(void* user_ptr) {
+	GC_is_visible(user_ptr);
+	check_return_debug(user_ptr);
 	// ignore free
 }
 

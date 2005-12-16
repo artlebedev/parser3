@@ -8,7 +8,7 @@
 #ifndef PA_VXDOC_H
 #define PA_VXDOC_H
 
-static const char * const IDENT_VXDOC_H="$Date: 2005/08/09 08:14:56 $";
+static const char * const IDENT_VXDOC_H="$Date: 2005/12/16 10:15:12 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -44,49 +44,49 @@ public: // Value
 
 public: // VXNode
 
-	override GdomeNode* get_node() { 
-		return (GdomeNode*)get_document();
+	override xmlNode& get_xmlnode() { 
+		return *reinterpret_cast<xmlNode*>(&get_xmldoc());
 	}
 
-	override VXdoc& get_xdoc() {
+	override VXdoc& get_vxdoc() {
 		return *this;
 	}
 
 public: // usage
 
-	VXdoc(Request_charsets* acharsets, GdomeDocument *adocument) : 
-		VXnode(acharsets, *this, 0), 
-		fdocument(0) {
-		assign_document(adocument); // not adding ref, owning a doc
-	}
+	VXdoc() : 
+		VXnode(*this), 
+		fcharsets(0),
+		fdocument(0) {}
 
-	override ~VXdoc() {
-		GdomeException exc;
-		if(fdocument) {
-			gdome_doc_unref(fdocument, &exc);
-			assign_document(0);
-		}
+	VXdoc(Request_charsets& acharsets, xmlDoc& adocument) : VXnode(*this) {
+		set_xmldoc(acharsets, adocument);
 	}
 
 public: // VXdoc
 
-	void set_document(Request_charsets* acharsets, GdomeDocument *adocument) { 
-		fcharsets=acharsets;
-
-		GdomeException exc;
-		if(fdocument)
-			gdome_doc_unref(fdocument, &exc);
-
-		assign_document(adocument);
-		gdome_doc_ref(fdocument, &exc);
+	void set_xmldoc(Request_charsets& acharsets, xmlDoc& adocument) { 
+		fcharsets=&acharsets;
+		fdocument=&adocument;
+		fdocument->_private=this;
 	}
-	GdomeDocument* get_document() { 
+	xmlDoc& get_xmldoc() { 
 		if(!fdocument)
 			throw Exception("parser.runtime",
 				0,
 				"using unitialized xdoc object");
-		return fdocument; 
+		return *fdocument; 
 	}
+
+	Request_charsets& charsets() { 
+		if(!fcharsets)
+			throw Exception("parser.runtime",
+				0,
+				"using unitialized xdoc object");
+		return *fcharsets; 
+	}
+
+	VXnode& wrap(xmlNode& anode);
 
 public:
 
@@ -109,17 +109,8 @@ public:
 
 private:
 
-	/// hold reference to prevent premature collecting
-	void assign_document(GdomeDocument *adocument) {
-		fdocument=adocument;
-
-		gcref_doc=fdocument?gdome_xml_doc_get_xmlDoc(fdocument):0;
-	}
-
-private:
-
-	GdomeDocument* fdocument;
-	xmlDoc *gcref_doc;
+	Request_charsets* fcharsets;
+	xmlDoc* fdocument;
 };
 
 #endif

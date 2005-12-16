@@ -5,7 +5,7 @@
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_CHARSET_C="$Date: 2005/12/09 07:18:07 $";
+static const char * const IDENT_CHARSET_C="$Date: 2005/12/16 10:15:12 $";
 
 #include "pa_charset.h"
 #include "pa_charsets.h"
@@ -726,7 +726,7 @@ xmlCharEncodingHandler& Charset::transcoder(const String::Body NAME) {
 	return *ftranscoder;
 }
 
-String::C Charset::transcode_cstr(xmlChar* s) {
+String::C Charset::transcode_cstr(const xmlChar* s) {
 	if(!s)
 		return String::C("", 0);
 
@@ -758,15 +758,7 @@ String::C Charset::transcode_cstr(xmlChar* s) {
 	assert(outlen<=saved_outlen); out[outlen]=0;
 	return String::C(out, outlen);
 }
-const String& Charset::transcode(xmlChar* s) { 
-	String::C cstr=transcode_cstr(s);
-	return *new String(cstr.str, cstr.length, true);
-}
-String::C Charset::transcode_cstr(GdomeDOMString* s) { 
-	return s?transcode_cstr(BAD_CAST s->str)
-		:String::C("", 0);
-}
-const String& Charset::transcode(GdomeDOMString* s) { 
+const String& Charset::transcode(const xmlChar* s) { 
 	String::C cstr=transcode_cstr(s);
 	return *new String(cstr.str, cstr.length, true);
 }
@@ -810,18 +802,15 @@ xmlChar* Charset::transcode_buf2xchar(const char* buf, size_t buf_size) {
 	assert(outlen<=saved_outlen); out[outlen]=0;
 	return out;
 }
-GdomeDOMString_auto_ptr Charset::transcode_buf2dom(const char* buf, size_t buf_size) { 
-	return GdomeDOMString_auto_ptr(transcode_buf2xchar(buf, buf_size));
-}
-GdomeDOMString_auto_ptr Charset::transcode(const String& s) { 
+xmlChar* Charset::transcode(const String& s) { 
 	const char* cstr=s.cstr(String::L_UNSPECIFIED);
 
-	return transcode_buf2dom(cstr, strlen(cstr)); 
+	return transcode_buf2xchar(cstr, strlen(cstr)); 
 }
-GdomeDOMString_auto_ptr Charset::transcode(const String::Body s) { 
+xmlChar* Charset::transcode(const String::Body s) { 
 	const char* cstr=s.cstr();
 
-	return transcode_buf2dom(cstr, s.length()); 
+	return transcode_buf2xchar(cstr, s.length()); 
 }
 #endif
 

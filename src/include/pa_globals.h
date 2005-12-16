@@ -8,11 +8,10 @@
 #ifndef PA_GLOBALS_H
 #define PA_GLOBALS_H
 
-static const char * const IDENT_GLOBALS_H="$Date: 2005/08/09 08:14:49 $";
+static const char * const IDENT_GLOBALS_H="$Date: 2005/12/16 10:15:12 $";
 
 #ifdef XML
 #	include "libxml/tree.h"
-#	include "gdome.h"
 #endif
 
 class Request;
@@ -27,9 +26,6 @@ void pa_globals_done();
 extern short hex_value[0x100];
 
 #ifdef XML
-/// DOMImplementation
-extern GdomeDOMImplementation *domimpl;
-
 /// flag whether there were some xml generic errors on current thread
 bool xmlHaveGenericErrors();
 /// get xml generic error accumulated for current thread. WARNING: it is up to caller to free up

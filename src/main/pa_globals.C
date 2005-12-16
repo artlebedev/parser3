@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_GLOBALS_C="$Date: 2005/12/09 07:18:07 $";
+static const char * const IDENT_GLOBALS_C="$Date: 2005/12/16 10:15:12 $";
 
 #include "pa_config_includes.h"
 
@@ -42,10 +42,6 @@ extern "C" {
 // globals
 
 short hex_value[0x100];
-
-#ifdef XML
-GdomeDOMImplementation *domimpl;
-#endif
 
 static void setup_hex_value() {
 	memset(hex_value, 0, sizeof(hex_value));
@@ -151,15 +147,14 @@ const char* xmlGenericErrors() {
 #endif
 
 void pa_globals_destroy(void *) {
+/*
 	try {
 #ifdef XML
-		GdomeException exc;
-		gdome_di_unref (domimpl, &exc);
-		// uncomment SAPI::abort below if adding potential-throw code here
 #endif
-	} catch(.../*const Exception& e*/) {
+	} catch(.../*const Exception& e* /) {
 //		SAPI::abort("pa_globals_destroy failed: %s", e.comment());
 	}
+*/
 }
 
 
@@ -335,8 +330,6 @@ void pa_globals_init() {
 #ifdef XML
 	// initializing xml libs
 
-	/* First get a DOMImplementation reference */
-	domimpl = gdome_di_mkref ();
 	/*
 	* Register the EXSLT extensions and the test module
 	*/

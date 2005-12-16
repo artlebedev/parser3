@@ -22,6 +22,7 @@
 /* sprintf implementation whenever possible.				*/
 /* Boehm, September 21, 1995 6:00 pm PDT */
 
+#include "pa_config_includes.h"
 #include "cord.h"
 #include "ec.h"
 #include <stdio.h>

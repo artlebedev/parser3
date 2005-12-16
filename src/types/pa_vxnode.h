@@ -8,7 +8,7 @@
 #ifndef PA_VXNODE_H
 #define PA_VXNODE_H
 
-static const char * const IDENT_VXNODE_H="$Date: 2005/08/09 08:14:56 $";
+static const char * const IDENT_VXNODE_H="$Date: 2005/12/16 10:15:12 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -16,19 +16,11 @@ static const char * const IDENT_VXNODE_H="$Date: 2005/08/09 08:14:56 $";
 
 extern "C" {
 #include "libxml/tree.h"
-
-#include "gdome.h"
-#include "gdomecore/gdome-xml-node.h"
-#include "gdomecore/gdome-xml-document.h"
 };
 
 // defines
 
 #define VXNODE_TYPE "xnode"
-
-// helper defines
-
-#define gdome_xml_doc_get_xmlDoc(dome_doc) (((_Gdome_xml_Document *)dome_doc)->n)
 
 // externals
 
@@ -38,8 +30,8 @@ extern Methoded* xnode_class;
 
 class VXdoc;
 
-/// value of type 'xnode'. implemented with GdomeNode
-class VXnode: public VStateless_object, PA_Cleaned {
+/// value of type 'xnode'. implemented with xmlNode
+class VXnode: public VStateless_object {
 public: // Value
 
 	override const char* type() const { return VXNODE_TYPE; }
@@ -59,41 +51,39 @@ public: // Value
 
 public: // usage
 
-	VXnode(Request_charsets* acharsets, VXdoc& adocument, GdomeNode* anode) : 
-		fcharsets(acharsets),
-		fdocument(adocument),
-		fnode(anode/*not adding ref, owning a node*/) {
-	}
+	VXnode() : 
+		fnode(0) {}
 
-	override ~VXnode() {
-		GdomeException exc;
-		if(fnode)			
-			gdome_n_unref(fnode, &exc);
-	}
+	VXnode(xmlNode& anode) : 
+		fnode(&anode) {}
 
 public: // VXnode
 
-	virtual GdomeNode* get_node() { 
+	virtual xmlNode& get_xmlnode() { 
 		if(!fnode)
 			throw Exception(0,
 				0,
 				"can not be applied to uninitialized instance");
 
-		return fnode; 
+		return *fnode; 
 	}
 
-	virtual VXdoc& get_xdoc() {
-		return fdocument;
+	virtual VXdoc& get_vxdoc() {
+		return get_internal_vxdoc();
 	}
 
-protected:
-
-	Request_charsets* fcharsets;
+	Request_charsets& charsets();
 
 private:
 
-	VXdoc& fdocument;
-	GdomeNode* fnode;
+	VXdoc& get_internal_vxdoc() {
+		throw Exception(0,0,"todo: VXdoc(fnode->doc->_private)");
+		//return *(VXdoc*)0;
+	}
+
+private:
+
+	xmlNode* fnode;
 };
 
 #endif

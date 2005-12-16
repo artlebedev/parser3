@@ -45,7 +45,7 @@
 	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.tab.C,v 1.109 2005/12/06 08:19:12 paf Exp $
+	$Id: compile.tab.C,v 1.110 2005/12/16 10:15:12 paf Exp $
 */
 
 /**
@@ -2103,9 +2103,9 @@ default:
 				}
 				// #HH ?
 				if(pc.source[0]=='#' && pc.source[1] && pc.source[2]) {
-					char c=
+					char c=(char)(
 						hex_value[(unsigned char)pc.source[1]]*0x10+
-						hex_value[(unsigned char)pc.source[2]];
+						hex_value[(unsigned char)pc.source[2]]);
 					if(c==0) {
 						result=BAD_HEX_LITERAL;
 						goto break2; // wrong hex value[no ^#00 chars allowed]: bail out

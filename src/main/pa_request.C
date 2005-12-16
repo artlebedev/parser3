@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REQUEST_C="$Date: 2005/12/13 10:59:32 $";
+static const char * const IDENT_REQUEST_C="$Date: 2005/12/16 10:15:12 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -915,19 +915,15 @@ const String& Request::mime_type_of(const char* user_file_name_cstr) {
 }
 
 #ifdef XML
-GdomeDOMString_auto_ptr Request::transcode(const String& s) {
+xmlChar* Request::transcode(const String& s) {
 	return charsets.source().transcode(s);
 }
 
-GdomeDOMString_auto_ptr Request::transcode(const String::Body s) {
+xmlChar* Request::transcode(const String::Body s) {
 	return charsets.source().transcode(s);
 }
 
-const String& Request::transcode(GdomeDOMString* s) {
-	return charsets.source().transcode(s);
-}
-
-const String& Request::transcode(xmlChar* s) {
+const String& Request::transcode(const xmlChar* s) {
 	return charsets.source().transcode(s);
 }
 #endif

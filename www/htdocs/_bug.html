@@ -1,2 +1,8 @@
-$i(0)
-^while($i<10){^i.inc[]$i}{,}
+$entry_data[^xdoc::create[doc]]
+
+^for[i](1;60){
+	$node[^entry_data.createElement[span$i]]
+}
+
+$entry_data[çààààááóóóóäü]
+^memory:compact[]

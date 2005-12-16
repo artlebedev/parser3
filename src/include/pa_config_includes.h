@@ -228,4 +228,11 @@ void pa_release_assert(const char* str, const char* file, int line);
 #define assert(exp) (void)( (exp) || (pa_release_assert(#exp, __FILE__, __LINE__), 0) )
 #endif
 
+/// to debug backtrace pointers switch this on:
+#if defined(_DEBUG) || defined(PA_RELEASE_ASSERTS)
+//// this switches on straightforward realloc implementation, bad for profiling
+//// note: this is incompatible with -DGC_ASSERTIONS, which can be switched ON in win32/gc/NT_THREADS_MAKEFILE
+#define GC_DEBUG
+#endif
+
 #endif

@@ -7,13 +7,29 @@
 #include "pa_config_includes.h"
 #ifdef XML
 
-static const char * const IDENT_VXDOC="$Date: 2005/08/09 08:14:56 $";
+static const char * const IDENT_VXDOC="$Date: 2005/12/16 10:15:12 $";
 
 #include "pa_vxdoc.h"
 
 // defines
 
 #define SEARCH_NAMESPACES_NAME "search-namespaces"
+
+
+VXnode& VXdoc::wrap(xmlNode& anode) {
+	VXnode* result;
+	if((result=static_cast<VXnode*>(anode._private))) {
+		assert(anode.doc==fdocument);
+		return *result;
+	}
+
+	result=new VXnode(anode);
+	anode._private=result;
+	anode.doc=fdocument;
+
+	return *result;
+}
+
 
 Value* VXdoc::as(const char* atype, bool looking_up) {
 	if(Value* result=Value::as(atype, looking_up))
@@ -35,20 +51,21 @@ Value* VXdoc::get_element(const String& aname, Value& aself, bool looking_up) {
 		// ignore bad node elements, they can be valid here...
 
 		// fields
+/* someday
 		GdomeDocument* document=get_document();
 		GdomeException exc;
 
 		if(aname=="doctype") {
 			// readonly attribute DocumentType doctype;
-			return new VXnode(fcharsets, *this, (GdomeNode*)gdome_doc_doctype(document, &exc));
+			return new VXnode(fcharsets, *this, (xmlNode*)gdome_doc_doctype(document, &exc));
 		} else if(aname=="implementation") {
 			// readonly attribute DOMImplementation implementation;
 			return 0;
 		} else if(aname=="documentElement") {
 			// readonly attribute Element documentElement;
-			return new VXnode(fcharsets, *this, (GdomeNode *)gdome_doc_documentElement(document, &exc));
+			return new VXnode(fcharsets, *this, (xmlNode *)gdome_doc_documentElement(document, &exc));
 		} 	
-
+*/
 		return bark("%s field not found", &aname);
 	}
 }

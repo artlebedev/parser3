@@ -18,6 +18,7 @@
  * cord_basics.
  */
 /* Boehm, December 8, 1995 1:53 pm PST */
+#include "pa_config_includes.h"
 # include <stdio.h>
 # include <string.h>
 # include <stdlib.h>

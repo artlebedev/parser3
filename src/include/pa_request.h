@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char * const IDENT_REQUEST_H="$Date: 2005/08/09 08:14:50 $";
+static const char * const IDENT_REQUEST_H="$Date: 2005/12/16 10:15:12 $";
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -33,7 +33,6 @@ const size_t pseudo_file_no__process=1;
 class Temp_lang;
 class Methoded;
 class VMethodFrame;
-class GdomeDOMString_auto_ptr;
 class VMail;
 class VForm;
 class VResponse;
@@ -359,13 +358,11 @@ public: // status read methods
 public: // charset helpers
 
 	/// @see Charset::transcode
-	GdomeDOMString_auto_ptr transcode(const String& s);
+	xmlChar* transcode(const String& s);
 	/// @see Charset::transcode
-	GdomeDOMString_auto_ptr transcode(const String::Body s);
+	xmlChar* transcode(const String::Body s);
 	/// @see Charset::transcode
-	const String& transcode(GdomeDOMString* s);
-	/// @see Charset::transcode
-	const String& transcode(xmlChar* s);
+	const String& transcode(const xmlChar* s);
 
 #endif
 

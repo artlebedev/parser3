@@ -7,7 +7,7 @@
 
 #include "pa_config_includes.h"
 #ifdef XML
-static const char * const IDENT_STYLESHEET_CONNECTION_C="$Date: 2005/08/09 08:14:52 $";
+static const char * const IDENT_STYLESHEET_CONNECTION_C="$Date: 2005/12/16 10:15:12 $";
 
 #include "pa_stylesheet_connection.h"
 #include "pa_xml_exception.h"
@@ -24,10 +24,8 @@ void Stylesheet_connection::load(time_t new_disk_time) {
 		}
 		dependencies=pa_xmlGetDependencies();
 	}
-	if(xmlHaveGenericErrors()) {
-		GdomeException exc=0;
-		throw XmlException(new String(ffile_spec, String::L_TAINTED), exc);
-	}
+	if(xmlHaveGenericErrors())
+		throw XmlException(new String(ffile_spec, String::L_TAINTED));
 	if(!nstylesheet)
 		throw Exception("file.missing",
 			new String(ffile_spec, String::L_TAINTED),

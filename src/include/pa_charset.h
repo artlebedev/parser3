@@ -8,7 +8,7 @@
 #ifndef PA_CHARSET_H
 #define PA_CHARSET_H
 
-static const char * const IDENT_CHARSET_H="$Date: 2005/08/09 08:14:49 $";
+static const char * const IDENT_CHARSET_H="$Date: 2005/12/16 10:15:12 $";
 
 
 #include "pa_exception.h"
@@ -24,7 +24,6 @@ namespace PCRE {
 
 #ifdef XML
 #include "libxml/encoding.h"
-#include "gdome.h"
 #endif
 
 // defines
@@ -39,10 +38,6 @@ namespace PCRE {
 #	ifndef XMLByte
 		typedef unsigned char XMLByte;
 #	endif
-
-// forwards
-
-class GdomeDOMString_auto_ptr;
 
 // helpers
 
@@ -137,25 +132,19 @@ private:
 	void initTranscoder(const String::Body name, const char* name_cstr);
 	
 public:
-	/// converts GdomeDOMString string to char* 
-	String::C transcode_cstr(GdomeDOMString* s);
-	/// converts GdomeDOMString string to parser String
-	const String& transcode(GdomeDOMString* s);
 	/// converts xmlChar* null-terminated string to char* 
-	String::C transcode_cstr(xmlChar* s);
+	String::C transcode_cstr(const xmlChar* s);
 	/// converts xmlChar* null-terminated string to parser String
-	const String& transcode(xmlChar* s);
+	const String& transcode(const xmlChar* s);
 
 	/** converts sized char*  to xmlChar*
 		@returns xmlChar*  WHICH CALLER SHOULD FREE
 	*/
 	xmlChar* transcode_buf2xchar(const char* buf, size_t buf_size);
-	/// converts char*  to GdomeDOMString
-	GdomeDOMString_auto_ptr transcode_buf2dom(const char* buf, size_t buf_size);
-	/// converts parser String to GdomeDOMString
-	GdomeDOMString_auto_ptr transcode(const String& s);
-	/// converts parser String::Body to GdomeDOMString
-	GdomeDOMString_auto_ptr transcode(const String::Body s);
+	/// converts parser String to xmlChar*
+	xmlChar* transcode(const String& s);
+	/// converts parser String::Body to xmlChar*
+	xmlChar* transcode(const String::Body s);
 
 private:
 
@@ -173,54 +162,5 @@ extern Charset::UTF8CaseTable UTF8CaseToLower;
 void change_case_UTF8(const XMLByte* srcData, size_t srcLen,
 					  XMLByte* toFill, size_t toFillLen,
 					  const Charset::UTF8CaseTable& table);
-
-
-#ifdef XML
-/// Auto-object used to track GdomeDOMString usage
-class GdomeDOMString_auto_ptr {
-	GdomeDOMString* fstring;
-public:
-	/// frees astring afterwards!!!
-	explicit GdomeDOMString_auto_ptr(xmlChar* astring) : fstring(gdome_str_mkref_xml(astring)) {}
-	explicit GdomeDOMString_auto_ptr(GdomeDOMString* astring=0) : fstring(astring) {
-		// not ref-ing, owning
-	}
-	~GdomeDOMString_auto_ptr() {
-		if(fstring)
-			gdome_str_unref(fstring);
-	}
-/*	GdomeDOMString* get() {
-		return fstring;
-	}*/
-	GdomeDOMString* use() {
-		if(fstring)
-			gdome_str_ref(fstring);
-		return fstring;
-	}
-	GdomeDOMString* operator->() {
-		return fstring;
-	}
-/*	GdomeDOMString& operator*() {
-		return* fstring;
-	}*/
-
-	// copying
-	GdomeDOMString_auto_ptr(const GdomeDOMString_auto_ptr& src) : fstring(src.fstring) {
-		gdome_str_ref(fstring);
-	}
-	GdomeDOMString_auto_ptr& operator =(const GdomeDOMString_auto_ptr& src) {
-		if(this == &src)
-			return* this;
-
-		if(fstring)
-			gdome_str_unref(fstring);
-		fstring=src.fstring;
-		if(fstring)
-			gdome_str_ref(fstring);
-
-		return* this;
-	}
-};
-#endif
 
 #endif

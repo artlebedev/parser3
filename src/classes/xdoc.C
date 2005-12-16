@@ -9,9 +9,8 @@
 
 #ifdef XML
 
-static const char * const IDENT_XDOC_C="$Date: 2005/08/09 08:14:48 $";
+static const char * const IDENT_XDOC_C="$Date: 2005/12/16 10:15:12 $";
 
-#include "gdome.h"
 #include "libxml/tree.h"
 #include "libxml/HTMLtree.h"
 #include "libxslt/xsltInternals.h"
@@ -43,7 +42,7 @@ static const char * const IDENT_XDOC_C="$Date: 2005/08/09 08:14:48 $";
 
 class MXdoc: public MXnode {
 public: // VStateless_class
-	Value* create_new_value(Pool&, HashStringValue&) { return new VXdoc(0, 0); }
+	Value* create_new_value(Pool&, HashStringValue&) { return new VXdoc(); }
 
 public:
 	MXdoc();
@@ -157,246 +156,224 @@ private:
 
 // methods
 
-static void writeNode(Request& r, VXdoc& xdoc, GdomeNode *node, 
-					  GdomeException exc) {
-	if(!node || exc)
-		throw XmlException(0, exc);
+static void writeNode(Request& r, VXdoc& xdoc, xmlNode* node) {
+	if(!node)
+		throw Exception("parser.runtime",
+			0,
+			"error creating node"); // OOM, bad name, things like that
 
 	// write out result
-	r.write_no_lang(*new VXnode(&r.charsets, xdoc, node));
+	r.write_no_lang(xdoc.wrap(*node));
 }
+
+struct IdsIteratorInfo {
+	xmlChar *elementId;
+	xmlNode *element;
+};
+
+/* Hash Scanner function for pa_getElementById */
+extern "C" void // switching to calling convetion of libxml
+idsHashScanner (void *payload, void *data, xmlChar *name) {
+	IdsIteratorInfo *priv = (IdsIteratorInfo *)data;
+
+	if (priv->element == NULL && xmlStrEqual (name, priv->elementId))
+	{
+		xmlNode* parent=((xmlID *)payload)->attr->parent;
+		assert(parent);
+		priv->element=parent;
+	}
+}
+
+static xmlNode*
+pa_getElementById(xmlDoc& xmldoc, xmlChar* elementId) {
+	xmlHashTable *ids = (xmlHashTable *)xmldoc.ids;
+	IdsIteratorInfo iter={elementId, NULL};
+	xmlHashScan(ids, idsHashScanner, &iter);
+	return iter.element;
+}
+
+/*
+static xmlNode *
+pa_importNode (xmlDoc& xmldoc, xmlNode& importedNode, bool deep) {
+	xmlNode *result = NULL;
+
+	switch (importedNode.type) {
+	case XML_ATTRIBUTE_NODE:
+		result = (xmlNode *)xmlCopyProp(xmldoc, (xmlAttr *)importedNode);
+		result.parent=0; // no idea
+		break;
+	case XML_DOCUMENT_FRAG_NODE:
+	case XML_ELEMENT_NODE:
+	case XML_ENTITY_REF_NODE:
+	case XML_PI_NODE:
+	case XML_TEXT_NODE:
+	case XML_CDATA_SECTION_NODE:
+	case XML_COMMENT_NODE:
+		result = xmlCopyNode (importedNode->n, deep);
+		xmlSetTreeDoc (result, priv->n);
+		break;
+	default:
+		*exc = GDOME_NOT_SUPPORTED_ERR;
+	}
+
+	return result;
+}
+*/
 
 // Element createElement(in DOMString tagName) raises(DOMException);
 static void _createElement(Request& r, MethodParams& params) {
 	VXdoc& vdoc=GET_SELF(r, VXdoc);
+	xmlDoc& xmldoc=vdoc.get_xmldoc();
 
-	const String& tagName=params.as_string(0, "tagName must be string");
+	xmlChar* tagName=as_xmlchar(r, params, 0, "tagName must be string");
 
-	GdomeException exc;
-	GdomeNode *node=
-		(GdomeNode *)gdome_doc_createElement(vdoc.get_document(), 
-		r.transcode(tagName).use(),
-		&exc);
-	writeNode(r, vdoc, node, exc);
+	xmlNode *node=xmlNewDocNode(&xmldoc, NULL, tagName, NULL);
+	writeNode(r, vdoc, node);
 }
 
 // Element createElementNS(in DOMString namespaceURI, in DOMString qualifiedName) raises(DOMException);
 static void _createElementNS(Request& r, MethodParams& params) {
 	VXdoc& vdoc=GET_SELF(r, VXdoc);
+	xmlDoc& xmldoc=vdoc.get_xmldoc();
 
 	// namespaceURI;localName
-	const String& namespaceURI=params.as_string(0, "namespaceURI must be string");
-	const String& qualifiedName=params.as_string(1, "qualifiedName must be string");
+	xmlChar* namespaceURI=as_xmlchar(r, params, 0, "namespaceURI must be string");
+	xmlChar* qualifiedName=as_xmlchar(r, params, 1, "qualifiedName must be string");
 
-	GdomeException exc;
-	GdomeNode *node=
-		(GdomeNode *)gdome_doc_createElementNS(vdoc.get_document(), 
-		r.transcode(namespaceURI).use(),
-		r.transcode(qualifiedName).use(),
-		&exc);
-	writeNode(r, vdoc, node, exc);
+	xmlChar* prefix=0;
+	xmlChar* localName=xmlSplitQName2(qualifiedName, &prefix);
+
+	xmlNode *node;
+	if(localName) {
+		xmlNs& ns=pa_xmlMapNs(xmldoc, namespaceURI, prefix);
+		node=xmlNewDocNode(&xmldoc, &ns, localName, NULL);
+	} else
+		node=xmlNewDocNode(&xmldoc, NULL, qualifiedName/*unqualified, actually*/, NULL);
+	writeNode(r, vdoc, node);
 }
 
 // DocumentFragment createDocumentFragment()
 static void _createDocumentFragment(Request& r, MethodParams&) {
 	VXdoc& vdoc=GET_SELF(r, VXdoc);
+	xmlDoc& xmldoc=vdoc.get_xmldoc();
 
-	GdomeException exc;
-	GdomeNode *node=
-		(GdomeNode *)gdome_doc_createDocumentFragment(
-		vdoc.get_document(),
-		&exc);
-	writeNode(r, vdoc, node, exc);
+	xmlNode *node=xmlNewDocFragment(&xmldoc);
+	writeNode(r, vdoc, node);
 }
 
 // Text createTextNode(in DOMString data);
 static void _createTextNode(Request& r, MethodParams& params) {
 	VXdoc& vdoc=GET_SELF(r, VXdoc);
+	xmlDoc& xmldoc=vdoc.get_xmldoc();
 
-	const String& data=params.as_string(0, "data must be string");
+	xmlChar* data=as_xmlchar(r, params, 0, "data must be string");
 
-	GdomeException exc;
-	GdomeNode *node=(GdomeNode *)gdome_doc_createTextNode(
-		vdoc.get_document(),
-		r.transcode(data).use(),
-		&exc);
-	writeNode(r, vdoc, node, exc);
+	xmlNode *node=xmlNewDocText(&xmldoc, data);
+	writeNode(r, vdoc, node);
 }
 
 // Comment createComment(in DOMString data)
 static void _createComment(Request& r, MethodParams& params) {
 	VXdoc& vdoc=GET_SELF(r, VXdoc);
 
-	const String& data=params.as_string(0, "data must be string");
+	xmlChar* data=as_xmlchar(r, params, 0, "data must be string");
 
-	GdomeException exc;
-	GdomeNode *node=(GdomeNode *)gdome_doc_createComment(
-		vdoc.get_document(),
-		r.transcode(data).use(),
-		&exc);
-	writeNode(r, vdoc, node, exc);
+	xmlNode *node=xmlNewComment(data);
+	writeNode(r, vdoc, node);
 }
 
 // CDATASection createCDATASection(in DOMString data) raises(DOMException);
 static void _createCDATASection(Request& r, MethodParams& params) {
 	VXdoc& vdoc=GET_SELF(r, VXdoc);
+	xmlDoc& xmldoc=vdoc.get_xmldoc();
 
-	const String& data=params.as_string(0, "data must be string");
+	xmlChar* data=as_xmlchar(r, params, 0, "data must be string");
 
-	GdomeException exc;
-	GdomeNode *node=(GdomeNode *)gdome_doc_createCDATASection(
-		vdoc.get_document(),
-		r.transcode(data).use(),
-		&exc);
-	writeNode(r, vdoc, node, exc);
+	xmlNode *node=xmlNewCDataBlock(&xmldoc, data, strlen((const char*)data));
+	writeNode(r, vdoc, node);
 }
 
 // ProcessingInstruction createProcessingInstruction(in DOMString target,in DOMString data) raises(DOMException);
 static void _createProcessingInstruction(Request& r, MethodParams& params) {
 	VXdoc& vdoc=GET_SELF(r, VXdoc);
+	xmlDoc& xmldoc=vdoc.get_xmldoc();
 
-	const String& target=params.as_string(0, "data must be string");
-	const String& data=params.as_string(1, "data must be string");
+	xmlChar* target=as_xmlchar(r, params, 0, "data must be string");
+	xmlChar* data=as_xmlchar(r, params, 1, "data must be string");
 
-	GdomeException exc;
-	GdomeNode *node=(GdomeNode *)gdome_doc_createProcessingInstruction(
-		vdoc.get_document(),
-		r.transcode(target).use(), 
-		r.transcode(data).use(),
-		&exc);
-	writeNode(r, vdoc, node, exc);
+	xmlNode *node=xmlNewDocPI(&xmldoc, target, data);
+	writeNode(r, vdoc, node);
 }
 
 // Attr createAttribute(in DOMString name) raises(DOMException);
 static void _createAttribute(Request& r, MethodParams& params) {
 	VXdoc& vdoc=GET_SELF(r, VXdoc);
+	xmlDoc& xmldoc=vdoc.get_xmldoc();
 
-	const String& name=params.as_string(0, "name must be string");
+	xmlChar* name=as_xmlchar(r, params, 0, "name must be string");
 
-	GdomeException exc;
-	GdomeNode *node=(GdomeNode *)gdome_doc_createAttribute(
-		vdoc.get_document(),
-		r.transcode(name).use(),
-		&exc);
-	writeNode(r, vdoc, node, exc);
+	xmlNode *node=(xmlNode*)xmlNewDocProp(&xmldoc, name, 0);
+	writeNode(r, vdoc, node);
 }
 
 // Attr createAttributeNS(in DOMString namespaceURI, in DOMString qualifiedName) raises(DOMException);
 static void _createAttributeNS(Request& r, MethodParams& params) {
 	VXdoc& vdoc=GET_SELF(r, VXdoc);
+	xmlDoc& xmldoc=vdoc.get_xmldoc();
 
-	// namespaceURI;qualifiedName
-	const String& namespaceURI=params.as_string(0, "namespaceURI must be string");
-	const String& qualifiedName=params.as_string(1, "name must be string");
+	xmlChar* namespaceURI=as_xmlchar(r, params, 0, "namespaceURI must be string");
+	xmlChar* qualifiedName=as_xmlchar(r, params, 1, "name must be string");
 
-	GdomeException exc;
-	GdomeNode *node=(GdomeNode *)gdome_doc_createAttributeNS(
-		vdoc.get_document(),
-		r.transcode(namespaceURI).use(),
-		r.transcode(qualifiedName).use(),
-		&exc);
-	writeNode(r, vdoc, node, exc);
+	xmlChar* prefix=0;
+	xmlChar* localName=xmlSplitQName2(qualifiedName, &prefix);
+
+	xmlNode *node;
+	if(localName) {
+		xmlNs& ns=pa_xmlMapNs(xmldoc, namespaceURI, prefix);
+		node=(xmlNode*)xmlNewDocProp(&xmldoc, localName, NULL);
+		xmlSetNs(node, &ns);
+	} else
+		node=(xmlNode*)xmlNewDocProp(&xmldoc, qualifiedName/*unqualified, actually*/, NULL);
+	writeNode(r, vdoc, node);
 }
 
 // EntityReference createEntityReference(in DOMString name) raises(DOMException);
 static void _createEntityReference(Request& r, MethodParams& params) {
 	VXdoc& vdoc=GET_SELF(r, VXdoc);
+	xmlDoc& xmldoc=vdoc.get_xmldoc();
 
-	const String& name=params.as_string(0, "name must be string");
+	xmlChar* name=as_xmlchar(r, params, 0, "name must be string");
 
-	GdomeException exc;
-	GdomeNode *node=(GdomeNode *)gdome_doc_createEntityReference(
-		vdoc.get_document(),
-		r.transcode(name).use(),
-		&exc);
-	writeNode(r, vdoc, node, exc);
+	xmlNode *node=xmlNewReference(&xmldoc, name);
+	writeNode(r, vdoc, node);
 }
 
-// NodeList getElementsByTagName(in DOMString name);
-static void _getElementsByTagName(Request& r, MethodParams& params) {
-	VXdoc& vdoc=GET_SELF(r, VXdoc);
-
-	const String& name=params.as_string(0, "name must be string");
-
-	VHash& result=*new VHash;
-	GdomeException exc;
-	if(GdomeNodeList *nodes=
-		gdome_doc_getElementsByTagName(
-			vdoc.get_document(), 
-			r.transcode(name).use(), 
-			&exc)) {
-		gulong length=gdome_nl_length(nodes, &exc);
-		for(gulong i=0; i<length; i++)
-			result.hash().put(
-				String::Body::Format(i), 
-				new VXnode(&r.charsets, vdoc, gdome_nl_item(nodes, i, &exc)));
-	} else if(exc)
-		throw XmlException(0, exc);
-
-	// write out result
-	r.write_no_lang(result);
-}
-
-static void _getElementsByTagNameNS(Request& r, MethodParams& params) {
-	VXdoc& vdoc=GET_SELF(r, VXdoc);
-
-	// namespaceURI;localName
-	const String& namespaceURI=params.as_string(0, "namespaceURI must be string");
-	const String& localName=params.as_string(1, "localName must be string");
-
-	GdomeException exc;
-	VHash& result=*new VHash;
-	if(GdomeNodeList *nodes=
-		gdome_doc_getElementsByTagNameNS(
-			vdoc.get_document(), 
-			r.transcode(namespaceURI).use(),
-			r.transcode(localName).use(),
-			&exc)) {
-		gulong length=gdome_nl_length(nodes, &exc);
-		for(gulong i=0; i<length; i++)
-			result.hash().put(
-				String::Body::Format(i), 
-				new VXnode(&r.charsets, vdoc, gdome_nl_item(nodes, i, &exc)));
-	}
-
-	// write out result
-	r.write_no_lang(result);
-}
 
 static void _getElementById(Request& r, MethodParams& params) {
 	VXdoc& vdoc=GET_SELF(r, VXdoc);
+	xmlDoc& xmldoc=vdoc.get_xmldoc();
 
 	// elementId
-	const String& elementId=params.as_string(0, "elementID must be string");
+	xmlChar* elementId=as_xmlchar(r, params, 0, "elementID must be string");
 
-	GdomeException exc;
-	if(GdomeNode *node=(GdomeNode *)gdome_doc_getElementById(
-		vdoc.get_document(),
-		r.transcode(elementId).use(),
-		&exc)) {
+	if(xmlNode *node=pa_getElementById(xmldoc, elementId)) {
 		// write out result
-		r.write_no_lang(*new VXnode(&r.charsets, vdoc, node));
-	} else if(exc || xmlHaveGenericErrors())
-		throw XmlException(&elementId, exc);
+		writeNode(r, vdoc, node);
+	}
 }
 
 static void _importNode(Request& r, MethodParams& params) {
 	VXdoc& vdoc=GET_SELF(r, VXdoc);
+	xmlDoc& xmldoc=vdoc.get_xmldoc();
 
-	GdomeNode *importedNode=
+	xmlNode& importedNode=
 		as_node(params, 0, "importedNode must be node");
 	bool deep=
 		params.as_bool(1, "deep must be bool", r);
 
-	GdomeException exc;
-	GdomeNode *outputNode=gdome_doc_importNode(vdoc.get_document(), 
-		importedNode,
-		deep, &exc);
-	if(exc)
-		throw XmlException(0, exc);
-
+	xmlNode *node=xmlDocCopyNode(&importedNode, &xmldoc, deep?1: 0);
 	// write out result
-	r.write_no_lang(*new VXnode(&r.charsets, vdoc, outputNode));
+	writeNode(r, vdoc, node);
 }
 /*
 GdomeElement *gdome_doc_createElementNS (GdomeDocument *self, GdomeDOMString *namespaceURI, GdomeDOMString *qualifiedName, GdomeException *exc);
@@ -408,28 +385,22 @@ static void _create(Request& r, MethodParams& params) {
 	VXdoc& vdoc=GET_SELF(r, VXdoc);
 
 	Value& param=params[params.count()-1];
-	GdomeDocument *document;
+	xmlDoc* xmldoc;
 	bool set_encoding=false;
 	if(param.get_junction()) { // {<?xml?>...}
 		Temp_lang temp_lang(r, String::L_XML);
 		const String& xml=r.process_to_string(param);
 
 		const char* cstr=xml.cstr(String::L_UNSPECIFIED, 0, &r.charsets);
-		document=(GdomeDocument *)
-			gdome_xml_n_mkref((xmlNode *)xmlParseMemory(
-				cstr, strlen(cstr)
-			));
+		xmldoc=xmlParseMemory(cstr, strlen(cstr));
 		//printf("document=0x%p\n", document);
-		if(!document || xmlHaveGenericErrors()) {
-			GdomeException exc=0;
-			throw XmlException(0, exc);
-		}
+		if(!xmldoc || xmlHaveGenericErrors())
+			throw XmlException(0);
 
 		// must be last action in if, see after if}
-	} else { // [name]
-		const String& qualifiedName=param.as_string();
+	} else { // [localName]
+		xmlChar* localName=r.transcode(param.as_string());
 
-		GdomeException exc;
 #if 0
 		GdomeDocumentType *documentType=gdome_di_createDocumentType (
 			docimpl, 
@@ -443,40 +414,33 @@ static void _create(Request& r, MethodParams& params) {
 				exc);
 		/// +xalan createXMLDecl ?
 #endif
-		document=gdome_di_createDocument(domimpl, 
-			0/*namespaceURI*/, 
-			r.transcode(qualifiedName).use(), 
-			0/*doctype*/, 
-			&exc);
-		if(!document || exc || xmlHaveGenericErrors())
-			throw XmlException(0, exc);
+		xmldoc=xmlNewDoc(0);
+		if(!xmldoc || xmlHaveGenericErrors())
+			throw XmlException(0);
+		xmlNode* node=xmlNewChild((xmlNode*)xmldoc, NULL, localName, NULL);
+		if(!node || xmlHaveGenericErrors())
+			throw XmlException(0);
 
 		set_encoding=true;
 		// must be last action in if, see after if}
 	}
 	// must be first action after if}
 	// replace any previous parsed source
-	{
-		vdoc.set_document(&r.charsets, document); 
-		GdomeException exc;
-		gdome_doc_unref(document, &exc);
-	}
+	vdoc.set_xmldoc(r.charsets, *xmldoc); 
 	
 	// URI 
 	const char* URI_cstr;
-	const char* URI_cstr_ptr;
 	if(params.count()>1) { // absolute(param)
 		const String& URI=params.as_string(0, "URI must be string");
-		URI_cstr=URI_cstr_ptr=r.absolute(URI).cstr();
+		URI_cstr=r.absolute(URI).cstr();
 	} else // default = disk path to requested document
 		URI_cstr=r.request_info.path_translated;
-	xmlDoc *doc=gdome_xml_doc_get_xmlDoc(document);
 	if(URI_cstr)
-		doc->URL=source_charset.transcode_buf2xchar(URI_cstr, strlen(URI_cstr));
+		xmldoc->URL=source_charset.transcode_buf2xchar(URI_cstr, strlen(URI_cstr));
 
 	if(set_encoding) {
 		const char* source_charset_name=source_charset.NAME().cstr();
-		doc->encoding=source_charset.transcode_buf2xchar(source_charset_name, strlen(source_charset_name));
+		xmldoc->encoding=source_charset.transcode_buf2xchar(source_charset_name, strlen(source_charset_name));
 	}
 }
 
@@ -492,25 +456,13 @@ static void _load(Request& r, MethodParams& params) {
 		uri_cstr=uri->cstr(String::L_AS_IS); // leave as-is for xmlParseFile to handle
 
 	/// todo!! add SAFE MODE!!
-	GdomeDocument *document=(GdomeDocument *)
-		gdome_xml_n_mkref((xmlNode *)xmlParseFile(uri_cstr));
-	if(!document || xmlHaveGenericErrors()) {
-		GdomeException exc=0;
-		throw XmlException(uri, exc);
-	}
+	xmlDoc* xmldoc=xmlParseFile(uri_cstr);
+	if(!xmldoc || xmlHaveGenericErrors())
+		throw XmlException(uri);
+	
 	// must be first action after if}
 	// replace any previous parsed source
-	{
-		vdoc.set_document(&r.charsets, document); 
-		GdomeException exc;
-		gdome_doc_unref(document, &exc);
-	}
-/* xmlParseFile does that itself. old peace for xmlParseMemory
-	const char* URI_cstr=uri->cstr();
-	xmlDoc *doc=gdome_xml_doc_get_xmlDoc(document);
-	if(URI_cstr)
-		doc->URL=r.charsets.source().transcode_buf2xchar(URI_cstr, strlen(URI_cstr));
-*/
+	vdoc.set_xmldoc(r.charsets, *xmldoc); 
 }
 
 static void param_option_over_output_option(
@@ -637,7 +589,7 @@ static Xdoc2buf_result xdoc2buf(Request& r, VXdoc& vdoc,
 			"xsltNewStylesheet failed");
 
 	#define OOSTRING2STYLE(name) \
-		stylesheet->name=oo.name?BAD_CAST xmlMemStrdup(r.transcode(*oo.name)->str):0
+		stylesheet->name=oo.name?BAD_CAST xmlMemStrdup((const char*)r.transcode(*oo.name)):0
 	#define OOBOOL2STYLE(name) \
 		if(oo.name>=0) stylesheet->name=oo.name
 
@@ -651,15 +603,13 @@ static Xdoc2buf_result xdoc2buf(Request& r, VXdoc& vdoc,
 	OOBOOL2STYLE(standalone);
 	OOBOOL2STYLE(omitXmlDeclaration);
 
-	xmlDoc *document=gdome_xml_doc_get_xmlDoc(vdoc.get_document());
-	document->encoding=BAD_CAST xmlMemStrdup(render_encoding);
+	xmlDoc& xmldoc=vdoc.get_xmldoc();
+	xmldoc.encoding=BAD_CAST xmlMemStrdup(render_encoding);
 	if(header_encoding)
 		stylesheet->encoding=BAD_CAST xmlMemStrdup(header_encoding);
-	if(xsltSaveResultTo(outputBuffer.get(), document, stylesheet.get())<0
-		|| xmlHaveGenericErrors()) {
-		GdomeException exc=0;
-		throw XmlException(0, exc);
-	}
+	if(xsltSaveResultTo(outputBuffer.get(), &xmldoc, stylesheet.get())<0
+		|| xmlHaveGenericErrors())
+		throw XmlException(0);
 
 	// write out result
 	char *gnome_str;  size_t gnome_length;
@@ -733,51 +683,45 @@ static void _string(Request& r, MethodParams& params) {
 #ifndef DOXYGEN
 struct Add_xslt_param_info {
 	Request* r;
-	Array<GdomeDOMString_auto_ptr>* strings;
-	const char** current_transform_param;
+	Array<const xmlChar*>* strings;
+	const xmlChar** current_transform_param;
 };
 #endif
 static void add_xslt_param(
 			   HashStringValue::key_type attribute, 
 			   HashStringValue::value_type meaning, 
 			   Add_xslt_param_info* info) {
-	GdomeDOMString_auto_ptr s;
-	*info->current_transform_param++=(s=info->r->transcode(attribute))->str; *info->strings+=s;
-	*info->current_transform_param++=(s=info->r->transcode(meaning->as_string()))->str; *info->strings+=s;
+	xmlChar* s;
+	*info->current_transform_param++=(s=info->r->transcode(attribute)); *info->strings+=s;
+	*info->current_transform_param++=(s=info->r->transcode(meaning->as_string())); *info->strings+=s;
 }
 
 static VXdoc& _transform(Request& r, const String* stylesheet_source, 
-						   VXdoc& vdoc, xsltStylesheetPtr stylesheet, const char** transform_params) 
+						   VXdoc& vdoc, xsltStylesheetPtr stylesheet, const xmlChar** transform_params) 
 {
-	xmlDoc *document=gdome_xml_doc_get_xmlDoc(vdoc.get_document());
+	xmlDoc& xmldoc=vdoc.get_xmldoc();
+
 	xsltTransformContext_auto_ptr transformContext(
-		xsltNewTransformContext(stylesheet, document));
+		xsltNewTransformContext(stylesheet, &xmldoc));
 	// make params literal
 	if (transformContext->globalVars == NULL) // strangly not initialized by xsltNewTransformContext
 		transformContext->globalVars = xmlHashCreate(20);
-	xsltQuoteUserParams(transformContext.get(), transform_params);
+	xsltQuoteUserParams(transformContext.get(), (const char**)transform_params);
 	// do transform
 	xmlDoc *transformed=xsltApplyStylesheetUser(
 		stylesheet,
-		document,
+		&xmldoc,
 		0/*already quoted-inserted  transform_params*/,
 		0/*const char* output*/,
 		0/*FILE *profile*/,
 		transformContext.get());
-	if(!transformed || xmlHaveGenericErrors()) {
-		GdomeException exc=0;
-		throw XmlException(stylesheet_source, exc);
-	}
+	if(!transformed || xmlHaveGenericErrors())
+		throw XmlException(stylesheet_source);
 
 	//gdome_xml_doc_mkref dislikes XML_HTML_DOCUMENT_NODE  type, fixing
 	transformed->type=XML_DOCUMENT_NODE;
 	// constructing result
-	GdomeDocument *gdomeDocument=gdome_xml_doc_mkref(transformed);
-	if(!gdomeDocument)
-		throw Exception(0,
-			0,
-			"gdome_xml_doc_mkref failed");
-	VXdoc& result=*new VXdoc(&r.charsets, gdomeDocument);
+	VXdoc& result=*new VXdoc(r.charsets, *transformed);
 	/* grabbing options
 
 		<xsl:output
@@ -810,13 +754,13 @@ static void _transform(Request& r, MethodParams& params) {
 	VXdoc& vdoc=GET_SELF(r, VXdoc);
 
 	// params
-	Array<GdomeDOMString_auto_ptr> transform_strings;
-	const char** transform_params=0;
+	Array<const xmlChar*> transform_strings;
+	const xmlChar** transform_params=0;
 	if(params.count()>1) {
 		Value& vparams=params.as_no_junction(1, "transform parameters must be hash");
 		if(!vparams.is_string())
 			if(HashStringValue* hash=vparams.get_hash()) {
-				transform_params=new(UseGC) const char*[hash->count()*2+1];
+				transform_params=new(UseGC) const xmlChar*[hash->count()*2+1];
 				Add_xslt_param_info info={
 					&r, 
 					&transform_strings,
@@ -832,14 +776,11 @@ static void _transform(Request& r, MethodParams& params) {
 
 	VXdoc* result;
 	if(Value *vxdoc=params[0].as(VXDOC_TYPE, false)) { // stylesheet (xdoc)
-		xmlDoc *document=gdome_xml_doc_get_xmlDoc(
-			static_cast<VXdoc *>(vxdoc)->get_document());
+		xmlDoc& stylesheetdoc=static_cast<VXdoc *>(vxdoc)->get_xmldoc();
 		// compile xdoc stylesheet
-		xsltStylesheet_auto_ptr stylesheet_ptr(xsltParseStylesheetDoc(document)); 
-		if(xmlHaveGenericErrors()) {
-			GdomeException exc=0;
-			throw XmlException(0, exc);
-		}
+		xsltStylesheet_auto_ptr stylesheet_ptr(xsltParseStylesheetDoc(&stylesheetdoc)); 
+		if(xmlHaveGenericErrors())
+			throw XmlException(0);
 		if(!stylesheet_ptr.get())
 			throw Exception("xml",
 				0,
@@ -890,8 +831,6 @@ MXdoc::MXdoc(): MXnode(XDOC_CLASS_NAME, xnode_class) {
 	add_native_method("createAttribute", Method::CT_DYNAMIC, _createAttribute, 1, 1);
 	// EntityReference createEntityReference(in DOMString name) raises(DOMException);
 	add_native_method("createEntityReference", Method::CT_DYNAMIC, _createEntityReference, 1, 1);
-	// NodeList getElementsByTagName(in DOMString name);
-	add_native_method("getElementsByTagName", Method::CT_DYNAMIC, _getElementsByTagName, 1, 1);
 
 	/// DOM2
 
@@ -906,9 +845,6 @@ MXdoc::MXdoc(): MXnode(XDOC_CLASS_NAME, xnode_class) {
 
 	// Element createElementNS(in DOMString namespaceURI, in DOMString qualifiedName) raises(DOMException);
 	add_native_method("createElementNS", Method::CT_DYNAMIC, _createElementNS, 2, 2);
-
-	// NodeList getElementsByTagNameNS(in DOMString namespaceURI, in DOMString localName);
-	add_native_method("getElementsByTagNameNS", Method::CT_DYNAMIC, _getElementsByTagNameNS, 2, 2);
 
 	/// parser
 	

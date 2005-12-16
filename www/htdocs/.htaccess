@@ -1,8 +1,9 @@
 #apache
 #AddHandler parser3-handler html
+#cgi
 AddHandler parsed-html html
-#Action parsed-html /cgi-bin/debug/parser3
-Action parsed-html /cgi-bin/release/parser3
+Action parsed-html /cgi-bin/debug/parser3
+#Action parsed-html /cgi-bin/release/parser3
 #Action parsed-html /cgi-bin/ReleaseHEAD/parser3
 #Action parsed-html /cgi-bin/DebugHEAD/parser3
 #Action parsed-html /cgi-bin/ProfileDebug/parser3
@@ -14,6 +15,8 @@ Action parsed-html /cgi-bin/release/parser3
 #Action parsed-html /cgi-bin/release312/parser3
 #Action parsed-html /cgi-bin/release313/parser3
 #Action parsed-html /cgi-bin/release314/parser3
+#Action parsed-html /cgi-bin/release315/parser3
+#Action parsed-html /cgi-bin/mix/parser3
 
 AddType image/x-icon ico
 AddType text/xml xsl

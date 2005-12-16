@@ -10,12 +10,11 @@
 
 #ifdef XML
 
-static const char * const IDENT_XML_EXCEPTION_H="$Date: 2005/08/09 08:14:50 $";
+static const char * const IDENT_XML_EXCEPTION_H="$Date: 2005/12/16 10:15:12 $";
 
 // includes
 
 #include "pa_exception.h"
-#include "gdome.h"
 
 // defines
 
@@ -23,8 +22,7 @@ class XmlException: public Exception {
 public:
 
 	XmlException(
-		const String* aproblem_source, 
-		GdomeException& exc);
+		const String* aproblem_source);
 
 };
 
