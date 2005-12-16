@@ -1,1 +1,1 @@
-SUBDIRS = patches gd smtp cord ltdl pcre md5 gc sdbm
+SUBDIRS = gd smtp cord ltdl pcre md5 gc sdbm

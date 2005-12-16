@@ -625,7 +625,6 @@ AC_OUTPUT(
 	src/main/Makefile 
 	src/sql/Makefile 
 	src/lib/Makefile 
-	src/lib/patches/Makefile 
 	src/lib/gd/Makefile 
 	src/lib/smtp/Makefile 
 	src/lib/gc/Makefile 

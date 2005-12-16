@@ -74,8 +74,6 @@
 3a. In case you wish XML(xdoc and xnode classes) support, you need libraries
       libxml2 >= 2.6.22
       libxslt >= 1.1.15
-      glib >= 1.2.10 
-      gdome2 => 0.8.1
     on your system, and specify path to them to Parser3 configure script.
 
     Sources of libgdome library must be patched prior to compile. [library author bug confirmation pending]
@@ -112,46 +110,11 @@
     ./configure --with-libxml-prefix=$HOME/parser3project/gnome --prefix=$HOME/parser3project/gnome --without-debug --without-debugger --without-crypto --without-plugins --disable-shared  --silent
     make install
 
-    glib:
-
-    cd $HOME/parser3project/src
-    #on freebsd5 this is reported to work: 
-    #wget --passive-ftp ftp://ftp.gtk.org/pub/gtk/v1.1/glib-1.1.16.tar.gz
-    wget --passive-ftp ftp://ftp.gtk.org/pub/gtk/v1.2/glib-1.2.10.tar.gz
-    gunzip -c glib-1.2.10.tar.gz | tar vxf -
-    cd glib-1.2.10
-    ./configure --prefix=$HOME/parser3project/gnome --disable-debug --disable-shared  --silent
-    make install
-
-    gdome2:
-
-    cd $HOME/parser3project/src
-    wget http://gdome2.cs.unibo.it/tarball/gdome2-0.8.1.tar.gz
-    gunzip -c gdome2-0.8.1.tar.gz | tar vxf -
-    cd gdome2-0.8.1
-    patch -p0 < $HOME/parser3project/parser3/src/lib/patches/gdome2.patch
-
-    #copy these additional headers into install includes directory
-    mkdir -p $HOME/parser3project/gnome/include/libgdome/gdomecore
-    cp libgdome/gdomecore/gdome-xml-node.h $HOME/parser3project/gnome/include/libgdome/gdomecore
-    cp libgdome/gdomecore/gdome-xml-document.h $HOME/parser3project/gnome/include/libgdome/gdomecore
-    
-    set path=($path $HOME/parser3project/gnome/bin)
-    ./configure --enable-glib-1 --disable-glibtest \
-      --prefix=$HOME/parser3project/gnome \
-      --disable-shared  --silent
-    make install
-
-    
 
     Parser3 configure options, choose whether you need static or dynamic linkage with xml libs:
         --with-static-xml=$HOME/parser3project/gnome
         --with-shared-xml=$HOME/parser3project/gnome
 
-    NOTE:
-    In case your glib as installed into some other prefix,
-    specify it's configuration file with
-        --with-glib-config=/path/to/your/glib-config
     NOTE:
     In case you are using SHARED xml libraries, you may want to link in direct path to them,
     use this key to specify which linker key to use do do that:
@@ -171,8 +134,6 @@
       glib >= 1.2.10
       gmime >= 1.0.1 [http://spruce.sourceforge.net/gmime/sources/v1.0/gmime-1.0.8.tar.gz]
     on your system, and specify path to them to Parser3 configure script.
-
-    You may have already installed glib at 3b step.
 
     glib:
 
@@ -263,4 +224,4 @@
   
 Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-$Id: INSTALL,v 1.46 2005/12/16 10:14:54 paf Exp $
+$Id: INSTALL,v 1.47 2005/12/16 10:18:08 paf Exp $
