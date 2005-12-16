@@ -14,6 +14,7 @@
     wget http://www.hpl.hp.com/personal/Hans_Boehm/gc/gc_source/gc6.6.tar.gz
     gunzip -c gc6.6.tar.gz | tar vxf -
     cd gc6.6
+    CPPFLAGS=USE_LIBC_PRIVATES \
     ./configure --prefix=$HOME/parser3project/gc --disable-threads --disable-shared --silent
     make install
 
@@ -224,4 +225,4 @@
   
 Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-$Id: INSTALL,v 1.47 2005/12/16 10:18:08 paf Exp $
+$Id: INSTALL,v 1.48 2005/12/16 10:19:38 paf Exp $
