@@ -7,7 +7,7 @@
 #include "classes.h"
 #ifdef XML
 
-static const char * const IDENT_XNODE_C="$Date: 2005/12/16 10:15:12 $";
+static const char * const IDENT_XNODE_C="$Date: 2005/12/16 15:08:46 $";
 
 #include "pa_vmethod_frame.h"
 
@@ -121,7 +121,7 @@ xmlAttr& as_attr(MethodParams& params, int index, const char* msg) {
 }
 
 static void writeNode(Request& r, VXdoc& xdoc, xmlNode* node) {
-	if(!node)
+	if(!node|| xmlHaveGenericErrors())
 		throw XmlException(0); // OOM, bad name, things like that
 
 	// write out result
