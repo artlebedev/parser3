@@ -1,5 +1,5 @@
-content-type: text/html; charset=WINDOWS-1251
-content-length: 86
+content-type: text/html; charset=UTF-8
+content-length: 63
 
-<?xml version="1.0" encoding="WINDOWS-1251" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <вася name="значение"/>

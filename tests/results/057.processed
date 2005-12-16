@@ -1,4 +1,4 @@
-content-type: text/html; charset=WINDOWS-1251
+content-type: text/html; charset=UTF-8
 content-length: 615
 
 <table border=1>
@@ -19,7 +19,7 @@ content-length: 615
 </tr> <tr>
 <td>2000-02-03 15:30:04</td><td align=right>2000-02-03 15:30:04</td>
 </tr> <tr>
-<td>2000-02-03 15:30:04 hren</td><td align=right>2000-02-03 15:30:04</td>
+<td>2000-02-03 15:30:04.hren</td><td align=right>2000-02-03 15:30:04</td>
 </tr> <tr>
 <td>2002:12:02</td><td align=right>2002-12-02 00:00:00</td>
 </tr>

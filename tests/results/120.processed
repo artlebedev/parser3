@@ -1,4 +1,7 @@
-content-type: text/html; charset=WINDOWS-1251
-content-length: 13
+content-type: text/html; charset=UTF-8
+content-length: 58
 
-output there
+<?xml version="1.0" encoding="UTF-8"?>
+
+		outputÂ there
+

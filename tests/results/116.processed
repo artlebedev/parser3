@@ -1,7 +1,7 @@
-content-type: text/paf; charset=WINDOWS-1251
-content-length: 91
+content-type: text/paf; charset=UTF-8
+content-length: 73
 
-<?xml version="1.0" encoding="WINDOWS-1251" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <document>
-текст
+С‚РµРєСЃС‚
 </document>

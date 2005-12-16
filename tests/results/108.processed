@@ -1,19 +1,19 @@
-content-type: text/html; charset=WINDOWS-1251
-content-length: 493
+content-type: text/html; charset=UTF-8
+content-length: 490
 
 <pre>&lt;html&gt;
 &lt;head&gt;
-&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=WINDOWS-1251&quot;&gt;z&lt;/head&gt;
+&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=UTF-8&quot;&gt;z&lt;/head&gt;
 		param1=123/&lt;br&gt;
 		param2=defparam2&lt;br&gt;
 
 		test return: =&lt;inside&gt;in?&lt;deep value=&quot;1&quot;&gt;&lt;/deep&gt;&lt;/inside&gt;=
 		 &lt;something background=&quot;&quot;&gt;&lt;/something&gt;
 	
-		&lt;b&gt;P«AF	B&lt;/b&gt;
+		&lt;b&gt;PÂ«AF	B&lt;/b&gt;
 	
 	   	
-            &lt;b&gt;ÏÈÔ&amp;amp;&lt;/b&gt;
+            &lt;b&gt;ÐŸÐ˜Ð¤&amp;amp;&lt;/b&gt;
 	   	
 &lt;hr&gt;
 		test return

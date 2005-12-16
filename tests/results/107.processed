@@ -1,12 +1,12 @@
-content-type: text/html; charset=WINDOWS-1251
-content-length: 2692
+content-type: text/html; charset=UTF-8
+content-length: 2731
 
 <pre>&lt;!--for getByID to work we need to enable doctype checking in pa_global.C :( &lt;?DOCTYPE people SYSTEM &quot;107.dtd&quot;?&gt;--&gt;&lt;people&gt;
-	&lt;man id=&quot;1&quot; имя=&quot;word слово&quot;&gt;
-		&lt;name&gt;P«AF	B&lt;/name&gt;
+	&lt;man id=&quot;1&quot; РёРјСЏ=&quot;word СЃР»РѕРІРѕ&quot;&gt;
+		&lt;name&gt;PВ«AF	B&lt;/name&gt;
 	&lt;/man&gt;
 	   	&lt;man id=&quot;2&quot;&gt;
-            &lt;name&gt;ПИФ&amp;amp;&lt;/name&gt;
+            &lt;name&gt;РџРР¤&amp;amp;&lt;/name&gt;
 	   	&lt;/man&gt;
 &lt;/people&gt;
 
@@ -25,7 +25,7 @@ for getByID to work we need to enable doctype checking in pa_global.C :( &lt;?DO
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 &lt;man
-id="1" имя="word слово"
+id="1" РёРјСЏ="word СЃР»РѕРІРѕ"
 &gt;
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -37,7 +37,7 @@ id="1" имя="word слово"
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 [3]
-P«AF	B<br>
+PВ«AF	B<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 [3]
 <br>
@@ -59,7 +59,7 @@ id="2"
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 [3]
-ПИФ&amp;<br>
+РџРР¤&amp;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 [3]
 <br>
@@ -73,7 +73,7 @@ id="2"
 <hr>
 XPath1:<br>
 &lt;man
-id="1" имя="word слово"
+id="1" РёРјСЏ="word СЃР»РѕРІРѕ"
 &gt;
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp;
@@ -85,7 +85,7 @@ id="1" имя="word слово"
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 [3]
-P«AF	B<br>
+PВ«AF	B<br>
 &nbsp;&nbsp;&nbsp;&nbsp;
 [3]
 <br>
@@ -104,7 +104,7 @@ id="2"
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 [3]
-ПИФ&amp;<br>
+РџРР¤&amp;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;
 [3]
 <br>
@@ -117,6 +117,6 @@ XPath2:<br>
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp;
 [3]
-ПИФ&amp;<br>
+РџРР¤&amp;<br>
 &lt;/name&gt;<br>
 <hr>

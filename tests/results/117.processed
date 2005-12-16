@@ -1,14 +1,17 @@
-content-type: text/html; charset=WINDOWS-1251
-content-length: 243
+content-type: text/html; charset=UTF-8
+content-length: 262
 
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=WINDOWS-1251">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link type="text/xml" rel="alternate" href="/Default.vsdisco">
 </head>
-para1=defparam1<br>
-para2=значение param2<br>
-<b>1 2</b>
+   		
+   		para1=defparam1<br>
+   		para2=значение param2<br>
+	
+		<b>1  2</b>
+	
 <hr>
-test return3
-</html>
+		test return3
+	</html>

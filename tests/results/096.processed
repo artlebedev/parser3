@@ -1,4 +1,4 @@
-content-type: text/html; charset=WINDOWS-1251
+content-type: text/html; charset=UTF-8
 content-length: 1502
 
 <table border=1>
@@ -13,13 +13,13 @@ CompressedBitsPerPixel: <b>
 4
 </b><br>
 DateTime: <b>
-1999-11-30 00:00:00
+0000:00:00 00:00:00
 </b><br>
 DateTimeDigitized: <b>
-1999-11-30 00:00:00
+0000:00:00 00:00:00
 </b><br>
 DateTimeOriginal: <b>
-1999-11-30 00:00:00
+0000:00:00 00:00:00
 </b><br>
 ExifImageHeight: <b>
 1536
