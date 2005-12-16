@@ -45,7 +45,7 @@
 	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.tab.C,v 1.109.2.1 2005/12/08 10:02:44 paf Exp $
+	$Id: compile.tab.C,v 1.109.2.2 2005/12/16 14:09:43 paf Exp $
 */
 
 /**
@@ -1375,7 +1375,7 @@ case 72:
 	YYSTYPE params_code=yyvsp[-1];
 	if(params_code->count()==4) { // probably [] case. [OP_VALUE+origin+Void+STORE_PARAM]
 		if(Value* value=LA2V(*params_code)) // it is OP_VALUE+origin+value?
-			if(!value->is_defined()) // value is VVoid?
+			if(value->is_void()) // value is VVoid?
 				params_code=0; // ^zzz[] case. don't append lone empty param.
 	}
 	/* stack: context, method_junction */

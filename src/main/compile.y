@@ -5,7 +5,7 @@
 	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.217.2.1 2005/12/08 10:02:44 paf Exp $
+	$Id: compile.y,v 1.217.2.2 2005/12/16 14:09:43 paf Exp $
 */
 
 /**
@@ -409,7 +409,7 @@ call_value: '^' {
 	YYSTYPE params_code=$5;
 	if(params_code->count()==4) { // probably [] case. [OP_VALUE+origin+Void+STORE_PARAM]
 		if(Value* value=LA2V(*params_code)) // it is OP_VALUE+origin+value?
-			if(!value->is_defined()) // value is VVoid?
+			if(value->is_void()) // value is VVoid?
 				params_code=0; // ^zzz[] case. don't append lone empty param.
 	}
 	/* stack: context, method_junction */
