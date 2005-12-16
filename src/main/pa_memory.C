@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_MEMORY_C="$Date: 2005/12/16 10:15:12 $";
+static const char * const IDENT_MEMORY_C="$Date: 2005/12/16 10:22:41 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -38,6 +38,8 @@ static size_t debug_size(size_t user_size) {
 
 const int BEFORE_MARK=0xBEF0BEF0;
 const int AFTER_MARK=0xAFEEAFEE;
+
+#error this code is known not to work: it ruins something with nonGC_DEBUG realloc
 
 static void* fill_return_user(void* aptr, size_t /*pure_size*/) {
 	char* ptr=(char*)aptr;
