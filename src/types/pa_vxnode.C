@@ -7,7 +7,7 @@
 #include "pa_config_includes.h"
 #ifdef XML
 
-static const char * const IDENT_VXNODE_C="$Date: 2005/12/16 10:15:12 $";
+static const char * const IDENT_VXNODE_C="$Date: 2005/12/16 14:48:22 $";
 
 #include "pa_vxnode.h"
 #include "pa_vxdoc.h"
@@ -19,7 +19,7 @@ static const char * const IDENT_VXNODE_C="$Date: 2005/12/16 10:15:12 $";
 #include "pa_xml_exception.h"
 
 Request_charsets& VXnode::charsets() { 
-	return get_internal_vxdoc().charsets();
+	return get_vxdoc().charsets();
 }
 
 Value* VXnode::get_element(const String& aname, Value& aself, bool looking_up) { 

@@ -8,7 +8,7 @@
 #ifndef PA_VXNODE_H
 #define PA_VXNODE_H
 
-static const char * const IDENT_VXNODE_H="$Date: 2005/12/16 10:15:12 $";
+static const char * const IDENT_VXNODE_H="$Date: 2005/12/16 14:48:22 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -51,39 +51,27 @@ public: // Value
 
 public: // usage
 
-	VXnode() : 
-		fnode(0) {}
-
 	VXnode(xmlNode& anode) : 
-		fnode(&anode) {}
+		fnode(anode) {}
 
 public: // VXnode
 
 	virtual xmlNode& get_xmlnode() { 
-		if(!fnode)
-			throw Exception(0,
-				0,
-				"can not be applied to uninitialized instance");
-
-		return *fnode; 
+		return fnode; 
 	}
 
 	virtual VXdoc& get_vxdoc() {
-		return get_internal_vxdoc();
+		assert(fnode.doc);
+		VXdoc* result=static_cast<VXdoc*>(fnode.doc->_private);
+		assert(result);
+		return *result;
 	}
 
 	Request_charsets& charsets();
 
 private:
 
-	VXdoc& get_internal_vxdoc() {
-		throw Exception(0,0,"todo: VXdoc(fnode->doc->_private)");
-		//return *(VXdoc*)0;
-	}
-
-private:
-
-	xmlNode* fnode;
+	xmlNode& fnode;
 };
 
 #endif

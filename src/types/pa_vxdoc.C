@@ -7,7 +7,7 @@
 #include "pa_config_includes.h"
 #ifdef XML
 
-static const char * const IDENT_VXDOC="$Date: 2005/12/16 10:15:12 $";
+static const char * const IDENT_VXDOC="$Date: 2005/12/16 14:48:22 $";
 
 #include "pa_vxdoc.h"
 
@@ -51,21 +51,24 @@ Value* VXdoc::get_element(const String& aname, Value& aself, bool looking_up) {
 		// ignore bad node elements, they can be valid here...
 
 		// fields
-/* someday
-		GdomeDocument* document=get_document();
-		GdomeException exc;
+		xmlDoc& xmldoc=get_xmldoc();
 
 		if(aname=="doctype") {
 			// readonly attribute DocumentType doctype;
-			return new VXnode(fcharsets, *this, (xmlNode*)gdome_doc_doctype(document, &exc));
+			if(xmlNode* node=(xmlNode*)xmldoc.intSubset)
+				return &wrap(*node);
+			else
+				return 0;
 		} else if(aname=="implementation") {
 			// readonly attribute DOMImplementation implementation;
 			return 0;
 		} else if(aname=="documentElement") {
 			// readonly attribute Element documentElement;
-			return new VXnode(fcharsets, *this, (xmlNode *)gdome_doc_documentElement(document, &exc));
+			xmlNode* rootElement=xmlDocGetRootElement(&xmldoc);
+			assert(rootElement);
+			return &wrap(*rootElement);
 		} 	
-*/
+
 		return bark("%s field not found", &aname);
 	}
 }
