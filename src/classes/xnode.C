@@ -7,7 +7,7 @@
 #include "classes.h"
 #ifdef XML
 
-static const char * const IDENT_XNODE_C="$Date: 2005/12/16 15:08:46 $";
+static const char * const IDENT_XNODE_C="$Date: 2005/12/19 11:54:57 $";
 
 #include "pa_vmethod_frame.h"
 
@@ -170,7 +170,7 @@ xmlNs& pa_xmlMapNs(xmlDoc& doc, const xmlChar *href, const xmlChar *prefix) {
 static void pa_addAttributeNode(xmlNode& selfNode, xmlAttr& attrNode) 
 {
 	if(attrNode.type!=XML_ATTRIBUTE_NODE)
-		throw Exception("xml",
+		throw Exception("parser.runtime",
 			0,
 			"must be ATTRIBUTE_NODE");
 
@@ -265,16 +265,21 @@ static void _replaceChild(Request& r, MethodParams& params) {
 	xmlDoc& xmldoc=vxdoc.get_xmldoc();
 	xmlNode& selfNode=vnode.get_xmlnode();
 	xmlNode& newChild=as_node(params, 0, "newChild must be node");
-	xmlNode& oldChild=as_node(params, 1, "refChild must be node");
+	xmlNode& oldChild=as_node(params, 1, "oldChild must be node");
 
 	if(newChild.doc!=&xmldoc)
-		throw Exception("xml",
+		throw Exception("xml.dom",
 			0,
 			"WRONG_DOCUMENT_ERR");
 	if(oldChild.doc!=&xmldoc)
-		throw Exception("xml",
+		throw Exception("xml.dom",
 			0,
 			"WRONG_DOCUMENT_ERR");
+
+	if(oldChild.parent!=&selfNode)
+		throw Exception("xml.dom",
+			0,
+			"NOT_FOUND_ERR");
 
 	xmlNode* refChild=oldChild.next;
 	xmlUnlinkNode(&oldChild);
@@ -297,7 +302,7 @@ static void _removeChild(Request& r, MethodParams& params) {
 	xmlNode& oldChild=as_node(params, 0, "refChild must be node");
 	
 	if(oldChild.doc!=&xmldoc)
-		throw Exception("xml",
+		throw Exception("xml.dom",
 			0,
 			"WRONG_DOCUMENT_ERR");
 
@@ -412,12 +417,12 @@ static void _setAttributeNode(Request& r, MethodParams& params) {
 	xmlAttr& newAttr=as_attr(params, 0, "newAttr must be ATTRIBUTE node");
 
 	if(newAttr.doc!=&xmldoc)
-		throw Exception("xml",
+		throw Exception("xml.dom",
 			0,
 			"WRONG_DOCUMENT_ERR");
 
 	if(newAttr.parent)
-		throw Exception("xml",
+		throw Exception("xml.dom",
 			0,
 			"INUSE_ATTRIBUTE_ERR");
 	
@@ -438,7 +443,7 @@ static void _removeAttributeNode(Request& r, MethodParams& params) {
 	xmlAttr& oldAttr=as_attr(params, 0, "oldAttr must be ATTRIBUTE node");
 
 	if(oldAttr.parent!=&element)
-		throw Exception("xml",
+		throw Exception("xml.dom",
 			0,
 			"NOT_FOUND_ERR");
 
@@ -631,7 +636,7 @@ static void _selectX(Request& r, MethodParams& params,
 							  Value*& result)) 
 {
 	VXnode& vnode=GET_SELF(r, VXnode);
-	xmlNode& element=get_self_element(vnode);
+	xmlNode& xmlnode=vnode.get_xmlnode();
 	VXdoc& vdoc=vnode.get_vxdoc();
 	xmlDoc& xmldoc=vdoc.get_xmldoc();
 
@@ -642,7 +647,7 @@ static void _selectX(Request& r, MethodParams& params,
 		Register_one_ns_info info={&r, ctxt.get()};
 		vdoc.search_namespaces.hash().for_each(register_one_ns, &info);
 	}
-	ctxt->node=&element;
+	ctxt->node=&xmlnode;
 	/*error to stderr for now*/
 	xmlXPathObject_auto_ptr res(
 		xmlXPathEvalExpression(r.transcode(expression), ctxt.get()));
@@ -677,7 +682,7 @@ static void selectNodesHandler(Request&,
 			}
 		break;
 	default: 
-		throw Exception(0,
+		throw Exception("parser.runtime",
 			&expression,
 			"wrong xmlXPathEvalExpression result type (%d)", res->type);
 		break; // never
