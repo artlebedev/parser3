@@ -887,12 +887,12 @@ Optional Packages:
                           Boehm garbage collecting library is installed (shared lib)
   --with-static-gc=D      D is the directory where
                           Boehm garbage collecting library is installed (static lib)
-  --with-glib-config=FILE FILE is glib library
-                          configuration file (search for glib*-config)
   --with-shared-xml=D     D is the directory where
                           Gnome XML libraries are installed (shared libs)
   --with-static-xml=D     D is the directory where
                           Gnome XML libraries are installed (static libs)
+  --with-glib-config=FILE FILE is glib library
+                          configuration file (search for glib*-config)
   --with-shared-mailreceive=D is the directory where
                           Gnome MIME library is installed (shared lib)
   --with-static-mailreceive=D is the directory where
@@ -1662,7 +1662,7 @@ fi
 
 # Define the identity of the package.
  PACKAGE=parser
- VERSION=3.2.0
+ VERSION=3.2.1b
 
 
 # Some tools Automake needs.
@@ -4159,14 +4159,6 @@ LIBS=$SAVE_LIBS
 
 
 
-# Check whether --with-glib-config or --without-glib-config was given.
-if test "${with_glib_config+set}" = set; then
-  withval="$with_glib_config"
-  GLIB_CONFIG=$withval
-
-fi;
-
-
 # Check whether --with-shared-xml or --without-shared-xml was given.
 if test "${with_shared_xml+set}" = set; then
   withval="$with_shared_xml"
@@ -4189,24 +4181,11 @@ _ACEOF
 
 
 	LIBXML2_SO_NAME=`cd $XMLLIB ; ls libxml2.?? libxml2.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
-	LIBGDOME_SO_NAME=`cd $XMLLIB ; ls libgdome.?? libgdome.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
 	LIBXSLT_SO_NAME=`cd $XMLLIB ; ls libxslt.?? libxslt.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
 	LIBEXSLT_SO_NAME=`cd $XMLLIB ; ls libexslt.?? libexslt.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
 
-	if test -z "$GLIB_CONFIG"; then
-		GLIB_CONFIG=$XMLBIN/glib-config
-		if test \! -x $GLIB_CONFIG; then
-			GLIB_CONFIG=$XMLBIN/glib2-config
-			if test \! -x $GLIB_CONFIG; then
-				GLIB_CONFIG=glib-config
-			fi
-		fi
-	fi
-	GLIB_CFLAGS=`$GLIB_CONFIG --cflags`
-	GLIB_LIBS=`$GLIB_CONFIG --libs`
-
-	XML_INCLUDES="$GLIB_CFLAGS -I$XMLINC -I$XMLINC/libgdome -I$XMLINC/libxml2"
-	XML_LIBS="$GLIB_LIBS -L$XMLLIB -l$LIBXML2_SO_NAME -l$LIBGDOME_SO_NAME -l$LIBXSLT_SO_NAME -l$LIBEXSLT_SO_NAME"
+	XML_INCLUDES="$GLIB_CFLAGS -I$XMLINC -I$XMLINC/libxml2"
+	XML_LIBS="-L$XMLLIB -l$LIBXML2_SO_NAME -l$LIBXSLT_SO_NAME -l$LIBEXSLT_SO_NAME"
 	if test \! -z "$LD_PATHLINK"; then
 	XML_LIBS="$XML_LIBS -Wl,$LD_PATHLINK -Wl,$XMLLIB"
 	fi
@@ -4234,22 +4213,20 @@ cat >>confdefs.h <<\_ACEOF
 _ACEOF
 
 
-	if test -z "$GLIB_CONFIG"; then
-		GLIB_CONFIG=$XMLBIN/glib-config
-		if test \! -x $GLIB_CONFIG; then
-			GLIB_CONFIG=glib-config
-		fi
-	fi
-	GLIB_CFLAGS=`$GLIB_CONFIG --cflags`
-
-	GLIB_DIR=`$GLIB_CONFIG --libs | sed 's/.*-L\([^ ]*\).*/\1/'`
-	GLIB_NAME=`$GLIB_CONFIG --libs | sed 's/.*-l\([^ ]*\).*/\1/'`
-	XML_INCLUDES="$GLIB_CFLAGS -I$XMLINC -I$XMLINC/libgdome -I$XMLINC/libxml2"
-	XML_LIBS="$XMLLIB/libgdome.a $XMLLIB/libxslt.a $XMLLIB/libexslt.a $XMLLIB/libxml2.a $GLIB_DIR/lib$GLIB_NAME.a"
+	XML_INCLUDES="$GLIB_CFLAGS -I$XMLINC -I$XMLINC/libxml2"
+	XML_LIBS="$XMLLIB/libxslt.a $XMLLIB/libexslt.a $XMLLIB/libxml2.a"
 
 fi;
 
 
+
+
+# Check whether --with-glib-config or --without-glib-config was given.
+if test "${with_glib_config+set}" = set; then
+  withval="$with_glib_config"
+  GLIB_CONFIG=$withval
+
+fi;
 
 
 # Check whether --with-shared-mailreceive or --without-shared-mailreceive was given.
@@ -4276,9 +4253,12 @@ _ACEOF
 	LIBMIME_SO_NAME=`cd $MIMELIB ; ls libgmime.?? libgmime.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
 
 	if test -z "$GLIB_CONFIG"; then
-		GLIB_CONFIG=$MIMEBIN/glib-config
+		GLIB_CONFIG=$XMLBIN/glib-config
 		if test \! -x $GLIB_CONFIG; then
-			GLIB_CONFIG=glib-config
+			GLIB_CONFIG=$XMLBIN/glib2-config
+			if test \! -x $GLIB_CONFIG; then
+				GLIB_CONFIG=glib-config
+			fi
 		fi
 	fi
 	GLIB_CFLAGS=`$GLIB_CONFIG --cflags`
@@ -4314,9 +4294,12 @@ _ACEOF
 
 
 	if test -z "$GLIB_CONFIG"; then
-		GLIB_CONFIG=$MIMEBIN/glib-config
+		GLIB_CONFIG=$XMLBIN/glib-config
 		if test \! -x $GLIB_CONFIG; then
-			GLIB_CONFIG=glib-config
+			GLIB_CONFIG=$XMLBIN/glib2-config
+			if test \! -x $GLIB_CONFIG; then
+				GLIB_CONFIG=glib-config
+			fi
 		fi
 	fi
 	GLIB_CFLAGS=`$GLIB_CONFIG --cflags`

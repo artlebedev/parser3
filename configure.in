@@ -2,7 +2,7 @@ dnl Process this file with autoconf to produce a configure script.
 AC_INIT(README)
 AC_PREREQ(2.57)
 
-AM_INIT_AUTOMAKE(parser, 3.2.0, nodefine)
+AM_INIT_AUTOMAKE(parser, 3.2.1b, nodefine)
 
 dnl expand srcdir
 P3S=`cd $srcdir/src ; pwd`
@@ -253,11 +253,6 @@ AC_SUBST(GC_LIBS)
 LIBS=$SAVE_LIBS
 
 
-AC_ARG_WITH(glib-config,[  --with-glib-config=FILE FILE is glib library
-                          configuration file (search for glib*-config)],
-	GLIB_CONFIG=$withval
-)
-
 AC_ARG_WITH(shared-xml,[  --with-shared-xml=D     D is the directory where
                           Gnome XML libraries are installed (shared libs)],[
 	GNOME_XML=$withval
@@ -272,24 +267,11 @@ AC_ARG_WITH(shared-xml,[  --with-shared-xml=D     D is the directory where
 	AC_DEFINE(XML,,xml-abled parser (uses shared library))
 	
 	LIBXML2_SO_NAME=`cd $XMLLIB ; ls libxml2.?? libxml2.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
-	LIBGDOME_SO_NAME=`cd $XMLLIB ; ls libgdome.?? libgdome.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
 	LIBXSLT_SO_NAME=`cd $XMLLIB ; ls libxslt.?? libxslt.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
 	LIBEXSLT_SO_NAME=`cd $XMLLIB ; ls libexslt.?? libexslt.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
 
-	if test -z "$GLIB_CONFIG"; then
-		GLIB_CONFIG=$XMLBIN/glib-config
-		if test \! -x $GLIB_CONFIG; then
-			GLIB_CONFIG=$XMLBIN/glib2-config
-			if test \! -x $GLIB_CONFIG; then
-				GLIB_CONFIG=glib-config
-			fi
-		fi
-	fi
-	GLIB_CFLAGS=`$GLIB_CONFIG --cflags`
-	GLIB_LIBS=`$GLIB_CONFIG --libs`
-
-	XML_INCLUDES="$GLIB_CFLAGS -I$XMLINC -I$XMLINC/libgdome -I$XMLINC/libxml2"
-	XML_LIBS="$GLIB_LIBS -L$XMLLIB -l$LIBXML2_SO_NAME -l$LIBGDOME_SO_NAME -l$LIBXSLT_SO_NAME -l$LIBEXSLT_SO_NAME"
+	XML_INCLUDES="$GLIB_CFLAGS -I$XMLINC -I$XMLINC/libxml2"
+	XML_LIBS="-L$XMLLIB -l$LIBXML2_SO_NAME -l$LIBXSLT_SO_NAME -l$LIBEXSLT_SO_NAME"
 	if test \! -z "$LD_PATHLINK"; then
 	XML_LIBS="$XML_LIBS -Wl,$LD_PATHLINK -Wl,$XMLLIB"
 	fi
@@ -307,24 +289,16 @@ AC_ARG_WITH(static-xml,[  --with-static-xml=D     D is the directory where
 
 	AC_DEFINE(XML,,xml-abled parser (uses static library))
 
-	if test -z "$GLIB_CONFIG"; then
-		GLIB_CONFIG=$XMLBIN/glib-config
-		if test \! -x $GLIB_CONFIG; then
-			GLIB_CONFIG=glib-config
-		fi
-	fi
-	GLIB_CFLAGS=`$GLIB_CONFIG --cflags`
-
-dnl  '-L/usr/local/lib -lglib' -> /usr/local/lib
-changequote(, )dnl
-	GLIB_DIR=`$GLIB_CONFIG --libs | sed 's/.*-L\([^ ]*\).*/\1/'`
-	GLIB_NAME=`$GLIB_CONFIG --libs | sed 's/.*-l\([^ ]*\).*/\1/'`
-changequote([, ])dnl
-	XML_INCLUDES="$GLIB_CFLAGS -I$XMLINC -I$XMLINC/libgdome -I$XMLINC/libxml2"
-	XML_LIBS="$XMLLIB/libgdome.a $XMLLIB/libxslt.a $XMLLIB/libexslt.a $XMLLIB/libxml2.a $GLIB_DIR/lib$GLIB_NAME.a"
+	XML_INCLUDES="$GLIB_CFLAGS -I$XMLINC -I$XMLINC/libxml2"
+	XML_LIBS="$XMLLIB/libxslt.a $XMLLIB/libexslt.a $XMLLIB/libxml2.a"
 ])
 AC_SUBST(XML_INCLUDES)
 AC_SUBST(XML_LIBS)
+
+AC_ARG_WITH(glib-config,[  --with-glib-config=FILE FILE is glib library
+                          configuration file (search for glib*-config)],
+	GLIB_CONFIG=$withval
+)
 
 AC_ARG_WITH(shared-mailreceive,[  --with-shared-mailreceive=D is the directory where
                           Gnome MIME library is installed (shared lib)],[
@@ -342,9 +316,12 @@ AC_ARG_WITH(shared-mailreceive,[  --with-shared-mailreceive=D is the directory w
 	LIBMIME_SO_NAME=`cd $MIMELIB ; ls libgmime.?? libgmime.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
 
 	if test -z "$GLIB_CONFIG"; then
-		GLIB_CONFIG=$MIMEBIN/glib-config
+		GLIB_CONFIG=$XMLBIN/glib-config
 		if test \! -x $GLIB_CONFIG; then
-			GLIB_CONFIG=glib-config
+			GLIB_CONFIG=$XMLBIN/glib2-config
+			if test \! -x $GLIB_CONFIG; then
+				GLIB_CONFIG=glib-config
+			fi
 		fi
 	fi
 	GLIB_CFLAGS=`$GLIB_CONFIG --cflags`
@@ -370,9 +347,12 @@ AC_ARG_WITH(static-mailreceive,[  --with-static-mailreceive=D is the directory w
 	AC_DEFINE(WITH_MAILRECEIVE,,has \$mail:received (uses static library))
 
 	if test -z "$GLIB_CONFIG"; then
-		GLIB_CONFIG=$MIMEBIN/glib-config
+		GLIB_CONFIG=$XMLBIN/glib-config
 		if test \! -x $GLIB_CONFIG; then
-			GLIB_CONFIG=glib-config
+			GLIB_CONFIG=$XMLBIN/glib2-config
+			if test \! -x $GLIB_CONFIG; then
+				GLIB_CONFIG=glib-config
+			fi
 		fi
 	fi
 	GLIB_CFLAGS=`$GLIB_CONFIG --cflags`

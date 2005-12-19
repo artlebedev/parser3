@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_GLOBALS_C="$Date: 2005/12/16 10:15:12 $";
+static const char * const IDENT_GLOBALS_C="$Date: 2005/12/19 14:22:01 $";
 
 #include "pa_config_includes.h"
 
@@ -394,9 +394,13 @@ void pa_globals_done() {
 
 #endif
 
-#ifdef XML
-#	define GNOME_LIBS "../../../../win32/gnome"
+#define GNOME_LIBS "../../../../win32/gnome"
+
+#ifdef WITH_MAILRECEIVE
 #	pragma comment(lib, GNOME_LIBS "/glib/lib/libglib-1.3-11.lib")
+#endif
+
+#ifdef XML
 #	ifdef _DEBUG
 
 #		ifdef LIBXML_STATIC
@@ -416,12 +420,6 @@ void pa_globals_done() {
 #			pragma comment(lib, GNOME_LIBS "/libxslt-x.x.x/win32/debug/lib/libexslt.lib")
 #		endif
 
-#		ifdef LIBGDOME_STATIC
-#			pragma comment(lib, GNOME_LIBS "/gdome2-x.x.x/win32/DebugStatic/libgdome.lib")
-#		else
-#			pragma comment(lib, GNOME_LIBS "/gdome2-x.x.x/win32/DebugDynamic/libgdome.lib")
-#		endif
-
 #else
 
 #		ifdef LIBXML_STATIC
@@ -439,12 +437,6 @@ void pa_globals_done() {
 #			pragma comment(lib, GNOME_LIBS "/libxslt-x.x.x/win32/release/lib/libexslt_a.lib")
 #		else
 #			pragma comment(lib, GNOME_LIBS "/libxslt-x.x.x/win32/release/lib/libexslt.lib")
-#		endif
-
-#		ifdef LIBGDOME_STATIC
-#			pragma comment(lib, GNOME_LIBS "/gdome2-x.x.x/win32/ReleaseStatic/libgdome.lib")
-#		else
-#			pragma comment(lib, GNOME_LIBS "/gdome2-x.x.x/win32/ReleaseDynamic/libgdome.lib")
 #		endif
 
 #	endif

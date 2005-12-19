@@ -26,7 +26,7 @@
 				Name="VCCLCompilerTool"
 				optimization="2" GlobalOptimizations="TRUE" 				
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..\..\include;..\..\lib\gc\include;..\..\lib\cord\include;..\..\..\..\win32\gnome\glib\include;..\..\..\..\win32\gnome\glib\include\glib;..\..\..\..\win32\gnome\gdome2-x.x.x\libgdome;..\..\..\..\win32\gnome\libxml2-x.x.x\include;..\..\..\..\win32\gnome\libxslt-x.x.x"
+				AdditionalIncludeDirectories="..\..\include;..\..\lib\gc\include;..\..\lib\cord\include;..\..\..\..\win32\gnome\libxml2-x.x.x\include;..\..\..\..\win32\gnome\libxslt-x.x.x"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
@@ -78,7 +78,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\include;..\..\lib\gc\include;..\..\lib\cord\include;..\..\..\..\win32\gnome\glib\include;..\..\..\..\win32\gnome\glib\include\glib;..\..\..\..\win32\gnome\gdome2-x.x.x\libgdome;..\..\..\..\win32\gnome\libxml2-x.x.x\include;..\..\..\..\win32\gnome\libxslt-x.x.x"
+				AdditionalIncludeDirectories="..\..\include;..\..\lib\gc\include;..\..\lib\cord\include;..\..\..\..\win32\gnome\libxml2-x.x.x\include;..\..\..\..\win32\gnome\libxslt-x.x.x"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"

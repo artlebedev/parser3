@@ -10,7 +10,7 @@
 #ifndef PA_CONFIG_FIXED_H
 #define PA_CONFIG_FIXED_H
 
-static const char * const IDENT_CONFIG_FIXED_H="$Date: 2005/12/09 07:18:07 $";
+static const char * const IDENT_CONFIG_FIXED_H="$Date: 2005/12/19 14:22:01 $";
 
 #define inline  __inline
 #define HAVE_ASSERT_H
@@ -56,7 +56,6 @@ static const char * const IDENT_CONFIG_FIXED_H="$Date: 2005/12/09 07:18:07 $";
 #	define LIBXML_STATIC
 #	define LIBXSLT_STATIC
 #	define LIBEXSLT_STATIC
-#	define LIBGDOME_STATIC
 #endif
 
 // if no access to console, but need asserts
