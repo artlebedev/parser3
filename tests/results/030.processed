@@ -1,5 +1,5 @@
 set-cookie: clientType=test; expires=Tue, 25 Feb 2003 21:00:00 GMT; path=/
-content-type: text/html; charset=UTF-8
+content-type: text/html
 content-length: 10
 
 =test=<br>

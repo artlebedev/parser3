@@ -5,7 +5,7 @@ else
 	PARSER_DIR=../src/targets/cgi
 	PARSER_EXECUTABLE=$(PARSER_DIR)/parser3
 endif
-PARSER_CONFIG=NONE
+PARSER_CONFIG=results/auto.p
 
 RUN_PARSER=./run_parser.sh
 DIFF=diff -b
@@ -17,8 +17,7 @@ OUTPUTS=$(patsubst %.html,outputs/%.processed,$(wildcard *.html))
 RESULTS=$(patsubst %.html,results/%.processed,$(wildcard *.html))
 
 outputs/%.processed: %.html
-# Makefile $(RUN_PARSER) $(PARSER_EXECUTABLE) $(PARSER_CONFIG)
-	$(RUN_PARSER) $(PARSER_EXECUTABLE) $< > $@
+	$(RUN_PARSER) $(PARSER_EXECUTABLE) $< $(PARSER_CONFIG) > $@
 
 .PHONY: FORCE all tests clean install install-exec install-data
 

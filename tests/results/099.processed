@@ -1,4 +1,4 @@
-content-type: text/html
+content-type: application/octet-stream
 content-length: 43
 
 $response:body[^file::load[text;099.html]]

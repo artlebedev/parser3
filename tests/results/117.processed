@@ -1,5 +1,5 @@
-content-type: text/html; charset=UTF-8
-content-length: 262
+content-type: text/html
+content-length: 270
 
 <html>
 <head>
@@ -8,7 +8,7 @@ content-length: 262
 </head>
    		
    		para1=defparam1<br>
-   		para2=значение param2<br>
+   		para2=Р·РЅР°С‡РµРЅРёРµ param2<br>
 	
 		<b>1  2</b>
 	
