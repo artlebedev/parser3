@@ -1,1 +1,19 @@
-^for[i](1;3){$i}
+$entry_data[^xdoc::create{<?xml version="1.0" encoding="$response:charset" ?>
+        <blog-entry>
+        </blog-entry>
+}]
+
+# דגמחהü ןנמדנאללû
+^for[i](1;300){
+        $node[^entry_data.createElement[span$i]]
+}
+# /דגמחהü
+
+$entry_data[^entry_data.transform[/_bug.xsl]]
+$entry_data[
+        ^entry_data.string[
+                $.method[html]
+        ]
+]
+^memory:compact[]
+OK

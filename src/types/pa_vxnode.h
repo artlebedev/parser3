@@ -8,7 +8,7 @@
 #ifndef PA_VXNODE_H
 #define PA_VXNODE_H
 
-static const char * const IDENT_VXNODE_H="$Date: 2005/08/05 13:03:06 $";
+static const char * const IDENT_VXNODE_H="$Date: 2005/12/19 14:43:23 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -61,14 +61,17 @@ public: // usage
 
 	VXnode(Request_charsets* acharsets, VXdoc& adocument, GdomeNode* anode) : 
 		fcharsets(acharsets),
-		fdocument(adocument),
-		fnode(anode/*not adding ref, owning a node*/) {
+		fdocument(adocument)
+	{
+		assign_node(anode/*not adding ref, owning a node*/); 
 	}
 
 	override ~VXnode() {
 		GdomeException exc;
-		if(fnode)			
+		if(fnode) {
 			gdome_n_unref(fnode, &exc);
+			assign_node(0);
+		}
 	}
 
 public: // VXnode
@@ -86,6 +89,15 @@ public: // VXnode
 		return fdocument;
 	}
 
+private:
+
+	/// hold reference to prevent premature collecting
+	void assign_node(GdomeNode *anode) {
+		fnode=anode;
+
+		gcref_node=fnode?gdome_xml_n_get_xmlNode(fnode):0;
+	}
+
 protected:
 
 	Request_charsets* fcharsets;
@@ -94,6 +106,7 @@ private:
 
 	VXdoc& fdocument;
 	GdomeNode* fnode;
+	xmlNode* gcref_node;
 };
 
 #endif
