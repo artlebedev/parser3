@@ -1,0 +1,112 @@
+@main[]
+$xdoc[^xdoc::create{<?xml version="1.0" encoding="$request:charset"?>
+<!DOCTYPE people>
+<!--some comment-->
+<people xmlns:first="http://parser.ru/first" xmlns:second="http://parser.ru/second">
+	   	<man first:attrname="attr value">
+            <name>ПИФ^taint[&]</name>
+	   	</man>
+	<man id="1" имя="word слово">
+		<name>P&#171^;AF	B</name>
+		<tst:findme xmlns:tst="http://parser.ru/tst">secret</tst:findme>
+	</man>
+</people>
+}]
+
+^dump[$xdoc]
+
+^xdoc.documentElement.firstChild.nextSibling.getAttributeNS[http://parser.ru/first;attrname]
+
+^xdoc.documentElement.lastChild.previousSibling.setAttributeNS[http://parser.ru/second;second:attrname2;value 2]
+
+^dump[$xdoc]
+
+^xdoc.documentElement.firstChild.nextSibling.removeAttributeNS[http://parser.ru/first;attrname]
+
+^dump[$xdoc]
+
+=^xdoc.documentElement.lastChild.previousSibling.getAttributeNS[http://parser.ru/second;attrname2]=
+$Attr[^xdoc.documentElement.lastChild.previousSibling.getAttributeNodeNS[http://parser.ru/second;attrname2]]
+=$Attr.nodeValue=
+$Attr.nodeValue[changed attribute value]
+
+^dump[$xdoc]
+
+
+#intentionally not predeclaring namespace. todo: think about that stuff
+$newAttr[^xdoc.createAttributeNS[http://parser.ru/third;third:attrname3]]
+$oldAttr[^xdoc.documentElement.lastChild.previousSibling.setAttributeNodeNS[$newAttr]]
+^if($oldAttr is xnode){wrong;right}<br>
+$newAttr.nodeValue[value3]
+
+^dump[$xdoc]
+
+$NodeList[^xdoc.getElementsByTagNameNS[http://parser.ru/tst;findme]]
+^show_xnodes1[$NodeList]<hr><hr>
+
+$man1[^xdoc.selectSingle[/people/man[@id=1]]]
+^if(^man1.hasAttribute[id]){right;wrong2!}<br>
+^if(^man1.hasAttributeNS[http://parser.ru/third;attrname3]){right;wrong3}
+
+<hr>
+
+@dump[xdoc]
+^show_xdoc2[$xdoc]<hr>
+^show_xnode1[$xdoc]<hr>
+<hr>
+
+@show1[array]
+^for[i](0;$array-1){
+    $x[$array.$i]
+	$x.firstChild.nodeValue: 
+		$pattributes[$x.parentNode.attributes]
+		^if(^pattributes._count[]){
+			$pattributes.id.name=$pattributes.id.nodeValue
+		}
+	<br>
+}
+	
+@show_xnodes1[array][i]
+^for[i](0;^array._count[]-1){
+	^show_xnode1[$array.$i;0;1]
+}
+
+@show_xnode1[x;level;single][l]
+^if(def $x){
+    ^for[l](0;$level-1){&nbsp^;&nbsp^;&nbsp^;&nbsp^;}
+    ^if($x.nodeType == $xnode:ELEMENT_NODE){
+    	&lt^;$x.nodeName
+	    $pairs[$x.attributes]
+	    ^if(def $pairs){
+	    	$names[^pairs._keys[]]
+	    	^names.menu{ $names.key="$pairs.[$names.key].nodeValue"}
+	    }
+	    &gt^;
+    }{
+    	[$x.nodeType]
+    }
+    
+    ^if(def $x.nodeValue){$x.nodeValue}<br>
+    ^show_xnode1[$x.firstChild]($level+1)
+    ^if(!$single){
+	    ^show_xnode1[$x.nextSibling]($level)
+    }
+
+    ^if($x.nodeType == $xnode:ELEMENT_NODE){
+    ^for[l](0;$level-1){&nbsp^;&nbsp^;&nbsp^;&nbsp^;}&lt^;/$x.nodeName&gt^;<br>
+    }
+}
+
+@show_xdoc2[xdoc]
+#$response:body[^xdoc.file[	$.media-type[text/paf]  ]]
+<pre>^taint[html][^xdoc.string[
+#	$.method[html]
+#	$.encoding[utF-8]
+#  	$.omit-xml-declaration[yes]
+#	$.standalone[no]
+#	-$.doctype-public[-//W3C//DTD XHTML]
+#	-$.doctype-system[/a/b/c/]
+#	$.indent[yes]
+#	$.media-type[text/paf]
+]]
+</pre>

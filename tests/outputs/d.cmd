@@ -1,0 +1,1 @@
+gdiff ..\results\%1.processed %1.processed

@@ -7,7 +7,7 @@
 #include "pa_config_includes.h"
 #ifdef XML
 
-static const char * const IDENT_VXNODE_C="$Date: 2005/12/16 14:48:22 $";
+static const char * const IDENT_VXNODE_C="$Date: 2005/12/19 12:24:57 $";
 
 #include "pa_vxnode.h"
 #include "pa_vxdoc.h"
@@ -33,7 +33,16 @@ Value* VXnode::get_element(const String& aname, Value& aself, bool looking_up) {
 	if(aname=="nodeName") {
 		return new VString(charsets().source().transcode(selfNode.name));
 	} else if(aname=="nodeValue") {
-		return new VString(charsets().source().transcode(xmlNodeGetContent(&selfNode)));
+		switch(selfNode.type) {
+		case XML_ATTRIBUTE_NODE:
+		case XML_PI_NODE:
+		case XML_CDATA_SECTION_NODE:
+		case XML_COMMENT_NODE:
+		case XML_TEXT_NODE:
+			return new VString(charsets().source().transcode(xmlNodeGetContent(&selfNode)));
+		}
+
+		return 0;
 	} else if(aname=="nodeType") {
 		return new VInt(selfNode.type);
 	} else if(aname=="parentNode") {

@@ -1,0 +1,59 @@
+content-type: text/html; charset=UTF-8
+content-length: 1332
+
+<pre>&lt;doc&gt;&lt;man&gt;&lt;/man&gt;&lt;/doc&gt;
+
+</pre><hr>
+[9]
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;doc
+&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;man
+&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/man&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;/doc&gt;<br>
+<hr>
+<hr>
+<pre>&lt;doc&gt;&lt;man&gt;&lt;/man&gt;&lt;man id=&quot;1&quot; имя=&quot;word слово&quot;&gt;
+		&lt;name&gt;P«AF	B&lt;/name&gt;
+	&lt;/man&gt;&lt;/doc&gt;
+
+</pre><hr>
+[9]
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;doc
+&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;man
+&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;man
+id="1" имя="word слово"
+&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[3]
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;name
+&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[3]
+P«AF	B<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[3]
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/name&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/man&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/man&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;/doc&gt;<br>
+<hr>
+<hr>

@@ -11,8 +11,8 @@ $xdoc[^xdoc::create{<?xml version="1.0" encoding="$request:charset"?>
 </people>
 }]
 
-^if(^xdoc.firstChild.hasChildNodes[]){y;n}
-^if(^xdoc.firstChild.nextSibling.hasChildNodes[]){y;n}
+^if(^xdoc.firstChild.hasChildNodes[]){wrong1;right, comment does not have children}<br>
+^if(^xdoc.firstChild.nextSibling.hasChildNodes[]){right;wrong2}
 
 #should have dtd for this to work $Element[^xdoc.getElementById[2]] 
 # ^show_xnode1[$Element]

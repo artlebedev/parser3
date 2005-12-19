@@ -5,6 +5,5 @@
 134.html mustfail: hash: adding a key inside of foreach
 135.html mustfail: modifying system class
 136.html mustfail: $.name outside of $hash[here]
-137.html mustfail: appendChild without import
 138.html mustfail: invalid encoding inside of xml
 139.html mustfail: bad XPath

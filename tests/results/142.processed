@@ -1,0 +1,224 @@
+content-type: text/html; charset=UTF-8
+content-length: 5258
+
+<pre>&lt;doc&gt;&lt;paf&gt;&lt;/paf&gt;&lt;/doc&gt;
+
+</pre><hr>
+[9]
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;doc
+&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;paf
+&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/paf&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;/doc&gt;<br>
+<hr>
+<hr>
+<pre>&lt;doc&gt;&lt;paf&gt;this is text node (will be removed later)&lt;/paf&gt;&lt;/doc&gt;
+
+</pre><hr>
+[9]
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;doc
+&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;paf
+&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[3]
+this is text node (will be removed later)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/paf&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;/doc&gt;<br>
+<hr>
+<hr>
+<pre>&lt;doc&gt;&lt;paf&gt;&lt;!--this is comment, must go before text node(will be replaced later)--&gt;this is text node (will be removed later)&lt;/paf&gt;&lt;/doc&gt;
+
+</pre><hr>
+[9]
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;doc
+&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;paf
+&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[8]
+this is comment, must go before text node(will be replaced later)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[3]
+this is text node (will be removed later)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/paf&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;/doc&gt;<br>
+<hr>
+<hr>
+<pre>&lt;doc&gt;&lt;paf&gt;this is CDATA, it replaced comment here!this is text node (will be removed later)&lt;/paf&gt;&lt;/doc&gt;
+
+</pre><hr>
+[9]
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;doc
+&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;paf
+&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[4]
+this is CDATA, it replaced comment here!<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[3]
+this is text node (will be removed later)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/paf&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;/doc&gt;<br>
+<hr>
+<hr>
+=text|this is text node (will be removed later)=
+<pre>&lt;doc&gt;&lt;paf&gt;this is CDATA, it replaced comment here!&lt;/paf&gt;&lt;/doc&gt;
+
+</pre><hr>
+[9]
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;doc
+&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;paf
+&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[4]
+this is CDATA, it replaced comment here!<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/paf&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;/doc&gt;<br>
+<hr>
+<hr>
+<pre>&lt;doc&gt;&lt;paf&gt;&lt;?this is target this is pi&gt;&lt;/paf&gt;&lt;/doc&gt;
+
+</pre><hr>
+[9]
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;doc
+&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;paf
+&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[7]
+this is pi<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/paf&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;/doc&gt;<br>
+<hr>
+<hr>
+<pre>&lt;doc attname&gt;&lt;paf&gt;&lt;?this is target this is pi&gt;&lt;/paf&gt;&lt;/doc&gt;
+
+</pre><hr>
+[9]
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;doc
+attname=""
+&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;paf
+&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[7]
+this is pi<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/paf&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;/doc&gt;<br>
+<hr>
+<hr>
+<pre>&lt;doc attname=&quot;attvalue&quot;&gt;&lt;paf&gt;&lt;?this is target this is pi&gt;&lt;/paf&gt;&lt;/doc&gt;
+
+</pre><hr>
+[9]
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;doc
+attname="attvalue"
+&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;paf
+&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[7]
+this is pi<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/paf&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;/doc&gt;<br>
+<hr>
+<hr>
+<pre>&lt;doc attname=&quot;attvalue&quot;&gt;&lt;paf&gt;&lt;?this is target this is pi&gt;&lt;/paf&gt;&amp;nbsp;&lt;/doc&gt;
+
+</pre><hr>
+[9]
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;doc
+attname="attvalue"
+&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;paf
+&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[7]
+this is pi<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[5]
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/paf&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;/doc&gt;<br>
+<hr>
+<hr>
+<pre>&lt;doc attname=&quot;attvalue&quot;&gt;&lt;paf&gt;&lt;?this is target this is pi&gt;&lt;/paf&gt;&amp;nbsp;&lt;/doc&gt;
+
+</pre><hr>
+[9]
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;doc
+attname="attvalue"
+&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;paf
+&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[7]
+this is pi<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;paf
+&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/paf&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[5]
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/paf&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;/doc&gt;<br>
+<hr>
+<hr>
+paf count=2
+<hr><hr>

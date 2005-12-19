@@ -16,8 +16,8 @@ $insertedComment[^xdoc.firstChild.firstChild.insertBefore[$elem;$appendedTextNod
 
 ^dump[$xdoc]
 
-$elem[^xdoc.createCDATASection[this is CDATA, it replaced comment here!]]
-$dummy[^xdoc.firstChild.firstChild.replaceChild[$elem;$insertedComment]]
+$cdata[^xdoc.createCDATASection[this is CDATA, it replaced comment here!]]
+$dummy[^xdoc.firstChild.firstChild.replaceChild[$cdata;$insertedComment]]
 
 ^dump[$xdoc]
 
@@ -27,7 +27,7 @@ $removedNode[^xdoc.firstChild.firstChild.removeChild[$xdoc.firstChild.firstChild
 ^dump[$xdoc]
 
 $elem[^xdoc.createProcessingInstruction[this is target;this is pi]]
-$dummy[^xdoc.firstChild.firstChild.replaceChild[$elem;$insertedComment]]
+$dummy[^xdoc.firstChild.firstChild.replaceChild[$elem;$cdata]]
 
 ^dump[$xdoc]
 

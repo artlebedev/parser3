@@ -1,0 +1,53 @@
+content-type: text/html; charset=UTF-8
+content-length: 1181
+
+<pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;doc&gt;&lt;first:elementWithNamespace1/&gt;&lt;/doc&gt;
+
+</pre><hr>
+[9]
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;doc
+&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;elementWithNamespace1
+&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/elementWithNamespace1&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;/doc&gt;<br>
+<hr>
+<hr>
+<pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;doc&gt;&lt;first:elementWithNamespace1/&gt;&lt;first:elementWithNamespace1/&gt;&lt;/doc&gt;
+
+</pre><hr>
+[9]
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;doc
+&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;elementWithNamespace1
+&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;elementWithNamespace1
+&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/elementWithNamespace1&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/elementWithNamespace1&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;/doc&gt;<br>
+<hr>
+<hr>
+&lt;elementWithNamespace1
+&gt;
+<br>
+&lt;/elementWithNamespace1&gt;<br>
+&lt;elementWithNamespace1
+&gt;
+<br>
+&lt;/elementWithNamespace1&gt;<br>
+<hr><hr>

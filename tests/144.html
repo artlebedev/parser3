@@ -12,16 +12,6 @@ $dummy[^xdoc.firstChild.appendChild[$elem]]
 
 ^dump[$xdoc]
 
-$attr[^xdoc.createAttributeNS[http://parser.ru/second;second:element2WithNamespace2]]
-$dummy[^xdoc.firstChild.firstChild.appendChild[$attr]]
-
-^dump[$xdoc]
-
-$attr[^xdoc.createAttributeNS[http://parser.ru/second;second:element3WithNamespace2]]
-$dummy[^xdoc.firstChild.firstChild.appendChild[$attr]]
-
-^dump[$xdoc]
-
 $nodeList[^xdoc.getElementsByTagNameNS[http://parser.ru/first;elementWithNamespace1]]
 ^show_xnodes1[$nodeList]
 <hr><hr>

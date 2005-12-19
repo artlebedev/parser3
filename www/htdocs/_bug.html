@@ -1,101 +1,21 @@
 @main[]
-$xdoc[^xdoc::create{<?xml version="1.0" encoding="$request:charset"?>
-<!DOCTYPE people>
-<!--some comment-->
-<people xmlns:first="http://parser.ru/first" xmlns:second="http://parser.ru/second">
-	   	<man first:attrname="attr value">
-            <name>ПИФ^taint[&]</name>
-	   	</man>
-	<man id="1" имя="word слово">
-		<name>P&#171^;AF	B</name>
-	</man>
-</people>
-}]
-
-^dump[$xdoc]
-
-^xdoc.documentElement.firstChild.nextSibling.getAttributeNS[http://parser.ru/first;attrname]!
-
-^xdoc.documentElement.lastChild.previousSibling.setAttributeNS[http://parser.ru/second;second:attrname2;value 2]
-
-^dump[$xdoc]
-
-<hr>
-^rem{
-
-^㧥�.removeAttributeNS[namespaceURI;localName]   [3.1.1] 
-
-$Attr[^㧥�.getAttributeNodeNS[namespaceURI;localName]]   [3.1.1] 
-
-$Attr[^㧥�.setAttributeNodeNS[$newAttr]]   [3.1.1] 
-
-$NodeList[^㧥�.getElementsByTagNameNS[namespaceURI;localName]] 
-
-^if(^㧥�.hasAttribute[name]){:}   [3.1.1] 
-
-^if(^㧥�.hasAttributeNS[namespaceURI;localName]){:}   [3.1.1] 
-
-^show_xnode1[$xdoc.doctype]
-}
-<hr>
-
-@dump[xdoc]
-^show_xdoc2[$xdoc]<hr>
-^show_xnode1[$xdoc]<hr>
-<hr>
-
-@show1[array]
-^for[i](0;$array-1){
-    $x[$array.$i]
-	$x.firstChild.nodeValue: 
-		$pattributes[$x.parentNode.attributes]
-		^if(^pattributes._count[]){
-			$pattributes.id.name=$pattributes.id.nodeValue
-		}
-	<br>
-}
-	
-@show_xnodes1[array][i]
-^for[i](0;^array._count[]-1){
-	^show_xnode1[$array.$i;0;1]
+^try{	
+	^mustfail[]
+}{
+	^if($exception.type eq xml){
+		failed, that's OK
+		$exception.handled(1)
+	}
 }
 
-@show_xnode1[x;level;single][l]
-^if(def $x){
-    ^for[l](0;$level-1){&nbsp^;&nbsp^;&nbsp^;&nbsp^;}
-    ^if($x.nodeType == $xnode:ELEMENT_NODE){
-    	&lt^;$x.nodeName
-	    $pairs[$x.attributes]
-	    ^if(def $pairs){
-	    	$names[^pairs._keys[]]
-	    	^names.menu{ $names.key="$pairs.[$names.key].nodeValue"}
-	    }
-	    &gt^;
-    }{
-    	[$x.nodeType]
-    }
-    
-    ^if(def $x.nodeValue){$x.nodeValue}<br>
-    ^show_xnode1[$x.firstChild]($level+1)
-    ^if(!$single){
-	    ^show_xnode1[$x.nextSibling]($level)
-    }
-
-    ^if($x.nodeType == $xnode:ELEMENT_NODE){
-    ^for[l](0;$level-1){&nbsp^;&nbsp^;&nbsp^;&nbsp^;}&lt^;/$x.nodeName&gt^;<br>
-    }
-}
+@mustfail[]
+$dom_from_disk[^xdoc::create[input]]
+$dom_created_in_air[^xdoc::create[doc]]
+^dom_created_in_air.documentElement.appendChild[$dom_from_disk.documentElement]
+^show_xdoc2[$dom_created_in_air]
 
 @show_xdoc2[xdoc]
-#$response:body[^xdoc.file[	$.media-type[text/paf]  ]]
 <pre>^taint[html][^xdoc.string[
-#	$.method[html]
-#	$.encoding[utF-8]
-#  	$.omit-xml-declaration[yes]
-#	$.standalone[no]
-#	-$.doctype-public[-//W3C//DTD XHTML]
-#	-$.doctype-system[/a/b/c/]
-#	$.indent[yes]
-#	$.media-type[text/paf]
+	$.method[html]
 ]]
 </pre>
