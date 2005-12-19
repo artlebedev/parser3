@@ -206,11 +206,11 @@
   ./p3runConfigure <any additional options to apache configure to pass>
   
   example:
-  ./p3runConfigure --prefix=$D/apache13install --enable-module=rewrite
+  ./p3runConfigure --prefix=$HOME/apache13install --enable-module=rewrite
 
   WARNING: if you want to use apache configure option --enable-shared=max, do this:
   ./p3runConfigure --enable-shared=max --disable-shared=mod_parser3.c
   
 Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-$Id: INSTALL,v 1.40 2005/03/16 14:37:03 paf Exp $
+$Id: INSTALL,v 1.40.6.1 2005/12/19 14:42:33 paf Exp $
