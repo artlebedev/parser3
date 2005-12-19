@@ -7455,7 +7455,7 @@ rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
 
           ac_config_headers="$ac_config_headers src/include/pa_config_auto.h"
 
-                                                                                                                                                                                                                                                                                                                      ac_config_files="$ac_config_files Makefile src/Makefile src/types/Makefile src/classes/Makefile src/include/Makefile src/main/Makefile src/sql/Makefile src/lib/Makefile src/lib/patches/Makefile src/lib/gd/Makefile src/lib/smtp/Makefile src/lib/gc/Makefile src/lib/gc/include/Makefile src/lib/cord/Makefile src/lib/cord/include/Makefile src/lib/cord/include/private/Makefile src/lib/ltdl/Makefile src/lib/pcre/Makefile src/lib/md5/Makefile src/lib/sdbm/Makefile src/lib/sdbm/apr-include/Makefile src/targets/Makefile src/targets/cgi/Makefile src/targets/apache13core/Makefile src/targets/apache13/Makefile src/targets/apache13/p3runConfigure src/targets/isapi/Makefile etc/Makefile etc/parser3.charsets/Makefile bin/Makefile bin/auto.p.dist"
+                                                                                                                                                                                                                                                                                                            ac_config_files="$ac_config_files Makefile src/Makefile src/types/Makefile src/classes/Makefile src/include/Makefile src/main/Makefile src/sql/Makefile src/lib/Makefile src/lib/gd/Makefile src/lib/smtp/Makefile src/lib/gc/Makefile src/lib/gc/include/Makefile src/lib/cord/Makefile src/lib/cord/include/Makefile src/lib/cord/include/private/Makefile src/lib/ltdl/Makefile src/lib/pcre/Makefile src/lib/md5/Makefile src/lib/sdbm/Makefile src/lib/sdbm/apr-include/Makefile src/targets/Makefile src/targets/cgi/Makefile src/targets/apache13core/Makefile src/targets/apache13/Makefile src/targets/apache13/p3runConfigure src/targets/isapi/Makefile etc/Makefile etc/parser3.charsets/Makefile bin/Makefile bin/auto.p.dist"
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure
@@ -8027,7 +8027,6 @@ do
   "src/main/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/main/Makefile" ;;
   "src/sql/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/sql/Makefile" ;;
   "src/lib/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/lib/Makefile" ;;
-  "src/lib/patches/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/lib/patches/Makefile" ;;
   "src/lib/gd/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/lib/gd/Makefile" ;;
   "src/lib/smtp/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/lib/smtp/Makefile" ;;
   "src/lib/gc/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/lib/gc/Makefile" ;;
