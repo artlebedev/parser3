@@ -1,21 +1,2 @@
-@main[]
-^try{	
-	^mustfail[]
-}{
-	^if($exception.type eq xml){
-		failed, that's OK
-		$exception.handled(1)
-	}
-}
-
-@mustfail[]
-$dom_from_disk[^xdoc::create[input]]
-$dom_created_in_air[^xdoc::create[doc]]
-^dom_created_in_air.documentElement.appendChild[$dom_from_disk.documentElement]
-^show_xdoc2[$dom_created_in_air]
-
-@show_xdoc2[xdoc]
-<pre>^taint[html][^xdoc.string[
-	$.method[html]
-]]
-</pre>
+@bug[][result]
+this is bug
