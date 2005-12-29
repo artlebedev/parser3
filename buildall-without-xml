@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Id: buildall-without-xml,v 1.1.2.2 2005/12/29 09:06:17 paf Exp $
+# $Id: buildall-without-xml,v 1.1.2.3 2005/12/29 12:22:19 paf Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -13,7 +13,7 @@ echo "Building..."
 parser3_directory=`pwd`
 cd ..
 project_directory=`pwd`
-mkdir src
+mkdir src >/dev/null 2>&1
 
 if test ! -f "$project_directory/gc/lib/libgc.a"; then
   cd $project_directory/src
@@ -46,10 +46,10 @@ echo "DONE"
 echo
 echo
 echo "********************************************************************************************************"
-echo "Now you can copy $install_directory with subdirectories
-echo "  (Parser3 WITHOUT XML support)"
+echo "Now you can copy $install_directory with subdirectories"
+echo "  -Parser3 WITHOUT XML support-"
 echo "to your cgi-bin directory"
 echo "Read more about installing Parser here:"
-echo "  http://www.parser.ru/en/docs/lang/install4apachecgi.htm" in English
-echo "  http://www.parser.ru/docs/lang/install4apachecgi.htm" in Russian
+echo "  http://www.parser.ru/en/docs/lang/install4apachecgi.htm in English"
+echo "  http://www.parser.ru/docs/lang/install4apachecgi.htm in Russian"
 echo "********************************************************************************************************"
