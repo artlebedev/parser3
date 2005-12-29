@@ -1,11 +1,11 @@
 #!/bin/sh
 
-# $Id: buildall-without-xml,v 1.1.2.1 2005/12/28 16:45:36 paf Exp $
+# $Id: buildall-without-xml,v 1.1.2.2 2005/12/29 09:06:17 paf Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
 
-echo "buildall-with-xml"
+echo "buildall-without-xml"
 echo "Script author: Alexander Petrosian <paf@design.ru> (http://paf.design.ru)"
 echo
 echo "Building..."
@@ -26,6 +26,7 @@ if test ! -f "$project_directory/gc/lib/libgc.a"; then
   CPPFLAGS=-DUSE_LIBC_PRIVATES \
   ./configure --prefix=$project_directory/gc --disable-threads --disable-shared --silent
   echo "Building libgc..."
+  make
   make install
 fi
 
@@ -44,6 +45,11 @@ echo "DONE"
 
 echo
 echo
-echo "*******************************************************************************************"
-echo "Now you can copy $HOME/parser3install/bin/parser3 WITHOUT XML support to your CGI directory"
-echo "*******************************************************************************************"
+echo "********************************************************************************************************"
+echo "Now you can copy $install_directory with subdirectories
+echo "  (Parser3 WITHOUT XML support)"
+echo "to your cgi-bin directory"
+echo "Read more about installing Parser here:"
+echo "  http://www.parser.ru/en/docs/lang/install4apachecgi.htm" in English
+echo "  http://www.parser.ru/docs/lang/install4apachecgi.htm" in Russian
+echo "********************************************************************************************************"

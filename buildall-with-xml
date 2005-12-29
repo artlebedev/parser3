@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Id: buildall-with-xml,v 1.1.2.1 2005/12/28 16:45:36 paf Exp $
+# $Id: buildall-with-xml,v 1.1.2.2 2005/12/29 09:06:17 paf Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -83,12 +83,16 @@ if test ! -f "Makefile"; then
      --silent
 fi
 echo "Building parser3..."
-make
 make install
 echo "DONE"
 
 echo
 echo
-echo "****************************************************************************************"
-echo "Now you can copy $install_directory/bin/parser3 WITH XML support to your CGI directory"
-echo "****************************************************************************************"
+echo "********************************************************************************************************"
+echo "Now you can copy $install_directory with subdirectories
+echo "  (Parser3 with XML support)"
+echo "to your cgi-bin directory"
+echo "Read more about installing Parser here:"
+echo "  http://www.parser.ru/en/docs/lang/install4apachecgi.htm" in English
+echo "  http://www.parser.ru/docs/lang/install4apachecgi.htm" in Russian
+echo "********************************************************************************************************"
