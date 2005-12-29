@@ -1,137 +1,53 @@
-0.Assuming your perform your builds in $HOME directory 
-  and suggested subdirectories.
+Alexander Petrosian <paf@design.ru> (http://paf.design.ru)
+$Id: INSTALL,v 1.49 2005/12/29 13:06:58 paf Exp $
 
 1.What is the process to compile Parser3?
 
-  First, you must have LIBGC installed (conservative garbage collector for C++).
-      libgc >= 6.6
-    
-    Installation sequence of this library:
+  Just start ./buildall-with-xml script and you would get $HOME/parser3install/bin/parser3 binary.
 
-    mkdir $HOME/parser3project
-    mkdir $HOME/parser3project/src
-    cd $HOME/parser3project/src
-    wget http://www.hpl.hp.com/personal/Hans_Boehm/gc/gc_source/gc6.6.tar.gz
-    gunzip -c gc6.6.tar.gz | tar vxf -
-    cd gc6.6
-    CPPFLAGS=USE_LIBC_PRIVATES \
-    ./configure --prefix=$HOME/parser3project/gc --disable-threads --disable-shared --silent
-    make install
-
-    Then you can use these Parser3 configure options to use that statically compiled gc:
-        --with-static-gc=$HOME/parser3project/gc/lib
-	In case you already have libgc.so and want to link parser against it, 
-	you can this Parser3 configure option:
-        --with-shared-gc=/path/to/gc/lib
-
-    NOTE:
-    On some platforms there is special version of libgc patched to support some
-    local piece of subtlety.
-    Official libgc does not work there, use special version instead.
-    (OpenBSD reported to be one of those)
-
-  As most UNIX programs Parser3 follows the "standard":
-
-  mkdir $HOME/parser3project
-  cd $HOME/parser3project
-  gunzip -c parser3-x.x.tar.gz | tar xvf -
-  mv parser3-x.x parser3
-  cd parser3
-  ./configure --prefix=$HOME/parser3install --silent
-  make
-  
-  That renaming is needed for SQL drivers to be able to find 
-  necessary include-file in Parser3 sources.
 
   NOTE:
-  On some system you should run 'gmake'.
+  In case you do not need XML support, use ./buildall-without-xml
 
   NOTE:
-  By default your would get 'parser3' binary without support of these features:
-    * xml(xdoc and xnode classes)
-  Read section (3) on getting xml-abled parser.
+  On some platforms there is special version of libgc patched to support some
+  local piece of subtlety.
+  Official libgc does not work there, use special version instead.
+  (OpenBSD reported to be one of those)
+  If you need that special version, please change buildall script accordingly.
 
+  NOTE:
+  In case you later would experience problems with gcc runtime exception handling
+  (most notable when reporting sql-related problems),
+  add this to configure line in buildall script:
+  --with-sjlj-exceptions
+  (HPUX is reported to have such problems)
 
-  Read section (4) on configure options.
+  NOTE:
+  On some systems there are no "make" and you should run 'gmake', change buildall script accordingly then.
 
 2.What is the process to install Parser3?
 
-  make install
+  Copy files from $HOME/parser3install directory into your cgi-bin directory.
 
-  Installation layout:
-    $prefix/bin/
+  Then install Parser3 as a handler of documents, step-by-step instrunctions:
+    http://www.parser.ru/en/docs/lang/install4apachecgi.htm" in English
+    http://www.parser.ru/docs/lang/install4apachecgi.htm" in Russian
+
+  Directory layout:
+    bin/
       parser3             -- CGI and command line Parser3 interpreter
       auto.p.dist         -- configuration file sample, 
                              copy it to auto.p and adjust to your needs
-    $prefix/etc/
+    etc/
       parser3.charsets/   -- charset definition files
         koi8-r.cfg        -- cyrillic charset [KOI8-R encoding]
         windows-1250.cfg  -- central europian charset [windows-1250 encoding]
         windows-1251.cfg  -- cyrillic charset [windows-1251 encoding]
         windows-1257.cfg  -- baltic charset [windows-1257 encoding]
 
-3.What other libraries are needed to compile/install parser? 
-
-3a. In case you wish XML(xdoc and xnode classes) support, you need libraries
-      libxml2 >= 2.6.22
-      libxslt >= 1.1.15
-    on your system, and specify path to them to Parser3 configure script.
-
-    Sources of libgdome library must be patched prior to compile. [library author bug confirmation pending]
-
-    Installation sequence of these libraries to $HOME/parser3project/gnome:
-
-    libxml2:
-
-    cd $HOME/parser3project/src
-    mkdir $HOME/parser3project
-    wget --passive-ftp ftp://xmlsoft.org/libxml2-2.6.22.tar.gz
-    gunzip -c libxml2-2.6.22.tar.gz | tar vxf -
-    cd libxml2-2.6.22
-    #sax1, output, tree, xinclude[in libxslt], html[in libxslt, mode=html?] xptr[xinclude]-- needed!
-    ./configure --prefix=$HOME/parser3project/gnome \
-      --without-iconv --without-threads --without-debug \
-      --without-iso8859x --without-legacy \
-      --without-pattern --without-push --without-python \
-      --without-reader --without-writer --without-readline --without-regexps \
-      --without-schemas --without-schematron \
-      --without-modules \
-      --without-zlib \
-      --disable-shared --silent
-	echo "int main(){return 0;}">testapi.c
-	echo "int main(){return 0;}">runtest.c
-    make install
-
-    libxslt:
-
-    cd $HOME/parser3project/src
-    wget --passive-ftp ftp://xmlsoft.org/libxslt-1.1.15.tar.gz
-    gunzip -c libxslt-1.1.15.tar.gz | tar vxf -
-    cd libxslt-1.1.15
-    ./configure --with-libxml-prefix=$HOME/parser3project/gnome --prefix=$HOME/parser3project/gnome --without-debug --without-debugger --without-crypto --without-plugins --disable-shared  --silent
-    make install
-
-
-    Parser3 configure options, choose whether you need static or dynamic linkage with xml libs:
-        --with-static-xml=$HOME/parser3project/gnome
-        --with-shared-xml=$HOME/parser3project/gnome
-
-    NOTE:
-    In case you are using SHARED xml libraries, you may want to link in direct path to them,
-    use this key to specify which linker key to use do do that:
-        --with-pathlink=LKEY    put dynamic libraries paths to binary
-                                using linker key (-R, -rpath-link)
-
-    Sample:
-    cd $HOME/parser3project/parser3
-    ./configure --prefix=$HOME/parser3install \
-        --with-static-gc=$HOME/parser3project/gc/lib \
-        --with-static-xml=$HOME/parser3project/gnome \
-        --with-sendmail="/usr/sbin/sendmail -i -t -f postmaster" \
-        --silent
-	make install
-
-3b. In case you wish $mail:receive support you need libraries
+3.I have heard about $mail:receive experimental support, how do I use it?
+  You need to bulid these additional libraries
       glib >= 1.2.10
       gmime >= 1.0.1 [http://spruce.sourceforge.net/gmime/sources/v1.0/gmime-1.0.8.tar.gz]
     on your system, and specify path to them to Parser3 configure script.
@@ -152,9 +68,9 @@
     ./configure --prefix=$HOME/parser3project/gnome
     make install
 
-    Parser3 configure options, choose whether you need static or dynamic linkage with xml libs:
+    Then you need to change buildall script to add this to parser3 configure line:
         --with-static-mailreceive=$HOME/parser3project/gnome
-        --with-shared-mailreceive=$HOME/parser3project/gnome
+    And start that changed ./buildall.
 
     NOTE:
     In case your glib as installed into some other prefix,
@@ -166,14 +82,7 @@
         --with-pathlink=LKEY    put dynamic libraries paths to binary
                                 using linker key (-R, -rpath-link)
 
-4.
-
-  In case you're not root on machine you're installing Parser,
-  we recommend you to do:
-  ./configure --prefix=$HOME/parser3install
-  and afterwards copy $HOME/parser3install/bin/parser3 to your CGI directory
-  or make a symlink [if your web server configured to follow symlinks].
-
+4.Security issues
   You can disable any exec operations by setting
   --disable-execs
   option to configure.
@@ -185,14 +94,9 @@
   option to configure.
   
   You can disable user-configured sendmail commands by forcing it, setting
-  --with=sendmail="COMMAND"
+  "--with=sendmail=COMMAND"
   option to configure, for example:
-  --with-sendmail="/usr/sbin/sendmail -i -t -f postmaster"
-
-  In case you are experiencing problem with gcc runtime exception handling,
-  try to configure with
-  --with-sjlj-exceptions
-  option.  
+  "--with-sendmail=/usr/sbin/sendmail -i -t -f postmaster"
 
   By default libstdc++ is linked statically, you can re-enable dynamic libstdc++ linkage by specifying
   --with-dynamic-stdcpp
@@ -222,7 +126,3 @@
 
   WARNING: if you want to use apache configure option --enable-shared=max, do this:
   ./p3runConfigure --enable-shared=max --disable-shared=mod_parser3.c
-  
-Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-$Id: INSTALL,v 1.48 2005/12/16 10:19:38 paf Exp $

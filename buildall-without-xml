@@ -1,0 +1,55 @@
+#!/bin/sh
+
+# $Id: buildall-without-xml,v 1.2 2005/12/29 13:06:58 paf Exp $
+
+install_directory=$HOME/parser3install
+sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
+
+echo "buildall-without-xml"
+echo "Script author: Alexander Petrosian <paf@design.ru> (http://paf.design.ru)"
+echo
+echo "Building..."
+
+parser3_directory=`pwd`
+cd ..
+project_directory=`pwd`
+mkdir src >/dev/null 2>&1
+
+if test ! -f "$project_directory/gc/lib/libgc.a"; then
+  cd $project_directory/src
+  echo "Downloading libgc [1 lib of 1]..."
+  wget -c http://www.hpl.hp.com/personal/Hans_Boehm/gc/gc_source/gc6.6.tar.gz
+  echo "Unpacking..."
+  gunzip -c gc6.6.tar.gz | tar vxf - >/dev/null
+  cd gc6.6
+  echo "Configuring libgc..."
+  CPPFLAGS=-DUSE_LIBC_PRIVATES \
+  ./configure --prefix=$project_directory/gc --disable-threads --disable-shared --silent
+  echo "Building libgc..."
+  make
+  make install
+fi
+
+cd $parser3_directory
+
+if test ! -f "Makefile"; then
+  echo "Configuring parser3..."
+  ./configure --prefix=$install_directory \
+     "--with-sendmail=$sendmail_command" \
+     --with-static-gc=$project_directory/gc/lib \
+     --silent
+fi
+echo "Building parser3..."
+make install
+echo "DONE"
+
+echo
+echo
+echo "********************************************************************************************************"
+echo "Now you can copy $install_directory with subdirectories"
+echo "  -Parser3 WITHOUT XML support-"
+echo "to your cgi-bin directory"
+echo "Read more about installing Parser here:"
+echo "  http://www.parser.ru/en/docs/lang/install4apachecgi.htm in English"
+echo "  http://www.parser.ru/docs/lang/install4apachecgi.htm in Russian"
+echo "********************************************************************************************************"

@@ -1,6 +1,6 @@
 SUBDIRS = src etc bin
 
-EXTRA_DIST = operators.txt parser3.sln gnu.vcproj
+EXTRA_DIST = operators.txt parser3.sln gnu.vcproj buildall-with-xml buildall-without-xml acsite.m4
 
 update:
 	cvs update
