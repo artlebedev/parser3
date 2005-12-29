@@ -1,5 +1,5 @@
 Alexander Petrosian <paf@design.ru> (http://paf.design.ru)
-$Id: INSTALL,v 1.48.2.1 2005/12/28 16:45:36 paf Exp $
+$Id: INSTALL,v 1.48.2.2 2005/12/29 08:27:42 paf Exp $
 
 1.What is the process to compile Parser3?
 
@@ -12,15 +12,16 @@ $Id: INSTALL,v 1.48.2.1 2005/12/28 16:45:36 paf Exp $
   local piece of subtlety.
   Official libgc does not work there, use special version instead.
   (OpenBSD reported to be one of those)
+  If you need that special version, please change buildall script accordingly.
 
   NOTE:
   On some systems there are no "make" and you should run 'gmake', change buildall script accordingly then.
 
 2.What is the process to install Parser3?
 
-  make install
+  Just copy files from $HOME/parser3install directory into your cgi-bin directory.
 
-  Installation layout:
+  Files layout:
     $prefix/bin/
       parser3             -- CGI and command line Parser3 interpreter
       auto.p.dist         -- configuration file sample, 
@@ -33,7 +34,7 @@ $Id: INSTALL,v 1.48.2.1 2005/12/28 16:45:36 paf Exp $
         windows-1257.cfg  -- baltic charset [windows-1257 encoding]
 
 3.I have heard about $mail:receive experimental support, how do I use it?
-  You need two more libraries
+  You need to bulid these additional libraries
       glib >= 1.2.10
       gmime >= 1.0.1 [http://spruce.sourceforge.net/gmime/sources/v1.0/gmime-1.0.8.tar.gz]
     on your system, and specify path to them to Parser3 configure script.
@@ -54,8 +55,9 @@ $Id: INSTALL,v 1.48.2.1 2005/12/28 16:45:36 paf Exp $
     ./configure --prefix=$HOME/parser3project/gnome
     make install
 
-    You need to change buildall script to add this to parser3 configure line:
+    Then you need to change buildall script to add this to parser3 configure line:
         --with-static-mailreceive=$HOME/parser3project/gnome
+    And start that changed ./buildall.
 
     NOTE:
     In case your glib as installed into some other prefix,
@@ -67,14 +69,7 @@ $Id: INSTALL,v 1.48.2.1 2005/12/28 16:45:36 paf Exp $
         --with-pathlink=LKEY    put dynamic libraries paths to binary
                                 using linker key (-R, -rpath-link)
 
-4.
-
-  In case you're not root on machine you're installing Parser,
-  we recommend you to do:
-  ./configure --prefix=$HOME/parser3install
-  and afterwards copy $HOME/parser3install/bin/parser3 to your CGI directory
-  or make a symlink [if your web server configured to follow symlinks].
-
+4.Security issues
   You can disable any exec operations by setting
   --disable-execs
   option to configure.
@@ -86,14 +81,16 @@ $Id: INSTALL,v 1.48.2.1 2005/12/28 16:45:36 paf Exp $
   option to configure.
   
   You can disable user-configured sendmail commands by forcing it, setting
-  --with=sendmail="COMMAND"
+  "--with=sendmail=COMMAND"
   option to configure, for example:
-  --with-sendmail="/usr/sbin/sendmail -i -t -f postmaster"
+  "--with-sendmail=/usr/sbin/sendmail -i -t -f postmaster"
 
-  In case you are experiencing problem with gcc runtime exception handling,
+  In case you are experiencing problem with gcc runtime exception handling
+  (most notable when reporting sql-related problems),
   try to configure with
   --with-sjlj-exceptions
-  option.  
+  option.
+  (HPUX is reported to be have such problems)
 
   By default libstdc++ is linked statically, you can re-enable dynamic libstdc++ linkage by specifying
   --with-dynamic-stdcpp
