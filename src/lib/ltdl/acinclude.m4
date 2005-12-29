@@ -30,8 +30,8 @@ AC_DEFUN([AC_PROG_LIBTOOL],
 # This can be used to rebuild libtool when needed
 LIBTOOL_DEPS="$ac_aux_dir/ltmain.sh"
 
-# Always use our own libtool.
-LIBTOOL='$(SHELL) $(top_builddir)/libtool'
+# Always use rootdir libtool.
+LIBTOOL="$ac_aux_dir/libtool"
 AC_SUBST(LIBTOOL)dnl
 
 # Prevent multiple expansion

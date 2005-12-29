@@ -7,4 +7,4 @@ noinst_LIBRARIES = libltdlc.a
 
 libltdlc_a_SOURCES = ltdl.c
 
-EXTRA_DIST = ltdl.vcproj
+EXTRA_DIST = config_fixed.h ltdl.vcproj
