@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Date: 2004/12/23 15:01:03 $";
+static const char * const IDENT="$Date: 2006/01/17 14:41:17 $";
 
 #include "pa_globals.h"
 #include "pa_common.h"
@@ -201,19 +201,29 @@ void VHashfile::remove(const String& aname) {
 void VHashfile::for_each(void callback(apr_sdbm_datum_t, void*), void* info) const {
 	apr_sdbm_t *db=get_db_for_reading();
 
-	Array<apr_sdbm_datum_t> keys;
-
 	// collect keys
+	Array<apr_sdbm_datum_t>* keys=0;
 	check("apr_sdbm_lock", apr_sdbm_lock(db, APR_FLOCK_SHARED));
 	try {
 		apr_sdbm_datum_t key;
 		if(apr_sdbm_firstkey(db, &key)==APR_SUCCESS)
+		{
+			size_t count=0;
 			do {
-				 // must clone because it points to page which may go away 
-				// [if they modify hashfile inside foreach]
-				key.dptr = pa_strdup(key.dptr, key.dsize);
-				keys+=key;
+				// must cound beforehead, becase doing reallocs later would be VERY slow and cause HUGE fragmentation
+				count++;
 			} while(apr_sdbm_nextkey(db, &key)==APR_SUCCESS);
+
+			keys=new Array<apr_sdbm_datum_t>(count);
+
+			if(apr_sdbm_firstkey(db, &key)==APR_SUCCESS)
+				do {
+					// must clone because it points to page which may go away 
+					// [if they modify hashfile inside foreach]
+					key.dptr = pa_strdup(key.dptr, key.dsize);
+					*keys+=key;
+				} while(apr_sdbm_nextkey(db, &key)==APR_SUCCESS);
+		}
 	} catch(...) {
 			check("apr_sdbm_unlock", apr_sdbm_unlock(db));
 			rethrow;
@@ -221,7 +231,8 @@ void VHashfile::for_each(void callback(apr_sdbm_datum_t, void*), void* info) con
 	check("apr_sdbm_unlock", apr_sdbm_unlock(db));
 
 	// iterate them
-	keys.for_each(callback, info);
+	if(keys)
+		keys->for_each(callback, info);
 }
 
 #ifndef DOXYGEN
