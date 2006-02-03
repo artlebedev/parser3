@@ -26,7 +26,7 @@
  *
  */
 
-static const char * const IDENT_COMMON_C="$Date: 2005/12/09 07:18:07 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2006/02/03 15:08:04 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -922,9 +922,9 @@ g_mime_utils_base64_decode_step (const unsigned char *in, size_t inlen, unsigned
 			saved = (saved << 6) | c;
 			i++;
 			if (i == 4) {
-				*outptr++ = (unsigned char)saved >> 16;
-				*outptr++ = (unsigned char)saved >> 8;
-				*outptr++ = (unsigned char)saved;
+				*outptr++ = (unsigned char)(saved >> 16);
+				*outptr++ = (unsigned char)(saved >> 8);
+				*outptr++ = (unsigned char)(saved);
 				i = 0;
 			}
 		}
