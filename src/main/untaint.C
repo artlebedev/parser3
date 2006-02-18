@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_UNTAINT_C="$Date: 2005/11/22 15:09:10 $";
+static const char * const IDENT_UNTAINT_C="$Date: 2006/02/18 18:01:33 $";
 
 
 #include "pa_string.h"
@@ -374,6 +374,8 @@ int cstr_to_string_body_block(char alang, size_t fragment_length, Cstr_to_string
 			bool email=false;
 			uchar c;
 			for(const char* src=mail_ptr; (c=(uchar)*src++); ) {
+				if(c=='\r' || c=='\n')
+					c=' ';
 				if(to_quoted_printable && (c==',' || c == '"' || addr_spec_soon(src-1/*position to 'c'*/))) {
 					email=c=='<';
 					to_string("?=");
