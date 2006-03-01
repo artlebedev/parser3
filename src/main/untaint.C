@@ -1,11 +1,11 @@
 /** @file
 	Parser: String class part: untaint mechanizm.
 
-	Copyright(c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright(c) 2001-2006 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_UNTAINT_C="$Date: 2005/11/22 15:11:05 $";
+static const char * const IDENT_UNTAINT_C="$Date: 2006/03/01 18:44:55 $";
 
 
 #include "pa_string.h"
@@ -374,6 +374,8 @@ int cstr_to_string_body_block(char alang, size_t fragment_length, Cstr_to_string
 			bool email=false;
 			uchar c;
 			for(const char* src=mail_ptr; (c=(uchar)*src++); ) {
+				if(c=='\r' || c=='\n')
+					c=' ';
 				if(to_quoted_printable && (c==',' || c == '"' || addr_spec_soon(src-1/*position to 'c'*/))) {
 					email=c=='<';
 					to_string("?=");
