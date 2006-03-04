@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2005/12/09 07:39:19 $";
+static const char * const IDENT_STRING_C="$Date: 2006/03/04 18:03:22 $";
 
 #include "pcre.h"
 
@@ -685,9 +685,12 @@ bool String::deserialize(size_t prolog_size, void *buf, size_t buf_size) {
 			// length [WARNING: not cast, addresses must be %4=0 on sparc]
 			memcpy(&fragment_length, cur, sizeof(fragment_length));  cur+=sizeof(fragment_length);
 
+			size_t combined_length=total_length+fragment_length;
+			if(combined_length>body_length)
+				return false; // file curruption
 			// uchar needed to prevent propagating 0x80 bit to upper bytes
 			langs.append(total_length, (String::Language)(uchar)lang, fragment_length);
-			total_length+=fragment_length;
+			total_length=combined_length;
 			in_buf-=piece_length;
 		}
 
