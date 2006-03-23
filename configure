@@ -1662,7 +1662,7 @@ fi
 
 # Define the identity of the package.
  PACKAGE=parser
- VERSION=3.1.6
+ VERSION=3.1.6sp2
 
 
 # Some tools Automake needs.
