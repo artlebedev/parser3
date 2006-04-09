@@ -1,4 +1,4 @@
-/* A Bison parser, made by GNU Bison 1.875b.  */
+/* A Bison parser, made by GNU Bison 1.875c.  */
 
 /* Skeleton parser for Yacc-like parsing with Bison,
    Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
@@ -37,7 +37,7 @@
 #define YYBISON 1
 
 /* Skeleton name.  */
-#define YYSKELETON_NAME "/../../../cygdrive/y/parser3project/win32/tools/yacc.c"
+#define YYSKELETON_NAME "yacc.c"
 
 /* Pure parsers.  */
 #define YYPURE 1
@@ -132,7 +132,7 @@
 	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.tab.C,v 1.112 2005/12/21 13:54:43 paf Exp $
+	$Id: compile.tab.C,v 1.113 2006/04/09 13:48:50 paf Exp $
 */
 
 /**
@@ -219,16 +219,16 @@ typedef int YYSTYPE;
 
 /* The parser invokes alloca or malloc; define the necessary symbols.  */
 
-# if YYSTACK_USE_ALLOCA
-#  define YYSTACK_ALLOC alloca
+# ifdef YYSTACK_USE_ALLOCA
+#  if YYSTACK_USE_ALLOCA
+#   define YYSTACK_ALLOC alloca
+#  endif
 # else
-#  ifndef YYSTACK_USE_ALLOCA
-#   if defined (alloca) || defined (_ALLOCA_H)
-#    define YYSTACK_ALLOC alloca
-#   else
-#    ifdef __GNUC__
-#     define YYSTACK_ALLOC __builtin_alloca
-#    endif
+#  if defined (alloca) || defined (_ALLOCA_H)
+#   define YYSTACK_ALLOC alloca
+#  else
+#   ifdef __GNUC__
+#    define YYSTACK_ALLOC __builtin_alloca
 #   endif
 #  endif
 # endif
@@ -249,7 +249,7 @@ typedef int YYSTYPE;
 
 #if (! defined (yyoverflow) \
      && (! defined (__cplusplus) \
-	 || (YYSTYPE_IS_TRIVIAL)))
+	 || (defined (YYSTYPE_IS_TRIVIAL) && YYSTYPE_IS_TRIVIAL)))
 
 /* A type that is properly aligned for any stack member.  */
 union yyalloc
@@ -270,7 +270,7 @@ union yyalloc
 /* Copy COUNT objects from FROM to TO.  The source and destination do
    not overlap.  */
 # ifndef YYCOPY
-#  if 1 < __GNUC__
+#  if defined (__GNUC__) && 1 < __GNUC__
 #   define YYCOPY(To, From, Count) \
       __builtin_memcpy (To, From, (Count) * sizeof (*(From)))
 #  else
@@ -471,40 +471,40 @@ static const unsigned short yyrline[] =
    First, the terminals, then, starting at YYNTOKENS, nonterminals. */
 static const char *const yytname[] =
 {
-  "$end", "error", "$undefined", "EON", "STRING", "BOGUS", 
-  "BAD_STRING_COMPARISON_OPERATOR", "BAD_HEX_LITERAL", 
-  "BAD_METHOD_DECL_START", "BAD_METHOD_PARAMETER_NAME_CHARACTER", 
-  "BAD_NONWHITESPACE_CHARACTER_IN_EXPLICIT_RESULT_MODE", "\"&&\"", 
-  "\"||\"", "\"!||\"", "\"!|\"", "\"<=\"", "\">=\"", "\"==\"", "\"!=\"", 
-  "\"<<\"", "\">>\"", "\"lt\"", "\"gt\"", "\"le\"", "\"ge\"", "\"eq\"", 
-  "\"ne\"", "\"def\"", "\"in\"", "\"-f\"", "\"-d\"", "\"is\"", "\"true\"", 
-  "\"false\"", "'<'", "'>'", "'|'", "'&'", "'+'", "'-'", "'*'", "'/'", 
-  "'\\\\'", "'%'", "NUNARY", "'~'", "'!'", "'@'", "'\\n'", "'['", "']'", 
-  "';'", "'$'", "'{'", "'}'", "'.'", "'('", "')'", "'^'", "':'", "'\"'", 
-  "'''", "$accept", "all", "methods", "one_big_piece", "method", 
-  "control_method", "maybe_control_strings", "control_strings", 
-  "control_string", "maybe_string", "code_method", "@1", 
-  "maybe_bracketed_strings", "bracketed_maybe_strings", "maybe_strings", 
-  "strings", "maybe_comment", "maybe_codes", "codes", "code", "action", 
-  "get", "get_value", "get_name_value", "name_in_curly_rdive", 
-  "name_without_curly_rdive", "name_without_curly_rdive_read", 
-  "name_without_curly_rdive_class", "name_without_curly_rdive_code", 
-  "put", "name_expr_wdive", "name_expr_wdive_root", 
-  "name_expr_wdive_write", "name_expr_wdive_class", "construct", 
-  "construct_square", "@2", "@3", "construct_round", "construct_curly", 
-  "any_constructor_code_value", "constructor_code_value", 
-  "constructor_code", "codes__excluding_sole_str_literal", "call", 
-  "call_value", "@4", "@5", "call_name", "store_params", "store_param", 
-  "store_square_param", "@6", "@7", "store_round_param", 
-  "store_curly_param", "store_code_param_parts", "store_expr_param_parts", 
-  "store_curly_param_parts", "store_code_param_part", 
-  "store_expr_param_part", "store_curly_param_part", "code_param_value", 
-  "name_expr_dive_code", "name_path", "name_step", "name_advance1", 
-  "name_advance2", "name_expr_value", "name_expr_subvar_value", 
-  "name_expr_with_subvar_value", "name_square_code_value", "@8", "@9", 
-  "subvar_ref_name_rdive", "subvar_get_writes", "subvar__get_write", 
-  "class_prefix", "class_static_prefix", "class_constructor_prefix", 
-  "expr_value", "expr", "double_or_STRING", "string_inside_quotes_value", 
+  "$end", "error", "$undefined", "EON", "STRING", "BOGUS",
+  "BAD_STRING_COMPARISON_OPERATOR", "BAD_HEX_LITERAL",
+  "BAD_METHOD_DECL_START", "BAD_METHOD_PARAMETER_NAME_CHARACTER",
+  "BAD_NONWHITESPACE_CHARACTER_IN_EXPLICIT_RESULT_MODE", "\"&&\"",
+  "\"||\"", "\"!||\"", "\"!|\"", "\"<=\"", "\">=\"", "\"==\"", "\"!=\"",
+  "\"<<\"", "\">>\"", "\"lt\"", "\"gt\"", "\"le\"", "\"ge\"", "\"eq\"",
+  "\"ne\"", "\"def\"", "\"in\"", "\"-f\"", "\"-d\"", "\"is\"", "\"true\"",
+  "\"false\"", "'<'", "'>'", "'|'", "'&'", "'+'", "'-'", "'*'", "'/'",
+  "'\\\\'", "'%'", "NUNARY", "'~'", "'!'", "'@'", "'\\n'", "'['", "']'",
+  "';'", "'$'", "'{'", "'}'", "'.'", "'('", "')'", "'^'", "':'", "'\"'",
+  "'''", "$accept", "all", "methods", "one_big_piece", "method",
+  "control_method", "maybe_control_strings", "control_strings",
+  "control_string", "maybe_string", "code_method", "@1",
+  "maybe_bracketed_strings", "bracketed_maybe_strings", "maybe_strings",
+  "strings", "maybe_comment", "maybe_codes", "codes", "code", "action",
+  "get", "get_value", "get_name_value", "name_in_curly_rdive",
+  "name_without_curly_rdive", "name_without_curly_rdive_read",
+  "name_without_curly_rdive_class", "name_without_curly_rdive_code", "put",
+  "name_expr_wdive", "name_expr_wdive_root", "name_expr_wdive_write",
+  "name_expr_wdive_class", "construct", "construct_square", "@2", "@3",
+  "construct_round", "construct_curly", "any_constructor_code_value",
+  "constructor_code_value", "constructor_code",
+  "codes__excluding_sole_str_literal", "call", "call_value", "@4", "@5",
+  "call_name", "store_params", "store_param", "store_square_param", "@6",
+  "@7", "store_round_param", "store_curly_param", "store_code_param_parts",
+  "store_expr_param_parts", "store_curly_param_parts",
+  "store_code_param_part", "store_expr_param_part",
+  "store_curly_param_part", "code_param_value", "name_expr_dive_code",
+  "name_path", "name_step", "name_advance1", "name_advance2",
+  "name_expr_value", "name_expr_subvar_value",
+  "name_expr_with_subvar_value", "name_square_code_value", "@8", "@9",
+  "subvar_ref_name_rdive", "subvar_get_writes", "subvar__get_write",
+  "class_prefix", "class_static_prefix", "class_constructor_prefix",
+  "expr_value", "expr", "double_or_STRING", "string_inside_quotes_value",
   "write_string", "void_value", "true_value", "false_value", "empty", 0
 };
 #endif
@@ -831,7 +831,7 @@ static const unsigned char yystos[] =
 
 #define YYACCEPT	goto yyacceptlab
 #define YYABORT		goto yyabortlab
-#define YYERROR		goto yyerrlab1
+#define YYERROR		goto yyerrorlab
 
 
 /* Like YYERROR except do call yyerror.  This remains here temporarily
@@ -866,11 +866,11 @@ while (0)
    are run).  */
 
 #ifndef YYLLOC_DEFAULT
-# define YYLLOC_DEFAULT(Current, Rhs, N)         \
-  Current.first_line   = Rhs[1].first_line;      \
-  Current.first_column = Rhs[1].first_column;    \
-  Current.last_line    = Rhs[N].last_line;       \
-  Current.last_column  = Rhs[N].last_column;
+# define YYLLOC_DEFAULT(Current, Rhs, N)		\
+   ((Current).first_line   = (Rhs)[1].first_line,	\
+    (Current).first_column = (Rhs)[1].first_column,	\
+    (Current).last_line    = (Rhs)[N].last_line,	\
+    (Current).last_column  = (Rhs)[N].last_column)
 #endif
 
 /* YYLEX -- calling `yylex' with the right arguments.  */
@@ -914,7 +914,7 @@ do {								\
 
 /*------------------------------------------------------------------.
 | yy_stack_print -- Print the state stack from its BOTTOM up to its |
-| TOP (cinluded).                                                   |
+| TOP (included).                                                   |
 `------------------------------------------------------------------*/
 
 #if defined (__STDC__) || defined (__cplusplus)
@@ -993,7 +993,7 @@ int yydebug;
    SIZE_MAX < YYSTACK_BYTES (YYMAXDEPTH)
    evaluated with infinite-precision integer arithmetic.  */
 
-#if YYMAXDEPTH == 0
+#if defined (YYMAXDEPTH) && YYMAXDEPTH == 0
 # undef YYMAXDEPTH
 #endif
 
@@ -2219,7 +2219,7 @@ yyreduce:
 
     }
 
-/* Line 999 of yacc.c.  */
+/* Line 993 of yacc.c.  */
 #line 2224 "compile.tab.C"
 
   yyvsp -= yylen;
@@ -2323,25 +2323,27 @@ yyerrlab:
       /* If just tried and failed to reuse lookahead token after an
 	 error, discard it.  */
 
-      /* Return failure if at end of input.  */
-      if (yychar == YYEOF)
+      if (yychar <= YYEOF)
         {
-	  /* Pop the error token.  */
-          YYPOPSTACK;
-	  /* Pop the rest of the stack.  */
-	  while (yyss < yyssp)
-	    {
-	      YYDSYMPRINTF ("Error: popping", yystos[*yyssp], yyvsp, yylsp);
-	      yydestruct (yystos[*yyssp], yyvsp);
-	      YYPOPSTACK;
-	    }
-	  YYABORT;
+          /* If at end of input, pop the error token,
+	     then the rest of the stack, then return failure.  */
+	  if (yychar == YYEOF)
+	     for (;;)
+	       {
+		 YYPOPSTACK;
+		 if (yyssp == yyss)
+		   YYABORT;
+		 YYDSYMPRINTF ("Error: popping", yystos[*yyssp], yyvsp, yylsp);
+		 yydestruct (yystos[*yyssp], yyvsp);
+	       }
         }
+      else
+	{
+	  YYDSYMPRINTF ("Error: discarding", yytoken, &yylval, &yylloc);
+	  yydestruct (yytoken, &yylval);
+	  yychar = YYEMPTY;
 
-      YYDSYMPRINTF ("Error: discarding", yytoken, &yylval, &yylloc);
-      yydestruct (yytoken, &yylval);
-      yychar = YYEMPTY;
-
+	}
     }
 
   /* Else will try to reuse lookahead token after shifting the error
@@ -2349,9 +2351,27 @@ yyerrlab:
   goto yyerrlab1;
 
 
-/*----------------------------------------------------.
-| yyerrlab1 -- error raised explicitly by an action.  |
-`----------------------------------------------------*/
+/*---------------------------------------------------.
+| yyerrorlab -- error raised explicitly by YYERROR.  |
+`---------------------------------------------------*/
+yyerrorlab:
+
+#ifdef __GNUC__
+  /* Pacify GCC when the user code never invokes YYERROR and the label
+     yyerrorlab therefore never appears in user code.  */
+  if (0)
+     goto yyerrorlab;
+#endif
+
+  yyvsp -= yylen;
+  yyssp -= yylen;
+  yystate = *yyssp;
+  goto yyerrlab1;
+
+
+/*-------------------------------------------------------------.
+| yyerrlab1 -- common code for both syntax error and YYERROR.  |
+`-------------------------------------------------------------*/
 yyerrlab1:
   yyerrstatus = 3;	/* Each real token shifted decrements this.  */
 
@@ -2375,9 +2395,8 @@ yyerrlab1:
 
       YYDSYMPRINTF ("Error: popping", yystos[*yyssp], yyvsp, yylsp);
       yydestruct (yystos[yystate], yyvsp);
-      yyvsp--;
-      yystate = *--yyssp;
-
+      YYPOPSTACK;
+      yystate = *yyssp;
       YY_STACK_PRINT (yyss, yyssp);
     }
 
@@ -2960,6 +2979,8 @@ default:
 			case '=': case '!':
 			// common delimiters
 			case ',': case '?': case '#':
+			// mysql column separators
+			case '`':
 			// before call
 			case '^': 
 				pop_LS(pc);
