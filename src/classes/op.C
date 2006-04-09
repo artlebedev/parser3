@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2005/12/01 15:51:06 $";
+static const char * const IDENT_OP_C="$Date: 2006/04/09 13:38:46 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -38,10 +38,20 @@ public:
 	VClassMAIN();
 };
 
+// defines for globals
+
+#define CYCLE_DATA_NAME "CYCLE-DATA"
+
+// globals
+
+//^for & co
+String cycle_data_name(CYCLE_DATA_NAME);
+
 // defines for statics
 
 #define SWITCH_DATA_NAME "SWITCH-DATA"
 #define CACHE_DATA_NAME "CACHE-DATA"
+
 #define EXCEPTION_VAR_NAME "exception"
 
 // statics
@@ -52,6 +62,7 @@ static const String switch_data_name(SWITCH_DATA_NAME);
 static const String cache_data_name(CACHE_DATA_NAME);
 
 static const String exception_var_name(EXCEPTION_VAR_NAME);
+
 
 // local defines
 
@@ -229,6 +240,9 @@ static void _rem(Request&, MethodParams& params) {
 }
 
 static void _while(Request& r, MethodParams& params) {
+	Temp_hash_value<const String::Body, void*> 
+		cycle_data_setter(r.classes_conf, cycle_data_name, /*any not null flag*/&r);
+
 	Value& vcondition=params.as_junction(0, "condition must be expression");
 	Value& body_code=params.as_junction(1, "body must be code");
 	Value* delim_maybe_code=params.count()>2?&params[2]:0;
@@ -248,6 +262,7 @@ static void _while(Request& r, MethodParams& params) {
 			break;
 
 		StringOrValue sv_processed=r.process(body_code);
+		Request::Skip lskip=r.get_skip(); r.set_skip(Request::SKIP_NOTHING);
 		const String* s_processed=sv_processed.get_string();
 		if(delim_maybe_code && s_processed && s_processed->length()) { // delimiter set and we have body
 			if(need_delim) // need delim & iteration produced string?
@@ -255,6 +270,9 @@ static void _while(Request& r, MethodParams& params) {
 			need_delim=true;
 		}
 		r.write_pass_lang(sv_processed);
+
+		if(lskip==Request::SKIP_BREAK)
+			break;
 	}
 }
 
@@ -263,7 +281,28 @@ static void _use(Request& r, MethodParams& params) {
 	r.use_file(r.main_class, vfile.as_string());
 }
 
+static void set_skip(Request& r, Request::Skip askip) {
+	void* data=r.classes_conf.get(cycle_data_name);
+	if(!data)
+		throw Exception("parser.runtime",
+			0,
+			"without cycle");
+
+	r.set_skip(askip);
+}
+
+static void _break(Request& r, MethodParams&) {
+	set_skip(r, Request::SKIP_BREAK);
+}
+
+static void _continue(Request& r, MethodParams&) {
+	set_skip(r, Request::SKIP_CONTINUE);
+}
+
 static void _for(Request& r, MethodParams& params) {
+	Temp_hash_value<const String::Body, void*> 
+		cycle_data_setter(r.classes_conf, cycle_data_name, /*any not null flag*/&r);
+
 	const String& var_name=params.as_string(0, "var name must be string");
 	int from=params.as_int(1, "from must be int", r);
 	int to=params.as_int(2, "to must be int", r);
@@ -284,6 +323,7 @@ static void _for(Request& r, MethodParams& params) {
 		vint->set_int(i);
 
 		StringOrValue sv_processed=r.process(body_code);
+		Request::Skip lskip=r.get_skip(); r.set_skip(Request::SKIP_NOTHING);
 		const String* s_processed=sv_processed.get_string();
 		if(delim_maybe_code && s_processed && s_processed->length()) { // delimiter set and we have body
 			if(need_delim) // need delim & iteration produced string?
@@ -291,6 +331,9 @@ static void _for(Request& r, MethodParams& params) {
 			need_delim=true;
 		}
 		r.write_pass_lang(sv_processed);
+
+		if(lskip==Request::SKIP_BREAK)
+			break;
 	}
 }
 
@@ -825,6 +868,10 @@ VClassMAIN::VClassMAIN(): VClass() {
 	// ^use[file]
 	add_native_method("use", Method::CT_ANY, _use, 1, 1);
 
+	// ^break[]
+	add_native_method("break", Method::CT_ANY, _break, 0, 0);
+	// ^continue[]
+	add_native_method("continue", Method::CT_ANY, _continue, 0, 0);
 	// ^for[i](from-number;to-number-inclusive){code}[delim]
 	add_native_method("for", Method::CT_ANY, _for, 3+1, 3+1+1);
 

@@ -5,7 +5,7 @@
 	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.219 2005/12/16 14:04:20 paf Exp $
+	$Id: compile.y,v 1.220 2006/04/09 13:38:47 paf Exp $
 */
 
 /**
@@ -1170,6 +1170,8 @@ default:
 			case '=': case '!':
 			// common delimiters
 			case ',': case '?': case '#':
+			// mysql column separators
+			case '`':
 			// before call
 			case '^': 
 				pop_LS(pc);

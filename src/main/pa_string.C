@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2006/03/04 18:02:40 $";
+static const char * const IDENT_STRING_C="$Date: 2006/04/09 13:38:47 $";
 
 #include "pcre.h"
 
@@ -644,7 +644,7 @@ bool String::deserialize(size_t prolog_size, void *buf, size_t buf_size) {
 	// 1: prolog
 	const char* cur=(const char* )buf+prolog_size;
 
-	// 2: langs.count
+	// 2: chars.count
 	size_t body_length;
 	if(in_buf<sizeof(body_length)) // body.length don't fit?
 		return false;

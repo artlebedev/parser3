@@ -5,10 +5,11 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_THREADS_C="$Date: 2005/08/09 08:14:53 $";
+static const char * const IDENT_THREADS_C="$Date: 2006/04/09 13:38:47 $";
 
 #include "pa_threads.h"
 
+#define  WINVER  0x0400
 #include <windows.h>
 
 const bool parser_multithreaded=true;

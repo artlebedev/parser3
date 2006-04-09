@@ -4,7 +4,8 @@
 	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
-static const char * const IDENT_TABLE_C="$Date: 2006/01/20 11:28:44 $";
+
+static const char * const IDENT_TABLE_C="$Date: 2006/04/09 13:38:47 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -32,6 +33,10 @@ public: // Methoded
 // global variable
 
 DECLARE_CLASS_VAR(table, new MTable, 0);
+
+// externs
+
+extern String cycle_data_name;
 
 // defines for globals
 
@@ -490,6 +495,9 @@ static void _offset(Request& r, MethodParams& params) {
 }
 
 static void _menu(Request& r, MethodParams& params) {
+	Temp_hash_value<const String::Body, void*> 
+		cycle_data_setter(r.classes_conf, cycle_data_name, /*any not null flag*/&r);
+
 	Value& body_code=params.as_junction(0, "body must be code");
 	
 	Value* delim_maybe_code=params.count()>1?&params[1]:0;
@@ -502,6 +510,7 @@ static void _menu(Request& r, MethodParams& params) {
 		table.set_current(row);
 
 		StringOrValue sv_processed=r.process(body_code);
+		Request::Skip lskip=r.get_skip(); r.set_skip(Request::SKIP_NOTHING);
 		const String* s_processed=sv_processed.get_string();
 		if(delim_maybe_code && s_processed && s_processed->length()) { // delimiter set and we have body
 			if(need_delim) // need delim & iteration produced string?
@@ -509,6 +518,9 @@ static void _menu(Request& r, MethodParams& params) {
 			need_delim=true;
 		}
 		r.write_pass_lang(sv_processed);
+
+		if(lskip==Request::SKIP_BREAK)
+			break;
 	}
 	table.set_current(saved_current);
 }
@@ -918,7 +930,7 @@ int marshal_binds(HashStringValue& hash, SQL_Driver::Placeholder*& placeholders)
 	int hash_count=hash.count();
 	placeholders=new(UseGC) SQL_Driver::Placeholder[hash_count];
 	SQL_Driver::Placeholder* ptr=placeholders;
-	hash.for_each(marshal_bind, &ptr);
+	hash.for_each<SQL_Driver::Placeholder**>(marshal_bind, &ptr);
 	return hash_count;
 }
 

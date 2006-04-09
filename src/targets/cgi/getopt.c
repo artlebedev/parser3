@@ -49,7 +49,7 @@ getopt(int argc, char* const *argv, const char* optstr)
     static int optchr = 0;
     static int dash = 0; /* have already seen the - */
 
-    char *cp;
+    const char *cp;
 
     if(optind >= argc)
         return(EOF);

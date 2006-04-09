@@ -7,7 +7,7 @@
 
 #include "pa_config_includes.h"
 #ifdef XML
-static const char * const IDENT_STYLESHEET_CONNECTION_C="$Date: 2005/12/16 10:15:12 $";
+static const char * const IDENT_STYLESHEET_CONNECTION_C="$Date: 2006/04/09 13:38:47 $";
 
 #include "pa_stylesheet_connection.h"
 #include "pa_xml_exception.h"
@@ -52,7 +52,7 @@ time_t Stylesheet_connection::get_disk_time() {
 	assert(dependencies);
 
 	time_t result=0;
-	dependencies->for_each(update_max_mtime, &result);
+	dependencies->for_each<time_t*>(update_max_mtime, &result);
 	return result;
 }
 

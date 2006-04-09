@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Date: 2006/01/17 14:41:17 $";
+static const char * const IDENT="$Date: 2006/04/09 13:38:48 $";
 
 #include "pa_globals.h"
 #include "pa_common.h"
@@ -198,7 +198,7 @@ void VHashfile::remove(const String& aname) {
 	remove(key);
 }
 
-void VHashfile::for_each(void callback(apr_sdbm_datum_t, void*), void* info) const {
+void VHashfile::for_each(bool callback(apr_sdbm_datum_t, void*), void* info) const {
 	apr_sdbm_t *db=get_db_for_reading();
 
 	// collect keys
@@ -239,10 +239,10 @@ void VHashfile::for_each(void callback(apr_sdbm_datum_t, void*), void* info) con
 struct For_each_string_callback_info {
 	VHashfile* self;
 	void* nested_info;
-	void (*nested_callback)(const String::Body, const String&, void*);
+	bool (*nested_callback)(const String::Body, const String&, void*);
 };
 #endif
-static void for_each_string_callback(apr_sdbm_datum_t apkey, void* ainfo) {
+static bool for_each_string_callback(apr_sdbm_datum_t apkey, void* ainfo) {
 	For_each_string_callback_info& info=*static_cast<For_each_string_callback_info *>(ainfo);
 	apr_sdbm_t *db=info.self->get_db_for_reading();
 
@@ -252,10 +252,11 @@ static void for_each_string_callback(apr_sdbm_datum_t apkey, void* ainfo) {
 	if(const String* svalue=info.self->deserialize_value(apkey, apvalue)) {
 		const char *clkey=pa_strdup(apkey.dptr, apkey.dsize);
 
-		info.nested_callback(clkey, *svalue, info.nested_info);
+		return info.nested_callback(clkey, *svalue, info.nested_info);
 	}
+	return false;
 }
-void VHashfile::for_each(void callback(const String::Body, const String&, void*), void* ainfo) {
+void VHashfile::for_each(bool callback(const String::Body, const String&, void*), void* ainfo) {
 	For_each_string_callback_info info;
 	
 	info.self=this;
@@ -265,8 +266,9 @@ void VHashfile::for_each(void callback(const String::Body, const String&, void*)
 	for_each(for_each_string_callback, &info);
 }
 
-static void clear_delete_key(apr_sdbm_datum_t key, void* adb) {
+static bool clear_delete_key(apr_sdbm_datum_t key, void* adb) {
 	check("apr_sdbm_delete", apr_sdbm_delete(static_cast<apr_sdbm_t*>(adb), key));
+	return false;
 }
 void VHashfile::clear() {
 	apr_sdbm_t *db=get_db_for_writing();
@@ -275,8 +277,9 @@ void VHashfile::clear() {
 }
 
 
-static void get_hash__put(const String::Body key, const String& value, void* aresult) {
+static bool get_hash__put(const String::Body key, const String& value, void* aresult) {
 	static_cast<HashStringValue*>(aresult)->put(key, new VString(value));
+	return false;
 }
 HashStringValue *VHashfile::get_hash() {
 	HashStringValue& result=*new HashStringValue();

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REQUEST_C="$Date: 2005/12/16 10:15:12 $";
+static const char * const IDENT_REQUEST_C="$Date: 2006/04/09 13:38:47 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -107,7 +107,7 @@ Request::Request(SAPI_Info& asapi_info, Request_info& arequest_info,
 	wcontext(0),
 	flang(adefault_lang),
 	fconnection(0),
-	finterrupted(false),
+	finterrupted(false),fskip(SKIP_NOTHING),
 
 	// public
 #ifdef RESOURCES_DEBUG
@@ -220,7 +220,7 @@ void Request::configure_admin(VStateless_class& conf_class) {
 	if(Value* vcharsets=conf_class.get_element(charsets_name, conf_class, false)) {
 		if(!vcharsets->is_string())
 			if(HashStringValue* charsets=vcharsets->get_hash())
-				charsets->for_each(load_charset, &this->charsets);
+				charsets->for_each<Request_charsets*>(load_charset, &this->charsets);
 			else
 				throw Exception("parser.runtime",
 					0,
@@ -862,7 +862,7 @@ void Request::output_result(VFile* body_file, bool header_only, bool as_attachme
 
 	// prepare header: $response:fields without :body
 	Add_header_attribute_info info(*this);
-	response.fields().for_each(add_header_attribute, &info);
+	response.fields().for_each<Add_header_attribute_info*>(add_header_attribute, &info);
 
 	if(body_file_content_type)
 		if(HashStringValue *hash=body_file_content_type->get_hash())

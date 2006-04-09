@@ -7,7 +7,7 @@
 	@todo setrlimit
 */
 
-static const char * const IDENT_EXEC_C="$Date: 2005/08/09 08:14:52 $";
+static const char * const IDENT_EXEC_C="$Date: 2006/04/09 13:38:47 $";
 
 #include "pa_config_includes.h"
 
@@ -134,7 +134,7 @@ static const char* buildCommand(const char* file_spec_cstr, const ArrayString& a
 				const char* begin=buf+2;
 				while(*begin==' ') // alx: were an old magic for some linux-es
 					begin++;
-				if(char *end=strchr(begin, '\n')) {
+				if(const char *end=strchr(begin, '\n')) {
 					String string(pa_strdup(begin, end-begin));
 					string << " " << file_spec_cstr;
 					result=string.cstr();
@@ -345,7 +345,7 @@ PA_exec_result pa_exec(
 	if(env) {
 		String::Body body;
 		Append_env_pair_info info(body);
-		env->for_each(append_env_pair, &info);
+		env->for_each<Append_env_pair_info*>(append_env_pair, &info);
 		env_cstr=info.body.cstrm();
 		for(char* replacer=env_cstr; *replacer; replacer++)
 			if(*replacer=='\1')

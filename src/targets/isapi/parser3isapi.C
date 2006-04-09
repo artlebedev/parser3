@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_PARSER3ISAPI_C="$Date: 2005/12/09 07:18:08 $";
+static const char * const IDENT_PARSER3ISAPI_C="$Date: 2006/04/09 13:38:47 $";
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -19,6 +19,7 @@ static const char * const IDENT_PARSER3ISAPI_C="$Date: 2005/12/09 07:18:08 $";
 #include "pa_version.h"
 #include "pa_socks.h"
 
+#define  WINVER  0x0400
 #include <windows.h>
 #include <process.h>
 

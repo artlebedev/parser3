@@ -1,79 +1,120 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="7.10"
+	Version="8.00"
 	Name="classes"
-	SccProjectName="classes"
-	SccAuxPath=""
-	SccLocalPath="."
-	SccProvider="MSSCCI:Jalindi Igloo"
-	Keyword="MFCProj">
+	ProjectGUID="{B79D9D3D-DFD7-4D48-91AA-484378D5E76C}"
+	Keyword="MFCProj"
+	>
 	<Platforms>
 		<Platform
-			Name="Win32"/>
+			Name="Win32"
+		/>
 	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory=".\Release"
 			IntermediateDirectory=".\Release"
 			ConfigurationType="4"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				optimization="2" GlobalOptimizations="TRUE" 				
+				Optimization="2"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="gd;..\include;..\types;..\lib\gc;..\lib\gd;..\lib\smtp;..\lib\gc\include;..\lib\cord\include;..\lib\pcre;..\lib\sdbm\apr-include;..\lib\md5;..\sql;..\..\..\win32\gnome\libxml2-x.x.x\win32\release\include;..\..\..\win32\gnome\libxslt-x.x.x\win32\release\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
-				StringPooling="TRUE"
+				StringPooling="true"
 				RuntimeLibrary="2"
-				EnableFunctionLevelLinking="TRUE"
-				UsePrecompiledHeader="2"
+				EnableFunctionLevelLinking="true"
+				UsePrecompiledHeader="0"
 				PrecompiledHeaderFile=".\Release/classes.pch"
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
 				ProgramDataBaseFileName=".\Release/"
 				WarningLevel="4"
-				SuppressStartupBanner="TRUE"
+				SuppressStartupBanner="true"
 				DebugInformationFormat="3"
-				CompileAs="2"/>
+				CompileAs="2"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLibrarianTool"
-				OutputFile=".\Release\classes.lib"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"/>
-			<Tool
-				Name="VCPostBuildEventTool"/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG"
-				Culture="1049"/>
+				Culture="1049"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCLibrarianTool"
+				OutputFile=".\Release\classes.lib"
+				SuppressStartupBanner="true"
+			/>
 			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory=".\Debug"
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="4"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="2"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
@@ -81,136 +122,164 @@
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
-				UsePrecompiledHeader="2"
+				UsePrecompiledHeader="0"
 				PrecompiledHeaderFile=".\Debug/classes.pch"
 				AssemblerListingLocation=".\Debug/"
 				ObjectFile=".\Debug/"
 				ProgramDataBaseFileName=".\Debug/"
 				BrowseInformation="1"
 				WarningLevel="4"
-				SuppressStartupBanner="TRUE"
+				SuppressStartupBanner="true"
 				DebugInformationFormat="3"
-				CompileAs="2"/>
+				CompileAs="2"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLibrarianTool"
-				OutputFile=".\Debug\classes.lib"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"/>
-			<Tool
-				Name="VCPostBuildEventTool"/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG"
-				Culture="1049"/>
+				Culture="1049"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCLibrarianTool"
+				OutputFile=".\Debug\classes.lib"
+				SuppressStartupBanner="true"
+			/>
 			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 	</Configurations>
 	<References>
 	</References>
 	<Files>
 		<File
-			RelativePath="classes.awk">
+			RelativePath="classes.awk"
+			>
 			<FileConfiguration
-				Name="Release|Win32">
+				Name="Release|Win32"
+				>
 				<Tool
 					Name="VCCustomBuildTool"
 					Description="Scanning classes/, creating classes.inc..."
-					CommandLine="SET CLASSES_INC=..\classes\classes.inc
-ECHO // do not edit. autogenerated by .dsp, see classes.awk settings &gt; %CLASSES_INC%
-..\..\..\win32\tools\ls | ..\..\..\win32\tools\gawk -f &quot;$(InputPath)&quot; &gt;&gt; %CLASSES_INC%
-"
-					Outputs="..\classes\classes.inc"/>
+					CommandLine="SET CLASSES_INC=..\classes\classes.inc&#x0D;&#x0A;ECHO // do not edit. autogenerated by .dsp, see classes.awk settings &gt; %CLASSES_INC%&#x0D;&#x0A;..\..\..\win32\tools\ls | ..\..\..\win32\tools\gawk -f &quot;$(InputPath)&quot; &gt;&gt; %CLASSES_INC%&#x0D;&#x0A;"
+					Outputs="..\classes\classes.inc"
+				/>
 			</FileConfiguration>
 			<FileConfiguration
-				Name="Debug|Win32">
+				Name="Debug|Win32"
+				>
 				<Tool
 					Name="VCCustomBuildTool"
 					Description="Scanning classes/, creating classes.inc..."
-					CommandLine="ECHO // do not edit. autogenerated by .dsp, see classes.awk settings &gt; classes.inc
-..\..\..\win32\tools\ls | ..\..\..\win32\tools\gawk -f &quot;$(InputPath)&quot; &gt;&gt; classes.inc
-"
-					Outputs="classes.inc"/>
+					CommandLine="ECHO // do not edit. autogenerated by .dsp, see classes.awk settings &gt; classes.inc&#x0D;&#x0A;..\..\..\win32\tools\ls | ..\..\..\win32\tools\gawk -f &quot;$(InputPath)&quot; &gt;&gt; classes.inc&#x0D;&#x0A;"
+					Outputs="classes.inc"
+				/>
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath=".\classes.C">
+			RelativePath=".\classes.C"
+			>
 		</File>
 		<File
-			RelativePath=".\classes.h">
+			RelativePath=".\classes.h"
+			>
 		</File>
 		<File
-			RelativePath=".\classes.inc">
+			RelativePath=".\classes.inc"
+			>
 		</File>
 		<File
-			RelativePath=".\date.C">
+			RelativePath=".\date.C"
+			>
 		</File>
 		<File
-			RelativePath=".\double.C">
+			RelativePath=".\double.C"
+			>
 		</File>
 		<File
-			RelativePath=".\file.C">
+			RelativePath=".\file.C"
+			>
 		</File>
 		<File
-			RelativePath=".\form.C">
+			RelativePath=".\form.C"
+			>
 		</File>
 		<File
-			RelativePath=".\hash.C">
+			RelativePath=".\hash.C"
+			>
 		</File>
 		<File
-			RelativePath=".\hashfile.C">
+			RelativePath=".\hashfile.C"
+			>
 		</File>
 		<File
-			RelativePath=".\image.C">
+			RelativePath=".\image.C"
+			>
 		</File>
 		<File
-			RelativePath=".\int.C">
+			RelativePath=".\int.C"
+			>
 		</File>
 		<File
-			RelativePath=".\mail.C">
+			RelativePath=".\mail.C"
+			>
 		</File>
 		<File
-			RelativePath=".\math.C">
+			RelativePath=".\math.C"
+			>
 		</File>
 		<File
-			RelativePath=".\memory.C">
+			RelativePath=".\memory.C"
+			>
 		</File>
 		<File
-			RelativePath=".\op.C">
+			RelativePath=".\op.C"
+			>
 		</File>
 		<File
-			RelativePath=".\response.C">
+			RelativePath=".\response.C"
+			>
 		</File>
 		<File
-			RelativePath=".\string.C">
+			RelativePath=".\string.C"
+			>
 		</File>
 		<File
-			RelativePath=".\table.C">
+			RelativePath=".\table.C"
+			>
 		</File>
 		<File
-			RelativePath=".\void.C">
+			RelativePath=".\void.C"
+			>
 		</File>
 		<File
-			RelativePath=".\xdoc.C">
+			RelativePath=".\xdoc.C"
+			>
 		</File>
 		<File
-			RelativePath=".\xnode.C">
+			RelativePath=".\xnode.C"
+			>
 		</File>
 		<File
-			RelativePath=".\xnode.h">
+			RelativePath=".\xnode.h"
+			>
 		</File>
 	</Files>
 	<Globals>

@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_VMAIL_C="$Date: 2005/12/09 07:18:08 $";
+static const char * const IDENT_VMAIL_C="$Date: 2006/04/09 13:38:48 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -601,7 +601,7 @@ static const String& file_value_to_string(Request& r, Value* send_value) {
 	Store_message_element_info info(r.charsets, 
 		result, dummy_from, false, dummy_to);
 	if(HashStringValue *send_hash=send_value->get_hash()) { // hash
-		send_hash->for_each(store_message_element, &info);
+		send_hash->for_each<Store_message_element_info*>(store_message_element, &info);
 
 		// $.value
 		if(Value* value=send_hash->get(value_name))
@@ -656,7 +656,7 @@ static const String& text_value_to_string(Request& r,
 	if(HashStringValue* send_hash=send_value->get_hash()) {
 		// $.USER-HEADERS
 		info.content_type=0; info.backward_compatibility=false; // reset
-		send_hash->for_each(store_message_element, &info);
+		send_hash->for_each<Store_message_element_info*>(store_message_element, &info);
 		// $.value
 		text_value=send_hash->get(value_name);
 		if(!text_value)
@@ -747,7 +747,7 @@ const String& VMail::message_hash_to_string(Request& r,
 			message_hash->remove("body");
 			info.backward_compatibility=true;
 		}		
-		message_hash->for_each(store_message_element, &info);
+		message_hash->for_each<Store_message_element_info*>(store_message_element, &info);
 
 		if(body) {
 			VHash& text_part=*new VHash(); 

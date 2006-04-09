@@ -7,7 +7,7 @@
 #include "pa_config_includes.h"
 #ifdef XML
 
-static const char * const IDENT_STYLESHEET_MANAGER_C="$Date: 2005/08/09 08:14:52 $";
+static const char * const IDENT_STYLESHEET_MANAGER_C="$Date: 2006/04/09 13:38:47 $";
 
 #include "pa_stylesheet_manager.h"
 #include "pa_exception.h"
@@ -52,7 +52,7 @@ Stylesheet_manager::Stylesheet_manager(): prev_expiration_pass_time(0) {
 }
 
 Stylesheet_manager::~Stylesheet_manager() {
-	connection_cache.for_each(expire_connections, time(0)+(time_t)10/*=in future=expire all*/);
+	connection_cache.for_each<time_t>(expire_connections, time(0)+(time_t)10/*=in future=expire all*/);
 }
 
 Stylesheet_connection_ptr Stylesheet_manager::get_connection(String::Body file_spec) {
@@ -97,7 +97,7 @@ void Stylesheet_manager::maybe_expire_cache() {
 	time_t now=time(0);
 
 	if(prev_expiration_pass_time<now-CHECK_EXPIRED_CONNECTION_SECONDS) {
-		connection_cache.for_each(expire_connections, now-EXPIRE_UNUSED_CONNECTION_SECONDS);
+		connection_cache.for_each<time_t>(expire_connections, now-EXPIRE_UNUSED_CONNECTION_SECONDS);
 
 		prev_expiration_pass_time=now;
 	}
@@ -133,7 +133,7 @@ Value* Stylesheet_manager::get_status() {
 		columns+=new String("time");
 		Table& table=*new Table(&columns, connection_cache.count());
 
-		connection_cache.for_each(add_connections_to_status_cache_table, &table);
+		connection_cache.for_each<Table*>(add_connections_to_status_cache_table, &table);
 
 		result->get_hash()->put(*new String("cache"), new VTable(&table));
 	}

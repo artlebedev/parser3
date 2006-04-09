@@ -9,7 +9,7 @@
 #ifndef PA_MEMORY_H
 #define PA_MEMORY_H
 
-static const char * const IDENT_MEMORY_H="$Date: 2005/12/16 10:15:12 $";
+static const char * const IDENT_MEMORY_H="$Date: 2006/04/09 13:38:47 $";
 
 // include
 
@@ -78,8 +78,8 @@ inline void *pa_realloc(void *ptr, size_t size) {
 }
 
 //{@ these operators are disabled, one should explicitely specify either new(UseGC) or new(PointerFreeGC)
-inline void *operator new(size_t) { abort(); } // disabled
-inline void *operator new[] (size_t) { abort(); } // disabled
+inline void *operator new(size_t) { abort(); return /*calm, compiler*/ (void*)1; } // disabled
+inline void *operator new[] (size_t) { abort(); return /*calm, compiler*/ (void*)1; } // disabled
 //}@
 
 #define UseGC ((int)1)

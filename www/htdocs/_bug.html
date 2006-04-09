@@ -1,7 +1,42 @@
-@USE
-/int2str.p
 
-@main[]
-$request:charset[windows-1251]
+$hash[
+	$.1(1)
+	$.2(2)
+]
+^hash.foreach[k;v]{
+	k=$k,v=$v^break[];!
+}
 
-^int2str:money2str(71.86)
+$table[^table::create{a
+1
+2
+3}]
+^table.menu{
+	<$table.a^if($table.a==2){^break[]!}>
+}[,]
+-------------
+
+^while(1<2){
+	$i($i+1)
+	^if(1<3){
+	{
+	<$i^if($i==3){^break[]}>
+	}
+	}
+}
+
+^for[i](1;3){
+	$i before
+	^if($i==2){^continue[]}
+	after
+}[,]
+
+$response:paf[test]
+$response:paf[]
+---
+$hashfile[^hashfile::open[hf]]
+$hashfile.1(1)
+$hashfile.2(2)
+^hashfile.foreach[k;v]{
+	k=$k,v=$v^break[];!
+}

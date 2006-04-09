@@ -7,7 +7,7 @@
 #include "classes.h"
 #ifdef XML
 
-static const char * const IDENT_XNODE_C="$Date: 2005/12/19 11:54:57 $";
+static const char * const IDENT_XNODE_C="$Date: 2006/04/09 13:38:47 $";
 
 #include "pa_vmethod_frame.h"
 
@@ -645,7 +645,7 @@ static void _selectX(Request& r, MethodParams& params,
 	xmlXPathContext_auto_ptr ctxt(xmlXPathNewContext(&xmldoc));
 	{
 		Register_one_ns_info info={&r, ctxt.get()};
-		vdoc.search_namespaces.hash().for_each(register_one_ns, &info);
+		vdoc.search_namespaces.hash().for_each<Register_one_ns_info*>(register_one_ns, &info);
 	}
 	ctxt->node=&xmlnode;
 	/*error to stderr for now*/

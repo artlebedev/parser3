@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_SMTP_H="$Date: 2005/08/09 08:14:51 $";
+static const char * const IDENT_SMTP_H="$Date: 2006/04/09 13:38:47 $";
 
 
 #include "pa_string.h"
@@ -19,6 +19,7 @@ typedef u_int	SOCKET;
 int PASCAL closesocket(SOCKET);
 #else
 #	if defined(WIN32)
+#		define  WINVER  0x0400
 #		include <windows.h>
 #	else
 		typedef char    CHAR;

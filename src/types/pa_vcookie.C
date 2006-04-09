@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VCOOKIE_C="$Date: 2005/08/09 08:14:54 $";
+static const char * const IDENT_VCOOKIE_C="$Date: 2006/04/09 13:38:48 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -218,17 +218,17 @@ static void output_set_cookie_header(
 static void output_after(
 						 HashStringValue::key_type aattribute, 
 						 HashStringValue::value_type ameaning,
-						 SAPI_Info* sapi_info) {
-	output_set_cookie_header(aattribute, ameaning, false, *sapi_info);
+						 SAPI_Info& sapi_info) {
+	output_set_cookie_header(aattribute, ameaning, false, sapi_info);
 }
 static void output_deleted(
 						   HashStringValue::key_type aattribute, 
 						   HashStringValue::value_type ameaning, 
-						   SAPI_Info* sapi_info) {
+						   SAPI_Info& sapi_info) {
 	if(ameaning)
-		output_set_cookie_header(aattribute, ameaning, true, *sapi_info);
+		output_set_cookie_header(aattribute, ameaning, true, sapi_info);
 }
 void VCookie::output_result(SAPI_Info& sapi_info) {
-	after.for_each(output_after, &sapi_info);
-	deleted.for_each(output_deleted, &sapi_info);
+	after.for_each<SAPI_Info&>(output_after, sapi_info);
+	deleted.for_each<SAPI_Info&>(output_deleted, sapi_info);
 }

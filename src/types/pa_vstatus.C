@@ -7,7 +7,7 @@
 	Win32 rusage author: Victor Fedoseev <vvf_ru@mail.ru>
 */
 
-static const char * const IDENT_VSTATUS_C="$Date: 2005/08/09 08:14:56 $";
+static const char * const IDENT_VSTATUS_C="$Date: 2006/04/09 13:38:48 $";
 
 #include "pa_vstatus.h"
 #include "pa_cache_managers.h"
@@ -21,6 +21,7 @@ static const char * const IDENT_VSTATUS_C="$Date: 2005/08/09 08:14:56 $";
 #endif
 
 #ifdef WIN32
+#define  WINVER  0x0400
 #include <windows.h>
 #include "psapi.h"
 

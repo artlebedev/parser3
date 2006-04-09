@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT_XDOC_C="$Date: 2005/12/16 10:15:12 $";
+static const char * const IDENT_XDOC_C="$Date: 2006/04/09 13:38:47 $";
 
 #include "libxml/tree.h"
 #include "libxml/HTMLtree.h"
@@ -766,7 +766,7 @@ static void _transform(Request& r, MethodParams& params) {
 					&transform_strings,
 					transform_params
 				};
-				hash->for_each(add_xslt_param, &info);
+				hash->for_each<Add_xslt_param_info*>(add_xslt_param, &info);
 				transform_params[hash->count()*2]=0;				
 			} else
 				throw Exception("parser.runtime",

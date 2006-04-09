@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_SQL_DRIVER_MANAGER_C="$Date: 2005/08/09 08:14:52 $";
+static const char * const IDENT_SQL_DRIVER_MANAGER_C="$Date: 2006/04/09 13:38:47 $";
 
 #include "pa_sql_driver_manager.h"
 #include "ltdl.h"
@@ -106,7 +106,7 @@ SQL_Driver_manager::SQL_Driver_manager():
 }
 
 SQL_Driver_manager::~SQL_Driver_manager() {
-	connection_cache.for_each(expire_connections, time(0)+(time_t)10/*=in future=expire all*/);
+	connection_cache.for_each<time_t>(expire_connections, time(0)+(time_t)10/*=in future=expire all*/);
 
 	if(is_dlinited)
 		lt_dlexit();
@@ -187,8 +187,8 @@ SQL_Connection* SQL_Driver_manager::get_connection(const String& aurl,
 					error?error:"can not open the module");
 			}
 
-			SQL_Driver_create_func create=(SQL_Driver_create_func)lt_dlsym(handle, 
-				SQL_DRIVER_CREATE_NAME);
+			SQL_Driver_create_func create=(SQL_Driver_create_func)(lt_dlsym(handle, 
+				SQL_DRIVER_CREATE_NAME));
 			if(!create)
 				throw Exception(0,
 					library,
@@ -286,7 +286,7 @@ void SQL_Driver_manager::maybe_expire_cache() {
 	time_t now=time(0);
 
 	if(prev_expiration_pass_time<now-CHECK_EXPIRED_CONNECTIONS_SECONDS) {
-		connection_cache.for_each(expire_connections, time_t(now-EXPIRE_UNUSED_CONNECTION_SECONDS));
+		connection_cache.for_each<time_t>(expire_connections, time_t(now-EXPIRE_UNUSED_CONNECTION_SECONDS));
 
 		prev_expiration_pass_time=now;
 	}
@@ -323,7 +323,7 @@ Value* SQL_Driver_manager::get_status() {
 		columns+=new String("time");
 		Table& table=*new Table(&columns, connection_cache.count());
 
-		connection_cache.for_each(add_connections_to_status_cache_table, &table);
+		connection_cache.for_each<Table*>(add_connections_to_status_cache_table, &table);
 
 		result->get_hash()->put(*new String("cache"), new VTable(&table));
 	}

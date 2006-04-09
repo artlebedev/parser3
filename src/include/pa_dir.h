@@ -8,7 +8,7 @@
 #ifndef PA_DIR_H
 #define PA_DIR_H
 
-static const char * const IDENT_DIR_H="$Date: 2005/11/18 10:11:08 $";
+static const char * const IDENT_DIR_H="$Date: 2006/04/09 13:38:47 $";
 
 #include "pa_config_includes.h"
 
@@ -19,6 +19,7 @@ static const char * const IDENT_DIR_H="$Date: 2005/11/18 10:11:08 $";
 
 #ifdef WIN32
 
+#define  WINVER  0x0400
 #include <windows.h>
 
 #define MAXPATH MAX_PATH

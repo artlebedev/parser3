@@ -5,8 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-
-static const char * const IDENT="$Id: hashfile.C,v 1.36 2005/08/09 08:14:47 paf Exp $";
+static const char * const IDENT="$Id: hashfile.C,v 1.37 2006/04/09 13:38:46 paf Exp $";
 
 #include "classes.h"
 
@@ -30,6 +29,10 @@ public: // Methoded
 // global variable
 
 DECLARE_CLASS_VAR(hashfile, new MHashfile, 0);
+
+// externs
+
+extern String cycle_data_name;
 
 // defines for statics
 
@@ -98,7 +101,7 @@ struct Foreach_info {
 	bool need_delim;
 };
 #endif
-static void one_foreach_cycle(const String::Body key, const String& value, void* ainfo) {
+static bool one_foreach_cycle(const String::Body key, const String& value, void* ainfo) {
 	Foreach_info& info=*static_cast<Foreach_info*>(ainfo);
 	info.vkey->set_string(*new String(key, String::L_TAINTED));
 	info.vvalue->set_string(value);
@@ -106,6 +109,7 @@ static void one_foreach_cycle(const String::Body key, const String& value, void*
 	info.var_context->put_element(*info.var_context, *info.value_var_name, info.vvalue, false);
 
 	StringOrValue sv_processed=info.r->process(*info.body_code);
+	Request::Skip lskip=info.r->get_skip(); info.r->set_skip(Request::SKIP_NOTHING);
 	const String* s_processed=sv_processed.get_string();
 	if(info.delim_maybe_code && s_processed && s_processed->length()) { // delimiter set and we have body
 		if(info.need_delim) // need delim & iteration produced string?
@@ -113,8 +117,13 @@ static void one_foreach_cycle(const String::Body key, const String& value, void*
 		info.need_delim=true;
 	}
 	info.r->write_pass_lang(sv_processed);
+
+	return lskip==Request::SKIP_BREAK;
 }
 static void _foreach(Request& r, MethodParams& params) {
+	Temp_hash_value<const String::Body, void*> 
+		cycle_data_setter(r.classes_conf, cycle_data_name, /*any not null flag*/&r);
+
 	VHashfile& self=GET_SELF(r, VHashfile);
 
 	Foreach_info info;

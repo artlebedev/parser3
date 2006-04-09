@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char * const IDENT_REQUEST_H="$Date: 2005/12/16 10:15:12 $";
+static const char * const IDENT_REQUEST_H="$Date: 2006/04/09 13:38:47 $";
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -61,6 +61,12 @@ public:
 
 		const String* name() const { return fname; }
 		const Operation::Origin origin() const { return forigin; }
+	};
+
+	enum Skip {
+		SKIP_NOTHING,
+		SKIP_BREAK,
+		SKIP_CONTINUE
 	};
 
 private:
@@ -144,6 +150,7 @@ public:
 	//@}
 	/// interrupted flag, raised on signals [SIGPIPE]
 	bool finterrupted;
+	Skip fskip;
 
 public:
 	uint register_file(String::Body file_spec);
@@ -295,6 +302,9 @@ public:
 
 	void set_interrupted(bool ainterrupted) { finterrupted=ainterrupted; }
 	bool get_interrupted() { return finterrupted; }
+
+	void set_skip(Skip askip) { fskip=askip; }
+	Skip get_skip() { return fskip; }
 
 public:
 	

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_SOCKS_C="$Date: 2005/08/09 08:14:52 $";
+static const char * const IDENT_SOCKS_C="$Date: 2006/04/09 13:38:47 $";
 
 #define NO_UNISTD_H
 #include "pa_config_includes.h"
@@ -17,6 +17,7 @@ static const char * const IDENT_SOCKS_C="$Date: 2005/08/09 08:14:52 $";
 
 // in cygwin: for pascal
 // in MSVC: for everything
+#define  WINVER  0x0400
 #include <windows.h>
 
 #ifdef CYGWIN

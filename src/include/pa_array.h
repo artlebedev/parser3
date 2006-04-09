@@ -8,7 +8,7 @@
 #ifndef PA_ARRAY_H
 #define PA_ARRAY_H
 
-static const char * const IDENT_ARRAY_Y="$Date: 2005/11/25 12:21:34 $";
+static const char * const IDENT_ARRAY_Y="$Date: 2006/04/09 13:38:47 $";
 
 // includes
 
@@ -165,6 +165,14 @@ public:
 	}
 
 	/// iterate over all elements
+	template<typename I> void for_each(bool (*callback)(T, I), I info) const {
+		T *last=felements+fused;
+		for(T *current=felements; current<last; current++)
+			if(callback(*current, info))
+				return;
+	}
+
+	/// iterate over all elements
 	template<typename I> void for_each_ref(void (*callback)(T&, I), I info) {
 		T *last=felements+fused;
 		for(T *current=felements; current<last; current++)
@@ -228,7 +236,7 @@ public:
 	}
 
 	/// quickly extracts next Array element
-	const T next() {
+	T next() {
 		return *(fcurrent++);
 	}
 

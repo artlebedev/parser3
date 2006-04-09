@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
  */
 
-static const char * const IDENT_HTTP_C="$Date: 2005/11/28 11:32:47 $"; 
+static const char * const IDENT_HTTP_C="$Date: 2006/04/09 13:38:47 $"; 
 
 #include "pa_http.h"
 #include "pa_common.h"
@@ -382,7 +382,7 @@ static void form_value2string(
 }
 const char* pa_form2string(HashStringValue& form) {
 	String string;
-	form.for_each(form_value2string, &string);
+	form.for_each<String*>(form_value2string, &string);
 	return string.cstr(String::L_UNSPECIFIED);
 }
 static void find_headers_end(char* p,
@@ -527,7 +527,7 @@ File_read_http_result pa_internal_file_read_http(Request_charsets& charsets,
 		if(vheaders && !vheaders->is_string()) { // allow empty
 			if(HashStringValue *headers=vheaders->get_hash()) {
 				Http_pass_header_info info={&charsets, &head, false};
-				headers->for_each(http_pass_header, &info); 
+				headers->for_each<Http_pass_header_info*>(http_pass_header, &info); 
 				user_agent_specified=info.user_agent_specified;
 			} else
 				throw Exception("parser.runtime", 

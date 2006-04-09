@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_HASH_C="$Date: 2005/08/26 12:01:38 $";
+static const char * const IDENT_HASH_C="$Date: 2006/04/09 13:38:46 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -33,6 +33,10 @@ public: // Methoded
 // global variable
 
 DECLARE_CLASS_VAR(hash, new MHash, 0);
+
+// externs
+
+extern String cycle_data_name;
 
 // methods
 
@@ -127,7 +131,7 @@ static void _create_or_add(Request& r, MethodParams& params) {
 			HashStringValue* self_hash=&(self.hash());
 			if(src==self_hash) // same: doing nothing
 				return;
-			src->for_each(copy_all_overwrite_to, self_hash);
+			src->for_each<HashStringValue*>(copy_all_overwrite_to, self_hash);
 
 			if(VHash* vhash_src=static_cast<VHash*>(vsrc.as(VHASH_TYPE, false)))
 				self.set_default(vhash_src->get_default());
@@ -149,7 +153,7 @@ static void _sub(Request& r, MethodParams& params) {
 			self->clear();
 			return;
 		}
-		src->for_each(remove_key_from, self);
+		src->for_each<HashStringValue*>(remove_key_from, self);
 	}
 }
 
@@ -165,7 +169,7 @@ static void _union(Request& r, MethodParams& params) {
 	// dest += b
 	Value& vsrc=params.as_no_junction(0, "param must be hash");
 	if(HashStringValue* src=vsrc.get_hash())
-		src->for_each(copy_all_dontoverwrite_to, result.get_hash());
+		src->for_each<HashStringValue*>(copy_all_dontoverwrite_to, result.get_hash());
 
 	// return result
 	r.write_no_lang(result);
@@ -190,7 +194,7 @@ static void _intersection(Request& r, MethodParams& params) {
 	Value& vb=params.as_no_junction(0, "param must be hash");
 	if(HashStringValue* b=vb.get_hash()) {
 		Copy_intersection_to_info info={b, result.get_hash()};
-		GET_SELF(r, VHash).hash().for_each(copy_intersection_to, &info);
+		GET_SELF(r, VHash).hash().for_each<Copy_intersection_to_info*>(copy_intersection_to, &info);
 	}
 
 	// return result
@@ -209,7 +213,7 @@ static void _intersects(Request& r, MethodParams& params) {
 
 	Value& vb=params.as_no_junction(0, "param must be hash");
 	if(HashStringValue* b=vb.get_hash())
-		result=GET_SELF(r, VHash).hash().first_that(intersects, b)!=0;
+		result=GET_SELF(r, VHash).hash().first_that<HashStringValue*>(intersects, b)!=0;
 
 	// return result
 	r.write_no_lang(*new VBool(result));
@@ -307,7 +311,7 @@ static void _keys(Request& r, MethodParams& params) {
 	*columns+=keys_column_name;
 	Table* table=new Table(columns);
 
-	GET_SELF(r, VHash).hash().for_each(keys_collector, table);
+	GET_SELF(r, VHash).hash().for_each<Table*>(keys_collector, table);
 
 	r.write_no_lang(*new VTable(table));
 }
@@ -333,7 +337,7 @@ struct Foreach_info {
 	bool need_delim;
 };
 #endif
-static void one_foreach_cycle(						   
+static bool one_foreach_cycle(						   
 			      HashStringValue::key_type akey, 
 			      HashStringValue::value_type avalue, 
 			      Foreach_info *info) {
@@ -343,6 +347,7 @@ static void one_foreach_cycle(
 	ncontext.put_element(ncontext, *info->value_var_name, avalue, false);
 
 	StringOrValue sv_processed=info->r->process(*info->body_code);
+	Request::Skip lskip=info->r->get_skip(); info->r->set_skip(Request::SKIP_NOTHING);
 	const String* s_processed=sv_processed.get_string();
 	if(info->delim_maybe_code && s_processed && s_processed->length()) { // delimiter set and we have body
 		if(info->need_delim) // need delim & iteration produced string?
@@ -350,8 +355,13 @@ static void one_foreach_cycle(
 		info->need_delim=true;
 	}
 	info->r->write_pass_lang(sv_processed);
+
+	return lskip==Request::SKIP_BREAK;
 }
 static void _foreach(Request& r, MethodParams& params) {
+	Temp_hash_value<const String::Body, void*> 
+		cycle_data_setter(r.classes_conf, cycle_data_name, /*any not null flag*/&r);
+
 	Foreach_info info={
 		&r,
 		&params.as_string(0, "key-var name must be string"),
@@ -365,7 +375,7 @@ static void _foreach(Request& r, MethodParams& params) {
 	VHash& self=GET_SELF(r, VHash);
 	HashStringValue& hash=self.hash();
 	VHash_lock lock(self);
-	hash.for_each(one_foreach_cycle, &info);
+	hash.first_that<Foreach_info*>(one_foreach_cycle, &info);
 }
 
 // constructor

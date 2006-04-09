@@ -8,7 +8,7 @@
 #ifndef PA_VHASHFILE_H
 #define PA_VHASHFILE_H
 
-static const char * const IDENT_VHASHFILE_H="$Date: 2005/08/09 08:14:54 $";
+static const char * const IDENT_VHASHFILE_H="$Date: 2006/04/09 13:38:48 $";
 
 #include "classes.h"
 #include "pa_pool.h"
@@ -66,8 +66,8 @@ public: // usage
 	void delete_files();
 	void remove(const String& aname);
 
-	void for_each(void callback(apr_sdbm_datum_t, void*), void* info) const;
-	void for_each(void callback(const String::Body, const String&, void*), void* info);
+	void for_each(bool callback(apr_sdbm_datum_t, void*), void* info) const;
+	void for_each(bool callback(const String::Body, const String&, void*), void* info);
 
 public:
 

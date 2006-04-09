@@ -8,7 +8,7 @@
 #ifndef PA_STACK_H
 #define PA_STACK_H
 
-static const char * const IDENT_STACK_H="$Date: 2005/08/09 08:14:50 $";
+static const char * const IDENT_STACK_H="$Date: 2006/04/09 13:38:47 $";
 
 #include "pa_config_includes.h"
 #include "pa_array.h"
@@ -21,7 +21,7 @@ public:
 
 	void push(T item) {
 		if(ftop<this->count()) // cell is already allocated?
-			put(ftop, item); // use it
+			this->put(ftop, item); // use it
 		else
 			*this+=item; // append it
 		ftop++;

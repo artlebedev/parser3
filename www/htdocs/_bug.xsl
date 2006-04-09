@@ -8,12 +8,14 @@
 <!--method="html"-->
 
 <xsl:output 
+	method="html"
     omit-xml-declaration="no"
     encoding="windows-1251"
 	/>
 	
 	<xsl:template match="/">
 		<html>
+		<br/>
 	<rnd><xsl:value-of select="math:random()"/></rnd>
 	<sin><xsl:value-of select="math:sin(263)"/></sin>
 		// 

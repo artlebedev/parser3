@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2005/11/24 14:00:34 $";
+static const char * const IDENT_FILE_C="$Date: 2006/04/09 13:38:46 $";
 
 #include "pa_config_includes.h"
 
@@ -199,7 +199,7 @@ static void _load(Request& r, MethodParams& params) {
 	VFile& self=GET_SELF(r, VFile);
 	self.set(true/*tainted*/, file.str, file.length, user_file_name, vcontent_type);
 	if(file.headers)
-		file.headers->for_each(_load_pass_param, &self.fields());
+		file.headers->for_each<HashStringValue*>(_load_pass_param, &self.fields());
 }
 
 static void _create(Request& r, MethodParams& params) {
@@ -359,7 +359,7 @@ static void _exec_cgi(Request& r, MethodParams& params,
 				// influence URLencoding of tainted pieces to String::L_URI lang
 				// main target -- $.QUERY_STRING
 				Temp_client_charset temp(r.charsets, charset? *charset: r.charsets.source());
-				user_env->for_each(append_env_pair, &info);
+				user_env->for_each<Append_env_pair_info*>(append_env_pair, &info);
 			}
 			// $.stdin
 			if(info.vstdin) {

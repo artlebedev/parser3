@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_IMAGE_C="$Date: 2005/08/09 08:14:48 $";
+static const char * const IDENT_IMAGE_C="$Date: 2006/04/09 13:38:46 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -757,7 +757,7 @@ static void _html(Request& r, MethodParams& params) {
 		if(!vattribs.is_string()) // allow empty
 			if((attribs=vattribs.get_hash())) {
 				Attrib_info info={&tag, 0};
-				attribs->for_each(append_attrib_pair, &info);
+				attribs->for_each<Attrib_info*>(append_attrib_pair, &info);
 			} else
 				throw Exception("parser.runtime", 
 					0, 
@@ -766,7 +766,7 @@ static void _html(Request& r, MethodParams& params) {
 
 	{
 		Attrib_info info={&tag, attribs};
-		fields.for_each(append_attrib_pair, &info);
+		fields.for_each<Attrib_info*>(append_attrib_pair, &info);
 	}
 	tag << " />";
 	r.write_pass_lang(tag);
