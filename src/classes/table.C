@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2006/04/09 13:38:47 $";
+static const char * const IDENT_TABLE_C="$Date: 2006/06/09 19:08:12 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -399,7 +399,9 @@ static void _save(Request& r, MethodParams& params) {
 
 	TableSeparators separators;
 	if(param_index<params.count()) {
-		if(HashStringValue *options=params.as_no_junction(param_index++, "additional params must be hash").get_hash()) {
+		Value& voptions=params.as_no_junction(param_index++, "additional params must be hash");
+		if( voptions.is_defined() && !voptions.is_string() ) {
+			if(HashStringValue* options=voptions.get_hash()) {
 			int valid_options=separators.load(*options);
 			if(valid_options!=options->count())
 				throw Exception("parser.runtime",
@@ -409,7 +411,7 @@ static void _save(Request& r, MethodParams& params) {
 			throw Exception("parser.runtime",
 				0,
 				"additional params must be hash (did you spell mode parameter correctly?)");
-		
+		}
 	}
 	if(param_index<params.count())
 		throw Exception("parser.runtime",
