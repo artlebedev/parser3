@@ -562,7 +562,7 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !это старый формат, поддерживается для обратной совместимости
     !если имя части начинается со слова text, то это текстовый блок.
     !если имя части начинается со слова attach, то это вложение, формат задания::
-        !$attach[$.format[!uue|Xbase64] $.value[DATA] $.file-name[user-file-name]]
+        !$attach[$.format[!uue|!base64] $.value[DATA] $.file-name[user-file-name]]
     !важно: при multipart не указывать content-type
         ^mail:send[
 #           по-умолчанию, совпадает с source encoding.
