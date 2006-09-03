@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2006/04/09 13:38:46 $";
+static const char * const IDENT_FILE_C="$Date: 2006/09/03 09:47:22 $";
 
 #include "pa_config_includes.h"
 
@@ -356,8 +356,8 @@ static void _exec_cgi(Request& r, MethodParams& params,
 			// $.others
 			Append_env_pair_info info={&r.charsets, &env, 0};
 			{
-				// influence URLencoding of tainted pieces to String::L_URI lang
-				// main target -- $.QUERY_STRING
+				// influence tainting
+				// main target -- $.QUERY_STRING -- URLencoding of tainted pieces to String::L_URI lang
 				Temp_client_charset temp(r.charsets, charset? *charset: r.charsets.source());
 				user_env->for_each<Append_env_pair_info*>(append_env_pair, &info);
 			}
@@ -380,8 +380,13 @@ static void _exec_cgi(Request& r, MethodParams& params,
 	// argv from params
 	ArrayString argv;
 	if(params.count()>2) {
-		for(size_t i=2; i<params.count(); i++)
-			argv+=&params.as_string(i, "parameter must be string");
+   		// influence tainting 
+   		// main target -- URLencoding of tainted pieces to String::L_URI lang
+   		Temp_client_charset temp(r.charsets, charset? *charset: r.charsets.source());
+		for(size_t i=2; i<params.count(); i++) {
+			const String& param=params.as_string(i, "parameter must be string");
+			argv+=new String(param.cstr_to_string_body(String::L_UNSPECIFIED, 0, &r.charsets), String::L_AS_IS);
+		}
 	}
 
 	// transcode if necessary
