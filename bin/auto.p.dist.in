@@ -1,4 +1,4 @@
-#$Id: auto.p.dist.in,v 1.12 2005/08/08 13:45:45 paf Exp $
+#$Id: auto.p.dist.in,v 1.13 2006/09/11 15:05:53 misha Exp $
 
 @conf[filespec]
 $confdir[^file:dirname[$filespec]]
@@ -13,15 +13,15 @@ $CHARSETS[
 ]
 #change your client libraries paths to those on your system
 $SQL[
-	$.drivers[^table::set{protocol	driver	client
+	$.drivers[^table::create{protocol	driver	client
 mysql	$sqldriversdir/libparser3mysql.@dll_extension@	@mysql_client@
 pgsql	$sqldriversdir/libparser3pgsql.@dll_extension@	@pgsql_client@
 oracle	$sqldriversdir/libparser3oracle.@dll_extension@	@oracle_client@
 }]
 ]
 
-#for ^file:load[name;user-name] mime-type autodetection
-$MIME-TYPES[^table::set{ext	mime-type
+#for ^file::load[name;user-name] mime-type autodetection
+$MIME-TYPES[^table::create{ext	mime-type
 zip	application/zip
 doc	application/msword
 xls	application/vnd.ms-excel
@@ -59,15 +59,16 @@ $LIMITS[
 #$MAIL[
 #	$.sendmail[your sendmail command goes here]
 #	these are tried when no 'sendmail' specified:
-#	    /usr/sbin/sendmail -t -i -f postmaster
-#	    /usr/lib/sendmail -t -i -f postmaster
+#		/usr/sbin/sendmail -t -i -f postmaster
+#		/usr/lib/sendmail -t -i -f postmaster
 #]
+
 
 @fatal_error[title;subtitle;body]
 $response:status(500)
 $response:content-type[
-        $.value[text/html]
-        $.charset[$response:charset]
+	$.value[text/html]
+	$.charset[$response:charset]
 ]
 <html>
 <head><title>$title</title></head>
@@ -79,11 +80,12 @@ $body
 </body>
 </html>
 
+
 @unhandled_exception_debug[exception;stack]
 ^fatal_error[Unhandled Exception^if(def $exception.type){ ($exception.type)};$exception.source;
 <pre>^untaint[html]{$exception.comment}</pre>
 ^if(def $exception.file){
-^untaint[html]{<tt>$exception.file^(${exception.lineno}:$exception.colno^)</tt>}
+	^untaint[html]{<tt>$exception.file^(${exception.lineno}:$exception.colno^)</tt>}
 }
 ^if($stack){
 	<hr/>
@@ -95,34 +97,34 @@ $body
 }
 ]
 
+
 @unhandled_exception_release[exception;stack]
 ^fatal_error[Unhandled Exception;;
 
-<p>The server encountered an unhandled exception 
-and was unable to complete your request.</p>
-<p>Please contact the server administrator, $env:SERVER_ADMIN
-and inform them of the time the error occurred, 
-and anything you might have done that may have caused the error.</p>
-<p>More information about this error may be available in the Parser error log
-or in debug version of unhandled_exception.</p>
+<p>The server encountered an unhandled exception and was unable to complete your request.</p>
+<p>Please contact the server administrator, $env:SERVER_ADMIN and inform them of the time the error occurred, and anything you might have done that may have caused the error.</p>
+<p>More information about this error may be available in the Parser error log or in debug version of unhandled_exception.</p>
 
 ]
 
+
 @is_developer[]
 #change mask to your ip address
-$result(^env:REMOTE_ADDR.match[^^127\.0\.0\.1$])
+$result(def $env:REMOTE_ADDR && ^env:REMOTE_ADDR.match[^^127\.0\.0\.1^$])
+
 
 @unhandled_exception[exception;stack]
 #developer? use debug version to see problem details
-^if(^is_developer[])
-        ^unhandled_exception_debug[$exception;$stack]
+^if(^is_developer[]){
+	^unhandled_exception_debug[$exception;$stack]
 }{
-        ^if($exception.type eq "file.missing"){
-#                ^log404[]
-                ^location[/404/]
-        }{
-                ^unhandled_exception_release[$exception;$stack]
-        }
+	^if($exception.type eq "file.missing"){
+#		^log404[]
+#		^location[/404/]
+		$response:status(404)
+	}{
+		^unhandled_exception_release[$exception;$stack]
+	}
 }
 
 
@@ -132,8 +134,8 @@ $request:charset[windows-1251]
 $response:charset[windows-1251]
 
 $response:content-type[
-        $.value[text/html]
-        $.charset[$response:charset]
+	$.value[text/html]
+	$.charset[$response:charset]
 ]
 
 #$SQL.connect-string[mysql://user:pass@host/db?charset=cp1251_koi8]
