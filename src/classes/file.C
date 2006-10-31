@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2006/09/03 09:47:22 $";
+static const char * const IDENT_FILE_C="$Date: 2006/10/31 17:16:10 $";
 
 #include "pa_config_includes.h"
 
@@ -385,7 +385,9 @@ static void _exec_cgi(Request& r, MethodParams& params,
    		Temp_client_charset temp(r.charsets, charset? *charset: r.charsets.source());
 		for(size_t i=2; i<params.count(); i++) {
 			const String& param=params.as_string(i, "parameter must be string");
-			argv+=new String(param.cstr_to_string_body(String::L_UNSPECIFIED, 0, &r.charsets), String::L_AS_IS);
+			if(param.length() > 0) {
+				argv+=new String(param.cstr_to_string_body(String::L_UNSPECIFIED, 0, &r.charsets), String::L_AS_IS);
+			}
 		}
 	}
 
