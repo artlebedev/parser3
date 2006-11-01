@@ -8,7 +8,7 @@
 #ifndef PA_TABLE_H
 #define PA_TABLE_H
 
-static const char * const IDENT_TABLE_H="$Date: 2005/08/09 08:14:50 $";
+static const char * const IDENT_TABLE_H="$Date: 2006/11/01 17:20:09 $";
 
 #include "pa_types.h"
 #include "pa_hash.h"
@@ -101,6 +101,8 @@ public:
 
 				if(func(*this, info))
 					return true;
+				if(!row)
+					return false;
 			}
 		} else { // forward
 			for(size_t to=row+o.limit; row<to; row++) {
