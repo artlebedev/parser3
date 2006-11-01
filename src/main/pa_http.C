@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
  */
 
-static const char * const IDENT_HTTP_C="$Date: 2006/04/09 13:38:47 $"; 
+static const char * const IDENT_HTTP_C="$Date: 2006/11/01 13:56:34 $"; 
 
 #include "pa_http.h"
 #include "pa_common.h"
@@ -321,7 +321,7 @@ static Charset* detect_charset(Charset& source_charset, const String& content_ty
 				charset_end=delim_pos;
 		}
 		const String::Body CHARSET_NAME_BODY=
-			CONTENT_TYPE_VALUE.mid(charset_begin, charset_end);
+			CONTENT_TYPE_VALUE.mid(charset_begin, charset_end - charset_begin);
 
 		return &charsets.get(CHARSET_NAME_BODY);
 	}
