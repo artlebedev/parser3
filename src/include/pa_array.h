@@ -8,7 +8,7 @@
 #ifndef PA_ARRAY_H
 #define PA_ARRAY_H
 
-static const char * const IDENT_ARRAY_Y="$Date: 2006/11/03 17:32:30 $";
+static const char * const IDENT_ARRAY_Y="$Date: 2006/11/03 18:13:54 $";
 
 // includes
 
@@ -56,8 +56,7 @@ public:
 		bool adjust(size_t count) {
 			if(!count || !limit)
 				return false;
-			size_t row=offset;
-			if(row>=count)
+			if(offset>=count)
 				return false;
 			// max(limit)
 			size_t m=reverse?
