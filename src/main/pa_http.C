@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
  */
 
-static const char * const IDENT_HTTP_C="$Date: 2006/11/01 13:56:34 $"; 
+static const char * const IDENT_HTTP_C="$Date: 2006/11/03 16:42:56 $"; 
 
 #include "pa_http.h"
 #include "pa_common.h"
@@ -305,7 +305,7 @@ static Charset* detect_charset(Charset& source_charset, const String& content_ty
 	// content-type: xxx/xxx; source_charset="WE-NEED-THIS";
 	size_t before_charseteq_pos=CONTENT_TYPE_VALUE.pos("CHARSET=");
 	if(before_charseteq_pos!=STRING_NOT_FOUND) {
-		size_t charset_begin=before_charseteq_pos+8/*CHARSET="*/;
+		size_t charset_begin=before_charseteq_pos+8/*CHARSET=*/;
 		size_t open_quote_pos=CONTENT_TYPE_VALUE.pos('"', charset_begin);
 		bool quoted=open_quote_pos==charset_begin;
 		if(quoted)
@@ -380,10 +380,10 @@ static void form_value2string(
 			new String(key, String::L_TAINTED),
 			"is %s, "HTTP_FORM_NAME" option value must either string or table", value->type());
 }
-const char* pa_form2string(HashStringValue& form) {
+const char* pa_form2string(HashStringValue& form, Request_charsets& charsets) {
 	String string;
 	form.for_each<String*>(form_value2string, &string);
-	return string.cstr(String::L_UNSPECIFIED);
+	return string.cstr(String::L_UNSPECIFIED, 0, &charsets);
 }
 static void find_headers_end(char* p,
 		char*& headers_end_at,
@@ -487,7 +487,7 @@ File_read_http_result pa_internal_file_read_http(Request_charsets& charsets,
 		// influence URLencoding of tainted pieces to String::L_URI lang
 		Temp_client_charset temp(charsets, *asked_remote_charset);
 
-		const char* connect_string_cstr=connect_string.cstr(String::L_UNSPECIFIED); 
+		const char* connect_string_cstr=connect_string.cstr(String::L_UNSPECIFIED, 0, &charsets); 
 
 		const char* current=connect_string_cstr;
 		if(strncmp(current, "http://", 7)!=0)
@@ -511,12 +511,12 @@ File_read_http_result pa_internal_file_read_http(Request_charsets& charsets,
 		head << " " << uri;
 		if(form)
 			if(method_is_get)
-				head << (uri_has_query_string?"&":"?") << pa_form2string(*form);
+				head << (uri_has_query_string?"&":"?") << pa_form2string(*form, charsets);
 		head <<" HTTP/1.0" CRLF
 			"host: "<< host << CRLF; 
 		if(form && !method_is_get) {
 			head << "content-type: application/x-www-form-urlencoded" CRLF;
-			body_cstr = pa_form2string(*form);
+			body_cstr = pa_form2string(*form, charsets);
 		}
 
 		// http://www.ietf.org/rfc/rfc2617.txt
