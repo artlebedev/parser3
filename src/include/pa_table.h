@@ -8,7 +8,7 @@
 #ifndef PA_TABLE_H
 #define PA_TABLE_H
 
-static const char * const IDENT_TABLE_H="$Date: 2006/11/02 12:07:25 $";
+static const char * const IDENT_TABLE_H="$Date: 2006/11/03 17:32:30 $";
 
 #include "pa_types.h"
 #include "pa_hash.h"
@@ -75,8 +75,8 @@ public:
 		size_t saved_current=current();
 		size_t row=o.offset;
 		if(o.reverse) { // reverse
-			for(size_t to=row-o.limit; row>=to; --row) {
-				set_current(row);
+			for(size_t i=0; i<o.limit; i++) {
+				set_current(row-i);
 				func(*this, info);
 			}
 		} else { // forward
@@ -96,8 +96,8 @@ public:
 		size_t saved_current=current();
 		size_t row=o.offset;
 		if(o.reverse) { // reverse
-			for(size_t i=0; i<=o.limit; i++) {
-				set_current(o.offset-i);
+			for(size_t i=0; i<o.limit; i++) {
+				set_current(row-i);
 
 				if(func(*this, info))
 					return true;
