@@ -1,0 +1,29 @@
+@main[]
+$t[^table::create{name
+1
+2
+3}]
+
+^for[reverse](0;1){
+	reverse=$reverse<br />
+
+	^for[limit](0;4){
+		limit=$limit<br />
+		^for[offset](0;3){
+			offset=$offset<br />
+			^for[val](1;4){
+				val: $val ^if(
+					^t.locate(
+						$t.name == $val
+					)[
+						$.offset($offset)
+						$.limit($limit)
+						$.reverse($reverse)
+					]
+				){found (^t.offset[])}{no}<br />
+			}
+		}
+		<br />
+	}
+
+}[<hr />]

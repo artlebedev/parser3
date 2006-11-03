@@ -1,0 +1,26 @@
+@main[]
+$source[^table::create{name
+1
+2
+3}]
+
+$empty[^table::create{name}]
+
+^for[reverse](0;1){
+	reverse=$reverse<br />
+
+	^for[limit](0;4){
+		limit=$limit<br />
+		^for[offset](0;3){
+			$dest[^table::create[$empty]]
+			^dest.join[$source][
+				$.offset($offset)
+				$.limit($limit)
+				$.reverse($reverse)
+			]
+			offset=$offset, count: ^dest.count[]^if($dest){, items: ^dest.menu{$dest.name}[,]}<br />
+		}
+		<br />
+	}
+
+}[<hr />]

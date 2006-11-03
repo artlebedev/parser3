@@ -1,0 +1,66 @@
+content-type: text/html
+content-length: 13177
+
+reverse=0<br />
+limit=0<br />
+offset=0, count: 0<br />
+offset=1, count: 0<br />
+offset=2, count: 0<br />
+offset=3, count: 0<br />
+<br />
+limit=1<br />
+offset=0, count: 1, items: 1<br />
+offset=1, count: 1, items: 2<br />
+offset=2, count: 1, items: 3<br />
+offset=3, count: 0<br />
+<br />
+limit=2<br />
+offset=0, count: 2, items: 1,2<br />
+offset=1, count: 2, items: 2,3<br />
+offset=2, count: 1, items: 3<br />
+offset=3, count: 0<br />
+<br />
+limit=3<br />
+offset=0, count: 3, items: 1,2,3<br />
+offset=1, count: 2, items: 2,3<br />
+offset=2, count: 1, items: 3<br />
+offset=3, count: 0<br />
+<br />
+limit=4<br />
+offset=0, count: 3, items: 1,2,3<br />
+offset=1, count: 2, items: 2,3<br />
+offset=2, count: 1, items: 3<br />
+offset=3, count: 0<br />
+<br />
+<hr />
+reverse=1<br />
+limit=0<br />
+offset=0, count: 0<br />
+offset=1, count: 0<br />
+offset=2, count: 0<br />
+offset=3, count: 0<br />
+<br />
+limit=1<br />
+offset=0, count: 1, items: 1<br />
+offset=1, count: 1, items: 2<br />
+offset=2, count: 1, items: 3<br />
+offset=3, count: 0<br />
+<br />
+limit=2<br />
+offset=0, count: 1, items: 1<br />
+offset=1, count: 2, items: 2,1<br />
+offset=2, count: 2, items: 3,2<br />
+offset=3, count: 0<br />
+<br />
+limit=3<br />
+offset=0, count: 1, items: 1<br />
+offset=1, count: 2, items: 2,1<br />
+offset=2, count: 3, items: 3,2,1<br />
+offset=3, count: 0<br />
+<br />
+limit=4<br />
+offset=0, count: 1, items: 1<br />
+offset=1, count: 2, items: 2,1<br />
+offset=2, count: 3, items: 3,2,1<br />
+offset=3, count: 0<br />
+<br />

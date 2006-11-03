@@ -1,0 +1,226 @@
+content-type: text/html
+content-length: 13177
+
+reverse=0<br />
+limit=0<br />
+offset=0<br />
+val: 1 no<br />
+val: 2 no<br />
+val: 3 no<br />
+val: 4 no<br />
+offset=1<br />
+val: 1 no<br />
+val: 2 no<br />
+val: 3 no<br />
+val: 4 no<br />
+offset=2<br />
+val: 1 no<br />
+val: 2 no<br />
+val: 3 no<br />
+val: 4 no<br />
+offset=3<br />
+val: 1 no<br />
+val: 2 no<br />
+val: 3 no<br />
+val: 4 no<br />
+<br />
+limit=1<br />
+offset=0<br />
+val: 1 found (0)<br />
+val: 2 no<br />
+val: 3 no<br />
+val: 4 no<br />
+offset=1<br />
+val: 1 no<br />
+val: 2 found (1)<br />
+val: 3 no<br />
+val: 4 no<br />
+offset=2<br />
+val: 1 no<br />
+val: 2 no<br />
+val: 3 found (2)<br />
+val: 4 no<br />
+offset=3<br />
+val: 1 no<br />
+val: 2 no<br />
+val: 3 no<br />
+val: 4 no<br />
+<br />
+limit=2<br />
+offset=0<br />
+val: 1 found (0)<br />
+val: 2 found (1)<br />
+val: 3 no<br />
+val: 4 no<br />
+offset=1<br />
+val: 1 no<br />
+val: 2 found (1)<br />
+val: 3 found (2)<br />
+val: 4 no<br />
+offset=2<br />
+val: 1 no<br />
+val: 2 no<br />
+val: 3 found (2)<br />
+val: 4 no<br />
+offset=3<br />
+val: 1 no<br />
+val: 2 no<br />
+val: 3 no<br />
+val: 4 no<br />
+<br />
+limit=3<br />
+offset=0<br />
+val: 1 found (0)<br />
+val: 2 found (1)<br />
+val: 3 found (2)<br />
+val: 4 no<br />
+offset=1<br />
+val: 1 no<br />
+val: 2 found (1)<br />
+val: 3 found (2)<br />
+val: 4 no<br />
+offset=2<br />
+val: 1 no<br />
+val: 2 no<br />
+val: 3 found (2)<br />
+val: 4 no<br />
+offset=3<br />
+val: 1 no<br />
+val: 2 no<br />
+val: 3 no<br />
+val: 4 no<br />
+<br />
+limit=4<br />
+offset=0<br />
+val: 1 found (0)<br />
+val: 2 found (1)<br />
+val: 3 found (2)<br />
+val: 4 no<br />
+offset=1<br />
+val: 1 no<br />
+val: 2 found (1)<br />
+val: 3 found (2)<br />
+val: 4 no<br />
+offset=2<br />
+val: 1 no<br />
+val: 2 no<br />
+val: 3 found (2)<br />
+val: 4 no<br />
+offset=3<br />
+val: 1 no<br />
+val: 2 no<br />
+val: 3 no<br />
+val: 4 no<br />
+<br />
+<hr />
+reverse=1<br />
+limit=0<br />
+offset=0<br />
+val: 1 no<br />
+val: 2 no<br />
+val: 3 no<br />
+val: 4 no<br />
+offset=1<br />
+val: 1 no<br />
+val: 2 no<br />
+val: 3 no<br />
+val: 4 no<br />
+offset=2<br />
+val: 1 no<br />
+val: 2 no<br />
+val: 3 no<br />
+val: 4 no<br />
+offset=3<br />
+val: 1 no<br />
+val: 2 no<br />
+val: 3 no<br />
+val: 4 no<br />
+<br />
+limit=1<br />
+offset=0<br />
+val: 1 found (0)<br />
+val: 2 no<br />
+val: 3 no<br />
+val: 4 no<br />
+offset=1<br />
+val: 1 no<br />
+val: 2 found (1)<br />
+val: 3 no<br />
+val: 4 no<br />
+offset=2<br />
+val: 1 no<br />
+val: 2 no<br />
+val: 3 found (2)<br />
+val: 4 no<br />
+offset=3<br />
+val: 1 no<br />
+val: 2 no<br />
+val: 3 no<br />
+val: 4 no<br />
+<br />
+limit=2<br />
+offset=0<br />
+val: 1 found (0)<br />
+val: 2 no<br />
+val: 3 no<br />
+val: 4 no<br />
+offset=1<br />
+val: 1 found (0)<br />
+val: 2 found (1)<br />
+val: 3 no<br />
+val: 4 no<br />
+offset=2<br />
+val: 1 no<br />
+val: 2 found (1)<br />
+val: 3 found (2)<br />
+val: 4 no<br />
+offset=3<br />
+val: 1 no<br />
+val: 2 no<br />
+val: 3 no<br />
+val: 4 no<br />
+<br />
+limit=3<br />
+offset=0<br />
+val: 1 found (0)<br />
+val: 2 no<br />
+val: 3 no<br />
+val: 4 no<br />
+offset=1<br />
+val: 1 found (0)<br />
+val: 2 found (1)<br />
+val: 3 no<br />
+val: 4 no<br />
+offset=2<br />
+val: 1 found (0)<br />
+val: 2 found (1)<br />
+val: 3 found (2)<br />
+val: 4 no<br />
+offset=3<br />
+val: 1 no<br />
+val: 2 no<br />
+val: 3 no<br />
+val: 4 no<br />
+<br />
+limit=4<br />
+offset=0<br />
+val: 1 found (0)<br />
+val: 2 no<br />
+val: 3 no<br />
+val: 4 no<br />
+offset=1<br />
+val: 1 found (0)<br />
+val: 2 found (1)<br />
+val: 3 no<br />
+val: 4 no<br />
+offset=2<br />
+val: 1 found (0)<br />
+val: 2 found (1)<br />
+val: 3 found (2)<br />
+val: 4 no<br />
+offset=3<br />
+val: 1 no<br />
+val: 2 no<br />
+val: 3 no<br />
+val: 4 no<br />
+<br />
