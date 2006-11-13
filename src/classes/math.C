@@ -8,7 +8,7 @@
 	Copyright (C) 1996, 1997, 1998, 1999 Theodore Ts'o.
 */
 
-static const char * const IDENT_MATH_C="$Date: 2006/11/01 17:43:43 $";
+static const char * const IDENT_MATH_C="$Date: 2006/11/13 13:46:17 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_common.h"
@@ -362,6 +362,11 @@ static void _uid64(Request& r, MethodParams& /*params*/) {
 	r.write_pass_lang(*new String(hex_string(id, sizeof(id), true)));
 }
 
+static void _crc32(Request& r, MethodParams& params) {
+	const char *string=params.as_string(0, "parameter must be string").cstr();
+	r.write_no_lang(*new VInt(pa_crc32(string, strlen(string))));
+}
+
 // constructor
 
 MMath::MMath(): Methoded("math") {
@@ -391,6 +396,8 @@ MMath::MMath(): Methoded("math") {
 
 	// ^md5[string]
 	ADD1(md5);
+
+	ADD1(crc32);
 
 	// ^uuid[]
 	ADD0(uuid);
