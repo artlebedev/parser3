@@ -707,6 +707,10 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     	если есть третья - это content-type
     !^file.base64[] encode
     !^file::base64[encoded string] decode
+    !^file:crc32[имя файла]
+       вычисляет crc32 файла с указанным именем
+    !^file.crc32[]
+		вычисляет crc32 объекта
 
 !math
     !$math:PI
@@ -735,6 +739,8 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
          если нет тела salt, оно создаётся случайным
        $1$ вызывает MD5 алгоритм функции OS 'crypt', если поддерживается [заведомо нет на solaris].
        другие salt читайте документацию по функции OS 'crypt'.
+    !^math:crc32[string]
+       вычисляет crc32 строки
 
 !date
     !время типа time можно использовать в выражениях, подставляет 
