@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-static const char * const IDENT_COMMON_H="$Date: 2005/11/24 14:00:34 $";
+static const char * const IDENT_COMMON_H="$Date: 2006/11/13 13:45:11 $";
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -212,8 +212,52 @@ void remove_crlf(char *start, char *end);
 void check_safe_mode(struct stat finfo, const String& file_spec, const char* fname); 
 #endif 
 
-char* pa_base64_encode(const char *in, size_t in_size);
 void pa_base64_decode(const char *in, size_t in_size, char*& result, size_t& result_size);
+char* pa_base64_encode(const char *in, size_t in_size);
+static void file_base64_file_action(
+			     struct stat& finfo, 
+			     int f, 
+			     const String& file_spec, const char* /*fname*/, bool, 
+			     void *context);
+
+#define CRC32_MAX_BUFFER_SIZE	4096
+static unsigned long *pCrc32Table;
+static void InitCrc32Table()
+{
+	if(pCrc32Table == 0){
+		// This is the official polynomial used by CRC32 in PKZip.
+		// Often times the polynomial shown reversed as 0x04C11DB7.
+		static const unsigned long dwPolynomial = 0xEDB88320;
+
+		pCrc32Table = new(PointerFreeGC) unsigned long[256];
+
+		for(int i = 0; i < 256; i++)
+		{
+			unsigned long dwCrc = i;
+			for(int j = 8; j > 0; j--)
+			{
+				if(dwCrc & 1)
+					dwCrc = (dwCrc >> 1) ^ dwPolynomial;
+				else
+					dwCrc >>= 1;
+			}
+			pCrc32Table[i] = dwCrc;
+		}
+	}
+}
+
+inline void CalcCrc32(const unsigned char byte, unsigned long &crc32)
+{
+	crc32 = ((crc32) >> 8) ^ pCrc32Table[(byte) ^ ((crc32) & 0x000000FF)];
+}
+
+const unsigned long pa_crc32(const char *in, size_t in_size);
+const unsigned long pa_crc32(const String& file_spec);
+static void file_crc32_file_action(
+			     struct stat& finfo, 
+			     int f, 
+			     const String& file_spec, const char* /*fname*/, bool, 
+			     void *context);
 
 int pa_get_valid_file_options_count(HashStringValue& options);
 

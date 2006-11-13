@@ -26,7 +26,7 @@
  *
  */
 
-static const char * const IDENT_COMMON_C="$Date: 2006/02/03 15:08:04 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2006/11/13 13:45:17 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -978,3 +978,41 @@ void pa_base64_decode(const char *in, size_t in_size, char*& result, size_t& res
 	assert(result_size <= in_size);
 	result[result_size]=0; // for text files
 }
+
+
+const unsigned long pa_crc32(const char *in, size_t in_size)
+{
+	unsigned long crc32=0xFFFFFFFF;
+	if(in_size){
+		InitCrc32Table();
+		for(size_t i = 0; i < in_size; i++) CalcCrc32(in[i], crc32);
+	}
+	return ~crc32; 
+}
+
+const unsigned long pa_crc32(const String& file_spec)
+{
+	unsigned long crc32=0xFFFFFFFF;
+	file_read_action_under_lock(file_spec, "crc32", file_crc32_file_action, &crc32);
+	return ~crc32; 
+}
+
+static void file_crc32_file_action(
+			     struct stat& finfo, 
+			     int f, 
+			     const String& file_spec, const char* /*fname*/, bool, 
+			     void *context)
+{
+	unsigned long& crc32=*static_cast<unsigned long *>(context);
+	if(finfo.st_size) {
+		InitCrc32Table();
+		size_t nCount=0;
+		do {
+			char buffer[CRC32_MAX_BUFFER_SIZE];
+			nCount = read(f, buffer, sizeof(buffer));
+			for(size_t i = 0; i < nCount; i++) CalcCrc32(buffer[i], crc32);
+		} while(nCount);
+	}
+}
+
+
