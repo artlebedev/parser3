@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2006/10/31 17:16:10 $";
+static const char * const IDENT_FILE_C="$Date: 2006/11/13 13:45:57 $";
 
 #include "pa_config_includes.h"
 
@@ -811,37 +811,58 @@ static void _base64(Request& r, MethodParams& params) {
 	}
 }
 
+static void _crc32(Request& r, MethodParams& params) {
+	unsigned long crc32 = 0;
+	if(&r.get_self() == file_class) {
+		// ^file:crc32[file-name]
+		if(params.count()) {
+			const String& file_spec=params.as_string(0, "file name must be string");
+			crc32=pa_crc32(r.absolute(file_spec));
+		} else {
+			throw Exception("parser.runtime",
+				0,
+				"file name must be defined");
+		}
+	} else {
+		// ^file.crc32[]
+		VFile& self=GET_SELF(r, VFile);
+		crc32=pa_crc32(self.value_ptr(), self.value_size());
+	}
+	r.write_no_lang(*new VInt(crc32));
+}
+
+
 // constructor
 
 MFile::MFile(): Methoded("file") {
-	// ^create[text;user-name;string]
-	// ^create[binary;user-name;SOMEDAY SOMETHING]
+	// ^file::create[text;user-name;string]
+	// ^file::create[binary;user-name;SOMEDAY SOMETHING]
 	add_native_method("create", Method::CT_DYNAMIC, _create, 3, 3);
 
-	// ^save[mode;file-name]
+	// ^file.save[mode;file-name]
 	add_native_method("save", Method::CT_DYNAMIC, _save, 2, 2);
 
-	// ^delete[file-name]
+	// ^file:delete[file-name]
 	add_native_method("delete", Method::CT_STATIC, _delete, 1, 1);
 
-	// ^move[from-file-name;to-file-name]
+	// ^file:move[from-file-name;to-file-name]
 	add_native_method("move", Method::CT_STATIC, _move, 2, 2);
 
-	// ^load[mode;disk-name]
-	// ^load[mode;disk-name;user-name]
+	// ^file::load[mode;disk-name]
+	// ^file::load[mode;disk-name;user-name]
 	add_native_method("load", Method::CT_DYNAMIC, _load, 2, 3);
 
-	// ^stat[disk-name]
+	// ^file::stat[disk-name]
 	add_native_method("stat", Method::CT_DYNAMIC, _stat, 1, 1);
 
-	// ^cgi[file-name]
-	// ^cgi[file-name;env hash]
-	// ^cgi[file-name;env hash;1cmd;2line;3ar;4g;5s]
+	// ^file::cgi[file-name]
+	// ^file::cgi[file-name;env hash]
+	// ^file::cgi[file-name;env hash;1cmd;2line;3ar;4g;5s]
 	add_native_method("cgi", Method::CT_DYNAMIC, _cgi, 1, 2+50);
 
-	// ^exec[file-name]
-	// ^exec[file-name;env hash]
-	// ^exec[file-name;env hash;1cmd;2line;3ar;4g;5s]
+	// ^file::exec[file-name]
+	// ^file::exec[file-name;env hash]
+	// ^file::exec[file-name;env hash;1cmd;2line;3ar;4g;5s]
 	add_native_method("exec", Method::CT_DYNAMIC, _exec, 1, 2+50);
 
 	// ^file:list[path]
@@ -851,8 +872,8 @@ MFile::MFile(): Methoded("file") {
 	// ^file:lock[path]{code}
 	add_native_method("lock", Method::CT_STATIC, _lock, 2, 2);
 
-	// ^find[file-name]
-	// ^find[file-name]{when-not-found}
+	// ^file:find[file-name]
+	// ^file:find[file-name]{when-not-found}
 	add_native_method("find", Method::CT_STATIC, _find, 1, 2);
 
     // ^file:dirname[/a/some.tar.gz]=/a
@@ -873,7 +894,11 @@ MFile::MFile(): Methoded("file") {
     // ^file::sql[[alt_name]]{}
 	add_native_method("sql", Method::CT_DYNAMIC, _sql, 1, 2);
 
-	// ^file.base64[] << encode
 	// ^file::base64[string] << decode
+	// ^file.base64[] << encode
 	add_native_method("base64", Method::CT_DYNAMIC, _base64, 0, 1);
+
+	// ^file.crc32[]
+	// ^file:crc32[file-name]
+	add_native_method("crc32", Method::CT_ANY, _crc32, 0, 1);
 }
