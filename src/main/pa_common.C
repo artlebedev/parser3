@@ -26,7 +26,7 @@
  *
  */
 
-static const char * const IDENT_COMMON_C="$Date: 2006/11/13 13:45:17 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2006/11/14 17:25:21 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -1000,7 +1000,7 @@ const unsigned long pa_crc32(const String& file_spec)
 static void file_crc32_file_action(
 			     struct stat& finfo, 
 			     int f, 
-			     const String& file_spec, const char* /*fname*/, bool, 
+			     const String&, const char* /*fname*/, bool, 
 			     void *context)
 {
 	unsigned long& crc32=*static_cast<unsigned long *>(context);
@@ -1008,7 +1008,7 @@ static void file_crc32_file_action(
 		InitCrc32Table();
 		size_t nCount=0;
 		do {
-			char buffer[CRC32_MAX_BUFFER_SIZE];
+			char buffer[FILE_BUFFER_SIZE];
 			nCount = read(f, buffer, sizeof(buffer));
 			for(size_t i = 0; i < nCount; i++) CalcCrc32(buffer[i], crc32);
 		} while(nCount);
