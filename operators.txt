@@ -711,6 +711,10 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
        вычисляет crc32 файла с указанным именем
     !^file.crc32[]
 		вычисляет crc32 объекта
+	!^file.md5[]
+	!^file:md5[имя файла]
+        выдает digest файла, длиной 16 байт в виде строки, 
+        где байты digest выданы в hex виде, впритык, в нижнем регистре
 
 !math
     !$math:PI
