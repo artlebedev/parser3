@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2006/11/13 13:45:57 $";
+static const char * const IDENT_FILE_C="$Date: 2006/11/14 17:26:00 $";
 
 #include "pa_config_includes.h"
 
@@ -25,6 +25,7 @@ static const char * const IDENT_FILE_C="$Date: 2006/11/13 13:45:57 $";
 #include "pa_charset.h"
 #include "pa_charsets.h"
 #include "pa_sql_connection.h"
+#include "pa_md5.h"
 
 // defines
 
@@ -832,6 +833,68 @@ static void _crc32(Request& r, MethodParams& params) {
 }
 
 
+static void file_md5_file_action(
+			     struct stat& finfo, 
+			     int f, 
+			     const String& , const char* /*fname*/, bool, 
+			     void *context)
+{
+	PA_MD5_CTX& md5context=*static_cast<PA_MD5_CTX *>(context);
+	if(finfo.st_size) {
+		size_t nCount=0;
+		do {
+			unsigned char buffer[FILE_BUFFER_SIZE];
+			nCount = read(f, buffer, sizeof(buffer));
+			if ( nCount ){
+				pa_MD5Update(&md5context, (const unsigned char*)buffer, nCount);
+			}
+		} while(nCount);
+	}
+}
+
+const char* pa_md5(const String& file_spec)
+{
+	PA_MD5_CTX context;
+	unsigned char digest[16];
+	pa_MD5Init(&context);
+	file_read_action_under_lock(file_spec, "md5", file_md5_file_action, &context);
+	pa_MD5Final(digest, &context);
+	
+	return hex_string(digest, sizeof(digest), false);
+}
+
+const char* pa_md5(const char *in, size_t in_size)
+{
+	PA_MD5_CTX context;
+	unsigned char digest[16];
+	pa_MD5Init(&context);
+	pa_MD5Update(&context, (const unsigned char*)in, in_size);
+	pa_MD5Final(digest, &context);
+	
+	return hex_string(digest, sizeof(digest), false);
+}
+
+static void _md5(Request& r, MethodParams& params) {
+	const char* md5;
+	if(&r.get_self() == file_class) {
+		// ^file:md5[file-name]
+		if(params.count()) {
+			const String& file_spec=params.as_string(0, "file name must be string");
+			md5=pa_md5(r.absolute(file_spec));
+		} else {
+			throw Exception("parser.runtime",
+				0,
+				"file name must be defined");
+		}
+	} else {
+		// ^file.md5[]
+		VFile& self=GET_SELF(r, VFile);
+		md5=pa_md5(self.value_ptr(), self.value_size());
+
+	}
+	r.write_no_lang(*new String(md5));
+}
+
 // constructor
 
 MFile::MFile(): Methoded("file") {
@@ -901,4 +964,9 @@ MFile::MFile(): Methoded("file") {
 	// ^file.crc32[]
 	// ^file:crc32[file-name]
 	add_native_method("crc32", Method::CT_ANY, _crc32, 0, 1);
+
+	// ^file.md5[]
+	// ^file:md5[file-name]
+	add_native_method("md5", Method::CT_ANY, _md5, 0, 1);
+
 }
