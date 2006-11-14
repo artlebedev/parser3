@@ -8,7 +8,7 @@
 	Copyright (C) 1996, 1997, 1998, 1999 Theodore Ts'o.
 */
 
-static const char * const IDENT_MATH_C="$Date: 2006/11/13 13:46:17 $";
+static const char * const IDENT_MATH_C="$Date: 2006/11/14 17:24:49 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_common.h"
@@ -281,26 +281,8 @@ static void _crypt(Request& r, MethodParams& params) {
 	}
 }
 
-static const char* hex_string(unsigned char* bytes, size_t size, bool upcase) {
-	char *bytes_hex=new(PointerFreeGC) char [size*2/*byte->hh*/+1/*for zero-teminator*/];
-	unsigned char *src=bytes;
-	unsigned char *end=bytes+size;
-	char *dest=bytes_hex;
-
-	const char *hex=upcase?"0123456789ABCDEF":"0123456789abcdef";
-
-	for(; src<end; src++) {
-                *dest++=hex[*src/0x10];
-                *dest++=hex[*src%0x10];
-	}
-	*dest=0;
-
-	return bytes_hex;
-}
-
 static void _md5(Request& r, MethodParams& params) {
 	const char *string=params.as_string(0, "parameter must be string").cstr();
-
 
 	PA_MD5_CTX context;
 	unsigned char digest[16];
