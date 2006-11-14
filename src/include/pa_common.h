@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-static const char * const IDENT_COMMON_H="$Date: 2006/11/13 13:45:11 $";
+static const char * const IDENT_COMMON_H="$Date: 2006/11/14 17:24:11 $";
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -214,13 +214,8 @@ void check_safe_mode(struct stat finfo, const String& file_spec, const char* fna
 
 void pa_base64_decode(const char *in, size_t in_size, char*& result, size_t& result_size);
 char* pa_base64_encode(const char *in, size_t in_size);
-static void file_base64_file_action(
-			     struct stat& finfo, 
-			     int f, 
-			     const String& file_spec, const char* /*fname*/, bool, 
-			     void *context);
 
-#define CRC32_MAX_BUFFER_SIZE	4096
+#define FILE_BUFFER_SIZE	4096
 static unsigned long *pCrc32Table;
 static void InitCrc32Table()
 {
@@ -256,8 +251,25 @@ const unsigned long pa_crc32(const String& file_spec);
 static void file_crc32_file_action(
 			     struct stat& finfo, 
 			     int f, 
-			     const String& file_spec, const char* /*fname*/, bool, 
+			     const String&, const char* /*fname*/, bool, 
 			     void *context);
+
+static const char* hex_string(unsigned char* bytes, size_t size, bool upcase) {
+	char *bytes_hex=new(PointerFreeGC) char [size*2/*byte->hh*/+1/*for zero-teminator*/];
+	unsigned char *src=bytes;
+	unsigned char *end=bytes+size;
+	char *dest=bytes_hex;
+
+	const char *hex=upcase?"0123456789ABCDEF":"0123456789abcdef";
+
+	for(; src<end; src++) {
+                *dest++=hex[*src/0x10];
+                *dest++=hex[*src%0x10];
+	}
+	*dest=0;
+
+	return bytes_hex;
+}
 
 int pa_get_valid_file_options_count(HashStringValue& options);
 
