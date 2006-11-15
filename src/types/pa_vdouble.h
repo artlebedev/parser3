@@ -8,7 +8,7 @@
 #ifndef PA_VDOUBLE_H
 #define PA_VDOUBLE_H
 
-static const char * const IDENT_VDOUBLE_H="$Date: 2006/11/14 10:39:21 $";
+static const char * const IDENT_VDOUBLE_H="$Date: 2006/11/15 11:02:36 $";
 
 // includes
 
@@ -61,7 +61,7 @@ public: // usage
 private:
 
 	bool has_frac() {
-		return abs(fdouble-trunc(fdouble))>1e-100;
+		return fabs(fdouble-trunc(fdouble))>1e-100;
 	}
 
 private:
