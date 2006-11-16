@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_VMAIL_C="$Date: 2006/11/16 18:05:42 $";
+static const char * const IDENT_VMAIL_C="$Date: 2006/11/16 18:41:38 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -812,9 +812,10 @@ const String& VMail::message_hash_to_string(Request& r,
 		{
 			ArrayValue& files=*info.parts[P_FILE];
 			for(size_t i=0; i<files.count(); i++) {
-				if(files.get(i)->get_hash()->get(cid_name))
+				if(files.get(i)->get_hash()->get(cid_name)){
 					is_inline = true;
 					break;
+				}
 			}
 		}
 		
