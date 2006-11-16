@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_VMAIL_C="$Date: 2006/06/09 18:54:01 $";
+static const char * const IDENT_VMAIL_C="$Date: 2006/11/16 18:05:42 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -48,11 +48,13 @@ static const char* const part_name_begins[P_TYPES_COUNT]={"text", "html", "file"
 
 #define FORMAT_NAME "format"
 #define CHARSET_NAME "charset"
+#define CID_NAME "content-id"
 
 // statics
 
 static const String format_name(FORMAT_NAME);
 static const String charset_name(CHARSET_NAME);
+static const String cid_name(CID_NAME);
 
 // consts
 
@@ -499,7 +501,8 @@ static void store_message_element(HashStringValue::key_type raw_element_name,
 		|| low_element_name==VALUE_NAME
 		|| low_element_name==RAW_NAME
 		|| low_element_name==FORMAT_NAME
-		|| low_element_name==NAME_NAME)
+		|| low_element_name==NAME_NAME
+		|| low_element_name==CID_NAME)
 		return;
 
 	// grep parts
@@ -596,6 +599,7 @@ static const String& file_value_to_string(Request& r, Value* send_value) {
 	VFile* vfile;
 	const String* file_name=0;
 	Value* vformat=0;
+	Value* vcid=0;
 	const String* dummy_from;
 	String* dummy_to;
 	Store_message_element_info info(r.charsets, 
@@ -614,6 +618,9 @@ static const String& file_value_to_string(Request& r, Value* send_value) {
 		// $.format
 		vformat=send_hash->get(format_name);
 
+		// $.content-id
+		vcid=send_hash->get(cid_name);
+
 		// $.name
 		if(Value* vfile_name=send_hash->get(name_name)) // $name specified 
 			file_name=&vfile_name->as_string();
@@ -630,10 +637,17 @@ static const String& file_value_to_string(Request& r, Value* send_value) {
 		<< "; name=\"" << file_name_cstr << "\"\n";
 
 	if(!info.had_content_disposition) {
-		// content-disposition: attachment; filename="user_file_name"
-		result << 
-			CONTENT_DISPOSITION_NAME ": "CONTENT_DISPOSITION_VALUE"; "
-			CONTENT_DISPOSITION_FILENAME_NAME"=\"" << file_name_cstr << "\"\n";
+		if(vcid){
+			// content-disposition: inline;"
+			result << 
+				CONTENT_DISPOSITION_NAME ": "CONTENT_DISPOSITION_INLINE"\n"
+				CID_NAME ": <" << vcid->as_string() << ">\n";
+		} else {
+			// content-disposition: attachment; filename="user_file_name"
+			result << 
+				CONTENT_DISPOSITION_NAME ": "CONTENT_DISPOSITION_VALUE"; "
+				CONTENT_DISPOSITION_FILENAME_NAME"=\"" << file_name_cstr << "\"\n";
+		}
 	}
 
 	const String* type=vformat?&vformat->as_string():0;
@@ -793,10 +807,22 @@ const String& VMail::message_hash_to_string(Request& r,
 	if(multipart) {
 		boundary=new(PointerFreeGC) char[MAX_NUMBER];
 		snprintf(boundary, MAX_NUMBER-5/*lEvEl*/, "lEvEl%d", level);
+
+		bool is_inline = false;
+		{
+			ArrayValue& files=*info.parts[P_FILE];
+			for(size_t i=0; i<files.count(); i++) {
+				if(files.get(i)->get_hash()->get(cid_name))
+					is_inline = true;
+					break;
+			}
+		}
+		
+		result << "content-type: " << ( is_inline ? "multipart/related;" : "multipart/mixed;" );
+
 		// multi-part
 		result 
-			<< "content-type: multipart/related; boundary=\"" 
-			<< boundary << "\"\n"
+			 << " boundary=\"" << boundary << "\"\n"
 				"\n"
 				"This is a multi-part message in MIME format.";
 	}
