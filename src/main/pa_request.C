@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REQUEST_C="$Date: 2006/04/09 13:38:47 $";
+static const char * const IDENT_REQUEST_C="$Date: 2006/11/16 18:03:13 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -59,6 +59,7 @@ const char* ORIGINS_CONTENT_TYPE="text/plain";
 const String main_method_name(MAIN_METHOD_NAME);
 const String auto_method_name(AUTO_METHOD_NAME);
 const String content_disposition_name(CONTENT_DISPOSITION_NAME);
+const String content_disposition_inline(CONTENT_DISPOSITION_INLINE);
 const String content_disposition_value(CONTENT_DISPOSITION_VALUE);
 const String content_disposition_filename_name(CONTENT_DISPOSITION_FILENAME_NAME);
 const String body_name(BODY_NAME);
