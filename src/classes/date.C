@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_DATE_C="$Date: 2005/12/09 07:18:07 $";
+static const char * const IDENT_DATE_C="$Date: 2006/11/17 09:31:16 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -131,7 +131,8 @@ static void _create(Request& r, MethodParams& params) {
 					"invalid datetime");
 			vdate.set_time(t);
 		}
-	} else if(params.count()>=2) { // ^create(y;m;d[;h[;m[;s]]])
+	} else { // ^create(y;m;d[;h[;m[;s]]])
+		assert(params.count()>6);
 		tm tmIn; memset(&tmIn, 0, sizeof(tmIn));
 		tmIn.tm_isdst=-1;
 		tmIn.tm_year=to_tm_year(params.as_int(0, "year must be int", r));
@@ -142,10 +143,7 @@ static void _create(Request& r, MethodParams& params) {
 		if(params.count()>4) tmIn.tm_min=params.as_int(4, "minutes must be int", r);
 		if(params.count()>5) tmIn.tm_sec=params.as_int(5, "seconds must be int", r);
 		vdate.set_time(tmIn);
-	} else
-		throw Exception("parser.runtime",
-			0,
-			"invalid params count, must be 1 or >=2");
+	};
 }
 
 static void _sql_string(Request& r, MethodParams&) {
