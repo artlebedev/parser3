@@ -26,7 +26,7 @@
  *
  */
 
-static const char * const IDENT_COMMON_C="$Date: 2006/11/14 17:25:21 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2006/11/17 09:33:24 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -627,9 +627,9 @@ static bool isLeap(int year) {
 }
 
 int getMonthDays(int year, int month) {
-    int monthDays[]={
+	static int monthDays[]={
         31, 
-        isLeap(year) ? 29 : 28, 
+        28, 
         31, 
         30, 
         31, 
@@ -641,7 +641,7 @@ int getMonthDays(int year, int month) {
         30, 
         31
     }; 
-    return monthDays[month]; 
+	return (month == 2 && isLeap(year)) ? 29 : monthDays[month]; 
 }
 
 void remove_crlf(char* start, char* end) {
@@ -983,10 +983,10 @@ void pa_base64_decode(const char *in, size_t in_size, char*& result, size_t& res
 const unsigned long pa_crc32(const char *in, size_t in_size)
 {
 	unsigned long crc32=0xFFFFFFFF;
-	if(in_size){
+
 		InitCrc32Table();
 		for(size_t i = 0; i < in_size; i++) CalcCrc32(in[i], crc32);
-	}
+
 	return ~crc32; 
 }
 
@@ -1006,12 +1006,12 @@ static void file_crc32_file_action(
 	unsigned long& crc32=*static_cast<unsigned long *>(context);
 	if(finfo.st_size) {
 		InitCrc32Table();
-		size_t nCount=0;
+		int nCount=0;
 		do {
 			char buffer[FILE_BUFFER_SIZE];
 			nCount = read(f, buffer, sizeof(buffer));
-			for(size_t i = 0; i < nCount; i++) CalcCrc32(buffer[i], crc32);
-		} while(nCount);
+			for(int i = 0; i < nCount; i++) CalcCrc32(buffer[i], crc32);
+		} while(nCount > 0);
 	}
 }
 
