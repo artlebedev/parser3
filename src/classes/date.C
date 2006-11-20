@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_DATE_C="$Date: 2006/11/17 09:31:16 $";
+static const char * const IDENT_DATE_C="$Date: 2006/11/20 18:43:06 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -132,7 +132,7 @@ static void _create(Request& r, MethodParams& params) {
 			vdate.set_time(t);
 		}
 	} else { // ^create(y;m;d[;h[;m[;s]]])
-		assert(params.count()>6);
+		assert(params.count()<=6);
 		tm tmIn; memset(&tmIn, 0, sizeof(tmIn));
 		tmIn.tm_isdst=-1;
 		tmIn.tm_year=to_tm_year(params.as_int(0, "year must be int", r));
