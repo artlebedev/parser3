@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2006/12/01 17:40:25 $";
+static const char * const IDENT_FILE_C="$Date: 2006/12/01 17:59:13 $";
 
 #include "pa_config_includes.h"
 
@@ -188,11 +188,7 @@ static void _copy(Request& r, MethodParams& params) {
 			to_spec,
 			"copy",
 			copy_open_target,
-			&from_spec,
-			false/*as_text*/,
-			false/*do_append*/,
-			true/*block*/,
-			true/*fail on lock problem*/ );
+			&from_spec);
 }
 
 static void _load_pass_param(
