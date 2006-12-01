@@ -5,10 +5,11 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)\
 */
 
-static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2005/08/09 08:14:55 $";
+static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2006/12/01 19:00:54 $";
 
 #include "pa_vstateless_class.h"
 #include "pa_vproperty.h"
+#include "pa_vstring.h"
 
 /// @TODO why?! request must be different ptr from global [used in VStateless_class.add_method]
 void VStateless_class::add_method(const String& name, Method& method) {
@@ -42,6 +43,9 @@ Value* VStateless_class::get_element(const String& aname, Value& aself, bool loo
 	// $CLASS
 	if(aname==CLASS_NAME)
 		return this;
+	// $CLASS_NAME
+	if(aname==CLASS_NAMETEXT)
+		return new VString(this->name());
 	// $method=junction(self+class+method)
 	if(Method* method=get_method(aname))
 		return new VJunction(aself, method);

@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
-static const char * const IDENT_VSTATELESS_CLASS_H="$Date: 2005/08/09 08:14:55 $";
+static const char * const IDENT_VSTATELESS_CLASS_H="$Date: 2006/12/01 19:00:54 $";
 
 // include
 
@@ -21,6 +21,7 @@ static const char * const IDENT_VSTATELESS_CLASS_H="$Date: 2005/08/09 08:14:55 $
 // defines
 
 #define CLASS_NAME "CLASS"
+#define CLASS_NAMETEXT "CLASS_NAME"
 
 // forwards
 
