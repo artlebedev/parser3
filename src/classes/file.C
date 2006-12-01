@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2006/11/14 17:26:00 $";
+static const char * const IDENT_FILE_C="$Date: 2006/12/01 17:40:25 $";
 
 #include "pa_config_includes.h"
 
@@ -148,6 +148,51 @@ static void _move(Request& r, MethodParams& params) {
 	file_move(
 		r.absolute(vfrom_file_name.as_string()),
 		r.absolute(vto_file_name.as_string()));
+}
+
+static void copy_process_source(
+			     struct stat& , 
+			     int from_file, 
+			     const String& , const char* /*fname*/, bool, 
+				 void *context) {
+	int& to_file=*static_cast<int *>(context);
+
+	int nCount=0;
+	do {
+		unsigned char buffer[FILE_BUFFER_SIZE];
+		nCount = read(from_file, buffer, sizeof(buffer));
+		int written=write(to_file, buffer, nCount); 
+		if( written < 0 )
+			throw Exception(0, 
+				0, 
+				"write failed: %s (%d)",  strerror(errno), errno); 
+		
+	} while(nCount > 0);
+}
+
+static void copy_open_target(int f, void *from_spec) {
+	String& file_spec=*static_cast<String *>(from_spec);
+	file_read_action_under_lock(file_spec, "copy", copy_process_source, &f);
+};
+
+static void _copy(Request& r, MethodParams& params) {
+	Value& vfrom_file_name=params.as_no_junction(0, "from file name must not be code");
+	Value& vto_file_name=params.as_no_junction(1, "to file name must not be code");
+
+	String from_spec = r.absolute(vfrom_file_name.as_string());
+	const String& to_spec = r.absolute(vto_file_name.as_string());
+	
+	create_dir_for_file(to_spec); 
+	
+	file_write_action_under_lock(
+			to_spec,
+			"copy",
+			copy_open_target,
+			&from_spec,
+			false/*as_text*/,
+			false/*do_append*/,
+			true/*block*/,
+			true/*fail on lock problem*/ );
 }
 
 static void _load_pass_param(
@@ -841,14 +886,14 @@ static void file_md5_file_action(
 {
 	PA_MD5_CTX& md5context=*static_cast<PA_MD5_CTX *>(context);
 	if(finfo.st_size) {
-		size_t nCount=0;
+		int nCount=0;
 		do {
 			unsigned char buffer[FILE_BUFFER_SIZE];
 			nCount = read(f, buffer, sizeof(buffer));
 			if ( nCount ){
 				pa_MD5Update(&md5context, (const unsigned char*)buffer, nCount);
 			}
-		} while(nCount);
+		} while(nCount > 0);
 	}
 }
 
@@ -969,4 +1014,6 @@ MFile::MFile(): Methoded("file") {
 	// ^file:md5[file-name]
 	add_native_method("md5", Method::CT_ANY, _md5, 0, 1);
 
+	// ^file:copy[from-file-name;to-file-name]
+	add_native_method("copy", Method::CT_STATIC, _copy, 2, 2);
 }
