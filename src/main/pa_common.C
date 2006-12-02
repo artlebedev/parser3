@@ -26,7 +26,7 @@
  *
  */
 
-static const char * const IDENT_COMMON_C="$Date: 2006/11/17 09:33:24 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2006/12/02 12:35:50 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -980,6 +980,15 @@ void pa_base64_decode(const char *in, size_t in_size, char*& result, size_t& res
 }
 
 
+int file_block_read(const int f, unsigned char* buffer, const size_t size){
+	int nCount = read(f, buffer, size);
+	if (nCount < 0)
+		throw Exception(0, 
+			0, 
+			"read failed: %s (%d)",  strerror(errno), errno); 
+	return nCount;
+}
+
 const unsigned long pa_crc32(const char *in, size_t in_size)
 {
 	unsigned long crc32=0xFFFFFFFF;
@@ -1008,11 +1017,10 @@ static void file_crc32_file_action(
 		InitCrc32Table();
 		int nCount=0;
 		do {
-			char buffer[FILE_BUFFER_SIZE];
-			nCount = read(f, buffer, sizeof(buffer));
+			unsigned char buffer[FILE_BUFFER_SIZE];
+			nCount = file_block_read(f, buffer, sizeof(buffer));
 			for(int i = 0; i < nCount; i++) CalcCrc32(buffer[i], crc32);
 		} while(nCount > 0);
 	}
 }
-
 
