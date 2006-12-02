@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2006/12/01 17:59:13 $";
+static const char * const IDENT_FILE_C="$Date: 2006/12/02 12:36:04 $";
 
 #include "pa_config_includes.h"
 
@@ -160,7 +160,7 @@ static void copy_process_source(
 	int nCount=0;
 	do {
 		unsigned char buffer[FILE_BUFFER_SIZE];
-		nCount = read(from_file, buffer, sizeof(buffer));
+		nCount = file_block_read(from_file, buffer, sizeof(buffer));
 		int written=write(to_file, buffer, nCount); 
 		if( written < 0 )
 			throw Exception(0, 
@@ -885,7 +885,7 @@ static void file_md5_file_action(
 		int nCount=0;
 		do {
 			unsigned char buffer[FILE_BUFFER_SIZE];
-			nCount = read(f, buffer, sizeof(buffer));
+			nCount = file_block_read(f, buffer, sizeof(buffer));
 			if ( nCount ){
 				pa_MD5Update(&md5context, (const unsigned char*)buffer, nCount);
 			}
