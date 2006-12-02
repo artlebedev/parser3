@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-static const char * const IDENT_COMMON_H="$Date: 2006/11/17 09:35:44 $";
+static const char * const IDENT_COMMON_H="$Date: 2006/12/02 12:34:52 $";
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -238,6 +238,8 @@ static void InitCrc32Table()
 		}
 	}
 }
+
+int file_block_read(const int f, unsigned char* buffer, const size_t size);
 
 inline void CalcCrc32(const unsigned char byte, unsigned long &crc32)
 {
