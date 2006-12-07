@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-static const char * const IDENT_VALUE_H="$Date: 2006/04/09 13:38:48 $";
+static const char * const IDENT_VALUE_H="$Date: 2006/12/07 18:28:33 $";
 
 #include "pa_string.h"
 #include "pa_array.h"
@@ -64,6 +64,9 @@ public: // Value
 
 	/// is this value void?
 	virtual bool is_void() const { return false; }
+
+	/// is this value bool?
+	virtual bool is_bool() const { return false; }
 
 	/// is this value number?
 	virtual bool is_evaluated_expr() const { return false; }
@@ -171,7 +174,8 @@ protected:
 */
 const String& attributed_meaning_to_string(Value& meaning, 
 					   String::Language lang, 
-					   bool forced=false);
+					   bool forced=false,
+					   bool allow_bool=false);
 
 // defines
 

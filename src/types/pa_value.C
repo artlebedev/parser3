@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VALUE_C="$Date: 2006/04/09 13:38:48 $";
+static const char * const IDENT_VALUE_C="$Date: 2006/12/07 18:28:32 $";
 
 #include "pa_value.h"
 #include "pa_vstateless_class.h"
@@ -124,6 +124,7 @@ struct Attributed_meaning_info {
 	String* header; // header line being constructed
 	String::Language lang; // language in which to append to that line
 	bool forced; // do they force that lang?
+	bool allow_bool; // allow bool types during print attributes 
 };
 #endif
 static void append_attribute_subattribute(HashStringValue::key_type akey, 
@@ -135,18 +136,20 @@ static void append_attribute_subattribute(HashStringValue::key_type akey,
 	// ...; charset=windows1251
 	*info->header << "; ";
 	info->header->append(String(akey, String::L_TAINTED), info->lang, info->forced);
-	*info->header << "=";
-	append_attribute_meaning(*info->header, *avalue, info->lang, info->forced);
+	if(!info->allow_bool || !avalue->is_bool()){
+		*info->header << "=";
+		append_attribute_meaning(*info->header, *avalue, info->lang, info->forced);
+	}
 }
 const String& attributed_meaning_to_string(Value& meaning, 
-					   String::Language lang, bool forced) {
+					   String::Language lang, bool forced, bool allow_bool) {
 	String& result=*new String;
 	if(HashStringValue *hash=meaning.get_hash()) {
 		// $value(value) $subattribute(subattribute value)
 		if(Value* value=hash->get(value_name))
 			append_attribute_meaning(result, *value, lang, forced);
 
-		Attributed_meaning_info attributed_meaning_info={&result, lang, false};
+		Attributed_meaning_info attributed_meaning_info={&result, lang, false, allow_bool};
 		hash->for_each<Attributed_meaning_info*>(append_attribute_subattribute, &attributed_meaning_info);
 	} else // result value
 		append_attribute_meaning(result, meaning, lang, forced);
