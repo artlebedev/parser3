@@ -444,9 +444,11 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
 !cookie
     !$cookie:имя считать старое или свежезаданное
     !$cookie:имя[значение] на 90 дней
-    !$cookie:имя[$.value[значение]  $.expires ЗНАЧЕНИЕ ]
+    !$cookie:имя[$.value[значение]  $.expires ЗНАЧЕНИЕ $.secure(true)]
     !значение поля expires может быть 'session', date, или число дней(0дней=session)
     ! если дата, она будет преобразована к формату "Sun, 25-Aug-2002 12:03:45 GMT"
+    ! можно устанавливать bool свойства, например $.secure(true), $.httponly(true)
+
 
 !request
     !$request:query    
