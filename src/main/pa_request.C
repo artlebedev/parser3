@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REQUEST_C="$Date: 2006/11/16 18:03:13 $";
+static const char * const IDENT_REQUEST_C="$Date: 2006/12/19 19:06:10 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -837,14 +837,14 @@ void Request::output_result(VFile* body_file, bool header_only, bool as_attachme
 	if(vfile_name) {
 		const String& sfile_name=vfile_name->as_string();
 		if(sfile_name!=NONAME_DAT) {
-			if(as_attachment)
-			{
-				VHash& hash=*new VHash();
-				HashStringValue &h=hash.hash();
-				h.put(value_name, new VString(content_disposition_value));
-				h.put(content_disposition_filename_name, vfile_name);
-				response.fields().put(content_disposition_name, &hash);
-			}
+			VHash& hash=*new VHash();
+			HashStringValue &h=hash.hash();
+			h.put(value_name, new VString(content_disposition_value));
+
+			h.put(value_name, new VString( as_attachment ? content_disposition_value : content_disposition_inline ));
+
+			h.put(content_disposition_filename_name, vfile_name);
+			response.fields().put(content_disposition_name, &hash);
 
 			if(!body_file_content_type)
 				body_file_content_type=new VString(mime_type_of(sfile_name.cstr()));
