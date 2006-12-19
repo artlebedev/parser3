@@ -7,7 +7,7 @@
 #include "pa_config_includes.h"
 #ifdef XML
 
-static const char * const IDENT_VXDOC="$Date: 2005/12/16 14:48:22 $";
+static const char * const IDENT_VXDOC="$Date: 2006/12/19 19:06:59 $";
 
 #include "pa_vxdoc.h"
 
@@ -31,11 +31,8 @@ VXnode& VXdoc::wrap(xmlNode& anode) {
 }
 
 
-Value* VXdoc::as(const char* atype, bool looking_up) {
-	if(Value* result=Value::as(atype, looking_up))
-		return result;
-	else
-		return VXnode::as(atype, looking_up);
+Value* VXdoc::as(const char* atype, bool ) {
+	return atype && ( strcmp(VXdoc::type(), atype)==0 || strcmp(VXnode::type(), atype)==0 )?this:0;
 }
 
 /// VXdoc: $CLASS,$method
