@@ -8,7 +8,7 @@
 #ifndef PA_METHOD_H
 #define PA_METHOD_H
 
-static const char * const IDENT_METHOD_H="$Date: 2005/08/09 08:14:53 $";
+static const char * const IDENT_METHOD_H="$Date: 2006/12/20 09:39:39 $";
 
 
 /*#include "pa_string.h"
@@ -69,7 +69,7 @@ public:
 	ArrayOperation* parser_code;/*OR*/NativeCodePtr native_code;
 	//@}
 
-	Method::Method(
+	Method(
 		//const String& aname,
 		Call_type call_type,
 		int amin_numbered_params_count, int amax_numbered_params_count,

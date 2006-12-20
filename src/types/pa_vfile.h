@@ -8,7 +8,7 @@
 #ifndef PA_VFILE_H
 #define PA_VFILE_H
 
-static const char * const IDENT_VFILE_H="$Date: 2005/08/09 08:14:54 $";
+static const char * const IDENT_VFILE_H="$Date: 2006/12/20 09:39:39 $";
 
 // include
 
@@ -56,9 +56,9 @@ public: // Value
 
 public: // usage
 
-	VFile::VFile(): fvalue_ptr(0), fvalue_size(0) {}
+	VFile(): fvalue_ptr(0), fvalue_size(0) {}
 
-	VFile::VFile(HashStringValue& afields): ffields(afields) {}
+	VFile(HashStringValue& afields): ffields(afields) {}
 
 	/// WARNING: when setting text files be sure to append terminating zero to avalue_ptr
 	void set(
