@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2006/04/09 13:38:47 $";
+static const char * const IDENT_STRING_C="$Date: 2007/01/18 17:47:44 $";
 
 #include "pcre.h"
 
@@ -451,11 +451,13 @@ Table* String::match(Charset& source_charset,
 		if(exec_substrings==PCRE_ERROR_NOMATCH) {
 			pcre_free(code);
 			row_action(table, 0/*last time, no raw*/, 0, 0, poststart, postfinish, info);
-			if(global || subpatterns)
-				return &table; // global or with subpatterns=true+result
-			else {
-				just_matched=false; return 0; // not global=no result
-			}
+			// if(global || subpatterns)
+			// 	return &table; // global or with subpatterns=true+result
+			// else {
+			// 	just_matched=false; return 0; // not global=no result
+			// }
+			just_matched=false;
+			return &table;
 		}
 
 		if(exec_substrings<0) {
