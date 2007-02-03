@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Id: buildall-with-xml,v 1.4 2006/04/09 10:41:52 paf Exp $
+# $Id: buildall-with-xml,v 1.5 2007/02/03 18:15:22 misha Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -34,10 +34,10 @@ fi
 if test ! -f "$project_directory/gnome/lib/libxml2.a"; then
   cd $project_directory/src
   echo "Downloading libxml [2 lib of 3]..."
-  wget -c --passive-ftp ftp://xmlsoft.org/libxml2/libxml2-2.6.22.tar.gz
+  wget -c --passive-ftp ftp://xmlsoft.org/libxml2/libxml2-2.6.27.tar.gz
   echo "Unpacking... (be patient)"
-  gunzip -c libxml2-2.6.22.tar.gz | tar vxf - >/dev/null
-  cd libxml2-2.6.22
+  gunzip -c libxml2-2.6.27.tar.gz | tar vxf - >/dev/null
+  cd libxml2-2.6.27
   #sax1, output, tree, xinclude[in libxslt], html[in libxslt, mode=html?] xptr[xinclude]-- needed!
   echo "Configuring libxml..."
   ./configure --prefix=$project_directory/gnome \
@@ -59,10 +59,10 @@ fi
 if test ! -f "$project_directory/gnome/lib/libxslt.a"; then
   cd $project_directory/src
   echo "Downloading libxslt [3 lib of 3]..."
-  wget -c --passive-ftp ftp://xmlsoft.org/libxslt/libxslt-1.1.15.tar.gz
+  wget -c --passive-ftp ftp://xmlsoft.org/libxslt/libxslt-1.1.20.tar.gz
   echo "Unpacking... (be patient)"
-  gunzip -c libxslt-1.1.15.tar.gz | tar vxf - >/dev/null
-  cd libxslt-1.1.15
+  gunzip -c libxslt-1.1.20.tar.gz | tar vxf - >/dev/null
+  cd libxslt-1.1.20
   echo "Configuring libxslt..."
   ./configure --prefix=$project_directory/gnome \
      --with-libxml-prefix=$project_directory/gnome \
