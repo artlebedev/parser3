@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VOID_C="$Date: 2005/08/26 12:01:38 $";
+static const char * const IDENT_VOID_C="$Date: 2007/02/03 18:08:38 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -14,6 +14,7 @@ static const char * const IDENT_VOID_C="$Date: 2005/08/26 12:01:38 $";
 #include "pa_vint.h"
 #include "pa_vdouble.h"
 #include "pa_vvoid.h"
+#include "pa_vbool.h"
 #include "pa_sql_connection.h"
 
 // externs
@@ -57,6 +58,12 @@ static void _double(Request& r, MethodParams& params) {
 	VVoid& vvoid=GET_SELF(r, VVoid);
 	r.write_no_lang(*new VDouble(
 		params.count()==0?vvoid.as_double():params.as_double(0, "default must be double", r)));
+}
+
+static void _bool(Request& r, MethodParams& params) {
+	VVoid& vvoid=GET_SELF(r, VVoid);
+	r.write_no_lang(*new VBool(
+		params.count()==0?vvoid.as_bool():params.as_bool(0, "default must be bool", r)));
 }
 
 #ifndef DOXYGEN
@@ -169,6 +176,10 @@ MVoid::MVoid(): Methoded("void") {
 	// ^void.double[]
 	// ^void.double(default)
 	add_native_method("double", Method::CT_DYNAMIC, _double, 0, 1);
+
+	// ^void.bool[]
+	// ^void.bool(default)
+	add_native_method("bool", Method::CT_DYNAMIC, _bool, 0, 1);
 
 	// ^sql[query]
 	add_native_method("sql", Method::CT_STATIC, _sql, 1, 2);

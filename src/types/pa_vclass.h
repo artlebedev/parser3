@@ -8,7 +8,7 @@
 #ifndef PA_VCLASS_H
 #define PA_VCLASS_H
 
-static const char * const IDENT_VCLASS_H="$Date: 2005/08/09 08:14:53 $";
+static const char * const IDENT_VCLASS_H="$Date: 2007/02/03 18:08:38 $";
 
 // includes
 
@@ -26,8 +26,6 @@ public: // Value
 
 	override Value* as(const char* atype, bool looking_up);
 
-	/// VClass: true
-	override Value& as_expr_result(bool) { return *new VBool(as_bool()); }
 	/// VClass: true
 	override bool as_bool() const { return true; }
 

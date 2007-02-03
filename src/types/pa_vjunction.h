@@ -8,12 +8,11 @@
 #ifndef PA_VJUNCTION_H
 #define PA_VJUNCTION_H
 
-static const char * const IDENT_VJUNCTION_H="$Date: 2005/08/09 08:14:54 $";
+static const char * const IDENT_VJUNCTION_H="$Date: 2007/02/03 18:08:38 $";
 
 // include
 
 #include "pa_value.h"
-#include "pa_vbool.h"
 #include "pa_junction.h"
 
 /// junction is method+self+context, implemented with Junction
@@ -32,7 +31,7 @@ public: // VJunction
 	override bool as_bool() const { return is_defined(); }
 
 	/// VJunction: false
-	override Value& as_expr_result(bool) { return *new VBool(as_bool()); }
+	override Value& as_expr_result(bool);
 
 	/// VJunction: method, root,self,rcontext, code
 	override Junction* get_junction() { return &fjunction; }

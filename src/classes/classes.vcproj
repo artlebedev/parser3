@@ -170,6 +170,10 @@
 	</References>
 	<Files>
 		<File
+			RelativePath=".\bool.C"
+			>
+		</File>
+		<File
 			RelativePath="classes.awk"
 			>
 			<FileConfiguration

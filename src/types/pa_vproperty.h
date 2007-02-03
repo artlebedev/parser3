@@ -8,12 +8,11 @@
 #ifndef PA_VPROPERTY_H
 #define PA_VPROPERTY_H
 
-static const char * const IDENT_VPROPERTY_H="$Date: 2005/08/09 08:14:55 $";
+static const char * const IDENT_VPROPERTY_H="$Date: 2007/02/03 18:08:38 $";
 
 // include
 
 #include "pa_value.h"
-#include "pa_vbool.h"
 #include "pa_property.h"
 
 /// property two methods
@@ -32,7 +31,7 @@ public: // VProperty
 	override bool as_bool() const { return is_defined(); }
 
 	/// VProperty: false
-	override Value& as_expr_result(bool) { return *new VBool(as_bool()); }
+	override Value& as_expr_result(bool);
 
 	/// VProperty: property
 	override Property* get_property() { return &fproperty; }

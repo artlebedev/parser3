@@ -7,7 +7,7 @@
 #include "classes.h"
 #ifdef XML
 
-static const char * const IDENT_XNODE_C="$Date: 2006/04/09 13:38:47 $";
+static const char * const IDENT_XNODE_C="$Date: 2007/02/03 18:08:38 $";
 
 #include "pa_vmethod_frame.h"
 
@@ -17,6 +17,7 @@ static const char * const IDENT_XNODE_C="$Date: 2006/04/09 13:38:47 $";
 #include "pa_vxdoc.h"
 #include "pa_vvoid.h"
 #include "pa_xml_exception.h"
+#include "pa_vbool.h"
 
 #include "xnode.h"
 #include "libxml/xpath.h"

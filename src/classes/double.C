@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_DOUBLE_C="$Date: 2005/08/26 11:12:45 $";
+static const char * const IDENT_DOUBLE_C="$Date: 2007/02/03 18:08:38 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -13,6 +13,7 @@ static const char * const IDENT_DOUBLE_C="$Date: 2005/08/26 11:12:45 $";
 #include "pa_request.h"
 #include "pa_vdouble.h"
 #include "pa_vint.h"
+#include "pa_vbool.h"
 
 // externs
 
@@ -34,7 +35,7 @@ DECLARE_CLASS_VAR(double, new MDouble, 0);
 // methods
 
 static void _int(Request& r, MethodParams& params) {
-	// just checking (default) syntax validity, never really using it  here, just for string.int compatibility
+	// just checking (default) syntax validity, never really using it here, just for string.int compatibility
 	if(params.count()>0)
 		params.as_int(0, "default must be int", r);
 
@@ -43,12 +44,21 @@ static void _int(Request& r, MethodParams& params) {
 }
 
 static void _double(Request& r, MethodParams& params) {
-	// just checking (default) syntax validity, never really using it  here, just for string.doube compatibility
+	// just checking (default) syntax validity, never really using it here, just for string.double compatibility
 	if(params.count()>0)
 		params.as_double(0, "default must be double", r);
 
 	VDouble& vdouble=GET_SELF(r, VDouble);
 	r.write_no_lang(*new VDouble(vdouble.as_double()));
+}
+
+static void _bool(Request& r, MethodParams& params) {
+	// just checking (default) syntax validity, never really using it here, just for string.bool compatibility
+	if(params.count()>0)
+		params.as_double(0, "default must be bool", r);
+
+	VDouble& vdouble=GET_SELF(r, VDouble);
+	r.write_no_lang(*new VBool(vdouble.as_bool()));
 }
 
 typedef void (*vdouble_op_func_ptr)(VDouble& vdouble, double param);
@@ -103,6 +113,9 @@ MDouble::MDouble(): Methoded("double") {
 
 	// ^double.double[]
 	add_native_method("double", Method::CT_DYNAMIC, _double, 0, 1);
+
+	// ^double.bool[]
+	add_native_method("bool", Method::CT_DYNAMIC, _bool, 0, 1);
 	
 	// ^double.inc[] 
 	// ^double.inc[offset]

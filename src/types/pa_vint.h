@@ -8,11 +8,17 @@
 #ifndef PA_VINT_H
 #define PA_VINT_H
 
-static const char * const IDENT_VINT_H="$Date: 2005/11/21 10:13:43 $";
+static const char * const IDENT_VINT_H="$Date: 2007/02/03 18:08:38 $";
+
+// include
 
 #include "classes.h"
 #include "pa_common.h"
 #include "pa_vstateless_object.h"
+
+// defines
+
+#define VINT_TYPE "int"
 
 extern Methoded* int_class;
 
@@ -20,7 +26,7 @@ extern Methoded* int_class;
 class VInt: public VStateless_object {
 public: // Value
 
-	override const char* type() const { return "int"; }
+	override const char* type() const { return VINT_TYPE; }
 	override VStateless_class *get_class() { return int_class; }
 
 	/// VInt: true

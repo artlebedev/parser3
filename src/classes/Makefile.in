@@ -54,7 +54,7 @@ AR = ar
 ARFLAGS = cru
 libclasses_a_AR = $(AR) $(ARFLAGS)
 libclasses_a_LIBADD =
-am__objects_1 = double.$(OBJEXT) file.$(OBJEXT) form.$(OBJEXT) \
+am__objects_1 = bool.$(OBJEXT) double.$(OBJEXT) file.$(OBJEXT) form.$(OBJEXT) \
 	image.$(OBJEXT) int.$(OBJEXT) mail.$(OBJEXT) op.$(OBJEXT) \
 	math.$(OBJEXT) response.$(OBJEXT) string.$(OBJEXT) \
 	table.$(OBJEXT) void.$(OBJEXT) hash.$(OBJEXT) \
@@ -189,7 +189,7 @@ target_alias = @target_alias@
 INCLUDES = -I../types -I../sql -I../lib/gd -I../lib/pcre -I../lib/gc/include -I../lib/cord/include -I../lib/sdbm/apr-include -Igd @XML_INCLUDES@ -I../lib/md5 -I../lib/smtp
 noinst_LIBRARIES = libclasses.a
 noinst_HEADERS = classes.h xnode.h
-CLASSES_SOURCE_FILES = classes.awk double.C file.C form.C image.C int.C mail.C op.C math.C response.C string.C table.C void.C hash.C hashfile.C date.C xnode.C xdoc.C memory.C
+CLASSES_SOURCE_FILES = classes.awk bool.C double.C file.C form.C image.C int.C mail.C op.C math.C response.C string.C table.C void.C hash.C hashfile.C date.C xnode.C xdoc.C memory.C
 libclasses_a_SOURCES = $(CLASSES_SOURCE_FILES) classes.C
 CLEANFILES = classes.inc
 EXTRA_DIST = classes.vcproj
@@ -241,6 +241,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/classes.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bool.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/date.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/double.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/file.Po@am__quote@

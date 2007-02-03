@@ -3,7 +3,7 @@ INCLUDES = -I../types -I../sql -I../lib/gd -I../lib/pcre -I../lib/gc/include -I.
 noinst_LIBRARIES = libclasses.a
 noinst_HEADERS = classes.h xnode.h
 
-CLASSES_SOURCE_FILES = classes.awk double.C file.C form.C image.C int.C mail.C op.C math.C response.C string.C table.C void.C hash.C hashfile.C date.C xnode.C xdoc.C memory.C
+CLASSES_SOURCE_FILES = classes.awk bool.C double.C file.C form.C image.C int.C mail.C op.C math.C response.C string.C table.C void.C hash.C hashfile.C date.C xnode.C xdoc.C memory.C
 libclasses_a_SOURCES = $(CLASSES_SOURCE_FILES) classes.C
 
 classes.inc: $(CLASSES_SOURCE_FILES) Makefile.am

@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-static const char * const IDENT_STRING_H="$Date: 2005/11/22 15:09:10 $";
+static const char * const IDENT_STRING_H="$Date: 2007/02/03 18:08:38 $";
 
 // includes
 #include "pa_types.h"
@@ -512,6 +512,7 @@ public:
 	const String& trim(Trim_kind kind=TRIM_BOTH, const char* chars=0) const;
 	double as_double() const { return pa_atod(cstr(), this); }
 	int as_int() const { return pa_atoi(cstr(), this); }
+	bool as_bool() const { return as_int()!=0; }
 
 private: //disabled
 

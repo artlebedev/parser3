@@ -5,11 +5,16 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)\
 */
 
-static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2006/12/01 19:00:54 $";
+static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2007/02/03 18:08:38 $";
 
 #include "pa_vstateless_class.h"
 #include "pa_vproperty.h"
 #include "pa_vstring.h"
+#include "pa_vbool.h"
+
+override Value& VStateless_class::as_expr_result(bool /*return_string_as_is=false*/) {
+	return *new VBool(as_bool());
+}
 
 /// @TODO why?! request must be different ptr from global [used in VStateless_class.add_method]
 void VStateless_class::add_method(const String& name, Method& method) {
@@ -38,7 +43,7 @@ void VStateless_class::add_native_method(
 	add_method(name, method);
 }
 
-/// VStateless_class: $CLASS, $method
+/// VStateless_class: $CLASS, $CLASS_NAME, $method
 Value* VStateless_class::get_element(const String& aname, Value& aself, bool looking_up) {
 	// $CLASS
 	if(aname==CLASS_NAME)

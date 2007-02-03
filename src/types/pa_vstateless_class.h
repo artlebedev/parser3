@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
-static const char * const IDENT_VSTATELESS_CLASS_H="$Date: 2006/12/01 19:00:54 $";
+static const char * const IDENT_VSTATELESS_CLASS_H="$Date: 2007/02/03 18:08:39 $";
 
 // include
 
@@ -58,6 +58,7 @@ public: // Value
 	/// VStateless_class: fbase
 	override Value* base() { return fbase; }
 	override Value* get_element(const String& aname, Value& aself, bool looking_up);
+	override Value& as_expr_result(bool /*return_string_as_is=false*/);
 
 public: // usage
 

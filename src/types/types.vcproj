@@ -289,6 +289,10 @@
 			>
 		</File>
 		<File
+			RelativePath=".\pa_vjunction.C"
+			>
+		</File>
+		<File
 			RelativePath=".\pa_vjunction.h"
 			>
 		</File>
@@ -326,6 +330,10 @@
 		</File>
 		<File
 			RelativePath=".\pa_vobject.h"
+			>
+		</File>
+		<File
+			RelativePath=".\pa_vproperty.C"
 			>
 		</File>
 		<File

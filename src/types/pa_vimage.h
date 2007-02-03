@@ -8,7 +8,7 @@
 #ifndef PA_VIMAGE_H
 #define PA_VIMAGE_H
 
-static const char * const IDENT_VIMAGE_H="$Date: 2005/08/09 08:14:54 $";
+static const char * const IDENT_VIMAGE_H="$Date: 2007/02/03 18:08:38 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -66,9 +66,6 @@ public: // Value
 
 	/// VImage: true
 	override bool as_bool() const { return true; }
-
-	/// VImage: true
-	override Value& as_expr_result(bool /*return_string_as_is=false*/) { return *new VBool(as_bool()); }
 
 	/// VImage: method,field
 	override Value* get_element(const String& aname, Value& aself, bool looking_up);
