@@ -1,0 +1,124 @@
+@main[]
+<h2>Defines</h2>
+
+$sEmpty[]
+^$sEmpty[]<br />
+$sZero[0]
+^$sZero[0]<br />
+$sOne[1]
+^$sOne[1]<br />
+$sTwo[2]
+^$sTwo[2]<br /><br />
+
+$dZero(0.0)
+^$dZero(0.0)<br />
+$dOne(1.1)
+^$dOne(1.1)<br />
+$dTwo(2.2)
+^$dTwo(2.2)<br /><br />
+
+$iZero(^dZero.int[])
+^$iZero(^^dZero.int[])<br />
+$iOne(^dOne.int[])
+^$iOne(^^dOne.int[])<br />
+$iTwo(^dTwo.int[])
+^$iTwo(^^dTwo.int[])<br /><br />
+
+$bTrue(1==1)
+^$bTrue(1==1)<br />
+$bFalse(1==0)
+^$bFalse(1==0)<br />
+
+
+<h2>.CLASS_NAME</h2>
+^$bTrue.CLASS_NAME: $bTrue.CLASS_NAME<br />
+^$bFalse.CLASS_NAME: $bFalse.CLASS_NAME<br />
+<br />
+
+^$sEmpty.CLASS_NAME: $sEmpty.CLASS_NAME<br />
+^$sZero.CLASS_NAME: $sZero.CLASS_NAME<br />
+^$sOne.CLASS_NAME: $sOne.CLASS_NAME<br />
+^$sTwo.CLASS_NAME: $sTwo.CLASS_NAME<br />
+<br />
+
+^$dZero.CLASS_NAME: $dZero.CLASS_NAME<br />
+^$dOne.CLASS_NAME: $dOne.CLASS_NAME<br />
+^$dTwo.CLASS_NAME: $dTwo.CLASS_NAME<br />
+<br />
+
+^$iZero.CLASS_NAME: $iZero.CLASS_NAME<br />
+^$iOne.CLASS_NAME: $iOne.CLASS_NAME<br />
+^$iTwo.CLASS_NAME: $iTwo.CLASS_NAME<br />
+
+
+<h2>bool itself</h2>
+(1==0): ^check(1==0)<br />
+(1==1): ^check(1==1)<br />
+<br />
+
+(^$bFalse is "bool"): ^if($bFalse is "bool"){yes}{no}<br />
+(^$bTrue is "bool"): ^if($bTrue is "bool"){yes}{no}<br />
+<br />
+
+(^$sEmpty is "bool"): ^if($sEmpty is "bool"){yes}{no}<br />
+(^$sZero is "bool"): ^if($sZero is "bool"){yes}{no}<br />
+(^$sOne is "bool"): ^if($sOne is "bool"){yes}{no}<br />
+(^$sTwo is "bool"): ^if($sTwo is "bool"){yes}{no}<br />
+<br />
+
+(^$dZero is "bool"): ^if($dZero is "bool"){yes}{no}<br />
+(^$dOne is "bool"): ^if($dOne is "bool"){yes}{no}<br />
+(^$dTwo is "bool"): ^if($dTwo is "bool"){yes}{no}<br />
+<br />
+
+(^$iZero is "bool"): ^if($iZero is "bool"){yes}{no}<br />
+(^$iOne is "bool"): ^if($iOne is "bool"){yes}{no}<br />
+(^$iTwo is "bool"): ^if($iTwo is "bool"){yes}{no}<br />
+
+
+<h2>void functions</h2>
+^^vVoid.bool(true): ^check(^vVoid.bool(true))<br />
+^^vVoid.bool(false): ^check(^vVoid.bool(false))<br />
+
+
+<h2>string functions</h2>
+^^sEmpty.bool(true): ^check(^sEmpty.bool(true))<br />
+^^sEmpty.bool(false): ^check(^sEmpty.bool(false))<br />
+
+^^sZero.bool(true): ^check(^sZero.bool(true))<br />
+^^sZero.bool(false): ^check(^sZero.bool(false))<br />
+
+^^sOne.bool(true): ^check(^sOne.bool(true))<br />
+^^sOne.bool(false): ^check(^sOne.bool(false))<br />
+
+^^sTwo.bool(true): ^check(^sTwo.bool(true))<br />
+^^sTwo.bool(false): ^check(^sTwo.bool(false))<br />
+
+
+<h2>double functions</h2>
+^^dZero.bool(true): ^check(^dZero.bool(true))<br />
+^^dZero.bool(false): ^check(^dZero.bool(false))<br />
+
+^^dOne.bool(true): ^check(^dOne.bool(true))<br />
+^^dOne.bool(false): ^check(^dOne.bool(false))<br />
+
+^^dTwo.bool(true): ^check(^dTwo.bool(true))<br />
+^^dTwo.bool(false): ^check(^dTwo.bool(false))<br />
+
+
+<h2>int functions</h2>
+^^iZero.bool(true): ^check(^iZero.bool(true))<br />
+^^iZero.bool(false): ^check(^iZero.bool(false))<br />
+
+^^iOne.bool(true): ^check(^iOne.bool(true))<br />
+^^iOne.bool(false): ^check(^iOne.bool(false))<br />
+
+^^iTwo.bool(true): ^check(^iTwo.bool(true))<br />
+^^iTwo.bool(false): ^check(^iTwo.bool(false))<br />
+
+
+
+
+
+@check[bValue]
+'^if($bValue){true}{false}'
