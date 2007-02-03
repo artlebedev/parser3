@@ -258,12 +258,14 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         0 или default
     !^имя.double[] (default)
         0 или default
+    !^имя.bool[] + .bool(true|false)  bool значение
     !^void:sql{запрос без результата}{$.bind[см. table::sql]}
 
 
 !int,double
     !^имя.int[]  целочисленное значение 
     !^имя.double[]+  double значение 
+    !^имя.bool[] + .bool(true|false)  bool значение
     !^имя.inc(на сколько +)
     !^имя.dec(на сколько -)
     !^имя.mul(на сколько *)
@@ -287,6 +289,7 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !^имя.int[] .int(default) целочисленное значение строки. 
         если ломается преобразование, берётся default
     !^имя.double[]+ .double(default)  double значение строки
+    !^имя.bool[] + .bool(true|false)  bool значение
         если ломается преобразование, берётся default
     !^имя.format[формат] %d  %.2f %02d...
     !^строка.match[шаблон][[опции поиска]]  $prematch $match $postmatch $1 $2...
@@ -444,7 +447,7 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
 !cookie
     !$cookie:имя считать старое или свежезаданное
     !$cookie:имя[значение] на 90 дней
-    !$cookie:имя[$.value[значение]  $.expires ЗНАЧЕНИЕ $.secure(true)]
+    !$cookie:имя[$.value[значение]  $.expires[ЗНАЧЕНИЕ] $.secure(true)]
     !значение поля expires может быть 'session', date, или число дней(0дней=session)
     ! если дата, она будет преобразована к формату "Sun, 25-Aug-2002 12:03:45 GMT"
     ! можно устанавливать bool свойства, например $.secure(true), $.httponly(true)
