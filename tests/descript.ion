@@ -1,3 +1,4 @@
+080.html on *nix result slightly different: '2e-20'
 130.html mustfail: empty regexp
 131.html mustfail: invalid date/time
 132.html mustfail: access to junction outside of context
