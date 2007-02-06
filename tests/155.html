@@ -1,0 +1,19 @@
+$t[^table::create{a	b
+^taint[av	av]	^taint[b
+v]}]
+
+^t.save[155.cfg;
+	$.encloser["]
+]
+
+$t[^table::load[155.cfg;$.encloser["]]]
+^untaint[as-is]{
+<table border="1">
+^t.menu{
+	<tr>
+		<td>$t.a</td>
+		<td>$t.b</td>
+	</tr>
+}
+</table>
+}
