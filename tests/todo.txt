@@ -12,7 +12,7 @@ $response:download[^image.gif[a.gif]]
 #c
 a"b	c!
 
-$t[^table::load[excel.txt;$.column-encloser["]]]
+$t[^table::load[excel.txt;$.encloser["]]]
 $c[^t.columns[]]
 ^c.menu{=$c.column=|}<br>
 ^t.menu{
@@ -23,16 +23,6 @@ $c[^t.columns[]]
 
 }
 
-
----------------
-
-$t[^table::create{a	b
-^taint[av	av]	^taint[b
-v]}]
-
-^t.save[t.cfg;
-	$.encloser["]
-]
 
 ----------------
 
