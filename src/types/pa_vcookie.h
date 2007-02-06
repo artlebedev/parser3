@@ -8,7 +8,7 @@
 #ifndef PA_VCOOKIE_H
 #define PA_VCOOKIE_H
 
-static const char * const IDENT_VCOOKIE_H="$Date: 2005/08/09 08:14:54 $";
+static const char * const IDENT_VCOOKIE_H="$Date: 2007/02/06 16:22:08 $";
 
 #include "pa_hash.h"
 #include "pa_common.h"
@@ -25,7 +25,7 @@ class VCookie: public Value {
 
 public: // Value
 	
-	override const char* type() const { return "cookie"; }
+	override const char* type() const { return COOKIE_CLASS_NAME; }
 	/// VCookie: 0
 	override VStateless_class *get_class() { return 0; }
 
