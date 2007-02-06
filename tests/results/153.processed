@@ -1,0 +1,72 @@
+content-type: text/html
+content-length: 1406
+
+<p>
+$sFileName: '153.html'<br />
+$sText: 'проверка'<br />
+</p>
+<table border="1">
+<tr>
+<td colspan="2"><h2>base64</h2></td>
+</tr>
+<tr>
+<td>$sText[проверка]<br />^sText.base64[]</td>
+<td>'7/Du4uXw6uA='</td>
+</tr>
+<tr>
+<td>^string:base64[7/Du4uXw6uA=]</td>
+<td>'проверка'</td>
+</tr>
+<tr>
+<td>$f[^file::load[binary;153.html]]<br />^math:md5[^f.base64[]]</td>
+<td>8beb08b57d99dfa074cbda4a520cf91f</td>
+</tr>
+<tr>
+<td>$f[^file::load[binary;153.html]]<br />^math:md5[^f.text.base64[]]</td>
+<td>8beb08b57d99dfa074cbda4a520cf91f</td>
+</tr>
+<tr>
+<td colspan="2"><br /></td>
+</tr>
+<tr>
+<td colspan="2"><h2>crc32</h2></td>
+</tr>
+<tr>
+<td>^file:crc32[153.html]</td>
+<td>421cf3d9</td>
+</tr>
+<tr>
+<td>$f[^file::load[binary;153.html]]<br />^f.crc32[]</td>
+<td>421cf3d9</td>
+</tr>
+<tr>
+<td>$f[^file::load[binary;153.html]]<br />^math:crc32[$f.text]</td>
+<td>421cf3d9</td>
+</tr>
+<tr>
+<td>^math:crc32[проверка]</td>
+<td>750807f4</td>
+</tr>
+<tr>
+<td colspan="2"><br /></td>
+</tr>
+<tr>
+<td colspan="2"><h2>md5</h2></td>
+</tr>
+<tr>
+<td>^file:md5[153.html]</td>
+<td>160c0b8b41c6462902f5fe480d492ed0</td>
+</tr>
+<tr>
+<td>$f[^file::load[binary;153.html]]<br />^f.md5[]</td>
+<td>160c0b8b41c6462902f5fe480d492ed0</td>
+</tr>
+<tr>
+<td>$f[^file::load[binary;153.html]]<br />^math:md5[$f.text]</td>
+<td>160c0b8b41c6462902f5fe480d492ed0</td>
+</tr>
+<tr>
+<td>^math:md5[проверка]</td>
+<td>ff05c0fd1f49ee9bc5568e7309a5348b</td>
+</tr>
+</table>
