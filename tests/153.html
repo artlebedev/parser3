@@ -1,0 +1,100 @@
+$sFileName[153.html]
+
+$sText[проверка]
+
+$f[^file::load[binary;$sFileName]]
+
+<p>
+^$sFileName: '$sFileName'<br />
+^$sText: '$sText'<br />
+</p>
+
+
+<table border="1">
+<tr>
+	<td colspan="2"><h2>base64</h2></td>
+</tr>
+$sBase64[^sText.base64[]]
+<tr>
+	<td>^$sText[проверка]<br />^^sText.base64[]</td>
+	<td>'$sBase64'</td>
+</tr>
+<tr>
+	<td>^^string:base64[$sBase64]</td>
+	<td>'^string:base64[$sBase64]'</td>
+</tr>
+^rem{
+<tr>
+	<td>^^math:md5[^^file:base64[$sFileName]]</td>
+	<td>^math:md5[^file:base64[$sFileName]]</td>
+#	<td>^file:base64[$sFileName]</td>
+</tr>
+}
+<tr>
+	<td>^$f[^^file::load[binary;$sFileName]]<br />^^math:md5[^^f.base64[]]</td>
+	<td>^math:md5[^f.base64[]]</td>
+#	<td>^f.base64[]</td>
+</tr>
+<tr>
+	<td>^$f[^^file::load[binary;$sFileName]]<br />^^math:md5[^^f.text.base64[]]</td>
+	<td>^if(def $f.text){^math:md5[^f.text.base64[]]}{empty source}</td>
+</tr>
+
+
+<tr>
+	<td colspan="2"><br /></td>
+</tr>
+<tr>
+	<td colspan="2"><h2>crc32</h2></td>
+</tr>
+
+<tr>
+	<td>^^file:crc32[$sFileName]</td>
+	<td>^eval(^file:crc32[$sFileName])[%4x]</td>
+</tr>
+
+<tr>
+	<td>^$f[^^file::load[binary;$sFileName]]<br />^^f.crc32[]</td>
+	<td>^eval(^f.crc32[])[%4x]</td>
+</tr>
+
+<tr>
+	<td>^$f[^^file::load[binary;$sFileName]]<br />^^math:crc32[^$f.text]</td>
+	<td>^eval(^math:crc32[$f.text])[%4x]</td>
+</tr>
+
+<tr>
+	<td>^^math:crc32[$sText]</td>
+	<td>^eval(^math:crc32[$sText])[%4x]</td>
+</tr>
+
+
+
+<tr>
+	<td colspan="2"><br /></td>
+</tr>
+<tr>
+	<td colspan="2"><h2>md5</h2></td>
+</tr>
+
+<tr>
+	<td>^^file:md5[$sFileName]</td>
+	<td>^file:md5[$sFileName]</td>
+</tr>
+
+<tr>
+	<td>^$f[^^file::load[binary;$sFileName]]<br />^^f.md5[]</td>
+	<td>^f.md5[]</td>
+</tr>
+
+<tr>
+	<td>^$f[^^file::load[binary;$sFileName]]<br />^^math:md5[^$f.text]</td>
+	<td>^math:md5[$f.text]</td>
+</tr>
+
+<tr>
+	<td>^^math:md5[$sText]</td>
+	<td>^math:md5[$sText]</td>
+</tr>
+
+</table>
