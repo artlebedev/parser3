@@ -8,7 +8,7 @@
 #ifndef PA_VCONSOLE_H
 #define PA_VCONSOLE_H
 
-static const char * const IDENT_VCONSOLE_H="$Date: 2005/08/09 08:14:54 $";
+static const char * const IDENT_VCONSOLE_H="$Date: 2007/02/07 15:50:51 $";
 
 // includes
 
@@ -20,14 +20,13 @@ static const char * const IDENT_VCONSOLE_H="$Date: 2005/08/09 08:14:54 $";
 // defines
 
 #define CONSOLE_CLASS_NAME "console"
-
 #define CONSOLE_LINE_NAME "line"
 
 /// console class
 class VConsole: public Value {
 public: // Value
 	
-	const char* type() const { return "console"; }
+	const char* type() const { return CONSOLE_CLASS_NAME; }
 	/// VConsole: 0
 	VStateless_class *get_class() { return 0; }
 
