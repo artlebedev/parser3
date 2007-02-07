@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VCOOKIE_C="$Date: 2006/12/07 18:29:35 $";
+static const char * const IDENT_VCOOKIE_C="$Date: 2007/02/07 09:26:14 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -51,7 +51,6 @@ Value* VCookie::get_element(const String& aname, Value& /*aself*/, bool /*lookin
 
 const VJunction* VCookie::put_element(Value& /*aself*/, const String& aname, Value* avalue, bool /*replace*/) {
 	// $cookie
-	bool remove;
 	Value* lvalue;
 	if(HashStringValue *hash=avalue->get_hash())
 		lvalue=hash->get(value_name);
@@ -65,11 +64,13 @@ const VJunction* VCookie::put_element(Value& /*aself*/, const String& aname, Val
 		lvalue=new VString(tainted);
 	}
 
-	remove=!lvalue || lvalue->as_string().is_empty();
-
-	(remove?deleted:after).put(aname, avalue);
-	(remove?after:deleted).put(aname, 0);
-	
+	if( !lvalue || lvalue->as_string().is_empty() ) {
+		deleted.put(aname, avalue);
+		after.put(aname, 0);
+	} else {
+		after.put(aname, avalue);
+		deleted.put(aname, 0);
+	}
 	return PUT_ELEMENT_REPLACED_ELEMENT;
 }
 
