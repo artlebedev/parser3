@@ -23,13 +23,11 @@ $sBase64[^sText.base64[]]
 	<td>^^string:base64[$sBase64]</td>
 	<td>'^string:base64[$sBase64]'</td>
 </tr>
-^rem{
 <tr>
 	<td>^^math:md5[^^file:base64[$sFileName]]</td>
 	<td>^math:md5[^file:base64[$sFileName]]</td>
 #	<td>^file:base64[$sFileName]</td>
 </tr>
-}
 <tr>
 	<td>^$f[^^file::load[binary;$sFileName]]<br />^^math:md5[^^f.base64[]]</td>
 	<td>^math:md5[^f.base64[]]</td>
@@ -37,7 +35,7 @@ $sBase64[^sText.base64[]]
 </tr>
 <tr>
 	<td>^$f[^^file::load[binary;$sFileName]]<br />^^math:md5[^^f.text.base64[]]</td>
-	<td>^if(def $f.text){^math:md5[^f.text.base64[]]}{empty source}</td>
+	<td>^if(def $f.text){^math:md5[^f.text.base64[]]}{$s[]^math:md5[$s]}</td>
 </tr>
 
 
