@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2006/12/02 12:36:04 $";
+static const char * const IDENT_FILE_C="$Date: 2007/02/07 15:50:32 $";
 
 #include "pa_config_includes.h"
 
@@ -837,6 +837,8 @@ static void _sql(Request& r, MethodParams& params) {
 }
 
 static void _base64(Request& r, MethodParams& params) {
+	bool dynamic = !(&r.get_self() == file_class);
+	if ( dynamic ){
 	VFile& self=GET_SELF(r, VFile);
 	if(params.count()) {
 		// decode
@@ -849,6 +851,12 @@ static void _base64(Request& r, MethodParams& params) {
 	} else {
 		// encode 
 		const char* encoded=pa_base64_encode(self.value_ptr(), self.value_size());
+		r.write_assign_lang(*new String(encoded, 0, true/*once ?param=base64(something) was needed*/));
+	}
+	} else {
+		// encode
+		const String& file_spec=params.as_string(0, "file name must be string");
+		const char* encoded=pa_base64_encode(r.absolute(file_spec));
 		r.write_assign_lang(*new String(encoded, 0, true/*once ?param=base64(something) was needed*/));
 	}
 }
@@ -1000,7 +1008,8 @@ MFile::MFile(): Methoded("file") {
 
 	// ^file::base64[string] << decode
 	// ^file.base64[] << encode
-	add_native_method("base64", Method::CT_DYNAMIC, _base64, 0, 1);
+	// ^file:base64[file-name] << encode
+	add_native_method("base64", Method::CT_ANY, _base64, 0, 1);
 
 	// ^file.crc32[]
 	// ^file:crc32[file-name]
