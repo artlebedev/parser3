@@ -26,7 +26,7 @@
  *
  */
 
-static const char * const IDENT_COMMON_C="$Date: 2006/12/02 12:35:50 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2007/02/07 15:50:04 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -964,6 +964,44 @@ char* pa_base64_encode(const char *in, size_t in_size)
 	assert(filled <= in_size * 2 + 6);
 
 	return result;
+}
+
+
+char* pa_base64_encode(const String& file_spec)
+{
+	unsigned char* base64=0;
+	File_base64_action_info info={&base64}; 
+
+	file_read_action_under_lock(file_spec, 
+		"pa_base64_encode", file_base64_file_action, &info);
+
+	return (char*)base64; 
+}
+
+
+static void file_base64_file_action(
+			     struct stat& finfo, 
+			     int f, 
+			     const String&, const char* /*fname*/, bool, 
+			     void *context) {
+
+	if(finfo.st_size) { 
+		File_base64_action_info& info=*static_cast<File_base64_action_info *>(context);
+		*info.base64=new(PointerFreeGC) unsigned char[finfo.st_size * 2 + 6]; 
+		unsigned char* base64 = *info.base64;
+		int state=0;
+		int save=0;
+		int nCount;
+		do {
+			unsigned char buffer[FILE_BUFFER_SIZE];
+			nCount = file_block_read(f, buffer, sizeof(buffer));
+			if( nCount ){
+				size_t filled=g_mime_utils_base64_encode_step ((const unsigned char*)buffer, nCount, base64, &state, &save);
+				base64+=filled;
+			}
+		} while(nCount > 0);
+		g_mime_utils_base64_encode_close (0, 0, base64, &state, &save);
+	}
 }
 
 void pa_base64_decode(const char *in, size_t in_size, char*& result, size_t& result_size)
