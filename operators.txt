@@ -714,6 +714,7 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     	если есть вторая - это имя файла
     	если есть третья - это content-type
     !^file.base64[] encode
+    !^file:base64[имя файла] encode
     !^file::base64[encoded string] decode
     !^file:crc32[имя файла]
        вычисляет crc32 файла с указанным именем
