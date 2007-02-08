@@ -117,8 +117,33 @@ $bFalse(1==0)
 ^^iTwo.bool(false): ^check(^iTwo.bool(false))<br />
 
 
+<h2>def</h2>
+(def ^$vVoid): ^def[$vVoid]<br />
+<br />
 
+(def ^$bFalse): ^def[$bFalse]<br />
+(def ^$bTrue): ^def[$bTrue]<br />
+<br />
+
+(def ^$sEmpty): ^def[$sEmpty]<br />
+(def ^$sZero): ^def[$sZero]<br />
+(def ^$sOne): ^def[$sOne]<br />
+(def ^$sTwo): ^def[$sTwo]<br />
+<br />
+
+(def ^$dZero): ^def($dZero)<br />
+(def ^$dOne): ^def($dOne)<br />
+(def ^$dTwo): ^def($dTwo)<br />
+<br />
+
+(def ^$iZero): ^def($iZero)<br />
+(def ^$iOne): ^def($iOne)<br />
+(def ^$iTwo): ^def($iTwo)<br />
 
 
 @check[bValue]
 '^if($bValue){true}{false}'
+
+
+@def[uValue]
+^if(def $uValue){def}{undef}

@@ -1,5 +1,5 @@
 content-type: text/html
-content-length: 1922
+content-length: 2299
 
 <h2>Defines</h2>
 $sEmpty[]<br />
@@ -31,8 +31,10 @@ $iZero.CLASS_NAME: int<br />
 $iOne.CLASS_NAME: int<br />
 $iTwo.CLASS_NAME: int<br />
 <h2>bool itself</h2>
-(1==0): 'false'<br />
-(1==1): 'true'<br />
+(1==0): 'false'
+<br />
+(1==1): 'true'
+<br />
 <br />
 ($bFalse is "bool"): yes<br />
 ($bTrue is "bool"): yes<br />
@@ -50,28 +52,68 @@ $iTwo.CLASS_NAME: int<br />
 ($iOne is "bool"): no<br />
 ($iTwo is "bool"): no<br />
 <h2>void functions</h2>
-^vVoid.bool(true): 'true'<br />
-^vVoid.bool(false): 'false'<br />
+^vVoid.bool(true): 'true'
+<br />
+^vVoid.bool(false): 'false'
+<br />
 <h2>string functions</h2>
-^sEmpty.bool(true): 'true'<br />
-^sEmpty.bool(false): 'false'<br />
-^sZero.bool(true): 'false'<br />
-^sZero.bool(false): 'false'<br />
-^sOne.bool(true): 'true'<br />
-^sOne.bool(false): 'true'<br />
-^sTwo.bool(true): 'true'<br />
-^sTwo.bool(false): 'true'<br />
+^sEmpty.bool(true): 'true'
+<br />
+^sEmpty.bool(false): 'false'
+<br />
+^sZero.bool(true): 'false'
+<br />
+^sZero.bool(false): 'false'
+<br />
+^sOne.bool(true): 'true'
+<br />
+^sOne.bool(false): 'true'
+<br />
+^sTwo.bool(true): 'true'
+<br />
+^sTwo.bool(false): 'true'
+<br />
 <h2>double functions</h2>
-^dZero.bool(true): 'false'<br />
-^dZero.bool(false): 'false'<br />
-^dOne.bool(true): 'true'<br />
-^dOne.bool(false): 'true'<br />
-^dTwo.bool(true): 'true'<br />
-^dTwo.bool(false): 'true'<br />
+^dZero.bool(true): 'false'
+<br />
+^dZero.bool(false): 'false'
+<br />
+^dOne.bool(true): 'true'
+<br />
+^dOne.bool(false): 'true'
+<br />
+^dTwo.bool(true): 'true'
+<br />
+^dTwo.bool(false): 'true'
+<br />
 <h2>int functions</h2>
-^iZero.bool(true): 'false'<br />
-^iZero.bool(false): 'false'<br />
-^iOne.bool(true): 'true'<br />
-^iOne.bool(false): 'true'<br />
-^iTwo.bool(true): 'true'<br />
-^iTwo.bool(false): 'true'<br />
+^iZero.bool(true): 'false'
+<br />
+^iZero.bool(false): 'false'
+<br />
+^iOne.bool(true): 'true'
+<br />
+^iOne.bool(false): 'true'
+<br />
+^iTwo.bool(true): 'true'
+<br />
+^iTwo.bool(false): 'true'
+<br />
+<h2>def</h2>
+(def $vVoid): undef<br />
+<br />
+(def $bFalse): def<br />
+(def $bTrue): def<br />
+<br />
+(def $sEmpty): undef<br />
+(def $sZero): def<br />
+(def $sOne): def<br />
+(def $sTwo): def<br />
+<br />
+(def $dZero): def<br />
+(def $dOne): def<br />
+(def $dTwo): def<br />
+<br />
+(def $iZero): def<br />
+(def $iOne): def<br />
+(def $iTwo): def<br />
