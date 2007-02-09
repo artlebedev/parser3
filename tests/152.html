@@ -10,6 +10,30 @@ $sOne[1]
 $sTwo[2]
 ^$sTwo[2]<br /><br />
 
+$dtDate[^date::create(2007;01;02;03;04;05)]
+^$dtDate[^^date::create(2007;01;02;03;04;05)]<br />
+<br />
+
+^$tEmptyTable[^^table::create{a&nbsp^;&nbsp^;b}]<br />
+^$tTable[^^table::create{a&nbsp^;&nbsp^;b<br />
+1&nbsp^;&nbsp^;2}]<br />
+$tEmptyTable[^table::create{a	b}]
+$tTable[^table::create{a	b
+1	2}]
+<br />
+
+^$hEmptyHash[^^hash::create[]]<br />
+$hEmptyHash[^hash::create[]]
+^$hHash[<br />
+&nbsp^;&nbsp^;^$.a[1]<br />
+&nbsp^;&nbsp^;^$.b[2]<br />
+]<br />
+<br />
+$hHash[
+	$.a[1]
+	$.b[2]
+]
+
 $dZero(0.0)
 ^$dZero(0.0)<br />
 $dOne(1.1)
@@ -27,8 +51,15 @@ $iTwo(^dTwo.int[])
 $bTrue(1==1)
 ^$bTrue(1==1)<br />
 $bFalse(1==0)
-^$bFalse(1==0)<br />
+^$bFalse(1==0)<br /><br />
 
+$xDoc[^xdoc::create{<?xml version="1.0"?><root><t/><t/><t/></root>}]
+^$xDoc[^^xdoc::create{<?xml version="1.0"?><root><t/><t/><t/></root>}]<br />
+
+^$h[^^xDoc.select[/root/t]]<br />
+^$xNode[^$h.0]<br />
+$h[^xDoc.select[/root/t]]
+$xNode[$h.0]
 
 <h2>.CLASS_NAME</h2>
 ^$bTrue.CLASS_NAME: $bTrue.CLASS_NAME<br />
@@ -49,101 +80,136 @@ $bFalse(1==0)
 ^$iZero.CLASS_NAME: $iZero.CLASS_NAME<br />
 ^$iOne.CLASS_NAME: $iOne.CLASS_NAME<br />
 ^$iTwo.CLASS_NAME: $iTwo.CLASS_NAME<br />
+<br />
 
+^$tTable.CLASS_NAME: $tTable.CLASS_NAME<br />
+^$hHash.CLASS_NAME: $hHash.CLASS_NAME<br />
+^$dtDate.CLASS_NAME: $dtDate.CLASS_NAME<br />
+^$xDoc.CLASS_NAME: $xDoc.CLASS_NAME<br />
+^$xNode.CLASS_NAME: $xNode.CLASS_NAME<br />
 
 <h2>bool itself</h2>
-(1==0): ^check(1==0)<br />
-(1==1): ^check(1==1)<br />
+(1==0): ^checkBool(1==0)
+(1==1): ^checkBool(1==1)
 <br />
 
-(^$bFalse is "bool"): ^if($bFalse is "bool"){yes}{no}<br />
-(^$bTrue is "bool"): ^if($bTrue is "bool"){yes}{no}<br />
-<br />
-
-(^$sEmpty is "bool"): ^if($sEmpty is "bool"){yes}{no}<br />
-(^$sZero is "bool"): ^if($sZero is "bool"){yes}{no}<br />
-(^$sOne is "bool"): ^if($sOne is "bool"){yes}{no}<br />
-(^$sTwo is "bool"): ^if($sTwo is "bool"){yes}{no}<br />
-<br />
-
-(^$dZero is "bool"): ^if($dZero is "bool"){yes}{no}<br />
-(^$dOne is "bool"): ^if($dOne is "bool"){yes}{no}<br />
-(^$dTwo is "bool"): ^if($dTwo is "bool"){yes}{no}<br />
-<br />
-
-(^$iZero is "bool"): ^if($iZero is "bool"){yes}{no}<br />
-(^$iOne is "bool"): ^if($iOne is "bool"){yes}{no}<br />
-(^$iTwo is "bool"): ^if($iTwo is "bool"){yes}{no}<br />
+<h2>bool methods for void</h2>
+^^vVoid.bool(true): ^checkBool(^vVoid.bool(true))
+^^vVoid.bool(false): ^checkBool(^vVoid.bool(false))
 
 
-<h2>void functions</h2>
-^^vVoid.bool(true): ^check(^vVoid.bool(true))<br />
-^^vVoid.bool(false): ^check(^vVoid.bool(false))<br />
+<h2>bool methods for string</h2>
+^^sEmpty.bool(true): ^checkBool(^sEmpty.bool(true))
+^^sEmpty.bool(false): ^checkBool(^sEmpty.bool(false))
+
+^^sZero.bool(true): ^checkBool(^sZero.bool(true))
+^^sZero.bool(false): ^checkBool(^sZero.bool(false))
+
+^^sOne.bool(true): ^checkBool(^sOne.bool(true))
+^^sOne.bool(false): ^checkBool(^sOne.bool(false))
+
+^^sTwo.bool(true): ^checkBool(^sTwo.bool(true))
+^^sTwo.bool(false): ^checkBool(^sTwo.bool(false))
 
 
-<h2>string functions</h2>
-^^sEmpty.bool(true): ^check(^sEmpty.bool(true))<br />
-^^sEmpty.bool(false): ^check(^sEmpty.bool(false))<br />
+<h2>bool methods for double</h2>
+^^dZero.bool(true): ^checkBool(^dZero.bool(true))
+^^dZero.bool(false): ^checkBool(^dZero.bool(false))
 
-^^sZero.bool(true): ^check(^sZero.bool(true))<br />
-^^sZero.bool(false): ^check(^sZero.bool(false))<br />
+^^dOne.bool(true): ^checkBool(^dOne.bool(true))
+^^dOne.bool(false): ^checkBool(^dOne.bool(false))
 
-^^sOne.bool(true): ^check(^sOne.bool(true))<br />
-^^sOne.bool(false): ^check(^sOne.bool(false))<br />
-
-^^sTwo.bool(true): ^check(^sTwo.bool(true))<br />
-^^sTwo.bool(false): ^check(^sTwo.bool(false))<br />
+^^dTwo.bool(true): ^checkBool(^dTwo.bool(true))
+^^dTwo.bool(false): ^checkBool(^dTwo.bool(false))
 
 
-<h2>double functions</h2>
-^^dZero.bool(true): ^check(^dZero.bool(true))<br />
-^^dZero.bool(false): ^check(^dZero.bool(false))<br />
+<h2>bool methods for int</h2>
+^^iZero.bool(true): ^checkBool(^iZero.bool(true))
+^^iZero.bool(false): ^checkBool(^iZero.bool(false))
 
-^^dOne.bool(true): ^check(^dOne.bool(true))<br />
-^^dOne.bool(false): ^check(^dOne.bool(false))<br />
+^^iOne.bool(true): ^checkBool(^iOne.bool(true))
+^^iOne.bool(false): ^checkBool(^iOne.bool(false))
 
-^^dTwo.bool(true): ^check(^dTwo.bool(true))<br />
-^^dTwo.bool(false): ^check(^dTwo.bool(false))<br />
-
-
-<h2>int functions</h2>
-^^iZero.bool(true): ^check(^iZero.bool(true))<br />
-^^iZero.bool(false): ^check(^iZero.bool(false))<br />
-
-^^iOne.bool(true): ^check(^iOne.bool(true))<br />
-^^iOne.bool(false): ^check(^iOne.bool(false))<br />
-
-^^iTwo.bool(true): ^check(^iTwo.bool(true))<br />
-^^iTwo.bool(false): ^check(^iTwo.bool(false))<br />
+^^iTwo.bool(true): ^checkBool(^iTwo.bool(true))
+^^iTwo.bool(false): ^checkBool(^iTwo.bool(false))
 
 
-<h2>def</h2>
-(def ^$vVoid): ^def[$vVoid]<br />
-<br />
+<h2>others</h2>
+<table border="1">
+^printHeadLine[<br />]
+^printLine[^$vVoid;^checkDef[];^checkExp[$vVoid]]
 
-(def ^$bFalse): ^def[$bFalse]<br />
-(def ^$bTrue): ^def[$bTrue]<br />
-<br />
+^printLine[^$bFalse;^checkDef[$bFalse];^checkExp[$bFalse];$bFalse]
+^printLine[^$bTrue;^checkDef[$bTrue];^checkExp[$bTrue];$bTrue]
 
-(def ^$sEmpty): ^def[$sEmpty]<br />
-(def ^$sZero): ^def[$sZero]<br />
-(def ^$sOne): ^def[$sOne]<br />
-(def ^$sTwo): ^def[$sTwo]<br />
-<br />
+^printLine[^$sEmpty;^checkDef[$sEmpty];^checkExp[$sEmpty];$sEmpty]
+^printLine[^$sZero;^checkDef[$sZero];^checkExp[$sZero];$sZero]
+^printLine[^$sOne;^checkDef[$sOne];^checkExp[$sOne];$sOne]
+^printLine[^$sTwo;^checkDef[$sTwo];^checkExp[$sTwo];$sTwo]
 
-(def ^$dZero): ^def($dZero)<br />
-(def ^$dOne): ^def($dOne)<br />
-(def ^$dTwo): ^def($dTwo)<br />
-<br />
+^printLine[^$dZero;^checkDef($dZero);^checkExp($dZero)]($dZero)
+^printLine[^$dOne;^checkDef($dOne);^checkExp($dOne)]($dOne)
+^printLine[^$dTwo;^checkDef($dTwo);^checkExp($dTwo)]($dTwo)
 
-(def ^$iZero): ^def($iZero)<br />
-(def ^$iOne): ^def($iOne)<br />
-(def ^$iTwo): ^def($iTwo)<br />
+^printLine[^$iZero;^checkDef($iZero);^checkExp($iZero)]($iZero)
+^printLine[^$iOne;^checkDef($iOne);^checkExp($iOne)]($iOne)
+^printLine[^$iTwo;^checkDef($iTwo);^checkExp($iTwo)]($iTwo)
+
+^printLine[^$tEmptyTable;^checkDef[$tEmptyTable];^checkExp[$tEmptyTable];$tEmptyTable]
+^printLine[^$tTable;^checkDef[$tTable];^checkExp[$tTable];$tTable]
+
+^printLine[^$hEmptyHash;^checkDef[$hEmptyHash];^checkExp[$hEmptyHash];$hEmptyHash]
+^printLine[^$hHash;^checkDef[$hHash];^checkExp[$hHash];$hHash]
+
+^printLine[^$dtDate;^checkDef[$dtDate];^checkExp[$dtDate];$dtDate]
+^printLine[^$xDoc;^checkDef[$xDoc];^checkExp[$xDoc];$xDoc]
+^printLine[^$xNode;^checkDef[$xNode];^checkExp[$xNode];$xNode]
+</table>
 
 
-@check[bValue]
-'^if($bValue){true}{false}'
+
+@checkIsBool[uValue]
+^if($uValue is "bool"){yes}{no}<br />
 
 
-@def[uValue]
-^if(def $uValue){def}{undef}
+@checkBool[bValue]
+^if($bValue == true){true}{false}<br />
+
+
+@checkDef[uValue]
+^if(def $uValue){yes}{no}<br />
+
+
+@checkExp[uValue]
+^if($uValue){true}{false}<br />
+
+
+@printHeadLine[sTitle]
+$tType[^table::create{sName
+bool
+string
+double
+int
+table
+hash
+date
+xdoc
+xnode
+}]
+<tr>
+	<td>$sTitle</td>
+	<td>(def ...)</td>
+	<td>(...)</td>
+	^tType.menu{<td>(... is $tType.sName)</td>}
+</tr>
+
+
+@printLine[sTitle;sDef;sExp;uValue]
+<tr>
+	<td>$sTitle</td>
+	<td>$sDef</td>
+	<td>$sExp</td>
+	^tType.menu{
+		<td>^if($uValue is $tType.sName){<b>yes</b>}{no}</td>
+	}
+</tr>

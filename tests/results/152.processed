@@ -1,11 +1,23 @@
 content-type: text/html
-content-length: 2299
+content-length: 6124
 
 <h2>Defines</h2>
 $sEmpty[]<br />
 $sZero[0]<br />
 $sOne[1]<br />
 $sTwo[2]<br /><br />
+$dtDate[^date::create(2007;01;02;03;04;05)]<br />
+<br />
+$tEmptyTable[^table::create{a&nbsp;&nbsp;b}]<br />
+$tTable[^table::create{a&nbsp;&nbsp;b<br />
+1&nbsp;&nbsp;2}]<br />
+<br />
+$hEmptyHash[^hash::create[]]<br />
+$hHash[<br />
+&nbsp;&nbsp;$.a[1]<br />
+&nbsp;&nbsp;$.b[2]<br />
+]<br />
+<br />
 $dZero(0.0)<br />
 $dOne(1.1)<br />
 $dTwo(2.2)<br /><br />
@@ -13,7 +25,10 @@ $iZero(^dZero.int[])<br />
 $iOne(^dOne.int[])<br />
 $iTwo(^dTwo.int[])<br /><br />
 $bTrue(1==1)<br />
-$bFalse(1==0)<br />
+$bFalse(1==0)<br /><br />
+$xDoc[^xdoc::create{<?xml version="1.0"?><root><t/><t/><t/></root>}]<br />
+$h[^xDoc.select[/root/t]]<br />
+$xNode[$h.0]<br />
 <h2>.CLASS_NAME</h2>
 $bTrue.CLASS_NAME: bool<br />
 $bFalse.CLASS_NAME: bool<br />
@@ -30,90 +45,368 @@ $dTwo.CLASS_NAME: double<br />
 $iZero.CLASS_NAME: int<br />
 $iOne.CLASS_NAME: int<br />
 $iTwo.CLASS_NAME: int<br />
+<br />
+$tTable.CLASS_NAME: table<br />
+$hHash.CLASS_NAME: hash<br />
+$dtDate.CLASS_NAME: date<br />
+$xDoc.CLASS_NAME: xdoc<br />
+$xNode.CLASS_NAME: xnode<br />
 <h2>bool itself</h2>
-(1==0): 'false'
+(1==0): false<br />
+(1==1): true<br />
 <br />
-(1==1): 'true'
-<br />
-<br />
-($bFalse is "bool"): yes<br />
-($bTrue is "bool"): yes<br />
-<br />
-($sEmpty is "bool"): no<br />
-($sZero is "bool"): no<br />
-($sOne is "bool"): no<br />
-($sTwo is "bool"): no<br />
-<br />
-($dZero is "bool"): no<br />
-($dOne is "bool"): no<br />
-($dTwo is "bool"): no<br />
-<br />
-($iZero is "bool"): no<br />
-($iOne is "bool"): no<br />
-($iTwo is "bool"): no<br />
-<h2>void functions</h2>
-^vVoid.bool(true): 'true'
-<br />
-^vVoid.bool(false): 'false'
-<br />
-<h2>string functions</h2>
-^sEmpty.bool(true): 'true'
-<br />
-^sEmpty.bool(false): 'false'
-<br />
-^sZero.bool(true): 'false'
-<br />
-^sZero.bool(false): 'false'
-<br />
-^sOne.bool(true): 'true'
-<br />
-^sOne.bool(false): 'true'
-<br />
-^sTwo.bool(true): 'true'
-<br />
-^sTwo.bool(false): 'true'
-<br />
-<h2>double functions</h2>
-^dZero.bool(true): 'false'
-<br />
-^dZero.bool(false): 'false'
-<br />
-^dOne.bool(true): 'true'
-<br />
-^dOne.bool(false): 'true'
-<br />
-^dTwo.bool(true): 'true'
-<br />
-^dTwo.bool(false): 'true'
-<br />
-<h2>int functions</h2>
-^iZero.bool(true): 'false'
-<br />
-^iZero.bool(false): 'false'
-<br />
-^iOne.bool(true): 'true'
-<br />
-^iOne.bool(false): 'true'
-<br />
-^iTwo.bool(true): 'true'
-<br />
-^iTwo.bool(false): 'true'
-<br />
-<h2>def</h2>
-(def $vVoid): undef<br />
-<br />
-(def $bFalse): def<br />
-(def $bTrue): def<br />
-<br />
-(def $sEmpty): undef<br />
-(def $sZero): def<br />
-(def $sOne): def<br />
-(def $sTwo): def<br />
-<br />
-(def $dZero): def<br />
-(def $dOne): def<br />
-(def $dTwo): def<br />
-<br />
-(def $iZero): def<br />
-(def $iOne): def<br />
-(def $iTwo): def<br />
+<h2>bool methods for void</h2>
+^vVoid.bool(true): true<br />
+^vVoid.bool(false): false<br />
+<h2>bool methods for string</h2>
+^sEmpty.bool(true): true<br />
+^sEmpty.bool(false): false<br />
+^sZero.bool(true): false<br />
+^sZero.bool(false): false<br />
+^sOne.bool(true): true<br />
+^sOne.bool(false): true<br />
+^sTwo.bool(true): true<br />
+^sTwo.bool(false): true<br />
+<h2>bool methods for double</h2>
+^dZero.bool(true): false<br />
+^dZero.bool(false): false<br />
+^dOne.bool(true): true<br />
+^dOne.bool(false): true<br />
+^dTwo.bool(true): true<br />
+^dTwo.bool(false): true<br />
+<h2>bool methods for int</h2>
+^iZero.bool(true): false<br />
+^iZero.bool(false): false<br />
+^iOne.bool(true): true<br />
+^iOne.bool(false): true<br />
+^iTwo.bool(true): true<br />
+^iTwo.bool(false): true<br />
+<h2>others</h2>
+<table border="1">
+<tr>
+<td><br /></td>
+<td>(def ...)</td>
+<td>(...)</td>
+<td>(... is bool)</td><td>(... is string)</td><td>(... is double)</td><td>(... is int)</td><td>(... is table)</td><td>(... is hash)</td><td>(... is date)</td><td>(... is xdoc)</td><td>(... is xnode)</td>
+</tr>
+<tr>
+<td>$vVoid</td>
+<td>no<br />
+</td>
+<td>false<br />
+</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+</tr>
+<tr>
+<td>$bFalse</td>
+<td>yes<br />
+</td>
+<td>false<br />
+</td>
+<td><b>yes</b></td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+</tr>
+<tr>
+<td>$bTrue</td>
+<td>yes<br />
+</td>
+<td>true<br />
+</td>
+<td><b>yes</b></td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+</tr>
+<tr>
+<td>$sEmpty</td>
+<td>no<br />
+</td>
+<td>false<br />
+</td>
+<td>no</td>
+<td><b>yes</b></td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+</tr>
+<tr>
+<td>$sZero</td>
+<td>yes<br />
+</td>
+<td>false<br />
+</td>
+<td>no</td>
+<td><b>yes</b></td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+</tr>
+<tr>
+<td>$sOne</td>
+<td>yes<br />
+</td>
+<td>true<br />
+</td>
+<td>no</td>
+<td><b>yes</b></td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+</tr>
+<tr>
+<td>$sTwo</td>
+<td>yes<br />
+</td>
+<td>true<br />
+</td>
+<td>no</td>
+<td><b>yes</b></td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+</tr>
+<tr>
+<td>$dZero</td>
+<td>yes<br />
+</td>
+<td>false<br />
+</td>
+<td>no</td>
+<td>no</td>
+<td><b>yes</b></td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+</tr>
+<tr>
+<td>$dOne</td>
+<td>yes<br />
+</td>
+<td>true<br />
+</td>
+<td>no</td>
+<td>no</td>
+<td><b>yes</b></td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+</tr>
+<tr>
+<td>$dTwo</td>
+<td>yes<br />
+</td>
+<td>true<br />
+</td>
+<td>no</td>
+<td>no</td>
+<td><b>yes</b></td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+</tr>
+<tr>
+<td>$iZero</td>
+<td>yes<br />
+</td>
+<td>false<br />
+</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td><b>yes</b></td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+</tr>
+<tr>
+<td>$iOne</td>
+<td>yes<br />
+</td>
+<td>true<br />
+</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td><b>yes</b></td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+</tr>
+<tr>
+<td>$iTwo</td>
+<td>yes<br />
+</td>
+<td>true<br />
+</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td><b>yes</b></td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+</tr>
+<tr>
+<td>$tEmptyTable</td>
+<td>no<br />
+</td>
+<td>false<br />
+</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td><b>yes</b></td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+</tr>
+<tr>
+<td>$tTable</td>
+<td>yes<br />
+</td>
+<td>true<br />
+</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td><b>yes</b></td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+</tr>
+<tr>
+<td>$hEmptyHash</td>
+<td>no<br />
+</td>
+<td>false<br />
+</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td><b>yes</b></td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+</tr>
+<tr>
+<td>$hHash</td>
+<td>yes<br />
+</td>
+<td>true<br />
+</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td><b>yes</b></td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+</tr>
+<tr>
+<td>$dtDate</td>
+<td>yes<br />
+</td>
+<td>true<br />
+</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td><b>yes</b></td>
+<td>no</td>
+<td>no</td>
+</tr>
+<tr>
+<td>$xDoc</td>
+<td>yes<br />
+</td>
+<td>true<br />
+</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td><b>yes</b></td>
+<td><b>yes</b></td>
+</tr>
+<tr>
+<td>$xNode</td>
+<td>yes<br />
+</td>
+<td>true<br />
+</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td><b>yes</b></td>
+</tr>
+</table>
