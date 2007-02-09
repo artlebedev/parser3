@@ -61,33 +61,6 @@ $xDoc[^xdoc::create{<?xml version="1.0"?><root><t/><t/><t/></root>}]
 $h[^xDoc.select[/root/t]]
 $xNode[$h.0]
 
-<h2>.CLASS_NAME</h2>
-^$bTrue.CLASS_NAME: $bTrue.CLASS_NAME<br />
-^$bFalse.CLASS_NAME: $bFalse.CLASS_NAME<br />
-<br />
-
-^$sEmpty.CLASS_NAME: $sEmpty.CLASS_NAME<br />
-^$sZero.CLASS_NAME: $sZero.CLASS_NAME<br />
-^$sOne.CLASS_NAME: $sOne.CLASS_NAME<br />
-^$sTwo.CLASS_NAME: $sTwo.CLASS_NAME<br />
-<br />
-
-^$dZero.CLASS_NAME: $dZero.CLASS_NAME<br />
-^$dOne.CLASS_NAME: $dOne.CLASS_NAME<br />
-^$dTwo.CLASS_NAME: $dTwo.CLASS_NAME<br />
-<br />
-
-^$iZero.CLASS_NAME: $iZero.CLASS_NAME<br />
-^$iOne.CLASS_NAME: $iOne.CLASS_NAME<br />
-^$iTwo.CLASS_NAME: $iTwo.CLASS_NAME<br />
-<br />
-
-^$tTable.CLASS_NAME: $tTable.CLASS_NAME<br />
-^$hHash.CLASS_NAME: $hHash.CLASS_NAME<br />
-^$dtDate.CLASS_NAME: $dtDate.CLASS_NAME<br />
-^$xDoc.CLASS_NAME: $xDoc.CLASS_NAME<br />
-^$xNode.CLASS_NAME: $xNode.CLASS_NAME<br />
-
 <h2>bool itself</h2>
 (1==0): ^checkBool(1==0)
 (1==1): ^checkBool(1==1)
@@ -137,33 +110,33 @@ $xNode[$h.0]
 <h2>others</h2>
 <table border="1">
 ^printHeadLine[<br />]
-^printLine[^$vVoid;^checkDef[];^checkExp[$vVoid]]
+^printLine[^$vVoid;$vVoid.CLASS_NAME;^checkDef[];^checkExp[$vVoid]]
 
-^printLine[^$bFalse;^checkDef[$bFalse];^checkExp[$bFalse];$bFalse]
-^printLine[^$bTrue;^checkDef[$bTrue];^checkExp[$bTrue];$bTrue]
+^printLine[^$bFalse;$bFalse.CLASS_NAME;^checkDef[$bFalse];^checkExp[$bFalse];$bFalse]
+^printLine[^$bTrue;$bTrue.CLASS_NAME;^checkDef[$bTrue];^checkExp[$bTrue];$bTrue]
 
-^printLine[^$sEmpty;^checkDef[$sEmpty];^checkExp[$sEmpty];$sEmpty]
-^printLine[^$sZero;^checkDef[$sZero];^checkExp[$sZero];$sZero]
-^printLine[^$sOne;^checkDef[$sOne];^checkExp[$sOne];$sOne]
-^printLine[^$sTwo;^checkDef[$sTwo];^checkExp[$sTwo];$sTwo]
+^printLine[^$sEmpty;<b>$sEmpty.CLASS_NAME</b>;^checkDef[$sEmpty];^checkExp[$sEmpty];$sEmpty]
+^printLine[^$sZero;$sZero.CLASS_NAME;^checkDef[$sZero];^checkExp[$sZero];$sZero]
+^printLine[^$sOne;$sOne.CLASS_NAME;^checkDef[$sOne];^checkExp[$sOne];$sOne]
+^printLine[^$sTwo;$sTwo.CLASS_NAME;^checkDef[$sTwo];^checkExp[$sTwo];$sTwo]
 
-^printLine[^$dZero;^checkDef($dZero);^checkExp($dZero)]($dZero)
-^printLine[^$dOne;^checkDef($dOne);^checkExp($dOne)]($dOne)
-^printLine[^$dTwo;^checkDef($dTwo);^checkExp($dTwo)]($dTwo)
+^printLine[^$dZero;$dZero.CLASS_NAME;^checkDef($dZero);^checkExp($dZero)]($dZero)
+^printLine[^$dOne;$dOne.CLASS_NAME;^checkDef($dOne);^checkExp($dOne)]($dOne)
+^printLine[^$dTwo;$dTwo.CLASS_NAME;^checkDef($dTwo);^checkExp($dTwo)]($dTwo)
 
-^printLine[^$iZero;^checkDef($iZero);^checkExp($iZero)]($iZero)
-^printLine[^$iOne;^checkDef($iOne);^checkExp($iOne)]($iOne)
-^printLine[^$iTwo;^checkDef($iTwo);^checkExp($iTwo)]($iTwo)
+^printLine[^$iZero;$iZero.CLASS_NAME;^checkDef($iZero);^checkExp($iZero)]($iZero)
+^printLine[^$iOne;$iOne.CLASS_NAME;^checkDef($iOne);^checkExp($iOne)]($iOne)
+^printLine[^$iTwo;$iTwo.CLASS_NAME;^checkDef($iTwo);^checkExp($iTwo)]($iTwo)
 
-^printLine[^$tEmptyTable;^checkDef[$tEmptyTable];^checkExp[$tEmptyTable];$tEmptyTable]
-^printLine[^$tTable;^checkDef[$tTable];^checkExp[$tTable];$tTable]
+^printLine[^$tEmptyTable;$tEmptyTable.CLASS_NAME;^checkDef[$tEmptyTable];^checkExp[$tEmptyTable];$tEmptyTable]
+^printLine[^$tTable;$tTable.CLASS_NAME;^checkDef[$tTable];^checkExp[$tTable];$tTable]
 
-^printLine[^$hEmptyHash;^checkDef[$hEmptyHash];^checkExp[$hEmptyHash];$hEmptyHash]
-^printLine[^$hHash;^checkDef[$hHash];^checkExp[$hHash];$hHash]
+^printLine[^$hEmptyHash;$hEmptyHash.CLASS_NAME;^checkDef[$hEmptyHash];^checkExp[$hEmptyHash];$hEmptyHash]
+^printLine[^$hHash;$hHash.CLASS_NAME;^checkDef[$hHash];^checkExp[$hHash];$hHash]
 
-^printLine[^$dtDate;^checkDef[$dtDate];^checkExp[$dtDate];$dtDate]
-^printLine[^$xDoc;^checkDef[$xDoc];^checkExp[$xDoc];$xDoc]
-^printLine[^$xNode;^checkDef[$xNode];^checkExp[$xNode];$xNode]
+^printLine[^$dtDate;$dtDate.CLASS_NAME;^checkDef[$dtDate];^checkExp[$dtDate];$dtDate]
+^printLine[^$xDoc;$xDoc.CLASS_NAME;^checkDef[$xDoc];^checkExp[$xDoc];$xDoc]
+^printLine[^$xNode;$xNode.CLASS_NAME;^checkDef[$xNode];^checkExp[$xNode];$xNode]
 </table>
 
 
@@ -177,11 +150,11 @@ $xNode[$h.0]
 
 
 @checkDef[uValue]
-^if(def $uValue){yes}{no}<br />
+^if(def $uValue){<b>yes</b>}{no}<br />
 
 
 @checkExp[uValue]
-^if($uValue){true}{false}<br />
+^if($uValue){<b>true</b>}{false}<br />
 
 
 @printHeadLine[sTitle]
@@ -198,15 +171,17 @@ xnode
 }]
 <tr>
 	<td>$sTitle</td>
+	<td>.CLASS_NAME</td>
 	<td>(def ...)</td>
 	<td>(...)</td>
-	^tType.menu{<td>(... is $tType.sName)</td>}
+	^tType.menu{<td>is $tType.sName</td>}
 </tr>
 
 
-@printLine[sTitle;sDef;sExp;uValue]
+@printLine[sTitle;sClassName;sDef;sExp;uValue]
 <tr>
 	<td>$sTitle</td>
+	<td>$sClassName</td>
 	<td>$sDef</td>
 	<td>$sExp</td>
 	^tType.menu{

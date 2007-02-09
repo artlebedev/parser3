@@ -1,5 +1,5 @@
 content-type: text/html
-content-length: 6124
+content-length: 6019
 
 <h2>Defines</h2>
 $sEmpty[]<br />
@@ -29,28 +29,6 @@ $bFalse(1==0)<br /><br />
 $xDoc[^xdoc::create{<?xml version="1.0"?><root><t/><t/><t/></root>}]<br />
 $h[^xDoc.select[/root/t]]<br />
 $xNode[$h.0]<br />
-<h2>.CLASS_NAME</h2>
-$bTrue.CLASS_NAME: bool<br />
-$bFalse.CLASS_NAME: bool<br />
-<br />
-$sEmpty.CLASS_NAME: void<br />
-$sZero.CLASS_NAME: string<br />
-$sOne.CLASS_NAME: string<br />
-$sTwo.CLASS_NAME: string<br />
-<br />
-$dZero.CLASS_NAME: double<br />
-$dOne.CLASS_NAME: double<br />
-$dTwo.CLASS_NAME: double<br />
-<br />
-$iZero.CLASS_NAME: int<br />
-$iOne.CLASS_NAME: int<br />
-$iTwo.CLASS_NAME: int<br />
-<br />
-$tTable.CLASS_NAME: table<br />
-$hHash.CLASS_NAME: hash<br />
-$dtDate.CLASS_NAME: date<br />
-$xDoc.CLASS_NAME: xdoc<br />
-$xNode.CLASS_NAME: xnode<br />
 <h2>bool itself</h2>
 (1==0): false<br />
 (1==1): true<br />
@@ -85,12 +63,14 @@ $xNode.CLASS_NAME: xnode<br />
 <table border="1">
 <tr>
 <td><br /></td>
+<td>.CLASS_NAME</td>
 <td>(def ...)</td>
 <td>(...)</td>
-<td>(... is bool)</td><td>(... is string)</td><td>(... is double)</td><td>(... is int)</td><td>(... is table)</td><td>(... is hash)</td><td>(... is date)</td><td>(... is xdoc)</td><td>(... is xnode)</td>
+<td>is bool</td><td>is string</td><td>is double</td><td>is int</td><td>is table</td><td>is hash</td><td>is date</td><td>is xdoc</td><td>is xnode</td>
 </tr>
 <tr>
 <td>$vVoid</td>
+<td>void</td>
 <td>no<br />
 </td>
 <td>false<br />
@@ -107,7 +87,8 @@ $xNode.CLASS_NAME: xnode<br />
 </tr>
 <tr>
 <td>$bFalse</td>
-<td>yes<br />
+<td>bool</td>
+<td><b>yes</b><br />
 </td>
 <td>false<br />
 </td>
@@ -123,9 +104,10 @@ $xNode.CLASS_NAME: xnode<br />
 </tr>
 <tr>
 <td>$bTrue</td>
-<td>yes<br />
+<td>bool</td>
+<td><b>yes</b><br />
 </td>
-<td>true<br />
+<td><b>true</b><br />
 </td>
 <td><b>yes</b></td>
 <td>no</td>
@@ -139,6 +121,7 @@ $xNode.CLASS_NAME: xnode<br />
 </tr>
 <tr>
 <td>$sEmpty</td>
+<td><b>void</b></td>
 <td>no<br />
 </td>
 <td>false<br />
@@ -155,7 +138,8 @@ $xNode.CLASS_NAME: xnode<br />
 </tr>
 <tr>
 <td>$sZero</td>
-<td>yes<br />
+<td>string</td>
+<td><b>yes</b><br />
 </td>
 <td>false<br />
 </td>
@@ -171,9 +155,10 @@ $xNode.CLASS_NAME: xnode<br />
 </tr>
 <tr>
 <td>$sOne</td>
-<td>yes<br />
+<td>string</td>
+<td><b>yes</b><br />
 </td>
-<td>true<br />
+<td><b>true</b><br />
 </td>
 <td>no</td>
 <td><b>yes</b></td>
@@ -187,9 +172,10 @@ $xNode.CLASS_NAME: xnode<br />
 </tr>
 <tr>
 <td>$sTwo</td>
-<td>yes<br />
+<td>string</td>
+<td><b>yes</b><br />
 </td>
-<td>true<br />
+<td><b>true</b><br />
 </td>
 <td>no</td>
 <td><b>yes</b></td>
@@ -203,7 +189,8 @@ $xNode.CLASS_NAME: xnode<br />
 </tr>
 <tr>
 <td>$dZero</td>
-<td>yes<br />
+<td>double</td>
+<td><b>yes</b><br />
 </td>
 <td>false<br />
 </td>
@@ -219,9 +206,10 @@ $xNode.CLASS_NAME: xnode<br />
 </tr>
 <tr>
 <td>$dOne</td>
-<td>yes<br />
+<td>double</td>
+<td><b>yes</b><br />
 </td>
-<td>true<br />
+<td><b>true</b><br />
 </td>
 <td>no</td>
 <td>no</td>
@@ -235,9 +223,10 @@ $xNode.CLASS_NAME: xnode<br />
 </tr>
 <tr>
 <td>$dTwo</td>
-<td>yes<br />
+<td>double</td>
+<td><b>yes</b><br />
 </td>
-<td>true<br />
+<td><b>true</b><br />
 </td>
 <td>no</td>
 <td>no</td>
@@ -251,7 +240,8 @@ $xNode.CLASS_NAME: xnode<br />
 </tr>
 <tr>
 <td>$iZero</td>
-<td>yes<br />
+<td>int</td>
+<td><b>yes</b><br />
 </td>
 <td>false<br />
 </td>
@@ -267,9 +257,10 @@ $xNode.CLASS_NAME: xnode<br />
 </tr>
 <tr>
 <td>$iOne</td>
-<td>yes<br />
+<td>int</td>
+<td><b>yes</b><br />
 </td>
-<td>true<br />
+<td><b>true</b><br />
 </td>
 <td>no</td>
 <td>no</td>
@@ -283,9 +274,10 @@ $xNode.CLASS_NAME: xnode<br />
 </tr>
 <tr>
 <td>$iTwo</td>
-<td>yes<br />
+<td>int</td>
+<td><b>yes</b><br />
 </td>
-<td>true<br />
+<td><b>true</b><br />
 </td>
 <td>no</td>
 <td>no</td>
@@ -299,6 +291,7 @@ $xNode.CLASS_NAME: xnode<br />
 </tr>
 <tr>
 <td>$tEmptyTable</td>
+<td>table</td>
 <td>no<br />
 </td>
 <td>false<br />
@@ -315,9 +308,10 @@ $xNode.CLASS_NAME: xnode<br />
 </tr>
 <tr>
 <td>$tTable</td>
-<td>yes<br />
+<td>table</td>
+<td><b>yes</b><br />
 </td>
-<td>true<br />
+<td><b>true</b><br />
 </td>
 <td>no</td>
 <td>no</td>
@@ -331,6 +325,7 @@ $xNode.CLASS_NAME: xnode<br />
 </tr>
 <tr>
 <td>$hEmptyHash</td>
+<td>hash</td>
 <td>no<br />
 </td>
 <td>false<br />
@@ -347,9 +342,10 @@ $xNode.CLASS_NAME: xnode<br />
 </tr>
 <tr>
 <td>$hHash</td>
-<td>yes<br />
+<td>hash</td>
+<td><b>yes</b><br />
 </td>
-<td>true<br />
+<td><b>true</b><br />
 </td>
 <td>no</td>
 <td>no</td>
@@ -363,9 +359,10 @@ $xNode.CLASS_NAME: xnode<br />
 </tr>
 <tr>
 <td>$dtDate</td>
-<td>yes<br />
+<td>date</td>
+<td><b>yes</b><br />
 </td>
-<td>true<br />
+<td><b>true</b><br />
 </td>
 <td>no</td>
 <td>no</td>
@@ -379,9 +376,10 @@ $xNode.CLASS_NAME: xnode<br />
 </tr>
 <tr>
 <td>$xDoc</td>
-<td>yes<br />
+<td>xdoc</td>
+<td><b>yes</b><br />
 </td>
-<td>true<br />
+<td><b>true</b><br />
 </td>
 <td>no</td>
 <td>no</td>
@@ -395,9 +393,10 @@ $xNode.CLASS_NAME: xnode<br />
 </tr>
 <tr>
 <td>$xNode</td>
-<td>yes<br />
+<td>xnode</td>
+<td><b>yes</b><br />
 </td>
-<td>true<br />
+<td><b>true</b><br />
 </td>
 <td>no</td>
 <td>no</td>
