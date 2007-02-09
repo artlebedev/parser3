@@ -7,9 +7,10 @@
 #include "pa_config_includes.h"
 #ifdef XML
 
-static const char * const IDENT_VXDOC="$Date: 2007/02/03 18:08:39 $";
+static const char * const IDENT_VXDOC="$Date: 2007/02/09 18:06:37 $";
 
 #include "pa_vxdoc.h"
+#include "pa_vbool.h"
 
 // defines
 
@@ -41,6 +42,9 @@ Value* VXdoc::as(const char* atype, bool ) {
 		return VXnode::as(atype, looking_up);
 	*/
 }
+
+/// VXdoc: true	 
+Value& VXdoc::as_expr_result(bool /*return_string_as_is=false*/) { return *new VBool(as_bool()); }
 
 
 /// VXdoc: $CLASS,$method
