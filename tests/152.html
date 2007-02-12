@@ -10,6 +10,25 @@ $sOne[1]
 $sTwo[2]
 ^$sTwo[2]<br /><br />
 
+$dZero(0.0)
+^$dZero(0.0)<br />
+$dOne(1.1)
+^$dOne(1.1)<br />
+$dTwo(2.2)
+^$dTwo(2.2)<br /><br />
+
+$iZero(^dZero.int[])
+^$iZero(^^dZero.int[])<br />
+$iOne(^dOne.int[])
+^$iOne(^^dOne.int[])<br />
+$iTwo(^dTwo.int[])
+^$iTwo(^^dTwo.int[])<br /><br />
+
+$bTrue(1==1)
+^$bTrue(1==1)<br />
+$bFalse(1==0)
+^$bFalse(1==0)<br /><br />
+
 $dtDate[^date::create(2007;01;02;03;04;05)]
 ^$dtDate[^^date::create(2007;01;02;03;04;05)]<br />
 <br />
@@ -34,24 +53,14 @@ $hHash[
 	$.b[2]
 ]
 
-$dZero(0.0)
-^$dZero(0.0)<br />
-$dOne(1.1)
-^$dOne(1.1)<br />
-$dTwo(2.2)
-^$dTwo(2.2)<br /><br />
+^$fFile[^^file::load[text;152.html]]<br />
+$fFile[^file::load[text;152.html]]
 
-$iZero(^dZero.int[])
-^$iZero(^^dZero.int[])<br />
-$iOne(^dOne.int[])
-^$iOne(^^dOne.int[])<br />
-$iTwo(^dTwo.int[])
-^$iTwo(^^dTwo.int[])<br /><br />
+^$fStat[^^file::stat[152.html]]<br /><br />
+$fStat[^file::stat[152.html]]
 
-$bTrue(1==1)
-^$bTrue(1==1)<br />
-$bFalse(1==0)
-^$bFalse(1==0)<br /><br />
+^$fImage[^^image::measure[103paf2001.gif]]<br /><br />
+$fImage[^image::measure[103paf2001.gif]]
 
 $xDoc[^xdoc::create{<?xml version="1.0"?><root><t/><t/><t/></root>}]
 ^$xDoc[^^xdoc::create{<?xml version="1.0"?><root><t/><t/><t/></root>}]<br />
@@ -61,10 +70,48 @@ $xDoc[^xdoc::create{<?xml version="1.0"?><root><t/><t/><t/></root>}]
 $h[^xDoc.select[/root/t]]
 $xNode[$h.0]
 
+<hr />
+<table border="1">
+^printHeadLine[<br />]
+^printLine[^$vVoid;$vVoid.CLASS_NAME;^checkDef[];^checkExp[$vVoid]]
+
+^printLine[^$bFalse;$bFalse.CLASS_NAME;^checkDef[$bFalse];^checkExp[$bFalse];$bFalse]
+^printLine[^$bTrue;$bTrue.CLASS_NAME;^checkDef[$bTrue];^checkExp[$bTrue];$bTrue]
+
+^printLine[^$sEmpty;<b>$sEmpty.CLASS_NAME</b>;^checkDef[$sEmpty];^checkExp[$sEmpty];$sEmpty]
+^printLine[^$sZero;$sZero.CLASS_NAME;^checkDef[$sZero];^checkExp[$sZero];$sZero]
+^printLine[^$sOne;$sOne.CLASS_NAME;^checkDef[$sOne];^checkExp[$sOne];$sOne]
+^printLine[^$sTwo;$sTwo.CLASS_NAME;^checkDef[$sTwo];^checkExp[$sTwo];$sTwo]
+
+^printLine[^$dZero;$dZero.CLASS_NAME;^checkDef($dZero);^checkExp($dZero)]($dZero)
+^printLine[^$dOne;$dOne.CLASS_NAME;^checkDef($dOne);^checkExp($dOne)]($dOne)
+^printLine[^$dTwo;$dTwo.CLASS_NAME;^checkDef($dTwo);^checkExp($dTwo)]($dTwo)
+
+^printLine[^$iZero;$iZero.CLASS_NAME;^checkDef($iZero);^checkExp($iZero)]($iZero)
+^printLine[^$iOne;$iOne.CLASS_NAME;^checkDef($iOne);^checkExp($iOne)]($iOne)
+^printLine[^$iTwo;$iTwo.CLASS_NAME;^checkDef($iTwo);^checkExp($iTwo)]($iTwo)
+
+^printLine[^$tEmptyTable;$tEmptyTable.CLASS_NAME;^checkDef[$tEmptyTable];^checkExp[$tEmptyTable];$tEmptyTable]
+^printLine[^$tTable;$tTable.CLASS_NAME;^checkDef[$tTable];^checkExp[$tTable];$tTable]
+
+^printLine[^$hEmptyHash;$hEmptyHash.CLASS_NAME;^checkDef[$hEmptyHash];^checkExp[$hEmptyHash];$hEmptyHash]
+^printLine[^$hHash;$hHash.CLASS_NAME;^checkDef[$hHash];^checkExp[$hHash];$hHash]
+
+^printLine[^$fFile;$fFile.CLASS_NAME;^checkDef[$fFile];^checkExp[$fFile];$fFile]
+^printLine[^$fStat;$fStat.CLASS_NAME;^checkDef[$fStat];^checkExp[$fStat];$fStat]
+^printLine[^$fImage;$fImage.CLASS_NAME;^checkDef[$fImage];^checkExp[$fImage];$fImage]
+
+^printLine[^$dtDate;$dtDate.CLASS_NAME;^checkDef[$dtDate];^checkExp[$dtDate];$dtDate]
+^printLine[^$xDoc;$xDoc.CLASS_NAME;^checkDef[$xDoc];^checkExp[$xDoc];$xDoc]
+^printLine[^$xNode;$xNode.CLASS_NAME;^checkDef[$xNode];^checkExp[$xNode];$xNode]
+</table>
+
+
+
 <h2>bool itself</h2>
 (1==0): ^checkBool(1==0)
 (1==1): ^checkBool(1==1)
-<br />
+
 
 <h2>bool methods for void</h2>
 ^^vVoid.bool(true): ^checkBool(^vVoid.bool(true))
@@ -107,40 +154,6 @@ $xNode[$h.0]
 ^^iTwo.bool(false): ^checkBool(^iTwo.bool(false))
 
 
-<h2>others</h2>
-<table border="1">
-^printHeadLine[<br />]
-^printLine[^$vVoid;$vVoid.CLASS_NAME;^checkDef[];^checkExp[$vVoid]]
-
-^printLine[^$bFalse;$bFalse.CLASS_NAME;^checkDef[$bFalse];^checkExp[$bFalse];$bFalse]
-^printLine[^$bTrue;$bTrue.CLASS_NAME;^checkDef[$bTrue];^checkExp[$bTrue];$bTrue]
-
-^printLine[^$sEmpty;<b>$sEmpty.CLASS_NAME</b>;^checkDef[$sEmpty];^checkExp[$sEmpty];$sEmpty]
-^printLine[^$sZero;$sZero.CLASS_NAME;^checkDef[$sZero];^checkExp[$sZero];$sZero]
-^printLine[^$sOne;$sOne.CLASS_NAME;^checkDef[$sOne];^checkExp[$sOne];$sOne]
-^printLine[^$sTwo;$sTwo.CLASS_NAME;^checkDef[$sTwo];^checkExp[$sTwo];$sTwo]
-
-^printLine[^$dZero;$dZero.CLASS_NAME;^checkDef($dZero);^checkExp($dZero)]($dZero)
-^printLine[^$dOne;$dOne.CLASS_NAME;^checkDef($dOne);^checkExp($dOne)]($dOne)
-^printLine[^$dTwo;$dTwo.CLASS_NAME;^checkDef($dTwo);^checkExp($dTwo)]($dTwo)
-
-^printLine[^$iZero;$iZero.CLASS_NAME;^checkDef($iZero);^checkExp($iZero)]($iZero)
-^printLine[^$iOne;$iOne.CLASS_NAME;^checkDef($iOne);^checkExp($iOne)]($iOne)
-^printLine[^$iTwo;$iTwo.CLASS_NAME;^checkDef($iTwo);^checkExp($iTwo)]($iTwo)
-
-^printLine[^$tEmptyTable;$tEmptyTable.CLASS_NAME;^checkDef[$tEmptyTable];^checkExp[$tEmptyTable];$tEmptyTable]
-^printLine[^$tTable;$tTable.CLASS_NAME;^checkDef[$tTable];^checkExp[$tTable];$tTable]
-
-^printLine[^$hEmptyHash;$hEmptyHash.CLASS_NAME;^checkDef[$hEmptyHash];^checkExp[$hEmptyHash];$hEmptyHash]
-^printLine[^$hHash;$hHash.CLASS_NAME;^checkDef[$hHash];^checkExp[$hHash];$hHash]
-
-^printLine[^$dtDate;$dtDate.CLASS_NAME;^checkDef[$dtDate];^checkExp[$dtDate];$dtDate]
-^printLine[^$xDoc;$xDoc.CLASS_NAME;^checkDef[$xDoc];^checkExp[$xDoc];$xDoc]
-^printLine[^$xNode;$xNode.CLASS_NAME;^checkDef[$xNode];^checkExp[$xNode];$xNode]
-</table>
-
-
-
 @checkIsBool[uValue]
 ^if($uValue is "bool"){yes}{no}<br />
 
@@ -165,6 +178,8 @@ double
 int
 table
 hash
+file
+image
 date
 xdoc
 xnode

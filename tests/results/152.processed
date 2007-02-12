@@ -1,11 +1,19 @@
 content-type: text/html
-content-length: 6019
+content-length: 7362
 
 <h2>Defines</h2>
 $sEmpty[]<br />
 $sZero[0]<br />
 $sOne[1]<br />
 $sTwo[2]<br /><br />
+$dZero(0.0)<br />
+$dOne(1.1)<br />
+$dTwo(2.2)<br /><br />
+$iZero(^dZero.int[])<br />
+$iOne(^dOne.int[])<br />
+$iTwo(^dTwo.int[])<br /><br />
+$bTrue(1==1)<br />
+$bFalse(1==0)<br /><br />
 $dtDate[^date::create(2007;01;02;03;04;05)]<br />
 <br />
 $tEmptyTable[^table::create{a&nbsp;&nbsp;b}]<br />
@@ -18,55 +26,20 @@ $hHash[<br />
 &nbsp;&nbsp;$.b[2]<br />
 ]<br />
 <br />
-$dZero(0.0)<br />
-$dOne(1.1)<br />
-$dTwo(2.2)<br /><br />
-$iZero(^dZero.int[])<br />
-$iOne(^dOne.int[])<br />
-$iTwo(^dTwo.int[])<br /><br />
-$bTrue(1==1)<br />
-$bFalse(1==0)<br /><br />
+$fFile[^file::load[text;152.html]]<br />
+$fStat[^file::stat[152.html]]<br /><br />
+$fImage[^image::measure[103paf2001.gif]]<br /><br />
 $xDoc[^xdoc::create{<?xml version="1.0"?><root><t/><t/><t/></root>}]<br />
 $h[^xDoc.select[/root/t]]<br />
 $xNode[$h.0]<br />
-<h2>bool itself</h2>
-(1==0): false<br />
-(1==1): true<br />
-<br />
-<h2>bool methods for void</h2>
-^vVoid.bool(true): true<br />
-^vVoid.bool(false): false<br />
-<h2>bool methods for string</h2>
-^sEmpty.bool(true): true<br />
-^sEmpty.bool(false): false<br />
-^sZero.bool(true): false<br />
-^sZero.bool(false): false<br />
-^sOne.bool(true): true<br />
-^sOne.bool(false): true<br />
-^sTwo.bool(true): true<br />
-^sTwo.bool(false): true<br />
-<h2>bool methods for double</h2>
-^dZero.bool(true): false<br />
-^dZero.bool(false): false<br />
-^dOne.bool(true): true<br />
-^dOne.bool(false): true<br />
-^dTwo.bool(true): true<br />
-^dTwo.bool(false): true<br />
-<h2>bool methods for int</h2>
-^iZero.bool(true): false<br />
-^iZero.bool(false): false<br />
-^iOne.bool(true): true<br />
-^iOne.bool(false): true<br />
-^iTwo.bool(true): true<br />
-^iTwo.bool(false): true<br />
-<h2>others</h2>
+<hr />
 <table border="1">
 <tr>
 <td><br /></td>
 <td>.CLASS_NAME</td>
 <td>(def ...)</td>
 <td>(...)</td>
-<td>is bool</td><td>is string</td><td>is double</td><td>is int</td><td>is table</td><td>is hash</td><td>is date</td><td>is xdoc</td><td>is xnode</td>
+<td>is bool</td><td>is string</td><td>is double</td><td>is int</td><td>is table</td><td>is hash</td><td>is file</td><td>is image</td><td>is date</td><td>is xdoc</td><td>is xnode</td>
 </tr>
 <tr>
 <td>$vVoid</td>
@@ -75,6 +48,8 @@ $xNode[$h.0]<br />
 </td>
 <td>false<br />
 </td>
+<td>no</td>
+<td>no</td>
 <td>no</td>
 <td>no</td>
 <td>no</td>
@@ -101,6 +76,8 @@ $xNode[$h.0]<br />
 <td>no</td>
 <td>no</td>
 <td>no</td>
+<td>no</td>
+<td>no</td>
 </tr>
 <tr>
 <td>$bTrue</td>
@@ -110,6 +87,8 @@ $xNode[$h.0]<br />
 <td><b>true</b><br />
 </td>
 <td><b>yes</b></td>
+<td>no</td>
+<td>no</td>
 <td>no</td>
 <td>no</td>
 <td>no</td>
@@ -135,6 +114,8 @@ $xNode[$h.0]<br />
 <td>no</td>
 <td>no</td>
 <td>no</td>
+<td>no</td>
+<td>no</td>
 </tr>
 <tr>
 <td>$sZero</td>
@@ -145,6 +126,8 @@ $xNode[$h.0]<br />
 </td>
 <td>no</td>
 <td><b>yes</b></td>
+<td>no</td>
+<td>no</td>
 <td>no</td>
 <td>no</td>
 <td>no</td>
@@ -169,6 +152,8 @@ $xNode[$h.0]<br />
 <td>no</td>
 <td>no</td>
 <td>no</td>
+<td>no</td>
+<td>no</td>
 </tr>
 <tr>
 <td>$sTwo</td>
@@ -179,6 +164,8 @@ $xNode[$h.0]<br />
 </td>
 <td>no</td>
 <td><b>yes</b></td>
+<td>no</td>
+<td>no</td>
 <td>no</td>
 <td>no</td>
 <td>no</td>
@@ -203,6 +190,8 @@ $xNode[$h.0]<br />
 <td>no</td>
 <td>no</td>
 <td>no</td>
+<td>no</td>
+<td>no</td>
 </tr>
 <tr>
 <td>$dOne</td>
@@ -214,6 +203,8 @@ $xNode[$h.0]<br />
 <td>no</td>
 <td>no</td>
 <td><b>yes</b></td>
+<td>no</td>
+<td>no</td>
 <td>no</td>
 <td>no</td>
 <td>no</td>
@@ -237,6 +228,8 @@ $xNode[$h.0]<br />
 <td>no</td>
 <td>no</td>
 <td>no</td>
+<td>no</td>
+<td>no</td>
 </tr>
 <tr>
 <td>$iZero</td>
@@ -249,6 +242,8 @@ $xNode[$h.0]<br />
 <td>no</td>
 <td>no</td>
 <td><b>yes</b></td>
+<td>no</td>
+<td>no</td>
 <td>no</td>
 <td>no</td>
 <td>no</td>
@@ -271,6 +266,8 @@ $xNode[$h.0]<br />
 <td>no</td>
 <td>no</td>
 <td>no</td>
+<td>no</td>
+<td>no</td>
 </tr>
 <tr>
 <td>$iTwo</td>
@@ -283,6 +280,8 @@ $xNode[$h.0]<br />
 <td>no</td>
 <td>no</td>
 <td><b>yes</b></td>
+<td>no</td>
+<td>no</td>
 <td>no</td>
 <td>no</td>
 <td>no</td>
@@ -305,6 +304,8 @@ $xNode[$h.0]<br />
 <td>no</td>
 <td>no</td>
 <td>no</td>
+<td>no</td>
+<td>no</td>
 </tr>
 <tr>
 <td>$tTable</td>
@@ -318,6 +319,8 @@ $xNode[$h.0]<br />
 <td>no</td>
 <td>no</td>
 <td><b>yes</b></td>
+<td>no</td>
+<td>no</td>
 <td>no</td>
 <td>no</td>
 <td>no</td>
@@ -339,6 +342,8 @@ $xNode[$h.0]<br />
 <td>no</td>
 <td>no</td>
 <td>no</td>
+<td>no</td>
+<td>no</td>
 </tr>
 <tr>
 <td>$hHash</td>
@@ -347,6 +352,65 @@ $xNode[$h.0]<br />
 </td>
 <td><b>true</b><br />
 </td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td><b>yes</b></td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+</tr>
+<tr>
+<td>$fFile</td>
+<td>file</td>
+<td><b>yes</b><br />
+</td>
+<td><b>true</b><br />
+</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td><b>yes</b></td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+</tr>
+<tr>
+<td>$fStat</td>
+<td>file</td>
+<td><b>yes</b><br />
+</td>
+<td><b>true</b><br />
+</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td><b>yes</b></td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+</tr>
+<tr>
+<td>$fImage</td>
+<td>image</td>
+<td><b>yes</b><br />
+</td>
+<td><b>true</b><br />
+</td>
+<td>no</td>
+<td>no</td>
 <td>no</td>
 <td>no</td>
 <td>no</td>
@@ -370,6 +434,8 @@ $xNode[$h.0]<br />
 <td>no</td>
 <td>no</td>
 <td>no</td>
+<td>no</td>
+<td>no</td>
 <td><b>yes</b></td>
 <td>no</td>
 <td>no</td>
@@ -381,6 +447,8 @@ $xNode[$h.0]<br />
 </td>
 <td><b>true</b><br />
 </td>
+<td>no</td>
+<td>no</td>
 <td>no</td>
 <td>no</td>
 <td>no</td>
@@ -406,6 +474,37 @@ $xNode[$h.0]<br />
 <td>no</td>
 <td>no</td>
 <td>no</td>
+<td>no</td>
+<td>no</td>
 <td><b>yes</b></td>
 </tr>
 </table>
+<h2>bool itself</h2>
+(1==0): false<br />
+(1==1): true<br />
+<h2>bool methods for void</h2>
+^vVoid.bool(true): true<br />
+^vVoid.bool(false): false<br />
+<h2>bool methods for string</h2>
+^sEmpty.bool(true): true<br />
+^sEmpty.bool(false): false<br />
+^sZero.bool(true): false<br />
+^sZero.bool(false): false<br />
+^sOne.bool(true): true<br />
+^sOne.bool(false): true<br />
+^sTwo.bool(true): true<br />
+^sTwo.bool(false): true<br />
+<h2>bool methods for double</h2>
+^dZero.bool(true): false<br />
+^dZero.bool(false): false<br />
+^dOne.bool(true): true<br />
+^dOne.bool(false): true<br />
+^dTwo.bool(true): true<br />
+^dTwo.bool(false): true<br />
+<h2>bool methods for int</h2>
+^iZero.bool(true): false<br />
+^iZero.bool(false): false<br />
+^iOne.bool(true): true<br />
+^iOne.bool(false): true<br />
+^iTwo.bool(true): true<br />
+^iTwo.bool(false): true<br />
