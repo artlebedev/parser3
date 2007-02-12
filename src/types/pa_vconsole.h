@@ -8,7 +8,7 @@
 #ifndef PA_VCONSOLE_H
 #define PA_VCONSOLE_H
 
-static const char * const IDENT_VCONSOLE_H="$Date: 2007/02/07 15:50:51 $";
+static const char * const IDENT_VCONSOLE_H="$Date: 2007/02/12 16:10:17 $";
 
 // includes
 
@@ -51,6 +51,7 @@ public: // Value
 	override const VJunction* put_element(Value& /*aself*/, const String& aname, Value* avalue, bool /*areplace*/) { 
 		// $line
 		if(aname==CONSOLE_LINE_NAME) {
+			fused=true;
 			const char* cstr=avalue->as_string().cstr();
 			puts(cstr);
 			fflush(stdout);
@@ -63,10 +64,18 @@ public: // Value
 			"writing to invalid field");
 	}
 
+	bool was_used(){
+		return fused;
+	}
+
 public: // usage
 
-	VConsole() {}
+	VConsole() {
+		fused=false;
+	}
 
+private:
+	bool fused;
 };
 
 #endif
