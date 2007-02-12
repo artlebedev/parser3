@@ -5,12 +5,14 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VIMAGE_C="$Date: 2005/08/09 08:14:54 $";
+static const char * const IDENT_VIMAGE_C="$Date: 2007/02/12 11:19:27 $";
 
 #include "pa_vimage.h"
 #include "pa_vint.h"
 #include "pa_vstring.h"
 #include "gif.h"
+#include "pa_vbool.h"
+
 
 void VImage::set(const String* src, int width, int height,
 				 gdImage* aimage,
@@ -34,6 +36,10 @@ void VImage::set(const String* src, int width, int height,
 	// internals, take a look at image.C append_attrib_pair before update
 	// $line-width(1) 
 	ffields.put(String::Body("line-width"), new VInt(1));
+}
+
+Value& VImage::as_expr_result(bool /*return_string_as_is=false*/) {
+	return *new VBool(as_bool());
 }
 
 
