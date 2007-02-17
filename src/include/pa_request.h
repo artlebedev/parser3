@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char * const IDENT_REQUEST_H="$Date: 2006/11/16 18:02:49 $";
+static const char * const IDENT_REQUEST_H="$Date: 2007/02/17 11:50:19 $";
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -18,6 +18,7 @@ static const char * const IDENT_REQUEST_H="$Date: 2006/11/16 18:02:49 $";
 #include "pa_request_info.h"
 #include "pa_request_charsets.h"
 #include "pa_sapi.h"
+#include "pa_vconsole.h"
 
 #ifdef RESOURCES_DEBUG
 #include <sys/resource.h>
@@ -327,6 +328,8 @@ public:
 	VResponse& response;
 	/// $cookie:elements
 	VCookie& cookie;
+	/// $console
+	VConsole& console;
 
 	/// classes configured data
 	Hash<const String::Body, void*> classes_conf;
