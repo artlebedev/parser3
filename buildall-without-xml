@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Id: buildall-without-xml,v 1.3 2006/01/19 10:57:14 paf Exp $
+# $Id: buildall-without-xml,v 1.4 2007/02/17 11:14:57 misha Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -18,10 +18,10 @@ mkdir src >/dev/null 2>&1
 if test ! -f "$project_directory/gc/lib/libgc.a"; then
   cd $project_directory/src
   echo "Downloading libgc [1 lib of 1]..."
-  wget -c http://www.hpl.hp.com/personal/Hans_Boehm/gc/gc_source/gc6.6.tar.gz
+  wget -c http://www.hpl.hp.com/personal/Hans_Boehm/gc/gc_source/gc6.8.tar.gz
   echo "Unpacking..."
-  gunzip -c gc6.6.tar.gz | tar vxf - >/dev/null
-  cd gc6.6
+  gunzip -c gc6.8.tar.gz | tar vxf - >/dev/null
+  cd gc6.8
   echo "Configuring libgc..."
   CPPFLAGS="-DUSE_LIBC_PRIVATES -DUSE_MMAP -DUSE_MUNMAP" \
   ./configure --prefix=$project_directory/gc --disable-threads --disable-shared --silent
