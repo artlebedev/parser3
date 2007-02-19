@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Id: buildall-with-xml,v 1.6 2007/02/17 11:14:57 misha Exp $
+# $Id: buildall-with-xml,v 1.7 2007/02/19 11:47:55 misha Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -17,11 +17,14 @@ mkdir src >/dev/null 2>&1
 
 if test ! -f "$project_directory/gc/lib/libgc.a"; then
   cd $project_directory/src
-  echo "Downloading libgc [1 lib of 3]..."
-  wget -c http://www.hpl.hp.com/personal/Hans_Boehm/gc/gc_source/gc6.8.tar.gz
-  echo "Unpacking..."
-  gunzip -c gc6.8.tar.gz | tar vxf - >/dev/null
-  cd gc6.8
+  libgc="gc6.8"
+  if test ! -f "$libgc.tar.gz"; then
+    echo "Downloading libgc [1 lib of 3]..."
+    wget -c http://www.hpl.hp.com/personal/Hans_Boehm/gc/gc_source/$libgc.tar.gz
+  fi
+  echo "Unpacking gc..."
+  gunzip -c $libgc.tar.gz | tar vxf - >/dev/null
+  cd $libgc
   echo "Configuring libgc..."
   CPPFLAGS="-DUSE_LIBC_PRIVATES -DUSE_MMAP -DUSE_MUNMAP" \
   ./configure --prefix=$project_directory/gc --disable-threads --disable-shared --silent
@@ -33,11 +36,14 @@ fi
 
 if test ! -f "$project_directory/gnome/lib/libxml2.a"; then
   cd $project_directory/src
-  echo "Downloading libxml [2 lib of 3]..."
-  wget -c --passive-ftp ftp://xmlsoft.org/libxml2/libxml2-2.6.27.tar.gz
-  echo "Unpacking... (be patient)"
-  gunzip -c libxml2-2.6.27.tar.gz | tar vxf - >/dev/null
-  cd libxml2-2.6.27
+  libxml2="libxml2-2.6.27"
+  if test ! -f "$libxml2.tar.gz"; then
+    echo "Downloading libxml [2 lib of 3]..."
+    wget -c --passive-ftp ftp://xmlsoft.org/libxml2/$libxml2.tar.gz
+  fi
+  echo "Unpacking libxml2... (be patient)"
+  gunzip -c $libxml2.tar.gz | tar vxf - >/dev/null
+  cd $libxml2
   #sax1, output, tree, xinclude[in libxslt], html[in libxslt, mode=html?] xptr[xinclude]-- needed!
   echo "Configuring libxml..."
   ./configure --prefix=$project_directory/gnome \
@@ -58,11 +64,14 @@ fi
 
 if test ! -f "$project_directory/gnome/lib/libxslt.a"; then
   cd $project_directory/src
-  echo "Downloading libxslt [3 lib of 3]..."
-  wget -c --passive-ftp ftp://xmlsoft.org/libxslt/libxslt-1.1.20.tar.gz
-  echo "Unpacking... (be patient)"
-  gunzip -c libxslt-1.1.20.tar.gz | tar vxf - >/dev/null
-  cd libxslt-1.1.20
+  libxslt="libxslt-1.1.20"
+  if test ! -f "$libxslt.tar.gz"; then
+    echo "Downloading libxslt [3 lib of 3]..."
+    wget -c --passive-ftp ftp://xmlsoft.org/libxslt/$libxslt.tar.gz
+  fi
+  echo "Unpacking libxslt... (be patient)"
+  gunzip -c $libxslt.tar.gz | tar vxf - >/dev/null
+  cd $libxslt
   echo "Configuring libxslt..."
   ./configure --prefix=$project_directory/gnome \
      --with-libxml-prefix=$project_directory/gnome \
