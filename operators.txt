@@ -132,15 +132,18 @@ Xне сделано, видимо, не будет сделано
 
         !odbc://DSN=dsn^;UID=user^;PWD=password^;ClientCharset=parser-charset
             ClientCharset << charset in which parser thinks client works
+            
+        !sqlite://database
 
         для работы connect нужно, чтобы заранее(рекомендуется в системном parser3)
         была определена таблица
 #sql drivers
 $SQL[
-    $.drivers[^table::set{protocol    driver    client
+    $.drivers[^table::create{protocol    driver    client
 mysql    /www/parser3/libparser3mysql.so    /usr/local/lib/mysql/libmysqlclient.so
 pgsql    /www/parser3/libparser3pgsql.so    /usr/local/pgsql/lib/libpq.so
 oracle    /www/parser3/libparser3oracle.so    /u01/app/oracle/product/8.1.5/lib/libclntsh.so?ORACLE_HOME=/u01/app/oracle/product/8.1.5&ORA_NLS33=/u01/app/oracle/product/8.1.5/ocommon/nls/admin/data
+sqlite    /www/parser3/libparser3sqlite.so    /usr/local/sqlite/lib/sqlite3.so
 odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
 }]
 ]
@@ -195,7 +198,7 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !есть глобальная строка/таблица $MAIN:CLASS_PATH с путём/путями к каталогу с классами.
         !корень путя/путей считается от корня веб пространства.
     !2. ...относительно строчки из table $MAIN:CLASS_PATH, снизу вверх
-       задавайте её в parser3.conf вашего сайта
+       задавайте её в конфигурационном auto.p вашего сайта
 
     !глобальная табличка $CHARSETS[$.название[имя файла]]
     !задаёт какие буквы считаются какими(whitespace, letter, etc), а также их unicode
@@ -289,7 +292,7 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !^имя.int[] .int(default) целочисленное значение строки. 
         если ломается преобразование, берётся default
     !^имя.double[]+ .double(default)  double значение строки
-    !^имя.bool[] + .bool(true|false)  bool значение
+    !^имя.bool[] + .bool(default)  bool значение строки
         если ломается преобразование, берётся default
     !^имя.format[формат] %d  %.2f %02d...
     !^строка.match[шаблон][[опции поиска]]  $prematch $match $postmatch $1 $2...
@@ -567,8 +570,8 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !если body указан hash, то это части, будут собраны текстовые блоки, затем вложения
     !это старый формат, поддерживается для обратной совместимости
     !если имя части начинается со слова text, то это текстовый блок.
-    !если имя части начинается со слова attach, то это вложение, формат задания::
-        !$attach[$.format[!uue|!base64] $.value[DATA] $.file-name[user-file-name]]
+    !если имя части начинается со слова file, то это вложение, формат задания::
+        !$file[$.format[!uue|!base64] $.value[DATA] $.name[user-file-name]]
     !важно: при multipart не указывать content-type
         ^mail:send[
 #           по-умолчанию, совпадает с source encoding.
@@ -596,13 +599,14 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
                     $.body[слова]
                 ]
 #для удобства скриптования можно указать только одну часть, при этом не будет multipart
-                $.attach[
+                $.file[
                    $.value[^file::load[my beloved.doc]]
-                   $.file-name[мой любимый.doc]
+                   $.name[мой любимый.doc]
+                   $.format[base64]
                 ]
-                $.attach2[
+                $.file2[
                    $.value[^file::load[my beloved.doc]]
-                   $.file-name[мой любимый.doc]
+                   $.name[мой любимый.doc]
                ]
             ]
         ]
@@ -1038,9 +1042,9 @@ DATA::=string | file | hash
 ]
 
 !MAIN
-    это класс, загружаемый на автомате из parser3.conf, 
+    это класс, загружаемый на автомате из конфигурационного auto.p, 
     кучи auto.p и запрашиваемого документа:
-        !parser3.conf 
+        !конфигурационный auto.p 
             cgi: 
                 1. или полный путь из переменной окружения CGI_PARSER_SITE_CONFIG
                    или рядом с бинарником parser'а 
@@ -1052,7 +1056,7 @@ DATA::=string | file | hash
     имя последнего загруженного MAIN, имён у предыдущих нет
     
     !после загрузки MAIN класса вызывается его @main[]
-    !результат которого передаётся в его @post-process[data] if($data is string) ...
+    !результат которого передаётся в его @postprocess[data] if($data is string) ...
     !результат которого отдаётся пользователю
 
 !если встречается ошибка и try не задан, её можно красиво сообщить пользователю, 
