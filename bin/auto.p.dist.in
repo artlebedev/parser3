@@ -1,4 +1,4 @@
-#$Id: auto.p.dist.in,v 1.13 2006/09/11 15:05:53 misha Exp $
+#$Id: auto.p.dist.in,v 1.14 2007/02/20 10:47:52 misha Exp $
 
 @conf[filespec]
 $confdir[^file:dirname[$filespec]]
@@ -17,6 +17,7 @@ $SQL[
 mysql	$sqldriversdir/libparser3mysql.@dll_extension@	@mysql_client@
 pgsql	$sqldriversdir/libparser3pgsql.@dll_extension@	@pgsql_client@
 oracle	$sqldriversdir/libparser3oracle.@dll_extension@	@oracle_client@
+sqlite	$sqldriversdir/libparser3sqlite.@dll_extension@	@sqlite_client@
 }]
 ]
 
@@ -142,3 +143,4 @@ $response:content-type[
 #$SQL.connect-string[pgsql://user:pass@host/db]
 #$SQL.connect-string[oracle://user:pass@service?NLS_LANG=RUSSIAN_AMERICA.CL8MSWIN1251&NLS_DATE_FORMAT=YYYY-MM-DD HH24:MI:SS]
 #$SQL.connect-string[odbc://DSN=datasource^;UID=user^;PWD=password]
+#$SQL.connect-string[sqlite://db]
