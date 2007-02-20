@@ -1,4 +1,1182 @@
+2007-02-19	misha
+	* buildall-with-xml 1.7:
+	* buildall-without-xml 1.5:
+		- some modifications
+
+	* operators.txt 1.189:
+		- some comments changes
+
+2007-02-17	misha
+	* buildall-with-xml 1.6:
+	* buildall-without-xml 1.4:
+		- moving to gc6.8
+
+	* src/main/pa_request.C 1.285:
+		- damn, i forgot to commit it while I change console behaviour
+
+2007-02-12	misha
+	* src/types/pa_vimage.C 1.36:
+	* src/types/pa_vimage.h 1.47:
+		- fixed bug added while adding 'bool' (^if($image){} caused 
+		exception)
+
+	* src/targets/cgi/parser3.C 1.241:
+		- don't print headers if $console:line[data] was used during cgi 
+		execution.
+
+	* src/types/pa_vconsole.h 1.12:
+		- console class have bool flag now which marked as 'true' if 
+		class was used.
+
+	* tests/152.html 1.5:
+	* tests/results/152.processed 1.6:
+		- more types was added to test 152
+
+2007-02-09	misha
+	* src/types/pa_vxdoc.C 1.34:
+	* src/types/pa_vxdoc.h 1.43:
+	* src/types/pa_vxnode.C 1.48:
+	* src/types/pa_vxnode.h 1.39:
+		- bugfix. I broke xdoc & xnode in expression
+
+	* tests/152.html 1.3:
+	* tests/results/152.processed 1.4:
+		- test rewrited
+
+	* tests/152.html 1.4:
+	* tests/results/152.processed 1.5:
+		- test alightly updated
+
+2007-02-08	misha
+	* tests/152.html 1.2:
+	* tests/results/152.processed 1.3:
+		- add test for checking 'def' for void, string, bool, int & 
+		double
+
+2007-02-07	misha
+	* src/main/pa_common.C 1.222:
+		- definitions for ^file:base64[filespec]
+
+	* src/types/pa_vconsole.h 1.11:
+	* src/types/pa_vcookie.C 1.71:
+		- little optimization
+
+	* src/classes/file.C 1.151:
+		- ^file:base64[filespec]
+
+	* tests/results/153.processed 1.2:
+		- result test for ^file:base64[filespec]  was updated
+
+	* tests/153.html 1.2:
+		- test for ^file:base64[filespec]  was added
+
+	* src/include/pa_common.h 1.112:
+		- declarations for ^file:base64[filespec]
+
+	* operators.txt 1.188:
+		- ^file:base64[filespec]  was added
+
+2007-02-06	misha
+	* src/types/pa_vbool.h 1.30:
+		- bugfix
+
+	* tests/156.html 1.1:
+		- added test for bool cookie
+
+	* src/main/utf8-to-lower.inc 1.2:
+	* src/main/utf8-to-upper.inc 1.2:
+		- some chars were temporary commented
+
+	* tests/153.html 1.1:
+	* tests/154.html 1.1:
+	* tests/todo.txt 1.6:
+		- two more tests added
+
+	* src/types/pa_vcookie.h 1.32:
+		- not needed string "cookie" removed
+
+	* tests/155.html 1.1:
+	* tests/results/155.processed 1.1:
+		- added test for check $.encloser[] option for table save/load
+
+2007-02-05	misha
+	* tests/results/141.processed 1.5:
+		- math:md5 must be lowercased
+
+	* src/targets/cgi/parser3.C 1.240:
+		- 2007 in help ;)
+
+	* tests/results/152.processed 1.2:
+		- newline at the end was missed
+
+2007-02-03	misha
+	* tests/152.html 1.1:
+		- test for bool added
+
+	* operators.txt 1.187:
+		- info bool class was added
+
+	* src/classes/Makefile.am 1.50:
+	* src/classes/Makefile.in 1.63:
+	* src/classes/bool.C 1.1:
+	* src/classes/classes.vcproj 1.15:
+	* src/classes/double.C 1.60:
+	* src/classes/int.C 1.56:
+	* src/classes/string.C 1.151:
+	* src/classes/void.C 1.37:
+	* src/classes/xnode.C 1.76:
+	* src/include/pa_string.h 1.167:
+	* src/types/pa_vbool.h 1.29:
+	* src/types/pa_vclass.h 1.52:
+	* src/types/pa_vimage.h 1.46:
+	* src/types/pa_vint.h 1.45:
+	* src/types/pa_vjunction.C 1.4:
+	* src/types/pa_vjunction.h 1.25:
+	* src/types/pa_vproperty.C 1.1:
+	* src/types/pa_vproperty.h 1.4:
+	* src/types/pa_vstateless_class.C 1.30:
+	* src/types/pa_vstateless_class.h 1.55:
+	* src/types/pa_vxdoc.C 1.33:
+	* src/types/pa_vxdoc.h 1.42:
+	* src/types/pa_vxnode.h 1.38:
+	* src/types/types.vcproj 1.19:
+		- bool class was added
+
+	* tests/results/150.processed 1.2:
+	* tests/results/151.processed 1.2:
+	* tests/results/152.processed 1.1:
+		- test for bool added and some content length fixes
+
+	* buildall-with-xml 1.5:
+		- moved to libxml2-2.6.27 and libxslt-1.1.20
+
+	* src/main/pa_request.C 1.284:
+		- fix
+
+2007-01-18	misha
+	* src/classes/string.C 1.150:
+	* src/main/pa_string.C 1.208:
+		- return table during ^string.match[][] even if no matched 
+		found.
+
+2006-12-20	misha
+	* src/types/pa_method.h 1.7:
+	* src/types/pa_vfile.h 1.59:
+		- some syntax changes [ http://www.parser.ru/forum/?id=55598 ]
+
+2006-12-19	misha
+	* src/main/pa_request.C 1.283:
+		- always set content-disposition for $response:body[hash here]. 
+		more details: http://www.parser.ru/forum/?id=52130
+
+	* src/types/pa_vxdoc.C 1.32:
+		- $xDoc is "xnode" == true now. more details: http://
+		www.parser.ru/forum/?id=52359
+
+2006-12-07	misha
+	* operators.txt 1.186:
+		- added info about bool params in cookie set
+
+	* src/types/pa_value.C 1.21:
+	* src/types/pa_value.h 1.128:
+	* src/types/pa_vbool.h 1.28:
+		- is_bool method was added
+
+	* src/types/pa_vcookie.C 1.70:
+		- bool param in cookies available now
+		$cookie:name[
+		  $.value[123]
+		  $.secure(true)
+		  $.httponly(true)
+		]
+
+2006-12-02	misha
+	* src/classes/file.C 1.150:
+		- file_block_read used instead of native read
+
+	* src/include/pa_common.h 1.111:
+		- added file_block_read declaration
+
+	* src/main/pa_common.C 1.221:
+		- added file_block_read with read error detection
+		- file_block_read used instead of native read
+
+2006-12-01	misha
+	* src/classes/file.C 1.148:
+		- ^file:copy[from;fo] was added
+
+	* operators.txt 1.184:
+		- added info about ^file:copy[]
+
+	* src/types/pa_vstateless_class.C 1.29:
+	* src/types/pa_vstateless_class.h 1.54:
+		- $var.CLASS_NAME added
+
+	* operators.txt 1.185:
+		- info about $var.CLASS_NAME was added
+
+2006-11-20	misha
+	* src/classes/date.C 1.75:
+		- bug fix :)
+
+2006-11-17	misha
+	* src/main/pa_common.C 1.220:
+		- little optimization in getMonthDays
+		- small changes in crc32 calculation
+
+	* src/classes/date.C 1.74:
+		- not needed code was removed
+
+	* src/include/pa_common.h 1.110:
+		- array in crc32 calculation was changed to static
+
+2006-11-16	misha
+	* src/types/pa_vmail.C 1.76:
+		- mail:send now set content-type: multipart/related instead of 
+		multipart/mixed if file have $.content-id[]
+
+	* src/types/pa_vmail.C 1.77:
+		- fix missed brakes
+
+2006-11-15	misha
+	* src/types/pa_vdouble.h 1.52:
+		abs -> fabs
+
+2006-11-14	misha
+	* src/include/pa_common.h 1.109:
+		- hex_string was moved from math.C
+		- CRC32_MAX_BUFFER_SIZE was renamed to FILE_BUFFER_SIZE
+
+	* operators.txt 1.183:
+		- added info about ^file.md5[] and ^file:md5[file-name]
+
+	* src/types/pa_vdouble.h 1.51:
+		- incorrect frac detection with negative values was fixed
+
+	* src/classes/math.C 1.44:
+		- hex_string was moved to pa_common.h
+
+	* src/main/pa_common.C 1.219:
+		- CRC32_MAX_BUFFER_SIZE was renamed to FILE_BUFFER_SIZE
+
+	* src/classes/file.C 1.147:
+		- ^file.md5[] and ^file:md5[file-name] were added
+
+2006-11-13	misha
+	* operators.txt 1.182:
+		- added info about ^math:crc32[string], ^file:crc32[file-name] & 
+		^file.crc32[]
+
+	* src/classes/file.C 1.146:
+		- some comments were changed
+		- added ^file:crc32[file-name] and ^file.crc32[]
+
+	* src/classes/math.C 1.43:
+		- added ^math:crc32[string]
+
+	* src/include/pa_common.h 1.108:
+	* src/main/pa_common.C 1.218:
+		- some functions for crc32 calculation added
+
+2006-11-03	misha
+	* tests/150.html 1.1:
+	* tests/151.html 1.1:
+	* tests/results/150.processed 1.1:
+	* tests/results/151.processed 1.1:
+		- 2 tests were added
+
+	* src/include/pa_array.h 1.70:
+		- not needed variable removed
+
+	* src/include/pa_array.h 1.69:
+	* src/include/pa_table.h 1.62:
+		- table.locate & table.join with $.reverse(1) were fixed
+
+	* src/main/pa_http.C 1.5:
+		- bug fix. now tainted data from $.form and query converted to $
+		.charset during ^file::load[http://...]
+
+2006-11-02	misha
+	* src/include/pa_table.h 1.61:
+		ups. forget '=' char
+
+	* src/include/pa_table.h 1.60:
+		- one more fix in .locate[...][$.reverse(1)]
+
+2006-11-01	misha
+	* src/main/pa_http.C 1.4:
+		- second param for this mid method is length but not end_index so this method has error and can't detect charsets in next content-types:
+		Content-type: text/html; charset="windows-1251"
+		Content-type: text/html; charset="windows-1251";
+		Content-type: text/html; charset=windows-1251;
+		
+		only
+		Content-type: text/html; charset=windows-1251
+		was fine
+
+	* src/include/pa_table.h 1.59:
+		- bug fix during ^table.locate( condition false for all records )
+		[$.reverse(1)]
+
+	* src/classes/math.C 1.42:
+		- bug fix, details: http://www.parser.ru/forum/?id=53360
+
+2006-10-31	misha
+	* src/classes/file.C 1.145:
+		- empty args in file::exec removed now
+
+2006-09-11	misha
+	* bin/auto.p.dist.in 1.13:
+		- 2 errors were fixed
+		- table::set was replaced to table::create
+		- some changes in text/code formatting
+
+2006-09-03	paf
+	* src/classes/file.C 1.144:
+		proper tainting of ^file::exec/cgi[script;env;COMMAND;LINE;
+		PARAMS]
+
+2006-06-09	paf
+	* src/classes/table.C 1.223:
+		formatting
+
+	* src/classes/hash.C 1.78:
+		incorporated patch from misha
+		Sent: Wednesday, June 07, 2006 9:52 PM
+		Subject: parser3: patch for $hash._default disappear while
+
+	* src/types/pa_vmail.C 1.75:
+		misha:
+		Sent: Wednesday, June 07, 2006 8:51 PM
+		Subject: patch for base64 in ^mail:send[] %-)
+
+	* src/classes/table.C 1.222:
+		incorporated patch from misha:
+		Sent: Thursday, June 08, 2006 12:38 PM
+		Subject: parser3: patch for ignoring string options for ^table.save[]
+
+	* src/lib/pcre/pcre-2_08.tar.gz 1.2:
+		one can easily find those
+
+	* operators.txt 1.181:
+		^mail:send[
+		  $.file1[
+		     $.value[file]
+		     $.format[!uue|!base64] << new base64 option. default uue
+		  ]
+		]
+
+2006-04-09	paf
+	* buildall-with-xml [release_3_2_1] 1.1.2.5:
+		merged
+		. ftp paths update
+
+	* buildall-with-xml 1.4:
+		. ftp paths update
+
+	* gnu.vcproj 1.2:
+	* operators.txt 1.180:
+	* parser3.sln 1.10:
+	* src/classes/classes.vcproj 1.14:
+	* src/classes/file.C 1.143:
+	* src/classes/hash.C 1.77:
+	* src/classes/hashfile.C 1.37:
+	* src/classes/image.C 1.114:
+	* src/classes/op.C 1.164:
+	* src/classes/table.C 1.221:
+	* src/classes/xdoc.C 1.150:
+	* src/classes/xnode.C 1.75:
+	* src/include/pa_array.h 1.68:
+	* src/include/pa_config_fixed.h 1.71:
+	* src/include/pa_dir.h 1.19:
+	* src/include/pa_memory.h 1.15:
+	* src/include/pa_request.h 1.181:
+	* src/include/pa_stack.h 1.25:
+	* src/lib/cord/cord.vcproj 1.4:
+	* src/lib/gd/gd.vcproj 1.9:
+	* src/lib/ltdl/ltdl.vcproj 1.4:
+	* src/lib/md5/md5.vcproj 1.4:
+	* src/lib/pcre/pcre.vcproj 1.4:
+	* src/lib/pcre/pcre_dftables.vcproj 1.5:
+	* src/lib/pcre/pcre_parser_ctype.vcproj 1.5:
+	* src/lib/sdbm/sdbm.vcproj 1.5:
+	* src/lib/smtp/smtp.h 1.7:
+	* src/lib/smtp/smtp.vcproj 1.8:
+	* src/main/compile.y 1.220:
+	* src/main/execute.C 1.315:
+	* src/main/main.vcproj 1.19:
+	* src/main/pa_cache_managers.C 1.17:
+	* src/main/pa_charset.C 1.55:
+	* src/main/pa_exec.C 1.68:
+	* src/main/pa_http.C 1.3:
+	* src/main/pa_request.C 1.281:
+	* src/main/pa_socks.C 1.25:
+	* src/main/pa_sql_driver_manager.C 1.86:
+	* src/main/pa_string.C 1.207:
+	* src/main/pa_stylesheet_connection.C 1.5:
+	* src/main/pa_stylesheet_manager.C 1.28:
+	* src/targets/apache13/ApacheModuleParser3.vcproj 1.8:
+	* src/targets/apache13core/ApacheModuleParser3Core.vcproj 1.11:
+	* src/targets/apache13core/pa_threads.C 1.6:
+	* src/targets/cgi/getopt.c 1.5:
+	* src/targets/cgi/parser3.C 1.239:
+	* src/targets/cgi/parser3.vcproj 1.14:
+	* src/targets/isapi/pa_threads.C 1.18:
+	* src/targets/isapi/parser3isapi.C 1.97:
+	* src/targets/isapi/parser3isapi.vcproj 1.10:
+	* src/types/pa_value.C 1.20:
+	* src/types/pa_value.h 1.127:
+	* src/types/pa_vcookie.C 1.69:
+	* src/types/pa_vhashfile.C 1.50:
+	* src/types/pa_vhashfile.h 1.34:
+	* src/types/pa_vmail.C 1.74:
+	* src/types/pa_vresponse.C 1.27:
+	* src/types/pa_vstatus.C 1.26:
+	* src/types/types.vcproj 1.18:
+	* tests/descript.ion 1.4:
+	* www/htdocs/_bug.html 1.117:
+	* www/htdocs/_bug.xsl 1.16:
+		+ ^break[] ^continue[], in ^for, ^while, ^menu, ^hash/
+		hashfile.foreach
+
+	* src/main/compile.tab.C 1.113:
+		` change compiled
+
+	* gnu.vcproj [vs2005_to_gcc] 1.1.32.1:
+	* parser3.sln [vs2005_to_gcc] 1.9.28.1:
+	* src/classes/classes.vcproj [vs2005_to_gcc] 1.13.8.1:
+	* src/classes/file.C [vs2005_to_gcc] 1.142.12.1:
+	* src/classes/hash.C [vs2005_to_gcc] 1.76.12.1:
+	* src/classes/image.C [vs2005_to_gcc] 1.113.12.1:
+	* src/classes/op.C [vs2005_to_gcc] 1.163.12.1:
+	* src/classes/table.C [vs2005_to_gcc] 1.220.4.1:
+	* src/classes/xdoc.C [vs2005_to_gcc] 1.149.8.1:
+	* src/classes/xnode.C [vs2005_to_gcc] 1.74.8.1:
+	* src/include/pa_array.h [vs2005_to_gcc] 1.67.12.1:
+	* src/include/pa_config_fixed.h [vs2005_to_gcc] 1.70.8.1:
+	* src/include/pa_dir.h [vs2005_to_gcc] 1.18.12.1:
+	* src/include/pa_memory.h [vs2005_to_gcc] 1.14.8.1:
+	* src/include/pa_request.h [vs2005_to_gcc] 1.180.8.1:
+	* src/include/pa_stack.h [vs2005_to_gcc] 1.24.12.1:
+	* src/lib/cord/cord.vcproj [vs2005_to_gcc] 1.3.8.1:
+	* src/lib/gd/gd.vcproj [vs2005_to_gcc] 1.8.8.1:
+	* src/lib/ltdl/ltdl.vcproj [vs2005_to_gcc] 1.3.20.1:
+	* src/lib/md5/md5.vcproj [vs2005_to_gcc] 1.3.20.1:
+	* src/lib/pcre/pcre.vcproj [vs2005_to_gcc] 1.3.20.1:
+	* src/lib/pcre/pcre_dftables.vcproj [vs2005_to_gcc] 1.4.20.1:
+	* src/lib/pcre/pcre_parser_ctype.vcproj [vs2005_to_gcc] 1.4.20.1:
+	* src/lib/sdbm/sdbm.vcproj [vs2005_to_gcc] 1.4.26.1:
+	* src/lib/smtp/smtp.h [vs2005_to_gcc] 1.6.12.1:
+	* src/lib/smtp/smtp.vcproj [vs2005_to_gcc] 1.7.8.1:
+	* src/main/compile.y [vs2005_to_gcc] 1.219.8.1:
+	* src/main/execute.C [vs2005_to_gcc] 1.314.12.1:
+	* src/main/main.vcproj [vs2005_to_gcc] 1.18.8.1:
+	* src/main/pa_cache_managers.C [vs2005_to_gcc] 1.16.12.1:
+	* src/main/pa_charset.C [vs2005_to_gcc] 1.54.8.1:
+	* src/main/pa_exec.C [vs2005_to_gcc] 1.67.12.1:
+	* src/main/pa_http.C [vs2005_to_gcc] 1.2.12.1:
+	* src/main/pa_request.C [vs2005_to_gcc] 1.280.8.1:
+	* src/main/pa_socks.C [vs2005_to_gcc] 1.24.12.1:
+	* src/main/pa_sql_driver_manager.C [vs2005_to_gcc] 1.85.12.1:
+	* src/main/pa_string.C [vs2005_to_gcc] 1.206.4.1:
+	* src/main/pa_stylesheet_connection.C [vs2005_to_gcc] 1.4.8.1:
+	* src/main/pa_stylesheet_manager.C [vs2005_to_gcc] 1.27.12.1:
+	* src/targets/apache13/ApacheModuleParser3.vcproj [vs2005_to_gcc] 1.7.20.1:
+	* src/targets/apache13core/ApacheModuleParser3Core.vcproj [vs2005_to_gcc] 1.10.8.1:
+	* src/targets/apache13core/pa_threads.C [vs2005_to_gcc] 1.5.12.1:
+	* src/targets/cgi/getopt.c [vs2005_to_gcc] 1.4.10.1:
+	* src/targets/cgi/parser3.C [vs2005_to_gcc] 1.238.8.1:
+	* src/targets/cgi/parser3.vcproj [vs2005_to_gcc] 1.13.8.1:
+	* src/targets/isapi/pa_threads.C [vs2005_to_gcc] 1.17.12.1:
+	* src/targets/isapi/parser3isapi.C [vs2005_to_gcc] 1.96.10.1:
+	* src/targets/isapi/parser3isapi.vcproj [vs2005_to_gcc] 1.9.8.1:
+	* src/types/pa_value.C [vs2005_to_gcc] 1.19.12.1:
+	* src/types/pa_value.h [vs2005_to_gcc] 1.126.12.1:
+	* src/types/pa_vcookie.C [vs2005_to_gcc] 1.68.12.1:
+	* src/types/pa_vmail.C [vs2005_to_gcc] 1.73.10.1:
+	* src/types/pa_vresponse.C [vs2005_to_gcc] 1.26.12.1:
+	* src/types/pa_vstatus.C [vs2005_to_gcc] 1.25.12.1:
+	* src/types/types.vcproj [vs2005_to_gcc] 1.17.8.1:
+	* tests/descript.ion [vs2005_to_gcc] 1.3.8.1:
+	* www/htdocs/_bug.html [vs2005_to_gcc] 1.116.6.1:
+	* www/htdocs/_bug.xsl [vs2005_to_gcc] 1.15.18.1:
+		! switched to VS2005 (projects and object<info explicitly typed>.for_each(, info))
+		+ $response:field[] setting void means removing
+		+ grammar $name` name stops now, for mysql `$field`
+		+ started ^break[] ^continue[], in ^for. TODO: to other iterators (while, menu, foreach)
+		+ all log messages += [uri=, method=, cl=]
+
+2006-03-23	moko
+	* Makefile.am [release_3_1_6] 1.48.6.2.2.1:
+	* Makefile.am [release_3_2_1] 1.51.6.3:
+	* Makefile.in [release_3_1_6] 1.62.6.3.2.1:
+	* Makefile.in [release_3_2_1] 1.65.6.3:
+	* acinclude.m4 [release_3_1_6] 1.35.6.3.2.1:
+	* acinclude.m4 [release_3_2_1] 1.38.6.1:
+	* aclocal.m4 [release_3_1_6] 1.38.6.3.2.1:
+	* aclocal.m4 [release_3_2_1] 1.41.6.1:
+	* acsite.m4 [release_3_1_6] 1.13.6.2.2.1:
+	* acsite.m4 [release_3_2_1] 1.16.6.1:
+	* configure [release_3_1_6] 1.83.6.4.2.2:
+	* configure [release_3_2_1] 1.90.2.2:
+	* configure.in [release_3_1_6] 1.83.6.5.2.2:
+	* configure.in [release_3_2_1] 1.91.2.2:
+	* src/include/pa_version.h [release_3_1_6] 1.19.6.6.2.2:
+	* src/include/pa_version.h [release_3_2_1] 1.27.2.2:
+		*** empty log message ***
+
+2006-03-04	paf
+	* src/main/pa_string.C 1.206:
+		! cache file curruption checks++ [thanks to Igor Zinkovsky for 
+		detailed report]
+
+	* src/main/pa_string.C [release_3_1_6] 1.202.6.2.2.1:
+	* src/main/pa_string.C [release_3_2_1] 1.205.4.1:
+		merged from HEAD
+		! cache file curruption checks++ [thanks to Igor Zinkovsky for detailed report]
+
+2006-03-01	paf
+	* src/main/untaint.C [release_3_1_6] 1.134.6.2.2.1:
+		merged from HEAD
+		! mail:send << changed \r or \n to ' ' in
+
+2006-02-18	paf
+	* src/main/untaint.C [release_3_2_1] 1.136.6.1:
+		merged from HEAD
+		! mail:send << changed \r or \n to ' ' in
+
+	* src/main/untaint.C 1.137:
+		! mail:send << changed \r or \n to ' ' in
+
+2006-02-03	paf
+	* src/main/pa_common.C 1.217:
+		! bugfix: decoding from base64
+
+	* src/main/pa_common.C [release_3_2_1] 1.216.4.1:
+		merged from HEAD
+		! bugfix: decoding from base64
+
+2006-01-20	paf
+	* src/classes/table.C 1.220:
+		! bugfix ^table.save[$.encloser-s now handled properly
+
+	* src/classes/table.C [release_3_1_6] 1.208.6.11.2.1:
+	* src/classes/table.C [release_3_2_1] 1.219.6.1:
+		merged from HEAD
+		! bugfix ^table.save[$.encloser-s now handled properly
+
+	* src/types/pa_vhashfile.C [release_3_1_6] 1.48.14.1:
+		. merged hashfile.foreach memory economy fix
+
+2006-01-19	paf
+	* buildall-with-xml [release_3_2_1] 1.1.2.4:
+	* buildall-without-xml [release_3_2_1] 1.1.2.4:
+		merged from HEAD
+		! libgc:USE_MUNMAP activates merging of free memory blocks which helps a lot in our case:
+		after transform we want CORD(main.result)->cstr[big malloc]->transcode[big malloc]
+
+	* buildall-with-xml 1.3:
+	* buildall-without-xml 1.3:
+		! libgc:USE_MUNMAP activates merging of free memory blocks which helps a lot in our case:
+		after transform we want CORD(main.result)->cstr[big malloc]->transcode[big malloc]
+
+	* src/types/pa_vhashfile.C [release_3_2_1] 1.48.16.1:
+		. merged hashfile.foreach memory economy fix
+
+2006-01-17	paf
+	* src/types/pa_vhashfile.C 1.49:
+		! hashfile.foreach: counted pairs before reading them. got rid 
+		of reallocs = became quicker and less fragmentated
+
+2005-12-29	paf
+	* Makefile.am [release_3_2_1] 1.51.6.2:
+	* Makefile.in [release_3_2_1] 1.65.6.2:
+	* src/lib/ltdl/Makefile.am [release_3_2_1] 1.2.14.2:
+	* src/lib/ltdl/Makefile.in [release_3_2_1] 1.8.6.2:
+		. now site.m4 also packaged when 'make dist', so do configure 
+		companion files in src/lib/ltdl
+
+	* src/lib/ltdl/Makefile.am [release_3_2_1] 1.2.14.1:
+	* src/lib/ltdl/Makefile.in [release_3_2_1] 1.8.6.1:
+	* src/lib/ltdl/acconfig.h [release_3_2_1] 1.1.2.1:
+	* src/lib/ltdl/acinclude.m4 [release_3_2_1] 1.2.38.1:
+	* src/lib/ltdl/config.guess [release_3_2_1] 1.2.2.1:
+	* src/lib/ltdl/config.sub [release_3_2_1] 1.2.2.1:
+	* src/lib/ltdl/configure.in [release_3_2_1] 1.4.36.1:
+	* src/lib/ltdl/install-sh [release_3_2_1] 1.2.2.1:
+	* src/lib/ltdl/ltmain.sh [release_3_2_1] 1.1.2.1:
+	* src/lib/ltdl/missing [release_3_2_1] 1.2.2.1:
+		. now config_auto.h is created with configure [were constant]
+
+	* INSTALL [release_3_2_1] 1.48.2.2:
+	* buildall-with-xml [release_3_2_1] 1.1.2.3:
+	* buildall-without-xml [release_3_2_1] 1.1.2.3:
+		*** empty log message ***
+
+	* buildall-with-xml [release_3_2_1] 1.1.2.2:
+	* buildall-without-xml [release_3_2_1] 1.1.2.2:
+		. farawell doc indication
+
+	* src/lib/ltdl/ltmain.sh 1.1:
+		file ltmain.sh was initially added on branch release_3_2_1.
+
+	* INSTALL 1.49:
+	* Makefile.am 1.52:
+	* Makefile.in 1.66:
+	* buildall-with-xml 1.2:
+	* buildall-without-xml 1.2:
+	* configure 1.91:
+	* configure.in 1.92:
+	* src/include/pa_version.h 1.28:
+	* src/lib/ltdl/Makefile.am 1.3:
+	* src/lib/ltdl/Makefile.in 1.9:
+	* src/lib/ltdl/acconfig.h 1.2:
+	* src/lib/ltdl/acinclude.m4 1.3:
+	* src/lib/ltdl/config.guess 1.3:
+	* src/lib/ltdl/config.sub 1.3:
+	* src/lib/ltdl/configure.in 1.5:
+	* src/lib/ltdl/install-sh 1.3:
+	* src/lib/ltdl/ltmain.sh 1.2:
+	* src/lib/ltdl/missing 1.3:
+	* www/htdocs/_bug.html 1.116:
+		. merged from 3.2.1
+
+	* INSTALL [release_3_2_1] 1.48.2.3:
+		. references to documentation and some clarification
+
+	* Makefile.am [release_3_2_1] 1.51.6.1:
+	* Makefile.in [release_3_2_1] 1.65.6.1:
+		. dist+=buildall*
+
+	* src/lib/ltdl/acconfig.h 1.1:
+		file acconfig.h was initially added on branch release_3_2_1.
+
+2005-12-28	paf
+	* configure [release_3_2_1] 1.90.2.1:
+		. 3.2.1
+
+	* buildall-with-xml 1.1:
+		file buildall-with-xml was initially added on branch 
+		release_3_2_1.
+
+	* INSTALL [release_3_2_1] 1.48.2.1:
+	* buildall-with-xml [release_3_2_1] 1.1.2.1:
+	* buildall-without-xml [release_3_2_1] 1.1.2.1:
+		+ started to simplify build process, see INSTALL
+
+	* buildall-without-xml 1.1:
+		file buildall-without-xml was initially added on branch 
+		release_3_2_1.
+
+2005-12-26	paf
+	* configure.in [release_3_1_6] 1.83.6.5.2.1:
+	* src/include/pa_version.h [release_3_1_6] 1.19.6.6.2.1:
+	* src/main/compile.tab.C [release_3_1_6] 1.103.8.10.2.1:
+		version
+
+	* configure [release_3_1_6] 1.83.6.4.2.1:
+		ver
+
+2005-12-21	paf
+	* src/main/compile.tab.C 1.112:
+	* src/main/main.vcproj 1.18:
+	* www/htdocs/_bug.html 1.115:
+		. win32: grammar is now compiled with bison 1.875b, it reports 
+		unexpected token names
+
+2005-12-19	paf
+	* configure 1.89:
+	* src/lib/Makefile.in 1.15:
+	* src/lib/cord/Makefile.in 1.6:
+		. makes
+
+	* src/main/compile.tab.C [release_3_1_5] 1.103.8.10:
+	* src/types/pa_vxnode.h [release_3_1_5] 1.30.12.2:
+	* www/htdocs/_bug.html [release_3_1_5] 1.84.4.16:
+	* www/htdocs/_bug.xsl [release_3_1_5] 1.15.6.1:
+		! bugfix xnode now holds a link to xmlNode to prevent premature 
+		gc(xmlNode)
+
+	* configure 1.90:
+	* configure.in 1.91:
+	* src/classes/classes.vcproj 1.13:
+	* src/include/pa_config_fixed.h 1.70:
+	* src/include/pa_version.h 1.26:
+	* src/include/pa_version.h 1.27:
+	* src/lib/gd/gd.vcproj 1.8:
+	* src/lib/smtp/smtp.vcproj 1.7:
+	* src/main/main.vcproj 1.17:
+	* src/main/pa_globals.C 1.181:
+	* src/targets/apache13core/ApacheModuleParser3Core.vcproj 1.10:
+	* src/targets/cgi/parser3.vcproj 1.13:
+	* src/targets/isapi/parser3isapi.vcproj 1.9:
+	* src/types/types.vcproj 1.17:
+		. killing gdome [what a relief]
+
+	* src/types/pa_vxnode.C 1.47:
+		. less warnings
+
+	* src/targets/cgi/parser3.C 1.238:
+		. style
+
+	* src/classes/xnode.C 1.74:
+		. "xml.dom"
+		. xnode.select* now works on xdoc too [were barking "not element"]
+
+	* tests/137.html 1.3:
+	* tests/results/137.processed 1.4:
+		. not handled this case yet. code does not hang from inserting 
+		parent into child, considering thing minor issue -- nodes are 
+		removed from source anyway, don't know why shold that be an 
+		error after all
+
+	* tests/097.html 1.3:
+	* tests/106.html 1.3:
+	* tests/108.html 1.3:
+	* tests/110.html 1.3:
+	* tests/112.html 1.3:
+	* tests/113.html 1.3:
+	* tests/114.html 1.3:
+	* tests/115.html 1.3:
+	* tests/116.html 1.3:
+	* tests/117.html 1.3:
+	* tests/Makefile 1.4:
+	* tests/results/001.processed 1.4:
+	* tests/results/002.processed 1.4:
+	* tests/results/003.processed 1.4:
+	* tests/results/004.processed 1.4:
+	* tests/results/005.processed 1.4:
+	* tests/results/006.processed 1.4:
+	* tests/results/008.processed 1.4:
+	* tests/results/009.processed 1.4:
+	* tests/results/010.processed 1.4:
+	* tests/results/011.processed 1.4:
+	* tests/results/012.processed 1.4:
+	* tests/results/013.processed 1.4:
+	* tests/results/014.processed 1.4:
+	* tests/results/015.processed 1.4:
+	* tests/results/016.processed 1.4:
+	* tests/results/017.processed 1.4:
+	* tests/results/018.processed 1.4:
+	* tests/results/020.processed 1.4:
+	* tests/results/021.processed 1.4:
+	* tests/results/022.processed 1.4:
+	* tests/results/023.processed 1.4:
+	* tests/results/024.processed 1.4:
+	* tests/results/025.processed 1.4:
+	* tests/results/026.processed 1.4:
+	* tests/results/027.processed 1.4:
+	* tests/results/028.processed 1.4:
+	* tests/results/029.processed 1.4:
+	* tests/results/030.processed 1.4:
+	* tests/results/031.processed 1.4:
+	* tests/results/032.processed 1.4:
+	* tests/results/033.processed 1.4:
+	* tests/results/034.processed 1.4:
+	* tests/results/035.processed 1.4:
+	* tests/results/036.processed 1.4:
+	* tests/results/037.processed 1.4:
+	* tests/results/038.processed 1.4:
+	* tests/results/039.processed 1.4:
+	* tests/results/040.processed 1.4:
+	* tests/results/041.processed 1.4:
+	* tests/results/042.processed 1.4:
+	* tests/results/043.processed 1.4:
+	* tests/results/044.processed 1.4:
+	* tests/results/045.processed 1.4:
+	* tests/results/046.processed 1.4:
+	* tests/results/047.processed 1.4:
+	* tests/results/048.processed 1.4:
+	* tests/results/049.processed 1.4:
+	* tests/results/050.processed 1.4:
+	* tests/results/051.processed 1.4:
+	* tests/results/052.processed 1.4:
+	* tests/results/053.processed 1.4:
+	* tests/results/054.processed 1.4:
+	* tests/results/055.processed 1.4:
+	* tests/results/056.processed 1.4:
+	* tests/results/057.processed 1.4:
+	* tests/results/058.processed 1.4:
+	* tests/results/059.processed 1.4:
+	* tests/results/060.processed 1.4:
+	* tests/results/061.processed 1.4:
+	* tests/results/062.processed 1.4:
+	* tests/results/063.processed 1.4:
+	* tests/results/064.processed 1.4:
+	* tests/results/065.processed 1.4:
+	* tests/results/066.processed 1.4:
+	* tests/results/067.processed 1.4:
+	* tests/results/068.processed 1.4:
+	* tests/results/069.processed 1.4:
+	* tests/results/070.processed 1.4:
+	* tests/results/071.processed 1.4:
+	* tests/results/072.processed 1.4:
+	* tests/results/073.processed 1.4:
+	* tests/results/074.processed 1.4:
+	* tests/results/075.processed 1.4:
+	* tests/results/076.processed 1.4:
+	* tests/results/077.processed 1.4:
+	* tests/results/078.processed 1.4:
+	* tests/results/079.processed 1.4:
+	* tests/results/080.processed 1.4:
+	* tests/results/081.processed 1.4:
+	* tests/results/082.processed 1.4:
+	* tests/results/083.processed 1.4:
+	* tests/results/084.processed 1.4:
+	* tests/results/085.processed 1.4:
+	* tests/results/086.processed 1.4:
+	* tests/results/087.processed 1.4:
+	* tests/results/088.processed 1.4:
+	* tests/results/089.processed 1.4:
+	* tests/results/090.processed 1.4:
+	* tests/results/091.processed 1.4:
+	* tests/results/092.processed 1.4:
+	* tests/results/093.processed 1.4:
+	* tests/results/094.processed 1.4:
+	* tests/results/095.processed 1.4:
+	* tests/results/096.processed 1.4:
+	* tests/results/097.processed 1.4:
+	* tests/results/099.processed 1.4:
+	* tests/results/100.processed 1.3:
+	* tests/results/101.processed 1.4:
+	* tests/results/102.processed 1.4:
+	* tests/results/104.processed 1.4:
+	* tests/results/105.processed 1.4:
+	* tests/results/106.processed 1.4:
+	* tests/results/107.processed 1.4:
+	* tests/results/108.processed 1.4:
+	* tests/results/109.processed 1.4:
+	* tests/results/110.processed 1.4:
+	* tests/results/111.processed 1.4:
+	* tests/results/112.processed 1.4:
+	* tests/results/113.processed 1.4:
+	* tests/results/114.processed 1.4:
+	* tests/results/115.processed 1.4:
+	* tests/results/117.processed 1.4:
+	* tests/results/119.processed 1.4:
+	* tests/results/120.processed 1.4:
+	* tests/results/121.processed 1.4:
+	* tests/results/122.processed 1.4:
+	* tests/results/123.processed 1.4:
+	* tests/results/124.processed 1.4:
+	* tests/results/125.processed 1.4:
+	* tests/results/126.processed 1.4:
+	* tests/results/127.processed 1.4:
+	* tests/results/128.processed 1.4:
+	* tests/results/129.processed 1.4:
+	* tests/results/130.processed 1.4:
+	* tests/results/131.processed 1.4:
+	* tests/results/132.processed 1.4:
+	* tests/results/133.processed 1.4:
+	* tests/results/134.processed 1.4:
+	* tests/results/135.processed 1.4:
+	* tests/results/136.processed 1.4:
+	* tests/results/138.processed 1.4:
+	* tests/results/139.processed 1.4:
+	* tests/results/140.processed 1.4:
+	* tests/results/141.processed 1.4:
+	* tests/results/142.processed 1.2:
+	* tests/results/143.processed 1.2:
+	* tests/results/144.processed 1.2:
+	* tests/results/145.processed 1.2:
+	* tests/results/146.processed 1.2:
+	* tests/results/147.processed 1.2:
+	* tests/results/148.processed 1.2:
+	* tests/results/149.processed 1.2:
+	* tests/results/auto.p 1.1:
+	* tests/run_parser.sh 1.3:
+		. now works if we turn off default auto.p
+
+	* src/types/pa_vxnode.C 1.46:
+	* tests/142.html 1.2:
+	* tests/144.html 1.2:
+	* tests/145.html 1.2:
+	* tests/149.html 1.1:
+	* tests/descript.ion 1.3:
+	* tests/outputs/d.cmd 1.1:
+	* tests/results/142.processed 1.1:
+	* tests/results/143.processed 1.1:
+	* tests/results/144.processed 1.1:
+	* tests/results/145.processed 1.1:
+	* tests/results/146.processed 1.1:
+	* tests/results/147.processed 1.1:
+	* tests/results/148.processed 1.1:
+	* tests/results/149.processed 1.1:
+	* www/htdocs/_bug.html 1.114:
+		. removed .nodeValue from all node types other than 5 (grabbed 
+		piece from gdome)
+
+2005-12-16	paf
+	* tests/142.html 1.1:
+	* tests/143.html 1.1:
+	* tests/144.html 1.1:
+	* tests/145.html 1.1:
+		. dom [part]
+
+	* tests/146.html 1.1:
+	* tests/147.html 1.1:
+	* tests/148.html 1.1:
+	* www/htdocs/_bug.html 1.113:
+		. more tests
+
+	* src/main/compile.tab.C [release_3_1_5] 1.103.8.9:
+	* src/main/compile.tab.C [release_3_2_0] 1.109.2.2:
+	* src/main/compile.y [release_3_1_5] 1.213.10.7:
+	* src/main/compile.y [release_3_2_0] 1.217.2.2:
+	* src/types/pa_value.h [release_3_1_5] 1.119.6.4:
+	* src/types/pa_vvoid.h [release_3_1_5] 1.22.8.2:
+		merged from HEAD
+		! fixed overoptimized ^call(false) case. (confused it with ^call[] case)
+
+	* src/main/compile.tab.C 1.111:
+	* src/main/compile.y 1.219:
+	* www/htdocs/_bug.html 1.112:
+		! fixed overoptimized ^call(false) case. (confused it with ^call[
+		] case)
+
+	* INSTALL 1.47:
+	* configure.in 1.90:
+	* src/lib/Makefile.am 1.8:
+		. sweetest part [no glib/gdome in INSTALL and patches]
+
+	* tests/006.html 1.3:
+	* tests/034.html 1.3:
+	* tests/057.html 1.3:
+	* tests/Makefile 1.3:
+	* tests/make_tests.cmd 1.1:
+	* tests/results/001.processed 1.3:
+	* tests/results/002.processed 1.3:
+	* tests/results/003.processed 1.3:
+	* tests/results/004.processed 1.3:
+	* tests/results/005.processed 1.3:
+	* tests/results/006.processed 1.3:
+	* tests/results/008.processed 1.3:
+	* tests/results/009.processed 1.3:
+	* tests/results/010.processed 1.3:
+	* tests/results/011.processed 1.3:
+	* tests/results/012.processed 1.3:
+	* tests/results/013.processed 1.3:
+	* tests/results/014.processed 1.3:
+	* tests/results/015.processed 1.3:
+	* tests/results/016.processed 1.3:
+	* tests/results/017.processed 1.3:
+	* tests/results/018.processed 1.3:
+	* tests/results/019.processed 1.3:
+	* tests/results/020.processed 1.3:
+	* tests/results/021.processed 1.3:
+	* tests/results/022.processed 1.3:
+	* tests/results/023.processed 1.3:
+	* tests/results/024.processed 1.3:
+	* tests/results/025.processed 1.3:
+	* tests/results/026.processed 1.3:
+	* tests/results/027.processed 1.3:
+	* tests/results/028.processed 1.3:
+	* tests/results/029.processed 1.3:
+	* tests/results/030.processed 1.3:
+	* tests/results/031.processed 1.3:
+	* tests/results/032.processed 1.3:
+	* tests/results/033.processed 1.3:
+	* tests/results/034.processed 1.3:
+	* tests/results/035.processed 1.3:
+	* tests/results/036.processed 1.3:
+	* tests/results/037.processed 1.3:
+	* tests/results/038.processed 1.3:
+	* tests/results/039.processed 1.3:
+	* tests/results/040.processed 1.3:
+	* tests/results/041.processed 1.3:
+	* tests/results/042.processed 1.3:
+	* tests/results/043.processed 1.3:
+	* tests/results/044.processed 1.3:
+	* tests/results/045.processed 1.3:
+	* tests/results/046.processed 1.3:
+	* tests/results/047.processed 1.3:
+	* tests/results/048.processed 1.3:
+	* tests/results/049.processed 1.3:
+	* tests/results/050.processed 1.3:
+	* tests/results/051.processed 1.3:
+	* tests/results/052.processed 1.3:
+	* tests/results/053.processed 1.3:
+	* tests/results/054.processed 1.3:
+	* tests/results/055.processed 1.3:
+	* tests/results/056.processed 1.3:
+	* tests/results/057.processed 1.3:
+	* tests/results/058.processed 1.3:
+	* tests/results/059.processed 1.3:
+	* tests/results/060.processed 1.3:
+	* tests/results/061.processed 1.3:
+	* tests/results/062.processed 1.3:
+	* tests/results/063.processed 1.3:
+	* tests/results/064.processed 1.3:
+	* tests/results/065.processed 1.3:
+	* tests/results/066.processed 1.3:
+	* tests/results/067.processed 1.3:
+	* tests/results/068.processed 1.3:
+	* tests/results/069.processed 1.3:
+	* tests/results/070.processed 1.3:
+	* tests/results/071.processed 1.3:
+	* tests/results/072.processed 1.3:
+	* tests/results/073.processed 1.3:
+	* tests/results/074.processed 1.3:
+	* tests/results/075.processed 1.3:
+	* tests/results/076.processed 1.3:
+	* tests/results/077.processed 1.3:
+	* tests/results/078.processed 1.3:
+	* tests/results/079.processed 1.3:
+	* tests/results/080.processed 1.3:
+	* tests/results/081.processed 1.3:
+	* tests/results/082.processed 1.3:
+	* tests/results/083.processed 1.3:
+	* tests/results/084.processed 1.3:
+	* tests/results/085.processed 1.3:
+	* tests/results/086.processed 1.3:
+	* tests/results/087.processed 1.3:
+	* tests/results/088.processed 1.3:
+	* tests/results/089.processed 1.3:
+	* tests/results/090.processed 1.3:
+	* tests/results/091.processed 1.3:
+	* tests/results/092.processed 1.3:
+	* tests/results/093.processed 1.3:
+	* tests/results/094.processed 1.3:
+	* tests/results/095.processed 1.3:
+	* tests/results/096.processed 1.3:
+	* tests/results/097.processed 1.3:
+	* tests/results/099.processed 1.3:
+	* tests/results/101.processed 1.3:
+	* tests/results/102.processed 1.3:
+	* tests/results/104.processed 1.3:
+	* tests/results/105.processed 1.3:
+	* tests/results/106.processed 1.3:
+	* tests/results/107.processed 1.3:
+	* tests/results/108.processed 1.3:
+	* tests/results/109.processed 1.3:
+	* tests/results/110.processed 1.3:
+	* tests/results/111.processed 1.3:
+	* tests/results/112.processed 1.3:
+	* tests/results/113.processed 1.3:
+	* tests/results/114.processed 1.3:
+	* tests/results/115.processed 1.3:
+	* tests/results/116.processed 1.3:
+	* tests/results/117.processed 1.3:
+	* tests/results/118.processed 1.3:
+	* tests/results/119.processed 1.3:
+	* tests/results/120.processed 1.3:
+	* tests/results/121.processed 1.3:
+	* tests/results/122.processed 1.3:
+	* tests/results/123.processed 1.3:
+	* tests/results/124.processed 1.3:
+	* tests/results/125.processed 1.3:
+	* tests/results/126.processed 1.3:
+	* tests/results/127.processed 1.3:
+	* tests/results/128.processed 1.3:
+	* tests/results/129.processed 1.3:
+	* tests/results/130.processed 1.3:
+	* tests/results/131.processed 1.3:
+	* tests/results/132.processed 1.3:
+	* tests/results/133.processed 1.3:
+	* tests/results/134.processed 1.3:
+	* tests/results/135.processed 1.3:
+	* tests/results/136.processed 1.3:
+	* tests/results/137.processed 1.3:
+	* tests/results/138.processed 1.3:
+	* tests/results/139.processed 1.3:
+	* tests/results/140.processed 1.3:
+	* tests/results/141.processed 1.3:
+		. refreshed old tests, made them work without auto.p (in utf8)
+		. things noted:
+		. gif got encoded differently
+		. exif 0000:00:00 decoded now into 0000:00:00 (were some strange year)
+
+	* src/classes/xdoc.C 1.149:
+	* src/classes/xnode.C 1.72:
+	* src/classes/xnode.h 1.25:
+	* src/include/pa_charset.h 1.32:
+	* src/include/pa_config_includes.h 1.32:
+	* src/include/pa_globals.h 1.113:
+	* src/include/pa_memory.h 1.14:
+	* src/include/pa_request.h 1.180:
+	* src/include/pa_xml_exception.h 1.5:
+	* src/lib/cord/Makefile.am 1.4:
+	* src/lib/cord/cord.vcproj 1.3:
+	* src/lib/cord/cordbscs.c 1.6:
+	* src/lib/cord/cordprnt.c 1.4:
+	* src/lib/cord/cordxtra.c 1.7:
+	* src/main/compile.tab.C 1.110:
+	* src/main/pa_charset.C 1.54:
+	* src/main/pa_globals.C 1.180:
+	* src/main/pa_memory.C 1.7:
+	* src/main/pa_request.C 1.280:
+	* src/main/pa_stylesheet_connection.C 1.4:
+	* src/main/pa_xml_exception.C 1.5:
+	* src/types/pa_vxdoc.C 1.30:
+	* src/types/pa_vxdoc.h 1.41:
+	* src/types/pa_vxnode.C 1.44:
+	* src/types/pa_vxnode.h 1.36:
+	* www/htdocs/.htaccess 1.49:
+	* www/htdocs/_bug.html 1.111:
+		. started killing gdome
+
+	* INSTALL 1.48:
+		. revived linux libgc fix
+
+	* src/types/pa_vxdoc.C 1.31:
+	* src/types/pa_vxnode.C 1.45:
+	* src/types/pa_vxnode.h 1.37:
+		+ xdoc DOM props
+
+	* src/classes/xnode.C 1.73:
+		. also bark on possible errors
+
+2005-12-13	paf
+	* src/main/pa_request.C [release_3_1_5] 1.274.6.5:
+	* src/main/pa_request.C [release_3_2_0] 1.278.2.1:
+		merged from HEAD
+		! when code in @unhandled_exception thrown another exception, print correct origin (earlier code in catch of exception inside of @unhandled_exception grabbed parent_frame(original_exception) origin and printed it, instead of true origin)
+
+	* src/main/pa_request.C 1.279:
+		! when code in @unhandled_exception thrown another exception, 
+		print correct origin (earlier code in catch of exception inside 
+		of @unhandled_exception grabbed parent_frame(original_exception) 
+		origin and printed it, instead of true origin)
+
+2005-12-09	paf
+	* src/main/pa_string.C 1.205:
+	* src/main/pa_string.C [release_3_2_0] 1.203.2.2:
+		merged from 3.1.5
+		! regex tainting were ignored in ^string.matched :(
+
+	* INSTALL 1.45:
+	* configure 1.88:
+	* configure.in 1.89:
+	* src/classes/date.C 1.73:
+	* src/include/pa_config_fixed.h 1.69:
+	* src/include/pa_version.h 1.25:
+	* src/main/compile.y 1.218:
+	* src/main/compile_tools.h 1.77:
+	* src/main/pa_charset.C 1.53:
+	* src/main/pa_common.C 1.216:
+	* src/main/pa_globals.C 1.179:
+	* src/main/pa_string.C 1.204:
+	* src/targets/apache13core/mod_parser3_core.C 1.10:
+	* src/targets/cgi/getopt.c 1.4:
+	* src/targets/isapi/parser3isapi.C 1.96:
+	* src/types/pa_vmail.C 1.73:
+	* www/htdocs/.htaccess 1.48:
+	* www/htdocs/_bug.txt 1.8:
+	* www/htdocs/auto.p 1.25:
+		. merged latest fixes from 3.2.0
+
+	* src/main/pa_string.C [release_3_1_5] 1.202.6.2:
+		! regex tainting were ignored in ^string.matched :(
+
+	* INSTALL [release_3_2_0] 1.44.2.5:
+		. updated INSTALL doc to work around linux stack base detection 
+		problem, due to change in gc6.4 code
+
 2005-12-08	paf
+	* src/types/pa_vmail.C [release_3_1_5] 1.71.6.2:
+		merged from 3.2.0
+		! bcc line longer then 500 chars now handled OK [were wrapped on 500th char according to rfc, but sendmail failed to unwrap it properly]
+
 	* src/classes/date.C [release_3_2_0] 1.72.2.1:
 	* src/include/pa_config_fixed.h [release_3_2_0] 1.68.2.2:
 	* src/main/compile.tab.C [release_3_2_0] 1.109.2.1:
@@ -15,14 +1193,14 @@
 	* www/htdocs/auto.p [release_3_2_0] 1.24.2.1:
 		. less warnings
 
+	* src/targets/isapi/parser3isapi.C [release_3_2_0] 1.95.2.2:
+		. undone some strange change since 3.1.5
+
 	* src/include/pa_config_fixed.h [release_3_2_0] 1.68.2.1:
 		. removed outdated string origins [in current storage scheme 
 		there's no place for them. someday we can add third CORD to 
 		store origins and special version of parser which stores origins 
 		there [separate binary]]
-
-	* src/lib/patches/gc.patch [release_3_2_0] 1.2.24.1:
-		- incorporated into gc6.2
 
 	* src/targets/apache13core/mod_parser3_core.C [release_3_2_0] 1.9.2.1:
 	* src/targets/isapi/parser3isapi.C [release_3_2_0] 1.95.2.1:
@@ -32,13 +1210,6 @@
 		! bcc line longer then 500 chars now handled OK [were wrapped on 
 		500th char according to rfc, but sendmail failed to unwrap it 
 		properly]
-
-	* src/lib/patches/Makefile.am [release_3_2_0] 1.4.24.1:
-	* src/lib/patches/Makefile.in [release_3_2_0] 1.14.2.1:
-		*** empty log message ***
-
-	* src/targets/isapi/parser3isapi.C [release_3_2_0] 1.95.2.2:
-		. undone some strange change since 3.1.5
 
 2005-12-07	paf
 	* Makefile.am [release_3_2_0] 1.51.2.1:
