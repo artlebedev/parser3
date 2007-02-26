@@ -8,7 +8,7 @@
 #ifndef PA_VFILE_H
 #define PA_VFILE_H
 
-static const char * const IDENT_VFILE_H="$Date: 2006/12/20 09:39:39 $";
+static const char * const IDENT_VFILE_H="$Date: 2007/02/26 13:41:27 $";
 
 // include
 
@@ -20,6 +20,7 @@ static const char * const IDENT_VFILE_H="$Date: 2006/12/20 09:39:39 $";
 // defines
 
 #define NONAME_DAT "noname.dat"
+#define VFILE_TYPE "file"
 
 // forwards
 
@@ -38,7 +39,7 @@ class VFile: public VStateless_object {
 
 public: // Value
 	
-	override const char* type() const { return "file"; }
+	override const char* type() const { return VFILE_TYPE; }
 	override VStateless_class *get_class();
 
 	/// VFile: true
