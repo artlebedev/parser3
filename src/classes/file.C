@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2007/02/07 15:50:32 $";
+static const char * const IDENT_FILE_C="$Date: 2007/02/26 13:42:27 $";
 
 #include "pa_config_includes.h"
 
@@ -35,6 +35,9 @@ static const char * const IDENT_FILE_C="$Date: 2007/02/07 15:50:32 $";
 #define CHARSET_EXEC_PARAM_NAME "charset"
 
 #define NAME_NAME "name"
+
+#define FILE_NAME_MUST_BE_STRING "file name must be string"
+#define FILE_NAME_MUST_NOT_BE_CODE "file name must not be code"
 
 // externs
 
@@ -126,7 +129,7 @@ static bool is_text_mode(const String& mode) {
 
 static void _save(Request& r, MethodParams& params) {
 	Value& vmode_name=params. as_no_junction(0, "mode must not be code");
-	Value& vfile_name=params.as_no_junction(1, "file name must not be code");
+	Value& vfile_name=params.as_no_junction(1, FILE_NAME_MUST_NOT_BE_CODE);
 
 	// save
 	GET_SELF(r, VFile).save(r.absolute(vfile_name.as_string()),
@@ -134,7 +137,7 @@ static void _save(Request& r, MethodParams& params) {
 }
 
 static void _delete(Request& r, MethodParams& params) {
-	Value& vfile_name=params.as_no_junction(0, "file name must not be code");
+	Value& vfile_name=params.as_no_junction(0, FILE_NAME_MUST_NOT_BE_CODE);
 
 	// unlink
 	file_delete(r.absolute(vfile_name.as_string()));
@@ -199,7 +202,7 @@ static void _load_pass_param(
 }
 static void _load(Request& r, MethodParams& params) {
 	Value& vmode_name=params. as_no_junction(0, "mode must not be code");
-	const String& lfile_name=r.absolute(params.as_no_junction(1, "file name must not be code").as_string());
+	const String& lfile_name=r.absolute(params.as_no_junction(1, FILE_NAME_MUST_NOT_BE_CODE).as_string());
 	Value* third_param=params.count()>2?&params.as_no_junction(2, "filename or options must not be code")
 		:0;
 	HashStringValue* third_param_hash=third_param?third_param->get_hash():0;
@@ -226,7 +229,7 @@ static void _load(Request& r, MethodParams& params) {
 	);
 
 	const char *user_file_name=params.count()>alt_filename_param_index?
-		params.as_string(alt_filename_param_index, "filename must be string").cstr()
+		params.as_string(alt_filename_param_index, FILE_NAME_MUST_BE_STRING).cstr()
 		:lfile_name.cstr(String::L_FILE_SPEC);
 
 	Value* vcontent_type=0;
@@ -252,7 +255,7 @@ static void _create(Request& r, MethodParams& params) {
 			"only text mode is currently supported");
 
 	const char* user_file_name_cstr=r.absolute(
-		params.as_no_junction(1, "file name must not be code").as_string()).cstr(String::L_FILE_SPEC);
+		params.as_no_junction(1, FILE_NAME_MUST_NOT_BE_CODE).as_string()).cstr(String::L_FILE_SPEC);
 
 	const String& content=params.as_string(2, "content must be string");
 	const char* content_cstr=content.cstr(String::L_UNSPECIFIED); // explode content, honor tainting changes
@@ -264,7 +267,7 @@ static void _create(Request& r, MethodParams& params) {
 }
 
 static void _stat(Request& r, MethodParams& params) {
-	Value& vfile_name=params.as_no_junction(0, "file name must not be code");
+	Value& vfile_name=params.as_no_junction(0, FILE_NAME_MUST_NOT_BE_CODE);
 
 	const String& lfile_name=vfile_name.as_string();
 
@@ -346,7 +349,7 @@ static void pass_cgi_header_attribute(
 static void _exec_cgi(Request& r, MethodParams& params,
 					  bool cgi) {
 
-	Value& vfile_name=params.as_no_junction(0, "file name must not be code");
+	Value& vfile_name=params.as_no_junction(0, FILE_NAME_MUST_NOT_BE_CODE);
 
 	const String& script_name=r.absolute(vfile_name.as_string());
 
@@ -611,7 +614,7 @@ static void lock_execute_body(int , void *ainfo) {
 	info.r->write_assign_lang(info.r->process(*info.body_code));
 };
 static void _lock(Request& r, MethodParams& params) {
-	const String& file_spec=r.absolute(params.as_string(0, "file name must be string"));
+	const String& file_spec=r.absolute(params.as_string(0, FILE_NAME_MUST_BE_STRING));
 	Lock_execute_body_info info={
 		&r, 
 		&params.as_junction(1, "body must be code")
@@ -636,7 +639,7 @@ static int lastposafter(const String& s, size_t after, const char* substr, size_
 }
 
 static void _find(Request& r, MethodParams& params) {
-	const String& file_name=params.as_no_junction(0, "file name must not be code").as_string();
+	const String& file_name=params.as_no_junction(0, FILE_NAME_MUST_NOT_BE_CODE).as_string();
 	const String* file_spec;
 	if(file_name.first_char()=='/')
 		file_spec=&file_name;
@@ -673,7 +676,7 @@ static void _find(Request& r, MethodParams& params) {
 }
 
 static void _dirname(Request& r, MethodParams& params) {
-	const String& file_spec=params.as_string(0, "file name must be string");
+	const String& file_spec=params.as_string(0, FILE_NAME_MUST_BE_STRING);
     // /a/some.tar.gz > /a
 	// /a/b/ > /a
 	int afterslash=lastposafter(file_spec, 0, "/", 1, true);
@@ -684,21 +687,21 @@ static void _dirname(Request& r, MethodParams& params) {
 }
 
 static void _basename(Request& r, MethodParams& params) {
-	const String& file_spec=params.as_string(0, "file name must be string");
+	const String& file_spec=params.as_string(0, FILE_NAME_MUST_BE_STRING);
     // /a/some.tar.gz > some.tar.gz
 	int afterslash=lastposafter(file_spec, 0, "/", 1);
 	r.write_assign_lang(file_spec.mid(afterslash, file_spec.length()));
 }
 
 static void _justname(Request& r, MethodParams& params) {
-	const String& file_spec=params.as_string(0, "file name must be string");
+	const String& file_spec=params.as_string(0, FILE_NAME_MUST_BE_STRING);
     // /a/some.tar.gz > some.tar
 	int afterslash=lastposafter(file_spec, 0, "/", 1);
 	int afterdot=lastposafter(file_spec, afterslash, ".", 1);
 	r.write_assign_lang(file_spec.mid(afterslash, afterdot!=afterslash?afterdot-1:file_spec.length()));
 }
 static void _justext(Request& r, MethodParams& params) {
-	const String& file_spec=params.as_string(0, "file name must be string");
+	const String& file_spec=params.as_string(0, FILE_NAME_MUST_BE_STRING);
     // /a/some.tar.gz > gz
 	int afterdot=lastposafter(file_spec, 0, ".", 1);
 	if(afterdot>0)
@@ -706,7 +709,7 @@ static void _justext(Request& r, MethodParams& params) {
 }
 
 static void _fullpath(Request& r, MethodParams& params) {
-	const String& file_spec=params.as_string(0, "file name must be string");
+	const String& file_spec=params.as_string(0, FILE_NAME_MUST_BE_STRING);
 	const String* result;
 	if(file_spec.first_char()=='/')
 		result=&file_spec;
@@ -855,7 +858,7 @@ static void _base64(Request& r, MethodParams& params) {
 	}
 	} else {
 		// encode
-		const String& file_spec=params.as_string(0, "file name must be string");
+		const String& file_spec=params.as_string(0, FILE_NAME_MUST_BE_STRING);
 		const char* encoded=pa_base64_encode(r.absolute(file_spec));
 		r.write_assign_lang(*new String(encoded, 0, true/*once ?param=base64(something) was needed*/));
 	}
@@ -866,7 +869,7 @@ static void _crc32(Request& r, MethodParams& params) {
 	if(&r.get_self() == file_class) {
 		// ^file:crc32[file-name]
 		if(params.count()) {
-			const String& file_spec=params.as_string(0, "file name must be string");
+			const String& file_spec=params.as_string(0, FILE_NAME_MUST_BE_STRING);
 			crc32=pa_crc32(r.absolute(file_spec));
 		} else {
 			throw Exception("parser.runtime",
@@ -928,7 +931,7 @@ static void _md5(Request& r, MethodParams& params) {
 	if(&r.get_self() == file_class) {
 		// ^file:md5[file-name]
 		if(params.count()) {
-			const String& file_spec=params.as_string(0, "file name must be string");
+			const String& file_spec=params.as_string(0, FILE_NAME_MUST_BE_STRING);
 			md5=pa_md5(r.absolute(file_spec));
 		} else {
 			throw Exception("parser.runtime",
