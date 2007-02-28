@@ -1,4 +1,5 @@
 content-type: application/octet-stream
+content-disposition: inline; filename=099.html
 content-length: 43
 
 $response:body[^file::load[text;099.html]]
