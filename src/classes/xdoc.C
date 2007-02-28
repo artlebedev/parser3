@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT_XDOC_C="$Date: 2007/02/28 19:23:15 $";
+static const char * const IDENT_XDOC_C="$Date: 2007/02/28 19:36:31 $";
 
 #include "libxml/tree.h"
 #include "libxml/HTMLtree.h"
@@ -399,24 +399,20 @@ static void _create(Request& r, MethodParams& params) {
 
 		// must be last action in if, see after if}
 	} else { // [localName]
-		if (0 && VFile* vfile=param.as_vfile(String::L_UNSPECIFIED)){
-			xmldoc=xmlParseMemory(vfile->value_ptr(), vfile->value_size());
-			if(!xmldoc || xmlHaveGenericErrors())
-				throw XmlException(0);
-		} else {
-			xmlChar* localName=r.transcode(param.as_string());
+		if(const String* value = param.get_string()){
+			xmlChar* localName=r.transcode(*value);
 #if 0
-		GdomeDocumentType *documentType=gdome_di_createDocumentType (
-			docimpl, 
-			r.transcode(qualifiedName), 
-			0/*publicId*/, 
-			0/*systemId*/, 
-			&exc);
-		if(!documentType || exc || xmlHaveGenericErrors())
-			throw Exception(
-				method_name, 
-				exc);
-		/// +xalan createXMLDecl ?
+			GdomeDocumentType *documentType=gdome_di_createDocumentType (
+				docimpl, 
+				r.transcode(qualifiedName), 
+				0/*publicId*/, 
+				0/*systemId*/, 
+				&exc);
+			if(!documentType || exc || xmlHaveGenericErrors())
+				throw Exception(
+					method_name, 
+					exc);
+			/// +xalan createXMLDecl ?
 #endif
 			xmldoc=xmlNewDoc(0);
 			if(!xmldoc || xmlHaveGenericErrors())
@@ -427,6 +423,11 @@ static void _create(Request& r, MethodParams& params) {
 
 			set_encoding=true;
 			// must be last action in if, see after if}
+		} else {
+			VFile* vfile=param.as_vfile(String::L_UNSPECIFIED);
+			xmldoc=xmlParseMemory(vfile->value_ptr(), vfile->value_size());
+			if(!xmldoc || xmlHaveGenericErrors())
+				throw XmlException(0);
 		}
 	}
 	// must be first action after if}
