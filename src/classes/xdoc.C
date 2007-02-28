@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT_XDOC_C="$Date: 2006/04/09 13:38:47 $";
+static const char * const IDENT_XDOC_C="$Date: 2007/02/28 19:09:23 $";
 
 #include "libxml/tree.h"
 #include "libxml/HTMLtree.h"
@@ -399,8 +399,12 @@ static void _create(Request& r, MethodParams& params) {
 
 		// must be last action in if, see after if}
 	} else { // [localName]
-		xmlChar* localName=r.transcode(param.as_string());
-
+		if (VFile* vfile=param.as_vfile(String::L_UNSPECIFIED)){
+			xmldoc=xmlParseMemory(vfile->value_ptr(), vfile->value_size());
+			if(!xmldoc || xmlHaveGenericErrors())
+				throw XmlException(0);
+		} else {
+			xmlChar* localName=r.transcode(param.as_string());
 #if 0
 		GdomeDocumentType *documentType=gdome_di_createDocumentType (
 			docimpl, 
@@ -414,15 +418,16 @@ static void _create(Request& r, MethodParams& params) {
 				exc);
 		/// +xalan createXMLDecl ?
 #endif
-		xmldoc=xmlNewDoc(0);
-		if(!xmldoc || xmlHaveGenericErrors())
-			throw XmlException(0);
-		xmlNode* node=xmlNewChild((xmlNode*)xmldoc, NULL, localName, NULL);
-		if(!node || xmlHaveGenericErrors())
-			throw XmlException(0);
+			xmldoc=xmlNewDoc(0);
+			if(!xmldoc || xmlHaveGenericErrors())
+				throw XmlException(0);
+			xmlNode* node=xmlNewChild((xmlNode*)xmldoc, NULL, localName, NULL);
+			if(!node || xmlHaveGenericErrors())
+				throw XmlException(0);
 
-		set_encoding=true;
-		// must be last action in if, see after if}
+			set_encoding=true;
+			// must be last action in if, see after if}
+		}
 	}
 	// must be first action after if}
 	// replace any previous parsed source

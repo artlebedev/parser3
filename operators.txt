@@ -820,6 +820,7 @@ xdoc(xnode)
     ::sql{...}
     !::create[[URI]]{<?xml?><string/>} старое имя 'set'
     !::create[[URI]][qualifiedName]
+    !::create[file] can be usable: $f[^file::load[binary;http://;some http options here...]]$x[^xdoc::create[$f]]
       URI default = disk path to requested document
       для каталогов конечный / обязателен
     !::load[file.xml[;опции]]
