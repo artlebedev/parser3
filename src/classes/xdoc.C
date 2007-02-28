@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT_XDOC_C="$Date: 2007/02/28 19:09:23 $";
+static const char * const IDENT_XDOC_C="$Date: 2007/02/28 19:23:15 $";
 
 #include "libxml/tree.h"
 #include "libxml/HTMLtree.h"
@@ -399,7 +399,7 @@ static void _create(Request& r, MethodParams& params) {
 
 		// must be last action in if, see after if}
 	} else { // [localName]
-		if (VFile* vfile=param.as_vfile(String::L_UNSPECIFIED)){
+		if (0 && VFile* vfile=param.as_vfile(String::L_UNSPECIFIED)){
 			xmldoc=xmlParseMemory(vfile->value_ptr(), vfile->value_size());
 			if(!xmldoc || xmlHaveGenericErrors())
 				throw XmlException(0);
