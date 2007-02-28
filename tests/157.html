@@ -1,8 +1,8 @@
 ^try{
-	^file:copy[157.html;157.copy]
-	^if(-f "157.copy"){
+	^file:copy[157.html;newdir/157.copy]
+	^if(-f "newdir/157.copy"){
 		ok.
-		^file:delete[157.copy]
+		^file:delete[newdir/157.copy]
 	}{
 		no copy errors but target file doesn't exist.
 	}
