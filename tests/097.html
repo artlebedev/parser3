@@ -6,5 +6,18 @@ $file[^file::load[binary;http://www.parser.ru/none/;
 ]]
 #server: $file.SERVER<br>
 $file.status
-<hr>
+<hr />
 #<pre>$file.text</pre>
+
+
+$file[^file::load[binary;http://www.parser.ru/xmlview.xsl;
+	$.timeout(10)
+	$.any-status(1)
+]]
+^try{
+	$xdoc[^xdoc::create[$file]]
+	xdoc from file created successfully (documentElement: $xdoc.documentElement.nodeName)
+}{
+	can't create xdoc.
+	$exception.handled(1)
+}
