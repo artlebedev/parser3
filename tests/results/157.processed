@@ -1,4 +1,8 @@
 content-type: text/html
-content-length: 4
+content-length: 42
 
+Copying file:
+ok.
+<br />
+Moving file:
 ok.

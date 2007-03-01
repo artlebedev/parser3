@@ -1,12 +1,36 @@
+$sFrom[157.html]
+$sCopy[newdir1/157.copy]
+$sMove[newdir2/157.move]
 ^try{
-	^file:copy[157.html;newdir/157.copy]
-	^if(-f "newdir/157.copy"){
+	Copying file:
+	^file:copy[$sFrom;$sCopy]
+	^if(-f $sCopy){
 		ok.
-		^file:delete[newdir/157.copy]
 	}{
 		no copy errors but target file doesn't exist.
 	}
 }{
 	failed.
 	$exception.handled(1)
+}
+<br />
+
+^if(-f $sCopy){
+	Moving file:
+	^try{
+		^file:move[$sCopy;$sMove]
+		^if(-f $sMove){
+			^if(-d ^file:dirname[$sCopy]){
+				moving ok but source dir still exist.
+			}{
+				ok.
+			}
+			^file:delete[$sMove]
+		}{
+			no move errors but target file doesn't exist.
+		}
+	}{
+		failed.
+		$exception.handled(1)
+	}
 }
