@@ -1,13 +1,18 @@
 content-type: text/html
-content-length: 2731
+content-length: 4790
 
 <pre>&lt;!--for getByID to work we need to enable doctype checking in pa_global.C :( &lt;?DOCTYPE people SYSTEM &quot;107.dtd&quot;?&gt;--&gt;&lt;people&gt;
 	&lt;man id=&quot;1&quot; имя=&quot;word слово&quot;&gt;
 		&lt;name&gt;P«AF	B&lt;/name&gt;
 	&lt;/man&gt;
-	   	&lt;man id=&quot;2&quot;&gt;
-            &lt;name&gt;ПИФ&amp;amp;&lt;/name&gt;
-	   	&lt;/man&gt;
+	&lt;man id=&quot;2&quot;&gt;
+		&lt;name&gt;ПИФ&amp;amp;&lt;/name&gt;
+	&lt;/man&gt;
+	&lt;group&gt;
+		&lt;man id=&quot;3&quot;&gt;
+			&lt;name&gt;ПАФ&lt;/name&gt;
+		&lt;/man&gt;
+	&lt;/group&gt;
 &lt;/people&gt;
 
 </pre><hr>
@@ -17,23 +22,19 @@ content-length: 2731
 [8]
 for getByID to work we need to enable doctype checking in pa_global.C :( &lt;?DOCTYPE people SYSTEM &quot;107.dtd&quot;?&gt;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;
-&lt;people
-&gt;
+&lt;people&gt;
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 [3]
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-&lt;man
-id="1" имя="word слово"
-&gt;
+&lt;man id="1" имя="word слово"&gt;
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 [3]
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-&lt;name
-&gt;
+&lt;name&gt;
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 [3]
@@ -46,16 +47,13 @@ P«AF	B<br>
 [3]
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-&lt;man
-id="2"
-&gt;
+&lt;man id="2"&gt;
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 [3]
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-&lt;name
-&gt;
+&lt;name&gt;
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 [3]
@@ -67,21 +65,48 @@ id="2"
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 [3]
 <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;group&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[3]
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;man id="3"&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[3]
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;name&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[3]
+ПАФ<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[3]
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/name&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[3]
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/man&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[3]
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/group&gt;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/man&gt;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/man&gt;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&lt;/people&gt;<br>
 <hr>
-XPath1:<br>
-&lt;man
-id="1" имя="word слово"
-&gt;
+XPath1 [*/man]:<br>
+&lt;man id="1" имя="word слово"&gt;
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp;
 [3]
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp;
-&lt;name
-&gt;
+&lt;name&gt;
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 [3]
@@ -91,16 +116,13 @@ P«AF	B<br>
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp;&lt;/name&gt;<br>
 &lt;/man&gt;<br>
-&lt;man
-id="2"
-&gt;
+&lt;man id="2"&gt;
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp;
 [3]
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp;
-&lt;name
-&gt;
+&lt;name&gt;
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 [3]
@@ -111,9 +133,58 @@ id="2"
 &nbsp;&nbsp;&nbsp;&nbsp;&lt;/name&gt;<br>
 &lt;/man&gt;<br>
 <hr>
-XPath2:<br>
-&lt;name
-&gt;
+XPath1 [//man]:<br>
+&lt;man id="1" имя="word слово"&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;
+[3]
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;name&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[3]
+P«AF	B<br>
+&nbsp;&nbsp;&nbsp;&nbsp;
+[3]
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;/name&gt;<br>
+&lt;/man&gt;<br>
+&lt;man id="2"&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;
+[3]
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;name&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[3]
+ПИФ&amp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;
+[3]
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;/name&gt;<br>
+&lt;/man&gt;<br>
+&lt;man id="3"&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;
+[3]
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;name&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[3]
+ПАФ<br>
+&nbsp;&nbsp;&nbsp;&nbsp;
+[3]
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;/name&gt;<br>
+&lt;/man&gt;<br>
+<hr>
+XPath2 [*/man[2]/name]:<br>
+&lt;name&gt;
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp;
 [3]

@@ -1,15 +1,26 @@
 @main[]
+$request:charset[UTF-8]
+$response:charset[UTF-8]
+$response:content-type[
+	$.value[text/html]
+	$.charset[$response:charset]
+]
 ^xdata[]
 
 ^show_xdoc2[$xdoc]<hr>
 ^show_xnode1[$xdoc]<hr>
 
-XPath1:<br>
+XPath1 [*/man]:<br>
 $people[^xdoc.select[*/man]]
 ^show_xnodes1[$people]<hr>
 
-XPath2:<br>
+XPath1 [//man]:<br>
+$people[^xdoc.select[//man]]
+^show_xnodes1[$people]<hr>
+
+XPath2 [*/man[2]/name]:<br>
 ^show_xnode1[^xdoc.selectSingle[*/man[2]/name];0;1]<hr>
+
 
 @xdata[]
 $xdoc[^xdoc::create{<?xml version="1.0" encoding="$request:charset"?>
@@ -18,15 +29,20 @@ $xdoc[^xdoc::create{<?xml version="1.0" encoding="$request:charset"?>
 	<man id="1" имя="word слово">
 		<name>P&#171^;AF	B</name>
 	</man>
-	   	<man id="2">
-            <name>ПИФ^taint[&]</name>
-	   	</man>
+	<man id="2">
+		<name>ПИФ^taint[&]</name>
+	</man>
+	<group>
+		<man id="3">
+			<name>ПАФ</name>
+		</man>
+	</group>
 </people>
 }]
 
 @show1[array]
 ^for[i](0;$array-1){
-    $x[$array.$i]
+	$x[$array.$i]
 	$x.firstChild.nodeValue: 
 		$pattributes[$x.parentNode.attributes]
 		^if(^pattributes._count[]){
@@ -40,30 +56,23 @@ $xdoc[^xdoc::create{<?xml version="1.0" encoding="$request:charset"?>
 	^show_xnode1[$array.$i;0;1]
 }
 
-@show_xnode1[x;level;single][l]
+@show_xnode1[x;level;single][l;key;value]
 ^if(def $x){
-    ^for[l](0;$level-1){&nbsp^;&nbsp^;&nbsp^;&nbsp^;}
-    ^if($x.nodeType == $xnode:ELEMENT_NODE){
-    	&lt^;$x.nodeName
-	    $pairs[$x.attributes]
-	    ^if(def $pairs){
-	    	$names[^pairs._keys[]]
-	    	^names.menu{ $names.key="$pairs.[$names.key].nodeValue"}
-	    }
-	    &gt^;
-    }{
-    	[$x.nodeType]
-    }
-    
-    ^if(def $x.nodeValue){$x.nodeValue}<br>
-    ^show_xnode1[$x.firstChild]($level+1)
-    ^if(!$single){
+	^for[l](0;$level-1){&nbsp^;&nbsp^;&nbsp^;&nbsp^;}
+	^if($x.nodeType == $xnode:ELEMENT_NODE){
+		&lt^;$x.nodeName^if(def $x.attributes){^x.attributes.foreach[key;value]{ $key="$value.nodeValue"}}&gt^;
+	}{
+		[$x.nodeType]
+	}
+	^if(def $x.nodeValue){$x.nodeValue}<br>
+	^show_xnode1[$x.firstChild]($level+1)
+	^if(!$single){
 	    ^show_xnode1[$x.nextSibling]($level)
-    }
+	}
 
-    ^if($x.nodeType == $xnode:ELEMENT_NODE){
-    ^for[l](0;$level-1){&nbsp^;&nbsp^;&nbsp^;&nbsp^;}&lt^;/$x.nodeName&gt^;<br>
-    }
+	^if($x.nodeType == $xnode:ELEMENT_NODE){
+		^for[l](0;$level-1){&nbsp^;&nbsp^;&nbsp^;&nbsp^;}&lt^;/$x.nodeName&gt^;<br>
+	}
 }
 
 @show_xdoc2[xdoc]
@@ -71,7 +80,7 @@ $xdoc[^xdoc::create{<?xml version="1.0" encoding="$request:charset"?>
 <pre>^taint[html][^xdoc.string[
 	$.method[html]
 #	$.encoding[utF-8]
-#  	$.omit-xml-declaration[yes]
+#	$.omit-xml-declaration[yes]
 #	$.standalone[no]
 #	-$.doctype-public[-//W3C//DTD XHTML]
 #	-$.doctype-system[/a/b/c/]
