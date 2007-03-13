@@ -1,0 +1,145 @@
+content-type: text/html
+content-length: 1697
+
+<table border="1">
+<caption>Origin</caption>
+<tr>
+<th>name</th><th>age</th>
+</tr>
+<tr>
+<td>Вася</td><td>12</td>
+</tr>
+<tr>
+<td>Петя</td><td>24</td>
+</tr>
+<tr>
+<td>Маша</td><td>15</td>
+</tr>
+<tr>
+<td>O'Neil</td><td>33</td>
+</tr>
+<tr>
+<td>Piter
+Pen</td><td>12</td>
+</tr>
+</table><br />
+<table border="1">
+<caption>Loaded</caption>
+<tr>
+<th>name</th><th>age</th>
+</tr>
+<tr>
+<td>Вася</td><td>12</td>
+</tr>
+<tr>
+<td>Петя</td><td>24</td>
+</tr>
+<tr>
+<td>Маша</td><td>15</td>
+</tr>
+<tr>
+<td>O'Neil</td><td>33</td>
+</tr>
+<tr>
+<td>Piter
+Pen</td><td>12</td>
+</tr>
+</table><br />
+<table border="1">
+<caption>Without encloser</caption>
+<tr>
+<th>name</th><th>age</th>
+</tr>
+<tr>
+<td>Вася</td><td>12</td>
+</tr>
+<tr>
+<td>Петя</td><td>24</td>
+</tr>
+<tr>
+<td>Маша</td><td>15</td>
+</tr>
+<tr>
+<td>O'Neil</td><td>33</td>
+</tr>
+<tr>
+<td>Piter</td><td></td>
+</tr>
+<tr>
+<td>Pen</td><td>12</td>
+</tr>
+</table><br />
+<table border="1">
+<caption>Nameless</caption>
+<tr>
+<td>Вася</td>
+<td>12</td>
+</tr>
+<tr>
+<td>Петя</td>
+<td>24</td>
+</tr>
+<tr>
+<td>Маша</td>
+<td>15</td>
+</tr>
+<tr>
+<td>O'Neil</td>
+<td>33</td>
+</tr>
+<tr>
+<td>Piter
+Pen</td>
+<td>12</td>
+</tr>
+</table><br />
+<table border="1">
+<caption>Loaded nameless</caption>
+<tr>
+<td>Вася</td>
+<td>12</td>
+</tr>
+<tr>
+<td>Петя</td>
+<td>24</td>
+</tr>
+<tr>
+<td>Маша</td>
+<td>15</td>
+</tr>
+<tr>
+<td>O'Neil</td>
+<td>33</td>
+</tr>
+<tr>
+<td>Piter
+Pen</td>
+<td>12</td>
+</tr>
+</table><br />
+<table border="1">
+<caption>Nameless without encloser</caption>
+<tr>
+<td>Вася</td>
+<td>12</td>
+</tr>
+<tr>
+<td>Петя</td>
+<td>24</td>
+</tr>
+<tr>
+<td>Маша</td>
+<td>15</td>
+</tr>
+<tr>
+<td>O'Neil</td>
+<td>33</td>
+</tr>
+<tr>
+<td>Piter</td>
+</tr>
+<tr>
+<td>Pen</td>
+<td>12</td>
+</tr>
+</table><br />

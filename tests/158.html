@@ -1,0 +1,63 @@
+@main[]
+$sFileNamed[158.named]
+$sFileNameless[158.nameless]
+$hOption[$.encloser[']]
+
+$sTable[Вася	12
+Петя	24
+Маша	15
+O'Neil	33
+^taint[Piter^#0APen]	12
+]
+
+$tOrigin[^table::create{name	age
+$sTable}]
+
+$tNameless[^table::create[nameless]{$sTable}]
+
+^print[Origin;$tOrigin]<br />
+
+^tOrigin.save[$sFileNamed;$hOption]
+$tOriginNew[^table::load[$sFileNamed;$hOption]]
+
+^print[Loaded;$tOriginNew]<br />
+
+^tOrigin.save[$sFileNamed]
+$tOriginNew[^table::load[$sFileNamed]]
+
+^print[Without encloser;$tOriginNew]<br />
+
+^print[Nameless;$tNameless]<br />
+^tNameless.save[nameless;$sFileNameless;$hOption]
+$tNamelessNew[^table::load[nameless;$sFileNameless;$hOption]]
+
+^print[Loaded nameless;$tNamelessNew]<br />
+
+^tNameless.save[nameless;$sFileNameless]
+$tNamelessNew[^table::load[nameless;$sFileNameless]]
+
+^print[Nameless without encloser;$tNamelessNew]<br />
+
+
+
+@print[sTitle;tTable][tColumn;i]
+$tColumn[^tTable.columns[]]
+<table border="1">
+^if(def $sTitle){
+	<caption>$sTitle</caption>
+}
+^if($tColumn){
+	<tr>
+		^tColumn.menu{<th>$tColumn.column</th>}
+	</tr>
+}
+^tTable.menu{
+	<tr>
+		^if($tColumn){
+			^tColumn.menu{<td>$tTable.[$tColumn.column]</td>}
+		}{
+			^for[i](0;5){^if(def $tTable.$i){<td>$tTable.$i</td>}}
+		}
+	</tr>
+}
+</table>
