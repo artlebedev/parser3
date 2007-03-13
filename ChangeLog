@@ -1,3 +1,65 @@
+2007-03-13	misha
+	* buildall-with-xml 1.8:
+		- pattern needed now for building
+
+	* tests/097.html 1.5:
+		- added test for xdoc::load
+
+	* buildall-with-xml 1.9:
+		libxml2: --without-ftp --without-docbook
+
+	* tests/results/097.processed 1.6:
+		- added test results for xdoc::load & xdoc::load[http://...]
+
+2007-03-12	misha
+	* tests/107.html 1.4:
+	* tests/results/107.processed 1.5:
+		- added test for xpath '//man'
+
+2007-03-01	misha
+	* tests/097.html 1.4:
+	* tests/results/097.processed 1.5:
+		- added test for creating xdoc from file
+
+	* tests/157.html 1.3:
+	* tests/results/157.processed 1.2:
+		- added test for file:move
+
+2007-02-28	misha
+	* tests/results/099.processed 1.5:
+		- ever send content-disposition to client with file
+
+	* operators.txt 1.190:
+	* src/classes/xdoc.C 1.151:
+		- ^xdoc::create[$file] added.
+
+	* src/classes/xdoc.C 1.153:
+		- another attempt
+
+	* tests/157.html 1.1:
+		+ test for file:copy
+
+	* src/classes/xdoc.C 1.152:
+		- roll back last changes for a while
+
+	* src/classes/file.C 1.153:
+		- under lock we create non-exist dir anyway
+
+2007-02-26	misha
+	* src/classes/file.C 1.152:
+		- some similar strings moved to #define instead of to be copy/
+		pasted many times
+
+	* src/types/pa_vfile.h 1.60:
+		- class name string ("file") moved to #define
+
+2007-02-20	misha
+	* bin/auto.p.dist.in 1.14:
+		- added lines for sqlite
+
+	* configure.in 1.93:
+		- added some strings for sqlite detection
+
 2007-02-19	misha
 	* buildall-with-xml 1.7:
 	* buildall-without-xml 1.5:
