@@ -1,5 +1,5 @@
 content-type: text/html
-content-length: 1697
+content-length: 1682
 
 <table border="1">
 <caption>Origin</caption>
@@ -7,13 +7,13 @@ content-length: 1697
 <th>name</th><th>age</th>
 </tr>
 <tr>
-<td>Р’Р°СЃСЏ</td><td>12</td>
+<td>Вася</td><td>12</td>
 </tr>
 <tr>
-<td>РџРµС‚СЏ</td><td>24</td>
+<td>Петя</td><td>24</td>
 </tr>
 <tr>
-<td>РњР°С€Р°</td><td>15</td>
+<td>Маша</td><td>15</td>
 </tr>
 <tr>
 <td>O'Neil</td><td>33</td>
@@ -29,13 +29,13 @@ Pen</td><td>12</td>
 <th>name</th><th>age</th>
 </tr>
 <tr>
-<td>Р’Р°СЃСЏ</td><td>12</td>
+<td>Вася</td><td>12</td>
 </tr>
 <tr>
-<td>РџРµС‚СЏ</td><td>24</td>
+<td>Петя</td><td>24</td>
 </tr>
 <tr>
-<td>РњР°С€Р°</td><td>15</td>
+<td>Маша</td><td>15</td>
 </tr>
 <tr>
 <td>O'Neil</td><td>33</td>
@@ -51,13 +51,13 @@ Pen</td><td>12</td>
 <th>name</th><th>age</th>
 </tr>
 <tr>
-<td>Р’Р°СЃСЏ</td><td>12</td>
+<td>Вася</td><td>12</td>
 </tr>
 <tr>
-<td>РџРµС‚СЏ</td><td>24</td>
+<td>Петя</td><td>24</td>
 </tr>
 <tr>
-<td>РњР°С€Р°</td><td>15</td>
+<td>Маша</td><td>15</td>
 </tr>
 <tr>
 <td>O'Neil</td><td>33</td>
@@ -72,74 +72,59 @@ Pen</td><td>12</td>
 <table border="1">
 <caption>Nameless</caption>
 <tr>
-<td>Р’Р°СЃСЏ</td>
-<td>12</td>
+<td>Вася</td><td>12</td>
 </tr>
 <tr>
-<td>РџРµС‚СЏ</td>
-<td>24</td>
+<td>Петя</td><td>24</td>
 </tr>
 <tr>
-<td>РњР°С€Р°</td>
-<td>15</td>
+<td>Маша</td><td>15</td>
 </tr>
 <tr>
-<td>O'Neil</td>
-<td>33</td>
+<td>O'Neil</td><td>33</td>
 </tr>
 <tr>
 <td>Piter
-Pen</td>
-<td>12</td>
+Pen</td><td>12</td>
 </tr>
 </table><br />
 <table border="1">
 <caption>Loaded nameless</caption>
 <tr>
-<td>Р’Р°СЃСЏ</td>
-<td>12</td>
+<td>Вася</td><td>12</td>
 </tr>
 <tr>
-<td>РџРµС‚СЏ</td>
-<td>24</td>
+<td>Петя</td><td>24</td>
 </tr>
 <tr>
-<td>РњР°С€Р°</td>
-<td>15</td>
+<td>Маша</td><td>15</td>
 </tr>
 <tr>
-<td>O'Neil</td>
-<td>33</td>
+<td>O'Neil</td><td>33</td>
 </tr>
 <tr>
 <td>Piter
-Pen</td>
-<td>12</td>
+Pen</td><td>12</td>
 </tr>
 </table><br />
 <table border="1">
 <caption>Nameless without encloser</caption>
 <tr>
-<td>Р’Р°СЃСЏ</td>
-<td>12</td>
+<td>Вася</td><td>12</td>
 </tr>
 <tr>
-<td>РџРµС‚СЏ</td>
-<td>24</td>
+<td>Петя</td><td>24</td>
 </tr>
 <tr>
-<td>РњР°С€Р°</td>
-<td>15</td>
+<td>Маша</td><td>15</td>
 </tr>
 <tr>
-<td>O'Neil</td>
-<td>33</td>
+<td>O'Neil</td><td>33</td>
 </tr>
 <tr>
 <td>Piter</td>
 </tr>
 <tr>
-<td>Pen</td>
-<td>12</td>
+<td>Pen</td><td>12</td>
 </tr>
 </table><br />
