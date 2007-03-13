@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Id: buildall-with-xml,v 1.7 2007/02/19 11:47:55 misha Exp $
+# $Id: buildall-with-xml,v 1.8 2007/03/13 11:00:28 misha Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -42,14 +42,15 @@ if test ! -f "$project_directory/gnome/lib/libxml2.a"; then
     wget -c --passive-ftp ftp://xmlsoft.org/libxml2/$libxml2.tar.gz
   fi
   echo "Unpacking libxml2... (be patient)"
+  rm -rf $libxml2
   gunzip -c $libxml2.tar.gz | tar vxf - >/dev/null
   cd $libxml2
-  #sax1, output, tree, xinclude[in libxslt], html[in libxslt, mode=html?] xptr[xinclude]-- needed!
+  #sax1, output, tree, xinclude[in libxslt], html[in libxslt, mode=html?], xptr[xinclude], http, pattern -- needed!
   echo "Configuring libxml..."
   ./configure --prefix=$project_directory/gnome \
     --without-iconv --without-threads --without-debug \
     --without-iso8859x --without-legacy \
-    --without-pattern --without-push --without-python \
+    --without-push --without-python \
     --without-reader --without-writer --without-readline --without-regexps \
     --without-schemas --without-schematron \
     --without-modules \
@@ -70,6 +71,7 @@ if test ! -f "$project_directory/gnome/lib/libxslt.a"; then
     wget -c --passive-ftp ftp://xmlsoft.org/libxslt/$libxslt.tar.gz
   fi
   echo "Unpacking libxslt... (be patient)"
+  rm -rf $libxslt
   gunzip -c $libxslt.tar.gz | tar vxf - >/dev/null
   cd $libxslt
   echo "Configuring libxslt..."
