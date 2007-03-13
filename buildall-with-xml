@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Id: buildall-with-xml,v 1.8 2007/03/13 11:00:28 misha Exp $
+# $Id: buildall-with-xml,v 1.9 2007/03/13 14:58:17 misha Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -23,6 +23,7 @@ if test ! -f "$project_directory/gc/lib/libgc.a"; then
     wget -c http://www.hpl.hp.com/personal/Hans_Boehm/gc/gc_source/$libgc.tar.gz
   fi
   echo "Unpacking gc..."
+  rm -rf $libgc
   gunzip -c $libgc.tar.gz | tar vxf - >/dev/null
   cd $libgc
   echo "Configuring libgc..."
@@ -53,7 +54,7 @@ if test ! -f "$project_directory/gnome/lib/libxml2.a"; then
     --without-push --without-python \
     --without-reader --without-writer --without-readline --without-regexps \
     --without-schemas --without-schematron \
-    --without-modules \
+    --without-modules --without-ftp --without-docbook \
     --without-zlib \
     --disable-shared --silent
   echo "int main(){return 0;}">testapi.c
