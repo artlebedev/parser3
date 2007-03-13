@@ -1,6 +1,10 @@
 content-type: text/html
-content-length: 77
+content-length: 214
 
 404
 <hr />
 xdoc from file created successfully (documentElement: stylesheet)
+<hr />
+remote xdoc loaded successfully (documentElement: stylesheet)
+<hr />
+local xdoc loaded successfully (documentElement: stylesheet)
