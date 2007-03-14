@@ -5,7 +5,10 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2006/06/09 19:09:19 $";
+static const char * const IDENT_TABLE_C="$Date: 2007/03/14 10:57:52 $";
+
+#include <sstream>
+using namespace std;
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -359,7 +362,7 @@ static void _load(Request& r, MethodParams& params) {
 	GET_SELF(r, VTable).set_table(table);
 }
 
-static void maybe_enclose( String& to, const String& from, char encloser, const String* sencloser ) {
+void maybe_enclose( String& to, const String& from, char encloser, const String* sencloser ) {
 	if(encloser) {
 		to<<*sencloser;
 		// while we have 'encloser'...
@@ -379,8 +382,28 @@ static void maybe_enclose( String& to, const String& from, char encloser, const 
 		to<<from;
 }
 
+void maybe_enclose( ostringstream& to, const String& from, char encloser ) {
+	if(encloser) {
+		to<<encloser;
+		// while we have 'encloser'...
+		size_t pos_after=0;
+		for( size_t pos_before; (pos_before=from.pos( encloser, pos_after ))!=STRING_NOT_FOUND; pos_after=pos_before) {
+			pos_before++; // including first encloser (and skipping it for next pos)
+            to<<from.mid(pos_after, pos_before).cstr();
+			to<<encloser; // doubling encloser
+		}
+		// last piece
+		size_t from_length=from.length();
+		if(pos_after<from_length)
+			to<<from.mid(pos_after, from_length).cstr();
 
-static void _save(Request& r, MethodParams& params) {
+		to<<encloser;
+	} else
+		to<<from.cstr();
+}
+
+
+static void _save_old(Request& r, MethodParams& params) {
 	const String& first_arg=params.as_string(0, "first argument must not be code");
 	size_t param_index=1;
 
@@ -462,6 +485,92 @@ static void _save(Request& r, MethodParams& params) {
 			data_cstr, sdata.length(), true, do_append);
 		if(*data_cstr) // not empty (when empty it's not heap memory)
 			pa_free((void*)data_cstr); // not needed anymore
+	}
+}
+
+static void _save(Request& r, MethodParams& params) {
+	const String& first_arg=params.as_string(0, "first argument must not be code");
+	size_t param_index=1;
+
+	bool do_append=false;
+	bool output_column_names=true;
+
+	// mode?
+	if(first_arg=="append")
+		do_append=true;
+	else if(first_arg=="nameless")
+		output_column_names=false;
+	else
+		--param_index;
+
+	const String& file_name=params.as_string(param_index++, "file name must not be code");
+
+	TableSeparators separators;
+	if(param_index<params.count()) {
+		Value& voptions=params.as_no_junction(param_index++, "additional params must be hash");
+		if( voptions.is_defined() && !voptions.is_string() ) {
+			if(HashStringValue* options=voptions.get_hash()) {
+				int valid_options=separators.load(*options);
+				if(valid_options!=options->count())
+					throw Exception("parser.runtime",
+						0,
+						"invalid option passed");
+			} else {
+				throw Exception("parser.runtime",
+					0,
+					"additional params must be hash (did you spell mode parameter correctly?)");
+			}
+		}
+	}
+	if(param_index<params.count())
+		throw Exception("parser.runtime",
+			0,
+			"bad mode (must be nameless or append)");
+
+	Table& table=GET_SELF(r, VTable).table();
+
+	ostringstream ost(stringstream::out);
+
+	// process header
+	if(output_column_names) {
+		if(table.columns()) { // named table
+			for(Array_iterator<const String*> i(*table.columns()); i.has_next(); ) {
+				maybe_enclose( ost, *i.next(), separators.encloser );
+				if(i.has_next()){
+					ost<<separators.column;
+				}
+			}
+		} else { // nameless table [we were asked to output column names]
+			if(int lsize=table.count()?table[0]->count():0)
+				for(int column=0; column<lsize; column++) {
+					ost<<column;
+					if(column<lsize-1){
+						ost<<separators.column;
+					}
+				}
+			else
+				ost<<"empty nameless table";
+		}
+		ost<<'\n';
+	}
+
+	// process data lines
+	Array_iterator<ArrayString*> i(table);
+	while(i.has_next()) {
+		for(Array_iterator<const String*> c(*i.next()); c.has_next(); ) {
+			maybe_enclose( ost, *c.next(), separators.encloser );
+			if(c.has_next())
+				ost<<separators.column;
+		}
+		ost<<'\n';
+	}
+
+	// write
+	{
+		string data=ost.str();
+		const char* data_cstr = data.c_str();
+
+		file_write(r.absolute(file_name), data_cstr, data.length(), true /* as text */, do_append);
 	}
 }
 
@@ -1088,6 +1197,8 @@ MTable::MTable(): Methoded("table") {
 	// ^table.save[file]  
 	// ^table.save[nameless;file]
 	add_native_method("save", Method::CT_DYNAMIC, _save, 1, 3);
+
+	// add_native_method("save_old", Method::CT_DYNAMIC, _save_old, 1, 3);
 
 	// ^table.count[]
 	add_native_method("count", Method::CT_DYNAMIC, _count, 0, 0);
