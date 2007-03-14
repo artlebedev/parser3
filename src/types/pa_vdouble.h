@@ -8,13 +8,16 @@
 #ifndef PA_VDOUBLE_H
 #define PA_VDOUBLE_H
 
-static const char * const IDENT_VDOUBLE_H="$Date: 2006/11/15 11:02:36 $";
+static const char * const IDENT_VDOUBLE_H="$Date: 2007/03/14 10:58:04 $";
 
 // includes
 
 #include "classes.h"
 #include "pa_common.h"
 #include "pa_vstateless_object.h"
+
+// defines
+#define VDOUBLE_TYPE "double"
 
 // externs
 
@@ -24,7 +27,7 @@ extern Methoded* double_class;
 class VDouble: public VStateless_object {
 public: // Value
 
-	override const char* type() const { return "double"; }
+	override const char* type() const { return VDOUBLE_TYPE; }
 	override VStateless_class *get_class() { return double_class; }
 
 	/// VDouble: true
