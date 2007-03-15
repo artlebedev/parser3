@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2007/03/14 10:57:52 $";
+static const char * const IDENT_TABLE_C="$Date: 2007/03/15 10:11:18 $";
 
 #include <sstream>
 using namespace std;
@@ -543,7 +543,11 @@ static void _save(Request& r, MethodParams& params) {
 		} else { // nameless table [we were asked to output column names]
 			if(int lsize=table.count()?table[0]->count():0)
 				for(int column=0; column<lsize; column++) {
+					if(separators.encloser) {
+						ost<<separators.encloser<<column<<separators.encloser;
+					} else {
 					ost<<column;
+					}
 					if(column<lsize-1){
 						ost<<separators.column;
 					}
