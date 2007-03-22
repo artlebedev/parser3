@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-static const char * const IDENT_COMMON_H="$Date: 2007/02/07 15:49:51 $";
+static const char * const IDENT_COMMON_H="$Date: 2007/03/22 18:59:42 $";
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -292,5 +292,6 @@ extern const String file_status_name;
 #define PA_SQL_OFFSET_NAME "offset"
 #define PA_COLUMN_SEPARATOR_NAME "separator"
 #define PA_COLUMN_ENCLOSER_NAME "encloser"
+#define PA_CHARSET_NAME "charset"
 
 #endif
