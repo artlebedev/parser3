@@ -1,0 +1,51 @@
+@main[]
+$iYearFrom(1998)
+$iYearTo(2027)
+
+
+^for[iYear]($iYearFrom;$iYearTo){
+	^printCalendar[$iYear;01]
+	^printCalendar[$iYear;12]
+}[<br />]
+
+
+@printCalendar[iYear;iMontd]
+$tWeek[^date:calendar[rus]($iYear;$iMontd)]
+<table border="1" cellpadding="3">
+	<caption>$iYear/$iMontd</caption>
+	<tr>
+		<td>Mo</td>
+		<td>Tu</td>
+		<td>We</td>
+		<td>Th</td>
+		<td>Fr</td>
+		<td>Sa</td>
+		<td>Su</td>
+		<td><br /></td>
+		<td>Week</td>
+		<td>Year</td>
+	</tr>
+	^tWeek.menu{
+		<tr>
+			^for[iWeekDay](0;6){
+				^if($tWeek.$iWeekDay){
+					$dt[^date::create($iYear;$iMontd;$tWeek.$iWeekDay)]
+					$bOk(
+						(($dt.weekday > 0 && $dt.weekday == $iWeekDay + 1) || ($dt.weekday == 0 && $iWeekDay == 6))
+						&& $dt.week == $tWeek.week
+						&& $dt.weekyear == $tWeek.year
+					)
+					<td^if(!$bOk){
+						style="font-weight: bold^; color: red^;"
+						title="W^dt.weekyear.format[%04d]-^dt.week.format[%02d]"
+					}>$tWeek.$iWeekDay</td>
+				}{
+					<td><br /></td>
+				}
+			}
+			<td>&nbsp^;</td>
+			<td>$tWeek.week</td>
+			<td>$tWeek.year</td>
+		</tr>
+	}
+</table>
