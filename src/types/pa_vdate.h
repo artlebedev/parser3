@@ -8,7 +8,7 @@
 #ifndef PA_VDATE_H
 #define PA_VDATE_H
 
-static const char * const IDENT_VDATE_H="$Date: 2005/11/30 15:47:46 $";
+static const char * const IDENT_VDATE_H="$Date: 2007/03/22 13:38:40 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -102,8 +102,14 @@ public: // Value
 		else if(aname=="weekday") result=tms.tm_wday;
 		else if(aname=="yearday") result=tms.tm_yday;
 		else if(aname=="daylightsaving") result=tms.tm_isdst;
-		else if(aname=="week") result=week_no(tms);
-		else { return bark("%s field not found", &aname); }
+		else if(aname=="week") {
+			yw week = CalcWeek(tms);
+			result=week.week;
+		}
+		else if(aname=="weekyear") {
+			yw week = CalcWeek(tms);
+			result=1900+week.year;
+		} else { return bark("%s field not found", &aname); }
 		return new VInt(result);
 	}
 
@@ -146,15 +152,42 @@ public: // usage
 			ftz_cstr=ftz->cstr();
 	}
 
-	static int week_no(tm& tms) {
+	struct yw {
+		int year;
+		int week;
+	}; 
+	
+	static yw CalcWeek(tm& tms) {
+		yw week = {tms.tm_year, 0};
+
 		// http://www.merlyn.demon.co.uk/weekinfo.htm
-		int weekyear=tms.tm_year+1900;
-		const int FirstThurs[] = {7,5,4,3,2,7,6,5,4,2,1,7,6,4,3,2,1,6,5,4,3,1,7,6,5,3,2,1};
-		return 1 + (tms.tm_yday-(FirstThurs[weekyear % 28]-3))/7;
+		static const unsigned int FirstThurs[] = {7,5,4,3,2,7,6,5,4,2,1,7,6,4,3,2,1,6,5,4,3,1,7,6,5,3,2,1};
+		int diff = tms.tm_yday-(FirstThurs[(tms.tm_year+1900) % 28]-4);
+		if (diff < 0){
+			tms.tm_mday = diff;
+			/*normalize*/mktime(&tms);
+			week = CalcWeek(tms);
+		} else {
+			week.week = 1 + diff/7;
+			if ( week.week > 52 && ISOWeekCount(week.year) < week.week ){
+				week.year++;
+				week.week = 1;
+			}
+	}
+
+		return week;
+	}
+
+	static int ISOWeekCount (int year) {
+		static const unsigned int YearWeeks[] = {
+			52,52,52,52,53, 52,52,52,52,52,
+			53,52,52,52,52, 52,53,52,52,52,
+			52,53,52,52,52, 52,52,53
+		};
+		return YearWeeks[(year+1900) % 28];
 	}
 
 private:
-
 	time_t ftime;
 	const String* ftz;
 	const char* ftz_cstr;
