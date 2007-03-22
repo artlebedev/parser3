@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
  */
 
-static const char * const IDENT_HTTP_C="$Date: 2006/11/03 16:42:56 $"; 
+static const char * const IDENT_HTTP_C="$Date: 2007/03/22 18:58:52 $"; 
 
 #include "pa_http.h"
 #include "pa_common.h"
@@ -20,7 +20,7 @@ static const char * const IDENT_HTTP_C="$Date: 2006/11/03 16:42:56 $";
 #define HTTP_TIMEOUT_NAME    "timeout"
 #define HTTP_HEADERS_NAME "headers"
 #define HTTP_ANY_STATUS_NAME "any-status"
-#define HTTP_CHARSET_NAME "charset"
+// #define HTTP_CHARSET_NAME "charset"
 #define HTTP_TABLES_NAME "tables"
 #define HTTP_USER "user"
 #define HTTP_PASSWORD "password"
@@ -449,8 +449,8 @@ File_read_http_result pa_internal_file_read_http(Request_charsets& charsets,
 			valid_options++;
 			fail_on_status_ne_200=!vany_status->as_bool(); 
 		} 
-		if(Value* vcharset_name=options->get(HTTP_CHARSET_NAME)) {
-			valid_options++;
+		if(Value* vcharset_name=options->get(PA_CHARSET_NAME)) {
+//			valid_options++;
 			asked_remote_charset=&::charsets.get(vcharset_name->as_string().
 				change_case(charsets.source(), String::CC_UPPER));
 		} 
@@ -540,23 +540,25 @@ File_read_http_result pa_internal_file_read_http(Request_charsets& charsets,
 		if(body_cstr) {
 			// recode those pieces which are not in String::L_URI lang 
 			// [those violating HTTP standard, but widly used]
+/*
 			body_cstr=Charset::transcode(
 				String::C(body_cstr, strlen(body_cstr)),
 				charsets.source(),
 				*asked_remote_charset);
-
+*/
 			head << "content-length: " << format(strlen(body_cstr), "%u") << CRLF;
 		}
 
-		const char* head_cstr=head.cstr(String::L_UNSPECIFIED);
+		const char* head_cstr=head.cstr(String::L_UNSPECIFIED, 0, &charsets);
 
 		// recode those pieces which are not in String::L_URI lang 
 		// [those violating HTTP standard, but widly used]
+/*
 		head_cstr=Charset::transcode(
 			String::C(head_cstr, strlen(head_cstr)),
 			charsets.source(),
 			*asked_remote_charset);
-
+*/
 		// head + end of header
 		request_head_and_body << head_cstr << CRLF;
 		// body

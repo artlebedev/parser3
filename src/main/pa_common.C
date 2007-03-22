@@ -26,7 +26,7 @@
  *
  */
 
-static const char * const IDENT_COMMON_C="$Date: 2007/02/07 15:50:04 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2007/03/22 18:58:51 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -34,6 +34,7 @@ static const char * const IDENT_COMMON_C="$Date: 2007/02/07 15:50:04 $";
 #include "pa_globals.h"
 #include "pa_charsets.h"
 #include "pa_http.h"
+#include "pa_request_charsets.h"
 
 // some maybe-undefined constants
 
@@ -111,6 +112,8 @@ int pa_get_valid_file_options_count(HashStringValue& options)
 		result++;
 	if(options.get(PA_COLUMN_ENCLOSER_NAME))
 		result++;
+	if(options.get(PA_CHARSET_NAME))
+		result++;
 	return result;
 }
 
@@ -182,6 +185,19 @@ File_read_result file_read(Request_charsets& charsets, const String& file_spec,
 		result.success=file_read_action_under_lock(file_spec, 
 			"read", file_read_action, &info, 
 			as_text, fail_on_read_problem); 
+
+		if(result.length && as_text && params) {
+			if( Value* vcharset_name=params->get(PA_CHARSET_NAME) ) {
+				Charset asked_charset=::charsets.get(vcharset_name->as_string().
+					change_case(charsets.source(), String::CC_UPPER));
+
+				String::C body=String::C(result.str, result.length);
+				body=Charset::transcode(body, asked_charset, charsets.source());
+
+				result.str=const_cast<char *>(body.str); // hacking a little
+				result.length=body.length;
+			} 
+		}
 	}
 
 	if(result.success && as_text) {
