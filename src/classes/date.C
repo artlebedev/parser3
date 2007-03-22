@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_DATE_C="$Date: 2006/11/20 18:43:06 $";
+static const char * const IDENT_DATE_C="$Date: 2007/03/22 13:38:25 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -290,7 +290,8 @@ static Table& fill_month_days(Request& r, MethodParams& params, bool rus){
 				const int weekno_buf_size=2+1/*for stupid snprintfs*/ +1;
 
 				weekno_buf=new(PointerFreeGC) char[weekno_buf_size];
-				weekno_size=snprintf(weekno_buf, weekno_buf_size, "%02d", VDate::week_no(tms));
+				VDate::yw week = VDate::CalcWeek(tms);
+				weekno_size=snprintf(weekno_buf, weekno_buf_size, "%02d", week.week);
 			}
 		
         }
