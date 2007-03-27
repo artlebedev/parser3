@@ -1,0 +1,6 @@
+content-type: text/html
+content-length: 122
+
+$request:charset (UTF-8): =проверка=<br />
+UTF-8: =проверка=<br />
+WINDOWS-1251: =проверка=<br />

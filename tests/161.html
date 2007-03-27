@@ -1,0 +1,14 @@
+@main[]
+^load[161_utf8.txt]
+^load[161_utf8.txt;UTF-8]
+^load[161_windows1251.txt;WINDOWS-1251]
+
+
+@load[sFile;sCharset][f]
+$f[^file::load[text;$sFile;
+	^if(def $sCharset){
+		$.charset[$sCharset]
+	}
+]]
+
+^if(def $sCharset){$sCharset}{^$request:charset ($request:charset)}: =$f.text=<br />
