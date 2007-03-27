@@ -1,0 +1,20 @@
+@main[]
+$t[^table::create{a	b
+1	11
+2	22
+3	33
+4	11
+5	22
+6	33
+}]
+
+$t1[^t.select(^condition[$t])]
+<pre>
+^t1.menu{
+$t1.a	$t1.b
+}[^#0A]
+</pre>
+
+
+@condition[t]
+$result($t.b != 11)
