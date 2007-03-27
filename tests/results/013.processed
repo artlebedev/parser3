@@ -1,5 +1,17 @@
 content-type: text/html
-content-length: 24
+content-length: 179
 
-not kretin<br>
-=123=<br>
+not kretin<br />
+=123=<br />
+<hr />
+=1=<br />
+=default value=<br />
+<hr />
+=1=<br />
+=2=<br />
+=default value=<br />
+<hr />
+=1=<br />
+=2=<br />
+=3=<br />
+=new default value=<br />
