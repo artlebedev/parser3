@@ -1,0 +1,23 @@
+content-type: text/html
+content-length: 256
+
+<hr />
+=One=
+Execute code, ^cache[] == 13599
+<br />
+=One=
+Get cached result
+<br />
+=One=
+Get cached result
+<br />
+<hr />
+=Two=
+Execute code, ^cache[] == 13599
+<br />
+=Two=
+Execute code, ^cache[] == 13599
+<br />
+=Two=
+Execute code, ^cache[] == 13599
+<br />

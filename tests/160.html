@@ -1,0 +1,26 @@
+@main[]
+^do[One]
+^sleep(1)
+^do[Two]
+
+
+
+@do[sText][i]
+<hr />
+^for[i](1;3){
+	$iCacheTime[]
+	^cache[outputs/160.cache](1){
+		=$sText=
+		^if($sText eq "Two"){
+			^cache(0)
+		}
+		$iCacheTime(^cache[])
+	}
+	^if(def $iCacheTime){
+		Execute code, ^^cache[] == ^iCacheTime.int(0)
+	}{
+		Get cached result
+	}
+	<br />
+}
+
