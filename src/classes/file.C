@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2007/02/28 19:08:46 $";
+static const char * const IDENT_FILE_C="$Date: 2007/04/13 16:58:15 $";
 
 #include "pa_config_includes.h"
 
@@ -428,10 +428,27 @@ static void _exec_cgi(Request& r, MethodParams& params,
    		// influence tainting 
    		// main target -- URLencoding of tainted pieces to String::L_URI lang
    		Temp_client_charset temp(r.charsets, charset? *charset: r.charsets.source());
+
 		for(size_t i=2; i<params.count(); i++) {
-			const String& param=params.as_string(i, "parameter must be string");
-			if(param.length() > 0) {
-				argv+=new String(param.cstr_to_string_body(String::L_UNSPECIFIED, 0, &r.charsets), String::L_AS_IS);
+			Value& param=params.as_no_junction(i, "parameter must not be code");
+			if(param.is_defined()){
+				if(param.is_string()){
+					const String& pstring=*param.get_string();
+					if(pstring.length() > 0) {
+						argv+=new String(pstring.cstr_to_string_body(String::L_UNSPECIFIED, 0, &r.charsets), String::L_AS_IS);
+					}
+				} else {
+					Table* ptable=param.get_table();
+					if(ptable){
+						for(size_t i=0; i<ptable->count(); i++) {
+							argv+=new String(ptable->get(i)->get(0)->cstr_to_string_body(String::L_UNSPECIFIED, 0, &r.charsets), String::L_AS_IS);
+						}
+					} else {
+						throw Exception("parser.runtime",
+							0,
+							"parameter must be string or table");
+					}
+				}
 			}
 		}
 	}
