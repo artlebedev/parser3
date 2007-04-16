@@ -1,0 +1,24 @@
+content-type: text/html
+content-length: 688
+
+Operation: 18201.49 * 100.00<br /><br />
+Result: 1.82015e+006 (auto format)<br />
+.format()[%.2f]: 1820149.00<br />
+.int[]: 1820149<br />
+^math:round(): 1820149<br />
+^math:ceiling(): 1820150<br />
+^math:floor(): 1820149<br /><hr />
+Operation: 18201.50 * 100.00<br /><br />
+Result: 1820150 (auto format)<br />
+.format()[%.2f]: 1820150.00<br />
+.int[]: 1820150<br />
+^math:round(): 1820150<br />
+^math:ceiling(): 1820150<br />
+^math:floor(): 1820150<br /><hr />
+Operation: 18201.60 * 100.00<br /><br />
+Result: 1.82016e+006 (auto format)<br />
+.format()[%.2f]: 1820160.00<br />
+.int[]: 1820159<br />
+^math:round(): 1820160<br />
+^math:ceiling(): 1820160<br />
+^math:floor(): 1820159<br />

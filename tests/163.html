@@ -1,0 +1,22 @@
+@main[]
+$tData[^table::create{value1	value2
+18201.49	100
+18201.5	100
+18201.6	100
+}]
+^tData.menu{^print($tData.value1;$tData.value2)}[<hr />]
+
+
+
+
+@print[value1;value2][dResult]
+$dResult($value1 * $value2)
+
+Operation: ^value1.format[%.2f] * ^value2.format[%.2f]<br /><br />
+
+Result: $dResult (auto format)<br />
+.format()[%.2f]: ^dResult.format[%.2f]<br />
+.int[]: ^dResult.int[]<br />
+^^math:round(): ^math:round($dResult)<br />
+^^math:ceiling(): ^math:ceiling($dResult)<br />
+^^math:floor(): ^math:floor($dResult)<br />
