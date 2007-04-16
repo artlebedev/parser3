@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2007/04/13 16:58:15 $";
+static const char * const IDENT_FILE_C="$Date: 2007/04/16 10:08:17 $";
 
 #include "pa_config_includes.h"
 
@@ -345,6 +345,13 @@ static void pass_cgi_header_attribute(
 			info->content_type=value;
 	}
 }
+
+static void append_to_argv(Request& r, ArrayString& argv, const String* str){
+	if( str->length() ){
+		argv+=new String(str->cstr_to_string_body(String::L_UNSPECIFIED, 0, &r.charsets), String::L_AS_IS);
+	}
+}
+
 /// @todo fix `` in perl - they produced flipping consoles and no output to perl
 static void _exec_cgi(Request& r, MethodParams& params,
 					  bool cgi) {
@@ -433,15 +440,12 @@ static void _exec_cgi(Request& r, MethodParams& params,
 			Value& param=params.as_no_junction(i, "parameter must not be code");
 			if(param.is_defined()){
 				if(param.is_string()){
-					const String& pstring=*param.get_string();
-					if(pstring.length() > 0) {
-						argv+=new String(pstring.cstr_to_string_body(String::L_UNSPECIFIED, 0, &r.charsets), String::L_AS_IS);
-					}
+					append_to_argv(r, argv, param.get_string());
 				} else {
-					Table* ptable=param.get_table();
-					if(ptable){
-						for(size_t i=0; i<ptable->count(); i++) {
-							argv+=new String(ptable->get(i)->get(0)->cstr_to_string_body(String::L_UNSPECIFIED, 0, &r.charsets), String::L_AS_IS);
+					Table* table=param.get_table();
+					if(table){
+						for(size_t i=0; i<table->count(); i++) {
+							append_to_argv(r, argv, table->get(i)->get(0));
 						}
 					} else {
 						throw Exception("parser.runtime",
