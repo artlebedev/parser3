@@ -14,8 +14,8 @@ $dResult($value1 * $value2)
 
 Operation: ^value1.format[%.2f] * ^value2.format[%.2f]<br /><br />
 
-Result: $dResult (auto format)<br />
-.format()[%.2f]: ^dResult.format[%.2f]<br />
+#Result: ^dResult (auto format)<br />
+.format[%.10f]: ^dResult.format[%.10f]<br />
 .int[]: ^dResult.int[]<br />
 ^^math:round(): ^math:round($dResult)<br />
 ^^math:ceiling(): ^math:ceiling($dResult)<br />
