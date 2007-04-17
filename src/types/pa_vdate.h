@@ -8,7 +8,7 @@
 #ifndef PA_VDATE_H
 #define PA_VDATE_H
 
-static const char * const IDENT_VDATE_H="$Date: 2007/03/22 13:38:40 $";
+static const char * const IDENT_VDATE_H="$Date: 2007/04/17 08:42:43 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -31,7 +31,11 @@ inline void set_tz(const char* tz, char* buf, size_t buf_size) {
 		putenv(buf);
 #ifndef WIN32
 	} else
+#ifdef HAVE_UNSETENV
+        unsetenv("TZ");
+#else
 		putenv("TZ");
+#endif
 #endif
 	tzset();
 }
@@ -165,7 +169,7 @@ public: // usage
 		int diff = tms.tm_yday-(FirstThurs[(tms.tm_year+1900) % 28]-4);
 		if (diff < 0){
 			tms.tm_mday = diff;
-			/*normalize*/mktime(&tms);
+			mktime(&tms); // normalize
 			week = CalcWeek(tms);
 		} else {
 			week.week = 1 + diff/7;
@@ -174,7 +178,6 @@ public: // usage
 				week.week = 1;
 			}
 	}
-
 		return week;
 	}
 
