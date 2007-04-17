@@ -8,7 +8,7 @@
 #ifndef PA_VFORM_H
 #define PA_VFORM_H
 
-static const char * const IDENT_VFORM_H="$Date: 2005/08/09 08:14:54 $";
+static const char * const IDENT_VFORM_H="$Date: 2007/04/17 18:13:16 $";
 
 // includes
 
@@ -21,6 +21,7 @@ static const char * const IDENT_VFORM_H="$Date: 2005/08/09 08:14:54 $";
 #define FORM_FIELDS_ELEMENT_NAME "fields"
 #define FORM_TABLES_ELEMENT_NAME "tables"
 #define FORM_IMAP_ELEMENT_NAME "imap"
+#define FORM_FILES_ELEMENT_NAME "files"
 
 // forwards
 
@@ -67,11 +68,14 @@ private:
 	void ParseMimeInput(char *content_type, const char* data, size_t length);
 	void AppendFormEntry(
 		const char* cname_cstr, 
+		const char* raw_cvalue_ptr, const size_t raw_cvalue_size);
+	void AppendFormFileEntry(
+		const char* cname_cstr, 
 		const char* raw_cvalue_ptr, const size_t raw_cvalue_size,
-		const char* copy_me_file_name_cstr=0);
+		const char* file_name_cstr);
 
-	bool should_refill_fields_and_tables();
-	void refill_fields_and_tables();
+	bool should_refill_fields_tables_and_files();
+	void refill_fields_tables_and_files();
 
 private:
 
@@ -79,6 +83,7 @@ private:
 	Charset* filled_client;
 	HashStringValue fields;
 	HashStringValue tables;
+	HashStringValue files;
 	HashStringValue imap;
 
 private:

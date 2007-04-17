@@ -7,7 +7,7 @@
 	based on The CGI_C library, by Thomas Boutell.
 */
 
-static const char * const IDENT_VFORM_C="$Date: 2005/08/09 08:14:54 $";
+static const char * const IDENT_VFORM_C="$Date: 2007/04/17 18:13:16 $";
 
 #include "pa_sapi.h"
 #include "pa_vform.h"
@@ -195,63 +195,83 @@ void VForm::ParseMimeInput(
 			if(attr) {
 				/* OK, we have a new pair, add it to the list. */
 				// fName checks are because MSIE passes unassigned <input type=file> as filename="" and empty body 
-				AppendFormEntry(attr, 
+				if( fName && (strlen(fName) || valueSize) ){
+					AppendFormFileEntry(attr, 
 						valueSize? &dataStart[headerSize+1]: "", 
 						valueSize, 
-						fName && (strlen(fName) || valueSize)? fName: 0); 
+						fName); 
+				} else {
+					AppendFormEntry(attr, 
+						valueSize? &dataStart[headerSize+1]: "", 
+						valueSize); 
+				}
 			}
 		}
 		data=(dataEnd-strlen(boundary));
 	}
 }
 
-void VForm::AppendFormEntry(const char* cname_cstr, 
+void VForm::AppendFormFileEntry(const char* cname_cstr, 
 			    const char* raw_cvalue_ptr, const size_t raw_cvalue_size, 
-			    const char* copy_me_file_name_cstr) {
+			    const char* file_name_cstr){
+
 	const String& sname=*new String(transcode(cname_cstr, strlen(cname_cstr)));
+	VFile* vfile=new VFile;
+	// maybe transcode text/* files?
+	const String& sfile_name=*new String(strdup(file_name_cstr));
+	vfile->set(true/*tainted*/, raw_cvalue_ptr, raw_cvalue_size, sfile_name.cstr());
 
-	Value* value;
-	if(copy_me_file_name_cstr) {
-		VFile* vfile=new VFile;
-		// maybe transcode text/* files?
-		const String& sfile_name=*new String(strdup(copy_me_file_name_cstr));
-		vfile->set(true/*tainted*/, raw_cvalue_ptr, raw_cvalue_size, sfile_name.cstr());
-		value=vfile;
-	} else {
-		const char* premature_zero_pos=(const char* )memchr(raw_cvalue_ptr, 0, raw_cvalue_size);
-		size_t cvalue_size=premature_zero_pos?premature_zero_pos-(const char* )raw_cvalue_ptr
-			:raw_cvalue_size;
-		char *cvalue_ptr=strdup(raw_cvalue_ptr, cvalue_size); 
-		fix_line_breaks(cvalue_ptr, cvalue_size);
-		String& string=*new String(transcode(cvalue_ptr, cvalue_size), true);
+	fields.put_dont_replace(sname, vfile);
 
-		// tables
-		{
-			Value* vtable=tables.get(sname);
-			if(!vtable) {
-				// first appearence
-				Table::columns_type columns(new ArrayString(1));
-				*columns+=new String("field");
-
-				vtable=new VTable(new Table(columns));
-				tables.put(sname, vtable);
-			}
-			Table& table=*vtable->get_table();
-
-			// this string becomes next row
-			Table::element_type row(new ArrayString(1));
-			*row+=&string;
-			table+=row;
-		}
-		value=new VString(string);
+	// files
+	Value* vhash=files.get(sname);
+	if(!vhash){
+		// first appearence
+		vhash=new VHash;
+		files.put(sname, vhash);
 	}
+	HashStringValue& hash=*vhash->get_hash();
 
-	fields.put_dont_replace(sname, value);
+	hash.put(String::Body::Format(hash.count()), vfile);
 }
 
-void VForm::refill_fields_and_tables() {
+void VForm::AppendFormEntry(const char* cname_cstr, const char* raw_cvalue_ptr, const size_t raw_cvalue_size) {
+	const String& sname=*new String(transcode(cname_cstr, strlen(cname_cstr)));
+
+	const char* premature_zero_pos=(const char* )memchr(raw_cvalue_ptr, 0, raw_cvalue_size);
+	size_t cvalue_size=premature_zero_pos?premature_zero_pos-(const char* )raw_cvalue_ptr
+		:raw_cvalue_size;
+	char *cvalue_ptr=strdup(raw_cvalue_ptr, cvalue_size); 
+	fix_line_breaks(cvalue_ptr, cvalue_size);
+	String& string=*new String(transcode(cvalue_ptr, cvalue_size), true);
+
+	// tables
+	{
+		Value* vtable=tables.get(sname);
+		if(!vtable) {
+			// first appearence
+			Table::columns_type columns(new ArrayString(1));
+			*columns+=new String("field");
+
+			vtable=new VTable(new Table(columns));
+			tables.put(sname, vtable);
+		}
+		Table& table=*vtable->get_table();
+
+		// this string becomes next row
+		Table::element_type row(new ArrayString(1));
+		*row+=&string;
+		table+=row;
+	}
+
+	fields.put_dont_replace(sname, new VString(string));
+}
+
+
+void VForm::refill_fields_tables_and_files() {
 	fields.clear();
 	tables.clear();
+	files.clear();
 	imap.clear();
 
 	//frequest_info.query_string="a=123";
@@ -289,14 +309,14 @@ void VForm::refill_fields_and_tables() {
 	filled_client=&fcharsets.client();
 }
 
-bool VForm::should_refill_fields_and_tables() {
+bool VForm::should_refill_fields_tables_and_files() {
 	return &fcharsets.source()!=filled_source
 		|| &fcharsets.client()!=filled_client;
 }
 
 Value* VForm::get_element(const String& aname, Value& aself, bool looking_up) {
-	if(should_refill_fields_and_tables())
-		refill_fields_and_tables();
+	if(should_refill_fields_tables_and_files())
+		refill_fields_tables_and_files();
 
 	// $fields
 	if(aname==FORM_FIELDS_ELEMENT_NAME)
@@ -305,6 +325,10 @@ Value* VForm::get_element(const String& aname, Value& aself, bool looking_up) {
 	// $tables
 	if(aname==FORM_TABLES_ELEMENT_NAME)
 		return new VHash(tables);
+
+	// $files
+	if(aname==FORM_FILES_ELEMENT_NAME)
+		return new VHash(files);
 
 	// $imap
 	if(aname==FORM_IMAP_ELEMENT_NAME)
