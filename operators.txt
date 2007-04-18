@@ -440,6 +440,7 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !$form:qtail = строка со значением текста после второго "?xxxxx", если там не было ',' [imap]
     !$form:fields = hash со всеми полями формы
     !$form:tables.поле = table с одним столбцом "field" со значениями "поля"
+    !$form:files.поле = hash со значениями полей типа файл, ключи - 0, 1, ..., значение - файл
     !$form:imap = хэш с ключами 'x' и 'y'
         со значением ?1,2 приписки при использовании server-site image map
 
