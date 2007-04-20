@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2007/02/03 18:08:38 $";
+static const char * const IDENT_STRING_C="$Date: 2007/04/20 10:19:24 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -336,19 +336,19 @@ static void _match(Request& r, MethodParams& params) {
 
 	Temp_lang temp_lang(r, String::L_PASS_APPENDED);
 	const String& src=GET_SELF(r, VString).string();
-	bool just_matched;
+	int matches_count=0;
 	if(params.count()<3) { // search
 		Table* table=src.match(r.charsets.source(),
 			regexp.as_string(), options,
 			search_action, 0,
-			just_matched);
-		// Value* result;
-		// if(table) 
-		// 	result=new VTable(table); // table of pre/match/post+substrings
-		// else 
-		// 	result=new VBool(just_matched);
-		// r.write_assign_lang(*result);
+			matches_count);
+		// r.write_assign_lang(*new VTable(table));
+		if(table){
 		r.write_assign_lang(*new VTable(table));
+		} else {
+			r.write_assign_lang(*new VInt(matches_count));
+		}
+
 	} else { // replace
 		Value& replacement_code=params.as_junction(2, "replacement param must be code");
 
@@ -367,7 +367,7 @@ static void _match(Request& r, MethodParams& params) {
 		src.match(r.charsets.source(),
 			r.process_to_string(regexp), options,
 			replace_action, &info,
-			just_matched);
+			matches_count);
 		r.write_assign_lang(result);
 	}
 }

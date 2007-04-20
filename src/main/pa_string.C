@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2007/01/18 17:47:44 $";
+static const char * const IDENT_STRING_C="$Date: 2007/04/20 10:19:06 $";
 
 #include "pcre.h"
 
@@ -364,20 +364,27 @@ void String::split(ArrayString& result,
 	}
 }
 
-static void regex_options(const String* options, int *result, bool& need_pre_post_match){
+enum Match_feature {
+	MF_NEED_PRE_POST_MATCH = 0x01,
+	MF_JUST_COUNT_MATCHES = 0x02
+};
+
+static void regex_options(const String* options, int* result, int* match_features){
     struct Regex_option {
 		const char* keyL;
 		const char* keyU;
-		int clear, set;
+		int clear;
+		int set;
 		int *result;
-		bool *flag;
+		int flag;
     } regex_option[]={
 		{"i", "I", 0, PCRE_CASELESS, result, 0}, // a=A
 		{"s", "S", 0, PCRE_DOTALL, result, 0}, // \n\n$ [default]
 		{"x", "U", 0, PCRE_EXTENDED, result, 0}, // whitespace in regex ignored
 		{"m", "M", PCRE_DOTALL, PCRE_MULTILINE, result, 0}, // ^aaa\n$^bbb\n$
 		{"g", "G", 0, 1, result+1, 0}, // many rows
-		{"'", 0, 0, 0, 0, &need_pre_post_match},
+		{"'", 0, 0, 0, 0, MF_NEED_PRE_POST_MATCH},
+		{"n", "N", 0, 0, 0, MF_JUST_COUNT_MATCHES},
 		{0, 0, 0, 0, 0, 0}
     };
 	result[0]=PCRE_EXTRA | PCRE_DOTALL | PCRE_DOLLAR_ENDONLY;
@@ -385,11 +392,13 @@ static void regex_options(const String* options, int *result, bool& need_pre_pos
 
     if(options && !options->is_empty()) 
 		for(Regex_option *o=regex_option; o->keyL; o++) 
-			if(options->pos(o->keyL)!=STRING_NOT_FOUND
-				|| (o->keyU && options->pos(o->keyU)!=STRING_NOT_FOUND)) {
-				if(o->flag)
-					*o->flag=true;
-				else { // result
+			if(
+				options->pos(o->keyL)!=STRING_NOT_FOUND
+				|| (o->keyU && options->pos(o->keyU)!=STRING_NOT_FOUND)
+			){
+				if(o->flag){
+					(*match_features) |= o->flag;
+				} else {
 					*o->result &= ~o->clear;
 					*o->result |= o->set;
 				}
@@ -400,7 +409,7 @@ Table* String::match(Charset& source_charset,
 		     const String& regexp, 
 		     const String* options,
 		     Row_action row_action, void *info,
-		     bool& just_matched) const { 
+		     int& matches_count) const { 
 	if(regexp.is_empty())
 		throw Exception(0,
 			0,
@@ -409,8 +418,11 @@ Table* String::match(Charset& source_charset,
 	const char* pattern=regexp.cstr(String::L_UNSPECIFIED); // fix any tainted with L_REGEX
 	const char* errptr;
 	int erroffset;
-	bool need_pre_post_match=false;
-	int option_bits[2]={0};  regex_options(options, option_bits, need_pre_post_match);
+	int option_bits[2]={0};
+	int match_features=0;
+	regex_options(options, option_bits, &match_features);
+	bool need_pre_post_match=(match_features & MF_NEED_PRE_POST_MATCH) != 0;
+	bool just_count_matches=(match_features & MF_JUST_COUNT_MATCHES) != 0;
 	bool global=option_bits[1]!=0;
 	pcre *code=pcre_compile(pattern, option_bits[0], 
 		&errptr, &erroffset,
@@ -456,8 +468,7 @@ Table* String::match(Charset& source_charset,
 			// else {
 			// 	just_matched=false; return 0; // not global=no result
 			// }
-			just_matched=false;
-			return &table;
+			return just_count_matches ? 0 : &table;
 		}
 
 		if(exec_substrings<0) {
@@ -486,12 +497,14 @@ Table* String::match(Charset& source_charset,
 			*row+=&mid(ovector[i*2+0], ovector[i*2+1]); // .i column value
 		}
 		
+		matches_count++;
 		row_action(table, row, prestart, prefinish, poststart, postfinish, info);
 
 		if(!global || prestart==poststart) { // not global | going to hang
 			pcre_free(code);
 			row_action(table, 0/*last time, no row*/, 0, 0, poststart, postfinish, info);
-			return &table;
+			return just_count_matches ? 0 : &table;
+			// return &table;
 		}
 		prestart=poststart;
 

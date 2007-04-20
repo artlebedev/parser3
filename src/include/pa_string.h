@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-static const char * const IDENT_STRING_H="$Date: 2007/02/03 18:08:38 $";
+static const char * const IDENT_STRING_H="$Date: 2007/04/20 10:19:12 $";
 
 // includes
 #include "pa_types.h"
@@ -501,7 +501,7 @@ public:
 		const String& regexp, 
 		const String* options,
 		Row_action row_action, void *info,
-		bool& just_matched) const;
+		int& matches_count) const;
 	enum Change_case_kind {
 		CC_UPPER,
 		CC_LOWER
