@@ -520,7 +520,8 @@ getrusage \
 gettimeofday \
 crypt \
 sigsetjmp \
-siglongjmp
+siglongjmp \
+unsetenv
 )
 
 dnl on some linux[seen on 2.4] it's a macro 
