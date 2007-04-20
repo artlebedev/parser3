@@ -310,7 +310,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar P3S build build_cpu build_vendor build_os host host_cpu host_vendor host_os RANLIB ac_ct_RANLIB YACC CXX CXXFLAGS LDFLAGS CPPFLAGS ac_ct_CXX EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE CC CFLAGS ac_ct_CC CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE commentcharset_windows1251 commentcharset_windows1250 commentcharset_windows1257 commentcharset_koi8r dll_extension mysql_client pgsql_client oracle_client CPP_LIBS GC_LIBS XML_INCLUDES XML_LIBS MIME_INCLUDES MIME_LIBS APACHE13 COMPILE_APACHE13_MODULE_TRUE COMPILE_APACHE13_MODULE_FALSE INCLTDL LIBLTDL subdirs LIBADD_DL CPP EGREP LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar P3S build build_cpu build_vendor build_os host host_cpu host_vendor host_os RANLIB ac_ct_RANLIB YACC CXX CXXFLAGS LDFLAGS CPPFLAGS ac_ct_CXX EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE CC CFLAGS ac_ct_CC CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE commentcharset_windows1251 commentcharset_windows1250 commentcharset_windows1257 commentcharset_koi8r dll_extension mysql_client pgsql_client oracle_client sqlite_client CPP_LIBS GC_LIBS XML_INCLUDES XML_LIBS MIME_INCLUDES MIME_LIBS APACHE13 COMPILE_APACHE13_MODULE_TRUE COMPILE_APACHE13_MODULE_FALSE INCLTDL LIBLTDL subdirs LIBADD_DL CPP EGREP LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -878,6 +878,8 @@ Optional Packages:
                           PgSQL client dynamic library to root config
   --with-oracle-client=oracleclientlib?withparams
                           Oracle client dynamic library
+  --with-sqlite-client=sqliteclientlib?withparams
+                          SQLite client dynamic library to root config
   --with-pathlink=LKEY    put dynamic libraries paths to binary
                           using linker key (-R, -rpath-link)
   --with-dynamic-stdcpp   link libstdc++ dynamically
@@ -1662,7 +1664,7 @@ fi
 
 # Define the identity of the package.
  PACKAGE=parser
- VERSION=3.2.1
+ VERSION=3.2.2b
 
 
 # Some tools Automake needs.
@@ -3976,10 +3978,11 @@ fi;
 
 
 
+
 # Check whether --with-pgsql-client or --without-pgsql-client was given.
 if test "${with_pgsql_client+set}" = set; then
   withval="$with_pgsql_client"
-  mysql_client=$withval
+  pgsql_client=$withval
 
 else
   echo "$as_me:$LINENO: checking for pgsql client" >&5
@@ -4005,6 +4008,7 @@ fi;
 
 
 
+
 # Check whether --with-oracle-client or --without-oracle-client was given.
 if test "${with_oracle_client+set}" = set; then
   withval="$with_oracle_client"
@@ -4024,6 +4028,36 @@ echo "${ECHO_T}could not guess" >&6
 		oracle_client="$oracle_client?ORACLE_HOME=$ORACLE_HOME&ORA_NLS33=$ORACLE_HOME/ocommon/nls/admin/data"
 		echo "$as_me:$LINENO: result: $oracle_client" >&5
 echo "${ECHO_T}$oracle_client" >&6
+	fi
+
+
+fi;
+
+
+
+
+# Check whether --with-sqlite-client or --without-sqlite-client was given.
+if test "${with_sqlite_client+set}" = set; then
+  withval="$with_sqlite_client"
+  sqlite_client=$withval
+
+else
+  echo "$as_me:$LINENO: checking for sqlite_client client" >&5
+echo $ECHO_N "checking for sqlite_client client... $ECHO_C" >&6
+	for lib in \
+		/usr/local/sqlite/lib/sqlite3.$dll_extension \
+		/usr/local/lib/sqlite3.$dll_extension \
+		/usr/lib/sqlite3.$dll_extension; do
+		if test -f $lib; then sqlite_client=$lib; fi
+	done
+
+	if test -z "$sqlite_client"; then
+		sqlite_client="-configure could not guess-"
+		echo "$as_me:$LINENO: result: could not guess" >&5
+echo "${ECHO_T}could not guess" >&6
+	else
+		echo "$as_me:$LINENO: result: $sqlite_client" >&5
+echo "${ECHO_T}$sqlite_client" >&6
 	fi
 
 
@@ -6805,6 +6839,7 @@ fi
 
 
 
+
 for ac_func in flock \
 _locking \
 fcntl \
@@ -6814,7 +6849,8 @@ getrusage \
 gettimeofday \
 crypt \
 sigsetjmp \
-siglongjmp
+siglongjmp \
+unsetenv
 
 do
 as_ac_var=`echo "ac_cv_func_$ac_func" | $as_tr_sh`
@@ -8183,6 +8219,7 @@ s,@dll_extension@,$dll_extension,;t t
 s,@mysql_client@,$mysql_client,;t t
 s,@pgsql_client@,$pgsql_client,;t t
 s,@oracle_client@,$oracle_client,;t t
+s,@sqlite_client@,$sqlite_client,;t t
 s,@CPP_LIBS@,$CPP_LIBS,;t t
 s,@GC_LIBS@,$GC_LIBS,;t t
 s,@XML_INCLUDES@,$XML_INCLUDES,;t t
