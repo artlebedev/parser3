@@ -7,7 +7,7 @@
 	based on The CGI_C library, by Thomas Boutell.
 */
 
-static const char * const IDENT_VFORM_C="$Date: 2007/04/17 18:13:16 $";
+static const char * const IDENT_VFORM_C="$Date: 2007/04/20 08:36:10 $";
 
 #include "pa_sapi.h"
 #include "pa_vform.h"
@@ -18,6 +18,7 @@ static const char * const IDENT_VFORM_C="$Date: 2007/04/17 18:13:16 $";
 #include "pa_common.h"
 #include "pa_vtable.h"
 #include "pa_charset.h"
+//#include "pa_charsets.h"
 
 // defines
 
@@ -218,6 +219,7 @@ void VForm::AppendFormFileEntry(const char* cname_cstr,
 	const String& sname=*new String(transcode(cname_cstr, strlen(cname_cstr)));
 	VFile* vfile=new VFile;
 	// maybe transcode text/* files?
+	// NO!!! user may be want download txt file as is or this file have unknown encoding.
 	const String& sfile_name=*new String(strdup(file_name_cstr));
 	vfile->set(true/*tainted*/, raw_cvalue_ptr, raw_cvalue_size, sfile_name.cstr());
 
