@@ -79,7 +79,7 @@ Xне сделано, видимо, не будет сделано
                 $exception.source = вася
                 $exception.comment = болван
             }
-            ^case[_default]{
+            ^case[DEFAULT]{
                 код, обрабатывающий другую ошибку
                 ^throw[$exception] << re-throw
             }
@@ -91,7 +91,7 @@ Xне сделано, видимо, не будет сделано
         выдавая нестандартный результат
     !^break[] + - обрывает цикл
     !^continue[] + - обрывает итерацию цикла
-    !^untaint[[as-is|file-spec|http-header|mail-header|uri|sql|js|xml|html|optimized-html]]{код}
+    !^untaint[[as-is|file-spec|http-header|mail-header|uri|sql|js|xml|html|optimized-html|regex]]{код}
         default as-is
     !^taint[[lang]][код]
         default "just tainted, language unknown"
@@ -135,7 +135,7 @@ Xне сделано, видимо, не будет сделано
             
         !sqlite://database
 
-        для работы connect нужно, чтобы заранее(рекомендуется в системном parser3)
+        для работы connect нужно, чтобы заранее(рекомендуется в системном конфигурационном auto.p)
         была определена таблица
 #sql drivers
 $SQL[
@@ -170,7 +170,7 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         !скэшировать строку, которая получается при выполнении кода на 'секунд' секунд
         !если 0секунд, значит не кэшировать, а старый такой стереть
         !в catch коде $exception.handled[cache]  ^rem{флаг, что exception обработан}
-    !^cache[файл][expires date]{код}
+    !^cache[файл][expires date]{код}[{catch код}]
         !абсолютное задание времени
     X^cache[файл] удалить файл [не ругает, если его нет] // такое было, больше не будет, делать ^cache(0)
     !^cache(секунд)
@@ -179,7 +179,7 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         !в пределе: ^cache(0) отменить кэширование
     !^cache[] выдаёт текущую expires date
     X^cache[read] 
-        сигнализирует вышестоящему ^cache "взять скэшированное насильно, игнорируя expires", <br>
+        сигнализирует вышестоящему ^cache "взять скэшированное насильно, игнорируя expires",
         выдаёт bool "получилось/нет"
 	!^sleep(seconds)
 
@@ -251,17 +251,18 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         0
     !^имя.pos[...]
         -1
-    !^void.left(n)
+    !^имя.left(n)
        ничего не выдаёт
-    !^void.right(n)
+    !^имя.right(n)
        ничего не выдаёт
-    !^void.mid(p[;n])
+    !^имя.mid(p[;n])
        ничего не выдаёт
     !^имя.int[]  (default) 
         0 или default
     !^имя.double[] (default)
         0 или default
-    !^имя.bool[] + .bool(true|false)  bool значение
+    !^имя.bool[] (default)
+        false или default
     !^void:sql{запрос без результата}{$.bind[см. table::sql]}
 
 
@@ -289,12 +290,12 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         ^if($user.isAlive) истина? [автопреобразование к числу, не ноль?]
     !^string::sql{query}[[$.limit(1) $.offset(4) $.default{n/a} $.bind[см. table::sql]]]
         результат запроса должен быть один столбец/одна строка
-    !^имя.int[] .int(default) целочисленное значение строки. 
+    !^строка.int[] .int(default) целочисленное значение строки. 
         если ломается преобразование, берётся default
-    !^имя.double[]+ .double(default)  double значение строки
-    !^имя.bool[] + .bool(default)  bool значение строки
+    !^строка.double[]+ .double(default)  double значение строки
+    !^строка.bool[] + .bool(default)  bool значение строки
         если ломается преобразование, берётся default
-    !^имя.format[формат] %d  %.2f %02d...
+    !^строка.format[формат] %d  %.2f %02d...
     !^строка.match[шаблон][[опции поиска]]  $prematch $match $postmatch $1 $2...
         опции поиска=
         i CASELESS
@@ -303,14 +304,14 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         m multiline = $ считается концом строки[\n], не концом всего текста
         g найти все вхождения, а не одно
         ' создавать столбцы prematch, match, postmatch
-        n вернуть цисло с количеством найденных совпадений, а не таблицу с резальтатами
+        n вернуть цисло с количеством найденных совпадений, а не таблицу с результатами
     !^строка.match[шаблон][опции поиска]{замена}
         опции поиска+=
         g заменить все вхождения, а не одно
     !^строка.split[разделитель][[lrhv]]
         l слева направо [default]
         r справа налево
-        h nameless таблица
+        h nameless таблица с ключами 0, 1, 2, ...
         v таблица из столбца piece [default]
     !^строка.{l|r}split[разделитель] таблица из столбца $piece
         оставлен для совместимости
@@ -328,10 +329,10 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !^строка.normalize[] выдает другую строку, в которой фрагменты на одном языке объединены
         полезно делать перед сложными match операциями, если вы знаете, что входная строка
         состоит из большого числа фрагментов
-    !^string.trim[start|both|end[;chars]] выкидывает charset из начала/конца/и начала и конца
+    !^строка.trim[start|both|end[;chars]] выкидывает chars из начала/конца/и начала и конца
         default 'chars' -- whitespace chars
-    !^string.append[string]
-    !^string.base64[] encode
+    !^строка.append[string]
+    !^строка.base64[] encode
     !^string:base64[encoded] decode
 
 !table
@@ -355,8 +356,9 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !^таблица.save[[nameless|append;]путь[;опции, см. load]]
     !$таблица.поле
     !$таблица.fields  из named таблицы выдаёт текущую запись как Hash
-    !^таблица.menu{тело}[разделитель]
-    !^таблица.offset[[whence]](5) сдвигает; без параметра - печатает offset
+    !^таблица.menu{тело}[[разделитель]]
+    !^таблица.offset[] печатает offset
+    !^таблица.offset[[whence]](5) сдвигает
         !whence=cur|set
         !без whence - это cur
     !^таблица.count[]
@@ -368,7 +370,7 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     X^таблица.remove(position[;count]) - стирает запись 
         из текущей позиции [стирает запись из конкретной позиции] 
             [стирает count записей]
-    !^таблица.join[таблица][$.limit(1) $.offset(5) $.offset[cur]]     - добавляет записи из таблицы. 
+    !^таблица.join[таблица][$.limit(1) $.offset(5) $.offset[cur]] - добавляет записи из таблицы. 
         таблицы должны иметь одинаковую структуру.
     !^таблица.flip[] выдаёт транспонированную, надо куда-то сложить, потом пользовать
     !^таблица.locate[поле;значение][[$.limit(1) $.offset(5) $.offset[cur] $.reverse(1)]] 
@@ -390,33 +392,33 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !в выражении 
         !логическое значение равно "не пуста?"
         !числовое значение равно _count[]
-    !$hash.ключ
+    !$хеш.ключ
         !_default - специальный ключ, если задан, 
         то при обращении по ключу, которому нет соответствия, выдаётся _default значение 
-    !$hash.fields выдает $hash. чтобы класс hash был чуть больше похож на класс table
+    !$хеш.fields выдает $hash. чтобы класс hash был чуть больше похож на класс table
     !^hash::create[[!copy_from_hash|copy_from_hashfile]]
         создаёт новый hash, копию старого
-    !^hash.add[слагаемое]
+    !^хеш.add[слагаемое]
         перезаписывает одноимённые
-    !^hash.sub[вычитаемое]
-    !^a.union[b] = объединение
+    !^хеш.sub[вычитаемое]
+    !^хеш.union[b] = объединение
         одноимённые остаются
-    !^a.intersection[b] = пересечение
-        значения a
-    !^a.intersects[b] = bool
+    !^хеш.intersection[b] = пересечение
+        значения хеш
+    !^хеш.intersects[b] = bool
     !^hash::sql{запрос}[[$.distinct(1) $.limit(2) $.offset(4) todo:$.default{$.field[]...}]]
         получается hash(ключи=значения первая колонка ответа)
         of hash(ключи=названия остальных колонкок ответа)
-    !^hash._keys[[название колонки с ключами]]+ таблица из одного столбца $key или как передадут
-    !^hash._count[]
-    !^foreach[key;value]{тело}[[разделитель]|{разделитель который выполняется перед непустым очередным не первым телом}]
-    !^delete[ключ]  удалить ключ
+    !^хеш._keys[[название колонки с ключами]]+ таблица из одного столбца $key или как передадут
+    !^хеш._count[]
+    !^хеш.foreach[key;value]{тело}[[разделитель]|{разделитель который выполняется перед непустым очередным не первым телом}]
+    !^хеш.delete[ключ]  удалить ключ
 
 !hashfile
     !^hashfile::open[filename]
     !^хешфайл.clear[]  забыть всё
     !$хешфайл.ключ[значение]  положить значение
-    !$хешфайл.ключ[$.value[значение] $.expires ЗНАЧЕНИЕ}
+    !$хешфайл.ключ[$.value[значение] $.expires[ЗНАЧЕНИЕ]}
       положить значение до expires
       значение поля expires может быть date, или число дней(0дней=на вечно)
     !$хешфайл.ключ  достать
@@ -451,7 +453,7 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
 
 !env
     !$env:переменная
-    !$env:PARSER было то же самое, что показывается при запуске parser.cgi
+    !$env:PARSER то же самое, что показывается при запуске parser.cgi
 
 !cookie
     !$cookie:имя считать старое или свежезаданное
@@ -630,7 +632,7 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !$картинка[^image::measure[DATA]]
         смотрит на .ext case insensitive, 
         умеет мерить пока только .gif и .jpg .jpeg
-    !$image.exif << hash после measure jpeg с exif информацией 
+    !$картинка.exif << hash после measure jpeg с exif информацией 
         !$image.exif.DateTime & co 
             [полный список см. http://www.ba.wakwak.com/~tsuruzoh/Computer/Digicams/exif-e.html]
         !числа типа int/double,
@@ -712,7 +714,7 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !^file:justname[/a/some.tar.gz]=some.tar
     !^file:justext[/a/some.tar.gz]=gz
     !/some/page.html: ^file:fullpath[a.gif] => /some/a.gif
-    !^file.sql-string[] внутри ^connect даст правильно escaped строку, которую можно в запрос отдать
+    !^файл.sql-string[] внутри ^connect даст правильно escaped строку, которую можно в запрос отдать
     X^file::sql[[имя_файла_для_download]]{}
     !^file::sql{}[[
     	$.name[имя_файла_для_download]
@@ -723,14 +725,14 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     	первая колонка - данные
     	если есть вторая - это имя файла
     	если есть третья - это content-type
-    !^file.base64[] encode
+    !^файл.base64[] encode
     !^file:base64[имя файла] encode
     !^file::base64[encoded string] decode
     !^file:crc32[имя файла]
        вычисляет crc32 файла с указанным именем
-    !^file.crc32[]
+    !^файл.crc32[]
 		вычисляет crc32 объекта
-	!^file.md5[]
+	!^файл.md5[]
 	!^file:md5[имя файла]
         выдает digest файла, длиной 16 байт в виде строки, 
         где байты digest выданы в hex виде, впритык, в нижнем регистре
@@ -781,13 +783,13 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         формат1: %Y[-%m[-%d[ %H[:%M[:%S]]]]]
         формат2: %H:%M[:%S]
     !^date::unix-timestamp()
-    !^date.unix-timestamp[]
-    !$date.year month day  hour minute second  weekday yearday(0...) daylightsaving TZ weekyear
+    !^дата.unix-timestamp[]
+    !$дата.year month day  hour minute second  weekday yearday(0...) daylightsaving TZ weekyear
         read-only
         TZ="" << локальная зона
-    !^date.roll[year|month|day](+-смещение) сдвигает дату
-    !^date.roll[TZ;Новая зона] говорит, что дата в таком-то часовом поясе: влияет на .hour&co
-    !^date.sql-string[] %Y-%m-%d %H:%M:%S
+    !^дата.roll[year|month|day](+-смещение) сдвигает дату
+    !^дата.roll[TZ;Новая зона] говорит, что дата в таком-то часовом поясе: влияет на .hour & Co
+    !^дата.sql-string[] %Y-%m-%d %H:%M:%S
         where published='$дата.sql-string[]'
     !^date:calendar[rus|eng;год;месяц] выдаёт неименованную таблицу 
         столбцы: 0..6, week, year
