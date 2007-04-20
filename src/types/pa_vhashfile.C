@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Date: 2006/04/09 13:38:48 $";
+static const char * const IDENT="$Date: 2007/04/20 10:17:57 $";
 
 #include "pa_globals.h"
 #include "pa_common.h"
@@ -32,31 +32,47 @@ void check(const char *step, apr_status_t status) {
 			step, str?str:"<unknown>", status);
 }
 
-void VHashfile::open(const String& afile_name) {
-	file_name=afile_name.cstr(String::L_FILE_SPEC);
+void do_open(apr_sdbm_t** m_db, const char* file_name){
+	String& sfile_name = *new String(file_name);
+	if(!entry_exists(sfile_name))
+		create_dir_for_file(sfile_name);
 
-	if(!entry_exists(file_name))
-		create_dir_for_file(afile_name);
-
-	check("apr_sdbm_open(shared)", apr_sdbm_open(&m_db, file_name, 
+	check("apr_sdbm_open(shared)", apr_sdbm_open(m_db, file_name, 
                                         APR_CREATE|APR_READ|APR_SHARELOCK, 
                                         0664, 0));
 }
 
-void VHashfile::close() {
-	check_db();
-
-	check("apr_sdbm_close", apr_sdbm_close(m_db));  m_db=0;
+void VHashfile::open(const String& afile_name) {
+	file_name=afile_name.cstr(String::L_FILE_SPEC);
+	do_open(&m_db, file_name);
 }
 
-void VHashfile::check_db() const {
-	if(!m_db)
+bool VHashfile::is_open() {
+	return m_db != 0;
+}
+
+void VHashfile::close() {
+	if(!is_open())
+		return;
+
+	check("apr_sdbm_close", apr_sdbm_close(m_db));
+	m_db=0;
+}
+
+void VHashfile::check_db() {
+	if(is_open())
+		return;
+
+	if(file_name)
+		do_open(&m_db, file_name);
+
+	if(!is_open())
 		throw Exception(0,
 			0,
 			"%s is closed", type());
 }
 
-apr_sdbm_t *VHashfile::get_db_for_reading() const {
+apr_sdbm_t *VHashfile::get_db_for_reading() {
 	check_db();
 
 	return m_db;
@@ -77,7 +93,7 @@ apr_sdbm_t *VHashfile::get_db_for_writing() {
 }
 
 VHashfile::~VHashfile() {
-	if(m_db)
+	if(is_open())
 		close();
 }
 
@@ -198,7 +214,7 @@ void VHashfile::remove(const String& aname) {
 	remove(key);
 }
 
-void VHashfile::for_each(bool callback(apr_sdbm_datum_t, void*), void* info) const {
+void VHashfile::for_each(bool callback(apr_sdbm_datum_t, void*), void* info) {
 	apr_sdbm_t *db=get_db_for_reading();
 
 	// collect keys
@@ -295,7 +311,9 @@ static void delete_file(const char* base_name, const char* ext) {
 }
 
 void VHashfile::delete_files() {
-	close();
-	delete_file(file_name, APR_SDBM_DIRFEXT);
-	delete_file(file_name, APR_SDBM_PAGFEXT);
+	if(is_open()){
+		close();
+		delete_file(file_name, APR_SDBM_DIRFEXT);
+		delete_file(file_name, APR_SDBM_PAGFEXT);
+	}
 }
