@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Id: hashfile.C,v 1.37 2006/04/09 13:38:46 paf Exp $";
+static const char * const IDENT="$Id: hashfile.C,v 1.38 2007/04/20 10:20:03 misha Exp $";
 
 #include "classes.h"
 
@@ -143,17 +143,36 @@ static void _foreach(Request& r, MethodParams& params) {
 	self.for_each(one_foreach_cycle, &info);
 }
 
+static bool one_cleanup_cycle(const String::Body, const String&, void*) {
+	return false;
+}
+static void _cleanup(Request& r, MethodParams&) {
+	VHashfile& self=GET_SELF(r, VHashfile);
+
+	self.for_each(one_cleanup_cycle, 0);
+}
+
+static void _release(Request& r, MethodParams&) {
+	VHashfile& self=GET_SELF(r, VHashfile);
+	self.close();
+}
+
 // constructor
 
 MHashfile::MHashfile(): Methoded("hashfile") {
-	// ^hashfile::open[db_home;filename]
+	// ^hashfile::open[filename]
 	add_native_method("open", Method::CT_DYNAMIC, _open, 1, 1);
-	// ^hash[]
+	// ^hashfile.hash[]
 	add_native_method("hash", Method::CT_DYNAMIC, _hash, 0, 0);
 	// ^hashfile.delete[key]
 	add_native_method("delete", Method::CT_DYNAMIC, _delete, 0, 1);
 	// ^hashfile.clear[]
 	add_native_method("clear", Method::CT_DYNAMIC, _clear, 0, 0);
+	// ^hashfile.flush[]
+	add_native_method("release", Method::CT_DYNAMIC, _release, 0, 0);
+	// ^hashfile.cleanup[]
+	add_native_method("cleanup", Method::CT_DYNAMIC, _cleanup, 0, 0);
+	add_native_method("defecate", Method::CT_DYNAMIC, _cleanup, 0, 0);
 	// ^hashfile.foreach[key;value]{code}[delim]
 	add_native_method("foreach", Method::CT_DYNAMIC, _foreach, 2+1, 2+1+1);
 }
