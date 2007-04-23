@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Id: hashfile.C,v 1.38 2007/04/20 10:20:03 misha Exp $";
+static const char * const IDENT="$Id: hashfile.C,v 1.39 2007/04/23 10:18:32 misha Exp $";
 
 #include "classes.h"
 
@@ -51,7 +51,7 @@ static void _open(Request& r, MethodParams& params) {
 
 	const String& file_spec=r.absolute(params.as_string(0, "filename must be string"));
 	if(file_list->get(file_spec))
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			0,
 			"this hashfile is already opened, use existing variable");
 	file_list->put(file_spec, true);
@@ -84,7 +84,7 @@ static void _delete(Request& r, MethodParams& params) {
 
 static void _clear(Request& r, MethodParams&) {
 	VHashfile& self=GET_SELF(r, VHashfile);
-	self.clear();
+	self.delete_files();
 }
 
 #ifndef DOXYGEN
@@ -166,7 +166,7 @@ MHashfile::MHashfile(): Methoded("hashfile") {
 	add_native_method("hash", Method::CT_DYNAMIC, _hash, 0, 0);
 	// ^hashfile.delete[key]
 	add_native_method("delete", Method::CT_DYNAMIC, _delete, 0, 1);
-	// ^hashfile.clear[]
+	// ^hashfile.clear[] -- for backward compatibility. use .delete[] instead.
 	add_native_method("clear", Method::CT_DYNAMIC, _clear, 0, 0);
 	// ^hashfile.flush[]
 	add_native_method("release", Method::CT_DYNAMIC, _release, 0, 0);
