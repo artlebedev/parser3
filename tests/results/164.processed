@@ -1,5 +1,5 @@
 content-type: text/html
-content-length: 955
+content-length: 999
 
 $hf[^hashfile::open[164_dir/hf]]
 <p>
@@ -7,9 +7,9 @@ $hf[^hashfile::open[164_dir/hf]]
 164_dir/hf.pag file doesn't exist
 </p>
 <hr />
-Storing 3 values and show all items...<br />
+Storing 4 values and show all items...<br />
 <p>
-$hf.1: 'value 1'<br />$hf.2: 'value 2'<br />$hf.3: 'value 3'
+$hf.0: 'value 0'<br />$hf.1: 'value 1'<br />$hf.2: 'value 2'<br />$hf.3: 'value 3'
 </p>
 <hr />
 Checking files after storing data...
@@ -23,7 +23,7 @@ Removing locks...
 <hr />
 Removing one value and show all items...<br />
 <p>
-$hf.1: 'value 1'<br />$hf.2: 'value 2'
+$hf.0: 'value 0'<br />$hf.1: 'value 1'<br />$hf.2: 'value 2'
 </p>
 <hr />
 Waiting for a 2 secs and show all items...
