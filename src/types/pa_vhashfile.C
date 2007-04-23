@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Date: 2007/04/23 10:17:57 $";
+static const char * const IDENT="$Date: 2007/04/23 14:45:05 $";
 
 #include "pa_globals.h"
 #include "pa_common.h"
@@ -44,7 +44,7 @@ void do_open(apr_sdbm_t** m_db, const char* file_name){
 
 void VHashfile::open(const String& afile_name) {
 	file_name=afile_name.cstr(String::L_FILE_SPEC);
-	do_open(&m_db, file_name);
+	// do_open(&m_db, file_name);
 }
 
 bool VHashfile::is_open() {
