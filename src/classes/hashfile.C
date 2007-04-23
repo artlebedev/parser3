@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Id: hashfile.C,v 1.39 2007/04/23 10:18:32 misha Exp $";
+static const char * const IDENT="$Id: hashfile.C,v 1.40 2007/04/23 14:45:23 misha Exp $";
 
 #include "classes.h"
 
@@ -168,7 +168,7 @@ MHashfile::MHashfile(): Methoded("hashfile") {
 	add_native_method("delete", Method::CT_DYNAMIC, _delete, 0, 1);
 	// ^hashfile.clear[] -- for backward compatibility. use .delete[] instead.
 	add_native_method("clear", Method::CT_DYNAMIC, _clear, 0, 0);
-	// ^hashfile.flush[]
+	// ^hashfile.release[]
 	add_native_method("release", Method::CT_DYNAMIC, _release, 0, 0);
 	// ^hashfile.cleanup[]
 	add_native_method("cleanup", Method::CT_DYNAMIC, _cleanup, 0, 0);
