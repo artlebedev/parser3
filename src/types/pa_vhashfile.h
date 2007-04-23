@@ -8,7 +8,7 @@
 #ifndef PA_VHASHFILE_H
 #define PA_VHASHFILE_H
 
-static const char * const IDENT_VHASHFILE_H="$Date: 2007/04/20 10:17:57 $";
+static const char * const IDENT_VHASHFILE_H="$Date: 2007/04/23 10:17:57 $";
 
 #include "classes.h"
 #include "pa_pool.h"
@@ -63,7 +63,7 @@ public: // usage
 	void check_db();
 	apr_sdbm_t *get_db_for_reading();
 	apr_sdbm_t *get_db_for_writing();
-	void clear();
+	// void clear();
 	void delete_files();
 	void remove(const String& aname);
 

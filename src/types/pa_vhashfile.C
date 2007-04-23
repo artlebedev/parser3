@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Date: 2007/04/20 10:17:57 $";
+static const char * const IDENT="$Date: 2007/04/23 10:17:57 $";
 
 #include "pa_globals.h"
 #include "pa_common.h"
@@ -172,7 +172,7 @@ void VHashfile::put_field(const String& aname, Value *avalue) {
 		value_string=&avalue->as_string();
 
 	if(aname.is_empty())
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			0,
 			"hashfile key must not be empty");
 
@@ -282,6 +282,7 @@ void VHashfile::for_each(bool callback(const String::Body, const String&, void*)
 	for_each(for_each_string_callback, &info);
 }
 
+/*
 static bool clear_delete_key(apr_sdbm_datum_t key, void* adb) {
 	check("apr_sdbm_delete", apr_sdbm_delete(static_cast<apr_sdbm_t*>(adb), key));
 	return false;
@@ -291,7 +292,7 @@ void VHashfile::clear() {
 
 	for_each(clear_delete_key, db);
 }
-
+*/
 
 static bool get_hash__put(const String::Body key, const String& value, void* aresult) {
 	static_cast<HashStringValue*>(aresult)->put(key, new VString(value));
