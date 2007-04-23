@@ -1,15 +1,20 @@
+@main[]
+$response:charset[UTF-8]
+$request:charset[UTF-8]
+
 $file[^file::load[binary;http://www.parser.ru/none/;
 	$.headers[
 		$.USER-AGENT[paf]
 	]
+	$.timeout(10)
 	$.any-status(1)
 ]]
 #server: $file.SERVER<br>
 $file.status
-<hr />
 #<pre>$file.text</pre>
 
 
+<hr />
 ^try{
 	$file[^file::load[binary;http://www.parser.ru/xmlview.xsl;
 		$.timeout(10)
@@ -44,4 +49,39 @@ $file.status
 }{
 	can't load local xdoc.
 	$exception.handled(1)
+}
+
+
+<hr />
+Loading remote file in windows-1251:
+^try{
+	$file[^file::load[text;http://www.parser.ru/_/tests/097.html;
+		$.charset[windows-1251]
+		$.timeout(10)
+		$.form[
+			$.charset[windows-1251]
+			$.title[Проверка]
+		]
+	]]
+	<p>$file.text</p>
+}{
+	$exception.handled(1)
+	can't load remote file. 
+}
+
+
+<hr />
+Loading remote file in UTF-8:
+^try{
+	$file[^file::load[text;http://www.parser.ru/_/tests/097.html;
+		$.timeout(10)
+		$.form[
+			$.charset[UTF-8]
+			$.title[Проверка]
+		]
+	]]
+	<p>$file.text</p>
+}{
+	$exception.handled(1)
+	can't load remote file. 
 }

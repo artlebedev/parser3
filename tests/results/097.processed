@@ -1,5 +1,5 @@
 content-type: text/html
-content-length: 214
+content-length: 476
 
 404
 <hr />
@@ -8,3 +8,13 @@ xdoc from file created successfully (documentElement: stylesheet)
 remote xdoc loaded successfully (documentElement: stylesheet)
 <hr />
 local xdoc loaded successfully (documentElement: stylesheet)
+<hr />
+Loading remote file in windows-1251:
+<p>Charset: WINDOWS-1251
+Incoming text: 'Проверка'
+Local text: 'Проверка'</p>
+<hr />
+Loading remote file in UTF-8:
+<p>Charset: UTF-8
+Incoming text: 'Проверка'
+Local text: 'Проверка'</p>
