@@ -26,7 +26,7 @@ Removing one value and show all items...<br />
 $hf.0: 'value 0'<br />$hf.1: 'value 1'<br />$hf.2: 'value 2'
 </p>
 <hr />
-Waiting for a 2 secs and show all items...
+Waiting for a 3 secs and show all items...
 <p>
 $hf.2: 'value 2'
 </p>

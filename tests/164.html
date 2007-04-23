@@ -9,9 +9,9 @@ $hf[^hashfile::open[$sName]]
 <hr />
 Storing 4 values and show all items...<br />
 ^put[$hf;0;value 0](2)
-^put[$hf;1;value 1;^date::now(+1/24/60/60)]
-^put[$hf;2;value 2](3)
-^put[$hf;3;value 3](4)
+^put[$hf;1;value 1;^date::now(+2/24/60/60)]
+^put[$hf;2;value 2](4)
+^put[$hf;3;value 3](5)
 ^print[$hf]
 
 <hr />
@@ -29,8 +29,8 @@ Removing one value and show all items...<br />
 ^print[$hf]
 
 <hr />
-Waiting for a 2 secs and show all items...
-^sleep(2)
+Waiting for a 3 secs and show all items...
+^sleep(3)
 ^print[$hf]
 
 <hr />
