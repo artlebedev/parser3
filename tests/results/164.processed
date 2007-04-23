@@ -1,0 +1,52 @@
+content-type: text/html
+content-length: 955
+
+$hf[^hashfile::open[164_dir/hf]]
+<p>
+164_dir/hf.dir file doesn't exist<br />
+164_dir/hf.pag file doesn't exist
+</p>
+<hr />
+Storing 3 values and show all items...<br />
+<p>
+$hf.1: 'value 1'<br />$hf.2: 'value 2'<br />$hf.3: 'value 3'
+</p>
+<hr />
+Checking files after storing data...
+<p>
+164_dir/hf.dir file exist<br />
+164_dir/hf.pag file exist
+</p>
+<hr />
+Removing locks...
+<br />^hf.release[]
+<hr />
+Removing one value and show all items...<br />
+<p>
+$hf.1: 'value 1'<br />$hf.2: 'value 2'
+</p>
+<hr />
+Waiting for a 2 secs and show all items...
+<p>
+$hf.2: 'value 2'
+</p>
+<hr />
+Scan for expired items...
+<br />^hf.cleanup[]
+<p>
+164_dir/hf.dir file exist<br />
+164_dir/hf.pag file exist
+</p>
+<hr />
+Delete files and check if they exists...
+<br />^hf.delete[]
+<p>
+164_dir/hf.dir file doesn't exist<br />
+164_dir/hf.pag file doesn't exist
+</p>
+<hr />
+Put value and check auto re-opening...
+<p>
+164_dir/hf.dir file exist<br />
+164_dir/hf.pag file exist
+</p>

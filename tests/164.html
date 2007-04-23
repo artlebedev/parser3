@@ -1,0 +1,80 @@
+@main[]
+$sName[164_dir/hf]
+
+^$hf[^^hashfile::open[$sName]]
+$hf[^hashfile::open[$sName]]
+
+^checkFiles[$sName]
+
+<hr />
+Storing 3 values and show all items...<br />
+^put[$hf;1;value 1](1)
+^put[$hf;2;value 2](3)
+^put[$hf;3;value 3](4)
+^print[$hf]
+
+<hr />
+Checking files after storing data...
+^checkFiles[$sName]
+
+<hr />
+Removing locks...
+<br />^^hf.release[]
+^hf.release[]
+
+<hr />
+Removing one value and show all items...<br />
+^hf.delete[3]
+^print[$hf]
+
+<hr />
+Waiting for a 2 secs and show all items...
+^sleep(2)
+^print[$hf]
+
+<hr />
+Scan for expired items...
+<br />^^hf.cleanup[]
+^hf.cleanup[]
+^checkFiles[$sName]
+
+<hr />
+Delete files and check if they exists...
+<br />^^hf.delete[]
+^hf.delete[]
+^checkFiles[$sName]
+
+<hr />
+Put value and check auto re-opening...
+^put[$hf;1;value 1](1)
+^checkFiles[$sName]
+
+# finalizing: remove files for make next test start working well
+^hf.delete[]
+
+
+
+@put[hf;sKey;sValue;iTime]
+$hf.$sKey[
+	$.value[$sValue]
+	$.expires($iTime/24/60/60)
+]
+
+
+@print[hf;sText][sKey;sValue]
+<p>^if(def $sText){$sText<br />}
+^hf.foreach[sKey;sValue]{^$hf.${sKey}: '$sValue'}[<br />]
+</p>
+
+
+
+@checkFiles[sName]
+<p>
+${sName}.dir file ^checkFile[${sName}.dir]<br />
+${sName}.pag file ^checkFile[${sName}.dir]
+</p>
+
+
+
+@checkFile[sFileName]
+^if(!-f $sFileName){doesn't }exist
