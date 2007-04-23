@@ -8,7 +8,9 @@
 #ifndef PA_EXCEPTION_H
 #define PA_EXCEPTION_H
 
-static const char * const IDENT_EXCEPTION_H="$Date: 2005/08/09 08:14:49 $";
+static const char * const IDENT_EXCEPTION_H="$Date: 2007/04/23 10:17:36 $";
+
+static const char* const PARSER_RUNTIME = "parser.runtime";
 
 // includes
 
