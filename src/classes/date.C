@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_DATE_C="$Date: 2007/03/22 13:38:25 $";
+static const char * const IDENT_DATE_C="$Date: 2007/04/23 10:30:09 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -171,7 +171,7 @@ static void _roll(Request& r, MethodParams& params) {
 		vdate.set_tz(&argument_tz);
 		return;
 	} else
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			&what,
 			"must be year|month|day|TZ");
 	
@@ -365,7 +365,7 @@ static void _calendar(Request& r, MethodParams& params) {
 	else if(what=="eng")
 		rus=false;
 	else
-		throw Exception("parser.runtime", 
+		throw Exception(PARSER_RUNTIME, 
 			&what, 
 			"must be rus|eng");
 

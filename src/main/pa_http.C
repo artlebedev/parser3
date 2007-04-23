@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
  */
 
-static const char * const IDENT_HTTP_C="$Date: 2007/03/22 18:58:52 $"; 
+static const char * const IDENT_HTTP_C="$Date: 2007/04/23 10:30:32 $"; 
 
 #include "pa_http.h"
 #include "pa_common.h"
@@ -464,7 +464,7 @@ File_read_http_result pa_internal_file_read_http(Request_charsets& charsets,
 		}
 
 		if(valid_options!=options->count())
-			throw Exception("parser.runtime",
+			throw Exception(PARSER_RUNTIME,
 				0,
 				"invalid option passed");
 	}
@@ -473,7 +473,7 @@ File_read_http_result pa_internal_file_read_http(Request_charsets& charsets,
 
 	method_is_get=strcmp(method, "GET")==0;
 	if(method_is_get && body_cstr)
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			0,
 			"you can not use $."HTTP_BODY_NAME" option with method GET");
 
@@ -530,7 +530,7 @@ File_read_http_result pa_internal_file_read_http(Request_charsets& charsets,
 				headers->for_each<Http_pass_header_info*>(http_pass_header, &info); 
 				user_agent_specified=info.user_agent_specified;
 			} else
-				throw Exception("parser.runtime", 
+				throw Exception(PARSER_RUNTIME, 
 					&connect_string,
 					"headers param must be hash"); 
 		};

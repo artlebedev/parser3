@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_DICTIONARY_C="$Date: 2005/08/09 08:14:52 $";
+static const char * const IDENT_DICTIONARY_C="$Date: 2007/04/23 10:30:31 $";
 
 #include "pa_dictionary.h"
 #include "pa_exception.h"
@@ -16,7 +16,7 @@ void pa_dictionary_add_first(Table::element_type row, Dictionary* self) {
 	const String* a=row->get(0);
 	// empty 'a' check
 	if(a->is_empty()) {
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			0, //&a, 
 			"dictionary table 'from' column elements must not be empty");
 	}

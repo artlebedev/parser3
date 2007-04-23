@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2005/08/09 08:14:52 $";
+static const char * const IDENT_TABLE_C="$Date: 2007/04/23 10:30:32 $";
 
 #include "pa_table.h"
 
@@ -41,7 +41,7 @@ int Table::column_name2index(const String& column_name, bool bark) const {
 	if(fcolumns) {// named
 		int result=name2number->get(column_name)-1; // -1 = column not found
 		if(bark && result<0)
-			throw Exception("parser.runtime",
+			throw Exception(PARSER_RUNTIME,
 				&column_name,
 				"column not found");
 		return result;

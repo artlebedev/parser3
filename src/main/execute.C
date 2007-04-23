@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2006/04/09 13:38:47 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2007/04/23 10:30:31 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -147,7 +147,7 @@ void Request::execute(ArrayOperation& ops) {
 				const String& name=stack.pop().string();
 				Value* value=classes().get(name);
 				if(!value) 
-					throw Exception("parser.runtime",
+					throw Exception(PARSER_RUNTIME,
 						&name,
 						"class is undefined"); 
 
@@ -174,7 +174,7 @@ void Request::execute(ArrayOperation& ops) {
 		case OP_WITH_WRITE: 
 			{
 				if(wcontext==method_frame)
-					throw Exception("parser.runtime",
+					throw Exception(PARSER_RUNTIME,
 						0,
 						"$.name outside of $name[...]");
 
@@ -222,7 +222,7 @@ void Request::execute(ArrayOperation& ops) {
 				Value& ncontext=stack.pop().value();
 				if(const VJunction* vjunction=ncontext.put_element(ncontext, name, &value, false))
 					if(vjunction!=PUT_ELEMENT_REPLACED_ELEMENT)
-						throw Exception("parser.runtime",
+						throw Exception(PARSER_RUNTIME,
 							0,
 							"property value can not be code, use [] or () brackets");
 					
@@ -400,11 +400,11 @@ void Request::execute(ArrayOperation& ops) {
 				Junction* junction=value.get_junction();
 				if(!junction) {
 					if(value.is("void"))
-						throw Exception("parser.runtime",
+						throw Exception(PARSER_RUNTIME,
 							0,
 							"undefined method");
 					else
-						throw Exception("parser.runtime",
+						throw Exception(PARSER_RUNTIME,
 							0,
 							"is '%s', not a method or junction, can not call it",
 								value.type());
@@ -416,7 +416,7 @@ void Request::execute(ArrayOperation& ops) {
 				// $junction{code}
 				//  ^junction[]
 				if(!junction->method)
-					throw Exception("parser.runtime",
+					throw Exception(PARSER_RUNTIME,
 						
 						"is '%s', it is code junction, can not call it",
 							value.type());
@@ -446,7 +446,7 @@ void Request::execute(ArrayOperation& ops) {
 							// some stateless_class creatable derivates
 							new_self=value;
 						} else 
-							throw Exception("parser.runtime",
+							throw Exception(PARSER_RUNTIME,
 								0, //&frame.name(),
 								"is not a constructor, system class '%s' can be constructed only implicitly", 
 									called_class.name().cstr());
@@ -455,7 +455,7 @@ void Request::execute(ArrayOperation& ops) {
 							String::L_CLEAN  // not used, always an object, not string
 						);
 					} else
-						throw Exception("parser.runtime",
+						throw Exception(PARSER_RUNTIME,
 							0, //&frame.name(),
 							"method is static and can not be used as constructor");
 				} else
@@ -485,7 +485,7 @@ void Request::execute(ArrayOperation& ops) {
 						} else // parser code, execute it
 							recoursion_checked_execute(*method.parser_code);
 					} else
-						throw Exception("parser.runtime",
+						throw Exception(PARSER_RUNTIME,
 							0, //&frame.name(),
 							"is not allowed to be called %s", 
 								call_type==Method::CT_STATIC?"statically":"dynamically");
@@ -859,7 +859,7 @@ Value& Request::get_element(Value& ncontext, const String& name, bool can_call_o
 	if(value && wcontext->get_constructing())
 		if(Junction* junction=value->get_junction()) {
 			if(junction->self.get_class()!=&ncontext)
-				throw Exception("parser.runtime",
+				throw Exception(PARSER_RUNTIME,
 					&name,
 					"constructor must be declared in class '%s'", 
 						ncontext.get_class()->name_cstr());
@@ -883,7 +883,7 @@ void Request::put_element(Value& ncontext, const String& name, Value& value) {
 			ArrayString* params_names=junction.method->params_names;
 			int param_count=params_names? params_names->count(): 0;
 			if(param_count!=1)
-				throw Exception("parser.runtime",
+				throw Exception(PARSER_RUNTIME,
 					0,
 					"setter method must have ONE parameter (has %d parameters)", param_count);
 
@@ -930,7 +930,7 @@ StringOrValue Request::process(Value& input_value, bool intercept_string) {
 
 			VMethodFrame frame(*junction, method_frame/*caller*/);
 			if(junction->method->params_names)
-				throw Exception("parser.runtime",
+				throw Exception(PARSER_RUNTIME,
 					0,
 					"getter method must have no parameters");
 
@@ -961,7 +961,7 @@ StringOrValue Request::process(Value& input_value, bool intercept_string) {
 #endif
 
 			if(!junction->method_frame)
-				throw Exception("parser.runtime",
+				throw Exception(PARSER_RUNTIME,
 				0,
 				"junction used outside of context");
 

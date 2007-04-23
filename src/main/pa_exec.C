@@ -7,7 +7,7 @@
 	@todo setrlimit
 */
 
-static const char * const IDENT_EXEC_C="$Date: 2006/04/09 13:38:47 $";
+static const char * const IDENT_EXEC_C="$Date: 2007/04/23 10:30:31 $";
 
 #include "pa_config_includes.h"
 
@@ -330,7 +330,7 @@ PA_exec_result pa_exec(
 
 #ifdef NO_PA_EXECS
 	if(!forced_allow)
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			&file_spec,
 			"parser execs are disabled [recompile parser without --disable-execs configure option]");
 #endif
@@ -412,7 +412,7 @@ from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?r
 	const int argv_size=argv.count();
 	const int argv_max=sizeof(argv_cstrs)/sizeof(argv_cstrs[0])-1-1;
 	if(argv_size>argv_max)
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			&file_spec,
 			"too many arguments (%d > max %d)", argv_size, argv_max);
 	for(int i=0; i<argv_size; i++)

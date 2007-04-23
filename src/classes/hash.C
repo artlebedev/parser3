@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_HASH_C="$Date: 2006/06/09 19:03:49 $";
+static const char * const IDENT_HASH_C="$Date: 2007/04/23 10:30:09 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -73,7 +73,7 @@ public:
 	}
 	bool before_rows(SQL_Error& error) { 
 		if(columns.count()<1) {
-			error=SQL_Error("parser.runtime", "no columns");
+			error=SQL_Error(PARSER_RUNTIME, "no columns");
 			return true;
 		}
 		only_one_column=columns.count()==1;
@@ -100,7 +100,7 @@ public:
 				row_hash->put(*columns[column_index], new VString(cell));
 
 			if(duplicate & !distinct) {
-				error=SQL_Error("parser.runtime", "duplicate key");
+				error=SQL_Error(PARSER_RUNTIME, "duplicate key");
 				return true;
 			}
 
@@ -265,11 +265,11 @@ static void _sql(Request& r, MethodParams& params) {
 					distinct=r.process_to_value(*vdistinct).as_bool();
 				}
 				if(valid_options!=options->count())
-					throw Exception("parser.runtime",
+					throw Exception(PARSER_RUNTIME,
 						0,
 						"called with invalid option");
 			} else
-				throw Exception("parser.runtime",
+				throw Exception(PARSER_RUNTIME,
 					0,
 					"options must be hash");
 	}

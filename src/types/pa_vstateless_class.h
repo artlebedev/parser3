@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
-static const char * const IDENT_VSTATELESS_CLASS_H="$Date: 2007/02/03 18:08:39 $";
+static const char * const IDENT_VSTATELESS_CLASS_H="$Date: 2007/04/23 10:30:50 $";
 
 // include
 
@@ -77,7 +77,7 @@ public: // usage
 			if(fbase)
 				return fbase->name();
 
-			throw Exception("parser.runtime",
+			throw Exception(PARSER_RUNTIME,
 				0,
 				"getting name of nameless class");
 		}

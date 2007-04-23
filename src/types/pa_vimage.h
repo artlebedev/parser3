@@ -8,7 +8,7 @@
 #ifndef PA_VIMAGE_H
 #define PA_VIMAGE_H
 
-static const char * const IDENT_VIMAGE_H="$Date: 2007/02/12 11:19:27 $";
+static const char * const IDENT_VIMAGE_H="$Date: 2007/04/23 10:30:50 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -88,7 +88,7 @@ public:
 
 	gdImage& image() { 
 		if(!fimage)
-			throw Exception("parser.runtime",
+			throw Exception(PARSER_RUNTIME,
 				0,
 				"using unitialized image object");
 
@@ -98,7 +98,7 @@ public:
 	void set_font(Font* afont) { ffont=afont; }
 	Font& font() {
 		if(!ffont)
-			throw Exception("parser.runtime",
+			throw Exception(PARSER_RUNTIME,
 				0,
 				"set the font first");
 		return *ffont;

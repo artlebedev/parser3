@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2005/11/21 10:13:43 $";
+static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2007/04/23 10:30:50 $";
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
@@ -84,7 +84,7 @@ private:
 	/// handy value-is/not-a-junction ensurer
 	Value& get_as(Value* value, bool as_junction, const char* msg, int index) { 
 		if((value->get_junction()!=0) ^ as_junction)
-			throw Exception("parser.runtime",
+			throw Exception(PARSER_RUNTIME,
 				0,
 				"%s (parameter #%d)", msg, 1+index);
 
@@ -187,7 +187,7 @@ public: // usage
 			method.params_names?method.params_names->count():
 			0;
 		if(store_param_index==max_params)
-			throw Exception("parser.runtime",
+			throw Exception(PARSER_RUNTIME,
 				0, //&name(),
 				"method of %s (%s) accepts maximum %d parameter(s)", 
 					junction.self.get_class()->name_cstr(),

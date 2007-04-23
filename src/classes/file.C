@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2007/04/16 10:08:17 $";
+static const char * const IDENT_FILE_C="$Date: 2007/04/23 10:30:09 $";
 
 #include "pa_config_includes.h"
 
@@ -122,7 +122,7 @@ static bool is_text_mode(const String& mode) {
 		return true;
 	if(mode==BINARY_MODE_NAME)
 		return false;
-	throw Exception("parser.runtime",
+	throw Exception(PARSER_RUNTIME,
 		&mode,
 		"is invalid mode, must be either '"TEXT_MODE_NAME"' or '"BINARY_MODE_NAME"'");
 }
@@ -250,7 +250,7 @@ static void _load(Request& r, MethodParams& params) {
 static void _create(Request& r, MethodParams& params) {
 	Value& vmode_name=params. as_no_junction(0, "mode must not be code");
 	if(!is_text_mode(vmode_name.as_string()))
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			0,
 			"only text mode is currently supported");
 
@@ -319,7 +319,7 @@ static void append_env_pair(
 		// ignore, already processed
 	} else {
 		if(!is_safe_env_key(akey.cstr()))
-			throw Exception("parser.runtime",
+			throw Exception(PARSER_RUNTIME,
 				new String(akey, String::L_TAINTED),
 				"not safe environment variable");
 		info->env->put(akey, avalue->as_string().cstr_to_string_body(String::L_UNSPECIFIED, 0, info->charsets));
@@ -422,7 +422,7 @@ static void _exec_cgi(Request& r, MethodParams& params,
 					if(VFile* vfile=static_cast<VFile *>(info.vstdin->as("file", false)))
 						in->append_know_length((const char* )vfile->value_ptr(), vfile->value_size(), String::L_TAINTED);
 					else
-						throw Exception("parser.runtime",
+						throw Exception(PARSER_RUNTIME,
 							0,
 							STDIN_EXEC_PARAM_NAME " parameter must be string or file");
 			}
@@ -448,7 +448,7 @@ static void _exec_cgi(Request& r, MethodParams& params,
 							append_to_argv(r, argv, table->get(i)->get(0));
 						}
 					} else {
-						throw Exception("parser.runtime",
+						throw Exception(PARSER_RUNTIME,
 							0,
 							"parameter must be string or table");
 					}
@@ -776,7 +776,7 @@ public:
 
 	bool add_column(SQL_Error& error, const char* /*str*/, size_t /*length*/) {
 		if(got_columns++==3) {
-			error=SQL_Error("parser.runtime", "result must contain not more then 3 columns");
+			error=SQL_Error(PARSER_RUNTIME, "result must contain not more then 3 columns");
 			return true;
 		}
 		return false;
@@ -798,7 +798,7 @@ public:
 						user_content_type=new String(str, length, true);
 					break;
 				default:
-					error=SQL_Error("parser.runtime", "result must not contain more then one row, three rows");
+					error=SQL_Error(PARSER_RUNTIME, "result must not contain more then one row, three rows");
 					return true;
 			}
 			return false;
@@ -831,7 +831,7 @@ static void _sql(Request& r, MethodParams& params) {
 				handlers.user_content_type=&vcontent_type->as_string();
 			}
 			if(valid_options!=options->count())
-				throw Exception("parser.runtime",
+				throw Exception(PARSER_RUNTIME,
 					0,
 					"called with invalid option");
 		}
@@ -845,7 +845,7 @@ static void _sql(Request& r, MethodParams& params) {
 		statement_string);
 
 	if(!handlers.value)
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			0,
 			"produced no result");
 
@@ -893,7 +893,7 @@ static void _crc32(Request& r, MethodParams& params) {
 			const String& file_spec=params.as_string(0, FILE_NAME_MUST_BE_STRING);
 			crc32=pa_crc32(r.absolute(file_spec));
 		} else {
-			throw Exception("parser.runtime",
+			throw Exception(PARSER_RUNTIME,
 				0,
 				"file name must be defined");
 		}
@@ -955,7 +955,7 @@ static void _md5(Request& r, MethodParams& params) {
 			const String& file_spec=params.as_string(0, FILE_NAME_MUST_BE_STRING);
 			md5=pa_md5(r.absolute(file_spec));
 		} else {
-			throw Exception("parser.runtime",
+			throw Exception(PARSER_RUNTIME,
 				0,
 				"file name must be defined");
 		}

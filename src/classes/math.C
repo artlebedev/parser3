@@ -8,7 +8,7 @@
 	Copyright (C) 1996, 1997, 1998, 1999 Theodore Ts'o.
 */
 
-static const char * const IDENT_MATH_C="$Date: 2006/11/14 17:24:49 $";
+static const char * const IDENT_MATH_C="$Date: 2007/04/23 10:30:09 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_common.h"
@@ -166,7 +166,7 @@ static inline int _random(uint top) {
 static void _random(Request& r, MethodParams& params) {
 	double top=params.as_double(0, "range must be expression", r);
 	if(top<=0 || top>MAX_UINT)
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			0,
 			"top(%g) must be [1..%u]", top, MAX_UINT);
 	
@@ -268,13 +268,13 @@ static void _crypt(Request& r, MethodParams& params) {
 		if(!static_sample_buf  // nothing generated
 			|| !static_sample_buf[0] // generated nothing
 			|| strncmp(static_sample_buf, normal_salt, prefix_size)!=0) // salt prefix not preserved
-			throw Exception("parser.runtime",
+			throw Exception(PARSER_RUNTIME,
 				0,
 				"crypt on this platform does not support '%.*s' salt prefix", prefix_size, normal_salt);
 		
 		r.write_pass_lang(String(pa_strdup(static_sample_buf)));
 #else
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			0,
 			"salt must start with '" PA_MD5PW_ID "'");
 #endif

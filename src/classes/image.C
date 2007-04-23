@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_IMAGE_C="$Date: 2006/04/09 13:38:46 $";
+static const char * const IDENT_IMAGE_C="$Date: 2007/04/23 10:30:09 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -759,7 +759,7 @@ static void _html(Request& r, MethodParams& params) {
 				Attrib_info info={&tag, 0};
 				attribs->for_each<Attrib_info*>(append_attrib_pair, &info);
 			} else
-				throw Exception("parser.runtime", 
+				throw Exception(PARSER_RUNTIME, 
 					0, 
 					"attributes must be hash");
 	}
@@ -940,7 +940,7 @@ static void _polybar(Request& r, MethodParams& params) {
 
 	Table* table=params.as_no_junction(1, "coordinates must not be code").get_table();
 	if(!table) 
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			0,
 			"coordinates must be table");
 
@@ -1031,12 +1031,12 @@ static void _font(Request& r, MethodParams& params) {
 		monospace_width=0;
 
 	if(!alphabet.length())
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			0,
 			"alphabet must not be empty");
 
 	if(int remainder=image->SY() % alphabet.length())
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			0,
 			"font-file height(%d) not divisable by alphabet size(%d), remainder=%d",
 				image->SY(), alphabet.length(), remainder);
@@ -1109,7 +1109,7 @@ gdImage& as_image(MethodParams& params, int index, const char* msg) {
 	if(Value* vimage=value.as(VIMAGE_TYPE, false)) {
 		return static_cast<VImage *>(vimage)->image();
 	} else
-		throw Exception("parser.runtime", 
+		throw Exception(PARSER_RUNTIME, 
 			0, 
 			msg);
 }

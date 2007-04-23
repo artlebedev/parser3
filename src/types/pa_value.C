@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VALUE_C="$Date: 2006/12/07 18:28:32 $";
+static const char * const IDENT_VALUE_C="$Date: 2007/04/23 10:30:49 $";
 
 #include "pa_value.h"
 #include "pa_vstateless_class.h"
@@ -44,7 +44,7 @@ void Method::check_actual_numbered_params(Value& self,
 
 	int actual_count=actual_numbered_params?actual_numbered_params->count():0;
 	if(actual_count<min_numbered_params_count) // not proper count? bark
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			0,
 			"native method of %s (%s) accepts minimum %d parameter(s) (%d present)", 
 				self.get_class()->name_cstr(),
@@ -114,7 +114,7 @@ static void append_attribute_meaning(String& result,
 
 			result.append_help_length(attribute.str, attribute.length, String::L_CLEAN);
 		} else
-			throw Exception("parser.runtime",
+			throw Exception(PARSER_RUNTIME,
 				&result,
 				"trying to append here neither string nor date (%s)",
 					value.type());

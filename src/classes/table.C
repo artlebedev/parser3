@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2007/03/15 10:11:18 $";
+static const char * const IDENT_TABLE_C="$Date: 2007/04/23 10:30:10 $";
 
 #include <sstream>
 using namespace std;
@@ -94,7 +94,7 @@ static Table::Action_options get_action_options(Request& r, MethodParams& params
 			if(soffset == "cur")
 				result.offset=source.current();
 			else
-				throw Exception("parser.runtime",
+				throw Exception(PARSER_RUNTIME,
 					&soffset,
 					"must be 'cur' string or expression");
 		} else 
@@ -112,7 +112,7 @@ static Table::Action_options get_action_options(Request& r, MethodParams& params
 	} 
 
 	if(valid_options!=options->count())
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			0,
 			"called with invalid option");
 
@@ -122,7 +122,7 @@ static void check_option_param(bool options_defined,
 			  MethodParams& params, size_t next_param_index,
 			  const char *msg) {
 	if(next_param_index+(options_defined?1:0) != params.count())
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			0,
 			"%s", msg);
 }
@@ -148,7 +148,7 @@ static void _create(Request& r, MethodParams& params) {
 	if(params.count()==2) {
 		const String& snameless=params.as_string(0, "called with two params, first param may only be string 'nameless'");
 		if(snameless!="nameless")
-			throw Exception("parser.runtime",
+			throw Exception(PARSER_RUNTIME,
 				&snameless,
 				"table::create called with two params, first param may only be 'nameless'");
 		columns=Table::columns_type(0); // nameless
@@ -280,7 +280,7 @@ struct TableSeparators {
 		if(Value* vseparator=options.get(PA_COLUMN_SEPARATOR_NAME)) {
 			scolumn=&vseparator->as_string();
 			if(scolumn->length()!=1)
-				throw Exception("parser.runtime",
+				throw Exception(PARSER_RUNTIME,
 					scolumn,
 					"separator must be one character long");
 			column=scolumn->first_char();
@@ -289,7 +289,7 @@ struct TableSeparators {
 		if(Value* vencloser=options.get(PA_COLUMN_ENCLOSER_NAME)) {
 			sencloser=&vencloser->as_string();
 			if(sencloser->length()!=1)
-				throw Exception("parser.runtime",
+				throw Exception(PARSER_RUNTIME,
 					sencloser,
 					"encloser must be one character long");
 			encloser=sencloser->first_char();
@@ -427,18 +427,18 @@ static void _save_old(Request& r, MethodParams& params) {
 			if(HashStringValue* options=voptions.get_hash()) {
 				int valid_options=separators.load(*options);
 				if(valid_options!=options->count())
-					throw Exception("parser.runtime",
+					throw Exception(PARSER_RUNTIME,
 						0,
 						"invalid option passed");
 			} else {
-				throw Exception("parser.runtime",
+				throw Exception(PARSER_RUNTIME,
 					0,
 					"additional params must be hash (did you spell mode parameter correctly?)");
 			}
 		}
 	}
 	if(param_index<params.count())
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			0,
 			"bad mode (must be nameless or append)");
 
@@ -512,18 +512,18 @@ static void _save(Request& r, MethodParams& params) {
 			if(HashStringValue* options=voptions.get_hash()) {
 				int valid_options=separators.load(*options);
 				if(valid_options!=options->count())
-					throw Exception("parser.runtime",
+					throw Exception(PARSER_RUNTIME,
 						0,
 						"invalid option passed");
 			} else {
-				throw Exception("parser.runtime",
+				throw Exception(PARSER_RUNTIME,
 					0,
 					"additional params must be hash (did you spell mode parameter correctly?)");
 			}
 		}
 	}
 	if(param_index<params.count())
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			0,
 			"bad mode (must be nameless or append)");
 
@@ -599,7 +599,7 @@ static void _offset(Request& r, MethodParams& params) {
 		    else if(whence=="set")
 				absolute=true;
 		    else
-				throw Exception("parser.runtime",
+				throw Exception(PARSER_RUNTIME,
 					&whence,
 					"is invalid whence, valid are 'cur' or 'set'");
 		}
@@ -727,20 +727,21 @@ static void _hash(Request& r, MethodParams& params) {
 							if(sdistinct=="tables")
 								distinct=D_TABLES;
 							else
-								throw Exception("parser.runtime",
+								throw Exception(PARSER_RUNTIME,
 									&sdistinct,
 									"must be 'tables' or true/false");
 						} else
 							distinct=vdistinct_value.as_bool()?D_FIRST:D_ILLEGAL;
 					}
+
 					if(valid_options!=options->count())
-						throw Exception("parser.runtime",
+						throw Exception(PARSER_RUNTIME,
 							0,
 							"called with invalid option");
 				}
 			}
 			if(param_index==2) // bad options param type
-				throw Exception("parser.runtime",
+				throw Exception(PARSER_RUNTIME,
 					0,
 					"options must be hash");
 
@@ -763,10 +764,10 @@ static void _hash(Request& r, MethodParams& params) {
 							+=self_table.column_name2index(value_field_name, true);
 					}
 				} else
-					throw Exception("parser.runtime",
+					throw Exception(PARSER_RUNTIME,
 						0,
-						"value field(s) must be string or table"
-					);
+						"value field(s) must be string or table");
+
 			} else { // by all columns, including key
 				if(!(distinct!=D_ILLEGAL && distinct!=D_FIRST))
 					for(size_t i=0; i<columns->count(); i++)
@@ -951,7 +952,7 @@ static void join_nameless_row(Table& src, Table* dest) {
 static void _join(Request& r, MethodParams& params) {
 	Table* maybe_src=params.as_no_junction(0, "table ref must not be code").get_table();
 	if(!maybe_src)
-		throw Exception("parser.runtime", 
+		throw Exception(PARSER_RUNTIME, 
 			0, 
 			"source is not a table");
 	Table& src=*maybe_src;
@@ -962,7 +963,7 @@ static void _join(Request& r, MethodParams& params) {
 
 	Table& dest=GET_SELF(r, VTable).table();
 	if(&src == &dest)
-		throw Exception("parser.runtime", 
+		throw Exception(PARSER_RUNTIME, 
 			0, 
 			"source and destination are same table");
 
@@ -1091,11 +1092,11 @@ static void _sql(Request& r, MethodParams& params) {
 					offset=(ulong)r.process_to_value(*voffset).as_double();
 				}
 				if(valid_options!=options->count())
-					throw Exception("parser.runtime",
+					throw Exception(PARSER_RUNTIME,
 						0,
 						"called with invalid option");
 			} else
-				throw Exception("parser.runtime",
+				throw Exception(PARSER_RUNTIME,
 					0,
 					"options must be hash");
 	}

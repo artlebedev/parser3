@@ -5,7 +5,7 @@
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_CHARSET_C="$Date: 2006/04/09 13:38:47 $";
+static const char * const IDENT_CHARSET_C="$Date: 2007/04/23 10:30:31 $";
 
 #include "pa_charset.h"
 #include "pa_charsets.h"
@@ -150,7 +150,7 @@ void Charset::load_definition(Request_charsets& charsets, const String& afile_sp
 			case 8:
 				// charset
 				if(tables.toTableSize>MAX_CHARSET_UNI_CODES)
-					throw Exception("parser.runtime",
+					throw Exception(PARSER_RUNTIME,
 						&afile_spec,
 						"charset must contain not more then %d unicode values", MAX_CHARSET_UNI_CODES);
 
@@ -720,7 +720,7 @@ void Charset::initTranscoder(const String::Body NAME, const char* name_cstr) {
 
 xmlCharEncodingHandler& Charset::transcoder(const String::Body NAME) {
 	if(!ftranscoder)
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			new String(NAME, String::L_TAINTED),
 			"unsupported encoding");
 	return *ftranscoder;

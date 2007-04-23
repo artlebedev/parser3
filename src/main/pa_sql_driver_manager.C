@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_SQL_DRIVER_MANAGER_C="$Date: 2006/04/09 13:38:47 $";
+static const char * const IDENT_SQL_DRIVER_MANAGER_C="$Date: 2007/04/23 10:30:32 $";
 
 #include "pa_sql_driver_manager.h"
 #include "ltdl.h"
@@ -118,7 +118,7 @@ SQL_Connection* SQL_Driver_manager::get_connection(const String& aurl,
 						   const char* arequest_charset) {
 	// we have table for locating protocol's library
 	if(!protocol2driver_and_client)
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			&aurl,
 			"$"MAIN_SQL_NAME":"MAIN_SQL_DRIVERS_NAME" table must be defined");
 
@@ -138,7 +138,7 @@ SQL_Connection* SQL_Driver_manager::get_connection(const String& aurl,
 	else { // no cached connection or it were unpingabe: connect/reconnect
 		url_cstr=aurl.cstrm();
 		if(!strstr(url_cstr, "://"))
-			throw Exception("parser.runtime",
+			throw Exception(PARSER_RUNTIME,
 				aurl.length()?&aurl:0,
 				"connection string must start with protocol://");
 
@@ -158,13 +158,13 @@ SQL_Connection* SQL_Driver_manager::get_connection(const String& aurl,
 			Table::Action_options options;
 			if(protocol2driver_and_client->locate(0, protocol, options)) {
 				if(!(library=protocol2driver_and_client->item(1)) || library->length()==0)
-					throw Exception("parser.runtime",
+					throw Exception(PARSER_RUNTIME,
 						0,
 						"driver library column for protocol '%s' is empty", 
 							protocol_cstr);
 				dlopen_file_spec=protocol2driver_and_client->item(2);
 			} else
-				throw Exception("parser.runtime",
+				throw Exception(PARSER_RUNTIME,
 					&aurl,
 					"undefined protocol '%s'", 
 						protocol_cstr);

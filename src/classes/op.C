@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2007/04/20 10:16:54 $";
+static const char * const IDENT_OP_C="$Date: 2007/04/23 10:30:09 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -163,7 +163,7 @@ static void _process(Request& r, MethodParams& params) {
 	{
 		VStateless_class *target_class=target_self->get_last_derived_class();
 		if(!target_class)
-			throw Exception("parser.runtime",
+			throw Exception(PARSER_RUNTIME,
 				0,
 				"no target class");
 
@@ -180,7 +180,7 @@ static void _process(Request& r, MethodParams& params) {
 			Value& voptions=params.as_no_junction(options_index, "options must not be code");
 			options=voptions.get_hash();
 			if(!options)
-				throw Exception("parser.runtime",
+				throw Exception(PARSER_RUNTIME,
 					0,
 					"options must be hash");
 		}
@@ -204,7 +204,7 @@ static void _process(Request& r, MethodParams& params) {
 			}
 	
 			if(valid_options!=options->count())
-				throw Exception("parser.runtime",
+				throw Exception(PARSER_RUNTIME,
 					0,
 					"called with invalid option");
 		}
@@ -252,7 +252,7 @@ static void _while(Request& r, MethodParams& params) {
 	bool need_delim=false;
 	while(true) {
 		if(++endless_loop_count>=MAX_LOOPS) // endless loop?
-			throw Exception("parser.runtime",
+			throw Exception(PARSER_RUNTIME,
 				0,
 				"endless loop detected");
 
@@ -284,7 +284,7 @@ static void _use(Request& r, MethodParams& params) {
 static void set_skip(Request& r, Request::Skip askip) {
 	void* data=r.classes_conf.get(cycle_data_name);
 	if(!data)
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			0,
 			"without cycle");
 
@@ -310,7 +310,7 @@ static void _for(Request& r, MethodParams& params) {
 	Value* delim_maybe_code=params.count()>4?&params[4]:0;
 
 	if(to-from>=MAX_LOOPS) // too long loop?
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			0,
 			"endless loop detected");
 
@@ -423,7 +423,7 @@ static void _switch(Request& r, MethodParams& params) {
 static void _case(Request& r, MethodParams& params) {
 	Switch_data* data=static_cast<Switch_data*>(r.classes_conf.get(switch_data_name));
 	if(!data)
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			0,
 			"without switch");
 
@@ -448,7 +448,7 @@ static void _case(Request& r, MethodParams& params) {
 
 		if(matches) {
 			if(data->found)
-				throw Exception("parser.runtime",
+				throw Exception(PARSER_RUNTIME,
 					0,
 					"duplicate found");
 
@@ -578,7 +578,7 @@ static void locked_process_and_cache_put_action(int f, void *context) {
 			assert(body_from_disk);
 			info.processed_code=body_from_disk;
 		} else
-			throw Exception("parser.runtime",
+			throw Exception(PARSER_RUNTIME,
 				result.exception_should_be_handled,
 				"$"EXCEPTION_VAR_NAME"."EXCEPTION_HANDLED_PART_NAME" value must be "
 				"either boolean or string '"CACHE_EXCEPTION_HANDLED_CACHE_NAME"'");
@@ -671,7 +671,7 @@ static void _cache(Request& r, MethodParams& params) {
 		// return current expiration time
 		Cache_scope* scope=static_cast<Cache_scope*>(r.classes_conf.get(cache_data_name));
 		if(!scope)
-			throw Exception("parser.runtime",
+			throw Exception(PARSER_RUNTIME,
 				0,
 				"expire-time get without cache");
 		r.write_no_lang(*new VDate(scope->expires));
@@ -690,7 +690,7 @@ static void _cache(Request& r, MethodParams& params) {
 		// secods|expires date
 		Cache_scope* scope=static_cast<Cache_scope*>(r.classes_conf.get(cache_data_name));
 		if(!scope)
-			throw Exception("parser.runtime",
+			throw Exception(PARSER_RUNTIME,
 				0,
 				"expire-time reducing instruction without cache");
 		
@@ -700,7 +700,7 @@ static void _cache(Request& r, MethodParams& params) {
 
 		return;
 	} else if(params.count()<3)
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			0,
 			"invalid number of parameters"); 
 	
@@ -787,7 +787,7 @@ static void _try_operator(Request& r, MethodParams& params) {
 		&catch_code);
 	
 	if(result.exception_should_be_handled)
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			result.exception_should_be_handled,
 			"catch block must set $exception.handled to some boolean value, not string");
 
@@ -812,7 +812,7 @@ static void _throw_operator(Request&, MethodParams& params) {
 				source?source:0,
 				"%s", comment?comment:"");
 		} else
-			throw Exception("parser.runtime",
+			throw Exception(PARSER_RUNTIME,
 				0,
 				"one-param version has hash param");
 	} else {

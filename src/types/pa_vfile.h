@@ -8,7 +8,7 @@
 #ifndef PA_VFILE_H
 #define PA_VFILE_H
 
-static const char * const IDENT_VFILE_H="$Date: 2007/02/26 13:41:27 $";
+static const char * const IDENT_VFILE_H="$Date: 2007/04/23 10:30:49 $";
 
 // include
 
@@ -72,14 +72,14 @@ public: // usage
 		if(fvalue_ptr)
 			file_write(file_spec, fvalue_ptr, fvalue_size, is_text);
 		else
-			throw Exception("parser.runtime",
+			throw Exception(PARSER_RUNTIME,
 				&file_spec,
 				"saving stat-ed file");
 	}
 
 	const char* value_ptr() const { 
 		if(!fvalue_ptr)
-			throw Exception("parser.runtime",
+			throw Exception(PARSER_RUNTIME,
 				0,
 				"getting value of stat-ed file");
 

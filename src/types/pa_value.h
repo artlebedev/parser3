@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-static const char * const IDENT_VALUE_H="$Date: 2006/12/07 18:28:33 $";
+static const char * const IDENT_VALUE_H="$Date: 2007/04/23 10:30:49 $";
 
 #include "pa_string.h"
 #include "pa_array.h"
@@ -156,7 +156,7 @@ protected:
 	/// throws exception specifying bark-reason and name() type() of problematic value
 	Value* bark(const char *reason, const String *problem_source=0) const {
 		//if(this) // removing warnings on unreachable code
-			throw Exception("parser.runtime",
+			throw Exception(PARSER_RUNTIME,
 				problem_source, 
 				reason, type());
 

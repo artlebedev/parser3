@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)\
 */
 
-static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2007/02/03 18:08:38 $";
+static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2007/04/23 10:30:50 $";
 
 #include "pa_vstateless_class.h"
 #include "pa_vproperty.h"
@@ -19,7 +19,7 @@ override Value& VStateless_class::as_expr_result(bool /*return_string_as_is=fals
 /// @TODO why?! request must be different ptr from global [used in VStateless_class.add_method]
 void VStateless_class::add_method(const String& name, Method& method) {
 	if(flocked)
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			&name,
 			"can not add method to system class (maybe you have forgotten .CLASS in ^process[$caller.CLASS]{...}?)");
 

@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_VMAIL_C="$Date: 2006/11/16 18:41:38 $";
+static const char * const IDENT_VMAIL_C="$Date: 2007/04/23 10:30:50 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -611,7 +611,7 @@ static const String& file_value_to_string(Request& r, Value* send_value) {
 		if(Value* value=send_hash->get(value_name))
 			vfile=value->as_vfile(String::L_UNSPECIFIED);
 		else
-			throw Exception("parser.runtime",
+			throw Exception(PARSER_RUNTIME,
 				0,
 				"file part has no $value");
 
@@ -660,7 +660,7 @@ static const String& file_value_to_string(Request& r, Value* send_value) {
 			result << pa_base64_encode(vfile->value_ptr(), file_size);
 		} else {
 			// for now
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			type,
 			"unknown attachment encode format");
 		}
@@ -682,7 +682,7 @@ static const String& text_value_to_string(Request& r,
 		// $.value
 		text_value=send_hash->get(value_name);
 		if(!text_value)
-			throw Exception("parser.runtime",
+			throw Exception(PARSER_RUNTIME,
 				0,
 				"%s part has no $" VALUE_NAME, part_name_begins[pt]);
 	} else
@@ -710,7 +710,7 @@ static const String& text_value_to_string(Request& r,
 			if(text_value->get_junction())
 				body=&r.process_to_string(*text_value);
 			else {
-				throw Exception("parser.runtime",
+				throw Exception(PARSER_RUNTIME,
 					0,
 					"html part value must be code");
 			}
@@ -742,7 +742,7 @@ const String& VMail::message_hash_to_string(Request& r,
 					    const String* & from, bool extract_to, String* & to) {
 	
 	if(!message_hash)
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			0,
 			"message must be hash");
 
@@ -790,12 +790,12 @@ const String& VMail::message_hash_to_string(Request& r,
 
 	int textCount=info.parts[P_TEXT]->count();
 	if(textCount>1)
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			0,
 			"multiple text parts not supported, use file part");
 	int htmlCount=info.parts[P_HTML]->count();
 	if(htmlCount>1)
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			0,
 			"multiple html parts not supported, use file part");
 

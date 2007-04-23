@@ -8,7 +8,7 @@
 #ifndef PA_VCONSOLE_H
 #define PA_VCONSOLE_H
 
-static const char * const IDENT_VCONSOLE_H="$Date: 2007/02/12 16:10:17 $";
+static const char * const IDENT_VCONSOLE_H="$Date: 2007/04/23 10:30:49 $";
 
 // includes
 
@@ -42,7 +42,7 @@ public: // Value
 			return 0; // EOF
 		}
 
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			&aname,
 			"reading of invalid field");
 	}
@@ -59,7 +59,7 @@ public: // Value
 			return PUT_ELEMENT_REPLACED_ELEMENT;
 		}
 
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			&aname,
 			"writing to invalid field");
 	}

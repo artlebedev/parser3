@@ -8,7 +8,7 @@
 #ifndef PA_VHASH_H
 #define PA_VHASH_H
 
-static const char * const IDENT_VHASH_H="$Date: 2005/08/09 08:14:54 $";
+static const char * const IDENT_VHASH_H="$Date: 2007/04/23 10:30:49 $";
 
 #include "classes.h"
 #include "pa_value.h"
@@ -78,7 +78,7 @@ public: // value
 		else 
 			if(flocked) {
 				if(!fhash.put_replaced(aname, avalue))
-					throw Exception("parser.runtime",
+					throw Exception(PARSER_RUNTIME,
 						&aname,
 						"can not insert new hash key (hash flocked)");
 			} else
@@ -112,7 +112,7 @@ public: // usage
 
 	void check_lock() {
 		if(flocked)
-			throw Exception("parser.runtime",
+			throw Exception(PARSER_RUNTIME,
 				0,
 				"can not modify hash (flocked)");
 	}

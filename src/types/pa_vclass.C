@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VCLASS_C="$Date: 2005/08/09 08:14:53 $";
+static const char * const IDENT_VCLASS_C="$Date: 2007/04/23 10:30:49 $";
 
 #include "pa_vclass.h"
 
@@ -70,7 +70,7 @@ try_to_find_getter_up_the_tree:
 		return result; // TODO: this can be SIGNIFICANTLY sped up by caching in ffields! [THOUGH decide about different aself] // what REALLY would speed up things is to join storage of properties/methods/fields of all vobject parents into last descenant [sort of vmt + all fields as in other langs]
 
 	if(property_but_no_getter_in_self)
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			0,
 			"this property has no getter method (@GET_%s[])", aname.cstr());
 
@@ -118,7 +118,7 @@ const VJunction* VClass::put_element(Value& aself, const String& aname, Value* a
 					return result; // replaced in base
 
 		if(property_but_no_setter_in_self)
-			throw Exception("parser.runtime",
+			throw Exception(PARSER_RUNTIME,
 				0,
 				"this property has no setter method (@SET_%s[value])", aname.cstr());
 

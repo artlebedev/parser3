@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REQUEST_C="$Date: 2007/02/17 11:03:10 $";
+static const char * const IDENT_REQUEST_C="$Date: 2007/04/23 10:30:32 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -205,7 +205,7 @@ static void load_charset(HashStringValue::key_type akey,
 }
 void Request::configure_admin(VStateless_class& conf_class) {
 	if(configure_admin_done)
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 		0,
 		"parser already configured");
 	configure_admin_done=true;
@@ -223,7 +223,7 @@ void Request::configure_admin(VStateless_class& conf_class) {
 			if(HashStringValue* charsets=vcharsets->get_hash())
 				charsets->for_each<Request_charsets*>(load_charset, &this->charsets);
 			else
-				throw Exception("parser.runtime",
+				throw Exception(PARSER_RUNTIME,
 					0,
 					"$" MAIN_CLASS_NAME ":" CHARSETS_NAME " must be hash");
 	}
@@ -374,7 +374,7 @@ gettimeofday(&mt[1],NULL);
 		// execute @main[]
 		const String* body_string=execute_virtual_method(main_class, main_method_name);
 		if(!body_string)
-			throw Exception("parser.runtime",
+			throw Exception(PARSER_RUNTIME,
 				0,
 				"'"MAIN_METHOD_NAME"' method not found");
 
@@ -570,16 +570,16 @@ void Request::use_file(VStateless_class& aclass,
 						break; // found along class_path
 				}
 			} else
-				throw Exception("parser.runtime",
+				throw Exception(PARSER_RUNTIME,
 					0,
 					"$" CLASS_PATH_NAME " must be string or table");
 			if(!file_spec)
-				throw Exception("parser.runtime",
+				throw Exception(PARSER_RUNTIME,
 					&file_name,
 					"not found along " MAIN_CLASS_NAME ":" CLASS_PATH_NAME);
 		}
 		if(!file_spec)
-			throw Exception("parser.runtime",
+			throw Exception(PARSER_RUNTIME,
 				&file_name,
 				"usage failed - no $" MAIN_CLASS_NAME  ":" CLASS_PATH_NAME " were specified");
 	}
@@ -880,7 +880,7 @@ void Request::output_result(VFile* body_file, bool header_only, bool as_attachme
 			if(Value* vdatep=v->as(VDATE_TYPE, false))
 				vdate=static_cast<VDate*>(vdatep);
 			else 
-				throw Exception("parser.runtime", 0, "mdate must be a date");
+				throw Exception(PARSER_RUNTIME, 0, "mdate must be a date");
 		}
 		if(!vdate)
 			vdate=new VDate(mtime);
@@ -905,7 +905,7 @@ const String& Request::mime_type_of(const char* user_file_name_cstr) {
 					if(const String* result=mime_types->item(1))
 						return *result;
 				else
-					throw Exception("parser.runtime",
+					throw Exception(PARSER_RUNTIME,
 						0,
 						MIME_TYPES_NAME  " table column elements must not be empty");
 		}

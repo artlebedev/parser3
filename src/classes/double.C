@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_DOUBLE_C="$Date: 2007/02/03 18:08:38 $";
+static const char * const IDENT_DOUBLE_C="$Date: 2007/04/23 10:30:09 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -98,7 +98,7 @@ static void _sql(Request& r, MethodParams& params) {
 		if(default_code)
 			val=r.process_to_value(*default_code).as_double();
 		else {
-			throw Exception("parser.runtime",
+			throw Exception(PARSER_RUNTIME,
 				0,
 				"produced no result, but no default option specified");
 		}

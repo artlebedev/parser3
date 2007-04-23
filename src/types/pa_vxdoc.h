@@ -8,7 +8,7 @@
 #ifndef PA_VXDOC_H
 #define PA_VXDOC_H
 
-static const char * const IDENT_VXDOC_H="$Date: 2007/02/09 18:06:37 $";
+static const char * const IDENT_VXDOC_H="$Date: 2007/04/23 10:30:50 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -72,7 +72,7 @@ public: // VXdoc
 	}
 	xmlDoc& get_xmldoc() { 
 		if(!fdocument)
-			throw Exception("parser.runtime",
+			throw Exception(PARSER_RUNTIME,
 				0,
 				"using unitialized xdoc object");
 		return *fdocument; 
@@ -80,7 +80,7 @@ public: // VXdoc
 
 	Request_charsets& charsets() { 
 		if(!fcharsets)
-			throw Exception("parser.runtime",
+			throw Exception(PARSER_RUNTIME,
 				0,
 				"using unitialized xdoc object");
 		return *fcharsets; 

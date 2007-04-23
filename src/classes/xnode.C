@@ -7,7 +7,7 @@
 #include "classes.h"
 #ifdef XML
 
-static const char * const IDENT_XNODE_C="$Date: 2007/02/03 18:08:38 $";
+static const char * const IDENT_XNODE_C="$Date: 2007/04/23 10:30:10 $";
 
 #include "pa_vmethod_frame.h"
 
@@ -102,7 +102,7 @@ xmlNode& as_node(MethodParams& params, int index, const char* msg) {
 	if(Value* vxnode=value.as(VXNODE_TYPE, false))
 		return static_cast<VXnode*>(vxnode)->get_xmlnode();
 	else
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			0,
 			msg);
 }
@@ -114,7 +114,7 @@ xmlChar* as_xmlchar(Request& r, MethodParams& params, int index, const char* msg
 xmlAttr& as_attr(MethodParams& params, int index, const char* msg) {
 	xmlNode& xmlnode=as_node(params, index, msg);
 	if(xmlnode.type!=XML_ATTRIBUTE_NODE)
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			0,
 			msg);
 
@@ -171,7 +171,7 @@ xmlNs& pa_xmlMapNs(xmlDoc& doc, const xmlChar *href, const xmlChar *prefix) {
 static void pa_addAttributeNode(xmlNode& selfNode, xmlAttr& attrNode) 
 {
 	if(attrNode.type!=XML_ATTRIBUTE_NODE)
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			0,
 			"must be ATTRIBUTE_NODE");
 
@@ -354,7 +354,7 @@ xmlNode& get_self_element(VXnode& vnode) {
 	xmlNode& node=vnode.get_xmlnode();
 
 	if(node.type!=XML_ELEMENT_NODE)
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			0,
 			"method can only be called on nodes of ELEMENT type");
 
@@ -625,7 +625,7 @@ static void register_one_ns(
 			info->r->transcode(key), 
 			info->r->transcode(*svalue));
 	else
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			new String(key, String::L_TAINTED),
 			"value is %s, must be string or number", value->type());
 }
@@ -683,7 +683,7 @@ static void selectNodesHandler(Request&,
 			}
 		break;
 	default: 
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			&expression,
 			"wrong xmlXPathEvalExpression result type (%d)", res->type);
 		break; // never
@@ -701,7 +701,7 @@ static void selectNodeHandler(Request& r,
 	case XPATH_NODESET: 
 		if(res->nodesetval && res->nodesetval->nodeNr) { // empty result strangly has NODESET  res->type
 			if(res->nodesetval->nodeNr>1)
-				throw Exception("parser.runtime",
+				throw Exception(PARSER_RUNTIME,
 					&expression,
 					"resulted not in a single node (%d)", res->nodesetval->nodeNr);
 			
@@ -718,7 +718,7 @@ static void selectNodeHandler(Request& r,
 		result=new VString(r.transcode((xmlChar*)res->stringval));
 		break;
 	default: 
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			&expression,
 			"wrong xmlXPathEvalExpression result type (%d)", res->type);
 	}
@@ -738,7 +738,7 @@ static void selectBoolHandler(Request&,
 			break;
 		// else[nodeset] fall down to default
 	default: 
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			&expression,
 			"wrong xmlXPathEvalExpression result type (%d)", res->type);
 		break; // never
@@ -759,7 +759,7 @@ static void selectNumberHandler(Request&,
 			break;
 		// else[nodeset] fall down to default
 	default: 
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			&expression,
 			"wrong xmlXPathEvalExpression result type (%d)", res->type);
 		break; // never
@@ -782,7 +782,7 @@ static void selectStringHandler(Request& r,
 			break;
 		// else[nodeset] fall down to default
 	default: 
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			&expression,
 			"wrong xmlXPathEvalExpression result type (%d)", res->type);
 		break; // never

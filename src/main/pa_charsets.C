@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_CHARSETS_C="$Date: 2005/08/09 08:14:51 $";
+static const char * const IDENT_CHARSETS_C="$Date: 2007/04/23 10:30:31 $";
 
 #include "pa_charsets.h"
 
@@ -29,7 +29,7 @@ Charset& Charsets::get(const String::Body ANAME) {
 	if(Charset* result=Hash<key_type, value_type>::get(ANAME))
 		return *result;
 	else
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			new String(ANAME, String::L_TAINTED),
 			"unknown charset");
 }

@@ -26,7 +26,7 @@
  *
  */
 
-static const char * const IDENT_COMMON_C="$Date: 2007/03/22 18:58:51 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2007/04/23 10:30:31 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -161,7 +161,7 @@ File_read_result file_read(Request_charsets& charsets, const String& file_spec,
 	File_read_result result={false, 0, 0, 0};
 	if(file_spec.starts_with("http://")) {
 		if(offset || count)
-			throw Exception("parser.runtime",
+			throw Exception(PARSER_RUNTIME,
 				0,
 				"offset and load options are not supported for HTTP:// file load");
 
@@ -175,7 +175,7 @@ File_read_result file_read(Request_charsets& charsets, const String& file_spec,
 		if(params) {
 			int valid_options=pa_get_valid_file_options_count(*params);
 			if(valid_options!=params->count())
-				throw Exception("parser.runtime",
+				throw Exception(PARSER_RUNTIME,
 					0,
 					"invalid option passed");
 		}
@@ -219,7 +219,7 @@ File_read_result file_read(Request_charsets& charsets, const String& file_spec,
 void check_safe_mode(struct stat finfo, const String& file_spec, const char* fname) { 
 	if(finfo.st_uid/*foreign?*/!=geteuid() 
 		&& finfo.st_gid/*foreign?*/!=getegid()) 
-		throw Exception("parser.runtime",  
+		throw Exception(PARSER_RUNTIME,  
 			&file_spec,  
 			"parser is in safe mode: " 
 			"reading files of foreign group and user disabled " 

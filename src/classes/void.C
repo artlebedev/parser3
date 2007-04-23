@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VOID_C="$Date: 2007/02/03 18:08:38 $";
+static const char * const IDENT_VOID_C="$Date: 2007/04/23 10:30:10 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -74,7 +74,7 @@ public:
 	bool add_column(SQL_Error& /*error*/, const char* /*str*/, size_t /*length*/) { /* ignore */ return false; }
 	bool before_rows(SQL_Error& error) {
 		// there are some result rows, which is wrong
-		error=SQL_Error("parser.runtime",
+		error=SQL_Error(PARSER_RUNTIME,
 			/*statement_string,*/
 			"must return nothing");
 		return true;
@@ -102,11 +102,11 @@ static void _sql(Request& r, MethodParams& params) {
 					bind=vbind->get_hash();
 				}
 				if(valid_options!=options->count())
-					throw Exception("parser.runtime",
+					throw Exception(PARSER_RUNTIME,
 						0,
 						"called with invalid option");
 			} else
-				throw Exception("parser.runtime",
+				throw Exception(PARSER_RUNTIME,
 					0,
 					"options must be hash");
 	}
@@ -135,7 +135,7 @@ static void _sql(Request& r, MethodParams& params) {
 static void _left_right(Request& r, MethodParams& params) {
 	ssize_t sn=params.as_int(0, "n must be int", r);
 	if(sn<0)
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			0, 
 			"n(%d) must be >=0", sn);
 
@@ -145,14 +145,14 @@ static void _left_right(Request& r, MethodParams& params) {
 static void _mid(Request& r, MethodParams& params) {
 	ssize_t sbegin=params.as_int(0, "p must be int", r);
 	if(sbegin<0)
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			0, 
 			"p(%d) must be >=0", sbegin);
 
 	if(params.count()>1) {
 		ssize_t sn=params.as_int(1, "n must be int", r);
 		if(sn<0)
-			throw Exception("parser.runtime",
+			throw Exception(PARSER_RUNTIME,
 				0, 
 				"n(%d) must be >=0", sn);
 	}

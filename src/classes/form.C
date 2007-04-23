@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FORM_C="$Date: 2005/08/09 08:14:47 $";
+static const char * const IDENT_FORM_C="$Date: 2007/04/23 10:30:09 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -59,7 +59,7 @@ void MForm::configure_admin(Request& r) {
 		size_t max_post_size=value?value:MAX_POST_SIZE_DEFAULT;
 		
 		if(r.request_info.content_length>max_post_size)
-			throw Exception("parser.runtime",
+			throw Exception(PARSER_RUNTIME,
 				0,
 				"posted content_length(%u) > $"LIMITS_NAME"."MAX_POST_SIZE_NAME"(%u)",
 					r.request_info.content_length, max_post_size);

@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT_XDOC_C="$Date: 2007/02/28 19:36:31 $";
+static const char * const IDENT_XDOC_C="$Date: 2007/04/23 10:30:10 $";
 
 #include "libxml/tree.h"
 #include "libxml/HTMLtree.h"
@@ -158,7 +158,7 @@ private:
 
 static void writeNode(Request& r, VXdoc& xdoc, xmlNode* node) {
 	if(!node)
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			0,
 			"error creating node"); // OOM, bad name, things like that
 
@@ -487,7 +487,7 @@ static void param_option_over_output_option(
 		else if(s=="no")
 			output_option=0;
 		else
-			throw Exception("parser.runtime",
+			throw Exception(PARSER_RUNTIME,
 				&s,
 				"%s must be either 'yes' or 'no'", option_name);
 	}
@@ -577,7 +577,7 @@ static Xdoc2buf_result xdoc2buf(Request& r, VXdoc& vdoc,
 
 	xmlCharEncodingHandler *renderer=xmlFindCharEncodingHandler(render_encoding);
 	if(!renderer)
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			0,
 			"encoding '%s' not supported", render_encoding);
 	// UTF-8 renderer contains empty input/output converters, 
@@ -775,7 +775,7 @@ static void _transform(Request& r, MethodParams& params) {
 				hash->for_each<Add_xslt_param_info*>(add_xslt_param, &info);
 				transform_params[hash->count()*2]=0;				
 			} else
-				throw Exception("parser.runtime",
+				throw Exception(PARSER_RUNTIME,
 					0,
 					"transform parameters parameter must be hash");
 	}

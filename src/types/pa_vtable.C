@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VTABLE_C="$Date: 2005/08/09 08:14:56 $";
+static const char * const IDENT_VTABLE_C="$Date: 2007/04/23 10:30:50 $";
 
 #include "pa_vtable.h"
 #include "pa_vstring.h"
@@ -58,7 +58,7 @@ Value* VTable::get_element(const String& aname, Value& aself, bool looking_up) {
 				return new VVoid;
 	}
 
-	throw Exception("parser.runtime",
+	throw Exception(PARSER_RUNTIME,
 		&aname, 
 		"column not found");
 }

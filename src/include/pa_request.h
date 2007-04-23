@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char * const IDENT_REQUEST_H="$Date: 2007/02/17 11:50:19 $";
+static const char * const IDENT_REQUEST_H="$Date: 2007/04/23 10:30:19 $";
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -206,7 +206,7 @@ public:
 		// anti_endless_execute_recoursion
 		if(++anti_endless_execute_recoursion==ANTI_ENDLESS_EXECUTE_RECOURSION) {
 			anti_endless_execute_recoursion=0; // give @exception a chance
-			throw Exception("parser.runtime",
+			throw Exception(PARSER_RUNTIME,
 				0, //&name,
 				"call canceled - endless recursion detected");
 		}
@@ -294,7 +294,7 @@ public:
 	/// returns current SQL connection if any
 	SQL_Connection* connection(bool fail_on_error=true) { 
 		if(fail_on_error && !fconnection)
-			throw Exception("parser.runtime",
+			throw Exception(PARSER_RUNTIME,
 				0,
 				"outside of 'connect' operator");
 

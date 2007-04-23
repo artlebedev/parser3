@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2007/04/20 10:19:24 $";
+static const char * const IDENT_STRING_C="$Date: 2007/04/23 10:30:10 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -56,7 +56,7 @@ static void _int(Request& r, MethodParams& params) {
 	int converted;
 	try {
 		if(self_string.is_empty())
-			throw Exception("parser.runtime",
+			throw Exception(PARSER_RUNTIME,
 				0,
 				"parameter is empty string, error converting");
 		converted=self_string.as_int();
@@ -74,7 +74,7 @@ static void _double(Request& r, MethodParams& params) {
 	double converted;
 	try {
 		if(self_string.is_empty())
-			throw Exception("parser.runtime",
+			throw Exception(PARSER_RUNTIME,
 				0,
 				"parameter is empty string, error converting");
 		converted=self_string.as_double();
@@ -93,7 +93,7 @@ static void _bool(Request& r, MethodParams& params) {
 	bool converted;
 	try {
 		if(self_string.is_empty())
-			throw Exception("parser.runtime",
+			throw Exception(PARSER_RUNTIME,
 				0,
 				"parameter is empty string, error converting");
 		converted=self_string.as_bool();
@@ -121,7 +121,7 @@ static void _bool(Request& r, MethodParams& params) {
 static void _left(Request& r, MethodParams& params) {
 	ssize_t sn=params.as_int(0, "n must be int", r);
 	if(sn<0)
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			0, 
 			"n(%d) must be >=0", sn);
 	size_t n=(size_t)sn;
@@ -133,7 +133,7 @@ static void _left(Request& r, MethodParams& params) {
 static void _right(Request& r, MethodParams& params) {
 	ssize_t sn=(size_t)params.as_int(0, "n must be int", r);
 	if(sn<0)
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			0, 
 			"n(%d) must be >=0", sn);
 	size_t n=(size_t)sn;
@@ -149,7 +149,7 @@ static void _mid(Request& r, MethodParams& params) {
 
 	ssize_t sbegin=params.as_int(0, "p must be int", r);
 	if(sbegin<0)
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			0, 
 			"p(%d) must be >=0", sbegin);
 	size_t begin=(size_t)sbegin;
@@ -158,7 +158,7 @@ static void _mid(Request& r, MethodParams& params) {
 	if(params.count()>1) {
 		ssize_t sn=params.as_int(1, "n must be int", r);
 		if(sn<0)
-			throw Exception("parser.runtime",
+			throw Exception(PARSER_RUNTIME,
 				0, 
 				"n(%d) must be >=0", sn);
 		end=begin+(size_t)sn;
@@ -209,7 +209,7 @@ static int split_options(const String* options) {
 			if(options->pos(o->keyL)!=STRING_NOT_FOUND 
 				|| (o->keyU && options->pos(o->keyU)!=STRING_NOT_FOUND)) {
 				if(result & o->checkBit)
-					throw Exception("parser.runtime",
+					throw Exception(PARSER_RUNTIME,
 						options,
 						"conflicting split options");
 				result |= o->setBit;
@@ -402,7 +402,7 @@ public:
 
 	bool add_column(SQL_Error& error, const char* /*str*/, size_t /*length*/) {
 		if(got_column) {
-			error=SQL_Error("parser.runtime",
+			error=SQL_Error(PARSER_RUNTIME,
 				//statement_string,
 				"result must contain exactly one column");
 			return true;
@@ -414,7 +414,7 @@ public:
 	bool add_row(SQL_Error& /*error*/) { /* ignore */ return false; }
 	bool add_row_cell(SQL_Error& error, const char* str, size_t length) {
 		if(got_cell) {
-			error=SQL_Error("parser.runtime",
+			error=SQL_Error(PARSER_RUNTIME,
 				//statement_string,
 				"result must not contain more then one row");
 			return true;
@@ -468,11 +468,11 @@ const String* sql_result_string(Request& r, MethodParams& params,
 					valid_options++;
 				}
 				if(valid_options!=options->count())
-					throw Exception("parser.runtime",
+					throw Exception(PARSER_RUNTIME,
 						0,
 						"called with invalid option");
 			} else
-				throw Exception("parser.runtime",
+				throw Exception(PARSER_RUNTIME,
 					0,
 					"options must be hash");
 	} else
@@ -513,7 +513,7 @@ static void _sql(Request& r, MethodParams& params) {
 		if(default_code) {
 			string=&r.process_to_string(*default_code);
 		} else
-			throw Exception("parser.runtime",
+			throw Exception(PARSER_RUNTIME,
 				0,
 				"produced no result, but no default option specified");
 	}
@@ -526,7 +526,7 @@ static void _replace(Request& r, MethodParams& params) {
 
 	Table* table=params.as_no_junction(0, "parameter must not be code").get_table();
 	if(!table)
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			0,
 			"parameter must be table");
 
@@ -546,7 +546,7 @@ static void _save(Request& r, MethodParams& params) {
 		if(mode=="append")
 			do_append=true;
 		else
-			throw Exception("parser.runtime",
+			throw Exception(PARSER_RUNTIME,
 				&mode,
 				"unknown mode, must be 'append'");
 	}		
@@ -579,7 +579,7 @@ static void _trim(Request& r, MethodParams& params) {
 			else if(skind==TRIM_BOTH_OPTION)
 				kind=String::TRIM_BOTH;
 			else
-				throw Exception("parser.runtime",
+				throw Exception(PARSER_RUNTIME,
 					&skind,
 					"'kind' must be one of "TRIM_START_OPTION", "TRIM_BOTH_OPTION", "TRIM_END_OPTION);
 

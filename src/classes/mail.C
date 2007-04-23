@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_MAIL_C="$Date: 2005/08/09 08:14:48 $";
+static const char * const IDENT_MAIL_C="$Date: 2007/04/23 10:30:09 $";
 
 #include "pa_config_includes.h"
 #include "pa_vmethod_frame.h"
@@ -98,7 +98,7 @@ static void sendmail(
 
 #if WIN32
 	// win32 without SMTP server configured
-	throw Exception("parser.runtime",
+	throw Exception(PARSER_RUNTIME,
 		0,
 		"$"MAIN_CLASS_NAME":"MAIL_NAME".SMTP not defined");
 #else
@@ -109,7 +109,7 @@ static void sendmail(
 	String* sendmail_command=new String;
 	if(vmail_conf) {
 #ifdef PA_FORCED_SENDMAIL
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			0,
 			"Parser was configured with --with-sendmail="PA_FORCED_SENDMAIL
 			" key, to change sendmail you should reconfigure and recompie it");
@@ -117,7 +117,7 @@ static void sendmail(
 		if(Value* sendmail_value=vmail_conf->get_hash()->get(mail_sendmail_name))
 			*sendmail_command<<sendmail_value->as_string();
 		else
-			throw Exception("parser.runtime",
+			throw Exception(PARSER_RUNTIME,
 				0,
 				"$"MAIN_CLASS_NAME":"MAIL_NAME"."SENDMAIL_NAME" not defined");
 #endif
@@ -196,7 +196,7 @@ static void _send(Request& r, MethodParams& params) {
 	Value& vhash=params.as_no_junction(0, "message must not be code");
 	HashStringValue* hash=vhash.get_hash();
 	if(!hash)
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			0,
 			"message must be hash");
 
@@ -241,7 +241,7 @@ void MMail::configure_user(Request& r) {
 			r.classes_conf.put(name(), mail_element);
 		else
 			if( !mail_element->is_string() )
-				throw Exception("parser.runtime",
+				throw Exception(PARSER_RUNTIME,
 					0,
 					"$" MAIL_CLASS_NAME ":" MAIL_NAME " is not hash");
 }
