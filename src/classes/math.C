@@ -8,7 +8,7 @@
 	Copyright (C) 1996, 1997, 1998, 1999 Theodore Ts'o.
 */
 
-static const char * const IDENT_MATH_C="$Date: 2007/04/23 16:34:03 $";
+static const char * const IDENT_MATH_C="$Date: 2007/04/24 08:40:12 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_common.h"
@@ -197,7 +197,7 @@ MATH1(round);	MATH1(floor);	MATH1P(ceiling, ceil);
 MATH1(trunc);	MATH1(frac);
 MATH1P(abs, fabs);	MATH1(sign);
 MATH1(exp);	
-MATH1(log);	MATH1P(ln, log);	MATH1(log10);
+MATH1(log);	MATH1(log10);
 MATH1(sin);	MATH1(asin);	
 MATH1(cos);	MATH1(acos);	
 MATH1(tan);	MATH1(atan);
@@ -364,7 +364,7 @@ MMath::MMath(): Methoded("math") {
 	ADD1(trunc);	ADD1(frac);
 	ADD1(abs);	ADD1(sign);
 	ADD1(exp);
-	ADD1(log);	ADD1(ln);	ADD1(log10);
+	ADD1(log);	ADD1(log10);
 	ADD1(sin);	ADD1(asin);	
 	ADD1(cos);	ADD1(acos);	
 	ADD1(tan);	ADD1(atan);
