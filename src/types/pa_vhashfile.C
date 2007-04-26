@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Date: 2007/04/23 14:45:05 $";
+static const char * const IDENT="$Date: 2007/04/26 10:33:21 $";
 
 #include "pa_globals.h"
 #include "pa_common.h"
@@ -32,23 +32,15 @@ void check(const char *step, apr_status_t status) {
 			step, str?str:"<unknown>", status);
 }
 
-void do_open(apr_sdbm_t** m_db, const char* file_name){
+void check_dir(const char* file_name){
 	String& sfile_name = *new String(file_name);
 	if(!entry_exists(sfile_name))
 		create_dir_for_file(sfile_name);
-
-	check("apr_sdbm_open(shared)", apr_sdbm_open(m_db, file_name, 
-                                        APR_CREATE|APR_READ|APR_SHARELOCK, 
-                                        0664, 0));
 }
+
 
 void VHashfile::open(const String& afile_name) {
 	file_name=afile_name.cstr(String::L_FILE_SPEC);
-	// do_open(&m_db, file_name);
-}
-
-bool VHashfile::is_open() {
-	return m_db != 0;
 }
 
 void VHashfile::close() {
@@ -59,35 +51,51 @@ void VHashfile::close() {
 	m_db=0;
 }
 
-void VHashfile::check_db() {
-	if(is_open())
-		return;
+bool VHashfile::is_open() {
+	return m_db != 0;
+}
 
-	if(file_name)
-		do_open(&m_db, file_name);
+apr_sdbm_t *VHashfile::get_db_for_reading() {
+	if(is_open()){
+		return m_db;
+	}
+
+	if(file_name){
+		check_dir(file_name);
+		check("apr_sdbm_open(shared)", apr_sdbm_open(&m_db, file_name, 
+                                        APR_CREATE|APR_READ|APR_SHARELOCK, 
+                                        0664, 0));
+	}
 
 	if(!is_open())
 		throw Exception(0,
 			0,
-			"%s is closed", type());
-}
-
-apr_sdbm_t *VHashfile::get_db_for_reading() {
-	check_db();
+			"can't open %s for reading", type());
 
 	return m_db;
 }
 
 apr_sdbm_t *VHashfile::get_db_for_writing() {
-	check_db();
-
+	if(is_open()){
 	if(apr_sdbm_rdonly(m_db)) {
+			close(); // close if was opened for reading
+		} else {
+			return m_db;
+		}
+	}
+
+	if(file_name) {
+		check_dir(file_name);
 		// reopen in write mode & exclusive lock
-		close();
 		check("apr_sdbm_open(exclusive)", apr_sdbm_open(&m_db, file_name, 
-											APR_WRITE, 
+											APR_CREATE|APR_WRITE, 
 											0664, 0));
 	}
+
+	if(!is_open())
+		throw Exception(0,
+			0,
+			"can't open %s for writing", type());
 
 	return m_db;
 }
@@ -308,12 +316,14 @@ HashStringValue *VHashfile::get_hash() {
 static void delete_file(const char* base_name, const char* ext) {
 	String sfile_name(base_name, false/*already removed tainting at ::open*/);
 	sfile_name<<ext;
-	file_delete(sfile_name);
+	file_delete(sfile_name, false);
 }
 
 void VHashfile::delete_files() {
-	if(is_open()){
+	if(is_open())
 		close();
+
+	if(file_name){
 		delete_file(file_name, APR_SDBM_DIRFEXT);
 		delete_file(file_name, APR_SDBM_PAGFEXT);
 	}

@@ -8,7 +8,7 @@
 #ifndef PA_VHASHFILE_H
 #define PA_VHASHFILE_H
 
-static const char * const IDENT_VHASHFILE_H="$Date: 2007/04/23 10:17:57 $";
+static const char * const IDENT_VHASHFILE_H="$Date: 2007/04/26 10:33:21 $";
 
 #include "classes.h"
 #include "pa_pool.h"
@@ -58,9 +58,8 @@ public: // usage
 	override ~VHashfile();
 
 	void open(const String& afile_name);
-	bool VHashfile::is_open();
 	void close();
-	void check_db();
+	bool is_open();
 	apr_sdbm_t *get_db_for_reading();
 	apr_sdbm_t *get_db_for_writing();
 	// void clear();
