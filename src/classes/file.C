@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2007/04/23 10:30:09 $";
+static const char * const IDENT_FILE_C="$Date: 2007/05/03 10:40:45 $";
 
 #include "pa_config_includes.h"
 
@@ -184,8 +184,6 @@ static void _copy(Request& r, MethodParams& params) {
 
 	String from_spec = r.absolute(vfrom_file_name.as_string());
 	const String& to_spec = r.absolute(vto_file_name.as_string());
-	
-	// create_dir_for_file(to_spec); 
 	
 	file_write_action_under_lock(
 			to_spec,
