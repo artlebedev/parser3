@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2007/04/23 10:30:10 $";
+static const char * const IDENT_TABLE_C="$Date: 2007/05/03 10:42:04 $";
 
 #include <sstream>
 using namespace std;
@@ -46,7 +46,9 @@ extern String cycle_data_name;
 #define SQL_BIND_NAME "bind"
 #define SQL_DEFAULT_NAME "default"
 #define SQL_DISTINCT_NAME "distinct"
+#define SQL_VALUE_TYPE_NAME "type"
 #define TABLE_REVERSE_NAME "reverse"
+
 
 // globals
 
@@ -55,6 +57,7 @@ String sql_limit_name(PA_SQL_LIMIT_NAME);
 String sql_offset_name(PA_SQL_OFFSET_NAME);
 String sql_default_name(SQL_DEFAULT_NAME);
 String sql_distinct_name(SQL_DISTINCT_NAME);
+String sql_value_type_name(SQL_VALUE_TYPE_NAME);
 String table_reverse_name(TABLE_REVERSE_NAME);
 
 // methods
@@ -642,7 +645,8 @@ static void _menu(Request& r, MethodParams& params) {
 }
 
 #ifndef DOXYGEN
-enum Table2hash_distint { D_ILLEGAL, D_FIRST, D_TABLES };
+enum Table2hash_distint { D_ILLEGAL, D_FIRST };
+enum Table2hash_value_type { C_HASH, C_STRING, C_TABLE };
 struct Row_info {
 	Request *r;
 	Table *table;
@@ -652,6 +656,7 @@ struct Row_info {
 	HashStringValue* hash;
 	Table2hash_distint distinct;
 	size_t row;
+	Table2hash_value_type value_type;
 };
 #endif
 static void table_row_to_hash(Table::element_type row, Row_info *info) {
@@ -660,14 +665,21 @@ static void table_row_to_hash(Table::element_type row, Row_info *info) {
 		info->table->set_current(info->row++); // change context row
 		StringOrValue sv_processed=info->r->process(*info->key_code);
 		key=&sv_processed.as_string();
-	} else
+	} else {
 		key=info->key_field<row->count()?row->get(info->key_field):0;
+	}
 
 	if(!key)
 		return; // ignore rows without key [too-short-record_array if-indexed]
 		
-	switch(info->distinct) {
-	case D_ILLEGAL: case D_FIRST:
+	bool exist = false;
+	switch (info->value_type) {
+	case C_STRING:
+		{
+			exist=info->hash->put_dont_replace(*key, new VString(*row->get(info->value_fields->get(0))));
+		}
+		break;
+	case C_HASH:
 		{
 			VHash* vhash=new VHash;
 			HashStringValue& hash=vhash->hash();
@@ -679,20 +691,21 @@ static void table_row_to_hash(Table::element_type row, Row_info *info) {
 						new VString(*row->get(value_field)));
 			}
 
-			if(info->hash->put_dont_replace(*key, vhash)) // put. existed?
-				if(info->distinct==D_ILLEGAL)
-					throw Exception("parser.runtime",
-						key,
-						"duplicate key");
+			exist=info->hash->put_dont_replace(*key, vhash);
 		}
 		break;
-	case D_TABLES:
+	case C_TABLE:
 		{
 			VTable* vtable=(VTable*)info->hash->get(*key); // put. table existed?
+			if( info->distinct==D_ILLEGAL ){
+				exist=true;
+				break;
+			}
+
 			Table* table;
-			if(vtable) 
+			if(vtable) {
 				table=vtable->get_table();
-			else {
+			} else {
 				// no? creating table of same structure as source
 				Table::Action_options table_options(0, 0);
 				table=new Table(*info->table, table_options/*no rows, just structure*/);
@@ -701,11 +714,11 @@ static void table_row_to_hash(Table::element_type row, Row_info *info) {
 			*table+=row;
 		}
 		break;
-	default:
-		throw Exception(0,
-			0,
-			"invalid distinct code (#%d)", info->distinct);
 	}
+	if(exist && info->distinct==D_ILLEGAL)
+		throw Exception(PARSER_RUNTIME,
+			key,
+			"duplicate key");
 }
 static void _hash(Request& r, MethodParams& params) {
 	Table& self_table=GET_SELF(r, VTable).table();
@@ -713,10 +726,12 @@ static void _hash(Request& r, MethodParams& params) {
 	if(Table::columns_type columns=self_table.columns())
 		if(columns->count()>0) {
 			Table2hash_distint distinct=D_ILLEGAL;
+			Table2hash_value_type value_type=C_HASH;
 			int param_index=params.count()-1;
 			if(param_index>0) {
 				if(HashStringValue* options=
-					params.as_no_junction(param_index, "param must not be code").get_hash()) {
+					params.as_no_junction(param_index, "param must not be code").get_hash()
+				){
 					--param_index;
 					int valid_options=0;
 					if(Value* vdistinct_code=options->get(sql_distinct_name)) {
@@ -724,15 +739,40 @@ static void _hash(Request& r, MethodParams& params) {
 						Value& vdistinct_value=r.process_to_value(*vdistinct_code);
 						if(vdistinct_value.is_string()) {
 							const String& sdistinct=*vdistinct_value.get_string();
-							if(sdistinct=="tables")
-								distinct=D_TABLES;
-							else
+							if(sdistinct=="tables") {
+								value_type=C_TABLE;
+								distinct=D_FIRST;
+							} else
 								throw Exception(PARSER_RUNTIME,
 									&sdistinct,
 									"must be 'tables' or true/false");
 						} else
 							distinct=vdistinct_value.as_bool()?D_FIRST:D_ILLEGAL;
 					}
+					if(Value* vvalue_type_code=options->get(sql_value_type_name)) {
+						if(value_type==C_TABLE){ // $.distinct[tables] was specified
+							throw Exception(PARSER_RUNTIME,
+								0,
+								"you can't specify $.distinct[tables] and $.values[] together.");
+						} else {
+							valid_options++;
+							Value& vvalue_type_value=r.process_to_value(*vvalue_type_code);
+							if(vvalue_type_value.is_string()) {
+								const String& svalue_type=*vvalue_type_value.get_string();
+								if(svalue_type == "table"){
+									value_type=C_TABLE;
+								} else if (svalue_type == "string") {
+									value_type=C_STRING;
+								} else if (svalue_type == "hash") {
+									value_type=C_HASH;
+								} else {
+									throw Exception(PARSER_RUNTIME,
+										&svalue_type,
+										"must be 'hash', 'table' or 'string'");
+								}
+							}
+						}
+					} 
 
 					if(valid_options!=options->count())
 						throw Exception(PARSER_RUNTIME,
@@ -747,8 +787,8 @@ static void _hash(Request& r, MethodParams& params) {
 
 			Array<int> value_fields;
 			if(param_index>0) {
-				if(distinct!=D_ILLEGAL && distinct!=D_FIRST)
-					throw Exception("parser.runtime",
+				if(value_type==C_TABLE)
+					throw Exception(PARSER_RUNTIME,
 						0,
 						"in distinct[tables] mode you may not specify value field(s)");
 				Value& value_fields_param=params.as_no_junction(param_index, "value field(s) must not be code");
@@ -769,11 +809,19 @@ static void _hash(Request& r, MethodParams& params) {
 						"value field(s) must be string or table");
 
 			} else { // by all columns, including key
-				if(!(distinct!=D_ILLEGAL && distinct!=D_FIRST))
+				if(value_type==C_STRING)
+					throw Exception(PARSER_RUNTIME,
+						0,
+						"with $.values[string] you must specify one value field(s)");
+				// if(!(distinct!=D_ILLEGAL && distinct!=D_FIRST))
 					for(size_t i=0; i<columns->count(); i++)
 						value_fields+=i;
 			}
 
+			if(value_type==C_STRING && value_fields.count()!=1)
+				throw Exception(PARSER_RUNTIME,
+					0,
+					"you can specify one value field with this $.type[].");
 
 			{
 				Value* key_param=&params[0];
@@ -785,7 +833,8 @@ static void _hash(Request& r, MethodParams& params) {
 					&value_fields,
 					&result.hash(),
 					distinct,
-					/*row=*/0
+					/*row=*/0,
+					value_type
 				};
 				info.key_field=(info.key_code?-1
 						:self_table.column_name2index(key_param->as_string(), true));
