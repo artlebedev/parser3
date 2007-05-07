@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-static const char * const IDENT_STRING_H="$Date: 2007/04/20 10:19:12 $";
+static const char * const IDENT_STRING_H="$Date: 2007/05/07 09:43:35 $";
 
 // includes
 #include "pa_types.h"
@@ -220,7 +220,7 @@ public:
 			if(opt.is_not_just_lang)
 				return CORD_range_contains_chr_greater_then(langs, aoffset, alength, (unsigned)alang)==0;
 			else
-				return opt.lang<=alang;
+				return (unsigned)opt.lang<=(unsigned)alang;
 		}
 
 		/// @returns count of blocks
