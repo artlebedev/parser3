@@ -9,7 +9,7 @@
 #ifndef PA_MEMORY_H
 #define PA_MEMORY_H
 
-static const char * const IDENT_MEMORY_H="$Date: 2006/04/09 13:38:47 $";
+static const char * const IDENT_MEMORY_H="$Date: 2007/05/07 09:47:07 $";
 
 // include
 
@@ -77,9 +77,13 @@ inline void *pa_realloc(void *ptr, size_t size) {
 	return pa_fail_alloc("reallocate to", size);
 }
 
-//{@ these operators are disabled, one should explicitely specify either new(UseGC) or new(PointerFreeGC)
-inline void *operator new(size_t) { abort(); return /*calm, compiler*/ (void*)1; } // disabled
-inline void *operator new[] (size_t) { abort(); return /*calm, compiler*/ (void*)1; } // disabled
+//{@ these operators can be used from stl. to be on a safe side, assume that data may contain pointers
+inline void *operator new[] (size_t size) {
+	return pa_malloc(size);
+}
+inline void *operator new(size_t size) {
+	return pa_malloc(size);
+}
 //}@
 
 #define UseGC ((int)1)
