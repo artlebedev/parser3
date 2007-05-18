@@ -1,6 +1,6 @@
 @main[]
 ^do[One]
-^sleep(1)
+^sleep(2)
 ^do[Two]
 
 
@@ -9,7 +9,7 @@
 <hr />
 ^for[i](1;3){
 	$iCacheTime[]
-	^cache[outputs/160.cache](1){
+	^cache[outputs/160.cache](2){
 		=$sText=
 		^if($sText eq "Two"){
 			^cache(0)
