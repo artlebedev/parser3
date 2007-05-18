@@ -18,7 +18,7 @@
 /* the implementation of some exported macros relies on it.	*/
 /* Don't use anything defined here and not in cord.h.		*/
 
-# define MAX_DEPTH 48
+# define MAX_DEPTH 999
 	/* The maximum depth of a balanced cord + 1.		*/
 	/* We don't let cords get deeper than MAX_DEPTH.	*/
 
