@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_HASH_C="$Date: 2007/04/23 10:30:09 $";
+static const char * const IDENT_HASH_C="$Date: 2007/05/18 12:44:22 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -333,6 +333,12 @@ static void _delete(Request& r, MethodParams& params) {
 	GET_SELF(r, VHash).hash().remove(params.as_string(0, "key must be string"));
 }
 
+static void _contain(Request& r, MethodParams& params) {
+
+	bool result = GET_SELF(r, VHash).hash().contain(params.as_string(0, "key must be string"));
+	r.write_no_lang(*new VBool(result));
+}
+
 #ifndef DOXYGEN
 struct Foreach_info {
 	Request *r;
@@ -406,7 +412,10 @@ MHash::MHash(): Methoded("hash")
 	// ^a.delete[key]
 	add_native_method("delete", Method::CT_DYNAMIC, _delete, 1, 1);
 
-	// ^hash:sql[query][options hash]
+	// ^a.contain[key]
+	add_native_method("contain", Method::CT_DYNAMIC, _contain, 1, 1);
+
+	// ^hash::sql[query][options hash]
 	add_native_method("sql", Method::CT_DYNAMIC, _sql, 1, 2);
 
 	// ^hash._keys[[column name]]
