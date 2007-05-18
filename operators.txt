@@ -413,6 +413,7 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !^хеш._count[]
     !^хеш.foreach[key;value]{тело}[[разделитель]|{разделитель который выполняется перед непустым очередным не первым телом}]
     !^хеш.delete[ключ]  удалить ключ
+    !^хеш.contain[ключ] - существует ли в хеше ключ (bool)
 
 !hashfile
     !^hashfile::open[filename]
