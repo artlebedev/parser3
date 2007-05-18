@@ -17,7 +17,7 @@
 #ifndef PA_HASH_H
 #define PA_HASH_H
 
-static const char * const IDENT_HASH_H="$Date: 2005/08/09 08:14:49 $";
+static const char * const IDENT_HASH_H="$Date: 2007/05/18 12:44:00 $";
 
 #include "pa_memory.h"
 #include "pa_types.h"
@@ -228,6 +228,20 @@ public:
 
 		return false;
 	}
+
+	/// returns exist key or not
+	bool contain(K key){
+		uint code=hash_code(key);
+		uint index=code%allocated;
+		for(Pair **ref=&refs[index]; *ref; ref=&(*ref)->link){
+			if((*ref)->code==code && (*ref)->key==key) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 
 	/// get associated [value] by the [key]
 	V get(K key) const {
