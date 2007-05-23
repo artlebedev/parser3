@@ -5,10 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2007/05/03 10:42:04 $";
-
-#include <sstream>
-using namespace std;
+static const char * const IDENT_TABLE_C="$Date: 2007/05/23 08:30:35 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -19,6 +16,9 @@ using namespace std;
 #include "pa_vint.h"
 #include "pa_sql_connection.h"
 #include "pa_vbool.h"
+
+#include <sstream>
+using namespace std;
 
 // class
 
