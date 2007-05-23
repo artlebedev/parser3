@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-static const char * const IDENT_COMMON_H="$Date: 2007/03/22 18:59:42 $";
+static const char * const IDENT_COMMON_H="$Date: 2007/05/23 08:32:22 $";
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -134,7 +134,9 @@ typedef void (*File_write_action)(int f, void *context);
 */
 bool file_write_action_under_lock(
 				const String& file_spec, 
-				const char* action_name, File_write_action action, void *context,
+				const char* action_name,
+				File_write_action action,
+				void *context,
 				bool as_text=false,
 				bool do_append=false,
 				bool do_block=true,

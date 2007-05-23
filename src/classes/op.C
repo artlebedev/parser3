@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2007/04/23 10:30:09 $";
+static const char * const IDENT_OP_C="$Date: 2007/05/23 08:30:20 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -535,7 +535,7 @@ struct Data_string_serialized_prolog {
 #endif
 
 void cache_delete(const String& file_spec) {
-	file_delete(file_spec, false/*fail_on_read_problem*/);
+	file_delete(file_spec, false/*fail_on_problem*/);
 }
 
 #ifndef DOXYGEN
@@ -547,7 +547,8 @@ public:
 struct Locked_process_and_cache_put_action_info {
 	Request *r;
 	Cache_scope *scope;
-	Value* body_code; Value* catch_code; 
+	Value* body_code;
+	Value* catch_code; 
 	const String* processed_code;
 };
 #endif
@@ -565,7 +566,6 @@ static StringOrValue process_cache_body_code(Request& r, Value* body_code) {
 static void locked_process_and_cache_put_action(int f, void *context) {
 	Locked_process_and_cache_put_action_info& info=
 		*static_cast<Locked_process_and_cache_put_action_info *>(context);
-
 
 	const String* body_from_disk=info.scope->body_from_disk;
 	// body->process 

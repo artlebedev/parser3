@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2007/05/03 10:40:45 $";
+static const char * const IDENT_FILE_C="$Date: 2007/05/23 08:30:20 $";
 
 #include "pa_config_includes.h"
 
@@ -639,7 +639,11 @@ static void _lock(Request& r, MethodParams& params) {
 		&params.as_junction(1, "body must be code")
 	};
 
-	file_write_action_under_lock(file_spec, "lock", lock_execute_body, &info);
+	file_write_action_under_lock(
+			file_spec,
+			"lock",
+			lock_execute_body,
+			&info);
 }
 
 static int lastposafter(const String& s, size_t after, const char* substr, size_t substr_size, bool beforelast=false) {

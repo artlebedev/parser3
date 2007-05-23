@@ -26,7 +26,7 @@
  *
  */
 
-static const char * const IDENT_COMMON_C="$Date: 2007/04/23 10:30:31 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2007/05/23 08:31:47 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -298,7 +298,9 @@ void create_dir_for_file(const String& file_spec) {
 
 bool file_write_action_under_lock(
 				const String& file_spec, 
-				const char* action_name, File_write_action action, void *context, 
+				const char* action_name,
+				File_write_action action,
+				void *context, 
 				bool as_text, 
 				bool do_append, 
 				bool do_block, 
@@ -369,9 +371,12 @@ void file_write(
 				bool as_text, 
 				bool do_append) {
 	File_write_action_info info={data, size}; 
+
 	file_write_action_under_lock(
 		file_spec, 
-		"write", file_write_action, &info, 
+		"write",
+		file_write_action,
+		&info, 
 		as_text, 
 		do_append); 
 }
