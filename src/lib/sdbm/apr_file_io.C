@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Date: 2005/11/18 10:04:41 $";
+static const char * const IDENT="$Date: 2007/05/24 10:25:00 $";
 
 #include "apr_file_io.h"
 
@@ -78,7 +78,7 @@ APR_DECLARE(apr_status_t) apr_file_close(apr_file_t *file)
 APR_DECLARE(apr_status_t) apr_file_lock(apr_file_t *file, int type)
 {
 	if(type & APR_FLOCK_NONBLOCK)
-		pa_lock_exclusive_nonblocking(file->handle);
+		pa_lock_exclusive_blocking(file->handle);
 
 	if ((type & APR_FLOCK_TYPEMASK) == APR_FLOCK_SHARED)
 		return pa_lock_shared_blocking(file->handle);
