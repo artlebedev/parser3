@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2007/05/23 08:30:20 $";
+static const char * const IDENT_OP_C="$Date: 2007/05/24 10:28:56 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -610,11 +610,13 @@ const String* locked_process_and_cache_put(Request& r,
 
 	const String* result=file_write_action_under_lock(
 		file_spec, 
-		"cache_put", locked_process_and_cache_put_action, &info,
+		"cache_put",
+		locked_process_and_cache_put_action,
+		&info,
 		false/*as_text*/,
 		false/*do_append*/,
-		false/*block*/,
-		false/*fail on lock problem*/) ? info.processed_code: 0;
+		false/*block == don't wait till other thread release lock*/) ? info.processed_code: 0;
+
 	time_t now=time(0);
 	if(scope.expires<=now)
 		cache_delete(file_spec);
@@ -716,63 +718,41 @@ static void _cache(Request& r, MethodParams& params) {
 	if(params.count()>3)
 		catch_code=&params.as_junction(3, "catch_code must be code");
 
-	if(scope.expires>now) { // valid 'expires' specified? try cached copy...
-		// hence we don't hope to have unary create/lockEX
-		// we need some plan to live in a life like that, so... 
-		// worst races plan:
-		// A        B
-		// open
-		//          |open
-		// lockSH
-		//          |nonblocking-lockEX fails
-		// unlockSH
-		// close, cache_get returns 0
-		// open
-		// nonblocking-lockEX succeeds; process, write, close
-		//          |retry1: open
-		// ...
-		//          |lockSH succeeds; ...
+	if(scope.expires>now) {
+		Cache_get_result cached=cache_get(r.charsets, file_spec, now);
 
-		for(int retry=0; retry<2; retry++) {
-			Cache_get_result cached=cache_get(r.charsets, file_spec, now);
-			if(cached.body) { // have cached copy
-				if(cached.expired) 
-					scope.body_from_disk=cached.body; // storing for user to retrive it with ^cache[]
-				else // and it's not expired yet
-				{
-    				// write it out 
-    				r.write_assign_lang(*cached.body);
-    				// happy with it
-    				return;
-    			}
-			}
-
-     		// non-blocked lock; process; cache it
-     		if(const String* processed_body=
-     			locked_process_and_cache_put(r, body_code, catch_code, scope, file_spec)) {
-     			// write it out 
-     			r.write_assign_lang(*processed_body);
-     			// happy with it
-     			return;
-     		} else { // somebody writing result right now
-     			pa_sleep(0, 500000); // waiting half a second
-     			retry=0; // prolonging our wait, than could cache_get it, without processing body_code
-     		}
+		if(cached.body) { // have cached copy
+		if(cached.expired) {
+			scope.body_from_disk=cached.body; // storing for user to retrive it with ^cache[]
+		} else {
+			// and it's not expired yet write it out 
+   				r.write_assign_lang(*cached.body);
+   				// happy with it
+   				return;
+   			}
 		}
-		throw Exception(0,
-			&file_spec,
-			"locking problem");
+
+		// no cached info or it's already expired
+		try {
+			// try to process and store in file
+   			const String* processed_body=locked_process_and_cache_put(r, body_code, catch_code, scope, file_spec);
+   			// write it out 
+   			r.write_assign_lang(*processed_body);
+   			// happy with it
+   			return;
+		} catch(...) {
+			// we fail during get exclusive lock
+			// nvm we just process it a bit later 
+   		}
 	} else { 
 		// instructed not to cache; forget cached copy
 		cache_delete(file_spec);
-		// process
-		const String& processed_body=r.process_to_string(body_code);
-		// write it out 
-		r.write_assign_lang(processed_body);
-		// happy with it
-		return;
 	}
-	// never reached
+	
+	// process without cacheing
+	const String& processed_body=r.process_to_string(body_code);
+	// write it out 
+	r.write_assign_lang(processed_body);
 }
 
 static StringOrValue process_try_body_code(Request& r, Value* body_code) {
