@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Date: 2007/04/26 10:33:21 $";
+static const char * const IDENT="$Date: 2007/05/24 09:58:42 $";
 
 #include "pa_globals.h"
 #include "pa_common.h"
@@ -289,18 +289,6 @@ void VHashfile::for_each(bool callback(const String::Body, const String&, void*)
 
 	for_each(for_each_string_callback, &info);
 }
-
-/*
-static bool clear_delete_key(apr_sdbm_datum_t key, void* adb) {
-	check("apr_sdbm_delete", apr_sdbm_delete(static_cast<apr_sdbm_t*>(adb), key));
-	return false;
-}
-void VHashfile::clear() {
-	apr_sdbm_t *db=get_db_for_writing();
-
-	for_each(clear_delete_key, db);
-}
-*/
 
 static bool get_hash__put(const String::Body key, const String& value, void* aresult) {
 	static_cast<HashStringValue*>(aresult)->put(key, new VString(value));
