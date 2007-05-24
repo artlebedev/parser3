@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMMON_C="$Date: 2007/05/24 10:27:18 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2007/05/24 10:32:57 $"; 
 
 #include "pa_config_includes.h"
 #include "pa_os.h"
@@ -61,7 +61,7 @@ int pa_lock(int fd, int attempts, int operation){
 		if(status==0 || attempts<=0){
 			return status;
 		}
-		pa_sleep(PA_LOCK_WAIT_TIMEOUT, 0);
+		pa_sleep(PA_LOCK_WAIT_TIMEOUT_SECS, PA_LOCK_WAIT_TIMEOUT_USECS);
 	}
 };
 

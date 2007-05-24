@@ -8,10 +8,11 @@
 #ifndef PA_OS_H
 #define PA_OS_H
 
-static const char * const IDENT_OS_H="$Date: 2007/05/24 10:25:56 $";
+static const char * const IDENT_OS_H="$Date: 2007/05/24 10:32:42 $";
 
-#define PA_LOCK_ATTEMPTS 10
-#define PA_LOCK_WAIT_TIMEOUT 1
+#define PA_LOCK_ATTEMPTS 20
+#define PA_LOCK_WAIT_TIMEOUT_SECS 0
+#define PA_LOCK_WAIT_TIMEOUT_USECS 500000
 
 // 'blocking' mean we will wait till other process release lock 
 // but we'll make PA_LOCK_ATTEMPTS attempts with PA_LOCK_WAIT_TIMEOUT secs delaus between attempts 
