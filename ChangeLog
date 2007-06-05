@@ -1,12 +1,55 @@
+2007-05-24	misha
+	* src/include/pa_os.h 1.6:
+		- consts for blocking locks + some comments were added
+
+	* src/main/pa_os.C 1.9:
+		- locks engines were rewrited: now we don't use system locks 
+		which wait till other threads release it but try get lock, if 
+		fail wait 1 sec and make 10 attempts.
+
+	* src/lib/sdbm/apr_file_io.C 1.6:
+		- wait till lock released while opening files
+
+	* src/classes/table.C 1.229:
+		- changes in includes. if unclude <sstream> after our classes on 
+		unix it can't be build
+
+	* src/types/pa_vhashfile.C 1.55:
+		- not needed code removed
+
+	* src/classes/op.C 1.168:
+		- cache was rewrited. I hope it works with locking system now on 
+		unix
+
+	* src/include/pa_os.h 1.7:
+	* src/main/pa_os.C 1.10:
+		- 20 attempt to get lock with 0.5 secs interval
+
+2007-05-23	misha
+	* src/classes/file.C 1.158:
+	* src/classes/op.C 1.167:
+	* src/include/pa_common.h 1.114:
+	* src/main/pa_common.C 1.225:
+		- cosmetic changes
+
 2007-05-18	misha
+	* tests/results/160.processed 1.2:
+		- returned time corrected
+
+	* tests/160.html 1.2:
+		- time increased because on unix 1 mean nothing :(
+
+	* src/lib/cord/include/private/cord_pos.h 1.3:
+		- rebalance tree not so often. it's give some speed increasing
+
 	* src/classes/hash.C 1.80:
 		- added ^hash.contain[key]
 
-	* src/include/pa_hash.h 1.67:
-		- added method for checking key exists in hash
-
 	* operators.txt 1.195:
 		- added info about ^hash.contain[key]
+
+	* src/include/pa_hash.h 1.67:
+		- added method for checking key exists in hash
 
 2007-05-07	misha
 	* src/include/pa_string.h 1.169:
