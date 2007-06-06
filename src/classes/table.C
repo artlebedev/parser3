@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2007/05/24 09:59:57 $";
+static const char * const IDENT_TABLE_C="$Date: 2007/06/06 14:21:19 $";
 
 #include <sstream>
 using namespace std;
@@ -1213,7 +1213,7 @@ static void _columns(Request& r, MethodParams&) {
 }
 
 static void _select(Request& r, MethodParams& params) {
-	Value& vcondition=params.as_junction(0, "condition must be expression");
+	Value& vcondition=params[0].is_evaluated_expr()?params[0]:params.as_junction(0, "condition must be bool or expression");
 
 	Table& source_table=GET_SELF(r, VTable).table();
 	Table& result_table=*new Table(source_table.columns());
