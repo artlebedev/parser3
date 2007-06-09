@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2007/04/23 10:30:50 $";
+static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2007/06/09 16:21:30 $";
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
@@ -52,6 +52,15 @@ public:
 	/// handy value-is-not-a-junction ensurer
 	Value& as_no_junction(Value* value, const char* msg, int index) { 
 		return get_as(value, false, msg, index); 
+	}
+	/// handy is-value-a-junction ensurer or can be auto-processed
+	Value& as_expression(int index, const char* msg) { 
+		Value* value=get(index);
+		if(value->is_evaluated_expr()){
+			return *value;
+		} else {
+			return get_as(value, true, msg, index);
+		}
 	}
 	/// handy expression auto-processing to double
 	double as_double(int index, const char* msg, Request& r) { 
