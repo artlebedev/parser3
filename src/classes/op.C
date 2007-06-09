@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2007/06/06 14:21:19 $";
+static const char * const IDENT_OP_C="$Date: 2007/06/09 16:22:08 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -243,7 +243,8 @@ static void _while(Request& r, MethodParams& params) {
 	Temp_hash_value<const String::Body, void*> 
 		cycle_data_setter(r.classes_conf, cycle_data_name, /*any not null flag*/&r);
 
-	Value& vcondition=params[0].is_evaluated_expr()?params[0]:params.as_junction(0, "condition must be bool or expression");
+	Value& vcondition=params.as_expression(0, "condition must be number, bool or expression");
+
 	Value& body_code=params.as_junction(1, "body must be code");
 	Value* delim_maybe_code=params.count()>2?&params[2]:0;
 
