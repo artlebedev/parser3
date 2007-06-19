@@ -17,7 +17,7 @@
 #ifndef PA_HASH_H
 #define PA_HASH_H
 
-static const char * const IDENT_HASH_H="$Date: 2007/05/18 12:44:00 $";
+static const char * const IDENT_HASH_H="$Date: 2007/06/19 16:40:14 $";
 
 #include "pa_memory.h"
 #include "pa_types.h"
@@ -33,6 +33,44 @@ static uint Hash_allocates[HASH_ALLOCATES_COUNT]={
 	16229, 32531, 65407, 130987, 262237, 524521, 1048793, 
 	2097397, 4194103, 8388857, 16777447, 33554201, 67108961, 
 	134217487, 268435697, 536870683, 1073741621, 2147483399};
+
+/// useful generic hash function
+inline void generic_hash_code(uint& result, char c) {
+	result=(result<<4)+c;
+	if(uint g=(result&0xF0000000)) {
+		result=result^(g>>24);
+		result=result^g;
+	}
+}
+/// useful generic hash function
+inline void generic_hash_code(uint& result, const char* s) {
+	while(char c=*s++) {
+		result=(result<<4)+c;
+		if(uint g=(result&0xF0000000)) {
+			result=result^(g>>24);
+			result=result^g;
+		}
+	}
+}
+
+/// useful generic hash function
+inline void generic_hash_code(uint& result, const char* buf, size_t size) {
+	const char* end=buf+size;
+	while(buf<end) {
+		result=(result<<4)+*buf++;
+		if(uint g=(result&0xF0000000)) {
+			result=result^(g>>24);
+			result=result^g;
+		}
+	}
+}
+
+/// simple hash code of int. used by EXIF mapping
+inline uint hash_code(int self) {
+	uint result=0;
+	generic_hash_code(result, (const char*)&self, sizeof(self));
+	return result;
+}
 
 /** 
 	Simple hash.
@@ -442,44 +480,6 @@ private: //disabled
 
 	Hash& operator = (const Hash&) { return *this; }
 };
-
-/// useful generic hash function
-inline void generic_hash_code(uint& result, char c) {
-	result=(result<<4)+c;
-	if(uint g=(result&0xF0000000)) {
-		result=result^(g>>24);
-		result=result^g;
-	}
-}
-/// useful generic hash function
-inline void generic_hash_code(uint& result, const char* s) {
-	while(char c=*s++) {
-		result=(result<<4)+c;
-		if(uint g=(result&0xF0000000)) {
-			result=result^(g>>24);
-			result=result^g;
-		}
-	}
-}
-
-/// useful generic hash function
-inline void generic_hash_code(uint& result, const char* buf, size_t size) {
-	const char* end=buf+size;
-	while(buf<end) {
-		result=(result<<4)+*buf++;
-		if(uint g=(result&0xF0000000)) {
-			result=result^(g>>24);
-			result=result^g;
-		}
-	}
-}
-
-/// simple hash code of int. used by EXIF mapping
-inline uint hash_code(int self) {
-	uint result=0;
-	generic_hash_code(result, (const char*)&self, sizeof(self));
-	return result;
-}
 
 ///	Auto-object used to temporarily substituting/removing hash values
 template <typename K, typename V>
