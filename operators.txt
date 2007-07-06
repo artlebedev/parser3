@@ -767,6 +767,8 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
        другие salt читайте документацию по функции OS 'crypt'.
     !^math:crc32[string]
        вычисляет crc32 строки
+    !^math:sha1[string]
+    !^math:long2ip(long)
 
 !date
     !время типа time можно использовать в выражениях, подставляет 
