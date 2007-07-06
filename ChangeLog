@@ -1,3 +1,55 @@
+2007-07-06	misha
+	* src/types/pa_vform.C 1.87:
+		- bugfix: uploaded file name wasn't transcoded
+
+	* src/classes/math.C 1.49:
+		- ^math:long2ip(long) and ^math:sha1[string] were added
+
+	* tests/153.html 1.3:
+	* tests/results/153.processed 1.3:
+		- added test for ^math:sha1[string]
+
+2007-06-28	misha
+	* etc/parser3.charsets/windows-1251.cfg 1.13:
+		- removed duplicated and some incorrect chars
+
+2007-06-19	misha
+	* src/include/pa_hash.h 1.68:
+		- methods generic_hash_code & hash_code were moved on top 
+		because of gcc 4 had a problems during building.
+
+2007-06-18	misha
+	* tests/results/019.processed 1.4:
+		- new image commited
+
+2007-06-09	misha
+	* src/types/pa_vmethod_frame.h 1.62:
+		- method as_expression was added
+
+	* src/classes/op.C 1.170:
+	* src/classes/table.C 1.231:
+		- in while and table.select method as_expression used now
+
+2007-06-08	misha
+	* src/lib/cord/include/private/cord_pos.h 1.4:
+		- back to origin value because of no speed/memory optimisation 
+		but some proglems with long cycles occure
+
+	* tests/166.html 1.1:
+	* tests/results/166.processed 1.1:
+		- test for ^match[...][n]
+
+	* tests/165.html 1.1:
+	* tests/results/165.processed 1.1:
+		- tests for loops
+
+2007-06-06	misha
+	* src/classes/op.C 1.169:
+	* src/classes/table.C 1.230:
+		- ^while(true){}, ^while(1){}, ^table.select(true) and ^
+		table.select(1) didn't works because of awaiting junction-param 
+		only. fixed.
+
 2007-05-24	misha
 	* src/include/pa_os.h 1.6:
 		- consts for blocking locks + some comments were added
