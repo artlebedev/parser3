@@ -1,26 +1,108 @@
 @main[]
-^do[One]
-^sleep(2)
-^do[Two]
+$sDir[outputs/160]
+$iStep(1)
+$iSleepTime(3)
+$iCacheTime(2)
+
+<table border="1" cellpadding="3">
+<tr>
+<th>File: 1</th>
+<th>File: 2</th>
+<th>File: 3</th>
+</tr>
+
+<tr>
+<td>
+	^do[1](3){One}
+</td>
+<td>
+	^do[2](3){Two}
+</td>
+<td>
+	^do[3](3){Three}
+</td>
+</tr>
 
 
-
-@do[sText][i]
-<hr />
-^for[i](1;3){
-	$iCacheTime[]
-	^cache[outputs/160.cache](2){
-		=$sText=
-		^if($sText eq "Two"){
-			^cache(0)
-		}
-		$iCacheTime(^cache[])
-	}
-	^if(def $iCacheTime){
-		Execute code, ^^cache[] == ^iCacheTime.int(0)
-	}{
-		Get cached result
-	}
-	<br />
+<tr>
+<td><br /></td>
+<td><br /></td>
+<td>
+^do[3](3){
+	^method[]
+}{
+	$exception.handled(1)
+	^cache(2)
+	Error occure while executing body
 }
+</td>
+</tr>
+
+# wait till cache expire
+<tr>
+<td colspan="3">
+^sleep($iSleepTime)
+^^sleep($iSleepTime)
+</td>
+</tr>
+
+
+<tr>
+<td>
+^do[1](3){
+	^method[]
+}{
+	^cache(1)
+	$exception.handled[cache]
+	Error occure while executing body but force get cached resuls
+}
+</td>
+
+<td>
+^do[2](3){
+	Two
+	^cache(0)
+}
+</td>
+
+<td>
+^do[3](3){
+	^method[]
+}{
+	$exception.handled(1)
+	^cache(0)
+	Error occure while executing body
+}
+</td>
+
+
+</tr>
+</table>
+
+
+@do[sFile;iSteps;jBody;jExceptionHandler][i;bProcessBody;bProcessErrorHandler;iTime;sBody]
+^for[i](1;$iSteps){
+	$iTime[]
+	$bProcessBody(0)
+	$bProcessErrorHandler(0)
+
+	$sBody[^cache[$sDir/$sFile]($iCacheTime){
+		$jBody ($i)
+		$bProcessBody(1)
+		$iTime(^cache[])
+	}{$bProcessErrorHandler(1)$jExceptionHandler}]
+
+	^if($bProcessBody){
+		Executed code, ^^cache[] value ^if(def $iTime){defined}{undefined},
+	}{
+		^if($bProcessErrorHandler){
+			Process error handler, 
+		}{
+			Get cached result,
+		}
+	}
+	
+	result: $sBody
+}[<br />]
+^iStep.inc(1)
 

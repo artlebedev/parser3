@@ -1,23 +1,92 @@
 content-type: text/html
-content-length: 256
+content-length: 1351
 
-<hr />
-=One=
-Execute code, ^cache[] == 13651
+<table border="1" cellpadding="3">
+<tr>
+<th>File: 1</th>
+<th>File: 2</th>
+<th>File: 3</th>
+</tr>
+<tr>
+<td>
+Executed code, ^cache[] value defined,
+result: One (1)
 <br />
-=One=
-Get cached result
+Get cached result,
+result: One (1)
 <br />
-=One=
-Get cached result
+Get cached result,
+result: One (1)
+</td>
+<td>
+Executed code, ^cache[] value defined,
+result: Two (1)
 <br />
-<hr />
-=Two=
-Execute code, ^cache[] == 13651
+Get cached result,
+result: Two (1)
 <br />
-=Two=
-Execute code, ^cache[] == 13651
+Get cached result,
+result: Two (1)
+</td>
+<td>
+Executed code, ^cache[] value defined,
+result: Three (1)
 <br />
-=Two=
-Execute code, ^cache[] == 13651
+Get cached result,
+result: Three (1)
 <br />
+Get cached result,
+result: Three (1)
+</td>
+</tr>
+<tr>
+<td><br /></td>
+<td><br /></td>
+<td>
+Get cached result,
+result: Three (1)
+<br />
+Get cached result,
+result: Three (1)
+<br />
+Get cached result,
+result: Three (1)
+</td>
+</tr>
+<tr>
+<td colspan="3">
+^sleep(3)
+</td>
+</tr>
+<tr>
+<td>
+Process error handler, result: One (1)
+<br />
+Get cached result,
+result: One (1)
+<br />
+Get cached result,
+result: One (1)
+</td>
+<td>
+Executed code, ^cache[] value defined,
+result: Two
+(1)
+<br />
+Executed code, ^cache[] value defined,
+result: Two
+(2)
+<br />
+Executed code, ^cache[] value defined,
+result: Two
+(3)
+</td>
+<td>
+Process error handler, result: Error occure while executing body
+<br />
+Process error handler, result: Error occure while executing body
+<br />
+Process error handler, result: Error occure while executing body
+</td>
+</tr>
+</table>
