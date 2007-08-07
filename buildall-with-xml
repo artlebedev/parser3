@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Id: buildall-with-xml,v 1.13 2007/08/06 16:52:00 misha Exp $
+# $Id: buildall-with-xml,v 1.14 2007/08/07 16:55:29 misha Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -28,7 +28,10 @@ if test ! -f "$project_directory/gc/lib/libgc.a"; then
   cd $libgc
   echo "Configuring libgc..."
   CPPFLAGS="-DUSE_LIBC_PRIVATES -DUSE_MMAP -DUSE_MUNMAP" \
-  ./configure --prefix=$project_directory/gc --disable-threads --disable-shared --silent
+  ./configure --prefix=$project_directory/gc \
+    --disable-threads \
+    --disable-shared \
+    --silent
   echo "Building libgc..."
   make
   make install
@@ -47,17 +50,29 @@ if test ! -f "$project_directory/gnome/lib/libxml2.a"; then
   rm -rf $libxml2
   gunzip -c $libxml2.tar.gz | tar vxf - >/dev/null
   cd $libxml2
-  #sax1, output, tree, xinclude[in libxslt], html[in libxslt, mode=html?], xptr[xinclude], http, pattern -- needed!
+  #sax1, output, tree, xinclude[in libxslt], html[in libxslt, mode=html?], xptr[xinclude], pattern -- needed!
   echo "Configuring libxml..."
   ./configure --prefix=$project_directory/gnome \
-    --without-iconv --without-threads --without-debug \
-    --without-iso8859x --without-legacy \
-    --without-push --without-python \
-    --without-reader --without-writer --without-readline --without-regexps \
-    --without-schemas --without-schematron \
-    --without-modules --without-ftp --without-docbook \
+    --without-iconv \
+    --without-threads \
+    --without-debug \
+    --without-iso8859x \
+    --without-legacy \
+    --without-push \
+    --without-python \
+    --without-reader \
+    --without-writer \
+    --without-readline \
+    --without-regexps \
+    --without-schemas \
+    --without-schematron \
+    --without-modules \
+    --without-ftp \
+    --without-http \
+    --without-docbook \
     --without-zlib \
-    --disable-shared --silent
+    --disable-shared \
+    --silent
   echo "int main(){return 0;}">testapi.c
   echo "int main(){return 0;}">runtest.c
   echo "Building libxml..."
@@ -80,7 +95,12 @@ if test ! -f "$project_directory/gnome/lib/libxslt.a"; then
   echo "Configuring libxslt..."
   ./configure --prefix=$project_directory/gnome \
      --with-libxml-prefix=$project_directory/gnome \
-     --without-debug --without-debugger --without-crypto --without-plugins --disable-shared  --silent
+     --without-debug \
+     --without-debugger \
+     --without-crypto \
+     --without-plugins \
+     --disable-shared \
+     --silent
   echo "Building libxslt..."
   make
   make install
