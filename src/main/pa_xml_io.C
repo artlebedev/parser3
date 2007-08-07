@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT="$Date: 2005/08/09 08:14:53 $";
+static const char * const IDENT="$Date: 2007/08/07 16:54:16 $";
 
 #include "libxslt/extensions.h"
 
@@ -105,12 +105,13 @@ xmlFileOpen_ReadIntoStream (const char* do_not_store_filename, bool adjust_path_
 		strcat(adjust_buf, &do_not_store_filename[16]);
 		do_not_store_filename=adjust_buf;
 	} else
-		if(strstr(do_not_store_filename, "file://"))
-			do_not_store_filename+=7/*strlen("file://")*/; 
-		else if(*do_not_store_filename && do_not_store_filename[1]!=':' && strstr(do_not_store_filename, "://"))  {
-			pa_xmlStopMonitoringDependencies();
-			return 0; // plug out [do not handle other prefixes]
-		}
+		if(!strstr(do_not_store_filename, "http://"))
+			if(strstr(do_not_store_filename, "file://"))
+				do_not_store_filename+=7/*strlen("file://")*/; 
+			else if(*do_not_store_filename && do_not_store_filename[1]!=':' && strstr(do_not_store_filename, "://"))  {
+				pa_xmlStopMonitoringDependencies();
+				return 0; // plug out [do not handle other prefixes]
+			}
 
 	const char* can_store_filename=pa_strdup(do_not_store_filename);
 	add_dependency(can_store_filename);
