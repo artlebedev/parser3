@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Id: buildall-without-xml,v 1.7 2007/06/05 17:47:56 misha Exp $
+# $Id: buildall-without-xml,v 1.8 2007/08/07 16:56:20 misha Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -28,7 +28,10 @@ if test ! -f "$project_directory/gc/lib/libgc.a"; then
   cd $libgc
   echo "Configuring libgc..."
   CPPFLAGS="-DUSE_LIBC_PRIVATES -DUSE_MMAP -DUSE_MUNMAP" \
-  ./configure --prefix=$project_directory/gc --disable-threads --disable-shared --silent
+  	./configure --prefix=$project_directory/gc \
+  		--disable-threads \
+  		--disable-shared \
+  		--silent
   echo "Building libgc..."
   make
   make install
