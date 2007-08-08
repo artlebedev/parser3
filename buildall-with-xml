@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Id: buildall-with-xml,v 1.14 2007/08/07 16:55:29 misha Exp $
+# $Id: buildall-with-xml,v 1.15 2007/08/08 07:35:54 misha Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -35,7 +35,7 @@ if test ! -f "$project_directory/gc/lib/libgc.a"; then
   echo "Building libgc..."
   make
   make install
-#  rm -rf $libgc
+  rm -rf $libgc
 fi
 
 
@@ -78,7 +78,7 @@ if test ! -f "$project_directory/gnome/lib/libxml2.a"; then
   echo "Building libxml..."
   make
   make install
-#  rm -rf $libxml2
+  rm -rf $libxml2
 fi
 
 if test ! -f "$project_directory/gnome/lib/libxslt.a"; then
@@ -104,7 +104,7 @@ if test ! -f "$project_directory/gnome/lib/libxslt.a"; then
   echo "Building libxslt..."
   make
   make install
-#  rm -rf $libxslt
+  rm -rf $libxslt
 fi
 
 cd $parser3_directory
