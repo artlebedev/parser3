@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Id: buildall-without-xml,v 1.9 2007/08/08 07:35:54 misha Exp $
+# $Id: buildall-without-xml,v 1.10 2007/08/08 08:30:31 misha Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -35,6 +35,7 @@ if test ! -f "$project_directory/gc/lib/libgc.a"; then
   echo "Building libgc..."
   make
   make install
+  cd ..
   rm -rf $libgc
 fi
 
