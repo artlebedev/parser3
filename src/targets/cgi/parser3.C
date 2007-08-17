@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_PARSER3_C="$Date: 2007/03/14 12:10:56 $";
+static const char * const IDENT_PARSER3_C="$Date: 2007/08/17 08:16:11 $";
 
 #include "pa_config_includes.h"
 
@@ -297,8 +297,15 @@ static void SIGUSR1_handler(int /*sig*/){
 #endif
 
 #ifdef SIGPIPE
+#define SIGPIPE_NAME "SIGPIPE"
+static const String sigpipe_name(SIGPIPE_NAME);
 static void SIGPIPE_handler(int /*sig*/){
+	Value* sigpipe=0;
+	if(request)
+		sigpipe=request->main_class.get_element(sigpipe_name, request->main_class, false);
+	if(sigpipe && sigpipe->as_bool())
 	log_signal("SIGPIPE");
+
 	execution_canceled=true;
 	if(request)
 		request->set_interrupted(true);
@@ -384,7 +391,7 @@ static void real_parser_handler(const char* filespec_to_process,
 			memcpy(document_root_buf, filespec_to_process, len); document_root_buf[len]=0;
 			request_info.document_root=document_root_buf;
 		} else
-			throw Exception("parser.runtime",
+			throw Exception(PARSER_RUNTIME,
 				0,
 				"CGI: no PATH_INFO defined(in reinventing DOCUMENT_ROOT)");
 	} else {
