@@ -1,5 +1,7 @@
 content-type: text/html
-content-length: 27
+content-length: 99
 
-...a...<br>
-...word...<br>
+...a...<br />
+...'a' not in list 'ax,b,c'...<br />
+...Word...<br />
+...'wo rd' not a word...<br />

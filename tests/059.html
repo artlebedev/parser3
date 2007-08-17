@@ -1,14 +1,35 @@
 @main[]
-...^oneOf[a;a,b,c]...<br>
-#...^oneOf[a;ax,b,c]...<br>
-...^oneWord[word]...<br>
-#...^oneWord[wo rd]...<br>
+...^oneOf[a;a,b,c]...<br />
+...^oneOf[a;ax,b,c]...<br />
+...^oneWord[Word]...<br />
+...^oneWord[wo rd]...<br />
 
 
 @oneOf[s;list][t] выдаёт строку, если строка она есть в списке(разделенном запятыми)
 $t[^list.lsplit[,]]
-^if(!^t.locate[piece;$s]){^throw[user;$s;unknown]}
-$result[$s]
+^try{
+	^if(!^t.locate[piece;$s]){
+		^throw[user;$s;unknown]
+	}
+	$result[$s]
+}{
+	^if($exception.type eq "user"){
+		$exception.handled(1)
+		$result['$s' not in list '$list']
+	}
+}
+
 
 @oneWord[s]
-^if(^s.match[\W]){^throw[user.data;$s;not word]}{$s}
+^try{
+	^if(^s.match[\W]){
+		^throw[user;$s;not word]
+	}
+	$result[$s]
+}{
+	^if($exception.type eq "user"){
+		$exception.handled(1)
+		$result['$s' not a word]
+	}
+}
+
