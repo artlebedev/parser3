@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_PARSER3_C="$Date: 2007/08/17 08:16:11 $";
+static const char * const IDENT_PARSER3_C="$Date: 2007/08/17 09:06:13 $";
 
 #include "pa_config_includes.h"
 
@@ -304,7 +304,7 @@ static void SIGPIPE_handler(int /*sig*/){
 	if(request)
 		sigpipe=request->main_class.get_element(sigpipe_name, request->main_class, false);
 	if(sigpipe && sigpipe->as_bool())
-	log_signal("SIGPIPE");
+		log_signal(SIGPIPE_NAME);
 
 	execution_canceled=true;
 	if(request)
