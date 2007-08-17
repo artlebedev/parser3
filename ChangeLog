@@ -1,3 +1,38 @@
+2007-08-17	misha
+	* operators.txt 1.197:
+	* src/targets/cgi/parser3.C 1.243:
+		- annoying 'SIGPIPE' messages in parser3.log switched off by 
+		default. If someone really still need it: use $SIGPIPE(1)
+
+	* src/classes/math.C 1.50:
+	* src/targets/cgi/parser3.C 1.244:
+	* src/targets/isapi/parser3isapi.C 1.98:
+		- little syntax changes
+
+2007-08-08	misha
+	* buildall-with-xml 1.15:
+	* buildall-without-xml 1.9:
+		- remove libs source files by default since now
+
+2007-08-07	misha
+	* buildall-with-xml 1.14:
+		- compile libxml2 without http support
+		- some option syntax changes
+
+	* buildall-without-xml 1.8:
+		- some option syntax changes
+
+	* src/main/pa_xml_io.C 1.20:
+		- will use parser file loader for xml needs
+
+2007-08-06	misha
+	* buildall-with-xml 1.13:
+		- moved to libxml2-2.6.29 and libxslt-1.1.21
+
+	* tests/160.html 1.3:
+	* tests/results/160.processed 1.3:
+		- cache test was rewrited
+
 2007-07-06	misha
 	* src/types/pa_vform.C 1.87:
 		- bugfix: uploaded file name wasn't transcoded
