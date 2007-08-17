@@ -1,6 +1,35 @@
 content-type: text/html
-content-length: 41
+content-length: 652
 
-second c<br>
-first a,b<br>
-third d,e<br>
+<b>$.distinct[tables]</b><br />
+second c<br />
+first a,b<br />
+third d,e<br />
+<hr />
+<b>$.distinct(1) $.type[table]</b><br />
+second c<br />
+first a,b<br />
+third d,e<br />
+<hr />
+<b>$.distinct(1) $.type[hash]</b><br />
+third <blockquote>
+name d<br />
+group third<br />
+</blockquote><br />
+second <blockquote>
+name c<br />
+group second<br />
+</blockquote><br />
+first <blockquote>
+name a<br />
+group first<br />
+</blockquote><br />
+<hr />
+<b>$.distinct(1) $.type[string]</b><br />
+failed, that's OK.
+<br />with $.type[string] only one field must be specified
+<hr />
+<b>$.distinct(1) $.type[string]</b><br />
+third d<br />
+second c<br />
+first a<br />

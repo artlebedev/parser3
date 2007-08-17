@@ -1,3 +1,4 @@
+@main[]
 $table[^table::create{group	name
 first	a
 first	b
@@ -5,11 +6,55 @@ second	c
 third	d
 third	e
 }]
-	
-$distinct_tables[^table.hash[group][
+
+
+<b>^$.distinct[tables]</b><br />
+^print[^table.hash[group][
 	$.distinct[tables]
 ]]
 
-^distinct_tables.foreach[key;table]{
-	$key ^table.menu{$table.name}[,]<br>
+
+<hr />
+<b>^$.distinct(1) ^$.type[table]</b><br />
+^print[^table.hash[group][
+	$.distinct(1)
+	$.type[table]
+]]
+
+
+<hr />
+<b>^$.distinct(1) ^$.type[hash]</b><br />
+^print[^table.hash[group][
+	$.distinct(1)
+	$.type[hash]
+]]
+
+
+<hr />
+<b>^$.distinct(1) ^$.type[string]</b><br />
+^try{
+	^print[^table.hash[group][
+		$.distinct(1)
+		$.type[string]
+	]]
+}{
+	^if($exception.type eq parser.runtime){
+		failed, that's OK.
+		<br />with ^$.type[string] only one field must be specified
+		$exception.handled(1)
+	}
+}
+
+
+<hr />
+<b>^$.distinct(1) ^$.type[string]</b><br />
+^print[^table.hash[group;name][
+	$.distinct(1)
+	$.type[string]
+]]
+
+
+@print[hData][sKey;value]
+^hData.foreach[sKey;value]{
+	$sKey ^if($value is "table"){^value.menu{$value.name}[,]}{^if($value is "string"){$value}{^if($value is "hash"){<blockquote>^print[$value]</blockquote>}}}<br />
 }
