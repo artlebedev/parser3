@@ -8,7 +8,7 @@
 	Copyright (C) 1996, 1997, 1998, 1999 Theodore Ts'o.
 */
 
-static const char * const IDENT_MATH_C="$Date: 2007/07/06 15:06:28 $";
+static const char * const IDENT_MATH_C="$Date: 2007/08/17 09:00:50 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_common.h"
@@ -297,18 +297,16 @@ static void _md5(Request& r, MethodParams& params) {
 
 //SHA-1:
 
-struct SHA1Context
-    {
+struct SHA1Context {
     unsigned Message_Digest[5], Length_Low, Length_High;
-    unsigned char Message_Block[64];
+    unsigned int Message_Block[64];
     int Message_Block_Index, Computed, Corrupted;
-    };
+};
 
 #define SHA1CircularShift(bits,word) ((((word) << (bits)) & 0xFFFFFFFF)|((word) >> (32-(bits))))
 void SHA1ProcessMessageBlock(SHA1Context *);
 void SHA1PadMessage(SHA1Context *);
-void SHA1Reset(SHA1Context *context)
-    {
+void SHA1Reset(SHA1Context *context) {
     context->Length_Low = context->Length_High = context->Message_Block_Index = 0;
     context->Message_Digest[0]      = 0x67452301;
     context->Message_Digest[1]      = 0xEFCDAB89;
@@ -316,32 +314,27 @@ void SHA1Reset(SHA1Context *context)
     context->Message_Digest[3]      = 0x10325476;
     context->Message_Digest[4]      = 0xC3D2E1F0;
     context->Computed = context->Corrupted  = 0;
-    }
+}
 
-int SHA1Result(SHA1Context *context)
-    {
+int SHA1Result(SHA1Context *context) {
     if (context->Corrupted)
         return 0;
-    if (!context->Computed)
-	{
+    if (!context->Computed) {
         SHA1PadMessage(context);
         context->Computed = 1;
 	}
     return 1;
-    }
+}
 
-void SHA1Input (SHA1Context *context, const unsigned char *message_array, unsigned length)
-    {
+void SHA1Input (SHA1Context *context, const unsigned char *message_array, unsigned length) {
     if (!length)
         return;
-    if (context->Computed || context->Corrupted)
-	{
+    if (context->Computed || context->Corrupted) {
         context->Corrupted = 1;
         return;
 	}
 
-    while(length-- && !context->Corrupted)
-	{
+    while(length-- && !context->Corrupted) {
         context->Message_Block[context->Message_Block_Index++] = (*message_array & 0xFF);
         context->Length_Low += 8;
         context->Length_Low &= 0xFFFFFFFF;
@@ -351,46 +344,43 @@ void SHA1Input (SHA1Context *context, const unsigned char *message_array, unsign
             SHA1ProcessMessageBlock(context);
         message_array++;
 	}
-    }
+}
 
-void SHA1ProcessMessageBlock(SHA1Context *context)
-    {
+void SHA1ProcessMessageBlock(SHA1Context *context) {
     const unsigned K[] = {0x5A827999, 0x6ED9EBA1, 0x8F1BBCDC, 0xCA62C1D6 };
     int t;
     unsigned    temp, W[80], buf[5];
     unsigned &A=buf[0], &B=buf[1], &C=buf[2], &D=buf[3], &E=buf[4];
+
     for(t = 0; t < 16; t++)
         W[t] = (((unsigned) context->Message_Block[t * 4]) << 24) | (((unsigned) context->Message_Block[t * 4 + 1]) << 16) | (((unsigned) context->Message_Block[t * 4 + 2]) << 8) | ((unsigned) context->Message_Block[t * 4 + 3]);
+
     for(t = 16; t < 80; t++)
 	W[t] = SHA1CircularShift(1,W[t-3] ^ W[t-8] ^ W[t-14] ^ W[t-16]);
 
     memcpy (buf, context->Message_Digest, sizeof(buf));
-    for(t = 0; t < 20; t++)
-        {
+    for(t = 0; t < 20; t++) {
         temp =  (SHA1CircularShift(5,A) + ((B & C) | ((~B) & D)) + E + W[t] + K[0]) & 0xFFFFFFFF;
         E = D; D = C;
         C = SHA1CircularShift(30,B);
         B = A; A = temp;
 	}
 
-    for(t = 20; t < 40; t++)
-	{
+    for(t = 20; t < 40; t++) {
         temp = (SHA1CircularShift(5,A) + (B ^ C ^ D) + E + W[t] + K[1]) & 0xFFFFFFFF;
         E = D; D = C;
         C = SHA1CircularShift(30,B);
         B = A; A = temp;
 	}
 
-    for(t = 40; t < 60; t++)
-	{
+    for(t = 40; t < 60; t++) {
         temp = (SHA1CircularShift(5,A) + ((B & C) | (B & D) | (C & D)) + E + W[t] + K[2]) & 0xFFFFFFFF;
         E = D; D = C;
         C = SHA1CircularShift(30,B);
         B = A; A = temp;
 	}
 
-    for(t = 60; t < 80; t++)
-	{
+    for(t = 60; t < 80; t++) {
         temp = (SHA1CircularShift(5,A) + (B ^ C ^ D) + E + W[t] + K[3]) & 0xFFFFFFFF;
         E = D; D = C;
         C = SHA1CircularShift(30,B);
@@ -399,21 +389,20 @@ void SHA1ProcessMessageBlock(SHA1Context *context)
 
     for (t = 0; t < 5; t++)
 	context->Message_Digest[t] = (context->Message_Digest[t] + buf[t]) & 0xFFFFFFFF;
-    context->Message_Block_Index = 0;
-    }
 
-void SHA1PadMessage(SHA1Context *context)
-    {
+    context->Message_Block_Index = 0;
+}
+
+void SHA1PadMessage(SHA1Context *context) {
     context->Message_Block[context->Message_Block_Index++] = 0x80;
-    if (context->Message_Block_Index > 56) //was 55, one shift
-	{
+	if (context->Message_Block_Index > 56) {
+		//was 55, one shift
         while(context->Message_Block_Index < 64)
             context->Message_Block[context->Message_Block_Index++] = 0;
         SHA1ProcessMessageBlock(context);
         while(context->Message_Block_Index < 56)
             context->Message_Block[context->Message_Block_Index++] = 0;
-	}
-    else
+	} else
         while(context->Message_Block_Index < 56)
             context->Message_Block[context->Message_Block_Index++] = 0;
     context->Message_Block[56] = (context->Length_High >> 24) & 0xFF;
@@ -425,18 +414,17 @@ void SHA1PadMessage(SHA1Context *context)
     context->Message_Block[62] = (context->Length_Low >> 8) & 0xFF;
     context->Message_Block[63] = (context->Length_Low) & 0xFF;
     SHA1ProcessMessageBlock(context);
-    }
+}
 
 
-static void _sha1(Request& r, MethodParams& params)
-    {
+static void _sha1(Request& r, MethodParams& params) {
     const char *string = params.as_string(0, "parameter must be string").cstr();
 
     SHA1Context c;
     SHA1Reset (&c);
     SHA1Input (&c, (const unsigned char*)string, strlen(string));
     if (!SHA1Result (&c))
-        throw Exception ("parser.runtime", 0, "Cannot compute SHA1");
+        throw Exception (PARSER_RUNTIME, 0, "Can not compute SHA1");
     
     char digest[128];
     sprintf(digest, "%08x%08x%08x%08x%08x", c.Message_Digest[0], c.Message_Digest[1], c.Message_Digest[2], c.Message_Digest[3], c.Message_Digest[4]);

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_PARSER3ISAPI_C="$Date: 2006/04/09 13:38:47 $";
+static const char * const IDENT_PARSER3ISAPI_C="$Date: 2007/08/17 09:01:29 $";
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -348,7 +348,7 @@ void real_parser_handler(SAPI_Info& SAPI_info, bool header_only) {
 		strncpy(buf, filespec_to_process, len); buf[len]=0;
 		request_info.document_root=buf;
 	} else
-		throw Exception("parser.runtime",
+		throw Exception(PARSER_RUNTIME,
 			0,
 			"ISAPI: no PATH_INFO defined (in reinventing DOCUMENT_ROOT)");
 
