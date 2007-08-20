@@ -8,9 +8,18 @@
 #ifndef PA_EXCEPTION_H
 #define PA_EXCEPTION_H
 
-static const char * const IDENT_EXCEPTION_H="$Date: 2007/04/24 08:39:28 $";
+static const char * const IDENT_EXCEPTION_H="$Date: 2007/08/20 10:00:47 $";
 
 const char* const PARSER_RUNTIME = "parser.runtime";
+
+const char* const NAME_MUST_BE_STRING = "name must be string";
+const char* const FILE_NAME_MUST_BE_STRING = "file name must be string";
+const char* const NAMESPACEURI_MUST_BE_STRING = "namespaceURI must be string";
+const char* const LOCALNAME_MUST_BE_STRING = "localName must be string";
+const char* const VALUE_MUST_BE_STRING = "value must be string";
+
+const char* const FILE_NAME_MUST_NOT_BE_CODE = "file name must not be code";
+const char* const COORDINATES_MUST_NOT_BE_CODE = "coordinates must not be code";
 
 // includes
 
