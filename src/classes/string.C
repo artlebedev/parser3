@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2007/08/20 10:02:51 $";
+static const char * const IDENT_STRING_C="$Date: 2007/08/20 10:37:21 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -596,7 +596,7 @@ static void _append(Request& r, MethodParams& params) {
 	// c=a+b
 	VString& va=GET_SELF(r, VString);
 	const String& a=va.string();
-	const String& b=params.as_string(0, "parameter must be string");
+	const String& b=params.as_string(0, PARAMETER_MUST_BE_STRING);
 	String& c=*new String(a);
 	c.append(b, String::L_PASS_APPENDED);
 	va.set_string(c);
@@ -605,7 +605,7 @@ static void _append(Request& r, MethodParams& params) {
 static void _base64(Request& r, MethodParams& params) {
 	if(params.count()) {
 		// decode
-		const char* cstr=params.as_string(0, "parameter must be string").cstr();
+		const char* cstr=params.as_string(0, PARAMETER_MUST_BE_STRING).cstr();
 		char* decoded_cstr=0;
 		size_t decoded_size=0;
 		pa_base64_decode(cstr, strlen(cstr), decoded_cstr, decoded_size);

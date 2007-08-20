@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2007/08/20 10:02:51 $";
+static const char * const IDENT_OP_C="$Date: 2007/08/20 10:37:21 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -708,7 +708,7 @@ static void _cache(Request& r, MethodParams& params) {
 			"invalid number of parameters"); 
 	
 	// file_spec, expires, body code
-	const String& file_spec=r.absolute(params.as_string(0, "filespec must be string"));
+	const String& file_spec=as_file_spec(r, params, 0);
 
 	Cache_scope scope={as_expires(r, params, 1, now), 0};
 

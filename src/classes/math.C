@@ -8,7 +8,7 @@
 	Copyright (C) 1996, 1997, 1998, 1999 Theodore Ts'o.
 */
 
-static const char * const IDENT_MATH_C="$Date: 2007/08/17 09:00:50 $";
+static const char * const IDENT_MATH_C="$Date: 2007/08/20 10:37:21 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_common.h"
@@ -283,7 +283,7 @@ static void _crypt(Request& r, MethodParams& params) {
 }
 
 static void _md5(Request& r, MethodParams& params) {
-	const char *string=params.as_string(0, "parameter must be string").cstr();
+	const char *string=params.as_string(0, PARAMETER_MUST_BE_STRING).cstr();
 
 	PA_MD5_CTX context;
 	unsigned char digest[16];
@@ -418,7 +418,7 @@ void SHA1PadMessage(SHA1Context *context) {
 
 
 static void _sha1(Request& r, MethodParams& params) {
-    const char *string = params.as_string(0, "parameter must be string").cstr();
+    const char *string = params.as_string(0, PARAMETER_MUST_BE_STRING).cstr();
 
     SHA1Context c;
     SHA1Reset (&c);
@@ -487,7 +487,7 @@ static void _uid64(Request& r, MethodParams& /*params*/) {
 }
 
 static void _crc32(Request& r, MethodParams& params) {
-	const char *string=params.as_string(0, "parameter must be string").cstr();
+	const char *string=params.as_string(0, PARAMETER_MUST_BE_STRING).cstr();
 	r.write_no_lang(*new VInt(pa_crc32(string, strlen(string))));
 }
 

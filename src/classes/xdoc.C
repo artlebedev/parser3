@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT_XDOC_C="$Date: 2007/08/20 10:02:51 $";
+static const char * const IDENT_XDOC_C="$Date: 2007/08/20 10:37:21 $";
 
 #include "libxml/tree.h"
 #include "libxml/HTMLtree.h"
@@ -266,7 +266,7 @@ static void _createTextNode(Request& r, MethodParams& params) {
 	VXdoc& vdoc=GET_SELF(r, VXdoc);
 	xmlDoc& xmldoc=vdoc.get_xmldoc();
 
-	xmlChar* data=as_xmlchar(r, params, 0, "data must be string");
+	xmlChar* data=as_xmlchar(r, params, 0, DATA_MUST_BE_STRING);
 
 	xmlNode *node=xmlNewDocText(&xmldoc, data);
 	writeNode(r, vdoc, node);
@@ -276,7 +276,7 @@ static void _createTextNode(Request& r, MethodParams& params) {
 static void _createComment(Request& r, MethodParams& params) {
 	VXdoc& vdoc=GET_SELF(r, VXdoc);
 
-	xmlChar* data=as_xmlchar(r, params, 0, "data must be string");
+	xmlChar* data=as_xmlchar(r, params, 0, DATA_MUST_BE_STRING);
 
 	xmlNode *node=xmlNewComment(data);
 	writeNode(r, vdoc, node);
@@ -287,7 +287,7 @@ static void _createCDATASection(Request& r, MethodParams& params) {
 	VXdoc& vdoc=GET_SELF(r, VXdoc);
 	xmlDoc& xmldoc=vdoc.get_xmldoc();
 
-	xmlChar* data=as_xmlchar(r, params, 0, "data must be string");
+	xmlChar* data=as_xmlchar(r, params, 0, DATA_MUST_BE_STRING);
 
 	xmlNode *node=xmlNewCDataBlock(&xmldoc, data, strlen((const char*)data));
 	writeNode(r, vdoc, node);
@@ -298,8 +298,8 @@ static void _createProcessingInstruction(Request& r, MethodParams& params) {
 	VXdoc& vdoc=GET_SELF(r, VXdoc);
 	xmlDoc& xmldoc=vdoc.get_xmldoc();
 
-	xmlChar* target=as_xmlchar(r, params, 0, "data must be string");
-	xmlChar* data=as_xmlchar(r, params, 1, "data must be string");
+	xmlChar* target=as_xmlchar(r, params, 0, DATA_MUST_BE_STRING);
+	xmlChar* data=as_xmlchar(r, params, 1, DATA_MUST_BE_STRING);
 
 	xmlNode *node=xmlNewDocPI(&xmldoc, target, data);
 	writeNode(r, vdoc, node);
@@ -454,7 +454,7 @@ static void _load(Request& r, MethodParams& params) {
 	VXdoc& vdoc=GET_SELF(r, VXdoc);
 
 	// filespec
-	const String* uri=&params.as_string(0, "uri must be string");
+	const String* uri=&params.as_string(0, "URI must be string");
 	const char* uri_cstr;
 	if(uri->pos("://")==STRING_NOT_FOUND) // disk path
 		uri_cstr=r.absolute(*uri).cstr(String::L_FILE_SPEC);
