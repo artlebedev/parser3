@@ -13,49 +13,61 @@ $xdoc[^xdoc::create{<?xml version="1.0" encoding="$request:charset"?>
 </people>
 }]
 
-^dump[$xdoc]
+^dump[Origin;$xdoc]
+
 
 ^xdoc.documentElement.firstChild.nextSibling.getAttributeNS[http://parser.ru/first;attrname]
-
 ^xdoc.documentElement.lastChild.previousSibling.setAttributeNS[http://parser.ru/second;second:attrname2;value 2]
 
-^dump[$xdoc]
+^dump[Added attrname2 for last 'man' element;$xdoc]
+
 
 ^xdoc.documentElement.firstChild.nextSibling.removeAttributeNS[http://parser.ru/first;attrname]
 
-^dump[$xdoc]
+^dump[Removed attrname for first 'man' element;$xdoc]
 
-=^xdoc.documentElement.lastChild.previousSibling.getAttributeNS[http://parser.ru/second;attrname2]=
+
+^^x.getAttrinuteNS[...;attrname2]='^xdoc.documentElement.lastChild.previousSibling.getAttributeNS[http://parser.ru/second;attrname2]'<br />
 $Attr[^xdoc.documentElement.lastChild.previousSibling.getAttributeNodeNS[http://parser.ru/second;attrname2]]
-=$Attr.nodeValue=
+^$Attr.nodeValue='$Attr.nodeValue'<br />
 $Attr.nodeValue[changed attribute value]
 
-^dump[$xdoc]
+^dump[Changed attrname2 for last 'man' element;$xdoc]
 
 
 #intentionally not predeclaring namespace. todo: think about that stuff
 $newAttr[^xdoc.createAttributeNS[http://parser.ru/third;third:attrname3]]
 $oldAttr[^xdoc.documentElement.lastChild.previousSibling.setAttributeNodeNS[$newAttr]]
-^if($oldAttr is xnode){wrong;right}<br>
+^if($oldAttr is xnode){wrong;right}<br />
 $newAttr.nodeValue[value3]
 
-^dump[$xdoc]
+^dump[Added attrname3 for last 'man' element;$xdoc]
+
 
 $NodeList[^xdoc.getElementsByTagNameNS[http://parser.ru/tst;findme]]
-^show_xnodes1[$NodeList]<hr><hr>
+^show_xnodes1[$NodeList]<br /><br />
 
 $man1[^xdoc.selectSingle[/people/man[@id=1]]]
-^if(^man1.hasAttribute[id]){right;wrong2!}<br>
+^if(^man1.hasAttribute[id]){right;wrong2!}<br />
 ^if(^man1.hasAttributeNS[http://parser.ru/third;attrname3]){right;wrong3}
 
-<hr>
+<hr />
 
-@dump[xdoc]
-^show_xdoc2[$xdoc]<hr>
-^show_xnode1[$xdoc]<hr>
-<hr>
+/people/man[@id=1] ^if(^man1.hasAttributes[]){has;hasn't} attributes<br />
+$name2[^xdoc.selectSingle[/people/man[@id=1]/name]]
+/people/man[@id=1]/name ^if(^name2.hasAttributes[]){has;hasn't} attributes<br />
 
-@show1[array]
+
+
+@dump[sTitle;xdoc]
+^if(def $sTitle){<h2>$sTitle</h2>}
+^show_xdoc2[$xdoc]<hr />
+^show_xnode1[$xdoc]<hr />
+<hr />
+
+
+
+@show1[array][i;x;pattributes]
 ^for[i](0;$array-1){
     $x[$array.$i]
 	$x.firstChild.nodeValue: 
@@ -63,15 +75,19 @@ $man1[^xdoc.selectSingle[/people/man[@id=1]]]
 		^if(^pattributes._count[]){
 			$pattributes.id.name=$pattributes.id.nodeValue
 		}
-	<br>
+	<br />
 }
+
+
 	
 @show_xnodes1[array][i]
 ^for[i](0;^array._count[]-1){
 	^show_xnode1[$array.$i;0;1]
 }
 
-@show_xnode1[x;level;single][l]
+
+
+@show_xnode1[x;level;single][l;pairs;names]
 ^if(def $x){
     ^for[l](0;$level-1){&nbsp^;&nbsp^;&nbsp^;&nbsp^;}
     ^if($x.nodeType == $xnode:ELEMENT_NODE){
@@ -86,16 +102,18 @@ $man1[^xdoc.selectSingle[/people/man[@id=1]]]
     	[$x.nodeType]
     }
     
-    ^if(def $x.nodeValue){$x.nodeValue}<br>
+    ^if(def $x.nodeValue){$x.nodeValue}<br />
     ^show_xnode1[$x.firstChild]($level+1)
     ^if(!$single){
 	    ^show_xnode1[$x.nextSibling]($level)
     }
 
     ^if($x.nodeType == $xnode:ELEMENT_NODE){
-    ^for[l](0;$level-1){&nbsp^;&nbsp^;&nbsp^;&nbsp^;}&lt^;/$x.nodeName&gt^;<br>
+    ^for[l](0;$level-1){&nbsp^;&nbsp^;&nbsp^;&nbsp^;}&lt^;/$x.nodeName&gt^;<br />
     }
 }
+
+
 
 @show_xdoc2[xdoc]
 #$response:body[^xdoc.file[	$.media-type[text/paf]  ]]
