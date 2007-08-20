@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2007/06/09 16:22:08 $";
+static const char * const IDENT_OP_C="$Date: 2007/08/20 10:02:51 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -278,7 +278,7 @@ static void _while(Request& r, MethodParams& params) {
 }
 
 static void _use(Request& r, MethodParams& params) {
-	Value& vfile=params.as_no_junction(0, "file name must not be code");
+	Value& vfile=params.as_no_junction(0, FILE_NAME_MUST_NOT_BE_CODE);
 	r.use_file(r.main_class, vfile.as_string());
 }
 

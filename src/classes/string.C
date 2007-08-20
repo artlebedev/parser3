@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2007/04/23 10:30:10 $";
+static const char * const IDENT_STRING_C="$Date: 2007/08/20 10:02:51 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -535,8 +535,7 @@ static void _replace(Request& r, MethodParams& params) {
 }
 
 static void _save(Request& r, MethodParams& params) {
-	const String& file_name=params.as_string(params.count()-1, 
-		"file name must be string");
+	const String& file_name=params.as_string(params.count()-1, FILE_NAME_MUST_BE_STRING);
 
 	const String& src=GET_SELF(r, VString).string();
 

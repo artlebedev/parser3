@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_IMAGE_C="$Date: 2007/04/23 10:30:09 $";
+static const char * const IDENT_IMAGE_C="$Date: 2007/08/20 10:02:51 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -794,7 +794,7 @@ static gdImage* load(Request& r,
 
 
 static void _load(Request& r, MethodParams& params) {
-	const String& file_name=params.as_string(0, "file name must not be code");
+	const String& file_name=params.as_string(0, FILE_NAME_MUST_NOT_BE_CODE);
 
 	gdImage* image=load(r, file_name);
 	GET_SELF(r, VImage).set(&file_name, image->SX(), image->SY(), image);
@@ -817,7 +817,7 @@ static void _gif(Request& r, MethodParams& params) {
 
 	const String *file_name=0;
 	if(params.count()>0)
-		file_name=&params.as_string(0, "file name must be string");
+		file_name=&params.as_string(0, FILE_NAME_MUST_BE_STRING);
 
 	gdBuf buf=image.Gif();
 	
@@ -888,7 +888,7 @@ static void add_point(Table::element_type row,
 static void _replace(Request& r, MethodParams& params) {
 	gdImage& image=GET_SELF(r, VImage).image();
 
-	Table* table=params.as_no_junction(2, "coordinates must not be code").get_table();
+	Table* table=params.as_no_junction(2, COORDINATES_MUST_NOT_BE_CODE).get_table();
 	if(!table) 
 		throw Exception(0,
 			0,
@@ -905,7 +905,7 @@ static void _replace(Request& r, MethodParams& params) {
 static void _polyline(Request& r, MethodParams& params) {
 	gdImage& image=GET_SELF(r, VImage).image();
 
-	Table* table=params.as_no_junction(1, "coordinates must not be code").get_table();
+	Table* table=params.as_no_junction(1, COORDINATES_MUST_NOT_BE_CODE).get_table();
 	if(!table) 
 		throw Exception(0,
 			0,
@@ -922,7 +922,7 @@ static void _polyline(Request& r, MethodParams& params) {
 static void _polygon(Request& r, MethodParams& params) {
 	gdImage& image=GET_SELF(r, VImage).image();
 
-	Table* table=params.as_no_junction(1, "coordinates must not be code").get_table();
+	Table* table=params.as_no_junction(1, COORDINATES_MUST_NOT_BE_CODE).get_table();
 	if(!table) 
 		throw Exception(0,
 			0,
@@ -938,7 +938,7 @@ static void _polygon(Request& r, MethodParams& params) {
 static void _polybar(Request& r, MethodParams& params) {
 	gdImage& image=GET_SELF(r, VImage).image();
 
-	Table* table=params.as_no_junction(1, "coordinates must not be code").get_table();
+	Table* table=params.as_no_junction(1, COORDINATES_MUST_NOT_BE_CODE).get_table();
 	if(!table) 
 		throw Exception(PARSER_RUNTIME,
 			0,

@@ -7,7 +7,7 @@
 #include "classes.h"
 #ifdef XML
 
-static const char * const IDENT_XNODE_C="$Date: 2007/08/20 08:56:46 $";
+static const char * const IDENT_XNODE_C="$Date: 2007/08/20 10:02:51 $";
 
 #include "pa_vmethod_frame.h"
 
@@ -330,8 +330,7 @@ static void _hasChildNodes(Request& r, MethodParams&) {
 	xmlNode& node=vnode.get_xmlnode();
 
 	// write out result
-	bool result=node.children!=0;
-	r.write_no_lang(*new VBool(result));
+	r.write_no_lang(*new VBool(node.children!=0));
 }
 
 // Node cloneNode(in boolean deep);
@@ -365,7 +364,7 @@ xmlNode& get_self_element(VXnode& vnode) {
 static void _getAttribute(Request& r, MethodParams& params) {
 	VXnode& vnode=GET_SELF(r, VXnode);
 	xmlNode& element=get_self_element(vnode);
-	const xmlChar* name=as_xmlchar(r, params, 0, "name must be string");
+	const xmlChar* name=as_xmlchar(r, params, 0, NAME_MUST_BE_STRING);
 
 	// todo: when name="xmlns"
 	xmlChar* attribute_value=xmlGetProp(&element, name);
@@ -377,8 +376,8 @@ static void _getAttribute(Request& r, MethodParams& params) {
 static void _setAttribute(Request& r, MethodParams& params) {
 	VXnode& vnode=GET_SELF(r, VXnode);
 	xmlNode& element=get_self_element(vnode);
-	const xmlChar* name=as_xmlchar(r, params, 0, "name must be string");
-	const xmlChar* attribute_value=as_xmlchar(r, params, 1, "value must be string");
+	const xmlChar* name=as_xmlchar(r, params, 0, NAME_MUST_BE_STRING);
+	const xmlChar* attribute_value=as_xmlchar(r, params, 1, VALUE_MUST_BE_STRING);
 
 	// todo: when name="xmlns"
 	if(!xmlSetProp(&element, name,  attribute_value))
@@ -389,7 +388,7 @@ static void _setAttribute(Request& r, MethodParams& params) {
 static void _removeAttribute(Request& r, MethodParams& params) {
 	VXnode& vnode=GET_SELF(r, VXnode);
 	xmlNode& element=get_self_element(vnode);
-	const xmlChar* name=as_xmlchar(r, params, 0, "name must be string");
+	const xmlChar* name=as_xmlchar(r, params, 0, NAME_MUST_BE_STRING);
 
 	// todo: when name="xmlns"
 	xmlUnsetProp(&element, name);
@@ -400,7 +399,7 @@ static void _getAttributeNode(Request& r, MethodParams& params) {
 	VXnode& vnode=GET_SELF(r, VXnode);
 	VXdoc& vxdoc=vnode.get_vxdoc();
 	xmlNode& element=get_self_element(vnode);
-	const xmlChar* localName=as_xmlchar(r, params, 0, "name must be string");
+	const xmlChar* localName=as_xmlchar(r, params, 0, NAME_MUST_BE_STRING);
 
 	if(xmlNode* retNode=pa_getAttributeNodeNS(element, localName, 0)){
 		// write out result
@@ -460,7 +459,7 @@ static void _getElementsByTagName(Request& r, MethodParams& params) {
 	VXdoc& vxdoc=vnode.get_vxdoc();
 	xmlNode& xmlnode=vnode.get_xmlnode();
 
-	xmlChar* tagName=as_xmlchar(r, params, 0, "name must be string");
+	xmlChar* tagName=as_xmlchar(r, params, 0, NAME_MUST_BE_STRING);
 
 	VHash& result=*new VHash;
 	AccumulateFoundInfo info={&result.hash(), &vxdoc, 0};
@@ -481,8 +480,8 @@ static void _getAttributeNS(Request& r, MethodParams& params) {
 	VXnode& vnode=GET_SELF(r, VXnode);
 	xmlNode& element=get_self_element(vnode);
 	
-	xmlChar* namespaceURI=as_xmlchar(r, params, 0, "namespaceURI must be string");
-	xmlChar* localName=as_xmlchar(r, params, 1, "localName must be string");
+	xmlChar* namespaceURI=as_xmlchar(r, params, 0, NAMESPACEURI_MUST_BE_STRING);
+	xmlChar* localName=as_xmlchar(r, params, 1, LOCALNAME_MUST_BE_STRING);
 
 	// todo: when name="xmlns"
 	xmlChar* attribute_value=xmlGetNsProp(&element, localName, namespaceURI);
@@ -497,9 +496,9 @@ static void _setAttributeNS(Request& r, MethodParams& params) {
 	xmlNode& element=get_self_element(vnode);
 	VXdoc& vxdoc=vnode.get_vxdoc();
 	xmlDoc& xmldoc=vxdoc.get_xmldoc();
-	const xmlChar* namespaceURI=as_xmlchar(r, params, 0, "namespaceURI must be string");
+	const xmlChar* namespaceURI=as_xmlchar(r, params, 0, NAMESPACEURI_MUST_BE_STRING);
 	const xmlChar* qualifiedName=as_xmlchar(r, params, 1, "qualifiedName must be string");
-	const xmlChar* attribute_value=as_xmlchar(r, params, 2, "value must be string");
+	const xmlChar* attribute_value=as_xmlchar(r, params, 2, VALUE_MUST_BE_STRING);
 
 	xmlChar* prefix=0;
 	xmlChar* localName=xmlSplitQName2(qualifiedName, &prefix);
@@ -528,8 +527,8 @@ static void _removeAttributeNS(Request& r, MethodParams& params) {
 	xmlNode& element=get_self_element(vnode);
 	VXdoc& vxdoc=vnode.get_vxdoc();
 	xmlDoc& xmldoc=vxdoc.get_xmldoc();
-	const xmlChar* namespaceURI=as_xmlchar(r, params, 0, "namespaceURI must be string");
-	const xmlChar* localName=as_xmlchar(r, params, 1, "localName must be string");
+	const xmlChar* namespaceURI=as_xmlchar(r, params, 0, NAMESPACEURI_MUST_BE_STRING);
+	const xmlChar* localName=as_xmlchar(r, params, 1, LOCALNAME_MUST_BE_STRING);
 
 	// todo: when name="xmlns"
 	xmlNs& ns=pa_xmlMapNs(xmldoc, namespaceURI, 0);
@@ -541,8 +540,8 @@ static void _getAttributeNodeNS(Request& r, MethodParams& params) {
 	VXnode& vnode=GET_SELF(r, VXnode);
 	VXdoc& vxdoc=vnode.get_vxdoc();
 	xmlNode& element=get_self_element(vnode);
-	const xmlChar* namespaceURI=as_xmlchar(r, params, 0, "namespaceURI must be string");
-	const xmlChar* localName=as_xmlchar(r, params, 1, "localName must be string");
+	const xmlChar* namespaceURI=as_xmlchar(r, params, 0, NAMESPACEURI_MUST_BE_STRING);
+	const xmlChar* localName=as_xmlchar(r, params, 1, LOCALNAME_MUST_BE_STRING);
 
 	if(xmlNode* retNode=pa_getAttributeNodeNS(element, localName, namespaceURI)){
 		// write out result
@@ -555,12 +554,11 @@ static void _hasAttribute(Request& r, MethodParams& params) {
 	VXnode& vnode=GET_SELF(r, VXnode);
 	xmlNode& element=get_self_element(vnode);
 
-	const xmlChar* name=as_xmlchar(r, params, 0, "name must be string");
+	const xmlChar* name=as_xmlchar(r, params, 0, NAME_MUST_BE_STRING);
 
-	xmlChar* prop=xmlGetProp(&element, name);
 	// todo: when name="xmlns"
 	// write out result
-	r.write_no_lang(*new VBool(prop!=0));
+	r.write_no_lang(*new VBool(xmlGetProp(&element, name)!=0));
 }
 
 // boolean hasAttributeNS(n DOMString namespaceURI, in DOMString localName) raises(DOMException);
@@ -568,12 +566,11 @@ static void _hasAttributeNS(Request& r, MethodParams& params) {
 	VXnode& vnode=GET_SELF(r, VXnode);
 	xmlNode& element=get_self_element(vnode);
 
-	const xmlChar* namespaceURI=as_xmlchar(r, params, 0, "namespaceURI must be string");
-	const xmlChar* localName=as_xmlchar(r, params, 1, "localName must be string");
+	const xmlChar* namespaceURI=as_xmlchar(r, params, 0, NAMESPACEURI_MUST_BE_STRING);
+	const xmlChar* localName=as_xmlchar(r, params, 1, LOCALNAME_MUST_BE_STRING);
 
-	xmlChar* prop=xmlGetNsProp(&element, localName, namespaceURI);
 	// write out result
-	r.write_no_lang(*new VBool(prop!=0));
+	r.write_no_lang(*new VBool(xmlGetNsProp(&element, localName, namespaceURI)!=0));
 }
 
 // boolean hasAttributes
@@ -591,8 +588,8 @@ static void _getElementsByTagNameNS(Request& r, MethodParams& params) {
 	xmlDoc& xmldoc=vdoc.get_xmldoc();
 
 	// namespaceURI;localName
-	xmlChar* namespaceURI=as_xmlchar(r, params, 0, "namespaceURI must be string");
-	xmlChar* localName=as_xmlchar(r, params, 1, "name must be string");
+	xmlChar* namespaceURI=as_xmlchar(r, params, 0, NAMESPACEURI_MUST_BE_STRING);
+	xmlChar* localName=as_xmlchar(r, params, 1, NAME_MUST_BE_STRING);
 
 	VHash& result=*new VHash;
 	AccumulateFoundInfo info={&result.hash(), &vdoc, 0};

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Id: hashfile.C,v 1.40 2007/04/23 14:45:23 misha Exp $";
+static const char * const IDENT="$Id: hashfile.C,v 1.41 2007/08/20 10:02:51 misha Exp $";
 
 #include "classes.h"
 
@@ -49,7 +49,7 @@ static void _open(Request& r, MethodParams& params) {
 		r.classes_conf.put(OPEN_DATA_NAME, file_list);
 	}
 
-	const String& file_spec=r.absolute(params.as_string(0, "filename must be string"));
+	const String& file_spec=r.absolute(params.as_string(0, FILE_NAME_MUST_BE_STRING));
 	if(file_list->get(file_spec))
 		throw Exception(PARSER_RUNTIME,
 			0,

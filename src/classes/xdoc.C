@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT_XDOC_C="$Date: 2007/04/23 10:30:10 $";
+static const char * const IDENT_XDOC_C="$Date: 2007/08/20 10:02:51 $";
 
 #include "libxml/tree.h"
 #include "libxml/HTMLtree.h"
@@ -237,7 +237,7 @@ static void _createElementNS(Request& r, MethodParams& params) {
 	xmlDoc& xmldoc=vdoc.get_xmldoc();
 
 	// namespaceURI;localName
-	xmlChar* namespaceURI=as_xmlchar(r, params, 0, "namespaceURI must be string");
+	xmlChar* namespaceURI=as_xmlchar(r, params, 0, NAMESPACEURI_MUST_BE_STRING);
 	xmlChar* qualifiedName=as_xmlchar(r, params, 1, "qualifiedName must be string");
 
 	xmlChar* prefix=0;
@@ -310,7 +310,7 @@ static void _createAttribute(Request& r, MethodParams& params) {
 	VXdoc& vdoc=GET_SELF(r, VXdoc);
 	xmlDoc& xmldoc=vdoc.get_xmldoc();
 
-	xmlChar* name=as_xmlchar(r, params, 0, "name must be string");
+	xmlChar* name=as_xmlchar(r, params, 0, NAME_MUST_BE_STRING);
 
 	xmlNode *node=(xmlNode*)xmlNewDocProp(&xmldoc, name, 0);
 	writeNode(r, vdoc, node);
@@ -321,8 +321,8 @@ static void _createAttributeNS(Request& r, MethodParams& params) {
 	VXdoc& vdoc=GET_SELF(r, VXdoc);
 	xmlDoc& xmldoc=vdoc.get_xmldoc();
 
-	xmlChar* namespaceURI=as_xmlchar(r, params, 0, "namespaceURI must be string");
-	xmlChar* qualifiedName=as_xmlchar(r, params, 1, "name must be string");
+	xmlChar* namespaceURI=as_xmlchar(r, params, 0, NAMESPACEURI_MUST_BE_STRING);
+	xmlChar* qualifiedName=as_xmlchar(r, params, 1, NAME_MUST_BE_STRING);
 
 	xmlChar* prefix=0;
 	xmlChar* localName=xmlSplitQName2(qualifiedName, &prefix);
@@ -342,7 +342,7 @@ static void _createEntityReference(Request& r, MethodParams& params) {
 	VXdoc& vdoc=GET_SELF(r, VXdoc);
 	xmlDoc& xmldoc=vdoc.get_xmldoc();
 
-	xmlChar* name=as_xmlchar(r, params, 0, "name must be string");
+	xmlChar* name=as_xmlchar(r, params, 0, NAME_MUST_BE_STRING);
 
 	xmlNode *node=xmlNewReference(&xmldoc, name);
 	writeNode(r, vdoc, node);
@@ -667,7 +667,7 @@ static void _file(Request& r, MethodParams& params) {
 static void _save(Request& r, MethodParams& params) {
 	VXdoc& vdoc=GET_SELF(r, VXdoc);
 
-	const String& file_spec=r.absolute(params.as_string(0, "file name must be string"));
+	const String& file_spec=r.absolute(params.as_string(0, FILE_NAME_MUST_BE_STRING));
 	
 	VXdoc::Output_options oo(vdoc.output_options);
 	xdoc2buf(r, vdoc, params, 1, 

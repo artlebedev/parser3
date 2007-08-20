@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2007/06/09 16:22:08 $";
+static const char * const IDENT_TABLE_C="$Date: 2007/08/20 10:07:36 $";
 
 #include <sstream>
 using namespace std;
@@ -303,7 +303,7 @@ struct TableSeparators {
 };
 
 static void _load(Request& r, MethodParams& params) {
-	const String&  first_param=params.as_string(0, "file name must be string");
+	const String&  first_param=params.as_string(0, FILE_NAME_MUST_BE_STRING);
 	int filename_param_index=0;
 	bool nameless=first_param=="nameless";
 	if(nameless)
@@ -321,7 +321,7 @@ static void _load(Request& r, MethodParams& params) {
 
 	// loading text
 	char *data=file_read_text(r.charsets,
-		r.absolute(params.as_string(filename_param_index, "file name must be string")),
+		r.absolute(params.as_string(filename_param_index, FILE_NAME_MUST_BE_STRING)),
 		true,
 		options
 	);
@@ -421,7 +421,7 @@ static void _save_old(Request& r, MethodParams& params) {
 	else
 		--param_index;
 
-	const String& file_name=params.as_string(param_index++, "file name must not be code");
+	const String& file_name=params.as_string(param_index++, FILE_NAME_MUST_NOT_BE_CODE);
 
 	TableSeparators separators;
 	if(param_index<params.count()) {
@@ -506,7 +506,7 @@ static void _save(Request& r, MethodParams& params) {
 	else
 		--param_index;
 
-	const String& file_name=params.as_string(param_index++, "file name must not be code");
+	const String& file_name=params.as_string(param_index++, FILE_NAME_MUST_NOT_BE_CODE);
 
 	TableSeparators separators;
 	if(param_index<params.count()) {
@@ -940,7 +940,7 @@ static bool _locate_name_value(Table& table, Table::Action_options o,
 	check_option_param(o.defined, params, 2,
 		"locate by locate by name has parameters: name, value and, maybe, options");
 	const String& name=params.as_string(0, "column name must be string");
-	const String& value=params.as_string(1, "value must be string");
+	const String& value=params.as_string(1, VALUE_MUST_BE_STRING);
 	return table.locate(name, value, o);
 }
 static void _locate(Request& r, MethodParams& params) {

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2007/05/23 08:30:20 $";
+static const char * const IDENT_FILE_C="$Date: 2007/08/20 10:02:51 $";
 
 #include "pa_config_includes.h"
 
@@ -35,9 +35,6 @@ static const char * const IDENT_FILE_C="$Date: 2007/05/23 08:30:20 $";
 #define CHARSET_EXEC_PARAM_NAME "charset"
 
 #define NAME_NAME "name"
-
-#define FILE_NAME_MUST_BE_STRING "file name must be string"
-#define FILE_NAME_MUST_NOT_BE_CODE "file name must not be code"
 
 // externs
 
