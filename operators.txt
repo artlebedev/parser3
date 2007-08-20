@@ -941,7 +941,8 @@ xdoc(xnode)
 
     !Introduced in DOM Level 2:
     !Node importNode(in Node importedNode, in boolean deep) raises(DOMException)
-    !NodeList getElementsByTagNameNS(in DOMString namespaceURI, in DOMString localName);
+    !NodeList getElementsByTagNameNS(in DOMString namespaceURI, in DOMString localName)
+    !boolean hasAttributes()
 
     !XPath:
     !^node.select[xpath/query/expression] = array of nodes, 
