@@ -1,13 +1,58 @@
+2007-08-20	misha
+	* operators.txt 1.198:
+		- comment about new method ^node.hasAttributes[] was added
+
+	* src/include/pa_exception.h 1.49:
+		- more exception text strings moved here
+
+	* src/classes/xnode.C 1.78:
+		- DOM2 method ^xnode.hasAttributes[] was added
+
+	* src/include/pa_exception.h 1.48:
+		- some exception text strings movet to pa_exception
+
+	* tests/149.html 1.2:
+	* tests/results/149.processed 1.3:
+		- test for ^xnode.hasAttributes[] was added
+		- some code changes
+
+	* src/classes/file.C 1.160:
+	* src/classes/math.C 1.51:
+	* src/classes/op.C 1.172:
+	* src/classes/string.C 1.155:
+	* src/classes/xdoc.C 1.156:
+		- more duplicated exception text strings were removed
+
+	* src/classes/file.C 1.159:
+	* src/classes/hashfile.C 1.41:
+	* src/classes/image.C 1.116:
+	* src/classes/op.C 1.171:
+	* src/classes/string.C 1.154:
+	* src/classes/table.C 1.232:
+	* src/classes/xdoc.C 1.155:
+	* src/classes/xnode.C 1.79:
+		- some duplicate exceptions' text strings removed
+
 2007-08-17	misha
 	* operators.txt 1.197:
 	* src/targets/cgi/parser3.C 1.243:
 		- annoying 'SIGPIPE' messages in parser3.log switched off by 
 		default. If someone really still need it: use $SIGPIPE(1)
 
+	* tests/006.html 1.4:
+	* tests/059.html 1.3:
+	* tests/results/006.processed 1.5:
+	* tests/results/059.processed 1.5:
+		- more tests for match
+
 	* src/classes/math.C 1.50:
 	* src/targets/cgi/parser3.C 1.244:
 	* src/targets/isapi/parser3isapi.C 1.98:
 		- little syntax changes
+
+	* tests/129.html 1.3:
+	* tests/results/129.processed 1.5:
+		- tests for ^table.hash[...][$.type[string|hash|table]] added
 
 2007-08-08	misha
 	* buildall-with-xml 1.15:
