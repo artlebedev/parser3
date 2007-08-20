@@ -7,7 +7,7 @@
 #include "classes.h"
 #ifdef XML
 
-static const char * const IDENT_XNODE_C="$Date: 2007/04/23 10:30:10 $";
+static const char * const IDENT_XNODE_C="$Date: 2007/08/20 08:56:46 $";
 
 #include "pa_vmethod_frame.h"
 
@@ -576,6 +576,15 @@ static void _hasAttributeNS(Request& r, MethodParams& params) {
 	r.write_no_lang(*new VBool(prop!=0));
 }
 
+// boolean hasAttributes
+static void _hasAttributes(Request& r, MethodParams&) {
+	VXnode& vnode=GET_SELF(r, VXnode);
+	xmlNode& element=get_self_element(vnode);
+
+	// write out result
+	r.write_no_lang(*new VBool(element.properties!=0));
+}
+
 static void _getElementsByTagNameNS(Request& r, MethodParams& params) {
 	VXnode& vnode=GET_SELF(r, VXnode);
 	VXdoc& vdoc=vnode.get_vxdoc();
@@ -872,6 +881,9 @@ MXnode::MXnode(const char* aname, VStateless_class *abase):
 	add_native_method("hasAttribute", Method::CT_DYNAMIC, _hasAttribute, 1, 1);
 	// boolean hasAttributeNS(in DOMString namespaceURI, in DOMString localName) raises(DOMException);
 	add_native_method("hasAttributeNS", Method::CT_DYNAMIC, _hasAttributeNS, 2, 2);
+	// boolean hasAttributes
+	add_native_method("hasAttributes", Method::CT_DYNAMIC, _hasAttributes, 0, 0);
+	
 
 	/// parser
 	// ^node.select[/some/xpath/query] = hash $.#[dnode]
