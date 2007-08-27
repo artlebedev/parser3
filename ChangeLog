@@ -1,3 +1,16 @@
+2007-08-27	misha
+	* src/main/untaint.C 1.138:
+		- try to fix coredump on unix if print to body ^taint[sql][
+		something] outside of connect
+
+	* buildall-with-xml 1.17:
+	* buildall-without-xml 1.11:
+		- strip parser3 was added (commented by default)
+
+	* tests/167.html 1.1:
+	* tests/results/167.processed 1.1:
+		- test for ^taint[sql] outside of connect
+
 2007-08-20	misha
 	* operators.txt 1.198:
 		- comment about new method ^node.hasAttributes[] was added
