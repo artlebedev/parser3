@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_UNTAINT_C="$Date: 2006/02/18 17:43:19 $";
+static const char * const IDENT_UNTAINT_C="$Date: 2007/08/27 19:04:03 $";
 
 
 #include "pa_string.h"
@@ -295,13 +295,14 @@ struct Cstr_to_string_body_block_info {
 	CORD_pos pos;
 	size_t fragment_begin;
 	bool whitespace;
+	const char* exception;
 };
 #endif
 int cstr_to_string_body_block(char alang, size_t fragment_length, Cstr_to_string_body_block_info* info) {
 	const String::Language fragment_lang=(String::Language)(unsigned char)alang;
 	bool& whitespace=info->whitespace;
 	size_t fragment_end=info->fragment_begin+fragment_length;
-	//fprintf(stderr, "%d, %d\n", fragment.lang, fragment.length);
+	//fprintf(stderr, "%d, %d =%s=\n", fragment_lang, fragment_length, info->body->cstr());
 
 	
 	String::Language to_lang=info->lang==String::L_UNSPECIFIED?fragment_lang:info->lang;
@@ -412,10 +413,11 @@ int cstr_to_string_body_block(char alang, size_t fragment_length, Cstr_to_string
 			pa_CORD_pos_advance(info->pos, fragment_length);
 
 			to_string(info->connection->quote(fragment_str, fragment_length));
-		} else
-			throw Exception(0,
-				0,
-				"untaint in SQL language failed - no connection specified");
+		} else {
+			info->exception="untaint in SQL language failed - no connection specified";
+			info->fragment_begin=fragment_end;
+			return 1; // stop processing. can't throw exception here
+		}
 		break;
 	case String::L_JS:
 		escape(switch(c) {
@@ -505,8 +507,15 @@ String::Body String::cstr_to_string_body(Language lang,
 	// private
 	body.set_pos(info.pos, 0);
 	info.fragment_begin=0;
+	info.exception=0;
 	info.whitespace=true;
 
 	langs.for_each(body, cstr_to_string_body_block, &info);
+	if(info.exception){
+		throw Exception(0,
+			0,
+			info.exception);
+	}
+
 	return String::Body(CORD_ec_to_cord(info.result));
 }
