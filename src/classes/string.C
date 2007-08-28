@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2007/08/20 10:37:21 $";
+static const char * const IDENT_STRING_C="$Date: 2007/08/28 09:28:00 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -219,9 +219,9 @@ static int split_options(const String* options) {
 	return result;
 }
 
-static Table& split_vertical(ArrayString& pieces, bool right) {
+static Table& split_vertical(ArrayString& pieces, bool right, const String* column_name) {
 	Table::columns_type columns(new ArrayString);
-	*columns+=new String("piece");
+	*columns+=column_name;
 
 	Table& table=*new Table(columns, pieces.count());
 	if(right) { // right
@@ -274,8 +274,19 @@ static void split_with_options(Request& r, MethodParams& params,
 
 	bool right=(bits & SPLIT_RIGHT) != 0;
 	bool horizontal=(bits & SPLIT_HORIZONTAL) !=0;
-	Table& table=horizontal?split_horizontal(pieces, right)
-		:split_vertical(pieces, right);
+
+	const String* column_name=0;
+	if(params.count()>2){
+		column_name=&params.as_string(2, COLUMN_NAME_MUST_BE_STRING);
+		if (horizontal && column_name->length()) 
+			throw Exception(PARSER_RUNTIME,
+				column_name,
+				"column name can't be specified with horisontal split");
+	} 
+	if(!column_name || !column_name->length())
+		column_name=new String("piece");
+
+	Table& table=horizontal?split_horizontal(pieces, right):split_vertical(pieces, right, column_name);
 
 	r.write_no_lang(*new VTable(&table));
 }
@@ -651,7 +662,8 @@ MString::MString(): Methoded("string") {
 
 	// ^string.split[delim]
 	// ^string.split[delim][options]
-	add_native_method("split", Method::CT_DYNAMIC, _split, 1, 2);
+	// ^string.split[delim][options][column name]
+	add_native_method("split", Method::CT_DYNAMIC, _split, 1, 3);
 		// old names for backward compatibility
 		// ^string.lsplit[delim]
 		add_native_method("lsplit", Method::CT_DYNAMIC, _lsplit, 1, 1);
