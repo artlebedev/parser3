@@ -1,0 +1,59 @@
+@main[][sText;tHorizontal]
+$sText[/a/b/c/]
+$sChar[/]
+$sColumnName[zigi]
+
+
+<h3>Horisontal split '$sText' with '$sChar'</h3>
+$tHorizontal[^sText.split[$sChar;h]]
+^printColumns[$tHorizontal]
+
+
+
+<h3>Horisontal split '$sText' with '$sChar' using column name '$sColumnName' (error)</h3>
+^try{
+	$tHorizontal[^sText.split[$sChar;h;$sColumnName]]
+	^printColumns[$tHorizontal]
+}{
+	$exception.handled(1)
+	<p>${exception.source}: $exception.comment [$exception.type]</p>
+}
+
+
+
+<h3>Horisontal split '$sText' with '$sChar' using empty column name (ok)</h3>
+$tHorizontal[^sText.split[$sChar;h;]]
+^printColumns[$tHorizontal]
+
+
+
+
+<hr />
+<h3>Vertical split '$sText' with '$sChar'</h3>
+$tVertical[^sText.split[$sChar;v]]
+^printColumns[$tVertical]
+
+
+
+
+<h3>Vertical split '$sText' with '$sChar' using column name '$sColumnName'</h3>
+$tVertical[^sText.split[$sChar;v;$sColumnName]]
+^printColumns[$tVertical]
+
+
+
+<h3>Vertical split '$sText' with '$sChar' using empty column name</h3>
+$tVertical[^sText.split[$sChar;v;]]
+^printColumns[$tVertical]
+
+
+
+
+@printColumns[tData]
+$tColumn[^tData.columns[]]
+Columns:
+^if($tColumn){
+	^tColumn.menu{$tColumn.column}[, ]
+}{
+	nameless table
+}

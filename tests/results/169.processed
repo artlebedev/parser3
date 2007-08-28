@@ -1,0 +1,21 @@
+content-type: text/html
+content-length: 557
+
+<h3>Horisontal split '/a/b/c/' with '/'</h3>
+Columns:
+nameless table
+<h3>Horisontal split '/a/b/c/' with '/' using column name 'zigi' (error)</h3>
+<p>zigi: column name can't be specified with horisontal split [parser.runtime]</p>
+<h3>Horisontal split '/a/b/c/' with '/' using empty column name (ok)</h3>
+Columns:
+nameless table
+<hr />
+<h3>Vertical split '/a/b/c/' with '/'</h3>
+Columns:
+piece
+<h3>Vertical split '/a/b/c/' with '/' using column name 'zigi'</h3>
+Columns:
+zigi
+<h3>Vertical split '/a/b/c/' with '/' using empty column name</h3>
+Columns:
+piece
