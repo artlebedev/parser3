@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2007/08/28 09:28:18 $";
+static const char * const IDENT_TABLE_C="$Date: 2007/08/28 10:34:49 $";
 
 #include <sstream>
 using namespace std;
@@ -41,7 +41,14 @@ DECLARE_CLASS_VAR(table, new MTable, 0);
 
 extern String cycle_data_name;
 
+// defines for globals
+
+#define SQL_BIND_NAME "bind"
+#define SQL_DEFAULT_NAME "default"
+#define SQL_DISTINCT_NAME "distinct"
+#define SQL_VALUE_TYPE_NAME "type"
 #define TABLE_REVERSE_NAME "reverse"
+
 
 // globals
 
@@ -638,6 +645,8 @@ static void _menu(Request& r, MethodParams& params) {
 }
 
 #ifndef DOXYGEN
+enum Table2hash_distint { D_ILLEGAL, D_FIRST };
+enum Table2hash_value_type { C_HASH, C_STRING, C_TABLE };
 struct Row_info {
 	Request *r;
 	Table *table;
@@ -711,28 +720,6 @@ static void table_row_to_hash(Table::element_type row, Row_info *info) {
 			key,
 			"duplicate key");
 }
-
-Table2hash_value_type get_value_type(Value& vvalue_type){
-	if(vvalue_type.is_string()) {
-		const String& svalue_type=*vvalue_type.get_string();
-		if(svalue_type == "table"){
-			return C_TABLE;
-		} else if (svalue_type == "string") {
-			return C_STRING;
-		} else if (svalue_type == "hash") {
-			return C_HASH;
-		} else {
-			throw Exception(PARSER_RUNTIME,
-				&svalue_type,
-				"must be 'hash', 'table' or 'string'");
-		}
-	} else {
-		throw Exception(PARSER_RUNTIME,
-			0,
-			"'type' must be hash");
-	}
-}
-
 static void _hash(Request& r, MethodParams& params) {
 	Table& self_table=GET_SELF(r, VTable).table();
 	VHash& result=*new VHash;
@@ -769,7 +756,21 @@ static void _hash(Request& r, MethodParams& params) {
 								"you can't specify $.distinct[tables] and $.type[] together.");
 						} else {
 							valid_options++;
-							value_type=get_value_type(r.process_to_value(*vvalue_type_code));
+							Value& vvalue_type_value=r.process_to_value(*vvalue_type_code);
+							if(vvalue_type_value.is_string()) {
+								const String& svalue_type=*vvalue_type_value.get_string();
+								if(svalue_type == "table"){
+									value_type=C_TABLE;
+								} else if (svalue_type == "string") {
+									value_type=C_STRING;
+								} else if (svalue_type == "hash") {
+									value_type=C_HASH;
+								} else {
+									throw Exception(PARSER_RUNTIME,
+										&svalue_type,
+										"must be 'hash', 'table' or 'string'");
+								}
+							}
 						}
 					} 
 
