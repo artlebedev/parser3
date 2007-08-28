@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2007/08/20 10:07:36 $";
+static const char * const IDENT_TABLE_C="$Date: 2007/08/28 09:28:18 $";
 
 #include <sstream>
 using namespace std;
@@ -41,14 +41,7 @@ DECLARE_CLASS_VAR(table, new MTable, 0);
 
 extern String cycle_data_name;
 
-// defines for globals
-
-#define SQL_BIND_NAME "bind"
-#define SQL_DEFAULT_NAME "default"
-#define SQL_DISTINCT_NAME "distinct"
-#define SQL_VALUE_TYPE_NAME "type"
 #define TABLE_REVERSE_NAME "reverse"
-
 
 // globals
 
@@ -645,8 +638,6 @@ static void _menu(Request& r, MethodParams& params) {
 }
 
 #ifndef DOXYGEN
-enum Table2hash_distint { D_ILLEGAL, D_FIRST };
-enum Table2hash_value_type { C_HASH, C_STRING, C_TABLE };
 struct Row_info {
 	Request *r;
 	Table *table;
@@ -720,6 +711,28 @@ static void table_row_to_hash(Table::element_type row, Row_info *info) {
 			key,
 			"duplicate key");
 }
+
+Table2hash_value_type get_value_type(Value& vvalue_type){
+	if(vvalue_type.is_string()) {
+		const String& svalue_type=*vvalue_type.get_string();
+		if(svalue_type == "table"){
+			return C_TABLE;
+		} else if (svalue_type == "string") {
+			return C_STRING;
+		} else if (svalue_type == "hash") {
+			return C_HASH;
+		} else {
+			throw Exception(PARSER_RUNTIME,
+				&svalue_type,
+				"must be 'hash', 'table' or 'string'");
+		}
+	} else {
+		throw Exception(PARSER_RUNTIME,
+			0,
+			"'type' must be hash");
+	}
+}
+
 static void _hash(Request& r, MethodParams& params) {
 	Table& self_table=GET_SELF(r, VTable).table();
 	VHash& result=*new VHash;
@@ -750,27 +763,13 @@ static void _hash(Request& r, MethodParams& params) {
 							distinct=vdistinct_value.as_bool()?D_FIRST:D_ILLEGAL;
 					}
 					if(Value* vvalue_type_code=options->get(sql_value_type_name)) {
-						if(value_type==C_TABLE){ // $.distinct[tables] was specified
+						if(value_type==C_TABLE){ // $.distinct[tables] was specified already
 							throw Exception(PARSER_RUNTIME,
 								0,
-								"you can't specify $.distinct[tables] and $.values[] together.");
+								"you can't specify $.distinct[tables] and $.type[] together.");
 						} else {
 							valid_options++;
-							Value& vvalue_type_value=r.process_to_value(*vvalue_type_code);
-							if(vvalue_type_value.is_string()) {
-								const String& svalue_type=*vvalue_type_value.get_string();
-								if(svalue_type == "table"){
-									value_type=C_TABLE;
-								} else if (svalue_type == "string") {
-									value_type=C_STRING;
-								} else if (svalue_type == "hash") {
-									value_type=C_HASH;
-								} else {
-									throw Exception(PARSER_RUNTIME,
-										&svalue_type,
-										"must be 'hash', 'table' or 'string'");
-								}
-							}
+							value_type=get_value_type(r.process_to_value(*vvalue_type_code));
 						}
 					} 
 
@@ -812,7 +811,7 @@ static void _hash(Request& r, MethodParams& params) {
 				if(value_type==C_STRING)
 					throw Exception(PARSER_RUNTIME,
 						0,
-						"with $.values[string] you must specify one value field(s)");
+						"with $.type[string] you must specify one value field(s)");
 				// if(!(distinct!=D_ILLEGAL && distinct!=D_FIRST))
 					for(size_t i=0; i<columns->count(); i++)
 						value_fields+=i;
@@ -1194,10 +1193,15 @@ static void _sql(Request& r, MethodParams& params) {
 	GET_SELF(r, VTable).set_table(result);
 }
 
-static void _columns(Request& r, MethodParams&) {
+static void _columns(Request& r, MethodParams& params) {
+	const String* column_column_name;
+	if(params.count()>0)
+		column_column_name=&params.as_string(0, COLUMN_NAME_MUST_BE_STRING);
+	else 
+		column_column_name=new String("column");
 
 	Table::columns_type result_columns(new ArrayString);
-	*result_columns+=new String("column");
+	*result_columns+=column_column_name;
 	Table& result_table=*new Table(result_columns);
 
 	Table& source_table=GET_SELF(r, VTable).table();
@@ -1294,8 +1298,8 @@ MTable::MTable(): Methoded("table") {
 	// ^table:sql[query][$.limit(1) $.offset(2)]
 	add_native_method("sql", Method::CT_DYNAMIC, _sql, 1, 2);
 
-	// ^table:columns[]
-	add_native_method("columns", Method::CT_DYNAMIC, _columns, 0, 0);
+	// ^table:columns[[column name]]
+	add_native_method("columns", Method::CT_DYNAMIC, _columns, 0, 1);
 
 	// ^table.select(expression) = table
 	add_native_method("select", Method::CT_DYNAMIC, _select, 1, 1);
