@@ -1,3 +1,29 @@
+2007-09-14	misha
+	* buildall-with-xml 1.18:
+		- new xml libs again =)
+
+2007-08-28	misha
+	* src/classes/table.C 1.233:
+		- new option ^table.columns[[column name]] was added
+
+	* src/classes/string.C 1.156:
+		- new option ^string.split[...;v;[column name]]
+
+	* operators.txt 1.199:
+		- texts about ^table.columns[[column name]]  and ^string.split[
+		...][v][column name] were added
+
+	* tests/168.html 1.1:
+	* tests/169.html 1.1:
+	* tests/results/168.processed 1.1:
+	* tests/results/169.processed 1.1:
+		- tests for ^table.columns[[column name]]  and ^string.split[...]
+		[v][column name] were added
+
+	* src/include/pa_exception.h 1.50:
+		- error text message for ^hash._keys[], ^table.columns[] and ^
+		string.split[]
+
 2007-08-27	misha
 	* src/main/untaint.C 1.138:
 		- try to fix coredump on unix if print to body ^taint[sql][
