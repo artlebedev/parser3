@@ -463,6 +463,7 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !значение поля expires может быть 'session', date, или число дней(0дней=session)
     ! если дата, она будет преобразована к формату "Sun, 25-Aug-2002 12:03:45 GMT"
     ! можно устанавливать bool свойства, например $.secure(true), $.httponly(true)
+    !$cookie:fields = hash со всеми cookies
 
 
 !request
