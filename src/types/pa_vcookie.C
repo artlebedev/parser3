@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VCOOKIE_C="$Date: 2007/02/07 09:26:14 $";
+static const char * const IDENT_VCOOKIE_C="$Date: 2007/09/17 15:15:05 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -22,6 +22,8 @@ static const char * const IDENT_VCOOKIE_C="$Date: 2007/02/07 09:26:14 $";
 #define SESSION_NAME "session"
 #define DEFAULT_EXPIRES_DAYS 90
 
+#define COOKIE_FIELDS_ELEMENT_NAME "fields"
+
 // statics
 
 static const String path_name(PATH_NAME);
@@ -33,6 +35,13 @@ Value* VCookie::get_element(const String& aname, Value& /*aself*/, bool /*lookin
 	// $CLASS
 	if(aname==CLASS_NAME)
 		return this;
+
+	if(aname==COOKIE_FIELDS_ELEMENT_NAME){
+		HashStringValue *result = new HashStringValue(before);
+		after.for_each<HashStringValue*>(copy_all_overwrite_to, result);
+		deleted.for_each<HashStringValue*>(remove_key_from, result);
+		return new VHash(*result);
+	}
 
 	// $cookie
 	if(deleted.get(aname)) // deleted?
