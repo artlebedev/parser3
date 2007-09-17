@@ -5,17 +5,19 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Date: 2005/11/22 16:09:26 $";
+static const char * const IDENT="$Date: 2007/09/17 15:13:45 $";
 
 #include "pa_venv.h"
 #include "pa_vstring.h"
 #include "pa_version.h"
 
+#define PARSER_VERSION_ELEMENT_NAME "PARSER_VERSION"
+
 static const String parser_version(PARSER_VERSION);
 
 Value* VEnv::get_element(const String& aname, Value& /*aself*/, bool /*looking_up*/) {
 	// $env:PARSER_VERSION
-	if(aname=="PARSER_VERSION")
+	if(aname==PARSER_VERSION_ELEMENT_NAME)
 		return new VString(parser_version);
 
 	// getenv

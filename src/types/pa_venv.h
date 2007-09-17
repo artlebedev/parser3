@@ -8,7 +8,7 @@
 #ifndef PA_VENV_H
 #define PA_VENV_H
 
-static const char * const IDENT_VENV_H="$Date: 2005/11/21 09:24:45 $";
+static const char * const IDENT_VENV_H="$Date: 2007/09/17 15:13:45 $";
 
 // includes
 
@@ -25,7 +25,7 @@ class VEnv: public Value {
 	SAPI_Info& finfo;
 public: // Value
 	
-	const char* type() const { return "env"; }
+	const char* type() const { return ENV_CLASS_NAME; }
 	/// VEnv: 0
 	VStateless_class *get_class() { return 0; }
 
