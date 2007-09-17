@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_HASH_C="$Date: 2007/05/18 12:44:22 $";
+static const char * const IDENT_HASH_C="$Date: 2007/09/17 15:14:31 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -117,12 +117,6 @@ VBool Hash_sql_event_handlers::only_one_column_value(true);
 
 #endif
 
-static void copy_all_overwrite_to(
-								  HashStringValue::key_type key, 
-								  HashStringValue::value_type value, 
-								  HashStringValue* dest) {
-	dest->put(key, value);
-}
 static void _create_or_add(Request& r, MethodParams& params) {
 	if(params.count()) {
 		Value& vsrc=params.as_no_junction(0, "param must be hash");
@@ -147,12 +141,6 @@ static void _create_or_add(Request& r, MethodParams& params) {
 	}
 }
 
-static void remove_key_from(
-							HashStringValue::key_type key, 
-							HashStringValue::value_type /*value*/, 
-							HashStringValue* dest) {
-	dest->remove(key);
-}
 static void _sub(Request& r, MethodParams& params) {
 	Value& vsrc=params.as_no_junction(0, "param must be hash");
 	if(HashStringValue* src=vsrc.get_hash()) {
@@ -233,6 +221,8 @@ extern String sql_limit_name;
 extern String sql_offset_name;
 extern String sql_default_name;
 extern String sql_distinct_name;
+extern String sql_value_type_name;
+extern Table2hash_value_type get_value_type(Value& vvalue_type);
 extern int marshal_binds(HashStringValue& hash, SQL_Driver::Placeholder*& placeholders);
 extern void unmarshal_bind_updates(HashStringValue& hash, int placeholder_count, SQL_Driver::Placeholder* placeholders);
 
@@ -243,6 +233,7 @@ static void _sql(Request& r, MethodParams& params) {
 	ulong limit=0;
 	ulong offset=0;
 	bool distinct=false;
+	Table2hash_value_type value_type=C_HASH;
 	if(params.count()>1) {
 		Value& voptions=params.as_no_junction(1, "options must be hash, not code");
 		if(voptions.is_defined() && !voptions.is_string())
@@ -263,6 +254,10 @@ static void _sql(Request& r, MethodParams& params) {
 				if(Value* vdistinct=options->get(sql_distinct_name)) {
 					valid_options++;
 					distinct=r.process_to_value(*vdistinct).as_bool();
+				}
+				if(Value* vvalue_type=options->get(sql_value_type_name)) {
+					valid_options++;
+					value_type=get_value_type(r.process_to_value(*vvalue_type));
 				}
 				if(valid_options!=options->count())
 					throw Exception(PARSER_RUNTIME,
@@ -311,7 +306,7 @@ static void keys_collector(
 static void _keys(Request& r, MethodParams& params) {
 	const String* keys_column_name;
 	if(params.count()>0)
-		keys_column_name=&params.as_string(0, "column name must be string");
+		keys_column_name=&params.as_string(0, COLUMN_NAME_MUST_BE_STRING);
 	else 
 		keys_column_name=new String("key");
 
