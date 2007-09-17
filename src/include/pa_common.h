@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-static const char * const IDENT_COMMON_H="$Date: 2007/05/23 08:32:22 $";
+static const char * const IDENT_COMMON_H="$Date: 2007/09/17 15:14:15 $";
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -284,6 +284,22 @@ static const char* hex_string(unsigned char* bytes, size_t size, bool upcase) {
 
 int pa_get_valid_file_options_count(HashStringValue& options);
 
+// some stuff for use with .for_each
+static void copy_all_overwrite_to(
+								  HashStringValue::key_type key, 
+								  HashStringValue::value_type value, 
+								  HashStringValue* dest) {
+	dest->put(key, value);
+}
+
+static void remove_key_from(
+							HashStringValue::key_type key, 
+							HashStringValue::value_type /*value*/, 
+							HashStringValue* dest) {
+	dest->remove(key);
+}
+
+
 // globals
 
 extern const String file_status_name;
@@ -296,4 +312,17 @@ extern const String file_status_name;
 #define PA_COLUMN_ENCLOSER_NAME "encloser"
 #define PA_CHARSET_NAME "charset"
 
+// globals defines for sql options
+
+#define SQL_BIND_NAME "bind"
+#define SQL_DEFAULT_NAME "default"
+#define SQL_DISTINCT_NAME "distinct"
+#define SQL_VALUE_TYPE_NAME "type"
+
+#ifndef DOXYGEN
+enum Table2hash_distint { D_ILLEGAL, D_FIRST };
+enum Table2hash_value_type { C_HASH, C_STRING, C_TABLE };
 #endif
+
+#endif
+
