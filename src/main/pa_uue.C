@@ -7,11 +7,13 @@
 	@todo setrlimit
 */
 
-static const char * const IDENT_UUE_C="$Date: 2005/08/09 08:14:52 $";
+static const char * const IDENT_UUE_C="$Date: 2007/10/02 17:24:29 $";
 
 #include "pa_config_includes.h"
 
 #include "pa_uue.h"
+
+#define UUE_MAX_STRING 0x40
 
 static unsigned char uue_table[64] = {
   '`', '!', '"', '#', '$', '%', '&', '\'',
@@ -39,7 +41,7 @@ void pa_uuencode(String& result, const String& file_name, const VFile& vfile) {
 		if((itemp+count)>(in+in_length)) 
 			count=in_length-(itemp-in);
 
-		char *buf=new(PointerFreeGC) char[MAX_STRING];
+		char *buf=new(PointerFreeGC) char[UUE_MAX_STRING];
 		char *optr=buf;
 		
 		/*
