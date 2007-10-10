@@ -7,7 +7,7 @@
 #include "classes.h"
 #ifdef XML
 
-static const char * const IDENT_XNODE_C="$Date: 2007/08/20 10:02:51 $";
+static const char * const IDENT_XNODE_C="$Date: 2007/10/10 17:37:18 $";
 
 #include "pa_vmethod_frame.h"
 
@@ -705,7 +705,7 @@ static void selectNodeHandler(Request& r,
 	case XPATH_UNDEFINED: 
 		break;
 	case XPATH_NODESET: 
-		if(res->nodesetval && res->nodesetval->nodeNr) { // empty result strangly has NODESET  res->type
+		if(res->nodesetval && res->nodesetval->nodeNr) { // empty result strangely has NODESET  res->type
 			if(res->nodesetval->nodeNr>1)
 				throw Exception(PARSER_RUNTIME,
 					&expression,
