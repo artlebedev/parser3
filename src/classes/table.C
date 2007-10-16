@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2007/10/10 17:41:20 $";
+static const char * const IDENT_TABLE_C="$Date: 2007/10/16 09:30:10 $";
 
 #include <sstream>
 using namespace std;
@@ -123,6 +123,38 @@ static void check_option_param(bool options_defined,
 			"%s", msg);
 }
 
+struct TableSeparators {
+	char column;  const String* scolumn;
+	char encloser; const String* sencloser;
+
+	TableSeparators():
+		column('\t'), scolumn(new String("\t", false)),
+		encloser(0), sencloser(0)
+	{}
+	int load( HashStringValue& options ) {
+		int result=0;
+		if(Value* vseparator=options.get(PA_COLUMN_SEPARATOR_NAME)) {
+			scolumn=&vseparator->as_string();
+			if(scolumn->length()!=1)
+				throw Exception(PARSER_RUNTIME,
+					scolumn,
+					"separator must be one character long");
+			column=scolumn->first_char();
+			result++;
+		}
+		if(Value* vencloser=options.get(PA_COLUMN_ENCLOSER_NAME)) {
+			sencloser=&vencloser->as_string();
+			if(sencloser->length()!=1)
+				throw Exception(PARSER_RUNTIME,
+					sencloser,
+					"encloser must be one character long");
+			encloser=sencloser->first_char();
+			result++;
+		}
+		return result;
+	}
+};
+
 static void _create(Request& r, MethodParams& params) {
 	// clone/copy part?
 	if(Table *source=params[0].get_table()) {
@@ -133,20 +165,49 @@ static void _create(Request& r, MethodParams& params) {
 		return;
 	}
 
-	// data is last parameter
+	size_t data_param_index=0;
+	bool nameless=false;
+
+	if(params.count()>1) {
+		if(params[0].is_string()){ // can be nameless only
+			const String& snameless=params.as_string(0, "called with more then 1 param, first param may be only string 'nameless' or junction");
+			if(snameless!="nameless")
+				throw Exception(PARSER_RUNTIME,
+					&snameless,
+					"table::create called with more then 1 param, first param may be only 'nameless'");
+			nameless=true;
+			data_param_index++;
+		}
+	}
+
+	HashStringValue *options=0;
+	TableSeparators separators;
+
+	size_t options_param_index=data_param_index+1;
+	if(
+		options_param_index<params.count()
+		&& (options=params.as_no_junction(options_param_index, "additional params must be hash").get_hash())
+	) {
+		// cloning, so that we could change
+		options=new HashStringValue(*options);
+		separators.load(*options);
+		if(separators.encloser){
+			throw Exception(PARSER_RUNTIME,
+				0,
+				"encloser not supported for table::create yet");
+		}
+	}
+
+	// data
 	Temp_lang temp_lang(r, String::L_PASS_APPENDED);
 	const String&  data=
-		r.process_to_string(params.as_junction(params.count()-1, "body must be code"));
+		r.process_to_string(params.as_junction(data_param_index, "body must be code"));
 
 	// parse columns
 	size_t raw_pos_after=0;
 	Table::columns_type columns;
-	if(params.count()==2) {
-		const String& snameless=params.as_string(0, "called with two params, first param may only be string 'nameless'");
-		if(snameless!="nameless")
-			throw Exception(PARSER_RUNTIME,
-				&snameless,
-				"table::create called with two params, first param may only be 'nameless'");
+
+	if(nameless){
 		columns=Table::columns_type(0); // nameless
 	} else {
 		columns=Table::columns_type(new ArrayString);
@@ -155,7 +216,7 @@ static void _create(Request& r, MethodParams& params) {
 		data.split(head, raw_pos_after, "\n", String::L_AS_IS, 1);
 		if(head.count()) {
 			size_t col_pos_after=0;
-			head[0]->split(*columns, col_pos_after, "\t", String::L_AS_IS);
+			head[0]->split(*columns, col_pos_after, *separators.scolumn, String::L_AS_IS);
 		}
 	}
 
@@ -173,7 +234,7 @@ static void _create(Request& r, MethodParams& params) {
 			continue;
 
 		size_t col_pos_after=0;
-		string.split(*row, col_pos_after, "\t", String::L_AS_IS);
+		string.split(*row, col_pos_after, *separators.scolumn, String::L_AS_IS);
 		table+=row;
 	}
 
@@ -262,38 +323,6 @@ static void skip_empty_and_comment_lines( char** data_ref ) {
 		}
 	}
 }
-
-struct TableSeparators {
-	char column;  const String* scolumn;
-	char encloser; const String* sencloser;
-
-	TableSeparators():
-		column('\t'), scolumn(new String("\t", false)),
-		encloser(0), sencloser(0)
-	{}
-	int load( HashStringValue& options ) {
-		int result=0;
-		if(Value* vseparator=options.get(PA_COLUMN_SEPARATOR_NAME)) {
-			scolumn=&vseparator->as_string();
-			if(scolumn->length()!=1)
-				throw Exception(PARSER_RUNTIME,
-					scolumn,
-					"separator must be one character long");
-			column=scolumn->first_char();
-			result++;
-		}
-		if(Value* vencloser=options.get(PA_COLUMN_ENCLOSER_NAME)) {
-			sencloser=&vencloser->as_string();
-			if(sencloser->length()!=1)
-				throw Exception(PARSER_RUNTIME,
-					sencloser,
-					"encloser must be one character long");
-			encloser=sencloser->first_char();
-			result++;
-		}
-		return result;
-	}
-};
 
 static void _load(Request& r, MethodParams& params) {
 	const String&  first_param=params.as_string(0, FILE_NAME_MUST_BE_STRING);
@@ -398,7 +427,7 @@ void maybe_enclose( ostringstream& to, const String& from, char encloser ) {
 		to<<from.cstr();
 }
 
-
+/*
 static void _save_old(Request& r, MethodParams& params) {
 	const String& first_arg=params.as_string(0, "first argument must not be code");
 	size_t param_index=1;
@@ -483,6 +512,7 @@ static void _save_old(Request& r, MethodParams& params) {
 			pa_free((void*)data_cstr); // not needed anymore
 	}
 }
+*/
 
 static void _save(Request& r, MethodParams& params) {
 	const String& first_arg=params.as_string(0, "first argument must not be code");
@@ -1244,9 +1274,9 @@ MTable::MTable(): Methoded("table") {
 	// ^table::create{data}
 	// ^table::create[nameless]{data}
 	// ^table::create[table]
-	add_native_method("create", Method::CT_DYNAMIC, _create, 1, 2);
+	add_native_method("create", Method::CT_DYNAMIC, _create, 1, 3);
 	// old name for compatibility with <= v 1.141 2002/01/25 11:33:45 paf
-	add_native_method("set", Method::CT_DYNAMIC, _create, 1, 2); 
+	add_native_method("set", Method::CT_DYNAMIC, _create, 1, 3); 
 
 	// ^table::load[file]  
 	// ^table::load[nameless;file]
