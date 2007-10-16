@@ -11,3 +11,30 @@ $t[^table::create[nameless]{^taint[$a-tab-b]}]
 
 $t[^table::create{^untaint{^taint[$a-tab-b]}}]
 =$t.a=
+<hr>
+
+
+$a-comma-b[a,b
+1,2]
+
+$t[^table::create{$a-comma-b}[$.separator[,]]]
+=$t.a=
+<hr>
+
+$t[^table::create[nameless]{^taint[$a-comma-b]}[$.separator[,]]]
+=$t.0=
+<hr>
+
+$t[^table::create{^untaint{^taint[$a-comma-b]}}[$.separator[,]]]
+=$t.a=
+<hr>
+
+
+^try{
+	$t[^table::create{$a-comma-b}[$.separator[,]$.encloser["]]]
+	=$t.a=
+}{
+	$exception.handled(1)
+	$exception.comment
+}
+

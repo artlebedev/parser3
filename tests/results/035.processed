@@ -1,5 +1,5 @@
 content-type: text/html
-content-length: 27
+content-length: 111
 
 =1=
 <hr>
@@ -7,3 +7,12 @@ content-length: 27
 1	2=
 <hr>
 =1=
+<hr>
+=1=
+<hr>
+=a,b
+1,2=
+<hr>
+=1=
+<hr>
+encloser not supported for table::create yet
