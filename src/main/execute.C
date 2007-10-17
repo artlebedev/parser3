@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2007/04/23 10:30:31 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2007/10/17 08:00:38 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -928,11 +928,12 @@ StringOrValue Request::process(Value& input_value, bool intercept_string) {
 		if(junction->is_getter) { // is it a getter-junction?
 			// process it
 
-			VMethodFrame frame(*junction, method_frame/*caller*/);
 			if(junction->method->params_names)
 				throw Exception(PARSER_RUNTIME,
 					0,
 					"getter method must have no parameters");
+
+			VMethodFrame frame(*junction, method_frame/*caller*/);
 
 			frame.set_self(frame.junction.self);
 
@@ -1042,6 +1043,7 @@ StringOrValue Request::execute_method(VMethodFrame& amethod_frame, const Method&
 const String* Request::execute_method(Value& aself, 
 				      const Method& method, VString* optional_param,
 				      bool do_return_string) {
+
 	VMethodFrame *saved_method_frame=method_frame;  
 	Value* saved_rcontext=rcontext;  
 	WContext *saved_wcontext=wcontext;
@@ -1076,13 +1078,13 @@ const String* Request::execute_method(Value& aself,
 
 Request::Execute_nonvirtual_method_result 
 Request::execute_nonvirtual_method(VStateless_class& aclass, 
-				   const String& method_name, VString* optional_param,
+				   const String& method_name,
+				   VString* optional_param,
 				   bool do_return_string) {
 	Execute_nonvirtual_method_result result;
 	result.method=aclass.get_method(method_name);
 	if(result.method)
-		result.string=execute_method(aclass, *result.method, optional_param, 
-			do_return_string);
+		result.string=execute_method(aclass, *result.method, optional_param, do_return_string);
 	return result;
 }
 
