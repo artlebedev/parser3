@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REQUEST_C="$Date: 2007/04/23 10:30:32 $";
+static const char * const IDENT_REQUEST_C="$Date: 2007/10/17 07:59:55 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -464,40 +464,41 @@ t[9]-t[3]
 				false)) {
 			if(Junction* junction=value->get_junction()) {
 				if(const Method *method=junction->method) {
-// preparing to pass parameters to 
-//	@unhandled_exception[exception;stack]
-VMethodFrame frame(/*method->name, */ *junction, 0/*no caller*/);
-frame.set_self(main_class);
+					// preparing to pass parameters to 
+					//	@unhandled_exception[exception;stack]
+					VMethodFrame frame(/*method->name, */ *junction, 0/*no caller*/);
+					frame.set_self(main_class);
 
-// $exception
-frame.store_param(details.vhash);
-// $stack[^table::set{name	origin}]
-Table::columns_type stack_trace_columns(new ArrayString);
-*stack_trace_columns+=new String("name");
-*stack_trace_columns+=new String("file");
-*stack_trace_columns+=new String("lineno");
-*stack_trace_columns+=new String("colno");
-Table& stack_trace=*new Table(stack_trace_columns);
-if(!exception_trace.is_empty()/*signed!*/) 
-for(size_t i=exception_trace.bottom_index(); i<exception_trace.top_index(); i++) {
-	Trace trace=exception_trace.get(i);
-	Table::element_type row(new ArrayString);
+					// $exception
+					frame.store_param(details.vhash);
+					// $stack[^table::create{name	file	lineno	colno}]
+					Table::columns_type stack_trace_columns(new ArrayString);
+					*stack_trace_columns+=new String("name");
+					*stack_trace_columns+=new String("file");
+					*stack_trace_columns+=new String("lineno");
+					*stack_trace_columns+=new String("colno");
+					Table& stack_trace=*new Table(stack_trace_columns);
+					if(!exception_trace.is_empty()/*signed!*/) 
+						for(size_t i=exception_trace.bottom_index(); i<exception_trace.top_index(); i++) {
+							Trace trace=exception_trace.get(i);
+							Table::element_type row(new ArrayString);
 
-	*row+=trace.name(); // name column
-	Operation::Origin origin=trace.origin();
-	if(origin.file_no) {
-		*row+=new String(file_list[origin.file_no], String::L_TAINTED); // 'file' column
-		*row+=new String(String::Body::Format(1+origin.line), String::L_CLEAN); // 'lineno' column
-		*row+=new String(String::Body::Format(1+origin.col), String::L_CLEAN); // 'colno' column
-	}
-	stack_trace+=row;
-}
-frame.store_param(*new VTable(&stack_trace));
+							*row+=trace.name(); // name column
+							Operation::Origin origin=trace.origin();
+							if(origin.file_no) {
+								*row+=new String(file_list[origin.file_no], String::L_TAINTED); // 'file' column
+								*row+=new String(String::Body::Format(1+origin.line), String::L_CLEAN); // 'lineno' column
+								*row+=new String(String::Body::Format(1+origin.col), String::L_CLEAN); // 'colno' column
+							}
+							stack_trace+=row;
+						}
 
-// future $response:body=
-//   execute ^unhandled_exception[exception;stack]
-exception_trace.clear(); // forget all about previous life, in case there would be error inside of this method, error handled  would not be mislead by old stack contents (see extract_origin)
-body_string=&execute_method(frame, *method).as_string();
+					frame.store_param(*new VTable(&stack_trace));
+
+					// future $response:body=
+					//   execute ^unhandled_exception[exception;stack]
+					exception_trace.clear(); // forget all about previous life, in case there would be error inside of this method, error handled  would not be mislead by old stack contents (see extract_origin)
+					body_string=&execute_method(frame, *method).as_string();
 				}
 			}
 		}
@@ -523,6 +524,7 @@ body_string=&execute_method(frame, *method).as_string();
 
 		// ERROR. write it out
 		output_result(body_file, header_only, false);
+
 		} catch(const Exception& e) { // exception in unhandled exception
 			Request::Exception_details details=get_details(e);
 			const char* exception_cstr=get_exception_cstr(e, details);
