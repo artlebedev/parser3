@@ -5,7 +5,7 @@
 	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.220 2006/04/09 13:38:47 paf Exp $
+	$Id: compile.y,v 1.221 2007/10/17 13:34:59 misha Exp $
 */
 
 /**
@@ -216,7 +216,7 @@ control_strings: control_string | control_strings control_string { $$=$1; P(*$$,
 control_string: maybe_string '\n';
 maybe_string: empty | STRING;
 
-code_method: '@' STRING bracketed_maybe_strings maybe_bracketed_strings maybe_comment '\n' { 
+code_method: '@' STRING bracketed_maybe_strings maybe_bracketed_strings maybe_comment '\n' maybe_codes { 
 	PC.explicit_result=false;
 	const String& name=*LA2S(*$2);
 
@@ -246,14 +246,12 @@ code_method: '@' STRING bracketed_maybe_strings maybe_bracketed_strings maybe_co
 		Method::CT_ANY,
 		0, 0/*min,max numbered_params_count*/, 
 		params_names, locals_names, 
-		0/*to be filled later in next {} */, 0);
+		$7, 0);
+
 	PC.cclass->add_method(PC.alias_method(name), *method);
 	*reinterpret_cast<Method**>(&$$)=method;
 
 	// todo: check [][;result;]
-} maybe_codes {
-	// fill in the code
-	reinterpret_cast<Method*>($7)->parser_code=$8;
 };
 
 maybe_bracketed_strings: empty | bracketed_maybe_strings;
