@@ -7,7 +7,7 @@
 	@todo setrlimit
 */
 
-static const char * const IDENT_UUE_C="$Date: 2007/10/02 17:24:29 $";
+static const char * const IDENT_UUE_C="$Date: 2007/10/22 14:34:24 $";
 
 #include "pa_config_includes.h"
 
@@ -27,7 +27,6 @@ static unsigned char uue_table[64] = {
 };
 void pa_uuencode(String& result, const String& file_name, const VFile& vfile) {
 	//header
-	result << "content-transfer-encoding: x-uuencode\n" << "\n";
 	result << "begin 644 " << file_name << "\n";
 
 	//body
