@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_VMAIL_C="$Date: 2007/10/22 14:35:14 $";
+static const char * const IDENT_VMAIL_C="$Date: 2007/10/22 16:40:05 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -672,6 +672,7 @@ static const String& text_value_to_string(Request& r,
 	String& result=*new String;
 
 	Value* text_value;
+	Value* content_transfer_encoding=0;
 	if(HashStringValue* send_hash=send_value->get_hash()) {
 		// $.USER-HEADERS
 		info.content_type=0; info.backward_compatibility=false; // reset
@@ -682,6 +683,7 @@ static const String& text_value_to_string(Request& r,
 			throw Exception(PARSER_RUNTIME,
 				0,
 				"%s part has no $" VALUE_NAME, part_name_begins[pt]);
+		content_transfer_encoding=send_hash->get(content_transfer_encoding_name);
 	} else
 		text_value=send_value;
 
@@ -691,7 +693,8 @@ static const String& text_value_to_string(Request& r,
 			<< "; charset=" << info.charsets.mail().NAME()
 			<< "\n";
 	}
-	result << CONTENT_TRANSFER_ENCODING_NAME << ": 8bit\n";
+	if(!content_transfer_encoding)
+		result << CONTENT_TRANSFER_ENCODING_NAME << ": 8bit\n";
 
 	// header|body separator
 	result << "\n"; 
