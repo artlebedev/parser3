@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_VMAIL_C="$Date: 2007/04/23 10:30:50 $";
+static const char * const IDENT_VMAIL_C="$Date: 2007/10/22 13:46:03 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -633,22 +633,19 @@ static const String& file_value_to_string(Request& r, Value* send_value) {
 	const char* file_name_cstr=file_name->cstr();
 
 	// content-type: application/octet-stream
-	result << "content-type: " << r.mime_type_of(file_name_cstr) 
-		<< "; name=\"" << file_name_cstr << "\"\n";
+	result << "content-type: " << r.mime_type_of(file_name_cstr) << "; name=\"" << file_name_cstr << "\"\n";
 
 	if(!info.had_content_disposition) {
-		if(vcid){
-			// content-disposition: inline;"
-			result << 
-				CONTENT_DISPOSITION_NAME ": "CONTENT_DISPOSITION_INLINE"\n"
-				CID_NAME ": <" << vcid->as_string() << ">\n";
-		} else {
-			// content-disposition: attachment; filename="user_file_name"
-			result << 
-				CONTENT_DISPOSITION_NAME ": "CONTENT_DISPOSITION_VALUE"; "
-				CONTENT_DISPOSITION_FILENAME_NAME"=\"" << file_name_cstr << "\"\n";
-		}
+		// $.content-disposition wasn't specified
+		result
+			<< CONTENT_DISPOSITION_NAME ": "
+			<< ( vcid ? CONTENT_DISPOSITION_INLINE : CONTENT_DISPOSITION_ATTACHMENT )
+			<< "; "
+			<< CONTENT_DISPOSITION_FILENAME_NAME"=\"" << file_name_cstr << "\"\n";
 	}
+
+	if(vcid)
+		result << CID_NAME ": <" << vcid->as_string() << ">\n"; // todo: value must be escaped as %hh
 
 	const String* type=vformat?&vformat->as_string():0;
 	if(!type/*default = uue*/ || *type=="uue") {
