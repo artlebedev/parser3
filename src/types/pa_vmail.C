@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_VMAIL_C="$Date: 2007/10/22 13:46:03 $";
+static const char * const IDENT_VMAIL_C="$Date: 2007/10/22 14:35:14 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -633,7 +633,7 @@ static const String& file_value_to_string(Request& r, Value* send_value) {
 	const char* file_name_cstr=file_name->cstr();
 
 	// content-type: application/octet-stream
-	result << "content-type: " << r.mime_type_of(file_name_cstr) << "; name=\"" << file_name_cstr << "\"\n";
+	result << CONTENT_TYPE_NAME ": " << r.mime_type_of(file_name_cstr) << "; name=\"" << file_name_cstr << "\"\n";
 
 	if(!info.had_content_disposition) {
 		// $.content-disposition wasn't specified
@@ -649,12 +649,12 @@ static const String& file_value_to_string(Request& r, Value* send_value) {
 
 	const String* type=vformat?&vformat->as_string():0;
 	if(!type/*default = uue*/ || *type=="uue") {
+		result << CONTENT_TRANSFER_ENCODING_NAME ": x-uuencode\n" << "\n";
 		pa_uuencode(result, *file_name, *vfile);
 	} else {
 		if(*type=="base64") {
-			size_t file_size=vfile->value_size();
-			result << "content-transfer-encoding: base64\n" << "\n";
-			result << pa_base64_encode(vfile->value_ptr(), file_size);
+			result << CONTENT_TRANSFER_ENCODING_NAME ": base64\n" << "\n";
+			result << pa_base64_encode(vfile->value_ptr(), vfile->value_size());
 		} else {
 			// for now
 		throw Exception(PARSER_RUNTIME,
@@ -687,10 +687,11 @@ static const String& text_value_to_string(Request& r,
 
 	if(!info.content_type) {
 		result 
-			<< "content-type: text/" << (pt==P_TEXT?"plain":"html")
+			<< CONTENT_TYPE_NAME ": text/" << (pt==P_TEXT?"plain":"html")
 			<< "; charset=" << info.charsets.mail().NAME()
 			<< "\n";
 	}
+	result << CONTENT_TRANSFER_ENCODING_NAME << ": 8bit\n";
 
 	// header|body separator
 	result << "\n"; 
@@ -816,7 +817,7 @@ const String& VMail::message_hash_to_string(Request& r,
 			}
 		}
 		
-		result << "content-type: " << ( is_inline ? "multipart/related;" : "multipart/mixed;" );
+		result << CONTENT_TYPE_NAME ": " << ( is_inline ? "multipart/related;" : "multipart/mixed;" );
 
 		// multi-part
 		result 
@@ -829,7 +830,7 @@ const String& VMail::message_hash_to_string(Request& r,
 	{
 		if(alternative) {
 			result << "\n\n--" << boundary << "\n" // intermediate boundary
-				"content-type: multipart/alternative; boundary=\"ALT" << boundary << "\"\n";
+				CONTENT_TYPE_NAME ": multipart/alternative; boundary=\"ALT" << boundary << "\"\n";
 		} 
 		for(int i=0; i<2; i++) {
 			PartType pt=i==0?P_TEXT:P_HTML;
