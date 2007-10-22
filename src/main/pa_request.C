@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REQUEST_C="$Date: 2007/10/17 07:59:55 $";
+static const char * const IDENT_REQUEST_C="$Date: 2007/10/22 13:44:59 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -60,7 +60,7 @@ const String main_method_name(MAIN_METHOD_NAME);
 const String auto_method_name(AUTO_METHOD_NAME);
 const String content_disposition_name(CONTENT_DISPOSITION_NAME);
 const String content_disposition_inline(CONTENT_DISPOSITION_INLINE);
-const String content_disposition_value(CONTENT_DISPOSITION_VALUE);
+const String content_disposition_attachment(CONTENT_DISPOSITION_ATTACHMENT);
 const String content_disposition_filename_name(CONTENT_DISPOSITION_FILENAME_NAME);
 const String body_name(BODY_NAME);
 const String exception_type_part_name(EXCEPTION_TYPE_PART_NAME);
@@ -841,7 +841,7 @@ void Request::output_result(VFile* body_file, bool header_only, bool as_attachme
 		if(sfile_name!=NONAME_DAT) {
 			VHash& hash=*new VHash();
 			HashStringValue &h=hash.hash();
-			h.put(value_name, new VString( as_attachment ? content_disposition_value : content_disposition_inline ));
+			h.put(value_name, new VString( as_attachment ? content_disposition_attachment : content_disposition_inline ));
 
 			h.put(content_disposition_filename_name, vfile_name);
 			response.fields().put(content_disposition_name, &hash);

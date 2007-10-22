@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char * const IDENT_REQUEST_H="$Date: 2007/04/23 10:30:19 $";
+static const char * const IDENT_REQUEST_H="$Date: 2007/10/22 13:44:42 $";
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -363,7 +363,8 @@ public: // status read methods
 		Execute_nonvirtual_method_result(): string(0), method(0) {}
 	};
 	Execute_nonvirtual_method_result execute_nonvirtual_method(VStateless_class& aclass, 
-		const String& method_name, VString* optional_param,
+		const String& method_name,
+		VString* optional_param,
 		bool do_return_string);
 	//}
 
@@ -510,7 +511,7 @@ public:
 // defines for externs
 
 #define CONTENT_DISPOSITION_NAME "content-disposition"
-#define CONTENT_DISPOSITION_VALUE "attachment"
+#define CONTENT_DISPOSITION_ATTACHMENT "attachment"
 #define CONTENT_DISPOSITION_INLINE "inline"
 #define CONTENT_DISPOSITION_FILENAME_NAME "filename"
 #define EXCEPTION_HANDLED_PART_NAME "handled"
@@ -522,7 +523,7 @@ extern const String main_method_name;
 extern const String auto_method_name;
 extern const String body_name;
 extern const String content_disposition_name;
-extern const String content_disposition_value;
+extern const String content_disposition_attachment;
 extern const String content_disposition_inline;
 extern const String content_disposition_filename_name;
 
