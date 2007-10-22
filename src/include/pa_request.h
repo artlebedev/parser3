@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char * const IDENT_REQUEST_H="$Date: 2007/10/22 14:33:43 $";
+static const char * const IDENT_REQUEST_H="$Date: 2007/10/22 16:38:20 $";
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -510,8 +510,8 @@ public:
 
 // defines for externs
 
-#define CONTENT_TRANSFER_ENCODING_NAME "Content-Transfer-Encoding"
-#define CONTENT_DISPOSITION_NAME "Content-Disposition"
+#define CONTENT_TRANSFER_ENCODING_NAME "content-transfer-encoding"
+#define CONTENT_DISPOSITION_NAME "content-disposition"
 #define CONTENT_DISPOSITION_ATTACHMENT "attachment"
 #define CONTENT_DISPOSITION_INLINE "inline"
 #define CONTENT_DISPOSITION_FILENAME_NAME "filename"
@@ -525,6 +525,7 @@ extern const String main_method_name;
 extern const String auto_method_name;
 extern const String body_name;
 
+extern const String content_transfer_encoding_name;
 extern const String content_disposition_name;
 extern const String content_disposition_attachment;
 extern const String content_disposition_inline;
