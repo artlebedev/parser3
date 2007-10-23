@@ -894,6 +894,8 @@ xdoc(xnode)
     !$node.previousSibling
     !$node.nextSibling
     !$node.ownerDocument = xdoc
+    !$node.prefix
+    !$node.namespaceURI
     !$element_node.attributes = hash of xnodes
     !$element_node.tagName
     !$attribute_node.specified = boolean
