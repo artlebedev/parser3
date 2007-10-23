@@ -7,7 +7,7 @@
 #include "pa_config_includes.h"
 #ifdef XML
 
-static const char * const IDENT_VXNODE_C="$Date: 2007/02/09 18:06:37 $";
+static const char * const IDENT_VXNODE_C="$Date: 2007/10/23 13:56:46 $";
 
 #include "pa_vxnode.h"
 #include "pa_vxdoc.h"
@@ -96,9 +96,12 @@ Value* VXnode::get_element(const String& aname, Value& aself, bool looking_up) {
 					return result;
 				}
 				return 0;
-			} else if(aname=="tagName") {
+			} else if(aname=="tagName")
 				return new VString(charsets().source().transcode(selfNode.name));
-			}
+			else if(aname=="prefix")
+				return (selfNode.ns ? new VString(charsets().source().transcode(selfNode.ns->prefix)) : 0);
+			else if(aname=="namespaceURI")
+				return (selfNode.ns ? new VString(charsets().source().transcode(selfNode.ns->href)) : 0);
 			break;
 		case XML_ATTRIBUTE_NODE: 
 			if(aname=="specified")
@@ -107,6 +110,10 @@ Value* VXnode::get_element(const String& aname, Value& aself, bool looking_up) {
 				return new VString(charsets().source().transcode(selfNode.name));
 			else if(aname=="value")
 				return new VString(charsets().source().transcode(xmlNodeGetContent(&selfNode)));
+			else if(aname=="prefix")
+				return (selfNode.ns ? new VString(charsets().source().transcode(selfNode.ns->prefix)) : 0);
+			else if(aname=="namespaceURI")
+				return (selfNode.ns ? new VString(charsets().source().transcode(selfNode.ns->href)) : 0);
 			break;
 /*
 		case XML_COMMENT_NODE: 
