@@ -7,7 +7,7 @@
 #include "classes.h"
 #ifdef XML
 
-static const char * const IDENT_XNODE_C="$Date: 2007/10/10 17:37:18 $";
+static const char * const IDENT_XNODE_C="$Date: 2007/10/23 13:57:15 $";
 
 #include "pa_vmethod_frame.h"
 
@@ -558,7 +558,7 @@ static void _hasAttribute(Request& r, MethodParams& params) {
 
 	// todo: when name="xmlns"
 	// write out result
-	r.write_no_lang(*new VBool(xmlGetProp(&element, name)!=0));
+	r.write_no_lang(*new VBool(xmlHasProp(&element, name)!=0));
 }
 
 // boolean hasAttributeNS(n DOMString namespaceURI, in DOMString localName) raises(DOMException);
@@ -570,7 +570,7 @@ static void _hasAttributeNS(Request& r, MethodParams& params) {
 	const xmlChar* localName=as_xmlchar(r, params, 1, LOCALNAME_MUST_BE_STRING);
 
 	// write out result
-	r.write_no_lang(*new VBool(xmlGetNsProp(&element, localName, namespaceURI)!=0));
+	r.write_no_lang(*new VBool(xmlHasNsProp(&element, localName, namespaceURI)!=0));
 }
 
 // boolean hasAttributes
