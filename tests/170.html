@@ -1,0 +1,21 @@
+@main[]
+=^m1[1;2]=
+=^m2[1;2]=
+=^m3[1;2]=
+#=^try{^m4[1;2]}{$exception.handled(1)failed. it's ok}=
+
+
+@m1[a;b]
+^if(0){$a}{$b}
+
+
+@m2[a;b][result]
+^if(0){$a}{$b}
+
+
+@m3[a;b]
+^if(0){$a}{$b}<br />
+
+
+#@m4[a;b][result]
+#^if(0){$a}{$b}<br />
