@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Id: buildall-without-xml,v 1.11 2007/08/27 09:46:25 misha Exp $
+# $Id: buildall-without-xml,v 1.12 2007/10/25 13:38:43 misha Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -43,13 +43,14 @@ fi
 cd $parser3_directory
 
 if test ! -f "Makefile"; then
+  options=""
+  options="$options --with-static-gc=$project_directory/gc/lib"
+#  options="$options --disable-safe-mode"
+#  options="$options --with-dynamic-stdcpp"
+  options="$options --silent"
+
   echo "Configuring parser3..."
-  ./configure --prefix=$install_directory \
-     "--with-sendmail=$sendmail_command" \
-     --with-static-gc=$project_directory/gc/lib \
-#     --disable-safe-mode \
-#     --with-dynamic-stdcpp \
-     --silent
+  ./configure --prefix=$install_directory "--with-sendmail=$sendmail_command" $options
 fi
 echo "Building parser3..."
 make install
