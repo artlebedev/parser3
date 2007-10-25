@@ -5,7 +5,7 @@
 	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.221 2007/10/17 13:34:59 misha Exp $
+	$Id: compile.y,v 1.222 2007/10/25 10:52:48 misha Exp $
 */
 
 /**
@@ -216,9 +216,8 @@ control_strings: control_string | control_strings control_string { $$=$1; P(*$$,
 control_string: maybe_string '\n';
 maybe_string: empty | STRING;
 
-code_method: '@' STRING bracketed_maybe_strings maybe_bracketed_strings maybe_comment '\n' maybe_codes { 
+code_method: '@' STRING bracketed_maybe_strings maybe_bracketed_strings maybe_comment '\n' { 
 	PC.explicit_result=false;
-	const String& name=*LA2S(*$2);
 
 	YYSTYPE params_names_code=$3;
 	ArrayString* params_names=0;
@@ -246,12 +245,18 @@ code_method: '@' STRING bracketed_maybe_strings maybe_bracketed_strings maybe_co
 		Method::CT_ANY,
 		0, 0/*min,max numbered_params_count*/, 
 		params_names, locals_names, 
-		$7, 0);
+		0/*to be filled later in next {} */, 0);
 
-	PC.cclass->add_method(PC.alias_method(name), *method);
 	*reinterpret_cast<Method**>(&$$)=method;
 
 	// todo: check [][;result;]
+} maybe_codes {
+        Method& method=*reinterpret_cast<Method*>($7);
+        // fill in the code
+        method.parser_code=$8;
+        // register in class
+        const String& name=*LA2S(*$2);
+        PC.cclass->add_method(PC.alias_method(name), method);
 };
 
 maybe_bracketed_strings: empty | bracketed_maybe_strings;
