@@ -473,6 +473,7 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !$request:document-root
         каталог, относительно которого считаются пути в parser, по-умолчанию = $env:DOCUMENT_ROOT
         можно изменить, если на hosting что-то неудобно настроено
+    !$request:argv = hash с параметрами коммандной строки. ключи 0, 1, ... [0 -- имя обрабатываемого файла].
     X!$request:browser  это hash, поля:
         !$type = ie/nn и !$version = номер, скажем 5.5       
     X$request:user
