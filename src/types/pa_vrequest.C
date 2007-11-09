@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VREQUEST_C="$Date: 2007/11/09 14:41:13 $";
+static const char * const IDENT_VREQUEST_C="$Date: 2007/11/09 17:11:15 $";
 
 #include "pa_vrequest.h"
 #include "pa_request_info.h"
@@ -31,7 +31,7 @@ VRequest::VRequest(Request_info& ainfo, Request_charsets& acharsets):
 	
 			fargv.put_dont_replace(
 				*new String(name, sprintf(name, "%d", i - ainfo.args_skip)),
-				new VString(*new String(value))
+				new VString(*new String(value, 0, true /*tainted*/))
 			);
 		}
 	}
@@ -42,7 +42,8 @@ Value* VRequest::get_element(const String& aname, Value&  /*aself*/, bool /*look
 	// $charset
 	if(aname==CHARSET_NAME)
 		return new VString(*new String(fcharsets.source().NAME(), String::L_TAINTED));
-	else if(aname==REQUEST_ARGV_ELEMENT_NAME)
+
+	if(aname==REQUEST_ARGV_ELEMENT_NAME)
 		return new VHash(fargv);
 	
 	// $query $uri $document-root $body
