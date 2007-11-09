@@ -8,16 +8,17 @@
 #ifndef PA_VREQUEST_H
 #define PA_VREQUEST_H
 
-static const char * const IDENT_VREQUEST_H="$Date: 2005/08/09 08:14:55 $";
+static const char * const IDENT_VREQUEST_H="$Date: 2007/11/09 14:41:13 $";
 
 // includes
 
-//#include "pa_common.h"
+#include "pa_common.h"
 #include "pa_value.h"
 
 // defines
 
 #define REQUEST_CLASS_NAME "request"
+#define REQUEST_ARGV_ELEMENT_NAME "argv"
 
 // forwards
 
@@ -28,10 +29,11 @@ class VRequest: public Value {
 
 	Request_info& finfo;
 	Request_charsets& fcharsets;
+	HashStringValue fargv;
 
 public: // Value
 	
-	override const char* type() const { return "request"; }
+	override const char* type() const { return REQUEST_CLASS_NAME; }
 	/// VRequest: 0
 	override VStateless_class *get_class() { return 0; }
 
@@ -43,8 +45,7 @@ public: // Value
 
 public: // usage
 
-	VRequest(Request_info& ainfo, Request_charsets& acharsets): 
-		finfo(ainfo), fcharsets(acharsets) {}
+	VRequest(Request_info& ainfo, Request_charsets& acharsets);
 
 };
 

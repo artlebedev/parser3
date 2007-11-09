@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_INFO_H
 #define PA_REQUEST_INFO_H
 
-static const char * const IDENT_REQUEST_INFO_H="$Date: 2005/08/09 08:14:50 $";
+static const char * const IDENT_REQUEST_INFO_H="$Date: 2007/11/09 14:39:14 $";
 
 /// some information from web server
 class Request_info {
@@ -22,6 +22,9 @@ public:
 	const char* content_type;
 	size_t content_length;
 	const char* cookie;
+	
+	char** argv;
+	int args_skip;
 	bool mail_received;
 	//@}
 	//@{ these are filed by Request class itself: user's post data

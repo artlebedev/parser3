@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_PARSER3_C="$Date: 2007/08/17 09:06:13 $";
+static const char * const IDENT_PARSER3_C="$Date: 2007/11/09 14:42:09 $";
 
 #include "pa_config_includes.h"
 
@@ -22,9 +22,6 @@ static const char * const IDENT_PARSER3_C="$Date: 2007/08/17 09:06:13 $";
 
 #ifdef WIN32
 #	include <windows.h>
-#	include "getopt.h"
-#else
-#	include <getopt.h>
 #endif
 
 // defines
@@ -50,6 +47,9 @@ const size_t READ_POST_CHUNK_SIZE=0x400*0x400; // 1M
 static const char* argv0;
 static const char* config_filespec_cstr=0;
 static bool fail_on_config_read_problem=true;
+
+static int args_skip=1;
+static char** argv_all = NULL;
 
 static bool cgi; ///< we were started as CGI?
 static bool mail_received=false; ///< we were started with -m option? [asked to parse incoming message to $mail:received]
@@ -475,6 +475,9 @@ static void real_parser_handler(const char* filespec_to_process,
 	request_info.cookie=getenv("HTTP_COOKIE");
 	request_info.mail_received=mail_received;
 
+	request_info.argv=argv_all;
+	request_info.args_skip=args_skip;
+
 	// get request_info ptr for signal handlers
 	::request_info=&request_info;
 	if(execution_canceled)
@@ -610,7 +613,7 @@ static void usage(const char* program) {
 	exit(EINVAL);
 }
 
-int main(int argc, char *argv[]) {
+int main(size_t argc, char *argv[]) {
 #ifdef PA_DEBUG_CGI_ENTRY_EXIT
 	log("main: entry");
 #endif
@@ -654,6 +657,7 @@ int main(int argc, char *argv[]) {
 #ifdef _DEBUG
 	//_crtBreakAlloc=46;
 #endif
+	argv_all=argv;
 	argv0=argv[0];
 
 	umask(2);
@@ -671,38 +675,44 @@ int main(int argc, char *argv[]) {
 		if(raw_filespec_to_process && !*raw_filespec_to_process)
 			raw_filespec_to_process=0;
 	} else {
-		optind = 1;
-		opterr = 0;
-		int c;
-		while((c = getopt(argc, argv, "hf:"
+		size_t optind=1;
+		while(optind < argc){
+			char *carg = argv[optind];
+			if(carg[0] != '-')
+				break;
+
+			for(size_t k = 1; k < strlen(carg); k++){
+				char c = carg[k];
+				switch (c) {
+					case 'h':
+						usage(argv[0]);
+						break;
+					case 'f':
+						if(optind < argc - 1){
+							optind++;
+							config_filespec_cstr=argv[optind];
+						}
+						break;
 #ifdef WITH_MAILRECEIVE
-			"m"
+					case 'm':
+						mail_received=true;
+						break;
 #endif
-			)) > 0) {
-			switch (c) {
-			case 'h':
-				usage(argv[0]);
-				break;
-			case 'f':
-				config_filespec_cstr=optarg;
-				break;
-#ifdef WITH_MAILRECEIVE
-			case 'm':
-				mail_received=true;
-				break;
-#endif
-			default:
-				fprintf(stderr, "%s: invalid option '%c'\n", argv[0], optopt);
-				usage(argv[0]);
-				break;
+					default:
+						fprintf(stderr, "%s: invalid option '%c'\n", argv[0], c);
+						usage(argv[0]);
+						break;
+				}
 			}
+			optind++;
 		}
-		if (optind != argc - 1) {
+		
+		if (optind > argc - 1) {
 			fprintf(stderr, "%s: file not specified\n", argv[0]);
 			usage(argv[0]);
 		}
-		
-		raw_filespec_to_process=argv[optind++];
+		raw_filespec_to_process=argv[optind];
+		args_skip=optind;
 	}
 
 #ifdef WIN32

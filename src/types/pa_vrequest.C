@@ -5,24 +5,45 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VREQUEST_C="$Date: 2005/08/09 08:14:55 $";
+static const char * const IDENT_VREQUEST_C="$Date: 2007/11/09 14:41:13 $";
 
 #include "pa_vrequest.h"
 #include "pa_request_info.h"
 #include "pa_request_charsets.h"
 #include "pa_charsets.h"
 #include "pa_vstring.h"
+#include "pa_vhash.h"
 
 // defines
 
 #define DOCUMENT_ROOT_NAME "document-root"
 
+VRequest::VRequest(Request_info& ainfo, Request_charsets& acharsets): 
+		finfo(ainfo), 
+		fcharsets(acharsets) {
+   
+	if(ainfo.argv) {
+		for (size_t i = ainfo.args_skip; ainfo.argv[i]; i++) {
+        	char *name = new(PointerFreeGC) char[3 /* max 999 argvs */ + 1/* terminating 0 */];
+
+			char *value = new(PointerFreeGC) char[strlen(ainfo.argv[i])+1];
+			strcpy(value, ainfo.argv[i]);
+	
+			fargv.put_dont_replace(
+				*new String(name, sprintf(name, "%d", i - ainfo.args_skip)),
+				new VString(*new String(value))
+			);
+		}
+	}
+}
 
 // request: CLASS,method,field
 Value* VRequest::get_element(const String& aname, Value&  /*aself*/, bool /*looking_up*/) {
 	// $charset
 	if(aname==CHARSET_NAME)
 		return new VString(*new String(fcharsets.source().NAME(), String::L_TAINTED));
+	else if(aname==REQUEST_ARGV_ELEMENT_NAME)
+		return new VHash(fargv);
 	
 	// $query $uri $document-root $body
 	const char* buf;
