@@ -1,4 +1,16 @@
+2007-11-09	misha
+	* operators.txt 1.203:
+	* src/include/pa_request_info.h 1.6:
+	* src/targets/cgi/parser3.C 1.245:
+	* src/types/pa_vrequest.C 1.38:
+	* src/types/pa_vrequest.h 1.34:
+		- $request:argv
+
 2007-10-25	misha
+	* buildall-with-xml 1.19:
+	* buildall-without-xml 1.12:
+		- options preparations for ./configure rewrited
+
 	* src/main/compile.tab.C 1.115:
 	* src/main/compile.y 1.222:
 		- bug if parser.compile error occure in unhandled_exception 
