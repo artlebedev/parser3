@@ -1,4 +1,23 @@
+2007-11-14	misha
+	* operators.txt 1.204:
+		- info about new text|binary option for file::exec/cgi was added
+
+	* src/classes/file.C 1.162:
+	* src/include/pa_exec.h 1.19:
+	* src/main/pa_exec.C 1.70:
+		- ^file:exec[[text|binary];script;...]
+
+	* src/classes/file.C 1.161:
+	* src/classes/image.C 1.117:
+	* src/classes/string.C 1.157:
+	* src/classes/table.C 1.237:
+	* src/include/pa_exception.h 1.51:
+		- more text strings moved to the one place
+
 2007-11-09	misha
+	* src/types/pa_vrequest.C 1.39:
+		- $request:argv must be taint
+
 	* operators.txt 1.203:
 	* src/include/pa_request_info.h 1.6:
 	* src/targets/cgi/parser3.C 1.245:
