@@ -7,7 +7,7 @@
 	@todo setrlimit
 */
 
-static const char * const IDENT_EXEC_C="$Date: 2007/04/23 10:30:31 $";
+static const char * const IDENT_EXEC_C="$Date: 2007/11/14 12:45:45 $";
 
 #include "pa_config_includes.h"
 
@@ -119,6 +119,36 @@ static void read_pipe(String& result, HANDLE hOutRead, String::Language lang){
 			break;
 		buf[size]=0;
 		result.append_know_length(buf, size, lang);
+	}
+}
+
+static void read_pipe(File_read_result& result, HANDLE hOutRead){
+	char *buf=new(PointerFreeGC) char[MAX_STRING];
+
+	unsigned long size = 0;
+	unsigned long bufsize = 0;
+	unsigned long newsize = 0;
+
+	result.headers = 0;
+	result.length = 0;
+	result.str = 0;
+	result.success = false;
+
+	while(true) {
+		if(!ReadFile(hOutRead, buf, MAX_STRING, &size, NULL) || !size) 
+			break;
+		newsize = (size + result.length);
+		if(newsize > bufsize){
+			bufsize = (size==MAX_STRING)?newsize*2:newsize;
+			char *tmp = new(PointerFreeGC) char[bufsize];
+			if(result.str)
+				memcpy(tmp, result.str, result.length);
+			memcpy(tmp+result.length, buf, size);
+			result.str = tmp;
+		}else{
+			memcpy(result.str+result.length, buf, size);
+		}
+		result.length = newsize;
 	}
 }
 
@@ -290,6 +320,37 @@ static void read_pipe(String& result, int file, String::Language lang){
 	}
 }
 
+static void read_pipe(File_read_result& result, int file){
+	char *buf=new(PointerFreeGC) char[MAX_STRING];
+
+	ssize_t size = 0;
+	unsigned long bufsize = 0;
+	unsigned long newsize = 0;
+
+	result.headers = 0;
+	result.length = 0;
+	result.str = 0;
+	result.success = false;
+
+	while(true) {
+		read(file, buf, MAX_STRING);
+		if(size <= 0)
+			break;
+		newsize = (size + result.length);
+		if(newsize > bufsize){
+			bufsize = (size==MAX_STRING)?newsize*2:newsize;
+			char *tmp = new(PointerFreeGC) char[bufsize];
+			if(result.str)
+				memcpy(tmp, result.str, result.length);
+			memcpy(tmp+result.length, buf, size);
+			result.str = tmp;
+		}else{
+			memcpy(result.str+result.length, buf, size);
+		}
+		result.length = newsize;
+	}
+}
+
 #endif
 
 #ifndef DOXYGEN
@@ -374,7 +435,7 @@ PA_exec_result pa_exec(
 		// without this char
 		WriteFile(hInWrite, "\x1A", 1, &written_size, NULL);
 		CloseHandle(hInWrite);
-		read_pipe(result.out, hOutRead, String::L_AS_IS);
+		read_pipe(result.out, hOutRead);
 		CloseHandle(hOutRead);
 		read_pipe(result.err, hErrRead, String::L_TAINTED);		
 		CloseHandle(hErrRead);
@@ -439,7 +500,7 @@ from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?r
 			write(pipe_write, in_cstr, in.length());
 		}
 		close(pipe_write);
-		read_pipe(result.out, pipe_read, String::L_AS_IS);
+		read_pipe(result.out, pipe_read);
 		close(pipe_read);
 		read_pipe(result.err, pipe_err, String::L_TAINTED);
 		close(pipe_err);

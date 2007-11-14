@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2007/11/14 09:45:21 $";
+static const char * const IDENT_FILE_C="$Date: 2007/11/14 12:46:02 $";
 
 #include "pa_config_includes.h"
 
@@ -351,11 +351,32 @@ static void append_to_argv(Request& r, ArrayString& argv, const String* str){
 	}
 }
 
+inline size_t strpos(const char *s1, const char *s2) {
+	const char *p = strstr(s1, s2);
+	return (p==0)?(size_t)-1:p-s1;
+}
+
 /// @todo fix `` in perl - they produced flipping consoles and no output to perl
 static void _exec_cgi(Request& r, MethodParams& params,
 					  bool cgi) {
 
-	Value& vfile_name=params.as_no_junction(0, FILE_NAME_MUST_NOT_BE_CODE);
+	Value& first_param=params.as_no_junction(0, FIRST_ARG_MUST_NOT_BE_CODE);			
+	
+	bool is_mode_specified=is_valid_mode(first_param.as_string());
+	const String& mode_name=(is_mode_specified) ? first_param.as_string() : *new String(TEXT_MODE_NAME);
+
+	size_t param_index=1;
+	if(!is_mode_specified){
+		--param_index;
+	}
+
+	if(param_index>=params.count())
+		throw Exception(PARSER_RUNTIME,
+			0,
+			"file name must be specified");
+
+
+	Value& vfile_name=params.as_no_junction(param_index++, FILE_NAME_MUST_NOT_BE_CODE);
 
 	const String& script_name=r.absolute(vfile_name.as_string());
 
@@ -396,8 +417,8 @@ static void _exec_cgi(Request& r, MethodParams& params,
 	// environment & stdin from param
 	String *in=new String();
 	Charset *charset=0; // default script works raw_in 'source' charset = no transcoding needed
-	if(params.count()>1) {
-		Value& venv=params.as_no_junction(1, "env must not be code");
+	if(param_index < params.count()) {
+		Value& venv=params.as_no_junction(param_index++, "env must not be code");
 		if(HashStringValue* user_env=venv.get_hash()) {
 			// $.charset  [previewing to handle URI pieces]
 			if(Value* vcharset=user_env->get(CHARSET_EXEC_PARAM_NAME))
@@ -430,12 +451,12 @@ static void _exec_cgi(Request& r, MethodParams& params,
 
 	// argv from params
 	ArrayString argv;
-	if(params.count()>2) {
+	if(param_index < params.count()) {
    		// influence tainting 
    		// main target -- URLencoding of tainted pieces to String::L_URI lang
    		Temp_client_charset temp(r.charsets, charset? *charset: r.charsets.source());
 
-		for(size_t i=2; i<params.count(); i++) {
+		for(size_t i=param_index; i<params.count(); i++) {
 			Value& param=params.as_no_junction(i, PARAM_MUST_NOT_BE_CODE);
 			if(param.is_defined()){
 				if(param.is_string()){
@@ -449,7 +470,7 @@ static void _exec_cgi(Request& r, MethodParams& params,
 					} else {
 						throw Exception(PARSER_RUNTIME,
 							0,
-							"parameter must be string or table");
+							"param must be string or table");
 					}
 				}
 			}
@@ -470,23 +491,31 @@ static void _exec_cgi(Request& r, MethodParams& params,
 	PA_exec_result execution=
 		pa_exec(false/*forced_allow*/, script_name, &env, argv, *in);
 
-	String *real_out=&execution.out;
+	File_read_result *file_out=&execution.out;
 	String *real_err=&execution.err;
-	// transcode if necessary
-	if(charset) {
-		real_out=&Charset::transcode(*real_out, *charset, r.charsets.source());
-		real_err=&Charset::transcode(*real_err, *charset, r.charsets.source());
+
+	if(is_text_mode(mode_name)){
+		fix_line_breaks(file_out->str, file_out->length);
+		// treat output as string
+		String *real_out = new String(file_out->str, file_out->length);
+
+		// transcode if necessary
+		if(charset) {
+			real_out=&Charset::transcode(*real_out, *charset, r.charsets.source());
+			real_err=&Charset::transcode(*real_err, *charset, r.charsets.source());
+		}
+		// FIXME: unsafe cast
+		file_out->str = (char*)real_out->cstr();
+		file_out->length = real_out->length();
 	}
 
 	VFile& self=GET_SELF(r, VFile);
 
-	const String* body=real_out; // ^file:exec
+	if(cgi) { // ^file::cgi
 	const char* eol_marker=0; size_t eol_marker_size;
-	const String* header=0;
-	if(cgi) { // ^file:cgi
 		// construct with 'out' body and header
-		size_t dos_pos=real_out->pos("\r\n\r\n", 4);
-		size_t unix_pos=real_out->pos("\n\n", 2);
+		size_t dos_pos=strpos(file_out->str, "\r\n\r\n");
+		size_t unix_pos=strpos(file_out->str, "\n\n");
 
 		bool unix_header_break;
 		switch((dos_pos!=STRING_NOT_FOUND?10:00) + (unix_pos!=STRING_NOT_FOUND?01:00)) {
@@ -506,7 +535,7 @@ static void _exec_cgi(Request& r, MethodParams& params,
 				"output does not contain CGI header; "
 				"exit status=%d; stdoutsize=%u; stdout: \"%s\"; stderrsize=%u; stderr: \"%s\"", 
 					execution.status, 
-					(uint)real_out->length(), real_out->cstr(),
+					(uint)file_out->length, file_out->str,
 					(uint)real_err->length(), real_err->cstr());
 			break; //never reached
 		}
@@ -520,23 +549,29 @@ static void _exec_cgi(Request& r, MethodParams& params,
 			eol_marker="\r\n"; eol_marker_size=2;
 		}
 
-		header=&real_out->mid(0, header_break_pos);
-		body=&real_out->mid(header_break_pos+eol_marker_size*2, real_out->length());
-	}
-	// body
-	self.set(false/*not tainted*/, body->cstr(), body->length());
+		file_out->str[header_break_pos] = 0;
+		String *header=new String(file_out->str, header_break_pos);
+		unsigned long headersize = header_break_pos+eol_marker_size*2;
+		file_out->str += headersize;
+		file_out->length -= headersize;
 
-	// $fields << header
-	if(header && eol_marker) {
-		ArrayString rows;
-		size_t pos_after=0;
-		header->split(rows, pos_after, eol_marker);
-		Pass_cgi_header_attribute_info info={0, 0, 0};
-		info.charset=&r.charsets.source();
-		info.fields=&self.fields();
-		rows.for_each(pass_cgi_header_attribute, &info);
-		if(info.content_type)
-			self.fields().put(content_type_name, info.content_type);
+		// body
+		self.set(false/*not tainted*/, file_out->str, file_out->length);
+
+		// $fields << header
+		if(header && eol_marker) {
+			ArrayString rows;
+			size_t pos_after=0;
+			header->split(rows, pos_after, eol_marker);
+			Pass_cgi_header_attribute_info info={0, 0, 0};
+			info.charset=&r.charsets.source();
+			info.fields=&self.fields();
+			rows.for_each(pass_cgi_header_attribute, &info);
+			if(info.content_type)
+				self.fields().put(content_type_name, info.content_type);
+		}
+	} else {
+		self.set(false/*not tainted*/, file_out->str, file_out->length);
 	}
 
 	// $status
@@ -994,15 +1029,15 @@ MFile::MFile(): Methoded("file") {
 	// ^file::stat[disk-name]
 	add_native_method("stat", Method::CT_DYNAMIC, _stat, 1, 1);
 
-	// ^file::cgi[file-name]
-	// ^file::cgi[file-name;env hash]
-	// ^file::cgi[file-name;env hash;1cmd;2line;3ar;4g;5s]
-	add_native_method("cgi", Method::CT_DYNAMIC, _cgi, 1, 2+50);
+	// ^file::cgi[mode;file-name]
+	// ^file::cgi[mode;file-name;env hash]
+	// ^file::cgi[mode;file-name;env hash;1cmd;2line;3ar;4g;5s]
+	add_native_method("cgi", Method::CT_DYNAMIC, _cgi, 1, 3+50);
 
-	// ^file::exec[file-name]
-	// ^file::exec[file-name;env hash]
-	// ^file::exec[file-name;env hash;1cmd;2line;3ar;4g;5s]
-	add_native_method("exec", Method::CT_DYNAMIC, _exec, 1, 2+50);
+	// ^file::exec[mode;file-name]
+	// ^file::exec[mode;file-name;env hash]
+	// ^file::exec[mode;file-name;env hash;1cmd;2line;3ar;4g;5s]
+	add_native_method("exec", Method::CT_DYNAMIC, _exec, 1, 3+50);
 
 	// ^file:list[path]
 	// ^file:list[path][regexp]

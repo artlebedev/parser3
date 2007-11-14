@@ -8,7 +8,7 @@
 #ifndef PA_EXEC_H
 #define PA_EXEC_H
 
-static const char * const IDENT_EXEC_H="$Date: 2005/08/09 08:14:49 $";
+static const char * const IDENT_EXEC_H="$Date: 2007/11/14 12:45:38 $";
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -18,10 +18,10 @@ static const char * const IDENT_EXEC_H="$Date: 2005/08/09 08:14:49 $";
 
 struct PA_exec_result {
 	int status; ///< exit code
-	String& out;
+	File_read_result out;
 	String& err;
 
-	PA_exec_result(): status(0), out(*new String), err(*new String) {}
+	PA_exec_result(): status(0), out(), err(*new String) {}
 };
 
 PA_exec_result pa_exec(
