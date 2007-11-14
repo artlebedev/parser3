@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2007/10/16 09:30:10 $";
+static const char * const IDENT_TABLE_C="$Date: 2007/11/14 09:45:21 $";
 
 #include <sstream>
 using namespace std;
@@ -429,7 +429,7 @@ void maybe_enclose( ostringstream& to, const String& from, char encloser ) {
 
 /*
 static void _save_old(Request& r, MethodParams& params) {
-	const String& first_arg=params.as_string(0, "first argument must not be code");
+	const String& first_arg=params.as_string(0, FIRST_ARG_MUST_NOT_BE_CODE);
 	size_t param_index=1;
 
 	bool do_append=false;
@@ -515,7 +515,7 @@ static void _save_old(Request& r, MethodParams& params) {
 */
 
 static void _save(Request& r, MethodParams& params) {
-	const String& first_arg=params.as_string(0, "first argument must not be code");
+	const String& first_arg=params.as_string(0, FIRST_ARG_MUST_NOT_BE_CODE);
 	size_t param_index=1;
 
 	bool do_append=false;
@@ -773,7 +773,7 @@ static void _hash(Request& r, MethodParams& params) {
 			int param_index=params.count()-1;
 			if(param_index>0) {
 				if(HashStringValue* options=
-					params.as_no_junction(param_index, "param must not be code").get_hash()
+					params.as_no_junction(param_index, PARAM_MUST_NOT_BE_CODE).get_hash()
 				){
 					--param_index;
 					int valid_options=0;

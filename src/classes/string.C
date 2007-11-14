@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2007/08/28 09:28:00 $";
+static const char * const IDENT_STRING_C="$Date: 2007/11/14 09:45:21 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -535,7 +535,7 @@ static void _sql(Request& r, MethodParams& params) {
 static void _replace(Request& r, MethodParams& params) {
 	const String& src=GET_SELF(r, VString).string();
 
-	Table* table=params.as_no_junction(0, "parameter must not be code").get_table();
+	Table* table=params.as_no_junction(0, PARAM_MUST_NOT_BE_CODE).get_table();
 	if(!table)
 		throw Exception(PARSER_RUNTIME,
 			0,

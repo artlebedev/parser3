@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_IMAGE_C="$Date: 2007/08/20 10:02:51 $";
+static const char * const IDENT_IMAGE_C="$Date: 2007/11/14 09:45:21 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -1020,7 +1020,7 @@ void Font::string_display(gdImage& image, int x, int y, const String& s){
 
 static void _font(Request& r, MethodParams& params) {
 	const String& alphabet=params.as_string(0, "alphabet must not be code");
-	gdImage* image=load(r, params.as_string(1, "file_name must not be code"));
+	gdImage* image=load(r, params.as_string(1, FILE_NAME_MUST_NOT_BE_CODE));
 	int spacebar_width=params.as_int(2, "spacebar_width must be int", r);
 	int monospace_width;
 	if(params.count()>3) {

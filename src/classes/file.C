@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2007/08/20 10:37:21 $";
+static const char * const IDENT_FILE_C="$Date: 2007/11/14 09:45:21 $";
 
 #include "pa_config_includes.h"
 
@@ -114,6 +114,10 @@ static const String::Body cdate_name("cdate");
 
 // methods
 
+static bool is_valid_mode (const String& mode) {
+	return (mode==TEXT_MODE_NAME || mode==BINARY_MODE_NAME);
+}
+
 static bool is_text_mode(const String& mode) {
 	if(mode==TEXT_MODE_NAME)
 		return true;
@@ -125,7 +129,7 @@ static bool is_text_mode(const String& mode) {
 }
 
 static void _save(Request& r, MethodParams& params) {
-	Value& vmode_name=params. as_no_junction(0, "mode must not be code");
+	Value& vmode_name=params.as_no_junction(0, MODE_MUST_NOT_BE_CODE);
 	Value& vfile_name=params.as_no_junction(1, FILE_NAME_MUST_NOT_BE_CODE);
 
 	// save
@@ -196,7 +200,7 @@ static void _load_pass_param(
 	dest->put(key, value);
 }
 static void _load(Request& r, MethodParams& params) {
-	Value& vmode_name=params. as_no_junction(0, "mode must not be code");
+	Value& vmode_name=params.as_no_junction(0, MODE_MUST_NOT_BE_CODE);
 	const String& lfile_name=r.absolute(params.as_no_junction(1, FILE_NAME_MUST_NOT_BE_CODE).as_string());
 	Value* third_param=params.count()>2?&params.as_no_junction(2, "filename or options must not be code")
 		:0;
@@ -243,7 +247,7 @@ static void _load(Request& r, MethodParams& params) {
 }
 
 static void _create(Request& r, MethodParams& params) {
-	Value& vmode_name=params. as_no_junction(0, "mode must not be code");
+	Value& vmode_name=params.as_no_junction(0, MODE_MUST_NOT_BE_CODE);
 	if(!is_text_mode(vmode_name.as_string()))
 		throw Exception(PARSER_RUNTIME,
 			0,
@@ -432,7 +436,7 @@ static void _exec_cgi(Request& r, MethodParams& params,
    		Temp_client_charset temp(r.charsets, charset? *charset: r.charsets.source());
 
 		for(size_t i=2; i<params.count(); i++) {
-			Value& param=params.as_no_junction(i, "parameter must not be code");
+			Value& param=params.as_no_junction(i, PARAM_MUST_NOT_BE_CODE);
 			if(param.is_defined()){
 				if(param.is_string()){
 					append_to_argv(r, argv, param.get_string());
@@ -819,7 +823,7 @@ static void _sql(Request& r, MethodParams& params) {
 
 	if(params.count()>1)
 		if(HashStringValue* options=
-			params.as_no_junction(1, "param must not be code").get_hash()) {
+			params.as_no_junction(1, PARAM_MUST_NOT_BE_CODE).get_hash()) {
 			int valid_options=0;
 			if(Value* vfilename=options->get(NAME_NAME)) {
 				valid_options++;
