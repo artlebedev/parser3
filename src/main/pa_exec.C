@@ -7,7 +7,7 @@
 	@todo setrlimit
 */
 
-static const char * const IDENT_EXEC_C="$Date: 2007/11/14 12:45:45 $";
+static const char * const IDENT_EXEC_C="$Date: 2007/11/15 19:44:39 $";
 
 #include "pa_config_includes.h"
 
@@ -123,6 +123,7 @@ static void read_pipe(String& result, HANDLE hOutRead, String::Language lang){
 }
 
 static void read_pipe(File_read_result& result, HANDLE hOutRead){
+
 	char *buf=new(PointerFreeGC) char[MAX_STRING];
 
 	unsigned long size = 0;
@@ -135,11 +136,11 @@ static void read_pipe(File_read_result& result, HANDLE hOutRead){
 	result.success = false;
 
 	while(true) {
-		if(!ReadFile(hOutRead, buf, MAX_STRING, &size, NULL) || !size) 
+		if(!ReadFile(hOutRead, buf, MAX_STRING-1, &size, NULL) || !size) 
 			break;
 		newsize = (size + result.length);
 		if(newsize > bufsize){
-			bufsize = (size==MAX_STRING)?newsize*2:newsize;
+			bufsize = (size==MAX_STRING-1)?newsize*2:newsize;
 			char *tmp = new(PointerFreeGC) char[bufsize];
 			if(result.str)
 				memcpy(tmp, result.str, result.length);
@@ -323,7 +324,6 @@ static void read_pipe(String& result, int file, String::Language lang){
 static void read_pipe(File_read_result& result, int file){
 	char *buf=new(PointerFreeGC) char[MAX_STRING];
 
-	ssize_t size = 0;
 	unsigned long bufsize = 0;
 	unsigned long newsize = 0;
 
@@ -333,12 +333,12 @@ static void read_pipe(File_read_result& result, int file){
 	result.success = false;
 
 	while(true) {
-		read(file, buf, MAX_STRING);
+		ssize_t size=read(file, buf, MAX_STRING-1);
 		if(size <= 0)
 			break;
 		newsize = (size + result.length);
 		if(newsize > bufsize){
-			bufsize = (size==MAX_STRING)?newsize*2:newsize;
+			bufsize = (size==MAX_STRING-1)?newsize*2:newsize;
 			char *tmp = new(PointerFreeGC) char[bufsize];
 			if(result.str)
 				memcpy(tmp, result.str, result.length);
