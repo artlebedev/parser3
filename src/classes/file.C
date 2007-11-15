@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2007/11/15 17:10:08 $";
+static const char * const IDENT_FILE_C="$Date: 2007/11/15 17:24:22 $";
 
 #include "pa_config_includes.h"
 
@@ -556,6 +556,9 @@ static void _exec_cgi(Request& r, MethodParams& params,
 		file_out->str += headersize;
 		file_out->length -= headersize;
 
+		// $body
+		self.set(false/*not tainted*/, file_out->str, file_out->length);
+
 		// $fields << header
 		if(header && eol_marker) {
 			ArrayString rows;
@@ -568,10 +571,10 @@ static void _exec_cgi(Request& r, MethodParams& params,
 			if(info.content_type)
 				self.fields().put(content_type_name, info.content_type);
 		}
-	}
-
+	} else { // ^file::exec
 	// $body
 	self.set(false/*not tainted*/, file_out->str, file_out->length);
+	}
 
 	// $status
 	self.fields().put(file_status_name, new VInt(execution.status));
