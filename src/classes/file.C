@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2007/11/14 12:46:02 $";
+static const char * const IDENT_FILE_C="$Date: 2007/11/15 17:10:08 $";
 
 #include "pa_config_includes.h"
 
@@ -488,13 +488,12 @@ static void _exec_cgi(Request& r, MethodParams& params,
 	// match silent conversion in OS
 
 	// exec!
-	PA_exec_result execution=
-		pa_exec(false/*forced_allow*/, script_name, &env, argv, *in);
+	PA_exec_result execution=pa_exec(false/*forced_allow*/, script_name, &env, argv, *in);
 
 	File_read_result *file_out=&execution.out;
 	String *real_err=&execution.err;
 
-	if(is_text_mode(mode_name)){
+	if(file_out->length && is_text_mode(mode_name)){
 		fix_line_breaks(file_out->str, file_out->length);
 		// treat output as string
 		String *real_out = new String(file_out->str, file_out->length);
@@ -505,14 +504,16 @@ static void _exec_cgi(Request& r, MethodParams& params,
 			real_err=&Charset::transcode(*real_err, *charset, r.charsets.source());
 		}
 		// FIXME: unsafe cast
-		file_out->str = (char*)real_out->cstr();
+		file_out->str=const_cast<char *>(real_out->cstr()); // hacking a little
 		file_out->length = real_out->length();
 	}
 
 	VFile& self=GET_SELF(r, VFile);
 
 	if(cgi) { // ^file::cgi
-	const char* eol_marker=0; size_t eol_marker_size;
+		const char* eol_marker=0;
+		size_t eol_marker_size;
+
 		// construct with 'out' body and header
 		size_t dos_pos=strpos(file_out->str, "\r\n\r\n");
 		size_t unix_pos=strpos(file_out->str, "\n\n");
@@ -555,9 +556,6 @@ static void _exec_cgi(Request& r, MethodParams& params,
 		file_out->str += headersize;
 		file_out->length -= headersize;
 
-		// body
-		self.set(false/*not tainted*/, file_out->str, file_out->length);
-
 		// $fields << header
 		if(header && eol_marker) {
 			ArrayString rows;
@@ -570,9 +568,10 @@ static void _exec_cgi(Request& r, MethodParams& params,
 			if(info.content_type)
 				self.fields().put(content_type_name, info.content_type);
 		}
-	} else {
-		self.set(false/*not tainted*/, file_out->str, file_out->length);
 	}
+
+	// $body
+	self.set(false/*not tainted*/, file_out->str, file_out->length);
 
 	// $status
 	self.fields().put(file_status_name, new VInt(execution.status));
