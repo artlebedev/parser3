@@ -1,0 +1,55 @@
+content-type: text/html
+content-length: 1143
+
+Get not existing file 'notfound.txt' without $.charset option (^file::exec[text;script;...]):
+status: 2
+text: ''
+size: 0
+stderr: -
+text.length: -
+
+Get not existing file 'notfound.gif' without $.charset option (^file::exec[binary;script;...]):
+status: 2
+text: ''
+size: 0
+stderr: -
+text.length: -
+
+Get file '161_windows1251.txt' as text with additional text 'тест' without $.charset option (^file::exec[script;...]):
+status: 0
+text: 'тест
+проверка'
+size: 13
+stderr: -
+text.length: 13
+
+Get file '161_windows1251.txt' as text without $.charset option (^file::cgi[script;...]):
+status: 0
+text: 'проверка'
+size: 8
+stderr: -
+text.length: 8
+
+Get file '161_windows1251.txt' as text with additional text 'тест' in WINDOWS-1251 (^file::cgi[text;script;...]):
+status: 0
+text: 'тест
+проверка'
+size: 13
+stderr: -
+text.length: 13
+
+Get file '161_utf8.txt' as text with additional text 'тест' in UTF-8 (^file::exec[text;script;...]):
+status: 0
+text: 'тест
+проверка'
+size: 13
+stderr: -
+text.length: 13
+
+Get file '019paf2001.gif' as binary without $.charset option (^file::cgi[binary;script;...]):
+status: 0
+text: 'GIF89aр'
+size: 91968
+stderr: -
+text.length: 7
+
