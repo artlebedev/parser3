@@ -1,0 +1,49 @@
+@main[]
+$request:charset[windows-1251]
+$response:charset[$request:charset]
+$sScript[./cat.sh]
+
+$tData[^table::create{sType	sFormat	sContentType	sFileName	sText	sCharset
+exec	text	text/plain	notfound.txt
+exec	binary	image/gif	notfound.gif
+exec		text/plain	161_windows1251.txt	тест		#old style
+cgi		text/plain	161_windows1251.txt			#old style
+cgi	text	text/plain	161_windows1251.txt	тест	$request:charset
+exec	text	text/plain	161_utf8.txt	тест	UTF-8
+cgi	binary	image/gif	019paf2001.gif
+}]
+
+^tData.menu{
+	Get ^if(-f $tData.sFileName){file '$tData.sFileName' as ^if($tData.sFormat eq "binary"){binary}{text}^if(def $tData.sText){ with additional text '$tData.sText'}}{not existing file '$tData.sFileName'} ^if(def $tData.sCharset){in $tData.sCharset}{without ^$.charset option} (^if(def $tData.sFormat){^^file::${tData.sType}[$tData.sFormat^;script^;...]}{^^file::${tData.sType}[script^;...]}):
+	^if(def $tData.sFormat){
+		^rem{ *** new style where in 1st param we can specify 'text' or 'binary' format *** }
+		^switch[$tData.sType]{
+			^case[exec]{
+				$f[^file::exec[$tData.sFormat;$sScript;^if(def $tData.sCharset){$.charset[$tData.sCharset]};exec;$tData.sContentType;$tData.sFileName;$tData.sText]]
+			}
+			^case[cgi]{
+				$f[^file::cgi[$tData.sFormat;$sScript;^if(def $tData.sCharset){$.charset[$tData.sCharset]};cgi;$tData.sContentType;$tData.sFileName;$tData.sText]]
+			}
+		}
+	}{
+		^rem{ *** old style: 1st param can be path to script only *** }
+		^switch[$tData.sType]{
+			^case[exec]{
+				$f[^file::exec[$sScript;^if(def $tData.sCharset){$.charset[$tData.sCharset]};exec;$tData.sContentType;$tData.sFileName;$tData.sText]]
+			}
+			^case[cgi]{
+				$f[^file::cgi[$sScript;^if(def $tData.sCharset){$.charset[$tData.sCharset]};cgi;$tData.sContentType;$tData.sFileName;$tData.sText]]
+			}
+		}
+	}
+	^print[$f]
+	^if(!$f.status){^f.save[^if($tData.sFormat eq "binary"){binary}{text};171_dir/^tData.line[].^file:justext[$tData.sFileName]]}
+}
+
+
+@print[f]
+status: $f.status
+text: '$f.text'
+size: ^if(def $f.size){$f.size}{-}
+stderr: ^if(def $f.stderr){def}{-}
+text.length: ^if(def $f.text){^f.text.length[]}{-}^taint[as-is][^#0A]
