@@ -3,6 +3,10 @@
 
 $sEmpty[]
 ^$sEmpty[]<br />
+$sTrue[true]
+^$sTrue[true]<br />
+$sFalse[false]
+^$sFalse[false]<br />
 $sZero[0]
 ^$sZero[0]<br />
 $sOne[1]
@@ -130,6 +134,12 @@ $xNode[$h.0]
 
 ^^sTwo.bool(true): ^checkBool(^sTwo.bool(true))
 ^^sTwo.bool(false): ^checkBool(^sTwo.bool(false))
+
+^^sTrue.bool(true): ^checkBool(^sTrue.bool(true))
+^^sTrue.bool(false): ^checkBool(^sTrue.bool(false))
+
+^^sFalse.bool(true): ^checkBool(^sFalse.bool(true))
+^^sFalse.bool(false): ^checkBool(^sFalse.bool(false))
 
 
 <h2>bool methods for double</h2>
