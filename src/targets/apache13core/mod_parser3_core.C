@@ -5,7 +5,7 @@ Parser: apache 1.3 module, part, compiled by parser3project.
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_MOD_PARSER3_MAIN_C="$Date: 2005/12/09 07:18:07 $";
+static const char * const IDENT_MOD_PARSER3_MAIN_C="$Date: 2007/11/27 09:57:52 $";
 
 #include "pa_config_includes.h"
 
@@ -67,17 +67,17 @@ public:
 void SAPI::log(SAPI_Info& SAPI_info, const char* fmt, ...) {
 	va_list args;
 	va_start(args,fmt);
-	char buf[MAX_STRING];
-	size_t size=vsnprintf(buf, MAX_STRING, fmt, args);
-	remove_crlf(buf, buf+size);
+	char buf[MAX_LOG_STRING];
+	size_t size=vsnprintf(buf, MAX_LOG_STRING, fmt, args);
+	size=remove_crlf(buf, buf+size);
 	pa_ap_log_rerror(0, 0, PA_APLOG_ERR | PA_APLOG_NOERRNO, SAPI_info.r, "%s", buf);
 	va_end(args);
 }
 
 static void die_or_abort(const char* fmt, va_list args, bool write_core) {
-	char buf[MAX_STRING];
-	size_t size=vsnprintf(buf, MAX_STRING, fmt, args);
-	remove_crlf(buf, buf+size);
+	char buf[MAX_LOG_STRING];
+	size_t size=vsnprintf(buf, MAX_LOG_STRING, fmt, args);
+	size=remove_crlf(buf, buf+size);
 	pa_ap_log_error(PA_APLOG_MARK, PA_APLOG_EMERG, 0, "%s", buf);
 	
 	// exit & try to produce core dump

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_PARSER3ISAPI_C="$Date: 2007/08/17 09:01:29 $";
+static const char * const IDENT_PARSER3ISAPI_C="$Date: 2007/11/27 09:58:05 $";
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -77,12 +77,12 @@ public:
 void SAPI::log(SAPI_Info& SAPI_info, const char* fmt, ...) {
 	va_list args;
 	va_start(args,fmt);
-	char buf[MAX_STRING];
+	char buf[MAX_LOG_STRING];
 	const char* prefix="PARSER_ERROR:";
 	strcpy(buf, prefix);
 	char *start=buf+strlen(prefix);
-	DWORD size=vsnprintf(start, MAX_STRING-strlen(prefix), fmt, args);
-	remove_crlf(start, start+size);
+	DWORD size=vsnprintf(start, MAX_LOG_STRING-strlen(prefix), fmt, args);
+	size=remove_crlf(start, start+size);
 
 	SAPI_info.lpECB->ServerSupportFunction(SAPI_info.lpECB->ConnID, 
 		HSE_APPEND_LOG_PARAMETER, buf, &size, 0);

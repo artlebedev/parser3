@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_PARSER3_C="$Date: 2007/11/09 14:42:09 $";
+static const char * const IDENT_PARSER3_C="$Date: 2007/11/27 09:57:39 $";
 
 #include "pa_config_includes.h"
 
@@ -112,9 +112,9 @@ static void log(const char* fmt, va_list args) {
 	}
 	// message
 
-	char buf[MAX_STRING];
-	size_t size=vsnprintf(buf, MAX_STRING, fmt, args);
-	remove_crlf(buf, buf+size);
+	char buf[MAX_LOG_STRING];
+	size_t size=vsnprintf(buf, MAX_LOG_STRING, fmt, args);
+	size=remove_crlf(buf, buf+size);
 	fwrite(buf, size, 1, f);
 
 	if(request_info)
