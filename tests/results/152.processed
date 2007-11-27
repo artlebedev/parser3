@@ -1,17 +1,22 @@
 content-type: text/html
-content-length: 7362
+content-length: 8022
 
 <h2>Defines</h2>
 $sEmpty[]<br />
 $sZero[0]<br />
 $sOne[1]<br />
-$sTwo[2]<br /><br />
+$sTwo[2]<br />
+$sTrue[true]<br />
+$sFalse[false]<br />
+<br />
 $dZero(0.0)<br />
 $dOne(1.1)<br />
-$dTwo(2.2)<br /><br />
+$dTwo(2.2)<br />
+<br />
 $iZero(^dZero.int[])<br />
 $iOne(^dOne.int[])<br />
-$iTwo(^dTwo.int[])<br /><br />
+$iTwo(^dTwo.int[])<br />
+<br />
 $bTrue(1==1)<br />
 $bFalse(1==0)<br /><br />
 $dtDate[^date::create(2007;01;02;03;04;05)]<br />
@@ -29,7 +34,7 @@ $hHash[<br />
 $fFile[^file::load[text;152.html]]<br />
 $fStat[^file::stat[152.html]]<br /><br />
 $fImage[^image::measure[103paf2001.gif]]<br /><br />
-$xDoc[^xdoc::create{<?xml version="1.0"?><root><t/><t/><t/></root>}]<br />
+$xDoc[^xdoc::create{&lt;?xml version=&quot;1.0&quot;?&gt;&lt;root&gt;&lt;t/&gt;&lt;t/&gt;&lt;t/&gt;&lt;/root&gt;}]<br />
 $h[^xDoc.select[/root/t]]<br />
 $xNode[$h.0]<br />
 <hr />
@@ -162,6 +167,42 @@ $xNode[$h.0]<br />
 </td>
 <td><b>true</b><br />
 </td>
+<td>no</td>
+<td><b>yes</b></td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+</tr>
+<tr>
+<td>$sTrue</td>
+<td>string</td>
+<td><b>yes</b><br />
+</td>
+<td>--</td>
+<td>no</td>
+<td><b>yes</b></td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+</tr>
+<tr>
+<td>$sFalse</td>
+<td>string</td>
+<td><b>yes</b><br />
+</td>
+<td>--</td>
 <td>no</td>
 <td><b>yes</b></td>
 <td>no</td>
@@ -494,6 +535,10 @@ $xNode[$h.0]<br />
 ^sOne.bool(false): true<br />
 ^sTwo.bool(true): true<br />
 ^sTwo.bool(false): true<br />
+^sTrue.bool(true): true<br />
+^sTrue.bool(false): true<br />
+^sFalse.bool(true): false<br />
+^sFalse.bool(false): false<br />
 <h2>bool methods for double</h2>
 ^dZero.bool(true): false<br />
 ^dZero.bool(false): false<br />

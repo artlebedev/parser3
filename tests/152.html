@@ -3,30 +3,33 @@
 
 $sEmpty[]
 ^$sEmpty[]<br />
-$sTrue[true]
-^$sTrue[true]<br />
-$sFalse[false]
-^$sFalse[false]<br />
 $sZero[0]
 ^$sZero[0]<br />
 $sOne[1]
 ^$sOne[1]<br />
 $sTwo[2]
-^$sTwo[2]<br /><br />
+^$sTwo[2]<br />
+$sTrue[true]
+^$sTrue[true]<br />
+$sFalse[false]
+^$sFalse[false]<br />
+<br />
 
 $dZero(0.0)
 ^$dZero(0.0)<br />
 $dOne(1.1)
 ^$dOne(1.1)<br />
 $dTwo(2.2)
-^$dTwo(2.2)<br /><br />
+^$dTwo(2.2)<br />
+<br />
 
 $iZero(^dZero.int[])
 ^$iZero(^^dZero.int[])<br />
 $iOne(^dOne.int[])
 ^$iOne(^^dOne.int[])<br />
 $iTwo(^dTwo.int[])
-^$iTwo(^^dTwo.int[])<br /><br />
+^$iTwo(^^dTwo.int[])<br />
+<br />
 
 $bTrue(1==1)
 ^$bTrue(1==1)<br />
@@ -67,7 +70,7 @@ $fStat[^file::stat[152.html]]
 $fImage[^image::measure[103paf2001.gif]]
 
 $xDoc[^xdoc::create{<?xml version="1.0"?><root><t/><t/><t/></root>}]
-^$xDoc[^^xdoc::create{<?xml version="1.0"?><root><t/><t/><t/></root>}]<br />
+^$xDoc[^^xdoc::create{^taint[<?xml version="1.0"?><root><t/><t/><t/></root>]}]<br />
 
 ^$h[^^xDoc.select[/root/t]]<br />
 ^$xNode[^$h.0]<br />
@@ -86,6 +89,8 @@ $xNode[$h.0]
 ^printLine[^$sZero;$sZero.CLASS_NAME;^checkDef[$sZero];^checkExp[$sZero];$sZero]
 ^printLine[^$sOne;$sOne.CLASS_NAME;^checkDef[$sOne];^checkExp[$sOne];$sOne]
 ^printLine[^$sTwo;$sTwo.CLASS_NAME;^checkDef[$sTwo];^checkExp[$sTwo];$sTwo]
+^printLine[^$sTrue;$sTrue.CLASS_NAME;^checkDef[$sTrue];--;$sTrue]
+^printLine[^$sFalse;$sFalse.CLASS_NAME;^checkDef[$sFalse];--;$sFalse]
 
 ^printLine[^$dZero;$dZero.CLASS_NAME;^checkDef($dZero);^checkExp($dZero)]($dZero)
 ^printLine[^$dOne;$dOne.CLASS_NAME;^checkDef($dOne);^checkExp($dOne)]($dOne)
