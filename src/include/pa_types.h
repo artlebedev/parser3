@@ -8,12 +8,14 @@
 #ifndef PA_TYPES_H
 #define PA_TYPES_H
 
-static const char * const IDENT_TYPES_H="$Date: 2005/08/09 08:14:50 $";
+static const char * const IDENT_TYPES_H="$Date: 2007/11/27 09:55:06 $";
 
 #include "pa_config_includes.h"
 
 /// for rare cases of undefined length using this-sized strings
 #define MAX_STRING 0x400
+/// buffer size for parser.log
+#define MAX_LOG_STRING 0x400*4
 /// for snprintf(buf, MAX_NUMBER, "%.2f")
 #define MAX_NUMBER 40
 
