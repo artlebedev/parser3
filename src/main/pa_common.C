@@ -26,7 +26,7 @@
  *
  */
 
-static const char * const IDENT_COMMON_C="$Date: 2007/05/23 08:31:47 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2007/11/27 09:57:08 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -665,12 +665,31 @@ int getMonthDays(int year, int month) {
 	return (month == 2 && isLeap(year)) ? 29 : monthDays[month]; 
 }
 
-void remove_crlf(char* start, char* end) {
-	for(char* p=start; p<end; p++)
-		switch(*p) {
-			case '\n': *p='|';  break;
-			case '\r': *p=' ';  break;
+int remove_crlf(char* start, char* end) {
+	char* from=start;
+	char* to=start;
+	bool skip=false;
+	while(from < end){
+		switch(*from){
+			case '\n':
+			case '\r':
+			case '\t':
+			case ' ':
+				if(!skip){
+					*to=' ';
+					to++;
+					skip=true;
+				}
+				break;
+			default:
+				if(from != to)
+					*to=*from;
+				to++;
+				skip=false;
 		}
+		from++;
+	}
+	return to-start;
 }
 
 
