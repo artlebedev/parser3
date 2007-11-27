@@ -42,8 +42,7 @@ cgi	binary	image/gif	019paf2001.gif
 
 
 @print[f]
-status: $f.status
+status: ^if(!$f.status){==0}{!=0}
 text: '$f.text'
 size: ^if(def $f.size){$f.size}{-}
-stderr: ^if(def $f.stderr){def}{-}
 text.length: ^if(def $f.text){^f.text.length[]}{-}^taint[as-is][^#0A]
