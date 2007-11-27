@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2007/11/14 09:45:21 $";
+static const char * const IDENT_STRING_C="$Date: 2007/11/27 10:51:01 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -96,7 +96,19 @@ static void _bool(Request& r, MethodParams& params) {
 			throw Exception(PARSER_RUNTIME,
 				0,
 				"parameter is empty string, error converting");
-		converted=self_string.as_bool();
+		
+		try {
+			converted=self_string.as_bool();
+		} catch(...) {
+			const String& lower_string=self_string.change_case(r.charsets.source(), String::CC_LOWER);
+			if(lower_string == "true"){
+				converted=true;
+			} else if (lower_string == "false"){
+				converted=false;
+			} else {
+				rethrow;
+			}
+		}
 	} catch(...) { // convert problem
 		if(params.count()>0)
 			converted=params.as_bool(0, "default must be bool", r); // (default)
