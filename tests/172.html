@@ -1,0 +1,37 @@
+@main[]
+$h[
+	$i(0)
+	$.[i$i][$i]
+	^i.inc[]  ^rem{allow such calls}
+	$.[i$i][$i]
+]
+^print[$h]
+
+
+$j(0)
+$h[
+	$.[j$j][$j]
+	^j.inc[]  ^rem{allow such calls}
+	$.[j$j][$j]
+]
+^print[$h]
+
+
+$h[^create{
+	^for[k](1;5){
+		$.[k$k][$k]
+		$.[k$k][$k]
+	}
+}]
+^print[$h]
+
+
+
+@create[jCode]
+$result[$jCode]
+
+
+
+@print[h]
+^h.foreach[k;v]{$k=$v}[, ]
+<br />
