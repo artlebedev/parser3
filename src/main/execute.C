@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2007/10/17 08:00:38 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2007/11/29 08:07:26 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -978,18 +978,16 @@ StringOrValue Request::process(Value& input_value, bool intercept_string) {
 			// using the fact in decision "which wwrapper to use"
 			bool using_code_frame=intercept_string && junction->wcontext;
 			if(using_code_frame) {
-				// almost plain wwrapper about junction wcontext, 
-				// BUT intercepts string writes
-				VCodeFrame local(*junction->wcontext, junction->wcontext);
+				// almost plain wwrapper about junction wcontext 
+
+				VCodeFrame local(*junction->wcontext);
 				wcontext=&local;
 
 				// execute it
 				recoursion_checked_execute(*junction->code);
 
 				// CodeFrame soul:
-				//   string writes were intercepted
-				//   returning them as the result of getting code-junction
-				result.set_string(*wcontext->get_string());
+				result=wcontext->result();
 			} else {
 				// plain wwrapper
 				WWrapper local(0/*empty*/, wcontext);
