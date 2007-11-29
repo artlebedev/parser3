@@ -1,0 +1,20 @@
+@main[][d]
+$d[^date::create(2007;11;29;11;22;33)]
+
+^do{$d}
+
+$j{$d}
+^check[$j]
+
+$r[$j]
+^check[$r]
+
+
+@do[jCode][uLocalVar]
+$uLocalVar[$jCode]
+^check[$uLocalVar]
+
+
+
+@check[uVar]
+^if($uVar is "date"){date [value: ^uVar.sql-string[]]}{not date}<br />
