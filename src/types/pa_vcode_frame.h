@@ -8,12 +8,12 @@
 #ifndef PA_VCODE_FRAME_H
 #define PA_VCODE_FRAME_H
 
-static const char * const IDENT_VCODE_FRAME_H="$Date: 2007/11/29 08:06:12 $";
+static const char * const IDENT_VCODE_FRAME_H="$Date: 2007/12/04 12:01:47 $";
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
 
-/// specialized write wrapper, completely transparent, but intercepting string writes
+/// specialized write wrapper, completely transparent
 class VCodeFrame: public WContext {
 public: // Value
 
