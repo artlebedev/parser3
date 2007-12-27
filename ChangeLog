@@ -1,3 +1,68 @@
+2007-12-27	misha
+	* gnu.vcproj 1.3:
+	* parser3.sln 1.11:
+	* src/classes/classes.vcproj 1.16:
+	* src/lib/cord/cord.vcproj 1.5:
+	* src/lib/gd/gd.vcproj 1.10:
+	* src/lib/ltdl/ltdl.vcproj 1.5:
+	* src/lib/md5/md5.vcproj 1.5:
+	* src/lib/pcre/pcre.vcproj 1.5:
+	* src/lib/pcre/pcre_dftables.vcproj 1.6:
+	* src/lib/pcre/pcre_parser_ctype.vcproj 1.6:
+	* src/lib/sdbm/sdbm.vcproj 1.6:
+	* src/lib/smtp/smtp.vcproj 1.9:
+	* src/main/main.vcproj 1.20:
+	* src/targets/apache13/ApacheModuleParser3.vcproj 1.9:
+	* src/targets/apache13core/ApacheModuleParser3Core.vcproj 1.12:
+	* src/targets/cgi/parser3.vcproj 1.15:
+	* src/targets/isapi/parser3isapi.vcproj 1.11:
+	* src/types/types.vcproj 1.20:
+		- back to VS2003 because of Apache 1.3 module can't work if it was built in VS 2005.
+		with cgi all file so VS2003 project files can be easy converted to the new format.
+
+2007-12-25	misha
+	* Makefile.am [release_3_2_2] 1.52.8.1:
+	* Makefile.in [release_3_2_2] 1.67.2.1:
+	* acinclude.m4 [release_3_2_2] 1.38.14.1:
+	* aclocal.m4 [release_3_2_2] 1.41.14.1:
+	* acsite.m4 [release_3_2_2] 1.16.14.1:
+	* acsite.m4 [release_3_2_2] 1.16.14.2:
+	* bin/Makefile.in [release_3_2_2] 1.12.14.1:
+	* configure [release_3_2_2] 1.92.2.1:
+	* configure.in [release_3_2_2] 1.94.2.1:
+	* etc/Makefile.in [release_3_2_2] 1.17.14.1:
+	* etc/parser3.charsets/Makefile.in [release_3_2_2] 1.21.14.1:
+	* src/Makefile.in [release_3_2_2] 1.58.14.1:
+	* src/classes/Makefile.in [release_3_2_2] 1.63.2.1:
+	* src/include/Makefile.in [release_3_2_2] 1.20.14.1:
+	* src/include/pa_config_auto.h.in [release_3_2_2] 1.43.14.1:
+	* src/include/pa_version.h [release_3_2_2] 1.28.8.2:
+	* src/lib/Makefile.in [release_3_2_2] 1.15.10.1:
+	* src/lib/cord/Makefile.in [release_3_2_2] 1.6.10.1:
+	* src/lib/cord/include/Makefile.in [release_3_2_2] 1.4.14.1:
+	* src/lib/cord/include/private/Makefile.in [release_3_2_2] 1.4.14.1:
+	* src/lib/gc/Makefile.in [release_3_2_2] 1.4.14.1:
+	* src/lib/gc/include/Makefile.in [release_3_2_2] 1.4.14.1:
+	* src/lib/gd/Makefile.in [release_3_2_2] 1.5.14.1:
+	* src/lib/ltdl/Makefile.in [release_3_2_2] 1.9.8.1:
+	* src/lib/md5/Makefile.in [release_3_2_2] 1.10.14.1:
+	* src/lib/pcre/Makefile.in [release_3_2_2] 1.12.14.1:
+	* src/lib/sdbm/Makefile.in [release_3_2_2] 1.3.14.1:
+	* src/lib/sdbm/apr-include/Makefile.in [release_3_2_2] 1.3.14.1:
+	* src/lib/smtp/Makefile.in [release_3_2_2] 1.5.14.1:
+	* src/main/Makefile.in [release_3_2_2] 1.60.14.1:
+	* src/sql/Makefile.in [release_3_2_2] 1.14.14.1:
+	* src/targets/Makefile.in [release_3_2_2] 1.45.14.1:
+	* src/targets/apache13/Makefile.in [release_3_2_2] 1.50.14.1:
+	* src/targets/apache13core/Makefile.in [release_3_2_2] 1.7.14.1:
+	* src/targets/cgi/Makefile.in [release_3_2_2] 1.69.14.1:
+	* src/targets/isapi/Makefile.in [release_3_2_2] 1.15.14.1:
+	* src/types/Makefile.in [release_3_2_2] 1.61.2.1:
+		*** empty log message ***
+
+	* src/include/pa_version.h [release_3_2_2] 1.28.8.1:
+		=no message
+
 2007-12-04	misha
 	* src/types/pa_vcode_frame.h 1.34:
 		- changes in comment
