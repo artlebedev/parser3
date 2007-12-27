@@ -1,144 +1,111 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="7.10"
 	Name="gnu"
 	SccProjectName="gnu"
+	SccAuxPath=""
 	SccLocalPath="."
 	SccProvider="MSSCCI:Jalindi Igloo"
-	Keyword="MakeFileProj"
-	>
+	Keyword="MakeFileProj">
 	<Platforms>
 		<Platform
-			Name="Win32"
-		/>
+			Name="Win32"/>
 	</Platforms>
-	<ToolFiles>
-	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory=".\gnu___Win32_Debug"
 			IntermediateDirectory=".\gnu___Win32_Debug"
 			ConfigurationType="10"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="false"
-			>
+			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
+				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCMIDLTool"
 				TypeLibraryName=".\gnu___Win32_Debug/gnu.tlb"
-				HeaderFileName=""
-			/>
+				HeaderFileName=""/>
 			<Tool
-				Name="VCPostBuildEventTool"
-			/>
+				Name="VCPostBuildEventTool"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory=".\Release"
 			IntermediateDirectory=".\Release"
 			ConfigurationType="10"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="false"
-			>
+			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
+				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCMIDLTool"
 				TypeLibraryName=".\Release/gnu.tlb"
-				HeaderFileName=""
-			/>
+				HeaderFileName=""/>
 			<Tool
-				Name="VCPostBuildEventTool"
-			/>
+				Name="VCPostBuildEventTool"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
 		</Configuration>
 	</Configurations>
 	<References>
 	</References>
 	<Files>
 		<File
-			RelativePath="acinclude.m4"
-			>
+			RelativePath="acinclude.m4">
 		</File>
 		<File
-			RelativePath="aclocal.m4"
-			>
+			RelativePath="aclocal.m4">
 		</File>
 		<File
-			RelativePath="AUTHORS"
-			>
+			RelativePath="AUTHORS">
 		</File>
 		<File
-			RelativePath="ChangeLog"
-			>
+			RelativePath="ChangeLog">
 		</File>
 		<File
-			RelativePath="config.guess"
-			>
+			RelativePath="config.guess">
 		</File>
 		<File
-			RelativePath="config.sub"
-			>
+			RelativePath="config.sub">
 		</File>
 		<File
-			RelativePath="configure"
-			>
+			RelativePath="configure">
 		</File>
 		<File
-			RelativePath="configure.in"
-			>
+			RelativePath="configure.in">
 		</File>
 		<File
-			RelativePath="COPYING"
-			>
+			RelativePath="COPYING">
 		</File>
 		<File
-			RelativePath="INSTALL"
-			>
+			RelativePath="INSTALL">
 		</File>
 		<File
-			RelativePath="install-sh"
-			>
+			RelativePath="install-sh">
 		</File>
 		<File
-			RelativePath="Makefile.am"
-			>
+			RelativePath="Makefile.am">
 		</File>
 		<File
-			RelativePath="Makefile.in"
-			>
+			RelativePath="Makefile.in">
 		</File>
 		<File
-			RelativePath="missing"
-			>
+			RelativePath="missing">
 		</File>
 		<File
-			RelativePath="mkinstalldirs"
-			>
+			RelativePath="mkinstalldirs">
 		</File>
 		<File
-			RelativePath="NEWS"
-			>
+			RelativePath="NEWS">
 		</File>
 		<File
-			RelativePath="operators.txt"
-			>
+			RelativePath="operators.txt">
 		</File>
 		<File
-			RelativePath="README"
-			>
+			RelativePath="README">
 		</File>
 	</Files>
 	<Globals>
