@@ -1,120 +1,80 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="7.10"
 	Name="types"
-	ProjectGUID="{09C0531B-9B8F-443A-A16B-BD9134712613}"
-	Keyword="MFCProj"
-	>
+	SccProjectName="types"
+	SccAuxPath=""
+	SccLocalPath="."
+	SccProvider="MSSCCI:Jalindi Igloo"
+	Keyword="MFCProj">
 	<Platforms>
 		<Platform
-			Name="Win32"
-		/>
+			Name="Win32"/>
 	</Platforms>
-	<ToolFiles>
-	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory=".\Release"
 			IntermediateDirectory=".\Release"
 			ConfigurationType="4"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="false"
-			CharacterSet="2"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-			/>
+			ATLMinimizesCRunTimeLibraryUsage="FALSE"
+			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
+				GlobalOptimizations="TRUE"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="..\lib\gd;..\include;..\classes;..\sql;..\lib\gc\include;..\lib\cord\include;..\lib\pcre;..\lib\sdbm\apr-include;..\..\..\win32\psapi;..\..\..\win32\gnome\glib\include;..\..\..\win32\gnome\glib\include\glib;..\..\..\win32\gnome\gmime-x.x.x;..\..\..\win32\gnome\libxml2-x.x.x\win32\release\include;..\..\..\win32\gnome\libxslt-x.x.x\win32\release\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
-				StringPooling="true"
+				StringPooling="TRUE"
 				RuntimeLibrary="2"
-				EnableFunctionLevelLinking="true"
-				UsePrecompiledHeader="0"
+				EnableFunctionLevelLinking="TRUE"
+				UsePrecompiledHeader="2"
 				PrecompiledHeaderFile=".\Release/types.pch"
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
 				ProgramDataBaseFileName=".\Release/"
 				WarningLevel="4"
-				SuppressStartupBanner="true"
+				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="3"
-				CompileAs="2"
-			/>
+				CompileAs="2"/>
 			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG"
-				Culture="1049"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
+				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLibrarianTool"
 				OutputFile=".\Release\types.lib"
-				SuppressStartupBanner="true"
-			/>
+				SuppressStartupBanner="TRUE"/>
 			<Tool
-				Name="VCALinkTool"
-			/>
+				Name="VCMIDLTool"/>
 			<Tool
-				Name="VCXDCMakeTool"
-			/>
+				Name="VCPostBuildEventTool"/>
 			<Tool
-				Name="VCBscMakeTool"
-			/>
+				Name="VCPreBuildEventTool"/>
 			<Tool
-				Name="VCFxCopTool"
-			/>
+				Name="VCPreLinkEventTool"/>
 			<Tool
-				Name="VCPostBuildEventTool"
-			/>
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"
+				Culture="1049"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory=".\Debug"
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="4"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="2"
-			ATLMinimizesCRunTimeLibraryUsage="false"
-			CharacterSet="2"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-			/>
+			ATLMinimizesCRunTimeLibraryUsage="FALSE"
+			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
@@ -122,47 +82,41 @@
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
-				UsePrecompiledHeader="0"
+				UsePrecompiledHeader="2"
 				PrecompiledHeaderFile=".\Debug/types.pch"
 				AssemblerListingLocation=".\Debug/"
 				ObjectFile=".\Debug/"
 				ProgramDataBaseFileName=".\Debug/"
 				WarningLevel="4"
-				SuppressStartupBanner="true"
+				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="3"
-				CompileAs="2"
-			/>
+				CompileAs="2"/>
 			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG"
-				Culture="1049"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
+				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLibrarianTool"
 				OutputFile=".\Debug\types.lib"
-				SuppressStartupBanner="true"
-			/>
+				SuppressStartupBanner="TRUE"/>
 			<Tool
-				Name="VCALinkTool"
-			/>
+				Name="VCMIDLTool"/>
 			<Tool
-				Name="VCXDCMakeTool"
-			/>
+				Name="VCPostBuildEventTool"/>
 			<Tool
-				Name="VCBscMakeTool"
-			/>
+				Name="VCPreBuildEventTool"/>
 			<Tool
-				Name="VCFxCopTool"
-			/>
+				Name="VCPreLinkEventTool"/>
 			<Tool
-				Name="VCPostBuildEventTool"
-			/>
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG"
+				Culture="1049"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 	</Configurations>
 	<References>
@@ -170,263 +124,199 @@
 	<Files>
 		<Filter
 			Name="psapi"
-			>
+			Filter="">
 			<File
-				RelativePath="..\..\..\win32\psapi\Psapi.h"
-				>
+				RelativePath="..\..\..\win32\psapi\Psapi.h">
 			</File>
 			<File
-				RelativePath="..\..\..\win32\psapi\Psapi.Lib"
-				>
+				RelativePath="..\..\..\win32\psapi\Psapi.Lib">
 			</File>
 		</Filter>
 		<File
-			RelativePath=".\pa_junction.h"
-			>
+			RelativePath=".\pa_junction.h">
 		</File>
 		<File
-			RelativePath=".\pa_method.h"
-			>
+			RelativePath=".\pa_method.h">
 		</File>
 		<File
-			RelativePath=".\pa_property.h"
-			>
+			RelativePath=".\pa_property.h">
 		</File>
 		<File
-			RelativePath=".\pa_value.C"
-			>
+			RelativePath=".\pa_value.C">
 		</File>
 		<File
-			RelativePath=".\pa_value.h"
-			>
+			RelativePath=".\pa_value.h">
 		</File>
 		<File
-			RelativePath=".\pa_vbool.h"
-			>
+			RelativePath=".\pa_vbool.h">
 		</File>
 		<File
-			RelativePath=".\pa_vclass.C"
-			>
+			RelativePath=".\pa_vclass.C">
 		</File>
 		<File
-			RelativePath=".\pa_vclass.h"
-			>
+			RelativePath=".\pa_vclass.h">
 		</File>
 		<File
-			RelativePath=".\pa_vcode_frame.h"
-			>
+			RelativePath=".\pa_vcode_frame.h">
 		</File>
 		<File
-			RelativePath=".\pa_vconsole.h"
-			>
+			RelativePath=".\pa_vconsole.h">
 		</File>
 		<File
-			RelativePath=".\pa_vcookie.C"
-			>
+			RelativePath=".\pa_vcookie.C">
 		</File>
 		<File
-			RelativePath=".\pa_vcookie.h"
-			>
+			RelativePath=".\pa_vcookie.h">
 		</File>
 		<File
-			RelativePath=".\pa_vdate.h"
-			>
+			RelativePath=".\pa_vdate.h">
 		</File>
 		<File
-			RelativePath=".\pa_vdouble.h"
-			>
+			RelativePath=".\pa_vdouble.h">
 		</File>
 		<File
-			RelativePath=".\pa_venv.C"
-			>
+			RelativePath=".\pa_venv.C">
 		</File>
 		<File
-			RelativePath=".\pa_venv.h"
-			>
+			RelativePath=".\pa_venv.h">
 		</File>
 		<File
-			RelativePath=".\pa_vfile.C"
-			>
+			RelativePath=".\pa_vfile.C">
 		</File>
 		<File
-			RelativePath=".\pa_vfile.h"
-			>
+			RelativePath=".\pa_vfile.h">
 		</File>
 		<File
-			RelativePath=".\pa_vform.C"
-			>
+			RelativePath=".\pa_vform.C">
 		</File>
 		<File
-			RelativePath=".\pa_vform.h"
-			>
+			RelativePath=".\pa_vform.h">
 		</File>
 		<File
-			RelativePath=".\pa_vhash.C"
-			>
+			RelativePath=".\pa_vhash.C">
 		</File>
 		<File
-			RelativePath=".\pa_vhash.h"
-			>
+			RelativePath=".\pa_vhash.h">
 		</File>
 		<File
-			RelativePath=".\pa_vhashfile.C"
-			>
+			RelativePath=".\pa_vhashfile.C">
 		</File>
 		<File
-			RelativePath=".\pa_vhashfile.h"
-			>
+			RelativePath=".\pa_vhashfile.h">
 		</File>
 		<File
-			RelativePath=".\pa_vimage.C"
-			>
+			RelativePath=".\pa_vimage.C">
 		</File>
 		<File
-			RelativePath=".\pa_vimage.h"
-			>
+			RelativePath=".\pa_vimage.h">
 		</File>
 		<File
-			RelativePath=".\pa_vint.h"
-			>
+			RelativePath=".\pa_vint.h">
 		</File>
 		<File
-			RelativePath=".\pa_vjunction.C"
-			>
+			RelativePath=".\pa_vjunction.C">
 		</File>
 		<File
-			RelativePath=".\pa_vjunction.h"
-			>
+			RelativePath=".\pa_vjunction.h">
 		</File>
 		<File
-			RelativePath=".\pa_vmail.C"
-			>
+			RelativePath=".\pa_vmail.C">
 		</File>
 		<File
-			RelativePath=".\pa_vmail.h"
-			>
+			RelativePath=".\pa_vmail.h">
 		</File>
 		<File
-			RelativePath=".\pa_vmath.C"
-			>
+			RelativePath=".\pa_vmath.C">
 		</File>
 		<File
-			RelativePath=".\pa_vmath.h"
-			>
+			RelativePath=".\pa_vmath.h">
 		</File>
 		<File
-			RelativePath=".\pa_vmemory.h"
-			>
+			RelativePath=".\pa_vmemory.h">
 		</File>
 		<File
-			RelativePath=".\pa_vmethod_frame.C"
-			>
+			RelativePath=".\pa_vmethod_frame.C">
 		</File>
 		<File
-			RelativePath=".\pa_vmethod_frame.h"
-			>
+			RelativePath=".\pa_vmethod_frame.h">
 		</File>
 		<File
-			RelativePath=".\pa_vobject.C"
-			>
+			RelativePath=".\pa_vobject.C">
 		</File>
 		<File
-			RelativePath=".\pa_vobject.h"
-			>
+			RelativePath=".\pa_vobject.h">
 		</File>
 		<File
-			RelativePath=".\pa_vproperty.C"
-			>
+			RelativePath=".\pa_vproperty.C">
 		</File>
 		<File
-			RelativePath=".\pa_vproperty.h"
-			>
+			RelativePath=".\pa_vproperty.h">
 		</File>
 		<File
-			RelativePath=".\pa_vrequest.C"
-			>
+			RelativePath=".\pa_vrequest.C">
 		</File>
 		<File
-			RelativePath=".\pa_vrequest.h"
-			>
+			RelativePath=".\pa_vrequest.h">
 		</File>
 		<File
-			RelativePath=".\pa_vresponse.C"
-			>
+			RelativePath=".\pa_vresponse.C">
 		</File>
 		<File
-			RelativePath=".\pa_vresponse.h"
-			>
+			RelativePath=".\pa_vresponse.h">
 		</File>
 		<File
-			RelativePath=".\pa_vstateless_class.C"
-			>
+			RelativePath=".\pa_vstateless_class.C">
 		</File>
 		<File
-			RelativePath=".\pa_vstateless_class.h"
-			>
+			RelativePath=".\pa_vstateless_class.h">
 		</File>
 		<File
-			RelativePath=".\pa_vstateless_object.h"
-			>
+			RelativePath=".\pa_vstateless_object.h">
 		</File>
 		<File
-			RelativePath=".\pa_vstatus.C"
-			>
+			RelativePath=".\pa_vstatus.C">
 		</File>
 		<File
-			RelativePath=".\pa_vstatus.h"
-			>
+			RelativePath=".\pa_vstatus.h">
 		</File>
 		<File
-			RelativePath=".\pa_vstring.C"
-			>
+			RelativePath=".\pa_vstring.C">
 		</File>
 		<File
-			RelativePath=".\pa_vstring.h"
-			>
+			RelativePath=".\pa_vstring.h">
 		</File>
 		<File
-			RelativePath=".\pa_vtable.C"
-			>
+			RelativePath=".\pa_vtable.C">
 		</File>
 		<File
-			RelativePath=".\pa_vtable.h"
-			>
+			RelativePath=".\pa_vtable.h">
 		</File>
 		<File
-			RelativePath=".\pa_vvoid.C"
-			>
+			RelativePath=".\pa_vvoid.C">
 		</File>
 		<File
-			RelativePath=".\pa_vvoid.h"
-			>
+			RelativePath=".\pa_vvoid.h">
 		</File>
 		<File
-			RelativePath=".\pa_vxdoc.C"
-			>
+			RelativePath=".\pa_vxdoc.C">
 		</File>
 		<File
-			RelativePath=".\pa_vxdoc.h"
-			>
+			RelativePath=".\pa_vxdoc.h">
 		</File>
 		<File
-			RelativePath=".\pa_vxnode.C"
-			>
+			RelativePath=".\pa_vxnode.C">
 		</File>
 		<File
-			RelativePath=".\pa_vxnode.h"
-			>
+			RelativePath=".\pa_vxnode.h">
 		</File>
 		<File
-			RelativePath=".\pa_wcontext.C"
-			>
+			RelativePath=".\pa_wcontext.C">
 		</File>
 		<File
-			RelativePath=".\pa_wcontext.h"
-			>
+			RelativePath=".\pa_wcontext.h">
 		</File>
 		<File
-			RelativePath=".\pa_wwrapper.h"
-			>
+			RelativePath=".\pa_wwrapper.h">
 		</File>
 	</Files>
 	<Globals>

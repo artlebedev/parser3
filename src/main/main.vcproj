@@ -1,119 +1,78 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="7.10"
 	Name="main"
-	ProjectGUID="{650C3584-6F31-4CDE-9A4E-42BAAD4EA88E}"
-	RootNamespace="main"
-	Keyword="MFCProj"
-	>
+	SccProjectName="main"
+	SccAuxPath=""
+	SccLocalPath=".."
+	SccProvider="MSSCCI:Jalindi Igloo"
+	Keyword="MFCProj">
 	<Platforms>
 		<Platform
-			Name="Win32"
-		/>
+			Name="Win32"/>
 	</Platforms>
-	<ToolFiles>
-	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory=".\Release"
 			IntermediateDirectory=".\Release"
 			ConfigurationType="4"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="false"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-			/>
+			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
+				GlobalOptimizations="TRUE"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="..\lib\ltdl;..\classes\gd;..\include;..\types;..\classes;..\lib\gc\include;..\lib\cord\include;..\lib\pcre;..\sql;..\..\..\win32\gnome\libxml2-x.x.x\win32\release\include;..\..\..\win32\gnome\libxslt-x.x.x\win32\release\include"
 				PreprocessorDefinitions="NDEBUG;_LIB;WIN32"
-				StringPooling="true"
+				StringPooling="TRUE"
 				RuntimeLibrary="2"
-				EnableFunctionLevelLinking="true"
-				UsePrecompiledHeader="0"
+				EnableFunctionLevelLinking="TRUE"
+				UsePrecompiledHeader="2"
 				PrecompiledHeaderFile=".\Release/main.pch"
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
 				ProgramDataBaseFileName=".\Release/"
 				WarningLevel="4"
-				SuppressStartupBanner="true"
+				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="3"
-				CompileAs="2"
-			/>
+				CompileAs="2"/>
 			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG"
-				Culture="1049"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
+				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLibrarianTool"
 				OutputFile=".\Release\main.lib"
-				SuppressStartupBanner="true"
-			/>
+				SuppressStartupBanner="TRUE"/>
 			<Tool
-				Name="VCALinkTool"
-			/>
+				Name="VCMIDLTool"/>
 			<Tool
-				Name="VCXDCMakeTool"
-			/>
+				Name="VCPostBuildEventTool"/>
 			<Tool
-				Name="VCBscMakeTool"
-			/>
+				Name="VCPreBuildEventTool"/>
 			<Tool
-				Name="VCFxCopTool"
-			/>
+				Name="VCPreLinkEventTool"/>
 			<Tool
-				Name="VCPostBuildEventTool"
-			/>
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"
+				Culture="1049"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory=".\Debug"
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="4"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="2"
-			ATLMinimizesCRunTimeLibraryUsage="false"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-			/>
+			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
@@ -121,50 +80,42 @@
 				PreprocessorDefinitions="_DEBUG;_LIB;WIN32"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
-				DisableLanguageExtensions="false"
-				RuntimeTypeInfo="false"
-				UsePrecompiledHeader="0"
+				UsePrecompiledHeader="2"
 				PrecompiledHeaderFile=".\Debug/main.pch"
 				AssemblerListingLocation=".\Debug/"
 				ObjectFile=".\Debug/"
 				ProgramDataBaseFileName=".\Debug/"
 				BrowseInformation="1"
 				WarningLevel="4"
-				SuppressStartupBanner="true"
+				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="3"
-				CompileAs="2"
-			/>
+				CompileAs="2"/>
 			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG"
-				Culture="1049"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
+				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLibrarianTool"
 				OutputFile=".\Debug\main.lib"
-				SuppressStartupBanner="true"
-			/>
+				SuppressStartupBanner="TRUE"/>
 			<Tool
-				Name="VCALinkTool"
-			/>
+				Name="VCMIDLTool"/>
 			<Tool
-				Name="VCXDCMakeTool"
-			/>
+				Name="VCPostBuildEventTool"/>
 			<Tool
-				Name="VCBscMakeTool"
-			/>
+				Name="VCPreBuildEventTool"/>
 			<Tool
-				Name="VCFxCopTool"
-			/>
+				Name="VCPreLinkEventTool"/>
 			<Tool
-				Name="VCPostBuildEventTool"
-			/>
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG"
+				Culture="1049"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 	</Configurations>
 	<References>
@@ -172,299 +123,232 @@
 	<Files>
 		<Filter
 			Name="sql"
-			>
+			Filter="">
 			<File
-				RelativePath="..\sql\pa_sql_driver.h"
-				>
+				RelativePath="..\sql\pa_sql_driver.h">
 			</File>
 		</Filter>
 		<File
-			RelativePath=".\compile.C"
-			>
+			RelativePath=".\compile.C">
 		</File>
 		<File
-			RelativePath=".\compile.tab.C"
-			>
+			RelativePath=".\compile.tab.C">
 		</File>
 		<File
-			RelativePath="compile.y"
-			>
+			RelativePath="compile.y">
 			<FileConfiguration
-				Name="Release|Win32"
-				>
+				Name="Release|Win32">
 				<Tool
 					Name="VCCustomBuildTool"
 					Description="Compiling grammar..."
-					CommandLine="cd &quot;$(InputDir)&quot;&#x0D;&#x0A;set BISON_SIMPLE=..\..\..\win32\tools\usr\share\bison.simple&#x0D;&#x0A;..\..\..\win32\tools\bison -v &quot;$(InputName)&quot;.y -o compile.tab.C&#x0D;&#x0A;"
-					Outputs="compile.tab.C"
-				/>
+					CommandLine="cd &quot;$(InputDir)&quot;
+set BISON_SIMPLE=..\..\..\win32\tools\usr\share\bison.simple
+..\..\..\win32\tools\bison -v &quot;$(InputName)&quot;.y -o compile.tab.C
+"
+					Outputs="compile.tab.C"/>
 			</FileConfiguration>
 			<FileConfiguration
-				Name="Debug|Win32"
-				>
+				Name="Debug|Win32">
 				<Tool
 					Name="VCCustomBuildTool"
 					Description="Compiling grammar..."
-					CommandLine="cd &quot;$(InputDir)&quot;&#x0D;&#x0A;echo TURNED OFF FOR A WHILE (use unix version) ..\..\..\win32\tools\bison -v &quot;$(InputName)&quot;.y -o compile.tab.C -S/../../../cygdrive/y/parser3project/win32/tools/yacc.c&#x0D;&#x0A;"
-					Outputs="compile.tab.C"
-				/>
+					CommandLine="cd &quot;$(InputDir)&quot;
+..\..\..\win32\tools\bison -v &quot;$(InputName)&quot;.y -o compile.tab.C -S/../../../cygdrive/y/parser3project/win32/tools/yacc.c
+"
+					Outputs="compile.tab.C"/>
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath=".\compile_tools.C"
-			>
+			RelativePath=".\compile_tools.C">
 		</File>
 		<File
-			RelativePath=".\compile_tools.h"
-			>
+			RelativePath=".\compile_tools.h">
 		</File>
 		<File
-			RelativePath=".\execute.C"
-			>
+			RelativePath=".\execute.C">
 		</File>
 		<File
-			RelativePath="..\include\pa_array.h"
-			>
+			RelativePath="..\include\pa_array.h">
 		</File>
 		<File
-			RelativePath=".\pa_cache_managers.C"
-			>
+			RelativePath=".\pa_cache_managers.C">
 		</File>
 		<File
-			RelativePath="..\include\pa_cache_managers.h"
-			>
+			RelativePath="..\include\pa_cache_managers.h">
 		</File>
 		<File
-			RelativePath=".\pa_charset.C"
-			>
+			RelativePath=".\pa_charset.C">
 		</File>
 		<File
-			RelativePath="..\include\pa_charset.h"
-			>
+			RelativePath="..\include\pa_charset.h">
 		</File>
 		<File
-			RelativePath=".\pa_charsets.C"
-			>
+			RelativePath=".\pa_charsets.C">
 		</File>
 		<File
-			RelativePath="..\include\pa_charsets.h"
-			>
+			RelativePath="..\include\pa_charsets.h">
 		</File>
 		<File
-			RelativePath=".\pa_common.C"
-			>
+			RelativePath=".\pa_common.C">
 		</File>
 		<File
-			RelativePath="..\include\pa_common.h"
-			>
+			RelativePath="..\include\pa_common.h">
 		</File>
 		<File
-			RelativePath="..\include\pa_config_fixed.h"
-			>
+			RelativePath="..\include\pa_config_fixed.h">
 		</File>
 		<File
-			RelativePath="..\include\pa_config_includes.h"
-			>
+			RelativePath="..\include\pa_config_includes.h">
 		</File>
 		<File
-			RelativePath=".\pa_dictionary.C"
-			>
+			RelativePath=".\pa_dictionary.C">
 		</File>
 		<File
-			RelativePath="..\include\pa_dictionary.h"
-			>
+			RelativePath="..\include\pa_dictionary.h">
 		</File>
 		<File
-			RelativePath=".\pa_dir.C"
-			>
+			RelativePath=".\pa_dir.C">
 		</File>
 		<File
-			RelativePath="..\include\pa_dir.h"
-			>
+			RelativePath="..\include\pa_dir.h">
 		</File>
 		<File
-			RelativePath=".\pa_exception.C"
-			>
+			RelativePath=".\pa_exception.C">
 		</File>
 		<File
-			RelativePath="..\include\pa_exception.h"
-			>
+			RelativePath="..\include\pa_exception.h">
 		</File>
 		<File
-			RelativePath=".\pa_exec.C"
-			>
+			RelativePath=".\pa_exec.C">
 		</File>
 		<File
-			RelativePath="..\include\pa_exec.h"
-			>
+			RelativePath="..\include\pa_exec.h">
 		</File>
 		<File
-			RelativePath=".\pa_globals.C"
-			>
+			RelativePath=".\pa_globals.C">
 		</File>
 		<File
-			RelativePath="..\include\pa_globals.h"
-			>
+			RelativePath="..\include\pa_globals.h">
 		</File>
 		<File
-			RelativePath="..\include\pa_hash.h"
-			>
+			RelativePath="..\include\pa_hash.h">
 		</File>
 		<File
-			RelativePath=".\pa_http.C"
-			>
+			RelativePath=".\pa_http.C">
 		</File>
 		<File
-			RelativePath="..\include\pa_http.h"
-			>
+			RelativePath="..\include\pa_http.h">
 		</File>
 		<File
-			RelativePath=".\pa_memory.C"
-			>
+			RelativePath=".\pa_memory.C">
 		</File>
 		<File
-			RelativePath="..\include\pa_memory.h"
-			>
+			RelativePath="..\include\pa_memory.h">
 		</File>
 		<File
-			RelativePath="..\include\pa_opcode.h"
-			>
+			RelativePath="..\include\pa_opcode.h">
 		</File>
 		<File
-			RelativePath="..\include\pa_operation.h"
-			>
+			RelativePath="..\include\pa_operation.h">
 		</File>
 		<File
-			RelativePath=".\pa_os.C"
-			>
+			RelativePath=".\pa_os.C">
 		</File>
 		<File
-			RelativePath="..\include\pa_os.h"
-			>
+			RelativePath="..\include\pa_os.h">
 		</File>
 		<File
-			RelativePath=".\pa_pool.C"
-			>
+			RelativePath=".\pa_pool.C">
 		</File>
 		<File
-			RelativePath="..\include\pa_pool.h"
-			>
+			RelativePath="..\include\pa_pool.h">
 		</File>
 		<File
-			RelativePath=".\pa_request.C"
-			>
+			RelativePath=".\pa_request.C">
 		</File>
 		<File
-			RelativePath="..\include\pa_request.h"
-			>
+			RelativePath="..\include\pa_request.h">
 		</File>
 		<File
-			RelativePath="..\include\pa_request_charsets.h"
-			>
+			RelativePath="..\include\pa_request_charsets.h">
 		</File>
 		<File
-			RelativePath="..\include\pa_request_info.h"
-			>
+			RelativePath="..\include\pa_request_info.h">
 		</File>
 		<File
-			RelativePath="..\include\pa_sapi.h"
-			>
+			RelativePath="..\include\pa_sapi.h">
 		</File>
 		<File
-			RelativePath=".\pa_socks.C"
-			>
+			RelativePath=".\pa_socks.C">
 		</File>
 		<File
-			RelativePath="..\include\pa_socks.h"
-			>
+			RelativePath="..\include\pa_socks.h">
 		</File>
 		<File
-			RelativePath="..\include\pa_sql_connection.h"
-			>
+			RelativePath="..\include\pa_sql_connection.h">
 		</File>
 		<File
-			RelativePath=".\pa_sql_driver_manager.C"
-			>
+			RelativePath=".\pa_sql_driver_manager.C">
 		</File>
 		<File
-			RelativePath="..\include\pa_sql_driver_manager.h"
-			>
+			RelativePath="..\include\pa_sql_driver_manager.h">
 		</File>
 		<File
-			RelativePath="..\include\pa_stack.h"
-			>
+			RelativePath="..\include\pa_stack.h">
 		</File>
 		<File
-			RelativePath=".\pa_string.C"
-			>
+			RelativePath=".\pa_string.C">
 		</File>
 		<File
-			RelativePath="..\include\pa_string.h"
-			>
+			RelativePath="..\include\pa_string.h">
 		</File>
 		<File
-			RelativePath=".\pa_stylesheet_connection.C"
-			>
+			RelativePath=".\pa_stylesheet_connection.C">
 		</File>
 		<File
-			RelativePath="..\include\pa_stylesheet_connection.h"
-			>
+			RelativePath="..\include\pa_stylesheet_connection.h">
 		</File>
 		<File
-			RelativePath=".\pa_stylesheet_manager.C"
-			>
+			RelativePath=".\pa_stylesheet_manager.C">
 		</File>
 		<File
-			RelativePath="..\include\pa_stylesheet_manager.h"
-			>
+			RelativePath="..\include\pa_stylesheet_manager.h">
 		</File>
 		<File
-			RelativePath=".\pa_table.C"
-			>
+			RelativePath=".\pa_table.C">
 		</File>
 		<File
-			RelativePath="..\include\pa_table.h"
-			>
+			RelativePath="..\include\pa_table.h">
 		</File>
 		<File
-			RelativePath="..\include\pa_threads.h"
-			>
+			RelativePath="..\include\pa_threads.h">
 		</File>
 		<File
-			RelativePath="..\include\pa_types.h"
-			>
+			RelativePath="..\include\pa_types.h">
 		</File>
 		<File
-			RelativePath=".\pa_uue.C"
-			>
+			RelativePath=".\pa_uue.C">
 		</File>
 		<File
-			RelativePath="..\include\pa_uue.h"
-			>
+			RelativePath="..\include\pa_uue.h">
 		</File>
 		<File
-			RelativePath="..\include\pa_version.h"
-			>
+			RelativePath="..\include\pa_version.h">
 		</File>
 		<File
-			RelativePath=".\pa_xml_exception.C"
-			>
+			RelativePath=".\pa_xml_exception.C">
 		</File>
 		<File
-			RelativePath="..\include\pa_xml_exception.h"
-			>
+			RelativePath="..\include\pa_xml_exception.h">
 		</File>
 		<File
-			RelativePath=".\pa_xml_io.C"
-			>
+			RelativePath=".\pa_xml_io.C">
 		</File>
 		<File
-			RelativePath="..\include\pa_xml_io.h"
-			>
+			RelativePath="..\include\pa_xml_io.h">
 		</File>
 		<File
-			RelativePath=".\untaint.C"
-			>
+			RelativePath=".\untaint.C">
 		</File>
 	</Files>
 	<Globals>
