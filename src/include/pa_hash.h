@@ -17,7 +17,7 @@
 #ifndef PA_HASH_H
 #define PA_HASH_H
 
-static const char * const IDENT_HASH_H="$Date: 2007/06/19 16:40:14 $";
+static const char * const IDENT_HASH_H="$Date: 2007/12/28 11:23:20 $";
 
 #include "pa_memory.h"
 #include "pa_types.h"
@@ -268,7 +268,7 @@ public:
 	}
 
 	/// returns exist key or not
-	bool contain(K key){
+	bool contains(K key){
 		uint code=hash_code(key);
 		uint index=code%allocated;
 		for(Pair **ref=&refs[index]; *ref; ref=&(*ref)->link){
