@@ -3,14 +3,17 @@ $request:charset[windows-1251]
 $response:charset[$request:charset]
 $sScript[./cat.sh]
 
-$tData[^table::create{sType	sFormat	sContentType	sFileName	sText	sCharset
-exec	text	text/plain	notfound.txt
-exec	binary	image/gif	notfound.gif
-exec		text/plain	161_windows1251.txt	тест		#old style
-cgi		text/plain	161_windows1251.txt			#old style
-cgi	text	text/plain	161_windows1251.txt	тест	$request:charset
-exec	text	text/plain	161_utf8.txt	тест	UTF-8
-cgi	binary	image/gif	019paf2001.gif
+$tData[^table::create{sType	sFormat	sContentType	sFileName	iStatus	sText	sCharset
+exec		text/plain	notfound.txt	1
+exec	text	text/plain	notfound.txt	2
+cgi	text	text/plain	notfound.txt	3	тест
+exec	binary	image/gif	notfound.gif	4
+cgi	text	text/plain	161_windows1251.txt	0	тест	$request:charset
+exec	text	text/plain	161_utf8.txt	0	тест	UTF-8
+cgi	binary	image/gif	019paf2001.gif	0
+#old style
+exec		text/plain	161_windows1251.txt	0	тест
+cgi		text/plain	161_windows1251.txt	0
 }]
 
 ^tData.menu{
@@ -19,30 +22,50 @@ cgi	binary	image/gif	019paf2001.gif
 		^rem{ *** new style where in 1st param we can specify 'text' or 'binary' format *** }
 		^switch[$tData.sType]{
 			^case[exec]{
-				$f[^file::exec[$tData.sFormat;$sScript;^if(def $tData.sCharset){$.charset[$tData.sCharset]};exec;$tData.sContentType;$tData.sFileName;$tData.sText]]
+				$f[^file::exec[$tData.sFormat;$sScript;^if(def $tData.sCharset){$.charset[$tData.sCharset]};exec;$tData.sContentType;$tData.sFileName;$tData.iStatus;$tData.sText]]
 			}
 			^case[cgi]{
-				$f[^file::cgi[$tData.sFormat;$sScript;^if(def $tData.sCharset){$.charset[$tData.sCharset]};cgi;$tData.sContentType;$tData.sFileName;$tData.sText]]
+				$f[^file::cgi[$tData.sFormat;$sScript;^if(def $tData.sCharset){$.charset[$tData.sCharset]};cgi;$tData.sContentType;$tData.sFileName;$tData.iStatus;$tData.sText]]
 			}
 		}
 	}{
 		^rem{ *** old style: 1st param can be path to script only *** }
 		^switch[$tData.sType]{
 			^case[exec]{
-				$f[^file::exec[$sScript;^if(def $tData.sCharset){$.charset[$tData.sCharset]};exec;$tData.sContentType;$tData.sFileName;$tData.sText]]
+				$f[^file::exec[$sScript;^if(def $tData.sCharset){$.charset[$tData.sCharset]};exec;$tData.sContentType;$tData.sFileName;$tData.iStatus;$tData.sText]]
 			}
 			^case[cgi]{
-				$f[^file::cgi[$sScript;^if(def $tData.sCharset){$.charset[$tData.sCharset]};cgi;$tData.sContentType;$tData.sFileName;$tData.sText]]
+				$f[^file::cgi[$sScript;^if(def $tData.sCharset){$.charset[$tData.sCharset]};cgi;$tData.sContentType;$tData.sFileName;$tData.iStatus;$tData.sText]]
 			}
 		}
 	}
-	^print[$f]
-	^if(!$f.status){^f.save[^if($tData.sFormat eq "binary"){binary}{text};171_dir/^tData.line[].^file:justext[$tData.sFileName]]}
+	^print[$tData.sType;$f]
+	^if($f is "file" && !$f.status){
+		^f.save[^if($tData.sFormat eq "binary"){binary}{text};171_dir/^tData.line[].^file:justext[$tData.sFileName]]
+	}
 }
 
 
-@print[f]
-status: ^if(!$f.status){==0}{!=0}
-text: '$f.text'
-size: ^if(def $f.size){$f.size}{-}
-text.length: ^if(def $f.text){^f.text.length[]}{-}^taint[as-is][^#0A]
+$f[]
+Calling cgi which don't get back CGI headers:
+^try{
+	$f[^file::cgi[$sScript;;exec;text/plain;161_windows1251.txt;0]]
+}{
+	$exception.handled(1)
+}
+^print[cgi;$f]
+
+
+
+
+@print[sType;f]
+^if($f is "file"){
+	^$f.status: ^if($f.status){!=0}{==0}
+	^$f.text: '$f.text'
+	^$f.size: ^if(def $f.size){$f.size}{-}
+	^$f.text.length: ^if(def $f.text){^f.text.length[]}{-}
+	^if($sType eq "cgi"){^$f.CONTENT-TYPE: ^if(def ${f.CONTENT-TYPE}){${f.CONTENT-TYPE}}{-}}
+}{
+	Variable is not a file, can't analyze it.
+}
+^taint[as-is][^#0A]

@@ -1,5 +1,11 @@
 #!/bin/sh
 
+if [ $1 = "halt" ]
+then
+	exit $2
+fi
+
+
 if [ $1 = "cgi" ]
 then
 	echo "content-type: $2
@@ -7,10 +13,17 @@ then
 fi
 
 
-if [ -n "$4" ]
+if [ -n "$5" ]
 then
-	echo "$4"
+	echo "$5"
 fi
 
+
 cat -s $3
+
+
+if [ -n "$4" ]
+then
+	exit $4
+fi
 
