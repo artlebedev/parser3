@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2007/11/15 17:24:22 $";
+static const char * const IDENT_FILE_C="$Date: 2008/01/21 14:53:57 $";
 
 #include "pa_config_includes.h"
 
@@ -353,7 +353,7 @@ static void append_to_argv(Request& r, ArrayString& argv, const String* str){
 
 inline size_t strpos(const char *s1, const char *s2) {
 	const char *p = strstr(s1, s2);
-	return (p==0)?(size_t)-1:p-s1;
+	return (p==0)?STRING_NOT_FOUND:p-s1;
 }
 
 /// @todo fix `` in perl - they produced flipping consoles and no output to perl
@@ -493,16 +493,19 @@ static void _exec_cgi(Request& r, MethodParams& params,
 	File_read_result *file_out=&execution.out;
 	String *real_err=&execution.err;
 
+	// transcode err if necessary (@todo: need fix line breaks in err as well )
+	if(charset)
+		real_err=&Charset::transcode(*real_err, *charset, r.charsets.source());
+
 	if(file_out->length && is_text_mode(mode_name)){
 		fix_line_breaks(file_out->str, file_out->length);
 		// treat output as string
 		String *real_out = new String(file_out->str, file_out->length);
 
-		// transcode if necessary
-		if(charset) {
+		// transcode out if necessary
+		if(charset)
 			real_out=&Charset::transcode(*real_out, *charset, r.charsets.source());
-			real_err=&Charset::transcode(*real_err, *charset, r.charsets.source());
-		}
+
 		// FIXME: unsafe cast
 		file_out->str=const_cast<char *>(real_out->cstr()); // hacking a little
 		file_out->length = real_out->length();
@@ -515,8 +518,8 @@ static void _exec_cgi(Request& r, MethodParams& params,
 		size_t eol_marker_size;
 
 		// construct with 'out' body and header
-		size_t dos_pos=strpos(file_out->str, "\r\n\r\n");
-		size_t unix_pos=strpos(file_out->str, "\n\n");
+		size_t dos_pos=(file_out->length)?strpos(file_out->str, "\r\n\r\n"):STRING_NOT_FOUND;
+		size_t unix_pos=(file_out->length)?strpos(file_out->str, "\n\n"):STRING_NOT_FOUND;
 
 		bool unix_header_break;
 		switch((dos_pos!=STRING_NOT_FOUND?10:00) + (unix_pos!=STRING_NOT_FOUND?01:00)) {
@@ -536,18 +539,20 @@ static void _exec_cgi(Request& r, MethodParams& params,
 				"output does not contain CGI header; "
 				"exit status=%d; stdoutsize=%u; stdout: \"%s\"; stderrsize=%u; stderr: \"%s\"", 
 					execution.status, 
-					(uint)file_out->length, file_out->str,
-					(uint)real_err->length(), real_err->cstr());
+						(size_t)file_out->length, (file_out->length) ? (file_out->str) : "",
+						(size_t)real_err->length(), real_err->cstr());
 			break; //never reached
 		}
 
-		int header_break_pos;
+		size_t header_break_pos;
 		if(unix_header_break) {
 			header_break_pos=unix_pos;
-			eol_marker="\n"; eol_marker_size=1;
+			eol_marker="\n";
+			eol_marker_size=1;
 		} else {
 			header_break_pos=dos_pos;
-			eol_marker="\r\n"; eol_marker_size=2;
+			eol_marker="\r\n";
+			eol_marker_size=2;
 		}
 
 		file_out->str[header_break_pos] = 0;
