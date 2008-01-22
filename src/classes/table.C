@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2007/11/14 09:45:21 $";
+static const char * const IDENT_TABLE_C="$Date: 2008/01/22 13:19:08 $";
 
 #include <sstream>
 using namespace std;
@@ -766,18 +766,16 @@ Table2hash_value_type get_value_type(Value& vvalue_type){
 static void _hash(Request& r, MethodParams& params) {
 	Table& self_table=GET_SELF(r, VTable).table();
 	VHash& result=*new VHash;
-	if(Table::columns_type columns=self_table.columns())
+	if(Table::columns_type columns=self_table.columns()){
 		if(columns->count()>0) {
 			Table2hash_distint distinct=D_ILLEGAL;
 			Table2hash_value_type value_type=C_HASH;
 			int param_index=params.count()-1;
 			if(param_index>0) {
-				if(HashStringValue* options=
-					params.as_no_junction(param_index, PARAM_MUST_NOT_BE_CODE).get_hash()
-				){
+				if(HashStringValue* options=params.as_no_junction(param_index, PARAM_MUST_NOT_BE_CODE).get_hash()){ // options where specified
 					--param_index;
 					int valid_options=0;
-					if(Value* vdistinct_code=options->get(sql_distinct_name)) {
+					if(Value* vdistinct_code=options->get(sql_distinct_name)) { // $.distinct ?
 						valid_options++;
 						Value& vdistinct_value=r.process_to_value(*vdistinct_code);
 						if(vdistinct_value.is_string()) {
@@ -785,23 +783,24 @@ static void _hash(Request& r, MethodParams& params) {
 							if(sdistinct=="tables") {
 								value_type=C_TABLE;
 								distinct=D_FIRST;
-							} else
+							} else {
 								throw Exception(PARSER_RUNTIME,
 									&sdistinct,
 									"must be 'tables' or true/false");
-						} else
+							}
+						} else {
 							distinct=vdistinct_value.as_bool()?D_FIRST:D_ILLEGAL;
+						}
 					}
-					if(Value* vvalue_type_code=options->get(sql_value_type_name)) {
-						if(value_type==C_TABLE){ // $.distinct[tables] was specified already
+					if(Value* vvalue_type_code=options->get(sql_value_type_name)) { // $.type ?
+						if(value_type==C_TABLE) // $.distinct[tables] already was specified
 							throw Exception(PARSER_RUNTIME,
 								0,
-								"you can't specify $.distinct[tables] and $.type[] together.");
-						} else {
-							valid_options++;
-							value_type=get_value_type(r.process_to_value(*vvalue_type_code));
-						}
-					} 
+								"you can't specify $.distinct[tables] and $.type[] together");
+
+						valid_options++;
+						value_type=get_value_type(r.process_to_value(*vvalue_type_code));
+					}
 
 					if(valid_options!=options->count())
 						throw Exception(PARSER_RUNTIME,
@@ -809,48 +808,46 @@ static void _hash(Request& r, MethodParams& params) {
 							"called with invalid option");
 				}
 			}
-			if(param_index==2) // bad options param type
+
+			if(param_index==2) // options was specified but not as hash
 				throw Exception(PARSER_RUNTIME,
 					0,
 					"options must be hash");
 
 			Array<int> value_fields;
-			if(param_index>0) {
+			if(param_index==0){ // list of columns wasn't specified
+				if(value_type==C_STRING) // $.type[string]
+					throw Exception(PARSER_RUNTIME,
+						0,
+						"you must specify one value field with option $.type[string]");
+				
+				for(size_t i=0; i<columns->count(); i++) // by all columns, including key
+					value_fields+=i;
+
+			} else { // list of columns was specified
 				if(value_type==C_TABLE)
 					throw Exception(PARSER_RUNTIME,
 						0,
-						"in distinct[tables] mode you may not specify value field(s)");
+						"you can't specify value field(s) with option $.distinct[tables] or $.type[tables]");
+
 				Value& value_fields_param=params.as_no_junction(param_index, "value field(s) must not be code");
-				if(value_fields_param.is_string()) {
-					value_fields+=self_table.column_name2index(
-						*value_fields_param.get_string(), true);
-				} else if(Table* value_fields_table=value_fields_param.get_table()) {
-					for(Array_iterator<Table::element_type> i(*value_fields_table); 
-						i.has_next(); ) {
-						const String& value_field_name
-							=*i.next()->get(0);
-						value_fields
-							+=self_table.column_name2index(value_field_name, true);
+				if(value_fields_param.is_string()) { // one column as string was specified
+					value_fields+=self_table.column_name2index(*value_fields_param.get_string(), true);
+				} else if(Table* value_fields_table=value_fields_param.get_table()) { // list of columns were specified in table
+					for(Array_iterator<Table::element_type> i(*value_fields_table); i.has_next(); ) {
+						const String& value_field_name =*i.next()->get(0);
+						value_fields +=self_table.column_name2index(value_field_name, true);
 					}
 				} else
 					throw Exception(PARSER_RUNTIME,
 						0,
 						"value field(s) must be string or table");
-
-			} else { // by all columns, including key
-				if(value_type==C_STRING)
-					throw Exception(PARSER_RUNTIME,
-						0,
-						"with $.type[string] you must specify one value field(s)");
-				// if(!(distinct!=D_ILLEGAL && distinct!=D_FIRST))
-					for(size_t i=0; i<columns->count(); i++)
-						value_fields+=i;
-			}
+				}
 
 			if(value_type==C_STRING && value_fields.count()!=1)
 				throw Exception(PARSER_RUNTIME,
 					0,
-					"you can specify one value field with this $.type[].");
+					"you can specify only one value field with option $.type[string]");
 
 			{
 				Value* key_param=&params[0];
@@ -875,6 +872,7 @@ static void _hash(Request& r, MethodParams& params) {
 				result.extract_default();
 			}
 		}
+	}
 	r.write_no_lang(result);
 }
 
