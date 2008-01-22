@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VCOOKIE_C="$Date: 2007/09/17 15:15:05 $";
+static const char * const IDENT_VCOOKIE_C="$Date: 2008/01/22 13:17:27 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -142,7 +142,7 @@ static Value& expires_vdate(double days_till_expire) {
 
 /*
 	@todo 
-	http://www.netscape.com/newsref/std/cookie_spec.html
+	http://wp.netscape.com/newsref/std/cookie_spec.html
 	When sending cookies to a server, 
 	all cookies with a more specific path mapping should be sent before cookies 
 	with less specific path mappings. 
@@ -206,7 +206,7 @@ static void output_set_cookie_header(
 
 	if(adelete) {// removing value
 		/*
-			http://www.netscape.com/newsref/std/cookie_spec.html
+			http://wp.netscape.com/newsref/std/cookie_spec.html
 			to delete a cookie, it can do so by returning a cookie with the same name, 
 			and an expires time which is in the past
 		*/
