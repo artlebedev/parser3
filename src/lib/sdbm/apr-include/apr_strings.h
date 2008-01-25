@@ -113,6 +113,9 @@ APR_DECLARE_NONSTD(char *) apr_pstrcat(apr_pool_t *p, ...);
 
 /** @} */
 
+// use libgc
+void* apr_malloc(unsigned int size);
+
 #ifdef __cplusplus
 }
 #endif

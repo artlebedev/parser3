@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Date: 2003/11/20 16:34:26 $";
+static const char * const IDENT="$Date: 2008/01/25 18:57:52 $";
 
 #include "apr_strings.h"
 #include "pa_memory.h"
@@ -65,4 +65,8 @@ APR_DECLARE_NONSTD(char *) apr_pstrcat(apr_pool_t *p, ...)
     *cp = '\0';
 
     return res;
+}
+
+void* apr_malloc(unsigned int size){
+	return pa_malloc(size);
 }
