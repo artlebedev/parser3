@@ -71,7 +71,7 @@
 #include "sdbm_private.h"
 
 #include <string.h>     /* for memset() */
-#include <stdlib.h>     /* for malloc() and free() */
+// #include <stdlib.h>     /* for malloc() and free() */
 
 /*
  * forward
@@ -120,7 +120,7 @@ static apr_status_t database_cleanup(void *data)
         (void) apr_file_unlock(db->dirf);
     (void) apr_file_close(db->dirf);
     (void) apr_file_close(db->pagf);
-    free(db);
+//    free(db); // libcg will do it
 
     return APR_SUCCESS;
 }
@@ -133,8 +133,9 @@ static apr_status_t prep(apr_sdbm_t **pdb, const char *dirname, const char *pagn
 
     *pdb = NULL;
 
-    db = malloc(sizeof(*db));
-    memset(db, 0, sizeof(*db));
+//    db = malloc(sizeof(*db));
+//    memset(db, 0, sizeof(*db));
+	db = apr_malloc(sizeof(*db));
 
     db->pool = p;
 
@@ -205,7 +206,7 @@ error:
     if (db->pagf != NULL) {
         (void) apr_file_close(db->pagf);
     }
-    free(db);
+//    free(db); // libcg will do it
     return status;
 }
 
