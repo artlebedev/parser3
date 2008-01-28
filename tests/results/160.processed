@@ -1,92 +1,153 @@
 content-type: text/html
-content-length: 1351
+content-length: 2071
 
 <table border="1" cellpadding="3">
 <tr>
+<th>Info</th>
 <th>File: 1</th>
 <th>File: 2</th>
 <th>File: 3</th>
+<th>File: 4</th>
 </tr>
-<tr>
+<tr valign="top">
+<td>Exec body on 1st step, then just get cached result</td>
 <td>
-Executed code, ^cache[] value defined,
-result: One (1)
+Executed body, ^cache[] value defined,
+result: '
+One (1)
+'
 <br />
 Get cached result,
-result: One (1)
+result: '
+One (1)
+'
 <br />
 Get cached result,
-result: One (1)
+result: '
+One (1)
+'
 </td>
 <td>
-Executed code, ^cache[] value defined,
-result: Two (1)
+Executed body, ^cache[] value defined,
+result: '
+Two (1)
+'
 <br />
 Get cached result,
-result: Two (1)
+result: '
+Two (1)
+'
 <br />
 Get cached result,
-result: Two (1)
+result: '
+Two (1)
+'
 </td>
 <td>
-Executed code, ^cache[] value defined,
-result: Three (1)
+Executed body, ^cache[] value defined,
+result: '
+Three (1)
+'
 <br />
 Get cached result,
-result: Three (1)
+result: '
+Three (1)
+'
 <br />
 Get cached result,
-result: Three (1)
+result: '
+Three (1)
+'
 </td>
+<td><br /></td>
 </tr>
-<tr>
+<tr valign="top">
+<td>Value in cache not expired yet.</td>
 <td><br /></td>
 <td><br /></td>
 <td>
 Get cached result,
-result: Three (1)
+result: '
+Three (1)
+'
 <br />
 Get cached result,
-result: Three (1)
+result: '
+Three (1)
+'
 <br />
 Get cached result,
-result: Three (1)
+result: '
+Three (1)
+'
 </td>
 </tr>
-<tr>
+<tr valign="top">
+<td>Wait for 3 secs. Cache expired for sure.</td>
 <td colspan="3">
 ^sleep(3)
 </td>
+<td><br /></td>
 </tr>
-<tr>
+<tr valign="top">
 <td>
-Process error handler, result: One (1)
-<br />
-Get cached result,
-result: One (1)
-<br />
-Get cached result,
-result: One (1)
+1. Body code has an exception but force get cached result<br />
+2. Execute body and set ^cache(0) for prevent cacheing<br />
+3. Body code has an exception, execute catch section and set ^cache(0)
 </td>
 <td>
-Executed code, ^cache[] value defined,
-result: Two
+Processing catch section, result: '
+One (1)
+'
+<br />
+Get cached result,
+result: '
+One (1)
+'
+<br />
+Get cached result,
+result: '
+One (1)
+'
+</td>
+<td>
+Executed body, ^cache[] value defined,
+result: '
+Two
 (1)
+'
 <br />
-Executed code, ^cache[] value defined,
-result: Two
+Executed body, ^cache[] value defined,
+result: '
+Two
 (2)
+'
 <br />
-Executed code, ^cache[] value defined,
-result: Two
+Executed body, ^cache[] value defined,
+result: '
+Two
 (3)
+'
 </td>
 <td>
-Process error handler, result: Error occure while executing body
+Processing catch section, result: '
+Catch section results
+'
 <br />
-Process error handler, result: Error occure while executing body
+Processing catch section, result: '
+Catch section results
+'
 <br />
-Process error handler, result: Error occure while executing body
+Processing catch section, result: '
+Catch section results
+'
+</td>
+<td>
+Error. Body executed 1 times, catch executed 1 times.
+<br />
+Error. Body executed 1 times, catch executed 1 times.
+<br />
+Error. Body executed 1 times, catch executed 1 times.
 </td>
 </tr>
 </table>
