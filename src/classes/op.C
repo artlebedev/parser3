@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2007/08/20 10:37:21 $";
+static const char * const IDENT_OP_C="$Date: 2008/01/28 16:01:43 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -616,7 +616,8 @@ const String* locked_process_and_cache_put(Request& r,
 		&info,
 		false/*as_text*/,
 		false/*do_append*/,
-		false/*block == don't wait till other thread release lock*/) ? info.processed_code: 0;
+		false/*block == don't wait till other thread release lock*/,
+		false/*dun throw exception if lock failed*/) ? info.processed_code: 0;
 
 	time_t now=time(0);
 	if(scope.expires<=now)
@@ -669,9 +670,8 @@ static const String& as_file_spec(Request& r, MethodParams& params, int index) {
 	return r.absolute(params.as_string(index, "filespec must be string"));
 }
 static void _cache(Request& r, MethodParams& params) {
-	if(params.count()==0)
-	{
-		// return current expiration time
+	if(params.count()==0) {
+		// ^cache[] -- return current expiration time
 		Cache_scope* scope=static_cast<Cache_scope*>(r.classes_conf.get(cache_data_name));
 		if(!scope)
 			throw Exception(PARSER_RUNTIME,
@@ -683,8 +683,8 @@ static void _cache(Request& r, MethodParams& params) {
 
 	time_t now=time(0);
 
-	// ^cache[filename] ^cache(seconds) ^cache[expires date]
 	if(params.count()==1) {
+		// ^cache[filename] ^cache(seconds) ^cache[expires date]
 		if(params[0].is_string()) { // filename?
 			cache_delete(as_file_spec(r, params, 0));
 			return;
@@ -734,16 +734,16 @@ static void _cache(Request& r, MethodParams& params) {
 		}
 
 		// no cached info or it's already expired
-		try {
-			// try to process and store in file
+
+		// trying to process it under lock and store result in file
    			const String* processed_body=locked_process_and_cache_put(r, body_code, catch_code, scope, file_spec);
+		if(processed_body){
    			// write it out 
    			r.write_assign_lang(*processed_body);
    			// happy with it
    			return;
-		} catch(...) {
-			// we fail during get exclusive lock
-			// nvm we just process it a bit later 
+		} else {
+			// we fail while get exclusive lock. nvm, we just execute body_code a bit later
    		}
 	} else { 
 		// instructed not to cache; forget cached copy
