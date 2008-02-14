@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_DATE_C="$Date: 2007/04/23 10:30:09 $";
+static const char * const IDENT_DATE_C="$Date: 2008/02/14 10:11:16 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -61,13 +61,22 @@ static void _now(Request& r, MethodParams& params) {
 }
 
 /// shrinked range: 1970/1/1 to 2038/1/1
-static int to_tm_year(int iyear) {
+static int to_year(int iyear) {
 	if(iyear<1970 || iyear>2038)
 		throw Exception(0,
 			0,
 			"year '%d' is out of valid range", iyear);
-	return iyear-1900;
+	return iyear;
 }
+
+static int to_month(int imonth) {
+	return max(1, min(imonth, 12)) -1;
+}
+
+static int to_tm_year(int iyear) {
+	return to_year(iyear)-1900;
+}
+
 
 // 2002-04-25 18:14:00
 // 18:14:00
@@ -241,8 +250,8 @@ static Table& fill_month_days(Request& r, MethodParams& params, bool rus){
 	Table::Action_options table_options;
 	Table& result=*new Table(date_calendar_table_template, table_options);
 	
-	int year=params.as_int(1, "year must be int", r);
-	int month=max(1, min(params.as_int(2, "month must be int", r), 12)) -1;
+	int year=to_year(params.as_int(1, "year must be int", r));
+	int month=to_month(params.as_int(2, "month must be int", r));
 	
 	tm tmIn;  
 	memset(&tmIn, 0, sizeof(tmIn)); 
@@ -316,8 +325,8 @@ static Table& fill_week_days(Request& r, MethodParams& params, bool rus){
 	*columns+=new String("weekday");
 	Table& result=*new Table(columns);
 
-	int year=params.as_int(1, "year must be int", r);
-	int month=max(1, min(params.as_int(2, "month must be int", r), 12)) -1;
+	int year=to_year(params.as_int(1, "year must be int", r));
+	int month=to_month(params.as_int(2, "month must be int", r));
 	int day=params.as_int(3, "day must be int", r);
 	
 	tm tmIn;
@@ -397,22 +406,47 @@ static void _unix_timestamp(Request& r, MethodParams& params) {
 	}
 }
 
+static void _lastday(Request& r, MethodParams& params) {
+	int year;
+	int month;
+	if(&r.get_self() == date_class) {
+		// ^date:lastday(year;month)
+		if(params.count() == 2) {
+			year=to_year(params.as_int(0, "year must be int", r));
+			month=to_month(params.as_int(1, "month must be int", r));
+		} else
+			throw Exception(PARSER_RUNTIME,
+				0,
+				"year and month must be defined");
+	} else {
+		// ^date.lastday[]
+		tm &tmIn=GET_SELF(r, VDate).get_localtime();
+		year=tmIn.tm_year+1900;
+		month=tmIn.tm_mon;
+	}
+	r.write_assign_lang(*new VInt(getMonthDays(year, month)));
+}
+
 
 // constructor
 
 MDate::MDate(): Methoded("date") {
-	// ^now[]
+	// ^date::now[]
 	add_native_method("now", Method::CT_DYNAMIC, _now, 0, 1);
 
-	// ^create(float days)
+	// ^date::create(float days)
 	add_native_method("create", Method::CT_DYNAMIC, _create, 1, 6);
 	// old name for compatibility with <= v1.17 2002/2/18 12:13:42 paf
 	add_native_method("set", Method::CT_DYNAMIC, _create, 1, 6);
 
-	// ^sql-string[]
+	// ^date.sql-string[]
 	add_native_method("sql-string", Method::CT_DYNAMIC, _sql_string, 0, 0);
 
-	// ^roll(year|month|day;+/- 1)
+	// ^date:lastday(year;month)
+	// ^date.lastday[]
+	add_native_method("lastday", Method::CT_ANY, _lastday, 0, 2);
+
+	// ^date.roll(year|month|day;+/- 1)
 	add_native_method("roll", Method::CT_DYNAMIC, _roll, 2, 2);
 
 	// ^date:calendar[month|montheng;year;month]  = table
@@ -420,6 +454,7 @@ MDate::MDate(): Methoded("date") {
 	add_native_method("calendar", Method::CT_STATIC, _calendar, 3, 4);
 
 
-	// ^unix-timestamp[]
+	// ^date.unix-timestamp[]
+	// ^date::unix-timestamp[]
 	add_native_method("unix-timestamp", Method::CT_DYNAMIC, _unix_timestamp, 0, 1);
 }
