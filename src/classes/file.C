@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2008/01/21 14:53:57 $";
+static const char * const IDENT_FILE_C="$Date: 2008/02/14 09:10:23 $";
 
 #include "pa_config_includes.h"
 
@@ -523,25 +523,25 @@ static void _exec_cgi(Request& r, MethodParams& params,
 
 		bool unix_header_break;
 		switch((dos_pos!=STRING_NOT_FOUND?10:00) + (unix_pos!=STRING_NOT_FOUND?01:00)) {
-		case 10: // dos
-			unix_header_break=false;
-			break;
-		case 01: // unix
-			unix_header_break=true;
-			break;
-		case 11: // dos & unix
-			unix_header_break=unix_pos<dos_pos;
-			break;
-		default: // 00
-			unix_header_break=false; // calm down, compiler
-			throw Exception(0,
-				0,
-				"output does not contain CGI header; "
-				"exit status=%d; stdoutsize=%u; stdout: \"%s\"; stderrsize=%u; stderr: \"%s\"", 
-					execution.status, 
+			case 10: // dos
+				unix_header_break=false;
+				break;
+			case 01: // unix
+				unix_header_break=true;
+				break;
+			case 11: // dos & unix
+				unix_header_break=unix_pos<dos_pos;
+				break;
+			default: // 00
+				unix_header_break=false; // calm down, compiler
+				throw Exception(0,
+					0,
+					"output does not contain CGI header; "
+					"exit status=%d; stdoutsize=%u; stdout: \"%s\"; stderrsize=%u; stderr: \"%s\"", 
+						execution.status, 
 						(size_t)file_out->length, (file_out->length) ? (file_out->str) : "",
 						(size_t)real_err->length(), real_err->cstr());
-			break; //never reached
+				break; //never reached
 		}
 
 		size_t header_break_pos;
@@ -577,8 +577,8 @@ static void _exec_cgi(Request& r, MethodParams& params,
 				self.fields().put(content_type_name, info.content_type);
 		}
 	} else { // ^file::exec
-	// $body
-	self.set(false/*not tainted*/, file_out->str, file_out->length);
+		// $body
+		self.set(false/*not tainted*/, file_out->str, file_out->length);
 	}
 
 	// $status

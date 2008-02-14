@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2008/01/22 13:19:08 $";
+static const char * const IDENT_TABLE_C="$Date: 2008/02/14 09:10:24 $";
 
 #include <sstream>
 using namespace std;
@@ -572,7 +572,7 @@ static void _save(Request& r, MethodParams& params) {
 					if(separators.encloser) {
 						ost<<separators.encloser<<column<<separators.encloser;
 					} else {
-					ost<<column;
+						ost<<column;
 					}
 					if(column<lsize-1){
 						ost<<separators.column;
@@ -842,7 +842,7 @@ static void _hash(Request& r, MethodParams& params) {
 					throw Exception(PARSER_RUNTIME,
 						0,
 						"value field(s) must be string or table");
-				}
+			}
 
 			if(value_type==C_STRING && value_fields.count()!=1)
 				throw Exception(PARSER_RUNTIME,
@@ -1301,8 +1301,8 @@ MTable::MTable(): Methoded("table") {
 	// ^table.menu{code}[delim]
 	add_native_method("menu", Method::CT_DYNAMIC, _menu, 1, 2);
 
-	// ^table:hash[key field name]
-	// ^table:hash[key field name][value field name(s) string/table]
+	// ^table.hash[key field name]
+	// ^table.hash[key field name][value field name(s) string/table]
 	add_native_method("hash", Method::CT_DYNAMIC, _hash, 1, 3);
 
 	// ^table.sort{string-key-maker} ^table.sort{string-key-maker}[desc|asc]
@@ -1322,11 +1322,11 @@ MTable::MTable(): Methoded("table") {
 	add_native_method("join", Method::CT_DYNAMIC, _join, 1, 2);
 
 
-	// ^table:sql[query]
-	// ^table:sql[query][$.limit(1) $.offset(2)]
+	// ^table::sql[query]
+	// ^table::sql[query][$.limit(1) $.offset(2)]
 	add_native_method("sql", Method::CT_DYNAMIC, _sql, 1, 2);
 
-	// ^table:columns[[column name]]
+	// ^table.columns[[column name]]
 	add_native_method("columns", Method::CT_DYNAMIC, _columns, 0, 1);
 
 	// ^table.select(expression) = table

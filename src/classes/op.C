@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2008/01/28 16:01:43 $";
+static const char * const IDENT_OP_C="$Date: 2008/02/14 09:10:23 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -723,10 +723,10 @@ static void _cache(Request& r, MethodParams& params) {
 		Cache_get_result cached=cache_get(r.charsets, file_spec, now);
 
 		if(cached.body) { // have cached copy
-		if(cached.expired) {
-			scope.body_from_disk=cached.body; // storing for user to retrive it with ^cache[]
-		} else {
-			// and it's not expired yet write it out 
+			if(cached.expired) {
+				scope.body_from_disk=cached.body; // storing for user to retrive it with ^cache[]
+			} else {
+				// and it's not expired yet write it out 
    				r.write_assign_lang(*cached.body);
    				// happy with it
    				return;
@@ -736,15 +736,15 @@ static void _cache(Request& r, MethodParams& params) {
 		// no cached info or it's already expired
 
 		// trying to process it under lock and store result in file
-   			const String* processed_body=locked_process_and_cache_put(r, body_code, catch_code, scope, file_spec);
+		const String* processed_body=locked_process_and_cache_put(r, body_code, catch_code, scope, file_spec);
 		if(processed_body){
-   			// write it out 
-   			r.write_assign_lang(*processed_body);
-   			// happy with it
-   			return;
+			// write it out 
+			r.write_assign_lang(*processed_body);
+			// happy with it
+			return;
 		} else {
 			// we fail while get exclusive lock. nvm, we just execute body_code a bit later
-   		}
+		}
 	} else { 
 		// instructed not to cache; forget cached copy
 		cache_delete(file_spec);
