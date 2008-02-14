@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VALUE_C="$Date: 2007/04/23 10:30:49 $";
+static const char * const IDENT_VALUE_C="$Date: 2008/02/14 09:10:44 $";
 
 #include "pa_value.h"
 #include "pa_vstateless_class.h"
@@ -124,7 +124,7 @@ struct Attributed_meaning_info {
 	String* header; // header line being constructed
 	String::Language lang; // language in which to append to that line
 	bool forced; // do they force that lang?
-	bool allow_bool; // allow bool types during print attributes 
+	bool allow_bool; // allow bool types during print attributes
 };
 #endif
 static void append_attribute_subattribute(HashStringValue::key_type akey, 
