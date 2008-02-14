@@ -795,12 +795,15 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !^дата.roll[year|month|day](+-смещение) сдвигает дату
     !^дата.roll[TZ;Ќова€ зона] говорит, что дата в таком-то часовом по€се: вли€ет на .hour & Co
     !^дата.sql-string[] %Y-%m-%d %H:%M:%S
-        where published='$дата.sql-string[]'
-    !^date:calendar[rus|eng;год;мес€ц] выдаЄт неименованную таблицу 
+        where published='^дата.sql-string[]'
+    !^date:calendar[rus|eng](год;мес€ц) выдаЄт неименованную таблицу 
         столбцы: 0..6, week, year
-    !^date:calendar[rus|eng;год;мес€ц;день] выдаЄт именнованную таблицу
+    !^date:calendar[rus|eng](год;мес€ц;день) выдаЄт именнованную таблицу
         столбцы: year, month, day, weekday
-    
+    !^date:last-day(год;мес€ц) вернЄт последний день мес€ца
+    !^дата.last-day[] вернЄт последний день мес€ца $дата
+
+
 xdoc(xnode)
     !$xdoc.search-namespaces hash, where keys=prefixes, values=urls
     
