@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_UNTAINT_C="$Date: 2007/08/27 19:04:03 $";
+static const char * const IDENT_UNTAINT_C="$Date: 2008/02/14 18:35:01 $";
 
 
 #include "pa_string.h"
@@ -353,6 +353,7 @@ int cstr_to_string_body_block(char alang, size_t fragment_length, Cstr_to_string
 		break;
 	case String::L_HTTP_HEADER:
 		// tainted, untaint language: http-field-content-text
+		// the same as L_URI BUT not transcoded into $response:charset before encoding
 		escape(
 			encode(need_uri_encode, '%', c);
 		);
