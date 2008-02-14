@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_DATE_C="$Date: 2008/02/14 10:11:16 $";
+static const char * const IDENT_DATE_C="$Date: 2008/02/14 10:46:01 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -406,7 +406,7 @@ static void _unix_timestamp(Request& r, MethodParams& params) {
 	}
 }
 
-static void _lastday(Request& r, MethodParams& params) {
+static void _last_day(Request& r, MethodParams& params) {
 	int year;
 	int month;
 	if(&r.get_self() == date_class) {
@@ -444,7 +444,7 @@ MDate::MDate(): Methoded("date") {
 
 	// ^date:lastday(year;month)
 	// ^date.lastday[]
-	add_native_method("lastday", Method::CT_ANY, _lastday, 0, 2);
+	add_native_method("last-day", Method::CT_ANY, _last_day, 0, 2);
 
 	// ^date.roll(year|month|day;+/- 1)
 	add_native_method("roll", Method::CT_DYNAMIC, _roll, 2, 2);
