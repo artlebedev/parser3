@@ -1,10 +1,11 @@
-@main[]
+@main[][iYearFrom;iYearTo;iYear]
 $iYearFrom(1998)
 $iYearTo(2027)
 
 
 ^for[iYear]($iYearFrom;$iYearTo){
 	^printCalendar[$iYear;01]
+	^printCalendar[$iYear;02]
 	^printCalendar[$iYear;12]
 }[<br />]
 
