@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
  */
 
-static const char * const IDENT_HTTP_C="$Date: 2007/04/23 10:30:32 $"; 
+static const char * const IDENT_HTTP_C="$Date: 2008/02/14 18:31:38 $"; 
 
 #include "pa_http.h"
 #include "pa_common.h"
@@ -538,29 +538,14 @@ File_read_http_result pa_internal_file_read_http(Request_charsets& charsets,
 			head << "user-agent: " DEFAULT_USER_AGENT CRLF;
 
 		if(body_cstr) {
-			// recode those pieces which are not in String::L_URI lang 
-			// [those violating HTTP standard, but widly used]
-/*
-			body_cstr=Charset::transcode(
-				String::C(body_cstr, strlen(body_cstr)),
-				charsets.source(),
-				*asked_remote_charset);
-*/
 			head << "content-length: " << format(strlen(body_cstr), "%u") << CRLF;
 		}
 
 		const char* head_cstr=head.cstr(String::L_UNSPECIFIED, 0, &charsets);
 
-		// recode those pieces which are not in String::L_URI lang 
-		// [those violating HTTP standard, but widly used]
-/*
-		head_cstr=Charset::transcode(
-			String::C(head_cstr, strlen(head_cstr)),
-			charsets.source(),
-			*asked_remote_charset);
-*/
 		// head + end of header
 		request_head_and_body << head_cstr << CRLF;
+
 		// body
 		if(body_cstr)
 			request_head_and_body << body_cstr;
