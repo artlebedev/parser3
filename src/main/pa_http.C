@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
  */
 
-static const char * const IDENT_HTTP_C="$Date: 2008/02/14 18:31:38 $"; 
+static const char * const IDENT_HTTP_C="$Date: 2008/02/15 11:51:22 $"; 
 
 #include "pa_http.h"
 #include "pa_common.h"
@@ -285,15 +285,18 @@ struct Http_pass_header_info {
 	bool user_agent_specified;
 };
 #endif
-static void http_pass_header(HashStringValue::key_type key, 
+static void http_pass_header(HashStringValue::key_type name, 
 			     HashStringValue::value_type value, 
 			     Http_pass_header_info *info) {
-    *info->request <<key<<": "
-	<< attributed_meaning_to_string(*value, String::L_HTTP_HEADER, false)
-	<< CRLF; 
+
+	String aname=String(name, String::L_HTTP_HEADER);
+
+	*info->request <<aname<<": "
+		<< attributed_meaning_to_string(*value, String::L_HTTP_HEADER, false)
+		<< CRLF; 
 	
-    if(String(key, String::L_TAINTED).change_case(info->charsets->source(), String::CC_UPPER)=="USER-AGENT")
-	info->user_agent_specified=true;
+    if(aname.change_case(info->charsets->source(), String::CC_UPPER)=="USER-AGENT")
+		info->user_agent_specified=true;
 }
 
 
