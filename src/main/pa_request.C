@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REQUEST_C="$Date: 2008/02/14 18:32:36 $";
+static const char * const IDENT_REQUEST_C="$Date: 2008/02/15 11:49:44 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -672,7 +672,7 @@ static void add_header_attribute(
 
 	SAPI::add_header_attribute(info->r.sapi_info,
 		aname, 
-		attributed_meaning_to_string(*value, String::L_URI, false).cstr(String::L_UNSPECIFIED, 0, &info->r.charsets));
+		attributed_meaning_to_string(*value, String::L_URI, true).cstr(String::L_UNSPECIFIED, 0, &info->r.charsets));
 
 	if(strcasecmp(aname, "last-modified")==0)
 		info->add_last_modified = false;
