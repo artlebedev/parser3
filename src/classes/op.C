@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2008/02/14 09:10:23 $";
+static const char * const IDENT_OP_C="$Date: 2008/02/15 18:08:47 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -102,19 +102,22 @@ static void _if(Request& r, MethodParams& params) {
 		r.write_pass_lang(r.process(*params.get(2)));
 }
 
-static void _untaint(Request& r, MethodParams& params) {
+static String::Language get_untaint_lang(MethodParams& params, int index){
+	const String& lang_name=params.as_string(index, "lang must be string");
+	String::Language lang=untaint_lang_name2enum.get(lang_name);
+	if(!lang)
+		throw Exception(0,
+			&lang_name,
+			"invalid taint language");
+	return lang;
+}
 
+static void _untaint(Request& r, MethodParams& params) {
 	String::Language lang;
 	if(params.count()==1)
-		lang=String::L_AS_IS; // mark as simply 'tainted'. useful in html from sql 
-	else {
-		const String& lang_name=params.as_string(0, "lang must be string");
-		lang=untaint_lang_name2enum.get(lang_name);
-		if(!lang)
-			throw Exception(0,
-				&lang_name,
-				"invalid taint language");
-	}
+		lang=String::L_AS_IS; // mark as simply 'as-is'. useful in html from sql 
+	else
+		lang=get_untaint_lang(params, 0);
 
 	{
 		Value& vbody=params.as_junction(params.count()-1, "body must be code");
@@ -127,15 +130,9 @@ static void _untaint(Request& r, MethodParams& params) {
 static void _taint(Request& r, MethodParams& params) {
 	String::Language lang;
 	if(params.count()==1)
-		lang=String::L_TAINTED; // mark as simply 'tainted'. useful in table:set
-	else {
-		const String& lang_name=params.as_string(0, "lang must be string");
-		lang=untaint_lang_name2enum.get(lang_name);
-		if(!lang)
-			throw Exception(0,
-				&lang_name,
-				"invalid taint language");
-	}
+		lang=String::L_TAINTED; // mark as simply 'tainted'. useful in table:create
+	else
+		lang=get_untaint_lang(params, 0);
 
 	{
 		Value& vbody=params.as_no_junction(params.count()-1, "body must not be code");
