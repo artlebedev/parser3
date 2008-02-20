@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
  */
 
-static const char * const IDENT_HTTP_C="$Date: 2008/02/15 11:51:22 $"; 
+static const char * const IDENT_HTTP_C="$Date: 2008/02/20 08:55:15 $"; 
 
 #include "pa_http.h"
 #include "pa_common.h"
@@ -19,6 +19,7 @@ static const char * const IDENT_HTTP_C="$Date: 2008/02/15 11:51:22 $";
 #define HTTP_BODY_NAME  "body"
 #define HTTP_TIMEOUT_NAME    "timeout"
 #define HTTP_HEADERS_NAME "headers"
+#define HTTP_COOKIES_NAME "cookies"
 #define HTTP_ANY_STATUS_NAME "any-status"
 // #define HTTP_CHARSET_NAME "charset"
 #define HTTP_TABLES_NAME "tables"
@@ -289,16 +290,25 @@ static void http_pass_header(HashStringValue::key_type name,
 			     HashStringValue::value_type value, 
 			     Http_pass_header_info *info) {
 
-	String aname=String(name, String::L_HTTP_HEADER);
+	String aname=String(name, String::L_URI);
 
 	*info->request <<aname<<": "
-		<< attributed_meaning_to_string(*value, String::L_HTTP_HEADER, false)
+		<< attributed_meaning_to_string(*value, String::L_URI, false)
 		<< CRLF; 
 	
     if(aname.change_case(info->charsets->source(), String::CC_UPPER)=="USER-AGENT")
 		info->user_agent_specified=true;
 }
 
+static void http_pass_cookie(HashStringValue::key_type name, 
+			     HashStringValue::value_type value, 
+			     Http_pass_header_info *info) {
+	
+	*info->request << String(name, String::L_HTTP_HEADER) << "="
+		<< attributed_meaning_to_string(*value, String::L_HTTP_HEADER, false)
+		<< "; "; 
+
+}
 
 static Charset* detect_charset(Charset& source_charset, const String& content_type_value) {
 	const String::Body CONTENT_TYPE_VALUE=
@@ -416,12 +426,13 @@ File_read_http_result pa_internal_file_read_http(Request_charsets& charsets,
 	char host[MAX_STRING]; 
 	const char* uri; 
 	short port;
-	const char* method="GET"; bool method_is_get;
+	const char* method="GET";
 	HashStringValue* form=0;
 	const char* body_cstr=0;
 	int timeout_secs=2;
 	bool fail_on_status_ne_200=true;
 	Value* vheaders=0;
+	Value* vcookies=0;
 	Charset *asked_remote_charset=0;
 	const char* user_cstr=0;
 	const char* password_cstr=0;
@@ -448,12 +459,14 @@ File_read_http_result pa_internal_file_read_http(Request_charsets& charsets,
 		if((vheaders=options->get(HTTP_HEADERS_NAME))) {
 			valid_options++;
 		} 
+		if((vcookies=options->get(HTTP_COOKIES_NAME))) {
+			valid_options++;
+		} 
 		if(Value* vany_status=options->get(HTTP_ANY_STATUS_NAME)) {
 			valid_options++;
 			fail_on_status_ne_200=!vany_status->as_bool(); 
 		} 
 		if(Value* vcharset_name=options->get(PA_CHARSET_NAME)) {
-//			valid_options++;
 			asked_remote_charset=&::charsets.get(vcharset_name->as_string().
 				change_case(charsets.source(), String::CC_UPPER));
 		} 
@@ -474,7 +487,7 @@ File_read_http_result pa_internal_file_read_http(Request_charsets& charsets,
 	if(!asked_remote_charset) // defaulting to $request:charset
 		asked_remote_charset=&charsets.source();
 
-	method_is_get=strcmp(method, "GET")==0;
+	bool method_is_get=strcmp(method, "GET")==0;
 	if(method_is_get && body_cstr)
 		throw Exception(PARSER_RUNTIME,
 			0,
@@ -539,6 +552,18 @@ File_read_http_result pa_internal_file_read_http(Request_charsets& charsets,
 		};
 		if(!user_agent_specified) // defaulting
 			head << "user-agent: " DEFAULT_USER_AGENT CRLF;
+
+		if(vcookies && !vcookies->is_string()){
+			if(HashStringValue* cookies=vcookies->get_hash()) {
+				head << "cookie: ";
+				Http_pass_header_info info={&charsets, &head, false};
+				cookies->for_each<Http_pass_header_info*>(http_pass_cookie, &info); 
+				head << CRLF;
+			} else
+				throw Exception(PARSER_RUNTIME, 
+					&connect_string,
+					"cookies param must be hash"); 
+		}
 
 		if(body_cstr) {
 			head << "content-length: " << format(strlen(body_cstr), "%u") << CRLF;
