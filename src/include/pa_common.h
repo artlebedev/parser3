@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-static const char * const IDENT_COMMON_H="$Date: 2007/11/27 09:55:37 $";
+static const char * const IDENT_COMMON_H="$Date: 2008/02/21 14:16:33 $";
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -297,6 +297,21 @@ static void remove_key_from(
 							HashStringValue::value_type /*value*/, 
 							HashStringValue* dest) {
 	dest->remove(key);
+}
+
+static String::C date_gmt_string(tm* tms) {
+	/// http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3
+	static const char month_names[12][4]={
+		"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
+	static const char days[7][4]={
+		"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
+
+	char *buf=new(PointerFreeGC) char[MAX_STRING];
+	return String::C(buf, 
+		snprintf(buf, MAX_STRING, "%s, %.2d %s %.4d %.2d:%.2d:%.2d GMT", 
+		days[tms->tm_wday],
+		tms->tm_mday,month_names[tms->tm_mon],tms->tm_year+1900,
+		tms->tm_hour,tms->tm_min,tms->tm_sec));
 }
 
 
