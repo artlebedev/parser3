@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_DATE_C="$Date: 2008/02/14 10:46:01 $";
+static const char * const IDENT_DATE_C="$Date: 2008/02/21 14:17:38 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -162,6 +162,14 @@ static void _sql_string(Request& r, MethodParams&) {
 	size=strftime(buf, size, "%Y-%m-%d %H:%M:%S", &vdate.get_localtime());
 	
 	r.write_assign_lang(String(buf, size));
+}
+
+static void _gmt_string(Request& r, MethodParams&) {
+	VDate& vdate=GET_SELF(r, VDate);
+
+	time_t when=vdate.get_time();
+	
+	r.write_assign_lang(String(date_gmt_string(gmtime(&when))));
 }
 
 static void _roll(Request& r, MethodParams& params) {
@@ -441,6 +449,9 @@ MDate::MDate(): Methoded("date") {
 
 	// ^date.sql-string[]
 	add_native_method("sql-string", Method::CT_DYNAMIC, _sql_string, 0, 0);
+
+	// ^date.gmt-string[]
+	add_native_method("gmt-string", Method::CT_DYNAMIC, _gmt_string, 0, 0);
 
 	// ^date:lastday(year;month)
 	// ^date.lastday[]
