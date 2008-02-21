@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_VMAIL_C="$Date: 2007/10/22 16:40:05 $";
+static const char * const IDENT_VMAIL_C="$Date: 2008/02/21 13:13:28 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -657,9 +657,9 @@ static const String& file_value_to_string(Request& r, Value* send_value) {
 			result << pa_base64_encode(vfile->value_ptr(), vfile->value_size());
 		} else {
 			// for now
-		throw Exception(PARSER_RUNTIME,
-			type,
-			"unknown attachment encode format");
+			throw Exception(PARSER_RUNTIME,
+				type,
+				"unknown attachment encode format");
 		}
 	}
 	
@@ -813,7 +813,8 @@ const String& VMail::message_hash_to_string(Request& r,
 		{
 			ArrayValue& files=*info.parts[P_FILE];
 			for(size_t i=0; i<files.count(); i++) {
-				if(files.get(i)->get_hash()->get(cid_name)){
+				HashStringValue* file;
+				if((file=files.get(i)->get_hash()) && file->get(cid_name)){
 					is_inline = true;
 					break;
 				}
