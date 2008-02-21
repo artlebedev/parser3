@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VALUE_C="$Date: 2008/02/14 09:10:44 $";
+static const char * const IDENT_VALUE_C="$Date: 2008/02/21 14:17:12 $";
 
 #include "pa_value.h"
 #include "pa_vstateless_class.h"
@@ -84,26 +84,15 @@ void Junction::reattach(WContext *new_wcontext) {
 // attributed meaning
 
 static String::C date_attribute(const VDate& vdate) {
-	/// http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3
-	const char month_names[12][4]={
-		"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
-	const char days[7][4]={
-		"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
-			
 	time_t when=vdate.get_time();
 	struct tm *tms=gmtime(&when);
 	if(!tms)
 		throw Exception(0,
 			0,
 			"bad time in attribute value (seconds from epoch=%u)", when);
-
-	char *buf=new(PointerFreeGC) char[MAX_STRING];
-	return String::C(buf, 
-		snprintf(buf, MAX_STRING, "%s, %.2d %s %.4d %.2d:%.2d:%.2d GMT", 
-		days[tms->tm_wday],
-		tms->tm_mday,month_names[tms->tm_mon],tms->tm_year+1900,
-		tms->tm_hour,tms->tm_min,tms->tm_sec));
+	return date_gmt_string(tms);
 }
+
 static void append_attribute_meaning(String& result,
 				     Value& value, String::Language lang, bool forced) {
 	if(const String* string=value.get_string())
