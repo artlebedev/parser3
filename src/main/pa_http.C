@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
  */
 
-static const char * const IDENT_HTTP_C="$Date: 2008/02/20 08:55:15 $"; 
+static const char * const IDENT_HTTP_C="$Date: 2008/02/22 17:29:38 $"; 
 
 #include "pa_http.h"
 #include "pa_common.h"
@@ -433,6 +433,7 @@ File_read_http_result pa_internal_file_read_http(Request_charsets& charsets,
 	bool fail_on_status_ne_200=true;
 	Value* vheaders=0;
 	Value* vcookies=0;
+	Value* vbody=0;
 	Charset *asked_remote_charset=0;
 	const char* user_cstr=0;
 	const char* password_cstr=0;
@@ -448,18 +449,17 @@ File_read_http_result pa_internal_file_read_http(Request_charsets& charsets,
 			valid_options++;
 			form=vform->get_hash(); 
 		} 
-		if(Value* vbody=options->get(HTTP_BODY_NAME)) {
+		if(vbody=options->get(HTTP_BODY_NAME)) {
 			valid_options++;
-			body_cstr=vbody->as_string().cstr(String::L_UNSPECIFIED);
 		} 
 		if(Value* vtimeout=options->get(HTTP_TIMEOUT_NAME)) {
 			valid_options++;
 			timeout_secs=vtimeout->as_int(); 
 		} 
-		if((vheaders=options->get(HTTP_HEADERS_NAME))) {
+		if(vheaders=options->get(HTTP_HEADERS_NAME)) {
 			valid_options++;
 		} 
-		if((vcookies=options->get(HTTP_COOKIES_NAME))) {
+		if(vcookies=options->get(HTTP_COOKIES_NAME)) {
 			valid_options++;
 		} 
 		if(Value* vany_status=options->get(HTTP_ANY_STATUS_NAME)) {
@@ -488,10 +488,17 @@ File_read_http_result pa_internal_file_read_http(Request_charsets& charsets,
 		asked_remote_charset=&charsets.source();
 
 	bool method_is_get=strcmp(method, "GET")==0;
-	if(method_is_get && body_cstr)
-		throw Exception(PARSER_RUNTIME,
-			0,
-			"you can not use $."HTTP_BODY_NAME" option with method GET");
+	if(vbody){
+		if(method_is_get)
+			throw Exception(PARSER_RUNTIME,
+				0,
+				"you can not use $."HTTP_BODY_NAME" option with method GET");
+
+		if(form)
+			throw Exception(PARSER_RUNTIME,
+				0,
+				"you can not use options $."HTTP_BODY_NAME" and $."HTTP_FORM_NAME" together");
+	}
 
 	//preparing request
 	String& connect_string=*new String;
@@ -521,18 +528,25 @@ File_read_http_result pa_internal_file_read_http(Request_charsets& charsets,
 
 		bool uri_has_query_string=strchr(uri, '?')!=0;
 
-		//making request head
+		// making request head
 		String head;
-		head << method;
-		head << " " << uri;
-		if(form)
-			if(method_is_get)
-				head << (uri_has_query_string?"&":"?") << pa_form2string(*form, charsets);
-		head <<" HTTP/1.0" CRLF
-			"host: "<< host << CRLF; 
+		head << method << " " << uri;
+		if(form && method_is_get)
+			head << (uri_has_query_string?"&":"?") << pa_form2string(*form, charsets);
+
+		head <<" HTTP/1.0" CRLF "host: "<< host << CRLF;
+
 		if(form && !method_is_get) {
 			head << "content-type: application/x-www-form-urlencoded" CRLF;
-			body_cstr = pa_form2string(*form, charsets);
+			body_cstr=pa_form2string(*form, charsets);
+		}  else if (vbody) {
+			body_cstr=vbody->as_string().cstr(String::L_UNSPECIFIED, 0, &charsets);
+			// needed for transcoded $.body[] first of all
+			body_cstr=Charset::transcode(
+				String::C(body_cstr, strlen(body_cstr)),
+				charsets.source(),
+				*asked_remote_charset
+			);
 		}
 
 		// http://www.ietf.org/rfc/rfc2617.txt
@@ -553,7 +567,7 @@ File_read_http_result pa_internal_file_read_http(Request_charsets& charsets,
 		if(!user_agent_specified) // defaulting
 			head << "user-agent: " DEFAULT_USER_AGENT CRLF;
 
-		if(vcookies && !vcookies->is_string()){
+		if(vcookies && !vcookies->is_string()){ // allow empty
 			if(HashStringValue* cookies=vcookies->get_hash()) {
 				head << "cookie: ";
 				Http_pass_header_info info={&charsets, &head, false};
