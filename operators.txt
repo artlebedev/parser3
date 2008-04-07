@@ -802,6 +802,7 @@ odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         столбцы: year, month, day, weekday
     !^date:last-day(год;мес€ц) вернЄт последний день мес€ца
     !^дата.last-day[] вернЄт последний день мес€ца $дата
+    !^дата.gmt-string[]  Fri, 23 Mar 2001 09:32:23 GMT
 
 
 xdoc(xnode)
@@ -836,9 +837,11 @@ xdoc(xnode)
     ::sql{...}
     !::create[[URI]]{<?xml?><string/>} старое им€ 'set'
     !::create[[URI]][qualifiedName]
-    !::create[file] can be usable: $f[^file::load[binary;http://;some http options here...]]$x[^xdoc::create[$f]]
       URI default = disk path to requested document
       дл€ каталогов конечный / об€зателен
+    !::create[file] can be usable:
+    	$f[^file::load[binary;http://;some HTTP options here...]]
+    	$x[^xdoc::create[$f]]
     !::load[file.xml[;опции]]
     !.transform[rules.xsl|xdoc][[params hash]] выдаЄт dom
         шаблон кэшируетс€, кэш обновл€етс€ при изменении даты файла шаблона,
@@ -1095,8 +1098,11 @@ DATA::=string | file | hash
     !а также, возможно, указать опции:
         !$.method[GET|POST|HEAD]
         !$.timeout(3)  << в секундах, по-умолчанию =2
+        !$.cookies[
+        	$.им€[значение]
+        ]
         !$.headers[
-        !    $поле[значение] << значение имеет формат, как $response:«ј√ќЋќ¬ќ 
+        !    $.поле[значение] << значение имеет формат, как $response:«ј√ќЋќ¬ќ 
         !]
         $.enctype[multipart/form-data]
         $.form[
