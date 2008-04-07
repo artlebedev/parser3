@@ -5,10 +5,12 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2008/02/14 09:10:24 $";
+static const char * const IDENT_TABLE_C="$Date: 2008/04/07 15:14:32 $";
 
+#ifndef NO_STRINGSTREAM
 #include <sstream>
 using namespace std;
+#endif
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -555,6 +557,8 @@ static void _save(Request& r, MethodParams& params) {
 
 	Table& table=GET_SELF(r, VTable).table();
 
+#ifndef NO_STRINGSTREAM
+
 	ostringstream ost(stringstream::out);
 
 	// process header
@@ -602,6 +606,52 @@ static void _save(Request& r, MethodParams& params) {
 
 		file_write(r.absolute(file_name), data_cstr, data.length(), true /* as text */, do_append);
 	}
+
+#else
+
+	String sdata;
+	if(output_column_names) {
+		if(table.columns()) { // named table
+			for(Array_iterator<const String*> i(*table.columns()); i.has_next(); ) {
+				maybe_enclose( sdata, *i.next(), separators.encloser, separators.sencloser );
+				if(i.has_next())
+					sdata<<*separators.scolumn;
+			}
+		} else { // nameless table [we were asked to output column names]
+			if(int lsize=table.count()?table[0]->count():0)
+				for(int column=0; column<lsize; column++) {
+					char *cindex_tab=new(PointerFreeGC) char[MAX_NUMBER];
+					sdata.append_know_length(cindex_tab, 
+						snprintf(cindex_tab, MAX_NUMBER, 
+							column<lsize-1?"%d%c":"%d", column, separators.column),
+							String::L_CLEAN);
+				}
+			else
+				sdata.append_help_length("empty nameless table", 0, String::L_CLEAN);
+		}
+		sdata.append_know_length("\n", 1, String::L_CLEAN);
+	}
+
+	// data lines
+	Array_iterator<ArrayString*> i(table);
+	while(i.has_next()) {
+		for(Array_iterator<const String*> c(*i.next()); c.has_next(); ) {
+			maybe_enclose( sdata, *c.next(), separators.encloser, separators.sencloser );
+			if(c.has_next())
+				sdata<<*separators.scolumn;
+		}
+		sdata.append_know_length("\n", 1, String::L_CLEAN);
+	}
+
+	// write
+	{
+		const char* data_cstr=sdata.cstr();
+		file_write(r.absolute(file_name), 
+			data_cstr, sdata.length(), true, do_append);
+		if(*data_cstr) // not empty (when empty it's not heap memory)
+			pa_free((void*)data_cstr); // not needed anymore
+	}
+#endif
 }
 
 static void _count(Request& r, MethodParams&) {
