@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Id: buildall-with-xml,v 1.20 2008/01/18 13:17:35 misha Exp $
+# $Id: buildall-with-xml,v 1.21 2008/04/07 15:11:06 misha Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -119,6 +119,7 @@ if test ! -f "Makefile"; then
   options="$options --with-static-xml=$project_directory/gnome"
 #  options="$options --disable-safe-mode"
 #  options="$options --with-dynamic-stdcpp"
+#  options="$options --disable-stringstream"
   options="$options --silent"
 
   echo "Configuring parser3..."
