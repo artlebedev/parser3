@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2008/04/07 15:14:32 $";
+static const char * const IDENT_TABLE_C="$Date: 2008/04/08 12:34:01 $";
 
 #ifndef NO_STRINGSTREAM
 #include <sstream>
@@ -389,6 +389,8 @@ static void _load(Request& r, MethodParams& params) {
 	GET_SELF(r, VTable).set_table(table);
 }
 
+#ifdef NO_STRINGSTREAM
+
 void maybe_enclose( String& to, const String& from, char encloser, const String* sencloser ) {
 	if(encloser) {
 		to<<*sencloser;
@@ -408,6 +410,8 @@ void maybe_enclose( String& to, const String& from, char encloser, const String*
 	} else
 		to<<from;
 }
+
+#else
 
 void maybe_enclose( ostringstream& to, const String& from, char encloser ) {
 	if(encloser) {
@@ -429,8 +433,9 @@ void maybe_enclose( ostringstream& to, const String& from, char encloser ) {
 		to<<from.cstr();
 }
 
-/*
-static void _save_old(Request& r, MethodParams& params) {
+#endif
+
+static void _save(Request& r, MethodParams& params) {
 	const String& first_arg=params.as_string(0, FIRST_ARG_MUST_NOT_BE_CODE);
 	size_t param_index=1;
 
@@ -470,6 +475,8 @@ static void _save_old(Request& r, MethodParams& params) {
 			"bad mode (must be nameless or append)");
 
 	Table& table=GET_SELF(r, VTable).table();
+
+#ifdef NO_STRINGSTREAM
 
 	String sdata;
 	if(output_column_names) {
@@ -513,51 +520,8 @@ static void _save_old(Request& r, MethodParams& params) {
 		if(*data_cstr) // not empty (when empty it's not heap memory)
 			pa_free((void*)data_cstr); // not needed anymore
 	}
-}
-*/
 
-static void _save(Request& r, MethodParams& params) {
-	const String& first_arg=params.as_string(0, FIRST_ARG_MUST_NOT_BE_CODE);
-	size_t param_index=1;
-
-	bool do_append=false;
-	bool output_column_names=true;
-
-	// mode?
-	if(first_arg=="append")
-		do_append=true;
-	else if(first_arg=="nameless")
-		output_column_names=false;
-	else
-		--param_index;
-
-	const String& file_name=params.as_string(param_index++, FILE_NAME_MUST_NOT_BE_CODE);
-
-	TableSeparators separators;
-	if(param_index<params.count()) {
-		Value& voptions=params.as_no_junction(param_index++, "additional params must be hash");
-		if( voptions.is_defined() && !voptions.is_string() ) {
-			if(HashStringValue* options=voptions.get_hash()) {
-				int valid_options=separators.load(*options);
-				if(valid_options!=options->count())
-					throw Exception(PARSER_RUNTIME,
-						0,
-						"invalid option passed");
-			} else {
-				throw Exception(PARSER_RUNTIME,
-					0,
-					"additional params must be hash (did you spell mode parameter correctly?)");
-			}
-		}
-	}
-	if(param_index<params.count())
-		throw Exception(PARSER_RUNTIME,
-			0,
-			"bad mode (must be nameless or append)");
-
-	Table& table=GET_SELF(r, VTable).table();
-
-#ifndef NO_STRINGSTREAM
+#else
 
 	ostringstream ost(stringstream::out);
 
@@ -607,50 +571,6 @@ static void _save(Request& r, MethodParams& params) {
 		file_write(r.absolute(file_name), data_cstr, data.length(), true /* as text */, do_append);
 	}
 
-#else
-
-	String sdata;
-	if(output_column_names) {
-		if(table.columns()) { // named table
-			for(Array_iterator<const String*> i(*table.columns()); i.has_next(); ) {
-				maybe_enclose( sdata, *i.next(), separators.encloser, separators.sencloser );
-				if(i.has_next())
-					sdata<<*separators.scolumn;
-			}
-		} else { // nameless table [we were asked to output column names]
-			if(int lsize=table.count()?table[0]->count():0)
-				for(int column=0; column<lsize; column++) {
-					char *cindex_tab=new(PointerFreeGC) char[MAX_NUMBER];
-					sdata.append_know_length(cindex_tab, 
-						snprintf(cindex_tab, MAX_NUMBER, 
-							column<lsize-1?"%d%c":"%d", column, separators.column),
-							String::L_CLEAN);
-				}
-			else
-				sdata.append_help_length("empty nameless table", 0, String::L_CLEAN);
-		}
-		sdata.append_know_length("\n", 1, String::L_CLEAN);
-	}
-
-	// data lines
-	Array_iterator<ArrayString*> i(table);
-	while(i.has_next()) {
-		for(Array_iterator<const String*> c(*i.next()); c.has_next(); ) {
-			maybe_enclose( sdata, *c.next(), separators.encloser, separators.sencloser );
-			if(c.has_next())
-				sdata<<*separators.scolumn;
-		}
-		sdata.append_know_length("\n", 1, String::L_CLEAN);
-	}
-
-	// write
-	{
-		const char* data_cstr=sdata.cstr();
-		file_write(r.absolute(file_name), 
-			data_cstr, sdata.length(), true, do_append);
-		if(*data_cstr) // not empty (when empty it's not heap memory)
-			pa_free((void*)data_cstr); // not needed anymore
-	}
 #endif
 }
 
