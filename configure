@@ -862,8 +862,10 @@ Optional Features:
   --enable-dependency-tracking   do not reject slow dependency extractors
   --disable-safe-mode	  to enable reading and executing
                           files belonging to group+user other then effective
-  --disable-execs	  to disable any execs
+  --disable-execs	      to disable any execs
                           (file::exec, file::cgi, unix mail:send)
+  --disable-stringstream  to disable stringstream usage.
+                          when disabled table.save use more memory but it's safer on freebsd 4.x
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -3829,6 +3831,7 @@ _ACEOF
 
 fi;
 
+
 # Check whether --enable-safe-mode or --disable-safe-mode was given.
 if test "${enable_safe_mode+set}" = set; then
   enableval="$enable_safe_mode"
@@ -3848,6 +3851,7 @@ _ACEOF
 
 fi
 
+
 # Check whether --enable-execs or --disable-execs was given.
 if test "${enable_execs+set}" = set; then
   enableval="$enable_execs"
@@ -3858,6 +3862,24 @@ echo "$as_me: WARNING: disabling file execs" >&2;}
 
 cat >>confdefs.h <<\_ACEOF
 #define NO_PA_EXECS
+_ACEOF
+
+fi
+
+
+fi;
+
+
+# Check whether --enable-stringstream or --disable-stringstream was given.
+if test "${enable_stringstream+set}" = set; then
+  enableval="$enable_stringstream"
+
+if test "$enableval" = "no"; then
+	{ echo "$as_me:$LINENO: WARNING: disabling stringstream usage" >&5
+echo "$as_me: WARNING: disabling stringstream usage" >&2;}
+
+cat >>confdefs.h <<\_ACEOF
+#define NO_STRINGSTREAM
 _ACEOF
 
 fi

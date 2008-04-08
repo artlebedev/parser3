@@ -70,6 +70,7 @@ AC_ARG_WITH(assertions, [  --with-assertions       to enable assertions],
 	AC_DEFINE(NDEBUG,,assertions disabled)
 )
 
+
 AC_ARG_ENABLE(safe-mode, [  --disable-safe-mode	  to enable reading and executing
                           files belonging to group+user other then effective],
 [
@@ -82,12 +83,24 @@ else
 	AC_DEFINE(PA_SAFE_MODE,,disabled reading of files belonging to group+user other then effective)
 fi
 
-AC_ARG_ENABLE(execs, [  --disable-execs	  to disable any execs
+
+AC_ARG_ENABLE(execs, [  --disable-execs	      to disable any execs
                           (file::exec, file::cgi, unix mail:send)],
 [
 if test "$enableval" = "no"; then
 	AC_MSG_WARN(disabling file execs)
 	AC_DEFINE(NO_PA_EXECS,,pa_exec disabled)
+fi
+]
+)
+
+
+AC_ARG_ENABLE(stringstream, [  --disable-stringstream  to disable stringstream usage.
+                          when disabled table.save use more memory but it's safer on freebsd 4.x],
+[
+if test "$enableval" = "no"; then
+	AC_MSG_WARN(disabling stringstream usage)
+	AC_DEFINE(NO_STRINGSTREAM,,stringstream disabled)
 fi
 ]
 )
