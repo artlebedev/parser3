@@ -54,10 +54,10 @@ AR = ar
 ARFLAGS = cru
 libclasses_a_AR = $(AR) $(ARFLAGS)
 libclasses_a_LIBADD =
-am__objects_1 = bool.$(OBJEXT) double.$(OBJEXT) file.$(OBJEXT) form.$(OBJEXT) \
-	image.$(OBJEXT) int.$(OBJEXT) mail.$(OBJEXT) op.$(OBJEXT) \
-	math.$(OBJEXT) response.$(OBJEXT) string.$(OBJEXT) \
-	table.$(OBJEXT) void.$(OBJEXT) hash.$(OBJEXT) \
+am__objects_1 = bool.$(OBJEXT) double.$(OBJEXT) file.$(OBJEXT) \
+	form.$(OBJEXT) image.$(OBJEXT) int.$(OBJEXT) mail.$(OBJEXT) \
+	op.$(OBJEXT) math.$(OBJEXT) response.$(OBJEXT) \
+	string.$(OBJEXT) table.$(OBJEXT) void.$(OBJEXT) hash.$(OBJEXT) \
 	hashfile.$(OBJEXT) date.$(OBJEXT) xnode.$(OBJEXT) \
 	xdoc.$(OBJEXT) memory.$(OBJEXT)
 am_libclasses_a_OBJECTS = $(am__objects_1) classes.$(OBJEXT)
@@ -183,6 +183,7 @@ prefix = @prefix@
 program_transform_name = @program_transform_name@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
+sqlite_client = @sqlite_client@
 subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
@@ -240,8 +241,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/classes.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bool.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/classes.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/date.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/double.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/file.Po@am__quote@

@@ -186,6 +186,9 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
+/* Define to 1 if you have the `unsetenv' function. */
+#undef HAVE_UNSETENV
+
 /* Define to 1 if you have the <winsock.h> header file. */
 #undef HAVE_WINSOCK_H
 
@@ -197,6 +200,9 @@
 
 /* pa_exec disabled */
 #undef NO_PA_EXECS
+
+/* stringstream disabled */
+#undef NO_STRINGSTREAM
 
 /* Define to the address where bug reports for this package should be sent. */
 #undef PACKAGE_BUGREPORT

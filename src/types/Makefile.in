@@ -56,7 +56,8 @@ libtypes_a_AR = $(AR) $(ARFLAGS)
 libtypes_a_LIBADD =
 am_libtypes_a_OBJECTS = pa_value.$(OBJEXT) pa_vcookie.$(OBJEXT) \
 	pa_vfile.$(OBJEXT) pa_vform.$(OBJEXT) pa_vimage.$(OBJEXT) \
-	pa_vjunction.$(OBJEXT) pa_vproperty.$(OBJEXT) pa_vrequest.$(OBJEXT) pa_vresponse.$(OBJEXT) \
+	pa_vjunction.$(OBJEXT) pa_vproperty.$(OBJEXT) \
+	pa_vrequest.$(OBJEXT) pa_vresponse.$(OBJEXT) \
 	pa_vstateless_class.$(OBJEXT) pa_vstring.$(OBJEXT) \
 	pa_wcontext.$(OBJEXT) pa_vtable.$(OBJEXT) pa_vxnode.$(OBJEXT) \
 	pa_vxdoc.$(OBJEXT) pa_vstatus.$(OBJEXT) pa_vmail.$(OBJEXT) \
@@ -186,6 +187,7 @@ prefix = @prefix@
 program_transform_name = @program_transform_name@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
+sqlite_client = @sqlite_client@
 subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
@@ -251,11 +253,11 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vhashfile.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vimage.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vjunction.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vproperty.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vmail.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vmath.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vmethod_frame.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vobject.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vproperty.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vrequest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vresponse.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vstateless_class.Po@am__quote@
