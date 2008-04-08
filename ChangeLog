@@ -1,4 +1,208 @@
+2008-04-08	misha
+	* Makefile.am 1.53:
+	* Makefile.am 1.54:
+	* Makefile.in 1.68:
+	* Makefile.in 1.69:
+	* acinclude.m4 1.39:
+	* acinclude.m4 1.40:
+	* aclocal.m4 1.42:
+	* aclocal.m4 1.43:
+	* acsite.m4 1.17:
+	* acsite.m4 1.18:
+	* bin/Makefile.in 1.13:
+	* configure 1.94:
+	* configure 1.95:
+	* configure.in 1.96:
+	* configure.in 1.97:
+	* etc/Makefile.in 1.18:
+	* etc/parser3.charsets/Makefile.in 1.22:
+	* src/Makefile.in 1.59:
+	* src/classes/Makefile.in 1.64:
+	* src/include/Makefile.in 1.21:
+	* src/include/pa_config_auto.h.in 1.44:
+	* src/include/pa_config_fixed.h 1.72:
+	* src/lib/Makefile.in 1.16:
+	* src/lib/cord/Makefile.in 1.7:
+	* src/lib/cord/include/Makefile.in 1.5:
+	* src/lib/cord/include/private/Makefile.in 1.5:
+	* src/lib/gc/Makefile.in 1.5:
+	* src/lib/gc/include/Makefile.in 1.5:
+	* src/lib/gd/Makefile.in 1.6:
+	* src/lib/ltdl/Makefile.in 1.10:
+	* src/lib/md5/Makefile.in 1.11:
+	* src/lib/pcre/Makefile.in 1.13:
+	* src/lib/sdbm/Makefile.in 1.4:
+	* src/lib/sdbm/apr-include/Makefile.in 1.4:
+	* src/lib/smtp/Makefile.in 1.6:
+	* src/main/Makefile.in 1.61:
+	* src/sql/Makefile.in 1.15:
+	* src/targets/Makefile.in 1.46:
+	* src/targets/apache13/Makefile.in 1.51:
+	* src/targets/apache13core/Makefile.in 1.8:
+	* src/targets/cgi/Makefile.in 1.70:
+	* src/targets/isapi/Makefile.in 1.16:
+	* src/types/Makefile.in 1.62:
+		*** empty log message ***
+
+2008-04-07	misha
+	* src/classes/table.C 1.240:
+		- use NO_STRINGSTREAM for switch to old style of ^table.save[]: 
+		prepare one big string and sabe it at once. it's safe on freebsd 
+		4.x but use much more memory.
+
+	* buildall-with-xml 1.21:
+	* buildall-without-xml 1.13:
+		- option --disable-stringstream added (under comment. use it on 
+		freebsd 4.x)
+
+2008-02-22	misha
+	* src/main/pa_http.C 1.11:
+		- exception if $.body[] and $.forms[] specified together in file::load[;http]
+		- get back transcoding $.body[] in file::load[;http]
+
+2008-02-21	misha
+	* src/classes/date.C 1.80:
+		- ^date.gmt-string[] was added
+
+	* src/types/pa_value.C 1.24:
+		- method for output date in RFC 822 format moved to pa_common.h
+
+	* src/include/pa_common.h 1.117:
+		- method for output date in RFC 822 format moved here from 
+		pa_value.C
+
+	* src/types/pa_vmail.C 1.82:
+		- fixed core in sending mail with attachment in simple mode ($
+		.file[file here]) introduced in 3.2.2
+
+2008-02-20	misha
+	* src/main/pa_http.C 1.10:
+		- transcode $.headers before escaping into specified charset while ^file::load[...;http://...] (
+		L_URI instead of L_HTTP_HEADER)
+		- $.cookies param available in ^file::load[;http://...] now (but we don't parse set-cookies from 
+		response yet) (cookies not transcoded as common $cookies)
+
+2008-02-19	misha
+	* src/main/pa_request.C 1.292:
+		- rollback: we mustn't force taint $response:field values 
+		because in this case $response:locateion[http://...] don't 
+		works.
+
+2008-02-15	misha
+	* src/classes/op.C 1.175:
+		- little refactoring
+
+	* src/main/pa_http.C 1.9:
+		- taint names of $.headers for load[;http
+
+	* src/main/pa_request.C 1.291:
+		- force taint values of $response:field
+
+2008-02-14	misha
+	* src/main/pa_request.C 1.290:
+		- $response:field transcoded to $response:charset before 
+		escaping now
+
+	* src/main/pa_http.C 1.8:
+		- some outdated comments removed
+
+	* src/classes/date.C 1.79:
+		- lastdat -> last-day
+
+	* src/classes/date.C 1.78:
+		- ^date:lastday(year;month) and ^date.lastday[] were added
+		- little code refactoring
+		- comments changes
+
+	* tests/159.html 1.2:
+	* tests/results/159.processed 1.2:
+		- test for number of days in February
+
+	* src/types/pa_value.C 1.23:
+		- fixes in code formatting
+
+	* src/classes/file.C 1.166:
+	* src/classes/op.C 1.174:
+	* src/classes/table.C 1.239:
+		- fixes in code formatting and comments
+
+2008-02-13	misha
+	* src/main/pa_common.C 1.227:
+		- bugfix for february at leap year
+
+2008-01-28	misha
+	* tests/160.html 1.4:
+	* tests/results/160.processed 1.4:
+		- more test for cache added
+
+	* src/classes/op.C 1.173:
+		- bugfix: cache body executed twice if contains unhandled 
+		exception
+
+2008-01-25	misha
+	* src/lib/sdbm/sdbm.c 1.4:
+		- use arp_malloc instead of malloc (fixed bug when hashfile 
+		became inavailable after memory:compact)
+
+	* src/lib/sdbm/apr-include/apr_strings.h 1.4:
+	* src/lib/sdbm/apr_strings.C 1.3:
+		- +arp_malloc
+
+2008-01-22	misha
+	* src/classes/table.C 1.238:
+		- little refactiring and exception texts changes in method ^
+		table.hash[]
+
+	* src/types/pa_vcookie.C 1.73:
+		- link to cookie specification changed
+
+2008-01-21	misha
+	* tests/171.html 1.3:
+	* tests/cat.sh 1.2:
+	* tests/results/171.processed 1.3:
+		- more tests for file::exec/cgi
+
+	* src/classes/file.C 1.165:
+		- bugfix: core while processing headers if executed cgi script 
+		don't return content
+
+2008-01-18	misha
+	* configure 1.93:
+		=no message
+
+	* buildall-with-xml 1.20:
+		- move to libxml2 version 2.6.31
+
+	* configure.in 1.95:
+	* src/include/pa_version.h 1.29:
+		- version number updated to '3.2.3b'
+
+2007-12-28	misha
+	* src/classes/hash.C 1.82:
+	* src/include/pa_hash.h 1.69:
+		- hash.contain => hash.contains
+
 2007-12-27	misha
+	* gnu.vcproj [release_3_2_2] 1.2.2.1:
+	* parser3.sln [release_3_2_2] 1.10.2.1:
+	* src/classes/classes.vcproj [release_3_2_2] 1.15.2.1:
+	* src/lib/cord/cord.vcproj [release_3_2_2] 1.4.2.1:
+	* src/lib/gd/gd.vcproj [release_3_2_2] 1.9.2.1:
+	* src/lib/ltdl/ltdl.vcproj [release_3_2_2] 1.4.2.1:
+	* src/lib/md5/md5.vcproj [release_3_2_2] 1.4.2.1:
+	* src/lib/pcre/pcre.vcproj [release_3_2_2] 1.4.2.1:
+	* src/lib/pcre/pcre_dftables.vcproj [release_3_2_2] 1.5.2.1:
+	* src/lib/pcre/pcre_parser_ctype.vcproj [release_3_2_2] 1.5.2.1:
+	* src/lib/sdbm/sdbm.vcproj [release_3_2_2] 1.5.2.1:
+	* src/lib/smtp/smtp.vcproj [release_3_2_2] 1.8.2.1:
+	* src/main/main.vcproj [release_3_2_2] 1.19.2.1:
+	* src/targets/apache13/ApacheModuleParser3.vcproj [release_3_2_2] 1.8.2.1:
+	* src/targets/apache13core/ApacheModuleParser3Core.vcproj [release_3_2_2] 1.11.2.1:
+	* src/targets/cgi/parser3.vcproj [release_3_2_2] 1.14.2.1:
+	* src/targets/isapi/parser3isapi.vcproj [release_3_2_2] 1.10.2.1:
+	* src/types/types.vcproj [release_3_2_2] 1.19.2.1:
+		=no message
+
 	* gnu.vcproj 1.3:
 	* parser3.sln 1.11:
 	* src/classes/classes.vcproj 1.16:
