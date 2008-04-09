@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_DATE_C="$Date: 2008/02/21 14:17:38 $";
+static const char * const IDENT_DATE_C="$Date: 2008/04/09 09:52:00 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -418,21 +418,21 @@ static void _last_day(Request& r, MethodParams& params) {
 	int year;
 	int month;
 	if(&r.get_self() == date_class) {
-		// ^date:lastday(year;month)
-		if(params.count() == 2) {
-			year=to_year(params.as_int(0, "year must be int", r));
-			month=to_month(params.as_int(1, "month must be int", r));
-		} else
+		if(params.count() != 2)
 			throw Exception(PARSER_RUNTIME,
 				0,
 				"year and month must be defined");
+
+		// ^date:lastday(year;month)
+		year=to_year(params.as_int(0, "year must be int", r));
+		month=to_month(params.as_int(1, "month must be int", r));
 	} else {
 		// ^date.lastday[]
 		tm &tmIn=GET_SELF(r, VDate).get_localtime();
 		year=tmIn.tm_year+1900;
 		month=tmIn.tm_mon;
 	}
-	r.write_assign_lang(*new VInt(getMonthDays(year, month)));
+	r.write_no_lang(*new VInt(getMonthDays(year, month)));
 }
 
 
