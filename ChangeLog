@@ -1,3 +1,13 @@
+2008-04-09	misha
+	* buildall-with-xml 1.22:
+		- move to libxml 2.6.32 and libxslt 1.1.23
+
+	* src/main/pa_common.C 1.228:
+		- comment added
+
+	* src/classes/date.C 1.81:
+		- little refactoring
+
 2008-04-08	misha
 	* Makefile.am 1.53:
 	* Makefile.am 1.54:
