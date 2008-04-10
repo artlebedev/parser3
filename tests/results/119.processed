@@ -1,5 +1,14 @@
 content-type: text/html
-content-length: 63
+content-length: 266
 
+$request:charset: UTF-8<br />
+$response:charset: UTF-8<br />
+<hr />
 <?xml version="1.0" encoding="UTF-8"?>
-<âàñÿ name="çíà÷åíèå"/>
+<Ð²Ð°ÑÑ name="Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ"/>
+
+<hr />
+$exception.type: 'xml'<br />
+$exception.source: 'string'<br />
+$exception.comment: 'string is not in UTF-8
+'<br />

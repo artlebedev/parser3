@@ -1,3 +1,31 @@
-$xdoc[^xdoc::create[вася]]
-^xdoc.firstChild.setAttribute[name;значение]
-^xdoc.string[]
+@main[]
+# $request:charset and $response:charset are utf-8
+^$request:charset: $request:charset<br />
+^$response:charset: $response:charset<br />
+
+# content in utf-8: ok
+^do{
+	$xdoc[^xdoc::create[РІР°СЃСЏ]]
+	^xdoc.firstChild.setAttribute[name;Р·РЅР°С‡РµРЅРёРµ]
+	^xdoc.string[]
+}
+
+# content in windows-1251: must fail
+^do{
+	$xdoc[^xdoc::create[вася]]
+	^xdoc.firstChild.setAttribute[name;значение]
+	^xdoc.string[]
+}
+
+
+
+@do[jCode]
+<hr />
+^try{
+	$jCode
+}{
+	$exception.handled(1)
+	^$exception.type: '$exception.type'<br />
+	^$exception.source: '$exception.source'<br />
+	^$exception.comment: '$exception.comment'<br />
+}
