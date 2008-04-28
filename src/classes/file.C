@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2008/02/14 09:10:23 $";
+static const char * const IDENT_FILE_C="$Date: 2008/04/28 10:19:53 $";
 
 #include "pa_config_includes.h"
 
@@ -276,13 +276,15 @@ static void _stat(Request& r, MethodParams& params) {
 		size,
 		atime, mtime, ctime);
 	
+	const char* user_file_name=lfile_name.cstr(String::L_FILE_SPEC);
+
 	VFile& self=GET_SELF(r, VFile);
-	self.set(true/*tainted*/, 0/*no bytes*/, size);
+
+	self.set(true/*tainted*/, 0/*no bytes*/, size, user_file_name, new VString(r.mime_type_of(user_file_name)));
 	HashStringValue& ff=self.fields();
 	ff.put(adate_name, new VDate(atime));
 	ff.put(mdate_name, new VDate(mtime));
 	ff.put(cdate_name, new VDate(ctime));
-	ff.put(content_type_name, new VString(r.mime_type_of(lfile_name.cstr(String::L_FILE_SPEC))));
 }
 
 static bool is_safe_env_key(const char* key) {
