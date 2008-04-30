@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2008/04/28 10:19:53 $";
+static const char * const IDENT_FILE_C="$Date: 2008/04/30 14:24:51 $";
 
 #include "pa_config_includes.h"
 
@@ -232,8 +232,7 @@ static void _load(Request& r, MethodParams& params) {
 		:lfile_name.cstr(String::L_FILE_SPEC);
 
 	Value* vcontent_type=0;
-	if(file.headers)
-	{
+	if(file.headers){
 		if(Value* remote_content_type=file.headers->get("CONTENT-TYPE"))
 			vcontent_type=new VString(*new String(remote_content_type->as_string().cstr()));
 	} 
@@ -242,8 +241,21 @@ static void _load(Request& r, MethodParams& params) {
 	
 	VFile& self=GET_SELF(r, VFile);
 	self.set(true/*tainted*/, file.str, file.length, user_file_name, vcontent_type);
-	if(file.headers)
+
+	if(file.headers){
 		file.headers->for_each<HashStringValue*>(_load_pass_param, &self.fields());
+	} else {
+		size_t size;
+		time_t atime, mtime, ctime;
+
+		file_stat(r.absolute(lfile_name), size, atime, mtime, ctime);
+	
+		HashStringValue& ff=self.fields();
+		ff.put(adate_name, new VDate(atime));
+		ff.put(mdate_name, new VDate(mtime));
+		ff.put(cdate_name, new VDate(ctime));
+	}
+
 }
 
 static void _create(Request& r, MethodParams& params) {
