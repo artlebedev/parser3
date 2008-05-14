@@ -1,0 +1,23 @@
+content-type: text/html
+content-length: 629
+
+174/data.dir -- not exist<br />
+174/data.pag -- not exist<br />
+<hr />
+174/data.dir -- exist<br />
+174/data.pag -- exist<br />
+$hf.0: 'zigi'<br />
+<hr />
+$hf.0: ''<br />
+<hr />
+keys: 1, 2, 3, 4, 5, 6, 7, 8, 9
+<hr />
+$hf.2: '=2='<br />$hf.3: '=3='<br />$hf.4: '=4='<br />$hf.5: '=5='<br />$hf.6: '=6='<br />$hf.7: '=7='<br />$hf.8: '=8='<br />$hf.9: '=9='<br />
+<hr />
+$hf.3: '=3='<br />$hf.4: '=4='<br />$hf.5: '=5='<br />$hf.6: '=6='<br />$hf.7: '=7='<br />$hf.8: '=8='<br />$hf.9: '=9='<br />
+<hr />
+174/data.dir -- not exist<br />
+174/data.pag -- not exist<br />
+<hr />
+174/data.dir -- exist<br />
+174/data.pag -- exist<br />
