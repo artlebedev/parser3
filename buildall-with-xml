@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Id: buildall-with-xml,v 1.22 2008/04/09 10:11:50 misha Exp $
+# $Id: buildall-with-xml,v 1.23 2008/05/14 08:09:45 misha Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -85,7 +85,7 @@ fi
 
 if test ! -f "$project_directory/gnome/lib/libxslt.a"; then
   cd $project_directory/src
-  libxslt="libxslt-1.1.23"
+  libxslt="libxslt-1.1.24"
   if test ! -f "$libxslt.tar.gz"; then
     echo "Downloading libxslt [3 lib of 3]..."
     wget -c --passive-ftp ftp://xmlsoft.org/libxslt/$libxslt.tar.gz
