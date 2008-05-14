@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2008/04/30 14:24:51 $";
+static const char * const IDENT_FILE_C="$Date: 2008/05/14 10:17:05 $";
 
 #include "pa_config_includes.h"
 
@@ -248,7 +248,7 @@ static void _load(Request& r, MethodParams& params) {
 		size_t size;
 		time_t atime, mtime, ctime;
 
-		file_stat(r.absolute(lfile_name), size, atime, mtime, ctime);
+		file_stat(lfile_name, size, atime, mtime, ctime);
 	
 		HashStringValue& ff=self.fields();
 		ff.put(adate_name, new VDate(atime));
