@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_HASH_C="$Date: 2007/12/28 11:23:13 $";
+static const char * const IDENT_HASH_C="$Date: 2008/05/14 10:19:04 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -357,12 +357,15 @@ static bool one_foreach_cycle(
 
 	StringOrValue sv_processed=info->r->process(*info->body_code);
 	Request::Skip lskip=info->r->get_skip(); info->r->set_skip(Request::SKIP_NOTHING);
+
 	const String* s_processed=sv_processed.get_string();
 	if(info->delim_maybe_code && s_processed && s_processed->length()) { // delimiter set and we have body
 		if(info->need_delim) // need delim & iteration produced string?
 			info->r->write_pass_lang(info->r->process(*info->delim_maybe_code));
-		info->need_delim=true;
+		else
+			info->need_delim=true;
 	}
+
 	info->r->write_pass_lang(sv_processed);
 
 	return lskip==Request::SKIP_BREAK;

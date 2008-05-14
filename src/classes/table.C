@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2008/04/08 12:34:01 $";
+static const char * const IDENT_TABLE_C="$Date: 2008/05/14 10:19:04 $";
 
 #ifndef NO_STRINGSTREAM
 #include <sstream>
@@ -623,12 +623,15 @@ static void _menu(Request& r, MethodParams& params) {
 
 		StringOrValue sv_processed=r.process(body_code);
 		Request::Skip lskip=r.get_skip(); r.set_skip(Request::SKIP_NOTHING);
+
 		const String* s_processed=sv_processed.get_string();
 		if(delim_maybe_code && s_processed && s_processed->length()) { // delimiter set and we have body
 			if(need_delim) // need delim & iteration produced string?
 				r.write_pass_lang(r.process(*delim_maybe_code));
-			need_delim=true;
+			else
+				need_delim=true;
 		}
+
 		r.write_pass_lang(sv_processed);
 
 		if(lskip==Request::SKIP_BREAK)
