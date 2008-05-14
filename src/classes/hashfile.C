@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Id: hashfile.C,v 1.41 2007/08/20 10:02:51 misha Exp $";
+static const char * const IDENT="$Id: hashfile.C,v 1.42 2008/05/14 10:20:05 misha Exp $";
 
 #include "classes.h"
 
@@ -101,7 +101,10 @@ struct Foreach_info {
 	bool need_delim;
 };
 #endif
-static bool one_foreach_cycle(const String::Body key, const String& value, void* ainfo) {
+static bool one_foreach_cycle(
+				  const String::Body key,
+				  const String& value,
+				  void* ainfo) {
 	Foreach_info& info=*static_cast<Foreach_info*>(ainfo);
 	info.vkey->set_string(*new String(key, String::L_TAINTED));
 	info.vvalue->set_string(value);
@@ -110,12 +113,15 @@ static bool one_foreach_cycle(const String::Body key, const String& value, void*
 
 	StringOrValue sv_processed=info.r->process(*info.body_code);
 	Request::Skip lskip=info.r->get_skip(); info.r->set_skip(Request::SKIP_NOTHING);
+
 	const String* s_processed=sv_processed.get_string();
 	if(info.delim_maybe_code && s_processed && s_processed->length()) { // delimiter set and we have body
 		if(info.need_delim) // need delim & iteration produced string?
 			info.r->write_pass_lang(info.r->process(*info.delim_maybe_code));
-		info.need_delim=true;
+		else
+			info.need_delim=true;
 	}
+
 	info.r->write_pass_lang(sv_processed);
 
 	return lskip==Request::SKIP_BREAK;
@@ -134,7 +140,8 @@ static void _foreach(Request& r, MethodParams& params) {
 	info.body_code=&params.as_junction(2, "body must be code");
 	info.delim_maybe_code=params.count()>3?params.get(3):0;
 
-	info.var_context=info.body_code->get_junction()->wcontext;
+	// info.var_context=info.body_code->get_junction()->wcontext;
+	info.var_context=info.r->get_method_frame()->caller();
 	info.vkey=new VString;
 	info.vvalue=new VString;
 
