@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Id: hashfile.C,v 1.42 2008/05/14 10:20:05 misha Exp $";
+static const char * const IDENT="$Id: hashfile.C,v 1.43 2008/05/15 09:34:15 misha Exp $";
 
 #include "classes.h"
 
@@ -130,23 +130,19 @@ static void _foreach(Request& r, MethodParams& params) {
 	Temp_hash_value<const String::Body, void*> 
 		cycle_data_setter(r.classes_conf, cycle_data_name, /*any not null flag*/&r);
 
+	Foreach_info info={
+		&r,
+		&params.as_string(0, "key-var name must be string"),
+		&params.as_string(1, "value-var name must be string"),
+		&params.as_junction(2, "body must be code"),
+		/*delimiter*/params.count()>3?params.get(3):0,
+		/*var_context*/r.get_method_frame()->caller(),
+		/*vkey=*/new VString,
+		/*vvalue=*/new VString,
+		/*need_delim*/false
+	};
+
 	VHashfile& self=GET_SELF(r, VHashfile);
-
-	Foreach_info info;
-	
-	info.r=&r;
-	info.key_var_name=&params.as_string(0, "key-var name must be string");
-	info.value_var_name=&params.as_string(1, "value-var name must be string");
-	info.body_code=&params.as_junction(2, "body must be code");
-	info.delim_maybe_code=params.count()>3?params.get(3):0;
-
-	// info.var_context=info.body_code->get_junction()->wcontext;
-	info.var_context=info.r->get_method_frame()->caller();
-	info.vkey=new VString;
-	info.vvalue=new VString;
-
-	info.need_delim=false;
-
 	self.for_each(one_foreach_cycle, &info);
 }
 
