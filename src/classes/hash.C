@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_HASH_C="$Date: 2008/05/15 09:33:37 $";
+static const char * const IDENT_HASH_C="$Date: 2008/05/16 14:28:23 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -351,10 +351,13 @@ static bool one_foreach_cycle(
 			      HashStringValue::key_type akey, 
 			      HashStringValue::value_type avalue, 
 			      Foreach_info *info) {
-	info->vkey->set_string(*new String(akey, String::L_TAINTED));
 	Value& var_context=*info->var_context;
-	var_context.put_element(var_context, *info->key_var_name, info->vkey, false);
-	var_context.put_element(var_context, *info->value_var_name, avalue, false);
+	if(info->key_var_name){
+		info->vkey->set_string(*new String(akey, String::L_TAINTED));
+		var_context.put_element(var_context, *info->key_var_name, info->vkey, false);
+	}
+	if(info->value_var_name)
+		var_context.put_element(var_context, *info->value_var_name, avalue, false);
 
 	StringOrValue sv_processed=info->r->process(*info->body_code);
 	Request::Skip lskip=info->r->get_skip(); info->r->set_skip(Request::SKIP_NOTHING);
@@ -375,15 +378,18 @@ static void _foreach(Request& r, MethodParams& params) {
 	Temp_hash_value<const String::Body, void*> 
 		cycle_data_setter(r.classes_conf, cycle_data_name, /*any not null flag*/&r);
 
+	const String& key_var_name=params.as_string(0, "key-var name must be string");
+	const String& value_var_name=params.as_string(1, "value-var name must be string");
+
 	Foreach_info info={
 		&r,
-		&params.as_string(0, "key-var name must be string"),
-		&params.as_string(1, "value-var name must be string"),
+		key_var_name.is_empty()? 0 : &key_var_name,
+		value_var_name.is_empty()? 0 : &value_var_name,
 		&params.as_junction(2, "body must be code"),
 		/*delimiter*/params.count()>3?params.get(3):0,
 		/*var_context*/r.get_method_frame()->caller(),
 		/*vkey=*/new VString,
-		/*need_delim*/false
+		false
 	};
 
 	VHash& self=GET_SELF(r, VHash);
