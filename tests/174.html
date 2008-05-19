@@ -1,6 +1,7 @@
-@main[][sDir;sName;tList;hf;i]
+@main[][sDir;sName;hf;hf2;tList;i;k;v;iSizeBefore;iSizeAfter]
 $sDir[174]
 $sName[data]
+
 
 # remove previous files first
 $tList[^file:list[$sDir]]
@@ -8,12 +9,23 @@ $tList[^file:list[$sDir]]
 	^file:delete[$sDir/$tList.name]
 }
 
-# open hashfile
+
+# open hashfiles
 $hf[^hashfile::open[$sDir/$sName]]
+$hf2[^hashfile::open[$sDir/${sName}2]]
+
+
 
 # check hashfile files -- it mustn't exist because of delayed opened
 ^checkFiles[$sDir;$sName]
-<hr />
+^checkFiles[$sDir;${sName}2]
+
+
+# $hf2 for checking .cleanup[]
+^fill[$hf2]
+$iSizeBefore(^getFileSize[$sDir;${sName}2])
+
+
 
 # add item with key '0' for 2 sec
 $hf.0[
@@ -21,61 +33,80 @@ $hf.0[
 	$.expires(2/24/60/60)
 ]
 
-# add more items to hashfile
+# add more items to hf
 ^for[i](1;9){
 	$hf.[$i][=$i=]
 }
 
-^checkFiles[$sDir;$sName]
 
-^$hf.0: '$hf.0'<br />
 
 <hr />
-# wait 2 secs till item with key '0' expired
-^sleep(3)
+^checkFiles[$sDir;$sName]
+^checkFiles[$sDir;${sName}2]
 
+
+
+<hr />
 ^$hf.0: '$hf.0'<br />
 
-# release before .foreach
-^hf.release[]
+
+# wait till some items expire
+^sleep(3)
+
+
+
+
+<hr />
+# $hf2 for checking .cleanup[]: add many items, read _file_ size, wait till items expire, .cleanup[],
+# add the same number of items, read file size again and compare sizes.
+# second file size must not be higher because of space used with expired items must be reused
+^hf2.cleanup[]
+#^hf2.foreach[;]{}
+
+
+^fill[$hf2]
+
+$iSizeAfter(^getFileSize[$sDir;${sName}2])
+^if($iSizeAfter > $iSizeBefore){file size increased}{file size wasn't increased}
+
+
+
+<hr />
+^$hf.0: '$hf.0'<br />
+
+
 
 <hr />
 keys: ^hf.foreach[k;]{$k}[, ]
 
 
-# release before .delete
-^hf.release[]
-
-^hf.delete[1]
 
 <hr />
+^hf.delete[1]
 ^hf.foreach[k;v]{^$hf.${k}: '$v'<br />}
 
 
-^hf.delete[2]
 
 <hr />
+^hf.delete[2]
 $s[^hf.foreach[k;v]{^$hf.${k}: '$v'}[<br />]]
 $s<br />
 
-# checking for cleanup (just calls: we can't check internals)
-^hf.cleanup[]
 
 
 <hr />
 # delete hashfile
 ^hf.delete[]
-
 # files mustn't exist after .delete[]
 ^checkFiles[$sDir;$sName]
 
-# try to read not existing hashfile (it must auto opened)
-<hr />
-^hf.foreach[k;v]{^$hf.${k}: '$v'<br />}
 
+
+<hr />
+# trying to read not existing hashfile (it must auto opened)
+^hf.foreach[k;v]{^$hf.${k}: '$v'<br />}
 # files must exist now
 ^checkFiles[$sDir;$sName]
-
 
 
 
@@ -90,3 +121,21 @@ $s<br />
 
 @checkFile[sFileName]
 $sFileName -- ^if(-f $sFileName){exist}{not exist}<br />
+
+
+
+@getFileSize[sDir;sName][fStat]
+$fStat[^file::stat[$sDir/${sName}.pag]]
+$result($fStat.size)
+
+
+
+@fill[hf][iCount;i]
+$iCount(150)
+^for[i](0;$iCount){
+	$hf.[^math:uuid[]][
+		$.value[^math:uuid[]]
+		$.expires(2/24/60/60)
+	]
+}
+^hf.release[]

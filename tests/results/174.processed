@@ -1,12 +1,19 @@
 content-type: text/html
-content-length: 629
+content-length: 794
 
 174/data.dir -- not exist<br />
 174/data.pag -- not exist<br />
+174/data2.dir -- not exist<br />
+174/data2.pag -- not exist<br />
 <hr />
 174/data.dir -- exist<br />
 174/data.pag -- exist<br />
+174/data2.dir -- exist<br />
+174/data2.pag -- exist<br />
+<hr />
 $hf.0: 'zigi'<br />
+<hr />
+file size wasn't increased
 <hr />
 $hf.0: ''<br />
 <hr />
