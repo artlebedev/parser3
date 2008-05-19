@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Id: hashfile.C,v 1.43 2008/05/15 09:34:15 misha Exp $";
+static const char * const IDENT="$Id: hashfile.C,v 1.44 2008/05/19 08:56:59 misha Exp $";
 
 #include "classes.h"
 
@@ -106,10 +106,14 @@ static bool one_foreach_cycle(
 				  const String& value,
 				  void* ainfo) {
 	Foreach_info& info=*static_cast<Foreach_info*>(ainfo);
-	info.vkey->set_string(*new String(key, String::L_TAINTED));
-	info.vvalue->set_string(value);
-	info.var_context->put_element(*info.var_context, *info.key_var_name, info.vkey, false);
-	info.var_context->put_element(*info.var_context, *info.value_var_name, info.vvalue, false);
+	if(info.key_var_name){
+		info.vkey->set_string(*new String(key, String::L_TAINTED));
+		info.var_context->put_element(*info.var_context, *info.key_var_name, info.vkey, false);
+	}
+	if(info.value_var_name){
+		info.vvalue->set_string(value);
+		info.var_context->put_element(*info.var_context, *info.value_var_name, info.vvalue, false);
+	}
 
 	StringOrValue sv_processed=info.r->process(*info.body_code);
 	Request::Skip lskip=info.r->get_skip(); info.r->set_skip(Request::SKIP_NOTHING);
@@ -130,16 +134,19 @@ static void _foreach(Request& r, MethodParams& params) {
 	Temp_hash_value<const String::Body, void*> 
 		cycle_data_setter(r.classes_conf, cycle_data_name, /*any not null flag*/&r);
 
+	const String& key_var_name=params.as_string(0, "key-var name must be string");
+	const String& value_var_name=params.as_string(1, "value-var name must be string");
+
 	Foreach_info info={
 		&r,
-		&params.as_string(0, "key-var name must be string"),
-		&params.as_string(1, "value-var name must be string"),
+		key_var_name.is_empty()? 0 : &key_var_name,
+		value_var_name.is_empty()? 0 : &value_var_name,
 		&params.as_junction(2, "body must be code"),
-		/*delimiter*/params.count()>3?params.get(3):0,
+		/*delimiter*/params.count()>3 ? params.get(3) : 0,
 		/*var_context*/r.get_method_frame()->caller(),
 		/*vkey=*/new VString,
 		/*vvalue=*/new VString,
-		/*need_delim*/false
+		false
 	};
 
 	VHashfile& self=GET_SELF(r, VHashfile);
