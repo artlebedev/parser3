@@ -5,7 +5,7 @@
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_CHARSET_C="$Date: 2007/04/23 10:30:31 $";
+static const char * const IDENT_CHARSET_C="$Date: 2008/05/22 16:18:03 $";
 
 #include "pa_charset.h"
 #include "pa_charsets.h"
@@ -623,6 +623,11 @@ const String::C Charset::transcodeToCharset(const String::C src,
 		return String::C((char*)dest_body, dest_length);
 	}
 }			
+
+XMLByte Charset::transcodeCharFromUTF8(XMLCh utf8code, XMLByte not_found){
+	return xlatOneTo(utf8code, tables, not_found);
+}
+
 
 #ifdef XML
 
