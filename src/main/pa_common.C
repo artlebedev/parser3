@@ -26,7 +26,7 @@
  *
  */
 
-static const char * const IDENT_COMMON_C="$Date: 2008/04/09 09:52:18 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2008/05/22 17:29:30 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -92,9 +92,9 @@ void fix_line_breaks(char *str, size_t& length) {
 }
 
 char* file_read_text(Request_charsets& charsets, 
-		     const String& file_spec, 
-		     bool fail_on_read_problem,
-		     HashStringValue* params/*, HashStringValue* * out_fields*/) {
+			const String& file_spec, 
+			bool fail_on_read_problem,
+			HashStringValue* params/*, HashStringValue* * out_fields*/) {
 	File_read_result file=
 		file_read(charsets, file_spec, true, params, fail_on_read_problem);
 	return file.success?file.str:0;
@@ -124,10 +124,10 @@ struct File_read_action_info {
 }; 
 #endif
 static void file_read_action(
-			     struct stat& finfo, 
-			     int f, 
-			     const String& file_spec, const char* /*fname*/, bool as_text, 
-			     void *context) {
+				struct stat& finfo, 
+				int f, 
+				const String& file_spec, const char* /*fname*/, bool as_text, 
+				void *context) {
 	File_read_action_info& info=*static_cast<File_read_action_info *>(context); 
 	size_t to_read_size=info.count;
 	if(!to_read_size)
@@ -155,9 +155,9 @@ static void file_read_action(
 	}
 }
 File_read_result file_read(Request_charsets& charsets, const String& file_spec, 
-			   bool as_text, HashStringValue *params,
-			   bool fail_on_read_problem,
-			   char* buf, size_t offset, size_t count) {
+			bool as_text, HashStringValue *params,
+			bool fail_on_read_problem,
+			char* buf, size_t offset, size_t count) {
 	File_read_result result={false, 0, 0, 0};
 	if(file_spec.starts_with("http://")) {
 		if(offset || count)
@@ -248,7 +248,7 @@ bool file_read_action_under_lock(const String& file_spec,
 	//   they delay update till open, so we would receive "!^test[" string
 	//   if would do stat, next open.
 	// later: it seems, even this does not help sometimes
-    if((f=open(fname, O_RDONLY|(as_text?_O_TEXT:_O_BINARY)))>=0) {
+	if((f=open(fname, O_RDONLY|(as_text?_O_TEXT:_O_BINARY)))>=0) {
 		try {
 			if(pa_lock_shared_blocking(f)!=0)
 				throw Exception("file.lock", 
@@ -277,7 +277,7 @@ bool file_read_action_under_lock(const String& file_spec,
 
 		pa_unlock(f);close(f); 
 		return true;
-    } else {
+	} else {
 		if(fail_on_read_problem)
 			throw Exception(errno==EACCES?"file.access":errno==ENOENT?"file.missing":0, 
 				&file_spec, 
@@ -468,11 +468,11 @@ bool file_executable(const String& file_spec) {
 }
 
 bool file_stat(const String& file_spec, 
-			   size_t& rsize, 
-			   time_t& ratime, 
-			   time_t& rmtime, 
-			   time_t& rctime, 
-			   bool fail_on_read_problem) {
+			size_t& rsize,
+			time_t& ratime,
+			time_t& rmtime,
+			time_t& rctime,
+			bool fail_on_read_problem) {
 	const char* fname=file_spec.cstr(String::L_FILE_SPEC); 
 	struct stat finfo;
 	if(stat(fname, &finfo)!=0)
@@ -491,62 +491,140 @@ bool file_stat(const String& file_spec,
 }
 
 char* getrow(char* *row_ref, char delim) {
-    char* result=*row_ref;
-    if(result) {
+	char* result=*row_ref;
+	if(result) {
 		*row_ref=strchr(result, delim); 
 		if(*row_ref) 
 			*((*row_ref)++)=0; 
 		else if(!*result) 
 			return 0;
-    }
-    return result;
+	}
+	return result;
 }
 
 char* lsplit(char* string, char delim) {
-    if(string) {
+	if(string) {
 		char* v=strchr(string, delim); 
 		if(v) {
 			*v=0;
 			return v+1;
 		}
-    }
-    return 0;
+	}
+	return 0;
 }
 
 char* lsplit(char* *string_ref, char delim) {
-    char* result=*string_ref;
+	char* result=*string_ref;
 	char* next=lsplit(*string_ref, delim); 
-    *string_ref=next;
-    return result;
+	*string_ref=next;
+	return result;
 }
 
 char* rsplit(char* string, char delim) {
-    if(string) {
+	if(string) {
 		char* v=strrchr(string, delim); 
 		if(v) {
 			*v=0;
 			return v+1;
 		}
-    }
-    return NULL;	
+	}
+	return NULL;	
 }
 
-/// @todo less stupid type detection
+
+// format: %[flags][width][.precision]type	http://msdn.microsoft.com/ru-ru/library/56e442dc(en-us,VS.80).aspx
+//		flags: '-', '+', ' ', '#', '0'		http://msdn.microsoft.com/ru-ru/library/8aky45ct(en-us,VS.80).aspx
+//		width, precision: non negative decimal number
+enum FormatType {
+	FormatInvalid,
+	FormatInt,
+	FormatUInt,
+	FormatDouble
+};
+FormatType format_type(char* fmt){
+	enum FormatState {
+		Percent, 
+		Flags, 
+		Width,
+		Precision,
+		Done
+	} state=Percent;
+
+	FormatType result=FormatInvalid;
+
+	char* pos=fmt;
+	while(char c=*(pos++)){
+		switch(state){
+			case Percent:
+				if(c=='%'){
+					state=Flags;
+				} else {
+					return FormatInvalid; // 1st char must be '%' only
+				}
+				break;
+			case Flags:
+				if(strchr("-+ #0", c)!=0){
+					break;
+				}
+				// go to the next step
+			case Width:
+				if(c=='.'){
+					state=Precision;
+					break;
+				}
+				// go to the next step
+			case Precision:
+				if(c>='0' && c<='9'){
+					if(state == Flags) state=Width; // no more flags
+					break;
+				} else if(c=='d' || c=='i'){
+					result=FormatInt;
+				} else if(strchr("feEgG", c)!=0){
+					result=FormatDouble;
+				} else if(strchr("uoxX", c)!=0){
+					result=FormatUInt;
+				} else {
+					return FormatInvalid; // invalid char
+				}
+				state=Done;
+				break;
+			case Done:
+				return FormatInvalid; // no chars allowed after 'type'
+		}
+	}
+	return result;
+}
+
+
 const char* format(double value, char* fmt) {
-	char local_buf[MAX_NUMBER]; 
+	char local_buf[MAX_NUMBER];
 	size_t size;
-	
-	if(fmt)
-		if(strpbrk(fmt, "diouxX"))
-			if(strpbrk(fmt, "ouxX"))
-				size=snprintf(local_buf, sizeof(local_buf), fmt, (uint)value); 
-			else
+
+	if(fmt && strlen(fmt)){
+		switch(format_type(fmt)){
+			case FormatDouble:
+				size=snprintf(local_buf, sizeof(local_buf), fmt, value); 
+				break;
+			case FormatInt:
 				size=snprintf(local_buf, sizeof(local_buf), fmt, (int)value); 
-		else
-			size=snprintf(local_buf, sizeof(local_buf), fmt, value); 
-	else
-		size=snprintf(local_buf, sizeof(local_buf), "%d", (int)value); 
-	
+				break;
+			case FormatUInt:
+				size=snprintf(local_buf, sizeof(local_buf), fmt, (uint)value); 
+				break;
+			case FormatInvalid:
+				throw Exception(PARSER_RUNTIME, 
+					0, 
+					"Incorrect format string '%s' was specified.", fmt);
+		}
+	} else
+		size=snprintf(local_buf, sizeof(local_buf), "%d", (int)value);
+
+	if(size < 0 || size >= MAX_NUMBER-1){ // on win32 we manually reduce max size while printing
+		throw Exception(PARSER_RUNTIME, 
+			0, 
+			"Error occure white executing snprintf with format string '%s'.", fmt);
+	}
+
 	return pa_strdup(local_buf, size);
 }
 
@@ -567,13 +645,16 @@ size_t stdout_write(const void *buf, size_t size) {
 #endif
 }
 
+enum EscapeState {
+	EscapeRest, 
+	EscapeFirst, 
+	EscapeSecond,
+	EscapeUnicode
+};
+/*
 char* unescape_chars(const char* cp, int len) {
 	char* s=new(PointerFreeGC) char[len + 1]; 
-	enum EscapeState {
-		EscapeRest, 
-		EscapeFirst, 
-		EscapeSecond
-	} escapeState=EscapeRest;
+	EscapeState escapeState=EscapeRest;
 	uint escapedValue=0;
 	int srcPos=0;
 	int dstPos=0;
@@ -581,27 +662,100 @@ char* unescape_chars(const char* cp, int len) {
 		uchar ch=(uchar)cp[srcPos]; 
 		switch(escapeState) {
 			case EscapeRest:
-			if(ch=='%') {
-				escapeState=EscapeFirst;
-			} else if(ch=='+') {
-				s[dstPos++]=' '; 
-			} else {
-				s[dstPos++]=ch;	
-			}
-			break;
+				if(ch=='%') {
+					escapeState=EscapeFirst;
+				} else if(ch=='+'){
+					s[dstPos++]=' '; 
+				} else {
+					s[dstPos++]=ch;	
+				}
+				break;
 			case EscapeFirst:
-			escapedValue=hex_value[ch] << 4;
-			escapeState=EscapeSecond;
-			break;
+				escapedValue=hex_value[ch] << 4;
+				escapeState=EscapeSecond;
+				break;
 			case EscapeSecond:
-			escapedValue +=hex_value[ch]; 
-			s[dstPos++]=(char)escapedValue;
-			escapeState=EscapeRest;
-			break;
+				escapedValue +=hex_value[ch]; 
+				s[dstPos++]=(char)escapedValue;
+				escapeState=EscapeRest;
+				break;
 		}
 		srcPos++; 
 	}
 	s[dstPos]=0;
+	return s;
+}
+*/
+
+bool is_hex_digit(char c){
+	return (c>='0' && c<='9') || (c>='a' && c<='f') || (c>='A' && c<='F');
+}
+
+char* unescape_chars(const char* cp, int len, Request_charsets* charsets){
+	char* s=new(PointerFreeGC) char[len + 1];
+	EscapeState escapeState=EscapeRest;
+	uint escapedValue=0;
+	int srcPos=0;
+	int dstPos=0;
+	int jsCnt=0;
+	while(srcPos < len) {
+		uchar c=(uchar)cp[srcPos]; 
+		if(c=='%'){
+			escapeState=EscapeFirst;
+		} else {
+			switch(escapeState) {
+				case EscapeRest:
+					if(c=='+'){
+						s[dstPos++]=' ';
+					} else {
+						s[dstPos++]=c;
+					}
+					break;
+				case EscapeFirst:
+					if(charsets && c=='u'){
+						// escaped unicode value: %u0430
+						jsCnt=0;
+						escapedValue=0;
+						escapeState=EscapeUnicode;
+					} else {
+						if(is_hex_digit(c)){
+							escapedValue=hex_value[c] << 4;
+							escapeState=EscapeSecond;
+						} else {
+							s[dstPos++]=c;
+							escapeState=EscapeRest;
+						}
+					}
+					break;
+				case EscapeSecond:
+					if(is_hex_digit(c)){
+						escapedValue+=hex_value[c]; 
+						s[dstPos++]=(char)escapedValue;
+					}
+					escapeState=EscapeRest;
+					break;
+				case EscapeUnicode:
+					if(is_hex_digit(c)){
+						escapedValue=(escapedValue << 4) + hex_value[c];
+						if(++jsCnt==4){
+							// transcode utf8 char to source charset (we can lost some chars here)
+							if(char ch=charsets->source().transcodeCharFromUTF8(escapedValue, '?')){
+								s[dstPos++]=ch;
+							}
+							escapeState=EscapeRest;
+						}
+					} else {
+						// not full unicode value
+						escapeState=EscapeRest;
+					}
+					break;
+			}
+		}
+
+		srcPos++;
+	}
+
+	s[dstPos]=0; // zero-termination
 	return s;
 }
 
@@ -642,26 +796,26 @@ bool StrEqNc(const char* s1, const char* s2, bool strict) {
 }
 
 static bool isLeap(int year) {
-    return !(
-             (year % 4) || ((year % 400) && !(year % 100))
-            ); 
+	return !(
+				(year % 4) || ((year % 400) && !(year % 100))
+			); 
 }
 
 int getMonthDays(int year, int month) {
 	static int monthDays[]={
-        31, 
-        28, 
-        31, 
-        30, 
-        31, 
-        30, 
-        31, 
-        31, 
-        30, 
-        31, 
-        30, 
-        31
-    }; 
+		31, 
+		28, 
+		31, 
+		30, 
+		31, 
+		30, 
+		31, 
+		31, 
+		30, 
+		31, 
+		30, 
+		31
+	}; 
 	return (month == 1 /* january -- 0 */ && isLeap(year)) ? 29 : monthDays[month]; 
 }
 
@@ -1020,10 +1174,10 @@ char* pa_base64_encode(const String& file_spec)
 
 
 static void file_base64_file_action(
-			     struct stat& finfo, 
-			     int f, 
-			     const String&, const char* /*fname*/, bool, 
-			     void *context) {
+				struct stat& finfo, 
+				int f, 
+				const String&, const char* /*fname*/, bool, 
+				void *context) {
 
 	if(finfo.st_size) { 
 		File_base64_action_info& info=*static_cast<File_base64_action_info *>(context);
@@ -1085,10 +1239,10 @@ const unsigned long pa_crc32(const String& file_spec)
 }
 
 static void file_crc32_file_action(
-			     struct stat& finfo, 
-			     int f, 
-			     const String&, const char* /*fname*/, bool, 
-			     void *context)
+				struct stat& finfo, 
+				int f, 
+				const String&, const char* /*fname*/, bool, 
+				void *context)
 {
 	unsigned long& crc32=*static_cast<unsigned long *>(context);
 	if(finfo.st_size) {
