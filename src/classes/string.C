@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2007/11/27 10:51:01 $";
+static const char * const IDENT_STRING_C="$Date: 2008/05/22 17:43:30 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -125,7 +125,7 @@ static void _bool(Request& r, MethodParams& params) {
 	// for some time due to stupid {} in original design
 	const String& fmt=r.process_to_string(fmt_maybe_code);
 
-	const char* buf=format(r.get_self().as_double(), fmt.cstrm());
+	const char* buf=format(r.get_self().as_double(), fmt.trim().cstrm());
 
 	r.write_no_lang(String(buf));
 }
@@ -149,8 +149,7 @@ static void _right(Request& r, MethodParams& params) {
 			0, 
 			"n(%d) must be >=0", sn);
 	size_t n=(size_t)sn;
-	
-	
+
 	const String& string=GET_SELF(r, VString).string();
 	size_t length=string.length();
 	r.write_assign_lang(n<length?string.mid(length-n, string.length()):string);
@@ -367,7 +366,7 @@ static void _match(Request& r, MethodParams& params) {
 			matches_count);
 		// r.write_assign_lang(*new VTable(table));
 		if(table){
-		r.write_assign_lang(*new VTable(table));
+			r.write_assign_lang(*new VTable(table));
 		} else {
 			r.write_assign_lang(*new VInt(matches_count));
 		}

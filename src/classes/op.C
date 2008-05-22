@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2008/05/15 09:34:32 $";
+static const char * const IDENT_OP_C="$Date: 2008/05/22 17:43:29 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -343,8 +343,12 @@ static void _eval(Request& r, MethodParams& params) {
 	Value& value_result=r.process_to_value(expr, 
 		false/*don't intercept string*/).as_expr_result();
 	if(params.count()>1) {
-		Value& fmt=params.as_no_junction(1, "fmt must not be code");
-		r.write_no_lang(String(format(value_result.as_double(), fmt.as_string().cstrm())));
+		const String& fmt=params.as_string(1, "fmt must be string").trim();
+		if(fmt.is_empty()){
+			r.write_no_lang(value_result);
+		} else {
+			r.write_no_lang(String(format(value_result.as_double(), fmt.cstrm())));
+		}
 	} else
 		r.write_no_lang(value_result);
 }
