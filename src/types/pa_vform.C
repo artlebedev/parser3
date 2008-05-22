@@ -7,7 +7,7 @@
 	based on The CGI_C library, by Thomas Boutell.
 */
 
-static const char * const IDENT_VFORM_C="$Date: 2007/07/06 15:07:07 $";
+static const char * const IDENT_VFORM_C="$Date: 2008/05/22 17:30:35 $";
 
 #include "pa_sapi.h"
 #include "pa_vform.h"
@@ -158,8 +158,8 @@ void VForm::ParseFormInput(const char* data, size_t length) {
 			}
 		}
 
-		const char* attr=aftereq>start?unescape_chars(data+start, aftereq-1-start):"nameless";
-		char *value=unescape_chars(data+aftereq, finish-aftereq);
+		const char* attr=aftereq>start?unescape_chars(data+start, aftereq-1-start, &fcharsets):"nameless";
+		char *value=unescape_chars(data+aftereq, finish-aftereq, &fcharsets);
 		AppendFormEntry(attr, value, strlen(value));
 	}
 }
