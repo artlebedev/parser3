@@ -1,0 +1,101 @@
+@main[][d;n;sEmpty;sSpace]
+$d(65321.3)
+$n(-$d)
+$sEmpty[]
+$sSpace[ ]
+
+<table border="1">
+
+# not specified format strings
+^TR[w/o param;^try_code{^d.format[]}]
+
+# format strings contains whitespaces only
+^format[$d;$sEmpty]
+^format[$d;$sSpace]
+
+# invalid format string
+^format[$d;%K]
+^format[$d;%]
+^format[$d;%%]
+
+# banned format string
+^format[$d;%n]
+^format[$d;%s]
+^format[$d;%z]
+
+# int/uint
+^format[$d;%d]
+^format[$d;%u]
+^format[$d;%o]
+^format[$d;%x]
+^format[$d;%X]
+
+# float
+^format[$d;%f]
+^format[$d;%e]
+^format[$d;%E]
+^format[$d;%g]
+^format[$d;%G]
+
+# flags, width, precision
+^format[$d;%d]
+^format[$d;%0d]
+^format[$d;%10d]
+^format[$d;%010d]
+
+^format[$d;%f]
+^format[$d;%.f]
+^format[$d;%.0f]
+^format[$d;%.02f]
+^format[$d;%9.03f]
+^format[$d;%+9.03f]
+^format[$n;%+9.03f]
+^format[$d;% 9.03f]
+^format[$n;% 9.03f]
+^format[$d;%0#10x]
+^format[$d;%+#10X]
+^format[$d;%-10d]
+^format[$d;%0#o]
+^format[$d;%0#d]
+^format[$d;%#g]
+^format[$d;%#e]
+
+# flags in wrong place
+^format[$d;%1+9.03f]
+
+^format[$d;%99d]
+
+# more then 1 dot as precision flag
+^format[$d;%9..03f]
+^format[$d;%9.1.03f]
+
+# invalid because contains something at the ends
+^format[$d;%d=]
+^format[$d;=%d]
+
+</table>
+
+
+
+@TR[sTD1;sTD2]
+<tr>
+<td>$sTD1</td>
+<td>$sTD2</td>
+</tr>
+
+
+
+
+@format[d;sFormat][s]
+^TR[^if(def $sFormat && def ^sFormat.trim[]){$sFormat}{'$sFormat'};^try_code{$s[^d.format[$sFormat]]'^taint[html][^s.match[\+00][]{+0}]'}]
+
+
+
+@try_code[jCode]
+^try{
+	$jCode
+}{
+	$exception.handled(1)
+	$exception.comment
+}
+<br />

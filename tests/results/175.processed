@@ -1,0 +1,275 @@
+content-type: text/html
+content-length: 2902
+
+<table border="1">
+<tr>
+<td>w/o param</td>
+<td>
+native method of double (double) accepts minimum 1 parameter(s) (0 present)
+<br /></td>
+</tr>
+<tr>
+<td>''</td>
+<td>
+'65321'
+<br /></td>
+</tr>
+<tr>
+<td>' '</td>
+<td>
+'65321'
+<br /></td>
+</tr>
+<tr>
+<td>%K</td>
+<td>
+Incorrect format string '%K' was specified.
+<br /></td>
+</tr>
+<tr>
+<td>%</td>
+<td>
+Incorrect format string '%' was specified.
+<br /></td>
+</tr>
+<tr>
+<td>%%</td>
+<td>
+Incorrect format string '%%' was specified.
+<br /></td>
+</tr>
+<tr>
+<td>%n</td>
+<td>
+Incorrect format string '%n' was specified.
+<br /></td>
+</tr>
+<tr>
+<td>%s</td>
+<td>
+Incorrect format string '%s' was specified.
+<br /></td>
+</tr>
+<tr>
+<td>%z</td>
+<td>
+Incorrect format string '%z' was specified.
+<br /></td>
+</tr>
+<tr>
+<td>%d</td>
+<td>
+'65321'
+<br /></td>
+</tr>
+<tr>
+<td>%u</td>
+<td>
+'65321'
+<br /></td>
+</tr>
+<tr>
+<td>%o</td>
+<td>
+'177451'
+<br /></td>
+</tr>
+<tr>
+<td>%x</td>
+<td>
+'ff29'
+<br /></td>
+</tr>
+<tr>
+<td>%X</td>
+<td>
+'FF29'
+<br /></td>
+</tr>
+<tr>
+<td>%f</td>
+<td>
+'65321.300000'
+<br /></td>
+</tr>
+<tr>
+<td>%e</td>
+<td>
+'6.532130e+04'
+<br /></td>
+</tr>
+<tr>
+<td>%E</td>
+<td>
+'6.532130E+04'
+<br /></td>
+</tr>
+<tr>
+<td>%g</td>
+<td>
+'65321.3'
+<br /></td>
+</tr>
+<tr>
+<td>%G</td>
+<td>
+'65321.3'
+<br /></td>
+</tr>
+<tr>
+<td>%d</td>
+<td>
+'65321'
+<br /></td>
+</tr>
+<tr>
+<td>%0d</td>
+<td>
+'65321'
+<br /></td>
+</tr>
+<tr>
+<td>%10d</td>
+<td>
+'     65321'
+<br /></td>
+</tr>
+<tr>
+<td>%010d</td>
+<td>
+'0000065321'
+<br /></td>
+</tr>
+<tr>
+<td>%f</td>
+<td>
+'65321.300000'
+<br /></td>
+</tr>
+<tr>
+<td>%.f</td>
+<td>
+'65321'
+<br /></td>
+</tr>
+<tr>
+<td>%.0f</td>
+<td>
+'65321'
+<br /></td>
+</tr>
+<tr>
+<td>%.02f</td>
+<td>
+'65321.30'
+<br /></td>
+</tr>
+<tr>
+<td>%9.03f</td>
+<td>
+'65321.300'
+<br /></td>
+</tr>
+<tr>
+<td>%+9.03f</td>
+<td>
+'+65321.300'
+<br /></td>
+</tr>
+<tr>
+<td>%+9.03f</td>
+<td>
+'-65321.300'
+<br /></td>
+</tr>
+<tr>
+<td>% 9.03f</td>
+<td>
+' 65321.300'
+<br /></td>
+</tr>
+<tr>
+<td>% 9.03f</td>
+<td>
+'-65321.300'
+<br /></td>
+</tr>
+<tr>
+<td>%0#10x</td>
+<td>
+'0x0000ff29'
+<br /></td>
+</tr>
+<tr>
+<td>%+#10X</td>
+<td>
+'    0XFF29'
+<br /></td>
+</tr>
+<tr>
+<td>%-10d</td>
+<td>
+'65321     '
+<br /></td>
+</tr>
+<tr>
+<td>%0#o</td>
+<td>
+'0177451'
+<br /></td>
+</tr>
+<tr>
+<td>%0#d</td>
+<td>
+'65321'
+<br /></td>
+</tr>
+<tr>
+<td>%#g</td>
+<td>
+'65321.3'
+<br /></td>
+</tr>
+<tr>
+<td>%#e</td>
+<td>
+'6.532130e+04'
+<br /></td>
+</tr>
+<tr>
+<td>%1+9.03f</td>
+<td>
+Incorrect format string '%1+9.03f' was specified.
+<br /></td>
+</tr>
+<tr>
+<td>%99d</td>
+<td>
+Error occure white executing snprintf with format string '%99d'.
+<br /></td>
+</tr>
+<tr>
+<td>%9..03f</td>
+<td>
+Incorrect format string '%9..03f' was specified.
+<br /></td>
+</tr>
+<tr>
+<td>%9.1.03f</td>
+<td>
+Incorrect format string '%9.1.03f' was specified.
+<br /></td>
+</tr>
+<tr>
+<td>%d=</td>
+<td>
+Incorrect format string '%d=' was specified.
+<br /></td>
+</tr>
+<tr>
+<td>=%d</td>
+<td>
+Incorrect format string '=%d' was specified.
+<br /></td>
+</tr>
+</table>
