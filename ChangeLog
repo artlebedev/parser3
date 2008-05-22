@@ -1,3 +1,48 @@
+2008-05-22	misha
+	* tests/175.html 1.1:
+	* tests/results/175.processed 1.1:
+		- more tests for different format strings in .format[]
+
+	* src/types/pa_vform.C 1.88:
+		- while decoding get values decode %uXXXX as well (not only %XX)
+
+	* src/main/pa_common.C 1.229:
+		- unescape_chars can decode %uXXXX if charset specified
+		- checks for format before print number (^d.format[>...<], ^eval($d)[>...<])
+		- formating with spaces (instead of tabs) removed
+
+	* src/include/pa_common.h 1.118:
+		- unescape_chars can decode %uXXXX if charset specified
+
+	* src/include/pa_charset.h 1.33:
+	* src/main/pa_charset.C 1.57:
+		- method for get char in requested charset from utf code was 
+		added
+
+2008-05-19	misha
+	* tests/174.html 1.2:
+	* tests/results/174.processed 1.2:
+		- test for ^hashfile.cleanup[] added
+
+	* src/classes/hashfile.C 1.44:
+		- optimization: don't create any key or value variable if it's 
+		name weren't specified (^hf.foreach[;v]{...})
+
+2008-05-16	misha
+	* src/classes/hash.C 1.85:
+		- optimization: don't create any key variable if variable name 
+		wasn't specified (^h.foreach[;v]{...})
+
+2008-05-15	misha
+	* src/classes/op.C 1.176:
+		- small changes
+
+	* src/classes/hashfile.C 1.43:
+		- code reformating (as hash.foreach)
+
+	* src/classes/hash.C 1.84:
+		- calculate var_context once before foreach
+
 2008-05-14	misha
 	* src/classes/hashfile.C 1.42:
 		- incorrect vars context calculation for ^hashfile.foreach[;]{} 
