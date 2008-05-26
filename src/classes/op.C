@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2008/05/22 17:43:29 $";
+static const char * const IDENT_OP_C="$Date: 2008/05/26 14:23:46 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -780,7 +780,7 @@ static void _try_operator(Request& r, MethodParams& params) {
 }
 
 static void _throw_operator(Request&, MethodParams& params) {
-	if(params.count()==1) {
+	if(params.count()==1 && !params[0].is_string()) {
 		if(HashStringValue *hash=params[0].get_hash()) {
 			const char* type=0;
 			if(Value* value=hash->get(exception_type_part_name))
@@ -798,13 +798,12 @@ static void _throw_operator(Request&, MethodParams& params) {
 		} else
 			throw Exception(PARSER_RUNTIME,
 				0,
-				"one-param version has hash param");
+				"one-param version has hash or string param");
 	} else {
 		const char* type=params.as_string(0, "type must be string").cstr();
-		const String& source=params.as_string(1, "source must be string");
-		const char* comment=params.count()>2? params.as_string(2, "comment must be string").cstr()
-			:0;
-		throw Exception(type, &source, "%s", comment?comment:"");
+		const String* source=params.count()>1? &params.as_string(1, "source must be string"):0;
+		const char* comment=params.count()>2? params.as_string(2, "comment must be string").cstr():0;
+		throw Exception(type, source, "%s", comment?comment:"");
 	}
  }
 
