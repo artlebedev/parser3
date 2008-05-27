@@ -62,15 +62,20 @@ Xне сделано, видимо, не будет сделано
     !^use[модуль]
     !^try{
         ...
-        !^throw[sql.connect;вася;болван] // был ^error[текст]
+        !^throw[sql.connect[;вася[;болван]]] // был ^error[текст]
+        !^throw[
+        	$.type[sql.connect]
+        	$.source[вася]
+        	$.comment[болван]
+        ]
         ...
     }{
-        ^if($exception.type eq sql){
-            $exception.handled(1)  ^rem{флаг, что exception обработан}
+        ^if($exception.type eq "sql"){
+            $exception.handled(1|true)  ^rem{флаг, что exception обработан}
             ....
         }
         
-        ^switch($exception.type){
+        ^switch[$exception.type]{
             ^case[sql;mail]{
                 $exception.handled(1)
                 код, обрабатывающий sql ошибку
@@ -81,7 +86,7 @@ Xне сделано, видимо, не будет сделано
             }
             ^case[DEFAULT]{
                 код, обрабатывающий другую ошибку
-                ^throw[$exception] << re-throw
+                ^throw[$exception] << re-throw // DON'T! It's default behaviour!
             }
         }
     }
@@ -109,6 +114,7 @@ Xне сделано, видимо, не будет сделано
             timeout=3&
             compress=1&
             named_pipe=1&
+            multi_statements=1&	allow execute more then one query in one parser :sql{} request
             autocommit=1
             autocommit если выставить в 0, будет делать commit/rollback
 
@@ -139,12 +145,12 @@ Xне сделано, видимо, не будет сделано
         была определена таблица
 #sql drivers
 $SQL[
-    $.drivers[^table::create{protocol    driver    client
-mysql    /www/parser3/libparser3mysql.so    /usr/local/lib/mysql/libmysqlclient.so
-pgsql    /www/parser3/libparser3pgsql.so    /usr/local/pgsql/lib/libpq.so
-oracle    /www/parser3/libparser3oracle.so    /u01/app/oracle/product/8.1.5/lib/libclntsh.so?ORACLE_HOME=/u01/app/oracle/product/8.1.5&ORA_NLS33=/u01/app/oracle/product/8.1.5/ocommon/nls/admin/data
-sqlite    /www/parser3/libparser3sqlite.so    /usr/local/sqlite/lib/sqlite3.so
-odbc    c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
+    $.drivers[^table::create{protocol	driver	client
+mysql	/www/parser3/libparser3mysql.so	/usr/local/lib/mysql/libmysqlclient.so
+pgsql	/www/parser3/libparser3pgsql.so	/usr/local/pgsql/lib/libpq.so
+oracle	/www/parser3/libparser3oracle.so	/u01/app/oracle/product/8.1.5/lib/libclntsh.so?ORACLE_HOME=/u01/app/oracle/product/8.1.5&ORA_NLS33=/u01/app/oracle/product/8.1.5/ocommon/nls/admin/data
+sqlite	/www/parser3/libparser3sqlite.so	/usr/local/sqlite/lib/sqlite3.so
+odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
 }]
 ]
         !в таблице у oracle в столбце клиентской библиотеки
