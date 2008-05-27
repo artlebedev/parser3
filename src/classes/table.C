@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2008/05/14 10:19:04 $";
+static const char * const IDENT_TABLE_C="$Date: 2008/05/27 19:01:46 $";
 
 #ifndef NO_STRINGSTREAM
 #include <sstream>
@@ -666,15 +666,13 @@ static void table_row_to_hash(Table::element_type row, Row_info *info) {
 	if(!key)
 		return; // ignore rows without key [too-short-record_array if-indexed]
 		
-	bool exist = false;
-	switch (info->value_type) {
-	case C_STRING:
-		{
+	bool exist=false;
+	switch(info->value_type) {
+		case C_STRING: {
 			exist=info->hash->put_dont_replace(*key, new VString(*row->get(info->value_fields->get(0))));
+			break;
 		}
-		break;
-	case C_HASH:
-		{
+		case C_HASH: {
 			VHash* vhash=new VHash;
 			HashStringValue& hash=vhash->hash();
 			for(Array_iterator<int> i(*info->value_fields); i.has_next(); ) {
@@ -686,18 +684,16 @@ static void table_row_to_hash(Table::element_type row, Row_info *info) {
 			}
 
 			exist=info->hash->put_dont_replace(*key, vhash);
+			break;
 		}
-		break;
-	case C_TABLE:
-		{
-			VTable* vtable=(VTable*)info->hash->get(*key); // put. table existed?
-			if( info->distinct==D_ILLEGAL ){
-				exist=true;
-				break;
-			}
-
+		case C_TABLE: {
+			VTable* vtable=(VTable*)info->hash->get(*key); // table exist?
 			Table* table;
 			if(vtable) {
+				if(info->distinct==D_ILLEGAL) {
+					exist=true;
+					break;
+				}
 				table=vtable->get_table();
 			} else {
 				// no? creating table of same structure as source
@@ -706,8 +702,8 @@ static void table_row_to_hash(Table::element_type row, Row_info *info) {
 				info->hash->put(*key, new VTable(table));
 			}
 			*table+=row;
+			break;
 		}
-		break;
 	}
 	if(exist && info->distinct==D_ILLEGAL)
 		throw Exception(PARSER_RUNTIME,
