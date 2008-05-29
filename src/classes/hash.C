@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_HASH_C="$Date: 2008/05/16 14:28:23 $";
+static const char * const IDENT_HASH_C="$Date: 2008/05/29 09:26:34 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -45,23 +45,35 @@ class Hash_sql_event_handlers: public SQL_Driver_query_event_handlers {
 	const String& statement_string; const char* statement_cstr;
 	bool distinct;
 	HashStringValue& rows_hash;
-	HashStringValue* row_hash;
+	Value* row_value;
 	int column_index;
-	ArrayString columns;
-	bool only_one_column;
+	ArrayString& columns;
+	bool one_bool_column;
 	static VBool only_one_column_value;
+	Table2hash_value_type value_type;
+	int columns_count;
+public:
+	Table* empty;
 public:
 	Hash_sql_event_handlers(
-		const String& astatement_string, const char* astatement_cstr,
+		const String& astatement_string,
+		const char* astatement_cstr,
 		bool adistinct,
-		HashStringValue& arows_hash): 
-		statement_string(astatement_string), statement_cstr(astatement_cstr),
+		HashStringValue& arows_hash,
+		Table2hash_value_type avalue_type)
+	: 
+		statement_string(astatement_string),
+		statement_cstr(astatement_cstr),
 		distinct(adistinct),
 		rows_hash(arows_hash),
-		row_hash(0),
+		value_type(avalue_type),
+		row_value(0),
 		column_index(0),
-		only_one_column(false) {
+		one_bool_column(false),
+		columns(*new ArrayString),
+		empty(0) {
 	}
+
 	bool add_column(SQL_Error& error, const char* str, size_t length) {
 		try {
 			columns+=new String(str, length, true);
@@ -71,33 +83,101 @@ public:
 			return true;
 		}
 	}
+
 	bool before_rows(SQL_Error& error) { 
 		if(columns.count()<1) {
 			error=SQL_Error(PARSER_RUNTIME, "no columns");
 			return true;
 		}
-		only_one_column=columns.count()==1;
-
+		switch(value_type){
+			case C_STRING: {
+				if(columns.count()>2){
+					error=SQL_Error(PARSER_RUNTIME, "only 2 columns allowed for $.type[string].");
+					return true;
+				}
+			}
+			case C_TABLE: {
+				// create empty table which we'll copy later
+				empty=new Table(&columns);
+				columns_count=columns.count();
+			}
+			case C_HASH: {
+				one_bool_column=columns.count()==1;
+			}
+		}
 		return false;
 	}
+
 	bool add_row(SQL_Error& /*error*/) {
 		column_index=0;
 		return false;
 	}
+
 	bool add_row_cell(SQL_Error& error, const char *ptr, size_t length) {
 		try {
 			String& cell=*new String;
 			if(length)
 				cell.append_know_length(ptr, length, String::L_TAINTED);
+
 			bool duplicate=false;
-			if(only_one_column) {
+			if(one_bool_column) {
 				duplicate=rows_hash.put_dont_replace(cell, &only_one_column_value);  // put. existed?
 			} else if(column_index==0) {
-				VHash* row_vhash=new VHash;
-				row_hash=&row_vhash->hash();
-				duplicate=rows_hash.put_dont_replace(cell, row_vhash); // put. existed?
-			} else
-				row_hash->put(*columns[column_index], new VString(cell));
+				switch(value_type){
+					case C_HASH: {
+						VHash* row_vhash=new VHash;
+						row_value=row_vhash;
+						duplicate=rows_hash.put_dont_replace(cell, row_vhash); // put. existed?
+						break;
+					}
+					case C_STRING: {
+						VString* row_vstring=new VString();
+						row_value=row_vstring;
+						duplicate=rows_hash.put_dont_replace(cell, row_vstring);  // put. existed?
+						break;
+					}
+					case C_TABLE: {
+						VTable* vtable=(VTable*)rows_hash.get(cell);
+						Table* table;
+
+						if(vtable) { // table with this key exist?
+							if(!distinct) {
+								duplicate=true;
+								break;
+							}
+							table=vtable->get_table();
+						} else {
+							// no? creating table of same structure as source
+							Table::Action_options table_options(0, 0);
+							table=new Table(*empty, table_options/*no rows, just structure*/);
+							vtable=new VTable(table);
+							rows_hash.put(cell, vtable); // put
+						}
+						ArrayString* row=new ArrayString(columns_count);
+						row_value=(Value*)row;
+						*row+=&cell;
+						*table+=row;
+						break;
+					}
+				}
+			} else {
+				switch(value_type) {
+					case C_HASH: {
+						row_value->get_hash()->put(*columns[column_index], new VString(cell));
+						break;
+					}
+					case C_STRING: {
+						VString* row_string=(VString*)row_value;
+						row_string->set_string(cell);
+						break;
+					}
+					case C_TABLE: {
+						ArrayString* row=(ArrayString*)row_value;
+						*row+=&cell;
+						break;
+					}
+				}
+			}
 
 			if(duplicate & !distinct) {
 				error=SQL_Error(PARSER_RUNTIME, "duplicate key");
@@ -283,7 +363,8 @@ static void _sql(Request& r, MethodParams& params) {
 	Hash_sql_event_handlers handlers(
 		statement_string, statement_cstr, 
 		distinct,
-		hash);
+		hash,
+		value_type);
 	r.connection()->query(
 		statement_cstr, 
 		placeholders_count, placeholders,
