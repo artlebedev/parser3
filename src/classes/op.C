@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2008/05/26 14:23:46 $";
+static const char * const IDENT_OP_C="$Date: 2008/05/29 09:24:29 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -474,9 +474,11 @@ struct Try_catch_result {
 template<class I>
 static Try_catch_result try_catch(Request& r, 
 		  StringOrValue body_code(Request&, I), I info, 
-		  Value* catch_code, bool could_be_handled_by_caller=false) 
+		  Value* catch_code,
+		  bool could_be_handled_by_caller=false) 
 {
 	Try_catch_result result;
+
 	if(!catch_code) {
 		result.processed_code=body_code(r, info);
 		return result;
@@ -496,6 +498,7 @@ static Try_catch_result try_catch(Request& r,
 		Value* saved_exception_var_value=method_frame->get_element(exception_var_name, *method_frame, false);
 		VMethodFrame& frame=*junction->method_frame;
 		frame.put_element(frame, exception_var_name, &details.vhash, false);
+
 		result.processed_code=r.process(*catch_code);
 		
 		// retriving $exception.handled, restoring $exception var
@@ -512,7 +515,7 @@ static Try_catch_result try_catch(Request& r,
 				
 				bhandled=false;
 			} else
-				bhandled=vhandled->as_bool();		
+				bhandled=vhandled->as_bool();
 		}
 
 		if(!bhandled) {
@@ -520,6 +523,7 @@ static Try_catch_result try_catch(Request& r,
 			rethrow;
 		}
 	}
+
 	return result;
 }
 
@@ -765,18 +769,33 @@ static StringOrValue process_try_body_code(Request& r, Value* body_code) {
 static void _try_operator(Request& r, MethodParams& params) {
 	Value& body_code=params.as_junction(0, "body_code must be code");
 	Value& catch_code=params.as_junction(1, "catch_code must be code");
+	Value* finally_code=(params.count()==3) ? &params.as_junction(2, "finally_code must be code") : 0;
 
-	Try_catch_result result=try_catch(r, 
-		process_try_body_code, &body_code,
-		&catch_code);
-	
-	if(result.exception_should_be_handled)
-		throw Exception(PARSER_RUNTIME,
-			result.exception_should_be_handled,
-			"catch block must set $exception.handled to some boolean value, not string");
+	Try_catch_result result;
+	StringOrValue finally_result;
+	try{
+		result=try_catch(r, 
+			process_try_body_code, &body_code,
+			&catch_code);
+		if(result.exception_should_be_handled)
+			throw Exception(PARSER_RUNTIME,
+				result.exception_should_be_handled,
+				"catch block must set $exception.handled to some boolean value, not string");
+	} catch(...){
+		if(finally_code)
+			finally_result=r.process(*finally_code);
+		rethrow;
+	}
+
+	if(finally_code)
+		finally_result=r.process(*finally_code);
 
 	// write out processed body_code or catch_code
 	r.write_pass_lang(result.processed_code);
+
+	// write out processed finally code
+	if(finally_code)
+		r.write_pass_lang(finally_result);
 }
 
 static void _throw_operator(Request&, MethodParams& params) {
@@ -882,7 +901,7 @@ VClassMAIN::VClassMAIN(): VClass() {
 	// try-catch
 
 	// ^try{code}{catch code}
-	add_native_method("try", Method::CT_ANY, _try_operator, 2, 2);
+	add_native_method("try", Method::CT_ANY, _try_operator, 2, 3);
 	// ^throw[$exception hash]
 	// ^throw[type;source;comment]
 	add_native_method("throw", Method::CT_ANY, _throw_operator, 1, 3);
