@@ -8,50 +8,103 @@ third	e
 }]
 
 
-<b>^$.distinct[tables]</b><br />
-^print[^table.hash[group][
-	$.distinct[tables]
-]]
-
-
-<hr />
-<b>^$.distinct(1) ^$.type[table]</b><br />
-^print[^table.hash[group][
-	$.distinct(1)
-	$.type[table]
-]]
-
-
-<hr />
-<b>^$.distinct(1) ^$.type[hash]</b><br />
-^print[^table.hash[group][
-	$.distinct(1)
-	$.type[hash]
-]]
-
-
-<hr />
-<b>^$.distinct(1) ^$.type[string]</b><br />
-^try{
-	^print[^table.hash[group][
-		$.distinct(1)
-		$.type[string]
-	]]
-}{
-	^if($exception.type eq parser.runtime){
-		failed, that's OK.
-		<br />with ^$.type[string] only one field must be specified
-		$exception.handled(1)
-	}
+^do[unique key, no value columns, no options]{
+	^table.hash[name]
 }
 
 
-<hr />
-<b>^$.distinct(1) ^$.type[string]</b><br />
-^print[^table.hash[group;name][
-	$.distinct(1)
-	$.type[string]
-]]
+^do[non-unique key, no value columns, no options]{
+	^table.hash[group]
+}[if key not unique ^$.distinct(1) must be specified]
+
+
+^do[non-unique key, no value columns, options: ^$.distinct[tables] (backward)]{
+	^table.hash[group][
+		$.distinct[tables]
+	]
+}
+
+
+^do[non-unique key, no value columns, options: ^$.distinct[tables], ^$.type[hash] ]{
+	^table.hash[group][
+		$.distinct[tables]
+		$.type[hash]
+	]
+}[^$.distinct[tables] and ^$.type[...] can't be specified together]
+
+
+^do[non-unique key, no value columns, options: ^$.distinct(1) ^$.type[table]]{
+	^table.hash[group][
+		$.distinct(1)
+		$.type[table]
+	]
+}
+
+
+^do[non-unique key, no value columns, options: ^$.distinct(1) ^$.type[table]]{
+	^table.hash[group][
+		$.type[table]
+	]
+}[non unique key without distinct option]
+
+
+^do[unique key, no value columns, options: ^$.type[table]]{
+	^table.hash[name][
+		$.type[table]
+	]
+}
+
+
+^do[non-unique key, no value columns, options: ^$.distinct(1) ^$.type[hash]]{
+	^table.hash[group][
+		$.distinct(1)
+		$.type[hash]
+	]
+}
+
+
+^do[non-unique key, no value columns, options: ^$.distinct(1) (as above because ^$.type[hash] == default)]{
+	^table.hash[group][
+		$.distinct(1)
+	]
+}
+
+
+^do[non-unique key, no value columns, options: ^$.distinct(1) ^$.type[string]]{
+	^table.hash[group][
+		$.distinct(1)
+		$.type[string]
+	]
+}[with ^$.type[string] only one field must be specified]
+
+
+^do[non-unique key, one value column (name), options: ^$.distinct(1) ^$.type[string]]{
+	^table.hash[group;name][
+		$.distinct(1)
+		$.type[string]
+	]
+}
+
+
+
+
+@do[sTitle;jCode;sExceptionComment][h]
+<h3>$sTitle</h3>
+^try{
+	$h[$jCode]
+	^print[$h]
+}{
+	^if($exception.type eq "parser.runtime"){
+		$exception.handled(1)
+		^if(def $sExceptionComment){
+			failed, that's OK.<br />
+			$sExceptionComment
+		}{
+			something wrong
+		}
+	}
+}
+
 
 
 @print[hData][sKey;value]
