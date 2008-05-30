@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
-static const char * const IDENT_VSTATELESS_CLASS_H="$Date: 2007/04/23 10:30:50 $";
+static const char * const IDENT_VSTATELESS_CLASS_H="$Date: 2008/05/30 12:24:44 $";
 
 // include
 
@@ -44,6 +44,7 @@ class VStateless_class: public Value {
 	Hash<const String::Body, Method*> fmethods;
 
 	bool flocked;
+	bool fall_vars_local;
 
 protected:
 
@@ -67,7 +68,8 @@ public: // usage
 		VStateless_class* abase=0):
 		fname(aname),
 		flocked(false),
-		fbase(abase) {
+		fbase(abase),
+		fall_vars_local(false) {
 	}
 
 	void lock() { flocked=true; }
@@ -98,6 +100,14 @@ public: // usage
 
 	Method* get_method(const String& aname) const { 
 		return fmethods.get(aname);
+	}
+
+	void all_vars_local(){
+		fall_vars_local=true;
+	}
+
+	bool is_vars_local(){
+		return fall_vars_local;
 	}
 
 	/// virtual for VClass to override to pre-cache property accessors into fields
