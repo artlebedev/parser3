@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2007/11/29 08:07:26 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2008/05/30 12:27:05 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -14,7 +14,8 @@ static const char * const IDENT_EXECUTE_C="$Date: 2007/11/29 08:07:26 $";
 #include "pa_vhash.h"
 #include "pa_vvoid.h"
 #include "pa_vcode_frame.h"
-#include "pa_vmethod_frame.h"
+#include "pa_vmethod_frame_local.h"
+#include "pa_vmethod_frame_global.h"
 #include "pa_vobject.h"
 #include "pa_vdouble.h"
 #include "pa_vbool.h"
@@ -417,92 +418,38 @@ void Request::execute(ArrayOperation& ops) {
 				//  ^junction[]
 				if(!junction->method)
 					throw Exception(PARSER_RUNTIME,
-						
 						"is '%s', it is code junction, can not call it",
 							value.type());
 				*/
 
-				VMethodFrame frame(*junction, method_frame/*caller*/);
-				if(local_ops){ // store param code goes here
-					stack.push(frame); // argument for *STORE_PARAM ops
-					execute(*local_ops);
-					stack.pop().value();
+				if(junction->method->all_vars_local){
+					VMethodFrameLocal frame(*junction, method_frame);
+					if(local_ops){ // store param code goes here
+						stack.push(frame); // argument for *STORE_PARAM ops
+						execute(*local_ops);
+						stack.pop().value();
+					}
+					WContext* result_wcontext=op_call(frame);
+					if(opcode==OP_CALL__WRITE) {
+						write_assign_lang(result_wcontext->result());
+					} else { // OP_CALL
+						stack.push(result_wcontext->result().as_value());
+					}
+				} else {
+					VMethodFrameGlobal frame(*junction, method_frame);
+					if(local_ops){ // store param code goes here
+						stack.push(frame); // argument for *STORE_PARAM ops
+						execute(*local_ops);
+						stack.pop().value();
+					}
+					WContext* result_wcontext=op_call(frame);
+					if(opcode==OP_CALL__WRITE) {
+						write_assign_lang(result_wcontext->result());
+					} else { // OP_CALL
+						stack.push(result_wcontext->result().as_value());
+					}
 				}
-				frame.fill_unspecified_params();
-				VMethodFrame *saved_method_frame=method_frame;
-				Value* saved_rcontext=rcontext;
-				WContext *saved_wcontext=wcontext;
-				
-				VStateless_class& called_class=*frame.junction.self.get_class();
-				Value* new_self;
-				if(wcontext->get_constructing()) {
-					wcontext->set_constructing(false);
-					new_self=&get_self();
-					if(frame.junction.method->call_type!=Method::CT_STATIC) {
-						// this is a constructor call
 
-						HashStringValue& new_object_fields=*new HashStringValue();
-						if(Value* value=called_class.create_new_value(fpool, new_object_fields)) {
-							// some stateless_class creatable derivates
-							new_self=value;
-						} else 
-							throw Exception(PARSER_RUNTIME,
-								0, //&frame.name(),
-								"is not a constructor, system class '%s' can be constructed only implicitly", 
-									called_class.name().cstr());
-
-						frame.write(*new_self, 
-							String::L_CLEAN  // not used, always an object, not string
-						);
-					} else
-						throw Exception(PARSER_RUNTIME,
-							0, //&frame.name(),
-							"method is static and can not be used as constructor");
-				} else
-					new_self=&frame.junction.self;
-
-				frame.set_self(*new_self);
-
-				// see OP_PREPARE_TO_EXPRESSION
-				frame.set_in_expression(wcontext->get_in_expression());
-				
-				rcontext=wcontext=&frame;
-				{
-					const Method& method=*frame.junction.method;
-					Method::Call_type call_type=
-						&called_class==new_self ? Method::CT_STATIC : Method::CT_DYNAMIC;
-					if(
-						method.call_type==Method::CT_ANY ||
-						method.call_type==call_type) { // allowed call type?
-						method_frame=&frame;
-						if(method.native_code) { // native code?
-							method.check_actual_numbered_params(
-								frame.junction.self, 
-								/*frame.name(), */frame.numbered_params());
-							method.native_code(
-								*this, 
-								*frame.numbered_params()); // execute it
-						} else // parser code, execute it
-							recoursion_checked_execute(*method.parser_code);
-					} else
-						throw Exception(PARSER_RUNTIME,
-							0, //&frame.name(),
-							"is not allowed to be called %s", 
-								call_type==Method::CT_STATIC?"statically":"dynamically");
-
-				}
-				StringOrValue result=wcontext->result();
-
-				wcontext=saved_wcontext;
-				rcontext=saved_rcontext;
-				method_frame=saved_method_frame;
-
-				if(opcode==OP_CALL__WRITE) {
-					write_assign_lang(result);
-				} else { // OP_CALL
-					stack.push(result.as_value());
-				}
-				
 #ifdef DEBUG_EXECUTE
 				debug_printf(sapi_info, "<-returned");
 #endif
@@ -831,6 +778,79 @@ void Request::execute(ArrayOperation& ops) {
 	}
 }
 
+WContext* Request::op_call(VMethodFrame& frame){
+	frame.fill_unspecified_params();
+	VMethodFrame *saved_method_frame=method_frame;
+	Value* saved_rcontext=rcontext;
+	WContext *saved_wcontext=wcontext;
+			
+	VStateless_class& called_class=*frame.junction.self.get_class();
+	Value* new_self;
+	if(wcontext->get_constructing()) {
+		wcontext->set_constructing(false);
+		new_self=&get_self();
+		if(frame.junction.method->call_type!=Method::CT_STATIC) {
+			// this is a constructor call
+			HashStringValue& new_object_fields=*new HashStringValue();
+			if(Value* value=called_class.create_new_value(fpool, new_object_fields)) {
+				// some stateless_class creatable derivates
+				new_self=value;
+			} else 
+				throw Exception(PARSER_RUNTIME,
+					0, //&frame.name(),
+					"is not a constructor, system class '%s' can be constructed only implicitly", 
+						called_class.name().cstr());
+
+			frame.write(*new_self, 
+				String::L_CLEAN  // not used, always an object, not string
+			);
+		} else
+			throw Exception(PARSER_RUNTIME,
+				0, //&frame.name(),
+				"method is static and can not be used as constructor");
+	} else
+		new_self=&frame.junction.self;
+
+	frame.set_self(*new_self);
+
+	// see OP_PREPARE_TO_EXPRESSION
+	frame.set_in_expression(wcontext->get_in_expression());
+				
+	rcontext=wcontext=&frame;
+	{
+		const Method& method=*frame.junction.method;
+		Method::Call_type call_type=&called_class==new_self ? Method::CT_STATIC : Method::CT_DYNAMIC;
+		if(
+			method.call_type==Method::CT_ANY ||
+			method.call_type==call_type) { // allowed call type?
+			method_frame=&frame;
+			if(method.native_code) { // native code?
+				method.check_actual_numbered_params(
+					frame.junction.self, 
+					/*frame.name(), */frame.numbered_params());
+				method.native_code(
+					*this, 
+					*frame.numbered_params()); // execute it
+			} else // parser code, execute it
+				recoursion_checked_execute(*method.parser_code);
+		} else
+			throw Exception(PARSER_RUNTIME,
+				0, //&frame.name(),
+				"is not allowed to be called %s", 
+					call_type==Method::CT_STATIC?"statically":"dynamically");
+	}
+
+	WContext *result_wcontext=wcontext;
+	// StringOrValue result=wcontext->result();
+
+	wcontext=saved_wcontext;
+	rcontext=saved_rcontext;
+	method_frame=saved_method_frame;
+
+	return result_wcontext;
+}
+
+
 /**
 	@todo cache|prepare junctions
 	@bug ^superbase:method would dynamically call ^base:method if there is any
@@ -887,7 +907,7 @@ void Request::put_element(Value& ncontext, const String& name, Value& value) {
 					0,
 					"setter method must have ONE parameter (has %d parameters)", param_count);
 
-			VMethodFrame frame(junction, method_frame/*caller*/);
+			VMethodFrameGlobal frame(junction, method_frame/*caller*/);
 			frame.store_param(value);
 
 			frame.set_self(frame.junction.self);
@@ -933,7 +953,7 @@ StringOrValue Request::process(Value& input_value, bool intercept_string) {
 					0,
 					"getter method must have no parameters");
 
-			VMethodFrame frame(*junction, method_frame/*caller*/);
+			VMethodFrameGlobal frame(*junction, method_frame/*caller*/);
 
 			frame.set_self(frame.junction.self);
 
@@ -1047,7 +1067,7 @@ const String* Request::execute_method(Value& aself,
 	WContext *saved_wcontext=wcontext;
 	
 	Junction local_junction(aself, &method);
-	VMethodFrame local_frame(local_junction, method_frame/*caller*/);
+	VMethodFrameGlobal local_frame(local_junction, method_frame/*caller*/);
 	if(optional_param && local_frame.can_store_param()) {
 		local_frame.store_param(*optional_param);
 		local_frame.fill_unspecified_params();
