@@ -5,7 +5,7 @@
 	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.222 2007/10/25 10:52:48 misha Exp $
+	$Id: compile.y,v 1.223 2008/05/30 12:27:44 misha Exp $
 */
 
 /**
@@ -41,6 +41,7 @@
 // defines
 
 #define USE_CONTROL_METHOD_NAME "USE"
+#define OPTIONS_CONTROL_METHOD_NAME "OPTION"
 
 // forwards
 
@@ -203,11 +204,22 @@ control_method: '@' STRING '\n'
 			strcpy(PC.error, "@"BASE_NAME" must contain sole name");
 			YYERROR;
 		}
+	} else if(command==OPTIONS_CONTROL_METHOD_NAME) {
+		for(size_t i=0; i<strings_code->count(); i+=OPERATIONS_PER_OPVALUE) {
+			const String& option=*LA2S(*strings_code, i);
+			if(option==ALL_VARS_LOCAL_NAME){
+				PC.cclass->all_vars_local();
+			} else {
+				strcpy(PC.error, option.cstr());
+				strcat(PC.error, ": unknown option in @"OPTIONS_CONTROL_METHOD_NAME" was specified.");
+				YYERROR;
+			}
+		}
 	} else {
 		strcpy(PC.error, "'");
 		strncat(PC.error, command.cstr(), MAX_STRING/2);
 		strcat(PC.error, "' invalid special name. valid names are "
-			"'"CLASS_NAME"', '"USE_CONTROL_METHOD_NAME"' and '"BASE_NAME"'");
+			"'"CLASS_NAME"', '"USE_CONTROL_METHOD_NAME"', '"BASE_NAME"' and '"OPTIONS_CONTROL_METHOD_NAME"'.");
 		YYERROR;
 	}
 };
@@ -229,15 +241,21 @@ code_method: '@' STRING bracketed_maybe_strings maybe_bracketed_strings maybe_co
 
 	YYSTYPE locals_names_code=$4;
 	ArrayString* locals_names=0;
+	bool all_vars_local=false;
 	if(int size=locals_names_code->count()) {
 		locals_names=new ArrayString;
 		for(int i=0; i<size; i+=OPERATIONS_PER_OPVALUE) {
 			const String* local_name=LA2S(*locals_names_code, i);
 			if(*local_name==RESULT_VAR_NAME)
 				PC.explicit_result=true;
+			else if(*local_name==ALL_VARS_LOCAL_NAME)
+				all_vars_local=true;
 			else
 				*locals_names+=local_name;
 		}
+	}
+	if(!all_vars_local && PC.cclass && PC.cclass->is_vars_local()){
+		all_vars_local=true;
 	}
 
 	Method* method=new Method(
@@ -245,7 +263,7 @@ code_method: '@' STRING bracketed_maybe_strings maybe_bracketed_strings maybe_co
 		Method::CT_ANY,
 		0, 0/*min,max numbered_params_count*/, 
 		params_names, locals_names, 
-		0/*to be filled later in next {} */, 0);
+		0/*to be filled later in next {} */, 0, all_vars_local);
 
 	*reinterpret_cast<Method**>(&$$)=method;
 
