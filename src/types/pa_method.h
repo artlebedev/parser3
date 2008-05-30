@@ -8,7 +8,7 @@
 #ifndef PA_METHOD_H
 #define PA_METHOD_H
 
-static const char * const IDENT_METHOD_H="$Date: 2006/12/20 09:39:39 $";
+static const char * const IDENT_METHOD_H="$Date: 2008/05/30 12:22:54 $";
 
 
 /*#include "pa_string.h"
@@ -68,20 +68,23 @@ public:
 	/// @name the Code
 	ArrayOperation* parser_code;/*OR*/NativeCodePtr native_code;
 	//@}
+	bool all_vars_local;
 
 	Method(
 		//const String& aname,
 		Call_type call_type,
 		int amin_numbered_params_count, int amax_numbered_params_count,
 		ArrayString* aparams_names, ArrayString* alocals_names,
-		ArrayOperation* aparser_code, NativeCodePtr anative_code) : 
+		ArrayOperation* aparser_code, NativeCodePtr anative_code,
+		bool aall_vars_local=false) : 
 
 		//name(aname),
 		call_type(call_type),
 		min_numbered_params_count(amin_numbered_params_count),
 		max_numbered_params_count(amax_numbered_params_count),
 		params_names(aparams_names), locals_names(alocals_names),
-		parser_code(aparser_code), native_code(anative_code) {
+		parser_code(aparser_code), native_code(anative_code),
+		all_vars_local(aall_vars_local) {
 	}
 
 	/// call this before invoking to ensure proper actual numbered params count
