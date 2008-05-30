@@ -1,4 +1,65 @@
+2008-05-30	misha
+	* src/main/compile.tab.C 1.116:
+	* src/main/compile.y 1.223:
+		- changes in compiler: @OPTION\nlocals + @method[vars][;locals;] 
+		were added
+
+	* src/main/execute.C 1.319:
+		- code of OP_CALL and OP_CALL__WRITE was moved to separate method op_code
+		- switch from VMethodFrame to VMethodFrameGlobal + VMethodFrameLocal
+
+	* src/include/pa_request.h 1.188:
+		- code of OP_CALL and OP_CALL__WRITE was moved to separate 
+		method op_code
+
+	* src/main/pa_request.C 1.293:
+		- use VMethodFrameGlobal instead of VMethodFrame now
+
+	* src/types/pa_vstateless_class.h 1.57:
+		- stateless class have bool flag all_vars_local as well
+
+	* src/types/Makefile.am 1.42:
+	* src/types/pa_vmethod_frame.h 1.63:
+	* src/types/pa_vmethod_frame_global.h 1.1:
+	* src/types/pa_vmethod_frame_local.h 1.1:
+		- who children for VMethodFrame were added: one (global) works 
+		as VMethodFrame before and second (local) write all vars in self 
+		vars scope
+
+	* src/types/pa_method.h 1.8:
+		- method has bool flag all_vars_local now
+
+2008-05-29	misha
+	* tests/129.html 1.4:
+	* tests/results/129.processed 1.6:
+		- more tests for ^table.hash[]
+
+	* src/classes/hash.C 1.86:
+		- ^hash::sql has a new option: $.type[hash|string|table] as ^
+		table.hash[] one.
+
+	* src/classes/op.C 1.179:
+		- ^try has 3rd param now: finally code which executed anyway 
+		after try or catch section
+
+2008-05-27	misha
+	* src/classes/table.C 1.243:
+		- bugfix: ^table.hash[key][$.type[table]] must not fail if $
+		.distinct(1) wasn't specified
+
+2008-05-26	misha
+	* src/classes/op.C 1.178:
+		- allow ^throw[my type]
+
 2008-05-22	misha
+	* configure 1.96:
+	* configure.in 1.98:
+		- version number updated to 3.2.4b
+
+	* src/classes/op.C 1.177:
+	* src/classes/string.C 1.159:
+		- trim format string before eval/format
+
 	* tests/175.html 1.1:
 	* tests/results/175.processed 1.1:
 		- more tests for different format strings in .format[]
