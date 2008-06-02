@@ -1,0 +1,147 @@
+@main[][sDir]
+$tClass[^table::create{sName
+a.p
+b.p
+c.p
+d.p
+}]
+
+$sDir[176]
+^tClass.menu{
+	^use[$sDir/$tClass.sName]
+}
+
+
+<table border="1" style="font-size: 80%">
+<tr>
+	<th rowspan="2"><br /></th>
+	<th colspan="3">var value</th>
+</tr>
+<tr>
+	<th>local</th>
+	<th>not local</th>
+	<th>self</th>
+</tr>
+
+^one[]
+^two[]
+^print[MAIN vars;$MAIN:CLASS]
+
+
+
+^hr[]
+$oa1[^a::create[]]
+^add_methods[$oa1]
+
+^oa1.run[]
+^print[first <b>a</b> instance (dynamic, has @OPTION in self);$oa1;$.bProcess(true)]
+
+
+$oa2[^a::create[]]
+^print[second <b>a</b> instance without setting vars (dynamic, has @OPTION in self);$oa2;$.bProcess(true)]
+
+^print[<b>a</b> without setting vars (static, has @OPTION in self);$a:CLASS]
+
+^a:run[]
+^print[<b>a</b> (static, has @OPTION in self);$a:CLASS]
+
+
+^hr[]
+^b:run[]
+^print[<b>b</b> (static, no @OPTION in self);$b:CLASS]
+
+
+$ob[^b::create[]]
+^add_methods[$ob]
+
+^ob.run[]
+^print[<b>b</b> (dynamic, no @OPTION in self);$ob;$.bProcess(true)]
+
+
+
+^hr[]
+^c:run[]
+^print[<b>c</b> (static, child of 'a', no @OPTION in self);$c:CLASS]
+
+
+$oc[^c::create[]]
+^oc.run[]
+^print[<b>c</b> (dynamic, child of 'a', no @OPTION in self);$oc]
+
+
+
+^hr[]
+^d:run[]
+^print[<b>d</b> (static, child of 'a', has @OPTION in self);$d:CLASS]
+
+
+$od[^d::create[]]
+^od.run[]
+^print[<b>d</b> (dynamic, child of 'a', has @OPTION in self);$od]
+
+
+</table>
+
+
+
+
+
+@one[][locals;one_1]
+$one_1[one_1]	^rem{ local }
+$one_2[one_2]	^rem{ local because of 'locals' }
+$self.one_3[one_3]	^rem{ not local }
+
+
+
+@two[][two_1]
+$two_1[two_1]	^rem{ local }
+$two_2[two_2]	^rem{ not local }
+$self.two_3[two_3]	^rem{ not local }
+
+
+
+@add_methods[uObject]
+^process[$uObject]{@three[][locals^;three_1]
+^$three_1[three_1]
+^$three_2[three_2]
+^$self.three_3[three_3]^#0A@four[][four_1]
+^$four_1[four_1]
+^$four_2[four_2]
+^$self.four_3[four_3]
+}
+
+
+
+@hr[sTitle]
+<tr>
+<td colspan="4">^if(def $sTitle){$sTitle}{<br />}</td>
+</tr>
+
+
+
+@print[sTitle;uObject;hParam]
+^hr[$sTitle]
+^vars[Method with [^;locals^;];$uObject;one]
+
+^vars[Method without [^;locals^;];$uObject;two]
+
+^if($hParam.bProcess){
+	^vars[Runtime added method with [^;locals^;];$uObject;three]
+
+	^vars[Runtime added method without [^;locals^;];$uObject;four]
+}
+
+
+
+@vars[sTitle;uObject;sPrefix]
+<tr>
+<td>$sTitle</td>
+<td>^var[$uObject.[${sPrefix}_1]]</td>
+<td>^var[$uObject.[${sPrefix}_2]]</td>
+<td>^var[$uObject.[${sPrefix}_3]]</td>
+</tr>
+
+
+
+@var[sValue]
+^if(def $sValue){<b>$sValue</b>}{undef}

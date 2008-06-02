@@ -1,0 +1,227 @@
+content-type: text/html
+content-length: 4004
+
+<table border="1" style="font-size: 80%">
+<tr>
+<th rowspan="2"><br /></th>
+<th colspan="3">var value</th>
+</tr>
+<tr>
+<th>local</th>
+<th>not local</th>
+<th>self</th>
+</tr>
+<tr>
+<td colspan="4">MAIN vars</td>
+</tr>
+<tr>
+<td>Method with [;locals;]</td>
+<td>undef</td>
+<td>undef</td>
+<td><b>one_3</b></td>
+</tr>
+<tr>
+<td>Method without [;locals;]</td>
+<td>undef</td>
+<td><b>two_2</b></td>
+<td><b>two_3</b></td>
+</tr>
+<tr>
+<td colspan="4"><br /></td>
+</tr>
+<tr>
+<td colspan="4">first <b>a</b> instance (dynamic, has @OPTION in self)</td>
+</tr>
+<tr>
+<td>Method with [;locals;]</td>
+<td>undef</td>
+<td>undef</td>
+<td><b>one_3</b></td>
+</tr>
+<tr>
+<td>Method without [;locals;]</td>
+<td>undef</td>
+<td>undef</td>
+<td><b>two_3</b></td>
+</tr>
+<tr>
+<td>Runtime added method with [;locals;]</td>
+<td>undef</td>
+<td>undef</td>
+<td><b>three_3</b></td>
+</tr>
+<tr>
+<td>Runtime added method without [;locals;]</td>
+<td>undef</td>
+<td>undef</td>
+<td><b>four_3</b></td>
+</tr>
+<tr>
+<td colspan="4">second <b>a</b> instance without setting vars (dynamic, has @OPTION in self)</td>
+</tr>
+<tr>
+<td>Method with [;locals;]</td>
+<td>undef</td>
+<td>undef</td>
+<td>undef</td>
+</tr>
+<tr>
+<td>Method without [;locals;]</td>
+<td>undef</td>
+<td>undef</td>
+<td>undef</td>
+</tr>
+<tr>
+<td>Runtime added method with [;locals;]</td>
+<td>undef</td>
+<td>undef</td>
+<td>undef</td>
+</tr>
+<tr>
+<td>Runtime added method without [;locals;]</td>
+<td>undef</td>
+<td>undef</td>
+<td>undef</td>
+</tr>
+<tr>
+<td colspan="4"><b>a</b> without setting vars (static, has @OPTION in self)</td>
+</tr>
+<tr>
+<td>Method with [;locals;]</td>
+<td>undef</td>
+<td>undef</td>
+<td>undef</td>
+</tr>
+<tr>
+<td>Method without [;locals;]</td>
+<td>undef</td>
+<td>undef</td>
+<td>undef</td>
+</tr>
+<tr>
+<td colspan="4"><b>a</b> (static, has @OPTION in self)</td>
+</tr>
+<tr>
+<td>Method with [;locals;]</td>
+<td>undef</td>
+<td>undef</td>
+<td><b>one_3</b></td>
+</tr>
+<tr>
+<td>Method without [;locals;]</td>
+<td>undef</td>
+<td>undef</td>
+<td><b>two_3</b></td>
+</tr>
+<tr>
+<td colspan="4"><br /></td>
+</tr>
+<tr>
+<td colspan="4"><b>b</b> (static, no @OPTION in self)</td>
+</tr>
+<tr>
+<td>Method with [;locals;]</td>
+<td>undef</td>
+<td>undef</td>
+<td><b>one_3</b></td>
+</tr>
+<tr>
+<td>Method without [;locals;]</td>
+<td>undef</td>
+<td><b>two_2</b></td>
+<td><b>two_3</b></td>
+</tr>
+<tr>
+<td colspan="4"><b>b</b> (dynamic, no @OPTION in self)</td>
+</tr>
+<tr>
+<td>Method with [;locals;]</td>
+<td>undef</td>
+<td>undef</td>
+<td><b>one_3</b></td>
+</tr>
+<tr>
+<td>Method without [;locals;]</td>
+<td>undef</td>
+<td><b>two_2</b></td>
+<td><b>two_3</b></td>
+</tr>
+<tr>
+<td>Runtime added method with [;locals;]</td>
+<td>undef</td>
+<td>undef</td>
+<td><b>three_3</b></td>
+</tr>
+<tr>
+<td>Runtime added method without [;locals;]</td>
+<td>undef</td>
+<td><b>four_2</b></td>
+<td><b>four_3</b></td>
+</tr>
+<tr>
+<td colspan="4"><br /></td>
+</tr>
+<tr>
+<td colspan="4"><b>c</b> (static, child of 'a', no @OPTION in self)</td>
+</tr>
+<tr>
+<td>Method with [;locals;]</td>
+<td>undef</td>
+<td>undef</td>
+<td><b>one_3</b></td>
+</tr>
+<tr>
+<td>Method without [;locals;]</td>
+<td>undef</td>
+<td>undef</td>
+<td><b>two_3</b></td>
+</tr>
+<tr>
+<td colspan="4"><b>c</b> (dynamic, child of 'a', no @OPTION in self)</td>
+</tr>
+<tr>
+<td>Method with [;locals;]</td>
+<td>undef</td>
+<td>undef</td>
+<td><b>one_3</b></td>
+</tr>
+<tr>
+<td>Method without [;locals;]</td>
+<td>undef</td>
+<td><b>two_2</b></td>
+<td><b>two_3</b></td>
+</tr>
+<tr>
+<td colspan="4"><br /></td>
+</tr>
+<tr>
+<td colspan="4"><b>d</b> (static, child of 'a', has @OPTION in self)</td>
+</tr>
+<tr>
+<td>Method with [;locals;]</td>
+<td>undef</td>
+<td>undef</td>
+<td><b>one_3</b></td>
+</tr>
+<tr>
+<td>Method without [;locals;]</td>
+<td>undef</td>
+<td>undef</td>
+<td><b>two_3</b></td>
+</tr>
+<tr>
+<td colspan="4"><b>d</b> (dynamic, child of 'a', has @OPTION in self)</td>
+</tr>
+<tr>
+<td>Method with [;locals;]</td>
+<td>undef</td>
+<td>undef</td>
+<td><b>one_3</b></td>
+</tr>
+<tr>
+<td>Method without [;locals;]</td>
+<td>undef</td>
+<td>undef</td>
+<td><b>two_3</b></td>
+</tr>
+</table>
