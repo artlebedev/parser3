@@ -1,0 +1,10 @@
+@main[]
+$f[^file::load[binary;177.html]]
+
+^$f.name: $f.name<br />
+^$f.content-type: $f.content-type<br />
+^$f.size: ^if($f.size){!=0}{==0}<br />
+^$f.cdate: ^if($f.cdate is "date"){date}{undef}<br />
+^$f.mdate: ^if($f.mdate is "date"){date}{undef}<br />
+^$f.adate: ^if($f.adate is "date"){date}{undef}<br />
+^$f.text: ^if(def $f.text){def}{undef}<br />
