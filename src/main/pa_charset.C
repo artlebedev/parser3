@@ -5,7 +5,7 @@
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_CHARSET_C="$Date: 2008/05/22 16:18:03 $";
+static const char * const IDENT_CHARSET_C="$Date: 2008/06/03 12:13:54 $";
 
 #include "pa_charset.h"
 #include "pa_charsets.h"
@@ -471,7 +471,7 @@ static XMLCh change_case_UTF8(const XMLCh src, const Charset::UTF8CaseTable& tab
 	return src;
 }
 
-static void store_UTF8(XMLCh src, XMLByte*& outPtr ) {
+static void store_UTF8(XMLCh src, XMLByte*& outPtr){
 	if(!src) {
 		// use the replacement character
 		*outPtr++= '?';
@@ -624,10 +624,15 @@ const String::C Charset::transcodeToCharset(const String::C src,
 	}
 }			
 
-XMLByte Charset::transcodeCharFromUTF8(XMLCh utf8code, XMLByte not_found){
-	return xlatOneTo(utf8code, tables, not_found);
+void Charset::store_Char(XMLByte*& outPtr, XMLCh src, XMLByte not_found){
+	if(isUTF8()){
+		store_UTF8(src, outPtr);
+	} else {
+		if(char ch=xlatOneTo(src, tables, not_found)){
+			*outPtr++=ch;
+		}
+	}
 }
-
 
 #ifdef XML
 

@@ -8,7 +8,7 @@
 #ifndef PA_CHARSET_H
 #define PA_CHARSET_H
 
-static const char * const IDENT_CHARSET_H="$Date: 2008/05/22 16:17:50 $";
+static const char * const IDENT_CHARSET_H="$Date: 2008/06/03 12:13:29 $";
 
 
 #include "pa_exception.h"
@@ -77,7 +77,7 @@ public:
 		const Charset& source_transcoder, 
 		const Charset& dest_transcoder);
 
-	XMLByte transcodeCharFromUTF8(XMLCh utf8code, XMLByte not_found);
+	void Charset::store_Char(XMLByte*& outPtr, XMLCh src, XMLByte not_found);
 
 #ifdef XML
 	xmlCharEncodingHandler& transcoder(const String::Body NAME);
