@@ -26,7 +26,7 @@
  *
  */
 
-static const char * const IDENT_COMMON_C="$Date: 2008/05/22 17:29:30 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2008/06/03 12:14:27 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -692,12 +692,12 @@ bool is_hex_digit(char c){
 }
 
 char* unescape_chars(const char* cp, int len, Request_charsets* charsets){
-	char* s=new(PointerFreeGC) char[len + 1];
+	char* s=new(PointerFreeGC) char[len + 1]; // enough (%uXXXX==6 bytes, max utf-8 char length==6 bytes)
+	char* dst=s;
 	EscapeState escapeState=EscapeRest;
 	uint escapedValue=0;
 	int srcPos=0;
-	int dstPos=0;
-	int jsCnt=0;
+	short int jsCnt=0;
 	while(srcPos < len) {
 		uchar c=(uchar)cp[srcPos]; 
 		if(c=='%'){
@@ -706,9 +706,9 @@ char* unescape_chars(const char* cp, int len, Request_charsets* charsets){
 			switch(escapeState) {
 				case EscapeRest:
 					if(c=='+'){
-						s[dstPos++]=' ';
+						*dst++=' ';
 					} else {
-						s[dstPos++]=c;
+						*dst++=c;
 					}
 					break;
 				case EscapeFirst:
@@ -722,7 +722,7 @@ char* unescape_chars(const char* cp, int len, Request_charsets* charsets){
 							escapedValue=hex_value[c] << 4;
 							escapeState=EscapeSecond;
 						} else {
-							s[dstPos++]=c;
+							*dst++=c;
 							escapeState=EscapeRest;
 						}
 					}
@@ -730,7 +730,7 @@ char* unescape_chars(const char* cp, int len, Request_charsets* charsets){
 				case EscapeSecond:
 					if(is_hex_digit(c)){
 						escapedValue+=hex_value[c]; 
-						s[dstPos++]=(char)escapedValue;
+						*dst++=(char)escapedValue;
 					}
 					escapeState=EscapeRest;
 					break;
@@ -738,10 +738,8 @@ char* unescape_chars(const char* cp, int len, Request_charsets* charsets){
 					if(is_hex_digit(c)){
 						escapedValue=(escapedValue << 4) + hex_value[c];
 						if(++jsCnt==4){
-							// transcode utf8 char to source charset (we can lost some chars here)
-							if(char ch=charsets->source().transcodeCharFromUTF8(escapedValue, '?')){
-								s[dstPos++]=ch;
-							}
+							// transcode utf8 char to client charset (we can lost some chars here)
+							charsets->client().store_Char((XMLByte*&)dst, (XMLCh)escapedValue, '?');
 							escapeState=EscapeRest;
 						}
 					} else {
@@ -755,7 +753,7 @@ char* unescape_chars(const char* cp, int len, Request_charsets* charsets){
 		srcPos++;
 	}
 
-	s[dstPos]=0; // zero-termination
+	*dst=0; // zero-termination
 	return s;
 }
 
