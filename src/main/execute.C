@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2008/05/30 12:27:05 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2008/06/05 13:32:43 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -869,12 +869,12 @@ Value& Request::get_element(Value& ncontext, const String& name, bool can_call_o
 					if(read_class->derived_from(*called_class)) // current derived from called
 						if(Value* base=get_self().base()) { // doing DYNAMIC call
 							Temp_derived temp_derived(*base, 0); // temporarily prevent go-back-down virtual calls
-							value=base->get_element(name, *base, false); // virtual-up lookup starting from parent
+							value=base->get_element(name, *base, true); // virtual-up lookup starting from parent
 							goto value_ready;
 						}
 	}
 	if(!value)
-		value=ncontext.get_element(name, ncontext, false);
+		value=ncontext.get_element(name, ncontext, true);
 
 	if(value && wcontext->get_constructing())
 		if(Junction* junction=value->get_junction()) {
@@ -946,14 +946,21 @@ StringOrValue Request::process(Value& input_value, bool intercept_string) {
 	Junction* junction=input_value.get_junction();
 	if(junction) {
 		if(junction->is_getter) { // is it a getter-junction?
-			// process it
-
-			if(junction->method->params_names)
+			int param_count=junction->method->params_names?junction->method->params_names->count():0;
+			if(junction->auto_name){ // default getter
+				if(param_count>1)
+					throw Exception(PARSER_RUNTIME,
+						0,
+						"default getter method can't have more then 1 parameter (has %d parameters)", param_count);
+			} else if(param_count)
 				throw Exception(PARSER_RUNTIME,
 					0,
-					"getter method must have no parameters");
+					"getter method must have no parameters (has %d parameters)", param_count);
 
 			VMethodFrameGlobal frame(*junction, method_frame/*caller*/);
+
+			if(junction->auto_name && param_count)
+				frame.store_param(*new VString(*junction->auto_name));
 
 			frame.set_self(frame.junction.self);
 
