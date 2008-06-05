@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)\
 */
 
-static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2007/04/23 10:30:50 $";
+static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2008/06/05 13:26:57 $";
 
 #include "pa_vstateless_class.h"
 #include "pa_vproperty.h"
@@ -44,7 +44,7 @@ void VStateless_class::add_native_method(
 }
 
 /// VStateless_class: $CLASS, $CLASS_NAME, $method
-Value* VStateless_class::get_element(const String& aname, Value& aself, bool looking_up) {
+Value* VStateless_class::get_element(const String& aname, Value& aself, bool alooking_up) {
 	// $CLASS
 	if(aname==CLASS_NAME)
 		return this;
@@ -58,12 +58,28 @@ Value* VStateless_class::get_element(const String& aname, Value& aself, bool loo
 	// base monkey
 	if(fbase) {
 		if(Value* obase=aself.base()) // MXdoc has fbase but does not have object_base[ base() ]
-			return fbase->get_element(aname, *obase, looking_up);
+			return fbase->get_element(aname, *obase, alooking_up);
 	}
 
 	return 0;
 }
 
-void VStateless_class::put_method(const String& aname, Method* amethod) {
+void VStateless_class::put_method(const String& aname, Method* amethod){
 	fmethods.put(aname, amethod); 
 }
+
+Value* VStateless_class::get_default_getter(Value& aself, const String& aname){
+	if(fdefault_getter)
+		return new VJunction(aself, fdefault_getter, true /*getter*/, (String*)&aname);
+
+	if(fbase)
+		if(Value* obase=aself.base())
+			return fbase->get_default_getter(*obase, aname);
+
+	return 0;
+}
+
+void VStateless_class::set_default_getter(Method* amethod){
+	fdefault_getter=amethod;
+}
+
