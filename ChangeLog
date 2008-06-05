@@ -1,4 +1,82 @@
+2008-06-05	misha
+	* tests/178.html 1.1:
+	* tests/results/178.processed 1.1:
+		- test for testing default getter
+
+	* tests/178_dir/178a.p 1.1:
+	* tests/178_dir/178b.p 1.1:
+	* tests/178_dir/178c.p 1.1:
+	* tests/178_dir/178d.p 1.1:
+	* tests/178_dir/178e.p 1.1:
+		- classes for test for testing default getter
+
+	* src/main/execute.C 1.320:
+		- default getter soul
+
+	* src/types/pa_vobject.C 1.25:
+	* src/types/pa_vobject.h 1.48:
+		- get default getter if requested objects' field not found
+
+	* src/types/pa_vclass.C 1.35:
+		- register default getter if defined
+		- get default getter if requested field not found
+
+	* src/types/pa_vstateless_object.h 1.37:
+		- method get_default_getter was added
+
+	* src/types/pa_vstateless_class.C 1.32:
+	* src/types/pa_vstateless_class.h 1.58:
+		- pointer to default getter and methods for get/set it were 
+		added
+
+	* src/types/pa_junction.h 1.8:
+	* src/types/pa_vjunction.h 1.26:
+		- junction has auto_name field (for default getter)
+
+2008-06-04	misha
+	* src/main/pa_xml_io.C 1.21:
+		- load external xml in binary mode (no transcoding, no cutting 
+		BOM code, no fixing line breaks) and get it to libxml "as is"
+
+2008-06-03	misha
+	* src/main/pa_common.C 1.230:
+		- use store_Char instead of transcodeCharFromUTF8
+
+	* src/include/pa_charset.h 1.34:
+	* src/main/pa_charset.C 1.58:
+		- method store_Char added, transcodeCharFromUTF8 -- removed
+
+2008-06-02	misha
+	* tests/177.html 1.1:
+	* tests/results/177.processed 1.1:
+		- test for checking .[acm]date after local ^file::load[] was 
+		added
+
+	* tests/176.html 1.1:
+	* tests/results/176.processed 1.1:
+		- test for checking @OPTION\locals + @method[vars][locals] added
+
+	* tests/results/auto.p 1.3:
+		- CLASS_PATH specified for checking use
+
 2008-05-30	misha
+	* Makefile.am 1.55:
+	* Makefile.am 1.56:
+	* Makefile.in 1.70:
+	* Makefile.in 1.71:
+	* acinclude.m4 1.41:
+	* acinclude.m4 1.42:
+	* aclocal.m4 1.44:
+	* aclocal.m4 1.45:
+	* acsite.m4 1.19:
+	* acsite.m4 1.20:
+	* configure 1.97:
+	* configure 1.98:
+	* configure.in 1.100:
+	* configure.in 1.99:
+	* src/types/Makefile.in 1.63:
+		*** empty log message ***
+
 	* src/main/compile.tab.C 1.116:
 	* src/main/compile.y 1.223:
 		- changes in compiler: @OPTION\nlocals + @method[vars][;locals;] 
