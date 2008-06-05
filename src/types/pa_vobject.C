@@ -8,8 +8,9 @@
 #include "pa_vobject.h"
 #include "pa_vhash.h"
 #include "pa_vtable.h"
+#include "pa_vstring.h"
 
-static const char * const IDENT_VOBJECT_C="$Date: 2005/08/09 08:14:55 $";
+static const char * const IDENT_VOBJECT_C="$Date: 2008/06/05 13:32:12 $";
 
 Value* VObject::as(const char* atype, bool looking_up) { 
 	if(!looking_up)
@@ -71,20 +72,25 @@ Table *VObject::get_table() {
 }
 
 /// VObject: (field)=value;(CLASS)=vclass;(method)=method_ref
-Value* VObject::get_element(const String& aname, Value&, bool looking_up) {
+Value* VObject::get_element(const String& aname, Value&, bool alooking_up) {
 	// simple things first: $field=ffields.field
 	if(Value* result=ffields.get(aname))
 		return result;
 
 	// gets element from last_derivate upwards
-	if(!looking_up) {
+	if(alooking_up) {
 		// $CLASS
 		if(aname==CLASS_NAME)
 			return get_class();
-
+		// $CLASS_NAME
+		if(aname==CLASS_NAMETEXT)
+			return new VString(get_class()->name());
 		// $virtual_method $virtual_property
 		VObject& last_derived=get_last_derived();
 		if(Value* result=last_derived.stateless_object__get_element(aname, last_derived))
+			return result;
+
+		if(Value* result=last_derived.get_default_getter(last_derived, aname))
 			return result;
 	}
 
@@ -101,7 +107,7 @@ const VJunction* VObject::prevent_append_if_exists_in_static_or_base(Value* valu
 }
 
 /// VObject: (field/property)=value
-const VJunction* VObject::put_element(Value& /*aself*/, const String& aname, Value* avalue, bool /*areplace*/) {
+const VJunction* VObject::put_element(Value& /*aself*/, const String& aname, Value* avalue, bool /*areplace*/){
 	Prevent_append_if_exists_in_static_or_base_info info={this, &aname};
 	return ffields.replace_maybe_append<const VJunction*>(aname, avalue, 
 		prevent_append_if_exists_in_static_or_base, 
