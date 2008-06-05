@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VCLASS_C="$Date: 2007/04/23 10:30:49 $";
+static const char * const IDENT_VCLASS_C="$Date: 2008/06/05 13:31:14 $";
 
 #include "pa_vclass.h"
 
@@ -28,11 +28,13 @@ Property& VClass::add_property(const String& aname) {
 }
 
 /// preparing property accessors to fields
-void VClass::add_method(const String& aname, Method& amethod)
-{
-	if(aname.starts_with("GET_"))
-		add_property(aname).getter=&amethod;
-	else if(aname.starts_with("SET_") )
+void VClass::add_method(const String& aname, Method& amethod) {
+	if(aname.starts_with("GET_")){
+		if(aname == "GET_DEFAULT")
+			set_default_getter(&amethod);
+		else
+			add_property(aname).getter=&amethod;
+	} else if(aname.starts_with("SET_") )
 		add_property(aname).setter=&amethod;
 	
 	// NOT under 'else' for backward compatiblilty: 
@@ -54,25 +56,30 @@ Value* VClass::get_element(const String& aname, Value& aself, bool alooking_up) 
 
 	// simple things first: $field=static field/property
 	if(Value* result=ffields.get(aname)) {
-		if(Property* prop=result->get_property()) { // it is property?
-			if(Method* method=prop->getter)
-				return new VJunction(aself, method, true /*is_getter*/);
+		Property* prop=result->get_property();
 
-			property_but_no_getter_in_self=true;
-			goto try_to_find_getter_up_the_tree;
-		}
-		return result;
+		if(!prop) // just field, not a property
+			return result;
+
+		if(Method* method=prop->getter) // has getter
+			return new VJunction(aself, method, true /*is_getter*/);
+
+		property_but_no_getter_in_self=true;
 	}
 
-try_to_find_getter_up_the_tree:
 	// $CLASS, $method, or other base element
-	if(Value* result=VStateless_class::get_element(aname, aself, alooking_up))
+	if(Value* result=VStateless_class::get_element(aname, aself, false))
 		return result; // TODO: this can be SIGNIFICANTLY sped up by caching in ffields! [THOUGH decide about different aself] // what REALLY would speed up things is to join storage of properties/methods/fields of all vobject parents into last descenant [sort of vmt + all fields as in other langs]
 
 	if(property_but_no_getter_in_self)
 		throw Exception(PARSER_RUNTIME,
 			0,
 			"this property has no getter method (@GET_%s[])", aname.cstr());
+
+	// no field or method found: looking for default getter
+	if(alooking_up)
+		if(Value* result=get_default_getter(aself, aname))
+			return result;
 
 	return 0;
 }
