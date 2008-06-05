@@ -5,7 +5,7 @@
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_CHARSET_C="$Date: 2008/06/03 12:13:54 $";
+static const char * const IDENT_CHARSET_C="$Date: 2008/06/05 13:23:22 $";
 
 #include "pa_charset.h"
 #include "pa_charsets.h"
@@ -625,13 +625,10 @@ const String::C Charset::transcodeToCharset(const String::C src,
 }			
 
 void Charset::store_Char(XMLByte*& outPtr, XMLCh src, XMLByte not_found){
-	if(isUTF8()){
+	if(isUTF8())
 		store_UTF8(src, outPtr);
-	} else {
-		if(char ch=xlatOneTo(src, tables, not_found)){
+	else if(char ch=xlatOneTo(src, tables, not_found))
 			*outPtr++=ch;
-		}
-	}
 }
 
 #ifdef XML
