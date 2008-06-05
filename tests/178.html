@@ -1,0 +1,47 @@
+@main[]
+$sDir[178_dir]
+^use[$sDir/178a.p]
+^use[$sDir/178b.p]
+^use[$sDir/178c.p]
+^use[$sDir/178d.p]
+^use[$sDir/178e.p]
+
+$tField[^table::create{sDynamic	sStatic
+b	_b
+c	_c
+d	_d
+e	_e
+f	_f
+}]
+
+$oa[^a::create[]]
+$ob[^b::create[]]
+$oc[^c::create[]]
+$od[^d::create[]]
+$oe[^e::create[]]
+
+^tField.menu{
+	^get[^$oa.$tField.sDynamic]{$oa.[$tField.sDynamic]}
+	^get[^$ob.$tField.sDynamic]{$ob.[$tField.sDynamic]}
+	^get[^$oc.$tField.sDynamic]{$oc.[$tField.sDynamic]}
+	^get[^$od.$tField.sDynamic]{$od.[$tField.sDynamic]}
+	^get[^$oe.$tField.sDynamic]{$oe.[$tField.sDynamic]}
+}[<hr />]
+
+
+<hr />
+<hr />
+
+^tField.menu{
+	^get[^$a:$tField.sStatic]{$a:[$tField.sStatic]}
+	^get[^$b:$tField.sStatic]{$b:[$tField.sStatic]}
+	^get[^$c:$tField.sStatic]{$c:[$tField.sStatic]}
+	^get[^$d:$tField.sStatic]{$d:[$tField.sStatic]}
+	^get[^$e:$tField.sStatic]{$e:[$tField.sStatic]}
+}[<hr />]
+
+
+
+@get[s;j]
+${s}: '$j'
+<br />
