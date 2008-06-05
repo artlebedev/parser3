@@ -8,7 +8,7 @@
 #ifndef PA_JUNCTION_H
 #define PA_JUNCTION_H
 
-static const char * const IDENT_JUNCTION_H="$Date: 2005/08/09 08:14:53 $";
+static const char * const IDENT_JUNCTION_H="$Date: 2008/06/05 13:23:58 $";
 
 
 #include "pa_string.h"
@@ -61,9 +61,13 @@ public:
 	/// Method-Junction or Getter-Junction constructor
 	Junction(Value& aself,
 		const Method* amethod,
-		bool ais_getter=false): self(aself),
+		bool ais_getter=false,
+		String* aauto_name=0
+	): self(aself),
 		method(amethod),
-		is_getter(ais_getter) {}
+		is_getter(ais_getter),
+		auto_name(aauto_name)
+	 	{}
 
 
 	void reattach(WContext *new_wcontext);
@@ -84,6 +88,9 @@ public:
 	//@{
 	bool is_getter;
 	//@}
+	//@{
+	String* auto_name;
+	//@{
 };
 
 #endif

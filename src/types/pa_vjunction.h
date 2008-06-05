@@ -8,7 +8,7 @@
 #ifndef PA_VJUNCTION_H
 #define PA_VJUNCTION_H
 
-static const char * const IDENT_VJUNCTION_H="$Date: 2007/02/03 18:08:38 $";
+static const char * const IDENT_VJUNCTION_H="$Date: 2008/06/05 13:24:16 $";
 
 // include
 
@@ -49,7 +49,9 @@ public: // usage
 	/// Method-Junction or Getter-Junction constructor
 	VJunction(Value& aself,
 		const Method* amethod,
-		bool ais_getter=false): fjunction(aself, amethod, ais_getter) {}
+		bool ais_getter=false,
+		String* aauto_name=0
+	): fjunction(aself, amethod, ais_getter, aauto_name) {}
 
 	const Junction& junction() const { return fjunction; }
 
