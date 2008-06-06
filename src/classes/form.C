@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FORM_C="$Date: 2007/04/23 10:30:09 $";
+static const char * const IDENT_FORM_C="$Date: 2008/06/06 11:17:22 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -51,7 +51,7 @@ static const String limits_name(LIMITS_NAME);
 void MForm::configure_admin(Request& r) {
 
 	Value* limits=r.main_class.get_element(limits_name, r.main_class, false);
-	if(r.request_info.method && StrEqNc(r.request_info.method, "post", true)) {
+	if(r.request_info.method && StrStartFromNC(r.request_info.method, "post", true)) {
 		// $limits.max_post_size default 10M
 		Value* element=limits?limits->get_element(max_post_size_name, *limits, false)
 			:0;

@@ -7,7 +7,7 @@
 	based on The CGI_C library, by Thomas Boutell.
 */
 
-static const char * const IDENT_VFORM_C="$Date: 2008/05/22 17:30:35 $";
+static const char * const IDENT_VFORM_C="$Date: 2008/06/06 11:17:42 $";
 
 #include "pa_sapi.h"
 #include "pa_vform.h"
@@ -221,7 +221,7 @@ void VForm::AppendFormFileEntry(const char* cname_cstr,
 
 	const String& sname=*new String(transcode(cname_cstr, strlen(cname_cstr)));
 	// maybe transcode text/* files?
-	// NO!!! some users want to download file 'as is' or file encoding can be unknown
+	// NO!!! some users want to upload file 'as is' or file encoding can be unknown
 
 	VFile* vfile=new VFile;
 	vfile->set(true/*tainted*/, raw_cvalue_ptr, raw_cvalue_size, sfile_name.cstr());
@@ -301,10 +301,10 @@ void VForm::refill_fields_tables_and_files() {
 	// parsing POST data
 	if(frequest_info.method) {
 		if(const char* content_type=frequest_info.content_type)
-			if(StrEqNc(frequest_info.method, "post", true)) {
-				if(StrEqNc(content_type, "application/x-www-form-urlencoded", true)) 
+			if(StrStartFromNC(frequest_info.method, "post", true)) {
+				if(StrStartFromNC(content_type, "application/x-www-form-urlencoded", false)) 
 					ParseFormInput(frequest_info.post_data, frequest_info.post_size);
-				else if(StrEqNc(content_type, "multipart/form-data", 0))
+				else if(StrStartFromNC(content_type, "multipart/form-data", false))
 					ParseMimeInput(strdup(content_type), 
 						frequest_info.post_data, frequest_info.post_size);
 			}
