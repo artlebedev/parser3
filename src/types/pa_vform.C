@@ -7,7 +7,7 @@
 	based on The CGI_C library, by Thomas Boutell.
 */
 
-static const char * const IDENT_VFORM_C="$Date: 2008/06/06 11:17:42 $";
+static const char * const IDENT_VFORM_C="$Date: 2008/06/06 12:58:17 $";
 
 #include "pa_sapi.h"
 #include "pa_vform.h"
@@ -302,9 +302,9 @@ void VForm::refill_fields_tables_and_files() {
 	if(frequest_info.method) {
 		if(const char* content_type=frequest_info.content_type)
 			if(StrStartFromNC(frequest_info.method, "post", true)) {
-				if(StrStartFromNC(content_type, "application/x-www-form-urlencoded", false)) 
+				if(StrStartFromNC(content_type, HTTP_CONTENT_TYPE_FORM_URLENCODED, false)) 
 					ParseFormInput(frequest_info.post_data, frequest_info.post_size);
-				else if(StrStartFromNC(content_type, "multipart/form-data", false))
+				else if(StrStartFromNC(content_type, HTTP_CONTENT_TYPE_MULTIPART, false))
 					ParseMimeInput(strdup(content_type), 
 						frequest_info.post_data, frequest_info.post_size);
 			}
