@@ -8,10 +8,16 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-static const char * const IDENT_COMMON_H="$Date: 2008/06/06 11:15:45 $";
+static const char * const IDENT_COMMON_H="$Date: 2008/06/06 12:57:46 $";
 
 #include "pa_string.h"
 #include "pa_hash.h"
+
+// defines
+#define HTTP_USER_AGENT "USER-AGENT"
+#define HTTP_CONTENT_TYPE "CONTENT-TYPE"
+#define HTTP_CONTENT_TYPE_FORM_URLENCODED "application/x-www-form-urlencoded"
+#define HTTP_CONTENT_TYPE_MULTIPART "multipart/form-data"
 
 class Value;
 typedef Hash<const String::Body , Value*> HashStringValue;
