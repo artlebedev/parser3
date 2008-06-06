@@ -26,7 +26,7 @@
  *
  */
 
-static const char * const IDENT_COMMON_C="$Date: 2008/06/06 11:16:55 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2008/06/06 17:24:23 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -687,7 +687,7 @@ char* unescape_chars(const char* cp, int len) {
 }
 */
 
-char* unescape_chars(const char* cp, int len, Request_charsets* charsets){
+char* unescape_chars(const char* cp, int len, Charset* charset){
 	char* s=new(PointerFreeGC) char[len + 1]; // enough (%uXXXX==6 bytes, max utf-8 char length==6 bytes)
 	char* dst=s;
 	EscapeState escapeState=EscapeRest;
@@ -708,7 +708,7 @@ char* unescape_chars(const char* cp, int len, Request_charsets* charsets){
 					}
 					break;
 				case EscapeFirst:
-					if(charsets && c=='u'){
+					if(charset && c=='u'){
 						// escaped unicode value: %u0430
 						jsCnt=0;
 						escapedValue=0;
@@ -735,7 +735,7 @@ char* unescape_chars(const char* cp, int len, Request_charsets* charsets){
 						escapedValue=(escapedValue << 4) + hex_value[c];
 						if(++jsCnt==4){
 							// transcode utf8 char to client charset (we can lost some chars here)
-							charsets->client().store_Char((XMLByte*&)dst, (XMLCh)escapedValue, '?');
+							charset->store_Char((XMLByte*&)dst, (XMLCh)escapedValue, '?');
 							escapeState=EscapeRest;
 						}
 					} else {
@@ -789,6 +789,72 @@ bool StrStartFromNC(const char* str, const char* substr, bool equal){
 		substr++; 
 	}
 }
+
+char* pa_tolower(char *str){
+	for(char *p=str; *p; p++)
+		*p=(char)tolower((unsigned char)*p);
+	return str;
+}
+
+char* pa_toupper(char *str){
+	for(char *p=str; *p; p++)
+		*p=(char)toupper((unsigned char)*p);
+	return str;
+}
+
+size_t strpos(const char *str, const char *substr) {
+	const char *p = strstr(str, substr);
+	return (p==0)?STRING_NOT_FOUND:p-str;
+}
+
+char* strpart(const char* str, size_t len) {
+    char *result=new(PointerFreeGC) char[len+1];
+    memcpy(result, str, len);
+    result[len]=0;
+    return result;
+}
+
+// content-type: xxx; charset=WE-NEED-THIS
+// content-type: xxx; charset="WE-NEED-THIS"
+// content-type: xxx; charset="WE-NEED-THIS";
+Charset* detect_charset(char* content_type_value){
+	if(const char* start=strstr(content_type_value, "CHARSET=")){
+		start+=8;/*skip CHARSET=*/
+		char* end=0;
+		if(*start && (*start=='"' || *start =='\'')){
+			char quote=*start;
+			start++;
+			end=(char*)strchr(start, quote);
+		}
+		if(!end)
+			end=(char*)strchr(start, ';');
+
+		size_t len;
+		if(end){
+			*end=0;
+			len=end-start;
+		} else {
+			len=strlen(start);
+		}
+		
+		String::Body NAME=String::Body(start, len);
+		return &charsets.get(NAME);
+	}
+
+	return 0;
+}
+
+Charset* detect_charset(const char* content_type_value){
+	size_t len=strlen(content_type_value);
+    char* value=new(PointerFreeGC) char[len+1];
+    memcpy(value, content_type_value, len);
+	return detect_charset(pa_toupper(value));
+}
+
+Charset* detect_charset(Request_charsets& charsets, const String& content_type_value){
+	return detect_charset(content_type_value.change_case(charsets.source(), String::CC_UPPER).cstrm(String::L_UNSPECIFIED, 0, &charsets));
+}
+
 
 static bool isLeap(int year) {
 	return !(
