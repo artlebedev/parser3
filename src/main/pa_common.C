@@ -26,7 +26,7 @@
  *
  */
 
-static const char * const IDENT_COMMON_C="$Date: 2008/06/03 12:14:27 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2008/06/06 11:16:55 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -687,10 +687,6 @@ char* unescape_chars(const char* cp, int len) {
 }
 */
 
-bool is_hex_digit(char c){
-	return (c>='0' && c<='9') || (c>='a' && c<='f') || (c>='A' && c<='F');
-}
-
 char* unescape_chars(const char* cp, int len, Request_charsets* charsets){
 	char* s=new(PointerFreeGC) char[len + 1]; // enough (%uXXXX==6 bytes, max utf-8 char length==6 bytes)
 	char* dst=s;
@@ -718,7 +714,7 @@ char* unescape_chars(const char* cp, int len, Request_charsets* charsets){
 						escapedValue=0;
 						escapeState=EscapeUnicode;
 					} else {
-						if(is_hex_digit(c)){
+						if(isxdigit(c)){
 							escapedValue=hex_value[c] << 4;
 							escapeState=EscapeSecond;
 						} else {
@@ -728,14 +724,14 @@ char* unescape_chars(const char* cp, int len, Request_charsets* charsets){
 					}
 					break;
 				case EscapeSecond:
-					if(is_hex_digit(c)){
+					if(isxdigit(c)){
 						escapedValue+=hex_value[c]; 
 						*dst++=(char)escapedValue;
 					}
 					escapeState=EscapeRest;
 					break;
 				case EscapeUnicode:
-					if(is_hex_digit(c)){
+					if(isxdigit(c)){
 						escapedValue=(escapedValue << 4) + hex_value[c];
 						if(++jsCnt==4){
 							// transcode utf8 char to client charset (we can lost some chars here)
@@ -774,22 +770,23 @@ void slashes_to_back_slashes(char* s) {
 */
 #endif
 
-bool StrEqNc(const char* s1, const char* s2, bool strict) {
+bool StrStartFromNC(const char* str, const char* substr, bool equal){
 	while(true) {
-		if(!(*s1)) {
-			if(!(*s2))
+		if(!(*substr)){
+			if(!(*str))
 				return true;
 			else
-				return !strict;
-		} else if(!(*s2))
-			return !strict;
-		if(isalpha((unsigned char)*s1)) {
-			if(tolower((unsigned char)*s1) !=tolower((unsigned char)*s2))
-				return false;
-		} else if((*s1) !=(*s2))
+				return !equal;
+		}
+		if(!(*str))
 			return false;
-		s1++; 
-		s2++; 
+		if(isalpha((unsigned char)*str)) {
+			if(tolower((unsigned char)*str)!=tolower((unsigned char)*substr))
+				return false;
+		} else if((*str) != (*substr))
+			return false;
+		str++; 
+		substr++; 
 	}
 }
 
