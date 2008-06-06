@@ -7,7 +7,7 @@
 	based on The CGI_C library, by Thomas Boutell.
 */
 
-static const char * const IDENT_VFORM_C="$Date: 2008/06/06 12:58:17 $";
+static const char * const IDENT_VFORM_C="$Date: 2008/06/06 17:26:50 $";
 
 #include "pa_sapi.h"
 #include "pa_vform.h"
@@ -65,14 +65,8 @@ VForm::VForm(Request_charsets& acharsets, Request_info& arequest_info): VStatele
 	fcharsets(acharsets),
 	frequest_info(arequest_info),
 	filled_source(0),
-	filled_client(0) {
-}
-
-char *VForm::strpart(const char* str, size_t len) {
-    char *result=new(PointerFreeGC) char[len+1];
-    memcpy(result, str, len);
-    result[len]=0;
-    return result;
+	filled_client(0),
+	filled_post(0) {
 }
 
 char *VForm::getAttributeValue(const char* data, char *attr, size_t len) {
@@ -94,7 +88,7 @@ char *VForm::getAttributeValue(const char* data, char *attr, size_t len) {
 String::C VForm::transcode(const char* client, size_t client_size) {
 	return Charset::transcode(
 		String::C(strdup(client, client_size), client_size),
-		fcharsets.client(),
+		filled_post?*filled_post:fcharsets.client(),
 		fcharsets.source());
 }
 
@@ -158,17 +152,12 @@ void VForm::ParseFormInput(const char* data, size_t length) {
 			}
 		}
 
-		const char* attr=aftereq>start?unescape_chars(data+start, aftereq-1-start, &fcharsets):"nameless";
-		char *value=unescape_chars(data+aftereq, finish-aftereq, &fcharsets);
+		const char* attr=aftereq>start?unescape_chars(data+start, aftereq-1-start, &fcharsets.client()):"nameless";
+		char *value=unescape_chars(data+aftereq, finish-aftereq, &fcharsets.client());
 		AppendFormEntry(attr, value, strlen(value));
 	}
 }
 
-static char *pa_tolower(char *s) {
-	for(char *p=s; *p; p++)
-		*p=(char)tolower((unsigned char)*p);
-	return s;
-}
 void VForm::ParseMimeInput(
 						   char *content_type, 
 						   const char* data, size_t length) {
@@ -302,9 +291,12 @@ void VForm::refill_fields_tables_and_files() {
 	if(frequest_info.method) {
 		if(const char* content_type=frequest_info.content_type)
 			if(StrStartFromNC(frequest_info.method, "post", true)) {
-				if(StrStartFromNC(content_type, HTTP_CONTENT_TYPE_FORM_URLENCODED, false)) 
+				if(StrStartFromNC(content_type, HTTP_CONTENT_TYPE_FORM_URLENCODED, false)){
+					Charset* remote_charset=detect_charset(content_type);
+					if(remote_charset)
+						filled_post=remote_charset;
 					ParseFormInput(frequest_info.post_data, frequest_info.post_size);
-				else if(StrStartFromNC(content_type, HTTP_CONTENT_TYPE_MULTIPART, false))
+				} else if(StrStartFromNC(content_type, HTTP_CONTENT_TYPE_MULTIPART, false))
 					ParseMimeInput(strdup(content_type), 
 						frequest_info.post_data, frequest_info.post_size);
 			}
@@ -315,8 +307,10 @@ void VForm::refill_fields_tables_and_files() {
 }
 
 bool VForm::should_refill_fields_tables_and_files() {
-	return &fcharsets.source()!=filled_source
-		|| &fcharsets.client()!=filled_client;
+	return !(
+			&fcharsets.source()==filled_source
+			&& (filled_post || &fcharsets.client()==filled_client)
+	);
 }
 
 Value* VForm::get_element(const String& aname, Value& aself, bool looking_up) {
