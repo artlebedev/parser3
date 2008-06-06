@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
  */
 
-static const char * const IDENT_HTTP_C="$Date: 2008/02/22 17:29:38 $"; 
+static const char * const IDENT_HTTP_C="$Date: 2008/06/06 13:04:45 $"; 
 
 #include "pa_http.h"
 #include "pa_common.h"
@@ -21,8 +21,11 @@ static const char * const IDENT_HTTP_C="$Date: 2008/02/22 17:29:38 $";
 #define HTTP_HEADERS_NAME "headers"
 #define HTTP_COOKIES_NAME "cookies"
 #define HTTP_ANY_STATUS_NAME "any-status"
-// #define HTTP_CHARSET_NAME "charset"
+#define HTTP_OMIT_POST_CHARSET "omit-post-charset"	// ^file::load[...;http://...;$.form[...]$.method[post]]
+													// by default add charset to content-type
+
 #define HTTP_TABLES_NAME "tables"
+
 #define HTTP_USER "user"
 #define HTTP_PASSWORD "password"
 
@@ -284,6 +287,7 @@ struct Http_pass_header_info {
 	Request_charsets* charsets;
 	String* request;
 	bool user_agent_specified;
+	bool content_type_specified;
 };
 #endif
 static void http_pass_header(HashStringValue::key_type name, 
@@ -296,8 +300,11 @@ static void http_pass_header(HashStringValue::key_type name,
 		<< attributed_meaning_to_string(*value, String::L_URI, false)
 		<< CRLF; 
 	
-    if(aname.change_case(info->charsets->source(), String::CC_UPPER)=="USER-AGENT")
+	const String::Body name_upper=aname.change_case(info->charsets->source(), String::CC_UPPER);
+    if(name_upper==HTTP_USER_AGENT)
 		info->user_agent_specified=true;
+    if(name_upper==HTTP_CONTENT_TYPE)
+		info->content_type_specified=true;
 }
 
 static void http_pass_cookie(HashStringValue::key_type name, 
@@ -431,6 +438,7 @@ File_read_http_result pa_internal_file_read_http(Request_charsets& charsets,
 	const char* body_cstr=0;
 	int timeout_secs=2;
 	bool fail_on_status_ne_200=true;
+	bool omit_post_charset=false;
 	Value* vheaders=0;
 	Value* vcookies=0;
 	Value* vbody=0;
@@ -465,7 +473,11 @@ File_read_http_result pa_internal_file_read_http(Request_charsets& charsets,
 		if(Value* vany_status=options->get(HTTP_ANY_STATUS_NAME)) {
 			valid_options++;
 			fail_on_status_ne_200=!vany_status->as_bool(); 
-		} 
+		}
+		if(Value* vomit_post_charset=options->get(HTTP_OMIT_POST_CHARSET)){
+			valid_options++;
+			omit_post_charset=vomit_post_charset->as_bool();
+		}
 		if(Value* vcharset_name=options->get(PA_CHARSET_NAME)) {
 			asked_remote_charset=&::charsets.get(vcharset_name->as_string().
 				change_case(charsets.source(), String::CC_UPPER));
@@ -536,8 +548,11 @@ File_read_http_result pa_internal_file_read_http(Request_charsets& charsets,
 
 		head <<" HTTP/1.0" CRLF "host: "<< host << CRLF;
 
-		if(form && !method_is_get) {
-			head << "content-type: application/x-www-form-urlencoded" CRLF;
+		if(form && !method_is_get) { // POST
+			head << "content-type: " << HTTP_CONTENT_TYPE_FORM_URLENCODED;
+			if(!omit_post_charset)
+				head << "; charset=" << asked_remote_charset->NAME_CSTR() << ";";
+			head << CRLF;
 			body_cstr=pa_form2string(*form, charsets);
 		}  else if (vbody) {
 			body_cstr=vbody->as_string().cstr(String::L_UNSPECIFIED, 0, &charsets);
@@ -554,11 +569,13 @@ File_read_http_result pa_internal_file_read_http(Request_charsets& charsets,
 			head<<"authorization: "<<*authorization_field_value<<CRLF;
 
 		bool user_agent_specified=false;
+		bool content_type_specified=false;
 		if(vheaders && !vheaders->is_string()) { // allow empty
 			if(HashStringValue *headers=vheaders->get_hash()) {
 				Http_pass_header_info info={&charsets, &head, false};
 				headers->for_each<Http_pass_header_info*>(http_pass_header, &info); 
 				user_agent_specified=info.user_agent_specified;
+				content_type_specified=info.content_type_specified;
 			} else
 				throw Exception(PARSER_RUNTIME, 
 					&connect_string,
@@ -566,6 +583,11 @@ File_read_http_result pa_internal_file_read_http(Request_charsets& charsets,
 		};
 		if(!user_agent_specified) // defaulting
 			head << "user-agent: " DEFAULT_USER_AGENT CRLF;
+
+		if(form && !method_is_get && content_type_specified) // POST + form + content-type was specified
+			throw Exception(PARSER_RUNTIME,
+				&connect_string,
+				"$.content-type can't be specified with method POST"); 
 
 		if(vcookies && !vcookies->is_string()){ // allow empty
 			if(HashStringValue* cookies=vcookies->get_hash()) {
@@ -635,7 +657,7 @@ File_read_http_result pa_internal_file_read_http(Request_charsets& charsets,
 			const String::Body HEADER_NAME=
 				line.mid(0, pos).change_case(charsets.source(), String::CC_UPPER);
 			const String& header_value=line.mid(pos+1, line.length()).trim(String::TRIM_BOTH, " \t\r");
-			if(as_text && HEADER_NAME=="CONTENT-TYPE")
+			if(as_text && HEADER_NAME==HTTP_CONTENT_TYPE)
 				real_remote_charset=detect_charset(charsets.source(), header_value);
 
 			// tables
