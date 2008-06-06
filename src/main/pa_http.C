@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
  */
 
-static const char * const IDENT_HTTP_C="$Date: 2008/06/06 13:04:45 $"; 
+static const char * const IDENT_HTTP_C="$Date: 2008/06/06 17:25:44 $"; 
 
 #include "pa_http.h"
 #include "pa_common.h"
@@ -317,38 +317,6 @@ static void http_pass_cookie(HashStringValue::key_type name,
 
 }
 
-static Charset* detect_charset(Charset& source_charset, const String& content_type_value) {
-	const String::Body CONTENT_TYPE_VALUE=
-		content_type_value.change_case(source_charset, String::CC_UPPER);
-	// content-type: xxx/xxx; source_charset=WE-NEED-THIS
-	// content-type: xxx/xxx; source_charset="WE-NEED-THIS"
-	// content-type: xxx/xxx; source_charset="WE-NEED-THIS";
-	size_t before_charseteq_pos=CONTENT_TYPE_VALUE.pos("CHARSET=");
-	if(before_charseteq_pos!=STRING_NOT_FOUND) {
-		size_t charset_begin=before_charseteq_pos+8/*CHARSET=*/;
-		size_t open_quote_pos=CONTENT_TYPE_VALUE.pos('"', charset_begin);
-		bool quoted=open_quote_pos==charset_begin;
-		if(quoted)
-			charset_begin++; // skip opening '"'
-		size_t charset_end=CONTENT_TYPE_VALUE.length();
-		if(quoted) {
-			size_t close_quote_pos=CONTENT_TYPE_VALUE.pos('"', charset_begin);
-			if(close_quote_pos!=STRING_NOT_FOUND)
-				charset_end=close_quote_pos;
-		} else {
-			size_t delim_pos=CONTENT_TYPE_VALUE.pos(';', charset_begin);
-			if(delim_pos!=STRING_NOT_FOUND)
-				charset_end=delim_pos;
-		}
-		const String::Body CHARSET_NAME_BODY=
-			CONTENT_TYPE_VALUE.mid(charset_begin, charset_end - charset_begin);
-
-		return &charsets.get(CHARSET_NAME_BODY);
-	}
-
-	return 0;
-}
-
 static const String* basic_authorization_field(const char* user, const char* pass) {
 	if(!user&& !pass)
 		return 0;
@@ -658,7 +626,7 @@ File_read_http_result pa_internal_file_read_http(Request_charsets& charsets,
 				line.mid(0, pos).change_case(charsets.source(), String::CC_UPPER);
 			const String& header_value=line.mid(pos+1, line.length()).trim(String::TRIM_BOTH, " \t\r");
 			if(as_text && HEADER_NAME==HTTP_CONTENT_TYPE)
-				real_remote_charset=detect_charset(charsets.source(), header_value);
+				real_remote_charset=detect_charset(charsets, header_value);
 
 			// tables
 			{
