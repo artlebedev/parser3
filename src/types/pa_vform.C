@@ -7,7 +7,7 @@
 	based on The CGI_C library, by Thomas Boutell.
 */
 
-static const char * const IDENT_VFORM_C="$Date: 2008/06/07 11:01:14 $";
+static const char * const IDENT_VFORM_C="$Date: 2008/06/07 17:28:09 $";
 
 #include "pa_sapi.h"
 #include "pa_vform.h"
@@ -355,4 +355,12 @@ Value* VForm::get_element(const String& aname, Value& aself, bool looking_up) {
 
 	// $element
 	return fields.get(aname);
+}
+
+Charset* VForm::get_post_charset(){
+	if(should_refill_fields_tables_and_files())
+		refill_fields_tables_and_files();
+	if(filled_post)
+		return filled_post;
+	return 0;
 }
