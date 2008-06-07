@@ -7,7 +7,7 @@
 	based on The CGI_C library, by Thomas Boutell.
 */
 
-static const char * const IDENT_VFORM_C="$Date: 2008/06/06 17:26:50 $";
+static const char * const IDENT_VFORM_C="$Date: 2008/06/07 11:01:14 $";
 
 #include "pa_sapi.h"
 #include "pa_vform.h"
@@ -67,6 +67,13 @@ VForm::VForm(Request_charsets& acharsets, Request_info& arequest_info): VStatele
 	filled_source(0),
 	filled_client(0),
 	filled_post(0) {
+}
+
+char *VForm::strpart(const char* str, size_t len) {
+    char *result=new(PointerFreeGC) char[len+1];
+    memcpy(result, str, len);
+    result[len]=0;
+    return result;
 }
 
 char *VForm::getAttributeValue(const char* data, char *attr, size_t len) {
@@ -158,22 +165,31 @@ void VForm::ParseFormInput(const char* data, size_t length) {
 	}
 }
 
+static char* pa_tolower(char *str){
+	if(!str)
+		return 0;
+	for(char *p=str; *p; p++)
+		*p=(char)tolower((unsigned char)*p);
+	return str;
+}
+
 void VForm::ParseMimeInput(
 						   char *content_type, 
 						   const char* data, size_t length) {
 /* Scan for mime-presented pairs, storing them as they are found. */
-	const char 
-		*boundary=pa_tolower(getAttributeValue(content_type, "boundary=", strlen(content_type))), 
-	    *lastData=&data[length];
-	if(!boundary) 
+	const char* boundary=pa_tolower(getAttributeValue(content_type, "boundary=", strlen(content_type)));
+	if(!boundary)
 		throw Exception(0, 
 			0, 
 			"VForm::ParseMimeInput no boundary attribute of Content-Type");
+
+	const char* lastData=&data[length];
 
 	while(true) {
 		const char 
 			*dataStart=searchAttribute(data, boundary, lastData-data), 
 			*dataEnd=searchAttribute(dataStart, boundary, lastData-dataStart);
+
 		size_t headerSize=getHeader(dataStart, lastData-dataStart);
 
 		if(!dataStart|!dataEnd|!headerSize) break;

@@ -26,7 +26,7 @@
  *
  */
 
-static const char * const IDENT_COMMON_C="$Date: 2008/06/06 17:24:23 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2008/06/07 11:01:09 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -790,69 +790,73 @@ bool StrStartFromNC(const char* str, const char* substr, bool equal){
 	}
 }
 
-char* pa_tolower(char *str){
-	for(char *p=str; *p; p++)
-		*p=(char)tolower((unsigned char)*p);
-	return str;
-}
-
-char* pa_toupper(char *str){
-	for(char *p=str; *p; p++)
-		*p=(char)toupper((unsigned char)*p);
-	return str;
-}
-
 size_t strpos(const char *str, const char *substr) {
 	const char *p = strstr(str, substr);
 	return (p==0)?STRING_NOT_FOUND:p-str;
 }
 
-char* strpart(const char* str, size_t len) {
-    char *result=new(PointerFreeGC) char[len+1];
-    memcpy(result, str, len);
-    result[len]=0;
-    return result;
-}
-
 // content-type: xxx; charset=WE-NEED-THIS
 // content-type: xxx; charset="WE-NEED-THIS"
 // content-type: xxx; charset="WE-NEED-THIS";
-Charset* detect_charset(char* content_type_value){
-	if(const char* start=strstr(content_type_value, "CHARSET=")){
-		start+=8;/*skip CHARSET=*/
-		char* end=0;
-		if(*start && (*start=='"' || *start =='\'')){
-			char quote=*start;
-			start++;
-			end=(char*)strchr(start, quote);
-		}
-		if(!end)
-			end=(char*)strchr(start, ';');
+Charset* detect_charset(const char* content_type){
+	if(content_type){
+		size_t len=strlen(content_type);
+		char* CONTENT_TYPE=new(PointerFreeGC) char[len+1];
+		memcpy(CONTENT_TYPE, content_type, len);
+		for(char *p=CONTENT_TYPE; *p; p++)
+			*p=(char)toupper((unsigned char)*p);
 
-		size_t len;
-		if(end){
-			*end=0;
-			len=end-start;
-		} else {
-			len=strlen(start);
+		if(const char* begin=strstr(CONTENT_TYPE, "CHARSET=")){
+			begin+=8; // skip "CHARSET="
+			char* end=0;
+			if(*begin && (*begin=='"' || *begin =='\'')){
+				char quote=*begin;
+				begin++;
+				end=(char*)strchr(begin, quote);
+			}
+			if(!end)
+				end=(char*)strchr(begin, ';');
+
+			size_t len;
+			if(end){
+				*end=0; // terminator
+				len=end-begin;
+			} else {
+				len=strlen(begin);
+			}
+
+			String::Body NAME=String::Body(begin, len);
+			return &charsets.get(NAME);
 		}
-		
-		String::Body NAME=String::Body(start, len);
-		return &charsets.get(NAME);
 	}
-
 	return 0;
 }
 
-Charset* detect_charset(const char* content_type_value){
-	size_t len=strlen(content_type_value);
-    char* value=new(PointerFreeGC) char[len+1];
-    memcpy(value, content_type_value, len);
-	return detect_charset(pa_toupper(value));
-}
+Charset* detect_charset(Charset& source_charset, const String& content_type){
+	const String& CONTENT_TYPE=content_type.change_case(source_charset, String::CC_UPPER);
+	size_t begin=CONTENT_TYPE.pos("CHARSET=");
+	if(begin!=STRING_NOT_FOUND) {
+		begin+=8; // skip "CHARSET="
+		size_t end=STRING_NOT_FOUND;
 
-Charset* detect_charset(Request_charsets& charsets, const String& content_type_value){
-	return detect_charset(content_type_value.change_case(charsets.source(), String::CC_UPPER).cstrm(String::L_UNSPECIFIED, 0, &charsets));
+		if(CONTENT_TYPE.pos('"', begin)==begin){
+			begin++;
+			end=CONTENT_TYPE.pos('"', begin);
+		} else if(CONTENT_TYPE.pos('\'', begin)==begin){
+			begin++;
+			end=CONTENT_TYPE.pos('\'', begin);
+		}
+
+		if(end==STRING_NOT_FOUND)
+			end=CONTENT_TYPE.pos(';', begin);
+
+		if(end==STRING_NOT_FOUND)
+			end=CONTENT_TYPE.length();
+
+		const String::Body NAME=CONTENT_TYPE.mid(begin, end);
+		return &charsets.get(NAME);
+	}
+	return 0;
 }
 
 

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
  */
 
-static const char * const IDENT_HTTP_C="$Date: 2008/06/06 17:25:44 $"; 
+static const char * const IDENT_HTTP_C="$Date: 2008/06/07 11:01:09 $"; 
 
 #include "pa_http.h"
 #include "pa_common.h"
@@ -622,11 +622,10 @@ File_read_http_result pa_internal_file_read_http(Request_charsets& charsets,
 				throw Exception("http.response", 
 					&connect_string,
 					"bad response from host - bad header \"%s\"", line.cstr());
-			const String::Body HEADER_NAME=
-				line.mid(0, pos).change_case(charsets.source(), String::CC_UPPER);
-			const String& header_value=line.mid(pos+1, line.length()).trim(String::TRIM_BOTH, " \t\r");
+			const String::Body HEADER_NAME=line.mid(0, pos).change_case(charsets.source(), String::CC_UPPER);
+			const String& HEADER_VALUE=line.mid(pos+1, line.length()).trim(String::TRIM_BOTH, " \t\r");
 			if(as_text && HEADER_NAME==HTTP_CONTENT_TYPE)
-				real_remote_charset=detect_charset(charsets, header_value);
+				real_remote_charset=detect_charset(charsets.source(), HEADER_VALUE);
 
 			// tables
 			{
@@ -638,20 +637,20 @@ File_read_http_result pa_internal_file_read_http(Request_charsets& charsets,
 					table=valready->get_table();
 				} else {
 					// first appearence
-					Table::columns_type columns =new ArrayString(1);
+					Table::columns_type columns=new ArrayString(1);
 					*columns+=new String("value");
 					table=new Table(columns);
 				}
 				// this string becomes next row
 				ArrayString& row=*new ArrayString(1);
-				row+=&header_value;
+				row+=&HEADER_VALUE;
 				*table+=&row;
 				// not existed before? add it
 				if(!existed)
 					tables.put(HEADER_NAME, new VTable(table));
 			}
 
-			result.headers->put(HEADER_NAME, new VString(header_value));
+			result.headers->put(HEADER_NAME, new VString(HEADER_VALUE));
 		}
 	}
 

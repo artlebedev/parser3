@@ -8,7 +8,7 @@
 #ifndef PA_VFORM_H
 #define PA_VFORM_H
 
-static const char * const IDENT_VFORM_H="$Date: 2008/06/06 17:26:50 $";
+static const char * const IDENT_VFORM_H="$Date: 2008/06/07 11:01:14 $";
 
 // includes
 
@@ -60,6 +60,7 @@ private:
 	Request_charsets& fcharsets;
 	Request_info& frequest_info;
 
+	char *strpart(const char* str, size_t len);
 	char *getAttributeValue(const char* data,char *attr,size_t len);
 	void UnescapeChars(char **sp, const char* cp, size_t len);
 	void ParseGetFormInput(const char* query_string, size_t length);
