@@ -8,7 +8,7 @@
 #ifndef PA_VREQUEST_H
 #define PA_VREQUEST_H
 
-static const char * const IDENT_VREQUEST_H="$Date: 2007/11/09 14:41:13 $";
+static const char * const IDENT_VREQUEST_H="$Date: 2008/06/07 17:28:50 $";
 
 // includes
 
@@ -19,10 +19,12 @@ static const char * const IDENT_VREQUEST_H="$Date: 2007/11/09 14:41:13 $";
 
 #define REQUEST_CLASS_NAME "request"
 #define REQUEST_ARGV_ELEMENT_NAME "argv"
+#define POST_CHARSET_NAME "post-charset"
 
 // forwards
 
 class Request_info;
+class VForm;
 
 /// request class
 class VRequest: public Value {
@@ -30,6 +32,7 @@ class VRequest: public Value {
 	Request_info& finfo;
 	Request_charsets& fcharsets;
 	HashStringValue fargv;
+	VForm& fform;
 
 public: // Value
 	
@@ -45,7 +48,7 @@ public: // Value
 
 public: // usage
 
-	VRequest(Request_info& ainfo, Request_charsets& acharsets);
+	VRequest(Request_info& ainfo, Request_charsets& acharsets, VForm& aform);
 
 };
 

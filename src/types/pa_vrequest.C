@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VREQUEST_C="$Date: 2007/11/09 17:11:15 $";
+static const char * const IDENT_VREQUEST_C="$Date: 2008/06/07 17:28:50 $";
 
 #include "pa_vrequest.h"
 #include "pa_request_info.h"
@@ -13,14 +13,17 @@ static const char * const IDENT_VREQUEST_C="$Date: 2007/11/09 17:11:15 $";
 #include "pa_charsets.h"
 #include "pa_vstring.h"
 #include "pa_vhash.h"
+#include "pa_vform.h"
+#include "pa_vvoid.h"
 
 // defines
 
 #define DOCUMENT_ROOT_NAME "document-root"
 
-VRequest::VRequest(Request_info& ainfo, Request_charsets& acharsets): 
+VRequest::VRequest(Request_info& ainfo, Request_charsets& acharsets, VForm& aform): 
 		finfo(ainfo), 
-		fcharsets(acharsets) {
+		fcharsets(acharsets),
+		fform(aform) {
    
 	if(ainfo.argv) {
 		for (size_t i = ainfo.args_skip; ainfo.argv[i]; i++) {
@@ -39,14 +42,23 @@ VRequest::VRequest(Request_info& ainfo, Request_charsets& acharsets):
 
 // request: CLASS,method,field
 Value* VRequest::get_element(const String& aname, Value&  /*aself*/, bool /*looking_up*/) {
-	// $charset
+	// $request:charset
 	if(aname==CHARSET_NAME)
 		return new VString(*new String(fcharsets.source().NAME(), String::L_TAINTED));
 
+	// $request:post-charset
+	if(aname==POST_CHARSET_NAME){
+		if(Charset* post_charset=fform.get_post_charset())
+			return new VString(*new String(post_charset->NAME(), String::L_TAINTED));
+		else
+			return new VVoid();
+	}
+	
+	// $request:argv
 	if(aname==REQUEST_ARGV_ELEMENT_NAME)
 		return new VHash(fargv);
 	
-	// $query $uri $document-root $body
+	// $request:query $request:uri $request:document-root $request:body
 	const char* buf;
 	size_t size=0;
 	if(aname=="query")
