@@ -1,3 +1,48 @@
+2008-06-07	misha
+	* src/include/pa_common.h 1.122:
+	* src/main/pa_common.C 1.233:
+	* src/main/pa_http.C 1.14:
+	* src/types/pa_vform.C 1.92:
+	* src/types/pa_vform.h 1.53:
+		- some polish
+
+2008-06-06	misha
+	* src/types/pa_vform.C 1.91:
+	* src/types/pa_vform.h 1.52:
+		- if POST -- try detec charset and decode chars from it but not 
+		from response:charset
+
+	* src/main/pa_http.C 1.13:
+		- detect_charset moved out of here
+
+	* src/include/pa_common.h 1.121:
+	* src/main/pa_common.C 1.232:
+		- more helpers methods moved here
+		- unescape_chars accepn one charset now
+
+	* src/main/pa_http.C 1.12:
+		- new constants used
+		- don't allow $.content-type in ^file::load[;http://;$.method[POST]]
+		- add charset info while ^file::load[;http://;$.method[POST]]
+		- option $.omit-post-charset(true) added to ^file::load[;http://] for disabling charset during post
+
+	* src/types/pa_vform.C 1.90:
+		- new constants used
+
+	* src/include/pa_common.h 1.120:
+		- some constants were added
+
+	* src/classes/form.C 1.41:
+	* src/types/pa_vform.C 1.89:
+		- use StrStartFromNC instead of StrEqNc
+
+	* src/main/pa_common.C 1.231:
+		- new method for caseless search c-substring in c-string
+		- use isxdigit instead of is_hex_digit
+
+	* src/include/pa_common.h 1.119:
+		- new method for caseless search c-substring in c-string
+
 2008-06-05	misha
 	* tests/178.html 1.1:
 	* tests/results/178.processed 1.1:
