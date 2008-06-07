@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2008/05/14 10:17:05 $";
+static const char * const IDENT_FILE_C="$Date: 2008/06/07 17:30:33 $";
 
 #include "pa_config_includes.h"
 
@@ -363,11 +363,6 @@ static void append_to_argv(Request& r, ArrayString& argv, const String* str){
 	if( str->length() ){
 		argv+=new String(str->cstr_to_string_body(String::L_UNSPECIFIED, 0, &r.charsets), String::L_AS_IS);
 	}
-}
-
-inline size_t strpos(const char *s1, const char *s2) {
-	const char *p = strstr(s1, s2);
-	return (p==0)?STRING_NOT_FOUND:p-s1;
 }
 
 /// @todo fix `` in perl - they produced flipping consoles and no output to perl
