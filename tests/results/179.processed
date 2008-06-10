@@ -1,0 +1,6 @@
+content-type: text/html
+content-length: 96
+
+=static_a===a===<br />
+=static_a=static_b==a=b==<br />
+=static_a=static_b=static_c=a=b=c=<br />
