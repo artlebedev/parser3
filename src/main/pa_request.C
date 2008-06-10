@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REQUEST_C="$Date: 2008/06/07 17:29:33 $";
+static const char * const IDENT_REQUEST_C="$Date: 2008/06/10 14:05:20 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -605,22 +605,26 @@ void Request::use_buf(VStateless_class& aclass,
 	// temporary zero @auto so to maybe-replace it in compiled code
 	Temp_method temp_method_auto(aclass, auto_method_name, 0);
 
-	// compile loaded class
-	VStateless_class& cclass=compile(&aclass, source, main_alias, file_no, line_no_offset);
+	// compile loaded classes
+	ArrayClass& cclasses=compile(&aclass, source, main_alias, file_no, line_no_offset);
 
 	// locate and execute possible @conf[] static
 	VString* vfilespec=
 		new VString(*new String(file_list[file_no], String::L_TAINTED));
-	Execute_nonvirtual_method_result executed=execute_nonvirtual_method(cclass, 
-		conf_method_name, vfilespec,
-		false/*no string result needed*/);
-	if(executed.method)
-		configure_admin(cclass/*, executed.method->name*/);
 
-	// locate and execute possible @auto[] static
-	execute_nonvirtual_method(cclass, 
-		auto_method_name, vfilespec,
-		false/*no result needed*/);
+	for(size_t i=0; i<cclasses.count(); i++){
+		VStateless_class& cclass=*cclasses.get(i);
+		Execute_nonvirtual_method_result executed=execute_nonvirtual_method(cclass, 
+			conf_method_name, vfilespec,
+			false/*no string result needed*/);
+		if(executed.method)
+			configure_admin(cclass/*, executed.method->name*/);
+
+		// locate and execute possible @auto[] static
+		execute_nonvirtual_method(cclass, 
+			auto_method_name, vfilespec,
+			false/*no result needed*/);
+	}
 }
 
 const String& Request::relative(const char* apath, const String& relative_name) {
