@@ -17,7 +17,6 @@ a
 
 @auto[]
 $_b[static_b]
-#^throw[;b]
 
 @create[]
 ^BASE:create[]
@@ -34,7 +33,6 @@ b
 
 @auto[]
 $_c[static_c]
-#^throw[;c]
 
 @create[]
 ^BASE:create[]
