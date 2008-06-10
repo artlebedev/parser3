@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char * const IDENT_REQUEST_H="$Date: 2008/05/30 12:26:22 $";
+static const char * const IDENT_REQUEST_H="$Date: 2008/06/10 14:04:44 $";
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -392,7 +392,7 @@ private:
 
 private: // compile.C
 
-	VStateless_class& compile(VStateless_class* aclass, 
+	ArrayClass& compile(VStateless_class* aclass, 
 		const char* source, const String* main_alias, 
 		uint file_no,
 		int line_no_offset);
