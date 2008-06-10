@@ -1,4 +1,41 @@
+2008-06-10	misha
+	* tests/179.html 1.1:
+	* tests/179.p 1.1:
+	* tests/results/179.processed 1.1:
+		- test for many classes in 1 file
+
+	* src/main/compile.tab.C 1.117:
+	* src/main/compile.y 1.224:
+		- compile return list of classes now. internals.
+
+	* src/main/compile.C 1.79:
+	* src/main/compile_tools.h 1.78:
+		- compile return list of classes now.
+
+	* src/main/pa_request.C 1.295:
+		- compile return list of classes now. try call @conf and @auto 
+		for each returned class
+
+	* src/include/pa_request.h 1.189:
+		- compile return list of classes now
+
+	* src/types/pa_vstateless_class.h 1.59:
+		- typedef ArrayClass added (for return list of classes when 
+		compile buf)
+
 2008-06-07	misha
+	* src/main/pa_request.C 1.294:
+		- constructing VRequest object with 3rd param -- form
+
+	* src/types/pa_vrequest.C 1.40:
+	* src/types/pa_vrequest.h 1.35:
+		- constructor acceps 3rd param: form. needed for get 
+		post_charset
+
+	* src/types/pa_vform.C 1.93:
+	* src/types/pa_vform.h 1.54:
+		- VForm::get_post_charset() added
+
 	* src/include/pa_common.h 1.122:
 	* src/main/pa_common.C 1.233:
 	* src/main/pa_http.C 1.14:

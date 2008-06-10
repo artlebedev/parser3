@@ -1,5 +1,5 @@
 content-type: text/html
-content-length: 96
+content-length: 95
 
 =static_a===a===<br />
 =static_a=static_b==a=b==<br />
