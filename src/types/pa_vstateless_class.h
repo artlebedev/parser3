@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
-static const char * const IDENT_VSTATELESS_CLASS_H="$Date: 2008/06/05 13:26:57 $";
+static const char * const IDENT_VSTATELESS_CLASS_H="$Date: 2008/06/10 14:04:14 $";
 
 // include
 
@@ -26,6 +26,7 @@ static const char * const IDENT_VSTATELESS_CLASS_H="$Date: 2008/06/05 13:26:57 $
 // forwards
 
 class VStateless_class;
+typedef Array<VStateless_class*> ArrayClass;
 
 class Temp_method;
 
