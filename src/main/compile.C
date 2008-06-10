@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMPILE_C="$Date: 2005/08/09 08:14:51 $";
+static const char * const IDENT_COMPILE_C="$Date: 2008/06/10 14:06:22 $";
 
 #include "pa_opcode.h"
 #include "pa_request.h"
@@ -14,7 +14,7 @@ static const char * const IDENT_COMPILE_C="$Date: 2005/08/09 08:14:51 $";
 extern int yydebug;
 extern int yyparse (void *);
 
-VStateless_class& Request::compile(VStateless_class* aclass, 
+ArrayClass& Request::compile(VStateless_class* aclass, 
 				   const char* source, const String* main_alias, 
 				   uint file_no,
 				   int line_no_offset) {
@@ -35,5 +35,5 @@ VStateless_class& Request::compile(VStateless_class* aclass,
 	}
 
 	// result
-	return *pc.cclass;
+	return *pc.cclasses;
 }

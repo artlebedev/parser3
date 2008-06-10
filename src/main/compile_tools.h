@@ -8,7 +8,7 @@
 #ifndef COMPILE_TOOLS
 #define COMPILE_TOOLS
 
-static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2005/12/09 07:18:07 $";
+static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2008/06/10 14:06:36 $";
 
 #include "pa_opcode.h"
 #include "pa_types.h"
@@ -62,6 +62,7 @@ public:
 	/// @name input
 	Request& request;
 	VStateless_class* cclass;
+	ArrayClass* cclasses;
 	const char* source;
 	uint file_no;
 	Pos pos;
@@ -98,6 +99,7 @@ public:
 
 		// we were told the class to compile to?
 		cclass(aclass), // until changed with @CLASS would consider operators loading
+		cclasses(new ArrayClass(1)),
 		source(asource), 
 		file_no(afile_no),
 		pos(line_no_offset, 0),
@@ -108,7 +110,10 @@ public:
 		ls(LS_USER),
 		ls_sp(0),
 		in_call_value(false),
-		explicit_result(false) {}
+		explicit_result(false) {
+
+		*cclasses+=aclass;
+	}
 
 	void pos_next_line() {
 		pos.line++;
