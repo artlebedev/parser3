@@ -5,7 +5,7 @@
 	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.223 2008/05/30 12:27:44 misha Exp $
+	$Id: compile.y,v 1.224 2008/06/10 14:06:00 misha Exp $
 */
 
 /**
@@ -151,12 +151,14 @@ control_method: '@' STRING '\n'
 		YYERROR;
 	}
 	if(command==CLASS_NAME) {
+		/*
 		if(PC.cclass->base_class()) { // already changed from default?
 			strcpy(PC.error, "class already have a name '");
 			strncat(PC.error, PC.cclass->name().cstr(), 100);
 			strcat(PC.error, "'");
 			YYERROR;
 		}
+		*/
 		if(strings_code->count()==1*OPERATIONS_PER_OPVALUE) {
 			// new class' name
 			const String& name=*LA2S(*strings_code);
@@ -166,6 +168,7 @@ control_method: '@' STRING '\n'
 			PC.cclass->set_name(name);
 			// append to request's classes
 			PC.request.classes().put(name, cclass);
+			*PC.cclasses+=cclass;
 		} else {
 			strcpy(PC.error, "@"CLASS_NAME" must contain only one line with class name (contains more then one)");
 			YYERROR;
