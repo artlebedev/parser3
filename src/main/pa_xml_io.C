@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT="$Date: 2008/06/04 09:18:08 $";
+static const char * const IDENT="$Date: 2008/06/11 11:39:40 $";
 
 #include "libxslt/extensions.h"
 
@@ -118,10 +118,10 @@ xmlFileOpen_ReadIntoStream (const char* do_not_store_filename, bool adjust_path_
 
 	const char *buf;
 	try {
-		//buf=file_read_text(r.charsets, *new String(can_store_filename));
-		// load external file in binary mode: libxml cat transcode it itself and we don't need to change @encding in xml declaration
-		File_read_result file=file_read(r.charsets, *new String(can_store_filename), false/* not text */);
-		buf=file.success?file.str:0;
+		buf=file_read_text(r.charsets, *new String(can_store_filename), 
+							true/*fail_on_read_problem*/,
+							0/*params*/,
+							false/*don't transcode result because it must be fit with @encoding value!*/);
 	} catch(const Exception& e) {
 		if(strcmp(e.type(), "file.missing")==0)
 			return 0; // let the library try that and report an error properly
