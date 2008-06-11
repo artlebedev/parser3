@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-static const char * const IDENT_COMMON_H="$Date: 2008/06/07 11:00:59 $";
+static const char * const IDENT_COMMON_H="$Date: 2008/06/11 11:38:18 $";
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -105,7 +105,8 @@ bool file_read_action_under_lock(const String& file_spec,
 char *file_read_text(Request_charsets& charsets, 
 					 const String& file_spec, 
 					 bool fail_on_read_problem=true,
-					 HashStringValue* options=0/*, HashStringValue* * out_fields=0*/);
+					 HashStringValue* options=0,
+					 bool transcode_result=true);
 
 struct File_read_result {
 	bool success;
@@ -126,7 +127,7 @@ File_read_result file_read(Request_charsets& charsets,
 			   bool as_text,
 			   HashStringValue* options=0,
 			   bool fail_on_read_problem=true,
-			   char* buf=0, size_t offset=0, size_t size=0);
+			   char* buf=0, size_t offset=0, size_t size=0, bool transcode_text_result=true);
 
 typedef void (*File_write_action)(int f, void *context);
 

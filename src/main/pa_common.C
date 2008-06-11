@@ -26,7 +26,7 @@
  *
  */
 
-static const char * const IDENT_COMMON_C="$Date: 2008/06/07 11:01:09 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2008/06/11 11:38:35 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -94,9 +94,10 @@ void fix_line_breaks(char *str, size_t& length) {
 char* file_read_text(Request_charsets& charsets, 
 			const String& file_spec, 
 			bool fail_on_read_problem,
-			HashStringValue* params/*, HashStringValue* * out_fields*/) {
+			HashStringValue* params,
+			bool transcode_result) {
 	File_read_result file=
-		file_read(charsets, file_spec, true, params, fail_on_read_problem);
+		file_read(charsets, file_spec, true, params, fail_on_read_problem, 0, 0, 0, transcode_result);
 	return file.success?file.str:0;
 }
 
@@ -157,7 +158,7 @@ static void file_read_action(
 File_read_result file_read(Request_charsets& charsets, const String& file_spec, 
 			bool as_text, HashStringValue *params,
 			bool fail_on_read_problem,
-			char* buf, size_t offset, size_t count) {
+			char* buf, size_t offset, size_t count, bool transcode_text_result) {
 	File_read_result result={false, 0, 0, 0};
 	if(file_spec.starts_with("http://")) {
 		if(offset || count)
@@ -166,7 +167,7 @@ File_read_result file_read(Request_charsets& charsets, const String& file_spec,
 				"offset and load options are not supported for HTTP:// file load");
 
 		// fail on read problem
-		File_read_http_result http=pa_internal_file_read_http(charsets, file_spec, as_text, params);
+		File_read_http_result http=pa_internal_file_read_http(charsets, file_spec, as_text, params, transcode_text_result);
 		result.success=true;
 		result.str=http.str;
 		result.length=http.length;
@@ -186,7 +187,7 @@ File_read_result file_read(Request_charsets& charsets, const String& file_spec,
 			"read", file_read_action, &info, 
 			as_text, fail_on_read_problem); 
 
-		if(result.length && as_text && params) {
+		if(result.length && as_text && params && transcode_text_result) {
 			if( Value* vcharset_name=params->get(PA_CHARSET_NAME) ) {
 				Charset asked_charset=::charsets.get(vcharset_name->as_string().
 					change_case(charsets.source(), String::CC_UPPER));
