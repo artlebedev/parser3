@@ -1,0 +1,40 @@
+@main[][tList;dLong;sErr]
+$tList[^table::create{sIP	z
+10.0.0.2	167772161
+213.152.135.132
+255.255.255.254
+255.255.255.255
+10.0.0..2
+10.1
+.10.1.1.1
+10.1.1.
+	z
+}]
+
+
+<table border="1">
+	<tr>
+		<td>IP</td>
+		<td>^^math:ip2long[IP]</td>
+		<td>^^math:long2ip(^^math:ip2long[IP])</td>
+	</tr>
+	^tList.menu{
+		$dLong[]
+		$sErr[^safe{$dLong(^math:ip2long[$tList.sIP])}]
+		<tr>
+			<td>$tList.sIP</td>
+			<td>^if(def $dLong){^dLong.format[%u]}{$sErr}</td>
+			<td>^if(def $dLong){^safe{^math:long2ip($dLong)}}{&mdash^;}</td>
+		</tr>
+	}
+</table>
+
+
+
+@safe[jCode]
+^try{
+	$result[$jCode]
+}{
+	$exception.handled(1)
+	$result[$exception.comment]
+}

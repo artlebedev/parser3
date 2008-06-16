@@ -1,0 +1,55 @@
+content-type: text/html
+content-length: 936
+
+<table border="1">
+<tr>
+<td>IP</td>
+<td>^math:ip2long[IP]</td>
+<td>^math:long2ip(^math:ip2long[IP])</td>
+</tr>
+<tr>
+<td>10.0.0.2</td>
+<td>167772162</td>
+<td>10.0.0.2</td>
+</tr>
+<tr>
+<td>213.152.135.132</td>
+<td>3583543172</td>
+<td>213.152.135.132</td>
+</tr>
+<tr>
+<td>255.255.255.254</td>
+<td>4294967294</td>
+<td>255.255.255.254</td>
+</tr>
+<tr>
+<td>255.255.255.255</td>
+<td>4294967295</td>
+<td>255.255.255.255</td>
+</tr>
+<tr>
+<td>10.0.0..2</td>
+<td>Invalid IP address '10.0.0..2' specified.</td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td>10.1</td>
+<td>Invalid IP address '10.1' specified.</td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td>.10.1.1.1</td>
+<td>Invalid IP address '.10.1.1.1' specified.</td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td>10.1.1.</td>
+<td>Invalid IP address '10.1.1.' specified.</td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td></td>
+<td>IP address must not be empty.</td>
+<td>&mdash;</td>
+</tr>
+</table>
