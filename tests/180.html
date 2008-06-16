@@ -15,16 +15,16 @@ $tList[^table::create{sIP	z
 <table border="1">
 	<tr>
 		<td>IP</td>
-		<td>^^math:ip2long[IP]</td>
-		<td>^^math:long2ip(^^math:ip2long[IP])</td>
+		<td>^^inet:aton[IP]</td>
+		<td>^^inet:ntoa(^^inet:aton[IP])</td>
 	</tr>
 	^tList.menu{
 		$dLong[]
-		$sErr[^safe{$dLong(^math:ip2long[$tList.sIP])}]
+		$sErr[^safe{$dLong(^inet:aton[$tList.sIP])}]
 		<tr>
 			<td>$tList.sIP</td>
 			<td>^if(def $dLong){^dLong.format[%u]}{$sErr}</td>
-			<td>^if(def $dLong){^safe{^math:long2ip($dLong)}}{&mdash^;}</td>
+			<td>^if(def $dLong){^safe{^inet:ntoa($dLong)}}{&mdash^;}</td>
 		</tr>
 	}
 </table>
