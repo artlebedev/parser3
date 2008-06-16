@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)\
 */
 
-static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2008/06/05 13:26:57 $";
+static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2008/06/16 12:41:34 $";
 
 #include "pa_vstateless_class.h"
 #include "pa_vproperty.h"
@@ -83,3 +83,17 @@ void VStateless_class::set_default_getter(Method* amethod){
 	fdefault_getter=amethod;
 }
 
+Value* VStateless_class::get_scalar(Value& aself){
+	if(fscalar)
+		return new VJunction(aself, fscalar, true /*getter*/);
+
+	if(fbase)
+		if(Value* obase=aself.base())
+			return fbase->get_scalar(*obase);
+
+	return 0;
+}
+
+void VStateless_class::set_scalar(Method* amethod){
+	fscalar=amethod;
+}

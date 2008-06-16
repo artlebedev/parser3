@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
-static const char * const IDENT_VSTATELESS_CLASS_H="$Date: 2008/06/10 14:04:14 $";
+static const char * const IDENT_VSTATELESS_CLASS_H="$Date: 2008/06/16 12:41:34 $";
 
 // include
 
@@ -50,6 +50,7 @@ class VStateless_class: public Value {
 protected:
 
 	VStateless_class* fbase;
+	Method* fscalar;
 	Method* fdefault_getter;
 
 public: // Value
@@ -62,8 +63,12 @@ public: // Value
 	override Value* base() { return fbase; }
 	override Value* get_element(const String& aname, Value& aself, bool alooking_up);
 	override Value& as_expr_result(bool /*return_string_as_is=false*/);
+
 	override Value* get_default_getter(Value& aself, const String& aname);
 	override void set_default_getter(Method* amethod);
+
+	override Value* get_scalar(Value& aself);
+	override void set_scalar(Method* amethod);
 
 public: // usage
 
@@ -74,6 +79,7 @@ public: // usage
 		flocked(false),
 		fbase(abase),
 		fall_vars_local(false),
+		fscalar(0),
 		fdefault_getter(0) {
 	}
 

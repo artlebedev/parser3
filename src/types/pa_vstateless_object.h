@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_OBJECT_H
 #define PA_VSTATELESS_OBJECT_H
 
-static const char * const IDENT_VSTATELESS_OBJECT_H="$Date: 2008/06/05 13:27:18 $";
+static const char * const IDENT_VSTATELESS_OBJECT_H="$Date: 2008/06/16 12:41:34 $";
 
 // include
 
@@ -35,6 +35,11 @@ public: // Value
 	/// VStateless_object: class_transparent
 	override Value* get_default_getter(Value& aself, const String& aname) { 
 		return get_class()->get_default_getter(aself, aname);
+	}
+
+	/// VStateless_object: class_transparent
+	override Value* get_scalar(Value& aself){
+		return get_class()->get_scalar(aself);
 	}
 
 };
