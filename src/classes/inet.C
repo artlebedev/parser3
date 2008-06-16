@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_INET_C="$Date: 2008/06/16 12:37:59 $";
+static const char * const IDENT_INET_C="$Date: 2008/06/16 13:09:22 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
@@ -25,7 +25,7 @@ DECLARE_CLASS_VAR(inet, new MInet, 0);
 
 static void _ntoa(Request& r, MethodParams& params){
 	unsigned long l=(unsigned long)trunc(params.as_double(0, "parameter must be expression", r));
-	static const int ip_cstr_bufsize=3*4+3+1;
+	static const int ip_cstr_bufsize=3*4+3+1+1;
 	char* ip_cstr=new(PointerFreeGC) char[ip_cstr_bufsize];
 
 	snprintf(ip_cstr, ip_cstr_bufsize, "%u.%u.%u.%u",
