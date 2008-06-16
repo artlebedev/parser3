@@ -777,6 +777,7 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
        вычисляет crc32 строки
     !^math:sha1[string]
     !^math:long2ip(long)
+    !^math:ip2long[IP]
 
 !date
     !время типа time можно использовать в выражениях, подставляет 
