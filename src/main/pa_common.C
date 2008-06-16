@@ -26,7 +26,7 @@
  *
  */
 
-static const char * const IDENT_COMMON_C="$Date: 2008/06/11 11:38:35 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2008/06/16 12:46:00 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -599,7 +599,7 @@ FormatType format_type(char* fmt){
 
 const char* format(double value, char* fmt) {
 	char local_buf[MAX_NUMBER];
-	size_t size;
+	int size=-1;
 
 	if(fmt && strlen(fmt)){
 		switch(format_type(fmt)){
@@ -626,7 +626,7 @@ const char* format(double value, char* fmt) {
 			"Error occure white executing snprintf with format string '%s'.", fmt);
 	}
 
-	return pa_strdup(local_buf, size);
+	return pa_strdup(local_buf, (size_t)size);
 }
 
 size_t stdout_write(const void *buf, size_t size) {
