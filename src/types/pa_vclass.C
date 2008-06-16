@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VCLASS_C="$Date: 2008/06/05 13:31:14 $";
+static const char * const IDENT_VCLASS_C="$Date: 2008/06/16 12:42:20 $";
 
 #include "pa_vclass.h"
 
@@ -30,13 +30,17 @@ Property& VClass::add_property(const String& aname) {
 /// preparing property accessors to fields
 void VClass::add_method(const String& aname, Method& amethod) {
 	if(aname.starts_with("GET_")){
-		if(aname == "GET_DEFAULT")
+		if(aname=="GET_DEFAULT")
 			set_default_getter(&amethod);
 		else
 			add_property(aname).getter=&amethod;
-	} else if(aname.starts_with("SET_") )
+	} else if(aname.starts_with("SET_")){
 		add_property(aname).setter=&amethod;
-	
+	} else if(aname=="GET"){
+		set_scalar(&amethod);
+	}
+
+
 	// NOT under 'else' for backward compatiblilty: 
 	// if someone used get_xxx names to name regular methods
 	// still register method:
