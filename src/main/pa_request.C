@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REQUEST_C="$Date: 2008/06/11 11:38:41 $";
+static const char * const IDENT_REQUEST_C="$Date: 2008/06/16 12:44:57 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -14,7 +14,7 @@ static const char * const IDENT_REQUEST_C="$Date: 2008/06/11 11:38:41 $";
 #include "pa_vclass.h"
 #include "pa_globals.h"
 #include "pa_vint.h"
-#include "pa_vmethod_frame_global.h"
+#include "pa_vmethod_frame.h"
 #include "pa_types.h"
 #include "pa_venv.h"
 #include "pa_vmath.h"
@@ -405,7 +405,7 @@ gettimeofday(&mt[2],NULL);
 				if(const Method *method=junction->method) {
 					// preparing to pass parameters to 
 					//	@postprocess[data]
-					VMethodFrameGlobal frame(/*method->name, */ *junction, 0/*no parent*/);
+					VMethodFrame frame(/*method->name, */ *junction, 0/*no parent*/);
 					frame.set_self(main_class);
 
 					frame.store_param(*body_value);
@@ -467,7 +467,7 @@ t[9]-t[3]
 				if(const Method *method=junction->method) {
 					// preparing to pass parameters to 
 					//	@unhandled_exception[exception;stack]
-					VMethodFrameGlobal frame(/*method->name, */ *junction, 0/*no caller*/);
+					VMethodFrame frame(/*method->name, */ *junction, 0/*no caller*/);
 					frame.set_self(main_class);
 
 					// $exception

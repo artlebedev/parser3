@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2008/06/05 13:32:43 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2008/06/16 12:44:57 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -14,8 +14,7 @@ static const char * const IDENT_EXECUTE_C="$Date: 2008/06/05 13:32:43 $";
 #include "pa_vhash.h"
 #include "pa_vvoid.h"
 #include "pa_vcode_frame.h"
-#include "pa_vmethod_frame_local.h"
-#include "pa_vmethod_frame_global.h"
+#include "pa_vmethod_frame.h"
 #include "pa_vobject.h"
 #include "pa_vdouble.h"
 #include "pa_vbool.h"
@@ -422,32 +421,17 @@ void Request::execute(ArrayOperation& ops) {
 							value.type());
 				*/
 
-				if(junction->method->all_vars_local){
-					VMethodFrameLocal frame(*junction, method_frame);
-					if(local_ops){ // store param code goes here
-						stack.push(frame); // argument for *STORE_PARAM ops
-						execute(*local_ops);
-						stack.pop().value();
-					}
-					WContext* result_wcontext=op_call(frame);
-					if(opcode==OP_CALL__WRITE) {
-						write_assign_lang(result_wcontext->result());
-					} else { // OP_CALL
-						stack.push(result_wcontext->result().as_value());
-					}
-				} else {
-					VMethodFrameGlobal frame(*junction, method_frame);
-					if(local_ops){ // store param code goes here
-						stack.push(frame); // argument for *STORE_PARAM ops
-						execute(*local_ops);
-						stack.pop().value();
-					}
-					WContext* result_wcontext=op_call(frame);
-					if(opcode==OP_CALL__WRITE) {
-						write_assign_lang(result_wcontext->result());
-					} else { // OP_CALL
-						stack.push(result_wcontext->result().as_value());
-					}
+				VMethodFrame frame(*junction, method_frame);
+				if(local_ops){ // store param code goes here
+					stack.push(frame); // argument for *STORE_PARAM ops
+					execute(*local_ops);
+					stack.pop().value();
+				}
+				WContext* result_wcontext=op_call(frame);
+				if(opcode==OP_CALL__WRITE) {
+					write_assign_lang(result_wcontext->result());
+				} else { // OP_CALL
+					stack.push(result_wcontext->result().as_value());
 				}
 
 #ifdef DEBUG_EXECUTE
@@ -907,7 +891,7 @@ void Request::put_element(Value& ncontext, const String& name, Value& value) {
 					0,
 					"setter method must have ONE parameter (has %d parameters)", param_count);
 
-			VMethodFrameGlobal frame(junction, method_frame/*caller*/);
+			VMethodFrame frame(junction, method_frame/*caller*/);
 			frame.store_param(value);
 
 			frame.set_self(frame.junction.self);
@@ -957,7 +941,7 @@ StringOrValue Request::process(Value& input_value, bool intercept_string) {
 					0,
 					"getter method must have no parameters (has %d parameters)", param_count);
 
-			VMethodFrameGlobal frame(*junction, method_frame/*caller*/);
+			VMethodFrame frame(*junction, method_frame/*caller*/);
 
 			if(junction->auto_name && param_count)
 				frame.store_param(*new VString(*junction->auto_name));
@@ -1074,7 +1058,7 @@ const String* Request::execute_method(Value& aself,
 	WContext *saved_wcontext=wcontext;
 	
 	Junction local_junction(aself, &method);
-	VMethodFrameGlobal local_frame(local_junction, method_frame/*caller*/);
+	VMethodFrame local_frame(local_junction, method_frame/*caller*/);
 	if(optional_param && local_frame.can_store_param()) {
 		local_frame.store_param(*optional_param);
 		local_frame.fill_unspecified_params();
