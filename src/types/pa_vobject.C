@@ -9,8 +9,24 @@
 #include "pa_vhash.h"
 #include "pa_vtable.h"
 #include "pa_vstring.h"
+#include "pa_vmethod_frame.h"
+#include "pa_request.h"
 
-static const char * const IDENT_VOBJECT_C="$Date: 2008/06/05 13:32:12 $";
+static const char * const IDENT_VOBJECT_C="$Date: 2008/06/16 12:47:25 $";
+
+Value* VObject::get_scalar_value() const {
+	VObject* unconst_this=const_cast<VObject*>(this);
+	VObject& last_derived=unconst_this->get_last_derived();
+	if(Value* scalar=unconst_this->get_scalar(last_derived))
+		if(Junction* junction=scalar->get_junction())
+			if(const Method *method=junction->method){
+				VMethodFrame frame(*junction, 0/*no caller*/);
+				frame.set_self(last_derived);
+				return &pa_thread_request().execute_method(frame, *method).as_value();
+			}
+
+	return 0;
+}
 
 Value* VObject::as(const char* atype, bool looking_up) { 
 	if(!looking_up)
@@ -32,26 +48,38 @@ Value* VObject::as(const char* atype, bool looking_up) {
 
 /// VObject: from possible parent, if any
 bool VObject::is_defined() const {
+	if(Value* value=get_scalar_value())
+		return value->is_defined();
 	return fbase?fbase->is_defined():Value::is_defined();
 }
 /// VObject: from possible parent, if any
-Value& VObject::as_expr_result(bool) { 
+Value& VObject::as_expr_result(bool) {
+	if(Value* value=get_scalar_value())
+		return value->as_expr_result();
 	return fbase?fbase->as_expr_result():Value::as_expr_result();
 }
 /// VObject: from possible parent, if any
 int VObject::as_int() const {
+	if(Value* value=get_scalar_value())
+		return value->as_int();
 	return fbase?fbase->as_int():Value::as_int();
 }
 /// VObject: from possible parent, if any
-double VObject::as_double() {
+double VObject::as_double() const {
+	if(Value* value=get_scalar_value())
+		return value->as_double();
 	return fbase?fbase->as_double():Value::as_double();
 }
 /// VObject: from possible parent, if any
 bool VObject::as_bool() const { 
+	if(Value* value=get_scalar_value())
+		return value->as_bool();
 	return fbase?fbase->as_bool():Value::as_bool();
 }
 /// VObject: from possible parent, if any
 VFile* VObject::as_vfile(String::Language lang, const Request_charsets *charsets) {
+	if(Value* value=get_scalar_value())
+		return value->as_vfile(lang, charsets);
 	return fbase?fbase->as_vfile(lang, charsets):
 		Value::as_vfile(lang, charsets);
 }

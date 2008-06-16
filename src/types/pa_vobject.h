@@ -8,7 +8,7 @@
 #ifndef PA_VOBJECT_H
 #define PA_VOBJECT_H
 
-static const char * const IDENT_VOBJECT_H="$Date: 2008/06/05 13:32:13 $";
+static const char * const IDENT_VOBJECT_H="$Date: 2008/06/16 12:47:25 $";
 
 // includes
 
@@ -46,7 +46,7 @@ public: // Value
 	override bool is_defined() const;
 	override Value& as_expr_result(bool);
 	override int as_int() const;
-	override double as_double();
+	override double as_double() const;
 	override bool as_bool() const;
 	override VFile* as_vfile(String::Language lang=String::L_UNSPECIFIED, 
 		const Request_charsets *charsets=0);
@@ -80,6 +80,8 @@ private:
 	Value* stateless_object__get_element(const String& aname, Value& aself) {
 		return VStateless_object::get_element(aname, aself, false);
 	}
+
+	Value* get_scalar_value() const;
 
 	const VJunction* stateless_object__put_element(Value& aself, const String& aname, Value* avalue) {
 		return VStateless_object::put_element(aself, aname, avalue, true/*try to replace! NEVER overwrite*/);
