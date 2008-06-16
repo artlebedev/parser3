@@ -1,11 +1,11 @@
 content-type: text/html
-content-length: 936
+content-length: 875
 
 <table border="1">
 <tr>
 <td>IP</td>
-<td>^math:ip2long[IP]</td>
-<td>^math:long2ip(^math:ip2long[IP])</td>
+<td>^inet:aton[IP]</td>
+<td>^inet:ntoa(^inet:aton[IP])</td>
 </tr>
 <tr>
 <td>10.0.0.2</td>
