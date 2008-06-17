@@ -1,3 +1,77 @@
+2008-06-17	misha
+	* src/main/compile.tab.C 1.118:
+	* src/main/compile.y 1.225:
+		- bugfix in 'def' compilation: ^if(default){true. it's 
+		incorrect. must be exception}
+
+2008-06-16	misha
+	* tests/181.ent 1.1:
+	* tests/181.html 1.1:
+	* tests/results/181.processed 1.1:
+		- test for checking external reference loading with 'http://
+		localhost' prefix while creating xdoc
+
+	* src/classes/Makefile.in 1.65:
+		*** empty log message ***
+
+	* tests/180.html 1.2:
+		- use ^inet:ntoa[] and ^inet:aton[] instead of ^math:long2ip[] 
+		and ^math:ip2long[]
+
+	* src/types/pa_vobject.C 1.26:
+	* src/types/pa_vobject.h 1.49:
+		- get_scalar_value method added which use scalar stateless class method when user object used in 
+		scalar context
+		- use get_scalar_value when user object requested in scalar context
+
+	* src/main/pa_common.C 1.235:
+		- size must be int but not size_t or we can't compare with 0 
+		sprintf result
+
+	* src/main/execute.C 1.321:
+	* src/main/pa_request.C 1.297:
+	* src/types/pa_vmethod_frame.C 1.9:
+	* src/types/pa_vmethod_frame.h 1.64:
+		- go back to one VMethodFrame with internal switch between local/
+		global vars
+
+	* src/types/pa_vclass.C 1.36:
+		- register scalar if method @GET[] was specified
+
+	* src/types/pa_vstateless_class.C 1.33:
+	* src/types/pa_vstateless_class.h 1.60:
+	* src/types/pa_vstateless_object.h 1.38:
+		- stateless class and object now has private scalar field and 
+		getter/setter for working with it
+
+	* src/classes/math.C 1.53:
+		- methods math:long2ip & math:ip2long were moved to inet static 
+		class
+
+	* src/classes/Makefile.am 1.51:
+	* src/classes/classes.vcproj 1.17:
+	* src/classes/inet.C 1.1:
+		- inet static class added (^inet:aton[IP], ^inet:ntoa(number))
+
+	* tests/180.html 1.1:
+	* tests/results/180.processed 1.1:
+		- tests for ^math:long2ip(long) and ^math:ip2long[IP]
+
+	* src/classes/math.C 1.52:
+		- ^math:ip2long[IP] added
+
+2008-06-11	misha
+	* src/main/pa_xml_io.C 1.22:
+		- use file_read_text again because of we need cut BOM code and 
+		remove DOS newline chars. but don't transcode it anyway.
+
+	* src/include/pa_common.h 1.123:
+	* src/include/pa_http.h 1.2:
+	* src/main/pa_common.C 1.234:
+	* src/main/pa_http.C 1.15:
+		- option for disable transcoding while file_read and 
+		file_read_text added
+
 2008-06-10	misha
 	* tests/179.html 1.1:
 	* tests/179.p 1.1:
