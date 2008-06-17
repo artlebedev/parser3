@@ -5,7 +5,7 @@
 	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.224 2008/06/10 14:06:00 misha Exp $
+	$Id: compile.y,v 1.225 2008/06/17 15:51:25 misha Exp $
 */
 
 /**
@@ -1097,14 +1097,18 @@ default:
 			case 'd':
 				if(end==begin) // right after whitespace
 					if(pc.source[0]=='e' && pc.source[1]=='f') { // def
-						skip_analized=2;
-						result=DEF;
-						goto break2;
+						switch(pc.source[2]){
+						case ' ': case '\t': case '\n': case '"': case '\'': case '^': case '$': // non-quoted string without whitespace after 'def' is not allowed
+							skip_analized=2;
+							result=DEF;
+							goto break2;
+						}
+						// error: incorrect char after 'def'
 					}
 				break;
 			case 't':
 				if(end==begin) // right after whitespace
-					if(pc.source[0]=='r' && pc.source[1]=='u' && pc.source[2]=='e') { // def
+					if(pc.source[0]=='r' && pc.source[1]=='u' && pc.source[2]=='e') { // true
 						skip_analized=3;
 						result=LITERAL_TRUE;
 						goto break2;
@@ -1112,7 +1116,7 @@ default:
 				break;
 			case 'f':
 				if(end==begin) // right after whitespace
-					if(pc.source[0]=='a' && pc.source[1]=='l' && pc.source[2]=='s' && pc.source[3]=='e') { // def
+					if(pc.source[0]=='a' && pc.source[1]=='l' && pc.source[2]=='s' && pc.source[3]=='e') { // false
 						skip_analized=4;
 						result=LITERAL_FALSE;
 						goto break2;
