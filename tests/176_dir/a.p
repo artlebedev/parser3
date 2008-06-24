@@ -1,7 +1,7 @@
 @CLASS
 a
 
-@OPTION
+@OPTIONS
 locals
 
 @create[]

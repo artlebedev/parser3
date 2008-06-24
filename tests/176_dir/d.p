@@ -4,7 +4,7 @@ d
 @BASE
 a
 
-@OPTION
+@OPTIONS
 locals
 
 @create[]
