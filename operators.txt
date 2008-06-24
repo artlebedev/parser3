@@ -112,7 +112,7 @@ Xне сделано, видимо, не будет сделано
             ClientCharset=parser-charset << charset in which parser thinks client works
             charset=cp1251_koi8&
             timeout=3&
-            compress=1&
+            compress=0&
             named_pipe=1&
             multi_statements=1&	allow execute more then one query in one parser :sql{} request
             autocommit=1
@@ -139,7 +139,9 @@ Xне сделано, видимо, не будет сделано
         !odbc://DSN=dsn^;UID=user^;PWD=password^;ClientCharset=parser-charset
             ClientCharset << charset in which parser thinks client works
             
-        !sqlite://database
+        !sqlite://DBfile?
+        	ClientCharset=parser-charset& << charset in which parser thinks client works
+        	autocommit=1
 
         для работы connect нужно, чтобы заранее(рекомендуется в системном конфигурационном auto.p)
         была определена таблица

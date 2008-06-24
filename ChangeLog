@@ -1,3 +1,26 @@
+2008-06-24	misha
+	* tests/176.html 1.3:
+	* tests/176_dir/a.p 1.2:
+	* tests/176_dir/d.p 1.2:
+	* tests/results/176.processed 1.2:
+		- @OPTION => @OPTIONS
+
+	* tests/182.html 1.1:
+	* tests/182_dir/a1.p 1.1:
+	* tests/182_dir/a2.p 1.1:
+	* tests/182_dir/a3.p 1.1:
+		- tests for @OPTIONS\nappend
+
+	* src/main/compile.tab.C 1.119:
+	* src/main/compile.y 1.226:
+		- stuff for @OPTIONS\nappend
+
+	* src/main/compile_tools.h 1.79:
+		- new methods for @OPTIONS\nappend
+
+	* src/types/pa_vmethod_frame.h 1.65:
+		- ALL_VARS_LOCAL_NAME moved fo compile.y
+
 2008-06-17	misha
 	* src/main/compile.tab.C 1.118:
 	* src/main/compile.y 1.225:
