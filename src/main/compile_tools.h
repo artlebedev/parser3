@@ -8,7 +8,7 @@
 #ifndef COMPILE_TOOLS
 #define COMPILE_TOOLS
 
-static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2008/06/10 14:06:36 $";
+static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2008/06/24 12:09:48 $";
 
 #include "pa_opcode.h"
 #include "pa_types.h"
@@ -62,6 +62,7 @@ public:
 	/// @name input
 	Request& request;
 	VStateless_class* cclass;
+	VStateless_class* cclass_new;
 	ArrayClass* cclasses;
 	const char* source;
 	uint file_no;
@@ -82,6 +83,7 @@ public:
 
 	bool in_call_value;
 	bool explicit_result;
+	bool append;
 	//@}
 	
 	/// output: filled input 'methods' and 'error' if any
@@ -99,6 +101,7 @@ public:
 
 		// we were told the class to compile to?
 		cclass(aclass), // until changed with @CLASS would consider operators loading
+		cclass_new(0), 
 		cclasses(new ArrayClass(1)),
 		source(asource), 
 		file_no(afile_no),
@@ -110,9 +113,45 @@ public:
 		ls(LS_USER),
 		ls_sp(0),
 		in_call_value(false),
-		explicit_result(false) {
+		explicit_result(false),
+		append(false) {
 
 		*cclasses+=aclass;
+	}
+
+	void class_add(){
+		if(cclass_new){
+			cclass=cclass_new;
+			// append to request's classes
+			request.classes().put(cclass->name(), cclass);
+			*cclasses+=cclass;
+			cclass_new=0;
+			append=false;
+		}
+	}
+
+	bool class_reuse(){
+		if(cclass_new){
+			if(Value* class_value=request.classes().get(cclass_new->name())){
+				if(VStateless_class* existed_class=class_value->get_class()) {
+					cclass=existed_class;
+					cclass_new=0;
+					append=true;
+					return true;
+				} else {
+					return false;
+				}
+			}
+		}
+		return false;
+	}
+
+	void set_all_vars_local(){
+		if(cclass_new){
+			cclass_new->all_vars_local();
+		} else {
+			cclass->all_vars_local();
+		}
 	}
 
 	void pos_next_line() {
