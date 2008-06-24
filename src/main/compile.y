@@ -5,7 +5,7 @@
 	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.225 2008/06/17 15:51:25 misha Exp $
+	$Id: compile.y,v 1.226 2008/06/24 12:10:33 misha Exp $
 */
 
 /**
@@ -41,7 +41,9 @@
 // defines
 
 #define USE_CONTROL_METHOD_NAME "USE"
-#define OPTIONS_CONTROL_METHOD_NAME "OPTION"
+#define OPTIONS_CONTROL_METHOD_NAME "OPTIONS"
+#define OPTION_ALL_VARS_LOCAL_NAME "locals"
+#define OPTION_APPEND_METHODS "append"
 
 // forwards
 
@@ -151,24 +153,13 @@ control_method: '@' STRING '\n'
 		YYERROR;
 	}
 	if(command==CLASS_NAME) {
-		/*
-		if(PC.cclass->base_class()) { // already changed from default?
-			strcpy(PC.error, "class already have a name '");
-			strncat(PC.error, PC.cclass->name().cstr(), 100);
-			strcat(PC.error, "'");
-			YYERROR;
-		}
-		*/
 		if(strings_code->count()==1*OPERATIONS_PER_OPVALUE) {
 			// new class' name
 			const String& name=*LA2S(*strings_code);
 			// creating the class
 			VStateless_class* cclass=new VClass;
-			PC.cclass=cclass;
-			PC.cclass->set_name(name);
-			// append to request's classes
-			PC.request.classes().put(name, cclass);
-			*PC.cclasses+=cclass;
+			PC.cclass_new=cclass;
+			PC.cclass_new->set_name(name);
 		} else {
 			strcpy(PC.error, "@"CLASS_NAME" must contain only one line with class name (contains more then one)");
 			YYERROR;
@@ -177,9 +168,16 @@ control_method: '@' STRING '\n'
 		for(size_t i=0; i<strings_code->count(); i+=OPERATIONS_PER_OPVALUE) 
 			PC.request.use_file(PC.request.main_class, *LA2S(*strings_code, i));
 	} else if(command==BASE_NAME) {
+		if(PC.append){
+			strcpy(PC.error, "can't set base while appending methods to class '");
+			strncat(PC.error, PC.cclass->name().cstr(), MAX_STRING/2);
+			strcat(PC.error, "'");
+			YYERROR;
+		}
+		PC.class_add();
 		if(PC.cclass->base_class()) { // already changed from default?
 			strcpy(PC.error, "class already have a base '");
-			strncat(PC.error, PC.cclass->base_class()->name().cstr(), 100);
+			strncat(PC.error, PC.cclass->base_class()->name().cstr(), MAX_STRING/2);
 			strcat(PC.error, "'");
 			YYERROR;
 		}
@@ -210,11 +208,24 @@ control_method: '@' STRING '\n'
 	} else if(command==OPTIONS_CONTROL_METHOD_NAME) {
 		for(size_t i=0; i<strings_code->count(); i+=OPERATIONS_PER_OPVALUE) {
 			const String& option=*LA2S(*strings_code, i);
-			if(option==ALL_VARS_LOCAL_NAME){
-				PC.cclass->all_vars_local();
+			if(option==OPTION_ALL_VARS_LOCAL_NAME){
+				PC.set_all_vars_local();
+			} else if(option==OPTION_APPEND_METHODS) {
+				if(!PC.class_reuse()){
+					if(PC.cclass_new){
+						strcpy(PC.error, "can't append methods to not existed class '");
+						strncat(PC.error, PC.cclass_new->name().cstr(), MAX_STRING/2);
+						strcat(PC.error, "'");
+					} else {
+						strcpy(PC.error, "'"OPTION_APPEND_METHODS"' option should be used straight after @"CLASS_NAME);
+					}
+					YYERROR;
+				}
 			} else {
-				strcpy(PC.error, option.cstr());
-				strcat(PC.error, ": unknown option in @"OPTIONS_CONTROL_METHOD_NAME" was specified.");
+				strcpy(PC.error, "'");
+				strncat(PC.error, option.cstr(), MAX_STRING/2);
+				strcat(PC.error, "' invalid option. valid options are "
+					"'"OPTION_APPEND_METHODS"' and '"OPTION_ALL_VARS_LOCAL_NAME"'");
 				YYERROR;
 			}
 		}
@@ -232,6 +243,7 @@ control_string: maybe_string '\n';
 maybe_string: empty | STRING;
 
 code_method: '@' STRING bracketed_maybe_strings maybe_bracketed_strings maybe_comment '\n' { 
+	PC.class_add();
 	PC.explicit_result=false;
 
 	YYSTYPE params_names_code=$3;
@@ -251,7 +263,7 @@ code_method: '@' STRING bracketed_maybe_strings maybe_bracketed_strings maybe_co
 			const String* local_name=LA2S(*locals_names_code, i);
 			if(*local_name==RESULT_VAR_NAME)
 				PC.explicit_result=true;
-			else if(*local_name==ALL_VARS_LOCAL_NAME)
+			else if(*local_name==OPTION_ALL_VARS_LOCAL_NAME)
 				all_vars_local=true;
 			else
 				*locals_names+=local_name;
