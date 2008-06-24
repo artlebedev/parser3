@@ -34,50 +34,50 @@ $oa1[^a::create[]]
 ^add_methods[$oa1]
 
 ^oa1.run[]
-^print[first <b>a</b> instance (dynamic, has @OPTION in self);$oa1;$.bProcess(true)]
+^print[first <b>a</b> instance (dynamic, has @OPTIONS in self);$oa1;$.bProcess(true)]
 
 
 $oa2[^a::create[]]
-^print[second <b>a</b> instance without setting vars (dynamic, has @OPTION in self);$oa2;$.bProcess(true)]
+^print[second <b>a</b> instance without setting vars (dynamic, has @OPTIONS in self);$oa2;$.bProcess(true)]
 
-^print[<b>a</b> without setting vars (static, has @OPTION in self);$a:CLASS]
+^print[<b>a</b> without setting vars (static, has @OPTIONS in self);$a:CLASS]
 
 ^a:run[]
-^print[<b>a</b> (static, has @OPTION in self);$a:CLASS]
+^print[<b>a</b> (static, has @OPTIONS in self);$a:CLASS]
 
 
 ^hr[]
 ^b:run[]
-^print[<b>b</b> (static, no @OPTION in self);$b:CLASS]
+^print[<b>b</b> (static, no @OPTIONS in self);$b:CLASS]
 
 
 $ob[^b::create[]]
 ^add_methods[$ob]
 
 ^ob.run[]
-^print[<b>b</b> (dynamic, no @OPTION in self);$ob;$.bProcess(true)]
+^print[<b>b</b> (dynamic, no @OPTIONS in self);$ob;$.bProcess(true)]
 
 
 
 ^hr[]
 ^c:run[]
-^print[<b>c</b> (static, child of 'a', no @OPTION in self);$c:CLASS]
+^print[<b>c</b> (static, child of 'a', no @OPTIONS in self);$c:CLASS]
 
 
 $oc[^c::create[]]
 ^oc.run[]
-^print[<b>c</b> (dynamic, child of 'a', no @OPTION in self);$oc]
+^print[<b>c</b> (dynamic, child of 'a', no @OPTIONS in self);$oc]
 
 
 
 ^hr[]
 ^d:run[]
-^print[<b>d</b> (static, child of 'a', has @OPTION in self);$d:CLASS]
+^print[<b>d</b> (static, child of 'a', has @OPTIONS in self);$d:CLASS]
 
 
 $od[^d::create[]]
 ^od.run[]
-^print[<b>d</b> (dynamic, child of 'a', has @OPTION in self);$od]
+^print[<b>d</b> (dynamic, child of 'a', has @OPTIONS in self);$od]
 
 
 </table>
