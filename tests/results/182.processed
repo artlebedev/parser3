@@ -1,0 +1,12 @@
+content-type: text/html
+content-length: 189
+
+^a:a1[]: a1<br />
+^a:a2[]: a2<br />
+^a:a3[]: a3<br />
+^b:b1[]: b1<br />
+<hr />
+^a:a1[]: new a1<br />
+^a:a2[]: exception: undefined method <b>a2</b><br />
+^b:b1[]: b1<br />
+^c:c1[]: c1<br />
