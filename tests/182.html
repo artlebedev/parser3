@@ -1,0 +1,25 @@
+@main[]
+$sDir[182_dir]
+^use[$sDir/a1.p]
+^use[$sDir/a2.p]
+
+^^a:a1[]: ^a:a1[]
+^^a:a2[]: ^a:a2[]
+^^a:a3[]: ^a:a3[]
+^^b:b1[]: ^b:b1[]
+
+<hr />
+
+# override 'a' class and add 'c' class
+^use[182_dir/a3.p]
+
+^^a:a1[]: ^a:a1[]
+^^a:a2[]: 
+^try{
+	^a:a2[]
+}{
+	$exception.handled(1)
+	exception: $exception.comment <b>$exception.source</b><br />
+}
+^^b:b1[]: ^b:b1[]
+^^c:c1[]: ^c:c1[]
