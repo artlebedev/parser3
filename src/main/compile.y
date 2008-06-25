@@ -5,7 +5,7 @@
 	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.226 2008/06/24 12:10:33 misha Exp $
+	$Id: compile.y,v 1.227 2008/06/25 08:35:51 misha Exp $
 */
 
 /**
@@ -213,9 +213,9 @@ control_method: '@' STRING '\n'
 			} else if(option==OPTION_APPEND_METHODS) {
 				if(!PC.class_reuse()){
 					if(PC.cclass_new){
-						strcpy(PC.error, "can't append methods to not existed class '");
+						strcpy(PC.error, "can't append methods to '");
 						strncat(PC.error, PC.cclass_new->name().cstr(), MAX_STRING/2);
-						strcat(PC.error, "'");
+						strcat(PC.error, "' - the class doesn't exist");
 					} else {
 						strcpy(PC.error, "'"OPTION_APPEND_METHODS"' option should be used straight after @"CLASS_NAME);
 					}
