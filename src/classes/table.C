@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2008/05/27 19:01:46 $";
+static const char * const IDENT_TABLE_C="$Date: 2008/06/26 15:00:42 $";
 
 #ifndef NO_STRINGSTREAM
 #include <sstream>
@@ -1117,7 +1117,7 @@ static void _sql(Request& r, MethodParams& params) {
 	Value& statement=params.as_junction(0, "statement must be code");
 
 	HashStringValue* bind=0;
-	ulong limit=0;
+	ulong limit=SQL_NO_LIMIT;
 	ulong offset=0;
 	if(params.count()>1) {
 		Value& voptions=params.as_no_junction(1, "options must be hash, not code");
@@ -1129,8 +1129,13 @@ static void _sql(Request& r, MethodParams& params) {
 					bind=vbind->get_hash();
 				}
 				if(Value* vlimit=options->get(sql_limit_name)) {
-					valid_options++;
-					limit=(ulong)r.process_to_value(*vlimit).as_double();
+					if(vlimit->is_defined()){
+						valid_options++;
+						limit=(ulong)r.process_to_value(*vlimit).as_double();
+					} else
+						throw Exception(PARSER_RUNTIME,
+								0,
+								"limit must be defined");
 				}
 				if(Value* voffset=options->get(sql_offset_name)) {
 					valid_options++;

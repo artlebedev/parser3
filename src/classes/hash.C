@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_HASH_C="$Date: 2008/05/29 09:26:34 $";
+static const char * const IDENT_HASH_C="$Date: 2008/06/26 15:00:42 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -310,7 +310,7 @@ static void _sql(Request& r, MethodParams& params) {
 	Value& statement=params.as_junction(0, "statement must be code");
 
 	HashStringValue* bind=0;
-	ulong limit=0;
+	ulong limit=SQL_NO_LIMIT;
 	ulong offset=0;
 	bool distinct=false;
 	Table2hash_value_type value_type=C_HASH;
@@ -324,8 +324,13 @@ static void _sql(Request& r, MethodParams& params) {
 					bind=vbind->get_hash();
 				}
 				if(Value* vlimit=options->get(sql_limit_name)) {
-					valid_options++;
-					limit=(ulong)r.process_to_value(*vlimit).as_double();
+					if(vlimit->is_defined()){
+						valid_options++;
+						limit=(ulong)r.process_to_value(*vlimit).as_double();
+					} else
+						throw Exception(PARSER_RUNTIME,
+							0,
+							"limit must be defined");
 				}
 				if(Value* voffset=options->get(sql_offset_name)) {
 					valid_options++;
@@ -365,6 +370,7 @@ static void _sql(Request& r, MethodParams& params) {
 		distinct,
 		hash,
 		value_type);
+
 	r.connection()->query(
 		statement_cstr, 
 		placeholders_count, placeholders,

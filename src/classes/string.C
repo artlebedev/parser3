@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2008/05/22 17:43:30 $";
+static const char * const IDENT_STRING_C="$Date: 2008/06/26 15:00:42 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -466,7 +466,7 @@ const String* sql_result_string(Request& r, MethodParams& params,
 	Value& statement=params.as_junction(0, "statement must be code");
 
 	HashStringValue* bind=0;
-	ulong limit=0;
+	ulong limit=SQL_NO_LIMIT;
 	ulong offset=0;
 	default_code=0;
 	if(params.count()>1) {
@@ -479,8 +479,13 @@ const String* sql_result_string(Request& r, MethodParams& params,
 					bind=vbind->get_hash();
 				}
 				if(Value* vlimit=options->get(sql_limit_name)) {
-					valid_options++;
-					limit=(ulong)r.process_to_value(*vlimit).as_double();
+					if(vlimit->is_defined()){
+						valid_options++;
+						limit=(ulong)r.process_to_value(*vlimit).as_double();
+					} else
+						throw Exception(PARSER_RUNTIME,
+								0,
+								"limit must be defined");
 				}
 				if(Value* voffset=options->get(sql_offset_name)) {
 					valid_options++;
@@ -510,6 +515,7 @@ const String* sql_result_string(Request& r, MethodParams& params,
 	const char* statement_cstr=
 		statement_string.cstr(String::L_UNSPECIFIED, r.connection());
 	String_sql_event_handlers handlers(statement_string, statement_cstr);
+
 	r.connection()->query(
 		statement_cstr, 
 		placeholders_count, placeholders,
