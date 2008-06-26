@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_SQL_DRIVER_MANAGER_C="$Date: 2007/04/23 10:30:32 $";
+static const char * const IDENT_SQL_DRIVER_MANAGER_C="$Date: 2008/06/26 09:41:55 $";
 
 #include "pa_sql_driver_manager.h"
 #include "ltdl.h"
@@ -115,7 +115,8 @@ SQL_Driver_manager::~SQL_Driver_manager() {
 /// @param aurl protocol://[driver-dependent]
 SQL_Connection* SQL_Driver_manager::get_connection(const String& aurl,
 						   Table *protocol2driver_and_client,
-						   const char* arequest_charset) {
+						   const char* arequest_charset,
+						   const char* adocument_root) {
 	// we have table for locating protocol's library
 	if(!protocol2driver_and_client)
 		throw Exception(PARSER_RUNTIME,
@@ -220,7 +221,7 @@ SQL_Connection* SQL_Driver_manager::get_connection(const String& aurl,
 			put_driver_to_cache(protocol, driver);
 		}
 	
-		connection=new SQL_Connection(aurl, *driver, arequest_charset);
+		connection=new SQL_Connection(aurl, *driver, arequest_charset, adocument_root);
 		// associate with pool[request]  (deassociates at close)
 		connection->set_url(); 
 	}

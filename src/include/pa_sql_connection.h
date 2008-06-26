@@ -8,7 +8,7 @@
 #ifndef PA_SQL_CONNECTION_H
 #define PA_SQL_CONNECTION_H
 
-static const char * const IDENT_SQL_CONNECTION_H="$Date: 2005/08/09 08:14:50 $";
+static const char * const IDENT_SQL_CONNECTION_H="$Date: 2008/06/26 09:41:43 $";
 
 
 #include "pa_sql_driver.h"
@@ -35,8 +35,9 @@ class SQL_Driver_services_impl: public SQL_Driver_services {
 	const String* furl;
 	Exception fexception;
 	const char* frequest_charset;
+	const char* fdocument_root;
 public:
-	SQL_Driver_services_impl(const char* arequest_charset): furl(0), frequest_charset(arequest_charset) {}
+	SQL_Driver_services_impl(const char* arequest_charset, const char* adocument_root): furl(0), frequest_charset(arequest_charset), fdocument_root(adocument_root) {}
 	void set_url(const String& aurl) { furl=&aurl;}
 	const String& url_without_login() const;
 
@@ -45,6 +46,8 @@ public:
 	override void* realloc(void *ptr, size_t size) { return pa_realloc(ptr, size); }
 
 	override const char* request_charset() { return frequest_charset; }
+	override const char* request_document_root() { return fdocument_root; }
+	
 	override void transcode(const char* src, size_t src_length,
 		const char*& dst, size_t& dst_length,
 		const char* charset_from_name,
@@ -94,10 +97,10 @@ class SQL_Connection: public PA_Object {
 
 public:
 
-	SQL_Connection(const String& aurl, SQL_Driver& adriver, const char* arequest_charset):
+	SQL_Connection(const String& aurl, SQL_Driver& adriver, const char* arequest_charset, const char* adocument_root):
 		furl(aurl),
 		fdriver(adriver),
-		fservices(arequest_charset),
+		fservices(arequest_charset, adocument_root),
 		fconnection(0),
 		time_used(0) {
 	}

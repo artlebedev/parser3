@@ -9,7 +9,7 @@
 #ifndef PA_SQL_DRIVER_MANAGER_H
 #define PA_SQL_DRIVER_MANAGER_H
 
-static const char * const IDENT_SQL_DRIVER_MANAGER_H="$Date: 2005/08/09 08:14:50 $";
+static const char * const IDENT_SQL_DRIVER_MANAGER_H="$Date: 2008/06/26 09:41:31 $";
 
 
 #include "pa_sql_driver.h"
@@ -56,7 +56,8 @@ public:
 	*/
 	SQL_Connection* get_connection(const String& aurl, 
 		Table *protocol2driver_and_client,
-		const char* arequest_charset);
+		const char* arequest_charset,
+		const char* adocument_root);
 
 private: // driver cache
 
