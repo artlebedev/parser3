@@ -26,19 +26,25 @@
 #ifndef PA_SQL_DRIVER_H
 #define PA_SQL_DRIVER_H
 
-static const char * const IDENT_SQL_DRIVER_H="$Date: 2005/08/09 08:14:53 $";
+static const char * const IDENT_SQL_DRIVER_H="$Date: 2008/06/26 09:42:35 $";
 
 #include <sys/types.h>
 #include <setjmp.h>
 #include <stdlib.h>
+#include <limits.h>
 
 /*
     1..8 not logged
 	9 introducing placeholders
+	10 limit fixed (default: SQL_NO_LIMIT [ULONG_MAX]), path to document_root added
 */
+//#define SQL_DRIVER_API_VERSION 10
 #define SQL_DRIVER_API_VERSION 9
 #define SQL_DRIVER_CREATE create /* used in driver implementation */
 #define SQL_DRIVER_CREATE_NAME "create" /* could not figure out how to # it :( */
+
+//#define SQL_NO_LIMIT ULONG_MAX
+#define SQL_NO_LIMIT 0
 
 /// fields are freed elsewhere
 class SQL_Error {
@@ -81,6 +87,8 @@ public:
 	virtual void *realloc(void *ptr, size_t size) =0;
 	/// $request:charset
 	virtual const char* request_charset() =0;
+	/// $request:document-root
+	virtual const char* request_document_root() =0;
 	/// transcoder. 
 	/// WARNING: can store pointers to charset names to speedup name-to-instance resolving
 	/// so do NOT pass pointers to local vars and change those vars after that
