@@ -26,7 +26,7 @@
 #ifndef PA_SQL_DRIVER_H
 #define PA_SQL_DRIVER_H
 
-static const char * const IDENT_SQL_DRIVER_H="$Date: 2008/06/26 09:42:35 $";
+static const char * const IDENT_SQL_DRIVER_H="$Date: 2008/06/26 14:42:09 $";
 
 #include <sys/types.h>
 #include <setjmp.h>
@@ -38,13 +38,13 @@ static const char * const IDENT_SQL_DRIVER_H="$Date: 2008/06/26 09:42:35 $";
 	9 introducing placeholders
 	10 limit fixed (default: SQL_NO_LIMIT [ULONG_MAX]), path to document_root added
 */
-//#define SQL_DRIVER_API_VERSION 10
-#define SQL_DRIVER_API_VERSION 9
+#define SQL_DRIVER_API_VERSION 10
+//#define SQL_DRIVER_API_VERSION 9
 #define SQL_DRIVER_CREATE create /* used in driver implementation */
 #define SQL_DRIVER_CREATE_NAME "create" /* could not figure out how to # it :( */
 
-//#define SQL_NO_LIMIT ULONG_MAX
-#define SQL_NO_LIMIT 0
+#define SQL_NO_LIMIT ULONG_MAX
+//#define SQL_NO_LIMIT 0
 
 /// fields are freed elsewhere
 class SQL_Error {
