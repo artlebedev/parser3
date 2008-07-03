@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2008/06/26 15:00:42 $";
+static const char * const IDENT_FILE_C="$Date: 2008/07/03 09:18:52 $";
 
 #include "pa_config_includes.h"
 
@@ -872,9 +872,10 @@ static void _sql(Request& r, MethodParams& params) {
 		statement_string.cstr(String::L_UNSPECIFIED, r.connection());
 	File_sql_event_handlers handlers(statement_string, statement_cstr);
 
+	ulong offset=0;
+
 	if(params.count()>1)
-		if(HashStringValue* options=
-			params.as_no_junction(1, PARAM_MUST_NOT_BE_CODE).get_hash()) {
+		if(HashStringValue* options=params.as_no_junction(1, PARAM_MUST_NOT_BE_CODE).get_hash()){
 			int valid_options=0;
 			if(Value* vfilename=options->get(NAME_NAME)) {
 				valid_options++;
@@ -883,6 +884,10 @@ static void _sql(Request& r, MethodParams& params) {
 			if(Value* vcontent_type=options->get(CONTENT_TYPE_NAME)) {
 				valid_options++;
 				handlers.user_content_type=&vcontent_type->as_string();
+			}
+			if(Value* voffset=options->get(sql_offset_name)) {
+				valid_options++;
+				offset=(ulong)r.process_to_value(*voffset).as_double();
 			}
 			if(valid_options!=options->count())
 				throw Exception(PARSER_RUNTIME,
@@ -894,7 +899,7 @@ static void _sql(Request& r, MethodParams& params) {
 	r.connection()->query(
 		statement_cstr, 
 		0, 0,
-		0, SQL_NO_LIMIT, 
+		offset, 1/*limit*/,
 		handlers,
 		statement_string);
 
