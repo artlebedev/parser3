@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2008/06/26 15:00:42 $";
+static const char * const IDENT_STRING_C="$Date: 2008/07/03 09:17:57 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -479,13 +479,8 @@ const String* sql_result_string(Request& r, MethodParams& params,
 					bind=vbind->get_hash();
 				}
 				if(Value* vlimit=options->get(sql_limit_name)) {
-					if(vlimit->is_defined()){
-						valid_options++;
-						limit=(ulong)r.process_to_value(*vlimit).as_double();
-					} else
-						throw Exception(PARSER_RUNTIME,
-								0,
-								"limit must be defined");
+					valid_options++;
+					limit=(ulong)r.process_to_value(*vlimit).as_double();
 				}
 				if(Value* voffset=options->get(sql_offset_name)) {
 					valid_options++;
