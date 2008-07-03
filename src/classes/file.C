@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2008/07/03 09:18:52 $";
+static const char * const IDENT_FILE_C="$Date: 2008/07/03 09:36:16 $";
 
 #include "pa_config_includes.h"
 
@@ -872,6 +872,7 @@ static void _sql(Request& r, MethodParams& params) {
 		statement_string.cstr(String::L_UNSPECIFIED, r.connection());
 	File_sql_event_handlers handlers(statement_string, statement_cstr);
 
+	ulong limit=SQL_NO_LIMIT;
 	ulong offset=0;
 
 	if(params.count()>1)
@@ -884,6 +885,10 @@ static void _sql(Request& r, MethodParams& params) {
 			if(Value* vcontent_type=options->get(CONTENT_TYPE_NAME)) {
 				valid_options++;
 				handlers.user_content_type=&vcontent_type->as_string();
+			}
+			if(Value* vlimit=options->get(sql_limit_name)) {
+				valid_options++;
+				limit=(ulong)r.process_to_value(*vlimit).as_double();
 			}
 			if(Value* voffset=options->get(sql_offset_name)) {
 				valid_options++;
@@ -899,7 +904,7 @@ static void _sql(Request& r, MethodParams& params) {
 	r.connection()->query(
 		statement_cstr, 
 		0, 0,
-		offset, 1/*limit*/,
+		offset, limit,
 		handlers,
 		statement_string);
 
