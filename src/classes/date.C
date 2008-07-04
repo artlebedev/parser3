@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_DATE_C="$Date: 2008/04/09 09:52:00 $";
+static const char * const IDENT_DATE_C="$Date: 2008/07/04 11:17:32 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -127,12 +127,10 @@ date_part_set:
 static void _create(Request& r, MethodParams& params) {
 	VDate& vdate=GET_SELF(r, VDate);
 
-	if(params.count()==1) { 
-		// ^create[2002-04-25 18:14:00]
-		// ^create[18:14:00]
-		if(const String* sdate=params[0].get_string())
+	if(params.count()==1){
+		if(const String* sdate=params[0].get_string()){ // ^create[2002-04-25 18:14:00] ^create[18:14:00]
 			vdate.set_time(cstr_to_time_t(sdate->cstrm()));
-		else { // ^create(float days)
+		} else { // ^create(float days) or ^create[date object]
 			time_t t=(time_t)round(params.as_double(0, "float days must be double", r)*SECS_PER_DAY);
 			if(t<0 || !localtime(&t))
 				throw Exception(0,
