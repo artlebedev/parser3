@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2008/07/03 09:17:57 $";
+static const char * const IDENT_STRING_C="$Date: 2008/07/04 11:16:51 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -36,9 +36,9 @@ DECLARE_CLASS_VAR(string, new MString, 0);
 // defines for statics
 
 #define MATCH_VAR_NAME "match"
-#define TRIM_START_OPTION "start"
+#define TRIM_START_OPTION "left"
+#define TRIM_END_OPTION "right"
 #define TRIM_BOTH_OPTION "both"
-#define TRIM_END_OPTION "end"
 
 // statics
 
@@ -594,12 +594,12 @@ static void _trim(Request& r, MethodParams& params) {
 		const String& skind=params.as_string(0, 
 			"'where' must be string");
 		if(skind.length())
-			if(skind==TRIM_START_OPTION)
-				kind=String::TRIM_START;
-			else if(skind==TRIM_END_OPTION)
-				kind=String::TRIM_END;
-			else if(skind==TRIM_BOTH_OPTION)
+			if(skind==TRIM_BOTH_OPTION)
 				kind=String::TRIM_BOTH;
+			else if(skind==TRIM_START_OPTION || skind=="start")
+				kind=String::TRIM_START;
+			else if(skind==TRIM_END_OPTION || skind=="end")
+				kind=String::TRIM_END;
 			else
 				throw Exception(PARSER_RUNTIME,
 					&skind,
