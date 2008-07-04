@@ -8,7 +8,7 @@
 #ifndef PA_VDATE_H
 #define PA_VDATE_H
 
-static const char * const IDENT_VDATE_H="$Date: 2007/04/17 08:42:43 $";
+static const char * const IDENT_VDATE_H="$Date: 2008/07/04 11:18:24 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -50,8 +50,12 @@ public: // Value
 	/// VDate: ftime -> float days
 	override Value& as_expr_result(bool /*return_string_as_is=false*/) { return *new VDouble(as_double()); }
 
+	/// VDate: true
+	override bool is_evaluated_expr() const { return true; }
+
 	/// VDate: ftime -> float days
 	override double as_double() const { return ((double)ftime)/ SECS_PER_DAY; }
+
 	/// VDate: 0 or !0
 	override bool as_bool() const { return ftime!=0; }
 
