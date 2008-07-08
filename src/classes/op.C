@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2008/06/26 09:42:53 $";
+static const char * const IDENT_OP_C="$Date: 2008/07/08 13:37:30 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -404,12 +404,22 @@ r.sql_connect_time+=t[1]-t[0];
 class Switch_data: public PA_Object {
 public:
 	Request& r;
-	Value& searching;
+	const String* searching_string;
+	double searching_double;
 	Value* found;
 	Value* _default;
 public:
 	Switch_data(Request& ar, Value& asearching): 
-	  r(ar), searching(asearching) {}
+		r(ar)
+	{
+		if(asearching.is_string() || asearching.is_void()){
+			searching_string=&asearching.as_string();
+			searching_double=0;
+		} else {
+			searching_string=0;
+			searching_double=asearching.as_double();
+		}
+	}
 };
 #endif
 static void _switch(Request& r, MethodParams& params) {
@@ -432,31 +442,27 @@ static void _case(Request& r, MethodParams& params) {
 			0,
 			"without switch");
 
+	if(data->found) // matches already was found
+		return;
+
 	int count=params.count();
 	Value& code=params.as_junction(--count, "case result must be code");
 	
-	Value& searching=data->searching;
-	bool we_are_searching_string_or_void=searching.is_string() || searching.is_void();
-	for(int i=0; i<count; i++) {
+	for(int i=0; i<count; i++){
 		Value& value=r.process_to_value(params[i]);
 
-		if(value.is_string() && value.as_string() == CASE_DEFAULT_VALUE) {
+		if(value.is_string() && value.as_string() == CASE_DEFAULT_VALUE){
 			data->_default=&code;
-			break;
+			continue;
 		}
 
 		bool matches;
-		if(we_are_searching_string_or_void)
-			matches=searching.as_string() == value.as_string();
+		if(data->searching_string)
+			matches=(*data->searching_string) == value.as_string();
 		else
-			matches=searching.as_double() == value.as_double();
+			matches=data->searching_double == value.as_double();
 
-		if(matches) {
-			if(data->found)
-				throw Exception(PARSER_RUNTIME,
-					0,
-					"duplicate found");
-
+		if(matches){
 			data->found=&code;
 			break;
 		}
