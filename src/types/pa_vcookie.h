@@ -8,20 +8,25 @@
 #ifndef PA_VCOOKIE_H
 #define PA_VCOOKIE_H
 
-static const char * const IDENT_VCOOKIE_H="$Date: 2007/02/06 16:22:08 $";
+static const char * const IDENT_VCOOKIE_H="$Date: 2008/07/15 12:54:24 $";
 
 #include "pa_hash.h"
 #include "pa_common.h"
 #include "pa_value.h"
-#include "pa_request_info.h"
 #include "pa_sapi.h"
 
 #define COOKIE_CLASS_NAME "cookie"
 
+// forwards
+class Request_info;
+class Request_charsets;
+
 /// cookie class
 class VCookie: public Value {
 
-	HashStringValue before, after, deleted;
+	HashStringValue before;
+	HashStringValue after;
+	HashStringValue deleted;
 
 public: // Value
 	
@@ -36,9 +41,19 @@ public: // Value
 
 public: // usage
 
-	void fill_fields(Request_info& request_info);
+	VCookie(Request_charsets& acharsets, Request_info& arequest_info);
 	void output_result(SAPI_Info& sapi_info);
 
+private:
+	Request_charsets& fcharsets;
+	Request_info& frequest_info;
+
+private:
+	Charset* filled_source;
+	Charset* filled_client;
+
+	bool should_refill();
+	void refill();
 };
 
 #endif

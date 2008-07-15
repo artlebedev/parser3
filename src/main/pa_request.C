@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REQUEST_C="$Date: 2008/06/16 12:44:57 $";
+static const char * const IDENT_REQUEST_C="$Date: 2008/07/15 12:54:37 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -126,7 +126,7 @@ Request::Request(SAPI_Info& asapi_info, Request_info& arequest_info,
 	form(*new VForm(charsets, arequest_info)),
 	mail(*new VMail),
 	response(*new VResponse(arequest_info, charsets)),
-	cookie(*new VCookie),
+	cookie(*new VCookie(charsets, arequest_info)),
 	console(*new VConsole),
 
 	// private
@@ -306,9 +306,6 @@ struct timeval mt[10];
 gettimeofday(&mt[0],NULL);
 #endif
 	try {
-		// filling cookies
-		cookie.fill_fields(request_info);
-
 		// filling mail received
 		mail.fill_received(*this);
 
