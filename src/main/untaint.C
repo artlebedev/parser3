@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_UNTAINT_C="$Date: 2008/02/14 18:35:01 $";
+static const char * const IDENT_UNTAINT_C="$Date: 2008/07/15 12:55:43 $";
 
 
 #include "pa_string.h"
@@ -53,7 +53,7 @@ extern "C" { // author forgot to do that
     }
 
 
-#define escape(action) \
+#define escape_fragment(action) \
 	for(; fragment_length--; CORD_next(info->pos)) { \
 		char c=CORD_pos_fetch(info->pos); \
 		action \
@@ -303,7 +303,6 @@ int cstr_to_string_body_block(char alang, size_t fragment_length, Cstr_to_string
 	bool& whitespace=info->whitespace;
 	size_t fragment_end=info->fragment_begin+fragment_length;
 	//fprintf(stderr, "%d, %d =%s=\n", fragment_lang, fragment_length, info->body->cstr());
-
 	
 	String::Language to_lang=info->lang==String::L_UNSPECIFIED?fragment_lang:info->lang;
 	bool optimize=(to_lang & String::L_OPTIMIZE_BIT)!=0;
@@ -325,14 +324,17 @@ int cstr_to_string_body_block(char alang, size_t fragment_length, Cstr_to_string
 		break;
 	case String::L_FILE_SPEC:
 		// tainted, untaint language: file [name]
-		escape(
-			// Macintosh has problems with small Russian letter 'r'
-			if( c=='\xF0' && info->charsets && info->charsets->source().NAME()=="WINDOWS-1251" ) {
-				// fixing that letter for most common charset
-				to_char('p');
-			} else // fallback to default
-				encode(need_file_encode, '_', c); 
-		);
+		{
+			bool is1251=(info->charsets && info->charsets->source().NAME()=="WINDOWS-1251");
+			escape_fragment(
+				// Macintosh has problems with small Russian letter 'r'
+				if( is1251 && c=='\xF0' ) {
+					// fixing that letter for most common charset
+					to_char('p');
+				} else // fallback to default
+					encode(need_file_encode, '_', c); 
+			);
+		}
 		break;
 	case String::L_URI:
 		// tainted, untaint language: uri
@@ -354,7 +356,7 @@ int cstr_to_string_body_block(char alang, size_t fragment_length, Cstr_to_string
 	case String::L_HTTP_HEADER:
 		// tainted, untaint language: http-field-content-text
 		// the same as L_URI BUT not transcoded into $response:charset before encoding
-		escape(
+		escape_fragment(
 			encode(need_uri_encode, '%', c);
 		);
 		break;
@@ -421,10 +423,10 @@ int cstr_to_string_body_block(char alang, size_t fragment_length, Cstr_to_string
 		}
 		break;
 	case String::L_JS:
-		escape(switch(c) {
+		escape_fragment(switch(c) {
+			case '\n': to_string("\\n");  break;
 			case '"': to_string("\\\"");  break;
 			case '\'': to_string("\\'");  break;
-			case '\n': to_string("\\n");  break;
 			case '\\': to_string("\\\\");  break;
 			case '\xFF': to_string("\\\xFF");  break;
 			default: _default; break;
@@ -432,9 +434,10 @@ int cstr_to_string_body_block(char alang, size_t fragment_length, Cstr_to_string
 		break;
 	case String::L_XML:
 		// [2]    Char    ::=    #x9 | #xA | #xD | [#x20-#xD7FF] | [#xE000-#xFFFD] | [#x10000-#x10FFFF] 
-		escape(switch(c) {
-			case '\x9': 
-			case '\xA': 
+		escape_fragment(switch(c) {
+			case '\x20':
+			case '\x9':
+			case '\xA':
 			case '\xD': // this is usually removed on input
 				_default; 
 				break;
@@ -463,7 +466,7 @@ int cstr_to_string_body_block(char alang, size_t fragment_length, Cstr_to_string
 		});
 		break;
 	case String::L_HTML:
-		escape(switch(c) {
+		escape_fragment(switch(c) {
 			case '&': to_string("&amp;");  break;
 			case '>': to_string("&gt;");  break;
 			case '<': to_string("&lt;");  break;
@@ -473,11 +476,37 @@ int cstr_to_string_body_block(char alang, size_t fragment_length, Cstr_to_string
 		break;
 	case String::L_REGEX:
 		// tainted, untaint language: regex
-		escape(
+		escape_fragment(
 			if(need_regex_escape(c))
 				to_char('\\')
 			_default;
 		);
+		break;
+	case String::L_HTTP_COOKIE:
+		// tainted, untaint language: cookie (3.3.0 and higher: %uXXXX in UTF-8)
+		{
+			const char *fragment_str=info->body->mid(info->fragment_begin, fragment_length).cstr();
+			// skip source [we use recoded version]
+			pa_CORD_pos_advance(info->pos, fragment_length);
+			String::C output(fragment_str, fragment_length);
+			/*
+			if(info->charsets && !info->charsets->source().isUTF8())
+				output=Charset::transcode(output, 
+					info->charsets->source(), 
+					UTF8_charset);
+			*/
+			
+			output=Charset::escape(output, info->charsets->source());
+			//throw Exception(0, 0, output);
+			to_string(output);
+
+			/*
+			char c;
+			for(const char* src=output.str; (c=*src++); ) 
+				encode(need_http_cookie_header_encode, '%', c);
+			*/
+
+		}
 		break;
 	default:
 		SAPI::abort("unknown untaint language #%d", 
