@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-static const char * const IDENT_STRING_H="$Date: 2007/05/07 09:43:35 $";
+static const char * const IDENT_STRING_H="$Date: 2008/07/15 12:51:20 $";
 
 // includes
 #include "pa_types.h"
@@ -77,25 +77,26 @@ public:
 	enum Language {
 		L_UNSPECIFIED=0, ///< no real string has parts of this lange: it's just convinient to check when string's empty
 		// these two must go before others, there are checks for >L_AS_IS
-		L_CLEAN='0', ///< clean  WARNING: read above warning before changing
-		L_AS_IS='A',     ///< leave all characters intact  WARNING: read above warning before changing
+		L_CLEAN='0',	///< clean  WARNING: read above warning before changing
+		L_AS_IS='A',	///< leave all characters intact  WARNING: read above warning before changing
 
 		L_PASS_APPENDED='P',
 			/**<
 				leave lang built into string being appended.
 				just a flag, that value not stored
 			*/
-		L_TAINTED='T',  ///< tainted, untaint lang as assigned later 
+		L_TAINTED='T',	///< tainted, untaint lang as assigned later 
 		// untaint langs. assigned by ^untaint[lang]{...}
-		L_FILE_SPEC='F', ///< file specification
-		L_HTTP_HEADER='h',    ///< text in HTTP response header
-		L_MAIL_HEADER='m',    ///< text in mail header
-		L_URI='U',       ///< text in uri
-		L_SQL='Q',       ///< ^table:sql body
-		L_JS='J',        ///< JavaScript code
+		L_FILE_SPEC='F',	///< file specification
+		L_HTTP_HEADER='h',	///< text in HTTP response header
+		L_MAIL_HEADER='m',	///< text in mail header
+		L_URI='U',		///< text in uri
+		L_SQL='Q',		///< ^table:sql body
+		L_JS='J',		///< JavaScript code
 		L_XML='X',		///< ^dom:set xml
-		L_HTML='H',      ///< HTML code
-		L_REGEX='R',      ///< RegEx expression
+		L_HTML='H',		///< HTML code
+		L_REGEX='R',	///< RegEx expression
+		L_HTTP_COOKIE='C',	///< cookies encoded as %uXXXX for compartibility with js functions encode/decode
 		// READ WARNING ABOVE BEFORE ADDING ANYTHING
 		L_OPTIMIZE_BIT = 0x80  ///< flag, requiring cstr whitespace optimization
 	};
