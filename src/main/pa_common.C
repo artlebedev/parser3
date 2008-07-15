@@ -26,7 +26,7 @@
  *
  */
 
-static const char * const IDENT_COMMON_C="$Date: 2008/06/16 12:46:00 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2008/07/15 12:50:11 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -173,7 +173,7 @@ File_read_result file_read(Request_charsets& charsets, const String& file_spec,
 		result.length=http.length;
 		result.headers=http.headers; 
 	} else {
-		if(params) {
+		if(params){
 			int valid_options=pa_get_valid_file_options_count(*params);
 			if(valid_options!=params->count())
 				throw Exception(PARSER_RUNTIME,
@@ -187,31 +187,30 @@ File_read_result file_read(Request_charsets& charsets, const String& file_spec,
 			"read", file_read_action, &info, 
 			as_text, fail_on_read_problem); 
 
-		if(result.length && as_text && params && transcode_text_result) {
-			if( Value* vcharset_name=params->get(PA_CHARSET_NAME) ) {
-				Charset asked_charset=::charsets.get(vcharset_name->as_string().
-					change_case(charsets.source(), String::CC_UPPER));
+		if(as_text && result.success){
+			if(result.length>=3 && strncmp(result.str, "\xEF\xBB\xBF", 3)==0){
+				// skip UTF-8 signature: EF BB BF  (BOM code)
+				result.str+=3;
+				result.length-=3;
+			}
+			
+			if(result.length && transcode_text_result && params){ // must be checked because transcode returns CONST string in case length==0, which contradicts hacking few lines below
+				if( Value* vcharset_name=params->get(PA_CHARSET_NAME) ){
+					Charset asked_charset=::charsets.get(vcharset_name->as_string().
+						change_case(charsets.source(), String::CC_UPPER));
 
-				String::C body=String::C(result.str, result.length);
-				body=Charset::transcode(body, asked_charset, charsets.source());
+					String::C body=String::C(result.str, result.length);
+					body=Charset::transcode(body, asked_charset, charsets.source());
 
-				result.str=const_cast<char *>(body.str); // hacking a little
-				result.length=body.length;
-			} 
-		}
-	}
-
-	if(result.success && as_text) {
-		// UTF-8 signature: EF BB BF
-		if(result.length>=3) {
-			char *in=(char *)result.str;
-			if(strncmp(in, "\xEF\xBB\xBF", 3)==0) {
-				result.str=in+3; result.length-=3;// skip prefix
+					result.str=const_cast<char*>(body.str); // hacking a little
+					result.length=body.length;
+				}
 			}
 		}
-
-		fix_line_breaks((char *)(result.str), result.length); 
 	}
+	
+	if(as_text && result.length)
+		fix_line_breaks(result.str, result.length);
 
 	return result;
 }
@@ -652,57 +651,23 @@ enum EscapeState {
 	EscapeSecond,
 	EscapeUnicode
 };
-/*
-char* unescape_chars(const char* cp, int len) {
-	char* s=new(PointerFreeGC) char[len + 1]; 
-	EscapeState escapeState=EscapeRest;
-	uint escapedValue=0;
-	int srcPos=0;
-	int dstPos=0;
-	while(srcPos < len) {
-		uchar ch=(uchar)cp[srcPos]; 
-		switch(escapeState) {
-			case EscapeRest:
-				if(ch=='%') {
-					escapeState=EscapeFirst;
-				} else if(ch=='+'){
-					s[dstPos++]=' '; 
-				} else {
-					s[dstPos++]=ch;	
-				}
-				break;
-			case EscapeFirst:
-				escapedValue=hex_value[ch] << 4;
-				escapeState=EscapeSecond;
-				break;
-			case EscapeSecond:
-				escapedValue +=hex_value[ch]; 
-				s[dstPos++]=(char)escapedValue;
-				escapeState=EscapeRest;
-				break;
-		}
-		srcPos++; 
-	}
-	s[dstPos]=0;
-	return s;
-}
-*/
 
-char* unescape_chars(const char* cp, int len, Charset* charset){
-	char* s=new(PointerFreeGC) char[len + 1]; // enough (%uXXXX==6 bytes, max utf-8 char length==6 bytes)
+// @todo prescan for reduce required size (unescaped sting in 1 byte charset requires less memory usually)
+char* unescape_chars(const char* cp, int len, Charset* charset, bool ignore_plus){
+	char* s=new(PointerFreeGC) char[len+1]; // must be enough (%uXXXX==6 bytes, max utf-8 char length==6 bytes)
 	char* dst=s;
 	EscapeState escapeState=EscapeRest;
 	uint escapedValue=0;
 	int srcPos=0;
 	short int jsCnt=0;
-	while(srcPos < len) {
+	while(srcPos<len){
 		uchar c=(uchar)cp[srcPos]; 
 		if(c=='%'){
 			escapeState=EscapeFirst;
 		} else {
 			switch(escapeState) {
 				case EscapeRest:
-					if(c=='+'){
+					if(!ignore_plus && c=='+'){
 						*dst++=' ';
 					} else {
 						*dst++=c;

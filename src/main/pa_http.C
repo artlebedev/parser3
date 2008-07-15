@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
  */
 
-static const char * const IDENT_HTTP_C="$Date: 2008/06/11 11:38:35 $"; 
+static const char * const IDENT_HTTP_C="$Date: 2008/07/15 12:50:11 $"; 
 
 #include "pa_http.h"
 #include "pa_common.h"
@@ -655,17 +655,28 @@ File_read_http_result pa_internal_file_read_http(Request_charsets& charsets,
 		}
 	}
 
+	if(as_text && raw_body_size>=3 && strncmp(raw_body, "\xEF\xBB\xBF", 3)==0){
+		// skip UTF-8 signature: EF BB BF  (BOM code)
+		raw_body+=3;
+		raw_body_size-=3;
+	}
+
 	// output response
 	String::C real_body=String::C(raw_body, raw_body_size);
-	if(as_text && raw_body_size && transcode_text_result) { // must be checked because transcode returns CONST string in case length==0, which contradicts hacking few lines below
+
+	if(as_text && transcode_text_result && raw_body_size) { // raw_body_size must be checked because transcode returns CONST string in case length==0, which contradicts hacking few lines below
 		// defaulting to used-asked charset [it's never empty!]
 		if(!real_remote_charset)
 			real_remote_charset=asked_remote_charset;
+
 		real_body=Charset::transcode(real_body, *real_remote_charset, charsets.source());
+
 	}
 
 	result.str=const_cast<char *>(real_body.str); // hacking a little
 	result.length=real_body.length;
+
 	result.headers->put(file_status_name, new VInt(status_code));
+
 	return result;
 }
