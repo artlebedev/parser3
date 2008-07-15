@@ -5,7 +5,7 @@
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_CHARSET_C="$Date: 2008/06/05 13:23:22 $";
+static const char * const IDENT_CHARSET_C="$Date: 2008/07/15 12:53:10 $";
 
 #include "pa_charset.h"
 #include "pa_charsets.h"
@@ -15,6 +15,7 @@ static const char * const IDENT_CHARSET_C="$Date: 2008/06/05 13:23:22 $";
 #endif
 
 //#define PA_PATCHED_LIBXML_BACKWARD
+#define PRECALCULATE_DEST_LENGTH
 
 // globals
 
@@ -187,6 +188,7 @@ void Charset::sort_ToTable() {
 	//fclose(f);
 }
 
+// @todo: precache for spedup searching
 static XMLByte xlatOneTo(const XMLCh toXlat,
 			 const Charset::Tables& tables,
 			 XMLByte not_found) {
@@ -316,17 +318,17 @@ static int transcodeToUTF8(const XMLByte* srcData, size_t& srcLen,
 		//  here, so bump up the output pointer and work down as we go.
 		outPtr+= encodedBytes;
 		switch(encodedBytes) {
-		case 6: *--outPtr = XMLByte((curVal | 0x80UL) & 0xBFUL);
-			curVal>>= 6;
-		case 5: *--outPtr = XMLByte((curVal | 0x80UL) & 0xBFUL);
-			curVal>>= 6;
-		case 4: *--outPtr = XMLByte((curVal | 0x80UL) & 0xBFUL);
-			curVal>>= 6;
-		case 3: *--outPtr = XMLByte((curVal | 0x80UL) & 0xBFUL);
-			curVal>>= 6;
-		case 2: *--outPtr = XMLByte((curVal | 0x80UL) & 0xBFUL);
-			curVal>>= 6;
-		case 1: *--outPtr = XMLByte(curVal | gFirstByteMark[encodedBytes]);
+			case 6: *--outPtr = XMLByte((curVal | 0x80UL) & 0xBFUL);
+				curVal>>= 6;
+			case 5: *--outPtr = XMLByte((curVal | 0x80UL) & 0xBFUL);
+				curVal>>= 6;
+			case 4: *--outPtr = XMLByte((curVal | 0x80UL) & 0xBFUL);
+				curVal>>= 6;
+			case 3: *--outPtr = XMLByte((curVal | 0x80UL) & 0xBFUL);
+				curVal>>= 6;
+			case 2: *--outPtr = XMLByte((curVal | 0x80UL) & 0xBFUL);
+				curVal>>= 6;
+			case 1: *--outPtr = XMLByte(curVal | gFirstByteMark[encodedBytes]);
 		}
 		
 		// Add the encoded bytes back in again to indicate we've eaten them
@@ -364,7 +366,7 @@ static int transcodeFromUTF8(const XMLByte* srcData, size_t& srcLen,
 		const XMLByte firstByte =* srcPtr;
 		
 		// Special-case ASCII, which is a leading byte value of<= 127
-		if(firstByte<= 127) {
+		if(firstByte<=127) {
 			*outPtr++= firstByte;
 			srcPtr++;
 			continue;
@@ -430,10 +432,215 @@ of ocetes consumed.
 	return 0;
 }
 
-/// @todo not so memory-hungry with prescan
+static bool is_escaped(char c){
+	return
+		!(c<=127
+		&& (
+			((c>='0') && (c<='9'))
+			|| ((c>='A') && (c<='Z'))
+			|| ((c>='a') && (c<='z'))
+			|| strchr("*@-_+./", c)!=0
+		));
+}
+
+// read one utf8 character, return number of bytes needed for store it
+static unsigned int readChar(const XMLByte*& srcPtr, const XMLByte*& srcEnd, XMLByte& firstByte, XMLCh& UTF8Char){
+	if(!srcPtr || !*srcPtr || srcPtr>=srcEnd)
+		return 0;
+
+	firstByte=*srcPtr;
+
+	if(firstByte<=127){
+		UTF8Char=firstByte;
+		srcPtr++;
+		return 1;
+	}
+
+	unsigned int trailingBytes=gUTFBytes[firstByte];
+
+	if(srcPtr+trailingBytes>=srcEnd){
+		return 0; // not enough bytes in source string for reading
+	}
+
+	uint tmpVal=0;
+	switch(trailingBytes){
+		case 5: tmpVal+=*srcPtr++; tmpVal<<=6;
+		case 4: tmpVal+=*srcPtr++; tmpVal<<=6;
+		case 3: tmpVal+=*srcPtr++; tmpVal<<=6;
+		case 2: tmpVal+=*srcPtr++; tmpVal<<=6;
+		case 1: tmpVal+=*srcPtr++; tmpVal<<=6;
+		case 0: tmpVal+=*srcPtr++;
+	}
+
+	tmpVal-=gUTFOffsets[trailingBytes];
+	UTF8Char=tmpVal;
+
+	return trailingBytes+1;
+}
+
+// read char, return number of bytes needed for store it as UTF8
+static unsigned int readChar(const XMLByte*& srcPtr, const XMLByte*& srcEnd, XMLByte& firstByte, XMLCh& UTF8Char, const Charset::Tables& tables){
+	if(!srcPtr || !*srcPtr || srcPtr>=srcEnd)
+		return 0;
+
+	firstByte=*srcPtr++;
+	UTF8Char=tables.fromTable[firstByte];
+
+	if(UTF8Char<0x80)
+		return 1;
+	else if(UTF8Char<0x800)
+		return 2;
+	else if(UTF8Char<0x10000)
+		return 3;
+	else if(UTF8Char<0x200000)
+		return 4;
+	else if(UTF8Char<0x4000000)
+		return 5;
+	else if(UTF8Char<= 0x7FFFFFFF)
+		return 6;
+
+	// will use the replacement character '?'
+	firstByte=0;
+	return 1;
+}
+
+static int escape(const XMLByte* srcData, size_t& srcLen,
+			     XMLByte* toFill, size_t& toFillLen) {
+	const XMLByte* srcPtr=srcData;
+	const XMLByte* srcEnd=srcData+srcLen;
+	XMLByte* outPtr=toFill;
+	XMLByte* outEnd=toFill+toFillLen;
+	XMLByte firstByte;
+	XMLCh UTF8Char;
+	uint charSize;
+
+	// loop until we either run out of input data, or room to store
+	while((outPtr < outEnd) && (charSize=readChar(srcPtr, srcEnd, firstByte, UTF8Char))){
+		if(charSize==1){
+			if(is_escaped(firstByte)) // %XX
+				outPtr+=sprintf((char*)outPtr, "%%%02X", firstByte);
+			else
+				*outPtr++=firstByte;
+		} else
+			outPtr+=sprintf((char*)outPtr, "%%u%04X", UTF8Char); // %uXXXX
+	}
+	
+	// Update the bytes eaten
+	srcLen=srcPtr-srcData;
+	
+	// Return the characters read
+	toFillLen=outPtr-toFill;
+
+	return 0;
+}
+
+static int escape(const XMLByte* srcData, size_t& srcLen,
+			   XMLByte *toFill, size_t& toFillLen,
+			   const Charset::Tables& tables) {
+	const XMLByte* srcPtr=srcData;
+	const XMLByte* srcEnd=srcData+srcLen;
+	XMLByte* outPtr=toFill;
+	//XMLByte* outEnd=toFill+toFillLen;
+	XMLByte firstByte;
+	XMLCh UTF8Char;
+	uint charSize;
+
+	while(charSize=readChar(srcPtr, srcEnd, firstByte, UTF8Char, tables)){
+		if(charSize==1){
+			if(firstByte){
+				if(is_escaped(firstByte)) // %XX
+					outPtr+=sprintf((char*)outPtr, "%%%02X", firstByte);
+				else
+					*outPtr++=firstByte;
+			} else // add replacement char '?'
+				*outPtr++='?';
+		} else
+			outPtr+=sprintf((char*)outPtr, "%%u%04X", UTF8Char); // %uXXXX
+	}
+
+	// Update the bytes eaten
+	srcLen = srcPtr - srcData;
+	
+	// Return the characters read
+	toFillLen = outPtr - toFill;
+	
+	return 0;
+}
+
+
+String::C Charset::escape(const String::C src, const Charset& source_charset){
+	size_t src_length=src.length;
+	if(!src_length)
+		return String::C("", 0);
+
+#ifdef PRECALCULATE_DEST_LENGTH
+	size_t dest_length=0;
+	const XMLByte* srcPtr=(XMLByte*)src.str;
+	const XMLByte* srcEnd=srcPtr+src_length;
+	XMLByte firstByte;
+	XMLCh UTF8Char;
+
+	if(source_charset.isUTF8()){
+		while(uint charSize=readChar(srcPtr, srcEnd, firstByte, UTF8Char)){
+			if(charSize==1)
+				dest_length+=!is_escaped(firstByte)?1:3/*%XX*/;
+			else
+				dest_length+=6; // '%uXXXX'
+		}
+	} else {
+		while(uint charSize=readChar(srcPtr, srcEnd, firstByte, UTF8Char, source_charset.tables)){
+			if(charSize==1)
+				dest_length+=(!firstByte/*replacement char '?'*/ || !is_escaped(firstByte))?1:3/*'%XX'*/;
+			else
+				dest_length+=6; // '%uXXXX'
+		}
+	}
+#else
+	size_t dest_length=src_length*6; // enough for %uXXXX but too memory-hungry
+#endif
+
+	//throw Exception(0,0,"%u",dest_length);
+
+#ifndef NDEBUG
+	size_t saved_dest_length=dest_length;
+#endif
+	XMLByte *dest_body=new(PointerFreeGC) XMLByte[dest_length+1/*for terminator*/];
+
+	int status;
+	if(source_charset.isUTF8()){
+		status=::escape((XMLByte *)src.str, src_length, dest_body, dest_length);
+	} else {
+		status=::escape((XMLByte *)src.str, src_length, dest_body, dest_length, source_charset.tables);
+	}
+
+	if(status<0)
+		throw Exception(0,
+			0,
+			"Charset::escapeString buffer overflow");
+
+	assert(dest_length<=saved_dest_length);
+	dest_body[dest_length]=0; // terminator
+	return String::C((char*)dest_body, dest_length);
+}
+	
+
 const String::C Charset::transcodeToUTF8(const String::C src) const {
 	size_t src_length=src.length;
-	size_t dest_length=src.length*6/*so that surly enough, max utf8 seq len=6*/;
+
+#ifdef PRECALCULATE_DEST_LENGTH
+	size_t dest_length=0;
+	const XMLByte* srcPtr=(XMLByte*)src.str;
+	const XMLByte* srcEnd=srcPtr+src_length;
+	XMLByte firstByte;
+	XMLCh UTF8Char;
+	while(uint charSize=readChar(srcPtr, srcEnd, firstByte, UTF8Char, tables))
+		dest_length+=charSize;
+#else
+	size_t dest_length=src_length*6; // so that surly enough (max utf8 seq len=6) but too memory-hyngry
+#endif
+
+	//throw Exception(0,0,"%u",dest_length);
+
 #ifndef NDEBUG
 	size_t saved_dest_length=dest_length;
 #endif
@@ -447,7 +654,8 @@ const String::C Charset::transcodeToUTF8(const String::C src) const {
 			0,
 			"Charset::transcodeToUTF8 buffer overflow");
 
-	assert(dest_length<=saved_dest_length); dest_body[dest_length]=0; // terminator
+	assert(dest_length<=saved_dest_length);
+	dest_body[dest_length]=0; // terminator
 	return String::C((char*)dest_body, dest_length);
 }
 
@@ -536,7 +744,7 @@ void change_case_UTF8(const XMLByte* srcData, size_t srcLen,
 		// Get the next leading byte out
 		const XMLByte firstByte =* srcPtr;
 
-		if(firstByte<= 127) {
+		if(firstByte<=127) {
 			change_case_UTF8(firstByte, outPtr, table);
 			srcPtr++;
 			continue;
@@ -580,10 +788,43 @@ void change_case_UTF8(const XMLByte* srcData, size_t srcLen,
 			"change_case_UTF8 error: end pointers do not match");
 }
 
+static size_t getDecNumLength(XMLCh UTF8Char){
+	return
+		(UTF8Char < 100)
+			?2
+			:(UTF8Char < 1000)
+				?3
+				:(UTF8Char < 10000)
+					?4
+					:5;
+}
 
 const String::C Charset::transcodeFromUTF8(const String::C src) const {
 	size_t src_length=src.length;
-	size_t dest_length=src.length*6/*so that surly enough, "&#255;" has max ratio */;
+
+#ifdef PRECALCULATE_DEST_LENGTH
+	size_t dest_length=0;
+	const XMLByte* srcPtr=(XMLByte*)src.str;
+	const XMLByte* srcEnd=srcPtr+src_length;
+	XMLByte firstByte;
+	XMLCh UTF8Char;
+	while(uint charSize=readChar(srcPtr, srcEnd, firstByte, UTF8Char)){
+		if(charSize==1)
+			dest_length++;
+		else
+			dest_length+=(UTF8Char & 0xFFFF0000)
+							?charSize*3	// '%XX' for each byte
+							:(xlatOneTo(UTF8Char, tables, 0)!=0)
+								?1		// can convert it to single char
+								:getDecNumLength(UTF8Char)+3;		// &#XX; - &#XXXXX;
+	}
+#else
+	// so that surly enough, "&#XXX;" has max ratio (huh? 8 bytes needed for '&#XXXXX;')
+	size_t dest_length=src_length*6;
+#endif
+
+	//throw Exception(0,0,"%u",dest_length);
+
 #ifndef NDEBUG
 	size_t saved_dest_length=dest_length;
 #endif
@@ -597,7 +838,8 @@ const String::C Charset::transcodeFromUTF8(const String::C src) const {
 			0,
 			"Charset::transcodeFromUTF8 buffer overflow");
 
-	assert(dest_length<=saved_dest_length); dest_body[dest_length]=0; // terminator
+	assert(dest_length<=saved_dest_length);
+	dest_body[dest_length]=0; // terminator
 	return String::C((char*)dest_body, dest_length);
 }
 
