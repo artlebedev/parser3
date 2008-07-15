@@ -1,6 +1,15 @@
-﻿$cookie:имя[
-	$.value[проверка]
+﻿$request:charset[utf-8]
+
+$value[abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ
+0123456789
+`+-=~!@#^$%^^&*()_
+[]{}<>^;:'",./?
+
+абвгдеёжзийклмнопрстуфхцчшщъыьэюя	АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ]
+
+$cookie:имя[
+	$.value[$value]
 	$.expires[^date::create(2033;01;01)]
 ]
 
-=$cookie:имя=
+=^taint[as-is][$cookie:имя]=
