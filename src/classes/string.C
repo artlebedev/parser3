@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2008/07/04 11:16:51 $";
+static const char * const IDENT_STRING_C="$Date: 2008/07/16 17:07:48 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -47,7 +47,7 @@ static const String match_var_name(MATCH_VAR_NAME);
 // methods
 
 static void _length(Request& r, MethodParams&) {
-	double result=GET_SELF(r, VString).string().length();
+	double result=GET_SELF(r, VString).string().length(r.charsets.source());
 	r.write_no_lang(*new VDouble(result));
 }
 
@@ -139,7 +139,7 @@ static void _left(Request& r, MethodParams& params) {
 	size_t n=(size_t)sn;
 
 	const String& string=GET_SELF(r, VString).string();
-	r.write_assign_lang(string.mid(0, n));
+	r.write_assign_lang(string.mid(r.charsets.source(), 0, n));
 }
 
 static void _right(Request& r, MethodParams& params) {
@@ -151,8 +151,8 @@ static void _right(Request& r, MethodParams& params) {
 	size_t n=(size_t)sn;
 
 	const String& string=GET_SELF(r, VString).string();
-	size_t length=string.length();
-	r.write_assign_lang(n<length?string.mid(length-n, string.length()):string);
+	size_t length=string.length(r.charsets.source());
+	r.write_assign_lang(n<length?string.mid(r.charsets.source(), length-n, length):string);
 }
 
 static void _mid(Request& r, MethodParams& params) {
@@ -174,16 +174,16 @@ static void _mid(Request& r, MethodParams& params) {
 				"n(%d) must be >=0", sn);
 		end=begin+(size_t)sn;
 	} else 
-		end=string.length();
-	
-	r.write_assign_lang(string.mid(begin, end));
+		end=string.length(r.charsets.source());
+
+	r.write_assign_lang(string.mid(r.charsets.source(), begin, end));
 }
 
 static void _pos(Request& r, MethodParams& params) {
 	Value& substr=params.as_no_junction(0, "substr must not be code");
 	
 	const String& string=GET_SELF(r, VString).string();
-	r.write_assign_lang(*new VInt((int)string.pos(substr.as_string())));
+	r.write_assign_lang(*new VInt((int)string.pos(r.charsets.source(), substr.as_string())));
 }
 
 static void split_list(MethodParams& params, int paramIndex,
