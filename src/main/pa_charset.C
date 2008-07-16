@@ -5,7 +5,7 @@
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_CHARSET_C="$Date: 2008/07/16 17:07:16 $";
+static const char * const IDENT_CHARSET_C="$Date: 2008/07/16 17:23:28 $";
 
 #include "pa_charset.h"
 #include "pa_charsets.h"
@@ -478,10 +478,20 @@ static unsigned int readChar(const XMLByte*& srcPtr, const XMLByte* srcEnd, XMLB
 	return trailingBytes+1;
 }
 
-static unsigned int readChar(const XMLByte*& srcPtr, const XMLByte* srcEnd){
-	XMLByte firstByte;
-	XMLCh UTF8Char;
-	return readChar(srcPtr, srcEnd, firstByte, UTF8Char);
+static unsigned int skipChar(const XMLByte*& srcPtr, const XMLByte* srcEnd){
+	if(!srcPtr || !*srcPtr || srcPtr>=srcEnd)
+		return 0;
+
+	XMLByte firstByte=*srcPtr;
+
+	if(firstByte<=127){
+		srcPtr++;
+		return 1;
+	}
+	
+	unsigned int trailingBytes=gUTFBytes[firstByte]+1;
+	srcPtr+=trailingBytes;
+	return trailingBytes;
 }
 
 // read char, return number of bytes needed for store it as UTF8
@@ -1122,7 +1132,7 @@ void Charset::transcode(HashStringString& src,
 
 size_t getUTF8BytePos(const XMLByte* srcBegin, const XMLByte* srcEnd, size_t charPos){
 	const XMLByte* ptr=srcBegin;
-	while(charPos-- && readChar(ptr, srcEnd));
+	while(charPos-- && skipChar(ptr, srcEnd));
 
 	return ptr-srcBegin;
 }
@@ -1131,7 +1141,7 @@ size_t getUTF8CharPos(const XMLByte* srcBegin, const XMLByte* srcEnd, size_t byt
 	size_t charPos=0;
 	const XMLByte* ptr=srcBegin;
 	const XMLByte* ptrEnd=srcBegin+bytePos;
-	while(readChar(ptr, srcEnd)){
+	while(skipChar(ptr, srcEnd)){
 		if(ptr>ptrEnd)
 			return charPos;
 		charPos++;
@@ -1145,7 +1155,7 @@ size_t getUTF8CharPos(const XMLByte* srcBegin, const XMLByte* srcEnd, size_t byt
 
 size_t lengthUTF8(const XMLByte* srcBegin, const XMLByte* srcEnd){
 	size_t size=0;
-	while(readChar(srcBegin, srcEnd))
+	while(skipChar(srcBegin, srcEnd))
 		size++;
 
 	return size;
