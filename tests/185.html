@@ -1,0 +1,63 @@
+﻿@main[]
+$request:charset[UTF-8]
+$response:charset[UTF-8]
+$response:content-type[
+	$.value[text/html]
+	$.charset[$response:charset]
+]
+
+
+$str[о сколько нам открытий чудных...10.11.2005]
+$length(^str.length[]) ^rem{ *** length in real chars (not in bytes) == 42 *** }
+
+<pre>^taint[as-is][
+^$str[$str]
+     <b>0</b>123456789<b>0</b>123456789<b>0</b>123456789<b>0</b>123456789<b>0</b>123456789
+]</pre>
+
+^^str.length[]: ^str.length[]<br /><br />
+
+#=^str.right(5)=
+#=^str.mid(43;2)=
+
+^pos[$str;о]
+^pos[$str; ]
+^pos[$str;чудных]
+^pos[$str;2005]
+^pos[$str;zzz]
+
+
+<table border="1">
+	<tr>
+		<td>N</td>
+		<td>^^str.left(N)</tr>
+		<td>^^str.right(N)</tr>
+		<td>^^str.mid(N;Z)</tr>
+	</tr>
+^for[i](0;$length\2+1){
+	<tr>
+		<td>^eval($i*2)</td>
+		<td>^left[$str]($i*2)</td>
+		<td>^right[$str]($i*2)</td>
+		<td>^mid[$str]($i*2;3)</td>
+	</tr>
+}
+</table>
+
+
+
+@left[str;num]
+'^str.left($num)'
+
+
+
+@right[str;num]
+'^str.right($num)'
+
+
+@mid[str;num;count]
+'^str.mid($num;$count)'
+
+
+@pos[str;substr]
+^^str.pos[$substr]: ^str.pos[$substr]<br />
