@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-static const char * const IDENT_STRING_H="$Date: 2008/07/15 12:51:20 $";
+static const char * const IDENT_STRING_H="$Date: 2008/07/16 17:06:10 $";
 
 // includes
 #include "pa_types.h"
@@ -400,6 +400,7 @@ public:
 
 	bool is_empty() const { return body.is_empty(); }
 	size_t length() const { return body.length(); }
+	size_t length(Charset& charset) const;
 
 	/// convert to CORD. if 'lang' known, forcing 'lang' to it
 	Body cstr_to_string_body(Language lang=L_AS_IS, 
@@ -462,6 +463,7 @@ public:
 
 	/// extracts [start, finish) piece of string
 	String& mid(size_t substr_begin, size_t substr_end) const;
+	String& mid(Charset& charset, size_t substr_begin, size_t substr_end) const;
 
 	/** 
 		ignore lang if it's L_UNSPECIFIED
@@ -477,6 +479,9 @@ public:
 		size_t this_offset=0) const {
 		return body.pos(c, this_offset);
 	}
+	size_t String::pos(Charset& charset,
+		const String& substr, 
+		size_t this_offset=0, Language lang=L_UNSPECIFIED) const;
 
 	void split(ArrayString& result, 
 		size_t& pos_after,

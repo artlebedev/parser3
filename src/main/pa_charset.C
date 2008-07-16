@@ -5,7 +5,7 @@
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_CHARSET_C="$Date: 2008/07/15 12:53:10 $";
+static const char * const IDENT_CHARSET_C="$Date: 2008/07/16 17:07:16 $";
 
 #include "pa_charset.h"
 #include "pa_charsets.h"
@@ -444,7 +444,7 @@ static bool is_escaped(char c){
 }
 
 // read one utf8 character, return number of bytes needed for store it
-static unsigned int readChar(const XMLByte*& srcPtr, const XMLByte*& srcEnd, XMLByte& firstByte, XMLCh& UTF8Char){
+static unsigned int readChar(const XMLByte*& srcPtr, const XMLByte* srcEnd, XMLByte& firstByte, XMLCh& UTF8Char){
 	if(!srcPtr || !*srcPtr || srcPtr>=srcEnd)
 		return 0;
 
@@ -478,8 +478,14 @@ static unsigned int readChar(const XMLByte*& srcPtr, const XMLByte*& srcEnd, XML
 	return trailingBytes+1;
 }
 
+static unsigned int readChar(const XMLByte*& srcPtr, const XMLByte* srcEnd){
+	XMLByte firstByte;
+	XMLCh UTF8Char;
+	return readChar(srcPtr, srcEnd, firstByte, UTF8Char);
+}
+
 // read char, return number of bytes needed for store it as UTF8
-static unsigned int readChar(const XMLByte*& srcPtr, const XMLByte*& srcEnd, XMLByte& firstByte, XMLCh& UTF8Char, const Charset::Tables& tables){
+static unsigned int readChar(const XMLByte*& srcPtr, const XMLByte* srcEnd, XMLByte& firstByte, XMLCh& UTF8Char, const Charset::Tables& tables){
 	if(!srcPtr || !*srcPtr || srcPtr>=srcEnd)
 		return 0;
 
@@ -1106,9 +1112,41 @@ static void transcode_pair(const String::Body /*akey*/,
 		*info->source_transcoder, 
 		*info->dest_transcoder);
 }
+
 void Charset::transcode(HashStringString& src,
 	const Charset& source_transcoder, 
 	const Charset& dest_transcoder) {
 	Transcode_pair_info info={&source_transcoder, &dest_transcoder};
 	src.for_each_ref<Transcode_pair_info*>(transcode_pair, &info);
+}
+
+size_t getUTF8BytePos(const XMLByte* srcBegin, const XMLByte* srcEnd, size_t charPos){
+	const XMLByte* ptr=srcBegin;
+	while(charPos-- && readChar(ptr, srcEnd));
+
+	return ptr-srcBegin;
+}
+
+size_t getUTF8CharPos(const XMLByte* srcBegin, const XMLByte* srcEnd, size_t bytePos){
+	size_t charPos=0;
+	const XMLByte* ptr=srcBegin;
+	const XMLByte* ptrEnd=srcBegin+bytePos;
+	while(readChar(ptr, srcEnd)){
+		if(ptr>ptrEnd)
+			return charPos;
+		charPos++;
+	}
+
+	// scan till end but position in bytes still too low
+	throw Exception(0,
+					0,
+					"Error convertion byte pos to char pos");
+}
+
+size_t lengthUTF8(const XMLByte* srcBegin, const XMLByte* srcEnd){
+	size_t size=0;
+	while(readChar(srcBegin, srcEnd))
+		size++;
+
+	return size;
 }

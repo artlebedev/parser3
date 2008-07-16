@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2007/04/20 10:19:06 $";
+static const char * const IDENT_STRING_C="$Date: 2008/07/16 17:06:28 $";
 
 #include "pcre.h"
 
@@ -279,6 +279,14 @@ String& String::append_strdup(const char* str, size_t helper_length, Language la
 	return *this;
 }
 
+size_t String::length(Charset& charset) const {
+	if(charset.isUTF8()){
+		const XMLByte* srcPtr=(const XMLByte*)cstrm();
+		return lengthUTF8(srcPtr, srcPtr+body.length());
+	} else
+		return body.length();
+}
+
 /// @todo check in doc: whether it documents NOW bad situation "abc".mid(-1, 3) =were?="ab"
 String& String::mid(size_t substr_begin, size_t substr_end) const {
 	String& result=*new String;
@@ -294,6 +302,35 @@ String& String::mid(size_t substr_begin, size_t substr_end) const {
 	result.langs.append(result.body, langs, substr_begin, substr_length);
 	// next: letters themselves
 	result.body=body.mid(substr_begin, substr_length);
+
+	ASSERT_STRING_INVARIANT(result);
+	return result;
+}
+
+String& String::mid(Charset& charset, size_t from, size_t to) const {
+	String& result=*new String;
+
+	size_t self_length=length(); // in bytes not in characters
+	from=min(from, self_length);
+	to=min(max(to, from), self_length);
+	size_t substr_length=to-from;
+	if(!substr_length)
+		return result;
+
+	if(charset.isUTF8()){
+		const XMLByte* srcPtr=(const XMLByte*)cstrm();
+		const XMLByte* srcEnd=srcPtr+self_length;
+
+		from=getUTF8BytePos(srcPtr, srcEnd, from);
+		substr_length=getUTF8BytePos(srcPtr+from, srcEnd, substr_length);
+		if(!substr_length)
+			return result;
+	}
+
+	// first: their langs
+	result.langs.append(result.body, langs, from, substr_length);
+	// next: letters themselves
+	result.body=body.mid(from, substr_length);
 
 	ASSERT_STRING_INVARIANT(result);
 	return result;
@@ -317,6 +354,21 @@ size_t String::pos(const String::Body substr, size_t this_offset, Language lang)
 size_t String::pos(const String& substr, 
 				size_t this_offset, Language lang) const {
 	return pos(substr.body, this_offset, lang);
+}
+
+size_t String::pos(Charset& charset, const String& substr, 
+				size_t this_offset, Language lang) const {
+
+	size_t result=pos(substr.body, this_offset, lang);
+	if(result==CORD_NOT_FOUND)
+		return STRING_NOT_FOUND;
+
+	if(charset.isUTF8()){
+		const XMLByte* srcPtr=(const XMLByte*)cstrm();
+		result=getUTF8CharPos(srcPtr, srcPtr+body.length(), result);
+	}
+
+	return result;
 }
 
 void String::split(ArrayString& result, 
