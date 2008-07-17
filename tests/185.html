@@ -6,8 +6,8 @@ $response:content-type[
 	$.charset[$response:charset]
 ]
 
-$str[^taint[ab<cd]ef>gh]
-^$str[$str] [^str.length[]]<br /><br />
+$str[ab^taint["]"cd^taint[xml][&]&ef]
+<pre>^$str[$str] [^str.length[]]</pre>
 
 ^^str.left(4): ^left[$str](4)<br />
 ^^str.left(9): ^left[$str](9)<br />
@@ -33,17 +33,27 @@ $length(^str.length[]) ^rem{ *** length in real chars (not in bytes) == 42 *** }
 <br />
 <table border="1">
 	<tr>
-		<td>N</td>
-		<td>^^str.left(N) [^^substr.length[]]</tr>
-		<td>^^str.right(N) [^^substr.length[]]</tr>
+		<td>L</td>
+		<td>^^str.left(L) [^^substr.length[]]</tr>
+		<td>R</td>
+		<td>^^str.right(R) [^^substr.length[]]</tr>
+		<td>N, O</td>
 		<td>^^str.mid(N;O)</tr>
 	</tr>
 ^for[i](0;$length\2+1){
 	<tr>
-		<td>^eval($i*2)</td>
-		<td>^left[$str]($i*2+$i%2)</td>
-		<td>^right[$str]($i*2+($i+1)%2)</td>
-		<td>^mid[$str]($i*2;^if($i%2)(3;4))</td>
+		$iLeft($i*2+$i%2)
+		<td>$iLeft</td>
+		<td>^left[$str]($iLeft)</td>
+		
+		$iRight($i*2+($i+1)%2)
+		<td>$iRight</td>
+		<td>^right[$str]($iRight)</td>
+
+		$iMid($i*2)
+		$iLength(^if($i%2)(3;4))
+		<td>$iMid, $iLength</td>
+		<td>^mid[$str]($iMid;$iLength)</td>
 	</tr>
 }
 </table>
