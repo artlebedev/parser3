@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-static const char * const IDENT_STRING_H="$Date: 2008/07/17 09:11:14 $";
+static const char * const IDENT_STRING_H="$Date: 2008/07/17 09:44:29 $";
 
 // includes
 #include "pa_types.h"
@@ -479,7 +479,7 @@ public:
 		size_t this_offset=0) const {
 		return body.pos(c, this_offset);
 	}
-	size_t String::pos(Charset& charset,
+	size_t pos(Charset& charset,
 		const String& substr, 
 		size_t this_offset=0, Language lang=L_UNSPECIFIED) const;
 
