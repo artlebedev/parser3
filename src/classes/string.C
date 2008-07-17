@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2008/07/16 17:07:48 $";
+static const char * const IDENT_STRING_C="$Date: 2008/07/17 09:11:35 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -152,7 +152,7 @@ static void _right(Request& r, MethodParams& params) {
 
 	const String& string=GET_SELF(r, VString).string();
 	size_t length=string.length(r.charsets.source());
-	r.write_assign_lang(n<length?string.mid(r.charsets.source(), length-n, length):string);
+	r.write_assign_lang(n<length?string.mid(r.charsets.source(), length-n, length, length):string);
 }
 
 static void _mid(Request& r, MethodParams& params) {
@@ -166,6 +166,7 @@ static void _mid(Request& r, MethodParams& params) {
 	size_t begin=(size_t)sbegin;
 
 	size_t end;
+	size_t length=0;
 	if(params.count()>1) {
 		ssize_t sn=params.as_int(1, "n must be int", r);
 		if(sn<0)
@@ -173,10 +174,12 @@ static void _mid(Request& r, MethodParams& params) {
 				0, 
 				"n(%d) must be >=0", sn);
 		end=begin+(size_t)sn;
-	} else 
-		end=string.length(r.charsets.source());
+	} else {
+		length=string.length(r.charsets.source());
+		end=length;
+	}
 
-	r.write_assign_lang(string.mid(r.charsets.source(), begin, end));
+	r.write_assign_lang(string.mid(r.charsets.source(), begin, end, length));
 }
 
 static void _pos(Request& r, MethodParams& params) {

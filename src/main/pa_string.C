@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2008/07/16 17:06:28 $";
+static const char * const IDENT_STRING_C="$Date: 2008/07/17 09:11:25 $";
 
 #include "pcre.h"
 
@@ -307,20 +307,28 @@ String& String::mid(size_t substr_begin, size_t substr_end) const {
 	return result;
 }
 
-String& String::mid(Charset& charset, size_t from, size_t to) const {
+// from, to and helper_length in characters, not in bytes (it's important for utf-8)
+String& String::mid(Charset& charset, size_t from, size_t to, size_t helper_length) const {
 	String& result=*new String;
 
-	size_t self_length=length(); // in bytes not in characters
-	from=min(from, self_length);
+	size_t self_length=(helper_length)?helper_length:length(charset);
+
+	if(!self_length)
+		return result;
+
+	from=min(min(to, from), self_length);
 	to=min(max(to, from), self_length);
+
 	size_t substr_length=to-from;
+
 	if(!substr_length)
 		return result;
 
 	if(charset.isUTF8()){
 		const XMLByte* srcPtr=(const XMLByte*)cstrm();
-		const XMLByte* srcEnd=srcPtr+self_length;
+		const XMLByte* srcEnd=srcPtr+body.length();
 
+		// convert from and substr_length from 'characters' to 'bytes'
 		from=getUTF8BytePos(srcPtr, srcEnd, from);
 		substr_length=getUTF8BytePos(srcPtr+from, srcEnd, substr_length);
 		if(!substr_length)

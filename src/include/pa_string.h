@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-static const char * const IDENT_STRING_H="$Date: 2008/07/16 17:06:10 $";
+static const char * const IDENT_STRING_H="$Date: 2008/07/17 09:11:14 $";
 
 // includes
 #include "pa_types.h"
@@ -463,7 +463,7 @@ public:
 
 	/// extracts [start, finish) piece of string
 	String& mid(size_t substr_begin, size_t substr_end) const;
-	String& mid(Charset& charset, size_t substr_begin, size_t substr_end) const;
+	String& mid(Charset& charset, size_t from, size_t to, size_t helper_length=0) const;
 
 	/** 
 		ignore lang if it's L_UNSPECIFIED
