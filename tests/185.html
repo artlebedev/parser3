@@ -6,19 +6,23 @@ $response:content-type[
 	$.charset[$response:charset]
 ]
 
+$str[^taint[ab<cd]ef>gh]
+^$str[$str] [^str.length[]]<br /><br />
 
+^^str.left(4): ^left[$str](4)<br />
+^^str.left(9): ^left[$str](9)<br />
+^^str.right(4): ^right[$str](4)<br />
+^^str.right(9): ^right[$str](9)<br />
+^^str.mid(1;8): ^mid[$str](1;8)<br />
+
+<hr />
 $str[о сколько нам открытий чудных...10.11.2005]
 $length(^str.length[]) ^rem{ *** length in real chars (not in bytes) == 42 *** }
 
 <pre>^taint[as-is][
-^$str[$str]
+^$str[$str] [^str.length[]]
      <b>0</b>123456789<b>0</b>123456789<b>0</b>123456789<b>0</b>123456789<b>0</b>123456789
 ]</pre>
-
-^^str.length[]: ^str.length[]<br /><br />
-
-#=^str.right(5)=
-#=^str.mid(43;2)=
 
 ^pos[$str;о]
 ^pos[$str; ]
@@ -26,37 +30,41 @@ $length(^str.length[]) ^rem{ *** length in real chars (not in bytes) == 42 *** }
 ^pos[$str;2005]
 ^pos[$str;zzz]
 
-
+<br />
 <table border="1">
 	<tr>
 		<td>N</td>
-		<td>^^str.left(N)</tr>
-		<td>^^str.right(N)</tr>
-		<td>^^str.mid(N;Z)</tr>
+		<td>^^str.left(N) [^^substr.length[]]</tr>
+		<td>^^str.right(N) [^^substr.length[]]</tr>
+		<td>^^str.mid(N;O)</tr>
 	</tr>
 ^for[i](0;$length\2+1){
 	<tr>
 		<td>^eval($i*2)</td>
-		<td>^left[$str]($i*2)</td>
-		<td>^right[$str]($i*2)</td>
-		<td>^mid[$str]($i*2;3)</td>
+		<td>^left[$str]($i*2+$i%2)</td>
+		<td>^right[$str]($i*2+($i+1)%2)</td>
+		<td>^mid[$str]($i*2;^if($i%2)(3;4))</td>
 	</tr>
 }
 </table>
 
 
 
-@left[str;num]
-'^str.left($num)'
+@left[str;num][substr]
+$substr[^str.left($num)]
+'$substr' [^substr.length[]]
 
 
 
-@right[str;num]
-'^str.right($num)'
+@right[str;num][substr]
+$substr[^str.right($num)]
+'$substr' [^substr.length[]]
+
 
 
 @mid[str;num;count]
 '^str.mid($num;$count)'
+
 
 
 @pos[str;substr]

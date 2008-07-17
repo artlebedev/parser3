@@ -5,7 +5,7 @@
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_CHARSET_C="$Date: 2008/07/16 17:23:28 $";
+static const char * const IDENT_CHARSET_C="$Date: 2008/07/17 09:10:49 $";
 
 #include "pa_charset.h"
 #include "pa_charsets.h"
@@ -482,15 +482,9 @@ static unsigned int skipChar(const XMLByte*& srcPtr, const XMLByte* srcEnd){
 	if(!srcPtr || !*srcPtr || srcPtr>=srcEnd)
 		return 0;
 
-	XMLByte firstByte=*srcPtr;
-
-	if(firstByte<=127){
-		srcPtr++;
-		return 1;
-	}
-	
-	unsigned int trailingBytes=gUTFBytes[firstByte]+1;
+	unsigned int trailingBytes=gUTFBytes[*srcPtr]+1;
 	srcPtr+=trailingBytes;
+
 	return trailingBytes;
 }
 
