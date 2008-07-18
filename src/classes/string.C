@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2008/07/18 08:24:35 $";
+static const char * const IDENT_STRING_C="$Date: 2008/07/18 09:12:17 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -195,7 +195,7 @@ static void _pos(Request& r, MethodParams& params) {
 				"n(%d) must be >=0", offset);
 	}
 
-	r.write_assign_lang(*new VInt((int)string.pos(r.charsets.source(), substr.as_string(), (size_t)offset)));
+	r.write_no_lang(*new VInt((int)string.pos(r.charsets.source(), substr.as_string(), (size_t)offset)));
 }
 
 static void split_list(MethodParams& params, int paramIndex,
