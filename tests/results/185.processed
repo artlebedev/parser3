@@ -1,5 +1,5 @@
 content-type: text/html; charset=UTF-8
-content-length: 4808
+content-length: 4833
 
 <pre>$str[ab&quot;"cd&amp;&ef] [10]</pre>
 ^str.left(4): 'ab&quot;"' [4]
@@ -18,6 +18,7 @@ $str[о сколько нам открытий чудных...10.11.2005] [42]
      <b>0</b>123456789<b>0</b>123456789<b>0</b>123456789<b>0</b>123456789<b>0</b>123456789
 </pre>
 ^str.pos[о]: 0<br />
+^str.pos[о](2): 4<br />
 ^str.pos[ ]: 1<br />
 ^str.pos[чудных]: 23<br />
 ^str.pos[2005]: 38<br />
