@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2008/07/17 09:11:25 $";
+static const char * const IDENT_STRING_C="$Date: 2008/07/18 08:24:01 $";
 
 #include "pcre.h"
 
@@ -328,7 +328,7 @@ String& String::mid(Charset& charset, size_t from, size_t to, size_t helper_leng
 		const XMLByte* srcPtr=(const XMLByte*)cstrm();
 		const XMLByte* srcEnd=srcPtr+body.length();
 
-		// convert from and substr_length from 'characters' to 'bytes'
+		// convert 'from' and 'substr_length' from 'characters' to 'bytes'
 		from=getUTF8BytePos(srcPtr, srcEnd, from);
 		substr_length=getUTF8BytePos(srcPtr+from, srcEnd, substr_length);
 		if(!substr_length)
@@ -367,13 +367,24 @@ size_t String::pos(const String& substr,
 size_t String::pos(Charset& charset, const String& substr, 
 				size_t this_offset, Language lang) const {
 
-	size_t result=pos(substr.body, this_offset, lang);
-	if(result==CORD_NOT_FOUND)
-		return STRING_NOT_FOUND;
-
+	size_t result;
 	if(charset.isUTF8()){
 		const XMLByte* srcPtr=(const XMLByte*)cstrm();
-		result=getUTF8CharPos(srcPtr, srcPtr+body.length(), result);
+		const XMLByte* srcEnd=srcPtr+body.length();
+
+		// convert 'this_offset' from 'characters' to 'bytes'
+		this_offset=getUTF8BytePos(srcPtr, srcEnd, this_offset);
+
+		result=pos(substr.body, this_offset, lang);
+		if(result==CORD_NOT_FOUND)
+			return STRING_NOT_FOUND;
+
+		// convert 'result' from 'bytes' to 'characters'
+		result=getUTF8CharPos(srcPtr, srcEnd, result);
+	} else {
+		result=pos(substr.body, this_offset, lang);
+		if(result==CORD_NOT_FOUND)
+			return STRING_NOT_FOUND;
 	}
 
 	return result;
