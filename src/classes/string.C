@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2008/07/17 09:11:35 $";
+static const char * const IDENT_STRING_C="$Date: 2008/07/18 08:24:35 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -186,7 +186,16 @@ static void _pos(Request& r, MethodParams& params) {
 	Value& substr=params.as_no_junction(0, "substr must not be code");
 	
 	const String& string=GET_SELF(r, VString).string();
-	r.write_assign_lang(*new VInt((int)string.pos(r.charsets.source(), substr.as_string())));
+	ssize_t offset=0;
+	if(params.count()>1){
+		offset=params.as_int(1, "n must be int", r);
+		if(offset<0)
+			throw Exception(PARSER_RUNTIME,
+				0, 
+				"n(%d) must be >=0", offset);
+	}
+
+	r.write_assign_lang(*new VInt((int)string.pos(r.charsets.source(), substr.as_string(), (size_t)offset)));
 }
 
 static void split_list(MethodParams& params, int paramIndex,
@@ -662,18 +671,20 @@ MString::MString(): Methoded("string") {
 	// ^void.bool(default)
 	add_native_method("bool", Method::CT_DYNAMIC, _bool, 0, 1);
 
-	// ^string.format{format}
+	// ^string.format[format]
 	add_native_method("format", Method::CT_DYNAMIC, _string_format, 1, 1);
 
 	// ^string.left(n)
 	add_native_method("left", Method::CT_DYNAMIC, _left, 1, 1);
 	// ^string.right(n)
 	add_native_method("right", Method::CT_DYNAMIC, _right, 1, 1);
+	// ^string.mid(p)
 	// ^string.mid(p;n)
 	add_native_method("mid", Method::CT_DYNAMIC, _mid, 1, 2);
 
 	// ^string.pos[substr]
-	add_native_method("pos", Method::CT_DYNAMIC, _pos, 1, 1);
+	// ^string.pos[substr](n)
+	add_native_method("pos", Method::CT_DYNAMIC, _pos, 1, 2);
 
 	// ^string.split[delim]
 	// ^string.split[delim][options]
@@ -689,9 +700,9 @@ MString::MString(): Methoded("string") {
 	// ^string.match[regexp][options]{replacement-code}
 	add_native_method("match", Method::CT_DYNAMIC, _match, 1, 3);
 
-	// ^string.toupper[]
+	// ^string.upper[]
 	add_native_method("upper", Method::CT_DYNAMIC, _upper, 0, 0);
-	// ^string.tolower[]
+	// ^string.lower[]
 	add_native_method("lower", Method::CT_DYNAMIC, _lower, 0, 0);
 
 	// ^sql[query]

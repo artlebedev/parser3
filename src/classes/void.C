@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VOID_C="$Date: 2008/06/26 15:00:42 $";
+static const char * const IDENT_VOID_C="$Date: 2008/07/18 08:24:35 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -44,6 +44,13 @@ static void _length(Request& r, MethodParams&) {
 static void _pos(Request& r, MethodParams& params) {
 	// just checking for consistency
 	params.as_no_junction(0, "substr must not be code");
+	if(params.count()>1){
+		ssize_t offset=params.as_int(1, "n must be int", r);
+		if(offset<0)
+			throw Exception(PARSER_RUNTIME,
+				0, 
+				"n(%d) must be >=0", offset);
+	}
 	// never found
 	r.write_no_lang(*new VInt(-1));
 }
@@ -167,7 +174,7 @@ MVoid::MVoid(): Methoded("void") {
 	add_native_method("length", Method::CT_DYNAMIC, _length, 0, 0);
 
 	// ^void.pos[substr]
-	add_native_method("pos", Method::CT_DYNAMIC, _pos, 1, 1);
+	add_native_method("pos", Method::CT_DYNAMIC, _pos, 1, 2);
 
 	// ^void.int[]
 	// ^void.int(default)
