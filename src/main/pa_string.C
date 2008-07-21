@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2008/07/18 08:24:01 $";
+static const char * const IDENT_STRING_C="$Date: 2008/07/21 07:37:11 $";
 
 #include "pcre.h"
 
@@ -640,6 +640,13 @@ String& String::change_case(Charset& source_charset, Change_case_kind kind) cons
 	result.body=new_cstr;
 
 	return result;
+}
+
+const String& String::escape(Charset& source_charset) const {
+	if(is_empty())
+		return *this;
+
+	return Charset::escape(*this, source_charset);
 }
 
 const String& String::replace(const Dictionary& dict) const {

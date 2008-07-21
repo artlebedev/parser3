@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-static const char * const IDENT_STRING_H="$Date: 2008/07/17 09:44:29 $";
+static const char * const IDENT_STRING_H="$Date: 2008/07/21 07:37:02 $";
 
 // includes
 #include "pa_types.h"
@@ -519,6 +519,7 @@ public:
 	double as_double() const { return pa_atod(cstr(), this); }
 	int as_int() const { return pa_atoi(cstr(), this); }
 	bool as_bool() const { return as_int()!=0; }
+	const String& escape(Charset& source_charset) const;
 
 private: //disabled
 
