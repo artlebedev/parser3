@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2008/07/18 09:12:17 $";
+static const char * const IDENT_STRING_C="$Date: 2008/07/21 07:37:37 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -655,6 +655,17 @@ static void _base64(Request& r, MethodParams& params) {
 	}
 }
 
+static void _escape(Request& r, MethodParams&){
+	const String& src=GET_SELF(r, VString).string();
+	r.write_assign_lang(src.escape(r.charsets.source()));
+}
+
+static void _unescape(Request& r, MethodParams& params){
+	const String& src=params.as_string(0, PARAMETER_MUST_BE_STRING);
+	if(const char* result=unescape_chars(src.cstr(), src.length(), &r.charsets.source(), true/* don't unescape '+' char */))
+		r.write_assign_lang(*new String(result));
+}
+
 // constructor
 
 MString::MString(): Methoded("string") {
@@ -727,4 +738,9 @@ MString::MString(): Methoded("string") {
 	// ^string.base64[] << encode
 	// ^string:base64[encoded string] << decode	
 	add_native_method("base64", Method::CT_ANY, _base64, 0, 1);
+
+	// ^string.escape[]
+	// ^string:unescape[escaped%uXXXXstring]
+	add_native_method("escape", Method::CT_ANY, _escape, 0, 0);
+	add_native_method("unescape", Method::CT_STATIC, _unescape, 1, 1);
 }	
