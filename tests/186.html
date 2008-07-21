@@ -1,0 +1,38 @@
+$sValue[abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ
+0123456789
+`+-=~!@#^$%^^&*()_
+[]{}<>^;:'",./?
+
+àáâãäå¸æçèéêëìíîïğñòóôõö÷øùúûüışÿ	ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏĞÑÒÓÔÕÖ×ØÙÚÛÜİŞß]
+
+<hr />
+Origin:
+<pre>
+=^taint[html][$sValue]=
+</pre>
+
+
+<hr />
+$sEscapeValued[^sValue.escape[]]
+Escaped:
+<pre>
+=^taint[html][$sEscapeValued]=
+</pre>
+
+
+<hr />
+$sUnescapedValue[^string:unescape[$sEscapeValued]]
+Unescaped [^if($sUnescapedValue eq $sValue){equal to source}{NOT equal to source}]:
+<pre>
+=^taint[html][$sUnescapedValue]=
+</pre>
+
+
+<hr />
+Empty string escape/unescape:
+$v[]
+$s[$v]
+<pre>
+=^s.escape[]=
+=^string:unescape[$s]=
+</pre>
