@@ -15,7 +15,7 @@ Origin:
 
 
 <hr />
-$sEscapeValued[^sValue.escape[]]
+$sEscapeValued[^sValue.js-escape[]]
 Escaped:
 <pre>
 =^taint[html][$sEscapeValued]=
@@ -23,7 +23,7 @@ Escaped:
 
 
 <hr />
-$sUnescapedValue[^string:unescape[$sEscapeValued]]
+$sUnescapedValue[^string:js-unescape[$sEscapeValued]]
 Unescaped [^if($sUnescapedValue eq $sValue){equal to source}{NOT equal to source}]:
 <pre>
 =^taint[html][$sUnescapedValue]=
@@ -35,6 +35,6 @@ Empty string escape/unescape:
 $v[]
 $s[$v]
 <pre>
-=^s.escape[]=
-=^string:unescape[$s]=
+=^s.js-escape[]=
+=^string:js-unescape[$s]=
 </pre>
