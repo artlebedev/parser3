@@ -8,7 +8,7 @@
 #ifndef PA_CHARSET_H
 #define PA_CHARSET_H
 
-static const char * const IDENT_CHARSET_H="$Date: 2008/07/21 07:36:34 $";
+static const char * const IDENT_CHARSET_H="$Date: 2008/07/23 14:06:04 $";
 
 
 #include "pa_exception.h"
@@ -19,7 +19,7 @@ static const char * const IDENT_CHARSET_H="$Date: 2008/07/21 07:36:34 $";
 // hiding into namespace so to avoid stupid conflict
 namespace PCRE {
 #include "pcre.h"
-#	include "internal.h"
+#include "internal.h"
 };
 
 #ifdef XML
