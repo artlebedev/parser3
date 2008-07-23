@@ -5,7 +5,7 @@
 	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.227 2008/06/25 08:35:51 misha Exp $
+	$Id: compile.y,v 1.228 2008/07/23 09:54:17 misha Exp $
 */
 
 /**
@@ -765,7 +765,7 @@ case LS_DEF_COMMENT:
 default:
 			switch(*pc.source) {
 			// ^escaping some punctuators
-			case '^': case '$': case ';':
+			case '^': case '$': case ';': case '@':
 			case '(': case ')':
 			case '[': case ']':
 			case '{': case '}':
@@ -793,7 +793,7 @@ default:
 					pc.string.append_strdup_know_length(begin, end-begin);
 				}
 				// #HH ?
-				if(pc.source[0]=='#' && pc.source[1] && pc.source[2]) {
+				if(pc.source[1] && isxdigit(pc.source[1]) && pc.source[2] && isxdigit(pc.source[2])) {
 					char c=(char)(
 						hex_value[(unsigned char)pc.source[1]]*0x10+
 						hex_value[(unsigned char)pc.source[2]]);
@@ -812,7 +812,14 @@ default:
 					// skip analysis = forced literal
 					continue;
 				}
-				break;
+				// just escaped char
+				// reset piece 'begin' position & line
+				begin=pc.source;
+				begin_pos=pc.pos;
+				// skip over _ after ^
+				pc.source++;  pc.pos.col++;
+				// skip analysis = forced literal
+				continue;
 			}
 			break;
 			}
