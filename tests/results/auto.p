@@ -10,3 +10,9 @@ $CLASS_PATH[^table::create{path
 
 
 @auto[]
+
+
+
+@windows-1251[]
+$request:charset[windows-1251]
+$response:charset[windows-1251]
