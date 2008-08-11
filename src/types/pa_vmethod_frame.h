@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2008/07/23 14:05:48 $";
+static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2008/08/11 13:15:14 $";
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
@@ -136,6 +136,9 @@ public: // Value
 	override Value* get_element(const String& aname, Value& /*aself*/, bool looking_up) { 
 		if(aname==CALLER_ELEMENT_NAME)
 			return caller();
+
+		if(aname==SELF_ELEMENT_NAME)
+			return &self();
 
 		Value* result;
 		if(my && (result=my->get(aname)))
