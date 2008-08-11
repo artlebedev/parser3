@@ -1,0 +1,13 @@
+content-type: text/html
+content-length: 264
+
+<hr />
+$a: 'test187_a'<br />
+$caller.self.a: 'MAIN_a'<br />
+$caller.CLASS_NAME: 'MAIN'<br />
+$caller.self.CLASS_NAME: 'MAIN'<br />
+<hr />
+$a: 'test187_a'<br />
+$caller.self.a: 'test187_a'<br />
+$caller.CLASS_NAME: 'MAIN'<br />
+$caller.self.CLASS_NAME: 'MAIN'<br />
