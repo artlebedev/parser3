@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_UNTAINT_C="$Date: 2008/07/16 17:06:44 $";
+static const char * const IDENT_UNTAINT_C="$Date: 2008/08/14 09:26:11 $";
 
 
 #include "pa_string.h"
@@ -93,7 +93,7 @@ inline bool need_http_header_encode(unsigned char c){
 	return need_uri_encode(c);
 }
 inline bool need_regex_escape(unsigned char c){
-	return strchr("\\^$.[]|()?*+{}", c)!=0;
+	return strchr("\\^$.[]|()?*+{}-", c)!=0;
 }
 
 // String
