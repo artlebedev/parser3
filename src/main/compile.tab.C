@@ -132,7 +132,7 @@
 	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.tab.C,v 1.121 2008/07/23 09:55:05 misha Exp $
+	$Id: compile.tab.C,v 1.122 2008/08/15 15:26:33 misha Exp $
 */
 
 /**
@@ -1618,8 +1618,8 @@ yyreduce:
     {
 	yyval=yyvsp[0]; /* stack: resulting value */ 
 	changetail_or_append(*yyval, 
-		OP_GET_ELEMENT, false,  /*->*/OP_GET_ELEMENT__WRITE,
-		/*or */OP_WRITE_VALUE
+		OP::OP_GET_ELEMENT, false,  /*->*/OP::OP_GET_ELEMENT__WRITE,
+		/*or */OP::OP_WRITE_VALUE
 		); /* value=pop; wcontext.write(value) */
 ;}
     break;
@@ -1643,17 +1643,17 @@ yyreduce:
 	// self.xxx... -> xxx...
 	// OP_VALUE+origin+string+OP_GET_ELEMENT+... -> OP_WITH_SELF+...
 	if(first_name && *first_name==SELF_ELEMENT_NAME) {
-		O(*yyval, OP_WITH_SELF); /* stack: starting context */
+		O(*yyval, OP::OP_WITH_SELF); /* stack: starting context */
 		P(*yyval, *diving_code, 
 			/* skip over... */
-			diving_code->count()>=4?4/*OP_VALUE+origin+string+OP_GET_ELEMENTx*/:3/*OP_+origin+string*/);
+			diving_code->count()>=4?4/*OP::OP_VALUE+origin+string+OP::OP_GET_ELEMENTx*/:3/*OP::OP_+origin+string*/);
 	} else {
-		O(*yyval, OP_WITH_READ); /* stack: starting context */
+		O(*yyval, OP::OP_WITH_READ); /* stack: starting context */
 
 		// ^if ELEMENT -> ^if ELEMENT_OR_OPERATOR
 		// OP_VALUE+origin+string+OP_GET_ELEMENT. -> OP_VALUE+origin+string+OP_GET_ELEMENT_OR_OPERATOR.
 		if(PC.in_call_value && diving_code->count()==4)
-			diving_code->put(4-1, OP_GET_ELEMENT_OR_OPERATOR);
+			diving_code->put(4-1, OP::OP_GET_ELEMENT_OR_OPERATOR);
 		P(*yyval, *diving_code);
 	}
 	/* diving code; stack: current context */
@@ -1687,12 +1687,12 @@ yyreduce:
 	// $self.xxx... -> $xxx...
 	// OP_VALUE+origin+string+OP_GET_ELEMENT+... -> OP_WITH_SELF+...
 	if(first_name && *first_name==SELF_ELEMENT_NAME) {
-		O(*yyval, OP_WITH_SELF); /* stack: starting context */
+		O(*yyval, OP::OP_WITH_SELF); /* stack: starting context */
 		P(*yyval, *diving_code, 
 			/* skip over... */
-			diving_code->count()>=4?4/*OP_VALUE+origin+string+OP_GET_ELEMENTx*/:3/*OP_+origin+string*/);
+			diving_code->count()>=4?4/*OP::OP_VALUE+origin+string+OP::OP_GET_ELEMENTx*/:3/*OP::OP_+origin+string*/);
 	} else {
-		O(*yyval, OP_WITH_ROOT); /* stack: starting context */
+		O(*yyval, OP::OP_WITH_ROOT); /* stack: starting context */
 		P(*yyval, *diving_code);
 	}
 	/* diving code; stack: current context */
@@ -1703,7 +1703,7 @@ yyreduce:
 #line 377 "compile.y"
     {
 	yyval=N(); 
-	O(*yyval, OP_WITH_WRITE); /* stack: starting context */
+	O(*yyval, OP::OP_WITH_WRITE); /* stack: starting context */
 	P(*yyval, *yyvsp[0]); /* diving code; stack: context,name */
 ;}
     break;
@@ -1733,7 +1733,7 @@ yyreduce:
     {
 	// stack: context, name
 	yyval=yyvsp[-2]; // stack: context, name, value
-	O(*yyval, OP_CONSTRUCT_VALUE); /* value=pop; name=pop; context=pop; construct(context,name,value) */
+	O(*yyval, OP::OP_CONSTRUCT_VALUE); /* value=pop; name=pop; context=pop; construct(context,name,value) */
 ;}
     break;
 
@@ -1741,10 +1741,10 @@ yyreduce:
 #line 400 "compile.y"
     { 
 	yyval=N(); 
-	O(*yyval, OP_PREPARE_TO_EXPRESSION);
+	O(*yyval, OP::OP_PREPARE_TO_EXPRESSION);
 	// stack: context, name
 	P(*yyval, *yyvsp[-1]); // stack: context, name, value
-	O(*yyval, OP_CONSTRUCT_EXPR); /* value=pop->as_expr_result; name=pop; context=pop; construct(context,name,value) */
+	O(*yyval, OP::OP_CONSTRUCT_EXPR); /* value=pop->as_expr_result; name=pop; context=pop; construct(context,name,value) */
 ;}
     break;
 
@@ -1753,7 +1753,7 @@ yyreduce:
     {
 	// stack: context, name
 	yyval=N(); 
-	OA(*yyval, OP_CURLY_CODE__CONSTRUCT, yyvsp[-1]); /* code=pop; name=pop; context=pop; construct(context,name,junction(code)) */
+	OA(*yyval, OP::OP_CURLY_CODE__CONSTRUCT, yyvsp[-1]); /* code=pop; name=pop; context=pop; construct(context,name,junction(code)) */
 ;}
     break;
 
@@ -1761,7 +1761,7 @@ yyreduce:
 #line 419 "compile.y"
     {
 	yyval=N(); 
-	OA(*yyval, OP_OBJECT_POOL, yyvsp[0]); /* stack: empty write context */
+	OA(*yyval, OP::OP_OBJECT_POOL, yyvsp[0]); /* stack: empty write context */
 	/* some code that writes to that context */
 	/* context=pop; stack: context.value() */
 ;}
@@ -1777,8 +1777,8 @@ yyreduce:
     {
 	yyval=yyvsp[0]; /* stack: value */
 	changetail_or_append(*yyval, 
-		OP_CALL, true,  /*->*/ OP_CALL__WRITE,
-		/*or */OP_WRITE_VALUE); /* value=pop; wcontext.write(value) */
+		OP::OP_CALL, true,  /*->*/ OP::OP_CALL__WRITE,
+		/*or */OP::OP_WRITE_VALUE); /* value=pop; wcontext.write(value) */
 ;}
     break;
 
@@ -1802,13 +1802,13 @@ yyreduce:
 	yyval=yyvsp[-3]; /* with_xxx,diving code; stack: context,method_junction */
 
 	YYSTYPE params_code=yyvsp[-1];
-	if(params_code->count()==4) { // probably [] case. [OP_VALUE+origin+Void+STORE_PARAM]
+	if(params_code->count()==4) { // probably [] case. [OP::OP_VALUE+origin+Void+STORE_PARAM]
 		if(Value* value=LA2V(*params_code)) // it is OP_VALUE+origin+value?
 			if(value->is_void()) // value is VVoid?
 				params_code=0; // ^zzz[] case. don't append lone empty param.
 	}
 	/* stack: context, method_junction */
-	OA(*yyval, OP_CALL, params_code); // method_frame=make frame(pop junction); ncontext=pop; call(ncontext,method_frame) stack: value
+	OA(*yyval, OP::OP_CALL, params_code); // method_frame=make frame(pop junction); ncontext=pop; call(ncontext,method_frame) stack: value
 ;}
     break;
 
@@ -1866,7 +1866,7 @@ yyreduce:
 #line 483 "compile.y"
     {
 	yyval=yyvsp[0];
-	O(*yyval, OP_STORE_PARAM);
+	O(*yyval, OP::OP_STORE_PARAM);
 ;}
     break;
 
@@ -1875,16 +1875,16 @@ yyreduce:
     {
 	YYSTYPE expr_code=yyvsp[0];
 	if(expr_code->count()==3
-		&& (*expr_code)[0].code==OP_VALUE) { // optimizing (double/bool/incidently 'string' too) case. [OP_VALUE+origin+Double]
+		&& (*expr_code)[0].code==OP::OP_VALUE) { // optimizing (double/bool/incidently 'string' too) case. [OP::OP_VALUE+origin+Double]
 		yyval=expr_code; 
-		O(*yyval, OP_STORE_PARAM); // no evaluating
+		O(*yyval, OP::OP_STORE_PARAM); // no evaluating
 	} else {
 		ArrayOperation* code=N();
-		O(*code, OP_PREPARE_TO_EXPRESSION);
+		O(*code, OP::OP_PREPARE_TO_EXPRESSION);
 		P(*code, *expr_code);
-		O(*code, OP_WRITE_EXPR_RESULT);
+		O(*code, OP::OP_WRITE_EXPR_RESULT);
 		yyval=N(); 
-		OA(*yyval, OP_EXPR_CODE__STORE_PARAM, code);
+		OA(*yyval, OP::OP_EXPR_CODE__STORE_PARAM, code);
 	}
 ;}
     break;
@@ -1893,7 +1893,7 @@ yyreduce:
 #line 502 "compile.y"
     {
 	yyval=N(); 
-	OA(*yyval, OP_CURLY_CODE__STORE_PARAM, yyvsp[0]);
+	OA(*yyval, OP::OP_CURLY_CODE__STORE_PARAM, yyvsp[0]);
 ;}
     break;
 
@@ -1915,7 +1915,7 @@ yyreduce:
 
 	/* stack: context */
 	yyval=yyvsp[0]; /* stack: context,name */
-	O(*yyval, OP_GET_ELEMENT); /* name=pop; context=pop; stack: context.get_element(name) */
+	O(*yyval, OP::OP_GET_ELEMENT); /* name=pop; context=pop; stack: context.get_element(name) */
 ;}
     break;
 
@@ -1924,7 +1924,7 @@ yyreduce:
     {
 	/* stack: context */
 	yyval=yyvsp[0]; /* stack: context,name */
-	O(*yyval, OP_GET_ELEMENT); /* name=pop; context=pop; stack: context.get_element(name) */
+	O(*yyval, OP::OP_GET_ELEMENT); /* name=pop; context=pop; stack: context.get_element(name) */
 ;}
     break;
 
@@ -1932,7 +1932,7 @@ yyreduce:
 #line 539 "compile.y"
     {
 	yyval=yyvsp[0];
-	O(*yyval, OP_GET_ELEMENT);
+	O(*yyval, OP::OP_GET_ELEMENT);
 ;}
     break;
 
@@ -1945,7 +1945,7 @@ yyreduce:
 		P(*code, *yyvsp[0]);
 	}
 	yyval=N(); 
-	OA(*yyval, OP_STRING_POOL, code);
+	OA(*yyval, OP::OP_STRING_POOL, code);
 ;}
     break;
 
@@ -1968,7 +1968,7 @@ yyreduce:
 #line 557 "compile.y"
     {
 	yyval=N(); 
-	OA(*yyval, OP_OBJECT_POOL, yyvsp[-2]); /* stack: empty write context */
+	OA(*yyval, OP::OP_OBJECT_POOL, yyvsp[-2]); /* stack: empty write context */
 	/* some code that writes to that context */
 	/* context=pop; stack: context.value() */
 ;}
@@ -1978,7 +1978,7 @@ yyreduce:
 #line 563 "compile.y"
     {
 	yyval=N(); 
-	O(*yyval, OP_WITH_READ);
+	O(*yyval, OP::OP_WITH_READ);
 	P(*yyval, *yyvsp[0]);
 ;}
     break;
@@ -1992,7 +1992,7 @@ yyreduce:
 #line 569 "compile.y"
     {
 	yyval=yyvsp[0];
-	O(*yyval, OP_GET_ELEMENT__WRITE);
+	O(*yyval, OP::OP_GET_ELEMENT__WRITE);
 ;}
     break;
 
@@ -2008,7 +2008,7 @@ yyreduce:
 			YYERROR;
 		}
 	}
-	O(*yyval, OP_GET_CLASS);
+	O(*yyval, OP::OP_GET_CLASS);
 ;}
     break;
 
@@ -2020,7 +2020,7 @@ yyreduce:
 		strcpy(PC.error, ":: not allowed here");
 		YYERROR;
 	}
-	O(*yyval, OP_PREPARE_TO_CONSTRUCT_OBJECT);
+	O(*yyval, OP::OP_PREPARE_TO_CONSTRUCT_OBJECT);
 ;}
     break;
 
@@ -2041,7 +2041,7 @@ yyreduce:
 
   case 131:
 #line 613 "compile.y"
-    { yyval=yyvsp[0];  O(*yyval, OP_NEG) ;}
+    { yyval=yyvsp[0];  O(*yyval, OP::OP_NEG) ;}
     break;
 
   case 132:
@@ -2051,167 +2051,167 @@ yyreduce:
 
   case 133:
 #line 615 "compile.y"
-    { yyval=yyvsp[0];	 O(*yyval, OP_INV) ;}
+    { yyval=yyvsp[0];	 O(*yyval, OP::OP_INV) ;}
     break;
 
   case 134:
 #line 616 "compile.y"
-    { yyval=yyvsp[0];  O(*yyval, OP_NOT) ;}
+    { yyval=yyvsp[0];  O(*yyval, OP::OP_NOT) ;}
     break;
 
   case 135:
 #line 617 "compile.y"
-    { yyval=yyvsp[0];  O(*yyval, OP_DEF) ;}
+    { yyval=yyvsp[0];  O(*yyval, OP::OP_DEF) ;}
     break;
 
   case 136:
 #line 618 "compile.y"
-    { yyval=yyvsp[0];  O(*yyval, OP_IN) ;}
+    { yyval=yyvsp[0];  O(*yyval, OP::OP_IN) ;}
     break;
 
   case 137:
 #line 619 "compile.y"
-    { yyval=yyvsp[0];  O(*yyval, OP_FEXISTS) ;}
+    { yyval=yyvsp[0];  O(*yyval, OP::OP_FEXISTS) ;}
     break;
 
   case 138:
 #line 620 "compile.y"
-    { yyval=yyvsp[0];  O(*yyval, OP_DEXISTS) ;}
+    { yyval=yyvsp[0];  O(*yyval, OP::OP_DEXISTS) ;}
     break;
 
   case 139:
 #line 622 "compile.y"
-    {	yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP_SUB) ;}
+    {	yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP::OP_SUB) ;}
     break;
 
   case 140:
 #line 623 "compile.y"
-    { yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP_ADD) ;}
+    { yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP::OP_ADD) ;}
     break;
 
   case 141:
 #line 624 "compile.y"
-    { yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP_MUL) ;}
+    { yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP::OP_MUL) ;}
     break;
 
   case 142:
 #line 625 "compile.y"
-    { yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP_DIV) ;}
+    { yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP::OP_DIV) ;}
     break;
 
   case 143:
 #line 626 "compile.y"
-    { yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP_MOD) ;}
+    { yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP::OP_MOD) ;}
     break;
 
   case 144:
 #line 627 "compile.y"
-    { yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP_INTDIV) ;}
+    { yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP::OP_INTDIV) ;}
     break;
 
   case 145:
 #line 628 "compile.y"
-    { yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP_BIN_SL) ;}
+    { yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP::OP_BIN_SL) ;}
     break;
 
   case 146:
 #line 629 "compile.y"
-    { yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP_BIN_SR) ;}
+    { yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP::OP_BIN_SR) ;}
     break;
 
   case 147:
 #line 630 "compile.y"
-    { yyval=yyvsp[-2]; 	P(*yyval, *yyvsp[0]);  O(*yyval, OP_BIN_AND) ;}
+    { yyval=yyvsp[-2]; 	P(*yyval, *yyvsp[0]);  O(*yyval, OP::OP_BIN_AND) ;}
     break;
 
   case 148:
 #line 631 "compile.y"
-    { yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP_BIN_OR) ;}
+    { yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP::OP_BIN_OR) ;}
     break;
 
   case 149:
 #line 632 "compile.y"
-    { yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP_BIN_XOR) ;}
+    { yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP::OP_BIN_XOR) ;}
     break;
 
   case 150:
 #line 633 "compile.y"
-    { yyval=yyvsp[-2];  OA(*yyval, OP_NESTED_CODE, yyvsp[0]);  O(*yyval, OP_LOG_AND) ;}
+    { yyval=yyvsp[-2];  OA(*yyval, OP::OP_NESTED_CODE, yyvsp[0]);  O(*yyval, OP::OP_LOG_AND) ;}
     break;
 
   case 151:
 #line 634 "compile.y"
-    { yyval=yyvsp[-2];  OA(*yyval, OP_NESTED_CODE, yyvsp[0]);  O(*yyval, OP_LOG_OR) ;}
+    { yyval=yyvsp[-2];  OA(*yyval, OP::OP_NESTED_CODE, yyvsp[0]);  O(*yyval, OP::OP_LOG_OR) ;}
     break;
 
   case 152:
 #line 635 "compile.y"
-    { yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP_LOG_XOR) ;}
+    { yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP::OP_LOG_XOR) ;}
     break;
 
   case 153:
 #line 636 "compile.y"
-    { yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP_NUM_LT) ;}
+    { yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP::OP_NUM_LT) ;}
     break;
 
   case 154:
 #line 637 "compile.y"
-    { yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP_NUM_GT) ;}
+    { yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP::OP_NUM_GT) ;}
     break;
 
   case 155:
 #line 638 "compile.y"
-    { yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP_NUM_LE) ;}
+    { yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP::OP_NUM_LE) ;}
     break;
 
   case 156:
 #line 639 "compile.y"
-    { yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP_NUM_GE) ;}
+    { yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP::OP_NUM_GE) ;}
     break;
 
   case 157:
 #line 640 "compile.y"
-    { yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP_NUM_EQ) ;}
+    { yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP::OP_NUM_EQ) ;}
     break;
 
   case 158:
 #line 641 "compile.y"
-    { yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP_NUM_NE) ;}
+    { yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP::OP_NUM_NE) ;}
     break;
 
   case 159:
 #line 642 "compile.y"
-    { yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP_STR_LT) ;}
+    { yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP::OP_STR_LT) ;}
     break;
 
   case 160:
 #line 643 "compile.y"
-    { yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP_STR_GT) ;}
+    { yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP::OP_STR_GT) ;}
     break;
 
   case 161:
 #line 644 "compile.y"
-    { yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP_STR_LE) ;}
+    { yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP::OP_STR_LE) ;}
     break;
 
   case 162:
 #line 645 "compile.y"
-    { yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP_STR_GE) ;}
+    { yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP::OP_STR_GE) ;}
     break;
 
   case 163:
 #line 646 "compile.y"
-    { yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP_STR_EQ) ;}
+    { yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP::OP_STR_EQ) ;}
     break;
 
   case 164:
 #line 647 "compile.y"
-    { yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP_STR_NE) ;}
+    { yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP::OP_STR_NE) ;}
     break;
 
   case 165:
 #line 648 "compile.y"
-    { yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP_IS) ;}
+    { yyval=yyvsp[-2];  P(*yyval, *yyvsp[0]);  O(*yyval, OP::OP_IS) ;}
     break;
 
   case 166:
@@ -2226,7 +2226,7 @@ yyreduce:
 #line 656 "compile.y"
     {
 	yyval=N();
-	OA(*yyval, OP_STRING_POOL, yyvsp[0]); /* stack: empty write context */
+	OA(*yyval, OP::OP_STRING_POOL, yyvsp[0]); /* stack: empty write context */
 	/* some code that writes to that context */
 	/* context=pop; stack: context.get_string() */
 ;}

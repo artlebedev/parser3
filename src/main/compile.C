@@ -5,9 +5,8 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMPILE_C="$Date: 2008/06/10 14:06:22 $";
+static const char * const IDENT_COMPILE_C="$Date: 2008/08/15 15:26:14 $";
 
-#include "pa_opcode.h"
 #include "pa_request.h"
 #include "compile_tools.h"
 

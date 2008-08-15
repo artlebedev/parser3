@@ -9,7 +9,7 @@
 #ifndef OPERATION_H
 #define OPERATION_H
 
-static const char * const IDENT_OPERATION_H="$Date: 2005/08/09 08:14:49 $";
+static const char * const IDENT_OPERATION_H="$Date: 2008/08/15 15:25:03 $";
 
 #include "pa_array.h"
 #include "pa_opcode.h"
@@ -44,14 +44,14 @@ union Operation {
 		}
 	};
 
-	OPCODE code; ///< operation code
+	OP::OPCODE code; ///< operation code
 	Origin origin; ///< not an operation, but rather debug information: [OP_VALUE; debug_info; Value*]
 	Value* value; ///< not an operation, but rather value stored after argumented op
 	ArrayOperation* ops; ///< not an operation, but rather code array stored after argumented op
 
 	/// needed to fill unused Array entries
 	Operation() {}
-	Operation(OPCODE acode): code(acode) {}
+	Operation(OP::OPCODE acode): code(acode) {}
 	Operation(uint afile_no, uint aline, uint acol): 
 		origin(Origin::create(afile_no, aline, acol)) {}
 	Operation(Value* avalue): value(avalue) {}

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2008/06/16 12:44:57 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2008/08/15 15:26:14 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -121,7 +121,7 @@ void Request::execute(ArrayOperation& ops) {
 				0,
 				"execution stopped");
 		}
-		OPCODE opcode=i.next().code;
+		OP::OPCODE opcode=i.next().code;
 
 #ifdef DEBUG_EXECUTE
 		debug_printf(sapi_info, "%d:%s", stack.top_index()+1, opcode_name[opcode]);
@@ -129,7 +129,7 @@ void Request::execute(ArrayOperation& ops) {
 
 		switch(opcode) {
 		// param in next instruction
-		case OP_VALUE:
+		case OP::OP_VALUE:
 			{
 				debug_origin=i.next().origin;
 				Value& value=*i.next().value;
@@ -139,7 +139,7 @@ void Request::execute(ArrayOperation& ops) {
 				stack.push(value);
 				break;
 			}
-		case OP_GET_CLASS:
+		case OP::OP_GET_CLASS:
 			{
 				// maybe they do ^class:method[] call, remember the fact
 				wcontext->set_somebody_entered_some_class();
@@ -156,22 +156,22 @@ void Request::execute(ArrayOperation& ops) {
 			}
 			
 		// OP_WITH
-		case OP_WITH_ROOT:
+		case OP::OP_WITH_ROOT:
 			{
 				stack.push(*method_frame);
 				break;
 			}
-		case OP_WITH_SELF: 
+		case OP::OP_WITH_SELF: 
 			{
 				stack.push(get_self());
 				break;
 			}
-		case OP_WITH_READ: 
+		case OP::OP_WITH_READ: 
 			{
 				stack.push(*rcontext);
 				break;
 			}
-		case OP_WITH_WRITE: 
+		case OP::OP_WITH_WRITE: 
 			{
 				if(wcontext==method_frame)
 					throw Exception(PARSER_RUNTIME,
@@ -183,7 +183,7 @@ void Request::execute(ArrayOperation& ops) {
 			}
 			
 		// OTHER ACTIONS BUT WITHs
-		case OP_CONSTRUCT_VALUE:
+		case OP::OP_CONSTRUCT_VALUE:
 			{
 				Value& value=stack.pop().value();
 				const String& name=stack.pop().string();  debug_name=&name;
@@ -192,7 +192,7 @@ void Request::execute(ArrayOperation& ops) {
 
 				break;
 			}
-		case OP_CONSTRUCT_EXPR:
+		case OP::OP_CONSTRUCT_EXPR:
 			{
 				// see OP_PREPARE_TO_EXPRESSION
 				wcontext->set_in_expression(false);
@@ -204,7 +204,7 @@ void Request::execute(ArrayOperation& ops) {
 				put_element(ncontext, name, value);
 				break;
 			}
-		case OP_CURLY_CODE__CONSTRUCT:
+		case OP::OP_CURLY_CODE__CONSTRUCT:
 			{
 				ArrayOperation& local_ops=*i.next().ops;
 #ifdef DEBUG_EXECUTE
@@ -228,7 +228,7 @@ void Request::execute(ArrayOperation& ops) {
 					
 				break;
 			}
-		case OP_NESTED_CODE:
+		case OP::OP_NESTED_CODE:
 			{
 				ArrayOperation& local_ops=*i.next().ops;
 #ifdef DEBUG_EXECUTE
@@ -238,13 +238,13 @@ void Request::execute(ArrayOperation& ops) {
 				stack.push(local_ops);
 				break;
 			}
-		case OP_WRITE_VALUE:
+		case OP::OP_WRITE_VALUE:
 			{
 				Value& value=stack.pop().value();
 				write_assign_lang(value);
 				break;
 			}
-		case OP_WRITE_EXPR_RESULT:
+		case OP::OP_WRITE_EXPR_RESULT:
 			{
 				Value& value=stack.pop().value();
 				write_no_lang(value.as_expr_result());
@@ -254,7 +254,7 @@ void Request::execute(ArrayOperation& ops) {
 				wcontext->set_in_expression(false);
 				break;
 			}
-		case OP_STRING__WRITE:
+		case OP::OP_STRING__WRITE:
 			{
 				i.next(); // ignore origin
 				Value* value=i.next().value;
@@ -265,7 +265,7 @@ void Request::execute(ArrayOperation& ops) {
 				break;
 			}
 			
-		case OP_GET_ELEMENT_OR_OPERATOR:
+		case OP::OP_GET_ELEMENT_OR_OPERATOR:
 			{
 				const String& name=stack.pop().string();  debug_name=&name;
 				Value& ncontext=stack.pop().value();
@@ -273,7 +273,7 @@ void Request::execute(ArrayOperation& ops) {
 				stack.push(value);
 				break;
 			}
-		case OP_GET_ELEMENT:
+		case OP::OP_GET_ELEMENT:
 			{
 				const String& name=stack.pop().string();  debug_name=&name;
 				Value& ncontext=stack.pop().value();
@@ -282,7 +282,7 @@ void Request::execute(ArrayOperation& ops) {
 				break;
 			}
 
-		case OP_GET_ELEMENT__WRITE:
+		case OP::OP_GET_ELEMENT__WRITE:
 			{
 				const String& name=stack.pop().string();  debug_name=&name;
 				Value& ncontext=stack.pop().value();
@@ -292,7 +292,7 @@ void Request::execute(ArrayOperation& ops) {
 			}
 
 
-		case OP_OBJECT_POOL:
+		case OP::OP_OBJECT_POOL:
 			{
 				ArrayOperation& local_ops=*i.next().ops;
 				
@@ -310,7 +310,7 @@ void Request::execute(ArrayOperation& ops) {
 				break;
 			}
 			
-		case OP_STRING_POOL:
+		case OP::OP_STRING_POOL:
 			{
 				ArrayOperation& local_ops=*i.next().ops;
 
@@ -334,7 +334,7 @@ void Request::execute(ArrayOperation& ops) {
 			}
 
 		// CALL
-		case OP_STORE_PARAM:
+		case OP::OP_STORE_PARAM:
 			{
 				Value& value=stack.pop().value();
 				VMethodFrame& frame=stack.top_value().method_frame();
@@ -342,8 +342,8 @@ void Request::execute(ArrayOperation& ops) {
 				frame.store_param(value);
 				break;
 			}
-		case OP_CURLY_CODE__STORE_PARAM:
-		case OP_EXPR_CODE__STORE_PARAM:
+		case OP::OP_CURLY_CODE__STORE_PARAM:
+		case OP::OP_EXPR_CODE__STORE_PARAM:
 			{
 				// code
 				ArrayOperation& local_ops=*i.next().ops;
@@ -363,7 +363,7 @@ void Request::execute(ArrayOperation& ops) {
 					get_self(), 0,
 					method_frame, 
 					rcontext, 
-					opcode==OP_EXPR_CODE__STORE_PARAM?0:wcontext, 
+					opcode==OP::OP_EXPR_CODE__STORE_PARAM?0:wcontext, 
 					&local_ops);
 				// store param
 				// this op is executed from CALL local_ops only, so can not check method_frame_to_fill==0
@@ -371,20 +371,20 @@ void Request::execute(ArrayOperation& ops) {
 				break;
 			}
 
-		case OP_PREPARE_TO_CONSTRUCT_OBJECT:
+		case OP::OP_PREPARE_TO_CONSTRUCT_OBJECT:
 			{
 				wcontext->set_constructing(true);
 				break;
 			}
 
-		case OP_PREPARE_TO_EXPRESSION:
+		case OP::OP_PREPARE_TO_EXPRESSION:
 			{
 				wcontext->set_in_expression(true);
 				break;
 			}
 
-		case OP_CALL:
-		case OP_CALL__WRITE:
+		case OP::OP_CALL:
+		case OP::OP_CALL__WRITE:
 			{
 				//is_debug_junction=true;
 				ArrayOperation* local_ops=i.next().ops;
@@ -428,7 +428,7 @@ void Request::execute(ArrayOperation& ops) {
 					stack.pop().value();
 				}
 				WContext* result_wcontext=op_call(frame);
-				if(opcode==OP_CALL__WRITE) {
+				if(opcode==OP::OP_CALL__WRITE) {
 					write_assign_lang(result_wcontext->result());
 				} else { // OP_CALL
 					stack.push(result_wcontext->result().as_value());
@@ -442,35 +442,35 @@ void Request::execute(ArrayOperation& ops) {
 			}
 
 		// expression ops: unary
-		case OP_NEG:
+		case OP::OP_NEG:
 			{
 				Value& a=stack.pop().value();
 				Value& value=*new VDouble(-a.as_double());
 				stack.push(value);
 				break;
 			}
-		case OP_INV:
+		case OP::OP_INV:
 			{
 				Value& a=stack.pop().value();
 				Value& value=*new VDouble(~a.as_int());
 				stack.push(value);
 				break;
 			}
-		case OP_NOT:
+		case OP::OP_NOT:
 			{
 				Value& a=stack.pop().value();
 				Value& value=*new VBool(!a.as_bool());
 				stack.push(value);
 				break;
 			}
-		case OP_DEF:
+		case OP::OP_DEF:
 			{
 				Value& a=stack.pop().value();
 				Value& value=*new VBool(a.is_defined());
 				stack.push(value);
 				break;
 			}
-		case OP_IN:
+		case OP::OP_IN:
 			{
 				Value& a=stack.pop().value();
 				const String& path=a.as_string();
@@ -478,14 +478,14 @@ void Request::execute(ArrayOperation& ops) {
 				stack.push(value);
 				break;
 			}
-		case OP_FEXISTS:
+		case OP::OP_FEXISTS:
 			{
 				Value& a=stack.pop().value();
 				Value& value=*new VBool(file_exist(absolute(a.as_string())));
 				stack.push(value);
 				break;
 			}
-		case OP_DEXISTS:
+		case OP::OP_DEXISTS:
 			{
 				Value& a=stack.pop().value();
 				Value& value=*new VBool(dir_exists(absolute(a.as_string())));
@@ -494,28 +494,28 @@ void Request::execute(ArrayOperation& ops) {
 			}
 
 		// expression ops: binary
-		case OP_SUB: 
+		case OP::OP_SUB: 
 			{
 				Value& b=stack.pop().value();  Value& a=stack.pop().value();
 				Value& value=*new VDouble(a.as_double() - b.as_double());
 				stack.push(value);
 				break;
 			}
-		case OP_ADD: 
+		case OP::OP_ADD: 
 			{
 				Value& b=stack.pop().value();  Value& a=stack.pop().value();
 				Value& value=*new VDouble(a.as_double() + b.as_double());
 				stack.push(value);
 				break;
 			}
-		case OP_MUL: 
+		case OP::OP_MUL: 
 			{
 				Value& b=stack.pop().value();  Value& a=stack.pop().value();
 				Value& value=*new VDouble(a.as_double() * b.as_double());
 				stack.push(value);
 				break;
 			}
-		case OP_DIV: 
+		case OP::OP_DIV: 
 			{
 				Value& b=stack.pop().value();  Value& a=stack.pop().value();
 
@@ -533,7 +533,7 @@ void Request::execute(ArrayOperation& ops) {
 				stack.push(value);
 				break;
 			}
-		case OP_MOD: 
+		case OP::OP_MOD: 
 			{
 				Value& b=stack.pop().value();  Value& a=stack.pop().value();
 
@@ -551,7 +551,7 @@ void Request::execute(ArrayOperation& ops) {
 				stack.push(value);
 				break;
 			}
-		case OP_INTDIV:
+		case OP::OP_INTDIV:
 			{
 				Value& b=stack.pop().value();  Value& a=stack.pop().value();
 
@@ -569,7 +569,7 @@ void Request::execute(ArrayOperation& ops) {
 				stack.push(value);
 				break;
 			}
-		case OP_BIN_SL:
+		case OP::OP_BIN_SL:
 			{
 				Value& b=stack.pop().value();  Value& a=stack.pop().value();
 				Value& value=*new VInt(
@@ -578,7 +578,7 @@ void Request::execute(ArrayOperation& ops) {
 				stack.push(value);
 				break;
 			}
-		case OP_BIN_SR:
+		case OP::OP_BIN_SR:
 			{
 				Value& b=stack.pop().value();  Value& a=stack.pop().value();
 				Value& value=*new VInt(
@@ -587,7 +587,7 @@ void Request::execute(ArrayOperation& ops) {
 				stack.push(value);
 				break;
 			}
-		case OP_BIN_AND:
+		case OP::OP_BIN_AND:
 			{
 				Value& b=stack.pop().value();  Value& a=stack.pop().value();
 				Value& value=*new VInt(
@@ -596,7 +596,7 @@ void Request::execute(ArrayOperation& ops) {
 				stack.push(value);
 				break;
 			}
-		case OP_BIN_OR:
+		case OP::OP_BIN_OR:
 			{
 				Value& b=stack.pop().value();  Value& a=stack.pop().value();
 				Value& value=*new VInt(
@@ -605,7 +605,7 @@ void Request::execute(ArrayOperation& ops) {
 				stack.push(value);
 				break;
 			}
-		case OP_BIN_XOR:
+		case OP::OP_BIN_XOR:
 			{
 				Value& b=stack.pop().value();  Value& a=stack.pop().value();
 				Value& value=*new VInt(
@@ -614,7 +614,7 @@ void Request::execute(ArrayOperation& ops) {
 				stack.push(value);
 				break;
 			}
-		case OP_LOG_AND:
+		case OP::OP_LOG_AND:
 			{
 				ArrayOperation& local_ops=stack.pop().ops();  Value& a=stack.pop().value();
 				bool result;
@@ -628,7 +628,7 @@ void Request::execute(ArrayOperation& ops) {
 				stack.push(value);
 				break;
 			}
-		case OP_LOG_OR:
+		case OP::OP_LOG_OR:
 			{
 				ArrayOperation& local_ops=stack.pop().ops();  Value& a=stack.pop().value();
 				bool result;
@@ -643,14 +643,14 @@ void Request::execute(ArrayOperation& ops) {
 				stack.push(value);
 				break;
 			}
-		case OP_LOG_XOR:
+		case OP::OP_LOG_XOR:
 			{
 				Value& b=stack.pop().value();  Value& a=stack.pop().value();
 				Value& value=*new VBool(a.as_bool() ^ b.as_bool());
 				stack.push(value);
 				break;
 			}
-		case OP_NUM_LT: 
+		case OP::OP_NUM_LT: 
 			{
 				volatile double b_double=stack.pop().value().as_double();
 				volatile double a_double=stack.pop().value().as_double();
@@ -658,7 +658,7 @@ void Request::execute(ArrayOperation& ops) {
 				stack.push(value);
 				break;
 			}
-		case OP_NUM_GT: 
+		case OP::OP_NUM_GT: 
 			{
 				volatile double b_double=stack.pop().value().as_double();
 				volatile double a_double=stack.pop().value().as_double();
@@ -666,7 +666,7 @@ void Request::execute(ArrayOperation& ops) {
 				stack.push(value);
 				break;
 			}
-		case OP_NUM_LE: 
+		case OP::OP_NUM_LE: 
 			{
 				volatile double b_double=stack.pop().value().as_double();
 				volatile double a_double=stack.pop().value().as_double();
@@ -674,7 +674,7 @@ void Request::execute(ArrayOperation& ops) {
 				stack.push(value);
 				break;
 			}
-		case OP_NUM_GE: 
+		case OP::OP_NUM_GE: 
 			{
 				volatile double b_double=stack.pop().value().as_double();
 				volatile double a_double=stack.pop().value().as_double();
@@ -682,7 +682,7 @@ void Request::execute(ArrayOperation& ops) {
 				stack.push(value);
 				break;
 			}
-		case OP_NUM_EQ: 
+		case OP::OP_NUM_EQ: 
 			{
 				volatile double b_double=stack.pop().value().as_double();
 				volatile double a_double=stack.pop().value().as_double();
@@ -690,7 +690,7 @@ void Request::execute(ArrayOperation& ops) {
 				stack.push(value);
 				break;
 			}
-		case OP_NUM_NE: 
+		case OP::OP_NUM_NE: 
 			{
 				volatile double b_double=stack.pop().value().as_double();
 				volatile double a_double=stack.pop().value().as_double();
@@ -698,49 +698,49 @@ void Request::execute(ArrayOperation& ops) {
 				stack.push(value);
 				break;
 			}
-		case OP_STR_LT: 
+		case OP::OP_STR_LT: 
 			{
 				Value& b=stack.pop().value();  Value& a=stack.pop().value();
 				Value& value=*new VBool(a.as_string() < b.as_string());
 				stack.push(value);
 				break;
 			}
-		case OP_STR_GT: 
+		case OP::OP_STR_GT: 
 			{
 				Value& b=stack.pop().value();  Value& a=stack.pop().value();
 				Value& value=*new VBool(a.as_string() > b.as_string());
 				stack.push(value);
 				break;
 			}
-		case OP_STR_LE: 
+		case OP::OP_STR_LE: 
 			{
 				Value& b=stack.pop().value();  Value& a=stack.pop().value();
 				Value& value=*new VBool(a.as_string() <= b.as_string());
 				stack.push(value);
 				break;
 			}
-		case OP_STR_GE: 
+		case OP::OP_STR_GE: 
 			{
 				Value& b=stack.pop().value();  Value& a=stack.pop().value();
 				Value& value=*new VBool(a.as_string() >= b.as_string());
 				stack.push(value);
 				break;
 			}
-		case OP_STR_EQ: 
+		case OP::OP_STR_EQ: 
 			{
 				Value& b=stack.pop().value();  Value& a=stack.pop().value();
 				Value& value=*new VBool(a.as_string() == b.as_string());
 				stack.push(value);
 				break;
 			}
-		case OP_STR_NE: 
+		case OP::OP_STR_NE: 
 			{
 				Value& b=stack.pop().value();  Value& a=stack.pop().value();
 				Value& value=*new VBool(a.as_string() != b.as_string());
 				stack.push(value);
 				break;
 			}
-		case OP_IS:
+		case OP::OP_IS:
 			{
 				Value& b=stack.pop().value();  Value& a=stack.pop().value();
 				Value& value=*new VBool(a.is(b.as_string().cstr()));

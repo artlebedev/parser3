@@ -5,7 +5,7 @@
 	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.228 2008/07/23 09:54:17 misha Exp $
+	$Id: compile.y,v 1.229 2008/08/15 15:26:14 misha Exp $
 */
 
 /**
@@ -312,8 +312,8 @@ action: get | put | call;
 get: get_value {
 	$$=$1; /* stack: resulting value */ 
 	changetail_or_append(*$$, 
-		OP_GET_ELEMENT, false,  /*->*/OP_GET_ELEMENT__WRITE,
-		/*or */OP_WRITE_VALUE
+		OP::OP_GET_ELEMENT, false,  /*->*/OP::OP_GET_ELEMENT__WRITE,
+		/*or */OP::OP_WRITE_VALUE
 		); /* value=pop; wcontext.write(value) */
 };
 get_value: '$' get_name_value { $$=$2 };
@@ -329,17 +329,17 @@ name_without_curly_rdive_read: name_without_curly_rdive_code {
 	// self.xxx... -> xxx...
 	// OP_VALUE+origin+string+OP_GET_ELEMENT+... -> OP_WITH_SELF+...
 	if(first_name && *first_name==SELF_ELEMENT_NAME) {
-		O(*yyval, OP_WITH_SELF); /* stack: starting context */
+		O(*yyval, OP::OP_WITH_SELF); /* stack: starting context */
 		P(*yyval, *diving_code, 
 			/* skip over... */
-			diving_code->count()>=4?4/*OP_VALUE+origin+string+OP_GET_ELEMENTx*/:3/*OP_+origin+string*/);
+			diving_code->count()>=4?4/*OP::OP_VALUE+origin+string+OP::OP_GET_ELEMENTx*/:3/*OP::OP_+origin+string*/);
 	} else {
-		O(*yyval, OP_WITH_READ); /* stack: starting context */
+		O(*yyval, OP::OP_WITH_READ); /* stack: starting context */
 
 		// ^if ELEMENT -> ^if ELEMENT_OR_OPERATOR
 		// OP_VALUE+origin+string+OP_GET_ELEMENT. -> OP_VALUE+origin+string+OP_GET_ELEMENT_OR_OPERATOR.
 		if(PC.in_call_value && diving_code->count()==4)
-			diving_code->put(4-1, OP_GET_ELEMENT_OR_OPERATOR);
+			diving_code->put(4-1, OP::OP_GET_ELEMENT_OR_OPERATOR);
 		P(*$$, *diving_code);
 	}
 	/* diving code; stack: current context */
@@ -364,19 +364,19 @@ name_expr_wdive_root: name_expr_dive_code {
 	// $self.xxx... -> $xxx...
 	// OP_VALUE+origin+string+OP_GET_ELEMENT+... -> OP_WITH_SELF+...
 	if(first_name && *first_name==SELF_ELEMENT_NAME) {
-		O(*$$, OP_WITH_SELF); /* stack: starting context */
+		O(*$$, OP::OP_WITH_SELF); /* stack: starting context */
 		P(*$$, *diving_code, 
 			/* skip over... */
-			diving_code->count()>=4?4/*OP_VALUE+origin+string+OP_GET_ELEMENTx*/:3/*OP_+origin+string*/);
+			diving_code->count()>=4?4/*OP::OP_VALUE+origin+string+OP::OP_GET_ELEMENTx*/:3/*OP::OP_+origin+string*/);
 	} else {
-		O(*$$, OP_WITH_ROOT); /* stack: starting context */
+		O(*$$, OP::OP_WITH_ROOT); /* stack: starting context */
 		P(*$$, *diving_code);
 	}
 	/* diving code; stack: current context */
 };
 name_expr_wdive_write: '.' name_expr_dive_code {
 	$$=N(); 
-	O(*$$, OP_WITH_WRITE); /* stack: starting context */
+	O(*$$, OP::OP_WITH_WRITE); /* stack: starting context */
 	P(*$$, *$2); /* diving code; stack: context,name */
 };
 name_expr_wdive_class: class_prefix name_expr_dive_code { $$=$1; P(*$$, *$2) };
@@ -394,21 +394,21 @@ construct_square: '[' {
 } ']' {
 	// stack: context, name
 	$$=$3; // stack: context, name, value
-	O(*$$, OP_CONSTRUCT_VALUE); /* value=pop; name=pop; context=pop; construct(context,name,value) */
+	O(*$$, OP::OP_CONSTRUCT_VALUE); /* value=pop; name=pop; context=pop; construct(context,name,value) */
 }
 ;
 construct_round: '(' expr_value ')' { 
 	$$=N(); 
-	O(*$$, OP_PREPARE_TO_EXPRESSION);
+	O(*$$, OP::OP_PREPARE_TO_EXPRESSION);
 	// stack: context, name
 	P(*$$, *$2); // stack: context, name, value
-	O(*$$, OP_CONSTRUCT_EXPR); /* value=pop->as_expr_result; name=pop; context=pop; construct(context,name,value) */
+	O(*$$, OP::OP_CONSTRUCT_EXPR); /* value=pop->as_expr_result; name=pop; context=pop; construct(context,name,value) */
 }
 ;
 construct_curly: '{' maybe_codes '}' {
 	// stack: context, name
 	$$=N(); 
-	OA(*$$, OP_CURLY_CODE__CONSTRUCT, $2); /* code=pop; name=pop; context=pop; construct(context,name,junction(code)) */
+	OA(*$$, OP::OP_CURLY_CODE__CONSTRUCT, $2); /* code=pop; name=pop; context=pop; construct(context,name,junction(code)) */
 };
 
 any_constructor_code_value: 
@@ -418,7 +418,7 @@ any_constructor_code_value:
 ;
 constructor_code_value: constructor_code {
 	$$=N(); 
-	OA(*$$, OP_OBJECT_POOL, $1); /* stack: empty write context */
+	OA(*$$, OP::OP_OBJECT_POOL, $1); /* stack: empty write context */
 	/* some code that writes to that context */
 	/* context=pop; stack: context.value() */
 };
@@ -430,8 +430,8 @@ codes__excluding_sole_str_literal: action | code codes { $$=$1; P(*$$, *$2) };
 call: call_value {
 	$$=$1; /* stack: value */
 	changetail_or_append(*$$, 
-		OP_CALL, true,  /*->*/ OP_CALL__WRITE,
-		/*or */OP_WRITE_VALUE); /* value=pop; wcontext.write(value) */
+		OP::OP_CALL, true,  /*->*/ OP::OP_CALL__WRITE,
+		/*or */OP::OP_WRITE_VALUE); /* value=pop; wcontext.write(value) */
 };
 call_value: '^' { 
 					PC.in_call_value=true; 
@@ -443,13 +443,13 @@ call_value: '^' {
 	$$=$3; /* with_xxx,diving code; stack: context,method_junction */
 
 	YYSTYPE params_code=$5;
-	if(params_code->count()==4) { // probably [] case. [OP_VALUE+origin+Void+STORE_PARAM]
+	if(params_code->count()==4) { // probably [] case. [OP::OP_VALUE+origin+Void+STORE_PARAM]
 		if(Value* value=LA2V(*params_code)) // it is OP_VALUE+origin+value?
 			if(value->is_void()) // value is VVoid?
 				params_code=0; // ^zzz[] case. don't append lone empty param.
 	}
 	/* stack: context, method_junction */
-	OA(*$$, OP_CALL, params_code); // method_frame=make frame(pop junction); ncontext=pop; call(ncontext,method_frame) stack: value
+	OA(*$$, OP::OP_CALL, params_code); // method_frame=make frame(pop junction); ncontext=pop; call(ncontext,method_frame) stack: value
 };
 
 call_name: name_without_curly_rdive;
@@ -482,26 +482,26 @@ store_curly_param_parts:
 ;
 store_code_param_part: code_param_value {
 	$$=$1;
-	O(*$$, OP_STORE_PARAM);
+	O(*$$, OP::OP_STORE_PARAM);
 };
 store_expr_param_part: expr_value {
 	YYSTYPE expr_code=$1;
 	if(expr_code->count()==3
-		&& (*expr_code)[0].code==OP_VALUE) { // optimizing (double/bool/incidently 'string' too) case. [OP_VALUE+origin+Double]
+		&& (*expr_code)[0].code==OP::OP_VALUE) { // optimizing (double/bool/incidently 'string' too) case. [OP::OP_VALUE+origin+Double]
 		$$=expr_code; 
-		O(*$$, OP_STORE_PARAM); // no evaluating
+		O(*$$, OP::OP_STORE_PARAM); // no evaluating
 	} else {
 		ArrayOperation* code=N();
-		O(*code, OP_PREPARE_TO_EXPRESSION);
+		O(*code, OP::OP_PREPARE_TO_EXPRESSION);
 		P(*code, *expr_code);
-		O(*code, OP_WRITE_EXPR_RESULT);
+		O(*code, OP::OP_WRITE_EXPR_RESULT);
 		$$=N(); 
-		OA(*$$, OP_EXPR_CODE__STORE_PARAM, code);
+		OA(*$$, OP::OP_EXPR_CODE__STORE_PARAM, code);
 	}
 };
 store_curly_param_part: maybe_codes {
 	$$=N(); 
-	OA(*$$, OP_CURLY_CODE__STORE_PARAM, $1);
+	OA(*$$, OP::OP_CURLY_CODE__STORE_PARAM, $1);
 };
 code_param_value:
 	void_value /* optimized [;...] case */
@@ -521,12 +521,12 @@ name_advance1: name_expr_value {
 
 	/* stack: context */
 	$$=$1; /* stack: context,name */
-	O(*$$, OP_GET_ELEMENT); /* name=pop; context=pop; stack: context.get_element(name) */
+	O(*$$, OP::OP_GET_ELEMENT); /* name=pop; context=pop; stack: context.get_element(name) */
 };
 name_advance2: name_expr_value {
 	/* stack: context */
 	$$=$1; /* stack: context,name */
-	O(*$$, OP_GET_ELEMENT); /* name=pop; context=pop; stack: context.get_element(name) */
+	O(*$$, OP::OP_GET_ELEMENT); /* name=pop; context=pop; stack: context.get_element(name) */
 }
 |	STRING BOGUS
 ;
@@ -538,7 +538,7 @@ name_expr_value:
 ;
 name_expr_subvar_value: '$' subvar_ref_name_rdive {
 	$$=$2;
-	O(*$$, OP_GET_ELEMENT);
+	O(*$$, OP::OP_GET_ELEMENT);
 };
 name_expr_with_subvar_value: STRING subvar_get_writes {
 	ArrayOperation* code;
@@ -547,7 +547,7 @@ name_expr_with_subvar_value: STRING subvar_get_writes {
 		P(*code, *$2);
 	}
 	$$=N(); 
-	OA(*$$, OP_STRING_POOL, code);
+	OA(*$$, OP::OP_STRING_POOL, code);
 };
 name_square_code_value: '[' {
 	// allow $result_or_other_variable[ letters here any time ]
@@ -556,19 +556,19 @@ name_square_code_value: '[' {
 	PC.explicit_result=*reinterpret_cast<bool*>(&$2);
 } ']' {
 	$$=N(); 
-	OA(*$$, OP_OBJECT_POOL, $3); /* stack: empty write context */
+	OA(*$$, OP::OP_OBJECT_POOL, $3); /* stack: empty write context */
 	/* some code that writes to that context */
 	/* context=pop; stack: context.value() */
 };
 subvar_ref_name_rdive: STRING {
 	$$=N(); 
-	O(*$$, OP_WITH_READ);
+	O(*$$, OP::OP_WITH_READ);
 	P(*$$, *$1);
 };
 subvar_get_writes: subvar__get_write | subvar_get_writes subvar__get_write { $$=$1; P(*$$, *$2) };
 subvar__get_write: '$' subvar_ref_name_rdive {
 	$$=$2;
-	O(*$$, OP_GET_ELEMENT__WRITE);
+	O(*$$, OP::OP_GET_ELEMENT__WRITE);
 };
 
 class_prefix:
@@ -585,7 +585,7 @@ class_static_prefix: STRING ':' {
 			YYERROR;
 		}
 	}
-	O(*$$, OP_GET_CLASS);
+	O(*$$, OP::OP_GET_CLASS);
 };
 class_constructor_prefix: class_static_prefix ':' {
 	$$=$1;
@@ -593,7 +593,7 @@ class_constructor_prefix: class_static_prefix ':' {
 		strcpy(PC.error, ":: not allowed here");
 		YYERROR;
 	}
-	O(*$$, OP_PREPARE_TO_CONSTRUCT_OBJECT);
+	O(*$$, OP::OP_PREPARE_TO_CONSTRUCT_OBJECT);
 };
 
 
@@ -610,42 +610,42 @@ expr:
 |	'\'' string_inside_quotes_value '\'' { $$ = $2 }
 |	'(' expr ')' { $$ = $2; }
 /* stack: operand // stack: @operand */
-|	'-' expr %prec NUNARY { $$=$2;  O(*$$, OP_NEG) }
+|	'-' expr %prec NUNARY { $$=$2;  O(*$$, OP::OP_NEG) }
 |	'+' expr %prec NUNARY { $$=$2 }
-|	'~' expr { $$=$2;	 O(*$$, OP_INV) }
-|	'!' expr { $$=$2;  O(*$$, OP_NOT) }
-|	"def" expr { $$=$2;  O(*$$, OP_DEF) }
-|	"in" expr { $$=$2;  O(*$$, OP_IN) }
-|	"-f" expr { $$=$2;  O(*$$, OP_FEXISTS) }
-|	"-d" expr { $$=$2;  O(*$$, OP_DEXISTS) }
+|	'~' expr { $$=$2;	 O(*$$, OP::OP_INV) }
+|	'!' expr { $$=$2;  O(*$$, OP::OP_NOT) }
+|	"def" expr { $$=$2;  O(*$$, OP::OP_DEF) }
+|	"in" expr { $$=$2;  O(*$$, OP::OP_IN) }
+|	"-f" expr { $$=$2;  O(*$$, OP::OP_FEXISTS) }
+|	"-d" expr { $$=$2;  O(*$$, OP::OP_DEXISTS) }
 /* stack: a,b // stack: a@b */
-|	expr '-' expr {	$$=$1;  P(*$$, *$3);  O(*$$, OP_SUB) }
-|	expr '+' expr { $$=$1;  P(*$$, *$3);  O(*$$, OP_ADD) }
-|	expr '*' expr { $$=$1;  P(*$$, *$3);  O(*$$, OP_MUL) }
-|	expr '/' expr { $$=$1;  P(*$$, *$3);  O(*$$, OP_DIV) }
-|	expr '%' expr { $$=$1;  P(*$$, *$3);  O(*$$, OP_MOD) }
-|	expr '\\' expr { $$=$1;  P(*$$, *$3);  O(*$$, OP_INTDIV) }
-|	expr "<<" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP_BIN_SL) }
-|	expr ">>" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP_BIN_SR) }
-|	expr '&' expr { $$=$1; 	P(*$$, *$3);  O(*$$, OP_BIN_AND) }
-|	expr '|' expr { $$=$1;  P(*$$, *$3);  O(*$$, OP_BIN_OR) }
-|	expr "!|" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP_BIN_XOR) }
-|	expr "&&" expr { $$=$1;  OA(*$$, OP_NESTED_CODE, $3);  O(*$$, OP_LOG_AND) }
-|	expr "||" expr { $$=$1;  OA(*$$, OP_NESTED_CODE, $3);  O(*$$, OP_LOG_OR) }
-|	expr "!||" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP_LOG_XOR) }
-|	expr '<' expr { $$=$1;  P(*$$, *$3);  O(*$$, OP_NUM_LT) }
-|	expr '>' expr { $$=$1;  P(*$$, *$3);  O(*$$, OP_NUM_GT) }
-|	expr "<=" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP_NUM_LE) }
-|	expr ">=" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP_NUM_GE) }
-|	expr "==" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP_NUM_EQ) }
-|	expr "!=" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP_NUM_NE) }
-|	expr "lt" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP_STR_LT) }
-|	expr "gt" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP_STR_GT) }
-|	expr "le" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP_STR_LE) }
-|	expr "ge" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP_STR_GE) }
-|	expr "eq" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP_STR_EQ) }
-|	expr "ne" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP_STR_NE) }
-|	expr "is" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP_IS) }
+|	expr '-' expr {	$$=$1;  P(*$$, *$3);  O(*$$, OP::OP_SUB) }
+|	expr '+' expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_ADD) }
+|	expr '*' expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_MUL) }
+|	expr '/' expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_DIV) }
+|	expr '%' expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_MOD) }
+|	expr '\\' expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_INTDIV) }
+|	expr "<<" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_BIN_SL) }
+|	expr ">>" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_BIN_SR) }
+|	expr '&' expr { $$=$1; 	P(*$$, *$3);  O(*$$, OP::OP_BIN_AND) }
+|	expr '|' expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_BIN_OR) }
+|	expr "!|" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_BIN_XOR) }
+|	expr "&&" expr { $$=$1;  OA(*$$, OP::OP_NESTED_CODE, $3);  O(*$$, OP::OP_LOG_AND) }
+|	expr "||" expr { $$=$1;  OA(*$$, OP::OP_NESTED_CODE, $3);  O(*$$, OP::OP_LOG_OR) }
+|	expr "!||" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_LOG_XOR) }
+|	expr '<' expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_NUM_LT) }
+|	expr '>' expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_NUM_GT) }
+|	expr "<=" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_NUM_LE) }
+|	expr ">=" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_NUM_GE) }
+|	expr "==" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_NUM_EQ) }
+|	expr "!=" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_NUM_NE) }
+|	expr "lt" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_STR_LT) }
+|	expr "gt" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_STR_GT) }
+|	expr "le" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_STR_LE) }
+|	expr "ge" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_STR_GE) }
+|	expr "eq" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_STR_EQ) }
+|	expr "ne" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_STR_NE) }
+|	expr "is" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_IS) }
 ;
 
 double_or_STRING: STRING {
@@ -655,7 +655,7 @@ double_or_STRING: STRING {
 
 string_inside_quotes_value: maybe_codes {
 	$$=N();
-	OA(*$$, OP_STRING_POOL, $1); /* stack: empty write context */
+	OA(*$$, OP::OP_STRING_POOL, $1); /* stack: empty write context */
 	/* some code that writes to that context */
 	/* context=pop; stack: context.get_string() */
 };

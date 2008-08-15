@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMPILE_TOOLS_C="$Date: 2005/08/09 08:14:51 $";
+static const char * const IDENT_COMPILE_TOOLS_C="$Date: 2008/08/15 15:26:14 $";
 
 #include "compile_tools.h"
 #include "pa_string.h"
@@ -15,24 +15,24 @@ static const char * const IDENT_COMPILE_TOOLS_C="$Date: 2005/08/09 08:14:51 $";
 #include "pa_vdouble.h"
 
 Value* LA2V(ArrayOperation& literal_string_array, int offset) {
-	return literal_string_array[offset+0].code==OP_VALUE?literal_string_array[offset+2/*skip opcode&origin*/].value
+	return literal_string_array[offset+0].code==OP::OP_VALUE?literal_string_array[offset+2/*skip opcode&origin*/].value
 		:0;
 }
 
 void maybe_change_string_literal_to_double_literal(ArrayOperation& literal_array) {
-	assert(literal_array[0].code==OP_VALUE);
+	assert(literal_array[0].code==OP::OP_VALUE);
 	VString& vstring=*static_cast<VString*>(literal_array[2/*opcode+origin*/].value);
 	if(isdigit(vstring.string().first_char()))
 		literal_array.put(2/*opcode+origin*/, &vstring.as_expr_result());
 }
 
 void change_string_literal_value(ArrayOperation& literal_string_array, const String& new_value) {
-	assert(literal_string_array[0].code==OP_VALUE);
+	assert(literal_string_array[0].code==OP::OP_VALUE);
 	static_cast<VString*>(literal_string_array[2/*opcode+origin*/].value)->set_string(new_value);
 }
 
 void changetail_or_append(ArrayOperation& opcodes, 
-						  OPCODE find, bool with_argument, OPCODE replace, OPCODE notfound) {
+						  OP::OPCODE find, bool with_argument, OP::OPCODE replace, OP::OPCODE notfound) {
 	int tail=opcodes.count()-(with_argument?2:1);
 	if(tail>=0) {
 		Operation& op=opcodes.get_ref(tail);

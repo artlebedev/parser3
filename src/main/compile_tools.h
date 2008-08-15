@@ -8,7 +8,7 @@
 #ifndef COMPILE_TOOLS
 #define COMPILE_TOOLS
 
-static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2008/06/24 12:09:48 $";
+static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2008/08/15 15:26:14 $";
 
 #include "pa_opcode.h"
 #include "pa_types.h"
@@ -184,7 +184,7 @@ inline ArrayOperation* N() {
 }
 
 /// Assembler instruction // append ordinary instruction to ops
-inline void O(ArrayOperation& result, OPCODE code) {
+inline void O(ArrayOperation& result, OP::OPCODE code) {
 	result+=Operation(code);
 }
 
@@ -198,7 +198,7 @@ inline void P(ArrayOperation& result, ArrayOperation& code_array, int offset) {
 }
 
 /// append cOde Array
-inline void OA(ArrayOperation& result, OPCODE code, ArrayOperation* code_array) {
+inline void OA(ArrayOperation& result, OP::OPCODE code, ArrayOperation* code_array) {
 	result+=Operation(code); // append OP_CODE
 	result+=Operation(code_array); // append 'code_array'
 }
@@ -214,7 +214,7 @@ inline ArrayOperation* VL(Value* value, uint file_no, uint line, uint col) {
 	ArrayOperation& result=*N();
 
 	// append 'value' to 'result'
-	result+=Operation(OP_VALUE);
+	result+=Operation(OP::OP_VALUE);
 	result+=Operation(file_no, line, col); // append origin
 	result+=Operation(value); // append 'value'
 
@@ -231,7 +231,7 @@ inline const String* LA2S(ArrayOperation& literal_string_array, int offset=0) {
 }
 
 inline void change_string_literal_to_write_string_literal(ArrayOperation& literal_string_array) {
-	literal_string_array.put(0, OP_STRING__WRITE);
+	literal_string_array.put(0, OP::OP_STRING__WRITE);
 }
 
 
@@ -240,7 +240,7 @@ void maybe_change_string_literal_to_double_literal(ArrayOperation& literal_strin
 void change_string_literal_value(ArrayOperation& literal_string_array, const String& new_value);
 
 void changetail_or_append(ArrayOperation& opcodes, 
-						  OPCODE find, bool with_argument, OPCODE replace, OPCODE notfound);
+						  OP::OPCODE find, bool with_argument, OP::OPCODE replace, OP::OPCODE notfound);
 
 
 void push_LS(Parse_control& pc, lexical_state new_state);

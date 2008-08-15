@@ -9,7 +9,9 @@
 #ifndef OPCODE_H
 #define OPCODE_H
 
-static const char * const IDENT_OPCODE_H="$Date: 2005/08/09 08:14:49 $";
+namespace OP {
+
+static const char * const IDENT_OPCODE_H="$Date: 2008/08/15 15:25:03 $";
 
 ///	Compiled operation code
 enum OPCODE {
@@ -47,6 +49,7 @@ enum OPCODE {
 	OP_STR_LT, OP_STR_GT, OP_STR_LE, OP_STR_GE, OP_STR_EQ, OP_STR_NE,
 	OP_IS
 	//@}
+};
 };
 
 #endif
