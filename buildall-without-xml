@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Id: buildall-without-xml,v 1.13 2008/04/07 15:11:07 misha Exp $
+# $Id: buildall-without-xml,v 1.14 2008/08/15 16:41:23 misha Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -19,7 +19,7 @@ if test ! -f "$project_directory/gc/lib/libgc.a"; then
   cd $project_directory/src
   libgc="gc6.8"
   if test ! -f "$libgc.tar.gz"; then
-    echo "Downloading libgc [1 lib of 1]..."
+    echo "Downloading libgc [1 lib of 2]..."
     wget -c http://www.hpl.hp.com/personal/Hans_Boehm/gc/gc_source/$libgc.tar.gz
   fi
   echo "Unpacking gc..."
@@ -40,11 +40,43 @@ if test ! -f "$project_directory/gc/lib/libgc.a"; then
 fi
 
 
+if test ! -f "$project_directory/pcre/lib/libpcre.a"; then
+  cd $project_directory/src
+  libpcre="pcre-7.7"
+  if test ! -f "$libpcre.tar.gz"; then
+    echo "Downloading pcre [2 lib of 2]..."
+    wget -c ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/$libpcre.tar.gz
+  fi
+  echo "Unpacking pcre..."
+  rm -rf $libpcre
+  gunzip -c $libpcre.tar.gz | tar vxf - >/dev/null
+  cd $libpcre
+  current_dir=`pwd`
+  echo "Configuring pcre..."
+  ./configure --prefix="$project_directory/pcre" \
+    --enable-utf8 \
+    --enable-unicode-properties \
+    --disable-shared \
+    --disable-cpp \
+    --disable-pcregrep-libz \
+    --disable-pcregrep-libz2 \
+    --silent
+  echo "Building pcre..."
+  make
+  make install
+  echo "Copying required files (Parser3 uses some PCRE internals)..."
+  cp pcre_internal.h ucp.h $project_directory/pcre/include
+  cd ..
+  rm -rf $libpcre
+fi
+
+
 cd $parser3_directory
 
 if test ! -f "Makefile"; then
   options=""
   options="$options --with-static-gc=$project_directory/gc/lib"
+  options="$options --with-static-pcre=$project_directory/pcre"
 #  options="$options --disable-safe-mode"
 #  options="$options --with-dynamic-stdcpp"
 #  options="$options --disable-stringstream"

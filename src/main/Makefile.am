@@ -1,4 +1,4 @@
-INCLUDES = -I../types -I../classes -I../sql -I../lib/pcre -I../lib/gc/include -I../lib/cord/include $(INCLTDL) @XML_INCLUDES@
+INCLUDES = -I../types -I../classes -I../sql -I../lib/gc/include -I../lib/cord/include $(INCLTDL) @PCRE_INCLUDES@ @XML_INCLUDES@
 
 noinst_HEADERS = compile_tools.h utf8-to-lower.inc utf8-to-upper.inc
 noinst_LIBRARIES = libmain.a

@@ -291,6 +291,23 @@ AC_SUBST(GC_LIBS)
 LIBS=$SAVE_LIBS
 
 
+AC_ARG_WITH(static-pcre,[  --with-static-pcre=D     D is the directory where
+                          PCRE library is installed (static lib)],[
+	PCRE=$withval
+	PCREINC="$PCRE/include"
+	PCRELIB="$PCRE/lib"
+
+	if test \! -d $PCREINC -o \! -d $PCRELIB; then
+		AC_MSG_ERROR($PCRE does not seem to be valid PCRE installation directory)
+	fi
+
+	PCRE_INCLUDES="-I$PCREINC"
+	PCRE_LIBS="$PCRELIB/libpcre.a"
+])
+AC_SUBST(PCRE_INCLUDES)
+AC_SUBST(PCRE_LIBS)
+
+
 AC_ARG_WITH(shared-xml,[  --with-shared-xml=D     D is the directory where
                           Gnome XML libraries are installed (shared libs)],[
 	GNOME_XML=$withval
@@ -652,7 +669,6 @@ AC_OUTPUT(
 	src/lib/cord/include/Makefile
 	src/lib/cord/include/private/Makefile
 	src/lib/ltdl/Makefile
-	src/lib/pcre/Makefile
 	src/lib/md5/Makefile
 	src/lib/sdbm/Makefile
 	src/lib/sdbm/apr-include/Makefile

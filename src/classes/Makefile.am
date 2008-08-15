@@ -1,4 +1,4 @@
-INCLUDES = -I../types -I../sql -I../lib/gd -I../lib/pcre -I../lib/gc/include -I../lib/cord/include -I../lib/sdbm/apr-include -Igd @XML_INCLUDES@ -I../lib/md5 -I../lib/smtp
+INCLUDES = -I../types -I../sql -I../lib/gd -I../lib/gc/include -I../lib/cord/include -I../lib/sdbm/apr-include -Igd @PCRE_INCLUDES@ @XML_INCLUDES@ -I../lib/md5 -I../lib/smtp
 
 noinst_LIBRARIES = libclasses.a
 noinst_HEADERS = classes.h xnode.h
