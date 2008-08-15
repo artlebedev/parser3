@@ -5,13 +5,15 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2008/07/23 14:07:04 $";
+static const char * const IDENT_STRING_C="$Date: 2008/08/15 15:30:12 $";
 
 #include "pa_string.h"
 #include "pa_exception.h"
 #include "pa_table.h"
 #include "pa_dictionary.h"
 #include "pa_charset.h"
+
+#include "pcre.h"
 
 const String String::Empty;
 
@@ -493,7 +495,11 @@ Table* String::match(Charset& source_charset,
 	bool need_pre_post_match=(match_features & MF_NEED_PRE_POST_MATCH) != 0;
 	bool just_count_matches=(match_features & MF_JUST_COUNT_MATCHES) != 0;
 	bool global=option_bits[1]!=0;
-	PCRE::pcre *code=PCRE::pcre_compile(pattern, option_bits[0], 
+
+	if(source_charset.isUTF8())
+		option_bits[0]=option_bits[0] | PCRE_UTF8;
+
+	pcre *code=pcre_compile(pattern, option_bits[0], 
 		&errptr, &erroffset,
 		source_charset.pcre_tables);
 
@@ -502,9 +508,9 @@ Table* String::match(Charset& source_charset,
 			&regexp.mid(erroffset, regexp.length()),
 			"regular expression syntax error - %s", errptr);
 	
-	int subpatterns=PCRE::pcre_info(code, 0, 0);
+	int subpatterns=pcre_info(code, 0, 0);
 	if(subpatterns<0) {
-		PCRE::pcre_free(code);
+		pcre_free(code);
 		throw Exception(0,
 			&regexp,
 			"pcre_info error (%d)", 
@@ -525,12 +531,12 @@ Table* String::match(Charset& source_charset,
 	int poststart=0;
 	int postfinish=length();
 	while(true) {
-		int exec_substrings=PCRE::pcre_exec(code, 0,
+		int exec_substrings=pcre_exec(code, 0,
 			subject, subject_length, prestart,
 			exec_option_bits, ovector, oveclength);
 		
 		if(exec_substrings==PCRE_ERROR_NOMATCH) {
-			PCRE::pcre_free(code);
+			pcre_free(code);
 			row_action(table, 0/*last time, no raw*/, 0, 0, poststart, postfinish, info);
 			// if(global || subpatterns)
 			// 	return &table; // global or with subpatterns=true+result
@@ -541,7 +547,7 @@ Table* String::match(Charset& source_charset,
 		}
 
 		if(exec_substrings<0) {
-			PCRE::pcre_free(code);
+			pcre_free(code);
 			throw Exception(0,
 				&regexp,
 				"regular expression execute error (%d)", 
@@ -570,7 +576,7 @@ Table* String::match(Charset& source_charset,
 		row_action(table, row, prestart, prefinish, poststart, postfinish, info);
 
 		if(!global || prestart==poststart) { // not global | going to hang
-			PCRE::pcre_free(code);
+			pcre_free(code);
 			row_action(table, 0/*last time, no row*/, 0, 0, poststart, postfinish, info);
 			return just_count_matches ? 0 : &table;
 			// return &table;

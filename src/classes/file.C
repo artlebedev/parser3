@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2008/07/23 14:07:43 $";
+static const char * const IDENT_FILE_C="$Date: 2008/08/15 15:29:42 $";
 
 #include "pa_config_includes.h"
 
@@ -608,7 +608,7 @@ static void _list(Request& r, MethodParams& params) {
 	Value& relative_path=params.as_no_junction(0, "path must not be code");
 
 	const String* regexp;
-	PCRE::pcre *regexp_code;
+	pcre *regexp_code;
 	const int ovecsize=(1/*match*/)*3;
 	int ovector[ovecsize];
 	if(params.count()>1) {
@@ -617,7 +617,11 @@ static void _list(Request& r, MethodParams& params) {
 		const char* pattern=regexp->cstr();
 		const char* errptr;
 		int erroffset;
-		regexp_code=PCRE::pcre_compile(pattern, PCRE_EXTRA | PCRE_DOTALL, 
+		int options=PCRE_EXTRA | PCRE_DOTALL;
+		if(r.charsets.source().isUTF8())
+			options=options|PCRE_UTF8;
+
+		regexp_code=pcre_compile(pattern, options, 
 			&errptr, &erroffset, 
 			r.charsets.source().pcre_tables);
 
@@ -642,14 +646,14 @@ static void _list(Request& r, MethodParams& params) {
 		size_t file_name_size=strlen(file_name_cstr);
 		bool suits=true;
 		if(regexp_code) {
-			int exec_result=PCRE::pcre_exec(regexp_code, 0, 
+			int exec_result=pcre_exec(regexp_code, 0, 
 				ffblk.ff_name, file_name_size, 0, 
 				0, ovector, ovecsize);
 			
 			if(exec_result==PCRE_ERROR_NOMATCH)
 				suits=false;
 			else if(exec_result<0) {
-				(*PCRE::pcre_free)(regexp_code);
+				(*pcre_free)(regexp_code);
 				throw Exception(0, 
 					regexp, 
 					"regular expression execute (%d)", 
@@ -665,7 +669,7 @@ static void _list(Request& r, MethodParams& params) {
 	);
 
 	if(regexp_code)
-		PCRE::pcre_free(regexp_code);
+		pcre_free(regexp_code);
 
 	// write out result
 	r.write_no_lang(*new VTable(&table));
