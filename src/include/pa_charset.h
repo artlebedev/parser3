@@ -8,7 +8,7 @@
 #ifndef PA_CHARSET_H
 #define PA_CHARSET_H
 
-static const char * const IDENT_CHARSET_H="$Date: 2008/07/23 14:06:04 $";
+static const char * const IDENT_CHARSET_H="$Date: 2008/08/15 15:28:52 $";
 
 
 #include "pa_exception.h"
@@ -16,11 +16,11 @@ static const char * const IDENT_CHARSET_H="$Date: 2008/07/23 14:06:04 $";
 #include "pa_hash.h"
 #include "pa_array.h"
 
-// hiding into namespace so to avoid stupid conflict
-namespace PCRE {
+// pcre.h must be included BEFORE pcre_internal.h
 #include "pcre.h"
-#include "internal.h"
-};
+// have to call config.h for using pcre_internal.h as well
+#include "../lib/pcre/config.h"
+#include "pcre_internal.h"
 
 #ifdef XML
 #include "libxml/encoding.h"

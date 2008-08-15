@@ -5,7 +5,7 @@
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_CHARSET_C="$Date: 2008/07/21 07:36:42 $";
+static const char * const IDENT_CHARSET_C="$Date: 2008/08/15 15:30:21 $";
 
 #include "pa_charset.h"
 #include "pa_charsets.h"
@@ -86,7 +86,6 @@ static void element2case(unsigned char from, unsigned char to,
 
 // methods
 
-extern "C" unsigned char pcre_default_tables[]; // pcre/chartables.c
 Charset::Charset(Request_charsets* charsets, const String::Body ANAME, const String* afile_spec): 
 	FNAME(ANAME),
 	FNAME_CSTR(ANAME.cstrm()) {
@@ -100,7 +99,7 @@ Charset::Charset(Request_charsets* charsets, const String::Body ANAME, const Str
 	} else {
 		fisUTF8=true;
 		// grab default onces [for UTF-8 so to be able to make a-z =>A-Z
-		memcpy(pcre_tables, pcre_default_tables, sizeof(pcre_tables));
+		memcpy(pcre_tables, _pcre_default_tables, sizeof(pcre_tables));
 	}
 
 #ifdef XML

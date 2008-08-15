@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_GLOBALS_C="$Date: 2008/07/23 14:07:33 $";
+static const char * const IDENT_GLOBALS_C="$Date: 2008/08/15 15:30:21 $";
 
 #include "pa_config_includes.h"
 
@@ -27,9 +27,7 @@ extern "C" {
 
 #include "pa_cache_managers.h"
 
-namespace PCRE {
 #include "pcre.h"
-};
 
 // defines
 
@@ -307,8 +305,8 @@ static void gc_substitute_memory_management_functions() {
 #endif
 
 	// pcre
-	PCRE::pcre_malloc=pa_gc_malloc;
-	PCRE::pcre_free=pa_gc_free;
+	pcre_malloc=pa_gc_malloc;
+	pcre_free=pa_gc_free;
 
 
 	// cord

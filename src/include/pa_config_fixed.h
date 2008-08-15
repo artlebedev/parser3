@@ -10,7 +10,7 @@
 #ifndef PA_CONFIG_FIXED_H
 #define PA_CONFIG_FIXED_H
 
-static const char * const IDENT_CONFIG_FIXED_H="$Date: 2008/04/08 12:03:44 $";
+static const char * const IDENT_CONFIG_FIXED_H="$Date: 2008/08/15 15:30:33 $";
 
 #define inline  __inline
 #define HAVE_ASSERT_H
@@ -65,3 +65,8 @@ static const char * const IDENT_CONFIG_FIXED_H="$Date: 2008/04/08 12:03:44 $";
 //#define PA_RELEASE_ASSERTS
 
 #endif
+
+
+// PCRE
+#define PCRE_STATIC
+
