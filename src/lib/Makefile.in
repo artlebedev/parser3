@@ -108,6 +108,8 @@ PACKAGE_STRING = @PACKAGE_STRING@
 PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
+PCRE_INCLUDES = @PCRE_INCLUDES@
+PCRE_LIBS = @PCRE_LIBS@
 RANLIB = @RANLIB@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
@@ -167,7 +169,7 @@ sqlite_client = @sqlite_client@
 subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-SUBDIRS = gd smtp cord ltdl pcre md5 gc sdbm
+SUBDIRS = gd smtp cord ltdl md5 gc sdbm
 all: all-recursive
 
 .SUFFIXES:
