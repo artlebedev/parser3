@@ -5,7 +5,7 @@
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_CHARSET_C="$Date: 2008/08/15 15:30:21 $";
+static const char * const IDENT_CHARSET_C="$Date: 2008/08/15 16:54:01 $";
 
 #include "pa_charset.h"
 #include "pa_charsets.h"
@@ -433,13 +433,15 @@ of ocetes consumed.
 
 static bool is_escaped(char c){
 	return
-		!(c<=127
-		&& (
-			((c>='0') && (c<='9'))
-			|| ((c>='A') && (c<='Z'))
-			|| ((c>='a') && (c<='z'))
-			|| strchr("*@-_+./", c)!=0
-		));
+		!(
+			(c<=127)
+			&& (
+				((c>='0') && (c<='9'))
+				|| ((c>='A') && (c<='Z'))
+				|| ((c>='a') && (c<='z'))
+				|| strchr("*@-_+./", c)!=0
+			)
+		);
 }
 
 // read one utf8 character, return number of bytes needed for store it
