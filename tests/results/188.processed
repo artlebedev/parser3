@@ -1,0 +1,94 @@
+﻿content-type: text/html
+content-length: 9602
+
+<body>
+<h2>Caseless search</h2>
+$str: ПроВерКа<br />
+^str.match[вер][i]{ГУЛ}: ПроГУЛКа
+<h2>Absolute references</h2>
+$str: ПроВерКа<br />
+^str.match[^^.*(р)(.+?)\1.*^$][]{$match.2}: оВе
+<h2>Relative references</h2>
+$str: ПроВерКа<br />
+^str.match[^^.*(р)(.+?)(?-2).*^$][]{$match.2}: оВе
+<h2>Named subpatterns in back references</h2>
+$str: ПроВерКа<br />
+^str.match[^^.*(?&lt;ZIGI&gt;р)(.+?)\k{ZIGI}.*^$][]{$match.2}: оВе
+<h2>Conditional patterns</h2>
+$str1: 29-Sep-2008<br />
+^str1.match[^^.*?(?(?=[^^a-z]*[a-z])\d{2}-([a-z]{3})-\d{4}|\d{2}-(\d{2})-\d{4}).*?^$][i]{=$match.1=$match.2=}: =Sep==<br />
+$str1: 29-09-2008<br />
+^str1.match[^^.*?(?(?=[^^a-z]*[a-z])\d{2}-([a-z]{3})-\d{4}|\d{2}-(\d{2})-\d{4}).*?^$][i]{=$match.1=$match.2=}: ==09=<br />
+<h2>Ungreedy search</h2>
+$str: ПроВерКа<br />
+^str.match[^^\pL+][]{!}: !<br />
+^str.match[^^\pL+][U]{!}: !роВерКа
+<h2>Recursive patterns</h2>
+$str: (ab(cd(ef)gh)ij)<br />
+^str.match[\((((?>[^^()]+)|(?R))*)\)][g]{$match.1}: ab(cd(ef)gh)ij
+<h2>Working with UTF-8 international letters</h2>
+$str: П1р2о3В4е5р6К7а<br />
+$t[^str.match[(.)][g]]<br />
+^t.menu{'$t.1'}[, ]:
+'П', '1', 'р', '2', 'о', '3', 'В', '4', 'е', '5', 'р', '6', 'К', '7', 'а'
+<h2>Working with unicode properties</h2>
+<p>"<i>In UTF-8 mode, characters with values greater than 128 never match \d, \s, or \w, and always match \D, \S, and \W. This is true even when Unicode character property support is available. These sequences retain their original meanings from before UTF-8 support was available, mainly for efficiency reasons.</i>"</p>
+$str: ПроВерКа-12345 67890 !#% αβγδεζηθικλμνξοπ_<br />
+<table border="1">
+<tr>
+<td>^str.match[(\w)][g]{&lt;b&gt;$match.1&lt;/b&gt;}</td>
+<td>ПроВерКа-<b>1</b><b>2</b><b>3</b><b>4</b><b>5</b> <b>6</b><b>7</b><b>8</b><b>9</b><b>0</b> !#% αβγδεζηθικλμνξοπ<b>_</b></td>
+<td></td>
+</tr>
+<tr>
+<td>^str.match[(\W)][g]{&lt;b&gt;$match.1&lt;/b&gt;}</td>
+<td><b>П</b><b>р</b><b>о</b><b>В</b><b>е</b><b>р</b><b>К</b><b>а</b><b>-</b>12345<b> </b>67890<b> </b><b>!</b><b>#</b><b>%</b><b> </b><b>α</b><b>β</b><b>γ</b><b>δ</b><b>ε</b><b>ζ</b><b>η</b><b>θ</b><b>ι</b><b>κ</b><b>λ</b><b>μ</b><b>ν</b><b>ξ</b><b>ο</b><b>π</b>_</td>
+<td></td>
+</tr>
+<tr>
+<td>^str.match[(\d)][g]{&lt;b&gt;$match.1&lt;/b&gt;}</td>
+<td>ПроВерКа-<b>1</b><b>2</b><b>3</b><b>4</b><b>5</b> <b>6</b><b>7</b><b>8</b><b>9</b><b>0</b> !#% αβγδεζηθικλμνξοπ_</td>
+<td></td>
+</tr>
+<tr>
+<td>^str.match[(\D)][g]{&lt;b&gt;$match.1&lt;/b&gt;}</td>
+<td><b>П</b><b>р</b><b>о</b><b>В</b><b>е</b><b>р</b><b>К</b><b>а</b><b>-</b>12345<b> </b>67890<b> </b><b>!</b><b>#</b><b>%</b><b> </b><b>α</b><b>β</b><b>γ</b><b>δ</b><b>ε</b><b>ζ</b><b>η</b><b>θ</b><b>ι</b><b>κ</b><b>λ</b><b>μ</b><b>ν</b><b>ξ</b><b>ο</b><b>π</b><b>_</b></td>
+<td></td>
+</tr>
+<tr>
+<td>^str.match[(\p{Nd})][g]{&lt;b&gt;$match.1&lt;/b&gt;}</td>
+<td>ПроВерКа-<b>1</b><b>2</b><b>3</b><b>4</b><b>5</b> <b>6</b><b>7</b><b>8</b><b>9</b><b>0</b> !#% αβγδεζηθικλμνξοπ_</td>
+<td>Must be used in UTF-8 instead of \d</td>
+</tr>
+<tr>
+<td>^str.match[(\pL)][g]{&lt;b&gt;$match.1&lt;/b&gt;}</td>
+<td><b>П</b><b>р</b><b>о</b><b>В</b><b>е</b><b>р</b><b>К</b><b>а</b>-12345 67890 !#% <b>α</b><b>β</b><b>γ</b><b>δ</b><b>ε</b><b>ζ</b><b>η</b><b>θ</b><b>ι</b><b>κ</b><b>λ</b><b>μ</b><b>ν</b><b>ξ</b><b>ο</b><b>π</b>_</td>
+<td>Must be used in UTF-8 for searching letters</td>
+</tr>
+<tr>
+<td>^str.match[(\p{Cyrillic})][g]{&lt;b&gt;$match.1&lt;/b&gt;}</td>
+<td><b>П</b><b>р</b><b>о</b><b>В</b><b>е</b><b>р</b><b>К</b><b>а</b>-12345 67890 !#% αβγδεζηθικλμνξοπ_</td>
+<td></td>
+</tr>
+<tr>
+<td>^str.match[(\p{Greek})][g]{&lt;b&gt;$match.1&lt;/b&gt;}</td>
+<td>ПроВерКа-12345 67890 !#% <b>α</b><b>β</b><b>γ</b><b>δ</b><b>ε</b><b>ζ</b><b>η</b><b>θ</b><b>ι</b><b>κ</b><b>λ</b><b>μ</b><b>ν</b><b>ξ</b><b>ο</b><b>π</b>_</td>
+<td></td>
+</tr>
+<tr>
+<td>^str.match[([\pL\p{Nd}_])][g]{&lt;b&gt;$match.1&lt;/b&gt;}</td>
+<td><b>П</b><b>р</b><b>о</b><b>В</b><b>е</b><b>р</b><b>К</b><b>а</b>-<b>1</b><b>2</b><b>3</b><b>4</b><b>5</b> <b>6</b><b>7</b><b>8</b><b>9</b><b>0</b> !#% <b>α</b><b>β</b><b>γ</b><b>δ</b><b>ε</b><b>ζ</b><b>η</b><b>θ</b><b>ι</b><b>κ</b><b>λ</b><b>μ</b><b>ν</b><b>ξ</b><b>ο</b><b>π</b><b>_</b></td>
+<td>Can be used in UTF-8 mode instead of \w</td>
+</tr>
+<tr>
+<td>^str.match[([^\pL\p{Nd}_])][g]{&lt;b&gt;$match.1&lt;/b&gt;}</td>
+<td>ПроВерКа<b>-</b>12345<b> </b>67890<b> </b><b>!</b><b>#</b><b>%</b><b> </b>αβγδεζηθικλμνξοπ_</td>
+<td>Can be used in UTF-8 mode instead of \W</td>
+</tr>
+<tr>
+<td>^str.match[([a-zа-я0-9_])][gi]{&lt;b&gt;$match.1&lt;/b&gt;}</td>
+<td><b>П</b><b>р</b><b>о</b><b>В</b><b>е</b><b>р</b><b>К</b><b>а</b>-<b>1</b><b>2</b><b>3</b><b>4</b><b>5</b> <b>6</b><b>7</b><b>8</b><b>9</b><b>0</b> !#% αβγδεζηθικλμνξοπ<b>_</b></td>
+<td></td>
+</tr>
+</table>
+</body>

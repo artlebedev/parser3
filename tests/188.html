@@ -1,0 +1,94 @@
+﻿$request:charset[UTF-8]
+$response:charset[UTF-8]
+$response:content-type[
+	$.value[text/html]
+	$.charset[$response:charset]
+]
+
+<body>
+<h2>Caseless search</h2>
+$str[ПроВерКа]
+^$str: $str<br />
+^^str.match[вер][i]{ГУЛ}: ^str.match[вер][i]{ГУЛ}
+
+
+<h2>Absolute references</h2>
+^$str: $str<br />
+^taint[^^str.match[^^^^.*(р)(.+?)\1.*^^^$][]{^$match.2}]: ^str.match[^^.*(р)(.+?)\g1.*^$][]{$match.2}
+
+
+<h2>Relative references</h2>
+^$str: $str<br />
+^taint[^^str.match[^^^^.*(р)(.+?)(?-2).*^^^$][]{^$match.2}]: ^str.match[^^.*(р)(.+?)(?-2).*^$][]{$match.2}
+
+
+<h2>Named subpatterns in back references</h2>
+^$str: $str<br />
+^taint[^^str.match[^^^^.*(?<ZIGI>р)(.+?)\k{ZIGI}.*^^^$][]{^$match.2}]: ^str.match[^^.*(?<ZIGI>р)(.+?)\k{ZIGI}.*^$][]{$match.2}
+
+
+<h2>Conditional patterns</h2>
+$str1[29-Sep-2008]
+^$str1: $str1<br />
+^taint[^^str1.match[^^^^.*?(?(?=[^^^^a-z]*[a-z])\d{2}-([a-z]{3})-\d{4}|\d{2}-(\d{2})-\d{4}).*?^^^$][i]{=^$match.1=^$match.2=}]: ^str1.match[^^.*?(?(?=[^^a-z]*[a-z])\d{2}-([a-z]{3})-\d{4}|\d{2}-(\d{2})-\d{4}).*?^$][i]{=$match.1=$match.2=}<br />
+
+$str1[29-09-2008]
+^$str1: $str1<br />
+^taint[^^str1.match[^^^^.*?(?(?=[^^^^a-z]*[a-z])\d{2}-([a-z]{3})-\d{4}|\d{2}-(\d{2})-\d{4}).*?^^^$][i]{=^$match.1=^$match.2=}]: ^str1.match[^^.*?(?(?=[^^a-z]*[a-z])\d{2}-([a-z]{3})-\d{4}|\d{2}-(\d{2})-\d{4}).*?^$][i]{=$match.1=$match.2=}<br />
+
+
+<h2>Ungreedy search</h2>
+^$str: $str<br />
+^^str.match[^^^^\pL+][]{!}: ^str.match[^^\pL+][]{!}<br />
+^^str.match[^^^^\pL+][U]{!}: ^str.match[^^\pL+][U]{!}
+
+
+<h2>Recursive patterns</h2>
+$str[(ab(cd(ef)gh)ij)]
+^$str: $str<br />
+^^str.match[\((((?>[^^^^()]+)|(?R))*)\)][g]{^$match.1}: ^str.match[\((((?>[^^()]+)|(?R))*)\)][g]{$match.1}
+
+
+<h2>Working with UTF-8 international letters</h2>
+$str[П1р2о3В4е5р6К7а]
+^$str: $str<br />
+
+^$t[^^str.match[(.)][g]]<br />
+^^t.menu{'^$t.1'}[, ]:
+
+$t[^str.match[(.)][g]]
+^t.menu{'$t.1'}[, ]
+
+
+<h2>Working with unicode properties</h2>
+<p>"<i>In UTF-8 mode, characters with values greater than 128 never match \d, \s, or \w, and always match \D, \S, and \W. This is true even when Unicode character property support is available. These sequences retain their original meanings from before UTF-8 support was available, mainly for efficiency reasons.</i>"</p>
+
+$str[ПроВерКа-12345 67890 !#% αβγδεζηθικλμνξοπ_]
+^$str: $str<br />
+
+$t[^table::create{sRegEx	sOptions	sComment
+(\w)	g
+(\W)	g
+(\d)	g
+(\D)	g
+(\p{Nd})	g	Must be used in UTF-8 instead of \d
+(\pL)	g	Must be used in UTF-8 for searching letters
+(\p{Cyrillic})	g
+(\p{Greek})	g
+([\pL\p{Nd}_])	g	Can be used in UTF-8 mode instead of \w
+([^^\pL\p{Nd}_])	g	Can be used in UTF-8 mode instead of \W
+([a-zа-я0-9_])	gi
+}]
+
+<table border="1">
+^t.menu{
+	<tr>
+		<td>^taint[^^str.match[$t.sRegEx][$t.sOptions]{<b>^$match.1</b>}]</td>
+		<td>^str.match[$t.sRegEx][$t.sOptions]{<b>$match.1</b>}</td>
+		<td>$t.sComment</td>
+	</tr>
+}
+</table>
+
+
+</body>
