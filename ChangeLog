@@ -1,3 +1,319 @@
+2008-08-15	misha
+	* Makefile.am 1.58:
+	* Makefile.in 1.73:
+	* acinclude.m4 1.44:
+	* aclocal.m4 1.47:
+	* acsite.m4 1.22:
+	* bin/Makefile.in 1.14:
+	* configure 1.100:
+	* configure.in 1.104:
+	* etc/Makefile.in 1.19:
+	* etc/parser3.charsets/Makefile.in 1.23:
+	* src/Makefile.in 1.60:
+	* src/classes/Makefile.in 1.66:
+	* src/include/Makefile.in 1.22:
+	* src/include/pa_version.h 1.32:
+	* src/lib/Makefile.in 1.17:
+	* src/lib/cord/Makefile.in 1.8:
+	* src/lib/cord/include/Makefile.in 1.6:
+	* src/lib/cord/include/private/Makefile.in 1.6:
+	* src/lib/gc/Makefile.in 1.6:
+	* src/lib/gc/include/Makefile.in 1.6:
+	* src/lib/gd/Makefile.in 1.7:
+	* src/lib/ltdl/Makefile.in 1.11:
+	* src/lib/md5/Makefile.in 1.12:
+	* src/lib/sdbm/Makefile.in 1.5:
+	* src/lib/sdbm/apr-include/Makefile.in 1.5:
+	* src/lib/smtp/Makefile.in 1.7:
+	* src/main/Makefile.in 1.62:
+	* src/sql/Makefile.in 1.16:
+	* src/targets/Makefile.in 1.47:
+	* src/targets/apache13/Makefile.in 1.52:
+	* src/targets/apache13core/Makefile.in 1.9:
+	* src/targets/cgi/Makefile.in 1.71:
+	* src/targets/isapi/Makefile.in 1.17:
+	* src/types/Makefile.in 1.65:
+		*** empty log message ***
+
+	* src/lib/pcre/LICENCE 1.2:
+	* src/lib/pcre/Makefile.am 1.3:
+	* src/lib/pcre/Makefile.in 1.14:
+	* src/lib/pcre/README 1.2:
+	* src/lib/pcre/Tech.Notes 1.2:
+	* src/lib/pcre/dftables.c 1.2:
+	* src/lib/pcre/get.c 1.2:
+	* src/lib/pcre/internal.h 1.2:
+	* src/lib/pcre/maketables.c 1.3:
+	* src/lib/pcre/pcre.3 1.2:
+	* src/lib/pcre/pcre.3.html 1.2:
+	* src/lib/pcre/pcre.3.txt 1.2:
+	* src/lib/pcre/pcre.c 1.2:
+	* src/lib/pcre/pcre.h 1.3:
+	* src/lib/pcre/pcre.vcproj 1.6:
+	* src/lib/pcre/pcre_dftables.vcproj 1.7:
+	* src/lib/pcre/study.c 1.2:
+		- old PCRE files removed
+
+	* src/lib/pcre/config.h 1.1:
+		- configuration for PCRE library
+
+	* src/classes/classes.vcproj 1.18:
+	* src/lib/Makefile.am 1.9:
+	* src/main/main.vcproj 1.21:
+	* src/targets/apache13core/ApacheModuleParser3Core.vcproj 1.13:
+	* src/targets/cgi/parser3.vcproj 1.16:
+	* src/targets/isapi/parser3isapi.vcproj 1.12:
+	* src/types/types.vcproj 1.21:
+		- use PCRE library from win32\pcre instead of parser3\src\lib\
+		pcre
+
+	* src/include/pa_charset.h 1.40:
+	* src/include/pa_config_fixed.h 1.73:
+	* src/main/pa_charset.C 1.65:
+	* src/main/pa_globals.C 1.183:
+		- moved to new PCRE library
+
+	* src/classes/file.C 1.175:
+	* src/main/pa_string.C 1.215:
+		- moved to new PCRE library and set flag UTF8 if $request:
+		charset is UTF-8
+
+	* src/include/pa_opcode.h 1.29:
+	* src/include/pa_operation.h 1.7:
+	* src/main/compile.C 1.80:
+	* src/main/compile.tab.C 1.122:
+	* src/main/compile.y 1.229:
+	* src/main/compile_tools.C 1.60:
+	* src/main/compile_tools.h 1.80:
+	* src/main/execute.C 1.322:
+		- opcodes were moved to separate namespace
+
+2008-08-14	misha
+	* src/types/pa_vstateless_class.C 1.34:
+		- newline at the end missed
+
+	* src/main/untaint.C 1.142:
+		- char '-' also prefixed by '\' while regex tainting
+
+2008-08-11	misha
+	* tests/187.html 1.1:
+	* tests/187.p 1.1:
+	* tests/results/187.processed 1.1:
+		- tests for $caller.self, $caller.self.field and $
+		caller.self.field[value] were added
+
+	* src/types/pa_vmethod_frame.h 1.67:
+		- still need to check 'self' runtime as well (for $caller.self)
+
+2008-07-25	misha
+	* tests/021.html 1.3:
+	* tests/032.html 1.3:
+	* tests/033.html 1.3:
+	* tests/047.html 1.3:
+	* tests/055.html 1.3:
+	* tests/059.html 1.4:
+	* tests/061.html 1.3:
+	* tests/064.html 1.3:
+	* tests/067.html 1.3:
+	* tests/068.html 1.3:
+	* tests/085.html 1.3:
+	* tests/086.html 1.3:
+	* tests/098.html 1.3:
+	* tests/109.html 1.3:
+	* tests/121.html 1.3:
+		- set correct charsets in tests with international characters
+
+2008-07-23	misha
+	* src/main/pa_http.C 1.17:
+		- escape $cookies as %uXXXX while file::load[...;http://
+
+	* src/classes/file.C 1.174:
+	* src/main/pa_globals.C 1.182:
+	* src/main/pa_string.C 1.214:
+		- pcre now everywhere in separate namespace
+
+	* src/types/pa_vmethod_frame.h 1.66:
+		- looking for caller before looking for vars
+
+	* src/main/compile.tab.C 1.121:
+	* src/main/compile.y 1.228:
+		- characters '@' and '#' now can be escaped by '^'
+
+2008-07-22	misha
+	* src/classes/string.C 1.168:
+	* tests/186.html 1.3:
+		- names changes: escape=>js-escape, unescape=>js-unescape
+
+2008-07-21	misha
+	* tests/186.html 1.1:
+	* tests/results/186.processed 1.1:
+		- test for string escape/unescape
+
+	* src/classes/string.C 1.167:
+		- string has escape and unescape methods now
+
+	* src/include/pa_string.h 1.174:
+	* src/main/pa_string.C 1.213:
+		- escape method was added
+
+	* src/include/pa_charset.h 1.38:
+	* src/main/pa_charset.C 1.64:
+		- more escape method-layers added (with different params)
+
+2008-07-18	misha
+	* tests/results/185.processed 1.3:
+		- test for ^str.pos[substr](offset) was added
+
+	* tests/185.html 1.4:
+		- test for ^str.pos[sub](offset) added
+
+	* operators.txt 1.211:
+	* src/classes/string.C 1.165:
+	* src/classes/void.C 1.40:
+		- ^string.pos[substr](offset) -- 2nd param accepted now
+
+	* src/main/pa_string.C 1.212:
+		- .pos works fine with offset for utf-8 strings
+
+2008-07-17	misha
+	* src/classes/string.C 1.164:
+	* src/include/pa_string.h 1.172:
+	* src/main/pa_string.C 1.211:
+		- helper length added for mid for small optimisation
+
+2008-07-16	misha
+	* tests/185.html 1.1:
+	* tests/results/185.processed 1.1:
+		- tests for length/left/right/mid/pos with utf-8 strings
+
+	* src/classes/string.C 1.163:
+		- left/right/mid/length/pos works fine for utf-8 strings
+
+	* src/include/pa_charset.h 1.37:
+	* src/include/pa_string.h 1.171:
+	* src/main/pa_charset.C 1.61:
+	* src/main/pa_string.C 1.210:
+		- methods for working with pos/mid for strings in utf-8 were 
+		added
+
+	* src/main/untaint.C 1.141:
+		- comments removed
+
+2008-07-15	misha
+	* tests/184.html 1.1:
+	* tests/results/184.processed 1.1:
+		- test for case body as expression: $var(^switch(1){^case(1)(
+		true)..})
+
+	* src/classes/op.C 1.182:
+		- case body can be expression now: $var(^switch(1){^case(1)(true)
+		..})
+
+	* tests/183.html 1.1:
+	* tests/results/183.processed 1.1:
+		- added test for testing new cookie encoding (%uXXXX)
+
+	* src/main/untaint.C 1.140:
+		- cookies outputs as %uXXXX now. while decoding for backward 
+		compatibility they decoded from %XX in request:charset too
+
+	* src/main/pa_request.C 1.298:
+	* src/types/pa_vcookie.C 1.74:
+	* src/types/pa_vcookie.h 1.33:
+		- cookie class now decode cookies before first access after last 
+		request:charset changing (as form class).
+
+	* src/main/pa_charset.C 1.60:
+		- added method escape for escaping cookies as %uXXXX
+		- before transcode calculate required space for dest string. it reduce mem usage for transcode
+
+	* src/include/pa_charset.h 1.36:
+		- added method escape for escaping cookies as %uXXXX
+
+	* src/include/pa_string.h 1.170:
+		- taint lang (internal) L_HTTP_COOKIE was added. will used for 
+		escaping cookies as %uXXXX
+
+	* src/include/pa_common.h 1.124:
+		- escape method has new option for skip converting '+' to a 
+		space char
+
+	* src/main/pa_common.C 1.236:
+	* src/main/pa_http.C 1.16:
+		- skip BOM code before transcode
+		- escape method has new option for skip converting '+' to a space char
+
+2008-07-08	misha
+	* src/classes/op.C 1.181:
+		- bugfix in switch
+		- case "stops" on 1st match (no UE if more then 1 case matches anylonger)
+		- optimization: doing searching.as_string() || searching.as_double() only once
+
+2008-07-04	misha
+	* src/types/pa_vdate.h 1.46:
+		- is_evaluated_expr returning true added so now ^date::create[
+		date object] works
+
+	* src/classes/string.C 1.162:
+		- left and right added as aliases for start and end in ^
+		string.trim[]
+
+2008-07-03	misha
+	* src/classes/file.C 1.173:
+		- allow $.limit for file::sql as well
+
+	* src/classes/file.C 1.172:
+		- allow $.offset option for file::sql
+		- force send limit=1 to query for use sql specifics authomatically
+
+	* src/classes/hash.C 1.88:
+	* src/classes/string.C 1.161:
+	* src/classes/table.C 1.245:
+		- don't throw exception if $.limit value if empty. autoconvert 
+		it as everywere
+
+2008-07-02	misha
+	* Makefile.am 1.57:
+	* Makefile.in 1.72:
+	* acinclude.m4 1.43:
+	* aclocal.m4 1.46:
+	* acsite.m4 1.21:
+	* configure 1.99:
+	* configure.in 1.102:
+		*** empty log message ***
+
+	* configure.in 1.101:
+	* src/include/pa_version.h 1.31:
+		- time to change version number to 3.3.0 %-)
+
+2008-06-26	misha
+	* src/classes/file.C 1.171:
+	* src/classes/hash.C 1.87:
+	* src/classes/string.C 1.160:
+	* src/classes/table.C 1.244:
+	* src/classes/void.C 1.39:
+		- $.limit(0) fixes
+
+	* src/sql/pa_sql_driver.h 1.45:
+		- new drivers API and new version (10.0)
+		- $.limit(0) fixes
+
+	* src/classes/op.C 1.180:
+	* src/include/pa_sql_connection.h 1.41:
+	* src/include/pa_sql_driver_manager.h 1.34:
+	* src/main/pa_sql_driver_manager.C 1.88:
+		- document_root added
+
+	* src/sql/pa_sql_driver.h 1.44:
+		- SQL_NO_LIMIT added (preparations to new API)
+
+	* src/main/compile.tab.C 1.120:
+		- error message was changed
+
+2008-06-25	misha
+	* src/main/compile.y 1.227:
+		- error message was changed
+
 2008-06-24	misha
 	* tests/176.html 1.3:
 	* tests/176_dir/a.p 1.2:
