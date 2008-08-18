@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2008/08/15 15:30:12 $";
+static const char * const IDENT_STRING_C="$Date: 2008/08/18 12:01:29 $";
 
 #include "pa_string.h"
 #include "pa_exception.h"
@@ -442,30 +442,31 @@ enum Match_feature {
 
 static void regex_options(const String* options, int* result, int* match_features){
     struct Regex_option {
-		const char* keyL;
-		const char* keyU;
+		const char* key;
+		const char* keyAlt;
 		int clear;
 		int set;
 		int *result;
 		int flag;
     } regex_option[]={
 		{"i", "I", 0, PCRE_CASELESS, result, 0}, // a=A
-		{"s", "S", 0, PCRE_DOTALL, result, 0}, // \n\n$ [default]
-		{"x", "U", 0, PCRE_EXTENDED, result, 0}, // whitespace in regex ignored
+		{"s", "S", 0, PCRE_DOTALL, result, 0}, // ^\n\n$ [default]
 		{"m", "M", PCRE_DOTALL, PCRE_MULTILINE, result, 0}, // ^aaa\n$^bbb\n$
+		{"x", 0, 0, PCRE_EXTENDED, result, 0}, // whitespace in regex ignored
+		{"U", 0, 0, PCRE_UNGREEDY, result, 0}, // ungreedy patterns (greedy by default)
 		{"g", "G", 0, 1, result+1, 0}, // many rows
 		{"'", 0, 0, 0, 0, MF_NEED_PRE_POST_MATCH},
-		{"n", "N", 0, 0, 0, MF_JUST_COUNT_MATCHES},
+		{"n", 0, 0, 0, 0, MF_JUST_COUNT_MATCHES},
 		{0, 0, 0, 0, 0, 0}
     };
 	result[0]=PCRE_EXTRA | PCRE_DOTALL | PCRE_DOLLAR_ENDONLY;
 	result[1]=0;
 
     if(options && !options->is_empty()) 
-		for(Regex_option *o=regex_option; o->keyL; o++) 
+		for(Regex_option *o=regex_option; o->key; o++) 
 			if(
-				options->pos(o->keyL)!=STRING_NOT_FOUND
-				|| (o->keyU && options->pos(o->keyU)!=STRING_NOT_FOUND)
+				options->pos(o->key)!=STRING_NOT_FOUND
+				|| (o->keyAlt && options->pos(o->keyAlt)!=STRING_NOT_FOUND)
 			){
 				if(o->flag){
 					(*match_features) |= o->flag;
@@ -596,8 +597,9 @@ String& String::change_case(Charset& source_charset, Change_case_kind kind) cons
 		return result;
 
 	char* new_cstr=cstrm();
-	size_t new_cstr_len=length();
+
 	if(source_charset.isUTF8()) {
+		size_t new_cstr_len=length();
 		switch(kind) {
 		case CC_UPPER:
 			change_case_UTF8((const XMLByte*)new_cstr, new_cstr_len, (XMLByte*)new_cstr, new_cstr_len, UTF8CaseToUpper);
