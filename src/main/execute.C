@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2008/08/15 15:26:14 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2008/08/19 14:24:29 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -70,9 +70,9 @@ void debug_printf(SAPI_Info& sapi_info, const char* fmt, ...) {
 void debug_dump(SAPI_Info& sapi_info, int level, ArrayOperation& ops) {
 	Array_iterator<Operation> i(ops);
 	while(i.has_next()) {
-		OPCODE opcode=i.next().code;
+		OP::OPCODE opcode=i.next().code;
 
-		if(opcode==OP_VALUE || opcode==OP_STRING__WRITE) {
+		if(opcode==OP::OP_VALUE || opcode==OP::OP_STRING__WRITE) {
 			Operation::Origin origin=i.next().origin;
 			Value& value=*i.next().value;
 			debug_printf(sapi_info, 
@@ -85,14 +85,14 @@ void debug_dump(SAPI_Info& sapi_info, int level, ArrayOperation& ops) {
 		debug_printf(sapi_info, "%*s%s", level*4, "", opcode_name[opcode]);
 
 		switch(opcode) {
-		case OP_CURLY_CODE__STORE_PARAM: 
-		case OP_EXPR_CODE__STORE_PARAM:
-		case OP_CURLY_CODE__CONSTRUCT:
-		case OP_NESTED_CODE:
-		case OP_OBJECT_POOL:  
-		case OP_STRING_POOL:
-		case OP_CALL:
-		case OP_CALL__WRITE:
+		case OP::OP_CURLY_CODE__STORE_PARAM: 
+		case OP::OP_EXPR_CODE__STORE_PARAM:
+		case OP::OP_CURLY_CODE__CONSTRUCT:
+		case OP::OP_NESTED_CODE:
+		case OP::OP_OBJECT_POOL:  
+		case OP::OP_STRING_POOL:
+		case OP::OP_CALL:
+		case OP::OP_CALL__WRITE:
 			if(ArrayOperation* local_ops=i.next().ops)
 				debug_dump(sapi_info, level+1, *local_ops);
 		}
