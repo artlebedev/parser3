@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2008/08/18 12:01:29 $";
+static const char * const IDENT_STRING_C="$Date: 2008/08/21 15:58:12 $";
 
 #include "pa_string.h"
 #include "pa_exception.h"
@@ -551,7 +551,7 @@ Table* String::match(Charset& source_charset,
 			pcre_free(code);
 			throw Exception(0,
 				&regexp,
-				"regular expression execute error (%d)", 
+				print_pcre_exec_error_text(exec_substrings),
 					exec_substrings);
 		}
 

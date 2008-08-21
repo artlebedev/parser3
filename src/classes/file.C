@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2008/08/15 15:29:42 $";
+static const char * const IDENT_FILE_C="$Date: 2008/08/21 15:58:27 $";
 
 #include "pa_config_includes.h"
 
@@ -655,8 +655,8 @@ static void _list(Request& r, MethodParams& params) {
 			else if(exec_result<0) {
 				(*pcre_free)(regexp_code);
 				throw Exception(0, 
-					regexp, 
-					"regular expression execute (%d)", 
+					regexp,
+					print_pcre_exec_error_text(exec_result),
 						exec_result);
 			}
 		}
