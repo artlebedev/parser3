@@ -26,7 +26,7 @@
  *
  */
 
-static const char * const IDENT_COMMON_C="$Date: 2008/07/15 12:50:11 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2008/08/21 15:57:48 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -35,6 +35,7 @@ static const char * const IDENT_COMMON_C="$Date: 2008/07/15 12:50:11 $";
 #include "pa_charsets.h"
 #include "pa_http.h"
 #include "pa_request_charsets.h"
+#include "pcre.h"
 
 // some maybe-undefined constants
 
@@ -1284,6 +1285,16 @@ static void file_crc32_file_action(
 			nCount = file_block_read(f, buffer, sizeof(buffer));
 			for(int i = 0; i < nCount; i++) CalcCrc32(buffer[i], crc32);
 		} while(nCount > 0);
+	}
+}
+
+char* print_pcre_exec_error_text(int exec_result){
+	switch(exec_result){
+		case PCRE_ERROR_BADUTF8:
+			return "validation of UTF-8 string failed while pcre_exec (%d).";
+			break;
+		default:
+			return "regular expression execute error (%d)";
 	}
 }
 
