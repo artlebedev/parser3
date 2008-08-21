@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-static const char * const IDENT_COMMON_H="$Date: 2008/07/15 12:50:24 $";
+static const char * const IDENT_COMMON_H="$Date: 2008/08/21 15:57:33 $";
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -275,6 +275,7 @@ static void file_crc32_file_action(
 			     int f, 
 			     const String&, const char* /*fname*/, bool, 
 			     void *context);
+char* print_pcre_exec_error_text(int exec_result);
 
 static const char* hex_string(unsigned char* bytes, size_t size, bool upcase) {
 	char *bytes_hex=new(PointerFreeGC) char [size*2/*byte->hh*/+1/*for zero-teminator*/];
