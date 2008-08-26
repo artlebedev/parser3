@@ -1,127 +1,162 @@
 content-type: text/html
-content-length: 1502
+content-length: 1606
 
-<table border=1>
-<tr valign=top>
+<table border="1">
+<tr valign="top">
 <td><img height="100" width="100" border="0" src="096_dir/163.jpg" /></td>
 <td>
 163.jpg<hr>
 ColorSpace: <b>
 1
-</b><br>
+</b>
+<br />
 CompressedBitsPerPixel: <b>
 4
-</b><br>
+</b>
+<br />
 DateTime: <b>
 0000:00:00 00:00:00
-</b><br>
+</b>
+<br />
 DateTimeDigitized: <b>
 0000:00:00 00:00:00
-</b><br>
+</b>
+<br />
 DateTimeOriginal: <b>
 0000:00:00 00:00:00
-</b><br>
+</b>
+<br />
 ExifImageHeight: <b>
 1536
-</b><br>
+</b>
+<br />
 ExifImageWidth: <b>
 2048
-</b><br>
+</b>
+<br />
 ExifInteroperabilityOffset: <b>
 886
-</b><br>
+</b>
+<br />
 ExposureBiasValue: <b>
 0
-</b><br>
+</b>
+<br />
 ExposureProgram: <b>
 2
-</b><br>
+</b>
+<br />
 ExposureTime: <b>
 0.00790514
-</b><br>
+</b>
+<br />
 FNumber: <b>
 3.8
-</b><br>
+</b>
+<br />
 Flash: <b>
 1
-</b><br>
+</b>
+<br />
 FocalLength: <b>
 19.1
-</b><br>
+</b>
+<br />
 ISOSpeedRatings: <b>
 100
-</b><br>
+</b>
+<br />
 ImageDescription: <b>
-</b><br>
+</b>
+<br />
 LightSource: <b>
 0
-</b><br>
+</b>
+<br />
 Make: <b>
 NIKON
-</b><br>
+</b>
+<br />
 MaxApertureValue: <b>
 0
-</b><br>
+</b>
+<br />
 MeteringMode: <b>
 5
-</b><br>
+</b>
+<br />
 Model: <b>
 E995
-</b><br>
+</b>
+<br />
 Orientation: <b>
 1
-</b><br>
+</b>
+<br />
 ResolutionUnit: <b>
 2
-</b><br>
+</b>
+<br />
 Software: <b>
 E995v1.6
-</b><br>
+</b>
+<br />
 XResolution: <b>
 300
-</b><br>
+</b>
+<br />
 YCbCrPositioning: <b>
 2
-</b><br>
+</b>
+<br />
 YResolution: <b>
 300
-</b><br>
+</b>
 </td>
 </tr>
-<tr valign=top>
+<tr valign="top">
 <td><img height="100" width="100" border="0" src="096_dir/188.jpg" /></td>
 <td>
 188.jpg<hr>
 ColorSpace: <b>
 65535
-</b><br>
+</b>
+<br />
 DateTime: <b>
 2002-07-25 08:16:45
-</b><br>
+</b>
+<br />
 ExifImageHeight: <b>
 134
-</b><br>
+</b>
+<br />
 ExifImageWidth: <b>
 100
-</b><br>
+</b>
+<br />
 ImageDescription: <b>
 5.1.2
-</b><br>
+</b>
+<br />
 Orientation: <b>
 1
-</b><br>
+</b>
+<br />
 ResolutionUnit: <b>
 2
-</b><br>
+</b>
+<br />
 Software: <b>
 Adobe Photoshop 7.0
-</b><br>
+</b>
+<br />
 XResolution: <b>
 72
-</b><br>
+</b>
+<br />
 YResolution: <b>
 72
-</b><br>
+</b>
 </td>
 </tr>
 </table>
