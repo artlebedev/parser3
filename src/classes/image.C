@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_IMAGE_C="$Date: 2007/11/14 09:45:21 $";
+static const char * const IDENT_IMAGE_C="$Date: 2008/08/26 11:34:33 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -49,13 +49,13 @@ DECLARE_CLASS_VAR(image, new MImage, 0);
 
 // helpers
 
+#define EXIF_TAG(tag, name) put(tag, #name);
+
 /// value of exif tag -> it's value
 class EXIF_tag_value2name: public Hash<int, const char*> {
 public:
 	EXIF_tag_value2name() {
 	// image JPEG Exif
-		#define EXIF_TAG(tag, name) \
-			put(tag, #name);
 		// Tags used by IFD0 (main image)
 		EXIF_TAG(0x010e,	ImageDescription);
 		EXIF_TAG(0x010f,	Make);
@@ -130,7 +130,7 @@ public:
 		EXIF_TAG(0x83bb,	IPTC/NAA);
 		EXIF_TAG(0x8773,	InterColorProfile);
 		EXIF_TAG(0x8824,	SpectralSensitivity);
-		EXIF_TAG(0x8825,	GPSInfo);
+		//EXIF_TAG(0x8825,	GPSInfo);
 		EXIF_TAG(0x8828,	OECF);
 		EXIF_TAG(0x8829,	Interlace);
 		EXIF_TAG(0x882a,	TimeZoneOffset);
@@ -147,10 +147,79 @@ public:
 		EXIF_TAG(0xa20b,	FlashEnergy);
 		EXIF_TAG(0xa20c,	SpatialFrequencyResponse);
 		EXIF_TAG(0xa214,	SubjectLocation);
-		#undef EXIF_TAG
+
+		// additional things added by misha@
+		EXIF_TAG(0x0100,	ImageWidth);
+		EXIF_TAG(0x0101,	ImageLength);
+		EXIF_TAG(0x0102,	BitsPerSample);
+		EXIF_TAG(0x0103,	Compression);
+		EXIF_TAG(0x0106,	PhotometricInterpretation);
+		EXIF_TAG(0x010a,	FillOrder);
+		EXIF_TAG(0x010d,	DocumentName);
+		EXIF_TAG(0x0111,	StripOffsets);
+		EXIF_TAG(0x0115,	SamplesPerPixel);
+		EXIF_TAG(0x0116,	RowsPerStrip);
+		EXIF_TAG(0x0117,	StripByteCounts);
+		EXIF_TAG(0x011c,	PlanarConfiguration);
+		EXIF_TAG(0x0156,	TransferRange);
+		EXIF_TAG(0x0200,	JPEGProc);
+		EXIF_TAG(0x0201,	JPEGInterchangeFormat);
+		EXIF_TAG(0x0202,	JPEGInterchangeFormatLength);
+		EXIF_TAG(0x0212,	YCbCrSubSampling);
+		EXIF_TAG(0xa401,	CustomRendered);
+		EXIF_TAG(0xa402,	ExposureMode);
+		EXIF_TAG(0xa403,	WhiteBalance);
+		EXIF_TAG(0xa404,	DigitalZoomRatio);
+		EXIF_TAG(0xa405,	FocalLengthIn35mmFilm);
+		EXIF_TAG(0xa406,	SceneCaptureType);
+		EXIF_TAG(0xa407,	GainControl);
+		EXIF_TAG(0xa408,	Contrast);
+		EXIF_TAG(0xa409,	Saturation);
+		EXIF_TAG(0xa40a,	Sharpness);
+		EXIF_TAG(0xa40b,	DeviceSettingDescription);
+		EXIF_TAG(0xa40c,	SubjectDistanceRange);
+		EXIF_TAG(0xa420,	ImageUniqueID);
 	}
 } exif_tag_value2name;
 
+class EXIF_gps_tag_value2name: public Hash<int, const char*> {
+public:
+		EXIF_gps_tag_value2name() {
+		EXIF_TAG(0x0,	GPSVersionID);
+		EXIF_TAG(0x1,	GPSLatitudeRef);
+		EXIF_TAG(0x2,	GPSLatitude);
+		EXIF_TAG(0x3,	GPSLongitudeRef);
+		EXIF_TAG(0x4,	GPSLongitude);
+		EXIF_TAG(0x5,	GPSAltitudeRef);
+		EXIF_TAG(0x6,	GPSAltitude);
+		EXIF_TAG(0x7,	GPSTimeStamp);
+		EXIF_TAG(0x8,	GPSSatellites);
+		EXIF_TAG(0x9,	GPSStatus);
+		EXIF_TAG(0xA,	GPSMeasureMode);
+		EXIF_TAG(0xB,	GPSDOP);
+		EXIF_TAG(0xC,	GPSSpeedRef);
+		EXIF_TAG(0xD,	GPSSpeed);
+		EXIF_TAG(0xE,	GPSTrackRef);
+		EXIF_TAG(0xF,	GPSTrack);
+		EXIF_TAG(0x10,	GPSImgDirectionRef);
+		EXIF_TAG(0x11,	GPSImgDirection);
+		EXIF_TAG(0x12,	GPSMapDatum);
+		EXIF_TAG(0x13,	GPSDestLatitudeRef);
+		EXIF_TAG(0x14,	GPSDestLatitude);
+		EXIF_TAG(0x15,	GPSDestLongitudeRef);
+		EXIF_TAG(0x16,	GPSDestLongitude);
+		EXIF_TAG(0x17,	GPSDestBearingRef);
+		EXIF_TAG(0x18,	GPSDestBearing);
+		EXIF_TAG(0x19,	GPSDestDistanceRef);
+		EXIF_TAG(0x1A,	GPSDestDistance);
+		EXIF_TAG(0x1B,	GPSProcessingMethod);
+		EXIF_TAG(0x1C,	GPSAreaInformation);
+		EXIF_TAG(0x1D,	GPSDateStamp);
+		EXIF_TAG(0x1E,	GPSDifferential);
+	}
+} exif_gps_tag_value2name;
+
+#undef EXIF_TAG
 
 #ifndef DOXYGEN
 class Measure_reader {
@@ -186,7 +255,7 @@ public:
 
 	override void seek(long value, int whence) {
 		if(lseek(f, value, whence)<0)
-			throw Exception("image.format",
+			throw Exception(IMAGE_FORMAT,
 				&file_name, 
 				"seek(value=%ld, whence=%d) failed: %s (%d), actual filename '%s'", 
 					value, whence, strerror(errno), errno, fname);
@@ -228,7 +297,7 @@ public:
 		}
 		
 		if((ssize_t)new_offset<0 || new_offset>size)
-			throw Exception("image.format",
+			throw Exception(IMAGE_FORMAT,
 				&file_name, 
 				"seek(value=%l, whence=%d) failed: out of buffer, new_offset>size (%l>%l) or new_offset<0", 
 					value, whence, new_offset, size);
@@ -303,6 +372,8 @@ struct JPG_Exif_IFD_entry {
 
 #define JPG_IFD_TAG_EXIF_OFFSET 0x8769
 
+#define JPG_IFD_TAG_EXIF_GPS_OFFSET 0x8825
+
 #define JPEG_EXIF_DATE_CHARS 20
 
 //
@@ -331,13 +402,13 @@ static void measure_gif(const String& origin_string,
 	const char* buf;
 	const size_t head_size=sizeof(GIF_Header);
 	if(reader.read(buf, head_size)<head_size)
-		throw Exception("image.format", 
+		throw Exception(IMAGE_FORMAT, 
 			&origin_string, 
 			"not GIF file - too small");
 	GIF_Header *head=(GIF_Header *)buf;
 
 	if(strncmp(head->signature, "GIF", 3)!=0)
-		throw Exception("image.format", 
+		throw Exception(IMAGE_FORMAT, 
 			&origin_string, 
 			"not GIF file - wrong signature");	
 
@@ -492,24 +563,25 @@ static Value* parse_IFD_entry_value(
 }
 
 static void parse_IFD(HashStringValue& hash,
-		      bool is_big, Measure_reader& reader, long tiff_base);
+		      bool is_big, Measure_reader& reader, long tiff_base, bool gps=false);
 
 static void parse_IFD_entry(HashStringValue& hash,
 			    bool is_big, Measure_reader& reader, long tiff_base,
-			    JPG_Exif_IFD_entry& entry) {
+			    JPG_Exif_IFD_entry& entry, bool gps=false) {
 	ushort tag=endian_to_ushort(is_big, entry.tag);
-	if(tag==JPG_IFD_TAG_EXIF_OFFSET) {
+
+	if(tag==JPG_IFD_TAG_EXIF_OFFSET || tag==JPG_IFD_TAG_EXIF_GPS_OFFSET){
 		long remembered=reader.tell();
 		{
 			reader.seek(tiff_base+endian_to_uint(is_big, entry.value_or_offset_to_it), SEEK_SET);
-			parse_IFD(hash, is_big, reader, tiff_base);
+			parse_IFD(hash, is_big, reader, tiff_base, (tag==JPG_IFD_TAG_EXIF_GPS_OFFSET)?true:gps);
 		}
 		reader.seek(remembered, SEEK_SET);
 		return;
 	}
-	
+
 	if(Value* value=parse_IFD_entry_value(is_big, reader, tiff_base, entry)) {
-		if(const char* name=exif_tag_value2name.get(tag))
+		if(const char* name=(gps)?exif_gps_tag_value2name.get(tag):exif_tag_value2name.get(tag))
 			hash.put(String::Body(name), value);
 		else
 			hash.put(String::Body::Format(tag), value);
@@ -518,7 +590,7 @@ static void parse_IFD_entry(HashStringValue& hash,
 
 static void parse_IFD(
 		      HashStringValue& hash,
-		      bool is_big, Measure_reader& reader, long tiff_base) {
+		      bool is_big, Measure_reader& reader, long tiff_base, bool gps) {
 	const char* buf;
 	if(reader.read(buf, sizeof(JPG_Exif_IFD_begin))<sizeof(JPG_Exif_IFD_begin))
 		return;
@@ -529,7 +601,7 @@ static void parse_IFD(
 		if(reader.read(buf, sizeof(JPG_Exif_IFD_entry))<sizeof(JPG_Exif_IFD_entry))
 			return;
 
-		parse_IFD_entry(hash, is_big, reader, tiff_base, *(JPG_Exif_IFD_entry *)buf);
+		parse_IFD_entry(hash, is_big, reader, tiff_base, *(JPG_Exif_IFD_entry *)buf, gps);
 	}
 	// then goes: LLLLLLLL Offset to next IFD [not going there]
 }
@@ -537,7 +609,7 @@ static void parse_IFD(
 static Value* parse_exif(Measure_reader& reader, const String& origin_string) {
 	const char* buf;
 	if(reader.read(buf, sizeof(JPG_Exif_segment_begin))<sizeof(JPG_Exif_segment_begin))
-		throw Exception("image.format", 
+		throw Exception(IMAGE_FORMAT, 
 			&origin_string, 
 			"not JPEG file - can not fully read Exif segment start");
 
@@ -576,13 +648,13 @@ static void measure_jpeg(const String& origin_string,
 	const char* buf;
 	const size_t prefix_size=2;
 	if(reader.read(buf, prefix_size)<prefix_size)
-		throw Exception("image.format", 
+		throw Exception(IMAGE_FORMAT, 
 			&origin_string, 
 			"not JPEG file - too small");
 	uchar *signature=(uchar *)buf;
 	
 	if(!(signature[0]==0xFF && signature[1]==0xD8)) 
-		throw Exception("image.format", 
+		throw Exception(IMAGE_FORMAT, 
 			&origin_string, 
 			"not JPEG file - wrong signature");
 
@@ -594,12 +666,12 @@ static void measure_jpeg(const String& origin_string,
 
         // Verify that it's a valid segment.
 		if(head->marker!=MARKER)
-			throw Exception("image.format", 
+			throw Exception(IMAGE_FORMAT, 
 				&origin_string, 
 				"not JPEG file - marker not found");
 
 		switch(head->code) {
-		// http://www.ba.wakwak.com/~tsuruzoh/Computer/Digicams/exif-e.html
+		// http://park2.wakwak.com/~tsuruzoh/Computer/Digicams/exif-e.html
 		case CODE_EXIF:
 			if(exif && !*exif) // seen .jpg with some xml under EXIF tag, after real exif block :)
 				*exif=parse_exif(reader, origin_string);
@@ -612,7 +684,7 @@ static void measure_jpeg(const String& origin_string,
 			{
 				// Segments that contain size info
 				if(reader.read(buf, sizeof(JPG_Size_segment_body))<sizeof(JPG_Size_segment_body))
-					throw Exception("image.format", 
+					throw Exception(IMAGE_FORMAT, 
 						&origin_string, 
 						"not JPEG file - can not fully read Size segment");
 				JPG_Size_segment_body *body=(JPG_Size_segment_body *)buf;
@@ -626,7 +698,7 @@ static void measure_jpeg(const String& origin_string,
 		reader.seek(segment_base+endian_to_ushort(true, head->length), SEEK_SET);
 	}
 
-	throw Exception("image.format", 
+	throw Exception(IMAGE_FORMAT, 
 		&origin_string, 
 		"broken JPEG file - size frame not found");
 }
@@ -637,13 +709,13 @@ static void measure_png(const String& origin_string,
 	const char* buf;
 	const size_t head_size=sizeof(PNG_Header);
 	if(reader.read(buf, head_size)<head_size)
-		throw Exception("image.format", 
+		throw Exception(IMAGE_FORMAT, 
 			&origin_string, 
 			"not PNG file - too small");
 	PNG_Header *head=(PNG_Header *)buf;
 
 	if(strncmp(head->signature, "IHDR", 4)!=0)
-		throw Exception("image.format", 
+		throw Exception(IMAGE_FORMAT, 
 			&origin_string, 
 			"not PNG file - wrong signature");	
 
@@ -665,11 +737,11 @@ static void measure(const String& file_name,
 		else if(strcasecmp(cext, "PNG")==0)
 			measure_png(file_name, reader, width, height);
 		else
-			throw Exception("image.format", 
+			throw Exception(IMAGE_FORMAT, 
 				&file_name, 
 				"unhandled image file name extension '%s'", cext);
 	} else
-		throw Exception("image.format", 
+		throw Exception(IMAGE_FORMAT, 
 			&file_name, 
 			"can not determine image type - no file name extension");
 }
@@ -781,7 +853,7 @@ static gdImage* load(Request& r,
 		bool ok=image->CreateFromGif(f);
 		fclose(f);
 		if(!ok)
-			throw Exception("image.format", 
+			throw Exception(IMAGE_FORMAT, 
 				&file_name,
 				"is not in GIF format");
 		return image;
