@@ -12,7 +12,7 @@
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
 
-static const char * const IDENT_VOBJECT_C="$Date: 2008/06/16 12:47:25 $";
+static const char * const IDENT_VOBJECT_C="$Date: 2008/08/26 11:53:43 $";
 
 Value* VObject::get_scalar_value() const {
 	VObject* unconst_this=const_cast<VObject*>(this);
@@ -107,14 +107,14 @@ Value* VObject::get_element(const String& aname, Value&, bool alooking_up) {
 
 	// gets element from last_derivate upwards
 	if(alooking_up) {
+		VObject& last_derived=get_last_derived();
 		// $CLASS
 		if(aname==CLASS_NAME)
-			return get_class();
+			return last_derived.get_class();
 		// $CLASS_NAME
 		if(aname==CLASS_NAMETEXT)
-			return new VString(get_class()->name());
+			return new VString(last_derived.get_class()->name());
 		// $virtual_method $virtual_property
-		VObject& last_derived=get_last_derived();
 		if(Value* result=last_derived.stateless_object__get_element(aname, last_derived))
 			return result;
 
