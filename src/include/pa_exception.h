@@ -8,9 +8,10 @@
 #ifndef PA_EXCEPTION_H
 #define PA_EXCEPTION_H
 
-static const char * const IDENT_EXCEPTION_H="$Date: 2007/11/14 09:44:06 $";
+static const char * const IDENT_EXCEPTION_H="$Date: 2008/08/26 11:32:35 $";
 
 const char* const PARSER_RUNTIME = "parser.runtime";
+const char* const IMAGE_FORMAT = "image.format";
 
 const char* const NAME_MUST_BE_STRING = "name must be string";
 const char* const FILE_NAME_MUST_BE_STRING = "file name must be string";
