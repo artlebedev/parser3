@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2008/08/21 15:58:27 $";
+static const char * const IDENT_FILE_C="$Date: 2008/08/29 08:24:17 $";
 
 #include "pa_config_includes.h"
 
@@ -614,7 +614,7 @@ static void _list(Request& r, MethodParams& params) {
 	if(params.count()>1) {
 		regexp=&params.as_no_junction(1, "regexp must not be code").as_string();
 
-		const char* pattern=regexp->cstr();
+		const char* pattern=regexp->cstr(String::L_UNSPECIFIED);
 		const char* errptr;
 		int erroffset;
 		int options=PCRE_EXTRA | PCRE_DOTALL;
