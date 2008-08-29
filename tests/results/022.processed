@@ -1,5 +1,8 @@
 content-type: text/html
-content-length: 15
+content-length: 37
 
-a.html<br>
-<hr>
+a.html
+<hr />
+<hr />
+b[b].txt
+<hr />
