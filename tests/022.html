@@ -1,5 +1,13 @@
-$html[^file:list[022_dir;\.html^$]]
-^html.menu{
-	$html.name<br>
-}
-<hr>
+@main[]
+^print[^file:list[022_dir;\.html^$]]
+
+^print[^file:list[022_dir;b[b].txt^$]]
+
+^print[^file:list[022_dir;^taint[regex][b[b].txt]^$]]
+
+
+@print[tList]
+^tList.menu{
+	$tList.name
+}[<br />]
+<hr />
