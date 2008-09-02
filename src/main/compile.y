@@ -5,7 +5,7 @@
 	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.229 2008/08/15 15:26:14 misha Exp $
+	$Id: compile.y,v 1.230 2008/09/02 16:14:29 misha Exp $
 */
 
 /**
@@ -43,7 +43,7 @@
 #define USE_CONTROL_METHOD_NAME "USE"
 #define OPTIONS_CONTROL_METHOD_NAME "OPTIONS"
 #define OPTION_ALL_VARS_LOCAL_NAME "locals"
-#define OPTION_APPEND_METHODS "append"
+#define OPTION_PARTIAL_CLASS "partial"
 
 // forwards
 
@@ -210,22 +210,28 @@ control_method: '@' STRING '\n'
 			const String& option=*LA2S(*strings_code, i);
 			if(option==OPTION_ALL_VARS_LOCAL_NAME){
 				PC.set_all_vars_local();
-			} else if(option==OPTION_APPEND_METHODS) {
-				if(!PC.class_reuse()){
-					if(PC.cclass_new){
-						strcpy(PC.error, "can't append methods to '");
-						strncat(PC.error, PC.cclass_new->name().cstr(), MAX_STRING/2);
-						strcat(PC.error, "' - the class doesn't exist");
+			} else if(option==OPTION_PARTIAL_CLASS){
+				if(PC.cclass_new){
+					if(VStateless_class* existed=PC.get_existed_class(PC.cclass_new)){
+						if(!PC.reuse_existed_class(existed)){
+							strcpy(PC.error, "can't append methods to '");
+							strncat(PC.error, PC.cclass_new->name().cstr(), MAX_STRING/2);
+							strcat(PC.error, "' - the class wasn't marked as partial");
+							YYERROR;
+						}
 					} else {
-						strcpy(PC.error, "'"OPTION_APPEND_METHODS"' option should be used straight after @"CLASS_NAME);
+						// mark new class as partial. we can add methods to it later.
+						PC.cclass_new->set_partial();
 					}
+				} else {
+					strcpy(PC.error, "'"OPTION_PARTIAL_CLASS"' option should be used straight after @"CLASS_NAME);
 					YYERROR;
 				}
 			} else {
 				strcpy(PC.error, "'");
 				strncat(PC.error, option.cstr(), MAX_STRING/2);
 				strcat(PC.error, "' invalid option. valid options are "
-					"'"OPTION_APPEND_METHODS"' and '"OPTION_ALL_VARS_LOCAL_NAME"'");
+					"'"OPTION_PARTIAL_CLASS"' and '"OPTION_ALL_VARS_LOCAL_NAME"'");
 				YYERROR;
 			}
 		}

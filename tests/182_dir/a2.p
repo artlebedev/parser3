@@ -2,7 +2,7 @@
 a
 
 @OPTIONS
-append
+partial
 
 @a3[]
 a3<br />

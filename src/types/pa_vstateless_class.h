@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
-static const char * const IDENT_VSTATELESS_CLASS_H="$Date: 2008/06/16 12:41:34 $";
+static const char * const IDENT_VSTATELESS_CLASS_H="$Date: 2008/09/02 16:14:38 $";
 
 // include
 
@@ -46,12 +46,14 @@ class VStateless_class: public Value {
 
 	bool flocked;
 	bool fall_vars_local;
+	bool fpartial;
 
 protected:
 
 	VStateless_class* fbase;
 	Method* fscalar;
 	Method* fdefault_getter;
+	Method* fdefault_setter;
 
 public: // Value
 	
@@ -70,6 +72,9 @@ public: // Value
 	override Value* get_scalar(Value& aself);
 	override void set_scalar(Method* amethod);
 
+	override VJunction* get_default_setter(Value& aself, const String& aname);
+	override void set_default_setter(Method* amethod);
+
 public: // usage
 
 	VStateless_class(
@@ -79,8 +84,11 @@ public: // usage
 		flocked(false),
 		fbase(abase),
 		fall_vars_local(false),
+		fpartial(false),
 		fscalar(0),
-		fdefault_getter(0) {
+		fdefault_getter(0),
+		fdefault_setter(0)
+		{
 	}
 
 	void lock() { flocked=true; }
@@ -105,6 +113,7 @@ public: // usage
 		} else
 			return "<unknown>";
 	}
+
 	void set_name(const String& aname) {
 		fname=&aname; 
 	}
@@ -113,12 +122,20 @@ public: // usage
 		return fmethods.get(aname);
 	}
 
-	void all_vars_local(){
+	bool is_vars_local(){
+		return fall_vars_local;
+	}
+
+	void set_all_vars_local(){
 		fall_vars_local=true;
 	}
 
-	bool is_vars_local(){
-		return fall_vars_local;
+	bool is_partial(){
+		return fpartial;
+	}
+
+	void set_partial(){
+		fpartial=true;
 	}
 
 	/// virtual for VClass to override to pre-cache property accessors into fields

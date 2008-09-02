@@ -8,7 +8,7 @@
 #ifndef COMPILE_TOOLS
 #define COMPILE_TOOLS
 
-static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2008/08/15 15:26:14 $";
+static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2008/09/02 16:14:29 $";
 
 #include "pa_opcode.h"
 #include "pa_types.h"
@@ -130,27 +130,31 @@ public:
 		}
 	}
 
-	bool class_reuse(){
-		if(cclass_new){
-			if(Value* class_value=request.classes().get(cclass_new->name())){
-				if(VStateless_class* existed_class=class_value->get_class()) {
-					cclass=existed_class;
-					cclass_new=0;
-					append=true;
-					return true;
-				} else {
-					return false;
-				}
+	VStateless_class* get_existed_class(VStateless_class* aclass){
+		if(aclass){
+			if(Value* class_value=request.classes().get(aclass->name())){
+				return class_value->get_class();
 			}
 		}
-		return false;
+		return 0;
+	}
+
+	bool reuse_existed_class(VStateless_class* aclass){
+		if(aclass->is_partial()){
+			cclass=aclass;
+			cclass_new=0;
+			append=true;
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	void set_all_vars_local(){
 		if(cclass_new){
-			cclass_new->all_vars_local();
+			cclass_new->set_all_vars_local();
 		} else {
-			cclass->all_vars_local();
+			cclass->set_all_vars_local();
 		}
 	}
 

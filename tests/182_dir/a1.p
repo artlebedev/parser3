@@ -1,6 +1,9 @@
 @CLASS
 a
 
+@OPTIONS
+partial
+
 @a1[]
 a1<br />
 
@@ -9,7 +12,7 @@ a1<br />
 a
 
 @OPTIONS
-append
+partial
 
 @a2[]
 a2<br />
