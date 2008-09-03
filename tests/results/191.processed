@@ -1,0 +1,163 @@
+content-type: text/html
+content-length: 2904
+
+<table width="100%" border="1" cellpadding="4">
+<tr>
+<th colspan="2">Dynamic</th>
+<th colspan="2">Static</th>
+</tr>
+<tr valign="top">
+<td width="25%">
+^class[$oA1]: A<br />
+^class[^oA1.class_v[]]: A<br />
+^class[^oA1.class_a[]]: A<br />
+<br />
+^class_name[$oA1]: A<br />
+A/^class_name_v[]: A<br />
+A/^class_name_a[]: A<br />
+<br />
+A/^print_v[]:<br />
+$sv: 'sv_b'<br />
+$sa: 'sa_a'<br />
+$sb: ''<br />
+$dv: 'dv_a'<br />
+$da: 'da_a'<br />
+$db: ''<br />
+<br />
+A/^print_a[]:<br />
+$sv: 'sv_b'<br />
+$sa: 'sa_a'<br />
+$sb: ''<br />
+$dv: 'dv_a'<br />
+$da: 'da_a'<br />
+$db: ''<br />
+<br />
+^print[]:<br />
+$oA1.sa: 'sa_a'<br />
+$oA1.sb: ''<br />
+$oA1.sv: 'sv_b'<br />
+$oA1.da: 'da_a'<br />
+$oA1.db: ''<br />
+$oA1.dv: 'dv_a'<br />
+</td>
+<td width="25%">
+^class[$oB1]: A, B<br />
+^class[^oB1.class_v[]]: A, B<br />
+^class[^oB1.class_a[]]: A, B<br />
+^class[^oB1.class_b[]]: A, B<br />
+<br />
+^class_name[$oB1]: B<br />
+B/^class_name_v[]: B<br />
+A/^class_name_a[]: B<br />
+B/^class_name_b[]: B<br />
+<br />
+B/^print_v[]:<br />
+$sv: 'sv_b'<br />
+$sa: 'sa_a'<br />
+$sb: 'sb_b'<br />
+$dv: 'dv_b'<br />
+$da: 'da_a'<br />
+$db: 'db_b'<br />
+<br />
+A/^print_a[]:<br />
+$sv: 'sv_b'<br />
+$sa: 'sa_a'<br />
+$sb: 'sb_b'<br />
+$dv: 'dv_b'<br />
+$da: 'da_a'<br />
+$db: 'db_b'<br />
+<br />
+B/^print_b[]:<br />
+$sv: 'sv_b'<br />
+$sa: 'sa_a'<br />
+$sb: 'sb_b'<br />
+$dv: 'dv_b'<br />
+$da: 'da_a'<br />
+$db: 'db_b'<br />
+<br />
+^print[]:<br />
+$oB1.sa: 'sa_a'<br />
+$oB1.sb: 'sb_b'<br />
+$oB1.sv: 'sv_b'<br />
+$oB1.da: 'da_a'<br />
+$oB1.db: 'db_b'<br />
+$oB1.dv: 'dv_b'<br />
+</td>
+<td width="25%">
+^class[$A:CLASS]: A<br />
+^class[^A:class_v[]]: A<br />
+^class[^A:class_a[]]: A<br />
+<br />
+^class_name[$A:CLASS]: A<br />
+A/^class_name_v[]: A<br />
+A/^class_name_a[]: A<br />
+<br />
+A/^print_v[]:<br />
+$sv: 'sv_b'<br />
+$sa: 'sa_a'<br />
+$sb: ''<br />
+$dv: ''<br />
+$da: ''<br />
+$db: ''<br />
+<br />
+A/^print_a[]:<br />
+$sv: 'sv_b'<br />
+$sa: 'sa_a'<br />
+$sb: ''<br />
+$dv: ''<br />
+$da: ''<br />
+$db: ''<br />
+<br />
+^print[]:<br />
+$A:sa: 'sa_a'<br />
+$A:sb: ''<br />
+$A:sv: 'sv_b'<br />
+$A:da: ''<br />
+$A:db: ''<br />
+$A:dv: ''<br />
+</td>
+<td width="25%">
+^class[$B:CLASS]: A, B<br />
+^class[^B:class_v[]]: A, B<br />
+^class[^B:class_a[]]: A<br />
+^class[^B:class_b[]]: A, B<br />
+<br />
+^class_name[$B:CLASS]: B<br />
+B/^class_name_v[]: B<br />
+A/^class_name_a[]: A<br />
+B/^class_name_b[]: B<br />
+<br />
+B/^print_v[]:<br />
+$sv: 'sv_b'<br />
+$sa: 'sa_a'<br />
+$sb: 'sb_b'<br />
+$dv: ''<br />
+$da: ''<br />
+$db: ''<br />
+<br />
+A/^print_a[]:<br />
+$sv: 'sv_b'<br />
+$sa: 'sa_a'<br />
+$sb: ''<br />
+$dv: ''<br />
+$da: ''<br />
+$db: ''<br />
+<br />
+B/^print_b[]:<br />
+$sv: 'sv_b'<br />
+$sa: 'sa_a'<br />
+$sb: 'sb_b'<br />
+$dv: ''<br />
+$da: ''<br />
+$db: ''<br />
+<br />
+^print[]:<br />
+$B:sa: 'sa_a'<br />
+$B:sb: 'sb_b'<br />
+$B:sv: 'sv_b'<br />
+$B:da: ''<br />
+$B:db: ''<br />
+$B:dv: ''<br />
+</td>
+</tr>
+</table>
