@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2008/08/29 08:24:17 $";
+static const char * const IDENT_FILE_C="$Date: 2008/09/03 15:15:32 $";
 
 #include "pa_config_includes.h"
 
@@ -626,7 +626,7 @@ static void _list(Request& r, MethodParams& params) {
 			r.charsets.source().pcre_tables);
 
 		if(!regexp_code)
-			throw Exception(0, 
+			throw Exception(PCRE_EXCEPTION_TYPE, 
 				&regexp->mid(erroffset, regexp->length()), 
 				"regular expression syntax error - %s", errptr);
 	} else {
@@ -654,7 +654,7 @@ static void _list(Request& r, MethodParams& params) {
 				suits=false;
 			else if(exec_result<0) {
 				(*pcre_free)(regexp_code);
-				throw Exception(0, 
+				throw Exception(PCRE_EXCEPTION_TYPE, 
 					regexp,
 					print_pcre_exec_error_text(exec_result),
 						exec_result);

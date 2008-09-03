@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2008/08/21 15:58:12 $";
+static const char * const IDENT_STRING_C="$Date: 2008/09/03 15:15:47 $";
 
 #include "pa_string.h"
 #include "pa_exception.h"
@@ -483,7 +483,7 @@ Table* String::match(Charset& source_charset,
 		     Row_action row_action, void *info,
 		     int& matches_count) const { 
 	if(regexp.is_empty())
-		throw Exception(0,
+		throw Exception(PARSER_RUNTIME,
 			0,
 			"regexp is empty");
 
@@ -505,14 +505,14 @@ Table* String::match(Charset& source_charset,
 		source_charset.pcre_tables);
 
 	if(!code)
-		throw Exception(0,
+		throw Exception(PCRE_EXCEPTION_TYPE,
 			&regexp.mid(erroffset, regexp.length()),
 			"regular expression syntax error - %s", errptr);
 	
 	int subpatterns=pcre_info(code, 0, 0);
 	if(subpatterns<0) {
 		pcre_free(code);
-		throw Exception(0,
+		throw Exception(PCRE_EXCEPTION_TYPE,
 			&regexp,
 			"pcre_info error (%d)", 
 				subpatterns);
@@ -549,7 +549,7 @@ Table* String::match(Charset& source_charset,
 
 		if(exec_substrings<0) {
 			pcre_free(code);
-			throw Exception(0,
+			throw Exception(PCRE_EXCEPTION_TYPE,
 				&regexp,
 				print_pcre_exec_error_text(exec_substrings),
 					exec_substrings);
