@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2008/07/03 09:17:57 $";
+static const char * const IDENT_TABLE_C="$Date: 2008/09/03 14:29:17 $";
 
 #ifndef NO_STRINGSTREAM
 #include <sstream>
@@ -451,6 +451,10 @@ static void _save(Request& r, MethodParams& params) {
 		--param_index;
 
 	const String& file_name=params.as_string(param_index++, FILE_NAME_MUST_NOT_BE_CODE);
+	String file_spec=r.absolute(file_name);
+
+	if(do_append && file_exist(file_spec))
+		output_column_names=false;
 
 	TableSeparators separators;
 	if(param_index<params.count()) {
@@ -515,7 +519,7 @@ static void _save(Request& r, MethodParams& params) {
 	// write
 	{
 		const char* data_cstr=sdata.cstr();
-		file_write(r.absolute(file_name), 
+		file_write(file_spec, 
 			data_cstr, sdata.length(), true, do_append);
 		if(*data_cstr) // not empty (when empty it's not heap memory)
 			pa_free((void*)data_cstr); // not needed anymore
@@ -566,9 +570,9 @@ static void _save(Request& r, MethodParams& params) {
 	// write
 	{
 		string data=ost.str();
-		const char* data_cstr = data.c_str();
+		const char* data_cstr=data.c_str();
 
-		file_write(r.absolute(file_name), data_cstr, data.length(), true /* as text */, do_append);
+		file_write(file_spec, data_cstr, data.length(), true /* as text */, do_append);
 	}
 
 #endif
