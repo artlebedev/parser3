@@ -1,0 +1,132 @@
+@USE
+191_a.p
+191_b.p
+
+@main[]
+
+$oA1[^A::create[]]
+$oA2[^A::create[]]
+
+$oB1[^B::create[]]
+$oB2[^B::create[]]
+
+
+=$env:PARSER_VERSION=
+<table width="100%" border="1" cellpadding="4">
+<tr>
+	<th colspan="2">Dynamic</th>
+	<th colspan="2">Static</th>
+</tr>
+
+<tr valign="top">
+
+
+<td width="25%">
+^^class[^$oA1]: ^class[$oA1]
+^^class[^^oA1.class_v[]]: ^class[^oA1.class_v[]]
+^^class[^^oA1.class_a[]]: ^class[^oA1.class_a[]]
+
+<br />
+^^class_name[^$oA1]: ^class_name[$oA1]
+^oA1.class_name_v[]
+^oA1.class_name_a[]
+
+^oA1.print_v[]
+^oA1.print_a[]
+
+^print[^$oA1.;$oA1]
+</td>
+
+
+<td width="25%">
+^^class[^$oB1]: ^class[$oB1]
+^^class[^^oB1.class_v[]]: ^class[^oB1.class_v[]]
+^^class[^^oB1.class_a[]]: ^class[^oB1.class_a[]]
+^^class[^^oB1.class_b[]]: ^class[^oB1.class_b[]]
+
+<br />
+^^class_name[^$oB1]: ^class_name[$oB1]
+^oB1.class_name_v[]
+^oB1.class_name_a[]
+^oB1.class_name_b[]
+
+^oB1.print_v[]
+^oB1.print_a[]
+^oB1.print_b[]
+
+^print[^$oB1.;$oB1]
+</td>
+
+
+<td width="25%">
+^^class[^$A:CLASS]: ^class[$A:CLASS]
+^^class[^^A:class_v[]]: ^class[^A:class_v[]]
+^^class[^^A:class_a[]]: ^class[^A:class_a[]]
+
+<br />
+^^class_name[^$A:CLASS]: ^class_name[$A:CLASS]
+^A:class_name_v[]
+^A:class_name_a[]
+
+^A:print_v[]
+^A:print_a[]
+
+^print[^$A:;$A:CLASS]
+</td>
+
+
+
+<td width="25%">
+^^class[^$B:CLASS]: ^class[$B:CLASS]
+^^class[^^B:class_v[]]: ^class[^B:class_v[]]
+^^class[^^B:class_a[]]: ^class[^B:class_a[]]
+^^class[^^B:class_b[]]: ^class[^B:class_b[]]
+
+<br />
+^^class_name[^$B:CLASS]: ^class_name[$B:CLASS]
+^B:class_name_v[]
+^B:class_name_a[]
+^B:class_name_b[]
+
+^B:print_v[]
+^B:print_a[]
+^B:print_b[]
+
+^print[^$B:;$B:CLASS]
+</td>
+
+
+</tr>
+</table>
+
+
+
+@class[uObject]
+^if(!def $tClass){
+	$tClass[^table::create{sName
+A
+B
+}]
+}
+
+$result[^tClass.menu{^if($uObject is $tClass.sName){$tClass.sName}}[, ]<br />]
+
+
+@class_name[uObject]
+$result[$uObject.CLASS_NAME<br />]
+
+
+
+@print[sName;uObject]
+<br />
+^^print[]:<br />
+${sName}sa: '$uObject.sa'<br />
+${sName}sb: '$uObject.sb'<br />
+${sName}sv: '$uObject.sv'<br />
+
+${sName}da: '$uObject.da'<br />
+${sName}db: '$uObject.db'<br />
+${sName}dv: '$uObject.dv'<br />
+
+
+
