@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VOID_C="$Date: 2008/07/18 08:24:35 $";
+static const char * const IDENT_VOID_C="$Date: 2008/09/04 13:15:36 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -174,6 +174,7 @@ MVoid::MVoid(): Methoded("void") {
 	add_native_method("length", Method::CT_DYNAMIC, _length, 0, 0);
 
 	// ^void.pos[substr]
+	// ^void.pos[substr](n)
 	add_native_method("pos", Method::CT_DYNAMIC, _pos, 1, 2);
 
 	// ^void.int[]
@@ -188,7 +189,7 @@ MVoid::MVoid(): Methoded("void") {
 	// ^void.bool(default)
 	add_native_method("bool", Method::CT_DYNAMIC, _bool, 0, 1);
 
-	// ^sql[query]
+	// ^void:sql{query}
 	add_native_method("sql", Method::CT_STATIC, _sql, 1, 2);
 
 	// ^void.left() ^void.right()
