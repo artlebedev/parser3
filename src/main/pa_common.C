@@ -26,7 +26,7 @@
  *
  */
 
-static const char * const IDENT_COMMON_C="$Date: 2008/08/21 15:57:48 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2008/09/04 09:37:00 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -144,7 +144,7 @@ static void file_read_action(
 		*info.data_size=(size_t)read(f, *info.data, to_read_size); 
 
 		if(ssize_t(*info.data_size)<0 || *info.data_size>to_read_size)
-			throw Exception(0, 
+			throw Exception("file.read", 
 				&file_spec, 
 				"read failed: actually read %u bytes count not in [0..%u] valid range", 
 					*info.data_size, to_read_size); 
@@ -361,7 +361,7 @@ static void file_write_action(int f, void *context) {
 	if(info.length) {
 		int written=write(f, info.str, info.length); 
 		if(written<0)
-			throw Exception(0, 
+			throw Exception("file.access", 
 				0, 
 				"write failed: %s (%d)",  strerror(errno), errno); 
 	}
@@ -1247,7 +1247,7 @@ void pa_base64_decode(const char *in, size_t in_size, char*& result, size_t& res
 int file_block_read(const int f, unsigned char* buffer, const size_t size){
 	int nCount = read(f, buffer, size);
 	if (nCount < 0)
-		throw Exception(0, 
+		throw Exception("file.read", 
 			0, 
 			"read failed: %s (%d)",  strerror(errno), errno); 
 	return nCount;

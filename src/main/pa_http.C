@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
  */
 
-static const char * const IDENT_HTTP_C="$Date: 2008/07/23 14:08:26 $"; 
+static const char * const IDENT_HTTP_C="$Date: 2008/09/04 09:37:48 $"; 
 
 #include "pa_http.h"
 #include "pa_common.h"
@@ -364,7 +364,7 @@ static void form_value2string(
 		Form_table_value2string_info info(key, *result);
 		tvalue->for_each(form_table_value2string, &info);
 	} else
-		throw Exception(0,
+		throw Exception(PARSER_RUNTIME,
 			new String(key, String::L_TAINTED),
 			"is %s, "HTTP_FORM_NAME" option value must either string or table", value->type());
 }
@@ -495,7 +495,7 @@ File_read_http_result pa_internal_file_read_http(Request_charsets& charsets,
 
 		const char* current=connect_string_cstr;
 		if(strncmp(current, "http://", 7)!=0)
-			throw Exception(0, 
+			throw Exception(PARSER_RUNTIME, 
 				&connect_string, 
 				"does not start with http://"); //never
 		current+=7;

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Date: 2007/05/24 09:58:42 $";
+static const char * const IDENT="$Date: 2008/09/04 09:36:46 $";
 
 #include "pa_globals.h"
 #include "pa_common.h"
@@ -68,7 +68,7 @@ apr_sdbm_t *VHashfile::get_db_for_reading() {
 	}
 
 	if(!is_open())
-		throw Exception(0,
+		throw Exception("file.read",
 			0,
 			"can't open %s for reading", type());
 
@@ -93,7 +93,7 @@ apr_sdbm_t *VHashfile::get_db_for_writing() {
 	}
 
 	if(!is_open())
-		throw Exception(0,
+		throw Exception("file.access",
 			0,
 			"can't open %s for writing", type());
 
@@ -160,7 +160,7 @@ void VHashfile::put_field(const String& aname, Value *avalue) {
 	if(HashStringValue *hash=avalue->get_hash()) {
 		if(Value *value_value=hash->get(value_name)) {
 			if(value_value->get_junction())
-				throw Exception(0,
+				throw Exception(PARSER_RUNTIME,
 					0,
 					VALUE_NAME" must not be code");
 
@@ -173,7 +173,7 @@ void VHashfile::put_field(const String& aname, Value *avalue) {
 					time_to_die=time(NULL)+(time_t)(60*60*24*days_till_expire); // $expires(days)
 			}
 		} else
-			throw Exception(0,
+			throw Exception(PARSER_RUNTIME,
 				&aname,
 				"put hash value must contain ."VALUE_NAME);
 	} else

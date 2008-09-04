@@ -7,7 +7,7 @@
 	@todo setrlimit
 */
 
-static const char * const IDENT_EXEC_C="$Date: 2007/11/15 19:44:39 $";
+static const char * const IDENT_EXEC_C="$Date: 2008/09/04 09:37:48 $";
 
 #include "pa_config_includes.h"
 
@@ -422,7 +422,7 @@ PA_exec_result pa_exec(
 		if(error_size>3) // ".\r\n"
 			szErrorDesc[error_size-3]=0;
             
-		throw Exception(0,
+		throw Exception("file.execute",
 			&file_spec,
 			"exec failed - %s (%u). Consider adding shbang line (#!x:\\interpreter\\command line)", 
 				error_size?szErrorDesc:"<unknown>", error);
@@ -508,7 +508,7 @@ from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?r
 		result.status=get_exit_status(pid); // negative may mean "-errno[execl()]"
 	} else { 
 		const char* str=strerror(errno);
-		throw Exception(0,
+		throw Exception("file.execute",
 			&file_spec,
 			"%s error: %s (%d)", pid<0?"fork":"pipe", str?str:"<unknown>", errno); 
 	}

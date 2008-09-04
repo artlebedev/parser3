@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2008/09/03 15:15:32 $";
+static const char * const IDENT_FILE_C="$Date: 2008/09/04 09:37:35 $";
 
 #include "pa_config_includes.h"
 
@@ -165,7 +165,7 @@ static void copy_process_source(
 		nCount = file_block_read(from_file, buffer, sizeof(buffer));
 		int written=write(to_file, buffer, nCount); 
 		if( written < 0 )
-			throw Exception(0, 
+			throw Exception("file.access", 
 				0, 
 				"write failed: %s (%d)",  strerror(errno), errno); 
 		
@@ -541,7 +541,7 @@ static void _exec_cgi(Request& r, MethodParams& params,
 				break;
 			default: // 00
 				unix_header_break=false; // calm down, compiler
-				throw Exception(0,
+				throw Exception("file.execute",
 					0,
 					"output does not contain CGI header; "
 					"exit status=%d; stdoutsize=%u; stdout: \"%s\"; stderrsize=%u; stderr: \"%s\"", 
