@@ -1,3 +1,56 @@
+2008-09-04	misha
+	* src/classes/op.C 1.183:
+		- exception with 'invalid taint language' not typeless anylonger
+
+	* src/classes/image.C 1.119:
+		- some exceptions while operations with image not typeless 
+		anymore
+
+	* src/classes/file.C 1.179:
+	* src/main/pa_common.C 1.238:
+	* src/main/pa_exec.C 1.72:
+	* src/main/pa_http.C 1.18:
+	* src/types/pa_vhashfile.C 1.56:
+		- some exceptions while operations with files not typeless 
+		anymore
+
+	* src/classes/date.C 1.83:
+	* src/types/pa_value.C 1.25:
+	* src/types/pa_vcookie.C 1.75:
+	* src/types/pa_vdate.h 1.47:
+		- exceptions while checking date range not typeless anymore
+
+	* src/include/pa_exception.h 1.54:
+		- exception type string for invalid date range was added
+
+2008-09-03	misha
+	* src/classes/file.C 1.178:
+	* src/main/pa_string.C 1.218:
+		- exception while pce operations not typeless anymore
+
+	* src/include/pa_exception.h 1.53:
+		- exception type for pce operations was added
+
+	* tests/191.html 1.1:
+	* tests/191_a.p 1.1:
+	* tests/191_b.p 1.1:
+		- tests for calling .CLASS and .CLASS_NAME insite classes
+
+	* src/classes/table.C 1.246:
+		- don't save table header whiile ^table.save[append;filename] if 
+		file exists
+
+2008-09-02	misha
+	* src/main/compile.tab.C 1.123:
+	* src/main/compile.y 1.230:
+	* src/main/compile_tools.h 1.81:
+	* src/types/pa_vstateless_class.h 1.61:
+	* tests/182_dir/a1.p 1.2:
+	* tests/182_dir/a2.p 1.2:
+		- append option was renamed to partial and it login changed: we 
+		must mark class as partial for allow their modifications in 
+		future.
+
 2008-08-29	misha
 	* tests/022.html 1.3:
 	* tests/results/022.processed 1.5:
