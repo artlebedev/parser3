@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_DATE_C="$Date: 2008/07/04 11:17:32 $";
+static const char * const IDENT_DATE_C="$Date: 2008/09/04 09:35:09 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -63,7 +63,7 @@ static void _now(Request& r, MethodParams& params) {
 /// shrinked range: 1970/1/1 to 2038/1/1
 static int to_year(int iyear) {
 	if(iyear<1970 || iyear>2038)
-		throw Exception(0,
+		throw Exception(DATE_RANGE_EXCEPTION_TYPE,
 			0,
 			"year '%d' is out of valid range", iyear);
 	return iyear;
@@ -83,7 +83,7 @@ static int to_tm_year(int iyear) {
 // 2002:04:25 [+maybe time]
 /*not static, used in image.C*/ tm cstr_to_time_t(char *cstr) {
 	if( !cstr || !*cstr )
-		throw Exception(0,
+		throw Exception(DATE_RANGE_EXCEPTION_TYPE,
 			0,
 			"empty string is not valid datetime");
 
@@ -133,7 +133,7 @@ static void _create(Request& r, MethodParams& params) {
 		} else { // ^create(float days) or ^create[date object]
 			time_t t=(time_t)round(params.as_double(0, "float days must be double", r)*SECS_PER_DAY);
 			if(t<0 || !localtime(&t))
-				throw Exception(0,
+				throw Exception(DATE_RANGE_EXCEPTION_TYPE,
 					0,
 					"invalid datetime");
 			vdate.set_time(t);
@@ -207,12 +207,12 @@ static void _roll(Request& r, MethodParams& params) {
 		int saved_mon=(tmIn.tm_mon+12*100)%12; // crossing year boundary backwards
 		t_changed_date=mktime/*normalizetime*/(&tmIn);
 		if(t_changed_date<0)
-			throw Exception(0,
+			throw Exception(DATE_RANGE_EXCEPTION_TYPE,
 				0,
 				"bad resulting time (rolled out of valid date range)");
 		if(oday==0 && tmIn.tm_mon!=saved_mon/*but it changed*/) {
 			if(adjust_day <= -3/*31->28 max, so never, but...*/)
-				throw Exception(0,
+				throw Exception(DATE_RANGE_EXCEPTION_TYPE,
 					0,
 					"bad resulting time (day hole still with %d day adjustment)", adjust_day );
 			
@@ -224,7 +224,7 @@ static void _roll(Request& r, MethodParams& params) {
 
 	tm *tmOut=localtime(&t_changed_date);
 	if(!tmOut)
-		throw Exception(0,
+		throw Exception(DATE_RANGE_EXCEPTION_TYPE,
 			0,
 			"bad resulting time (seconds from epoch=%d)", t_changed_date);
     
@@ -244,7 +244,7 @@ static void _roll(Request& r, MethodParams& params) {
 		*/
 
 		if(t_changed_time<0)
-			throw Exception(0,
+			throw Exception(DATE_RANGE_EXCEPTION_TYPE,
 				0,
 				"bad resulting time (after reconstruction)");
 		
@@ -267,7 +267,7 @@ static Table& fill_month_days(Request& r, MethodParams& params, bool rus){
 
 	time_t t=mktime(&tmIn);
 	if(t<0)
-		throw Exception(0, 
+		throw Exception(DATE_RANGE_EXCEPTION_TYPE, 
 			0, 
 			"invalid date");
 	tm *tmOut=localtime(&t);
@@ -344,7 +344,7 @@ static Table& fill_week_days(Request& r, MethodParams& params, bool rus){
 		
 	time_t t=mktime(&tmIn);
 	if(t<0)
-		throw Exception(0, 
+		throw Exception(DATE_RANGE_EXCEPTION_TYPE, 
 			0, 
 			"invalid date");
 	tm *tmOut=localtime(&t);
@@ -401,7 +401,7 @@ static void _unix_timestamp(Request& r, MethodParams& params) {
 		r.write_no_lang(*new VInt((int)vdate.get_time()));
 	} else {
 		if(vdate.get_time())
-			throw Exception(0,
+			throw Exception(PARSER_RUNTIME,
 				0,
 				"date object already constructed");
 

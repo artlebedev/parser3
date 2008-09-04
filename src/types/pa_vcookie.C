@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VCOOKIE_C="$Date: 2008/07/15 12:54:24 $";
+static const char * const IDENT_VCOOKIE_C="$Date: 2008/09/04 09:36:04 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -121,7 +121,7 @@ static Value& expires_vdate(double days_till_expire) {
 	time_t when=time(NULL)+(time_t)(60*60*24*days_till_expire);
 	struct tm *tms=gmtime(&when);
 	if(!tms)
-		throw Exception(0,
+		throw Exception(DATE_RANGE_EXCEPTION_TYPE,
 			0,
 			"bad expires time (seconds from epoch=%u)", when);
 

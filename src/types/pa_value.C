@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VALUE_C="$Date: 2008/02/21 14:17:12 $";
+static const char * const IDENT_VALUE_C="$Date: 2008/09/04 09:35:56 $";
 
 #include "pa_value.h"
 #include "pa_vstateless_class.h"
@@ -87,7 +87,7 @@ static String::C date_attribute(const VDate& vdate) {
 	time_t when=vdate.get_time();
 	struct tm *tms=gmtime(&when);
 	if(!tms)
-		throw Exception(0,
+		throw Exception(DATE_RANGE_EXCEPTION_TYPE,
 			0,
 			"bad time in attribute value (seconds from epoch=%u)", when);
 	return date_gmt_string(tms);
