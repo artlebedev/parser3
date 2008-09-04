@@ -1145,7 +1145,9 @@ DATA::=string | file | hash
     !file.lock                                                        shared/exclusive lock error
     !file.missing         ^file:delete[delme]                         not found
     !file.access          ^table::load[.]                             no rights
+    !file.read            ^file::load[...]                            error while reading file
     !file.seek                                                        seek failed
+    !file.execute         ^file::cgi[...]                             incorrect cgi header/can't execute
     !image.format         ^image::measure[index.html]                 not gif/jpg
     !sql.connect          ^connect[mysql://baduser:pass@host/db]{}    not found/timeout
     !sql.execute          ^void:sql{select bad}                       syntax error
@@ -1163,7 +1165,8 @@ DATA::=string | file | hash
     !http.timeout         ^file::load[http://host/doc]                whole load operation failed to complete in # seconds
     !http.response        ^file::load[http://ok/there]                host found, connection accepted, bad answer
     !http.status          ^file::load[http://ok/there]                host found, connection accepted, status!=200
-    
+    !date.range           ^date::create(1950;1;1)                     date out of valid range
+
 !нужно выключить русский apache: CharsetDisable on
 
 Xесли в MAIN будет определён флаг $ORIGINS(1) то вместо обычного вывода страницы будет
