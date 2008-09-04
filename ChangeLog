@@ -1,4 +1,20 @@
 2008-09-04	misha
+	* Makefile.am [release_3_3_0] 1.58.2.1:
+	* Makefile.in [release_3_3_0] 1.73.2.1:
+	* acinclude.m4 [release_3_3_0] 1.44.2.1:
+	* aclocal.m4 [release_3_3_0] 1.47.2.1:
+	* acsite.m4 [release_3_3_0] 1.22.2.1:
+	* configure [release_3_3_0] 1.100.2.1:
+	* configure.in [release_3_3_0] 1.104.2.1:
+		*** empty log message ***
+
+	* src/include/pa_version.h [release_3_3_0] 1.33.2.1:
+		=no message
+
+	* tests/130.html 1.3:
+	* tests/131.html 1.3:
+		- these exceptions not typeless anymore
+
 	* src/classes/op.C 1.183:
 		- exception with 'invalid taint language' not typeless anylonger
 
