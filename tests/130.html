@@ -2,13 +2,13 @@
 ^try{	
 	^mustfail[]
 }{
-	^if($exception.type eq ''){
+	^if($exception.type eq 'parser.runtime'){
 		failed, that's OK
 		$exception.handled(1)
 	}
 }
 
 @mustfail[]
-$s[abcÄÅÇ]
+$s[abc]
 ^if(^s.match[][i]){y}{n}
 

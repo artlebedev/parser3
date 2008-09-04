@@ -2,7 +2,7 @@
 ^try{	
 	^mustfail[]
 }{
-	^if($exception.type eq ''){
+	^if($exception.type eq 'date.range'){
 		failed, that's OK
 		$exception.handled(1)
 	}
