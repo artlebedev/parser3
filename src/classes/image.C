@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_IMAGE_C="$Date: 2008/08/26 11:34:33 $";
+static const char * const IDENT_IMAGE_C="$Date: 2008/09/04 09:38:09 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -962,7 +962,7 @@ static void _replace(Request& r, MethodParams& params) {
 
 	Table* table=params.as_no_junction(2, COORDINATES_MUST_NOT_BE_CODE).get_table();
 	if(!table) 
-		throw Exception(0,
+		throw Exception(PARSER_RUNTIME,
 			0,
 			"coordinates must be table");
 
@@ -979,7 +979,7 @@ static void _polyline(Request& r, MethodParams& params) {
 
 	Table* table=params.as_no_junction(1, COORDINATES_MUST_NOT_BE_CODE).get_table();
 	if(!table) 
-		throw Exception(0,
+		throw Exception(PARSER_RUNTIME,
 			0,
 			"coordinates must be table");
 
@@ -996,7 +996,7 @@ static void _polygon(Request& r, MethodParams& params) {
 
 	Table* table=params.as_no_junction(1, COORDINATES_MUST_NOT_BE_CODE).get_table();
 	if(!table) 
-		throw Exception(0,
+		throw Exception(PARSER_RUNTIME,
 			0,
 			"coordinates must be table");
 
