@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2008/07/15 13:35:16 $";
+static const char * const IDENT_OP_C="$Date: 2008/09/04 09:38:53 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -106,7 +106,7 @@ static String::Language get_untaint_lang(MethodParams& params, int index){
 	const String& lang_name=params.as_string(index, "lang must be string");
 	String::Language lang=untaint_lang_name2enum.get(lang_name);
 	if(!lang)
-		throw Exception(0,
+		throw Exception(PARSER_RUNTIME,
 			&lang_name,
 			"invalid taint language");
 	return lang;
