@@ -169,7 +169,7 @@ sqlite_client = @sqlite_client@
 subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-SUBDIRS = gd smtp cord ltdl md5 gc sdbm
+SUBDIRS = gd smtp cord ltdl pcre md5 gc sdbm
 all: all-recursive
 
 .SUFFIXES:

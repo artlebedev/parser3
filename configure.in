@@ -669,6 +669,7 @@ AC_OUTPUT(
 	src/lib/cord/include/Makefile
 	src/lib/cord/include/private/Makefile
 	src/lib/ltdl/Makefile
+	src/lib/pcre/Makefile
 	src/lib/md5/Makefile
 	src/lib/sdbm/Makefile
 	src/lib/sdbm/apr-include/Makefile
