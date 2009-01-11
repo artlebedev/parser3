@@ -2,7 +2,7 @@ dnl Process this file with autoconf to produce a configure script.
 AC_INIT(README)
 AC_PREREQ(2.57)
 
-AM_INIT_AUTOMAKE(parser, 3.3.0b, nodefine)
+AM_INIT_AUTOMAKE(parser, 3.3.1b, nodefine)
 
 dnl expand srcdir
 P3S=`cd $srcdir/src ; pwd`
@@ -669,7 +669,6 @@ AC_OUTPUT(
 	src/lib/cord/include/Makefile
 	src/lib/cord/include/private/Makefile
 	src/lib/ltdl/Makefile
-	src/lib/pcre/Makefile
 	src/lib/md5/Makefile
 	src/lib/sdbm/Makefile
 	src/lib/sdbm/apr-include/Makefile
