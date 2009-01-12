@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2008/09/04 09:37:35 $";
+static const char * const IDENT_FILE_C="$Date: 2009/01/12 07:22:16 $";
 
 #include "pa_config_includes.h"
 
@@ -153,10 +153,10 @@ static void _move(Request& r, MethodParams& params) {
 }
 
 static void copy_process_source(
-			     struct stat& , 
-			     int from_file, 
-			     const String& , const char* /*fname*/, bool, 
-				 void *context) {
+				struct stat& , 
+				int from_file, 
+				const String& , const char* /*fname*/, bool, 
+				void *context) {
 	int& to_file=*static_cast<int *>(context);
 
 	int nCount=0;
@@ -192,42 +192,42 @@ static void _copy(Request& r, MethodParams& params) {
 }
 
 static void _load_pass_param(
-			     HashStringValue::key_type key, 
-			     HashStringValue::value_type value, 
-			     HashStringValue *dest) {
+				HashStringValue::key_type key, 
+				HashStringValue::value_type value, 
+				HashStringValue *dest) {
 	dest->put(key, value);
 }
-static void _load(Request& r, MethodParams& params) {
-	Value& vmode_name=params.as_no_junction(0, MODE_MUST_NOT_BE_CODE);
-	const String& lfile_name=r.absolute(params.as_no_junction(1, FILE_NAME_MUST_NOT_BE_CODE).as_string());
-	Value* third_param=params.count()>2?&params.as_no_junction(2, "filename or options must not be code")
-		:0;
-	HashStringValue* third_param_hash=third_param?third_param->get_hash():0;
-	size_t alt_filename_param_index=2;
-	if(third_param_hash)
-		alt_filename_param_index++;
 
-	HashStringValue* options=third_param_hash;
+static void _load(Request& r, MethodParams& params) {
+	bool as_text=is_text_mode(params.as_no_junction(0, MODE_MUST_NOT_BE_CODE).as_string());
+	const String& lfile_name=r.absolute(params.as_no_junction(1, FILE_NAME_MUST_NOT_BE_CODE).as_string());
+
+	size_t param_index=params.count()-1;
+	Value* param_value=param_index>=2?&params.as_no_junction(param_index, "filename or options must not be code"):0;
+	HashStringValue* param_hash=param_value?param_value->get_hash():0;
+	HashStringValue* options=param_hash;
+
+	param_index--;
+
 	size_t offset=0;
 	size_t limit=0;
-	if(options) {
+	if(options){
 		options=new HashStringValue(*options);
-		if(Value *voffset=(Value *)options->get(sql_offset_name)) {
+		if(Value *voffset=(Value *)options->get(sql_offset_name)){
 			offset=r.process_to_value(*voffset).as_int();
 		}
-		if(Value *vlimit=(Value *)options->get(sql_limit_name)) {
+		if(Value *vlimit=(Value *)options->get(sql_limit_name)){
 			limit=r.process_to_value(*vlimit).as_int();
 		}
 		// no check on options count here, see file_read
 	}
 	File_read_result file=file_read(r.charsets, lfile_name,
-		is_text_mode(vmode_name.as_string()),
-		options, true, 0, offset, limit
+		as_text, options, true, 0, offset, limit
 	);
 
-	const char *user_file_name=params.count()>alt_filename_param_index?
-		params.as_string(alt_filename_param_index, FILE_NAME_MUST_BE_STRING).cstr()
-		:lfile_name.cstr(String::L_FILE_SPEC);
+	const char *user_file_name=(param_index>=2)?
+				params.as_string(param_index, FILE_NAME_MUST_BE_STRING).cstr(String::L_FILE_SPEC)
+				:lfile_name.cstr(String::L_FILE_SPEC);
 
 	Value* vcontent_type=0;
 	if(file.headers){
@@ -321,9 +321,9 @@ struct Append_env_pair_info {
 };
 #endif
 static void append_env_pair(
-			    HashStringValue::key_type akey, 
-			    HashStringValue::value_type avalue, 
-			    Append_env_pair_info *info) {
+				HashStringValue::key_type akey, 
+				HashStringValue::value_type avalue, 
+				Append_env_pair_info *info) {
 	if(akey==STDIN_EXEC_PARAM_NAME) {
 		info->vstdin=avalue;
 	} else if(akey==CHARSET_EXEC_PARAM_NAME) {
@@ -344,8 +344,8 @@ struct Pass_cgi_header_attribute_info {
 };
 #endif
 static void pass_cgi_header_attribute(
-				      ArrayString::element_type astring, 
-				      Pass_cgi_header_attribute_info* info) {
+					ArrayString::element_type astring, 
+					Pass_cgi_header_attribute_info* info) {
 	size_t colon_pos=astring->pos(':');
 	if(colon_pos!=STRING_NOT_FOUND) {
 		const String& key=astring->mid(0, colon_pos).change_case(
@@ -459,9 +459,9 @@ static void _exec_cgi(Request& r, MethodParams& params,
 	// argv from params
 	ArrayString argv;
 	if(param_index < params.count()) {
-   		// influence tainting 
-   		// main target -- URLencoding of tainted pieces to String::L_URI lang
-   		Temp_client_charset temp(r.charsets, charset? *charset: r.charsets.source());
+		// influence tainting 
+		// main target -- URLencoding of tainted pieces to String::L_URI lang
+		Temp_client_charset temp(r.charsets, charset? *charset: r.charsets.source());
 
 		for(size_t i=param_index; i<params.count(); i++) {
 			Value& param=params.as_no_junction(i, PARAM_MUST_NOT_BE_CODE);
@@ -754,7 +754,7 @@ static void _find(Request& r, MethodParams& params) {
 
 static void _dirname(Request& r, MethodParams& params) {
 	const String& file_spec=params.as_string(0, FILE_NAME_MUST_BE_STRING);
-    // /a/some.tar.gz > /a
+	// /a/some.tar.gz > /a
 	// /a/b/ > /a
 	int afterslash=lastposafter(file_spec, 0, "/", 1, true);
 	if(afterslash>0)
@@ -765,21 +765,21 @@ static void _dirname(Request& r, MethodParams& params) {
 
 static void _basename(Request& r, MethodParams& params) {
 	const String& file_spec=params.as_string(0, FILE_NAME_MUST_BE_STRING);
-    // /a/some.tar.gz > some.tar.gz
+	// /a/some.tar.gz > some.tar.gz
 	int afterslash=lastposafter(file_spec, 0, "/", 1);
 	r.write_assign_lang(file_spec.mid(afterslash, file_spec.length()));
 }
 
 static void _justname(Request& r, MethodParams& params) {
 	const String& file_spec=params.as_string(0, FILE_NAME_MUST_BE_STRING);
-    // /a/some.tar.gz > some.tar
+	// /a/some.tar.gz > some.tar
 	int afterslash=lastposafter(file_spec, 0, "/", 1);
 	int afterdot=lastposafter(file_spec, afterslash, ".", 1);
 	r.write_assign_lang(file_spec.mid(afterslash, afterdot!=afterslash?afterdot-1:file_spec.length()));
 }
 static void _justext(Request& r, MethodParams& params) {
 	const String& file_spec=params.as_string(0, FILE_NAME_MUST_BE_STRING);
-    // /a/some.tar.gz > gz
+	// /a/some.tar.gz > gz
 	int afterdot=lastposafter(file_spec, 0, ".", 1);
 	if(afterdot>0)
 		r.write_assign_lang(file_spec.mid(afterdot, file_spec.length()));
@@ -928,26 +928,26 @@ static void _sql(Request& r, MethodParams& params) {
 
 static void _base64(Request& r, MethodParams& params) {
 	bool dynamic = !(&r.get_self() == file_class);
-	if ( dynamic ){
-	VFile& self=GET_SELF(r, VFile);
-	if(params.count()) {
-		// decode
-		const char* cstr=params.as_string(0, PARAMETER_MUST_BE_STRING).cstr();
-		char* decoded_cstr=0;
-		size_t decoded_size=0;
-		pa_base64_decode(cstr, strlen(cstr), decoded_cstr, decoded_size);
-		if(decoded_cstr && decoded_size)
-			self.set(true/*tainted*/, decoded_cstr, decoded_size);
+	if(dynamic){
+		VFile& self=GET_SELF(r, VFile);
+		if(params.count()) {
+			// decode: ^file::base64[encoded]
+			const char* cstr=params.as_string(0, PARAMETER_MUST_BE_STRING).cstr();
+			char* decoded=0;
+			size_t length=0;
+			pa_base64_decode(cstr, strlen(cstr), decoded, length);
+			if(decoded && length)
+				self.set(true/*tainted*/, decoded, length);
+		} else {
+			// encode: ^f.base64[]
+			const char* encoded=pa_base64_encode(self.value_ptr(), self.value_size());
+			r.write_assign_lang(*new String(encoded, 0, true/*tainted. once ?param=base64(something) was needed**/));
+		}
 	} else {
-		// encode 
-		const char* encoded=pa_base64_encode(self.value_ptr(), self.value_size());
-		r.write_assign_lang(*new String(encoded, 0, true/*once ?param=base64(something) was needed*/));
-	}
-	} else {
-		// encode
+		// encode: ^file:base64[filespec]
 		const String& file_spec=params.as_string(0, FILE_NAME_MUST_BE_STRING);
 		const char* encoded=pa_base64_encode(r.absolute(file_spec));
-		r.write_assign_lang(*new String(encoded, 0, true/*once ?param=base64(something) was needed*/));
+		r.write_assign_lang(*new String(encoded, 0, true/*tainted. once ?param=base64(something) was needed*/));
 	}
 }
 
@@ -973,10 +973,10 @@ static void _crc32(Request& r, MethodParams& params) {
 
 
 static void file_md5_file_action(
-			     struct stat& finfo, 
-			     int f, 
-			     const String& , const char* /*fname*/, bool, 
-			     void *context)
+				struct stat& finfo, 
+				int f, 
+				const String& , const char* /*fname*/, bool, 
+				void *context)
 {
 	PA_MD5_CTX& md5context=*static_cast<PA_MD5_CTX *>(context);
 	if(finfo.st_size) {
@@ -1052,7 +1052,7 @@ MFile::MFile(): Methoded("file") {
 
 	// ^file::load[mode;disk-name]
 	// ^file::load[mode;disk-name;user-name]
-	add_native_method("load", Method::CT_DYNAMIC, _load, 2, 3);
+	add_native_method("load", Method::CT_DYNAMIC, _load, 2, 4);
 
 	// ^file::stat[disk-name]
 	add_native_method("stat", Method::CT_DYNAMIC, _stat, 1, 1);
