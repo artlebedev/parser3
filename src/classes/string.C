@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2008/07/22 13:11:38 $";
+static const char * const IDENT_STRING_C="$Date: 2009/01/12 07:09:08 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -639,19 +639,28 @@ static void _append(Request& r, MethodParams& params) {
 
 static void _base64(Request& r, MethodParams& params) {
 	if(params.count()) {
-		// decode
+		// decode: ^string:base64[encoded]
 		const char* cstr=params.as_string(0, PARAMETER_MUST_BE_STRING).cstr();
-		char* decoded_cstr=0;
-		size_t decoded_size=0;
-		pa_base64_decode(cstr, strlen(cstr), decoded_cstr, decoded_size);
-		if(decoded_cstr && decoded_size)
-			r.write_assign_lang(*new String(decoded_cstr, decoded_size, true));
+		char* decoded=0;
+		size_t length=0;
+		pa_base64_decode(cstr, strlen(cstr), decoded, length);
+		if(decoded && length){
+			if(memchr((const char*)decoded, 0, length))
+				throw Exception(PARSER_RUNTIME,
+					0,
+					"Invalid \\x00 character found while decode to string. Decode it to file instead.");
+
+			fix_line_breaks(decoded, length);
+			if(length){
+				r.write_assign_lang(*new String(decoded, length, true/*tainted*/));
+			}
+		}
 	} else {
-		// encode 
+		// encode: ^str.base64[]
 		VString& self=GET_SELF(r, VString);
 		const char* cstr=self.string().cstr();
 		const char* encoded=pa_base64_encode(cstr, strlen(cstr));
-		r.write_assign_lang(*new String(encoded, 0, true/*once ?param=base64(something) was needed*/));
+		r.write_assign_lang(*new String(encoded, 0, true/*tainted. once ?param=base64(something) was needed*/));
 	}
 }
 
