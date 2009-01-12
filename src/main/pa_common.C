@@ -26,7 +26,7 @@
  *
  */
 
-static const char * const IDENT_COMMON_C="$Date: 2009/01/12 07:15:45 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2009/01/12 07:47:50 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -189,13 +189,13 @@ File_read_result file_read(Request_charsets& charsets, const String& file_spec,
 
 		if(as_text && result.success){
 			if(result.length>=3 && strncmp(result.str, "\xEF\xBB\xBF", 3)==0){
-				// skip UTF-8 signature: EF BB BF  (BOM code)
+				// skip UTF-8 signature (BOM code)
 				result.str+=3;
 				result.length-=3;
 			}
 			
 			if(result.length && transcode_text_result && params){ // must be checked because transcode returns CONST string in case length==0, which contradicts hacking few lines below
-				if( Value* vcharset_name=params->get(PA_CHARSET_NAME) ){
+				if(Value* vcharset_name=params->get(PA_CHARSET_NAME)){
 					Charset asked_charset=::charsets.get(vcharset_name->as_string().
 						change_case(charsets.source(), String::CC_UPPER));
 
@@ -1258,7 +1258,7 @@ int file_block_read(const int f, unsigned char* buffer, const size_t size){
 const unsigned long pa_crc32(const char *in, size_t in_size){
 	unsigned long crc32=0xFFFFFFFF;
 
-		InitCrc32Table();
+	InitCrc32Table();
 	for(size_t i = 0; i<in_size; i++)
 		CalcCrc32(in[i], crc32);
 
