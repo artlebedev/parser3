@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2009/01/12 07:22:16 $";
+static const char * const IDENT_FILE_C="$Date: 2009/01/12 07:46:13 $";
 
 #include "pa_config_includes.h"
 
@@ -231,7 +231,7 @@ static void _load(Request& r, MethodParams& params) {
 
 	Value* vcontent_type=0;
 	if(file.headers){
-		if(Value* remote_content_type=file.headers->get("CONTENT-TYPE"))
+		if(Value* remote_content_type=file.headers->get(HTTP_CONTENT_TYPE_UPPER))
 			vcontent_type=new VString(*new String(remote_content_type->as_string().cstr()));
 	} 
 	if(!vcontent_type)
@@ -352,7 +352,7 @@ static void pass_cgi_header_attribute(
 			*info->charset, String::CC_UPPER);
 		Value* value=new VString(astring->mid(colon_pos+1, astring->length()).trim());
 		info->fields->put(key, value);
-		if(key=="CONTENT-TYPE")
+		if(key==HTTP_CONTENT_TYPE_UPPER)
 			info->content_type=value;
 	}
 }

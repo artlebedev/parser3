@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
  */
 
-static const char * const IDENT_HTTP_C="$Date: 2009/01/12 07:16:33 $"; 
+static const char * const IDENT_HTTP_C="$Date: 2009/01/12 07:47:26 $"; 
 
 #include "pa_http.h"
 #include "pa_common.h"
@@ -22,7 +22,7 @@ static const char * const IDENT_HTTP_C="$Date: 2009/01/12 07:16:33 $";
 #define HTTP_COOKIES_NAME	"cookies"
 
 #define HTTP_ANY_STATUS_NAME	"any-status"
-#define HTTP_OMIT_POST_CHARSET "omit-post-charset"	// ^file::load[...;http://...;$.form[...]$.method[post]]
+#define HTTP_OMIT_POST_CHARSET_NAME	"omit-post-charset"	// ^file::load[...;http://...;$.form[...]$.method[post]]
 													// by default add charset to content-type
 
 #define HTTP_TABLES_NAME "tables"
@@ -302,15 +302,15 @@ static void http_pass_header(HashStringValue::key_type name,
 		<< CRLF; 
 	
 	const String::Body name_upper=aname.change_case(info->charsets->source(), String::CC_UPPER);
-    if(name_upper==HTTP_USER_AGENT)
+	if(name_upper==HTTP_USER_AGENT_UPPER)
 		info->user_agent_specified=true;
-    if(name_upper==HTTP_CONTENT_TYPE)
+	if(name_upper==HTTP_CONTENT_TYPE_UPPER)
 		info->content_type_specified=true;
 }
 
 static void http_pass_cookie(HashStringValue::key_type name, 
-			     HashStringValue::value_type value, 
-			     Http_pass_header_info *info) {
+				HashStringValue::value_type value, 
+				Http_pass_header_info *info) {
 	
 	*info->request << String(name, String::L_HTTP_COOKIE) << "="
 		<< attributed_meaning_to_string(*value, String::L_HTTP_COOKIE, false)
@@ -329,19 +329,21 @@ static const String* basic_authorization_field(const char* user, const char* pas
 	if(pass)
 		combined<<pass;
 	
-	String* result=new String("Basic "); *result<<pa_base64_encode(combined.cstr(), combined.length());
+	String* result=new String("Basic ");
+	*result<<pa_base64_encode(combined.cstr(), combined.length());
 	return result;
 }
 
 static void form_string_value2string(
-								  HashStringValue::key_type key, 
-								  const String& value, 
-								  String& result) 
+					HashStringValue::key_type key, 
+					const String& value, 
+					String& result) 
 {
 	result << String(key, String::L_URI) << "=";
 	result.append(value, String::L_URI, true);
-	result<< "&";
+	result << "&";
 }
+
 #ifndef DOXYGEN
 struct Form_table_value2string_info {
 	HashStringValue::key_type key;
@@ -355,9 +357,9 @@ static void form_table_value2string(Table::element_type row, Form_table_value2st
 	form_string_value2string(info->key, *row->get(0), info->result);
 }
 static void form_value2string(
-								  HashStringValue::key_type key, 
-								  HashStringValue::value_type value, 
-								  String* result) 
+					HashStringValue::key_type key, 
+					HashStringValue::value_type value, 
+					String* result) 
 {
 	if(const String* svalue=value->get_string())
 		form_string_value2string(key, *svalue, *result);
@@ -369,6 +371,7 @@ static void form_value2string(
 			new String(key, String::L_TAINTED),
 			"is %s, "HTTP_FORM_NAME" option value must either string or table", value->type());
 }
+
 const char* pa_form2string(HashStringValue& form, Request_charsets& charsets) {
 	String string;
 	form.for_each<String*>(form_value2string, &string);
@@ -395,12 +398,12 @@ static void find_headers_end(char* p,
 
 /// @todo build .cookies field. use ^file.tables.SET-COOKIES.menu{ for now
 File_read_http_result pa_internal_file_read_http(Request_charsets& charsets, 
-					    const String& file_spec, 
-					    bool as_text,
+						const String& file_spec, 
+						bool as_text,
 						HashStringValue *options,
 						bool transcode_text_result) {
 	File_read_http_result result;
-	char host[MAX_STRING]; 
+	char host[MAX_STRING];
 	const char* uri; 
 	short port;
 	const char* method="GET";
@@ -444,7 +447,7 @@ File_read_http_result pa_internal_file_read_http(Request_charsets& charsets,
 			valid_options++;
 			fail_on_status_ne_200=!vany_status->as_bool(); 
 		}
-		if(Value* vomit_post_charset=options->get(HTTP_OMIT_POST_CHARSET)){
+		if(Value* vomit_post_charset=options->get(HTTP_OMIT_POST_CHARSET_NAME)){
 			valid_options++;
 			omit_post_charset=vomit_post_charset->as_bool();
 		}
@@ -492,7 +495,7 @@ File_read_http_result pa_internal_file_read_http(Request_charsets& charsets,
 		// influence URLencoding of tainted pieces to String::L_URI lang
 		Temp_client_charset temp(charsets, *asked_remote_charset);
 
-		const char* connect_string_cstr=connect_string.cstr(String::L_UNSPECIFIED, 0, &charsets); 
+		const char* connect_string_cstr=connect_string.cstr(String::L_UNSPECIFIED, 0, &charsets);
 
 		const char* current=connect_string_cstr;
 		if(strncmp(current, "http://", 7)!=0)
@@ -552,7 +555,7 @@ File_read_http_result pa_internal_file_read_http(Request_charsets& charsets,
 					"headers param must be hash"); 
 		};
 		if(!user_agent_specified) // defaulting
-			head << "user-agent: " DEFAULT_USER_AGENT CRLF;
+			head << HTTP_USER_AGENT ": " DEFAULT_USER_AGENT CRLF;
 
 		if(form && !method_is_get && content_type_specified) // POST + form + content-type was specified
 			throw Exception(PARSER_RUNTIME,
@@ -626,7 +629,7 @@ File_read_http_result pa_internal_file_read_http(Request_charsets& charsets,
 					"bad response from host - bad header \"%s\"", line.cstr());
 			const String::Body HEADER_NAME=line.mid(0, pos).change_case(charsets.source(), String::CC_UPPER);
 			const String& HEADER_VALUE=line.mid(pos+1, line.length()).trim(String::TRIM_BOTH, " \t\r");
-			if(as_text && HEADER_NAME==HTTP_CONTENT_TYPE)
+			if(as_text && HEADER_NAME==HTTP_CONTENT_TYPE_UPPER)
 				real_remote_charset=detect_charset(charsets.source(), HEADER_VALUE);
 
 			// tables
@@ -657,7 +660,7 @@ File_read_http_result pa_internal_file_read_http(Request_charsets& charsets,
 	}
 
 	if(as_text && raw_body_size>=3 && strncmp(raw_body, "\xEF\xBB\xBF", 3)==0){
-		// skip UTF-8 signature: EF BB BF  (BOM code)
+		// skip UTF-8 signature (BOM code)
 		raw_body+=3;
 		raw_body_size-=3;
 	}

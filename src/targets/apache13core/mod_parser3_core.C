@@ -5,7 +5,7 @@ Parser: apache 1.3 module, part, compiled by parser3project.
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_MOD_PARSER3_MAIN_C="$Date: 2007/11/27 09:57:52 $";
+static const char * const IDENT_MOD_PARSER3_MAIN_C="$Date: 2009/01/12 07:48:46 $";
 
 #include "pa_config_includes.h"
 
@@ -163,7 +163,7 @@ void SAPI::add_header_attribute(SAPI_Info& SAPI_info,
 	if(strcasecmp(dont_store_key, "location")==0) 
 		*SAPI_info.r->status=302;
 	
-	if(strcasecmp(dont_store_key, "content-type")==0) {
+	if(strcasecmp(dont_store_key, HTTP_CONTENT_TYPE)==0) {
 	/* r->content_type, *not* r->headers_out("Content-type").  If you don't
 	* set it, it will be filled in with the server's default type (typically
 	* "text/plain").  You *must* also ensure that r->content_type is lower
@@ -333,7 +333,7 @@ int pa_parser_handler(pa_request_rec *r, Parser_module_config *dcfg) {
 		int content_length=strlen(buf);
 		
 		// prepare header
-		SAPI::add_header_attribute(SAPI_info, "content-type", "text/plain");
+		SAPI::add_header_attribute(SAPI_info, HTTP_CONTENT_TYPE, "text/plain");
 		char content_length_cstr[MAX_NUMBER];
 		snprintf(content_length_cstr, MAX_NUMBER, "%u", content_length);
 		SAPI::add_header_attribute(SAPI_info, "content-length", content_length_cstr);

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_PARSER3ISAPI_C="$Date: 2007/11/27 09:58:05 $";
+static const char * const IDENT_PARSER3ISAPI_C="$Date: 2009/01/12 07:49:59 $";
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -476,7 +476,7 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 		// prepare header // not using SAPI func wich allocates on pool
 		char header_buf[MAX_STRING];
 		int header_len=snprintf(header_buf, MAX_STRING,
-			"content-type: text/plain\r\n"
+			HTTP_CONTENT_TYPE ": text/plain\r\n"
 			"content-length: %u\r\n"
 //			"expires: Fri, 23 Mar 2001 09:32:23 GMT\r\n"
 			"\r\n",
@@ -509,7 +509,7 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 		// prepare header // not using SAPI func wich allocates on pool
 		char header_buf[MAX_STRING];
 		int header_len=snprintf(header_buf, MAX_STRING,
-			"content-type: text/plain\r\n"
+			HTTP_CONTENT_TYPE ": text/plain\r\n"
 			"content-length: %u\r\n"
 			"expires: Fri, 23 Mar 2001 09:32:23 GMT\r\n"
 			"\r\n",

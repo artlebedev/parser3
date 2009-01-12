@@ -8,16 +8,21 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-static const char * const IDENT_COMMON_H="$Date: 2009/01/12 07:10:33 $";
+static const char * const IDENT_COMMON_H="$Date: 2009/01/12 07:42:44 $";
 
 #include "pa_string.h"
 #include "pa_hash.h"
 
 // defines
-#define HTTP_USER_AGENT "USER-AGENT"
-#define HTTP_CONTENT_TYPE "CONTENT-TYPE"
-#define HTTP_CONTENT_TYPE_FORM_URLENCODED "application/x-www-form-urlencoded"
-#define HTTP_CONTENT_TYPE_MULTIPART "multipart/form-data"
+#define HTTP_USER_AGENT_UPPER	"USER-AGENT"
+#define HTTP_CONTENT_TYPE_UPPER	"CONTENT-TYPE"
+#define HTTP_USER_AGENT	"User-Agent"
+#define HTTP_CONTENT_TYPE	"Content-Type"
+#define HTTP_CONTENT_DISPOSITION	"Content-Disposition"
+#define HTTP_CONTENT_TYPE_FORM_URLENCODED	"application/x-www-form-urlencoded"
+#define HTTP_CONTENT_TYPE_MULTIPART_FORMDATA	"multipart/form-data"
+#define HTTP_CONTENT_TYPE_MULTIPART_RELATED	"multipart/related"
+#define HTTP_CONTENT_TYPE_MULTIPART_MIXED	"multipart/mixed"
 
 class Value;
 typedef Hash<const String::Body , Value*> HashStringValue;
@@ -100,7 +105,7 @@ bool file_read_action_under_lock(const String& file_spec,
 
 	WARNING: charset is used for http header case conversion, it's not a charset of input file!
 
-  	@returns true if read OK
+	@returns true if read OK
 */
 char *file_read_text(Request_charsets& charsets, 
 					const String& file_spec, 
