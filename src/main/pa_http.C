@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
  */
 
-static const char * const IDENT_HTTP_C="$Date: 2009/01/12 07:47:26 $"; 
+static const char * const IDENT_HTTP_C="$Date: 2009/01/12 09:03:34 $"; 
 
 #include "pa_http.h"
 #include "pa_common.h"
@@ -297,7 +297,7 @@ static void http_pass_header(HashStringValue::key_type name,
 
 	String aname=String(name, String::L_URI);
 
-	*info->request <<aname<<": "
+	*info->request << aname << ": "
 		<< attributed_meaning_to_string(*value, String::L_URI, false)
 		<< CRLF; 
 	
@@ -407,6 +407,7 @@ File_read_http_result pa_internal_file_read_http(Request_charsets& charsets,
 	const char* uri; 
 	short port;
 	const char* method="GET";
+	bool method_is_get=true;
 	HashStringValue* form=0;
 	const char* body_cstr=0;
 	int timeout_secs=2;
@@ -424,7 +425,8 @@ File_read_http_result pa_internal_file_read_http(Request_charsets& charsets,
 
 		if(Value* vmethod=options->get(HTTP_METHOD_NAME)) {
 			valid_options++;
-			method=vmethod->as_string().cstr();
+			method=vmethod->as_string().change_case(r.charsets.source(), String::CC_UPPER).cstr();
+			method_is_get=strcmp(method, "GET")==0;
 		}
 		if(Value* vform=options->get(HTTP_FORM_NAME)) {
 			valid_options++;
@@ -472,7 +474,6 @@ File_read_http_result pa_internal_file_read_http(Request_charsets& charsets,
 	if(!asked_remote_charset) // defaulting to $request:charset
 		asked_remote_charset=&charsets.source();
 
-	bool method_is_get=strcmp(method, "GET")==0;
 	if(vbody){
 		if(method_is_get)
 			throw Exception(PARSER_RUNTIME,
