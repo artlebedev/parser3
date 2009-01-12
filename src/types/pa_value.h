@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-static const char * const IDENT_VALUE_H="$Date: 2007/04/23 10:30:49 $";
+static const char * const IDENT_VALUE_H="$Date: 2009/01/12 07:18:18 $";
 
 #include "pa_string.h"
 #include "pa_array.h"
@@ -169,7 +169,7 @@ protected:
 /**
 	$content-type[text/html] -> 
 		content-type: text/html
-	$content-type[$value[text/html] charset[windows-1251]] -> 
+	$content-type[$.value[text/html] $.charset[windows-1251]] -> 
 		content-type: text/html; charset=windows-1251
 */
 const String& attributed_meaning_to_string(Value& meaning, 

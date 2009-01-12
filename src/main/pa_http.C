@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
  */
 
-static const char * const IDENT_HTTP_C="$Date: 2008/09/04 09:37:48 $"; 
+static const char * const IDENT_HTTP_C="$Date: 2009/01/12 07:16:33 $"; 
 
 #include "pa_http.h"
 #include "pa_common.h"
@@ -14,13 +14,14 @@ static const char * const IDENT_HTTP_C="$Date: 2008/09/04 09:37:48 $";
 
 // defines
 
-#define HTTP_METHOD_NAME  "method"
-#define HTTP_FORM_NAME  "form"
-#define HTTP_BODY_NAME  "body"
-#define HTTP_TIMEOUT_NAME    "timeout"
-#define HTTP_HEADERS_NAME "headers"
-#define HTTP_COOKIES_NAME "cookies"
-#define HTTP_ANY_STATUS_NAME "any-status"
+#define HTTP_METHOD_NAME	"method"
+#define HTTP_FORM_NAME	"form"
+#define HTTP_BODY_NAME	"body"
+#define HTTP_TIMEOUT_NAME	"timeout"
+#define HTTP_HEADERS_NAME	"headers"
+#define HTTP_COOKIES_NAME	"cookies"
+
+#define HTTP_ANY_STATUS_NAME	"any-status"
 #define HTTP_OMIT_POST_CHARSET "omit-post-charset"	// ^file::load[...;http://...;$.form[...]$.method[post]]
 													// by default add charset to content-type
 

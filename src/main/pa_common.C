@@ -26,7 +26,7 @@
  *
  */
 
-static const char * const IDENT_COMMON_C="$Date: 2008/09/04 09:37:00 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2009/01/12 07:15:45 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -103,8 +103,7 @@ char* file_read_text(Request_charsets& charsets,
 }
 
 /// these options were handled but not checked elsewhere, now check them
-int pa_get_valid_file_options_count(HashStringValue& options)
-{
+int pa_get_valid_file_options_count(HashStringValue& options) {
 	int result=0;
 	if(options.get(PA_SQL_LIMIT_NAME))
 		result++;
@@ -390,6 +389,7 @@ static void rmdir(const String& file_spec, size_t pos_after) {
 	
 	rmdir(file_spec.mid(0, pos_after-1/* / */).cstr(String::L_FILE_SPEC)); 
 }
+
 bool file_delete(const String& file_spec, bool fail_on_problem) {
 	const char* fname=file_spec.cstr(String::L_FILE_SPEC); 
 	if(unlink(fname)!=0)
@@ -404,6 +404,7 @@ bool file_delete(const String& file_spec, bool fail_on_problem) {
 	rmdir(file_spec, 1); 
 	return true;
 }
+
 void file_move(const String& old_spec, const String& new_spec) {
 	const char* old_spec_cstr=old_spec.cstr(String::L_FILE_SPEC); 
 	const char* new_spec_cstr=new_spec.cstr(String::L_FILE_SPEC); 
@@ -452,20 +453,24 @@ static bool entry_readable(const String& file_spec, bool need_dir) {
 	}
 	return false;
 }
+
 bool file_exist(const String& file_spec) {
 	return entry_readable(file_spec, false); 
 }
+
 bool dir_exists(const String& file_spec) {
 	return entry_readable(file_spec, true); 
 }
+
 const String* file_exist(const String& path, const String& name) {
 	String& result=*new String(path);
 	result << "/"; 
 	result << name;
 	return file_exist(result)?&result:0;
 }
+
 bool file_executable(const String& file_spec) {
-    return access(file_spec.cstr(String::L_FILE_SPEC), X_OK)==0;
+	return access(file_spec.cstr(String::L_FILE_SPEC), X_OK)==0;
 }
 
 bool file_stat(const String& file_spec, 
@@ -1176,8 +1181,7 @@ g_mime_utils_base64_decode_step (const unsigned char *in, size_t inlen, unsigned
 }
 
 
-char* pa_base64_encode(const char *in, size_t in_size)
-{
+char* pa_base64_encode(const char *in, size_t in_size){
 	/* wont go to more than 2x size (overly conservative) */
 	char* result=new(PointerFreeGC) char[in_size * 2 + 6];
 	int state=0;
@@ -1193,8 +1197,7 @@ char* pa_base64_encode(const char *in, size_t in_size)
 }
 
 
-char* pa_base64_encode(const String& file_spec)
-{
+char* pa_base64_encode(const String& file_spec){
 	unsigned char* base64=0;
 	File_base64_action_info info={&base64}; 
 
@@ -1230,8 +1233,7 @@ static void file_base64_file_action(
 	}
 }
 
-void pa_base64_decode(const char *in, size_t in_size, char*& result, size_t& result_size)
-{
+void pa_base64_decode(const char *in, size_t in_size, char*& result, size_t& result_size) {
 	/* wont go to more than had (overly conservative) */
 	result=new(PointerFreeGC) char[in_size+1/*terminator*/];
 	int state=0;
@@ -1253,18 +1255,17 @@ int file_block_read(const int f, unsigned char* buffer, const size_t size){
 	return nCount;
 }
 
-const unsigned long pa_crc32(const char *in, size_t in_size)
-{
+const unsigned long pa_crc32(const char *in, size_t in_size){
 	unsigned long crc32=0xFFFFFFFF;
 
 		InitCrc32Table();
-		for(size_t i = 0; i < in_size; i++) CalcCrc32(in[i], crc32);
+	for(size_t i = 0; i<in_size; i++)
+		CalcCrc32(in[i], crc32);
 
 	return ~crc32; 
 }
 
-const unsigned long pa_crc32(const String& file_spec)
-{
+const unsigned long pa_crc32(const String& file_spec){
 	unsigned long crc32=0xFFFFFFFF;
 	file_read_action_under_lock(file_spec, "crc32", file_crc32_file_action, &crc32);
 	return ~crc32; 
@@ -1274,8 +1275,7 @@ static void file_crc32_file_action(
 				struct stat& finfo, 
 				int f, 
 				const String&, const char* /*fname*/, bool, 
-				void *context)
-{
+				void *context) {
 	unsigned long& crc32=*static_cast<unsigned long *>(context);
 	if(finfo.st_size) {
 		InitCrc32Table();

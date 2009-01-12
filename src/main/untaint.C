@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_UNTAINT_C="$Date: 2008/08/14 09:26:11 $";
+static const char * const IDENT_UNTAINT_C="$Date: 2009/01/12 07:17:20 $";
 
 
 #include "pa_string.h"
@@ -74,24 +74,27 @@ inline bool need_file_encode(unsigned char c){
 	// russian letters and space ENABLED
 	// encoding only these...
 	return strchr(
-			  "*?'\"<>|"
+			"*?'\"<>|"
 #ifndef WIN32
-			  ":\\"
+			":\\"
 #endif
-			  , c)!=0;
+			, c)!=0;
 }
+
 inline bool need_uri_encode(unsigned char c){
-    if((c>='0') &&(c<='9') ||(c>='A') &&(c<='Z') ||(c>='a') &&(c<='z')) 
+	if((c>='0') &&(c<='9') ||(c>='A') &&(c<='Z') ||(c>='a') &&(c<='z'))
 		return false;
 
-    return !strchr("_-./", c);
+	return !strchr("_-./", c);
 }
+
 inline bool need_http_header_encode(unsigned char c){
-    if(strchr(" , :", c))
+	if(strchr(" , :", c))
 		return false;
 
 	return need_uri_encode(c);
 }
+
 inline bool need_regex_escape(unsigned char c){
 	return strchr("\\^$.[]|()?*+{}-", c)!=0;
 }
