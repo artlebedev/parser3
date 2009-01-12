@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VFILE_C="$Date: 2005/08/09 08:14:54 $";
+static const char * const IDENT_VFILE_C="$Date: 2009/01/12 07:18:31 $";
 
 #include "classes.h"
 #include "pa_vfile.h"
@@ -56,15 +56,18 @@ void VFile::set(
 	// $size
 	ffields.put(size_name, new VInt(fvalue_size));
 	// $text
-	if(fvalue_ptr && fvalue_size) { // assigned files don't have ptr, and we really have some bytes
+	if(fvalue_ptr && fvalue_size) { // assigned file have ptr and we really have some bytes
 		String& text=*new String;
-		char *premature_zero_pos=(char *)memchr(fvalue_ptr, 0, fvalue_size);
-		if(premature_zero_pos!=fvalue_ptr) {
-			size_t copy_size=premature_zero_pos?premature_zero_pos-fvalue_ptr:fvalue_size;
+
+		const char *premature_zero_pos=(const char *)memchr(fvalue_ptr, 0, fvalue_size);
+		size_t copy_size=premature_zero_pos?premature_zero_pos-fvalue_ptr:fvalue_size;
+
+		if(copy_size){
 			char *copy_ptr=strdup(fvalue_ptr, copy_size);
 			fix_line_breaks(copy_ptr, copy_size);
 			text.append_know_length(copy_ptr, copy_size, tainted? String::L_TAINTED : String::L_AS_IS);
 		}
+
 		ffields.put(text_name, new VString(text));
 	}
 	// $mime-type
