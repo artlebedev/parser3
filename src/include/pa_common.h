@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-static const char * const IDENT_COMMON_H="$Date: 2008/08/21 15:57:33 $";
+static const char * const IDENT_COMMON_H="$Date: 2009/01/12 07:10:33 $";
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -66,9 +66,9 @@ inline long lseek( int handle, long offset, int origin ) { return _lseek(handle,
 	can't say that about other systems/ line break styles
 */
 void fix_line_breaks(
-		     char *str,
-		     size_t& length///< may change! used to speedup next actions
-		     );
+			char *str,
+			size_t& length///< may change! used to speedup next actions
+			);
 
 int pa_lock_shared_blocking(int fd);
 int pa_lock_exclusive_blocking(int fd);
@@ -78,10 +78,10 @@ int pa_unlock(int fd);
 void create_dir_for_file(const String& file_spec);
 
 typedef void (*File_read_action)(
-				 struct stat& finfo,
-				 int f, 
-				 const String& file_spec, const char* fname, bool as_text,
-				 void *context);
+				struct stat& finfo,
+				int f, 
+				const String& file_spec, const char* fname, bool as_text,
+				void *context);
 
 /**
 	shared-lock specified file, 
@@ -103,10 +103,10 @@ bool file_read_action_under_lock(const String& file_spec,
   	@returns true if read OK
 */
 char *file_read_text(Request_charsets& charsets, 
-					 const String& file_spec, 
-					 bool fail_on_read_problem=true,
-					 HashStringValue* options=0,
-					 bool transcode_result=true);
+					const String& file_spec, 
+					bool fail_on_read_problem=true,
+					HashStringValue* options=0,
+					bool transcode_result=true);
 
 struct File_read_result {
 	bool success;
@@ -123,11 +123,11 @@ struct File_read_result {
 	@returns true if read OK
 */
 File_read_result file_read(Request_charsets& charsets, 
-			   const String& file_spec, 
-			   bool as_text,
-			   HashStringValue* options=0,
-			   bool fail_on_read_problem=true,
-			   char* buf=0, size_t offset=0, size_t size=0, bool transcode_text_result=true);
+				const String& file_spec, 
+				bool as_text,
+				HashStringValue* options=0,
+				bool fail_on_read_problem=true,
+				char* buf=0, size_t offset=0, size_t size=0, bool transcode_text_result=true);
 
 typedef void (*File_write_action)(int f, void *context);
 
@@ -178,11 +178,11 @@ const String* file_exist(const String& path, const String& name);
 bool file_executable(const String& file_spec);
 
 bool file_stat(const String& file_spec, 
-			   size_t& rsize, 
-			   time_t& ratime,
-			   time_t& rmtime,
-			   time_t& rctime,
-			   bool fail_on_read_problem=true);
+				size_t& rsize, 
+				time_t& ratime,
+				time_t& rmtime,
+				time_t& rctime,
+				bool fail_on_read_problem=true);
 
 /**
 	scans for @a delim[default \n] in @a *row_ref, 
@@ -232,10 +232,10 @@ struct File_base64_action_info {
 }; 
 char* pa_base64_encode(const String& file_spec);
 static void file_base64_file_action(
-			     struct stat& finfo, 
-			     int f, 
-			     const String&, const char* /*fname*/, bool, 
-			     void *context);
+				struct stat& finfo, 
+				int f, 
+				const String&, const char* /*fname*/, bool, 
+				void *context);
 
 #define FILE_BUFFER_SIZE	4096
 static unsigned long crc32Table[256];
@@ -271,10 +271,10 @@ inline void CalcCrc32(const unsigned char byte, unsigned long &crc32)
 const unsigned long pa_crc32(const char *in, size_t in_size);
 const unsigned long pa_crc32(const String& file_spec);
 static void file_crc32_file_action(
-			     struct stat& finfo, 
-			     int f, 
-			     const String&, const char* /*fname*/, bool, 
-			     void *context);
+				struct stat& finfo, 
+				int f, 
+				const String&, const char* /*fname*/, bool, 
+				void *context);
 char* print_pcre_exec_error_text(int exec_result);
 
 static const char* hex_string(unsigned char* bytes, size_t size, bool upcase) {
@@ -286,8 +286,8 @@ static const char* hex_string(unsigned char* bytes, size_t size, bool upcase) {
 	const char *hex=upcase?"0123456789ABCDEF":"0123456789abcdef";
 
 	for(; src<end; src++) {
-                *dest++=hex[*src/0x10];
-                *dest++=hex[*src%0x10];
+		*dest++=hex[*src/0x10];
+		*dest++=hex[*src%0x10];
 	}
 	*dest=0;
 
@@ -298,9 +298,9 @@ int pa_get_valid_file_options_count(HashStringValue& options);
 
 // some stuff for use with .for_each
 static void copy_all_overwrite_to(
-								  HashStringValue::key_type key, 
-								  HashStringValue::value_type value, 
-								  HashStringValue* dest) {
+								HashStringValue::key_type key, 
+								HashStringValue::value_type value, 
+								HashStringValue* dest) {
 	dest->put(key, value);
 }
 
