@@ -8,7 +8,7 @@
 	Copyright (C) 1996, 1997, 1998, 1999 Theodore Ts'o.
 */
 
-static const char * const IDENT_MATH_C="$Date: 2008/06/16 12:38:41 $";
+static const char * const IDENT_MATH_C="$Date: 2009/01/23 03:45:18 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_common.h"
@@ -89,22 +89,22 @@ public:
 /// from gen_uuid.c
 static int get_random_fd(void)
 {
-        struct timeval  tv;
-        static int      fd = -2;
-        int             i;
+	struct timeval  tv;
+	static int      fd = -2;
+	int             i;
 
-        if (fd == -2) {
-                gettimeofday(&tv, 0);
-                fd = open("/dev/urandom", O_RDONLY);
-                if (fd == -1)
-                        fd = open("/dev/random", O_RDONLY | O_NONBLOCK);
-                srand((getpid() << 16) ^ getuid() ^ tv.tv_sec ^ tv.tv_usec);
-        }
-        /* Crank the random number generator a few times */
-        gettimeofday(&tv, 0);
-        for (i = (tv.tv_sec ^ tv.tv_usec) & 0x1F; i > 0; i--)
-                rand();
-        return fd;
+	if (fd == -2) {
+		gettimeofday(&tv, 0);
+		fd = open("/dev/urandom", O_RDONLY);
+		if (fd == -1)
+			fd = open("/dev/random", O_RDONLY | O_NONBLOCK);
+		srand((getpid() << 16) ^ getuid() ^ tv.tv_sec ^ tv.tv_usec);
+	}
+	/* Crank the random number generator a few times */
+	gettimeofday(&tv, 0);
+	for (i = (tv.tv_sec ^ tv.tv_usec) & 0x1F; i > 0; i--)
+		rand();
+	return fd;
 }
 
 
@@ -114,28 +114,28 @@ static int get_random_fd(void)
  */
 static void get_random_bytes(void *buf, int nbytes)
 {
-        int i, fd = get_random_fd();
-        int lose_counter = 0;
-        char *cp = (char *) buf;
+	int i, fd = get_random_fd();
+	int lose_counter = 0;
+	char *cp = (char *) buf;
 
-        if (fd >= 0) {
-                while (nbytes > 0) {
-                        i = read(fd, cp, nbytes);
-                        if (i <= 0) {
-                                if (lose_counter++ > 16)
-                                        break;
-                                continue;
-                        }
-                        nbytes -= i;
-                        cp += i;
-                        lose_counter = 0;
-                }
-        }
+	if (fd >= 0) {
+		while (nbytes > 0) {
+			i = read(fd, cp, nbytes);
+			if (i <= 0) {
+				if (lose_counter++ > 16)
+					break;
+				continue;
+			}
+			nbytes -= i;
+			cp += i;
+			lose_counter = 0;
+		}
+	}
 
-        /* XXX put something better here if no /dev/random! */
-        for (i = 0; i < nbytes; i++)
-                *cp++ = rand() & 0xFF;
-        return;
+	/* XXX put something better here if no /dev/random! */
+	for (i = 0; i < nbytes; i++)
+		*cp++ = rand() & 0xFF;
+	return;
 }
 
 
@@ -254,16 +254,16 @@ static void _crypt(Request& r, MethodParams& params) {
 	} else
 		normal_salt=maybe_bodyless_salt;
 
-    /* FreeBSD style MD5 string 
-     */
-    if(strncmp(normal_salt, PA_MD5PW_ID, PA_MD5PW_IDLEN) == 0) {
+	/* FreeBSD style MD5 string 
+	*/
+	if(strncmp(normal_salt, PA_MD5PW_ID, PA_MD5PW_IDLEN) == 0) {
 		const size_t sample_size=120;
 		char *sample_buf=new(PointerFreeGC) char[sample_size];
 		pa_MD5Encode((const unsigned char *)password,
 				(const unsigned char *)normal_salt, sample_buf, sample_size);
 		String sample(sample_buf);
 		r.write_pass_lang(sample);
-    } else {
+	} else {
 #ifdef HAVE_CRYPT
 		const char* static_sample_buf=crypt(password, normal_salt);
 		if(!static_sample_buf  // nothing generated
@@ -298,150 +298,154 @@ static void _md5(Request& r, MethodParams& params) {
 //SHA-1:
 
 struct SHA1Context {
-    unsigned Message_Digest[5], Length_Low, Length_High;
-    unsigned int Message_Block[64];
-    int Message_Block_Index, Computed, Corrupted;
+	unsigned Message_Digest[5], Length_Low, Length_High;
+	unsigned int Message_Block[64];
+	int Message_Block_Index, Computed, Corrupted;
 };
 
 #define SHA1CircularShift(bits,word) ((((word) << (bits)) & 0xFFFFFFFF)|((word) >> (32-(bits))))
 void SHA1ProcessMessageBlock(SHA1Context *);
 void SHA1PadMessage(SHA1Context *);
 void SHA1Reset(SHA1Context *context) {
-    context->Length_Low = context->Length_High = context->Message_Block_Index = 0;
-    context->Message_Digest[0]      = 0x67452301;
-    context->Message_Digest[1]      = 0xEFCDAB89;
-    context->Message_Digest[2]      = 0x98BADCFE;
-    context->Message_Digest[3]      = 0x10325476;
-    context->Message_Digest[4]      = 0xC3D2E1F0;
-    context->Computed = context->Corrupted  = 0;
+	context->Length_Low = context->Length_High = context->Message_Block_Index = 0;
+	context->Message_Digest[0]	= 0x67452301;
+	context->Message_Digest[1]	= 0xEFCDAB89;
+	context->Message_Digest[2]	= 0x98BADCFE;
+	context->Message_Digest[3]	= 0x10325476;
+	context->Message_Digest[4]	= 0xC3D2E1F0;
+	context->Computed = context->Corrupted  = 0;
 }
 
 int SHA1Result(SHA1Context *context) {
-    if (context->Corrupted)
-        return 0;
-    if (!context->Computed) {
-        SHA1PadMessage(context);
-        context->Computed = 1;
+	if (context->Corrupted)
+		return 0;
+	if (!context->Computed) {
+		SHA1PadMessage(context);
+		context->Computed = 1;
 	}
-    return 1;
+	return 1;
 }
 
-void SHA1Input (SHA1Context *context, const unsigned char *message_array, unsigned length) {
-    if (!length)
-        return;
-    if (context->Computed || context->Corrupted) {
-        context->Corrupted = 1;
-        return;
+void SHA1Input(SHA1Context *context, const unsigned char *message_array, unsigned length) {
+	if (!length)
+		return;
+	if (context->Computed || context->Corrupted) {
+		context->Corrupted = 1;
+		return;
 	}
 
-    while(length-- && !context->Corrupted) {
-        context->Message_Block[context->Message_Block_Index++] = (*message_array & 0xFF);
-        context->Length_Low += 8;
-        context->Length_Low &= 0xFFFFFFFF;
-        if (!context->Length_Low && !(context->Length_High=((1+context->Length_High)&0xFFFFFFFF)))
-            context->Corrupted = 1; // too long message
-        if (context->Message_Block_Index == 64)
-            SHA1ProcessMessageBlock(context);
-        message_array++;
+	while(length-- && !context->Corrupted) {
+		context->Message_Block[context->Message_Block_Index++] = (*message_array & 0xFF);
+		context->Length_Low += 8;
+		context->Length_Low &= 0xFFFFFFFF;
+		if (!context->Length_Low && !(context->Length_High=((1+context->Length_High)&0xFFFFFFFF)))
+			context->Corrupted = 1; // too long message
+		if (context->Message_Block_Index == 64)
+			SHA1ProcessMessageBlock(context);
+		message_array++;
 	}
 }
 
 void SHA1ProcessMessageBlock(SHA1Context *context) {
-    const unsigned K[] = {0x5A827999, 0x6ED9EBA1, 0x8F1BBCDC, 0xCA62C1D6 };
-    int t;
-    unsigned    temp, W[80], buf[5];
-    unsigned &A=buf[0], &B=buf[1], &C=buf[2], &D=buf[3], &E=buf[4];
+	const unsigned K[] = {0x5A827999, 0x6ED9EBA1, 0x8F1BBCDC, 0xCA62C1D6 };
+	int t;
+	unsigned    temp, W[80], buf[5];
+	unsigned &A=buf[0], &B=buf[1], &C=buf[2], &D=buf[3], &E=buf[4];
 
-    for(t = 0; t < 16; t++)
-        W[t] = (((unsigned) context->Message_Block[t * 4]) << 24) | (((unsigned) context->Message_Block[t * 4 + 1]) << 16) | (((unsigned) context->Message_Block[t * 4 + 2]) << 8) | ((unsigned) context->Message_Block[t * 4 + 3]);
+	for(t = 0; t < 16; t++)
+		W[t] = (((unsigned) context->Message_Block[t * 4]) << 24) | (((unsigned) context->Message_Block[t * 4 + 1]) << 16) | (((unsigned) context->Message_Block[t * 4 + 2]) << 8) | ((unsigned) context->Message_Block[t * 4 + 3]);
 
-    for(t = 16; t < 80; t++)
-	W[t] = SHA1CircularShift(1,W[t-3] ^ W[t-8] ^ W[t-14] ^ W[t-16]);
+	for(t = 16; t < 80; t++)
+		W[t] = SHA1CircularShift(1,W[t-3] ^ W[t-8] ^ W[t-14] ^ W[t-16]);
 
-    memcpy (buf, context->Message_Digest, sizeof(buf));
-    for(t = 0; t < 20; t++) {
-        temp =  (SHA1CircularShift(5,A) + ((B & C) | ((~B) & D)) + E + W[t] + K[0]) & 0xFFFFFFFF;
-        E = D; D = C;
-        C = SHA1CircularShift(30,B);
-        B = A; A = temp;
+	memcpy (buf, context->Message_Digest, sizeof(buf));
+	for(t = 0; t < 20; t++) {
+		temp =  (SHA1CircularShift(5,A) + ((B & C) | ((~B) & D)) + E + W[t] + K[0]) & 0xFFFFFFFF;
+		E = D; D = C;
+		C = SHA1CircularShift(30,B);
+		B = A; A = temp;
 	}
 
-    for(t = 20; t < 40; t++) {
-        temp = (SHA1CircularShift(5,A) + (B ^ C ^ D) + E + W[t] + K[1]) & 0xFFFFFFFF;
-        E = D; D = C;
-        C = SHA1CircularShift(30,B);
-        B = A; A = temp;
+	for(t = 20; t < 40; t++) {
+		temp = (SHA1CircularShift(5,A) + (B ^ C ^ D) + E + W[t] + K[1]) & 0xFFFFFFFF;
+		E = D; D = C;
+		C = SHA1CircularShift(30,B);
+		B = A; A = temp;
 	}
 
-    for(t = 40; t < 60; t++) {
-        temp = (SHA1CircularShift(5,A) + ((B & C) | (B & D) | (C & D)) + E + W[t] + K[2]) & 0xFFFFFFFF;
-        E = D; D = C;
-        C = SHA1CircularShift(30,B);
-        B = A; A = temp;
+	for(t = 40; t < 60; t++) {
+		temp = (SHA1CircularShift(5,A) + ((B & C) | (B & D) | (C & D)) + E + W[t] + K[2]) & 0xFFFFFFFF;
+		E = D; D = C;
+		C = SHA1CircularShift(30,B);
+		B = A; A = temp;
 	}
 
-    for(t = 60; t < 80; t++) {
-        temp = (SHA1CircularShift(5,A) + (B ^ C ^ D) + E + W[t] + K[3]) & 0xFFFFFFFF;
-        E = D; D = C;
-        C = SHA1CircularShift(30,B);
-        B = A; A = temp;
+	for(t = 60; t < 80; t++) {
+		temp = (SHA1CircularShift(5,A) + (B ^ C ^ D) + E + W[t] + K[3]) & 0xFFFFFFFF;
+		E = D; D = C;
+		C = SHA1CircularShift(30,B);
+		B = A; A = temp;
 	}
 
-    for (t = 0; t < 5; t++)
-	context->Message_Digest[t] = (context->Message_Digest[t] + buf[t]) & 0xFFFFFFFF;
+	for (t = 0; t < 5; t++)
+		context->Message_Digest[t] = (context->Message_Digest[t] + buf[t]) & 0xFFFFFFFF;
 
-    context->Message_Block_Index = 0;
+	context->Message_Block_Index = 0;
 }
 
 void SHA1PadMessage(SHA1Context *context) {
-    context->Message_Block[context->Message_Block_Index++] = 0x80;
+	context->Message_Block[context->Message_Block_Index++] = 0x80;
 	if (context->Message_Block_Index > 56) {
 		//was 55, one shift
-        while(context->Message_Block_Index < 64)
-            context->Message_Block[context->Message_Block_Index++] = 0;
-        SHA1ProcessMessageBlock(context);
-        while(context->Message_Block_Index < 56)
-            context->Message_Block[context->Message_Block_Index++] = 0;
+		while(context->Message_Block_Index < 64)
+			context->Message_Block[context->Message_Block_Index++] = 0;
+		SHA1ProcessMessageBlock(context);
+		while(context->Message_Block_Index < 56)
+			context->Message_Block[context->Message_Block_Index++] = 0;
 	} else
-        while(context->Message_Block_Index < 56)
-            context->Message_Block[context->Message_Block_Index++] = 0;
-    context->Message_Block[56] = (context->Length_High >> 24) & 0xFF;
-    context->Message_Block[57] = (context->Length_High >> 16) & 0xFF;
-    context->Message_Block[58] = (context->Length_High >> 8) & 0xFF;
-    context->Message_Block[59] = (context->Length_High) & 0xFF;
-    context->Message_Block[60] = (context->Length_Low >> 24) & 0xFF;
-    context->Message_Block[61] = (context->Length_Low >> 16) & 0xFF;
-    context->Message_Block[62] = (context->Length_Low >> 8) & 0xFF;
-    context->Message_Block[63] = (context->Length_Low) & 0xFF;
-    SHA1ProcessMessageBlock(context);
+		while(context->Message_Block_Index < 56)
+			context->Message_Block[context->Message_Block_Index++] = 0;
+	context->Message_Block[56] = (context->Length_High >> 24) & 0xFF;
+	context->Message_Block[57] = (context->Length_High >> 16) & 0xFF;
+	context->Message_Block[58] = (context->Length_High >> 8) & 0xFF;
+	context->Message_Block[59] = (context->Length_High) & 0xFF;
+	context->Message_Block[60] = (context->Length_Low >> 24) & 0xFF;
+	context->Message_Block[61] = (context->Length_Low >> 16) & 0xFF;
+	context->Message_Block[62] = (context->Length_Low >> 8) & 0xFF;
+	context->Message_Block[63] = (context->Length_Low) & 0xFF;
+	SHA1ProcessMessageBlock(context);
 }
 
-
 static void _sha1(Request& r, MethodParams& params) {
-    const char *string = params.as_string(0, PARAMETER_MUST_BE_STRING).cstr();
+	const char *string = params.as_string(0, PARAMETER_MUST_BE_STRING).cstr();
 
-    SHA1Context c;
-    SHA1Reset (&c);
-    SHA1Input (&c, (const unsigned char*)string, strlen(string));
-    if (!SHA1Result (&c))
-        throw Exception (PARSER_RUNTIME, 0, "Can not compute SHA1");
-    
-    char digest[128];
-    sprintf(digest, "%08x%08x%08x%08x%08x", c.Message_Digest[0], c.Message_Digest[1], c.Message_Digest[2], c.Message_Digest[3], c.Message_Digest[4]);
-    
-    char *ret = new(PointerFreeGC) char[strlen(digest)+1];
-    strcpy(ret, digest);
-    r.write_pass_lang(*new String(ret, 0, false));
-    }
+	SHA1Context c;
+	SHA1Reset (&c);
+	SHA1Input (&c, (const unsigned char*)string, strlen(string));
+	if(!SHA1Result(&c))
+		throw Exception (PARSER_RUNTIME, 0, "Can not compute SHA1");
+
+	size_t sha1_bufsize=40+/*for zero-teminator*/+1/*for faulty snprintfs*/;
+	char *sha1_cstr=new(PointerFreeGC) char[sha1_bufsize];
+	snprintf(sha1_cstr, sha1_bufsize,
+			"%08x%08x%08x%08x%08x",
+			c.Message_Digest[0],
+			c.Message_Digest[1],
+			c.Message_Digest[2],
+			c.Message_Digest[3],
+			c.Message_Digest[4]);
+
+	r.write_pass_lang(*new String(sha1_cstr));
+}
 
 
 /// to hell with extra bytes on 64bit platforms
 struct uuid {
-        unsigned int   time_low;
-        unsigned short   time_mid;
-        unsigned short   time_hi_and_version;
-        unsigned short   clock_seq;
-        unsigned char    node[6];
+		unsigned int   time_low;
+		unsigned short   time_mid;
+		unsigned short   time_hi_and_version;
+		unsigned short   clock_seq;
+		unsigned char    node[6];
 };
 static void _uuid(Request& r, MethodParams& /*params*/) {
 
@@ -468,12 +472,12 @@ static void _uuid(Request& r, MethodParams& /*params*/) {
 	// format 
 	const int uuid_cstr_bufsize=36+1/*for zero-teminator*/+1/*for faulty snprintfs*/;
 	char *uuid_cstr=new(PointerFreeGC) char[uuid_cstr_bufsize];
-        snprintf(uuid_cstr, uuid_cstr_bufsize,
-                "%08X-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X",
-                uuid.time_low, uuid.time_mid, uuid.time_hi_and_version,
-                uuid.clock_seq >> 8, uuid.clock_seq & 0xFF,
-                uuid.node[0], uuid.node[1], uuid.node[2],
-                uuid.node[3], uuid.node[4], uuid.node[5]);
+		snprintf(uuid_cstr, uuid_cstr_bufsize,
+				"%08X-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X",
+				uuid.time_low, uuid.time_mid, uuid.time_hi_and_version,
+				uuid.clock_seq >> 8, uuid.clock_seq & 0xFF,
+				uuid.node[0], uuid.node[1], uuid.node[2],
+				uuid.node[3], uuid.node[4], uuid.node[5]);
 
 	r.write_pass_lang(*new String(uuid_cstr));
 }
