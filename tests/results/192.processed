@@ -1,0 +1,23 @@
+content-type: text/html
+content-length: 303
+
+$f.name: 192.html
+<br />
+$f.name: 192.html
+<br />
+$f.name: 192.html
+<br />
+load
+method of file (stateless_class) accepts maximum 4 parameter(s)
+<br />
+$f.name: overrided.html
+<br />
+$f.name: overrided.html
+<br />
+$f.name: overrided.html
+<br />
+load
+invalid option passed
+<br />
+$f.name: 192.html
+<br />
