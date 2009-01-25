@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
  */
 
-static const char * const IDENT_HTTP_C="$Date: 2009/01/25 02:05:33 $"; 
+static const char * const IDENT_HTTP_C="$Date: 2009/01/25 06:12:04 $"; 
 
 #include "pa_http.h"
 #include "pa_common.h"
@@ -560,7 +560,7 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 			omit_post_charset=vomit_post_charset->as_bool();
 		}
 		if(Value* vcharset_name=options->get(PA_CHARSET_NAME)) {
-			asked_remote_charset=&::charsets.get(vcharset_name->as_string().
+			asked_remote_charset=&charsets.get(vcharset_name->as_string().
 				change_case(r.charsets.source(), String::CC_UPPER));
 		} 
 		if(Value* vuser=options->get(HTTP_USER)) {
@@ -739,14 +739,8 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 	const char* request=request_head_and_body.cstr();
 	size_t request_size=strlen(request);
 
-	if(multipart){
-		/*
-		char* untainted=new (PointerFreeGC) char[request_size];
-		request_size=file_untaint(request, request_size, untainted);
-		request=untainted;
-		*/
+	if(multipart)
 		request_size=file_untaint(request, request_size);
-	}
 
 	int status_code=http_request(response, response_size,
 		host, port, request, request_size,
