@@ -266,6 +266,12 @@ set BISON_SIMPLE=..\..\..\win32\tools\usr\share\bison.simple
 			RelativePath="..\include\pa_pool.h">
 		</File>
 		<File
+			RelativePath=".\pa_random.C">
+		</File>
+		<File
+			RelativePath="..\include\pa_random.h">
+		</File>
+		<File
 			RelativePath=".\pa_request.C">
 		</File>
 		<File
