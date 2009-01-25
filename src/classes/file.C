@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2009/01/25 02:04:14 $";
+static const char * const IDENT_FILE_C="$Date: 2009/01/25 04:55:57 $";
 
 #include "pa_config_includes.h"
 
@@ -203,14 +203,27 @@ static void _load(Request& r, MethodParams& params) {
 	const String& lfile_name=r.absolute(params.as_no_junction(1, FILE_NAME_MUST_NOT_BE_CODE).as_string());
 
 	size_t param_index=params.count()-1;
-	Value* param_value=param_index>=2?&params.as_no_junction(param_index, "filename or options must not be code"):0;
-	HashStringValue* param_hash=param_value?param_value->get_hash():0;
-	HashStringValue* options=param_hash;
+	Value* param_value=param_index>1?&params.as_no_junction(param_index, "filename or options must not be code"):0;
 
-	param_index--;
+	HashStringValue* options=0;
+	const char *user_file_name=0;
+
+	if(param_value){
+		options=param_value->get_hash();
+		if(options || param_index>2)
+			param_index--;
+		if(param_index>1){
+			const String& luser_file_name=params.as_string(param_index, FILE_NAME_MUST_BE_STRING);
+			if(!luser_file_name.is_empty())
+				user_file_name=luser_file_name.cstr(String::L_FILE_SPEC);
+		}
+	}
+	if(!user_file_name)
+		user_file_name=lfile_name.cstr(String::L_FILE_SPEC);
 
 	size_t offset=0;
 	size_t limit=0;
+
 	if(options){
 		options=new HashStringValue(*options);
 		if(Value *voffset=(Value *)options->get(sql_offset_name)){
@@ -224,10 +237,6 @@ static void _load(Request& r, MethodParams& params) {
 	File_read_result file=file_load(r, lfile_name,
 		as_text, options, true, 0, offset, limit
 	);
-
-	const char *user_file_name=(param_index>=2)?
-				params.as_string(param_index, FILE_NAME_MUST_BE_STRING).cstr(String::L_FILE_SPEC)
-				:lfile_name.cstr(String::L_FILE_SPEC);
 
 	Value* vcontent_type=0;
 	if(file.headers){
