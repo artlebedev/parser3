@@ -8,7 +8,7 @@
 #ifndef PA_HTTP_H
 #define PA_HTTP_H
 
-static const char * const IDENT_HTTP_H="$Date: 2009/01/12 07:44:26 $";
+static const char * const IDENT_HTTP_H="$Date: 2009/01/25 02:04:49 $";
 
 #include "pa_vstring.h"
 #include "pa_vint.h"
@@ -39,7 +39,7 @@ struct File_read_http_result {
 }; 
 #endif
 
-File_read_http_result pa_internal_file_read_http(Request_charsets& charsets, 
+File_read_http_result pa_internal_file_read_http(Request& r, 
 						const String& file_spec, 
 						bool as_text,
 						HashStringValue *options=0,

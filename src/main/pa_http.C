@@ -5,12 +5,15 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
  */
 
-static const char * const IDENT_HTTP_C="$Date: 2009/01/12 09:03:34 $"; 
+static const char * const IDENT_HTTP_C="$Date: 2009/01/25 02:05:33 $"; 
 
 #include "pa_http.h"
 #include "pa_common.h"
 #include "pa_charsets.h"
 #include "pa_request_charsets.h"
+#include "pa_request.h"
+#include "pa_vfile.h"
+#include "pa_random.h"
 
 // defines
 
@@ -20,7 +23,7 @@ static const char * const IDENT_HTTP_C="$Date: 2009/01/12 09:03:34 $";
 #define HTTP_TIMEOUT_NAME	"timeout"
 #define HTTP_HEADERS_NAME	"headers"
 #define HTTP_COOKIES_NAME	"cookies"
-
+#define HTTP_FORM_ENCTYPE_NAME	"enctype"
 #define HTTP_ANY_STATUS_NAME	"any-status"
 #define HTTP_OMIT_POST_CHARSET_NAME	"omit-post-charset"	// ^file::load[...;http://...;$.form[...]$.method[post]]
 													// by default add charset to content-type
@@ -38,12 +41,13 @@ static const char * const IDENT_HTTP_C="$Date: 2009/01/12 09:03:34 $";
 
 #undef CRLF
 #define CRLF "\r\n"
+#define DCRLF "\r\n\r\n"
 
 static bool set_addr(struct sockaddr_in *addr, const char* host, const short port){
-    memset(addr, 0, sizeof(*addr)); 
-    addr->sin_family=AF_INET;
-    addr->sin_port=htons(port); 
-    if(host) {
+	memset(addr, 0, sizeof(*addr)); 
+	addr->sin_family=AF_INET;
+	addr->sin_port=htons(port); 
+	if(host) {
 		ulong packed_ip=inet_addr(host);
 		if(packed_ip!=INADDR_NONE)
 			memcpy(&addr->sin_addr, &packed_ip, sizeof(packed_ip)); 
@@ -54,9 +58,9 @@ static bool set_addr(struct sockaddr_in *addr, const char* host, const short por
 			else
 				return false;
 		} 
-    } else 
+	} else 
 		addr->sin_addr.s_addr=INADDR_ANY;
-    return true;
+	return true;
 }
 
 size_t guess_content_length(char* buf) {
@@ -187,13 +191,36 @@ done:
 #ifdef PA_USE_ALARM
 static sigjmp_buf timeout_env;
 static void timeout_handler(int /*sig*/){
-    siglongjmp(timeout_env, 1); 
+	siglongjmp(timeout_env, 1); 
 }
 #endif
 
+static size_t file_untaint(const char* str, size_t len) {
+	// untaint file from L_FILE_POST encoding
+	char* j=(char *)str;
+	const char* end=str+len-1;
+	for(const char* i=str; i<=end; i++, j++){
+		if(*i=='\\' && i!=end){
+			switch(*(i+1)){
+				case '0':
+					*j='\0';
+					i++;
+					continue;
+				case '\\':
+					*j='\\';
+					i++;
+					continue;
+			}
+		}
+		if(i!=j)
+			*j=*i;
+	}
+	return j-str; // new length
+} 
+
 static int http_request(char*& response, size_t& response_size,
 			const char* host, short port, 
-			const char* request, 
+			const char* request, size_t request_size,
 			int timeout_secs,
 			bool fail_on_status_ne_200) {
 	if(!host)
@@ -256,7 +283,7 @@ static int http_request(char*& response, size_t& response_size,
 					0, 
 					"can not connect to host \"%s\": %s (%d)", host, pa_socks_strerr(no), no); 
 			}
-			size_t request_size=strlen(request);
+
 			if(send(sock, request, request_size, 0)!=(ssize_t)request_size) {
 				int no=pa_socks_errno();
 				throw Exception("http.timeout", 
@@ -292,8 +319,8 @@ struct Http_pass_header_info {
 };
 #endif
 static void http_pass_header(HashStringValue::key_type name, 
-			     HashStringValue::value_type value, 
-			     Http_pass_header_info *info) {
+				HashStringValue::value_type value, 
+				Http_pass_header_info *info) {
 
 	String aname=String(name, String::L_URI);
 
@@ -369,7 +396,7 @@ static void form_value2string(
 	} else
 		throw Exception(PARSER_RUNTIME,
 			new String(key, String::L_TAINTED),
-			"is %s, "HTTP_FORM_NAME" option value must either string or table", value->type());
+			"is %s, "HTTP_FORM_NAME" option value can be string or table only (file is allowed for $."HTTP_METHOD_NAME"[POST] + $."HTTP_FORM_ENCTYPE_NAME"["HTTP_CONTENT_TYPE_MULTIPART_FORMDATA"])", value->type());
 }
 
 const char* pa_form2string(HashStringValue& form, Request_charsets& charsets) {
@@ -377,6 +404,79 @@ const char* pa_form2string(HashStringValue& form, Request_charsets& charsets) {
 	form.for_each<String*>(form_value2string, &string);
 	return string.cstr(String::L_UNSPECIFIED, 0, &charsets);
 }
+
+struct FormPart {
+	Request* r;
+	const char* boundary;
+	String string;
+	Form_table_value2string_info* info;
+};
+
+static void form_part_boundary_header(FormPart& part, String name, const char* file_name=0){
+	part.string << "--" << part.boundary;
+	part.string << CRLF HTTP_CONTENT_DISPOSITION ": form-data; name=\"" << name << "\"";
+	if(file_name){
+		if(strcmp(file_name, NONAME_DAT)!=0)
+			part.string << "; filename=\"" << file_name << "\"";
+		part.string << CRLF HTTP_CONTENT_TYPE ": " << part.r->mime_type_of(file_name);
+	}
+	part.string << DCRLF;
+}
+
+static void form_string_value2part(
+					HashStringValue::key_type key,
+					const String& value,
+					FormPart& part)
+{
+	form_part_boundary_header(part, String(key, String::L_URI));
+	part.string.append(value, String::L_AS_IS, true);
+	part.string << CRLF;
+}
+
+static void form_file_value2part(
+					HashStringValue::key_type key,
+					VFile& vfile,  
+					FormPart& part)
+{
+	form_part_boundary_header(part, String(key, String::L_URI), vfile.fields().get(name_name)->as_string().cstr());
+	part.string.append_know_length(vfile.value_ptr(), vfile.value_size(), String::L_FILE_POST);
+	part.string << CRLF;
+}
+
+static void form_table_value2part(Table::element_type row, FormPart* part) {
+	form_string_value2part(part->info->key, *row->get(0), *part);
+}
+
+static void form_value2part(
+					HashStringValue::key_type key,
+					HashStringValue::value_type value,
+					FormPart& part)
+{
+	if(const String* svalue=value->get_string())
+		form_string_value2part(key, *svalue, part);
+	else if(Table* tvalue=value->get_table()) {
+		Form_table_value2string_info info(key, part.string);
+		part.info = &info;
+		tvalue->for_each(form_table_value2part, &part);
+	} else if(VFile* vfile=static_cast<VFile *>(value->as("file", false))){
+		form_file_value2part(key, *vfile, part);
+	} else
+		throw Exception(PARSER_RUNTIME,
+			new String(key, String::L_TAINTED),
+			"is %s, "HTTP_FORM_NAME" option value can be string, table or file only", value->type());
+}
+
+const char* pa_form2string_multipart(HashStringValue& form, Request& r, const char* boundary, size_t& post_size){
+	FormPart formpart;
+	formpart.r=&r;
+	formpart.boundary=boundary;
+	formpart.info=NULL;
+	form.for_each<FormPart&>(form_value2part, formpart);
+	formpart.string << CRLF << "--" << boundary << "--";
+	post_size=formpart.string.length();
+	return formpart.string.cstr(String::L_UNSPECIFIED, 0, &(r.charsets));
+}
+
 static void find_headers_end(char* p,
 		char*& headers_end_at,
 		char*& raw_body)
@@ -397,8 +497,8 @@ static void find_headers_end(char* p,
 }
 
 /// @todo build .cookies field. use ^file.tables.SET-COOKIES.menu{ for now
-File_read_http_result pa_internal_file_read_http(Request_charsets& charsets, 
-						const String& file_spec, 
+File_read_http_result pa_internal_file_read_http(Request& r,
+						const String& file_spec,
 						bool as_text,
 						HashStringValue *options,
 						bool transcode_text_result) {
@@ -419,6 +519,8 @@ File_read_http_result pa_internal_file_read_http(Request_charsets& charsets,
 	Charset *asked_remote_charset=0;
 	const char* user_cstr=0;
 	const char* password_cstr=0;
+	const char* encode=0;
+	bool multipart=false;
 
 	if(options) {
 		int valid_options=pa_get_valid_file_options_count(*options);
@@ -427,6 +529,10 @@ File_read_http_result pa_internal_file_read_http(Request_charsets& charsets,
 			valid_options++;
 			method=vmethod->as_string().change_case(r.charsets.source(), String::CC_UPPER).cstr();
 			method_is_get=strcmp(method, "GET")==0;
+		}
+		if(Value* vencode=options->get(HTTP_FORM_ENCTYPE_NAME)) {
+			valid_options++;
+			encode=vencode->as_string().cstr();
 		}
 		if(Value* vform=options->get(HTTP_FORM_NAME)) {
 			valid_options++;
@@ -455,7 +561,7 @@ File_read_http_result pa_internal_file_read_http(Request_charsets& charsets,
 		}
 		if(Value* vcharset_name=options->get(PA_CHARSET_NAME)) {
 			asked_remote_charset=&::charsets.get(vcharset_name->as_string().
-				change_case(charsets.source(), String::CC_UPPER));
+				change_case(r.charsets.source(), String::CC_UPPER));
 		} 
 		if(Value* vuser=options->get(HTTP_USER)) {
 			valid_options++;
@@ -472,7 +578,21 @@ File_read_http_result pa_internal_file_read_http(Request_charsets& charsets,
 				"invalid option passed");
 	}
 	if(!asked_remote_charset) // defaulting to $request:charset
-		asked_remote_charset=&charsets.source();
+		asked_remote_charset=&(r.charsets).source();
+
+	if(encode){
+		if(method_is_get)
+			throw Exception(PARSER_RUNTIME,
+				0,
+				"you can not use $."HTTP_FORM_ENCTYPE_NAME" option with method GET");
+
+		multipart=strcasecmp(encode, HTTP_CONTENT_TYPE_MULTIPART_FORMDATA)==0;
+
+		if(!multipart && strcasecmp(encode, HTTP_CONTENT_TYPE_FORM_URLENCODED)!=0)
+			throw Exception(PARSER_RUNTIME,
+				0,
+				"$."HTTP_FORM_ENCTYPE_NAME" option value can be "HTTP_CONTENT_TYPE_FORM_URLENCODED" or "HTTP_CONTENT_TYPE_MULTIPART_FORMDATA" only");
+	}
 
 	if(vbody){
 		if(method_is_get)
@@ -494,9 +614,9 @@ File_read_http_result pa_internal_file_read_http(Request_charsets& charsets,
 	String request_head_and_body;
 	{
 		// influence URLencoding of tainted pieces to String::L_URI lang
-		Temp_client_charset temp(charsets, *asked_remote_charset);
+		Temp_client_charset temp(r.charsets, *asked_remote_charset);
 
-		const char* connect_string_cstr=connect_string.cstr(String::L_UNSPECIFIED, 0, &charsets);
+		const char* connect_string_cstr=connect_string.cstr(String::L_UNSPECIFIED, 0, &(r.charsets));
 
 		const char* current=connect_string_cstr;
 		if(strncmp(current, "http://", 7)!=0)
@@ -518,22 +638,45 @@ File_read_http_result pa_internal_file_read_http(Request_charsets& charsets,
 		String head;
 		head << method << " " << uri;
 		if(form && method_is_get)
-			head << (uri_has_query_string?"&":"?") << pa_form2string(*form, charsets);
+			head << (uri_has_query_string?"&":"?") << pa_form2string(*form, r.charsets);
 
 		head <<" HTTP/1.0" CRLF "host: "<< host << CRLF;
 
-		if(form && !method_is_get) { // POST
-			head << "content-type: " << HTTP_CONTENT_TYPE_FORM_URLENCODED;
-			if(!omit_post_charset)
-				head << "; charset=" << asked_remote_charset->NAME_CSTR() << ";";
-			head << CRLF;
-			body_cstr=pa_form2string(*form, charsets);
-		}  else if (vbody) {
-			body_cstr=vbody->as_string().cstr(String::L_UNSPECIFIED, 0, &charsets);
+		char* boundary;
+
+		if(multipart){
+			uuid uuid=get_uuid();
+			const int boundary_bufsize=10+32+1/*for zero-teminator*/+1/*for faulty snprintfs*/;
+			boundary=new(PointerFreeGC) char[boundary_bufsize];
+			snprintf(boundary, boundary_bufsize,
+				"----------%08X%04X%04X%02X%02X%02X%02X%02X%02X%02X%02X",
+				uuid.time_low, uuid.time_mid, uuid.time_hi_and_version,
+				uuid.clock_seq >> 8, uuid.clock_seq & 0xFF,
+				uuid.node[0], uuid.node[1], uuid.node[2],
+				uuid.node[3], uuid.node[4], uuid.node[5]);
+		}
+
+		size_t post_size=0;
+		if(form && !method_is_get) {
+			head << HTTP_CONTENT_TYPE ": ";
+			if(multipart) {
+				head << HTTP_CONTENT_TYPE_MULTIPART_FORMDATA "; boundary=" << boundary << CRLF;
+				// !!! charset?
+				body_cstr=pa_form2string_multipart(*form, r, boundary, post_size);
+			} else {
+				head << HTTP_CONTENT_TYPE_FORM_URLENCODED;
+				if(!omit_post_charset)
+					head << "; charset=" << asked_remote_charset->NAME_CSTR() << ";";
+				head << CRLF;
+				body_cstr=pa_form2string(*form, r.charsets);
+				post_size=strlen(body_cstr);
+			}
+		} else if (vbody) {
+			body_cstr=vbody->as_string().cstr(String::L_UNSPECIFIED, 0, &(r.charsets));
 			// needed for transcoded $.body[] first of all
 			body_cstr=Charset::transcode(
 				String::C(body_cstr, strlen(body_cstr)),
-				charsets.source(),
+				r.charsets.source(),
 				*asked_remote_charset
 			);
 		}
@@ -546,7 +689,7 @@ File_read_http_result pa_internal_file_read_http(Request_charsets& charsets,
 		bool content_type_specified=false;
 		if(vheaders && !vheaders->is_string()) { // allow empty
 			if(HashStringValue *headers=vheaders->get_hash()) {
-				Http_pass_header_info info={&charsets, &head, false};
+				Http_pass_header_info info={&(r.charsets), &head, false};
 				headers->for_each<Http_pass_header_info*>(http_pass_header, &info); 
 				user_agent_specified=info.user_agent_specified;
 				content_type_specified=info.content_type_specified;
@@ -566,7 +709,7 @@ File_read_http_result pa_internal_file_read_http(Request_charsets& charsets,
 		if(vcookies && !vcookies->is_string()){ // allow empty
 			if(HashStringValue* cookies=vcookies->get_hash()) {
 				head << "cookie: ";
-				Http_pass_header_info info={&charsets, &head, false};
+				Http_pass_header_info info={&(r.charsets), &head, false};
 				cookies->for_each<Http_pass_header_info*>(http_pass_cookie, &info); 
 				head << CRLF;
 			} else
@@ -576,10 +719,10 @@ File_read_http_result pa_internal_file_read_http(Request_charsets& charsets,
 		}
 
 		if(body_cstr) {
-			head << "content-length: " << format(strlen(body_cstr), "%u") << CRLF;
+			head << "content-length: " << format(post_size, "%u") << CRLF;
 		}
 
-		const char* head_cstr=head.cstr(String::L_UNSPECIFIED, 0, &charsets);
+		const char* head_cstr=head.cstr(String::L_UNSPECIFIED, 0, &(r.charsets));
 
 		// head + end of header
 		request_head_and_body << head_cstr << CRLF;
@@ -592,8 +735,21 @@ File_read_http_result pa_internal_file_read_http(Request_charsets& charsets,
 	//sending request
 	char* response;
 	size_t response_size;
+
+	const char* request=request_head_and_body.cstr();
+	size_t request_size=strlen(request);
+
+	if(multipart){
+		/*
+		char* untainted=new (PointerFreeGC) char[request_size];
+		request_size=file_untaint(request, request_size, untainted);
+		request=untainted;
+		*/
+		request_size=file_untaint(request, request_size);
+	}
+
 	int status_code=http_request(response, response_size,
-		host, port, request_head_and_body.cstr(), 
+		host, port, request, request_size,
 		timeout_secs, fail_on_status_ne_200); 
 	
 	//processing results	
@@ -628,10 +784,10 @@ File_read_http_result pa_internal_file_read_http(Request_charsets& charsets,
 				throw Exception("http.response", 
 					&connect_string,
 					"bad response from host - bad header \"%s\"", line.cstr());
-			const String::Body HEADER_NAME=line.mid(0, pos).change_case(charsets.source(), String::CC_UPPER);
+			const String::Body HEADER_NAME=line.mid(0, pos).change_case(r.charsets.source(), String::CC_UPPER);
 			const String& HEADER_VALUE=line.mid(pos+1, line.length()).trim(String::TRIM_BOTH, " \t\r");
 			if(as_text && HEADER_NAME==HTTP_CONTENT_TYPE_UPPER)
-				real_remote_charset=detect_charset(charsets.source(), HEADER_VALUE);
+				real_remote_charset=detect_charset(r.charsets.source(), HEADER_VALUE);
 
 			// tables
 			{
@@ -674,12 +830,15 @@ File_read_http_result pa_internal_file_read_http(Request_charsets& charsets,
 		if(!real_remote_charset)
 			real_remote_charset=asked_remote_charset;
 
-		real_body=Charset::transcode(real_body, *real_remote_charset, charsets.source());
+		real_body=Charset::transcode(real_body, *real_remote_charset, r.charsets.source());
 
 	}
 
 	result.str=const_cast<char *>(real_body.str); // hacking a little
 	result.length=real_body.length;
+
+	if(as_text && result.length)
+		fix_line_breaks(result.str, result.length);
 
 	result.headers->put(file_status_name, new VInt(status_code));
 

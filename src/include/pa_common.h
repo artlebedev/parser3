@@ -8,10 +8,12 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-static const char * const IDENT_COMMON_H="$Date: 2009/01/12 07:42:44 $";
+static const char * const IDENT_COMMON_H="$Date: 2009/01/25 02:04:34 $";
 
 #include "pa_string.h"
 #include "pa_hash.h"
+
+class Request;
 
 // defines
 #define HTTP_USER_AGENT_UPPER	"USER-AGENT"
@@ -99,15 +101,20 @@ bool file_read_action_under_lock(const String& file_spec,
 				const char* action_name, File_read_action action, void *context,
 				bool as_text=false,
 				bool fail_on_read_problem=true);
+
 /**
 	read specified text file using 
 	if fail_on_read_problem is true[default] throws an exception
 
 	WARNING: charset is used for http header case conversion, it's not a charset of input file!
-
-	@returns true if read OK
 */
 char *file_read_text(Request_charsets& charsets, 
+					const String& file_spec, 
+					bool fail_on_read_problem=true,
+					HashStringValue* options=0,
+					bool transcode_result=true);
+
+char *file_load_text(Request& r, 
 					const String& file_spec, 
 					bool fail_on_read_problem=true,
 					HashStringValue* options=0,
@@ -124,11 +131,16 @@ struct File_read_result {
 	if fail_on_read_problem is true[default] throws an exception
 
 	WARNING: charset is used for http header case conversion, it's not a charset of input file!
-
-	@returns true if read OK
 */
-File_read_result file_read(Request_charsets& charsets, 
-				const String& file_spec, 
+File_read_result file_read(Request_charsets& charsets,
+				const String& file_spec,
+				bool as_text,
+				HashStringValue* options=0,
+				bool fail_on_read_problem=true,
+				char* buf=0, size_t offset=0, size_t size=0, bool transcode_text_result=true);
+
+File_read_result file_load(Request& r,
+				const String& file_spec,
 				bool as_text,
 				HashStringValue* options=0,
 				bool fail_on_read_problem=true,

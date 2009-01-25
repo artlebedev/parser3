@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2008/09/03 14:29:17 $";
+static const char * const IDENT_TABLE_C="$Date: 2009/01/25 02:04:00 $";
 
 #ifndef NO_STRINGSTREAM
 #include <sstream>
@@ -344,7 +344,7 @@ static void _load(Request& r, MethodParams& params) {
 	}
 
 	// loading text
-	char *data=file_read_text(r.charsets,
+	char *data=file_load_text(r,
 		r.absolute(params.as_string(filename_param_index, FILE_NAME_MUST_BE_STRING)),
 		true,
 		options

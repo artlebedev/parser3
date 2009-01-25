@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2009/01/12 07:46:13 $";
+static const char * const IDENT_FILE_C="$Date: 2009/01/25 02:04:14 $";
 
 #include "pa_config_includes.h"
 
@@ -221,7 +221,7 @@ static void _load(Request& r, MethodParams& params) {
 		}
 		// no check on options count here, see file_read
 	}
-	File_read_result file=file_read(r.charsets, lfile_name,
+	File_read_result file=file_load(r, lfile_name,
 		as_text, options, true, 0, offset, limit
 	);
 

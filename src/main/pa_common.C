@@ -26,7 +26,7 @@
  *
  */
 
-static const char * const IDENT_COMMON_C="$Date: 2009/01/12 07:47:50 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2009/01/25 02:05:33 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -36,6 +36,7 @@ static const char * const IDENT_COMMON_C="$Date: 2009/01/12 07:47:50 $";
 #include "pa_http.h"
 #include "pa_request_charsets.h"
 #include "pcre.h"
+#include "pa_request.h"
 
 // some maybe-undefined constants
 
@@ -102,6 +103,16 @@ char* file_read_text(Request_charsets& charsets,
 	return file.success?file.str:0;
 }
 
+char* file_load_text(Request& r, 
+			const String& file_spec, 
+			bool fail_on_read_problem,
+			HashStringValue* params,
+			bool transcode_result) {
+	File_read_result file=
+		file_load(r, file_spec, true, params, fail_on_read_problem, 0, 0, 0, transcode_result);
+	return file.success?file.str:0;
+}
+
 /// these options were handled but not checked elsewhere, now check them
 int pa_get_valid_file_options_count(HashStringValue& options) {
 	int result=0;
@@ -155,39 +166,28 @@ static void file_read_action(
 		return;
 	}
 }
+
 File_read_result file_read(Request_charsets& charsets, const String& file_spec, 
 			bool as_text, HashStringValue *params,
 			bool fail_on_read_problem,
 			char* buf, size_t offset, size_t count, bool transcode_text_result) {
 	File_read_result result={false, 0, 0, 0};
-	if(file_spec.starts_with("http://")) {
-		if(offset || count)
+	if(params){
+		int valid_options=pa_get_valid_file_options_count(*params);
+		if(valid_options!=params->count())
 			throw Exception(PARSER_RUNTIME,
 				0,
-				"offset and load options are not supported for HTTP:// file load");
+				"invalid option passed");
+	}
 
-		// fail on read problem
-		File_read_http_result http=pa_internal_file_read_http(charsets, file_spec, as_text, params, transcode_text_result);
-		result.success=true;
-		result.str=http.str;
-		result.length=http.length;
-		result.headers=http.headers; 
-	} else {
-		if(params){
-			int valid_options=pa_get_valid_file_options_count(*params);
-			if(valid_options!=params->count())
-				throw Exception(PARSER_RUNTIME,
-					0,
-					"invalid option passed");
-		}
+	File_read_action_info info={&result.str, &result.length, buf, offset, count}; 
 
-		File_read_action_info info={&result.str, &result.length,
-			buf, offset, count}; 
-		result.success=file_read_action_under_lock(file_spec, 
-			"read", file_read_action, &info, 
-			as_text, fail_on_read_problem); 
+	result.success=file_read_action_under_lock(file_spec, 
+		"read", file_read_action, &info, 
+		as_text, fail_on_read_problem); 
 
-		if(as_text && result.success){
+	if(as_text){
+		if(result.success){
 			if(result.length>=3 && strncmp(result.str, "\xEF\xBB\xBF", 3)==0){
 				// skip UTF-8 signature (BOM code)
 				result.str+=3;
@@ -207,10 +207,34 @@ File_read_result file_read(Request_charsets& charsets, const String& file_spec,
 				}
 			}
 		}
+		if(result.length)
+			fix_line_breaks(result.str, result.length);
 	}
-	
-	if(as_text && result.length)
-		fix_line_breaks(result.str, result.length);
+
+	return result;
+}
+
+File_read_result file_load(Request& r, const String& file_spec, 
+			bool as_text, HashStringValue *params,
+			bool fail_on_read_problem,
+			char* buf, size_t offset, size_t count, bool transcode_text_result) {
+
+	File_read_result result={false, 0, 0, 0};
+	if(file_spec.starts_with("http://")) {
+		if(offset || count)
+			throw Exception(PARSER_RUNTIME,
+				0,
+				"offset and load options are not supported for HTTP:// file load");
+
+		// fail on read problem
+		File_read_http_result http=pa_internal_file_read_http(r, file_spec, as_text, params, transcode_text_result);
+		result.success=true;
+		result.str=http.str;
+		result.length=http.length;
+		result.headers=http.headers; 
+	} else
+		result=
+			file_read(r.charsets, file_spec, as_text, params, fail_on_read_problem, buf, offset, count, transcode_text_result);
 
 	return result;
 }
@@ -933,9 +957,9 @@ int __vsnprintf(char* b, size_t s, const char* f, va_list l) {
 
 int __snprintf(char* b, size_t s, const char* f, ...) {
 	va_list l;
-    va_start(l, f); 
-    int r=__vsnprintf(b, s, f, l); 
-    va_end(l); 
+	va_start(l, f); 
+	int r=__vsnprintf(b, s, f, l); 
+	va_end(l); 
 	return r;
 }
 

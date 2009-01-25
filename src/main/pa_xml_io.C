@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT="$Date: 2008/06/11 11:39:40 $";
+static const char * const IDENT="$Date: 2009/01/25 02:05:08 $";
 
 #include "libxslt/extensions.h"
 
@@ -118,7 +118,7 @@ xmlFileOpen_ReadIntoStream (const char* do_not_store_filename, bool adjust_path_
 
 	const char *buf;
 	try {
-		buf=file_read_text(r.charsets, *new String(can_store_filename), 
+		buf=file_load_text(r, *new String(can_store_filename), 
 							true/*fail_on_read_problem*/,
 							0/*params*/,
 							false/*don't transcode result because it must be fit with @encoding value!*/);
