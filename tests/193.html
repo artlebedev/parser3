@@ -1,0 +1,18 @@
+$tString[^table::create{sValue
+pyAxOTczLiDV7uT/8iDx6/P16Cwg9/LuIKvH5evl7fvlIPDz6uDi4Lsg7eDv6PHg6yDx4OyF	correct
+AAnwG0kBAAAAh_SuCQIA6VPA-1_2MCEg-_QY85U-6YePwp0AAAAAAAAAAAAUl_Op0QTPyrdJcMhlyHS9O4oOgA==	file with \x00 char
+AAn	incorrect base64
+}]
+
+
+^tString.menu{
+	^try{
+		'^string:base64[$tString.sValue]'
+	}{
+		$exception.handled(true)
+		$exception.comment
+	}
+	<br />
+}
+
+done.
