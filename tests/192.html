@@ -1,0 +1,24 @@
+@main[]
+$sName[192.html]
+
+^do{^file::load[text;$sName]}
+^do{^file::load[text;$sName;]}
+^do{^file::load[text;$sName;;]}
+^do{^file::load[text;$sName;;;]}
+^do{^file::load[text;$sName;overrided.html]}
+^do{^file::load[text;$sName;overrided.html;]}
+^do{^file::load[text;$sName;overrided.html;$.charset[windows-1251]]}
+^do{^file::load[text;$sName;overrided.html;$.invalid-option[value]]}
+^do{^file::load[text;$sName;;overrided.html]}
+
+
+
+@do[jCode][f]
+^try{
+	$f[$jCode]
+	^$f.name: $f.name<br />
+}{
+	$exception.handled(true)
+	$exception.source
+	$exception.comment<br />
+}
