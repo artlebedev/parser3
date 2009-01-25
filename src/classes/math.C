@@ -8,7 +8,7 @@
 	Copyright (C) 1996, 1997, 1998, 1999 Theodore Ts'o.
 */
 
-static const char * const IDENT_MATH_C="$Date: 2009/01/25 01:58:17 $";
+static const char * const IDENT_MATH_C="$Date: 2009/01/25 03:10:11 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_common.h"
@@ -314,7 +314,7 @@ static void _sha1(Request& r, MethodParams& params) {
 	if(!SHA1Result(&c))
 		throw Exception (PARSER_RUNTIME, 0, "Can not compute SHA1");
 
-	const size_t bufsize=40+/*zero-teminator*/+1/*for faulty snprintfs*/;
+	const size_t bufsize=40+1/*zero-teminator*/+1/*for faulty snprintfs*/;
 	char* cstr=new(PointerFreeGC) char[bufsize];
 
 	snprintf(cstr, bufsize,
