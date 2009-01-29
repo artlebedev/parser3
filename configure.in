@@ -665,6 +665,7 @@ AC_OUTPUT(
 	src/lib/smtp/Makefile 
 	src/lib/gc/Makefile 
 	src/lib/gc/include/Makefile
+	src/lib/pcre/Makefile 
 	src/lib/cord/Makefile
 	src/lib/cord/include/Makefile
 	src/lib/cord/include/private/Makefile
