@@ -66,7 +66,8 @@ am_libmain_a_OBJECTS = pa_pool.$(OBJEXT) pa_os.$(OBJEXT) \
 	pa_charsets.$(OBJEXT) pa_uue.$(OBJEXT) \
 	pa_sql_driver_manager.$(OBJEXT) \
 	pa_stylesheet_manager.$(OBJEXT) \
-	pa_stylesheet_connection.$(OBJEXT) pa_http.$(OBJEXT)
+	pa_stylesheet_connection.$(OBJEXT) pa_http.$(OBJEXT) \
+	pa_random.$(OBJEXT)
 libmain_a_OBJECTS = $(am_libmain_a_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -198,7 +199,7 @@ target_alias = @target_alias@
 INCLUDES = -I../types -I../classes -I../sql -I../lib/gc/include -I../lib/cord/include $(INCLTDL) @PCRE_INCLUDES@ @XML_INCLUDES@
 noinst_HEADERS = compile_tools.h utf8-to-lower.inc utf8-to-upper.inc
 noinst_LIBRARIES = libmain.a
-libmain_a_SOURCES = pa_pool.C pa_os.C pa_common.C compile.tab.C compile.C compile_tools.C execute.C pa_cache_managers.C pa_exception.C pa_xml_exception.C pa_globals.C pa_xml_io.C pa_memory.C pa_request.C pa_string.C pa_table.C untaint.C pa_dir.C pa_exec.C pa_socks.C pa_dictionary.C pa_charset.C pa_charsets.C pa_uue.C pa_sql_driver_manager.C pa_stylesheet_manager.C pa_stylesheet_connection.C pa_http.C
+libmain_a_SOURCES = pa_pool.C pa_os.C pa_common.C compile.tab.C compile.C compile_tools.C execute.C pa_cache_managers.C pa_exception.C pa_xml_exception.C pa_globals.C pa_xml_io.C pa_memory.C pa_request.C pa_string.C pa_table.C untaint.C pa_dir.C pa_exec.C pa_socks.C pa_dictionary.C pa_charset.C pa_charsets.C pa_uue.C pa_sql_driver_manager.C pa_stylesheet_manager.C pa_stylesheet_connection.C pa_http.C pa_random.C
 EXTRA_DIST = compile.y main.vcproj
 all: all-am
 
@@ -264,6 +265,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_memory.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_os.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_pool.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_random.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_request.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_socks.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_sql_driver_manager.Po@am__quote@
