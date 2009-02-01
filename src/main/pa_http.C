@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
  */
 
-static const char * const IDENT_HTTP_C="$Date: 2009/01/25 06:12:04 $"; 
+static const char * const IDENT_HTTP_C="$Date: 2009/02/01 09:32:47 $"; 
 
 #include "pa_http.h"
 #include "pa_common.h"
@@ -472,7 +472,7 @@ const char* pa_form2string_multipart(HashStringValue& form, Request& r, const ch
 	formpart.boundary=boundary;
 	formpart.info=NULL;
 	form.for_each<FormPart&>(form_value2part, formpart);
-	formpart.string << CRLF << "--" << boundary << "--";
+	formpart.string << "--" << boundary << "--";
 	post_size=formpart.string.length();
 	return formpart.string.cstr(String::L_UNSPECIFIED, 0, &(r.charsets));
 }
