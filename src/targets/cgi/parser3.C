@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_PARSER3_C="$Date: 2009/01/12 07:49:13 $";
+static const char * const IDENT_PARSER3_C="$Date: 2009/03/09 21:33:24 $";
 
 #include "pa_config_includes.h"
 
@@ -613,7 +613,7 @@ static void usage(const char* program) {
 	exit(EINVAL);
 }
 
-int main(size_t argc, char *argv[]) {
+int main(int argc, char *argv[]) {
 #ifdef PA_DEBUG_CGI_ENTRY_EXIT
 	log("main: entry");
 #endif
