@@ -5,7 +5,7 @@
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_CHARSET_C="$Date: 2008/08/15 16:54:01 $";
+static const char * const IDENT_CHARSET_C="$Date: 2009/04/10 01:35:17 $";
 
 #include "pa_charset.h"
 #include "pa_charsets.h"
@@ -15,6 +15,8 @@ static const char * const IDENT_CHARSET_C="$Date: 2008/08/15 16:54:01 $";
 #endif
 
 //#define PA_PATCHED_LIBXML_BACKWARD
+
+// reduce memory usage by pre-calculation utf-8 string length
 #define PRECALCULATE_DEST_LENGTH
 
 // globals
@@ -431,7 +433,7 @@ of ocetes consumed.
 	return 0;
 }
 
-static bool is_escaped(char c){
+static bool is_escaped(XMLByte c){
 	return
 		!(
 			(c<=127)
