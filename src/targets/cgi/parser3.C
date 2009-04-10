@@ -1,11 +1,11 @@
 /** @file
 	Parser: scripting and CGI main.
 
-	Copyright(c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright(c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_PARSER3_C="$Date: 2009/03/09 21:33:24 $";
+static const char * const IDENT_PARSER3_C="$Date: 2009/04/10 11:35:01 $";
 
 #include "pa_config_includes.h"
 
@@ -675,7 +675,7 @@ int main(int argc, char *argv[]) {
 		if(raw_filespec_to_process && !*raw_filespec_to_process)
 			raw_filespec_to_process=0;
 	} else {
-		size_t optind=1;
+		int optind=1;
 		while(optind < argc){
 			char *carg = argv[optind];
 			if(carg[0] != '-')
