@@ -1,11 +1,11 @@
 /** @file
 	Parser: string class. @see untalength_t.C.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2008/09/03 15:15:47 $";
+static const char * const IDENT_STRING_C="$Date: 2009/04/10 11:33:16 $";
 
 #include "pa_string.h"
 #include "pa_exception.h"
@@ -497,8 +497,10 @@ Table* String::match(Charset& source_charset,
 	bool just_count_matches=(match_features & MF_JUST_COUNT_MATCHES) != 0;
 	bool global=option_bits[1]!=0;
 
-	if(source_charset.isUTF8())
-		option_bits[0]=option_bits[0] | PCRE_UTF8;
+	if(source_charset.isUTF8()){
+		// @todo (for UTF-8): check string & pattern and use PCRE_NO_UTF8_CHECK option 
+		option_bits[0]|=PCRE_UTF8;
+	}
 
 	pcre *code=pcre_compile(pattern, option_bits[0], 
 		&errptr, &erroffset,
@@ -539,11 +541,6 @@ Table* String::match(Charset& source_charset,
 		if(exec_substrings==PCRE_ERROR_NOMATCH) {
 			pcre_free(code);
 			row_action(table, 0/*last time, no raw*/, 0, 0, poststart, postfinish, info);
-			// if(global || subpatterns)
-			// 	return &table; // global or with subpatterns=true+result
-			// else {
-			// 	just_matched=false; return 0; // not global=no result
-			// }
 			return just_count_matches ? 0 : &table;
 		}
 
@@ -576,11 +573,10 @@ Table* String::match(Charset& source_charset,
 		matches_count++;
 		row_action(table, row, prestart, prefinish, poststart, postfinish, info);
 
-		if(!global || prestart==poststart) { // not global | going to hang
+		if(!global || prestart==poststart) { // last step
 			pcre_free(code);
 			row_action(table, 0/*last time, no row*/, 0, 0, poststart, postfinish, info);
 			return just_count_matches ? 0 : &table;
-			// return &table;
 		}
 		prestart=poststart;
 
