@@ -1,11 +1,11 @@
 /** @file
 	Parser: @b inet parser class.
 
-	Copyright(c) 2001-2005 ArtLebedev Group(http://www.artlebedev.com)
+	Copyright(c) 2001-2009 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_INET_C="$Date: 2008/06/16 13:09:22 $";
+static const char * const IDENT_INET_C="$Date: 2009/04/10 11:31:06 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
@@ -90,5 +90,5 @@ MInet::MInet(): Methoded("inet") {
 	add_native_method("ntoa", Method::CT_STATIC, _ntoa, 1, 1);
 	add_native_method("aton", Method::CT_STATIC, _aton, 1, 1);
 
-	// todo: gethostbyname, gethostbyaddr
+	// @todo: gethostbyname, gethostbyaddr
 }

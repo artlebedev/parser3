@@ -1,11 +1,11 @@
 /** @file
 	Parser: @b image parser class.
 
-	Copyright(c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright(c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_IMAGE_C="$Date: 2008/09/04 09:38:09 $";
+static const char * const IDENT_IMAGE_C="$Date: 2009/04/10 11:31:06 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -453,9 +453,9 @@ static Value* parse_IFD_entry_formatted_one_value(
 		}
 		/*
 	case 11: // single float
-		todo
+		@todo
 	case 12: // double float
-		todo
+		@todo
 		*/
 	};	
 	

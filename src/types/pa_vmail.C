@@ -2,11 +2,11 @@
 	Parser: @b mail class.
 	relies on gmime library, by Jeffrey Stedfast <fejj@helixcode.com>
 
-	Copyright(c) 2001-2005 ArtLebedev Group(http://www.artlebedev.com)
+	Copyright(c) 2001-2009 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_VMAIL_C="$Date: 2009/01/12 07:51:19 $";
+static const char * const IDENT_VMAIL_C="$Date: 2009/04/10 11:35:50 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -209,7 +209,7 @@ static void MimePart2body(GMimePart *part, gpointer data) {
 		// $.content-location
 		putReceived(source_charset, partX, "content-location", part->content_location);
 		
-		// todo GMimePart:
+		// @todo GMimePart:
 		//   GMimePartEncodingType encoding;
 		//   GMimeDisposition *disposition;
 		if(part->disposition) {
@@ -290,7 +290,7 @@ static void parse(Request& r, GMimeStream *stream, HashStringValue& received) {
 		// .reply-to
 		putReceived(source_charset, received, "reply-to", messageHeader->reply_to);
 		// .to
-		// todo: messageHeader->recipients
+		// @todo: messageHeader->recipients
 		// .subject
 		putReceived(source_charset, received, "subject", messageHeader->subject);
 		// .date(date+gmt_offset)
@@ -645,7 +645,7 @@ static const String& file_value_to_string(Request& r, Value* send_value) {
 	}
 
 	if(vcid)
-		result << CID_NAME ": <" << vcid->as_string() << ">\n"; // todo: value must be escaped as %hh
+		result << CID_NAME ": <" << vcid->as_string() << ">\n"; // @todo: value must be escaped as %hh
 
 	const String* type=vformat?&vformat->as_string():0;
 	if(!type/*default = uue*/ || *type=="uue") {

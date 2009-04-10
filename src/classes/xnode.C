@@ -1,13 +1,13 @@
 /** @file
 	Parser: @b dom parser class.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 #include "classes.h"
 #ifdef XML
 
-static const char * const IDENT_XNODE_C="$Date: 2007/10/23 13:57:15 $";
+static const char * const IDENT_XNODE_C="$Date: 2009/04/10 11:31:06 $";
 
 #include "pa_vmethod_frame.h"
 
@@ -167,7 +167,7 @@ xmlNs& pa_xmlMapNs(xmlDoc& doc, const xmlChar *href, const xmlChar *prefix) {
 	return *cur;
 }
 
-/// todo: проверить, обновляется ли parent!
+/// @todo: проверить, обновляется ли parent!
 static void pa_addAttributeNode(xmlNode& selfNode, xmlAttr& attrNode) 
 {
 	if(attrNode.type!=XML_ATTRIBUTE_NODE)
@@ -366,7 +366,7 @@ static void _getAttribute(Request& r, MethodParams& params) {
 	xmlNode& element=get_self_element(vnode);
 	const xmlChar* name=as_xmlchar(r, params, 0, NAME_MUST_BE_STRING);
 
-	// todo: when name="xmlns"
+	// @todo: when name="xmlns"
 	xmlChar* attribute_value=xmlGetProp(&element, name);
 	// write out result
 	r.write_pass_lang(r.transcode(attribute_value));
@@ -379,7 +379,7 @@ static void _setAttribute(Request& r, MethodParams& params) {
 	const xmlChar* name=as_xmlchar(r, params, 0, NAME_MUST_BE_STRING);
 	const xmlChar* attribute_value=as_xmlchar(r, params, 1, VALUE_MUST_BE_STRING);
 
-	// todo: when name="xmlns"
+	// @todo: when name="xmlns"
 	if(!xmlSetProp(&element, name,  attribute_value))
 		throw XmlException(0);
 }
@@ -390,7 +390,7 @@ static void _removeAttribute(Request& r, MethodParams& params) {
 	xmlNode& element=get_self_element(vnode);
 	const xmlChar* name=as_xmlchar(r, params, 0, NAME_MUST_BE_STRING);
 
-	// todo: when name="xmlns"
+	// @todo: when name="xmlns"
 	xmlUnsetProp(&element, name);
 }
 
@@ -503,7 +503,7 @@ static void _setAttributeNS(Request& r, MethodParams& params) {
 	xmlChar* prefix=0;
 	xmlChar* localName=xmlSplitQName2(qualifiedName, &prefix);
 
-	// todo: name=xmlns
+	// @todo: name=xmlns
 	xmlAttr* attrNode;
 	if(localName) {
 		xmlNs& ns=pa_xmlMapNs(xmldoc, namespaceURI, prefix);
@@ -530,7 +530,7 @@ static void _removeAttributeNS(Request& r, MethodParams& params) {
 	const xmlChar* namespaceURI=as_xmlchar(r, params, 0, NAMESPACEURI_MUST_BE_STRING);
 	const xmlChar* localName=as_xmlchar(r, params, 1, LOCALNAME_MUST_BE_STRING);
 
-	// todo: when name="xmlns"
+	// @todo: when name="xmlns"
 	xmlNs& ns=pa_xmlMapNs(xmldoc, namespaceURI, 0);
 	xmlUnsetNsProp(&element, &ns, localName);
 }
@@ -556,7 +556,7 @@ static void _hasAttribute(Request& r, MethodParams& params) {
 
 	const xmlChar* name=as_xmlchar(r, params, 0, NAME_MUST_BE_STRING);
 
-	// todo: when name="xmlns"
+	// @todo: when name="xmlns"
 	// write out result
 	r.write_no_lang(*new VBool(xmlHasProp(&element, name)!=0));
 }

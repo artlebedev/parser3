@@ -1,7 +1,7 @@
 /** @file
 	Parser: @b xdoc parser class.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT_XDOC_C="$Date: 2007/08/20 10:37:21 $";
+static const char * const IDENT_XDOC_C="$Date: 2009/04/10 11:31:06 $";
 
 #include "libxml/tree.h"
 #include "libxml/HTMLtree.h"
@@ -461,7 +461,7 @@ static void _load(Request& r, MethodParams& params) {
 	else // xxx:// 
 		uri_cstr=uri->cstr(String::L_AS_IS); // leave as-is for xmlParseFile to handle
 
-	/// todo!! add SAFE MODE!!
+	/// @todo!! add SAFE MODE!!
 	xmlDoc* xmldoc=xmlParseFile(uri_cstr);
 	if(!xmldoc || xmlHaveGenericErrors())
 		throw XmlException(uri);

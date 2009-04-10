@@ -1,11 +1,11 @@
 /** @file
 	Parser: @b string parser class.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2009/01/12 07:09:08 $";
+static const char * const IDENT_STRING_C="$Date: 2009/04/10 11:31:06 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -360,7 +360,7 @@ static void replace_action(Table& table, ArrayString* row,
 		*ai.dest << ai.src->mid(poststart, postfinish);
 }
 
-/// @todo use pcre:study somehow
+/// @todo use pcre_study somehow
 static void _match(Request& r, MethodParams& params) {
 	Value& regexp=params.as_no_junction(0, "regexp must not be code");
 
