@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b console class decl.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VCONSOLE_H
 #define PA_VCONSOLE_H
 
-static const char * const IDENT_VCONSOLE_H="$Date: 2007/04/23 10:30:49 $";
+static const char * const IDENT_VCONSOLE_H="$Date: 2009/04/10 11:38:15 $";
 
 // includes
 
@@ -20,6 +20,8 @@ static const char * const IDENT_VCONSOLE_H="$Date: 2007/04/23 10:30:49 $";
 // defines
 
 #define CONSOLE_CLASS_NAME "console"
+static const String console_class_name(CONSOLE_CLASS_NAME);
+
 #define CONSOLE_LINE_NAME "line"
 
 /// console class
@@ -30,7 +32,7 @@ public: // Value
 	/// VConsole: 0
 	VStateless_class *get_class() { return 0; }
 
-	// VConsole: $line
+	/// console: line,CLASS,CLASS_NAME
 	Value* get_element(const String& aname, Value& /*aself*/, bool /*looking_up*/) {
 		// $line
 		if(aname==CONSOLE_LINE_NAME) {
@@ -42,12 +44,20 @@ public: // Value
 			return 0; // EOF
 		}
 
+		// $CLASS
+		if(aname==CLASS_NAME)
+			return this;
+
+		// $CLASS_NAME
+		if(aname==CLASS_NAMETEXT)
+			return new VString(console_class_name);
+
 		throw Exception(PARSER_RUNTIME,
 			&aname,
 			"reading of invalid field");
 	}
 
-	/// VConsole: $line
+	/// console: $line
 	override const VJunction* put_element(Value& /*aself*/, const String& aname, Value* avalue, bool /*areplace*/) { 
 		// $line
 		if(aname==CONSOLE_LINE_NAME) {
