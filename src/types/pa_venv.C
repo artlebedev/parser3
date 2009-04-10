@@ -1,11 +1,11 @@
 /** @file
 	Parser: @b env class.
 
-	Copyright(c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright(c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Date: 2007/09/17 15:13:45 $";
+static const char * const IDENT="$Date: 2009/04/10 11:37:02 $";
 
 #include "pa_venv.h"
 #include "pa_vstring.h"
@@ -16,6 +16,14 @@ static const char * const IDENT="$Date: 2007/09/17 15:13:45 $";
 static const String parser_version(PARSER_VERSION);
 
 Value* VEnv::get_element(const String& aname, Value& /*aself*/, bool /*looking_up*/) {
+	// $CLASS
+	if(aname==CLASS_NAME)
+		return this;
+
+	// $CLASS_NAME
+	if(aname==CLASS_NAMETEXT)
+		return new VString(env_class_name);
+
 	// $env:PARSER_VERSION
 	if(aname==PARSER_VERSION_ELEMENT_NAME)
 		return new VString(parser_version);
