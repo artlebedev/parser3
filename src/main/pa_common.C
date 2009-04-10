@@ -1,7 +1,7 @@
 /** @file
 	Parser: commonly functions.
 
-	Copyright(c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright(c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
  * BASE64 part
@@ -26,7 +26,7 @@
  *
  */
 
-static const char * const IDENT_COMMON_C="$Date: 2009/01/25 02:05:33 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2009/04/10 11:32:38 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -1315,6 +1315,7 @@ static void file_crc32_file_action(
 char* print_pcre_exec_error_text(int exec_result){
 	switch(exec_result){
 		case PCRE_ERROR_BADUTF8:
+		case PCRE_ERROR_BADUTF8_OFFSET:
 			return "validation of UTF-8 string failed while pcre_exec (%d).";
 			break;
 		default:
