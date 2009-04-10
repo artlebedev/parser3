@@ -8,7 +8,7 @@
 #ifndef PA_VMATH_H
 #define PA_VMATH_H
 
-static const char * const IDENT_VMATH_H="$Date: 2005/08/09 08:14:55 $";
+static const char * const IDENT_VMATH_H="$Date: 2009/04/10 02:23:50 $";
 
 // includes
 
@@ -17,7 +17,8 @@ static const char * const IDENT_VMATH_H="$Date: 2005/08/09 08:14:55 $";
 
 // defines
 
-#define PI 3.1415926535
+#define PI		3.14159265358979
+#define MathE	2.718281828459
 
 /**
 */

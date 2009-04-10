@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_VMATH_C="$Date: 2005/08/09 08:14:55 $";
+static const char * const IDENT_VMATH_C="$Date: 2009/04/10 02:23:50 $";
 
 #include "pa_vmath.h"
 #include "pa_vdouble.h"
@@ -18,4 +18,5 @@ extern Methoded* math_base_class;
 
 VMath::VMath(): VStateless_class(0, math_base_class) {
 	fconsts.put(String::Body("PI"), new VDouble(PI));
+	fconsts.put(String::Body("E"), new VDouble(MathE));
 }
