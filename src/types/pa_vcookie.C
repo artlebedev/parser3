@@ -1,11 +1,11 @@
 /** @file
 	Parser: cookie class.
 
-	Copyright(c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright(c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VCOOKIE_C="$Date: 2008/09/04 09:36:04 $";
+static const char * const IDENT_VCOOKIE_C="$Date: 2009/04/10 11:41:10 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -41,6 +41,10 @@ Value* VCookie::get_element(const String& aname, Value& /*aself*/, bool /*lookin
 	// $CLASS
 	if(aname==CLASS_NAME)
 		return this;
+
+	// $CLASS_NAME
+	if(aname==CLASS_NAMETEXT)
+		return new VString(cookie_class_name);
 
 	// $fields
 	if(aname==COOKIE_FIELDS_ELEMENT_NAME){
