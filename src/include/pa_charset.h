@@ -1,14 +1,14 @@
 /** @file
 	Parser: Charset connection decl.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_CHARSET_H
 #define PA_CHARSET_H
 
-static const char * const IDENT_CHARSET_H="$Date: 2008/08/15 15:28:52 $";
+static const char * const IDENT_CHARSET_H="$Date: 2009/04/10 11:31:34 $";
 
 
 #include "pa_exception.h"
@@ -32,12 +32,12 @@ static const char * const IDENT_CHARSET_H="$Date: 2008/08/15 15:28:52 $";
 
 #define MAX_CHARSET_UNI_CODES 500
 
-#	ifndef XMLCh 
-		typedef unsigned int XMLCh;
-#	endif
-#	ifndef XMLByte
-		typedef unsigned char XMLByte;
-#	endif
+#ifndef XMLCh 
+	typedef unsigned int XMLCh;
+#endif
+#ifndef XMLByte
+	typedef unsigned char XMLByte;
+#endif
 
 // helpers
 
