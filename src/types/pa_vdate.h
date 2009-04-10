@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b date parser class decl.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VDATE_H
 #define PA_VDATE_H
 
-static const char * const IDENT_VDATE_H="$Date: 2008/09/04 09:36:14 $";
+static const char * const IDENT_VDATE_H="$Date: 2009/04/10 11:37:33 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -63,7 +63,7 @@ public: // Value
 	tm& get_localtime()
 	{
 		char saved_tz[MAX_STRING];
-		static char saved_tz_pair[MAX_STRING]; //TODO: this is NOT thread safe!
+		static char saved_tz_pair[MAX_STRING]; // @TODO: this is NOT thread safe!
 		static char temp_tz_pair[MAX_STRING];
 		if(ftz_cstr) {
 			if(const char* ltz=getenv("TZ")) {

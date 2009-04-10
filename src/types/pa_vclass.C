@@ -1,11 +1,11 @@
 /**	@file
 	Parser: @b class parser class impl.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VCLASS_C="$Date: 2008/06/16 12:42:20 $";
+static const char * const IDENT_VCLASS_C="$Date: 2009/04/10 11:41:35 $";
 
 #include "pa_vclass.h"
 
@@ -73,7 +73,7 @@ Value* VClass::get_element(const String& aname, Value& aself, bool alooking_up) 
 
 	// $CLASS, $method, or other base element
 	if(Value* result=VStateless_class::get_element(aname, aself, false))
-		return result; // TODO: this can be SIGNIFICANTLY sped up by caching in ffields! [THOUGH decide about different aself] // what REALLY would speed up things is to join storage of properties/methods/fields of all vobject parents into last descenant [sort of vmt + all fields as in other langs]
+		return result; // @TODO: this can be SIGNIFICANTLY sped up by caching in ffields! [THOUGH decide about different aself] // what REALLY would speed up things is to join storage of properties/methods/fields of all vobject parents into last descenant [sort of vmt + all fields as in other langs]
 
 	if(property_but_no_getter_in_self)
 		throw Exception(PARSER_RUNTIME,
