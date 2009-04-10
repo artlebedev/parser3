@@ -8,7 +8,7 @@
 #ifndef PA_VFORM_H
 #define PA_VFORM_H
 
-static const char * const IDENT_VFORM_H="$Date: 2008/06/07 17:28:09 $";
+static const char * const IDENT_VFORM_H="$Date: 2009/04/10 11:38:39 $";
 
 // includes
 
@@ -48,7 +48,7 @@ public: // Value
 	
 	const char* type() const { return "form"; }
 	
-	// form: CLASS,method,field,tables field
+	// form: CLASS,CLASS_NAME,fields,tables,files,imap,method,field
 	Value* get_element(const String& aname, Value& aself, bool /*looking_up*/);
 	Charset* get_post_charset();
 
