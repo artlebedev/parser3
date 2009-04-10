@@ -1,11 +1,11 @@
 /** @file
 	Parser: @b request class.
 
-	Copyright(c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright(c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VREQUEST_C="$Date: 2008/06/07 17:28:50 $";
+static const char * const IDENT_VREQUEST_C="$Date: 2009/04/10 11:39:47 $";
 
 #include "pa_vrequest.h"
 #include "pa_request_info.h"
@@ -24,10 +24,10 @@ VRequest::VRequest(Request_info& ainfo, Request_charsets& acharsets, VForm& afor
 		finfo(ainfo), 
 		fcharsets(acharsets),
 		fform(aform) {
-   
+
 	if(ainfo.argv) {
 		for (size_t i = ainfo.args_skip; ainfo.argv[i]; i++) {
-        	char *name = new(PointerFreeGC) char[3 /* max 999 argvs */ + 1/* terminating 0 */];
+			char *name = new(PointerFreeGC) char[3 /* max 999 argvs */ + 1/* terminating 0 */];
 
 			char *value = new(PointerFreeGC) char[strlen(ainfo.argv[i])+1];
 			strcpy(value, ainfo.argv[i]);
@@ -40,7 +40,6 @@ VRequest::VRequest(Request_info& ainfo, Request_charsets& acharsets, VForm& afor
 	}
 }
 
-// request: CLASS,method,field
 Value* VRequest::get_element(const String& aname, Value&  /*aself*/, bool /*looking_up*/) {
 	// $request:charset
 	if(aname==CHARSET_NAME)
@@ -54,6 +53,14 @@ Value* VRequest::get_element(const String& aname, Value&  /*aself*/, bool /*look
 			return new VVoid();
 	}
 	
+	// $CLASS
+	if(aname==CLASS_NAME)
+		return this;
+
+	// $CLASS_NAME
+	if(aname==CLASS_NAMETEXT)
+		return new VString(request_class_name);
+
 	// $request:argv
 	if(aname==REQUEST_ARGV_ELEMENT_NAME)
 		return new VHash(fargv);

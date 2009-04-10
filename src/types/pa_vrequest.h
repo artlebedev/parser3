@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b request class decl.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VREQUEST_H
 #define PA_VREQUEST_H
 
-static const char * const IDENT_VREQUEST_H="$Date: 2008/06/07 17:28:50 $";
+static const char * const IDENT_VREQUEST_H="$Date: 2009/04/10 11:39:47 $";
 
 // includes
 
@@ -20,6 +20,8 @@ static const char * const IDENT_VREQUEST_H="$Date: 2008/06/07 17:28:50 $";
 #define REQUEST_CLASS_NAME "request"
 #define REQUEST_ARGV_ELEMENT_NAME "argv"
 #define POST_CHARSET_NAME "post-charset"
+
+static const String request_class_name(REQUEST_CLASS_NAME);
 
 // forwards
 
@@ -40,7 +42,7 @@ public: // Value
 	/// VRequest: 0
 	override VStateless_class *get_class() { return 0; }
 
-	/// request: fields
+	/// request: CLASS,CLASS_NAME,field
 	override Value* get_element(const String& name, Value& aself, bool /*looking_up*/);
 
 	/// request: (key)=value
