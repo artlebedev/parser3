@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2009/04/10 11:31:06 $";
+static const char * const IDENT_STRING_C="$Date: 2009/04/11 03:40:06 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -376,7 +376,6 @@ static void _match(Request& r, MethodParams& params) {
 			regexp.as_string(), options,
 			search_action, 0,
 			matches_count);
-		// r.write_assign_lang(*new VTable(table));
 		if(table){
 			r.write_assign_lang(*new VTable(table));
 		} else {
@@ -399,7 +398,7 @@ static void _match(Request& r, MethodParams& params) {
 			*replacement_code.get_junction()->method_frame, 
 			match_var_name, vtable);
 		src.match(r.charsets.source(),
-			r.process_to_string(regexp), options,
+			regexp.as_string(), options,
 			replace_action, &info,
 			matches_count);
 		r.write_assign_lang(result);
