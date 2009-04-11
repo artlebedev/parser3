@@ -1,18 +1,21 @@
 /** @file
 	Parser: response class.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VRESPONSE_H
 #define PA_VRESPONSE_H
 
-static const char * const IDENT_VRESPONSE_H="$Date: 2005/08/09 08:14:55 $";
+static const char * const IDENT_VRESPONSE_H="$Date: 2009/04/11 03:23:05 $";
 
 #include "pa_vstateless_object.h"
 #include "pa_string.h"
 #include "classes.h"
+
+// defines
+#define RESPONSE_CLASS_NAME "response"
 
 // forwards
 
@@ -34,7 +37,7 @@ class VResponse: public VStateless_object {
 
 public: // Value
 	
-	override const char* type() const { return "response"; }
+	override const char* type() const { return RESPONSE_CLASS_NAME; }
 	override VStateless_class *get_class() { return response_class; }
 
 	/// Response: ffields
