@@ -1,0 +1,36 @@
+content-type: text/html
+content-length: 585
+
+<table border="1">
+<tr>
+<th>class</th>
+<th>$class:CLASS_NAME</th>
+<th>$var[$class:CLASS]<br />$var.CLASS_NAME</th>
+<th>$var[$class:CLASS]<br />^if($var is "class"){yes (class)}</th>
+</tr>
+<tr>
+<td>form</td>
+<td>form</td>
+<td>form</td><td>yes (form)</td>
+</tr>
+<tr>
+<td>cookie</td>
+<td>cookie</td>
+<td>cookie</td><td>yes (cookie)</td>
+</tr>
+<tr>
+<td>env</td>
+<td>env</td>
+<td>env</td><td>yes (env)</td>
+</tr>
+<tr>
+<td>console</td>
+<td>console</td>
+<td>console</td><td>yes (console)</td>
+</tr>
+<tr>
+<td>request</td>
+<td>request</td>
+<td>request</td><td>yes (request)</td>
+</tr>
+</table>
