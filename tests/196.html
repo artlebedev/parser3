@@ -1,0 +1,51 @@
+@main[]
+$tList[^table::create{name
+form
+cookie
+env
+console
+request
+}]
+
+<table border="1">
+<tr>
+<th>class</th>
+<th>^$class:CLASS_NAME</th>
+<th>^$var[^$class:CLASS]<br />^$var.CLASS_NAME</th>
+<th>^$var[^$class:CLASS]<br />^^if(^$var is "class"){yes (class)}</th>
+</tr>
+
+<tr>
+<td>form</td>
+<td>$form:CLASS_NAME</td>
+^do[$form:CLASS]
+</tr>
+
+<tr>
+<td>cookie</td>
+<td>$cookie:CLASS_NAME</td>
+^do[$cookie:CLASS]
+</tr>
+
+<tr>
+<td>env</td>
+<td>$env:CLASS_NAME</td>
+^do[$env:CLASS]
+</tr>
+
+<tr>
+<td>console</td>
+<td>$console:CLASS_NAME</td>
+^do[$console:CLASS]
+</tr>
+
+<tr>
+<td>request</td>
+<td>$request:CLASS_NAME</td>
+^do[$request:CLASS]
+</tr>
+</table>
+
+
+@do[var]
+$result[<td>$var.CLASS_NAME</td><td>^tList.menu{^if($var is "$tList.name"){yes ($tList.name)}}[, ]</td>]
