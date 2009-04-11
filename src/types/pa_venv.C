@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Date: 2009/04/10 11:37:02 $";
+static const char * const IDENT="$Date: 2009/04/11 03:20:58 $";
 
 #include "pa_venv.h"
 #include "pa_vstring.h"
@@ -16,11 +16,11 @@ static const char * const IDENT="$Date: 2009/04/10 11:37:02 $";
 static const String parser_version(PARSER_VERSION);
 
 Value* VEnv::get_element(const String& aname, Value& /*aself*/, bool /*looking_up*/) {
-	// $CLASS
+	// $env:CLASS
 	if(aname==CLASS_NAME)
 		return this;
 
-	// $CLASS_NAME
+	// $env:CLASS_NAME
 	if(aname==CLASS_NAMETEXT)
 		return new VString(env_class_name);
 
@@ -28,9 +28,9 @@ Value* VEnv::get_element(const String& aname, Value& /*aself*/, bool /*looking_u
 	if(aname==PARSER_VERSION_ELEMENT_NAME)
 		return new VString(parser_version);
 
-	// getenv
-	String& result=*new String;
+	// $env:field
 	if(const char* local_value=SAPI::get_env(finfo, aname.cstr()))
-		result.append_help_length(strdup(local_value), 0, String::L_TAINTED);
-	return new VString(result);
+		return new VString(*new String(strdup(local_value), true));
+	
+	return 0;
 }

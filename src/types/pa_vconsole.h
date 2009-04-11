@@ -8,7 +8,7 @@
 #ifndef PA_VCONSOLE_H
 #define PA_VCONSOLE_H
 
-static const char * const IDENT_VCONSOLE_H="$Date: 2009/04/10 11:38:15 $";
+static const char * const IDENT_VCONSOLE_H="$Date: 2009/04/11 03:21:21 $";
 
 // includes
 
@@ -32,14 +32,13 @@ public: // Value
 	/// VConsole: 0
 	VStateless_class *get_class() { return 0; }
 
-	/// console: line,CLASS,CLASS_NAME
+	/// console: line, CLASS, CLASS_NAME
 	Value* get_element(const String& aname, Value& /*aself*/, bool /*looking_up*/) {
 		// $line
 		if(aname==CONSOLE_LINE_NAME) {
 			char local_value[MAX_STRING];
-			if(fgets(local_value, sizeof(local_value), stdin)) {
+			if(fgets(local_value, sizeof(local_value), stdin))
 				return new VString(*new String(strdup(local_value), true));
-			}
 
 			return 0; // EOF
 		}
@@ -62,8 +61,7 @@ public: // Value
 		// $line
 		if(aname==CONSOLE_LINE_NAME) {
 			fused=true;
-			const char* cstr=avalue->as_string().cstr();
-			puts(cstr);
+			puts(avalue->as_string().cstr());
 			fflush(stdout);
 
 			return PUT_ELEMENT_REPLACED_ELEMENT;
