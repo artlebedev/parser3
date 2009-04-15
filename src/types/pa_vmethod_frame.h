@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2009/04/15 04:49:50 $";
+static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2009/04/15 07:41:45 $";
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
@@ -87,7 +87,6 @@ public:
 	const String& as_string(int index, const char* msg) { 
 		return as_no_junction(index, msg).as_string();
 	}
-
 private:
 
 	/// handy value-is/not-a-junction ensurer
@@ -116,7 +115,6 @@ protected:
 	HashStringValue* my;/*OR*/MethodParams* fnumbered_params;
 	Value* fself;
 
-	Value* fresult_initial_void;
 	typedef const VJunction* (VMethodFrame::*put_element_t)(const String& aname, Value* avalue);
 	put_element_t put_element_impl;
 
@@ -159,6 +157,13 @@ public: // Value
 	/// VMethodFrame: my or self_transparent
 	override const VJunction* put_element(Value& /*aself*/, const String& aname, Value* avalue, bool /*areplace*/) {
 		return (this->*put_element_impl)(aname, avalue);
+	}
+
+	/// VMethodFrame: appends a fstring to result
+	override void write(const String& astring, String::Language alang) {
+		if(!get_result_variable()){
+			fstring.append(astring, alang);
+		}
 	}
 
 private:

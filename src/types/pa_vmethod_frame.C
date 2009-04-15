@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)\
 */
 
-static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2009/04/15 04:49:50 $";
+static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2009/04/15 07:41:45 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
@@ -13,6 +13,7 @@ static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2009/04/15 04:49:50 $
 // globals
 
 const String result_var_name(RESULT_VAR_NAME);
+const uint result_var_hash_code(hash_code(result_var_name));
 
 // MethodParams: methods
 
@@ -33,8 +34,6 @@ VMethodFrame::VMethodFrame(
 	my(0), fnumbered_params(0),
 	fself(0),
 
-	fresult_initial_void(0),
-	
 	junction(ajunction) {
 
 	put_element_impl=(junction.method->all_vars_local)?&VMethodFrame::put_element_local:&VMethodFrame::put_element_global;
@@ -55,13 +54,15 @@ VMethodFrame::VMethodFrame(
 			}
 		}
 		{ // always there is one local: $result
-			fresult_initial_void=VVoid::get();
-			set_my_variable(result_var_name, *fresult_initial_void);
+			set_my_variable(result_var_name, *VVoid::get());
 		}
 	}
 }
 
 Value* VMethodFrame::get_result_variable() {
-	Value* result=my?my->get(result_var_name):0;
-	return result!=fresult_initial_void ? result : 0;
+	if(!my)
+		return 0;
+
+	Value* result=my->get_by_hash_code(result_var_hash_code, result_var_name);
+	return result!=VVoid::get()?result:0;
 }
