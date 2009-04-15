@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_UNTAINT_C="$Date: 2009/01/25 02:01:01 $";
+static const char * const IDENT_UNTAINT_C="$Date: 2009/04/15 07:48:13 $";
 
 
 #include "pa_string.h"
@@ -192,7 +192,7 @@ String& String::append_to(String& dest, Language lang, bool forced) const {
 	// first: fragment infos
 	
 	if(lang==L_PASS_APPENDED) // without language-change?
-		dest.langs.append(dest.body, body.length(), langs);
+		dest.langs.appendHelper(dest.body, body, langs);
 	else if(forced) //forcing passed lang?
 		dest.langs.append(dest.body, lang, length());
 	else { 

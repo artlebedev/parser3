@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-static const char * const IDENT_STRING_H="$Date: 2009/01/25 01:59:42 $";
+static const char * const IDENT_STRING_H="$Date: 2009/04/15 07:47:36 $";
 
 // includes
 #include "pa_types.h"
@@ -57,6 +57,8 @@ inline size_t get_length(T current) {
 	- whether they are tainted or not, 
 	  and the lang which should be used to detaint them
 */
+
+
 class String: public PA_Object {
 public:
 
@@ -107,6 +109,7 @@ public:
 		TRIM_START,
 		TRIM_END
 	};
+
 
 	union Languages {
 
@@ -182,10 +185,26 @@ public:
 			append(current, CORD_chars((char)alang, asize));
 		}
 
+		template<typename C>
+		void appendHelper(C current, Language alang, C asize_helper) {
+			assert(alang);
+
+			if(!opt.is_not_just_lang)
+				if(opt.lang) {
+					if(opt.lang==alang) // same length? ignoring
+						return;
+				} else {
+					opt.lang=alang; // to uninitialized
+					return;
+				}
+
+			append(current, CORD_chars((char)alang, asize_helper.length()));
+		}
+
+
 		/// MUST be called exactly prior to modification of current [uses it's length]
 		template<typename C>
-		void append(C current, size_t appending_length, 
-			const Languages src) {
+		void append(C current, size_t appending_length, const Languages src) {
 			assert(appending_length);
 
 			if(!langs)
@@ -195,7 +214,20 @@ public:
 			else
 				append(current, src.make_langs(appending_length));
 		}
-		
+
+
+		template<typename C>
+		void appendHelper(C current, C length_helper, const Languages src) {
+
+			if(!langs)
+				langs=src.langs; // to uninitialized
+			else if(!src.opt.is_not_just_lang)
+				appendHelper(current, src.opt.lang, length_helper); // simplifying when simple source
+			else
+				append(current, src.make_langs(length_helper));
+		}
+
+
 		/// MUST be called exactly prior to modification of current [uses it's length]
 		template<typename C>
 		void append(C current,
