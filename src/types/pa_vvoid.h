@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b void parser class.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VVOID_H
 #define PA_VVOID_H
 
-static const char * const IDENT_VVOID_H="$Date: 2005/08/09 08:14:56 $";
+static const char * const IDENT_VVOID_H="$Date: 2009/04/15 04:47:46 $";
 
 #include "classes.h"
 #include "pa_vstateless_object.h"
@@ -54,6 +54,11 @@ public: // Value
 	/// VVoid: bark
 	override const VJunction* put_element(Value& aself, const String& aname, Value* avalue, bool areplace) { 
 		return Value::put_element(aself, aname, avalue, areplace);
+	}
+
+	inline static VVoid *get(){
+		static VVoid singleton;
+		return &singleton;
 	}
 
 private:
