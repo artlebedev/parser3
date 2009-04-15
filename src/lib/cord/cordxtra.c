@@ -435,7 +435,16 @@ char CORD_nul_func(size_t i, void * client_data)
 
 CORD CORD_chars(char c, size_t i)
 {
-    return(CORD_from_fn(CORD_nul_func, (void *)(unsigned long)c, i));
+	if (i>0 && i<16 /* SHORT_LIMIT */) {
+		register char* result;
+		result=GC_MALLOC_ATOMIC(i+1);
+		if(result==0) OUT_OF_MEMORY;
+		memset(result, c, i);
+		result[i] = '\0';
+		return((CORD) result);
+	} else {
+		return(CORD_from_fn(CORD_nul_func, (void *)(unsigned long)c, i));
+	}
 }
 
 CORD CORD_from_file_eager(FILE * f)
