@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b method_frame write context
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2008/08/11 13:15:14 $";
+static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2009/04/15 04:49:50 $";
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
@@ -232,7 +232,7 @@ public: // usage
 			size_t param_count=method.params_names->count();
 			for(; store_param_index<param_count; store_param_index++) {
 				const String& fname=*(*method.params_names)[store_param_index];
-				my->put(fname, new VVoid);
+				my->put(fname, VVoid::get());
 			}
 		}
 	}

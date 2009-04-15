@@ -1,11 +1,11 @@
 /** @file
 	Parser: @b table parser class.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2009/01/25 02:04:00 $";
+static const char * const IDENT_TABLE_C="$Date: 2009/04/15 04:50:48 $";
 
 #ifndef NO_STRINGSTREAM
 #include <sstream>
@@ -1107,7 +1107,7 @@ void unmarshal_bind_updates(HashStringValue& hash, int placeholder_count, SQL_Dr
 		if(ph->were_updated) {
 			Value* value;
 			if(ph->is_null)
-				value=new VVoid();
+				value=VVoid::get();
 			else
 				if(ph->value)
 					value=new VString(*new String(ph->value, 0, true/*tainted*/));

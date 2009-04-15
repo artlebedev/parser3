@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VREQUEST_C="$Date: 2009/04/10 11:39:47 $";
+static const char * const IDENT_VREQUEST_C="$Date: 2009/04/15 04:49:50 $";
 
 #include "pa_vrequest.h"
 #include "pa_request_info.h"
@@ -50,7 +50,7 @@ Value* VRequest::get_element(const String& aname, Value&  /*aself*/, bool /*look
 		if(Charset* post_charset=fform.get_post_charset())
 			return new VString(*new String(post_charset->NAME(), String::L_TAINTED));
 		else
-			return new VVoid();
+			return VVoid::get();
 	}
 	
 	// $CLASS

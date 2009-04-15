@@ -1,11 +1,11 @@
 /**	@file
 	Parser: method frame class.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)\
 */
 
-static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2008/06/16 12:43:58 $";
+static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2009/04/15 04:49:50 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
@@ -51,11 +51,11 @@ VMethodFrame::VMethodFrame(
 			for(Array_iterator<const String*> i(*method.locals_names); i.has_next(); ) {
 				// speedup: not checking for clash with "result" fname
 				const String& fname=*i.next();
-				set_my_variable(fname, *new VVoid);
+				set_my_variable(fname, *VVoid::get());
 			}
 		}
 		{ // always there is one local: $result
-			fresult_initial_void=new VVoid;
+			fresult_initial_void=VVoid::get();
 			set_my_variable(result_var_name, *fresult_initial_void);
 		}
 	}

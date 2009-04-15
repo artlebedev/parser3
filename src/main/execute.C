@@ -1,11 +1,11 @@
 /** @file
 	Parser: executor part of request class.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2008/08/19 14:24:29 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2009/04/15 04:50:28 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -326,7 +326,7 @@ void Request::execute(ArrayOperation& ops) {
 				if(const String* string=wcontext->get_string())
 					value=new VString(*string);
 				else
-					value=new VVoid;
+					value=VVoid::get();
 				stack.push(*value);
 
 				wcontext=saved_wcontext;
@@ -873,7 +873,7 @@ value_ready:
 	if(value)
 		value=&process_to_value(*value); // process possible code-junction
 	else
-		value=new VVoid;
+		value=VVoid::get();
 
 	return *value;
 }

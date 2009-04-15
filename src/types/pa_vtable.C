@@ -1,11 +1,11 @@
 /** @file
 	Parser: @b table class.
 
-	Copyright(c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright(c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VTABLE_C="$Date: 2007/04/23 10:30:50 $";
+static const char * const IDENT_VTABLE_C="$Date: 2009/04/15 04:49:50 $";
 
 #include "pa_vtable.h"
 #include "pa_vstring.h"
@@ -24,7 +24,7 @@ static void store_column_item_to_hash(const String* column_name,
 	if(const String* column_item=info->table->item(*column_name))
 		value=new VString(*column_item);
 	else
-		value=new VVoid;
+		value=VVoid::get();
 	info->hash->put(*column_name, value);
 }
 Value* VTable::fields_element() {
@@ -55,7 +55,7 @@ Value* VTable::get_element(const String& aname, Value& aself, bool looking_up) {
 			if(const String* string=ftable->item(index)) // there is such column
 				return new VString(*string);
 			else
-				return new VVoid;
+				return VVoid::get();
 	}
 
 	throw Exception(PARSER_RUNTIME,
