@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2009/04/10 11:33:16 $";
+static const char * const IDENT_STRING_C="$Date: 2009/04/15 07:44:25 $";
 
 #include "pa_string.h"
 #include "pa_exception.h"
@@ -229,9 +229,13 @@ static int CORD_batched_iter_fn_generic_hash_code(const char*  s, void * client_
 };
 uint String::Body::hash_code() const {
 	uint result=0;
-	CORD_iter5(body, 0,
-		CORD_batched_iter_fn_generic_hash_code, 
-		CORD_batched_iter_fn_generic_hash_code, &result);
+	if (body && CORD_IS_STRING(body)){
+		generic_hash_code(result, body);
+	} else {
+		CORD_iter5(body, 0,
+			CORD_batched_iter_fn_generic_hash_code, 
+			CORD_batched_iter_fn_generic_hash_code, &result);
+	}
 	return result;
 }
 
@@ -279,10 +283,16 @@ String& String::append_strdup(const char* str, size_t helper_length, Language la
 	return *this;
 }
 
+int CORD_batched_len(const char * s, size_t *len){
+	(*len)+=lengthUTF8( (const XMLByte *)s, (const XMLByte *)s+strlen(s));
+	return 0;
+}
+
 size_t String::length(Charset& charset) const {
 	if(charset.isUTF8()){
-		const XMLByte* srcPtr=(const XMLByte*)cstrm();
-		return lengthUTF8(srcPtr, srcPtr+body.length());
+		size_t len=0;
+		body.for_each<size_t *>(NULL, CORD_batched_len, &len);
+		return len;
 	} else
 		return body.length();
 }
