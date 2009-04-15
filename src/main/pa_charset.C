@@ -5,7 +5,7 @@
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_CHARSET_C="$Date: 2009/04/15 04:51:40 $";
+static const char * const IDENT_CHARSET_C="$Date: 2009/04/15 07:42:46 $";
 
 #include "pa_charset.h"
 #include "pa_charsets.h"
@@ -660,9 +660,9 @@ const String::C Charset::transcodeToUTF8(const String::C src) const {
 	size_t dest_length=0;
 	const XMLByte* srcPtr=(XMLByte*)src.str;
 	const XMLByte* srcEnd=srcPtr+src_length;
-	XMLByte firstByte;
-	XMLCh UTF8Char;
-	while(uint charSize=skipChar(srcPtr, srcEnd))
+ 	XMLByte firstByte;
+ 	XMLCh UTF8Char;
+	while(uint charSize=readChar(srcPtr, srcEnd, firstByte, UTF8Char, tables))
 		dest_length+=charSize;
 #else
 	size_t dest_length=src_length*6; // so that surly enough (max utf8 seq len=6) but too memory-hyngry
