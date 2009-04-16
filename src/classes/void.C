@@ -1,11 +1,11 @@
 /** @file
 	Parser: @b VOID parser class.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VOID_C="$Date: 2008/09/04 13:15:36 $";
+static const char * const IDENT_VOID_C="$Date: 2009/04/16 01:10:22 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -69,8 +69,7 @@ static void _double(Request& r, MethodParams& params) {
 
 static void _bool(Request& r, MethodParams& params) {
 	VVoid& vvoid=GET_SELF(r, VVoid);
-	r.write_no_lang(*new VBool(
-		params.count()==0?vvoid.as_bool():params.as_bool(0, "default must be bool", r)));
+	r.write_no_lang(VBool::get(params.count()==0?vvoid.as_bool():params.as_bool(0, "default must be bool", r)));
 }
 
 #ifndef DOXYGEN

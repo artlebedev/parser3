@@ -1,11 +1,11 @@
 /**	@file
 	Parser: stateless class.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)\
 */
 
-static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2008/08/14 16:27:40 $";
+static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2009/04/16 01:09:01 $";
 
 #include "pa_vstateless_class.h"
 #include "pa_vproperty.h"
@@ -13,7 +13,7 @@ static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2008/08/14 16:27:40 $
 #include "pa_vbool.h"
 
 override Value& VStateless_class::as_expr_result(bool /*return_string_as_is=false*/) {
-	return *new VBool(as_bool());
+	return VBool::get(as_bool());
 }
 
 /// @TODO why?! request must be different ptr from global [used in VStateless_class.add_method]

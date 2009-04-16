@@ -1,13 +1,13 @@
 /** @node
 	Parser: @b dnode parser type.
 
-	Copyright(c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright(c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 #include "pa_config_includes.h"
 #ifdef XML
 
-static const char * const IDENT_VXNODE_C="$Date: 2007/10/23 13:56:46 $";
+static const char * const IDENT_VXNODE_C="$Date: 2009/04/16 01:09:01 $";
 
 #include "pa_vxnode.h"
 #include "pa_vxdoc.h"
@@ -23,7 +23,7 @@ Request_charsets& VXnode::charsets() {
 }
 
 /// VXnode: true	 
-Value& VXnode::as_expr_result(bool /*return_string_as_is=false*/) { return *new VBool(as_bool()); }
+Value& VXnode::as_expr_result(bool /*return_string_as_is=false*/) { return VBool::get(as_bool()); }
 
 
 Value* VXnode::get_element(const String& aname, Value& aself, bool looking_up) { 
@@ -105,7 +105,7 @@ Value* VXnode::get_element(const String& aname, Value& aself, bool looking_up) {
 			break;
 		case XML_ATTRIBUTE_NODE: 
 			if(aname=="specified")
-				return new VBool(true); // were not working in gdome, leaving out
+				return &VBool::get(true); // were not working in gdome, leaving out
 			else if(aname=="name")
 				return new VString(charsets().source().transcode(selfNode.name));
 			else if(aname=="value")

@@ -1,11 +1,11 @@
 /** @file
 	Parser: @b double parser class.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_DOUBLE_C="$Date: 2007/04/23 10:30:09 $";
+static const char * const IDENT_DOUBLE_C="$Date: 2009/04/16 01:10:21 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -58,7 +58,7 @@ static void _bool(Request& r, MethodParams& params) {
 		params.as_double(0, "default must be bool", r);
 
 	VDouble& vdouble=GET_SELF(r, VDouble);
-	r.write_no_lang(*new VBool(vdouble.as_bool()));
+	r.write_no_lang(VBool::get(vdouble.as_bool()));
 }
 
 typedef void (*vdouble_op_func_ptr)(VDouble& vdouble, double param);

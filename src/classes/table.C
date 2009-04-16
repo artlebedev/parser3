@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2009/04/15 04:50:48 $";
+static const char * const IDENT_TABLE_C="$Date: 2009/04/16 01:10:21 $";
 
 #ifndef NO_STRINGSTREAM
 #include <sstream>
@@ -951,7 +951,7 @@ static void _locate(Request& r, MethodParams& params) {
 	bool result=params[0].get_junction()?
 		_locate_expression(table, o, r, params) :
 		_locate_name_value(table, o, r, params);
-	r.write_no_lang(*new VBool(result));
+	r.write_no_lang(VBool::get(result));
 }
 
 

@@ -1,11 +1,11 @@
 /** @file
 	Parser: request class main part. @see compile.C and execute.C.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REQUEST_C="$Date: 2008/07/15 12:54:37 $";
+static const char * const IDENT_REQUEST_C="$Date: 2009/04/16 01:09:54 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -985,7 +985,7 @@ Request::Exception_details Request::get_details(const Exception& e) {
 			new VString(*new String(comment, 0, true/*tainted*/)));
 
 	// $.handled(0)
-	hash.put(exception_handled_part_name, new VBool(false));
+	hash.put(exception_handled_part_name, &VBool::get(false));
 
 	return Request::Exception_details(trace, problem_source, vhash);
 }

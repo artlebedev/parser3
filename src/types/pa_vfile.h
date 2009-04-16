@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b file parser type decl.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VFILE_H
 #define PA_VFILE_H
 
-static const char * const IDENT_VFILE_H="$Date: 2007/04/23 10:30:49 $";
+static const char * const IDENT_VFILE_H="$Date: 2009/04/16 01:08:26 $";
 
 // include
 
@@ -46,7 +46,7 @@ public: // Value
 	override bool as_bool() const { return true; }
 
 	/// VFile: true
-	override Value& as_expr_result(bool /*return_string_as_is=false*/) { return *new VBool(as_bool()); }
+	override Value& as_expr_result(bool /*return_string_as_is=false*/) { return VBool::get(as_bool()); }
 
 	/// VFile: this
 	override VFile* as_vfile(String::Language /*lang*/, 

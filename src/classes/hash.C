@@ -1,11 +1,11 @@
 /** @file
 	Parser: @b hash parser class.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_HASH_C="$Date: 2008/07/03 09:17:57 $";
+static const char * const IDENT_HASH_C="$Date: 2009/04/16 01:10:21 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -292,7 +292,7 @@ static void _intersects(Request& r, MethodParams& params) {
 		result=GET_SELF(r, VHash).hash().first_that<HashStringValue*>(intersects, b)!=0;
 
 	// return result
-	r.write_no_lang(*new VBool(result));
+	r.write_no_lang(VBool::get(result));
 }
 
 
@@ -411,9 +411,8 @@ static void _delete(Request& r, MethodParams& params) {
 }
 
 static void _contains(Request& r, MethodParams& params) {
-
-	bool result = GET_SELF(r, VHash).hash().contains(params.as_string(0, "key must be string"));
-	r.write_no_lang(*new VBool(result));
+	bool result=GET_SELF(r, VHash).hash().contains(params.as_string(0, "key must be string"));
+	r.write_no_lang(VBool::get(result));
 }
 
 #ifndef DOXYGEN

@@ -7,7 +7,7 @@
 #include "classes.h"
 #ifdef XML
 
-static const char * const IDENT_XNODE_C="$Date: 2009/04/10 11:31:06 $";
+static const char * const IDENT_XNODE_C="$Date: 2009/04/16 01:10:22 $";
 
 #include "pa_vmethod_frame.h"
 
@@ -330,7 +330,7 @@ static void _hasChildNodes(Request& r, MethodParams&) {
 	xmlNode& node=vnode.get_xmlnode();
 
 	// write out result
-	r.write_no_lang(*new VBool(node.children!=0));
+	r.write_no_lang(VBool::get(node.children!=0));
 }
 
 // Node cloneNode(in boolean deep);
@@ -558,7 +558,7 @@ static void _hasAttribute(Request& r, MethodParams& params) {
 
 	// @todo: when name="xmlns"
 	// write out result
-	r.write_no_lang(*new VBool(xmlHasProp(&element, name)!=0));
+	r.write_no_lang(VBool::get(xmlHasProp(&element, name)!=0));
 }
 
 // boolean hasAttributeNS(n DOMString namespaceURI, in DOMString localName) raises(DOMException);
@@ -570,7 +570,7 @@ static void _hasAttributeNS(Request& r, MethodParams& params) {
 	const xmlChar* localName=as_xmlchar(r, params, 1, LOCALNAME_MUST_BE_STRING);
 
 	// write out result
-	r.write_no_lang(*new VBool(xmlHasNsProp(&element, localName, namespaceURI)!=0));
+	r.write_no_lang(VBool::get(xmlHasNsProp(&element, localName, namespaceURI)!=0));
 }
 
 // boolean hasAttributes
@@ -579,7 +579,7 @@ static void _hasAttributes(Request& r, MethodParams&) {
 	xmlNode& element=get_self_element(vnode);
 
 	// write out result
-	r.write_no_lang(*new VBool(element.properties!=0));
+	r.write_no_lang(VBool::get(element.properties!=0));
 }
 
 static void _getElementsByTagNameNS(Request& r, MethodParams& params) {
@@ -715,7 +715,7 @@ static void selectNodeHandler(Request& r,
 		}
 		break;
 	case XPATH_BOOLEAN: 
-		result=new VBool(res->boolval!=0);
+		result=&VBool::get(res->boolval!=0);
 		break;
 	case XPATH_NUMBER: 
 		result=new VDouble(res->floatval);
@@ -737,7 +737,7 @@ static void selectBoolHandler(Request&,
 			      Value*& result) {
 	switch(res->type) {
 	case XPATH_BOOLEAN: 
-		result=new VBool(res->boolval!=0);
+		result=&VBool::get(res->boolval!=0);
 		break;
 	case XPATH_NODESET: 
 		if(!(res->nodesetval && res->nodesetval->nodeNr))

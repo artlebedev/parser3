@@ -1,11 +1,11 @@
 /** @file
 	Parser: @b int parser class.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_INT_C="$Date: 2007/02/03 18:08:38 $";
+static const char * const IDENT_INT_C="$Date: 2009/04/16 01:10:21 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -57,8 +57,7 @@ static void _bool(Request& r, MethodParams& params) {
 	if(params.count()>0)
 		params.as_bool(0, "default must be bool", r);
 
-	VBool& vbool=GET_SELF(r, VBool);
-	r.write_no_lang(*new VBool(vbool));
+	r.write_no_lang(GET_SELF(r, VBool));
 }
 
 //typedef void (*vbool_op_func_ptr)(VBool& vbool, double param);

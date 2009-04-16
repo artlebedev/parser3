@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b bool class decls.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VBOOL_H
 #define PA_VBOOL_H
 
-static const char * const IDENT_VBOOL_H="$Date: 2007/02/06 17:01:12 $";
+static const char * const IDENT_VBOOL_H="$Date: 2009/04/16 01:07:58 $";
 
 // include
 
@@ -34,7 +34,7 @@ public: // Value
 	/// VBool: true
 	override bool is_evaluated_expr() const { return true; }
 	/// VBool: clone
-	override Value& as_expr_result(bool) { return *new VBool(fbool); }
+	override Value& as_expr_result(bool) { return VBool::get(fbool); }
 
 	/// VBool: fbool
 	virtual bool is_defined() const { return true; }
@@ -47,6 +47,11 @@ public: // Value
 	override bool as_bool() const { return fbool; }
 
 	override bool is_bool() const { return true; }
+
+	inline static VBool &get(bool abool){
+		static VBool singleton_true(true), singleton_false(false);
+		return abool?singleton_true:singleton_false;
+	}
 
 public: // usage
 

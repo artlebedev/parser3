@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2009/04/11 03:40:06 $";
+static const char * const IDENT_STRING_C="$Date: 2009/04/16 01:10:21 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -116,7 +116,7 @@ static void _bool(Request& r, MethodParams& params) {
 			rethrow; // we have a problem when no default
 	}
 
-	r.write_no_lang(*new VBool(converted));
+	r.write_no_lang(VBool::get(converted));
 }
 
 /*not static*/void _string_format(Request& r, MethodParams& params) {

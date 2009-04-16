@@ -1,13 +1,13 @@
 /** @dom
 	Parser: @b dom parser type.
 
-	Copyright(c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright(c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 #include "pa_config_includes.h"
 #ifdef XML
 
-static const char * const IDENT_VXDOC="$Date: 2007/02/09 18:06:37 $";
+static const char * const IDENT_VXDOC="$Date: 2009/04/16 01:09:01 $";
 
 #include "pa_vxdoc.h"
 #include "pa_vbool.h"
@@ -44,7 +44,7 @@ Value* VXdoc::as(const char* atype, bool ) {
 }
 
 /// VXdoc: true	 
-Value& VXdoc::as_expr_result(bool /*return_string_as_is=false*/) { return *new VBool(as_bool()); }
+Value& VXdoc::as_expr_result(bool /*return_string_as_is=false*/) { return VBool::get(as_bool()); }
 
 
 /// VXdoc: $CLASS,$method
