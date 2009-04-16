@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2009/04/15 07:41:45 $";
+static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2009/04/16 02:07:11 $";
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
@@ -162,7 +162,7 @@ public: // Value
 	/// VMethodFrame: appends a fstring to result
 	override void write(const String& astring, String::Language alang) {
 		if(!get_result_variable()){
-			fstring.append(astring, alang);
+			WContext::write(astring, alang);
 		}
 	}
 

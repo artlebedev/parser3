@@ -1,14 +1,14 @@
 /**	@file
 	Parser: write context class decl.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_WCONTEXT_H
 #define PA_WCONTEXT_H
 
-static const char * const IDENT_WCONTEXT_H="$Date: 2005/12/06 10:27:40 $";
+static const char * const IDENT_WCONTEXT_H="$Date: 2009/04/16 02:06:25 $";
 
 #include "pa_value.h"
 #include "pa_vstring.h"
@@ -50,7 +50,10 @@ public: // Value
 
 	override const char* type() const { return "wcontext"; }
 	/// WContext: accumulated fstring
-	override const String* get_string() { return &fstring; };
+	override const String* get_string() {
+		static String empty;
+		return fstring?fstring:&empty;
+	};
 
 	/// WContext: none yet | transparent
 	override VStateless_class *get_class() { return fvalue?fvalue->get_class():0; }
@@ -59,7 +62,8 @@ public: // WContext
 
 	/// appends a fstring to result
 	virtual void write(const String& astring, String::Language alang) {
-		fstring.append(astring, alang);
+		if(!fstring) fstring=new String;
+		fstring->append(astring, alang);
 	}
 	/// writes Value; raises an error if already, providing origin
 	virtual void write(Value& avalue);
@@ -82,7 +86,8 @@ public: // WContext
 		wmethod_frame first checks for $result and if there is one, returns it instead
 	*/
 	virtual StringOrValue result() {
-		return fvalue?StringOrValue(*fvalue):StringOrValue(fstring);
+		static String empty;
+		return fvalue?StringOrValue(*fvalue):StringOrValue(fstring?*fstring:empty);
 	}
 
 	void attach_junction(Junction* ajunction) {
@@ -92,7 +97,7 @@ public: // WContext
 public: // usage
 
 	WContext(Value* avalue, WContext *aparent):
-		fstring(*new String),
+		fstring(0),
 		fvalue(avalue),
 		fparent(aparent) {
 		constructing=in_expression=entered_class=entered_object=were_string_writes=false;
@@ -115,7 +120,7 @@ private:
 	void detach_junctions(); 
 
 protected:
-	String& fstring;
+	String* fstring;
 	Value* fvalue;
 
 private: // status
