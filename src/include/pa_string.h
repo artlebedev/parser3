@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-static const char * const IDENT_STRING_H="$Date: 2009/04/15 07:47:36 $";
+static const char * const IDENT_STRING_H="$Date: 2009/04/16 01:10:36 $";
 
 // includes
 #include "pa_types.h"
@@ -200,21 +200,6 @@ public:
 
 			append(current, CORD_chars((char)alang, asize_helper.length()));
 		}
-
-
-		/// MUST be called exactly prior to modification of current [uses it's length]
-		template<typename C>
-		void append(C current, size_t appending_length, const Languages src) {
-			assert(appending_length);
-
-			if(!langs)
-				langs=src.langs; // to uninitialized
-			else if(!src.opt.is_not_just_lang)
-				append(current, src.opt.lang, appending_length); // simplifying when simple source
-			else
-				append(current, src.make_langs(appending_length));
-		}
-
 
 		template<typename C>
 		void appendHelper(C current, C length_helper, const Languages src) {
