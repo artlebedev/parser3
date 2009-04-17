@@ -8,7 +8,7 @@
 #ifndef PA_METHOD_H
 #define PA_METHOD_H
 
-static const char * const IDENT_METHOD_H="$Date: 2009/04/17 09:02:54 $";
+static const char * const IDENT_METHOD_H="$Date: 2009/04/17 12:00:42 $";
 
 
 /*#include "pa_string.h"
@@ -69,7 +69,7 @@ public:
 	ArrayOperation* parser_code;/*OR*/NativeCodePtr native_code;
 	//@}
 	bool all_vars_local; // in local vars list 'locals' was specified: all vars are local
-	bool write_to_result; // write to $result detected during compilation. will not collect all writes to output scope.
+	bool allways_use_result; // write to $result detected during compilation. will not collect all writes to output scope.
 
 	Method(
 		//const String& aname,
@@ -77,7 +77,7 @@ public:
 		int amin_numbered_params_count, int amax_numbered_params_count,
 		ArrayString* aparams_names, ArrayString* alocals_names,
 		ArrayOperation* aparser_code, NativeCodePtr anative_code,
-		bool aall_vars_local=false, bool awrite_to_result=false) : 
+		bool aall_vars_local=false, bool aallways_use_result=false) : 
 
 		//name(aname),
 		call_type(call_type),
@@ -85,7 +85,7 @@ public:
 		max_numbered_params_count(amax_numbered_params_count),
 		params_names(aparams_names), locals_names(alocals_names),
 		parser_code(aparser_code), native_code(anative_code),
-		all_vars_local(aall_vars_local), write_to_result(awrite_to_result) {
+		all_vars_local(aall_vars_local), allways_use_result(aallways_use_result) {
 	}
 
 	/// call this before invoking to ensure proper actual numbered params count
