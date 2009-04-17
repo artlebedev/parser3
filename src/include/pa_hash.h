@@ -17,7 +17,7 @@
 #ifndef PA_HASH_H
 #define PA_HASH_H
 
-static const char * const IDENT_HASH_H="$Date: 2009/04/17 13:13:09 $";
+static const char * const IDENT_HASH_H="$Date: 2009/04/17 23:21:51 $";
 
 #include "pa_memory.h"
 #include "pa_types.h"
@@ -115,6 +115,13 @@ public:
 	}
 
 	~Hash() {
+		Pair **ref=refs;
+		for(int index=0; index<allocated; index++)
+			for(Pair *pair=*ref++; pair;){
+				Pair *next=pair->link;
+				delete pair;
+				pair=next;
+			}
 		delete[] refs;
 	}
 
