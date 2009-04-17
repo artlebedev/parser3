@@ -1,14 +1,14 @@
 /** @file
 	Parser: Array & Array_iterator classes decls.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_ARRAY_H
 #define PA_ARRAY_H
 
-static const char * const IDENT_ARRAY_Y="$Date: 2006/11/03 18:13:54 $";
+static const char * const IDENT_ARRAY_Y="$Date: 2009/04/17 09:55:21 $";
 
 // includes
 
@@ -76,19 +76,19 @@ public:
 
 	typedef T element_type;
 
-	Array(size_t initial=3):
-		fallocated(initial>3?initial:3),
+	inline Array(size_t initial=0):
+		fallocated(initial),
 		fused(0)
 	{
-		felements=static_cast<T*>(malloc(fallocated*sizeof(T)));
+		felements=fallocated?static_cast<T*>(malloc(fallocated*sizeof(T))):0;
 	}
 
 	/// how many items are in Array
-	size_t count() const { return fused; }
+	inline size_t count() const { return fused; }
 	/// append to array
-	Array& operator += (T src) {
+	inline Array& operator+=(T src) {
 		if(is_full())
-			expand(+2);
+			expand(fallocated>0?2:3); // 3 is PAF default, confirmed by tests
 
 		felements[fused++]=src;
 
@@ -137,24 +137,24 @@ public:
 	}
 
 	/// get index-element
-	T get(size_t index) const {
+	inline T get(size_t index) const {
 		assert(index<count());
 		return felements[index];
 	}
 
 	/// ref version of get
-	T& get_ref(size_t index) const {
+	inline T& get_ref(size_t index) const {
 		assert(index<count());
 		return felements[index];
 	}
 
 	/// put index-element
-	void put(size_t index, T element) {
+	inline void put(size_t index, T element) {
 		assert(index<count());
 		felements[index]=element;
 	}
 
-	T operator [](size_t index) const { return get(index); }
+	inline T operator [](size_t index) const { return get(index); }
 
 	/// iterate over all elements
 	template<typename I> void for_each(void (*callback)(T, I), I info) const {
@@ -194,10 +194,15 @@ protected:
 		return fused == fallocated;
 	}
 	void expand(size_t delta) {
-		size_t new_allocated=fallocated+delta;
-		felements = (T *)realloc(felements, new_allocated*sizeof(T));
-		memset(&felements[fallocated], 0, delta*sizeof(T));
-		fallocated=new_allocated;
+		if(fallocated){
+			size_t new_allocated=fallocated+delta;
+			felements = (T *)realloc(felements, new_allocated*sizeof(T));
+			memset(&felements[fallocated], 0, delta*sizeof(T));
+			fallocated=new_allocated;
+		} else {
+			fallocated=delta;
+			felements=static_cast<T*>(malloc(fallocated*sizeof(T)));
+		}
 	}
 
 private: //disabled
