@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2009/04/17 09:12:41 $";
+static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2009/04/17 09:56:21 $";
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
@@ -112,7 +112,7 @@ protected:
 	VMethodFrame *fcaller;
 
 	size_t store_param_index;
-	HashStringValue* my;/*OR*/MethodParams* fnumbered_params;
+	HashStringValue* my; /*OR*/ MethodParams fnumbered_params;
 	Value* fself;
 
 	typedef const VJunction* (VMethodFrame::*put_element_t)(const String& aname, Value* avalue);
@@ -222,8 +222,8 @@ public: // usage
 					junction.self.type(),
 					max_params);
 		
-		if(fnumbered_params) { // are this method params numbered?
-			*fnumbered_params+=&value;
+		if(!my){ // are this method params numbered?
+			fnumbered_params+=&value;
 		} else { // named param
 			// speedup: not checking for clash with "result" fname
 			const String& fname=*(*method.params_names)[store_param_index];
@@ -242,7 +242,7 @@ public: // usage
 		}
 	}
 
-	MethodParams* numbered_params() { return fnumbered_params; }
+	MethodParams* numbered_params() { return &fnumbered_params; }
 
 protected:
 
