@@ -1,14 +1,14 @@
 /** @file
 	Parser: compiler support helper functions decls.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef COMPILE_TOOLS
 #define COMPILE_TOOLS
 
-static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2008/09/02 16:14:29 $";
+static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2009/04/17 09:03:25 $";
 
 #include "pa_opcode.h"
 #include "pa_types.h"
@@ -84,6 +84,7 @@ public:
 	bool in_call_value;
 	bool explicit_result;
 	bool append;
+	bool write_to_result;
 	//@}
 	
 	/// output: filled input 'methods' and 'error' if any
@@ -114,7 +115,8 @@ public:
 		ls_sp(0),
 		in_call_value(false),
 		explicit_result(false),
-		append(false) {
+		append(false),
+		write_to_result(false) {
 
 		*cclasses+=aclass;
 	}
