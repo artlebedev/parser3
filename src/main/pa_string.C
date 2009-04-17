@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2009/04/15 07:44:25 $";
+static const char * const IDENT_STRING_C="$Date: 2009/04/17 09:59:51 $";
 
 #include "pa_string.h"
 #include "pa_exception.h"
@@ -283,15 +283,21 @@ String& String::append_strdup(const char* str, size_t helper_length, Language la
 	return *this;
 }
 
-int CORD_batched_len(const char * s, size_t *len){
-	(*len)+=lengthUTF8( (const XMLByte *)s, (const XMLByte *)s+strlen(s));
+int CORD_batched_len(const char* s, size_t* len){
+	(*len) += lengthUTF8( (const XMLByte *)s, (const XMLByte *)s+strlen(s));
+	return 0;
+}
+
+// can be called only for IS_FUNCTION(CORD) which are used only in Lang
+int CORD_batched_len(const char, size_t *len){
+	(*len)++;
 	return 0;
 }
 
 size_t String::length(Charset& charset) const {
 	if(charset.isUTF8()){
 		size_t len=0;
-		body.for_each<size_t *>(NULL, CORD_batched_len, &len);
+		body.for_each(CORD_batched_len, CORD_batched_len, &len);
 		return len;
 	} else
 		return body.length();
