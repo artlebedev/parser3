@@ -5,7 +5,7 @@
 	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.230 2008/09/02 16:14:29 misha Exp $
+	$Id: compile.y,v 1.231 2009/04/17 09:11:15 misha Exp $
 */
 
 /**
@@ -251,6 +251,7 @@ maybe_string: empty | STRING;
 code_method: '@' STRING bracketed_maybe_strings maybe_bracketed_strings maybe_comment '\n' { 
 	PC.class_add();
 	PC.explicit_result=false;
+	PC.write_to_result=false;
 
 	YYSTYPE params_names_code=$3;
 	ArrayString* params_names=0;
@@ -275,9 +276,8 @@ code_method: '@' STRING bracketed_maybe_strings maybe_bracketed_strings maybe_co
 				*locals_names+=local_name;
 		}
 	}
-	if(!all_vars_local && PC.cclass && PC.cclass->is_vars_local()){
+	if(!all_vars_local && PC.cclass && PC.cclass->is_vars_local())
 		all_vars_local=true;
-	}
 
 	Method* method=new Method(
 		//name, 
@@ -290,12 +290,16 @@ code_method: '@' STRING bracketed_maybe_strings maybe_bracketed_strings maybe_co
 
 	// todo: check [][;result;]
 } maybe_codes {
-        Method& method=*reinterpret_cast<Method*>($7);
-        // fill in the code
-        method.parser_code=$8;
-        // register in class
-        const String& name=*LA2S(*$2);
-        PC.cclass->add_method(PC.alias_method(name), method);
+		Method& method=*reinterpret_cast<Method*>($7);
+		// fill in the code
+		method.parser_code=$8;
+
+		// write to $result was detected in method's code during compilation
+		method.write_to_result=PC.write_to_result;
+
+		// register in class
+		const String& name=*LA2S(*$2);
+		PC.cclass->add_method(PC.alias_method(name), method);
 };
 
 maybe_bracketed_strings: empty | bracketed_maybe_strings;
@@ -375,6 +379,8 @@ name_expr_wdive_root: name_expr_dive_code {
 			/* skip over... */
 			diving_code->count()>=4?4/*OP::OP_VALUE+origin+string+OP::OP_GET_ELEMENTx*/:3/*OP::OP_+origin+string*/);
 	} else {
+		if(first_name && *first_name==RESULT_VAR_NAME)
+			PC.write_to_result=true;
 		O(*$$, OP::OP_WITH_ROOT); /* stack: starting context */
 		P(*$$, *diving_code);
 	}
