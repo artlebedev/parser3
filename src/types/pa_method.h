@@ -8,7 +8,7 @@
 #ifndef PA_METHOD_H
 #define PA_METHOD_H
 
-static const char * const IDENT_METHOD_H="$Date: 2009/04/17 23:20:42 $";
+static const char * const IDENT_METHOD_H="$Date: 2009/04/17 23:40:46 $";
 
 
 /*#include "pa_string.h"
@@ -68,6 +68,9 @@ public:
 	/// @name the Code
 	ArrayOperation* parser_code;/*OR*/NativeCodePtr native_code;
 	//@}
+
+	VJunction *junction_template;
+
 	bool all_vars_local; // in local vars list 'locals' was specified: all vars are local
 	bool allways_use_result; // write to $result detected. will not collect all writes to output scope.
 

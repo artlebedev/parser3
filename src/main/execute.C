@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2009/04/15 04:50:28 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2009/04/17 23:40:57 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -842,8 +842,11 @@ WContext* Request::op_call(VMethodFrame& frame){
 Value& Request::get_element(Value& ncontext, const String& name, bool can_call_operator) {
 	Value* value=0;
 	if(can_call_operator) {
-		if(Method* method=main_class.get_method(name)) // looking operator of that name FIRST
-			value=new VJunction(main_class, method);
+		if(Method* method=main_class.get_method(name)){ // looking operator of that name FIRST
+			if(!method->junction_template)
+				method->junction_template=new VJunction(main_class, method);
+			return *method->junction_template;
+		}
 	}
 	if(!value) {
 		if(!wcontext->get_constructing() // not constructing

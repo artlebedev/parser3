@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)\
 */
 
-static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2009/04/16 01:09:01 $";
+static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2009/04/17 23:40:46 $";
 
 #include "pa_vstateless_class.h"
 #include "pa_vproperty.h"
@@ -48,12 +48,18 @@ Value* VStateless_class::get_element(const String& aname, Value& aself, bool alo
 	// $CLASS
 	if(aname==CLASS_NAME)
 		return this;
+
 	// $CLASS_NAME
 	if(aname==CLASS_NAMETEXT)
 		return new VString(this->name());
+
 	// $method=junction(self+class+method)
-	if(Method* method=get_method(aname))
-		return new VJunction(aself, method);
+	if(Method* method=get_method(aname)){
+		if(!method->junction_template)
+			return method->junction_template=new VJunction(aself, method);
+
+		return &(method->junction_template->get_junction()->self)==&aself?method->junction_template:new VJunction(aself, method);
+	}
 
 	// base monkey
 	if(fbase) {
