@@ -5,7 +5,7 @@
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_CHARSET_C="$Date: 2009/04/15 07:42:46 $";
+static const char * const IDENT_CHARSET_C="$Date: 2009/04/17 09:04:49 $";
 
 #include "pa_charset.h"
 #include "pa_charsets.h"
@@ -433,7 +433,7 @@ of ocetes consumed.
 	return 0;
 }
 
-static bool is_escaped(XMLByte c){
+static bool isEscaped(XMLByte c){
 	return
 		!(
 			(c<=127)
@@ -446,8 +446,8 @@ static bool is_escaped(XMLByte c){
 		);
 }
 
-// read one utf8 character, return number of bytes needed for store it
-static unsigned int readChar(const XMLByte*& srcPtr, const XMLByte* srcEnd, XMLByte& firstByte, XMLCh& UTF8Char){
+// read one UTF8 char and return length of this char (in bytes)
+static unsigned int readUTF8Char(const XMLByte*& srcPtr, const XMLByte* srcEnd, XMLByte& firstByte, XMLCh& UTF8Char){
 	if(!srcPtr || !*srcPtr || srcPtr>=srcEnd)
 		return 0;
 
@@ -481,7 +481,8 @@ static unsigned int readChar(const XMLByte*& srcPtr, const XMLByte* srcEnd, XMLB
 	return trailingBytes+1;
 }
 
-static unsigned int skipChar(const XMLByte*& srcPtr, const XMLByte* srcEnd){
+// skip UTF8 char and return length of this char (in bytes)
+static unsigned int skipUTF8Char(const XMLByte*& srcPtr, const XMLByte* srcEnd){
 	if(!srcPtr || !*srcPtr || srcPtr>=srcEnd)
 		return 0;
 
@@ -491,7 +492,7 @@ static unsigned int skipChar(const XMLByte*& srcPtr, const XMLByte* srcEnd){
 	return trailingBytes;
 }
 
-// read char, return number of bytes needed for store it as UTF8
+// read non-UTF8 char, and return number of bytes needed for store this char in UTF8
 static unsigned int readChar(const XMLByte*& srcPtr, const XMLByte* srcEnd, XMLByte& firstByte, XMLCh& UTF8Char, const Charset::Tables& tables){
 	if(!srcPtr || !*srcPtr || srcPtr>=srcEnd)
 		return 0;
@@ -517,7 +518,7 @@ static unsigned int readChar(const XMLByte*& srcPtr, const XMLByte* srcEnd, XMLB
 	return 1;
 }
 
-static int escape(const XMLByte* srcData, size_t& srcLen,
+static int escapeUTF8(const XMLByte* srcData, size_t& srcLen,
 			     XMLByte* toFill, size_t& toFillLen) {
 	const XMLByte* srcPtr=srcData;
 	const XMLByte* srcEnd=srcData+srcLen;
@@ -528,9 +529,9 @@ static int escape(const XMLByte* srcData, size_t& srcLen,
 	uint charSize;
 
 	// loop until we either run out of input data, or room to store
-	while((outPtr < outEnd) && (charSize=readChar(srcPtr, srcEnd, firstByte, UTF8Char))){
+	while((outPtr < outEnd) && (charSize=readUTF8Char(srcPtr, srcEnd, firstByte, UTF8Char))){
 		if(charSize==1){
-			if(is_escaped(firstByte)) // %XX
+			if(isEscaped(firstByte)) // %XX
 				outPtr+=sprintf((char*)outPtr, "%%%02X", firstByte);
 			else
 				*outPtr++=firstByte;
@@ -553,7 +554,6 @@ static int escape(const XMLByte* srcData, size_t& srcLen,
 	const XMLByte* srcPtr=srcData;
 	const XMLByte* srcEnd=srcData+srcLen;
 	XMLByte* outPtr=toFill;
-	//XMLByte* outEnd=toFill+toFillLen;
 	XMLByte firstByte;
 	XMLCh UTF8Char;
 	uint charSize;
@@ -561,7 +561,7 @@ static int escape(const XMLByte* srcData, size_t& srcLen,
 	while(charSize=readChar(srcPtr, srcEnd, firstByte, UTF8Char, tables)){
 		if(charSize==1){
 			if(firstByte){
-				if(is_escaped(firstByte)) // %XX
+				if(isEscaped(firstByte)) // %XX
 					outPtr+=sprintf((char*)outPtr, "%%%02X", firstByte);
 				else
 					*outPtr++=firstByte;
@@ -594,16 +594,16 @@ String::C Charset::escape(const String::C src, const Charset& source_charset){
 	XMLCh UTF8Char;
 
 	if(source_charset.isUTF8()){
-		while(uint charSize=readChar(srcPtr, srcEnd, firstByte, UTF8Char)){
+		while(uint charSize=readUTF8Char(srcPtr, srcEnd, firstByte, UTF8Char)){
 			if(charSize==1)
-				dest_length+=!is_escaped(firstByte)?1:3/*%XX*/;
+				dest_length+=!isEscaped(firstByte)?1:3/*%XX*/;
 			else
 				dest_length+=6; // '%uXXXX'
 		}
 	} else {
 		while(uint charSize=readChar(srcPtr, srcEnd, firstByte, UTF8Char, source_charset.tables)){
 			if(charSize==1)
-				dest_length+=(!firstByte/*replacement char '?'*/ || !is_escaped(firstByte))?1:3/*'%XX'*/;
+				dest_length+=(!firstByte/*replacement char '?'*/ || !isEscaped(firstByte))?1:3/*'%XX'*/;
 			else
 				dest_length+=6; // '%uXXXX'
 		}
@@ -621,7 +621,7 @@ String::C Charset::escape(const String::C src, const Charset& source_charset){
 
 	int status;
 	if(source_charset.isUTF8()){
-		status=::escape((XMLByte *)src.str, src_length, dest_body, dest_length);
+		status=::escapeUTF8((XMLByte *)src.str, src_length, dest_body, dest_length);
 	} else {
 		status=::escape((XMLByte *)src.str, src_length, dest_body, dest_length, source_charset.tables);
 	}
@@ -629,7 +629,7 @@ String::C Charset::escape(const String::C src, const Charset& source_charset){
 	if(status<0)
 		throw Exception(0,
 			0,
-			"Charset::escapeString buffer overflow");
+			"Charset::escape buffer overflow");
 
 	assert(dest_length<=saved_dest_length);
 	dest_body[dest_length]=0; // terminator
@@ -640,8 +640,7 @@ String::Body Charset::escape(const String::Body src, const Charset& source_chars
 	const char *src_ptr=src.cstr();
 	size_t src_size=strlen(src_ptr);
 
-	String::C dest=Charset::escape(String::C(src_ptr, src_size),
-		source_charset);
+	String::C dest=Charset::escape(String::C(src_ptr, src_size), source_charset);
 
 	return String::Body(dest.str, dest.length);
 }
@@ -837,7 +836,7 @@ const String::C Charset::transcodeFromUTF8(const String::C src) const {
 	const XMLByte* srcEnd=srcPtr+src_length;
 	XMLByte firstByte;
 	XMLCh UTF8Char;
-	while(uint charSize=readChar(srcPtr, srcEnd, firstByte, UTF8Char)){
+	while(uint charSize=readUTF8Char(srcPtr, srcEnd, firstByte, UTF8Char)){
 		if(charSize==1)
 			dest_length++;
 		else
@@ -1145,7 +1144,7 @@ void Charset::transcode(HashStringString& src,
 
 size_t getUTF8BytePos(const XMLByte* srcBegin, const XMLByte* srcEnd, size_t charPos){
 	const XMLByte* ptr=srcBegin;
-	while(charPos-- && skipChar(ptr, srcEnd));
+	while(charPos-- && skipUTF8Char(ptr, srcEnd));
 
 	return ptr-srcBegin;
 }
@@ -1154,7 +1153,7 @@ size_t getUTF8CharPos(const XMLByte* srcBegin, const XMLByte* srcEnd, size_t byt
 	size_t charPos=0;
 	const XMLByte* ptr=srcBegin;
 	const XMLByte* ptrEnd=srcBegin+bytePos;
-	while(skipChar(ptr, srcEnd)){
+	while(skipUTF8Char(ptr, srcEnd)){
 		if(ptr>ptrEnd)
 			return charPos;
 		charPos++;
@@ -1168,7 +1167,7 @@ size_t getUTF8CharPos(const XMLByte* srcBegin, const XMLByte* srcEnd, size_t byt
 
 size_t lengthUTF8(const XMLByte* srcBegin, const XMLByte* srcEnd){
 	size_t size=0;
-	while(skipChar(srcBegin, srcEnd))
+	while(skipUTF8Char(srcBegin, srcEnd))
 		size++;
 
 	return size;
