@@ -17,7 +17,7 @@
 #ifndef PA_HASH_H
 #define PA_HASH_H
 
-static const char * const IDENT_HASH_H="$Date: 2009/04/15 07:46:43 $";
+static const char * const IDENT_HASH_H="$Date: 2009/04/17 13:13:09 $";
 
 #include "pa_memory.h"
 #include "pa_types.h"
@@ -112,6 +112,10 @@ public:
 
 				pair=next;
 			}
+	}
+
+	~Hash() {
+		delete[] refs;
 	}
 
 	/// put a [value] under the [key] @returns existed or not

@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2009/04/17 12:00:42 $";
+static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2009/04/17 13:13:37 $";
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
@@ -203,6 +203,12 @@ public: // usage
 		VMethodFrame *acaller);
 
 	VMethodFrame *caller() { return fcaller; }
+
+	~VMethodFrame(){
+		if(my){
+			delete my;
+		}
+	}
 
 	void set_self(Value& aself) { fself=&aself; }
 	/// we sure that someone already set our self with VMethodFrame::set_self(Value&)

@@ -8,7 +8,7 @@
 #ifndef PA_ARRAY_H
 #define PA_ARRAY_H
 
-static const char * const IDENT_ARRAY_Y="$Date: 2009/04/17 09:55:21 $";
+static const char * const IDENT_ARRAY_Y="$Date: 2009/04/17 13:13:09 $";
 
 // includes
 
@@ -81,6 +81,10 @@ public:
 		fused(0)
 	{
 		felements=fallocated?static_cast<T*>(malloc(fallocated*sizeof(T))):0;
+	}
+
+	~Array(){
+		free(felements);
 	}
 
 	/// how many items are in Array
