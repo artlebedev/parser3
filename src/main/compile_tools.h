@@ -8,7 +8,7 @@
 #ifndef COMPILE_TOOLS
 #define COMPILE_TOOLS
 
-static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2009/04/17 09:03:25 $";
+static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2009/04/17 12:00:08 $";
 
 #include "pa_opcode.h"
 #include "pa_types.h"
@@ -84,7 +84,6 @@ public:
 	bool in_call_value;
 	bool explicit_result;
 	bool append;
-	bool write_to_result;
 	//@}
 	
 	/// output: filled input 'methods' and 'error' if any
@@ -115,8 +114,7 @@ public:
 		ls_sp(0),
 		in_call_value(false),
 		explicit_result(false),
-		append(false),
-		write_to_result(false) {
+		append(false) {
 
 		*cclasses+=aclass;
 	}
