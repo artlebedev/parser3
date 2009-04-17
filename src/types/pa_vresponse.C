@@ -1,11 +1,11 @@
 /** @file
 	Parser: @b response class.
 
-	Copyright(c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright(c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VRESPONSE_C="$Date: 2006/04/09 13:38:48 $";
+static const char * const IDENT_VRESPONSE_C="$Date: 2009/04/17 09:14:28 $";
 
 #include "pa_vresponse.h"
 #include "pa_request_charsets.h"
@@ -24,14 +24,14 @@ Value* VResponse::get_element(const String& aname, Value& aself, bool looking_up
 	if(aname==CHARSET_NAME)
 		return new VString(*new String(fcharsets.client().NAME(), String::L_TAINTED));
 
+	// $headers
+	if(aname==REQUEST_HEADERS_ELEMENT_NAME)
+		return new VHash(ffields);
+	
 	// $method
 	if(Value* result=VStateless_object::get_element(aname, aself, looking_up))
 		return result;
 
-	// $fields
-	if(aname==REQUEST_HEADERS_ELEMENT_NAME)
-		return new VHash(ffields);
-	
 	// $field
 	return ffields.get(aname.change_case(fcharsets.source(), String::CC_LOWER));
 }
