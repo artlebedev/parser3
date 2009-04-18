@@ -1,7 +1,7 @@
 /** @file
 	Parser: memory reference counting classes decls.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
@@ -9,7 +9,7 @@
 #ifndef PA_MEMORY_H
 #define PA_MEMORY_H
 
-static const char * const IDENT_MEMORY_H="$Date: 2007/05/07 09:47:07 $";
+static const char * const IDENT_MEMORY_H="$Date: 2009/04/18 00:33:34 $";
 
 // include
 
@@ -17,6 +17,9 @@ static const char * const IDENT_MEMORY_H="$Date: 2007/05/07 09:47:07 $";
 #include "gc.h"
 
 // defines
+
+// use destructors for Array, Hash and VMethodFrame
+#define USE_DESTRUCTORS
 
 //#define PA_DEBUG_GC_MEMORY
 
