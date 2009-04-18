@@ -17,7 +17,7 @@
 #ifndef PA_HASH_H
 #define PA_HASH_H
 
-static const char * const IDENT_HASH_H="$Date: 2009/04/17 23:21:51 $";
+static const char * const IDENT_HASH_H="$Date: 2009/04/18 00:33:56 $";
 
 #include "pa_memory.h"
 #include "pa_types.h"
@@ -114,6 +114,7 @@ public:
 			}
 	}
 
+#ifdef USE_DESTRUCTORS
 	~Hash() {
 		Pair **ref=refs;
 		for(int index=0; index<allocated; index++)
@@ -124,6 +125,7 @@ public:
 			}
 		delete[] refs;
 	}
+#endif
 
 	/// put a [value] under the [key] @returns existed or not
 	bool put(K key, V value) {
