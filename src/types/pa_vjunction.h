@@ -1,14 +1,14 @@
 /**	@file
 	Parser: @b junction class decl.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VJUNCTION_H
 #define PA_VJUNCTION_H
 
-static const char * const IDENT_VJUNCTION_H="$Date: 2008/06/05 13:24:16 $";
+static const char * const IDENT_VJUNCTION_H="$Date: 2009/04/18 09:16:26 $";
 
 // include
 
@@ -54,6 +54,10 @@ public: // usage
 	): fjunction(aself, amethod, ais_getter, aauto_name) {}
 
 	const Junction& junction() const { return fjunction; }
+
+	inline VJunction *get(Value& aself){
+		return &(fjunction.self)==&aself?this:new VJunction(aself, fjunction.method);
+	}
 
 private:
 
