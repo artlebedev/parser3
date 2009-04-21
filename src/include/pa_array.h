@@ -8,7 +8,7 @@
 #ifndef PA_ARRAY_H
 #define PA_ARRAY_H
 
-static const char * const IDENT_ARRAY_Y="$Date: 2009/04/18 00:33:56 $";
+static const char * const IDENT_ARRAY_Y="$Date: 2009/04/21 09:23:21 $";
 
 // includes
 
@@ -85,7 +85,8 @@ public:
 
 #ifdef USE_DESTRUCTORS 
 	inline ~Array(){
-		free(felements);
+		if(felements)
+			free(felements);
 	}
 #endif
 
