@@ -8,7 +8,7 @@
 #ifndef PA_WCONTEXT_H
 #define PA_WCONTEXT_H
 
-static const char * const IDENT_WCONTEXT_H="$Date: 2009/04/16 02:06:25 $";
+static const char * const IDENT_WCONTEXT_H="$Date: 2009/04/21 09:26:08 $";
 
 #include "pa_value.h"
 #include "pa_vstring.h"
@@ -90,7 +90,7 @@ public: // WContext
 		return fvalue?StringOrValue(*fvalue):StringOrValue(fstring?*fstring:empty);
 	}
 
-	void attach_junction(Junction* ajunction) {
+	void attach_junction(VJunction* ajunction) {
 		junctions+=ajunction;
 	}
 
@@ -134,7 +134,7 @@ private: // status
 private:
 
 	WContext *fparent;
-	Array<Junction*>  junctions;
+	Array<VJunction*> junctions;
 
 };
 

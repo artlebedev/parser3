@@ -1,11 +1,11 @@
 /** @file
 	Parser: parser @b operators.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2008/09/04 09:38:53 $";
+static const char * const IDENT_OP_C="$Date: 2009/04/21 09:27:20 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -446,13 +446,21 @@ static void _case(Request& r, MethodParams& params) {
 		return;
 
 	int count=params.count();
-	Value& code=params.as_expression(--count, "case result must be code");
+	Value* code=&params.as_expression(--count, "case result must be code");
+
+#ifdef USE_DESTRUCTORS
+	Junction *j=code->get_junction();
+	if (j){
+		code=new VJunction(j->self,j->method,j->method_frame,j->rcontext,j->wcontext,j->code);
+		if (j->wcontext) j->wcontext->attach_junction((VJunction *)code);
+	}
+#endif
 	
 	for(int i=0; i<count; i++){
 		Value& value=r.process_to_value(params[i]);
 
 		if(value.is_string() && value.as_string() == CASE_DEFAULT_VALUE){
-			data->_default=&code;
+			data->_default=code;
 			continue;
 		}
 
@@ -463,7 +471,7 @@ static void _case(Request& r, MethodParams& params) {
 			matches=data->searching_double == value.as_double();
 
 		if(matches){
-			data->found=&code;
+			data->found=code;
 			break;
 		}
 	}

@@ -1,11 +1,11 @@
 /** @file
 	Parser: Value class.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VALUE_C="$Date: 2008/09/04 09:35:56 $";
+static const char * const IDENT_VALUE_C="$Date: 2009/04/21 09:26:08 $";
 
 #include "pa_value.h"
 #include "pa_vstateless_class.h"
@@ -52,33 +52,6 @@ void Method::check_actual_numbered_params(Value& self,
 				min_numbered_params_count,
 				actual_count);
 
-}
-
-Junction::Junction(Value& aself,
-	const Method* amethod,
-	VMethodFrame* amethod_frame,
-	Value* arcontext,
-	WContext* awcontext,
-	ArrayOperation* acode): self(aself),
-	method(amethod),
-	method_frame(amethod_frame),
-	rcontext(arcontext),
-	wcontext(awcontext),
-	code(acode) {
-	if(wcontext)
-		wcontext->attach_junction(this);
-}
-
-void Junction::reattach(WContext *new_wcontext) {
-	if(new_wcontext) {
-		assert(wcontext!=new_wcontext);
-		wcontext=new_wcontext;
-		wcontext->attach_junction(this);
-	} else {
-		method_frame=0;
-		rcontext=0;
-		wcontext=0;
-	}
 }
 
 // attributed meaning
