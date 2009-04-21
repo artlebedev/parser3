@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VJUNCTION_C="$Date: 2009/04/21 09:26:08 $";
+static const char * const IDENT_VJUNCTION_C="$Date: 2009/04/21 11:44:04 $";
 
 // include
 
@@ -16,7 +16,7 @@ static const char * const IDENT_VJUNCTION_C="$Date: 2009/04/21 09:26:08 $";
 void VJunction::reattach(WContext *new_wcontext){
 
 #ifdef USE_DESTRUCTORS
-	if (fjunction.wcontext)
+	if(fjunction.wcontext)
 #endif
 	if(new_wcontext) {
 		assert(fjunction.wcontext!=new_wcontext);
@@ -26,9 +26,14 @@ void VJunction::reattach(WContext *new_wcontext){
 	}
 
 #ifdef USE_DESTRUCTORS
-	if (fjunction.is_temporal) delete this;
+	if(fjunction.is_temporal){
+		delete this;
+		return;
+	}
 #endif
-
+	fjunction.method_frame=0;
+	fjunction.rcontext=0;
+	fjunction.wcontext=0;
 }
 
 
