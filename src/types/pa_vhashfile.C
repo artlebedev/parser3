@@ -1,11 +1,11 @@
 /** @file
 	Parser: @b table class.
 
-	Copyright(c) 2001, 2002 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright(c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Date: 2008/09/04 09:36:46 $";
+static const char * const IDENT="$Date: 2009/04/22 12:23:07 $";
 
 #include "pa_globals.h"
 #include "pa_common.h"
@@ -77,7 +77,7 @@ apr_sdbm_t *VHashfile::get_db_for_reading() {
 
 apr_sdbm_t *VHashfile::get_db_for_writing() {
 	if(is_open()){
-	if(apr_sdbm_rdonly(m_db)) {
+		if(apr_sdbm_rdonly(m_db)) {
 			close(); // close if was opened for reading
 		} else {
 			return m_db;
@@ -152,6 +152,11 @@ const String* VHashfile::deserialize_value(apr_sdbm_datum_t key, const apr_sdbm_
 }
 
 void VHashfile::put_field(const String& aname, Value *avalue) {
+	if(aname.is_empty())
+		throw Exception(PARSER_RUNTIME,
+			0,
+			"hashfile key must not be empty");
+
 	apr_sdbm_t *db=get_db_for_writing();
 
 	time_t time_to_die=0;
@@ -179,16 +184,21 @@ void VHashfile::put_field(const String& aname, Value *avalue) {
 	} else
 		value_string=&avalue->as_string();
 
-	if(aname.is_empty())
-		throw Exception(PARSER_RUNTIME,
-			0,
-			"hashfile key must not be empty");
-
 	apr_sdbm_datum_t key;
 	key.dptr=const_cast<char*>(aname.cstr());
 	key.dsize=aname.length();
 
 	apr_sdbm_datum_t value=serialize_value(*value_string, time_to_die);
+
+#ifndef PAIRMAX
+// !see PAIRMAX definition in sdbm_private.h. values should be the same
+#define PAIRMAX 8008
+#endif
+
+	if(key.dsize+value.dsize > PAIRMAX)
+		throw Exception(PARSER_RUNTIME,
+			0,
+			"hashfile record length (key+value) exceeds limit (%d bytes)", PAIRMAX);
 
  	check("apr_sdbm_store", apr_sdbm_store(db, key, value, APR_SDBM_REPLACE));
 }
