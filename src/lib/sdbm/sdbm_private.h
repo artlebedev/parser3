@@ -70,6 +70,7 @@
 /* if the block/page size is increased, it breaks perl apr_sdbm_t compatibility */
 #define DBLKSIZ 16384
 #define PBLKSIZ 8192
+// !see PAIRMAX definition in pa_vhashfile.C. values should be the same
 #define PAIRMAX 8008			/* arbitrary on PBLKSIZ-N */
 #else
 #define DBLKSIZ 4096
