@@ -8,7 +8,7 @@
 #ifndef PA_VREGEX_H
 #define PA_VREGEX_H
 
-static const char * const IDENT_VREGEX_H="$Date: 2009/04/22 04:34:14 $";
+static const char * const IDENT_VREGEX_H="$Date: 2009/04/22 21:39:19 $";
 
 // include
 
@@ -51,7 +51,7 @@ public: // Value
 	override Value& as_expr_result(bool/*return_string_as_is=false*/);
 
 	/// VRegex: true
-	virtual bool is_defined() const { return true; }
+	virtual bool is_defined() const { return as_bool(); }
 
 	/// VRegex: true
 	override bool as_bool() const { return true; }
