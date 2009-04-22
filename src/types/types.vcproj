@@ -253,6 +253,12 @@
 			RelativePath=".\pa_vproperty.h">
 		</File>
 		<File
+			RelativePath=".\pa_vregex.C">
+		</File>
+		<File
+			RelativePath=".\pa_vregex.h">
+		</File>
+		<File
 			RelativePath=".\pa_vrequest.C">
 		</File>
 		<File
