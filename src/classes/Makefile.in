@@ -56,10 +56,10 @@ libclasses_a_AR = $(AR) $(ARFLAGS)
 libclasses_a_LIBADD =
 am__objects_1 = bool.$(OBJEXT) double.$(OBJEXT) file.$(OBJEXT) \
 	form.$(OBJEXT) image.$(OBJEXT) inet.$(OBJEXT) int.$(OBJEXT) \
-	mail.$(OBJEXT) op.$(OBJEXT) math.$(OBJEXT) response.$(OBJEXT) \
-	string.$(OBJEXT) table.$(OBJEXT) void.$(OBJEXT) hash.$(OBJEXT) \
-	hashfile.$(OBJEXT) date.$(OBJEXT) xnode.$(OBJEXT) \
-	xdoc.$(OBJEXT) memory.$(OBJEXT)
+	mail.$(OBJEXT) op.$(OBJEXT) math.$(OBJEXT) regex.$(OBJEXT) \
+	response.$(OBJEXT) string.$(OBJEXT) table.$(OBJEXT) \
+	void.$(OBJEXT) hash.$(OBJEXT) hashfile.$(OBJEXT) \
+	date.$(OBJEXT) xnode.$(OBJEXT) xdoc.$(OBJEXT) memory.$(OBJEXT)
 am_libclasses_a_OBJECTS = $(am__objects_1) classes.$(OBJEXT)
 libclasses_a_OBJECTS = $(am_libclasses_a_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src/include
@@ -192,7 +192,7 @@ target_alias = @target_alias@
 INCLUDES = -I../types -I../sql -I../lib/gd -I../lib/gc/include -I../lib/cord/include -I../lib/sdbm/apr-include -Igd @PCRE_INCLUDES@ @XML_INCLUDES@ -I../lib/md5 -I../lib/smtp
 noinst_LIBRARIES = libclasses.a
 noinst_HEADERS = classes.h xnode.h
-CLASSES_SOURCE_FILES = classes.awk bool.C double.C file.C form.C image.C inet.C int.C mail.C op.C math.C response.C string.C table.C void.C hash.C hashfile.C date.C xnode.C xdoc.C memory.C
+CLASSES_SOURCE_FILES = classes.awk bool.C double.C file.C form.C image.C inet.C int.C mail.C op.C math.C regex.C response.C string.C table.C void.C hash.C hashfile.C date.C xnode.C xdoc.C memory.C
 libclasses_a_SOURCES = $(CLASSES_SOURCE_FILES) classes.C
 CLEANFILES = classes.inc
 EXTRA_DIST = classes.vcproj
@@ -258,6 +258,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/math.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/memory.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/op.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/regex.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/response.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/string.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/table.Po@am__quote@
