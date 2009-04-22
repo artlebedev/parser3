@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2009/01/25 04:55:57 $";
+static const char * const IDENT_FILE_C="$Date: 2009/04/22 04:37:17 $";
 
 #include "pa_config_includes.h"
 
@@ -24,6 +24,7 @@ static const char * const IDENT_FILE_C="$Date: 2009/01/25 04:55:57 $";
 #include "pa_charsets.h"
 #include "pa_sql_connection.h"
 #include "pa_md5.h"
+#include "pa_vregex.h"
 
 // defines
 
@@ -616,33 +617,20 @@ static void _cgi(Request& r, MethodParams& params) {
 static void _list(Request& r, MethodParams& params) {
 	Value& relative_path=params.as_no_junction(0, "path must not be code");
 
-	const String* regexp;
-	pcre *regexp_code;
-	const int ovecsize=(1/*match*/)*3;
-	int ovector[ovecsize];
-	if(params.count()>1) {
-		regexp=&params.as_no_junction(1, "regexp must not be code").as_string();
-
-		const char* pattern=regexp->cstr(String::L_UNSPECIFIED);
-		const char* errptr;
-		int erroffset;
-		int options=PCRE_EXTRA | PCRE_DOTALL;
-		if(r.charsets.source().isUTF8())
-			options=options|PCRE_UTF8;
-
-		regexp_code=pcre_compile(pattern, options, 
-			&errptr, &erroffset, 
-			r.charsets.source().pcre_tables);
-
-		if(!regexp_code)
-			throw Exception(PCRE_EXCEPTION_TYPE, 
-				&regexp->mid(erroffset, regexp->length()), 
-				"regular expression syntax error - %s", errptr);
+	VRegex* vregex;
+	VRegexCleaner vrcleaner;
+	if(params.count()>1){
+		Value& regexp=params.as_no_junction(1, "regexp must not be code");
+		if(Value* value=regexp.as(VREGEX_TYPE, false)){
+			vregex=static_cast<VRegex*>(value);
+		} else {
+			vregex=new VRegex(r.charsets.source(), &regexp.as_string(), 0/*options*/);
+			vrcleaner.vregex=vregex;
+		}
+		vregex->study();
 	} else {
-		regexp=0; // not used, just to calm down compiler
-		regexp_code=0;
+		vregex=0;
 	}
-
 
 	const char* absolute_path_cstr=r.absolute(relative_path.as_string()).cstr(String::L_FILE_SPEC);
 
@@ -650,35 +638,19 @@ static void _list(Request& r, MethodParams& params) {
 	*columns+=new String("name");
 	Table& table=*new Table(columns);
 
+	const int ovector_size=(1/*match*/)*3;
+	int ovector[ovector_size];
+
 	LOAD_DIR(absolute_path_cstr, 
 		const char* file_name_cstr=ffblk.ff_name;
 		size_t file_name_size=strlen(file_name_cstr);
-		bool suits=true;
-		if(regexp_code) {
-			int exec_result=pcre_exec(regexp_code, 0, 
-				ffblk.ff_name, file_name_size, 0, 
-				0, ovector, ovecsize);
-			
-			if(exec_result==PCRE_ERROR_NOMATCH)
-				suits=false;
-			else if(exec_result<0) {
-				(*pcre_free)(regexp_code);
-				throw Exception(PCRE_EXCEPTION_TYPE, 
-					regexp,
-					print_pcre_exec_error_text(exec_result),
-						exec_result);
-			}
-		}
 
-		if(suits) {
+		if(!vregex || vregex->exec(ffblk.ff_name, file_name_size, ovector, ovector_size)>=0) {
 			Table::element_type row(new ArrayString);
-			*row+=new String(pa_strdup(file_name_cstr, file_name_size), file_name_size, true);
+			*row+=new String(pa_strdup(file_name_cstr, file_name_size), file_name_size, true/*tainted*/);
 			table+=row;
 		}
 	);
-
-	if(regexp_code)
-		pcre_free(regexp_code);
 
 	// write out result
 	r.write_no_lang(*new VTable(&table));
