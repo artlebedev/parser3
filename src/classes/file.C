@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2009/04/22 04:41:32 $";
+static const char * const IDENT_FILE_C="$Date: 2009/04/22 05:17:03 $";
 
 #include "pa_config_includes.h"
 
@@ -625,9 +625,9 @@ static void _list(Request& r, MethodParams& params) {
 			vregex=static_cast<VRegex*>(value);
 		} else {
 			vregex=new VRegex(r.charsets.source(), &regexp.as_string(), 0/*options*/);
+			vregex->study();
 			vrcleaner.vregex=vregex;
 		}
-		vregex->study();
 	} else {
 		vregex=0;
 	}

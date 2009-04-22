@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2009/04/22 04:38:36 $";
+static const char * const IDENT_STRING_C="$Date: 2009/04/22 05:17:03 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -381,6 +381,7 @@ static void _match(Request& r, MethodParams& params) {
 		vregex=new VRegex(r.charsets.source(),
 			&regexp.as_string(),
 			(options)?(&options->as_string()):0);
+		vregex->study();
 		vrcleaner.vregex=vregex;
 	}
 
