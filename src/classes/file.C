@@ -1,11 +1,11 @@
 /** @file
 	Parser: @b file parser class.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2009/04/22 04:37:17 $";
+static const char * const IDENT_FILE_C="$Date: 2009/04/22 04:41:32 $";
 
 #include "pa_config_includes.h"
 

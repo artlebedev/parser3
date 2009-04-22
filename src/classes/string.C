@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2009/04/17 09:05:33 $";
+static const char * const IDENT_STRING_C="$Date: 2009/04/22 04:38:36 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -19,6 +19,7 @@ static const char * const IDENT_STRING_C="$Date: 2009/04/17 09:05:33 $";
 #include "pa_sql_connection.h"
 #include "pa_dictionary.h"
 #include "pa_vmethod_frame.h"
+#include "pa_vregex.h"
 
 // class
 
@@ -360,22 +361,38 @@ static void replace_action(Table& table, ArrayString* row,
 		*ai.dest << ai.src->mid(poststart, postfinish);
 }
 
-/// @todo use pcre_study somehow
 static void _match(Request& r, MethodParams& params) {
-	Value& regexp=params.as_no_junction(0, "regexp must not be code");
+	size_t params_count=params.count();
 
-	const String* options=
-		params.count()>1?
-		&params.as_no_junction(1, "options must not be code").as_string():0;
+	Value& regexp=params.as_no_junction(0, "regexp must not be code");
+	Value* options=(params_count>1)?&params.as_no_junction(1, "options must not be code"):0;
+
+	VRegex* vregex;
+	VRegexCleaner vrcleaner;
+
+	if(Value* value=regexp.as(VREGEX_TYPE, false)){
+		if(options && options->is_defined())
+			throw Exception(PARSER_RUNTIME,
+				0,
+				"you can not specify regex-object and options together"
+			);
+		vregex=static_cast<VRegex*>(value);
+	} else {
+		vregex=new VRegex(r.charsets.source(),
+			&regexp.as_string(),
+			(options)?(&options->as_string()):0);
+		vrcleaner.vregex=vregex;
+	}
 
 	Temp_lang temp_lang(r, String::L_PASS_APPENDED);
 	const String& src=GET_SELF(r, VString).string();
 	int matches_count=0;
-	if(params.count()<3) { // search
-		Table* table=src.match(r.charsets.source(),
-			regexp.as_string(), options,
+
+	if(params_count<3) { // search
+		Table* table=src.match(vregex,
 			search_action, 0,
 			matches_count);
+
 		if(table){
 			r.write_assign_lang(*new VTable(table));
 		} else {
@@ -397,10 +414,11 @@ static void _match(Request& r, MethodParams& params) {
 		Temp_value_element temp_match_var(
 			*replacement_code.get_junction()->method_frame, 
 			match_var_name, vtable);
-		src.match(r.charsets.source(),
-			regexp.as_string(), options,
+
+		src.match(vregex,
 			replace_action, &info,
 			matches_count);
+
 		r.write_assign_lang(result);
 	}
 }

@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-static const char * const IDENT_STRING_H="$Date: 2009/04/16 01:10:36 $";
+static const char * const IDENT_STRING_H="$Date: 2009/04/22 04:37:52 $";
 
 // includes
 #include "pa_types.h"
@@ -36,6 +36,7 @@ class Dictionary;
 class Request_charsets;
 class String;
 typedef Array<const String*> ArrayString;
+class VRegex;
 
 // generally useful
 
@@ -521,9 +522,7 @@ public:
 			prematch/match/postmatch/1/2/3/...
 		@endverbatim
 	*/
-	Table* match(Charset& source_charset,
-		const String& regexp, 
-		const String* options,
+	Table* match(VRegex* vregex,
 		Row_action row_action, void *info,
 		int& matches_count) const;
 	enum Change_case_kind {

@@ -5,15 +5,14 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2009/04/17 09:59:51 $";
+static const char * const IDENT_STRING_C="$Date: 2009/04/22 04:38:17 $";
 
 #include "pa_string.h"
 #include "pa_exception.h"
 #include "pa_table.h"
 #include "pa_dictionary.h"
 #include "pa_charset.h"
-
-#include "pcre.h"
+#include "pa_vregex.h"
 
 const String String::Empty;
 
@@ -451,122 +450,31 @@ void String::split(ArrayString& result,
 	}
 }
 
-enum Match_feature {
-	MF_NEED_PRE_POST_MATCH = 0x01,
-	MF_JUST_COUNT_MATCHES = 0x02
-};
+Table* String::match(VRegex* vregex,
+			Row_action row_action, void *info,
+			int& matches_count) const { 
 
-static void regex_options(const String* options, int* result, int* match_features){
-    struct Regex_option {
-		const char* key;
-		const char* keyAlt;
-		int clear;
-		int set;
-		int *result;
-		int flag;
-    } regex_option[]={
-		{"i", "I", 0, PCRE_CASELESS, result, 0}, // a=A
-		{"s", "S", 0, PCRE_DOTALL, result, 0}, // ^\n\n$ [default]
-		{"m", "M", PCRE_DOTALL, PCRE_MULTILINE, result, 0}, // ^aaa\n$^bbb\n$
-		{"x", 0, 0, PCRE_EXTENDED, result, 0}, // whitespace in regex ignored
-		{"U", 0, 0, PCRE_UNGREEDY, result, 0}, // ungreedy patterns (greedy by default)
-		{"g", "G", 0, 1, result+1, 0}, // many rows
-		{"'", 0, 0, 0, 0, MF_NEED_PRE_POST_MATCH},
-		{"n", 0, 0, 0, 0, MF_JUST_COUNT_MATCHES},
-		{0, 0, 0, 0, 0, 0}
-    };
-	result[0]=PCRE_EXTRA | PCRE_DOTALL | PCRE_DOLLAR_ENDONLY;
-	result[1]=0;
+	// vregex->info(); // I have no idea what does it for?
 
-    if(options && !options->is_empty()) 
-		for(Regex_option *o=regex_option; o->key; o++) 
-			if(
-				options->pos(o->key)!=STRING_NOT_FOUND
-				|| (o->keyAlt && options->pos(o->keyAlt)!=STRING_NOT_FOUND)
-			){
-				if(o->flag){
-					(*match_features) |= o->flag;
-				} else {
-					*o->result &= ~o->clear;
-					*o->result |= o->set;
-				}
-			}
-}
-
-Table* String::match(Charset& source_charset,
-		     const String& regexp, 
-		     const String* options,
-		     Row_action row_action, void *info,
-		     int& matches_count) const { 
-	if(regexp.is_empty())
-		throw Exception(PARSER_RUNTIME,
-			0,
-			"regexp is empty");
-
-	const char* pattern=regexp.cstr(String::L_UNSPECIFIED); // fix any tainted with L_REGEX
-	const char* errptr;
-	int erroffset;
-	int option_bits[2]={0};
-	int match_features=0;
-	regex_options(options, option_bits, &match_features);
-	bool need_pre_post_match=(match_features & MF_NEED_PRE_POST_MATCH) != 0;
-	bool just_count_matches=(match_features & MF_JUST_COUNT_MATCHES) != 0;
-	bool global=option_bits[1]!=0;
-
-	if(source_charset.isUTF8()){
-		// @todo (for UTF-8): check string & pattern and use PCRE_NO_UTF8_CHECK option 
-		option_bits[0]|=PCRE_UTF8;
-	}
-
-	pcre *code=pcre_compile(pattern, option_bits[0], 
-		&errptr, &erroffset,
-		source_charset.pcre_tables);
-
-	if(!code)
-		throw Exception(PCRE_EXCEPTION_TYPE,
-			&regexp.mid(erroffset, regexp.length()),
-			"regular expression syntax error - %s", errptr);
-	
-	int subpatterns=pcre_info(code, 0, 0);
-	if(subpatterns<0) {
-		pcre_free(code);
-		throw Exception(PCRE_EXCEPTION_TYPE,
-			&regexp,
-			"pcre_info error (%d)", 
-				subpatterns);
-	}
+	bool need_pre_post_match=vregex->is_pre_post_match_needed();
+	bool global=vregex->is_global_search();
 
 	const char* subject=cstr();
 	size_t subject_length=strlen(subject);
-	const int oveclength=(1/*match*/+MAX_MATCH_GROUPS)*3;
-	int ovector[oveclength];
+	const int ovector_size=(1/*match*/+MAX_MATCH_GROUPS)*3;
+	int ovector[ovector_size];
 
-	// create table
 	Table::Action_options table_options;
 	Table& table=*new Table(string_match_table_template, table_options);
 
-	int exec_option_bits=0;
 	int prestart=0;
 	int poststart=0;
 	int postfinish=length();
 	while(true) {
-		int exec_substrings=pcre_exec(code, 0,
-			subject, subject_length, prestart,
-			exec_option_bits, ovector, oveclength);
-		
-		if(exec_substrings==PCRE_ERROR_NOMATCH) {
-			pcre_free(code);
-			row_action(table, 0/*last time, no raw*/, 0, 0, poststart, postfinish, info);
-			return just_count_matches ? 0 : &table;
-		}
+		int exec_result=vregex->exec(subject, subject_length, ovector, ovector_size, prestart);
 
-		if(exec_substrings<0) {
-			pcre_free(code);
-			throw Exception(PCRE_EXCEPTION_TYPE,
-				&regexp,
-				print_pcre_exec_error_text(exec_substrings),
-					exec_substrings);
-		}
+		if(exec_result<0) // only PCRE_ERROR_NOMATCH might be here, other negative results cause an exception
+			break;
 
 		int prefinish=ovector[0];
 		poststart=ovector[1];
@@ -581,7 +489,7 @@ Table* String::match(Charset& source_charset,
 			*row+=&Empty; // .postmatch
 		}
 		
-		for(int i=1; i<exec_substrings; i++) {
+		for(int i=1; i<exec_result; i++) {
 			// -1:-1 case handled peacefully by mid() itself
 			*row+=&mid(ovector[i*2+0], ovector[i*2+1]); // .i column value
 		}
@@ -589,18 +497,14 @@ Table* String::match(Charset& source_charset,
 		matches_count++;
 		row_action(table, row, prestart, prefinish, poststart, postfinish, info);
 
-		if(!global || prestart==poststart) { // last step
-			pcre_free(code);
-			row_action(table, 0/*last time, no row*/, 0, 0, poststart, postfinish, info);
-			return just_count_matches ? 0 : &table;
-		}
-		prestart=poststart;
+		if(!global || prestart==poststart) // last step
+			break;
 
-/*
-		if(option_bits[0] & PCRE_MULTILINE)
-			exec_option_bits|=PCRE_NOTBOL; // start of subject+startoffset not BOL
-*/
+		prestart=poststart;
 	}
+
+	row_action(table, 0/*last time, no raw*/, 0, 0, poststart, postfinish, info);
+	return vregex->is_just_count() ? 0 : &table;
 }
 
 String& String::change_case(Charset& source_charset, Change_case_kind kind) const {
