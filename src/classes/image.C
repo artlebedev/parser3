@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_IMAGE_C="$Date: 2008/09/04 09:38:09 $";
+static const char * const IDENT_IMAGE_C="$Date: 2009/04/23 07:02:39 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -535,7 +535,7 @@ static Value* parse_IFD_entry_value(
 	// You can get the total data byte length by multiplies 
 	// a 'bytes/components' value (see above chart) by number of components stored 'NNNNNNNN' area
 	uint components_count=endian_to_uint(is_big, entry.components_count);
-	size_t value_size=component_size*components_count;
+	uint value_size=component_size*components_count;
 	// If its size is over 4bytes, 'DDDDDDDD' contains the offset to data stored address
 	Value* result;
 

@@ -5,7 +5,7 @@
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_CHARSET_C="$Date: 2008/08/15 16:54:01 $";
+static const char * const IDENT_CHARSET_C="$Date: 2009/04/23 07:03:56 $";
 
 #include "pa_charset.h"
 #include "pa_charsets.h"
@@ -268,9 +268,9 @@ static const XMLByte gFirstByteMark[7] = {
     0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC
 };
 
-static int transcodeToUTF8(const XMLByte* srcData, size_t& srcLen,
-			   XMLByte *toFill, size_t& toFillLen,
-			   const Charset::Tables& tables) {
+static int transcodeToUTF8(const XMLByte* srcData, int& srcLen,
+				XMLByte *toFill, int& toFillLen,
+				const Charset::Tables& tables) {
 	const XMLByte* srcPtr=srcData;
 	const XMLByte* srcEnd=srcData+srcLen;
 	XMLByte* outPtr=toFill;
@@ -351,9 +351,9 @@ of ocetes consumed.
 	return 0;
 }
 /// @todo digital entites only when xml/html output [at output in html/xml mode, in html part of a letter]
-static int transcodeFromUTF8(const XMLByte* srcData, size_t& srcLen,
-			     XMLByte* toFill, size_t& toFillLen,
-			     const Charset::Tables& tables) {
+static int transcodeFromUTF8(const XMLByte* srcData, int& srcLen,
+				XMLByte* toFill, int& toFillLen,
+				const Charset::Tables& tables) {
 	const XMLByte* srcPtr=srcData;
 	const XMLByte* srcEnd=srcData+srcLen;
 	XMLByte* outPtr=toFill;
@@ -652,24 +652,24 @@ String& Charset::escape(const String& src, const Charset& source_charset) {
 }
 
 const String::C Charset::transcodeToUTF8(const String::C src) const {
-	size_t src_length=src.length;
+	int src_length=src.length;
 
 #ifdef PRECALCULATE_DEST_LENGTH
-	size_t dest_length=0;
+	int dest_length=0;
 	const XMLByte* srcPtr=(XMLByte*)src.str;
 	const XMLByte* srcEnd=srcPtr+src_length;
-	XMLByte firstByte;
-	XMLCh UTF8Char;
+ 	XMLByte firstByte;
+ 	XMLCh UTF8Char;
 	while(uint charSize=readChar(srcPtr, srcEnd, firstByte, UTF8Char, tables))
 		dest_length+=charSize;
 #else
-	size_t dest_length=src_length*6; // so that surly enough (max utf8 seq len=6) but too memory-hyngry
+	int dest_length=src_length*6; // so that surly enough (max utf8 seq len=6) but too memory-hyngry
 #endif
 
 	//throw Exception(0,0,"%u",dest_length);
 
 #ifndef NDEBUG
-	size_t saved_dest_length=dest_length;
+	int saved_dest_length=dest_length;
 #endif
 	XMLByte *dest_body=new(PointerFreeGC) XMLByte[dest_length+1/*for terminator*/];
 
@@ -827,10 +827,10 @@ static size_t getDecNumLength(XMLCh UTF8Char){
 }
 
 const String::C Charset::transcodeFromUTF8(const String::C src) const {
-	size_t src_length=src.length;
+	int src_length=src.length;
 
 #ifdef PRECALCULATE_DEST_LENGTH
-	size_t dest_length=0;
+	int dest_length=0;
 	const XMLByte* srcPtr=(XMLByte*)src.str;
 	const XMLByte* srcEnd=srcPtr+src_length;
 	XMLByte firstByte;
@@ -847,13 +847,11 @@ const String::C Charset::transcodeFromUTF8(const String::C src) const {
 	}
 #else
 	// so that surly enough, "&#XXX;" has max ratio (huh? 8 bytes needed for '&#XXXXX;')
-	size_t dest_length=src_length*6;
+	int dest_length=src_length*6;
 #endif
 
-	//throw Exception(0,0,"%u",dest_length);
-
 #ifndef NDEBUG
-	size_t saved_dest_length=dest_length;
+	int saved_dest_length=dest_length;
 #endif
 	XMLByte *dest_body=new(PointerFreeGC) XMLByte[dest_length+1/*for terminator*/];
 
@@ -911,16 +909,16 @@ static const Charset::Tables* tables[MAX_CHARSETS];
 		unsigned char *out, int *outlen, \
 		const unsigned char *in, int *inlen, void*) { \
 		return transcodeToUTF8( \
-			in, *(size_t*)inlen, \
-			out, *(size_t*)outlen, \
+			in, *inlen, \
+			out, *outlen, \
 			*tables[i]); \
 	} \
 	static int xml256CharEncodingOutputFunc##i( \
 		unsigned char *out, int *outlen, \
 		const unsigned char *in, int *inlen, void*) { \
 		return transcodeFromUTF8( \
-			in, *(size_t*)inlen, \
-			out, *(size_t*)outlen, \
+			in, *inlen, \
+			out, *outlen, \
 			*tables[i]); \
 	}
 
@@ -931,16 +929,16 @@ static const Charset::Tables* tables[MAX_CHARSETS];
 		unsigned char *out, int *outlen, \
 		const unsigned char *in, int *inlen) { \
 		return transcodeToUTF8( \
-			in, *(size_t*)inlen, \
-			out, *(size_t*)outlen, \
+			in, *inlen, \
+			out, *outlen, \
 			*tables[i]); \
 	} \
 	static int xml256CharEncodingOutputFunc##i( \
 		unsigned char *out, int *outlen, \
 		const unsigned char *in, int *inlen) { \
 		return transcodeFromUTF8( \
-			in, *(size_t*)inlen, \
-			out, *(size_t*)outlen, \
+			in, *inlen, \
+			out, *outlen, \
 			*tables[i]); \
 	}
 

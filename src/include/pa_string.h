@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-static const char * const IDENT_STRING_H="$Date: 2008/07/21 07:37:02 $";
+static const char * const IDENT_STRING_H="$Date: 2009/04/23 07:03:12 $";
 
 // includes
 #include "pa_types.h"
@@ -112,9 +112,9 @@ public:
 		struct {
 #ifdef PA_LITTLE_ENDIAN
 			Language lang:8;
-			int is_not_just_lang:sizeof(CORD)*8-8;
+			size_t is_not_just_lang:sizeof(CORD)*8-8;
 #elif defined(PA_BIG_ENDIAN)
-			int is_not_just_lang:sizeof(CORD)*8-8;
+			size_t is_not_just_lang:sizeof(CORD)*8-8;
 			Language lang:8;
 #else
 #	error word endianness not determined for some obscure reason
