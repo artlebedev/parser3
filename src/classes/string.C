@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2009/04/24 06:29:26 $";
+static const char * const IDENT_STRING_C="$Date: 2009/04/24 06:32:06 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -625,7 +625,6 @@ static void _trim(Request& r, MethodParams& params) {
 	const char* chars=0;
 	if(params_count>0) {
 		const String& skind=params.as_string(0, "'where' must be string");
-			"'where' must be string");
 		if(skind.length())
 			if(skind==TRIM_BOTH_OPTION)
 				kind=String::TRIM_BOTH;
