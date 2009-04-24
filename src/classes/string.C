@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2009/04/22 05:17:03 $";
+static const char * const IDENT_STRING_C="$Date: 2009/04/24 06:29:26 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -284,13 +284,14 @@ static Table& split_horizontal(ArrayString& pieces, bool right) {
 static void split_with_options(Request& r, MethodParams& params,
 							   int bits) {
 	const String& string=GET_SELF(r, VString).string();
+	size_t params_count=params.count();
 
 	ArrayString pieces;
 	split_list(params, 0, string, pieces);
 
 	if(!bits) {
 		const String* options=0;
-		if(params.count()>1)
+		if(params_count>1)
 			options=&params.as_string(1, "options must not be code");
 		
 		bits=split_options(options);
@@ -300,7 +301,7 @@ static void split_with_options(Request& r, MethodParams& params,
 	bool horizontal=(bits & SPLIT_HORIZONTAL) !=0;
 
 	const String* column_name=0;
-	if(params.count()>2){
+	if(params_count>2){
 		column_name=&params.as_string(2, COLUMN_NAME_MUST_BE_STRING);
 		if (horizontal && column_name->length()) 
 			throw Exception(PARSER_RUNTIME,
@@ -395,7 +396,7 @@ static void _match(Request& r, MethodParams& params) {
 			matches_count);
 
 		if(table){
-			r.write_assign_lang(*new VTable(table));
+			r.write_no_lang(*new VTable(table));
 		} else {
 			r.write_no_lang(*new VInt(matches_count));
 		}
@@ -588,12 +589,13 @@ static void _replace(Request& r, MethodParams& params) {
 }
 
 static void _save(Request& r, MethodParams& params) {
-	const String& file_name=params.as_string(params.count()-1, FILE_NAME_MUST_BE_STRING);
+	size_t params_count=params.count();
+	const String& file_name=params.as_string(params_count-1, FILE_NAME_MUST_BE_STRING);
 
 	const String& src=GET_SELF(r, VString).string();
 
 	bool do_append=false;
-	if(params.count()>1) {
+	if(params_count>1) {
 		const String& mode=params.as_string(0, "mode must be string");
 		if(mode=="append")
 			do_append=true;
@@ -619,9 +621,10 @@ static void _trim(Request& r, MethodParams& params) {
 	const String& src=GET_SELF(r, VString).string();
 
 	String::Trim_kind kind=String::TRIM_BOTH;
+	size_t params_count=params.count();
 	const char* chars=0;
-	if(params.count()>0) {
-		const String& skind=params.as_string(0, 
+	if(params_count>0) {
+		const String& skind=params.as_string(0, "'where' must be string");
 			"'where' must be string");
 		if(skind.length())
 			if(skind==TRIM_BOTH_OPTION)
@@ -635,7 +638,7 @@ static void _trim(Request& r, MethodParams& params) {
 					&skind,
 					"'kind' must be one of "TRIM_START_OPTION", "TRIM_BOTH_OPTION", "TRIM_END_OPTION);
 
-		if(params.count()>1) {
+		if(params_count>1) {
 			const String& schars=params.as_string(1, "'chars' must be string");
 			if(schars.length())
 				chars=schars.cstr();
