@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2009/04/21 09:26:29 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2009/04/24 06:30:58 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -113,14 +113,6 @@ void Request::execute(ArrayOperation& ops) {
 	debug_printf(sapi_info, "execution-------------------------\n");
 #endif
 	for(Array_iterator<Operation> i(ops); i.has_next(); ) {
-		if(get_skip())
-			return;
-		if(get_interrupted()) {
-			set_interrupted(false);
-			throw Exception("parser.interrupted",
-				0,
-				"execution stopped");
-		}
 		OP::OPCODE opcode=i.next().code;
 
 #ifdef DEBUG_EXECUTE
@@ -446,6 +438,15 @@ void Request::execute(ArrayOperation& ops) {
 				debug_printf(sapi_info, "<-returned");
 #endif
 				//is_debug_junction=false;
+
+				if(get_skip())
+					return;
+				if(get_interrupted()) {
+					set_interrupted(false);
+					throw Exception("parser.interrupted",
+						0,
+						"execution stopped");
+				}
 				break;
 			}
 
@@ -467,14 +468,14 @@ void Request::execute(ArrayOperation& ops) {
 		case OP::OP_NOT:
 			{
 				Value& a=stack.pop().value();
-				Value& value=*new VBool(!a.as_bool());
+				Value& value=VBool::get(!a.as_bool());
 				stack.push(value);
 				break;
 			}
 		case OP::OP_DEF:
 			{
 				Value& a=stack.pop().value();
-				Value& value=*new VBool(a.is_defined());
+				Value& value=VBool::get(a.is_defined());
 				stack.push(value);
 				break;
 			}
@@ -482,21 +483,21 @@ void Request::execute(ArrayOperation& ops) {
 			{
 				Value& a=stack.pop().value();
 				const String& path=a.as_string();
-				Value& value=*new VBool(request_info.uri && *request_info.uri && path.this_starts(request_info.uri));
+				Value& value=VBool::get(request_info.uri && *request_info.uri && path.this_starts(request_info.uri));
 				stack.push(value);
 				break;
 			}
 		case OP::OP_FEXISTS:
 			{
 				Value& a=stack.pop().value();
-				Value& value=*new VBool(file_exist(absolute(a.as_string())));
+				Value& value=VBool::get(file_exist(absolute(a.as_string())));
 				stack.push(value);
 				break;
 			}
 		case OP::OP_DEXISTS:
 			{
 				Value& a=stack.pop().value();
-				Value& value=*new VBool(dir_exists(absolute(a.as_string())));
+				Value& value=VBool::get(dir_exists(absolute(a.as_string())));
 				stack.push(value);
 				break;
 			}
@@ -632,7 +633,7 @@ void Request::execute(ArrayOperation& ops) {
 					result=b.as_bool();
 				} else
 					result=false;
-				Value& value=*new VBool(result);
+				Value& value=VBool::get(result);
 				stack.push(value);
 				break;
 			}
@@ -647,14 +648,14 @@ void Request::execute(ArrayOperation& ops) {
 					Value& b=stack.pop().value();
 					result=b.as_bool();
 				}
-				Value& value=*new VBool(result);
+				Value& value=VBool::get(result);
 				stack.push(value);
 				break;
 			}
 		case OP::OP_LOG_XOR:
 			{
 				Value& b=stack.pop().value();  Value& a=stack.pop().value();
-				Value& value=*new VBool(a.as_bool() ^ b.as_bool());
+				Value& value=VBool::get(a.as_bool() ^ b.as_bool());
 				stack.push(value);
 				break;
 			}
@@ -662,7 +663,7 @@ void Request::execute(ArrayOperation& ops) {
 			{
 				volatile double b_double=stack.pop().value().as_double();
 				volatile double a_double=stack.pop().value().as_double();
-				Value& value=*new VBool(a_double<b_double);
+				Value& value=VBool::get(a_double<b_double);
 				stack.push(value);
 				break;
 			}
@@ -670,7 +671,7 @@ void Request::execute(ArrayOperation& ops) {
 			{
 				volatile double b_double=stack.pop().value().as_double();
 				volatile double a_double=stack.pop().value().as_double();
-				Value& value=*new VBool(a_double>b_double);
+				Value& value=VBool::get(a_double>b_double);
 				stack.push(value);
 				break;
 			}
@@ -678,7 +679,7 @@ void Request::execute(ArrayOperation& ops) {
 			{
 				volatile double b_double=stack.pop().value().as_double();
 				volatile double a_double=stack.pop().value().as_double();
-				Value& value=*new VBool(a_double<=b_double);
+				Value& value=VBool::get(a_double<=b_double);
 				stack.push(value);
 				break;
 			}
@@ -686,7 +687,7 @@ void Request::execute(ArrayOperation& ops) {
 			{
 				volatile double b_double=stack.pop().value().as_double();
 				volatile double a_double=stack.pop().value().as_double();
-				Value& value=*new VBool(a_double>=b_double);
+				Value& value=VBool::get(a_double>=b_double);
 				stack.push(value);
 				break;
 			}
@@ -694,7 +695,7 @@ void Request::execute(ArrayOperation& ops) {
 			{
 				volatile double b_double=stack.pop().value().as_double();
 				volatile double a_double=stack.pop().value().as_double();
-				Value& value=*new VBool(a_double==b_double);
+				Value& value=VBool::get(a_double==b_double);
 				stack.push(value);
 				break;
 			}
@@ -702,56 +703,56 @@ void Request::execute(ArrayOperation& ops) {
 			{
 				volatile double b_double=stack.pop().value().as_double();
 				volatile double a_double=stack.pop().value().as_double();
-				Value& value=*new VBool(a_double!=b_double);
+				Value& value=VBool::get(a_double!=b_double);
 				stack.push(value);
 				break;
 			}
 		case OP::OP_STR_LT: 
 			{
 				Value& b=stack.pop().value();  Value& a=stack.pop().value();
-				Value& value=*new VBool(a.as_string() < b.as_string());
+				Value& value=VBool::get(a.as_string() < b.as_string());
 				stack.push(value);
 				break;
 			}
 		case OP::OP_STR_GT: 
 			{
 				Value& b=stack.pop().value();  Value& a=stack.pop().value();
-				Value& value=*new VBool(a.as_string() > b.as_string());
+				Value& value=VBool::get(a.as_string() > b.as_string());
 				stack.push(value);
 				break;
 			}
 		case OP::OP_STR_LE: 
 			{
 				Value& b=stack.pop().value();  Value& a=stack.pop().value();
-				Value& value=*new VBool(a.as_string() <= b.as_string());
+				Value& value=VBool::get(a.as_string() <= b.as_string());
 				stack.push(value);
 				break;
 			}
 		case OP::OP_STR_GE: 
 			{
 				Value& b=stack.pop().value();  Value& a=stack.pop().value();
-				Value& value=*new VBool(a.as_string() >= b.as_string());
+				Value& value=VBool::get(a.as_string() >= b.as_string());
 				stack.push(value);
 				break;
 			}
 		case OP::OP_STR_EQ: 
 			{
 				Value& b=stack.pop().value();  Value& a=stack.pop().value();
-				Value& value=*new VBool(a.as_string() == b.as_string());
+				Value& value=VBool::get(a.as_string() == b.as_string());
 				stack.push(value);
 				break;
 			}
 		case OP::OP_STR_NE: 
 			{
 				Value& b=stack.pop().value();  Value& a=stack.pop().value();
-				Value& value=*new VBool(a.as_string() != b.as_string());
+				Value& value=VBool::get(a.as_string() != b.as_string());
 				stack.push(value);
 				break;
 			}
 		case OP::OP_IS:
 			{
 				Value& b=stack.pop().value();  Value& a=stack.pop().value();
-				Value& value=*new VBool(a.is(b.as_string().cstr()));
+				Value& value=VBool::get(a.is(b.as_string().cstr()));
 				stack.push(value);
 				break;
 			}
