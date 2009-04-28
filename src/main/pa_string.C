@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2009/04/22 04:38:17 $";
+static const char * const IDENT_STRING_C="$Date: 2009/04/28 04:53:26 $";
 
 #include "pa_string.h"
 #include "pa_exception.h"
@@ -757,7 +757,7 @@ void String::dump() const {
 	langs.dump();
 }
 const String& String::trim(String::Trim_kind kind, const char* chars) const {
-	if(!length())
+	if(is_empty())
 		return *this;
 
 	size_t substr_begin, substr_length;

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2009/04/24 06:32:06 $";
+static const char * const IDENT_STRING_C="$Date: 2009/04/28 04:53:52 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -303,12 +303,12 @@ static void split_with_options(Request& r, MethodParams& params,
 	const String* column_name=0;
 	if(params_count>2){
 		column_name=&params.as_string(2, COLUMN_NAME_MUST_BE_STRING);
-		if (horizontal && column_name->length()) 
+		if (horizontal && !column_name->is_empty()) 
 			throw Exception(PARSER_RUNTIME,
 				column_name,
 				"column name can't be specified with horisontal split");
 	} 
-	if(!column_name || !column_name->length())
+	if(!column_name || column_name->is_empty())
 		column_name=new String("piece");
 
 	Table& table=horizontal?split_horizontal(pieces, right):split_vertical(pieces, right, column_name);
@@ -625,7 +625,7 @@ static void _trim(Request& r, MethodParams& params) {
 	const char* chars=0;
 	if(params_count>0) {
 		const String& skind=params.as_string(0, "'where' must be string");
-		if(skind.length())
+		if(!skind.is_empty())
 			if(skind==TRIM_BOTH_OPTION)
 				kind=String::TRIM_BOTH;
 			else if(skind==TRIM_START_OPTION || skind=="start")
@@ -639,7 +639,7 @@ static void _trim(Request& r, MethodParams& params) {
 
 		if(params_count>1) {
 			const String& schars=params.as_string(1, "'chars' must be string");
-			if(schars.length())
+			if(!schars.is_empty())
 				chars=schars.cstr();
 		}
 	}
