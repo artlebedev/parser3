@@ -5,7 +5,7 @@
 	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.232 2009/04/17 12:00:08 misha Exp $
+	$Id: compile.y,v 1.233 2009/04/28 11:11:10 misha Exp $
 */
 
 /**
@@ -317,10 +317,11 @@ action: get | put | call;
 
 get: get_value {
 	$$=$1; /* stack: resulting value */ 
-	changetail_or_append(*$$, 
-		OP::OP_GET_ELEMENT, false,  /*->*/OP::OP_GET_ELEMENT__WRITE,
-		/*or */OP::OP_WRITE_VALUE
-		); /* value=pop; wcontext.write(value) */
+	if(!replace_top_opcode(*$$, OP::OP_VALUE__GET_ELEMENT, OP::OP_VALUE__GET_ELEMENT__WRITE))
+		changetail_or_append(*$$, 
+			OP::OP_GET_ELEMENT, false,  /*->*/OP::OP_GET_ELEMENT__WRITE,
+			/*or */OP::OP_WRITE_VALUE
+			); /* value=pop; wcontext.write(value) */
 };
 get_value: '$' get_name_value { $$=$2 };
 get_name_value: name_without_curly_rdive EON | name_in_curly_rdive;
@@ -340,6 +341,19 @@ name_without_curly_rdive_read: name_without_curly_rdive_code {
 			/* skip over... */
 			diving_code->count()>=4?4/*OP::OP_VALUE+origin+string+OP::OP_GET_ELEMENTx*/:3/*OP::OP_+origin+string*/);
 	} else {
+#ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
+		if(diving_code->count()==4){ // optimisations for simple (but very popular) cases
+			O(*yyval,
+				(PC.in_call_value) // ^call
+				? OP::OP_VALUE__GET_ELEMENT_OR_OPERATOR // OP_VALUE+origin+string+OP_GET_ELEMENT -> OP_VALUE__GET_ELEMENT_OR_OPERATOR+origin+string
+				: OP::OP_VALUE__GET_ELEMENT // OP_VALUE+origin+string+OP_GET_ELEMENT -> OP_VALUE__GET_ELEMENT+origin+string
+			);
+			P(*$$, *diving_code, 1/*offset==1: skip leading OP_VALUE*/, 2/*limit==2: skip trailing OP_GET_ELEMENT*/);
+		} else {
+			O(*yyval, OP::OP_WITH_READ); /* stack: starting context */
+			P(*$$, *diving_code);
+		}
+#else
 		O(*yyval, OP::OP_WITH_READ); /* stack: starting context */
 
 		// ^if ELEMENT -> ^if ELEMENT_OR_OPERATOR
@@ -347,6 +361,7 @@ name_without_curly_rdive_read: name_without_curly_rdive_code {
 		if(PC.in_call_value && diving_code->count()==4)
 			diving_code->put(4-1, OP::OP_GET_ELEMENT_OR_OPERATOR);
 		P(*$$, *diving_code);
+#endif
 	}
 	/* diving code; stack: current context */
 };
@@ -591,7 +606,12 @@ class_static_prefix: STRING ':' {
 			YYERROR;
 		}
 	}
+#ifdef OPTIMIZE_BYTECODE_GET_CLASS
+	// OP_VALUE+origin+string+OP_GET_CLASS -> OP_VALUE__GET_CLASS+origin+string
+	replace_top_opcode(*$$, OP::OP_VALUE, OP::OP_VALUE__GET_CLASS, true/*assert if top opcode != OP_VALUE*/)
+#else
 	O(*$$, OP::OP_GET_CLASS);
+#endif
 };
 class_constructor_prefix: class_static_prefix ':' {
 	$$=$1;

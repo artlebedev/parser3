@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2009/04/24 06:30:58 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2009/04/28 11:11:11 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -33,10 +33,26 @@ char *opcode_name[]={
 
 	// actions
 	"WITH_ROOT",	"WITH_SELF",	"WITH_READ",	"WITH_WRITE",
+#ifdef OPTIMIZE_BYTECODE_GET_CLASS
+	"VALUE__GET_CLASS",
+#else
 	"GET_CLASS",
+#endif
 	"CONSTRUCT_VALUE", "CONSTRUCT_EXPR", "CURLY_CODE__CONSTRUCT",
 	"WRITE_VALUE",  "WRITE_EXPR_RESULT",  "STRING__WRITE",
-	"GET_ELEMENT_OR_OPERATOR", "GET_ELEMENT",	"GET_ELEMENT__WRITE",
+#ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
+	"VALUE__GET_ELEMENT_OR_OPERATOR",
+#else
+	"GET_ELEMENT_OR_OPERATOR",
+#endif
+	"GET_ELEMENT",
+#ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
+	"VALUE__GET_ELEMENT",
+#endif
+	"GET_ELEMENT__WRITE",
+#ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
+	"VALUE__GET_ELEMENT__WRITE",
+#endif
 	"OBJECT_POOL",	"STRING_POOL",
 	"STORE_PARAM",
 	"PREPARE_TO_CONSTRUCT_OBJECT",	"PREPARE_TO_EXPRESSION", 
@@ -72,7 +88,18 @@ void debug_dump(SAPI_Info& sapi_info, int level, ArrayOperation& ops) {
 	while(i.has_next()) {
 		OP::OPCODE opcode=i.next().code;
 
-		if(opcode==OP::OP_VALUE || opcode==OP::OP_STRING__WRITE) {
+		if(
+			opcode==OP::OP_VALUE
+			|| opcode==OP::OP_STRING__WRITE
+#ifdef OPTIMIZE_BYTECODE_GET_CLASS
+			|| opcode==OP::OP_VALUE__GET_CLASS
+#endif
+#ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
+			|| opcode==OP::OP_VALUE__GET_ELEMENT
+			|| opcode==OP::OP_VALUE__GET_ELEMENT__WRITE
+			|| opcode==OP::OP_VALUE__GET_ELEMENT_OR_OPERATOR
+#endif
+		) {
 			Operation::Origin origin=i.next().origin;
 			Value& value=*i.next().value;
 			debug_printf(sapi_info, 
@@ -131,6 +158,31 @@ void Request::execute(ArrayOperation& ops) {
 				stack.push(value);
 				break;
 			}
+
+#ifdef OPTIMIZE_BYTECODE_GET_CLASS
+		case OP::OP_VALUE__GET_CLASS:
+			{
+				// maybe they do ^class:method[] call, remember the fact
+				wcontext->set_somebody_entered_some_class();
+
+				debug_origin=i.next().origin;
+				Value& value=*i.next().value;
+				const String& name=*value.get_string();
+
+#ifdef DEBUG_EXECUTE
+				debug_printf(sapi_info, " \"%s\" ", name.cstr());
+#endif
+
+				Value* class_value=classes().get(name);
+				if(!class_value)
+					throw Exception(PARSER_RUNTIME,
+						&name,
+						"class is undefined"); 
+
+				stack.push(*class_value);
+				break;
+			}
+#else
 		case OP::OP_GET_CLASS:
 			{
 				// maybe they do ^class:method[] call, remember the fact
@@ -146,7 +198,7 @@ void Request::execute(ArrayOperation& ops) {
 				stack.push(*value);
 				break;
 			}
-			
+#endif
 		// OP_WITH
 		case OP::OP_WITH_ROOT:
 			{
@@ -258,7 +310,22 @@ void Request::execute(ArrayOperation& ops) {
 				write_no_lang(*value->get_string());
 				break;
 			}
-			
+
+#ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
+		case OP::OP_VALUE__GET_ELEMENT_OR_OPERATOR:
+			{
+				debug_origin=i.next().origin;
+				const String& name=*i.next().value->get_string();  debug_name=&name;
+
+#ifdef DEBUG_EXECUTE
+				debug_printf(sapi_info, " \"%s\" ", name.cstr());
+#endif
+
+				Value& value=get_element(*rcontext, name, true);
+				stack.push(value);
+				break;
+			}
+#else
 		case OP::OP_GET_ELEMENT_OR_OPERATOR:
 			{
 				const String& name=stack.pop().string();  debug_name=&name;
@@ -267,6 +334,8 @@ void Request::execute(ArrayOperation& ops) {
 				stack.push(value);
 				break;
 			}
+#endif
+
 		case OP::OP_GET_ELEMENT:
 			{
 				const String& name=stack.pop().string();  debug_name=&name;
@@ -275,6 +344,23 @@ void Request::execute(ArrayOperation& ops) {
 				stack.push(value);
 				break;
 			}
+
+#ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
+		case OP::OP_VALUE__GET_ELEMENT:
+			{
+				debug_origin=i.next().origin;
+				const String& name=*i.next().value->get_string(); debug_name=&name;
+
+#ifdef DEBUG_EXECUTE
+				debug_printf(sapi_info, " \"%s\" ", name.cstr());
+#endif
+
+				Value& value=get_element(*rcontext, name, false);
+				stack.push(value);
+				break;
+			}
+#endif
+
 
 		case OP::OP_GET_ELEMENT__WRITE:
 			{
@@ -285,6 +371,21 @@ void Request::execute(ArrayOperation& ops) {
 				break;
 			}
 
+#ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
+		case OP::OP_VALUE__GET_ELEMENT__WRITE:
+			{
+				debug_origin=i.next().origin;
+				const String& name=*i.next().value->get_string(); debug_name=&name;
+
+#ifdef DEBUG_EXECUTE
+				debug_printf(sapi_info, " \"%s\" ", name.cstr());
+#endif
+
+				Value& value=get_element(*rcontext, name, false);
+				write_assign_lang(value);
+				break;
+			}
+#endif
 
 		case OP::OP_OBJECT_POOL:
 			{
