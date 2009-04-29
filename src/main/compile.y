@@ -5,7 +5,7 @@
 	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.234 2009/04/29 03:26:50 misha Exp $
+	$Id: compile.y,v 1.235 2009/04/29 06:48:46 misha Exp $
 */
 
 /**
@@ -317,7 +317,9 @@ action: get | put | call;
 
 get: get_value {
 	$$=$1; /* stack: resulting value */ 
+#ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
 	if(!replace_top_opcode(*$$, OP::OP_VALUE__GET_ELEMENT, OP::OP_VALUE__GET_ELEMENT__WRITE))
+#endif
 		changetail_or_append(*$$, 
 			OP::OP_GET_ELEMENT, false,  /*->*/OP::OP_GET_ELEMENT__WRITE,
 			/*or */OP::OP_WRITE_VALUE
