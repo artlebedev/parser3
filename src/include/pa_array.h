@@ -8,7 +8,7 @@
 #ifndef PA_ARRAY_H
 #define PA_ARRAY_H
 
-static const char * const IDENT_ARRAY_Y="$Date: 2009/04/21 09:23:21 $";
+static const char * const IDENT_ARRAY_Y="$Date: 2009/04/29 03:26:38 $";
 
 // includes
 
@@ -193,6 +193,10 @@ public:
 				return *current;
 
 		return T(0);
+	}
+
+	inline T* ptr(size_t index){
+		return felements + index;
 	}
 
 protected:

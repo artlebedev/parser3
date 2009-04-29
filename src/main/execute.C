@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2009/04/28 11:11:11 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2009/04/29 03:26:50 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -54,7 +54,6 @@ char *opcode_name[]={
 	"VALUE__GET_ELEMENT__WRITE",
 #endif
 	"OBJECT_POOL",	"STRING_POOL",
-	"STORE_PARAM",
 	"PREPARE_TO_CONSTRUCT_OBJECT",	"PREPARE_TO_EXPRESSION", 
 	"CALL", "CALL__WRITE",
 
@@ -232,7 +231,7 @@ void Request::execute(ArrayOperation& ops) {
 				Value& value=stack.pop().value();
 				const String& name=stack.pop().string();  debug_name=&name;
 				Value& ncontext=stack.pop().value();
-				put_element(ncontext, name, value);
+				put_element(ncontext, name, &value);
 
 				break;
 			}
@@ -245,7 +244,7 @@ void Request::execute(ArrayOperation& ops) {
 				const String& name=stack.pop().string();  debug_name=&name;
 				Value& ncontext=stack.pop().value();
 				Value& value=expr.as_expr_result();
-				put_element(ncontext, name, value);
+				put_element(ncontext, name, &value);
 				break;
 			}
 		case OP::OP_CURLY_CODE__CONSTRUCT:
@@ -429,20 +428,11 @@ void Request::execute(ArrayOperation& ops) {
 			}
 
 		// CALL
-		case OP::OP_STORE_PARAM:
-			{
-				Value& value=stack.pop().value();
-				VMethodFrame& frame=stack.top_value().method_frame();
-				// this op is executed from CALL local_ops only, so may skip the check "method_frame_to_fill==0"
-				frame.store_param(value);
-				break;
-			}
 		case OP::OP_CURLY_CODE__STORE_PARAM:
 		case OP::OP_EXPR_CODE__STORE_PARAM:
 			{
 				// code
 				ArrayOperation& local_ops=*i.next().ops;
-				VMethodFrame& frame=stack.top_value().method_frame();
 #ifdef DEBUG_EXECUTE
 				debug_printf(sapi_info, " (%d)\n", local_ops.count());
 				debug_dump(sapi_info, 1, local_ops);
@@ -468,7 +458,7 @@ void Request::execute(ArrayOperation& ops) {
 				wcontext->attach_junction(&value);
 				// store param
 				// this op is executed from CALL local_ops only, so can not check method_frame_to_fill==0
-				frame.store_param(value);
+				stack.push(value);
 				break;
 			}
 
@@ -524,9 +514,10 @@ void Request::execute(ArrayOperation& ops) {
 
 				VMethodFrame frame(*junction, method_frame);
 				if(local_ops){ // store param code goes here
-					stack.push(frame); // argument for *STORE_PARAM ops
+					size_t first = stack.top_index();
 					execute(*local_ops);
-					stack.pop().value();
+					frame.store_params((Value**)stack.ptr(first), stack.top_index()-first);
+					stack.set_top_index(first);
 				}
 				WContext* result_wcontext=op_call(frame);
 				if(opcode==OP::OP_CALL__WRITE) {
@@ -873,7 +864,6 @@ void Request::execute(ArrayOperation& ops) {
 }
 
 WContext* Request::op_call(VMethodFrame& frame){
-	frame.fill_unspecified_params();
 	VMethodFrame *saved_method_frame=method_frame;
 	Value* saved_rcontext=rcontext;
 	WContext *saved_wcontext=wcontext;
@@ -991,22 +981,20 @@ value_ready:
 	return *value;
 }
 
-void Request::put_element(Value& ncontext, const String& name, Value& value) {
+void Request::put_element(Value& ncontext, const String& name, Value* value) {
 	// put_element can return property-setting-junction
-	if(const VJunction* vjunction=ncontext.put_element(ncontext, name, &value, false))
+	if(const VJunction* vjunction=ncontext.put_element(ncontext, name, value, false))
 		if(vjunction!=PUT_ELEMENT_REPLACED_ELEMENT) {
-			const Junction& junction=vjunction->junction();
 			// process it
-			ArrayString* params_names=junction.method->params_names;
-			int param_count=params_names? params_names->count(): 0;
+			VMethodFrame frame(vjunction->junction(), method_frame/*caller*/);
+			int param_count=frame.method_params_count();
+
 			if(param_count!=1)
 				throw Exception(PARSER_RUNTIME,
 					0,
 					"setter method must have ONE parameter (has %d parameters)", param_count);
 
-			VMethodFrame frame(junction, method_frame/*caller*/);
-			frame.store_param(value);
-
+			frame.store_params(&value, 1);
 			frame.set_self(frame.junction.self);
 
 			VMethodFrame *saved_method_frame=method_frame;
@@ -1043,7 +1031,9 @@ StringOrValue Request::process(Value& input_value, bool intercept_string) {
 	Junction* junction=input_value.get_junction();
 	if(junction) {
 		if(junction->is_getter) { // is it a getter-junction?
-			int param_count=junction->method->params_names?junction->method->params_names->count():0;
+			VMethodFrame frame(*junction, method_frame/*caller*/);
+			int param_count=frame.method_params_count();
+
 			if(junction->auto_name){ // default getter
 				if(param_count>1)
 					throw Exception(PARSER_RUNTIME,
@@ -1054,10 +1044,10 @@ StringOrValue Request::process(Value& input_value, bool intercept_string) {
 					0,
 					"getter method must have no parameters (has %d parameters)", param_count);
 
-			VMethodFrame frame(*junction, method_frame/*caller*/);
-
-			if(junction->auto_name && param_count)
-				frame.store_param(*new VString(*junction->auto_name));
+			if(junction->auto_name && param_count){
+				Value *param=new VString(*junction->auto_name);
+				frame.store_params(&param, 1);
+			}
 
 			frame.set_self(frame.junction.self);
 
@@ -1163,8 +1153,8 @@ StringOrValue Request::execute_method(VMethodFrame& amethod_frame, const Method&
 }
 
 const String* Request::execute_method(Value& aself, 
-				      const Method& method, VString* optional_param,
-				      bool do_return_string) {
+					const Method& method, Value* optional_param,
+					bool do_return_string) {
 
 	VMethodFrame *saved_method_frame=method_frame;  
 	Value* saved_rcontext=rcontext;  
@@ -1172,9 +1162,8 @@ const String* Request::execute_method(Value& aself,
 	
 	Junction local_junction(aself, &method);
 	VMethodFrame local_frame(local_junction, method_frame/*caller*/);
-	if(optional_param && local_frame.can_store_param()) {
-		local_frame.store_param(*optional_param);
-		local_frame.fill_unspecified_params();
+	if(optional_param && local_frame.method_params_count()>0) {
+		local_frame.store_params(&optional_param, 1);
 	}
 	local_frame.set_self(aself);
 	rcontext=wcontext=method_frame=&local_frame; 

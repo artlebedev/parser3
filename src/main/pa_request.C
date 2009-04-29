@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REQUEST_C="$Date: 2009/04/16 01:09:54 $";
+static const char * const IDENT_REQUEST_C="$Date: 2009/04/29 03:26:50 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -405,7 +405,7 @@ gettimeofday(&mt[2],NULL);
 					VMethodFrame frame(/*method->name, */ *junction, 0/*no parent*/);
 					frame.set_self(main_class);
 
-					frame.store_param(*body_value);
+					frame.store_params(&body_value, 1);
 					body_value=&execute_method(frame, *method).as_value();
 				}
 
@@ -467,8 +467,6 @@ t[9]-t[3]
 					VMethodFrame frame(/*method->name, */ *junction, 0/*no caller*/);
 					frame.set_self(main_class);
 
-					// $exception
-					frame.store_param(details.vhash);
 					// $stack[^table::create{name	file	lineno	colno}]
 					Table::columns_type stack_trace_columns(new ArrayString);
 					*stack_trace_columns+=new String("name");
@@ -491,7 +489,8 @@ t[9]-t[3]
 							stack_trace+=row;
 						}
 
-					frame.store_param(*new VTable(&stack_trace));
+					Value *params[]={&details.vhash, new VTable(&stack_trace)};
+					frame.store_params(params, 2);
 
 					// future $response:body=
 					//   execute ^unhandled_exception[exception;stack]

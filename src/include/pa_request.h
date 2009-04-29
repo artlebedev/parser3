@@ -1,14 +1,14 @@
 /** @file
 	Parser: request class decl.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char * const IDENT_REQUEST_H="$Date: 2008/06/10 14:04:44 $";
+static const char * const IDENT_REQUEST_H="$Date: 2009/04/29 03:26:38 $";
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -356,7 +356,7 @@ public: // status read methods
 	StringOrValue execute_method(VMethodFrame& amethodFrame, const Method& method);
 	//{ for @conf[filespec] and @auto[filespec] and parser://method/call
 	const String* execute_method(Value& aself, 
-		const Method& method, VString* optional_param,
+		const Method& method, Value* optional_param,
 		bool do_return_string);
 	struct Execute_nonvirtual_method_result {
 		const String* string;
@@ -399,7 +399,7 @@ private: // compile.C
 
 private: // execute.C
 
-	void put_element(Value& ncontext, const String& name, Value& value);
+	void put_element(Value& ncontext, const String& name, Value* value);
 	Value& get_element(Value& ncontext, const String& name, bool can_call_operator);
 
 private: // defaults

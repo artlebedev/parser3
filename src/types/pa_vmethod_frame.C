@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)\
 */
 
-static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2009/04/17 09:56:21 $";
+static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2009/04/29 03:27:08 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
@@ -30,7 +30,6 @@ VMethodFrame::VMethodFrame(
 
 	fcaller(acaller),
 
-	store_param_index(0),
 	my(0),
 	fself(0),
 

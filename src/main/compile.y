@@ -5,7 +5,7 @@
 	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.233 2009/04/28 11:11:10 misha Exp $
+	$Id: compile.y,v 1.234 2009/04/29 03:26:50 misha Exp $
 */
 
 /**
@@ -464,7 +464,7 @@ call_value: '^' {
 	$$=$3; /* with_xxx,diving code; stack: context,method_junction */
 
 	YYSTYPE params_code=$5;
-	if(params_code->count()==4) { // probably [] case. [OP::OP_VALUE+origin+Void+STORE_PARAM]
+	if(params_code->count()==3) { // probably [] case. [OP::OP_VALUE+origin+Void]
 		if(Value* value=LA2V(*params_code)) // it is OP_VALUE+origin+value?
 			if(value->is_void()) // value is VVoid?
 				params_code=0; // ^zzz[] case. don't append lone empty param.
@@ -503,14 +503,12 @@ store_curly_param_parts:
 ;
 store_code_param_part: code_param_value {
 	$$=$1;
-	O(*$$, OP::OP_STORE_PARAM);
 };
 store_expr_param_part: expr_value {
 	YYSTYPE expr_code=$1;
 	if(expr_code->count()==3
-		&& (*expr_code)[0].code==OP::OP_VALUE) { // optimizing (double/bool/incidently 'string' too) case. [OP::OP_VALUE+origin+Double]
+		&& (*expr_code)[0].code==OP::OP_VALUE) { // optimizing (double/bool/incidently 'string' too) case. [OP::OP_VALUE+origin+Double]. no evaluating
 		$$=expr_code; 
-		O(*$$, OP::OP_STORE_PARAM); // no evaluating
 	} else {
 		ArrayOperation* code=N();
 		O(*code, OP::OP_PREPARE_TO_EXPRESSION);

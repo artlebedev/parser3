@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2009/04/18 00:34:14 $";
+static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2009/04/29 03:27:08 $";
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
@@ -31,7 +31,13 @@ class Request;
 */
 class MethodParams: public Array<Value*> {
 public:
-	Value& operator[] (size_t index) { return *get(index); }
+	void store_params(Value **params, size_t count){ 
+		expand(count); 
+		memcpy(felements, params, sizeof(Value *)*count);
+		fused=count;
+	}
+
+	inline Value& operator[] (size_t index) { return *get(index); }
 
 	Value& last() { return *get(count()-1); }
 
@@ -111,7 +117,6 @@ class VMethodFrame: public WContext {
 protected:
 	VMethodFrame *fcaller;
 
-	size_t store_param_index;
 	HashStringValue* my; /*OR*/ MethodParams fnumbered_params;
 	Value* fself;
 
@@ -216,17 +221,19 @@ public: // usage
 	/// we sure that someone already set our self with VMethodFrame::set_self(Value&)
 	Value& self() { return *fself; }
 
-	bool can_store_param() {
+	size_t method_params_count() {
 		const Method& method=*junction.method;
-		return method.params_names && store_param_index<method.params_names->count();
+		return method.params_names ? method.params_names->count():0;
 	}
-	void store_param(Value& value) {
+
+	void store_params(Value **params, size_t count) {
 		const Method& method=*junction.method;
 		size_t max_params=
 			method.max_numbered_params_count?method.max_numbered_params_count:
 			method.params_names?method.params_names->count():
 			0;
-		if(store_param_index==max_params)
+
+		if(count>max_params)
 			throw Exception(PARSER_RUNTIME,
 				0, //&name(),
 				"method of %s (%s) accepts maximum %d parameter(s)", 
@@ -234,23 +241,21 @@ public: // usage
 					junction.self.type(),
 					max_params);
 		
-		if(!my){ // are this method params numbered?
-			fnumbered_params+=&value;
-		} else { // named param
-			// speedup: not checking for clash with "result" fname
-			const String& fname=*(*method.params_names)[store_param_index];
-			set_my_variable(fname, value);
-		}
-		store_param_index++;
-	}
-	void fill_unspecified_params() {
-		const Method &method=*junction.method;
-		if(method.params_names) { // there are any named parameters might need filling?
+		if(my) {
+			size_t i=0;
+
+			for (; i<count; i++){
+				const String& fname=*(*method.params_names)[i];
+				set_my_variable(fname, *params[i]);
+			}
+
 			size_t param_count=method.params_names->count();
-			for(; store_param_index<param_count; store_param_index++) {
-				const String& fname=*(*method.params_names)[store_param_index];
+			for(; i<param_count; i++) {
+				const String& fname=*(*method.params_names)[i];
 				my->put(fname, VVoid::get());
 			}
+		} else {
+			fnumbered_params.store_params(params,count);
 		}
 	}
 
