@@ -1,0 +1,12 @@
+@main[]
+$var[global]
+
+^call[]
+'$z' -- should be empty string!
+<hr />
+^call[1]
+'$z' -- should be '1'
+
+
+@call[var]
+$z[$var]

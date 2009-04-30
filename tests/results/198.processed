@@ -1,0 +1,7 @@
+content-type: text/html
+content-length: 59
+
+'' -- should be empty string!
+<hr />
+
+'1' -- should be '1'
