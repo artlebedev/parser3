@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2009/04/29 03:27:08 $";
+static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2009/04/30 04:39:39 $";
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
@@ -29,12 +29,20 @@ class Request;
 	contains handy typecast ad junction/not junction ensurers
 
 */
-class MethodParams: public Array<Value*> {
+class MethodParams {
 public:
+	MethodParams() : felements(0), fused(0){}
+
 	void store_params(Value **params, size_t count){ 
-		expand(count); 
-		memcpy(felements, params, sizeof(Value *)*count);
+		felements=params;
 		fused=count;
+	}
+
+	inline size_t count() const { return fused; }
+
+	inline Value *get(size_t index) const {
+		assert(index<count());
+		return felements[index];
 	}
 
 	inline Value& operator[] (size_t index) { return *get(index); }
@@ -94,6 +102,9 @@ public:
 		return as_no_junction(index, msg).as_string();
 	}
 private:
+
+	Value **felements;
+	size_t fused;
 
 	/// handy value-is/not-a-junction ensurer
 	Value& get_as(Value* value, bool as_junction, const char* msg, int index) { 
@@ -240,8 +251,8 @@ public: // usage
 					junction.self.get_class()->name_cstr(),
 					junction.self.type(),
 					max_params);
-		
-		if(my) {
+
+		if(method.params_names) {
 			size_t i=0;
 
 			for (; i<count; i++){
@@ -256,6 +267,17 @@ public: // usage
 			}
 		} else {
 			fnumbered_params.store_params(params,count);
+		}
+	}
+
+	void empty_params(){
+		const Method& method=*junction.method;
+		if(method.params_names){
+			size_t param_count=method.params_names->count();
+			for(size_t i=0; i<param_count; i++) {
+				const String& fname=*(*method.params_names)[i];
+				my->put(fname, VVoid::get());
+			}
 		}
 	}
 

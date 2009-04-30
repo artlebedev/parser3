@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2009/04/29 03:26:50 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2009/04/30 04:39:29 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -319,8 +319,12 @@ void Request::execute(ArrayOperation& ops) {
 #ifdef DEBUG_EXECUTE
 				debug_printf(sapi_info, " \"%s\" ", name.cstr());
 #endif
-
-				Value& value=get_element(*rcontext, name, true);
+				if(Method* method=main_class.get_method(name)){ // looking operator of that name FIRST
+					if(!method->junction_template) method->junction_template=new VJunction(main_class, method);
+					stack.push(*method->junction_template);
+					break;
+				}
+				Value& value=get_element(*rcontext, name);
 				stack.push(value);
 				break;
 			}
@@ -329,7 +333,12 @@ void Request::execute(ArrayOperation& ops) {
 			{
 				const String& name=stack.pop().string();  debug_name=&name;
 				Value& ncontext=stack.pop().value();
-				Value& value=get_element(ncontext, name, true);
+				if(Method* method=main_class.get_method(name)){ // looking operator of that name FIRST
+					if(!method->junction_template) method->junction_template=new VJunction(main_class, method);
+					stack.push(*method->junction_template);
+					break;
+				}
+				Value& value=get_element(ncontext, name);
 				stack.push(value);
 				break;
 			}
@@ -339,7 +348,7 @@ void Request::execute(ArrayOperation& ops) {
 			{
 				const String& name=stack.pop().string();  debug_name=&name;
 				Value& ncontext=stack.pop().value();
-				Value& value=get_element(ncontext, name, false);
+				Value& value=get_element(ncontext, name);
 				stack.push(value);
 				break;
 			}
@@ -354,7 +363,7 @@ void Request::execute(ArrayOperation& ops) {
 				debug_printf(sapi_info, " \"%s\" ", name.cstr());
 #endif
 
-				Value& value=get_element(*rcontext, name, false);
+				Value& value=get_element(*rcontext, name);
 				stack.push(value);
 				break;
 			}
@@ -365,7 +374,7 @@ void Request::execute(ArrayOperation& ops) {
 			{
 				const String& name=stack.pop().string();  debug_name=&name;
 				Value& ncontext=stack.pop().value();
-				Value& value=get_element(ncontext, name, false);
+				Value& value=get_element(ncontext, name);
 				write_assign_lang(value);
 				break;
 			}
@@ -380,7 +389,7 @@ void Request::execute(ArrayOperation& ops) {
 				debug_printf(sapi_info, " \"%s\" ", name.cstr());
 #endif
 
-				Value& value=get_element(*rcontext, name, false);
+				Value& value=get_element(*rcontext, name);
 				write_assign_lang(value);
 				break;
 			}
@@ -513,13 +522,19 @@ void Request::execute(ArrayOperation& ops) {
 				*/
 
 				VMethodFrame frame(*junction, method_frame);
+				WContext* result_wcontext;
+
 				if(local_ops){ // store param code goes here
 					size_t first = stack.top_index();
 					execute(*local_ops);
 					frame.store_params((Value**)stack.ptr(first), stack.top_index()-first);
+					result_wcontext=op_call(frame);
 					stack.set_top_index(first);
+				} else {
+					frame.empty_params();
+					result_wcontext=op_call(frame);
 				}
-				WContext* result_wcontext=op_call(frame);
+
 				if(opcode==OP::OP_CALL__WRITE) {
 					write_assign_lang(result_wcontext->result());
 				} else { // OP_CALL
@@ -863,10 +878,18 @@ void Request::execute(ArrayOperation& ops) {
 	}
 }
 
-WContext* Request::op_call(VMethodFrame& frame){
-	VMethodFrame *saved_method_frame=method_frame;
-	Value* saved_rcontext=rcontext;
+#define SAVE_CONTEXT								\
+	VMethodFrame *saved_method_frame=method_frame;	\
+	Value* saved_rcontext=rcontext;					\
 	WContext *saved_wcontext=wcontext;
+
+#define RESTORE_CONTEXT					\
+	wcontext=saved_wcontext;			\
+	rcontext=saved_rcontext;			\
+	method_frame=saved_method_frame;
+
+WContext* Request::op_call(VMethodFrame& frame){
+	SAVE_CONTEXT
 			
 	VStateless_class& called_class=*frame.junction.self.get_class();
 	Value* new_self;
@@ -927,9 +950,7 @@ WContext* Request::op_call(VMethodFrame& frame){
 	WContext *result_wcontext=wcontext;
 	// StringOrValue result=wcontext->result();
 
-	wcontext=saved_wcontext;
-	rcontext=saved_rcontext;
-	method_frame=saved_method_frame;
+	RESTORE_CONTEXT
 
 	return result_wcontext;
 }
@@ -939,46 +960,29 @@ WContext* Request::op_call(VMethodFrame& frame){
 	@todo cache|prepare junctions
 	@bug ^superbase:method would dynamically call ^base:method if there is any
 */
-Value& Request::get_element(Value& ncontext, const String& name, bool can_call_operator) {
-	Value* value=0;
-	if(can_call_operator) {
-		if(Method* method=main_class.get_method(name)){ // looking operator of that name FIRST
-			if(!method->junction_template)
-				method->junction_template=new VJunction(main_class, method);
-			return *method->junction_template;
-		}
-	}
-	if(!value) {
-		if(!wcontext->get_constructing() // not constructing
-			&& wcontext->get_somebody_entered_some_class() ) // ^class:method
+Value& Request::get_element(Value& ncontext, const String& name) {
+	if(!wcontext->get_constructing() // not constructing
+		&& wcontext->get_somebody_entered_some_class() ) // ^class:method
 			if(VStateless_class *called_class=ncontext.get_class())
 				if(VStateless_class *read_class=rcontext->get_class())
 					if(read_class->derived_from(*called_class)) // current derived from called
 						if(Value* base=get_self().base()) { // doing DYNAMIC call
-							Temp_derived temp_derived(*base, 0); // temporarily prevent go-back-down virtual calls
-							value=base->get_element(name, *base, true); // virtual-up lookup starting from parent
-							goto value_ready;
+							Temp_derived temp_derived(*base, 0); // temporarily prevent go-back-down virtual calls 
+							Value *value=base->get_element(name, *base, true); // virtual-up lookup starting from parent
+							return *(value ? &process_to_value(*value) : VVoid::get());
 						}
-	}
-	if(!value)
-		value=ncontext.get_element(name, ncontext, true);
+
+	Value* value=ncontext.get_element(name, ncontext, true);
 
 	if(value && wcontext->get_constructing())
-		if(Junction* junction=value->get_junction()) {
+		if(Junction* junction=value->get_junction())
 			if(junction->self.get_class()!=&ncontext)
 				throw Exception(PARSER_RUNTIME,
 					&name,
 					"constructor must be declared in class '%s'", 
 						ncontext.get_class()->name_cstr());
-		}
 
-value_ready:
-	if(value)
-		value=&process_to_value(*value); // process possible code-junction
-	else
-		value=VVoid::get();
-
-	return *value;
+	return *(value ? &process_to_value(*value) : VVoid::get());
 }
 
 void Request::put_element(Value& ncontext, const String& name, Value* value) {
@@ -997,9 +1001,7 @@ void Request::put_element(Value& ncontext, const String& name, Value* value) {
 			frame.store_params(&value, 1);
 			frame.set_self(frame.junction.self);
 
-			VMethodFrame *saved_method_frame=method_frame;
-			Value* saved_rcontext=rcontext;
-			WContext *saved_wcontext=wcontext;
+			SAVE_CONTEXT
 
 			rcontext=wcontext=&frame;
 			method_frame=&frame;
@@ -1010,9 +1012,7 @@ void Request::put_element(Value& ncontext, const String& name, Value* value) {
 			recoursion_checked_execute(*frame.junction.method->parser_code); // parser code, execute it
 			// we don't need it StringOrValue result=wcontext->result();
 
-			method_frame=saved_method_frame;
-			wcontext=saved_wcontext;
-			rcontext=saved_rcontext;
+			RESTORE_CONTEXT
 		}
 }
 
@@ -1047,13 +1047,13 @@ StringOrValue Request::process(Value& input_value, bool intercept_string) {
 			if(junction->auto_name && param_count){
 				Value *param=new VString(*junction->auto_name);
 				frame.store_params(&param, 1);
+			} else {
+				frame.empty_params();
 			}
 
 			frame.set_self(frame.junction.self);
 
-			VMethodFrame *saved_method_frame=method_frame;
-			Value* saved_rcontext=rcontext;
-			WContext *saved_wcontext=wcontext;
+			SAVE_CONTEXT
 
 			rcontext=wcontext=&frame;
 			method_frame=&frame;
@@ -1061,9 +1061,7 @@ StringOrValue Request::process(Value& input_value, bool intercept_string) {
 			recoursion_checked_execute(*frame.junction.method->parser_code); // parser code, execute it
 			StringOrValue result=wcontext->result();
 
-			method_frame=saved_method_frame;
-			wcontext=saved_wcontext;
-			rcontext=saved_rcontext;
+			RESTORE_CONTEXT
 
 			return result;
 		}
@@ -1080,9 +1078,7 @@ StringOrValue Request::process(Value& input_value, bool intercept_string) {
 				0,
 				"junction used outside of context");
 
-			VMethodFrame *saved_method_frame=method_frame;  
-			Value* saved_rcontext=rcontext;  
-			WContext *saved_wcontext=wcontext;
+			SAVE_CONTEXT
 
 			method_frame=junction->method_frame;
 			rcontext=junction->rcontext;
@@ -1113,9 +1109,7 @@ StringOrValue Request::process(Value& input_value, bool intercept_string) {
 				result=wcontext->result();
 			}
 
-			wcontext=saved_wcontext;
-			rcontext=saved_rcontext;
-			method_frame=saved_method_frame;
+			RESTORE_CONTEXT
 
 #ifdef DEBUG_EXECUTE
 			debug_printf(sapi_info, "<-ja returned");
@@ -1131,9 +1125,7 @@ StringOrValue Request::process(Value& input_value, bool intercept_string) {
 }
 
 StringOrValue Request::execute_method(VMethodFrame& amethod_frame, const Method& method) {
-	VMethodFrame *saved_method_frame=method_frame;  
-	Value* saved_rcontext=rcontext;  
-	WContext *saved_wcontext=wcontext;
+	SAVE_CONTEXT
 	
 	// initialize contexts
 	rcontext=wcontext=method_frame=&amethod_frame;
@@ -1144,9 +1136,7 @@ StringOrValue Request::execute_method(VMethodFrame& amethod_frame, const Method&
 	// result
 	StringOrValue result=wcontext->result();
 	
-	wcontext=saved_wcontext;
-	rcontext=saved_rcontext;
-	method_frame=saved_method_frame;
+	RESTORE_CONTEXT
 	
 	// return
 	return result;
@@ -1156,14 +1146,14 @@ const String* Request::execute_method(Value& aself,
 					const Method& method, Value* optional_param,
 					bool do_return_string) {
 
-	VMethodFrame *saved_method_frame=method_frame;  
-	Value* saved_rcontext=rcontext;  
-	WContext *saved_wcontext=wcontext;
+	SAVE_CONTEXT
 	
 	Junction local_junction(aself, &method);
 	VMethodFrame local_frame(local_junction, method_frame/*caller*/);
 	if(optional_param && local_frame.method_params_count()>0) {
 		local_frame.store_params(&optional_param, 1);
+	} else {
+		local_frame.empty_params();
 	}
 	local_frame.set_self(aself);
 	rcontext=wcontext=method_frame=&local_frame; 
@@ -1180,18 +1170,16 @@ const String* Request::execute_method(Value& aself,
 	if(do_return_string)
 		result=&wcontext->result().as_string();
 	
-	wcontext=saved_wcontext;
-	rcontext=saved_rcontext;
-	method_frame=saved_method_frame;
+	RESTORE_CONTEXT
 
 	return result;
 }
 
 Request::Execute_nonvirtual_method_result 
 Request::execute_nonvirtual_method(VStateless_class& aclass, 
-				   const String& method_name,
-				   VString* optional_param,
-				   bool do_return_string) {
+					const String& method_name,
+					VString* optional_param,
+					bool do_return_string) {
 	Execute_nonvirtual_method_result result;
 	result.method=aclass.get_method(method_name);
 	if(result.method)
@@ -1200,7 +1188,7 @@ Request::execute_nonvirtual_method(VStateless_class& aclass,
 }
 
 const String* Request::execute_virtual_method(Value& aself, 
-					      const String& method_name) {
+					const String& method_name) {
 	if(Value* value=aself.get_element(method_name, aself, false))
 		if(Junction* junction=value->get_junction())
 			if(const Method *method=junction->method) 

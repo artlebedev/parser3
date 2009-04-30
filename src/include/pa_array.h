@@ -8,7 +8,7 @@
 #ifndef PA_ARRAY_H
 #define PA_ARRAY_H
 
-static const char * const IDENT_ARRAY_Y="$Date: 2009/04/30 04:39:06 $";
+static const char * const IDENT_ARRAY_Y="$Date: 2009/04/30 04:40:30 $";
 
 // includes
 
@@ -208,7 +208,6 @@ protected:
 		if(fallocated){
 			size_t new_allocated=fallocated+delta;
 			felements=(T *)pa_realloc(felements, new_allocated*sizeof(T));
-			memset(&felements[fallocated], 0, delta*sizeof(T));
 			fallocated=new_allocated;
 		} else {
 			fallocated=delta;

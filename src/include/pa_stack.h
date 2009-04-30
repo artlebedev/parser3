@@ -1,54 +1,57 @@
 /** @file
 	Parser: stack class decl.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_STACK_H
 #define PA_STACK_H
 
-static const char * const IDENT_STACK_H="$Date: 2006/04/09 13:38:47 $";
+static const char * const IDENT_STACK_H="$Date: 2009/04/30 04:39:06 $";
 
-#include "pa_config_includes.h"
 #include "pa_array.h"
 
 /// simple stack based on Array
 template<typename T> class Stack: public Array<T> {
 public:
 
-	Stack(): ftop(0) {}
+	Stack(size_t initial=4) : Array<T>(initial){}
 
-	void push(T item) {
-		if(ftop<this->count()) // cell is already allocated?
-			this->put(ftop, item); // use it
-		else
-			*this+=item; // append it
-		ftop++;
+	inline void push(T item) {
+		if(this->is_full())
+			expand(this->fallocated); // free is not called, so expanding a lot to decrease memory waste
+		this->felements[this->fused++]=item;
 	}
 
-	T pop() {
-		return this->get(--ftop);
+	inline T pop() {
+		return this->felements[--this->fused];
 	}
 
-	bool is_empty() { return ftop==0; }
-	size_t top_index() { return ftop; }
-	void set_top_index(size_t atop) { ftop=atop; }
-	T top_value() { 
+	inline bool is_empty() { return this->fused==0; }
+	inline size_t top_index() { return this->fused; }
+	inline void set_top_index(size_t atop) { this->fused=atop; }
+	inline T top_value() {
 		assert(!is_empty());
-		return this->get(ftop-1); 
+		return this->felements[this->fused-1];
 	}
 
 	/// call this prior to collecting garbage [in unused part of stack there may be pointers(unused)]
 	void wipe_unused() {
-		if(size_t above_top_size=this->fused-ftop)
-			memset(&this->felements[ftop], 0, above_top_size*sizeof(T));
+		if(size_t above_top_size=this->fallocated-this->fused)
+			memset(&this->felements[this->fused], 0, above_top_size*sizeof(T));
 	}
 
 protected:
 
-	// deepest used index+1
-	size_t ftop;
+	void expand(size_t delta) {
+		size_t new_allocated=this->fallocated+delta;
+		// we can't use realloc as MethodParams references allocated stack
+		T* new_elements = (T *)pa_malloc(new_allocated*sizeof(T));
+		memcpy(new_elements, this->felements, this->fallocated*sizeof(T));
+		this->felements=new_elements;
+		this->fallocated=new_allocated;
+	}
 };
 
 #endif

@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char * const IDENT_REQUEST_H="$Date: 2009/04/29 03:26:38 $";
+static const char * const IDENT_REQUEST_H="$Date: 2009/04/30 04:39:06 $";
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -105,11 +105,11 @@ private:
 		element_type bottom_value() { return get(bottom_index()); }
 
 		void clear() {
-			ftop=fbottom=0;
+			fused=fbottom=0;
 		}
 
 		bool is_empty() {
-			return ftop==fbottom;
+			return fused==fbottom;
 		}
 
 		const element_type extract_origin(const String*& problem_source);
@@ -400,7 +400,7 @@ private: // compile.C
 private: // execute.C
 
 	void put_element(Value& ncontext, const String& name, Value* value);
-	Value& get_element(Value& ncontext, const String& name, bool can_call_operator);
+	Value& get_element(Value& ncontext, const String& name);
 
 private: // defaults
 
