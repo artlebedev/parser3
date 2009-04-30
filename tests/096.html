@@ -4,7 +4,7 @@
 
 @test_exif[dir][file;image;keys]
 $file[^file:list[$dir;\.(?i:jpe?g)^$]]
-^file.sort($file.name)
+^file.sort{$file.name}
 <table border="1">
 ^file.menu{
 	<tr valign="top">
