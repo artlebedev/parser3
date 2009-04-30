@@ -8,7 +8,7 @@
 #ifndef PA_ARRAY_H
 #define PA_ARRAY_H
 
-static const char * const IDENT_ARRAY_Y="$Date: 2009/04/29 03:26:38 $";
+static const char * const IDENT_ARRAY_Y="$Date: 2009/04/30 04:39:06 $";
 
 // includes
 
@@ -80,13 +80,13 @@ public:
 		fallocated(initial),
 		fused(0)
 	{
-		felements=fallocated?static_cast<T*>(malloc(fallocated*sizeof(T))):0;
+		felements=fallocated?(T *)pa_malloc(fallocated*sizeof(T)):0;
 	}
 
 #ifdef USE_DESTRUCTORS 
 	inline ~Array(){
 		if(felements)
-			free(felements);
+			pa_free(felements);
 	}
 #endif
 
@@ -207,12 +207,12 @@ protected:
 	void expand(size_t delta) {
 		if(fallocated){
 			size_t new_allocated=fallocated+delta;
-			felements = (T *)realloc(felements, new_allocated*sizeof(T));
+			felements=(T *)pa_realloc(felements, new_allocated*sizeof(T));
 			memset(&felements[fallocated], 0, delta*sizeof(T));
 			fallocated=new_allocated;
 		} else {
 			fallocated=delta;
-			felements=static_cast<T*>(malloc(fallocated*sizeof(T)));
+			felements=(T *)pa_malloc(fallocated*sizeof(T));
 		}
 	}
 
