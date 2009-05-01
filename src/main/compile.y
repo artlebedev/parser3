@@ -5,7 +5,7 @@
 	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.235 2009/04/29 06:48:46 misha Exp $
+	$Id: compile.y,v 1.236 2009/05/01 11:42:14 misha Exp $
 */
 
 /**
@@ -344,13 +344,16 @@ name_without_curly_rdive_read: name_without_curly_rdive_code {
 			diving_code->count()>=4?4/*OP::OP_VALUE+origin+string+OP::OP_GET_ELEMENTx*/:3/*OP::OP_+origin+string*/);
 	} else {
 #ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
-		if(diving_code->count()==4){ // optimisations for simple (but very popular) cases
+		size_t count=diving_code->count();
+		if(count==4 || (count>4 && PC.in_call_value)){ // optimisations for popular simple cases
 			O(*yyval,
-				(PC.in_call_value) // ^call
+				(count==4 && PC.in_call_value) // ^call
 				? OP::OP_VALUE__GET_ELEMENT_OR_OPERATOR // OP_VALUE+origin+string+OP_GET_ELEMENT -> OP_VALUE__GET_ELEMENT_OR_OPERATOR+origin+string
 				: OP::OP_VALUE__GET_ELEMENT // OP_VALUE+origin+string+OP_GET_ELEMENT -> OP_VALUE__GET_ELEMENT+origin+string
 			);
-			P(*$$, *diving_code, 1/*offset==1: skip leading OP_VALUE*/, 2/*limit==2: skip trailing OP_GET_ELEMENT*/);
+			P(*$$, *diving_code, 1/*offset*/, 2/*limit*/); // copy origin+value
+			if(count>4)
+				P(*$$, *diving_code, 4/*offset*/); // copy tail
 		} else {
 			O(*yyval, OP::OP_WITH_READ); /* stack: starting context */
 			P(*$$, *diving_code);
