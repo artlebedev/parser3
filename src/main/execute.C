@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2009/04/30 04:39:29 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2009/05/01 11:41:14 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -1034,22 +1034,20 @@ StringOrValue Request::process(Value& input_value, bool intercept_string) {
 			VMethodFrame frame(*junction, method_frame/*caller*/);
 			int param_count=frame.method_params_count();
 
-			if(junction->auto_name){ // default getter
-				if(param_count>1)
+			if(param_count){
+				if(junction->auto_name){ // default getter
+					if(param_count==1){
+						Value *param=new VString(*junction->auto_name);
+						frame.store_params(&param, 1);
+					} else
+						throw Exception(PARSER_RUNTIME,
+							0,
+							"default getter method can't have more then 1 parameter (has %d parameters)", param_count);
+				} else
 					throw Exception(PARSER_RUNTIME,
 						0,
-						"default getter method can't have more then 1 parameter (has %d parameters)", param_count);
-			} else if(param_count)
-				throw Exception(PARSER_RUNTIME,
-					0,
-					"getter method must have no parameters (has %d parameters)", param_count);
-
-			if(junction->auto_name && param_count){
-				Value *param=new VString(*junction->auto_name);
-				frame.store_params(&param, 1);
-			} else {
-				frame.empty_params();
-			}
+						"getter method must have no parameters (has %d parameters)", param_count);
+			} // no need for else frame.empty_params()
 
 			frame.set_self(frame.junction.self);
 
