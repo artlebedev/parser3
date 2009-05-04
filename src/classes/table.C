@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2009/04/16 01:10:21 $";
+static const char * const IDENT_TABLE_C="$Date: 2009/05/04 09:26:20 $";
 
 #ifndef NO_STRINGSTREAM
 #include <sstream>
@@ -619,27 +619,40 @@ static void _menu(Request& r, MethodParams& params) {
 	Value* delim_maybe_code=params.count()>1?&params[1]:0;
 
 	Table& table=GET_SELF(r, VTable).table();
-	bool need_delim=false;
 	int saved_current=table.current();
 	int size=table.count();
-	for(int row=0; row<size; row++) {
-		table.set_current(row);
 
-		StringOrValue sv_processed=r.process(body_code);
-		Request::Skip lskip=r.get_skip(); r.set_skip(Request::SKIP_NOTHING);
+	if(delim_maybe_code) {
+		bool need_delim=false;
+		for(int row=0; row<size; row++) {
+			table.set_current(row);
 
-		const String* s_processed=sv_processed.get_string();
-		if(delim_maybe_code && s_processed && s_processed->length()) { // delimiter set and we have body
-			if(need_delim) // need delim & iteration produced string?
-				r.write_pass_lang(r.process(*delim_maybe_code));
-			else
-				need_delim=true;
+			StringOrValue sv_processed=r.process(body_code);
+			Request::Skip lskip=r.get_skip(); r.set_skip(Request::SKIP_NOTHING);
+
+			const String* s_processed=sv_processed.get_string();
+			if(s_processed && s_processed->length()) { // delimiter set and we have body
+				if(need_delim) // need delim & iteration produced string?
+					r.write_pass_lang(r.process(*delim_maybe_code));
+				else
+					need_delim=true;
+			}
+
+			r.write_pass_lang(sv_processed);
+
+			if(lskip==Request::SKIP_BREAK)
+				break;
 		}
-
-		r.write_pass_lang(sv_processed);
-
-		if(lskip==Request::SKIP_BREAK)
-			break;
+	} else {
+		for(int row=0; row<size; row++) {
+			table.set_current(row);
+ 
+			r.process_write(body_code);
+			Request::Skip lskip=r.get_skip(); r.set_skip(Request::SKIP_NOTHING);
+ 
+			if(lskip==Request::SKIP_BREAK)
+				break;
+		}
 	}
 	table.set_current(saved_current);
 }

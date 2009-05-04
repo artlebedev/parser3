@@ -1,14 +1,14 @@
 /** @file
 	Parser: stateless class decls.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
-static const char * const IDENT_VSTATELESS_CLASS_H="$Date: 2008/09/02 16:14:38 $";
+static const char * const IDENT_VSTATELESS_CLASS_H="$Date: 2009/05/04 09:25:32 $";
 
 // include
 
@@ -145,7 +145,9 @@ public: // usage
 		const char* cstr_name,
 		Method::Call_type call_type,
 		NativeCodePtr native_code,
-		int min_numbered_params_count, int max_numbered_params_count);
+		int min_numbered_params_count, 
+		int max_numbered_params_count, 
+		Method::Call_optimization call_optimization=Method::CO_WITHOUT_WCONTEXT);
 	
 	void set_base(VStateless_class* abase) {
 		// remember the guy

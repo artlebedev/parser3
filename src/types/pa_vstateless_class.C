@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)\
 */
 
-static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2009/04/18 09:16:27 $";
+static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2009/05/04 09:25:32 $";
 
 #include "pa_vstateless_class.h"
 #include "pa_vproperty.h"
@@ -30,7 +30,9 @@ void VStateless_class::add_native_method(
 	const char* cstr_name,
 	Method::Call_type call_type,
 	NativeCodePtr native_code,
-	int min_numbered_params_count, int max_numbered_params_count) {
+	int min_numbered_params_count, 
+	int max_numbered_params_count, 
+	Method::Call_optimization call_optimization) {
 
 	const String& name=*new String(cstr_name);
 	
@@ -38,8 +40,8 @@ void VStateless_class::add_native_method(
 		call_type,
 		min_numbered_params_count, max_numbered_params_count,
 		0/*params_names*/, 0/*locals_names*/,
-		0/*parser_code*/, native_code
-		);
+		0/*parser_code*/, native_code,
+		false/*all_vars_local*/, call_optimization);
 	add_method(name, method);
 }
 

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_HASH_C="$Date: 2009/04/16 01:10:21 $";
+static const char * const IDENT_HASH_C="$Date: 2009/05/04 09:26:19 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -428,10 +428,10 @@ struct Foreach_info {
 	bool need_delim;
 };
 #endif
-static bool one_foreach_cycle(						   
-			      HashStringValue::key_type akey, 
-			      HashStringValue::value_type avalue, 
-			      Foreach_info *info) {
+static bool one_foreach_cycle(
+				HashStringValue::key_type akey, 
+				HashStringValue::value_type avalue, 
+				Foreach_info *info) {
 	Value& var_context=*info->var_context;
 	if(info->key_var_name){
 		info->vkey->set_string(*new String(akey, String::L_TAINTED));
@@ -440,20 +440,24 @@ static bool one_foreach_cycle(
 	if(info->value_var_name)
 		var_context.put_element(var_context, *info->value_var_name, avalue, false);
 
-	StringOrValue sv_processed=info->r->process(*info->body_code);
-	Request::Skip lskip=info->r->get_skip(); info->r->set_skip(Request::SKIP_NOTHING);
+	if(info->delim_maybe_code){
+		StringOrValue sv_processed=info->r->process(*info->body_code);
+		Request::Skip lskip=info->r->get_skip(); info->r->set_skip(Request::SKIP_NOTHING);
 
-	const String* s_processed=sv_processed.get_string();
-	if(info->delim_maybe_code && s_processed && s_processed->length()) { // delimiter set and we have body
-		if(info->need_delim) // need delim & iteration produced string?
-			info->r->write_pass_lang(info->r->process(*info->delim_maybe_code));
-		else
-			info->need_delim=true;
+		const String* s_processed=sv_processed.get_string();
+		if(s_processed && s_processed->length()) { // delimiter set and we have body
+			if(info->need_delim) // need delim & iteration produced string?
+				info->r->write_pass_lang(info->r->process(*info->delim_maybe_code));
+			else
+				info->need_delim=true;
+		}
+		info->r->write_pass_lang(sv_processed);
+		return lskip==Request::SKIP_BREAK;
+	} else {
+		info->r->process_write(*info->body_code);
+		Request::Skip lskip=info->r->get_skip(); info->r->set_skip(Request::SKIP_NOTHING);
+		return lskip==Request::SKIP_BREAK;
 	}
-
-	info->r->write_pass_lang(sv_processed);
-
-	return lskip==Request::SKIP_BREAK;
 }
 static void _foreach(Request& r, MethodParams& params) {
 	Temp_hash_value<const String::Body, void*> 

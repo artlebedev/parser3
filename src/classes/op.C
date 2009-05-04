@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2009/04/21 09:27:20 $";
+static const char * const IDENT_OP_C="$Date: 2009/05/04 09:26:19 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -97,9 +97,9 @@ public:
 static void _if(Request& r, MethodParams& params) {
 	bool condition=params.as_bool(0, "condition must be expression", r);
 	if(condition)
-		r.write_pass_lang(r.process(*params.get(1)));
+		r.process_write(*params.get(1));
 	else if(params.count()>2)
-		r.write_pass_lang(r.process(*params.get(2)));
+		r.process_write(*params.get(2));
 }
 
 static String::Language get_untaint_lang(MethodParams& params, int index){
@@ -247,31 +247,47 @@ static void _while(Request& r, MethodParams& params) {
 
 	// while...
 	int endless_loop_count=0;
-	bool need_delim=false;
-	while(true) {
-		if(++endless_loop_count>=MAX_LOOPS) // endless loop?
-			throw Exception(PARSER_RUNTIME,
-				0,
-				"endless loop detected");
+	if(delim_maybe_code){
+		bool need_delim=false;
+		while(true) {
+			if(++endless_loop_count>=MAX_LOOPS) // endless loop?
+				throw Exception(PARSER_RUNTIME,
+					0,
+					"endless loop detected");
 
-		bool condition=r.process_to_value(vcondition, 
-				false/*don't intercept string*/).as_bool();
-		if(!condition) // ...condition is true
-			break;
+			if(!r.process_to_value(vcondition, false/*don't intercept string*/).as_bool())
+				break;
 
-		StringOrValue sv_processed=r.process(body_code);
-		Request::Skip lskip=r.get_skip(); r.set_skip(Request::SKIP_NOTHING);
-		const String* s_processed=sv_processed.get_string();
-		if(delim_maybe_code && s_processed && s_processed->length()) { // delimiter set and we have body
-			if(need_delim) // need delim & iteration produced string?
-				r.write_pass_lang(r.process(*delim_maybe_code));
-			else
-				need_delim=true;
+			StringOrValue sv_processed=r.process(body_code);
+			Request::Skip lskip=r.get_skip(); r.set_skip(Request::SKIP_NOTHING);
+			const String* s_processed=sv_processed.get_string();
+			if(delim_maybe_code && s_processed && s_processed->length()) { // delimiter set and we have body
+				if(need_delim) // need delim & iteration produced string?
+					r.write_pass_lang(r.process(*delim_maybe_code));
+				else
+					need_delim=true;
+			}
+			r.write_pass_lang(sv_processed);
+
+			if(lskip==Request::SKIP_BREAK)
+				break;
 		}
-		r.write_pass_lang(sv_processed);
+	} else {
+		while(true) {
+			if(++endless_loop_count>=MAX_LOOPS) // endless loop?
+				throw Exception(PARSER_RUNTIME,
+					0,
+					"endless loop detected");
 
-		if(lskip==Request::SKIP_BREAK)
-			break;
+			if(!r.process_to_value(vcondition, false/*don't intercept string*/).as_bool())
+				break;
+
+			r.process_write(body_code);
+			Request::Skip lskip=r.get_skip(); r.set_skip(Request::SKIP_NOTHING);
+
+			if(lskip==Request::SKIP_BREAK)
+				break;
+		}
 	}
 }
 
@@ -313,27 +329,40 @@ static void _for(Request& r, MethodParams& params) {
 			0,
 			"endless loop detected");
 
-	bool need_delim=false;
 	VInt* vint=new VInt(0);
 
 	VMethodFrame& caller=*r.get_method_frame()->caller();
 	caller.put_element(caller, var_name, vint, false);
-	for(int i=from; i<=to; i++) {
-		vint->set_int(i);
+	if(delim_maybe_code){
+		bool need_delim=false;
 
-		StringOrValue sv_processed=r.process(body_code);
-		Request::Skip lskip=r.get_skip(); r.set_skip(Request::SKIP_NOTHING);
-		const String* s_processed=sv_processed.get_string();
-		if(delim_maybe_code && s_processed && s_processed->length()) { // delimiter set and we have body
-			if(need_delim) // need delim & iteration produced string?
-				r.write_pass_lang(r.process(*delim_maybe_code));
-			else
-				need_delim=true;
+		for(int i=from; i<=to; i++) {
+			vint->set_int(i);
+
+			StringOrValue sv_processed=r.process(body_code);
+			Request::Skip lskip=r.get_skip(); r.set_skip(Request::SKIP_NOTHING);
+			const String* s_processed=sv_processed.get_string();
+			if(s_processed && s_processed->length()) { // delimiter set and we have body
+				if(need_delim) // need delim & iteration produced string?
+					r.write_pass_lang(r.process(*delim_maybe_code));
+				else
+					need_delim=true;
+			}
+			r.write_pass_lang(sv_processed);
+
+			if(lskip==Request::SKIP_BREAK)
+				break;
 		}
-		r.write_pass_lang(sv_processed);
+	} else {
+		for(int i=from; i<=to; i++) {
+			vint->set_int(i);
+ 
+			r.process_write(body_code);
+			Request::Skip lskip=r.get_skip(); r.set_skip(Request::SKIP_NOTHING);
 
-		if(lskip==Request::SKIP_BREAK)
-			break;
+			if(lskip==Request::SKIP_BREAK)
+				break;
+		}
 	}
 }
 
@@ -865,36 +894,38 @@ VClassMAIN::VClassMAIN(): VClass() {
 
 	// ^if(condition){code-when-true}
 	// ^if(condition){code-when-true}{code-when-false}
-	add_native_method("if", Method::CT_ANY, _if, 2, 3);
+	add_native_method("if", Method::CT_ANY, _if, 2, 3, Method::CO_WITHOUT_FRAME);
 
-	// ^untaint[as-is|uri|sql|js|html|html-typo]{code}
-	add_native_method("untaint", Method::CT_ANY, _untaint, 1, 2);
+	// ^untaint[as-is|uri|sql|js|html|html-typo|regex]{code}
+	add_native_method("untaint", Method::CT_ANY, _untaint, 1, 2, Method::CO_NONE);
 
-	// ^taint[as-is|uri|sql|js|html|html-typo]{code}
-	add_native_method("taint", Method::CT_ANY, _taint, 1, 2);
+	// ^taint[as-is|uri|sql|js|html|html-typo|regex]{code}
+	add_native_method("taint", Method::CT_ANY, _taint, 1, 2, Method::CO_NONE);
 
 	// ^process[code]
 	add_native_method("process", Method::CT_ANY, _process, 1, 3);
 
 	// ^rem{code}
-	add_native_method("rem", Method::CT_ANY, _rem, 1, 10000);
+	add_native_method("rem", Method::CT_ANY, _rem, 1, 10000, Method::CO_WITHOUT_FRAME);
 
 	// ^while(condition){code}
-	add_native_method("while", Method::CT_ANY, _while, 2, 3);
+	add_native_method("while", Method::CT_ANY, _while, 2, 3, Method::CO_WITHOUT_FRAME);
 
 	// ^use[file]
 	add_native_method("use", Method::CT_ANY, _use, 1, 1);
 
 	// ^break[]
-	add_native_method("break", Method::CT_ANY, _break, 0, 0);
+	add_native_method("break", Method::CT_ANY, _break, 0, 0, Method::CO_WITHOUT_FRAME);
+
 	// ^continue[]
-	add_native_method("continue", Method::CT_ANY, _continue, 0, 0);
+	add_native_method("continue", Method::CT_ANY, _continue, 0, 0, Method::CO_WITHOUT_FRAME);
+
 	// ^for[i](from-number;to-number-inclusive){code}[delim]
-	add_native_method("for", Method::CT_ANY, _for, 3+1, 3+1+1);
+	add_native_method("for", Method::CT_ANY, _for, 3+1, 3+1+1, Method::CO_WITHOUT_WCONTEXT);
 
 	// ^eval(expr)
 	// ^eval(expr)[format]
-	add_native_method("eval", Method::CT_ANY, _eval, 1, 2);
+	add_native_method("eval", Method::CT_ANY, _eval, 1, 2, Method::CO_WITHOUT_FRAME);
 
 	// ^connect[protocol://user:pass@host[:port]/database]{code with ^sql-s}
 	add_native_method("connect", Method::CT_ANY, _connect, 2, 2);
@@ -908,15 +939,15 @@ VClassMAIN::VClassMAIN(): VClass() {
 	// switch
 
 	// ^switch[value]{cases}
-	add_native_method("switch", Method::CT_ANY, _switch, 2, 2);
+	add_native_method("switch", Method::CT_ANY, _switch, 2, 2, Method::CO_WITHOUT_FRAME);
 
 	// ^case[value]{code}
-	add_native_method("case", Method::CT_ANY, _case, 2, 10000);
+	add_native_method("case", Method::CT_ANY, _case, 2, 10000, Method::CO_WITHOUT_FRAME);
 
 	// try-catch
 
 	// ^try{code}{catch code}
-	add_native_method("try", Method::CT_ANY, _try_operator, 2, 3);
+	add_native_method("try", Method::CT_ANY, _try_operator, 2, 3, Method::CO_WITHOUT_FRAME);
 	// ^throw[$exception hash]
 	// ^throw[type;source;comment]
 	add_native_method("throw", Method::CT_ANY, _throw_operator, 1, 3);

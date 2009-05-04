@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2009/05/01 11:41:14 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2009/05/04 09:26:00 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -466,7 +466,6 @@ void Request::execute(ArrayOperation& ops) {
 #endif
 				wcontext->attach_junction(&value);
 				// store param
-				// this op is executed from CALL local_ops only, so can not check method_frame_to_fill==0
 				stack.push(value);
 				break;
 			}
@@ -484,9 +483,7 @@ void Request::execute(ArrayOperation& ops) {
 			}
 
 		case OP::OP_CALL:
-		case OP::OP_CALL__WRITE:
 			{
-				//is_debug_junction=true;
 				ArrayOperation* local_ops=i.next().ops;
 #ifdef DEBUG_EXECUTE
 				debug_printf(sapi_info, " (%d)\n", local_ops?local_ops->count():0);
@@ -509,42 +506,114 @@ void Request::execute(ArrayOperation& ops) {
 							"is '%s', not a method or junction, can not call it",
 								value.type());
 				}
-				/* no check needed, code compiled the way that that's impossible
-				// check: 
-				//	that this is method-junction, not a code-junction
-				// [disabling these contstructions:]
-				// $junction{code}
-				//  ^junction[]
-				if(!junction->method)
-					throw Exception(PARSER_RUNTIME,
-						"is '%s', it is code junction, can not call it",
-							value.type());
-				*/
 
 				VMethodFrame frame(*junction, method_frame);
-				WContext* result_wcontext;
 
 				if(local_ops){ // store param code goes here
 					size_t first = stack.top_index();
 					execute(*local_ops);
 					frame.store_params((Value**)stack.ptr(first), stack.top_index()-first);
-					result_wcontext=op_call(frame);
+					op_call(frame);
 					stack.set_top_index(first);
 				} else {
 					frame.empty_params();
-					result_wcontext=op_call(frame);
+					op_call(frame);
 				}
 
-				if(opcode==OP::OP_CALL__WRITE) {
-					write_assign_lang(result_wcontext->result());
-				} else { // OP_CALL
-					stack.push(result_wcontext->result().as_value());
-				}
+				stack.push(frame.result().as_value());
 
 #ifdef DEBUG_EXECUTE
 				debug_printf(sapi_info, "<-returned");
 #endif
-				//is_debug_junction=false;
+				if(get_skip())
+					return;
+				if(get_interrupted()) {
+					set_interrupted(false);
+					throw Exception("parser.interrupted",
+						0,
+						"execution stopped");
+				}
+				break;
+			}
+
+		case OP::OP_CALL__WRITE:
+			{
+				ArrayOperation* local_ops=i.next().ops;
+#ifdef DEBUG_EXECUTE
+				debug_printf(sapi_info, " (%d)\n", local_ops?local_ops->count():0);
+				if(local_ops)
+					debug_dump(sapi_info, 1, *local_ops);
+
+				debug_printf(sapi_info, "->\n");
+#endif
+				Value& value=stack.pop().value();
+
+				Junction* junction=value.get_junction();
+				if(!junction) {
+					if(value.is("void"))
+						throw Exception(PARSER_RUNTIME,
+							0,
+							"undefined method");
+					else
+						throw Exception(PARSER_RUNTIME,
+							0,
+							"is '%s', not a method or junction, can not call it",
+							value.type());
+				}
+
+#ifdef OPTIMIZE_CALL
+				const Method& method=*junction->method;
+				if (!wcontext->get_constructing() && method.call_optimization==Method::CO_WITHOUT_FRAME){
+					if(local_ops){ // store param code goes here
+						size_t first = stack.top_index();
+						execute(*local_ops);
+
+						MethodParams method_params;
+						method_params.store_params((Value**)stack.ptr(first), stack.top_index()-first);
+						method.check_actual_numbered_params(junction->self, &method_params);
+						method.native_code(*this, method_params); // execute it
+
+						stack.set_top_index(first);
+					} else {
+						MethodParams method_params;
+						method.check_actual_numbered_params(junction->self, &method_params);
+						method.native_code(*this, method_params); // execute it
+					}
+				} else if (!wcontext->get_constructing() && method.call_optimization==Method::CO_WITHOUT_WCONTEXT){
+					VMethodFrame frame(*junction, method_frame);
+					if(local_ops){ // store param code goes here
+						size_t first = stack.top_index();
+						execute(*local_ops);
+
+						frame.store_params((Value**)stack.ptr(first), stack.top_index()-first);
+						op_call_write(frame);
+
+						stack.set_top_index(first);
+					} else {
+						frame.empty_params();
+						op_call_write(frame);
+					}
+				} else 
+#endif // OPTIMIZE_CALL
+				{
+					VMethodFrame frame(*junction, method_frame);
+					if(local_ops){ // store param code goes here
+						size_t first = stack.top_index();
+						execute(*local_ops);
+
+						frame.store_params((Value**)stack.ptr(first), stack.top_index()-first);
+						op_call(frame);
+
+						stack.set_top_index(first);
+					} else {
+						frame.empty_params();
+						op_call(frame);
+					}
+					write_assign_lang(frame.result());
+				}
+#ifdef DEBUG_EXECUTE
+				debug_printf(sapi_info, "<-returned");
+#endif
 
 				if(get_skip())
 					return;
@@ -888,20 +957,18 @@ void Request::execute(ArrayOperation& ops) {
 	rcontext=saved_rcontext;			\
 	method_frame=saved_method_frame;
 
-WContext* Request::op_call(VMethodFrame& frame){
-	SAVE_CONTEXT
-			
-	VStateless_class& called_class=*frame.junction.self.get_class();
+void Request::op_call(VMethodFrame& frame){
+	const Junction &junction=frame.junction;
+	VStateless_class& called_class=*junction.self.get_class();
 	Value* new_self;
+
 	if(wcontext->get_constructing()) {
 		wcontext->set_constructing(false);
-		new_self=&get_self();
-		if(frame.junction.method->call_type!=Method::CT_STATIC) {
+		if(junction.method->call_type!=Method::CT_STATIC) {
 			// this is a constructor call
 			HashStringValue& new_object_fields=*new HashStringValue();
-			if(Value* value=called_class.create_new_value(fpool, new_object_fields)) {
+			if(new_self=called_class.create_new_value(fpool, new_object_fields)) {
 				// some stateless_class creatable derivates
-				new_self=value;
 			} else 
 				throw Exception(PARSER_RUNTIME,
 					0, //&frame.name(),
@@ -915,49 +982,66 @@ WContext* Request::op_call(VMethodFrame& frame){
 			throw Exception(PARSER_RUNTIME,
 				0, //&frame.name(),
 				"method is static and can not be used as constructor");
-	} else
-		new_self=&frame.junction.self;
+	} else 
+		new_self=&junction.self;
 
 	frame.set_self(*new_self);
 
 	// see OP_PREPARE_TO_EXPRESSION
 	frame.set_in_expression(wcontext->get_in_expression());
 				
+	SAVE_CONTEXT
+
 	rcontext=wcontext=&frame;
-	{
-		const Method& method=*frame.junction.method;
-		Method::Call_type call_type=&called_class==new_self ? Method::CT_STATIC : Method::CT_DYNAMIC;
-		if(
-			method.call_type==Method::CT_ANY ||
-			method.call_type==call_type) { // allowed call type?
-			method_frame=&frame;
-			if(method.native_code) { // native code?
-				method.check_actual_numbered_params(
-					frame.junction.self, 
-					/*frame.name(), */frame.numbered_params());
-				method.native_code(
-					*this, 
-					*frame.numbered_params()); // execute it
-			} else // parser code, execute it
-				recoursion_checked_execute(*method.parser_code);
-		} else
-			throw Exception(PARSER_RUNTIME,
-				0, //&frame.name(),
-				"is not allowed to be called %s", 
-					call_type==Method::CT_STATIC?"statically":"dynamically");
-	}
+	method_frame=&frame;
 
-	WContext *result_wcontext=wcontext;
-	// StringOrValue result=wcontext->result();
+	const Method& method=*junction.method;
+	Method::Call_type call_type=&called_class==new_self ? Method::CT_STATIC : Method::CT_DYNAMIC;
 
+	if(method.call_type==Method::CT_ANY || method.call_type==call_type) { // allowed call type?
+		if(method.native_code) { // native code?
+			method.check_actual_numbered_params(junction.self, frame.numbered_params());
+			method.native_code(*this, *frame.numbered_params()); // execute it
+		} else // parser code, execute it
+			recoursion_checked_execute(*method.parser_code);
+	} else
+		throw Exception(PARSER_RUNTIME,
+			0,
+			"is not allowed to be called %s", 
+			call_type==Method::CT_STATIC?"statically":"dynamically");
+ 
 	RESTORE_CONTEXT
-
-	return result_wcontext;
+	//return &frame;
 }
 
+void Request::op_call_write(VMethodFrame& frame){
+	const Junction &junction=frame.junction;
+
+	frame.set_self(junction.self);
+
+	VMethodFrame *saved_method_frame=method_frame;
+	Value* saved_rcontext=rcontext;
+
+	rcontext=&frame;
+	method_frame=&frame;
+
+	const Method& method=*junction.method;
+	Method::Call_type call_type=junction.self.get_class()==&junction.self ? Method::CT_STATIC : Method::CT_DYNAMIC;
+
+	if( method.call_type==Method::CT_ANY || method.call_type==call_type) { // allowed call type?
+		method.check_actual_numbered_params(junction.self, frame.numbered_params());
+		method.native_code(*this, *frame.numbered_params()); // execute it
+	} else
+		throw Exception(PARSER_RUNTIME,
+			0,
+			"is not allowed to be called %s", 
+			call_type==Method::CT_STATIC?"statically":"dynamically");
+	
+	rcontext=saved_rcontext;
+	method_frame=saved_method_frame;
+}
 
 /**
-	@todo cache|prepare junctions
 	@bug ^superbase:method would dynamically call ^base:method if there is any
 */
 Value& Request::get_element(Value& ncontext, const String& name) {
@@ -1120,6 +1204,101 @@ StringOrValue Request::process(Value& input_value, bool intercept_string) {
 	}	
 
 	return input_value;
+}
+
+void Request::process_write(Value& input_value) {
+	Junction* junction=input_value.get_junction();
+	if(junction) {
+		if(junction->is_getter) { // is it a getter-junction?
+			VMethodFrame frame(*junction, method_frame/*caller*/);
+			int param_count=frame.method_params_count();
+
+			if(param_count){
+				if(junction->auto_name){ // default getter
+					if(param_count==1){
+						Value *param=new VString(*junction->auto_name);
+						frame.store_params(&param, 1);
+					} else 
+						throw Exception(PARSER_RUNTIME,
+							0,
+							"default getter method can't have more then 1 parameter (has %d parameters)", param_count);
+				} else 
+					throw Exception(PARSER_RUNTIME,
+						0,
+						"getter method must have no parameters (has %d parameters)", param_count);
+			} // no need for else frame.empty_params()
+
+			frame.set_self(frame.junction.self);
+
+			SAVE_CONTEXT
+
+			rcontext=wcontext=&frame;
+			method_frame=&frame;
+
+			recoursion_checked_execute(*frame.junction.method->parser_code); // parser code, execute it
+
+			RESTORE_CONTEXT
+
+			write_pass_lang(frame.result());
+			return;
+		}
+
+		if(junction->code) { // is it a code-junction?
+							// process it
+#ifdef DEBUG_EXECUTE
+			debug_printf(sapi_info, "ja->\n");
+#endif
+			if(!junction->method_frame)
+				throw Exception(PARSER_RUNTIME,
+					0,
+					"junction used outside of context");
+
+			SAVE_CONTEXT
+
+			method_frame=junction->method_frame;
+			rcontext=junction->rcontext;
+
+			// for expression method params
+			// wcontext is set 0
+			// using the fact in decision "which wwrapper to use"
+#ifdef OPTIMIZE_CALL
+			if(wcontext==junction->wcontext){
+				// no wrappers for wcontext
+				recoursion_checked_execute(*junction->code);
+				RESTORE_CONTEXT
+
+			} else
+#endif
+			if(junction->wcontext) {
+				// almost plain wwrapper about junction wcontext 
+				VCodeFrame local(*junction->wcontext);
+				wcontext=&local;
+
+				// execute it
+				recoursion_checked_execute(*junction->code);
+				RESTORE_CONTEXT
+				write_pass_lang(local.result());
+			} else {
+				// plain wwrapper
+				WWrapper local(0/*empty*/, wcontext);
+				wcontext=&local;
+
+				// execute it
+				recoursion_checked_execute(*junction->code);
+				RESTORE_CONTEXT
+				write_pass_lang(local.result());
+			}
+#ifdef DEBUG_EXECUTE
+			debug_printf(sapi_info, "<-ja returned");
+#endif
+			return;
+		}
+
+		// it is then method-junction, do not explode it
+		// just return it as we do for usual objects
+	}
+
+	write_pass_lang(input_value);
 }
 
 StringOrValue Request::execute_method(VMethodFrame& amethod_frame, const Method& method) {

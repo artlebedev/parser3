@@ -1,20 +1,17 @@
 /** @file
 	Parser: Method class decl.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_METHOD_H
 #define PA_METHOD_H
 
-static const char * const IDENT_METHOD_H="$Date: 2009/04/17 23:40:46 $";
+static const char * const IDENT_METHOD_H="$Date: 2009/05/04 09:25:32 $";
 
+#define OPTIMIZE_CALL
 
-/*#include "pa_string.h"
-#include "pa_array.h"
-#include "pa_exception.h"
-*/
 #include "pa_operation.h"
 
 /**
@@ -52,8 +49,12 @@ public:
 		CT_DYNAMIC ///< method can be called only dynamically
 	};
 	
-	/// name for error reporting
-	//const String& name;
+	enum Call_optimization {
+		CO_NONE,
+		CO_WITHOUT_FRAME, // for some native methods method frame is not required, faster
+		CO_WITHOUT_WCONTEXT // for some native methods wcontext is not required, faster
+	};
+
 	///
 	Call_type call_type;
 	//@{
@@ -74,26 +75,31 @@ public:
 	bool all_vars_local; // in local vars list 'locals' was specified: all vars are local
 	bool allways_use_result; // write to $result detected. will not collect all writes to output scope.
 
+#ifdef OPTIMIZE_CALL
+	Call_optimization call_optimization;
+#endif
+
 	Method(
-		//const String& aname,
-		Call_type call_type,
+		Call_type acall_type,
 		int amin_numbered_params_count, int amax_numbered_params_count,
 		ArrayString* aparams_names, ArrayString* alocals_names,
 		ArrayOperation* aparser_code, NativeCodePtr anative_code,
-		bool aall_vars_local=false, bool aallways_use_result=false) : 
+		bool aall_vars_local=false, Call_optimization acall_optimization=CO_NONE) :
 
-		//name(aname),
-		call_type(call_type),
+		call_type(acall_type),
 		min_numbered_params_count(amin_numbered_params_count),
 		max_numbered_params_count(amax_numbered_params_count),
 		params_names(aparams_names), locals_names(alocals_names),
 		parser_code(aparser_code), native_code(anative_code),
-		all_vars_local(aall_vars_local), allways_use_result(aallways_use_result) {
+#ifdef OPTIMIZE_CALL
+		call_optimization(acall_optimization),  
+#endif
+		all_vars_local(aall_vars_local), allways_use_result(false){
 	}
 
 	/// call this before invoking to ensure proper actual numbered params count
 	void check_actual_numbered_params(
-		Value& self, /*const String& actual_name, */MethodParams* actual_numbered_params) const;
+		Value& self, MethodParams* actual_numbered_params) const;
 };
 
 ///	Auto-object used for temporarily substituting/removing elements
