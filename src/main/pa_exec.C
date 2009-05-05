@@ -1,13 +1,13 @@
 /** @file
 	Parser: program executing for different OS-es.
 
-	Copyright(c) 2000,2001-2005 ArtLebedev Group(http://www.artlebedev.com)
+	Copyright(c) 2000-2009 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
 	@todo setrlimit
 */
 
-static const char * const IDENT_EXEC_C="$Date: 2008/09/04 09:37:48 $";
+static const char * const IDENT_EXEC_C="$Date: 2009/05/05 11:12:29 $";
 
 #include "pa_config_includes.h"
 
@@ -29,10 +29,10 @@ static const char * const IDENT_EXEC_C="$Date: 2008/09/04 09:37:48 $";
 static DWORD CreateHiddenConsoleProcess(LPCTSTR szCmdLine,
 										LPCTSTR szScriptFileSpec,
 										char *szEnv,
-                                        PROCESS_INFORMATION* ppi, 
-                                        LPHANDLE phInWrite,
-                                        LPHANDLE phOutRead,
-                                        LPHANDLE phErrRead)
+										PROCESS_INFORMATION* ppi, 
+										LPHANDLE phInWrite,
+										LPHANDLE phOutRead,
+										LPHANDLE phErrRead)
 {
 	DWORD result=0;
 	BOOL fCreated;
@@ -421,7 +421,7 @@ PA_exec_result pa_exec(
 			szErrorDesc, sizeof(szErrorDesc), (va_list *)&param);
 		if(error_size>3) // ".\r\n"
 			szErrorDesc[error_size-3]=0;
-            
+
 		throw Exception("file.execute",
 			&file_spec,
 			"exec failed - %s (%u). Consider adding shbang line (#!x:\\interpreter\\command line)", 
@@ -443,10 +443,10 @@ PA_exec_result pa_exec(
 from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?rev=1.151&content-type=text/vnd.viewcvs-markup
 
 	* We must close the handles to the new process and its main thread
-    * to prevent handle and memory leaks.
+	* to prevent handle and memory leaks.
 */	
 		CloseHandle(pi.hProcess);
-        CloseHandle(pi.hThread);
+		CloseHandle(pi.hThread);
 	}
 
 #else
@@ -495,7 +495,7 @@ from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?r
 		&pipe_write, &pipe_read, &pipe_err);
 	if(pid>0) {
 		// in child
-		if(in.length()) {// there is some in data
+		if(!in.is_empty()) {// there is some in data
 			const char* in_cstr=in.cstr();
 			write(pipe_write, in_cstr, in.length());
 		}
