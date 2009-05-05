@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-static const char * const IDENT_STRING_H="$Date: 2009/04/22 21:29:01 $";
+static const char * const IDENT_STRING_H="$Date: 2009/05/05 10:59:05 $";
 
 // includes
 #include "pa_types.h"
@@ -337,7 +337,7 @@ public:
 		Body mid(size_t index, size_t length) const { return CORD_substr(body, index, length); }
 		size_t pos(const char* substr, size_t offset=0) const { return CORD_str(body, offset, substr); }
 		size_t pos(const Body substr, size_t offset=0) const { 
-			if(!substr.length())
+			if(substr.is_empty())
 				return STRING_NOT_FOUND; // in this case CORD_str returns 0 [parser users got used to -1]
 
 			// CORD_str checks for bad offset [CORD_chr does not]
