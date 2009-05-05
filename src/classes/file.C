@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2009/04/22 05:17:03 $";
+static const char * const IDENT_FILE_C="$Date: 2009/05/05 10:06:57 $";
 
 #include "pa_config_includes.h"
 
@@ -368,9 +368,8 @@ static void pass_cgi_header_attribute(
 }
 
 static void append_to_argv(Request& r, ArrayString& argv, const String* str){
-	if( str->length() ){
+	if(!str->is_empty())
 		argv+=new String(str->cstr_to_string_body(String::L_UNSPECIFIED, 0, &r.charsets), String::L_AS_IS);
-	}
 }
 
 /// @todo fix `` in perl - they produced flipping consoles and no output to perl
@@ -602,7 +601,7 @@ static void _exec_cgi(Request& r, MethodParams& params,
 	self.fields().put(file_status_name, new VInt(execution.status));
 	
 	// $stderr
-	if(real_err->length())
+	if(!real_err->is_empty())
 		self.fields().put(
 			String::Body("stderr"),
 			new VString(*real_err));

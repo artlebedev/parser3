@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2009/05/04 09:26:20 $";
+static const char * const IDENT_TABLE_C="$Date: 2009/05/05 10:06:57 $";
 
 #ifndef NO_STRINGSTREAM
 #include <sstream>
@@ -622,7 +622,7 @@ static void _menu(Request& r, MethodParams& params) {
 	int saved_current=table.current();
 	int size=table.count();
 
-	if(delim_maybe_code) {
+	if(delim_maybe_code) { // delimiter set
 		bool need_delim=false;
 		for(int row=0; row<size; row++) {
 			table.set_current(row);
@@ -631,7 +631,7 @@ static void _menu(Request& r, MethodParams& params) {
 			Request::Skip lskip=r.get_skip(); r.set_skip(Request::SKIP_NOTHING);
 
 			const String* s_processed=sv_processed.get_string();
-			if(s_processed && s_processed->length()) { // delimiter set and we have body
+			if(s_processed && !s_processed->is_empty()) { // we have body
 				if(need_delim) // need delim & iteration produced string?
 					r.write_pass_lang(r.process(*delim_maybe_code));
 				else

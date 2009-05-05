@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2009/05/04 09:26:19 $";
+static const char * const IDENT_OP_C="$Date: 2009/05/05 10:06:57 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -247,7 +247,7 @@ static void _while(Request& r, MethodParams& params) {
 
 	// while...
 	int endless_loop_count=0;
-	if(delim_maybe_code){
+	if(delim_maybe_code){ // delimiter set
 		bool need_delim=false;
 		while(true) {
 			if(++endless_loop_count>=MAX_LOOPS) // endless loop?
@@ -260,8 +260,9 @@ static void _while(Request& r, MethodParams& params) {
 
 			StringOrValue sv_processed=r.process(body_code);
 			Request::Skip lskip=r.get_skip(); r.set_skip(Request::SKIP_NOTHING);
+
 			const String* s_processed=sv_processed.get_string();
-			if(delim_maybe_code && s_processed && s_processed->length()) { // delimiter set and we have body
+			if(s_processed && !s_processed->is_empty()) { // we have body
 				if(need_delim) // need delim & iteration produced string?
 					r.write_pass_lang(r.process(*delim_maybe_code));
 				else
@@ -321,7 +322,7 @@ static void _for(Request& r, MethodParams& params) {
 	const String& var_name=params.as_string(0, "var name must be string");
 	int from=params.as_int(1, "from must be int", r);
 	int to=params.as_int(2, "to must be int", r);
-	Value&  body_code=params.as_junction(3, "body must be code");
+	Value& body_code=params.as_junction(3, "body must be code");
 	Value* delim_maybe_code=params.count()>4?&params[4]:0;
 
 	if(to-from>=MAX_LOOPS) // too long loop?
@@ -333,7 +334,7 @@ static void _for(Request& r, MethodParams& params) {
 
 	VMethodFrame& caller=*r.get_method_frame()->caller();
 	caller.put_element(caller, var_name, vint, false);
-	if(delim_maybe_code){
+	if(delim_maybe_code){ // delimiter set 
 		bool need_delim=false;
 
 		for(int i=from; i<=to; i++) {
@@ -341,8 +342,9 @@ static void _for(Request& r, MethodParams& params) {
 
 			StringOrValue sv_processed=r.process(body_code);
 			Request::Skip lskip=r.get_skip(); r.set_skip(Request::SKIP_NOTHING);
+
 			const String* s_processed=sv_processed.get_string();
-			if(s_processed && s_processed->length()) { // delimiter set and we have body
+			if(s_processed && !s_processed->is_empty()) { // we have body
 				if(need_delim) // need delim & iteration produced string?
 					r.write_pass_lang(r.process(*delim_maybe_code));
 				else

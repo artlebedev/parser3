@@ -1,11 +1,11 @@
 /** @file
 	Parser: exception class.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXCEPTION_C="$Date: 2005/08/09 08:14:52 $";
+static const char * const IDENT_EXCEPTION_C="$Date: 2009/05/05 10:07:11 $";
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -29,8 +29,8 @@ Exception& Exception::operator =(const Exception& src) {
 }
 
 Exception::Exception(const char* atype, 
-		     const String* aproblem_source, 
-		     const char* comment_fmt, ...) {
+			const String* aproblem_source, 
+			const char* comment_fmt, ...) {
 	ftype=atype;
 	fproblem_source=aproblem_source;
 
@@ -46,5 +46,5 @@ Exception::Exception(const char* atype,
 }
 
 const String* Exception::problem_source() const { 
-	return fproblem_source && fproblem_source->length()?fproblem_source:0; 
+	return fproblem_source && !fproblem_source->is_empty()?fproblem_source:0; 
 }

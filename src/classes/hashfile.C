@@ -1,11 +1,11 @@
 /** @file
 	Parser: @b hashfile parser class.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Id: hashfile.C,v 1.44 2008/05/19 08:56:59 misha Exp $";
+static const char * const IDENT="$Id: hashfile.C,v 1.45 2009/05/05 10:06:57 misha Exp $";
 
 #include "classes.h"
 
@@ -119,7 +119,7 @@ static bool one_foreach_cycle(
 	Request::Skip lskip=info.r->get_skip(); info.r->set_skip(Request::SKIP_NOTHING);
 
 	const String* s_processed=sv_processed.get_string();
-	if(info.delim_maybe_code && s_processed && s_processed->length()) { // delimiter set and we have body
+	if(info.delim_maybe_code && s_processed && !s_processed->is_empty()) { // delimiter set and we have body
 		if(info.need_delim) // need delim & iteration produced string?
 			info.r->write_pass_lang(info.r->process(*info.delim_maybe_code));
 		else
