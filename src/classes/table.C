@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2009/05/05 10:06:57 $";
+static const char * const IDENT_TABLE_C="$Date: 2009/05/05 10:20:59 $";
 
 #ifndef NO_STRINGSTREAM
 #include <sstream>
@@ -230,9 +230,9 @@ static void _create(Request& r, MethodParams& params) {
 	Array_iterator<const String*> i(rows);
 	while(i.has_next()) {
 		Table::element_type row(new ArrayString);
-		const String&  string=*i.next();
+		const String& string=*i.next();
 		// remove comment lines
-		if(!string.length())
+		if(string.is_empty())
 			continue;
 
 		size_t col_pos_after=0;
