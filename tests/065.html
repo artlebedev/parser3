@@ -3,7 +3,9 @@ $selffilespec[$filespec]
 
 @main[]
 #src=$selffilespec<br>
-#dirname=^file:dirname[$selffilespec]<br>
-basename=^file:basename[$selffilespec]<br>
-justname=^file:justname[$selffilespec]<br>
-justext=^file:justext[$selffilespec]<br>
+$sDirName[^file:dirname[$selffilespec]]
+#dirname=$sDirName<br />
+dirname=^if(^sDirName.left(1) eq "/" && ^sDirName.right(6) eq "/tests"){OK}<br />
+basename=^file:basename[$selffilespec]<br />
+justname=^file:justname[$selffilespec]<br />
+justext=^file:justext[$selffilespec]<br />
