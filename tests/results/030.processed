@@ -1,5 +1,7 @@
+set-cookie: zigi=value; expires=Wed, 19 Feb 2003 21:00:00 GMT; path=/
 set-cookie: clientType=test; expires=Tue, 25 Feb 2003 21:00:00 GMT; path=/
 content-type: text/html
-content-length: 10
+content-length: 50
 
-=test=<br>
+'test'<br />
+clientType:	'test'<br />zigi:	'value'
