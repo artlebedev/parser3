@@ -3,3 +3,14 @@ $2($math:PI)
 ^if(^1.format[%.10f]==^2.format[%.10f]){y;n}
 ^if($1==$2){y;n}
 ^if(^math:radians(180)==$math:PI){y;n}
+
+<hr />
+^eval($math:PI)[%.4f]<br />
+^^math:radians(180): ^eval(^math:radians(180))[%.4f]<br />
+^^math:degrees(^$math:PI/2): ^eval(^math:degrees($math:PI/2))[%d]<br />
+^^math:sin(^$math:PI/2): ^eval(^math:sin($math:PI/2))[%.2f]<br />
+^^math:asin(-1): ^eval(^math:asin(-1))[%.2f]<br />
+^^math:cos(^$math:PI): ^eval(^math:cos($math:PI))[%.2f]<br />
+^^math:acos(0): ^eval(^math:acos(0))[%.2f]<br />
+^^math:tan(^$math:PI/4): ^eval(^math:tan($math:PI/4))[%.2f]<br />
+^^math:atan(-1): ^eval(^math:atan(-1))[%.2f]<br />
