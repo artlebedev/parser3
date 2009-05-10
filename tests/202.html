@@ -1,0 +1,16 @@
+$d[^date::create(2008;05;09)]
+
+# server should be in known TZ for testing
+#^^d.gmt-string[]: ^d.gmt-string[]<br />
+
+^^d.last-day[]: ^d.last-day[]<br />
+
+^^date:last-day(2008;02): ^date:last-day(2008;02)<br />
+
+<br />^^date:calendar[eng](2008;2;29)
+$c[^date:calendar[eng](2008;2;29)]
+^c.menu{<br />$c.year $c.month $c.day $c.weekday}
+
+<br /><br />^^date:calendar[rus](2008;2;29)
+$c[^date:calendar[rus](2008;2;29)]
+^c.menu{<br />$c.year $c.month $c.day $c.weekday}
