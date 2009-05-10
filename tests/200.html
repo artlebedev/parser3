@@ -1,0 +1,41 @@
+$t[^table::create{a	b
+10	100
+9	90
+8	80
+7	70
+6	60
+5	50
+4	40
+3	30
+2	20
+1	10
+0	00
+}]
+
+^t.menu{$t.a}[, ]<br />
+
+^t.offset[set](3)
+^t.offset[]: $t.a<br />
+^t.offset(3)
+^t.offset[]: $t.a<br />
+^t.offset[set](3)
+^t.offset[]: $t.a<br />
+^t.offset[cur](2)
+^t.offset[]: $t.a<br />
+^t.offset[cur](-1)
+^t.offset[]: $t.a<br />
+^t.offset[set](-1)
+^t.offset[]: $t.a<br />
+^t.offset[set](-2)
+^t.offset[]: $t.a<br />
+
+^t.sort{$t.a}
+^t.menu{$t.a}[, ]<br />
+
+^t.sort($t.a)
+^t.menu{$t.a}[, ]<br />
+
+<br />
+$tf[^t.flip[]]
+^tf.count[]<br />
+^tf.menu{^for[i](0;10){$tf.$i}[, ]}[<br />]
