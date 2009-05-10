@@ -1,4 +1,4 @@
-﻿@main[]
+@main[]
 $request:charset[UTF-8]
 $response:charset[UTF-8]
 $response:content-type[
@@ -9,11 +9,25 @@ $response:content-type[
 $str[ab^taint["]"cd^taint[xml][&]&ef]
 <pre>^$str[$str] [^str.length[]]</pre>
 
+^^str.left[]: ^left[$str]<br />
+^^str.left(-2): ^left[$str](-2)<br />
 ^^str.left(4): ^left[$str](4)<br />
 ^^str.left(9): ^left[$str](9)<br />
+^^str.left(20): ^left[$str](20)<br />
+^^str.right[]: ^right[$str]<br />
+^^str.right(-3): ^right[$str](-3)<br />
 ^^str.right(4): ^right[$str](4)<br />
 ^^str.right(9): ^right[$str](9)<br />
+^^str.right(30): ^right[$str](30)<br />
 ^^str.mid(1;8): ^mid[$str](1;8)<br />
+^^str.mid(2;0): ^mid[$str](2;0)<br />
+^^str.mid(3;-1): ^mid[$str](3;-1)<br />
+^^str.mid(7): ^mid[$str](7)<br />
+^^str.mid(8;99): ^mid[$str](8;99)<br />
+^^str.mid(40): ^mid[$str](40)<br />
+^^str.mid(40;2): ^mid[$str](40;2)<br />
+^^str.mid(-5): ^mid[$str](-5)<br />
+^^str.mid(-5;2): ^mid[$str](-5;2)<br />
 
 <hr />
 $str[о сколько нам открытий чудных...10.11.2005]
@@ -21,9 +35,11 @@ $length(^str.length[]) ^rem{ *** length in real chars (not in bytes) == 42 *** }
 
 <pre>^taint[as-is][
 ^$str[$str] [^str.length[]]
-     <b>0</b>123456789<b>0</b>123456789<b>0</b>123456789<b>0</b>123456789<b>0</b>123456789
+	<b>0</b>123456789<b>0</b>123456789<b>0</b>123456789<b>0</b>123456789<b>0</b>123456789
 ]</pre>
 
+^^str.pos[]: ^try{^str.pos[]}{$exception.handled(1)error}<br />
+^^str.pos[^$empty]: ^str.pos[$empty]<br />
 ^pos[$str;о]
 ^pos[$str;о;2]
 ^pos[$str; ]
@@ -62,19 +78,51 @@ $length(^str.length[]) ^rem{ *** length in real chars (not in bytes) == 42 *** }
 
 
 @left[str;num][substr]
-$substr[^str.left($num)]
-'$substr' [^substr.length[]]
+^try{
+	^if(def $num){
+		$substr[^str.left($num)]
+	}{
+		$substr[^str.left[]]
+	}
+	$result['$substr' [^substr.length[]]]
+}{
+	$exception.handled(1)
+	$result[error]
+}
 
 
 
 @right[str;num][substr]
-$substr[^str.right($num)]
-'$substr' [^substr.length[]]
+^try{
+	^if(def $num){
+		$substr[^str.right($num)]
+	}{
+		$substr[^str.right[]]
+	}
+	$result['$substr' [^substr.length[]]]
+}{
+	$exception.handled(1)
+	$result[error]
+}
 
 
 
 @mid[str;num;count]
-'^str.mid($num;$count)'
+^try{
+	^if(def $num){
+		^if(def $count){
+			$substr[^str.mid($num;$count)]
+		}{
+			$substr[^str.mid($num)]
+		}
+	}{
+		$substr[^str.mid[]]
+	}
+	$result['$substr' [^substr.length[]]]
+}{
+	$exception.handled(1)
+	$result[error]
+}
 
 
 
