@@ -1,6 +1,16 @@
 content-type: text/html
-content-length: 5
+content-length: 277
 
 y
 y
 y
+<hr />
+3.1416<br />
+^math:radians(180): 3.1416<br />
+^math:degrees($math:PI/2): 90<br />
+^math:sin($math:PI/2): 1.00<br />
+^math:asin(-1): -1.57<br />
+^math:cos($math:PI): -1.00<br />
+^math:acos(0): 1.57<br />
+^math:tan($math:PI/4): 1.00<br />
+^math:atan(-1): -0.79<br />
