@@ -2,4 +2,13 @@ $cookie:clientType[
 	$.value[test]
 	$.expires[^date::create(2003;2;26)]
 ]
-=$cookie:CLASS.clientType=<br>
+$cookie:zigi[
+	$.value[value]
+]
+'$cookie:CLASS.clientType'<br />
+
+$t[^table::create{key	value}]
+^cookie:fields.foreach[k;v]{^t.append{$k	^if($v is "hash"){$v.value}{$v}}}
+^t.sort{$t.key}
+
+^t.menu{${t.key}:	'$t.value'}[<br />]
