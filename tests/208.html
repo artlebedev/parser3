@@ -1,0 +1,40 @@
+@main[]
+$r0[$status:rusage]
+$m0[$status:memory]
+
+^do[]
+^do[]
+^sleep(1)
+
+$r1[$status:rusage]
+$m1[$status:memory]
+
+^memory:compact[]
+
+$r2[$status:rusage]
+$m2[$status:memory]
+
+Status:<br />
+time diff: ^if($r1.tv_sec*1000+$r1.tv_usec/1000-$r0.tv_sec*1000-$r0.tv_usec/1000 >= 1000){OK}{???}<br />
+maxrss diff: ^if($r1.maxrss-$r0.maxrss){OK}{???}<br />
+^$r1.stime: ^if($r1.stime){OK}{???}<br />
+^$r1.utime: ^if($r1.utime){OK}{???}<br />
+^$r1.utime >= ^$r1.stime ? ^if($r1.utime >= $r1.stime){Y (OK)}{N (???)}<br />
+
+<br />
+Memory:<br />
+^$m1.used > ^$m0.used ? ^if($m1.used > $m0.used){Y (OK)}{N (???)}<br />
+^$m1.used > ^$m2.used ? ^if($m1.used > $m2.used){Y (OK)}{N (???)}<br />
+^$m2.used >= ^$m0.used ? ^if($m2.used >= $m0.used){Y (OK)}{N (???)}<br />
+<br />
+
+^$m1.ever_allocated_since_start >= ^$m0.ever_allocated_since_start ? ^if($m1.ever_allocated_since_start >= $m0.ever_allocated_since_start){Y (OK)}{N (???)}<br />
+^$m2.ever_allocated_since_start >= ^$m1.ever_allocated_since_start ? ^if($m2.ever_allocated_since_start >= $m1.ever_allocated_since_start){Y (OK)}{N (???)}<br />
+<br />
+
+^$m1.ever_allocated_since_compact >= ^$m0.ever_allocated_since_compact ? ^if($m1.ever_allocated_since_compact >= $m0.ever_allocated_since_compact){Y (OK)}{N (???)}<br />
+^$m2.ever_allocated_since_compact < ^$m0.ever_allocated_since_compact ? ^if($m2.ever_allocated_since_compact < $m0.ever_allocated_since_compact){Y (OK)}{N (???)}<br />
+
+
+@do[][i;var]
+$var[^for[i](1;5000){^i.format[%4d]}]
