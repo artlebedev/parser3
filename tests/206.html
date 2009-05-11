@@ -1,0 +1,15 @@
+@main[]
+2+2: ^do{^eval(2+2)}{ :)<br />}
+1/0: ^do{^eval(1/0)}{ :(<br />}
+
+
+
+@do[jCode;jFinally]
+^try{
+	$jCode
+}{
+	$exception.handled(1)
+	exception while executing code ($exception.type)
+}{
+	$jFinally
+}
