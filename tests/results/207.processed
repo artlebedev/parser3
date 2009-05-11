@@ -1,0 +1,21 @@
+content-type: text/html
+content-length: 387
+
+^math:abs(-2): 2<br />
+^math:abs(5): 5<br />
+<br />
+^math:sign(-3): -1<br />
+^math:sign(-0): 0<br />
+^math:sign(6): 1<br />
+<br />
+^math:trunc(0.6): 0<br />
+^math:trunc(1.4): 1<br />
+^math:trunc(-2.5): -2<br />
+<br />
+^math:frac(0.6): 0.6<br />
+^math:frac(1.4): 0.4<br />
+^math:frac(-2.5): -0.5<br />
+<br />
+^math:exp(1): 2.7183<br />
+^math:log(3): 1.0986<br />
+^math:log10(100): 2<br />
