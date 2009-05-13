@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REGEX_C="$Date: 2009/04/22 04:36:17 $";
+static const char * const IDENT_REGEX_C="$Date: 2009/05/13 08:36:08 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -69,3 +69,4 @@ MRegex::MRegex(): Methoded("regex") {
 	add_native_method("study_size", Method::CT_DYNAMIC, _study_size, 0, 0);
 
 }
+

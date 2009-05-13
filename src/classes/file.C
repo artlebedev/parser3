@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2009/05/13 07:36:04 $";
+static const char * const IDENT_FILE_C="$Date: 2009/05/13 08:36:08 $";
 
 #include "pa_config_includes.h"
 
@@ -740,7 +740,7 @@ static void _dirname(Request& r, MethodParams& params) {
 	if(afterslash>0)
 		r.write_assign_lang(file_spec.mid(0, afterslash==1?1:afterslash-1));
 	else
-		r.write_assign_lang(String(".", 1));
+		r.write_assign_lang(String("."));
 }
 
 static void _basename(Request& r, MethodParams& params) {
@@ -827,11 +827,11 @@ public:
 					break;
 				case 1:
 					if(!user_file_name) // user not specified?
-						user_file_name=new String(str, true);
+						user_file_name=new String(str, true/*tainted*/);
 					break;
 				case 2:
 					if(!user_content_type) // user not specified?
-						user_content_type=new String(str, true);
+						user_content_type=new String(str, true/*tainted*/);
 					break;
 				default:
 					error=SQL_Error(PARSER_RUNTIME, "result must not contain more then one row, three rows");

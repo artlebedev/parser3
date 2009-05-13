@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2009/05/13 07:36:05 $";
+static const char * const IDENT_TABLE_C="$Date: 2009/05/13 08:36:08 $";
 
 #ifndef NO_STRINGSTREAM
 #include <sstream>
@@ -130,7 +130,7 @@ struct TableSeparators {
 	char encloser; const String* sencloser;
 
 	TableSeparators():
-		column('\t'), scolumn(new String("\t", false)),
+		column('\t'), scolumn(new String("\t")),
 		encloser(0), sencloser(0)
 	{}
 	int load( HashStringValue& options ) {
@@ -359,7 +359,7 @@ static void _load(Request& r, MethodParams& params) {
 
 		skip_empty_and_comment_lines(&data);
 		while( lsplit_result sr=lsplit(&data, separators.column, '\n', separators.encloser) ) {
-			*columns+=new String(sr.piece, true);
+			*columns+=new String(sr.piece, true/*tainted*/);
 			if(sr.delim=='\n') 
 				break;
 		}
@@ -374,7 +374,7 @@ static void _load(Request& r, MethodParams& params) {
 	while( lsplit_result sr=lsplit(&data, separators.column, '\n', separators.encloser) ) {
 		if(!*sr.piece && !sr.delim && !row->count()) // append last empty column [if without \n]
 			break;
-		*row+=new String(sr.piece, true);
+		*row+=new String(sr.piece, true/*tainted*/);
 		if(sr.delim=='\n') {
 			table+=row;
 			row=new ArrayString(columns_count);
