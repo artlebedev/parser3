@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT_XDOC_C="$Date: 2009/04/10 11:31:06 $";
+static const char * const IDENT_XDOC_C="$Date: 2009/05/13 07:36:05 $";
 
 #include "libxml/tree.h"
 #include "libxml/HTMLtree.h"
@@ -647,7 +647,7 @@ static void _file(Request& r, MethodParams& params) {
 		oo,
 		0/*not to file, to memory*/);
 	// write out result
-	r.write_no_lang(String(buf.str, buf.length));
+	r.write_no_lang(String(buf.str));
 
 	// write out result
 	VFile& vfile=*new VFile;

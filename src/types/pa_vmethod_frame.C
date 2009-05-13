@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)\
 */
 
-static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2009/04/29 03:27:08 $";
+static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2009/05/13 07:35:27 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
@@ -14,6 +14,7 @@ static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2009/04/29 03:27:08 $
 
 const String result_var_name(RESULT_VAR_NAME);
 const uint result_var_hash_code(hash_code(result_var_name));
+VVoid void_result; // unique value to be sure the result is changed
 
 // MethodParams: methods
 
@@ -50,9 +51,10 @@ VMethodFrame::VMethodFrame(
 				set_my_variable(fname, *VVoid::get());
 			}
 		}
-		{ // always there is one local: $result
-			set_my_variable(result_var_name, *VVoid::get());
-		}
+#ifdef OPTIMIZE_RESULT
+		if(junction.method->result_optimization!=Method::RO_USE_WCONTEXT)
+#endif
+			set_my_variable(result_var_name, void_result);
 	}
 }
 
@@ -61,5 +63,5 @@ Value* VMethodFrame::get_result_variable() {
 		return 0;
 
 	Value* result=my->get_by_hash_code(result_var_hash_code, result_var_name);
-	return result!=VVoid::get()?result:0;
+	return result!=&void_result?result:0;
 }

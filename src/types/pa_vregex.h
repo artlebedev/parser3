@@ -8,7 +8,7 @@
 #ifndef PA_VREGEX_H
 #define PA_VREGEX_H
 
-static const char * const IDENT_VREGEX_H="$Date: 2009/04/27 09:39:00 $";
+static const char * const IDENT_VREGEX_H="$Date: 2009/05/13 07:35:27 $";
 
 // include
 
@@ -61,7 +61,6 @@ public: // usage
 	VRegex():
 		fcharset(0),
 		fpattern(0),
-		fpattern_len(0),
 		fcode(0),
 		fextra(0),
 		fstudied(false)
@@ -121,7 +120,6 @@ private:
 private:
 	Charset* fcharset;
 	const char* fpattern;
-	size_t fpattern_len;
 	int foptions[2];
 
 	pcre* fcode;

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2009/05/05 10:06:57 $";
+static const char * const IDENT_FILE_C="$Date: 2009/05/13 07:36:04 $";
 
 #include "pa_config_includes.h"
 
@@ -401,7 +401,7 @@ static void _exec_cgi(Request& r, MethodParams& params,
 		if(value_cstr) \
 			env.put( \
 				String::Body(#name), \
-				String::Body(value_cstr, 0)); \
+				String::Body(value_cstr)); \
 	// passing SAPI::environment
 	if(const char *const *pairs=SAPI::environment(r.sapi_info)) {
 		while(const char* pair=*pairs++)
@@ -516,7 +516,7 @@ static void _exec_cgi(Request& r, MethodParams& params,
 	if(file_out->length && is_text_mode(mode_name)){
 		fix_line_breaks(file_out->str, file_out->length);
 		// treat output as string
-		String *real_out = new String(file_out->str, file_out->length);
+		String *real_out = new String(file_out->str);
 
 		// transcode out if necessary
 		if(charset)
@@ -572,7 +572,7 @@ static void _exec_cgi(Request& r, MethodParams& params,
 		}
 
 		file_out->str[header_break_pos] = 0;
-		String *header=new String(file_out->str, header_break_pos);
+		String *header=new String(file_out->str);
 		unsigned long headersize = header_break_pos+eol_marker_size*2;
 		file_out->str += headersize;
 		file_out->length -= headersize;
@@ -646,7 +646,7 @@ static void _list(Request& r, MethodParams& params) {
 
 		if(!vregex || vregex->exec(ffblk.ff_name, file_name_size, ovector, ovector_size)>=0) {
 			Table::element_type row(new ArrayString);
-			*row+=new String(pa_strdup(file_name_cstr, file_name_size), file_name_size, true/*tainted*/);
+			*row+=new String(pa_strdup(file_name_cstr, file_name_size), true/*tainted*/);
 			table+=row;
 		}
 	);
@@ -685,7 +685,7 @@ static int lastposafter(const String& s, size_t after, const char* substr, size_
 	if(beforelast)
 		size=s.length();
 	size_t at;
-	while((at=s.pos(String::Body(substr, substr_size), after))!=STRING_NOT_FOUND) {
+	while((at=s.pos(String::Body(substr), after))!=STRING_NOT_FOUND) {
 		size_t newafter=at+substr_size/*skip substr*/;
 		if(beforelast && newafter==size)
 			break;
@@ -827,11 +827,11 @@ public:
 					break;
 				case 1:
 					if(!user_file_name) // user not specified?
-						user_file_name=new String(str, length, true);
+						user_file_name=new String(str, true);
 					break;
 				case 2:
 					if(!user_content_type) // user not specified?
-						user_content_type=new String(str, length, true);
+						user_content_type=new String(str, true);
 					break;
 				default:
 					error=SQL_Error(PARSER_RUNTIME, "result must not contain more then one row, three rows");
@@ -921,13 +921,13 @@ static void _base64(Request& r, MethodParams& params) {
 		} else {
 			// encode: ^f.base64[]
 			const char* encoded=pa_base64_encode(self.value_ptr(), self.value_size());
-			r.write_assign_lang(*new String(encoded, 0, true/*tainted. once ?param=base64(something) was needed**/));
+			r.write_assign_lang(*new String(encoded, true/*tainted. once ?param=base64(something) was needed**/));
 		}
 	} else {
 		// encode: ^file:base64[filespec]
 		const String& file_spec=params.as_string(0, FILE_NAME_MUST_BE_STRING);
 		const char* encoded=pa_base64_encode(r.absolute(file_spec));
-		r.write_assign_lang(*new String(encoded, 0, true/*tainted. once ?param=base64(something) was needed*/));
+		r.write_assign_lang(*new String(encoded, true/*tainted. once ?param=base64(something) was needed*/));
 	}
 }
 

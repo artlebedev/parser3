@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2009/04/28 04:53:52 $";
+static const char * const IDENT_STRING_C="$Date: 2009/05/13 07:36:05 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -671,16 +671,15 @@ static void _base64(Request& r, MethodParams& params) {
 					"Invalid \\x00 character found while decode to string. Decode it to file instead.");
 
 			fix_line_breaks(decoded, length);
-			if(length){
-				r.write_assign_lang(*new String(decoded, length, true/*tainted*/));
-			}
+			if(length)
+				r.write_assign_lang(*new String(decoded, true/*tainted*/));
 		}
 	} else {
 		// encode: ^str.base64[]
 		VString& self=GET_SELF(r, VString);
 		const char* cstr=self.string().cstr();
 		const char* encoded=pa_base64_encode(cstr, strlen(cstr));
-		r.write_assign_lang(*new String(encoded, 0, true/*tainted. once ?param=base64(something) was needed*/));
+		r.write_assign_lang(*new String(encoded, true/*tainted. once ?param=base64(something) was needed*/));
 	}
 }
 

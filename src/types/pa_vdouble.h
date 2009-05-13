@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b double parser class decl.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VDOUBLE_H
 #define PA_VDOUBLE_H
 
-static const char * const IDENT_VDOUBLE_H="$Date: 2007/03/14 10:58:04 $";
+static const char * const IDENT_VDOUBLE_H="$Date: 2009/05/13 07:35:27 $";
 
 // includes
 
@@ -40,7 +40,7 @@ public: // Value
 	override const String* get_string() {
 		char local_buf[MAX_NUMBER];
 		size_t length=snprintf(local_buf, MAX_NUMBER, has_frac()? "%g": "%.0f", fdouble);
-		return new String(strdup(local_buf, length), length);
+		return new String(strdup(local_buf, length));
 	}
 	/// VDouble: fdouble
 	override double as_double() const { return fdouble; }

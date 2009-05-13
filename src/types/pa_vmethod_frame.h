@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2009/04/30 04:39:39 $";
+static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2009/05/13 07:35:27 $";
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
@@ -177,13 +177,18 @@ public: // Value
 
 	/// VMethodFrame: appends a fstring to result
 	override void write(const String& astring, String::Language alang) {
-		if(!junction.method->allways_use_result){
-			if(!get_result_variable()){
-				WContext::write(astring, alang);
-			} else {
-				((Method *)junction.method)->allways_use_result=true;
-			}
+#ifdef OPTIMIZE_RESULT
+		switch (junction.method->result_optimization){
+			case Method::RO_USE_RESULT: 
+				return;
+			case Method::RO_UNKNOWN:
+				if(get_result_variable()){
+					((Method*)junction.method)->result_optimization=Method::RO_USE_RESULT;
+					return;
+				}
 		}
+#endif
+		WContext::write(astring, alang);
 	}
 
 private:
@@ -205,7 +210,17 @@ public: // WContext
 		// check the $result value
 		Value* result_value=get_result_variable();
 		// if we have one, return it, else return as usual: accumulated fstring or fvalue
-		return result_value ? StringOrValue(*result_value) : WContext::result();
+		if(result_value)
+			return StringOrValue(*result_value);
+#ifdef OPTIMIZE_RESULT
+		if(junction.method->result_optimization==Method::RO_USE_RESULT)
+			return StringOrValue(*VVoid::get());
+		((Method *)junction.method)->result_optimization=Method::RO_USE_WCONTEXT;
+#ifdef OPTIMIZE_CALL // nested as CO_WITHOUT_WCONTEXT assumes that $result not used
+		((Method *)junction.method)->call_optimization=Method::CO_WITHOUT_WCONTEXT;
+#endif
+#endif
+		return WContext::result();
 	}
 
 	void write(Value& avalue, String::Language alang) {

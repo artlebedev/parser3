@@ -5,7 +5,7 @@
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_CHARSET_C="$Date: 2009/05/05 10:59:26 $";
+static const char * const IDENT_CHARSET_C="$Date: 2009/05/13 07:35:41 $";
 
 #include "pa_charset.h"
 #include "pa_charsets.h"
@@ -642,12 +642,12 @@ String::Body Charset::escape(const String::Body src, const Charset& source_chars
 
 	String::C dest=Charset::escape(String::C(src_ptr, src_size), source_charset);
 
-	return String::Body(dest.str, dest.length);
+	return String::Body(dest.str);
 }
 
 String& Charset::escape(const String& src, const Charset& source_charset) {
 	if(src.is_empty())
-		return *new String("", 0, false);
+		return *new String();
 
 	return *new String(escape((String::Body)src, source_charset), String::L_CLEAN);
 }
@@ -1035,7 +1035,7 @@ String::C Charset::transcode_cstr(const xmlChar* s) {
 }
 const String& Charset::transcode(const xmlChar* s) { 
 	String::C cstr=transcode_cstr(s);
-	return *new String(cstr.str, cstr.length, true);
+	return *new String(cstr.str, true);
 }
 
 /// @test less memory using -maybe- xmlParserInputBufferCreateMem
@@ -1100,14 +1100,14 @@ String::Body Charset::transcode(const String::Body src,
 		source_transcoder,
 		dest_transcoder);
 
-	return String::Body(dest.str, dest.length);
+	return String::Body(dest.str);
 }
 
 String& Charset::transcode(const String& src, 
 	const Charset& source_transcoder, 
 	const Charset& dest_transcoder) {
 	if(src.is_empty())
-		return *new String("", 0, false);
+		return *new String();
 
 	return *new String(transcode((String::Body)src, source_transcoder, dest_transcoder), String::L_CLEAN);
 }

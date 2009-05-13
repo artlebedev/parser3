@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2009/04/28 04:53:26 $";
+static const char * const IDENT_STRING_C="$Date: 2009/05/13 07:35:42 $";
 
 #include "pa_string.h"
 #include "pa_exception.h"
@@ -162,7 +162,7 @@ Table string_match_table_template(new String_match_table_template_columns);
 String::Body String::Body::Format(int value) {
 	char local[MAX_NUMBER];
 	size_t length=snprintf(local, MAX_NUMBER, "%d", value);
-	return String::Body(pa_strdup(local, length), length);
+	return String::Body(pa_strdup(local, length));
 }
 
 String::Body String::Body::trim(String::Trim_kind kind, const char* chars, 
@@ -240,13 +240,6 @@ uint String::Body::hash_code() const {
 
 // String methods
 
-String::String(const char* cstr, size_t helper_length, bool tainted): body(CORD_EMPTY) {
-	append_help_length(cstr, helper_length, tainted?L_TAINTED:L_CLEAN);
-}
-String::String(const String::C cstr, bool tainted): body(CORD_EMPTY) {
-	append_know_length(cstr.str, cstr.length, tainted?L_TAINTED:L_CLEAN);
-}
-
 String& String::append_know_length(const char* str, size_t known_length, Language lang) {
 	if(!known_length)
 		return *this;
@@ -296,7 +289,7 @@ int CORD_batched_len(const char, size_t *len){
 size_t String::length(Charset& charset) const {
 	if(charset.isUTF8()){
 		size_t len=0;
-		body.for_each(CORD_batched_len, CORD_batched_len, &len);
+		body.for_each<size_t *>(CORD_batched_len, CORD_batched_len, &len);
 		return len;
 	} else
 		return body.length();
@@ -673,7 +666,7 @@ bool String::deserialize(size_t prolog_size, void *buf, size_t buf_size) {
 	if(cur[body_length] != 0) // in place?
 		return false;
 	// 3: letters
-	body=String::Body(cur, body_length);  
+	body=String::Body(cur);
 	cur+=body_length+1;
 	in_buf-=body_length+1;
 

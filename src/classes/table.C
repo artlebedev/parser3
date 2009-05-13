@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2009/05/05 10:20:59 $";
+static const char * const IDENT_TABLE_C="$Date: 2009/05/13 07:36:05 $";
 
 #ifndef NO_STRINGSTREAM
 #include <sstream>
@@ -359,7 +359,7 @@ static void _load(Request& r, MethodParams& params) {
 
 		skip_empty_and_comment_lines(&data);
 		while( lsplit_result sr=lsplit(&data, separators.column, '\n', separators.encloser) ) {
-			*columns+=new String(sr.piece, 0, true);
+			*columns+=new String(sr.piece, true);
 			if(sr.delim=='\n') 
 				break;
 		}
@@ -374,7 +374,7 @@ static void _load(Request& r, MethodParams& params) {
 	while( lsplit_result sr=lsplit(&data, separators.column, '\n', separators.encloser) ) {
 		if(!*sr.piece && !sr.delim && !row->count()) // append last empty column [if without \n]
 			break;
-		*row+=new String(sr.piece, 0, true);
+		*row+=new String(sr.piece, true);
 		if(sr.delim=='\n') {
 			table+=row;
 			row=new ArrayString(columns_count);
@@ -1047,9 +1047,9 @@ public:
 		columns(*new ArrayString), row(0), table(0) {
 	}
 
-	bool add_column(SQL_Error& error, const char *str, size_t length) {
+	bool add_column(SQL_Error& error, const char *str, size_t) {
 		try {
-			columns+=new String(str, length, true);
+			columns+=new String(str, true);
 			return false;
 		} catch(...) {
 			error=SQL_Error("exception occured in Table_sql_event_handlers::add_column");
@@ -1123,7 +1123,7 @@ void unmarshal_bind_updates(HashStringValue& hash, int placeholder_count, SQL_Dr
 				value=VVoid::get();
 			else
 				if(ph->value)
-					value=new VString(*new String(ph->value, 0, true/*tainted*/));
+					value=new VString(*new String(ph->value, true/*tainted*/));
 				else
 					value=new VString(*new String());					
 			hash.put(ph->name, value);

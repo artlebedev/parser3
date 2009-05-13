@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2009/05/04 09:26:00 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2009/05/13 07:35:41 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -1028,9 +1028,12 @@ void Request::op_call_write(VMethodFrame& frame){
 	const Method& method=*junction.method;
 	Method::Call_type call_type=junction.self.get_class()==&junction.self ? Method::CT_STATIC : Method::CT_DYNAMIC;
 
-	if( method.call_type==Method::CT_ANY || method.call_type==call_type) { // allowed call type?
-		method.check_actual_numbered_params(junction.self, frame.numbered_params());
-		method.native_code(*this, *frame.numbered_params()); // execute it
+	if(method.call_type==Method::CT_ANY || method.call_type==call_type) { // allowed call type?
+		if(method.native_code) { // native code?
+			method.check_actual_numbered_params(junction.self, frame.numbered_params());
+			method.native_code(*this, *frame.numbered_params()); // execute it
+		} else // parser code, execute it
+			recoursion_checked_execute(*method.parser_code);
 	} else
 		throw Exception(PARSER_RUNTIME,
 			0,

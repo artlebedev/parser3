@@ -8,9 +8,10 @@
 #ifndef PA_METHOD_H
 #define PA_METHOD_H
 
-static const char * const IDENT_METHOD_H="$Date: 2009/05/04 09:25:32 $";
+static const char * const IDENT_METHOD_H="$Date: 2009/05/13 07:35:27 $";
 
 #define OPTIMIZE_CALL
+#define OPTIMIZE_RESULT
 
 #include "pa_operation.h"
 
@@ -49,6 +50,12 @@ public:
 		CT_DYNAMIC ///< method can be called only dynamically
 	};
 	
+	enum Result_optimization {
+		RO_UNKNOWN,
+		RO_USE_RESULT, // write to $result detected, will not collect all writes to output scope.
+		RO_USE_WCONTEXT // native code or parser code without $result usage.
+	};
+
 	enum Call_optimization {
 		CO_NONE,
 		CO_WITHOUT_FRAME, // for some native methods method frame is not required, faster
@@ -74,6 +81,9 @@ public:
 
 	bool all_vars_local; // in local vars list 'locals' was specified: all vars are local
 	bool allways_use_result; // write to $result detected. will not collect all writes to output scope.
+#ifdef OPTIMIZE_RESULT
+	Result_optimization result_optimization;
+#endif
 
 #ifdef OPTIMIZE_CALL
 	Call_optimization call_optimization;
@@ -84,17 +94,22 @@ public:
 		int amin_numbered_params_count, int amax_numbered_params_count,
 		ArrayString* aparams_names, ArrayString* alocals_names,
 		ArrayOperation* aparser_code, NativeCodePtr anative_code,
-		bool aall_vars_local=false, Call_optimization acall_optimization=CO_NONE) :
+		bool aall_vars_local=false,
+		Result_optimization aresult_optimization=RO_UNKNOWN,
+		Call_optimization acall_optimization=CO_NONE) :
 
 		call_type(acall_type),
 		min_numbered_params_count(amin_numbered_params_count),
 		max_numbered_params_count(amax_numbered_params_count),
 		params_names(aparams_names), locals_names(alocals_names),
 		parser_code(aparser_code), native_code(anative_code),
+#ifdef OPTIMIZE_RESULT
+		result_optimization(aresult_optimization),
+#endif
 #ifdef OPTIMIZE_CALL
 		call_optimization(acall_optimization),  
 #endif
-		all_vars_local(aall_vars_local), allways_use_result(false){
+		all_vars_local(aall_vars_local){
 	}
 
 	/// call this before invoking to ensure proper actual numbered params count

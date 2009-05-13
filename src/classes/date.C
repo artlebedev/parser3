@@ -1,11 +1,11 @@
 /** @file
 	Parser: @b date parser class.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_DATE_C="$Date: 2008/09/04 09:35:09 $";
+static const char * const IDENT_DATE_C="$Date: 2009/05/13 07:36:04 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -38,7 +38,8 @@ public:
 	Date_calendar_table_template_columns(): ArrayString(6+2) {
 		for(int i=0; i<=6; i++) {
 			char *cname=new(PointerFreeGC) char[1/*strlen("6")*/+1/*terminating 0*/];
-			*this+=new String(cname, sprintf(cname, "%d", i)); // .i column name
+			sprintf(cname, "%d", i);
+			*this+=new String(cname); // .i column name
 		}
 		*this+=new String("week");
 		*this+=new String("year");
@@ -159,7 +160,7 @@ static void _sql_string(Request& r, MethodParams&) {
 	char *buf=new(PointerFreeGC) char[size];
 	size=strftime(buf, size, "%Y-%m-%d %H:%M:%S", &vdate.get_localtime());
 	
-	r.write_assign_lang(String(buf, size));
+	r.write_assign_lang(String(buf));
 }
 
 static void _gmt_string(Request& r, MethodParams&) {
@@ -281,7 +282,6 @@ static Table& fill_month_days(Request& r, MethodParams& params, bool rus){
 		Table::element_type row(new ArrayString(7));
 		// calculating year week no [1..54]
 		char *weekno_buf=0; // surely would be assigned to, but to calm down compiler
-		size_t weekno_size=0; // same
 		int weekyear=0; // same
 		// 0..6 week days-cells fill with month days
 		for(int wday=0; wday<7; wday++, _day++) {
@@ -290,7 +290,7 @@ static Table& fill_month_days(Request& r, MethodParams& params, bool rus){
 				char *buf=new(PointerFreeGC) char[2+1]; 
 				cell->append_know_length(buf, sprintf(buf, "%02d", _day), String::L_CLEAN);
 			}
-			*row+=cell;            
+			*row+=cell;
 
 			if(wday==(rus?3:4)/*thursday*/) {
 				tm tms;
@@ -306,16 +306,17 @@ static Table& fill_month_days(Request& r, MethodParams& params, bool rus){
 
 				weekno_buf=new(PointerFreeGC) char[weekno_buf_size];
 				VDate::yw week = VDate::CalcWeek(tms);
-				weekno_size=snprintf(weekno_buf, weekno_buf_size, "%02d", week.week);
+				snprintf(weekno_buf, weekno_buf_size, "%02d", week.week);
 			}
 		
-        }
+		}
 		// appending year week no
-		*row+=new String(weekno_buf, weekno_size);
+		*row+=new String(weekno_buf);
 		// appending year week year
 		{
-			char* buf=new(PointerFreeGC) char[4+1]; 
-			*row+=new String(buf, sprintf(buf, "%02d", weekyear));
+			char* buf=new(PointerFreeGC) char[4+1];
+			sprintf(buf, "%02d", weekyear);
+			*row+=new String(buf);
 		}
 		result+=row;
 	}
@@ -348,7 +349,7 @@ static Table& fill_week_days(Request& r, MethodParams& params, bool rus){
 			0, 
 			"invalid date");
 	tm *tmOut=localtime(&t);
-    
+
 	int baseWeekDay=tmOut->tm_wday;
 	if(rus) 
 		baseWeekDay=baseWeekDay?baseWeekDay-1:6; //sunday last
@@ -360,7 +361,8 @@ static Table& fill_week_days(Request& r, MethodParams& params, bool rus){
 		Table::element_type row(new ArrayString(4));
 #define WDFILL(size, value) { \
 			char *buf=new(PointerFreeGC) char[size+1]; \
-			*row+=new String(buf, sprintf(buf, "%0"#size"d", value)); \
+			sprintf(buf, "%0"#size"d", value); \
+			*row+=new String(buf); \
 		}
 		WDFILL(4, 1900+tmOut->tm_year);
 		WDFILL(2, 1+tmOut->tm_mon);

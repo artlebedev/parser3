@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-static const char * const IDENT_STRING_H="$Date: 2009/05/05 10:59:05 $";
+static const char * const IDENT_STRING_H="$Date: 2009/05/13 07:35:52 $";
 
 // includes
 #include "pa_types.h"
@@ -176,7 +176,7 @@ public:
 
 			if(!opt.is_not_just_lang)
 				if(opt.lang) {
-					if(opt.lang==alang) // same length? ignoring
+					if(opt.lang==alang) // same language? ignoring
 						return;
 				} else {
 					opt.lang=alang; // to uninitialized
@@ -290,10 +290,7 @@ public:
 				|| body[1]==6 // SUBSTR_HDR 
 				);
 		}
-		/// WARNING: length is only HELPER length, str in ANY case should be zero-terminated
-		Body(const char* str, size_t helper_length): body(CORD_EMPTY) {
-			append_know_length(str, helper_length?helper_length:strlen(str));
-		}
+
 		static Body Format(int value);
 
 		void clear() { body=CORD_EMPTY; }
@@ -405,8 +402,19 @@ public:
 
 	static const String Empty;
 
-	explicit String(const char* cstr=0, size_t helper_length=0, bool tainted=false);
-	explicit String(const C cstr, bool tainted=false);
+	explicit String(){};
+	explicit String(const char* cstr, bool tainted=false){
+		if(cstr && *cstr){
+			body=cstr;
+			langs=tainted ? L_TAINTED:L_CLEAN;
+		}
+	}
+	explicit String(const String::C cstr, bool tainted=false){
+		if(cstr.length){
+			body=cstr.str;
+			langs=tainted ? L_TAINTED:L_CLEAN;
+		}
+	}
 	String(Body abody, Language alang): body(abody), langs(alang) {
 		ASSERT_STRING_INVARIANT(*this);
 	}

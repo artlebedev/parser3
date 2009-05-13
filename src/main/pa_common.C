@@ -26,7 +26,7 @@
  *
  */
 
-static const char * const IDENT_COMMON_C="$Date: 2009/04/22 04:35:48 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2009/05/13 07:35:41 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -813,16 +813,10 @@ Charset* detect_charset(const char* content_type){
 			if(!end)
 				end=(char*)strchr(begin, ';');
 
-			size_t len;
-			if(end){
+			if(end)
 				*end=0; // terminator
-				len=end-begin;
-			} else {
-				len=strlen(begin);
-			}
 
-			String::Body NAME=String::Body(begin, len);
-			return &charsets.get(NAME);
+			return &charsets.get(begin);
 		}
 	}
 	return 0;

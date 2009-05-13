@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)\
 */
 
-static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2009/05/04 09:25:32 $";
+static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2009/05/13 07:35:27 $";
 
 #include "pa_vstateless_class.h"
 #include "pa_vproperty.h"
@@ -40,8 +40,9 @@ void VStateless_class::add_native_method(
 		call_type,
 		min_numbered_params_count, max_numbered_params_count,
 		0/*params_names*/, 0/*locals_names*/,
-		0/*parser_code*/, native_code,
-		false/*all_vars_local*/, call_optimization);
+		0/*parser_code*/, native_code, false/*all_vars_local*/,
+		Method::RO_USE_WCONTEXT, call_optimization);
+
 	add_method(name, method);
 }
 

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VREQUEST_C="$Date: 2009/04/15 04:49:50 $";
+static const char * const IDENT_VREQUEST_C="$Date: 2009/05/13 07:35:27 $";
 
 #include "pa_vrequest.h"
 #include "pa_request_info.h"
@@ -32,9 +32,10 @@ VRequest::VRequest(Request_info& ainfo, Request_charsets& acharsets, VForm& afor
 			char *value = new(PointerFreeGC) char[strlen(ainfo.argv[i])+1];
 			strcpy(value, ainfo.argv[i]);
 	
+			sprintf(name, "%d", i - ainfo.args_skip);
 			fargv.put_dont_replace(
-				*new String(name, sprintf(name, "%d", i - ainfo.args_skip)),
-				new VString(*new String(value, 0, true /*tainted*/))
+				*new String(name),
+				new VString(*new String(value, true/*tainted*/))
 			);
 		}
 	}
@@ -67,20 +68,18 @@ Value* VRequest::get_element(const String& aname, Value&  /*aself*/, bool /*look
 	
 	// $request:query $request:uri $request:document-root $request:body
 	const char* buf;
-	size_t size=0;
 	if(aname=="query")
 		buf=finfo.query_string;
 	else if(aname=="uri")
 		buf=finfo.uri;
 	else if(aname==DOCUMENT_ROOT_NAME)
 		buf=finfo.document_root;
-	else if(aname=="body") {
+	else if(aname=="body")
 		buf=finfo.post_data;
-		size=finfo.post_size;
-	} else
+	else
 		return bark("%s field not found", &aname);
 
-	return new VString(*new String(buf?buf:"", size, true));
+	return new VString(*new String(buf, true));
 }
 
 const VJunction* VRequest::put_element(Value& aself, const String& aname, Value* avalue, bool areplace) {

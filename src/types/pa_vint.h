@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b int parser class decl.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VINT_H
 #define PA_VINT_H
 
-static const char * const IDENT_VINT_H="$Date: 2007/02/03 18:08:38 $";
+static const char * const IDENT_VINT_H="$Date: 2009/05/13 07:35:27 $";
 
 // include
 
@@ -38,7 +38,7 @@ public: // Value
 	override const String* get_string() {
 		char local_buf[MAX_NUMBER];
 		size_t length=snprintf(local_buf, MAX_NUMBER, "%d", finteger);
-		return new String(strdup(local_buf, length), length);
+		return new String(strdup(local_buf, length));
 	}
 	/// VInt: finteger
 	override double as_double() const { return as_int(); }
