@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2009/05/13 08:36:08 $";
+static const char * const IDENT_TABLE_C="$Date: 2009/05/13 09:01:00 $";
 
 #ifndef NO_STRINGSTREAM
 #include <sstream>
@@ -1049,7 +1049,7 @@ public:
 
 	bool add_column(SQL_Error& error, const char *str, size_t) {
 		try {
-			columns+=new String(str, true);
+			columns+=new String(str, true/*tainted*/);
 			return false;
 		} catch(...) {
 			error=SQL_Error("exception occured in Table_sql_event_handlers::add_column");
