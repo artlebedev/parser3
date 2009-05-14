@@ -8,7 +8,7 @@
 #ifndef PA_METHOD_H
 #define PA_METHOD_H
 
-static const char * const IDENT_METHOD_H="$Date: 2009/05/13 07:35:27 $";
+static const char * const IDENT_METHOD_H="$Date: 2009/05/14 07:28:17 $";
 
 #define OPTIMIZE_CALL
 #define OPTIMIZE_RESULT
@@ -94,9 +94,14 @@ public:
 		int amin_numbered_params_count, int amax_numbered_params_count,
 		ArrayString* aparams_names, ArrayString* alocals_names,
 		ArrayOperation* aparser_code, NativeCodePtr anative_code,
-		bool aall_vars_local=false,
-		Result_optimization aresult_optimization=RO_UNKNOWN,
-		Call_optimization acall_optimization=CO_NONE) :
+		bool aall_vars_local=false
+#ifdef OPTIMIZE_RESULT
+		, Result_optimization aresult_optimization=RO_UNKNOWN
+#endif
+#ifdef OPTIMIZE_CALL
+		, Call_optimization acall_optimization=CO_NONE
+#endif
+		) :
 
 		call_type(acall_type),
 		min_numbered_params_count(amin_numbered_params_count),
