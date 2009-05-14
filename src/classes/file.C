@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2009/05/13 08:36:08 $";
+static const char * const IDENT_FILE_C="$Date: 2009/05/14 08:10:09 $";
 
 #include "pa_config_includes.h"
 
@@ -646,7 +646,7 @@ static void _list(Request& r, MethodParams& params) {
 
 		if(!vregex || vregex->exec(ffblk.ff_name, file_name_size, ovector, ovector_size)>=0) {
 			Table::element_type row(new ArrayString);
-			*row+=new String(pa_strdup(file_name_cstr, file_name_size), true/*tainted*/);
+			*row+=new String(pa_strdup(file_name_cstr, file_name_size), String::L_TAINTED);
 			table+=row;
 		}
 	);
@@ -827,11 +827,11 @@ public:
 					break;
 				case 1:
 					if(!user_file_name) // user not specified?
-						user_file_name=new String(str, true/*tainted*/);
+						user_file_name=new String(str, String::L_TAINTED);
 					break;
 				case 2:
 					if(!user_content_type) // user not specified?
-						user_content_type=new String(str, true/*tainted*/);
+						user_content_type=new String(str, String::L_TAINTED);
 					break;
 				default:
 					error=SQL_Error(PARSER_RUNTIME, "result must not contain more then one row, three rows");
@@ -921,13 +921,13 @@ static void _base64(Request& r, MethodParams& params) {
 		} else {
 			// encode: ^f.base64[]
 			const char* encoded=pa_base64_encode(self.value_ptr(), self.value_size());
-			r.write_assign_lang(*new String(encoded, true/*tainted. once ?param=base64(something) was needed**/));
+			r.write_assign_lang(*new String(encoded, String::L_TAINTED/*once ?param=base64(something) was needed**/));
 		}
 	} else {
 		// encode: ^file:base64[filespec]
 		const String& file_spec=params.as_string(0, FILE_NAME_MUST_BE_STRING);
 		const char* encoded=pa_base64_encode(r.absolute(file_spec));
-		r.write_assign_lang(*new String(encoded, true/*tainted. once ?param=base64(something) was needed*/));
+		r.write_assign_lang(*new String(encoded, String::L_TAINTED/*once ?param=base64(something) was needed*/));
 	}
 }
 

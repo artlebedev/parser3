@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-static const char * const IDENT_STRING_H="$Date: 2009/05/13 07:35:52 $";
+static const char * const IDENT_STRING_H="$Date: 2009/05/14 08:10:09 $";
 
 // includes
 #include "pa_types.h"
@@ -403,16 +403,16 @@ public:
 	static const String Empty;
 
 	explicit String(){};
-	explicit String(const char* cstr, bool tainted=false){
+	explicit String(const char* cstr, Language alang=L_CLEAN){
 		if(cstr && *cstr){
 			body=cstr;
-			langs=tainted ? L_TAINTED:L_CLEAN;
+			langs=alang;
 		}
 	}
-	explicit String(const String::C cstr, bool tainted=false){
+	explicit String(const String::C cstr, Language alang=L_CLEAN){
 		if(cstr.length){
 			body=cstr.str;
-			langs=tainted ? L_TAINTED:L_CLEAN;
+			langs=alang;
 		}
 	}
 	String(Body abody, Language alang): body(abody), langs(alang) {

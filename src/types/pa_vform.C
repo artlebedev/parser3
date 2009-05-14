@@ -1,13 +1,13 @@
 /**	@file
 	Parser: @b form class.
 
-	Copyright(c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright(c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
 	based on The CGI_C library, by Thomas Boutell.
 */
 
-static const char * const IDENT_VFORM_C="$Date: 2009/01/12 07:50:35 $";
+static const char * const IDENT_VFORM_C="$Date: 2009/05/14 08:10:09 $";
 
 #include "pa_sapi.h"
 #include "pa_vform.h"
@@ -253,7 +253,7 @@ void VForm::AppendFormEntry(const char* cname_cstr, const char* raw_cvalue_ptr, 
 		:raw_cvalue_size;
 	char *cvalue_ptr=strdup(raw_cvalue_ptr, cvalue_size); 
 	fix_line_breaks(cvalue_ptr, cvalue_size);
-	String& string=*new String(transcode(cvalue_ptr, cvalue_size), true);
+	String& string=*new String(transcode(cvalue_ptr, cvalue_size), String::L_TAINTED);
 
 	// tables
 	{
@@ -353,7 +353,7 @@ Value* VForm::get_element(const String& aname, Value& aself, bool looking_up) {
 	if(Value* result=VStateless_class::get_element(aname, aself, looking_up))
 		return result;
 
-	// $element
+	// $field
 	return fields.get(aname);
 }
 

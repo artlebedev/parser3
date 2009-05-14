@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VREQUEST_C="$Date: 2009/05/13 08:36:22 $";
+static const char * const IDENT_VREQUEST_C="$Date: 2009/05/14 08:10:09 $";
 
 #include "pa_vrequest.h"
 #include "pa_request_info.h"
@@ -35,7 +35,7 @@ VRequest::VRequest(Request_info& ainfo, Request_charsets& acharsets, VForm& afor
 			sprintf(name, "%d", i - ainfo.args_skip);
 			fargv.put_dont_replace(
 				*new String(name),
-				new VString(*new String(value, true/*tainted*/))
+				new VString(*new String(value, String::L_TAINTED))
 			);
 		}
 	}
@@ -79,7 +79,7 @@ Value* VRequest::get_element(const String& aname, Value&  /*aself*/, bool /*look
 	else
 		return bark("%s field not found", &aname);
 
-	return new VString(*new String(buf, true/*tainted*/));
+	return new VString(*new String(buf, String::L_TAINTED));
 }
 
 const VJunction* VRequest::put_element(Value& aself, const String& aname, Value* avalue, bool areplace) {

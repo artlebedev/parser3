@@ -5,7 +5,7 @@
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_CHARSET_C="$Date: 2009/05/13 08:36:30 $";
+static const char * const IDENT_CHARSET_C="$Date: 2009/05/14 08:10:09 $";
 
 #include "pa_charset.h"
 #include "pa_charsets.h"
@@ -1035,7 +1035,7 @@ String::C Charset::transcode_cstr(const xmlChar* s) {
 }
 const String& Charset::transcode(const xmlChar* s) { 
 	String::C cstr=transcode_cstr(s);
-	return *new String(cstr.str, true/*tainted*/);
+	return *new String(cstr.str, String::L_TAINTED);
 }
 
 /// @test less memory using -maybe- xmlParserInputBufferCreateMem

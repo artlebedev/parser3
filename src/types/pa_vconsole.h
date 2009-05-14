@@ -8,7 +8,7 @@
 #ifndef PA_VCONSOLE_H
 #define PA_VCONSOLE_H
 
-static const char * const IDENT_VCONSOLE_H="$Date: 2009/04/11 03:21:21 $";
+static const char * const IDENT_VCONSOLE_H="$Date: 2009/05/14 08:10:09 $";
 
 // includes
 
@@ -38,7 +38,7 @@ public: // Value
 		if(aname==CONSOLE_LINE_NAME) {
 			char local_value[MAX_STRING];
 			if(fgets(local_value, sizeof(local_value), stdin))
-				return new VString(*new String(strdup(local_value), true));
+				return new VString(*new String(strdup(local_value), String::L_TAINTED));
 
 			return 0; // EOF
 		}

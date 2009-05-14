@@ -1,11 +1,11 @@
 /** @file
 	Parser: http support functions.
 
-	Copyright(c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright(c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
  */
 
-static const char * const IDENT_HTTP_C="$Date: 2009/02/01 09:32:47 $"; 
+static const char * const IDENT_HTTP_C="$Date: 2009/05/14 08:10:09 $"; 
 
 #include "pa_http.h"
 #include "pa_common.h"
@@ -718,9 +718,8 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 					"cookies param must be hash"); 
 		}
 
-		if(body_cstr) {
+		if(body_cstr)
 			head << "content-length: " << format(post_size, "%u") << CRLF;
-		}
 
 		const char* head_cstr=head.cstr(String::L_UNSPECIFIED, 0, &(r.charsets));
 
@@ -761,7 +760,7 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 
 	if(headers_end_at) {
 		*headers_end_at=0;
-		const String header_block(String::C(response, headers_end_at-response), true);
+		const String header_block(String::C(response, headers_end_at-response), String::L_TAINTED);
 		
 		ArrayString aheaders;
 		HashStringValue& tables=vtables->hash();

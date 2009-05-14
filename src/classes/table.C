@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2009/05/13 09:01:00 $";
+static const char * const IDENT_TABLE_C="$Date: 2009/05/14 08:10:09 $";
 
 #ifndef NO_STRINGSTREAM
 #include <sstream>
@@ -359,7 +359,7 @@ static void _load(Request& r, MethodParams& params) {
 
 		skip_empty_and_comment_lines(&data);
 		while( lsplit_result sr=lsplit(&data, separators.column, '\n', separators.encloser) ) {
-			*columns+=new String(sr.piece, true/*tainted*/);
+			*columns+=new String(sr.piece, String::L_TAINTED);
 			if(sr.delim=='\n') 
 				break;
 		}
@@ -374,7 +374,7 @@ static void _load(Request& r, MethodParams& params) {
 	while( lsplit_result sr=lsplit(&data, separators.column, '\n', separators.encloser) ) {
 		if(!*sr.piece && !sr.delim && !row->count()) // append last empty column [if without \n]
 			break;
-		*row+=new String(sr.piece, true/*tainted*/);
+		*row+=new String(sr.piece, String::L_TAINTED);
 		if(sr.delim=='\n') {
 			table+=row;
 			row=new ArrayString(columns_count);
@@ -398,7 +398,7 @@ void maybe_enclose( String& to, const String& from, char encloser, const String*
 		size_t pos_after=0;
 		for( size_t pos_before; (pos_before=from.pos( encloser, pos_after ))!=STRING_NOT_FOUND; pos_after=pos_before) {
 			pos_before++; // including first encloser (and skipping it for next pos)
-            to<<from.mid(pos_after, pos_before);
+			to<<from.mid(pos_after, pos_before);
 			to<<*sencloser; // doubling encloser
 		}
 		// last piece
@@ -1049,7 +1049,7 @@ public:
 
 	bool add_column(SQL_Error& error, const char *str, size_t) {
 		try {
-			columns+=new String(str, true/*tainted*/);
+			columns+=new String(str, String::L_TAINTED);
 			return false;
 		} catch(...) {
 			error=SQL_Error("exception occured in Table_sql_event_handlers::add_column");
@@ -1075,12 +1075,9 @@ public:
 			return true;
 		}
 	}
-	bool add_row_cell(SQL_Error& error, const char* str, size_t length) {
+	bool add_row_cell(SQL_Error& error, const char* str, size_t) {
 		try {
-			String& cell=*new String;
-			if(length)
-				cell.append_know_length(str, length, String::L_TAINTED);
-			*row+=&cell;
+			*row+=new String(str, String::L_TAINTED);
 			return false;
 		} catch(...) {
 			error=SQL_Error("exception occured in Table_sql_event_handlers::add_row_cell");
@@ -1122,10 +1119,7 @@ void unmarshal_bind_updates(HashStringValue& hash, int placeholder_count, SQL_Dr
 			if(ph->is_null)
 				value=VVoid::get();
 			else
-				if(ph->value)
-					value=new VString(*new String(ph->value, true/*tainted*/));
-				else
-					value=new VString(*new String());					
+				value=new VString(*new String(ph->value, String::L_TAINTED));
 			hash.put(ph->name, value);
 		}
 }

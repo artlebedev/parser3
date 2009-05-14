@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_IMAGE_C="$Date: 2009/05/13 07:36:05 $";
+static const char * const IDENT_IMAGE_C="$Date: 2009/05/14 08:10:09 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -484,7 +484,7 @@ static Value* parse_IFD_entry_formatted_value(bool is_big, ushort format,
 			catch(...) { /*ignore bad date times*/ }
 		}
 
-		return new VString(*new String(cstr, true/*tainted*/));
+		return new VString(*new String(cstr, String::L_TAINTED));
 	}
 
 	if(components_count==1)

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Date: 2009/05/13 07:35:27 $";
+static const char * const IDENT="$Date: 2009/05/14 08:10:09 $";
 
 #include "pa_globals.h"
 #include "pa_common.h"
@@ -148,7 +148,7 @@ const String* VHashfile::deserialize_value(apr_sdbm_datum_t key, const apr_sdbm_
 	char *input_cstr=value.dptr+sizeof(Hashfile_value_serialized_prolog);
 	size_t input_length=value.dsize-sizeof(Hashfile_value_serialized_prolog);
 
-	return new String(input_length? pa_strdup(input_cstr, input_length): 0, true);
+	return new String(input_length? pa_strdup(input_cstr, input_length): 0, String::L_TAINTED);
 }
 
 void VHashfile::put_field(const String& aname, Value *avalue) {
@@ -312,7 +312,7 @@ HashStringValue *VHashfile::get_hash() {
 }
 
 static void delete_file(const char* base_name, const char* ext) {
-	String sfile_name(base_name, false/*already removed tainting at ::open*/);
+	String sfile_name(base_name);
 	sfile_name<<ext;
 	file_delete(sfile_name, false);
 }

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VREGEX_C="$Date: 2009/05/13 08:36:22 $";
+static const char * const IDENT_VREGEX_C="$Date: 2009/05/14 08:10:09 $";
 
 #include "pa_vregex.h"
 #include "pa_vint.h"
@@ -90,7 +90,7 @@ void VRegex::compile(){
 
 	if(!fcode){
 		throw Exception(PCRE_EXCEPTION_TYPE,
-			new String(fpattern+err_offset, true/*tainted*/),
+			new String(fpattern+err_offset, String::L_TAINTED),
 			"regular expression syntax error - %s", err_ptr);
 	}
 
@@ -102,7 +102,7 @@ size_t VRegex::full_info(int type){
 	int fullinfo_result=pcre_fullinfo(fcode, fextra, type, &result);
 	if(fullinfo_result<0){
 		throw Exception(PCRE_EXCEPTION_TYPE,
-			new String(fpattern, true/*tainted*/),
+			new String(fpattern, String::L_TAINTED),
 			"pcre_full_info error (%d)", fullinfo_result);
 	}
 
@@ -128,7 +128,7 @@ void VRegex::study(){
 
 	if(err_ptr){
 		throw Exception(PCRE_EXCEPTION_TYPE,
-			new String(fpattern, true/*tainted*/),
+			new String(fpattern, String::L_TAINTED),
 			"pcre_study error: %s", err_ptr);
 	}
 
@@ -143,7 +143,7 @@ int VRegex::exec(const char* string, size_t string_len, int* ovector, int ovecto
 			
 	if(result<0 && result!=PCRE_ERROR_NOMATCH){
 		throw Exception(PCRE_EXCEPTION_TYPE, 
-			new String(fpattern, true/*tainted*/),
+			new String(fpattern, String::L_TAINTED),
 			get_pcre_exec_error_text(result), result);
 	}
 

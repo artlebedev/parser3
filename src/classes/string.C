@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2009/05/13 07:36:05 $";
+static const char * const IDENT_STRING_C="$Date: 2009/05/14 08:10:09 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -672,14 +672,14 @@ static void _base64(Request& r, MethodParams& params) {
 
 			fix_line_breaks(decoded, length);
 			if(length)
-				r.write_assign_lang(*new String(decoded, true/*tainted*/));
+				r.write_assign_lang(*new String(decoded, String::L_TAINTED));
 		}
 	} else {
 		// encode: ^str.base64[]
 		VString& self=GET_SELF(r, VString);
 		const char* cstr=self.string().cstr();
 		const char* encoded=pa_base64_encode(cstr, strlen(cstr));
-		r.write_assign_lang(*new String(encoded, true/*tainted. once ?param=base64(something) was needed*/));
+		r.write_assign_lang(*new String(encoded, String::L_TAINTED/*once ?param=base64(something) was needed*/));
 	}
 }
 
