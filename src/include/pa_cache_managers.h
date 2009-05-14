@@ -1,16 +1,14 @@
 /** @file
 	Parser: cache managers center decl.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	$Date: 2005/08/09 08:14:49 $
 */
 
 #ifndef PA_CACHE_MANAGERS_H
 #define PA_CACHE_MANAGERS_H
 
-static const char * const IDENT_CACHE_MANAGERS_H="$Date: 2005/08/09 08:14:49 $";
+static const char * const IDENT_CACHE_MANAGERS_H="$Date: 2009/05/14 11:27:23 $";
 
 #include "pa_hash.h"
 #include "pa_value.h"
@@ -27,7 +25,7 @@ public:
 };
 
 /// maintains name=>Cache_manager association, can expire its contents
-class Cache_managers: public Hash<const String::Body, Cache_manager*> {
+class Cache_managers: public HashString<Cache_manager*> {
 public:
 	Cache_managers();
 	virtual ~Cache_managers();

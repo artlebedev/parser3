@@ -1,14 +1,14 @@
 /** @file
 	Parser: commonly used functions.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-static const char * const IDENT_COMMON_H="$Date: 2009/04/22 04:35:31 $";
+static const char * const IDENT_COMMON_H="$Date: 2009/05/14 11:27:23 $";
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -27,7 +27,7 @@ class Request;
 #define HTTP_CONTENT_TYPE_MULTIPART_MIXED	"multipart/mixed"
 
 class Value;
-typedef Hash<const String::Body , Value*> HashStringValue;
+typedef HashString<Value*> HashStringValue;
 
 // replace system s*nprintf with our versions
 #undef vsnprintf 

@@ -1,13 +1,13 @@
 /** @file
 	Parser: Stylesheet connection implementation.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #include "pa_config_includes.h"
 #ifdef XML
-static const char * const IDENT_STYLESHEET_CONNECTION_C="$Date: 2006/04/09 13:38:47 $";
+static const char * const IDENT_STYLESHEET_CONNECTION_C="$Date: 2009/05/14 11:27:23 $";
 
 #include "pa_stylesheet_connection.h"
 #include "pa_xml_exception.h"
@@ -36,7 +36,7 @@ void Stylesheet_connection::load(time_t new_disk_time) {
 	prev_disk_time=new_disk_time;
 }
 
-static void update_max_mtime(const String::Body stat_file_spec_cstr, bool /*value*/, time_t* max) {
+static void update_max_mtime(HashStringValue::key_type stat_file_spec_cstr, bool /*value*/, time_t* max) {
 	size_t size;
 	time_t atime, mtime, ctime;
 	file_stat(*new String(stat_file_spec_cstr, String::L_AS_IS), 

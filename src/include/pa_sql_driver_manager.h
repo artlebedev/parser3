@@ -2,14 +2,14 @@
 	Parser: sql driver manager decl.
 	global sql driver manager, must be thread-safe
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_SQL_DRIVER_MANAGER_H
 #define PA_SQL_DRIVER_MANAGER_H
 
-static const char * const IDENT_SQL_DRIVER_MANAGER_H="$Date: 2008/06/26 09:41:31 $";
+static const char * const IDENT_SQL_DRIVER_MANAGER_H="$Date: 2009/05/14 11:27:23 $";
 
 
 #include "pa_sql_driver.h"
@@ -32,9 +32,9 @@ class SQL_Connection;
 class SQL_Driver_manager: public Cache_manager {
 public:
 
-	typedef Hash<const String::Body, SQL_Driver *> driver_cache_type;
+	typedef HashString<SQL_Driver *> driver_cache_type;
 	typedef Stack<SQL_Connection*> connection_cache_element_base_type;
-	typedef Hash<const String::Body, connection_cache_element_base_type*> connection_cache_type;
+	typedef HashString<connection_cache_element_base_type*> connection_cache_type;
 
 private:
 	

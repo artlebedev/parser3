@@ -1,7 +1,7 @@
 /** @file
 	Parser: hash class decl.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
@@ -17,10 +17,11 @@
 #ifndef PA_HASH_H
 #define PA_HASH_H
 
-static const char * const IDENT_HASH_H="$Date: 2009/04/18 00:33:56 $";
+static const char * const IDENT_HASH_H="$Date: 2009/05/14 11:27:23 $";
 
 #include "pa_memory.h"
 #include "pa_types.h"
+#include "pa_string.h"
 
 const int HASH_ALLOCATES_COUNT=29;
 
@@ -303,16 +304,6 @@ public:
 		return V(0);
 	}
 
-	/// get associated [value] by the [key] + [code] (faster)
-	V get_by_hash_code(uint code, K key) const {
-		uint index=code%allocated;
-		for(Pair *pair=refs[index]; pair; pair=pair->link)
-			if(pair->code==code && pair->key==key)
-				return pair->value;
-		
-		return V(0);
-	}
- 
 	/// put a [value] under the [key] if that [key] existed @returns existed or not
 	bool put_replaced(K key, V value) {
 		if(!value) {
@@ -429,7 +420,7 @@ public:
 		fpairs_count=fused_refs=0;	
 	}
 
-private:
+protected:
 
 	/// expand when these %% of allocated exausted
 	enum {
@@ -502,14 +493,322 @@ private: //disabled
 	Hash& operator = (const Hash&) { return *this; }
 };
 
-///	Auto-object used to temporarily substituting/removing hash values
+/** 
+       Simple String::body hash.
+       Allows hash code caching
+*/
+
+#ifdef HASH_CODE_CACHING
+
+template<typename V> class HashString: public Hash<const CORD,V> {
+public:
+
+	typedef typename Hash<const CORD,V>::Pair Pair; 
+	typedef const String::Body &K;
+
+	typedef K key_type;
+	
+	/// put a [value] under the [key] @returns existed or not
+	bool put(K str, V value) {
+		if(!value) {
+			remove(str);
+			return false;
+		}
+		if(this->is_full()) 
+			this->expand();
+
+		CORD key=str.get_cord();
+
+		uint code=str.get_hash_code();
+		uint index=code%this->allocated;
+		Pair **ref=&this->refs[index];
+		for(Pair *pair=*ref; pair; pair=pair->link)
+			if(pair->code==code && CORD_cmp(pair->key,key)==0) {
+				// found a pair with the same key
+				pair->value=value;
+				return true;
+			}
+
+		// proper pair not found -- create&link_in new pair
+		if(!*ref) // root cell were fused_refs?
+			this->fused_refs++; // not, we'll use it and record the fact
+		*ref=new Pair(code, key, value, *ref);
+		this->fpairs_count++;
+		return false;
+	}
+
+	/// put a [value] under the [key] @returns existed or not
+	template<typename R, typename F, typename I> R replace_maybe_append(K str, V value, F prevent, I info) {
+		if(!value) {
+			// they can come here from somewhere (true with maybe_replace_maybe_append, keeping parallel)
+			remove(str);
+			// this has nothing to do with properties, doing no special property handling here
+			return 0; 
+		}
+
+		if(this->is_full()) 
+			this->expand();
+
+		CORD key=str.get_cord();
+
+		uint code=str.get_hash_code();
+		uint index=code%this->allocated;
+		Pair **ref=&this->refs[index];
+		for(Pair *pair=*ref; pair; pair=pair->link)
+			if(pair->code==code && CORD_cmp(pair->key,key)==0) {
+				// found a pair with the same key
+				pair->value=value;
+				return reinterpret_cast<R>(1);
+			}
+
+		// proper pair not found 
+		// prevent-function intercepted append?
+		if(R result=prevent(value, info))
+			return result;
+
+		//create&link_in new pair
+		if(!*ref) // root cell were fused_refs?
+			this->fused_refs++; // not, we'll use it and record the fact
+		*ref=new Pair(code, key, value, *ref);
+		this->fpairs_count++;
+		return 0;
+	}
+
+	/// put a [value] under the [key] @returns existed or not
+	template<typename R, typename F1, typename F2, typename I> 
+		R maybe_replace_maybe_append(K str, V value, F1 prevent_replace, F2 prevent_append, I info) {
+		if(!value) {
+			// they can come here from Temp_value_element::dctor to restore some empty value
+			remove(str);
+			// this has nothing to do with properties, doing no special property handling here
+			return 0; 
+		}
+
+		if(this->is_full()) 
+			this->expand();
+
+		CORD key=str.get_cord();
+
+		uint code=str.get_hash_code();
+		uint index=code%this->allocated;
+		Pair **ref=&this->refs[index];
+		for(Pair *pair=*ref; pair; pair=pair->link)
+			if(pair->code==code && CORD_cmp(pair->key,key)==0) {
+				// found a pair with the same key
+
+				// prevent-function intercepted replace?
+				if(R result=prevent_replace(pair->value, info))
+					return result;
+
+				pair->value=value;
+				return reinterpret_cast<R>(1);
+			}
+
+		// proper pair not found 
+		// prevent-function intercepted append?
+		if(R result=prevent_append(value, info))
+			return result;
+
+		//create&link_in new pair
+		if(!*ref) // root cell were fused_refs?
+			this->fused_refs++; // not, we'll use it and record the fact
+		*ref=new Pair(code, key, value, *ref);
+		this->fpairs_count++;
+		return 0;
+	}
+
+	/// put a [value] under the [key] @returns existed or not
+	template<typename R, typename F1, typename I> 
+		R maybe_replace_never_append(K str, V value, F1 prevent_replace, I info) {
+		if(!value) {
+			// they can come here from somewhere (true with maybe_replace_maybe_append, keeping parallel)
+			remove(str);
+			// this has nothing to do with properties, doing no special property handling here
+			return 0; 
+		}
+
+		if(this->is_full()) 
+			this->expand();
+
+		CORD key=str.get_cord();
+
+		uint code=str.get_hash_code();
+		uint index=code%this->allocated;
+		Pair **ref=&this->refs[index];
+		for(Pair *pair=*ref; pair; pair=pair->link)
+			if(pair->code==code && CORD_cmp(pair->key,key)==0) {
+				// found a pair with the same key
+
+				// prevent-function intercepted replace?
+				if(R result=prevent_replace(pair->value, info))
+					return result;
+
+				pair->value=value;
+				return reinterpret_cast<R>(1);
+			}
+
+		return 0;
+
+	}
+
+	/// remove the [key] @returns existed or not
+	bool remove(K str) {
+		CORD key=str.get_cord();
+		uint code=str.get_hash_code();
+		uint index=code%this->allocated;
+		for(Pair **ref=&this->refs[index]; *ref; ref=&(*ref)->link)
+			if((*ref)->code==code && CORD_cmp((*ref)->key,key)==0) {
+				// found a pair with the same key
+				Pair *next=(*ref)->link;
+				delete *ref;
+				*ref=next;
+				--this->fpairs_count;
+				return true;
+			}
+
+		return false;
+	}
+
+	/// return true if key exists
+	bool contains(K str){
+		CORD key=str.get_cord();
+		uint code=str.get_hash_code();
+		uint index=code%this->allocated;
+		for(Pair *pair=this->refs[index]; pair; pair=pair->link){
+			if(pair->code==code && CORD_cmp(pair->key,key)==0)
+				return true;
+		}
+
+		return false;
+	}
+
+	/// get associated [value] by the [key]
+	V get(K str) const {
+		CORD key=str.get_cord();
+		uint code=str.get_hash_code();
+		uint index=code%this->allocated;
+		for(Pair *pair=this->refs[index]; pair; pair=pair->link)
+			if(pair->code==code && CORD_cmp(pair->key,key)==0)
+				return pair->value;
+
+		return V(0);
+	}
+
+	/// put a [value] under the [key] if that [key] existed @returns existed or not
+	bool put_replaced(K str, V value) {
+		if(!value) {
+			remove(str);
+			return false;
+		}
+
+		CORD key=str.get_cord();
+		uint code=str.get_hash_code();
+		uint index=code%this->allocated;
+		for(Pair *pair=this->refs[index]; pair; pair=pair->link)
+			if(pair->code==code && CORD_cmp(pair->key,key)==0) {
+				// found a pair with the same key, replacing
+				pair->value=value;
+				return true;
+			}
+
+		// proper pair not found 
+		return false;
+	}
+
+	/// put a [value] under the [key] if that [key] existed @returns existed or not
+	template<typename R, typename F> R maybe_put_replaced(K str, V value, F prevent) {
+		if(!value) {
+			// they can come here from Temp_value_element::dctor to restore some empty value
+			remove(str);
+			// this has nothing to do with properties, doing no special property handling here
+			return 0; 
+		}
+
+		CORD key=str.get_cord();
+		uint code=str.get_hash_code();
+		uint index=code%this->allocated;
+		for(Pair *pair=this->refs[index]; pair; pair=pair->link)
+			if(pair->code==code && CORD_cmp(pair->key,key)==0) {
+				// found a pair with the same key, replacing
+				// prevent-function intercepted put?
+				if(R result=prevent(pair->value))
+					return result;
+
+				pair->value=value;
+				return reinterpret_cast<R>(1);
+			}
+
+		// proper pair not found 
+		return 0;
+	}
+
+	/// put a [value] under the [key] if that [key] NOT existed @returns existed or not
+	bool put_dont_replace(K str, V value) {
+		if(!value) {
+			remove(str);
+			return false;
+		}
+		if(this->is_full()) 
+			this->expand();
+
+		CORD key=str.get_cord();
+		uint code=str.get_hash_code();
+		uint index=code%this->allocated;
+		Pair **ref=&this->refs[index];
+		for(Pair *pair=*ref; pair; pair=pair->link)
+			if(pair->code==code && CORD_cmp(pair->key,key)==0) {
+				// found a pair with the same key, NOT replacing
+				return true;
+			}
+
+		// proper pair not found -- create&link_in new pair
+		if(!*ref) // root cell were fused_refs?
+			this->fused_refs++; // not, we'll use it and record the fact
+		*ref=new Pair(code, key, value, *ref);
+		this->fpairs_count++;
+		return false;
+	}
+
+	/// iterate over all pairs
+	template<typename I> void for_each(void callback(K, V, I), I info) const {
+		Pair **ref=this->refs;
+		for(int index=0; index<this->allocated; index++)
+			for(Pair *pair=*ref++; pair; pair=pair->link)
+				callback(String::Body(pair->key, pair->code), pair->value, info);
+	}
+
+	/// iterate over all pairs
+	template<typename I> void for_each_ref(void callback(K, V&, I), I info) const {
+		Pair **ref=this->refs;
+		for(int index=0; index<this->allocated; index++)
+			for(Pair *pair=*ref++; pair; pair=pair->link)
+				callback(String::Body(pair->key, pair->code), pair->value, info);
+	}
+
+	/// iterate over all pairs until condition becomes true, return that element
+	template<typename I> V first_that(bool callback(K, V, I), I info) const {
+		Pair **ref=this->refs;
+		for(int index=0; index<this->allocated; index++)
+			for(Pair *pair=*ref++; pair; pair=pair->link)
+				if(callback(String::Body(pair->key, pair->code), pair->value, info))
+					return pair->value;
+		return V(0);
+	}
+};
+#else
+
+template<typename V> class HashString: public Hash<const String::Body,V>{};
+
+#endif
+
+///    Auto-object used to temporarily substituting/removing string hash values
 template <typename K, typename V>
 class Temp_hash_value {
-	Hash<K, V>& fhash;
+	HashString<V> &fhash;
 	K fname;
 	V saved_value;
 public:
-	Temp_hash_value(Hash<K, V>& ahash, K aname, V avalue) : 
+	Temp_hash_value(HashString<V>& ahash, K aname, V avalue) :
 		fhash(ahash),
 		fname(aname),
 		saved_value(ahash.get(aname)) {

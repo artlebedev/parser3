@@ -5,12 +5,15 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)\
 */
 
-static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2009/05/14 07:28:45 $";
+static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2009/05/14 11:27:23 $";
 
 #include "pa_vstateless_class.h"
 #include "pa_vproperty.h"
 #include "pa_vstring.h"
 #include "pa_vbool.h"
+
+/// globals
+const String class_name(CLASS_NAME), class_nametext(CLASS_NAMETEXT);
 
 override Value& VStateless_class::as_expr_result(bool /*return_string_as_is=false*/) {
 	return VBool::get(as_bool());
@@ -59,11 +62,11 @@ void VStateless_class::add_native_method(
 /// VStateless_class: $CLASS, $CLASS_NAME, $method
 Value* VStateless_class::get_element(const String& aname, Value& aself, bool alooking_up) {
 	// $CLASS
-	if(aname==CLASS_NAME)
+	if(aname==class_name)
 		return this;
 
 	// $CLASS_NAME
-	if(aname==CLASS_NAMETEXT)
+	if(aname==class_nametext)
 		return new VString(this->name());
 
 	// $method=junction(self+class+method)

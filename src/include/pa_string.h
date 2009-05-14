@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-static const char * const IDENT_STRING_H="$Date: 2009/05/14 08:10:09 $";
+static const char * const IDENT_STRING_H="$Date: 2009/05/14 11:27:23 $";
 
 // includes
 #include "pa_types.h"
@@ -20,6 +20,9 @@ extern "C" { // cord's author forgot to do that
 };
 
 // defines
+
+// cache hash code in String::Body for faster hash access
+#define HASH_CODE_CACHING
 
 // cord extension
 /* Returns true if x does contain                                       */
@@ -192,7 +195,7 @@ public:
 
 			if(!opt.is_not_just_lang)
 				if(opt.lang) {
-					if(opt.lang==alang) // same length? ignoring
+					if(opt.lang==alang) // same language? ignoring
 						return;
 				} else {
 					opt.lang=alang; // to uninitialized
@@ -276,13 +279,25 @@ public:
 
 		CORD body;
 
+#ifdef HASH_CODE_CACHING
+		// cached hash code is not reseted on write operations as test shows 
+		// that string body does not change after it is stored as a hash key
+		mutable uint hash_code;
+#endif
+
 	public:
 
 		const char* v() const;
 		void dump() const;
 
+#ifdef HASH_CODE_CACHING
+		Body(): body(CORD_EMPTY), hash_code(0) {}
+		Body(CORD abody, uint ahash_code): body(abody), hash_code(ahash_code) {}
+		Body(CORD abody): body(abody), hash_code(0) {
+#else
 		Body(): body(CORD_EMPTY) {}
 		Body(CORD abody): body(abody) {
+#endif
 			assert(!body // no body
 				|| *body // ordinary string
 				|| body[1]==1 // CONCAT_HDR
@@ -297,7 +312,8 @@ public:
 
 		bool operator! () const { return is_empty(); }
 
-		uint hash_code() const;
+		CORD get_cord() const { return body; }
+		uint get_hash_code() const;
 
 		const char* cstr() const { return CORD_to_const_char_star(body); }
 		char* cstrm() const { return CORD_to_char_star(body); }
@@ -423,7 +439,11 @@ public:
 	}
 
 	/// for convinient hash lookup
+#ifdef HASH_CODE_CACHING
+	operator const Body&() const { return body; }
+#else
 	operator const Body() const { return body; }
+#endif
 
 	bool is_empty() const { return body.is_empty(); }
 	size_t length() const { return body.length(); }
@@ -557,10 +577,12 @@ inline size_t get_length<String::Body>(String::Body body) {
 	return body.length();
 }
 
+#ifndef HASH_CODE_CACHING
 /// simple hash code of string. used by Hash
 inline uint hash_code(const String::Body self) {
-	return self.hash_code();
+	return self.get_hash_code()
 }
+#endif
 
 
 /// now that we've declared specialization we can use it

@@ -5,15 +5,14 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)\
 */
 
-static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2009/05/13 07:35:27 $";
+static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2009/05/14 11:27:23 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
 
 // globals
 
-const String result_var_name(RESULT_VAR_NAME);
-const uint result_var_hash_code(hash_code(result_var_name));
+const String result_var_name(RESULT_VAR_NAME), caller_element_name(CALLER_ELEMENT_NAME), self_element_name(SELF_ELEMENT_NAME);
 VVoid void_result; // unique value to be sure the result is changed
 
 // MethodParams: methods
@@ -62,6 +61,6 @@ Value* VMethodFrame::get_result_variable() {
 	if(!my)
 		return 0;
 
-	Value* result=my->get_by_hash_code(result_var_hash_code, result_var_name);
+	Value* result=my->get(result_var_name);
 	return result!=&void_result?result:0;
 }

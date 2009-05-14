@@ -1,11 +1,11 @@
 /** @file
 	Parser: sql driver manager implementation.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_CHARSETS_C="$Date: 2007/04/23 10:30:31 $";
+static const char * const IDENT_CHARSETS_C="$Date: 2009/05/14 11:27:23 $";
 
 #include "pa_charsets.h"
 
@@ -26,7 +26,7 @@ Charsets::Charsets() {
 }
 
 Charset& Charsets::get(const String::Body ANAME) {
-	if(Charset* result=Hash<key_type, value_type>::get(ANAME))
+	if(Charset* result=HashString<value_type>::get(ANAME))
 		return *result;
 	else
 		throw Exception(PARSER_RUNTIME,
@@ -36,7 +36,7 @@ Charset& Charsets::get(const String::Body ANAME) {
 
 void Charsets::load_charset(Request_charsets& charsets, const String::Body ANAME, const String& afile_spec) {
 	//we know that charset?
-	if(Hash<key_type, value_type>::get(ANAME)) 
+	if(HashString<value_type>::get(ANAME))
 		return; // don't load it then
 
 	put(ANAME, new Charset(&charsets, ANAME, &afile_spec));

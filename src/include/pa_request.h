@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char * const IDENT_REQUEST_H="$Date: 2009/05/04 09:26:08 $";
+static const char * const IDENT_REQUEST_H="$Date: 2009/05/14 11:27:23 $";
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -121,7 +121,7 @@ private:
 	HashStringValue fclasses;
 
 	/// already used files to avoid cyclic uses
-	Hash<const String::Body, bool> used_files;
+	HashString<bool> used_files;
 	/// list of all used files, Operation::file_no = index to it
 	Array<String::Body> file_list;
 
@@ -335,7 +335,7 @@ public:
 	VConsole& console;
 
 	/// classes configured data
-	Hash<const String::Body, void*> classes_conf;
+	HashString<void*> classes_conf;
 
 public: // status read methods
 

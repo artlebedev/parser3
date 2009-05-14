@@ -1,7 +1,7 @@
 /** @file
 	Parser: Stylesheet manager decl.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
 	global sql driver manager, must be thread-safe
@@ -10,7 +10,7 @@
 #ifndef PA_STYLESHEET_MANAGER_H
 #define PA_STYLESHEET_MANAGER_H
 
-static const char * const IDENT_STYLESHEET_MANAGER_H="$Date: 2005/08/09 08:14:50 $";
+static const char * const IDENT_STYLESHEET_MANAGER_H="$Date: 2009/05/14 11:27:23 $";
 
 
 #include "pa_hash.h"
@@ -49,7 +49,7 @@ private: // for stylesheet
 
 public:
 	typedef Stack<Stylesheet_connection*> connection_cache_value_type;
-	typedef Hash<const String::Body, connection_cache_value_type*> connection_cache_type;
+	typedef HashString<connection_cache_value_type*> connection_cache_type;
 private:
 	connection_cache_type connection_cache;
 

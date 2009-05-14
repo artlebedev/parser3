@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Id: hashfile.C,v 1.45 2009/05/05 10:06:57 misha Exp $";
+static const char * const IDENT="$Id: hashfile.C,v 1.46 2009/05/14 11:27:23 misha Exp $";
 
 #include "classes.h"
 
@@ -40,7 +40,7 @@ extern String cycle_data_name;
 
 // methods
 
-typedef Hash<const String::Body, bool> HashStringBool;
+typedef HashString<bool> HashStringBool;
 
 static void _open(Request& r, MethodParams& params) {
 	HashStringBool* file_list=static_cast<HashStringBool*>(r.classes_conf.get(OPEN_DATA_NAME));

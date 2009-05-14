@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2009/05/05 10:06:57 $";
+static const char * const IDENT_OP_C="$Date: 2009/05/14 11:27:23 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -70,7 +70,7 @@ static const String exception_var_name(EXCEPTION_VAR_NAME);
 
 // helpers
 
-class Untaint_lang_name2enum: public Hash<const String::Body, String::Language> {
+class Untaint_lang_name2enum: public HashString<String::Language> {
 public:
 	Untaint_lang_name2enum() {
 		#define ULN(name, LANG) \

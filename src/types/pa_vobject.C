@@ -1,7 +1,7 @@
 /**	@file
 	Parser: @b object class impl.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
@@ -12,7 +12,7 @@
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
 
-static const char * const IDENT_VOBJECT_C="$Date: 2008/08/26 11:53:43 $";
+static const char * const IDENT_VOBJECT_C="$Date: 2009/05/14 11:27:23 $";
 
 Value* VObject::get_scalar_value() const {
 	VObject* unconst_this=const_cast<VObject*>(this);
@@ -109,10 +109,10 @@ Value* VObject::get_element(const String& aname, Value&, bool alooking_up) {
 	if(alooking_up) {
 		VObject& last_derived=get_last_derived();
 		// $CLASS
-		if(aname==CLASS_NAME)
+		if(aname==class_name)
 			return last_derived.get_class();
 		// $CLASS_NAME
-		if(aname==CLASS_NAMETEXT)
+		if(aname==class_nametext)
 			return new VString(last_derived.get_class()->name());
 		// $virtual_method $virtual_property
 		if(Value* result=last_derived.stateless_object__get_element(aname, last_derived))

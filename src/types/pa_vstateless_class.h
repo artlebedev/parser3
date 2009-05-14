@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
-static const char * const IDENT_VSTATELESS_CLASS_H="$Date: 2009/05/04 09:25:32 $";
+static const char * const IDENT_VSTATELESS_CLASS_H="$Date: 2009/05/14 11:27:23 $";
 
 // include
 
@@ -22,6 +22,7 @@ static const char * const IDENT_VSTATELESS_CLASS_H="$Date: 2009/05/04 09:25:32 $
 
 #define CLASS_NAME "CLASS"
 #define CLASS_NAMETEXT "CLASS_NAME"
+extern const String class_name, class_nametext;
 
 // forwards
 
@@ -42,7 +43,7 @@ class VStateless_class: public Value {
 
 	const String* fname;
 	mutable const char* fname_cstr;
-	Hash<const String::Body, Method*> fmethods;
+	HashString<Method*> fmethods;
 
 	bool flocked;
 	bool fall_vars_local;

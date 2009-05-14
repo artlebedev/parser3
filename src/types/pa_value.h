@@ -1,14 +1,14 @@
 /** @file
 	Parser: Value, Method, Junction .
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-static const char * const IDENT_VALUE_H="$Date: 2009/01/12 07:18:18 $";
+static const char * const IDENT_VALUE_H="$Date: 2009/05/14 11:27:23 $";
 
 #include "pa_string.h"
 #include "pa_array.h"
@@ -23,10 +23,10 @@ class Request; class Request_charsets;
 class Junction;
 class VJunction;
 class Method;
-template<typename K, typename V> class Hash;
 class Value;
-typedef Hash<const String::Body, Value*> HashStringValue; 
-typedef Hash<const String::Body, PA_Object*> HashStringObject;
+template<typename K, typename V> class Hash;
+template<typename V> class HashString;
+typedef HashString<Value*> HashStringValue; 
 typedef Array<Value*> ArrayValue;
 class MethodParams;
 class VObject;

@@ -1,7 +1,7 @@
 /** @file
 	Parser: sql driver manager decl.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
 
@@ -11,13 +11,13 @@
 #ifndef PA_CHARSETS_H
 #define PA_CHARSETS_H
 
-static const char * const IDENT_CHARSETS_H="$Date: 2005/08/09 08:14:49 $";
+static const char * const IDENT_CHARSETS_H="$Date: 2009/05/14 11:27:23 $";
 
 #include "pa_hash.h"
 #include "pa_charset.h"
 
 /// convention: use UPPERCASE keys
-class Charsets: public Hash<const String::Body, Charset*> {
+class Charsets: public HashString<Charset*> {
 public:
 
 	Charsets();

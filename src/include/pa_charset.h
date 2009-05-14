@@ -8,7 +8,7 @@
 #ifndef PA_CHARSET_H
 #define PA_CHARSET_H
 
-static const char * const IDENT_CHARSET_H="$Date: 2009/04/10 11:31:34 $";
+static const char * const IDENT_CHARSET_H="$Date: 2009/05/14 11:27:23 $";
 
 
 #include "pa_exception.h"
@@ -41,7 +41,7 @@ static const char * const IDENT_CHARSET_H="$Date: 2009/04/10 11:31:34 $";
 
 // helpers
 
-typedef Hash<const String::Body, String::Body> HashStringString;
+typedef HashString<String::Body> HashStringString;
 
 /**	charset holds name & transcode tables 
 	registers libxml transcoders

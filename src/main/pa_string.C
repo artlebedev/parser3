@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2009/05/13 07:35:42 $";
+static const char * const IDENT_STRING_C="$Date: 2009/05/14 11:27:23 $";
 
 #include "pa_string.h"
 #include "pa_exception.h"
@@ -226,16 +226,21 @@ static int CORD_batched_iter_fn_generic_hash_code(const char*  s, void * client_
 	generic_hash_code(result, s);
 	return 0;
 };
-uint String::Body::hash_code() const {
-	uint result=0;
+uint String::Body::get_hash_code() const {
+#ifdef HASH_CODE_CACHING
+	if(hash_code)
+		return hash_code;
+#else
+	uint hash_code=0;
+#endif
 	if (body && CORD_IS_STRING(body)){
-		generic_hash_code(result, body);
+		generic_hash_code(hash_code, body);
 	} else {
 		CORD_iter5(body, 0,
 			CORD_batched_iter_fn_generic_hash_code, 
-			CORD_batched_iter_fn_generic_hash_code, &result);
+			CORD_batched_iter_fn_generic_hash_code, &hash_code);
 	}
-	return result;
+	return hash_code;
 }
 
 // String methods

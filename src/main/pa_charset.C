@@ -5,7 +5,7 @@
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_CHARSET_C="$Date: 2009/05/14 08:10:09 $";
+static const char * const IDENT_CHARSET_C="$Date: 2009/05/14 11:27:23 $";
 
 #include "pa_charset.h"
 #include "pa_charsets.h"
@@ -1125,7 +1125,7 @@ struct Transcode_pair_info {
 	const Charset* dest_transcoder;
 };
 #endif
-static void transcode_pair(const String::Body /*akey*/, 
+static void transcode_pair(HashStringValue::key_type /*akey*/, 
 			 String::Body& avalue, 
 			 Transcode_pair_info* info) {
 	avalue=Charset::transcode(avalue,
