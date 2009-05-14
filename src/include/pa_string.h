@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-static const char * const IDENT_STRING_H="$Date: 2009/05/14 11:27:23 $";
+static const char * const IDENT_STRING_H="$Date: 2009/05/14 11:50:38 $";
 
 // includes
 #include "pa_types.h"
@@ -580,7 +580,7 @@ inline size_t get_length<String::Body>(String::Body body) {
 #ifndef HASH_CODE_CACHING
 /// simple hash code of string. used by Hash
 inline uint hash_code(const String::Body self) {
-	return self.get_hash_code()
+	return self.get_hash_code();
 }
 #endif
 
