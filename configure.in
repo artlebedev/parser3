@@ -513,6 +513,9 @@ dnl Checks for libraries.
 
 dnl Some systems (Solaris 2.x) require libnsl (Network Services Library)
 case "$host" in
+  *-freebsd4*)
+	  AC_DEFINE(FREEBSD4,,FreeBSD4X target platform)
+  ;;
   *-sunos5.6* | *-solaris2.6*)
 	  AC_CHECK_LIB(xnet, main)
   ;;

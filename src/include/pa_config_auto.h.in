@@ -3,6 +3,9 @@
 /* using cygwin building environment */
 #undef CYGWIN
 
+/* FreeBSD4X target platform */
+#undef FREEBSD4
+
 /* Define to 1 if you have the <arpa/inet.h> header file. */
 #undef HAVE_ARPA_INET_H
 

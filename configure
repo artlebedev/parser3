@@ -6213,6 +6213,13 @@ done
 
 
 case "$host" in
+  *-freebsd4*)
+
+cat >>confdefs.h <<\_ACEOF
+#define FREEBSD4
+_ACEOF
+
+  ;;
   *-sunos5.6* | *-solaris2.6*)
 
 echo "$as_me:$LINENO: checking for main in -lxnet" >&5
