@@ -7,11 +7,22 @@ $m0[$status:memory]
 ^do[]
 ^do[]
 ^sleep(1)
+^for[j](0;3){
+	$i(0)
+	^while(true){
+		$a($i)
+		^i.inc(1)
+		^if($i==9000){
+			^break[]
+		}
+	}
+}
 
 $r1[$status:rusage]
 $m1[$status:memory]
 
 ^memory:compact[]
+^do[]
 
 $r2[$status:rusage]
 $m2[$status:memory]
