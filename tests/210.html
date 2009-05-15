@@ -1,0 +1,19 @@
+@main[]
+$a[a"a]
+$b[^taint[b"b]]
+$h[
+	$.[$a][$a]
+	$.[$b][$b]
+]
+
+#^h.foreach[k;v]{${k}: '$v'}[, ]
+
+$t[^h._keys[]]
+^t.sort{$t.key}
+^t.menu{${t.key}: '$h.[$t.key]'}[, ]
+<hr />
+
+$h.[^taint[as-is][$a]]<br />
+$h.[^taint[$a]]<br />
+$h.[^taint[as-is][$b]]<br />
+$h.[^taint[$b]]<br />
