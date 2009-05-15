@@ -25,6 +25,9 @@
 # include <stdarg.h>
 # include "cord.h"
 # include "ec.h"
+
+#define CORD_CHARS_CACHE
+
 # define I_HIDE_POINTERS	/* So we get access to allocation lock.	*/
 				/* We use this for lazy file reading, 	*/
 				/* so that we remain independent 	*/
@@ -433,14 +436,24 @@ char CORD_nul_func(size_t i, void * client_data)
     return((char)(unsigned long)client_data);
 }
 
+#ifdef CORD_CHARS_CACHE
+static char *cord_chars_cache[256][16]={0};
+#endif
+
 CORD CORD_chars(char c, size_t i)
 {
 	if (i>0 && i<16 /* SHORT_LIMIT */) {
+#ifdef CORD_CHARS_CACHE
+		if (cord_chars_cache[c][i]) return cord_chars_cache[c][i];
+#endif
 		register char* result;
 		result=GC_MALLOC_ATOMIC(i+1);
 		if(result==0) OUT_OF_MEMORY;
 		memset(result, c, i);
 		result[i] = '\0';
+#ifdef CORD_CHARS_CACHE
+		cord_chars_cache[c][i]=result;
+#endif
 		return((CORD) result);
 	} else {
 		return(CORD_from_fn(CORD_nul_func, (void *)(unsigned long)c, i));
