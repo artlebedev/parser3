@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2009/05/14 08:10:09 $";
+static const char * const IDENT_FILE_C="$Date: 2009/05/15 23:35:06 $";
 
 #include "pa_config_includes.h"
 
@@ -616,19 +616,19 @@ static void _cgi(Request& r, MethodParams& params) {
 static void _list(Request& r, MethodParams& params) {
 	Value& relative_path=params.as_no_junction(0, "path must not be code");
 
-	VRegex* vregex;
+	VRegex* vregex=0;
 	VRegexCleaner vrcleaner;
 	if(params.count()>1){
 		Value& regexp=params.as_no_junction(1, "regexp must not be code");
-		if(Value* value=regexp.as(VREGEX_TYPE, false)){
-			vregex=static_cast<VRegex*>(value);
-		} else {
-			vregex=new VRegex(r.charsets.source(), &regexp.as_string(), 0/*options*/);
-			vregex->study();
-			vrcleaner.vregex=vregex;
+		if(regexp.is_defined()){
+			if(Value* value=regexp.as(VREGEX_TYPE, false)){
+				vregex=static_cast<VRegex*>(value);
+			} else {
+				vregex=new VRegex(r.charsets.source(), &regexp.as_string(), 0/*options*/);
+				vregex->study();
+				vrcleaner.vregex=vregex;
+			}
 		}
-	} else {
-		vregex=0;
 	}
 
 	const char* absolute_path_cstr=r.absolute(relative_path.as_string()).cstr(String::L_FILE_SPEC);
