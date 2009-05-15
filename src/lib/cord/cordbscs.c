@@ -20,6 +20,10 @@
 # include <stdio.h>
 # include <string.h>
 
+// MOKO: to avoid stucture Concatenation creation on merge
+// may also require to add CORD_concatenation_clone in String::Body(abody)
+#define CORD_CAT_CHEAT
+
 /* An implementation of the cord primitives.  These are the only 	*/
 /* Functions that understand the representation.  We perform only	*/
 /* minimal checks on arguments to these functions.  Out of bounds	*/
@@ -203,6 +207,11 @@ CORD CORD_cat_char_star(CORD x, const char*  y, size_t leny)
             	memcpy(new_right, right, right_len);
             	memcpy(new_right + right_len, y, leny);
             	new_right[result_len] = '\0';
+#ifdef CORD_CAT_CHEAT
+				((CordRep *)x) -> concatenation.right=new_right;
+				((CordRep *)x) -> concatenation.len += leny;
+				return x;
+#endif
             	y = new_right;
             	leny = result_len;
             	x = left;
@@ -246,7 +255,17 @@ CORD CORD_cat(CORD x, CORD y)
     register int depth;
     register size_t lenx;
     
-    if (x == CORD_EMPTY) return(y);
+	if (x == CORD_EMPTY){
+#ifdef CORD_CAT_CHEAT
+		if IS_CONCATENATION(y){
+			register struct Concatenation * result;
+			result = GC_NEW(struct Concatenation);
+			*result = *(struct Concatenation*)y;
+			y=(CORD)result;
+		}
+#endif
+		return(y);
+	}
     if (y == CORD_EMPTY) return(x);
     if (CORD_IS_STRING(y)) {
         return(CORD_cat_char_star(x, y, strlen(y)));
