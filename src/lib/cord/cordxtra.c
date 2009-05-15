@@ -443,10 +443,11 @@ static char *cord_chars_cache[256][16]={0};
 CORD CORD_chars(char c, size_t i)
 {
 	if (i>0 && i<16 /* SHORT_LIMIT */) {
-#ifdef CORD_CHARS_CACHE
-		if (cord_chars_cache[c][i]) return cord_chars_cache[c][i];
-#endif
 		register char* result;
+#ifdef CORD_CHARS_CACHE
+		if(cord_chars_cache[c][i])
+			return ((CORD) cord_chars_cache[c][i]);
+#endif
 		result=GC_MALLOC_ATOMIC(i+1);
 		if(result==0) OUT_OF_MEMORY;
 		memset(result, c, i);
