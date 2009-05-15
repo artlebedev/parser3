@@ -5,9 +5,9 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2009/05/14 08:10:09 $";
+static const char * const IDENT_TABLE_C="$Date: 2009/05/15 13:54:29 $";
 
-#ifndef NO_STRINGSTREAM
+#if (!defined(NO_STRINGSTREAM) && !defined(FREEBSD4))
 #include <sstream>
 using namespace std;
 #endif
@@ -389,7 +389,29 @@ static void _load(Request& r, MethodParams& params) {
 	GET_SELF(r, VTable).set_table(table);
 }
 
-#ifdef NO_STRINGSTREAM
+#if (!defined(NO_STRINGSTREAM) && !defined(FREEBSD4))
+
+void maybe_enclose( ostringstream& to, const String& from, char encloser ) {
+	if(encloser) {
+		to<<encloser;
+		// while we have 'encloser'...
+		size_t pos_after=0;
+		for( size_t pos_before; (pos_before=from.pos( encloser, pos_after ))!=STRING_NOT_FOUND; pos_after=pos_before) {
+			pos_before++; // including first encloser (and skipping it for next pos)
+			to<<from.mid(pos_after, pos_before).cstr();
+			to<<encloser; // doubling encloser
+		}
+		// last piece
+		size_t from_length=from.length();
+		if(pos_after<from_length)
+			to<<from.mid(pos_after, from_length).cstr();
+
+		to<<encloser;
+	} else
+		to<<from.cstr();
+}
+
+#else
 
 void maybe_enclose( String& to, const String& from, char encloser, const String* sencloser ) {
 	if(encloser) {
@@ -411,29 +433,7 @@ void maybe_enclose( String& to, const String& from, char encloser, const String*
 		to<<from;
 }
 
-#else
-
-void maybe_enclose( ostringstream& to, const String& from, char encloser ) {
-	if(encloser) {
-		to<<encloser;
-		// while we have 'encloser'...
-		size_t pos_after=0;
-		for( size_t pos_before; (pos_before=from.pos( encloser, pos_after ))!=STRING_NOT_FOUND; pos_after=pos_before) {
-			pos_before++; // including first encloser (and skipping it for next pos)
-            to<<from.mid(pos_after, pos_before).cstr();
-			to<<encloser; // doubling encloser
-		}
-		// last piece
-		size_t from_length=from.length();
-		if(pos_after<from_length)
-			to<<from.mid(pos_after, from_length).cstr();
-
-		to<<encloser;
-	} else
-		to<<from.cstr();
-}
-
-#endif
+#endif // don't use stringstream
 
 static void _save(Request& r, MethodParams& params) {
 	const String& first_arg=params.as_string(0, FIRST_ARG_MUST_NOT_BE_CODE);
@@ -480,52 +480,7 @@ static void _save(Request& r, MethodParams& params) {
 
 	Table& table=GET_SELF(r, VTable).table();
 
-#ifdef NO_STRINGSTREAM
-
-	String sdata;
-	if(output_column_names) {
-		if(table.columns()) { // named table
-			for(Array_iterator<const String*> i(*table.columns()); i.has_next(); ) {
-				maybe_enclose( sdata, *i.next(), separators.encloser, separators.sencloser );
-				if(i.has_next())
-					sdata<<*separators.scolumn;
-			}
-		} else { // nameless table [we were asked to output column names]
-			if(int lsize=table.count()?table[0]->count():0)
-				for(int column=0; column<lsize; column++) {
-					char *cindex_tab=new(PointerFreeGC) char[MAX_NUMBER];
-					sdata.append_know_length(cindex_tab, 
-						snprintf(cindex_tab, MAX_NUMBER, 
-							column<lsize-1?"%d%c":"%d", column, separators.column),
-							String::L_CLEAN);
-				}
-			else
-				sdata.append_help_length("empty nameless table", 0, String::L_CLEAN);
-		}
-		sdata.append_know_length("\n", 1, String::L_CLEAN);
-	}
-
-	// data lines
-	Array_iterator<ArrayString*> i(table);
-	while(i.has_next()) {
-		for(Array_iterator<const String*> c(*i.next()); c.has_next(); ) {
-			maybe_enclose( sdata, *c.next(), separators.encloser, separators.sencloser );
-			if(c.has_next())
-				sdata<<*separators.scolumn;
-		}
-		sdata.append_know_length("\n", 1, String::L_CLEAN);
-	}
-
-	// write
-	{
-		const char* data_cstr=sdata.cstr();
-		file_write(file_spec, 
-			data_cstr, sdata.length(), true, do_append);
-		if(*data_cstr) // not empty (when empty it's not heap memory)
-			pa_free((void*)data_cstr); // not needed anymore
-	}
-
-#else
+#if (!defined(NO_STRINGSTREAM) && !defined(FREEBSD4))
 
 	ostringstream ost(stringstream::out);
 
@@ -575,7 +530,52 @@ static void _save(Request& r, MethodParams& params) {
 		file_write(file_spec, data_cstr, data.length(), true /* as text */, do_append);
 	}
 
-#endif
+#else
+
+	String sdata;
+	if(output_column_names) {
+		if(table.columns()) { // named table
+			for(Array_iterator<const String*> i(*table.columns()); i.has_next(); ) {
+				maybe_enclose( sdata, *i.next(), separators.encloser, separators.sencloser );
+				if(i.has_next())
+					sdata<<*separators.scolumn;
+			}
+		} else { // nameless table [we were asked to output column names]
+			if(int lsize=table.count()?table[0]->count():0)
+				for(int column=0; column<lsize; column++) {
+					char *cindex_tab=new(PointerFreeGC) char[MAX_NUMBER];
+					sdata.append_know_length(cindex_tab, 
+						snprintf(cindex_tab, MAX_NUMBER, 
+							column<lsize-1?"%d%c":"%d", column, separators.column),
+							String::L_CLEAN);
+				}
+			else
+				sdata.append_help_length("empty nameless table", 0, String::L_CLEAN);
+		}
+		sdata.append_know_length("\n", 1, String::L_CLEAN);
+	}
+
+	// data lines
+	Array_iterator<ArrayString*> i(table);
+	while(i.has_next()) {
+		for(Array_iterator<const String*> c(*i.next()); c.has_next(); ) {
+			maybe_enclose( sdata, *c.next(), separators.encloser, separators.sencloser );
+			if(c.has_next())
+				sdata<<*separators.scolumn;
+		}
+		sdata.append_know_length("\n", 1, String::L_CLEAN);
+	}
+
+	// write
+	{
+		const char* data_cstr=sdata.cstr();
+		file_write(file_spec, 
+			data_cstr, sdata.length(), true, do_append);
+		if(*data_cstr) // not empty (when empty it's not heap memory)
+			pa_free((void*)data_cstr); // not needed anymore
+	}
+
+#endif // don't use stringstream
 }
 
 static void _count(Request& r, MethodParams&) {
