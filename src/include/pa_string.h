@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-static const char * const IDENT_STRING_H="$Date: 2009/05/14 11:50:38 $";
+static const char * const IDENT_STRING_H="$Date: 2009/05/15 06:57:43 $";
 
 // includes
 #include "pa_types.h"
@@ -431,6 +431,7 @@ public:
 			langs=alang;
 		}
 	}
+	String(int value, char *format);
 	String(Body abody, Language alang): body(abody), langs(alang) {
 		ASSERT_STRING_INVARIANT(*this);
 	}

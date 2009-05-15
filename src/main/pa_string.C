@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2009/05/14 11:27:23 $";
+static const char * const IDENT_STRING_C="$Date: 2009/05/15 06:57:50 $";
 
 #include "pa_string.h"
 #include "pa_exception.h"
@@ -265,6 +265,10 @@ String& String::append_help_length(const char* str, size_t helper_length, Langua
 		return *this;
 
 	return append_know_length(str, known_length, lang);
+}
+String::String(int value, char *format) : langs(L_CLEAN){
+	char buf[MAX_NUMBER];
+	body.append_strdup_know_length(buf, snprintf(buf, MAX_NUMBER, format, value));
 }
 String& String::append_strdup(const char* str, size_t helper_length, Language lang) {
 	size_t known_length=helper_length?helper_length:strlen(str);
