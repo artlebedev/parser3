@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Id: buildall-without-xml,v 1.16 2009/04/21 10:25:01 misha Exp $
+# $Id: buildall-without-xml,v 1.17 2009/05/16 09:21:16 misha Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -17,7 +17,7 @@ mkdir src >/dev/null 2>&1
 
 if test ! -f "$project_directory/gc/lib/libgc.a"; then
   cd $project_directory/src
-  libgc="gc6.8"
+  libgc="gc-7.1"
   if test ! -f "$libgc.tar.gz"; then
     echo "Downloading libgc [1 lib of 2]..."
     wget -c http://www.hpl.hp.com/personal/Hans_Boehm/gc/gc_source/$libgc.tar.gz
