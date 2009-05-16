@@ -304,7 +304,7 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !^строка.bool[] + .bool(default)  bool значение строки
         если ломается преобразование, берётся default
     !^строка.format[формат] %d  %.2f %02d...
-    !^строка.match[шаблон][[опции поиска]]  $prematch $match $postmatch $1 $2...
+    !^строка.match[шаблон-строка|шаблон-regex][[опции поиска]]  $prematch $match $postmatch $1 $2...
         опции поиска=
         i CASELESS
         x whitespace in regex ignored
@@ -313,7 +313,8 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         g найти все вхождения, а не одно
         ' создавать столбцы prematch, match, postmatch
         n вернуть цисло с количеством найденных совпадений, а не таблицу с результатами
-    !^строка.match[шаблон][опции поиска]{замена}
+        U инвертировать смысл модификатора '?'
+    !^строка.match[шаблон-строка|шаблон-regex][опции поиска]{замена}
         опции поиска+=
         g заменить все вхождения, а не одно
     !^строка.split[разделитель][[lrhv]][[название столбца для вертикального разбиения]]
@@ -450,6 +451,7 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     $sessions.$sid[$.value[$uid] $.expires(1)]
     $uid[$sessions.$sid]
 
+
 !form
     [берётся первый элемент из одноимённых из GET, потом первый из POST]
     !$form:поле = string/file 
@@ -461,9 +463,11 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !$form:imap = хэш с ключами 'x' и 'y'
         со значением ?1,2 приписки при использовании server-site image map
 
+
 !env
     !$env:переменная
     !$env:PARSER то же самое, что показывается при запуске parser.cgi
+
 
 !cookie
     !$cookie:имя считать старое или свежезаданное
@@ -493,6 +497,7 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         ПРЕДУПРЕЖДЕНИЕ: класс form получает свои поля после обработки всех auto класса MAIN
         поэтому необходимо задать $request/response:charset в одном из них. не после.
 
+
 !response
     !$response:поле[значение]  и можно считать старое -- $response:поле
         !значение может быть string а может быть hash:
@@ -514,6 +519,19 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         не добавляет к content-type ничего, если хочется, это надо сделать вручную
         ПРЕДУПРЕЖДЕНИЕ: класс form получает свои поля после обработки всех auto класса MAIN
         поэтому необходимо задать $request/response:charset в одном из них. не после.
+
+
+!regex
+    !в выражении 
+        !логическое значение равно true
+        !числовое значение равно количество байт скомпилированного шаблона.
+    !^regex::create[шаблон-строка][[опции поиска]]
+    !^шаблон.size[] количество байт скомпилированного шаблона
+        если значение очень большое -- стоит почитать документацию по pcre и, возможно, переписать шаблон.
+    !^шаблон.study_size[] размер study-структуры. если==0 -- шаблон не может быть "изучен"
+    ^шаблон.save[filespec]
+    ^шаблон.load[filespec]
+
 
 !mail
     !$mail.received=MESSAGE:
@@ -688,6 +706,7 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !^картинка.pixel(x;y)[(color)]
         узнать или задать цвет пиксела
 
+
 !file
     !$файл_из_post.name 
     !$файл_из_post.size 
@@ -695,7 +714,7 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !^файл.save[text|binary;имя файла]
     !^file:delete[имя файла]
     !^file:find[имя файла][{когда не нашли}]
-    !^file:list[путь[;шаблон]] = table с колонкой name
+    !^file:list[путь[;шаблон-строка|шаблон-regex]] = table с колонкой name
     !^file::load[text|binary;!big.zip[;!domain_press_release_2001_03_01.zip][;опции]]
     !^file::create[text;имя;^untaint[xml]{data}]
     !$файл_который_был_loaded.size
@@ -749,6 +768,7 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         выдает digest файла, длиной 16 байт в виде строки, 
         где байты digest выданы в hex виде, впритык, в нижнем регистре
 
+
 !math
     !$math:PI
     !^math:round floor ceiling 
@@ -780,9 +800,11 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
        вычисляет crc32 строки
     !^math:sha1[string]
 
+
 !inet
     !^inet:ntoa(long)
     !^inet:aton[IP]
+
 
 !date
     !время типа time можно использовать в выражениях, подставляет 
