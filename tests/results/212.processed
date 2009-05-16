@@ -1,8 +1,10 @@
 content-type: text/html
-content-length: 117
+content-length: 176
 
 failed, that's OK
 <br />
+size: 50/50<br />
+study size: 0<br />
 !select
 <br />
 sEl!ct
@@ -11,6 +13,7 @@ s!l!ct
 <br />
 2
 <br />
+study size: 40<br />
 !2312312
 <br />
 !
