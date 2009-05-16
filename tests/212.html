@@ -1,0 +1,50 @@
+@main[]
+^try{
+	$r[^regex::create[]]
+}{
+	$exception.handled(1)
+	failed, that's OK
+}
+<br />
+
+
+$s[  select]
+$r[^regex::create[^^\s*]]
+^s.match[$r;]{!}
+<br />
+
+
+$s[  sElect]
+$r[^regex::create[e][g]]
+^s.match[$r;]{!}
+<br />
+
+
+$s[  sElect]
+$r[^regex::create[e;gi]]
+^s.match[$r;]{!}
+<br />
+
+
+$s[12312312]
+$r[^regex::create[3;gn]]
+^s.match[$r]
+<br />
+
+
+$s[12312312]
+$r[^regex::create[\d+?]]
+^s.match[$r;]{!}
+<br />
+
+
+$s[12312312]
+$r[^regex::create[\d+?;U]]
+^s.match[$r][]{!}
+<br />
+
+
+
+$t[^file:list[./;^regex::create[^^212.html^$]]]
+$t.name
+<br />
