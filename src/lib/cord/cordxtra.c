@@ -437,7 +437,7 @@ char CORD_nul_func(size_t i, void * client_data)
 }
 
 #ifdef CORD_CHARS_CACHE
-static char *cord_chars_cache[256][16]={0};
+static char* cord_chars_cache[256][15]={0};
 #endif
 
 CORD CORD_chars(char c, size_t i)
@@ -445,15 +445,15 @@ CORD CORD_chars(char c, size_t i)
 	if (i>0 && i<16 /* SHORT_LIMIT */) {
 		register char* result;
 #ifdef CORD_CHARS_CACHE
-		if(cord_chars_cache[c][i])
-			return ((CORD) cord_chars_cache[c][i]);
+		if(cord_chars_cache[(unsigned char)c][i])
+			return((CORD) cord_chars_cache[(unsigned char)c][i]);
 #endif
 		result=GC_MALLOC_ATOMIC(i+1);
 		if(result==0) OUT_OF_MEMORY;
 		memset(result, c, i);
 		result[i] = '\0';
 #ifdef CORD_CHARS_CACHE
-		cord_chars_cache[c][i]=result;
+		cord_chars_cache[(unsigned char)c][i]=result;
 #endif
 		return((CORD) result);
 	} else {
