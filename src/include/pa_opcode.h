@@ -1,7 +1,7 @@
 /** @file
 	Parser: compiled code related decls.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
@@ -11,12 +11,12 @@
 
 namespace OP {
 
-static const char * const IDENT_OPCODE_H="$Date: 2009/05/19 08:41:06 $";
+static const char * const IDENT_OPCODE_H="$Date: 2009/05/19 13:30:42 $";
 
 #define OPTIMIZE_BYTECODE_GET_CLASS
 #define OPTIMIZE_BYTECODE_GET_ELEMENT
-#define OPTIMIZE_BYTECODE_GET_ELEMENT_FIELD
-#define OPTIMIZE_BYTECODE_GET_ELEMENT_METHOD
+#define OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT
+#define OPTIMIZE_BYTECODE_GET_OBJECT_VAR_ELEMENT
 //#define OPTIMIZE_BYTECODE_STRING_POOL
 #define OPTIMIZE_BYTECODE_USE_TWO_OPERANDS_INSTRUCTIONS
 #define OPTIMIZE_BYTECODE_CUT_REM_OPERATOR
@@ -45,9 +45,13 @@ enum OPCODE {
 	OP_GET_ELEMENT_OR_OPERATOR,
 #endif
 	OP_GET_ELEMENT,
-#ifdef OPTIMIZE_BYTECODE_GET_ELEMENT_FIELD
-	OP_GET_ELEMENT_FIELD,
-	OP_GET_ELEMENT_FIELD__WRITE,
+#ifdef OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT
+	OP_GET_OBJECT_ELEMENT,				// $a.b & ^a.b
+	OP_GET_OBJECT_ELEMENT__WRITE,		// $a.b & ^a.b
+#endif
+#ifdef OPTIMIZE_BYTECODE_GET_OBJECT_VAR_ELEMENT
+	OP_GET_OBJECT_VAR_ELEMENT,			// $a.$b & ^a.$b
+	OP_GET_OBJECT_VAR_ELEMENT__WRITE,	// $a.$b & ^a.$b
 #endif
 #ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
 	OP_VALUE__GET_ELEMENT,
