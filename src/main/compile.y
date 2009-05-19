@@ -5,7 +5,7 @@
 	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.237 2009/05/09 10:45:43 misha Exp $
+	$Id: compile.y,v 1.238 2009/05/19 08:47:20 misha Exp $
 */
 
 /**
@@ -44,6 +44,7 @@
 #define OPTIONS_CONTROL_METHOD_NAME "OPTIONS"
 #define OPTION_ALL_VARS_LOCAL_NAME "locals"
 #define OPTION_PARTIAL_CLASS "partial"
+#define REM_OPERATOR_NAME "rem"
 
 // forwards
 
@@ -316,14 +317,33 @@ action: get | put | call;
 /* get */
 
 get: get_value {
-	$$=$1; /* stack: resulting value */ 
+	$$=N();
+	YYSTYPE code=$1;
 #ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
-	if(!replace_top_opcode(*$$, OP::OP_VALUE__GET_ELEMENT, OP::OP_VALUE__GET_ELEMENT__WRITE))
+	if(!replace_top_opcode(*code, OP::OP_VALUE__GET_ELEMENT, /*=>*/OP::OP_VALUE__GET_ELEMENT__WRITE))
 #endif
-		changetail_or_append(*$$, 
-			OP::OP_GET_ELEMENT, false,  /*->*/OP::OP_GET_ELEMENT__WRITE,
-			/*or */OP::OP_WRITE_VALUE
-			); /* value=pop; wcontext.write(value) */
+		{
+#ifdef OPTIMIZE_BYTECODE_GET_ELEMENT_FIELD
+			size_t count=code->count();
+			if(
+#ifdef OPTIMIZE_BYTECODE_USE_TWO_OPERANDS_INSTRUCTIONS
+				count==6
+#else
+				count==7
+#endif
+				&& (*code)[count-1].code==OP::OP_GET_ELEMENT
+				&& replace_top_opcode(*code, OP::OP_GET_ELEMENT_FIELD, /*=>*/OP::OP_GET_ELEMENT_FIELD__WRITE)
+			){
+				//P(*$$, *code, 0/*offset*/, count-1/*limit*/); // someday skip last OP_GET_ELEMENT
+				//break;
+			} else
+#endif
+				changetail_or_append(*code, 
+					OP::OP_GET_ELEMENT, false,  /*=>*/OP::OP_GET_ELEMENT__WRITE,
+					/*or */OP::OP_WRITE_VALUE
+					); /* value=pop; wcontext.write(value) */
+		}
+	P(*$$, *code);
 };
 get_value: '$' get_name_value { $$=$2 };
 get_name_value: name_without_curly_rdive EON | name_in_curly_rdive;
@@ -333,34 +353,53 @@ name_without_curly_rdive:
 |	name_without_curly_rdive_class;
 name_without_curly_rdive_read: name_without_curly_rdive_code {
 	$$=N(); 
-	ArrayOperation* diving_code=$1;
+	YYSTYPE diving_code=$1;
 	const String* first_name=LA2S(*diving_code);
-	// self.xxx... -> xxx...
+	// self.xxx... => xxx...
 	// OP_VALUE+origin+string+OP_GET_ELEMENT+... -> OP_WITH_SELF+...
 	if(first_name && *first_name==SELF_ELEMENT_NAME) {
-		O(*yyval, OP::OP_WITH_SELF); /* stack: starting context */
-		P(*yyval, *diving_code, 
+		O(*$$, OP::OP_WITH_SELF); /* stack: starting context */
+		P(*$$, *diving_code, 
 			/* skip over... */
 			diving_code->count()>=4?4/*OP::OP_VALUE+origin+string+OP::OP_GET_ELEMENTx*/:3/*OP::OP_+origin+string*/);
 	} else {
 #ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
 		size_t count=diving_code->count();
-		if(count==4){ // optimisations for popular simple cases
-			O(*yyval,
-				(PC.in_call_value) // ^call
-				? OP::OP_VALUE__GET_ELEMENT_OR_OPERATOR // OP_VALUE+origin+string+OP_GET_ELEMENT -> OP_VALUE__GET_ELEMENT_OR_OPERATOR+origin+string
-				: OP::OP_VALUE__GET_ELEMENT // OP_VALUE+origin+string+OP_GET_ELEMENT -> OP_VALUE__GET_ELEMENT+origin+string
+		if(count==4){ // optimization
+			O(*$$,
+				(PC.in_call_value)
+				? OP::OP_VALUE__GET_ELEMENT_OR_OPERATOR // ^object[ : OP_VALUE+origin+string+OP_GET_ELEMENT => OP_VALUE__GET_ELEMENT_OR_OPERATOR+origin+string
+				: OP::OP_VALUE__GET_ELEMENT             // $object  : OP_VALUE+origin+string+OP_GET_ELEMENT => OP_VALUE__GET_ELEMENT+origin+string
 			);
 			P(*$$, *diving_code, 1/*offset*/, 2/*limit*/); // copy origin+value
-		} else {
-			O(*yyval, OP::OP_WITH_READ); /* stack: starting context */
+		}
+#ifdef OPTIMIZE_BYTECODE_GET_ELEMENT_FIELD
+		else if(
+			count==8
+			&& (*diving_code)[7].code==OP::OP_GET_ELEMENT
+			&& replace_top_opcode(*diving_code, OP::OP_VALUE, /*=>*/OP::OP_GET_ELEMENT_FIELD)
+		){
+			// optimisation for ^object.method[ + $object.field
+			// OP_VALUE+origin+value+OP_GET_ELEMENT+OP_VALUE+origin+value+OP_GET_ELEMENT => OP_GET_ELEMENT_FIELD+origin+value+OP_VALUE+origin+value+OP_GET_ELEMENT
+			//         OP_VALUE+origin+value+OP_GET_ELEMENT+OP_VALUE+origin+value+OP_GET_ELEMENT
+			// offset  0        1      2     3              4        5      6     7
+			P(*$$, *diving_code, 0/*offset*/, 3/*limit*/); // copy OP_GET_ELEMENT_FIELD+origin+value (skip first OP_GET_ELEMENT)
+#ifdef OPTIMIZE_BYTECODE_USE_TWO_OPERANDS_INSTRUCTIONS
+			P(*$$, *diving_code, 5/*offset*/, 3/*limit*/); // copy origin+value+OP_GET_ELEMENT (last one is important!)
+#else
+			P(*$$, *diving_code, 4/*offset*/, 4/*limit*/); // copy OP_VALUE+origin+value+OP_GET_ELEMENT (last one is important!)
+#endif
+		}
+#endif
+		else {
+			O(*$$, OP::OP_WITH_READ); /* stack: starting context */
 			P(*$$, *diving_code);
 		}
 #else
-		O(*yyval, OP::OP_WITH_READ); /* stack: starting context */
+		O(*$$, OP::OP_WITH_READ); /* stack: starting context */
 
-		// ^if ELEMENT -> ^if ELEMENT_OR_OPERATOR
-		// OP_VALUE+origin+string+OP_GET_ELEMENT. -> OP_VALUE+origin+string+OP_GET_ELEMENT_OR_OPERATOR.
+		// ^if OP_ELEMENT => ^if OP_ELEMENT_OR_OPERATOR
+		// optimized OP_VALUE+origin+string+OP_GET_ELEMENT. => OP_VALUE+origin+string+OP_GET_ELEMENT_OR_OPERATOR.
 		if(PC.in_call_value && diving_code->count()==4)
 			diving_code->put(4-1, OP::OP_GET_ELEMENT_OR_OPERATOR);
 		P(*$$, *diving_code);
@@ -383,10 +422,10 @@ name_expr_wdive:
 |	name_expr_wdive_class;
 name_expr_wdive_root: name_expr_dive_code {
 	$$=N();
-	ArrayOperation* diving_code=$1;
+	YYSTYPE diving_code=$1;
 	const String* first_name=LA2S(*diving_code);
-	// $self.xxx... -> $xxx...
-	// OP_VALUE+origin+string+OP_GET_ELEMENT+... -> OP_WITH_SELF+...
+	// $self.xxx... => $xxx...
+	// OP_VALUE+origin+string+OP_GET_ELEMENT+... => OP_WITH_SELF+...
 	if(first_name && *first_name==SELF_ELEMENT_NAME) {
 		O(*$$, OP::OP_WITH_SELF); /* stack: starting context */
 		P(*$$, *diving_code, 
@@ -452,10 +491,15 @@ codes__excluding_sole_str_literal: action | code codes { $$=$1; P(*$$, *$2) };
 /* call */
 
 call: call_value {
-	$$=$1; /* stack: value */
-	changetail_or_append(*$$, 
-		OP::OP_CALL, true,  /*->*/ OP::OP_CALL__WRITE,
-		/*or */OP::OP_WRITE_VALUE); /* value=pop; wcontext.write(value) */
+#ifdef OPTIMIZE_BYTECODE_CUT_REM_OPERATOR
+	if((*$1).count())
+#endif
+	{
+		$$=$1; /* stack: value */
+		changetail_or_append(*$$, 
+			OP::OP_CALL, true,  /*=>*/ OP::OP_CALL__WRITE,
+			/*or */OP::OP_WRITE_VALUE); /* value=pop; wcontext.write(value) */
+	}
 };
 call_value: '^' { 
 					PC.in_call_value=true; 
@@ -464,16 +508,24 @@ call_value: '^' {
 				PC.in_call_value=false;
 			} 
 			store_params EON { /* ^field.$method{vasya} */
-	$$=$3; /* with_xxx,diving code; stack: context,method_junction */
+#ifdef OPTIMIZE_BYTECODE_CUT_REM_OPERATOR
+	const String* operator_name=LA2S(*$3, 0, OP::OP_VALUE__GET_ELEMENT_OR_OPERATOR);
+	if(operator_name && *operator_name == REM_OPERATOR_NAME){
+		$$=N();
+	} else 
+#endif
+		{
+			$$=$3; /* with_xxx,diving code; stack: context,method_junction */
 
-	YYSTYPE params_code=$5;
-	if(params_code->count()==3) { // probably [] case. [OP::OP_VALUE+origin+Void]
-		if(Value* value=LA2V(*params_code)) // it is OP_VALUE+origin+value?
-			if(value->is_void()) // value is VVoid?
-				params_code=0; // ^zzz[] case. don't append lone empty param.
-	}
-	/* stack: context, method_junction */
-	OA(*$$, OP::OP_CALL, params_code); // method_frame=make frame(pop junction); ncontext=pop; call(ncontext,method_frame) stack: value
+			YYSTYPE params_code=$5;
+			if(params_code->count()==3) { // probably [] case. [OP::OP_VALUE+origin+Void]
+				if(Value* value=LA2V(*params_code)) // it is OP_VALUE+origin+value?
+					if(value->is_void()) // value is VVoid?
+						params_code=0; // ^zzz[] case. don't append lone empty param.
+			}
+			/* stack: context, method_junction */
+			OA(*$$, OP::OP_CALL, params_code); // method_frame=make frame(pop junction); ncontext=pop; call(ncontext,method_frame) stack: value
+		}
 };
 
 call_name: name_without_curly_rdive;
@@ -513,7 +565,7 @@ store_expr_param_part: expr_value {
 		&& (*expr_code)[0].code==OP::OP_VALUE) { // optimizing (double/bool/incidently 'string' too) case. [OP::OP_VALUE+origin+Double]. no evaluating
 		$$=expr_code; 
 	} else {
-		ArrayOperation* code=N();
+		YYSTYPE code=N();
 		O(*code, OP::OP_PREPARE_TO_EXPRESSION);
 		P(*code, *expr_code);
 		O(*code, OP::OP_WRITE_EXPR_RESULT);
@@ -563,7 +615,7 @@ name_expr_subvar_value: '$' subvar_ref_name_rdive {
 	O(*$$, OP::OP_GET_ELEMENT);
 };
 name_expr_with_subvar_value: STRING subvar_get_writes {
-	ArrayOperation* code;
+	YYSTYPE code;
 	{
 		change_string_literal_to_write_string_literal(*(code=$1));
 		P(*code, *$2);
@@ -608,7 +660,7 @@ class_static_prefix: STRING ':' {
 		}
 	}
 #ifdef OPTIMIZE_BYTECODE_GET_CLASS
-	// OP_VALUE+origin+string+OP_GET_CLASS -> OP_VALUE__GET_CLASS+origin+string
+	// optimized OP_VALUE+origin+string+OP_GET_CLASS => OP_VALUE__GET_CLASS+origin+string
 	replace_top_opcode(*$$, OP::OP_VALUE, OP::OP_VALUE__GET_CLASS, true/*assert if top opcode != OP_VALUE*/)
 #else
 	O(*$$, OP::OP_GET_CLASS);
@@ -676,13 +728,25 @@ expr:
 ;
 
 double_or_STRING: STRING {
-	// optimized from OP_STRING->OP_VALUE for doubles
+	// optimized OP_STRING => OP_VALUE for doubles
 	maybe_change_string_literal_to_double_literal(*($$=$1));
 };
 
 string_inside_quotes_value: maybe_codes {
+#ifdef OPTIMIZE_BYTECODE_STRING_POOL
+	// it brakes ^if(" 09 "){...}
+	YYSTYPE code=$1;
+	$$=N();
+	if(code->count()==3 && replace_top_opcode(*code, OP::OP_STRING__WRITE, OP::OP_VALUE)){
+		// optimized OP_STRING__WRITE+origin+value => OP_VALUE+origin+value without starting OP_STRING_POOL
+		P(*$$, *code);
+	} else {
+		OA(*$$, OP::OP_STRING_POOL, code); /* stack: empty write context */
+	}
+#else
 	$$=N();
 	OA(*$$, OP::OP_STRING_POOL, $1); /* stack: empty write context */
+#endif
 	/* some code that writes to that context */
 	/* context=pop; stack: context.get_string() */
 };
@@ -690,7 +754,7 @@ string_inside_quotes_value: maybe_codes {
 /* basics */
 
 write_string: STRING {
-	// optimized from OP_STRING+OP_WRITE_VALUE to OP_STRING__WRITE
+	// optimized OP_STRING+OP_WRITE_VALUE => OP_STRING__WRITE
 	change_string_literal_to_write_string_literal(*($$=$1))
 };
 
