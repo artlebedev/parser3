@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2009/05/13 07:35:41 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2009/05/19 08:44:00 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -46,6 +46,10 @@ char *opcode_name[]={
 	"GET_ELEMENT_OR_OPERATOR",
 #endif
 	"GET_ELEMENT",
+#ifdef OPTIMIZE_BYTECODE_GET_ELEMENT_FIELD
+	"GET_ELEMENT_FIELD",
+	"GET_ELEMENT_FIELD__WRITE",
+#endif
 #ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
 	"VALUE__GET_ELEMENT",
 #endif
@@ -76,10 +80,10 @@ void va_debug_printf(SAPI_Info& sapi_info, const char* fmt,va_list args) {
 }
 
 void debug_printf(SAPI_Info& sapi_info, const char* fmt, ...) {
-    va_list args;
-    va_start(args, fmt);
-    va_debug_printf(sapi_info, fmt, args);
-    va_end(args);
+	va_list args;
+	va_start(args, fmt);
+	va_debug_printf(sapi_info, fmt, args);
+	va_end(args);
 }
 
 void debug_dump(SAPI_Info& sapi_info, int level, ArrayOperation& ops) {
@@ -87,6 +91,23 @@ void debug_dump(SAPI_Info& sapi_info, int level, ArrayOperation& ops) {
 	while(i.has_next()) {
 		OP::OPCODE opcode=i.next().code;
 
+#if defined(OPTIMIZE_BYTECODE_GET_ELEMENT_FIELD) && defined(OPTIMIZE_BYTECODE_USE_TWO_OPERANDS_INSTRUCTIONS)
+		if(
+			opcode==OP::OP_GET_ELEMENT_FIELD
+			|| opcode==OP::OP_GET_ELEMENT_FIELD__WRITE
+		){
+			i.next(); // skip origin
+			Value& value1=*i.next().value;
+			i.next(); // skip origin
+			Value& value2=*i.next().value;
+			debug_printf(sapi_info, 
+				"%*s%s"
+				" \"%s\" \"%s\"", 
+				level*4, "", opcode_name[opcode],
+				value1.get_string()->cstr(), value2.get_string()->cstr());
+			continue;
+		}
+#endif
 		if(
 			opcode==OP::OP_VALUE
 			|| opcode==OP::OP_STRING__WRITE
@@ -97,6 +118,10 @@ void debug_dump(SAPI_Info& sapi_info, int level, ArrayOperation& ops) {
 			|| opcode==OP::OP_VALUE__GET_ELEMENT
 			|| opcode==OP::OP_VALUE__GET_ELEMENT__WRITE
 			|| opcode==OP::OP_VALUE__GET_ELEMENT_OR_OPERATOR
+#endif
+#if defined(OPTIMIZE_BYTECODE_GET_ELEMENT_FIELD) && !defined(OPTIMIZE_BYTECODE_USE_TWO_OPERANDS_INSTRUCTIONS)
+			|| opcode==OP::OP_GET_ELEMENT_FIELD
+			|| opcode==OP::OP_GET_ELEMENT_FIELD__WRITE
 #endif
 		) {
 			Operation::Origin origin=i.next().origin;
@@ -340,6 +365,39 @@ void Request::execute(ArrayOperation& ops) {
 				}
 				Value& value=get_element(ncontext, name);
 				stack.push(value);
+				break;
+			}
+#endif
+
+#ifdef OPTIMIZE_BYTECODE_GET_ELEMENT_FIELD
+		case OP::OP_GET_ELEMENT_FIELD:
+		case OP::OP_GET_ELEMENT_FIELD__WRITE:
+			{
+				debug_origin=i.next().origin;
+				const String& context_name=*i.next().value->get_string();  debug_name=&context_name;
+#ifdef DEBUG_EXECUTE
+				debug_printf(sapi_info, " \"%s\" ", context_name.cstr());
+#endif
+				Value& object=get_element(*rcontext, context_name);
+
+#ifndef OPTIMIZE_BYTECODE_USE_TWO_OPERANDS_INSTRUCTIONS
+				i.next(); // skip OP_VALUE
+#endif
+
+				debug_origin=i.next().origin;
+				const String& field_name=*i.next().value->get_string();  debug_name=&field_name;
+#ifdef DEBUG_EXECUTE
+				debug_printf(sapi_info, " \"%s\" ", field_name.cstr());
+#endif
+				Value& value=get_element(object, field_name);
+
+				i.next(); // skip last OP_GET_ELEMENT
+
+				if(opcode==OP::OP_GET_ELEMENT_FIELD){
+					stack.push(value);
+				} else {
+					write_assign_lang(value);
+				}
 				break;
 			}
 #endif
@@ -1009,7 +1067,7 @@ void Request::op_call(VMethodFrame& frame){
 			0,
 			"is not allowed to be called %s", 
 			call_type==Method::CT_STATIC?"statically":"dynamically");
- 
+
 	RESTORE_CONTEXT
 	//return &frame;
 }
@@ -1112,7 +1170,7 @@ void Request::put_element(Value& ncontext, const String& name, Value* value) {
 		nothing goes to wcontext.
 		used in @c (expression) params evaluation
 
-    using the fact it's either string_ or value_ result requested to speed up checkes
+	using the fact it's either string_ or value_ result requested to speed up checkes
 */
 StringOrValue Request::process(Value& input_value, bool intercept_string) {
 	Junction* junction=input_value.get_junction();
