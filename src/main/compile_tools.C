@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMPILE_TOOLS_C="$Date: 2008/08/15 15:26:14 $";
+static const char * const IDENT_COMPILE_TOOLS_C="$Date: 2009/05/19 08:41:45 $";
 
 #include "compile_tools.h"
 #include "pa_string.h"
@@ -14,8 +14,8 @@ static const char * const IDENT_COMPILE_TOOLS_C="$Date: 2008/08/15 15:26:14 $";
 #include "pa_vstring.h"
 #include "pa_vdouble.h"
 
-Value* LA2V(ArrayOperation& literal_string_array, int offset) {
-	return literal_string_array[offset+0].code==OP::OP_VALUE?literal_string_array[offset+2/*skip opcode&origin*/].value
+Value* LA2V(ArrayOperation& literal_string_array, int offset, OP::OPCODE code) {
+	return literal_string_array[offset+0].code==code?literal_string_array[offset+2/*skip opcode&origin*/].value
 		:0;
 }
 

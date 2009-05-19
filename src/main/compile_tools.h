@@ -8,7 +8,7 @@
 #ifndef COMPILE_TOOLS
 #define COMPILE_TOOLS
 
-static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2009/04/28 11:06:42 $";
+static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2009/05/19 08:41:45 $";
 
 #include "pa_opcode.h"
 #include "pa_types.h"
@@ -231,10 +231,10 @@ inline ArrayOperation* VL(Value* value, uint file_no, uint line, uint col) {
 }
 
 /// Literal Array to(2) Value @return Value from literal Array OP+origin+Value
-Value* LA2V(ArrayOperation& literal_string_array, int offset=0);
+Value* LA2V(ArrayOperation& literal_string_array, int offset=0, OP::OPCODE code=OP::OP_VALUE);
 /// Literal Array to(2) String  @return String value from literal Array OP+origin+String array
-inline const String* LA2S(ArrayOperation& literal_string_array, int offset=0) {
-	if(Value* value=LA2V(literal_string_array, offset))
+inline const String* LA2S(ArrayOperation& literal_string_array, int offset=0, OP::OPCODE code=OP::OP_VALUE) {
+	if(Value* value=LA2V(literal_string_array, offset, code))
 		return value->get_string();
 	return 0;
 }
