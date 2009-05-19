@@ -80,7 +80,7 @@ Xне сделано, видимо, не будет сделано
                 $exception.handled(1)
                 код, обрабатывающий sql ошибку
                 $exception.type = sql.connect
-                $exception.file $exception.lineno [если не запрещены при компил€ции]
+                $exception.file $exception.lineno $exception.colno [если не запрещены при компил€ции]
                 $exception.source = вас€
                 $exception.comment = болван
             }
@@ -1120,7 +1120,7 @@ DATA::=string | file | hash
     !определив
     !@unhandled_exception[exception;stack]
     !$exception.type  строка "тип проблемы"
-    !$exception.file $exception.lineno файл и строка где случилась проблема [если не запрещены при компил€ции]
+    !$exception.file $exception.lineno $exception.colno файл, строка и позици€, где случилась проблема [если не запрещены при компил€ции]
     !$exception.source строка, из-за которой случилась проблема
     !$exception.comment комментарий english
     !stack табличка из колонок file line name,
