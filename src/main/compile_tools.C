@@ -1,11 +1,11 @@
 /** @file
 	Parser: compiler support helper functions.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMPILE_TOOLS_C="$Date: 2009/05/19 08:41:45 $";
+static const char * const IDENT_COMPILE_TOOLS_C="$Date: 2009/05/19 13:33:14 $";
 
 #include "compile_tools.h"
 #include "pa_string.h"
@@ -45,6 +45,45 @@ void changetail_or_append(ArrayOperation& opcodes,
 	opcodes+=Operation(notfound);
 }
 
+
+bool maybe_change_first_opcode(ArrayOperation& opcodes, OP::OPCODE find, OP::OPCODE replace, bool strict) {
+	if(opcodes[0].code==find){
+		opcodes.put(0, replace);
+		return true;
+	}
+	if(strict)
+		assert(opcodes[0].code==find);
+
+	return false;
+}
+
+
+bool maybe_change_first_opcode(ArrayOperation& opcodes, OP::OPCODE find, OP::OPCODE last, OP::OPCODE replace) {
+	if(opcodes[0].code==find && opcodes[opcodes.count()-1].code==last){
+		opcodes.put(0, replace);
+		return true;
+	}
+	return false;
+}
+
+
+bool append_2ops_opcode(ArrayOperation& opcodes, ArrayOperation& diving_code, OP::OPCODE code, size_t offset) {
+	assert(diving_code[0].code==OP::OP_VALUE);
+	if(diving_code[diving_code.count()-1].code==OP::OP_GET_ELEMENT){
+		O(opcodes, code);
+		P(opcodes, diving_code, 1/*offset*/, 2/*limit*/); // copy origin+value
+		P(opcodes, diving_code,
+#ifdef OPTIMIZE_BYTECODE_USE_TWO_OPERANDS_INSTRUCTIONS
+			offset, 3
+#else
+			offset-1, 4
+#endif
+		); // copy specified tail
+		return true;
+	} else {
+		return false;
+	}
+}
 
 void push_LS(Parse_control& pc, lexical_state new_state) { 
 	if(pc.ls_sp<MAX_LEXICAL_STATES) {

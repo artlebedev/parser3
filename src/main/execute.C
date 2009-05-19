@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2009/05/19 08:44:00 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2009/05/19 13:33:14 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -46,9 +46,13 @@ char *opcode_name[]={
 	"GET_ELEMENT_OR_OPERATOR",
 #endif
 	"GET_ELEMENT",
-#ifdef OPTIMIZE_BYTECODE_GET_ELEMENT_FIELD
-	"GET_ELEMENT_FIELD",
-	"GET_ELEMENT_FIELD__WRITE",
+#ifdef OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT
+	"GET_OBJECT_ELEMENT",
+	"GET_OBJECT_ELEMENT__WRITE",
+#endif
+#ifdef OPTIMIZE_BYTECODE_GET_OBJECT_VAR_ELEMENT
+	"GET_OBJECT_VAR_ELEMENT",
+	"GET_OBJECT_VAR_ELEMENT__WRITE",
 #endif
 #ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
 	"VALUE__GET_ELEMENT",
@@ -91,10 +95,17 @@ void debug_dump(SAPI_Info& sapi_info, int level, ArrayOperation& ops) {
 	while(i.has_next()) {
 		OP::OPCODE opcode=i.next().code;
 
-#if defined(OPTIMIZE_BYTECODE_GET_ELEMENT_FIELD) && defined(OPTIMIZE_BYTECODE_USE_TWO_OPERANDS_INSTRUCTIONS)
+#if (defined(OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT) || defined(OPTIMIZE_BYTECODE_GET_OBJECT_VAR_ELEMENT)) && defined(OPTIMIZE_BYTECODE_USE_TWO_OPERANDS_INSTRUCTIONS)
 		if(
-			opcode==OP::OP_GET_ELEMENT_FIELD
-			|| opcode==OP::OP_GET_ELEMENT_FIELD__WRITE
+			1==0
+#ifdef OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT
+			|| opcode==OP::OP_GET_OBJECT_ELEMENT
+			|| opcode==OP::OP_GET_OBJECT_ELEMENT__WRITE
+#endif
+#ifdef OPTIMIZE_BYTECODE_GET_OBJECT_VAR_ELEMENT
+			|| opcode==OP::OP_GET_OBJECT_VAR_ELEMENT
+			|| opcode==OP::OP_GET_OBJECT_VAR_ELEMENT__WRITE
+#endif
 		){
 			i.next(); // skip origin
 			Value& value1=*i.next().value;
@@ -119,9 +130,13 @@ void debug_dump(SAPI_Info& sapi_info, int level, ArrayOperation& ops) {
 			|| opcode==OP::OP_VALUE__GET_ELEMENT__WRITE
 			|| opcode==OP::OP_VALUE__GET_ELEMENT_OR_OPERATOR
 #endif
-#if defined(OPTIMIZE_BYTECODE_GET_ELEMENT_FIELD) && !defined(OPTIMIZE_BYTECODE_USE_TWO_OPERANDS_INSTRUCTIONS)
-			|| opcode==OP::OP_GET_ELEMENT_FIELD
-			|| opcode==OP::OP_GET_ELEMENT_FIELD__WRITE
+#if defined(OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT) && !defined(OPTIMIZE_BYTECODE_USE_TWO_OPERANDS_INSTRUCTIONS)
+			|| opcode==OP::OP_GET_OBJECT_ELEMENT
+			|| opcode==OP::OP_GET_OBJECT_ELEMENT__WRITE
+#endif
+#if defined(OPTIMIZE_BYTECODE_GET_OBJECT_VAR_ELEMENT) && !defined(OPTIMIZE_BYTECODE_USE_TWO_OPERANDS_INSTRUCTIONS)
+			|| opcode==OP::OP_GET_OBJECT_VAR_ELEMENT
+			|| opcode==OP::OP_GET_OBJECT_VAR_ELEMENT__WRITE
 #endif
 		) {
 			Operation::Origin origin=i.next().origin;
@@ -369,9 +384,9 @@ void Request::execute(ArrayOperation& ops) {
 			}
 #endif
 
-#ifdef OPTIMIZE_BYTECODE_GET_ELEMENT_FIELD
-		case OP::OP_GET_ELEMENT_FIELD:
-		case OP::OP_GET_ELEMENT_FIELD__WRITE:
+#ifdef OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT
+		case OP::OP_GET_OBJECT_ELEMENT:
+		case OP::OP_GET_OBJECT_ELEMENT__WRITE:
 			{
 				debug_origin=i.next().origin;
 				const String& context_name=*i.next().value->get_string();  debug_name=&context_name;
@@ -393,7 +408,42 @@ void Request::execute(ArrayOperation& ops) {
 
 				i.next(); // skip last OP_GET_ELEMENT
 
-				if(opcode==OP::OP_GET_ELEMENT_FIELD){
+				if(opcode==OP::OP_GET_OBJECT_ELEMENT){
+					stack.push(value);
+				} else {
+					write_assign_lang(value);
+				}
+				break;
+			}
+#endif
+
+#ifdef OPTIMIZE_BYTECODE_GET_OBJECT_VAR_ELEMENT
+		case OP::OP_GET_OBJECT_VAR_ELEMENT:
+		case OP::OP_GET_OBJECT_VAR_ELEMENT__WRITE:
+			{
+				debug_origin=i.next().origin;
+				const String& context_name=*i.next().value->get_string();  debug_name=&context_name;
+#ifdef DEBUG_EXECUTE
+				debug_printf(sapi_info, " \"%s\" ", context_name.cstr());
+#endif
+				Value& object=get_element(*rcontext, context_name);
+
+#ifndef OPTIMIZE_BYTECODE_USE_TWO_OPERANDS_INSTRUCTIONS
+				i.next(); // skip OP_VALUE
+#endif
+
+				debug_origin=i.next().origin;
+				const String& var_name=*i.next().value->get_string();  debug_name=&var_name;
+#ifdef DEBUG_EXECUTE
+				debug_printf(sapi_info, " \"%s\" ", var_name.cstr());
+#endif
+				const String* field=get_element(*rcontext, var_name).get_string();
+
+				Value& value=get_element(object, *field);
+
+				i.next(); // skip last OP_GET_ELEMENT
+
+				if(opcode==OP::OP_GET_OBJECT_VAR_ELEMENT){
 					stack.push(value);
 				} else {
 					write_assign_lang(value);

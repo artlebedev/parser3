@@ -8,7 +8,7 @@
 #ifndef COMPILE_TOOLS
 #define COMPILE_TOOLS
 
-static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2009/05/19 08:41:45 $";
+static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2009/05/19 13:33:14 $";
 
 #include "pa_opcode.h"
 #include "pa_types.h"
@@ -243,16 +243,11 @@ inline void change_string_literal_to_write_string_literal(ArrayOperation& litera
 	literal_string_array.put(0, OP::OP_STRING__WRITE);
 }
 
-inline bool replace_top_opcode(ArrayOperation& literal_string_array, OP::OPCODE find, OP::OPCODE replace, bool strict=false) {
-	if(literal_string_array[0].code==find){
-		literal_string_array.put(0, replace);
-		return true;
-	} else {
-		if(strict)
-			assert(literal_string_array[0].code==find);
-		return false;
-	}
-}
+bool maybe_change_first_opcode(ArrayOperation& opcodes, OP::OPCODE find, OP::OPCODE replace, bool strict=false);
+
+bool maybe_change_first_opcode(ArrayOperation& opcodes, OP::OPCODE find, OP::OPCODE last, OP::OPCODE replace);
+
+bool append_2ops_opcode(ArrayOperation& opcodes, ArrayOperation& diving_code, OP::OPCODE code, size_t offset);
 
 void maybe_change_string_literal_to_double_literal(ArrayOperation& literal_string_array);
 
