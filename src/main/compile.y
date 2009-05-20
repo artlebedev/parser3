@@ -5,7 +5,7 @@
 	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.240 2009/05/20 09:08:53 misha Exp $
+	$Id: compile.y,v 1.241 2009/05/20 13:22:59 misha Exp $
 */
 
 /**
@@ -324,11 +324,7 @@ get: get_value {
 #endif
 		{
 			size_t count=code->count();
-#ifdef OPTIMIZE_BYTECODE_USE_TWO_OPERANDS_INSTRUCTIONS
 			size_t len=6;
-#else
-			size_t len=7;
-#endif
 
 #ifdef OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT
 			if(
@@ -423,8 +419,16 @@ name_without_curly_rdive_code: name_advance2 | name_path name_advance2 { $$=$1; 
 /* put */
 
 put: '$' name_expr_wdive construct {
-	$$=$2; /* stack: context,name */
-	P(*$$, *$3); /* stack: context,name,constructor_value */
+	$$=N();
+#ifdef OPTIMIZE_BYTECODE_CONSTRUCT
+	if(maybe_make_root_or_write_construct(*$$, *$2, *$3)){
+		// $a(1) or $.b(2) or $c[d] or $.e[f]
+	} else 
+#endif
+	{
+		P(*$$, *$2); /* stack: context,name */
+		P(*$$, *$3); /* stack: context,name,constructor_value */
+	}
 };
 name_expr_wdive: 
 	name_expr_wdive_root

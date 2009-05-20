@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2009/05/20 09:09:20 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2009/05/20 13:22:59 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -65,6 +65,11 @@ char *opcode_name[]={
 	"PREPARE_TO_CONSTRUCT_OBJECT",	"PREPARE_TO_EXPRESSION", 
 	"CALL", "CALL__WRITE",
 
+#ifdef OPTIMIZE_BYTECODE_CONSTRUCT
+	"ROOT_CONSTRUCT_EXPR", "ROOT_CONSTRUCT_VALUE",
+	"WRITE_CONSTRUCT_EXPR", "WRITE_CONSTRUCT_VALUE",
+#endif
+
 	// expression ops: unary
 	"NEG", "INV", "NOT", "DEF", "IN", "FEXISTS", "DEXISTS",
 	// expression ops: binary
@@ -95,7 +100,7 @@ void debug_dump(SAPI_Info& sapi_info, int level, ArrayOperation& ops) {
 	while(i.has_next()) {
 		OP::OPCODE opcode=i.next().code;
 
-#if (defined(OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT) || defined(OPTIMIZE_BYTECODE_GET_OBJECT_VAR_ELEMENT)) && defined(OPTIMIZE_BYTECODE_USE_TWO_OPERANDS_INSTRUCTIONS)
+#if defined(OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT) || defined(OPTIMIZE_BYTECODE_GET_OBJECT_VAR_ELEMENT)
 		if(
 			1==0
 #ifdef OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT
@@ -105,6 +110,12 @@ void debug_dump(SAPI_Info& sapi_info, int level, ArrayOperation& ops) {
 #ifdef OPTIMIZE_BYTECODE_GET_OBJECT_VAR_ELEMENT
 			|| opcode==OP::OP_GET_OBJECT_VAR_ELEMENT
 			|| opcode==OP::OP_GET_OBJECT_VAR_ELEMENT__WRITE
+#endif
+#ifdef OPTIMIZE_BYTECODE_CONSTRUCT
+			|| opcode==OP::OP_ROOT_CONSTRUCT_EXPR
+			|| opcode==OP::OP_ROOT_CONSTRUCT_VALUE
+			|| opcode==OP::OP_WRITE_CONSTRUCT_EXPR
+			|| opcode==OP::OP_WRITE_CONSTRUCT_VALUE
 #endif
 		){
 			i.next(); // skip origin
@@ -129,14 +140,6 @@ void debug_dump(SAPI_Info& sapi_info, int level, ArrayOperation& ops) {
 			|| opcode==OP::OP_VALUE__GET_ELEMENT
 			|| opcode==OP::OP_VALUE__GET_ELEMENT__WRITE
 			|| opcode==OP::OP_VALUE__GET_ELEMENT_OR_OPERATOR
-#endif
-#if defined(OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT) && !defined(OPTIMIZE_BYTECODE_USE_TWO_OPERANDS_INSTRUCTIONS)
-			|| opcode==OP::OP_GET_OBJECT_ELEMENT
-			|| opcode==OP::OP_GET_OBJECT_ELEMENT__WRITE
-#endif
-#if defined(OPTIMIZE_BYTECODE_GET_OBJECT_VAR_ELEMENT) && !defined(OPTIMIZE_BYTECODE_USE_TWO_OPERANDS_INSTRUCTIONS)
-			|| opcode==OP::OP_GET_OBJECT_VAR_ELEMENT
-			|| opcode==OP::OP_GET_OBJECT_VAR_ELEMENT__WRITE
 #endif
 		) {
 			Operation::Origin origin=i.next().origin;
@@ -285,6 +288,81 @@ void Request::execute(ArrayOperation& ops) {
 
 				break;
 			}
+
+#ifdef OPTIMIZE_BYTECODE_CONSTRUCT
+		case OP::OP_ROOT_CONSTRUCT_EXPR:
+			{
+				debug_origin=i.next().origin;
+				const String& name=*i.next().value->get_string();  debug_name=&name;
+
+				i.next(); // skip origin
+				Value& expr=*i.next().value;
+
+				DEBUG_PRINT_STRING(name)
+
+				wcontext->set_in_expression(true);
+
+				Value& value=expr.as_expr_result();
+				put_element(*method_frame, name, &value);
+				break;
+			}
+
+		case OP::OP_WRITE_CONSTRUCT_EXPR:
+			{
+				if(wcontext==method_frame)
+					throw Exception(PARSER_RUNTIME,
+						0,
+						"$.name outside of $name[...]");
+
+				debug_origin=i.next().origin;
+				const String& name=*i.next().value->get_string();  debug_name=&name;
+
+				i.next(); // skip origin
+				Value& expr=*i.next().value;
+
+				DEBUG_PRINT_STRING(name)
+
+				wcontext->set_in_expression(true);
+
+				Value& value=expr.as_expr_result();
+				put_element(*wcontext, name, &value);
+				break;
+			}
+
+		case OP::OP_ROOT_CONSTRUCT_VALUE:
+			{
+				debug_origin=i.next().origin;
+				const String& name=*i.next().value->get_string();  debug_name=&name;
+
+				i.next(); // skip origin
+				Value& value=*i.next().value;
+
+				DEBUG_PRINT_STRING(name)
+
+				put_element(*method_frame, name, &value);
+				break;
+			}
+
+		case OP::OP_WRITE_CONSTRUCT_VALUE:
+			{
+				if(wcontext==method_frame)
+					throw Exception(PARSER_RUNTIME,
+						0,
+						"$.name outside of $name[...]");
+
+				debug_origin=i.next().origin;
+				const String& name=*i.next().value->get_string();  debug_name=&name;
+
+				i.next(); // skip origin
+				Value& value=*i.next().value;
+
+				DEBUG_PRINT_STRING(name)
+
+				put_element(*wcontext, name, &value);
+				break;
+			}
+#endif
+
 		case OP::OP_CONSTRUCT_EXPR:
 			{
 				// see OP_PREPARE_TO_EXPRESSION
@@ -297,6 +375,7 @@ void Request::execute(ArrayOperation& ops) {
 				put_element(ncontext, name, &value);
 				break;
 			}
+
 		case OP::OP_CURLY_CODE__CONSTRUCT:
 			{
 				ArrayOperation& local_ops=*i.next().ops;
@@ -404,10 +483,6 @@ void Request::execute(ArrayOperation& ops) {
 
 				Value& object=get_element(*rcontext, context_name);
 
-#ifndef OPTIMIZE_BYTECODE_USE_TWO_OPERANDS_INSTRUCTIONS
-				i.next(); // skip OP_VALUE
-#endif
-
 				debug_origin=i.next().origin;
 				const String& field_name=*i.next().value->get_string();  debug_name=&field_name;
 
@@ -436,10 +511,6 @@ void Request::execute(ArrayOperation& ops) {
 				DEBUG_PRINT_STRING(context_name)
 
 				Value& object=get_element(*rcontext, context_name);
-
-#ifndef OPTIMIZE_BYTECODE_USE_TWO_OPERANDS_INSTRUCTIONS
-				i.next(); // skip OP_VALUE
-#endif
 
 				debug_origin=i.next().origin;
 				const String& var_name=*i.next().value->get_string();  debug_name=&var_name;

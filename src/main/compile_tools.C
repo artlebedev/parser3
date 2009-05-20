@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMPILE_TOOLS_C="$Date: 2009/05/20 09:08:53 $";
+static const char * const IDENT_COMPILE_TOOLS_C="$Date: 2009/05/20 13:22:59 $";
 
 #include "compile_tools.h"
 #include "pa_string.h"
@@ -79,13 +79,7 @@ bool maybe_make_get_object_element(ArrayOperation& opcodes, ArrayOperation& divi
 	){
 		O(opcodes, OP::OP_GET_OBJECT_ELEMENT);
 		P(opcodes, diving_code, 1/*offset*/, 2/*limit*/); // copy origin+value
-		P(opcodes, diving_code,
-#ifdef OPTIMIZE_BYTECODE_USE_TWO_OPERANDS_INSTRUCTIONS
-			5, 3
-#else
-			4, 4
-#endif
-		); // copy specified tail
+		P(opcodes, diving_code, 5, 3); // copy specified tail
 		return true;
 	}
 	return false;
@@ -104,14 +98,43 @@ bool maybe_make_get_object_var_element(ArrayOperation& opcodes, ArrayOperation& 
 	){
 		O(opcodes, OP::OP_GET_OBJECT_VAR_ELEMENT);
 		P(opcodes, diving_code, 1/*offset*/, 2/*limit*/); // copy origin+value
-		P(opcodes, diving_code,
-#ifdef OPTIMIZE_BYTECODE_USE_TWO_OPERANDS_INSTRUCTIONS
-			6, 3
-#else
-			5, 4
-#endif
-		); // copy specified tail
+		P(opcodes, diving_code, 6, 3); // copy specified tail
 		return true;
+	}
+	return false;
+}
+
+// $a(1) or $.b(2)
+// (OP_WITH_ROOT|OP_WITH_WRITE)+OP_VALUE+origin+value
+// OP_PREPARE_TO_EXPRESSION+OP_VALUE+origin+value+CONSTRUCT_EXPR
+
+// $c[d] or $.e[f]
+// OP_WITH_ROOT+OP_VALUE+origin+value
+// OP_VALUE+origin+value+OP_CONSTRUCT_VALUE
+bool maybe_make_root_or_write_construct(ArrayOperation& opcodes, ArrayOperation& var_ops, ArrayOperation& expr_ops){
+	if(var_ops.count()==4 && (var_ops[0].code==OP::OP_WITH_ROOT || var_ops[0].code==OP::OP_WITH_WRITE)){
+		if(
+			expr_ops.count()==5
+			&& expr_ops[0].code==OP::OP_PREPARE_TO_EXPRESSION
+			&& expr_ops[1].code==OP::OP_VALUE
+			&& expr_ops[4].code==OP::OP_CONSTRUCT_EXPR
+		){
+			// $a(1) or $.b(2)
+			O(opcodes, (var_ops[0].code==OP::OP_WITH_ROOT) ? OP::OP_ROOT_CONSTRUCT_EXPR : OP::OP_WRITE_CONSTRUCT_EXPR);
+			P(opcodes, var_ops, 2/*offset*/); // skip OP_WITH+OP_VALUE and copy 1st origin+value
+			P(opcodes, expr_ops, 2/*offset*/, 2/*limit*/); // copy 2nd origin+value
+			return true;
+		} else if(
+			 expr_ops.count()==4
+			 && expr_ops[0].code==OP::OP_VALUE
+			 && expr_ops[3].code==OP::OP_CONSTRUCT_VALUE
+		){
+			// $c[d] or $.e[f]
+			O(opcodes, (var_ops[0].code==OP::OP_WITH_ROOT) ? OP::OP_ROOT_CONSTRUCT_VALUE : OP::OP_WRITE_CONSTRUCT_VALUE);
+			P(opcodes, var_ops, 2/*offset*/); // skip OP_WITH+OP_VALUE and copy 1st origin+value
+			P(opcodes, expr_ops, 1/*offset*/, 2/*limit*/); // copy 2nd origin+value
+			return true;
+		}
 	}
 	return false;
 }
