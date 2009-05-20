@@ -5,7 +5,7 @@
 	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.239 2009/05/19 13:33:14 misha Exp $
+	$Id: compile.y,v 1.240 2009/05/20 09:08:53 misha Exp $
 */
 
 /**
@@ -379,23 +379,15 @@ name_without_curly_rdive_read: name_without_curly_rdive_code {
 
 
 #ifdef OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT
-	else if(
-		count==8
-		&& append_2ops_opcode(*yyval, *diving_code, OP::OP_GET_OBJECT_ELEMENT, 5/*offset to next [OP_VALUE+]origin+value*/)
-	){
+	else if(maybe_make_get_object_element(*$$, *diving_code, count)){
 		// optimisation for $object.field + ^object.method[
-		// OP_VALUE+origin+value+OP_GET_ELEMENT+OP_VALUE+origin+value+OP_GET_ELEMENT => OP_GET_OBJECT_ELEMENT+origin+value+[OP_VALUE]+origin+value+OP_GET_ELEMENT
 	}
 #endif
 
 
 #ifdef OPTIMIZE_BYTECODE_GET_OBJECT_VAR_ELEMENT
-	else if(
-		count==10
-		&& append_2ops_opcode(*yyval, *diving_code, OP::OP_GET_OBJECT_VAR_ELEMENT, 6/*offset to next [OP_VALUE+]origin+value*/) 
-	){
+	else if(maybe_make_get_object_var_element(*$$, *diving_code, count)){
 		// optimisation for $object.$var
-		// OP_VALUE+origin+value+OP_GET_ELEMENT+OP_WITH_READ+OP_VALUE+origin+value+OP_GET_ELEMENT+OP_GET_ELEMENT => OP_GET_OBJECT_VAR_ELEMENT+origin+value+[OP_VALUE]+origin+value+OP_GET_ELEMENT
 	}
 #endif
 

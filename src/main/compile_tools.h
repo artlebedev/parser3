@@ -8,7 +8,7 @@
 #ifndef COMPILE_TOOLS
 #define COMPILE_TOOLS
 
-static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2009/05/19 13:33:14 $";
+static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2009/05/20 09:08:53 $";
 
 #include "pa_opcode.h"
 #include "pa_types.h"
@@ -247,7 +247,9 @@ bool maybe_change_first_opcode(ArrayOperation& opcodes, OP::OPCODE find, OP::OPC
 
 bool maybe_change_first_opcode(ArrayOperation& opcodes, OP::OPCODE find, OP::OPCODE last, OP::OPCODE replace);
 
-bool append_2ops_opcode(ArrayOperation& opcodes, ArrayOperation& diving_code, OP::OPCODE code, size_t offset);
+bool maybe_make_get_object_element(ArrayOperation& opcodes, ArrayOperation& diving_code, size_t divine_count);
+
+bool maybe_make_get_object_var_element(ArrayOperation& opcodes, ArrayOperation& diving_code, size_t divine_count);
 
 void maybe_change_string_literal_to_double_literal(ArrayOperation& literal_string_array);
 

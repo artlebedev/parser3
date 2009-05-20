@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMPILE_TOOLS_C="$Date: 2009/05/19 13:33:14 $";
+static const char * const IDENT_COMPILE_TOOLS_C="$Date: 2009/05/20 09:08:53 $";
 
 #include "compile_tools.h"
 #include "pa_string.h"
@@ -67,22 +67,53 @@ bool maybe_change_first_opcode(ArrayOperation& opcodes, OP::OPCODE find, OP::OPC
 }
 
 
-bool append_2ops_opcode(ArrayOperation& opcodes, ArrayOperation& diving_code, OP::OPCODE code, size_t offset) {
+// OP_VALUE+origin+value+OP_GET_ELEMENT+OP_VALUE+origin+value+OP_GET_ELEMENT => OP_GET_OBJECT_ELEMENT+origin+value+[OP_VALUE]+origin+value+OP_GET_ELEMENT
+bool maybe_make_get_object_element(ArrayOperation& opcodes, ArrayOperation& diving_code, size_t divine_count){
+	if(divine_count!=8)
+		return false;
+
 	assert(diving_code[0].code==OP::OP_VALUE);
-	if(diving_code[diving_code.count()-1].code==OP::OP_GET_ELEMENT){
-		O(opcodes, code);
+	if(
+		diving_code[4].code==OP::OP_VALUE
+		&& diving_code[divine_count-1].code==OP::OP_GET_ELEMENT
+	){
+		O(opcodes, OP::OP_GET_OBJECT_ELEMENT);
 		P(opcodes, diving_code, 1/*offset*/, 2/*limit*/); // copy origin+value
 		P(opcodes, diving_code,
 #ifdef OPTIMIZE_BYTECODE_USE_TWO_OPERANDS_INSTRUCTIONS
-			offset, 3
+			5, 3
 #else
-			offset-1, 4
+			4, 4
 #endif
 		); // copy specified tail
 		return true;
-	} else {
-		return false;
 	}
+	return false;
+}
+
+// OP_VALUE+origin+value+OP_GET_ELEMENT+OP_WITH_READ+OP_VALUE+origin+value+OP_GET_ELEMENT+OP_GET_ELEMENT => OP_GET_OBJECT_VAR_ELEMENT+origin+value+[OP_VALUE]+origin+value+OP_GET_ELEMENT
+bool maybe_make_get_object_var_element(ArrayOperation& opcodes, ArrayOperation& diving_code, size_t divine_count){
+	if(divine_count!=10)
+		return false;
+
+	assert(diving_code[0].code==OP::OP_VALUE);
+	if(
+		diving_code[4].code==OP::OP_WITH_READ
+		&& diving_code[5].code==OP::OP_VALUE
+		&& diving_code[divine_count-1].code==OP::OP_GET_ELEMENT
+	){
+		O(opcodes, OP::OP_GET_OBJECT_VAR_ELEMENT);
+		P(opcodes, diving_code, 1/*offset*/, 2/*limit*/); // copy origin+value
+		P(opcodes, diving_code,
+#ifdef OPTIMIZE_BYTECODE_USE_TWO_OPERANDS_INSTRUCTIONS
+			6, 3
+#else
+			5, 4
+#endif
+		); // copy specified tail
+		return true;
+	}
+	return false;
 }
 
 void push_LS(Parse_control& pc, lexical_state new_state) { 
