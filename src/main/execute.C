@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2009/05/19 13:33:14 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2009/05/20 09:09:20 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -164,7 +164,19 @@ void debug_dump(SAPI_Info& sapi_info, int level, ArrayOperation& ops) {
 		}
 	}
 }
+#define DEBUG_PRINT_STR(str) debug_printf(sapi_info, str);
+#define DEBUG_PRINT_STRING(value) debug_printf(sapi_info, " \"%s\" ", value.cstr());
+#define DEBUG_PRINT_OPS(local_ops) \
+					debug_printf(sapi_info, \
+					" (%d)\n", local_ops?local_ops->count():0); \
+					if(local_ops) debug_dump(sapi_info, 1, *local_ops);
+
+#else
+#define DEBUG_PRINT_STR(str)
+#define DEBUG_PRINT_STRING(value)
+#define DEBUG_PRINT_OPS(local_ops)
 #endif
+
 
 // Request
 
@@ -208,9 +220,7 @@ void Request::execute(ArrayOperation& ops) {
 				Value& value=*i.next().value;
 				const String& name=*value.get_string();
 
-#ifdef DEBUG_EXECUTE
-				debug_printf(sapi_info, " \"%s\" ", name.cstr());
-#endif
+				DEBUG_PRINT_STRING(name)
 
 				Value* class_value=classes().get(name);
 				if(!class_value)
@@ -244,17 +254,17 @@ void Request::execute(ArrayOperation& ops) {
 				stack.push(*method_frame);
 				break;
 			}
-		case OP::OP_WITH_SELF: 
+		case OP::OP_WITH_SELF:
 			{
 				stack.push(get_self());
 				break;
 			}
-		case OP::OP_WITH_READ: 
+		case OP::OP_WITH_READ:
 			{
 				stack.push(*rcontext);
 				break;
 			}
-		case OP::OP_WITH_WRITE: 
+		case OP::OP_WITH_WRITE:
 			{
 				if(wcontext==method_frame)
 					throw Exception(PARSER_RUNTIME,
@@ -290,10 +300,9 @@ void Request::execute(ArrayOperation& ops) {
 		case OP::OP_CURLY_CODE__CONSTRUCT:
 			{
 				ArrayOperation& local_ops=*i.next().ops;
-#ifdef DEBUG_EXECUTE
-				debug_printf(sapi_info, " (%d)\n", local_ops.count());
-				debug_dump(sapi_info, 1, local_ops);
-#endif
+
+				DEBUG_PRINT_OPS((&local_ops))
+
 				VJunction& value=*new VJunction(
 					get_self(), 0,
 					method_frame, 
@@ -316,10 +325,9 @@ void Request::execute(ArrayOperation& ops) {
 		case OP::OP_NESTED_CODE:
 			{
 				ArrayOperation& local_ops=*i.next().ops;
-#ifdef DEBUG_EXECUTE
-				debug_printf(sapi_info, " (%d)\n", local_ops.count());
-				debug_dump(sapi_info, 1, local_ops);
-#endif				
+
+				DEBUG_PRINT_OPS((&local_ops))
+
 				stack.push(local_ops);
 				break;
 			}
@@ -343,10 +351,12 @@ void Request::execute(ArrayOperation& ops) {
 			{
 				i.next(); // ignore origin
 				Value* value=i.next().value;
-#ifdef DEBUG_EXECUTE
-				debug_printf(sapi_info, " \"%s\"", value->get_string()->cstr());
-#endif
-				write_no_lang(*value->get_string());
+
+				const String& string_value=*value->get_string();
+
+				DEBUG_PRINT_STRING(string_value)
+
+				write_no_lang(string_value);
 				break;
 			}
 
@@ -356,9 +366,8 @@ void Request::execute(ArrayOperation& ops) {
 				debug_origin=i.next().origin;
 				const String& name=*i.next().value->get_string();  debug_name=&name;
 
-#ifdef DEBUG_EXECUTE
-				debug_printf(sapi_info, " \"%s\" ", name.cstr());
-#endif
+				DEBUG_PRINT_STRING(name)
+
 				if(Method* method=main_class.get_method(name)){ // looking operator of that name FIRST
 					if(!method->junction_template) method->junction_template=new VJunction(main_class, method);
 					stack.push(*method->junction_template);
@@ -390,9 +399,9 @@ void Request::execute(ArrayOperation& ops) {
 			{
 				debug_origin=i.next().origin;
 				const String& context_name=*i.next().value->get_string();  debug_name=&context_name;
-#ifdef DEBUG_EXECUTE
-				debug_printf(sapi_info, " \"%s\" ", context_name.cstr());
-#endif
+
+				DEBUG_PRINT_STRING(context_name)
+
 				Value& object=get_element(*rcontext, context_name);
 
 #ifndef OPTIMIZE_BYTECODE_USE_TWO_OPERANDS_INSTRUCTIONS
@@ -401,9 +410,9 @@ void Request::execute(ArrayOperation& ops) {
 
 				debug_origin=i.next().origin;
 				const String& field_name=*i.next().value->get_string();  debug_name=&field_name;
-#ifdef DEBUG_EXECUTE
-				debug_printf(sapi_info, " \"%s\" ", field_name.cstr());
-#endif
+
+				DEBUG_PRINT_STRING(field_name)
+
 				Value& value=get_element(object, field_name);
 
 				i.next(); // skip last OP_GET_ELEMENT
@@ -423,9 +432,9 @@ void Request::execute(ArrayOperation& ops) {
 			{
 				debug_origin=i.next().origin;
 				const String& context_name=*i.next().value->get_string();  debug_name=&context_name;
-#ifdef DEBUG_EXECUTE
-				debug_printf(sapi_info, " \"%s\" ", context_name.cstr());
-#endif
+
+				DEBUG_PRINT_STRING(context_name)
+
 				Value& object=get_element(*rcontext, context_name);
 
 #ifndef OPTIMIZE_BYTECODE_USE_TWO_OPERANDS_INSTRUCTIONS
@@ -434,9 +443,9 @@ void Request::execute(ArrayOperation& ops) {
 
 				debug_origin=i.next().origin;
 				const String& var_name=*i.next().value->get_string();  debug_name=&var_name;
-#ifdef DEBUG_EXECUTE
-				debug_printf(sapi_info, " \"%s\" ", var_name.cstr());
-#endif
+
+				DEBUG_PRINT_STRING(var_name)
+
 				const String* field=get_element(*rcontext, var_name).get_string();
 
 				Value& value=get_element(object, *field);
@@ -467,9 +476,7 @@ void Request::execute(ArrayOperation& ops) {
 				debug_origin=i.next().origin;
 				const String& name=*i.next().value->get_string(); debug_name=&name;
 
-#ifdef DEBUG_EXECUTE
-				debug_printf(sapi_info, " \"%s\" ", name.cstr());
-#endif
+				DEBUG_PRINT_STRING(name)
 
 				Value& value=get_element(*rcontext, name);
 				stack.push(value);
@@ -493,9 +500,7 @@ void Request::execute(ArrayOperation& ops) {
 				debug_origin=i.next().origin;
 				const String& name=*i.next().value->get_string(); debug_name=&name;
 
-#ifdef DEBUG_EXECUTE
-				debug_printf(sapi_info, " \"%s\" ", name.cstr());
-#endif
+				DEBUG_PRINT_STRING(name)
 
 				Value& value=get_element(*rcontext, name);
 				write_assign_lang(value);
@@ -550,10 +555,9 @@ void Request::execute(ArrayOperation& ops) {
 			{
 				// code
 				ArrayOperation& local_ops=*i.next().ops;
-#ifdef DEBUG_EXECUTE
-				debug_printf(sapi_info, " (%d)\n", local_ops.count());
-				debug_dump(sapi_info, 1, local_ops);
-#endif				
+
+				DEBUG_PRINT_OPS((&local_ops))
+
 				// when they evaluate expression parameter,
 				// the object expression result
 				// does not need to be written into calling frame
@@ -593,13 +597,10 @@ void Request::execute(ArrayOperation& ops) {
 		case OP::OP_CALL:
 			{
 				ArrayOperation* local_ops=i.next().ops;
-#ifdef DEBUG_EXECUTE
-				debug_printf(sapi_info, " (%d)\n", local_ops?local_ops->count():0);
-				if(local_ops)
-					debug_dump(sapi_info, 1, *local_ops);
 
-				debug_printf(sapi_info, "->\n");
-#endif
+				DEBUG_PRINT_OPS(local_ops)
+				DEBUG_PRINT_STR("->\n")
+
 				Value& value=stack.pop().value();
 
 				Junction* junction=value.get_junction();
@@ -630,9 +631,8 @@ void Request::execute(ArrayOperation& ops) {
 
 				stack.push(frame.result().as_value());
 
-#ifdef DEBUG_EXECUTE
-				debug_printf(sapi_info, "<-returned");
-#endif
+				DEBUG_PRINT_STR("<-returned")
+
 				if(get_skip())
 					return;
 				if(get_interrupted()) {
@@ -647,13 +647,10 @@ void Request::execute(ArrayOperation& ops) {
 		case OP::OP_CALL__WRITE:
 			{
 				ArrayOperation* local_ops=i.next().ops;
-#ifdef DEBUG_EXECUTE
-				debug_printf(sapi_info, " (%d)\n", local_ops?local_ops->count():0);
-				if(local_ops)
-					debug_dump(sapi_info, 1, *local_ops);
 
-				debug_printf(sapi_info, "->\n");
-#endif
+				DEBUG_PRINT_OPS(local_ops)
+				DEBUG_PRINT_STR("->\n")
+
 				Value& value=stack.pop().value();
 
 				Junction* junction=value.get_junction();
@@ -719,9 +716,8 @@ void Request::execute(ArrayOperation& ops) {
 					}
 					write_assign_lang(frame.result());
 				}
-#ifdef DEBUG_EXECUTE
-				debug_printf(sapi_info, "<-returned");
-#endif
+
+				DEBUG_PRINT_STR("<-returned")
 
 				if(get_skip())
 					return;
@@ -1262,9 +1258,8 @@ StringOrValue Request::process(Value& input_value, bool intercept_string) {
 		if(junction->code) { // is it a code-junction?
 			// process it
 			StringOrValue result;
-#ifdef DEBUG_EXECUTE
-			debug_printf(sapi_info, "ja->\n");
-#endif
+
+			DEBUG_PRINT_STR("ja->\n")
 
 			if(!junction->method_frame)
 				throw Exception(PARSER_RUNTIME,
@@ -1304,9 +1299,8 @@ StringOrValue Request::process(Value& input_value, bool intercept_string) {
 
 			RESTORE_CONTEXT
 
-#ifdef DEBUG_EXECUTE
-			debug_printf(sapi_info, "<-ja returned");
-#endif
+			DEBUG_PRINT_STR("<-ja returned")
+
 			return result;
 		}
 
@@ -1356,9 +1350,9 @@ void Request::process_write(Value& input_value) {
 
 		if(junction->code) { // is it a code-junction?
 							// process it
-#ifdef DEBUG_EXECUTE
-			debug_printf(sapi_info, "ja->\n");
-#endif
+
+			DEBUG_PRINT_STR("ja->\n")
+
 			if(!junction->method_frame)
 				throw Exception(PARSER_RUNTIME,
 					0,
@@ -1399,9 +1393,9 @@ void Request::process_write(Value& input_value) {
 				RESTORE_CONTEXT
 				write_pass_lang(local.result());
 			}
-#ifdef DEBUG_EXECUTE
-			debug_printf(sapi_info, "<-ja returned");
-#endif
+
+			DEBUG_PRINT_STR("<-ja returned")
+
 			return;
 		}
 
