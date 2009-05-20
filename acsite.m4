@@ -20,13 +20,13 @@ $3])
 
 AC_DEFUN([PA_CHECK_MATH_FUNCS_ONE_ARG],[
 AC_FOREACH([AC_Func], [$1],
-  [AH_TEMPLATE(AS_TR_CPP(HAVE_[]AC_Func),
+  [AH_TEMPLATE(AS_TR_CPP([HAVE_]AC_Func),
                [Define to 1 if you have the `]AC_Func[' (maybe built-in) math function function.])])dnl
 
 for pa_func in $1
 do
 PA_CHECK_MATH_FUNC_ONE_ARG($pa_func,
-              [AC_DEFINE_UNQUOTED([AS_TR_CPP([HAVE_$pa_func]) $2])],
+	      [AC_DEFINE_UNQUOTED(AS_TR_CPP([HAVE_$pa_func]) $2)],
               [$3])dnl
 done
 ])
@@ -43,7 +43,7 @@ AC_TRY_COMPILE([
         $pa_func(0,0);
 ],
 [AC_MSG_RESULT(yes)
-AC_DEFINE_UNQUOTED([AS_TR_CPP([HAVE_$pa_func])])
+AC_DEFINE_UNQUOTED(AS_TR_CPP([HAVE_$pa_func]))
 ],
 [AC_MSG_RESULT(no)
 ])
