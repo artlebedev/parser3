@@ -8,7 +8,7 @@
 #ifndef PA_VFILE_H
 #define PA_VFILE_H
 
-static const char * const IDENT_VFILE_H="$Date: 2009/04/16 01:08:26 $";
+static const char * const IDENT_VFILE_H="$Date: 2009/05/23 04:30:48 $";
 
 // include
 
@@ -35,6 +35,7 @@ class VFile: public VStateless_object {
 	const char* ffile_name_cstr;
 	const char* fvalue_ptr;
 	size_t fvalue_size;
+	bool ftext_tainted;
 	HashStringValue ffields;
 
 public: // Value
@@ -63,7 +64,7 @@ public: // usage
 
 	/// WARNING: when setting text files be sure to append terminating zero to avalue_ptr
 	void set(
-		bool tainted, 
+		bool atainted, 
 		const char* avalue_ptr, size_t avalue_size,
 		const char* afile_name_cstr=0,
 		Value* acontent_type=0);
