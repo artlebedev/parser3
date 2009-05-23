@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VREQUEST_C="$Date: 2009/05/14 08:10:09 $";
+static const char * const IDENT_VREQUEST_C="$Date: 2009/05/23 08:15:56 $";
 
 #include "pa_vrequest.h"
 #include "pa_request_info.h"
@@ -25,20 +25,16 @@ VRequest::VRequest(Request_info& ainfo, Request_charsets& acharsets, VForm& afor
 		fcharsets(acharsets),
 		fform(aform) {
 
-	if(ainfo.argv) {
-		for (size_t i = ainfo.args_skip; ainfo.argv[i]; i++) {
-			char *name = new(PointerFreeGC) char[3 /* max 999 argvs */ + 1/* terminating 0 */];
-
-			char *value = new(PointerFreeGC) char[strlen(ainfo.argv[i])+1];
+	if(ainfo.argv)
+		for(size_t i=ainfo.args_skip; ainfo.argv[i]; i++) {
+			char* value=new(PointerFreeGC) char[strlen(ainfo.argv[i])+1];
 			strcpy(value, ainfo.argv[i]);
 	
-			sprintf(name, "%d", i - ainfo.args_skip);
 			fargv.put_dont_replace(
-				*new String(name),
+				String(i-ainfo.args_skip, "%d"),
 				new VString(*new String(value, String::L_TAINTED))
 			);
 		}
-	}
 }
 
 Value* VRequest::get_element(const String& aname, Value&  /*aself*/, bool /*looking_up*/) {
@@ -85,8 +81,7 @@ Value* VRequest::get_element(const String& aname, Value&  /*aself*/, bool /*look
 const VJunction* VRequest::put_element(Value& aself, const String& aname, Value* avalue, bool areplace) {
 	// $charset
 	if(aname==CHARSET_NAME) {
-		fcharsets.set_source(charsets.get(avalue->as_string().
-			change_case(UTF8_charset, String::CC_UPPER)));
+		fcharsets.set_source(charsets.get(avalue->as_string().change_case(UTF8_charset, String::CC_UPPER)));
 		return PUT_ELEMENT_REPLACED_ELEMENT;
 	} 
 
