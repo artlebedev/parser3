@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2009/05/23 06:41:11 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2009/05/23 07:02:38 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -361,7 +361,7 @@ void Request::execute(ArrayOperation& ops) {
 					wcontext->set_in_expression(true);
 					put_element( (with_root)?*method_frame:*wcontext, name, &value.as_expr_result());
 				} else {
-					put_element( (with_root)?*method_frame:*wcontext, name, value.is_void()?new VString():&value);
+					put_element( (with_root)?*method_frame:*wcontext, name, &value);
 				}
 				break;
 			}
