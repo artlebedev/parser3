@@ -20,10 +20,6 @@
 # include <stdio.h>
 # include <string.h>
 
-// MOKO: to avoid stucture Concatenation creation on merge
-// may also require to add CORD_concatenation_clone in String::Body(abody)
-#define CORD_CAT_CHEAT
-
 /* An implementation of the cord primitives.  These are the only 	*/
 /* Functions that understand the representation.  We perform only	*/
 /* minimal checks on arguments to these functions.  Out of bounds	*/
@@ -75,7 +71,6 @@ typedef union {
 } CordRep;
 
 # define CONCAT_HDR 1
-	
 # define FN_HDR 4
 # define SUBSTR_HDR 6
 	/* Substring nodes are a special case of function nodes.  	*/
@@ -83,8 +78,19 @@ typedef union {
 	/* structure, and the function is either CORD_apply_access_fn 	*/
 	/* or CORD_index_access_fn.					*/
 
+#ifdef CORD_CAT_OPTIMIZATION
+
+#define CONCAT_HDR_RO 3
+
+#define IS_CONCATENATION(s)  ((((CordRep *)s)->generic.header & CONCAT_HDR) != 0)
+#define IS_RW_CONCATENATION(s)  (((CordRep *)s)->generic.header == CONCAT_HDR)
+
+#else
+
 /* The following may be applied only to function and concatenation nodes: */
 #define IS_CONCATENATION(s)  (((CordRep *)s)->generic.header == CONCAT_HDR)
+
+#endif
 
 #define IS_FUNCTION(s)  ((((CordRep *)s)->generic.header & FN_HDR) != 0)
 
@@ -207,11 +213,6 @@ CORD CORD_cat_char_star(CORD x, const char*  y, size_t leny)
             	memcpy(new_right, right, right_len);
             	memcpy(new_right + right_len, y, leny);
             	new_right[result_len] = '\0';
-#ifdef CORD_CAT_CHEAT
-				((CordRep *)x) -> concatenation.right=new_right;
-				((CordRep *)x) -> concatenation.len += leny;
-				return x;
-#endif
             	y = new_right;
             	leny = result_len;
             	x = left;
@@ -248,24 +249,13 @@ CORD CORD_cat_char_star(CORD x, const char*  y, size_t leny)
     }
 }
 
-
 CORD CORD_cat(CORD x, CORD y)
 {
     register size_t result_len;
     register int depth;
     register size_t lenx;
     
-	if (x == CORD_EMPTY){
-#ifdef CORD_CAT_CHEAT
-		if IS_CONCATENATION(y){
-			register struct Concatenation * result;
-			result = GC_NEW(struct Concatenation);
-			*result = *(struct Concatenation*)y;
-			y=(CORD)result;
-		}
-#endif
-		return(y);
-	}
+	if (x == CORD_EMPTY) return(y);
     if (y == CORD_EMPTY) return(x);
     if (CORD_IS_STRING(y)) {
         return(CORD_cat_char_star(x, y, strlen(y)));
@@ -300,6 +290,157 @@ CORD CORD_cat(CORD x, CORD y)
     	}
     }
 }
+
+#ifdef CORD_CAT_OPTIMIZATION
+void CORD_concatenation_protect(CORD x){
+	if(IS_RW_CONCATENATION(x))
+		((struct Concatenation*)x)->header = CONCAT_HDR_RO;
+}
+
+/* Optimized version to be called from parser code */
+CORD CORD_cat_char_star_optimized(CORD x, const char*  y, size_t leny)
+{
+	register size_t result_len;
+	register size_t lenx;
+	register int depth;
+
+	if (x == CORD_EMPTY) return(y);
+	//if (leny == 0) leny=strlen(y); // PAF
+	if (y == 0) ABORT("CORD_cat_char_star(,y,) y==0"); // PAF
+	if (*y == 0) ABORT("CORD_cat_char_star(,y,) y==\"\""); // PAF
+	if (leny == 0) ABORT("CORD_cat_char_star(,y,) leny==0"); // PAF
+    
+	if (CORD_IS_STRING(x)) {
+		lenx = strlen(x);
+		result_len = lenx + leny;
+		if (result_len <= SHORT_LIMIT) {
+			register char * result = GC_MALLOC_ATOMIC(result_len+1);
+
+			if (result == 0) OUT_OF_MEMORY;
+			memcpy(result, x, lenx);
+			memcpy(result + lenx, y, leny);
+			result[result_len] = '\0';
+			return((CORD) result);
+		} else {
+			depth = 1;
+		}
+	} else {
+		register CORD right;
+		register CORD left;
+		register char * new_right;
+		register size_t right_len;
+       
+		lenx = LEN(x);
+       
+		if (
+			leny <= SHORT_LIMIT/2
+			&& IS_CONCATENATION(x)
+			&& CORD_IS_STRING(right = ((CordRep *)x) -> concatenation.right)
+		){
+			/* Merge y into right part of x. */
+			if (!CORD_IS_STRING(left = ((CordRep *)x) -> concatenation.left)) {
+				right_len = lenx - LEN(left);
+			} else if (((CordRep *)x) -> concatenation.left_len != 0) {
+				right_len = lenx - ((CordRep *)x) -> concatenation.left_len;
+			} else {
+				right_len = strlen(right);
+			}
+			result_len = right_len + leny;  /* length of new_right */
+			if (result_len <= SHORT_LIMIT) {
+				new_right = GC_MALLOC_ATOMIC(result_len + 1);
+				memcpy(new_right, right, right_len);
+				memcpy(new_right + right_len, y, leny);
+				new_right[result_len] = '\0';
+
+				if (IS_RW_CONCATENATION(x)) {
+					// Optimization: instead of new Concatenation current is modified
+					((CordRep *)x) -> concatenation.right=new_right;
+					((CordRep *)x) -> concatenation.len += leny;
+					return x;
+				}
+
+				y = new_right;
+				leny = result_len;
+				x = left;
+				lenx -= right_len;
+				/* Now fall through to concatenate the two pieces: */
+			}
+			if (CORD_IS_STRING(x)) {
+				depth = 1;
+			} else {
+				depth = DEPTH(x) + 1;
+			}
+		} else {
+			depth = DEPTH(x) + 1;
+		}
+		result_len = lenx + leny;
+	}
+	{
+		/* The general case; lenx, result_len is known: */
+		register struct Concatenation * result;
+       
+		result = GC_NEW(struct Concatenation);
+		if (result == 0) OUT_OF_MEMORY;
+		result->header = CONCAT_HDR;
+		result->depth = depth;
+		if (lenx <= MAX_LEFT_LEN) result->left_len = lenx;
+		result->len = result_len;
+		result->left = x;
+		result->right = y;
+		if (depth >= MAX_DEPTH) {
+			return(CORD_balance((CORD)result));
+		} else {
+			return((CORD) result);
+		}
+	}
+}
+
+/* Optimized version to be called from parser code */
+CORD CORD_cat_optimized(CORD x, CORD y)
+{
+	register size_t result_len;
+	register int depth;
+	register size_t lenx;
+
+	if (x == CORD_EMPTY){
+		CORD_concatenation_protect(y); // to guarantee y won't be modified
+		return(y);
+	}
+	if (y == CORD_EMPTY) return(x);
+	if (CORD_IS_STRING(y)) {
+		return(CORD_cat_char_star_optimized(x, y, strlen(y))); // optimized version is called
+	} else if (CORD_IS_STRING(x)) {
+		lenx = strlen(x);
+		depth = DEPTH(y) + 1;
+	} else {
+		register int depthy = DEPTH(y);
+
+		lenx = LEN(x);
+		depth = DEPTH(x) + 1;
+		if (depthy >= depth) depth = depthy + 1;
+	}
+	result_len = lenx + LEN(y);
+	{
+		register struct Concatenation * result;
+
+		result = GC_NEW(struct Concatenation);
+		if (result == 0) OUT_OF_MEMORY;
+		result->header = CONCAT_HDR;
+		result->depth = depth;
+//		printf("depth=%d\n", depth);
+		if (lenx <= MAX_LEFT_LEN) result->left_len = lenx;
+		result->len = result_len;
+		result->left = x;
+		result->right = y;
+		// PAF@design.ru bug fix:
+		if (depth >= MAX_DEPTH) {
+			return(CORD_balance((CORD)result));
+		} else {
+			return((CORD) result);
+		}
+	}
+}
+#endif
 
 CORD CORD_from_fn(CORD_fn fn, void * client_data, size_t len)
 {

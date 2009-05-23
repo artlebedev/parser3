@@ -26,8 +26,6 @@
 # include "cord.h"
 # include "ec.h"
 
-#define CORD_CHARS_CACHE
-
 # define I_HIDE_POINTERS	/* So we get access to allocation lock.	*/
 				/* We use this for lazy file reading, 	*/
 				/* so that we remain independent 	*/

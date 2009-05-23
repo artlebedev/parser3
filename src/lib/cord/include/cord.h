@@ -74,6 +74,13 @@ typedef const char * CORD;
 /* Is a nonempty cord represented as a C string? */
 #define CORD_IS_STRING(s) (*(s) != '\0')
 
+/* Allows struct Concatenation modification on merge in CORD_cat,
+ thus all source Concatenation structs must be prepared for this */
+#define CORD_CAT_OPTIMIZATION
+
+/* Caches CORD_chars result to avoide useless allocations */
+#define CORD_CHARS_CACHE
+
 /* Concatenate two cords.  If the arguments are C strings, they may 	*/
 /* not be subsequently altered.						*/
 CORD CORD_cat(CORD x, CORD y);
@@ -89,6 +96,12 @@ CORD CORD_cat(CORD x, CORD y);
 	and changing 'leny' convention: now, if it's 0, then function does leny=strlen(y)
 */
 CORD CORD_cat_char_star(CORD x, const char * y, size_t leny);
+
+#ifdef CORD_CAT_OPTIMIZATION
+void CORD_concatenation_protect(CORD x);
+CORD CORD_cat_optimized(CORD x, CORD y);
+CORD CORD_cat_char_star_optimized(CORD x, const char * y, size_t leny);
+#endif
 
 /* Compute the length of a cord */
 size_t CORD_len(CORD x);

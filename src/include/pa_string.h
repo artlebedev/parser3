@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-static const char * const IDENT_STRING_H="$Date: 2009/05/15 06:57:43 $";
+static const char * const IDENT_STRING_H="$Date: 2009/05/23 08:12:47 $";
 
 // includes
 #include "pa_types.h"
@@ -17,6 +17,11 @@ static const char * const IDENT_STRING_H="$Date: 2009/05/15 06:57:43 $";
 extern "C" { // cord's author forgot to do that
 #define CORD_NO_IO
 #include "cord.h"
+
+#ifdef CORD_CAT_OPTIMIZATION
+#define CORD_cat(x, y) CORD_cat_optimized(x, y)
+#define CORD_cat_char_star(x, y, leny) CORD_cat_char_star_optimized(x, y, leny)
+#endif
 };
 
 // defines
@@ -206,10 +211,14 @@ public:
 		}
 
 		template<typename C>
-		void appendHelper(C current, C length_helper, const Languages src) {
-
-			if(!langs)
+		void appendHelper(C current, const Languages src, C length_helper) {
+			if(!langs){
 				langs=src.langs; // to uninitialized
+#ifdef CORD_CAT_OPTIMIZATION
+				if(opt.is_not_just_lang && !CORD_IS_STRING(langs))
+					CORD_concatenation_protect(langs);
+#endif
+			}
 			else if(!src.opt.is_not_just_lang)
 				appendHelper(current, src.opt.lang, length_helper); // simplifying when simple source
 			else
@@ -298,12 +307,22 @@ public:
 		Body(): body(CORD_EMPTY) {}
 		Body(CORD abody): body(abody) {
 #endif
+#ifdef CORD_CAT_OPTIMIZATION
+			assert(!body // no body
+				|| *body // ordinary string
+				|| body[1]==1 // CONCAT_HDR
+				|| body[1]==3 // CONCAT_HDR_READ_ONLY
+				|| body[1]==4 // FN_HDR 
+				|| body[1]==6 // SUBSTR_HDR 
+				);
+#else
 			assert(!body // no body
 				|| *body // ordinary string
 				|| body[1]==1 // CONCAT_HDR
 				|| body[1]==4 // FN_HDR 
 				|| body[1]==6 // SUBSTR_HDR 
 				);
+#endif
 		}
 
 		static Body Format(int value);

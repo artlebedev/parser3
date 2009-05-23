@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_UNTAINT_C="$Date: 2009/04/18 22:49:47 $";
+static const char * const IDENT_UNTAINT_C="$Date: 2009/05/23 08:12:56 $";
 
 
 #include "pa_string.h"
@@ -185,21 +185,37 @@ int append_fragment_nonoptimizing(char alang, size_t asize, Append_fragment_info
 	or marking ALL pieces of it with a @a lang when @a forced to,
 	and propagating OPTIMIZE language bit.
 */
-String& String::append_to(String& dest, Language lang, bool forced) const {
+String& String::append_to(String& dest, Language ilang, bool forced) const {
 	if(is_empty())
 		return dest;
 
 	// first: fragment infos
 	
-	if(lang==L_PASS_APPENDED) // without language-change?
-		dest.langs.appendHelper(dest.body, body, langs);
+	if(ilang==L_PASS_APPENDED) // without language-change?
+		dest.langs.appendHelper(dest.body, langs, body);
 	else if(forced) //forcing passed lang?
-		dest.langs.append(dest.body, lang, length());
-	else { 
-		Append_fragment_info info={lang, &dest.langs, dest.body.length()};
-	    langs.for_each(body, lang&L_OPTIMIZE_BIT?
-			append_fragment_optimizing
-			:append_fragment_nonoptimizing, &info);
+		dest.langs.appendHelper(dest.body, ilang, body);
+	else {
+		if(langs.opt.is_not_just_lang){
+			Append_fragment_info info={ilang, &dest.langs, dest.body.length()};
+			langs.for_each(body, ilang&L_OPTIMIZE_BIT?
+				append_fragment_optimizing
+				:append_fragment_nonoptimizing, &info);
+		} else {
+			Language lang=langs.opt.lang;
+			// see append_fragment_* for explanation
+			if(ilang&L_OPTIMIZE_BIT){
+				dest.langs.appendHelper(dest.body,
+					lang==String::L_TAINTED?
+						ilang
+						:lang==String::L_CLEAN?
+							(String::Language)(String::L_CLEAN|String::L_OPTIMIZE_BIT)
+							:lang,
+					body);
+			} else {
+				dest.langs.appendHelper(dest.body, lang==String::L_TAINTED ? ilang:lang, body);
+			}
+		}
 	}
 
 	// next: letters
