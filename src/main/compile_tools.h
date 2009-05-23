@@ -8,7 +8,7 @@
 #ifndef COMPILE_TOOLS
 #define COMPILE_TOOLS
 
-static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2009/05/23 05:23:03 $";
+static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2009/05/23 05:55:04 $";
 
 #include "pa_opcode.h"
 #include "pa_types.h"
@@ -349,7 +349,6 @@ inline bool maybe_make_root_or_write_construct(ArrayOperation& opcodes, ArrayOpe
 				if(
 					expr_ops[1].code==OP::OP_VALUE__GET_ELEMENT_OR_OPERATOR
 					&& expr_ops[4].code==OP::OP_CALL
-					//&& !expr_ops[5].ops
 				){
 					//	$a(^b[]) $.a(^b[])
 					//	OP_PREPARE_TO_EXPRESSION
@@ -403,7 +402,6 @@ inline bool maybe_make_root_or_write_construct(ArrayOperation& opcodes, ArrayOpe
 					pool_ops.count()==5
 					&& pool_ops[0].code==OP::OP_VALUE__GET_ELEMENT_OR_OPERATOR
 					&& pool_ops[3].code==OP::OP_CALL__WRITE
-					//&& !pool_ops[4].ops
 				){
 					//	$a[^b[]] $.a[^b[]]
 					//	OP_OBJECT_POOL
