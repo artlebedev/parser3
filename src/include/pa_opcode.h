@@ -11,15 +11,17 @@
 
 namespace OP {
 
-static const char * const IDENT_OPCODE_H="$Date: 2009/05/20 13:29:46 $";
+static const char * const IDENT_OPCODE_H="$Date: 2009/05/23 05:22:44 $";
 
 #define OPTIMIZE_BYTECODE_GET_CLASS
-#define OPTIMIZE_BYTECODE_GET_ELEMENT
-#define OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT
-#define OPTIMIZE_BYTECODE_GET_OBJECT_VAR_ELEMENT
+#define OPTIMIZE_BYTECODE_GET_ELEMENT				// $a ^a
+#define OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT		// $a.b ^a.b
+#define OPTIMIZE_BYTECODE_GET_OBJECT_VAR_ELEMENT	// $a.$b ^a.$b
 //#define OPTIMIZE_BYTECODE_STRING_POOL
-#define OPTIMIZE_BYTECODE_CUT_REM_OPERATOR
-#define OPTIMIZE_BYTECODE_CONSTRUCT
+#define OPTIMIZE_BYTECODE_CUT_REM_OPERATOR			// cut rem with all params
+#define OPTIMIZE_BYTECODE_CONSTRUCT					// $a(1), $.a(1), $a[b], $.a[b]
+													// $a($b), $.a($b), $a[$b], $.a[$b]
+													// $a(^b[]), $.a(^b[]), $a[^b[]], $.a[^b[]]
 
 ///	Compiled operation code
 enum OPCODE {
@@ -63,9 +65,26 @@ enum OPCODE {
 	OP_OBJECT_POOL,	OP_STRING_POOL,
 	OP_PREPARE_TO_CONSTRUCT_OBJECT, OP_PREPARE_TO_EXPRESSION, 
 	OP_CALL, OP_CALL__WRITE,
+
 #ifdef OPTIMIZE_BYTECODE_CONSTRUCT
-	OP_ROOT_CONSTRUCT_EXPR, OP_ROOT_CONSTRUCT_VALUE,
-	OP_WRITE_CONSTRUCT_EXPR, OP_WRITE_CONSTRUCT_VALUE,
+	OP_ROOT_CONSTRUCT_EXPR,							// $a(1)
+	OP_ROOT_ELEMENT_CONSTRUCT_EXPR,					// $a($b)
+	OP_ROOT_CALL_CONSTRUCT_EXPR,					// $a(^b[])
+
+
+	OP_ROOT_CONSTRUCT_VALUE,						// $a[b]
+	OP_ROOT_ELEMENT_CONSTRUCT_VALUE,				// $a[$b]
+	OP_ROOT_CALL_CONSTRUCT_VALUE,					// $a[^b[]]
+
+
+	OP_WRITE_CONSTRUCT_EXPR,						// $.a(1)
+	OP_WRITE_ELEMENT_CONSTRUCT_EXPR,				// $.a($b)
+	OP_WRITE_CALL_CONSTRUCT_EXPR,					// $.a(^b[])
+
+
+	OP_WRITE_CONSTRUCT_VALUE,						// $.a[b]
+	OP_WRITE_ELEMENT_CONSTRUCT_VALUE,				// $.a[$b]
+	OP_WRITE_CALL_CONSTRUCT_VALUE,					// $.a[^b[]]
 #endif
 	//@}
 

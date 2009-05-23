@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2009/05/20 13:22:59 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2009/05/23 05:23:03 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -66,8 +66,24 @@ char *opcode_name[]={
 	"CALL", "CALL__WRITE",
 
 #ifdef OPTIMIZE_BYTECODE_CONSTRUCT
-	"ROOT_CONSTRUCT_EXPR", "ROOT_CONSTRUCT_VALUE",
-	"WRITE_CONSTRUCT_EXPR", "WRITE_CONSTRUCT_VALUE",
+	"ROOT_CONSTRUCT_EXPR",
+	"ROOT_ELEMENT_CONSTRUCT_EXPR",
+	"ROOT_CALL_CONSTRUCT_EXPR",
+
+
+	"ROOT_CONSTRUCT_VALUE",
+	"ROOT_ELEMENT_CONSTRUCT_VALUE",
+	"ROOT_CALL_CONSTRUCT_VALUE",
+
+
+	"WRITE_CONSTRUCT_EXPR",
+	"WRITE_ELEMENT_CONSTRUCT_EXPR",
+	"WRITE_CALL_CONSTRUCT_EXPR",
+
+
+	"WRITE_CONSTRUCT_VALUE",
+	"WRITE_ELEMENT_CONSTRUCT_VALUE",
+	"WRITE_CALL_CONSTRUCT_VALUE",
 #endif
 
 	// expression ops: unary
@@ -113,9 +129,20 @@ void debug_dump(SAPI_Info& sapi_info, int level, ArrayOperation& ops) {
 #endif
 #ifdef OPTIMIZE_BYTECODE_CONSTRUCT
 			|| opcode==OP::OP_ROOT_CONSTRUCT_EXPR
+			|| opcode==OP::OP_ROOT_ELEMENT_CONSTRUCT_EXPR
+			|| opcode==OP::OP_ROOT_CALL_CONSTRUCT_EXPR
+
 			|| opcode==OP::OP_ROOT_CONSTRUCT_VALUE
+			|| opcode==OP::OP_ROOT_ELEMENT_CONSTRUCT_VALUE
+			|| opcode==OP::OP_ROOT_CALL_CONSTRUCT_VALUE
+
 			|| opcode==OP::OP_WRITE_CONSTRUCT_EXPR
+			|| opcode==OP::OP_WRITE_ELEMENT_CONSTRUCT_EXPR
+			|| opcode==OP::OP_WRITE_CALL_CONSTRUCT_EXPR
+
 			|| opcode==OP::OP_WRITE_CONSTRUCT_VALUE
+			|| opcode==OP::OP_WRITE_ELEMENT_CONSTRUCT_VALUE
+			|| opcode==OP::OP_WRITE_CALL_CONSTRUCT_VALUE
 #endif
 		){
 			i.next(); // skip origin
@@ -195,6 +222,8 @@ void Request::execute(ArrayOperation& ops) {
 #endif
 	for(Array_iterator<Operation> i(ops); i.has_next(); ) {
 		OP::OPCODE opcode=i.next().code;
+
+		bool with_root=true;
 
 #ifdef DEBUG_EXECUTE
 		debug_printf(sapi_info, "%d:%s", stack.top_index()+1, opcode_name[opcode]);
@@ -290,78 +319,170 @@ void Request::execute(ArrayOperation& ops) {
 			}
 
 #ifdef OPTIMIZE_BYTECODE_CONSTRUCT
-		case OP::OP_ROOT_CONSTRUCT_EXPR:
-			{
-				debug_origin=i.next().origin;
-				const String& name=*i.next().value->get_string();  debug_name=&name;
-
-				i.next(); // skip origin
-				Value& expr=*i.next().value;
-
-				DEBUG_PRINT_STRING(name)
-
-				wcontext->set_in_expression(true);
-
-				Value& value=expr.as_expr_result();
-				put_element(*method_frame, name, &value);
-				break;
-			}
-
 		case OP::OP_WRITE_CONSTRUCT_EXPR:
-			{
-				if(wcontext==method_frame)
-					throw Exception(PARSER_RUNTIME,
-						0,
-						"$.name outside of $name[...]");
-
-				debug_origin=i.next().origin;
-				const String& name=*i.next().value->get_string();  debug_name=&name;
-
-				i.next(); // skip origin
-				Value& expr=*i.next().value;
-
-				DEBUG_PRINT_STRING(name)
-
-				wcontext->set_in_expression(true);
-
-				Value& value=expr.as_expr_result();
-				put_element(*wcontext, name, &value);
-				break;
-			}
-
-		case OP::OP_ROOT_CONSTRUCT_VALUE:
-			{
-				debug_origin=i.next().origin;
-				const String& name=*i.next().value->get_string();  debug_name=&name;
-
-				i.next(); // skip origin
-				Value& value=*i.next().value;
-
-				DEBUG_PRINT_STRING(name)
-
-				put_element(*method_frame, name, &value);
-				break;
-			}
-
 		case OP::OP_WRITE_CONSTRUCT_VALUE:
 			{
 				if(wcontext==method_frame)
 					throw Exception(PARSER_RUNTIME,
 						0,
 						"$.name outside of $name[...]");
+				with_root=false;
+				// don't stop here. continue in the next block
+			}
 
+		case OP::OP_ROOT_CONSTRUCT_EXPR:
+		case OP::OP_ROOT_CONSTRUCT_VALUE:
+			{
 				debug_origin=i.next().origin;
 				const String& name=*i.next().value->get_string();  debug_name=&name;
 
-				i.next(); // skip origin
+				DEBUG_PRINT_STRING(name)
+
+				debug_origin=i.next().origin;
 				Value& value=*i.next().value;
+
+				if(
+					   opcode == OP::OP_WRITE_CONSTRUCT_EXPR
+					|| opcode == OP::OP_ROOT_CONSTRUCT_EXPR
+				){
+					wcontext->set_in_expression(true);
+					put_element( (with_root)?*method_frame:*wcontext, name, &value.as_expr_result());
+				} else {
+					put_element( (with_root)?*method_frame:*wcontext, name, &value);
+				}
+				break;
+			}
+
+		case OP::OP_WRITE_ELEMENT_CONSTRUCT_EXPR:
+		case OP::OP_WRITE_ELEMENT_CONSTRUCT_VALUE:
+			{
+				if(wcontext==method_frame)
+					throw Exception(PARSER_RUNTIME,
+						0,
+						"$.name outside of $name[...]");
+				with_root=false;
+				// don't stop here. continue in the next block
+			}
+
+		case OP::OP_ROOT_ELEMENT_CONSTRUCT_EXPR:
+		case OP::OP_ROOT_ELEMENT_CONSTRUCT_VALUE:
+			{
+				debug_origin=i.next().origin;
+				const String& name=*i.next().value->get_string();  debug_name=&name;
 
 				DEBUG_PRINT_STRING(name)
 
-				put_element(*wcontext, name, &value);
+				debug_origin=i.next().origin;
+				const String& source_var_name=*i.next().value->get_string();  debug_name=&source_var_name;
+
+				DEBUG_PRINT_STRING(source_var_name)
+
+				Value& value=get_element(*rcontext, source_var_name);
+
+				if(
+					   opcode == OP::OP_WRITE_ELEMENT_CONSTRUCT_EXPR
+					|| opcode == OP::OP_ROOT_ELEMENT_CONSTRUCT_EXPR
+				){
+					wcontext->set_in_expression(true);
+					put_element( (with_root)?*method_frame:*wcontext, name, &value.as_expr_result());
+				} else {
+					put_element( (with_root)?*method_frame:*wcontext, name, &value);
+				}
 				break;
 			}
-#endif
+
+		case OP::OP_WRITE_CALL_CONSTRUCT_EXPR:
+		case OP::OP_WRITE_CALL_CONSTRUCT_VALUE:
+			{
+				if(wcontext==method_frame)
+					throw Exception(PARSER_RUNTIME,
+						0,
+						"$.name outside of $name[...]");
+				with_root=false;
+				// don't stop here. continue in the next block
+			}
+
+		case OP::OP_ROOT_CALL_CONSTRUCT_EXPR:
+		case OP::OP_ROOT_CALL_CONSTRUCT_VALUE:
+			{
+				debug_origin=i.next().origin;
+				const String& name=*i.next().value->get_string();  debug_name=&name;
+
+				DEBUG_PRINT_STRING(name)
+
+				debug_origin=i.next().origin;
+				const String& method_name=*i.next().value->get_string();  debug_name=&method_name;
+
+				DEBUG_PRINT_STRING(method_name)
+
+				Value* vjunction;
+				if(Method* method=main_class.get_method(method_name)){ // looking operator of that name FIRST
+					if(!method->junction_template)
+						method->junction_template=new VJunction(main_class, method);
+					vjunction=method->junction_template;
+				} else {
+					vjunction=&get_element(*rcontext, method_name);
+				}
+
+				// CALL
+				i.next(); // ignore OP_CALL|OP_CALL__WRITE, they are redundant...
+				ArrayOperation* local_ops=i.next().ops;
+
+				DEBUG_PRINT_OPS(local_ops)
+				DEBUG_PRINT_STR("->\n")
+
+				Junction* junction=vjunction->get_junction();
+				if(!junction) {
+					if(vjunction->is("void"))
+						throw Exception(PARSER_RUNTIME,
+							0,
+							"undefined method");
+					else
+						throw Exception(PARSER_RUNTIME,
+							0,
+							"is '%s', not a method or junction, can not call it",
+								vjunction->type());
+				}
+
+				VMethodFrame frame(*junction, method_frame);
+
+				if(local_ops){ // store param code goes here
+					size_t first = stack.top_index();
+					execute(*local_ops);
+					frame.store_params((Value**)stack.ptr(first), stack.top_index()-first);
+					op_call(frame);
+					stack.set_top_index(first);
+				} else {
+					frame.empty_params();
+					op_call(frame);
+				}
+
+				Value& value=frame.result().as_value();
+
+				DEBUG_PRINT_STR("<-returned")
+
+				if(
+					   opcode == OP::OP_WRITE_CALL_CONSTRUCT_EXPR
+					|| opcode == OP::OP_ROOT_CALL_CONSTRUCT_EXPR
+				){
+					wcontext->set_in_expression(true);
+					put_element( (with_root)?*method_frame:*wcontext, name, &value.as_expr_result());
+				} else {
+					put_element( (with_root)?*method_frame:*wcontext, name, &value);
+				}
+
+				if(get_skip())
+					return;
+				if(get_interrupted()) {
+					set_interrupted(false);
+					throw Exception("parser.interrupted",
+						0,
+						"execution stopped");
+				}
+
+				break;
+			}
+#endif // OPTIMIZE_BYTECODE_CONSTRUCT
 
 		case OP::OP_CONSTRUCT_EXPR:
 			{
