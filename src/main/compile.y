@@ -5,7 +5,7 @@
 	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.241 2009/05/20 13:22:59 misha Exp $
+	$Id: compile.y,v 1.242 2009/05/23 05:23:19 misha Exp $
 */
 
 /**
@@ -422,7 +422,7 @@ put: '$' name_expr_wdive construct {
 	$$=N();
 #ifdef OPTIMIZE_BYTECODE_CONSTRUCT
 	if(maybe_make_root_or_write_construct(*$$, *$2, *$3)){
-		// $a(1) or $.b(2) or $c[d] or $.e[f]
+		// $a(1), $.a(1), $a[b], $.a[b], $a($b), $.a($b), $a[$b], $.a[$b]
 	} else 
 #endif
 	{
@@ -523,7 +523,11 @@ call_value: '^' {
 			} 
 			store_params EON { /* ^field.$method{vasya} */
 #ifdef OPTIMIZE_BYTECODE_CUT_REM_OPERATOR
+#ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
 	const String* operator_name=LA2S(*$3, 0, OP::OP_VALUE__GET_ELEMENT_OR_OPERATOR);
+#else
+	const String* operator_name=LA2S(*$3, 1);
+#endif
 	if(operator_name && *operator_name == REM_OPERATOR_NAME){
 		$$=N();
 	} else 
