@@ -8,7 +8,7 @@
 #ifndef PA_ARRAY_H
 #define PA_ARRAY_H
 
-static const char * const IDENT_ARRAY_Y="$Date: 2009/04/30 04:40:30 $";
+static const char * const IDENT_ARRAY_Y="$Date: 2009/05/23 04:29:18 $";
 
 // includes
 
@@ -95,7 +95,7 @@ public:
 	/// append to array
 	inline Array& operator+=(T src) {
 		if(is_full())
-			expand(fallocated>0?2:3); // 3 is PAF default, confirmed by tests
+			expand(fallocated>0? 2+fallocated/32 : 3); // 3 is PAF default, confirmed by tests
 
 		felements[fused++]=src;
 
