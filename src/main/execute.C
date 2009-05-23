@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2009/05/23 05:55:04 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2009/05/23 06:41:11 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -68,22 +68,32 @@ char *opcode_name[]={
 #ifdef OPTIMIZE_BYTECODE_CONSTRUCT
 	"ROOT_CONSTRUCT_EXPR",
 	"ROOT_ELEMENT_CONSTRUCT_EXPR",
-	"ROOT_CALL_CONSTRUCT_EXPR",
 
 
 	"ROOT_CONSTRUCT_VALUE",
 	"ROOT_ELEMENT_CONSTRUCT_VALUE",
-	"ROOT_CALL_CONSTRUCT_VALUE",
 
 
 	"WRITE_CONSTRUCT_EXPR",
 	"WRITE_ELEMENT_CONSTRUCT_EXPR",
-	"WRITE_CALL_CONSTRUCT_EXPR",
 
 
 	"WRITE_CONSTRUCT_VALUE",
 	"WRITE_ELEMENT_CONSTRUCT_VALUE",
+#endif
+
+#ifdef OPTIMIZE_BYTECODE_CALL_CONSTRUCT
+	"ROOT_CALL_CONSTRUCT_EXPR",
+	//"ROOT_CALL_OBJECT_ELEMENT_CONSTRUCT_EXPR",
+
+	"ROOT_CALL_CONSTRUCT_VALUE",
+	//"ROOT_CALL_OBJECT_ELEMENT_CONSTRUCT_VALUE",
+
+	"WRITE_CALL_CONSTRUCT_EXPR",
+	//"WRITE_CALL_OBJECT_ELEMENT_CONSTRUCT_EXPR",
+
 	"WRITE_CALL_CONSTRUCT_VALUE",
+	//"WRITE_CALL_OBJECT_ELEMENT_CONSTRUCT_VALUE",
 #endif
 
 	// expression ops: unary
@@ -130,18 +140,21 @@ void debug_dump(SAPI_Info& sapi_info, int level, ArrayOperation& ops) {
 #ifdef OPTIMIZE_BYTECODE_CONSTRUCT
 			|| opcode==OP::OP_ROOT_CONSTRUCT_EXPR
 			|| opcode==OP::OP_ROOT_ELEMENT_CONSTRUCT_EXPR
-			|| opcode==OP::OP_ROOT_CALL_CONSTRUCT_EXPR
 
 			|| opcode==OP::OP_ROOT_CONSTRUCT_VALUE
 			|| opcode==OP::OP_ROOT_ELEMENT_CONSTRUCT_VALUE
-			|| opcode==OP::OP_ROOT_CALL_CONSTRUCT_VALUE
 
 			|| opcode==OP::OP_WRITE_CONSTRUCT_EXPR
 			|| opcode==OP::OP_WRITE_ELEMENT_CONSTRUCT_EXPR
-			|| opcode==OP::OP_WRITE_CALL_CONSTRUCT_EXPR
 
 			|| opcode==OP::OP_WRITE_CONSTRUCT_VALUE
 			|| opcode==OP::OP_WRITE_ELEMENT_CONSTRUCT_VALUE
+#endif
+#ifdef OPTIMIZE_BYTECODE_CALL_CONSTRUCT
+			|| opcode==OP::OP_ROOT_CALL_CONSTRUCT_EXPR
+			|| opcode==OP::OP_ROOT_CALL_CONSTRUCT_VALUE
+
+			|| opcode==OP::OP_WRITE_CALL_CONSTRUCT_EXPR
 			|| opcode==OP::OP_WRITE_CALL_CONSTRUCT_VALUE
 #endif
 		){
@@ -390,7 +403,9 @@ void Request::execute(ArrayOperation& ops) {
 				}
 				break;
 			}
+#endif // OPTIMIZE_BYTECODE_CONSTRUCT
 
+#ifdef OPTIMIZE_BYTECODE_CALL_CONSTRUCT
 		case OP::OP_WRITE_CALL_CONSTRUCT_EXPR:
 		case OP::OP_WRITE_CALL_CONSTRUCT_VALUE:
 			{
@@ -425,7 +440,7 @@ void Request::execute(ArrayOperation& ops) {
 				}
 
 				// CALL
-				i.next(); // ignore OP_CALL|OP_CALL__WRITE, they are redundant...
+				Operation call_op=i.next();
 				ArrayOperation* local_ops=i.next().ops;
 
 				DEBUG_PRINT_OPS(local_ops)
@@ -456,19 +471,23 @@ void Request::execute(ArrayOperation& ops) {
 					frame.empty_params();
 					op_call(frame);
 				}
-
-				Value& value=frame.result().as_value();
-
+				
 				DEBUG_PRINT_STR("<-returned")
 
-				if(
-					   opcode == OP::OP_WRITE_CALL_CONSTRUCT_EXPR
-					|| opcode == OP::OP_ROOT_CALL_CONSTRUCT_EXPR
-				){
-					wcontext->set_in_expression(true);
-					put_element( (with_root)?*method_frame:*wcontext, name, &value.as_expr_result());
+				if(call_op.code==OP::OP_CALL__WRITE){
+					write_assign_lang(frame.result());
 				} else {
-					put_element( (with_root)?*method_frame:*wcontext, name, &value);
+					Value& value=frame.result().as_value();
+
+					if(
+						   opcode == OP::OP_WRITE_CALL_CONSTRUCT_EXPR
+						|| opcode == OP::OP_ROOT_CALL_CONSTRUCT_EXPR
+					){
+						wcontext->set_in_expression(true);
+						put_element( (with_root)?*method_frame:*wcontext, name, &value.as_expr_result());
+					} else {
+						put_element( (with_root)?*method_frame:*wcontext, name, &value);
+					}
 				}
 
 				if(get_skip())
@@ -482,7 +501,7 @@ void Request::execute(ArrayOperation& ops) {
 
 				break;
 			}
-#endif // OPTIMIZE_BYTECODE_CONSTRUCT
+#endif // OPTIMIZE_BYTECODE_CALL_CONSTRUCT
 
 		case OP::OP_CONSTRUCT_EXPR:
 			{

@@ -8,7 +8,7 @@
 #ifndef COMPILE_TOOLS
 #define COMPILE_TOOLS
 
-static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2009/05/23 05:55:04 $";
+static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2009/05/23 06:41:11 $";
 
 #include "pa_opcode.h"
 #include "pa_types.h"
@@ -300,7 +300,7 @@ inline bool maybe_make_get_object_var_element(ArrayOperation& opcodes, ArrayOper
 }
 
 inline bool maybe_make_root_or_write_construct(ArrayOperation& opcodes, ArrayOperation& var_ops, ArrayOperation& expr_ops){
-#ifdef OPTIMIZE_BYTECODE_CONSTRUCT
+#if defined(OPTIMIZE_BYTECODE_CONSTRUCT) || defined(OPTIMIZE_BYTECODE_CALL_CONSTRUCT)
 	if(
 		var_ops.count()==4
 		&& (var_ops[0].code==OP::OP_WITH_ROOT || var_ops[0].code==OP::OP_WITH_WRITE)
@@ -321,6 +321,7 @@ inline bool maybe_make_root_or_write_construct(ArrayOperation& opcodes, ArrayOpe
 			&& expr_ops[count-1].code==OP::OP_CONSTRUCT_EXPR
 		){
 			if(count==5){
+#ifdef OPTIMIZE_BYTECODE_CONSTRUCT
 				if(expr_ops[1].code==OP::OP_VALUE){
 					//	$a(1) $.a(2)
 					//	OP_PREPARE_TO_EXPRESSION
@@ -331,7 +332,6 @@ inline bool maybe_make_root_or_write_construct(ArrayOperation& opcodes, ArrayOpe
 					O(opcodes, (with_root) ? OP::OP_ROOT_CONSTRUCT_EXPR : OP::OP_WRITE_CONSTRUCT_EXPR);
 					source=&expr_ops;
 					offset=2;
-#ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
 				} else if(expr_ops[1].code==OP::OP_VALUE__GET_ELEMENT){
 					//	$a($b) or $.a($b)
 					//	OP_PREPARE_TO_EXPRESSION
@@ -342,9 +342,9 @@ inline bool maybe_make_root_or_write_construct(ArrayOperation& opcodes, ArrayOpe
 					O(opcodes, (with_root) ? OP::OP_ROOT_ELEMENT_CONSTRUCT_EXPR : OP::OP_WRITE_ELEMENT_CONSTRUCT_EXPR);
 					source=&expr_ops;
 					offset=2;
-#endif // OPTIMIZE_BYTECODE_GET_ELEMENT
+#endif // OPTIMIZE_BYTECODE_CONSTRUCT
 				}
-#ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
+#ifdef OPTIMIZE_BYTECODE_CALL_CONSTRUCT
 			} else if(count==7){
 				if(
 					expr_ops[1].code==OP::OP_VALUE__GET_ELEMENT_OR_OPERATOR
@@ -363,9 +363,10 @@ inline bool maybe_make_root_or_write_construct(ArrayOperation& opcodes, ArrayOpe
 					offset=2;
 					limit=4;
 				}
-#endif // OPTIMIZE_BYTECODE_GET_ELEMENT
+#endif // OPTIMIZE_BYTECODE_CALL_CONSTRUCT
 			}
 		} else if(expr_ops[count-1].code==OP::OP_CONSTRUCT_VALUE){
+#ifdef OPTIMIZE_BYTECODE_CONSTRUCT
 			if(
 				count==4
 				&& expr_ops[0].code==OP::OP_VALUE
@@ -378,13 +379,15 @@ inline bool maybe_make_root_or_write_construct(ArrayOperation& opcodes, ArrayOpe
 				O(opcodes, (with_root) ? OP::OP_ROOT_CONSTRUCT_VALUE : OP::OP_WRITE_CONSTRUCT_VALUE);
 				source=&expr_ops;
 				offset=1;
-			} else if(
+			}
+#endif
+			if(
 				count==3
 				&& expr_ops[0].code==OP::OP_OBJECT_POOL
 			){
-#ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
 				ArrayOperation& pool_ops=*expr_ops[1].ops;
 
+#ifdef OPTIMIZE_BYTECODE_CONSTRUCT
 				if(
 					pool_ops.count()==3
 					&& pool_ops[0].code==OP::OP_VALUE__GET_ELEMENT__WRITE
@@ -398,7 +401,10 @@ inline bool maybe_make_root_or_write_construct(ArrayOperation& opcodes, ArrayOpe
 					O(opcodes, (with_root) ? OP::OP_ROOT_ELEMENT_CONSTRUCT_VALUE : OP::OP_WRITE_ELEMENT_CONSTRUCT_VALUE);
 					source=&pool_ops;
 					offset=1;
-				} else if(
+				}
+#endif // OPTIMIZE_BYTECODE_CONSTRUCT
+#ifdef OPTIMIZE_BYTECODE_CALL_CONSTRUCT
+				if(
 					pool_ops.count()==5
 					&& pool_ops[0].code==OP::OP_VALUE__GET_ELEMENT_OR_OPERATOR
 					&& pool_ops[3].code==OP::OP_CALL__WRITE
@@ -416,7 +422,7 @@ inline bool maybe_make_root_or_write_construct(ArrayOperation& opcodes, ArrayOpe
 					offset=1;
 					limit=4;
 				}
-#endif // OPTIMIZE_BYTECODE_GET_ELEMENT
+#endif // OPTIMIZE_BYTECODE_CALL_CONSTRUCT
 			}
 		}
 
@@ -426,7 +432,7 @@ inline bool maybe_make_root_or_write_construct(ArrayOperation& opcodes, ArrayOpe
 			return true;
 		}
 	}
-#endif // OPTIMIZE_BYTECODE_CONSTRUCT
+#endif
 	return false;
 }
 
