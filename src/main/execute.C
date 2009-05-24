@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2009/05/23 07:02:38 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2009/05/24 07:34:10 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -68,18 +68,23 @@ char *opcode_name[]={
 #ifdef OPTIMIZE_BYTECODE_CONSTRUCT
 	"ROOT_CONSTRUCT_EXPR",
 	"ROOT_ELEMENT_CONSTRUCT_EXPR",
-
+	"ROOT_OBJECT_ELEMENT_CONSTRUCT_EXPR",
+	"ROOT_OBJECT_VAR_ELEMENT_CONSTRUCT_EXPR",
 
 	"ROOT_CONSTRUCT_VALUE",
 	"ROOT_ELEMENT_CONSTRUCT_VALUE",
-
+	"ROOT_OBJECT_ELEMENT_CONSTRUCT_VALUE",
+	"ROOT_OBJECT_VAR_ELEMENT_CONSTRUCT_VALUE",
 
 	"WRITE_CONSTRUCT_EXPR",
 	"WRITE_ELEMENT_CONSTRUCT_EXPR",
-
+	"WRITE_OBJECT_ELEMENT_CONSTRUCT_EXPR",
+	"WRITE_OBJECT_VAR_ELEMENT_CONSTRUCT_EXPR",
 
 	"WRITE_CONSTRUCT_VALUE",
 	"WRITE_ELEMENT_CONSTRUCT_VALUE",
+	"WRITE_OBJECT_ELEMENT_CONSTRUCT_VALUE",
+	"WRITE_OBJECT_VAR_ELEMENT_CONSTRUCT_VALUE",
 #endif
 
 #ifdef OPTIMIZE_BYTECODE_CALL_CONSTRUCT
@@ -107,6 +112,18 @@ char *opcode_name[]={
 	"STR_LT", "STR_GT", "STR_LE", "STR_GE", "STR_EQ", "STR_NE",
 	"IS"
 };
+
+const char* debug_value_to_cstr(Value& value){
+	const String* string=value.get_string();
+
+	if(string)
+		return string->cstr();
+	else
+		if(value.is_bool())
+			return value.as_bool()?"<true>":"<false>";
+		else
+			return "<value>";
+}
 
 void va_debug_printf(SAPI_Info& sapi_info, const char* fmt,va_list args) {
 	char buf[MAX_STRING];
@@ -166,7 +183,7 @@ void debug_dump(SAPI_Info& sapi_info, int level, ArrayOperation& ops) {
 				"%*s%s"
 				" \"%s\" \"%s\"", 
 				level*4, "", opcode_name[opcode],
-				value1.get_string()->cstr(), value2.get_string()->cstr());
+				debug_value_to_cstr(value1), debug_value_to_cstr(value2));
 			continue;
 		}
 #endif
@@ -181,14 +198,28 @@ void debug_dump(SAPI_Info& sapi_info, int level, ArrayOperation& ops) {
 			|| opcode==OP::OP_VALUE__GET_ELEMENT__WRITE
 			|| opcode==OP::OP_VALUE__GET_ELEMENT_OR_OPERATOR
 #endif
+#ifdef OPTIMIZE_BYTECODE_CONSTRUCT
+			|| opcode==OP::OP_ROOT_OBJECT_ELEMENT_CONSTRUCT_EXPR
+			|| opcode==OP::OP_ROOT_OBJECT_VAR_ELEMENT_CONSTRUCT_EXPR
+
+			|| opcode==OP::OP_ROOT_OBJECT_ELEMENT_CONSTRUCT_VALUE
+			|| opcode==OP::OP_ROOT_OBJECT_VAR_ELEMENT_CONSTRUCT_VALUE
+
+			|| opcode==OP::OP_WRITE_OBJECT_ELEMENT_CONSTRUCT_EXPR
+			|| opcode==OP::OP_WRITE_OBJECT_VAR_ELEMENT_CONSTRUCT_EXPR
+
+			|| opcode==OP::OP_WRITE_OBJECT_ELEMENT_CONSTRUCT_VALUE
+			|| opcode==OP::OP_WRITE_OBJECT_VAR_ELEMENT_CONSTRUCT_VALUE
+#endif
 		) {
 			Operation::Origin origin=i.next().origin;
 			Value& value=*i.next().value;
+
 			debug_printf(sapi_info, 
 				"%*s%s"
 				" \"%s\" %s", 
 				level*4, "", opcode_name[opcode],
-				value.get_string()->cstr(), value.type());
+				debug_value_to_cstr(value), value.type());
 			continue;
 		}
 		debug_printf(sapi_info, "%*s%s", level*4, "", opcode_name[opcode]);
@@ -209,6 +240,7 @@ void debug_dump(SAPI_Info& sapi_info, int level, ArrayOperation& ops) {
 }
 #define DEBUG_PRINT_STR(str) debug_printf(sapi_info, str);
 #define DEBUG_PRINT_STRING(value) debug_printf(sapi_info, " \"%s\" ", value.cstr());
+#define DEBUG_PRINT_VALUE_AND_TYPE(value) debug_printf(sapi_info, " \"%s\" %s", debug_value_to_cstr(value), value.type());
 #define DEBUG_PRINT_OPS(local_ops) \
 					debug_printf(sapi_info, \
 					" (%d)\n", local_ops?local_ops->count():0); \
@@ -217,6 +249,7 @@ void debug_dump(SAPI_Info& sapi_info, int level, ArrayOperation& ops) {
 #else
 #define DEBUG_PRINT_STR(str)
 #define DEBUG_PRINT_STRING(value)
+#define DEBUG_PRINT_VALUE_AND_TYPE(value)
 #define DEBUG_PRINT_OPS(local_ops)
 #endif
 
@@ -248,9 +281,9 @@ void Request::execute(ArrayOperation& ops) {
 			{
 				debug_origin=i.next().origin;
 				Value& value=*i.next().value;
-#ifdef DEBUG_EXECUTE
-				debug_printf(sapi_info, " \"%s\" %s", value.get_string()->cstr(), value.type());
-#endif
+
+				DEBUG_PRINT_VALUE_AND_TYPE(value)
+
 				stack.push(value);
 				break;
 			}
@@ -342,13 +375,11 @@ void Request::execute(ArrayOperation& ops) {
 				with_root=false;
 				// don't stop here. continue in the next block
 			}
-
 		case OP::OP_ROOT_CONSTRUCT_EXPR:
 		case OP::OP_ROOT_CONSTRUCT_VALUE:
 			{
 				debug_origin=i.next().origin;
 				const String& name=*i.next().value->get_string();  debug_name=&name;
-
 				DEBUG_PRINT_STRING(name)
 
 				debug_origin=i.next().origin;
@@ -358,10 +389,9 @@ void Request::execute(ArrayOperation& ops) {
 					   opcode == OP::OP_WRITE_CONSTRUCT_EXPR
 					|| opcode == OP::OP_ROOT_CONSTRUCT_EXPR
 				){
-					wcontext->set_in_expression(true);
-					put_element( (with_root)?*method_frame:*wcontext, name, &value.as_expr_result());
+					put_element( with_root?*method_frame:*wcontext, name, &value.as_expr_result());
 				} else {
-					put_element( (with_root)?*method_frame:*wcontext, name, &value);
+					put_element( with_root?*method_frame:*wcontext, name, &value);
 				}
 				break;
 			}
@@ -376,18 +406,15 @@ void Request::execute(ArrayOperation& ops) {
 				with_root=false;
 				// don't stop here. continue in the next block
 			}
-
 		case OP::OP_ROOT_ELEMENT_CONSTRUCT_EXPR:
 		case OP::OP_ROOT_ELEMENT_CONSTRUCT_VALUE:
 			{
 				debug_origin=i.next().origin;
 				const String& name=*i.next().value->get_string();  debug_name=&name;
-
 				DEBUG_PRINT_STRING(name)
 
 				debug_origin=i.next().origin;
 				const String& source_var_name=*i.next().value->get_string();  debug_name=&source_var_name;
-
 				DEBUG_PRINT_STRING(source_var_name)
 
 				Value& value=get_element(*rcontext, source_var_name);
@@ -396,10 +423,92 @@ void Request::execute(ArrayOperation& ops) {
 					   opcode == OP::OP_WRITE_ELEMENT_CONSTRUCT_EXPR
 					|| opcode == OP::OP_ROOT_ELEMENT_CONSTRUCT_EXPR
 				){
-					wcontext->set_in_expression(true);
-					put_element( (with_root)?*method_frame:*wcontext, name, &value.as_expr_result());
+					put_element( with_root?*method_frame:*wcontext, name, &value.as_expr_result());
 				} else {
-					put_element( (with_root)?*method_frame:*wcontext, name, value.is_void()?new VString():&value);
+					put_element( with_root?*method_frame:*wcontext, name, value.is_void()?new VString():&value);
+				}
+				break;
+			}
+
+		case OP::OP_WRITE_OBJECT_ELEMENT_CONSTRUCT_EXPR:
+		case OP::OP_WRITE_OBJECT_ELEMENT_CONSTRUCT_VALUE:
+			{
+				if(wcontext==method_frame)
+					throw Exception(PARSER_RUNTIME,
+						0,
+						"$.name outside of $name[...]");
+				with_root=false;
+				// don't stop here. continue in the next block
+			}
+		case OP::OP_ROOT_OBJECT_ELEMENT_CONSTRUCT_EXPR:
+		case OP::OP_ROOT_OBJECT_ELEMENT_CONSTRUCT_VALUE:
+			{
+				debug_origin=i.next().origin;
+				const String& name=*i.next().value->get_string();  debug_name=&name;
+				DEBUG_PRINT_STRING(name)
+
+				i.next(); // skip OP_GET_OBJECT_ELEMENT
+				debug_origin=i.next().origin;
+				const String& context_name=*i.next().value->get_string();  debug_name=&context_name;
+				DEBUG_PRINT_STRING(context_name)
+
+				Value& object=get_element(*rcontext, context_name);
+
+				debug_origin=i.next().origin;
+				const String& field_name=*i.next().value->get_string();  debug_name=&field_name;
+				DEBUG_PRINT_STRING(field_name)
+
+				Value& value=get_element(object, field_name);
+
+				if(
+					   opcode == OP::OP_WRITE_OBJECT_ELEMENT_CONSTRUCT_EXPR
+					|| opcode == OP::OP_ROOT_OBJECT_ELEMENT_CONSTRUCT_EXPR
+				){
+					put_element( with_root?*method_frame:*wcontext, name, &value.as_expr_result());
+				} else {
+					put_element( with_root?*method_frame:*wcontext, name, value.is_void()?new VString():&value);
+				}
+				break;
+			}
+
+		case OP::OP_WRITE_OBJECT_VAR_ELEMENT_CONSTRUCT_EXPR:
+		case OP::OP_WRITE_OBJECT_VAR_ELEMENT_CONSTRUCT_VALUE:
+			{
+				if(wcontext==method_frame)
+					throw Exception(PARSER_RUNTIME,
+						0,
+						"$.name outside of $name[...]");
+				with_root=false;
+				// don't stop here. continue in the next block
+			}
+		case OP::OP_ROOT_OBJECT_VAR_ELEMENT_CONSTRUCT_EXPR:
+		case OP::OP_ROOT_OBJECT_VAR_ELEMENT_CONSTRUCT_VALUE:
+			{
+				debug_origin=i.next().origin;
+				const String& name=*i.next().value->get_string();  debug_name=&name;
+				DEBUG_PRINT_STRING(name)
+
+				i.next(); // skip OP_GET_OBJECT_VAR_ELEMENT
+				debug_origin=i.next().origin;
+				const String& context_name=*i.next().value->get_string();  debug_name=&context_name;
+				DEBUG_PRINT_STRING(context_name)
+
+				Value& object=get_element(*rcontext, context_name);
+
+				debug_origin=i.next().origin;
+				const String& var_name=*i.next().value->get_string();  debug_name=&var_name;
+				DEBUG_PRINT_STRING(var_name)
+
+				const String* field_name=get_element(*rcontext, var_name).get_string();
+				Value& value=get_element(object, *field_name);
+
+				if(
+					   opcode == OP::OP_WRITE_OBJECT_VAR_ELEMENT_CONSTRUCT_EXPR
+					|| opcode == OP::OP_ROOT_OBJECT_VAR_ELEMENT_CONSTRUCT_EXPR
+				){
+					put_element( with_root?*method_frame:*wcontext, name, &value.as_expr_result());
+				} else {
+					put_element( with_root?*method_frame:*wcontext, name, value.is_void()?new VString():&value);
 				}
 				break;
 			}
@@ -429,6 +538,10 @@ void Request::execute(ArrayOperation& ops) {
 				const String& method_name=*i.next().value->get_string();  debug_name=&method_name;
 
 				DEBUG_PRINT_STRING(method_name)
+
+				bool is_expr=(opcode==OP::OP_WRITE_CALL_CONSTRUCT_EXPR || opcode==OP::OP_ROOT_CALL_CONSTRUCT_EXPR);
+				if(is_expr)
+					wcontext->set_in_expression(true);
 
 				Value* vjunction;
 				if(Method* method=main_class.get_method(method_name)){ // looking operator of that name FIRST
@@ -479,14 +592,11 @@ void Request::execute(ArrayOperation& ops) {
 				} else {
 					Value& value=frame.result().as_value();
 
-					if(
-						   opcode == OP::OP_WRITE_CALL_CONSTRUCT_EXPR
-						|| opcode == OP::OP_ROOT_CALL_CONSTRUCT_EXPR
-					){
-						wcontext->set_in_expression(true);
-						put_element( (with_root)?*method_frame:*wcontext, name, &value.as_expr_result());
+					if(is_expr){
+						wcontext->set_in_expression(false);
+						put_element( with_root?*method_frame:*wcontext, name, &value.as_expr_result());
 					} else {
-						put_element( (with_root)?*method_frame:*wcontext, name, &value);
+						put_element( with_root?*method_frame:*wcontext, name, &value);
 					}
 				}
 
