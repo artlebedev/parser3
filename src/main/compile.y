@@ -5,7 +5,7 @@
 	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.242 2009/05/23 05:23:19 misha Exp $
+	$Id: compile.y,v 1.243 2009/05/24 07:32:40 misha Exp $
 */
 
 /**
@@ -373,20 +373,17 @@ name_without_curly_rdive_read: name_without_curly_rdive_code {
 			count>=4?4/*OP_VALUE+origin+string+OP_GET_ELEMENTx*/:3/*OP::OP_+origin+string*/);
 	}
 
-
 #ifdef OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT
 	else if(maybe_make_get_object_element(*$$, *diving_code, count)){
 		// optimisation for $object.field + ^object.method[
 	}
 #endif
 
-
 #ifdef OPTIMIZE_BYTECODE_GET_OBJECT_VAR_ELEMENT
 	else if(maybe_make_get_object_var_element(*$$, *diving_code, count)){
 		// optimisation for $object.$var
 	}
 #endif
-
 
 #ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
 	else if(count==4){ // optimization
@@ -420,9 +417,12 @@ name_without_curly_rdive_code: name_advance2 | name_path name_advance2 { $$=$1; 
 
 put: '$' name_expr_wdive construct {
 	$$=N();
-#ifdef OPTIMIZE_BYTECODE_CONSTRUCT
+#if defined(OPTIMIZE_BYTECODE_CONSTRUCT) || defined(OPTIMIZE_BYTECODE_CALL_CONSTRUCT)
 	if(maybe_make_root_or_write_construct(*$$, *$2, *$3)){
-		// $a(1), $.a(1), $a[b], $.a[b], $a($b), $.a($b), $a[$b], $.a[$b]
+		// $a(1), $.a(1), $a[b], $.a[b]
+		// $a($b), $.a($b), $a[$b], $.a[$b]
+		// $a($b.c), $.a($b.c), $a[$b.c], $.a[$b.c]
+		// $a($b.$c), $.a($b.$c), $a[$b.$c], $.a[$b.$c]
 	} else 
 #endif
 	{
