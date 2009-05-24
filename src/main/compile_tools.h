@@ -8,7 +8,7 @@
 #ifndef COMPILE_TOOLS
 #define COMPILE_TOOLS
 
-static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2009/05/23 06:41:11 $";
+static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2009/05/24 07:34:38 $";
 
 #include "pa_opcode.h"
 #include "pa_types.h"
@@ -258,9 +258,9 @@ bool maybe_make_get_object_element(ArrayOperation& opcodes, ArrayOperation& divi
 
 bool maybe_make_get_object_var_element(ArrayOperation& opcodes, ArrayOperation& diving_code, size_t divine_count);
 
+#ifdef OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT
 // OP_VALUE+origin+value+OP_GET_ELEMENT+OP_VALUE+origin+value+OP_GET_ELEMENT => OP_GET_OBJECT_ELEMENT+origin+value+[OP_VALUE]+origin+value+OP_GET_ELEMENT
 inline bool maybe_make_get_object_element(ArrayOperation& opcodes, ArrayOperation& diving_code, size_t divine_count){
-#ifdef OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT
 	if(divine_count!=8)
 		return false;
 
@@ -274,13 +274,13 @@ inline bool maybe_make_get_object_element(ArrayOperation& opcodes, ArrayOperatio
 		P(opcodes, diving_code, 5, 3); // copy specified tail
 		return true;
 	}
-#endif
 	return false;
 }
+#endif
 
+#ifdef OPTIMIZE_BYTECODE_GET_OBJECT_VAR_ELEMENT
 // OP_VALUE+origin+value+OP_GET_ELEMENT+OP_WITH_READ+OP_VALUE+origin+value+OP_GET_ELEMENT+OP_GET_ELEMENT => OP_GET_OBJECT_VAR_ELEMENT+origin+value+[OP_VALUE]+origin+value+OP_GET_ELEMENT
 inline bool maybe_make_get_object_var_element(ArrayOperation& opcodes, ArrayOperation& diving_code, size_t divine_count){
-#ifdef OPTIMIZE_BYTECODE_GET_OBJECT_VAR_ELEMENT
 	if(divine_count!=10)
 		return false;
 
@@ -295,12 +295,12 @@ inline bool maybe_make_get_object_var_element(ArrayOperation& opcodes, ArrayOper
 		P(opcodes, diving_code, 6, 3); // copy specified tail
 		return true;
 	}
-#endif
 	return false;
 }
+#endif
 
-inline bool maybe_make_root_or_write_construct(ArrayOperation& opcodes, ArrayOperation& var_ops, ArrayOperation& expr_ops){
 #if defined(OPTIMIZE_BYTECODE_CONSTRUCT) || defined(OPTIMIZE_BYTECODE_CALL_CONSTRUCT)
+inline bool maybe_make_root_or_write_construct(ArrayOperation& opcodes, ArrayOperation& var_ops, ArrayOperation& expr_ops){
 	if(
 		var_ops.count()==4
 		&& (var_ops[0].code==OP::OP_WITH_ROOT || var_ops[0].code==OP::OP_WITH_WRITE)
@@ -310,131 +310,231 @@ inline bool maybe_make_root_or_write_construct(ArrayOperation& opcodes, ArrayOpe
 		// origin
 		// value
 		size_t count=expr_ops.count();
-		size_t limit=2;
 
 		ArrayOperation* source=0;
-		size_t offset=0;
+		size_t offset=1;
+		size_t limit=2;
+		OP::OPCODE code=OP::OP_VALUE;
 		bool with_root=(var_ops[0].code==OP::OP_WITH_ROOT);
 
 		if(
 			expr_ops[0].code==OP::OP_PREPARE_TO_EXPRESSION
 			&& expr_ops[count-1].code==OP::OP_CONSTRUCT_EXPR
 		){
-			if(count==5){
+			switch(count){
 #ifdef OPTIMIZE_BYTECODE_CONSTRUCT
-				if(expr_ops[1].code==OP::OP_VALUE){
-					//	$a(1) $.a(2)
-					//	OP_PREPARE_TO_EXPRESSION
-					//	OP_VALUE
-					//	origin
-					//	value
-					//	OP_CONSTRUCT_EXPR
-					O(opcodes, (with_root) ? OP::OP_ROOT_CONSTRUCT_EXPR : OP::OP_WRITE_CONSTRUCT_EXPR);
-					source=&expr_ops;
-					offset=2;
-				} else if(expr_ops[1].code==OP::OP_VALUE__GET_ELEMENT){
-					//	$a($b) or $.a($b)
-					//	OP_PREPARE_TO_EXPRESSION
-					//	OP_VALUE__GET_ELEMENT
-					//	origin
-					//	value
-					//	OP_CONSTRUCT_EXPR
-					O(opcodes, (with_root) ? OP::OP_ROOT_ELEMENT_CONSTRUCT_EXPR : OP::OP_WRITE_ELEMENT_CONSTRUCT_EXPR);
-					source=&expr_ops;
-					offset=2;
-#endif // OPTIMIZE_BYTECODE_CONSTRUCT
-				}
-#ifdef OPTIMIZE_BYTECODE_CALL_CONSTRUCT
-			} else if(count==7){
-				if(
-					expr_ops[1].code==OP::OP_VALUE__GET_ELEMENT_OR_OPERATOR
-					&& expr_ops[4].code==OP::OP_CALL
-				){
-					//	$a(^b[]) $.a(^b[])
-					//	OP_PREPARE_TO_EXPRESSION
-					//	VALUE__GET_ELEMENT_OR_OPERATOR
-					//	origin
-					//	value
-					//	OP_CALL
-					//		<empty params>
-					//	OP_CONSTRUCT_EXPR
-					O(opcodes, (with_root) ? OP::OP_ROOT_CALL_CONSTRUCT_EXPR : OP::OP_WRITE_CALL_CONSTRUCT_EXPR);
-					source=&expr_ops;
-					offset=2;
-					limit=4;
-				}
-#endif // OPTIMIZE_BYTECODE_CALL_CONSTRUCT
-			}
-		} else if(expr_ops[count-1].code==OP::OP_CONSTRUCT_VALUE){
-#ifdef OPTIMIZE_BYTECODE_CONSTRUCT
-			if(
-				count==4
-				&& expr_ops[0].code==OP::OP_VALUE
-			){
-				//	$a[b] $.a[b]
-				//	OP_VALUE
-				//	origin
-				//	value
-				//	OP_CONSTRUCT_VALUE
-				O(opcodes, (with_root) ? OP::OP_ROOT_CONSTRUCT_VALUE : OP::OP_WRITE_CONSTRUCT_VALUE);
-				source=&expr_ops;
-				offset=1;
-			}
+				case 5: // count
+					{
+						if(expr_ops[1].code==OP::OP_VALUE){
+							//	$a(1) $.a(2)
+							//	OP_PREPARE_TO_EXPRESSION
+							//	OP_VALUE
+							//	origin
+							//	value
+							//	OP_CONSTRUCT_EXPR
+							O(opcodes, with_root ? OP::OP_ROOT_CONSTRUCT_EXPR : OP::OP_WRITE_CONSTRUCT_EXPR);
+							source=&expr_ops;
+							offset=2;
+						}
+						else if(expr_ops[1].code==OP::OP_VALUE__GET_ELEMENT){
+							//	$a($b) or $.a($b)
+							//	OP_PREPARE_TO_EXPRESSION
+							//	OP_VALUE__GET_ELEMENT
+							//	origin
+							//	value
+							//	OP_CONSTRUCT_EXPR
+							O(opcodes, with_root ? OP::OP_ROOT_ELEMENT_CONSTRUCT_EXPR : OP::OP_WRITE_ELEMENT_CONSTRUCT_EXPR);
+							source=&expr_ops;
+							offset=2;
+						}
+						break;
+					}
 #endif
-			if(
-				count==3
-				&& expr_ops[0].code==OP::OP_OBJECT_POOL
-			){
-				ArrayOperation& pool_ops=*expr_ops[1].ops;
+
+#ifdef OPTIMIZE_BYTECODE_CALL_CONSTRUCT
+				case 7: // count
+					{
+						if(
+							expr_ops[1].code==OP::OP_VALUE__GET_ELEMENT_OR_OPERATOR
+							&& expr_ops[4].code==OP::OP_CALL
+						){
+							//	$a(^b[]) $.a(^b[])
+							//	OP_PREPARE_TO_EXPRESSION
+							//	VALUE__GET_ELEMENT_OR_OPERATOR
+							//	origin
+							//	value
+							//	OP_CALL
+							//		<empty params>
+							//	OP_CONSTRUCT_EXPR
+							O(opcodes, with_root ? OP::OP_ROOT_CALL_CONSTRUCT_EXPR : OP::OP_WRITE_CALL_CONSTRUCT_EXPR);
+							source=&expr_ops;
+							offset=2;
+							limit=4;
+						}
+						break;
+					}
+#endif
 
 #ifdef OPTIMIZE_BYTECODE_CONSTRUCT
-				if(
-					pool_ops.count()==3
-					&& pool_ops[0].code==OP::OP_VALUE__GET_ELEMENT__WRITE
-				){
-					//	$a[$b] $.a[$b]
-					//	OP_OBJECT_POOL
-					//		OP_VALUE__GET_ELEMENT__WRITE
-					//		origin
-					//		value
-					//	OP_CONSTRUCT_VALUE
-					O(opcodes, (with_root) ? OP::OP_ROOT_ELEMENT_CONSTRUCT_VALUE : OP::OP_WRITE_ELEMENT_CONSTRUCT_VALUE);
-					source=&pool_ops;
-					offset=1;
-				}
-#endif // OPTIMIZE_BYTECODE_CONSTRUCT
+				case 8: // count
+					{
+						if(expr_ops[1].code==OP::OP_GET_OBJECT_ELEMENT){
+							//	$a($b.c) or $.a($b.c)
+							//	OP_PREPARE_TO_EXPRESSION
+							//	OP_GET_OBJECT_ELEMENT
+							//	origin
+							//	value
+							//	origin
+							//	value
+							//	OP_GET_ELEMENT
+							//	OP_CONSTRUCT_EXPR
+							O(opcodes, with_root ? OP::OP_ROOT_OBJECT_ELEMENT_CONSTRUCT_EXPR : OP::OP_WRITE_OBJECT_ELEMENT_CONSTRUCT_EXPR);
+							source=&expr_ops;
+							code=OP::OP_GET_OBJECT_ELEMENT;
+							offset=2;
+							limit=4;
+						}
+						else if(expr_ops[1].code==OP::OP_GET_OBJECT_VAR_ELEMENT){
+							//	$a($b.c) or $.a($b.c)
+							//	OP_PREPARE_TO_EXPRESSION
+							//	OP_GET_OBJECT_VAR_ELEMENT
+							//	origin
+							//	value
+							//	origin
+							//	value
+							//	OP_GET_ELEMENT
+							//	OP_CONSTRUCT_EXPR
+							O(opcodes, with_root ? OP::OP_ROOT_OBJECT_VAR_ELEMENT_CONSTRUCT_EXPR : OP::OP_WRITE_OBJECT_VAR_ELEMENT_CONSTRUCT_EXPR);
+							source=&expr_ops;
+							code=OP::OP_GET_OBJECT_VAR_ELEMENT;
+							offset=2;
+							limit=4;
+						}
+						break;
+					}
+#endif
+			} // switch
+
+		}
+		else if(expr_ops[count-1].code==OP::OP_CONSTRUCT_VALUE){
+			switch(count){
+				case 3: // count
+					{
+						if(expr_ops[0].code==OP::OP_OBJECT_POOL){
+							ArrayOperation& pool_ops=*expr_ops[1].ops;
+
+							switch(pool_ops.count()){
+
+#ifdef OPTIMIZE_BYTECODE_CONSTRUCT
+								case 3: // pool_count
+									{
+										if(pool_ops[0].code==OP::OP_VALUE__GET_ELEMENT__WRITE){
+											//	$a[$b] $.a[$b]
+											//	OP_OBJECT_POOL
+											//		OP_VALUE__GET_ELEMENT__WRITE
+											//		origin
+											//		value
+											//	OP_CONSTRUCT_VALUE
+											O(opcodes, with_root ? OP::OP_ROOT_ELEMENT_CONSTRUCT_VALUE : OP::OP_WRITE_ELEMENT_CONSTRUCT_VALUE);
+											source=&pool_ops;
+										}
+										break;
+									}
+#endif
+
 #ifdef OPTIMIZE_BYTECODE_CALL_CONSTRUCT
-				if(
-					pool_ops.count()==5
-					&& pool_ops[0].code==OP::OP_VALUE__GET_ELEMENT_OR_OPERATOR
-					&& pool_ops[3].code==OP::OP_CALL__WRITE
-				){
-					//	$a[^b[]] $.a[^b[]]
-					//	OP_OBJECT_POOL
-					//		OP_VALUE__GET_ELEMENT_OR_OPERATOR
-					//		origin
-					//		value
-					//		OP_CALL__WRITE
-					//			<empty params>
-					//	OP_CONSTRUCT_VALUE
-					O(opcodes, (with_root) ? OP::OP_ROOT_CALL_CONSTRUCT_VALUE : OP::OP_WRITE_CALL_CONSTRUCT_VALUE);
-					source=&pool_ops;
-					offset=1;
-					limit=4;
-				}
-#endif // OPTIMIZE_BYTECODE_CALL_CONSTRUCT
-			}
+								case 5: // pool_count
+									{
+										if(
+											pool_ops[0].code==OP::OP_VALUE__GET_ELEMENT_OR_OPERATOR
+											&& pool_ops[3].code==OP::OP_CALL__WRITE
+										){
+											//	$a[^b[]] $.a[^b[]]
+											//	OP_OBJECT_POOL
+											//		OP_VALUE__GET_ELEMENT_OR_OPERATOR
+											//		origin
+											//		value
+											//		OP_CALL__WRITE
+											//			<empty params>
+											//	OP_CONSTRUCT_VALUE
+											O(opcodes, with_root ? OP::OP_ROOT_CALL_CONSTRUCT_VALUE : OP::OP_WRITE_CALL_CONSTRUCT_VALUE);
+											source=&pool_ops;
+											limit=4;
+										}
+										break;
+									}
+#endif
+
+#ifdef OPTIMIZE_BYTECODE_CONSTRUCT
+								case 6: // pool_count
+									{
+										if(pool_ops[0].code==OP::OP_GET_OBJECT_ELEMENT__WRITE){
+											//	$a[$b.c] $.a[$b.c]
+											//	OP_OBJECT_POOL
+											//		OP_GET_OBJECT_ELEMENT__WRITE
+											//		origin
+											//		value
+											//		origin
+											//		value
+											//		OP_GET_ELEMENT
+											//	OP_CONSTRUCT_VALUE
+											O(opcodes, with_root ? OP::OP_ROOT_OBJECT_ELEMENT_CONSTRUCT_VALUE : OP::OP_WRITE_OBJECT_ELEMENT_CONSTRUCT_VALUE);
+											source=&pool_ops;
+											code=OP::OP_GET_OBJECT_ELEMENT;
+											limit=4;
+										}
+										else if(pool_ops[0].code==OP::OP_GET_OBJECT_VAR_ELEMENT__WRITE){
+											//	$a[$b.$c] $.a[$b.$c]
+											//	OP_OBJECT_POOL
+											//		OP_GET_OBJECT_VAR_ELEMENT__WRITE
+											//		origin
+											//		value
+											//		origin
+											//		value
+											//		OP_GET_ELEMENT
+											//	OP_CONSTRUCT_VALUE
+											O(opcodes, with_root ? OP::OP_ROOT_OBJECT_VAR_ELEMENT_CONSTRUCT_VALUE : OP::OP_WRITE_OBJECT_VAR_ELEMENT_CONSTRUCT_VALUE);
+											source=&pool_ops;
+											code=OP::OP_GET_OBJECT_VAR_ELEMENT__WRITE;
+											limit=4;
+										}
+										break;
+									}
+#endif
+							}
+						}
+						break;
+					}
+
+#ifdef OPTIMIZE_BYTECODE_CONSTRUCT
+				case 4: // count
+					{
+						if(expr_ops[0].code==OP::OP_VALUE){
+							//	$a[b] $.a[b]
+							//	OP_VALUE
+							//	origin
+							//	value
+							//	OP_CONSTRUCT_VALUE
+							O(opcodes, with_root ? OP::OP_ROOT_CONSTRUCT_VALUE : OP::OP_WRITE_CONSTRUCT_VALUE);
+							source=&expr_ops;
+						}
+						break;
+					}
+#endif
+			} // switch
 		}
 
 		if(source){
 			P(opcodes, var_ops, 2/*offset*/, 2/*limit*/); // copy 1st origin+value
+			if(limit!=2)
+				O(opcodes, code);
 			P(opcodes, *source, offset, limit);
 			return true;
 		}
 	}
-#endif
 	return false;
 }
+#endif
 
 
 void push_LS(Parse_control& pc, lexical_state new_state);
