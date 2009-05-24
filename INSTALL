@@ -1,5 +1,5 @@
 Alexander Petrosian <paf@design.ru> (http://paf.design.ru)
-$Id: INSTALL,v 1.50 2009/05/23 04:39:45 misha Exp $
+$Id: INSTALL,v 1.51 2009/05/24 12:36:03 misha Exp $
 
 1.What is the process to compile Parser3?
 
@@ -128,8 +128,8 @@ $Id: INSTALL,v 1.50 2009/05/23 04:39:45 misha Exp $
   ./p3runConfigure --enable-shared=max --disable-shared=mod_parser3.c
 
 6.
-  Since parser3.4.0 the several optimisations were implemented.
-  If you experience problems you can try to disable them by commenting corresponding define and recompiling parser3.
+  Since Parser 3.4.0 the several optimisations were implemented.
+  If you experience problems you can try to disable them by commenting corresponding defines and recompiling parser3.
 
   src/include/pa_opcode.h
     #define OPTIMIZE_BYTECODE_GET_CLASS               -- $a:
@@ -138,9 +138,10 @@ $Id: INSTALL,v 1.50 2009/05/23 04:39:45 misha Exp $
     //#define OPTIMIZE_BYTECODE_STRING_POOL           -- simplifying string's bytecode into expression
     #define OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT      -- $a.b ^a.b
     #define OPTIMIZE_BYTECODE_GET_OBJECT_VAR_ELEMENT  -- $a.$b ^a.$b
-    #define OPTIMIZE_BYTECODE_CONSTRUCT               -- $a(1),    $.a(1),    $a[b],    $.a[b]
-                                                         $a($b),   $.a($b),   $a[$b],   $.a[$b]
-                                                         $a(^b[]), $.a(^b[]), $a[^b[]], $.a[^b[]]
+    #define OPTIMIZE_BYTECODE_CONSTRUCT               -- $a(1),       $.a(1),       $a[b],       $.a[b]
+                                                         $a($b),      $.a($b),      $a[$b],      $.a[$b]
+                                                         $a($b.c),    $.a($b.c),    $a[$b.c],    $.a[$b.c]
+                                                         $a($b.$c),   $.a($b.$c),   $a[$b.$c],   $.a[$b.$c]
 
   src/include/pa_string.h
     #define HASH_CODE_CACHING  -- calculated hash codes are cached and used for sequential hash lookups
@@ -155,11 +156,9 @@ $Id: INSTALL,v 1.50 2009/05/23 04:39:45 misha Exp $
     #define OPTIMIZE_RESULT    -- parser methods are marked when the $result variable was used.
                                   This allows write operations and context switching optimization.
 
-  src/lib/cord/cordbscs.c
+  src/lib/cord/include/cord.h
     #define CORD_CAT_OPTIMIZATION -- CORD library never modifies source concatenations. But in parser
                                      write operations it is safe to modify them and save some memory.
-
-  src/lib/cord/cordxtra.c
-    #define CORD_CHARS_CACHE   -- language cords with same language and length are cached and reused.
+    #define CORD_CHARS_CACHE      -- language cords with same language and length are cached and reused.
 
 
