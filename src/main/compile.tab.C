@@ -132,7 +132,7 @@
 	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.tab.C,v 1.135 2009/05/23 07:15:57 misha Exp $
+	$Id: compile.tab.C,v 1.136 2009/05/24 07:55:50 misha Exp $
 */
 
 /**
@@ -460,7 +460,7 @@ static const unsigned short int yyrline[] =
      247,   247,   248,   248,   249,   250,   250,   252,   252,   302,
      302,   303,   304,   304,   305,   305,   307,   307,   311,   311,
      313,   313,   314,   314,   315,   315,   315,   319,   356,   357,
-     357,   358,   360,   361,   362,   416,   417,   417,   421,   434,
+     357,   358,   360,   361,   362,   413,   414,   414,   418,   434,
      435,   436,   437,   454,   459,   462,   463,   464,   466,   469,
      466,   477,   485,   492,   493,   494,   496,   502,   503,   503,
      507,   518,   521,   518,   549,   551,   551,   553,   554,   555,
@@ -1687,20 +1687,17 @@ yyreduce:
 			count>=4?4/*OP_VALUE+origin+string+OP_GET_ELEMENTx*/:3/*OP::OP_+origin+string*/);
 	}
 
-
 #ifdef OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT
 	else if(maybe_make_get_object_element(*yyval, *diving_code, count)){
 		// optimisation for $object.field + ^object.method[
 	}
 #endif
 
-
 #ifdef OPTIMIZE_BYTECODE_GET_OBJECT_VAR_ELEMENT
 	else if(maybe_make_get_object_var_element(*yyval, *diving_code, count)){
 		// optimisation for $object.$var
 	}
 #endif
-
 
 #ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
 	else if(count==4){ // optimization
@@ -1730,22 +1727,25 @@ yyreduce:
     break;
 
   case 45:
-#line 416 "compile.y"
+#line 413 "compile.y"
     { yyval=yyvsp[-1]; P(*yyval, *yyvsp[0]) ;}
     break;
 
   case 47:
-#line 417 "compile.y"
+#line 414 "compile.y"
     { yyval=yyvsp[-1]; P(*yyval, *yyvsp[0]) ;}
     break;
 
   case 48:
-#line 421 "compile.y"
+#line 418 "compile.y"
     {
 	yyval=N();
-#ifdef OPTIMIZE_BYTECODE_CONSTRUCT
+#if defined(OPTIMIZE_BYTECODE_CONSTRUCT) || defined(OPTIMIZE_BYTECODE_CALL_CONSTRUCT)
 	if(maybe_make_root_or_write_construct(*yyval, *yyvsp[-1], *yyvsp[0])){
-		// $a(1), $.a(1), $a[b], $.a[b], $a($b), $.a($b), $a[$b], $.a[$b]
+		// $a(1), $.a(1), $a[b], $.a[b]
+		// $a($b), $.a($b), $a[$b], $.a[$b]
+		// $a($b.c), $.a($b.c), $a[$b.c], $.a[$b.c]
+		// $a($b.$c), $.a($b.$c), $a[$b.$c], $.a[$b.$c]
 	} else 
 #endif
 	{
