@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2009/05/15 23:35:06 $";
+static const char * const IDENT_FILE_C="$Date: 2009/05/25 08:11:40 $";
 
 #include "pa_config_includes.h"
 
@@ -401,7 +401,7 @@ static void _exec_cgi(Request& r, MethodParams& params,
 		if(value_cstr) \
 			env.put( \
 				String::Body(#name), \
-				String::Body(value_cstr)); \
+				String::Body(*value_cstr?value_cstr:0)); \
 	// passing SAPI::environment
 	if(const char *const *pairs=SAPI::environment(r.sapi_info)) {
 		while(const char* pair=*pairs++)
