@@ -5,7 +5,7 @@
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_CHARSET_C="$Date: 2009/05/14 11:27:23 $";
+static const char * const IDENT_CHARSET_C="$Date: 2009/05/26 21:33:05 $";
 
 #include "pa_charset.h"
 #include "pa_charsets.h"
@@ -642,7 +642,7 @@ String::Body Charset::escape(const String::Body src, const Charset& source_chars
 
 	String::C dest=Charset::escape(String::C(src_ptr, src_size), source_charset);
 
-	return String::Body(dest.str);
+	return String::Body(dest.length ? dest.str:0);
 }
 
 String& Charset::escape(const String& src, const Charset& source_charset) {
@@ -1096,11 +1096,9 @@ String::Body Charset::transcode(const String::Body src,
 	const char *src_ptr=src.cstr();
 	size_t src_size=strlen(src_ptr);
 
-	String::C dest=Charset::transcode(String::C(src_ptr, src_size),
-		source_transcoder,
-		dest_transcoder);
+	String::C dest=Charset::transcode(String::C(src_ptr, src_size), source_transcoder, dest_transcoder);
 
-	return String::Body(dest.str);
+	return String::Body(dest.length ? dest.str:0);
 }
 
 String& Charset::transcode(const String& src, 

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2009/05/15 06:57:50 $";
+static const char * const IDENT_STRING_C="$Date: 2009/05/26 21:33:05 $";
 
 #include "pa_string.h"
 #include "pa_exception.h"
@@ -675,7 +675,7 @@ bool String::deserialize(size_t prolog_size, void *buf, size_t buf_size) {
 	if(cur[body_length] != 0) // in place?
 		return false;
 	// 3: letters
-	body=String::Body(cur);
+	body=String::Body(*cur?cur:0);
 	cur+=body_length+1;
 	in_buf-=body_length+1;
 
