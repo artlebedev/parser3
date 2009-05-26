@@ -8,7 +8,7 @@
 #ifndef PA_VFORM_H
 #define PA_VFORM_H
 
-static const char * const IDENT_VFORM_H="$Date: 2009/04/10 11:38:39 $";
+static const char * const IDENT_VFORM_H="$Date: 2009/05/26 10:43:00 $";
 
 // includes
 
@@ -27,6 +27,12 @@ static const char * const IDENT_VFORM_H="$Date: 2009/04/10 11:38:39 $";
 
 class Request_info;
 class Request_charsets;
+
+enum POST_CONTENT_TYPE {
+	UNKNOWN,
+	FORM_URLENCODED,
+	MULTIPART_FORMDATA
+};
 
 /**
 	derivates from VStateless_class so that :CLASS element referred to @a this.
@@ -61,19 +67,22 @@ private:
 	Request_charsets& fcharsets;
 	Request_info& frequest_info;
 
+	bool is_post;
+	POST_CONTENT_TYPE post_content_type;
+
 	char *strpart(const char* str, size_t len);
 	char *getAttributeValue(const char* data,char *attr,size_t len);
 	void UnescapeChars(char **sp, const char* cp, size_t len);
 	void ParseGetFormInput(const char* query_string, size_t length);
-	void ParseFormInput(const char* data, size_t length);
-	void ParseMimeInput(char *content_type, const char* data, size_t length);
+	void ParseFormInput(const char* data, size_t length, Charset* client_charset=0);
+	void ParseMimeInput(char *content_type, const char* data, size_t length, Charset* client_charset=0);
 	void AppendFormEntry(
 		const char* cname_cstr, 
-		const char* raw_cvalue_ptr, const size_t raw_cvalue_size);
+		const char* raw_cvalue_ptr, const size_t raw_cvalue_size, Charset* client_charset=0);
 	void AppendFormFileEntry(
 		const char* cname_cstr, 
 		const char* raw_cvalue_ptr, const size_t raw_cvalue_size,
-		const char* file_name_cstr);
+		const char* file_name_cstr, Charset* client_charset=0);
 
 	bool should_refill_fields_tables_and_files();
 	void refill_fields_tables_and_files();
@@ -82,7 +91,7 @@ private:
 
 	Charset* filled_source;
 	Charset* filled_client;
-	Charset* filled_post; // charset which was specified in content-type in incoming POST
+	Charset* fpost_charset; // charset which was specified in content-type in incoming POST
 	HashStringValue fields;
 	HashStringValue tables;
 	HashStringValue files;
@@ -90,7 +99,7 @@ private:
 
 private:
 
-	String::C transcode(const char* client, size_t client_size);
+	String::C transcode(const char* client, size_t client_size, Charset* client_charset=0);
 
 };
 
