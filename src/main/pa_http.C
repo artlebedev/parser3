@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
  */
 
-static const char * const IDENT_HTTP_C="$Date: 2009/05/14 08:10:09 $"; 
+static const char * const IDENT_HTTP_C="$Date: 2009/05/26 10:44:33 $"; 
 
 #include "pa_http.h"
 #include "pa_common.h"
@@ -780,7 +780,7 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 			const String::Body HEADER_NAME=line.mid(0, pos).change_case(r.charsets.source(), String::CC_UPPER);
 			const String& HEADER_VALUE=line.mid(pos+1, line.length()).trim(String::TRIM_BOTH, " \t\r");
 			if(as_text && HEADER_NAME==HTTP_CONTENT_TYPE_UPPER)
-				real_remote_charset=detect_charset(r.charsets.source(), HEADER_VALUE);
+				real_remote_charset=detect_charset(HEADER_VALUE.cstr(), true/*already uppercased*/);
 
 			// tables
 			{

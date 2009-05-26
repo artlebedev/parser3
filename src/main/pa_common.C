@@ -26,7 +26,7 @@
  *
  */
 
-static const char * const IDENT_COMMON_C="$Date: 2009/05/13 07:35:41 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2009/05/26 10:44:33 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -794,13 +794,12 @@ size_t strpos(const char *str, const char *substr) {
 // content-type: xxx; charset=WE-NEED-THIS
 // content-type: xxx; charset="WE-NEED-THIS"
 // content-type: xxx; charset="WE-NEED-THIS";
-Charset* detect_charset(const char* content_type){
+Charset* detect_charset(const char* content_type, bool already_uppercased){
 	if(content_type){
-		size_t len=strlen(content_type);
-		char* CONTENT_TYPE=new(PointerFreeGC) char[len+1];
-		memcpy(CONTENT_TYPE, content_type, len);
-		for(char *p=CONTENT_TYPE; *p; p++)
-			*p=(char)toupper((unsigned char)*p);
+		char* CONTENT_TYPE=pa_strdup(content_type);
+		if(!already_uppercased)
+			for(char *p=CONTENT_TYPE; *p; p++)
+				*p=(char)toupper((unsigned char)*p);
 
 		if(const char* begin=strstr(CONTENT_TYPE, "CHARSET=")){
 			begin+=8; // skip "CHARSET="
@@ -816,35 +815,8 @@ Charset* detect_charset(const char* content_type){
 			if(end)
 				*end=0; // terminator
 
-			return &charsets.get(begin);
+			return *begin?&charsets.get(begin):0;
 		}
-	}
-	return 0;
-}
-
-Charset* detect_charset(Charset& source_charset, const String& content_type){
-	const String& CONTENT_TYPE=content_type.change_case(source_charset, String::CC_UPPER);
-	size_t begin=CONTENT_TYPE.pos("CHARSET=");
-	if(begin!=STRING_NOT_FOUND) {
-		begin+=8; // skip "CHARSET="
-		size_t end=STRING_NOT_FOUND;
-
-		if(CONTENT_TYPE.pos('"', begin)==begin){
-			begin++;
-			end=CONTENT_TYPE.pos('"', begin);
-		} else if(CONTENT_TYPE.pos('\'', begin)==begin){
-			begin++;
-			end=CONTENT_TYPE.pos('\'', begin);
-		}
-
-		if(end==STRING_NOT_FOUND)
-			end=CONTENT_TYPE.pos(';', begin);
-
-		if(end==STRING_NOT_FOUND)
-			end=CONTENT_TYPE.length();
-
-		const String::Body NAME=CONTENT_TYPE.mid(begin, end);
-		return &charsets.get(NAME);
 	}
 	return 0;
 }
