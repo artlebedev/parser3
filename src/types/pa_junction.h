@@ -8,7 +8,7 @@
 #ifndef PA_JUNCTION_H
 #define PA_JUNCTION_H
 
-static const char * const IDENT_JUNCTION_H="$Date: 2009/04/21 09:26:08 $";
+static const char * const IDENT_JUNCTION_H="$Date: 2009/05/27 00:58:46 $";
 
 
 #include "pa_string.h"
@@ -97,9 +97,6 @@ public:
 	//@}
 	//@{
 	bool is_getter;
-#ifdef USE_DESTRUCTORS
-	bool is_temporal;
-#endif
 	//@{
 };
 

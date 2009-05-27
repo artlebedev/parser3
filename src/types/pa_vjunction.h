@@ -8,7 +8,7 @@
 #ifndef PA_VJUNCTION_H
 #define PA_VJUNCTION_H
 
-static const char * const IDENT_VJUNCTION_H="$Date: 2009/04/21 09:26:08 $";
+static const char * const IDENT_VJUNCTION_H="$Date: 2009/05/27 00:58:46 $";
 
 // include
 
@@ -58,12 +58,6 @@ public: // usage
 	inline VJunction *get(Value& aself){
 		return &(fjunction.self)==&aself?this:new VJunction(aself, fjunction.method);
 	}
-
-#ifdef USE_DESTRUCTORS
-	inline void set_temporal(bool avalue){
-		fjunction.is_temporal=avalue;
-	}
-#endif
 
 	void reattach(WContext *new_wcontext);
 

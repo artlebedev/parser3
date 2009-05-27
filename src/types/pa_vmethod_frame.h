@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2009/05/14 11:27:23 $";
+static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2009/05/27 00:58:46 $";
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
@@ -33,6 +33,15 @@ class Request;
 class MethodParams {
 public:
 	MethodParams() : felements(0), fused(0){}
+
+#ifdef USE_DESTRUCTORS
+	~MethodParams(){
+		Value **flast=felements+count();
+		for(Value **current=felements;current<flast;current++)
+			if ((*current)->get_junction()!=0)
+				delete *current;
+	}
+#endif
 
 	void store_params(Value **params, size_t count){ 
 		felements=params;

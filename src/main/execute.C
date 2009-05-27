@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2009/05/24 07:34:10 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2009/05/27 00:59:08 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -892,12 +892,10 @@ void Request::execute(ArrayOperation& ops) {
 					rcontext, 
 					opcode==OP::OP_EXPR_CODE__STORE_PARAM?0:wcontext, 
 					&local_ops);
-#ifdef USE_DESTRUCTORS
-				value.set_temporal(true);
-#else
+#ifndef USE_DESTRUCTORS
 				if (opcode!=OP::OP_EXPR_CODE__STORE_PARAM)
+					wcontext->attach_junction(&value);
 #endif
-				wcontext->attach_junction(&value);
 				// store param
 				stack.push(value);
 				break;
