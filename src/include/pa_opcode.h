@@ -11,7 +11,7 @@
 
 namespace OP {
 
-static const char * const IDENT_OPCODE_H="$Date: 2009/05/24 07:32:09 $";
+static const char * const IDENT_OPCODE_H="$Date: 2009/06/02 10:08:47 $";
 
 #define OPTIMIZE_BYTECODE_GET_CLASS
 #define OPTIMIZE_BYTECODE_GET_ELEMENT				// $a ^a
@@ -21,11 +21,7 @@ static const char * const IDENT_OPCODE_H="$Date: 2009/05/24 07:32:09 $";
 #define OPTIMIZE_BYTECODE_CUT_REM_OPERATOR			// cut rem with all params
 
 #ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
-#define OPTIMIZE_BYTECODE_CONSTRUCT					// $a(1), $.a(1), $a[b], $.a[b]
-													// $a($b), $.a($b), $a[$b], $.a[$b]
-													// $a($b.c), $.a($b.c), $a[$b.c], $.a[$b.c] 
-													// $a($b.$c), $.a($b.$c), $a[$b.$c], $.a[$b.$c]
-//#define OPTIMIZE_BYTECODE_CALL_CONSTRUCT            // $a(^b[]), $.a(^b[]), $a[^b[]], $.a[^b[]]
+#define OPTIMIZE_BYTECODE_CONSTRUCT				// $a(expr), $.a(expr), $a[value], $.a[value]
 #endif
 
 ///	Compiled operation code
@@ -72,42 +68,10 @@ enum OPCODE {
 	OP_CALL, OP_CALL__WRITE,
 
 #ifdef OPTIMIZE_BYTECODE_CONSTRUCT
-	OP_ROOT_CONSTRUCT_EXPR,							// $a(1)
-	OP_ROOT_ELEMENT_CONSTRUCT_EXPR,					// $a($b)
-	OP_ROOT_OBJECT_ELEMENT_CONSTRUCT_EXPR,			// $a($b.c)
-	OP_ROOT_OBJECT_VAR_ELEMENT_CONSTRUCT_EXPR,	// $a($b.$c)
-
-
-	OP_ROOT_CONSTRUCT_VALUE,						// $a[b]
-	OP_ROOT_ELEMENT_CONSTRUCT_VALUE,				// $a[$b]
-	OP_ROOT_OBJECT_ELEMENT_CONSTRUCT_VALUE,			// $a[$b.c]
-	OP_ROOT_OBJECT_VAR_ELEMENT_CONSTRUCT_VALUE,	// $a[$b.$c]
-
-
-	OP_WRITE_CONSTRUCT_EXPR,						// $.a(1)
-	OP_WRITE_ELEMENT_CONSTRUCT_EXPR,				// $.a($b)
-	OP_WRITE_OBJECT_ELEMENT_CONSTRUCT_EXPR,			// $.a($b.c)
-	OP_WRITE_OBJECT_VAR_ELEMENT_CONSTRUCT_EXPR,	// $.a($b.$c)
-
-
-	OP_WRITE_CONSTRUCT_VALUE,						// $.a[b]
-	OP_WRITE_ELEMENT_CONSTRUCT_VALUE,				// $.a[$b]
-	OP_WRITE_OBJECT_ELEMENT_CONSTRUCT_VALUE,		// $.a[$b.c]
-	OP_WRITE_OBJECT_VAR_ELEMENT_CONSTRUCT_VALUE,	// $.a[$b.$c]
-#endif
-
-#ifdef OPTIMIZE_BYTECODE_CALL_CONSTRUCT
-	OP_ROOT_CALL_CONSTRUCT_EXPR,					// $a(^b[])
-	//OP_ROOT_CALL_OBJECT_ELEMENT_CONSTRUCT_EXPR,		// $a(^b.c[])
-
-	OP_ROOT_CALL_CONSTRUCT_VALUE,					// $a[^b[]]
-	//OP_ROOT_CALL_OBJECT_ELEMENT_CONSTRUCT_VALUE,	// $a[^b.c[]]
-
-	OP_WRITE_CALL_CONSTRUCT_EXPR,					// $.a(^b[])
-	//OP_WRITE_CALL_OBJECT_ELEMENT_CONSTRUCT_EXPR,	// $.a(^b.c[])
-
-	OP_WRITE_CALL_CONSTRUCT_VALUE,					// $.a[^b[]]
-	//OP_WRITE_CALL_OBJECT_ELEMENT_CONSTRUCT_VALUE,	// $.a[^b.c[]]
+	OP_WITH_ROOT__VALUE__CONSTRUCT_EXPR,
+	OP_WITH_ROOT__VALUE__CONSTRUCT_VALUE,
+	OP_WITH_WRITE__VALUE__CONSTRUCT_EXPR,
+	OP_WITH_WRITE__VALUE__CONSTRUCT_VALUE,
 #endif
 	//@}
 

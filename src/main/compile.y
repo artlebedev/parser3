@@ -5,7 +5,7 @@
 	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.243 2009/05/24 07:32:40 misha Exp $
+	$Id: compile.y,v 1.244 2009/06/02 10:08:40 misha Exp $
 */
 
 /**
@@ -322,35 +322,27 @@ get: get_value {
 #ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
 	if(!maybe_change_first_opcode(*code, OP::OP_VALUE__GET_ELEMENT, /*=>*/OP::OP_VALUE__GET_ELEMENT__WRITE))
 #endif
-		{
-			size_t count=code->count();
-			size_t len=6;
 
 #ifdef OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT
-			if(
-				count==len
-				&& maybe_change_first_opcode(*code, OP::OP_GET_OBJECT_ELEMENT, OP::OP_GET_ELEMENT, /*=>*/OP::OP_GET_OBJECT_ELEMENT__WRITE)
-			){
-				//P(*$$, *code, 0/*offset*/, count-1/*limit*/); // someday skip last OP_GET_ELEMENT
-				//break;
-			} else
+		if(
+			code->count()!=5
+			|| !maybe_change_first_opcode(*code, OP::OP_GET_OBJECT_ELEMENT, /*=>*/OP::OP_GET_OBJECT_ELEMENT__WRITE)
+		)
 #endif
 
 #ifdef OPTIMIZE_BYTECODE_GET_OBJECT_VAR_ELEMENT
-			if(
-				count==len
-				&& maybe_change_first_opcode(*code, OP::OP_GET_OBJECT_VAR_ELEMENT, OP::OP_GET_ELEMENT, /*=>*/OP::OP_GET_OBJECT_VAR_ELEMENT__WRITE)
-			){
-				//P(*$$, *code, 0/*offset*/, count-1/*limit*/); // someday skip last OP_GET_ELEMENT
-				//break;
-			} else
+		if(
+			code->count()!=5
+			|| !maybe_change_first_opcode(*code, OP::OP_GET_OBJECT_VAR_ELEMENT, /*=>*/OP::OP_GET_OBJECT_VAR_ELEMENT__WRITE)
+		)
 #endif
-
-				changetail_or_append(*code, 
-					OP::OP_GET_ELEMENT, false,  /*=>*/OP::OP_GET_ELEMENT__WRITE,
-					/*or */OP::OP_WRITE_VALUE
-					); /* value=pop; wcontext.write(value) */
+		{
+			changetail_or_append(*code, 
+				OP::OP_GET_ELEMENT, false,  /*=>*/OP::OP_GET_ELEMENT__WRITE,
+				/*or */OP::OP_WRITE_VALUE
+				); /* value=pop; wcontext.write(value) */
 		}
+
 	P(*$$, *code);
 };
 get_value: '$' get_name_value { $$=$2 };
@@ -417,12 +409,9 @@ name_without_curly_rdive_code: name_advance2 | name_path name_advance2 { $$=$1; 
 
 put: '$' name_expr_wdive construct {
 	$$=N();
-#if defined(OPTIMIZE_BYTECODE_CONSTRUCT) || defined(OPTIMIZE_BYTECODE_CALL_CONSTRUCT)
-	if(maybe_make_root_or_write_construct(*$$, *$2, *$3)){
-		// $a(1), $.a(1), $a[b], $.a[b]
-		// $a($b), $.a($b), $a[$b], $.a[$b]
-		// $a($b.c), $.a($b.c), $a[$b.c], $.a[$b.c]
-		// $a($b.$c), $.a($b.$c), $a[$b.$c], $.a[$b.$c]
+#ifdef OPTIMIZE_BYTECODE_CONSTRUCT
+	if(maybe_optimize_construct(*$$, *$2, *$3)){
+		// $a(expr), $.a(expr), $a[value], $.a[value]
 	} else 
 #endif
 	{
@@ -458,7 +447,7 @@ name_expr_wdive_write: '.' name_expr_dive_code {
 };
 name_expr_wdive_class: class_prefix name_expr_dive_code { $$=$1; P(*$$, *$2) };
 
-construct: 
+construct:
 	construct_square
 |	construct_round
 |	construct_curly

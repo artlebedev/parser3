@@ -8,7 +8,7 @@
 #ifndef COMPILE_TOOLS
 #define COMPILE_TOOLS
 
-static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2009/05/24 07:34:38 $";
+static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2009/06/02 10:08:40 $";
 
 #include "pa_opcode.h"
 #include "pa_types.h"
@@ -254,24 +254,22 @@ bool maybe_change_first_opcode(ArrayOperation& opcodes, OP::OPCODE find, OP::OPC
 
 bool maybe_change_first_opcode(ArrayOperation& opcodes, OP::OPCODE find, OP::OPCODE last, OP::OPCODE replace);
 
-bool maybe_make_get_object_element(ArrayOperation& opcodes, ArrayOperation& diving_code, size_t divine_count);
-
-bool maybe_make_get_object_var_element(ArrayOperation& opcodes, ArrayOperation& diving_code, size_t divine_count);
-
 #ifdef OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT
-// OP_VALUE+origin+value+OP_GET_ELEMENT+OP_VALUE+origin+value+OP_GET_ELEMENT => OP_GET_OBJECT_ELEMENT+origin+value+[OP_VALUE]+origin+value+OP_GET_ELEMENT
+// OP_VALUE+origin+value+OP_GET_ELEMENT+OP_VALUE+origin+value+OP_GET_ELEMENT => OP_GET_OBJECT_ELEMENT+origin+value+origin+value
 inline bool maybe_make_get_object_element(ArrayOperation& opcodes, ArrayOperation& diving_code, size_t divine_count){
 	if(divine_count!=8)
 		return false;
 
 	assert(diving_code[0].code==OP::OP_VALUE);
 	if(
-		diving_code[4].code==OP::OP_VALUE
+		diving_code[0].code==OP::OP_VALUE
+		&& diving_code[3].code==OP::OP_GET_ELEMENT
+		&& diving_code[4].code==OP::OP_VALUE
 		&& diving_code[divine_count-1].code==OP::OP_GET_ELEMENT
 	){
 		O(opcodes, OP::OP_GET_OBJECT_ELEMENT);
-		P(opcodes, diving_code, 1/*offset*/, 2/*limit*/); // copy origin+value
-		P(opcodes, diving_code, 5, 3); // copy specified tail
+		P(opcodes, diving_code, 1/*offset*/, 2/*limit*/); // first origin+value
+		P(opcodes, diving_code, 5, 2); // second origin+value
 		return true;
 	}
 	return false;
@@ -279,7 +277,7 @@ inline bool maybe_make_get_object_element(ArrayOperation& opcodes, ArrayOperatio
 #endif
 
 #ifdef OPTIMIZE_BYTECODE_GET_OBJECT_VAR_ELEMENT
-// OP_VALUE+origin+value+OP_GET_ELEMENT+OP_WITH_READ+OP_VALUE+origin+value+OP_GET_ELEMENT+OP_GET_ELEMENT => OP_GET_OBJECT_VAR_ELEMENT+origin+value+[OP_VALUE]+origin+value+OP_GET_ELEMENT
+// OP_VALUE+origin+value+OP_GET_ELEMENT+OP_WITH_READ+OP_VALUE+origin+value+OP_GET_ELEMENT+OP_GET_ELEMENT => OP_GET_OBJECT_VAR_ELEMENT+origin+value+origin+value
 inline bool maybe_make_get_object_var_element(ArrayOperation& opcodes, ArrayOperation& diving_code, size_t divine_count){
 	if(divine_count!=10)
 		return false;
@@ -291,246 +289,55 @@ inline bool maybe_make_get_object_var_element(ArrayOperation& opcodes, ArrayOper
 		&& diving_code[divine_count-1].code==OP::OP_GET_ELEMENT
 	){
 		O(opcodes, OP::OP_GET_OBJECT_VAR_ELEMENT);
-		P(opcodes, diving_code, 1/*offset*/, 2/*limit*/); // copy origin+value
-		P(opcodes, diving_code, 6, 3); // copy specified tail
+		P(opcodes, diving_code, 1/*offset*/, 2/*limit*/); // first origin+value
+		P(opcodes, diving_code, 6, 2); // second origin+value
 		return true;
 	}
 	return false;
 }
 #endif
 
-#if defined(OPTIMIZE_BYTECODE_CONSTRUCT) || defined(OPTIMIZE_BYTECODE_CALL_CONSTRUCT)
-inline bool maybe_make_root_or_write_construct(ArrayOperation& opcodes, ArrayOperation& var_ops, ArrayOperation& expr_ops){
-	if(
-		var_ops.count()==4
-		&& (var_ops[0].code==OP::OP_WITH_ROOT || var_ops[0].code==OP::OP_WITH_WRITE)
-	){
-		// OP_WITH_ROOT|OP_WITH_WRITE
-		// OP_VALUE
-		// origin
-		// value
-		size_t count=expr_ops.count();
-
-		ArrayOperation* source=0;
-		size_t offset=1;
-		size_t limit=2;
-		OP::OPCODE code=OP::OP_VALUE;
-		bool with_root=(var_ops[0].code==OP::OP_WITH_ROOT);
-
-		if(
-			expr_ops[0].code==OP::OP_PREPARE_TO_EXPRESSION
-			&& expr_ops[count-1].code==OP::OP_CONSTRUCT_EXPR
-		){
-			switch(count){
 #ifdef OPTIMIZE_BYTECODE_CONSTRUCT
-				case 5: // count
+inline bool maybe_optimize_construct(ArrayOperation& opcodes, ArrayOperation& var_ops, ArrayOperation& expr_ops){
+	size_t expr_count=expr_ops.count();
+	OP::OPCODE construct_op=expr_ops[expr_count-1].code;
+	size_t construct=(construct_op==OP::OP_CONSTRUCT_VALUE)?0x01:(construct_op==OP::OP_CONSTRUCT_EXPR)?0x02:0x00;
+	if(construct){
+		P(opcodes, expr_ops, 0/*offset*/, expr_count-1/*limit*/); // copy constructor body without CONSTRUCT_(VALUE|EXPR)
+
+		size_t with=(var_ops[0].code==OP::OP_WITH_ROOT)?0x10:(var_ops[0].code==OP::OP_WITH_WRITE)?0x20:0x00;
+
+		if(with && var_ops[1].code==OP::OP_VALUE && var_ops.count()==4){
+			OP::OPCODE code=OP::OP_VALUE; // calm down compiler. will be reassigned for sure.
+			switch( with | construct ) {
+				case 0x11:
 					{
-						if(expr_ops[1].code==OP::OP_VALUE){
-							//	$a(1) $.a(2)
-							//	OP_PREPARE_TO_EXPRESSION
-							//	OP_VALUE
-							//	origin
-							//	value
-							//	OP_CONSTRUCT_EXPR
-							O(opcodes, with_root ? OP::OP_ROOT_CONSTRUCT_EXPR : OP::OP_WRITE_CONSTRUCT_EXPR);
-							source=&expr_ops;
-							offset=2;
-						}
-						else if(expr_ops[1].code==OP::OP_VALUE__GET_ELEMENT){
-							//	$a($b) or $.a($b)
-							//	OP_PREPARE_TO_EXPRESSION
-							//	OP_VALUE__GET_ELEMENT
-							//	origin
-							//	value
-							//	OP_CONSTRUCT_EXPR
-							O(opcodes, with_root ? OP::OP_ROOT_ELEMENT_CONSTRUCT_EXPR : OP::OP_WRITE_ELEMENT_CONSTRUCT_EXPR);
-							source=&expr_ops;
-							offset=2;
-						}
+						code=OP::OP_WITH_ROOT__VALUE__CONSTRUCT_VALUE;
 						break;
 					}
-#endif
-
-#ifdef OPTIMIZE_BYTECODE_CALL_CONSTRUCT
-				case 7: // count
+				case 0x12:
 					{
-						if(
-							expr_ops[1].code==OP::OP_VALUE__GET_ELEMENT_OR_OPERATOR
-							&& expr_ops[4].code==OP::OP_CALL
-						){
-							//	$a(^b[]) $.a(^b[])
-							//	OP_PREPARE_TO_EXPRESSION
-							//	VALUE__GET_ELEMENT_OR_OPERATOR
-							//	origin
-							//	value
-							//	OP_CALL
-							//		<empty params>
-							//	OP_CONSTRUCT_EXPR
-							O(opcodes, with_root ? OP::OP_ROOT_CALL_CONSTRUCT_EXPR : OP::OP_WRITE_CALL_CONSTRUCT_EXPR);
-							source=&expr_ops;
-							offset=2;
-							limit=4;
-						}
+						code=OP::OP_WITH_ROOT__VALUE__CONSTRUCT_EXPR;
 						break;
 					}
-#endif
-
-#ifdef OPTIMIZE_BYTECODE_CONSTRUCT
-				case 8: // count
+				case 0x21:
 					{
-						if(expr_ops[1].code==OP::OP_GET_OBJECT_ELEMENT){
-							//	$a($b.c) or $.a($b.c)
-							//	OP_PREPARE_TO_EXPRESSION
-							//	OP_GET_OBJECT_ELEMENT
-							//	origin
-							//	value
-							//	origin
-							//	value
-							//	OP_GET_ELEMENT
-							//	OP_CONSTRUCT_EXPR
-							O(opcodes, with_root ? OP::OP_ROOT_OBJECT_ELEMENT_CONSTRUCT_EXPR : OP::OP_WRITE_OBJECT_ELEMENT_CONSTRUCT_EXPR);
-							source=&expr_ops;
-							code=OP::OP_GET_OBJECT_ELEMENT;
-							offset=2;
-							limit=4;
-						}
-						else if(expr_ops[1].code==OP::OP_GET_OBJECT_VAR_ELEMENT){
-							//	$a($b.c) or $.a($b.c)
-							//	OP_PREPARE_TO_EXPRESSION
-							//	OP_GET_OBJECT_VAR_ELEMENT
-							//	origin
-							//	value
-							//	origin
-							//	value
-							//	OP_GET_ELEMENT
-							//	OP_CONSTRUCT_EXPR
-							O(opcodes, with_root ? OP::OP_ROOT_OBJECT_VAR_ELEMENT_CONSTRUCT_EXPR : OP::OP_WRITE_OBJECT_VAR_ELEMENT_CONSTRUCT_EXPR);
-							source=&expr_ops;
-							code=OP::OP_GET_OBJECT_VAR_ELEMENT;
-							offset=2;
-							limit=4;
-						}
+						code=OP::OP_WITH_WRITE__VALUE__CONSTRUCT_VALUE;
 						break;
 					}
-#endif
-			} // switch
-
+				case 0x22:
+					{
+						code=OP::OP_WITH_WRITE__VALUE__CONSTRUCT_EXPR;
+						break;
+					}
+			}
+			O(opcodes, code);
+			P(opcodes, var_ops, 2/*offset*/, 2/*limit*/); // copy origin+value
+		} else {
+			P(opcodes, var_ops);
+			O(opcodes, construct_op);
 		}
-		else if(expr_ops[count-1].code==OP::OP_CONSTRUCT_VALUE){
-			switch(count){
-				case 3: // count
-					{
-						if(expr_ops[0].code==OP::OP_OBJECT_POOL){
-							ArrayOperation& pool_ops=*expr_ops[1].ops;
-
-							switch(pool_ops.count()){
-
-#ifdef OPTIMIZE_BYTECODE_CONSTRUCT
-								case 3: // pool_count
-									{
-										if(pool_ops[0].code==OP::OP_VALUE__GET_ELEMENT__WRITE){
-											//	$a[$b] $.a[$b]
-											//	OP_OBJECT_POOL
-											//		OP_VALUE__GET_ELEMENT__WRITE
-											//		origin
-											//		value
-											//	OP_CONSTRUCT_VALUE
-											O(opcodes, with_root ? OP::OP_ROOT_ELEMENT_CONSTRUCT_VALUE : OP::OP_WRITE_ELEMENT_CONSTRUCT_VALUE);
-											source=&pool_ops;
-										}
-										break;
-									}
-#endif
-
-#ifdef OPTIMIZE_BYTECODE_CALL_CONSTRUCT
-								case 5: // pool_count
-									{
-										if(
-											pool_ops[0].code==OP::OP_VALUE__GET_ELEMENT_OR_OPERATOR
-											&& pool_ops[3].code==OP::OP_CALL__WRITE
-										){
-											//	$a[^b[]] $.a[^b[]]
-											//	OP_OBJECT_POOL
-											//		OP_VALUE__GET_ELEMENT_OR_OPERATOR
-											//		origin
-											//		value
-											//		OP_CALL__WRITE
-											//			<empty params>
-											//	OP_CONSTRUCT_VALUE
-											O(opcodes, with_root ? OP::OP_ROOT_CALL_CONSTRUCT_VALUE : OP::OP_WRITE_CALL_CONSTRUCT_VALUE);
-											source=&pool_ops;
-											limit=4;
-										}
-										break;
-									}
-#endif
-
-#ifdef OPTIMIZE_BYTECODE_CONSTRUCT
-								case 6: // pool_count
-									{
-										if(pool_ops[0].code==OP::OP_GET_OBJECT_ELEMENT__WRITE){
-											//	$a[$b.c] $.a[$b.c]
-											//	OP_OBJECT_POOL
-											//		OP_GET_OBJECT_ELEMENT__WRITE
-											//		origin
-											//		value
-											//		origin
-											//		value
-											//		OP_GET_ELEMENT
-											//	OP_CONSTRUCT_VALUE
-											O(opcodes, with_root ? OP::OP_ROOT_OBJECT_ELEMENT_CONSTRUCT_VALUE : OP::OP_WRITE_OBJECT_ELEMENT_CONSTRUCT_VALUE);
-											source=&pool_ops;
-											code=OP::OP_GET_OBJECT_ELEMENT;
-											limit=4;
-										}
-										else if(pool_ops[0].code==OP::OP_GET_OBJECT_VAR_ELEMENT__WRITE){
-											//	$a[$b.$c] $.a[$b.$c]
-											//	OP_OBJECT_POOL
-											//		OP_GET_OBJECT_VAR_ELEMENT__WRITE
-											//		origin
-											//		value
-											//		origin
-											//		value
-											//		OP_GET_ELEMENT
-											//	OP_CONSTRUCT_VALUE
-											O(opcodes, with_root ? OP::OP_ROOT_OBJECT_VAR_ELEMENT_CONSTRUCT_VALUE : OP::OP_WRITE_OBJECT_VAR_ELEMENT_CONSTRUCT_VALUE);
-											source=&pool_ops;
-											code=OP::OP_GET_OBJECT_VAR_ELEMENT__WRITE;
-											limit=4;
-										}
-										break;
-									}
-#endif
-							}
-						}
-						break;
-					}
-
-#ifdef OPTIMIZE_BYTECODE_CONSTRUCT
-				case 4: // count
-					{
-						if(expr_ops[0].code==OP::OP_VALUE){
-							//	$a[b] $.a[b]
-							//	OP_VALUE
-							//	origin
-							//	value
-							//	OP_CONSTRUCT_VALUE
-							O(opcodes, with_root ? OP::OP_ROOT_CONSTRUCT_VALUE : OP::OP_WRITE_CONSTRUCT_VALUE);
-							source=&expr_ops;
-						}
-						break;
-					}
-#endif
-			} // switch
-		}
-
-		if(source){
-			P(opcodes, var_ops, 2/*offset*/, 2/*limit*/); // copy 1st origin+value
-			if(limit!=2)
-				O(opcodes, code);
-			P(opcodes, *source, offset, limit);
-			return true;
-		}
+		return true;
 	}
 	return false;
 }
