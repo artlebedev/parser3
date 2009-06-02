@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Date: 2009/05/14 08:10:09 $";
+static const char * const IDENT="$Date: 2009/06/02 22:26:09 $";
 
 #include "pa_venv.h"
 #include "pa_vstring.h"
@@ -30,7 +30,7 @@ Value* VEnv::get_element(const String& aname, Value& /*aself*/, bool /*looking_u
 
 	// $env:field
 	if(const char* value=SAPI::get_env(finfo, aname.cstr())){
-		return new VString(*new String(pa_strdup(value, strlen(value)), String::L_TAINTED));
+		return new VString(*new String(strdup(value, strlen(value)), String::L_TAINTED));
 	}
 	
 	return 0;
