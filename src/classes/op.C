@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2009/06/04 12:30:01 $";
+static const char * const IDENT_OP_C="$Date: 2009/06/04 12:38:46 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -425,7 +425,7 @@ r.sql_connect_time+=t[1]-t[0];
 	Temp_connection temp_connection(r, connection);
 	// execute body
 	try {
-		r.write_assign_lang(r.process(body_code));
+		r.process_write(body_code);
 		connection->commit();
 		connection->close();
 	} catch(...) { // process problem
