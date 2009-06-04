@@ -5,7 +5,7 @@
 	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.244 2009/06/02 10:08:40 misha Exp $
+	$Id: compile.y,v 1.245 2009/06/04 09:31:37 misha Exp $
 */
 
 /**
@@ -319,8 +319,13 @@ action: get | put | call;
 get: get_value {
 	$$=N();
 	YYSTYPE code=$1;
+
 #ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
 	if(!maybe_change_first_opcode(*code, OP::OP_VALUE__GET_ELEMENT, /*=>*/OP::OP_VALUE__GET_ELEMENT__WRITE))
+#endif
+
+#ifdef OPTIMIZE_BYTECODE_GET_SELF_ELEMENT
+	if(!maybe_change_first_opcode(*code, OP::OP_WITH_SELF__VALUE__GET_ELEMENT, /*=>*/OP::OP_WITH_SELF__VALUE__GET_ELEMENT__WRITE))
 #endif
 
 #ifdef OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT
@@ -359,21 +364,28 @@ name_without_curly_rdive_read: name_without_curly_rdive_code {
 	// self.xxx... => xxx...
 	// OP_VALUE+origin+string+OP_GET_ELEMENT+... -> OP_WITH_SELF+...
 	if(first_name && *first_name==SELF_ELEMENT_NAME) {
-		O(*$$, OP::OP_WITH_SELF); /* stack: starting context */
-		P(*$$, *diving_code, 
-			/* skip over... */
-			count>=4?4/*OP_VALUE+origin+string+OP_GET_ELEMENTx*/:3/*OP::OP_+origin+string*/);
+#ifdef OPTIMIZE_BYTECODE_GET_SELF_ELEMENT
+		if(maybe_make_with_self_get_element(*$$, *diving_code, count)){
+			// optimization for $self.field and ^self.method
+		} else
+#endif
+			{
+				O(*$$, OP::OP_WITH_SELF); /* stack: starting context */
+				P(*$$, *diving_code, 
+					/* skip over... */
+					count>=4?4/*OP_VALUE+origin+string+OP_GET_ELEMENTx*/:3/*OP::OP_+origin+string*/);
+			}
 	}
 
 #ifdef OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT
 	else if(maybe_make_get_object_element(*$$, *diving_code, count)){
-		// optimisation for $object.field + ^object.method[
+		// optimization for $object.field + ^object.method[
 	}
 #endif
 
 #ifdef OPTIMIZE_BYTECODE_GET_OBJECT_VAR_ELEMENT
 	else if(maybe_make_get_object_var_element(*$$, *diving_code, count)){
-		// optimisation for $object.$var
+		// optimization for $object.$var
 	}
 #endif
 
@@ -668,7 +680,7 @@ class_static_prefix: STRING ':' {
 	}
 #ifdef OPTIMIZE_BYTECODE_GET_CLASS
 	// optimized OP_VALUE+origin+string+OP_GET_CLASS => OP_VALUE__GET_CLASS+origin+string
-	maybe_change_first_opcode(*$$, OP::OP_VALUE, OP::OP_VALUE__GET_CLASS, true/*assert if top opcode != OP_VALUE*/)
+	maybe_change_first_opcode(*$$, OP::OP_VALUE, OP::OP_VALUE__GET_CLASS)
 #else
 	O(*$$, OP::OP_GET_CLASS);
 #endif

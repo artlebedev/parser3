@@ -8,7 +8,7 @@
 #ifndef COMPILE_TOOLS
 #define COMPILE_TOOLS
 
-static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2009/06/02 10:08:40 $";
+static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2009/06/04 09:31:38 $";
 
 #include "pa_opcode.h"
 #include "pa_types.h"
@@ -250,9 +250,8 @@ void change_string_literal_value(ArrayOperation& literal_string_array, const Str
 void changetail_or_append(ArrayOperation& opcodes, 
 						  OP::OPCODE find, bool with_argument, OP::OPCODE replace, OP::OPCODE notfound);
 
-bool maybe_change_first_opcode(ArrayOperation& opcodes, OP::OPCODE find, OP::OPCODE replace, bool strict=false);
+bool maybe_change_first_opcode(ArrayOperation& opcodes, OP::OPCODE find, OP::OPCODE replace);
 
-bool maybe_change_first_opcode(ArrayOperation& opcodes, OP::OPCODE find, OP::OPCODE last, OP::OPCODE replace);
 
 #ifdef OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT
 // OP_VALUE+origin+value+OP_GET_ELEMENT+OP_VALUE+origin+value+OP_GET_ELEMENT => OP_GET_OBJECT_ELEMENT+origin+value+origin+value
@@ -262,19 +261,19 @@ inline bool maybe_make_get_object_element(ArrayOperation& opcodes, ArrayOperatio
 
 	assert(diving_code[0].code==OP::OP_VALUE);
 	if(
-		diving_code[0].code==OP::OP_VALUE
-		&& diving_code[3].code==OP::OP_GET_ELEMENT
+		diving_code[3].code==OP::OP_GET_ELEMENT
 		&& diving_code[4].code==OP::OP_VALUE
 		&& diving_code[divine_count-1].code==OP::OP_GET_ELEMENT
 	){
 		O(opcodes, OP::OP_GET_OBJECT_ELEMENT);
-		P(opcodes, diving_code, 1/*offset*/, 2/*limit*/); // first origin+value
+		P(opcodes, diving_code, 1/*offset*/, 2/*limit*/); // copy first origin+value
 		P(opcodes, diving_code, 5, 2); // second origin+value
 		return true;
 	}
 	return false;
 }
 #endif
+
 
 #ifdef OPTIMIZE_BYTECODE_GET_OBJECT_VAR_ELEMENT
 // OP_VALUE+origin+value+OP_GET_ELEMENT+OP_WITH_READ+OP_VALUE+origin+value+OP_GET_ELEMENT+OP_GET_ELEMENT => OP_GET_OBJECT_VAR_ELEMENT+origin+value+origin+value
@@ -289,13 +288,35 @@ inline bool maybe_make_get_object_var_element(ArrayOperation& opcodes, ArrayOper
 		&& diving_code[divine_count-1].code==OP::OP_GET_ELEMENT
 	){
 		O(opcodes, OP::OP_GET_OBJECT_VAR_ELEMENT);
-		P(opcodes, diving_code, 1/*offset*/, 2/*limit*/); // first origin+value
+		P(opcodes, diving_code, 1/*offset*/, 2/*limit*/); // copy first origin+value
 		P(opcodes, diving_code, 6, 2); // second origin+value
 		return true;
 	}
 	return false;
 }
 #endif
+
+
+// OP_VALUE+origin+self+OP_GET_ELEMENT+OP_VALUE+origin+value+OP_GET_ELEMENT => OP_WITH_SELF__VALUE__GET_ELEMENT+origin+value
+#ifdef OPTIMIZE_BYTECODE_GET_SELF_ELEMENT
+inline bool maybe_make_with_self_get_element(ArrayOperation& opcodes, ArrayOperation& diving_code, size_t divine_count){
+	if(divine_count!=8)
+		return false;
+
+	assert(diving_code[0].code==OP::OP_VALUE);
+	if(
+		diving_code[3].code==OP::OP_GET_ELEMENT
+		&& diving_code[4].code==OP::OP_VALUE
+		&& diving_code[divine_count-1].code==OP::OP_GET_ELEMENT
+	){
+		O(opcodes, OP::OP_WITH_SELF__VALUE__GET_ELEMENT);
+		P(opcodes, diving_code, 5/*offset*/, 2/*limit*/); // copy second origin+value. we know that the first one is "self"
+		return true;
+	}
+	return false;
+}
+#endif
+
 
 #ifdef OPTIMIZE_BYTECODE_CONSTRUCT
 inline bool maybe_optimize_construct(ArrayOperation& opcodes, ArrayOperation& var_ops, ArrayOperation& expr_ops){
@@ -305,7 +326,24 @@ inline bool maybe_optimize_construct(ArrayOperation& opcodes, ArrayOperation& va
 	if(construct){
 		P(opcodes, expr_ops, 0/*offset*/, expr_count-1/*limit*/); // copy constructor body without CONSTRUCT_(VALUE|EXPR)
 
-		size_t with=(var_ops[0].code==OP::OP_WITH_ROOT)?0x10:(var_ops[0].code==OP::OP_WITH_WRITE)?0x20:0x00;
+		size_t with=0x00;
+		switch(var_ops[0].code){
+			case OP::OP_WITH_ROOT:
+				{
+					with=0x10;
+					break;
+				}
+			case OP::OP_WITH_WRITE:
+				{
+					with=0x20;
+					break;
+				}
+			case OP::OP_WITH_SELF:
+				{
+					with=0x30;
+					break;
+				}
+		}
 
 		if(with && var_ops[1].code==OP::OP_VALUE && var_ops.count()==4){
 			OP::OPCODE code=OP::OP_VALUE; // calm down compiler. will be reassigned for sure.
@@ -328,6 +366,16 @@ inline bool maybe_optimize_construct(ArrayOperation& opcodes, ArrayOperation& va
 				case 0x22:
 					{
 						code=OP::OP_WITH_WRITE__VALUE__CONSTRUCT_EXPR;
+						break;
+					}
+				case 0x31:
+					{
+						code=OP::OP_WITH_SELF__VALUE__CONSTRUCT_VALUE;
+						break;
+					}
+				case 0x32:
+					{
+						code=OP::OP_WITH_SELF__VALUE__CONSTRUCT_EXPR;
 						break;
 					}
 			}

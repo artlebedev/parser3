@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2009/06/02 10:08:40 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2009/06/04 09:31:38 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -61,6 +61,10 @@ char *opcode_name[]={
 #ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
 	"VALUE__GET_ELEMENT__WRITE",
 #endif
+#ifdef OPTIMIZE_BYTECODE_GET_SELF_ELEMENT
+	"WITH_SELF__VALUE__GET_ELEMENT",
+	"WITH_SELF__VALUE__GET_ELEMENT__WRITE",
+#endif
 	"OBJECT_POOL",	"STRING_POOL",
 	"PREPARE_TO_CONSTRUCT_OBJECT",	"PREPARE_TO_EXPRESSION", 
 	"CALL", "CALL__WRITE",
@@ -70,6 +74,8 @@ char *opcode_name[]={
 	"WITH_ROOT__VALUE__CONSTRUCT_VALUE",
 	"WITH_WRITE__VALUE__CONSTRUCT_EXPR",
 	"WITH_WRITE__VALUE__CONSTRUCT_VALUE",
+	"WITH_SELF__VALUE__CONSTRUCT_EXPR",
+	"WITH_SELF__VALUE__CONSTRUCT_VALUE",
 #endif
 
 	// expression ops: unary
@@ -149,11 +155,17 @@ void debug_dump(SAPI_Info& sapi_info, int level, ArrayOperation& ops) {
 			|| opcode==OP::OP_VALUE__GET_ELEMENT__WRITE
 			|| opcode==OP::OP_VALUE__GET_ELEMENT_OR_OPERATOR
 #endif
+#ifdef OPTIMIZE_BYTECODE_GET_SELF_ELEMENT
+			|| opcode==OP::OP_WITH_SELF__VALUE__GET_ELEMENT
+			|| opcode==OP::OP_WITH_SELF__VALUE__GET_ELEMENT__WRITE
+#endif
 #ifdef OPTIMIZE_BYTECODE_CONSTRUCT
 			|| opcode==OP::OP_WITH_ROOT__VALUE__CONSTRUCT_EXPR
 			|| opcode==OP::OP_WITH_ROOT__VALUE__CONSTRUCT_VALUE
 			|| opcode==OP::OP_WITH_WRITE__VALUE__CONSTRUCT_EXPR
 			|| opcode==OP::OP_WITH_WRITE__VALUE__CONSTRUCT_VALUE
+			|| opcode==OP::OP_WITH_SELF__VALUE__CONSTRUCT_EXPR
+			|| opcode==OP::OP_WITH_SELF__VALUE__CONSTRUCT_VALUE
 #endif
 		) {
 			Operation::Origin origin=i.next().origin;
@@ -212,8 +224,6 @@ void Request::execute(ArrayOperation& ops) {
 #endif
 	for(Array_iterator<Operation> i(ops); i.has_next(); ) {
 		OP::OPCODE opcode=i.next().code;
-
-		bool with_root=true;
 
 #ifdef DEBUG_EXECUTE
 		debug_printf(sapi_info, "%d:%s", stack.top_index()+1, opcode_name[opcode]);
@@ -307,13 +317,17 @@ void Request::execute(ArrayOperation& ops) {
 					throw Exception(PARSER_RUNTIME,
 						0,
 						"$.name outside of $name[...]");
-				with_root=false;
 				// don't stop here. continue in the next block
 			}
 		case OP::OP_WITH_ROOT__VALUE__CONSTRUCT_EXPR:
 		case OP::OP_WITH_ROOT__VALUE__CONSTRUCT_VALUE:
+		case OP::OP_WITH_SELF__VALUE__CONSTRUCT_EXPR:
+		case OP::OP_WITH_SELF__VALUE__CONSTRUCT_VALUE:
 			{
-				bool is_expr=(opcode==OP::OP_WITH_WRITE__VALUE__CONSTRUCT_EXPR || opcode==OP::OP_WITH_ROOT__VALUE__CONSTRUCT_EXPR);
+				bool is_expr=(opcode==OP::OP_WITH_WRITE__VALUE__CONSTRUCT_EXPR
+								|| opcode==OP::OP_WITH_ROOT__VALUE__CONSTRUCT_EXPR
+								|| opcode==OP::OP_WITH_SELF__VALUE__CONSTRUCT_EXPR);
+
 				if(is_expr)
 					wcontext->set_in_expression(false);
 
@@ -323,11 +337,13 @@ void Request::execute(ArrayOperation& ops) {
 
 				Value& value=stack.pop().value();
 
-				if(is_expr){
-					put_element( with_root?*method_frame:*wcontext, name, &value.as_expr_result());
-				} else {
-					put_element( with_root?*method_frame:*wcontext, name, /*value.is_void()?new VString():*/&value);
-				}
+				put_element(
+					(opcode==OP::OP_WITH_ROOT__VALUE__CONSTRUCT_EXPR || opcode==OP::OP_WITH_ROOT__VALUE__CONSTRUCT_VALUE)?*method_frame:
+					(opcode==OP::OP_WITH_SELF__VALUE__CONSTRUCT_EXPR || opcode==OP::OP_WITH_SELF__VALUE__CONSTRUCT_VALUE)?get_self():*wcontext,
+					name,
+					is_expr?&value.as_expr_result():/*value.is_void()?new VString():*/&value
+				);
+
 				break;
 			}
 #endif // OPTIMIZE_BYTECODE_CONSTRUCT
@@ -562,6 +578,26 @@ void Request::execute(ArrayOperation& ops) {
 
 				Value& value=get_element(*rcontext, name);
 				write_assign_lang(value);
+				break;
+			}
+#endif
+
+#ifdef OPTIMIZE_BYTECODE_GET_SELF_ELEMENT
+		case OP::OP_WITH_SELF__VALUE__GET_ELEMENT:
+		case OP::OP_WITH_SELF__VALUE__GET_ELEMENT__WRITE:
+			{
+				debug_origin=i.next().origin;
+				const String& name=*i.next().value->get_string(); debug_name=&name;
+
+				DEBUG_PRINT_STRING(name)
+
+				Value& value=get_element(get_self(), name);
+
+				if(opcode==OP::OP_WITH_SELF__VALUE__GET_ELEMENT){
+					stack.push(value);
+				} else {
+					write_assign_lang(value);
+				}
 				break;
 			}
 #endif

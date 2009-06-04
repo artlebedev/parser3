@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMPILE_TOOLS_C="$Date: 2009/05/23 05:23:03 $";
+static const char * const IDENT_COMPILE_TOOLS_C="$Date: 2009/06/04 09:31:38 $";
 
 #include "compile_tools.h"
 #include "pa_string.h"
@@ -45,27 +45,13 @@ void changetail_or_append(ArrayOperation& opcodes,
 	opcodes+=Operation(notfound);
 }
 
+bool maybe_change_first_opcode(ArrayOperation& opcodes, OP::OPCODE find, OP::OPCODE replace) {
+	if(opcodes[0].code!=find)
+		return false;
 
-bool maybe_change_first_opcode(ArrayOperation& opcodes, OP::OPCODE find, OP::OPCODE replace, bool strict) {
-	if(opcodes[0].code==find){
-		opcodes.put(0, replace);
-		return true;
-	}
-	if(strict)
-		assert(opcodes[0].code==find);
-
-	return false;
+	opcodes.put(0, replace);
+	return true;
 }
-
-
-bool maybe_change_first_opcode(ArrayOperation& opcodes, OP::OPCODE find, OP::OPCODE last, OP::OPCODE replace) {
-	if(opcodes[0].code==find && opcodes[opcodes.count()-1].code==last){
-		opcodes.put(0, replace);
-		return true;
-	}
-	return false;
-}
-
 
 void push_LS(Parse_control& pc, lexical_state new_state) { 
 	if(pc.ls_sp<MAX_LEXICAL_STATES) {
