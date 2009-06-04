@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2009/05/14 11:27:23 $";
+static const char * const IDENT_OP_C="$Date: 2009/06/04 12:30:01 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -122,8 +122,12 @@ static void _untaint(Request& r, MethodParams& params) {
 	{
 		Value& vbody=params.as_junction(params.count()-1, "body must be code");
 		
-		Temp_lang temp_lang(r, lang); // set temporarily specified ^untaint[language;
-		r.write_pass_lang(r.process(vbody)); // process marking tainted with that lang
+		StringOrValue result;
+		{
+			Temp_lang temp_lang(r, lang); // set temporarily specified ^untaint[language;
+			result=r.process(vbody); // process marking tainted with that lang
+		}
+		r.write_assign_lang(result);
 	}
 }
 
@@ -141,7 +145,7 @@ static void _taint(Request& r, MethodParams& params) {
 		result.append(
 			vbody.as_string(),  // process marking tainted with that lang
 			lang, true);  // force result language to specified
-		r.write_pass_lang(result);
+		r.write_assign_lang(result);
 	}
 }
 
@@ -899,10 +903,10 @@ VClassMAIN::VClassMAIN(): VClass() {
 	add_native_method("if", Method::CT_ANY, _if, 2, 3, Method::CO_WITHOUT_FRAME);
 
 	// ^untaint[as-is|uri|sql|js|html|html-typo|regex]{code}
-	add_native_method("untaint", Method::CT_ANY, _untaint, 1, 2, Method::CO_NONE);
+	add_native_method("untaint", Method::CT_ANY, _untaint, 1, 2);
 
 	// ^taint[as-is|uri|sql|js|html|html-typo|regex]{code}
-	add_native_method("taint", Method::CT_ANY, _taint, 1, 2, Method::CO_NONE);
+	add_native_method("taint", Method::CT_ANY, _taint, 1, 2);
 
 	// ^process[code]
 	add_native_method("process", Method::CT_ANY, _process, 1, 3);
