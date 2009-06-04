@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2009/06/04 09:31:38 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2009/06/04 12:29:38 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -46,6 +46,11 @@ char *opcode_name[]={
 	"GET_ELEMENT_OR_OPERATOR",
 #endif
 	"GET_ELEMENT",
+	"GET_ELEMENT__WRITE",
+#ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
+	"VALUE__GET_ELEMENT",
+	"VALUE__GET_ELEMENT__WRITE",
+#endif
 #ifdef OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT
 	"GET_OBJECT_ELEMENT",
 	"GET_OBJECT_ELEMENT__WRITE",
@@ -53,13 +58,6 @@ char *opcode_name[]={
 #ifdef OPTIMIZE_BYTECODE_GET_OBJECT_VAR_ELEMENT
 	"GET_OBJECT_VAR_ELEMENT",
 	"GET_OBJECT_VAR_ELEMENT__WRITE",
-#endif
-#ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
-	"VALUE__GET_ELEMENT",
-#endif
-	"GET_ELEMENT__WRITE",
-#ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
-	"VALUE__GET_ELEMENT__WRITE",
 #endif
 #ifdef OPTIMIZE_BYTECODE_GET_SELF_ELEMENT
 	"WITH_SELF__VALUE__GET_ELEMENT",
@@ -185,7 +183,7 @@ void debug_dump(SAPI_Info& sapi_info, int level, ArrayOperation& ops) {
 		case OP::OP_EXPR_CODE__STORE_PARAM:
 		case OP::OP_CURLY_CODE__CONSTRUCT:
 		case OP::OP_NESTED_CODE:
-		case OP::OP_OBJECT_POOL:  
+		case OP::OP_OBJECT_POOL:
 		case OP::OP_STRING_POOL:
 		case OP::OP_CALL:
 		case OP::OP_CALL__WRITE:
@@ -544,6 +542,15 @@ void Request::execute(ArrayOperation& ops) {
 				break;
 			}
 
+		case OP::OP_GET_ELEMENT__WRITE:
+			{
+				const String& name=stack.pop().string();  debug_name=&name;
+				Value& ncontext=stack.pop().value();
+				Value& value=get_element(ncontext, name);
+				write_assign_lang(value);
+				break;
+			}
+
 #ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
 		case OP::OP_VALUE__GET_ELEMENT:
 			{
@@ -556,19 +563,7 @@ void Request::execute(ArrayOperation& ops) {
 				stack.push(value);
 				break;
 			}
-#endif
 
-
-		case OP::OP_GET_ELEMENT__WRITE:
-			{
-				const String& name=stack.pop().string();  debug_name=&name;
-				Value& ncontext=stack.pop().value();
-				Value& value=get_element(ncontext, name);
-				write_assign_lang(value);
-				break;
-			}
-
-#ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
 		case OP::OP_VALUE__GET_ELEMENT__WRITE:
 			{
 				debug_origin=i.next().origin;
@@ -806,7 +801,7 @@ void Request::execute(ArrayOperation& ops) {
 						frame.empty_params();
 						op_call(frame);
 					}
-					write_assign_lang(frame.result());
+					write_pass_lang(frame.result());
 				}
 
 				DEBUG_PRINT_STR("<-returned")
