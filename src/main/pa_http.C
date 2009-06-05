@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
  */
 
-static const char * const IDENT_HTTP_C="$Date: 2009/05/26 10:44:33 $"; 
+static const char * const IDENT_HTTP_C="$Date: 2009/06/05 06:26:19 $"; 
 
 #include "pa_http.h"
 #include "pa_common.h"
@@ -679,6 +679,7 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 				r.charsets.source(),
 				*asked_remote_charset
 			);
+			post_size=strlen(body_cstr);
 		}
 
 		// http://www.ietf.org/rfc/rfc2617.txt
