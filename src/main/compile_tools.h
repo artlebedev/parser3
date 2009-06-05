@@ -8,7 +8,7 @@
 #ifndef COMPILE_TOOLS
 #define COMPILE_TOOLS
 
-static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2009/06/04 09:31:38 $";
+static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2009/06/05 23:07:38 $";
 
 #include "pa_opcode.h"
 #include "pa_types.h"
@@ -256,18 +256,20 @@ bool maybe_change_first_opcode(ArrayOperation& opcodes, OP::OPCODE find, OP::OPC
 #ifdef OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT
 // OP_VALUE+origin+value+OP_GET_ELEMENT+OP_VALUE+origin+value+OP_GET_ELEMENT => OP_GET_OBJECT_ELEMENT+origin+value+origin+value
 inline bool maybe_make_get_object_element(ArrayOperation& opcodes, ArrayOperation& diving_code, size_t divine_count){
-	if(divine_count!=8)
+	if(divine_count<8)
 		return false;
 
 	assert(diving_code[0].code==OP::OP_VALUE);
 	if(
 		diving_code[3].code==OP::OP_GET_ELEMENT
 		&& diving_code[4].code==OP::OP_VALUE
-		&& diving_code[divine_count-1].code==OP::OP_GET_ELEMENT
+		&& diving_code[7].code==OP::OP_GET_ELEMENT
 	){
 		O(opcodes, OP::OP_GET_OBJECT_ELEMENT);
 		P(opcodes, diving_code, 1/*offset*/, 2/*limit*/); // copy first origin+value
 		P(opcodes, diving_code, 5, 2); // second origin+value
+		if(divine_count>8)
+			P(opcodes, diving_code, 8/*offset*/); // tail
 		return true;
 	}
 	return false;
@@ -278,18 +280,22 @@ inline bool maybe_make_get_object_element(ArrayOperation& opcodes, ArrayOperatio
 #ifdef OPTIMIZE_BYTECODE_GET_OBJECT_VAR_ELEMENT
 // OP_VALUE+origin+value+OP_GET_ELEMENT+OP_WITH_READ+OP_VALUE+origin+value+OP_GET_ELEMENT+OP_GET_ELEMENT => OP_GET_OBJECT_VAR_ELEMENT+origin+value+origin+value
 inline bool maybe_make_get_object_var_element(ArrayOperation& opcodes, ArrayOperation& diving_code, size_t divine_count){
-	if(divine_count!=10)
+	if(divine_count<10)
 		return false;
 
 	assert(diving_code[0].code==OP::OP_VALUE);
 	if(
-		diving_code[4].code==OP::OP_WITH_READ
+		diving_code[3].code==OP::OP_GET_ELEMENT
+		&& diving_code[4].code==OP::OP_WITH_READ
 		&& diving_code[5].code==OP::OP_VALUE
-		&& diving_code[divine_count-1].code==OP::OP_GET_ELEMENT
+		&& diving_code[8].code==OP::OP_GET_ELEMENT
+		&& diving_code[9].code==OP::OP_GET_ELEMENT
 	){
 		O(opcodes, OP::OP_GET_OBJECT_VAR_ELEMENT);
 		P(opcodes, diving_code, 1/*offset*/, 2/*limit*/); // copy first origin+value
 		P(opcodes, diving_code, 6, 2); // second origin+value
+		if(divine_count>10)
+			P(opcodes, diving_code, 10/*offset*/); // tail
 		return true;
 	}
 	return false;
@@ -300,17 +306,19 @@ inline bool maybe_make_get_object_var_element(ArrayOperation& opcodes, ArrayOper
 // OP_VALUE+origin+self+OP_GET_ELEMENT+OP_VALUE+origin+value+OP_GET_ELEMENT => OP_WITH_SELF__VALUE__GET_ELEMENT+origin+value
 #ifdef OPTIMIZE_BYTECODE_GET_SELF_ELEMENT
 inline bool maybe_make_with_self_get_element(ArrayOperation& opcodes, ArrayOperation& diving_code, size_t divine_count){
-	if(divine_count!=8)
+	if(divine_count<8)
 		return false;
 
 	assert(diving_code[0].code==OP::OP_VALUE);
 	if(
 		diving_code[3].code==OP::OP_GET_ELEMENT
 		&& diving_code[4].code==OP::OP_VALUE
-		&& diving_code[divine_count-1].code==OP::OP_GET_ELEMENT
+		&& diving_code[7].code==OP::OP_GET_ELEMENT
 	){
 		O(opcodes, OP::OP_WITH_SELF__VALUE__GET_ELEMENT);
 		P(opcodes, diving_code, 5/*offset*/, 2/*limit*/); // copy second origin+value. we know that the first one is "self"
+		if(divine_count>8)
+			P(opcodes, diving_code, 8/*offset*/); // tail
 		return true;
 	}
 	return false;

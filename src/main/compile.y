@@ -5,7 +5,7 @@
 	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.245 2009/06/04 09:31:37 misha Exp $
+	$Id: compile.y,v 1.246 2009/06/05 23:07:38 misha Exp $
 */
 
 /**
@@ -323,31 +323,35 @@ get: get_value {
 #ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
 	if(!maybe_change_first_opcode(*code, OP::OP_VALUE__GET_ELEMENT, /*=>*/OP::OP_VALUE__GET_ELEMENT__WRITE))
 #endif
-
+	{
+		size_t count=code->count();
 #ifdef OPTIMIZE_BYTECODE_GET_SELF_ELEMENT
-	if(!maybe_change_first_opcode(*code, OP::OP_WITH_SELF__VALUE__GET_ELEMENT, /*=>*/OP::OP_WITH_SELF__VALUE__GET_ELEMENT__WRITE))
+		if(
+			count!=3
+			|| !maybe_change_first_opcode(*code, OP::OP_WITH_SELF__VALUE__GET_ELEMENT, /*=>*/OP::OP_WITH_SELF__VALUE__GET_ELEMENT__WRITE)
+		)
 #endif
 
 #ifdef OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT
 		if(
-			code->count()!=5
+			count!=5
 			|| !maybe_change_first_opcode(*code, OP::OP_GET_OBJECT_ELEMENT, /*=>*/OP::OP_GET_OBJECT_ELEMENT__WRITE)
 		)
 #endif
 
 #ifdef OPTIMIZE_BYTECODE_GET_OBJECT_VAR_ELEMENT
 		if(
-			code->count()!=5
+			count!=5
 			|| !maybe_change_first_opcode(*code, OP::OP_GET_OBJECT_VAR_ELEMENT, /*=>*/OP::OP_GET_OBJECT_VAR_ELEMENT__WRITE)
 		)
 #endif
 		{
-			changetail_or_append(*code, 
+			changetail_or_append(*code,
 				OP::OP_GET_ELEMENT, false,  /*=>*/OP::OP_GET_ELEMENT__WRITE,
 				/*or */OP::OP_WRITE_VALUE
 				); /* value=pop; wcontext.write(value) */
 		}
-
+	}
 	P(*$$, *code);
 };
 get_value: '$' get_name_value { $$=$2 };
@@ -423,7 +427,7 @@ put: '$' name_expr_wdive construct {
 	$$=N();
 #ifdef OPTIMIZE_BYTECODE_CONSTRUCT
 	if(maybe_optimize_construct(*$$, *$2, *$3)){
-		// $a(expr), $.a(expr), $a[value], $.a[value]
+		// $a(expr), $.a(expr), $a[value], $.a[value], $self.a[value], $self.a(expr)
 	} else 
 #endif
 	{
