@@ -1,0 +1,19 @@
+@main[]
+$s[a12312312b]
+
+^do{^s.match[(\d);g]{$match.1}}
+^do{^s.match[\d;g;]}
+^do{^s.match[\d;g]{}}
+^do{^s.match[\d;g;!]}
+^do{^s.match[\d;g]{!}}
+^do{^s.match[\d;g;^date::now[]]}
+
+
+
+@do[jCode]
+^try{
+	$result[$jCode<br />]
+}{
+	$exception.handled(true)
+	$result['$exception.type', '$exception.source', '$exception.comment'<br />]
+}
