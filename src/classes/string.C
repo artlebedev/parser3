@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2009/05/14 08:10:09 $";
+static const char * const IDENT_STRING_C="$Date: 2009/06/06 05:28:22 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -332,17 +332,18 @@ static void search_action(Table& table, Table::element_type row, int, int, int, 
 
 #ifndef DOXYGEN
 struct Replace_action_info {
-	Request* request;  
-	const String* src;  String* dest;
+	Request* request;
+	const String* src;
+	String* dest;
 	VTable* vtable;
 	Value* replacement_code;
 };
 #endif
 /// @todo they can do $global[$result] there, getting pointer to later-invalid local var, kill this
 static void replace_action(Table& table, ArrayString* row, 
-			   int prestart, int prefinish, 
-			   int poststart, int postfinish,
-			   void *info) {
+				int prestart, int prefinish, 
+				int poststart, int postfinish,
+				void *info) {
 	Replace_action_info& ai=*static_cast<Replace_action_info *>(info);
 	if(row) { // begin&middle
 		// piece from last match['prestart'] to beginning of this match['prefinish']
@@ -353,10 +354,12 @@ static void replace_action(Table& table, ArrayString* row,
 			table.put(0, row);
 		else // begin
 			table+=row;
-		{ // execute 'replacement_code' in 'table' context
-			ai.vtable->set_table(table);
 
-			*ai.dest << ai.request->process_to_string(*ai.replacement_code);
+		{ // execute 'replacement_code' in 'table' context
+			if(ai.replacement_code){
+				ai.vtable->set_table(table);
+				*ai.dest << ai.request->process_to_string(*ai.replacement_code);
+			}
 		}
 	} else // end
 		*ai.dest << ai.src->mid(poststart, postfinish);
@@ -402,7 +405,21 @@ static void _match(Request& r, MethodParams& params) {
 		}
 
 	} else { // replace
-		Value& replacement_code=params.as_junction(2, "replacement param must be code");
+
+		Value* replacement_code=0;
+		bool is_junction=false;
+
+		Value* replacement=&params[2];
+		if(replacement->get_junction()){
+			replacement_code=replacement;
+			is_junction=true;
+		} else if(replacement->is_string()){
+			if(replacement->is_defined())
+				replacement_code=replacement;
+		} else if(!replacement->is_void())
+			throw Exception(PARSER_RUNTIME,
+				0,
+				"replacement option should be junction or string");
 
 		String result;
 		VTable* vtable=new VTable;
@@ -411,15 +428,22 @@ static void _match(Request& r, MethodParams& params) {
 			&src,
 			&result,
 			vtable,
-			&replacement_code
+			replacement_code
 		};
-		Temp_value_element temp_match_var(
-			*replacement_code.get_junction()->method_frame, 
-			match_var_name, vtable);
+
+		Temp_value_element* temp_match_var=0;
+
+		if(is_junction)
+			temp_match_var=new Temp_value_element(
+				*replacement_code->get_junction()->method_frame,
+				match_var_name, vtable);
 
 		src.match(vregex,
 			replace_action, &info,
 			matches_count);
+
+		if(temp_match_var)
+			delete temp_match_var;
 
 		r.write_assign_lang(result);
 	}
