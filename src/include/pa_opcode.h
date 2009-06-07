@@ -11,7 +11,7 @@
 
 namespace OP {
 
-static const char * const IDENT_OPCODE_H="$Date: 2009/06/04 12:28:58 $";
+static const char * const IDENT_OPCODE_H="$Date: 2009/06/07 13:16:04 $";
 
 #define OPTIMIZE_BYTECODE_GET_CLASS
 #define OPTIMIZE_BYTECODE_GET_ELEMENT				// $a ^a
@@ -55,6 +55,7 @@ enum OPCODE {
 #ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
 	OP_VALUE__GET_ELEMENT,
 	OP_VALUE__GET_ELEMENT__WRITE,
+	OP_WITH_ROOT__VALUE__GET_ELEMENT,
 #endif
 #ifdef OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT
 	OP_GET_OBJECT_ELEMENT,				// $a.b & ^a.b
