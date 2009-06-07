@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2009/06/04 12:29:38 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2009/06/07 13:15:54 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -50,6 +50,7 @@ char *opcode_name[]={
 #ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
 	"VALUE__GET_ELEMENT",
 	"VALUE__GET_ELEMENT__WRITE",
+	"WITH_ROOT__VALUE__GET_ELEMENT",
 #endif
 #ifdef OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT
 	"GET_OBJECT_ELEMENT",
@@ -152,6 +153,7 @@ void debug_dump(SAPI_Info& sapi_info, int level, ArrayOperation& ops) {
 			|| opcode==OP::OP_VALUE__GET_ELEMENT
 			|| opcode==OP::OP_VALUE__GET_ELEMENT__WRITE
 			|| opcode==OP::OP_VALUE__GET_ELEMENT_OR_OPERATOR
+			|| opcode==OP::OP_WITH_ROOT__VALUE__GET_ELEMENT
 #endif
 #ifdef OPTIMIZE_BYTECODE_GET_SELF_ELEMENT
 			|| opcode==OP::OP_WITH_SELF__VALUE__GET_ELEMENT
@@ -308,42 +310,42 @@ void Request::execute(ArrayOperation& ops) {
 		// OTHER ACTIONS BUT WITHs
 
 #ifdef OPTIMIZE_BYTECODE_CONSTRUCT
+#define DO_CONSTRUCT(context, vvalue) {                                                 \
+				debug_origin=i.next().origin;                                           \
+				const String& name=*i.next().value->get_string();  debug_name=&name;    \
+				DEBUG_PRINT_STRING(name)                                                \
+				Value& value=stack.pop().value();                                       \
+				put_element( context, name, vvalue );                                   \
+				break;                                                                  \
+		}
+#define DO_CONSTRUCT_VALUE(context) DO_CONSTRUCT(context, &value)
+#define DO_CONSTRUCT_EXPR(context) {                                                    \
+				wcontext->set_in_expression(false);                                     \
+				DO_CONSTRUCT(context, &value.as_expr_result())                          \
+		}
+
 		case OP::OP_WITH_WRITE__VALUE__CONSTRUCT_EXPR:
+			{
+				if(wcontext==method_frame)
+					throw Exception(PARSER_RUNTIME, 0, "$.name outside of $name[...]");
+				DO_CONSTRUCT_EXPR(*wcontext)
+			}
+
 		case OP::OP_WITH_WRITE__VALUE__CONSTRUCT_VALUE:
 			{
 				if(wcontext==method_frame)
-					throw Exception(PARSER_RUNTIME,
-						0,
-						"$.name outside of $name[...]");
-				// don't stop here. continue in the next block
+					throw Exception(PARSER_RUNTIME, 0, "$.name outside of $name[...]");
+				DO_CONSTRUCT_VALUE(*wcontext)
 			}
-		case OP::OP_WITH_ROOT__VALUE__CONSTRUCT_EXPR:
-		case OP::OP_WITH_ROOT__VALUE__CONSTRUCT_VALUE:
-		case OP::OP_WITH_SELF__VALUE__CONSTRUCT_EXPR:
-		case OP::OP_WITH_SELF__VALUE__CONSTRUCT_VALUE:
-			{
-				bool is_expr=(opcode==OP::OP_WITH_WRITE__VALUE__CONSTRUCT_EXPR
-								|| opcode==OP::OP_WITH_ROOT__VALUE__CONSTRUCT_EXPR
-								|| opcode==OP::OP_WITH_SELF__VALUE__CONSTRUCT_EXPR);
 
-				if(is_expr)
-					wcontext->set_in_expression(false);
+		case OP::OP_WITH_ROOT__VALUE__CONSTRUCT_EXPR:	DO_CONSTRUCT_EXPR(*method_frame)
 
-				debug_origin=i.next().origin;
-				const String& name=*i.next().value->get_string();  debug_name=&name;
-				DEBUG_PRINT_STRING(name)
+		case OP::OP_WITH_ROOT__VALUE__CONSTRUCT_VALUE:	DO_CONSTRUCT_VALUE(*method_frame)
 
-				Value& value=stack.pop().value();
+		case OP::OP_WITH_SELF__VALUE__CONSTRUCT_EXPR:	DO_CONSTRUCT_EXPR(get_self())
 
-				put_element(
-					(opcode==OP::OP_WITH_ROOT__VALUE__CONSTRUCT_EXPR || opcode==OP::OP_WITH_ROOT__VALUE__CONSTRUCT_VALUE)?*method_frame:
-					(opcode==OP::OP_WITH_SELF__VALUE__CONSTRUCT_EXPR || opcode==OP::OP_WITH_SELF__VALUE__CONSTRUCT_VALUE)?get_self():*wcontext,
-					name,
-					is_expr?&value.as_expr_result():/*value.is_void()?new VString():*/&value
-				);
+		case OP::OP_WITH_SELF__VALUE__CONSTRUCT_VALUE:	DO_CONSTRUCT_VALUE(get_self())
 
-				break;
-			}
 #endif // OPTIMIZE_BYTECODE_CONSTRUCT
 
 		case OP::OP_CONSTRUCT_VALUE:
@@ -573,6 +575,18 @@ void Request::execute(ArrayOperation& ops) {
 
 				Value& value=get_element(*rcontext, name);
 				write_assign_lang(value);
+				break;
+			}
+
+		case OP::OP_WITH_ROOT__VALUE__GET_ELEMENT:
+			{
+				debug_origin=i.next().origin;
+				const String& name=*i.next().value->get_string(); debug_name=&name;
+
+				DEBUG_PRINT_STRING(name)
+
+				Value& value=get_element(*method_frame, name);
+				stack.push(value);
 				break;
 			}
 #endif

@@ -8,7 +8,7 @@
 #ifndef COMPILE_TOOLS
 #define COMPILE_TOOLS
 
-static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2009/06/05 23:07:38 $";
+static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2009/06/07 13:15:54 $";
 
 #include "pa_opcode.h"
 #include "pa_types.h"
@@ -303,27 +303,7 @@ inline bool maybe_make_get_object_var_element(ArrayOperation& opcodes, ArrayOper
 #endif
 
 
-// OP_VALUE+origin+self+OP_GET_ELEMENT+OP_VALUE+origin+value+OP_GET_ELEMENT => OP_WITH_SELF__VALUE__GET_ELEMENT+origin+value
-#ifdef OPTIMIZE_BYTECODE_GET_SELF_ELEMENT
-inline bool maybe_make_with_self_get_element(ArrayOperation& opcodes, ArrayOperation& diving_code, size_t divine_count){
-	if(divine_count<8)
-		return false;
-
-	assert(diving_code[0].code==OP::OP_VALUE);
-	if(
-		diving_code[3].code==OP::OP_GET_ELEMENT
-		&& diving_code[4].code==OP::OP_VALUE
-		&& diving_code[7].code==OP::OP_GET_ELEMENT
-	){
-		O(opcodes, OP::OP_WITH_SELF__VALUE__GET_ELEMENT);
-		P(opcodes, diving_code, 5/*offset*/, 2/*limit*/); // copy second origin+value. we know that the first one is "self"
-		if(divine_count>8)
-			P(opcodes, diving_code, 8/*offset*/); // tail
-		return true;
-	}
-	return false;
-}
-#endif
+bool maybe_make_self(ArrayOperation& opcodes, ArrayOperation& diving_code, size_t divine_count);
 
 
 #ifdef OPTIMIZE_BYTECODE_CONSTRUCT

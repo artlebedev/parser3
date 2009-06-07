@@ -5,7 +5,7 @@
 	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.246 2009/06/05 23:07:38 misha Exp $
+	$Id: compile.y,v 1.247 2009/06/07 13:15:54 misha Exp $
 */
 
 /**
@@ -319,39 +319,42 @@ action: get | put | call;
 get: get_value {
 	$$=N();
 	YYSTYPE code=$1;
+	size_t count=code->count();
 
 #ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
-	if(!maybe_change_first_opcode(*code, OP::OP_VALUE__GET_ELEMENT, /*=>*/OP::OP_VALUE__GET_ELEMENT__WRITE))
+	if(
+		count!=3
+		|| !maybe_change_first_opcode(*code, OP::OP_VALUE__GET_ELEMENT, /*=>*/OP::OP_VALUE__GET_ELEMENT__WRITE)
+	)
 #endif
-	{
-		size_t count=code->count();
+
 #ifdef OPTIMIZE_BYTECODE_GET_SELF_ELEMENT
-		if(
-			count!=3
-			|| !maybe_change_first_opcode(*code, OP::OP_WITH_SELF__VALUE__GET_ELEMENT, /*=>*/OP::OP_WITH_SELF__VALUE__GET_ELEMENT__WRITE)
-		)
+	if(
+		count!=3
+		|| !maybe_change_first_opcode(*code, OP::OP_WITH_SELF__VALUE__GET_ELEMENT, /*=>*/OP::OP_WITH_SELF__VALUE__GET_ELEMENT__WRITE)
+	)
 #endif
 
 #ifdef OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT
-		if(
-			count!=5
-			|| !maybe_change_first_opcode(*code, OP::OP_GET_OBJECT_ELEMENT, /*=>*/OP::OP_GET_OBJECT_ELEMENT__WRITE)
-		)
+	if(
+		count!=5
+		|| !maybe_change_first_opcode(*code, OP::OP_GET_OBJECT_ELEMENT, /*=>*/OP::OP_GET_OBJECT_ELEMENT__WRITE)
+	)
 #endif
 
 #ifdef OPTIMIZE_BYTECODE_GET_OBJECT_VAR_ELEMENT
-		if(
-			count!=5
-			|| !maybe_change_first_opcode(*code, OP::OP_GET_OBJECT_VAR_ELEMENT, /*=>*/OP::OP_GET_OBJECT_VAR_ELEMENT__WRITE)
-		)
+	if(
+		count!=5
+		|| !maybe_change_first_opcode(*code, OP::OP_GET_OBJECT_VAR_ELEMENT, /*=>*/OP::OP_GET_OBJECT_VAR_ELEMENT__WRITE)
+	)
 #endif
-		{
-			changetail_or_append(*code,
-				OP::OP_GET_ELEMENT, false,  /*=>*/OP::OP_GET_ELEMENT__WRITE,
-				/*or */OP::OP_WRITE_VALUE
-				); /* value=pop; wcontext.write(value) */
-		}
+	{
+		changetail_or_append(*code,
+			OP::OP_GET_ELEMENT, false,  /*=>*/OP::OP_GET_ELEMENT__WRITE,
+			/*or */OP::OP_WRITE_VALUE
+			); /* value=pop; wcontext.write(value) */
 	}
+
 	P(*$$, *code);
 };
 get_value: '$' get_name_value { $$=$2 };
@@ -363,50 +366,40 @@ name_without_curly_rdive:
 name_without_curly_rdive_read: name_without_curly_rdive_code {
 	$$=N(); 
 	YYSTYPE diving_code=$1;
-	const String* first_name=LA2S(*diving_code);
 	size_t count=diving_code->count();
-	// self.xxx... => xxx...
-	// OP_VALUE+origin+string+OP_GET_ELEMENT+... -> OP_WITH_SELF+...
-	if(first_name && *first_name==SELF_ELEMENT_NAME) {
-#ifdef OPTIMIZE_BYTECODE_GET_SELF_ELEMENT
-		if(maybe_make_with_self_get_element(*$$, *diving_code, count)){
-			// optimization for $self.field and ^self.method
-		} else
-#endif
-			{
-				O(*$$, OP::OP_WITH_SELF); /* stack: starting context */
-				P(*$$, *diving_code, 
-					/* skip over... */
-					count>=4?4/*OP_VALUE+origin+string+OP_GET_ELEMENTx*/:3/*OP::OP_+origin+string*/);
-			}
-	}
+
+	if(maybe_make_self(*$$, *diving_code, count)) {
+		// $self.
+	} else
 
 #ifdef OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT
-	else if(maybe_make_get_object_element(*$$, *diving_code, count)){
+	if(maybe_make_get_object_element(*$$, *diving_code, count)){
 		// optimization for $object.field + ^object.method[
-	}
+	} else
 #endif
 
 #ifdef OPTIMIZE_BYTECODE_GET_OBJECT_VAR_ELEMENT
-	else if(maybe_make_get_object_var_element(*$$, *diving_code, count)){
+	if(maybe_make_get_object_var_element(*$$, *diving_code, count)){
 		// optimization for $object.$var
-	}
+	} else
 #endif
 
 #ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
-	else if(count==4){ // optimization
+	if(count>=4){ // optimization
 		O(*$$,
-			(PC.in_call_value)
+			(PC.in_call_value && count==4)
 			? OP::OP_VALUE__GET_ELEMENT_OR_OPERATOR // ^object[ : OP_VALUE+origin+string+OP_GET_ELEMENT => OP_VALUE__GET_ELEMENT_OR_OPERATOR+origin+string
 			: OP::OP_VALUE__GET_ELEMENT             // $object  : OP_VALUE+origin+string+OP_GET_ELEMENT => OP_VALUE__GET_ELEMENT+origin+string
 		);
 		P(*$$, *diving_code, 1/*offset*/, 2/*limit*/); // copy origin+value
+		if(count>4)
+			P(*$$, *diving_code, 4); // copy tail
 	} else {
 		O(*$$, OP::OP_WITH_READ); /* stack: starting context */
 		P(*$$, *diving_code);
 	}
 #else
-	else {
+	{
 		O(*$$, OP::OP_WITH_READ); /* stack: starting context */
 
 		// ^if OP_ELEMENT => ^if OP_ELEMENT_OR_OPERATOR
@@ -442,15 +435,24 @@ name_expr_wdive:
 name_expr_wdive_root: name_expr_dive_code {
 	$$=N();
 	YYSTYPE diving_code=$1;
-	const String* first_name=LA2S(*diving_code);
-	// $self.xxx... => $xxx...
-	// OP_VALUE+origin+string+OP_GET_ELEMENT+... => OP_WITH_SELF+...
-	if(first_name && *first_name==SELF_ELEMENT_NAME) {
-		O(*$$, OP::OP_WITH_SELF); /* stack: starting context */
-		P(*$$, *diving_code, 
-			/* skip over... */
-			diving_code->count()>=4?4/*OP::OP_VALUE+origin+string+OP::OP_GET_ELEMENTx*/:3/*OP::OP_+origin+string*/);
-	} else {
+	size_t count=diving_code->count();
+
+	if(maybe_make_self(*$$, *diving_code, count)) {
+		// $self.
+	} else
+#ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
+	if(
+		count>=4
+		&& (*diving_code)[0].code==OP::OP_VALUE
+		&& (*diving_code)[3].code==OP::OP_GET_ELEMENT
+	){
+		O(*$$, OP::OP_WITH_ROOT__VALUE__GET_ELEMENT);
+		P(*$$, *diving_code, 1/*offset*/, 2/*limit*/); // copy origin+value
+		if(count>4)
+			P(*$$, *diving_code, 4); // tail
+	} else
+#endif
+	{
 		O(*$$, OP::OP_WITH_ROOT); /* stack: starting context */
 		P(*$$, *diving_code);
 	}

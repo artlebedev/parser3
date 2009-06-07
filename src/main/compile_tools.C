@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMPILE_TOOLS_C="$Date: 2009/06/04 09:31:38 $";
+static const char * const IDENT_COMPILE_TOOLS_C="$Date: 2009/06/07 13:15:54 $";
 
 #include "compile_tools.h"
 #include "pa_string.h"
@@ -13,6 +13,7 @@ static const char * const IDENT_COMPILE_TOOLS_C="$Date: 2009/06/04 09:31:38 $";
 #include "pa_exception.h"
 #include "pa_vstring.h"
 #include "pa_vdouble.h"
+#include "pa_vmethod_frame.h"
 
 Value* LA2V(ArrayOperation& literal_string_array, int offset, OP::OPCODE code) {
 	return literal_string_array[offset+0].code==code?literal_string_array[offset+2/*skip opcode&origin*/].value
@@ -52,6 +53,38 @@ bool maybe_change_first_opcode(ArrayOperation& opcodes, OP::OPCODE find, OP::OPC
 	opcodes.put(0, replace);
 	return true;
 }
+
+
+// OP_VALUE+origin+self+OP_GET_ELEMENT+OP_VALUE+origin+value+OP_GET_ELEMENT => OP_WITH_SELF__VALUE__GET_ELEMENT+origin+value
+bool maybe_make_self(ArrayOperation& opcodes, ArrayOperation& diving_code, size_t divine_count){
+	const String* first_name=LA2S(diving_code);
+
+	if(first_name && *first_name==SELF_ELEMENT_NAME){
+#ifdef OPTIMIZE_BYTECODE_GET_SELF_ELEMENT
+		if(
+			divine_count>=8
+			&& diving_code[3].code==OP::OP_GET_ELEMENT
+			&& diving_code[4].code==OP::OP_VALUE
+			&& diving_code[7].code==OP::OP_GET_ELEMENT
+		){
+			// optimization for $self.field and ^self.method
+			O(opcodes, OP::OP_WITH_SELF__VALUE__GET_ELEMENT);
+			P(opcodes, diving_code, 5/*offset*/, 2/*limit*/); // copy second origin+value. we know that the first one is "self"
+			if(divine_count>8)
+				P(opcodes, diving_code, 8/*offset*/); // copy tail
+		} else
+#endif
+		{
+			// self.xxx... => xxx...
+			// OP_VALUE+origin+string+OP_GET_ELEMENT+... -> OP_WITH_SELF+...
+			O(opcodes, OP::OP_WITH_SELF); /* stack: starting context */
+			P(opcodes, diving_code, divine_count>=4?4/*OP::OP_VALUE+origin+string+OP::OP_GET_ELEMENTx*/:3/*OP::OP_+origin+string*/);
+		}
+		return true;
+	}
+	return false;
+}
+
 
 void push_LS(Parse_control& pc, lexical_state new_state) { 
 	if(pc.ls_sp<MAX_LEXICAL_STATES) {
