@@ -5,7 +5,7 @@
 	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.247 2009/06/07 13:15:54 misha Exp $
+	$Id: compile.y,v 1.248 2009/06/07 22:37:31 misha Exp $
 */
 
 /**
@@ -385,7 +385,12 @@ name_without_curly_rdive_read: name_without_curly_rdive_code {
 #endif
 
 #ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
-	if(count>=4){ // optimization
+	if(
+		count>=4
+		&& (*diving_code)[0].code==OP::OP_VALUE
+		&& (*diving_code)[3].code==OP::OP_GET_ELEMENT
+	){
+		 // optimization
 		O(*$$,
 			(PC.in_call_value && count==4)
 			? OP::OP_VALUE__GET_ELEMENT_OR_OPERATOR // ^object[ : OP_VALUE+origin+string+OP_GET_ELEMENT => OP_VALUE__GET_ELEMENT_OR_OPERATOR+origin+string
