@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_PARSER3_C="$Date: 2008/04/14 07:46:04 $";
+static const char * const IDENT_PARSER3_C="$Date: 2009/06/09 08:47:17 $";
 
 #include "pa_config_includes.h"
 
@@ -613,7 +613,7 @@ static void usage(const char* program) {
 	exit(EINVAL);
 }
 
-int main(size_t argc, char *argv[]) {
+int main(int argc, char *argv[]) {
 #ifdef PA_DEBUG_CGI_ENTRY_EXIT
 	log("main: entry");
 #endif
@@ -675,7 +675,7 @@ int main(size_t argc, char *argv[]) {
 		if(raw_filespec_to_process && !*raw_filespec_to_process)
 			raw_filespec_to_process=0;
 	} else {
-		size_t optind=1;
+		int optind=1;
 		while(optind < argc){
 			char *carg = argv[optind];
 			if(carg[0] != '-')
