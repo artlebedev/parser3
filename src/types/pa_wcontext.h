@@ -8,7 +8,7 @@
 #ifndef PA_WCONTEXT_H
 #define PA_WCONTEXT_H
 
-static const char * const IDENT_WCONTEXT_H="$Date: 2009/04/21 09:26:08 $";
+static const char * const IDENT_WCONTEXT_H="$Date: 2009/06/13 07:06:07 $";
 
 #include "pa_value.h"
 #include "pa_vstring.h"
@@ -72,8 +72,7 @@ public: // WContext
 		if value is VString writes fstring,
 		else writes Value; raises an error if already, providing origin
 	*/
-	void write(
-		Value& avalue, String::Language alang) {
+	virtual void write(Value& avalue, String::Language alang) {
 		if(const String* fstring=avalue.get_string())
 			write(*fstring, alang);
 		else

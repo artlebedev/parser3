@@ -1,14 +1,16 @@
 /**	@file
 	Parser: @b write_wrapper write context
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_WWRAPPER_H
 #define PA_WWRAPPER_H
 
-static const char * const IDENT_WWRAPPER_H="$Date: 2005/08/09 08:14:56 $";
+static const char * const IDENT_WWRAPPER_H="$Date: 2009/06/13 07:06:07 $";
+
+//#define OPTIMIZE_SINGLE_STRING_WRITE
 
 #include "pa_wcontext.h"
 #include "pa_exception.h"
@@ -56,5 +58,77 @@ private:
 		return *fvalue;
 	}
 };
+
+#ifdef OPTIMIZE_SINGLE_STRING_WRITE
+class WObjectPoolWrapper: public WWrapper {
+public:
+
+	enum WState {
+		WS_NONE,
+		WS_KEEP_VALUE,
+		WS_TRANSPARENT
+	};
+
+	WObjectPoolWrapper(Value* avalue, WContext *aparent) : 
+		WWrapper(avalue, aparent), fstate(WS_NONE) {
+	}
+
+	override const VJunction* put_element(Value& aself, const String& aname, Value* avalue, bool areplace) { 
+		if(fstate == WS_KEEP_VALUE)
+			fvalue=0; // VHash will be created, thus no need to flush fvalue
+		fstate=WS_TRANSPARENT;
+		return WWrapper::put_element(aself, aname, avalue, areplace); 
+	}
+
+	override void write(const String& astring, String::Language alang) {
+		if(fstate == WS_KEEP_VALUE)
+			flush();
+		fstate=WS_TRANSPARENT;
+		WWrapper::write(astring, alang);
+	}
+
+	override void write(Value& avalue) {
+		if(fstate == WS_KEEP_VALUE)
+			flush();
+		fstate=WS_TRANSPARENT;
+		WWrapper::write(avalue);
+	}
+
+	override void write(Value& avalue, String::Language alang) {
+		switch(fstate){
+			case WS_NONE:{
+				// alang is allways L_PASS_APPENDED, but just in case we check it
+				// only VString can be cached, no get_string() call as VInt/etc will be affected
+				if (dynamic_cast<VString *>(&avalue) && alang == String::L_PASS_APPENDED){
+					fvalue=&avalue;
+					fstate=WS_KEEP_VALUE;
+					return;
+				}
+				break;
+			}
+			case WS_KEEP_VALUE:{
+				flush();
+				break;
+			}
+		}
+		fstate=WS_TRANSPARENT;
+		// we copy WWrapper::write here to prevent virtual call to our class
+		if(const String* fstring=avalue.get_string())
+			WWrapper::write(*fstring, alang);
+		else
+			WWrapper::write(avalue);
+	}
+
+	//override StringOrValue result() - not required as as_value() will be allways called
+private:
+
+	WState fstate;
+
+	inline void flush(){
+		WWrapper::write(*fvalue->get_string(), String::L_PASS_APPENDED);
+		fvalue=0;
+	}
+};
+#endif
 
 #endif
