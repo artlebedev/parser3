@@ -8,9 +8,9 @@
 #ifndef PA_WWRAPPER_H
 #define PA_WWRAPPER_H
 
-static const char * const IDENT_WWRAPPER_H="$Date: 2009/06/13 07:06:07 $";
+static const char * const IDENT_WWRAPPER_H="$Date: 2009/06/13 07:22:36 $";
 
-//#define OPTIMIZE_SINGLE_STRING_WRITE
+#define OPTIMIZE_SINGLE_STRING_WRITE
 
 #include "pa_wcontext.h"
 #include "pa_exception.h"
