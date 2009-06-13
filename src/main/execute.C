@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2009/06/07 13:15:54 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2009/06/13 07:05:57 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -65,7 +65,12 @@ char *opcode_name[]={
 	"WITH_SELF__VALUE__GET_ELEMENT__WRITE",
 #endif
 	"OBJECT_POOL",	"STRING_POOL",
-	"PREPARE_TO_CONSTRUCT_OBJECT",	"PREPARE_TO_EXPRESSION", 
+	"PREPARE_TO_CONSTRUCT_OBJECT",
+#ifdef OPTIMIZE_BYTECODE_CONSTRUCT_OBJECT
+	"CONSTRUCT_OBJECT",
+	"CONSTRUCT_OBJECT__WRITE",
+#endif
+	"PREPARE_TO_EXPRESSION", 
 	"CALL", "CALL__WRITE",
 
 #ifdef OPTIMIZE_BYTECODE_CONSTRUCT
@@ -143,6 +148,26 @@ void debug_dump(SAPI_Info& sapi_info, int level, ArrayOperation& ops) {
 			continue;
 		}
 #endif
+#ifdef OPTIMIZE_BYTECODE_CONSTRUCT_OBJECT
+		if(
+			opcode==OP::OP_CONSTRUCT_OBJECT
+			|| opcode==OP::OP_CONSTRUCT_OBJECT__WRITE
+		){
+			i.next(); // skip origin
+			Value& value1=*i.next().value;
+			i.next(); // skip origin
+			Value& value2=*i.next().value;
+			debug_printf(sapi_info, 
+				"%*s%s"
+				" \"%s\" \"%s\"", 
+				level*4, "", opcode_name[opcode],
+				debug_value_to_cstr(value1), debug_value_to_cstr(value2));
+
+			if(ArrayOperation* local_ops=i.next().ops)
+				debug_dump(sapi_info, level+1, *local_ops);
+			continue;
+		}
+#endif
 		if(
 			opcode==OP::OP_VALUE
 			|| opcode==OP::OP_STRING__WRITE
@@ -178,6 +203,7 @@ void debug_dump(SAPI_Info& sapi_info, int level, ArrayOperation& ops) {
 				debug_value_to_cstr(value), value.type());
 			continue;
 		}
+
 		debug_printf(sapi_info, "%*s%s", level*4, "", opcode_name[opcode]);
 
 		switch(opcode) {
@@ -618,7 +644,11 @@ void Request::execute(ArrayOperation& ops) {
 				WContext *saved_wcontext=wcontext;
 				String::Language saved_lang=flang;
 				flang=String::L_PASS_APPENDED;
+#ifdef OPTIMIZE_SINGLE_STRING_WRITE
+				WObjectPoolWrapper local(0/*empty*/, wcontext);
+#else
 				WWrapper local(0/*empty*/, wcontext);
+#endif
 				wcontext=&local;
 
 				execute(local_ops);
@@ -683,11 +713,13 @@ void Request::execute(ArrayOperation& ops) {
 				break;
 			}
 
+#ifndef OPTIMIZE_BYTECODE_CONSTRUCT_OBJECT
 		case OP::OP_PREPARE_TO_CONSTRUCT_OBJECT:
 			{
 				wcontext->set_constructing(true);
 				break;
 			}
+#endif
 
 		case OP::OP_PREPARE_TO_EXPRESSION:
 			{
@@ -802,6 +834,9 @@ void Request::execute(ArrayOperation& ops) {
 				} else 
 #endif // OPTIMIZE_CALL
 				{
+					if(wcontext->get_constructing())
+						throw Exception(PARSER_RUNTIME, 0, "non-optimized constructing");
+
 					VMethodFrame frame(*junction, method_frame);
 					if(local_ops){ // store param code goes here
 						size_t first = stack.top_index();
@@ -830,6 +865,88 @@ void Request::execute(ArrayOperation& ops) {
 				}
 				break;
 			}
+
+#ifdef OPTIMIZE_BYTECODE_CONSTRUCT_OBJECT
+		case OP::OP_CONSTRUCT_OBJECT:
+		case OP::OP_CONSTRUCT_OBJECT__WRITE:
+			{
+				// maybe they do ^class:method[] call, remember the fact
+				wcontext->set_somebody_entered_some_class();
+
+				debug_origin=i.next().origin;
+				Value& vclass_name=*i.next().value;
+				const String& class_name=*vclass_name.get_string();
+
+				DEBUG_PRINT_STRING(class_name)
+
+				Value* class_value=classes().get(class_name);
+				if(!class_value)
+					throw Exception(PARSER_RUNTIME,
+						&class_name,
+						"class is undefined"); 
+
+				wcontext->set_constructing(true);
+
+				debug_origin=i.next().origin;
+				Value& vconstructor_name=*i.next().value;
+				const String& constructor_name=*vconstructor_name.get_string(); debug_name=&constructor_name;
+
+				DEBUG_PRINT_STRING(constructor_name)
+
+				Value& constructor_value=get_element(*class_value, constructor_name);
+
+				ArrayOperation* local_ops=i.next().ops;
+				DEBUG_PRINT_OPS(local_ops)
+				DEBUG_PRINT_STR("->\n")
+
+				Junction* junction=constructor_value.get_junction();
+				if(!junction) {
+					if(constructor_value.is("void"))
+						throw Exception(PARSER_RUNTIME,
+							0,
+							"undefined method");
+					else
+						throw Exception(PARSER_RUNTIME,
+							0,
+							"is '%s', not a method or junction, can not call it",
+							constructor_value.type());
+				} else {
+					VMethodFrame frame(*junction, method_frame);
+					if(local_ops){ // store param code goes here
+						size_t first = stack.top_index();
+						execute(*local_ops);
+
+						frame.store_params((Value**)stack.ptr(first), stack.top_index()-first);
+						op_call(frame);
+
+						stack.set_top_index(first);
+					} else {
+						frame.empty_params();
+						op_call(frame);
+					}
+					
+					if(opcode==OP::OP_CONSTRUCT_OBJECT)
+						stack.push(frame.result().as_value());
+					else
+						write_pass_lang(frame.result());
+				}
+
+				DEBUG_PRINT_STR("<-returned")
+
+
+/*
+				if(get_skip())
+					return;
+				if(get_interrupted()) {
+					set_interrupted(false);
+					throw Exception("parser.interrupted",
+						0,
+						"execution stopped");
+				}
+*/
+				break;
+			}
+#endif // OPTIMIZE_BYTECODE_CONSTRUCT_OBJECT
 
 		// expression ops: unary
 		case OP::OP_NEG:
