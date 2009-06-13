@@ -5,7 +5,7 @@
 	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.248 2009/06/07 22:37:31 misha Exp $
+	$Id: compile.y,v 1.249 2009/06/13 07:05:22 misha Exp $
 */
 
 /**
@@ -522,9 +522,12 @@ call: call_value {
 #endif
 	{
 		$$=$1; /* stack: value */
-		changetail_or_append(*$$, 
-			OP::OP_CALL, true,  /*=>*/ OP::OP_CALL__WRITE,
-			/*or */OP::OP_WRITE_VALUE); /* value=pop; wcontext.write(value) */
+#ifdef OPTIMIZE_BYTECODE_CONSTRUCT_OBJECT
+		if(!maybe_change_first_opcode(*$$, OP::OP_CONSTRUCT_OBJECT, /*=>*/OP::OP_CONSTRUCT_OBJECT__WRITE))
+#endif
+			changetail_or_append(*$$, 
+				OP::OP_CALL, true,  /*=>*/ OP::OP_CALL__WRITE,
+				/*or */OP::OP_WRITE_VALUE); /* value=pop; wcontext.write(value) */
 	}
 };
 call_value: '^' { 
@@ -540,13 +543,11 @@ call_value: '^' {
 #else
 	const String* operator_name=LA2S(*$3, 1);
 #endif
-	if(operator_name && *operator_name == REM_OPERATOR_NAME){
+	if(operator_name && *operator_name==REM_OPERATOR_NAME){
 		$$=N();
 	} else 
 #endif
 		{
-			$$=$3; /* with_xxx,diving code; stack: context,method_junction */
-
 			YYSTYPE params_code=$5;
 			if(params_code->count()==3) { // probably [] case. [OP::OP_VALUE+origin+Void]
 				if(Value* value=LA2V(*params_code)) // it is OP_VALUE+origin+value?
@@ -554,7 +555,27 @@ call_value: '^' {
 						params_code=0; // ^zzz[] case. don't append lone empty param.
 			}
 			/* stack: context, method_junction */
-			OA(*$$, OP::OP_CALL, params_code); // method_frame=make frame(pop junction); ncontext=pop; call(ncontext,method_frame) stack: value
+
+			YYSTYPE var_code=$3;
+#ifdef OPTIMIZE_BYTECODE_CONSTRUCT_OBJECT
+			if(
+				var_code->count()==8
+				&& (*var_code)[0].code==OP::OP_VALUE__GET_CLASS
+				&& (*var_code)[3].code==OP::OP_PREPARE_TO_CONSTRUCT_OBJECT
+				&& (*var_code)[4].code==OP::OP_VALUE
+				&& (*var_code)[7].code==OP::OP_GET_ELEMENT
+			){
+				yyval=N();
+				O(*$$, OP::OP_CONSTRUCT_OBJECT);
+				P(*$$, *var_code, 1/*offset*/, 2/*limit*/); // class name
+				P(*$$, *var_code, 5/*offset*/, 2/*limit*/); // constructor name
+				OA(*$$, params_code);
+			} else 
+#endif
+				{
+					$$=var_code; /* with_xxx,diving code; stack: context,method_junction */
+					OA(*$$, OP::OP_CALL, params_code); // method_frame=make frame(pop junction); ncontext=pop; call(ncontext,method_frame) stack: value
+				}
 		}
 };
 

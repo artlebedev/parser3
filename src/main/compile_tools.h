@@ -8,7 +8,7 @@
 #ifndef COMPILE_TOOLS
 #define COMPILE_TOOLS
 
-static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2009/06/07 13:15:54 $";
+static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2009/06/13 07:05:22 $";
 
 #include "pa_opcode.h"
 #include "pa_types.h"
@@ -207,6 +207,10 @@ inline void P(ArrayOperation& result, ArrayOperation& code_array, int offset, in
 }
 
 /// append cOde Array
+inline void OA(ArrayOperation& result, ArrayOperation* code_array) {
+	result+=Operation(code_array); // append 'code_array'
+}
+
 inline void OA(ArrayOperation& result, OP::OPCODE code, ArrayOperation* code_array) {
 	result+=Operation(code); // append OP_CODE
 	result+=Operation(code_array); // append 'code_array'

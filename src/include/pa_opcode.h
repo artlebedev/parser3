@@ -11,13 +11,13 @@
 
 namespace OP {
 
-static const char * const IDENT_OPCODE_H="$Date: 2009/06/07 13:16:04 $";
+static const char * const IDENT_OPCODE_H="$Date: 2009/06/13 07:05:12 $";
 
 #define OPTIMIZE_BYTECODE_GET_CLASS
 #define OPTIMIZE_BYTECODE_GET_ELEMENT				// $a ^a
 #define OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT		// $a.b ^a.b
 #define OPTIMIZE_BYTECODE_GET_OBJECT_VAR_ELEMENT	// $a.$b ^a.$b
-//#define OPTIMIZE_BYTECODE_STRING_POOL
+#define OPTIMIZE_BYTECODE_STRING_POOL
 #define OPTIMIZE_BYTECODE_CUT_REM_OPERATOR			// cut rem with all params
 
 #ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
@@ -26,6 +26,8 @@ static const char * const IDENT_OPCODE_H="$Date: 2009/06/07 13:16:04 $";
 													// $self.a(expr), $self.a[value]
 #endif
 #define OPTIMIZE_BYTECODE_GET_SELF_ELEMENT			// $self.a ^self.a
+#define OPTIMIZE_BYTECODE_CONSTRUCT_OBJECT			// ^class::constructor
+
 
 ///	Compiled operation code
 enum OPCODE {
@@ -70,7 +72,12 @@ enum OPCODE {
 	OP_WITH_SELF__VALUE__GET_ELEMENT__WRITE,
 #endif
 	OP_OBJECT_POOL,	OP_STRING_POOL,
-	OP_PREPARE_TO_CONSTRUCT_OBJECT, OP_PREPARE_TO_EXPRESSION, 
+	OP_PREPARE_TO_CONSTRUCT_OBJECT,
+#ifdef OPTIMIZE_BYTECODE_CONSTRUCT_OBJECT
+	OP_CONSTRUCT_OBJECT,
+	OP_CONSTRUCT_OBJECT__WRITE,
+#endif
+	OP_PREPARE_TO_EXPRESSION, 
 	OP_CALL, OP_CALL__WRITE,
 
 #ifdef OPTIMIZE_BYTECODE_CONSTRUCT
