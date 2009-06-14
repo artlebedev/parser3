@@ -11,7 +11,7 @@
 
 namespace OP {
 
-static const char * const IDENT_OPCODE_H="$Date: 2009/06/13 07:05:12 $";
+static const char * const IDENT_OPCODE_H="$Date: 2009/06/14 00:34:21 $";
 
 #define OPTIMIZE_BYTECODE_GET_CLASS
 #define OPTIMIZE_BYTECODE_GET_ELEMENT				// $a ^a
@@ -22,9 +22,9 @@ static const char * const IDENT_OPCODE_H="$Date: 2009/06/13 07:05:12 $";
 
 #ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
 #define OPTIMIZE_BYTECODE_CONSTRUCT					// $a(expr),  $a[value]
-													// $.a(expr), $.a[value]
+#endif												// $.a(expr), $.a[value]
 													// $self.a(expr), $self.a[value]
-#endif
+
 #define OPTIMIZE_BYTECODE_GET_SELF_ELEMENT			// $self.a ^self.a
 #define OPTIMIZE_BYTECODE_CONSTRUCT_OBJECT			// ^class::constructor
 
