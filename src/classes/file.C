@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2009/05/25 08:11:40 $";
+static const char * const IDENT_FILE_C="$Date: 2009/06/14 00:33:36 $";
 
 #include "pa_config_includes.h"
 
@@ -45,7 +45,7 @@ extern String sql_offset_name;
 class MFile: public Methoded {
 public: // VStateless_class
 	
-	Value* create_new_value(Pool&, HashStringValue&) { return new VFile(); }
+	Value* create_new_value(Pool&, HashStringValue*) { return new VFile(); }
 
 public: // Methoded
 	bool used_directly() { return true; }

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VCLASS_C="$Date: 2009/04/10 11:41:35 $";
+static const char * const IDENT_VCLASS_C="$Date: 2009/06/14 00:33:54 $";
 
 #include "pa_vclass.h"
 
@@ -142,6 +142,6 @@ const VJunction* VClass::put_element(Value& aself, const String& aname, Value* a
 }
 
 /// @returns object of this class
-Value* VClass::create_new_value(Pool& apool, HashStringValue& afields) { 
-	return new VObject(apool, *this, afields);
+Value* VClass::create_new_value(Pool& apool, HashStringValue* afields) { 
+	return new VObject(apool, *this, afields ? afields : new HashStringValue());
 }

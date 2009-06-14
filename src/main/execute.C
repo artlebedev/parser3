@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2009/06/13 07:05:57 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2009/06/14 00:34:04 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -834,9 +834,6 @@ void Request::execute(ArrayOperation& ops) {
 				} else 
 #endif // OPTIMIZE_CALL
 				{
-					if(wcontext->get_constructing())
-						throw Exception(PARSER_RUNTIME, 0, "non-optimized constructing");
-
 					VMethodFrame frame(*junction, method_frame);
 					if(local_ops){ // store param code goes here
 						size_t first = stack.top_index();
@@ -1288,8 +1285,7 @@ void Request::op_call(VMethodFrame& frame){
 		wcontext->set_constructing(false);
 		if(junction.method->call_type!=Method::CT_STATIC) {
 			// this is a constructor call
-			HashStringValue& new_object_fields=*new HashStringValue();
-			if(new_self=called_class.create_new_value(fpool, new_object_fields)) {
+			if(new_self=called_class.create_new_value(fpool, 0 /*creating fields only in VClass*/)) {
 				// some stateless_class creatable derivates
 			} else 
 				throw Exception(PARSER_RUNTIME,

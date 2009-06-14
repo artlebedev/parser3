@@ -1,14 +1,14 @@
 /**	@file
 	Parser: @b class parser class decl.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VCLASS_H
 #define PA_VCLASS_H
 
-static const char * const IDENT_VCLASS_H="$Date: 2008/06/05 13:27:37 $";
+static const char * const IDENT_VCLASS_H="$Date: 2009/06/14 00:33:54 $";
 
 // includes
 
@@ -31,7 +31,7 @@ public: // Value
 
 	override Value* get_element(const String& aname, Value& aself, bool alooking_up);
 	override const VJunction* put_element(Value& self, const String& name, Value* value, bool replace);
-	override Value* create_new_value(Pool& apool, HashStringValue& afields);
+	override Value* create_new_value(Pool& apool, HashStringValue* afields);
 
 public: // VStateless_class
 

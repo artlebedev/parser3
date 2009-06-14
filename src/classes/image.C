@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_IMAGE_C="$Date: 2009/05/14 08:10:09 $";
+static const char * const IDENT_IMAGE_C="$Date: 2009/06/14 00:33:36 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -33,7 +33,7 @@ static const char * const IDENT_IMAGE_C="$Date: 2009/05/14 08:10:09 $";
 
 class MImage: public Methoded {
 public: // VStateless_class
-	Value* create_new_value(Pool&, HashStringValue&) { return new VImage(); }
+	Value* create_new_value(Pool&, HashStringValue*) { return new VImage(); }
 
 public:
 	MImage();

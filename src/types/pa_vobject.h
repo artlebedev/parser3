@@ -1,14 +1,14 @@
 /**	@file
 	Parser: @b object class decl.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VOBJECT_H
 #define PA_VOBJECT_H
 
-static const char * const IDENT_VOBJECT_H="$Date: 2008/06/16 12:47:25 $";
+static const char * const IDENT_VOBJECT_H="$Date: 2009/06/14 00:33:54 $";
 
 // includes
 
@@ -66,7 +66,7 @@ public: // Value
 
 public: // creation
 
-	VObject(Pool& apool, VStateless_class& aclass, HashStringValue& afields): fclass(aclass), ffields(afields), fderived(0) {
+	VObject(Pool& apool, VStateless_class& aclass, HashStringValue* afields): fclass(aclass), ffields(*afields), fderived(0) {
 		if(VStateless_class* base_class=fclass.base_class())
 			(fbase=base_class->create_new_value(apool, afields))->set_derived(this);
 	}
