@@ -1,1 +1,6 @@
-^if(" 09 "){y;n}
+^try{
+	^if(" 09 "){y;n}
+}{
+	$exception.handled(1)
+	failed, that's OK
+}
