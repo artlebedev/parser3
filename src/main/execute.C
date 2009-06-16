@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2009/06/14 00:34:04 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2009/06/16 08:40:32 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -716,7 +716,7 @@ void Request::execute(ArrayOperation& ops) {
 #ifndef OPTIMIZE_BYTECODE_CONSTRUCT_OBJECT
 		case OP::OP_PREPARE_TO_CONSTRUCT_OBJECT:
 			{
-				wcontext->set_constructing(true);
+				SET_CONSTRUCTING(wcontext,true)
 				break;
 			}
 #endif
@@ -726,6 +726,18 @@ void Request::execute(ArrayOperation& ops) {
 				wcontext->set_in_expression(true);
 				break;
 			}
+
+#define METHOD_FRAME_ACTION(action)													\
+		if(local_ops){																\
+			size_t first = stack.top_index();										\
+			execute(*local_ops);													\
+			frame.store_params((Value**)stack.ptr(first), stack.top_index()-first);	\
+			action;																	\
+			stack.set_top_index(first);												\
+		} else {																	\
+			frame.empty_params();													\
+			action;																	\
+		}
 
 		case OP::OP_CALL:
 			{
@@ -750,18 +762,7 @@ void Request::execute(ArrayOperation& ops) {
 				}
 
 				VMethodFrame frame(*junction, method_frame);
-
-				if(local_ops){ // store param code goes here
-					size_t first = stack.top_index();
-					execute(*local_ops);
-					frame.store_params((Value**)stack.ptr(first), stack.top_index()-first);
-					op_call(frame);
-					stack.set_top_index(first);
-				} else {
-					frame.empty_params();
-					op_call(frame);
-				}
-
+				METHOD_FRAME_ACTION(op_call(frame, GET_CONSTRUCTING(wcontext)));
 				stack.push(frame.result().as_value());
 
 				DEBUG_PRINT_STR("<-returned")
@@ -801,7 +802,7 @@ void Request::execute(ArrayOperation& ops) {
 
 #ifdef OPTIMIZE_CALL
 				const Method& method=*junction->method;
-				if (!wcontext->get_constructing() && method.call_optimization==Method::CO_WITHOUT_FRAME){
+				if (!GET_CONSTRUCTING(wcontext) && method.call_optimization==Method::CO_WITHOUT_FRAME){
 					if(local_ops){ // store param code goes here
 						size_t first = stack.top_index();
 						execute(*local_ops);
@@ -817,36 +818,14 @@ void Request::execute(ArrayOperation& ops) {
 						method.check_actual_numbered_params(junction->self, &method_params);
 						method.native_code(*this, method_params); // execute it
 					}
-				} else if (!wcontext->get_constructing() && method.call_optimization==Method::CO_WITHOUT_WCONTEXT){
+				} else if (!GET_CONSTRUCTING(wcontext) && method.call_optimization==Method::CO_WITHOUT_WCONTEXT){
 					VMethodFrame frame(*junction, method_frame);
-					if(local_ops){ // store param code goes here
-						size_t first = stack.top_index();
-						execute(*local_ops);
-
-						frame.store_params((Value**)stack.ptr(first), stack.top_index()-first);
-						op_call_write(frame);
-
-						stack.set_top_index(first);
-					} else {
-						frame.empty_params();
-						op_call_write(frame);
-					}
+					METHOD_FRAME_ACTION(op_call_write(frame));
 				} else 
 #endif // OPTIMIZE_CALL
 				{
 					VMethodFrame frame(*junction, method_frame);
-					if(local_ops){ // store param code goes here
-						size_t first = stack.top_index();
-						execute(*local_ops);
-
-						frame.store_params((Value**)stack.ptr(first), stack.top_index()-first);
-						op_call(frame);
-
-						stack.set_top_index(first);
-					} else {
-						frame.empty_params();
-						op_call(frame);
-					}
+					METHOD_FRAME_ACTION(op_call(frame, GET_CONSTRUCTING(wcontext)));
 					write_pass_lang(frame.result());
 				}
 
@@ -868,7 +847,7 @@ void Request::execute(ArrayOperation& ops) {
 		case OP::OP_CONSTRUCT_OBJECT__WRITE:
 			{
 				// maybe they do ^class:method[] call, remember the fact
-				wcontext->set_somebody_entered_some_class();
+				// wcontext->set_somebody_entered_some_class();
 
 				debug_origin=i.next().origin;
 				Value& vclass_name=*i.next().value;
@@ -882,7 +861,7 @@ void Request::execute(ArrayOperation& ops) {
 						&class_name,
 						"class is undefined"); 
 
-				wcontext->set_constructing(true);
+				SET_CONSTRUCTING(wcontext,true)
 
 				debug_origin=i.next().origin;
 				Value& vconstructor_name=*i.next().value;
@@ -892,55 +871,27 @@ void Request::execute(ArrayOperation& ops) {
 
 				Value& constructor_value=get_element(*class_value, constructor_name);
 
+				Junction* junction=constructor_value.get_junction();
+#ifdef OPTIMIZE_CONSTRUCT_OBJECT
+				if(!junction || junction->self.get_class()!=class_value)
+					throw Exception(PARSER_RUNTIME,
+						&constructor_name,
+						"constructor must be declared in class '%s'", 
+						class_value->get_class()->name_cstr());
+#endif
+
 				ArrayOperation* local_ops=i.next().ops;
 				DEBUG_PRINT_OPS(local_ops)
 				DEBUG_PRINT_STR("->\n")
 
-				Junction* junction=constructor_value.get_junction();
-				if(!junction) {
-					if(constructor_value.is("void"))
-						throw Exception(PARSER_RUNTIME,
-							0,
-							"undefined method");
-					else
-						throw Exception(PARSER_RUNTIME,
-							0,
-							"is '%s', not a method or junction, can not call it",
-							constructor_value.type());
-				} else {
-					VMethodFrame frame(*junction, method_frame);
-					if(local_ops){ // store param code goes here
-						size_t first = stack.top_index();
-						execute(*local_ops);
-
-						frame.store_params((Value**)stack.ptr(first), stack.top_index()-first);
-						op_call(frame);
-
-						stack.set_top_index(first);
-					} else {
-						frame.empty_params();
-						op_call(frame);
-					}
-					
-					if(opcode==OP::OP_CONSTRUCT_OBJECT)
-						stack.push(frame.result().as_value());
-					else
-						write_pass_lang(frame.result());
-				}
+				VMethodFrame frame(*junction, method_frame);
+				METHOD_FRAME_ACTION(op_call(frame, true /* constructing */));
+				if(opcode==OP::OP_CONSTRUCT_OBJECT)
+					stack.push(frame.result().as_value());
+				else
+					write_pass_lang(frame.result());
 
 				DEBUG_PRINT_STR("<-returned")
-
-
-/*
-				if(get_skip())
-					return;
-				if(get_interrupted()) {
-					set_interrupted(false);
-					throw Exception("parser.interrupted",
-						0,
-						"execution stopped");
-				}
-*/
 				break;
 			}
 #endif // OPTIMIZE_BYTECODE_CONSTRUCT_OBJECT
@@ -1276,13 +1227,13 @@ void Request::execute(ArrayOperation& ops) {
 	rcontext=saved_rcontext;			\
 	method_frame=saved_method_frame;
 
-void Request::op_call(VMethodFrame& frame){
+void Request::op_call(VMethodFrame& frame, bool constructing){
 	const Junction &junction=frame.junction;
 	VStateless_class& called_class=*junction.self.get_class();
 	Value* new_self;
 
-	if(wcontext->get_constructing()) {
-		wcontext->set_constructing(false);
+	if(constructing) {
+		SET_CONSTRUCTING(wcontext,false)
 		if(junction.method->call_type!=Method::CT_STATIC) {
 			// this is a constructor call
 			if(new_self=called_class.create_new_value(fpool, 0 /*creating fields only in VClass*/)) {
@@ -1366,7 +1317,7 @@ void Request::op_call_write(VMethodFrame& frame){
 	@bug ^superbase:method would dynamically call ^base:method if there is any
 */
 Value& Request::get_element(Value& ncontext, const String& name) {
-	if(!wcontext->get_constructing() // not constructing
+	if(!GET_CONSTRUCTING(wcontext) // not constructing
 		&& wcontext->get_somebody_entered_some_class() ) // ^class:method
 			if(VStateless_class *called_class=ncontext.get_class())
 				if(VStateless_class *read_class=rcontext->get_class())
@@ -1379,7 +1330,7 @@ Value& Request::get_element(Value& ncontext, const String& name) {
 
 	Value* value=ncontext.get_element(name, ncontext, true);
 
-	if(value && wcontext->get_constructing())
+	if(value && GET_CONSTRUCTING(wcontext))
 		if(Junction* junction=value->get_junction())
 			if(junction->self.get_class()!=&ncontext)
 				throw Exception(PARSER_RUNTIME,
