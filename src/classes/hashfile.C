@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Id: hashfile.C,v 1.47 2009/06/14 00:33:36 misha Exp $";
+static const char * const IDENT="$Id: hashfile.C,v 1.48 2009/06/16 07:36:01 misha Exp $";
 
 #include "classes.h"
 
@@ -96,8 +96,6 @@ struct Foreach_info {
 	Value* delim_maybe_code;
 
 	Value* var_context;
-	VString* vkey;
-	VString* vvalue;
 	bool need_delim;
 };
 #endif
@@ -107,12 +105,12 @@ static bool one_foreach_cycle(
 				  void* ainfo) {
 	Foreach_info& info=*static_cast<Foreach_info*>(ainfo);
 	if(info.key_var_name){
-		info.vkey->set_string(*new String(key, String::L_TAINTED));
-		info.var_context->put_element(*info.var_context, *info.key_var_name, info.vkey, false);
+		VString* vkey=new VString(*new String(key, String::L_TAINTED));
+		info.var_context->put_element(*info.var_context, *info.key_var_name, vkey, false);
 	}
 	if(info.value_var_name){
-		info.vvalue->set_string(value);
-		info.var_context->put_element(*info.var_context, *info.value_var_name, info.vvalue, false);
+		VString* vvalue=new VString(value);
+		info.var_context->put_element(*info.var_context, *info.value_var_name, vvalue, false);
 	}
 
 	StringOrValue sv_processed=info.r->process(*info.body_code);
@@ -144,8 +142,6 @@ static void _foreach(Request& r, MethodParams& params) {
 		&params.as_junction(2, "body must be code"),
 		/*delimiter*/params.count()>3 ? params.get(3) : 0,
 		/*var_context*/r.get_method_frame()->caller(),
-		/*vkey=*/new VString,
-		/*vvalue=*/new VString,
 		false
 	};
 

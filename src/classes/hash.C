@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_HASH_C="$Date: 2009/06/14 00:33:36 $";
+static const char * const IDENT_HASH_C="$Date: 2009/06/16 07:36:01 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -422,7 +422,6 @@ struct Foreach_info {
 	Value* delim_maybe_code;
 
 	Value* var_context;
-	VString* vkey;
 	bool need_delim;
 };
 #endif
@@ -432,8 +431,8 @@ static bool one_foreach_cycle(
 				Foreach_info *info) {
 	Value& var_context=*info->var_context;
 	if(info->key_var_name){
-		info->vkey->set_string(*new String(akey, String::L_TAINTED));
-		var_context.put_element(var_context, *info->key_var_name, info->vkey, false);
+		VString* vkey=new VString(*new String(akey, String::L_TAINTED));
+		var_context.put_element(var_context, *info->key_var_name, vkey, false);
 	}
 	if(info->value_var_name)
 		var_context.put_element(var_context, *info->value_var_name, avalue, false);
@@ -471,7 +470,6 @@ static void _foreach(Request& r, MethodParams& params) {
 		&params.as_junction(2, "body must be code"),
 		/*delimiter*/params.count()>3?params.get(3):0,
 		/*var_context*/r.get_method_frame()->caller(),
-		/*vkey=*/new VString,
 		false
 	};
 
