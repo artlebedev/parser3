@@ -8,11 +8,13 @@
 #ifndef PA_WCONTEXT_H
 #define PA_WCONTEXT_H
 
-static const char * const IDENT_WCONTEXT_H="$Date: 2009/06/13 07:06:07 $";
+static const char * const IDENT_WCONTEXT_H="$Date: 2009/06/16 08:38:40 $";
 
 #include "pa_value.h"
 #include "pa_vstring.h"
 #include "pa_vhash.h"
+
+#define OPTIMIZE_CONSTRUCT_OBJECT
 
 class Request;
 
@@ -98,15 +100,26 @@ public: // usage
 	WContext(Value* avalue, WContext *aparent):
 		fstring(0),
 		fvalue(avalue),
-		fparent(aparent) {
-		constructing=in_expression=entered_class=entered_object=were_string_writes=false;
-	}
+		fparent(aparent),
+#ifndef OPTIMIZE_CONSTRUCT_OBJECT
+		constructing(false),
+#endif 
+		in_expression(false),
+		entered_class(false){}
+
 	virtual ~WContext() {
 		detach_junctions();
 	}
 
+#ifdef OPTIMIZE_CONSTRUCT_OBJECT
+#define GET_CONSTRUCTING(w) false
+#define SET_CONSTRUCTING(w,v)
+#else
 	void set_constructing(bool aconstructing) { constructing=aconstructing; }
 	bool get_constructing() { return constructing; }
+#define GET_CONSTRUCTING(w) (w->get_constructing())
+#define SET_CONSTRUCTING(w,v) w->set_constructing(v);
+#endif 
 
 	void set_in_expression(bool ain_expression) { in_expression=ain_expression; }
 	bool get_in_expression() { return in_expression; }
@@ -124,11 +137,11 @@ protected:
 
 private: // status
 
+#ifndef OPTIMIZE_CONSTRUCT_OBJECT
 	bool constructing;
+#endif 
 	bool in_expression;
-	bool entered_object;
 	bool entered_class;
-	bool were_string_writes;
 
 private:
 
