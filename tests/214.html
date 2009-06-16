@@ -4,12 +4,12 @@ $h[^hash::create[]]
 	$h.[$i][$.id[$i]]
 }
 
-^h.foreach[k;v]{$k=$v.id}[, ]
+^print[$h]
 
 <hr />
 
 $h2[^copy[$h]]
-^h2.foreach[k;v]{$k=$v.id}[, ]
+^print[$h2]
 
 
 
@@ -18,3 +18,9 @@ $result[^hash::create[]]
 ^h.foreach[k;]{
 	$result.[$k][$.id[$k]]
 }
+
+
+@print[h;field][t]
+$t[^h._keys[]]
+^t.sort{$t.key}
+^t.menu{${t.key}=$h.[$t.key].id}[, ]
