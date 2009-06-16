@@ -1,0 +1,20 @@
+@main[]
+$h[^hash::create[]]
+^for[i](1;20){
+	$h.[$i][$.id[$i]]
+}
+
+^h.foreach[k;v]{$k=$v.id}[, ]
+
+<hr />
+
+$h2[^copy[$h]]
+^h2.foreach[k;v]{$k=$v.id}[, ]
+
+
+
+@copy[h][k;v]
+$result[^hash::create[]]
+^h.foreach[k;]{
+	$result.[$k][$.id[$k]]
+}
