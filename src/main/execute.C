@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2009/06/16 08:40:32 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2009/06/17 01:09:09 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -451,12 +451,11 @@ void Request::execute(ArrayOperation& ops) {
 			}
 		case OP::OP_WRITE_EXPR_RESULT:
 			{
-				Value& value=stack.pop().value();
-				write_no_lang(value.as_expr_result());
-
-				// must be after write(result) and 
 				// see OP_PREPARE_TO_EXPRESSION
 				wcontext->set_in_expression(false);
+
+				Value& value=stack.pop().value();
+				wcontext->write(value.as_expr_result());
 				break;
 			}
 		case OP::OP_STRING__WRITE:
@@ -645,9 +644,9 @@ void Request::execute(ArrayOperation& ops) {
 				String::Language saved_lang=flang;
 				flang=String::L_PASS_APPENDED;
 #ifdef OPTIMIZE_SINGLE_STRING_WRITE
-				WObjectPoolWrapper local(0/*empty*/, wcontext);
+				WObjectPoolWrapper local(wcontext);
 #else
-				WWrapper local(0/*empty*/, wcontext);
+				WWrapper local(wcontext);
 #endif
 				wcontext=&local;
 
@@ -664,7 +663,7 @@ void Request::execute(ArrayOperation& ops) {
 				ArrayOperation& local_ops=*i.next().ops;
 
 				WContext *saved_wcontext=wcontext;
-				WWrapper local(0 /*empty*/, wcontext);
+				WWrapper local(wcontext);
 				wcontext=&local;
 
 				execute(local_ops);
@@ -846,9 +845,6 @@ void Request::execute(ArrayOperation& ops) {
 		case OP::OP_CONSTRUCT_OBJECT:
 		case OP::OP_CONSTRUCT_OBJECT__WRITE:
 			{
-				// maybe they do ^class:method[] call, remember the fact
-				// wcontext->set_somebody_entered_some_class();
-
 				debug_origin=i.next().origin;
 				Value& vclass_name=*i.next().value;
 				const String& class_name=*vclass_name.get_string();
@@ -1453,7 +1449,7 @@ StringOrValue Request::process(Value& input_value, bool intercept_string) {
 				result=wcontext->result();
 			} else {
 				// plain wwrapper
-				WWrapper local(0/*empty*/, wcontext);
+				WWrapper local(wcontext);
 				wcontext=&local;
 
 				// execute it
@@ -1550,7 +1546,7 @@ void Request::process_write(Value& input_value) {
 				write_pass_lang(local.result());
 			} else {
 				// plain wwrapper
-				WWrapper local(0/*empty*/, wcontext);
+				WWrapper local(wcontext);
 				wcontext=&local;
 
 				// execute it
