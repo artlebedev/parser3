@@ -8,7 +8,7 @@
 #ifndef PA_WCONTEXT_H
 #define PA_WCONTEXT_H
 
-static const char * const IDENT_WCONTEXT_H="$Date: 2009/06/16 08:38:40 $";
+static const char * const IDENT_WCONTEXT_H="$Date: 2009/06/17 01:08:55 $";
 
 #include "pa_value.h"
 #include "pa_vstring.h"
@@ -97,10 +97,10 @@ public: // WContext
 
 public: // usage
 
-	WContext(Value* avalue, WContext *aparent):
-		fstring(0),
-		fvalue(avalue),
+	WContext(WContext *aparent):
 		fparent(aparent),
+		fstring(0),
+		fvalue(0),
 #ifndef OPTIMIZE_CONSTRUCT_OBJECT
 		constructing(false),
 #endif 
@@ -132,6 +132,7 @@ private:
 	void detach_junctions(); 
 
 protected:
+	WContext *fparent;
 	String* fstring;
 	Value* fvalue;
 
@@ -144,8 +145,6 @@ private: // status
 	bool entered_class;
 
 private:
-
-	WContext *fparent;
 	Array<VJunction*> junctions;
 
 };

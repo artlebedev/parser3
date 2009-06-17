@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)\
 */
 
-static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2009/05/14 11:27:23 $";
+static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2009/06/17 01:08:55 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
@@ -26,7 +26,7 @@ Value& MethodParams::get_processed(Value* value, const char* msg, int index, Req
 VMethodFrame::VMethodFrame(
 	const Junction& ajunction/*info: always method-junction*/,
 	VMethodFrame *acaller) : 
-	WContext(0/*empty*/, 0 /* no parent, junctions can be reattached only up to VMethodFrame */),
+	WContext(0 /* no parent, junctions can be reattached only up to VMethodFrame */),
 
 	fcaller(acaller),
 

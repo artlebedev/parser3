@@ -8,7 +8,7 @@
 #ifndef PA_WWRAPPER_H
 #define PA_WWRAPPER_H
 
-static const char * const IDENT_WWRAPPER_H="$Date: 2009/06/16 08:38:40 $";
+static const char * const IDENT_WWRAPPER_H="$Date: 2009/06/17 01:08:55 $";
 
 #define OPTIMIZE_SINGLE_STRING_WRITE
 
@@ -43,8 +43,8 @@ public: // Value
 
 public: // usage
 
-	WWrapper(Value* avalue, WContext *aparent) : 
-		WContext(avalue, aparent) {
+	WWrapper(WContext *aparent) : 
+		WContext(aparent) {
 	}
 	
 private:
@@ -69,8 +69,8 @@ public:
 		WS_TRANSPARENT
 	};
 
-	WObjectPoolWrapper(Value* avalue, WContext *aparent) : 
-		WWrapper(avalue, aparent), fstate(WS_NONE) {
+	WObjectPoolWrapper(WContext *aparent) : 
+		WWrapper(aparent), fstate(WS_NONE) {
 	}
 
 	override const VJunction* put_element(Value& aself, const String& aname, Value* avalue, bool areplace) { 
