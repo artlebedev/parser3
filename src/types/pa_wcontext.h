@@ -8,7 +8,7 @@
 #ifndef PA_WCONTEXT_H
 #define PA_WCONTEXT_H
 
-static const char * const IDENT_WCONTEXT_H="$Date: 2009/06/17 01:08:55 $";
+static const char * const IDENT_WCONTEXT_H="$Date: 2009/06/20 02:16:38 $";
 
 #include "pa_value.h"
 #include "pa_vstring.h"
@@ -65,7 +65,7 @@ public: // WContext
 	/// appends a fstring to result
 	virtual void write(const String& astring, String::Language alang) {
 		if(!fstring) fstring=new String;
-		fstring->append(astring, alang);
+		astring.append_to(*fstring, alang);
 	}
 	/// writes Value; raises an error if already, providing origin
 	virtual void write(Value& avalue);
