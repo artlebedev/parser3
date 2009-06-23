@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2009/06/20 02:16:18 $";
+static const char * const IDENT_STRING_C="$Date: 2009/06/23 10:05:16 $";
 
 #include "pa_string.h"
 #include "pa_exception.h"
@@ -166,41 +166,106 @@ String::Body String::Body::Format(int value) {
 }
 
 String::Body String::Body::trim(String::Trim_kind kind, const char* chars, 
-								size_t* out_start, size_t* out_length) const {
+								size_t* out_start, size_t* out_length, Charset* source_charset) const {
 	size_t our_length=length();
 	if(!our_length)
 		return *this;
-	if(!chars)
-		chars=" \t\n"; // white space
+
+	// check if any UTF-8 in chars
+	bool fast=true;
+	if(chars && source_charset && source_charset->isUTF8()){
+		const char* pos=chars;
+		while(unsigned char c=*pos++)
+			if(c>127){
+				fast=false;
+				break;
+			}
+	}
 
 	size_t start=0;
 	size_t end=our_length;
-	// from left...
-	if(kind!=TRIM_END) {
-		CORD_pos pos; set_pos(pos, 0);
-		while(true) {
-			char c=CORD_pos_fetch(pos);
-			if(strchr(chars, c)) {
-				if(++start==our_length)
-					return 0; // all chars are empty, just return empty string
-			} else
-				break;			
+	if(!chars)
+		chars=" \t\n"; // white space
 
-			CORD_next(pos);
+	if(fast){
+		// from left...
+		if(kind!=TRIM_END) {
+			CORD_pos pos; set_pos(pos, 0);
+			while(true) {
+				char c=CORD_pos_fetch(pos);
+				if(strchr(chars, c)) {
+					if(++start==our_length)
+						return 0; // all chars are empty, just return empty string
+				} else
+					break;			
+
+				CORD_next(pos);
+			}
 		}
-	}
-	// from right..
-	if(kind!=TRIM_START) {
-		CORD_pos pos; set_pos(pos, end-1);
-		while(true) {
-			char c=CORD_pos_fetch(pos);
-			if(strchr(chars, c)) {
-				if(--end==0) // optimization: NO need to check for 'end>=start', that's(<) impossible
-					return 0; // all chars are empty, just return empty string
-			} else
-				break;			
 
-			CORD_prev(pos);
+		// from right..
+		if(kind!=TRIM_START) {
+			CORD_pos pos; set_pos(pos, end-1);
+			while(true) {
+				char c=CORD_pos_fetch(pos);
+				if(strchr(chars, c)) {
+					if(--end==0) // optimization: NO need to check for 'end>=start', that's(<) impossible
+						return 0; // all chars are empty, just return empty string
+				} else
+					break;			
+
+				CORD_prev(pos);
+			}
+		}
+	} else {
+		const XMLByte* src_begin=(const XMLByte*)cstrm();
+		const XMLByte* src_end=src_begin+our_length;
+
+		// from left...
+		if(kind!=TRIM_END) {
+			while(src_begin<src_end){
+				uint char_length=1;
+				const XMLByte* ptr=src_begin;
+				while(++src_begin<=src_end && (*src_begin>127 && *src_begin<0xC0)/* searching first UTF-8 byte */)
+					char_length++;
+
+				bool found=false;
+				for(const char* chars_byte=chars; chars_byte=strchr(chars_byte, *ptr); chars_byte++)
+					if(strncmp(chars_byte, (const char*)ptr, char_length)==0){
+						found=true;
+						break;
+					}
+
+				if(found){
+					start+=char_length;
+					if(start==our_length)
+						return 0; // all chars are empty, just return empty string
+				} else
+					break;
+			}
+		}
+
+		// from right..
+		if(kind!=TRIM_START) {
+			while(src_begin<src_end){
+				uint char_length=1;
+				while(src_begin<=--src_end && (*src_end>127 && *src_end<0xC0)/* searching first UTF-8 byte */)
+					char_length++;
+
+				bool found=false;
+				for(const char* chars_byte=chars; chars_byte=strchr(chars_byte, *src_end); chars_byte++)
+					if(strncmp(chars_byte, (const char*)src_end, char_length)==0){
+						found=true;
+						break;
+					}
+
+				if(found){
+					end-=char_length;
+					if(end==0)
+						return 0; // all chars are empty, just return empty string
+				} else
+					break;
+			}
 		}
 	}
 
@@ -384,7 +449,6 @@ size_t String::pos(const String& substr,
 size_t String::pos(Charset& charset, const String& substr, 
 				size_t this_offset, Language lang) const {
 
-	size_t result;
 	if(charset.isUTF8()){
 		const XMLByte* srcPtr=(const XMLByte*)cstrm();
 		const XMLByte* srcEnd=srcPtr+body.length();
@@ -392,19 +456,16 @@ size_t String::pos(Charset& charset, const String& substr,
 		// convert 'this_offset' from 'characters' to 'bytes'
 		this_offset=getUTF8BytePos(srcPtr, srcEnd, this_offset);
 
-		result=pos(substr.body, this_offset, lang);
-		if(result==CORD_NOT_FOUND)
-			return STRING_NOT_FOUND;
-
-		// convert 'result' from 'bytes' to 'characters'
-		result=getUTF8CharPos(srcPtr, srcEnd, result);
+		size_t result=pos(substr.body, this_offset, lang);
+		return (result==CORD_NOT_FOUND)
+			? STRING_NOT_FOUND
+			: getUTF8CharPos(srcPtr, srcEnd, result); // convert 'result' from 'bytes' to 'characters'
 	} else {
-		result=pos(substr.body, this_offset, lang);
-		if(result==CORD_NOT_FOUND)
-			return STRING_NOT_FOUND;
+		size_t result=pos(substr.body, this_offset, lang);
+		return (result==CORD_NOT_FOUND)
+			? STRING_NOT_FOUND
+			: result;
 	}
-
-	return result;
 }
 
 void String::split(ArrayString& result, 
@@ -757,16 +818,18 @@ const char* String::v() const {
 
 	return buf;
 }
+
 void String::dump() const {
 	body.dump();
 	langs.dump();
 }
-const String& String::trim(String::Trim_kind kind, const char* chars) const {
+
+const String& String::trim(String::Trim_kind kind, const char* chars, Charset* source_charset) const {
 	if(is_empty())
 		return *this;
 
 	size_t substr_begin, substr_length;
-	Body new_body=body.trim(kind, chars, &substr_begin, &substr_length);
+	Body new_body=body.trim(kind, chars, &substr_begin, &substr_length, source_charset);
 	if(new_body==body) // we received unchanged pointer, do likewise
 		return *this;
 	// new_body differs from body, adjust langs along

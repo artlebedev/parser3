@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-static const char * const IDENT_STRING_H="$Date: 2009/06/20 00:45:46 $";
+static const char * const IDENT_STRING_H="$Date: 2009/06/23 10:05:09 $";
 
 // includes
 #include "pa_types.h"
@@ -444,7 +444,7 @@ public:
 
 		/// @returns this or 0 or mid. if returns this or 0 out_* are not filled
 		Body trim(Trim_kind kind=TRIM_BOTH, const char* chars=0,
-			size_t* out_start=0, size_t* out_length=0) const;
+			size_t* out_start=0, size_t* out_length=0, Charset* source_charset=0) const;
 	};
 
 	struct C {
@@ -628,7 +628,7 @@ public:
 	String& change_case(Charset& source_charset,
 		Change_case_kind kind) const;
 	const String& replace(const Dictionary& dict) const;
-	const String& trim(Trim_kind kind=TRIM_BOTH, const char* chars=0) const;
+	const String& trim(Trim_kind kind=TRIM_BOTH, const char* chars=0, Charset* source_charset=0) const;
 	double as_double() const { return pa_atod(cstr(), this); }
 	int as_int() const { return pa_atoi(cstr(), this); }
 	bool as_bool() const { return as_int()!=0; }
