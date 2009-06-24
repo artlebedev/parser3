@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_IMAGE_C="$Date: 2009/06/14 00:33:36 $";
+static const char * const IDENT_IMAGE_C="$Date: 2009/06/24 09:09:50 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -28,6 +28,12 @@ static const char * const IDENT_IMAGE_C="$Date: 2009/06/14 00:33:36 $";
 #include "pa_vimage.h"
 #include "pa_vdate.h"
 #include "pa_table.h"
+
+// defines
+
+static const String spacebar_width_name("space-width");
+static const String monospace_width_name("letter-width");
+static const String letter_spacing_name("letter-space");
 
 // class
 
@@ -1027,12 +1033,11 @@ static void _polybar(Request& r, MethodParams& params) {
 
 // Font class
 
-const int Font::letter_spacing=1;
-
 Font::Font(//, 
 	const String& aalphabet, 
-	gdImage* aifont, int aheight, int amonospace, int aspacebarspace):
+	gdImage* aifont, int aheight, int amonospace, int aspacebarspace, int aletterspacing):
 	height(aheight), monospace(amonospace),  spacebarspace(aspacebarspace),
+	letterspacing(aletterspacing),
 	ifont(aifont),
 	alphabet(aalphabet)	{
 }
@@ -1064,7 +1069,7 @@ void Font::index_display(gdImage& image, int x, int y, size_t index){
 /* ******************************** string ********************************** */
 
 int Font::step_width(int index) {
-	return letter_spacing + (monospace ? monospace : index_width(index));
+	return letterspacing + (monospace ? monospace : index_width(index));
 }
 
 // counts trailing letter_spacing, consider this OK. useful for contiuations
@@ -1090,20 +1095,52 @@ void Font::string_display(gdImage& image, int x, int y, const String& s){
 
 static void _font(Request& r, MethodParams& params) {
 	const String& alphabet=params.as_string(0, "alphabet must not be code");
-	gdImage* image=load(r, params.as_string(1, FILE_NAME_MUST_NOT_BE_CODE));
-	int spacebar_width=params.as_int(2, "spacebar_width must be int", r);
-	int monospace_width;
-	if(params.count()>3) {
-		monospace_width=params.as_int(3, "monospace_width must be int", r);
-		if(!monospace_width)
-			monospace_width=image->SX();
-	} else
-		monospace_width=0;
-
 	if(!alphabet.length())
 		throw Exception(PARSER_RUNTIME,
 			0,
 			"alphabet must not be empty");
+
+	gdImage* image=load(r, params.as_string(1, FILE_NAME_MUST_NOT_BE_CODE));
+
+	int spacebar_width=0;
+	int monospace_width=0; // proportional
+	int letter_spacing=1;
+	if(params.count()>2){
+		if(HashStringValue* options=params.as_no_junction(2, "param must be int or hash").get_hash()){
+			// third option is hash
+			if(params.count()>3)
+				throw Exception(PARSER_RUNTIME,
+					0,
+					"too many options were specified");
+			int valid_options=0;
+			if(Value* vspacebar_width=options->get(spacebar_width_name)){
+				valid_options++;
+				spacebar_width=r.process_to_value(*vspacebar_width).as_int();
+			}
+			if(Value* vmonospace_width=options->get(monospace_width_name)){
+				valid_options++;
+				monospace_width=r.process_to_value(*vmonospace_width).as_int();
+				if(!monospace_width)
+					monospace_width=image->SX();
+			}
+			if(Value* vletter_spacing=options->get(letter_spacing_name)){
+				valid_options++;
+				letter_spacing=r.process_to_value(*vletter_spacing).as_int();
+			}
+			if(valid_options!=options->count())
+				throw Exception(PARSER_RUNTIME,
+					0,
+					"called with invalid option");
+		} else {
+			// backward
+			spacebar_width=params.as_int(2, "spacebar_width must be int", r);
+			if(params.count()>3) {
+				monospace_width=params.as_int(3, "monospace_width must be int", r);
+				if(!monospace_width)
+					monospace_width=image->SX();
+			}
+		}
+	}
 
 	if(int remainder=image->SY() % alphabet.length())
 		throw Exception(PARSER_RUNTIME,
@@ -1114,7 +1151,7 @@ static void _font(Request& r, MethodParams& params) {
 	GET_SELF(r, VImage).set_font(new Font(
 		alphabet, 
 		image, 
-		image->SY() / alphabet.length(), monospace_width, spacebar_width));
+		image->SY() / alphabet.length(), monospace_width, spacebar_width, letter_spacing));
 }
 
 static void _text(Request& r, MethodParams& params) {
@@ -1265,14 +1302,16 @@ MImage::MImage(): Methoded("image") {
 	// ^image.polybar(color)[table x:y]
 	add_native_method("polybar", Method::CT_DYNAMIC, _polybar, 2, 2);
 
-    // ^image.font[alPHAbet;font-file-name.gif](spacebar_width)
-    // ^image.font[alPHAbet;font-file-name.gif](spacebar_width;width)
-	add_native_method("font", Method::CT_DYNAMIC, _font, 3, 4);
+	// ^image.font[alPHAbet;font-file-name.gif]
+	// ^image.font[alPHAbet;font-file-name.gif](spacebar_width)
+	// ^image.font[alPHAbet;font-file-name.gif](spacebar_width;letter_width)
+	// ^image.font[alPHAbet;font-file-name.gif][$.space-width(.) $.letter-width(.) $.letter-space(.)]
+	add_native_method("font", Method::CT_DYNAMIC, _font, 2, 4);
 
-    // ^image.text(x;y)[text]
+	// ^image.text(x;y)[text]
 	add_native_method("text", Method::CT_DYNAMIC, _text, 3, 3);
 	
-    // ^image.ngth[text]
+	// ^image.length[text]
 	add_native_method("length", Method::CT_DYNAMIC, _length, 1, 1);
 	
 	// ^image.arc(center x;center y;width;height;start in degrees;end in degrees;color)

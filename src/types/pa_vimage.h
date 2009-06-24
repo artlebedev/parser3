@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b image parser type decl.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VIMAGE_H
 #define PA_VIMAGE_H
 
-static const char * const IDENT_VIMAGE_H="$Date: 2007/04/23 10:30:50 $";
+static const char * const IDENT_VIMAGE_H="$Date: 2009/06/24 09:09:24 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -27,16 +27,16 @@ class gdImage;
 class Font: public PA_Object {
 public:
 	
-	static const int letter_spacing;
-	int height;	    ///< Font heigth
-	int monospace;	    ///< Default char width
-	int spacebarspace; ///< spacebar width
+	int letterspacing;
+	int height;			///< Font heigth
+	int monospace;		///< Default char width
+	int spacebarspace;	///< spacebar width
 	gdImage* ifont;
 	const String& alphabet;
 	
 	Font(
 		const String& aalphabet, 
-		gdImage* aifont, int aheight, int amonospace, int aspacebarspace);
+		gdImage* aifont, int aheight, int amonospace, int aspacebarspace, int aletterspacing);
 
 	//@{******************************** char **********************************	
 	size_t index_of(char ch);
