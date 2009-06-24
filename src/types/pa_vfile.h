@@ -8,7 +8,7 @@
 #ifndef PA_VFILE_H
 #define PA_VFILE_H
 
-static const char * const IDENT_VFILE_H="$Date: 2009/05/23 04:30:48 $";
+static const char * const IDENT_VFILE_H="$Date: 2009/06/24 09:02:44 $";
 
 // include
 
@@ -21,6 +21,12 @@ static const char * const IDENT_VFILE_H="$Date: 2009/05/23 04:30:48 $";
 
 #define NONAME_DAT "noname.dat"
 #define VFILE_TYPE "file"
+
+#define TEXT_MODE_NAME "text"
+#define BINARY_MODE_NAME "binary"
+
+static const String text_mode_name(TEXT_MODE_NAME);
+static const String binary_mode_name(BINARY_MODE_NAME);
 
 // forwards
 
@@ -68,6 +74,8 @@ public: // usage
 		const char* avalue_ptr, size_t avalue_size,
 		const char* afile_name_cstr=0,
 		Value* acontent_type=0);
+
+	void set_mode(bool as_text);
 	
 	void save(const String& file_spec, bool is_text) {
 		if(fvalue_ptr)
