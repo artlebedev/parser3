@@ -7,7 +7,7 @@
 	based on The CGI_C library, by Thomas Boutell.
 */
 
-static const char * const IDENT_VFORM_C="$Date: 2009/05/26 10:43:00 $";
+static const char * const IDENT_VFORM_C="$Date: 2009/06/24 09:02:22 $";
 
 #include "pa_sapi.h"
 #include "pa_vform.h"
@@ -27,9 +27,9 @@ static const char * const IDENT_VFORM_C="$Date: 2009/05/26 10:43:00 $";
 // parse helper funcs
 
 static size_t getHeader(const char* data, size_t len){
-    size_t i;
-    int enter=-1;
-    if (data)
+	size_t i;
+	int enter=-1;
+	if (data)
 		for (i=0;i<len;i++)
 			if (data[i]=='\n'){
 				if (enter>=0) enter++;
@@ -41,8 +41,8 @@ static size_t getHeader(const char* data, size_t len){
 static const char* searchAttribute(const char* data, 
 							 const char* attr,  //< expected to be lowercased
 							 size_t len){
-    size_t i;
-    if (data)
+	size_t i;
+	if (data)
 		for (i=0;i<len;i++)
 			if (tolower((unsigned char)data[i])==*attr){
 				size_t j;

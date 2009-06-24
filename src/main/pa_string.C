@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2009/06/23 10:05:16 $";
+static const char * const IDENT_STRING_C="$Date: 2009/06/24 09:00:56 $";
 
 #include "pa_string.h"
 #include "pa_exception.h"
@@ -407,12 +407,12 @@ String& String::mid(Charset& charset, size_t from, size_t to, size_t helper_leng
 		return result;
 
 	if(charset.isUTF8()){
-		const XMLByte* srcPtr=(const XMLByte*)cstrm();
-		const XMLByte* srcEnd=srcPtr+body.length();
+		const XMLByte* src_begin=(const XMLByte*)cstrm();
+		const XMLByte* src_end=src_begin+body.length();
 
 		// convert 'from' and 'substr_length' from 'characters' to 'bytes'
-		from=getUTF8BytePos(srcPtr, srcEnd, from);
-		substr_length=getUTF8BytePos(srcPtr+from, srcEnd, substr_length);
+		from=getUTF8BytePos(src_begin, src_end, from);
+		substr_length=getUTF8BytePos(src_begin+from, src_end, substr_length);
 		if(!substr_length)
 			return result;
 	}
