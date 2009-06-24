@@ -1,0 +1,15 @@
+@main[]
+^do[^^file::load^[text;text;215.html]
+^do[^^file::load^[binary;binary;215.html]
+^p[^^file::create;^file::create[text;zigi.txt;file]]
+^p[^^file::stat;^file::stat[215.html]]
+^p[^^file::base64;^file::base64[R0lGODdhyAAyANUAAP]]
+^p[^^image::create;^image::create(100;100)]
+
+
+@do[title;mode;file_name]
+^p[$title;^file::load[$mode;$file_name]]
+
+
+@p[title;f]
+${title}: '$f.mode'<br />
