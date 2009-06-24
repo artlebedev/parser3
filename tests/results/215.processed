@@ -1,0 +1,9 @@
+content-type: text/html
+content-length: 165
+
+^file::load[text: 'text'<br />
+^file::load[binary: 'binary'<br />
+^file::create: 'text'<br />
+^file::stat: ''<br />
+^file::base64: ''<br />
+^image::create: ''<br />
