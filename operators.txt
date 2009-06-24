@@ -683,9 +683,14 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !^картинка.polyline+(цвет)[table x:y точки]
     !^картинка.polygon(цвет)[table x:y вершины_многоугольника]
     !^картинка.polybar(цвет)[table x;y вершины_многоугольника]
-    !^картинка.font[набор_букв;имя_файла_шрифта.gif](ширина_пробела[;ширина_символа])
+    !^картинка.font[набор_букв;имя_файла_шрифта.gif][(ширина_пробела[;ширина_символа])]
         высота символа = высота картинки/количество букв в наборе
         если указана ширина_символа, то monospaced, если 0, то ширина_символа = ширине gif
+    !^картинка.font[набор_букв;имя_файла_шрифта.gif;
+           $.space-width(ширина_пробела)            // по умолчанию=0
+           $.letter-width(ширина_символа)           // см. выше, по умолчанию proportional
+           $.letter-space(расстояние между буквами) // по умолчанию=1
+     ]
     !^картинка.text(x;y)[текст_надписи] AS_IS
     !^картинка.length[текст_надписи] AS_IS
     !^картинка.gif[возможно, имя файла] -- кодирует в FILE с content-type=image/gif
@@ -718,13 +723,14 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !^file::load[text|binary;!big.zip[;!domain_press_release_2001_03_01.zip][;опции]]
     !^file::create[text;имя;^untaint[xml]{data}]
     !$файл_который_был_loaded.size
+    !$файл_который_был_loaded_или_created.mode = text/binary
     !^file::stat[имя файла]
-    !$файл_который_был_stated.size !.adate !.mdate !.cdate
+    !$файл_который_был_stated_или_loaded.size !.adate !.mdate !.cdate
     !^file::cgi[[text|binary;]имя файла[;env hash +options[;1cmd[;2line[;3ar[;4g[;5s]]]]]]]
         возвращённый заголовок рассыпается на $поля
         $status
         $stderr
-    !^file::exec[[text|binary;]имя файла[;env hash[;1cmd[;2line[;3ar[;4g[;5s;...under win32 max 10 args]]]]]]]
+    !^file::exec[[text|binary;]имя файла[;env hash[;1cmd[;2line[;3ar[;4g[;5s;...under unix max 50 args]]]]]]]
         options:
             $.stdin[текст]  если текст пуст, отключается автоматическое пересовывание данных HTTP-POST 
     !^file:move[старое имя файла;новое имя файла] 
