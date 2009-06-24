@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2009/06/14 00:33:36 $";
+static const char * const IDENT_FILE_C="$Date: 2009/06/24 09:03:57 $";
 
 #include "pa_config_includes.h"
 
@@ -28,8 +28,6 @@ static const char * const IDENT_FILE_C="$Date: 2009/06/14 00:33:36 $";
 
 // defines
 
-#define TEXT_MODE_NAME "text"
-#define BINARY_MODE_NAME "binary"
 #define STDIN_EXEC_PARAM_NAME "stdin"
 #define CHARSET_EXEC_PARAM_NAME "charset"
 
@@ -114,13 +112,13 @@ static const String::Body cdate_name("cdate");
 // methods
 
 static bool is_valid_mode (const String& mode) {
-	return (mode==TEXT_MODE_NAME || mode==BINARY_MODE_NAME);
+	return (mode==text_mode_name || mode==binary_mode_name);
 }
 
 static bool is_text_mode(const String& mode) {
-	if(mode==TEXT_MODE_NAME)
+	if(mode==text_mode_name)
 		return true;
-	if(mode==BINARY_MODE_NAME)
+	if(mode==binary_mode_name)
 		return false;
 	throw Exception(PARSER_RUNTIME,
 		&mode,
@@ -250,6 +248,8 @@ static void _load(Request& r, MethodParams& params) {
 	VFile& self=GET_SELF(r, VFile);
 	self.set(true/*tainted*/, file.str, file.length, user_file_name, vcontent_type);
 
+	self.set_mode(as_text);
+
 	if(file.headers){
 		file.headers->for_each<HashStringValue*>(_load_pass_param, &self.fields());
 	} else {
@@ -263,12 +263,11 @@ static void _load(Request& r, MethodParams& params) {
 		ff.put(mdate_name, new VDate(mtime));
 		ff.put(cdate_name, new VDate(ctime));
 	}
-
 }
 
 static void _create(Request& r, MethodParams& params) {
-	Value& vmode_name=params.as_no_junction(0, MODE_MUST_NOT_BE_CODE);
-	if(!is_text_mode(vmode_name.as_string()))
+	const String& mode_name=params.as_no_junction(0, MODE_MUST_NOT_BE_CODE).as_string();
+	if(!is_text_mode(mode_name))
 		throw Exception(PARSER_RUNTIME,
 			0,
 			"only text mode is currently supported");
@@ -283,6 +282,8 @@ static void _create(Request& r, MethodParams& params) {
 	
 	VFile& self=GET_SELF(r, VFile);
 	self.set(true/*tainted*/, content_cstr, strlen(content_cstr), user_file_name_cstr, vcontent_type);
+
+	self.set_mode(true/*as_text*/);
 }
 
 static void _stat(Request& r, MethodParams& params) {
@@ -373,17 +374,13 @@ static void append_to_argv(Request& r, ArrayString& argv, const String* str){
 }
 
 /// @todo fix `` in perl - they produced flipping consoles and no output to perl
-static void _exec_cgi(Request& r, MethodParams& params,
-					  bool cgi) {
-
-	Value& first_param=params.as_no_junction(0, FIRST_ARG_MUST_NOT_BE_CODE);			
-	
-	bool is_mode_specified=is_valid_mode(first_param.as_string());
-	const String& mode_name=(is_mode_specified) ? first_param.as_string() : *new String(TEXT_MODE_NAME);
-
-	size_t param_index=1;
-	if(!is_mode_specified){
-		--param_index;
+static void _exec_cgi(Request& r, MethodParams& params, bool cgi) {
+	bool as_text=true;
+	size_t param_index=0;
+	const String& mode_name=params.as_no_junction(0, FIRST_ARG_MUST_NOT_BE_CODE).as_string();
+	if(is_valid_mode(mode_name)){
+		as_text=is_text_mode(mode_name);
+		param_index++;
 	}
 
 	if(param_index>=params.count())
@@ -513,7 +510,7 @@ static void _exec_cgi(Request& r, MethodParams& params,
 	if(charset)
 		real_err=&Charset::transcode(*real_err, *charset, r.charsets.source());
 
-	if(file_out->length && is_text_mode(mode_name)){
+	if(file_out->length && as_text){
 		fix_line_breaks(file_out->str, file_out->length);
 		// treat output as string
 		String *real_out = new String(file_out->str);
@@ -555,8 +552,8 @@ static void _exec_cgi(Request& r, MethodParams& params,
 					"output does not contain CGI header; "
 					"exit status=%d; stdoutsize=%u; stdout: \"%s\"; stderrsize=%u; stderr: \"%s\"", 
 						execution.status, 
-						(size_t)file_out->length, (file_out->length) ? (file_out->str) : "",
-						(size_t)real_err->length(), real_err->cstr());
+						file_out->length, (file_out->length) ? (file_out->str) : "",
+						real_err->length(), real_err->cstr());
 				break; //never reached
 		}
 
@@ -581,7 +578,7 @@ static void _exec_cgi(Request& r, MethodParams& params,
 		self.set(false/*not tainted*/, file_out->str, file_out->length);
 
 		// $fields << header
-		if(header && eol_marker) {
+		if(header) {
 			ArrayString rows;
 			size_t pos_after=0;
 			header->split(rows, pos_after, eol_marker);
@@ -596,6 +593,8 @@ static void _exec_cgi(Request& r, MethodParams& params,
 		// $body
 		self.set(false/*not tainted*/, file_out->str, file_out->length);
 	}
+
+	self.set_mode(as_text);
 
 	// $status
 	self.fields().put(file_status_name, new VInt(execution.status));
@@ -904,6 +903,7 @@ static void _sql(Request& r, MethodParams& params) {
 			: 0;
 	VFile& self=GET_SELF(r, VFile);
 	self.set(true/*tainted*/, handlers.value.str, handlers.value.length, user_file_name_cstr, vcontent_type);
+	self.set_mode(false/*binary*/);
 }
 
 static void _base64(Request& r, MethodParams& params) {
