@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_IMAGE_C="$Date: 2009/06/24 09:09:50 $";
+static const char * const IDENT_IMAGE_C="$Date: 2009/06/25 08:44:36 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -31,9 +31,9 @@ static const char * const IDENT_IMAGE_C="$Date: 2009/06/24 09:09:50 $";
 
 // defines
 
-static const String spacebar_width_name("space-width");
-static const String monospace_width_name("letter-width");
-static const String letter_spacing_name("letter-space");
+static const String spacebar_width_name("space");
+static const String monospace_width_name("width");
+static const String letter_spacing_name("spacing");
 
 // class
 
@@ -1102,7 +1102,7 @@ static void _font(Request& r, MethodParams& params) {
 
 	gdImage* image=load(r, params.as_string(1, FILE_NAME_MUST_NOT_BE_CODE));
 
-	int spacebar_width=0;
+	int spacebar_width=image->SX();
 	int monospace_width=0; // proportional
 	int letter_spacing=1;
 	if(params.count()>2){
