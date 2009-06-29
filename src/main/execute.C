@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2009/06/17 01:09:09 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2009/06/29 09:25:29 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -1343,8 +1343,8 @@ void Request::put_element(Value& ncontext, const String& name, Value* value) {
 		if(vjunction!=PUT_ELEMENT_REPLACED_ELEMENT) {
 			// process it
 			VMethodFrame frame(vjunction->junction(), method_frame/*caller*/);
-			int param_count=frame.method_params_count();
 
+			size_t param_count=frame.method_params_count();
 			if(param_count!=1)
 				throw Exception(PARSER_RUNTIME,
 					0,
@@ -1384,9 +1384,8 @@ StringOrValue Request::process(Value& input_value, bool intercept_string) {
 	if(junction) {
 		if(junction->is_getter) { // is it a getter-junction?
 			VMethodFrame frame(*junction, method_frame/*caller*/);
-			int param_count=frame.method_params_count();
 
-			if(param_count){
+			if(size_t param_count=frame.method_params_count()){
 				if(junction->auto_name){ // default getter
 					if(param_count==1){
 						Value *param=new VString(*junction->auto_name);
@@ -1424,8 +1423,8 @@ StringOrValue Request::process(Value& input_value, bool intercept_string) {
 
 			if(!junction->method_frame)
 				throw Exception(PARSER_RUNTIME,
-				0,
-				"junction used outside of context");
+					0,
+					"junction used outside of context");
 
 			SAVE_CONTEXT
 
@@ -1477,9 +1476,8 @@ void Request::process_write(Value& input_value) {
 	if(junction) {
 		if(junction->is_getter) { // is it a getter-junction?
 			VMethodFrame frame(*junction, method_frame/*caller*/);
-			int param_count=frame.method_params_count();
 
-			if(param_count){
+			if(size_t param_count=frame.method_params_count()){
 				if(junction->auto_name){ // default getter
 					if(param_count==1){
 						Value *param=new VString(*junction->auto_name);
