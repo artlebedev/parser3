@@ -30,7 +30,6 @@
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="TRUE"
-				EnableEnhancedInstructionSet="2"
 				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="2"
 				PrecompiledHeaderFile=".\Release/ApacheModuleParser3Core.pch"
