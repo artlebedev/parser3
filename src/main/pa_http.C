@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
  */
 
-static const char * const IDENT_HTTP_C="$Date: 2009/06/05 06:26:19 $"; 
+static const char * const IDENT_HTTP_C="$Date: 2009/07/03 01:28:47 $"; 
 
 #include "pa_http.h"
 #include "pa_common.h"
@@ -41,7 +41,6 @@ static const char * const IDENT_HTTP_C="$Date: 2009/06/05 06:26:19 $";
 
 #undef CRLF
 #define CRLF "\r\n"
-#define DCRLF "\r\n\r\n"
 
 static bool set_addr(struct sockaddr_in *addr, const char* host, const short port){
 	memset(addr, 0, sizeof(*addr)); 
@@ -412,33 +411,34 @@ struct FormPart {
 	Form_table_value2string_info* info;
 };
 
-static void form_part_boundary_header(FormPart& part, String name, const char* file_name=0){
-	part.string << "--" << part.boundary;
-	part.string << CRLF HTTP_CONTENT_DISPOSITION ": form-data; name=\"" << name << "\"";
+static void form_part_boundary_header(FormPart& part, String::Body name, const char* file_name=0){
+	part.string << "--" << part.boundary
+				<< CRLF HTTP_CONTENT_DISPOSITION ": form-data; name=\"" 
+				<< Charset::transcode(name, part.r->charsets.source(), part.r->charsets.client())
+				<< "\"";
 	if(file_name){
 		if(strcmp(file_name, NONAME_DAT)!=0)
 			part.string << "; filename=\"" << file_name << "\"";
 		part.string << CRLF HTTP_CONTENT_TYPE ": " << part.r->mime_type_of(file_name);
 	}
-	part.string << DCRLF;
+	part.string << CRLF CRLF;
 }
 
 static void form_string_value2part(
-					HashStringValue::key_type key,
-					const String& value,
-					FormPart& part)
+				HashStringValue::key_type key,
+				const String& value,
+				FormPart& part)
 {
-	form_part_boundary_header(part, String(key, String::L_URI));
-	part.string.append(value, String::L_AS_IS, true);
-	part.string << CRLF;
+	form_part_boundary_header(part, key);
+	part.string << Charset::transcode(value, part.r->charsets.source(), part.r->charsets.client()) << CRLF;
 }
 
 static void form_file_value2part(
-					HashStringValue::key_type key,
-					VFile& vfile,  
-					FormPart& part)
+				HashStringValue::key_type key,
+				VFile& vfile,  
+				FormPart& part)
 {
-	form_part_boundary_header(part, String(key, String::L_URI), vfile.fields().get(name_name)->as_string().cstr());
+	form_part_boundary_header(part, key, vfile.fields().get(name_name)->as_string().cstr());
 	part.string.append_know_length(vfile.value_ptr(), vfile.value_size(), String::L_FILE_POST);
 	part.string << CRLF;
 }
@@ -448,9 +448,9 @@ static void form_table_value2part(Table::element_type row, FormPart* part) {
 }
 
 static void form_value2part(
-					HashStringValue::key_type key,
-					HashStringValue::value_type value,
-					FormPart& part)
+				HashStringValue::key_type key,
+				HashStringValue::value_type value,
+				FormPart& part)
 {
 	if(const String* svalue=value->get_string())
 		form_string_value2part(key, *svalue, part);
@@ -473,8 +473,8 @@ const char* pa_form2string_multipart(HashStringValue& form, Request& r, const ch
 	formpart.info=NULL;
 	form.for_each<FormPart&>(form_value2part, formpart);
 	formpart.string << "--" << boundary << "--";
-	post_size=formpart.string.length();
-	return formpart.string.cstr(String::L_UNSPECIFIED, 0, &(r.charsets));
+	post_size=formpart.string.length(); // very surprizing, but it calculates correct post_size even with binary files!
+	return formpart.string.cstr(String::L_UNSPECIFIED); // without transcoding
 }
 
 static void find_headers_end(char* p,
@@ -632,17 +632,15 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 		char* error_pos=0;
 		port=port_cstr?(short)strtol(port_cstr, &error_pos, 0):80;
 
-		bool uri_has_query_string=strchr(uri, '?')!=0;
-
 		// making request head
 		String head;
 		head << method << " " << uri;
-		if(form && method_is_get)
-			head << (uri_has_query_string?"&":"?") << pa_form2string(*form, r.charsets);
+		if(method_is_get && form)
+			head << (strchr(uri, '?')!=0?"&":"?") << pa_form2string(*form, r.charsets);
 
 		head <<" HTTP/1.0" CRLF "host: "<< host << CRLF;
 
-		char* boundary;
+		char* boundary=0;
 
 		if(multipart){
 			uuid uuid=get_uuid();
@@ -658,22 +656,25 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 
 		size_t post_size=0;
 		if(form && !method_is_get) {
-			head << HTTP_CONTENT_TYPE ": ";
+			head << HTTP_CONTENT_TYPE ": " << (multipart ? HTTP_CONTENT_TYPE_MULTIPART_FORMDATA : HTTP_CONTENT_TYPE_FORM_URLENCODED);
+
+			if(!omit_post_charset)
+				head << "; charset=" << asked_remote_charset->NAME_CSTR();
+
 			if(multipart) {
-				head << HTTP_CONTENT_TYPE_MULTIPART_FORMDATA "; boundary=" << boundary << CRLF;
-				// !!! charset?
-				body_cstr=pa_form2string_multipart(*form, r, boundary, post_size);
+				head << "; boundary=" << boundary;
+				body_cstr=pa_form2string_multipart(*form, r/*charsets & mime_type needed*/, boundary, post_size/*correct post_size returned here*/);
 			} else {
-				head << HTTP_CONTENT_TYPE_FORM_URLENCODED;
-				if(!omit_post_charset)
-					head << "; charset=" << asked_remote_charset->NAME_CSTR() << ";";
-				head << CRLF;
 				body_cstr=pa_form2string(*form, r.charsets);
 				post_size=strlen(body_cstr);
 			}
+			head << CRLF;
 		} else if (vbody) {
+			// transcode tainted pieces and then URI-encode them
 			body_cstr=vbody->as_string().cstr(String::L_UNSPECIFIED, 0, &(r.charsets));
-			// needed for transcoded $.body[] first of all
+
+			// now transcode is needed only if own content-type was specified _and_ clean chars with code>127 are in the body
+			// @todo: I don't like the current behaviour
 			body_cstr=Charset::transcode(
 				String::C(body_cstr, strlen(body_cstr)),
 				r.charsets.source(),
@@ -722,31 +723,29 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 		if(body_cstr)
 			head << "content-length: " << format(post_size, "%u") << CRLF;
 
-		const char* head_cstr=head.cstr(String::L_UNSPECIFIED, 0, &(r.charsets));
-
 		// head + end of header
-		request_head_and_body << head_cstr << CRLF;
+		request_head_and_body << head.cstr(String::L_UNSPECIFIED, 0, &(r.charsets)) << CRLF;
 
 		// body
 		if(body_cstr)
 			request_head_and_body << body_cstr;
 	}
 	
-	//sending request
+	const char* request_cstr=request_head_and_body.cstr();
+	size_t request_size=strlen(request_cstr);
+
+	if(multipart)
+		request_size=file_untaint(request_cstr, request_size);
+
 	char* response;
 	size_t response_size;
 
-	const char* request=request_head_and_body.cstr();
-	size_t request_size=strlen(request);
-
-	if(multipart)
-		request_size=file_untaint(request, request_size);
-
+	// sending request
 	int status_code=http_request(response, response_size,
-		host, port, request, request_size,
+		host, port, request_cstr, request_size,
 		timeout_secs, fail_on_status_ne_200); 
 	
-	//processing results	
+	// processing results	
 	char* raw_body; size_t raw_body_size;
 	char* headers_end_at;
 	find_headers_end(response, 
@@ -769,7 +768,7 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 		size_t pos_after=0;
 		header_block.split(aheaders, pos_after, "\n"); 
 		
-		//processing headers
+		// processing headers
 		size_t aheaders_count=aheaders.count();
 		for(size_t i=1; i<aheaders_count; i++) {
 			const String& line=*aheaders.get(i);
