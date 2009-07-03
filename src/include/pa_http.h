@@ -1,14 +1,14 @@
 /** @file
 	Parser: commonly used functions.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_HTTP_H
 #define PA_HTTP_H
 
-static const char * const IDENT_HTTP_H="$Date: 2009/01/25 02:04:49 $";
+static const char * const IDENT_HTTP_H="$Date: 2009/07/03 07:30:04 $";
 
 #include "pa_vstring.h"
 #include "pa_vint.h"
@@ -31,7 +31,6 @@ int PASCAL closesocket(SOCKET);
 #	endif
 #endif
 
-const char* pa_form2string(HashStringValue& form);
 #ifndef DOXYGEN
 struct File_read_http_result {
 	char *str; size_t length;
