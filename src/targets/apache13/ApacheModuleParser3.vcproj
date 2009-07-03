@@ -25,6 +25,7 @@
 				AdditionalIncludeDirectories="..\..\..\..\win32\apache13\src\include;..\..\..\..\win32\apache13\src\os\win32"
 				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;SHARED_MODULE"
 				RuntimeLibrary="3"
+				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="2"
 				PrecompiledHeaderFile=".\Debug/ApacheModuleParser3.pch"
 				AssemblerListingLocation=".\Debug/"
@@ -94,13 +95,16 @@ dir&gt;nul
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
 				Name="VCCLCompilerTool"
-				optimization="2" GlobalOptimizations="TRUE" 				
+				Optimization="2"
+				GlobalOptimizations="TRUE"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="..\..\..\..\win32\apache13\src\include;..\..\..\..\win32\apache13\src\os\win32"
 				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;SHARED_MODULE"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="TRUE"
+				EnableEnhancedInstructionSet="2"
+				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="2"
 				PrecompiledHeaderFile=".\Release/ApacheModuleParser3.pch"
 				AssemblerListingLocation=".\Release/"
@@ -121,6 +125,8 @@ dir&gt;nul
 				SuppressStartupBanner="TRUE"
 				ProgramDatabaseFile=".\Release/ApacheModuleParser3.pdb"
 				SubSystem="2"
+				OptimizeReferences="2"
+				OptimizeForWindows98="1"
 				ImportLibrary=".\Release/ApacheModuleParser3.lib"
 				TargetMachine="1"/>
 			<Tool
@@ -180,7 +186,8 @@ dir&gt;nul
 				Name="Release|Win32">
 				<Tool
 					Name="VCCLCompilerTool"
-					optimization="2" GlobalOptimizations="TRUE" 				
+					Optimization="2"
+					GlobalOptimizations="TRUE"
 					AdditionalIncludeDirectories=""
 					PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;SHARED_MODULE;$(NoInherit)"
 					CompileAs="1"/>

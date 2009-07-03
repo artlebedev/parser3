@@ -22,13 +22,17 @@
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
 				Name="VCCLCompilerTool"
-				optimization="2" GlobalOptimizations="TRUE" 				
+				Optimization="2"
+				GlobalOptimizations="TRUE"
 				InlineFunctionExpansion="1"
+				OptimizeForWindowsApplication="FALSE"
 				AdditionalIncludeDirectories="..\apache13;..\..\types;..\..\include;..\..\classes;..\..\sql;..\..\lib\gc\include;..\..\lib\cord\include;..\..\..\..\win32\pcre;..\..\lib\md5;..\..\..\..\win32\gnome\libxml2-x.x.x\win32\release\include;..\..\..\..\win32\gnome\libxslt-x.x.x\win32\release\include"
 				PreprocessorDefinitions="WIN32"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="TRUE"
+				EnableEnhancedInstructionSet="2"
+				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="2"
 				PrecompiledHeaderFile=".\Release/parser3isapi.pch"
 				AssemblerListingLocation=".\Release/"
@@ -49,6 +53,8 @@
 				SuppressStartupBanner="TRUE"
 				ModuleDefinitionFile=".\parser3isapi.def"
 				ProgramDatabaseFile=".\Release/parser3isapi.pdb"
+				OptimizeReferences="2"
+				OptimizeForWindows98="1"
 				ImportLibrary=".\Release/parser3isapi.lib"
 				TargetMachine="1"/>
 			<Tool
@@ -102,6 +108,7 @@ dir&gt;nul
 				PreprocessorDefinitions="_DEBUG;WIN32"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
+				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="2"
 				PrecompiledHeaderFile=".\Debug/parser3isapi.pch"
 				AssemblerListingLocation=".\Debug/"
@@ -175,7 +182,8 @@ dir&gt;nul
 				Name="Release|Win32">
 				<Tool
 					Name="VCCLCompilerTool"
-					optimization="2" GlobalOptimizations="TRUE" 				
+					Optimization="2"
+					GlobalOptimizations="TRUE"
 					AdditionalIncludeDirectories=""
 					PreprocessorDefinitions="WIN32;$(NoInherit)"
 					CompileAs="2"/>
@@ -197,7 +205,8 @@ dir&gt;nul
 				Name="Release|Win32">
 				<Tool
 					Name="VCCLCompilerTool"
-					optimization="2" GlobalOptimizations="TRUE" 				
+					Optimization="2"
+					GlobalOptimizations="TRUE"
 					AdditionalIncludeDirectories=""
 					PreprocessorDefinitions="WIN32;$(NoInherit)"
 					CompileAs="2"/>
