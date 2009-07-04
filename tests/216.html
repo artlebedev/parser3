@@ -1,0 +1,18 @@
+@main[]
+$t[^file:list[./216_dir]]
+Total files (no pattern): ^t.count[]<br />
+
+$t[^file:list[./216_dir;.]]
+Total files (clean '.' pattern): ^t.count[]<br />
+
+$t[^file:list[./216_dir;^taint[.]]]
+Files with dot (tainted '.' in pattern): ^t.count[]<br />
+
+$t[^file:list[./216_dir;^taint[regex][.]]]
+Files with dot (tainted '.' in pattern): ^t.count[]<br />
+
+$t[^file:list[./216_dir;\.]]
+Files with dot (clean '\.' pattern): ^t.count[]<br />
+
+$t[^file:list[./216_dir;3]]
+Files with '3' in name: ^t.count[]<br />
