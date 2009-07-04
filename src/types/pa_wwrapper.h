@@ -8,7 +8,7 @@
 #ifndef PA_WWRAPPER_H
 #define PA_WWRAPPER_H
 
-static const char * const IDENT_WWRAPPER_H="$Date: 2009/06/17 01:08:55 $";
+static const char * const IDENT_WWRAPPER_H="$Date: 2009/07/04 08:10:08 $";
 
 #define OPTIMIZE_SINGLE_STRING_WRITE
 
@@ -99,7 +99,7 @@ public:
 			case WS_NONE:{
 				// alang is allways L_PASS_APPENDED, but just in case we check it
 				// only VString can be cached, no get_string() call as VInt/etc will be affected
-				if (dynamic_cast<VString *>(&avalue) && alang == String::L_PASS_APPENDED){
+				if(avalue.is_string() && alang == String::L_PASS_APPENDED){
 					fvalue=&avalue;
 					fstate=WS_KEEP_VALUE;
 					return;
