@@ -1,0 +1,77 @@
+@main[]
+$response:charset[UTF-8]
+$request:charset[UTF-8]
+$response:content-type[
+	$.value[text/html]
+	$.charset[$response:charset]
+]
+
+$fWIN-1251[^file::load[binary;195_windows1251.txt]]
+$fUTF-8[^file::load[binary;195_utf8.txt]]
+
+^do[Load remote file in WIN-1251 with uploading file in UTF-8;post;multipart/form-data;
+	$.charset[windows-1251]
+	$.title[Проверка]
+	$.file[$fUTF-8]
+]
+
+^do[Load remote file in UTF-8 with uploading file in WIN-1251;POST;multipart/form-data;
+	$.charset[UTF-8]
+	$.title[Проверка]
+	$.file[$fWIN-1251]
+]
+
+^do[Load remote file with uploading file, correct enctype and method GET;get;multipart/form-data;
+	$.charset[UTF-8]
+	$.title[Проверка]
+	$.file[$fWIN-1251]
+]
+
+^do[Load remote file with uploading file and method GET;get;;
+	$.charset[UTF-8]
+	$.title[Проверка]
+	$.file[$fWIN-1251]
+]
+
+^do[Load remote file with uploading file without enctype;POST;;
+	$.charset[UTF-8]
+	$.title[Проверка]
+	$.file[$fWIN-1251]
+]
+
+^do[Load remote file with uploading file and inappropriate enctype;POST;application/x-www-form-urlencoded;
+	$.charset[UTF-8]
+	$.title[Проверка]
+	$.file[$fWIN-1251]
+]
+
+^do[Load remote file with uploading file and invalid enctype;POST;invalid-enctype;
+	$.charset[UTF-8]
+	$.title[Проверка]
+	$.file[$fWIN-1251]
+]
+
+
+
+
+@do[sTitle;sMethod;sEnctype;hData][sTarget;f]
+$sTarget[http://www.parser.ru/_/tests/195.html]
+<hr />
+<h2>$sTitle</h2>
+^try{
+	$f[^file::load[text;$sTarget;
+		$.timeout(10)
+		$.charset[$hData.charset]
+		$.form[$hData]
+		^if(def $sMethod){
+			$.method[$sMethod]
+		}
+		^if(def $sEnctype){
+			$.enctype[$sEnctype]
+		}
+	]]
+	<p>$f.text</p>
+}{
+	$exception.handled(1)
+	<p>Exception: $exception.comment</p> 
+}
