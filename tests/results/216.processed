@@ -1,0 +1,9 @@
+content-type: text/html
+content-length: 249
+
+Total files (no pattern): 3<br />
+Total files (clean '.' pattern): 3<br />
+Files with dot (tainted '.' in pattern): 1<br />
+Files with dot (tainted '.' in pattern): 1<br />
+Files with dot (clean '\.' pattern): 1<br />
+Files with '3' in name: 0<br />
