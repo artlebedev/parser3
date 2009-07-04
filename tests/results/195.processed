@@ -1,0 +1,28 @@
+content-type: text/html; charset=UTF-8
+content-length: 1432
+
+<hr />
+<h2>Load remote file in WIN-1251 with uploading file in UTF-8</h2>
+<p>Method: 'POST'
+Incoming text: 'Проверка'
+Local text: 'Проверка'
+Incoming file's size: 16
+Incoming file's name: '195_utf8.txt'</p>
+<hr />
+<h2>Load remote file in UTF-8 with uploading file in WIN-1251</h2>
+<p>Method: 'POST'
+Incoming text: 'Проверка'
+Local text: 'Проверка'
+Incoming file's size: 8
+Incoming file's name: '195_windows1251.txt'</p>
+<hr />
+<h2>Load remote file with uploading file, correct enctype and method GET</h2>
+<p>Exception: you can not use $.enctype option with method GET</p> <hr />
+<h2>Load remote file with uploading file and method GET</h2>
+<p>Exception: is file, form option value can be string or table only (file is allowed for $.method[POST] + $.enctype[multipart/form-data])</p> <hr />
+<h2>Load remote file with uploading file without enctype</h2>
+<p>Exception: is file, form option value can be string or table only (file is allowed for $.method[POST] + $.enctype[multipart/form-data])</p> <hr />
+<h2>Load remote file with uploading file and inappropriate enctype</h2>
+<p>Exception: is file, form option value can be string or table only (file is allowed for $.method[POST] + $.enctype[multipart/form-data])</p> <hr />
+<h2>Load remote file with uploading file and invalid enctype</h2>
+<p>Exception: $.enctype option value can be application/x-www-form-urlencoded or multipart/form-data only</p> 
