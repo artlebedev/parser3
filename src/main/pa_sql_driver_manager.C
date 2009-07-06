@@ -1,11 +1,11 @@
 /** @file
 	Parser: sql driver manager implementation.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_SQL_DRIVER_MANAGER_C="$Date: 2008/06/26 09:41:55 $";
+static const char * const IDENT_SQL_DRIVER_MANAGER_C="$Date: 2009/07/06 08:47:10 $";
 
 #include "pa_sql_driver_manager.h"
 #include "ltdl.h"
@@ -179,7 +179,7 @@ SQL_Connection* SQL_Driver_manager::get_connection(const String& aurl,
 				is_dlinited=true;
 			}
 
-			const char* filename=library->cstr(String::L_FILE_SPEC);
+			const char* filename=library->cstr_taint(String::L_FILE_SPEC);
 			lt_dlhandle handle=lt_dlopen(filename);
 			if (!handle) {
 				const char* error=lt_dlerror();
@@ -209,7 +209,7 @@ SQL_Connection* SQL_Driver_manager::get_connection(const String& aurl,
 			// initialise by connecting to sql client dynamic link library
 			char* dlopen_file_spec_cstr=
 				dlopen_file_spec && dlopen_file_spec->length()?
-				dlopen_file_spec->cstrm(String::L_AS_IS):0;
+				dlopen_file_spec->cstrm_taint(String::L_AS_IS):0;
 			if(const char* error=driver->initialize(dlopen_file_spec_cstr))
 				throw Exception(0,
 					library,

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VREGEX_C="$Date: 2009/06/29 09:25:02 $";
+static const char * const IDENT_VREGEX_C="$Date: 2009/07/06 08:48:24 $";
 
 #include "pa_vregex.h"
 #include "pa_vint.h"
@@ -70,11 +70,7 @@ void VRegex::set(Charset& acharset, const String* aregex, const String* aoptions
 
 	fcharset=&acharset;
 
-	// for untainting L_TAINTED strings as L_REGEX
-	String& regex=*new String;
-	regex.append(*aregex, String::L_REGEX);
-
-	fpattern=regex.cstr(String::L_UNSPECIFIED);
+	fpattern=aregex->cstr_untaint(String::L_REGEX);
 
 	regex_options(aoptions, foptions);
 }

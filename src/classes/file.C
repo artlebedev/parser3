@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2009/06/24 09:03:57 $";
+static const char * const IDENT_FILE_C="$Date: 2009/07/06 08:49:49 $";
 
 #include "pa_config_includes.h"
 
@@ -214,11 +214,11 @@ static void _load(Request& r, MethodParams& params) {
 		if(param_index>1){
 			const String& luser_file_name=params.as_string(param_index, FILE_NAME_MUST_BE_STRING);
 			if(!luser_file_name.is_empty())
-				user_file_name=luser_file_name.cstr(String::L_FILE_SPEC);
+				user_file_name=luser_file_name.cstr_taint(String::L_FILE_SPEC);
 		}
 	}
 	if(!user_file_name)
-		user_file_name=lfile_name.cstr(String::L_FILE_SPEC);
+		user_file_name=lfile_name.cstr_taint(String::L_FILE_SPEC);
 
 	size_t offset=0;
 	size_t limit=0;
@@ -273,7 +273,7 @@ static void _create(Request& r, MethodParams& params) {
 			"only text mode is currently supported");
 
 	const char* user_file_name_cstr=r.absolute(
-		params.as_no_junction(1, FILE_NAME_MUST_NOT_BE_CODE).as_string()).cstr(String::L_FILE_SPEC);
+		params.as_no_junction(1, FILE_NAME_MUST_NOT_BE_CODE).as_string()).cstr_taint(String::L_FILE_SPEC);
 
 	const String& content=params.as_string(2, "content must be string");
 	const char* content_cstr=content.cstr(String::L_UNSPECIFIED); // explode content, honor tainting changes
@@ -297,7 +297,7 @@ static void _stat(Request& r, MethodParams& params) {
 		size,
 		atime, mtime, ctime);
 	
-	const char* user_file_name=lfile_name.cstr(String::L_FILE_SPEC);
+	const char* user_file_name=lfile_name.cstr_taint(String::L_FILE_SPEC);
 
 	VFile& self=GET_SELF(r, VFile);
 
@@ -630,7 +630,7 @@ static void _list(Request& r, MethodParams& params) {
 		}
 	}
 
-	const char* absolute_path_cstr=r.absolute(relative_path.as_string()).cstr(String::L_FILE_SPEC);
+	const char* absolute_path_cstr=r.absolute(relative_path.as_string()).cstr_taint(String::L_FILE_SPEC);
 
 	Table::columns_type columns(new ArrayString);
 	*columns+=new String("name");
@@ -849,8 +849,8 @@ static void _sql(Request& r, MethodParams& params) {
 
 	Temp_lang temp_lang(r, String::L_SQL);
 	const String& statement_string=r.process_to_string(statement);
-	const char* statement_cstr=
-		statement_string.cstr(String::L_UNSPECIFIED, r.connection());
+	const char* statement_cstr=statement_string.cstr(String::L_UNSPECIFIED, r.connection());
+
 	File_sql_event_handlers handlers(statement_string, statement_cstr);
 
 	ulong limit=SQL_NO_LIMIT;

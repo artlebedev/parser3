@@ -7,7 +7,7 @@
 	@todo setrlimit
 */
 
-static const char * const IDENT_EXEC_C="$Date: 2009/05/05 11:12:29 $";
+static const char * const IDENT_EXEC_C="$Date: 2009/07/06 08:47:10 $";
 
 #include "pa_config_includes.h"
 
@@ -400,7 +400,7 @@ PA_exec_result pa_exec(
 
 	PROCESS_INFORMATION pi;	
 	HANDLE hInWrite, hOutRead, hErrRead;
-	const char* script_spec_cstr=file_spec.cstr(String::L_FILE_SPEC);
+	const char* script_spec_cstr=file_spec.cstr_taint(String::L_FILE_SPEC);
 	const char* cmd=buildCommand(script_spec_cstr, argv);
 	char* env_cstr=0;
 	if(env) {

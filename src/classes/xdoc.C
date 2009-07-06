@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT_XDOC_C="$Date: 2009/06/14 00:33:36 $";
+static const char * const IDENT_XDOC_C="$Date: 2009/07/06 08:49:50 $";
 
 #include "libxml/tree.h"
 #include "libxml/HTMLtree.h"
@@ -424,7 +424,7 @@ static void _create(Request& r, MethodParams& params) {
 			set_encoding=true;
 			// must be last action in if, see after if}
 		} else {
-			VFile* vfile=param.as_vfile(String::L_UNSPECIFIED);
+			VFile* vfile=param.as_vfile(String::L_AS_IS);
 			xmldoc=xmlParseMemory(vfile->value_ptr(), vfile->value_size());
 			if(!xmldoc || xmlHaveGenericErrors())
 				throw XmlException(0);
@@ -457,9 +457,9 @@ static void _load(Request& r, MethodParams& params) {
 	const String* uri=&params.as_string(0, "URI must be string");
 	const char* uri_cstr;
 	if(uri->pos("://")==STRING_NOT_FOUND) // disk path
-		uri_cstr=r.absolute(*uri).cstr(String::L_FILE_SPEC);
+		uri_cstr=r.absolute(*uri).cstr_taint(String::L_FILE_SPEC);
 	else // xxx:// 
-		uri_cstr=uri->cstr(String::L_AS_IS); // leave as-is for xmlParseFile to handle
+		uri_cstr=uri->cstr_taint(String::L_AS_IS); // leave as-is for xmlParseFile to handle
 
 	/// @todo!! add SAFE MODE!!
 	xmlDoc* xmldoc=xmlParseFile(uri_cstr);

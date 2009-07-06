@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_UNTAINT_C="$Date: 2009/05/23 08:12:56 $";
+static const char * const IDENT_UNTAINT_C="$Date: 2009/07/06 08:45:35 $";
 
 
 #include "pa_string.h"
@@ -317,13 +317,11 @@ struct Cstr_to_string_body_block_info {
 	const char* exception;
 };
 #endif
-int cstr_to_string_body_block(char alang, size_t fragment_length, Cstr_to_string_body_block_info* info) {
-	const String::Language fragment_lang=(String::Language)(unsigned char)alang;
+int cstr_to_string_body_block(String::Language to_lang, size_t fragment_length, Cstr_to_string_body_block_info* info) {
 	bool& whitespace=info->whitespace;
 	size_t fragment_end=info->fragment_begin+fragment_length;
-	//fprintf(stderr, "%d, %d =%s=\n", fragment_lang, fragment_length, info->body->cstr());
+	//fprintf(stderr, "%d, %d =%s=\n", to_lang, fragment_length, info->body->cstr());
 	
-	String::Language to_lang=info->lang==String::L_UNSPECIFIED?fragment_lang:info->lang;
 	bool optimize=(to_lang & String::L_OPTIMIZE_BIT)!=0;
 	if(!optimize)
 		whitespace=false;
@@ -537,9 +535,11 @@ int cstr_to_string_body_block(char alang, size_t fragment_length, Cstr_to_string
 }
 
 
-String::Body String::cstr_to_string_body(Language lang, 
-		  SQL_Connection* connection,
-		  const Request_charsets *charsets) const {
+int cstr_to_string_body_block_default(char alang, size_t fragment_length, Cstr_to_string_body_block_info* info){
+	return cstr_to_string_body_block(info->lang==String::L_UNSPECIFIED ? (String::Language)(unsigned char)alang : info->lang, fragment_length, info);
+}
+
+String::Body String::cstr_to_string_body(Language lang, SQL_Connection* connection, const Request_charsets *charsets) const {
 	if(is_empty())
 		return String::Body();
 
@@ -557,12 +557,81 @@ String::Body String::cstr_to_string_body(Language lang,
 	info.exception=0;
 	info.whitespace=true;
 
-	langs.for_each(body, cstr_to_string_body_block, &info);
-	if(info.exception){
+	langs.for_each(body, cstr_to_string_body_block_default, &info);
+	if(info.exception)
 		throw Exception(0,
 			0,
 			info.exception);
-	}
+
+	return String::Body(CORD_ec_to_cord(info.result));
+}
+
+String::Body String::cstr_to_string_body_taint(Language lang, SQL_Connection* connection, const Request_charsets *charsets) const {
+	if(is_empty())
+		return String::Body();
+
+	Cstr_to_string_body_block_info info;
+	// input
+	info.lang=lang;
+	info.connection=connection;
+	info.charsets=charsets;
+	info.body=&body;
+	// output
+	CORD_ec_init(info.result);
+	// private
+	body.set_pos(info.pos, 0);
+	info.fragment_begin=0;
+	info.exception=0;
+	info.whitespace=true;
+
+	cstr_to_string_body_block(lang, length(), &info);
+
+	if(info.exception)
+		throw Exception(0,
+			0,
+			info.exception);
+
+	return String::Body(CORD_ec_to_cord(info.result));
+}
+
+int cstr_to_string_body_block_untaint(char alang, size_t fragment_length, Cstr_to_string_body_block_info* info){
+	const String::Language lang=(String::Language)(unsigned char)alang;
+	// see append_fragment_* for explanation
+	if(info->lang&String::L_OPTIMIZE_BIT)
+		return cstr_to_string_body_block(
+			lang==String::L_TAINTED?
+				info->lang
+				:lang==String::L_CLEAN?
+					(String::Language)(String::L_CLEAN|String::L_OPTIMIZE_BIT)
+					:lang,
+			fragment_length, info);
+	else
+		return cstr_to_string_body_block(lang==String::L_TAINTED ? info->lang:lang, fragment_length, info);
+}
+
+String::Body String::cstr_to_string_body_untaint(Language lang, SQL_Connection* connection, const Request_charsets *charsets) const {
+	if(is_empty())
+		return String::Body();
+
+	Cstr_to_string_body_block_info info;
+	// input
+	info.lang=lang;
+	info.connection=connection;
+	info.charsets=charsets;
+	info.body=&body;
+	// output
+	CORD_ec_init(info.result);
+	// private
+	body.set_pos(info.pos, 0);
+	info.fragment_begin=0;
+	info.exception=0;
+	info.whitespace=true;
+
+	langs.for_each(body, cstr_to_string_body_block_untaint, &info);
+	if(info.exception)
+		throw Exception(0,
+			0,
+			info.exception);
 
 	return String::Body(CORD_ec_to_cord(info.result));
 }

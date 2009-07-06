@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-static const char * const IDENT_STRING_H="$Date: 2009/06/23 10:05:09 $";
+static const char * const IDENT_STRING_H="$Date: 2009/07/06 08:45:09 $";
 
 // includes
 #include "pa_types.h"
@@ -514,21 +514,42 @@ public:
 	size_t length(Charset& charset) const;
 
 	/// convert to CORD. if 'lang' known, forcing 'lang' to it
-	Body cstr_to_string_body(Language lang=L_AS_IS, 
-		SQL_Connection* connection=0,
-		const Request_charsets *charsets=0) const;
+	Body cstr_to_string_body(Language lang, SQL_Connection* connection, const Request_charsets *charsets) const;
+	Body cstr_to_string_body_taint(Language lang, SQL_Connection* connection, const Request_charsets *charsets) const;
+	Body cstr_to_string_body_untaint(Language lang, SQL_Connection* connection, const Request_charsets *charsets) const;
 
 	/// convert to constant C string. if 'lang' known, forcing 'lang' to it
-	const char* cstr(Language lang=L_AS_IS, 
-		SQL_Connection* connection=0,
-		const Request_charsets *charsets=0) const {
+	const char* cstr(Language lang, SQL_Connection* connection=0, const Request_charsets *charsets=0) const {
 		return cstr_to_string_body(lang, connection, charsets).cstr();
 	}
 	/// convert to Modifiable C string. if 'lang' known, forcing 'lang' to it
-	char *cstrm(Language lang=L_AS_IS, 
-		SQL_Connection* connection=0,
-		const Request_charsets *charsets=0) const {
+	char *cstrm(Language lang, SQL_Connection* connection=0, const Request_charsets *charsets=0) const {
 		return cstr_to_string_body(lang, connection, charsets).cstrm();
+	}
+
+	/// 
+	const char* cstr() const {
+		return body.cstr();
+	}
+	/// 
+	char* cstrm() const {
+		return body.cstrm();
+	}
+
+	/// convert to constant C string forcing lang tainting
+	const char* cstr_taint(Language lang, SQL_Connection* connection=0, const Request_charsets *charsets=0) const {
+		return cstr_to_string_body_taint(lang, connection, charsets).cstr();
+	}
+	char *cstrm_taint(Language lang, SQL_Connection* connection=0, const Request_charsets *charsets=0) const {
+		return cstr_to_string_body_taint(lang, connection, charsets).cstrm();
+	}
+
+	/// convert to constant C string with tainting dirty to lang
+	const char* cstr_untaint(Language lang, SQL_Connection* connection=0, const Request_charsets *charsets=0) const {
+		return cstr_to_string_body_untaint(lang, connection, charsets).cstr();
+	}
+	char *cstrm_untaint(Language lang, SQL_Connection* connection=0, const Request_charsets *charsets=0) const {
+		return cstr_to_string_body_untaint(lang, connection, charsets).cstrm();
 	}
 	/// puts pieces to buf
 	Cm serialize(size_t prolog_size) const;

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VREQUEST_C="$Date: 2009/05/23 08:15:56 $";
+static const char * const IDENT_VREQUEST_C="$Date: 2009/07/06 08:48:24 $";
 
 #include "pa_vrequest.h"
 #include "pa_request_info.h"
@@ -87,7 +87,7 @@ const VJunction* VRequest::put_element(Value& aself, const String& aname, Value*
 
 	// $document-root
 	if(aname==DOCUMENT_ROOT_NAME) {
-		finfo.document_root=avalue->as_string().cstr(String::L_FILE_SPEC);
+		finfo.document_root=avalue->as_string().cstr_taint(String::L_FILE_SPEC);
 		return PUT_ELEMENT_REPLACED_ELEMENT;
 	} 
 
