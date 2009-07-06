@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-static const char * const IDENT_STRING_H="$Date: 2009/07/06 08:45:09 $";
+static const char * const IDENT_STRING_H="$Date: 2009/07/06 11:53:35 $";
 
 // includes
 #include "pa_types.h"
@@ -518,15 +518,6 @@ public:
 	Body cstr_to_string_body_taint(Language lang, SQL_Connection* connection, const Request_charsets *charsets) const;
 	Body cstr_to_string_body_untaint(Language lang, SQL_Connection* connection, const Request_charsets *charsets) const;
 
-	/// convert to constant C string. if 'lang' known, forcing 'lang' to it
-	const char* cstr(Language lang, SQL_Connection* connection=0, const Request_charsets *charsets=0) const {
-		return cstr_to_string_body(lang, connection, charsets).cstr();
-	}
-	/// convert to Modifiable C string. if 'lang' known, forcing 'lang' to it
-	char *cstrm(Language lang, SQL_Connection* connection=0, const Request_charsets *charsets=0) const {
-		return cstr_to_string_body(lang, connection, charsets).cstrm();
-	}
-
 	/// 
 	const char* cstr() const {
 		return body.cstr();
@@ -537,18 +528,18 @@ public:
 	}
 
 	/// convert to constant C string forcing lang tainting
-	const char* cstr_taint(Language lang, SQL_Connection* connection=0, const Request_charsets *charsets=0) const {
+	const char* taint_cstr(Language lang, SQL_Connection* connection=0, const Request_charsets *charsets=0) const {
 		return cstr_to_string_body_taint(lang, connection, charsets).cstr();
 	}
-	char *cstrm_taint(Language lang, SQL_Connection* connection=0, const Request_charsets *charsets=0) const {
+	char *taint_cstrm(Language lang, SQL_Connection* connection=0, const Request_charsets *charsets=0) const {
 		return cstr_to_string_body_taint(lang, connection, charsets).cstrm();
 	}
 
 	/// convert to constant C string with tainting dirty to lang
-	const char* cstr_untaint(Language lang, SQL_Connection* connection=0, const Request_charsets *charsets=0) const {
+	const char* untaint_cstr(Language lang, SQL_Connection* connection=0, const Request_charsets *charsets=0) const {
 		return cstr_to_string_body_untaint(lang, connection, charsets).cstr();
 	}
-	char *cstrm_untaint(Language lang, SQL_Connection* connection=0, const Request_charsets *charsets=0) const {
+	char *untaint_cstrm(Language lang, SQL_Connection* connection=0, const Request_charsets *charsets=0) const {
 		return cstr_to_string_body_untaint(lang, connection, charsets).cstrm();
 	}
 	/// puts pieces to buf
