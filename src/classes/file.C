@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2009/07/06 08:49:49 $";
+static const char * const IDENT_FILE_C="$Date: 2009/07/06 12:13:29 $";
 
 #include "pa_config_includes.h"
 
@@ -214,11 +214,11 @@ static void _load(Request& r, MethodParams& params) {
 		if(param_index>1){
 			const String& luser_file_name=params.as_string(param_index, FILE_NAME_MUST_BE_STRING);
 			if(!luser_file_name.is_empty())
-				user_file_name=luser_file_name.cstr_taint(String::L_FILE_SPEC);
+				user_file_name=luser_file_name.taint_cstr(String::L_FILE_SPEC);
 		}
 	}
 	if(!user_file_name)
-		user_file_name=lfile_name.cstr_taint(String::L_FILE_SPEC);
+		user_file_name=lfile_name.taint_cstr(String::L_FILE_SPEC);
 
 	size_t offset=0;
 	size_t limit=0;
@@ -273,10 +273,10 @@ static void _create(Request& r, MethodParams& params) {
 			"only text mode is currently supported");
 
 	const char* user_file_name_cstr=r.absolute(
-		params.as_no_junction(1, FILE_NAME_MUST_NOT_BE_CODE).as_string()).cstr_taint(String::L_FILE_SPEC);
+		params.as_no_junction(1, FILE_NAME_MUST_NOT_BE_CODE).as_string()).taint_cstr(String::L_FILE_SPEC);
 
 	const String& content=params.as_string(2, "content must be string");
-	const char* content_cstr=content.cstr(String::L_UNSPECIFIED); // explode content, honor tainting changes
+	const char* content_cstr=content.untaint_cstr(String::L_AS_IS); // explode content, honor tainting changes
 
 	VString* vcontent_type=new VString(r.mime_type_of(user_file_name_cstr));
 	
@@ -297,7 +297,7 @@ static void _stat(Request& r, MethodParams& params) {
 		size,
 		atime, mtime, ctime);
 	
-	const char* user_file_name=lfile_name.cstr_taint(String::L_FILE_SPEC);
+	const char* user_file_name=lfile_name.taint_cstr(String::L_FILE_SPEC);
 
 	VFile& self=GET_SELF(r, VFile);
 
@@ -344,7 +344,7 @@ static void append_env_pair(
 			throw Exception(PARSER_RUNTIME,
 				new String(akey, String::L_TAINTED),
 				"not safe environment variable");
-		info->env->put(akey, avalue->as_string().cstr_to_string_body(String::L_UNSPECIFIED, 0, info->charsets));
+		info->env->put(akey, avalue->as_string().cstr_to_string_body_untaint(String::L_AS_IS, 0, info->charsets));
 	}
 }
 #ifndef DOXYGEN
@@ -370,7 +370,7 @@ static void pass_cgi_header_attribute(
 
 static void append_to_argv(Request& r, ArrayString& argv, const String* str){
 	if(!str->is_empty())
-		argv+=new String(str->cstr_to_string_body(String::L_UNSPECIFIED, 0, &r.charsets), String::L_AS_IS);
+		argv+=new String(str->cstr_to_string_body_untaint(String::L_AS_IS, 0, &r.charsets), String::L_AS_IS);
 }
 
 /// @todo fix `` in perl - they produced flipping consoles and no output to perl
@@ -466,7 +466,6 @@ static void _exec_cgi(Request& r, MethodParams& params, bool cgi) {
 	ArrayString argv;
 	if(param_index < params.count()) {
 		// influence tainting 
-		// main target -- URLencoding of tainted pieces to String::L_URI lang
 		Temp_client_charset temp(r.charsets, charset? *charset: r.charsets.source());
 
 		for(size_t i=param_index; i<params.count(); i++) {
@@ -630,7 +629,7 @@ static void _list(Request& r, MethodParams& params) {
 		}
 	}
 
-	const char* absolute_path_cstr=r.absolute(relative_path.as_string()).cstr_taint(String::L_FILE_SPEC);
+	const char* absolute_path_cstr=r.absolute(relative_path.as_string()).taint_cstr(String::L_FILE_SPEC);
 
 	Table::columns_type columns(new ArrayString);
 	*columns+=new String("name");
@@ -849,7 +848,7 @@ static void _sql(Request& r, MethodParams& params) {
 
 	Temp_lang temp_lang(r, String::L_SQL);
 	const String& statement_string=r.process_to_string(statement);
-	const char* statement_cstr=statement_string.cstr(String::L_UNSPECIFIED, r.connection());
+	const char* statement_cstr=statement_string.untaint_cstr(String::L_AS_IS, r.connection());
 
 	File_sql_event_handlers handlers(statement_string, statement_cstr);
 

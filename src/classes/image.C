@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_IMAGE_C="$Date: 2009/07/06 08:49:49 $";
+static const char * const IDENT_IMAGE_C="$Date: 2009/07/06 12:13:29 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -731,7 +731,7 @@ static void measure_png(const String& origin_string,
 
 static void measure(const String& file_name, 
 			 Measure_reader& reader, ushort& width, ushort& height, Value** exif) {
-	const char* file_name_cstr=file_name.cstr_taint(String::L_FILE_SPEC);
+	const char* file_name_cstr=file_name.taint_cstr(String::L_FILE_SPEC);
 	if(const char* cext=strrchr(file_name_cstr, '.')) {
 		cext++;
 		if(strcasecmp(cext, "GIF")==0)
@@ -851,7 +851,7 @@ static void _html(Request& r, MethodParams& params) {
 /// @test wrap FILE to auto-object
 static gdImage* load(Request& r, 
 					 const String& file_name){
-	const char* file_name_cstr=r.absolute(file_name).cstr_taint(String::L_FILE_SPEC);
+	const char* file_name_cstr=r.absolute(file_name).taint_cstr(String::L_FILE_SPEC);
 	if(FILE *f=fopen(file_name_cstr, "rb")) {
 		gdImage* image=new gdImage;
 		bool ok=image->CreateFromGif(f);
@@ -901,7 +901,7 @@ static void _gif(Request& r, MethodParams& params) {
 	Value* content_type=new VString(*new String("image/gif"));
 	vfile.set(false/*not tainted*/, 
 		(const char*)buf.ptr, buf.size, 
-		file_name? file_name->cstr_taint(String::L_FILE_SPEC): 0, 
+		file_name? file_name->taint_cstr(String::L_FILE_SPEC): 0, 
 		content_type);
 
 	r.write_no_lang(vfile);

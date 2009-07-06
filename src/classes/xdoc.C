@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT_XDOC_C="$Date: 2009/07/06 08:49:50 $";
+static const char * const IDENT_XDOC_C="$Date: 2009/07/06 12:13:30 $";
 
 #include "libxml/tree.h"
 #include "libxml/HTMLtree.h"
@@ -391,7 +391,7 @@ static void _create(Request& r, MethodParams& params) {
 		Temp_lang temp_lang(r, String::L_XML);
 		const String& xml=r.process_to_string(param);
 
-		const char* cstr=xml.cstr(String::L_UNSPECIFIED, 0, &r.charsets);
+		const char* cstr=xml.untaint_cstr(String::L_AS_IS, 0, &r.charsets);
 		xmldoc=xmlParseMemory(cstr, strlen(cstr));
 		//printf("document=0x%p\n", document);
 		if(!xmldoc || xmlHaveGenericErrors())
@@ -457,9 +457,9 @@ static void _load(Request& r, MethodParams& params) {
 	const String* uri=&params.as_string(0, "URI must be string");
 	const char* uri_cstr;
 	if(uri->pos("://")==STRING_NOT_FOUND) // disk path
-		uri_cstr=r.absolute(*uri).cstr_taint(String::L_FILE_SPEC);
+		uri_cstr=r.absolute(*uri).taint_cstr(String::L_FILE_SPEC);
 	else // xxx:// 
-		uri_cstr=uri->cstr_taint(String::L_AS_IS); // leave as-is for xmlParseFile to handle
+		uri_cstr=uri->taint_cstr(String::L_AS_IS); // leave as-is for xmlParseFile to handle
 
 	/// @todo!! add SAFE MODE!!
 	xmlDoc* xmldoc=xmlParseFile(uri_cstr);

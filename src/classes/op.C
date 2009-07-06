@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2009/06/04 12:38:46 $";
+static const char * const IDENT_OP_C="$Date: 2009/07/06 12:13:30 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -218,7 +218,7 @@ static void _process(Request& r, MethodParams& params) {
 		// evaluate source to process
 		const String& source=r.process_to_string(vjunction);
 		r.use_buf(*target_class,
-			source.cstr(String::L_UNSPECIFIED, r.connection(false)),
+			source.untaint_cstr(String::L_AS_IS, r.connection(false)),
 			main_alias,
 			processe_file_no,
 			line_no_alias_offset);

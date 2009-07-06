@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VOID_C="$Date: 2009/07/06 08:49:50 $";
+static const char * const IDENT_VOID_C="$Date: 2009/07/06 12:13:30 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -124,7 +124,7 @@ static void _sql(Request& r, MethodParams& params) {
 
 	Temp_lang temp_lang(r, String::L_SQL);
 	const String& statement_string=r.process_to_string(statement);
-	const char* statement_cstr=statement_string.cstr(String::L_UNSPECIFIED, r.connection());
+	const char* statement_cstr=statement_string.untaint_cstr(String::L_AS_IS, r.connection());
 
 	Void_sql_event_handlers handlers(statement_string);
 	r.connection()->query(

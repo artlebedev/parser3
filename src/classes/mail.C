@@ -1,11 +1,11 @@
 /** @file
 	Parser: @b mail parser class.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_MAIL_C="$Date: 2007/04/23 10:30:09 $";
+static const char * const IDENT_MAIL_C="$Date: 2009/07/06 12:13:30 $";
 
 #include "pa_config_includes.h"
 #include "pa_vmethod_frame.h"
@@ -73,7 +73,7 @@ static void sendmail(
 			 options
 #endif
 			 ) {
-	const char* message_cstr=message.cstr(String::L_UNSPECIFIED);
+	const char* message_cstr=message.untaint_cstr(String::L_AS_IS);
 
 	const char* exception_type="email.format";
 	if(!from) // we use in sendmail -f {from} && SMTP MAIL from: {from}
