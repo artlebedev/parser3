@@ -8,7 +8,7 @@
 #ifndef PA_VOBJECT_H
 #define PA_VOBJECT_H
 
-static const char * const IDENT_VOBJECT_H="$Date: 2009/06/14 00:33:54 $";
+static const char * const IDENT_VOBJECT_H="$Date: 2009/07/06 12:10:09 $";
 
 // includes
 
@@ -48,8 +48,7 @@ public: // Value
 	override int as_int() const;
 	override double as_double() const;
 	override bool as_bool() const;
-	override VFile* as_vfile(String::Language lang=String::L_UNSPECIFIED, 
-		const Request_charsets *charsets=0);
+	override VFile* as_vfile(String::Language lang=String::L_UNSPECIFIED, const Request_charsets *charsets=0);
 	
 	override HashStringValue* get_hash();
 	override Table *get_table();

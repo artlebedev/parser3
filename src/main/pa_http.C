@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
  */
 
-static const char * const IDENT_HTTP_C="$Date: 2009/07/03 01:28:47 $"; 
+static const char * const IDENT_HTTP_C="$Date: 2009/07/06 12:07:04 $"; 
 
 #include "pa_http.h"
 #include "pa_common.h"
@@ -401,7 +401,7 @@ static void form_value2string(
 const char* pa_form2string(HashStringValue& form, Request_charsets& charsets) {
 	String string;
 	form.for_each<String*>(form_value2string, &string);
-	return string.cstr(String::L_UNSPECIFIED, 0, &charsets);
+	return string.untaint_cstr(String::L_AS_IS, 0, &charsets);
 }
 
 struct FormPart {
@@ -474,7 +474,7 @@ const char* pa_form2string_multipart(HashStringValue& form, Request& r, const ch
 	form.for_each<FormPart&>(form_value2part, formpart);
 	formpart.string << "--" << boundary << "--";
 	post_size=formpart.string.length(); // very surprizing, but it calculates correct post_size even with binary files!
-	return formpart.string.cstr(String::L_UNSPECIFIED); // without transcoding
+	return formpart.string.untaint_cstr(String::L_AS_IS); // without transcoding
 }
 
 static void find_headers_end(char* p,
@@ -607,16 +607,14 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 	}
 
 	//preparing request
-	String& connect_string=*new String;
-	// not in ^sql{... L_SQL ...} spirit, but closer to ^file::load one
-	connect_string.append(file_spec, String::L_URI); // tainted pieces -> URI pieces
+	String& connect_string=*new String(file_spec);
 
 	String request_head_and_body;
 	{
 		// influence URLencoding of tainted pieces to String::L_URI lang
 		Temp_client_charset temp(r.charsets, *asked_remote_charset);
 
-		const char* connect_string_cstr=connect_string.cstr(String::L_UNSPECIFIED, 0, &(r.charsets));
+		const char* connect_string_cstr=connect_string.untaint_cstr(String::L_URI, 0, &(r.charsets));
 
 		const char* current=connect_string_cstr;
 		if(strncmp(current, "http://", 7)!=0)
@@ -671,7 +669,7 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 			head << CRLF;
 		} else if (vbody) {
 			// transcode tainted pieces and then URI-encode them
-			body_cstr=vbody->as_string().cstr(String::L_UNSPECIFIED, 0, &(r.charsets));
+			body_cstr=vbody->as_string().untaint_cstr(String::L_AS_IS, 0, &(r.charsets));
 
 			// now transcode is needed only if own content-type was specified _and_ clean chars with code>127 are in the body
 			// @todo: I don't like the current behaviour
@@ -724,7 +722,7 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 			head << "content-length: " << format(post_size, "%u") << CRLF;
 
 		// head + end of header
-		request_head_and_body << head.cstr(String::L_UNSPECIFIED, 0, &(r.charsets)) << CRLF;
+		request_head_and_body << head.untaint_cstr(String::L_AS_IS, 0, &(r.charsets)) << CRLF;
 
 		// body
 		if(body_cstr)

@@ -8,7 +8,7 @@
 #ifndef PA_VVOID_H
 #define PA_VVOID_H
 
-static const char * const IDENT_VVOID_H="$Date: 2009/04/15 04:47:46 $";
+static const char * const IDENT_VVOID_H="$Date: 2009/07/06 12:10:09 $";
 
 #include "classes.h"
 #include "pa_vstateless_object.h"
@@ -39,8 +39,7 @@ public: // Value
 	override Value& as_expr_result(bool /*return_string_as_is=false*/) { return *this; }
 
 	/// VVoid: empty vfile
-	override VFile* as_vfile(String::Language lang=String::L_UNSPECIFIED,
-		const Request_charsets *charsets=0);
+	override VFile* as_vfile(String::Language lang, const Request_charsets *charsets);
 
 	/// VVoid: methods
 	override Value* get_element(const String& aname, Value& aself, bool looking_up) {

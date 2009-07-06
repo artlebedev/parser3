@@ -7,7 +7,7 @@
 	@todo setrlimit
 */
 
-static const char * const IDENT_EXEC_C="$Date: 2009/07/06 08:47:10 $";
+static const char * const IDENT_EXEC_C="$Date: 2009/07/06 12:07:04 $";
 
 #include "pa_config_includes.h"
 
@@ -363,7 +363,7 @@ struct Append_env_pair_info {
 #endif
 };
 #endif
-///@test maybe here and at argv construction --- cstr(String::L_UNSPECIFIED
+///@test maybe here and at argv construction --- untaint_cstr(String::L_AS_IS
 static void append_env_pair(HashStringString::key_type key, HashStringString::value_type value,
 		Append_env_pair_info *info) {
 #ifdef WIN32
@@ -400,7 +400,7 @@ PA_exec_result pa_exec(
 
 	PROCESS_INFORMATION pi;	
 	HANDLE hInWrite, hOutRead, hErrRead;
-	const char* script_spec_cstr=file_spec.cstr_taint(String::L_FILE_SPEC);
+	const char* script_spec_cstr=file_spec.taint_cstr(String::L_FILE_SPEC);
 	const char* cmd=buildCommand(script_spec_cstr, argv);
 	char* env_cstr=0;
 	if(env) {
@@ -452,7 +452,7 @@ from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?r
 #else
 
 	// execve needs non const
-	char* file_spec_cstr=file_spec.cstrm(String::L_FILE_SPEC); 
+	char* file_spec_cstr=file_spec.taint_cstrm(String::L_FILE_SPEC); 
 
 	int pipe_write, pipe_read, pipe_err;
 

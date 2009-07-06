@@ -26,7 +26,7 @@
  *
  */
 
-static const char * const IDENT_COMMON_C="$Date: 2009/07/06 08:47:10 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2009/07/06 12:07:04 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -260,7 +260,7 @@ bool file_read_action_under_lock(const String& file_spec,
 				const char* action_name, File_read_action action, void *context, 
 				bool as_text, 
 				bool fail_on_read_problem) {
-	const char* fname=file_spec.cstr_taint(String::L_FILE_SPEC); 
+	const char* fname=file_spec.taint_cstr(String::L_FILE_SPEC); 
 	int f;
 
 	// first open, next stat:
@@ -315,7 +315,7 @@ void create_dir_for_file(const String& file_spec) {
 	size_t pos_after=1;
 	size_t pos_before;
 	while((pos_before=file_spec.pos('/', pos_after))!=STRING_NOT_FOUND) {
-		mkdir(file_spec.mid(0, pos_before).cstr_taint(String::L_FILE_SPEC), 0775); 
+		mkdir(file_spec.mid(0, pos_before).taint_cstr(String::L_FILE_SPEC), 0775); 
 		pos_after=pos_before+1;
 	}
 }
@@ -329,7 +329,7 @@ bool file_write_action_under_lock(
 				bool do_append, 
 				bool do_block, 
 				bool fail_on_lock_problem) {
-	const char* fname=file_spec.cstr_taint(String::L_FILE_SPEC); 
+	const char* fname=file_spec.taint_cstr(String::L_FILE_SPEC); 
 	int f;
 	if(access(fname, W_OK)!=0) // no
 		create_dir_for_file(file_spec); 
@@ -411,11 +411,11 @@ static void rmdir(const String& file_spec, size_t pos_after) {
 	if((pos_before=file_spec.pos('/', pos_after))!=STRING_NOT_FOUND)
 		rmdir(file_spec, pos_before+1); 
 	
-	rmdir(file_spec.mid(0, pos_after-1/* / */).cstr_taint(String::L_FILE_SPEC)); 
+	rmdir(file_spec.mid(0, pos_after-1/* / */).taint_cstr(String::L_FILE_SPEC)); 
 }
 
 bool file_delete(const String& file_spec, bool fail_on_problem) {
-	const char* fname=file_spec.cstr_taint(String::L_FILE_SPEC); 
+	const char* fname=file_spec.taint_cstr(String::L_FILE_SPEC); 
 	if(unlink(fname)!=0)
 		if(fail_on_problem)
 			throw Exception(errno==EACCES?"file.access":errno==ENOENT?"file.missing":0, 
@@ -430,8 +430,8 @@ bool file_delete(const String& file_spec, bool fail_on_problem) {
 }
 
 void file_move(const String& old_spec, const String& new_spec) {
-	const char* old_spec_cstr=old_spec.cstr_taint(String::L_FILE_SPEC); 
-	const char* new_spec_cstr=new_spec.cstr_taint(String::L_FILE_SPEC); 
+	const char* old_spec_cstr=old_spec.taint_cstr(String::L_FILE_SPEC); 
+	const char* new_spec_cstr=new_spec.taint_cstr(String::L_FILE_SPEC); 
 	
 	create_dir_for_file(new_spec); 
 
@@ -454,12 +454,12 @@ bool entry_exists(const char* fname, struct stat *afinfo) {
 }
 
 bool entry_exists(const String& file_spec) {
-	const char* fname=file_spec.cstr_taint(String::L_FILE_SPEC); 
+	const char* fname=file_spec.taint_cstr(String::L_FILE_SPEC); 
 	return entry_exists(fname, 0); 
 }
 
 static bool entry_readable(const String& file_spec, bool need_dir) {
-	char* fname=file_spec.cstrm_taint(String::L_FILE_SPEC); 
+	char* fname=file_spec.taint_cstrm(String::L_FILE_SPEC); 
 	if(need_dir) {
 		size_t size=strlen(fname); 
 		while(size) {
@@ -494,7 +494,7 @@ const String* file_exist(const String& path, const String& name) {
 }
 
 bool file_executable(const String& file_spec) {
-	return access(file_spec.cstr_taint(String::L_FILE_SPEC), X_OK)==0;
+	return access(file_spec.taint_cstr(String::L_FILE_SPEC), X_OK)==0;
 }
 
 bool file_stat(const String& file_spec, 
@@ -503,7 +503,7 @@ bool file_stat(const String& file_spec,
 			time_t& rmtime,
 			time_t& rctime,
 			bool fail_on_read_problem) {
-	const char* fname=file_spec.cstr_taint(String::L_FILE_SPEC); 
+	const char* fname=file_spec.taint_cstr(String::L_FILE_SPEC); 
 	struct stat finfo;
 	if(stat(fname, &finfo)!=0)
 		if(fail_on_read_problem)

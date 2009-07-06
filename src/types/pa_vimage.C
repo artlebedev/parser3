@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VIMAGE_C="$Date: 2009/07/06 08:48:24 $";
+static const char * const IDENT_VIMAGE_C="$Date: 2009/07/06 12:10:09 $";
 
 #include "pa_vimage.h"
 #include "pa_vint.h"
@@ -64,7 +64,7 @@ const VJunction* VImage::put_element(Value& /*aself*/, const String& aname, Valu
 			fimage->SetLineWidth(min(max(avalue->as_int(), 1), 10));
 		} else if(aname=="line-style") {
 			const String& sline_style=avalue->as_string();
-			fimage->SetLineStyle(sline_style.length()?sline_style.cstr_taint(String::L_AS_IS):0);
+			fimage->SetLineStyle(sline_style.length()?sline_style.taint_cstr(String::L_AS_IS):0);
 		}
 	}
 

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REQUEST_C="$Date: 2009/07/06 08:47:10 $";
+static const char * const IDENT_REQUEST_C="$Date: 2009/07/06 12:07:04 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -661,11 +661,11 @@ static void add_header_attribute(
 		|| name==CHARSET_NAME)
 		return;
 	
-	const char* aname=String(name, String::L_TAINTED).cstr_taint(String::L_URI, 0, &info->r.charsets);
+	const char* aname=String(name, String::L_TAINT).taint_cstr(String::L_URI, 0, &info->r.charsets);
 
 	SAPI::add_header_attribute(info->r.sapi_info,
 			aname, 
-			attributed_meaning_to_string(*value, String::L_TAINTED, false).cstr_untaint(String::L_URI, 0, &info->r.charsets)
+			attributed_meaning_to_string(*value, String::L_URI, false).untaint_cstr(String::L_AS_IS, 0, &info->r.charsets)
 		);
 
 	if(strcasecmp(aname, "last-modified")==0)

@@ -1,7 +1,7 @@
 /** @file
 	Parser: plugins to xml library, controlling i/o; implementation
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT="$Date: 2009/01/25 02:05:08 $";
+static const char * const IDENT="$Date: 2009/07/06 12:07:04 $";
 
 #include "libxslt/extensions.h"
 
@@ -201,7 +201,7 @@ xmlFileOpenMethod (const char* afilename) {
 			Request::Execute_nonvirtual_method_result body=
 				r.execute_nonvirtual_method(r.main_class, *method, vparam, true);
 			if(body.string) {
-				buf=body.string->cstr(String::L_UNSPECIFIED);
+				buf=body.string->untaint_cstr(String::L_AS_IS);
 			} else
 				throw Exception(0,
 					new String(afilename),

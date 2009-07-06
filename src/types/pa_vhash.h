@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b hash parser type decl.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VHASH_H
 #define PA_VHASH_H
 
-static const char * const IDENT_VHASH_H="$Date: 2007/04/23 10:30:49 $";
+static const char * const IDENT_VHASH_H="$Date: 2009/07/06 12:10:09 $";
 
 #include "classes.h"
 #include "pa_value.h"
@@ -87,8 +87,7 @@ public: // value
 		return PUT_ELEMENT_REPLACED_ELEMENT;
 	}
 
-	override VFile* as_vfile(String::Language lang=String::L_UNSPECIFIED,
-		const Request_charsets *charsets=0);
+	override VFile* as_vfile(String::Language lang=String::L_UNSPECIFIED, const Request_charsets *charsets=0);
 
 public: // usage
 
