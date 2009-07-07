@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2009/07/07 05:47:43 $";
+static const char * const IDENT_STRING_C="$Date: 2009/07/07 07:26:28 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
