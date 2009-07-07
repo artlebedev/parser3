@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2009/07/06 12:13:30 $";
+static const char * const IDENT_STRING_C="$Date: 2009/07/07 05:47:43 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -562,7 +562,7 @@ const String* sql_result_string(Request& r, MethodParams& params,
 
 	Temp_lang temp_lang(r, String::L_SQL);
 	const String& statement_string=r.process_to_string(statement);
-	const char* statement_cstr=statement_string.untaint_cstr(String::L_AS_IS, r.connection());
+	const char* statement_cstr=statement_string.untaint_cstr(r.flang, r.connection());
 
 	String_sql_event_handlers handlers(statement_string, statement_cstr);
 
@@ -630,9 +630,8 @@ static void _save(Request& r, MethodParams& params) {
 	}		
 
 	// write
-	const char* buf=src.untaint_cstr(String::L_AS_IS, r.connection(false/*no error if none*/));
-	file_write(r.absolute(file_name), 
-		buf, strlen(buf), true, do_append);
+	String::Body sbody=src.cstr_to_string_body_untaint(String::L_AS_IS, r.connection(false/*no error if none*/));
+	file_write(r.absolute(file_name), sbody.cstr(), sbody.length(), true, do_append);
 }
 
 static void _normalize(Request& r, MethodParams&) {

@@ -8,7 +8,7 @@
 #ifndef PA_VSTRING_H
 #define PA_VSTRING_H
 
-static const char * const IDENT_VSTRING_H="$Date: 2009/07/06 12:10:09 $";
+static const char * const IDENT_VSTRING_H="$Date: 2009/07/07 05:48:24 $";
 
 // includes
 
@@ -46,7 +46,7 @@ public: // Value
 	override int as_int() const { return fstring->as_int(); }
 
 	/// VString: vfile
-	override VFile* as_vfile(String::Language lang=String::L_UNSPECIFIED, const Request_charsets *charsets=0);
+	override VFile* as_vfile(String::Language lang, const Request_charsets *charsets=0);
 
 	/// VString: $method
 	override Value* get_element(const String& aname, Value& aself, bool looking_up) {

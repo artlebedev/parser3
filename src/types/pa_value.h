@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-static const char * const IDENT_VALUE_H="$Date: 2009/05/14 11:27:23 $";
+static const char * const IDENT_VALUE_H="$Date: 2009/07/07 05:48:24 $";
 
 #include "pa_string.h"
 #include "pa_array.h"
@@ -96,8 +96,7 @@ public: // Value
 	virtual bool as_bool() const { bark("is '%s', it does not have logical value"); return 0; }
 	
 	/// extract file
-	virtual VFile* as_vfile(String::Language lang=String::L_UNSPECIFIED, 
-		const Request_charsets* charsets=0);
+	virtual VFile* as_vfile(String::Language lang, const Request_charsets* charsets=0);
 	
 	/// extract Junction
 	virtual Junction* get_junction();

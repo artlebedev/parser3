@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2009/07/06 12:13:29 $";
+static const char * const IDENT_FILE_C="$Date: 2009/07/07 05:47:43 $";
 
 #include "pa_config_includes.h"
 
@@ -276,12 +276,12 @@ static void _create(Request& r, MethodParams& params) {
 		params.as_no_junction(1, FILE_NAME_MUST_NOT_BE_CODE).as_string()).taint_cstr(String::L_FILE_SPEC);
 
 	const String& content=params.as_string(2, "content must be string");
-	const char* content_cstr=content.untaint_cstr(String::L_AS_IS); // explode content, honor tainting changes
+	const String::Body content_body=content.cstr_to_string_body_untaint(String::L_AS_IS); // explode content, honor tainting changes
 
 	VString* vcontent_type=new VString(r.mime_type_of(user_file_name_cstr));
 	
 	VFile& self=GET_SELF(r, VFile);
-	self.set(true/*tainted*/, content_cstr, strlen(content_cstr), user_file_name_cstr, vcontent_type);
+	self.set(true/*tainted*/, content_body.cstr(), content_body.length(), user_file_name_cstr, vcontent_type);
 
 	self.set_mode(true/*as_text*/);
 }
@@ -848,7 +848,7 @@ static void _sql(Request& r, MethodParams& params) {
 
 	Temp_lang temp_lang(r, String::L_SQL);
 	const String& statement_string=r.process_to_string(statement);
-	const char* statement_cstr=statement_string.untaint_cstr(String::L_AS_IS, r.connection());
+	const char* statement_cstr=statement_string.untaint_cstr(r.flang, r.connection());
 
 	File_sql_event_handlers handlers(statement_string, statement_cstr);
 

@@ -5,7 +5,7 @@
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_CHARSET_C="$Date: 2009/07/06 12:07:04 $";
+static const char * const IDENT_CHARSET_C="$Date: 2009/07/07 05:48:05 $";
 
 #include "pa_charset.h"
 #include "pa_charsets.h"
@@ -1077,15 +1077,14 @@ xmlChar* Charset::transcode_buf2xchar(const char* buf, size_t buf_size) {
 	assert(outlen<=saved_outlen); out[outlen]=0;
 	return out;
 }
-xmlChar* Charset::transcode(const String& s) { 
-	const char* cstr=s.untaint_cstr(String::L_AS_IS);
 
-	return transcode_buf2xchar(cstr, strlen(cstr)); 
+xmlChar* Charset::transcode(const String& s) {
+	String::Body sbody=s.cstr_to_string_body_untaint(String::L_AS_IS);
+	return transcode_buf2xchar(sbody.cstr(), sbody.length()); 
 }
-xmlChar* Charset::transcode(const String::Body s) { 
-	const char* cstr=s.cstr();
 
-	return transcode_buf2xchar(cstr, s.length()); 
+xmlChar* Charset::transcode(const String::Body s) {
+	return transcode_buf2xchar(s.cstr(), s.length()); 
 }
 #endif
 

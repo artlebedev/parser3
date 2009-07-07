@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT_XDOC_C="$Date: 2009/07/06 12:13:30 $";
+static const char * const IDENT_XDOC_C="$Date: 2009/07/07 05:47:43 $";
 
 #include "libxml/tree.h"
 #include "libxml/HTMLtree.h"
@@ -391,8 +391,9 @@ static void _create(Request& r, MethodParams& params) {
 		Temp_lang temp_lang(r, String::L_XML);
 		const String& xml=r.process_to_string(param);
 
-		const char* cstr=xml.untaint_cstr(String::L_AS_IS, 0, &r.charsets);
-		xmldoc=xmlParseMemory(cstr, strlen(cstr));
+		String::Body sbody=xml.cstr_to_string_body_untaint(r.flang, 0, &r.charsets);
+		xmldoc=xmlParseMemory(sbody.cstr(), sbody.length());
+
 		//printf("document=0x%p\n", document);
 		if(!xmldoc || xmlHaveGenericErrors())
 			throw XmlException(0);

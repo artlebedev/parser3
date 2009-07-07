@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
  */
 
-static const char * const IDENT_HTTP_C="$Date: 2009/07/06 12:07:04 $"; 
+static const char * const IDENT_HTTP_C="$Date: 2009/07/07 05:48:05 $"; 
 
 #include "pa_http.h"
 #include "pa_common.h"
@@ -365,9 +365,7 @@ static void form_string_value2string(
 					const String& value, 
 					String& result) 
 {
-	result << String(key, String::L_URI) << "=";
-	result.append(value, String::L_URI, true);
-	result << "&";
+	result << String(key, String::L_URI) << "=" << String(value, String::L_URI) << "&";
 }
 
 #ifndef DOXYGEN

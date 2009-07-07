@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-static const char * const IDENT_STRING_H="$Date: 2009/07/06 11:53:35 $";
+static const char * const IDENT_STRING_H="$Date: 2009/07/07 05:47:52 $";
 
 // includes
 #include "pa_types.h"
@@ -513,10 +513,10 @@ public:
 	size_t length() const { return body.length(); }
 	size_t length(Charset& charset) const;
 
-	/// convert to CORD. if 'lang' known, forcing 'lang' to it
-	Body cstr_to_string_body(Language lang, SQL_Connection* connection, const Request_charsets *charsets) const;
-	Body cstr_to_string_body_taint(Language lang, SQL_Connection* connection, const Request_charsets *charsets) const;
-	Body cstr_to_string_body_untaint(Language lang, SQL_Connection* connection, const Request_charsets *charsets) const;
+	/// convert to CORD forcing lang tainting
+	Body cstr_to_string_body_taint(Language lang, SQL_Connection* connection=0, const Request_charsets *charsets=0) const;
+	/// convert to CORD with tainting dirty to lang
+	Body cstr_to_string_body_untaint(Language lang, SQL_Connection* connection=0, const Request_charsets *charsets=0) const;
 
 	/// 
 	const char* cstr() const {

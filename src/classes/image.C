@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_IMAGE_C="$Date: 2009/07/06 12:13:29 $";
+static const char * const IDENT_IMAGE_C="$Date: 2009/07/07 05:47:43 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -786,7 +786,7 @@ static void _measure(Request& r, MethodParams& params) {
 		file_read_action_under_lock(r.absolute(*file_name), 
 			"measure", file_measure_action, &info);
 	} else {
-		VFile* vfile=data.as_vfile();
+		VFile* vfile=data.as_vfile(String::L_AS_IS);
 		file_name=&vfile->fields().get(name_name)->as_string();
 		Measure_buf_reader reader(
 			vfile->value_ptr(),

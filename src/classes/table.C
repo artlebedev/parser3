@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2009/07/06 12:13:30 $";
+static const char * const IDENT_TABLE_C="$Date: 2009/07/07 05:47:43 $";
 
 #if (!defined(NO_STRINGSTREAM) && !defined(FREEBSD4))
 #include <sstream>
@@ -1164,7 +1164,7 @@ static void _sql(Request& r, MethodParams& params) {
 
 	Temp_lang temp_lang(r, String::L_SQL);
 	const String&  statement_string=r.process_to_string(statement);
-	const char* statement_cstr=statement_string.untaint_cstr(String::L_AS_IS, r.connection());
+	const char* statement_cstr=statement_string.untaint_cstr(r.flang, r.connection());
 
 	Table_sql_event_handlers handlers;
 #ifdef RESOURCES_DEBUG

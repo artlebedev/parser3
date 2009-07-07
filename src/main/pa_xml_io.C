@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT="$Date: 2009/07/06 12:07:04 $";
+static const char * const IDENT="$Date: 2009/07/07 05:48:05 $";
 
 #include "libxslt/extensions.h"
 
@@ -201,7 +201,7 @@ xmlFileOpenMethod (const char* afilename) {
 			Request::Execute_nonvirtual_method_result body=
 				r.execute_nonvirtual_method(r.main_class, *method, vparam, true);
 			if(body.string) {
-				buf=body.string->untaint_cstr(String::L_AS_IS);
+				buf=body.string->untaint_cstr(r.flang);
 			} else
 				throw Exception(0,
 					new String(afilename),

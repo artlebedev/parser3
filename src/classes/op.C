@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2009/07/06 12:13:30 $";
+static const char * const IDENT_OP_C="$Date: 2009/07/07 05:47:43 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -122,11 +122,8 @@ static void _untaint(Request& r, MethodParams& params) {
 	{
 		Value& vbody=params.as_junction(params.count()-1, "body must be code");
 		
-		StringOrValue result;
-		{
-			Temp_lang temp_lang(r, lang); // set temporarily specified ^untaint[language;
-			result=r.process(vbody); // process marking tainted with that lang
-		}
+		Temp_lang temp_lang(r, lang); // set temporarily specified ^untaint[language;
+		StringOrValue result=r.process(vbody); // process marking tainted with that lang
 		r.write_assign_lang(result);
 	}
 }
@@ -141,10 +138,7 @@ static void _taint(Request& r, MethodParams& params) {
 	{
 		Value& vbody=params.as_no_junction(params.count()-1, "body must not be code");
 		
-		String result;
-		result.append(
-			vbody.as_string(),  // process marking tainted with that lang
-			lang, true);  // force result language to specified
+		String result(vbody.as_string(), lang); // force result language to specified
 		r.write_assign_lang(result);
 	}
 }

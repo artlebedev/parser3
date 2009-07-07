@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REQUEST_C="$Date: 2009/07/06 12:20:01 $";
+static const char * const IDENT_REQUEST_C="$Date: 2009/07/07 05:48:05 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -956,9 +956,7 @@ Request::Exception_details Request::get_details(const Exception& e) {
 
 	// $.source
 	if(problem_source) {
-		String& source=*new String; 
-		source.append(*problem_source, String::L_TAINTED, true/*forced*/);
-
+		String& source=*new String(*problem_source, String::L_TAINTED);
 		hash.put(exception_source_part_name, new VString(source));
 	}
 

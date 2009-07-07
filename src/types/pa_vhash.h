@@ -8,7 +8,7 @@
 #ifndef PA_VHASH_H
 #define PA_VHASH_H
 
-static const char * const IDENT_VHASH_H="$Date: 2009/07/06 12:10:09 $";
+static const char * const IDENT_VHASH_H="$Date: 2009/07/07 05:48:24 $";
 
 #include "classes.h"
 #include "pa_value.h"
@@ -87,7 +87,7 @@ public: // value
 		return PUT_ELEMENT_REPLACED_ELEMENT;
 	}
 
-	override VFile* as_vfile(String::Language lang=String::L_UNSPECIFIED, const Request_charsets *charsets=0);
+	override VFile* as_vfile(String::Language lang, const Request_charsets *charsets=0);
 
 public: // usage
 

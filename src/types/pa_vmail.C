@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_VMAIL_C="$Date: 2009/07/06 12:10:09 $";
+static const char * const IDENT_VMAIL_C="$Date: 2009/07/07 05:48:24 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -725,7 +725,7 @@ static const String& text_value_to_string(Request& r,
 	}
 	if(body) {
 		Request_charsets charsets(r.charsets.source(), r.charsets.mail()/*uri!*/, r.charsets.mail());
-		const char* body_cstr=strdup(body->untaint_cstr(String::L_AS_IS, 0, &charsets));  // body
+		const char* body_cstr=body->untaint_cstr(String::L_AS_IS, 0, &charsets);  // body
 		String::C mail=Charset::transcode(
 			String::C(body_cstr, strlen(body_cstr)),
 			r.charsets.source(),

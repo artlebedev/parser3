@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_UNTAINT_C="$Date: 2009/07/06 08:45:35 $";
+static const char * const IDENT_UNTAINT_C="$Date: 2009/07/07 05:48:05 $";
 
 
 #include "pa_string.h"
@@ -534,37 +534,6 @@ int cstr_to_string_body_block(String::Language to_lang, size_t fragment_length, 
 	return 0; // 0=continue
 }
 
-
-int cstr_to_string_body_block_default(char alang, size_t fragment_length, Cstr_to_string_body_block_info* info){
-	return cstr_to_string_body_block(info->lang==String::L_UNSPECIFIED ? (String::Language)(unsigned char)alang : info->lang, fragment_length, info);
-}
-
-String::Body String::cstr_to_string_body(Language lang, SQL_Connection* connection, const Request_charsets *charsets) const {
-	if(is_empty())
-		return String::Body();
-
-	Cstr_to_string_body_block_info info;
-	// input
-	info.lang=lang;
-	info.connection=connection;
-	info.charsets=charsets;
-	info.body=&body;
-	// output
-	CORD_ec_init(info.result);
-	// private
-	body.set_pos(info.pos, 0);
-	info.fragment_begin=0;
-	info.exception=0;
-	info.whitespace=true;
-
-	langs.for_each(body, cstr_to_string_body_block_default, &info);
-	if(info.exception)
-		throw Exception(0,
-			0,
-			info.exception);
-
-	return String::Body(CORD_ec_to_cord(info.result));
-}
 
 String::Body String::cstr_to_string_body_taint(Language lang, SQL_Connection* connection, const Request_charsets *charsets) const {
 	if(is_empty())
