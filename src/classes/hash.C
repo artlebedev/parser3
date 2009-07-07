@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_HASH_C="$Date: 2009/07/07 05:47:43 $";
+static const char * const IDENT_HASH_C="$Date: 2009/07/07 06:27:05 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -232,9 +232,9 @@ static void _sub(Request& r, MethodParams& params) {
 }
 
 static void copy_all_dontoverwrite_to(
-								  HashStringValue::key_type key, 
-								  HashStringValue::value_type value, 
-								  HashStringValue* dest) {
+					HashStringValue::key_type key, 
+					HashStringValue::value_type value, 
+					HashStringValue* dest) {
 	dest->put_dont_replace(key, value);
 }
 static void _union(Request& r, MethodParams& params) {
@@ -256,9 +256,9 @@ struct Copy_intersection_to_info {
 };
 #endif
 static void copy_intersection_to(
-								 HashStringValue::key_type key, 
-								 HashStringValue::value_type value, 
-								 Copy_intersection_to_info *info) {
+					HashStringValue::key_type key, 
+					HashStringValue::value_type value, 
+					Copy_intersection_to_info *info) {
 	if(info->b->get(key))
 		info->dest->put_dont_replace(key, value);
 }
@@ -276,9 +276,9 @@ static void _intersection(Request& r, MethodParams& params) {
 }
 
 static bool intersects(
-					   HashStringValue::key_type key, 
-					   HashStringValue::value_type /*value*/, 
-					   HashStringValue* b) {
+					HashStringValue::key_type key, 
+					HashStringValue::value_type /*value*/, 
+					HashStringValue* b) {
 	return b->get(key)!=0;
 }
 
@@ -376,10 +376,10 @@ static void _sql(Request& r, MethodParams& params) {
 }
 
 static void keys_collector(
-			   HashStringValue::key_type key, 
-			   HashStringValue::value_type, 
-			   Table *table) {
-	Table::element_type row(new ArrayString);
+			HashStringValue::key_type key, 
+			HashStringValue::value_type, 
+			Table *table) {
+	Table::element_type row(new ArrayString(1));
 	*row+=new String(key, String::L_TAINTED);
 	*table+=row;
 }
