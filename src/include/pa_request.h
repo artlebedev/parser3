@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char * const IDENT_REQUEST_H="$Date: 2009/06/16 08:39:00 $";
+static const char * const IDENT_REQUEST_H="$Date: 2009/07/07 23:49:54 $";
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -118,7 +118,7 @@ private:
 	///@{ core data
 
 	/// classes
-	HashStringValue fclasses;
+	HashString<Value*> fclasses;
 
 	/// already used files to avoid cyclic uses
 	HashString<bool> used_files;
@@ -187,7 +187,7 @@ public:
 	~Request();
 
 	/// global classes
-	HashStringValue& classes() { return fclasses; }
+	HashString<Value*>& classes() { return fclasses; }
 
 	/**
 		core request processing

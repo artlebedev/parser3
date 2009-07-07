@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2009/05/27 00:58:46 $";
+static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2009/07/07 23:50:06 $";
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
@@ -138,7 +138,7 @@ class VMethodFrame: public WContext {
 protected:
 	VMethodFrame *fcaller;
 
-	HashStringValue* my; /*OR*/ MethodParams fnumbered_params;
+	HashString<Value*>* my; /*OR*/ MethodParams fnumbered_params;
 	Value* fself;
 
 	typedef const VJunction* (VMethodFrame::*put_element_t)(const String& aname, Value* avalue);

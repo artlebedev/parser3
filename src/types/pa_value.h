@@ -8,9 +8,9 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-static const char * const IDENT_VALUE_H="$Date: 2009/07/07 05:48:24 $";
+static const char * const IDENT_VALUE_H="$Date: 2009/07/07 23:50:06 $";
 
-#include "pa_string.h"
+#include "pa_common.h"
 #include "pa_array.h"
 #include "pa_exception.h"
 #include "pa_property.h"
@@ -19,20 +19,18 @@ static const char * const IDENT_VALUE_H="$Date: 2009/07/07 05:48:24 $";
 
 class VStateless_class;
 class WContext;
-class Request; class Request_charsets;
+class Request;
+class Request_charsets;
 class Junction;
 class VJunction;
 class Method;
 class Value;
-template<typename K, typename V> class Hash;
-template<typename V> class HashString;
-typedef HashString<Value*> HashStringValue; 
-typedef Array<Value*> ArrayValue;
 class MethodParams;
 class VObject;
 class VMethodFrame;
 class VFile;
 class Table;
+typedef Array<Value*> ArrayValue;
 
 ///	grandfather of all @a values in @b Parser
 class Value: public PA_Object {

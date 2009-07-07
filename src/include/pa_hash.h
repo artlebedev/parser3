@@ -17,7 +17,7 @@
 #ifndef PA_HASH_H
 #define PA_HASH_H
 
-static const char * const IDENT_HASH_H="$Date: 2009/05/14 11:27:23 $";
+static const char * const IDENT_HASH_H="$Date: 2009/07/07 23:49:54 $";
 
 #include "pa_memory.h"
 #include "pa_types.h"
@@ -73,6 +73,10 @@ inline uint hash_code(int self) {
 	return result;
 }
 
+#endif // PA_HASH_H
+
+#ifndef PA_HASH_CLASS
+#define PA_HASH_CLASS
 /** 
 	Simple hash.
 
@@ -81,42 +85,67 @@ inline uint hash_code(int self) {
 		get returning 0 means there were no such.
 		"put value 0" means "remove"
 */
-template<typename K, typename V> class Hash: public PA_Object {
+#ifdef HASH_ORDER
+
+#undef HASH
+#undef HASH_STRING
+#undef NEW_PAIR
+
+#define HASH OrderedHash
+#define HASH_STRING OrderedHashString
+#define NEW_PAIR(code, key, value) *ref=new Pair(code, key, value, *ref, this->last); this->last=&((*ref)->next)
+
+#else
+
+#define HASH Hash
+#define HASH_STRING HashString
+#define NEW_PAIR(code, key, value) *ref=new Pair(code, key, value, *ref)
+
+#endif
+
+template<typename K, typename V> class HASH: public PA_Object {
 public:
 
 	typedef K key_type;
 	typedef V value_type;
 
-	Hash() { 
+	HASH() { 
 		allocated=Hash_allocates[allocates_index=0];
 		threshold=allocated*THRESHOLD_PERCENT/100;
 		fpairs_count=fused_refs=0;
 		refs=new(UseGC) Pair*[allocated];
+#ifdef HASH_ORDER
+		first=0;
+		last=&first;
+#endif
 	}
 
-	Hash(const Hash& source) {
+	HASH(const HASH& source) {
 		allocates_index=source.allocates_index;
 		allocated=source.allocated;
 		threshold=source.threshold;
 		fused_refs=source.fused_refs;
 		fpairs_count=source.fpairs_count;
 		refs=new(UseGC) Pair*[allocated];
-
+#ifdef HASH_ORDER
+		first=0;
+		last=&first;
+#endif
 		// clone & rehash
 		Pair **old_ref=source.refs;
 		for(int index=0; index<allocated; index++)
 			for(Pair *pair=*old_ref++; pair; ) {
 				Pair *next=pair->link;
 
-				Pair **new_ref=&refs[index];
-				*new_ref=new Pair(pair->code, pair->key, pair->value, *new_ref);
+				Pair **ref=&refs[index];
+				NEW_PAIR(pair->code, pair->key, pair->value);
 
 				pair=next;
 			}
 	}
 
 #ifdef USE_DESTRUCTORS
-	~Hash() {
+	~HASH() {
 		Pair **ref=refs;
 		for(int index=0; index<allocated; index++)
 			for(Pair *pair=*ref++; pair;){
@@ -150,7 +179,7 @@ public:
 		// proper pair not found -- create&link_in new pair
 		if(!*ref) // root cell were fused_refs?
 			fused_refs++; // not, we'll use it and record the fact
-		*ref=new Pair(code, key, value, *ref);
+		NEW_PAIR(code, key, value);
 		fpairs_count++;
 		return false;
 	}
@@ -185,7 +214,7 @@ public:
 		//create&link_in new pair
 		if(!*ref) // root cell were fused_refs?
 			fused_refs++; // not, we'll use it and record the fact
-		*ref=new Pair(code, key, value, *ref);
+		NEW_PAIR(code, key, value);
 		fpairs_count++;
 		return 0;
 	}
@@ -227,7 +256,7 @@ public:
 		//create&link_in new pair
 		if(!*ref) // root cell were fused_refs?
 			fused_refs++; // not, we'll use it and record the fact
-		*ref=new Pair(code, key, value, *ref);
+		NEW_PAIR(code, key, value);
 		fpairs_count++;
 		return 0;
 	}
@@ -268,15 +297,24 @@ public:
 	bool remove(K key) {
 		uint code=hash_code(key);
 		uint index=code%allocated;
-		for(Pair **ref=&refs[index]; *ref; ref=&(*ref)->link)
-			if((*ref)->code==code && (*ref)->key==key) {
+		for(Pair **ref=&refs[index]; *ref; ref=&(*ref)->link){
+			Pair *pair=*ref;
+			if(pair->code==code && pair->key==key) {
 				// found a pair with the same key
-				Pair *next=(*ref)->link;
-				delete *ref;
+				Pair *next=pair->link;
+#ifdef HASH_ORDER
+				*(pair->prev)=pair->next;
+				if(pair->next)
+					pair->next->prev=pair->prev;
+				else
+					last=pair->prev;
+#endif
+				delete pair;
 				*ref=next;
 				--fpairs_count;
 				return true;
 			}
+		}
 
 		return false;
 	}
@@ -370,7 +408,7 @@ public:
 		// proper pair not found -- create&link_in new pair
 		if(!*ref) // root cell were fused_refs?
 			fused_refs++; // not, we'll use it and record the fact
-		*ref=new Pair(code, key, value, *ref);
+		NEW_PAIR(code, key, value);
 		fpairs_count++;
 		return false;
 	}
@@ -378,7 +416,7 @@ public:
 	/** put all 'src' values if NO with same key existed
 		@todo optimize this.allocated==src.allocated case
 	*/
-	void merge_dont_replace(const Hash& src) {
+	void merge_dont_replace(const HASH& src) {
 		for(int i=0; i<src.allocated; i++)
 			for(Pair *pair=src.refs[i]; pair; pair=pair->link)
 				put_dont_replace(pair->key, pair->value);
@@ -405,12 +443,17 @@ public:
 
 	/// iterate over all pairs until condition becomes true, return that element
 	template<typename I> V first_that(bool callback(K, V, I), I info) const {
+#ifdef HASH_ORDER
+		for(Pair *pair=first; pair; pair=pair->next)
+			if(callback(pair->key, pair->value, info))
+				return pair->value;
+#else
 		Pair **ref=refs;
 		for(int index=0; index<allocated; index++)
 			for(Pair *pair=*ref++; pair; pair=pair->link)
 				if(callback(pair->key, pair->value, info))
 					return pair->value;
-		
+#endif
 		return V(0);
 	}
 
@@ -418,6 +461,10 @@ public:
 	void clear() {
 		memset(refs, 0, sizeof(*refs)*allocated);
 		fpairs_count=fused_refs=0;	
+#ifdef HASH_ORDER
+		first=0;
+		last=&first;
+#endif
 	}
 
 protected:
@@ -449,13 +496,21 @@ protected:
 		K key;
 		V value;
 		Pair *link;
-		
-		Pair(uint acode, K akey, V avalue, Pair *alink) :
-			code(acode),
-			key(akey),
-			value(avalue),
-			link(alink) {}
+#ifdef HASH_ORDER
+		Pair **prev;
+		Pair *next;
+
+		Pair(uint acode, K akey, V avalue, Pair *alink, Pair **aprev) : code(acode), key(akey), value(avalue), link(alink), 
+			prev(aprev), next(0) { *aprev=this; }
+#else
+		Pair(uint acode, K akey, V avalue, Pair *alink) : code(acode), key(akey), value(avalue), link(alink) {}
+#endif
 	} **refs;
+
+#ifdef HASH_ORDER
+	Pair *first;
+	Pair **last;
+#endif
 
 	/// filled to threshold: needs expanding
 	bool is_full() { return fused_refs==threshold; }
@@ -490,20 +545,20 @@ protected:
 
 private: //disabled
 
-	Hash& operator = (const Hash&) { return *this; }
+	HASH& operator = (const HASH&) { return *this; }
 };
 
 /** 
-       Simple String::body hash.
-       Allows hash code caching
+	Simple String::body hash.
+	Allows hash code caching
 */
 
 #ifdef HASH_CODE_CACHING
 
-template<typename V> class HashString: public Hash<const CORD,V> {
+template<typename V> class HASH_STRING: public HASH<const CORD,V> {
 public:
 
-	typedef typename Hash<const CORD,V>::Pair Pair; 
+	typedef typename HASH<const CORD,V>::Pair Pair; 
 	typedef const String::Body &K;
 
 	typedef K key_type;
@@ -532,7 +587,7 @@ public:
 		// proper pair not found -- create&link_in new pair
 		if(!*ref) // root cell were fused_refs?
 			this->fused_refs++; // not, we'll use it and record the fact
-		*ref=new Pair(code, key, value, *ref);
+		NEW_PAIR(code, key, value);
 		this->fpairs_count++;
 		return false;
 	}
@@ -569,7 +624,7 @@ public:
 		//create&link_in new pair
 		if(!*ref) // root cell were fused_refs?
 			this->fused_refs++; // not, we'll use it and record the fact
-		*ref=new Pair(code, key, value, *ref);
+		NEW_PAIR(code, key, value);
 		this->fpairs_count++;
 		return 0;
 	}
@@ -612,7 +667,7 @@ public:
 		//create&link_in new pair
 		if(!*ref) // root cell were fused_refs?
 			this->fused_refs++; // not, we'll use it and record the fact
-		*ref=new Pair(code, key, value, *ref);
+		NEW_PAIR(code, key, value);
 		this->fpairs_count++;
 		return 0;
 	}
@@ -656,15 +711,24 @@ public:
 		CORD key=str.get_cord();
 		uint code=str.get_hash_code();
 		uint index=code%this->allocated;
-		for(Pair **ref=&this->refs[index]; *ref; ref=&(*ref)->link)
-			if((*ref)->code==code && CORD_cmp((*ref)->key,key)==0) {
+		for(Pair **ref=&this->refs[index]; *ref; ref=&(*ref)->link){
+			Pair *pair=*ref;
+			if(pair->code==code && CORD_cmp(pair->key,key)==0) {
 				// found a pair with the same key
-				Pair *next=(*ref)->link;
-				delete *ref;
+				Pair *next=pair->link;
+#ifdef HASH_ORDER
+				*(pair->prev)=pair->next;
+				if(pair->next)
+					pair->next->prev=pair->prev;
+				else
+					this->last=pair->prev;
+#endif
+				delete pair;
 				*ref=next;
 				--this->fpairs_count;
 				return true;
 			}
+		}
 
 		return false;
 	}
@@ -764,7 +828,7 @@ public:
 		// proper pair not found -- create&link_in new pair
 		if(!*ref) // root cell were fused_refs?
 			this->fused_refs++; // not, we'll use it and record the fact
-		*ref=new Pair(code, key, value, *ref);
+		NEW_PAIR(code, key, value);
 		this->fpairs_count++;
 		return false;
 	}
@@ -787,20 +851,27 @@ public:
 
 	/// iterate over all pairs until condition becomes true, return that element
 	template<typename I> V first_that(bool callback(K, V, I), I info) const {
+#ifdef HASH_ORDER
+		for(Pair *pair=this->first; pair; pair=pair->next)
+			if(callback(String::Body(pair->key, pair->code), pair->value, info))
+				return pair->value;
+#else
 		Pair **ref=this->refs;
 		for(int index=0; index<this->allocated; index++)
 			for(Pair *pair=*ref++; pair; pair=pair->link)
 				if(callback(String::Body(pair->key, pair->code), pair->value, info))
 					return pair->value;
+#endif
 		return V(0);
 	}
 };
 #else
 
-template<typename V> class HashString: public Hash<const String::Body,V>{};
+template<typename V> class HASH_STRING: public HASH<const String::Body,V>{};
 
 #endif
 
+#ifndef HASH_ORDER
 ///    Auto-object used to temporarily substituting/removing string hash values
 template <typename K, typename V>
 class Temp_hash_value {
@@ -818,5 +889,6 @@ public:
 		fhash.put(fname, saved_value);
 	}
 };
-
 #endif
+
+#endif //PA_HASH_CLASS

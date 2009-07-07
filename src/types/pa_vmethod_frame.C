@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)\
 */
 
-static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2009/06/17 01:08:55 $";
+static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2009/07/07 23:50:06 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
@@ -38,7 +38,7 @@ VMethodFrame::VMethodFrame(
 	put_element_impl=(junction.method->all_vars_local)?&VMethodFrame::put_element_local:&VMethodFrame::put_element_global;
 
 	if(!junction.method->max_numbered_params_count){ // this method uses numbered params?
-		my=new HashStringValue;
+		my=new HashString<Value*>;
 
 		const Method &method=*junction.method;
 		if(method.locals_names) { // are there any local var names?

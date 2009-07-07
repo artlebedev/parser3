@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-static const char * const IDENT_COMMON_H="$Date: 2009/05/26 10:44:41 $";
+static const char * const IDENT_COMMON_H="$Date: 2009/07/07 23:49:54 $";
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -26,8 +26,15 @@ class Request;
 #define HTTP_CONTENT_TYPE_MULTIPART_RELATED	"multipart/related"
 #define HTTP_CONTENT_TYPE_MULTIPART_MIXED	"multipart/mixed"
 
+#define HASH_ORDER
+
+#ifdef HASH_ORDER
+#undef PA_HASH_CLASS
+#include "pa_hash.h"
+#endif
+
 class Value;
-typedef HashString<Value*> HashStringValue;
+typedef HASH_STRING<Value*> HashStringValue;
 
 // replace system s*nprintf with our versions
 #undef vsnprintf 
