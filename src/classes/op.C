@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2009/07/07 05:47:43 $";
+static const char * const IDENT_OP_C="$Date: 2009/07/07 12:16:13 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -163,7 +163,7 @@ static void _process(Request& r, MethodParams& params) {
 				"no target class");
 
 		// temporary remove language change
-		Temp_lang temp_lang(r, String::L_PASS_APPENDED);
+		Temp_lang temp_lang(r, String::L_PARSER_CODE);
 		// temporary zero @main so to maybe-replace it in processed code
 		Temp_method temp_method_main(*target_class, main_method_name, 0);
 		// temporary zero @auto so it wouldn't be auto-called in Request::use_buf
