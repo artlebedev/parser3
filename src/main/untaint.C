@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_UNTAINT_C="$Date: 2009/07/07 05:48:05 $";
+static const char * const IDENT_UNTAINT_C="$Date: 2009/07/07 12:14:00 $";
 
 
 #include "pa_string.h"
@@ -97,6 +97,10 @@ inline bool need_http_header_encode(unsigned char c){
 
 inline bool need_regex_escape(unsigned char c){
 	return strchr("\\^$.[]|()?*+{}-", c)!=0;
+}
+
+inline bool need_parser_code_escape(unsigned char c){
+	return strchr("^$;@()[]{}:#\"", c)!=0;
 }
 
 // String
@@ -522,6 +526,14 @@ int cstr_to_string_body_block(String::Language to_lang, size_t fragment_length, 
 			to_string(output);
 
 		}
+		break;
+	case String::L_PARSER_CODE:
+		// for auto-untaint in process
+		escape_fragment(
+			if(need_parser_code_escape(c))
+				to_char('^');
+			_default;
+		);
 		break;
 	default:
 		SAPI::abort("unknown untaint language #%d", 

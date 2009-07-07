@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-static const char * const IDENT_STRING_H="$Date: 2009/07/07 05:47:52 $";
+static const char * const IDENT_STRING_H="$Date: 2009/07/07 12:13:28 $";
 
 // includes
 #include "pa_types.h"
@@ -100,14 +100,15 @@ public:
 		L_FILE_SPEC='F',	///< file specification
 		L_HTTP_HEADER='h',	///< text in HTTP response header
 		L_MAIL_HEADER='m',	///< text in mail header
-		L_URI='U',		///< text in uri
-		L_SQL='Q',		///< ^table:sql body
-		L_JS='J',		///< JavaScript code
-		L_XML='X',		///< ^dom:set xml
-		L_HTML='H',		///< HTML code
-		L_REGEX='R',	///< RegEx expression
+		L_URI='U',			///< text in uri
+		L_SQL='Q',			///< ^table:sql body
+		L_JS='J',			///< JavaScript code
+		L_XML='X',			///< ^dom:set xml
+		L_HTML='H',			///< HTML code
+		L_REGEX='R',		///< RegEx expression
 		L_HTTP_COOKIE='C',	///< cookies encoded as %uXXXX for compartibility with js functions encode/decode
-		L_FILE_POST='f', ///temporary escaping zero-char
+		L_FILE_POST='f',	///< temporary escaping zero-char
+		L_PARSER_CODE='p',	///< ^process body
 		// READ WARNING ABOVE BEFORE ADDING ANYTHING
 		L_OPTIMIZE_BIT = 0x80  ///< flag, requiring cstr whitespace optimization
 	};
