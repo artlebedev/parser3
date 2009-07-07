@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2009/07/07 12:16:13 $";
+static const char * const IDENT_OP_C="$Date: 2009/07/07 12:25:36 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -88,6 +88,7 @@ public:
 		ULN("html", HTML);
 		ULN("optimized-html", HTML|String::L_OPTIMIZE_BIT);
 		ULN("regex", REGEX);
+		ULN("parser-code", PARSER_CODE);
 		#undef ULN
 	}
 } untaint_lang_name2enum;
