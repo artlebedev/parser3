@@ -1,0 +1,15 @@
+@main[][str]
+
+$str[^taint[^^call[]]]
+^process{$str}
+
+<hr />
+
+^try{
+	^process{^taint[as-is][$str]}
+}{
+	$exception.handled(1)
+	exception, it's OK
+}
+
+
