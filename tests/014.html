@@ -39,9 +39,7 @@ $a[$.1[a1] $.2[a2] $.3[a3]]
 $b[    	$.2[b2] $.3[b3] $.4[b4]]
 
 
-@print[h][t;k;v]
-$t[^table::create{key	value
-^h.foreach[k;v]{$k	$v}[^#0A]
-}]
-^t.sort{$t.key}
-^t.menu{$t.key='$t.value'}[, ]<br />
+@print[h][t]
+$t[^h._keys[]]
+^t.sort($t.key)
+^t.menu{$t.key='$h.[$t.key]'}[, ]<br />
