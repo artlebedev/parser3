@@ -107,7 +107,10 @@ third	e
 
 
 
-@print[hData][sKey;value]
-^hData.foreach[sKey;value]{
-	$sKey ^if($value is "table"){^value.menu{$value.name}[,]}{^if($value is "string"){$value}{^if($value is "hash"){<blockquote>^print[$value]</blockquote>}}}<br />
+@print[h][t;v]
+$t[^h._keys[]]
+^t.sort{$t.key}
+^t.menu{
+	$v[$h.[$t.key]]
+	$t.key ^if($v is "table"){^v.menu{$v.name}[,]}{^if($v is "string"){$v}{^if($v is "hash"){<blockquote>^print[$v]</blockquote>}}}<br />
 }
