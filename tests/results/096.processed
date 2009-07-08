@@ -3,7 +3,7 @@ content-length: 1606
 
 <table border="1">
 <tr valign="top">
-<td><img height="100" width="100" border="0" src="096_dir/163.jpg" /></td>
+<td><img width="100" height="100" src="096_dir/163.jpg" border="0" /></td>
 <td>
 163.jpg<hr>
 ColorSpace: <b>
@@ -115,7 +115,7 @@ YResolution: <b>
 </td>
 </tr>
 <tr valign="top">
-<td><img height="100" width="100" border="0" src="096_dir/188.jpg" /></td>
+<td><img width="100" height="100" src="096_dir/188.jpg" border="0" /></td>
 <td>
 188.jpg<hr>
 ColorSpace: <b>
