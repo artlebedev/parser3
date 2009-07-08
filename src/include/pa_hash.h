@@ -17,7 +17,7 @@
 #ifndef PA_HASH_H
 #define PA_HASH_H
 
-static const char * const IDENT_HASH_H="$Date: 2009/07/07 23:49:54 $";
+static const char * const IDENT_HASH_H="$Date: 2009/07/08 09:03:18 $";
 
 #include "pa_memory.h"
 #include "pa_types.h"
@@ -427,18 +427,28 @@ public:
 
 	/// iterate over all pairs
 	template<typename I> void for_each(void callback(K, V, I), I info) const {
+#ifdef HASH_ORDER
+		for(Pair *pair=first; pair; pair=pair->next)
+			callback(pair->key, pair->value, info);
+#else
 		Pair **ref=refs;
 		for(int index=0; index<allocated; index++)
 			for(Pair *pair=*ref++; pair; pair=pair->link)
 				callback(pair->key, pair->value, info);
+#endif
 	}
 
 	/// iterate over all pairs
 	template<typename I> void for_each_ref(void callback(K, V&, I), I info) const {
+#ifdef HASH_ORDER
+		for(Pair *pair=first; pair; pair=pair->next)
+			callback(pair->key, pair->value, info);
+#else
 		Pair **ref=refs;
 		for(int index=0; index<allocated; index++)
 			for(Pair *pair=*ref++; pair; pair=pair->link)
 				callback(pair->key, pair->value, info);
+#endif
 	}
 
 	/// iterate over all pairs until condition becomes true, return that element
@@ -835,18 +845,28 @@ public:
 
 	/// iterate over all pairs
 	template<typename I> void for_each(void callback(K, V, I), I info) const {
+#ifdef HASH_ORDER
+		for(Pair *pair=first; pair; pair=pair->next)
+			callback(pair->key, pair->value, info);
+#else
 		Pair **ref=this->refs;
 		for(int index=0; index<this->allocated; index++)
 			for(Pair *pair=*ref++; pair; pair=pair->link)
 				callback(String::Body(pair->key, pair->code), pair->value, info);
+#endif
 	}
 
 	/// iterate over all pairs
 	template<typename I> void for_each_ref(void callback(K, V&, I), I info) const {
+#ifdef HASH_ORDER
+		for(Pair *pair=first; pair; pair=pair->next)
+			callback(pair->key, pair->value, info);
+#else
 		Pair **ref=this->refs;
 		for(int index=0; index<this->allocated; index++)
 			for(Pair *pair=*ref++; pair; pair=pair->link)
 				callback(String::Body(pair->key, pair->code), pair->value, info);
+#endif
 	}
 
 	/// iterate over all pairs until condition becomes true, return that element
