@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2009/06/24 09:00:56 $";
+static const char * const IDENT_STRING_C="$Date: 2009/07/08 10:07:45 $";
 
 #include "pa_string.h"
 #include "pa_exception.h"
@@ -226,7 +226,8 @@ String::Body String::Body::trim(String::Trim_kind kind, const char* chars,
 			while(src_begin<src_end){
 				uint char_length=1;
 				const XMLByte* ptr=src_begin;
-				while(++src_begin<=src_end && (*src_begin>127 && *src_begin<0xC0)/* searching first UTF-8 byte */)
+				// searching first UTF-8 byte: http://tools.ietf.org/html/rfc3629#section-3
+				while(++src_begin<=src_end && (*src_begin>127 && *src_begin<0xC0))
 					char_length++;
 
 				bool found=false;
@@ -249,7 +250,8 @@ String::Body String::Body::trim(String::Trim_kind kind, const char* chars,
 		if(kind!=TRIM_START) {
 			while(src_begin<src_end){
 				uint char_length=1;
-				while(src_begin<=--src_end && (*src_end>127 && *src_end<0xC0)/* searching first UTF-8 byte */)
+				// searching first UTF-8 byte: http://tools.ietf.org/html/rfc3629#section-3
+				while(src_begin<=--src_end && (*src_end>127 && *src_end<0xC0))
 					char_length++;
 
 				bool found=false;
