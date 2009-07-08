@@ -1,9 +1,6 @@
 content-type: text/html
-content-length: 72
+content-length: 69
 
-i0=0, i1=1
-<br />
-j1=1, j0=0
-<br />
-k1=1, k2=2, k3=3, k4=4, k5=5
-<br />
+i0=0, i1=1<br />
+j0=0, j1=1<br />
+k1=1, k2=2, k3=3, k4=4, k5=5<br />
