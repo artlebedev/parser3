@@ -32,6 +32,7 @@ $result[$jCode]
 
 
 
-@print[h]
-^h.foreach[k;v]{$k=$v}[, ]
-<br />
+@print[h][t]
+$t[^h._keys[]]
+^t.sort{$t.key}
+^t.menu{$t.key=$h.[$t.key]}[, ]<br />
