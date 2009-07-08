@@ -96,7 +96,7 @@ Xне сделано, видимо, не будет сделано
         выдавая нестандартный результат
     !^break[] + - обрывает цикл
     !^continue[] + - обрывает итерацию цикла
-    !^untaint[[as-is|file-spec|http-header|mail-header|uri|sql|js|xml|html|optimized-html|regex]]{код}
+    !^untaint[[as-is|file-spec|http-header|mail-header|uri|sql|js|xml|html|optimized-html|regex|parser-code]]{код}
         default as-is
     !^taint[[lang]][код]
         default "just tainted, language unknown"
