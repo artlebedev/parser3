@@ -146,7 +146,7 @@ attrname="attr value"
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 &lt;man
-id="1" attrname2="value 2" имя="word слово"
+id="1" имя="word слово" attrname2="value 2"
 &gt;
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -235,7 +235,7 @@ some comment<br />
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 &lt;man
-id="1" attrname2="value 2" имя="word слово"
+id="1" имя="word слово" attrname2="value 2"
 &gt;
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -326,7 +326,7 @@ some comment<br />
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 &lt;man
-id="1" attrname2="changed attribute value" имя="word слово"
+id="1" имя="word слово" attrname2="changed attribute value"
 &gt;
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -416,7 +416,7 @@ some comment<br />
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 &lt;man
-имя="word слово" attrname2="changed attribute value" attrname3="value3" id="1"
+id="1" имя="word слово" attrname2="changed attribute value" attrname3="value3"
 &gt;
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
