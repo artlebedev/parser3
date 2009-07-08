@@ -1,0 +1,37 @@
+@main[]
+$a[
+	$.2[2]
+	$.3[3]
+	$.1[1]
+]
+^print[$a]
+
+
+^a.delete[3]
+^print[$a]
+
+
+^a.delete[2]
+^print[$a]
+
+
+^a.delete[1]
+^print[$a]
+
+
+^a.add[
+	$.4[4]
+]
+^print[$a]
+
+
+^a.add[
+	$.5[5]
+]
+^print[$a]
+
+
+
+@print[h][k]
+# test checks order of elements during foreach
+^h.foreach[k;]{$k}[, ]<br />
