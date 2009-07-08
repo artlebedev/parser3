@@ -2,79 +2,79 @@ content-type: text/html
 content-length: 2098
 
 <h3>unique key, no value columns, no options</h3>
-c <blockquote>
-name c<br />
-group second<br />
-</blockquote><br />
-d <blockquote>
-name d<br />
-group third<br />
-</blockquote><br />
-e <blockquote>
-name e<br />
-group third<br />
-</blockquote><br />
 a <blockquote>
-name a<br />
 group first<br />
+name a<br />
 </blockquote><br />
 b <blockquote>
-name b<br />
 group first<br />
+name b<br />
+</blockquote><br />
+c <blockquote>
+group second<br />
+name c<br />
+</blockquote><br />
+d <blockquote>
+group third<br />
+name d<br />
+</blockquote><br />
+e <blockquote>
+group third<br />
+name e<br />
 </blockquote><br />
 <h3>non-unique key, no value columns, no options</h3>
 failed, that's OK.<br />
 if key not unique $.distinct(1) must be specified
 <h3>non-unique key, no value columns, options: $.distinct[tables] (backward)</h3>
-second c<br />
 first a,b<br />
+second c<br />
 third d,e<br />
 <h3>non-unique key, no value columns, options: $.distinct[tables], $.type[hash] </h3>
 failed, that's OK.<br />
 $.distinct[tables] and $.type[...] can't be specified together
 <h3>non-unique key, no value columns, options: $.distinct(1) $.type[table]</h3>
-second c<br />
 first a,b<br />
+second c<br />
 third d,e<br />
 <h3>non-unique key, no value columns, options: $.distinct(1) $.type[table]</h3>
 failed, that's OK.<br />
 non unique key without distinct option
 <h3>unique key, no value columns, options: $.type[table]</h3>
+a a<br />
+b b<br />
 c c<br />
 d d<br />
 e e<br />
-a a<br />
-b b<br />
 <h3>non-unique key, no value columns, options: $.distinct(1) $.type[hash]</h3>
-third <blockquote>
-name d<br />
-group third<br />
+first <blockquote>
+group first<br />
+name a<br />
 </blockquote><br />
 second <blockquote>
-name c<br />
 group second<br />
+name c<br />
 </blockquote><br />
-first <blockquote>
-name a<br />
-group first<br />
+third <blockquote>
+group third<br />
+name d<br />
 </blockquote><br />
 <h3>non-unique key, no value columns, options: $.distinct(1) (as above because $.type[hash] == default)</h3>
-third <blockquote>
-name d<br />
-group third<br />
+first <blockquote>
+group first<br />
+name a<br />
 </blockquote><br />
 second <blockquote>
-name c<br />
 group second<br />
+name c<br />
 </blockquote><br />
-first <blockquote>
-name a<br />
-group first<br />
+third <blockquote>
+group third<br />
+name d<br />
 </blockquote><br />
 <h3>non-unique key, no value columns, options: $.distinct(1) $.type[string]</h3>
 failed, that's OK.<br />
 with $.type[string] only one field must be specified
 <h3>non-unique key, one value column (name), options: $.distinct(1) $.type[string]</h3>
-third d<br />
-second c<br />
 first a<br />
+second c<br />
+third d<br />
