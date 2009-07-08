@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_HASH_C="$Date: 2009/07/07 06:27:05 $";
+static const char * const IDENT_HASH_C="$Date: 2009/07/08 00:30:58 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -390,7 +390,7 @@ static void _keys(Request& r, MethodParams& params) {
 	else 
 		keys_column_name=new String("key");
 
-	Table::columns_type columns(new ArrayString);
+	Table::columns_type columns(new ArrayString(1));
 	*columns+=keys_column_name;
 	Table* table=new Table(columns);
 
