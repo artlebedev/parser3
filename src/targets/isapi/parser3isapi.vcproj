@@ -51,6 +51,7 @@
 				SuppressStartupBanner="TRUE"
 				ModuleDefinitionFile=".\parser3isapi.def"
 				ProgramDatabaseFile=".\Release/parser3isapi.pdb"
+				StackReserveSize="2097152"
 				OptimizeReferences="2"
 				OptimizeForWindows98="1"
 				ImportLibrary=".\Release/parser3isapi.lib"
