@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VALUE_C="$Date: 2009/04/21 09:26:08 $";
+static const char * const IDENT_VALUE_C="$Date: 2009/07/13 02:18:41 $";
 
 #include "pa_value.h"
 #include "pa_vstateless_class.h"
@@ -95,10 +95,13 @@ static void append_attribute_subattribute(HashStringValue::key_type akey,
 	if(akey==VALUE_NAME)
 		return;
 
+	if(avalue->is_bool() && (!info->allow_bool || avalue->as_bool()==false))
+		return;
+
 	// ...; charset=windows1251
 	*info->header << "; ";
 	info->header->append(String(akey, String::L_TAINTED), info->lang, info->forced);
-	if(!info->allow_bool || !avalue->is_bool()){
+	if(!avalue->is_bool()){
 		*info->header << "=";
 		append_attribute_meaning(*info->header, *avalue, info->lang, info->forced);
 	}
