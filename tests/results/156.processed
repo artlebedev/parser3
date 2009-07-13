@@ -1,6 +1,9 @@
 set-cookie: name=zigi; expires=Tue, 25 Feb 2003 21:00:00 GMT; httponly; path=/
+set-cookie: name1=zigi; expires=Tue, 25 Feb 2003 21:00:00 GMT; path=/
 content-type: text/html
-content-length: 9
+content-length: 19
 
+==
+=zigi=
 ==
 =zigi=
