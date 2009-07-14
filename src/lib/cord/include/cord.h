@@ -118,6 +118,7 @@ CORD CORD_from_fn_gen(CORD_fn fn, void * client_data, size_t len);
 /* Return the substring (subcord really) of x with length at most n,	*/
 /* starting at position i.  (The initial character has position 0.)	*/
 CORD CORD_substr(CORD x, size_t i, size_t n);
+CORD CORD_substr_checked(CORD x, size_t i, size_t n);
 
 /* Return the argument, but rebalanced to allow more efficient   	*/
 /* character retrieval, substring operations, and comparisons.		*/
