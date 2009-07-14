@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2009/07/08 10:07:45 $";
+static const char * const IDENT_STRING_C="$Date: 2009/07/14 11:15:29 $";
 
 #include "pa_string.h"
 #include "pa_exception.h"
@@ -543,7 +543,7 @@ Table* String::match(VRegex* vregex,
 
 		int prefinish=ovector[0];
 		poststart=ovector[1];
-		ArrayString* row=new ArrayString;
+		ArrayString* row=new ArrayString(3);
 		if(need_pre_post_match) {
 			*row+=&mid(0, prefinish); // .prematch column value
 			*row+=&mid(prefinish, poststart); // .match
@@ -556,7 +556,7 @@ Table* String::match(VRegex* vregex,
 		
 		for(int i=1; i<exec_result; i++) {
 			// -1:-1 case handled peacefully by mid() itself
-			*row+=&mid(ovector[i*2+0], ovector[i*2+1]); // .i column value
+			*row+=(ovector[i*2+0]>=0 && ovector[i*2+1]>0)?&mid(ovector[i*2+0], ovector[i*2+1]):new String; // .i column value
 		}
 		
 		matches_count++;
