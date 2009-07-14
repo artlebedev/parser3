@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-static const char * const IDENT_STRING_H="$Date: 2009/07/07 12:13:28 $";
+static const char * const IDENT_STRING_H="$Date: 2009/07/14 23:32:07 $";
 
 // includes
 #include "pa_types.h"
@@ -410,7 +410,14 @@ public:
 		}
 
 		char fetch(size_t index) const { return CORD_fetch(body, index); }
-		Body mid(size_t index, size_t length) const { return CORD_substr(body, index, length); }
+		Body mid(size_t aindex, size_t alength) const {
+			if(alength==0) return 0;
+			size_t self_length=length();
+			if(aindex>self_length) return 0;
+			if(aindex+alength>self_length) alength=self_length-aindex;
+
+			return CORD_substr_checked(body, aindex, alength);
+		}
 		size_t pos(const char* substr, size_t offset=0) const { return CORD_str(body, offset, substr); }
 		size_t pos(const Body substr, size_t offset=0) const { 
 			if(substr.is_empty())
