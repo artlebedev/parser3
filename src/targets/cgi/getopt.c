@@ -49,8 +49,6 @@ getopt(int argc, char* const *argv, const char* optstr)
     static int optchr = 0;
     static int dash = 0; /* have already seen the - */
 
-    const char *cp;
-
     if(optind >= argc)
         return(EOF);
     if(!dash && (argv[optind][0] !=  '-'))
@@ -84,7 +82,8 @@ getopt(int argc, char* const *argv, const char* optstr)
         optind++;
         return(optiserr(argc, argv, optind-1, optstr, optchr, OPTERRCOLON));
     }
-    if(!(cp = strchr(optstr, argv[optind][optchr])))
+	const char *cp = strchr(optstr, argv[optind][optchr]);
+    if(!cp)
     {
         int errind = optind;
         int errchr = optchr;
