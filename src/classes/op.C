@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2009/07/07 12:25:36 $";
+static const char * const IDENT_OP_C="$Date: 2009/07/14 11:14:34 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -897,11 +897,11 @@ VClassMAIN::VClassMAIN(): VClass() {
 	// ^if(condition){code-when-true}{code-when-false}
 	add_native_method("if", Method::CT_ANY, _if, 2, 3, Method::CO_WITHOUT_FRAME);
 
-	// ^untaint[as-is|uri|sql|js|html|html-typo|regex]{code}
-	add_native_method("untaint", Method::CT_ANY, _untaint, 1, 2);
+	// ^untaint[as-is|uri|sql|js|html|html-typo|regex|parser-code]{code}
+	add_native_method("untaint", Method::CT_ANY, _untaint, 1, 2, Method::CO_WITHOUT_FRAME);
 
-	// ^taint[as-is|uri|sql|js|html|html-typo|regex]{code}
-	add_native_method("taint", Method::CT_ANY, _taint, 1, 2);
+	// ^taint[as-is|uri|sql|js|html|html-typo|regex|parser-code]{code}
+	add_native_method("taint", Method::CT_ANY, _taint, 1, 2, Method::CO_WITHOUT_FRAME);
 
 	// ^process[code]
 	add_native_method("process", Method::CT_ANY, _process, 1, 3);
