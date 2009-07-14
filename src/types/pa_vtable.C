@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VTABLE_C="$Date: 2009/04/15 04:49:50 $";
+static const char * const IDENT_VTABLE_C="$Date: 2009/07/14 11:17:53 $";
 
 #include "pa_vtable.h"
 #include "pa_vstring.h"
@@ -18,26 +18,42 @@ struct Record_info {
 	HashStringValue* hash;
 };
 #endif
-static void store_column_item_to_hash(const String* column_name, 
-				      Record_info *info) {
+
+static void store_column_item_to_hash(const String* column_name, Record_info *info) {
 	Value* value;
-	if(const String* column_item=info->table->item(*column_name))
-		value=new VString(*column_item);
-	else
-		value=VVoid::get();
-	info->hash->put(*column_name, value);
-}
-Value* VTable::fields_element() {
-	Table& ltable=table();
-	if(Table::columns_type columns=ltable.columns()) {
-		Value& result=*new VHash;
-		Record_info record_info={&ltable, result.get_hash()};
-		columns->for_each(store_column_item_to_hash, &record_info);
-		return &result;
-	}
-	return 0;
+	const String* column_item=info->table->item(*column_name);
+	info->hash->put(*column_name, 
+		(column_item && !column_item->is_empty())
+			?new VString(*column_item)
+			:new VString()
+	);
 }
 
+Value* VTable::fields_element() {
+	Value& result=*new VHash;
+	Table& ltable=table();
+	if(!ltable.count())
+		return &result;
+
+	HashStringValue* hash=result.get_hash();
+
+	if(Table::columns_type columns=ltable.columns()) { // named
+		Record_info record_info={&ltable, hash};
+		columns->for_each(store_column_item_to_hash, &record_info);
+	} else { // nameless
+		size_t row_size=ltable[ltable.current()]->count(); // number of columns in current row
+		for(size_t index=0; index<row_size; index++){
+			const String* column_item=ltable.item(index);
+			hash->put(String::Body::Format(index), 
+				(column_item && !column_item->is_empty())
+					?new VString(*column_item)
+					:new VString()
+			);
+		}
+	}
+
+	return &result;
+}
 
 Value* VTable::get_element(const String& aname, Value& aself, bool looking_up) {
 	// fields
