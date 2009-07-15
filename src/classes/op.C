@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2009/07/14 11:14:34 $";
+static const char * const IDENT_OP_C="$Date: 2009/07/15 12:59:19 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -173,7 +173,7 @@ static void _process(Request& r, MethodParams& params) {
 		size_t options_index=index+1;
 		HashStringValue* options=0;
 		if(options_index<params.count()) {
-			Value& voptions=params.as_no_junction(options_index, "options must not be code");
+			Value& voptions=params.as_no_junction(options_index, OPTIONS_MUST_NOT_BE_CODE);
 			options=voptions.get_hash();
 			if(!options)
 				throw Exception(PARSER_RUNTIME,

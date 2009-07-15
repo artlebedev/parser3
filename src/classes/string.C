@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2009/07/07 07:26:28 $";
+static const char * const IDENT_STRING_C="$Date: 2009/07/15 12:59:19 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -292,7 +292,7 @@ static void split_with_options(Request& r, MethodParams& params,
 	if(!bits) {
 		const String* options=0;
 		if(params_count>1)
-			options=&params.as_string(1, "options must not be code");
+			options=&params.as_string(1, OPTIONS_MUST_NOT_BE_CODE);
 		
 		bits=split_options(options);
 	}
@@ -369,7 +369,7 @@ static void _match(Request& r, MethodParams& params) {
 	size_t params_count=params.count();
 
 	Value& regexp=params.as_no_junction(0, "regexp must not be code");
-	Value* options=(params_count>1)?&params.as_no_junction(1, "options must not be code"):0;
+	Value* options=(params_count>1)?&params.as_no_junction(1, OPTIONS_MUST_NOT_BE_CODE):0;
 
 	VRegex* vregex;
 	VRegexCleaner vrcleaner;

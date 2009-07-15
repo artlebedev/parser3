@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REGEX_C="$Date: 2009/06/14 00:33:36 $";
+static const char * const IDENT_REGEX_C="$Date: 2009/07/15 12:59:19 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -32,13 +32,13 @@ DECLARE_CLASS_VAR(regex, new MRegex, 0);
 // methods
 
 static void _create(Request& r, MethodParams& params) {
-	Value& value=params.as_no_junction(0, "regexp must not be code");
+	const String& pattern=params.as_string(0, "regexp must not be code");
 
 	VRegex& vregex=GET_SELF(r, VRegex);
 
 	vregex.set(r.charsets.source(),
-		&value.as_string(),
-		params.count()>1?&params.as_no_junction(1, "options must not be code").as_string():0);
+		&pattern,
+		params.count()>1?&params.as_string(1, OPTIONS_MUST_NOT_BE_CODE):0);
 
 	vregex.compile();
 
