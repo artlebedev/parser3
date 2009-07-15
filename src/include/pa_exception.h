@@ -1,14 +1,14 @@
 /** @file
 	Parser: exception decls.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_EXCEPTION_H
 #define PA_EXCEPTION_H
 
-static const char * const IDENT_EXCEPTION_H="$Date: 2008/09/04 09:34:11 $";
+static const char * const IDENT_EXCEPTION_H="$Date: 2009/07/15 12:58:07 $";
 
 const char* const PARSER_RUNTIME = "parser.runtime";
 const char* const IMAGE_FORMAT = "image.format";
@@ -29,6 +29,7 @@ const char* const COORDINATES_MUST_NOT_BE_CODE = "coordinates must not be code";
 const char* const FIRST_ARG_MUST_NOT_BE_CODE = "first argument must not be code";
 const char* const PARAM_MUST_NOT_BE_CODE = "param must not be code";
 const char* const MODE_MUST_NOT_BE_CODE = "mode must not be code";
+const char* const OPTIONS_MUST_NOT_BE_CODE = "options must not be code";
 
 // includes
 
