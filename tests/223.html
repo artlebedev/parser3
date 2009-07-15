@@ -1,0 +1,16 @@
+@main[]
+$value[abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ
+0123456789
+`+-=~!@#^$%^^&*()_
+[]{}<>^;:'",./?
+
+абвгдеёжзийклмнопрстуфхцчшщъыьэюя	АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ]
+
+$f[^file::load[text;http://www.parser.ru/_/tests/223.html;
+	$.charset[windows-1251]
+	$.cookies[
+		$.zigi[$value]
+	]
+]]
+
+$f.text
