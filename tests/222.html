@@ -1,0 +1,12 @@
+@main[]
+$t[^table::create[nameless]{11	12	13
+21	22
+31
+41		43
+	52	53
+	62
+		73}]
+
+^t.menu{
+	^for[i](0;2){${i}: ^if($t.fields.[$i] is "void"){void}{'$t.fields.[$i]'}}[, ]
+}[<br />]

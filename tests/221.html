@@ -1,0 +1,14 @@
+@main[]
+$t[^table::create{a	b	c
+11	12	13
+21	22
+31
+41		43
+	52	53
+	62
+		73}]
+
+$c[^t.columns[]]
+^t.menu{
+	^c.menu{${c.column}: ^if($t.fields.[$c.column] is "void"){void}{'$t.fields.[$c.column]'}}[, ]
+}[<br />]
