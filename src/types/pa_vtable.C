@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VTABLE_C="$Date: 2009/07/14 11:17:53 $";
+static const char * const IDENT_VTABLE_C="$Date: 2009/07/15 00:01:00 $";
 
 #include "pa_vtable.h"
 #include "pa_vstring.h"
@@ -20,7 +20,6 @@ struct Record_info {
 #endif
 
 static void store_column_item_to_hash(const String* column_name, Record_info *info) {
-	Value* value;
 	const String* column_item=info->table->item(*column_name);
 	info->hash->put(*column_name, 
 		(column_item && !column_item->is_empty())
