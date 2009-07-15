@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
  */
 
-static const char * const IDENT_HTTP_C="$Date: 2009/07/07 05:48:05 $"; 
+static const char * const IDENT_HTTP_C="$Date: 2009/07/15 13:00:24 $"; 
 
 #include "pa_http.h"
 #include "pa_common.h"
@@ -339,7 +339,7 @@ static void http_pass_cookie(HashStringValue::key_type name,
 				Http_pass_header_info *info) {
 	
 	*info->request << String(name, String::L_HTTP_COOKIE) << "="
-		<< attributed_meaning_to_string(*value, String::L_HTTP_COOKIE, false)
+		<< attributed_meaning_to_string(*value, String::L_HTTP_COOKIE, true)
 		<< "; "; 
 
 }
