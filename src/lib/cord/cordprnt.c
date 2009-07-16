@@ -214,7 +214,7 @@ int CORD_vsprintf(CORD * out, CORD format, va_list args)
 			len = CORD_len(arg);
 			if (prec != NONE && len > (size_t)prec) {
 			  if (prec < 0) return(-1);
-			  arg = CORD_substr(arg, 0, prec);
+			  arg = CORD_substr(arg, 0, prec, 0);
 			  len = prec;
 			}
 			if (width != NONE && len < (size_t)width) {

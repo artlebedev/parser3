@@ -117,8 +117,7 @@ CORD CORD_from_fn_gen(CORD_fn fn, void * client_data, size_t len);
 
 /* Return the substring (subcord really) of x with length at most n,	*/
 /* starting at position i.  (The initial character has position 0.)	*/
-CORD CORD_substr(CORD x, size_t i, size_t n);
-CORD CORD_substr_checked(CORD x, size_t i, size_t n);
+CORD CORD_substr(CORD x, size_t i, size_t n, size_t len);
 
 /* Return the argument, but rebalanced to allow more efficient   	*/
 /* character retrieval, substring operations, and comparisons.		*/
@@ -249,7 +248,7 @@ int CORD_ncmp(CORD x, size_t x_start, CORD y, size_t y_start, size_t len);
 /* Find the first occurrence of s in x at position start or later.	*/
 /* Return the position of the first character of s in x, or		*/
 /* CORD_NOT_FOUND if there is none.					*/
-size_t CORD_str(CORD x, size_t start, CORD s);
+size_t CORD_str(CORD x, size_t start, CORD s, size_t xlen);
 
 /* Return a cord consisting of i copies of (possibly NUL) c.  Dangerous	*/
 /* in conjunction with CORD_to_char_star.				*/
@@ -286,7 +285,7 @@ CORD CORD_from_file_lazy(FILE * f);
 
 /* Turn a cord into a C string.	The result shares no structure with	*/
 /* x, and is thus modifiable.						*/
-char * CORD_to_char_star(CORD x);
+char * CORD_to_char_star(CORD x, size_t len);
 
 /* Turn a C string into a CORD.  The C string is copied, and so may	*/
 /* subsequently be modified.						*/
@@ -294,7 +293,7 @@ CORD CORD_from_char_star(const char *s);
 
 /* Identical to the above, but the result may share structure with	*/
 /* the argument and is thus not modifiable.				*/
-const char * CORD_to_const_char_star(CORD x); 
+const char * CORD_to_const_char_star(CORD x, size_t len); 
 
 /* Write a cord to a file, starting at the current position.  No	*/
 /* trailing NULs are newlines are added.				*/

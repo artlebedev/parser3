@@ -223,10 +223,11 @@ int CORD_ncmp(CORD x, size_t x_start, CORD y, size_t y_start, size_t len)
     return(0);
 }
 
-char * CORD_to_char_star(CORD x)
+char * CORD_to_char_star(CORD x, size_t len)
 {
-    register size_t len = CORD_len(x);
-    char * result = GC_MALLOC_ATOMIC(len + 1);
+	char * result;
+    if(0 == len) len = CORD_len(x);
+    result = GC_MALLOC_ATOMIC(len + 1);
     
     if (result == 0) OUT_OF_MEMORY;
     CORD_fill_buf(x, 0, len, result);
@@ -246,11 +247,11 @@ CORD CORD_from_char_star(const char* s)
     return(result);
 }
 
-const char*  CORD_to_const_char_star(CORD x)
+const char*  CORD_to_const_char_star(CORD x, size_t len)
 {
     if (x == 0) return("");
     if (CORD_IS_STRING(x)) return((const char* )x);
-    return(CORD_to_char_star(x));
+    return(CORD_to_char_star(x, len));
 }
 
 char CORD_fetch(CORD x, size_t i)
@@ -356,10 +357,9 @@ size_t CORD_rchr(CORD x, size_t i, int c)
 /* and call CORD_ncmp whenever there is a partial match.		*/
 /* This has the advantage that we allocate very little, or not at all.	*/
 /* It's very fast if there are few close misses.			*/
-size_t CORD_str(CORD x, size_t start, CORD s)
+size_t CORD_str(CORD x, size_t start, CORD s, size_t xlen)
 {
     CORD_pos xpos;
-    size_t xlen = CORD_len(x);
     size_t slen;
     register size_t start_len;
     const char*  s_start;
@@ -376,7 +376,7 @@ size_t CORD_str(CORD x, size_t start, CORD s)
         s_start = s;
         slen = strlen(s);
     } else {
-        s_start = CORD_to_char_star(CORD_substr(s, 0, sizeof(unsigned long)));
+        s_start = CORD_to_char_star(CORD_substr(s, 0, sizeof(unsigned long), 0), 0);
         slen = CORD_len(s);
     }
     if (xlen < start || xlen - start < slen) return(CORD_NOT_FOUND);

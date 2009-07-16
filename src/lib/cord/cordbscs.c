@@ -615,10 +615,9 @@ CORD CORD_substr_checked(CORD x, size_t i, size_t n)
     }
 }
 
-CORD CORD_substr(CORD x, size_t i, size_t n)
+CORD CORD_substr(CORD x, size_t i, size_t n, size_t len)
 {
-    register size_t len = CORD_len(x);
-    
+	if(0 == len) len = CORD_len(x);
     if (i >= len || n <= 0) return(0);
     	/* n < 0 is impossible in a correct C implementation, but	*/
     	/* quite possible  under SunOS 4.X.				*/

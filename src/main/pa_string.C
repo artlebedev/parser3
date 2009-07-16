@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2009/07/14 11:15:29 $";
+static const char * const IDENT_STRING_C="$Date: 2009/07/16 09:20:01 $";
 
 #include "pa_string.h"
 #include "pa_exception.h"
@@ -788,7 +788,7 @@ bool String::deserialize(size_t prolog_size, void *buf, size_t buf_size) {
 }
 
 const char* String::Body::v() const {
-	return CORD_to_const_char_star(body);
+	return CORD_to_const_char_star(body, length());
 }
 void String::Body::dump() const {
 	CORD_dump(body);
@@ -796,7 +796,7 @@ void String::Body::dump() const {
 
 const char* String::Languages::v() const {
 	if(opt.is_not_just_lang)
-		return CORD_to_const_char_star(langs);
+		return CORD_to_const_char_star(langs, 0);
 	else
 		return (const char*)&langs;
 }

@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-static const char * const IDENT_STRING_H="$Date: 2009/07/14 23:32:07 $";
+static const char * const IDENT_STRING_H="$Date: 2009/07/16 09:19:45 $";
 
 // includes
 #include "pa_types.h"
@@ -142,7 +142,7 @@ public:
 
 		CORD make_langs(size_t aoffset, size_t alength)  const {
 			return opt.is_not_just_lang?
-				CORD_substr(langs, aoffset, alength)
+				CORD_substr(langs, aoffset, alength, 0)
 				:CORD_chars((char)opt.lang, alength);
 		}
 
@@ -247,7 +247,7 @@ public:
 
 			if(!langs) // to uninitialized?
 				if(src.opt.is_not_just_lang)
-					langs=CORD_substr(src.langs, aoffset, alength); // to uninitialized complex
+					langs=CORD_substr(src.langs, aoffset, alength, 0); // to uninitialized complex
 				else
 					opt.lang=src.opt.lang; // to uninitialized simple
 			else 
@@ -363,8 +363,8 @@ public:
 		CORD get_cord() const { return body; }
 		uint get_hash_code() const;
 
-		const char* cstr() const { return CORD_to_const_char_star(body); }
-		char* cstrm() const { return CORD_to_char_star(body); }
+		const char* cstr() const { return CORD_to_const_char_star(body, length()); }
+		char* cstrm() const { return CORD_to_char_star(body, length()); }
 
 #ifdef STRING_LENGTH_CACHING
 		void set_length(size_t alength){ string_length = alength; }
@@ -410,21 +410,14 @@ public:
 		}
 
 		char fetch(size_t index) const { return CORD_fetch(body, index); }
-		Body mid(size_t aindex, size_t alength) const {
-			if(alength==0) return 0;
-			size_t self_length=length();
-			if(aindex>self_length) return 0;
-			if(aindex+alength>self_length) alength=self_length-aindex;
-
-			return CORD_substr_checked(body, aindex, alength);
-		}
-		size_t pos(const char* substr, size_t offset=0) const { return CORD_str(body, offset, substr); }
+		Body mid(size_t aindex, size_t alength) const { return CORD_substr(body, aindex, alength, length()); }
+		size_t pos(const char* substr, size_t offset=0) const { return CORD_str(body, offset, substr, length()); }
 		size_t pos(const Body substr, size_t offset=0) const { 
 			if(substr.is_empty())
 				return STRING_NOT_FOUND; // in this case CORD_str returns 0 [parser users got used to -1]
 
 			// CORD_str checks for bad offset [CORD_chr does not]
-			return CORD_str(body, offset, substr.body); 
+			return CORD_str(body, offset, substr.body, length()); 
 		}
 		size_t pos(char c, 
 			size_t offset=0) const {
