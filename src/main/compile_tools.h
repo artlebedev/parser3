@@ -8,7 +8,7 @@
 #ifndef COMPILE_TOOLS
 #define COMPILE_TOOLS
 
-static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2009/06/13 07:05:22 $";
+static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2009/07/22 02:20:30 $";
 
 #include "pa_opcode.h"
 #include "pa_types.h"
@@ -284,7 +284,7 @@ inline bool maybe_make_get_object_element(ArrayOperation& opcodes, ArrayOperatio
 #ifdef OPTIMIZE_BYTECODE_GET_OBJECT_VAR_ELEMENT
 // OP_VALUE+origin+value+OP_GET_ELEMENT+OP_WITH_READ+OP_VALUE+origin+value+OP_GET_ELEMENT+OP_GET_ELEMENT => OP_GET_OBJECT_VAR_ELEMENT+origin+value+origin+value
 inline bool maybe_make_get_object_var_element(ArrayOperation& opcodes, ArrayOperation& diving_code, size_t divine_count){
-	if(divine_count<10)
+	if(divine_count!=10)
 		return false;
 
 	assert(diving_code[0].code==OP::OP_VALUE);
@@ -298,8 +298,6 @@ inline bool maybe_make_get_object_var_element(ArrayOperation& opcodes, ArrayOper
 		O(opcodes, OP::OP_GET_OBJECT_VAR_ELEMENT);
 		P(opcodes, diving_code, 1/*offset*/, 2/*limit*/); // copy first origin+value
 		P(opcodes, diving_code, 6, 2); // second origin+value
-		if(divine_count>10)
-			P(opcodes, diving_code, 10/*offset*/); // tail
 		return true;
 	}
 	return false;
