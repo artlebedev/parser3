@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
-static const char * const IDENT_VSTATELESS_CLASS_H="$Date: 2009/06/14 00:33:54 $";
+static const char * const IDENT_VSTATELESS_CLASS_H="$Date: 2009/07/24 09:29:04 $";
 
 // include
 
@@ -121,6 +121,10 @@ public: // usage
 
 	Method* get_method(const String& aname) const { 
 		return fmethods.get(aname);
+	}
+
+	HashString<Method*> get_methods(){
+		return fmethods;
 	}
 
 	bool is_vars_local(){
