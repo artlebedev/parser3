@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Id: hashfile.C,v 1.48 2009/06/16 07:36:01 misha Exp $";
+static const char * const IDENT="$Id: hashfile.C,v 1.49 2009/07/24 09:29:15 misha Exp $";
 
 #include "classes.h"
 
