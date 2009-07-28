@@ -1,0 +1,70 @@
+@USE
+224.p
+
+
+@main[]
+$h[^reflection:classes[]]
+$hi[^h.intersection[
+	$.hash[]
+	$.env[]
+	$.cookie[]
+	$.table[]
+	$.test[]
+	$.test1[]
+	$.test2[]
+]]
+^hi.foreach[k;v]{$k^if(def $v){ - $v}}[<br />]
+<hr />
+
+^do{$d[^reflection:create[date;create]]}
+^do{$d[^reflection:create[date;calendar]]}
+^do{$d[^reflection:create[date;now](-2;1)]}
+^do{$d[^reflection:create[date;now](-2)]}
+
+^do{$o[^reflection:create[test;create](-1)]}
+^do{$o1[^reflection:create[test1;create1](1)]}
+^do{$o2[^reflection:create[test2;create2]]}
+<hr />
+
+^reflection:class_name[$hash:CLASS]<br />
+^reflection:class_name[$cookie:CLASS]<br />
+^reflection:class_name[$env:CLASS]<br />
+<hr />
+
+^print[test;$o]
+^print[test1;$o1]
+^print[test2;$o2]
+^print[date;$d]
+^print[env;$env:CLASS]
+^print[unknown]
+done.
+
+
+
+@do[code]
+^try{
+	$code
+}{
+	$exception.handled(1)
+	$exception.source
+	$exception.comment
+	<br />
+}
+
+
+
+@print[class;o][m;k;v;h;i]
+^do{
+	$m[^reflection:methods[$class]]
+	^m.foreach[k;v]{
+		$h[^reflection:method_params[$class;$k]]
+		^@${k}[^if($v eq "native"){^if($h.min_params != $h.max_params){^h.min_params.int(0)-}^h.max_params.int(0)}{^for[i](0;^h._count[]){$h.$i}[^;]}]^if(def $h.call_type){ {$h.call_type}}
+	}[<br />]
+}
+^if(def $o){
+	^if($m){<br /><br />}
+	'$class' object class name: '^reflection:class_name[$o]/^reflection:class_name[^reflection:class[$o]]'<br />
+	'$class' object base class name: '^reflection:base_name[$o]/^if(^reflection:base[$o] is "void"){;^reflection:class_name[^reflection:base[$o]]}'<br />
+}
+<hr />
+
