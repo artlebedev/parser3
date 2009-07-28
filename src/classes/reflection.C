@@ -5,31 +5,23 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REFLECTION_C="$Date: 2009/07/26 05:41:54 $";
+static const char * const IDENT_REFLECTION_C="$Date: 2009/07/28 08:03:05 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
 #include "pa_vbool.h"
 
-const char* const METHOD_TYPE_NATIVE="native";
-const char* const METHOD_TYPE_PARSER="parser";
+static const String class_type_methoded("methoded");
 
-const char* const METHOD_CALL_TYPE_STATIC="static";
-const char* const METHOD_CALL_TYPE_DYNAMIC="dynamic";
-const char* const METHOD_CALL_TYPE_ANY="any";
+static const String method_type_native("native");
+static const String method_type_parser("parser");
 
-const char* const METHOD_MIN_PARAMS="min_params";
-const char* const METHOD_MAX_PARAMS="max_params";
+static const String method_call_type_static("static");
+static const String method_call_type_dynamic("dynamic");
+static const String method_call_type_any("any");
 
-static const String method_type_native(METHOD_TYPE_NATIVE);
-static const String method_type_parser(METHOD_TYPE_PARSER);
-
-static const String method_call_type_static(METHOD_CALL_TYPE_STATIC);
-static const String method_call_type_dynamic(METHOD_CALL_TYPE_DYNAMIC);
-static const String method_call_type_any(METHOD_CALL_TYPE_ANY);
-
-static const String method_min_params(METHOD_MIN_PARAMS);
-static const String method_max_params(METHOD_MAX_PARAMS);
+static const String method_min_params("min_params");
+static const String method_max_params("max_params");
 
 // class
 
@@ -104,7 +96,7 @@ static void _create(Request& r, MethodParams& params) {
 
 	VMethodFrame frame(*junction, r.get_method_frame());
 
-    Value* v[100];
+	Value* v[100];
 	if(nparams>0){
 		for(int i=0; i<nparams; i++)
 			v[i]=&r.process_to_value(params[i+2]);
@@ -117,39 +109,69 @@ static void _create(Request& r, MethodParams& params) {
 }
 
 
-// @todo: something wring with native classes (it returns stateless_class)
-static void _class(Request& r, MethodParams& params) {
-	if(Value* lclass=params[0].get_last_derived_class())
-		r.write_no_lang(*lclass);
+static void store_vlass_info(
+		HashStringValue::key_type key, 
+		HashStringValue::value_type value,
+		HashStringValue* result
+){
+	Value* v;
+	if(value->get_class())
+		v=new VString(class_type_methoded);
 	else
-		throw Exception(PARSER_RUNTIME,
-			0,
-			"class is undefined");
+		v=VVoid::get();
+	result->put(key, v);
+}
+
+static void _classes(Request& r, MethodParams&) {
+	VHash& result=*new VHash;
+	r.classes().for_each(store_vlass_info, result.get_hash());
+	r.write_no_lang(result);
+}
+
+
+static Value* get_class(Value* value){
+	if(VStateless_class* result=value->get_class())
+		return result;
+	else
+		// classes with fields only, like env & console
+		return value;
+}
+
+static const String* get_class_name(Value* value){
+	if(VStateless_class* lclass=value->get_class())
+		return &lclass->name();
+	else
+		// classes with fields only, like env & console
+		return new String(value->type());
+}
+
+
+static void _class(Request& r, MethodParams& params) {
+	r.write_no_lang(*get_class(&params[0]));
 }
 
 
 static void _class_name(Request& r, MethodParams& params) {
-	r.write_no_lang(String(params[0].type()));
+	r.write_no_lang(*get_class_name(&params[0]));
 }
 
 
 static void _base(Request& r, MethodParams& params) {
-	if(Value* lclass=params[0].get_class())
-		if(Value* base=lclass->base())
-			r.write_no_lang(*lclass->base());
-		else
-			r.write_no_lang(*VVoid::get());
-	else
-		throw Exception(PARSER_RUNTIME,
-			0,
-			"class is undefined");
+	if(VStateless_class* lclass=params[0].get_class())
+		if(Value* base=lclass->base()){
+			r.write_no_lang(*get_class(base));
+			return;
+		}
+
+	// classes with fields only, like env & console or without base
+	r.write_no_lang(*VVoid::get());
 }
 
 
 static void _base_name(Request& r, MethodParams& params) {
-	if(Value* lclass=params[0].get_class())
+	if(VStateless_class* lclass=params[0].get_class())
 		if(Value* base=lclass->base())
-			r.write_no_lang(String(base->type()));
+			r.write_no_lang(*get_class_name(base));
 }
 
 
@@ -173,13 +195,8 @@ static void _methods(Request& r, MethodParams& params) {
 	if(VStateless_class* lclass=class_value->get_class()){
 		HashString<Method*> methods=lclass->get_methods();
 		methods.for_each(store_method_info, result.get_hash());
-/*
 	} else {
-		// exception?
-		throw Exception(PARSER_RUNTIME,
-			&class_name,
-			"class does not have methods");
-*/
+		// class which does not have methods (env, console, etc)
 	}
 	r.write_no_lang(result);
 }
@@ -198,7 +215,6 @@ static void _method_params(Request& r, MethodParams& params) {
 		throw Exception(PARSER_RUNTIME,
 			&class_name,
 			"class does not have methods");
-
 
 	const String& method_name=params.as_string(1, "method_name must be string");
 	Method* method=lclass->get_method(method_name);
@@ -242,6 +258,9 @@ MReflection::MReflection(): Methoded("reflection") {
 	// ^reflection:create[class_name;constructor_name[;param1[;param2[;...]]]]
 	add_native_method("create", Method::CT_STATIC, _create, 2, 102);
 
+	// ^reflection:classes[]
+	add_native_method("classes", Method::CT_STATIC, _classes, 0, 0);
+
 	// ^reflection:class[object]
 	add_native_method("class", Method::CT_STATIC, _class, 1, 1);
 
@@ -259,6 +278,4 @@ MReflection::MReflection(): Methoded("reflection") {
 
 	// ^reflection:method_params[class_name;method_name]
 	add_native_method("method_params", Method::CT_STATIC, _method_params, 2, 2);
-
-	// @todo: check how 'create' and 'methods' work with ancestors-classes
 }
