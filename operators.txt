@@ -535,6 +535,7 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
 
 !reflection
     !^reflection:create[класс;конструктор[;пара;[мет[;ры]]]]  вызывает указанный конструктор класса
+    !^reflection:classes[]           хеш со всеми классами. ключ -- имя класса, значение бывает methoded (класс с методами) или void
     !^reflection:class[объект]       класс переданного объекта
     !^reflection:class_name[объект]  имя класса переданного объекта
     !^reflection:base[объект]        класс переданного объекта
