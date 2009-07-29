@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_HASH_C="$Date: 2009/07/08 00:30:58 $";
+static const char * const IDENT_HASH_C="$Date: 2009/07/29 05:01:33 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -33,10 +33,6 @@ public: // Methoded
 // global variable
 
 DECLARE_CLASS_VAR(hash, new MHash, 0);
-
-// externs
-
-extern String cycle_data_name;
 
 // methods
 
@@ -457,8 +453,7 @@ static bool one_foreach_cycle(
 	}
 }
 static void _foreach(Request& r, MethodParams& params) {
-	Temp_hash_value<const String::Body, void*> 
-		cycle_data_setter(r.classes_conf, cycle_data_name, /*any not null flag*/&r);
+	InCycle temp(r);
 
 	const String& key_var_name=params.as_string(0, "key-var name must be string");
 	const String& value_var_name=params.as_string(1, "value-var name must be string");

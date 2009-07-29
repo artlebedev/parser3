@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REQUEST_C="$Date: 2009/07/07 05:48:05 $";
+static const char * const IDENT_REQUEST_C="$Date: 2009/07/29 05:01:53 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -109,7 +109,9 @@ Request::Request(SAPI_Info& asapi_info, Request_info& arequest_info,
 	wcontext(0),
 	flang(adefault_lang),
 	fconnection(0),
-	finterrupted(false),fskip(SKIP_NOTHING),
+	finterrupted(false),
+	fskip(SKIP_NOTHING),
+	fin_cycle(0),
 
 	// public
 #ifdef RESOURCES_DEBUG

@@ -17,7 +17,7 @@
 #ifndef PA_HASH_H
 #define PA_HASH_H
 
-static const char * const IDENT_HASH_H="$Date: 2009/07/08 09:12:24 $";
+static const char * const IDENT_HASH_H="$Date: 2009/07/29 05:01:46 $";
 
 #include "pa_memory.h"
 #include "pa_types.h"
@@ -885,11 +885,11 @@ public:
 		return V(0);
 	}
 };
-#else
+#else //HASH_CODE_CACHING
 
 template<typename V> class HASH_STRING: public HASH<const String::Body,V>{};
 
-#endif
+#endif //HASH_CODE_CACHING
 
 #ifndef HASH_ORDER
 ///    Auto-object used to temporarily substituting/removing string hash values

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Id: hashfile.C,v 1.49 2009/07/24 09:29:15 misha Exp $";
+static const char * const IDENT="$Id: hashfile.C,v 1.50 2009/07/29 05:01:33 misha Exp $";
 
 #include "classes.h"
 
@@ -29,10 +29,6 @@ public: // Methoded
 // global variable
 
 DECLARE_CLASS_VAR(hashfile, new MHashfile, 0);
-
-// externs
-
-extern String cycle_data_name;
 
 // defines for statics
 
@@ -129,8 +125,7 @@ static bool one_foreach_cycle(
 	return lskip==Request::SKIP_BREAK;
 }
 static void _foreach(Request& r, MethodParams& params) {
-	Temp_hash_value<const String::Body, void*> 
-		cycle_data_setter(r.classes_conf, cycle_data_name, /*any not null flag*/&r);
+	InCycle temp(r);
 
 	const String& key_var_name=params.as_string(0, "key-var name must be string");
 	const String& value_var_name=params.as_string(1, "value-var name must be string");

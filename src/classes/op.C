@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2009/07/15 12:59:19 $";
+static const char * const IDENT_OP_C="$Date: 2009/07/29 05:01:33 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -37,15 +37,6 @@ class VClassMAIN: public VClass {
 public:
 	VClassMAIN();
 };
-
-// defines for globals
-
-#define CYCLE_DATA_NAME "CYCLE-DATA"
-
-// globals
-
-//^for & co
-String cycle_data_name(CYCLE_DATA_NAME);
 
 // defines for statics
 
@@ -236,8 +227,7 @@ static void _rem(Request&, MethodParams& params) {
 }
 
 static void _while(Request& r, MethodParams& params) {
-	Temp_hash_value<const String::Body, void*> 
-		cycle_data_setter(r.classes_conf, cycle_data_name, /*any not null flag*/&r);
+	InCycle temp(r);
 
 	Value& vcondition=params.as_expression(0, "condition must be number, bool or expression");
 
@@ -297,8 +287,7 @@ static void _use(Request& r, MethodParams& params) {
 }
 
 static void set_skip(Request& r, Request::Skip askip) {
-	void* data=r.classes_conf.get(cycle_data_name);
-	if(!data)
+	if(!r.get_in_cycle())
 		throw Exception(PARSER_RUNTIME,
 			0,
 			"without cycle");
@@ -315,8 +304,7 @@ static void _continue(Request& r, MethodParams&) {
 }
 
 static void _for(Request& r, MethodParams& params) {
-	Temp_hash_value<const String::Body, void*> 
-		cycle_data_setter(r.classes_conf, cycle_data_name, /*any not null flag*/&r);
+	InCycle temp(r);
 
 	const String& var_name=params.as_string(0, "var name must be string");
 	int from=params.as_int(1, "from must be int", r);

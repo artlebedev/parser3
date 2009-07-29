@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char * const IDENT_REQUEST_H="$Date: 2009/07/07 23:49:54 $";
+static const char * const IDENT_REQUEST_H="$Date: 2009/07/29 05:01:46 $";
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -152,6 +152,7 @@ public:
 	/// interrupted flag, raised on signals [SIGPIPE]
 	bool finterrupted;
 	Skip fskip;
+	int fin_cycle;
 
 public:
 	uint register_file(String::Body file_spec);
@@ -310,6 +311,9 @@ public:
 
 	void set_skip(Skip askip) { fskip=askip; }
 	Skip get_skip() { return fskip; }
+
+	void set_in_cycle(int adelta) { fin_cycle+=adelta; }
+	bool get_in_cycle() { return fin_cycle>0; }
 
 public:
 	
@@ -511,6 +515,17 @@ public:
 	}
 };
 
+///	Auto-object used for break out of cycle check
+class InCycle {
+	Request& frequest;
+public:
+	InCycle(Request& arequest) : frequest(arequest) {
+		frequest.set_in_cycle(1);
+	}
+	~InCycle() { 
+		frequest.set_in_cycle(-1);
+	}
+};
 
 // defines for externs
 
