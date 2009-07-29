@@ -1,5 +1,5 @@
 content-type: text/html
-content-length: 1408
+content-length: 1402
 
 table - methoded<br />hash - methoded<br />env<br />test1 - methoded<br />cookie<br />test2 - methoded<br />test - methoded
 <hr />
@@ -42,7 +42,7 @@ env<br />
 <br />
 @now[0-1] {dynamic}
 <br />
-@last-day[0-2] {any}
+@last-day[0-2]
 <br />
 @create[1-6] {dynamic}
 <br />

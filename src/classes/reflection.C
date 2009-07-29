@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REFLECTION_C="$Date: 2009/07/28 08:03:05 $";
+static const char * const IDENT_REFLECTION_C="$Date: 2009/07/29 05:07:36 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
@@ -18,7 +18,6 @@ static const String method_type_parser("parser");
 
 static const String method_call_type_static("static");
 static const String method_call_type_dynamic("dynamic");
-static const String method_call_type_any("any");
 
 static const String method_min_params("min_params");
 static const String method_max_params("max_params");
@@ -230,18 +229,18 @@ static void _method_params(Request& r, MethodParams& params) {
 		// native code
 		hash->put(method_min_params, new VInt(method->min_numbered_params_count));
 		hash->put(method_max_params, new VInt(method->max_numbered_params_count));
-		const String* call_type;
+		Value* call_type;
 		switch(method->call_type){
 			case Method::CT_DYNAMIC:
-				call_type=&method_call_type_dynamic;
+				call_type=new VString(method_call_type_dynamic);
 				break;
 			case Method::CT_STATIC:
-				call_type=&method_call_type_static;
+				call_type=new VString(method_call_type_static);
 				break;
 			default:
-				call_type=&method_call_type_any;
+				call_type=VVoid::get();
 		}
-		hash->put(String("call_type"), new VString(*call_type));
+		hash->put(String("call_type"), call_type);
 		
 	} else {
 		// parser code
