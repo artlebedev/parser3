@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REFLECTION_C="$Date: 2009/07/29 05:07:36 $";
+static const char * const IDENT_REFLECTION_C="$Date: 2009/07/29 05:20:27 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
@@ -16,6 +16,7 @@ static const String class_type_methoded("methoded");
 static const String method_type_native("native");
 static const String method_type_parser("parser");
 
+static const String method_call_type("call_type");
 static const String method_call_type_static("static");
 static const String method_call_type_dynamic("dynamic");
 
@@ -229,7 +230,7 @@ static void _method_params(Request& r, MethodParams& params) {
 		// native code
 		hash->put(method_min_params, new VInt(method->min_numbered_params_count));
 		hash->put(method_max_params, new VInt(method->max_numbered_params_count));
-		Value* call_type;
+		Value* call_type=0;
 		switch(method->call_type){
 			case Method::CT_DYNAMIC:
 				call_type=new VString(method_call_type_dynamic);
@@ -237,11 +238,9 @@ static void _method_params(Request& r, MethodParams& params) {
 			case Method::CT_STATIC:
 				call_type=new VString(method_call_type_static);
 				break;
-			default:
-				call_type=VVoid::get();
 		}
-		hash->put(String("call_type"), call_type);
-		
+		if(call_type)
+			hash->put(method_call_type, call_type);
 	} else {
 		// parser code
 		if(method->params_names)
