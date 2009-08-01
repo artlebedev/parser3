@@ -5,7 +5,7 @@
 	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.249 2009/06/13 07:05:22 misha Exp $
+	$Id: compile.y,v 1.250 2009/08/01 04:58:45 misha Exp $
 */
 
 /**
@@ -522,9 +522,7 @@ call: call_value {
 #endif
 	{
 		$$=$1; /* stack: value */
-#ifdef OPTIMIZE_BYTECODE_CONSTRUCT_OBJECT
 		if(!maybe_change_first_opcode(*$$, OP::OP_CONSTRUCT_OBJECT, /*=>*/OP::OP_CONSTRUCT_OBJECT__WRITE))
-#endif
 			changetail_or_append(*$$, 
 				OP::OP_CALL, true,  /*=>*/ OP::OP_CALL__WRITE,
 				/*or */OP::OP_WRITE_VALUE); /* value=pop; wcontext.write(value) */
@@ -557,7 +555,6 @@ call_value: '^' {
 			/* stack: context, method_junction */
 
 			YYSTYPE var_code=$3;
-#ifdef OPTIMIZE_BYTECODE_CONSTRUCT_OBJECT
 			if(
 				var_code->count()==8
 				&& (*var_code)[0].code==OP::OP_VALUE__GET_CLASS
@@ -571,7 +568,6 @@ call_value: '^' {
 				P(*$$, *var_code, 5/*offset*/, 2/*limit*/); // constructor name
 				OA(*$$, params_code);
 			} else 
-#endif
 				{
 					$$=var_code; /* with_xxx,diving code; stack: context,method_junction */
 					OA(*$$, OP::OP_CALL, params_code); // method_frame=make frame(pop junction); ncontext=pop; call(ncontext,method_frame) stack: value

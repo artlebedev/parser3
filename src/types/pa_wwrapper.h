@@ -8,7 +8,7 @@
 #ifndef PA_WWRAPPER_H
 #define PA_WWRAPPER_H
 
-static const char * const IDENT_WWRAPPER_H="$Date: 2009/07/04 08:10:08 $";
+static const char * const IDENT_WWRAPPER_H="$Date: 2009/08/01 04:59:02 $";
 
 #define OPTIMIZE_SINGLE_STRING_WRITE
 
@@ -35,7 +35,6 @@ public: // Value
 			//		$.key1[$i]
 			//		^i.inc[]  ^rem{allow such calls}
 			//		$.key2[$1]
-			SET_CONSTRUCTING(this,false)
 		}
 
 		return fvalue->put_element(aself, aname, avalue, areplace); 

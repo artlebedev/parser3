@@ -11,7 +11,7 @@
 
 namespace OP {
 
-static const char * const IDENT_OPCODE_H="$Date: 2009/06/14 00:34:21 $";
+static const char * const IDENT_OPCODE_H="$Date: 2009/08/01 04:58:52 $";
 
 #define OPTIMIZE_BYTECODE_GET_CLASS
 #define OPTIMIZE_BYTECODE_GET_ELEMENT				// $a ^a
@@ -26,7 +26,6 @@ static const char * const IDENT_OPCODE_H="$Date: 2009/06/14 00:34:21 $";
 													// $self.a(expr), $self.a[value]
 
 #define OPTIMIZE_BYTECODE_GET_SELF_ELEMENT			// $self.a ^self.a
-#define OPTIMIZE_BYTECODE_CONSTRUCT_OBJECT			// ^class::constructor
 
 
 ///	Compiled operation code
@@ -73,10 +72,8 @@ enum OPCODE {
 #endif
 	OP_OBJECT_POOL,	OP_STRING_POOL,
 	OP_PREPARE_TO_CONSTRUCT_OBJECT,
-#ifdef OPTIMIZE_BYTECODE_CONSTRUCT_OBJECT
 	OP_CONSTRUCT_OBJECT,
 	OP_CONSTRUCT_OBJECT__WRITE,
-#endif
 	OP_PREPARE_TO_EXPRESSION, 
 	OP_CALL, OP_CALL__WRITE,
 

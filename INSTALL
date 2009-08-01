@@ -1,5 +1,5 @@
 Alexander Petrosian <paf@design.ru> (http://paf.design.ru)
-$Id: INSTALL,v 1.53 2009/07/29 04:59:15 misha Exp $
+$Id: INSTALL,v 1.54 2009/08/01 04:59:09 misha Exp $
 
 1.What is the process to compile Parser3?
 
@@ -140,7 +140,6 @@ $Id: INSTALL,v 1.53 2009/07/29 04:59:15 misha Exp $
     #define OPTIMIZE_BYTECODE_CONSTRUCT               -- $a(expr),  $a[value]
                                                          $.a(expr), $.a[value]
                                                          $self.a(expr), $self.a[value]
-    #define OPTIMIZE_BYTECODE_CONSTRUCT_OBJECT        -- ^class::constructor
     #define OPTIMIZE_BYTECODE_CUT_REM_OPERATOR        -- cut rem operator with any number of params during compilation
     #define OPTIMIZE_BYTECODE_STRING_POOL             -- simplifying string's bytecode into expression
 

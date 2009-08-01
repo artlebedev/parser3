@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2009/06/29 09:25:29 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2009/08/01 04:58:38 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -66,10 +66,8 @@ char *opcode_name[]={
 #endif
 	"OBJECT_POOL",	"STRING_POOL",
 	"PREPARE_TO_CONSTRUCT_OBJECT",
-#ifdef OPTIMIZE_BYTECODE_CONSTRUCT_OBJECT
 	"CONSTRUCT_OBJECT",
 	"CONSTRUCT_OBJECT__WRITE",
-#endif
 	"PREPARE_TO_EXPRESSION", 
 	"CALL", "CALL__WRITE",
 
@@ -148,7 +146,6 @@ void debug_dump(SAPI_Info& sapi_info, int level, ArrayOperation& ops) {
 			continue;
 		}
 #endif
-#ifdef OPTIMIZE_BYTECODE_CONSTRUCT_OBJECT
 		if(
 			opcode==OP::OP_CONSTRUCT_OBJECT
 			|| opcode==OP::OP_CONSTRUCT_OBJECT__WRITE
@@ -167,7 +164,6 @@ void debug_dump(SAPI_Info& sapi_info, int level, ArrayOperation& ops) {
 				debug_dump(sapi_info, level+1, *local_ops);
 			continue;
 		}
-#endif
 		if(
 			opcode==OP::OP_VALUE
 			|| opcode==OP::OP_STRING__WRITE
@@ -712,14 +708,6 @@ void Request::execute(ArrayOperation& ops) {
 				break;
 			}
 
-#ifndef OPTIMIZE_BYTECODE_CONSTRUCT_OBJECT
-		case OP::OP_PREPARE_TO_CONSTRUCT_OBJECT:
-			{
-				SET_CONSTRUCTING(wcontext,true)
-				break;
-			}
-#endif
-
 		case OP::OP_PREPARE_TO_EXPRESSION:
 			{
 				wcontext->set_in_expression(true);
@@ -761,7 +749,7 @@ void Request::execute(ArrayOperation& ops) {
 				}
 
 				VMethodFrame frame(*junction, method_frame);
-				METHOD_FRAME_ACTION(op_call(frame, GET_CONSTRUCTING(wcontext)));
+				METHOD_FRAME_ACTION(op_call(frame, false));
 				stack.push(frame.result().as_value());
 
 				DEBUG_PRINT_STR("<-returned")
@@ -801,7 +789,7 @@ void Request::execute(ArrayOperation& ops) {
 
 #ifdef OPTIMIZE_CALL
 				const Method& method=*junction->method;
-				if (!GET_CONSTRUCTING(wcontext) && method.call_optimization==Method::CO_WITHOUT_FRAME){
+				if(method.call_optimization==Method::CO_WITHOUT_FRAME){
 					if(local_ops){ // store param code goes here
 						size_t first = stack.top_index();
 						execute(*local_ops);
@@ -817,14 +805,14 @@ void Request::execute(ArrayOperation& ops) {
 						method.check_actual_numbered_params(junction->self, &method_params);
 						method.native_code(*this, method_params); // execute it
 					}
-				} else if (!GET_CONSTRUCTING(wcontext) && method.call_optimization==Method::CO_WITHOUT_WCONTEXT){
+				} else if(method.call_optimization==Method::CO_WITHOUT_WCONTEXT){
 					VMethodFrame frame(*junction, method_frame);
 					METHOD_FRAME_ACTION(op_call_write(frame));
 				} else 
 #endif // OPTIMIZE_CALL
 				{
 					VMethodFrame frame(*junction, method_frame);
-					METHOD_FRAME_ACTION(op_call(frame, GET_CONSTRUCTING(wcontext)));
+					METHOD_FRAME_ACTION(op_call(frame, false));
 					write_pass_lang(frame.result());
 				}
 
@@ -841,7 +829,6 @@ void Request::execute(ArrayOperation& ops) {
 				break;
 			}
 
-#ifdef OPTIMIZE_BYTECODE_CONSTRUCT_OBJECT
 		case OP::OP_CONSTRUCT_OBJECT:
 		case OP::OP_CONSTRUCT_OBJECT__WRITE:
 			{
@@ -857,8 +844,6 @@ void Request::execute(ArrayOperation& ops) {
 						&class_name,
 						"class is undefined"); 
 
-				SET_CONSTRUCTING(wcontext,true)
-
 				debug_origin=i.next().origin;
 				Value& vconstructor_name=*i.next().value;
 				const String& constructor_name=*vconstructor_name.get_string(); debug_name=&constructor_name;
@@ -868,13 +853,11 @@ void Request::execute(ArrayOperation& ops) {
 				Value& constructor_value=get_element(*class_value, constructor_name);
 
 				Junction* junction=constructor_value.get_junction();
-#ifdef OPTIMIZE_CONSTRUCT_OBJECT
 				if(!junction || junction->self.get_class()!=class_value)
 					throw Exception(PARSER_RUNTIME,
 						&constructor_name,
 						"constructor must be declared in class '%s'", 
 						class_value->get_class()->name_cstr());
-#endif
 
 				ArrayOperation* local_ops=i.next().ops;
 				DEBUG_PRINT_OPS(local_ops)
@@ -890,7 +873,6 @@ void Request::execute(ArrayOperation& ops) {
 				DEBUG_PRINT_STR("<-returned")
 				break;
 			}
-#endif // OPTIMIZE_BYTECODE_CONSTRUCT_OBJECT
 
 		// expression ops: unary
 		case OP::OP_NEG:
@@ -1229,7 +1211,6 @@ void Request::op_call(VMethodFrame& frame, bool constructing){
 	Value* new_self;
 
 	if(constructing) {
-		SET_CONSTRUCTING(wcontext,false)
 		if(junction.method->call_type!=Method::CT_STATIC) {
 			// this is a constructor call
 			if(new_self=called_class.create_new_value(fpool, 0 /*creating fields only in VClass*/)) {
@@ -1313,26 +1294,17 @@ void Request::op_call_write(VMethodFrame& frame){
 	@bug ^superbase:method would dynamically call ^base:method if there is any
 */
 Value& Request::get_element(Value& ncontext, const String& name) {
-	if(!GET_CONSTRUCTING(wcontext) // not constructing
-		&& wcontext->get_somebody_entered_some_class() ) // ^class:method
-			if(VStateless_class *called_class=ncontext.get_class())
-				if(VStateless_class *read_class=rcontext->get_class())
-					if(read_class->derived_from(*called_class)) // current derived from called
-						if(Value* base=get_self().base()) { // doing DYNAMIC call
-							Temp_derived temp_derived(*base, 0); // temporarily prevent go-back-down virtual calls 
-							Value *value=base->get_element(name, *base, true); // virtual-up lookup starting from parent
-							return *(value ? &process_to_value(*value) : VVoid::get());
-						}
+	if(wcontext->get_somebody_entered_some_class()) // ^class:method
+		if(VStateless_class *called_class=ncontext.get_class())
+			if(VStateless_class *read_class=rcontext->get_class())
+				if(read_class->derived_from(*called_class)) // current derived from called
+					if(Value* base=get_self().base()) { // doing DYNAMIC call
+						Temp_derived temp_derived(*base, 0); // temporarily prevent go-back-down virtual calls 
+						Value *value=base->get_element(name, *base, true); // virtual-up lookup starting from parent
+						return *(value ? &process_to_value(*value) : VVoid::get());
+					}
 
 	Value* value=ncontext.get_element(name, ncontext, true);
-
-	if(value && GET_CONSTRUCTING(wcontext))
-		if(Junction* junction=value->get_junction())
-			if(junction->self.get_class()!=&ncontext)
-				throw Exception(PARSER_RUNTIME,
-					&name,
-					"constructor must be declared in class '%s'", 
-						ncontext.get_class()->name_cstr());
 
 	return *(value ? &process_to_value(*value) : VVoid::get());
 }
