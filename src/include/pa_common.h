@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-static const char * const IDENT_COMMON_H="$Date: 2009/07/07 23:49:54 $";
+static const char * const IDENT_COMMON_H="$Date: 2009/08/05 08:57:34 $";
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -237,7 +237,7 @@ void back_slashes_to_slashes(char *s);
 bool StrStartFromNC(const char* str, const char* substr, bool equal=false);
 size_t strpos(const char *str, const char *substr);
 
-Charset* detect_charset(const char* content_type, bool already_uppercased=false);
+Charset* detect_charset(const char* content_type);
 
 #define SECS_PER_DAY (60*60*24)
 int getMonthDays(int year, int month);

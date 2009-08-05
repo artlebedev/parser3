@@ -26,7 +26,7 @@
  *
  */
 
-static const char * const IDENT_COMMON_C="$Date: 2009/07/06 12:07:04 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2009/08/05 08:57:27 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -794,12 +794,12 @@ size_t strpos(const char *str, const char *substr) {
 // content-type: xxx; charset=WE-NEED-THIS
 // content-type: xxx; charset="WE-NEED-THIS"
 // content-type: xxx; charset="WE-NEED-THIS";
-Charset* detect_charset(const char* content_type, bool already_uppercased){
+Charset* detect_charset(const char* content_type){
 	if(content_type){
 		char* CONTENT_TYPE=pa_strdup(content_type);
-		if(!already_uppercased)
-			for(char *p=CONTENT_TYPE; *p; p++)
-				*p=(char)toupper((unsigned char)*p);
+
+		for(char *p=CONTENT_TYPE; *p; p++)
+			*p=(char)toupper((unsigned char)*p);
 
 		if(const char* begin=strstr(CONTENT_TYPE, "CHARSET=")){
 			begin+=8; // skip "CHARSET="
