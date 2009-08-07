@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Id: buildall-with-xml,v 1.28 2009/06/13 08:28:48 misha Exp $
+# $Id: buildall-with-xml,v 1.29 2009/08/07 23:10:54 misha Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -27,7 +27,7 @@ if test ! -f "$project_directory/gc/lib/libgc.a"; then
   gunzip -c $libgc.tar.gz | tar vxf - >/dev/null
   cd $libgc
   echo "Configuring gc..."
-  CPPFLAGS="-DUSE_LIBC_PRIVATES -DUSE_MMAP -DUSE_MUNMAP -DDONT_ADD_BYTE_AT_END" \
+  CPPFLAGS="-DUSE_LIBC_PRIVATES -DUSE_MMAP -DDONT_ADD_BYTE_AT_END" \
   ./configure --prefix=$project_directory/gc \
     --disable-threads \
     --disable-shared \
