@@ -13,7 +13,9 @@ $hi[^h.intersection[
 	$.test1[]
 	$.test2[]
 ]]
-^hi.foreach[k;v]{$k^if(def $v){ - $v}}[<br />]
+$t[^hi._keys[]]
+^t.sort{$t.key}
+^t.menu{$t.key^if(def $hi.[$t.key]){ - $hi.[$t.key]}}[<br />]
 <hr />
 
 ^do{$d[^reflection:create[date;create]]}
@@ -53,10 +55,14 @@ done.
 
 
 
-@print[class;o][m;k;v;h;i]
+@print[class;o][m;k;v;h;i;t]
 ^do{
 	$m[^reflection:methods[$class]]
-	^m.foreach[k;v]{
+	$t[^m._keys[]]
+	^t.sort{$t.key}
+	^t.menu{
+		$k[$t.key]
+		$v[$m.$k]
 		$h[^reflection:method_params[$class;$k]]
 		^@${k}[^if($v eq "native"){^if($h.min_params != $h.max_params){^h.min_params.int(0)-}^h.max_params.int(0)}{^for[i](0;^h._count[]){$h.$i}[^;]}]^if(def $h.call_type){ {$h.call_type}}
 	}[<br />]
