@@ -26,9 +26,9 @@ env<br />
 'test' object class name: 'test/test'<br />
 'test' object base class name: '/'<br />
 <hr />
-@GET_value[]
-<br />
 @create1[v]
+<br />
+@GET_value[]
 <br /><br />
 'test1' object class name: 'test1/test1'<br />
 'test1' object base class name: 'test/test'<br />
