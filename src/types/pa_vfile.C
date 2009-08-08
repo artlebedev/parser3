@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VFILE_C="$Date: 2009/06/24 09:02:43 $";
+static const char * const IDENT_VFILE_C="$Date: 2009/08/08 13:30:21 $";
 
 #include "classes.h"
 #include "pa_vfile.h"
@@ -69,11 +69,11 @@ void VFile::set_mode(bool as_text){
 	ffields.put(mode_name, new VString(as_text? text_mode_name : binary_mode_name ));
 }
 
-Value* VFile::get_element(const String& aname, Value& aself, bool looking_up) {
+Value* VFile::get_element(const String& aname) {
 	Value* result;
 
 	// $method
-	if(result=VStateless_object::get_element(aname, aself, looking_up))
+	if(result=VStateless_object::get_element(aname))
 		return result;
 
 	// $field

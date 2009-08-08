@@ -8,7 +8,7 @@
 #ifndef PA_VREQUEST_H
 #define PA_VREQUEST_H
 
-static const char * const IDENT_VREQUEST_H="$Date: 2009/04/10 11:39:47 $";
+static const char * const IDENT_VREQUEST_H="$Date: 2009/08/08 13:30:21 $";
 
 // includes
 
@@ -43,10 +43,10 @@ public: // Value
 	override VStateless_class *get_class() { return 0; }
 
 	/// request: CLASS,CLASS_NAME,field
-	override Value* get_element(const String& name, Value& aself, bool /*looking_up*/);
+	override Value* get_element(const String& name);
 
 	/// request: (key)=value
-	override const VJunction* put_element(Value& self, const String& name, Value* value, bool replace);
+	override const VJunction* put_element(const String& name, Value* value, bool replace);
 
 public: // usage
 

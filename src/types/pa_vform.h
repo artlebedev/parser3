@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b form class decls.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VFORM_H
 #define PA_VFORM_H
 
-static const char * const IDENT_VFORM_H="$Date: 2009/05/26 10:43:00 $";
+static const char * const IDENT_VFORM_H="$Date: 2009/08/08 13:30:21 $";
 
 // includes
 
@@ -55,7 +55,7 @@ public: // Value
 	const char* type() const { return "form"; }
 	
 	// form: CLASS,CLASS_NAME,fields,tables,files,imap,method,field
-	Value* get_element(const String& aname, Value& aself, bool /*looking_up*/);
+	Value* get_element(const String& aname);
 	Charset* get_post_charset();
 
 public: // usage

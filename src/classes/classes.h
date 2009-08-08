@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b Methoded class decl.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef CLASSES_H
 #define CLASSES_H
 
-static const char * const IDENT_CLASSES_H="$Date: 2005/08/09 08:14:47 $";
+static const char * const IDENT_CLASSES_H="$Date: 2009/08/08 13:30:20 $";
 
 // include
 
@@ -19,12 +19,6 @@ static const char * const IDENT_CLASSES_H="$Date: 2005/08/09 08:14:47 $";
 	@see Methoded_array
 */
 class Methoded: public VStateless_class {
-public: // Value
-
-	override const VJunction* put_element(Value& /*self*/, const String& /*name*/, Value * /*value*/) { 
-		return 0; // fewer useless Exceptions
-	}
-
 public: // Methoded
 
 	/** should Methoded_array::register_directly_used register this class in

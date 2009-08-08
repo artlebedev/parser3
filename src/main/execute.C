@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2009/08/01 04:58:38 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2009/08/08 13:30:21 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -422,7 +422,7 @@ void Request::execute(ArrayOperation& ops) {
 
 				const String& name=stack.pop().string();  debug_name=&name;
 				Value& ncontext=stack.pop().value();
-				if(const VJunction* vjunction=ncontext.put_element(ncontext, name, &value, false))
+				if(const VJunction* vjunction=ncontext.put_element(name, &value, false))
 					if(vjunction!=PUT_ELEMENT_REPLACED_ELEMENT)
 						throw Exception(PARSER_RUNTIME,
 							0,
@@ -1213,7 +1213,7 @@ void Request::op_call(VMethodFrame& frame, bool constructing){
 	if(constructing) {
 		if(junction.method->call_type!=Method::CT_STATIC) {
 			// this is a constructor call
-			if(new_self=called_class.create_new_value(fpool, 0 /*creating fields only in VClass*/)) {
+			if(new_self=called_class.create_new_value(fpool)) {
 				// some stateless_class creatable derivates
 			} else 
 				throw Exception(PARSER_RUNTIME,
@@ -1290,28 +1290,23 @@ void Request::op_call_write(VMethodFrame& frame){
 	method_frame=saved_method_frame;
 }
 
-/**
-	@bug ^superbase:method would dynamically call ^base:method if there is any
-*/
 Value& Request::get_element(Value& ncontext, const String& name) {
 	if(wcontext->get_somebody_entered_some_class()) // ^class:method
 		if(VStateless_class *called_class=ncontext.get_class())
 			if(VStateless_class *read_class=rcontext->get_class())
-				if(read_class->derived_from(*called_class)) // current derived from called
-					if(Value* base=get_self().base()) { // doing DYNAMIC call
-						Temp_derived temp_derived(*base, 0); // temporarily prevent go-back-down virtual calls 
-						Value *value=base->get_element(name, *base, true); // virtual-up lookup starting from parent
-						return *(value ? &process_to_value(*value) : VVoid::get());
-					}
+				if(read_class->derived_from(*called_class)){ // current derived from called
+					Value *value=called_class->get_element(get_self(), name);
+					return *(value ? &process_to_value(*value) : VVoid::get());
+				}
 
-	Value* value=ncontext.get_element(name, ncontext, true);
+	Value* value=ncontext.get_element(name);
 
 	return *(value ? &process_to_value(*value) : VVoid::get());
 }
 
 void Request::put_element(Value& ncontext, const String& name, Value* value) {
 	// put_element can return property-setting-junction
-	if(const VJunction* vjunction=ncontext.put_element(ncontext, name, value, false))
+	if(const VJunction* vjunction=ncontext.put_element(name, value, false))
 		if(vjunction!=PUT_ELEMENT_REPLACED_ELEMENT) {
 			// process it
 			VMethodFrame frame(vjunction->junction(), method_frame/*caller*/);
@@ -1602,7 +1597,7 @@ Request::execute_nonvirtual_method(VStateless_class& aclass,
 
 const String* Request::execute_virtual_method(Value& aself, 
 					const String& method_name) {
-	if(Value* value=aself.get_element(method_name, aself, false))
+	if(Value* value=aself.get_element(method_name))
 		if(Junction* junction=value->get_junction())
 			if(const Method *method=junction->method) 
 				return execute_method(aself, *method, 0/*no params*/, true);

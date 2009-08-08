@@ -8,7 +8,7 @@
 #ifndef PA_VVOID_H
 #define PA_VVOID_H
 
-static const char * const IDENT_VVOID_H="$Date: 2009/07/06 12:10:09 $";
+static const char * const IDENT_VVOID_H="$Date: 2009/08/08 13:30:22 $";
 
 #include "classes.h"
 #include "pa_vstateless_object.h"
@@ -42,17 +42,17 @@ public: // Value
 	override VFile* as_vfile(String::Language lang, const Request_charsets *charsets);
 
 	/// VVoid: methods
-	override Value* get_element(const String& aname, Value& aself, bool looking_up) {
+	override Value* get_element(const String& aname) {
 		// methods
-		if(Value* result=VStateless_object::get_element(aname, aself, looking_up))
+		if(Value* result=VStateless_object::get_element(aname))
 			return result;
 
 		return 0;
 	}
 
 	/// VVoid: bark
-	override const VJunction* put_element(Value& aself, const String& aname, Value* avalue, bool areplace) { 
-		return Value::put_element(aself, aname, avalue, areplace);
+	override const VJunction* put_element(const String& aname, Value* avalue, bool areplace) { 
+		return Value::put_element(aname, avalue, areplace);
 	}
 
 	inline static VVoid *get(){

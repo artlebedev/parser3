@@ -8,7 +8,7 @@
 #ifndef PA_VDATE_H
 #define PA_VDATE_H
 
-static const char * const IDENT_VDATE_H="$Date: 2009/04/10 11:37:33 $";
+static const char * const IDENT_VDATE_H="$Date: 2009/08/08 13:30:21 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -88,9 +88,9 @@ public: // Value
 
 
 	/// VDate: method,field
-	override Value* get_element(const String& aname, Value& aself, bool looking_up) {
+	override Value* get_element(const String& aname) {
 		// $method
-		if(Value* result=VStateless_object::get_element(aname, aself, looking_up))
+		if(Value* result=VStateless_object::get_element(aname))
 			return result;
 
 		// $TZ

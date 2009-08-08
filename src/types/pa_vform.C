@@ -7,7 +7,7 @@
 	based on The CGI_C library, by Thomas Boutell.
 */
 
-static const char * const IDENT_VFORM_C="$Date: 2009/06/24 09:02:22 $";
+static const char * const IDENT_VFORM_C="$Date: 2009/08/08 13:30:21 $";
 
 #include "pa_sapi.h"
 #include "pa_vform.h"
@@ -335,7 +335,7 @@ bool VForm::should_refill_fields_tables_and_files() {
 	return &fcharsets.source()!=filled_source || &fcharsets.client()!=filled_client;
 }
 
-Value* VForm::get_element(const String& aname, Value& aself, bool looking_up) {
+Value* VForm::get_element(const String& aname) {
 	if(should_refill_fields_tables_and_files())
 		refill_fields_tables_and_files();
 
@@ -356,7 +356,7 @@ Value* VForm::get_element(const String& aname, Value& aself, bool looking_up) {
 		return new VHash(imap);
 
 	// CLASS, CLASS_NAME
-	if(Value* result=VStateless_class::get_element(aname, aself, looking_up))
+	if(Value* result=VStateless_class::get_element(aname))
 		return result;
 
 	// $field

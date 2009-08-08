@@ -8,7 +8,7 @@
 #ifndef PA_METHOD_H
 #define PA_METHOD_H
 
-static const char * const IDENT_METHOD_H="$Date: 2009/05/14 07:28:17 $";
+static const char * const IDENT_METHOD_H="$Date: 2009/08/08 13:30:21 $";
 
 #define OPTIMIZE_CALL
 #define OPTIMIZE_RESULT
@@ -131,11 +131,11 @@ public:
 	Temp_value_element(Value& awhere, const String& aname, Value* awhat) : 
 		fwhere(awhere),
 		fname(aname),
-		saved(awhere.get_element(aname, awhere, false)) {
-		fwhere.put_element(fwhere, aname, awhat, false);
+		saved(awhere.get_element(aname)) {
+		fwhere.put_element(aname, awhat, false);
 	}
 	~Temp_value_element() { 
-		fwhere.put_element(fwhere, fname, saved, false);
+		fwhere.put_element(fname, saved, false);
 	}
 };
 

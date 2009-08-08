@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REQUEST_C="$Date: 2009/07/29 05:01:53 $";
+static const char * const IDENT_REQUEST_C="$Date: 2009/08/08 13:30:21 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -221,7 +221,7 @@ void Request::configure_admin(VStateless_class& conf_class) {
 			...
 		]
 	*/
-	if(Value* vcharsets=conf_class.get_element(charsets_name, conf_class, false)) {
+	if(Value* vcharsets=conf_class.get_element(charsets_name)) {
 		if(!vcharsets->is_string())
 			if(HashStringValue* charsets=vcharsets->get_hash())
 				charsets->for_each<Request_charsets*>(load_charset, &this->charsets);
@@ -285,7 +285,7 @@ void Request::configure() {
 	methoded_array().configure_user(*this);
 
 	// $MAIN:MIME-TYPES
-	if(Value* element=main_class.get_element(mime_types_name, main_class, false))
+	if(Value* element=main_class.get_element(mime_types_name))
 		if(Table *table=element->get_table())
 			mime_types=table;			
 }
@@ -392,7 +392,7 @@ gettimeofday(&mt[2],NULL);
 			body_value=new VString(*body_string); // just result of ^main[]
 
 		// @postprocess
-		if(Value* value=main_class.get_element(post_process_method_name, main_class, false))
+		if(Value* value=main_class.get_element(post_process_method_name))
 			if(Junction* junction=value->get_junction())
 				if(const Method *method=junction->method) {
 					// preparing to pass parameters to 
@@ -450,10 +450,7 @@ t[9]-t[3]
 
 		// maybe we'd be lucky enough as to report an error
 		// in a gracefull way...
-		if(Value* value=main_class.get_element(
-				*new String(UNHANDLED_EXCEPTION_METHOD_NAME), 
-				main_class,
-				false)) {
+		if(Value* value=main_class.get_element(*new String(UNHANDLED_EXCEPTION_METHOD_NAME))) {
 			if(Junction* junction=value->get_junction()) {
 				if(const Method *method=junction->method) {
 					// preparing to pass parameters to 
@@ -552,7 +549,7 @@ void Request::use_file(VStateless_class& aclass,
 		file_spec=&absolute(file_name);
 	else {
 		file_spec=0;
-		if(Value* element=main_class.get_element(class_path_name, main_class, false)) {
+		if(Value* element=main_class.get_element(class_path_name)) {
 			if(element->is_string()) {
 				file_spec=file_exist(absolute(element->as_string()), file_name); // found at class_path?
 			} else if(Table *table=element->get_table()) {
@@ -876,7 +873,7 @@ void Request::output_result(VFile* body_file, bool header_only, bool as_attachme
 
 		VDate* vdate=0;
 		if(Value* v=body_file->fields().get("mdate")) {
-			if(Value* vdatep=v->as(VDATE_TYPE, false))
+			if(Value* vdatep=v->as(VDATE_TYPE))
 				vdate=static_cast<VDate*>(vdatep);
 			else 
 				throw Exception(PARSER_RUNTIME, 0, "mdate must be a date");

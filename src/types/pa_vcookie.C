@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VCOOKIE_C="$Date: 2009/07/06 12:10:09 $";
+static const char * const IDENT_VCOOKIE_C="$Date: 2009/08/08 13:30:21 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -37,7 +37,7 @@ VCookie::VCookie(Request_charsets& acharsets, Request_info& arequest_info):
 	frequest_info(arequest_info) {
 }
 
-Value* VCookie::get_element(const String& aname, Value& /*aself*/, bool /*looking_up*/) {
+Value* VCookie::get_element(const String& aname) {
 	// $CLASS
 	if(aname==CLASS_NAME)
 		return this;
@@ -75,7 +75,7 @@ Value* VCookie::get_element(const String& aname, Value& /*aself*/, bool /*lookin
 	return before.get(aname);
 }
 
-const VJunction* VCookie::put_element(Value& /*aself*/, const String& aname, Value* avalue, bool /*replace*/) {
+const VJunction* VCookie::put_element(const String& aname, Value* avalue, bool /*replace*/) {
 	// $cookie
 	Value* lvalue;
 	if(HashStringValue *hash=avalue->get_hash())
@@ -177,7 +177,7 @@ const String* output_set_cookie_value(
 				// $expires[session]
 				hash->remove(expires_name);
 			} else {
-				if(Value* vdate=expires->as(VDATE_TYPE, false))
+				if(Value* vdate=expires->as(VDATE_TYPE))
 					hash->put(expires_name, vdate); // $expires[DATE]
 				else if(double days_till_expire=expires->as_double())
 					hash->put(expires_name, &expires_vdate(days_till_expire)); // $expires(days)

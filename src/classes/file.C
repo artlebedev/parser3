@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2009/07/07 07:26:59 $";
+static const char * const IDENT_FILE_C="$Date: 2009/08/08 13:30:20 $";
 
 #include "pa_config_includes.h"
 
@@ -43,7 +43,7 @@ extern String sql_offset_name;
 class MFile: public Methoded {
 public: // VStateless_class
 	
-	Value* create_new_value(Pool&, HashStringValue*) { return new VFile(); }
+	Value* create_new_value(Pool&) { return new VFile(); }
 
 public: // Methoded
 	bool used_directly() { return true; }
@@ -452,7 +452,7 @@ static void _exec_cgi(Request& r, MethodParams& params, bool cgi) {
 				if(const String* sstdin=info.vstdin->get_string()) {
 					in->append(*sstdin, String::L_CLEAN, true);
 				} else
-					if(VFile* vfile=static_cast<VFile *>(info.vstdin->as("file", false)))
+					if(VFile* vfile=static_cast<VFile *>(info.vstdin->as("file")))
 						in->append_know_length((const char* )vfile->value_ptr(), vfile->value_size(), String::L_TAINTED);
 					else
 						throw Exception(PARSER_RUNTIME,
@@ -619,7 +619,7 @@ static void _list(Request& r, MethodParams& params) {
 	if(params.count()>1){
 		Value& regexp=params.as_no_junction(1, "regexp must not be code");
 		if(regexp.is_defined()){
-			if(Value* value=regexp.as(VREGEX_TYPE, false)){
+			if(Value* value=regexp.as(VREGEX_TYPE)){
 				vregex=static_cast<VRegex*>(value);
 			} else {
 				vregex=new VRegex(r.charsets.source(), &regexp.as_string(), 0/*options*/);

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VTABLE_C="$Date: 2009/07/15 00:01:00 $";
+static const char * const IDENT_VTABLE_C="$Date: 2009/08/08 13:30:22 $";
 
 #include "pa_vtable.h"
 #include "pa_vstring.h"
@@ -54,13 +54,13 @@ Value* VTable::fields_element() {
 	return &result;
 }
 
-Value* VTable::get_element(const String& aname, Value& aself, bool looking_up) {
+Value* VTable::get_element(const String& aname) {
 	// fields
 	if(aname==TABLE_FIELDS_ELEMENT_NAME)
 		return fields_element();
 
 	// methods
-	if(Value* result=VStateless_object::get_element(aname, aself, looking_up))
+	if(Value* result=VStateless_object::get_element(aname))
 		return result;
 
 	// columns

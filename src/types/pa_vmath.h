@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b math class decls.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VMATH_H
 #define PA_VMATH_H
 
-static const char * const IDENT_VMATH_H="$Date: 2009/04/10 02:23:50 $";
+static const char * const IDENT_VMATH_H="$Date: 2009/08/08 13:30:21 $";
 
 // includes
 
@@ -28,9 +28,9 @@ public: // Value
 	const char* type() const { return "math"; }
 
 	// math: CLASS,method,field
-	Value* get_element(const String& aname, Value& aself, bool looking_up) {
+	Value* get_element(const String& aname) {
 		// $CLASS,$method
-		if(Value* result=VStateless_class::get_element(aname, aself, looking_up))
+		if(Value* result=VStateless_class::get_element(aname))
 			return result;
 
 		// $const

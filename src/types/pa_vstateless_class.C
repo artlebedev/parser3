@@ -5,10 +5,9 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)\
 */
 
-static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2009/05/14 11:27:23 $";
+static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2009/08/08 13:30:21 $";
 
 #include "pa_vstateless_class.h"
-#include "pa_vproperty.h"
 #include "pa_vstring.h"
 #include "pa_vbool.h"
 
@@ -20,13 +19,13 @@ override Value& VStateless_class::as_expr_result(bool /*return_string_as_is=fals
 }
 
 /// @TODO why?! request must be different ptr from global [used in VStateless_class.add_method]
-void VStateless_class::add_method(const String& name, Method& method) {
+void VStateless_class::add_method(const String& aname, Method& amethod) {
 	if(flocked)
 		throw Exception(PARSER_RUNTIME,
-			&name,
+			&aname,
 			"can not add method to system class (maybe you have forgotten .CLASS in ^process[$caller.CLASS]{...}?)");
 
-	put_method(name, &method);
+	put_method(aname, &amethod);
 }
 
 void VStateless_class::add_native_method(
@@ -41,8 +40,6 @@ void VStateless_class::add_native_method(
 #endif
 	) {
 
-	const String& name=*new String(cstr_name);
-	
 	Method& method=*new Method(
 		call_type,
 		min_numbered_params_count, max_numbered_params_count,
@@ -56,66 +53,89 @@ void VStateless_class::add_native_method(
 #endif
 		);
 
-	add_method(name, method);
+	add_method(*new String(cstr_name), method);
 }
 
 /// VStateless_class: $CLASS, $CLASS_NAME, $method
-Value* VStateless_class::get_element(const String& aname, Value& aself, bool alooking_up) {
+Value* VStateless_class::get_element(Value& aself, const String& aname) {
 	// $CLASS
 	if(aname==class_name)
 		return this;
 
 	// $CLASS_NAME
 	if(aname==class_nametext)
-		return new VString(this->name());
+		return new VString(name());
 
 	// $method=junction(self+class+method)
 	if(Method* method=get_method(aname)){
 		if(!method->junction_template)
 			return method->junction_template=new VJunction(aself, method);
-
 		return method->junction_template->get(aself);
-	}
-
-	// base monkey
-	if(fbase) {
-		if(Value* obase=aself.base()) // MXdoc has fbase but does not have object_base[ base() ]
-			return fbase->get_element(aname, *obase, alooking_up);
 	}
 
 	return 0;
 }
 
 void VStateless_class::put_method(const String& aname, Method* amethod){
+	Method *omethod=fmethods.get(aname);
+	Array_iterator<VStateless_class *> i(fderived);
+	while(i.has_next()) {
+		VStateless_class *c=i.next();
+		if (c->fmethods.get(aname)==omethod)
+			c->fmethods.put(aname, amethod);
+	}
 	fmethods.put(aname, amethod); 
-}
-
-Value* VStateless_class::get_default_getter(Value& aself, const String& aname){
-	if(fdefault_getter)
-		return new VJunction(aself, fdefault_getter, true /*getter*/, (String*)&aname);
-
-	if(fbase)
-		if(Value* obase=aself.base())
-			return fbase->get_default_getter(*obase, aname);
-
-	return 0;
-}
-
-void VStateless_class::set_default_getter(Method* amethod){
-	fdefault_getter=amethod;
 }
 
 Value* VStateless_class::get_scalar(Value& aself){
 	if(fscalar)
 		return new VJunction(aself, fscalar, true /*getter*/);
-
-	if(fbase)
-		if(Value* obase=aself.base())
-			return fbase->get_scalar(*obase);
-
 	return 0;
 }
 
 void VStateless_class::set_scalar(Method* amethod){
+	Array_iterator<VStateless_class *> i(fderived);
+	while(i.has_next()) {
+		VStateless_class *c=i.next();
+		if (c->fscalar==fscalar)
+			c->fscalar=amethod;
+	}
 	fscalar=amethod;
+}
+
+Value* VStateless_class::get_default_getter(Value& aself, const String& aname){
+	if(fdefault_getter)
+		return new VJunction(aself, fdefault_getter, true /*getter*/, (String*)&aname);
+	return 0;
+}
+
+void VStateless_class::set_default_getter(Method* amethod){
+	Array_iterator<VStateless_class *> i(fderived);
+	while(i.has_next()) {
+		VStateless_class *c=i.next();
+		if (c->fdefault_getter==fdefault_getter)
+			c->fdefault_getter=amethod;
+	}
+	fdefault_getter=amethod;
+}
+
+void VStateless_class::set_base(VStateless_class* abase){
+	if(abase){
+		fbase=abase;
+		fbase->add_derived(*this);
+
+		// we assume there is no derivatives at this point
+		fmethods.merge_dont_replace(abase->fmethods);
+
+		if(fbase->fscalar && !fscalar)
+			fscalar=fbase->fscalar;
+		if(fbase->fdefault_getter && !fdefault_getter)
+			fdefault_getter=fbase->fdefault_getter;
+	}
+}
+
+void VStateless_class::add_derived(VStateless_class &aclass){
+	fderived+=&aclass;
+	if (fbase)
+		fbase->add_derived(aclass);
 }

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VALUE_C="$Date: 2009/07/13 02:18:41 $";
+static const char * const IDENT_VALUE_C="$Date: 2009/08/08 13:30:21 $";
 
 #include "pa_value.h"
 #include "pa_vstateless_class.h"
@@ -23,16 +23,11 @@ const String content_type_name(CONTENT_TYPE_NAME);
 
 // methods
 
-VObject* Value::set_derived(VObject* /*aderived*/) { return 0; }
-
 Junction* Value::get_junction() { return 0; }
 
-Value* Value::base_object() { return bark("is '%s', it has no base object"); }
-
-Value* Value::get_element(const String& /*aname*/, Value& /*aself*/, bool /*looking_up*/) {
+Value* Value::get_element(const String& /*aname*/) {
 	return bark("is '%s', it has no elements");
 }
-
 
 VFile* Value::as_vfile(String::Language /*lang*/, const Request_charsets* /*charsets*/) { 
 	bark("is '%s', it does not have file value"); return 0;
@@ -40,7 +35,7 @@ VFile* Value::as_vfile(String::Language /*lang*/, const Request_charsets* /*char
 
 /// call this before invoking to ensure proper actual numbered params count
 void Method::check_actual_numbered_params(Value& self, 
-					  MethodParams* actual_numbered_params) const {
+					MethodParams* actual_numbered_params) const {
 
 	int actual_count=actual_numbered_params?actual_numbered_params->count():0;
 	if(actual_count<min_numbered_params_count) // not proper count? bark
@@ -67,11 +62,11 @@ static String::C date_attribute(const VDate& vdate) {
 }
 
 static void append_attribute_meaning(String& result,
-				     Value& value, String::Language lang, bool forced) {
+					Value& value, String::Language lang, bool forced) {
 	if(const String* string=value.get_string())
 		result.append(*string, lang, forced);
 	else
-		if(Value* vdate=value.as(VDATE_TYPE, false)) {
+		if(Value* vdate=value.as(VDATE_TYPE)) {
 			String::C attribute=date_attribute(static_cast<VDate&>(*vdate));
 
 			result.append_help_length(attribute.str, attribute.length, String::L_CLEAN);

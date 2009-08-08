@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2009/07/29 05:01:33 $";
+static const char * const IDENT_OP_C="$Date: 2009/08/08 13:30:20 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -148,7 +148,7 @@ static void _process(Request& r, MethodParams& params) {
 	}
 
 	{
-		VStateless_class *target_class=target_self->get_last_derived_class();
+		VStateless_class *target_class=target_self->get_class();
 		if(!target_class)
 			throw Exception(PARSER_RUNTIME,
 				0,
@@ -320,7 +320,7 @@ static void _for(Request& r, MethodParams& params) {
 	VInt* vint=new VInt(0);
 
 	VMethodFrame& caller=*r.get_method_frame()->caller();
-	caller.put_element(caller, var_name, vint, false);
+	caller.put_element(var_name, vint, false);
 	if(delim_maybe_code){ // delimiter set 
 		bool need_delim=false;
 
@@ -379,8 +379,8 @@ struct timeval mt[2];
 	Value& body_code=params.as_junction(1, "body must be code");
 
 	Table* protocol2driver_and_client=0;
-	if(Value* sql=r.main_class.get_element(String(MAIN_SQL_NAME), r.main_class, false)) {
-		if(Value* element=sql->get_element(String(MAIN_SQL_DRIVERS_NAME), *sql, false)) {
+	if(Value* sql=r.main_class.get_element(String(MAIN_SQL_NAME))) {
+		if(Value* element=sql->get_element(String(MAIN_SQL_DRIVERS_NAME))) {
 			protocol2driver_and_client=element->get_table();
 		}
 	}
@@ -528,15 +528,15 @@ static Try_catch_result try_catch(Request& r,
 
 		Junction* junction=catch_code->get_junction();
 		Value* method_frame=junction->method_frame;
-		Value* saved_exception_var_value=method_frame->get_element(exception_var_name, *method_frame, false);
+		Value* saved_exception_var_value=method_frame->get_element(exception_var_name);
 		VMethodFrame& frame=*junction->method_frame;
-		frame.put_element(frame, exception_var_name, &details.vhash, false);
+		frame.put_element(exception_var_name, &details.vhash, false);
 
 		result.processed_code=r.process(*catch_code);
 		
 		// retriving $exception.handled, restoring $exception var
 		Value* vhandled=details.vhash.hash().get(exception_handled_part_name);
-		frame.put_element(frame, exception_var_name, saved_exception_var_value, false);
+		frame.put_element(exception_var_name, saved_exception_var_value, false);
 
 		bool bhandled=false;
 		if(vhandled) {
@@ -699,7 +699,7 @@ static Cache_get_result cache_get(Request_charsets& charsets, const String& file
 static time_t as_expires(Request& r, MethodParams& params, 
 						int index, time_t now) {
 	time_t result;
-	if(Value* vdate=params[index].as(VDATE_TYPE, false))
+	if(Value* vdate=params[index].as(VDATE_TYPE))
 		result=static_cast<VDate*>(vdate)->get_time();
 	else
 		result=now+(time_t)params.as_double(index, "lifespan must be date or number", r);

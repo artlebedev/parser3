@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VRESPONSE_C="$Date: 2009/04/17 09:14:28 $";
+static const char * const IDENT_VRESPONSE_C="$Date: 2009/08/08 13:30:21 $";
 
 #include "pa_vresponse.h"
 #include "pa_request_charsets.h"
@@ -19,7 +19,7 @@ static const char * const IDENT_VRESPONSE_C="$Date: 2009/04/17 09:14:28 $";
 
 #define REQUEST_HEADERS_ELEMENT_NAME "headers"
 
-Value* VResponse::get_element(const String& aname, Value& aself, bool looking_up) {
+Value* VResponse::get_element(const String& aname) {
 	// $charset
 	if(aname==CHARSET_NAME)
 		return new VString(*new String(fcharsets.client().NAME(), String::L_TAINTED));
@@ -29,14 +29,14 @@ Value* VResponse::get_element(const String& aname, Value& aself, bool looking_up
 		return new VHash(ffields);
 	
 	// $method
-	if(Value* result=VStateless_object::get_element(aname, aself, looking_up))
+	if(Value* result=VStateless_object::get_element(aname))
 		return result;
 
 	// $field
 	return ffields.get(aname.change_case(fcharsets.source(), String::CC_LOWER));
 }
 
-const VJunction* VResponse::put_element(Value& /*aself*/, const String& aname, Value* avalue, bool /*areplace*/) { 
+const VJunction* VResponse::put_element(const String& aname, Value* avalue, bool /*areplace*/) { 
 	// guard charset change
 	if(aname==CHARSET_NAME)
 		fcharsets.set_client(charsets.get(avalue->as_string().

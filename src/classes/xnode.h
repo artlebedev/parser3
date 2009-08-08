@@ -8,15 +8,15 @@
 #ifndef XNODE_H
 #define XNODE_H
 
-static const char * const IDENT_XNODE_H="$Date: 2009/06/14 00:36:51 $";
+static const char * const IDENT_XNODE_H="$Date: 2009/08/08 13:30:21 $";
 
 class MXnode: public Methoded {
 public: // Value
 
 	/// MXnode: +$const
-	Value* get_element(const String& aname, Value& aself, bool looking_up) {
+	Value* get_element(const String& aname) {
 		// $method
-		if(Value* result=Methoded::get_element(aname, aself, looking_up))
+		if(Value* result=Methoded::get_element(aname))
 			return result;
 
 		// $const
@@ -28,7 +28,7 @@ public: // Value
 
 
 public: // VStateless_class
-	Value* create_new_value(Pool&, HashStringValue*) { 
+	Value* create_new_value(Pool&) { 
 		throw Exception(PARSER_RUNTIME,
 			0,
 			"no constructors available, use CreateXXX DOM methods to create nodes instead"); 

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
  */
 
-static const char * const IDENT_HTTP_C="$Date: 2009/08/05 08:57:08 $"; 
+static const char * const IDENT_HTTP_C="$Date: 2009/08/08 13:30:21 $"; 
 
 #include "pa_http.h"
 #include "pa_common.h"
@@ -456,7 +456,7 @@ static void form_value2part(
 		Form_table_value2string_info info(key, part.string);
 		part.info = &info;
 		tvalue->for_each(form_table_value2part, &part);
-	} else if(VFile* vfile=static_cast<VFile *>(value->as("file", false))){
+	} else if(VFile* vfile=static_cast<VFile *>(value->as("file"))){
 		form_file_value2part(key, *vfile, part);
 	} else
 		throw Exception(PARSER_RUNTIME,

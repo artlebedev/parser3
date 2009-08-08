@@ -17,7 +17,7 @@
 #ifndef PA_HASH_H
 #define PA_HASH_H
 
-static const char * const IDENT_HASH_H="$Date: 2009/07/29 05:01:46 $";
+static const char * const IDENT_HASH_H="$Date: 2009/08/08 13:30:21 $";
 
 #include "pa_memory.h"
 #include "pa_types.h"
@@ -89,17 +89,26 @@ inline uint hash_code(int self) {
 
 #undef HASH
 #undef HASH_STRING
-#undef NEW_PAIR
+#undef HASH_NEW_PAIR
+#undef HASH_FOR_EACH
 
 #define HASH OrderedHash
 #define HASH_STRING OrderedHashString
-#define NEW_PAIR(code, key, value) *ref=new Pair(code, key, value, *ref, this->last); this->last=&((*ref)->next)
+#define HASH_NEW_PAIR(code, key, value) *ref=new Pair(code, key, value, *ref, this->last); this->last=&((*ref)->next)
+
+#define HASH_FOR_EACH \
+	for(Pair *pair=this->first; pair; pair=pair->next)
 
 #else
 
 #define HASH Hash
 #define HASH_STRING HashString
-#define NEW_PAIR(code, key, value) *ref=new Pair(code, key, value, *ref)
+#define HASH_NEW_PAIR(code, key, value) *ref=new Pair(code, key, value, *ref)
+
+#define HASH_FOR_EACH \
+	Pair **ref=this->refs; \
+	for(int index=0; index<this->allocated; index++) \
+		for(Pair *pair=*ref++; pair; pair=pair->link)
 
 #endif
 
@@ -138,7 +147,7 @@ public:
 				Pair *next=pair->link;
 
 				Pair **ref=&refs[index];
-				NEW_PAIR(pair->code, pair->key, pair->value);
+				HASH_NEW_PAIR(pair->code, pair->key, pair->value);
 
 				pair=next;
 			}
@@ -179,118 +188,9 @@ public:
 		// proper pair not found -- create&link_in new pair
 		if(!*ref) // root cell were fused_refs?
 			fused_refs++; // not, we'll use it and record the fact
-		NEW_PAIR(code, key, value);
+		HASH_NEW_PAIR(code, key, value);
 		fpairs_count++;
 		return false;
-	}
-
-	/// put a [value] under the [key] @returns existed or not
-	template<typename R, typename F, typename I> R replace_maybe_append(K key, V value, F prevent, I info) {
-		if(!value) {
-			// they can come here from somewhere (true with maybe_replace_maybe_append, keeping parallel)
-			remove(key);
-			// this has nothing to do with properties, doing no special property handling here
-			return 0; 
-		}
-
-		if(is_full()) 
-			expand();
-
-		uint code=hash_code(key);
-		uint index=code%allocated;
-		Pair **ref=&refs[index];
-		for(Pair *pair=*ref; pair; pair=pair->link)
-			if(pair->code==code && pair->key==key) {
-				// found a pair with the same key
-				pair->value=value;
-				return reinterpret_cast<R>(1);
-			}
-		
-		// proper pair not found 
-		// prevent-function intercepted append?
-		if(R result=prevent(value, info))
-			return result;
-		
-		//create&link_in new pair
-		if(!*ref) // root cell were fused_refs?
-			fused_refs++; // not, we'll use it and record the fact
-		NEW_PAIR(code, key, value);
-		fpairs_count++;
-		return 0;
-	}
-
-	/// put a [value] under the [key] @returns existed or not
-	template<typename R, typename F1, typename F2, typename I> 
-		R maybe_replace_maybe_append(K key, V value, F1 prevent_replace, F2 prevent_append, I info) 
-	{
-		if(!value) {
-			// they can come here from Temp_value_element::dctor to restore some empty value
-			remove(key);
-			// this has nothing to do with properties, doing no special property handling here
-			return 0; 
-		}
-
-		if(is_full()) 
-			expand();
-
-		uint code=hash_code(key);
-		uint index=code%allocated;
-		Pair **ref=&refs[index];
-		for(Pair *pair=*ref; pair; pair=pair->link)
-			if(pair->code==code && pair->key==key) {
-				// found a pair with the same key
-
-				// prevent-function intercepted replace?
-				if(R result=prevent_replace(pair->value, info))
-					return result;
-				
-				pair->value=value;
-				return reinterpret_cast<R>(1);
-			}
-		
-		// proper pair not found 
-		// prevent-function intercepted append?
-		if(R result=prevent_append(value, info))
-			return result;
-		
-		//create&link_in new pair
-		if(!*ref) // root cell were fused_refs?
-			fused_refs++; // not, we'll use it and record the fact
-		NEW_PAIR(code, key, value);
-		fpairs_count++;
-		return 0;
-	}
-
-	/// put a [value] under the [key] @returns existed or not
-	template<typename R, typename F1, typename I> 
-		R maybe_replace_never_append(K key, V value, F1 prevent_replace, I info) 
-	{
-		if(!value) {
-			// they can come here from somewhere (true with maybe_replace_maybe_append, keeping parallel)
-			remove(key);
-			// this has nothing to do with properties, doing no special property handling here
-			return 0; 
-		}
-
-		if(is_full()) 
-			expand();
-
-		uint code=hash_code(key);
-		uint index=code%allocated;
-		Pair **ref=&refs[index];
-		for(Pair *pair=*ref; pair; pair=pair->link)
-			if(pair->code==code && pair->key==key) {
-				// found a pair with the same key
-
-				// prevent-function intercepted replace?
-				if(R result=prevent_replace(pair->value, info))
-					return result;
-				
-				pair->value=value;
-				return reinterpret_cast<R>(1);
-			}
-		
-		return 0;
 	}
 
 	/// remove the [key] @returns existed or not
@@ -361,32 +261,6 @@ public:
 		return false;
 	}
 
-	/// put a [value] under the [key] if that [key] existed @returns existed or not
-	template<typename R, typename F> R maybe_put_replaced(K key, V value, F prevent) {
-		if(!value) {
-			// they can come here from Temp_value_element::dctor to restore some empty value
-			remove(key);
-			// this has nothing to do with properties, doing no special property handling here
-			return 0; 
-		}
-
-		uint code=hash_code(key);
-		uint index=code%allocated;
-		for(Pair *pair=refs[index]; pair; pair=pair->link)
-			if(pair->code==code && pair->key==key) {
-				// found a pair with the same key, replacing
-				// prevent-function intercepted put?
-				if(R result=prevent(pair->value))
-					return result;
-				
-				pair->value=value;
-				return reinterpret_cast<R>(1);
-			}
-
-		// proper pair not found 
-		return 0;
-	}
-
 	/// put a [value] under the [key] if that [key] NOT existed @returns existed or not
 	bool put_dont_replace(K key, V value) {
 		if(!value) {
@@ -408,17 +282,19 @@ public:
 		// proper pair not found -- create&link_in new pair
 		if(!*ref) // root cell were fused_refs?
 			fused_refs++; // not, we'll use it and record the fact
-		NEW_PAIR(code, key, value);
+		HASH_NEW_PAIR(code, key, value);
 		fpairs_count++;
 		return false;
 	}
 
-	/** put all 'src' values if NO with same key existed
-		@todo optimize this.allocated==src.allocated case
-	*/
+	/// put all 'src' values if NO with same key existed
 	void merge_dont_replace(const HASH& src) {
+#ifdef HASH_ORDER
+		for(Pair *pair=src.first; pair; pair=pair->next)
+#else
 		for(int i=0; i<src.allocated; i++)
 			for(Pair *pair=src.refs[i]; pair; pair=pair->link)
+#endif
 				put_dont_replace(pair->key, pair->value);
 	}
 
@@ -427,43 +303,21 @@ public:
 
 	/// iterate over all pairs
 	template<typename I> void for_each(void callback(K, V, I), I info) const {
-#ifdef HASH_ORDER
-		for(Pair *pair=first; pair; pair=pair->next)
+		HASH_FOR_EACH
 			callback(pair->key, pair->value, info);
-#else
-		Pair **ref=refs;
-		for(int index=0; index<allocated; index++)
-			for(Pair *pair=*ref++; pair; pair=pair->link)
-				callback(pair->key, pair->value, info);
-#endif
 	}
 
 	/// iterate over all pairs
 	template<typename I> void for_each_ref(void callback(K, V&, I), I info) const {
-#ifdef HASH_ORDER
-		for(Pair *pair=first; pair; pair=pair->next)
+		HASH_FOR_EACH
 			callback(pair->key, pair->value, info);
-#else
-		Pair **ref=refs;
-		for(int index=0; index<allocated; index++)
-			for(Pair *pair=*ref++; pair; pair=pair->link)
-				callback(pair->key, pair->value, info);
-#endif
 	}
 
 	/// iterate over all pairs until condition becomes true, return that element
 	template<typename I> V first_that(bool callback(K, V, I), I info) const {
-#ifdef HASH_ORDER
-		for(Pair *pair=first; pair; pair=pair->next)
+		HASH_FOR_EACH
 			if(callback(pair->key, pair->value, info))
 				return pair->value;
-#else
-		Pair **ref=refs;
-		for(int index=0; index<allocated; index++)
-			for(Pair *pair=*ref++; pair; pair=pair->link)
-				if(callback(pair->key, pair->value, info))
-					return pair->value;
-#endif
 		return V(0);
 	}
 
@@ -597,123 +451,9 @@ public:
 		// proper pair not found -- create&link_in new pair
 		if(!*ref) // root cell were fused_refs?
 			this->fused_refs++; // not, we'll use it and record the fact
-		NEW_PAIR(code, key, value);
+		HASH_NEW_PAIR(code, key, value);
 		this->fpairs_count++;
 		return false;
-	}
-
-	/// put a [value] under the [key] @returns existed or not
-	template<typename R, typename F, typename I> R replace_maybe_append(K str, V value, F prevent, I info) {
-		if(!value) {
-			// they can come here from somewhere (true with maybe_replace_maybe_append, keeping parallel)
-			remove(str);
-			// this has nothing to do with properties, doing no special property handling here
-			return 0; 
-		}
-
-		if(this->is_full()) 
-			this->expand();
-
-		CORD key=str.get_cord();
-
-		uint code=str.get_hash_code();
-		uint index=code%this->allocated;
-		Pair **ref=&this->refs[index];
-		for(Pair *pair=*ref; pair; pair=pair->link)
-			if(pair->code==code && CORD_cmp(pair->key,key)==0) {
-				// found a pair with the same key
-				pair->value=value;
-				return reinterpret_cast<R>(1);
-			}
-
-		// proper pair not found 
-		// prevent-function intercepted append?
-		if(R result=prevent(value, info))
-			return result;
-
-		//create&link_in new pair
-		if(!*ref) // root cell were fused_refs?
-			this->fused_refs++; // not, we'll use it and record the fact
-		NEW_PAIR(code, key, value);
-		this->fpairs_count++;
-		return 0;
-	}
-
-	/// put a [value] under the [key] @returns existed or not
-	template<typename R, typename F1, typename F2, typename I> 
-		R maybe_replace_maybe_append(K str, V value, F1 prevent_replace, F2 prevent_append, I info) {
-		if(!value) {
-			// they can come here from Temp_value_element::dctor to restore some empty value
-			remove(str);
-			// this has nothing to do with properties, doing no special property handling here
-			return 0; 
-		}
-
-		if(this->is_full()) 
-			this->expand();
-
-		CORD key=str.get_cord();
-
-		uint code=str.get_hash_code();
-		uint index=code%this->allocated;
-		Pair **ref=&this->refs[index];
-		for(Pair *pair=*ref; pair; pair=pair->link)
-			if(pair->code==code && CORD_cmp(pair->key,key)==0) {
-				// found a pair with the same key
-
-				// prevent-function intercepted replace?
-				if(R result=prevent_replace(pair->value, info))
-					return result;
-
-				pair->value=value;
-				return reinterpret_cast<R>(1);
-			}
-
-		// proper pair not found 
-		// prevent-function intercepted append?
-		if(R result=prevent_append(value, info))
-			return result;
-
-		//create&link_in new pair
-		if(!*ref) // root cell were fused_refs?
-			this->fused_refs++; // not, we'll use it and record the fact
-		NEW_PAIR(code, key, value);
-		this->fpairs_count++;
-		return 0;
-	}
-
-	/// put a [value] under the [key] @returns existed or not
-	template<typename R, typename F1, typename I> 
-		R maybe_replace_never_append(K str, V value, F1 prevent_replace, I info) {
-		if(!value) {
-			// they can come here from somewhere (true with maybe_replace_maybe_append, keeping parallel)
-			remove(str);
-			// this has nothing to do with properties, doing no special property handling here
-			return 0; 
-		}
-
-		if(this->is_full()) 
-			this->expand();
-
-		CORD key=str.get_cord();
-
-		uint code=str.get_hash_code();
-		uint index=code%this->allocated;
-		Pair **ref=&this->refs[index];
-		for(Pair *pair=*ref; pair; pair=pair->link)
-			if(pair->code==code && CORD_cmp(pair->key,key)==0) {
-				// found a pair with the same key
-
-				// prevent-function intercepted replace?
-				if(R result=prevent_replace(pair->value, info))
-					return result;
-
-				pair->value=value;
-				return reinterpret_cast<R>(1);
-			}
-
-		return 0;
-
 	}
 
 	/// remove the [key] @returns existed or not
@@ -789,33 +529,6 @@ public:
 		return false;
 	}
 
-	/// put a [value] under the [key] if that [key] existed @returns existed or not
-	template<typename R, typename F> R maybe_put_replaced(K str, V value, F prevent) {
-		if(!value) {
-			// they can come here from Temp_value_element::dctor to restore some empty value
-			remove(str);
-			// this has nothing to do with properties, doing no special property handling here
-			return 0; 
-		}
-
-		CORD key=str.get_cord();
-		uint code=str.get_hash_code();
-		uint index=code%this->allocated;
-		for(Pair *pair=this->refs[index]; pair; pair=pair->link)
-			if(pair->code==code && CORD_cmp(pair->key,key)==0) {
-				// found a pair with the same key, replacing
-				// prevent-function intercepted put?
-				if(R result=prevent(pair->value))
-					return result;
-
-				pair->value=value;
-				return reinterpret_cast<R>(1);
-			}
-
-		// proper pair not found 
-		return 0;
-	}
-
 	/// put a [value] under the [key] if that [key] NOT existed @returns existed or not
 	bool put_dont_replace(K str, V value) {
 		if(!value) {
@@ -838,50 +551,39 @@ public:
 		// proper pair not found -- create&link_in new pair
 		if(!*ref) // root cell were fused_refs?
 			this->fused_refs++; // not, we'll use it and record the fact
-		NEW_PAIR(code, key, value);
+		HASH_NEW_PAIR(code, key, value);
 		this->fpairs_count++;
 		return false;
 	}
 
+	/// put all 'src' values if NO with same key existed
+	void merge_dont_replace(const HASH_STRING& src) {
+#ifdef HASH_ORDER
+		for(Pair *pair=src.first; pair; pair=pair->next)
+#else
+		for(int i=0; i<src.allocated; i++)
+			for(Pair *pair=src.refs[i]; pair; pair=pair->link)
+#endif
+				put_dont_replace(String::Body(pair->key, pair->code), pair->value);
+	}
+
 	/// iterate over all pairs
 	template<typename I> void for_each(void callback(K, V, I), I info) const {
-#ifdef HASH_ORDER
-		for(Pair *pair=this->first; pair; pair=pair->next)
-			callback(pair->key, pair->value, info);
-#else
-		Pair **ref=this->refs;
-		for(int index=0; index<this->allocated; index++)
-			for(Pair *pair=*ref++; pair; pair=pair->link)
-				callback(String::Body(pair->key, pair->code), pair->value, info);
-#endif
+		HASH_FOR_EACH
+			callback(String::Body(pair->key, pair->code), pair->value, info);
 	}
 
 	/// iterate over all pairs
 	template<typename I> void for_each_ref(void callback(K, V&, I), I info) const {
-#ifdef HASH_ORDER
-		for(Pair *pair=this->first; pair; pair=pair->next)
-			callback(pair->key, pair->value, info);
-#else
-		Pair **ref=this->refs;
-		for(int index=0; index<this->allocated; index++)
-			for(Pair *pair=*ref++; pair; pair=pair->link)
-				callback(String::Body(pair->key, pair->code), pair->value, info);
-#endif
+		HASH_FOR_EACH
+			callback(String::Body(pair->key, pair->code), pair->value, info);
 	}
 
 	/// iterate over all pairs until condition becomes true, return that element
 	template<typename I> V first_that(bool callback(K, V, I), I info) const {
-#ifdef HASH_ORDER
-		for(Pair *pair=this->first; pair; pair=pair->next)
+		HASH_FOR_EACH
 			if(callback(String::Body(pair->key, pair->code), pair->value, info))
 				return pair->value;
-#else
-		Pair **ref=this->refs;
-		for(int index=0; index<this->allocated; index++)
-			for(Pair *pair=*ref++; pair; pair=pair->link)
-				if(callback(String::Body(pair->key, pair->code), pair->value, info))
-					return pair->value;
-#endif
 		return V(0);
 	}
 };

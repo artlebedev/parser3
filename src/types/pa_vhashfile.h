@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b hashfile parser type decl.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VHASHFILE_H
 #define PA_VHASHFILE_H
 
-static const char * const IDENT_VHASHFILE_H="$Date: 2007/04/26 10:33:21 $";
+static const char * const IDENT_VHASHFILE_H="$Date: 2009/08/08 13:30:21 $";
 
 #include "classes.h"
 #include "pa_pool.h"
@@ -37,9 +37,9 @@ public: // value
 	override HashStringValue *get_hash();
 
 	/// VHashfile: (key)=value
-	override Value* get_element(const String& aname, Value& aself, bool looking_up) { 
+	override Value* get_element(const String& aname) { 
 		// $CLASS,$method
-		if(Value *result=VStateless_object::get_element(aname, aself, looking_up))
+		if(Value *result=VStateless_object::get_element(aname))
 			return result;
 		
 		// $element
@@ -47,7 +47,7 @@ public: // value
 	}
 	
 	/// VHashfile: (key)=value, (key)=(value+expires)
-	override const VJunction* put_element(Value& /*aself*/, const String& aname, Value* avalue, bool /*replace*/) { 
+	override const VJunction* put_element(const String& aname, Value* avalue, bool /*replace*/) { 
 		put_field(aname, avalue);
 		return false; // nobody is supposed to derive from hashfile, so does not matter
 	}

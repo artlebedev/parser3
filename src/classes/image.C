@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_IMAGE_C="$Date: 2009/07/07 05:47:43 $";
+static const char * const IDENT_IMAGE_C="$Date: 2009/08/08 13:30:20 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -39,7 +39,7 @@ static const String letter_spacing_name("spacing");
 
 class MImage: public Methoded {
 public: // VStateless_class
-	Value* create_new_value(Pool&, HashStringValue*) { return new VImage(); }
+	Value* create_new_value(Pool&) { return new VImage(); }
 
 public:
 	MImage();
@@ -1213,7 +1213,7 @@ static void _circle(Request& r, MethodParams& params) {
 gdImage& as_image(MethodParams& params, int index, const char* msg) {
 	Value& value=params.as_no_junction(index, msg);
 
-	if(Value* vimage=value.as(VIMAGE_TYPE, false)) {
+	if(Value* vimage=value.as(VIMAGE_TYPE)) {
 		return static_cast<VImage *>(vimage)->image();
 	} else
 		throw Exception(PARSER_RUNTIME, 

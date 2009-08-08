@@ -248,12 +248,6 @@
 			RelativePath=".\pa_vobject.h">
 		</File>
 		<File
-			RelativePath=".\pa_vproperty.C">
-		</File>
-		<File
-			RelativePath=".\pa_vproperty.h">
-		</File>
-		<File
 			RelativePath=".\pa_vregex.C">
 		</File>
 		<File

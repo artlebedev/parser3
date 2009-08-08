@@ -1,16 +1,17 @@
 /** @file
 	Parser: Property class decl.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_PROPERTY_H
 #define PA_PROPERTY_H
 
-static const char * const IDENT_PROPERTY_H="$Date: 2005/08/09 08:14:53 $";
+static const char * const IDENT_PROPERTY_H="$Date: 2009/08/08 13:30:21 $";
 
 class Method;
+class Value;
 
 /** \b junction is getter and setter methods.
 
@@ -21,6 +22,9 @@ class Property: public PA_Object {
 public:
 	Method* getter;
 	Method* setter;
+	Value *value;
+
+	Property() : getter(0), setter(0), value(0){}
 };
 
 #endif

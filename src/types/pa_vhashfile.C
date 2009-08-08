@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Date: 2009/07/06 12:10:09 $";
+static const char * const IDENT="$Date: 2009/08/08 13:30:21 $";
 
 #include "pa_globals.h"
 #include "pa_common.h"
@@ -172,7 +172,7 @@ void VHashfile::put_field(const String& aname, Value *avalue) {
 			value_string=&value_value->as_string();
 
 			if(Value *expires=hash->get(expires_name)) {
-				if(Value* vdate=expires->as(VDATE_TYPE, false))
+				if(Value* vdate=expires->as(VDATE_TYPE))
 					time_to_die=static_cast<VDate*>(vdate)->get_time(); // $expires[DATE]
 				else if(double days_till_expire=expires->as_double())
 					time_to_die=time(NULL)+(time_t)(60*60*24*days_till_expire); // $expires(days)

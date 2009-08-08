@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
-static const char * const IDENT_VSTATELESS_CLASS_H="$Date: 2009/07/24 09:29:04 $";
+static const char * const IDENT_VSTATELESS_CLASS_H="$Date: 2009/08/08 13:30:21 $";
 
 // include
 
@@ -16,7 +16,6 @@ static const char * const IDENT_VSTATELESS_CLASS_H="$Date: 2009/07/24 09:29:04 $
 #include "pa_hash.h"
 #include "pa_vjunction.h"
 #include "pa_method.h"
-#include "pa_vproperty.h"
 
 // defines
 
@@ -28,6 +27,8 @@ extern const String class_name, class_nametext;
 
 class VStateless_class;
 typedef Array<VStateless_class*> ArrayClass;
+typedef HashString<Property *> HashStringProperty;
+typedef HashString<Method *> HashStringMethod;
 
 class Temp_method;
 
@@ -43,7 +44,7 @@ class VStateless_class: public Value {
 
 	const String* fname;
 	mutable const char* fname_cstr;
-	HashString<Method*> fmethods;
+	HashStringMethod fmethods;
 
 	bool flocked;
 	bool fall_vars_local;
@@ -52,9 +53,10 @@ class VStateless_class: public Value {
 protected:
 
 	VStateless_class* fbase;
+	ArrayClass fderived;
+
 	Method* fscalar;
 	Method* fdefault_getter;
-	Method* fdefault_setter;
 
 public: // Value
 	
@@ -64,17 +66,24 @@ public: // Value
 	override VStateless_class *get_class() { return this; }
 	/// VStateless_class: fbase
 	override Value* base() { return fbase; }
-	override Value* get_element(const String& aname, Value& aself, bool alooking_up);
+
+	override Value* get_element(const String& aname) { return get_element(*this, aname); }
+	/// get_element with aself for VObject junctions
+	virtual Value* get_element(Value& aself, const String& aname);
+
+	override const VJunction* put_element(const String& aname, Value* avalue, bool areplace) {	return put_element(*this, aname, avalue, areplace); }
+	/// put_element with aself for VObject junctions
+	virtual const VJunction* put_element(Value& /*aself*/, const String& aname, Value* avalue, bool areplace) {	return Value::put_element(aname, avalue, areplace); }
+
 	override Value& as_expr_result(bool /*return_string_as_is=false*/);
 
-	override Value* get_default_getter(Value& aself, const String& aname);
-	override void set_default_getter(Method* amethod);
+	Value* get_scalar(Value& aself);
+	void set_scalar(Method* amethod);
 
-	override Value* get_scalar(Value& aself);
-	override void set_scalar(Method* amethod);
+	Value* get_default_getter(Value& aself, const String& aname);
+	void set_default_getter(Method* amethod);
 
-	override VJunction* get_default_setter(Value& aself, const String& aname);
-	override void set_default_setter(Method* amethod);
+	void add_derived(VStateless_class &aclass);
 
 public: // usage
 
@@ -83,13 +92,14 @@ public: // usage
 		VStateless_class* abase=0):
 		fname(aname),
 		flocked(false),
-		fbase(abase),
+		fbase(0),
+		fderived(0),
 		fall_vars_local(false),
 		fpartial(false),
 		fscalar(0),
-		fdefault_getter(0),
-		fdefault_setter(0)
+		fdefault_getter(0)
 		{
+			set_base(abase);
 	}
 
 	void lock() { flocked=true; }
@@ -103,27 +113,25 @@ public: // usage
 				0,
 				"getting name of nameless class");
 		}
-
 		return *fname; 
 	}
+
 	const char* name_cstr() const{
-		if(this) {
-			if(!fname_cstr) // remembering last calculated, and can't reassign 'fname_cstr'!
-				fname_cstr=name().cstr();
-			return fname_cstr;
-		} else
-			return "<unknown>";
+		if(!fname_cstr) // remembering last calculated, and can't reassign 'fname_cstr'!
+			fname_cstr=name().cstr();
+		return fname_cstr;
 	}
 
 	void set_name(const String& aname) {
 		fname=&aname; 
+		fname_cstr=0;
 	}
 
 	Method* get_method(const String& aname) const { 
 		return fmethods.get(aname);
 	}
 
-	HashString<Method*> get_methods(){
+	HashStringMethod get_methods(){
 		return fmethods;
 	}
 
@@ -143,9 +151,6 @@ public: // usage
 		fpartial=true;
 	}
 
-	/// virtual for VClass to override to pre-cache property accessors into fields
-	virtual void add_method(const String& name, Method& method);
-	
 	void add_native_method(
 		const char* cstr_name,
 		Method::Call_type call_type,
@@ -153,31 +158,21 @@ public: // usage
 		int min_numbered_params_count, 
 		int max_numbered_params_count, 
 		Method::Call_optimization call_optimization=Method::CO_WITHOUT_WCONTEXT);
+
+	/// overrided in VClass
+	virtual void add_method(const String& aname, Method& amethod);
+	virtual void add_property(const String& /*aname*/, Property& /*aprop*/){};
+	virtual HashStringProperty* get_properties(){ return 0; };
+	virtual void set_base(VStateless_class* abase);
 	
-	void set_base(VStateless_class* abase) {
-		// remember the guy
-		fbase=abase;
-	}
 	VStateless_class* base_class() { return fbase; }
 
-	bool derived_from(VStateless_class& vclass) {
-		return 
-			fbase==&vclass || 
-			fbase && fbase->derived_from(vclass);
+	bool derived_from(VStateless_class& vclass){
+		return fbase==&vclass || fbase && fbase->derived_from(vclass);
 	}
 
-	//@{
-	/// @name just stubs, real onces defined below the hierarchy
-	virtual Value* get_field(const String&) { return 0; }
-	virtual bool replace_field(const String&, Value*) { return false; }
-	//@}
-
 	/// @returns new value for current class, used in classes/ & VClass
-	virtual Value* create_new_value(Pool&, HashStringValue* /*afields*/) { return 0; }
-
-protected:
-
-	void fill_properties(HashStringValue& acache);
+	virtual Value* create_new_value(Pool&) { return 0; }
 
 private:
 

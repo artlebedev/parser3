@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b xdoc parser class decl.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VXDOC_H
 #define PA_VXDOC_H
 
-static const char * const IDENT_VXDOC_H="$Date: 2007/04/23 10:30:50 $";
+static const char * const IDENT_VXDOC_H="$Date: 2009/08/08 13:30:22 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -29,7 +29,7 @@ class VXdoc: public VXnode {
 public: // Value
 
 	override const char* type() const { return VXDOC_TYPE; }
-	override Value* as(const char* atype, bool looking_up);
+	override Value* as(const char* atype);
 
 	override VStateless_class* get_class() { return xdoc_class; }
 
@@ -40,7 +40,7 @@ public: // Value
 	override Value& as_expr_result(bool /*return_string_as_is=false*/);
 
 	/// VXdoc: $CLASS,$method, fields
-	override Value* get_element(const String& aname, Value& aself, bool /*looking_up*/);
+	override Value* get_element(const String& aname);
 
 public: // VXNode
 

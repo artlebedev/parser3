@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2009/07/07 23:50:06 $";
+static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2009/08/08 13:30:21 $";
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
@@ -157,7 +157,7 @@ public: // Value
 	}
 	
 	/// VMethodFrame: my or self_transparent or $caller
-	override Value* get_element(const String& aname, Value& /*aself*/, bool looking_up) { 
+	override Value* get_element(const String& aname) { 
 		if(aname==caller_element_name)
 			return caller();
 
@@ -168,7 +168,7 @@ public: // Value
 		if(my && (result=my->get(aname)))
 			return result;
 
-		if(result=self().get_element(aname, self(), looking_up))
+		if(result=self().get_element(aname))
 			return result;
 
 		return 0;
@@ -181,7 +181,7 @@ public: // Value
 	override Value* base() { return self().base(); }
 
 	/// VMethodFrame: my or self_transparent
-	override const VJunction* put_element(Value& /*aself*/, const String& aname, Value* avalue, bool /*areplace*/) {
+	override const VJunction* put_element(const String& aname, Value* avalue, bool /*areplace*/) {
 		return (this->*put_element_impl)(aname, avalue);
 	}
 
@@ -211,7 +211,7 @@ private:
 	const VJunction* put_element_global(const String& aname, Value* avalue){
 		if(my && my->put_replaced(aname, avalue))
 			return PUT_ELEMENT_REPLACED_ELEMENT;
-		return self().put_element(self(), aname, avalue, false/*=always, areplace*/);
+		return self().put_element(aname, avalue, false/*=always, areplace*/);
 	}
 
 public: // WContext

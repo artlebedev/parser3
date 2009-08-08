@@ -8,7 +8,7 @@
 #ifndef PA_VCLASS_H
 #define PA_VCLASS_H
 
-static const char * const IDENT_VCLASS_H="$Date: 2009/06/14 00:33:54 $";
+static const char * const IDENT_VCLASS_H="$Date: 2009/08/08 13:30:21 $";
 
 // includes
 
@@ -17,44 +17,36 @@ static const char * const IDENT_VCLASS_H="$Date: 2009/06/14 00:33:54 $";
 #include "pa_vobject.h"
 
 /**	stores 
-- static fields: VClass::ffields
+- static fields, getters & setters: VClass::ffields
 */
 class VClass: public VStateless_class {
 public: // Value
 	
-	const char* type() const { return name_cstr(); }
-
-	override Value* as(const char* atype, bool looking_up);
+	override const char* type() const { return name_cstr(); }
 
 	/// VClass: true
 	override bool as_bool() const { return true; }
+	override Value* as(const char* atype);
 
-	override Value* get_element(const String& aname, Value& aself, bool alooking_up);
+	override Value* get_element(Value& aself, const String& aname);
 	override const VJunction* put_element(Value& self, const String& name, Value* value, bool replace);
-	override Value* create_new_value(Pool& apool, HashStringValue* afields);
+	override Value* create_new_value(Pool&);
 
-public: // VStateless_class
-
-	/// override to pre-cache property accessors into fields
-	override void add_method(const String& name, Method& method);
+public: 
+	
+	// VStateless_class
+	override void add_method(const String& aname, Method& amethod);
+	override void add_property(const String& aname, Property& aprop);
+	override HashStringProperty* get_properties(){ return &ffields; };
+	override void set_base(VStateless_class* abase);
 
 private:
 
-	Property& add_property(const String& aname);
-
-private:
-
-	struct Prevent_info {
-		VClass* _this;
-		Value* self;
-		const String* name;
-	};
-	static const VJunction* prevent_overwrite_property(Value* value, Prevent_info* info);
-	static const VJunction* prevent_append_if_exists_in_base(Value* value, Prevent_info* info);
+	Property& get_property(const String& aname);
 
 private: // self
 
-	HashStringValue ffields;
+	HashStringProperty ffields;
 
 };
 

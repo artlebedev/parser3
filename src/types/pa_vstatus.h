@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b status class decl.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VSTATUS_H
 #define PA_VSTATUS_H
 
-static const char * const IDENT_VSTATUS_H="$Date: 2005/08/09 08:14:56 $";
+static const char * const IDENT_VSTATUS_H="$Date: 2009/08/08 13:30:22 $";
 
 // includes
 
@@ -27,7 +27,7 @@ public: // Value
 	VStateless_class *get_class() { return 0; }
 
 	// VStatus: field
-	Value* get_element(const String& aname, Value& aself, bool /*looking_up*/);
+	Value* get_element(const String& aname);
 
 public: //  usage
 

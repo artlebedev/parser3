@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b xnode parser class decl.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VXNODE_H
 #define PA_VXNODE_H
 
-static const char * const IDENT_VXNODE_H="$Date: 2007/02/09 18:06:37 $";
+static const char * const IDENT_VXNODE_H="$Date: 2009/08/08 13:30:22 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -44,10 +44,10 @@ public: // Value
 	override Value& as_expr_result(bool /*return_string_as_is=false*/);
 
 	/// VXnode: $CLASS,$method, fields
-	override Value* get_element(const String& aname, Value& aself, bool /*looking_up*/);
+	override Value* get_element(const String& aname);
 
 	/// VXnode: $nodeValue
-	override const VJunction* put_element(Value& self, const String& aname, Value* avalue, bool replace);
+	override const VJunction* put_element(const String& aname, Value* avalue, bool replace);
 
 public: // usage
 

@@ -8,7 +8,7 @@
 #ifndef PA_VCONSOLE_H
 #define PA_VCONSOLE_H
 
-static const char * const IDENT_VCONSOLE_H="$Date: 2009/05/14 08:10:09 $";
+static const char * const IDENT_VCONSOLE_H="$Date: 2009/08/08 13:30:21 $";
 
 // includes
 
@@ -33,7 +33,7 @@ public: // Value
 	VStateless_class *get_class() { return 0; }
 
 	/// console: line, CLASS, CLASS_NAME
-	Value* get_element(const String& aname, Value& /*aself*/, bool /*looking_up*/) {
+	Value* get_element(const String& aname) {
 		// $line
 		if(aname==CONSOLE_LINE_NAME) {
 			char local_value[MAX_STRING];
@@ -57,7 +57,7 @@ public: // Value
 	}
 
 	/// console: $line
-	override const VJunction* put_element(Value& /*aself*/, const String& aname, Value* avalue, bool /*areplace*/) { 
+	override const VJunction* put_element(const String& aname, Value* avalue, bool /*areplace*/) { 
 		// $line
 		if(aname==CONSOLE_LINE_NAME) {
 			fused=true;

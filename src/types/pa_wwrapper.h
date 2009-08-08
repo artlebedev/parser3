@@ -8,7 +8,7 @@
 #ifndef PA_WWRAPPER_H
 #define PA_WWRAPPER_H
 
-static const char * const IDENT_WWRAPPER_H="$Date: 2009/08/01 04:59:02 $";
+static const char * const IDENT_WWRAPPER_H="$Date: 2009/08/08 13:30:22 $";
 
 #define OPTIMIZE_SINGLE_STRING_WRITE
 
@@ -21,11 +21,11 @@ public: // Value
 
 	override const char* type() const { return "wwrapper"; }
 	/// WWrapper: transparent
-	override Value* get_element(const String& aname, Value& aself, bool looking_up) { 
-		return as_value().get_element(aname, aself, looking_up); 
+	override Value* get_element(const String& aname) { 
+		return as_value().get_element(aname); 
 	}
 	/// WWrapper: transparent
-	override const VJunction* put_element(Value& aself, const String& aname, Value* avalue, bool areplace) { 
+	override const VJunction* put_element(const String& aname, Value* avalue, bool areplace) { 
 		if(!fvalue) {
 			fvalue=new VHash;
 			// not constructing anymore [if were constructing]
@@ -37,7 +37,7 @@ public: // Value
 			//		$.key2[$1]
 		}
 
-		return fvalue->put_element(aself, aname, avalue, areplace); 
+		return fvalue->put_element(aname, avalue, areplace); 
 	}
 
 public: // usage
@@ -72,11 +72,11 @@ public:
 		WWrapper(aparent), fstate(WS_NONE) {
 	}
 
-	override const VJunction* put_element(Value& aself, const String& aname, Value* avalue, bool areplace) { 
+	override const VJunction* put_element(const String& aname, Value* avalue, bool areplace) { 
 		if(fstate == WS_KEEP_VALUE)
 			fvalue=0; // VHash will be created, thus no need to flush fvalue
 		fstate=WS_TRANSPARENT;
-		return WWrapper::put_element(aself, aname, avalue, areplace); 
+		return WWrapper::put_element(aname, avalue, areplace); 
 	}
 
 	override void write(const String& astring, String::Language alang) {

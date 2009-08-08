@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_HASH_C="$Date: 2009/07/29 05:01:33 $";
+static const char * const IDENT_HASH_C="$Date: 2009/08/08 13:30:20 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -22,7 +22,7 @@ static const char * const IDENT_HASH_C="$Date: 2009/07/29 05:01:33 $";
 
 class MHash: public Methoded {
 public: // VStateless_class
-	Value* create_new_value(Pool&, HashStringValue*) { return new VHash(); }
+	Value* create_new_value(Pool&) { return new VHash(); }
 
 public:
 	MHash();
@@ -201,7 +201,7 @@ static void _create_or_add(Request& r, MethodParams& params) {
 				return;
 			src->for_each<HashStringValue*>(copy_all_overwrite_to, self_hash);
 
-			if(VHash* vhash_src=static_cast<VHash*>(vsrc.as(VHASH_TYPE, false)))
+			if(VHash* vhash_src=static_cast<VHash*>(vsrc.as(VHASH_TYPE)))
 			{
 				if(Value* vdefault=vhash_src->get_default())
 				{
@@ -428,10 +428,10 @@ static bool one_foreach_cycle(
 	Value& var_context=*info->var_context;
 	if(info->key_var_name){
 		VString* vkey=new VString(*new String(akey, String::L_TAINTED));
-		var_context.put_element(var_context, *info->key_var_name, vkey, false);
+		var_context.put_element(*info->key_var_name, vkey, false);
 	}
 	if(info->value_var_name)
-		var_context.put_element(var_context, *info->value_var_name, avalue, false);
+		var_context.put_element(*info->value_var_name, avalue, false);
 
 	if(info->delim_maybe_code){ // delimiter set
 		StringOrValue sv_processed=info->r->process(*info->body_code);

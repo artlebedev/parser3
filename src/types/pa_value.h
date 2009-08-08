@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-static const char * const IDENT_VALUE_H="$Date: 2009/07/07 23:50:06 $";
+static const char * const IDENT_VALUE_H="$Date: 2009/08/08 13:30:21 $";
 
 #include "pa_common.h"
 #include "pa_array.h"
@@ -39,20 +39,15 @@ public: // Value
 	/// value type, used for error reporting and 'is' expression operator
 	virtual const char* type() const =0;
 
-	/** remember derived class instance 
-	    - VObject: the only client
-	*/
-	virtual VObject* set_derived(VObject* /*aderived*/);
-
 	/**
 		all except VObject/VClass: this if @atype eq type()
 		VObject/VClass: can locate parent class by it's type
 	*/
-	virtual Value* as(const char* atype, bool /*looking_up*/) {
+	virtual Value* as(const char* atype) {
 		return atype && strcmp(type(), atype)==0?this:0;
 	}
 	/// type checking helper, uses Value::as
-	bool is(const char* atype) { return as(atype, false)!=0; }
+	bool is(const char* atype) { return as(atype)!=0; }
 	
 	/// is this value defined?
 	virtual bool is_defined() const { return true; }
@@ -99,24 +94,16 @@ public: // Value
 	/// extract Junction
 	virtual Junction* get_junction();
 	
-	/// extract Property
-	virtual Property* get_property() { return 0; }
-	
-	/** extract base object of Value
-		@return for
-		- VObject: fbase
-	*/
-	virtual Value* base_object();
-	
 	/// @return Value element; can return Junction for methods; Code-Junction for code; Getter-Junction for property
-	virtual Value* get_element(const String& /*aname*/, Value& /*aself*/, bool /*looking_up*/);
+	virtual Value* get_element(const String& /*aname*/);
 
 	/// indicator value meaning that put_element overwritten something
 	#define PUT_ELEMENT_REPLACED_ELEMENT reinterpret_cast<const VJunction*>(1)
+
 	/// store Value element under @a name
 	/// @returns putter method junction, or it can just report[PUT_ELEMENT_REPLACED_ELEMENT] 
 	/// that it replaced something in base fields 
-	virtual const VJunction* put_element(Value& /*aself*/, const String& aname, Value* /*avalue*/, bool /*areplace*/) { 
+	virtual const VJunction* put_element(const String& aname, Value* /*avalue*/, bool /*areplace*/) { 
 		// to prevent modification of system classes,
 		// created at system startup, and not having exception
 		// handler installed, we neet to bark using request.pool
@@ -127,10 +114,6 @@ public: // Value
 	/// extract VStateless_class
 	virtual VStateless_class *get_class()=0;
 
-	/// extract VStateless_class
-	virtual VStateless_class *get_last_derived_class() {
-		return get_class();
-	};
 	/// extract base object or class of Value, if any
 	virtual Value* base() { return 0; }
 

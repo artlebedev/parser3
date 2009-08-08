@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b mail class decls.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VMAIL_H
 #define PA_VMAIL_H
 
-static const char * const IDENT_VMAIL_H="$Date: 2005/08/09 08:14:55 $";
+static const char * const IDENT_VMAIL_H="$Date: 2009/08/08 13:30:21 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -35,7 +35,7 @@ public: // Value
 	override const char* type() const { return "mail"; }
 	
 	// mail: CLASS,methods,received field
-	Value* get_element(const String& aname, Value& aself, bool /*looking_up*/);
+	Value* get_element(const String& aname);
 
 public: // usage
 

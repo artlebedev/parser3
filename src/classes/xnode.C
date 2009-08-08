@@ -7,7 +7,7 @@
 #include "classes.h"
 #ifdef XML
 
-static const char * const IDENT_XNODE_C="$Date: 2009/04/16 01:10:22 $";
+static const char * const IDENT_XNODE_C="$Date: 2009/08/08 13:30:20 $";
 
 #include "pa_vmethod_frame.h"
 
@@ -99,7 +99,7 @@ private:
 
 xmlNode& as_node(MethodParams& params, int index, const char* msg) {
 	Value& value=params.as_no_junction(index, msg);
-	if(Value* vxnode=value.as(VXNODE_TYPE, false))
+	if(Value* vxnode=value.as(VXNODE_TYPE))
 		return static_cast<VXnode*>(vxnode)->get_xmlnode();
 	else
 		throw Exception(PARSER_RUNTIME,

@@ -8,7 +8,7 @@
 #ifndef PA_VHASH_H
 #define PA_VHASH_H
 
-static const char * const IDENT_VHASH_H="$Date: 2009/07/07 05:48:24 $";
+static const char * const IDENT_VHASH_H="$Date: 2009/08/08 13:30:21 $";
 
 #include "classes.h"
 #include "pa_value.h"
@@ -54,7 +54,7 @@ public: // value
 	override HashStringValue *get_hash() { return &hash(); }
 
 	/// VHash: (key)=value
-	override Value* get_element(const String& aname, Value& aself, bool looking_up) { 
+	override Value* get_element(const String& aname) { 
 		// $element
 		if(Value* result=fhash.get(aname))
 			return result;
@@ -64,7 +64,7 @@ public: // value
 			return this;
 
 		// $method
-		if(Value* result=VStateless_object::get_element(aname, aself, looking_up))
+		if(Value* result=VStateless_object::get_element(aname))
 			return result;
 
 		// default value
@@ -72,7 +72,7 @@ public: // value
 	}
 	
 	/// VHash: (key)=value
-	override const VJunction* put_element(Value& /*aself*/, const String& aname, Value* avalue, bool /*replace*/) { 
+	override const VJunction* put_element(const String& aname, Value* avalue, bool /*replace*/) { 
 		if(aname==HASH_DEFAULT_ELEMENT_NAME)
 			set_default(avalue);
 		else 

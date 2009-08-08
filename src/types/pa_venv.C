@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Date: 2009/06/02 22:26:09 $";
+static const char * const IDENT="$Date: 2009/08/08 13:30:21 $";
 
 #include "pa_venv.h"
 #include "pa_vstring.h"
@@ -15,7 +15,7 @@ static const char * const IDENT="$Date: 2009/06/02 22:26:09 $";
 
 static const String parser_version(PARSER_VERSION);
 
-Value* VEnv::get_element(const String& aname, Value& /*aself*/, bool /*looking_up*/) {
+Value* VEnv::get_element(const String& aname) {
 	// $env:CLASS
 	if(aname==CLASS_NAME)
 		return this;

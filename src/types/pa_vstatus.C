@@ -1,13 +1,13 @@
 /** @file
 	Parser: @b status class impl.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
 	Win32 rusage author: Victor Fedoseev <vvf_ru@mail.ru>
 */
 
-static const char * const IDENT_VSTATUS_C="$Date: 2006/04/09 13:38:48 $";
+static const char * const IDENT_VSTATUS_C="$Date: 2009/08/08 13:30:22 $";
 
 #include "pa_vstatus.h"
 #include "pa_cache_managers.h"
@@ -213,7 +213,7 @@ Value& memory_element() {
 }
 #endif
 
-Value* VStatus::get_element(const String& aname, Value& /*aself*/, bool /*looking_up*/) {
+Value* VStatus::get_element(const String& aname) {
 	// getstatus
 	if(Cache_manager* manager=cache_managers->get(aname))
 		return manager->get_status();

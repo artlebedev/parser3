@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Id: hashfile.C,v 1.50 2009/07/29 05:01:33 misha Exp $";
+static const char * const IDENT="$Id: hashfile.C,v 1.51 2009/08/08 13:30:20 misha Exp $";
 
 #include "classes.h"
 
@@ -18,7 +18,7 @@ static const char * const IDENT="$Id: hashfile.C,v 1.50 2009/07/29 05:01:33 mish
 
 class MHashfile : public Methoded {
 public: // VStateless_class
-	Value *create_new_value(Pool& apool, HashStringValue*) { return new VHashfile(apool); }
+	Value *create_new_value(Pool& apool) { return new VHashfile(apool); }
 
 public:
 	MHashfile();
@@ -96,17 +96,17 @@ struct Foreach_info {
 };
 #endif
 static bool one_foreach_cycle(
-				  const String::Body key,
-				  const String& value,
-				  void* ainfo) {
+				const String::Body key,
+				const String& value,
+				void* ainfo) {
 	Foreach_info& info=*static_cast<Foreach_info*>(ainfo);
 	if(info.key_var_name){
 		VString* vkey=new VString(*new String(key, String::L_TAINTED));
-		info.var_context->put_element(*info.var_context, *info.key_var_name, vkey, false);
+		info.var_context->put_element(*info.key_var_name, vkey, false);
 	}
 	if(info.value_var_name){
 		VString* vvalue=new VString(value);
-		info.var_context->put_element(*info.var_context, *info.value_var_name, vvalue, false);
+		info.var_context->put_element(*info.value_var_name, vvalue, false);
 	}
 
 	StringOrValue sv_processed=info.r->process(*info.body_code);

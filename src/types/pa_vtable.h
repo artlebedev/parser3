@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b table parser class decl.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VTABLE_H
 #define PA_VTABLE_H
 
-static const char * const IDENT_VTABLE_H="$Date: 2005/08/09 08:14:56 $";
+static const char * const IDENT_VTABLE_H="$Date: 2009/08/08 13:30:22 $";
 
 #include "pa_vstateless_object.h"
 #include "pa_table.h"
@@ -43,7 +43,7 @@ public: // Value
 	/// extract VTable
 	override Table* get_table() { return ftable; }
 	/// VTable: columns,methods
-	override Value* get_element(const String& aname, Value& aself, bool /*looking_up*/);
+	override Value* get_element(const String& aname);
 
 public: // usage
 

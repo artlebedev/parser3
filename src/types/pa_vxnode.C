@@ -7,7 +7,7 @@
 #include "pa_config_includes.h"
 #ifdef XML
 
-static const char * const IDENT_VXNODE_C="$Date: 2009/04/16 01:09:01 $";
+static const char * const IDENT_VXNODE_C="$Date: 2009/08/08 13:30:22 $";
 
 #include "pa_vxnode.h"
 #include "pa_vxdoc.h"
@@ -26,9 +26,9 @@ Request_charsets& VXnode::charsets() {
 Value& VXnode::as_expr_result(bool /*return_string_as_is=false*/) { return VBool::get(as_bool()); }
 
 
-Value* VXnode::get_element(const String& aname, Value& aself, bool looking_up) { 
+Value* VXnode::get_element(const String& aname) { 
 	// $CLASS,$method
-	if(Value* result=VStateless_object::get_element(aname, aself, looking_up))
+	if(Value* result=VStateless_object::get_element(aname))
 		return result;
 
 	// fields
@@ -165,7 +165,7 @@ Value* VXnode::get_element(const String& aname, Value& aself, bool looking_up) {
 	return bark("%s field not found", &aname);
 }
 
-const VJunction* VXnode::put_element(Value& /*aself*/, const String& aname, Value* avalue, bool /*replace*/)
+const VJunction* VXnode::put_element(const String& aname, Value* avalue, bool /*replace*/)
 { 
 	xmlNode& selfNode=get_xmlnode();
 

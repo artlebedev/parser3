@@ -7,7 +7,7 @@
 #include "pa_config_includes.h"
 #ifdef XML
 
-static const char * const IDENT_VXDOC="$Date: 2009/04/16 01:09:01 $";
+static const char * const IDENT_VXDOC="$Date: 2009/08/08 13:30:22 $";
 
 #include "pa_vxdoc.h"
 #include "pa_vbool.h"
@@ -32,15 +32,8 @@ VXnode& VXdoc::wrap(xmlNode& anode) {
 }
 
 
-Value* VXdoc::as(const char* atype, bool ) {
+Value* VXdoc::as(const char* atype) {
 	return atype && ( strcmp(VXdoc::type(), atype)==0 || strcmp(VXnode::type(), atype)==0 )?this:0;
-
-	/*
-	if(Value* result=Value::as(atype, looking_up))
-		return result;
-	else
-		return VXnode::as(atype, looking_up);
-	*/
 }
 
 /// VXdoc: true	 
@@ -48,14 +41,14 @@ Value& VXdoc::as_expr_result(bool /*return_string_as_is=false*/) { return VBool:
 
 
 /// VXdoc: $CLASS,$method
-Value* VXdoc::get_element(const String& aname, Value& aself, bool looking_up) { 
+Value* VXdoc::get_element(const String& aname) { 
 	if(aname==SEARCH_NAMESPACES_NAME) {
 		return &search_namespaces;
 	}
 
 	// up
 	try {
-		return VXnode::get_element(aname, aself, looking_up);
+		return VXnode::get_element(aname);
 	} catch(Exception) { 
 		// ignore bad node elements, they can be valid here...
 

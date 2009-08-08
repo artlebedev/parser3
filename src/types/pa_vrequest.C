@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VREQUEST_C="$Date: 2009/07/06 12:10:09 $";
+static const char * const IDENT_VREQUEST_C="$Date: 2009/08/08 13:30:21 $";
 
 #include "pa_vrequest.h"
 #include "pa_request_info.h"
@@ -37,7 +37,7 @@ VRequest::VRequest(Request_info& ainfo, Request_charsets& acharsets, VForm& afor
 		}
 }
 
-Value* VRequest::get_element(const String& aname, Value&  /*aself*/, bool /*looking_up*/) {
+Value* VRequest::get_element(const String& aname) {
 	// $request:charset
 	if(aname==CHARSET_NAME)
 		return new VString(*new String(fcharsets.source().NAME(), String::L_TAINTED));
@@ -78,7 +78,7 @@ Value* VRequest::get_element(const String& aname, Value&  /*aself*/, bool /*look
 	return new VString(*new String(buf, String::L_TAINTED));
 }
 
-const VJunction* VRequest::put_element(Value& aself, const String& aname, Value* avalue, bool areplace) {
+const VJunction* VRequest::put_element(const String& aname, Value* avalue, bool areplace) {
 	// $charset
 	if(aname==CHARSET_NAME) {
 		fcharsets.set_source(charsets.get(avalue->as_string().change_case(UTF8_charset, String::CC_UPPER)));
@@ -91,5 +91,5 @@ const VJunction* VRequest::put_element(Value& aself, const String& aname, Value*
 		return PUT_ELEMENT_REPLACED_ELEMENT;
 	} 
 
-	return Value::put_element(aself, aname, avalue, areplace);
+	return Value::put_element(aname, avalue, areplace);
 }

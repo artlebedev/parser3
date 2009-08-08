@@ -8,7 +8,7 @@
 #ifndef PA_VENV_H
 #define PA_VENV_H
 
-static const char * const IDENT_VENV_H="$Date: 2009/04/11 03:20:58 $";
+static const char * const IDENT_VENV_H="$Date: 2009/08/08 13:30:21 $";
 
 // includes
 
@@ -31,7 +31,7 @@ public: // Value
 	VStateless_class *get_class() { return 0; }
 
 	// env: CLASS, CLASS_NAME, field
-	Value* get_element(const String& aname, Value& /*aself*/, bool /*looking_up*/);
+	Value* get_element(const String& aname);
 
 public: // usage
 

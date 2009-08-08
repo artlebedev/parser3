@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REFLECTION_C="$Date: 2009/07/29 05:20:27 $";
+static const char * const IDENT_REFLECTION_C="$Date: 2009/08/08 13:30:20 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
@@ -49,7 +49,7 @@ static void _create(Request& r, MethodParams& params) {
 			"class is undefined");
 
 	const String& constructor_name=params.as_string(1, "constructor_name must be string");
-	Value* constructor_value=class_value->get_element(constructor_name, *class_value, true);
+	Value* constructor_value=class_value->get_element(constructor_name);
 
 	if(!constructor_value || !constructor_value->get_junction() || constructor_value->get_junction()->self.get_class()!=class_value)
 		throw Exception(PARSER_RUNTIME,
