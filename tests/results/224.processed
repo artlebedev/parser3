@@ -1,7 +1,7 @@
 content-type: text/html
 content-length: 1402
 
-table - methoded<br />hash - methoded<br />env<br />test1 - methoded<br />cookie<br />test2 - methoded<br />test - methoded
+cookie<br />env<br />hash - methoded<br />table - methoded<br />test - methoded<br />test1 - methoded<br />test2 - methoded
 <hr />
 create
 native method of class 'date' (stateless_class) accepts minimum 1 parameter(s) (0 passed)
@@ -26,9 +26,9 @@ env<br />
 'test' object class name: 'test/test'<br />
 'test' object base class name: '/'<br />
 <hr />
-@create1[v]
-<br />
 @GET_value[]
+<br />
+@create1[v]
 <br /><br />
 'test1' object class name: 'test1/test1'<br />
 'test1' object base class name: 'test/test'<br />
@@ -40,21 +40,21 @@ env<br />
 <hr />
 @calendar[3-4] {static}
 <br />
-@now[0-1] {dynamic}
+@create[1-6] {dynamic}
+<br />
+@gmt-string[0] {dynamic}
 <br />
 @last-day[0-2]
 <br />
-@create[1-6] {dynamic}
-<br />
-@sql-string[0] {dynamic}
+@now[0-1] {dynamic}
 <br />
 @roll[2] {dynamic}
 <br />
-@unix-timestamp[0-1] {dynamic}
-<br />
 @set[1-6] {dynamic}
 <br />
-@gmt-string[0] {dynamic}
+@sql-string[0] {dynamic}
+<br />
+@unix-timestamp[0-1] {dynamic}
 <br /><br />
 'date' object class name: 'date/date'<br />
 'date' object base class name: '/'<br />
