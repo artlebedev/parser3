@@ -1,5 +1,5 @@
 content-type: text/html
-content-length: 4014
+content-length: 4021
 
 <table border="1" style="font-size: 80%">
 <tr>
@@ -173,7 +173,7 @@ content-length: 4014
 <tr>
 <td>Method without [;locals;]</td>
 <td>undef</td>
-<td>undef</td>
+<td><b>two_2</b></td>
 <td><b>two_3</b></td>
 </tr>
 <tr>

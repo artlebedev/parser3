@@ -1,3 +1,6 @@
+content-type: text/html
+content-length: 2911
+
 <table width="100%" border="1" cellpadding="4">
 <tr>
 <th colspan="2">Dynamic</th>
@@ -116,12 +119,12 @@ $A:dv: ''<br />
 <td width="25%">
 ^class[$B:CLASS]: A, B<br />
 ^class[^B:class_v[]]: A, B<br />
-^class[^B:class_a[]]: A<br />
+^class[^B:class_a[]]: A, B<br />
 ^class[^B:class_b[]]: A, B<br />
 <br />
 ^class_name[$B:CLASS]: B<br />
 B/^class_name_v[]: B<br />
-A/^class_name_a[]: A<br />
+A/^class_name_a[]: B<br />
 B/^class_name_b[]: B<br />
 <br />
 B/^print_v[]:<br />
@@ -135,7 +138,7 @@ $db: ''<br />
 A/^print_a[]:<br />
 $sv: 'sv_b'<br />
 $sa: 'sa_a'<br />
-$sb: ''<br />
+$sb: 'sb_b'<br />
 $dv: ''<br />
 $da: ''<br />
 $db: ''<br />
