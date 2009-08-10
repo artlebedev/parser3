@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2009/08/08 13:30:21 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2009/08/10 12:04:35 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -853,7 +853,7 @@ void Request::execute(ArrayOperation& ops) {
 				Value& constructor_value=get_element(*class_value, constructor_name);
 
 				Junction* junction=constructor_value.get_junction();
-				if(!junction || junction->self.get_class()!=class_value)
+				if(!junction)
 					throw Exception(PARSER_RUNTIME,
 						&constructor_name,
 						"constructor must be declared in class '%s'", 
@@ -863,7 +863,9 @@ void Request::execute(ArrayOperation& ops) {
 				DEBUG_PRINT_OPS(local_ops)
 				DEBUG_PRINT_STR("->\n")
 
-				VMethodFrame frame(*junction, method_frame);
+				Junction casted=Junction(*class_value, junction->method);
+				VMethodFrame frame(casted, method_frame);
+
 				METHOD_FRAME_ACTION(op_call(frame, true /* constructing */));
 				if(opcode==OP::OP_CONSTRUCT_OBJECT)
 					stack.push(frame.result().as_value());
