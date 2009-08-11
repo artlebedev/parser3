@@ -63,8 +63,8 @@ done.
 	^t.menu{
 		$k[$t.key]
 		$v[$m.$k]
-		$h[^reflection:method_params[$class;$k]]
-		^@${k}[^if($v eq "native"){^if($h.min_params != $h.max_params){^h.min_params.int(0)-}^h.max_params.int(0)}{^for[i](0;^h._count[]){$h.$i}[^;]}]^if(def $h.call_type){ {$h.call_type}}
+		$h[^reflection:method_info[$class;$k]]
+		^@${k}[^if($v eq "native"){^if($h.min_params != $h.max_params){^h.min_params.int(0)-}^h.max_params.int(0)}{^for[i](0;^h._count[]){$h.$i}[^;]}]^if(def $h.call_type){ {$h.call_type}}^if(def $h.inherited){ {defined in $h.inherited}}
 	}[<br />]
 }
 ^if(def $o){
