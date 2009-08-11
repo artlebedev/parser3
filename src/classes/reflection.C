@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REFLECTION_C="$Date: 2009/08/08 22:28:37 $";
+static const char * const IDENT_REFLECTION_C="$Date: 2009/08/11 12:37:17 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
@@ -17,6 +17,7 @@ static const String method_type_native("native");
 static const String method_type_parser("parser");
 
 static const String method_call_type("call_type");
+static const String method_inherited("inherited");
 static const String method_call_type_static("static");
 static const String method_call_type_dynamic("dynamic");
 
@@ -174,18 +175,12 @@ static void _base_name(Request& r, MethodParams& params) {
 			r.write_no_lang(*get_class_name(base));
 }
 
-struct Store_method_info {
-	VStateless_class* base_class;
-	HashStringValue* result;
-};
-
 static void store_method_info(
 		HashStringMethod::key_type key, 
 		HashStringMethod::value_type method,
-		Store_method_info* info
+		HashStringValue* result
 ) {
-	if(!info->base_class || info->base_class->get_method(String(key, String::L_CLEAN)) != method)
-		info->result->put(key, new VString(method->native_code?method_type_native:method_type_parser));
+	result->put(key, new VString(method->native_code?method_type_native:method_type_parser));
 }
 
 static void _methods(Request& r, MethodParams& params) {
@@ -199,8 +194,7 @@ static void _methods(Request& r, MethodParams& params) {
 	VHash& result=*new VHash;
 	if(VStateless_class* lclass=class_value->get_class()){
 		HashStringMethod methods=lclass->get_methods();
-		Store_method_info info={lclass->base()?lclass->base()->get_class():0, result.get_hash()};
-		methods.for_each(store_method_info, &info);
+		methods.for_each(store_method_info, result.get_hash());
 	} else {
 		// class which does not have methods (env, console, etc)
 	}
@@ -208,7 +202,7 @@ static void _methods(Request& r, MethodParams& params) {
 }
 
 
-static void _method_params(Request& r, MethodParams& params) {
+static void _method_info(Request& r, MethodParams& params) {
 	const String& class_name=params.as_string(0, "class_name must be string");
 	Value* class_value=r.classes().get(class_name);
 	if(!class_value)
@@ -232,6 +226,14 @@ static void _method_params(Request& r, MethodParams& params) {
 
 	VHash& result=*new VHash;
 	HashStringValue* hash=result.get_hash();
+
+	VStateless_class* c=lclass;
+	while(c->base() && c->base()->get_class() && c->base()->get_class()->get_method(method_name))
+		c=c->base()->get_class();
+
+	if(c!=lclass)
+		hash->put(method_inherited, new VString(c->name()));
+
 	if(method->native_code){
 		// native code
 		hash->put(method_min_params, new VInt(method->min_numbered_params_count));
@@ -281,5 +283,5 @@ MReflection::MReflection(): Methoded("reflection") {
 	add_native_method("methods", Method::CT_STATIC, _methods, 1, 1);
 
 	// ^reflection:method_params[class_name;method_name]
-	add_native_method("method_params", Method::CT_STATIC, _method_params, 2, 2);
+	add_native_method("method_info", Method::CT_STATIC, _method_info, 2, 2);
 }
