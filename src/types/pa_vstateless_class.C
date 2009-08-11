@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)\
 */
 
-static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2009/08/11 10:18:43 $";
+static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2009/08/11 23:54:29 $";
 
 #include "pa_vstateless_class.h"
 #include "pa_vstring.h"
@@ -31,10 +31,14 @@ void VStateless_class::set_method(const String& aname, Method* amethod) {
 		while(i.has_next()) {
 			VStateless_class *c=i.next();
 			if(c->fmethods.get(aname)==omethod)
-				c->set_method(aname, amethod);
+				c->real_set_method(aname, amethod);
 		}
 	}
-	fmethods.put(aname, amethod); 
+	real_set_method(aname, amethod); 
+}
+
+void VStateless_class::real_set_method(const String& aname, Method* amethod) {
+	fmethods.put(aname, amethod);
 }
 
 void VStateless_class::add_native_method(

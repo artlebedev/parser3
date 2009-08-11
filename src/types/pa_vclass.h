@@ -8,7 +8,7 @@
 #ifndef PA_VCLASS_H
 #define PA_VCLASS_H
 
-static const char * const IDENT_VCLASS_H="$Date: 2009/08/11 10:18:43 $";
+static const char * const IDENT_VCLASS_H="$Date: 2009/08/11 23:54:29 $";
 
 // includes
 
@@ -35,7 +35,7 @@ public: // Value
 public: 
 	
 	// VStateless_class
-	override void set_method(const String& aname, Method* amethod);
+	override void real_set_method(const String& aname, Method* amethod);
 	override HashStringProperty* get_properties(){ return &ffields; };
 	override void set_base(VStateless_class* abase);
 

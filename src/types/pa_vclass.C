@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VCLASS_C="$Date: 2009/08/11 10:18:43 $";
+static const char * const IDENT_VCLASS_C="$Date: 2009/08/11 23:54:29 $";
 
 #include "pa_vclass.h"
 
@@ -29,7 +29,7 @@ Property& VClass::get_property(const String& aname) {
 	return *result;
 }
 
-void VClass::set_method(const String& aname, Method* amethod) {
+void VClass::real_set_method(const String& aname, Method* amethod) {
 	if(aname.starts_with("GET_")){
 		if(aname=="GET_DEFAULT")
 			set_default_getter(amethod);
@@ -41,10 +41,10 @@ void VClass::set_method(const String& aname, Method* amethod) {
 		set_scalar(amethod);
 	}
 
-	// NOT under 'else' for backward compatiblilty & recursion: 
+	// NOT under 'else' for backward compatiblilty: 
 	// if someone used get_xxx names to name regular methods
 	// still register method:
-	VStateless_class::set_method(aname, amethod);
+	VStateless_class::real_set_method(aname, amethod);
 }
 
 void VClass::set_base(VStateless_class* abase){

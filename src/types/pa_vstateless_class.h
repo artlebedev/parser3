@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
-static const char * const IDENT_VSTATELESS_CLASS_H="$Date: 2009/08/11 10:18:43 $";
+static const char * const IDENT_VSTATELESS_CLASS_H="$Date: 2009/08/11 23:54:29 $";
 
 // include
 
@@ -53,6 +53,7 @@ class VStateless_class: public Value {
 protected:
 
 	VStateless_class* fbase;
+	/// all derived classes, recursively
 	ArrayClass fderived;
 
 	Method* fscalar;
@@ -159,8 +160,10 @@ public: // usage
 		int max_numbered_params_count, 
 		Method::Call_optimization call_optimization=Method::CO_WITHOUT_WCONTEXT);
 
+	void set_method(const String& aname, Method* amethod);
+
 	/// overrided in VClass
-	virtual void set_method(const String& aname, Method* amethod);
+	virtual void real_set_method(const String& aname, Method* amethod);
 	virtual HashStringProperty* get_properties(){ return 0; };
 	virtual void set_base(VStateless_class* abase);
 	
