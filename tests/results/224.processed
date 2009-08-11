@@ -1,5 +1,5 @@
 content-type: text/html
-content-length: 1402
+content-length: 1677
 
 cookie<br />env<br />hash - methoded<br />table - methoded<br />test - methoded<br />test1 - methoded<br />test2 - methoded
 <hr />
@@ -28,12 +28,28 @@ env<br />
 <hr />
 @GET_value[]
 <br />
+@auto[] {defined in test}
+<br />
+@create[v] {defined in test}
+<br />
 @create1[v]
+<br />
+@m[] {defined in test}
 <br /><br />
 'test1' object class name: 'test1/test1'<br />
 'test1' object base class name: 'test/test'<br />
 <hr />
+@GET_value[] {defined in test1}
+<br />
+@auto[] {defined in test}
+<br />
+@create[v] {defined in test}
+<br />
+@create1[v] {defined in test1}
+<br />
 @create2[v]
+<br />
+@m[] {defined in test}
 <br /><br />
 'test2' object class name: 'test2/test2'<br />
 'test2' object base class name: 'test1/test1'<br />
