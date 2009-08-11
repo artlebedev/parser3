@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
-static const char * const IDENT_VSTATELESS_CLASS_H="$Date: 2009/08/08 13:30:21 $";
+static const char * const IDENT_VSTATELESS_CLASS_H="$Date: 2009/08/11 10:18:43 $";
 
 // include
 
@@ -160,8 +160,7 @@ public: // usage
 		Method::Call_optimization call_optimization=Method::CO_WITHOUT_WCONTEXT);
 
 	/// overrided in VClass
-	virtual void add_method(const String& aname, Method& amethod);
-	virtual void add_property(const String& /*aname*/, Property& /*aprop*/){};
+	virtual void set_method(const String& aname, Method* amethod);
 	virtual HashStringProperty* get_properties(){ return 0; };
 	virtual void set_base(VStateless_class* abase);
 	
@@ -173,10 +172,6 @@ public: // usage
 
 	/// @returns new value for current class, used in classes/ & VClass
 	virtual Value* create_new_value(Pool&) { return 0; }
-
-private:
-
-	void put_method(const String& aname, Method* amethod);	
 };
 
 ///	Auto-object used for temporarily substituting/removing class method
@@ -189,10 +184,10 @@ public:
 		fclass(aclass),
 		fname(aname),
 		saved_method(aclass.get_method(aname)) {
-		fclass.put_method(aname, amethod);
+		fclass.set_method(aname, amethod);
 	}
 	~Temp_method() { 
-		fclass.put_method(fname, saved_method);
+		fclass.set_method(fname, saved_method);
 	}
 };
 

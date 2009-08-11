@@ -5,7 +5,7 @@
 	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.250 2009/08/01 04:58:45 misha Exp $
+	$Id: compile.y,v 1.251 2009/08/11 10:19:02 misha Exp $
 */
 
 /**
@@ -130,11 +130,11 @@ static const VVoid vvoid;
 %%
 all:
 	one_big_piece {
-	Method& method=*new Method(Method::CT_ANY,
+	Method* method=new Method(Method::CT_ANY,
 		0, 0, /*min, max numbered_params_count*/
 		0/*param_names*/, 0/*local_names*/, 
 		$1/*parser_code*/, 0/*native_code*/);
-	PC.cclass->add_method(PC.alias_method(main_method_name), method);
+	PC.cclass->set_method(PC.alias_method(main_method_name), method);
 }
 |	methods;
 
@@ -290,13 +290,13 @@ code_method: '@' STRING bracketed_maybe_strings maybe_bracketed_strings maybe_co
 
 	// todo: check [][;result;]
 } maybe_codes {
-		Method& method=*reinterpret_cast<Method*>($7);
+		Method* method=reinterpret_cast<Method*>($7);
 		// fill in the code
-		method.parser_code=$8;
+		method->parser_code=$8;
 
 		// register in class
 		const String& name=*LA2S(*$2);
-		PC.cclass->add_method(PC.alias_method(name), method);
+		PC.cclass->set_method(PC.alias_method(name), method);
 };
 
 maybe_bracketed_strings: empty | bracketed_maybe_strings;

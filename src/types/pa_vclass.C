@@ -5,13 +5,13 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VCLASS_C="$Date: 2009/08/08 13:30:21 $";
+static const char * const IDENT_VCLASS_C="$Date: 2009/08/11 10:18:43 $";
 
 #include "pa_vclass.h"
 
 Property& VClass::get_property(const String& aname) {
-	Property* result;
-	if (result=ffields.get(aname)) {
+	Property* result=ffields.get(aname);
+	if (result) {
 		if (!result->getter && !result->setter) {
 			// can occur in ^process
 			Value *v=result->value;
@@ -19,40 +19,32 @@ Property& VClass::get_property(const String& aname) {
 				&aname,
 				"property can not be created, already exists field (%s) with that name", v ? v->get_class()->name_cstr() : "unknown");
 		}
+
+		// cloning existing property
+		result=new Property(*result);
 	} else {
 		result=new Property();
-		ffields.put(aname, result);
-
-		Array_iterator<VStateless_class *> i(fderived);
-		while (i.has_next()) {
-			VStateless_class *c=i.next();
-			c->add_property(aname, *result);
-		}
 	}
+	ffields.put(aname, result);
 	return *result;
 }
 
-/// preparing property accessors to fields
-void VClass::add_method(const String& aname, Method& amethod) {
+void VClass::set_method(const String& aname, Method* amethod) {
 	if(aname.starts_with("GET_")){
 		if(aname=="GET_DEFAULT")
-			set_default_getter(&amethod);
+			set_default_getter(amethod);
 		else
-			get_property(aname.mid(4, aname.length())).getter=&amethod;
+			get_property(aname.mid(4, aname.length())).getter=amethod;
 	} else if(aname.starts_with("SET_")){
-		get_property(aname.mid(4, aname.length())).setter=&amethod;
+		get_property(aname.mid(4, aname.length())).setter=amethod;
 	} else if(aname=="GET"){
-		set_scalar(&amethod);
+		set_scalar(amethod);
 	}
 
-	// NOT under 'else' for backward compatiblilty: 
+	// NOT under 'else' for backward compatiblilty & recursion: 
 	// if someone used get_xxx names to name regular methods
 	// still register method:
-	VStateless_class::add_method(aname, amethod);
-}
-
-void VClass::add_property(const String& aname, Property& aprop){
-	ffields.put_dont_replace(aname, &aprop);
+	VStateless_class::set_method(aname, amethod);
 }
 
 void VClass::set_base(VStateless_class* abase){
@@ -96,11 +88,11 @@ Value* VClass::get_element(Value& aself, const String& aname) {
 
 /// VClass: (field/property)=value - static values only
 const VJunction* VClass::put_element(Value& aself, const String& aname, Value* avalue, bool areplace) {
-	if (Property* prop=ffields.get(aname)) {
+	if(Property* prop=ffields.get(aname)) {
 		if (prop->setter)
 			return new VJunction(aself, prop->setter);
 
-		if (prop->getter)
+		if(prop->getter)
 			throw Exception(PARSER_RUNTIME,
 				0,
 				"this property has no setter method (@SET_%s[value])", aname.cstr());
@@ -108,10 +100,19 @@ const VJunction* VClass::put_element(Value& aself, const String& aname, Value* a
 		// just field, value can be 0 and unlike usual we don't remove it
 		prop->value=avalue;
 	} else {
-		if (areplace)
+		if(areplace)
 			return 0;
 
-		get_property(aname).value=avalue;
+		prop=new Property();
+		prop->value=avalue;
+		ffields.put(aname, prop);
+
+		Array_iterator<VStateless_class *> i(fderived);
+		while(i.has_next()) {
+			HashStringProperty *props=i.next()->get_properties();
+			if(props)
+				props->put_dont_replace(aname, prop);
+		}
 	}
 
 	return PUT_ELEMENT_REPLACED_ELEMENT;

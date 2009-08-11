@@ -8,7 +8,7 @@
 #ifndef PA_PROPERTY_H
 #define PA_PROPERTY_H
 
-static const char * const IDENT_PROPERTY_H="$Date: 2009/08/08 13:30:21 $";
+static const char * const IDENT_PROPERTY_H="$Date: 2009/08/11 10:18:43 $";
 
 class Method;
 class Value;
@@ -25,6 +25,7 @@ public:
 	Value *value;
 
 	Property() : getter(0), setter(0), value(0){}
+	Property(Property &prop) : getter(prop.getter), setter(prop.setter), value(prop.value){}
 };
 
 #endif

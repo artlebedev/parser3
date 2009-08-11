@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)\
 */
 
-static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2009/08/08 13:30:21 $";
+static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2009/08/11 10:18:43 $";
 
 #include "pa_vstateless_class.h"
 #include "pa_vstring.h"
@@ -18,14 +18,23 @@ override Value& VStateless_class::as_expr_result(bool /*return_string_as_is=fals
 	return VBool::get(as_bool());
 }
 
-/// @TODO why?! request must be different ptr from global [used in VStateless_class.add_method]
-void VStateless_class::add_method(const String& aname, Method& amethod) {
+/// @TODO why?! request must be different ptr from global [used in VStateless_class.set_method]
+void VStateless_class::set_method(const String& aname, Method* amethod) {
 	if(flocked)
 		throw Exception(PARSER_RUNTIME,
 			&aname,
 			"can not add method to system class (maybe you have forgotten .CLASS in ^process[$caller.CLASS]{...}?)");
 
-	put_method(aname, &amethod);
+	if(fderived.count()) {
+		Method *omethod=fmethods.get(aname);
+		Array_iterator<VStateless_class *> i(fderived);
+		while(i.has_next()) {
+			VStateless_class *c=i.next();
+			if(c->fmethods.get(aname)==omethod)
+				c->set_method(aname, amethod);
+		}
+	}
+	fmethods.put(aname, amethod); 
 }
 
 void VStateless_class::add_native_method(
@@ -40,7 +49,7 @@ void VStateless_class::add_native_method(
 #endif
 	) {
 
-	Method& method=*new Method(
+	Method* method=new Method(
 		call_type,
 		min_numbered_params_count, max_numbered_params_count,
 		0/*params_names*/, 0/*locals_names*/,
@@ -53,7 +62,7 @@ void VStateless_class::add_native_method(
 #endif
 		);
 
-	add_method(*new String(cstr_name), method);
+	set_method(*new String(cstr_name), method);
 }
 
 /// VStateless_class: $CLASS, $CLASS_NAME, $method
@@ -76,17 +85,6 @@ Value* VStateless_class::get_element(Value& aself, const String& aname) {
 	return 0;
 }
 
-void VStateless_class::put_method(const String& aname, Method* amethod){
-	Method *omethod=fmethods.get(aname);
-	Array_iterator<VStateless_class *> i(fderived);
-	while(i.has_next()) {
-		VStateless_class *c=i.next();
-		if (c->fmethods.get(aname)==omethod)
-			c->fmethods.put(aname, amethod);
-	}
-	fmethods.put(aname, amethod); 
-}
-
 Value* VStateless_class::get_scalar(Value& aself){
 	if(fscalar)
 		return new VJunction(aself, fscalar, true /*getter*/);
@@ -94,12 +92,6 @@ Value* VStateless_class::get_scalar(Value& aself){
 }
 
 void VStateless_class::set_scalar(Method* amethod){
-	Array_iterator<VStateless_class *> i(fderived);
-	while(i.has_next()) {
-		VStateless_class *c=i.next();
-		if (c->fscalar==fscalar)
-			c->fscalar=amethod;
-	}
 	fscalar=amethod;
 }
 
@@ -110,12 +102,6 @@ Value* VStateless_class::get_default_getter(Value& aself, const String& aname){
 }
 
 void VStateless_class::set_default_getter(Method* amethod){
-	Array_iterator<VStateless_class *> i(fderived);
-	while(i.has_next()) {
-		VStateless_class *c=i.next();
-		if (c->fdefault_getter==fdefault_getter)
-			c->fdefault_getter=amethod;
-	}
 	fdefault_getter=amethod;
 }
 

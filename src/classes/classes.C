@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_CLASSES_C="$Date: 2005/08/09 08:14:47 $";
+static const char * const IDENT_CLASSES_C="$Date: 2009/08/11 10:19:11 $";
 
 #include "classes.h"
 #include "pa_request.h"
@@ -17,7 +17,7 @@ void Methoded::register_directly_used(Request& r) {
 		r.classes().put(name(), this);
 	}
 
-	// prevent system classes from modification [calling add_method]
+	// prevent system classes from modification [calling set_method]
 	// ^process[$string:CLASS]{@method} prohibited from now on...
 	this->lock();
 }
