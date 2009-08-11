@@ -132,7 +132,7 @@
 	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.tab.C,v 1.143 2009/08/01 05:11:40 misha Exp $
+	$Id: compile.tab.C,v 1.144 2009/08/11 10:32:38 misha Exp $
 */
 
 /**
@@ -1430,11 +1430,11 @@ yyreduce:
         case 2:
 #line 132 "compile.y"
     {
-	Method& method=*new Method(Method::CT_ANY,
+	Method* method=new Method(Method::CT_ANY,
 		0, 0, /*min, max numbered_params_count*/
 		0/*param_names*/, 0/*local_names*/, 
 		yyvsp[0]/*parser_code*/, 0/*native_code*/);
-	PC.cclass->add_method(PC.alias_method(main_method_name), method);
+	PC.cclass->set_method(PC.alias_method(main_method_name), method);
 ;}
     break;
 
@@ -1595,13 +1595,13 @@ yyreduce:
   case 18:
 #line 292 "compile.y"
     {
-		Method& method=*reinterpret_cast<Method*>(yyvsp[-1]);
+		Method* method=reinterpret_cast<Method*>(yyvsp[-1]);
 		// fill in the code
-		method.parser_code=yyvsp[0];
+		method->parser_code=yyvsp[0];
 
 		// register in class
 		const String& name=*LA2S(*yyvsp[-6]);
-		PC.cclass->add_method(PC.alias_method(name), method);
+		PC.cclass->set_method(PC.alias_method(name), method);
 ;}
     break;
 
