@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REQUEST_C="$Date: 2009/08/08 13:30:21 $";
+static const char * const IDENT_REQUEST_C="$Date: 2009/08/14 23:36:55 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -49,6 +49,7 @@ const char* ORIGINS_CONTENT_TYPE="text/plain";
 
 #define MAIN_METHOD_NAME "main"
 #define AUTO_METHOD_NAME "auto"
+#define AUTOUSE_METHOD_NAME "autouse"
 #define BODY_NAME "body"
 #define EXCEPTION_TYPE_PART_NAME "type"
 #define EXCEPTION_SOURCE_PART_NAME "source"
@@ -58,6 +59,7 @@ const char* ORIGINS_CONTENT_TYPE="text/plain";
 
 const String main_method_name(MAIN_METHOD_NAME);
 const String auto_method_name(AUTO_METHOD_NAME);
+const String autouse_method_name(AUTOUSE_METHOD_NAME);
 const String content_transfer_encoding_name(CONTENT_TRANSFER_ENCODING_NAME);
 const String content_disposition_name(CONTENT_DISPOSITION_NAME);
 const String content_disposition_inline(CONTENT_DISPOSITION_INLINE);
@@ -199,6 +201,26 @@ Request::~Request() {
 }
 
 Value& Request::get_self() { return method_frame/*always have!*/->self(); }
+
+Value* Request::get_class(const String& name){
+	Value* result=classes().get(name);
+	if(!result){
+		if(Value* value=main_class.get_element(autouse_method_name))
+			if(Junction* junction=value->get_junction())
+				if(const Method *method=junction->method) {
+					Value *vname=new VString(name);
+					VMethodFrame frame(*junction, 0/*no parent*/);
+
+					frame.set_self(main_class);
+					frame.store_params(&vname, 1);
+					// we don't need the result
+					execute_method(frame, *method);
+
+					result=classes().get(name);
+				}
+	}
+	return result;
+}
 
 static void load_charset(HashStringValue::key_type akey, 
 			 HashStringValue::value_type avalue, 

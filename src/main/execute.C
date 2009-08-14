@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2009/08/14 10:39:57 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2009/08/14 23:36:55 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -276,7 +276,7 @@ void Request::execute(ArrayOperation& ops) {
 
 				DEBUG_PRINT_STRING(name)
 
-				Value* class_value=classes().get(name);
+				Value* class_value=get_class(name);
 				if(!class_value)
 					throw Exception(PARSER_RUNTIME,
 						&name,
@@ -292,7 +292,7 @@ void Request::execute(ArrayOperation& ops) {
 				wcontext->set_somebody_entered_some_class();
 
 				const String& name=stack.pop().string();
-				Value* value=classes().get(name);
+				Value* value=get_class(name);
 				if(!value) 
 					throw Exception(PARSER_RUNTIME,
 						&name,
@@ -838,7 +838,7 @@ void Request::execute(ArrayOperation& ops) {
 
 				DEBUG_PRINT_STRING(class_name)
 
-				Value* class_value=classes().get(class_name);
+				Value* class_value=get_class(class_name);
 				if(!class_value)
 					throw Exception(PARSER_RUNTIME,
 						&class_name,

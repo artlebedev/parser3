@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char * const IDENT_REQUEST_H="$Date: 2009/07/29 05:01:46 $";
+static const char * const IDENT_REQUEST_H="$Date: 2009/08/14 23:36:45 $";
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -189,6 +189,7 @@ public:
 
 	/// global classes
 	HashString<Value*>& classes() { return fclasses; }
+	Value* get_class(const String& name);
 
 	/**
 		core request processing

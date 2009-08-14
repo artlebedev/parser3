@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REFLECTION_C="$Date: 2009/08/14 12:35:46 $";
+static const char * const IDENT_REFLECTION_C="$Date: 2009/08/14 23:37:07 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
@@ -42,7 +42,7 @@ DECLARE_CLASS_VAR(reflection, new MReflection, 0);
 
 static void _create(Request& r, MethodParams& params) {
 	const String& class_name=params.as_string(0, "class_name must be string");
-	Value* class_value=r.classes().get(class_name);
+	Value* class_value=r.get_class(class_name);
 
 	if(!class_value)
 		throw Exception(PARSER_RUNTIME,
@@ -185,7 +185,7 @@ static void store_method_info(
 
 static void _methods(Request& r, MethodParams& params) {
 	const String& class_name=params.as_string(0, "class_name must be string");
-	Value* class_value=r.classes().get(class_name);
+	Value* class_value=r.get_class(class_name);
 	if(!class_value)
 		throw Exception(PARSER_RUNTIME,
 			&class_name,
@@ -204,7 +204,7 @@ static void _methods(Request& r, MethodParams& params) {
 
 static void _method_info(Request& r, MethodParams& params) {
 	const String& class_name=params.as_string(0, "class_name must be string");
-	Value* class_value=r.classes().get(class_name);
+	Value* class_value=r.get_class(class_name);
 	if(!class_value)
 		throw Exception(PARSER_RUNTIME,
 			&class_name,
