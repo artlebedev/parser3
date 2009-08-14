@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VCLASS_C="$Date: 2009/08/11 23:54:29 $";
+static const char * const IDENT_VCLASS_C="$Date: 2009/08/14 10:39:31 $";
 
 #include "pa_vclass.h"
 
@@ -49,9 +49,13 @@ void VClass::real_set_method(const String& aname, Method* amethod) {
 
 void VClass::set_base(VStateless_class* abase){
 	VStateless_class::set_base(abase);
-	if (abase)
-		if (HashStringProperty *props=abase->get_properties())
+	if(abase)
+		if(HashStringProperty *props=abase->get_properties())
 			ffields.merge_dont_replace(*props);
+		else 
+			throw Exception("parser.compile",
+				0,
+				"Class %s base class (%s) is not user-defined", name_cstr(), abase->name_cstr());
 }
 
 Value* VClass::as(const char* atype) {
