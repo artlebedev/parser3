@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REFLECTION_C="$Date: 2009/08/14 10:40:24 $";
+static const char * const IDENT_REFLECTION_C="$Date: 2009/08/14 12:35:46 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
@@ -52,7 +52,7 @@ static void _create(Request& r, MethodParams& params) {
 	const String& constructor_name=params.as_string(1, "constructor_name must be string");
 	Value* constructor_value=class_value->get_element(constructor_name);
 
-	if(!constructor_value || !constructor_value->get_junction() || constructor_value->get_junction()->self.get_class()!=class_value)
+	if(!constructor_value || !constructor_value->get_junction())
 		throw Exception(PARSER_RUNTIME,
 			&constructor_name,
 			"constructor must be declared in class '%s'",
