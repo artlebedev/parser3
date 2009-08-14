@@ -549,6 +549,7 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
              .call_type[dynamic|static|any]
          для parser классов возвращается хеш:
              ключ -- номер параметра (0, 1, ...), значение - имя параметра
+    !^reflection:dynamical[[object or class, caller if absent]]    возвращает true, если метод был вызван динамически
 
 
 !mail
