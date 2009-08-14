@@ -1,0 +1,20 @@
+# autouse checking
+@main[]
+^do{^test:call[]}
+^do{^zigi:call[]}
+
+
+@do[jCode]
+^try{
+	$jCode<br />
+}{
+	$exception.handled(1)
+	$exception.source $exception.comment
+}
+
+
+
+@autouse[name]
+^if($name eq "test"){
+	^use[226.p]
+}
