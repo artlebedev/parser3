@@ -1,0 +1,5 @@
+content-type: text/html
+content-length: 40
+
+it works!<br />
+zigi class is undefined

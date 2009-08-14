@@ -132,7 +132,7 @@
 	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.tab.C,v 1.144 2009/08/11 10:32:38 misha Exp $
+	$Id: compile.tab.C,v 1.145 2009/08/14 23:58:55 misha Exp $
 */
 
 /**
@@ -1480,7 +1480,7 @@ yyreduce:
 		}
 		if(strings_code->count()==1*OPERATIONS_PER_OPVALUE) {
 			const String& base_name=*LA2S(*strings_code);
-			if(Value* base_class_value=PC.request.classes().get(base_name)) {
+			if(Value* base_class_value=PC.request.get_class(base_name)) {
 				// @CLASS == @BASE sanity check
 				if(VStateless_class *base_class=base_class_value->get_class()) {
 					if(PC.cclass==base_class) {
