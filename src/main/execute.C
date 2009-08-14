@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2009/08/11 10:19:02 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2009/08/14 10:39:57 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -864,7 +864,7 @@ void Request::execute(ArrayOperation& ops) {
 				DEBUG_PRINT_STR("->\n")
 
 				Junction casted=Junction(*class_value, junction->method);
-				VMethodFrame frame(casted, method_frame);
+				VConstructorFrame frame(casted, method_frame);
 
 				METHOD_FRAME_ACTION(op_call(frame, true /* constructing */));
 				if(opcode==OP::OP_CONSTRUCT_OBJECT)
@@ -1223,9 +1223,7 @@ void Request::op_call(VMethodFrame& frame, bool constructing){
 					"is not a constructor, system class '%s' can be constructed only implicitly", 
 						called_class.name().cstr());
 
-			frame.write(*new_self, 
-				String::L_CLEAN  // not used, always an object, not string
-			);
+			frame.write(*new_self);
 		} else
 			throw Exception(PARSER_RUNTIME,
 				0, //&frame.name(),
@@ -1571,15 +1569,13 @@ const String* Request::execute_method(Value& aself,
 
 	// prevent non-string writes for better error reporting
 	if(do_return_string)
-		wcontext->write(local_frame);
+		local_frame.write(local_frame);
 	
 	// execute!	
 	execute(*method.parser_code);
 	
 	// result
-	const String* result=0;
-	if(do_return_string)
-		result=&wcontext->result().as_string();
+	const String* result=do_return_string ? local_frame.get_string() : 0;
 	
 	RESTORE_CONTEXT
 

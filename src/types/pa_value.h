@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-static const char * const IDENT_VALUE_H="$Date: 2009/08/08 13:30:21 $";
+static const char * const IDENT_VALUE_H="$Date: 2009/08/14 10:39:48 $";
 
 #include "pa_common.h"
 #include "pa_array.h"
@@ -112,10 +112,10 @@ public: // Value
 	}
 	
 	/// extract VStateless_class
-	virtual VStateless_class *get_class()=0;
+	virtual VStateless_class* get_class()=0;
 
-	/// extract base object or class of Value, if any
-	virtual Value* base() { return 0; }
+	/// extract base class, if any
+	virtual VStateless_class* base() { return 0; }
 
 	/// extract VTable
 	virtual Table* get_table() { return 0; }

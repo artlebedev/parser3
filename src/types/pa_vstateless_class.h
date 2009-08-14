@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
-static const char * const IDENT_VSTATELESS_CLASS_H="$Date: 2009/08/11 23:54:29 $";
+static const char * const IDENT_VSTATELESS_CLASS_H="$Date: 2009/08/14 10:39:48 $";
 
 // include
 
@@ -64,9 +64,9 @@ public: // Value
 	const char* type() const { return "stateless_class"; }
 
 	/// VStateless_class: this
-	override VStateless_class *get_class() { return this; }
+	override VStateless_class* get_class() { return this; }
 	/// VStateless_class: fbase
-	override Value* base() { return fbase; }
+	override VStateless_class* base() { return fbase; }
 
 	override Value* get_element(const String& aname) { return get_element(*this, aname); }
 	/// get_element with aself for VObject junctions

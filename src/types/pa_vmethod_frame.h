@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2009/08/08 13:30:21 $";
+static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2009/08/14 10:39:48 $";
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
@@ -178,7 +178,7 @@ public: // Value
 	override VStateless_class* get_class() { return self().get_class(); }
 
 	/// VMethodFrame: self_transparent
-	override Value* base() { return self().base(); }
+	override VStateless_class* base() { return self().base(); }
 
 	/// VMethodFrame: my or self_transparent
 	override const VJunction* put_element(const String& aname, Value* avalue, bool /*areplace*/) {
@@ -235,8 +235,8 @@ public: // WContext
 		return WContext::result();
 	}
 
-	void write(Value& avalue, String::Language alang) {
-		WContext::write(avalue, alang);
+	override void write(Value& avalue) {
+		WContext::write(avalue);
 	}
 
 public: // usage
@@ -322,6 +322,13 @@ public:
 	
 	const Junction& junction;
 
+};
+
+class VConstructorFrame: public VMethodFrame {
+public:
+	VConstructorFrame(const Junction& ajunction, VMethodFrame *acaller) : VMethodFrame(ajunction, acaller) {}
+
+	override void write(const String& /*astring*/, String::Language /*alang*/) {}
 };
 
 ///	Auto-object used for temporary changing VMethod_frame::fself.
