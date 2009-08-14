@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REFLECTION_C="$Date: 2009/08/11 12:37:17 $";
+static const char * const IDENT_REFLECTION_C="$Date: 2009/08/14 10:40:24 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
@@ -228,7 +228,7 @@ static void _method_info(Request& r, MethodParams& params) {
 	HashStringValue* hash=result.get_hash();
 
 	VStateless_class* c=lclass;
-	while(c->base() && c->base()->get_class() && c->base()->get_class()->get_method(method_name))
+	while(c->base() && c->base()->get_method(method_name))
 		c=c->base()->get_class();
 
 	if(c!=lclass)
@@ -259,6 +259,15 @@ static void _method_info(Request& r, MethodParams& params) {
 	r.write_no_lang(result);
 }
 
+static void _dynamical(Request& r, MethodParams& params) {
+	if(params.count()){
+		r.write_no_lang(VBool::get(params[0].get_class() != &params[0]));
+	} else {
+		VMethodFrame* caller=r.get_method_frame()->caller();
+		r.write_no_lang(VBool::get(caller && caller->get_class() != &caller->self()));
+	}
+}
+
 // constructor
 MReflection::MReflection(): Methoded("reflection") {
 	// ^reflection:create[class_name;constructor_name[;param1[;param2[;...]]]]
@@ -284,4 +293,7 @@ MReflection::MReflection(): Methoded("reflection") {
 
 	// ^reflection:method_params[class_name;method_name]
 	add_native_method("method_info", Method::CT_STATIC, _method_info, 2, 2);
+
+	// ^reflection:dynamical[[object or class, caller if absent]]
+	add_native_method("dynamical", Method::CT_STATIC, _dynamical, 0, 1);
 }
