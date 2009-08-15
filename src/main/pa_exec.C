@@ -7,7 +7,7 @@
 	@todo setrlimit
 */
 
-static const char * const IDENT_EXEC_C="$Date: 2009/07/06 12:07:04 $";
+static const char * const IDENT_EXEC_C="$Date: 2009/08/15 13:04:10 $";
 
 #include "pa_config_includes.h"
 
@@ -469,7 +469,7 @@ from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?r
 	}
 #endif
 
-	char* argv_cstrs[1+50+1]={file_spec_cstr, 0};
+	char* argv_cstrs[1+100+1]={file_spec_cstr, 0};
 	const int argv_size=argv.count();
 	const int argv_max=sizeof(argv_cstrs)/sizeof(argv_cstrs[0])-1-1;
 	if(argv_size>argv_max)
