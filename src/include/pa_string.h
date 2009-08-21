@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-static const char * const IDENT_STRING_H="$Date: 2009/07/16 09:19:45 $";
+static const char * const IDENT_STRING_H="$Date: 2009/08/21 08:38:46 $";
 
 // includes
 #include "pa_types.h"
@@ -518,6 +518,8 @@ public:
 	Body cstr_to_string_body_taint(Language lang, SQL_Connection* connection=0, const Request_charsets *charsets=0) const;
 	/// convert to CORD with tainting dirty to lang
 	Body cstr_to_string_body_untaint(Language lang, SQL_Connection* connection=0, const Request_charsets *charsets=0) const;
+	/// transcode and convert to CORD with tainting dirty to lang
+	Body cstr_to_string_body_transcode_and_untaint(Language lang, const Request_charsets *charsets) const;
 
 	/// 
 	const char* cstr() const {
@@ -543,6 +545,9 @@ public:
 	char *untaint_cstrm(Language lang, SQL_Connection* connection=0, const Request_charsets *charsets=0) const {
 		return cstr_to_string_body_untaint(lang, connection, charsets).cstrm();
 	}
+
+	const char* transcode_and_untaint_cstr(Language lang, const Request_charsets *charsets) const;
+
 	/// puts pieces to buf
 	Cm serialize(size_t prolog_size) const;
 	/// appends pieces from buf to self

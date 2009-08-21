@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
  */
 
-static const char * const IDENT_HTTP_C="$Date: 2009/08/08 13:30:21 $"; 
+static const char * const IDENT_HTTP_C="$Date: 2009/08/21 08:38:55 $"; 
 
 #include "pa_http.h"
 #include "pa_common.h"
@@ -399,7 +399,7 @@ static void form_value2string(
 const char* pa_form2string(HashStringValue& form, Request_charsets& charsets) {
 	String string;
 	form.for_each<String*>(form_value2string, &string);
-	return string.untaint_cstr(String::L_AS_IS, 0, &charsets);
+	return string.transcode_and_untaint_cstr(String::L_URI, &charsets);
 }
 
 struct FormPart {
@@ -612,7 +612,7 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 		// influence URLencoding of tainted pieces to String::L_URI lang
 		Temp_client_charset temp(r.charsets, *asked_remote_charset);
 
-		const char* connect_string_cstr=connect_string.untaint_cstr(String::L_URI, 0, &(r.charsets));
+		const char* connect_string_cstr=connect_string.transcode_and_untaint_cstr(String::L_URI, &(r.charsets));
 
 		const char* current=connect_string_cstr;
 		if(strncmp(current, "http://", 7)!=0)
@@ -622,9 +622,9 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 		current+=7;
 
 		strncpy(host, current, sizeof(host)-1);  host[sizeof(host)-1]=0;
-		char* host_uri=lsplit(host, '/'); 
-		uri=host_uri?current+(host_uri-1-host):"/"; 
-		char* port_cstr=lsplit(host, ':'); 
+		char* host_uri=lsplit(host, '/');
+		uri=host_uri?current+(host_uri-1-host):"/";
+		char* port_cstr=lsplit(host, ':');
 		char* error_pos=0;
 		port=port_cstr?(short)strtol(port_cstr, &error_pos, 0):80;
 

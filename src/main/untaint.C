@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_UNTAINT_C="$Date: 2009/07/07 12:14:00 $";
+static const char * const IDENT_UNTAINT_C="$Date: 2009/08/21 08:38:55 $";
 
 
 #include "pa_string.h"
@@ -321,6 +321,8 @@ struct Cstr_to_string_body_block_info {
 	const char* exception;
 };
 #endif
+
+// @todo: replace info->body->mid with something that uses info->pos
 int cstr_to_string_body_block(String::Language to_lang, size_t fragment_length, Cstr_to_string_body_block_info* info) {
 	bool& whitespace=info->whitespace;
 	size_t fragment_end=info->fragment_begin+fragment_length;
@@ -367,25 +369,8 @@ int cstr_to_string_body_block(String::Language to_lang, size_t fragment_length, 
 		}
 		break;
 	case String::L_URI:
-		// tainted, untaint language: uri
-		{
-			const char *fragment_str=info->body->mid(info->fragment_begin, fragment_length).cstr();
-			// skip source [we use recoded version]
-			pa_CORD_pos_advance(info->pos, fragment_length);
-			String::C output(fragment_str, fragment_length);
-			if(info->charsets) 
-				output=Charset::transcode(output, 
-					info->charsets->source(), 
-					info->charsets->client());
-
-			char c;
-			for(const char* src=output.str; (c=*src++); ) 
-				encode(need_uri_encode, '%', c);
-		}
-		break;
 	case String::L_HTTP_HEADER:
 		// tainted, untaint language: http-field-content-text
-		// the same as L_URI BUT not transcoded into $response:charset before encoding
 		escape_fragment(
 			encode(need_uri_encode, '%', c);
 		);
@@ -609,6 +594,66 @@ String::Body String::cstr_to_string_body_untaint(Language lang, SQL_Connection* 
 	info.whitespace=true;
 
 	langs.for_each(body, cstr_to_string_body_block_untaint, &info);
+
+	if(info.exception)
+		throw Exception(0,
+			0,
+			info.exception);
+
+	return String::Body(CORD_ec_to_cord(info.result));
+}
+
+const char* String::transcode_and_untaint_cstr(Language lang, const Request_charsets *charsets) const {
+	if(charsets && &charsets->source() != &charsets->client()){
+		return cstr_to_string_body_transcode_and_untaint(lang, charsets).cstr();
+	} else {
+		return cstr_to_string_body_untaint(lang, 0, charsets).cstr();
+	}
+}
+
+int cstr_to_string_body_block_transcode_and_untaint(char alang, size_t fragment_length, Cstr_to_string_body_block_info* info){
+	String::C output_c=Charset::transcode(
+		String::C(info->body->mid(info->fragment_begin, fragment_length).cstr(), fragment_length),
+		info->charsets->source(),
+		info->charsets->client()
+	);
+	String::Body output_body=String::Body(output_c);
+
+	size_t fragment_end=info->fragment_begin+fragment_length;
+	const String::Body* info_body=info->body;
+
+	info->fragment_begin=0;
+	info->body=&output_body;
+	info->body->set_pos(info->pos, 0);
+
+	int result=cstr_to_string_body_block_untaint(alang, output_c.length, info);
+
+	info->fragment_begin=fragment_end;
+	info->body=info_body;
+
+	return result;
+}
+
+String::Body String::cstr_to_string_body_transcode_and_untaint(Language lang, const Request_charsets *charsets) const {
+	if(is_empty())
+		return String::Body();
+
+	Cstr_to_string_body_block_info info;
+	// input
+	info.lang=lang;
+	info.connection=0;
+	info.charsets=charsets;
+	info.body=&body;
+	// output
+	CORD_ec_init(info.result);
+	// private
+	body.set_pos(info.pos, 0);
+	info.fragment_begin=0;
+	info.exception=0;
+	info.whitespace=true;
+
+	langs.for_each(body, cstr_to_string_body_block_transcode_and_untaint, &info);
+
 	if(info.exception)
 		throw Exception(0,
 			0,
