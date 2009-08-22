@@ -1,0 +1,39 @@
+@main[]
+$request:charset[windows-1251]
+$response:charset[windows-1251]
+$response:content-type[
+	$.value[text/html]
+	$.charset[$response:charset]
+]
+
+^do[utf-8]
+
+^do[utf-8;
+	$.content-type[
+		$.value[application/x-www-form-urlencoded]
+		$.charset[utf-8]
+	]
+]
+
+^do[windows-1251;
+	$.content-type[
+		$.value[application/x-www-form-urlencoded]
+		$.charset[windows-1251]
+	]
+]
+
+
+
+@do[sCharset;hHeaders][f]
+$f[^file::load[text;http://www.parser.ru/_/tests/228.html;
+#$f[^file::load[text;http://imp1/_/228_response.html;
+	$.charset[$sCharset]
+	$.timeout(5)
+	$.any-status(1)
+	$.method[post]
+	^if(def $hHeaders){
+		$.headers[$hHeaders]
+	}
+	$.body[charset=$sCharset&a=áóêâû&b=^taint[uri][ÁÓÊÂÛ]]
+]]
+^taint[as-is][$f.text]<br />
