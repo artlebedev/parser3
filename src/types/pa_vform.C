@@ -7,7 +7,7 @@
 	based on The CGI_C library, by Thomas Boutell.
 */
 
-static const char * const IDENT_VFORM_C="$Date: 2009/08/08 13:30:21 $";
+static const char * const IDENT_VFORM_C="$Date: 2009/08/22 14:06:14 $";
 
 #include "pa_sapi.h"
 #include "pa_vform.h"
@@ -69,15 +69,14 @@ VForm::VForm(Request_charsets& acharsets, Request_info& arequest_info): VStatele
 	fpost_charset(0)
 {
 	is_post=(arequest_info.method && StrStartFromNC(arequest_info.method, "post", true));
+	is_post_charset_detected=false;
 
 	post_content_type=UNKNOWN;
 	if(is_post && arequest_info.content_type)
-		if(StrStartFromNC(arequest_info.content_type, HTTP_CONTENT_TYPE_FORM_URLENCODED)){
+		if(StrStartFromNC(arequest_info.content_type, HTTP_CONTENT_TYPE_FORM_URLENCODED))
 			post_content_type=FORM_URLENCODED;
-			fpost_charset=detect_charset(arequest_info.content_type);
-		} else if(StrStartFromNC(arequest_info.content_type, HTTP_CONTENT_TYPE_MULTIPART_FORMDATA)) {
+		else if(StrStartFromNC(arequest_info.content_type, HTTP_CONTENT_TYPE_MULTIPART_FORMDATA))
 			post_content_type=MULTIPART_FORMDATA;
-		}
 }
 
 char *VForm::strpart(const char* str, size_t len) {
@@ -317,6 +316,7 @@ void VForm::refill_fields_tables_and_files() {
 		switch(post_content_type){
 			case FORM_URLENCODED:
 				{
+					detect_post_charset();
 					ParseFormInput(frequest_info.post_data, frequest_info.post_size, fpost_charset);
 					break;
 				}
@@ -329,6 +329,13 @@ void VForm::refill_fields_tables_and_files() {
 
 	filled_source=&fcharsets.source();
 	filled_client=&fcharsets.client();
+}
+
+void VForm::detect_post_charset(){
+	if(is_post && !is_post_charset_detected){
+		fpost_charset=detect_charset(frequest_info.content_type);
+		is_post_charset_detected=true;
+	}
 }
 
 bool VForm::should_refill_fields_tables_and_files() {
@@ -364,5 +371,6 @@ Value* VForm::get_element(const String& aname) {
 }
 
 Charset* VForm::get_post_charset(){
+	detect_post_charset();
 	return fpost_charset;
 }

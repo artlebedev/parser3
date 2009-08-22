@@ -8,7 +8,7 @@
 #ifndef PA_VFORM_H
 #define PA_VFORM_H
 
-static const char * const IDENT_VFORM_H="$Date: 2009/08/08 13:30:21 $";
+static const char * const IDENT_VFORM_H="$Date: 2009/08/22 14:06:14 $";
 
 // includes
 
@@ -68,6 +68,7 @@ private:
 	Request_info& frequest_info;
 
 	bool is_post;
+	bool is_post_charset_detected;
 	POST_CONTENT_TYPE post_content_type;
 
 	char *strpart(const char* str, size_t len);
@@ -87,6 +88,7 @@ private:
 	bool should_refill_fields_tables_and_files();
 	void refill_fields_tables_and_files();
 
+	void detect_post_charset();
 private:
 
 	Charset* filled_source;
