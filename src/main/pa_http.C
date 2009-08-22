@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
  */
 
-static const char * const IDENT_HTTP_C="$Date: 2009/08/21 08:38:55 $"; 
+static const char * const IDENT_HTTP_C="$Date: 2009/08/22 14:22:33 $"; 
 
 #include "pa_http.h"
 #include "pa_common.h"
@@ -313,25 +313,27 @@ static int http_request(char*& response, size_t& response_size,
 struct Http_pass_header_info {
 	Request_charsets* charsets;
 	String* request;
-	bool user_agent_specified;
-	bool content_type_specified;
+	bool* user_agent_specified;
+	bool* content_type_specified;
+	bool* content_type_url_encoded;
 };
 #endif
-static void http_pass_header(HashStringValue::key_type name, 
-				HashStringValue::value_type value, 
+static void http_pass_header(HashStringValue::key_type aname, 
+				HashStringValue::value_type avalue, 
 				Http_pass_header_info *info) {
 
-	String aname=String(name, String::L_URI);
+	String name=String(aname, String::L_URI);
+	String value=attributed_meaning_to_string(*avalue, String::L_URI, false);
 
-	*info->request << aname << ": "
-		<< attributed_meaning_to_string(*value, String::L_URI, false)
-		<< CRLF; 
+	*info->request << name << ": " << value << CRLF;
 	
-	const String::Body name_upper=aname.change_case(info->charsets->source(), String::CC_UPPER);
+	const String::Body name_upper=name.change_case(info->charsets->source(), String::CC_UPPER);
 	if(name_upper==HTTP_USER_AGENT_UPPER)
-		info->user_agent_specified=true;
-	if(name_upper==HTTP_CONTENT_TYPE_UPPER)
-		info->content_type_specified=true;
+		*info->user_agent_specified=true;
+	if(name_upper==HTTP_CONTENT_TYPE_UPPER){
+		*info->content_type_specified=true;
+		*info->content_type_url_encoded=StrStartFromNC(value.cstr(), HTTP_CONTENT_TYPE_FORM_URLENCODED);
+	}
 }
 
 static void http_pass_cookie(HashStringValue::key_type name, 
@@ -650,6 +652,25 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 				uuid.node[3], uuid.node[4], uuid.node[5]);
 		}
 
+		String user_headers;
+		bool user_agent_specified=false;
+		bool content_type_specified=false;
+		bool content_type_url_encoded=false;
+		if(vheaders && !vheaders->is_string()) { // allow empty
+			if(HashStringValue *headers=vheaders->get_hash()) {
+				Http_pass_header_info info={
+					&(r.charsets),
+					&user_headers,
+					&user_agent_specified,
+					&content_type_specified,
+					&content_type_url_encoded};
+				headers->for_each<Http_pass_header_info*>(http_pass_header, &info); 
+			} else
+				throw Exception(PARSER_RUNTIME, 
+					0,
+					"headers param must be hash"); 
+		};
+
 		size_t post_size=0;
 		if(form && !method_is_get) {
 			head << HTTP_CONTENT_TYPE ": " << (multipart ? HTTP_CONTENT_TYPE_MULTIPART_FORMDATA : HTTP_CONTENT_TYPE_FORM_URLENCODED);
@@ -665,17 +686,18 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 				post_size=strlen(body_cstr);
 			}
 			head << CRLF;
-		} else if (vbody) {
-			// transcode tainted pieces and then URI-encode them
-			body_cstr=vbody->as_string().untaint_cstr(String::L_AS_IS, 0, &(r.charsets));
-
-			// now transcode is needed only if own content-type was specified _and_ clean chars with code>127 are in the body
-			// @todo: I don't like the current behaviour
-			body_cstr=Charset::transcode(
-				String::C(body_cstr, strlen(body_cstr)),
-				r.charsets.source(),
-				*asked_remote_charset
-			);
+		} else if(vbody) {
+			if(content_type_url_encoded){
+				// transcode + url-escape
+				body_cstr=vbody->as_string().transcode_and_untaint_cstr(String::L_URI, &(r.charsets));
+			} else {
+				// content-type != application/x-www-form-urlencoded -> transcode only, don't url-escape!
+				body_cstr=Charset::transcode(
+					String::C(vbody->as_string().cstr(), vbody->as_string().length()),
+					r.charsets.source(),
+					*asked_remote_charset
+				);
+			}
 			post_size=strlen(body_cstr);
 		}
 
@@ -683,36 +705,25 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 		if(const String* authorization_field_value=basic_authorization_field(user_cstr, password_cstr))
 			head<<"authorization: "<<*authorization_field_value<<CRLF;
 
-		bool user_agent_specified=false;
-		bool content_type_specified=false;
-		if(vheaders && !vheaders->is_string()) { // allow empty
-			if(HashStringValue *headers=vheaders->get_hash()) {
-				Http_pass_header_info info={&(r.charsets), &head, false};
-				headers->for_each<Http_pass_header_info*>(http_pass_header, &info); 
-				user_agent_specified=info.user_agent_specified;
-				content_type_specified=info.content_type_specified;
-			} else
-				throw Exception(PARSER_RUNTIME, 
-					&connect_string,
-					"headers param must be hash"); 
-		};
+		head << user_headers;
+
 		if(!user_agent_specified) // defaulting
 			head << HTTP_USER_AGENT ": " DEFAULT_USER_AGENT CRLF;
 
 		if(form && !method_is_get && content_type_specified) // POST + form + content-type was specified
 			throw Exception(PARSER_RUNTIME,
-				&connect_string,
+				0,
 				"$.content-type can't be specified with method POST"); 
 
 		if(vcookies && !vcookies->is_string()){ // allow empty
 			if(HashStringValue* cookies=vcookies->get_hash()) {
 				head << "cookie: ";
-				Http_pass_header_info info={&(r.charsets), &head, false};
+				Http_pass_header_info info={&(r.charsets), &head, 0, 0, 0};
 				cookies->for_each<Http_pass_header_info*>(http_pass_cookie, &info); 
 				head << CRLF;
 			} else
 				throw Exception(PARSER_RUNTIME, 
-					&connect_string,
+					0,
 					"cookies param must be hash"); 
 		}
 
