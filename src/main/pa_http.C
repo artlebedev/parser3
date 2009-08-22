@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
  */
 
-static const char * const IDENT_HTTP_C="$Date: 2009/08/22 14:22:33 $"; 
+static const char * const IDENT_HTTP_C="$Date: 2009/08/22 14:23:51 $"; 
 
 #include "pa_http.h"
 #include "pa_common.h"
@@ -688,10 +688,10 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 			head << CRLF;
 		} else if(vbody) {
 			if(content_type_url_encoded){
-				// transcode + url-escape
+				// transcode + url-encode
 				body_cstr=vbody->as_string().transcode_and_untaint_cstr(String::L_URI, &(r.charsets));
 			} else {
-				// content-type != application/x-www-form-urlencoded -> transcode only, don't url-escape!
+				// content-type != application/x-www-form-urlencoded -> transcode only, don't url-encode!
 				body_cstr=Charset::transcode(
 					String::C(vbody->as_string().cstr(), vbody->as_string().length()),
 					r.charsets.source(),
