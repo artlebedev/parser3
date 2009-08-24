@@ -6,10 +6,19 @@
 ^do{^if(true){1}{2}{3}}
 <hr />
 
-^do{^eval[]}
-^do{^eval(2+2)}
-^do{^eval(2+2)[%d]}
-^do{^eval(2+2)[%d]{2}}
+^do{^for[]}
+^do{^for[i]}
+^do{^for[i](0)}
+^do{^for[i](0;1)}
+^do{^for[i](0;1){$i }}
+^do{^for[i](0;1){$i }[,]}
+^do{^for[i](0;1){$i }[,][z]}
+<hr />
+
+^do{^process[]}
+^do{^process{1}}
+^do{^process{1}[$.file[file]]}
+^do{^process{1}[$.file[file]][zigi][zigi]}
 <hr />
 
 ^do{^method[]}
