@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VALUE_C="$Date: 2009/08/08 13:30:21 $";
+static const char * const IDENT_VALUE_C="$Date: 2009/08/24 08:08:04 $";
 
 #include "pa_value.h"
 #include "pa_vstateless_class.h"
@@ -36,17 +36,16 @@ VFile* Value::as_vfile(String::Language /*lang*/, const Request_charsets* /*char
 /// call this before invoking to ensure proper actual numbered params count
 void Method::check_actual_numbered_params(Value& self, 
 					MethodParams* actual_numbered_params) const {
-
 	int actual_count=actual_numbered_params?actual_numbered_params->count():0;
-	if(actual_count<min_numbered_params_count) // not proper count? bark
+	if(actual_count<min_numbered_params_count || actual_count>max_numbered_params_count)
 		throw Exception(PARSER_RUNTIME,
 			0,
-			"native method of %s (%s) accepts minimum %d parameter(s) (%d present)", 
+			"native method of %s (%s) accepts %s %d parameter(s) (%d present)", 
 				self.get_class()->name_cstr(),
 				self.type(),
-				min_numbered_params_count,
+				actual_count<min_numbered_params_count ? "minimum" : "maximum",
+				actual_count<min_numbered_params_count ? min_numbered_params_count : max_numbered_params_count,
 				actual_count);
-
 }
 
 // attributed meaning

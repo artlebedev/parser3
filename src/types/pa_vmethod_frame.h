@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2009/08/14 10:39:48 $";
+static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2009/08/24 08:08:04 $";
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
@@ -266,35 +266,31 @@ public: // usage
 
 	void store_params(Value **params, size_t count) {
 		const Method& method=*junction.method;
-		size_t max_params=
-			method.max_numbered_params_count?method.max_numbered_params_count:
-			method.params_names?method.params_names->count():
-			0;
-
-		if(count>max_params)
-			throw Exception(PARSER_RUNTIME,
-				0, //&name(),
-				"method of %s (%s) accepts maximum %d parameter(s)", 
-					junction.self.get_class()->name_cstr(),
-					junction.self.type(),
-					max_params);
 
 		if(method.params_names) {
-			size_t i=0;
+			size_t param_count=method.params_names->count();
 
-			for (; i<count; i++){
+			if(count>param_count)
+				throw Exception(PARSER_RUNTIME,
+					0, //&name(),
+					"method of %s (%s) accepts maximum %d parameter(s) (%d present)", 
+					junction.self.get_class()->name_cstr(),
+					junction.self.type(),
+					param_count,
+					count);
+
+			size_t i=0;
+			for(; i<count; i++) {
 				const String& fname=*(*method.params_names)[i];
 				set_my_variable(fname, *params[i]);
 			}
 
-			size_t param_count=method.params_names->count();
 			for(; i<param_count; i++) {
 				const String& fname=*(*method.params_names)[i];
 				my->put(fname, VVoid::get());
 			}
-		} else {
+		} else
 			fnumbered_params.store_params(params,count);
-		}
 	}
 
 	void empty_params(){
