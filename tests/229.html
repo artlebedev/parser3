@@ -1,0 +1,27 @@
+@main[]
+^do{^if[]}
+^do{^if(true)}
+^do{^if(true){1}}
+^do{^if(true){1}{2}}
+^do{^if(true){1}{2}{3}}
+<hr />
+
+^do{^eval[]}
+^do{^eval(2+2)}
+^do{^eval(2+2)[%d]}
+^do{^eval(2+2)[%d]{2}}
+<hr />
+
+^do{^method[]}
+^do{^method(1)}
+^do{^method(1){1}}
+^do{^method(1){1}{2}}
+
+
+
+@do[jCode]
+^try{$jCode}{$exception.handled(1)$exception.source $exception.comment}<br />
+
+
+@method[a;b]
+$a=$b
