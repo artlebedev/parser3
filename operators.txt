@@ -538,8 +538,8 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !^reflection:classes[]                 хеш со всеми классами. ключ -- имя класса, значение бывает methoded (класс с методами) или void
     !^reflection:class[объект]             класс переданного объекта
     !^reflection:class_name[объект]        имя класса переданного объекта
-    !^reflection:base[объект]              класс переданного объекта
-    !^reflection:base_name[объект]         имя класса переданного объекта
+    !^reflection:base[объект]              родительский класс переданного объекта
+    !^reflection:base_name[объект]         имя родительского класса переданного объекта
     !^reflection:methods[класс]            хеш со списком методов указанного класса, значения -- строки 'native' или 'parser'
     !^reflection:method_info[класс;метод]  хеш с параметрами указанного метода класса
          $.inherited[класс]                имя класса, где метод был определён (возвращается только если метод был определён в предке)
@@ -549,7 +549,9 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
              .call_type[dynamic|static|any]
          для parser классов возвращается хеш:
              ключ -- номер параметра (0, 1, ...), значение - имя параметра
-    !^reflection:dynamical[[object or class, caller if absent]]    возвращает true, если метод был вызван динамически
+    !^reflection:dynamical[[object or class, caller if absent]]    возвращает true, если метод был вызван из динамического контекста
+                                                                   при передаче параметра возвращает true, если передан динамический объект,
+                                                                   false если класс
 
 
 !mail
