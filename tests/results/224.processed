@@ -1,5 +1,5 @@
 content-type: text/html
-content-length: 1677
+content-length: 1782
 
 cookie<br />env<br />hash - methoded<br />table - methoded<br />test - methoded<br />test1 - methoded<br />test2 - methoded
 <hr />
@@ -21,7 +21,9 @@ env<br />
 <br />
 @create[v]
 <br />
-@m[]
+@create0[]
+<br />
+@m[x;y;z]
 <br /><br />
 'test' object class name: 'test/test'<br />
 'test' object base class name: '/'<br />
@@ -32,9 +34,11 @@ env<br />
 <br />
 @create[v] {defined in test}
 <br />
+@create0[] {defined in test}
+<br />
 @create1[v]
 <br />
-@m[] {defined in test}
+@m[x;y;z] {defined in test}
 <br /><br />
 'test1' object class name: 'test1/test1'<br />
 'test1' object base class name: 'test/test'<br />
@@ -45,11 +49,13 @@ env<br />
 <br />
 @create[v] {defined in test}
 <br />
+@create0[] {defined in test}
+<br />
 @create1[v] {defined in test1}
 <br />
 @create2[v]
 <br />
-@m[] {defined in test}
+@m[x;y;z] {defined in test}
 <br /><br />
 'test2' object class name: 'test2/test2'<br />
 'test2' object base class name: 'test1/test1'<br />
