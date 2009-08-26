@@ -8,7 +8,7 @@
 #ifndef COMPILE_TOOLS
 #define COMPILE_TOOLS
 
-static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2009/08/14 23:36:55 $";
+static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2009/08/26 13:55:57 $";
 
 #include "pa_opcode.h"
 #include "pa_types.h"
@@ -132,7 +132,7 @@ public:
 
 	VStateless_class* get_existed_class(VStateless_class* aclass){
 		if(aclass)
-			if(Value* class_value=request.get_class(aclass->name()))
+			if(Value* class_value=request.classes().get(aclass->name()))
 				return class_value->get_class();
 		return 0;
 	}
