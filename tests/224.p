@@ -8,8 +8,9 @@ $a[aaa]
 @create[v][x]
 $value[$v]
 
+@create0[]
 
-@m[][a;b;c]
+@m[x;y;z][a;b;c]
 $value
 
 
