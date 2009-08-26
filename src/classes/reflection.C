@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REFLECTION_C="$Date: 2009/08/14 23:37:07 $";
+static const char * const IDENT_REFLECTION_C="$Date: 2009/08/26 13:46:12 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
@@ -83,7 +83,7 @@ static void _create(Request& r, MethodParams& params) {
 
 		max_params_count=method->max_numbered_params_count;
 	} else {
-		max_params_count=method->params_names->count();
+		max_params_count=method->params_names?method->params_names->count():0;
 	}
 
 	if(nparams>max_params_count)
