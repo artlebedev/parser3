@@ -1,11 +1,11 @@
 /** @file
 	Parser: random related functions.
 
-	Copyright (c) 2001-2008 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_RANDOM_C="$Date: 2009/01/25 01:57:36 $";
+static const char * const IDENT_RANDOM_C="$Date: 2009/08/27 10:21:10 $";
 
 // includes
 

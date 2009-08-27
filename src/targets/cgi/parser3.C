@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_PARSER3_C="$Date: 2009/08/08 13:30:21 $";
+static const char * const IDENT_PARSER3_C="$Date: 2009/08/27 10:21:28 $";
 
 #include "pa_config_includes.h"
 
@@ -598,7 +598,7 @@ static void call_real_parser_handler__supress_system_exception(
 static void usage(const char* program) {
 	printf(
 		"Parser/%s\n"
-		"Copyright(c) 2001-2008 ArtLebedev Group (http://www.artlebedev.com)\n"
+		"Copyright(c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)\n"
 		"Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)\n"
 		"\n"
 		"Usage: %s [options] file\n"
