@@ -2,7 +2,7 @@ Content-Type: text/html
 Content-Length: 172
 
 $f.name: 177.html<br />
-$f.Content-Type: application/octet-stream<br />
+$f.content-type: application/octet-stream<br />
 $f.size: !=0<br />
 $f.cdate: date<br />
 $f.mdate: date<br />
