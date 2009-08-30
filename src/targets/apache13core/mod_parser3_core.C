@@ -5,7 +5,7 @@ Parser: apache 1.3 module, part, compiled by parser3project.
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_MOD_PARSER3_MAIN_C="$Date: 2009/01/12 07:48:46 $";
+static const char * const IDENT_MOD_PARSER3_MAIN_C="$Date: 2009/08/30 05:29:20 $";
 
 #include "pa_config_includes.h"
 
@@ -170,7 +170,7 @@ void SAPI::add_header_attribute(SAPI_Info& SAPI_info,
 	* case.
 		*/
 		*SAPI_info.r->content_type = pa_ap_pstrdup(SAPI_info.r->pool, dont_store_value);
-	} else if(strcasecmp(dont_store_key, "status")==0) 
+	} else if(strcasecmp(dont_store_key, HTTP_STATUS)==0) 
 		*SAPI_info.r->status=atoi(dont_store_value);
 	else
 		pa_ap_table_addn(SAPI_info.r->headers_out, 
@@ -334,9 +334,7 @@ int pa_parser_handler(pa_request_rec *r, Parser_module_config *dcfg) {
 		
 		// prepare header
 		SAPI::add_header_attribute(SAPI_info, HTTP_CONTENT_TYPE, "text/plain");
-		char content_length_cstr[MAX_NUMBER];
-		snprintf(content_length_cstr, MAX_NUMBER, "%u", content_length);
-		SAPI::add_header_attribute(SAPI_info, "content-length", content_length_cstr);
+		SAPI::add_header_attribute(SAPI_info, HTTP_CONTENT_LENGTH, format(content_length, "%u"));
 		
 		// send header
 		SAPI::send_header(SAPI_info);

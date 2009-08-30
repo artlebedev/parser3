@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REQUEST_C="$Date: 2009/08/21 08:38:55 $";
+static const char * const IDENT_REQUEST_C="$Date: 2009/08/30 05:28:49 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -60,11 +60,7 @@ const char* ORIGINS_CONTENT_TYPE="text/plain";
 const String main_method_name(MAIN_METHOD_NAME);
 const String auto_method_name(AUTO_METHOD_NAME);
 const String autouse_method_name(AUTOUSE_METHOD_NAME);
-const String content_transfer_encoding_name(CONTENT_TRANSFER_ENCODING_NAME);
-const String content_disposition_name(CONTENT_DISPOSITION_NAME);
-const String content_disposition_inline(CONTENT_DISPOSITION_INLINE);
-const String content_disposition_attachment(CONTENT_DISPOSITION_ATTACHMENT);
-const String content_disposition_filename_name(CONTENT_DISPOSITION_FILENAME_NAME);
+
 const String body_name(BODY_NAME);
 const String exception_type_part_name(EXCEPTION_TYPE_PART_NAME);
 const String exception_source_part_name(EXCEPTION_SOURCE_PART_NAME);
@@ -704,10 +700,8 @@ static void output_sole_piece(Request& r,
 			r.charsets.source(), 
 			r.charsets.client());
 
-	// prepare header: content-length
-	char content_length_cstr[MAX_NUMBER];
-	snprintf(content_length_cstr, MAX_NUMBER, "%u", output.length);
-	SAPI::add_header_attribute(r.sapi_info, "content-length", content_length_cstr);
+	// prepare header: Content-Length
+	SAPI::add_header_attribute(r.sapi_info, HTTP_CONTENT_LENGTH, format(output.length, "%u"));
 
 	// send header
 	SAPI::send_header(r.sapi_info);
@@ -768,7 +762,7 @@ static void output_pieces(Request& r,
 		if(count == 1){
 			Range &rg = ar.get_ref(0);
 			if(rg.start == (size_t)-1 && rg.end == (size_t)-1){
-				SAPI::add_header_attribute(r.sapi_info, "status", "416 Requested Range Not Satisfiable");
+				SAPI::add_header_attribute(r.sapi_info, HTTP_STATUS, "416 Requested Range Not Satisfiable");
 				return;
 			}
 			if(rg.start == (size_t)-1 && rg.end != (size_t)-1){
@@ -782,21 +776,20 @@ static void output_pieces(Request& r,
 				part_length -= rg.start;
 			}
 			if(part_length == 0){
-				SAPI::add_header_attribute(r.sapi_info, "status", "204 No Content");
+				SAPI::add_header_attribute(r.sapi_info, HTTP_STATUS, "204 No Content");
 				return;
 			}
-			SAPI::add_header_attribute(r.sapi_info, "status", "206 Partial Content");
+			SAPI::add_header_attribute(r.sapi_info, HTTP_STATUS, "206 Partial Content");
 			snprintf(buf, BUFSIZE, "bytes %u-%u/%u", rg.start, rg.end, content_length);
 			SAPI::add_header_attribute(r.sapi_info, "Content-Range", buf);
 		}else if(count != 0){
-			SAPI::add_header_attribute(r.sapi_info, "status", "501 Not Implemented");
+			SAPI::add_header_attribute(r.sapi_info, HTTP_STATUS, "501 Not Implemented");
 			return;
 		}
 	}
 
 
-	snprintf(buf, BUFSIZE, "%u", part_length);
-	SAPI::add_header_attribute(r.sapi_info, "Content-Length", buf);
+	SAPI::add_header_attribute(r.sapi_info, HTTP_CONTENT_LENGTH, format(part_length, "%u"));
 
 	if(add_last_modified){
 		const String &s = attributed_meaning_to_string(date, String::L_AS_IS, true);
@@ -860,7 +853,7 @@ void Request::output_result(VFile* body_file, bool header_only, bool as_attachme
 			h.put(value_name, new VString( as_attachment ? content_disposition_attachment : content_disposition_inline ));
 
 			h.put(content_disposition_filename_name, vfile_name);
-			response.fields().put(content_disposition_name, &hash);
+			response.fields().put(content_disposition, &hash);
 
 			if(!body_file_content_type)
 				body_file_content_type=new VString(mime_type_of(sfile_name.cstr()));

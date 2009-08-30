@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2009/08/08 13:30:20 $";
+static const char * const IDENT_FILE_C="$Date: 2009/08/30 05:28:33 $";
 
 #include "pa_config_includes.h"
 
@@ -418,10 +418,7 @@ static void _exec_cgi(Request& r, MethodParams& params, bool cgi) {
 	ECSTR(QUERY_STRING, r.request_info.query_string);
 	ECSTR(REQUEST_URI, r.request_info.uri);
 	ECSTR(CONTENT_TYPE, r.request_info.content_type);
-	char content_length_cstr[MAX_NUMBER];  
-	snprintf(content_length_cstr, MAX_NUMBER, "%u", r.request_info.content_length);
-	//String content_length(content_length_cstr);
-	ECSTR(CONTENT_LENGTH, content_length_cstr);
+	ECSTR(CONTENT_LENGTH, format(r.request_info.content_length, "%u"));
 	// SCRIPT_*
 	env.put(String::Body("SCRIPT_NAME"), script_name);
 	//env.put(String::Body("SCRIPT_FILENAME"), ??&script_name);

@@ -1,5 +1,5 @@
-content-type: text/html
-content-length: 165
+Content-Type: text/html
+Content-Length: 165
 
 ^file::load[text: 'text'<br />
 ^file::load[binary: 'binary'<br />

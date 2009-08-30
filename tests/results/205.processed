@@ -1,5 +1,5 @@
-content-disposition: inline; filename=zigi.txt
-content-type: application/octet-stream
-content-length: 17
+Content-Disposition: inline; filename=zigi.txt
+Content-Type: application/octet-stream
+Content-Length: 17
 
 text file content

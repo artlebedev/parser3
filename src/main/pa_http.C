@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
  */
 
-static const char * const IDENT_HTTP_C="$Date: 2009/08/22 14:23:51 $"; 
+static const char * const IDENT_HTTP_C="$Date: 2009/08/30 05:28:49 $"; 
 
 #include "pa_http.h"
 #include "pa_common.h"
@@ -66,7 +66,7 @@ size_t guess_content_length(char* buf) {
 	char* ptr;
 	if((ptr=strstr(buf, "Content-Length:"))) // Apache
 		goto found;
-	if((ptr=strstr(buf, "content-length:"))) // Parser 3
+	if((ptr=strstr(buf, "content-length:"))) // Parser 3 before 3.4.0
 		goto found;
 	if((ptr=strstr(buf, "Content-length:"))) // maybe 1
 		goto found;
@@ -75,7 +75,7 @@ size_t guess_content_length(char* buf) {
 	return 0;
 found:
 	char *error_pos;
-	size_t result=(size_t)strtol(ptr+15/*strlen("CONTENT-LENGTH:")*/, &error_pos, 0);
+	size_t result=(size_t)strtol(ptr+15/*strlen("Content-Length:")*/, &error_pos, 0);
 	
 	const size_t reasonable_initial_max=0x400*0x400*10 /*10M*/;
 	if(result>reasonable_initial_max) // sanity check
@@ -85,8 +85,8 @@ found:
 
 static int http_read_response(char*& response, size_t& response_size, int sock, bool fail_on_status_ne_200) {
 	int result=0;
-	// fetching some to local buffer, guessing on possible content-length	
-	response_size=0x400*20; // initial size if content-length could not be determined	
+	// fetching some to local buffer, guessing on possible Content-Length
+	response_size=0x400*20; // initial size if Content-Length could not be determined	
 	const size_t preview_size=0x400*20;
 	char preview_buf[preview_size+1/*terminator*/];  // 20K buffer to preview headers
 	ssize_t received_size=recv(sock, preview_buf, preview_size, 0); 
@@ -135,9 +135,9 @@ static int http_read_response(char*& response, size_t& response_size, int sock, 
 		// we use terminator byte for two purposes here:
 		// 1. we return there zero always, not knowing: maybe they would want to create String form $file.body?
 		//     invariant: all Strings should have zero-terminated buffers
-		// 2. we use that out-of-size byte to detect if our content-length guess was wrong
+		// 2. we use that out-of-size byte to detect if our Content-Length guess was wrong
 		//    when recv gets more than we expected
-		//    a) we know that the content-length guess was wrong
+		//    a) we know that the Content-Length guess was wrong
 		//    b) we have space to put the first byte of extra data
 		//    c) we use less code to detect normal situation: on last while-cycle recv expected to just return 0
 		while(true) {
@@ -327,10 +327,10 @@ static void http_pass_header(HashStringValue::key_type aname,
 
 	*info->request << name << ": " << value << CRLF;
 	
-	const String::Body name_upper=name.change_case(info->charsets->source(), String::CC_UPPER);
-	if(name_upper==HTTP_USER_AGENT_UPPER)
+	const String::Body NAME=name.change_case(info->charsets->source(), String::CC_UPPER);
+	if(NAME==HTTP_USER_AGENT_UPPER)
 		*info->user_agent_specified=true;
-	if(name_upper==HTTP_CONTENT_TYPE_UPPER){
+	if(NAME==HTTP_CONTENT_TYPE_UPPER){
 		*info->content_type_specified=true;
 		*info->content_type_url_encoded=StrStartFromNC(value.cstr(), HTTP_CONTENT_TYPE_FORM_URLENCODED);
 	}
@@ -413,7 +413,7 @@ struct FormPart {
 
 static void form_part_boundary_header(FormPart& part, String::Body name, const char* file_name=0){
 	part.string << "--" << part.boundary
-				<< CRLF HTTP_CONTENT_DISPOSITION ": form-data; name=\"" 
+				<< CRLF CONTENT_DISPOSITION ": form-data; name=\"" 
 				<< Charset::transcode(name, part.r->charsets.source(), part.r->charsets.client())
 				<< "\"";
 	if(file_name){
@@ -636,7 +636,7 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 		if(method_is_get && form)
 			head << (strchr(uri, '?')!=0?"&":"?") << pa_form2string(*form, r.charsets);
 
-		head <<" HTTP/1.0" CRLF "host: "<< host << CRLF;
+		head <<" HTTP/1.0" CRLF "Host: "<< host << CRLF;
 
 		char* boundary=0;
 
@@ -703,7 +703,7 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 
 		// http://www.ietf.org/rfc/rfc2617.txt
 		if(const String* authorization_field_value=basic_authorization_field(user_cstr, password_cstr))
-			head<<"authorization: "<<*authorization_field_value<<CRLF;
+			head<<"Authorization: "<<*authorization_field_value<<CRLF;
 
 		head << user_headers;
 
@@ -717,7 +717,7 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 
 		if(vcookies && !vcookies->is_string()){ // allow empty
 			if(HashStringValue* cookies=vcookies->get_hash()) {
-				head << "cookie: ";
+				head << "Cookie: ";
 				Http_pass_header_info info={&(r.charsets), &head, 0, 0, 0};
 				cookies->for_each<Http_pass_header_info*>(http_pass_cookie, &info); 
 				head << CRLF;
@@ -728,7 +728,7 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 		}
 
 		if(body_cstr)
-			head << "content-length: " << format(post_size, "%u") << CRLF;
+			head << HTTP_CONTENT_LENGTH << ": " << format(post_size, "%u") << CRLF;
 
 		// head + end of header
 		request_head_and_body << head.untaint_cstr(String::L_AS_IS, 0, &(r.charsets)) << CRLF;

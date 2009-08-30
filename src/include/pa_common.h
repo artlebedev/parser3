@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-static const char * const IDENT_COMMON_H="$Date: 2009/08/05 08:57:34 $";
+static const char * const IDENT_COMMON_H="$Date: 2009/08/30 05:28:41 $";
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -19,12 +19,30 @@ class Request;
 #define HTTP_USER_AGENT_UPPER	"USER-AGENT"
 #define HTTP_CONTENT_TYPE_UPPER	"CONTENT-TYPE"
 #define HTTP_USER_AGENT	"User-Agent"
+#define HTTP_STATUS	"Status"
+#define HTTP_CONTENT_LENGTH	"Content-Length"
+
 #define HTTP_CONTENT_TYPE	"Content-Type"
-#define HTTP_CONTENT_DISPOSITION	"Content-Disposition"
 #define HTTP_CONTENT_TYPE_FORM_URLENCODED	"application/x-www-form-urlencoded"
 #define HTTP_CONTENT_TYPE_MULTIPART_FORMDATA	"multipart/form-data"
 #define HTTP_CONTENT_TYPE_MULTIPART_RELATED	"multipart/related"
 #define HTTP_CONTENT_TYPE_MULTIPART_MIXED	"multipart/mixed"
+
+#define CONTENT_TRANSFER_ENCODING_NAME "Content-Transfer-Encoding"
+
+#define CONTENT_DISPOSITION	"Content-Disposition"
+#define CONTENT_DISPOSITION_LOWER "content-disposition"
+#define CONTENT_DISPOSITION_ATTACHMENT "attachment"
+#define CONTENT_DISPOSITION_INLINE "inline"
+#define CONTENT_DISPOSITION_FILENAME_NAME "filename"
+
+const String content_transfer_encoding_name(CONTENT_TRANSFER_ENCODING_NAME);
+
+const String content_disposition(CONTENT_DISPOSITION);
+const String content_disposition_inline(CONTENT_DISPOSITION_INLINE);
+const String content_disposition_attachment(CONTENT_DISPOSITION_ATTACHMENT);
+const String content_disposition_filename_name(CONTENT_DISPOSITION_FILENAME_NAME);
+
 
 #define HASH_ORDER
 

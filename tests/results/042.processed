@@ -1,5 +1,5 @@
-content-type: text/html
-content-length: 91
+Content-Type: text/html
+Content-Length: 91
 
 type=test<br>
 source=this is the cause of error<br>

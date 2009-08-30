@@ -1,5 +1,5 @@
-content-type: text/html
-content-length: 266
+Content-Type: text/html
+Content-Length: 266
 
 ^while(true){.^break[].}:
 1,3,5,7,9

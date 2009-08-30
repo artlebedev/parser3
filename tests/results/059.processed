@@ -1,5 +1,5 @@
-content-type: text/html
-content-length: 99
+Content-Type: text/html
+Content-Length: 99
 
 ...a...<br />
 ...'a' not in list 'ax,b,c'...<br />

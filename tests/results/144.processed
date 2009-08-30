@@ -1,5 +1,5 @@
-content-type: text/html
-content-length: 1181
+Content-Type: text/html
+Content-Length: 1181
 
 <pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;doc&gt;&lt;first:elementWithNamespace1/&gt;&lt;/doc&gt;

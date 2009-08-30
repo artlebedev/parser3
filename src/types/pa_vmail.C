@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_VMAIL_C="$Date: 2009/08/08 13:30:21 $";
+static const char * const IDENT_VMAIL_C="$Date: 2009/08/30 05:29:01 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -524,7 +524,7 @@ static void store_message_element(HashStringValue::key_type raw_element_name,
 	// fetch some special headers
 	if(low_element_name=="from")
 		info->from=&extractEmails(element_value->as_string());
-	if(low_element_name==CONTENT_DISPOSITION_NAME)
+	if(low_element_name==CONTENT_DISPOSITION_LOWER)
 		info->had_content_disposition=true;
 	if(info->extract_to) { // defined only when SMTP used, see mail.C [collecting info for RCPT to-s]
 		bool is_to=low_element_name=="to" ;
@@ -638,7 +638,7 @@ static const String& file_value_to_string(Request& r, Value* send_value) {
 	if(!info.had_content_disposition) {
 		// $.content-disposition wasn't specified
 		result
-			<< HTTP_CONTENT_DISPOSITION ": "
+			<< CONTENT_DISPOSITION ": "
 			<< ( vcid ? CONTENT_DISPOSITION_INLINE : CONTENT_DISPOSITION_ATTACHMENT )
 			<< "; "
 			<< CONTENT_DISPOSITION_FILENAME_NAME"=\"" << file_name_cstr << "\"\n";

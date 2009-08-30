@@ -1,5 +1,5 @@
-content-type: text/html
-content-length: 58
+Content-Type: text/html
+Content-Length: 58
 
 '' -- should be empty string!
 <hr />

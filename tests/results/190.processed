@@ -1,5 +1,5 @@
-content-type: text/html
-content-length: 63
+Content-Type: text/html
+Content-Length: 63
 
 test190_a<br />
 non-exist $test190:b was requested<br />

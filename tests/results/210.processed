@@ -1,5 +1,5 @@
-content-type: text/html
-content-length: 94
+Content-Type: text/html
+Content-Length: 94
 
 a&quot;a: 'a"a', b&quot;b: 'b&quot;b'
 <hr />

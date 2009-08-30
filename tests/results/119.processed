@@ -1,5 +1,5 @@
-content-type: text/html
-content-length: 266
+Content-Type: text/html
+Content-Length: 266
 
 $request:charset: UTF-8<br />
 $response:charset: UTF-8<br />

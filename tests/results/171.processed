@@ -1,5 +1,5 @@
-content-type: text/html
-content-length: 1682
+Content-Type: text/html
+Content-Length: 1682
 
 Get not existing file 'notfound.txt' without $.charset option (^file::exec[script;...]):
 $f.status: !=0

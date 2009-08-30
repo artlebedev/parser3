@@ -1,5 +1,5 @@
-content-type: text/html
-content-length: 405
+Content-Type: text/html
+Content-Length: 405
 
 ^d.last-day[]: 31<br />
 ^date:last-day(2008;02): 29<br />

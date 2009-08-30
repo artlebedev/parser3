@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_PARSER3_C="$Date: 2009/08/27 10:21:28 $";
+static const char * const IDENT_PARSER3_C="$Date: 2009/08/30 05:29:46 $";
 
 #include "pa_config_includes.h"
 
@@ -165,11 +165,9 @@ static void die_or_abort(const char* fmt, va_list args, bool write_core) {
 
 	// prepare header
 	// let's be honest, that's bad we couldn't produce valid output
-	SAPI::add_header_attribute(SAPI_info, "status", "500");
+	SAPI::add_header_attribute(SAPI_info, HTTP_STATUS, "500");
 	SAPI::add_header_attribute(SAPI_info, HTTP_CONTENT_TYPE, "text/plain");
-	char content_length_cstr[MAX_NUMBER];
-	snprintf(content_length_cstr, sizeof(content_length_cstr), "%u", content_length);
-	SAPI::add_header_attribute(SAPI_info, "content-length", content_length_cstr);
+	SAPI::add_header_attribute(SAPI_info, HTTP_CONTENT_LENGTH, format(content_length, "%u"));
 
 	// send header
 	SAPI::send_header(SAPI_info);
@@ -765,9 +763,7 @@ int main(int argc, char *argv[]) {
 
 		// prepare header
 		SAPI::add_header_attribute(SAPI_info, HTTP_CONTENT_TYPE, "text/plain");
-		char content_length_cstr[MAX_NUMBER];
-		snprintf(content_length_cstr, MAX_NUMBER, "%u", content_length);
-		SAPI::add_header_attribute(SAPI_info, "content-length", content_length_cstr);
+		SAPI::add_header_attribute(SAPI_info, HTTP_CONTENT_LENGTH, format(content_length, "%u"));
 
 		// send header
 		SAPI::send_header(SAPI_info);

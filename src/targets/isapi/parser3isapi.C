@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_PARSER3ISAPI_C="$Date: 2009/01/12 07:49:59 $";
+static const char * const IDENT_PARSER3ISAPI_C="$Date: 2009/08/30 05:30:08 $";
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -212,7 +212,7 @@ void SAPI::add_header_attribute(SAPI_Info& SAPI_info,
 	if(strcasecmp(dont_store_key, "location")==0) 
 		SAPI_info.http_response_code=302;
 
-	if(strcasecmp(dont_store_key, "status")==0) 
+	if(strcasecmp(dont_store_key, HTTP_STATUS)==0) 
 		SAPI_info.http_response_code=atoi(dont_store_value);
 	else
 		(*SAPI_info.header) << pa_strdup(dont_store_key) << ": " << pa_strdup(dont_store_value) << "\r\n";
@@ -477,7 +477,7 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 		char header_buf[MAX_STRING];
 		int header_len=snprintf(header_buf, MAX_STRING,
 			HTTP_CONTENT_TYPE ": text/plain\r\n"
-			"content-length: %u\r\n"
+			HTTP_CONTENT_LENGTH ": %u\r\n"
 //			"expires: Fri, 23 Mar 2001 09:32:23 GMT\r\n"
 			"\r\n",
 			content_length);
@@ -510,7 +510,7 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 		char header_buf[MAX_STRING];
 		int header_len=snprintf(header_buf, MAX_STRING,
 			HTTP_CONTENT_TYPE ": text/plain\r\n"
-			"content-length: %u\r\n"
+			HTTP_CONTENT_LENGTH ": %u\r\n"
 			"expires: Fri, 23 Mar 2001 09:32:23 GMT\r\n"
 			"\r\n",
 			content_length);

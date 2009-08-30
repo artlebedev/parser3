@@ -1,5 +1,5 @@
-set-cookie: name=value; expires=Fri, 31 Dec 1999 21:00:00 GMT; path=/
-content-type: text/html
-content-length: 6
+Set-Cookie: name=value; expires=Fri, 31 Dec 1999 21:00:00 GMT; path=/
+Content-Type: text/html
+Content-Length: 6
 
 value!

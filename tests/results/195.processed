@@ -1,5 +1,5 @@
-content-type: text/html; charset=UTF-8
-content-length: 1432
+Content-Type: text/html; charset=UTF-8
+Content-Length: 1432
 
 <hr />
 <h2>Load remote file in WIN-1251 with uploading file in UTF-8</h2>

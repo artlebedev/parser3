@@ -1,5 +1,5 @@
-content-type: text/html
-content-length: 16
+Content-Type: text/html
+Content-Length: 16
 
 a=1<br>
 b=2<br>

@@ -1,5 +1,5 @@
-content-type: text/html
-content-length: 122
+Content-Type: text/html
+Content-Length: 122
 
 $request:charset (UTF-8): =проверка=<br />
 UTF-8: =проверка=<br />

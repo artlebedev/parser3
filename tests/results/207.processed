@@ -1,5 +1,5 @@
-content-type: text/html
-content-length: 387
+Content-Type: text/html
+Content-Length: 387
 
 ^math:abs(-2): 2<br />
 ^math:abs(5): 5<br />

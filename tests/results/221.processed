@@ -1,5 +1,5 @@
-content-type: text/html
-content-length: 206
+Content-Type: text/html
+Content-Length: 206
 
 a: '11', b: '12', c: '13'
 <br />

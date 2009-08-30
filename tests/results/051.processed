@@ -1,5 +1,5 @@
-content-type: text/html
-content-length: 67
+Content-Type: text/html
+Content-Length: 67
 
 t.test=ct<br>
 base.test=ct<br>

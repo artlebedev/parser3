@@ -1,5 +1,5 @@
-content-type: text/html
-content-length: 69
+Content-Type: text/html
+Content-Length: 69
 
 file was saved (EXIST)<br />
 file was deleted (DOES NOT EXIST)<br />
