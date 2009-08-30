@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REQUEST_C="$Date: 2009/08/30 05:28:49 $";
+static const char * const IDENT_REQUEST_C="$Date: 2009/08/30 06:05:56 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -513,7 +513,8 @@ t[9]-t[3]
 			// doing that ugly
 
 			// future $response:content-type
-			response.fields().put(content_type_name, 
+			response.fields().remove(content_type_name);
+			response.fields().put(http_content_type, 
 				new VString(*new String(UNHANDLED_EXCEPTION_CONTENT_TYPE)));
 			// future $response:body
 			body_string=new String(exception_cstr);
@@ -860,15 +861,15 @@ void Request::output_result(VFile* body_file, bool header_only, bool as_attachme
 		}
 	}
 
-	// set content-type
-	if(body_file_content_type) {
-		// body file content type
-		response.fields().put(content_type_name, body_file_content_type);
-	} else {
-		// default content type
-		response.fields().put_dont_replace(content_type_name, 
-			new VString(*new String(DEFAULT_CONTENT_TYPE)));
-	}
+	// set Content-Type
+	response.fields().put(http_content_type,
+		body_file_content_type
+			? body_file_content_type
+			: response.fields().get(content_type_name)
+				? response.fields().get(content_type_name)
+				: new VString(*new String(DEFAULT_CONTENT_TYPE)));
+
+	response.fields().remove(content_type_name);
 
 	// prepare header: $response:fields without :body
 	Add_header_attribute_info info(*this);

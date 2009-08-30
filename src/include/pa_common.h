@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-static const char * const IDENT_COMMON_H="$Date: 2009/08/30 05:28:41 $";
+static const char * const IDENT_COMMON_H="$Date: 2009/08/30 06:04:23 $";
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -35,6 +35,8 @@ class Request;
 #define CONTENT_DISPOSITION_ATTACHMENT "attachment"
 #define CONTENT_DISPOSITION_INLINE "inline"
 #define CONTENT_DISPOSITION_FILENAME_NAME "filename"
+
+const String http_content_type(HTTP_CONTENT_TYPE);
 
 const String content_transfer_encoding_name(CONTENT_TRANSFER_ENCODING_NAME);
 
