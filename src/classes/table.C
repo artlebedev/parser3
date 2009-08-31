@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2009/08/08 13:30:20 $";
+static const char * const IDENT_TABLE_C="$Date: 2009/08/31 08:28:53 $";
 
 #if (!defined(NO_STRINGSTREAM) && !defined(FREEBSD4))
 #include <sstream>
@@ -17,6 +17,7 @@ using namespace std;
 
 #include "pa_common.h"
 #include "pa_request.h"
+#include "pa_charsets.h"
 #include "pa_vtable.h"
 #include "pa_vint.h"
 #include "pa_sql_connection.h"
@@ -911,7 +912,15 @@ static void _sort(Request& r, MethodParams& params) {
 		else
 			seq[i].value.d=value.as_double();
 	}
-	// sort keys
+
+	// @todo: handle this elsewhere
+	if(r.charsets.source().NAME()=="KOI8-R" && key_values_are_strings) {
+		for(i=0; i<old_count; i++)
+			if(*seq[i].value.c_str)
+				seq[i].value.c_str=Charset::transcode(seq[i].value.c_str, r.charsets.source(), UTF8_charset).cstr();
+	}
+
+// sort keys
 	_qsort(seq, old_count, sizeof(Table_seq_item), 
 		key_values_are_strings?sort_cmp_string:sort_cmp_double);
 
