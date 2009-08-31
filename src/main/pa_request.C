@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REQUEST_C="$Date: 2009/08/30 06:05:56 $";
+static const char * const IDENT_REQUEST_C="$Date: 2009/08/31 13:03:16 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -200,7 +200,7 @@ Value& Request::get_self() { return method_frame/*always have!*/->self(); }
 
 Value* Request::get_class(const String& name){
 	Value* result=classes().get(name);
-	if(!result){
+	if(!result)
 		if(Value* value=main_class.get_element(autouse_method_name))
 			if(Junction* junction=value->get_junction())
 				if(const Method *method=junction->method) {
@@ -214,7 +214,7 @@ Value* Request::get_class(const String& name){
 
 					result=classes().get(name);
 				}
-	}
+
 	return result;
 }
 
@@ -719,8 +719,7 @@ struct Range
 	size_t end;
 };
 #endif
-static void parse_range(const String* s, Array<Range> &ar)
-{
+static void parse_range(const String* s, Array<Range> &ar) {
 	const char *p = s->cstr();
 	if(s->starts_with("bytes="))
 		p += 6;
@@ -834,11 +833,8 @@ void Request::output_result(VFile* body_file, bool header_only, bool as_attachme
 	Value* vfile_name=body_file->fields().get(name_name);
 	if(!vfile_name) {
 		vfile_name=body_file->fields().get(response_body_file_name);
-		if(vfile_name)
-		{
-			const String& sfile_name=vfile_name->as_string();
-
-			char* name_cstr=sfile_name.cstrm();
+		if(vfile_name) {
+			char* name_cstr=vfile_name->as_string().cstrm();
 			if(char *after_slash=rsplit(name_cstr, '\\'))
 				name_cstr=after_slash;
 			if(char *after_slash=rsplit(name_cstr, '/'))
@@ -852,8 +848,8 @@ void Request::output_result(VFile* body_file, bool header_only, bool as_attachme
 			VHash& hash=*new VHash();
 			HashStringValue &h=hash.hash();
 			h.put(value_name, new VString( as_attachment ? content_disposition_attachment : content_disposition_inline ));
-
 			h.put(content_disposition_filename_name, vfile_name);
+
 			response.fields().put(content_disposition, &hash);
 
 			if(!body_file_content_type)
@@ -914,8 +910,8 @@ const String& Request::mime_type_of(const char* user_file_name_cstr) {
 			String sext(++cext);
 			Table::Action_options options;
 			if(mime_types->locate(0, sext.change_case(charsets.source(), String::CC_LOWER), options))
-					if(const String* result=mime_types->item(1))
-						return *result;
+				if(const String* result=mime_types->item(1))
+					return *result;
 				else
 					throw Exception(PARSER_RUNTIME,
 						0,
