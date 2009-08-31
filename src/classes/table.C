@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2009/08/31 08:28:53 $";
+static const char * const IDENT_TABLE_C="$Date: 2009/08/31 12:55:01 $";
 
 #if (!defined(NO_STRINGSTREAM) && !defined(FREEBSD4))
 #include <sstream>
@@ -920,7 +920,7 @@ static void _sort(Request& r, MethodParams& params) {
 				seq[i].value.c_str=Charset::transcode(seq[i].value.c_str, r.charsets.source(), UTF8_charset).cstr();
 	}
 
-// sort keys
+	// sort keys
 	_qsort(seq, old_count, sizeof(Table_seq_item), 
 		key_values_are_strings?sort_cmp_string:sort_cmp_double);
 
@@ -990,9 +990,8 @@ static void _flip(Request& r, MethodParams&) {
 }
 
 static void _append(Request& r, MethodParams& params) {
-	// data
 	Temp_lang temp_lang(r, String::L_PASS_APPENDED);
-	const String& string=r.process_to_string(params.as_junction(0, "body must be code"));
+	const String& string=r.process_to_string(params[0]);
 
 	// parse cells
 	Table::element_type row=new ArrayString;
