@@ -26,7 +26,7 @@
  *
  */
 
-static const char * const IDENT_COMMON_C="$Date: 2009/08/05 08:57:27 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2009/09/03 11:08:18 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -66,6 +66,18 @@ static const char * const IDENT_COMMON_C="$Date: 2009/08/05 08:57:27 $";
 const String file_status_name(FILE_STATUS_NAME);
 
 // functions
+
+const char* capitalize(const char* s){
+	char* result=pa_strdup(s);
+	if(result){
+		bool upper=true;
+		for(char* c=result; *c; c++){
+			*c=upper ? (char)toupper((unsigned char)*c) : (char)tolower((unsigned char)*c);
+			upper=strchr("-_ ", *c) != 0;
+		}
+	}
+	return (const char*)result;
+}
 
 void fix_line_breaks(char *str, size_t& length) {
 	//_asm int 3;

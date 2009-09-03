@@ -1,14 +1,14 @@
 /** @file
 	Parser: web server api interface object decl.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_SAPI_H
 #define PA_SAPI_H
 
-static const char * const IDENT_SAPI_H="$Date: 2005/08/09 08:14:50 $";
+static const char * const IDENT_SAPI_H="$Date: 2009/09/03 11:08:28 $";
 
 // includes
 
@@ -34,8 +34,7 @@ struct SAPI {
 	/// read POST request bytes
 	static size_t read_post(SAPI_Info& info, char *buf, size_t max_bytes);
 	/// add response header attribute [but do not send it to client]
-	static void add_header_attribute(SAPI_Info& info, 
-		const char* dont_store_key, const char* dont_store_value);
+	static void add_header_attribute(SAPI_Info& info, const char* dont_store_key, const char* dont_store_value);
 	/// send collected header attributes to client
 	static void send_header(SAPI_Info& info);
 	/// output body bytes

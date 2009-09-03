@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_PARSER3_C="$Date: 2009/08/30 05:29:46 $";
+static const char * const IDENT_PARSER3_C="$Date: 2009/09/03 11:08:54 $";
 
 #include "pa_config_includes.h"
 
@@ -237,7 +237,7 @@ size_t SAPI::read_post(SAPI_Info& , char *buf, size_t max_bytes) {
 
 void SAPI::add_header_attribute(SAPI_Info& , const char* dont_store_key, const char* dont_store_value) {
 	if( cgi && (!request || !request->console.was_used()) )
-		printf("%s: %s\n", dont_store_key, dont_store_value);
+		printf("%s: %s\n", capitalize(dont_store_key), dont_store_value);
 }
 
 /// @todo intelligent cache-control

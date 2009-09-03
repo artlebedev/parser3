@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
  */
 
-static const char * const IDENT_HTTP_C="$Date: 2009/08/30 05:28:49 $"; 
+static const char * const IDENT_HTTP_C="$Date: 2009/09/03 11:08:18 $"; 
 
 #include "pa_http.h"
 #include "pa_common.h"
@@ -323,14 +323,18 @@ static void http_pass_header(HashStringValue::key_type aname,
 				Http_pass_header_info *info) {
 
 	String name=String(aname, String::L_URI);
+	const char* name_cstr=name.cstr();
+
+	if(strcasecmp(name_cstr, HTTP_CONTENT_LENGTH)==0)
+		return;
+
 	String value=attributed_meaning_to_string(*avalue, String::L_URI, false);
 
 	*info->request << name << ": " << value << CRLF;
 	
-	const String::Body NAME=name.change_case(info->charsets->source(), String::CC_UPPER);
-	if(NAME==HTTP_USER_AGENT_UPPER)
+	if(strcasecmp(name_cstr, HTTP_USER_AGENT)==0)
 		*info->user_agent_specified=true;
-	if(NAME==HTTP_CONTENT_TYPE_UPPER){
+	if(strcasecmp(name_cstr, HTTP_CONTENT_TYPE)==0){
 		*info->content_type_specified=true;
 		*info->content_type_url_encoded=StrStartFromNC(value.cstr(), HTTP_CONTENT_TYPE_FORM_URLENCODED);
 	}
@@ -673,7 +677,7 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 
 		size_t post_size=0;
 		if(form && !method_is_get) {
-			head << HTTP_CONTENT_TYPE ": " << (multipart ? HTTP_CONTENT_TYPE_MULTIPART_FORMDATA : HTTP_CONTENT_TYPE_FORM_URLENCODED);
+			head << "Content-Type: " << (multipart ? HTTP_CONTENT_TYPE_MULTIPART_FORMDATA : HTTP_CONTENT_TYPE_FORM_URLENCODED);
 
 			if(!omit_post_charset)
 				head << "; charset=" << asked_remote_charset->NAME_CSTR();
@@ -687,6 +691,7 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 			}
 			head << CRLF;
 		} else if(vbody) {
+			// $.body was specified
 			if(content_type_url_encoded){
 				// transcode + url-encode
 				body_cstr=vbody->as_string().transcode_and_untaint_cstr(String::L_URI, &(r.charsets));
@@ -703,12 +708,12 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 
 		// http://www.ietf.org/rfc/rfc2617.txt
 		if(const String* authorization_field_value=basic_authorization_field(user_cstr, password_cstr))
-			head<<"Authorization: "<<*authorization_field_value<<CRLF;
+			head << "Authorization: " << *authorization_field_value << CRLF;
 
 		head << user_headers;
 
 		if(!user_agent_specified) // defaulting
-			head << HTTP_USER_AGENT ": " DEFAULT_USER_AGENT CRLF;
+			head << "User-Agent: " DEFAULT_USER_AGENT CRLF;
 
 		if(form && !method_is_get && content_type_specified) // POST + form + content-type was specified
 			throw Exception(PARSER_RUNTIME,
@@ -728,7 +733,7 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 		}
 
 		if(body_cstr)
-			head << HTTP_CONTENT_LENGTH << ": " << format(post_size, "%u") << CRLF;
+			head << "Content-Length: " << format(post_size, "%u") << CRLF;
 
 		// head + end of header
 		request_head_and_body << head.untaint_cstr(String::L_AS_IS, 0, &(r.charsets)) << CRLF;

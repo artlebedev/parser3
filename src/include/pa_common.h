@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-static const char * const IDENT_COMMON_H="$Date: 2009/08/30 06:04:23 $";
+static const char * const IDENT_COMMON_H="$Date: 2009/09/03 11:08:28 $";
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -16,22 +16,20 @@ static const char * const IDENT_COMMON_H="$Date: 2009/08/30 06:04:23 $";
 class Request;
 
 // defines
-#define HTTP_USER_AGENT_UPPER	"USER-AGENT"
-#define HTTP_CONTENT_TYPE_UPPER	"CONTENT-TYPE"
-#define HTTP_USER_AGENT	"User-Agent"
-#define HTTP_STATUS	"Status"
-#define HTTP_CONTENT_LENGTH	"Content-Length"
+#define HTTP_USER_AGENT	"user-agent"
+#define HTTP_STATUS	"status"
+#define HTTP_CONTENT_LENGTH	"content-length"
 
-#define HTTP_CONTENT_TYPE	"Content-Type"
+#define HTTP_CONTENT_TYPE	"content-type"
+#define HTTP_CONTENT_TYPE_UPPER	"CONTENT-TYPE"
 #define HTTP_CONTENT_TYPE_FORM_URLENCODED	"application/x-www-form-urlencoded"
 #define HTTP_CONTENT_TYPE_MULTIPART_FORMDATA	"multipart/form-data"
 #define HTTP_CONTENT_TYPE_MULTIPART_RELATED	"multipart/related"
 #define HTTP_CONTENT_TYPE_MULTIPART_MIXED	"multipart/mixed"
 
-#define CONTENT_TRANSFER_ENCODING_NAME "Content-Transfer-Encoding"
+#define CONTENT_TRANSFER_ENCODING_NAME "content-transfer-tncoding"
 
-#define CONTENT_DISPOSITION	"Content-Disposition"
-#define CONTENT_DISPOSITION_LOWER "content-disposition"
+#define CONTENT_DISPOSITION	"content-disposition"
 #define CONTENT_DISPOSITION_ATTACHMENT "attachment"
 #define CONTENT_DISPOSITION_INLINE "inline"
 #define CONTENT_DISPOSITION_FILENAME_NAME "filename"
@@ -95,6 +93,8 @@ inline long lseek( int handle, long offset, int origin ) { return _lseek(handle,
 #endif
 
 #endif
+
+const char* capitalize(const char* s);
 
 /** under WIN32 "t" mode fixes DOS chars OK, 
 	can't say that about other systems/ line break styles

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REQUEST_C="$Date: 2009/08/31 13:03:16 $";
+static const char * const IDENT_REQUEST_C="$Date: 2009/09/03 11:08:19 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -513,9 +513,7 @@ t[9]-t[3]
 			// doing that ugly
 
 			// future $response:content-type
-			response.fields().remove(content_type_name);
-			response.fields().put(http_content_type, 
-				new VString(*new String(UNHANDLED_EXCEPTION_CONTENT_TYPE)));
+			response.fields().put(http_content_type, new VString(*new String(UNHANDLED_EXCEPTION_CONTENT_TYPE)));
 			// future $response:body
 			body_string=new String(exception_cstr);
 		}
@@ -791,10 +789,9 @@ static void output_pieces(Request& r,
 
 	SAPI::add_header_attribute(r.sapi_info, HTTP_CONTENT_LENGTH, format(part_length, "%u"));
 
-	if(add_last_modified){
-		const String &s = attributed_meaning_to_string(date, String::L_AS_IS, true);
-		SAPI::add_header_attribute(r.sapi_info, "Last-Modified", s.cstr());
-	}
+	if(add_last_modified)
+		SAPI::add_header_attribute(r.sapi_info, "Last-Modified", attributed_meaning_to_string(date, String::L_AS_IS, true).cstr());
+
 	SAPI::send_header(r.sapi_info);
 
 	const String& filespec=r.absolute(filename);
@@ -826,10 +823,10 @@ void Request::output_result(VFile* body_file, bool header_only, bool as_attachme
 	// header: cookies
 	cookie.output_result(sapi_info);
 	
-	// may be specified
+	// _file_ content-type might be specified
 	Value* body_file_content_type=body_file->fields().get(content_type_name);
 
-	// content-disposition
+	// Content-Disposition
 	Value* vfile_name=body_file->fields().get(name_name);
 	if(!vfile_name) {
 		vfile_name=body_file->fields().get(response_body_file_name);
@@ -858,24 +855,20 @@ void Request::output_result(VFile* body_file, bool header_only, bool as_attachme
 	}
 
 	// set Content-Type
-	response.fields().put(http_content_type,
-		body_file_content_type
-			? body_file_content_type
-			: response.fields().get(content_type_name)
-				? response.fields().get(content_type_name)
-				: new VString(*new String(DEFAULT_CONTENT_TYPE)));
+	if(body_file_content_type) {
+		// body file content type
+		response.fields().put(content_type_name, body_file_content_type);
+	} else {
+		// default content type
+		response.fields().put_dont_replace(content_type_name, new VString(*new String(DEFAULT_CONTENT_TYPE)));
+	}
 
-	response.fields().remove(content_type_name);
-
-	// prepare header: $response:fields without :body
+	// prepare header: $response:fields without :body, :download and :charset
 	Add_header_attribute_info info(*this);
 	response.fields().for_each<Add_header_attribute_info*>(add_header_attribute, &info);
 
-	if(body_file_content_type)
-		if(HashStringValue *hash=body_file_content_type->get_hash())
-			body_file_content_type=hash->get(value_name);
-
 	if(Value* vresponse_body_file=body_file->fields().get(response_body_file_name)) {
+		// $response:[download|body][$.file[filespec]] -- optput specified file
 		const String& sresponse_body_file=vresponse_body_file->as_string();
 		size_t content_length=0;
 		time_t atime=0, mtime=0, ctime=0;
@@ -899,6 +892,10 @@ void Request::output_result(VFile* body_file, bool header_only, bool as_attachme
 			*vdate,
 			info.add_last_modified);
 	} else {
+		if(body_file_content_type)
+			if(HashStringValue *hash=body_file_content_type->get_hash())
+				body_file_content_type=hash->get(value_name);
+
 		output_sole_piece(*this, header_only, 
 			*body_file, body_file_content_type);
 	}
