@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
  */
 
-static const char * const IDENT_HTTP_C="$Date: 2009/09/03 11:08:18 $"; 
+static const char * const IDENT_HTTP_C="$Date: 2009/09/04 07:31:29 $"; 
 
 #include "pa_http.h"
 #include "pa_common.h"
@@ -323,7 +323,7 @@ static void http_pass_header(HashStringValue::key_type aname,
 				Http_pass_header_info *info) {
 
 	String name=String(aname, String::L_URI);
-	const char* name_cstr=name.cstr();
+	const char* name_cstr=capitalize(name.cstr());
 
 	if(strcasecmp(name_cstr, HTTP_CONTENT_LENGTH)==0)
 		return;
