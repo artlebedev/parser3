@@ -132,7 +132,7 @@
 	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.tab.C,v 1.145 2009/08/14 23:58:55 misha Exp $
+	$Id: compile.tab.C,v 1.146 2009/09/07 12:31:25 misha Exp $
 */
 
 /**
@@ -3167,7 +3167,7 @@ default:
 			case ']': case '}': case ')': 
 			case '"': case '\'':
 			case '<': case '>':  // these stand for HTML brackets AND expression binary ops
-			case '+': case '*': case '/': case '%': 
+			case '+': case '*': case '/': case '\\': case '%': 
 			case '&': case '|': 
 			case '=': case '!':
 			// common delimiters
