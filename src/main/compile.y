@@ -5,7 +5,7 @@
 	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.252 2009/08/14 23:36:55 misha Exp $
+	$Id: compile.y,v 1.253 2009/09/07 12:16:36 misha Exp $
 */
 
 /**
@@ -1350,7 +1350,7 @@ default:
 			case ']': case '}': case ')': 
 			case '"': case '\'':
 			case '<': case '>':  // these stand for HTML brackets AND expression binary ops
-			case '+': case '*': case '/': case '%': 
+			case '+': case '*': case '/': case '\\': case '%': 
 			case '&': case '|': 
 			case '=': case '!':
 			// common delimiters
