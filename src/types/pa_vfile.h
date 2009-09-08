@@ -8,7 +8,7 @@
 #ifndef PA_VFILE_H
 #define PA_VFILE_H
 
-static const char * const IDENT_VFILE_H="$Date: 2009/08/08 13:30:21 $";
+static const char * const IDENT_VFILE_H="$Date: 2009/09/08 09:12:33 $";
 
 // include
 
@@ -77,14 +77,7 @@ public: // usage
 
 	void set_mode(bool as_text);
 	
-	void save(const String& file_spec, bool is_text) {
-		if(fvalue_ptr)
-			file_write(file_spec, fvalue_ptr, fvalue_size, is_text);
-		else
-			throw Exception(PARSER_RUNTIME,
-				&file_spec,
-				"saving stat-ed file");
-	}
+	void save(Request_charsets& charsets, const String& file_spec, bool is_text, Charset* asked_charset=0);
 
 	const char* value_ptr() const { 
 		if(!fvalue_ptr)

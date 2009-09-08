@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2009/08/30 05:28:33 $";
+static const char * const IDENT_FILE_C="$Date: 2009/09/08 09:12:47 $";
 
 #include "pa_config_includes.h"
 
@@ -126,12 +126,25 @@ static bool is_text_mode(const String& mode) {
 }
 
 static void _save(Request& r, MethodParams& params) {
-	Value& vmode_name=params.as_no_junction(0, MODE_MUST_NOT_BE_CODE);
+	bool is_text=is_text_mode(params.as_no_junction(0, MODE_MUST_NOT_BE_CODE).as_string());
 	Value& vfile_name=params.as_no_junction(1, FILE_NAME_MUST_NOT_BE_CODE);
 
+	Charset* asked_charset=0;
+	if(params.count()>2)
+		if(HashStringValue* options=params.as_no_junction(2, OPTIONS_MUST_NOT_BE_CODE).get_hash()){
+			size_t valid_options=0;
+			if(Value* vcharset_name=options->get(PA_CHARSET_NAME)){
+				asked_charset=&::charsets.get(vcharset_name->as_string().change_case(r.charsets.source(), String::CC_UPPER));
+				valid_options++;
+			}
+			if(valid_options != options->count())
+				throw Exception(PARSER_RUNTIME,
+					0,
+					INVALID_OPTION_PASSED);
+		}
+
 	// save
-	GET_SELF(r, VFile).save(r.absolute(vfile_name.as_string()),
-		is_text_mode(vmode_name.as_string()));
+	GET_SELF(r, VFile).save(r.charsets, r.absolute(vfile_name.as_string()), is_text, asked_charset);
 }
 
 static void _delete(Request& r, MethodParams& params) {
@@ -1018,7 +1031,8 @@ MFile::MFile(): Methoded("file") {
 	add_native_method("create", Method::CT_DYNAMIC, _create, 3, 3);
 
 	// ^file.save[mode;file-name]
-	add_native_method("save", Method::CT_DYNAMIC, _save, 2, 2);
+	// ^file.save[mode;file-name;$.charset[...]]
+	add_native_method("save", Method::CT_DYNAMIC, _save, 2, 3);
 
 	// ^file:delete[file-name]
 	add_native_method("delete", Method::CT_STATIC, _delete, 1, 1);
@@ -1028,6 +1042,8 @@ MFile::MFile(): Methoded("file") {
 
 	// ^file::load[mode;disk-name]
 	// ^file::load[mode;disk-name;user-name]
+	// ^file::load[mode;disk-name;user-name;options hash]
+	// ^file::load[mode;disk-name;options hash]
 	add_native_method("load", Method::CT_DYNAMIC, _load, 2, 4);
 
 	// ^file::stat[disk-name]
@@ -1054,22 +1070,22 @@ MFile::MFile(): Methoded("file") {
 	// ^file:find[file-name]{when-not-found}
 	add_native_method("find", Method::CT_STATIC, _find, 1, 2);
 
-    // ^file:dirname[/a/some.tar.gz]=/a
+	// ^file:dirname[/a/some.tar.gz]=/a
 	// ^file:dirname[/a/b/]=/a
 	add_native_method("dirname", Method::CT_STATIC, _dirname, 1, 1);
-    // ^file:basename[/a/some.tar.gz]=some.tar.gz
-    add_native_method("basename", Method::CT_STATIC, _basename, 1, 1);
-    // ^file:justname[/a/some.tar.gz]=some.tar
+	// ^file:basename[/a/some.tar.gz]=some.tar.gz
+	add_native_method("basename", Method::CT_STATIC, _basename, 1, 1);
+	// ^file:justname[/a/some.tar.gz]=some.tar
 	add_native_method("justname", Method::CT_STATIC, _justname, 1, 1);
-    // ^file:justext[/a/some.tar.gz]=gz
+	// ^file:justext[/a/some.tar.gz]=gz
 	add_native_method("justext", Method::CT_STATIC, _justext, 1, 1);
-    // /some/page.html: ^file:fullpath[a.gif] => /some/a.gif
+	// /some/page.html: ^file:fullpath[a.gif] => /some/a.gif
 	add_native_method("fullpath", Method::CT_STATIC, _fullpath, 1, 1);
 
-    // ^file.sql-string[]
+	// ^file.sql-string[]
 	add_native_method("sql-string", Method::CT_DYNAMIC, _sql_string, 0, 0);
 
-    // ^file::sql[[alt_name]]{}
+	// ^file::sql{}[options hash]
 	add_native_method("sql", Method::CT_DYNAMIC, _sql, 1, 2);
 
 	// ^file::base64[string] << decode

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2009/08/08 13:30:20 $";
+static const char * const IDENT_STRING_C="$Date: 2009/09/08 09:12:47 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -20,6 +20,7 @@ static const char * const IDENT_STRING_C="$Date: 2009/08/08 13:30:20 $";
 #include "pa_dictionary.h"
 #include "pa_vmethod_frame.h"
 #include "pa_vregex.h"
+#include "pa_charsets.h"
 
 // class
 
@@ -40,6 +41,8 @@ DECLARE_CLASS_VAR(string, new MString, 0);
 #define TRIM_START_OPTION "left"
 #define TRIM_END_OPTION "right"
 #define TRIM_BOTH_OPTION "both"
+
+#define MODE_APPEND "append"
 
 // statics
 
@@ -613,25 +616,43 @@ static void _replace(Request& r, MethodParams& params) {
 }
 
 static void _save(Request& r, MethodParams& params) {
-	size_t params_count=params.count();
-	const String& file_name=params.as_string(params_count-1, FILE_NAME_MUST_BE_STRING);
+	bool do_append=false;
+	Charset* asked_charset=0;
 
+	size_t file_name_index=0;
+	if(params.count()>1)
+		if(HashStringValue* options=params.as_no_junction(1, "second parameter should be string or hash").get_hash()){
+			size_t valid_options=0;
+			if(Value* vcharset_name=options->get(PA_CHARSET_NAME)){
+				asked_charset=&::charsets.get(vcharset_name->as_string().change_case(r.charsets.source(), String::CC_UPPER));
+				valid_options++;
+			}
+			if(Value* vappend=options->get(MODE_APPEND)){
+				do_append=vappend->as_bool();
+				valid_options++;
+			}
+			if(valid_options != options->count())
+				throw Exception(PARSER_RUNTIME,
+					0,
+					INVALID_OPTION_PASSED);
+		} else {
+			const String& mode=params.as_string(0, "mode must be string");
+			if(mode==MODE_APPEND){
+				do_append=true;
+				file_name_index++;
+			} else
+				throw Exception(PARSER_RUNTIME,
+					&mode,
+					"unknown mode, must be 'append'");
+		}
+
+	const String& file_name=params.as_string(file_name_index, FILE_NAME_MUST_BE_STRING);
 	const String& src=GET_SELF(r, VString).string();
 
-	bool do_append=false;
-	if(params_count>1) {
-		const String& mode=params.as_string(0, "mode must be string");
-		if(mode=="append")
-			do_append=true;
-		else
-			throw Exception(PARSER_RUNTIME,
-				&mode,
-				"unknown mode, must be 'append'");
-	}		
+	String::Body sbody=src.cstr_to_string_body_untaint(String::L_AS_IS, r.connection(false/*no error if none*/));
 
 	// write
-	String::Body sbody=src.cstr_to_string_body_untaint(String::L_AS_IS, r.connection(false/*no error if none*/));
-	file_write(r.absolute(file_name), sbody.cstr(), sbody.length(), true, do_append);
+	file_write(r.charsets, r.absolute(file_name), sbody.cstr(), sbody.length(), true, do_append, asked_charset);
 }
 
 static void _normalize(Request& r, MethodParams&) {
@@ -767,14 +788,16 @@ MString::MString(): Methoded("string") {
 	// ^string.lower[]
 	add_native_method("lower", Method::CT_DYNAMIC, _lower, 0, 0);
 
-	// ^sql[query]
-	// ^sql[query][options hash]
+	// ^string:sql{query}
+	// ^string:sql{query}[options hash]
 	add_native_method("sql", Method::CT_STATIC, _sql, 1, 2);
 
 	// ^string.replace[table]
 	add_native_method("replace", Method::CT_DYNAMIC, _replace, 1, 1);
 
-	// ^string.save[file]  
+	// ^string.save[append][file]
+	// ^string.save[file]
+	// ^string.save[file][$.append(true) $.charset[...]]
 	add_native_method("save", Method::CT_DYNAMIC, _save, 1, 2);
 
 	// ^string.normalize[]  
@@ -791,7 +814,8 @@ MString::MString(): Methoded("string") {
 	add_native_method("base64", Method::CT_ANY, _base64, 0, 1);
 
 	// ^string.js-escape[]
-	// ^string:js-unescape[escaped%uXXXXstring]
 	add_native_method("js-escape", Method::CT_ANY, _escape, 0, 0);
+
+	// ^string:js-unescape[escaped%uXXXXstring]
 	add_native_method("js-unescape", Method::CT_STATIC, _unescape, 1, 1);
 }	
