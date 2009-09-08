@@ -26,7 +26,7 @@
  *
  */
 
-static const char * const IDENT_COMMON_C="$Date: 2009/09/03 11:08:18 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2009/09/08 09:09:26 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -189,7 +189,7 @@ File_read_result file_read(Request_charsets& charsets, const String& file_spec,
 		if(valid_options!=params->count())
 			throw Exception(PARSER_RUNTIME,
 				0,
-				"invalid option passed");
+				INVALID_OPTION_PASSED);
 	}
 
 	File_read_action_info info={&result.str, &result.length, buf, offset, count}; 
@@ -388,7 +388,8 @@ bool file_write_action_under_lock(
 
 #ifndef DOXYGEN
 struct File_write_action_info {
-	const char* str; size_t length;
+	const char* str;
+	size_t length;
 }; 
 #endif
 static void file_write_action(int f, void *context) {
@@ -402,10 +403,21 @@ static void file_write_action(int f, void *context) {
 	}
 }
 void file_write(
-				const String& file_spec, 
-				const char* data, size_t size, 
+				Request_charsets& charsets,
+				const String& file_spec,
+				const char* data,
+				size_t size, 
 				bool as_text, 
-				bool do_append) {
+				bool do_append,
+				Charset* asked_charset) {
+
+	if(as_text && asked_charset){
+		String::C body=String::C(data, size);
+		body=Charset::transcode(body, charsets.source(), *asked_charset);
+		data=body.str;
+		size=body.length;
+	};
+
 	File_write_action_info info={data, size}; 
 
 	file_write_action_under_lock(

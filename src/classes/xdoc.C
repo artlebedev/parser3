@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT_XDOC_C="$Date: 2009/08/08 13:30:20 $";
+static const char * const IDENT_XDOC_C="$Date: 2009/09/08 09:11:51 $";
 
 #include "libxml/tree.h"
 #include "libxml/HTMLtree.h"
@@ -634,8 +634,10 @@ static Xdoc2buf_result xdoc2buf(Request& r, VXdoc& vdoc,
 		result.str=0;
 
 	if(file_spec)
-		file_write(*file_spec,
-			gnome_str, gnome_length, 
+		file_write(r.charsets,
+			*file_spec,
+			gnome_str,
+			gnome_length, 
 			true/*as_text*/);
 
 	return result;

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2009/08/31 12:55:01 $";
+static const char * const IDENT_TABLE_C="$Date: 2009/09/08 09:11:51 $";
 
 #if (!defined(NO_STRINGSTREAM) && !defined(FREEBSD4))
 #include <sstream>
@@ -462,7 +462,7 @@ static void _save(Request& r, MethodParams& params) {
 				if(valid_options!=options->count())
 					throw Exception(PARSER_RUNTIME,
 						0,
-						"invalid option passed");
+						INVALID_OPTION_PASSED);
 			} else {
 				throw Exception(PARSER_RUNTIME,
 					0,
@@ -524,7 +524,7 @@ static void _save(Request& r, MethodParams& params) {
 		string data=ost.str();
 		const char* data_cstr=data.c_str();
 
-		file_write(file_spec, data_cstr, data.length(), true /* as text */, do_append);
+		file_write(r.charsets, file_spec, data_cstr, data.length(), true /* as text */, do_append);
 	}
 
 #else
@@ -566,8 +566,7 @@ static void _save(Request& r, MethodParams& params) {
 	// write
 	{
 		const char* data_cstr=sdata.cstr();
-		file_write(file_spec, 
-			data_cstr, sdata.length(), true, do_append);
+		file_write(r.charsets, file_spec, data_cstr, sdata.length(), true, do_append);
 		if(*data_cstr) // not empty (when empty it's not heap memory)
 			pa_free((void*)data_cstr); // not needed anymore
 	}
