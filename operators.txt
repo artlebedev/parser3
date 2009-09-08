@@ -336,6 +336,7 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         <0 = не найдено
     !^строка.replace[$таблица_подстановок_строка_на_строку]
     !^строка.save[[append;]путь]
+    !^строка.save[путь[;$.charset[в какой кодировке сохраняем] $.append(true)]]
     !^строка.normalize[] выдает другую строку, в которой фрагменты на одном языке объединены
         полезно делать перед сложными match операциями, если вы знаете, что входная строка
         состоит из большого числа фрагментов
@@ -737,7 +738,7 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !$файл_из_post.name 
     !$файл_из_post.size 
     !$файлtиз_post.text
-    !^файл.save[text|binary;имя файла]
+    !^файл.save[text|binary;имя файла[;$.charset[в какоq кодировке сохраняем]]]
     !^file:delete[имя файла]
     !^file:find[имя файла][{когда не нашли}]
     !^file:list[путь[;шаблон-строка|шаблон-regex]] = table с колонкой name
