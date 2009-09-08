@@ -1,0 +1,16 @@
+Content-Type: text/html
+Content-Length: 334
+
+UTF-8=ПрОвЕрКа<br />
+windows-1251=ПрОвЕрКа<br />
+Error:
+save
+invalid option passed (it's OK)<br />
+<hr />
+UTF-8=ПрОвЕрКа<br />
+UTF-8=ПрОвЕрКаПрОвЕрКа<br />
+windows-1251=ПрОвЕрКа<br />
+windows-1251=ПрОвЕрКаПрОвЕрКа<br />
+Error:
+save
+invalid option passed (it's OK)<br />
