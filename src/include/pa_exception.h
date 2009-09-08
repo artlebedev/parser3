@@ -8,7 +8,7 @@
 #ifndef PA_EXCEPTION_H
 #define PA_EXCEPTION_H
 
-static const char * const IDENT_EXCEPTION_H="$Date: 2009/07/15 12:58:07 $";
+static const char * const IDENT_EXCEPTION_H="$Date: 2009/09/08 09:07:51 $";
 
 const char* const PARSER_RUNTIME = "parser.runtime";
 const char* const IMAGE_FORMAT = "image.format";
@@ -30,6 +30,8 @@ const char* const FIRST_ARG_MUST_NOT_BE_CODE = "first argument must not be code"
 const char* const PARAM_MUST_NOT_BE_CODE = "param must not be code";
 const char* const MODE_MUST_NOT_BE_CODE = "mode must not be code";
 const char* const OPTIONS_MUST_NOT_BE_CODE = "options must not be code";
+
+const char* const INVALID_OPTION_PASSED = "invalid option passed";
 
 // includes
 
