@@ -1,0 +1,71 @@
+@main[]
+$sSourceFile[230_utf8.txt]
+$sTargetFile[230_target.txt]
+
+$s1251[windows-1251]
+$sUTF[UTF-8]
+
+$f[^file::load[text;$sSourceFile]]
+
+
+^f.save[text;$sTargetFile]
+^load[$sTargetFile;$sUTF]
+
+^f.save[text;$sTargetFile;
+	$.charset[$s1251]
+]
+^load[$sTargetFile;$s1251]
+
+^do{
+	^f.save[text;$sTargetFile;
+		$.unknown-option[zigi]
+	]
+}
+
+
+<hr />
+
+^f.text.save[$sTargetFile]
+^load[$sTargetFile;$sUTF]
+
+^f.text.save[append;$sTargetFile]
+^load[$sTargetFile;$sUTF]
+
+
+^f.text.save[$sTargetFile;
+	$.charset[$s1251]
+]
+^load[$sTargetFile;$s1251]
+
+
+^f.text.save[$sTargetFile;
+	$.charset[$s1251]
+	$.append(true)
+]
+^load[$sTargetFile;$s1251]
+
+^do{
+^f.text.save[$sTargetFile;
+	$.charset[$s1251]
+	$.append(true)
+	$.unknown-option[zigi]
+]
+}
+
+
+@load[sFileName;sCharset][f]
+$f[^file::load[text;$sFileName;
+	$.charset[$sCharset]
+]]
+$sCharset=$f.text<br />
+
+
+@do[jCode]
+^try{
+	$jCode
+}{
+	$exception.handled(1)
+	Error:
+	$exception.source
+	$exception.comment (it's OK)<br />
+}
