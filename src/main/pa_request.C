@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REQUEST_C="$Date: 2009/09/03 11:08:19 $";
+static const char * const IDENT_REQUEST_C="$Date: 2009/09/08 09:13:56 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -746,7 +746,7 @@ static void output_pieces(Request& r,
 						  Value& date,
 						  bool add_last_modified) 
 {
-	SAPI::add_header_attribute(r.sapi_info, "Accept-Ranges", "bytes");
+	SAPI::add_header_attribute(r.sapi_info, "accept-ranges", "bytes");
 
 	const size_t BUFSIZE = 10*0x400;
 	char buf[BUFSIZE];
@@ -779,7 +779,7 @@ static void output_pieces(Request& r,
 			}
 			SAPI::add_header_attribute(r.sapi_info, HTTP_STATUS, "206 Partial Content");
 			snprintf(buf, BUFSIZE, "bytes %u-%u/%u", rg.start, rg.end, content_length);
-			SAPI::add_header_attribute(r.sapi_info, "Content-Range", buf);
+			SAPI::add_header_attribute(r.sapi_info, "content-range", buf);
 		}else if(count != 0){
 			SAPI::add_header_attribute(r.sapi_info, HTTP_STATUS, "501 Not Implemented");
 			return;
@@ -790,7 +790,7 @@ static void output_pieces(Request& r,
 	SAPI::add_header_attribute(r.sapi_info, HTTP_CONTENT_LENGTH, format(part_length, "%u"));
 
 	if(add_last_modified)
-		SAPI::add_header_attribute(r.sapi_info, "Last-Modified", attributed_meaning_to_string(date, String::L_AS_IS, true).cstr());
+		SAPI::add_header_attribute(r.sapi_info, "last-modified", attributed_meaning_to_string(date, String::L_AS_IS, true).cstr());
 
 	SAPI::send_header(r.sapi_info);
 
