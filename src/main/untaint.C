@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_UNTAINT_C="$Date: 2009/09/10 09:41:08 $";
+static const char * const IDENT_UNTAINT_C="$Date: 2009/09/10 10:53:44 $";
 
 
 #include "pa_string.h"
@@ -507,7 +507,7 @@ int cstr_to_string_body_block(String::Language to_lang, size_t fragment_length, 
 			pa_CORD_pos_advance(info->pos, fragment_length);
 			String::C output(fragment_str, fragment_length);
 			
-			output=Charset::escape(output, info->charsets->source());
+			output=Charset::escape(output, info->charsets->client());
 			//throw Exception(0, 0, output);
 			to_string(output);
 
