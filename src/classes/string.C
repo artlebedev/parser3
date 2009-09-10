@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2009/09/08 09:12:47 $";
+static const char * const IDENT_STRING_C="$Date: 2009/09/10 09:40:34 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -622,7 +622,7 @@ static void _save(Request& r, MethodParams& params) {
 	size_t file_name_index=0;
 	if(params.count()>1)
 		if(HashStringValue* options=params.as_no_junction(1, "second parameter should be string or hash").get_hash()){
-			size_t valid_options=0;
+			int valid_options=0;
 			if(Value* vcharset_name=options->get(PA_CHARSET_NAME)){
 				asked_charset=&::charsets.get(vcharset_name->as_string().change_case(r.charsets.source(), String::CC_UPPER));
 				valid_options++;
