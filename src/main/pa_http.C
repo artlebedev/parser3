@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
  */
 
-static const char * const IDENT_HTTP_C="$Date: 2009/09/08 09:14:02 $"; 
+static const char * const IDENT_HTTP_C="$Date: 2009/09/10 09:44:07 $"; 
 
 #include "pa_http.h"
 #include "pa_common.h"
@@ -322,8 +322,9 @@ static void http_pass_header(HashStringValue::key_type aname,
 				HashStringValue::value_type avalue, 
 				Http_pass_header_info *info) {
 
-	String name=String(aname, String::L_URI);
-	const char* name_cstr=capitalize(name.cstr());
+	const char* name_cstr=aname.cstr();
+
+	String name=String(capitalize(name_cstr), String::L_URI);
 
 	if(strcasecmp(name_cstr, HTTP_CONTENT_LENGTH)==0)
 		return;
@@ -417,13 +418,13 @@ struct FormPart {
 
 static void form_part_boundary_header(FormPart& part, String::Body name, const char* file_name=0){
 	part.string << "--" << part.boundary
-				<< CRLF CONTENT_DISPOSITION ": form-data; name=\"" 
+				<< CRLF CONTENT_DISPOSITION_CAPITALIZED ": form-data; name=\"" 
 				<< Charset::transcode(name, part.r->charsets.source(), part.r->charsets.client())
 				<< "\"";
 	if(file_name){
 		if(strcmp(file_name, NONAME_DAT)!=0)
 			part.string << "; filename=\"" << file_name << "\"";
-		part.string << CRLF HTTP_CONTENT_TYPE ": " << part.r->mime_type_of(file_name);
+		part.string << CRLF HTTP_CONTENT_TYPE_CAPITALIZED ": " << part.r->mime_type_of(file_name);
 	}
 	part.string << CRLF CRLF;
 }
@@ -736,7 +737,7 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 			head << "Content-Length: " << format(post_size, "%u") << CRLF;
 
 		// head + end of header
-		request_head_and_body << head.untaint_cstr(String::L_AS_IS, 0, &(r.charsets)) << CRLF;
+		request_head_and_body << head.transcode_and_untaint_cstr(String::L_URI, &(r.charsets)) << CRLF;
 
 		// body
 		if(body_cstr)
