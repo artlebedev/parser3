@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_UNTAINT_C="$Date: 2009/08/21 08:38:55 $";
+static const char * const IDENT_UNTAINT_C="$Date: 2009/09/10 09:41:08 $";
 
 
 #include "pa_string.h"
@@ -82,7 +82,7 @@ inline bool need_file_encode(unsigned char c){
 }
 
 inline bool need_uri_encode(unsigned char c){
-	if((c>='0') &&(c<='9') ||(c>='A') &&(c<='Z') ||(c>='a') &&(c<='z'))
+	if((c>='0') && (c<='9') || (c>='A') && (c<='Z') || (c>='a') && (c<='z'))
 		return false;
 
 	return !strchr("_-./", c);
@@ -108,34 +108,35 @@ inline bool need_parser_code_escape(unsigned char c){
 /*
 HTTP-header    = field-name ":" [ field-value ] CRLF
 
-       field-name     = token
-       field-value    = *( field-content | LWS )
+field-name     = token
+field-value    = *( field-content | LWS )
 
-       field-content  = <the OCTETs making up the field-value
+field-content  = <the OCTETs making up the field-value
                         and consisting of either *TEXT or combinations
                         of token, tspecials, and quoted-string>
 
 
-
-word           = token | quoted-string
-
 token          = 1*<any CHAR except CTLs or tspecials>
+word           = token | quoted-string
+quoted-string  = ( <"> *(qdtext | quoted-pair ) <"> )
+qdtext         = <any TEXT except <">>
+quoted-pair    = "\" CHAR
 
-
+OCTET          = <any 8-bit sequence of data>
+CHAR           = <any US-ASCII character (octets 0 - 127)>
 
 tspecials      = "(" | ")" | "<" | ">" | "@"
-                      | "," | ";" | ":" | "\" | <">
-                      | "/" | "[" | "]" | "?" | "="
-                      | "{" | "}" | SP | HT
+               | "," | ";" | ":" | "\" | <">
+               | "/" | "[" | "]" | "?" | "="
+               | "{" | "}" | SP | HT
 
 SP             = <US-ASCII SP, space (32)>
 HT             = <US-ASCII HT, horizontal-tab (9)>
 
 LWS            = [CRLF] 1*( SP | HT )
-TEXT           = <any OCTET except CTLs,
-                        but including LWS>
+TEXT           = <any OCTET except CTLs, but including LWS>
+CTL            = <any US-ASCII control character (octets 0 - 31) and DEL (127)>
 
-quoted-pair    = "\" CHAR
 
   if(strchr("()<>@,;:\\\"/[]?={} \t", *ptr))
 */
