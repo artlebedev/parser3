@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
  */
 
-static const char * const IDENT_HTTP_C="$Date: 2009/09/10 09:44:07 $"; 
+static const char * const IDENT_HTTP_C="$Date: 2009/09/10 10:01:45 $"; 
 
 #include "pa_http.h"
 #include "pa_common.h"
@@ -329,7 +329,7 @@ static void http_pass_header(HashStringValue::key_type aname,
 	if(strcasecmp(name_cstr, HTTP_CONTENT_LENGTH)==0)
 		return;
 
-	String value=attributed_meaning_to_string(*avalue, String::L_URI, false);
+	String value=attributed_meaning_to_string(*avalue, String::L_URI, true);
 
 	*info->request << name << ": " << value << CRLF;
 	
