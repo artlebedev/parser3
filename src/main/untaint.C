@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_UNTAINT_C="$Date: 2009/09/10 10:53:44 $";
+static const char * const IDENT_UNTAINT_C="$Date: 2009/09/10 12:31:43 $";
 
 
 #include "pa_string.h"
@@ -349,14 +349,8 @@ int cstr_to_string_body_block(String::Language to_lang, size_t fragment_length, 
 	case String::L_FILE_SPEC:
 		// tainted, untaint language: file [name]
 		{
-			bool is1251=(info->charsets && info->charsets->source().NAME()=="WINDOWS-1251");
 			escape_fragment(
-				// Macintosh has problems with small Russian letter 'r'
-				if( is1251 && c=='\xF0' ) {
-					// fixing that letter for most common charset
-					to_char('p');
-				} else // fallback to default
-					encode(need_file_encode, '_', c); 
+				encode(need_file_encode, '_', c); 
 			);
 		}
 		break;
