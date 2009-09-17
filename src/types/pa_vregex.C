@@ -5,10 +5,17 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VREGEX_C="$Date: 2009/07/06 12:10:09 $";
+static const char * const IDENT_VREGEX_C="$Date: 2009/09/17 02:06:18 $";
 
 #include "pa_vregex.h"
 #include "pa_vint.h"
+#include "pa_vstring.h"
+
+
+// defines
+
+#define REGEX_PATTERN_NAME "pattern"
+#define REGEX_OPTIONS_NAME "options"
 
 
 char* get_pcre_exec_error_text(int exec_result){
@@ -71,6 +78,8 @@ void VRegex::set(Charset& acharset, const String* aregex, const String* aoptions
 	fcharset=&acharset;
 
 	fpattern=aregex->untaint_cstr(String::L_REGEX);
+
+	foptions_cstr=aoptions->cstr();
 
 	regex_options(aoptions, foptions);
 }
@@ -152,3 +161,18 @@ int VRegex::exec(const char* string, size_t string_len, int* ovector, int ovecto
 }
 
 
+Value* VRegex::get_element(const String& aname) { 
+	if(aname == REGEX_PATTERN_NAME)
+		return new VString(*new String(fpattern, String::L_TAINTED));
+
+	if(aname == REGEX_OPTIONS_NAME)
+		return new VString(*new String(foptions_cstr, String::L_TAINTED));
+
+	// .CLASS, .CLASS_NAME
+	if(Value* result=VStateless_object::get_element(aname))
+		return result;
+
+	throw Exception(PARSER_RUNTIME,
+		&aname,
+		"reading of invalid field");
+}
