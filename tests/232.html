@@ -1,0 +1,39 @@
+@main[]
+
+$o[^test::create[]]
+
+$v($o)
+=$v.CLASS_NAME=$v=
+
+$v[^hash::create[$o]]
+=$v.CLASS_NAME=$v.key=
+
+$v[^table::create[$o]]
+=$v.CLASS_NAME=$v.name=
+
+$v(def $o)
+=$v.CLASS_NAME=^v.int[]=
+
+$v($o || 0)
+=$v.CLASS_NAME=^v.int[]=
+
+$v($o + 0)
+=$v.CLASS_NAME=$v=
+
+
+
+@CLASS
+test
+
+@create[]
+
+@GET[sMode]
+^switch[$sMode]{
+	^case[expression]{ $result(-1) }
+	^case[hash]{ $result[$.key[hash value]] }
+	^case[table]{ $result[^table::create{name^#0Atable value}] }
+	^case[def]{ $result(1) }
+	^case[bool]{ $result(false) }
+	^case[double]{ $result(5) }
+	^case[DEFAULT]{ ^throw[;unsupported mode '$sMode'] }
+}
