@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2009/09/08 09:11:51 $";
+static const char * const IDENT_TABLE_C="$Date: 2009/09/17 23:32:39 $";
 
 #if (!defined(NO_STRINGSTREAM) && !defined(FREEBSD4))
 #include <sstream>
@@ -55,12 +55,12 @@ String table_reverse_name(TABLE_REVERSE_NAME);
 // methods
 
 static Table::Action_options get_action_options(Request& r, MethodParams& params, 
-						const Table& source) {
+						size_t options_index, const Table& source) {
 	Table::Action_options result;
-	if(!params.count())
+	if(params.count() <= options_index)
 		return result;
 
-	Value& maybe_options=params.last();
+	Value& maybe_options=params[options_index];
 /* can not do it: 
 	want to enable ^table::create[$source;
 #		$.option[]
@@ -157,7 +157,7 @@ struct TableSeparators {
 static void _create(Request& r, MethodParams& params) {
 	// clone/copy part?
 	if(Table *source=params[0].get_table()) {
-		Table::Action_options o=get_action_options(r, params, *source);
+		Table::Action_options o=get_action_options(r, params, 1, *source);
 		check_option_param(o.defined, params, 1, 
 			"too many parameters");
 		GET_SELF(r, VTable).set_table(*new Table(*source, o));
@@ -962,7 +962,7 @@ static bool _locate_name_value(Table& table, Table::Action_options o,
 static void _locate(Request& r, MethodParams& params) {
 	Table& table=GET_SELF(r, VTable).table();
 
-	Table::Action_options o=get_action_options(r, params, table);
+	Table::Action_options o=get_action_options(r, params, 1, table);
 
 	bool result=params[0].get_junction()?
 		_locate_expression(table, o, r, params) :
@@ -1021,7 +1021,7 @@ static void _join(Request& r, MethodParams& params) {
 			"source is not a table");
 	Table& src=*maybe_src;
 
-	Table::Action_options o=get_action_options(r, params, src);
+	Table::Action_options o=get_action_options(r, params, 1, src);
 	check_option_param(o.defined, params, 1,
 		"invalid extra parameter");
 
