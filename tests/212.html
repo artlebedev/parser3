@@ -15,7 +15,6 @@ study size: ^r.study_size[]<br />
 ^s.match[$r;]{!}
 <br />
 
-
 $s[  sElect]
 $r[^regex::create[e][g]]
 ^s.match[$r;]{!}
@@ -33,7 +32,6 @@ $r[^regex::create[3;gn]]
 ^s.match[$r]
 <br />
 
-
 $s[12312312]
 $r[^regex::create[\d+?]]
 study size: ^r.study_size[]<br />
@@ -46,8 +44,11 @@ $r[^regex::create[\d+?;U]]
 ^s.match[$r][]{!}
 <br />
 
-
-
 $t[^file:list[./;^regex::create[^^212.html^$]]]
 $t.name
+<br />
+
+$r[^regex::create[^^[a-z\d_]+^$][gI]]
+^$r.pattern: $r.pattern<br />
+^$r.options: $r.options<br />
 <br />
