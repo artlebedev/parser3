@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 176
+Content-Length: 234
 
 failed, that's OK
 <br />
@@ -19,4 +19,7 @@ study size: 40<br />
 !
 <br />
 212.html
+<br />
+$r.pattern: ^[a-z\d_]+$<br />
+$r.options: gI<br />
 <br />
