@@ -8,7 +8,7 @@
 #ifndef PA_VOBJECT_H
 #define PA_VOBJECT_H
 
-static const char * const IDENT_VOBJECT_H="$Date: 2009/08/08 13:30:21 $";
+static const char * const IDENT_VOBJECT_H="$Date: 2009/09/17 23:31:42 $";
 
 // includes
 
@@ -57,7 +57,7 @@ public: // creation
 
 private:
 
-	Value* get_scalar_value() const;
+	Value* get_scalar_value(char* as_something) const;
 
 };
 
