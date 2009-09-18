@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 1782
+Content-Length: 1850
 
 cookie<br />env<br />hash - methoded<br />table - methoded<br />test - methoded<br />test1 - methoded<br />test2 - methoded
 <hr />
@@ -88,4 +88,9 @@ unknown
 class is undefined
 <br />
 <hr />
+<hr />
+statical<br />
+dynamical<br />
+a=1, b=2<br />
+d=4, c=3<br />
 done.

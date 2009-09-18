@@ -39,7 +39,7 @@ test1
 
 
 @CLASS
-test2
+test3
 
 @auto[]
 $a(1)
