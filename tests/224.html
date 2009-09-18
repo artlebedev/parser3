@@ -40,6 +40,17 @@ $t[^hi._keys[]]
 ^print[date;$d]
 ^print[env;$env:CLASS]
 ^print[unknown]
+<hr />
+
+^test2:m[]
+$o[^test2::create[]]
+^o.m[]
+
+$h[^reflection:fields[$o.CLASS]]
+^h.foreach[k;v]{$k=$v}[, ]<br />
+
+$h[^reflection:fields[$o]]
+^h.foreach[k;v]{$k=$v}[, ]<br />
 done.
 
 

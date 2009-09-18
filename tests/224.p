@@ -35,3 +35,19 @@ test2
 test1
 
 @create2[v]
+
+
+
+@CLASS
+test2
+
+@auto[]
+$a(1)
+$b[2]
+
+@create[]
+$c(3)
+$d[4]
+
+@m[]
+^if(^reflection:dynamical[]){dynamical}{statical}<br />
