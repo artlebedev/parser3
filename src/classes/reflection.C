@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REFLECTION_C="$Date: 2009/09/18 09:16:34 $";
+static const char * const IDENT_REFLECTION_C="$Date: 2009/09/18 10:12:08 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
@@ -301,7 +301,7 @@ MReflection::MReflection(): Methoded("reflection") {
 	// ^reflection:fields[object or class]
 	add_native_method("fields", Method::CT_STATIC, _fields, 1, 1);
 
-	// ^reflection:method_params[class_name;method_name]
+	// ^reflection:method_info[class_name;method_name]
 	add_native_method("method_info", Method::CT_STATIC, _method_info, 2, 2);
 
 	// ^reflection:dynamical[[object or class, caller if absent]]
