@@ -8,7 +8,7 @@
 #ifndef PA_VOBJECT_H
 #define PA_VOBJECT_H
 
-static const char * const IDENT_VOBJECT_H="$Date: 2009/09/17 23:31:42 $";
+static const char * const IDENT_VOBJECT_H="$Date: 2009/09/18 09:16:07 $";
 
 // includes
 
@@ -47,6 +47,7 @@ public: // Value
 	
 	override HashStringValue* get_hash();
 	override Table *get_table();
+	override HashStringValue* get_fields() { return &ffields; }
 
 	override Value* get_element(const String& aname);
 	override const VJunction* put_element(const String& name, Value* value, bool replace);

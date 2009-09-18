@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-static const char * const IDENT_VALUE_H="$Date: 2009/08/14 10:39:48 $";
+static const char * const IDENT_VALUE_H="$Date: 2009/09/18 09:16:07 $";
 
 #include "pa_common.h"
 #include "pa_array.h"
@@ -78,6 +78,8 @@ public: // Value
 	
 	/// extract const String
 	virtual const String* get_string() { return 0; }
+
+	virtual HashStringValue* get_fields() { return 0; }
 	
 	/// extract double
 	virtual double as_double() const { bark("is '%s', it does not have numerical (double) value"); return 0; }

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VCLASS_C="$Date: 2009/08/14 10:39:31 $";
+static const char * const IDENT_VCLASS_C="$Date: 2009/09/18 09:16:07 $";
 
 #include "pa_vclass.h"
 
@@ -66,11 +66,11 @@ Value* VClass::as(const char* atype) {
 /// VClass: $CLASS, (field/property)=STATIC value;(method)=method_ref with self=object_class
 Value* VClass::get_element(Value& aself, const String& aname) {
 	// simple things first: $field=static field/property
-	if (Property* prop=ffields.get(aname)) {
-		if (prop->getter)
+	if(Property* prop=ffields.get(aname)) {
+		if(prop->getter)
 			return new VJunction(aself, prop->getter, true /*is_getter*/);
 
-		if (prop->setter)
+		if(prop->setter)
 			throw Exception(PARSER_RUNTIME,
 				0,
 				"this property has no getter method (@GET_%s[])", aname.cstr());
@@ -80,14 +80,29 @@ Value* VClass::get_element(Value& aself, const String& aname) {
 	}
 
 	// $CLASS, $method, or other base element
-	if (Value* result=VStateless_class::get_element(aself, aname))
+	if(Value* result=VStateless_class::get_element(aself, aname))
 		return result;
 
 	// no field or method found: looking for default getter
-	if (Value* result=get_default_getter(aself, aname))
+	if(Value* result=get_default_getter(aself, aname))
 		return result;
 
 	return 0;
+}
+
+static void add_field(
+		HashStringProperty::key_type key, 
+		HashStringProperty::value_type prop,
+		HashStringValue* result
+){
+	if(prop->value)
+		result->put(key, prop->value);
+}
+
+HashStringValue* VClass::get_fields(){
+	HashStringValue* result=new HashStringValue();
+	ffields.for_each(add_field, result);
+	return result;
 }
 
 /// VClass: (field/property)=value - static values only
