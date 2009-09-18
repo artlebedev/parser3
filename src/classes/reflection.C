@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REFLECTION_C="$Date: 2009/08/26 13:46:12 $";
+static const char * const IDENT_REFLECTION_C="$Date: 2009/09/18 09:16:34 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
@@ -201,6 +201,13 @@ static void _methods(Request& r, MethodParams& params) {
 	r.write_no_lang(result);
 }
 
+static void _fields(Request& r, MethodParams& params) {
+	if(HashStringValue* fields=params[0].get_fields()){
+		VHash& result=*new VHash(*fields);
+		r.write_no_lang(result);
+	} else
+		r.write_no_lang(*new VHash());
+}
 
 static void _method_info(Request& r, MethodParams& params) {
 	const String& class_name=params.as_string(0, "class_name must be string");
@@ -290,6 +297,9 @@ MReflection::MReflection(): Methoded("reflection") {
 
 	// ^reflection:methods[class_name]
 	add_native_method("methods", Method::CT_STATIC, _methods, 1, 1);
+
+	// ^reflection:fields[object or class]
+	add_native_method("fields", Method::CT_STATIC, _fields, 1, 1);
 
 	// ^reflection:method_params[class_name;method_name]
 	add_native_method("method_info", Method::CT_STATIC, _method_info, 2, 2);
