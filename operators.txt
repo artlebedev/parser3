@@ -296,7 +296,7 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         пример:
         ^if(def $form:name) не пуста?
         ^if($user.isAlive) истина? [автопреобразование к числу, не ноль?]
-    !^string::sql{query}[[$.limit(1) $.offset(4) $.default{n/a} $.bind[см. table::sql]]]
+    !^string:sql{query}[[$.limit(1) $.offset(4) $.default{n/a} $.bind[см. table::sql]]]
         результат запроса должен быть один столбец/одна строка
     !^строка.int[] .int(default) целочисленное значение строки. 
         если ломается преобразование, берётся default
@@ -542,6 +542,7 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !^reflection:base[объект]              родительский класс переданного объекта
     !^reflection:base_name[объект]         имя родительского класса переданного объекта
     !^reflection:methods[класс]            хеш со списком методов указанного класса, значения -- строки 'native' или 'parser'
+    !^reflection:fields[класс или объект]  хеш со списком статических полей указанного класса или динамических полей указанного объекта
     !^reflection:method_info[класс;метод]  хеш с параметрами указанного метода класса
          $.inherited[класс]                имя класса, где метод был определён (возвращается только если метод был определён в предке)
          для native классов возвращается хеш:
