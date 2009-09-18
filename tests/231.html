@@ -1,0 +1,20 @@
+$request:charset[windows-1251]
+$response:charset[windows-1251]
+$response:content-type[
+	$.value[text/html]
+	$.charset[$response:charset]
+]
+
+$value[abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ
+0123456789
+`+-=~!@#^$%^^&*()_
+[]{}<>^;:'",./?
+
+àáâãäå¸æçèéêëìíîïğñòóôõö÷øùúûüışÿ	ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏĞÑÒÓÔÕÖ×ØÙÚÛÜİŞß]
+
+$cookie:èìÿ[
+	$.value[$value]
+	$.expires[^date::create(2033;01;01)]
+]
+
+=^taint[as-is][$cookie:èìÿ]=
