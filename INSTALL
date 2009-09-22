@@ -1,5 +1,5 @@
 Alexander Petrosian <paf@design.ru> (http://paf.design.ru)
-$Id: INSTALL,v 1.54 2009/08/01 04:59:09 misha Exp $
+$Id: INSTALL,v 1.55 2009/09/22 01:57:19 misha Exp $
 
 1.What is the process to compile Parser3?
 
@@ -126,6 +126,8 @@ $Id: INSTALL,v 1.54 2009/08/01 04:59:09 misha Exp $
 
   WARNING: if you want to use apache configure option --enable-shared=max, do this:
   ./p3runConfigure --enable-shared=max --disable-shared=mod_parser3.c
+
+  Make build-std" command to compile just httpd binary, support stuff won't build with parser libs.
 
 6.
   Since Parser 3.4.0 the several optimisations were implemented.
