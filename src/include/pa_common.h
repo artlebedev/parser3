@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-static const char * const IDENT_COMMON_H="$Date: 2009/09/10 09:39:48 $";
+static const char * const IDENT_COMMON_H="$Date: 2009/09/25 12:57:35 $";
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -28,7 +28,8 @@ class Request;
 #define HTTP_CONTENT_TYPE_MULTIPART_RELATED	"multipart/related"
 #define HTTP_CONTENT_TYPE_MULTIPART_MIXED	"multipart/mixed"
 
-#define CONTENT_TRANSFER_ENCODING_NAME "content-transfer-tncoding"
+#define CONTENT_TRANSFER_ENCODING_NAME "content-transfer-encoding"
+#define CONTENT_TRANSFER_ENCODING_CAPITALIZED "Content-Transfer-Encoding"
 
 #define CONTENT_DISPOSITION	"content-disposition"
 #define CONTENT_DISPOSITION_CAPITALIZED	"Content-Disposition"
