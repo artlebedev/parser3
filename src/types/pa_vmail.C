@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_VMAIL_C="$Date: 2009/09/03 11:08:40 $";
+static const char * const IDENT_VMAIL_C="$Date: 2009/09/25 13:00:19 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -588,7 +588,7 @@ static void store_message_element(HashStringValue::key_type raw_element_name,
 
 	// append header line
 	info->header 
-		<< raw_element_name 
+		<< capitalize(raw_element_name.cstr())
 		<< ":" << mail_line.untaint_cstr(String::L_AS_IS, 0, &info->charsets)
 		<< "\n";
 }
@@ -633,12 +633,12 @@ static const String& file_value_to_string(Request& r, Value* send_value) {
 	const char* file_name_cstr=file_name->cstr();
 
 	// content-type: application/octet-stream
-	result << HTTP_CONTENT_TYPE ": " << r.mime_type_of(file_name_cstr) << "; name=\"" << file_name_cstr << "\"\n";
+	result << HTTP_CONTENT_TYPE_CAPITALIZED ": " << r.mime_type_of(file_name_cstr) << "; name=\"" << file_name_cstr << "\"\n";
 
 	if(!info.had_content_disposition) {
 		// $.content-disposition wasn't specified
 		result
-			<< CONTENT_DISPOSITION ": "
+			<< CONTENT_DISPOSITION_CAPITALIZED ": "
 			<< ( vcid ? CONTENT_DISPOSITION_INLINE : CONTENT_DISPOSITION_ATTACHMENT )
 			<< "; "
 			<< CONTENT_DISPOSITION_FILENAME_NAME"=\"" << file_name_cstr << "\"\n";
@@ -649,11 +649,11 @@ static const String& file_value_to_string(Request& r, Value* send_value) {
 
 	const String* type=vformat?&vformat->as_string():0;
 	if(!type/*default = uue*/ || *type=="uue") {
-		result << CONTENT_TRANSFER_ENCODING_NAME ": x-uuencode\n" << "\n";
+		result << CONTENT_TRANSFER_ENCODING_CAPITALIZED ": x-uuencode\n" << "\n";
 		pa_uuencode(result, *file_name, *vfile);
 	} else {
 		if(*type=="base64") {
-			result << CONTENT_TRANSFER_ENCODING_NAME ": base64\n" << "\n";
+			result << CONTENT_TRANSFER_ENCODING_CAPITALIZED ": base64\n" << "\n";
 			result << pa_base64_encode(vfile->value_ptr(), vfile->value_size());
 		} else {
 			// for now
@@ -689,12 +689,12 @@ static const String& text_value_to_string(Request& r,
 
 	if(!info.content_type) {
 		result 
-			<< HTTP_CONTENT_TYPE ": text/" << (pt==P_TEXT?"plain":"html")
+			<< HTTP_CONTENT_TYPE_CAPITALIZED ": text/" << (pt==P_TEXT?"plain":"html")
 			<< "; charset=" << info.charsets.mail().NAME()
 			<< "\n";
 	}
 	if(!content_transfer_encoding)
-		result << CONTENT_TRANSFER_ENCODING_NAME << ": 8bit\n";
+		result << CONTENT_TRANSFER_ENCODING_CAPITALIZED << ": 8bit\n";
 
 	// header|body separator
 	result << "\n"; 
@@ -784,7 +784,7 @@ const String& VMail::message_hash_to_string(Request& r,
 		}
 
 		if(!info.errors_to)
-			result << "errors-to: postmaster\n"; // errors-to: default
+			result << "Errors-To: postmaster\n"; // errors-to: default
 		if(!info.mime_version_specified)
 			result << "MIME-Version: 1.0\n"; // MIME-Version: default
 	}
@@ -821,7 +821,7 @@ const String& VMail::message_hash_to_string(Request& r,
 			}
 		}
 		
-		result << HTTP_CONTENT_TYPE ": " << ( is_inline ? HTTP_CONTENT_TYPE_MULTIPART_RELATED : HTTP_CONTENT_TYPE_MULTIPART_MIXED ) << ";";
+		result << HTTP_CONTENT_TYPE_CAPITALIZED ": " << ( is_inline ? HTTP_CONTENT_TYPE_MULTIPART_RELATED : HTTP_CONTENT_TYPE_MULTIPART_MIXED ) << ";";
 
 		// multi-part
 		result 
@@ -834,7 +834,7 @@ const String& VMail::message_hash_to_string(Request& r,
 	{
 		if(alternative) {
 			result << "\n\n--" << boundary << "\n" // intermediate boundary
-				HTTP_CONTENT_TYPE ": multipart/alternative; boundary=\"ALT" << boundary << "\"\n";
+				HTTP_CONTENT_TYPE_CAPITALIZED ": multipart/alternative; boundary=\"ALT" << boundary << "\"\n";
 		} 
 		for(int i=0; i<2; i++) {
 			PartType pt=i==0?P_TEXT:P_HTML;
