@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Id: buildall-with-xml,v 1.30 2009/09/20 23:33:06 misha Exp $
+# $Id: buildall-with-xml,v 1.31 2009/09/25 12:59:16 misha Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -85,6 +85,7 @@ if test ! -f "$project_directory/gnome/lib/libxml2.a"; then
   #sax1, output, tree, xinclude[in libxslt], html[in libxslt, mode=html?], xptr[xinclude], pattern -- needed!
   echo "Configuring libxml..."
   ./configure --prefix=$project_directory/gnome \
+    --without-catalog \
     --without-iconv \
     --without-threads \
     --without-debug \
