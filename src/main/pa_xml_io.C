@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT="$Date: 2009/07/07 05:48:05 $";
+static const char * const IDENT="$Date: 2009/09/25 12:58:39 $";
 
 #include "libxslt/extensions.h"
 
@@ -106,9 +106,20 @@ xmlFileOpen_ReadIntoStream (const char* do_not_store_filename, bool adjust_path_
 		do_not_store_filename=adjust_buf;
 	} else
 		if(!strstr(do_not_store_filename, "http://"))
-			if(strstr(do_not_store_filename, "file://"))
-				do_not_store_filename+=7/*strlen("file://")*/; 
-			else if(*do_not_store_filename && do_not_store_filename[1]!=':' && strstr(do_not_store_filename, "://"))  {
+			if(strstr(do_not_store_filename, "file://")){
+				do_not_store_filename+=7/*strlen("file://")*/;
+#ifdef WIN32
+				if(
+					do_not_store_filename[0]=='/'
+					&& do_not_store_filename[1]
+					&& do_not_store_filename[2]==':'
+					&& do_not_store_filename[3]=='/'
+				){
+					// skip leading slash for absolute path file:///C:/path/to/file
+					do_not_store_filename++;
+				}
+#endif
+			} else if(*do_not_store_filename && do_not_store_filename[1]!=':' && strstr(do_not_store_filename, "://"))  {
 				pa_xmlStopMonitoringDependencies();
 				return 0; // plug out [do not handle other prefixes]
 			}
