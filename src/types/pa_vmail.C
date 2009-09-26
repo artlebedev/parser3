@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_VMAIL_C="$Date: 2009/09/25 13:00:19 $";
+static const char * const IDENT_VMAIL_C="$Date: 2009/09/26 12:19:39 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -330,9 +330,9 @@ static void parse(Request& r, GMimeStream *stream, HashStringValue& received) {
 
 void VMail::fill_received(Request& 
 #ifdef WITH_MAILRECEIVE
-						  r
+						r
 #endif
-						  ) {
+						) {
 	// store letter to received
 #ifdef WITH_MAILRECEIVE
 	if(r.request_info.mail_received) {
@@ -412,14 +412,14 @@ static void extractEmail(String& result, char *email) {
 		sub-domain  =  domain-ref / domain-literal
 		domain-ref  =  atom                         ; symbolic reference
 
-        domain-literal << ignoring for now
+		domain-literal << ignoring for now
 		quoted-string in word << ignoring for now
 
 		atom        =  1*<any CHAR except specials, SPACE and CTLs>  << the ONLY to check
 
 		specials    =  "(" / ")" / "<" / ">" / "@"  ; Must be in quoted-
-                 /  "," / ";" / ":" / "\" / <">  ;  string, to use
-                 /  "." / "[" / "]"              ;  within a word.
+				/  "," / ";" / ":" / "\" / <">  ;  string, to use
+				/  "." / "[" / "]"              ;  within a word.
 
 	*/
 	const char* exception_type="email.format";
@@ -490,8 +490,8 @@ struct Store_message_element_info {
 };
 #endif
 static void store_message_element(HashStringValue::key_type raw_element_name, 
-				  HashStringValue::value_type element_value, 
-				  Store_message_element_info *info) {
+				HashStringValue::value_type element_value, 
+				Store_message_element_info *info) {
 	const String& low_element_name=String(raw_element_name, String::L_TAINTED).change_case(
 		info->charsets.source(), String::CC_LOWER);
 
@@ -564,6 +564,7 @@ static void store_message_element(HashStringValue::key_type raw_element_name,
 		String::C(source_line_cstr, source_line.length()),
 		info->charsets.source(), 
 		info->charsets.mail());
+
 	String& mail_line=*new String;
 	if(low_element_name=="to"
 		|| low_element_name=="cc" 
@@ -636,7 +637,7 @@ static const String& file_value_to_string(Request& r, Value* send_value) {
 	result << HTTP_CONTENT_TYPE_CAPITALIZED ": " << r.mime_type_of(file_name_cstr) << "; name=\"" << file_name_cstr << "\"\n";
 
 	if(!info.had_content_disposition) {
-		// $.content-disposition wasn't specified
+		// $.Content-Disposition wasn't specified by user
 		result
 			<< CONTENT_DISPOSITION_CAPITALIZED ": "
 			<< ( vcid ? CONTENT_DISPOSITION_INLINE : CONTENT_DISPOSITION_ATTACHMENT )
@@ -667,15 +668,16 @@ static const String& file_value_to_string(Request& r, Value* send_value) {
 }
 
 static const String& text_value_to_string(Request& r,
-					  PartType pt, Value* send_value,
-					  Store_message_element_info& info) {
+					PartType pt, Value* send_value,
+					Store_message_element_info& info) {
 	String& result=*new String;
 
 	Value* text_value;
 	Value* content_transfer_encoding=0;
 	if(HashStringValue* send_hash=send_value->get_hash()) {
 		// $.USER-HEADERS
-		info.content_type=0; info.backward_compatibility=false; // reset
+		info.content_type=0;
+		info.backward_compatibility=false; // reset
 		send_hash->for_each<Store_message_element_info*>(store_message_element, &info);
 		// $.value
 		text_value=send_hash->get(value_name);
@@ -703,18 +705,19 @@ static const String& text_value_to_string(Request& r,
 	const String* body;
 	switch(pt) {
 	case P_TEXT:
-		body=&text_value->as_string();
-		break;
+		{
+			body=&text_value->as_string();
+			break;
+		}
 	case P_HTML: 
 		{
 			Temp_lang temp_lang(r, String::Language(String::L_HTML | String::L_OPTIMIZE_BIT));
 			if(text_value->get_junction())
 				body=&r.process_to_string(*text_value);
-			else {
+			else
 				throw Exception(PARSER_RUNTIME,
 					0,
 					"html part value must be code");
-			}
 
 			break;
 		}
@@ -739,8 +742,8 @@ static const String& text_value_to_string(Request& r,
 
 /// @todo files and messages in order (file, file2, ...)
 const String& VMail::message_hash_to_string(Request& r,
-					    HashStringValue* message_hash, int level, 
-					    const String* & from, bool extract_to, String* & to) {
+					HashStringValue* message_hash, int level, 
+					const String* & from, bool extract_to, String* & to) {
 	
 	if(!message_hash)
 		throw Exception(PARSER_RUNTIME,

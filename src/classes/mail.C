@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_MAIL_C="$Date: 2009/08/08 13:30:20 $";
+static const char * const IDENT_MAIL_C="$Date: 2009/09/26 12:15:40 $";
 
 #include "pa_config_includes.h"
 #include "pa_vmethod_frame.h"
@@ -66,9 +66,10 @@ static void sendmail(
 			vmail_conf
 #endif
 			, Value* smtp_server_port,
-		     const String& message, 
-		     const String* from, const String* to,
-			 const String* 
+			const String& message, 
+			const String* from,
+			const String* to,
+			const String* 
 #ifndef _MSC_VER
 			 options
 #endif
