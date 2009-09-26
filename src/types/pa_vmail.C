@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_VMAIL_C="$Date: 2009/09/26 12:19:39 $";
+static const char * const IDENT_VMAIL_C="$Date: 2009/09/26 12:32:23 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -646,18 +646,20 @@ static const String& file_value_to_string(Request& r, Value* send_value) {
 	}
 
 	if(vcid)
-		result << CID_NAME ": <" << vcid->as_string() << ">\n"; // @todo: value must be escaped as %hh
+		result
+			<< "Content-Id: <"
+			<< vcid->as_string()
+			<< ">\n"; // @todo: value must be escaped as %hh
 
 	const String* type=vformat?&vformat->as_string():0;
-	if(!type/*default = uue*/ || *type=="uue") {
-		result << CONTENT_TRANSFER_ENCODING_CAPITALIZED ": x-uuencode\n" << "\n";
-		pa_uuencode(result, *file_name, *vfile);
+	if(!type/*default*/ || *type=="base64") {
+		result << CONTENT_TRANSFER_ENCODING_CAPITALIZED ": base64\n\n";
+		result << pa_base64_encode(vfile->value_ptr(), vfile->value_size());
 	} else {
-		if(*type=="base64") {
-			result << CONTENT_TRANSFER_ENCODING_CAPITALIZED ": base64\n" << "\n";
-			result << pa_base64_encode(vfile->value_ptr(), vfile->value_size());
+		if(*type=="uue") {
+			result << CONTENT_TRANSFER_ENCODING_CAPITALIZED ": x-uuencode\n\n";
+			pa_uuencode(result, *file_name, *vfile);
 		} else {
-			// for now
 			throw Exception(PARSER_RUNTIME,
 				type,
 				"unknown attachment encode format");
