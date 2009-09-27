@@ -7,7 +7,7 @@
 	@todo setrlimit
 */
 
-static const char * const IDENT_UUE_C="$Date: 2009/09/27 22:07:58 $";
+static const char * const IDENT_UUE_C="$Date: 2009/09/27 23:40:07 $";
 
 #include "pa_config_includes.h"
 
@@ -31,7 +31,7 @@ const char* pa_uuencode(const String& file_name, const VFile& vfile) {
 	const char* file_name_cstr = file_name.cstr();
 
 	size_t new_size=((in_length / 3 + 1) * 4);
-	new_size += 2 * new_size / 60/*chars in line + new lines*/;
+	new_size += 2 * new_size / 60/*chars in line + new lines*/ + 2;
 	new_size += strlen(file_name_cstr) + 11/*header*/ + 6/*footer*/ + 1/*zero terminator*/;
 
 	const char* result=new(PointerFreeGC) char[new_size];
