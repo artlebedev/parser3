@@ -26,7 +26,7 @@
  *
  */
 
-static const char * const IDENT_COMMON_C="$Date: 2009/09/08 09:09:26 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2009/09/27 22:08:27 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -1196,16 +1196,18 @@ g_mime_utils_base64_decode_step (const unsigned char *in, size_t inlen, unsigned
 
 
 char* pa_base64_encode(const char *in, size_t in_size){
-	/* wont go to more than 2x size (overly conservative) */
-	char* result=new(PointerFreeGC) char[in_size * 2 + 6];
+	size_t new_size=((in_size / 3 + 1) * 4);
+	new_size+=new_size / 76/*new lines*/ + 1/*zero terminator*/;
+	char* result=new(PointerFreeGC) char[new_size];
 	int state=0;
 	int save=0;
 #ifndef NDEBUG
 	size_t filled=
 #endif
-		g_mime_utils_base64_encode_close ((const unsigned char*)in, in_size, 
-		(unsigned char*)result, &state, &save);
-	assert(filled <= in_size * 2 + 6);
+		g_mime_utils_base64_encode_close ((const unsigned char*)in, in_size, (unsigned char*)result, &state, &save);
+
+	//throw Exception(PARSER_RUNTIME, 0, "%d %d %d", in_size, new_size, filled);
+	assert(filled <= new_size);
 
 	return result;
 }
