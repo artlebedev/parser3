@@ -1,19 +1,17 @@
 /** @file
 	Parser: uuencoding impl.
 
-	Copyright(c) 2000,2001-2005 ArtLebedev Group(http://www.artlebedev.com)
+	Copyright(c) 2000-2009 ArtLebedev Group(http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
 	@todo setrlimit
 */
 
-static const char * const IDENT_UUE_C="$Date: 2007/10/22 14:34:24 $";
+static const char * const IDENT_UUE_C="$Date: 2009/09/27 22:07:58 $";
 
 #include "pa_config_includes.h"
 
 #include "pa_uue.h"
-
-#define UUE_MAX_STRING 0x40
 
 static unsigned char uue_table[64] = {
   '`', '!', '"', '#', '$', '%', '&', '\'',
@@ -25,14 +23,24 @@ static unsigned char uue_table[64] = {
   'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W',
   'X', 'Y', 'Z', '[', '\\',']', '^', '_'
 };
-void pa_uuencode(String& result, const String& file_name, const VFile& vfile) {
-	//header
-	result << "begin 644 " << file_name << "\n";
 
-	//body
+const char* pa_uuencode(const String& file_name, const VFile& vfile) {
 	const unsigned char *in=(const unsigned char *)vfile.value_ptr();
 	size_t in_length=vfile.value_size();
 
+	const char* file_name_cstr = file_name.cstr();
+
+	size_t new_size=((in_length / 3 + 1) * 4);
+	new_size += 2 * new_size / 60/*chars in line + new lines*/;
+	new_size += strlen(file_name_cstr) + 11/*header*/ + 6/*footer*/ + 1/*zero terminator*/;
+
+	const char* result=new(PointerFreeGC) char[new_size];
+	char* optr=(char*)result;
+
+	//header
+	optr += sprintf(optr, "begin 644 %s\n", file_name_cstr);
+
+	//body
 	int count=45;
 	for(const unsigned char *itemp=in; itemp<(in+in_length); itemp+=count) {
 		int index;	
@@ -40,9 +48,6 @@ void pa_uuencode(String& result, const String& file_name, const VFile& vfile) {
 		if((itemp+count)>(in+in_length)) 
 			count=in_length-(itemp-in);
 
-		char *buf=new(PointerFreeGC) char[UUE_MAX_STRING];
-		char *optr=buf;
-		
 		/*
 		* for UU and XX, encode the number of bytes as first character
 		*/
@@ -77,11 +82,15 @@ void pa_uuencode(String& result, const String& file_name, const VFile& vfile) {
 		* end of line
 		*/
 		*optr++ = '\n';	
-		*optr = 0;
-		result << buf;
 	}
 	
 	//footer
-	result<< "`\n"
-		"end\n";
+	optr += sprintf(optr, "`\nend\n");
+
+	*optr = 0;
+
+	//throw Exception(PARSER_RUNTIME, 0, "%d %d %d", in_length, new_size, (size_t)(optr-result));
+	assert((size_t)(optr-result) < new_size);
+
+	return result;
 }
