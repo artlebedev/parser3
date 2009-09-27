@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_MAIL_C="$Date: 2009/09/26 12:15:40 $";
+static const char * const IDENT_MAIL_C="$Date: 2009/09/27 22:10:12 $";
 
 #include "pa_config_includes.h"
 #include "pa_vmethod_frame.h"
@@ -20,10 +20,6 @@ static const char * const IDENT_MAIL_C="$Date: 2009/09/26 12:15:40 $";
 #include "pa_vmail.h"
 
 #include "smtp.h"
-
-// debug switches
-
-//#define DEBUG_JUST_SEE_MESSAGE
 
 // defines
 
@@ -205,6 +201,10 @@ static void _send(Request& r, MethodParams& params) {
 	if(Value* voptions=hash->get(MAIL_OPTIONS_NAME))
 		soptions=&voptions->as_string();
 
+	bool print_debug=false;
+	if(Value* vdebug=hash->get(MAIL_DEBUG_NAME))
+		print_debug=vdebug->as_bool();
+
 	Value* vmail_conf=static_cast<Value*>(r.classes_conf.get(mail_base_class->name()));
 	Value* smtp_server_port=0;
 	if(vmail_conf) {
@@ -219,12 +219,10 @@ static void _send(Request& r, MethodParams& params) {
 		GET_SELF(r, VMail).message_hash_to_string(r, hash, 0, from, 
 			smtp_server_port?true:false /*send by SMTP=strip to?*/, to);
 
-#ifdef DEBUG_JUST_SEE_MESSAGE
-	r.write_pass_lang(message);
-#else
-	sendmail(vmail_conf, smtp_server_port, 
-		message, from, to, soptions);
-#endif
+	if(print_debug)
+		r.write_pass_lang(message);
+	else
+		sendmail(vmail_conf, smtp_server_port, message, from, to, soptions);
 }
 
 // constructor & configurator

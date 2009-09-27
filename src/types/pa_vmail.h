@@ -8,7 +8,7 @@
 #ifndef PA_VMAIL_H
 #define PA_VMAIL_H
 
-static const char * const IDENT_VMAIL_H="$Date: 2009/08/08 13:30:21 $";
+static const char * const IDENT_VMAIL_H="$Date: 2009/09/27 22:10:02 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -18,6 +18,7 @@ static const char * const IDENT_VMAIL_H="$Date: 2009/08/08 13:30:21 $";
 
 #define MAIL_RECEIVED_ELEMENT_NAME "received"
 #define MAIL_OPTIONS_NAME "options"
+#define MAIL_DEBUG_NAME "print-debug"
 
 // forwards
 

@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_VMAIL_C="$Date: 2009/09/26 12:32:23 $";
+static const char * const IDENT_VMAIL_C="$Date: 2009/09/27 22:10:02 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -502,7 +502,8 @@ static void store_message_element(HashStringValue::key_type raw_element_name,
 		|| low_element_name==RAW_NAME
 		|| low_element_name==FORMAT_NAME
 		|| low_element_name==NAME_NAME
-		|| low_element_name==CID_NAME)
+		|| low_element_name==CID_NAME
+		|| low_element_name==MAIL_DEBUG_NAME)
 		return;
 
 	// grep parts
@@ -658,7 +659,7 @@ static const String& file_value_to_string(Request& r, Value* send_value) {
 	} else {
 		if(*type=="uue") {
 			result << CONTENT_TRANSFER_ENCODING_CAPITALIZED ": x-uuencode\n\n";
-			pa_uuencode(result, *file_name, *vfile);
+			result << pa_uuencode(*file_name, *vfile);
 		} else {
 			throw Exception(PARSER_RUNTIME,
 				type,
