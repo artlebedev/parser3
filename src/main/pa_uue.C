@@ -7,7 +7,7 @@
 	@todo setrlimit
 */
 
-static const char * const IDENT_UUE_C="$Date: 2009/09/28 08:59:29 $";
+static const char * const IDENT_UUE_C="$Date: 2009/09/28 11:39:30 $";
 
 #include "pa_config_includes.h"
 
@@ -26,8 +26,10 @@ static unsigned char uue_table[64] = {
 };
 
 const char* pa_uuencode(const unsigned char* in, size_t in_size, const char* file_name) {
-	size_t new_size=((in_size / 3 + 1) * 4);
-	new_size += 2 * new_size / 60/*chars in line + new lines*/ + 2;
+	int count=45;
+
+	size_t new_size = ((in_size / 3 + 1) * 4);
+	new_size += 2 * new_size / (count / 3 * 4) /*chars in line + new lines*/ + 2;
 	new_size += strlen(file_name) + 11/*header*/ + 6/*footer*/ + 1/*zero terminator*/;
 
 	const char* result=new(PointerFreeGC) char[new_size];
@@ -37,7 +39,6 @@ const char* pa_uuencode(const unsigned char* in, size_t in_size, const char* fil
 	optr += sprintf(optr, "begin 644 %s\n", file_name);
 
 	//body
-	int count=45;
 	for(const unsigned char *itemp=in; itemp<(in+in_size); itemp+=count) {
 		int index;	
 
@@ -77,13 +78,11 @@ const char* pa_uuencode(const unsigned char* in, size_t in_size, const char* fil
 		/*
 		* end of line
 		*/
-		*optr++ = '\n';	
+		*optr++ = '\n';
 	}
 	
 	//footer
 	optr += sprintf(optr, "`\nend\n");
-
-	*optr = 0;
 
 	//throw Exception(PARSER_RUNTIME, 0, "%d %d %d", in_size, new_size, (size_t)(optr-result));
 	assert((size_t)(optr-result) < new_size);

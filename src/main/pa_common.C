@@ -26,7 +26,7 @@
  *
  */
 
-static const char * const IDENT_COMMON_C="$Date: 2009/09/27 22:08:27 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2009/09/28 11:39:30 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -993,6 +993,9 @@ static char *base64_alphabet =
  *
  * Returns the number of bytes encoded.
  **/
+
+#define BASE64_GROUPS_IN_LINE 19
+
 static size_t
 g_mime_utils_base64_encode_step (const unsigned char *in, size_t inlen, unsigned char *out, int *state, int *save)
 {
@@ -1030,7 +1033,7 @@ g_mime_utils_base64_encode_step (const unsigned char *in, size_t inlen, unsigned
 			*outptr++ = base64_alphabet [((c2 & 0x0f) << 2) | (c3 >> 6)];
 			*outptr++ = base64_alphabet [c3 & 0x3f];
 			/* this is a bit ugly ... */
-			if ((++already) >= 19) {
+			if ((++already) >= BASE64_GROUPS_IN_LINE) {
 				*outptr++ = '\n';
 				already = 0;
 			}
@@ -1196,9 +1199,9 @@ g_mime_utils_base64_decode_step (const unsigned char *in, size_t inlen, unsigned
 
 
 char* pa_base64_encode(const char *in, size_t in_size){
-	size_t new_size=((in_size / 3 + 1) * 4);
-	new_size+=new_size / 76/*new lines*/ + 1/*zero terminator*/;
-	char* result=new(PointerFreeGC) char[new_size];
+	size_t new_size = ((in_size / 3 + 1) * 4);
+	new_size += new_size / (BASE64_GROUPS_IN_LINE * 4)/*new lines*/ + 1/*zero terminator*/;
+	char* result = new(PointerFreeGC) char[new_size];
 	int state=0;
 	int save=0;
 #ifndef NDEBUG
