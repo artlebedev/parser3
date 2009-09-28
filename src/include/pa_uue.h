@@ -8,11 +8,8 @@
 #ifndef PA_UUE_H
 #define PA_UUE_H
 
-static const char * const IDENT_UUE_H="$Date: 2009/09/27 22:07:50 $";
+static const char * const IDENT_UUE_H="$Date: 2009/09/28 08:59:12 $";
 
-#include "pa_string.h"
-#include "pa_vfile.h"
-
-const char* pa_uuencode(const String& file_name, const VFile& vfile);
+const char* pa_uuencode(const unsigned char* in, size_t in_size, const char* file_name);
 
 #endif

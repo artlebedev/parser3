@@ -7,11 +7,12 @@
 	@todo setrlimit
 */
 
-static const char * const IDENT_UUE_C="$Date: 2009/09/27 23:40:07 $";
+static const char * const IDENT_UUE_C="$Date: 2009/09/28 08:59:29 $";
 
 #include "pa_config_includes.h"
 
 #include "pa_uue.h"
+#include "pa_memory.h"
 
 static unsigned char uue_table[64] = {
   '`', '!', '"', '#', '$', '%', '&', '\'',
@@ -24,29 +25,24 @@ static unsigned char uue_table[64] = {
   'X', 'Y', 'Z', '[', '\\',']', '^', '_'
 };
 
-const char* pa_uuencode(const String& file_name, const VFile& vfile) {
-	const unsigned char *in=(const unsigned char *)vfile.value_ptr();
-	size_t in_length=vfile.value_size();
-
-	const char* file_name_cstr = file_name.cstr();
-
-	size_t new_size=((in_length / 3 + 1) * 4);
+const char* pa_uuencode(const unsigned char* in, size_t in_size, const char* file_name) {
+	size_t new_size=((in_size / 3 + 1) * 4);
 	new_size += 2 * new_size / 60/*chars in line + new lines*/ + 2;
-	new_size += strlen(file_name_cstr) + 11/*header*/ + 6/*footer*/ + 1/*zero terminator*/;
+	new_size += strlen(file_name) + 11/*header*/ + 6/*footer*/ + 1/*zero terminator*/;
 
 	const char* result=new(PointerFreeGC) char[new_size];
 	char* optr=(char*)result;
 
 	//header
-	optr += sprintf(optr, "begin 644 %s\n", file_name_cstr);
+	optr += sprintf(optr, "begin 644 %s\n", file_name);
 
 	//body
 	int count=45;
-	for(const unsigned char *itemp=in; itemp<(in+in_length); itemp+=count) {
+	for(const unsigned char *itemp=in; itemp<(in+in_size); itemp+=count) {
 		int index;	
 
-		if((itemp+count)>(in+in_length)) 
-			count=in_length-(itemp-in);
+		if((itemp+count)>(in+in_size)) 
+			count=in_size-(itemp-in);
 
 		/*
 		* for UU and XX, encode the number of bytes as first character
@@ -89,7 +85,7 @@ const char* pa_uuencode(const String& file_name, const VFile& vfile) {
 
 	*optr = 0;
 
-	//throw Exception(PARSER_RUNTIME, 0, "%d %d %d", in_length, new_size, (size_t)(optr-result));
+	//throw Exception(PARSER_RUNTIME, 0, "%d %d %d", in_size, new_size, (size_t)(optr-result));
 	assert((size_t)(optr-result) < new_size);
 
 	return result;
