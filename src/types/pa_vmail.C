@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_VMAIL_C="$Date: 2009/09/27 22:10:02 $";
+static const char * const IDENT_VMAIL_C="$Date: 2009/09/28 09:00:33 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -604,8 +604,8 @@ static const String& file_value_to_string(Request& r, Value* send_value) {
 	Value* vcid=0;
 	const String* dummy_from;
 	String* dummy_to;
-	Store_message_element_info info(r.charsets, 
-		result, dummy_from, false, dummy_to);
+	Store_message_element_info info(r.charsets, result, dummy_from, false, dummy_to);
+
 	if(HashStringValue *send_hash=send_value->get_hash()) { // hash
 		send_hash->for_each<Store_message_element_info*>(store_message_element, &info);
 
@@ -632,19 +632,28 @@ static const String& file_value_to_string(Request& r, Value* send_value) {
 	if(!file_name)
 		file_name=&vfile->fields().get(name_name)->as_string();
 
-	const char* file_name_cstr=file_name->cstr();
+	const char* file_name_cstr;
+	const char* quoted_file_name_cstr;
+	{
+		Request_charsets charsets(r.charsets.source(), r.charsets.mail()/*uri!*/, r.charsets.mail());
+		file_name_cstr=file_name->transcode_and_untaint_cstr(String::L_FILE_SPEC, &charsets);
+		quoted_file_name_cstr=String(file_name_cstr).taint_cstr(String::L_MAIL_HEADER, 0, &charsets);
+	}
 
-	// content-type: application/octet-stream
-	result << HTTP_CONTENT_TYPE_CAPITALIZED ": " << r.mime_type_of(file_name_cstr) << "; name=\"" << file_name_cstr << "\"\n";
+	// Content-Type: application/octet-stream
+	result
+		<< HTTP_CONTENT_TYPE_CAPITALIZED ": "
+		<< r.mime_type_of(file_name_cstr)
+		<< "; name=\""
+		<< quoted_file_name_cstr
+		<< "\"\n";
 
-	if(!info.had_content_disposition) {
-		// $.Content-Disposition wasn't specified by user
+	if(!info.had_content_disposition) // $.Content-Disposition wasn't specified by user
 		result
 			<< CONTENT_DISPOSITION_CAPITALIZED ": "
 			<< ( vcid ? CONTENT_DISPOSITION_INLINE : CONTENT_DISPOSITION_ATTACHMENT )
 			<< "; "
-			<< CONTENT_DISPOSITION_FILENAME_NAME"=\"" << file_name_cstr << "\"\n";
-	}
+			<< CONTENT_DISPOSITION_FILENAME_NAME"=\"" << quoted_file_name_cstr << "\"\n";
 
 	if(vcid)
 		result
@@ -659,14 +668,13 @@ static const String& file_value_to_string(Request& r, Value* send_value) {
 	} else {
 		if(*type=="uue") {
 			result << CONTENT_TRANSFER_ENCODING_CAPITALIZED ": x-uuencode\n\n";
-			result << pa_uuencode(*file_name, *vfile);
-		} else {
+			result << pa_uuencode((const unsigned char*)vfile->value_ptr(), vfile->value_size(), file_name_cstr);
+		} else
 			throw Exception(PARSER_RUNTIME,
 				type,
 				"unknown attachment encode format");
-		}
 	}
-	
+
 	return result;
 }
 
@@ -731,13 +739,8 @@ static const String& text_value_to_string(Request& r,
 	}
 	if(body) {
 		Request_charsets charsets(r.charsets.source(), r.charsets.mail()/*uri!*/, r.charsets.mail());
-		const char* body_cstr=body->untaint_cstr(String::L_AS_IS, 0, &charsets);  // body
-		String::C mail=Charset::transcode(
-			String::C(body_cstr, strlen(body_cstr)),
-			r.charsets.source(),
-			r.charsets.mail()/*always set - either mail.charset or $request:charset*/);
-		///@todo
-		result.append_know_length(mail.str, mail.length, String::L_CLEAN);
+		const char* body_cstr=body->transcode_and_untaint_cstr(String::L_AS_IS, &charsets);
+		result.append_know_length(body_cstr, strlen(body_cstr), String::L_CLEAN);
 	}
 
 	return result;
