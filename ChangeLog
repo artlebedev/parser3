@@ -1,3 +1,2115 @@
+2009-09-28	misha
+	* src/main/pa_common.C 1.252:
+	* src/main/pa_uue.C 1.15:
+		- some magic numbers were removed
+
+	* src/types/pa_vmail.C 1.96:
+		- forgot about space after ':'
+
+	* src/types/pa_vmail.C 1.95:
+		- escape filenames while preparing mail body
+		- small simplifications
+
+	* src/include/pa_uue.h 1.10:
+	* src/main/pa_uue.C 1.14:
+		- pa_uuencode now has inout params like pa_base64
+
+2009-09-27	misha
+	* src/classes/mail.C 1.115:
+	* src/types/pa_vmail.C 1.94:
+	* src/types/pa_vmail.h 1.19:
+		- new option $.debug-print(1) was added to mail:send
+		- changes for using uue_encode which uses less memory
+
+	* src/main/pa_common.C 1.251:
+		- pa_base64_encode uses less memory now
+
+	* src/include/pa_uue.h 1.9:
+	* src/main/pa_uue.C 1.12:
+		- pa_uuencode reduces less memory now
+
+2009-09-26	misha
+	* src/types/pa_vmail.C 1.93:
+		- default encoding now is base64
+
+	* buildall-with-xml 1.32:
+		- moving to libxml 2.7.5 and libxslt 1.1.26
+
+2009-09-25	misha
+	* src/types/pa_vmail.C 1.91:
+		- capitalization of headers was added to sending mail as well
+
+	* buildall-with-xml 1.31:
+		- catalog package was removed from libxml
+
+	* src/main/pa_xml_io.C 1.26:
+		- fix in removing file:// protocol for win32 absolute path
+
+	* src/include/pa_common.h 1.139:
+		- one more capitalized header was added
+
+2009-09-22	misha
+	* INSTALL 1.55:
+		- comment about building just httpd binary while building apache 
+		module was added
+
+	* src/targets/apache13/p3runConfigure.in 1.19:
+		- INCLUDES added so problem with finding pa_httpd.h should be 
+		fixed now
+
+2009-09-20	misha
+	* buildall-with-xml 1.30:
+		- moving to the latest versions of xml libs: libxml 2.7.4 and 
+		libxslt 1.1.25
+
+	* src/targets/apache13/p3runConfigure.in 1.18:
+		- path fo pcre libs was fixed
+
+2009-09-18	misha
+	* tests/224.html 1.6:
+	* tests/224.p 1.4:
+	* tests/results/224.processed 1.8:
+	* tests/results/231.processed 1.1:
+		*** empty log message ***
+
+	* tests/231.html 1.1:
+		- test for encoding cookie in win-1251
+
+	* tests/224.html 1.5:
+	* tests/224.p 1.3:
+		- tests for ^reflection:fields[class or object] were added
+
+	* operators.txt 1.227:
+		- info about method ^reflection:fields[class or object] was 
+		added
+
+	* src/classes/reflection.C 1.13:
+		- method ^reflection:fields[class or object] was added
+
+	* src/types/pa_value.h 1.136:
+	* src/types/pa_vclass.C 1.43:
+	* src/types/pa_vclass.h 1.58:
+	* src/types/pa_vobject.h 1.55:
+		- methods get_fields were added
+
+2009-09-17	misha
+	* tests/results/212.processed 1.4:
+	* tests/results/232.processed 1.1:
+		*** empty log message ***
+
+	* tests/232.html 1.1:
+		- tests for @GET[name]
+
+	* src/classes/table.C 1.268:
+		- some changes in handling hash-options for creare, join and 
+		locate
+
+	* src/types/pa_vobject.C 1.30:
+	* src/types/pa_vobject.h 1.54:
+		- @GET[] now could be defined with option: the type of requested 
+		value
+
+	* tests/212.html 1.3:
+		- tests for .pattern and .options were added
+
+	* src/types/pa_vregex.C 1.8:
+	* src/types/pa_vregex.h 1.5:
+		- $regex.pattern and $regex.options were added
+
+2009-09-11	misha
+	* tests/results/223.processed 1.3:
+		*** empty log message ***
+
+	* tests/223.html 1.2:
+	* tests/223_utf8.txt 1.1:
+	* tests/223_win1251.txt 1.1:
+		- test was rewrited. it checks not just one case of sending 
+		cookies during file::load[http], but also sending headers and 
+		fields (including files)
+
+2009-09-10	misha
+	* src/main/untaint.C 1.154:
+		- workaround in file-spec lang for old Macs was removed => now 
+		parser can open files with Russian 'r' in filename
+
+	* src/main/untaint.C 1.153:
+		- bugfix: client charset whould be analized while escaping 
+		cookies but now source charset
+
+	* src/main/pa_http.C 1.42:
+		- bugfix: the values of http headers didn't ^tainted[uri] so it 
+		was possible to make request with incorrect http header
+
+	* src/main/pa_http.C 1.41:
+		- capitalization of http headers during file::load[http was slightly changes
+		- bugfix: all headers which parser sends during file::load[http should be transcoded and only then 
+		escaped
+
+	* src/main/untaint.C 1.152:
+		- a bit more comments were added
+
+	* src/classes/file.C 1.202:
+	* src/classes/string.C 1.190:
+		- types where changes (minus 2 warnings)
+
+	* src/include/pa_common.h 1.138:
+		- 2 capitalized strings for making http headers during file::
+		load[http were added
+
+2009-09-08	misha
+	* tests/results/230.processed 1.1:
+		*** empty log message ***
+
+	* operators.txt 1.226:
+		- changes in file.save and string.save were added
+
+	* tests/230.html 1.1:
+	* tests/230.txt 1.1:
+		- tests for checking options in file.save and string.save were 
+		added
+
+	* src/main/pa_request.C 1.315:
+		- http headers names, which are passed to SAPI::
+		add_header_attribute are lowercased now (it'll be capitalized in 
+		that method)
+
+	* src/classes/file.C 1.201:
+	* src/classes/string.C 1.189:
+	* src/types/pa_vfile.C 1.46:
+	* src/types/pa_vfile.h 1.66:
+		- file_write accepts Request_charsets and asked charset and cound transcode content before writing
+		- string.save and file.save have option $.charset now
+
+	* src/classes/table.C 1.267:
+	* src/classes/xdoc.C 1.165:
+	* src/include/pa_common.h 1.137:
+	* src/main/pa_common.C 1.250:
+		- file_write accepts Request_charsets and asked charset and 
+		cound transcode content before writing
+
+	* src/include/pa_exception.h 1.56:
+		- new exception comment string was defined
+
+2009-09-07	misha
+	* src/main/compile.tab.C 1.146:
+		*** empty log message ***
+
+	* src/main/compile.y 1.253:
+		- grammar $name\ name stops now for regex sub-pattern\s
+
+2009-09-04	misha
+	* src/main/pa_http.C 1.39:
+		- capitalization of http headers during file::load[http was 
+		implemented
+
+2009-09-03	misha
+	* tests/results/075.processed 1.7:
+	* tests/results/204.processed 1.3:
+		*** empty log message ***
+
+	* src/include/pa_common.h 1.136:
+	* src/include/pa_sapi.h 1.28:
+	* src/main/pa_common.C 1.249:
+	* src/main/pa_http.C 1.38:
+	* src/main/pa_request.C 1.314:
+	* src/targets/apache13core/mod_parser3_core.C 1.14:
+	* src/targets/cgi/parser3.C 1.254:
+	* src/targets/isapi/parser3isapi.C 1.102:
+	* src/types/pa_vcookie.C 1.82:
+	* src/types/pa_vmail.C 1.90:
+		- back to storing response http headers in lowercase
+		- capitalize them during output
+
+2009-08-31	misha
+	* src/classes/table.C 1.266:
+		- allow call with any brackets (it could be useful in methods 
+		with explict result declaration)
+
+	* src/classes/table.C 1.265:
+		- bugfix: ^table.sort{...} doesn't work correctly if $request:
+		charset==koi8-r
+
+2009-08-30	misha
+	* src/classes/file.C 1.200:
+	* src/include/pa_common.h 1.134:
+	* src/include/pa_common.h 1.135:
+	* src/include/pa_request.h 1.198:
+	* src/main/pa_http.C 1.37:
+	* src/main/pa_request.C 1.311:
+	* src/main/pa_request.C 1.312:
+	* src/targets/apache13core/mod_parser3_core.C 1.13:
+	* src/targets/cgi/parser3.C 1.253:
+	* src/targets/isapi/parser3isapi.C 1.101:
+	* src/types/pa_vcookie.C 1.81:
+	* src/types/pa_vmail.C 1.89:
+	* tests/results/001.processed 1.5:
+	* tests/results/002.processed 1.5:
+	* tests/results/003.processed 1.5:
+	* tests/results/004.processed 1.5:
+	* tests/results/005.processed 1.5:
+	* tests/results/006.processed 1.7:
+	* tests/results/007.processed 1.3:
+	* tests/results/008.processed 1.5:
+	* tests/results/009.processed 1.5:
+	* tests/results/010.processed 1.5:
+	* tests/results/011.processed 1.5:
+	* tests/results/012.processed 1.5:
+	* tests/results/013.processed 1.6:
+	* tests/results/014.processed 1.6:
+	* tests/results/015.processed 1.6:
+	* tests/results/016.processed 1.5:
+	* tests/results/017.processed 1.5:
+	* tests/results/018.processed 1.5:
+	* tests/results/019.processed 1.5:
+	* tests/results/020.processed 1.5:
+	* tests/results/021.processed 1.5:
+	* tests/results/022.processed 1.7:
+	* tests/results/023.processed 1.5:
+	* tests/results/024.processed 1.5:
+	* tests/results/025.processed 1.5:
+	* tests/results/026.processed 1.5:
+	* tests/results/027.processed 1.5:
+	* tests/results/028.processed 1.5:
+	* tests/results/029.processed 1.5:
+	* tests/results/030.processed 1.7:
+	* tests/results/031.processed 1.5:
+	* tests/results/032.processed 1.5:
+	* tests/results/033.processed 1.5:
+	* tests/results/034.processed 1.5:
+	* tests/results/035.processed 1.6:
+	* tests/results/036.processed 1.5:
+	* tests/results/037.processed 1.5:
+	* tests/results/038.processed 1.6:
+	* tests/results/039.processed 1.5:
+	* tests/results/040.processed 1.5:
+	* tests/results/041.processed 1.5:
+	* tests/results/042.processed 1.5:
+	* tests/results/043.processed 1.5:
+	* tests/results/044.processed 1.5:
+	* tests/results/045.processed 1.5:
+	* tests/results/046.processed 1.5:
+	* tests/results/047.processed 1.5:
+	* tests/results/048.processed 1.5:
+	* tests/results/049.processed 1.5:
+	* tests/results/050.processed 1.5:
+	* tests/results/051.processed 1.5:
+	* tests/results/052.processed 1.5:
+	* tests/results/053.processed 1.5:
+	* tests/results/054.processed 1.5:
+	* tests/results/055.processed 1.5:
+	* tests/results/056.processed 1.5:
+	* tests/results/057.processed 1.5:
+	* tests/results/058.processed 1.6:
+	* tests/results/059.processed 1.6:
+	* tests/results/060.processed 1.5:
+	* tests/results/061.processed 1.5:
+	* tests/results/062.processed 1.6:
+	* tests/results/063.processed 1.6:
+	* tests/results/064.processed 1.5:
+	* tests/results/065.processed 1.6:
+	* tests/results/066.processed 1.5:
+	* tests/results/067.processed 1.5:
+	* tests/results/068.processed 1.5:
+	* tests/results/069.processed 1.5:
+	* tests/results/070.processed 1.5:
+	* tests/results/071.processed 1.5:
+	* tests/results/072.processed 1.5:
+	* tests/results/073.processed 1.5:
+	* tests/results/074.processed 1.5:
+	* tests/results/075.processed 1.6:
+	* tests/results/076.processed 1.5:
+	* tests/results/077.processed 1.5:
+	* tests/results/078.processed 1.5:
+	* tests/results/079.processed 1.5:
+	* tests/results/080.processed 1.6:
+	* tests/results/081.processed 1.5:
+	* tests/results/082.processed 1.5:
+	* tests/results/083.processed 1.5:
+	* tests/results/084.processed 1.5:
+	* tests/results/085.processed 1.5:
+	* tests/results/086.processed 1.5:
+	* tests/results/087.processed 1.5:
+	* tests/results/088.processed 1.5:
+	* tests/results/089.processed 1.5:
+	* tests/results/090.processed 1.5:
+	* tests/results/091.processed 1.5:
+	* tests/results/092.processed 1.5:
+	* tests/results/093.processed 1.5:
+	* tests/results/094.processed 1.5:
+	* tests/results/095.processed 1.5:
+	* tests/results/096.processed 1.7:
+	* tests/results/097.processed 1.8:
+	* tests/results/098.processed 1.3:
+	* tests/results/099.processed 1.7:
+	* tests/results/100.processed 1.5:
+	* tests/results/101.processed 1.5:
+	* tests/results/102.processed 1.5:
+	* tests/results/103.processed 1.3:
+	* tests/results/104.processed 1.5:
+	* tests/results/105.processed 1.5:
+	* tests/results/106.processed 1.5:
+	* tests/results/107.processed 1.7:
+	* tests/results/108.processed 1.5:
+	* tests/results/109.processed 1.5:
+	* tests/results/110.processed 1.5:
+	* tests/results/111.processed 1.5:
+	* tests/results/112.processed 1.5:
+	* tests/results/113.processed 1.5:
+	* tests/results/114.processed 1.5:
+	* tests/results/115.processed 1.5:
+	* tests/results/116.processed 1.4:
+	* tests/results/117.processed 1.5:
+	* tests/results/118.processed 1.4:
+	* tests/results/119.processed 1.6:
+	* tests/results/120.processed 1.5:
+	* tests/results/121.processed 1.5:
+	* tests/results/122.processed 1.5:
+	* tests/results/123.processed 1.5:
+	* tests/results/124.processed 1.5:
+	* tests/results/125.processed 1.5:
+	* tests/results/126.processed 1.5:
+	* tests/results/127.processed 1.5:
+	* tests/results/128.processed 1.5:
+	* tests/results/129.processed 1.8:
+	* tests/results/130.processed 1.5:
+	* tests/results/131.processed 1.5:
+	* tests/results/132.processed 1.5:
+	* tests/results/133.processed 1.5:
+	* tests/results/134.processed 1.5:
+	* tests/results/135.processed 1.5:
+	* tests/results/136.processed 1.5:
+	* tests/results/138.processed 1.5:
+	* tests/results/139.processed 1.5:
+	* tests/results/140.processed 1.5:
+	* tests/results/141.processed 1.7:
+	* tests/results/142.processed 1.3:
+	* tests/results/143.processed 1.3:
+	* tests/results/144.processed 1.3:
+	* tests/results/145.processed 1.3:
+	* tests/results/146.processed 1.3:
+	* tests/results/147.processed 1.3:
+	* tests/results/148.processed 1.3:
+	* tests/results/149.processed 1.5:
+	* tests/results/150.processed 1.3:
+	* tests/results/151.processed 1.3:
+	* tests/results/152.processed 1.8:
+	* tests/results/153.processed 1.4:
+	* tests/results/154.processed 1.3:
+	* tests/results/155.processed 1.2:
+	* tests/results/156.processed 1.4:
+	* tests/results/157.processed 1.3:
+	* tests/results/158.processed 1.3:
+	* tests/results/159.processed 1.3:
+	* tests/results/160.processed 1.5:
+	* tests/results/161.processed 1.2:
+	* tests/results/162.processed 1.2:
+	* tests/results/163.processed 1.3:
+	* tests/results/164.processed 1.6:
+	* tests/results/165.processed 1.2:
+	* tests/results/166.processed 1.4:
+	* tests/results/167.processed 1.2:
+	* tests/results/168.processed 1.3:
+	* tests/results/169.processed 1.2:
+	* tests/results/170.processed 1.2:
+	* tests/results/171.processed 1.4:
+	* tests/results/172.processed 1.3:
+	* tests/results/173.processed 1.2:
+	* tests/results/174.processed 1.3:
+	* tests/results/175.processed 1.2:
+	* tests/results/176.processed 1.5:
+	* tests/results/177.processed 1.2:
+	* tests/results/178.processed 1.2:
+	* tests/results/179.processed 1.3:
+	* tests/results/180.processed 1.3:
+	* tests/results/181.processed 1.2:
+	* tests/results/182.processed 1.2:
+	* tests/results/183.processed 1.2:
+	* tests/results/184.processed 1.2:
+	* tests/results/185.processed 1.5:
+	* tests/results/186.processed 1.2:
+	* tests/results/187.processed 1.2:
+	* tests/results/188.processed 1.4:
+	* tests/results/189.processed 1.2:
+	* tests/results/190.processed 1.2:
+	* tests/results/191.processed 1.4:
+	* tests/results/192.processed 1.3:
+	* tests/results/193.processed 1.2:
+	* tests/results/194.processed 1.2:
+	* tests/results/195.processed 1.2:
+	* tests/results/196.processed 1.2:
+	* tests/results/197.processed 1.2:
+	* tests/results/198.processed 1.3:
+	* tests/results/199.processed 1.3:
+	* tests/results/200.processed 1.2:
+	* tests/results/201.processed 1.2:
+	* tests/results/202.processed 1.2:
+	* tests/results/203.processed 1.2:
+	* tests/results/204.processed 1.2:
+	* tests/results/205.processed 1.3:
+	* tests/results/206.processed 1.2:
+	* tests/results/207.processed 1.2:
+	* tests/results/208.processed 1.2:
+	* tests/results/209.processed 1.2:
+	* tests/results/210.processed 1.2:
+	* tests/results/211.processed 1.2:
+	* tests/results/212.processed 1.3:
+	* tests/results/213.processed 1.2:
+	* tests/results/214.processed 1.2:
+	* tests/results/215.processed 1.2:
+	* tests/results/216.processed 1.2:
+	* tests/results/217.processed 1.2:
+	* tests/results/218.processed 1.2:
+	* tests/results/219.processed 1.2:
+	* tests/results/220.processed 1.2:
+	* tests/results/221.processed 1.2:
+	* tests/results/222.processed 1.2:
+	* tests/results/223.processed 1.2:
+	* tests/results/224.processed 1.7:
+	* tests/results/225.processed 1.2:
+	* tests/results/226.processed 1.2:
+	* tests/results/227.processed 1.2:
+	* tests/results/228.processed 1.2:
+	* tests/results/229.processed 1.2:
+		- http headers were changed: content-type => Content-type and so 
+		on
+
+2009-08-27	misha
+	* src/include/pa_random.h 1.2:
+	* src/main/pa_random.C 1.2:
+	* src/targets/cgi/parser3.C 1.252:
+		- year was updated :)
+
+2009-08-26	misha
+	* tests/results/224.processed 1.6:
+		*** empty log message ***
+
+	* tests/224.html 1.4:
+	* tests/224.p 1.2:
+		- test for creating of parser object using constructor without params
+		- little bugfix in test
+
+	* src/main/compile_tools.h 1.100:
+		- bugfix: should't call autouse while checking existed class 
+		while processing partial option
+
+	* src/classes/reflection.C 1.12:
+		- bugfix: core when creating object with reflection and 
+		constructor doesn't have params
+
+2009-08-24	misha
+	* tests/results/192.processed 1.2:
+	* tests/results/229.processed 1.1:
+		*** empty log message ***
+
+	* tests/229.html 1.1:
+		- tests for checking the number of parameters were added
+
+	* src/types/pa_value.C 1.29:
+	* src/types/pa_vmethod_frame.h 1.86:
+		- bugfix: the actual number of method's parameters wasn't 
+		checked correctly (the bug was introduced in 3.4.0)
+
+2009-08-23	misha
+	* tests/results/228.processed 1.1:
+		*** empty log message ***
+
+2009-08-22	misha
+	* src/main/pa_http.C 1.35:
+		- ^file::load[http://...;$.body[]] : $.body transcoded, but 
+		tainted pieces are escaped only when content-type==url-encoding
+
+	* tests/228.html 1.1:
+		- test for checking ^file::load[http://...;$.body[]]
+
+	* src/types/pa_vform.C 1.99:
+	* src/types/pa_vform.h 1.58:
+		- bugfix: attempt to detect post charset was too early (charsets 
+		is empty at this moment)
+
+2009-08-21	misha
+	* src/include/pa_string.h 1.195:
+	* src/main/pa_http.C 1.34:
+	* src/main/pa_request.C 1.310:
+	* src/main/untaint.C 1.151:
+		- some fixes with transcode+untaint
+
+2009-08-15	misha
+	* src/main/pa_exec.C 1.76:
+		- number of argv in file::exec/cgi on unix was increaced to 100 (
+		was 50)
+
+2009-08-14	misha
+	* src/main/compile.tab.C 1.145:
+	* tests/results/226.processed 1.1:
+	* tests/results/227.processed 1.1:
+		*** empty log message ***
+
+	* tests/227.html 1.1:
+		- test for checking overriding properties in static classes was 
+		added
+
+	* tests/226.html 1.1:
+	* tests/226.p 1.1:
+		- test for @autoload[] was added
+
+	* src/classes/reflection.C 1.11:
+	* src/include/pa_request.h 1.197:
+	* src/main/compile.y 1.252:
+	* src/main/compile_tools.h 1.99:
+	* src/main/execute.C 1.358:
+	* src/main/pa_request.C 1.309:
+		- autouse was implemented
+
+	* src/classes/reflection.C 1.10:
+		- outdated checkout was removed
+
+	* src/classes/reflection.C 1.9:
+		- optimization
+		- method ^dynamical was added.
+
+	* src/main/execute.C 1.357:
+	* src/types/pa_value.h 1.135:
+	* src/types/pa_vmethod_frame.h 1.85:
+	* src/types/pa_vstateless_class.h 1.69:
+		- optimization
+
+	* src/types/pa_vclass.C 1.42:
+		- exception if base on sytem class
+
+2009-08-11	misha
+	* src/types/pa_vclass.C 1.41:
+	* src/types/pa_vclass.h 1.57:
+	* src/types/pa_vstateless_class.C 1.44:
+	* src/types/pa_vstateless_class.h 1.68:
+		- little optimisation
+
+	* src/main/compile.tab.C 1.144:
+	* tests/results/224.processed 1.5:
+	* tests/results/225.processed 1.1:
+		*** empty log message ***
+
+	* tests/224.html 1.3:
+		- method_params => method_info
+		- checking for $.inherited
+
+	* operators.txt 1.223:
+	* src/classes/reflection.C 1.8:
+		- method method_params was renamed to method_info and now it 
+		returns class name, if method was defined in ancestor
+
+	* tests/225.html 1.1:
+		- tests for cheching properties in hierarhical classes were 
+		added
+
+	* src/classes/classes.C 1.23:
+	* src/main/compile.y 1.251:
+	* src/main/execute.C 1.356:
+	* src/types/pa_property.h 1.4:
+	* src/types/pa_vclass.C 1.40:
+	* src/types/pa_vclass.h 1.56:
+	* src/types/pa_vstateless_class.C 1.43:
+	* src/types/pa_vstateless_class.h 1.67:
+		- problems with properties in new classes implementation were 
+		fixed
+
+2009-08-10	misha
+	* src/main/execute.C 1.355:
+		- now constructor shouldn't be defined in class. it could be 
+		defined in parent.
+
+2009-08-08	misha
+	* Makefile.am 1.69:
+	* Makefile.in 1.84:
+	* acinclude.m4 1.55:
+	* aclocal.m4 1.58:
+	* acsite.m4 1.34:
+	* configure 1.111:
+	* configure.in 1.118:
+	* src/types/Makefile.am 1.45:
+	* src/types/Makefile.in 1.67:
+	* tests/results/176.processed 1.4:
+	* tests/results/191.processed 1.3:
+	* tests/results/224.processed 1.3:
+	* tests/results/224.processed 1.4:
+		*** empty log message ***
+
+	* src/classes/reflection.C 1.7:
+		- ^reflection:methods doesn't return base's methods
+
+	* src/classes/classes.h 1.32:
+	* src/classes/date.C 1.87:
+	* src/classes/file.C 1.199:
+	* src/classes/form.C 1.42:
+	* src/classes/hash.C 1.103:
+	* src/classes/hashfile.C 1.51:
+	* src/classes/image.C 1.130:
+	* src/classes/mail.C 1.113:
+	* src/classes/op.C 1.197:
+	* src/classes/reflection.C 1.6:
+	* src/classes/regex.C 1.5:
+	* src/classes/string.C 1.188:
+	* src/classes/table.C 1.264:
+	* src/classes/xdoc.C 1.164:
+	* src/classes/xnode.C 1.84:
+	* src/classes/xnode.h 1.29:
+	* src/include/pa_hash.h 1.79:
+	* src/main/execute.C 1.354:
+	* src/main/pa_http.C 1.33:
+	* src/main/pa_request.C 1.308:
+	* src/targets/cgi/parser3.C 1.251:
+	* src/types/pa_method.h 1.16:
+	* src/types/pa_property.h 1.3:
+	* src/types/pa_value.C 1.28:
+	* src/types/pa_value.h 1.134:
+	* src/types/pa_vclass.C 1.39:
+	* src/types/pa_vclass.h 1.55:
+	* src/types/pa_vcode_frame.h 1.36:
+	* src/types/pa_vconsole.h 1.17:
+	* src/types/pa_vcookie.C 1.80:
+	* src/types/pa_vcookie.h 1.36:
+	* src/types/pa_vdate.h 1.49:
+	* src/types/pa_venv.C 1.11:
+	* src/types/pa_venv.h 1.37:
+	* src/types/pa_vfile.C 1.45:
+	* src/types/pa_vfile.h 1.65:
+	* src/types/pa_vform.C 1.98:
+	* src/types/pa_vform.h 1.57:
+	* src/types/pa_vhash.h 1.62:
+	* src/types/pa_vhashfile.C 1.62:
+	* src/types/pa_vhashfile.h 1.38:
+	* src/types/pa_vimage.C 1.40:
+	* src/types/pa_vimage.h 1.50:
+	* src/types/pa_vmail.C 1.88:
+	* src/types/pa_vmail.h 1.18:
+	* src/types/pa_vmath.h 1.20:
+	* src/types/pa_vmemory.h 1.6:
+	* src/types/pa_vmethod_frame.h 1.84:
+	* src/types/pa_vobject.C 1.29:
+	* src/types/pa_vobject.h 1.53:
+	* src/types/pa_vproperty.C 1.3:
+	* src/types/pa_vproperty.h 1.5:
+	* src/types/pa_vrequest.C 1.49:
+	* src/types/pa_vrequest.h 1.37:
+	* src/types/pa_vresponse.C 1.29:
+	* src/types/pa_vresponse.h 1.42:
+	* src/types/pa_vstateless_class.C 1.42:
+	* src/types/pa_vstateless_class.h 1.66:
+	* src/types/pa_vstateless_object.h 1.39:
+	* src/types/pa_vstatus.C 1.27:
+	* src/types/pa_vstatus.h 1.20:
+	* src/types/pa_vstring.h 1.62:
+	* src/types/pa_vtable.C 1.31:
+	* src/types/pa_vtable.h 1.55:
+	* src/types/pa_vvoid.h 1.31:
+	* src/types/pa_vxdoc.C 1.36:
+	* src/types/pa_vxdoc.h 1.45:
+	* src/types/pa_vxnode.C 1.51:
+	* src/types/pa_vxnode.h 1.40:
+	* src/types/pa_wwrapper.h 1.43:
+	* src/types/types.vcproj 1.26:
+		- new classes implementation
+
+2009-08-07	misha
+	* buildall-with-xml 1.29:
+	* buildall-without-xml 1.19:
+		- gc has a bug if USE_MUNMAP is used. so it is disabled as a 
+		workaround.
+
+2009-08-05	misha
+	* src/include/pa_common.h 1.133:
+	* src/main/pa_common.C 1.248:
+		- not needed parameter was removed
+
+	* src/main/pa_http.C 1.32:
+		- bugfix: error was during detecting content-type of file which 
+		was loaded by http
+
+2009-08-01	misha
+	* src/main/compile.tab.C 1.143:
+		*** empty log message ***
+
+	* INSTALL 1.54:
+	* src/include/pa_opcode.h 1.44:
+	* src/main/compile.y 1.250:
+	* src/main/execute.C 1.353:
+	* src/types/pa_wcontext.h 1.57:
+	* src/types/pa_wwrapper.h 1.42:
+		- OPTIMIZE_BYTECODE_CONSTRUCT_OBJECT and 
+		OPTIMIZE_CONSTRUCT_OBJECT can't be disabled with defines any 
+		longer
+
+2009-07-29	misha
+	* src/classes/reflection.C 1.4:
+	* tests/results/224.processed 1.2:
+		- for native methods with any call type now returned empty 
+		call_type value
+
+	* src/classes/hash.C 1.102:
+	* src/classes/hashfile.C 1.50:
+	* src/classes/op.C 1.196:
+	* src/classes/table.C 1.263:
+	* src/include/pa_hash.h 1.78:
+	* src/include/pa_request.h 1.196:
+	* src/main/pa_request.C 1.307:
+		- break in cycles was optimized
+
+	* INSTALL 1.53:
+		- more defines were described
+
+2009-07-28	misha
+	* tests/results/224.processed 1.1:
+		*** empty log message ***
+
+	* operators.txt 1.222:
+		- some changes in information about reflection class
+
+	* tests/224.html 1.1:
+	* tests/224.p 1.1:
+		- tests for reflection class
+
+	* src/classes/reflection.C 1.3:
+		- some bugs were fixed, method classes was added, refactoring
+
+2009-07-26	misha
+	* src/classes/classes.vcproj 1.23:
+		- reflection class wass added to project
+
+	* operators.txt 1.220:
+		- information about reflection class was added
+
+	* src/classes/reflection.C 1.2:
+		- class was redesigned
+
+2009-07-24	misha
+	* Makefile.am 1.67:
+	* Makefile.am 1.68:
+	* Makefile.in 1.82:
+	* Makefile.in 1.83:
+	* acinclude.m4 1.53:
+	* acinclude.m4 1.54:
+	* aclocal.m4 1.56:
+	* aclocal.m4 1.57:
+	* acsite.m4 1.32:
+	* acsite.m4 1.33:
+	* configure 1.109:
+	* configure 1.110:
+	* configure.in 1.116:
+	* configure.in 1.117:
+	* src/classes/Makefile.in 1.68:
+		*** empty log message ***
+
+	* src/classes/Makefile.am 1.54:
+	* src/classes/reflection.C 1.1:
+		- class reflection was added
+
+	* src/types/pa_vstateless_class.h 1.65:
+		- method for reflection method's in classes was added
+
+2009-07-22	misha
+	* src/main/compile_tools.h 1.98:
+		- bugfix: $object.$var was over-optimized. it failed if $
+		object1.$object2.field
+
+2009-07-16	misha
+	* src/include/pa_string.h 1.194:
+	* src/lib/cord/cordbscs.c 1.9:
+	* src/lib/cord/cordprnt.c 1.5:
+	* src/lib/cord/cordxtra.c 1.13:
+	* src/lib/cord/include/cord.h 1.8:
+	* src/main/pa_string.C 1.233:
+		- optimization: CORD_str, CORD_to_const_char_star, 
+		CORD_to_char_star and CORD_substr have one more arg: length of 
+		cord
+
+2009-07-15	misha
+	* tests/results/221.processed 1.1:
+	* tests/results/222.processed 1.1:
+	* tests/results/223.processed 1.1:
+		*** empty log message ***
+
+	* src/main/pa_http.C 1.31:
+		- bugfix: $.cookies' values should be force tainted in ^file::
+		load[http://...;$.cookies[]]
+
+	* src/classes/op.C 1.195:
+	* src/classes/regex.C 1.4:
+	* src/classes/string.C 1.187:
+		- new string with exception was used
+
+	* src/include/pa_exception.h 1.55:
+		- new string with exception was added
+
+	* tests/223.html 1.1:
+		- test for checking cookie-encoding during ^file::load[http was 
+		added
+
+	* tests/221.html 1.1:
+	* tests/222.html 1.1:
+		- tests for checking type of $table.fields.field were added
+
+	* src/types/pa_vtable.C 1.30:
+		- not used var decl was removed
+
+2009-07-14	misha
+	* src/include/pa_string.h 1.193:
+		- use cached string length in Body::mid. it improves speed of 
+		match with brackets in pattern
+
+	* src/lib/cord/include/cord.h 1.7:
+		- make CORD_substr_checked available outside
+
+	* src/types/pa_vtable.C 1.29:
+		- $table.fields.a return string even if column is empty (sometime returned void)
+		- $table.fields was added for nameless tables
+
+	* src/targets/cgi/getopt.c 1.6:
+		- one warning resolved
+
+	* src/main/pa_string.C 1.232:
+		- potentian bug fixed
+
+	* src/classes/op.C 1.194:
+		- small optimization in taint/untaint
+
+2009-07-13	misha
+	* tests/results/156.processed 1.3:
+		*** empty log message ***
+
+	* tests/156.html 1.4:
+		- test for $cookie[...$.httponly(false)...] was added
+
+	* src/types/pa_value.C 1.27:
+		- bugfix: $cookie[...$.httponly(false)...] souldn't add the 
+		attribut to output
+
+2009-07-11	misha
+	* src/targets/apache13/ApacheModuleParser3.vcproj 1.13:
+	* src/targets/cgi/parser3.vcproj 1.20:
+	* src/targets/isapi/parser3isapi.vcproj 1.16:
+		- stack size was increaced to 2MB (default=1MB)
+
+2009-07-08	misha
+	* src/main/pa_string.C 1.231:
+		- link to UTF-8 description was added
+
+	* tests/results/030.processed 1.6:
+	* tests/results/058.processed 1.5:
+	* tests/results/075.processed 1.5:
+	* tests/results/096.processed 1.6:
+	* tests/results/099.processed 1.6:
+	* tests/results/100.processed 1.4:
+	* tests/results/129.processed 1.7:
+	* tests/results/149.processed 1.4:
+	* tests/results/156.processed 1.2:
+	* tests/results/172.processed 1.2:
+	* tests/results/205.processed 1.2:
+	* tests/results/220.processed 1.1:
+		*** empty log message ***
+
+	* src/include/pa_hash.h 1.76:
+		- hash keeps element's order in more places (ex: ._keys[])
+
+	* tests/220.html 1.1:
+		- test for checking order of elements in hash in foreach was 
+		added
+
+	* tests/129.html 1.5:
+	* tests/172.html 1.2:
+		- small changes in printing hash
+
+2009-07-07	misha
+	* src/include/pa_common.h 1.132:
+	* src/include/pa_hash.h 1.75:
+	* src/include/pa_request.h 1.195:
+	* src/types/pa_value.h 1.133:
+	* src/types/pa_vmethod_frame.C 1.17:
+	* src/types/pa_vmethod_frame.h 1.83:
+		- hash now keeps order of elements
+
+	* tests/014.html 1.4:
+		- small changes in printing hash
+
+	* tests/results/219.processed 1.1:
+		*** empty log message ***
+
+	* src/classes/op.C 1.193:
+		- new taint language "parser-code" was added
+
+	* tests/219.html 1.1:
+		- test for auto untaint parser code in process was added
+
+	* src/classes/op.C 1.192:
+		- tainted pieces in body of process are auto-untainted now: ^ -> 
+		^^, $ -> ^$ etc.
+
+	* src/include/pa_string.h 1.192:
+	* src/main/untaint.C 1.150:
+		- new language L_PARSER_CODE for auto-untaint in process was 
+		added
+
+	* src/classes/file.C 1.197:
+	* src/classes/hash.C 1.99:
+	* src/classes/image.C 1.129:
+	* src/classes/op.C 1.191:
+	* src/classes/string.C 1.185:
+	* src/classes/table.C 1.262:
+	* src/classes/void.C 1.45:
+	* src/classes/xdoc.C 1.163:
+	* src/include/pa_string.h 1.191:
+	* src/main/pa_charset.C 1.79:
+	* src/main/pa_http.C 1.30:
+	* src/main/pa_request.C 1.306:
+	* src/main/pa_xml_io.C 1.25:
+	* src/main/untaint.C 1.149:
+	* src/types/pa_value.h 1.132:
+	* src/types/pa_vhash.h 1.61:
+	* src/types/pa_vmail.C 1.87:
+	* src/types/pa_vobject.h 1.52:
+	* src/types/pa_vstring.h 1.61:
+		- some code cleanup
+
+2009-07-06	misha
+	* src/classes/file.C 1.196:
+	* src/classes/hash.C 1.98:
+	* src/classes/image.C 1.128:
+	* src/classes/mail.C 1.112:
+	* src/classes/op.C 1.190:
+	* src/classes/string.C 1.184:
+	* src/classes/table.C 1.261:
+	* src/classes/void.C 1.44:
+	* src/classes/xdoc.C 1.162:
+	* src/include/pa_string.h 1.190:
+	* src/main/pa_charset.C 1.78:
+	* src/main/pa_common.C 1.247:
+	* src/main/pa_exec.C 1.75:
+	* src/main/pa_http.C 1.29:
+	* src/main/pa_request.C 1.304:
+	* src/main/pa_sql_driver_manager.C 1.90:
+	* src/main/pa_xml_io.C 1.24:
+	* src/types/pa_vcookie.C 1.79:
+	* src/types/pa_vhash.h 1.60:
+	* src/types/pa_vhashfile.C 1.61:
+	* src/types/pa_vimage.C 1.39:
+	* src/types/pa_vmail.C 1.86:
+	* src/types/pa_vobject.h 1.51:
+	* src/types/pa_vregex.C 1.7:
+	* src/types/pa_vrequest.C 1.48:
+	* src/types/pa_vstring.h 1.60:
+	* src/types/pa_vvoid.h 1.30:
+		- cstr(params) and cstrm(params) were deleted. taint_cstr[m] and 
+		untaint_cstr[m] should be used
+
+	* tests/results/218.processed 1.1:
+		*** empty log message ***
+
+	* tests/218.html 1.1:
+		- test for checking automatic file-spec-taint was added
+
+	* src/classes/file.C 1.195:
+	* src/classes/hash.C 1.97:
+	* src/classes/image.C 1.127:
+	* src/classes/string.C 1.183:
+	* src/classes/table.C 1.260:
+	* src/classes/void.C 1.43:
+	* src/classes/xdoc.C 1.161:
+	* src/include/pa_string.h 1.189:
+	* src/main/pa_common.C 1.246:
+	* src/main/pa_exec.C 1.74:
+	* src/main/pa_request.C 1.303:
+	* src/main/pa_sql_driver_manager.C 1.89:
+	* src/main/untaint.C 1.148:
+	* src/types/pa_vhashfile.C 1.60:
+	* src/types/pa_vimage.C 1.38:
+	* src/types/pa_vmail.C 1.85:
+	* src/types/pa_vregex.C 1.6:
+	* src/types/pa_vrequest.C 1.47:
+	* src/types/pa_vstring.C 1.27:
+		- optimizations and simplification of string.cstr(...)
+
+2009-07-04	misha
+	* tests/results/195.processed 1.1:
+	* tests/results/216.processed 1.1:
+	* tests/results/217.processed 1.1:
+		*** empty log message ***
+
+	* tests/217.html 1.1:
+		- test for recursion detection was added
+
+	* src/classes/classes.vcproj 1.22:
+	* src/main/main.vcproj 1.26:
+	* src/targets/apache13/ApacheModuleParser3.vcproj 1.12:
+	* src/targets/apache13core/ApacheModuleParser3Core.vcproj 1.16:
+	* src/targets/cgi/parser3.vcproj 1.19:
+	* src/targets/isapi/parser3isapi.vcproj 1.15:
+	* src/types/types.vcproj 1.25:
+		- RuntimeTypeInfo was removed from .vcproj
+
+	* src/types/pa_wwrapper.h 1.41:
+		- dynamic_cast was removed
+
+	* tests/195.html 1.1:
+	* tests/195_utf8.txt 1.1:
+	* tests/195_windows1251.txt 1.1:
+		- tests for uploading files and case-insensitive http-method 
+		were added
+
+	* tests/216.html 1.1:
+	* tests/216_dir/1 1.1:
+	* tests/216_dir/2.txt 1.1:
+		- test for checking tainted pattern in ^file:list[] was added
+
+2009-07-03	misha
+	* src/classes/classes.vcproj 1.20:
+	* src/main/main.vcproj 1.24:
+	* src/targets/apache13/ApacheModuleParser3.vcproj 1.10:
+	* src/targets/apache13core/ApacheModuleParser3Core.vcproj 1.14:
+	* src/targets/cgi/parser3.vcproj 1.17:
+	* src/targets/isapi/parser3isapi.vcproj 1.13:
+	* src/types/types.vcproj 1.23:
+		- enable runtime info (needed for dynamic_cast)
+		- little options changes
+
+	* src/main/pa_http.C 1.28:
+		- file::load[http works now with uploading files _and_ changing $
+		.charset
+
+2009-06-29	misha
+	* src/types/pa_vregex.C 1.5:
+		- ^untaint[regex][] for all tainted data while creating pattern
+
+2009-06-25	misha
+	* operators.txt 1.217:
+	* src/classes/image.C 1.126:
+		- options' names for ^image.font were changed to $.space, $.width and $spacing
+		- default space width now == gif's width
+
+2009-06-24	misha
+	* tests/results/215.processed 1.1:
+		*** empty log message ***
+
+	* tests/215.html 1.1:
+		- tests for $file.mode were added
+
+	* operators.txt 1.216:
+		- added info about $file.mode and changes in ^image.font[
+
+	* src/classes/image.C 1.125:
+	* src/types/pa_vimage.h 1.49:
+		^image.font
+		- third param now could be omited
+		- third param now could be hash (with all widths options: $.space-width, $.letter-width)
+		- it's possible to specify tracking ($.letter-space)
+
+	* src/classes/file.C 1.194:
+		- file objects now could have mode field (text|binary)
+
+	* src/types/pa_vfile.C 1.44:
+	* src/types/pa_vfile.h 1.64:
+		- method set_method was added
+
+2009-06-23	misha
+	* src/classes/string.C 1.182:
+	* src/include/pa_string.h 1.188:
+	* src/main/pa_string.C 1.229:
+		- trim can work with utf-8 chars now
+
+2009-06-20	misha
+	* src/classes/hash.C 1.96:
+	* src/classes/table.C 1.259:
+	* src/include/pa_string.h 1.187:
+	* src/main/pa_string.C 1.228:
+		- string length cacheing was implemented
+
+2009-06-17	misha
+	* src/main/execute.C 1.351:
+		- value param was removed from WContext::WContext
+
+	* src/types/pa_vcode_frame.h 1.35:
+	* src/types/pa_vmethod_frame.C 1.16:
+	* src/types/pa_wcontext.h 1.55:
+	* src/types/pa_wwrapper.h 1.40:
+		- value param was removed from WContext::WContext
+		- field wcontext was removed from VCodeFrame (using fparent instead)
+
+2009-06-16	misha
+	* tests/results/214.processed 1.1:
+		*** empty log message ***
+
+	* tests/214.html 1.1:
+		- test with hash copying
+
+	* tests/062.html 1.3:
+	* tests/results/062.processed 1.5:
+		- evaluation hardcoded strings doesn't work in expression 
+		anymore
+
+	* src/main/execute.C 1.350:
+		- less calls for get_constructing()
+		- little refactoring
+
+	* src/include/pa_request.h 1.194:
+	* src/types/pa_wcontext.h 1.54:
+	* src/types/pa_wwrapper.h 1.39:
+		- less calls for get_constructing()
+
+	* src/classes/hash.C 1.95:
+	* src/classes/hashfile.C 1.48:
+		- fixed bug which was introduced with OPTIMIZE_SINGLE_STRING 
+		optimization
+
+2009-06-14	misha
+	* src/classes/date.C 1.86:
+	* src/classes/file.C 1.193:
+	* src/classes/hash.C 1.94:
+	* src/classes/hashfile.C 1.47:
+	* src/classes/image.C 1.124:
+	* src/classes/regex.C 1.3:
+	* src/classes/table.C 1.258:
+	* src/classes/xdoc.C 1.160:
+	* src/classes/xnode.h 1.27:
+	* src/main/execute.C 1.349:
+	* src/types/pa_vclass.C 1.38:
+	* src/types/pa_vclass.h 1.54:
+	* src/types/pa_vobject.h 1.50:
+	* src/types/pa_vstateless_class.h 1.64:
+		- create object for storing object's fields only for parser 
+		objects
+
+2009-06-13	misha
+	* buildall-with-xml 1.28:
+	* buildall-without-xml 1.18:
+		- new option was added for building GC (it slightly reduces 
+		memory usage)
+
+	* src/main/compile.tab.C 1.142:
+		*** empty log message ***
+
+	* src/types/pa_wcontext.h 1.53:
+	* src/types/pa_wwrapper.h 1.37:
+		- optimization of single string write
+
+	* src/main/execute.C 1.348:
+		- bytecode optimization of ^class:constructor
+		- optimization of single string write
+
+	* src/include/pa_opcode.h 1.42:
+	* src/main/compile.y 1.249:
+	* src/main/compile_tools.h 1.97:
+		- bytecode optimization of ^class:constructor
+
+2009-06-09	misha
+	* src/targets/cgi/parser3.C [release_3_3_0] 1.247.2.1:
+		- type size_t was changed to int in main (better compatibility)
+
+2009-06-07	misha
+	* src/main/compile.tab.C 1.140:
+	* src/main/compile.tab.C 1.141:
+		*** empty log message ***
+
+	* src/main/compile.y 1.248:
+		- I've forgot to commit it :(
+
+	* src/include/pa_opcode.h 1.41:
+		- more optimizations for WITH_SELF, WITH_READ and WITH_ROOT
+
+	* src/main/compile.y 1.247:
+	* src/main/compile_tools.C 1.67:
+	* src/main/compile_tools.h 1.96:
+	* src/main/execute.C 1.347:
+		- more optimizations for WITH_SELF, WITH_READ and WITH_ROOT
+		- little refactoring
+
+2009-06-06	misha
+	* tests/results/213.processed 1.1:
+		*** empty log message ***
+
+	* tests/213.html 1.1:
+		- tests for 3rd match string-param were added
+
+	* src/classes/string.C 1.181:
+		- 3rd match param could be string now
+
+2009-06-05	misha
+	* src/main/compile.tab.C 1.139:
+		*** empty log message ***
+
+	* src/main/compile.y 1.246:
+	* src/main/compile_tools.h 1.95:
+		- much more bytecode's sequences optimized to 
+		WITH_SELF__VALUE__GET_ELEMENT and GET_OBJECT_ELEMENT
+
+	* src/main/pa_http.C 1.27:
+		- bugfix: content-length was not calculated if $.body was 
+		specified
+
+2009-06-04	misha
+	* src/classes/op.C 1.189:
+		- optimizing write_assign_lang in connect
+
+	* src/classes/op.C 1.188:
+		- optimizing write_assign_lang in taint/untaint
+
+	* src/main/execute.C 1.346:
+		- little refactoring
+		- optimizing write_assign_lang in taint/untaint
+
+	* src/include/pa_opcode.h 1.40:
+		- little refactoring
+
+	* src/main/compile.tab.C 1.138:
+		*** empty log message ***
+
+	* src/include/pa_opcode.h 1.39:
+	* src/main/compile.y 1.245:
+	* src/main/compile_tools.C 1.66:
+	* src/main/compile_tools.h 1.94:
+	* src/main/execute.C 1.345:
+		- optimizations for $self.field, ^self.method, $self.field[...] 
+		and $self.field(...) were added
+
+2009-06-02	misha
+	* src/types/pa_venv.C 1.10:
+		- pa_strdup was replaced by strdup
+
+	* src/main/compile.tab.C 1.137:
+		*** empty log message ***
+
+	* src/include/pa_opcode.h 1.38:
+	* src/main/compile.y 1.244:
+	* src/main/compile_tools.h 1.93:
+	* src/main/execute.C 1.344:
+		- refactoring in last optimizations ($a[...], $a(...), $.a[...], 
+		$.a(...)). a bit less optimizations now but code is much easy 
+		and it is ready for further improvements.
+
+2009-05-27	misha
+	* src/main/execute.C 1.343:
+	* src/types/pa_junction.h 1.10:
+	* src/types/pa_vjunction.C 1.8:
+	* src/types/pa_vjunction.h 1.29:
+	* src/types/pa_vmethod_frame.h 1.82:
+		- changed in destructing junctions
+
+2009-05-26	misha
+	* src/main/pa_charset.C 1.77:
+	* src/main/pa_string.C 1.227:
+		- more safe creation on String:Body
+
+	* src/include/pa_common.h 1.131:
+	* src/main/pa_common.C 1.245:
+	* src/main/pa_http.C 1.26:
+		- one method detect_charset was deleted
+		- bug was fixed in this method (error while detecting charset in content_type withot last ';')
+
+	* src/types/pa_vform.C 1.96:
+	* src/types/pa_vform.h 1.56:
+		- detect post charset only once
+
+2009-05-25	misha
+	* src/classes/file.C 1.192:
+		- bugfix: file::exec didn't work after optimizing of 
+		helper_length
+
+2009-05-24	misha
+	* src/main/compile.tab.C 1.136:
+		*** empty log message ***
+
+	* src/main/compile_tools.h 1.92:
+		- $a[$b.c] and $a[$b.$c] optimisations were added
+		- little refactoring
+
+	* src/main/execute.C 1.342:
+		- core while printing in debug log non-printable values was fixed
+		- $a[$b.c] and $a[$b.$c] optimisations were added
+
+	* src/include/pa_opcode.h 1.37:
+		- new opcodes for $a[$b.c] and $a[$b.$c] were added
+
+2009-05-23	misha
+	* src/include/pa_string.h 1.186:
+	* src/lib/cord/cordbscs.c 1.8:
+	* src/lib/cord/cordxtra.c 1.12:
+	* src/lib/cord/include/cord.h 1.6:
+	* src/main/untaint.C 1.147:
+		- CORD_cat optimization
+
+	* src/main/compile.tab.C 1.135:
+		*** empty log message ***
+
+	* src/include/pa_opcode.h 1.36:
+	* src/main/compile_tools.h 1.91:
+	* src/main/execute.C 1.340:
+		- call constr optimisation under separate define now
+
+	* src/main/compile_tools.h 1.90:
+	* src/main/execute.C 1.339:
+		- bugfix: $a[] $b[$a] -- in $b should be string, not void
+
+	* src/main/compile.y 1.242:
+		- little fix for rem-cut optimisation
+
+	* src/include/pa_opcode.h 1.35:
+	* src/main/compile_tools.C 1.65:
+	* src/main/compile_tools.h 1.89:
+	* src/main/execute.C 1.338:
+		- optimisations for $a[^b[...]], $.a[^b[...]], $a(^b[...]) and $
+		.a(^b[...])
+
+	* INSTALL 1.50:
+		- description of some #defined were added
+
+	* src/types/pa_vfile.C 1.43:
+	* src/types/pa_vfile.h 1.63:
+		- fill .'text' field only before 1st access (memory usage is 
+		reduced if don't access to .text field)
+
+	* src/include/pa_array.h 1.79:
+		- array grows step now not static (it reduces numbers of 
+		reallocs)
+
+2009-05-20	misha
+	* Makefile.am 1.66:
+	* Makefile.in 1.81:
+	* acinclude.m4 1.52:
+	* aclocal.m4 1.55:
+	* acsite.m4 1.30:
+	* acsite.m4 1.31:
+	* configure 1.108:
+	* configure.in 1.115:
+	* src/main/compile.tab.C 1.133:
+	* src/main/compile.tab.C 1.134:
+		*** empty log message ***
+
+	* src/include/pa_opcode.h 1.34:
+	* src/main/compile.y 1.241:
+	* src/main/compile_tools.C 1.64:
+	* src/main/compile_tools.h 1.88:
+	* src/main/execute.C 1.337:
+		- bytecode optimization for $a(1), $.b(2), $c[d] and $.e[f] was 
+		added
+
+	* src/main/execute.C 1.336:
+		- debug printing moved in defines
+
+	* src/main/compile.y 1.240:
+	* src/main/compile_tools.C 1.63:
+	* src/main/compile_tools.h 1.87:
+		- bugfix and little refactoring for OP_GET_OBJECT_ELEMENT + 
+		OP_GET_OBJECT_VAR_ELEMENT optimisation
+
+2009-05-19	misha
+	* src/main/compile.tab.C 1.131:
+	* src/main/compile.tab.C 1.132:
+		*** empty log message ***
+
+	* src/main/compile.y 1.239:
+	* src/main/compile_tools.C 1.62:
+	* src/main/compile_tools.h 1.86:
+	* src/main/execute.C 1.335:
+		- $a.$b & ^a.$b bytecode optimisation
+
+	* src/include/pa_opcode.h 1.33:
+		- new opcodes were added (for $a.$b & ^a.$b optimisation)
+
+	* src/main/compile.y 1.238:
+		- compiler now generate new opcodes: OP_GET_ELEMENT_FIELD and OP_GET_ELEMENT_FIELD__WRITE for $a.b 
+		and ^a.b
+		- compiler now cut off ^rem{ with all content ; any number of params }
+
+	* src/main/execute.C 1.334:
+		- code for handle new opcodes OP_GET_ELEMENT_FIELD and 
+		OP_GET_ELEMENT_FIELD__WRITE was added
+
+	* src/main/compile_tools.C 1.61:
+	* src/main/compile_tools.h 1.85:
+		- new parameter was added for LA2V and LA2S
+
+	* src/include/pa_opcode.h 1.32:
+		- new defines which can be used for disable some bytecode 
+		optimisation and new opcodes were added
+
+2009-05-17	misha
+	* src/lib/cord/cordxtra.c 1.11:
+		- bugfix.
+
+2009-05-16	misha
+	* tests/results/022.processed 1.6:
+	* tests/results/212.processed 1.1:
+	* tests/results/212.processed 1.2:
+		*** empty log message ***
+
+	* tests/212.html 1.2:
+		- .size[] and .study_size[] were added to tests
+
+	* operators.txt 1.214:
+		- info about regex class was added
+
+	* tests/212.html 1.1:
+		- tests for regex class were added
+
+	* buildall-with-xml 1.27:
+	* buildall-without-xml 1.17:
+		- moving from gc6.8 to gc7.1
+
+2009-05-15	misha
+	* tests/022.html 1.5:
+		- test for ^file:list[path;] (empty second param) was added
+
+	* src/classes/file.C 1.191:
+		- bugfix: ^file:list[path;] [empty second param) should work
+
+	* Makefile.am 1.64:
+	* Makefile.am 1.65:
+	* Makefile.in 1.79:
+	* Makefile.in 1.80:
+	* acinclude.m4 1.50:
+	* acinclude.m4 1.51:
+	* aclocal.m4 1.53:
+	* aclocal.m4 1.54:
+	* acsite.m4 1.28:
+	* acsite.m4 1.29:
+	* configure 1.106:
+	* configure 1.107:
+	* configure.in 1.113:
+	* configure.in 1.114:
+	* src/include/pa_config_auto.h.in 1.45:
+	* tests/results/210.processed 1.1:
+	* tests/results/211.processed 1.1:
+		*** empty log message ***
+
+	* src/classes/table.C 1.257:
+		- automatically disable stringstream usage on freebsd4
+
+	* src/lib/cord/cordxtra.c 1.10:
+		- var decl should be at the beginning of scope
+
+	* tests/211.html 1.1:
+		- test with different types of access to hash was added
+
+	* tests/210.html 1.1:
+		- test which checks for loosing tainting in hash's keys was 
+		added
+
+	* tests/208.html 1.3:
+		- some parser work added. or stime == 0 %-)
+
+	* src/lib/cord/cordbscs.c 1.7:
+		- little hack was added to cord
+
+	* src/lib/cord/cordxtra.c 1.9:
+		- cacheing of cord chars was added
+
+	* configure.in 1.112:
+	* src/include/pa_version.h 1.36:
+		- moko have made a lot of optimisations for increacing version 
+		number more dramatically :)
+
+	* src/classes/date.C 1.85:
+		- little refactoring: use constructor which accepts formated 
+		string
+
+	* src/include/pa_string.h 1.185:
+	* src/main/pa_string.C 1.226:
+		- String constructor which can print formatted string was added
+
+2009-05-14	misha
+	* src/include/pa_string.h 1.184:
+		- type was fixed
+
+	* src/classes/hashfile.C 1.46:
+	* src/classes/op.C 1.187:
+	* src/include/pa_cache_managers.h 1.19:
+	* src/include/pa_charset.h 1.42:
+	* src/include/pa_charsets.h 1.14:
+	* src/include/pa_common.h 1.130:
+	* src/include/pa_hash.h 1.74:
+	* src/include/pa_request.h 1.193:
+	* src/include/pa_sql_driver_manager.h 1.35:
+	* src/include/pa_string.h 1.183:
+	* src/include/pa_stylesheet_manager.h 1.23:
+	* src/include/pa_table.h 1.63:
+	* src/include/pa_xml_io.h 1.5:
+	* src/main/pa_charset.C 1.76:
+	* src/main/pa_charsets.C 1.18:
+	* src/main/pa_string.C 1.225:
+	* src/main/pa_stylesheet_connection.C 1.6:
+	* src/types/pa_value.h 1.131:
+	* src/types/pa_vmethod_frame.C 1.15:
+	* src/types/pa_vmethod_frame.h 1.81:
+	* src/types/pa_vobject.C 1.28:
+	* src/types/pa_vstateless_class.C 1.41:
+	* src/types/pa_vstateless_class.h 1.63:
+		- hash_code caching was implemented (seaches should be faster 
+		now)
+
+	* src/classes/file.C 1.190:
+	* src/classes/hash.C 1.93:
+	* src/classes/image.C 1.123:
+	* src/classes/string.C 1.180:
+	* src/classes/table.C 1.256:
+	* src/include/pa_string.h 1.182:
+	* src/main/pa_charset.C 1.75:
+	* src/main/pa_http.C 1.25:
+	* src/main/pa_request.C 1.302:
+	* src/types/pa_vconsole.h 1.16:
+	* src/types/pa_vcookie.C 1.78:
+	* src/types/pa_venv.C 1.9:
+	* src/types/pa_vform.C 1.95:
+	* src/types/pa_vhashfile.C 1.59:
+	* src/types/pa_vregex.C 1.4:
+	* src/types/pa_vrequest.C 1.45:
+		- String constructors don't have that stupid true/false param 
+		which means 'tainted'. they accept lang instead.
+
+	* src/types/pa_vmethod_frame.h 1.80:
+		- bugfix: taint/untaint didn't work with OPTIMIZE_RESULT
+
+	* src/types/pa_method.h 1.15:
+	* src/types/pa_vstateless_class.C 1.40:
+		- less warnings wher OPTIMIZE_RESULT and OPTIMIZE_CALL not 
+		defined
+
+2009-05-13	misha
+	* src/classes/date.C 1.84:
+	* src/classes/file.C 1.188:
+	* src/classes/hash.C 1.92:
+	* src/classes/image.C 1.122:
+	* src/classes/string.C 1.179:
+	* src/classes/table.C 1.253:
+	* src/classes/xdoc.C 1.158:
+	* src/include/pa_string.h 1.181:
+	* src/main/execute.C 1.333:
+	* src/main/pa_charset.C 1.73:
+	* src/main/pa_common.C 1.244:
+	* src/main/pa_request.C 1.301:
+	* src/main/pa_string.C 1.224:
+	* src/types/pa_method.h 1.14:
+	* src/types/pa_vcookie.C 1.77:
+	* src/types/pa_vdouble.h 1.54:
+	* src/types/pa_venv.C 1.8:
+	* src/types/pa_vhashfile.C 1.58:
+	* src/types/pa_vint.h 1.46:
+	* src/types/pa_vmethod_frame.C 1.14:
+	* src/types/pa_vmethod_frame.h 1.79:
+	* src/types/pa_vregex.C 1.2:
+	* src/types/pa_vregex.h 1.4:
+	* src/types/pa_vrequest.C 1.43:
+	* src/types/pa_vstateless_class.C 1.39:
+		- result optimisation
+		- helper_length parameter removed from string constructors
+
+2009-05-11	misha
+	* tests/208.html 1.2:
+	* tests/results/206.processed 1.1:
+	* tests/results/207.processed 1.1:
+	* tests/results/208.processed 1.1:
+	* tests/results/209.processed 1.1:
+		*** empty log message ***
+
+	* tests/209.html 1.1:
+		- tests for ^hash::create[hash] were added
+
+	* tests/208.html 1.1:
+		- tests for $status:rusage, $status:memory, ^memory:compact[] 
+		were added
+
+	* tests/207.html 1.1:
+		-tests for abs, sign, trunc, frac, exp, log, log10 were added
+
+	* tests/206.html 1.1:
+		- test for try with finally was added
+
+2009-05-10	misha
+	* tests/results/014.processed 1.5:
+	* tests/results/030.processed 1.5:
+	* tests/results/038.processed 1.5:
+	* tests/results/063.processed 1.5:
+	* tests/results/065.processed 1.5:
+	* tests/results/141.processed 1.6:
+	* tests/results/185.processed 1.4:
+	* tests/results/200.processed 1.1:
+	* tests/results/201.processed 1.1:
+	* tests/results/202.processed 1.1:
+	* tests/results/203.processed 1.1:
+	* tests/results/204.processed 1.1:
+	* tests/results/205.processed 1.1:
+		*** empty log message ***
+
+	* tests/205.html 1.1:
+		- test for ^file::create[...] was added
+
+	* tests/204.html 1.1:
+		- test for ^response:clear[] was added
+
+	* tests/038.html 1.3:
+		- tests for trigonometric functions were added
+
+	* tests/014.html 1.3:
+		- tests for ^hash.containts and ^hash.delete were added
+		- more tests for .add, .sub, .union, .intersects and .intersections
+
+	* tests/065.html 1.3:
+		- test for ^file:dirname was added
+
+	* tests/030.html 1.3:
+		- test for $cookie:fields was added
+
+	* tests/203.html 1.1:
+		- test for ^h._keys[column name] was added
+
+	* tests/201.html 1.1:
+		- tests for .trim were added
+
+	* tests/202.html 1.1:
+		- tests for last-day, date:calendar[type](YYYY;MM;DD) were added
+
+	* tests/200.html 1.1:
+		- tests for .sort(), .sort{}, .flip[] and .offset[type](N) were 
+		added
+
+	* tests/185.html 1.5:
+		- more tests for .left(N), .right(N), .min(N;M) and .pos[c](N) 
+		were added
+
+	* tests/141.html 1.3:
+		- test for math:sha1 was added
+
+	* tests/063.html 1.3:
+		- tests for .mod(N), .inc[] & .dec[] were added
+
+2009-05-09	misha
+	* src/main/compile.tab.C 1.130:
+		*** empty log message ***
+
+	* src/main/compile.y 1.237:
+		- rollback
+
+2009-05-05	misha
+	* src/classes/file.C 1.187:
+	* src/classes/hash.C 1.91:
+	* src/classes/hashfile.C 1.45:
+	* src/classes/op.C 1.186:
+	* src/classes/table.C 1.251:
+	* src/classes/table.C 1.252:
+	* src/include/pa_string.h 1.180:
+	* src/main/pa_charset.C 1.72:
+	* src/main/pa_exception.C 1.49:
+	* src/main/pa_exec.C 1.73:
+		- little optimisation: somewhere length() was replaced by 
+		is_empty()
+
+2009-05-04	misha
+	* src/classes/hash.C 1.90:
+	* src/classes/op.C 1.185:
+	* src/classes/table.C 1.250:
+	* src/include/pa_request.h 1.192:
+	* src/main/execute.C 1.332:
+	* src/types/pa_method.h 1.13:
+	* src/types/pa_vstateless_class.C 1.38:
+	* src/types/pa_vstateless_class.h 1.62:
+		- more optimisations were added: some operators don't switch 
+		write context anylonger
+
+2009-05-01	misha
+	* src/main/compile.tab.C 1.129:
+		*** empty log message ***
+
+	* src/main/compile.y 1.236:
+		- slightly more opcode optimisations for WITH_WRITE + VALUE + 
+		GET_ELEMENT -> OP_VALUE__GET_ELEMENT
+
+	* src/main/execute.C 1.331:
+		- simplifying process for getters
+
+2009-04-30	misha
+	* tests/198.html 1.2:
+	* tests/199.html 1.2:
+		- new line fixes (should be 0x0A)
+
+	* tests/results/198.processed 1.2:
+	* tests/results/199.processed 1.2:
+		*** empty log message ***
+
+	* tests/199.html 1.1:
+	* tests/results/199.processed 1.1:
+		- test for checking $result into ^rem was added
+
+	* tests/022.html 1.4:
+	* tests/096.html 1.4:
+		- þsort after :list was asses (on some OS it returns list in 
+		different order)
+
+	* src/include/pa_array.h 1.77:
+	* src/include/pa_array.h 1.78:
+	* src/include/pa_request.h 1.191:
+	* src/include/pa_stack.h 1.26:
+	* src/main/execute.C 1.330:
+	* src/types/pa_vmethod_frame.h 1.78:
+		- changes in stack impl
+		- get_element() optimisation: 3rd param removed
+		- bugfix: problems with reading empty input param
+		- defines SAVE_CONTEXT and RESTORE_CONTEXT were added and used
+
+	* tests/198.html 1.1:
+	* tests/results/198.processed 1.1:
+		- test for reading empty local var was added
+
+2009-04-29	misha
+	* src/main/compile.tab.C 1.127:
+	* src/main/compile.tab.C 1.128:
+		*** empty log message ***
+
+	* src/main/compile.y 1.235:
+		- bugfix: couldn't compile because OP_VALUE__GET_ELEMENT should 
+		be unde #ifdef
+
+	* src/include/pa_array.h 1.76:
+	* src/include/pa_opcode.h 1.31:
+	* src/include/pa_request.h 1.190:
+	* src/main/compile.y 1.234:
+	* src/main/execute.C 1.329:
+	* src/main/pa_request.C 1.300:
+	* src/types/pa_vmethod_frame.C 1.13:
+	* src/types/pa_vmethod_frame.h 1.77:
+		- we can work without opcode OP_STORE_PARAM, so it was removed
+
+2009-04-28	misha
+	* src/main/compile.tab.C 1.126:
+		*** empty log message ***
+
+	* src/include/pa_opcode.h 1.30:
+	* src/main/compile.y 1.233:
+	* src/main/execute.C 1.328:
+		- op-codes optimisation:
+		  1. VALUE+GET_CLASS=>VALUE_GET_CLASS
+		  2. WITH_READ+VALUE+GET_ELEMENT=>VALUE__GET_ELEMENT (not all yet)
+		  3. WITH_READ+VALUE+GET_ELEMENT__WRITE=>VALUE__GET_ELEMENT__WRITE
+		  4. WITH_READ+VALUE+GET_ELEMENT_OR_OPERATOR=>VALUE__GET_ELEMENT_OR_OPERATOR
+
+	* src/main/compile_tools.h 1.84:
+		- new stuff for op-codes optimisation
+
+	* src/classes/string.C 1.178:
+	* src/main/pa_string.C 1.223:
+		- !length() => is_empty()
+
+2009-04-27	misha
+	* src/types/pa_vregex.h 1.3:
+		- back explicit vars initialisation
+
+2009-04-24	misha
+	* src/classes/string.C 1.177:
+		- ups. typo fixed
+
+	* src/main/execute.C 1.327:
+		- more replacements '*new VBool' to 'VBool::get'
+		- checks for ^break[], ^continue[] and parser.interrupted were optimised
+
+	* src/classes/string.C 1.176:
+		- number of params.count() calls was slightly reduced
+
+2009-04-23	misha
+	* src/classes/image.C [release_3_3_0] 1.119.2.1:
+	* src/include/pa_string.h [release_3_3_0] 1.174.2.1:
+	* src/main/pa_charset.C [release_3_3_0] 1.66.2.1:
+		- make it x64 friendly
+
+2009-04-22	misha
+	* src/classes/image.C 1.121:
+	* src/include/pa_string.h 1.179:
+	* src/main/pa_charset.C 1.71:
+		- parser is x64 friendly now
+
+	* src/types/pa_vhashfile.C 1.57:
+		- coder friendly exception about exceeding record size was added
+
+	* src/classes/Makefile.in 1.67:
+	* src/types/Makefile.in 1.66:
+		*** empty log message ***
+
+	* src/classes/file.C 1.184:
+	* src/classes/file.C 1.185:
+	* src/classes/string.C 1.174:
+	* src/include/pa_string.h 1.178:
+	* src/main/pa_string.C 1.222:
+		- use vregex object instead of direct calls methods from pcre 
+		lib
+
+	* src/classes/Makefile.am 1.53:
+	* src/classes/classes.vcproj 1.19:
+	* src/classes/regex.C 1.1:
+		- class regex was added
+
+	* src/include/pa_common.h 1.129:
+	* src/main/pa_common.C 1.243:
+		- method print_pcre_exec_error_text was moved to class vregex
+
+	* src/types/Makefile.am 1.44:
+	* src/types/pa_vregex.C 1.1:
+	* src/types/pa_vregex.h 1.1:
+	* src/types/types.vcproj 1.22:
+		- class vregex was added
+
+2009-04-21	misha
+	* buildall-with-xml 1.26:
+	* buildall-without-xml 1.16:
+		- pcre 7.8 -> pcre 7.9
+
+	* src/classes/op.C 1.184:
+	* src/main/execute.C 1.326:
+	* src/types/pa_junction.h 1.9:
+	* src/types/pa_value.C 1.26:
+	* src/types/pa_vjunction.C 1.6:
+	* src/types/pa_vjunction.h 1.28:
+	* src/types/pa_wcontext.C 1.35:
+	* src/types/pa_wcontext.h 1.52:
+		- junction-optimisation (destructors)
+
+	* src/include/pa_array.h 1.75:
+		- free under if now
+
+2009-04-18	misha
+	* src/main/untaint.C 1.146:
+		- ^taint[js] now escapes \x0D as well
+
+	* Makefile.am 1.62:
+	* Makefile.am 1.63:
+	* Makefile.in 1.77:
+	* Makefile.in 1.78:
+	* acinclude.m4 1.48:
+	* acinclude.m4 1.49:
+	* aclocal.m4 1.51:
+	* aclocal.m4 1.52:
+	* acsite.m4 1.26:
+	* acsite.m4 1.27:
+	* configure 1.104:
+	* configure 1.105:
+	* configure.in 1.110:
+	* configure.in 1.111:
+		*** empty log message ***
+
+	* src/include/pa_version.h 1.35:
+		
+		:q
+		:
+		
+		CV: ----------------------------------------------------------------------
+
+	* src/types/pa_vjunction.h 1.27:
+	* src/types/pa_vstateless_class.C 1.37:
+		- little refactoring
+
+	* src/include/pa_array.h 1.74:
+	* src/include/pa_hash.h 1.73:
+	* src/types/pa_vmethod_frame.h 1.76:
+		- destructors under #ifdef now
+
+	* src/include/pa_memory.h 1.17:
+		- define for using destructors was added
+
+2009-04-17	misha
+	* src/main/execute.C 1.325:
+	* src/types/pa_method.h 1.12:
+	* src/types/pa_vstateless_class.C 1.36:
+		- some junctions will be cached now
+
+	* src/include/pa_hash.h 1.72:
+		- hash destructor frees pairs now
+
+	* src/include/pa_array.h 1.73:
+		- inline was added to destructor
+
+	* src/types/pa_method.h 1.11:
+		- comment was changed
+
+	* src/include/pa_array.h 1.72:
+	* src/include/pa_hash.h 1.71:
+	* src/types/pa_vmethod_frame.h 1.75:
+		- destructors were added
+
+	* src/main/compile.tab.C 1.124:
+	* src/main/compile.tab.C 1.125:
+		*** empty log message ***
+
+	* src/types/pa_method.h 1.10:
+	* src/types/pa_vmethod_frame.h 1.74:
+		- write_to_result renamed to always_use_result
+
+	* src/main/compile.y 1.232:
+	* src/main/compile_tools.h 1.83:
+		- rollback changes in compiler: full backward compatibility is 
+		better
+
+	* src/types/pa_vmethod_frame.h 1.73:
+		- set flag write_to_result if find result in var's hash
+
+	* src/types/pa_vmethod_frame.C 1.12:
+	* src/types/pa_vmethod_frame.h 1.72:
+		- optimisation in method_frame
+
+	* src/include/pa_array.h 1.71:
+		- optimisation in array (allocate elements only when needed)
+
+	* src/types/pa_vresponse.C 1.28:
+		- check for $response:headers field before looking at custom 
+		fields
+
+	* src/types/pa_vmethod_frame.h 1.71:
+		- if flag write_to_result was set, not needed to check existance 
+		var with name 'result' in var's hash
+
+	* src/main/compile.y 1.231:
+		- compiler was changed: now it detects writings to $result and 
+		set flag writo_to_result in method
+
+	* src/classes/string.C 1.173:
+		- little optimisation: no needed to write number with lang
+
+	* src/main/pa_charset.C 1.70:
+		- methods readChar and skipChar which is used for read utf8-strings were renamed
+		- is_escaped was renamed to isEscaped (to the same name convention)
+
+	* src/main/compile_tools.h 1.82:
+	* src/types/pa_method.h 1.9:
+		- flag write_to_result added. compiler get this info from code.
+
+2009-04-16	misha
+	* src/types/pa_vmethod_frame.h 1.70:
+	* src/types/pa_wcontext.h 1.51:
+		- create new String only before 1st write
+
+	* src/include/pa_string.h 1.177:
+		- not needed template removed
+
+	* src/classes/bool.C 1.2:
+	* src/classes/double.C 1.62:
+	* src/classes/hash.C 1.89:
+	* src/classes/int.C 1.58:
+	* src/classes/string.C 1.172:
+	* src/classes/table.C 1.249:
+	* src/classes/void.C 1.42:
+	* src/classes/xnode.C 1.83:
+	* src/main/pa_request.C 1.299:
+	* src/types/pa_vbool.h 1.31:
+	* src/types/pa_vfile.h 1.62:
+	* src/types/pa_vimage.C 1.37:
+	* src/types/pa_vjunction.C 1.5:
+	* src/types/pa_vproperty.C 1.2:
+	* src/types/pa_vstateless_class.C 1.35:
+	* src/types/pa_vxdoc.C 1.35:
+	* src/types/pa_vxnode.C 1.50:
+		- bool optimisation (use only 2 bool objects)
+
+2009-04-15	misha
+	* src/lib/cord/cordxtra.c 1.8:
+		- more optimisation
+
+	* src/include/pa_string.h 1.176:
+	* src/main/untaint.C 1.145:
+		- String::append optimisation
+
+	* src/include/pa_hash.h 1.70:
+		- get_by_hash_code added (it works faster then get and can 
+		sometime be used)
+
+	* src/main/pa_string.C 1.220:
+		- String::length optimisation
+
+	* src/main/pa_charset.C 1.69:
+		- rollback changeing readChar to skipChar. these methods read 
+		different strings
+
+	* src/types/pa_vmethod_frame.C 1.11:
+	* src/types/pa_vmethod_frame.h 1.69:
+		- fresult_initial_void removed + some optimisation
+		- if $result defined we don't write to context anymore
+
+	* src/main/pa_charset.C 1.68:
+		- readChar => skipChar (in this place we need just skip char)
+
+	* src/classes/table.C 1.248:
+	* src/main/execute.C 1.324:
+	* src/types/pa_vmethod_frame.C 1.10:
+	* src/types/pa_vmethod_frame.h 1.68:
+	* src/types/pa_vrequest.C 1.42:
+	* src/types/pa_vtable.C 1.28:
+		- VVoid::get() => new VVoid (one void-instance)
+
+	* src/types/pa_vvoid.h 1.29:
+		- added get() method for retreave one instance
+
+2009-04-11	misha
+	* tests/results/196.processed 1.1:
+	* tests/results/197.processed 1.1:
+		*** empty log message ***
+
+	* tests/196.html 1.1:
+		- tests for $cookie:CLASS_NAME & Co were added
+
+	* tests/197.html 1.1:
+		- test for parser://test in xml was added
+
+	* src/classes/string.C 1.171:
+	* src/types/pa_vconsole.h 1.15:
+	* src/types/pa_venv.C 1.6:
+	* src/types/pa_venv.h 1.36:
+		- small optimisation
+
+2009-04-10	misha
+	* buildall-with-xml 1.25:
+	* buildall-without-xml 1.15:
+		- moving from pcre-7.7 to pcre-7.8
+
+	* src/classes/image.C 1.120:
+	* src/classes/inet.C 1.3:
+	* src/classes/string.C 1.170:
+	* src/classes/xdoc.C 1.157:
+	* src/classes/xnode.C 1.82:
+	* src/types/pa_vclass.C 1.37:
+	* src/types/pa_vdate.h 1.48:
+	* src/types/pa_vmail.C 1.84:
+		- normalizing todo-comments: '@todo' now
+
+	* src/types/pa_vcookie.C 1.76:
+	* src/types/pa_vcookie.h 1.34:
+		- $cookie:CLASS_NAME was added
+
+	* src/types/pa_vrequest.C 1.41:
+	* src/types/pa_vrequest.h 1.36:
+		- $request:CLASS and $request:CLASS_NAME were added
+
+	* src/types/pa_vconsole.h 1.14:
+		- $console:CLASS and $console:CLASS_NAME were added
+
+	* src/types/pa_venv.C 1.5:
+	* src/types/pa_venv.h 1.35:
+		- $env:CLASS and $env:CLASS_NAME were added
+
+	* src/targets/cgi/parser3.C 1.250:
+		- size_t -> int for calming down compirer
+
+	* src/main/pa_string.C 1.219:
+		- little code cleanup
+
+	* src/main/pa_common.C 1.242:
+		- describe one more UTF-8 related error during PCRE compile/
+		execute
+
+	* src/types/pa_vmath.C 1.9:
+	* src/types/pa_vmath.h 1.19:
+		- $math:E was added
+
+	* src/main/pa_charset.C 1.67:
+		- type changed for making compiler happy
+
+2009-03-09	misha
+	* src/targets/cgi/parser3.C 1.249:
+		make g++ happy with the type of argc in main()
+
+2009-02-01	misha
+	* src/main/pa_http.C 1.24:
+		- bugfix: double CRLF before the end of boundary
+
 2009-01-29	misha
 	* Makefile.am 1.61:
 	* Makefile.in 1.76:
