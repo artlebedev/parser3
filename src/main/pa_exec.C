@@ -7,7 +7,7 @@
 	@todo setrlimit
 */
 
-static const char * const IDENT_EXEC_C="$Date: 2009/08/15 13:04:10 $";
+static const char * const IDENT_EXEC_C="$Date: 2009/09/30 23:15:29 $";
 
 #include "pa_config_includes.h"
 
@@ -113,9 +113,9 @@ error:
 
 static void read_pipe(String& result, HANDLE hOutRead, String::Language lang){
 	while(true) {
-		char *buf=new(PointerFreeGC) char[MAX_STRING];
-		unsigned long size;
-		if(!ReadFile(hOutRead, buf, MAX_STRING-1, &size, NULL) || !size) 
+		char *buf=new(PointerFreeGC) char[MAX_STRING+1];
+		DWORD size;
+		if(!ReadFile(hOutRead, buf, MAX_STRING, &size, NULL) || !size) 
 			break;
 		buf[size]=0;
 		result.append_know_length(buf, size, lang);
@@ -124,11 +124,8 @@ static void read_pipe(String& result, HANDLE hOutRead, String::Language lang){
 
 static void read_pipe(File_read_result& result, HANDLE hOutRead){
 
-	char *buf=new(PointerFreeGC) char[MAX_STRING];
-
-	unsigned long size = 0;
-	unsigned long bufsize = 0;
-	unsigned long newsize = 0;
+	char *buf=(char*)pa_malloc(MAX_STRING+1);
+	DWORD bufsize = MAX_STRING;
 
 	result.headers = 0;
 	result.length = 0;
@@ -136,20 +133,15 @@ static void read_pipe(File_read_result& result, HANDLE hOutRead){
 	result.success = false;
 
 	while(true) {
-		if(!ReadFile(hOutRead, buf, MAX_STRING-1, &size, NULL) || !size) 
+		DWORD size=0;
+		if(!ReadFile(hOutRead, buf + result.length, bufsize - result.length, &size, NULL) || !size)
 			break;
-		newsize = (size + result.length);
-		if(newsize > bufsize){
-			bufsize = (size==MAX_STRING-1)?newsize*2:newsize;
-			char *tmp = new(PointerFreeGC) char[bufsize];
-			if(result.str)
-				memcpy(tmp, result.str, result.length);
-			memcpy(tmp+result.length, buf, size);
-			result.str = tmp;
-		}else{
-			memcpy(result.str+result.length, buf, size);
+		result.length += size;
+		if(result.length >= bufsize){
+			bufsize *= 2;
+			buf=(char*)pa_realloc(buf, bufsize+1);
 		}
-		result.length = newsize;
+		result.str=buf;
 	}
 }
 
@@ -312,8 +304,8 @@ static int get_exit_status(int pid) {
 
 static void read_pipe(String& result, int file, String::Language lang){
 	while(true) {
-		char *buf=new(PointerFreeGC) char[MAX_STRING];
-		ssize_t length=read(file, buf, MAX_STRING-1);
+		char *buf=new(PointerFreeGC) char[MAX_STRING+1];
+		ssize_t length=read(file, buf, MAX_STRING);
 		if(length<=0)
 			break;
 		buf[length]=0;
@@ -322,10 +314,8 @@ static void read_pipe(String& result, int file, String::Language lang){
 }
 
 static void read_pipe(File_read_result& result, int file){
-	char *buf=new(PointerFreeGC) char[MAX_STRING];
-
-	unsigned long bufsize = 0;
-	unsigned long newsize = 0;
+	char *buf=(char*)pa_malloc(MAX_STRING+1);
+	ssize_t bufsize = MAX_STRING;
 
 	result.headers = 0;
 	result.length = 0;
@@ -333,21 +323,15 @@ static void read_pipe(File_read_result& result, int file){
 	result.success = false;
 
 	while(true) {
-		ssize_t size=read(file, buf, MAX_STRING-1);
+		ssize_t size=read(file, buf + result.length, bufsize - result.length);
 		if(size <= 0)
 			break;
-		newsize = (size + result.length);
-		if(newsize > bufsize){
-			bufsize = (size==MAX_STRING-1)?newsize*2:newsize;
-			char *tmp = new(PointerFreeGC) char[bufsize];
-			if(result.str)
-				memcpy(tmp, result.str, result.length);
-			memcpy(tmp+result.length, buf, size);
-			result.str = tmp;
-		}else{
-			memcpy(result.str+result.length, buf, size);
+		result.length += size;
+		if(result.length >= bufsize){
+			bufsize *= 2;
+			buf=(char*)pa_realloc(buf, bufsize+1);
 		}
-		result.length = newsize;
+		result.str=buf;
 	}
 }
 
