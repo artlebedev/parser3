@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Id: buildall-without-xml,v 1.19 2009/08/07 23:10:54 misha Exp $
+# $Id: buildall-without-xml,v 1.20 2009/10/01 22:05:43 misha Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -17,6 +17,7 @@ mkdir src >/dev/null 2>&1
 
 if test ! -f "$project_directory/gc/lib/libgc.a"; then
   cd $project_directory/src
+# libgc="gc6.8" # FreeBSD 4.X is not supported in newer gc version
   libgc="gc-7.1"
   if test ! -f "$libgc.tar.gz"; then
     echo "Downloading libgc [1 lib of 2]..."
