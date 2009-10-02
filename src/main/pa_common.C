@@ -26,7 +26,7 @@
  *
  */
 
-static const char * const IDENT_COMMON_C="$Date: 2009/09/28 11:39:30 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2009/10/02 01:19:24 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -162,7 +162,7 @@ static void file_read_action(
 			lseek(f, info.offset, SEEK_SET);
 		*info.data=info.buf
 			? info.buf
-			: new(PointerFreeGC) char[to_read_size+(as_text?1:0)]; 
+			: (char *)pa_malloc_atomic(to_read_size+1);
 		*info.data_size=(size_t)read(f, *info.data, to_read_size); 
 
 		if(ssize_t(*info.data_size)<0 || *info.data_size>to_read_size)
@@ -172,7 +172,7 @@ static void file_read_action(
 					*info.data_size, to_read_size); 
 	} else { // empty file
 		// for both, text and binary: for text we need that terminator, for binary we need nonzero pointer to be able to save such files
-		*info.data=new(PointerFreeGC) char[1]; 
+		*info.data=(char *)pa_malloc_atomic(1);
 		*(char*)(*info.data)=0;
 		*info.data_size=0;
 		return;
