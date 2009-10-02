@@ -7,7 +7,7 @@
 	@todo setrlimit
 */
 
-static const char * const IDENT_EXEC_C="$Date: 2009/09/30 23:15:29 $";
+static const char * const IDENT_EXEC_C="$Date: 2009/10/02 01:18:27 $";
 
 #include "pa_config_includes.h"
 
@@ -114,7 +114,7 @@ error:
 static void read_pipe(String& result, HANDLE hOutRead, String::Language lang){
 	while(true) {
 		char *buf=new(PointerFreeGC) char[MAX_STRING+1];
-		DWORD size;
+		DWORD size=0;
 		if(!ReadFile(hOutRead, buf, MAX_STRING, &size, NULL) || !size) 
 			break;
 		buf[size]=0;
