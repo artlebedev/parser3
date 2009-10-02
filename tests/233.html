@@ -1,0 +1,25 @@
+﻿@main[]
+$font[098font.gif]
+$im[^image::measure[$font]]
+
+$image[^image::create(150;48;0x00FFFF)]
+
+$abc[ ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzАБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдежзийклмнопрстуфхцчшщъыьэюя0123456789-+=!\"%:,.^;<>?@()[]'&*/]
+
+^image.font[$abc;$font][
+	$.width(0)		^rem{ monospaced font with auto-width }
+	$.space(5)		^rem{ space width }
+	$.spacing(-1)
+]
+^image.text(1; 0)[ABC  length=[^abc.length[]]]
+^image.text(1;12)[Font height=[$im.height]]
+^image.text(1;24)[Char height=[^eval($im.height/^abc.length[])[%.2f]]]
+
+^image.font[$abc;$font;
+	$.space(6)		^rem{ space width }
+]
+$text[A Привет :*)]
+^image.text(1;36)[$text]
+^image.rectangle(0;36)(^image.length[$text]+1;47)(0x000000)
+
+$response:body[^image.gif[]]
