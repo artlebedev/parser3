@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_MAIL_C="$Date: 2009/09/27 22:10:12 $";
+static const char * const IDENT_MAIL_C="$Date: 2009/10/03 02:13:43 $";
 
 #include "pa_config_includes.h"
 #include "pa_vmethod_frame.h"
@@ -70,13 +70,14 @@ static void sendmail(
 			 options
 #endif
 			 ) {
-	const char* message_cstr=message.untaint_cstr(String::L_AS_IS);
-
 	const char* exception_type="email.format";
 	if(!from) // we use in sendmail -f {from} && SMTP MAIL from: {from}
 		throw Exception(exception_type,
 			0,
 			"parameter does not specify 'from' header field");
+
+	const char* message_cstr=message.untaint_cstr(String::L_AS_IS);
+
 	if(smtp_server_port) {
 		if(!to) // we use only in SMTP RCPT to: {to}
 			throw Exception(exception_type,
