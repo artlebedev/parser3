@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_IMAGE_C="$Date: 2009/08/08 13:30:20 $";
+static const char * const IDENT_IMAGE_C="$Date: 2009/10/03 02:15:02 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -1095,7 +1095,8 @@ void Font::string_display(gdImage& image, int x, int y, const String& s){
 
 static void _font(Request& r, MethodParams& params) {
 	const String& alphabet=params.as_string(0, "alphabet must not be code");
-	if(!alphabet.length())
+	size_t alphabet_length=alphabet.length(r.charsets.source());
+	if(!alphabet_length)
 		throw Exception(PARSER_RUNTIME,
 			0,
 			"alphabet must not be empty");
@@ -1142,16 +1143,16 @@ static void _font(Request& r, MethodParams& params) {
 		}
 	}
 
-	if(int remainder=image->SY() % alphabet.length())
+	if(int remainder=image->SY() % alphabet_length)
 		throw Exception(PARSER_RUNTIME,
 			0,
 			"font-file height(%d) not divisable by alphabet size(%d), remainder=%d",
-				image->SY(), alphabet.length(), remainder);
+				image->SY(), alphabet_length, remainder);
 	
 	GET_SELF(r, VImage).set_font(new Font(
 		alphabet, 
 		image, 
-		image->SY() / alphabet.length(), monospace_width, spacebar_width, letter_spacing));
+		image->SY() / alphabet_length, monospace_width, spacebar_width, letter_spacing));
 }
 
 static void _text(Request& r, MethodParams& params) {
