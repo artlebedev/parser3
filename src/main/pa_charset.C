@@ -5,7 +5,7 @@
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_CHARSET_C="$Date: 2009/07/07 05:48:05 $";
+static const char * const IDENT_CHARSET_C="$Date: 2009/10/03 02:18:11 $";
 
 #include "pa_charset.h"
 #include "pa_charsets.h"
@@ -193,8 +193,8 @@ void Charset::sort_ToTable() {
 static XMLByte xlatOneTo(const XMLCh toXlat,
 			 const Charset::Tables& tables,
 			 XMLByte not_found) {
-	int    lo = 0;
-	int    hi = tables.toTableSize - 1;
+	int lo = 0;
+	int hi = tables.toTableSize - 1;
 	while(lo<=hi) {
 		// Calc the mid point of the low and high offset.
 		const unsigned int i = (lo + hi) / 2;
@@ -263,11 +263,11 @@ static const XMLByte gUTFBytes[0x100] = {
 };
 
 static const uint gUTFOffsets[6] = {
-    0, 0x3080, 0xE2080, 0x3C82080, 0xFA082080, 0x82082080
+	0, 0x3080, 0xE2080, 0x3C82080, 0xFA082080, 0x82082080
 };
 
 static const XMLByte gFirstByteMark[7] = {
-    0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC
+	0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC
 };
 
 static int transcodeToUTF8(const XMLByte* srcData, int& srcLen,
@@ -519,7 +519,7 @@ static unsigned int readChar(const XMLByte*& srcPtr, const XMLByte* srcEnd, XMLB
 }
 
 static int escapeUTF8(const XMLByte* srcData, size_t& srcLen,
-			     XMLByte* toFill, size_t& toFillLen) {
+				XMLByte* toFill, size_t& toFillLen) {
 	const XMLByte* srcPtr=srcData;
 	const XMLByte* srcEnd=srcData+srcLen;
 	XMLByte* outPtr=toFill;
@@ -688,8 +688,8 @@ const String::C Charset::transcodeToUTF8(const String::C src) const {
 }
 
 static XMLCh change_case_UTF8(const XMLCh src, const Charset::UTF8CaseTable& table) {
-	int    lo = 0;
-	int    hi = table.size - 1;
+	int lo = 0;
+	int hi = table.size - 1;
 	while(lo<=hi) {
 		// Calc the mid point of the low and high offset.
 		const unsigned int i = (lo + hi) / 2;
@@ -871,7 +871,7 @@ const String::C Charset::transcodeFromUTF8(const String::C src) const {
 
 /// transcode using both charsets
 const String::C Charset::transcodeToCharset(const String::C src, 
-					    const Charset& dest_charset) const {
+						const Charset& dest_charset) const {
 	if(&dest_charset==this) 
 		return src;
 	else {
@@ -1166,4 +1166,9 @@ size_t lengthUTF8(const XMLByte* srcBegin, const XMLByte* srcEnd){
 		size++;
 
 	return size;
+}
+
+bool UTF8_string_iterator::has_next(){
+	fcharSize=readUTF8Char(fsrcPtr, fsrcEnd, ffirstByte, fUTF8Char);
+	return fcharSize!=0;
 }

@@ -8,7 +8,7 @@
 #ifndef PA_CHARSET_H
 #define PA_CHARSET_H
 
-static const char * const IDENT_CHARSET_H="$Date: 2009/05/14 11:27:23 $";
+static const char * const IDENT_CHARSET_H="$Date: 2009/10/03 02:18:04 $";
 
 
 #include "pa_exception.h"
@@ -170,10 +170,28 @@ private:
 extern Charset::UTF8CaseTable UTF8CaseToUpper;
 extern Charset::UTF8CaseTable UTF8CaseToLower;
 void change_case_UTF8(const XMLByte* srcData, size_t srcLen,
-					  XMLByte* toFill, size_t toFillLen,
-					  const Charset::UTF8CaseTable& table);
+					XMLByte* toFill, size_t toFillLen,
+					const Charset::UTF8CaseTable& table);
 size_t getUTF8BytePos(const XMLByte* srcBegin, const XMLByte* srcEnd, size_t charPos/*position in characters*/);
 size_t getUTF8CharPos(const XMLByte* srcBegin, const XMLByte* srcEnd, size_t bytePos/*position in bytes*/);
 size_t lengthUTF8(const XMLByte* srcBegin, const XMLByte* srcEnd);
+
+
+class UTF8_string_iterator {
+	public:
+		UTF8_string_iterator(const String& astring): fsrcPtr((XMLByte*)astring.cstr()), fsrcEnd(fsrcPtr + astring.length()) {}
+		UTF8_string_iterator(XMLByte* asrcPtr, size_t length): fsrcPtr(asrcPtr), fsrcEnd(fsrcPtr + length) {}
+
+		bool has_next();
+		XMLCh next() { return fUTF8Char; }
+		XMLByte getFirstByte(){ return ffirstByte; }
+		size_t getCharSize(){ return fcharSize; }
+	private:
+		const XMLByte* fsrcPtr;
+		const XMLByte* fsrcEnd;
+		size_t fcharSize;
+		XMLByte ffirstByte;
+		XMLCh fUTF8Char;
+};
 
 #endif
