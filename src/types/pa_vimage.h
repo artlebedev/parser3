@@ -8,11 +8,12 @@
 #ifndef PA_VIMAGE_H
 #define PA_VIMAGE_H
 
-static const char * const IDENT_VIMAGE_H="$Date: 2009/08/08 13:30:21 $";
+static const char * const IDENT_VIMAGE_H="$Date: 2009/10/03 02:21:44 $";
 
 #include "classes.h"
 #include "pa_common.h"
 #include "pa_vstateless_object.h"
+#include "pa_charset.h"
 
 // defines
 
@@ -35,11 +36,12 @@ public:
 	const String& alphabet;
 	
 	Font(
-		const String& aalphabet, 
+		Charset& acharset, const String& aalphabet, 
 		gdImage* aifont, int aheight, int amonospace, int aspacebarspace, int aletterspacing);
 
 	//@{******************************** char **********************************	
 	size_t index_of(char ch);
+	size_t Font::index_of(XMLCh ch);
 	int index_width(size_t index);
 	void index_display(gdImage& image, int x, int y, size_t index);
 	//@}
@@ -49,6 +51,10 @@ public:
 	/// counts trailing letter_spacing, consider this OK. useful for contiuations
 	int string_width(const String& s);
 	void string_display(gdImage& image, int x, int y, const String& s);	
+
+private:
+	Charset& fsource_charset;
+	Hash<XMLCh, size_t> fletter2index;
 };
 
 // externs

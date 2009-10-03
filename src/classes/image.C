@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_IMAGE_C="$Date: 2009/10/03 02:15:02 $";
+static const char * const IDENT_IMAGE_C="$Date: 2009/10/03 02:22:01 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -1033,13 +1033,23 @@ static void _polybar(Request& r, MethodParams& params) {
 
 // Font class
 
-Font::Font(//, 
+Font::Font(
+	Charset& asource_charset, 
 	const String& aalphabet, 
 	gdImage* aifont, int aheight, int amonospace, int aspacebarspace, int aletterspacing):
-	height(aheight), monospace(amonospace),  spacebarspace(aspacebarspace),
+	fsource_charset(asource_charset),
+	height(aheight),
+	monospace(amonospace),
+	spacebarspace(aspacebarspace),
 	letterspacing(aletterspacing),
 	ifont(aifont),
 	alphabet(aalphabet)	{
+
+	if(fsource_charset.isUTF8()){
+		size_t index=0;
+		for(UTF8_string_iterator i(alphabet); i.has_next(); )
+			fletter2index.put_dont_replace(i.next(), index++);
+	}
 }
 
 /* ******************************** char ********************************** */
@@ -1047,6 +1057,11 @@ Font::Font(//,
 size_t Font::index_of(char ch) {
 	if(ch==' ') return STRING_NOT_FOUND;
 	return alphabet.pos(ch);
+}
+
+size_t Font::index_of(XMLCh ch) {
+	if(ch==' ') return STRING_NOT_FOUND;
+	return fletter2index.get(ch);
 }
 
 int Font::index_width(size_t index) {
@@ -1076,17 +1091,33 @@ int Font::step_width(int index) {
 int Font::string_width(const String& s){
 	const char* cstr=s.cstr();
 	int result=0;
-	for(const char* current=cstr; *current; current++)
-		result+=step_width(index_of(*current));
+
+	if(fsource_charset.isUTF8()){
+		for(UTF8_string_iterator i(s); i.has_next(); )
+			result+=step_width(index_of(i.next()));
+	} else {
+		for(const char* current=cstr; *current; current++)
+			result+=step_width(index_of(*current));
+	}
+
 	return result;
 }
 
 void Font::string_display(gdImage& image, int x, int y, const String& s){
 	const char* cstr=s.cstr();
-	for(const char* current=cstr; *current; current++) {
-		size_t index=index_of(*current);
-		index_display(image, x, y, index);
-		x+=step_width(index);
+
+	if(fsource_charset.isUTF8()){
+		for(UTF8_string_iterator i(s); i.has_next(); ){
+			size_t index=index_of(i.next());
+			index_display(image, x, y, index);
+			x+=step_width(index);
+		}
+	} else {
+		for(const char* current=cstr; *current; current++) {
+			size_t index=index_of(*current);
+			index_display(image, x, y, index);
+			x+=step_width(index);
+		}
 	}
 }
 
@@ -1150,6 +1181,7 @@ static void _font(Request& r, MethodParams& params) {
 				image->SY(), alphabet_length, remainder);
 	
 	GET_SELF(r, VImage).set_font(new Font(
+		r.charsets.source(),
 		alphabet, 
 		image, 
 		image->SY() / alphabet_length, monospace_width, spacebar_width, letter_spacing));
