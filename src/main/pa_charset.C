@@ -5,7 +5,7 @@
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_CHARSET_C="$Date: 2009/10/03 02:18:11 $";
+static const char * const IDENT_CHARSET_C="$Date: 2009/10/04 22:02:57 $";
 
 #include "pa_charset.h"
 #include "pa_charsets.h"
@@ -521,24 +521,18 @@ static unsigned int readChar(const XMLByte*& srcPtr, const XMLByte* srcEnd, XMLB
 static int escapeUTF8(const XMLByte* srcData, size_t& srcLen,
 				XMLByte* toFill, size_t& toFillLen) {
 	const XMLByte* srcPtr=srcData;
-	const XMLByte* srcEnd=srcData+srcLen;
 	XMLByte* outPtr=toFill;
 	XMLByte* outEnd=toFill+toFillLen;
-	XMLByte firstByte;
-	XMLCh UTF8Char;
-	uint charSize;
-
 	// loop until we either run out of input data, or room to store
-	while((outPtr < outEnd) && (charSize=readUTF8Char(srcPtr, srcEnd, firstByte, UTF8Char))){
-		if(charSize==1){
-			if(isEscaped(firstByte)) // %XX
-				outPtr+=sprintf((char*)outPtr, "%%%02X", firstByte);
+	for(UTF8_string_iterator i((XMLByte *)srcPtr, srcLen); (outPtr < outEnd) && i.has_next(); ){
+		if(i.getCharSize()==1){
+			if(isEscaped(i.getFirstByte())) // %XX
+				outPtr+=sprintf((char*)outPtr, "%%%02X", i.getFirstByte());
 			else
-				*outPtr++=firstByte;
+				*outPtr++=i.getFirstByte();
 		} else
-			outPtr+=sprintf((char*)outPtr, "%%u%04X", UTF8Char); // %uXXXX
+			outPtr+=sprintf((char*)outPtr, "%%u%04X", i.next()); // %uXXXX
 	}
-	
 	// Update the bytes eaten
 	srcLen=srcPtr-srcData;
 	
@@ -588,19 +582,19 @@ String::C Charset::escape(const String::C src, const Charset& source_charset){
 
 #ifdef PRECALCULATE_DEST_LENGTH
 	size_t dest_length=0;
-	const XMLByte* srcPtr=(XMLByte*)src.str;
-	const XMLByte* srcEnd=srcPtr+src_length;
-	XMLByte firstByte;
-	XMLCh UTF8Char;
 
 	if(source_charset.isUTF8()){
-		while(uint charSize=readUTF8Char(srcPtr, srcEnd, firstByte, UTF8Char)){
-			if(charSize==1)
-				dest_length+=!isEscaped(firstByte)?1:3/*%XX*/;
+		for(UTF8_string_iterator i((XMLByte *)src.str, src_length); i.has_next(); ){
+			if(i.getCharSize()==1)
+				dest_length+=!isEscaped(i.getFirstByte())?1/*as-is*/:3/*%XX*/;
 			else
-				dest_length+=6; // '%uXXXX'
+				dest_length+=6/*%uXXXX*/;
 		}
 	} else {
+		const XMLByte* srcPtr=(XMLByte*)src.str;
+		const XMLByte* srcEnd=srcPtr+src_length;
+		XMLByte firstByte;
+		XMLCh UTF8Char;
 		while(uint charSize=readChar(srcPtr, srcEnd, firstByte, UTF8Char, source_charset.tables)){
 			if(charSize==1)
 				dest_length+=(!firstByte/*replacement char '?'*/ || !isEscaped(firstByte))?1:3/*'%XX'*/;
@@ -828,27 +822,21 @@ static size_t getDecNumLength(XMLCh UTF8Char){
 }
 
 const String::C Charset::transcodeFromUTF8(const String::C src) const {
-	int src_length=src.length;
-
 #ifdef PRECALCULATE_DEST_LENGTH
 	int dest_length=0;
-	const XMLByte* srcPtr=(XMLByte*)src.str;
-	const XMLByte* srcEnd=srcPtr+src_length;
-	XMLByte firstByte;
-	XMLCh UTF8Char;
-	while(uint charSize=readUTF8Char(srcPtr, srcEnd, firstByte, UTF8Char)){
-		if(charSize==1)
+	for(UTF8_string_iterator i((XMLByte *)src.str, src.length); i.has_next(); ){
+		if(i.getCharSize()==1)
 			dest_length++;
 		else
-			dest_length+=(UTF8Char & 0xFFFF0000)
-							?charSize*3	// '%XX' for each byte
-							:(xlatOneTo(UTF8Char, tables, 0)!=0)
+			dest_length+=(i.next() & 0xFFFF0000)
+							?i.getCharSize()*3	// '%XX' for each byte
+							:(xlatOneTo(i.next(), tables, 0)!=0)
 								?1		// can convert it to single char
-								:getDecNumLength(UTF8Char)+3;		// &#XX; - &#XXXXX;
+								:getDecNumLength(i.next())+3;		// &#XX; - &#XXXXX;
 	}
 #else
 	// so that surly enough, "&#XXX;" has max ratio (huh? 8 bytes needed for '&#XXXXX;')
-	int dest_length=src_length*6;
+	int dest_length=src.length*6;
 #endif
 
 #ifndef NDEBUG
@@ -857,7 +845,7 @@ const String::C Charset::transcodeFromUTF8(const String::C src) const {
 	XMLByte *dest_body=new(PointerFreeGC) XMLByte[dest_length+1/*for terminator*/];
 
 	if(::transcodeFromUTF8(
-		(XMLByte *)src.str, src_length,
+		(XMLByte *)src.str, (int&)src.length,
 		dest_body, dest_length,
 		tables)<0)
 		throw Exception(0, 
