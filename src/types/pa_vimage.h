@@ -8,7 +8,7 @@
 #ifndef PA_VIMAGE_H
 #define PA_VIMAGE_H
 
-static const char * const IDENT_VIMAGE_H="$Date: 2009/10/03 02:21:44 $";
+static const char * const IDENT_VIMAGE_H="$Date: 2009/10/05 00:41:03 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -41,7 +41,7 @@ public:
 
 	//@{******************************** char **********************************	
 	size_t index_of(char ch);
-	size_t Font::index_of(XMLCh ch);
+	size_t index_of(XMLCh ch);
 	int index_width(size_t index);
 	void index_display(gdImage& image, int x, int y, size_t index);
 	//@}
