@@ -5,7 +5,7 @@
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_CHARSET_C="$Date: 2009/10/04 22:02:57 $";
+static const char * const IDENT_CHARSET_C="$Date: 2009/10/05 11:38:12 $";
 
 #include "pa_charset.h"
 #include "pa_charsets.h"
@@ -822,9 +822,10 @@ static size_t getDecNumLength(XMLCh UTF8Char){
 }
 
 const String::C Charset::transcodeFromUTF8(const String::C src) const {
+	int src_length=src.length;
 #ifdef PRECALCULATE_DEST_LENGTH
 	int dest_length=0;
-	for(UTF8_string_iterator i((XMLByte *)src.str, src.length); i.has_next(); ){
+	for(UTF8_string_iterator i((XMLByte *)src.str, src_length); i.has_next(); ){
 		if(i.getCharSize()==1)
 			dest_length++;
 		else
@@ -836,7 +837,7 @@ const String::C Charset::transcodeFromUTF8(const String::C src) const {
 	}
 #else
 	// so that surly enough, "&#XXX;" has max ratio (huh? 8 bytes needed for '&#XXXXX;')
-	int dest_length=src.length*6;
+	int dest_length=src_length*6;
 #endif
 
 #ifndef NDEBUG
@@ -845,7 +846,7 @@ const String::C Charset::transcodeFromUTF8(const String::C src) const {
 	XMLByte *dest_body=new(PointerFreeGC) XMLByte[dest_length+1/*for terminator*/];
 
 	if(::transcodeFromUTF8(
-		(XMLByte *)src.str, (int&)src.length,
+		(XMLByte *)src.str, src_length,
 		dest_body, dest_length,
 		tables)<0)
 		throw Exception(0, 
