@@ -36,6 +36,9 @@
 /* Define to 1 if you have the <errno.h> header file. */
 #undef HAVE_ERRNO_H
 
+/* Define to 1 if you have the `fchmod' function. */
+#undef HAVE_FCHMOD
+
 /* Define to 1 if you have the `fcntl' function. */
 #undef HAVE_FCNTL
 
