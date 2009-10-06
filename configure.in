@@ -549,6 +549,7 @@ _locking \
 fcntl \
 lockf \
 ftruncate \
+fchmod \
 getrusage \
 gettimeofday \
 crypt \

@@ -6894,11 +6894,13 @@ fi
 
 
 
+
 for ac_func in flock \
 _locking \
 fcntl \
 lockf \
 ftruncate \
+fchmod \
 getrusage \
 gettimeofday \
 crypt \
