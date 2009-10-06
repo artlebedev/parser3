@@ -26,7 +26,7 @@
  *
  */
 
-static const char * const IDENT_COMMON_C="$Date: 2009/10/06 00:49:28 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2009/10/06 12:12:51 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -67,7 +67,20 @@ const String file_status_name(FILE_STATUS_NAME);
 
 // functions
 
+bool capitalized(const char* s){
+	bool upper=true;
+	for(const char* c=s; *c; c++){
+		if(*c != (upper ? toupper((unsigned char)*c) : tolower((unsigned char)*c)))
+			return false;
+		upper=strchr("-_ ", *c) != 0;
+	}
+	return true;
+}
+
 const char* capitalize(const char* s){
+	if(!s || capitalized(s))
+		return s;
+
 	char* result=pa_strdup(s);
 	if(result){
 		bool upper=true;
