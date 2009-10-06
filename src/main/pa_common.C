@@ -26,7 +26,7 @@
  *
  */
 
-static const char * const IDENT_COMMON_C="$Date: 2009/10/02 01:19:24 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2009/10/06 00:49:28 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -293,7 +293,7 @@ bool file_read_action_under_lock(const String& file_spec,
 							strerror(errno), errno, fname);
 
 			struct stat finfo;
-			if(stat(fname, &finfo)!=0)
+			if(fstat(f, &finfo)!=0)
 				throw Exception("file.missing", // hardly possible: we just opened it OK
 					&file_spec, 
 					"stat failed: %s (%d), actual filename '%s'", 
@@ -362,7 +362,12 @@ bool file_write_action_under_lock(
 		}
 
 		try {
-			action(f, context); 
+#if (defined(HAVE_FCHMOD) && defined(PA_SAFE_MODE))
+			struct stat finfo;
+			if(fstat(f, &finfo)==0 && finfo.st_mode & 0111)
+				fchmod(f, finfo.st_mode & 0666/*clear executable bits*/); // backward: ignore errors if any
+#endif
+			action(f, context);
 		} catch(...) {
 #ifdef HAVE_FTRUNCATE
 			if(!do_append)
