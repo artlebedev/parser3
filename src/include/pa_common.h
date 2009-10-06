@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-static const char * const IDENT_COMMON_H="$Date: 2009/09/25 12:57:35 $";
+static const char * const IDENT_COMMON_H="$Date: 2009/10/06 11:39:02 $";
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -17,8 +17,12 @@ class Request;
 
 // defines
 #define HTTP_USER_AGENT	"user-agent"
+
 #define HTTP_STATUS	"status"
+#define HTTP_STATUS_CAPITALIZED	"Status"
+
 #define HTTP_CONTENT_LENGTH	"content-length"
+#define HTTP_CONTENT_LENGTH_CAPITALIZED	"Content-Length"
 
 #define HTTP_CONTENT_TYPE	"content-type"
 #define HTTP_CONTENT_TYPE_UPPER	"CONTENT-TYPE"
