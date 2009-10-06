@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_PARSER3_C="$Date: 2009/09/03 11:08:54 $";
+static const char * const IDENT_PARSER3_C="$Date: 2009/10/06 11:39:58 $";
 
 #include "pa_config_includes.h"
 
@@ -165,9 +165,13 @@ static void die_or_abort(const char* fmt, va_list args, bool write_core) {
 
 	// prepare header
 	// let's be honest, that's bad we couldn't produce valid output
-	SAPI::add_header_attribute(SAPI_info, HTTP_STATUS, "500");
-	SAPI::add_header_attribute(SAPI_info, HTTP_CONTENT_TYPE, "text/plain");
-	SAPI::add_header_attribute(SAPI_info, HTTP_CONTENT_LENGTH, format(content_length, "%u"));
+	// capitalized headers passed for preventing malloc during capitalization
+	SAPI::add_header_attribute(SAPI_info, HTTP_STATUS_CAPITALIZED, "500");
+	SAPI::add_header_attribute(SAPI_info, HTTP_CONTENT_TYPE_CAPITALIZED, "text/plain");
+	// don't use 'format' function because it calls malloc
+	char content_length_cstr[MAX_NUMBER];
+	snprintf(content_length_cstr, sizeof(content_length_cstr), "%u", content_length);
+	SAPI::add_header_attribute(SAPI_info, HTTP_CONTENT_LENGTH_CAPITALIZED, content_length_cstr);
 
 	// send header
 	SAPI::send_header(SAPI_info);
@@ -762,8 +766,12 @@ int main(int argc, char *argv[]) {
 		int content_length=strlen(buf);
 
 		// prepare header
-		SAPI::add_header_attribute(SAPI_info, HTTP_CONTENT_TYPE, "text/plain");
-		SAPI::add_header_attribute(SAPI_info, HTTP_CONTENT_LENGTH, format(content_length, "%u"));
+		// capitalized headers are used for preventing malloc during capitalization
+		SAPI::add_header_attribute(SAPI_info, HTTP_CONTENT_TYPE_CAPITALIZED, "text/plain");
+		// don't use 'format' function because it calls malloc
+		char content_length_cstr[MAX_NUMBER];
+		snprintf(content_length_cstr, MAX_NUMBER, "%u", content_length);
+		SAPI::add_header_attribute(SAPI_info, HTTP_CONTENT_LENGTH_CAPITALIZED, content_length_cstr);
 
 		// send header
 		SAPI::send_header(SAPI_info);

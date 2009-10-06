@@ -5,7 +5,7 @@ Parser: apache 1.3 module, part, compiled by parser3project.
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_MOD_PARSER3_MAIN_C="$Date: 2009/09/03 11:08:48 $";
+static const char * const IDENT_MOD_PARSER3_MAIN_C="$Date: 2009/10/06 11:40:23 $";
 
 #include "pa_config_includes.h"
 
@@ -333,8 +333,12 @@ int pa_parser_handler(pa_request_rec *r, Parser_module_config *dcfg) {
 		int content_length=strlen(buf);
 		
 		// prepare header
-		SAPI::add_header_attribute(SAPI_info, HTTP_CONTENT_TYPE, "text/plain");
-		SAPI::add_header_attribute(SAPI_info, HTTP_CONTENT_LENGTH, format(content_length, "%u"));
+		// capitalized headers are used for preventing malloc during capitalization
+		SAPI::add_header_attribute(SAPI_info, HTTP_CONTENT_TYPE_CAPITALIZED, "text/plain");
+		// don't use 'format' function because it calls malloc
+		char content_length_cstr[MAX_NUMBER];
+		snprintf(content_length_cstr, MAX_NUMBER, "%u", content_length);
+		SAPI::add_header_attribute(SAPI_info, HTTP_CONTENT_LENGTH_CAPITALIZED, content_length_cstr);
 		
 		// send header
 		SAPI::send_header(SAPI_info);
