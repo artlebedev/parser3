@@ -9,10 +9,27 @@ $CLASS_PATH[^table::create{path
 }]
 
 
+
 @auto[]
 
 
 
-@windows-1251[]
+@1251[]
+^from-1251[]
+^to-1251[]
+
+
+
+@from-1251[]
 $request:charset[windows-1251]
+
+
+
+@to-1251[]
 $response:charset[windows-1251]
+
+
+
+# backward
+@windows-1251[]
+^1251[]
