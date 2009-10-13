@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_GLOBALS_C="$Date: 2008/08/15 15:30:21 $";
+static const char * const IDENT_GLOBALS_C="$Date: 2009/10/13 06:31:59 $";
 
 #include "pa_config_includes.h"
 
@@ -167,7 +167,7 @@ static char *pa_GC_strdup(const char *s) {
 	size_t size=strlen(s)+1;
 	char *result=(char *)GC_MALLOC_ATOMIC(size);
 	if(!result)
-		SAPI::abort("out of memory (while duplicating XML string [size=%d])", size);
+		pa_fail_alloc("duplicate XML string",size);
 
 	memcpy(result, s, size);
 #ifdef PA_DEBUG_XML_GC_MEMORY
@@ -234,22 +234,22 @@ static void pa_gc_free_log(void *p){
 
 inline void *check(void *result, const char *where, size_t size) {
 	if(!result)
-		SAPI::abort("out of memory (while %s [size=%d])", where, size);
+		pa_fail_alloc(where, size);
 
 	return result;
 }
 static void* pa_gc_malloc_nonull(size_t size) { 
-	return check(pa_gc_malloc(size), "allocating XML compsite memory", size);
+	return check(pa_gc_malloc(size), "allocate XML compsite memory", size);
 }
 static void* pa_gc_malloc_atomic_nonull(size_t size) { 
 #ifdef PA_WORKAROUND_BUGGY_MALLOCATOMIC_IN_LIBXML_GC_MEMORY
-	return check(pa_gc_malloc(size), "allocating XML composite memory (asked atomic)", size);
+	return check(pa_gc_malloc(size), "allocate XML composite memory (asked atomic)", size);
 #else
-	return check(pa_gc_malloc_atomic(size), "allocating XML atomic memory", size);
+	return check(pa_gc_malloc_atomic(size), "allocate XML atomic memory", size);
 #endif
 }
 static void* pa_gc_realloc_nonull(void* ptr, size_t size) { 
-	return check(pa_gc_realloc(ptr, size), "reallocating XML memory", size);
+	return check(pa_gc_realloc(ptr, size), "reallocate XML memory", size);
 }
 
 static void pa_gc_free_maybeignore(
@@ -267,7 +267,7 @@ static void pa_gc_free_maybeignore(
 #endif
 
 void pa_CORD_oom_fn(void) {
-	SAPI::abort("out of memory (while expanding string)");
+	pa_fail_alloc("expand string", 0);
 }
 
 /**
