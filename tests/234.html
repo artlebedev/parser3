@@ -1,0 +1,18 @@
+﻿^to-1251[]
+
+$s[^taint[uri;тест]-тест]
+
+# chars in lang uri should be escaped here in $response:charset
+$xml[^xdoc::create{<root>$s</root>}]
+
+$xsl[^xdoc::create{
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+	<xsl:template match="/">
+		<xsl:copy-of select="."/>
+	</xsl:template>
+</xsl:stylesheet>}]
+
+$transformed[^xml.transform[$xsl]]
+
+=$s=<br />
+=^transformed.string[$.method[html]]=
