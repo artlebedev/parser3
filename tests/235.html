@@ -1,0 +1,61 @@
+@main[]
+$sBody[Тело письма]
+$sAttachFileName[235_attach.txt]
+
+$fText[^file::load[text;$sAttachFileName]]
+$fBinary[^file::load[binary;$sAttachFileName]]
+
+^do[;
+	$.text[$sBody]
+	$.x-mailer[Parser 3]
+]
+
+^do[windows-1251;
+	$.text[$sBody]
+	$.html{<p>$sBody</p>}
+]
+
+^do[windows-1251;
+	$.text[$sBody]
+	$.file[$fText]
+	$.file2[$fBinary]
+]
+
+^do[windows-1251;
+	$.text[$sBody]
+	$.file[$fBinary]
+	$.message[
+		$.from[from-message@parser3test]
+		$.to[to-message@parser3test]
+		$.charset[windows-1251]
+		$.subject[Заголовок вложения]
+		$.text[Тело вложения]
+		$.file[$fText]
+	]
+]
+
+^do[windows-1251;
+	$.text[$sBody]
+	$.file[
+		$.value[$fText]
+		$.content-id[C-ID]
+		$.format[uue]
+	]
+]
+
+
+
+@do[sCharset;hData]
+<pre>
+^mail:send[
+	^hash::create[$hData]
+	$.from[from@parser3test]
+	$.to[to@parser3test]
+	^if(def $sCharset){
+		$.charset[$sCharset]
+	}
+	$.subject[Заголовок]
+	$.print-debug(1)
+]
+</pre>
+<hr />
