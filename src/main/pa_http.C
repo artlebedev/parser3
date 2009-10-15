@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
  */
 
-static const char * const IDENT_HTTP_C="$Date: 2009/09/10 10:11:18 $"; 
+static const char * const IDENT_HTTP_C="$Date: 2009/10/15 01:07:54 $"; 
 
 #include "pa_http.h"
 #include "pa_common.h"
@@ -405,7 +405,7 @@ static void form_value2string(
 const char* pa_form2string(HashStringValue& form, Request_charsets& charsets) {
 	String string;
 	form.for_each<String*>(form_value2string, &string);
-	return string.transcode_and_untaint_cstr(String::L_URI, &charsets);
+	return string.untaint_and_transcode_cstr(String::L_URI, &charsets);
 }
 
 struct FormPart {
@@ -618,7 +618,7 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 		// influence URLencoding of tainted pieces to String::L_URI lang
 		Temp_client_charset temp(r.charsets, *asked_remote_charset);
 
-		const char* connect_string_cstr=connect_string.transcode_and_untaint_cstr(String::L_URI, &(r.charsets));
+		const char* connect_string_cstr=connect_string.untaint_and_transcode_cstr(String::L_URI, &(r.charsets));
 
 		const char* current=connect_string_cstr;
 		if(strncmp(current, "http://", 7)!=0)
@@ -694,7 +694,7 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 			// $.body was specified
 			if(content_type_url_encoded){
 				// transcode + url-encode
-				body_cstr=vbody->as_string().transcode_and_untaint_cstr(String::L_URI, &(r.charsets));
+				body_cstr=vbody->as_string().untaint_and_transcode_cstr(String::L_URI, &(r.charsets));
 			} else {
 				// content-type != application/x-www-form-urlencoded -> transcode only, don't url-encode!
 				body_cstr=Charset::transcode(
@@ -729,14 +729,14 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 			} else
 				throw Exception(PARSER_RUNTIME, 
 					0,
-					"cookies param must be hash"); 
+					"cookies param must be hash");
 		}
 
 		if(body_cstr)
 			head << "Content-Length: " << format(post_size, "%u") << CRLF;
 
 		// head + end of header
-		request_head_and_body << head.transcode_and_untaint_cstr(String::L_URI, &(r.charsets)) << CRLF;
+		request_head_and_body << head.untaint_and_transcode_cstr(String::L_URI, &(r.charsets)) << CRLF;
 
 		// body
 		if(body_cstr)

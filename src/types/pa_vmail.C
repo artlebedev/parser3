@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_VMAIL_C="$Date: 2009/09/28 11:09:45 $";
+static const char * const IDENT_VMAIL_C="$Date: 2009/10/15 01:08:05 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -636,7 +636,7 @@ static const String& file_value_to_string(Request& r, Value* send_value) {
 	const char* quoted_file_name_cstr;
 	{
 		Request_charsets charsets(r.charsets.source(), r.charsets.mail()/*uri!*/, r.charsets.mail());
-		file_name_cstr=file_name->transcode_and_untaint_cstr(String::L_FILE_SPEC, &charsets);
+		file_name_cstr=file_name->untaint_and_transcode_cstr(String::L_FILE_SPEC, &charsets);
 		quoted_file_name_cstr=String(file_name_cstr).taint_cstr(String::L_MAIL_HEADER, 0, &charsets);
 	}
 
@@ -739,7 +739,7 @@ static const String& text_value_to_string(Request& r,
 	}
 	if(body) {
 		Request_charsets charsets(r.charsets.source(), r.charsets.mail()/*uri!*/, r.charsets.mail());
-		const char* body_cstr=body->transcode_and_untaint_cstr(String::L_AS_IS, &charsets);
+		const char* body_cstr=body->untaint_and_transcode_cstr(String::L_AS_IS, &charsets);
 		result.append_know_length(body_cstr, strlen(body_cstr), String::L_CLEAN);
 	}
 
