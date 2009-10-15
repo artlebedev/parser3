@@ -1,0 +1,168 @@
+Content-Type: text/html
+Content-Length: 3541
+
+<pre>
+X-Mailer: Parser 3
+From: from@parser3test
+To: to@parser3test
+Subject: =?UTF-8?Q?=D0=97=D0=B0=D0=B3=D0=BE=D0=BB=D0=BE=D0=B2=D0=BE=D0=BA?=
+Errors-To: postmaster
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+РўРµР»Рѕ РїРёСЃСЊРјР°
+</pre>
+<hr />
+<pre>
+From: from@parser3test
+To: to@parser3test
+Subject: =?WINDOWS-1251?Q?=C7=E0=E3=EE=EB=EE=E2=EE=EA?=
+Errors-To: postmaster
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="lEvEl0"
+
+This is a multi-part message in MIME format.
+
+--lEvEl0
+Content-Type: multipart/alternative; boundary="ALTlEvEl0"
+
+
+--ALTlEvEl0
+Content-Type: text/plain; charset=WINDOWS-1251
+Content-Transfer-Encoding: 8bit
+
+Тело письма
+
+--ALTlEvEl0
+Content-Type: text/html; charset=WINDOWS-1251
+Content-Transfer-Encoding: 8bit
+
+<p>Тело письма</p>
+
+--ALTlEvEl0--
+
+
+--lEvEl0--
+
+</pre>
+<hr />
+<pre>
+From: from@parser3test
+To: to@parser3test
+Subject: =?WINDOWS-1251?Q?=C7=E0=E3=EE=EB=EE=E2=EE=EA?=
+Errors-To: postmaster
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="lEvEl0"
+
+This is a multi-part message in MIME format.
+
+--lEvEl0
+Content-Type: text/plain; charset=WINDOWS-1251
+Content-Transfer-Encoding: 8bit
+
+Тело письма
+
+--lEvEl0
+Content-Type: application/octet-stream; name="235_attach.txt"
+Content-Disposition: attachment; filename="235_attach.txt"
+Content-Transfer-Encoding: base64
+
+dGV4dCBhdHRhY2htZW50CndpdGgKd2luZG93cyBsaW5lLWVuZGluZ3MK
+
+--lEvEl0
+Content-Type: application/octet-stream; name="235_attach.txt"
+Content-Disposition: attachment; filename="235_attach.txt"
+Content-Transfer-Encoding: base64
+
+dGV4dCBhdHRhY2htZW50DQp3aXRoDQp3aW5kb3dzIGxpbmUtZW5kaW5ncw0K
+
+--lEvEl0--
+
+</pre>
+<hr />
+<pre>
+From: from@parser3test
+To: to@parser3test
+Subject: =?WINDOWS-1251?Q?=C7=E0=E3=EE=EB=EE=E2=EE=EA?=
+Errors-To: postmaster
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="lEvEl0"
+
+This is a multi-part message in MIME format.
+
+--lEvEl0
+Content-Type: text/plain; charset=WINDOWS-1251
+Content-Transfer-Encoding: 8bit
+
+Тело письма
+
+--lEvEl0
+Content-Type: application/octet-stream; name="235_attach.txt"
+Content-Disposition: attachment; filename="235_attach.txt"
+Content-Transfer-Encoding: base64
+
+dGV4dCBhdHRhY2htZW50DQp3aXRoDQp3aW5kb3dzIGxpbmUtZW5kaW5ncw0K
+
+--lEvEl0
+From: from-message@parser3test
+To: to-message@parser3test
+Subject: =?WINDOWS-1251?Q?=C7=E0=E3=EE=EB=EE=E2=EE=EA_=E2=EB=EE=E6=E5=ED=E8=FF?=
+Errors-To: postmaster
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="lEvEl1"
+
+This is a multi-part message in MIME format.
+
+--lEvEl1
+Content-Type: text/plain; charset=WINDOWS-1251
+Content-Transfer-Encoding: 8bit
+
+Тело вложения
+
+--lEvEl1
+Content-Type: application/octet-stream; name="235_attach.txt"
+Content-Disposition: attachment; filename="235_attach.txt"
+Content-Transfer-Encoding: base64
+
+dGV4dCBhdHRhY2htZW50CndpdGgKd2luZG93cyBsaW5lLWVuZGluZ3MK
+
+--lEvEl1--
+
+
+--lEvEl0--
+
+</pre>
+<hr />
+<pre>
+From: from@parser3test
+To: to@parser3test
+Subject: =?WINDOWS-1251?Q?=C7=E0=E3=EE=EB=EE=E2=EE=EA?=
+Errors-To: postmaster
+MIME-Version: 1.0
+Content-Type: multipart/related; boundary="lEvEl0"
+
+This is a multi-part message in MIME format.
+
+--lEvEl0
+Content-Type: text/plain; charset=WINDOWS-1251
+Content-Transfer-Encoding: 8bit
+
+Тело письма
+
+--lEvEl0
+Content-Type: application/octet-stream; name="235_attach.txt"
+Content-Disposition: inline; filename="235_attach.txt"
+Content-Id: <C-ID>
+Content-Transfer-Encoding: x-uuencode
+
+begin 644 235_attach.txt
+J=&5X="!A='1A8VAM96YT"G=I=&@*=VEN9&]W<R!L:6YE+65N9&EN9W,*
+`
+end
+
+
+--lEvEl0--
+
+</pre>
+<hr />
