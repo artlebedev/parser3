@@ -8,7 +8,7 @@
 #ifndef PA_CHARSET_H
 #define PA_CHARSET_H
 
-static const char * const IDENT_CHARSET_H="$Date: 2009/10/03 02:18:04 $";
+static const char * const IDENT_CHARSET_H="$Date: 2009/11/06 05:01:24 $";
 
 
 #include "pa_exception.h"
@@ -175,6 +175,7 @@ void change_case_UTF8(const XMLByte* srcData, size_t srcLen,
 size_t getUTF8BytePos(const XMLByte* srcBegin, const XMLByte* srcEnd, size_t charPos/*position in characters*/);
 size_t getUTF8CharPos(const XMLByte* srcBegin, const XMLByte* srcEnd, size_t bytePos/*position in bytes*/);
 size_t lengthUTF8(const XMLByte* srcBegin, const XMLByte* srcEnd);
+unsigned int lengthUTF8Char(const XMLByte c);
 
 
 class UTF8_string_iterator {

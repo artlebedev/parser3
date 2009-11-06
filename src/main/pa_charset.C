@@ -5,7 +5,7 @@
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_CHARSET_C="$Date: 2009/10/15 01:07:54 $";
+static const char * const IDENT_CHARSET_C="$Date: 2009/11/06 05:01:18 $";
 
 #include "pa_charset.h"
 #include "pa_charsets.h"
@@ -1155,6 +1155,10 @@ size_t lengthUTF8(const XMLByte* srcBegin, const XMLByte* srcEnd){
 		size++;
 
 	return size;
+}
+
+unsigned int lengthUTF8Char(const XMLByte c){
+	return gUTFBytes[c]+1;
 }
 
 bool UTF8_string_iterator::has_next(){
