@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VREGEX_C="$Date: 2009/09/17 02:17:25 $";
+static const char * const IDENT_VREGEX_C="$Date: 2009/11/06 04:54:34 $";
 
 #include "pa_vregex.h"
 #include "pa_vint.h"
@@ -149,7 +149,7 @@ void VRegex::study(){
 int VRegex::exec(const char* string, size_t string_len, int* ovector, int ovector_size, int prestart){
 	int result=pcre_exec(fcode, fextra, 
 		string, string_len, prestart,
-		0, ovector, ovector_size);
+		prestart>0 ? PCRE_NO_UTF8_CHECK : 0, ovector, ovector_size);
 			
 	if(result<0 && result!=PCRE_ERROR_NOMATCH){
 		throw Exception(PCRE_EXCEPTION_TYPE, 
