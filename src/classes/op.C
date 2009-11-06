@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2009/08/08 13:30:20 $";
+static const char * const IDENT_OP_C="$Date: 2009/11/06 04:59:59 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -66,6 +66,7 @@ public:
 	Untaint_lang_name2enum() {
 		#define ULN(name, LANG) \
 			put(String::Body(name), (value_type)(String::L_##LANG));
+		ULN("clean", CLEAN);
 		ULN("as-is", AS_IS);
 		ULN("optimized-as-is", AS_IS|String::L_OPTIMIZE_BIT);
 		ULN("file-spec", FILE_SPEC);
