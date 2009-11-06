@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2009/09/10 09:40:34 $";
+static const char * const IDENT_STRING_C="$Date: 2009/11/06 05:02:53 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -434,19 +434,12 @@ static void _match(Request& r, MethodParams& params) {
 			replacement_code
 		};
 
-		Temp_value_element* temp_match_var=0;
-
-		if(is_junction)
-			temp_match_var=new Temp_value_element(
-				*replacement_code->get_junction()->method_frame,
-				match_var_name, vtable);
-
-		src.match(vregex,
-			replace_action, &info,
-			matches_count);
-
-		if(temp_match_var)
-			delete temp_match_var;
+		if(is_junction){
+			Temp_value_element temp( *replacement_code->get_junction()->method_frame, match_var_name, vtable);
+			src.match(vregex, replace_action, &info, matches_count);
+		} else {
+			src.match(vregex, replace_action, &info, matches_count);
+		}
 
 		r.write_assign_lang(result);
 	}
