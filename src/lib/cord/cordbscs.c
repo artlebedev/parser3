@@ -210,6 +210,7 @@ CORD CORD_cat_char_star(CORD x, const char*  y, size_t leny)
             result_len = right_len + leny;  /* length of new_right */
             if (result_len <= SHORT_LIMIT) {
             	new_right = GC_MALLOC_ATOMIC(result_len + 1);
+            	if (new_right == 0) OUT_OF_MEMORY;
             	memcpy(new_right, right, right_len);
             	memcpy(new_right + right_len, y, leny);
             	new_right[result_len] = '\0';
@@ -329,9 +330,9 @@ CORD CORD_cat_char_star_optimized(CORD x, const char*  y, size_t leny)
 		register CORD left;
 		register char * new_right;
 		register size_t right_len;
-       
+
 		lenx = LEN(x);
-       
+
 		if (
 			leny <= SHORT_LIMIT/2
 			&& IS_CONCATENATION(x)
@@ -348,6 +349,7 @@ CORD CORD_cat_char_star_optimized(CORD x, const char*  y, size_t leny)
 			result_len = right_len + leny;  /* length of new_right */
 			if (result_len <= SHORT_LIMIT) {
 				new_right = GC_MALLOC_ATOMIC(result_len + 1);
+				if (new_right == 0) OUT_OF_MEMORY;
 				memcpy(new_right, right, right_len);
 				memcpy(new_right + right_len, y, leny);
 				new_right[result_len] = '\0';
@@ -378,7 +380,7 @@ CORD CORD_cat_char_star_optimized(CORD x, const char*  y, size_t leny)
 	{
 		/* The general case; lenx, result_len is known: */
 		register struct Concatenation * result;
-       
+
 		result = GC_NEW(struct Concatenation);
 		if (result == 0) OUT_OF_MEMORY;
 		result->header = CONCAT_HDR;
