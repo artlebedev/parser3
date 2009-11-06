@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2009/07/16 09:20:01 $";
+static const char * const IDENT_STRING_C="$Date: 2009/11/06 05:07:13 $";
 
 #include "pa_string.h"
 #include "pa_exception.h"
@@ -218,7 +218,7 @@ String::Body String::Body::trim(String::Trim_kind kind, const char* chars,
 			}
 		}
 	} else {
-		const XMLByte* src_begin=(const XMLByte*)cstrm();
+		const XMLByte* src_begin=(const XMLByte*)cstr();
 		const XMLByte* src_end=src_begin+our_length;
 
 		// from left...
@@ -351,22 +351,31 @@ String& String::append_strdup(const char* str, size_t helper_length, Language la
 	return *this;
 }
 
-int CORD_batched_len(const char* s, size_t* len){
-	(*len) += lengthUTF8( (const XMLByte *)s, (const XMLByte *)s+strlen(s));
-	return 0;
+struct CORD_length_info {
+	size_t len;
+	size_t skip;
+};
+
+int CORD_batched_len(const char* s, CORD_length_info* info){
+	info->len += lengthUTF8( (const XMLByte *)s, (const XMLByte *)s+strlen(s));	return 0;
 }
 
-// can be called only for IS_FUNCTION(CORD) which are used only in Lang
-int CORD_batched_len(const char, size_t *len){
-	(*len)++;
+// can be called only for IS_FUNCTION(CORD) which are used in large String::Body::mid
+int CORD_batched_len(const char c, CORD_length_info* info){
+	if (info->skip==0){
+		info->len++;
+		info->skip = lengthUTF8Char(c)-1;
+	} else {
+		info->skip--;
+	}
 	return 0;
 }
 
 size_t String::length(Charset& charset) const {
 	if(charset.isUTF8()){
-		size_t len=0;
-		body.for_each<size_t *>(CORD_batched_len, CORD_batched_len, &len);
-		return len;
+		CORD_length_info info = {0, 0};
+		body.for_each<CORD_length_info *>(CORD_batched_len, CORD_batched_len, &info);
+		return info.len;
 	} else
 		return body.length();
 }
@@ -409,7 +418,7 @@ String& String::mid(Charset& charset, size_t from, size_t to, size_t helper_leng
 		return result;
 
 	if(charset.isUTF8()){
-		const XMLByte* src_begin=(const XMLByte*)cstrm();
+		const XMLByte* src_begin=(const XMLByte*)cstr();
 		const XMLByte* src_end=src_begin+body.length();
 
 		// convert 'from' and 'substr_length' from 'characters' to 'bytes'
@@ -452,7 +461,7 @@ size_t String::pos(Charset& charset, const String& substr,
 				size_t this_offset, Language lang) const {
 
 	if(charset.isUTF8()){
-		const XMLByte* srcPtr=(const XMLByte*)cstrm();
+		const XMLByte* srcPtr=(const XMLByte*)cstr();
 		const XMLByte* srcEnd=srcPtr+body.length();
 
 		// convert 'this_offset' from 'characters' to 'bytes'
@@ -525,7 +534,7 @@ Table* String::match(VRegex* vregex,
 	bool global=vregex->is_global_search();
 
 	const char* subject=cstr();
-	size_t subject_length=strlen(subject);
+	size_t subject_length=length();
 	const int ovector_size=(1/*match*/+MAX_MATCH_GROUPS)*3;
 	int ovector[ovector_size];
 
