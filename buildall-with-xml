@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Id: buildall-with-xml,v 1.33 2009/10/01 22:05:43 misha Exp $
+# $Id: buildall-with-xml,v 1.34 2009/11/09 02:09:48 misha Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -74,7 +74,7 @@ fi
 
 if test ! -f "$project_directory/gnome/lib/libxml2.a"; then
   cd $project_directory/src
-  libxml2="libxml2-2.7.5"
+  libxml2="libxml2-2.7.6"
   if test ! -f "$libxml2.tar.gz"; then
     echo "Downloading libxml [3 lib of 4]..."
     wget -c --passive-ftp ftp://xmlsoft.org/libxml2/$libxml2.tar.gz
