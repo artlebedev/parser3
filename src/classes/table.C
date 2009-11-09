@@ -5,11 +5,10 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2009/09/17 23:32:39 $";
+static const char * const IDENT_TABLE_C="$Date: 2009/11/09 00:31:07 $";
 
 #if (!defined(NO_STRINGSTREAM) && !defined(FREEBSD4))
 #include <sstream>
-using namespace std;
 #endif
 
 #include "classes.h"
@@ -388,7 +387,12 @@ static void _load(Request& r, MethodParams& params) {
 
 #if (!defined(NO_STRINGSTREAM) && !defined(FREEBSD4))
 
-void maybe_enclose( ostringstream& to, const String& from, char encloser ) {
+#include "gc_allocator.h"
+
+typedef std::basic_stringstream<char, std::char_traits<char>, gc_allocator<char> > pa_stringstream;
+typedef std::basic_string<char, std::char_traits<char>, gc_allocator<char> > pa_string;
+
+void maybe_enclose( pa_stringstream& to, const String& from, char encloser ) {
 	if(encloser) {
 		to<<encloser;
 		// while we have 'encloser'...
@@ -479,7 +483,7 @@ static void _save(Request& r, MethodParams& params) {
 
 #if (!defined(NO_STRINGSTREAM) && !defined(FREEBSD4))
 
-	ostringstream ost(stringstream::out);
+	pa_stringstream ost(std::stringstream::out);
 
 	// process header
 	if(output_column_names) {
@@ -521,7 +525,7 @@ static void _save(Request& r, MethodParams& params) {
 
 	// write
 	{
-		string data=ost.str();
+		pa_string data=ost.str();
 		const char* data_cstr=data.c_str();
 
 		file_write(r.charsets, file_spec, data_cstr, data.length(), true /* as text */, do_append);
