@@ -143,6 +143,7 @@ int CORD_cmp(CORD x, CORD y)
     
     if (y == CORD_EMPTY) return(x != CORD_EMPTY);
     if (x == CORD_EMPTY) return(-1);
+	if (x == y) return (0);
     if (CORD_IS_STRING(y) && CORD_IS_STRING(x)) return(strcmp(x,y));
     CORD_set_pos(xpos, x, 0);
     CORD_set_pos(ypos, y, 0);

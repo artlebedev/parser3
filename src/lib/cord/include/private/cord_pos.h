@@ -47,7 +47,7 @@ typedef struct CORD_Pos {
     struct CORD_pe path[MAX_DEPTH + 1];
     	/* path[path_len] is the leaf corresponding to cur_pos	*/
     	/* path[0].pe_cord is the cord we point to.		*/
-#   define FUNCTION_BUF_SZ 8
+#   define FUNCTION_BUF_SZ 32
     char function_buf[FUNCTION_BUF_SZ];	/* Space for next few chars	*/
     					/* from function node.		*/
 } CORD_pos[1];
@@ -104,7 +104,7 @@ void CORD__prev(CORD_pos);
 #define CORD_pos_valid(p) ((p)[0].path_len != CORD_POS_INVALID)
 
 /* Some grubby stuff for performance-critical friends:	*/
-#define CORD_pos_chars_left(p) ((long)((p)[0].cur_end) - (long)((p)[0].cur_pos))
+#define CORD_pos_chars_left(p) ((long)((p)[0].cur_end) != 0 ? ((long)((p)[0].cur_end) - (long)((p)[0].cur_pos)) : 0 )
 	/* Number of characters in cache.  <= 0 ==> none	*/
 
 #define CORD_pos_advance(p,n) ((p)[0].cur_pos += (n) - 1, CORD_next(p))
