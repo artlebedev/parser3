@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
  */
 
-static const char * const IDENT_HTTP_C="$Date: 2009/10/15 01:07:54 $"; 
+static const char * const IDENT_HTTP_C="$Date: 2009/11/09 00:32:05 $"; 
 
 #include "pa_http.h"
 #include "pa_common.h"
@@ -744,7 +744,7 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 	}
 	
 	const char* request_cstr=request_head_and_body.cstr();
-	size_t request_size=strlen(request_cstr);
+	size_t request_size=request_head_and_body.length();
 
 	if(multipart)
 		request_size=file_untaint(request_cstr, request_size);
