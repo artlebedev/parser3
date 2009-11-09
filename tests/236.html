@@ -8,15 +8,20 @@ $s[1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9
 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9
 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9]
 
+# CORD functions concatenation, unbalanced
 $a[^s.left(200)^s.mid(200;200)^s.mid(400;200)^s.mid(600)]
 
+# CORD functions concatenation, balanced
 $b[^s.mid(420;200)^s.mid(620)]
 $b[^s.left(220)^s.mid(220;200)$b]
 
+# CORD string concatenation, unbalanced
 $c[^s.left(150)^s.mid(150;150)^s.mid(300;150)^s.mid(450;150)^s.mid(600;150)^s.mid(750)]
 
+# mixed CORD string/functions concatenation, unbalanced
 $d[^s.left(150)^s.mid(150;200)^s.mid(350;150)^s.mid(500)]
 
+# mixed CORD string/functions concatenation, balanced
 $e[^s.mid(350;150)^s.mid(500)]
 $e[^s.left(150)^s.mid(150;200)$e]
 
