@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-static const char * const IDENT_STRING_H="$Date: 2009/10/15 01:07:20 $";
+static const char * const IDENT_STRING_H="$Date: 2009/11/09 00:37:44 $";
 
 // includes
 #include "pa_types.h"
@@ -363,7 +363,15 @@ public:
 		CORD get_cord() const { return body; }
 		uint get_hash_code() const;
 
-		const char* cstr() const { return CORD_to_const_char_star(body, length()); }
+		const char* cstr() const {
+#ifdef STRING_LENGTH_CACHING
+			string_length = length();
+			if(string_length)
+				return const_cast<Body*>(this)->body=CORD_to_const_char_star(body, string_length);
+#endif
+			return CORD_to_const_char_star(body, length());
+		}
+
 		char* cstrm() const { return CORD_to_char_star(body, length()); }
 
 #ifdef STRING_LENGTH_CACHING
