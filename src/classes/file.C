@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2009/09/10 09:40:34 $";
+static const char * const IDENT_FILE_C="$Date: 2009/11/09 00:28:45 $";
 
 #include "pa_config_includes.h"
 
@@ -289,7 +289,24 @@ static void _create(Request& r, MethodParams& params) {
 		params.as_no_junction(1, FILE_NAME_MUST_NOT_BE_CODE).as_string()).taint_cstr(String::L_FILE_SPEC);
 
 	const String& content=params.as_string(2, "content must be string");
-	const String::Body content_body=content.cstr_to_string_body_untaint(String::L_AS_IS); // explode content, honor tainting changes
+	String::Body content_body=content.cstr_to_string_body_untaint(String::L_AS_IS); // explode content, honor tainting changes
+
+	if(params.count()>3){
+		Charset* asked_charset=0;
+
+		if(HashStringValue* options=params.as_no_junction(3, OPTIONS_MUST_NOT_BE_CODE).get_hash()){
+			int valid_options=0;
+			if(Value* vcharset_name=options->get(PA_CHARSET_NAME)){
+				asked_charset=&::charsets.get(vcharset_name->as_string().change_case(r.charsets.source(), String::CC_UPPER));
+				valid_options++;
+			}
+			if(valid_options != options->count())
+				throw Exception(PARSER_RUNTIME, 0, INVALID_OPTION_PASSED);
+		}
+
+		if(asked_charset != 0)
+			content_body=Charset::transcode(content_body, r.charsets.source(), *asked_charset);
+	}
 
 	VString* vcontent_type=new VString(r.mime_type_of(user_file_name_cstr));
 	
@@ -1028,7 +1045,7 @@ static void _md5(Request& r, MethodParams& params) {
 MFile::MFile(): Methoded("file") {
 	// ^file::create[text;user-name;string]
 	// ^file::create[binary;user-name;SOMEDAY SOMETHING]
-	add_native_method("create", Method::CT_DYNAMIC, _create, 3, 3);
+	add_native_method("create", Method::CT_DYNAMIC, _create, 3, 4);
 
 	// ^file.save[mode;file-name]
 	// ^file.save[mode;file-name;$.charset[...]]
