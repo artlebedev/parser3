@@ -1,0 +1,5 @@
+Content-Disposition: inline; filename=zigi.txt
+Content-Type: application/octet-stream
+Content-Length: 67
+
+буквы в utf8, которые должны преобразоваться в буквы в windows-1251
