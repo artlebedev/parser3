@@ -739,12 +739,13 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !$файл_из_post.name 
     !$файл_из_post.size 
     !$файлtиз_post.text
-    !^файл.save[text|binary;имя файла[;$.charset[в какоq кодировке сохраняем]]]
+    !^файл.save[text|binary;имя файла[;$.charset[в какой кодировке сохраняем]]]
     !^file:delete[имя файла]
     !^file:find[имя файла][{когда не нашли}]
     !^file:list[путь[;шаблон-строка|шаблон-regex]] = table с колонкой name
     !^file::load[text|binary;!big.zip[;!domain_press_release_2001_03_01.zip][;опции]]
     !^file::create[text;имя;data]
+    !^file::create[text;имя;data[;$.charset[кодировка букв в создаваемом файле]]]
     !$файл_который_был_loaded.size
     !$файл_который_был_loaded_или_created.mode = text/binary
     !^file::stat[имя файла]
