@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2009/11/09 00:31:07 $";
+static const char * const IDENT_TABLE_C="$Date: 2009/11/11 02:26:04 $";
 
 #if (!defined(NO_STRINGSTREAM) && !defined(FREEBSD4))
 #include <sstream>
@@ -979,7 +979,7 @@ static void _flip(Request& r, MethodParams&) {
 	Table& old_table=GET_SELF(r, VTable).table();
 	Table& new_table=*new Table(0);
 	if(size_t old_count=old_table.count())
-		if(size_t old_cols=old_table[0]->count()) 
+		if(size_t old_cols=old_table.columns()?old_table.columns()->count():old_table[0]->count()) 
 			for(size_t column=0; column<old_cols; column++) {
 				Table::element_type new_row(new ArrayString(old_count));
 				for(size_t i=0; i<old_count; i++) {
