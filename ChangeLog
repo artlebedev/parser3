@@ -1,3 +1,219 @@
+2009-11-16	misha
+	* Makefile.am 1.72:
+	* Makefile.am 1.73:
+	* Makefile.am [release_3_4_0] 1.71.2.1:
+	* Makefile.am [release_3_4_0] 1.71.2.2:
+	* Makefile.in 1.88:
+	* Makefile.in 1.89:
+	* Makefile.in [release_3_4_0] 1.87.2.1:
+	* Makefile.in [release_3_4_0] 1.87.2.2:
+	* acinclude.m4 1.58:
+	* acinclude.m4 1.59:
+	* acinclude.m4 [release_3_4_0] 1.57.2.1:
+	* acinclude.m4 [release_3_4_0] 1.57.2.2:
+	* aclocal.m4 1.61:
+	* aclocal.m4 1.62:
+	* aclocal.m4 [release_3_4_0] 1.60.2.1:
+	* aclocal.m4 [release_3_4_0] 1.60.2.2:
+	* acsite.m4 1.37:
+	* acsite.m4 1.38:
+	* acsite.m4 [release_3_4_0] 1.36.2.1:
+	* acsite.m4 [release_3_4_0] 1.36.2.2:
+	* configure 1.115:
+	* configure 1.116:
+	* configure [release_3_4_0] 1.114.2.1:
+	* configure [release_3_4_0] 1.114.2.2:
+	* configure.in 1.121:
+	* configure.in 1.122:
+	* configure.in [release_3_4_0] 1.120.2.1:
+	* configure.in [release_3_4_0] 1.120.2.2:
+	* src/include/pa_version.h 1.39:
+	* src/lib/gc/include/Makefile.am 1.3:
+	* src/lib/gc/include/Makefile.am [release_3_4_0] 1.2.44.1:
+	* src/lib/gc/include/Makefile.in 1.7:
+	* src/lib/gc/include/Makefile.in [release_3_4_0] 1.6.4.1:
+		*** empty log message ***
+
+	* src/include/pa_version.h [release_3_4_0] 1.38.2.1:
+		=no message
+
+2009-11-11	misha
+	* src/classes/table.C 1.270:
+		- in ^table.flip[] look at number of columns instead of number 
+		of items in first row for named tables
+
+2009-11-10	misha
+	* operators.txt 1.229:
+		- info about hash-options in ^file::create was added
+
+2009-11-09	misha
+	* tests/results/236.processed 1.1:
+	* tests/results/237.processed 1.1:
+		*** empty log message ***
+
+	* tests/237.html 1.1:
+		- test for ^file::create[...;$.charset[...]] was added
+
+	* buildall-with-xml 1.34:
+		- moving to libxml 2.7.6
+
+	* tests/236.html 1.1:
+		- tests for comparations cords with functions were added
+
+	* src/include/pa_string.h 1.197:
+		- optimisation: cacheing of cstr was added
+
+	* src/classes/table.C 1.269:
+	* src/lib/gc/include/gc_allocator.h 1.1:
+		- bugfix: GPF mallocs + stringstream (table.save)
+
+	* src/main/pa_http.C 1.45:
+		- little optimisation
+
+	* src/classes/file.C 1.203:
+		- file::create now accepts 4th param: options with $.charset
+
+	* src/lib/cord/cordxtra.c 1.15:
+	* src/lib/cord/include/private/cord_pos.h 1.5:
+		- fixed bug in cord (comparation cords with functions was buggy)
+
+2009-11-06	misha
+	* src/main/pa_string.C 1.234:
+		- bugfix: calculation string.length sometimes was buggy
+
+	* src/classes/string.C 1.191:
+		- bugfix: Temp_value_element wasn't destroyed if exception 
+		occured during match/replace
+
+	* src/include/pa_charset.h 1.44:
+	* src/main/pa_charset.C 1.84:
+		- method lengthUTF8Char was added
+
+	* src/classes/op.C 1.198:
+		- clean tainting lang was added for user's usage
+
+	* src/lib/cord/cordbscs.c 1.10:
+	* src/lib/cord/cordxtra.c 1.14:
+		- some rare GPF were fixed: checkouts are required after 
+		GC_MALLOC
+
+	* src/types/pa_vregex.C 1.10:
+		- check UTF8 only during 1st iteration
+
+	* operators.txt 1.228:
+		- actually, there is no ^untaint[xml] in file::create
+
+2009-10-15	misha
+	* tests/results/234.processed 1.1:
+	* tests/results/235.processed 1.1:
+		*** empty log message ***
+
+	* tests/235.html 1.1:
+	* tests/235_attach.txt 1.1:
+		- tests for preparing email were added
+
+	* tests/234.html 1.1:
+		- more tests for checking ^taint[uri] escaping were added
+
+	* src/include/pa_string.h 1.196:
+	* src/main/pa_charset.C 1.83:
+	* src/main/pa_http.C 1.44:
+	* src/main/pa_request.C 1.316:
+	* src/main/untaint.C 1.155:
+	* src/types/pa_vmail.C 1.97:
+		- little hacking: for dealing with transcoding+^taint[uri] 
+		transcode_and_untaint was replaced by untaint_and_transcode
+
+2009-10-13	misha
+	* tests/121.html 1.4:
+	* tests/results/121.processed 1.7:
+		- test transcoding + url-escaping now
+
+	* tests/results/auto.p 1.5:
+		- more helpers' methods were added
+
+	* src/main/pa_globals.C 1.184:
+		- die instead of abort
+
+2009-10-06	misha
+	* Makefile.am 1.70:
+	* Makefile.am 1.71:
+	* Makefile.in 1.85:
+	* Makefile.in 1.86:
+	* Makefile.in 1.87:
+	* acinclude.m4 1.56:
+	* acinclude.m4 1.57:
+	* aclocal.m4 1.59:
+	* aclocal.m4 1.60:
+	* acsite.m4 1.35:
+	* acsite.m4 1.36:
+	* configure 1.112:
+	* configure 1.113:
+	* configure 1.114:
+	* configure.in 1.119:
+	* configure.in 1.120:
+	* src/include/pa_version.h 1.37:
+		*** empty log message ***
+
+	* src/main/pa_common.C 1.255:
+		- don't allocate memory during capitalization if input string is 
+		already capitalized
+
+	* src/targets/isapi/parser3isapi.C 1.103:
+		- pass pre-capitalized headers
+
+	* src/targets/apache13core/mod_parser3_core.C 1.15:
+	* src/targets/cgi/parser3.C 1.255:
+		- pass pre-capitalized headers
+		- don't use format function because it calls malloc
+
+	* src/include/pa_common.h 1.140:
+		- more capitalized headers were added
+
+	* src/main/pa_common.C 1.254:
+		- in safe mode clear executable bits during file writing
+
+2009-10-05	misha
+	* src/include/pa_config_auto.h.in 1.46:
+		*** empty log message ***
+
+2009-10-04	misha
+	* src/main/pa_charset.C 1.81:
+		- use iterators in pa_charset.C itself
+
+2009-10-03	misha
+	* src/classes/image.C 1.132:
+	* src/types/pa_vimage.h 1.51:
+		- ^img.font[], ^img.text[] & ^img.length[] can work in utf-8 now
+
+	* src/include/pa_charset.h 1.43:
+	* src/main/pa_charset.C 1.80:
+		- class UTF8_string_iterator was added
+
+	* src/classes/image.C 1.131:
+		- respect utf-8 when calculate alphabet length
+
+	* src/classes/mail.C 1.116:
+		- check from before get message.cstr
+
+2009-10-02	misha
+	* tests/233.html 1.1:
+		- test for image.font, image.length, image.text with text in utf-
+		8 were added
+
+	* src/main/pa_common.C 1.253:
+		- use pa_malloc_atomic instead of new
+
+2009-10-01	misha
+	* buildall-with-xml 1.33:
+	* buildall-without-xml 1.20:
+		- comment about gc version for freebsd 4 was added
+
+2009-09-30	misha
+	* src/main/pa_exec.C 1.77:
+		- bugfix: allocate a bit more (for terminator)
+		- read_pipe were slightly optimized
+
 2009-09-28	misha
 	* src/main/pa_common.C 1.252:
 	* src/main/pa_uue.C 1.15:
@@ -13,6 +229,20 @@
 	* src/include/pa_uue.h 1.10:
 	* src/main/pa_uue.C 1.14:
 		- pa_uuencode now has inout params like pa_base64
+
+2009-09-27	misha
+	* src/classes/mail.C 1.115:
+	* src/types/pa_vmail.C 1.94:
+	* src/types/pa_vmail.h 1.19:
+		- new option $.debug-print(1) was added to mail:send
+		- changes for using uue_encode which uses less memory
+
+	* src/main/pa_common.C 1.251:
+		- pa_base64_encode uses less memory now
+
+	* src/include/pa_uue.h 1.9:
+	* src/main/pa_uue.C 1.12:
+		- pa_uuencode reduces less memory now
 
 2009-09-27	misha
 	* src/classes/mail.C 1.115:
