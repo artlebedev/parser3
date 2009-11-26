@@ -7,7 +7,7 @@
 #include "pa_config_includes.h"
 #ifdef XML
 
-static const char * const IDENT_VXDOC="$Date: 2009/08/08 13:30:22 $";
+static const char * const IDENT_VXDOC="$Date: 2009/11/26 23:17:13 $";
 
 #include "pa_vxdoc.h"
 #include "pa_vbool.h"
@@ -66,9 +66,10 @@ Value* VXdoc::get_element(const String& aname) {
 			return 0;
 		} else if(aname=="documentElement") {
 			// readonly attribute Element documentElement;
-			xmlNode* rootElement=xmlDocGetRootElement(&xmldoc);
-			assert(rootElement);
-			return &wrap(*rootElement);
+			if(xmlNode* rootElement=xmlDocGetRootElement(&xmldoc))
+				return &wrap(*rootElement);
+			else
+				return 0;
 		} 	
 
 		return bark("%s field not found", &aname);
