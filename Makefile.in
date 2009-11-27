@@ -599,7 +599,7 @@ commit:
 	cvs commit -m "$(m)" -f Makefile.am
 	cvs commit -m "$(m)" -f Makefile.in
 	cvs commit -m "$(m)" -f configure
-	cvs commit -m "$(m)" -f pa_config_auto.h.in
+	cvs commit -m "$(m)" -f src/include/pa_config_auto.h.in
 
 	cvs commit
 
