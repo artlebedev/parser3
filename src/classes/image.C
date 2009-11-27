@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_IMAGE_C="$Date: 2009/10/03 02:22:01 $";
+static const char * const IDENT_IMAGE_C="$Date: 2009/11/27 05:05:40 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -806,14 +806,18 @@ struct Attrib_info {
 };
 #endif
 static void append_attrib_pair(
-			       HashStringValue::key_type key, 
-			       HashStringValue::value_type value, 
-			       Attrib_info* info) {
-	// skip user-specified and internal(starting with "line-") attributes 
-	if(info->skip && info->skip->get(key) || key.pos("line-")==0)
+				HashStringValue::key_type key, 
+				HashStringValue::value_type value, 
+				Attrib_info* info) {
+	// skip user-specified, internal(starting with "line-") attributes and border attribute with empty value
+	if(
+		(info->skip && info->skip->get(key))
+		|| key.pos("line-")==0
+		|| (key=="border" && !value->is_defined())
+	)
 		return;
 
-	// src="a.gif" width=123 ismap[=-1]
+	// src="a.gif" width="123" ismap[=-1]
 	*info->tag << " " << key;
 	if(value->is_string() || value->as_int()>=0)
 		*info->tag << "=\"" << value->as_string() << "\"";
@@ -828,8 +832,7 @@ static void _html(Request& r, MethodParams& params) {
 
 	if(params.count()) {
 		// for backward compatibility: someday was ^html{}
-		Value& vattribs=r.process_to_value(params[0],
-			false/*don't intercept string*/);
+		Value& vattribs=r.process_to_value(params[0], false/*don't intercept string*/);
 		if(!vattribs.is_string()) // allow empty
 			if((attribs=vattribs.get_hash())) {
 				Attrib_info info={&tag, 0};
