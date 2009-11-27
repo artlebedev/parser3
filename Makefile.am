@@ -13,13 +13,14 @@ commit:
 #	thus causing redundant remaking:
 #	aclocal+autoconf+automake
 
+	cvs commit -m "$(m)" -f configure.in
 	cvs commit -m "$(m)" -f acsite.m4
 	cvs commit -m "$(m)" -f acinclude.m4
 	cvs commit -m "$(m)" -f aclocal.m4
 	cvs commit -m "$(m)" -f Makefile.am
 	cvs commit -m "$(m)" -f Makefile.in
-	cvs commit -m "$(m)" -f configure.in
 	cvs commit -m "$(m)" -f configure
+	cvs commit -m "$(m)" -f pa_config_auto.h.in
 
 	cvs commit
 
