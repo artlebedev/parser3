@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2009/11/09 00:28:45 $";
+static const char * const IDENT_FILE_C="$Date: 2009/12/04 04:20:34 $";
 
 #include "pa_config_includes.h"
 
@@ -115,7 +115,7 @@ static bool is_valid_mode (const String& mode) {
 	return (mode==text_mode_name || mode==binary_mode_name);
 }
 
-static bool is_text_mode(const String& mode) {
+bool is_text_mode(const String& mode) {
 	if(mode==text_mode_name)
 		return true;
 	if(mode==binary_mode_name)

@@ -1,16 +1,14 @@
 /** @file
 	Parser: Configure file for autoconf-disabled platforms.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-	tested only with MS Visual C++ V6
 */
 
 #ifndef PA_CONFIG_FIXED_H
 #define PA_CONFIG_FIXED_H
 
-static const char * const IDENT_CONFIG_FIXED_H="$Date: 2008/08/15 15:30:33 $";
+static const char * const IDENT_CONFIG_FIXED_H="$Date: 2009/12/04 04:20:18 $";
 
 #define inline  __inline
 #define HAVE_ASSERT_H
@@ -64,9 +62,10 @@ static const char * const IDENT_CONFIG_FIXED_H="$Date: 2008/08/15 15:30:33 $";
 // if no access to console, but need asserts
 //#define PA_RELEASE_ASSERTS
 
-#endif
-
-
 // PCRE
 #define PCRE_STATIC
 
+// with CULR
+#define HAVE_CURL
+
+#endif
