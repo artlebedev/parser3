@@ -17,7 +17,7 @@
 #ifndef PA_HASH_H
 #define PA_HASH_H
 
-static const char * const IDENT_HASH_H="$Date: 2009/08/08 13:30:21 $";
+static const char * const IDENT_HASH_H="$Date: 2009/12/04 04:19:58 $";
 
 #include "pa_memory.h"
 #include "pa_types.h"
@@ -586,6 +586,32 @@ public:
 				return pair->value;
 		return V(0);
 	}
+
+	/// simple hash iterator
+	class Iterator {
+		const HASH_STRING<V>& fhash;
+		Pair *fcurrent;
+	public:
+		Iterator(const HASH_STRING<V>& ahash): fhash(ahash) {
+			fcurrent=fhash.first;
+		}
+
+		operator bool () {
+			return fcurrent != 0;
+		}
+
+		void next() {
+			fcurrent=fcurrent->next;
+		}
+
+		String::Body key(){
+			return String::Body(fcurrent->key, fcurrent->code);
+		}
+
+		V value(){
+			return fcurrent->value;
+		}
+	};
 };
 #else //HASH_CODE_CACHING
 
