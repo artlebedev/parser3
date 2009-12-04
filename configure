@@ -310,7 +310,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar P3S build build_cpu build_vendor build_os host host_cpu host_vendor host_os RANLIB ac_ct_RANLIB YACC CXX CXXFLAGS LDFLAGS CPPFLAGS ac_ct_CXX EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE CC CFLAGS ac_ct_CC CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE commentcharset_windows1251 commentcharset_windows1250 commentcharset_windows1257 commentcharset_koi8r dll_extension mysql_client pgsql_client oracle_client sqlite_client CPP_LIBS GC_LIBS PCRE_INCLUDES PCRE_LIBS XML_INCLUDES XML_LIBS MIME_INCLUDES MIME_LIBS APACHE13 COMPILE_APACHE13_MODULE_TRUE COMPILE_APACHE13_MODULE_FALSE INCLTDL LIBLTDL subdirs LIBADD_DL CPP EGREP LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar P3S build build_cpu build_vendor build_os host host_cpu host_vendor host_os RANLIB ac_ct_RANLIB YACC CXX CXXFLAGS LDFLAGS CPPFLAGS ac_ct_CXX EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE CC CFLAGS ac_ct_CC CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE commentcharset_windows1251 commentcharset_windows1250 commentcharset_windows1257 commentcharset_koi8r dll_extension mysql_client pgsql_client oracle_client sqlite_client CPP_LIBS GC_LIBS PCRE_INCLUDES PCRE_LIBS XML_INCLUDES XML_LIBS CURL_INCLUDES MIME_INCLUDES MIME_LIBS APACHE13 COMPILE_APACHE13_MODULE_TRUE COMPILE_APACHE13_MODULE_FALSE INCLTDL LIBLTDL subdirs LIBADD_DL CPP EGREP LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -891,12 +891,13 @@ Optional Packages:
                           Boehm garbage collecting library is installed (shared lib)
   --with-static-gc=D      D is the directory where
                           Boehm garbage collecting library is installed (static lib)
-  --with-static-pcre=D     D is the directory where
+  --with-static-pcre=D    D is the directory where
                           PCRE library is installed (static lib)
   --with-shared-xml=D     D is the directory where
                           Gnome XML libraries are installed (shared libs)
   --with-static-xml=D     D is the directory where
                           Gnome XML libraries are installed (static libs)
+  --with-curl=D           D is the curl includes directory
   --with-glib-config=FILE FILE is glib library
                           configuration file (search for glib*-config)
   --with-shared-mailreceive=D is the directory where
@@ -4299,6 +4300,30 @@ _ACEOF
 
 fi;
 
+
+
+
+# Check whether --with-curl or --without-curl was given.
+if test "${with_curl+set}" = set; then
+  withval="$with_curl"
+
+	CURLINC=$withval
+
+	if test \! -d $CURLINC -o \! -r $CURLINC/curl.h; then
+		{ { echo "$as_me:$LINENO: error: $CURLINC does not seem to be valid curl includes directory" >&5
+echo "$as_me: error: $CURLINC does not seem to be valid curl includes directory" >&2;}
+   { (exit 1); exit 1; }; }
+	fi
+
+
+cat >>confdefs.h <<\_ACEOF
+#define HAVE_CURL
+_ACEOF
+
+
+	CURL_INCLUDES="-I$CURLINC"
+
+fi;
 
 
 
@@ -8282,6 +8307,7 @@ s,@PCRE_INCLUDES@,$PCRE_INCLUDES,;t t
 s,@PCRE_LIBS@,$PCRE_LIBS,;t t
 s,@XML_INCLUDES@,$XML_INCLUDES,;t t
 s,@XML_LIBS@,$XML_LIBS,;t t
+s,@CURL_INCLUDES@,$CURL_INCLUDES,;t t
 s,@MIME_INCLUDES@,$MIME_INCLUDES,;t t
 s,@MIME_LIBS@,$MIME_LIBS,;t t
 s,@APACHE13@,$APACHE13,;t t

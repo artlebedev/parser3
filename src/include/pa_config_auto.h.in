@@ -21,6 +21,9 @@
 /* Define to 1 if you have the <ctype.h> header file. */
 #undef HAVE_CTYPE_H
 
+/* curl enabled parser */
+#undef HAVE_CURL
+
 /* Define if you have daylight external variable in <time.h> */
 #undef HAVE_DAYLIGHT
 
