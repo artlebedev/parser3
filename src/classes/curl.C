@@ -4,7 +4,7 @@
 	Copyright(c) 2001-2009 ArtLebedev Group(http://www.artlebedev.com)
 */
 
-static const char * const IDENT_INET_C="$Date: 2009/12/04 04:20:34 $";
+static const char * const IDENT_INET_C="$Date: 2009/12/04 22:22:13 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
@@ -191,8 +191,10 @@ public:
 		CURL_OPT(CURL_INT, HTTPAUTH);
 		CURL_OPT(CURL_STRING, USERPWD);
 
+#ifdef CURLOPT_USERNAME
 		CURL_OPT(CURL_STRING, USERNAME);
 		CURL_OPT(CURL_STRING, PASSWORD);
+#endif
 
 		CURL_OPT(CURL_INT, AUTOREFERER);
 		CURL_OPT(CURL_STRING, ENCODING); // gzip or deflate
@@ -233,8 +235,13 @@ public:
 		CURL_OPT(CURL_STRING, SSLENGINE);
 		CURL_OPT(CURL_STRING, SSLENGINE_DEFAULT);
 
+#ifdef CURLOPT_ISSUERCERT
 		CURL_OPT(CURL_FILE, ISSUERCERT);
+#endif
+
+#ifdef CURLOPT_CRLFILE
 		CURL_OPT(CURL_FILE, CRLFILE);
+#endif
 
 		CURL_OPT(CURL_STRING, CAINFO);
 		CURL_OPT(CURL_STRING, CAPATH);
@@ -297,19 +304,19 @@ static void curl_setopt(HashStringValue::key_type key, HashStringValue::value_ty
 			break;
 		}
 		case CurlOption::CURL_INT:{
-			// int curl option
-			int value_int=(int)v.as_double();
+			// integer curl option
+			long value_int=(long)v.as_double();
 			res=f_curl_easy_setopt(curl(), opt->id, value_int);
 			break;
 		}
 		case CurlOption::CURL_POST:{
 			// http post curl option
 			if(v.get_string()){
-				if( (res=f_curl_easy_setopt(curl(), CURLOPT_POSTFIELDSIZE, -1)) == CURLE_OK )
+				if( (res=f_curl_easy_setopt(curl(), CURLOPT_POSTFIELDSIZE, -1L)) == CURLE_OK )
 					res=f_curl_easy_setopt(curl(), opt->id, curl_urlencode(v.as_string(), r));
 			} else {
 				VFile *file=v.as_vfile(String::L_AS_IS);
-				if( (res=f_curl_easy_setopt(curl(), CURLOPT_POSTFIELDSIZE, file->value_size())) == CURLE_OK )
+				if( (res=f_curl_easy_setopt(curl(), CURLOPT_POSTFIELDSIZE, (long)file->value_size())) == CURLE_OK )
 					res=f_curl_easy_setopt(curl(), opt->id, file->value_ptr());
 			}
 			break;
