@@ -359,7 +359,7 @@ AC_ARG_WITH(curl,[  --with-curl=D           D is the curl includes directory],[
 
 	AC_DEFINE(HAVE_CURL,,curl enabled parser)
 
-	CURL_INCLUDES="-I$CURLINC"
+	CURL_INCLUDES="-I$CURLINC -I$CURLINC/../"
 ])
 AC_SUBST(CURL_INCLUDES)
 
