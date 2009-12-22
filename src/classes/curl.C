@@ -4,7 +4,11 @@
 	Copyright(c) 2001-2009 ArtLebedev Group(http://www.artlebedev.com)
 */
 
-static const char * const IDENT_INET_C="$Date: 2009/12/04 22:22:13 $";
+#include "pa_config_includes.h"
+
+#ifdef HAVE_CURL
+
+static const char * const IDENT_INET_C="$Date: 2009/12/22 04:47:19 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
@@ -27,7 +31,6 @@ DECLARE_CLASS_VAR(curl, new MCurl, 0);
 // from file.C
 extern bool is_text_mode(const String& mode);
 
-#ifdef HAVE_CURL
 #include "curl.h"
 
 typedef CURL *(*t_curl_easy_init)(); t_curl_easy_init f_curl_easy_init;
@@ -367,7 +370,7 @@ static void curl_setopt(HashStringValue::key_type key, HashStringValue::value_ty
 		throw Exception("curl", 0, "failed to set option '%s': %s", key.cstr(), f_curl_easy_strerror(res));
 }
 
-static void _curl_option(Request& r, MethodParams& params){
+static void _curl_options(Request& r, MethodParams& params){
 	if(curl_options==0)
 		curl_options=new CurlOptionHash();
 
@@ -426,7 +429,7 @@ static int curl_header(char *data, size_t size, size_t nmemb, HASH_STRING<char *
 
 static void _curl_load_action(Request& r, MethodParams& params){
 	if(params.count()==1)
-		_curl_option(r, params);
+		_curl_options(r, params);
 
 	CURLcode res;
 
@@ -479,13 +482,17 @@ static void _curl_load(Request& r, MethodParams& params){
 	fcurl ? _curl_load_action(r, params) : temp_curl(_curl_load_action, r, params);
 }
 
-#endif // HAVE_CURL
-
 // constructor
 MCurl::MCurl(): Methoded("curl") {
-#ifdef HAVE_CURL
 	add_native_method("session", Method::CT_STATIC, _curl_session, 1, 1);
-	add_native_method("option", Method::CT_STATIC, _curl_option, 1, 1);
+	add_native_method("options", Method::CT_STATIC, _curl_options, 1, 1);
 	add_native_method("load", Method::CT_STATIC, _curl_load, 0, 1);
-#endif // HAVE_CURL
 }
+
+#else // HAVE_CURL
+
+#include "classes.h"
+// global variable
+DECLARE_CLASS_VAR(curl, 0, 0); // fictive
+
+#endif // HAVE_CURL
