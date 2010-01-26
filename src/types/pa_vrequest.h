@@ -8,7 +8,7 @@
 #ifndef PA_VREQUEST_H
 #define PA_VREQUEST_H
 
-static const char * const IDENT_VREQUEST_H="$Date: 2009/08/08 13:30:21 $";
+static const char * const IDENT_VREQUEST_H="$Date: 2010/01/26 07:22:25 $";
 
 // includes
 
@@ -20,6 +20,7 @@ static const char * const IDENT_VREQUEST_H="$Date: 2009/08/08 13:30:21 $";
 #define REQUEST_CLASS_NAME "request"
 #define REQUEST_ARGV_ELEMENT_NAME "argv"
 #define POST_CHARSET_NAME "post-charset"
+#define POST_BODY_NAME "post-body"
 
 static const String request_class_name(REQUEST_CLASS_NAME);
 

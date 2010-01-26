@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VREQUEST_C="$Date: 2009/08/08 13:30:21 $";
+static const char * const IDENT_VREQUEST_C="$Date: 2010/01/26 07:22:25 $";
 
 #include "pa_vrequest.h"
 #include "pa_request_info.h"
@@ -15,6 +15,7 @@ static const char * const IDENT_VREQUEST_C="$Date: 2009/08/08 13:30:21 $";
 #include "pa_vhash.h"
 #include "pa_vform.h"
 #include "pa_vvoid.h"
+#include "pa_vfile.h"
 
 // defines
 
@@ -49,7 +50,15 @@ Value* VRequest::get_element(const String& aname) {
 		else
 			return VVoid::get();
 	}
-	
+
+	// $resuest:post-body
+	if(aname==POST_BODY_NAME){
+		VFile& result=*new VFile;
+		result.set(true/*tainted*/, finfo.post_data, finfo.post_size);
+		result.set_mode(false/*binary*/);
+		return &result;
+	}
+
 	// $CLASS
 	if(aname==CLASS_NAME)
 		return this;
