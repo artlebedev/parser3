@@ -8,7 +8,7 @@
 #ifndef PA_VFILE_H
 #define PA_VFILE_H
 
-static const char * const IDENT_VFILE_H="$Date: 2009/09/08 09:12:33 $";
+static const char * const IDENT_VFILE_H="$Date: 2010/01/26 07:21:29 $";
 
 // include
 
@@ -70,12 +70,13 @@ public: // usage
 
 	/// WARNING: when setting text files be sure to append terminating zero to avalue_ptr
 	void set(
-		bool atainted, 
-		const char* avalue_ptr, size_t avalue_size,
+		bool atainted,
+		const char* avalue_ptr,
+		size_t avalue_size,
 		const char* afile_name_cstr=0,
 		Value* acontent_type=0);
 
-	void set_mode(bool as_text);
+	void set_mode(bool aas_text);
 	
 	void save(Request_charsets& charsets, const String& file_spec, bool is_text, Charset* asked_charset=0);
 

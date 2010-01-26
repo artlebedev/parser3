@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VFILE_C="$Date: 2009/09/08 09:12:33 $";
+static const char * const IDENT_VFILE_C="$Date: 2010/01/26 07:21:29 $";
 
 #include "classes.h"
 #include "pa_vfile.h"
@@ -65,8 +65,8 @@ void VFile::set(
 		ffields.put(content_type_name, acontent_type);
 }
 
-void VFile::set_mode(bool as_text){
-	ffields.put(mode_name, new VString(as_text? text_mode_name : binary_mode_name ));
+void VFile::set_mode(bool aas_text){
+	ffields.put(mode_name, new VString(aas_text? text_mode_name : binary_mode_name ));
 }
 
 void VFile::save(Request_charsets& charsets, const String& file_spec, bool is_text, Charset* asked_charset) {
