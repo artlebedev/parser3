@@ -26,7 +26,7 @@
  *
  */
 
-static const char * const IDENT_COMMON_C="$Date: 2009/10/06 12:12:51 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2010/01/27 04:17:55 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -328,7 +328,8 @@ bool file_read_action_under_lock(const String& file_spec,
 		return true;
 	} else {
 		if(fail_on_read_problem)
-			throw Exception(errno==EACCES?"file.access":errno==ENOENT?"file.missing":0, 
+			throw Exception(errno==EACCES?"file.access"
+							:(errno==ENOENT || errno==ENOTDIR || errno==ENODEV)?"file.missing":0, 
 				&file_spec, 
 				"%s failed: %s (%d), actual filename '%s'", 
 					action_name, strerror(errno), errno, fname);
