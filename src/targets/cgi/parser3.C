@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_PARSER3_C="$Date: 2009/10/06 11:39:58 $";
+static const char * const IDENT_PARSER3_C="$Date: 2010/03/19 11:31:30 $";
 
 #include "pa_config_includes.h"
 
@@ -357,6 +357,18 @@ const char* maybe_reconstruct_IIS_status_in_qs(const char* original)
 }
 #endif
 
+
+class RequestController {
+public:
+	RequestController(Request* r){
+		::request=r;
+	}
+	~RequestController(){
+		::request=0;
+	}
+};
+
+
 /**
 main workhorse
 
@@ -501,42 +513,43 @@ static void real_parser_handler(const char* filespec_to_process,
 		cgi ? String::Language(String::L_HTML|String::L_OPTIMIZE_BIT) : String::L_AS_IS,
 		true /* status_allowed */);
 
-	// get request ptr for signal handlers
-	::request=&request;
+	{
+		// get ::request ptr for signal handlers
+		RequestController rc(&request);
 
-	char config_filespec_buf[MAX_STRING];
-	if(!config_filespec_cstr) {
-		const char* config_by_env=getenv(PARSER_CONFIG_ENV_NAME);
-		if(!config_by_env)
-			config_by_env=getenv(REDIRECT_PREFIX PARSER_CONFIG_ENV_NAME);
-		if(config_by_env)
-			config_filespec_cstr=config_by_env;
-		else {
-			// beside by binary
-			char beside_binary_path[MAX_STRING];
-			strncpy(beside_binary_path, argv0, MAX_STRING-1);  beside_binary_path[MAX_STRING-1]=0; // filespec of my binary
-			if(!(
-				rsplit(beside_binary_path, '/') || 
-				rsplit(beside_binary_path, '\\'))) { // strip filename
-				// no path, just filename
-				// @todo full path, not ./!
-				beside_binary_path[0]='.'; beside_binary_path[1]=0;
+		char config_filespec_buf[MAX_STRING];
+		if(!config_filespec_cstr) {
+			const char* config_by_env=getenv(PARSER_CONFIG_ENV_NAME);
+			if(!config_by_env)
+				config_by_env=getenv(REDIRECT_PREFIX PARSER_CONFIG_ENV_NAME);
+			if(config_by_env)
+				config_filespec_cstr=config_by_env;
+			else {
+				// beside by binary
+				char beside_binary_path[MAX_STRING];
+				strncpy(beside_binary_path, argv0, MAX_STRING-1);  beside_binary_path[MAX_STRING-1]=0; // filespec of my binary
+				if(!(
+					rsplit(beside_binary_path, '/') || 
+					rsplit(beside_binary_path, '\\'))) { // strip filename
+					// no path, just filename
+					// @todo full path, not ./!
+					beside_binary_path[0]='.'; beside_binary_path[1]=0;
+				}
+				snprintf(config_filespec_buf, MAX_STRING, 
+					"%s/%s", 
+					beside_binary_path, AUTO_FILE_NAME);
+				config_filespec_cstr=config_filespec_buf;
+				fail_on_config_read_problem=entry_exists(config_filespec_cstr);
 			}
-			snprintf(config_filespec_buf, MAX_STRING, 
-				"%s/%s", 
-				beside_binary_path, AUTO_FILE_NAME);
-			config_filespec_cstr=config_filespec_buf;
-			fail_on_config_read_problem=entry_exists(config_filespec_cstr);
 		}
-	}
-	
-	// process the request
-	request.core(
-		config_filespec_cstr, fail_on_config_read_problem,
-		header_only);
+		
+		// process the request
+		request.core(
+			config_filespec_cstr, fail_on_config_read_problem,
+			header_only);
 
-	// no request [prevent signal handlers from accessing invalid memory]
-	::request=0;
+		// ::request cleared in RequestController desctructor to prevent signal handlers from accessing invalid memory
+	}
 
 	// finalize global variables
 	pa_globals_done();
