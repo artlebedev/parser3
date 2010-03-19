@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2009/08/14 23:36:55 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2010/03/19 12:12:31 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -543,7 +543,7 @@ void Request::execute(ArrayOperation& ops) {
 
 				DEBUG_PRINT_STRING(var_name)
 
-				const String* field=get_element(*rcontext, var_name).get_string();
+				const String* field=&get_element(*rcontext, var_name).as_string();
 
 				Value& value=get_element(object, *field);
 
