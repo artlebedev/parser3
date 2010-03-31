@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REQUEST_C="$Date: 2009/10/15 01:07:54 $";
+static const char * const IDENT_REQUEST_C="$Date: 2010/03/31 21:50:28 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -366,7 +366,7 @@ gettimeofday(&mt[0],NULL);
 						true /*fail on read problem*/, 
 						false /*but ignore absence, sole user*/);
 				}
-				after=before+1;
+				for(after=before+1;*after=='/';after++);
 			}
 		}
 
