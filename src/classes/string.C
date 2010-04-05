@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2009/11/06 05:02:53 $";
+static const char * const IDENT_STRING_C="$Date: 2010/04/05 00:57:01 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -424,6 +424,8 @@ static void _match(Request& r, MethodParams& params) {
 				0,
 				"replacement option should be junction or string");
 
+		Value* default_code=(params_count==4)?&params.as_junction(3, "default value must be code"):0;
+
 		String result;
 		VTable* vtable=new VTable;
 		Replace_action_info info={
@@ -441,7 +443,10 @@ static void _match(Request& r, MethodParams& params) {
 			src.match(vregex, replace_action, &info, matches_count);
 		}
 
-		r.write_assign_lang(result);
+		if(!matches_count && default_code)
+			r.process_write(*default_code);
+		else
+			r.write_assign_lang(result);
 	}
 }
 
@@ -774,7 +779,8 @@ MString::MString(): Methoded("string") {
 	
 	// ^string.match[regexp][options]
 	// ^string.match[regexp][options]{replacement-code}
-	add_native_method("match", Method::CT_DYNAMIC, _match, 1, 3);
+	// ^string.match[regexp][options]{replacement-code}{code-if-nothing-is-found}
+	add_native_method("match", Method::CT_DYNAMIC, _match, 1, 4);
 
 	// ^string.upper[]
 	add_native_method("upper", Method::CT_DYNAMIC, _upper, 0, 0);
