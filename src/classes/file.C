@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2009/12/04 04:20:34 $";
+static const char * const IDENT_FILE_C="$Date: 2010/04/19 11:21:34 $";
 
 #include "pa_config_includes.h"
 
@@ -344,6 +344,7 @@ static bool is_safe_env_key(const char* key) {
 		if(!(c>='A' && c<='Z' || c>='0' && c<='9' || c=='_' || c=='-'))
 			return false;
 	}
+#ifdef PA_SAFE_MODE
 	if(strncasecmp(key, "HTTP_", 5)==0)
 		return true;
 	if(strncasecmp(key, "CGI_", 4)==0)
@@ -353,6 +354,9 @@ static bool is_safe_env_key(const char* key) {
 			return true;
 	}
 	return false;
+#else
+	return true;
+#endif
 }
 #ifndef DOXYGEN
 struct Append_env_pair_info {
