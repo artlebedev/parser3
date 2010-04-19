@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2010/03/19 12:12:31 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2010/04/19 19:39:54 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -272,7 +272,7 @@ void Request::execute(ArrayOperation& ops) {
 
 				debug_origin=i.next().origin;
 				Value& value=*i.next().value;
-				const String& name=*value.get_string();
+				const String& name=*value.get_string(); debug_name=&name;
 
 				DEBUG_PRINT_STRING(name)
 
@@ -291,7 +291,7 @@ void Request::execute(ArrayOperation& ops) {
 				// maybe they do ^class:method[] call, remember the fact
 				wcontext->set_somebody_entered_some_class();
 
-				const String& name=stack.pop().string();
+				const String& name=stack.pop().string(); debug_name=&name;
 				Value* value=get_class(name);
 				if(!value) 
 					throw Exception(PARSER_RUNTIME,
@@ -834,7 +834,7 @@ void Request::execute(ArrayOperation& ops) {
 			{
 				debug_origin=i.next().origin;
 				Value& vclass_name=*i.next().value;
-				const String& class_name=*vclass_name.get_string();
+				const String& class_name=*vclass_name.get_string(); debug_name=&class_name;
 
 				DEBUG_PRINT_STRING(class_name)
 
