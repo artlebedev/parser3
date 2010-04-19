@@ -7,7 +7,7 @@
 	@todo setrlimit
 */
 
-static const char * const IDENT_EXEC_C="$Date: 2009/10/02 01:18:27 $";
+static const char * const IDENT_EXEC_C="$Date: 2010/04/19 19:35:55 $";
 
 #include "pa_config_includes.h"
 
@@ -362,11 +362,7 @@ static void append_env_pair(HashStringString::key_type key, HashStringString::va
 }
 
 PA_exec_result pa_exec(
-			bool 
-#if defined(NO_PA_EXEC) || defined(PA_SAFE_MODE)
-			forced_allow
-#endif
-			, 
+			bool forced_allow,
 			const String& file_spec, 
 			const HashStringString* env, 
 			const ArrayString& argv, 
@@ -440,7 +436,6 @@ from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?r
 
 	int pipe_write, pipe_read, pipe_err;
 
-#ifdef PA_SAFE_MODE
 	if(!forced_allow) {
 		struct stat finfo;
 		if(stat(file_spec_cstr, &finfo)!=0)
@@ -451,7 +446,6 @@ from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?r
 
 		check_safe_mode(finfo, file_spec, file_spec_cstr);
 	}
-#endif
 
 	char* argv_cstrs[1+100+1]={file_spec_cstr, 0};
 	const int argv_size=argv.count();

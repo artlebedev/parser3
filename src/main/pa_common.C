@@ -26,7 +26,7 @@
  *
  */
 
-static const char * const IDENT_COMMON_C="$Date: 2010/01/27 04:17:55 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2010/04/19 19:35:55 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -264,8 +264,9 @@ File_read_result file_load(Request& r, const String& file_spec,
 	return result;
 }
 
-#ifdef PA_SAFE_MODE 
+
 void check_safe_mode(struct stat finfo, const String& file_spec, const char* fname) { 
+#ifdef PA_SAFE_MODE 
 	if(finfo.st_uid/*foreign?*/!=geteuid() 
 		&& finfo.st_gid/*foreign?*/!=getegid()) 
 		throw Exception(PARSER_RUNTIME,  
@@ -278,8 +279,9 @@ void check_safe_mode(struct stat finfo, const String& file_spec, const char* fna
 				fname, 
 				finfo.st_uid, geteuid(), 
 				finfo.st_gid, getegid()); 
+#endif
 } 
-#endif 
+
 
 bool file_read_action_under_lock(const String& file_spec, 
 				const char* action_name, File_read_action action, void *context, 
@@ -312,9 +314,7 @@ bool file_read_action_under_lock(const String& file_spec,
 					"stat failed: %s (%d), actual filename '%s'", 
 						strerror(errno), errno, fname);
 
-#ifdef PA_SAFE_MODE
 			check_safe_mode(finfo, file_spec, fname);
-#endif
 
 			action(finfo, f, file_spec, fname, as_text, context); 
 		} catch(...) {
