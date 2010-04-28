@@ -132,7 +132,7 @@
 	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.tab.C,v 1.146 2009/09/07 12:31:25 misha Exp $
+	$Id: compile.tab.C,v 1.147 2010/04/28 17:56:22 pretender Exp $
 */
 
 /**
@@ -2129,12 +2129,8 @@ yyreduce:
 			YYERROR;
 		}
 	}
-#ifdef OPTIMIZE_BYTECODE_GET_CLASS
 	// optimized OP_VALUE+origin+string+OP_GET_CLASS => OP_VALUE__GET_CLASS+origin+string
 	maybe_change_first_opcode(*yyval, OP::OP_VALUE, OP::OP_VALUE__GET_CLASS)
-#else
-	O(*yyval, OP::OP_GET_CLASS);
-#endif
 ;}
     break;
 

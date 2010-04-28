@@ -5,7 +5,7 @@
 	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.253 2009/09/07 12:16:36 misha Exp $
+	$Id: compile.y,v 1.254 2010/04/28 17:56:22 pretender Exp $
 */
 
 /**
@@ -706,12 +706,8 @@ class_static_prefix: STRING ':' {
 			YYERROR;
 		}
 	}
-#ifdef OPTIMIZE_BYTECODE_GET_CLASS
 	// optimized OP_VALUE+origin+string+OP_GET_CLASS => OP_VALUE__GET_CLASS+origin+string
 	maybe_change_first_opcode(*$$, OP::OP_VALUE, OP::OP_VALUE__GET_CLASS)
-#else
-	O(*$$, OP::OP_GET_CLASS);
-#endif
 };
 class_constructor_prefix: class_static_prefix ':' {
 	$$=$1;

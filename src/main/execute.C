@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2010/04/19 19:39:54 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2010/04/28 17:56:22 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -33,11 +33,7 @@ char *opcode_name[]={
 
 	// actions
 	"WITH_ROOT",	"WITH_SELF",	"WITH_READ",	"WITH_WRITE",
-#ifdef OPTIMIZE_BYTECODE_GET_CLASS
 	"VALUE__GET_CLASS",
-#else
-	"GET_CLASS",
-#endif
 	"CONSTRUCT_VALUE", "CONSTRUCT_EXPR", "CURLY_CODE__CONSTRUCT",
 	"WRITE_VALUE",  "WRITE_EXPR_RESULT",  "STRING__WRITE",
 #ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
@@ -167,9 +163,7 @@ void debug_dump(SAPI_Info& sapi_info, int level, ArrayOperation& ops) {
 		if(
 			opcode==OP::OP_VALUE
 			|| opcode==OP::OP_STRING__WRITE
-#ifdef OPTIMIZE_BYTECODE_GET_CLASS
 			|| opcode==OP::OP_VALUE__GET_CLASS
-#endif
 #ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
 			|| opcode==OP::OP_VALUE__GET_ELEMENT
 			|| opcode==OP::OP_VALUE__GET_ELEMENT__WRITE
@@ -263,8 +257,6 @@ void Request::execute(ArrayOperation& ops) {
 				stack.push(value);
 				break;
 			}
-
-#ifdef OPTIMIZE_BYTECODE_GET_CLASS
 		case OP::OP_VALUE__GET_CLASS:
 			{
 				// maybe they do ^class:method[] call, remember the fact
@@ -285,23 +277,6 @@ void Request::execute(ArrayOperation& ops) {
 				stack.push(*class_value);
 				break;
 			}
-#else
-		case OP::OP_GET_CLASS:
-			{
-				// maybe they do ^class:method[] call, remember the fact
-				wcontext->set_somebody_entered_some_class();
-
-				const String& name=stack.pop().string(); debug_name=&name;
-				Value* value=get_class(name);
-				if(!value) 
-					throw Exception(PARSER_RUNTIME,
-						&name,
-						"class is undefined"); 
-
-				stack.push(*value);
-				break;
-			}
-#endif
 		// OP_WITH
 		case OP::OP_WITH_ROOT:
 			{
