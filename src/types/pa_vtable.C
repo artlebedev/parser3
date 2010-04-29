@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VTABLE_C="$Date: 2009/08/08 13:30:22 $";
+static const char * const IDENT_VTABLE_C="$Date: 2010/04/29 13:32:04 $";
 
 #include "pa_vtable.h"
 #include "pa_vstring.h"
@@ -67,10 +67,10 @@ Value* VTable::get_element(const String& aname) {
 	if(ftable) {
 		int index=ftable->column_name2index(aname, false);
 		if(index>=0) // column aname|number valid
-			if(const String* string=ftable->item(index)) // there is such column
-				return new VString(*string);
-			else
-				return VVoid::get();
+		{
+			const String* string=ftable->item(index); // there is such column
+			return new VString(string ? *string : String::Empty);
+		}
 	}
 
 	throw Exception(PARSER_RUNTIME,
