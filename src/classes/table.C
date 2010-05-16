@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2009/11/11 02:26:04 $";
+static const char * const IDENT_TABLE_C="$Date: 2010/05/16 22:12:50 $";
 
 #if (!defined(NO_STRINGSTREAM) && !defined(FREEBSD4))
 #include <sstream>
@@ -685,7 +685,8 @@ static void table_row_to_hash(Table::element_type row, Row_info *info) {
 	bool exist=false;
 	switch(info->value_type) {
 		case C_STRING: {
-			exist=info->hash->put_dont_replace(*key, new VString(*row->get(info->value_fields->get(0))));
+			size_t index=info->value_fields->get(0);
+			exist=info->hash->put_dont_replace(*key, (index < row->count()) ? new VString(*row->get(index)) : new VString());
 			break;
 		}
 		case C_HASH: {
