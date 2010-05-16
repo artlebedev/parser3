@@ -8,13 +8,16 @@
 
 #ifdef HAVE_CURL
 
-static const char * const IDENT_INET_C="$Date: 2009/12/22 04:47:19 $";
+static const char * const IDENT_INET_C="$Date: 2010/05/16 00:23:00 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
 #include "pa_vfile.h"
 #include "pa_charsets.h"
-#include "ltdl.h"
+#include "pa_vstring.h"
+#include "pa_vtable.h"
+#include "pa_common.h"
+#include "ltdl.h"       
 
 class MCurl: public Methoded {
 public:
@@ -38,7 +41,11 @@ typedef CURLcode (*t_curl_easy_setopt)(CURL *, CURLoption option, ...); t_curl_e
 typedef CURLcode (*t_curl_easy_perform)(CURL *); t_curl_easy_perform f_curl_easy_perform;
 typedef void (*t_curl_easy_cleanup)(CURL *); t_curl_easy_cleanup f_curl_easy_cleanup;
 typedef const char *(*t_curl_easy_strerror)(CURLcode); t_curl_easy_strerror f_curl_easy_strerror;
+typedef CURLcode (*t_curl_easy_getinfo)(CURL *curl, CURLINFO info, ...); t_curl_easy_getinfo f_curl_easy_getinfo;
 typedef struct curl_slist *(*t_curl_slist_append)(struct curl_slist *,const char *); t_curl_slist_append f_curl_slist_append;
+typedef const char *(*t_curl_version)(); t_curl_version f_curl_version;
+typedef CURLFORMcode (*t_curl_formadd)(struct curl_httppost **httppost, struct curl_httppost **last_post, ...); t_curl_formadd f_curl_formadd;
+typedef void (*t_curl_formfree)(struct curl_httppost *form); t_curl_formfree f_curl_formfree;
 
 #define GLINK(name) f_##name=(t_##name)lt_dlsym(handle, #name);
 #define DLINK(name) GLINK(name) if(!f_##name) return "function " #name " was not found";
@@ -57,10 +64,14 @@ const char *dlink(const char *dlopen_file_spec) {
 
 	DLINK(curl_easy_init);
 	DLINK(curl_easy_cleanup);
+	DLINK(curl_version);
 	DLINK(curl_easy_setopt);
 	DLINK(curl_easy_perform);
 	DLINK(curl_easy_strerror);
+	DLINK(curl_easy_getinfo);
 	DLINK(curl_slist_append);
+	DLINK(curl_formadd);
+	DLINK(curl_formfree);
 	return 0;
 }
 
@@ -70,9 +81,14 @@ public:
 	const char *filename;
 	const String *content_type;
 	bool is_text;
-	Charset *charset;
+	Charset *charset, *response_charset;
+	struct curl_httppost *f_post;
 
-	ParserOptions() : filename(0), content_type(0), is_text(true), charset(0) {}
+	ParserOptions() : filename(0), content_type(0), is_text(true), charset(0), response_charset(0), f_post(0){}
+	~ParserOptions() {
+		f_curl_formfree(f_post);
+	}
+	 
 };
 
 // using thread local variables instead of keeping them in request
@@ -80,8 +96,8 @@ public:
 #ifdef WIN32
 #define __thread __declspec(thread)
 #endif
-__thread CURL *fcurl=0;
-__thread ParserOptions *foptions;
+__thread CURL *fcurl = 0;
+__thread ParserOptions *foptions = 0;
 
 static CURL *curl(){
 	if(!fcurl)
@@ -97,12 +113,13 @@ static ParserOptions &options(){
 
 // using temporal object scheme to garanty cleanup call
 class Temp_curl {
-	CURL* saved_curl;
-	ParserOptions* saved_options;
+	CURL *saved_curl;
+	ParserOptions *saved_options;
 public:
-	Temp_curl() : saved_curl(fcurl) {
-		fcurl = f_curl_easy_init();
-		foptions = new ParserOptions();
+	Temp_curl() : saved_curl(fcurl), saved_options(foptions){
+		fcurl = f_curl_easy_init();  
+		foptions = new ParserOptions();              
+		f_curl_easy_setopt(fcurl, CURLOPT_POSTFIELDSIZE, 0); // fix libcurl bug
 	}
 	~Temp_curl() {
 		f_curl_easy_cleanup(fcurl);
@@ -144,6 +161,13 @@ static void _curl_session(Request& r, MethodParams& params){
 	temp_curl(_curl_session_action, r, params);
 }
 
+static void _curl_version_action(Request& r, MethodParams& params){                                 
+	r.write_no_lang(*new VString(*new String(f_curl_version(), String::L_TAINTED)));
+}
+
+static void _curl_version(Request& r, MethodParams& params){
+	fcurl ? _curl_version_action(r, params) : temp_curl(_curl_version_action, r, params);
+}
 
 static char *str_lower(const char *str){
 	char *result=pa_strdup(str);
@@ -165,15 +189,18 @@ public:
 	enum OptionType {
 		CURL_STRING,
 		CURL_URLENCODE, // url-encoded string
+		CURL_URL,
 		CURL_INT,
 		CURL_POST,
+		CURL_FORM,
 		CURL_HEADERS,
 		CURL_FILE,
 		PARSER_LIBRARY,
 		PARSER_NAME,
 		PARSER_CONTENT_TYPE,
 		PARSER_MODE,
-		PARSER_CHARSET
+		PARSER_CHARSET,
+		PARSER_RESPONSE_CHARSET
 	};
 
 	CURLoption id;
@@ -186,11 +213,11 @@ public:
 	CurlOptionHash() {
 #define	CURL_OPT(type, name) put(str_lower(#name),new CurlOption(CURLOPT_##name, CurlOption::type));
 #define	PARSER_OPT(type, name) put(name,new CurlOption((CURLoption)0, CurlOption::type));
-		CURL_OPT(CURL_URLENCODE, URL);
+		CURL_OPT(CURL_URL, URL);
 		CURL_OPT(CURL_STRING, INTERFACE);
 		CURL_OPT(CURL_INT, LOCALPORT);
 		CURL_OPT(CURL_INT, PORT);
-
+		
 		CURL_OPT(CURL_INT, HTTPAUTH);
 		CURL_OPT(CURL_STRING, USERPWD);
 
@@ -199,6 +226,8 @@ public:
 		CURL_OPT(CURL_STRING, PASSWORD);
 #endif
 
+		CURL_OPT(CURL_URLENCODE, USERAGENT);
+		CURL_OPT(CURL_URLENCODE, REFERER);
 		CURL_OPT(CURL_INT, AUTOREFERER);
 		CURL_OPT(CURL_STRING, ENCODING); // gzip or deflate
 		CURL_OPT(CURL_INT, FOLLOWLOCATION);
@@ -206,9 +235,12 @@ public:
 
 		CURL_OPT(CURL_INT, POST);
 		CURL_OPT(CURL_INT, HTTPGET);
+		CURL_OPT(CURL_INT, NOBODY);
+		CURL_OPT(CURL_STRING, CUSTOMREQUEST);
 
 		CURL_OPT(CURL_POST, POSTFIELDS); // hopefully is safe too
 		CURL_OPT(CURL_POST, COPYPOSTFIELDS);
+		CURL_OPT(CURL_FORM, HTTPPOST);
 
 		CURL_OPT(CURL_HEADERS, HTTPHEADER);
 		CURL_OPT(CURL_URLENCODE, COOKIE);
@@ -219,16 +251,29 @@ public:
 		CURL_OPT(CURL_INT, HTTP_CONTENT_DECODING);
 		CURL_OPT(CURL_INT, HTTP_TRANSFER_DECODING);
 
+		CURL_OPT(CURL_INT, MAXREDIRS);
+		CURL_OPT(CURL_INT, POSTREDIR);
+
+		CURL_OPT(CURL_STRING, RANGE);
+
 		CURL_OPT(CURL_INT, TIMEOUT);
 		CURL_OPT(CURL_INT, TIMEOUT_MS);
 		CURL_OPT(CURL_INT, LOW_SPEED_LIMIT);
 		CURL_OPT(CURL_INT, LOW_SPEED_TIME);
 		CURL_OPT(CURL_INT, MAXCONNECTS);
 
+		CURL_OPT(CURL_STRING, PROXY);
+		CURL_OPT(CURL_INT, PROXYPORT);
+		CURL_OPT(CURL_INT, PROXYTYPE);
+		CURL_OPT(CURL_INT, HTTPPROXYTUNNEL); 
+		CURL_OPT(CURL_STRING, PROXYUSERPWD);
+		CURL_OPT(CURL_INT, PROXYAUTH);
+
 		CURL_OPT(CURL_INT, FRESH_CONNECT);
 		CURL_OPT(CURL_INT, FORBID_REUSE);
 		CURL_OPT(CURL_INT, CONNECTTIMEOUT);
 		CURL_OPT(CURL_INT, CONNECTTIMEOUT_MS);
+		CURL_OPT(CURL_INT, FAILONERROR);
 
 		CURL_OPT(CURL_FILE, SSLCERT);
 		CURL_OPT(CURL_STRING, SSLCERTTYPE);
@@ -258,6 +303,7 @@ public:
 		PARSER_OPT(PARSER_CONTENT_TYPE, "content-type");
 		PARSER_OPT(PARSER_MODE, "mode");
 		PARSER_OPT(PARSER_CHARSET, "charset");
+		PARSER_OPT(PARSER_RESPONSE_CHARSET, "response-charset");
 	}
 
 } *curl_options=0;
@@ -284,6 +330,43 @@ static struct curl_slist *curl_headers(HashStringValue *value_hash, Request& r) 
 	return slist;
 }
 
+static const char* curl_transcode(const String &s, Request& r){
+	return options().charset ? Charset::transcode(s.cstr(), r.charsets.source(), *options().charset).cstr() : s.cstr();
+}
+
+static void curl_form(HashStringValue *value_hash, Request& r){ 
+	struct curl_httppost *f_last=0;
+	for(HashStringValue::Iterator i(*value_hash); i; i.next() ){
+		const char *key = curl_transcode(String(i.key().cstr()), r);
+		if(const String* svalue = i.value()->get_string()){ 
+			// string
+			f_curl_formadd(&options().f_post, &f_last, 
+				CURLFORM_PTRNAME, key,
+				CURLFORM_PTRCONTENTS, curl_transcode(String(svalue->cstr()), r), 
+				CURLFORM_END);
+		} else if(Table* tvalue = i.value()->get_table()){
+			// table
+			for(size_t t = 0; t < tvalue->count(); t++) {
+				f_curl_formadd(&options().f_post, &f_last, 
+					CURLFORM_PTRNAME, key,
+					CURLFORM_PTRCONTENTS, curl_transcode(String(tvalue->get(t)->get(0)->cstr()), r), 
+					CURLFORM_END);
+			}
+		} else if(VFile* fvalue=static_cast<VFile *>(i.value()->as("file"))){
+			// file
+			f_curl_formadd(&options().f_post, &f_last, 
+				CURLFORM_PTRNAME, key,
+				CURLFORM_BUFFER, curl_transcode(String(fvalue->fields().get("name")->as_string(), String::L_FILE_SPEC), r),
+				CURLFORM_BUFFERLENGTH, (long)fvalue->value_size(), 
+				CURLFORM_BUFFERPTR, fvalue->value_ptr(), 
+				CURLFORM_CONTENTTYPE, fvalue->fields().get("content-type")->as_string().taint_cstr(String::L_URI), 
+				CURLFORM_END);
+		} else {
+			throw Exception("curl", new String(i.key(), String::L_TAINTED), "is %s, form option value can be string, table or file only", i.value()->type());			
+		}
+	}
+}
+
 static void curl_setopt(HashStringValue::key_type key, HashStringValue::value_type value, Request& r) {
 	CurlOption *opt=curl_options->get(key);
 
@@ -306,6 +389,15 @@ static void curl_setopt(HashStringValue::key_type key, HashStringValue::value_ty
 			res=f_curl_easy_setopt(curl(), opt->id, value_str);
 			break;
 		}
+		case CurlOption::CURL_URL:{
+			// url-encoded string curl_url option
+      const String url = v.as_string();
+      if(!url.starts_with("http://") && !url.starts_with("https://"))
+          throw Exception("curl", 0, "failed to set option '%s': invalid url scheme '%s'", key.cstr(), url.cstr());
+			const char *value_str=curl_urlencode(url, r);
+			res=f_curl_easy_setopt(curl(), opt->id, value_str);
+			break;
+		}
 		case CurlOption::CURL_INT:{
 			// integer curl option
 			long value_int=(long)v.as_double();
@@ -322,6 +414,19 @@ static void curl_setopt(HashStringValue::key_type key, HashStringValue::value_ty
 				if( (res=f_curl_easy_setopt(curl(), CURLOPT_POSTFIELDSIZE, (long)file->value_size())) == CURLE_OK )
 					res=f_curl_easy_setopt(curl(), opt->id, file->value_ptr());
 			}
+			break;
+		}
+		case CurlOption::CURL_FORM:{
+			HashStringValue *value_hash = v.get_hash();
+			if(value_hash){
+				curl_form(value_hash, r);
+			} else if(v.get_string()->is_empty()){   
+				f_curl_formfree(options().f_post);
+				options().f_post = 0;
+			} else {
+				throw Exception("curl", 0, "%s must be a hash", key.cstr());
+			}     
+			res=f_curl_easy_setopt(curl(), CURLOPT_HTTPPOST, foptions->f_post);
 			break;
 		}
 		case CurlOption::CURL_HEADERS:{
@@ -362,6 +467,11 @@ static void curl_setopt(HashStringValue::key_type key, HashStringValue::value_ty
 		case CurlOption::PARSER_CHARSET:{
 			// 'charset' parser option
 			options().charset=&::charsets.get(v.as_string().change_case(r.charsets.source(), String::CC_UPPER));
+			break;
+		}
+		case CurlOption::PARSER_RESPONSE_CHARSET:{
+			// 'charset' parser option
+			options().response_charset=&::charsets.get(v.as_string().change_case(r.charsets.source(), String::CC_UPPER));
 			break;
 		}
 	}
@@ -443,13 +553,38 @@ static void _curl_load_action(Request& r, MethodParams& params){
 	CURL_SETOPT(CURLOPT_WRITEHEADER, &headers, "curl header buffer");
 
 	if((res=f_curl_easy_perform(curl())) != CURLE_OK){
-		throw Exception("curl", 0, "failed to exec curl session: %s", f_curl_easy_strerror(res));
+		char *ex_type = 0; 
+		switch(res){
+			case CURLE_OPERATION_TIMEDOUT:
+				ex_type = "curl.timeout"; break;
+			case CURLE_COULDNT_RESOLVE_HOST:
+				ex_type = "curl.host"; break;
+			case CURLE_COULDNT_CONNECT:
+				ex_type = "curl.connect"; break;
+			case CURLE_HTTP_RETURNED_ERROR:
+				ex_type = "curl.status"; break;
+			case CURLE_SSL_CONNECT_ERROR:
+			case CURLE_SSL_CERTPROBLEM:
+			case CURLE_SSL_CIPHER:
+			case CURLE_SSL_CACERT:
+			case CURLE_SSL_ENGINE_INITFAILED:
+				ex_type = "curl.ssl"; break;
+		}
+		throw Exception( ex_type ? ex_type : "curl.fail", 0, "%s", f_curl_easy_strerror(res));
 	}
 
 	// assure trailing zero
 	body.buf[body.length]=0;
 
-	Charset *asked_charset=options().charset;
+	Value* vcontent_type=
+		options().content_type ? new VString(*options().content_type) :
+		options().filename ? new VString(r.mime_type_of(options().filename)) : 0;
+
+	VFile& result=*new VFile;
+
+	String::Body ct_header = headers.get(HTTP_CONTENT_TYPE_UPPER);
+  Charset *remote_charset = ct_header.is_empty() ? 0 : detect_charset(ct_header.trim(String::TRIM_BOTH, " \t\n\r").cstr());
+  Charset *asked_charset = options().response_charset ? options().response_charset : (remote_charset ? remote_charset : options().charset);
 
 	if(options().is_text && asked_charset != 0){
 		String::C c=Charset::transcode(String::C(body.buf, body.length), *asked_charset, r.charsets.source());
@@ -457,13 +592,13 @@ static void _curl_load_action(Request& r, MethodParams& params){
 		body.length=c.length;
 	}
 
-	Value* vcontent_type=
-		options().content_type ? new VString(*options().content_type) :
-		options().filename ? new VString(r.mime_type_of(options().filename)) : 0;
-
-	VFile& result=*new VFile;
 	result.set(true /*tainted*/, body.buf, body.length, options().filename, vcontent_type);
 	result.set_mode(options().is_text);
+
+	long http_status = 0;
+	if(f_curl_easy_getinfo(curl(), CURLINFO_RESPONSE_CODE, &http_status) == CURLE_OK){
+		result.fields().put("status", new VInt(http_status));
+	}
 
 	for(HASH_STRING<char *>::Iterator i(headers); i; i.next() ){
 		String::Body key=i.key();	
@@ -485,6 +620,7 @@ static void _curl_load(Request& r, MethodParams& params){
 // constructor
 MCurl::MCurl(): Methoded("curl") {
 	add_native_method("session", Method::CT_STATIC, _curl_session, 1, 1);
+	add_native_method("version", Method::CT_STATIC, _curl_version, 0, 0);
 	add_native_method("options", Method::CT_STATIC, _curl_options, 1, 1);
 	add_native_method("load", Method::CT_STATIC, _curl_load, 0, 1);
 }
