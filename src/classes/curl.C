@@ -8,7 +8,7 @@
 
 #ifdef HAVE_CURL
 
-static const char * const IDENT_INET_C="$Date: 2010/05/16 00:23:00 $";
+static const char * const IDENT_INET_C="$Date: 2010/05/17 08:52:19 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
@@ -17,7 +17,7 @@ static const char * const IDENT_INET_C="$Date: 2010/05/16 00:23:00 $";
 #include "pa_vstring.h"
 #include "pa_vtable.h"
 #include "pa_common.h"
-#include "ltdl.h"       
+#include "ltdl.h"
 
 class MCurl: public Methoded {
 public:
@@ -117,8 +117,8 @@ class Temp_curl {
 	ParserOptions *saved_options;
 public:
 	Temp_curl() : saved_curl(fcurl), saved_options(foptions){
-		fcurl = f_curl_easy_init();  
-		foptions = new ParserOptions();              
+		fcurl = f_curl_easy_init();
+		foptions = new ParserOptions();
 		f_curl_easy_setopt(fcurl, CURLOPT_POSTFIELDSIZE, 0); // fix libcurl bug
 	}
 	~Temp_curl() {
@@ -161,7 +161,7 @@ static void _curl_session(Request& r, MethodParams& params){
 	temp_curl(_curl_session_action, r, params);
 }
 
-static void _curl_version_action(Request& r, MethodParams& params){                                 
+static void _curl_version_action(Request& r, MethodParams& ){
 	r.write_no_lang(*new VString(*new String(f_curl_version(), String::L_TAINTED)));
 }
 
@@ -391,9 +391,9 @@ static void curl_setopt(HashStringValue::key_type key, HashStringValue::value_ty
 		}
 		case CurlOption::CURL_URL:{
 			// url-encoded string curl_url option
-      const String url = v.as_string();
-      if(!url.starts_with("http://") && !url.starts_with("https://"))
-          throw Exception("curl", 0, "failed to set option '%s': invalid url scheme '%s'", key.cstr(), url.cstr());
+			const String url = v.as_string();
+			if(!url.starts_with("http://") && !url.starts_with("https://"))
+				throw Exception("curl", 0, "failed to set option '%s': invalid url scheme '%s'", key.cstr(), url.cstr());
 			const char *value_str=curl_urlencode(url, r);
 			res=f_curl_easy_setopt(curl(), opt->id, value_str);
 			break;
@@ -420,12 +420,12 @@ static void curl_setopt(HashStringValue::key_type key, HashStringValue::value_ty
 			HashStringValue *value_hash = v.get_hash();
 			if(value_hash){
 				curl_form(value_hash, r);
-			} else if(v.get_string()->is_empty()){   
+			} else if(v.get_string()->is_empty()){
 				f_curl_formfree(options().f_post);
 				options().f_post = 0;
 			} else {
 				throw Exception("curl", 0, "%s must be a hash", key.cstr());
-			}     
+			}
 			res=f_curl_easy_setopt(curl(), CURLOPT_HTTPPOST, foptions->f_post);
 			break;
 		}
@@ -583,8 +583,8 @@ static void _curl_load_action(Request& r, MethodParams& params){
 	VFile& result=*new VFile;
 
 	String::Body ct_header = headers.get(HTTP_CONTENT_TYPE_UPPER);
-  Charset *remote_charset = ct_header.is_empty() ? 0 : detect_charset(ct_header.trim(String::TRIM_BOTH, " \t\n\r").cstr());
-  Charset *asked_charset = options().response_charset ? options().response_charset : (remote_charset ? remote_charset : options().charset);
+	Charset *remote_charset = ct_header.is_empty() ? 0 : detect_charset(ct_header.trim(String::TRIM_BOTH, " \t\n\r").cstr());
+	Charset *asked_charset = options().response_charset ? options().response_charset : (remote_charset ? remote_charset : options().charset);
 
 	if(options().is_text && asked_charset != 0){
 		String::C c=Charset::transcode(String::C(body.buf, body.length), *asked_charset, r.charsets.source());
