@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-static const char * const IDENT_COMMON_H="$Date: 2010/04/19 19:35:55 $";
+static const char * const IDENT_COMMON_H="$Date: 2010/05/17 22:54:58 $";
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -252,7 +252,7 @@ const char* format(double value, char *fmt);
 
 size_t stdout_write(const void *buf, size_t size);
 
-char* unescape_chars(const char* cp, int len, Charset* client_charset=0, bool ignore_plus=false);
+char* unescape_chars(const char* cp, int len, Charset* client_charset=0, bool js=false/*true==decode \uXXXX and don't convert '+' to space*/);
 
 #ifdef WIN32
 void back_slashes_to_slashes(char *s);

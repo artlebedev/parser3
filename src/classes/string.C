@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2010/04/05 00:57:01 $";
+static const char * const IDENT_STRING_C="$Date: 2010/05/17 22:57:12 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -732,7 +732,7 @@ static void _escape(Request& r, MethodParams&){
 
 static void _unescape(Request& r, MethodParams& params){
 	const String& src=params.as_string(0, PARAMETER_MUST_BE_STRING);
-	if(const char* result=unescape_chars(src.cstr(), src.length(), &r.charsets.source(), true/* don't unescape '+' char */))
+	if(const char* result=unescape_chars(src.cstr(), src.length(), &r.charsets.source(), true))
 		r.write_assign_lang(*new String(result));
 }
 

@@ -26,7 +26,7 @@
  *
  */
 
-static const char * const IDENT_COMMON_C="$Date: 2010/04/19 19:35:55 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2010/05/17 22:54:49 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -726,7 +726,7 @@ enum EscapeState {
 };
 
 // @todo prescan for reduce required size (unescaped sting in 1 byte charset requires less memory usually)
-char* unescape_chars(const char* cp, int len, Charset* charset, bool ignore_plus){
+char* unescape_chars(const char* cp, int len, Charset* charset, bool js){
 	char* s=new(PointerFreeGC) char[len+1]; // must be enough (%uXXXX==6 bytes, max utf-8 char length==6 bytes)
 	char* dst=s;
 	EscapeState escapeState=EscapeRest;
@@ -735,12 +735,12 @@ char* unescape_chars(const char* cp, int len, Charset* charset, bool ignore_plus
 	short int jsCnt=0;
 	while(srcPos<len){
 		uchar c=(uchar)cp[srcPos]; 
-		if(c=='%'){
+		if(c=='%' || (c=='\\' && js)){
 			escapeState=EscapeFirst;
 		} else {
 			switch(escapeState) {
 				case EscapeRest:
-					if(!ignore_plus && c=='+'){
+					if(!js && c=='+'){
 						*dst++=' ';
 					} else {
 						*dst++=c;

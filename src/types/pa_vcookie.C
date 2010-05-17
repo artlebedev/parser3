@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VCOOKIE_C="$Date: 2009/09/03 11:08:40 $";
+static const char * const IDENT_VCOOKIE_C="$Date: 2010/05/17 22:57:29 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -283,9 +283,9 @@ void VCookie::refill(){
 		if(char *attribute=search_stop(current, '='))
 			if(char *meaning=search_stop(current, ';')) {
 				const String& sattribute=
-					*new String(unescape_chars(attribute, strlen(attribute), &fcharsets.source(), true/*don't convert '"' to space*/), String::L_TAINTED);
+					*new String(unescape_chars(attribute, strlen(attribute), &fcharsets.source(), true), String::L_TAINTED);
 				const String& smeaning=
-					*new String(unescape_chars(meaning, strlen(meaning), &fcharsets.source(), true/*don't convert '"' to space*/), String::L_TAINTED);
+					*new String(unescape_chars(meaning, strlen(meaning), &fcharsets.source(), true), String::L_TAINTED);
 				before.put(sattribute, new VString(smeaning));
 
 				//if(sattribute == "test_js") throw Exception(0, 0, "'%s' '%s'", meaning, smeaning.cstr());
