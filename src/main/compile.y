@@ -5,7 +5,7 @@
 	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.254 2010/04/28 17:56:22 pretender Exp $
+	$Id: compile.y,v 1.255 2010/05/20 04:36:20 misha Exp $
 */
 
 /**
@@ -167,7 +167,7 @@ control_method: '@' STRING '\n'
 		}
 	} else if(command==USE_CONTROL_METHOD_NAME) {
 		for(size_t i=0; i<strings_code->count(); i+=OPERATIONS_PER_OPVALUE) 
-			PC.request.use_file(PC.request.main_class, *LA2S(*strings_code, i));
+			PC.request.use_file(PC.request.main_class, *LA2S(*strings_code, i), PC.request.get_used_filename(PC.file_no));
 	} else if(command==BASE_NAME) {
 		if(PC.append){
 			strcpy(PC.error, "can't set base while appending methods to class '");

@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char * const IDENT_REQUEST_H="$Date: 2010/05/20 04:35:59 $";
+static const char * const IDENT_REQUEST_H="$Date: 2010/05/20 04:40:49 $";
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -122,6 +122,7 @@ private:
 
 	/// already used files to avoid cyclic uses
 	HashString<bool> used_files;
+	HashString<bool> searched_along_class_path;
 	/// list of all used files, Operation::file_no = index to it
 	Array<String::Body> file_list;
 

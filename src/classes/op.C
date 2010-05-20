@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2009/11/06 04:59:59 $";
+static const char * const IDENT_OP_C="$Date: 2010/05/20 04:36:36 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -284,7 +284,9 @@ static void _while(Request& r, MethodParams& params) {
 
 static void _use(Request& r, MethodParams& params) {
 	Value& vfile=params.as_no_junction(0, FILE_NAME_MUST_NOT_BE_CODE);
-	r.use_file(r.main_class, vfile.as_string());
+
+	// _use could be called from the parser3 method only, so caller is always defined
+	r.use_file(r.main_class, vfile.as_string(), r.get_method_filename(r.get_method_frame()->caller()->junction.method));
 }
 
 static void set_skip(Request& r, Request::Skip askip) {

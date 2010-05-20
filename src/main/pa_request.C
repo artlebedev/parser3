@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REQUEST_C="$Date: 2010/03/31 21:50:28 $";
+static const char * const IDENT_REQUEST_C="$Date: 2010/05/20 04:36:20 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -332,9 +332,8 @@ gettimeofday(&mt[0],NULL);
 		// loading config
 		if(config_filespec) {
 			const String& filespec=*new String(config_filespec);
-			use_file(main_class,
-				filespec, 0 /*main_alias*/, 
-				true /*ignore class_path*/, 
+			use_file_directly(main_class,
+				filespec,
 				config_fail_on_read_problem, 
 				true /*file must exist if 'fail on read problem' not set*/);
 		}
@@ -359,10 +358,8 @@ gettimeofday(&mt[0],NULL);
 						String::L_CLEAN);
 					sfile_spec << "/" AUTO_FILE_NAME;
 
-					use_file(main_class,
+					use_file_directly(main_class,
 						sfile_spec, 
-						0 /*main_alias*/,
-						true /*ignore class_path*/, 
 						true /*fail on read problem*/, 
 						false /*but ignore absence, sole user*/);
 				}
@@ -374,10 +371,7 @@ gettimeofday(&mt[0],NULL);
 			// compile requested file
 			String& spath_translated=*new String;
 			spath_translated.append_help_length(request_info.path_translated, 0, String::L_TAINTED);
-			use_file(main_class,
-				spath_translated, 
-				0 /*main_alias*/,
-				true /*ignore class_path*/);
+			use_file_directly(main_class, spath_translated);
 
 			configure();
 		} catch(...) {
@@ -549,61 +543,75 @@ uint Request::register_file(String::Body file_spec) {
 	return file_list.count()-1;
 }
 
-void Request::use_file(VStateless_class& aclass,
-		       const String& file_name, const String* main_alias, 
-		       bool ignore_class_path, 
-		       bool fail_on_read_problem, 
-		       bool fail_on_file_absence) {
-	// cyclic dependence check
-	if(used_files.get(file_name))
-		return;
-	used_files.put(file_name, true);
+void Request::use_file_directly(VStateless_class& aclass,
+				const String& file_spec,
+				bool fail_on_read_problem, 
+				bool fail_on_file_absence) {
 
-	const String* file_spec;
-	if(ignore_class_path) // ignore_class_path?
-		file_spec=&file_name;
-	else if(file_name.first_char()=='/') //absolute path? [no need to scan MAIN:CLASS_PATH]
-		file_spec=&absolute(file_name);
-	else {
-		file_spec=0;
+	// cyclic dependence check
+	if(used_files.get(file_spec))
+		return;
+	used_files.put(file_spec, true);
+
+	if(fail_on_read_problem && !fail_on_file_absence) // ignore file absence if asked for
+		if(!entry_exists(file_spec))
+			return;
+
+	if(const char* source=file_read_text(charsets, file_spec, fail_on_read_problem))
+		use_buf(aclass, source, 0, register_file(file_spec));
+}
+
+
+void Request::use_file(VStateless_class& aclass,
+				const String& file_name,
+				const String* use_filespec/*absolute*/) {
+
+	const String* filespec=0;
+
+	if(file_name.first_char()=='/') //absolute path? [no need to scan MAIN:CLASS_PATH]
+		filespec=&absolute(file_name);
+	else if(use_filespec){ // search in current dir first
+		int afterslash=lastposafter(*use_filespec, 0, "/", 1, true);
+		if(afterslash>0)
+			filespec=file_exist(use_filespec->mid(0, afterslash-1), file_name); // found in current dir?
+	}
+
+	if(!filespec){
+		// prevent multiple scan CLASS_PATH for searching one file
+		if(searched_along_class_path.get(file_name))
+			return;
+		searched_along_class_path.put(file_name, true);
 		if(Value* element=main_class.get_element(class_path_name)) {
 			if(element->is_string()) {
-				file_spec=file_exist(absolute(element->as_string()), file_name); // found at class_path?
+				filespec=file_exist(absolute(element->as_string()), file_name); // found at class_path?
 			} else if(Table *table=element->get_table()) {
-				int size=table->count();
-				for(int i=size; i--; ) {
+				for(size_t i=table->count(); i--; ) {
 					const String& path=*(*table->get(i))[0];
-					if((file_spec=file_exist(absolute(path), file_name)))
+					if(filespec=file_exist(absolute(path), file_name))
 						break; // found along class_path
 				}
 			} else
 				throw Exception(PARSER_RUNTIME,
 					0,
 					"$" CLASS_PATH_NAME " must be string or table");
-			if(!file_spec)
+			if(!filespec)
 				throw Exception(PARSER_RUNTIME,
 					&file_name,
 					"not found along " MAIN_CLASS_NAME ":" CLASS_PATH_NAME);
-		}
-		if(!file_spec)
+		} else 
 			throw Exception(PARSER_RUNTIME,
 				&file_name,
 				"usage failed - no $" MAIN_CLASS_NAME  ":" CLASS_PATH_NAME " were specified");
 	}
 
-	if(fail_on_read_problem && !fail_on_file_absence) // ignore file absence if asked for
-		if(!entry_exists(*file_spec))
-			return;
-
-	if(const char* source=file_read_text(charsets, *file_spec, fail_on_read_problem))
-		use_buf(aclass, source, main_alias, register_file(*file_spec));
+	use_file_directly(aclass, *filespec);
 }
 
 
 void Request::use_buf(VStateless_class& aclass,
-		      const char* source, const String* main_alias, 
-		      uint file_no,
-			  int line_no_offset) {
+				const char* source, const String* main_alias, 
+				uint file_no,
+				int line_no_offset) {
 	// temporary zero @conf so to maybe-replace it in compiled code
 	Temp_method temp_method_conf(aclass, conf_method_name, 0);
 	// temporary zero @auto so to maybe-replace it in compiled code
@@ -916,6 +924,18 @@ const String& Request::mime_type_of(const char* user_file_name_cstr) {
 		}
 
 	return *new String("application/octet-stream");
+}
+
+const String* Request::get_method_filename(const Method* method){
+	if(ArrayOperation* code=method->parser_code)
+		return get_used_filename(code->get(1).origin.file_no); // todo@ check if 1 is always origin
+	return 0;
+}
+
+const String* Request::get_used_filename(uint file_no){
+	if(file_no < file_list.count())
+		return new String(file_list[file_no], String::L_TAINTED);
+	return 0;
 }
 
 #ifdef XML
