@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char * const IDENT_REQUEST_H="$Date: 2009/08/30 05:28:41 $";
+static const char * const IDENT_REQUEST_H="$Date: 2010/05/20 04:35:59 $";
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -219,13 +219,17 @@ public:
 		anti_endless_execute_recoursion--;
 	}
 
+	///
+	void use_file_directly(VStateless_class& aclass,
+				const String& file_spec,
+				bool fail_on_read_problem=true, 
+				bool fail_on_file_absence=true); // pa_request.C
+				
 	/// compiles the file, maybe forcing it's class @a name and @a base_class.
 	void use_file(VStateless_class& aclass,
-		const String& file_name, 
-		const String* main_alias=0,
-		bool ignore_class_path=false, 
-		bool fail_on_read_problem=true, 
-		bool fail_on_file_absence=true); // pa_request.C
+		const String& file_name,
+		const String* use_filespec); // pa_request.C
+
 	/// compiles a @a source buffer
 	void use_buf(VStateless_class& aclass,
 		const char* source, 
@@ -244,7 +248,8 @@ public:
 		return process(input_value, intercept_string).as_value();
 	}
 	//@}
-
+	const String* get_method_filename(const Method* method);
+	const String* get_used_filename(uint file_no);
 	
 #define DEFINE_DUAL(modification) \
 	void write_##modification##_lang(StringOrValue dual) { \
