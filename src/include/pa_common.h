@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-static const char * const IDENT_COMMON_H="$Date: 2010/05/17 22:54:58 $";
+static const char * const IDENT_COMMON_H="$Date: 2010/05/20 04:28:22 $";
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -376,6 +376,20 @@ static String::C date_gmt_string(tm* tms) {
 		tms->tm_hour,tms->tm_min,tms->tm_sec));
 }
 
+static int lastposafter(const String& s, size_t after, const char* substr, size_t substr_size, bool beforelast=false) {
+	size_t size=0; // just to calm down compiler
+	if(beforelast)
+		size=s.length();
+	size_t at;
+	while((at=s.pos(String::Body(substr), after))!=STRING_NOT_FOUND) {
+		size_t newafter=at+substr_size/*skip substr*/;
+		if(beforelast && newafter==size)
+			break;
+		after=newafter;
+	}
+
+	return after;
+}
 
 // globals
 

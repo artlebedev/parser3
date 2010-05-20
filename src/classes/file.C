@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2010/04/19 11:21:34 $";
+static const char * const IDENT_FILE_C="$Date: 2010/05/20 04:28:14 $";
 
 #include "pa_config_includes.h"
 
@@ -707,21 +707,6 @@ static void _lock(Request& r, MethodParams& params) {
 			"lock",
 			lock_execute_body,
 			&info);
-}
-
-static int lastposafter(const String& s, size_t after, const char* substr, size_t substr_size, bool beforelast=false) {
-	size_t size=0; // just to calm down compiler
-	if(beforelast)
-		size=s.length();
-	size_t at;
-	while((at=s.pos(String::Body(substr), after))!=STRING_NOT_FOUND) {
-		size_t newafter=at+substr_size/*skip substr*/;
-		if(beforelast && newafter==size)
-			break;
-		after=newafter;
-	}
-
-	return after;
 }
 
 static void _find(Request& r, MethodParams& params) {
