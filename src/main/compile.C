@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMPILE_C="$Date: 2008/08/15 15:26:14 $";
+static const char * const IDENT_COMPILE_C="$Date: 2010/05/20 04:29:51 $";
 
 #include "pa_request.h"
 #include "compile_tools.h"
@@ -14,9 +14,9 @@ extern int yydebug;
 extern int yyparse (void *);
 
 ArrayClass& Request::compile(VStateless_class* aclass, 
-				   const char* source, const String* main_alias, 
-				   uint file_no,
-				   int line_no_offset) {
+					const char* source, const String* main_alias, 
+					uint file_no,
+					int line_no_offset) {
 	// prepare to parse
 	Parse_control pc(*this, aclass, source, main_alias, file_no, line_no_offset);
 
