@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REFLECTION_C="$Date: 2009/09/18 10:12:08 $";
+static const char * const IDENT_REFLECTION_C="$Date: 2010/05/20 04:37:50 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
@@ -258,6 +258,7 @@ static void _method_info(Request& r, MethodParams& params) {
 			hash->put(method_call_type, call_type);
 	} else {
 		// parser code
+		hash->put("file", new VString(*r.get_method_filename(method)));
 		if(method->params_names)
 			for(size_t i=0; i<method->params_names->count(); i++)
 				hash->put(String::Body::Format(i), new VString(*method->params_names->get(i)));
