@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REQUEST_C="$Date: 2010/05/20 04:36:20 $";
+static const char * const IDENT_REQUEST_C="$Date: 2010/05/20 07:17:51 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -928,7 +928,8 @@ const String& Request::mime_type_of(const char* user_file_name_cstr) {
 
 const String* Request::get_method_filename(const Method* method){
 	if(ArrayOperation* code=method->parser_code)
-		return get_used_filename(code->get(1).origin.file_no); // todo@ check if 1 is always origin
+		if(code->count()) // method has ops
+			return get_used_filename(code->get(code->get(0).code == OP::OP_OBJECT_POOL ? 3 : 1).origin.file_no);
 	return 0;
 }
 
