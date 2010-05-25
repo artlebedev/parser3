@@ -26,7 +26,7 @@
  *
  */
 
-static const char * const IDENT_COMMON_C="$Date: 2010/05/17 22:54:49 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2010/05/25 09:30:30 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -265,8 +265,8 @@ File_read_result file_load(Request& r, const String& file_spec,
 }
 
 
-void check_safe_mode(struct stat finfo, const String& file_spec, const char* fname) { 
 #ifdef PA_SAFE_MODE 
+void check_safe_mode(struct stat finfo, const String& file_spec, const char* fname) {
 	if(finfo.st_uid/*foreign?*/!=geteuid() 
 		&& finfo.st_gid/*foreign?*/!=getegid()) 
 		throw Exception(PARSER_RUNTIME,  
@@ -278,9 +278,13 @@ void check_safe_mode(struct stat finfo, const String& file_spec, const char* fna
 			"fuid(%d)!=euid(%d) or fgid(%d)!=egid(%d)",  
 				fname, 
 				finfo.st_uid, geteuid(), 
-				finfo.st_gid, getegid()); 
+				finfo.st_gid, getegid());
+}
+#else
+void check_safe_mode(struct stat, const String&, const char*) {
+}
 #endif
-} 
+
 
 
 bool file_read_action_under_lock(const String& file_spec, 
