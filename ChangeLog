@@ -1,3 +1,216 @@
+2010-05-25	misha
+	* src/include/pa_request.h 1.201:
+	* src/main/execute.C 1.362:
+	* src/main/pa_request.C 1.321:
+		- get_method_filename was moved to execute.C
+
+2010-05-23	misha
+	* src/main/pa_request.C 1.320:
+		- more accurate detection of method's file
+
+2010-05-22	misha
+	* src/classes/reflection.C 1.16:
+		- bugfix: core during detection of .file if filespec isn't 
+		detected successfully
+
+2010-05-20	misha
+	* src/main/pa_request.C 1.319:
+		- fix in get_method_filename
+
+	* src/main/compile.tab.C 1.148:
+		*** empty log message ***
+
+	* src/classes/op.C 1.199:
+	* src/include/pa_request.h 1.199:
+	* src/include/pa_request.h 1.200:
+	* src/main/compile.y 1.255:
+	* src/main/pa_request.C 1.318:
+		- new feature: #24 -- searching included file in @USE/^use is 
+		changed. if its filespec doesn't start from '/' it will be 
+		searched in caller file directory
+
+	* src/classes/reflection.C 1.15:
+		- ^reflection:method_info returns file where the method is 
+		defined
+
+	* src/classes/file.C 1.206:
+	* src/include/pa_common.h 1.143:
+		- method lastposafter is moved to pa_common.h
+
+2010-05-17	misha
+	* src/classes/string.C 1.193:
+	* src/include/pa_common.h 1.142:
+	* src/main/pa_common.C 1.258:
+	* src/types/pa_vcookie.C 1.83:
+		new feature: #71 ^string:js-unescape and cookie parser decode \
+		uXXXX as well as %uXXXX
+
+	* src/classes/curl.C 1.5:
+		beauty:
+		- unused param is removed in method _curl_version_action
+		- some spaces were removed or replaced by tabs
+
+2010-05-16	misha
+	* src/classes/table.C 1.271:
+		- bugfix: #72 core with empty value during ^table.hash[...;
+		name_of_the_last_column][$.type[string]]
+
+	* src/classes/curl.C 1.4:
+		new: #61 more curl options were added (contributed by Sumo)
+
+2010-04-29	pretender
+	* src/main/pa_string.C 1.235:
+		fixes #63 Split result from empty string now empty string.
+
+	* src/types/pa_vtable.C 1.32:
+		bugfix: #35 All empty table cells are now string type.
+
+2010-04-28	pretender
+	* src/include/pa_opcode.h 1.45:
+	* src/main/compile.tab.C 1.147:
+	* src/main/compile.y 1.254:
+	* src/main/execute.C 1.361:
+		bugfix: #59 OPTIMIZE_BYTECODE_GET_CLASS macrodefinition removed
+
+2010-04-19	pretender
+	* src/main/execute.C 1.360:
+		fixes #60 Stacktrace now contains info for OP_CONSTRUCT_OBJECT 
+		and OP_GET_CLASS
+
+	* src/include/pa_common.h 1.141:
+	* src/main/pa_common.C 1.257:
+	* src/main/pa_exec.C 1.79:
+		fixes #64 Now file.missing exception generates in unsafe mode 
+		to.
+
+	* src/classes/file.C 1.205:
+		fixes #48 Now not throw "not save environment variable" 
+		exception in grpunlim version.
+
+2010-04-05	misha
+	* src/classes/string.C 1.192:
+		- new feature: 4th param was added to match. if specified its 
+		value is returned in case of nothing was found
+
+2010-03-31	misha
+	* src/main/pa_request.C 1.317:
+		- bugfix: on *nix URIs like /a/b/// caused multiple execution of 
+		/a/b/auto.p
+
+2010-03-19	misha
+	* src/main/execute.C 1.359:
+		- core in $table1.$table2 was fixed
+
+	* src/targets/cgi/parser3.C 1.256:
+		- core in sigpipe was fixed
+
+2010-01-27	misha
+	* src/main/pa_common.C 1.256:
+		- bugfix: there are no excaption.type if trying to open file by 
+		path /existing-file/non-exixting-file
+
+2010-01-26	misha
+	* src/types/pa_vrequest.C 1.50:
+	* src/types/pa_vrequest.h 1.38:
+		- $request:post-body was added (returns file)
+
+2009-12-22	misha
+	* src/classes/curl.C 1.3:
+		- method 'option' was renamed to 'options'
+		- now parser doesn't have class curl if it was built without it
+
+2009-12-15	misha
+	* configure.in 1.127:
+		- little cheat with curl include dir was added
+
+2009-12-04	misha
+	* src/classes/curl.C 1.2:
+		- some fixes
+
+	* Makefile.am 1.76:
+	* Makefile.in 1.92:
+	* acinclude.m4 1.62:
+	* aclocal.m4 1.65:
+	* acsite.m4 1.41:
+	* bin/Makefile.in 1.15:
+	* configure 1.119:
+	* configure.in 1.126:
+	* etc/Makefile.in 1.20:
+	* etc/parser3.charsets/Makefile.in 1.24:
+	* src/Makefile.in 1.61:
+	* src/classes/Makefile.in 1.69:
+	* src/include/Makefile.in 1.24:
+	* src/include/pa_config_auto.h.in 1.48:
+	* src/lib/Makefile.in 1.19:
+	* src/lib/cord/Makefile.in 1.9:
+	* src/lib/cord/include/Makefile.in 1.7:
+	* src/lib/cord/include/private/Makefile.in 1.7:
+	* src/lib/gc/Makefile.in 1.7:
+	* src/lib/gc/include/Makefile.in 1.8:
+	* src/lib/gd/Makefile.in 1.8:
+	* src/lib/ltdl/Makefile.in 1.12:
+	* src/lib/md5/Makefile.in 1.13:
+	* src/lib/pcre/Makefile.in 1.16:
+	* src/lib/sdbm/Makefile.in 1.6:
+	* src/lib/sdbm/apr-include/Makefile.in 1.6:
+	* src/lib/smtp/Makefile.in 1.8:
+	* src/main/Makefile.in 1.64:
+	* src/sql/Makefile.in 1.17:
+	* src/targets/Makefile.in 1.48:
+	* src/targets/apache13/Makefile.in 1.53:
+	* src/targets/apache13core/Makefile.in 1.10:
+	* src/targets/cgi/Makefile.in 1.72:
+	* src/targets/isapi/Makefile.in 1.18:
+	* src/types/Makefile.in 1.68:
+		*** empty log message ***
+
+	* buildall-with-xml 1.36:
+	* buildall-without-xml 1.22:
+	* configure.in 1.125:
+	* src/classes/Makefile.am 1.55:
+	* src/classes/classes.vcproj 1.24:
+	* src/classes/curl.C 1.1:
+	* src/classes/file.C 1.204:
+	* src/include/pa_config_fixed.h 1.74:
+		- curl class was added
+
+	* src/include/pa_hash.h 1.80:
+		- hash-iterator was added
+
+2009-12-03	misha
+	* buildall-with-xml 1.35:
+	* buildall-without-xml 1.21:
+		- option --passive-ftp was added to pcre
+
+2009-11-27	misha
+	* Makefile.am 1.74:
+	* Makefile.am 1.75:
+	* Makefile.in 1.90:
+	* Makefile.in 1.91:
+	* acinclude.m4 1.60:
+	* acinclude.m4 1.61:
+	* aclocal.m4 1.63:
+	* aclocal.m4 1.64:
+	* acsite.m4 1.39:
+	* acsite.m4 1.40:
+	* configure 1.117:
+	* configure 1.118:
+	* configure.in 1.123:
+	* configure.in 1.124:
+	* src/include/pa_config_auto.h.in 1.47:
+	* src/include/pa_version.h 1.40:
+	* src/include/pa_version.h 1.41:
+		*** empty log message ***
+
+	* src/classes/image.C 1.133:
+		- don't add @border attribute to output of ^image.html[] if it 
+		was specified by user with empty value
+
+2009-11-26	misha
+	* src/types/pa_vxdoc.C 1.37:
+		- bugfix: core if xdoc doesn't have the root element and we are 
+		trying to access .documentElement
+
 2009-11-16	misha
 	* Makefile.am 1.72:
 	* Makefile.am 1.73:
