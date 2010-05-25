@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2010/04/28 17:56:22 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2010/05/25 03:58:25 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -1578,3 +1578,67 @@ const String* Request::execute_virtual_method(Value& aself,
 			
 	return 0;
 }
+
+const String* Request::get_method_filename(const Method* method){
+	if(ArrayOperation* code=method->parser_code)
+		if(code){
+			Operation::Origin origin={0, 0, 0};
+			Array_iterator<Operation> i(*code);
+			while( i.has_next() ){
+				switch( i.next().code ){
+					case OP::OP_CURLY_CODE__STORE_PARAM: 
+					case OP::OP_EXPR_CODE__STORE_PARAM:
+					case OP::OP_CURLY_CODE__CONSTRUCT:
+					case OP::OP_NESTED_CODE:
+					case OP::OP_OBJECT_POOL:
+					case OP::OP_STRING_POOL:
+					case OP::OP_CALL:
+					case OP::OP_CALL__WRITE:
+						{
+							i.next(); // skip local ops
+							i.next(); // skip next opcode
+							// continue execution
+						}
+					case OP::OP_CONSTRUCT_OBJECT:
+					case OP::OP_CONSTRUCT_OBJECT__WRITE:
+					case OP::OP_VALUE:
+					case OP::OP_STRING__WRITE:
+					case OP::OP_VALUE__GET_CLASS:
+#ifdef OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT
+					case OP::OP_GET_OBJECT_ELEMENT:
+					case OP::OP_GET_OBJECT_ELEMENT__WRITE:
+#endif
+#ifdef OPTIMIZE_BYTECODE_GET_OBJECT_VAR_ELEMENT
+					case OP::OP_GET_OBJECT_VAR_ELEMENT:
+					case OP::OP_GET_OBJECT_VAR_ELEMENT__WRITE:
+#endif
+#ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
+					case OP::OP_VALUE__GET_ELEMENT:
+					case OP::OP_VALUE__GET_ELEMENT__WRITE:
+					case OP::OP_VALUE__GET_ELEMENT_OR_OPERATOR:
+					case OP::OP_WITH_ROOT__VALUE__GET_ELEMENT:
+#endif
+#ifdef OPTIMIZE_BYTECODE_GET_SELF_ELEMENT
+					case OP::OP_WITH_SELF__VALUE__GET_ELEMENT:
+					case OP::OP_WITH_SELF__VALUE__GET_ELEMENT__WRITE:
+#endif
+#ifdef OPTIMIZE_BYTECODE_CONSTRUCT
+					case OP::OP_WITH_ROOT__VALUE__CONSTRUCT_EXPR:
+					case OP::OP_WITH_ROOT__VALUE__CONSTRUCT_VALUE:
+					case OP::OP_WITH_WRITE__VALUE__CONSTRUCT_EXPR:
+					case OP::OP_WITH_WRITE__VALUE__CONSTRUCT_VALUE:
+					case OP::OP_WITH_SELF__VALUE__CONSTRUCT_EXPR:
+					case OP::OP_WITH_SELF__VALUE__CONSTRUCT_VALUE:
+#endif
+						{
+							origin=i.next().origin;
+							break;
+						}
+				}
+				if(origin.file_no)
+					return get_used_filename(origin.file_no);
+			}
+		}
+	return 0;
+}
+
