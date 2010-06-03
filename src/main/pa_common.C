@@ -26,7 +26,7 @@
  *
  */
 
-static const char * const IDENT_COMMON_C="$Date: 2010/05/25 09:30:30 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2010/06/03 02:03:21 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -102,7 +102,7 @@ void fix_line_breaks(char *str, size_t& length) {
 	while(char* eol=(char*)memchr(bol, '\r', eob -bol)) {
 		size_t len=eol-bol;
 		if(dest!=bol)
-			memcpy(dest, bol, len); 
+			memmove(dest, bol, len); 
 		dest+=len;
 		*dest++='\n'; 
 
@@ -114,7 +114,7 @@ void fix_line_breaks(char *str, size_t& length) {
 	}
 	// last piece without \r
 	if(dest!=bol)
-		memcpy(dest, bol, eob-bol); 
+		memmove(dest, bol, eob-bol); 
 	str[length]=0; // terminating
 }
 
