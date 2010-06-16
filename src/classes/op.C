@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2010/05/20 04:36:36 $";
+static const char * const IDENT_OP_C="$Date: 2010/06/16 11:29:17 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -88,11 +88,19 @@ public:
 // methods
 
 static void _if(Request& r, MethodParams& params) {
-	bool condition=params.as_bool(0, "condition must be expression", r);
-	if(condition)
-		r.process_write(*params.get(1));
-	else if(params.count()>2)
-		r.process_write(*params.get(2));
+	size_t max_param=params.count()-1;
+	size_t i=0;
+	do {
+		bool condition=params.as_bool(i, "condition must be expression", r);
+		if(condition) {
+			r.process_write(*params.get(i+1));
+			return;
+		}
+		i+=2;
+	} while (i < max_param);
+
+	if(i == max_param)
+		r.process_write(*params.get(i));
 }
 
 static String::Language get_untaint_lang(MethodParams& params, int index){
@@ -886,7 +894,8 @@ VClassMAIN::VClassMAIN(): VClass() {
 
 	// ^if(condition){code-when-true}
 	// ^if(condition){code-when-true}{code-when-false}
-	add_native_method("if", Method::CT_ANY, _if, 2, 3, Method::CO_WITHOUT_FRAME);
+	// ^if(condition){code-when-true} (another condition){code-when-true} ... {code-when-false}
+	add_native_method("if", Method::CT_ANY, _if, 2, 10000, Method::CO_WITHOUT_FRAME);
 
 	// ^untaint[as-is|uri|sql|js|html|html-typo|regex|parser-code]{code}
 	add_native_method("untaint", Method::CT_ANY, _untaint, 1, 2, Method::CO_WITHOUT_FRAME);
