@@ -1,11 +1,14 @@
 Content-Type: text/html
-Content-Length: 1006
+Content-Length: 956
 
 if native method of MAIN (MAIN) accepts minimum 2 parameter(s) (0 present)<br />
 if native method of MAIN (MAIN) accepts minimum 2 parameter(s) (1 present)<br />
 1<br />
 1<br />
-if native method of MAIN (MAIN) accepts maximum 3 parameter(s) (4 present)<br />
+3<br />
+3<br />
+<br />
+4<br />
 <hr />
 for native method of MAIN (MAIN) accepts minimum 4 parameter(s) (0 present)<br />
 for native method of MAIN (MAIN) accepts minimum 4 parameter(s) (1 present)<br />
