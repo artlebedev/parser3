@@ -2,8 +2,6 @@
 ^do(1000)
 ^do(1002)
 
-
-
 @do[iCount]
 ${iCount}:
 ^try{
@@ -16,11 +14,8 @@ ${iCount}:
 }
 <br />
 
-
-
 @call[iLevel]
 $iLevel($iLevel-1)
 ^if($iLevel>0){
 	^call[$iLevel]
 }
-
