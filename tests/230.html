@@ -52,13 +52,11 @@ $f[^file::load[text;$sSourceFile]]
 ]
 }
 
-
 @load[sFileName;sCharset][f]
 $f[^file::load[text;$sFileName;
 	$.charset[$sCharset]
 ]]
 $sCharset=$f.text<br />
-
 
 @do[jCode]
 ^try{
