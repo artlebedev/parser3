@@ -75,21 +75,14 @@ $sSpace[ ]
 
 </table>
 
-
-
 @TR[sTD1;sTD2]
 <tr>
 <td>$sTD1</td>
 <td>$sTD2</td>
 </tr>
 
-
-
-
 @format[d;sFormat][s]
 ^TR[^if(def $sFormat && def ^sFormat.trim[]){$sFormat}{'$sFormat'};^try_code{$s[^d.format[$sFormat]]'^taint[html][^s.match[\+00][]{+0}]'}]
-
-
 
 @try_code[jCode]
 ^try{

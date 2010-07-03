@@ -55,9 +55,6 @@ Calling cgi which don't get back CGI headers:
 }
 ^print[cgi;$f]
 
-
-
-
 @print[sType;f]
 ^if($f is "file"){
 	^$f.status: ^if($f.status){!=0}{==0}

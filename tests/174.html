@@ -108,27 +108,16 @@ $s<br />
 # files must exist now
 ^checkFiles[$sDir;$sName]
 
-
-
-
-
 @checkFiles[sDir;sName]
 ^checkFile[$sDir/${sName}.dir]
 ^checkFile[$sDir/${sName}.pag]
 
-
-
-
 @checkFile[sFileName]
 $sFileName -- ^if(-f $sFileName){exist}{not exist}<br />
-
-
 
 @getFileSize[sDir;sName][fStat]
 $fStat[^file::stat[$sDir/${sName}.pag]]
 $result($fStat.size)
-
-
 
 @fill[hf][iCount;i]
 $iCount(150)
