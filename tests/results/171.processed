@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 1682
+Content-Length: 1681
 
 Get not existing file 'notfound.txt' without $.charset option (^file::exec[script;...]):
 $f.status: !=0
@@ -74,5 +74,4 @@ $f.CONTENT-TYPE: text/plain
 
 Calling cgi which don't get back CGI headers:
 Variable is not a file, can't analyze it.
-
 
