@@ -98,8 +98,6 @@ $oB2[^B::create[]]
 </tr>
 </table>
 
-
-
 @class[uObject]
 ^if(!def $tClass){
 	$tClass[^table::create{sName
@@ -110,11 +108,8 @@ B
 
 $result[^tClass.menu{^if($uObject is $tClass.sName){$tClass.sName}}[, ]<br />]
 
-
 @class_name[uObject]
 $result[$uObject.CLASS_NAME<br />]
-
-
 
 @print[sName;uObject]
 <br />
@@ -126,6 +121,3 @@ ${sName}sv: '$uObject.sv'<br />
 ${sName}da: '$uObject.da'<br />
 ${sName}db: '$uObject.db'<br />
 ${sName}dv: '$uObject.dv'<br />
-
-
-

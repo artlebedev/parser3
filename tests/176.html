@@ -82,23 +82,15 @@ $od[^d::create[]]
 
 </table>
 
-
-
-
-
 @one[][locals;one_1]
 $one_1[one_1]	^rem{ local }
 $one_2[one_2]	^rem{ local because of 'locals' }
 $self.one_3[one_3]	^rem{ not local }
 
-
-
 @two[][two_1]
 $two_1[two_1]	^rem{ local }
 $two_2[two_2]	^rem{ not local }
 $self.two_3[two_3]	^rem{ not local }
-
-
 
 @add_methods[uObject]
 ^process[$uObject]{@three[][locals^;three_1]
@@ -110,14 +102,10 @@ $self.two_3[two_3]	^rem{ not local }
 ^$self.four_3[four_3]
 }
 
-
-
 @hr[sTitle]
 <tr>
 <td colspan="4">^if(def $sTitle){$sTitle}{<br />}</td>
 </tr>
-
-
 
 @print[sTitle;uObject;hParam]
 ^hr[$sTitle]
@@ -131,8 +119,6 @@ $self.two_3[two_3]	^rem{ not local }
 	^vars[Runtime added method without [^;locals^;];$uObject;four]
 }
 
-
-
 @vars[sTitle;uObject;sPrefix]
 <tr>
 <td>$sTitle</td>
@@ -140,8 +126,6 @@ $self.two_3[two_3]	^rem{ not local }
 <td>^var[$uObject.[${sPrefix}_2]]</td>
 <td>^var[$uObject.[${sPrefix}_3]]</td>
 </tr>
-
-
 
 @var[sValue]
 ^if(def $sValue){<b>$sValue</b>}{undef}

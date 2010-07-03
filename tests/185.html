@@ -75,8 +75,6 @@ $length(^str.length[]) ^rem{ *** length in real chars (not in bytes) == 42 *** }
 }
 </table>
 
-
-
 @left[str;num][substr]
 ^try{
 	^if(def $num){
@@ -90,8 +88,6 @@ $length(^str.length[]) ^rem{ *** length in real chars (not in bytes) == 42 *** }
 	$result[error]
 }
 
-
-
 @right[str;num][substr]
 ^try{
 	^if(def $num){
@@ -104,8 +100,6 @@ $length(^str.length[]) ^rem{ *** length in real chars (not in bytes) == 42 *** }
 	$exception.handled(1)
 	$result[error]
 }
-
-
 
 @mid[str;num;count]
 ^try{
@@ -123,8 +117,6 @@ $length(^str.length[]) ^rem{ *** length in real chars (not in bytes) == 42 *** }
 	$exception.handled(1)
 	$result[error]
 }
-
-
 
 @pos[str;substr;offset]
 ^^str.pos[$substr]^if(def $offset){($offset)}: ^if(def $offset){^str.pos[$substr]($offset)}{^str.pos[$substr]}<br />
