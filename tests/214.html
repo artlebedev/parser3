@@ -11,14 +11,11 @@ $h[^hash::create[]]
 $h2[^copy[$h]]
 ^print[$h2]
 
-
-
 @copy[h][k;v]
 $result[^hash::create[]]
 ^h.foreach[k;]{
 	$result.[$k][$.id[$k]]
 }
-
 
 @print[h;field][t]
 $t[^h._keys[]]

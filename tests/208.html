@@ -48,6 +48,5 @@ Memory:<br />
 ^$m1.ever_allocated_since_compact >= ^$m0.ever_allocated_since_compact ? ^if($m1.ever_allocated_since_compact >= $m0.ever_allocated_since_compact){Y (OK)}{N (???)}<br />
 ^$m2.ever_allocated_since_compact >= ^$m0.ever_allocated_since_compact ? ^if($m2.ever_allocated_since_compact >= $m0.ever_allocated_since_compact){Y (OK)}{N (???)}<br />
 
-
 @do[][i;var]
 $var[^for[i](1;5000){^i.format[%4d]}]
