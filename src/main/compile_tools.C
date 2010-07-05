@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMPILE_TOOLS_C="$Date: 2009/06/07 13:15:54 $";
+static const char * const IDENT_COMPILE_TOOLS_C="$Date: 2010/07/05 01:38:14 $";
 
 #include "compile_tools.h"
 #include "pa_string.h"
@@ -85,6 +85,24 @@ bool maybe_make_self(ArrayOperation& opcodes, ArrayOperation& diving_code, size_
 	return false;
 }
 
+
+Method::Call_type GetMethodCallType(Parse_control& pc, ArrayOperation& literal_array) {
+	const String* full_name=LA2S(literal_array);
+	int pos=full_name->pos(':');
+	if(pos > 0) {
+		const String call_type=full_name->mid(0, pos);
+		if(call_type!=method_call_type_static)
+			throw Exception("parser.compile",
+					&call_type,
+					"incorrect method call type. the only valid call type method prefix is '"METHOD_CALL_TYPE_STATIC"'"
+				);
+		const String *sole_name=&full_name->mid(pos+1, full_name->length());
+		// replace full method name (static:method) by sole method name (method). it will be used later.
+		change_string_literal_value(literal_array, *sole_name);
+		return Method::CT_STATIC;
+	}
+	return pc.get_methods_call_type();
+}
 
 void push_LS(Parse_control& pc, lexical_state new_state) { 
 	if(pc.ls_sp<MAX_LEXICAL_STATES) {

@@ -8,7 +8,7 @@
 #ifndef COMPILE_TOOLS
 #define COMPILE_TOOLS
 
-static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2009/08/27 10:18:58 $";
+static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2010/07/05 01:38:14 $";
 
 #include "pa_opcode.h"
 #include "pa_types.h"
@@ -17,6 +17,11 @@ static const char * const IDENT_COMPILE_TOOLS_H="$Date: 2009/08/27 10:18:58 $";
 
 /// used to track source column number
 #define TAB_SIZE 8
+
+#define METHOD_CALL_TYPE_STATIC "static"
+#define METHOD_CALL_TYPE_DYNAMIC "dynamic"
+const String method_call_type_static(METHOD_CALL_TYPE_STATIC);
+const String method_call_type_dynamic(METHOD_CALL_TYPE_DYNAMIC);
 
 enum lexical_state {
 	LS_USER, LS_NAME_SQUARE_PART,
@@ -151,11 +156,15 @@ public:
 	}
 
 	void set_all_vars_local(){
-		if(cclass_new){
-			cclass_new->set_all_vars_local();
-		} else {
-			cclass->set_all_vars_local();
-		}
+		(cclass_new ? cclass_new : cclass)->set_all_vars_local();
+	}
+
+	void set_methods_call_type(Method::Call_type call_type){
+		(cclass_new ? cclass_new : cclass)->set_methods_call_type(call_type);
+	}
+
+	Method::Call_type get_methods_call_type(){
+		return (cclass_new ? cclass_new : cclass)->get_methods_call_type();
 	}
 
 	void pos_next_line() {
@@ -236,6 +245,7 @@ inline ArrayOperation* VL(Value* value, uint file_no, uint line, uint col) {
 
 /// Literal Array to(2) Value @return Value from literal Array OP+origin+Value
 Value* LA2V(ArrayOperation& literal_string_array, int offset=0, OP::OPCODE code=OP::OP_VALUE);
+
 /// Literal Array to(2) String  @return String value from literal Array OP+origin+String array
 inline const String* LA2S(ArrayOperation& literal_string_array, int offset=0, OP::OPCODE code=OP::OP_VALUE) {
 	if(Value* value=LA2V(literal_string_array, offset, code))
@@ -381,6 +391,7 @@ inline bool maybe_optimize_construct(ArrayOperation& opcodes, ArrayOperation& va
 }
 #endif
 
+Method::Call_type GetMethodCallType(Parse_control& pc, ArrayOperation& literal_string_array);
 
 void push_LS(Parse_control& pc, lexical_state new_state);
 void pop_LS(Parse_control& pc);

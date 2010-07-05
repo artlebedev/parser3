@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
-static const char * const IDENT_VSTATELESS_CLASS_H="$Date: 2009/08/14 10:39:48 $";
+static const char * const IDENT_VSTATELESS_CLASS_H="$Date: 2010/07/05 01:38:34 $";
 
 // include
 
@@ -49,6 +49,7 @@ class VStateless_class: public Value {
 	bool flocked;
 	bool fall_vars_local;
 	bool fpartial;
+	Method::Call_type fcall_type;
 
 protected:
 
@@ -98,7 +99,8 @@ public: // usage
 		fall_vars_local(false),
 		fpartial(false),
 		fscalar(0),
-		fdefault_getter(0)
+		fdefault_getter(0),
+		fcall_type(Method::CT_ANY)
 		{
 			set_base(abase);
 	}
@@ -150,6 +152,19 @@ public: // usage
 
 	void set_partial(){
 		fpartial=true;
+	}
+
+	Method::Call_type get_methods_call_type(){
+		return fcall_type;
+	}
+
+	void set_methods_call_type(Method::Call_type call_type){
+		if(fcall_type!=Method::CT_ANY)
+			throw Exception(PARSER_RUNTIME,
+						0,
+						"You can specify call type option in a class only once"
+					);
+		fcall_type=call_type;
 	}
 
 	void add_native_method(

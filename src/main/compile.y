@@ -5,7 +5,7 @@
 	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.255 2010/05/20 04:36:20 misha Exp $
+	$Id: compile.y,v 1.256 2010/07/05 01:38:14 misha Exp $
 */
 
 /**
@@ -221,18 +221,24 @@ control_method: '@' STRING '\n'
 							YYERROR;
 						}
 					} else {
-						// mark new class as partial. we can add methods to it later.
+						// marks the new class as partial. we will be able to add methods here later.
 						PC.cclass_new->set_partial();
 					}
 				} else {
 					strcpy(PC.error, "'"OPTION_PARTIAL_CLASS"' option should be used straight after @"CLASS_NAME);
 					YYERROR;
 				}
+			} else if(option==method_call_type_static){
+				PC.set_methods_call_type(Method::CT_STATIC);
+			} else if(option==method_call_type_dynamic){
+				PC.set_methods_call_type(Method::CT_DYNAMIC);
 			} else {
 				strcpy(PC.error, "'");
 				strncat(PC.error, option.cstr(), MAX_STRING/2);
 				strcat(PC.error, "' invalid option. valid options are "
-					"'"OPTION_PARTIAL_CLASS"' and '"OPTION_ALL_VARS_LOCAL_NAME"'");
+					"'"OPTION_PARTIAL_CLASS"', '"OPTION_ALL_VARS_LOCAL_NAME"'"
+					", '"METHOD_CALL_TYPE_STATIC"' and '"METHOD_CALL_TYPE_DYNAMIC"'"
+					);
 				YYERROR;
 			}
 		}
@@ -281,14 +287,12 @@ code_method: '@' STRING bracketed_maybe_strings maybe_bracketed_strings maybe_co
 
 	Method* method=new Method(
 		//name, 
-		Method::CT_ANY,
+		GetMethodCallType(PC, LA2S(*$2)),
 		0, 0/*min,max numbered_params_count*/, 
 		params_names, locals_names, 
 		0/*to be filled later in next {} */, 0, all_vars_local);
 
 	*reinterpret_cast<Method**>(&$$)=method;
-
-	// todo: check [][;result;]
 } maybe_codes {
 		Method* method=reinterpret_cast<Method*>($7);
 		// fill in the code
