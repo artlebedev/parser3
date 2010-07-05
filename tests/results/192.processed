@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 321
+Content-Length: 326
 
 $f.name: 192.html
 <br />
@@ -17,7 +17,7 @@ $f.name: overrided.html
 $f.name: overrided.html
 <br />
 load
-invalid option passed
+called with invalid option
 <br />
 $f.name: 192.html
 <br />
