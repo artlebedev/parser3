@@ -26,7 +26,7 @@
  *
  */
 
-static const char * const IDENT_COMMON_C="$Date: 2010/06/03 02:03:21 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2010/07/05 01:08:24 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -452,13 +452,62 @@ void file_write(
 		do_append); 
 }
 
+static size_t get_dir(char* fname, size_t helper_length){
+	bool dir=false;
+	size_t pos=0;
+	for(pos=helper_length; pos; pos--){
+		char c=fname[pos-1];
+		if(c=='/' || c=='\\'){
+			fname[pos-1]=0;
+			dir=true;
+		} else if(dir) break;
+	}
+	return pos;
+}
+
+static bool entry_readable(char* fname, bool need_dir) {
+	if(need_dir){
+		size_t size=strlen(fname);
+		while(size) {
+			char c=fname[size-1];
+			if(c=='/' || c=='\\')
+				fname[--size]=0;
+			else
+				break;
+		}
+	}
+
+	struct stat finfo;
+	if(access(fname, R_OK)==0 && entry_exists(fname, &finfo)) {
+		bool is_dir=(finfo.st_mode&S_IFDIR) != 0;
+		return is_dir==need_dir;
+	}
+	return false;
+}
+
+static bool entry_readable(const String& file_spec, bool need_dir) {
+	return entry_readable(file_spec.taint_cstrm(String::L_FILE_SPEC), need_dir);
+}
+
 // throws nothing! [this is required in file_move & file_delete]
-static void rmdir(const String& file_spec, size_t pos_after) {
-	size_t pos_before;
-	if((pos_before=file_spec.pos('/', pos_after))!=STRING_NOT_FOUND)
-		rmdir(file_spec, pos_before+1); 
-	
-	rmdir(file_spec.mid(0, pos_after-1/* / */).taint_cstr(String::L_FILE_SPEC)); 
+static void rmdir(const String& file_spec, size_t pos_after=0) {
+	char* dir_spec=file_spec.taint_cstrm(String::L_FILE_SPEC);
+	size_t length=strlen(dir_spec);
+	while( (length=get_dir(dir_spec, length)) && (length > pos_after) ){
+#ifdef WIN32
+		if(!entry_readable(dir_spec, true))
+			break;
+		DWORD attrs=GetFileAttributes(dir_spec);
+		if(
+			(attrs==INVALID_FILE_ATTRIBUTES)
+			|| !(attrs & FILE_ATTRIBUTE_DIRECTORY)
+			|| (attrs & FILE_ATTRIBUTE_REPARSE_POINT)
+		)
+			break;
+#endif
+		if( rmdir(dir_spec) )
+			break;
+	};
 }
 
 bool file_delete(const String& file_spec, bool fail_on_problem) {
@@ -503,26 +552,6 @@ bool entry_exists(const char* fname, struct stat *afinfo) {
 bool entry_exists(const String& file_spec) {
 	const char* fname=file_spec.taint_cstr(String::L_FILE_SPEC); 
 	return entry_exists(fname, 0); 
-}
-
-static bool entry_readable(const String& file_spec, bool need_dir) {
-	char* fname=file_spec.taint_cstrm(String::L_FILE_SPEC); 
-	if(need_dir) {
-		size_t size=strlen(fname); 
-		while(size) {
-			char c=fname[size-1]; 
-			if(c=='/' || c=='\\')
-				fname[--size]=0;
-			else
-				break;
-		}
-	}
-	struct stat finfo;
-	if(access(fname, R_OK)==0 && entry_exists(fname, &finfo)) {
-		bool is_dir=(finfo.st_mode&S_IFDIR) != 0;
-		return is_dir==need_dir;
-	}
-	return false;
 }
 
 bool file_exist(const String& file_spec) {
