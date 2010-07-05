@@ -5,7 +5,7 @@
 	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.256 2010/07/05 01:38:14 misha Exp $
+	$Id: compile.y,v 1.257 2010/07/05 01:47:55 misha Exp $
 */
 
 /**
@@ -287,7 +287,7 @@ code_method: '@' STRING bracketed_maybe_strings maybe_bracketed_strings maybe_co
 
 	Method* method=new Method(
 		//name, 
-		GetMethodCallType(PC, LA2S(*$2)),
+		GetMethodCallType(PC, *$2),
 		0, 0/*min,max numbered_params_count*/, 
 		params_names, locals_names, 
 		0/*to be filled later in next {} */, 0, all_vars_local);
