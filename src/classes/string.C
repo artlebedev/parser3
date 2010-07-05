@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2010/05/17 22:57:12 $";
+static const char * const IDENT_STRING_C="$Date: 2010/07/05 05:54:46 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -546,13 +546,9 @@ const String* sql_result_string(Request& r, MethodParams& params,
 					valid_options++;
 				}
 				if(valid_options!=options->count())
-					throw Exception(PARSER_RUNTIME,
-						0,
-						"called with invalid option");
+					throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 			} else
-				throw Exception(PARSER_RUNTIME,
-					0,
-					"options must be hash");
+				throw Exception(PARSER_RUNTIME, 0, OPTIONS_MUST_BE_HASH);
 	} else
 		options=0;
 
@@ -630,9 +626,7 @@ static void _save(Request& r, MethodParams& params) {
 				valid_options++;
 			}
 			if(valid_options != options->count())
-				throw Exception(PARSER_RUNTIME,
-					0,
-					INVALID_OPTION_PASSED);
+				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 		} else {
 			const String& mode=params.as_string(0, "mode must be string");
 			if(mode==MODE_APPEND){

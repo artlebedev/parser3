@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_HASH_C="$Date: 2009/08/08 13:30:20 $";
+static const char * const IDENT_HASH_C="$Date: 2010/07/05 05:54:46 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -334,13 +334,9 @@ static void _sql(Request& r, MethodParams& params) {
 					value_type=get_value_type(r.process_to_value(*vvalue_type));
 				}
 				if(valid_options!=options->count())
-					throw Exception(PARSER_RUNTIME,
-						0,
-						"called with invalid option");
+					throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 			} else
-				throw Exception(PARSER_RUNTIME,
-					0,
-					"options must be hash");
+				throw Exception(PARSER_RUNTIME, 0, OPTIONS_MUST_BE_HASH);
 	}
 
 	SQL_Driver::Placeholder* placeholders=0;

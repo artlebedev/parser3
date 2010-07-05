@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_IMAGE_C="$Date: 2009/11/27 05:05:40 $";
+static const char * const IDENT_IMAGE_C="$Date: 2010/07/05 05:54:46 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -1163,9 +1163,7 @@ static void _font(Request& r, MethodParams& params) {
 				letter_spacing=r.process_to_value(*vletter_spacing).as_int();
 			}
 			if(valid_options!=options->count())
-				throw Exception(PARSER_RUNTIME,
-					0,
-					"called with invalid option");
+				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 		} else {
 			// backward
 			spacebar_width=params.as_int(2, "spacebar_width must be int", r);

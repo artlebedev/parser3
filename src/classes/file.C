@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2010/05/20 04:28:14 $";
+static const char * const IDENT_FILE_C="$Date: 2010/07/05 05:54:46 $";
 
 #include "pa_config_includes.h"
 
@@ -138,9 +138,7 @@ static void _save(Request& r, MethodParams& params) {
 				valid_options++;
 			}
 			if(valid_options != options->count())
-				throw Exception(PARSER_RUNTIME,
-					0,
-					INVALID_OPTION_PASSED);
+				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 		}
 
 	// save
@@ -301,7 +299,7 @@ static void _create(Request& r, MethodParams& params) {
 				valid_options++;
 			}
 			if(valid_options != options->count())
-				throw Exception(PARSER_RUNTIME, 0, INVALID_OPTION_PASSED);
+				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 		}
 
 		if(asked_charset != 0)
@@ -891,9 +889,7 @@ static void _sql(Request& r, MethodParams& params) {
 				offset=(ulong)r.process_to_value(*voffset).as_double();
 			}
 			if(valid_options!=options->count())
-				throw Exception(PARSER_RUNTIME,
-					0,
-					"called with invalid option");
+				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 		}
 
 

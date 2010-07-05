@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2010/05/16 22:12:50 $";
+static const char * const IDENT_TABLE_C="$Date: 2010/07/05 05:54:46 $";
 
 #if (!defined(NO_STRINGSTREAM) && !defined(FREEBSD4))
 #include <sstream>
@@ -106,9 +106,7 @@ static Table::Action_options get_action_options(Request& r, MethodParams& params
 	} 
 
 	if(valid_options!=options->count())
-		throw Exception(PARSER_RUNTIME,
-			0,
-			"called with invalid option");
+		throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 
 	return result;
 }
@@ -464,9 +462,7 @@ static void _save(Request& r, MethodParams& params) {
 			if(HashStringValue* options=voptions.get_hash()) {
 				int valid_options=separators.load(*options);
 				if(valid_options!=options->count())
-					throw Exception(PARSER_RUNTIME,
-						0,
-						INVALID_OPTION_PASSED);
+					throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 			} else {
 				throw Exception(PARSER_RUNTIME,
 					0,
@@ -789,16 +785,12 @@ static void _hash(Request& r, MethodParams& params) {
 					}
 
 					if(valid_options!=options->count())
-						throw Exception(PARSER_RUNTIME,
-							0,
-							"called with invalid option");
+						throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 				}
 			}
 
 			if(param_index==2) // options was specified but not as hash
-				throw Exception(PARSER_RUNTIME,
-					0,
-					"options must be hash");
+				throw Exception(PARSER_RUNTIME, 0, OPTIONS_MUST_BE_HASH);
 
 			Array<int> value_fields;
 			if(param_index==0){ // list of columns wasn't specified
@@ -1155,13 +1147,9 @@ static void _sql(Request& r, MethodParams& params) {
 					offset=(ulong)r.process_to_value(*voffset).as_double();
 				}
 				if(valid_options!=options->count())
-					throw Exception(PARSER_RUNTIME,
-						0,
-						"called with invalid option");
+					throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 			} else
-				throw Exception(PARSER_RUNTIME,
-					0,
-					"options must be hash");
+				throw Exception(PARSER_RUNTIME, 0, OPTIONS_MUST_BE_HASH);
 	}
 
 	SQL_Driver::Placeholder* placeholders=0;

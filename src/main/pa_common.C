@@ -26,7 +26,7 @@
  *
  */
 
-static const char * const IDENT_COMMON_C="$Date: 2010/07/05 01:08:24 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2010/07/05 05:55:21 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -200,9 +200,7 @@ File_read_result file_read(Request_charsets& charsets, const String& file_spec,
 	if(params){
 		int valid_options=pa_get_valid_file_options_count(*params);
 		if(valid_options!=params->count())
-			throw Exception(PARSER_RUNTIME,
-				0,
-				INVALID_OPTION_PASSED);
+			throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 	}
 
 	File_read_action_info info={&result.str, &result.length, buf, offset, count}; 

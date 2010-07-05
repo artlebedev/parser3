@@ -8,7 +8,7 @@
 
 #ifdef HAVE_CURL
 
-static const char * const IDENT_INET_C="$Date: 2010/05/17 08:52:19 $";
+static const char * const IDENT_INET_C="$Date: 2010/07/05 05:54:46 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
@@ -487,7 +487,7 @@ static void _curl_options(Request& r, MethodParams& params){
 	if(HashStringValue* options=params.as_no_junction(0, OPTIONS_MUST_NOT_BE_CODE).get_hash()){
 		options->for_each<Request&>(curl_setopt, r);
 	} else
-		throw Exception("curl", 0, "options must be hash");
+		throw Exception("curl", 0, OPTIONS_MUST_BE_HASH);
 }
 
 

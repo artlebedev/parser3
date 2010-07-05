@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
  */
 
-static const char * const IDENT_HTTP_C="$Date: 2009/11/09 00:32:05 $"; 
+static const char * const IDENT_HTTP_C="$Date: 2010/07/05 05:55:21 $"; 
 
 #include "pa_http.h"
 #include "pa_common.h"
@@ -577,9 +577,7 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 		}
 
 		if(valid_options!=options->count())
-			throw Exception(PARSER_RUNTIME,
-				0,
-				INVALID_OPTION_PASSED);
+			throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 	}
 	if(!asked_remote_charset) // defaulting to $request:charset
 		asked_remote_charset=&(r.charsets).source();
