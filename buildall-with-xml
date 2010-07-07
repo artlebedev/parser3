@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Id: buildall-with-xml,v 1.36 2009/12/04 04:20:45 misha Exp $
+# $Id: buildall-with-xml,v 1.37 2010/07/07 03:04:37 misha Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -43,7 +43,7 @@ fi
 
 if test ! -f "$project_directory/pcre/lib/libpcre.a"; then
   cd $project_directory/src
-  libpcre="pcre-7.9"
+  libpcre="pcre-8.10"
   if test ! -f "$libpcre.tar.gz"; then
     echo "Downloading pcre [2 lib of 4]..."
     wget -c --passive-ftp ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/$libpcre.tar.gz
