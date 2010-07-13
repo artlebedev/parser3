@@ -1,0 +1,14 @@
+@main[]
+$tab1[^table::create{one two three
+1	2	3}]
+
+$tab2[^table::create{column
+two}]
+
+^try{
+	$tab1.$tab2
+}{
+	$exception.handled(1)
+	exception (OK):<br />
+	<b>$exception.type</b> $exception.source $exception.comment
+}
