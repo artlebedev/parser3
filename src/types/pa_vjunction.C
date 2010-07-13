@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VJUNCTION_C="$Date: 2009/05/27 00:58:46 $";
+static const char * const IDENT_VJUNCTION_C="$Date: 2010/07/13 01:39:53 $";
 
 // include
 
@@ -28,4 +28,15 @@ void VJunction::reattach(WContext *new_wcontext){
 
 override Value& VJunction::as_expr_result(bool) {
 	return VBool::get(as_bool());
+}
+
+
+Value* VJunction::get_element(const String& aname) {
+	// .CLASS
+	if(aname==CLASS_NAME)
+		return this;
+	// .CLASS_NAME
+	if(aname==CLASS_NAMETEXT)
+		return new VString(junction_class_name);
+	return Value::get_element(aname);
 }

@@ -8,18 +8,21 @@
 #ifndef PA_VJUNCTION_H
 #define PA_VJUNCTION_H
 
-static const char * const IDENT_VJUNCTION_H="$Date: 2009/05/27 00:58:46 $";
+static const char * const IDENT_VJUNCTION_H="$Date: 2010/07/13 01:39:53 $";
 
 // include
 
 #include "pa_value.h"
 #include "pa_junction.h"
 
+#define JUNCTION_CLASS_NAME "junction"
+static const String junction_class_name(JUNCTION_CLASS_NAME);
+
 /// junction is method+self+context, implemented with Junction
 class VJunction: public Value {
 public: // VJunction
 
-	override const char* type() const { return "junction"; }
+	override const char* type() const { return JUNCTION_CLASS_NAME; }
 
 	/// VJunction: 0
 	override VStateless_class *get_class() { return 0; }
@@ -35,6 +38,9 @@ public: // VJunction
 
 	/// VJunction: method, root,self,rcontext, code
 	override Junction* get_junction() { return &fjunction; }
+
+	// VJunction: CLASS, CLASS_NAME
+	override Value* get_element(const String& aname);
 
 public: // usage
 
