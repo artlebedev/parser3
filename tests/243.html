@@ -1,0 +1,11 @@
+$filespec[./243/a//b///c////d.txt]
+$s[dummy]
+^s.save[$filespec]
+
+^if(-f $filespec){file exist<br />}
+^if(-f "./243/a/b/c/d.txt"){file exist<br />}
+^if(-d ^file:dirname[$filespec]){dir exist<br />}
+^if(-d "./243/a/b/c"){dir exist<br />}
+
+^file:delete[$filespec]
+^if(!(-d "./243")){dir doesn't exist (it's OK)<br />}

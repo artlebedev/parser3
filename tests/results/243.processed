@@ -1,0 +1,8 @@
+Content-Type: text/html
+Content-Length: 99
+
+file exist<br />
+file exist<br />
+dir exist<br />
+dir exist<br />
+dir doesn't exist (it's OK)<br />
