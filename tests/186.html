@@ -1,4 +1,4 @@
-﻿$request:charset[utf-8]
+$request:charset[utf-8]
 
 $sValue[abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ
 0123456789
@@ -15,15 +15,15 @@ Origin:
 
 
 <hr />
-$sEscapeValued[^sValue.js-escape[]]
+$sEscapedValue[^sValue.js-escape[]]
 Escaped:
 <pre>
-=^taint[html][$sEscapeValued]=
+=^taint[html][$sEscapedValue]=
 </pre>
 
 
 <hr />
-$sUnescapedValue[^string:js-unescape[$sEscapeValued]]
+$sUnescapedValue[^string:js-unescape[$sEscapedValue]]
 Unescaped [^if($sUnescapedValue eq $sValue){equal to source}{NOT equal to source}]:
 <pre>
 =^taint[html][$sUnescapedValue]=
@@ -38,3 +38,13 @@ $s[$v]
 =^s.js-escape[]=
 =^string:js-unescape[$s]=
 </pre>
+
+
+<hr />
+# replace %uXXXX to \uXXXX and check escaping again
+$sEscapedValue2[^sEscapedValue.match[%u][gi]{\u}]
+<pre>
+=^taint[html][$sEscapedValue2]=
+</pre>
+$sUnescapedValue2[^string:js-unescape[$sEscapedValue2]]
+Unescaped [^if($sUnescapedValue2 eq $sValue){equal to source}{NOT equal to source}]
