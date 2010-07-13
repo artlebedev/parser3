@@ -1,0 +1,8 @@
+^try{
+	$f[^file::load[binary;./241.html/zigi.txt]]
+}{
+	$exception.handled(1)
+	Exception (OK):
+	<b>$exception.type</b>
+	^exception.source.match[^^(.+)?\./][]{./}
+}
