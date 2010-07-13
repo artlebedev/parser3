@@ -1,0 +1,65 @@
+@main[]
+<h2>without @OPTIONS (==any):</h2>
+^do{^any:m00[]}
+^do{^any:m01[]}
+
+$o[^any::create[]]
+^do{^o.m00[]}
+^do{^o.m01[]}
+<hr />
+
+<h2>@OPTIONS static:</h2>
+^do{^static:m02[]}
+^do{^static:m03[]}
+^do{$o[^static::create[]]}
+<hr />
+
+<h2>@OPTIONS dynamic:</h2>
+^do{^dynamic:m04[]}
+^do{^dynamic:m05[]}
+$o[^dynamic::create[]]
+^do{^o.m04[]}
+^do{^o.m05[]}
+
+@do[jCode]
+^try{$jCode}{$exception.handled(1)$exception.type $exception.source $exception.comment}
+<br />
+
+@CLASS
+any
+
+@create[]
+
+@m00[]
+m00 (any)
+
+@static:m01[]
+static:m01 (static)
+
+@CLASS
+static
+
+@OPTIONS
+static
+
+@create[]
+
+@m02[]
+m02 (static)
+
+@static:m03[]
+static:m03 (static)
+
+@CLASS
+dynamic
+
+@OPTIONS
+dynamic
+
+@create[]
+
+@m04[]
+m04 (dynamic)
+
+@static:m05[]
+static:m05 (static)

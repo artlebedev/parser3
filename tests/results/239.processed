@@ -1,0 +1,30 @@
+Content-Type: text/html
+Content-Length: 535
+
+<h2>without @OPTIONS (==any):</h2>
+m00 (any)
+<br />
+static:m01 (static)
+<br />
+m00 (any)
+<br />
+parser.runtime m01 is not allowed to be called dynamically
+<br />
+<hr />
+<h2>@OPTIONS static:</h2>
+m02 (static)
+<br />
+static:m03 (static)
+<br />
+parser.runtime create method is static and can not be used as constructor
+<br />
+<hr />
+<h2>@OPTIONS dynamic:</h2>
+parser.runtime m04 is not allowed to be called statically
+<br />
+static:m05 (static)
+<br />
+m04 (dynamic)
+<br />
+parser.runtime m05 is not allowed to be called dynamically
+<br />
