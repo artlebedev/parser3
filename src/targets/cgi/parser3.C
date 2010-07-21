@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_PARSER3_C="$Date: 2010/03/19 11:31:30 $";
+static const char * const IDENT_PARSER3_C="$Date: 2010/07/21 22:23:33 $";
 
 #include "pa_config_includes.h"
 
@@ -679,10 +679,13 @@ int main(int argc, char *argv[]) {
 
 	// were we started as CGI?
 	cgi=
-		getenv("SERVER_SOFTWARE") || 
-		getenv("SERVER_NAME") || 
-		getenv("GATEWAY_INTERFACE") || 
-		getenv("REQUEST_METHOD");
+		(
+			getenv("SERVER_SOFTWARE") || 
+			getenv("SERVER_NAME") || 
+			getenv("GATEWAY_INTERFACE") || 
+			getenv("REQUEST_METHOD")
+		)
+		&& !getenv("PARSER_VERSION");
 	
 	char *raw_filespec_to_process;
 	if(cgi) {
