@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2010/07/05 05:54:46 $";
+static const char * const IDENT_FILE_C="$Date: 2010/07/21 22:21:17 $";
 
 #include "pa_config_includes.h"
 
@@ -25,6 +25,7 @@ static const char * const IDENT_FILE_C="$Date: 2010/07/05 05:54:46 $";
 #include "pa_sql_connection.h"
 #include "pa_md5.h"
 #include "pa_vregex.h"
+#include "pa_version.h"
 
 // defines
 
@@ -443,6 +444,7 @@ static void _exec_cgi(Request& r, MethodParams& params, bool cgi) {
 
 	// const
 	ECSTR(GATEWAY_INTERFACE, "CGI/1.1");
+	ECSTR(PARSER_VARSION, PARSER_VERSION);
 	// from Request.info
 	ECSTR(DOCUMENT_ROOT, r.request_info.document_root);
 	ECSTR(PATH_TRANSLATED, r.request_info.path_translated);
