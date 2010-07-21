@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2010/07/05 05:54:46 $";
+static const char * const IDENT_TABLE_C="$Date: 2010/07/21 22:29:05 $";
 
 #if (!defined(NO_STRINGSTREAM) && !defined(FREEBSD4))
 #include <sstream>
@@ -247,7 +247,7 @@ struct lsplit_result {
 
 inline lsplit_result lsplit(char* string, char delim1, char delim2) {
 	lsplit_result result;
-    if(string) {
+	if(string) {
 		char delims[]={delim1, delim2, 0};
 		if(char* v=strpbrk(string, delims)) {
 			result.delim=*v;
@@ -255,27 +255,27 @@ inline lsplit_result lsplit(char* string, char delim1, char delim2) {
 			result.piece=v+1;
 			return result;
 		}
-    }
+	}
 	result.piece=0;
 	result.delim=0;
-    return result;
+	return result;
 }
 
 inline lsplit_result lsplit(char* *string_ref, char delim1, char delim2) {
-    lsplit_result result;
+	lsplit_result result;
 	result.piece=*string_ref;
 	lsplit_result next=lsplit(*string_ref, delim1, delim2);
 	result.delim=next.delim;
 	*string_ref=next.piece;
-    return result;
+	return result;
 }
 
 static lsplit_result lsplit(char** string_ref, char delim1, char delim2, char encloser) {
 	lsplit_result result;
 
-    if(char* string=*string_ref) {
+	if(char* string=*string_ref) {
 		if(encloser && *string==encloser) {
-            string++;
+			string++;
 			
 			char *read;
 			char *write;
@@ -301,9 +301,9 @@ static lsplit_result lsplit(char** string_ref, char delim1, char delim2, char en
 			return result;
 		} else
 			return lsplit(string_ref, delim1, delim2);
-    }
+	}
 	result.piece=0;
-    return result;
+	return result;
 }
 
 static void skip_empty_and_comment_lines( char** data_ref ) {
@@ -319,6 +319,22 @@ static void skip_empty_and_comment_lines( char** data_ref ) {
 		}
 	}
 }
+
+static void skip_empty_lines( char** data_ref ) {
+	if(char *data=*data_ref) {
+		while( char c=*data ) {
+			if( c== '\n' ) {
+				/*nowhere=*/getrow(&data); // remove empty lines
+				if(!(*data_ref=data))
+					break;
+				continue;
+			}
+			break;
+		}
+	}
+}
+
+typedef void (*Skip_lines_action)(char** data_ref);
 
 static void _load(Request& r, MethodParams& params) {
 	const String&  first_param=params.as_string(0, FILE_NAME_MUST_BE_STRING);
@@ -344,6 +360,8 @@ static void _load(Request& r, MethodParams& params) {
 		options
 	);
 
+	Skip_lines_action skip_lines_action = (separators.column=='#' || separators.encloser=='#') ? skip_empty_lines : skip_empty_and_comment_lines;
+
 	// parse columns
 	Table::columns_type columns;
 	if(nameless) {
@@ -351,7 +369,7 @@ static void _load(Request& r, MethodParams& params) {
 	} else {
 		columns=Table::columns_type(new ArrayString);
 
-		skip_empty_and_comment_lines(&data);
+		skip_lines_action(&data);
 		while( lsplit_result sr=lsplit(&data, separators.column, '\n', separators.encloser) ) {
 			*columns+=new String(sr.piece, String::L_TAINTED);
 			if(sr.delim=='\n') 
@@ -364,7 +382,7 @@ static void _load(Request& r, MethodParams& params) {
 
 	// parse cells
 	Table::element_type row(new ArrayString(columns_count));
-	skip_empty_and_comment_lines(&data);
+	skip_lines_action(&data);
 	while( lsplit_result sr=lsplit(&data, separators.column, '\n', separators.encloser) ) {
 		if(!*sr.piece && !sr.delim && !row->count()) // append last empty column [if without \n]
 			break;
@@ -372,7 +390,7 @@ static void _load(Request& r, MethodParams& params) {
 		if(sr.delim=='\n') {
 			table+=row;
 			row=new ArrayString(columns_count);
-			skip_empty_and_comment_lines(&data);
+			skip_lines_action(&data);
 		}
 	}
 	// last line [if without \n]
