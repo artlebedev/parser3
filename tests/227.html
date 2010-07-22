@@ -4,6 +4,8 @@ $a[^child::create[]]
 =^child:test[]=^a.test[]=
 =^child:test2[]=^a.test2[]=
 
+auto call count (issue #75): $a.cnt
+
 @CLASS
 parent
 
@@ -21,6 +23,8 @@ parent_a
 @GET_DEFAULT[]
 403
 
+@auto[]
+$cnt[$cnt call]
 
 @CLASS
 child

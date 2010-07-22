@@ -5,11 +5,12 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)\
 */
 
-static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2009/08/11 23:54:29 $";
+static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2010/07/22 21:08:35 $";
 
 #include "pa_vstateless_class.h"
 #include "pa_vstring.h"
 #include "pa_vbool.h"
+#include "pa_request.h"
 
 /// globals
 const String class_name(CLASS_NAME), class_nametext(CLASS_NAMETEXT);
@@ -114,8 +115,11 @@ void VStateless_class::set_base(VStateless_class* abase){
 		fbase=abase;
 		fbase->add_derived(*this);
 
+		bool no_auto = fmethods.get(auto_method_name) == NULL;
 		// we assume there is no derivatives at this point
 		fmethods.merge_dont_replace(abase->fmethods);
+		// we don't want to inherit @auto (issue #75)
+		if (no_auto) fmethods.remove(auto_method_name);
 
 		if(fbase->fscalar && !fscalar)
 			fscalar=fbase->fscalar;
