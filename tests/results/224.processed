@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 1849
+Content-Length: 1783
 
 cookie<br />env<br />hash - methoded<br />table - methoded<br />test - methoded<br />test1 - methoded<br />test2 - methoded
 <hr />
@@ -30,8 +30,6 @@ env<br />
 <hr />
 @GET_value[]
 <br />
-@auto[] {defined in test}
-<br />
 @create[v] {defined in test}
 <br />
 @create0[] {defined in test}
@@ -44,8 +42,6 @@ env<br />
 'test1' object base class name: 'test/test'<br />
 <hr />
 @GET_value[] {defined in test1}
-<br />
-@auto[] {defined in test}
 <br />
 @create[v] {defined in test}
 <br />
