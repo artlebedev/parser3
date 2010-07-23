@@ -17,7 +17,7 @@
 #ifndef PA_HASH_H
 #define PA_HASH_H
 
-static const char * const IDENT_HASH_H="$Date: 2009/12/04 04:19:58 $";
+static const char * const IDENT_HASH_H="$Date: 2010/07/23 22:23:24 $";
 
 #include "pa_memory.h"
 #include "pa_types.h"
@@ -136,21 +136,24 @@ public:
 		fused_refs=source.fused_refs;
 		fpairs_count=source.fpairs_count;
 		refs=new(UseGC) Pair*[allocated];
+		// clone & rehash
 #ifdef HASH_ORDER
 		first=0;
 		last=&first;
-#endif
-		// clone & rehash
-		Pair **old_ref=source.refs;
-		for(int index=0; index<allocated; index++)
-			for(Pair *pair=*old_ref++; pair; ) {
-				Pair *next=pair->link;
-
-				Pair **ref=&refs[index];
+		for(Pair *pair=source.first; pair; pair=pair->next)
+		{
+			uint index=pair->code%allocated;
+			Pair **ref=&refs[index];
+			HASH_NEW_PAIR(pair->code, pair->key, pair->value);
+		}
+#else
+		for(int i=0; i<source.allocated; i++)
+			for(Pair *pair=source.refs[i]; pair; pair=pair->link)
+			{
+				Pair **ref=&refs[i];
 				HASH_NEW_PAIR(pair->code, pair->key, pair->value);
-
-				pair=next;
 			}
+#endif
 	}
 
 #ifdef USE_DESTRUCTORS
