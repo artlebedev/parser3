@@ -1,7 +1,6 @@
 @main[]
 ^test_exif[096_dir]
 
-
 @test_exif[dir][file;image;keys]
 $file[^file:list[$dir;\.(?i:jpe?g)^$]]
 ^file.sort{$file.name}
@@ -25,7 +24,6 @@ $file[^file:list[$dir;\.(?i:jpe?g)^$]]
 	</tr>
 }
 </table>
-
 
 @show_exif_value[value][i]
 ^if($value is date){

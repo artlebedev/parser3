@@ -6,7 +6,6 @@
 ^show_xnode1[$xdoc.documentElement;0;1]<hr>
 ^show_xdoc2[$xdoc]<hr>
 
-
 @domdata[]
 $xdoc[^xdoc::create[doc]]
 $doc[$xdoc.documentElement]
@@ -15,28 +14,28 @@ $text[^name.appendChild[^xdoc.createTextNode[петросян&coz]]]
 
 @show_xnode1[x;level;single][l]
 ^if(def $x){
-    ^for[l](0;$level-1){&nbsp^;&nbsp^;&nbsp^;&nbsp^;}
-    ^if($x.nodeType == $xnode:ELEMENT_NODE){
-    	&lt^;$x.nodeName
-	    $pairs[$x.attributes]
-	    ^if(def $pairs){
-	    	$names[^pairs._keys[]]
-	    	^names.menu{ $names.key="$pairs.[$names.key].nodeValue"}
-	    }
-	    &gt^;
-    }{
-    	[$x.nodeType]
-    }
-    
-    ^if(def $x.nodeValue){$x.nodeValue}<br>
-    ^show_xnode1[$x.firstChild]($level+1)
-    ^if(!$single){
-	    ^show_xnode1[$x.nextSibling]($level)
-    }
+	^for[l](0;$level-1){&nbsp^;&nbsp^;&nbsp^;&nbsp^;}
+	^if($x.nodeType == $xnode:ELEMENT_NODE){
+		&lt^;$x.nodeName
+		$pairs[$x.attributes]
+		^if(def $pairs){
+			$names[^pairs._keys[]]
+			^names.menu{ $names.key="$pairs.[$names.key].nodeValue"}
+		}
+		&gt^;
+	}{
+		[$x.nodeType]
+	}
+	
+	^if(def $x.nodeValue){$x.nodeValue}<br>
+	^show_xnode1[$x.firstChild]($level+1)
+	^if(!$single){
+		^show_xnode1[$x.nextSibling]($level)
+	}
 
-    ^if($x.nodeType == $xnode:ELEMENT_NODE){
-    ^for[l](0;$level-1){&nbsp^;&nbsp^;&nbsp^;&nbsp^;}&lt^;/$x.nodeName&gt^;<br>
-    }
+	^if($x.nodeType == $xnode:ELEMENT_NODE){
+	^for[l](0;$level-1){&nbsp^;&nbsp^;&nbsp^;&nbsp^;}&lt^;/$x.nodeName&gt^;<br>
+	}
 }
 
 @show_xdoc2[xdoc]

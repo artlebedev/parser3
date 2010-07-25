@@ -168,22 +168,17 @@ $xNode[$h.0]
 ^^iTwo.bool(true): ^checkBool(^iTwo.bool(true))
 ^^iTwo.bool(false): ^checkBool(^iTwo.bool(false))
 
-
 @checkIsBool[uValue]
 ^if($uValue is "bool"){yes}{no}<br />
-
 
 @checkBool[bValue]
 ^if($bValue == true){true}{false}<br />
 
-
 @checkDef[uValue]
 ^if(def $uValue){<b>yes</b>}{no}<br />
 
-
 @checkExp[uValue]
 ^if($uValue){<b>true</b>}{false}<br />
-
 
 @printHeadLine[sTitle]
 $tType[^table::create{sName
@@ -206,7 +201,6 @@ xnode
 	<td>(...)</td>
 	^tType.menu{<td>is $tType.sName</td>}
 </tr>
-
 
 @printLine[sTitle;sClassName;sDef;sExp;uValue]
 <tr>

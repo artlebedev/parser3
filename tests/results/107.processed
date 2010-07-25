@@ -1,5 +1,5 @@
 Content-Type: text/html; charset=UTF-8
-Content-Length: 4790
+Content-Length: 4789
 
 <pre>&lt;!--for getByID to work we need to enable doctype checking in pa_global.C :( &lt;?DOCTYPE people SYSTEM &quot;107.dtd&quot;?&gt;--&gt;&lt;people&gt;
 	&lt;man id=&quot;1&quot; имя=&quot;word слово&quot;&gt;
