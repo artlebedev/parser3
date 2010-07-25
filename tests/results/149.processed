@@ -1,14 +1,14 @@
 Content-Type: text/html
-Content-Length: 13769
+Content-Length: 13799
 
 <h2>Origin</h2>
 <pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;!DOCTYPE people&gt;
 &lt;!--some comment--&gt;
 &lt;people xmlns:first=&quot;http://parser.ru/first&quot; xmlns:second=&quot;http://parser.ru/second&quot;&gt;
-		&lt;man first:attrname=&quot;attr value&quot;&gt;
-			&lt;name&gt;ПИФ&amp;amp;&lt;/name&gt;
-		&lt;/man&gt;
+	   	&lt;man first:attrname=&quot;attr value&quot;&gt;
+            &lt;name&gt;ПИФ&amp;amp;&lt;/name&gt;
+	   	&lt;/man&gt;
 	&lt;man id=&quot;1&quot; имя=&quot;word слово&quot;&gt;
 		&lt;name&gt;P«AF	B&lt;/name&gt;
 		&lt;tst:findme xmlns:tst=&quot;http://parser.ru/tst&quot;&gt;secret&lt;/tst:findme&gt;
@@ -97,9 +97,9 @@ attr value
 &lt;!DOCTYPE people&gt;
 &lt;!--some comment--&gt;
 &lt;people xmlns:first=&quot;http://parser.ru/first&quot; xmlns:second=&quot;http://parser.ru/second&quot;&gt;
-		&lt;man first:attrname=&quot;attr value&quot;&gt;
-			&lt;name&gt;ПИФ&amp;amp;&lt;/name&gt;
-		&lt;/man&gt;
+	   	&lt;man first:attrname=&quot;attr value&quot;&gt;
+            &lt;name&gt;ПИФ&amp;amp;&lt;/name&gt;
+	   	&lt;/man&gt;
 	&lt;man id=&quot;1&quot; имя=&quot;word слово&quot; second:attrname2=&quot;value 2&quot;&gt;
 		&lt;name&gt;P«AF	B&lt;/name&gt;
 		&lt;tst:findme xmlns:tst=&quot;http://parser.ru/tst&quot;&gt;secret&lt;/tst:findme&gt;
@@ -187,9 +187,9 @@ secret<br />
 &lt;!DOCTYPE people&gt;
 &lt;!--some comment--&gt;
 &lt;people xmlns:first=&quot;http://parser.ru/first&quot; xmlns:second=&quot;http://parser.ru/second&quot;&gt;
-		&lt;man&gt;
-			&lt;name&gt;ПИФ&amp;amp;&lt;/name&gt;
-		&lt;/man&gt;
+	   	&lt;man&gt;
+            &lt;name&gt;ПИФ&amp;amp;&lt;/name&gt;
+	   	&lt;/man&gt;
 	&lt;man id=&quot;1&quot; имя=&quot;word слово&quot; second:attrname2=&quot;value 2&quot;&gt;
 		&lt;name&gt;P«AF	B&lt;/name&gt;
 		&lt;tst:findme xmlns:tst=&quot;http://parser.ru/tst&quot;&gt;secret&lt;/tst:findme&gt;
@@ -278,9 +278,9 @@ $Attr.nodeValue='value 2'<br />
 &lt;!DOCTYPE people&gt;
 &lt;!--some comment--&gt;
 &lt;people xmlns:first=&quot;http://parser.ru/first&quot; xmlns:second=&quot;http://parser.ru/second&quot;&gt;
-		&lt;man&gt;
-			&lt;name&gt;ПИФ&amp;amp;&lt;/name&gt;
-		&lt;/man&gt;
+	   	&lt;man&gt;
+            &lt;name&gt;ПИФ&amp;amp;&lt;/name&gt;
+	   	&lt;/man&gt;
 	&lt;man id=&quot;1&quot; имя=&quot;word слово&quot; second:attrname2=&quot;changed attribute value&quot;&gt;
 		&lt;name&gt;P«AF	B&lt;/name&gt;
 		&lt;tst:findme xmlns:tst=&quot;http://parser.ru/tst&quot;&gt;secret&lt;/tst:findme&gt;
@@ -368,9 +368,9 @@ right<br />
 &lt;!DOCTYPE people&gt;
 &lt;!--some comment--&gt;
 &lt;people xmlns:first=&quot;http://parser.ru/first&quot; xmlns:second=&quot;http://parser.ru/second&quot;&gt;
-		&lt;man&gt;
-			&lt;name&gt;ПИФ&amp;amp;&lt;/name&gt;
-		&lt;/man&gt;
+	   	&lt;man&gt;
+            &lt;name&gt;ПИФ&amp;amp;&lt;/name&gt;
+	   	&lt;/man&gt;
 	&lt;man id=&quot;1&quot; имя=&quot;word слово&quot; second:attrname2=&quot;changed attribute value&quot; third:attrname3=&quot;value3&quot;&gt;
 		&lt;name&gt;P«AF	B&lt;/name&gt;
 		&lt;tst:findme xmlns:tst=&quot;http://parser.ru/tst&quot;&gt;secret&lt;/tst:findme&gt;
