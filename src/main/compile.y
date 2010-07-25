@@ -5,7 +5,7 @@
 	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.257 2010/07/05 01:47:55 misha Exp $
+	$Id: compile.y,v 1.258 2010/07/25 06:44:45 misha Exp $
 */
 
 /**
@@ -1580,12 +1580,9 @@ default:
 
 break2:
 	if(end!=begin) { // there is last piece?
-		if((c=='@' || c==0) && end[-1]=='\n') { // we are before LS_DEF_NAME or EOF?
-			// strip last \n
-			end--;
-			if(end!=begin && end[-1]=='\n') // allow one empty line before LS_DEF_NAME
+		if(c=='@' || c==0) // we are before LS_DEF_NAME or EOF?
+			while(end!=begin && end[-1]=='\n') // trim all empty lines before LS_DEF_NAME and EOF
 				end--;
-		}
 		if(end!=begin && pc.ls!=LS_USER_COMMENT) { // last piece still alive and not comment?
 			if(!pc.string_start)
 				pc.string_start=begin_pos;
