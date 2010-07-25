@@ -6,7 +6,6 @@
 ...^oneWord[Word]...<br />
 ...^oneWord[wo rd]...<br />
 
-
 @oneOf[s;list][t] выдаёт строку, если строка она есть в списке(разделенном запятыми)
 $t[^list.lsplit[,]]
 ^try{
@@ -21,7 +20,6 @@ $t[^list.lsplit[,]]
 	}
 }
 
-
 @oneWord[s]
 ^try{
 	^if(^s.match[\W]){
@@ -34,4 +32,3 @@ $t[^list.lsplit[,]]
 		$result['$s' not a word]
 	}
 }
-
