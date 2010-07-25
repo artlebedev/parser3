@@ -10,8 +10,8 @@
 
 $s[  select]
 $r[^regex::create[^^\s*]]
-size: ^if($r){!=}{==0}/^if(^r.size[]){!=}{==0}<br />
-study size: ^if(^r.study_size[]){!=}{==0}<br />
+size: ^if($r){!=0}{==0}/^if(^r.size[]){!=0}{==0}<br />
+study size: ^if(^r.study_size[]){!=0}{==0}<br />
 ^s.match[$r;]{!}
 <br />
 
@@ -34,7 +34,7 @@ $r[^regex::create[3;gn]]
 
 $s[12312312]
 $r[^regex::create[\d+?]]
-study size: ^if(^r.study_size[]){!=}{==0}<br />
+study size: ^if(^r.study_size[]){!=0}{==0}<br />
 ^s.match[$r;]{!}
 <br />
 
