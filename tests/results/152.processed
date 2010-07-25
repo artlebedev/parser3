@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 8022
+Content-Length: 7973
 
 <h2>Defines</h2>
 $sEmpty[]<br />
@@ -49,10 +49,8 @@ $xNode[$h.0]<br />
 <tr>
 <td>$vVoid</td>
 <td>void</td>
-<td>no<br />
-</td>
-<td>false<br />
-</td>
+<td>no<br /></td>
+<td>false<br /></td>
 <td>no</td>
 <td>no</td>
 <td>no</td>
@@ -68,10 +66,8 @@ $xNode[$h.0]<br />
 <tr>
 <td>$bFalse</td>
 <td>bool</td>
-<td><b>yes</b><br />
-</td>
-<td>false<br />
-</td>
+<td><b>yes</b><br /></td>
+<td>false<br /></td>
 <td><b>yes</b></td>
 <td>no</td>
 <td>no</td>
@@ -87,10 +83,8 @@ $xNode[$h.0]<br />
 <tr>
 <td>$bTrue</td>
 <td>bool</td>
-<td><b>yes</b><br />
-</td>
-<td><b>true</b><br />
-</td>
+<td><b>yes</b><br /></td>
+<td><b>true</b><br /></td>
 <td><b>yes</b></td>
 <td>no</td>
 <td>no</td>
@@ -106,10 +100,8 @@ $xNode[$h.0]<br />
 <tr>
 <td>$sEmpty</td>
 <td><b>void</b></td>
-<td>no<br />
-</td>
-<td>false<br />
-</td>
+<td>no<br /></td>
+<td>false<br /></td>
 <td>no</td>
 <td><b>yes</b></td>
 <td>no</td>
@@ -125,10 +117,8 @@ $xNode[$h.0]<br />
 <tr>
 <td>$sZero</td>
 <td>string</td>
-<td><b>yes</b><br />
-</td>
-<td>false<br />
-</td>
+<td><b>yes</b><br /></td>
+<td>false<br /></td>
 <td>no</td>
 <td><b>yes</b></td>
 <td>no</td>
@@ -144,10 +134,8 @@ $xNode[$h.0]<br />
 <tr>
 <td>$sOne</td>
 <td>string</td>
-<td><b>yes</b><br />
-</td>
-<td><b>true</b><br />
-</td>
+<td><b>yes</b><br /></td>
+<td><b>true</b><br /></td>
 <td>no</td>
 <td><b>yes</b></td>
 <td>no</td>
@@ -163,10 +151,8 @@ $xNode[$h.0]<br />
 <tr>
 <td>$sTwo</td>
 <td>string</td>
-<td><b>yes</b><br />
-</td>
-<td><b>true</b><br />
-</td>
+<td><b>yes</b><br /></td>
+<td><b>true</b><br /></td>
 <td>no</td>
 <td><b>yes</b></td>
 <td>no</td>
@@ -182,8 +168,7 @@ $xNode[$h.0]<br />
 <tr>
 <td>$sTrue</td>
 <td>string</td>
-<td><b>yes</b><br />
-</td>
+<td><b>yes</b><br /></td>
 <td>--</td>
 <td>no</td>
 <td><b>yes</b></td>
@@ -200,8 +185,7 @@ $xNode[$h.0]<br />
 <tr>
 <td>$sFalse</td>
 <td>string</td>
-<td><b>yes</b><br />
-</td>
+<td><b>yes</b><br /></td>
 <td>--</td>
 <td>no</td>
 <td><b>yes</b></td>
@@ -218,10 +202,8 @@ $xNode[$h.0]<br />
 <tr>
 <td>$dZero</td>
 <td>double</td>
-<td><b>yes</b><br />
-</td>
-<td>false<br />
-</td>
+<td><b>yes</b><br /></td>
+<td>false<br /></td>
 <td>no</td>
 <td>no</td>
 <td><b>yes</b></td>
@@ -237,10 +219,8 @@ $xNode[$h.0]<br />
 <tr>
 <td>$dOne</td>
 <td>double</td>
-<td><b>yes</b><br />
-</td>
-<td><b>true</b><br />
-</td>
+<td><b>yes</b><br /></td>
+<td><b>true</b><br /></td>
 <td>no</td>
 <td>no</td>
 <td><b>yes</b></td>
@@ -256,10 +236,8 @@ $xNode[$h.0]<br />
 <tr>
 <td>$dTwo</td>
 <td>double</td>
-<td><b>yes</b><br />
-</td>
-<td><b>true</b><br />
-</td>
+<td><b>yes</b><br /></td>
+<td><b>true</b><br /></td>
 <td>no</td>
 <td>no</td>
 <td><b>yes</b></td>
@@ -275,10 +253,8 @@ $xNode[$h.0]<br />
 <tr>
 <td>$iZero</td>
 <td>int</td>
-<td><b>yes</b><br />
-</td>
-<td>false<br />
-</td>
+<td><b>yes</b><br /></td>
+<td>false<br /></td>
 <td>no</td>
 <td>no</td>
 <td>no</td>
@@ -294,10 +270,8 @@ $xNode[$h.0]<br />
 <tr>
 <td>$iOne</td>
 <td>int</td>
-<td><b>yes</b><br />
-</td>
-<td><b>true</b><br />
-</td>
+<td><b>yes</b><br /></td>
+<td><b>true</b><br /></td>
 <td>no</td>
 <td>no</td>
 <td>no</td>
@@ -313,10 +287,8 @@ $xNode[$h.0]<br />
 <tr>
 <td>$iTwo</td>
 <td>int</td>
-<td><b>yes</b><br />
-</td>
-<td><b>true</b><br />
-</td>
+<td><b>yes</b><br /></td>
+<td><b>true</b><br /></td>
 <td>no</td>
 <td>no</td>
 <td>no</td>
@@ -332,10 +304,8 @@ $xNode[$h.0]<br />
 <tr>
 <td>$tEmptyTable</td>
 <td>table</td>
-<td>no<br />
-</td>
-<td>false<br />
-</td>
+<td>no<br /></td>
+<td>false<br /></td>
 <td>no</td>
 <td>no</td>
 <td>no</td>
@@ -351,10 +321,8 @@ $xNode[$h.0]<br />
 <tr>
 <td>$tTable</td>
 <td>table</td>
-<td><b>yes</b><br />
-</td>
-<td><b>true</b><br />
-</td>
+<td><b>yes</b><br /></td>
+<td><b>true</b><br /></td>
 <td>no</td>
 <td>no</td>
 <td>no</td>
@@ -370,10 +338,8 @@ $xNode[$h.0]<br />
 <tr>
 <td>$hEmptyHash</td>
 <td>hash</td>
-<td>no<br />
-</td>
-<td>false<br />
-</td>
+<td>no<br /></td>
+<td>false<br /></td>
 <td>no</td>
 <td>no</td>
 <td>no</td>
@@ -389,10 +355,8 @@ $xNode[$h.0]<br />
 <tr>
 <td>$hHash</td>
 <td>hash</td>
-<td><b>yes</b><br />
-</td>
-<td><b>true</b><br />
-</td>
+<td><b>yes</b><br /></td>
+<td><b>true</b><br /></td>
 <td>no</td>
 <td>no</td>
 <td>no</td>
@@ -408,10 +372,8 @@ $xNode[$h.0]<br />
 <tr>
 <td>$fFile</td>
 <td>file</td>
-<td><b>yes</b><br />
-</td>
-<td><b>true</b><br />
-</td>
+<td><b>yes</b><br /></td>
+<td><b>true</b><br /></td>
 <td>no</td>
 <td>no</td>
 <td>no</td>
@@ -427,10 +389,8 @@ $xNode[$h.0]<br />
 <tr>
 <td>$fStat</td>
 <td>file</td>
-<td><b>yes</b><br />
-</td>
-<td><b>true</b><br />
-</td>
+<td><b>yes</b><br /></td>
+<td><b>true</b><br /></td>
 <td>no</td>
 <td>no</td>
 <td>no</td>
@@ -446,10 +406,8 @@ $xNode[$h.0]<br />
 <tr>
 <td>$fImage</td>
 <td>image</td>
-<td><b>yes</b><br />
-</td>
-<td><b>true</b><br />
-</td>
+<td><b>yes</b><br /></td>
+<td><b>true</b><br /></td>
 <td>no</td>
 <td>no</td>
 <td>no</td>
@@ -465,10 +423,8 @@ $xNode[$h.0]<br />
 <tr>
 <td>$dtDate</td>
 <td>date</td>
-<td><b>yes</b><br />
-</td>
-<td><b>true</b><br />
-</td>
+<td><b>yes</b><br /></td>
+<td><b>true</b><br /></td>
 <td>no</td>
 <td>no</td>
 <td>no</td>
@@ -484,10 +440,8 @@ $xNode[$h.0]<br />
 <tr>
 <td>$xDoc</td>
 <td>xdoc</td>
-<td><b>yes</b><br />
-</td>
-<td><b>true</b><br />
-</td>
+<td><b>yes</b><br /></td>
+<td><b>true</b><br /></td>
 <td>no</td>
 <td>no</td>
 <td>no</td>
@@ -503,10 +457,8 @@ $xNode[$h.0]<br />
 <tr>
 <td>$xNode</td>
 <td>xnode</td>
-<td><b>yes</b><br />
-</td>
-<td><b>true</b><br />
-</td>
+<td><b>yes</b><br /></td>
+<td><b>true</b><br /></td>
 <td>no</td>
 <td>no</td>
 <td>no</td>
