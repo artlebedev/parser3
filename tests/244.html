@@ -1,0 +1,34 @@
+@main[]
+
+^try_catch{
+	^classname::create[]
+}
+^try_catch{
+	^reflection:create[classname;create]
+}
+
+compare exceptions:
+^try_catch{
+	^hash::create[;]
+}
+
+$h[$.key[value]]
+^try_catch{
+	^h._count[ ]
+}
+
+
+@try_catch[code]
+^try{
+	$code
+}{
+	$exception.handled(true)
+	$exception.source
+	$exception.comment
+}
+
+@CLASS
+classname
+
+@create[]
+^hash::create[]

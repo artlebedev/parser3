@@ -1,0 +1,12 @@
+Content-Type: text/html
+Content-Length: 355
+
+classname
+classname may not be overwritten with hash, store it to variable instead
+classname
+classname may not be overwritten with hash, store it to variable instead
+compare exceptions:
+create
+native method of hash (stateless_class) accepts maximum 1 parameter(s) (2 present)
+_count
+native method of hash (hash) accepts maximum 0 parameter(s) (1 present)
