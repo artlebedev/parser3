@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 326
+Content-Length: 315
 
 $f.name: 192.html
 <br />
@@ -8,7 +8,7 @@ $f.name: 192.html
 $f.name: 192.html
 <br />
 load
-native method of file (stateless_class) accepts maximum 4 parameter(s) (5 present)
+native method of file (file) accepts maximum 4 parameter(s) (5 present)
 <br />
 $f.name: overrided.html
 <br />
