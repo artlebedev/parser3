@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2010/08/01 14:49:33 $";
+static const char * const IDENT_OP_C="$Date: 2010/08/01 15:23:19 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -222,7 +222,8 @@ static void _process(Request& r, MethodParams& params) {
 	if(main_method) {
 		VMethodFrame frame(*main_method, r.get_method_frame()->caller(), *target_self);
 		frame.empty_params();
-		r.op_call_write(frame);
+		r.op_call(frame);
+		r.write_pass_lang(frame.result());
 	}
 }
 	
