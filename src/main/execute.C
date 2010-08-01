@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2010/05/25 03:58:25 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2010/08/01 14:49:33 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -723,8 +723,8 @@ void Request::execute(ArrayOperation& ops) {
 								value.type());
 				}
 
-				VMethodFrame frame(*junction, method_frame);
-				METHOD_FRAME_ACTION(op_call(frame, false));
+				VMethodFrame frame(*junction->method, method_frame, junction->self);
+				METHOD_FRAME_ACTION(op_call(frame));
 				stack.push(frame.result().as_value());
 
 				DEBUG_PRINT_STR("<-returned")
@@ -781,13 +781,13 @@ void Request::execute(ArrayOperation& ops) {
 						method.native_code(*this, method_params); // execute it
 					}
 				} else if(method.call_optimization==Method::CO_WITHOUT_WCONTEXT){
-					VMethodFrame frame(*junction, method_frame);
+					VMethodFrame frame(method, method_frame, junction->self);
 					METHOD_FRAME_ACTION(op_call_write(frame));
 				} else 
 #endif // OPTIMIZE_CALL
 				{
-					VMethodFrame frame(*junction, method_frame);
-					METHOD_FRAME_ACTION(op_call(frame, false));
+					VMethodFrame frame(method, method_frame, junction->self);
+					METHOD_FRAME_ACTION(op_call(frame));
 					write_pass_lang(frame.result());
 				}
 
@@ -825,10 +825,8 @@ void Request::execute(ArrayOperation& ops) {
 
 				DEBUG_PRINT_STRING(constructor_name)
 
-				Value& constructor_value=get_element(*class_value, constructor_name);
-
-				Junction* junction=constructor_value.get_junction();
-				if(!junction)
+				Junction* constructor_junction=get_element(*class_value, constructor_name).get_junction();
+				if(!constructor_junction)
 					throw Exception(PARSER_RUNTIME,
 						&constructor_name,
 						"constructor must be declared in class '%s'", 
@@ -838,14 +836,14 @@ void Request::execute(ArrayOperation& ops) {
 				DEBUG_PRINT_OPS(local_ops)
 				DEBUG_PRINT_STR("->\n")
 
-				Junction casted=Junction(*class_value, junction->method);
-				VConstructorFrame frame(casted, method_frame);
+				Value &object=construct(*class_value, *constructor_junction->method);
+				VConstructorFrame frame(*constructor_junction->method, method_frame, object);
+				METHOD_FRAME_ACTION(op_call(frame));
 
-				METHOD_FRAME_ACTION(op_call(frame, true /* constructing */));
 				if(opcode==OP::OP_CONSTRUCT_OBJECT)
-					stack.push(frame.result().as_value());
+					stack.push(object);
 				else
-					write_pass_lang(frame.result());
+					write_pass_lang(object);
 
 				DEBUG_PRINT_STR("<-returned")
 				break;
@@ -1182,32 +1180,27 @@ void Request::execute(ArrayOperation& ops) {
 	rcontext=saved_rcontext;			\
 	method_frame=saved_method_frame;
 
-void Request::op_call(VMethodFrame& frame, bool constructing){
-	const Junction &junction=frame.junction;
-	VStateless_class& called_class=*junction.self.get_class();
-	Value* new_self;
 
-	if(constructing) {
-		if(junction.method->call_type!=Method::CT_STATIC) {
-			// this is a constructor call
-			if(new_self=called_class.create_new_value(fpool)) {
+Value& Request::construct(Value &class_value, const Method &method){
+	VStateless_class& called_class=*class_value.get_class();
+
+	if(method.call_type!=Method::CT_STATIC) {
+		// this is a constructor call
+		if(Value* result=called_class.create_new_value(fpool)) {
 				// some stateless_class creatable derivates
-			} else 
-				throw Exception(PARSER_RUNTIME,
-					0, //&frame.name(),
-					"is not a constructor, system class '%s' can be constructed only implicitly", 
-						called_class.name().cstr());
-
-			frame.write(*new_self);
-		} else
+				return *result;
+		} else 
 			throw Exception(PARSER_RUNTIME,
 				0, //&frame.name(),
+				"is not a constructor, system class '%s' can be constructed only implicitly", 
+					called_class.name().cstr());
+	} else
+		throw Exception(PARSER_RUNTIME,
+			0, //&frame.name(),
 				"method is static and can not be used as constructor");
-	} else 
-		new_self=&junction.self;
+}
 
-	frame.set_self(*new_self);
-
+void Request::op_call(VMethodFrame& frame){
 	// see OP_PREPARE_TO_EXPRESSION
 	frame.set_in_expression(wcontext->get_in_expression());
 				
@@ -1216,12 +1209,13 @@ void Request::op_call(VMethodFrame& frame, bool constructing){
 	rcontext=wcontext=&frame;
 	method_frame=&frame;
 
-	const Method& method=*junction.method;
-	Method::Call_type call_type=&called_class==new_self ? Method::CT_STATIC : Method::CT_DYNAMIC;
+	Value& self=frame.self();
+	const Method& method=frame.method;
+	Method::Call_type call_type=self.get_class()==&self ? Method::CT_STATIC : Method::CT_DYNAMIC;
 
 	if(method.call_type==Method::CT_ANY || method.call_type==call_type) { // allowed call type?
 		if(method.native_code) { // native code?
-			method.check_actual_numbered_params(junction.self, frame.numbered_params());
+			method.check_actual_numbered_params(self, frame.numbered_params());
 			method.native_code(*this, *frame.numbered_params()); // execute it
 		} else // parser code, execute it
 			recoursion_checked_execute(*method.parser_code);
@@ -1232,26 +1226,22 @@ void Request::op_call(VMethodFrame& frame, bool constructing){
 			call_type==Method::CT_STATIC?"statically":"dynamically");
 
 	RESTORE_CONTEXT
-	//return &frame;
 }
 
 void Request::op_call_write(VMethodFrame& frame){
-	const Junction &junction=frame.junction;
-
-	frame.set_self(junction.self);
-
 	VMethodFrame *saved_method_frame=method_frame;
 	Value* saved_rcontext=rcontext;
 
 	rcontext=&frame;
 	method_frame=&frame;
 
-	const Method& method=*junction.method;
-	Method::Call_type call_type=junction.self.get_class()==&junction.self ? Method::CT_STATIC : Method::CT_DYNAMIC;
+	Value& self=frame.self();
+	const Method& method=frame.method;
+	Method::Call_type call_type=self.get_class()==&self ? Method::CT_STATIC : Method::CT_DYNAMIC;
 
 	if(method.call_type==Method::CT_ANY || method.call_type==call_type) { // allowed call type?
 		if(method.native_code) { // native code?
-			method.check_actual_numbered_params(junction.self, frame.numbered_params());
+			method.check_actual_numbered_params(self, frame.numbered_params());
 			method.native_code(*this, *frame.numbered_params()); // execute it
 		} else // parser code, execute it
 			recoursion_checked_execute(*method.parser_code);
@@ -1284,7 +1274,8 @@ void Request::put_element(Value& ncontext, const String& name, Value* value) {
 	if(const VJunction* vjunction=ncontext.put_element(name, value, false))
 		if(vjunction!=PUT_ELEMENT_REPLACED_ELEMENT) {
 			// process it
-			VMethodFrame frame(vjunction->junction(), method_frame/*caller*/);
+			const Junction& junction = vjunction->junction();
+			VMethodFrame frame(*junction.method, method_frame /*caller*/, junction.self);
 
 			size_t param_count=frame.method_params_count();
 			if(param_count!=1)
@@ -1293,7 +1284,6 @@ void Request::put_element(Value& ncontext, const String& name, Value* value) {
 					"setter method must have ONE parameter (has %d parameters)", param_count);
 
 			frame.store_params(&value, 1);
-			frame.set_self(frame.junction.self);
 
 			SAVE_CONTEXT
 
@@ -1303,7 +1293,7 @@ void Request::put_element(Value& ncontext, const String& name, Value* value) {
 			// prevent non-string writes for better error reporting [setters are not expected to return anything]
 			wcontext->write(*method_frame);
 
-			recoursion_checked_execute(*frame.junction.method->parser_code); // parser code, execute it
+			recoursion_checked_execute(*frame.method.parser_code); // parser code, execute it
 			// we don't need it StringOrValue result=wcontext->result();
 
 			RESTORE_CONTEXT
@@ -1325,7 +1315,7 @@ StringOrValue Request::process(Value& input_value, bool intercept_string) {
 	Junction* junction=input_value.get_junction();
 	if(junction) {
 		if(junction->is_getter) { // is it a getter-junction?
-			VMethodFrame frame(*junction, method_frame/*caller*/);
+			VMethodFrame frame(*junction->method, method_frame/*caller*/, junction->self);
 			Value *param;
 
 			if(size_t param_count=frame.method_params_count()){
@@ -1343,14 +1333,12 @@ StringOrValue Request::process(Value& input_value, bool intercept_string) {
 						"getter method must have no parameters (has %d parameters)", param_count);
 			} // no need for else frame.empty_params()
 
-			frame.set_self(frame.junction.self);
-
 			SAVE_CONTEXT
 
 			rcontext=wcontext=&frame;
 			method_frame=&frame;
 
-			recoursion_checked_execute(*frame.junction.method->parser_code); // parser code, execute it
+			recoursion_checked_execute(*frame.method.parser_code); // parser code, execute it
 
 			RESTORE_CONTEXT
 
@@ -1417,7 +1405,7 @@ void Request::process_write(Value& input_value) {
 	Junction* junction=input_value.get_junction();
 	if(junction) {
 		if(junction->is_getter) { // is it a getter-junction?
-			VMethodFrame frame(*junction, method_frame/*caller*/);
+			VMethodFrame frame(*junction->method, method_frame /*caller*/, junction->self);
 			Value *param;
 
 			if(size_t param_count=frame.method_params_count()){
@@ -1435,14 +1423,12 @@ void Request::process_write(Value& input_value) {
 						"getter method must have no parameters (has %d parameters)", param_count);
 			} // no need for else frame.empty_params()
 
-			frame.set_self(frame.junction.self);
-
 			SAVE_CONTEXT
 
 			rcontext=wcontext=&frame;
 			method_frame=&frame;
 
-			recoursion_checked_execute(*frame.junction.method->parser_code); // parser code, execute it
+			recoursion_checked_execute(*frame.method.parser_code); // parser code, execute it
 
 			RESTORE_CONTEXT
 
@@ -1532,14 +1518,12 @@ const String* Request::execute_method(Value& aself,
 
 	SAVE_CONTEXT
 	
-	Junction local_junction(aself, &method);
-	VMethodFrame local_frame(local_junction, method_frame/*caller*/);
+	VMethodFrame local_frame(method, method_frame/*caller*/, aself);
 	if(optional_param && local_frame.method_params_count()>0) {
 		local_frame.store_params(&optional_param, 1);
 	} else {
 		local_frame.empty_params();
 	}
-	local_frame.set_self(aself);
 	rcontext=wcontext=method_frame=&local_frame; 
 
 	// prevent non-string writes for better error reporting

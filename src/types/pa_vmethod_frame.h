@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2009/08/24 08:08:04 $";
+static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2010/08/01 14:49:33 $";
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
@@ -139,7 +139,7 @@ protected:
 	VMethodFrame *fcaller;
 
 	HashString<Value*>* my; /*OR*/ MethodParams fnumbered_params;
-	Value* fself;
+	Value& fself;
 
 	typedef const VJunction* (VMethodFrame::*put_element_t)(const String& aname, Value* avalue);
 	put_element_t put_element_impl;
@@ -188,12 +188,12 @@ public: // Value
 	/// VMethodFrame: appends a fstring to result
 	override void write(const String& astring, String::Language alang) {
 #ifdef OPTIMIZE_RESULT
-		switch (junction.method->result_optimization){
+		switch (method.result_optimization){
 			case Method::RO_USE_RESULT: 
 				return;
 			case Method::RO_UNKNOWN:
 				if(get_result_variable()){
-					((Method*)junction.method)->result_optimization=Method::RO_USE_RESULT;
+					((Method *)&method)->result_optimization=Method::RO_USE_RESULT;
 					return;
 				}
 		}
@@ -224,11 +224,11 @@ public: // WContext
 			if(result_value)
 				return StringOrValue(*result_value);
 #ifdef OPTIMIZE_RESULT
-			if(junction.method->result_optimization==Method::RO_USE_RESULT)
+			if(method.result_optimization==Method::RO_USE_RESULT)
 				return StringOrValue(*VVoid::get());
-			((Method *)junction.method)->result_optimization=Method::RO_USE_WCONTEXT;
+			((Method *)&method)->result_optimization=Method::RO_USE_WCONTEXT;
 #ifdef OPTIMIZE_CALL // nested as CO_WITHOUT_WCONTEXT assumes that $result not used
-			((Method *)junction.method)->call_optimization=Method::CO_WITHOUT_WCONTEXT;
+			((Method *)&method)->call_optimization=Method::CO_WITHOUT_WCONTEXT;
 #endif
 #endif
 		}
@@ -241,9 +241,7 @@ public: // WContext
 
 public: // usage
 
-	VMethodFrame(
-		const Junction& ajunction/*info: always method-junction*/,
-		VMethodFrame *acaller);
+	VMethodFrame(const Method& amethod, VMethodFrame *acaller, Value& aself);
 
 	VMethodFrame *caller() { return fcaller; }
 
@@ -255,18 +253,13 @@ public: // usage
 	}
 #endif
 
-	void set_self(Value& aself) { fself=&aself; }
-	/// we sure that someone already set our self with VMethodFrame::set_self(Value&)
-	Value& self() { return *fself; }
+	Value& self() { return fself; }
 
 	size_t method_params_count() {
-		const Method& method=*junction.method;
 		return method.params_names ? method.params_names->count():0;
 	}
 
 	void store_params(Value **params, size_t count) {
-		const Method& method=*junction.method;
-
 		if(method.params_names) {
 			size_t param_count=method.params_names->count();
 
@@ -274,8 +267,8 @@ public: // usage
 				throw Exception(PARSER_RUNTIME,
 					0, //&name(),
 					"method of %s (%s) accepts maximum %d parameter(s) (%d present)", 
-					junction.self.get_class()->name_cstr(),
-					junction.self.type(),
+					self().get_class()->name_cstr(),
+					self().type(),
 					param_count,
 					count);
 
@@ -294,7 +287,6 @@ public: // usage
 	}
 
 	void empty_params(){
-		const Method& method=*junction.method;
 		if(method.params_names){
 			size_t param_count=method.params_names->count();
 			for(size_t i=0; i<param_count; i++) {
@@ -316,30 +308,18 @@ protected:
 
 public:
 	
-	const Junction& junction;
+	const Method& method;
 
 };
 
 class VConstructorFrame: public VMethodFrame {
 public:
-	VConstructorFrame(const Junction& ajunction, VMethodFrame *acaller) : VMethodFrame(ajunction, acaller) {}
+	VConstructorFrame(const Method& amethod, VMethodFrame *acaller, Value& aself) : VMethodFrame(amethod, acaller, aself) {
+		// prevent non-string writes for better error reporting [constructors are not expected to return anything]
+		VMethodFrame::write(aself);
+	}
 
 	override void write(const String& /*astring*/, String::Language /*alang*/) {}
-};
-
-///	Auto-object used for temporary changing VMethod_frame::fself.
-class Temp_method_frame_self {
-	VMethodFrame& fmethod_frame;
-	Value* saved_self;
-public:
-	Temp_method_frame_self(VMethodFrame& amethod_frame, Value& aself) :
-		fmethod_frame(amethod_frame),
-		saved_self(&amethod_frame.self()) {
-		fmethod_frame.set_self(aself);
-	}
-	~Temp_method_frame_self() {
-		fmethod_frame.set_self(*saved_self);
-	}
 };
 
 #endif

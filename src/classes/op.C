@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2010/07/05 05:54:46 $";
+static const char * const IDENT_OP_C="$Date: 2010/08/01 14:49:33 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -220,10 +220,9 @@ static void _process(Request& r, MethodParams& params) {
 	// after restoring current-request-lang
 	// maybe-execute @main[]
 	if(main_method) {
-		// temporarily set method_frame's self to target_self
-		Temp_method_frame_self tmfs(*r.get_method_frame(), *target_self);
-		// execute!	
-		r.execute(*main_method->parser_code);
+		VMethodFrame frame(*main_method, r.get_method_frame()->caller(), *target_self);
+		frame.empty_params();
+		r.op_call_write(frame);
 	}
 }
 	
@@ -290,7 +289,7 @@ static void _use(Request& r, MethodParams& params) {
 	Value& vfile=params.as_no_junction(0, FILE_NAME_MUST_NOT_BE_CODE);
 
 	// _use could be called from the parser3 method only, so caller is always defined
-	r.use_file(r.main_class, vfile.as_string(), r.get_method_filename(r.get_method_frame()->caller()->junction.method));
+	r.use_file(r.main_class, vfile.as_string(), r.get_method_filename(&r.get_method_frame()->caller()->method));
 }
 
 static void set_skip(Request& r, Request::Skip askip) {

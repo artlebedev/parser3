@@ -12,14 +12,14 @@
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
 
-static const char * const IDENT_VOBJECT_C="$Date: 2009/09/17 23:31:42 $";
+static const char * const IDENT_VOBJECT_C="$Date: 2010/08/01 14:49:33 $";
 
 Value* VObject::get_scalar_value(char* as_something) const {
 	VObject* unconst_this=const_cast<VObject*>(this);
 	if(Value* scalar=fclass.get_scalar(*unconst_this))
 		if(Junction* junction=scalar->get_junction())
 			if(const Method *method=junction->method){
-				VMethodFrame frame(*junction, 0/*no caller*/);
+				VMethodFrame frame(*method, 0 /*no caller*/, *unconst_this);
 
 				Value *param;
 
@@ -33,7 +33,6 @@ Value* VObject::get_scalar_value(char* as_something) const {
 							"scalar getter method can't have more then 1 parameter (has %d parameters)", param_count);
 				} // no need for else frame.empty_params()
 
-				frame.set_self(*unconst_this);
 				return &pa_thread_request().execute_method(frame, *method).as_value();
 			}
 	return 0;

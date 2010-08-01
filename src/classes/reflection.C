@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REFLECTION_C="$Date: 2010/05/22 07:37:05 $";
+static const char * const IDENT_REFLECTION_C="$Date: 2010/08/01 14:49:33 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
@@ -95,7 +95,8 @@ static void _create(Request& r, MethodParams& params) {
 			max_params_count,
 			nparams);
 
-	VMethodFrame frame(*junction, r.get_method_frame());
+	Value &object = r.construct(*class_value, *method);
+	VConstructorFrame frame(*method, r.get_method_frame(), object);
 
 	Value* v[100];
 	if(nparams>0){
@@ -105,8 +106,8 @@ static void _create(Request& r, MethodParams& params) {
 	} else {
 		frame.empty_params();
 	}
-	r.op_call(frame, true/*constructing*/);
-	r.write_pass_lang(frame.result());
+	r.op_call(frame);
+	r.write_pass_lang(object);
 }
 
 

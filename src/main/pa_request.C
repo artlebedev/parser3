@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REQUEST_C="$Date: 2010/05/25 03:58:25 $";
+static const char * const IDENT_REQUEST_C="$Date: 2010/08/01 14:49:33 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -205,9 +205,8 @@ Value* Request::get_class(const String& name){
 			if(Junction* junction=value->get_junction())
 				if(const Method *method=junction->method) {
 					Value *vname=new VString(name);
-					VMethodFrame frame(*junction, 0/*no parent*/);
+					VMethodFrame frame(*method, 0 /*no parent*/, main_class);
 
-					frame.set_self(main_class);
 					frame.store_params(&vname, 1);
 					// we don't need the result
 					execute_method(frame, *method);
@@ -409,8 +408,7 @@ gettimeofday(&mt[2],NULL);
 				if(const Method *method=junction->method) {
 					// preparing to pass parameters to 
 					//	@postprocess[data]
-					VMethodFrame frame(/*method->name, */ *junction, 0/*no parent*/);
-					frame.set_self(main_class);
+					VMethodFrame frame(*method, 0 /*no parent*/, main_class);
 
 					frame.store_params(&body_value, 1);
 					body_value=&execute_method(frame, *method).as_value();
@@ -467,8 +465,7 @@ t[9]-t[3]
 				if(const Method *method=junction->method) {
 					// preparing to pass parameters to 
 					//	@unhandled_exception[exception;stack]
-					VMethodFrame frame(/*method->name, */ *junction, 0/*no caller*/);
-					frame.set_self(main_class);
+					VMethodFrame frame(*method, 0 /*no caller*/, main_class);
 
 					// $stack[^table::create{name	file	lineno	colno}]
 					Table::columns_type stack_trace_columns(new ArrayString);

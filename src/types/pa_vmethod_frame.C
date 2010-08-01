@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)\
 */
 
-static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2009/07/07 23:50:06 $";
+static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2010/08/01 14:49:33 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
@@ -23,24 +23,18 @@ Value& MethodParams::get_processed(Value* value, const char* msg, int index, Req
 
 // VMethodFrame: methods
 
-VMethodFrame::VMethodFrame(
-	const Junction& ajunction/*info: always method-junction*/,
-	VMethodFrame *acaller) : 
+VMethodFrame::VMethodFrame(const Method& amethod, VMethodFrame *acaller, Value& aself) : 
 	WContext(0 /* no parent, junctions can be reattached only up to VMethodFrame */),
-
 	fcaller(acaller),
-
 	my(0),
-	fself(0),
+	fself(aself),
+	method(amethod) {
 
-	junction(ajunction) {
+	put_element_impl=(method.all_vars_local)?&VMethodFrame::put_element_local:&VMethodFrame::put_element_global;
 
-	put_element_impl=(junction.method->all_vars_local)?&VMethodFrame::put_element_local:&VMethodFrame::put_element_global;
-
-	if(!junction.method->max_numbered_params_count){ // this method uses numbered params?
+	if(!method.max_numbered_params_count){ // this method uses numbered params?
 		my=new HashString<Value*>;
 
-		const Method &method=*junction.method;
 		if(method.locals_names) { // are there any local var names?
 			// remember them
 			// those are flags that fname is local == to be looked up in 'my'
@@ -51,7 +45,7 @@ VMethodFrame::VMethodFrame(
 			}
 		}
 #ifdef OPTIMIZE_RESULT
-		if(junction.method->result_optimization!=Method::RO_USE_WCONTEXT)
+		if(method.result_optimization!=Method::RO_USE_WCONTEXT)
 #endif
 			set_my_variable(result_var_name, void_result);
 	}

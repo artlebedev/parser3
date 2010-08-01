@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char * const IDENT_REQUEST_H="$Date: 2010/05/25 03:58:17 $";
+static const char * const IDENT_REQUEST_H="$Date: 2010/08/01 14:49:33 $";
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -206,7 +206,8 @@ public:
 	void execute(ArrayOperation& ops); // execute.C
 	void op_call(VMethodFrame &frame);
 	void op_call_write(VMethodFrame &frame);
-	void op_call(VMethodFrame &frame, bool constructing);
+	Value& construct(Value &class_value, const Method &method);
+
 	/// execute ops with anti-recoursion check
 	void recoursion_checked_execute(/*const String& name, */ArrayOperation& ops) {
 		// anti_endless_execute_recoursion
