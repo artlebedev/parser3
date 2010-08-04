@@ -17,7 +17,7 @@
 #ifndef PA_HASH_H
 #define PA_HASH_H
 
-static const char * const IDENT_HASH_H="$Date: 2010/07/23 22:23:24 $";
+static const char * const IDENT_HASH_H="$Date: 2010/08/04 15:08:44 $";
 
 #include "pa_memory.h"
 #include "pa_types.h"
@@ -244,6 +244,16 @@ public:
 		
 		return V(0);
 	}
+
+#ifdef HASH_ORDER
+	V first_value() const {
+		return (first) ? first->value : V(0);
+	}
+
+	V last_value() const {
+		return (fpairs_count) ? ((Pair *)((char *)last - offsetof(Pair, next)))->value : V(0);
+	}
+#endif
 
 	/// put a [value] under the [key] if that [key] existed @returns existed or not
 	bool put_replaced(K key, V value) {
