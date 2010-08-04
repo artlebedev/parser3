@@ -1,0 +1,33 @@
+Content-Type: text/html
+Content-Length: 962
+
+<h3>Empty hash ($h[^hash::create[]])</h3>
+first:last='':''<br />
+<h3>One element was added ($h.1[a])</h3>
+first:last='a':'a'<br />
+<h3>One element was deleted (^h.delete[1])</h3>
+first:last='':''<br />
+<h3>One element was added ($h.1[a])</h3>
+first:last='a':'a'<br />
+<h3>Hash with 5 elements ($h[ $.1[a] $.2[b] $.3[c] $.4[d] $.5[e] ])</h3>
+first:last='a':'e'<br />
+<h3>The last element was deleted (^h.delete[5])</h3>
+first:last='a':'d'<br />
+<h3>The first element was deleted (^h.delete[1])</h3>
+first:last='b':'d'<br />
+<h3>One element was added at the end ($h.5[e])</h3>
+first:last='b':'e'<br />
+<h3>One element was added at the middle ($h.3[cc])</h3>
+first:last='b':'e'<br />
+<h3>_at on hash with 5 elements ($h[ $.1[a] $.2[b] $.3[c] $.4[d] $.5[e] ])</h3>
+^h._at(0)=a=<br />
+^h._at(1)=b=<br />
+^h._at(2)=c=<br />
+^h._at(3)=d=<br />
+^h._at(4)=e=<br />
+<br />
+^h._at(-1)=e=<br />
+^h._at(-2)=d=<br />
+^h._at(-3)=c=<br />
+^h._at(-4)=b=<br />
+^h._at(-5)=a=<br />
