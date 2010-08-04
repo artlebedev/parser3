@@ -56,6 +56,7 @@ Xне сделано, видимо, не будет сделано
 
            
     !^if(условие){когда да}{когда нет}
+    !^if(условие1){да}[(условие2){да}[(условие2){да}[...]]]{нет} -- количество доп. условий не ограничено (в общем elseif это :)
     !^switch[значение]{^case[вариант1[;вариант2...]]{действие}^case[DEFAULT]{действие по умолчанию}}
     !^while(условие){тело}[[разделитель]|{разделитель который выполняется перед непустым очередным не первым телом}]
     !^for[i](0;4){тело}[[разделитель]|{разделитель который выполняется перед непустым очередным не первым телом}]
@@ -140,8 +141,8 @@ Xне сделано, видимо, не будет сделано
             ClientCharset << charset in which parser thinks client works
             
         !sqlite://DBfile?
-        	ClientCharset=parser-charset& << charset in which parser thinks client works
-        	autocommit=1
+            ClientCharset=parser-charset& << charset in which parser thinks client works
+            autocommit=1
 
         для работы connect нужно, чтобы заранее(рекомендуется в системном конфигурационном auto.p)
         была определена таблица
@@ -360,10 +361,10 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         !$.separator[^#09]
         !$.encloser["] по-умолчанию, нет.
     !^table::sql{query}[[$.limit(2) $.offset(4) $.bind[hash] todo:$.default{ ^table::create[...] }]]
-    	bind привязывает переменные в запросе к их значениям
-    	пока реализован только для oracle
-    	в запросе надо написать ":имя"
-    	в параметре bind передать hash, из которого возьмётся(или куда запишется) значение
+        bind привязывает переменные в запросе к их значениям
+        пока реализован только для oracle
+        в запросе надо написать ":имя"
+        в параметре bind передать hash, из которого возьмётся(или куда запишется) значение
     !^таблица.save[[nameless|append;]путь[;опции, см. load]]
     !$таблица.поле
     !$таблица.fields  из named таблицы выдаёт текущую запись как Hash
@@ -425,6 +426,9 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !^хеш.foreach[key;value]{тело}[[разделитель]|{разделитель который выполняется перед непустым очередным не первым телом}]
     !^хеш.delete[ключ]  удалить ключ
     !^хеш.contain[ключ] - существует ли в хеше ключ (bool)
+    !^хэш._at[first|last]
+    !^хэш._at([-]N)
+        доступ к заданным элементам упорядоченного хеша
 
 !hashfile
     !^hashfile::open[filename]
@@ -509,7 +513,7 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !$response:headers накопленные поля
     !$response:body[DATA]  замещает стандартный ответ
     !$response:download[DATA]  замещает стандартный ответ, 
-    	выставляет флаг, заставляющий browser предложить download
+        выставляет флаг, заставляющий browser предложить download
     !$response:status
     !^response:clear[] забыть все заданные response поля
     !$response:charset
@@ -584,10 +588,10 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         $.message#[MESSAGE] (message, message2, ...)
 
     !^mail:send[
-    	$.options[-odd]
-	        unix: строка, которая будет добавлена к команде запуска sendmail
-	            -odd означает "быстро поставь в очередь без проверки email"
-	        win32: игнорируется
+        $.options[-odd]
+            unix: строка, которая будет добавлена к команде запуска sendmail
+                -odd означает "быстро поставь в очередь без проверки email"
+            win32: игнорируется
         $.charset[кодировка заголовка и текстовых блоков] 
         $.any-header-field 
         $.text[string]
@@ -778,23 +782,26 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !^файл.sql-string[] внутри ^connect даст правильно escaped строку, которую можно в запрос отдать
     X^file::sql[[имя_файла_для_download]]{}
     !^file::sql{}[[
-    	$.name[имя_файла_для_download]
-    	$.content-type[пользовательский content-type]
+        $.name[имя_файла_для_download]
+        $.content-type[пользовательский content-type]
     ]]
-    	результат запроса должен быть "одна строка".
-    	колонки:
-    	первая колонка - данные
-    	если есть вторая - это имя файла
-    	если есть третья - это content-type
+        результат запроса должен быть "одна строка".
+        колонки:
+        первая колонка - данные
+        если есть вторая - это имя файла
+        если есть третья - это content-type
     !^файл.base64[] encode
-    !^file:base64[имя файла] encode
-    !^file::base64[encoded string] decode
+    !^file:base64[имя файла]
+        encode
+    !^file::base64[encoded string]
+    !^file::base64[mode;имя файла;encoded string[;$.content-type[...]]]
+        decode
     !^file:crc32[имя файла]
-       вычисляет crc32 файла с указанным именем
+        вычисляет crc32 файла с указанным именем
     !^файл.crc32[]
-		вычисляет crc32 объекта
-	!^файл.md5[]
-	!^file:md5[имя файла]
+        вычисляет crc32 объекта
+    !^файл.md5[]
+    !^file:md5[имя файла]
         выдает digest файла, длиной 16 байт в виде строки, 
         где байты digest выданы в hex виде, впритык, в нижнем регистре
 
@@ -1100,7 +1107,7 @@ xdoc(xnode)
 
     !$status:memory hash
         !used
-            Includes some pages that were allocated but never written.		
+            Includes some pages that were allocated but never written.
 
         !free
 
@@ -1108,8 +1115,8 @@ xdoc(xnode)
             Return the number of bytes allocated since the last collection.	
 
         !ever_allocated_since_start
-            Return the total number of bytes [EVER(c)PAF] allocated in this process.		
-            Never decreases.							
+            Return the total number of bytes [EVER(c)PAF] allocated in this process.
+            Never decreases.
 
     !$status:pid process id
     !$status:tid thread id
