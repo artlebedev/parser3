@@ -1,0 +1,57 @@
+﻿@main[]
+$h[^hash::create[]]
+^first_and_last[Empty hash (^$h[^^hash::create[]]);$h]
+
+$h.1[a]
+^first_and_last[One element was added (^$h.1[a]);$h]
+
+^h.delete[1]
+^first_and_last[One element was deleted (^^h.delete[1]);$h]
+
+$h.1[a]
+^first_and_last[One element was added (^$h.1[a]);$h]
+
+$h[
+	$.1[a]
+	$.2[b]
+	$.3[c]
+	$.4[d]
+	$.5[e]
+]
+^first_and_last[Hash with 5 elements (^$h[ ^$.1[a] ^$.2[b] ^$.3[c] ^$.4[d] ^$.5[e] ]);$h]
+
+^h.delete[5]
+^first_and_last[The last element was deleted (^^h.delete[5]);$h]
+
+^h.delete[1]
+^first_and_last[The first element was deleted (^^h.delete[1]);$h]
+
+$h.5[e]
+^first_and_last[One element was added at the end (^$h.5[e]);$h]
+
+$h.3[cc]
+^first_and_last[One element was added at the middle (^$h.3[cc]);$h]
+
+<h3>_at on hash with 5 elements (^$h[ ^$.1[a] ^$.2[b] ^$.3[c] ^$.4[d] ^$.5[e] ])</h3>
+$h[
+	$.1[a]
+	$.2[b]
+	$.3[c]
+	$.4[d]
+	$.5[e]
+]
+^^h._at(0)=^h._at(0)=<br />
+^^h._at(1)=^h._at(1)=<br />
+^^h._at(2)=^h._at(2)=<br />
+^^h._at(3)=^h._at(3)=<br />
+^^h._at(4)=^h._at(4)=<br />
+<br />
+^^h._at(-1)=^h._at(-1)=<br />
+^^h._at(-2)=^h._at(-2)=<br />
+^^h._at(-3)=^h._at(-3)=<br />
+^^h._at(-4)=^h._at(-4)=<br />
+^^h._at(-5)=^h._at(-5)=<br />
+
+@first_and_last[sTitle;h]
+^if(def $sTitle){<h3>$sTitle</h3>}
+first:last='^h._at[first]':'^h._at[last]'<br />
