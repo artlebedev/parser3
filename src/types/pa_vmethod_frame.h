@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2010/08/01 14:49:33 $";
+static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2010/08/04 13:27:44 $";
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
@@ -110,6 +110,18 @@ public:
 	/// handy string ensurer
 	const String& as_string(int index, const char* msg) { 
 		return as_no_junction(index, msg).as_string();
+	}
+	/// handy hash ensurer
+	HashStringValue* as_hash(int index, const char* msg_no_junction=0, const char* msg_incorrect_type=0){
+		Value& voptions=as_no_junction(index, msg_no_junction ? msg_no_junction : OPTIONS_MUST_BE_HASH_NOT_CODE);
+		if(voptions.is_defined() && !voptions.is_string())
+			if(HashStringValue* options=voptions.get_hash())
+				return options;
+			else
+				throw Exception(PARSER_RUNTIME,
+					0,
+					msg_incorrect_type ? msg_incorrect_type : OPTIONS_MUST_BE_HASH);
+		return 0;
 	}
 private:
 
