@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2010/07/21 22:21:17 $";
+static const char * const IDENT_FILE_C="$Date: 2010/08/04 13:31:07 $";
 
 #include "pa_config_includes.h"
 
@@ -920,17 +920,58 @@ static void _sql(Request& r, MethodParams& params) {
 }
 
 static void _base64(Request& r, MethodParams& params) {
-	bool dynamic = !(&r.get_self() == file_class);
-	if(dynamic){
+	bool dynamic=!(&r.get_self() == file_class);
+	if(dynamic) {
 		VFile& self=GET_SELF(r, VFile);
 		if(params.count()) {
-			// decode: ^file::base64[encoded]
-			const char* cstr=params.as_string(0, PARAMETER_MUST_BE_STRING).cstr();
+			// decode: 
+			//	^file::base64[encoded] // backward
+			//	^file::base64[mode;user-file-name;encoded[;$.content-type[...]]]
+			bool is_text=false;
+			VString* vcontent_type=0;
+			const char* user_file_name_cstr=0;
+			size_t param_index=0;
+
+			if(params.count() > 1) {
+				if(params.count() < 3)
+					throw Exception(PARSER_RUNTIME,
+						0,
+						"constructor can't have less then 3 parameters (has %d parameters)",
+						params.count()); // actually it accepts 1 parameter (backward)
+
+				is_text=is_text_mode(params.as_no_junction(0, MODE_MUST_NOT_BE_CODE).as_string());
+				user_file_name_cstr=params.as_string(1, FILE_NAME_MUST_BE_STRING).taint_cstr(String::L_FILE_SPEC);
+
+				if(params.count() == 4)
+					if(HashStringValue* options=params.as_hash(3)) {
+						int valid_options=0;
+						if(Value* value=options->get(CONTENT_TYPE_NAME)) {
+							vcontent_type=new VString(value->as_string());
+							valid_options++;
+						}
+						if(valid_options!=options->count())
+							throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+					}
+
+				if(!vcontent_type)
+					vcontent_type=new VString(r.mime_type_of(user_file_name_cstr));
+
+				param_index=2;
+			}
+
+			const char* encoded=params.as_string(param_index, PARAMETER_MUST_BE_STRING).cstr();
+
 			char* decoded=0;
 			size_t length=0;
-			pa_base64_decode(cstr, strlen(cstr), decoded, length);
-			if(decoded && length)
-				self.set(true/*tainted*/, decoded, length);
+			pa_base64_decode(encoded, strlen(encoded), decoded, length);
+
+			if(length && is_text)
+				fix_line_breaks(decoded, length);
+		
+			self.set(true/*tainted*/, decoded, length, user_file_name_cstr, vcontent_type);
+
+			if(params.count() > 1)
+				self.set_mode(is_text);
 		} else {
 			// encode: ^f.base64[]
 			const char* encoded=pa_base64_encode(self.value_ptr(), self.value_size());
@@ -1031,7 +1072,9 @@ static void _md5(Request& r, MethodParams& params) {
 
 MFile::MFile(): Methoded("file") {
 	// ^file::create[text;user-name;string]
+	// ^file::create[text;user-name;string;options hash]
 	// ^file::create[binary;user-name;SOMEDAY SOMETHING]
+	// ^file::create[binary;user-name;SOMEDAY SOMETHING;options hash]
 	add_native_method("create", Method::CT_DYNAMIC, _create, 3, 4);
 
 	// ^file.save[mode;file-name]
@@ -1089,13 +1132,18 @@ MFile::MFile(): Methoded("file") {
 	// ^file.sql-string[]
 	add_native_method("sql-string", Method::CT_DYNAMIC, _sql_string, 0, 0);
 
+	// ^file::sql{}
 	// ^file::sql{}[options hash]
 	add_native_method("sql", Method::CT_DYNAMIC, _sql, 1, 2);
 
-	// ^file::base64[string] << decode
-	// ^file.base64[] << encode
-	// ^file:base64[file-name] << encode
-	add_native_method("base64", Method::CT_ANY, _base64, 0, 1);
+	// encode:
+	//   ^file.base64[]
+	//   ^file:base64[file-name]
+	// decode:
+	//   ^file::base64[encoded] // backward
+	//   ^file::base64[mode;user-file-name;encoded]
+	//   ^file::base64[mode;user-file-name;encoded;$.content-type[...]]
+	add_native_method("base64", Method::CT_ANY, _base64, 0, 4);
 
 	// ^file.crc32[]
 	// ^file:crc32[file-name]
