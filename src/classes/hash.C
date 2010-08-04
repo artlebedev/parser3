@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_HASH_C="$Date: 2010/07/05 05:54:46 $";
+static const char * const IDENT_HASH_C="$Date: 2010/08/04 15:11:44 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -470,6 +470,42 @@ static void _foreach(Request& r, MethodParams& params) {
 	hash.first_that<Foreach_info*>(one_foreach_cycle, &info);
 }
 
+static void _at(Request& r, MethodParams& params) {
+	HashStringValue& hash=GET_SELF(r, VHash).hash();
+	size_t count=hash.count();
+
+	int pos=0;
+
+	Value& vwhence=*params.get(0);
+	if(vwhence.is_string()){
+		const String& swhence=*vwhence.get_string();
+		if(swhence == "last")
+			pos=count-1;
+		else if(swhence != "first")
+			throw Exception(PARSER_RUNTIME,
+				&swhence,
+				"whence must be 'first', 'last' or expression");
+	} else {
+		pos=r.process_to_value(vwhence).as_int();
+		if(pos < 0)
+			pos+=count;
+	}
+
+	if(count && pos >= 0 && pos < count){
+		if(pos == 0)
+			r.write_assign_lang(*hash.first_value());
+		else if(pos == count-1)
+			r.write_assign_lang(*hash.last_value());
+		else
+			for(HashStringValue::Iterator i(hash); i; i.next(), pos-- )
+				if(!pos){
+					r.write_assign_lang(*i.value());
+					break;
+				}
+	}
+	
+}
+
 // constructor
 
 MHash::MHash(): Methoded("hash") 
@@ -506,4 +542,8 @@ MHash::MHash(): Methoded("hash")
 
 	// ^hash.foreach[key;value]{code}[delim]
 	add_native_method("foreach", Method::CT_DYNAMIC, _foreach, 2+1, 2+1+1);
+
+	// ^hash._at[first|last]
+	// ^hash._at([-]offset)
+	add_native_method("_at", Method::CT_DYNAMIC, _at, 1, 1);
 }
