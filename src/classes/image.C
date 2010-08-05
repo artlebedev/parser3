@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_IMAGE_C="$Date: 2010/07/05 05:54:46 $";
+static const char * const IDENT_IMAGE_C="$Date: 2010/08/05 12:05:38 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -964,21 +964,48 @@ static void add_point(Table::element_type row,
 	(*p)++;
 }
 #endif
+#ifndef DOXYGEN
+static void add_point(int x, int y, 
+					  gdImage::Point **p) {
+	(**p).x=x;
+	(**p).y=y;
+	(*p)++;
+}
+#endif
 static void _replace(Request& r, MethodParams& params) {
+	int src_color=params.as_int(0, "src color must be int", r);
+	int dest_color=params.as_int(1, "dest color must be int", r);
+
 	gdImage& image=GET_SELF(r, VImage).image();
 
-	Table* table=params.as_no_junction(2, COORDINATES_MUST_NOT_BE_CODE).get_table();
-	if(!table) 
-		throw Exception(PARSER_RUNTIME,
-			0,
-			"coordinates must be table");
+	gdImage::Point* all_p=0;
+	size_t count=0;
+	if(params.count() == 3){
+		Table* table=params.as_no_junction(2, COORDINATES_MUST_NOT_BE_CODE).get_table();
+		if(!table) 
+			throw Exception(PARSER_RUNTIME,
+				0,
+				"coordinates must be table");
+		count=table->count();
+		all_p=new(PointerFreeGC) gdImage::Point[count];
+		gdImage::Point* add_p=all_p;
+		table->for_each(add_point, &add_p);
+	} else {
+		int max_x=image.SX()-1;
+		int max_y=image.SY()-1;
+		if(max_x > 0 && max_y > 0){
+			count=4;
+			all_p=new(PointerFreeGC) gdImage::Point[count];
+			gdImage::Point* add_p=all_p;
+			add_point(0, 0, &add_p);
+			add_point(max_x, 0, &add_p);
+			add_point(max_x, max_y, &add_p);
+			add_point(0, max_y, &add_p);
+		}
+	}
 
-	gdImage::Point *all_p=new(PointerFreeGC) gdImage::Point[table->count()];
-	gdImage::Point *add_p=all_p;	
-	table->for_each(add_point, &add_p);
-	image.FilledPolygonReplaceColor(all_p, table->count(), 
-		image.Color(params.as_int(0, "src color must be int", r)),
-		image.Color(params.as_int(1, "dest color must be int", r)));
+	if(count)
+		image.FilledPolygonReplaceColor(all_p, count, image.Color(src_color), image.Color(dest_color));
 }
 
 static void _polyline(Request& r, MethodParams& params) {
@@ -1325,7 +1352,8 @@ MImage::MImage(): Methoded("image") {
 	add_native_method("bar", Method::CT_DYNAMIC, _bar, 5, 5);
 
 	// ^image.replace(color-source;color-dest)[table x:y]
-	add_native_method("replace", Method::CT_DYNAMIC, _replace, 3, 3);
+	// ^image.replace(color-source;color-dest)
+	add_native_method("replace", Method::CT_DYNAMIC, _replace, 2, 3);
 
 	// ^image.polyline(color)[table x:y]
 	add_native_method("polyline", Method::CT_DYNAMIC, _polyline, 2, 2);
