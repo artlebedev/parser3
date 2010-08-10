@@ -5,6 +5,7 @@ cookie
 env
 console
 request
+junction
 }]
 
 <table border="1">
@@ -43,6 +44,12 @@ request
 <td>request</td>
 <td>$request:CLASS_NAME</td>
 ^do[$request:CLASS]
+</tr>
+
+<tr>
+<td>junction-method</td>
+<td>$do.CLASS_NAME</td>
+^do[$do.CLASS]
 </tr>
 </table>
 
