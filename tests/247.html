@@ -1,0 +1,23 @@
+@main[]
+# checking for UTF-8 auto detection (BOM code)
+^1251[]
+$response:content-type[
+	$.value[text/html]
+	$.charset[$response:charset]
+]
+
+^load[file in UTF-8 with BOM. charset isn't specified;247_utf8_bom.txt]
+^load[file in UTF-8 with BOM. UTF-8 charset is specified;247_utf8_bom.txt;UTF-8]
+#^load[247_utf8.txt]
+^load[file in UTF-8 w/o BOM. UTF-8 charset is specified;247_utf8.txt;UTF-8]
+^load[file in WINDOWS-1251. WINDOWS-1251 charset is specified;247_windows1251.txt;WINDOWS-1251]
+
+@load[sTitle;sFile;sCharset][f]
+<h3>$sTitle</h3>
+$f[^file::load[text;$sFile;
+	^if(def $sCharset){
+		$.charset[$sCharset]
+	}
+]]
+
+$f.text<br />
