@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 584
+Content-Length: 679
 
 <table border="1">
 <tr>
@@ -32,5 +32,10 @@ Content-Length: 584
 <td>request</td>
 <td>request</td>
 <td>request</td><td>yes (request)</td>
+</tr>
+<tr>
+<td>junction-method</td>
+<td>junction</td>
+<td>junction</td><td>yes (junction)</td>
 </tr>
 </table>
