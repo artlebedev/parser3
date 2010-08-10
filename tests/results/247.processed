@@ -1,0 +1,11 @@
+Content-Type: text/html; charset=WINDOWS-1251
+Content-Length: 300
+
+<h3>file in UTF-8 with BOM. charset isn't specified</h3>
+проверка<br />
+<h3>file in UTF-8 with BOM. UTF-8 charset is specified</h3>
+проверка<br />
+<h3>file in UTF-8 w/o BOM. UTF-8 charset is specified</h3>
+проверка<br />
+<h3>file in WINDOWS-1251. WINDOWS-1251 charset is specified</h3>
+проверка<br />
