@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
  */
 
-static const char * const IDENT_HTTP_C="$Date: 2010/07/05 05:55:21 $"; 
+static const char * const IDENT_HTTP_C="$Date: 2010/08/10 05:27:46 $"; 
 
 #include "pa_http.h"
 #include "pa_common.h"
@@ -823,6 +823,8 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 		// skip UTF-8 signature (BOM code)
 		raw_body+=3;
 		raw_body_size-=3;
+		if(!real_remote_charset)
+			real_remote_charset=&UTF8_charset;
 	}
 
 	// output response
