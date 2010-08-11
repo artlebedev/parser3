@@ -17,7 +17,7 @@
 #ifndef PA_HASH_H
 #define PA_HASH_H
 
-static const char * const IDENT_HASH_H="$Date: 2010/08/04 15:08:44 $";
+static const char * const IDENT_HASH_H="$Date: 2010/08/11 16:17:27 $";
 
 #include "pa_memory.h"
 #include "pa_types.h"
@@ -120,7 +120,6 @@ public:
 
 	HASH() { 
 		allocated=Hash_allocates[allocates_index=0];
-		threshold=allocated*THRESHOLD_PERCENT/100;
 		fpairs_count=fused_refs=0;
 		refs=new(UseGC) Pair*[allocated];
 #ifdef HASH_ORDER
@@ -132,7 +131,6 @@ public:
 	HASH(const HASH& source) {
 		allocates_index=source.allocates_index;
 		allocated=source.allocated;
-		threshold=source.threshold;
 		fused_refs=source.fused_refs;
 		fpairs_count=source.fpairs_count;
 		refs=new(UseGC) Pair*[allocated];
@@ -346,19 +344,11 @@ public:
 
 protected:
 
-	/// expand when these %% of allocated exausted
-	enum {
-		THRESHOLD_PERCENT=75
-	};
-
 	/// the index of [allocated] in [Hash_allocates]
 	int allocates_index;
 
 	/// number of allocated pairs
 	int allocated;
-
-	/// helper: expanding when fused_refs == threshold
-	int threshold;
 
 	/// used pairs
 	int fused_refs;
@@ -389,18 +379,17 @@ protected:
 	Pair **last;
 #endif
 
-	/// filled to threshold: needs expanding
-	bool is_full() { return fused_refs==threshold; }
+	/// filled to threshold (THRESHOLD_PERCENT=75), needs expanding
+	bool is_full() { return fused_refs + allocated/4 >= allocated; }
 
 	/// allocate larger buffer & rehash
 	void expand() {
 		int old_allocated=allocated;
 		Pair **old_refs=refs;
 
-		allocates_index=allocates_index+1<HASH_ALLOCATES_COUNT?allocates_index+1:HASH_ALLOCATES_COUNT-1;
+		if (allocates_index<HASH_ALLOCATES_COUNT-1) allocates_index++;
 		// allocated bigger refs array
 		allocated=Hash_allocates[allocates_index];
-		threshold=allocated*THRESHOLD_PERCENT/100;
 		refs=new(UseGC) Pair*[allocated];
 
 		// rehash
