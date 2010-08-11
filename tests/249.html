@@ -1,0 +1,20 @@
+@main[]
+
+$o[^object::create[]]
+$o.k2[v2]
+
+display v1: $o.k1
+display v2 (with default setter): $o.k2
+display default getter: $o.test
+
+@CLASS
+object
+
+@create[]
+$k1[v1]
+
+@SET_DEFAULT[name;value]
+$self.$name[=$value=]
+
+@GET_DEFAULT[name]
+=$k1=$k3=

@@ -1,0 +1,6 @@
+Content-Type: text/html
+Content-Length: 83
+
+display v1: v1
+display v2 (with default setter): =v2=
+display default getter: =v1==
