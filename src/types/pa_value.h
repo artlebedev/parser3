@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-static const char * const IDENT_VALUE_H="$Date: 2009/09/18 09:16:07 $";
+static const char * const IDENT_VALUE_H="$Date: 2010/08/11 16:21:52 $";
 
 #include "pa_common.h"
 #include "pa_array.h"
@@ -112,6 +112,13 @@ public: // Value
 		bark("element can not be stored to %s", &aname); 
 		return 0;
 	}
+
+	/// VObject default getter & setter support
+	virtual void enable_default_getter(){ }
+	virtual void enable_default_setter(){ }
+	virtual void disable_default_getter(){ }
+	virtual void disable_default_setter(){ }
+	virtual bool is_enabled_default_getter(){ return true; }
 	
 	/// extract VStateless_class
 	virtual VStateless_class* get_class()=0;

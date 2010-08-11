@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char * const IDENT_REQUEST_H="$Date: 2010/08/01 14:49:33 $";
+static const char * const IDENT_REQUEST_H="$Date: 2010/08/11 16:21:52 $";
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -240,6 +240,7 @@ public:
 		int line_no_offset=0);
 
 	/// processes any code-junction there may be inside of @a value
+	StringOrValue process_getter(Junction& junction); // execute.C
 	StringOrValue process(Value& input_value, bool intercept_string=true); // execute.C
 	void process_write(Value& input_value); // execute.C
 	//@{ convinient helpers

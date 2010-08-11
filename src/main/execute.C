@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2010/08/01 14:49:33 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2010/08/11 16:21:52 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -839,6 +839,7 @@ void Request::execute(ArrayOperation& ops) {
 				Value &object=construct(*class_value, *constructor_junction->method);
 				VConstructorFrame frame(*constructor_junction->method, method_frame, object);
 				METHOD_FRAME_ACTION(op_call(frame));
+				object.enable_default_setter();
 
 				if(opcode==OP::OP_CONSTRUCT_OBJECT)
 					stack.push(object);
@@ -1273,31 +1274,99 @@ void Request::put_element(Value& ncontext, const String& name, Value* value) {
 	// put_element can return property-setting-junction
 	if(const VJunction* vjunction=ncontext.put_element(name, value, false))
 		if(vjunction!=PUT_ELEMENT_REPLACED_ELEMENT) {
-			// process it
 			const Junction& junction = vjunction->junction();
-			VMethodFrame frame(*junction.method, method_frame /*caller*/, junction.self);
+			VConstructorFrame frame(*junction.method, method_frame /*caller*/, junction.self);
 
 			size_t param_count=frame.method_params_count();
-			if(param_count!=1)
+
+ 			if(junction.auto_name){ 
+				// default setter
+ 				if(param_count!=2)
+ 					throw Exception(PARSER_RUNTIME,
+ 						0,
+ 						"default setter method must have TWO parameters (has %d parameters)", param_count);
+
+				Value* params[2] = { new VString(*junction.auto_name), value };
+				frame.store_params(params, 2);
+
+				Temp_disable_default_setter temp(junction.self);
+
+				SAVE_CONTEXT
+
+				rcontext=wcontext=&frame;
+				method_frame=&frame;
+
+				recoursion_checked_execute(*frame.method.parser_code);
+
+				RESTORE_CONTEXT
+ 			} else {
+				// setter
+ 				if(param_count!=1)
+ 					throw Exception(PARSER_RUNTIME,
+ 						0,
+ 						"setter method must have ONE parameter (has %d parameters)", param_count);
+
+				frame.store_params(&value, 1);
+
+				SAVE_CONTEXT
+
+				rcontext=wcontext=&frame;
+				method_frame=&frame;
+
+				recoursion_checked_execute(*frame.method.parser_code);
+
+				RESTORE_CONTEXT
+			}
+		}
+}
+
+StringOrValue Request::process_getter(Junction& junction) {
+	VMethodFrame frame(*junction.method, method_frame/*caller*/, junction.self);
+	size_t param_count=frame.method_params_count();
+
+	if(junction.auto_name){ 
+		// default getter
+		Value *param;
+
+		if(param_count){
+			if(param_count>1)
 				throw Exception(PARSER_RUNTIME,
 					0,
-					"setter method must have ONE parameter (has %d parameters)", param_count);
+					"default getter method can't have more then 1 parameter (has %d parameters)", param_count);
+			param=new VString(*junction.auto_name);
+			frame.store_params(&param, 1);
+		} // no need for else frame.empty_params()
 
-			frame.store_params(&value, 1);
+		Temp_disable_default_getter temp(junction.self);
+				
+		SAVE_CONTEXT
 
-			SAVE_CONTEXT
+		rcontext=wcontext=&frame;
+		method_frame=&frame;
 
-			rcontext=wcontext=&frame;
-			method_frame=&frame;
+		recoursion_checked_execute(*frame.method.parser_code); // parser code, execute it
 
-			// prevent non-string writes for better error reporting [setters are not expected to return anything]
-			wcontext->write(*method_frame);
+		RESTORE_CONTEXT
+	} else {
+		// getter
+		if(param_count!=0)
+			throw Exception(PARSER_RUNTIME,
+				0,
+				"getter method must have no parameters (has %d parameters)", param_count);
+		
+		// no need for frame.empty_params()
 
-			recoursion_checked_execute(*frame.method.parser_code); // parser code, execute it
-			// we don't need it StringOrValue result=wcontext->result();
+		SAVE_CONTEXT
 
-			RESTORE_CONTEXT
-		}
+		rcontext=wcontext=&frame;
+		method_frame=&frame;
+
+		recoursion_checked_execute(*frame.method.parser_code); // parser code, execute it
+
+		RESTORE_CONTEXT
+	}
+
+	return frame.result();
 }
 
 /**	@param intercept_string
@@ -1311,38 +1380,12 @@ void Request::put_element(Value& ncontext, const String& name, Value* value) {
 
 	using the fact it's either string_ or value_ result requested to speed up checkes
 */
+
 StringOrValue Request::process(Value& input_value, bool intercept_string) {
 	Junction* junction=input_value.get_junction();
 	if(junction) {
 		if(junction->is_getter) { // is it a getter-junction?
-			VMethodFrame frame(*junction->method, method_frame/*caller*/, junction->self);
-			Value *param;
-
-			if(size_t param_count=frame.method_params_count()){
-				if(junction->auto_name){ // default getter
-					if(param_count==1){
-						param=new VString(*junction->auto_name);
-						frame.store_params(&param, 1);
-					} else
-						throw Exception(PARSER_RUNTIME,
-							0,
-							"default getter method can't have more then 1 parameter (has %d parameters)", param_count);
-				} else
-					throw Exception(PARSER_RUNTIME,
-						0,
-						"getter method must have no parameters (has %d parameters)", param_count);
-			} // no need for else frame.empty_params()
-
-			SAVE_CONTEXT
-
-			rcontext=wcontext=&frame;
-			method_frame=&frame;
-
-			recoursion_checked_execute(*frame.method.parser_code); // parser code, execute it
-
-			RESTORE_CONTEXT
-
-			return frame.result();
+			return process_getter(*junction);
 		}
 
 		if(junction->code) { // is it a code-junction?
@@ -1405,34 +1448,7 @@ void Request::process_write(Value& input_value) {
 	Junction* junction=input_value.get_junction();
 	if(junction) {
 		if(junction->is_getter) { // is it a getter-junction?
-			VMethodFrame frame(*junction->method, method_frame /*caller*/, junction->self);
-			Value *param;
-
-			if(size_t param_count=frame.method_params_count()){
-				if(junction->auto_name){ // default getter
-					if(param_count==1){
-						param=new VString(*junction->auto_name);
-						frame.store_params(&param, 1);
-					} else 
-						throw Exception(PARSER_RUNTIME,
-							0,
-							"default getter method can't have more then 1 parameter (has %d parameters)", param_count);
-				} else 
-					throw Exception(PARSER_RUNTIME,
-						0,
-						"getter method must have no parameters (has %d parameters)", param_count);
-			} // no need for else frame.empty_params()
-
-			SAVE_CONTEXT
-
-			rcontext=wcontext=&frame;
-			method_frame=&frame;
-
-			recoursion_checked_execute(*frame.method.parser_code); // parser code, execute it
-
-			RESTORE_CONTEXT
-
-			write_pass_lang(frame.result());
+			write_pass_lang(process_getter(*junction));
 			return;
 		}
 

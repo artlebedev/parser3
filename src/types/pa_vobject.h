@@ -8,7 +8,7 @@
 #ifndef PA_VOBJECT_H
 #define PA_VOBJECT_H
 
-static const char * const IDENT_VOBJECT_H="$Date: 2009/09/18 09:16:07 $";
+static const char * const IDENT_VOBJECT_H="$Date: 2010/08/11 16:21:52 $";
 
 // includes
 
@@ -29,6 +29,13 @@ class VObject: public Value {
 
 	VStateless_class& fclass;
 	HashStringValue ffields;
+
+	enum State {
+		IS_GETTER_ACTIVE = 0x01,
+		IS_SETTER_ACTIVE = 0x02
+	};
+
+	int state; // default setter & getter state
 
 public: // Value
 	
@@ -52,14 +59,45 @@ public: // Value
 	override Value* get_element(const String& aname);
 	override const VJunction* put_element(const String& name, Value* value, bool replace);
 
+	/// VObject default getter & setter support
+	override void enable_default_getter(){ state |= IS_GETTER_ACTIVE; }
+	override void enable_default_setter(){ if(fclass.has_default_setter()) state |= IS_SETTER_ACTIVE; }
+	override void disable_default_getter(){ state &= ~IS_GETTER_ACTIVE; }
+	override void disable_default_setter(){ state &= ~IS_SETTER_ACTIVE; }
+	override bool is_enabled_default_getter(){ return (state & IS_GETTER_ACTIVE) > 0; }
+			 bool is_enabled_default_setter(){ return (state & IS_SETTER_ACTIVE) > 0; }
+
 public: // creation
 
-	VObject(VStateless_class& aclass): fclass(aclass){}
+	VObject(VStateless_class& aclass): fclass(aclass), state(IS_GETTER_ACTIVE){}
 
 private:
 
 	Value* get_scalar_value(char* as_something) const;
+};
 
+///	Auto-objects used for temporarily disabling setter/getter
+
+class Temp_disable_default_getter {
+	Value& fwhere;
+public:
+	Temp_disable_default_getter(Value& awhere) : fwhere(awhere) {
+		fwhere.disable_default_getter();
+	}
+	~Temp_disable_default_getter() { 
+		fwhere.enable_default_getter();
+	}
+};
+
+class Temp_disable_default_setter {
+	Value& fwhere;
+public:
+	Temp_disable_default_setter(Value& awhere) : fwhere(awhere) {
+		fwhere.disable_default_setter();
+	}
+	~Temp_disable_default_setter() { 
+		fwhere.enable_default_setter();
+	}
 };
 
 #endif

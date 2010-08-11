@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VCLASS_C="$Date: 2009/09/18 09:16:07 $";
+static const char * const IDENT_VCLASS_C="$Date: 2010/08/11 16:21:52 $";
 
 #include "pa_vclass.h"
 
@@ -36,7 +36,10 @@ void VClass::real_set_method(const String& aname, Method* amethod) {
 		else
 			get_property(aname.mid(4, aname.length())).getter=amethod;
 	} else if(aname.starts_with("SET_")){
-		get_property(aname.mid(4, aname.length())).setter=amethod;
+		if(aname=="SET_DEFAULT")
+			set_default_setter(amethod);
+		else
+			get_property(aname.mid(4, aname.length())).setter=amethod;
 	} else if(aname=="GET"){
 		set_scalar(amethod);
 	}
@@ -84,10 +87,7 @@ Value* VClass::get_element(Value& aself, const String& aname) {
 		return result;
 
 	// no field or method found: looking for default getter
-	if(Value* result=get_default_getter(aself, aname))
-		return result;
-
-	return 0;
+	return get_default_getter(aself, aname);
 }
 
 static void add_field(

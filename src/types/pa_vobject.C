@@ -12,7 +12,7 @@
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
 
-static const char * const IDENT_VOBJECT_C="$Date: 2010/08/01 14:49:33 $";
+static const char * const IDENT_VOBJECT_C="$Date: 2010/08/11 16:21:52 $";
 
 Value* VObject::get_scalar_value(char* as_something) const {
 	VObject* unconst_this=const_cast<VObject*>(this);
@@ -91,24 +91,24 @@ Table *VObject::get_table() {
 }
 
 Value* VObject::get_element(const String& aname) {
-	// simple things first: $field=ffields.field
+	// object field
 	if(Value* result=ffields.get(aname))
 		return result;
 
-	// class $virtual_method $virtual_property
-	if(Value* result=fclass.get_element(*this, aname))
-		return result;
-
-	if(Value* result=fclass.get_default_getter(*this, aname))
-		return result;
-
-	return 0;
+	// class method or property, or _object_ default getter
+	return fclass.get_element(*this, aname);
 }
 
-/// VObject: (field/property)=value
 const VJunction* VObject::put_element(const String& aname, Value* avalue, bool /*areplace*/){
+	// class property
 	if(const VJunction* result=fclass.put_element(*this, aname, avalue, true /*try to replace! NEVER overwrite*/))
-		return result; // replaced in statics fields/properties
-	ffields.put(aname,avalue);
+		return result; 
+	
+	// object field or default setter
+	if (is_enabled_default_setter()){
+		return ffields.put_replaced(aname, avalue) ? 0 : fclass.get_default_setter(*this, aname); 
+	} else {
+		ffields.put(aname, avalue);
+	}
 	return 0;
 }

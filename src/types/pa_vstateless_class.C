@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)\
 */
 
-static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2010/07/22 21:08:35 $";
+static const char * const IDENT_VSTATELESS_CLASS_C="$Date: 2010/08/11 16:21:52 $";
 
 #include "pa_vstateless_class.h"
 #include "pa_vstring.h"
@@ -101,13 +101,31 @@ void VStateless_class::set_scalar(Method* amethod){
 }
 
 Value* VStateless_class::get_default_getter(Value& aself, const String& aname){
-	if(fdefault_getter)
+	if(fdefault_getter && aself.is_enabled_default_getter())
 		return new VJunction(aself, fdefault_getter, true /*getter*/, (String*)&aname);
 	return 0;
 }
 
 void VStateless_class::set_default_getter(Method* amethod){
 	fdefault_getter=amethod;
+}
+
+bool VStateless_class::has_default_getter(){
+	return fdefault_getter != NULL;
+}
+
+VJunction* VStateless_class::get_default_setter(Value& aself, const String& aname){
+	if(fdefault_setter)
+		return new VJunction(aself, fdefault_setter, false /*setter*/, (String*)&aname);
+	return 0;
+}
+
+void VStateless_class::set_default_setter(Method* amethod){
+	fdefault_setter=amethod;
+}
+
+bool VStateless_class::has_default_setter(){
+	return fdefault_setter != NULL;
 }
 
 void VStateless_class::set_base(VStateless_class* abase){
@@ -125,6 +143,8 @@ void VStateless_class::set_base(VStateless_class* abase){
 			fscalar=fbase->fscalar;
 		if(fbase->fdefault_getter && !fdefault_getter)
 			fdefault_getter=fbase->fdefault_getter;
+		if(fbase->fdefault_setter && !fdefault_setter)
+			fdefault_setter=fbase->fdefault_setter;
 	}
 }
 

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REFLECTION_C="$Date: 2010/08/01 14:49:33 $";
+static const char * const IDENT_REFLECTION_C="$Date: 2010/08/11 16:21:51 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
@@ -107,6 +107,7 @@ static void _create(Request& r, MethodParams& params) {
 		frame.empty_params();
 	}
 	r.op_call(frame);
+	object.enable_default_setter();
 	r.write_pass_lang(object);
 }
 

@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
-static const char * const IDENT_VSTATELESS_CLASS_H="$Date: 2010/07/05 01:38:34 $";
+static const char * const IDENT_VSTATELESS_CLASS_H="$Date: 2010/08/11 16:21:52 $";
 
 // include
 
@@ -59,6 +59,7 @@ protected:
 
 	Method* fscalar;
 	Method* fdefault_getter;
+	Method* fdefault_setter;
 
 public: // Value
 	
@@ -84,6 +85,11 @@ public: // Value
 
 	Value* get_default_getter(Value& aself, const String& aname);
 	void set_default_getter(Method* amethod);
+	bool has_default_getter();
+
+	VJunction* get_default_setter(Value& aself, const String& aname);
+	void set_default_setter(Method* amethod);
+	bool has_default_setter();
 
 	void add_derived(VStateless_class &aclass);
 
@@ -100,6 +106,7 @@ public: // usage
 		fpartial(false),
 		fscalar(0),
 		fdefault_getter(0),
+		fdefault_setter(0),
 		fcall_type(Method::CT_ANY)
 		{
 			set_base(abase);
