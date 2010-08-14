@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_HASH_C="$Date: 2010/08/04 15:11:44 $";
+static const char * const IDENT_HASH_C="$Date: 2010/08/14 01:08:45 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -491,10 +491,10 @@ static void _at(Request& r, MethodParams& params) {
 			pos+=count;
 	}
 
-	if(count && pos >= 0 && pos < count){
+	if(count && pos >= 0 && (size_t)pos < count){
 		if(pos == 0)
 			r.write_assign_lang(*hash.first_value());
-		else if(pos == count-1)
+		else if((size_t)pos == count-1)
 			r.write_assign_lang(*hash.last_value());
 		else
 			for(HashStringValue::Iterator i(hash); i; i.next(), pos-- )
