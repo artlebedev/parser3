@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2010/08/04 13:31:07 $";
+static const char * const IDENT_FILE_C="$Date: 2010/08/25 04:41:32 $";
 
 #include "pa_config_includes.h"
 
@@ -848,7 +848,7 @@ public:
 						user_content_type=new String(str, String::L_TAINTED);
 					break;
 				default:
-					error=SQL_Error(PARSER_RUNTIME, "result must not contain more then one row, three rows");
+					error=SQL_Error(PARSER_RUNTIME, "result must not contain more then one row, three columns");
 					return true;
 			}
 			return false;
