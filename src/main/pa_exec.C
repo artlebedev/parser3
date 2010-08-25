@@ -7,7 +7,7 @@
 	@todo setrlimit
 */
 
-static const char * const IDENT_EXEC_C="$Date: 2010/04/19 19:35:55 $";
+static const char * const IDENT_EXEC_C="$Date: 2010/08/25 02:13:06 $";
 
 #include "pa_config_includes.h"
 
@@ -362,7 +362,11 @@ static void append_env_pair(HashStringString::key_type key, HashStringString::va
 }
 
 PA_exec_result pa_exec(
-			bool forced_allow,
+			bool
+#ifdef NO_PA_EXECS
+				forced_allow
+#endif
+			,
 			const String& file_spec, 
 			const HashStringString* env, 
 			const ArrayString& argv, 
