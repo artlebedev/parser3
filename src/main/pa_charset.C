@@ -5,7 +5,7 @@
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_CHARSET_C="$Date: 2009/11/06 05:01:18 $";
+static const char * const IDENT_CHARSET_C="$Date: 2010/08/27 02:53:24 $";
 
 #include "pa_charset.h"
 #include "pa_charsets.h"
@@ -433,7 +433,7 @@ of ocetes consumed.
 	return 0;
 }
 
-static bool isEscaped(XMLByte c){
+static bool need_escape(XMLByte c){
 	return
 		!(
 			(c<=127)
@@ -492,7 +492,7 @@ static unsigned int skipUTF8Char(const XMLByte*& srcPtr, const XMLByte* srcEnd){
 	return trailingBytes;
 }
 
-// read non-UTF8 char, and return number of bytes needed for store this char in UTF8
+// read non-UTF8 char, and return number of bytes needed for storing this char in UTF8
 static unsigned int readChar(const XMLByte*& srcPtr, const XMLByte* srcEnd, XMLByte& firstByte, XMLCh& UTF8Char, const Charset::Tables& tables){
 	if(!srcPtr || !*srcPtr || srcPtr>=srcEnd)
 		return 0;
@@ -518,118 +518,110 @@ static unsigned int readChar(const XMLByte*& srcPtr, const XMLByte* srcEnd, XMLB
 	return 1;
 }
 
-static int escapeUTF8(const XMLByte* srcData, size_t& srcLen,
-				XMLByte* toFill, size_t& toFillLen) {
-	const XMLByte* srcPtr=srcData;
-	XMLByte* outPtr=toFill;
-	XMLByte* outEnd=toFill+toFillLen;
-	// loop until we either run out of input data, or room to store
-	for(UTF8_string_iterator i((XMLByte *)srcPtr, srcLen); (outPtr < outEnd) && i.has_next(); ){
-		if(i.getCharSize()==1){
-			if(isEscaped(i.getFirstByte())) // %XX
-				outPtr+=sprintf((char*)outPtr, "%%%02X", i.getFirstByte());
-			else
-				*outPtr++=i.getFirstByte();
-		} else
-			outPtr+=sprintf((char*)outPtr, "%%u%04X", i.next()); // %uXXXX
-	}
-	// Update the bytes eaten
-	srcLen=srcPtr-srcData;
-	
-	// Return the characters read
-	toFillLen=outPtr-toFill;
+size_t Charset::calc_escaped_length_UTF8(XMLByte* src, size_t src_length){
+	size_t dest_length=0;
 
-	return 0;
-}
-
-static int escape(const XMLByte* srcData, size_t& srcLen,
-			   XMLByte *toFill, size_t& toFillLen,
-			   const Charset::Tables& tables) {
-	const XMLByte* srcPtr=srcData;
-	const XMLByte* srcEnd=srcData+srcLen;
-	XMLByte* outPtr=toFill;
-	XMLByte firstByte;
-	XMLCh UTF8Char;
-	uint charSize;
-
-	while(charSize=readChar(srcPtr, srcEnd, firstByte, UTF8Char, tables)){
-		if(charSize==1){
-			if(firstByte){
-				if(isEscaped(firstByte)) // %XX
-					outPtr+=sprintf((char*)outPtr, "%%%02X", firstByte);
-				else
-					*outPtr++=firstByte;
-			} else // add replacement char '?'
-				*outPtr++='?';
-		} else
-			outPtr+=sprintf((char*)outPtr, "%%u%04X", UTF8Char); // %uXXXX
+	for(UTF8_string_iterator i(src, src_length); i.has_next(); ){
+		if(i.getCharSize()==1)
+			dest_length+=!need_escape(i.getFirstByte())?1/*as-is*/:3/*%XX*/;
+		else
+			dest_length+=6; // %uXXXX
 	}
 
-	// Update the bytes eaten
-	srcLen = srcPtr - srcData;
-	
-	// Return the characters read
-	toFillLen = outPtr - toFill;
-	
-	return 0;
+	return dest_length;
 }
 
+size_t Charset::calc_escaped_length(XMLByte* src, size_t src_length, const Charset::Tables& tables){
+	size_t dest_length=0;
+
+	const XMLByte* src_ptr=src;
+	const XMLByte* src_end=src_ptr+src_length;
+	XMLByte first_byte;
+	XMLCh UTF8_char;
+	while(uint char_size=readChar(src_ptr, src_end, first_byte, UTF8_char, tables)){
+		if(char_size==1)
+			dest_length+=(!first_byte/*replacement char '?'*/ || !need_escape(first_byte))?1:3/*'%XX'*/;
+		else
+			dest_length+=6; // %uXXXX
+	}
+
+	return dest_length;
+}
+
+size_t Charset::calc_escaped_length(const String::C src, const Charset& source_charset){
+	size_t src_length=src.length;
+	if(!src_length)
+		return 0;
+
+#ifdef PRECALCULATE_DEST_LENGTH
+	if(source_charset.isUTF8())
+		return calc_escaped_length_UTF8((XMLByte *)src.str, src_length);
+	else
+		return calc_escaped_length((XMLByte *)src.str, src_length, source_charset.tables);
+#else
+	return src_length*6; // enough for %uXXXX but too memory-hungry
+#endif
+}
+
+#define escape_char(dest_ptr, char_size, first_byte, UTF8_char) \
+	if(char_size==1) \
+		if(first_byte){ \
+			if(need_escape(first_byte)) \
+				dest_ptr+=sprintf((char*)dest_ptr, "%%%02X", first_byte); /* %XX */ \
+			else \
+				*dest_ptr++=first_byte; /*as is*/ \
+		} else \
+			*dest_ptr++='?'; /* replacement char '?' */ \
+	else \
+		dest_ptr+=sprintf((char*)dest_ptr, "%%u%04X", UTF8_char); // %uXXXX
+
+
+size_t Charset::escape_UTF8(const XMLByte* src, size_t src_length, XMLByte* dest) {
+	XMLByte* dest_ptr=dest;
+
+	// loop until we either run out of input data
+	for(UTF8_string_iterator i((XMLByte *)src, src_length); i.has_next(); )
+		escape_char(dest_ptr, i.getCharSize(), i.getFirstByte(), i.next())
+	
+	return dest_ptr - dest;
+}
+
+size_t Charset::escape(const XMLByte* src, size_t src_length, XMLByte* dest, const Charset::Tables& tables) {
+	const XMLByte* src_ptr=src;
+	const XMLByte* src_end=src+src_length;
+	XMLByte* dest_ptr=dest;
+
+	XMLByte first_byte;
+	XMLCh UTF8_char;
+	uint char_size;
+
+	while(char_size=readChar(src_ptr, src_end, first_byte, UTF8_char, tables))
+		escape_char(dest_ptr, char_size, first_byte, UTF8_char)
+
+	return dest_ptr - dest;
+}
 
 String::C Charset::escape(const String::C src, const Charset& source_charset){
 	size_t src_length=src.length;
 	if(!src_length)
 		return String::C("", 0);
 
-#ifdef PRECALCULATE_DEST_LENGTH
-	size_t dest_length=0;
+	size_t dest_calculated_length=calc_escaped_length(src, source_charset);
+	XMLByte *dest_body=new(PointerFreeGC) XMLByte[dest_calculated_length+1/*terminator*/];
 
-	if(source_charset.isUTF8()){
-		for(UTF8_string_iterator i((XMLByte *)src.str, src_length); i.has_next(); ){
-			if(i.getCharSize()==1)
-				dest_length+=!isEscaped(i.getFirstByte())?1/*as-is*/:3/*%XX*/;
-			else
-				dest_length+=6/*%uXXXX*/;
-		}
-	} else {
-		const XMLByte* srcPtr=(XMLByte*)src.str;
-		const XMLByte* srcEnd=srcPtr+src_length;
-		XMLByte firstByte;
-		XMLCh UTF8Char;
-		while(uint charSize=readChar(srcPtr, srcEnd, firstByte, UTF8Char, source_charset.tables)){
-			if(charSize==1)
-				dest_length+=(!firstByte/*replacement char '?'*/ || !isEscaped(firstByte))?1:3/*'%XX'*/;
-			else
-				dest_length+=6; // '%uXXXX'
-		}
-	}
-#else
-	size_t dest_length=src_length*6; // enough for %uXXXX but too memory-hungry
-#endif
+	size_t dest_length;
+	if(source_charset.isUTF8())
+		dest_length=escape_UTF8((XMLByte *)src.str, src_length, dest_body);
+	else
+		dest_length=escape((XMLByte *)src.str, src_length, dest_body, source_charset.tables);
 
-	//throw Exception(0,0,"%u",dest_length);
+	if(dest_length>dest_calculated_length)
+		throw Exception(0, 0, "Charset::escape buffer overflow");
 
-#ifndef NDEBUG
-	size_t saved_dest_length=dest_length;
-#endif
-	XMLByte *dest_body=new(PointerFreeGC) XMLByte[dest_length+1/*for terminator*/];
-
-	int status;
-	if(source_charset.isUTF8()){
-		status=::escapeUTF8((XMLByte *)src.str, src_length, dest_body, dest_length);
-	} else {
-		status=::escape((XMLByte *)src.str, src_length, dest_body, dest_length, source_charset.tables);
-	}
-
-	if(status<0)
-		throw Exception(0,
-			0,
-			"Charset::escape buffer overflow");
-
-	assert(dest_length<=saved_dest_length);
 	dest_body[dest_length]=0; // terminator
 	return String::C((char*)dest_body, dest_length);
 }
-	
+
 String::Body Charset::escape(const String::Body src, const Charset& source_charset) {
 	const char *src_ptr=src.cstr();
 	size_t src_size=src.length();
@@ -646,6 +638,136 @@ String& Charset::escape(const String& src, const Charset& source_charset) {
 	return *new String(escape((String::Body)src, source_charset), String::L_CLEAN);
 }
 
+inline bool need_json_escape(unsigned char c){
+	return strchr("\n\"\\/\t\r\b\f", c)!=0;
+}
+
+size_t Charset::calc_JSON_escaped_length_UTF8(XMLByte* src, size_t src_length){
+	size_t dest_length=0;
+
+	for(UTF8_string_iterator i(src, src_length); i.has_next(); ){
+		if(i.getCharSize()==1)
+			dest_length+=need_json_escape(i.getFirstByte()) ? 2 : 1;
+		else
+			dest_length+=6; // \uXXXX
+	}
+
+	return dest_length;
+}
+
+size_t Charset::calc_JSON_escaped_length(XMLByte* src, size_t src_length, const Charset::Tables& tables){
+	const XMLByte* src_ptr=src;
+	const XMLByte* src_end=src_ptr+src_length;
+	XMLByte first_byte;
+	XMLCh UTF8_char;
+	size_t dest_length=0;
+
+	while(uint char_size=readChar(src_ptr, src_end, first_byte, UTF8_char, tables)){
+		if(char_size==1)
+			dest_length+=(!first_byte/*replacement char '?'*/ || !need_json_escape(first_byte))? 1 : 2;
+		else
+			dest_length+=6; // \uXXXX
+	}
+
+	return dest_length;
+}
+
+size_t Charset::calc_JSON_escaped_length(const String::C src, const Charset& source_charset){
+	size_t src_length=src.length;
+	if(!src_length)
+		return 0;
+
+#ifdef PRECALCULATE_DEST_LENGTH
+	if(source_charset.isUTF8())
+		return calc_JSON_escaped_length_UTF8((XMLByte *)src.str, src_length);
+	else
+		return calc_JSON_escaped_length((XMLByte *)src.str, src_length, source_charset.tables);
+#else
+	return src_length*6; // enough for \uXXXX but too memory-hungry
+#endif
+}
+
+#define escape_char_JSON(dest_ptr, char_size, first_byte, UTF8_char) \
+	if(char_size==1) \
+		switch(first_byte){ \
+			case '\n': *dest_ptr++='\\'; *dest_ptr++='n';  break; \
+			case '"' : *dest_ptr++='\\'; *dest_ptr++='"';  break; \
+			case '\\': *dest_ptr++='\\'; *dest_ptr++='\\'; break; \
+			case '/' : *dest_ptr++='\\'; *dest_ptr++='/';  break; \
+			case '\t': *dest_ptr++='\\'; *dest_ptr++='t';  break; \
+			case '\r': *dest_ptr++='\\'; *dest_ptr++='r';  break; \
+			case '\b': *dest_ptr++='\\'; *dest_ptr++='b';  break; \
+			case '\f': *dest_ptr++='\\'; *dest_ptr++='f';  break; \
+			case   0 : *dest_ptr++='?'; break; /*replacement char*/ \
+			default  : *dest_ptr++=first_byte; \
+		} \
+	else \
+		dest_ptr+=sprintf((char*)dest_ptr, "\\u%04X", UTF8_char); // \uXXXX
+
+
+size_t Charset::escape_JSON_UTF8(const XMLByte* src, size_t src_length, XMLByte* dest) {
+	XMLByte* dest_ptr=dest;
+
+	// loop until we either run out of input data
+	for(UTF8_string_iterator i((XMLByte *)src, src_length); i.has_next(); )
+		escape_char_JSON(dest_ptr, i.getCharSize(), i.getFirstByte(), i.next())
+
+	return dest_ptr - dest;
+}
+
+size_t Charset::escape_JSON(const XMLByte* src, size_t src_length, XMLByte* dest, const Charset::Tables& tables) {
+	const XMLByte* src_ptr=src;
+	const XMLByte* src_end=src+src_length;
+	XMLByte* dest_ptr=dest;
+
+	XMLByte first_byte;
+	XMLCh UTF8_char;
+	uint char_size;
+
+	while(char_size=readChar(src_ptr, src_end, first_byte, UTF8_char, tables))
+		escape_char_JSON(dest_ptr, char_size, first_byte, UTF8_char)
+
+	return dest_ptr - dest;
+}
+
+String::C Charset::escape_JSON(const String::C src, const Charset& source_charset){
+	size_t src_length=src.length;
+	if(!src_length)
+		return String::C("", 0);
+
+
+	size_t dest_calculated_length=calc_JSON_escaped_length(src, source_charset);
+	XMLByte *dest_body=new(PointerFreeGC) XMLByte[dest_calculated_length+1/*terminator*/];
+
+	size_t dest_length;
+	if(source_charset.isUTF8())
+		dest_length=escape_JSON_UTF8((XMLByte *)src.str, src_length, dest_body);
+	else
+		dest_length=escape_JSON((XMLByte *)src.str, src_length, dest_body, source_charset.tables);
+
+	if(dest_length>dest_calculated_length)
+		throw Exception(0, 0, "Charset::escape_JSON buffer overflow");
+
+	dest_body[dest_length]=0; // terminator
+	return String::C((char*)dest_body, dest_length);
+}
+
+String::Body Charset::escape_JSON(const String::Body src, const Charset& source_charset) {
+	const char *src_ptr=src.cstr();
+	size_t src_size=src.length();
+
+	String::C dest=Charset::escape_JSON(String::C(src_ptr, src_size), source_charset);
+
+	return String::Body(dest.length ? dest.str:0);
+}
+
+String& Charset::escape_JSON(const String& src, const Charset& source_charset) {
+	if(src.is_empty())
+		return *new String();
+
+	return *new String(escape_JSON((String::Body)src, source_charset), String::L_CLEAN);
+}
+
 const String::C Charset::transcodeToUTF8(const String::C src) const {
 	int src_length=src.length;
 
@@ -658,10 +780,8 @@ const String::C Charset::transcodeToUTF8(const String::C src) const {
 	while(uint charSize=readChar(srcPtr, srcEnd, firstByte, UTF8Char, tables))
 		dest_length+=charSize;
 #else
-	int dest_length=src_length*6; // so that surly enough (max utf8 seq len=6) but too memory-hyngry
+	int dest_length=src_length*6; // so that surly enough (max utf8 seq len=6) but too memory-hungry
 #endif
-
-	//throw Exception(0,0,"%u",dest_length);
 
 #ifndef NDEBUG
 	int saved_dest_length=dest_length;

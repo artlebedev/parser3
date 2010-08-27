@@ -8,7 +8,7 @@
 #ifndef PA_CHARSET_H
 #define PA_CHARSET_H
 
-static const char * const IDENT_CHARSET_H="$Date: 2009/11/06 05:01:24 $";
+static const char * const IDENT_CHARSET_H="$Date: 2010/08/27 02:53:34 $";
 
 
 #include "pa_exception.h"
@@ -78,11 +78,16 @@ public:
 
 	static String::C escape(const String::C src,
 		const Charset& source_charset);
-
 	static String::Body escape(const String::Body src,
 		const Charset& source_charset);
-
 	static String& escape(const String& src,
+		const Charset& source_charset);
+
+	static String::C escape_JSON(const String::C src,
+		const Charset& source_charset);
+	static String::Body escape_JSON(const String::Body src,
+		const Charset& source_charset);
+	static String& escape_JSON(const String& src,
 		const Charset& source_charset);
 
 	void store_Char(XMLByte*& outPtr, XMLCh src, XMLByte not_found);
@@ -140,7 +145,19 @@ private:
 private:
 	void addEncoding(char* name_cstr);
 	void initTranscoder(const String::Body name, const char* name_cstr);
-	
+
+	static size_t calc_escaped_length_UTF8(XMLByte* src, size_t src_length);
+	static size_t calc_escaped_length(XMLByte* src, size_t src_length, const Charset::Tables& tables);
+	static size_t calc_escaped_length(const String::C src, const Charset& source_charset);
+	static size_t escape_UTF8(const XMLByte* src, size_t src_length, XMLByte* dest);
+	static size_t escape(const XMLByte* src, size_t src_length, XMLByte* dest, const Charset::Tables& tables);
+
+	static size_t calc_JSON_escaped_length_UTF8(XMLByte* src, size_t src_length);
+	static size_t calc_JSON_escaped_length(XMLByte* src, size_t src_length, const Charset::Tables& tables);
+	static size_t calc_JSON_escaped_length(const String::C src, const Charset& source_charset);
+	static size_t escape_JSON_UTF8(const XMLByte* src, size_t src_length, XMLByte* dest);
+	static size_t escape_JSON(const XMLByte* src, size_t src_length, XMLByte* dest, const Charset::Tables& tables);
+
 public:
 	/// converts xmlChar* null-terminated string to char* 
 	String::C transcode_cstr(const xmlChar* s);

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_UNTAINT_C="$Date: 2009/10/15 01:07:54 $";
+static const char * const IDENT_UNTAINT_C="$Date: 2010/08/27 02:53:24 $";
 
 
 #include "pa_string.h"
@@ -508,6 +508,34 @@ int cstr_to_string_body_block(String::Language to_lang, size_t fragment_length, 
 				to_char('\\')
 			_default;
 		);
+		break;
+	case String::L_JSON:
+		// tainted, untaint language: json <http://json.org/>
+		// escape '"' '\' '/' '\n' '\t' '\r' '\b' '\f' chars and escape chars as \uXXXX if output charset != UTF-8
+		{
+			if(info->charsets->client().isUTF8()){
+				// escaping to \uXXXX is not needed
+				escape_fragment(switch(c) {
+					case '\n': to_string("\\n");  break;
+					case '"' : to_string("\\\""); break;
+					case '\\': to_string("\\\\"); break;
+					case '/' : to_string("\\/");  break;
+					case '\t': to_string("\\t");  break;
+					case '\r': to_string("\\r");  break;
+					case '\b': to_string("\\b");  break;
+					case '\f': to_string("\\f");  break;
+					default  : _default; break;
+				});
+			} else {
+				const char *fragment_str=info->body->mid(info->fragment_begin, fragment_length).cstr();
+				// skip source [we use recoded version]
+				pa_CORD_pos_advance(info->pos, fragment_length);
+				String::C output(fragment_str, fragment_length);
+
+				output=Charset::escape_JSON(output, info->charsets->source());
+				to_string(output);
+			}
+		}
 		break;
 	case String::L_HTTP_COOKIE:
 		// tainted, untaint language: cookie (3.3.0 and higher: %uXXXX in UTF-8)
