@@ -5,7 +5,7 @@
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_CHARSET_C="$Date: 2010/08/27 02:53:24 $";
+static const char * const IDENT_CHARSET_C="$Date: 2010/08/29 21:23:40 $";
 
 #include "pa_charset.h"
 #include "pa_charsets.h"
@@ -531,14 +531,13 @@ size_t Charset::calc_escaped_length_UTF8(XMLByte* src, size_t src_length){
 	return dest_length;
 }
 
-size_t Charset::calc_escaped_length(XMLByte* src, size_t src_length, const Charset::Tables& tables){
-	size_t dest_length=0;
-
-	const XMLByte* src_ptr=src;
-	const XMLByte* src_end=src_ptr+src_length;
+size_t Charset::calc_escaped_length(const XMLByte* src, size_t src_length, const Charset::Tables& tables){
+	const XMLByte* src_end=src+src_length;
 	XMLByte first_byte;
 	XMLCh UTF8_char;
-	while(uint char_size=readChar(src_ptr, src_end, first_byte, UTF8_char, tables)){
+	size_t dest_length=0;
+
+	while(uint char_size=readChar(src, src_end, first_byte, UTF8_char, tables)){
 		if(char_size==1)
 			dest_length+=(!first_byte/*replacement char '?'*/ || !need_escape(first_byte))?1:3/*'%XX'*/;
 		else
@@ -549,15 +548,14 @@ size_t Charset::calc_escaped_length(XMLByte* src, size_t src_length, const Chars
 }
 
 size_t Charset::calc_escaped_length(const String::C src, const Charset& source_charset){
-	size_t src_length=src.length;
-	if(!src_length)
+	if(!src.length)
 		return 0;
 
 #ifdef PRECALCULATE_DEST_LENGTH
 	if(source_charset.isUTF8())
-		return calc_escaped_length_UTF8((XMLByte *)src.str, src_length);
+		return calc_escaped_length_UTF8((XMLByte *)src.str, src.length);
 	else
-		return calc_escaped_length((XMLByte *)src.str, src_length, source_charset.tables);
+		return calc_escaped_length((XMLByte *)src.str, src.length, source_charset.tables);
 #else
 	return src_length*6; // enough for %uXXXX but too memory-hungry
 #endif
@@ -587,7 +585,6 @@ size_t Charset::escape_UTF8(const XMLByte* src, size_t src_length, XMLByte* dest
 }
 
 size_t Charset::escape(const XMLByte* src, size_t src_length, XMLByte* dest, const Charset::Tables& tables) {
-	const XMLByte* src_ptr=src;
 	const XMLByte* src_end=src+src_length;
 	XMLByte* dest_ptr=dest;
 
@@ -595,15 +592,14 @@ size_t Charset::escape(const XMLByte* src, size_t src_length, XMLByte* dest, con
 	XMLCh UTF8_char;
 	uint char_size;
 
-	while(char_size=readChar(src_ptr, src_end, first_byte, UTF8_char, tables))
+	while(char_size=readChar(src, src_end, first_byte, UTF8_char, tables))
 		escape_char(dest_ptr, char_size, first_byte, UTF8_char)
 
 	return dest_ptr - dest;
 }
 
 String::C Charset::escape(const String::C src, const Charset& source_charset){
-	size_t src_length=src.length;
-	if(!src_length)
+	if(!src.length)
 		return String::C("", 0);
 
 	size_t dest_calculated_length=calc_escaped_length(src, source_charset);
@@ -611,9 +607,9 @@ String::C Charset::escape(const String::C src, const Charset& source_charset){
 
 	size_t dest_length;
 	if(source_charset.isUTF8())
-		dest_length=escape_UTF8((XMLByte *)src.str, src_length, dest_body);
+		dest_length=escape_UTF8((XMLByte *)src.str, src.length, dest_body);
 	else
-		dest_length=escape((XMLByte *)src.str, src_length, dest_body, source_charset.tables);
+		dest_length=escape((XMLByte *)src.str, src.length, dest_body, source_charset.tables);
 
 	if(dest_length>dest_calculated_length)
 		throw Exception(0, 0, "Charset::escape buffer overflow");
@@ -623,11 +619,7 @@ String::C Charset::escape(const String::C src, const Charset& source_charset){
 }
 
 String::Body Charset::escape(const String::Body src, const Charset& source_charset) {
-	const char *src_ptr=src.cstr();
-	size_t src_size=src.length();
-
-	String::C dest=Charset::escape(String::C(src_ptr, src_size), source_charset);
-
+	String::C dest=Charset::escape(String::C(src.cstr(), src.length()), source_charset);
 	return String::Body(dest.length ? dest.str:0);
 }
 
@@ -655,14 +647,13 @@ size_t Charset::calc_JSON_escaped_length_UTF8(XMLByte* src, size_t src_length){
 	return dest_length;
 }
 
-size_t Charset::calc_JSON_escaped_length(XMLByte* src, size_t src_length, const Charset::Tables& tables){
-	const XMLByte* src_ptr=src;
-	const XMLByte* src_end=src_ptr+src_length;
+size_t Charset::calc_JSON_escaped_length(const XMLByte* src, size_t src_length, const Charset::Tables& tables){
+	const XMLByte* src_end=src+src_length;
 	XMLByte first_byte;
 	XMLCh UTF8_char;
 	size_t dest_length=0;
 
-	while(uint char_size=readChar(src_ptr, src_end, first_byte, UTF8_char, tables)){
+	while(uint char_size=readChar(src, src_end, first_byte, UTF8_char, tables)){
 		if(char_size==1)
 			dest_length+=(!first_byte/*replacement char '?'*/ || !need_json_escape(first_byte))? 1 : 2;
 		else
@@ -673,15 +664,14 @@ size_t Charset::calc_JSON_escaped_length(XMLByte* src, size_t src_length, const 
 }
 
 size_t Charset::calc_JSON_escaped_length(const String::C src, const Charset& source_charset){
-	size_t src_length=src.length;
-	if(!src_length)
+	if(!src.length)
 		return 0;
 
 #ifdef PRECALCULATE_DEST_LENGTH
 	if(source_charset.isUTF8())
-		return calc_JSON_escaped_length_UTF8((XMLByte *)src.str, src_length);
+		return calc_JSON_escaped_length_UTF8((XMLByte *)src.str, src.length);
 	else
-		return calc_JSON_escaped_length((XMLByte *)src.str, src_length, source_charset.tables);
+		return calc_JSON_escaped_length((XMLByte *)src.str, src.length, source_charset.tables);
 #else
 	return src_length*6; // enough for \uXXXX but too memory-hungry
 #endif
@@ -716,7 +706,6 @@ size_t Charset::escape_JSON_UTF8(const XMLByte* src, size_t src_length, XMLByte*
 }
 
 size_t Charset::escape_JSON(const XMLByte* src, size_t src_length, XMLByte* dest, const Charset::Tables& tables) {
-	const XMLByte* src_ptr=src;
 	const XMLByte* src_end=src+src_length;
 	XMLByte* dest_ptr=dest;
 
@@ -724,26 +713,24 @@ size_t Charset::escape_JSON(const XMLByte* src, size_t src_length, XMLByte* dest
 	XMLCh UTF8_char;
 	uint char_size;
 
-	while(char_size=readChar(src_ptr, src_end, first_byte, UTF8_char, tables))
+	while(char_size=readChar(src, src_end, first_byte, UTF8_char, tables))
 		escape_char_JSON(dest_ptr, char_size, first_byte, UTF8_char)
 
 	return dest_ptr - dest;
 }
 
 String::C Charset::escape_JSON(const String::C src, const Charset& source_charset){
-	size_t src_length=src.length;
-	if(!src_length)
+	if(!src.length)
 		return String::C("", 0);
-
 
 	size_t dest_calculated_length=calc_JSON_escaped_length(src, source_charset);
 	XMLByte *dest_body=new(PointerFreeGC) XMLByte[dest_calculated_length+1/*terminator*/];
 
 	size_t dest_length;
 	if(source_charset.isUTF8())
-		dest_length=escape_JSON_UTF8((XMLByte *)src.str, src_length, dest_body);
+		dest_length=escape_JSON_UTF8((XMLByte *)src.str, src.length, dest_body);
 	else
-		dest_length=escape_JSON((XMLByte *)src.str, src_length, dest_body, source_charset.tables);
+		dest_length=escape_JSON((XMLByte *)src.str, src.length, dest_body, source_charset.tables);
 
 	if(dest_length>dest_calculated_length)
 		throw Exception(0, 0, "Charset::escape_JSON buffer overflow");
@@ -753,11 +740,7 @@ String::C Charset::escape_JSON(const String::C src, const Charset& source_charse
 }
 
 String::Body Charset::escape_JSON(const String::Body src, const Charset& source_charset) {
-	const char *src_ptr=src.cstr();
-	size_t src_size=src.length();
-
-	String::C dest=Charset::escape_JSON(String::C(src_ptr, src_size), source_charset);
-
+	String::C dest=Charset::escape_JSON(String::C(src.cstr(), src.length()), source_charset);
 	return String::Body(dest.length ? dest.str:0);
 }
 
