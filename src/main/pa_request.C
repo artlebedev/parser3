@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REQUEST_C="$Date: 2010/08/01 14:49:33 $";
+static const char * const IDENT_REQUEST_C="$Date: 2010/08/30 10:49:05 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -209,7 +209,7 @@ Value* Request::get_class(const String& name){
 
 					frame.store_params(&vname, 1);
 					// we don't need the result
-					execute_method(frame, *method);
+					execute_method(frame);
 
 					result=classes().get(name);
 				}
@@ -411,7 +411,9 @@ gettimeofday(&mt[2],NULL);
 					VMethodFrame frame(*method, 0 /*no parent*/, main_class);
 
 					frame.store_params(&body_value, 1);
-					body_value=&execute_method(frame, *method).as_value();
+					execute_method(frame);
+
+					body_value=&frame.result().as_value();
 				}
 
 		VFile* body_file=body_value->as_vfile(flang, &charsets);
@@ -465,7 +467,6 @@ t[9]-t[3]
 				if(const Method *method=junction->method) {
 					// preparing to pass parameters to 
 					//	@unhandled_exception[exception;stack]
-					VMethodFrame frame(*method, 0 /*no caller*/, main_class);
 
 					// $stack[^table::create{name	file	lineno	colno}]
 					Table::columns_type stack_trace_columns(new ArrayString);
@@ -489,13 +490,17 @@ t[9]-t[3]
 							stack_trace+=row;
 						}
 
-					Value *params[]={&details.vhash, new VTable(&stack_trace)};
-					frame.store_params(params, 2);
-
 					// future $response:body=
 					//   execute ^unhandled_exception[exception;stack]
 					exception_trace.clear(); // forget all about previous life, in case there would be error inside of this method, error handled  would not be mislead by old stack contents (see extract_origin)
-					body_string=&execute_method(frame, *method).as_string();
+
+					VMethodFrame frame(*method, 0 /*no caller*/, main_class);
+					Value *params[]={&details.vhash, new VTable(&stack_trace)};
+
+					frame.store_params(params, 2);
+					execute_method(frame);
+
+					body_string=&frame.result().as_string();
 				}
 			}
 		}

@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char * const IDENT_REQUEST_H="$Date: 2010/08/11 16:21:52 $";
+static const char * const IDENT_REQUEST_H="$Date: 2010/08/30 10:49:05 $";
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -368,8 +368,9 @@ public: // status read methods
 	/// for @main[]
 	const String* execute_virtual_method(Value& aself, const String& method_name);
 
-	/// for @postprocess[body]
-	StringOrValue execute_method(VMethodFrame& amethodFrame, const Method& method);
+	/// executes parser method, use op_call(frame) to execute native method
+	void execute_method(VMethodFrame& aframe);
+
 	//{ for @conf[filespec] and @auto[filespec] and parser://method/call
 	const String* execute_method(Value& aself, 
 		const Method& method, Value* optional_param,

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2010/08/11 16:21:52 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2010/08/30 10:49:05 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -1207,8 +1207,7 @@ void Request::op_call(VMethodFrame& frame){
 				
 	SAVE_CONTEXT
 
-	rcontext=wcontext=&frame;
-	method_frame=&frame;
+	rcontext=wcontext=method_frame=&frame;
 
 	Value& self=frame.self();
 	const Method& method=frame.method;
@@ -1290,15 +1289,7 @@ void Request::put_element(Value& ncontext, const String& name, Value* value) {
 				frame.store_params(params, 2);
 
 				Temp_disable_default_setter temp(junction.self);
-
-				SAVE_CONTEXT
-
-				rcontext=wcontext=&frame;
-				method_frame=&frame;
-
-				recoursion_checked_execute(*frame.method.parser_code);
-
-				RESTORE_CONTEXT
+				execute_method(frame);
  			} else {
 				// setter
  				if(param_count!=1)
@@ -1307,15 +1298,7 @@ void Request::put_element(Value& ncontext, const String& name, Value* value) {
  						"setter method must have ONE parameter (has %d parameters)", param_count);
 
 				frame.store_params(&value, 1);
-
-				SAVE_CONTEXT
-
-				rcontext=wcontext=&frame;
-				method_frame=&frame;
-
-				recoursion_checked_execute(*frame.method.parser_code);
-
-				RESTORE_CONTEXT
+				execute_method(frame);
 			}
 		}
 }
@@ -1338,15 +1321,7 @@ StringOrValue Request::process_getter(Junction& junction) {
 		} // no need for else frame.empty_params()
 
 		Temp_disable_default_getter temp(junction.self);
-				
-		SAVE_CONTEXT
-
-		rcontext=wcontext=&frame;
-		method_frame=&frame;
-
-		recoursion_checked_execute(*frame.method.parser_code); // parser code, execute it
-
-		RESTORE_CONTEXT
+		execute_method(frame);
 	} else {
 		// getter
 		if(param_count!=0)
@@ -1355,15 +1330,7 @@ StringOrValue Request::process_getter(Junction& junction) {
 				"getter method must have no parameters (has %d parameters)", param_count);
 		
 		// no need for frame.empty_params()
-
-		SAVE_CONTEXT
-
-		rcontext=wcontext=&frame;
-		method_frame=&frame;
-
-		recoursion_checked_execute(*frame.method.parser_code); // parser code, execute it
-
-		RESTORE_CONTEXT
+		execute_method(frame);
 	}
 
 	return frame.result();
@@ -1510,51 +1477,37 @@ void Request::process_write(Value& input_value) {
 	write_pass_lang(input_value);
 }
 
-StringOrValue Request::execute_method(VMethodFrame& amethod_frame, const Method& method) {
+void Request::execute_method(VMethodFrame& aframe) {
 	SAVE_CONTEXT
 	
 	// initialize contexts
-	rcontext=wcontext=method_frame=&amethod_frame;
+	rcontext=wcontext=method_frame=&aframe;
 	
 	// execute!	
-	execute(*method.parser_code);
-	
-	// result
-	StringOrValue result=wcontext->result();
+	recoursion_checked_execute(*aframe.method.parser_code);
 	
 	RESTORE_CONTEXT
-	
-	// return
-	return result;
 }
 
 const String* Request::execute_method(Value& aself, 
 					const Method& method, Value* optional_param,
 					bool do_return_string) {
 
-	SAVE_CONTEXT
-	
 	VMethodFrame local_frame(method, method_frame/*caller*/, aself);
+
 	if(optional_param && local_frame.method_params_count()>0) {
 		local_frame.store_params(&optional_param, 1);
 	} else {
 		local_frame.empty_params();
 	}
-	rcontext=wcontext=method_frame=&local_frame; 
 
 	// prevent non-string writes for better error reporting
 	if(do_return_string)
 		local_frame.write(local_frame);
 	
-	// execute!	
-	execute(*method.parser_code);
+	execute_method(local_frame);
 	
-	// result
-	const String* result=do_return_string ? local_frame.get_string() : 0;
-	
-	RESTORE_CONTEXT
-
-	return result;
+	return do_return_string ? local_frame.get_string() : 0;
 }
 
 Request::Execute_nonvirtual_method_result 
