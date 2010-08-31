@@ -1,0 +1,38 @@
+@main[]
+
+$f[^file::load[text;253_json.txt]]
+
+$o[^json:parse[^taint[as-is][$f.text]][ $.double(false) ]]
+^print[$o]
+
+$o[^json:parse[^taint[as-is][$f.text]][ $.object[$hook] ]]
+^print[$o]
+
+@print[hash]
+^hash.foreach[k;v]{
+   $k = ^if($v is 'hash'){{^print[$v] 
+   }}{
+     $v.CLASS_NAME ^if($v is 'bool'){ ^if($v){true}{false} }($v is 'class1' || $v is 'class2'){^v.print[]}{$v}
+   }
+}
+
+@hook[key;value]
+$result[^if(def $value.type){^reflection:create[$value.type;create;$value]}{$value}]
+
+@CLASS
+class1
+
+@create[h]
+$value[$h.value]
+
+@print[]
+value "$value"
+
+@CLASS
+class2
+
+@create[h]
+$value[$h.value]
+
+@print[]
+value "$value"

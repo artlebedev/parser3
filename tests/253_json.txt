@@ -1,0 +1,18 @@
+{"object": {
+   "type": "class1",
+   "value": "sample1"
+ },
+ "array": [
+    {"id": 1, "label": "test1"},
+    {"id": 2, "label": "test2"},
+    false,
+    true,
+    2,
+    2.0,
+    null
+ ],
+ "object2": {
+   "type": "class2",
+   "value": "sample2"
+ }
+}
