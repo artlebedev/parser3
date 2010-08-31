@@ -1,11 +1,10 @@
 /** @file
 	Parser: @b json parser class.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
-	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
+	Copyright (c) 2010 ArtLebedev Group (http://www.artlebedev.com)
 */
 
-static const char * const IDENT_RESPONSE_C="$Date: 2010/08/31 13:30:13 $";
+static const char * const IDENT_RESPONSE_C="$Date: 2010/08/31 21:44:43 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -33,36 +32,45 @@ DECLARE_CLASS_VAR(json, new MJson, 0);
 // methods
 struct Json {
 	Stack<Value*> stack;
-	Stack<String::Body> key_stack;
+	Stack<String*> key_stack;
 
-	String::Body key;
+	String* key;
 	Value* result;
 
 	Junction* hook;
+	Request* request;
+
 	Charset *charset;
 	bool handle_double;
-public:
-	Json(Charset* acharset): stack(), key_stack(), key(), result(NULL), hook(NULL), charset(acharset), handle_double(true){}
+
+	Json(Charset* acharset): stack(), key_stack(), key(), result(NULL), hook(NULL), request(NULL), charset(acharset), handle_double(true){}
 };
 
 static void set_json_value(Json *json, Value *value){
 	Value *top = json->stack.top_value();
-	if(json->key.is_empty()){
+	if(json->key == NULL){
 		top->put_element(String(format(top->get_hash()->count(), 0)), value, true);
 	} else {
-		top->put_element(String(json->key, String::L_TAINTED), value, true);
-		json->key=String::Body();
+		top->put_element(*json->key, value, true);
+		json->key=NULL;
 	}
 }
 
-String::Body json_string(Json *json, const JSON_value* value){
-	return json->charset !=NULL ? 
-		Charset::transcode(String::Body(value->vu.str.value, value->vu.str.length), UTF8_charset, *json->charset) :
-		String::Body(pa_strdup(value->vu.str.value, value->vu.str.length), value->vu.str.length);
+String* json_string(Json *json, const JSON_value* value){
+	String::C result = json->charset !=NULL ? 
+			Charset::transcode(String::C(value->vu.str.value, value->vu.str.length), UTF8_charset, *json->charset) :
+			String::C(pa_strdup(value->vu.str.value, value->vu.str.length), value->vu.str.length);
+	return new String(result.str, String::L_TAINTED, result.length);
 }
 
-static Value *json_hook(Junction *hook, String::Body key, Value* value){
-	return value;
+static Value *json_hook(Request &r, Junction *hook, String* key, Value* value){
+	VMethodFrame frame(*hook->method, r.method_frame, hook->self);
+	Value *params[]={new VString(*key), value};
+
+	frame.store_params(params, 2);
+	r.execute_method(frame);
+
+	return &frame.result().as_value();
 }
 
 static int json_callback(Json *json, int type, const JSON_value* value)
@@ -80,8 +88,8 @@ static int json_callback(Json *json, int type, const JSON_value* value)
 		}
 		case JSON_T_OBJECT_END:{
 			if (json->hook){
-				String::Body key = json->key_stack.pop();
-				json->result = json_hook(json->hook, key, json->stack.pop());
+				String* key = json->key_stack.pop();
+				json->result = json_hook(*json->request, json->hook, key, json->stack.pop());
 				
 				if (json->stack.count()){
 					json->key = key;
@@ -109,11 +117,11 @@ static int json_callback(Json *json, int type, const JSON_value* value)
 			break;
 		case JSON_T_FLOAT:
 			if (json->handle_double){
-				set_json_value(json, new VDouble( String(json_string(json, value), String::L_TAINTED).as_double() ));
+				set_json_value(json, new VDouble( json_string(json, value)->as_double() ));
 				break;
 			} // else is JSON_T_STRING
 		case JSON_T_STRING:
-			set_json_value(json, new VString(*new String(json_string(json, value), String::L_TAINTED)));
+			set_json_value(json, new VString(*json_string(json, value)));
 			break;
 		case JSON_T_NULL:
 			set_json_value(json, new VVoid());
@@ -146,8 +154,9 @@ static char* json_error_message(int error_code){
 }
 
 static void _parse(Request& r, MethodParams& params) {
-	//Json json = Json(r.charsets.source().isUTF8() ? (Charset*)NULL : &(r.charsets.source()));
-	Json& json = *new Json(r.charsets.source().isUTF8() ? (Charset*)NULL : &(r.charsets.source()));
+	const String& json_string=params.as_string(0, "json must be string");
+
+	Json json(r.charsets.source().isUTF8() ? NULL : &(r.charsets.source()));
 
 	JSON_config config;
 	init_JSON_config(&config);
@@ -171,20 +180,19 @@ static void _parse(Request& r, MethodParams& params) {
 			}
 			if(Value* value=options->get("object")) {
 				json.hook=value->get_junction();
-				if (!json.hook || !json.hook->method || !json.hook->method->params_names || !(json.hook->method->params_names->count() == 2)){
+				json.request=&r;
+				if (!json.hook || !json.hook->method || !json.hook->method->params_names || !(json.hook->method->params_names->count() == 2))
 					throw Exception(PARSER_RUNTIME, 0, "$.object must be parser method with 2 parameters");
-				}
 				valid_options++;
 			}
 			if(valid_options!=options->count())
 				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 		}
 
-	struct JSON_parser_struct* jc = new_JSON_parser(&config);
-
-	const String& json_string=r.process_to_string(params[0]); // we accept both {} and []
 	const String::Body json_body = json_string.cstr_to_string_body_untaint(String::L_JSON, 0, &(r.charsets));
 	const char *json_cstr = json.charset != NULL ? Charset::transcode(json_body, *json.charset, UTF8_charset).cstr() : json_body.cstr();
+
+	struct JSON_parser_struct* jc = new_JSON_parser(&config);
 
 	for (const char *c=json_cstr; *c; c++){
 		if (!JSON_parser_char(jc, *((const unsigned char *)c))) {
