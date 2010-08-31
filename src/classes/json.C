@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_RESPONSE_C="$Date: 2010/08/31 13:00:47 $";
+static const char * const IDENT_RESPONSE_C="$Date: 2010/08/31 13:30:13 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -183,7 +183,7 @@ static void _parse(Request& r, MethodParams& params) {
 	struct JSON_parser_struct* jc = new_JSON_parser(&config);
 
 	const String& json_string=r.process_to_string(params[0]); // we accept both {} and []
-	const String::Body json_body = json_string.cstr_to_string_body_untaint(String::L_JS, 0, &(r.charsets));
+	const String::Body json_body = json_string.cstr_to_string_body_untaint(String::L_JSON, 0, &(r.charsets));
 	const char *json_cstr = json.charset != NULL ? Charset::transcode(json_body, *json.charset, UTF8_charset).cstr() : json_body.cstr();
 
 	for (const char *c=json_cstr; *c; c++){

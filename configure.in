@@ -690,6 +690,7 @@ AC_OUTPUT(
 	src/lib/md5/Makefile
 	src/lib/sdbm/Makefile
 	src/lib/sdbm/apr-include/Makefile
+	src/lib/json/Makefile
 	src/targets/Makefile
 	src/targets/cgi/Makefile
 	src/targets/apache13core/Makefile
