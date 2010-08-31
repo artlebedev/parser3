@@ -57,10 +57,10 @@ libclasses_a_LIBADD =
 am__objects_1 = bool.$(OBJEXT) curl.$(OBJEXT) date.$(OBJEXT) \
 	double.$(OBJEXT) file.$(OBJEXT) form.$(OBJEXT) hash.$(OBJEXT) \
 	hashfile.$(OBJEXT) image.$(OBJEXT) inet.$(OBJEXT) \
-	int.$(OBJEXT) mail.$(OBJEXT) math.$(OBJEXT) memory.$(OBJEXT) \
-	op.$(OBJEXT) reflection.$(OBJEXT) regex.$(OBJEXT) \
-	response.$(OBJEXT) string.$(OBJEXT) table.$(OBJEXT) \
-	void.$(OBJEXT) xnode.$(OBJEXT) xdoc.$(OBJEXT)
+	int.$(OBJEXT) json.$(OBJEXT) mail.$(OBJEXT) math.$(OBJEXT) \
+	memory.$(OBJEXT) op.$(OBJEXT) reflection.$(OBJEXT) \
+	regex.$(OBJEXT) response.$(OBJEXT) string.$(OBJEXT) \
+	table.$(OBJEXT) void.$(OBJEXT) xnode.$(OBJEXT) xdoc.$(OBJEXT)
 am_libclasses_a_OBJECTS = $(am__objects_1) classes.$(OBJEXT)
 libclasses_a_OBJECTS = $(am_libclasses_a_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src/include
@@ -191,10 +191,10 @@ sqlite_client = @sqlite_client@
 subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-INCLUDES = -I../types -I../sql -I../lib/gd -I../lib/gc/include -I../lib/cord/include -I../lib/sdbm/apr-include -Igd $(INCLTDL) @CURL_INCLUDES@ @PCRE_INCLUDES@ @XML_INCLUDES@ -I../lib/md5 -I../lib/smtp
+INCLUDES = -I../types -I../sql -I../lib/gd -I../lib/gc/include -I../lib/cord/include -I../lib/sdbm/apr-include -Igd $(INCLTDL) @CURL_INCLUDES@ @PCRE_INCLUDES@ @XML_INCLUDES@ -I../lib/md5 -I../lib/smtp -I../lib/json
 noinst_LIBRARIES = libclasses.a
 noinst_HEADERS = classes.h xnode.h
-CLASSES_SOURCE_FILES = classes.awk bool.C curl.C date.C double.C file.C form.C hash.C hashfile.C image.C inet.C int.C mail.C math.C memory.C op.C reflection.C regex.C response.C string.C table.C void.C xnode.C xdoc.C
+CLASSES_SOURCE_FILES = classes.awk bool.C curl.C date.C double.C file.C form.C hash.C hashfile.C image.C inet.C int.C json.C mail.C math.C memory.C op.C reflection.C regex.C response.C string.C table.C void.C xnode.C xdoc.C
 libclasses_a_SOURCES = $(CLASSES_SOURCE_FILES) classes.C
 CLEANFILES = classes.inc
 EXTRA_DIST = classes.vcproj
@@ -257,6 +257,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/image.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/inet.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/int.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/json.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mail.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/math.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/memory.Po@am__quote@
