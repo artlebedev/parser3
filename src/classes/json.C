@@ -4,7 +4,7 @@
 	Copyright (c) 2010 ArtLebedev Group (http://www.artlebedev.com)
 */
 
-static const char * const IDENT_RESPONSE_C="$Date: 2010/08/31 21:44:43 $";
+static const char * const IDENT_RESPONSE_C="$Date: 2010/09/01 22:14:28 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -31,7 +31,7 @@ DECLARE_CLASS_VAR(json, new MJson, 0);
 
 // methods
 struct Json {
-	Stack<Value*> stack;
+	Stack<VHash*> stack;
 	Stack<String*> key_stack;
 
 	String* key;
@@ -42,16 +42,45 @@ struct Json {
 
 	Charset *charset;
 	bool handle_double;
+	enum Distinct { D_EXCEPTION, D_FIRST, D_LAST, D_ALL } distinct;
 
-	Json(Charset* acharset): stack(), key_stack(), key(), result(NULL), hook(NULL), request(NULL), charset(acharset), handle_double(true){}
+	Json(Charset* acharset): stack(), key_stack(), key(NULL), result(NULL), hook(NULL), request(NULL), charset(acharset), handle_double(true), distinct(D_EXCEPTION){}
+
+	bool set_distinct(const String &value){
+		if (value == "first") distinct = D_FIRST;
+		else if (value == "last") distinct = D_LAST;
+		else if (value == "all") distinct = D_ALL;
+		else return false;
+		return true;
+	}
 };
 
 static void set_json_value(Json *json, Value *value){
-	Value *top = json->stack.top_value();
+	VHash *top = json->stack.top_value();
 	if(json->key == NULL){
-		top->put_element(String(format(top->get_hash()->count(), 0)), value, true);
+		top->hash().put(String(format(top->get_hash()->count(), 0)), value);
 	} else {
-		top->put_element(*json->key, value, true);
+		switch (json->distinct){
+			case Json::D_EXCEPTION:
+				if (top->hash().put_dont_replace(*json->key, value))
+					throw Exception(PARSER_RUNTIME, json->key, "duplicate key");
+				break;
+			case Json::D_FIRST:
+				top->hash().put_dont_replace(*json->key, value);
+				break;
+			case Json::D_LAST:
+				top->hash().put(*json->key, value);
+				break;
+			case Json::D_ALL:
+				if (top->hash().put_dont_replace(*json->key, value)){
+					for(int i=2;;i++){
+						String key;
+						key << *json->key << "_" << format(i, 0);
+						if (!top->hash().put_dont_replace(key, value)) break;
+					}
+				}
+				break;
+		}
 		json->key=NULL;
 	}
 }
@@ -77,7 +106,7 @@ static int json_callback(Json *json, int type, const JSON_value* value)
 {
 	switch(type) {
 		case JSON_T_OBJECT_BEGIN:{
-			Value *v = new VHash();
+			VHash *v = new VHash();
 			if (json->hook){
 				json->key_stack.push(json->key);
 			} else {
@@ -101,7 +130,7 @@ static int json_callback(Json *json, int type, const JSON_value* value)
 			break;
 		}
 		case JSON_T_ARRAY_BEGIN:{
-			Value *v = new VHash();
+			VHash *v = new VHash();
 			set_json_value(json, v);
 			json->stack.push(v);
 			break;
@@ -171,11 +200,17 @@ static void _parse(Request& r, MethodParams& params) {
 		if(HashStringValue* options=params.as_hash(1)) {
 			int valid_options=0;
 			if(Value* value=options->get("depth")) {
-				config.depth=value->as_int();
+				config.depth=r.process_to_value(*value).as_int();
 				valid_options++;
 			}
 			if(Value* value=options->get("double")) {
-				json.handle_double=value->as_bool();
+				json.handle_double=r.process_to_value(*value).as_bool();
+				valid_options++;
+			}
+			if(Value* value=options->get("distinct")) {
+				const String& sdistinct=value->as_string();
+				if (!json.set_distinct(sdistinct))
+					throw Exception(PARSER_RUNTIME, &sdistinct, "must be 'first', 'last' or 'all'");
 				valid_options++;
 			}
 			if(Value* value=options->get("object")) {
