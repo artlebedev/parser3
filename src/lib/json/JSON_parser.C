@@ -455,7 +455,7 @@ new_JSON_parser(JSON_config* config)
     int depth = 0;
     JSON_config default_config;
     
-    JSON_parser jc = JSON_parser_malloc(sizeof(struct JSON_parser_struct), "parser");
+    JSON_parser jc = (JSON_parser)JSON_parser_malloc(sizeof(struct JSON_parser_struct), "parser");
     
     if (jc == NULL) {
         return NULL;
