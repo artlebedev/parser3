@@ -1,6 +1,8 @@
 Content-Type: text/html
-Content-Length: 488
+Content-Length: 662
 
+object
+duplicate key
 object = {
 type = string class1
 value = string sample1
@@ -15,12 +17,24 @@ id = int 2
 label = string test2
 }
 2 = bool false 3 = bool true 4 = int 2
-5 = string 2.0
+5 = double 2
 6 = void }
-object2 = {
+object = {
 type = string class2
 value = string sample2
 }
+array = {
+0 = {
+id = int 1
+label = string test1
+}
+1 = {
+id = int 2
+label = string test2
+}
+2 = bool false 3 = bool true 4 = int 2
+5 = string 2.0
+6 = void }
 object = class1 value "sample1"
 array = {
 0 = {
@@ -34,4 +48,4 @@ label = string test2
 2 = bool false 3 = bool true 4 = int 2
 5 = double 2
 6 = void }
-object2 = class2 value "sample2"
+object_2 = class2 value "sample2"

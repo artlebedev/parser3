@@ -11,7 +11,7 @@
     2.0,
     null
  ],
- "object2": {
+ "object": {
    "type": "class2",
    "value": "sample2"
  }

@@ -1,19 +1,34 @@
 @main[]
 
 $f[^file::load[text;253_json.txt]]
+$s[^taint[as-is][$f.text]]
 
-$o[^json:parse[^taint[as-is][$f.text]][ $.double(false) ]]
+^try_catch{$o[^json:parse[$s]]}
+
+$o[^json:parse[$s][ $.distinct[first] ]]
 ^print[$o]
 
-$o[^json:parse[^taint[as-is][$f.text]][ $.object[$hook] ]]
+$o[^json:parse[$s][ $.double(false) $.distinct[last] ]]
 ^print[$o]
+
+$o[^json:parse[$s][ $.object[$hook] $.distinct[all] ]]
+^print[$o]
+
+@try_catch[code]
+^try{
+	$code
+}{
+	$exception.handled(true)
+	$exception.source
+	$exception.comment
+}
 
 @print[hash]
 ^hash.foreach[k;v]{
-   $k = ^if($v is 'hash'){{^print[$v] 
-   }}{
-     $v.CLASS_NAME ^if($v is 'bool'){ ^if($v){true}{false} }($v is 'class1' || $v is 'class2'){^v.print[]}{$v}
-   }
+	$k = ^if($v is 'hash'){{^print[$v] 
+	}}{
+		$v.CLASS_NAME ^if($v is 'bool'){ ^if($v){true}{false} }($v is 'class1' || $v is 'class2'){^v.print[]}{$v}
+	}
 }
 
 @hook[key;value]
