@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REFLECTION_C="$Date: 2010/08/11 16:21:51 $";
+static const char * const IDENT_REFLECTION_C="$Date: 2010/09/04 23:33:21 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
@@ -280,6 +280,18 @@ static void _dynamical(Request& r, MethodParams& params) {
 	}
 }
 
+static void _copy(Request& r, MethodParams& params) {
+	HashStringValue* src=params.as_no_junction(0, "source must not be code").get_hash();
+
+	if(src==NULL) 
+		throw Exception(PARSER_RUNTIME, 0, "source must have hash representation");
+
+	Value& dst=params.as_no_junction(1, "destination must not be code");
+
+	for(HashStringValue::Iterator i(*src); i; i.next())
+		r.put_element(dst, String(i.key(), String::L_TAINTED), i.value());
+}
+
 // constructor
 MReflection::MReflection(): Methoded("reflection") {
 	// ^reflection:create[class_name;constructor_name[;param1[;param2[;...]]]]
@@ -311,4 +323,7 @@ MReflection::MReflection(): Methoded("reflection") {
 
 	// ^reflection:dynamical[[object or class, caller if absent]]
 	add_native_method("dynamical", Method::CT_STATIC, _dynamical, 0, 1);
+
+	// ^reflection:copy[src;dst]
+	add_native_method("copy", Method::CT_STATIC, _copy, 2, 2);
 }

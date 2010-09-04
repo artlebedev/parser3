@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char * const IDENT_REQUEST_H="$Date: 2010/08/30 10:49:05 $";
+static const char * const IDENT_REQUEST_H="$Date: 2010/09/04 23:33:21 $";
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -365,6 +365,9 @@ public: // status read methods
 	}
 	*/
 
+	/// public for ^reflection:copy[]
+	void put_element(Value& ncontext, const String& name, Value* value);
+
 	/// for @main[]
 	const String* execute_virtual_method(Value& aself, const String& method_name);
 
@@ -416,7 +419,6 @@ private: // compile.C
 
 private: // execute.C
 
-	void put_element(Value& ncontext, const String& name, Value* value);
 	Value& get_element(Value& ncontext, const String& name);
 
 private: // defaults
