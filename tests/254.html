@@ -1,0 +1,44 @@
+@main[]
+
+$a[ $.v1[1] $.v2[2] $.v3[3] ]
+$b[^test::create[]]
+
+^reflection:copy[$a;$b]
+
+Object b:
+^print[^hash::create[$b]]
+
+^reflection:copy[$b;$a]
+
+Hash a:
+^print[$a]
+
+$string[$string]
+^try_catch{
+	^reflection:copy[$string;$a]
+}
+^try_catch{
+#	^reflection:copy[$a;$string]
+}
+
+@print[hash]
+^hash.foreach[k;v]{$k = $v
+}
+
+@try_catch[code]
+^try{
+	$code
+}{
+	$exception.handled(true)
+	$exception.source
+	$exception.comment
+}
+
+@CLASS
+test
+
+@create[]
+$v2[3]
+
+@SET_v3[value]
+$another3[=$value=]
