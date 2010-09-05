@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 125
+Content-Length: 173
 
 Object b:
 v2 = 2
@@ -12,3 +12,5 @@ v3 = 3
 another3 = =3=
 copy
 source must have hash representation
+v1
+element can not be stored to stateless_class
