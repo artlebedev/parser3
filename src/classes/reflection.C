@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REFLECTION_C="$Date: 2010/09/04 23:33:21 $";
+static const char * const IDENT_REFLECTION_C="$Date: 2010/09/05 21:01:24 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
@@ -289,7 +289,7 @@ static void _copy(Request& r, MethodParams& params) {
 	Value& dst=params.as_no_junction(1, "destination must not be code");
 
 	for(HashStringValue::Iterator i(*src); i; i.next())
-		r.put_element(dst, String(i.key(), String::L_TAINTED), i.value());
+		r.put_element(dst, *new String(i.key(), String::L_TAINTED), i.value());
 }
 
 // constructor
