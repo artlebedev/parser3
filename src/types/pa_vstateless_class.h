@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
-static const char * const IDENT_VSTATELESS_CLASS_H="$Date: 2010/08/11 16:21:52 $";
+static const char * const IDENT_VSTATELESS_CLASS_H="$Date: 2010/09/06 21:17:49 $";
 
 // include
 
@@ -76,7 +76,10 @@ public: // Value
 
 	override const VJunction* put_element(const String& aname, Value* avalue, bool areplace) {	return put_element(*this, aname, avalue, areplace); }
 	/// put_element with aself for VObject junctions
-	virtual const VJunction* put_element(Value& /*aself*/, const String& aname, Value* avalue, bool areplace) {	return Value::put_element(aname, avalue, areplace); }
+	virtual const VJunction* put_element(Value& aself, const String& aname, Value* /*avalue*/, bool /*areplace*/) {	
+		aself.bark("element can not be stored to %s", &aname); 
+		return 0;
+	}
 
 	override Value& as_expr_result(bool /*return_string_as_is=false*/);
 

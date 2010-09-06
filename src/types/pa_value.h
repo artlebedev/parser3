@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-static const char * const IDENT_VALUE_H="$Date: 2010/08/11 16:21:52 $";
+static const char * const IDENT_VALUE_H="$Date: 2010/09/06 21:17:49 $";
 
 #include "pa_common.h"
 #include "pa_array.h"
@@ -139,8 +139,6 @@ public: // usage
 
 		return *result;
 	}
-
-protected: 
 
 	/// throws exception specifying bark-reason and name() type() of problematic value
 	Value* bark(const char *reason, const String *problem_source=0) const {
