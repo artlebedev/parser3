@@ -74,6 +74,8 @@ SOFTWARE.
 
 #include "JSON_parser.h"
 
+#include "pa_memory.h"
+
 #ifdef _MSC_VER
 #   if _MSC_VER >= 1400 /* Visual Studio 2005 and up */
 #      pragma warning(disable:4996) // unsecure sscanf
@@ -95,16 +97,8 @@ SOFTWARE.
 #   define JSON_PARSER_PARSE_BUFFER_SIZE 3500
 #endif
 
-#ifdef JSON_PARSER_DEBUG_MALLOC
-#   define JSON_parser_malloc JSON_parser_debug_malloc
-#   define JSON_parser_free JSON_parser_debug_free
-#else
-#   define JSON_parser_malloc(bytes, reason) malloc(bytes)
-#   define JSON_parser_free free
-#endif
-
-extern void* JSON_parser_debug_malloc(size_t bytes, const char* reason);
-extern void JSON_parser_debug_free(void*);
+#define JSON_parser_malloc(bytes, reason) pa_malloc(bytes)
+#define JSON_parser_free(ptr) pa_free(ptr)
 
 typedef unsigned short UTF16;
 

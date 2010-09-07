@@ -9,15 +9,7 @@
 #include <stddef.h>
 
 /* Windows DLL stuff */
-#ifdef _WIN32_ZZZ
-#	ifdef JSON_PARSER_DLL_EXPORTS
-#		define JSON_PARSER_DLL_API __declspec(dllexport)
-#	else
-#		define JSON_PARSER_DLL_API __declspec(dllimport)
-#   endif
-#else
-#	define JSON_PARSER_DLL_API 
-#endif
+#define JSON_PARSER_DLL_API 
 
 /* Determine the integer type use to parse non-floating point numbers */
 #if __STDC_VERSION__ >= 199901L || HAVE_LONG_LONG == 1
