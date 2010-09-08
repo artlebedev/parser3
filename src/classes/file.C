@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2010/08/25 04:41:32 $";
+static const char * const IDENT_FILE_C="$Date: 2010/09/08 02:57:10 $";
 
 #include "pa_config_includes.h"
 
@@ -290,24 +290,29 @@ static void _create(Request& r, MethodParams& params) {
 	const String& content=params.as_string(2, "content must be string");
 	String::Body content_body=content.cstr_to_string_body_untaint(String::L_AS_IS); // explode content, honor tainting changes
 
-	if(params.count()>3){
-		Charset* asked_charset=0;
+	VString* vcontent_type=0;
+	if(params.count()>3)
+		if(HashStringValue* options=params.as_hash(3)){
+			Charset* asked_charset=0;
 
-		if(HashStringValue* options=params.as_no_junction(3, OPTIONS_MUST_NOT_BE_CODE).get_hash()){
 			int valid_options=0;
 			if(Value* vcharset_name=options->get(PA_CHARSET_NAME)){
 				asked_charset=&::charsets.get(vcharset_name->as_string().change_case(r.charsets.source(), String::CC_UPPER));
 				valid_options++;
 			}
+			if(Value* value=options->get(CONTENT_TYPE_NAME)) {
+				vcontent_type=new VString(value->as_string());
+				valid_options++;
+			}
 			if(valid_options != options->count())
 				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+
+			if(asked_charset)
+				content_body=Charset::transcode(content_body, r.charsets.source(), *asked_charset);
 		}
 
-		if(asked_charset != 0)
-			content_body=Charset::transcode(content_body, r.charsets.source(), *asked_charset);
-	}
-
-	VString* vcontent_type=new VString(r.mime_type_of(user_file_name_cstr));
+	if(!vcontent_type)
+		vcontent_type=new VString(r.mime_type_of(user_file_name_cstr));
 	
 	VFile& self=GET_SELF(r, VFile);
 	self.set(true/*tainted*/, content_body.cstr(), content_body.length(), user_file_name_cstr, vcontent_type);
