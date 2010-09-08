@@ -24,7 +24,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\include"
+				AdditionalIncludeDirectories="..\..\include;..\gc\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -37,7 +37,7 @@
 				WarningLevel="4"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="3"
-				CompileAs="0"/>
+				CompileAs="2"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
@@ -78,7 +78,7 @@
 				Optimization="2"
 				GlobalOptimizations="TRUE"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..\..\include"
+				AdditionalIncludeDirectories="..\..\include;..\gc\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
@@ -90,7 +90,7 @@
 				ProgramDataBaseFileName=".\Release/"
 				WarningLevel="4"
 				SuppressStartupBanner="TRUE"
-				CompileAs="0"/>
+				CompileAs="2"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
@@ -123,7 +123,7 @@
 	</References>
 	<Files>
 		<File
-			RelativePath="JSON_parser.c">
+			RelativePath="JSON_parser.C">
 			<FileConfiguration
 				Name="Debug|Win32">
 				<Tool
