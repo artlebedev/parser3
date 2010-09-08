@@ -7,7 +7,7 @@
 	based on The CGI_C library, by Thomas Boutell.
 */
 
-static const char * const IDENT_VFORM_C="$Date: 2009/08/22 14:06:14 $";
+static const char * const IDENT_VFORM_C="$Date: 2010/09/08 02:58:13 $";
 
 #include "pa_sapi.h"
 #include "pa_vform.h"
@@ -35,7 +35,7 @@ static size_t getHeader(const char* data, size_t len){
 				if (enter>=0) enter++;
 				if (enter>1) return i;
 			} else if (data[i]!='\r') enter=0;
-		return 0;
+	return 0;
 }
 
 static const char* searchAttribute(const char* data, 
@@ -210,16 +210,16 @@ void VForm::ParseMimeInput(
 				/* OK, we have a new pair, add it to the list. */
 				// fName checks are because MSIE passes unassigned <input type=file> as filename="" and empty body 
 				if( fName && (strlen(fName) || valueSize) ){
-					AppendFormFileEntry(attr, 
-						valueSize? &dataStart[headerSize+1]: "", 
-						valueSize, 
-						fName,
-						client_charset); 
-				} else {
-					AppendFormEntry(attr, 
-						valueSize? &dataStart[headerSize+1]: "", 
+					AppendFormFileEntry(attr,
+						valueSize? &dataStart[headerSize+1]: "",
 						valueSize,
-						client_charset); 
+						fName,
+						client_charset);
+				} else {
+					AppendFormEntry(attr,
+						valueSize? &dataStart[headerSize+1]: "",
+						valueSize,
+						client_charset);
 				}
 			}
 		}
