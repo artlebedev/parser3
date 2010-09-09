@@ -4,7 +4,7 @@
 	Copyright (c) 2010 ArtLebedev Group (http://www.artlebedev.com)
 */
 
-static const char * const IDENT_RESPONSE_C="$Date: 2010/09/01 22:14:28 $";
+static const char * const IDENT_RESPONSE_C="$Date: 2010/09/09 09:52:43 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -165,8 +165,8 @@ static int json_callback(Json *json, int type, const JSON_value* value)
 	return 1;
 }
 
-static char* json_error_message(int error_code){
-	static char* error_messages[] = {
+static const char* json_error_message(int error_code){
+	static const char* error_messages[] = {
 		NULL,
 		"invalid char",
 		"invalid keyword",
