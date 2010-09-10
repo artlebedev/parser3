@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_PARSER3_C="$Date: 2010/07/21 22:23:33 $";
+static const char * const IDENT_PARSER3_C="$Date: 2010/09/10 15:25:25 $";
 
 #include "pa_config_includes.h"
 
@@ -151,13 +151,6 @@ void SAPI::log(SAPI_Info&, const char* fmt, ...) {
 }
 
 static void die_or_abort(const char* fmt, va_list args, bool write_core) {
-	// log
-
-	// logging is more important than user 
-	// she can cancel download, we'd get SIGPIPE, 
-	// nothing would be logged then
-	::log(fmt, args);
-
 	// inform user
 
 	char body[MAX_STRING];
@@ -196,17 +189,29 @@ static void die_or_abort(const char* fmt, va_list args, bool write_core) {
 }
 
 void SAPI::die(const char* fmt, ...) {
-    va_list args;
+	va_list args;
+
+	// logging first, can't log inside die_or_abort due to vsnprintf (bug #106)
+	va_start(args,fmt);
+	::log(fmt, args);
+	va_end(args);
+
 	va_start(args, fmt);
-	die_or_abort(fmt, args, false/*write core?*/);
-//unreachable anyway	va_end(args);
+	die_or_abort(fmt, args, false /*write core?*/);
+//	va_end(args);
 }
 
 void SAPI::abort(const char* fmt, ...) {
-    va_list args;
+	va_list args;
+
+	// logging first, can't log inside die_or_abort due to vsnprintf (bug #106)
+	va_start(args,fmt);
+	::log(fmt, args);
+	va_end(args);
+
 	va_start(args, fmt);
-	die_or_abort(fmt, args, true/*write core?*/);
-//unreachable anyway	va_end(args);
+	die_or_abort(fmt, args, true /*write core?*/);
+//	va_end(args);
 }
 
 char* SAPI::get_env(SAPI_Info& , const char* name) {
