@@ -8,7 +8,7 @@
 #ifndef PA_VDATE_H
 #define PA_VDATE_H
 
-static const char * const IDENT_VDATE_H="$Date: 2009/08/08 13:30:21 $";
+static const char * const IDENT_VDATE_H="$Date: 2010/09/16 23:29:19 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -86,6 +86,16 @@ public: // Value
 		return *result;
 	}
 
+	const String* get_sql_string(){
+		int size=1+ 4+1+2+1+2 +1+ 2+1+2+1+2 +1 +1;
+		char *buf=new(PointerFreeGC) char[size];
+		size=strftime(buf, size, "%Y-%m-%d %H:%M:%S", &get_localtime());
+		return new String(buf);
+	}
+
+	const String* get_gmt_string(){
+		return new String(date_gmt_string(gmtime(&ftime)));
+	}
 
 	/// VDate: method,field
 	override Value* get_element(const String& aname) {
