@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-static const char * const IDENT_VALUE_H="$Date: 2010/09/06 21:17:49 $";
+static const char * const IDENT_VALUE_H="$Date: 2010/09/16 23:33:52 $";
 
 #include "pa_common.h"
 #include "pa_array.h"
@@ -31,6 +31,48 @@ class VMethodFrame;
 class VFile;
 class Table;
 typedef Array<Value*> ArrayValue;
+
+struct Json_options {
+	Request* r;
+	HashStringValue* methods;
+	Value* params;
+	bool skip_unknown;
+	enum Date { D_SQL, D_GMT, D_TIMESTAMP } date;
+	enum Table { T_ARRAY, T_OBJECT } table;
+	enum File { F_BODYLESS, F_BASE64, F_TEXT } file;
+
+	Json_options(Request* arequest): 
+		r(arequest),
+		methods(NULL),
+		params(NULL),
+		skip_unknown(false),
+		date(D_SQL),
+		table(T_OBJECT),
+		file(F_BODYLESS)
+	{}
+
+	bool set_date_format(const String &value){
+		if(value == "gmt-string") date = D_GMT;
+		else if (value == "sql-string") date = D_SQL;
+		else if (value == "unix-timestamp") date = D_TIMESTAMP;
+		else return false;
+		return true;
+	}
+
+	bool set_table_format(const String &value){
+		if(value == "array") table = T_ARRAY;
+		else if (value == "object") table = T_OBJECT;
+		else return false;
+		return true;
+	}
+
+	bool set_file_format(const String &value){
+		if(value == "base64") file = F_BASE64;
+		else if (value == "text") file = F_TEXT;
+		else return false;
+		return true;
+	}
+};
 
 ///	grandfather of all @a values in @b Parser
 class Value: public PA_Object {
@@ -78,6 +120,9 @@ public: // Value
 	
 	/// extract const String
 	virtual const String* get_string() { return 0; }
+
+	/// extract json-string
+	virtual const String* get_json_string(Json_options* options=0);
 
 	virtual HashStringValue* get_fields() { return 0; }
 	

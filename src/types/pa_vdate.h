@@ -8,7 +8,7 @@
 #ifndef PA_VDATE_H
 #define PA_VDATE_H
 
-static const char * const IDENT_VDATE_H="$Date: 2010/09/16 23:29:19 $";
+static const char * const IDENT_VDATE_H="$Date: 2010/09/16 23:33:52 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -47,6 +47,23 @@ public: // Value
 	override const char* type() const { return VDATE_TYPE; }
 	override VStateless_class *get_class() { return date_class; }
 	
+	/// VDate: json-string
+	override const String* get_json_string(Json_options* options=0) {
+		String* result=new String();
+		switch(options->date){
+			case Json_options::D_SQL:
+				result->append_quoted(get_sql_string());
+				break;
+			case Json_options::D_GMT:
+				result->append_quoted(get_gmt_string());
+				break;
+			case Json_options::D_TIMESTAMP:
+				*result << format((int)ftime, 0);
+				break;
+		}
+		return result;
+	}
+
 	/// VDate: ftime -> float days
 	override Value& as_expr_result(bool /*return_string_as_is=false*/) { return *new VDouble(as_double()); }
 

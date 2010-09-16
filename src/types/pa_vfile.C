@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VFILE_C="$Date: 2010/01/26 07:21:29 $";
+static const char * const IDENT_VFILE_C="$Date: 2010/09/16 23:33:52 $";
 
 #include "classes.h"
 #include "pa_vfile.h"
@@ -90,7 +90,7 @@ Value* VFile::get_element(const String& aname) {
 		return result;
 
 	// $text - if not cached
-	if (aname == text_name && fvalue_ptr && fvalue_size){
+	if(aname == text_name && fvalue_ptr && fvalue_size){
 		// assigned file have ptr and we really have some bytes
 
 		const char *premature_zero_pos=(const char *)memchr(fvalue_ptr, 0, fvalue_size);
@@ -109,4 +109,38 @@ Value* VFile::get_element(const String& aname) {
 	}
 
 	return 0;
+}
+
+const String* VFile::get_json_string(Json_options* options){
+	String* result=new String("{\"class\":\"file\"");
+
+	for(HashStringValue::Iterator i(ffields); i; i.next() ){
+		String::Body key=i.key();
+		if(key != text_name){
+			*result << ",\"" << String(key, String::L_JSON) << "\":" << *i.value()->get_json_string(options);
+		}
+	}
+
+	if(fvalue_ptr){
+		switch(options->file){
+			case Json_options::F_BASE64:
+				{
+					*result << ",\"base64\":\"";
+					const char* encoded=pa_base64_encode(fvalue_ptr, fvalue_size);
+					result->append_help_length(encoded, strlen(encoded), String::L_JSON);
+					*result << "\"";
+					break;
+				}
+			case Json_options::F_TEXT:
+				{
+					*result << ",\"text\":\"";
+					result->append(get_element(text_name)->as_string(), String::L_JSON, true/*forced lang*/);
+					*result << "\"";
+					break;
+				}
+		}
+	}
+
+	*result << "}";
+	return result;
 }

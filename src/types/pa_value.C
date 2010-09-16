@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VALUE_C="$Date: 2009/08/24 08:08:04 $";
+static const char * const IDENT_VALUE_C="$Date: 2010/09/16 23:33:52 $";
 
 #include "pa_value.h"
 #include "pa_vstateless_class.h"
@@ -31,6 +31,12 @@ Value* Value::get_element(const String& /*aname*/) {
 
 VFile* Value::as_vfile(String::Language /*lang*/, const Request_charsets* /*charsets*/) { 
 	bark("is '%s', it does not have file value"); return 0;
+}
+
+const String* Value::get_json_string(Json_options* options) {
+	if(!options || !options->skip_unknown)
+		throw Exception(PARSER_RUNTIME, 0, "Unsupported value's type (%s)", type());
+	return new String("null");
 }
 
 /// call this before invoking to ensure proper actual numbered params count

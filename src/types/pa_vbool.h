@@ -8,7 +8,7 @@
 #ifndef PA_VBOOL_H
 #define PA_VBOOL_H
 
-static const char * const IDENT_VBOOL_H="$Date: 2009/04/16 01:07:58 $";
+static const char * const IDENT_VBOOL_H="$Date: 2010/09/16 23:33:52 $";
 
 // include
 
@@ -36,7 +36,7 @@ public: // Value
 	/// VBool: clone
 	override Value& as_expr_result(bool) { return VBool::get(fbool); }
 
-	/// VBool: fbool
+	/// VBool: true
 	virtual bool is_defined() const { return true; }
 
 	/// VBool: fbool
@@ -48,6 +48,12 @@ public: // Value
 
 	override bool is_bool() const { return true; }
 
+	/// VBool: json-string ("true"|"false")
+	override const String* get_json_string(Json_options*) {
+		static const String singleton_json_true(String("true")), singleton_json_false(String("false"));
+		return fbool ? &singleton_json_true : &singleton_json_false;
+	}
+	
 	inline static VBool &get(bool abool){
 		static VBool singleton_true(true), singleton_false(false);
 		return abool?singleton_true:singleton_false;

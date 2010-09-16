@@ -8,7 +8,7 @@
 #ifndef PA_VINT_H
 #define PA_VINT_H
 
-static const char * const IDENT_VINT_H="$Date: 2009/05/13 07:35:27 $";
+static const char * const IDENT_VINT_H="$Date: 2010/09/16 23:33:52 $";
 
 // include
 
@@ -46,6 +46,8 @@ public: // Value
 	override int as_int() const { return finteger; }
 	/// VInt: 0 or !0
 	override bool as_bool() const { return finteger!=0; }
+	/// VInt: json-string
+	override const String* get_json_string(Json_options*) { return get_string(); }
 
 public: // usage
 

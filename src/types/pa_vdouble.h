@@ -8,7 +8,7 @@
 #ifndef PA_VDOUBLE_H
 #define PA_VDOUBLE_H
 
-static const char * const IDENT_VDOUBLE_H="$Date: 2009/05/13 07:35:27 $";
+static const char * const IDENT_VDOUBLE_H="$Date: 2010/09/16 23:33:52 $";
 
 // includes
 
@@ -48,6 +48,8 @@ public: // Value
 	override int as_int() const { return get_int(); }
 	/// VDouble: 0 or !0
 	override bool as_bool() const { return fdouble!=0; }
+	/// VInt: json-string
+	override const String* get_json_string(Json_options*) { return get_string(); }
 
 public: // usage
 

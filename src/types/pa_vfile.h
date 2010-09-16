@@ -8,7 +8,7 @@
 #ifndef PA_VFILE_H
 #define PA_VFILE_H
 
-static const char * const IDENT_VFILE_H="$Date: 2010/01/26 07:21:29 $";
+static const char * const IDENT_VFILE_H="$Date: 2010/09/16 23:33:52 $";
 
 // include
 
@@ -58,6 +58,9 @@ public: // Value
 	/// VFile: this
 	override VFile* as_vfile(String::Language /*lang*/, 
 		const Request_charsets* /*charsets*/) { return this; }
+
+	/// VFile: json-string
+	override const String* get_json_string(Json_options* options=0);
 
 	/// VFile: method,field
 	override Value* get_element(const String& aname);
