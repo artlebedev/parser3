@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-static const char * const IDENT_STRING_H="$Date: 2010/08/27 02:53:34 $";
+static const char * const IDENT_STRING_H="$Date: 2010/09/16 23:34:26 $";
 
 // includes
 #include "pa_types.h"
@@ -581,6 +581,14 @@ public:
 	String& append(const String& src, Language lang, bool forced=false) { 
 		return src.append_to(*this, lang, forced);
 	}
+	String& append_quoted(const String* src, Language lang=L_JSON){
+		*this << "\"";
+		if(src)
+			this->append(*src, lang, true/*forced lang*/);
+		*this << "\"";
+		return *this;
+	}
+
 	String& operator << (const String& src) { return append(src, L_PASS_APPENDED); }
 	String& operator << (const char* src) { return append_help_length(src, 0, L_AS_IS); }
 	String& operator << (const Body& src){
