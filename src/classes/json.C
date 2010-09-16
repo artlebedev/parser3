@@ -4,7 +4,7 @@
 	Copyright (c) 2010 ArtLebedev Group (http://www.artlebedev.com)
 */
 
-static const char * const IDENT_RESPONSE_C="$Date: 2010/09/09 09:52:43 $";
+static const char * const IDENT_RESPONSE_C="$Date: 2010/09/16 23:35:38 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -244,8 +244,96 @@ static void _parse(Request& r, MethodParams& params) {
 	if (json.result) r.write_no_lang(*json.result);
 }
 
+const String& value_json_string(Value& v, Json_options* options);
+
+const String& hash_json_string(HashStringValue &hash, Json_options* options) {
+	if(!hash.count())
+		return *new String("{}");
+
+	options->r->json_string_recoursion_go_down();
+
+	String& result = *new String("{");
+	bool need_delim=false;
+	for(HashStringValue::Iterator i(hash); i; i.next() ){
+		result << (need_delim ? ",\"" : "\"");
+		result << String(i.key(), String::L_JSON) << "\":" << value_json_string(*i.value(), options);
+		need_delim=true;
+	}
+	result << "}";
+
+	options->r->json_string_recoursion_go_up();
+	return result;
+}
+
+const String& value_json_string(Value& v, Json_options* options) {
+	if(options && options->methods)
+		if(Value* method=options->methods->get(v.type())){
+			Junction* junction=method->get_junction();
+			VMethodFrame frame(*junction->method, options->r->method_frame, junction->self);
+
+			Value *params[]={&v, (options->params) ? options->params : VVoid::get()};
+			frame.store_params(params, 2);
+
+			options->r->execute_method(frame);
+
+			return frame.result().as_string();
+		}
+
+	if(HashStringValue* hash=v.get_hash())
+		return hash_json_string(*hash, options);
+
+	return *v.get_json_string(options);
+}
+
+static void _string(Request& r, MethodParams& params) {
+	Json_options json(&r);
+
+	if(params.count() == 2)
+		if(HashStringValue* options=params.as_hash(1)) {
+			json.params=params.get(1);
+			HashStringValue* methods=new HashStringValue();
+			int valid_options=0;
+			for(HashStringValue::Iterator i(*options); i; i.next() ){
+				String::Body key=i.key();
+				Value* value=i.value();
+				if(key == "skip-unknown"){
+					json.skip_unknown=r.process_to_value(*value).as_bool();
+					valid_options++;
+				} else if(key == "date" && value->is_string()){
+					const String& svalue=value->as_string();
+					if(!json.set_date_format(svalue))
+						throw Exception(PARSER_RUNTIME, &svalue, "must be 'sql-string', 'gmt-string' or 'unix-timestamp'");
+					valid_options++;
+				} else if(key == "table" && value->is_string()){
+					const String& svalue=value->as_string();
+					if(!json.set_table_format(svalue))
+						throw Exception(PARSER_RUNTIME, &svalue, "must be 'array' or 'object'");
+					valid_options++;
+				} else if(key == "file" && value->is_string()){
+					const String& svalue=value->as_string();
+					if(!json.set_file_format(svalue))
+						throw Exception(PARSER_RUNTIME, &svalue, "must be 'base64' or 'text'");
+					valid_options++;
+				} else if(Junction* junction=value->get_junction()){
+					if(!junction->method || !junction->method->params_names || junction->method->params_names->count() != 2)
+						throw Exception(PARSER_RUNTIME, 0, "$.%s must be parser method with 2 parameters", key);
+					methods->put(key, value);
+					valid_options++;
+				}
+			}
+			if(valid_options!=options->count())
+				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+			if(methods->count())
+				json.methods=methods;
+		}
+
+	r.write_pass_lang(value_json_string(params[0], &json));
+ }
+
 // constructor
 
 MJson::MJson(): Methoded("json") {
 	add_native_method("parse", Method::CT_STATIC, _parse, 1, 2);
+
+	add_native_method("string", Method::CT_ANY, _string, 1, 2);
 }
