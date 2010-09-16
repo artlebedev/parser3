@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char * const IDENT_REQUEST_H="$Date: 2010/09/04 23:33:21 $";
+static const char * const IDENT_REQUEST_H="$Date: 2010/09/16 23:35:04 $";
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -27,6 +27,7 @@ static const char * const IDENT_REQUEST_H="$Date: 2010/09/04 23:33:21 $";
 // consts
 
 const uint ANTI_ENDLESS_EXECUTE_RECOURSION=1000;
+const uint ANTI_ENDLESS_JSON_STRING_RECOURSION=100;
 const size_t pseudo_file_no__process=1;
 
 // forwards
@@ -131,6 +132,8 @@ private:
 	*/
 	uint anti_endless_execute_recoursion;
 
+	uint anti_endless_json_string_recoursion;
+
 	///@}
 
 	/// execution stack
@@ -219,6 +222,20 @@ public:
 		}
 		execute(ops); // execute it
 		anti_endless_execute_recoursion--;
+	}
+
+	void json_string_recoursion_go_down(){
+		if(++anti_endless_json_string_recoursion==ANTI_ENDLESS_JSON_STRING_RECOURSION){
+			anti_endless_json_string_recoursion=0;
+			throw Exception(PARSER_RUNTIME,
+				0,
+				"call canceled - endless json recursion detected");
+		}
+	}
+
+	void json_string_recoursion_go_up(){
+		if(anti_endless_json_string_recoursion)
+			anti_endless_json_string_recoursion--;
 	}
 
 	///
@@ -467,6 +484,7 @@ class Request_context_saver {
 	/// execution stack
 	size_t stack;
 	uint anti_endless_execute_recoursion;
+	uint anti_endless_json_string_recoursion;
 	/// contexts
 	VMethodFrame* method_frame;
 	Value* rcontext;
@@ -483,6 +501,7 @@ public:
 		exception_trace_bottom(ar.exception_trace.bottom_index()),	
 		stack(ar.stack.top_index()),
 		anti_endless_execute_recoursion(ar.anti_endless_execute_recoursion),
+		anti_endless_json_string_recoursion(ar.anti_endless_json_string_recoursion),
 		method_frame(ar.method_frame),
 		rcontext(ar.rcontext),
 		wcontext(ar.wcontext),
@@ -493,6 +512,7 @@ public:
 		fr.exception_trace.set_bottom_index(exception_trace_bottom);
 		fr.stack.set_top_index(stack);
 		fr.anti_endless_execute_recoursion=anti_endless_execute_recoursion;
+		fr.anti_endless_json_string_recoursion=anti_endless_json_string_recoursion;
 		fr.method_frame=method_frame, fr.rcontext=rcontext; fr.wcontext=wcontext;
 		fr.flang=flang;
 		fr.fconnection=fconnection;
