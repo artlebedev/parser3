@@ -4,7 +4,7 @@
 	Copyright (c) 2010 ArtLebedev Group (http://www.artlebedev.com)
 */
 
-static const char * const IDENT_RESPONSE_C="$Date: 2010/09/16 23:35:38 $";
+static const char * const IDENT_RESPONSE_C="$Date: 2010/09/20 02:23:46 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -255,7 +255,7 @@ const String& hash_json_string(HashStringValue &hash, Json_options* options) {
 	String& result = *new String("{");
 	bool need_delim=false;
 	for(HashStringValue::Iterator i(hash); i; i.next() ){
-		result << (need_delim ? ",\"" : "\"");
+		result << (need_delim ? ",\n\"" : "\"");
 		result << String(i.key(), String::L_JSON) << "\":" << value_json_string(*i.value(), options);
 		need_delim=true;
 	}
