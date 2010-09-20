@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VTABLE_C="$Date: 2010/09/16 23:33:52 $";
+static const char * const IDENT_VTABLE_C="$Date: 2010/09/20 02:24:32 $";
 
 #include "pa_vtable.h"
 #include "pa_vstring.h"
@@ -92,7 +92,7 @@ const String* VTable::get_json_string(Json_options* options) {
 		// columns
 		if(ltable.columns()){
 			// named
-			result << "[\"";
+			result << "\n[\"";
 			bool need_delim=false;
 			for(Array_iterator<const String*> c(*ltable.columns()); c.has_next(); ) {
 				if(need_delim)
@@ -102,13 +102,13 @@ const String* VTable::get_json_string(Json_options* options) {
 			}
 			result << "\"]";
 		} else // nameless
-			result << "null";
+			result << "\nnull";
 
 		// data
 		if(ltable.count()){
 			result << ",";
 			for(Array_iterator<ArrayString*> r(ltable); r.has_next(); ) {
-				result << "[\"";
+				result << "\n[\"";
 				bool need_delim=false;
 				for(Array_iterator<const String*> c(*r.next()); c.has_next(); ) {
 					if(need_delim)
@@ -119,6 +119,7 @@ const String* VTable::get_json_string(Json_options* options) {
 				result << (r.has_next() ? "\"]," : "\"]");
 			}
 		}
+		result << "\n";
 	} else {
 		// [
 		//		{"c1":"v11", "c2":"v12", "c3":"v13"},
@@ -131,19 +132,17 @@ const String* VTable::get_json_string(Json_options* options) {
 		for(Array_iterator<ArrayString*> r(ltable); r.has_next(); ) {
 			ArrayString* row=r.next();
 
-			result << "{\"";
+			result << "\n{\"";
 			for(size_t index=0; index<row->count(); index++){
 				if(index)
 					result << "\",\"";
-				//result << ( index < columns_count ? String(*columns->get(index), String::L_JSON) : String(format(index, 0)) );
 				result.append(index < columns_count ? *columns->get(index) : String(format(index, 0)), String::L_JSON, true/*forced lang*/);
 				result << "\":\"";
 				result.append(*row->get(index), String::L_JSON, true/*forced lang*/);
 			}
 			result << "\"}";
 
-			if(r.has_next())
-				result << ",";
+			result << ((r.has_next()) ? "," : "\n");
 		}
 	}
 
