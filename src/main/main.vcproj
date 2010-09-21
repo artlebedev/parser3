@@ -145,8 +145,7 @@
 					Name="VCCustomBuildTool"
 					Description="Compiling grammar..."
 					CommandLine="cd &quot;$(InputDir)&quot;
-set BISON_SIMPLE=..\..\..\win32\tools\usr\share\bison.simple
-..\..\..\win32\tools\bison -v &quot;$(InputName)&quot;.y -o compile.tab.C
+..\..\..\win32\tools\cygwin\bin\bison -v &quot;$(InputName)&quot;.y -o compile.tab.C -Syacc.c
 "
 					Outputs="compile.tab.C"/>
 			</FileConfiguration>
@@ -156,7 +155,7 @@ set BISON_SIMPLE=..\..\..\win32\tools\usr\share\bison.simple
 					Name="VCCustomBuildTool"
 					Description="Compiling grammar..."
 					CommandLine="cd &quot;$(InputDir)&quot;
-..\..\..\win32\tools\bison -v &quot;$(InputName)&quot;.y -o compile.tab.C -S/../../../cygdrive/y/parser3project/win32/tools/yacc.c
+..\..\..\win32\tools\cygwin\bin\bison -v &quot;$(InputName)&quot;.y -o compile.tab.C -Syacc.c
 "
 					Outputs="compile.tab.C"/>
 			</FileConfiguration>
