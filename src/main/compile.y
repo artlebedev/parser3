@@ -5,7 +5,7 @@
 	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.258 2010/07/25 06:44:45 misha Exp $
+	$Id: compile.y,v 1.259 2010/09/21 06:01:25 misha Exp $
 */
 
 /**
@@ -251,7 +251,7 @@ control_method: '@' STRING '\n'
 	}
 };
 maybe_control_strings: empty | control_strings;
-control_strings: control_string | control_strings control_string { $$=$1; P(*$$, *$2) };
+control_strings: control_string | control_strings control_string { $$=$1; P(*$$, *$2); };
 control_string: maybe_string '\n';
 maybe_string: empty | STRING;
 
@@ -304,9 +304,9 @@ code_method: '@' STRING bracketed_maybe_strings maybe_bracketed_strings maybe_co
 };
 
 maybe_bracketed_strings: empty | bracketed_maybe_strings;
-bracketed_maybe_strings: '[' maybe_strings ']' {$$=$2};
+bracketed_maybe_strings: '[' maybe_strings ']' {$$=$2;};
 maybe_strings: empty | strings;
-strings: STRING | strings ';' STRING { $$=$1; P(*$$, *$3) };
+strings: STRING | strings ';' STRING { $$=$1; P(*$$, *$3); };
 
 maybe_comment: empty | STRING;
 
@@ -314,7 +314,7 @@ maybe_comment: empty | STRING;
 
 maybe_codes: empty | codes;
 
-codes: code | codes code { $$=$1; P(*$$, *$2) };
+codes: code | codes code { $$=$1; P(*$$, *$2); };
 code: write_string | action;
 action: get | put | call;
 
@@ -361,9 +361,9 @@ get: get_value {
 
 	P(*$$, *code);
 };
-get_value: '$' get_name_value { $$=$2 };
+get_value: '$' get_name_value { $$=$2; };
 get_name_value: name_without_curly_rdive EON | name_in_curly_rdive;
-name_in_curly_rdive: '{' name_without_curly_rdive '}' { $$=$2 };
+name_in_curly_rdive: '{' name_without_curly_rdive '}' { $$=$2; };
 name_without_curly_rdive: 
 	name_without_curly_rdive_read 
 |	name_without_curly_rdive_class;
@@ -420,8 +420,8 @@ name_without_curly_rdive_read: name_without_curly_rdive_code {
 #endif
 	/* diving code; stack: current context */
 };
-name_without_curly_rdive_class: class_prefix name_without_curly_rdive_code { $$=$1; P(*$$, *$2) };
-name_without_curly_rdive_code: name_advance2 | name_path name_advance2 { $$=$1; P(*$$, *$2) };
+name_without_curly_rdive_class: class_prefix name_without_curly_rdive_code { $$=$1; P(*$$, *$2); };
+name_without_curly_rdive_code: name_advance2 | name_path name_advance2 { $$=$1; P(*$$, *$2); };
 
 /* put */
 
@@ -472,7 +472,7 @@ name_expr_wdive_write: '.' name_expr_dive_code {
 	O(*$$, OP::OP_WITH_WRITE); /* stack: starting context */
 	P(*$$, *$2); /* diving code; stack: context,name */
 };
-name_expr_wdive_class: class_prefix name_expr_dive_code { $$=$1; P(*$$, *$2) };
+name_expr_wdive_class: class_prefix name_expr_dive_code { $$=$1; P(*$$, *$2); };
 
 construct:
 	construct_square
@@ -516,7 +516,7 @@ constructor_code_value: constructor_code {
 	/* context=pop; stack: context.value() */
 };
 constructor_code: codes__excluding_sole_str_literal;
-codes__excluding_sole_str_literal: action | code codes { $$=$1; P(*$$, *$2) };
+codes__excluding_sole_str_literal: action | code codes { $$=$1; P(*$$, *$2); };
 
 /* call */
 
@@ -581,7 +581,7 @@ call_value: '^' {
 
 call_name: name_without_curly_rdive;
 
-store_params: store_param | store_params store_param { $$=$1; P(*$$, *$2) };
+store_params: store_param | store_params store_param { $$=$1; P(*$$, *$2); };
 store_param: 
 	store_square_param
 |	store_round_param
@@ -592,20 +592,20 @@ store_square_param: '[' {
 	*reinterpret_cast<bool*>(&$$)=PC.explicit_result; PC.explicit_result=false;
 } store_code_param_parts {
 	PC.explicit_result=*reinterpret_cast<bool*>(&$2);
-} ']' {$$=$3};
-store_round_param: '(' store_expr_param_parts ')' {$$=$2};
-store_curly_param: '{' store_curly_param_parts '}' {$$=$2};
+} ']' {$$=$3;};
+store_round_param: '(' store_expr_param_parts ')' {$$=$2;};
+store_curly_param: '{' store_curly_param_parts '}' {$$=$2;};
 store_code_param_parts:
 	store_code_param_part
-|	store_code_param_parts ';' store_code_param_part { $$=$1; P(*$$, *$3) }
+|	store_code_param_parts ';' store_code_param_part { $$=$1; P(*$$, *$3); }
 ;
 store_expr_param_parts:
 	store_expr_param_part
-|	store_expr_param_parts ';' store_expr_param_part { $$=$1; P(*$$, *$3) }
+|	store_expr_param_parts ';' store_expr_param_part { $$=$1; P(*$$, *$3); }
 ;
 store_curly_param_parts:
 	store_curly_param_part
-|	store_curly_param_parts ';' store_curly_param_part { $$=$1; P(*$$, *$3) }
+|	store_curly_param_parts ';' store_curly_param_part { $$=$1; P(*$$, *$3); }
 ;
 store_code_param_part: code_param_value {
 	$$=$1;
@@ -636,9 +636,9 @@ code_param_value:
 
 /* name */
 
-name_expr_dive_code: name_expr_value | name_path name_expr_value { $$=$1; P(*$$, *$2) };
+name_expr_dive_code: name_expr_value | name_path name_expr_value { $$=$1; P(*$$, *$2); };
 
-name_path: name_step | name_path name_step { $$=$1; P(*$$, *$2) };
+name_path: name_step | name_path name_step { $$=$1; P(*$$, *$2); };
 name_step: name_advance1 '.';
 name_advance1: name_expr_value {
 	// we know that name_advance1 not called from ^xxx context
@@ -690,7 +690,7 @@ subvar_ref_name_rdive: STRING {
 	O(*$$, OP::OP_WITH_READ);
 	P(*$$, *$1);
 };
-subvar_get_writes: subvar__get_write | subvar_get_writes subvar__get_write { $$=$1; P(*$$, *$2) };
+subvar_get_writes: subvar__get_write | subvar_get_writes subvar__get_write { $$=$1; P(*$$, *$2); };
 subvar__get_write: '$' subvar_ref_name_rdive {
 	$$=$2;
 	O(*$$, OP::OP_GET_ELEMENT__WRITE);
@@ -711,7 +711,7 @@ class_static_prefix: STRING ':' {
 		}
 	}
 	// optimized OP_VALUE+origin+string+OP_GET_CLASS => OP_VALUE__GET_CLASS+origin+string
-	maybe_change_first_opcode(*$$, OP::OP_VALUE, OP::OP_VALUE__GET_CLASS)
+	maybe_change_first_opcode(*$$, OP::OP_VALUE, OP::OP_VALUE__GET_CLASS);
 };
 class_constructor_prefix: class_static_prefix ':' {
 	$$=$1;
@@ -732,46 +732,46 @@ expr:
 |   false_value
 |	get_value
 |	call_value
-|	'"' string_inside_quotes_value '"' { $$ = $2 }
-|	'\'' string_inside_quotes_value '\'' { $$ = $2 }
+|	'"' string_inside_quotes_value '"' { $$ = $2; }
+|	'\'' string_inside_quotes_value '\'' { $$ = $2; }
 |	'(' expr ')' { $$ = $2; }
 /* stack: operand // stack: @operand */
-|	'-' expr %prec NUNARY { $$=$2;  O(*$$, OP::OP_NEG) }
-|	'+' expr %prec NUNARY { $$=$2 }
-|	'~' expr { $$=$2;	 O(*$$, OP::OP_INV) }
-|	'!' expr { $$=$2;  O(*$$, OP::OP_NOT) }
-|	"def" expr { $$=$2;  O(*$$, OP::OP_DEF) }
-|	"in" expr { $$=$2;  O(*$$, OP::OP_IN) }
-|	"-f" expr { $$=$2;  O(*$$, OP::OP_FEXISTS) }
-|	"-d" expr { $$=$2;  O(*$$, OP::OP_DEXISTS) }
+|	'-' expr %prec NUNARY { $$=$2;  O(*$$, OP::OP_NEG); }
+|	'+' expr %prec NUNARY { $$=$2; }
+|	'~' expr { $$=$2;	 O(*$$, OP::OP_INV); }
+|	'!' expr { $$=$2;  O(*$$, OP::OP_NOT); }
+|	"def" expr { $$=$2;  O(*$$, OP::OP_DEF); }
+|	"in" expr { $$=$2;  O(*$$, OP::OP_IN); }
+|	"-f" expr { $$=$2;  O(*$$, OP::OP_FEXISTS); }
+|	"-d" expr { $$=$2;  O(*$$, OP::OP_DEXISTS); }
 /* stack: a,b // stack: a@b */
-|	expr '-' expr {	$$=$1;  P(*$$, *$3);  O(*$$, OP::OP_SUB) }
-|	expr '+' expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_ADD) }
-|	expr '*' expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_MUL) }
-|	expr '/' expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_DIV) }
-|	expr '%' expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_MOD) }
-|	expr '\\' expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_INTDIV) }
-|	expr "<<" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_BIN_SL) }
-|	expr ">>" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_BIN_SR) }
-|	expr '&' expr { $$=$1; 	P(*$$, *$3);  O(*$$, OP::OP_BIN_AND) }
-|	expr '|' expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_BIN_OR) }
-|	expr "!|" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_BIN_XOR) }
-|	expr "&&" expr { $$=$1;  OA(*$$, OP::OP_NESTED_CODE, $3);  O(*$$, OP::OP_LOG_AND) }
-|	expr "||" expr { $$=$1;  OA(*$$, OP::OP_NESTED_CODE, $3);  O(*$$, OP::OP_LOG_OR) }
-|	expr "!||" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_LOG_XOR) }
-|	expr '<' expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_NUM_LT) }
-|	expr '>' expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_NUM_GT) }
-|	expr "<=" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_NUM_LE) }
-|	expr ">=" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_NUM_GE) }
-|	expr "==" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_NUM_EQ) }
-|	expr "!=" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_NUM_NE) }
-|	expr "lt" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_STR_LT) }
-|	expr "gt" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_STR_GT) }
-|	expr "le" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_STR_LE) }
-|	expr "ge" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_STR_GE) }
-|	expr "eq" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_STR_EQ) }
-|	expr "ne" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_STR_NE) }
-|	expr "is" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_IS) }
+|	expr '-' expr {	$$=$1;  P(*$$, *$3);  O(*$$, OP::OP_SUB); }
+|	expr '+' expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_ADD); }
+|	expr '*' expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_MUL); }
+|	expr '/' expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_DIV); }
+|	expr '%' expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_MOD); }
+|	expr '\\' expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_INTDIV); }
+|	expr "<<" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_BIN_SL); }
+|	expr ">>" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_BIN_SR); }
+|	expr '&' expr { $$=$1; 	P(*$$, *$3);  O(*$$, OP::OP_BIN_AND); }
+|	expr '|' expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_BIN_OR); }
+|	expr "!|" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_BIN_XOR); }
+|	expr "&&" expr { $$=$1;  OA(*$$, OP::OP_NESTED_CODE, $3);  O(*$$, OP::OP_LOG_AND); }
+|	expr "||" expr { $$=$1;  OA(*$$, OP::OP_NESTED_CODE, $3);  O(*$$, OP::OP_LOG_OR); }
+|	expr "!||" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_LOG_XOR); }
+|	expr '<' expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_NUM_LT); }
+|	expr '>' expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_NUM_GT); }
+|	expr "<=" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_NUM_LE); }
+|	expr ">=" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_NUM_GE); }
+|	expr "==" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_NUM_EQ); }
+|	expr "!=" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_NUM_NE); }
+|	expr "lt" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_STR_LT); }
+|	expr "gt" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_STR_GT); }
+|	expr "le" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_STR_LE); }
+|	expr "ge" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_STR_GE); }
+|	expr "eq" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_STR_EQ); }
+|	expr "ne" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_STR_NE); }
+|	expr "is" expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_IS); }
 ;
 
 double_or_STRING: STRING {
@@ -802,14 +802,14 @@ string_inside_quotes_value: maybe_codes {
 
 write_string: STRING {
 	// optimized OP_STRING+OP_WRITE_VALUE => OP_STRING__WRITE
-	change_string_literal_to_write_string_literal(*($$=$1))
+	change_string_literal_to_write_string_literal(*($$=$1));
 };
 
-void_value: /* empty */ { $$=VL(/*we know that we will not change it*/const_cast<VVoid*>(&vvoid), 0, 0, 0) }
-true_value: "true" { $$ = VL(/*we know that we will not change it*/const_cast<VBool*>(&vtrue), 0, 0, 0) }
-false_value: "false" { $$ = VL(/*we know that we will not change it*/const_cast<VBool*>(&vfalse), 0, 0, 0) }
+void_value: /* empty */ { $$=VL(/*we know that we will not change it*/const_cast<VVoid*>(&vvoid), 0, 0, 0); }
+true_value: "true" { $$ = VL(/*we know that we will not change it*/const_cast<VBool*>(&vtrue), 0, 0, 0); }
+false_value: "false" { $$ = VL(/*we know that we will not change it*/const_cast<VBool*>(&vfalse), 0, 0, 0); }
 
-empty: /* empty */ { $$=N() };
+empty: /* empty */ { $$=N(); };
 
 %%
 #endif
