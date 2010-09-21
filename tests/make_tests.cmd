@@ -1,3 +1,3 @@
-path ..\..\win32\tools
+path ..\..\win32\tools\cygwin\bin
 make tests
 pause

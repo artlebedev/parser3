@@ -3,7 +3,8 @@ echo The system timezone should be GMT+3!
 
 set PARSER_DIR=..\src\targets\cgi\release
 set PARSER_EXECUTABLE=parser3.exe
-set DIFF_DIR=..\..\win32\tools
+set CYGWIN=nodosfilewarning
+set DIFF_DIR=..\..\win32\tools\cygwin\bin
 set DIFF_EXECUTABLE=diff.exe -b
 set PARSER_CONFIG=results\auto.p
 set RUN_PARSER=run_parser.cmd
