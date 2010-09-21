@@ -5,7 +5,7 @@
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_CHARSET_C="$Date: 2010/08/29 21:23:40 $";
+static const char * const IDENT_CHARSET_C="$Date: 2010/09/21 21:45:20 $";
 
 #include "pa_charset.h"
 #include "pa_charsets.h"
@@ -170,6 +170,15 @@ void Charset::load_definition(Request_charsets& charsets, const String& afile_sp
 			}
 		}
 	};
+
+	// parser charset tables declare only white-space before 0x20, thus adding the missing chars
+	for(uint i=0; i<0x20; i++)
+		if(!tables.fromTable[i]){
+			tables.fromTable[i]=i;
+			tables.toTable[tables.toTableSize].intCh=i;
+			tables.toTable[tables.toTableSize].extCh=(XMLByte)i;
+			tables.toTableSize++;
+		}
 
 	// sort by the Unicode code point
 	sort_ToTable();
