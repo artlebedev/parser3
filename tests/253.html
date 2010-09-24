@@ -1,6 +1,6 @@
 @main[]
 
-$f[^file::load[text;253_json.txt]]
+$f[^file::load[text;253_json.txt; $.charset[windows-1251]]]
 $s[^taint[as-is][$f.text]]
 
 ^try_catch{$o[^json:parse[$s]]}
@@ -24,12 +24,7 @@ $o[^json:parse[$s][ $.object[$hook] $.distinct[all] ]]
 }
 
 @print[hash]
-^hash.foreach[k;v]{
-	$k = ^if($v is 'hash'){{^print[$v] 
-	}}{
-		$v.CLASS_NAME ^if($v is 'bool'){ ^if($v){true}{false} }($v is 'class1' || $v is 'class2'){^v.print[]}{$v}
-	}
-}
+^json:string[$hash; $.indent(1)]
 
 @hook[key;value]
 $result[^if(def $value.type){^reflection:create[$value.type;create;$value]}{$value}]
@@ -38,16 +33,10 @@ $result[^if(def $value.type){^reflection:create[$value.type;create;$value]}{$val
 class1
 
 @create[h]
-$value[$h.value]
-
-@print[]
-value "$value"
+$value[class1 $h.value]
 
 @CLASS
 class2
 
 @create[h]
-$value[$h.value]
-
-@print[]
-value "$value"
+$value[class2 $h.value]

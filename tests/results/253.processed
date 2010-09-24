@@ -1,51 +1,82 @@
 Content-Type: text/html
-Content-Length: 662
+Content-Length: 1133
 
 object
 duplicate key
-object = {
-type = string class1
-value = string sample1
-}
-array = {
-0 = {
-id = int 1
-label = string test1
-}
-1 = {
-id = int 2
-label = string test2
-}
-2 = bool false 3 = bool true 4 = int 2
-5 = double 2
-6 = void }
-object = {
-type = string class2
-value = string sample2
-}
-array = {
-0 = {
-id = int 1
-label = string test1
-}
-1 = {
-id = int 2
-label = string test2
-}
-2 = bool false 3 = bool true 4 = int 2
-5 = string 2.0
-6 = void }
-object = class1 value "sample1"
-array = {
-0 = {
-id = int 1
-label = string test1
-}
-1 = {
-id = int 2
-label = string test2
-}
-2 = bool false 3 = bool true 4 = int 2
-5 = double 2
-6 = void }
-object_2 = class2 value "sample2"
+{
+	"object":{
+		"type":"class1",
+		"value":"sample1"
+	},
+	"array":{
+		"0":"Много букв в кодировке windows-1251",
+		"1":{
+			"id":1,
+			"label":"test1"
+		},
+		"2":{
+			"id":2,
+			"label":"test2"
+		},
+		"3":{
+			"Ключ":"Значение в windows-1251"
+		},
+		"4":false,
+		"5":true,
+		"6":2,
+		"7":2,
+		"8":null
+	}
+}
+{
+	"object":{
+		"type":"class2",
+		"value":"sample2"
+	},
+	"array":{
+		"0":"Много букв в кодировке windows-1251",
+		"1":{
+			"id":1,
+			"label":"test1"
+		},
+		"2":{
+			"id":2,
+			"label":"test2"
+		},
+		"3":{
+			"Ключ":"Значение в windows-1251"
+		},
+		"4":false,
+		"5":true,
+		"6":2,
+		"7":"2.0",
+		"8":null
+	}
+}
+{
+	"object":{
+		"value":"class1 sample1"
+	},
+	"array":{
+		"0":"Много букв в кодировке windows-1251",
+		"1":{
+			"id":1,
+			"label":"test1"
+		},
+		"2":{
+			"id":2,
+			"label":"test2"
+		},
+		"3":{
+			"Ключ":"Значение в windows-1251"
+		},
+		"4":false,
+		"5":true,
+		"6":2,
+		"7":2,
+		"8":null
+	},
+	"object_2":{
+		"value":"class2 sample2"
+	}
+}

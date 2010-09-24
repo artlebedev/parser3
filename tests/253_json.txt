@@ -3,8 +3,10 @@
    "value": "sample1"
  },
  "array": [
+    "Много букв в кодировке windows-1251",
     {"id": 1, "label": "test1"},
     {"id": 2, "label": "test2"},
+    {"Ключ": "Значение в windows-1251"},
     false,
     true,
     2,

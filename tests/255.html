@@ -1,0 +1,10 @@
+@main[]
+
+^windows-1251[]
+
+$f[^file::load[text;253_json.txt]]
+$s[^taint[as-is][$f.text]]
+
+$o[^json:parse[$s][ $.distinct[all] ]]
+Результат: $o.array.0
+^json:string[$o; $.indent(1)]
