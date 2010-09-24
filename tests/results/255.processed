@@ -1,33 +1,33 @@
 Content-Type: text/html
-Content-Length: 593
+Content-Length: 570
 
 Результат: Много букв в кодировке windows-1251
 {
-	"object":{
-		"type":"class1",
-		"value":"sample1"
-	},
-	"array":{
-		"0":"\u041C\u043D\u043E\u0433\u043E \u0431\u0443\u043A\u0432 \u0432 \u043A\u043E\u0434\u0438\u0440\u043E\u0432\u043A\u0435 windows-1251",
-		"1":{
+	"object":{
+		"type":"class1",
+		"value":"sample1"
+	},
+	"array":{
+		"0":"\u041C\u043D\u043E\u0433\u043E \u0431\u0443\u043A\u0432 \u0432 \u043A\u043E\u0434\u0438\u0440\u043E\u0432\u043A\u0435 windows-1251",
+		"1":{
 			"id":1,
 			"label":"test1"
-		},
-		"2":{
+		},
+		"2":{
 			"id":2,
 			"label":"test2"
-		},
-		"3":{
+		},
+		"3":{
 			"\u041A\u043B\u044E\u0447":"\u0417\u043D\u0430\u0447\u0435\u043D\u0438\u0435 \u0432 windows-1251"
-		},
-		"4":false,
-		"5":true,
-		"6":2,
-		"7":2,
-		"8":null
-	},
-	"object_2":{
-		"type":"class2",
-		"value":"sample2"
-	}
-и}
+		},
+		"4":false,
+		"5":true,
+		"6":2,
+		"7":2,
+		"8":null
+	},
+	"object_2":{
+		"type":"class2",
+		"value":"sample2"
+	}
+}
