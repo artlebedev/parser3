@@ -6,7 +6,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VFILE_C="$Date: 2010/09/16 23:33:52 $";
+static const char * const IDENT_VFILE_C="$Date: 2010/09/24 08:18:57 $";
 
 #include "classes.h"
 #include "pa_vfile.h"
@@ -112,12 +112,22 @@ Value* VFile::get_element(const String& aname) {
 }
 
 const String* VFile::get_json_string(Json_options* options){
-	String* result=new String("{\"class\":\"file\"");
+	String& result=*new String("{\n", String::L_AS_IS);
+	
+	String * indent=NULL;
+
+	if (options->indent){
+		indent = new String(",\n\t", String::L_AS_IS); *indent << options->indent << "\"";
+		result << "\t" << options->indent;
+	}
+
+	result << "\"class\":\"file\"";
 
 	for(HashStringValue::Iterator i(ffields); i; i.next() ){
 		String::Body key=i.key();
 		if(key != text_name){
-			*result << ",\"" << String(key, String::L_JSON) << "\":" << *i.value()->get_json_string(options);
+			indent ? result << *indent : result << ",\n\"";
+			result << String(key, String::L_JSON) << "\":" << *i.value()->get_json_string(options);
 		}
 	}
 
@@ -125,22 +135,24 @@ const String* VFile::get_json_string(Json_options* options){
 		switch(options->file){
 			case Json_options::F_BASE64:
 				{
-					*result << ",\"base64\":\"";
+					indent ? result << *indent : result << ",\n\"";
+					result << "base64\":\"";
 					const char* encoded=pa_base64_encode(fvalue_ptr, fvalue_size);
-					result->append_help_length(encoded, strlen(encoded), String::L_JSON);
-					*result << "\"";
+					result.append_help_length(encoded, strlen(encoded), String::L_JSON);
+					result << "\"";
 					break;
 				}
 			case Json_options::F_TEXT:
 				{
-					*result << ",\"text\":\"";
-					result->append(get_element(text_name)->as_string(), String::L_JSON, true/*forced lang*/);
-					*result << "\"";
+					indent ? result << *indent : result << ",\n\"";
+					result << "text\":\"";
+					result.append(get_element(text_name)->as_string(), String::L_JSON, true/*forced lang*/);
+					result << "\"";
 					break;
 				}
 		}
 	}
 
-	*result << "}";
-	return result;
+	result << "\n" << options->indent << "}";
+	return &result;
 }

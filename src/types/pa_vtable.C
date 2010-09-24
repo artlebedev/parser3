@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VTABLE_C="$Date: 2010/09/20 02:24:32 $";
+static const char * const IDENT_VTABLE_C="$Date: 2010/09/24 08:18:57 $";
 
 #include "pa_vtable.h"
 #include "pa_vstring.h"
@@ -79,7 +79,7 @@ Value* VTable::get_element(const String& aname) {
 }
 
 const String* VTable::get_json_string(Json_options* options) {
-	String& result = *new String("[");
+	String& result = *new String("[", String::L_AS_IS);
 	Table& ltable=table();
 	if(options && options->table == Json_options::T_ARRAY){
 		// [
@@ -92,7 +92,12 @@ const String* VTable::get_json_string(Json_options* options) {
 		// columns
 		if(ltable.columns()){
 			// named
-			result << "\n[\"";
+			if (options->indent){
+				result << "\n\t" << options->indent << "[\"";
+			} else {
+				result << "\n[\"";
+			}
+
 			bool need_delim=false;
 			for(Array_iterator<const String*> c(*ltable.columns()); c.has_next(); ) {
 				if(need_delim)
@@ -101,14 +106,24 @@ const String* VTable::get_json_string(Json_options* options) {
 				need_delim=true;
 			}
 			result << "\"]";
-		} else // nameless
-			result << "\nnull";
+		} else {
+			// nameless
+			if (options->indent){
+				result << "\n\t" << options->indent << "null";
+			} else {
+				result << "\nnull";
+			}
+		}
 
 		// data
 		if(ltable.count()){
 			result << ",";
 			for(Array_iterator<ArrayString*> r(ltable); r.has_next(); ) {
-				result << "\n[\"";
+				if (options->indent){
+					result << "\n\t" << options->indent << "[\"";
+				} else {
+					result << "\n[\"";
+				}
 				bool need_delim=false;
 				for(Array_iterator<const String*> c(*r.next()); c.has_next(); ) {
 					if(need_delim)
@@ -120,6 +135,7 @@ const String* VTable::get_json_string(Json_options* options) {
 			}
 		}
 		result << "\n";
+		result << options->indent;
 	} else {
 		// [
 		//		{"c1":"v11", "c2":"v12", "c3":"v13"},
@@ -132,7 +148,11 @@ const String* VTable::get_json_string(Json_options* options) {
 		for(Array_iterator<ArrayString*> r(ltable); r.has_next(); ) {
 			ArrayString* row=r.next();
 
-			result << "\n{\"";
+			if (options->indent){
+				result << "\n\t" << options->indent << "{\"";
+			} else {
+				result << "\n{\"";
+			}
 			for(size_t index=0; index<row->count(); index++){
 				if(index)
 					result << "\",\"";
@@ -142,7 +162,12 @@ const String* VTable::get_json_string(Json_options* options) {
 			}
 			result << "\"}";
 
-			result << ((r.has_next()) ? "," : "\n");
+			if (r.has_next()){
+				result << ",";
+			} else {
+				result << "\n";
+				result << options->indent;
+			}
 		}
 	}
 

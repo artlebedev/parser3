@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char * const IDENT_REQUEST_H="$Date: 2010/09/16 23:35:04 $";
+static const char * const IDENT_REQUEST_H="$Date: 2010/09/24 08:18:57 $";
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -224,13 +224,14 @@ public:
 		anti_endless_execute_recoursion--;
 	}
 
-	void json_string_recoursion_go_down(){
+	uint json_string_recoursion_go_down(){
 		if(++anti_endless_json_string_recoursion==ANTI_ENDLESS_JSON_STRING_RECOURSION){
 			anti_endless_json_string_recoursion=0;
 			throw Exception(PARSER_RUNTIME,
 				0,
 				"call canceled - endless json recursion detected");
 		}
+		return anti_endless_json_string_recoursion;
 	}
 
 	void json_string_recoursion_go_up(){

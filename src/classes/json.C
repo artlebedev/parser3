@@ -4,7 +4,7 @@
 	Copyright (c) 2010 ArtLebedev Group (http://www.artlebedev.com)
 */
 
-static const char * const IDENT_RESPONSE_C="$Date: 2010/09/20 02:23:46 $";
+static const char * const IDENT_RESPONSE_C="$Date: 2010/09/24 08:18:57 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -244,22 +244,53 @@ static void _parse(Request& r, MethodParams& params) {
 	if (json.result) r.write_no_lang(*json.result);
 }
 
+char *get_indent(uint level){
+	static char* cache[ANTI_ENDLESS_JSON_STRING_RECOURSION]={};
+	if (!cache[level]){
+		char *result = 	static_cast<char*>(pa_gc_malloc_atomic(level+1));
+		memset(result, '\t', level);
+		result[level+1]='\0';
+		return cache[level]=result;
+	}
+	return cache[level];
+}
+
 const String& value_json_string(Value& v, Json_options* options);
 
 const String& hash_json_string(HashStringValue &hash, Json_options* options) {
 	if(!hash.count())
-		return *new String("{}");
+		return *new String("{}", String::L_AS_IS);
 
-	options->r->json_string_recoursion_go_down();
+	uint level = options->r->json_string_recoursion_go_down();
 
-	String& result = *new String("{");
-	bool need_delim=false;
-	for(HashStringValue::Iterator i(hash); i; i.next() ){
-		result << (need_delim ? ",\n\"" : "\"");
-		result << String(i.key(), String::L_JSON) << "\":" << value_json_string(*i.value(), options);
-		need_delim=true;
+	String& result = *new String("{\n", String::L_AS_IS);
+
+	if (options->indent){
+
+		String *delim=NULL;
+		options->indent=get_indent(level);
+		for(HashStringValue::Iterator i(hash); i; i.next() ){
+			if (delim){
+				result << *delim;
+			} else {
+				result << options->indent << "\"";
+				delim = new String(",\n", String::L_AS_IS); *delim << options->indent << "\"";
+			}
+			result << String(i.key(), String::L_JSON) << "\":" << value_json_string(*i.value(), options);
+		}
+		result << "\n" << (options->indent=get_indent(level-1)) << "}";
+
+	} else {
+
+		bool need_delim=false;
+		for(HashStringValue::Iterator i(hash); i; i.next() ){
+			result << (need_delim ? ",\n\"" : "\"");
+			result << String(i.key(), String::L_JSON) << "\":" << value_json_string(*i.value(), options);
+			need_delim=true;
+		}
+		result << "\n}";
+
 	}
-	result << "}";
 
 	options->r->json_string_recoursion_go_up();
 	return result;
@@ -303,6 +334,9 @@ static void _string(Request& r, MethodParams& params) {
 					const String& svalue=value->as_string();
 					if(!json.set_date_format(svalue))
 						throw Exception(PARSER_RUNTIME, &svalue, "must be 'sql-string', 'gmt-string' or 'unix-timestamp'");
+					valid_options++;
+				} else if(key == "indent"){
+					json.indent=r.process_to_value(*value).as_bool() ? "":NULL;
 					valid_options++;
 				} else if(key == "table" && value->is_string()){
 					const String& svalue=value->as_string();
