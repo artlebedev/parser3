@@ -4,7 +4,7 @@
 	Copyright (c) 2010 ArtLebedev Group (http://www.artlebedev.com)
 */
 
-static const char * const IDENT_RESPONSE_C="$Date: 2010/09/24 08:18:57 $";
+static const char * const IDENT_RESPONSE_C="$Date: 2010/09/24 23:18:08 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -249,7 +249,7 @@ char *get_indent(uint level){
 	if (!cache[level]){
 		char *result = 	static_cast<char*>(pa_gc_malloc_atomic(level+1));
 		memset(result, '\t', level);
-		result[level+1]='\0';
+		result[level]='\0';
 		return cache[level]=result;
 	}
 	return cache[level];
@@ -350,7 +350,7 @@ static void _string(Request& r, MethodParams& params) {
 					valid_options++;
 				} else if(Junction* junction=value->get_junction()){
 					if(!junction->method || !junction->method->params_names || junction->method->params_names->count() != 2)
-						throw Exception(PARSER_RUNTIME, 0, "$.%s must be parser method with 2 parameters", key);
+						throw Exception(PARSER_RUNTIME, 0, "$.%s must be parser method with 2 parameters", key.cstr());
 					methods->put(key, value);
 					valid_options++;
 				}
