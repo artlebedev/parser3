@@ -1,0 +1,223 @@
+Content-Type: text/html
+Content-Length: 3982
+
+<h3>hash</h3>
+{
+"void":null,
+"bool-true":true,
+"bool-false":false,
+"int":1,
+"double":0.5,
+"a\/b":"\"1\"",
+"string":"value with \"quotes\"\/other things",
+"string-ru":"русские буквы",
+"hash":{
+"e":"ee"
+}
+}, {
+	"void":null,
+	"bool-true":true,
+	"bool-false":false,
+	"int":1,
+	"double":0.5,
+	"a\/b":"\"1\"",
+	"string":"value with \"quotes\"\/other things",
+	"string-ru":"русские буквы",
+	"hash":{
+		"e":"ee"
+	}
+}
+<h3>date</h3>
+{
+"value":1155866940
+}, {
+"value":"Fri, 18 Aug 2006 02:09:00 GMT"
+}, {
+"value":"2006-08-18 06:09:00"
+}, {
+"value":"new Date(1155866940)"
+}
+<h3>table</h3>
+{
+"table_nameless_empty":[],
+"table_nameless_1":[
+{"0":"v1","1":"v2","2":"v3"}
+],
+"table_nameless_2":[
+{"0":"v1","1":"v2","2":"v3"},
+{"0":"v4","1":"v5","2":"v6"}
+],
+"table_named_empty":[],
+"table_named_1":[
+{"c1":"v1","c2":"v2","c3":"v3"}
+],
+"table_named_2":[
+{"c1":"v1","c2":"v2","c3":"v3"},
+{"c1":"v4","c2":"v5","c3":"v6"}
+],
+"table_named_3":[
+{"c1":"v1","c2":"v2","c3":"v3"},
+{"c1":"v4","c2":"v5","c3":"v6"},
+{"c1":"v7","c2":"v8","c3":"v9","3":"v0"}
+]
+}, {
+	"table_nameless_empty":[],
+	"table_nameless_1":[
+		{"0":"v1","1":"v2","2":"v3"}
+	],
+	"table_nameless_2":[
+		{"0":"v1","1":"v2","2":"v3"},
+		{"0":"v4","1":"v5","2":"v6"}
+	],
+	"table_named_empty":[],
+	"table_named_1":[
+		{"c1":"v1","c2":"v2","c3":"v3"}
+	],
+	"table_named_2":[
+		{"c1":"v1","c2":"v2","c3":"v3"},
+		{"c1":"v4","c2":"v5","c3":"v6"}
+	],
+	"table_named_3":[
+		{"c1":"v1","c2":"v2","c3":"v3"},
+		{"c1":"v4","c2":"v5","c3":"v6"},
+		{"c1":"v7","c2":"v8","c3":"v9","3":"v0"}
+	]
+}, {
+"table_nameless_empty":[
+null
+],
+"table_nameless_1":[
+null,
+["v1","v2","v3"]
+],
+"table_nameless_2":[
+null,
+["v1","v2","v3"],
+["v4","v5","v6"]
+],
+"table_named_empty":[
+["c1","c2","c3"]
+],
+"table_named_1":[
+["c1","c2","c3"],
+["v1","v2","v3"]
+],
+"table_named_2":[
+["c1","c2","c3"],
+["v1","v2","v3"],
+["v4","v5","v6"]
+],
+"table_named_3":[
+["c1","c2","c3"],
+["v1","v2","v3"],
+["v4","v5","v6"],
+["v7","v8","v9","v0"]
+]
+}, {
+	"table_nameless_empty":[
+		null
+	],
+	"table_nameless_1":[
+		null,
+		["v1","v2","v3"]
+	],
+	"table_nameless_2":[
+		null,
+		["v1","v2","v3"],
+		["v4","v5","v6"]
+	],
+	"table_named_empty":[
+		["c1","c2","c3"]
+	],
+	"table_named_1":[
+		["c1","c2","c3"],
+		["v1","v2","v3"]
+	],
+	"table_named_2":[
+		["c1","c2","c3"],
+		["v1","v2","v3"],
+		["v4","v5","v6"]
+	],
+	"table_named_3":[
+		["c1","c2","c3"],
+		["v1","v2","v3"],
+		["v4","v5","v6"],
+		["v7","v8","v9","v0"]
+	]
+}
+<h3>my</h3>
+{
+"object":"my"
+}
+<h3>file</h3>
+{
+"text":{
+"class":"file",
+"name":"zigi",
+"size":12,
+"content-type":"application\/octet-stream",
+"mode":"text",
+"text":"file-content"
+},
+"binary":{
+"class":"file",
+"name":"256.txt",
+"size":12,
+"content-type":"application\/octet-stream",
+"mode":"binary",
+"adate":"-value-",
+"mdate":"-value-",
+"cdate":"-value-",
+"text":"file-content"
+},
+"stated":{
+"class":"file",
+"name":"256.txt",
+"size":12,
+"content-type":"application\/octet-stream",
+"adate":"-value-",
+"mdate":"-value-",
+"cdate":"-value-"
+}
+}, {
+	"text":{
+		"class":"file",
+		"name":"zigi",
+		"size":12,
+		"content-type":"application\/octet-stream",
+		"mode":"text",
+		"base64":"ZmlsZS1jb250ZW50"
+	},
+	"binary":{
+		"class":"file",
+		"name":"256.txt",
+		"size":12,
+		"content-type":"application\/octet-stream",
+		"mode":"binary",
+		"adate":"-value-",
+		"mdate":"-value-",
+		"cdate":"-value-",
+		"base64":"ZmlsZS1jb250ZW50"
+	},
+	"stated":{
+		"class":"file",
+		"name":"256.txt",
+		"size":12,
+		"content-type":"application\/octet-stream",
+		"adate":"-value-",
+		"mdate":"-value-",
+		"cdate":"-value-"
+	}
+}, {
+"text":{"file":{"name":"zigi", "text":"file-content", "params":"-params-"}},
+"binary":{"file":{"name":"256.txt", "text":"file-content", "params":"-params-"}},
+"stated":{"file":{"name":"256.txt", "text":"", "params":"-params-"}}
+}
+<h3>image</h3>
+{
+"value":null
+}, {
+"value":"image []"
+}, Exception. That's OK (Unsupported value's type (image))
+<h3>hash_with_infinite_recursion</h3>
+Exception. That's OK (call canceled - endless json recursion detected)
