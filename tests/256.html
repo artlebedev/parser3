@@ -1,0 +1,136 @@
+﻿@main[]
+$a[^hash::create[]]
+$b[$.a[$a]]
+$a.b[$b]
+
+$h[
+	$.hash[
+		$.void[]
+		$.bool-true(true)
+		$.bool-false(false)
+		$.int(1)
+		$.double(1/2)
+		$.[a/b]["1"]
+		$.string[value with "quotes"/other things]
+		$.string-ru[русские буквы]
+		$.hash[
+			$.e[ee]
+		]
+
+		$._options[
+			$.0[]
+			$.1[$.indent(true)]
+		]
+	]
+
+	$.date[
+		$.value[^date::create(2006;08;18;06;09;00)]
+
+		$._options[
+			$.0[$.date[unix-timestamp]]
+			$.1[$.date[gmt-string]]
+			$.2[$.date[sql-string]]
+			$.3[$.date[$handler]]
+		]
+	]
+
+	$.table[
+		$.table_nameless_empty[^table::create[nameless]{}]
+		$.table_nameless_1[^table::create[nameless]{v1	v2	v3}]
+		$.table_nameless_2[^table::create[nameless]{v1	v2	v3^#0Av4	v5	v6}]
+		$.table_named_empty[^table::create{c1	c2	c3}]
+		$.table_named_1[^table::create{c1	c2	c3^#0Av1	v2	v3}]
+		$.table_named_2[^table::create{c1	c2	c3^#0Av1	v2	v3^#0Av4	v5	v6}]
+		$.table_named_3[^table::create{c1	c2	c3^#0Av1	v2	v3^#0Av4	v5	v6}]
+
+		$._options[
+			$.0[$.table[object]]
+			$.1[$.table[object] $.indent(true)]
+			$.2[$.table[array]]
+			$.3[$.table[array] $.indent(true)]
+		]
+	]
+
+	$.my[
+		$.object[^my::create[]]
+
+		$._options[
+			$.0[$.my[$handler]]
+		]
+	]
+
+	$.file[
+		$.text[^file::create[text;zigi;file-content]]
+		$.binary[^file::load[binary;./256.txt]]
+		$.stated[^file::stat[./256.txt]]
+
+		$._options[
+			$.0[$.file[text]]
+			$.1[$.file[base64] $.indent(true)]
+			$.2[$.file[$handler]]
+		]
+	]
+
+	$.image[
+		$.value[^image::create(100;100;0)]
+		$._options[
+			$.0[$.skip-unknown(true)]
+			$.1[$.image[$handler]]
+			$.2[$.exception(true)]
+		]
+	]
+
+	$.hash_with_infinite_recursion[
+		$.value[$a]
+
+		$._options[
+			$.0[$.exception(true)]
+		]
+	]
+
+]
+
+^h.table.table_named_3.append{v7	v8	v9	v0}
+
+$s[^h.foreach[k;v]{
+	<h3>$k</h3>
+	^if($v is "hash" && def $v._options){
+		$hOptions[$v._options]
+		$hValue[^hash::create[$v]]
+		^hValue.delete[_options]
+		^hOptions.foreach[;hOpt]{^2string[$hValue;$hOpt]}[, ]
+	}{
+		^2string[$v]
+	}
+}]
+
+^s.match["([acm]date)":"[^^"]+"][g]{"$match.1":"-value-"}
+
+
+@2string[value;options]
+$options[^hash::create[$options]]
+$bShouldBeException($options.exception)
+^options.delete[exception]
+^try{
+	$result[^json:string[$value;$options]^if($bShouldBeException){. FAILED. EXCEPTION SHOULD BE HERE}]
+}{
+	$exception.handled(true)
+	$result[Exception^if($bShouldBeException){. That's OK} ($exception.comment)]
+}
+
+
+@handler[v;p][kk;vv]
+$result[^switch[$v.CLASS_NAME]{
+	^case[date]{"new Date(^v.unix-timestamp[])"}
+	^case[file]{{"file":{"name":"$v.name", "text":"$v.text", "params":"-params-"}}}
+	^case[image]{"image []"}
+	^case[DEFAULT]{"$v.CLASS_NAME"}
+}]
+
+
+
+@CLASS
+my
+
+@create[]
+$v[ac/dc]
