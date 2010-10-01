@@ -4,7 +4,7 @@
 	Copyright (c) 2010 ArtLebedev Group (http://www.artlebedev.com)
 */
 
-static const char * const IDENT_RESPONSE_C="$Date: 2010/09/24 23:18:08 $";
+static const char * const IDENT_RESPONSE_C="$Date: 2010/10/01 23:07:30 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -94,7 +94,7 @@ String* json_string(Json *json, const JSON_value* value){
 
 static Value *json_hook(Request &r, Junction *hook, String* key, Value* value){
 	VMethodFrame frame(*hook->method, r.method_frame, hook->self);
-	Value *params[]={new VString(*key), value};
+	Value *params[]={new VString(key ? *key : String::Empty), value};
 
 	frame.store_params(params, 2);
 	r.execute_method(frame);
