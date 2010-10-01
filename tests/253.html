@@ -5,13 +5,13 @@ $s[^taint[as-is][$f.text]]
 
 ^try_catch{$o[^json:parse[$s]]}
 
-$o[^json:parse[$s][ $.distinct[first] ]]
+$o[^json:parse[$s][ $.object[$hook] $.distinct[first] ]]
 ^print[$o]
 
 $o[^json:parse[$s][ $.double(false) $.distinct[last] ]]
 ^print[$o]
 
-$o[^json:parse[$s][ $.object[$hook] $.distinct[all] ]]
+$o[^json:parse[$s][ $.object[$hook_key] $.distinct[all] ]]
 ^print[$o]
 
 @try_catch[code]
@@ -28,6 +28,9 @@ $o[^json:parse[$s][ $.object[$hook] $.distinct[all] ]]
 
 @hook[key;value]
 $result[^if(def $value.type){^reflection:create[$value.type;create;$value]}{$value}]
+
+@hook_key[key;value]
+$result[^if($key eq 'object'){^reflection:create[$value.type;create;$value]}{$value}]
 
 @CLASS
 class1

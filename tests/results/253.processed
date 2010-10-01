@@ -1,12 +1,11 @@
 Content-Type: text/html
-Content-Length: 1074
+Content-Length: 1062
 
 object
 duplicate key
 {
 	"object":{
-		"type":"class1",
-		"value":"sample1"
+		"value":"class1 sample1"
 	},
 	"array":{
 		"0":"Много букв в кодировке windows-1251",
