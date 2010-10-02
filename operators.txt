@@ -181,7 +181,7 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         !в catch коде $exception.handled[cache]  ^rem{флаг, что exception обработан}
     !^cache[файл][expires date]{код}[{catch код}]
         !абсолютное задание времени
-    X^cache[файл] удалить файл [не ругает, если его нет] // такое было, больше не будет, делать ^cache(0)
+    !^cache[файл] удалить файл [не ругает, если его нет]
     !^cache(секунд)
     !^cache[expires date]
         !сигнализирует вышестоящему ^cache "уменьши до стольких-то 'секунд'/'expires'"
