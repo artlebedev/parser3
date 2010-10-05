@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_HASH_C="$Date: 2010/08/14 01:08:45 $";
+static const char * const IDENT_HASH_C="$Date: 2010/10/05 20:56:12 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -72,7 +72,7 @@ public:
 
 	bool add_column(SQL_Error& error, const char* str, size_t length) {
 		try {
-			columns+=new String(str, String::L_TAINTED, length);
+			columns+=new String(str, String::L_TAINTED /* no length as 0x00 can be inside */);
 			return false;
 		} catch(...) {
 			error=SQL_Error("exception occured in Hash_sql_event_handlers::add_column");
@@ -111,7 +111,7 @@ public:
 
 	bool add_row_cell(SQL_Error& error, const char *ptr, size_t length) {
 		try {
-			String& cell=*new String(ptr, String::L_TAINTED, length);
+			String& cell=*new String(ptr, String::L_TAINTED /* no length as 0x00 can be inside */);
 
 			bool duplicate=false;
 			if(one_bool_column) {

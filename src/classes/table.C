@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2010/07/21 22:29:05 $";
+static const char * const IDENT_TABLE_C="$Date: 2010/10/05 20:56:12 $";
 
 #if (!defined(NO_STRINGSTREAM) && !defined(FREEBSD4))
 #include <sstream>
@@ -1066,7 +1066,7 @@ public:
 
 	bool add_column(SQL_Error& error, const char *str, size_t length) {
 		try {
-			columns+=new String(str, String::L_TAINTED, length);
+			columns+=new String(str, String::L_TAINTED /* no length as 0x00 can be inside */);
 			return false;
 		} catch(...) {
 			error=SQL_Error("exception occured in Table_sql_event_handlers::add_column");
@@ -1094,7 +1094,7 @@ public:
 	}
 	bool add_row_cell(SQL_Error& error, const char* str, size_t length) {
 		try {
-			*row+=new String(str, String::L_TAINTED, length);
+			*row+=new String(str, String::L_TAINTED /* no length as 0x00 can be inside */);
 			return false;
 		} catch(...) {
 			error=SQL_Error("exception occured in Table_sql_event_handlers::add_row_cell");
