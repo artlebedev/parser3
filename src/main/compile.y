@@ -5,7 +5,7 @@
 	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.259 2010/09/21 06:01:25 misha Exp $
+	$Id: compile.y,v 1.260 2010/10/08 13:16:36 misha Exp $
 */
 
 /**
@@ -145,7 +145,7 @@ method: control_method | code_method;
 
 control_method: '@' STRING '\n' 
 				maybe_control_strings {
-	const String& command=*LA2S(*$2);
+	const String& command=LA2S(*$2)->trim(String::TRIM_END);
 	YYSTYPE strings_code=$4;
 	if(strings_code->count()<1*OPERATIONS_PER_OPVALUE) {
 		strcpy(PC.error, "@");
@@ -156,7 +156,7 @@ control_method: '@' STRING '\n'
 	if(command==CLASS_NAME) {
 		if(strings_code->count()==1*OPERATIONS_PER_OPVALUE) {
 			// new class' name
-			const String& name=*LA2S(*strings_code);
+			const String& name=LA2S(*strings_code)->trim(String::TRIM_END);
 			// creating the class
 			VStateless_class* cclass=new VClass;
 			PC.cclass_new=cclass;
@@ -167,7 +167,7 @@ control_method: '@' STRING '\n'
 		}
 	} else if(command==USE_CONTROL_METHOD_NAME) {
 		for(size_t i=0; i<strings_code->count(); i+=OPERATIONS_PER_OPVALUE) 
-			PC.request.use_file(PC.request.main_class, *LA2S(*strings_code, i), PC.request.get_used_filename(PC.file_no));
+			PC.request.use_file(PC.request.main_class, LA2S(*strings_code, i)->trim(String::TRIM_END), PC.request.get_used_filename(PC.file_no));
 	} else if(command==BASE_NAME) {
 		if(PC.append){
 			strcpy(PC.error, "can't set base while appending methods to class '");
@@ -183,7 +183,7 @@ control_method: '@' STRING '\n'
 			YYERROR;
 		}
 		if(strings_code->count()==1*OPERATIONS_PER_OPVALUE) {
-			const String& base_name=*LA2S(*strings_code);
+			const String& base_name=LA2S(*strings_code)->trim(String::TRIM_END);
 			if(Value* base_class_value=PC.request.get_class(base_name)) {
 				// @CLASS == @BASE sanity check
 				if(VStateless_class *base_class=base_class_value->get_class()) {
@@ -208,7 +208,7 @@ control_method: '@' STRING '\n'
 		}
 	} else if(command==OPTIONS_CONTROL_METHOD_NAME) {
 		for(size_t i=0; i<strings_code->count(); i+=OPERATIONS_PER_OPVALUE) {
-			const String& option=*LA2S(*strings_code, i);
+			const String& option=LA2S(*strings_code, i)->trim(String::TRIM_END);
 			if(option==OPTION_ALL_VARS_LOCAL_NAME){
 				PC.set_all_vars_local();
 			} else if(option==OPTION_PARTIAL_CLASS){
