@@ -1,0 +1,33 @@
+@main[]
+
+1. Object constructor returning object.
+^print[^test::create[;value for object]]
+2. Object constructor returning hash.
+^print[^test::create[hash;value for hash]]
+
+3. Reflection returning object.
+^print[^reflection:create[test;create;;value for object]]
+4. Reflection returning hash.
+^print[^reflection:create[test;create;hash;value for hash]]
+
+
+@print[o]
+Class:$o.CLASS_NAME
+Type property:$o.type
+Value property:$o.value
+
+@CLASS
+test
+
+@create[kind;v]
+
+^if($kind eq 'hash'){
+	$result[^hash::create[
+		$.type[hash]
+		$.value[$v]
+	]]
+}{
+	$result[$self]
+	$type[object]
+	$value[$v]
+}
