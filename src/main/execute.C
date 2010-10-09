@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2010/08/30 10:49:05 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2010/10/09 23:17:26 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -842,9 +842,9 @@ void Request::execute(ArrayOperation& ops) {
 				object.enable_default_setter();
 
 				if(opcode==OP::OP_CONSTRUCT_OBJECT)
-					stack.push(object);
+					stack.push(frame.result().as_value());
 				else
-					write_pass_lang(object);
+					write_pass_lang(frame.result());
 
 				DEBUG_PRINT_STR("<-returned")
 				break;
