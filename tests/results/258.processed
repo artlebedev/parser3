@@ -1,19 +1,19 @@
 Content-Type: text/html
-Content-Length: 351
+Content-Length: 387
 
 1. Object constructor returning object.
 Class:test
 Type property:object
 Value property:value for object
 2. Object constructor returning hash.
-Class:test
-Type property:
-Value property:
+Class:hash
+Type property:hash
+Value property:value for hash
 3. Reflection returning object.
 Class:test
 Type property:object
 Value property:value for object
 4. Reflection returning hash.
-Class:test
-Type property:
-Value property:
+Class:hash
+Type property:hash
+Value property:value for hash
