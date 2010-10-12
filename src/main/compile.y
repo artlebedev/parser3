@@ -5,7 +5,7 @@
 	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.260 2010/10/08 13:16:36 misha Exp $
+	$Id: compile.y,v 1.261 2010/10/12 21:55:14 moko Exp $
 */
 
 /**
@@ -35,7 +35,6 @@
 #include "pa_vobject.h"
 #include "pa_vdouble.h"
 #include "pa_globals.h"
-#include "pa_vvoid.h"
 #include "pa_vmethod_frame.h"
 
 // defines
@@ -54,7 +53,7 @@ static int yylex(YYSTYPE* lvalp, void* pc);
 
 static const VBool vfalse(false);
 static const VBool vtrue(true);
-static const VVoid vvoid;
+static const VString vempty;
 
 // local convinient inplace typecast & var
 #undef PC
@@ -505,7 +504,7 @@ construct_curly: '{' maybe_codes '}' {
 };
 
 any_constructor_code_value: 
-	void_value /* optimized $var[] case */
+	empty_value /* optimized $var[] case */
 |	STRING /* optimized $var[STRING] case */
 |	constructor_code_value /* $var[something complex] */
 ;
@@ -553,8 +552,9 @@ call_value: '^' {
 			YYSTYPE params_code=$5;
 			if(params_code->count()==3) { // probably [] case. [OP::OP_VALUE+origin+Void]
 				if(Value* value=LA2V(*params_code)) // it is OP_VALUE+origin+value?
-					if(value->is_void()) // value is VVoid?
-						params_code=0; // ^zzz[] case. don't append lone empty param.
+					if(const String * string=value->get_string())
+						if(string->is_empty()) // value is empty string?
+							params_code=0; // ^zzz[] case. don't append lone empty param.
 			}
 			/* stack: context, method_junction */
 
@@ -629,7 +629,7 @@ store_curly_param_part: maybe_codes {
 	OA(*$$, OP::OP_CURLY_CODE__STORE_PARAM, $1);
 };
 code_param_value:
-	void_value /* optimized [;...] case */
+	empty_value /* optimized [;...] case */
 |	STRING /* optimized [STRING] case */
 |	constructor_code_value /* [something complex] */
 ;
@@ -805,7 +805,7 @@ write_string: STRING {
 	change_string_literal_to_write_string_literal(*($$=$1));
 };
 
-void_value: /* empty */ { $$=VL(/*we know that we will not change it*/const_cast<VVoid*>(&vvoid), 0, 0, 0); }
+empty_value: /* empty */ { $$=VL(/*we know that we will not change it*/const_cast<VString*>(&vempty), 0, 0, 0); }
 true_value: "true" { $$ = VL(/*we know that we will not change it*/const_cast<VBool*>(&vtrue), 0, 0, 0); }
 false_value: "false" { $$ = VL(/*we know that we will not change it*/const_cast<VBool*>(&vfalse), 0, 0, 0); }
 

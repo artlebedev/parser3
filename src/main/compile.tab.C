@@ -132,7 +132,7 @@
 	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.tab.C,v 1.152 2010/10/08 13:16:36 misha Exp $
+	$Id: compile.tab.C,v 1.153 2010/10/12 21:59:08 moko Exp $
 */
 
 /**
@@ -162,7 +162,6 @@
 #include "pa_vobject.h"
 #include "pa_vdouble.h"
 #include "pa_globals.h"
-#include "pa_vvoid.h"
 #include "pa_vmethod_frame.h"
 
 // defines
@@ -181,7 +180,7 @@ static int yylex(YYSTYPE* lvalp, void* pc);
 
 static const VBool vfalse(false);
 static const VBool vtrue(true);
-static const VVoid vvoid;
+static const VString vempty;
 
 // local convinient inplace typecast & var
 #undef PC
@@ -217,7 +216,7 @@ typedef int YYSTYPE;
 
 
 /* Line 214 of yacc.c.  */
-#line 221 "compile.tab.C"
+#line 220 "compile.tab.C"
 
 #if ! defined (yyoverflow) || YYERROR_VERBOSE
 
@@ -456,14 +455,14 @@ static const short int yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const unsigned short int yyrline[] =
 {
-       0,   132,   132,   139,   141,   141,   142,   144,   144,   146,
-     253,   253,   254,   254,   255,   256,   256,   258,   258,   306,
-     306,   307,   308,   308,   309,   309,   311,   311,   315,   315,
-     317,   317,   318,   318,   319,   319,   319,   323,   364,   365,
-     365,   366,   368,   369,   370,   423,   424,   424,   428,   441,
-     442,   443,   444,   470,   475,   478,   479,   480,   482,   485,
-     482,   493,   501,   508,   509,   510,   512,   518,   519,   519,
-     523,   535,   538,   535,   582,   584,   584,   586,   587,   588,
+       0,   131,   131,   138,   140,   140,   141,   143,   143,   145,
+     252,   252,   253,   253,   254,   255,   255,   257,   257,   305,
+     305,   306,   307,   307,   308,   308,   310,   310,   314,   314,
+     316,   316,   317,   317,   318,   318,   318,   322,   363,   364,
+     364,   365,   367,   368,   369,   422,   423,   423,   427,   440,
+     441,   442,   443,   469,   474,   477,   478,   479,   481,   484,
+     481,   492,   500,   507,   508,   509,   511,   517,   518,   518,
+     522,   534,   537,   534,   582,   584,   584,   586,   587,   588,
      590,   593,   590,   596,   597,   599,   600,   603,   604,   607,
      608,   610,   613,   627,   632,   633,   634,   639,   639,   641,
      641,   642,   643,   651,   656,   659,   660,   661,   662,   664,
@@ -516,7 +515,7 @@ static const char *const yytname[] =
   "subvar_ref_name_rdive", "subvar_get_writes", "subvar__get_write",
   "class_prefix", "class_static_prefix", "class_constructor_prefix",
   "expr_value", "expr", "double_or_STRING", "string_inside_quotes_value",
-  "write_string", "void_value", "true_value", "false_value", "empty", 0
+  "write_string", "empty_value", "true_value", "false_value", "empty", 0
 };
 #endif
 
@@ -1428,7 +1427,7 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 132 "compile.y"
+#line 131 "compile.y"
     {
 	Method* method=new Method(Method::CT_ANY,
 		0, 0, /*min, max numbered_params_count*/
@@ -1439,7 +1438,7 @@ yyreduce:
     break;
 
   case 9:
-#line 147 "compile.y"
+#line 146 "compile.y"
     {
 	const String& command=LA2S(*yyvsp[-2])->trim(String::TRIM_END);
 	YYSTYPE strings_code=yyvsp[0];
@@ -1549,12 +1548,12 @@ yyreduce:
     break;
 
   case 13:
-#line 254 "compile.y"
+#line 253 "compile.y"
     { yyval=yyvsp[-1]; P(*yyval, *yyvsp[0]); ;}
     break;
 
   case 17:
-#line 258 "compile.y"
+#line 257 "compile.y"
     { 
 	PC.class_add();
 	PC.explicit_result=false;
@@ -1597,7 +1596,7 @@ yyreduce:
     break;
 
   case 18:
-#line 296 "compile.y"
+#line 295 "compile.y"
     {
 		Method* method=reinterpret_cast<Method*>(yyvsp[-1]);
 		// fill in the code
@@ -1610,22 +1609,22 @@ yyreduce:
     break;
 
   case 21:
-#line 307 "compile.y"
+#line 306 "compile.y"
     {yyval=yyvsp[-1];;}
     break;
 
   case 25:
-#line 309 "compile.y"
+#line 308 "compile.y"
     { yyval=yyvsp[-2]; P(*yyval, *yyvsp[0]); ;}
     break;
 
   case 31:
-#line 317 "compile.y"
+#line 316 "compile.y"
     { yyval=yyvsp[-1]; P(*yyval, *yyvsp[0]); ;}
     break;
 
   case 37:
-#line 323 "compile.y"
+#line 322 "compile.y"
     {
 	yyval=N();
 	YYSTYPE code=yyvsp[0];
@@ -1670,17 +1669,17 @@ yyreduce:
     break;
 
   case 38:
-#line 364 "compile.y"
+#line 363 "compile.y"
     { yyval=yyvsp[0]; ;}
     break;
 
   case 41:
-#line 366 "compile.y"
+#line 365 "compile.y"
     { yyval=yyvsp[-1]; ;}
     break;
 
   case 44:
-#line 370 "compile.y"
+#line 369 "compile.y"
     {
 	yyval=N(); 
 	YYSTYPE diving_code=yyvsp[0];
@@ -1737,17 +1736,17 @@ yyreduce:
     break;
 
   case 45:
-#line 423 "compile.y"
+#line 422 "compile.y"
     { yyval=yyvsp[-1]; P(*yyval, *yyvsp[0]); ;}
     break;
 
   case 47:
-#line 424 "compile.y"
+#line 423 "compile.y"
     { yyval=yyvsp[-1]; P(*yyval, *yyvsp[0]); ;}
     break;
 
   case 48:
-#line 428 "compile.y"
+#line 427 "compile.y"
     {
 	yyval=N();
 #ifdef OPTIMIZE_BYTECODE_CONSTRUCT
@@ -1763,7 +1762,7 @@ yyreduce:
     break;
 
   case 52:
-#line 444 "compile.y"
+#line 443 "compile.y"
     {
 	yyval=N();
 	YYSTYPE diving_code=yyvsp[0];
@@ -1793,7 +1792,7 @@ yyreduce:
     break;
 
   case 53:
-#line 470 "compile.y"
+#line 469 "compile.y"
     {
 	yyval=N(); 
 	O(*yyval, OP::OP_WITH_WRITE); /* stack: starting context */
@@ -1802,12 +1801,12 @@ yyreduce:
     break;
 
   case 54:
-#line 475 "compile.y"
+#line 474 "compile.y"
     { yyval=yyvsp[-1]; P(*yyval, *yyvsp[0]); ;}
     break;
 
   case 58:
-#line 482 "compile.y"
+#line 481 "compile.y"
     {
 	// allow $result_or_other_variable[ letters here any time ]
 	*reinterpret_cast<bool*>(&yyval)=PC.explicit_result; PC.explicit_result=false;
@@ -1815,14 +1814,14 @@ yyreduce:
     break;
 
   case 59:
-#line 485 "compile.y"
+#line 484 "compile.y"
     {
 	PC.explicit_result=*reinterpret_cast<bool*>(&yyvsp[-1]);
 ;}
     break;
 
   case 60:
-#line 487 "compile.y"
+#line 486 "compile.y"
     {
 	// stack: context, name
 	yyval=yyvsp[-2]; // stack: context, name, value
@@ -1831,7 +1830,7 @@ yyreduce:
     break;
 
   case 61:
-#line 493 "compile.y"
+#line 492 "compile.y"
     { 
 	yyval=N(); 
 	O(*yyval, OP::OP_PREPARE_TO_EXPRESSION);
@@ -1842,7 +1841,7 @@ yyreduce:
     break;
 
   case 62:
-#line 501 "compile.y"
+#line 500 "compile.y"
     {
 	// stack: context, name
 	yyval=N(); 
@@ -1851,7 +1850,7 @@ yyreduce:
     break;
 
   case 66:
-#line 512 "compile.y"
+#line 511 "compile.y"
     {
 	yyval=N(); 
 	OA(*yyval, OP::OP_OBJECT_POOL, yyvsp[0]); /* stack: empty write context */
@@ -1861,12 +1860,12 @@ yyreduce:
     break;
 
   case 69:
-#line 519 "compile.y"
+#line 518 "compile.y"
     { yyval=yyvsp[-1]; P(*yyval, *yyvsp[0]); ;}
     break;
 
   case 70:
-#line 523 "compile.y"
+#line 522 "compile.y"
     {
 #ifdef OPTIMIZE_BYTECODE_CUT_REM_OPERATOR
 	if((*yyvsp[0]).count())
@@ -1882,21 +1881,21 @@ yyreduce:
     break;
 
   case 71:
-#line 535 "compile.y"
+#line 534 "compile.y"
     { 
 					PC.in_call_value=true; 
 			;}
     break;
 
   case 72:
-#line 538 "compile.y"
+#line 537 "compile.y"
     {
 				PC.in_call_value=false;
 			;}
     break;
 
   case 73:
-#line 541 "compile.y"
+#line 540 "compile.y"
     { /* ^field.$method{vasya} */
 #ifdef OPTIMIZE_BYTECODE_CUT_REM_OPERATOR
 #ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
@@ -1912,8 +1911,9 @@ yyreduce:
 			YYSTYPE params_code=yyvsp[-1];
 			if(params_code->count()==3) { // probably [] case. [OP::OP_VALUE+origin+Void]
 				if(Value* value=LA2V(*params_code)) // it is OP_VALUE+origin+value?
-					if(value->is_void()) // value is VVoid?
-						params_code=0; // ^zzz[] case. don't append lone empty param.
+					if(const String * string=value->get_string())
+						if(string->is_empty()) // value is empty string?
+							params_code=0; // ^zzz[] case. don't append lone empty param.
 			}
 			/* stack: context, method_junction */
 
@@ -2380,7 +2380,7 @@ yyreduce:
 
   case 169:
 #line 808 "compile.y"
-    { yyval=VL(/*we know that we will not change it*/const_cast<VVoid*>(&vvoid), 0, 0, 0); ;}
+    { yyval=VL(/*we know that we will not change it*/const_cast<VString*>(&vempty), 0, 0, 0); ;}
     break;
 
   case 170:
