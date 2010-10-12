@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VCOOKIE_C="$Date: 2010/05/17 22:57:29 $";
+static const char * const IDENT_VCOOKIE_C="$Date: 2010/10/12 01:31:17 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -75,12 +75,25 @@ Value* VCookie::get_element(const String& aname) {
 	return before.get(aname);
 }
 
+time_t expires_sec(double days_till_expire) {
+	time_t result=time(NULL)+(time_t)(60*60*24*days_till_expire);
+	struct tm* tms=gmtime(&result);
+	if(!tms)
+		throw Exception(DATE_RANGE_EXCEPTION_TYPE,
+			0,
+			"bad expires time (seconds from epoch=%u)", result);
+	return result;
+}
+
 const VJunction* VCookie::put_element(const String& aname, Value* avalue, bool /*replace*/) {
 	// $cookie
 	Value* lvalue;
-	if(HashStringValue *hash=avalue->get_hash())
+	if(HashStringValue *hash=avalue->get_hash()) {
+		if(Value* expires=hash->get(expires_name))
+			if(double days_till_expire=expires->as_double())
+				expires_sec(days_till_expire);
 		lvalue=hash->get(value_name);
-	else
+	} else
 		lvalue=avalue;
 
 	if(lvalue && lvalue->is_string()) {
@@ -122,14 +135,7 @@ static char *search_stop(char*& current, char cstop_at) {
 
 
 static Value& expires_vdate(double days_till_expire) {
-	time_t when=time(NULL)+(time_t)(60*60*24*days_till_expire);
-	struct tm *tms=gmtime(&when);
-	if(!tms)
-		throw Exception(DATE_RANGE_EXCEPTION_TYPE,
-			0,
-			"bad expires time (seconds from epoch=%u)", when);
-
-	return *new VDate(when);
+	return *new VDate(expires_sec(days_till_expire));
 }
 
 /*
