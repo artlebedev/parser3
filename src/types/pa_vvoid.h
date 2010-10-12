@@ -8,7 +8,7 @@
 #ifndef PA_VVOID_H
 #define PA_VVOID_H
 
-static const char * const IDENT_VVOID_H="$Date: 2010/09/16 23:33:52 $";
+static const char * const IDENT_VVOID_H="$Date: 2010/10/12 21:52:17 $";
 
 #include "classes.h"
 #include "pa_vstateless_object.h"
@@ -25,6 +25,8 @@ public: // Value
 
 	/// VVoid: true [the only one, that reports true]
 	override bool is_void() const { return true; }
+	/// VVoid: with OPTIMIZE_SINGLE_STRING_WRITE it allows void to survive in [$void]
+	override bool is_string() const { return true; }
 	/// VVoid: ""
 	override const String* get_string() { return &void_string_value; }
 	/// VVoid: false
