@@ -1,0 +1,19 @@
+Content-Type: text/html
+Content-Length: 363
+
+Empty: string
+Empty copy: string
+Empty copy with spaces: string
+Void: void
+Void copy: void
+Void with spaces: string
+Void property: void
+Void as string: "", once again: ""
+Void as parameter: void
+Empty as parameter: string
+Empty parameter: void
+No params: void / void
+One param: string / void
+Two empty params: string / string
+Defined var: void
+Undefined var: void

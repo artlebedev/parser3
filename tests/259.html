@@ -1,0 +1,31 @@
+@main[]
+
+$s[]		Empty: $s.CLASS_NAME
+$x[$s]		Empty copy: $x.CLASS_NAME
+$y[ $s ]	Empty copy with spaces: $y.CLASS_NAME
+
+		Void: $void.CLASS_NAME
+$x[$void]	Void copy: $x.CLASS_NAME
+$y[ $x ]	Void with spaces: $y.CLASS_NAME
+$z[$void.p]	Void property: $z.CLASS_NAME
+
+Void as string: "$x", once again: "$x"
+Void as parameter: ^test[$x]
+Empty as parameter: ^test[$s]
+Empty parameter: ^test[]
+
+No params: ^test2[]
+One param: ^test2[one]
+Two empty params: ^test2[;]
+
+^test_var[]
+
+@test[a]
+$a.CLASS_NAME
+
+@test2[a;b]
+$a.CLASS_NAME / $b.CLASS_NAME
+
+@test_var[a][b]
+Defined var: $b.CLASS_NAME
+Undefined var: $bc.CLASS_NAME
