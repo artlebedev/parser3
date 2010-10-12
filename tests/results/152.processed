@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 7973
+Content-Length: 7975
 
 <h2>Defines</h2>
 $sEmpty[]<br />
@@ -99,7 +99,7 @@ $xNode[$h.0]<br />
 </tr>
 <tr>
 <td>$sEmpty</td>
-<td><b>void</b></td>
+<td><b>string</b></td>
 <td>no<br /></td>
 <td>false<br /></td>
 <td>no</td>
