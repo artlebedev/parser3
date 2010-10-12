@@ -3,5 +3,9 @@ $t[^table::create{a	b
 2	b
 3	c
 }]
-^if(^t.locate($t.a==2)){$t.b}{n}
+
+^if(^t.locate($t.a==2)){$t.b}{-n-}
+^if(^t.locate($t.a==2)[$.offset(2)]){$t.b}{-n-}
+^if(^t.locate[a;1]){$t.b}{-n-}
+^if(^t.locate[a;1;$.offset(1)]){$t.b}{-n-}
 
