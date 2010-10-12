@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2010/10/05 20:56:12 $";
+static const char * const IDENT_TABLE_C="$Date: 2010/10/12 01:26:33 $";
 
 #if (!defined(NO_STRINGSTREAM) && !defined(FREEBSD4))
 #include <sstream>
@@ -954,34 +954,37 @@ struct Expression_is_true_info {
 	Value* expression_code;
 };
 #endif
+
 static bool expression_is_true(Table&, Expression_is_true_info* info) {
 	return info->r->process_to_value(*info->expression_code).as_bool();
 }
-static bool _locate_expression(Table& table, Table::Action_options o,
-			       Request& r, MethodParams& params) {
-	check_option_param(o.defined, params, 1,
-		"locate by expression only has parameters: expression and, maybe, options");
+
+static bool _locate_expression(Table& table, Request& r, MethodParams& params) {
 	Value& expression_code=params.as_junction(0, "must be expression");
+	const size_t options_index=1;
+	Table::Action_options o=get_action_options(r, params, options_index, table);
+	check_option_param(o.defined, params, options_index, "locate by expression only has parameters: expression and, maybe, options");
 
 	Expression_is_true_info info={&r, &expression_code};
 	return table.table_first_that(expression_is_true, &info, o);
 }
-static bool _locate_name_value(Table& table, Table::Action_options o,
-			       Request&, MethodParams& params) {
-	check_option_param(o.defined, params, 2,
-		"locate by locate by name has parameters: name, value and, maybe, options");
+
+static bool _locate_name_value(Table& table, Request& r, MethodParams& params) {
 	const String& name=params.as_string(0, "column name must be string");
 	const String& value=params.as_string(1, VALUE_MUST_BE_STRING);
+	const size_t options_index=2;
+	Table::Action_options o=get_action_options(r, params, options_index, table);
+	check_option_param(o.defined, params, options_index, "locate by name has parameters: name, value and, maybe, options");
+
 	return table.locate(name, value, o);
 }
+
 static void _locate(Request& r, MethodParams& params) {
 	Table& table=GET_SELF(r, VTable).table();
 
-	Table::Action_options o=get_action_options(r, params, 1, table);
-
 	bool result=params[0].get_junction()?
-		_locate_expression(table, o, r, params) :
-		_locate_name_value(table, o, r, params);
+		_locate_expression(table, r, params) :
+		_locate_name_value(table, r, params);
 	r.write_no_lang(VBool::get(result));
 }
 
