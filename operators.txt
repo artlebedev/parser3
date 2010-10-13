@@ -836,6 +836,7 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !^math:crc32[string]
        вычисляет crc32 строки
     !^math:sha1[string]
+    !^math:convert[number](base-from;base-to) преобразует строку с числом из одной системы исчисления в другую
 
 
 !inet
