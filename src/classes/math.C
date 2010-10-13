@@ -8,7 +8,7 @@
 	Copyright (C) 1996, 1997, 1998, 1999 Theodore Ts'o.
 */
 
-static const char * const IDENT_MATH_C="$Date: 2009/01/25 03:10:11 $";
+static const char * const IDENT_MATH_C="$Date: 2010/10/13 11:30:08 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_common.h"
@@ -357,6 +357,43 @@ static void _crc32(Request& r, MethodParams& params) {
 	r.write_no_lang(*new VInt(pa_crc32(string, strlen(string))));
 }
 
+static void toBase(long value, int base, char*& ptr){
+	static const char* hex="0123456789ABCDEF";
+	int rest = value % base;
+	if(value > base)
+		toBase( (value-rest)/base, base, ptr);
+	*ptr++=(char)hex[rest];
+}
+
+static void _convert(Request& r, MethodParams& params) {
+	const char *string=params.as_string(0, PARAMETER_MUST_BE_STRING).cstr();
+	int base_from=params.as_int(1, "base from must be integer", r);
+	if(base_from < 2 || base_from > 16)
+		throw Exception(PARSER_RUNTIME, 0, "base from must be an integer from 2 to 16");
+
+	char *error_pos;
+	long value=strtol(string, &error_pos, base_from);
+	while(char c=*error_pos++)
+		if(!isspace((unsigned char)c))
+			throw Exception("number.format",
+				0,
+				"'%s' is invalid number (int)", string);
+
+	int base_to=params.as_int(2, "base to must be integer", r);
+	if(base_to < 2 || base_to > 16)
+		throw Exception(PARSER_RUNTIME, 0, "base to must be an integer from 2 to 16");
+
+	char result_cstr[sizeof(long)*8+1/*minus for negative number*/+1/*terminator*/];
+	char* ptr=(char *)&result_cstr;
+	if(value < 0){
+		*ptr++='-';
+		value=-value;
+	}
+	toBase(value, base_to, ptr);
+	*ptr=0;
+	r.write_pass_lang(*new String(pa_strdup(result_cstr)));
+}
+
 // constructor
 
 MMath::MMath(): Methoded("math") {
@@ -399,4 +436,7 @@ MMath::MMath(): Methoded("math") {
 
 	// ^math:uid64[]
 	ADD0(uid64);
+
+	// ^math:convert[number](base-from;base-to)
+	add_native_method("convert", Method::CT_STATIC, _convert, 3, 3);
 }
