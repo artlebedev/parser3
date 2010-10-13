@@ -8,7 +8,7 @@
 	Copyright (C) 1996, 1997, 1998, 1999 Theodore Ts'o.
 */
 
-static const char * const IDENT_MATH_C="$Date: 2010/10/13 11:30:08 $";
+static const char * const IDENT_MATH_C="$Date: 2010/10/13 12:28:45 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_common.h"
@@ -360,7 +360,7 @@ static void _crc32(Request& r, MethodParams& params) {
 static void toBase(long value, int base, char*& ptr){
 	static const char* hex="0123456789ABCDEF";
 	int rest = value % base;
-	if(value > base)
+	if(value >= base)
 		toBase( (value-rest)/base, base, ptr);
 	*ptr++=(char)hex[rest];
 }
