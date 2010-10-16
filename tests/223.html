@@ -36,6 +36,11 @@ $hForm[$hHeader]
 	$.file[^file::load[binary;223_win1251.txt]]
 ]
 
+^do[Binary file post;WINDOWS-1251;
+	$file[^file::load[binary;103mark.gif]]
+	$.file[$file] $.file_1[$file] $.file_2[$file] $.file_3[$file] $.file_4[$file]
+]
+
 @do[sTitle;sCharset;hForm;sUserAgent;bOmmitPostCharset][f;text;t;post]
 <h2>$sTitle</h2>
 $f[^file::load[text;http://www.parser.ru/_/tests/223.pl;

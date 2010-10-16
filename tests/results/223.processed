@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 8038
+Content-Length: 10386
 
 <h2>POST in $response:charset (UTF-8) w/o file</h2>
 <h3>Headers</h3>
@@ -85,7 +85,7 @@ Content-Type: application/octet-stream
 <hr />
 <h2>POST in WINDOWS-1251 with file in UTF-8</h2>
 <h3>Headers</h3>
-<pre>CONTENT_LENGTH	: 437
+<pre>CONTENT_LENGTH	: 433
 CONTENT_TYPE	: multipart/form-data; charset=WINDOWS-1251; boundary=----------boundary-value
 HTTP_COOKIE	: zigi=abcdefghijklmnopqrstuvwxyz%20ABCDEFGHIJKLMNOPQRSTUVWXYZ%0A0123456789%0A%60+-%3D%7E%21@%23%24%25%5E%26*%28%29_%0A%5B%5D%7B%7D%3C%3E%3B%3A%27%22%2C./%3F%0A%0A%u0430%u0431%u0432%u0433%u0434%u0435%u0451%u0436%u0437%u0438%u0439%u043A%u043B%u043C%u043D%u043E%u043F%u0440%u0441%u0442%u0443%u0444%u0445%u0446%u0447%u0448%u0449%u044A%u044B%u044C%u044D%u044E%u044F%09%u0410%u0411%u0412%u0413%u0414%u0415%u0401%u0416%u0417%u0418%u0419%u041A%u041B%u041C%u041D%u041E%u041F%u0420%u0421%u0422%u0423%u0424%u0425%u0426%u0427%u0428%u0429%u042A%u042B%u042C%u042D%u042E%u042F;
 HTTP_HOST	: www.parser.ru
@@ -111,11 +111,11 @@ Content-Disposition: form-data; name="
 зна
 чение
 ------------boundary-value
-Content-Disposition: form-data; name="file"; filename="С„Р°Р№
-Р».html"
+Content-Disposition: form-data; name="file"; filename="фай
+л.html"
 Content-Type: application/octet-stream
 
-РџСЂРѕРІР?СЂРєР°
+РџСЂРѕРІРµСЂРєР°
 ------------boundary-value--</pre>
 <hr />
 <h2>POST in WINDOWS-1251 with file in WINDOWS-1251</h2>
@@ -150,5 +150,51 @@ Content-Disposition: form-data; name="file"; filename="223_win1251.txt"
 Content-Type: application/octet-stream
 
 Проверка
+------------boundary-value--</pre>
+<hr />
+<h2>Binary file post</h2>
+<h3>Headers</h3>
+<pre>CONTENT_LENGTH	: 1244
+CONTENT_TYPE	: multipart/form-data; charset=WINDOWS-1251; boundary=----------boundary-value
+HTTP_COOKIE	: zigi=abcdefghijklmnopqrstuvwxyz%20ABCDEFGHIJKLMNOPQRSTUVWXYZ%0A0123456789%0A%60+-%3D%7E%21@%23%24%25%5E%26*%28%29_%0A%5B%5D%7B%7D%3C%3E%3B%3A%27%22%2C./%3F%0A%0A%u0430%u0431%u0432%u0433%u0434%u0435%u0451%u0436%u0437%u0438%u0439%u043A%u043B%u043C%u043D%u043E%u043F%u0440%u0441%u0442%u0443%u0444%u0445%u0446%u0447%u0448%u0449%u044A%u044B%u044C%u044D%u044E%u044F%09%u0410%u0411%u0412%u0413%u0414%u0415%u0401%u0416%u0417%u0418%u0419%u041A%u041B%u041C%u041D%u041E%u041F%u0420%u0421%u0422%u0423%u0424%u0425%u0426%u0427%u0428%u0429%u042A%u042B%u042C%u042D%u042E%u042F;
+HTTP_HOST	: www.parser.ru
+HTTP_MY_NAME	: %C7%ED%C0%0A%0A%F7%C5%ED%C8%E5
+HTTP_USER_AGENT	: parser3
+HTTP__0A_0A_F4_FB_E2	: %E7%ED%E0%0A%F7%E5%ED%E8%E5
+REQUEST_METHOD	: POST
+REQUEST_URI	: /_/tests/223.pl
+SCRIPT_NAME	: /_/tests/223.pl
+SERVER_NAME	: www.parser.ru</pre>
+<h3>Body</h3>
+<pre>------------boundary-value
+Content-Disposition: form-data; name="file"; filename="103mark.gif"
+Content-Type: application/octet-stream
+
+GIF89a\0\0Ђ\0\0э  яяя!щ\0\0\0,\0\0\0\0\0\0\0&ЊЏ©Лнc\0тЂ{%ЖqoзyM(.d™њ(ў~JЛЅ0eВЈ
+‘Х^\0;
+------------boundary-value
+Content-Disposition: form-data; name="file_1"; filename="103mark.gif"
+Content-Type: application/octet-stream
+
+GIF89a\0\0Ђ\0\0э  яяя!щ\0\0\0,\0\0\0\0\0\0\0&ЊЏ©Лнc\0тЂ{%ЖqoзyM(.d™њ(ў~JЛЅ0eВЈ
+‘Х^\0;
+------------boundary-value
+Content-Disposition: form-data; name="file_2"; filename="103mark.gif"
+Content-Type: application/octet-stream
+
+GIF89a\0\0Ђ\0\0э  яяя!щ\0\0\0,\0\0\0\0\0\0\0&ЊЏ©Лнc\0тЂ{%ЖqoзyM(.d™њ(ў~JЛЅ0eВЈ
+‘Х^\0;
+------------boundary-value
+Content-Disposition: form-data; name="file_3"; filename="103mark.gif"
+Content-Type: application/octet-stream
+
+GIF89a\0\0Ђ\0\0э  яяя!щ\0\0\0,\0\0\0\0\0\0\0&ЊЏ©Лнc\0тЂ{%ЖqoзyM(.d™њ(ў~JЛЅ0eВЈ
+‘Х^\0;
+------------boundary-value
+Content-Disposition: form-data; name="file_4"; filename="103mark.gif"
+Content-Type: application/octet-stream
+
+GIF89a\0\0Ђ\0\0э  яяя!щ\0\0\0,\0\0\0\0\0\0\0&ЊЏ©Лнc\0тЂ{%ЖqoзyM(.d™њ(ў~JЛЅ0eВЈ
+‘Х^\0;
 ------------boundary-value--</pre>
 <hr />
