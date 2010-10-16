@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_UNTAINT_C="$Date: 2010/08/27 02:53:24 $";
+static const char * const IDENT_UNTAINT_C="$Date: 2010/10/16 22:24:20 $";
 
 
 #include "pa_string.h"
@@ -352,15 +352,6 @@ int cstr_to_string_body_block(String::Language to_lang, size_t fragment_length, 
 			escape_fragment(
 				encode(need_file_encode, '_', c); 
 			);
-		}
-		break;
-	case String::L_FILE_POST:
-		{
-			escape_fragment(switch(c) {
-				case '\0': to_string("\\0");  break;
-				case '\\': to_string("\\\\"); break;
-				default: _default; break;
-			});
 		}
 		break;
 	case String::L_URI:

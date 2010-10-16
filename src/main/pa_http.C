@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
  */
 
-static const char * const IDENT_HTTP_C="$Date: 2010/08/10 05:27:46 $"; 
+static const char * const IDENT_HTTP_C="$Date: 2010/10/16 22:24:20 $"; 
 
 #include "pa_http.h"
 #include "pa_common.h"
@@ -193,29 +193,6 @@ static void timeout_handler(int /*sig*/){
 	siglongjmp(timeout_env, 1); 
 }
 #endif
-
-static size_t file_untaint(const char* str, size_t len) {
-	// untaint file from L_FILE_POST encoding
-	char* j=(char *)str;
-	const char* end=str+len-1;
-	for(const char* i=str; i<=end; i++, j++){
-		if(*i=='\\' && i!=end){
-			switch(*(i+1)){
-				case '0':
-					*j='\0';
-					i++;
-					continue;
-				case '\\':
-					*j='\\';
-					i++;
-					continue;
-			}
-		}
-		if(i!=j)
-			*j=*i;
-	}
-	return j-str; // new length
-} 
 
 static int http_request(char*& response, size_t& response_size,
 			const char* host, short port, 
@@ -411,21 +388,57 @@ const char* pa_form2string(HashStringValue& form, Request_charsets& charsets) {
 struct FormPart {
 	Request* r;
 	const char* boundary;
-	String string;
+	String* string;
 	Form_table_value2string_info* info;
+
+	struct BinaryBlock{
+		const char* ptr;
+		size_t length;
+
+		BinaryBlock(String* astring, Request* r): ptr(astring->untaint_and_transcode_cstr(String::L_AS_IS, &r->charsets)), length(strlen(ptr)){}
+		BinaryBlock(const char* aptr, size_t alength): ptr(aptr), length(alength){}
+	};
+
+	Array<BinaryBlock> blocks;
+
+	FormPart(Request* ar, const char* aboundary): r(ar), boundary(aboundary), string(new String()){}
+
+	const char *post(size_t &length){
+		if(blocks.count()){
+			blocks+=BinaryBlock(string, r);
+
+			length=0;
+			for(size_t i=0; i<blocks.count(); i++)
+				length+=blocks[i].length;
+
+			char *result=(char *)pa_malloc_atomic(length);
+			char *ptr=result;
+
+			for(size_t i=0; i<blocks.count(); i++){
+				memcpy(ptr, blocks[i].ptr, blocks[i].length);
+				ptr+=blocks[i].length;
+			}
+
+			return result;
+		} else {
+			BinaryBlock result(string, r);
+			length=result.length;
+			return result.ptr;
+		}
+	}
 };
 
 static void form_part_boundary_header(FormPart& part, String::Body name, const char* file_name=0){
-	part.string << "--" << part.boundary
+	*part.string << "--" << part.boundary
 				<< CRLF CONTENT_DISPOSITION_CAPITALIZED ": form-data; name=\"" 
-				<< Charset::transcode(name, part.r->charsets.source(), part.r->charsets.client())
+				<< name
 				<< "\"";
 	if(file_name){
 		if(strcmp(file_name, NONAME_DAT)!=0)
-			part.string << "; filename=\"" << file_name << "\"";
-		part.string << CRLF HTTP_CONTENT_TYPE_CAPITALIZED ": " << part.r->mime_type_of(file_name);
+			*part.string << "; filename=\"" << file_name << "\"";
+		*part.string << CRLF HTTP_CONTENT_TYPE_CAPITALIZED ": " << part.r->mime_type_of(file_name);
 	}
-	part.string << CRLF CRLF;
+	*part.string << CRLF CRLF;
 }
 
 static void form_string_value2part(
@@ -434,7 +447,7 @@ static void form_string_value2part(
 				FormPart& part)
 {
 	form_part_boundary_header(part, key);
-	part.string << Charset::transcode(value, part.r->charsets.source(), part.r->charsets.client()) << CRLF;
+	*part.string << value << CRLF;
 }
 
 static void form_file_value2part(
@@ -443,8 +456,10 @@ static void form_file_value2part(
 				FormPart& part)
 {
 	form_part_boundary_header(part, key, vfile.fields().get(name_name)->as_string().cstr());
-	part.string.append_know_length(vfile.value_ptr(), vfile.value_size(), String::L_FILE_POST);
-	part.string << CRLF;
+	part.blocks+=FormPart::BinaryBlock(part.string, part.r);
+	part.blocks+=FormPart::BinaryBlock(vfile.value_ptr(), vfile.value_size());
+	part.string=new String();
+	*part.string << CRLF;
 }
 
 static void form_table_value2part(Table::element_type row, FormPart* part) {
@@ -459,7 +474,7 @@ static void form_value2part(
 	if(const String* svalue=value->get_string())
 		form_string_value2part(key, *svalue, part);
 	else if(Table* tvalue=value->get_table()) {
-		Form_table_value2string_info info(key, part.string);
+		Form_table_value2string_info info(key, *part.string);
 		part.info = &info;
 		tvalue->for_each(form_table_value2part, &part);
 	} else if(VFile* vfile=static_cast<VFile *>(value->as("file"))){
@@ -471,14 +486,11 @@ static void form_value2part(
 }
 
 const char* pa_form2string_multipart(HashStringValue& form, Request& r, const char* boundary, size_t& post_size){
-	FormPart formpart;
-	formpart.r=&r;
-	formpart.boundary=boundary;
-	formpart.info=NULL;
+	FormPart formpart(&r, boundary);
 	form.for_each<FormPart&>(form_value2part, formpart);
-	formpart.string << "--" << boundary << "--";
-	post_size=formpart.string.length(); // very surprizing, but it calculates correct post_size even with binary files!
-	return formpart.string.untaint_cstr(String::L_AS_IS); // without transcoding
+	*formpart.string << "--" << boundary << "--";
+	// @todo: return binary blocks here to save memory in pa_internal_file_read_http
+	return formpart.post(post_size);
 }
 
 static void find_headers_end(char* p,
@@ -513,7 +525,6 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 	const char* method="GET";
 	bool method_is_get=true;
 	HashStringValue* form=0;
-	const char* body_cstr=0;
 	int timeout_secs=2;
 	bool fail_on_status_ne_200=true;
 	bool omit_post_charset=false;
@@ -611,7 +622,8 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 	//preparing request
 	String& connect_string=*new String(file_spec);
 
-	String request_head_and_body;
+	const char* request;
+	size_t request_size;
 	{
 		// influence URLencoding of tainted pieces to String::L_URI lang
 		Temp_client_charset temp(r.charsets, *asked_remote_charset);
@@ -673,6 +685,7 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 					"headers param must be hash"); 
 		};
 
+		const char* request_body=0;
 		size_t post_size=0;
 		if(form && !method_is_get) {
 			head << "Content-Type: " << (multipart ? HTTP_CONTENT_TYPE_MULTIPART_FORMDATA : HTTP_CONTENT_TYPE_FORM_URLENCODED);
@@ -682,26 +695,26 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 
 			if(multipart) {
 				head << "; boundary=" << boundary;
-				body_cstr=pa_form2string_multipart(*form, r/*charsets & mime_type needed*/, boundary, post_size/*correct post_size returned here*/);
+				request_body=pa_form2string_multipart(*form, r/*charsets & mime_type needed*/, boundary, post_size/*correct post_size returned here*/);
 			} else {
-				body_cstr=pa_form2string(*form, r.charsets);
-				post_size=strlen(body_cstr);
+				request_body=pa_form2string(*form, r.charsets);
+				post_size=strlen(request_body);
 			}
 			head << CRLF;
 		} else if(vbody) {
 			// $.body was specified
 			if(content_type_url_encoded){
 				// transcode + url-encode
-				body_cstr=vbody->as_string().untaint_and_transcode_cstr(String::L_URI, &(r.charsets));
+				request_body=vbody->as_string().untaint_and_transcode_cstr(String::L_URI, &(r.charsets));
 			} else {
 				// content-type != application/x-www-form-urlencoded -> transcode only, don't url-encode!
-				body_cstr=Charset::transcode(
+				request_body=Charset::transcode(
 					String::C(vbody->as_string().cstr(), vbody->as_string().length()),
 					r.charsets.source(),
 					*asked_remote_charset
 				);
 			}
-			post_size=strlen(body_cstr);
+			post_size=strlen(request_body);
 		}
 
 		// http://www.ietf.org/rfc/rfc2617.txt
@@ -730,29 +743,32 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 					"cookies param must be hash");
 		}
 
-		if(body_cstr)
+		if(request_body)
 			head << "Content-Length: " << format(post_size, "%u") << CRLF;
+		
+		head << CRLF;
+		
+		const char *request_head=head.untaint_and_transcode_cstr(String::L_URI, &(r.charsets));
 
-		// head + end of header
-		request_head_and_body << head.untaint_and_transcode_cstr(String::L_URI, &(r.charsets)) << CRLF;
-
-		// body
-		if(body_cstr)
-			request_head_and_body << body_cstr;
+		if(request_body){
+			size_t head_size = strlen(request_head);
+			request_size=post_size + head_size;
+			char *ptr=(char *)pa_malloc_atomic(request_size);
+			memcpy(ptr, request_head, head_size);
+			memcpy(ptr+head_size, request_body, post_size);
+			request=ptr;
+		} else {
+			request_size=strlen(request_head);
+			request=request_head;
+		}
 	}
 	
-	const char* request_cstr=request_head_and_body.cstr();
-	size_t request_size=request_head_and_body.length();
-
-	if(multipart)
-		request_size=file_untaint(request_cstr, request_size);
-
 	char* response;
 	size_t response_size;
 
 	// sending request
 	int status_code=http_request(response, response_size,
-		host, port, request_cstr, request_size,
+		host, port, request, request_size,
 		timeout_secs, fail_on_status_ne_200); 
 	
 	// processing results	
