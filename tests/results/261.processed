@@ -1,0 +1,8 @@
+Content-Type: text/html
+Content-Length: 80
+
+String vs void:
+Json: "" vs null
+Length: 0 vs 0
+Double: 0 vs 0
+Base64: "" vs ""

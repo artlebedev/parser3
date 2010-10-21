@@ -1,0 +1,24 @@
+@main[]
+
+$void_methods[^reflection:methods[void]]
+$string_methods[^reflection:methods[string]]
+
+^if($void_methods != $string_methods){
+	String has ^string_methods._count[] while void has ^void_methods._count[].
+}
+
+$s[]
+$v[$void]
+
+String vs void:
+
+Json: ^json:string[$s] vs ^json:string[$v]
+Length: ^s.length[] vs ^v.length[]
+Double: ^s.double(0) vs ^v.double(0)
+Base64: "^s.base64[]" vs "^v.base64[]"
+
+^string_methods.foreach[k;v]{
+	^if(!($v.$k is 'junction')){
+		String method $k absent in void
+	}
+}
