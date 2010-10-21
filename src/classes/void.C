@@ -5,16 +5,13 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VOID_C="$Date: 2010/10/21 15:06:29 $";
+static const char * const IDENT_VOID_C="$Date: 2010/10/21 15:25:07 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
 
 #include "pa_request.h"
-#include "pa_vint.h"
-#include "pa_vdouble.h"
 #include "pa_vvoid.h"
-#include "pa_vbool.h"
 #include "pa_sql_connection.h"
 
 // externs
@@ -28,47 +25,9 @@ public:
 	MVoid();
 };
 
-// global variable
-
-DECLARE_CLASS_VAR(void, new MVoid, 0);
+// void is inherited from string, thus global variable declared in string.C
 
 // methods
-
-static void _length(Request& r, MethodParams&) {
-	// always zero
-	r.write_no_lang(*new VInt(0));
-}
-
-static void _pos(Request& r, MethodParams& params) {
-	// just checking for consistency
-	params.as_no_junction(0, "substr must not be code");
-	if(params.count()>1){
-		ssize_t offset=params.as_int(1, "n must be int", r);
-		if(offset<0)
-			throw Exception(PARSER_RUNTIME,
-				0, 
-				"n(%d) must be >=0", offset);
-	}
-	// never found
-	r.write_no_lang(*new VInt(-1));
-}
-
-static void _int(Request& r, MethodParams& params) {
-	VVoid& vvoid=GET_SELF(r, VVoid);
-	r.write_no_lang(*new VInt(
-		params.count()==0?vvoid.as_int():params.as_int(0, "default must be int", r)));
-}
-
-static void _double(Request& r, MethodParams& params) {
-	VVoid& vvoid=GET_SELF(r, VVoid);
-	r.write_no_lang(*new VDouble(
-		params.count()==0?vvoid.as_double():params.as_double(0, "default must be double", r)));
-}
-
-static void _bool(Request& r, MethodParams& params) {
-	VVoid& vvoid=GET_SELF(r, VVoid);
-	r.write_no_lang(VBool::get(params.count()==0?vvoid.as_bool():params.as_bool(0, "default must be bool", r)));
-}
 
 #ifndef DOXYGEN
 class Void_sql_event_handlers: public SQL_Driver_query_event_handlers {
@@ -132,63 +91,11 @@ static void _sql(Request& r, MethodParams& params) {
 		unmarshal_bind_updates(*bind, placeholders_count, placeholders);
 }
 
-static void _left_right(Request& r, MethodParams& params) {
-	ssize_t sn=params.as_int(0, "n must be int", r);
-	if(sn<0)
-		throw Exception(PARSER_RUNTIME,
-			0, 
-			"n(%d) must be >=0", sn);
-
-	// return nothing
-}
-
-static void _mid(Request& r, MethodParams& params) {
-	ssize_t sbegin=params.as_int(0, "p must be int", r);
-	if(sbegin<0)
-		throw Exception(PARSER_RUNTIME,
-			0, 
-			"p(%d) must be >=0", sbegin);
-
-	if(params.count()>1) {
-		ssize_t sn=params.as_int(1, "n must be int", r);
-		if(sn<0)
-			throw Exception(PARSER_RUNTIME,
-				0, 
-				"n(%d) must be >=0", sn);
-	}
-
-	// return nothing
-}
-
 // constructor
 
-MVoid::MVoid(): Methoded("void") {
-	// ^void.length[] 
-	add_native_method("length", Method::CT_DYNAMIC, _length, 0, 0);
-
-	// ^void.pos[substr]
-	// ^void.pos[substr](n)
-	add_native_method("pos", Method::CT_DYNAMIC, _pos, 1, 2);
-
-	// ^void.int[]
-	// ^void.int(default)
-	add_native_method("int", Method::CT_DYNAMIC, _int, 0, 1);
-
-	// ^void.double[]
-	// ^void.double(default)
-	add_native_method("double", Method::CT_DYNAMIC, _double, 0, 1);
-
-	// ^void.bool[]
-	// ^void.bool(default)
-	add_native_method("bool", Method::CT_DYNAMIC, _bool, 0, 1);
-
+MVoid::MVoid(): Methoded("void", string_class) {
 	// ^void:sql{query}
 	add_native_method("sql", Method::CT_STATIC, _sql, 1, 2);
 
-	// ^void.left() ^void.right()
-	add_native_method("left", Method::CT_DYNAMIC, _left_right, 1, 1);
-	add_native_method("right", Method::CT_DYNAMIC, _left_right, 1, 1);
-
-	// ^void.mid(p;n)
-	add_native_method("mid", Method::CT_DYNAMIC, _mid, 1, 2);
+	// all other methods are inherinted from empty string
 }

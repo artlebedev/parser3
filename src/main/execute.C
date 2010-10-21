@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_EXECUTE_C="$Date: 2010/10/09 23:17:26 $";
+static const char * const IDENT_EXECUTE_C="$Date: 2010/10/21 15:25:07 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -639,13 +639,10 @@ void Request::execute(ArrayOperation& ops) {
 
 				execute(local_ops);
 
-				Value* value;
 				// from "$a $b" part of expression taking only string value,
 				// ignoring any other content of wcontext
-				if(const String* string=wcontext->get_string())
-					value=new VString(*string);
-				else
-					value=VVoid::get();
+				const String* string=wcontext->get_string();
+				Value* value=string ? new VString(*string) : new VString();
 				stack.push(*value);
 
 				wcontext=saved_wcontext;

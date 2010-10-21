@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2010/10/21 15:06:29 $";
+static const char * const IDENT_STRING_C="$Date: 2010/10/21 15:25:07 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -32,6 +32,17 @@ public:
 // global variable
 
 DECLARE_CLASS_VAR(string, new MString, 0);
+
+// void class, inherited from string and thus should be inited afterwards
+
+class MVoid: public Methoded {
+public:
+	MVoid();
+};
+
+// void global variable should be after string global variable
+
+DECLARE_CLASS_VAR(void, new MVoid, 0);
 
 // defines for statics
 
