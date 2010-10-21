@@ -1,7 +1,10 @@
-Set-Cookie: clientType=test; expires=Tue, 25 Feb 2003 21:00:00 GMT; path=/
-Set-Cookie: zigi=value; expires=Wed, 19 Feb 2003 21:00:00 GMT; path=/
+Set-Cookie: a=a-value; expires=Tue, 25 Feb 2003 21:00:00 GMT; path=/
+Set-Cookie: b=b-value; expires=Wed, 19 Feb 2003 21:00:00 GMT; path=/
+Set-Cookie: s=session-value; path=/
 Content-Type: text/html
-Content-Length: 50
+Content-Length: 81
 
-'test'<br />
-clientType:	'test'<br />zigi:	'value'
+mustfail, it's OK.<br />
+a: 'a-value'<br />
+b: 'b-value'<br />
+s: 'session-value'
