@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_IMAGE_C="$Date: 2010/08/05 12:05:38 $";
+static const char * const IDENT_IMAGE_C="$Date: 2010/10/21 15:06:27 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -43,10 +43,6 @@ public: // VStateless_class
 
 public:
 	MImage();
-
-public: // Methoded
-	bool used_directly() { return true; }
-
 };
 
 // globals

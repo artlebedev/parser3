@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_INET_C="$Date: 2009/04/10 11:31:06 $";
+static const char * const IDENT_INET_C="$Date: 2010/10/21 15:06:27 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
@@ -13,9 +13,6 @@ static const char * const IDENT_INET_C="$Date: 2009/04/10 11:31:06 $";
 class MInet: public Methoded {
 public:
 	MInet();
-
-public: // Methoded
-	bool used_directly() { return true; }
 };
 
 // global variables

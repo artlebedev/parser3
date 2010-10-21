@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Id: hashfile.C,v 1.51 2009/08/08 13:30:20 misha Exp $";
+static const char * const IDENT="$Id: hashfile.C,v 1.52 2010/10/21 15:06:27 moko Exp $";
 
 #include "classes.h"
 
@@ -19,11 +19,8 @@ static const char * const IDENT="$Id: hashfile.C,v 1.51 2009/08/08 13:30:20 mish
 class MHashfile : public Methoded {
 public: // VStateless_class
 	Value *create_new_value(Pool& apool) { return new VHashfile(apool); }
-
 public:
 	MHashfile();
-public: // Methoded
-	bool used_directly() { return true; }
 };
 
 // global variable

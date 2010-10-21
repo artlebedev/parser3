@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REGEX_C="$Date: 2009/08/08 13:30:20 $";
+static const char * const IDENT_REGEX_C="$Date: 2010/10/21 15:06:29 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -21,8 +21,6 @@ public: // VStateless_class
 	Value* create_new_value(Pool&) { return new VRegex(); }
 public:
 	MRegex();
-public: // Methoded
-	bool used_directly() { return true; }
 };
 
 // global variable

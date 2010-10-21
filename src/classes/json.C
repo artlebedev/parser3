@@ -4,7 +4,7 @@
 	Copyright (c) 2010 ArtLebedev Group (http://www.artlebedev.com)
 */
 
-static const char * const IDENT_RESPONSE_C="$Date: 2010/10/01 23:07:30 $";
+static const char * const IDENT_RESPONSE_C="$Date: 2010/10/21 15:06:29 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -21,8 +21,6 @@ static const char * const IDENT_RESPONSE_C="$Date: 2010/10/01 23:07:30 $";
 class MJson: public Methoded {
 public:
 	MJson();
-public: // Methoded
-	bool used_directly() { return true; }
 };
 
 // global variable

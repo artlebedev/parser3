@@ -8,7 +8,7 @@
 #ifndef CLASSES_H
 #define CLASSES_H
 
-static const char * const IDENT_CLASSES_H="$Date: 2009/08/08 13:30:20 $";
+static const char * const IDENT_CLASSES_H="$Date: 2010/10/21 15:06:27 $";
 
 // include
 
@@ -26,7 +26,7 @@ public: // Methoded
 		if not - global variable with Methoded descendant 
 		is used in VStateless_class parameter
 	*/
-	virtual bool used_directly() =0;
+	virtual bool used_directly() { return true; }
 	/// use this method to read parameters from root "auto.p"; access r.main_class
 	virtual void configure_admin(Request& ) {}
 	/// use this method to read parameters from 'MAIN' class; access r.main_class

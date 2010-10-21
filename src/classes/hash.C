@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_HASH_C="$Date: 2010/10/05 20:56:12 $";
+static const char * const IDENT_HASH_C="$Date: 2010/10/21 15:06:27 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -26,8 +26,6 @@ public: // VStateless_class
 
 public:
 	MHash();
-public: // Methoded
-	bool used_directly() { return true; }
 };
 
 // global variable

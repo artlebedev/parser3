@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VOID_C="$Date: 2010/07/05 05:54:46 $";
+static const char * const IDENT_VOID_C="$Date: 2010/10/21 15:06:29 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -26,8 +26,6 @@ extern String sql_bind_name;
 class MVoid: public Methoded {
 public:
 	MVoid();
-public: // Methoded
-	bool used_directly() { return true; }
 };
 
 // global variable

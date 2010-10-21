@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REFLECTION_C="$Date: 2010/10/09 23:17:26 $";
+static const char * const IDENT_REFLECTION_C="$Date: 2010/10/21 15:06:29 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
@@ -29,8 +29,6 @@ static const String method_max_params("max_params");
 class MReflection: public Methoded {
 public:
 	MReflection();
-public: // Methoded
-	bool used_directly() { return true; }
 };
 
 // global variable

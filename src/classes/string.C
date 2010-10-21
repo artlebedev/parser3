@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2010/07/05 05:54:46 $";
+static const char * const IDENT_STRING_C="$Date: 2010/10/21 15:06:29 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -27,8 +27,6 @@ static const char * const IDENT_STRING_C="$Date: 2010/07/05 05:54:46 $";
 class MString: public Methoded {
 public:
 	MString();
-public: // Methoded
-	bool used_directly() { return true; }
 };
 
 // global variable

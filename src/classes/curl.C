@@ -8,7 +8,7 @@
 
 #ifdef HAVE_CURL
 
-static const char * const IDENT_INET_C="$Date: 2010/07/05 05:54:46 $";
+static const char * const IDENT_INET_C="$Date: 2010/10/21 15:06:27 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
@@ -22,9 +22,6 @@ static const char * const IDENT_INET_C="$Date: 2010/07/05 05:54:46 $";
 class MCurl: public Methoded {
 public:
 	MCurl();
-
-public: // Methoded
-	bool used_directly() { return true; }
 };
 
 // global variables

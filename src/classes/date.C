@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_DATE_C="$Date: 2010/09/16 23:29:41 $";
+static const char * const IDENT_DATE_C="$Date: 2010/10/21 15:06:27 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -23,8 +23,6 @@ public: // VStateless_class
 
 public:
 	MDate();
-public: // Methoded
-	bool used_directly() { return true; }
 };
 
 // global variable

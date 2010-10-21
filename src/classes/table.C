@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2010/10/12 01:26:33 $";
+static const char * const IDENT_TABLE_C="$Date: 2010/10/21 15:06:29 $";
 
 #if (!defined(NO_STRINGSTREAM) && !defined(FREEBSD4))
 #include <sstream>
@@ -27,12 +27,8 @@ static const char * const IDENT_TABLE_C="$Date: 2010/10/12 01:26:33 $";
 class MTable: public Methoded {
 public: // VStateless_class
 	Value* create_new_value(Pool&) { return new VTable(); }
-
 public:
 	MTable();
-
-public: // Methoded
-	bool used_directly() { return true; }
 };
 
 // global variable

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_DOUBLE_C="$Date: 2009/04/16 01:10:21 $";
+static const char * const IDENT_DOUBLE_C="$Date: 2010/10/21 15:06:27 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -24,8 +24,6 @@ void _string_format(Request& r, MethodParams&);
 class MDouble: public Methoded {
 public:
 	MDouble();
-public: // Methoded
-	bool used_directly() { return true; }
 };
 
 // global variable
