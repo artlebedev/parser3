@@ -1,15 +1,26 @@
-$cookie:clientType[
-	$.value[test]
+$cookie:a[
+	$.value[a-value]
 	$.expires[^date::create(2003;2;26)]
 ]
-$cookie:zigi[
-	$.value[value]
+
+$cookie:b[
+	$.value[b-value]
 	$.expires[^date::create(2003;2;20)]
 ]
-'$cookie:CLASS.clientType'<br />
 
-$t[^table::create{key	value}]
-^cookie:fields.foreach[k;v]{^t.append{$k	^if($v is "hash"){$v.value}{$v}}}
-^t.sort{$t.key}
+$cookie:s[
+	$.value[session-value]
+	$.expires[session]
+]
 
-^t.menu{${t.key}:	'$t.value'}[<br />]
+^try{
+	$cookie:z[
+		$.value[zzz-value]
+		$.expires[zzz]
+	]
+}{
+	$exception.handled(true)
+	mustfail, it's OK.<br />
+}
+
+^cookie:fields.foreach[k;v]{${k}: '$v.value'}[<br />^#0A]
