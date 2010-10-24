@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 1062
+Content-Length: 1176
 
 object
 duplicate key
@@ -78,4 +78,19 @@ duplicate key
 	"object_2":{
 		"value":"class2 sample2"
 	}
+}
+{
+	"0":1,
+	"1":{
+		"value":"class1 3"
+	},
+	"2":4
+}
+{
+	"0":1,
+	"1":{
+		"type":"class1",
+		"value":"3"
+	},
+	"2":4
 }

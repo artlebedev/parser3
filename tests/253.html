@@ -14,6 +14,14 @@ $o[^json:parse[$s][ $.double(false) $.distinct[last] ]]
 $o[^json:parse[$s][ $.object[$hook_key] $.distinct[all] ]]
 ^print[$o]
 
+$s[[1,{"type":"class1","value":"3"},4]]
+
+$o[^json:parse[$s][ $.object[$hook] ]]
+^print[$o]
+
+$o[^json:parse[$s]]
+^print[$o]
+
 @try_catch[code]
 ^try{
 	$code
