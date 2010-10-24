@@ -8,7 +8,7 @@
 #ifndef PA_VSTRING_H
 #define PA_VSTRING_H
 
-static const char * const IDENT_VSTRING_H="$Date: 2010/09/16 23:33:52 $";
+static const char * const IDENT_VSTRING_H="$Date: 2010/10/24 21:41:43 $";
 
 // includes
 
@@ -60,6 +60,10 @@ public: // Value
 		// $method
 		if(Value* result=VStateless_object::get_element(aname))
 			return result;
+
+		// empty string is void compatible
+		if (fstring->is_empty())
+			return 0;
 
 		// bad $string.field
 		return bark("%s method not found", &aname);  

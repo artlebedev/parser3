@@ -10,12 +10,21 @@ $string_methods[^reflection:methods[string]]
 $s[]
 $v[$void]
 
-String vs void:
+Empty string vs void:
 
 Json: ^json:string[$s] vs ^json:string[$v]
 Length: ^s.length[] vs ^v.length[]
 Double: ^s.double(0) vs ^v.double(0)
 Base64: "^s.base64[]" vs "^v.base64[]"
+Hash compatibility: "$s.key" "$v.key"
+
+Non-empty string: ^try{
+	$s[string]
+	$s.key
+}{
+	$exception.handled(1)
+	has no hash compatibility
+}
 
 ^string_methods.foreach[k;v]{
 	^if(!($v.$k is 'junction')){

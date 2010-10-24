@@ -1,8 +1,10 @@
 Content-Type: text/html
-Content-Length: 80
+Content-Length: 156
 
-String vs void:
+Empty string vs void:
 Json: "" vs null
 Length: 0 vs 0
 Double: 0 vs 0
 Base64: "" vs ""
+Hash compatibility: "" ""
+Non-empty string: has no hash compatibility
