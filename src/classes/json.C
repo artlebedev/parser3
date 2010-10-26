@@ -4,7 +4,7 @@
 	Copyright (c) 2010 ArtLebedev Group (http://www.artlebedev.com)
 */
 
-static const char * const IDENT_RESPONSE_C="$Date: 2010/10/21 15:06:29 $";
+static const char * const IDENT_RESPONSE_C="$Date: 2010/10/26 11:41:42 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -129,12 +129,13 @@ static int json_callback(Json *json, int type, const JSON_value* value)
 		}
 		case JSON_T_ARRAY_BEGIN:{
 			VHash *v = new VHash();
-			set_json_value(json, v);
+			if (json->stack.count()) set_json_value(json, v);
 			json->stack.push(v);
 			break;
 		}
 		case JSON_T_ARRAY_END:
-			json->stack.pop();
+			// libjson supports array at top level, we too
+			json->result = json->stack.pop();
 			break;
 		case JSON_T_KEY:
 			json->key = json_string(json, value);
