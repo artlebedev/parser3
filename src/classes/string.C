@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2010/10/21 15:25:07 $";
+static const char * const IDENT_STRING_C="$Date: 2010/10/26 21:09:06 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -692,16 +692,6 @@ static void _trim(Request& r, MethodParams& params) {
 	r.write_assign_lang(src.trim(kind, chars, &r.charsets.source()));
 }
 
-static void _append(Request& r, MethodParams& params) {
-	// c=a+b
-	VString& va=GET_SELF(r, VString);
-	const String& a=va.string();
-	const String& b=params.as_string(0, PARAMETER_MUST_BE_STRING);
-	String& c=*new String(a);
-	c.append(b, String::L_PASS_APPENDED);
-	va.set_string(c);
-}
-
 static void _base64(Request& r, MethodParams& params) {
 	if(params.count()) {
 		// decode: ^string:base64[encoded]
@@ -807,9 +797,6 @@ MString::MString(): Methoded("string") {
 
 	// ^string.trim[[start|both|end][;chars]]
 	add_native_method("trim", Method::CT_DYNAMIC, _trim, 0, 2);
-
-	// ^string.append[string]
-	add_native_method("append", Method::CT_DYNAMIC, _append, 1, 1);
 
 	// ^string.base64[] << encode
 	// ^string:base64[encoded string] << decode	
