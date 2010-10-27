@@ -8,7 +8,7 @@
 
 #ifdef HAVE_CURL
 
-static const char * const IDENT_INET_C="$Date: 2010/10/21 15:06:27 $";
+static const char * const IDENT_INET_C="$Date: 2010/10/27 20:04:17 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
@@ -580,8 +580,11 @@ static void _curl_load_action(Request& r, MethodParams& params){
 	VFile& result=*new VFile;
 
 	String::Body ct_header = headers.get(HTTP_CONTENT_TYPE_UPPER);
-	Charset *remote_charset = ct_header.is_empty() ? 0 : detect_charset(ct_header.trim(String::TRIM_BOTH, " \t\n\r").cstr());
-	Charset *asked_charset = options().response_charset ? options().response_charset : (remote_charset ? remote_charset : options().charset);
+	Charset *asked_charset = options().response_charset;
+	if (asked_charset == 0){
+		Charset *remote_charset = ct_header.is_empty() ? 0 : detect_charset(ct_header.trim(String::TRIM_BOTH, " \t\n\r").cstr());
+		asked_charset = remote_charset ? remote_charset : options().charset;
+	}
 
 	if(options().is_text && asked_charset != 0){
 		String::C c=Charset::transcode(String::C(body.buf, body.length), *asked_charset, r.charsets.source());
