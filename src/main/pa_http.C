@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
  */
 
-static const char * const IDENT_HTTP_C="$Date: 2010/10/16 22:24:20 $"; 
+static const char * const IDENT_HTTP_C="$Date: 2010/10/28 22:40:25 $"; 
 
 #include "pa_http.h"
 #include "pa_common.h"
@@ -521,7 +521,7 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 	File_read_http_result result;
 	char host[MAX_STRING];
 	const char* uri; 
-	short port;
+	short port=80;
 	const char* method="GET";
 	bool method_is_get=true;
 	HashStringValue* form=0;
@@ -641,8 +641,13 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 		char* host_uri=lsplit(host, '/');
 		uri=host_uri?current+(host_uri-1-host):"/";
 		char* port_cstr=lsplit(host, ':');
-		char* error_pos=0;
-		port=port_cstr?(short)strtol(port_cstr, &error_pos, 0):80;
+		
+		if (port_cstr){
+			char* error_pos=0;
+			port=(short)strtol(port_cstr, &error_pos, 10);
+			if(port==0 || *error_pos)
+				throw Exception(PARSER_RUNTIME, &connect_string, "invalid port number '%s'", port_cstr);
+		}
 
 		// making request head
 		String head;
@@ -650,7 +655,10 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 		if(method_is_get && form)
 			head << (strchr(uri, '?')!=0?"&":"?") << pa_form2string(*form, r.charsets);
 
-		head <<" HTTP/1.0" CRLF "Host: "<< host << CRLF;
+		head <<" HTTP/1.0" CRLF "Host: "<< host;
+		if (port != 80)
+			head << ":" << port_cstr;
+		head << CRLF;
 
 		char* boundary=0;
 
