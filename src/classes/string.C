@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2010/10/26 21:09:06 $";
+static const char * const IDENT_STRING_C="$Date: 2010/10/30 22:37:53 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -71,7 +71,7 @@ static void _int(Request& r, MethodParams& params) {
 		if(self_string.is_empty())
 			throw Exception(PARSER_RUNTIME,
 				0,
-				"parameter is empty string, error converting");
+				"unable to convert empty string without default specified");
 		converted=self_string.as_int();
 	} catch(...) { // convert problem
 		if(params.count()>0)
@@ -89,7 +89,7 @@ static void _double(Request& r, MethodParams& params) {
 		if(self_string.is_empty())
 			throw Exception(PARSER_RUNTIME,
 				0,
-				"parameter is empty string, error converting");
+				"unable to convert empty string without default specified");
 		converted=self_string.as_double();
 	} catch(...) { // convert problem
 		if(params.count()>0)
@@ -108,7 +108,7 @@ static void _bool(Request& r, MethodParams& params) {
 		if(self_string.is_empty())
 			throw Exception(PARSER_RUNTIME,
 				0,
-				"parameter is empty string, error converting");
+				"unable to convert empty string without default specified");
 		
 		try {
 			converted=self_string.as_bool();
