@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 3982
+Content-Length: 4841
 
 <h3>hash</h3>
 {
@@ -58,7 +58,9 @@ Content-Length: 3982
 "table_named_3":[
 {"c1":"v1","c2":"v2","c3":"v3"},
 {"c1":"v4","c2":"v5","c3":"v6"},
-{"c1":"v7","c2":"v8","c3":"v9","3":"v0"}
+{"c1":"v7","c2":"v8","c3":"v9","3":"v0"},
+{"c1":"vA\""},
+{"c1":"vB\\"}
 ]
 }, {
 	"table_nameless_empty":[],
@@ -80,7 +82,9 @@ Content-Length: 3982
 	"table_named_3":[
 		{"c1":"v1","c2":"v2","c3":"v3"},
 		{"c1":"v4","c2":"v5","c3":"v6"},
-		{"c1":"v7","c2":"v8","c3":"v9","3":"v0"}
+		{"c1":"v7","c2":"v8","c3":"v9","3":"v0"},
+		{"c1":"vA\""},
+		{"c1":"vB\\"}
 	]
 }, {
 "table_nameless_empty":[
@@ -111,7 +115,9 @@ null,
 ["c1","c2","c3"],
 ["v1","v2","v3"],
 ["v4","v5","v6"],
-["v7","v8","v9","v0"]
+["v7","v8","v9","v0"],
+["vA\""],
+["vB\\"]
 ]
 }, {
 	"table_nameless_empty":[
@@ -142,12 +148,62 @@ null,
 		["c1","c2","c3"],
 		["v1","v2","v3"],
 		["v4","v5","v6"],
-		["v7","v8","v9","v0"]
+		["v7","v8","v9","v0"],
+		["vA\""],
+		["vB\\"]
+	]
+}, {
+"table_nameless_empty":[],
+"table_nameless_1":[
+["v1","v2","v3"]
+],
+"table_nameless_2":[
+["v1","v2","v3"],
+["v4","v5","v6"]
+],
+"table_named_empty":[],
+"table_named_1":[
+["v1","v2","v3"]
+],
+"table_named_2":[
+["v1","v2","v3"],
+["v4","v5","v6"]
+],
+"table_named_3":[
+["v1","v2","v3"],
+["v4","v5","v6"],
+["v7","v8","v9","v0"],
+"vA\"",
+"vB\\"
+]
+}, {
+	"table_nameless_empty":[],
+	"table_nameless_1":[
+		["v1","v2","v3"]
+	],
+	"table_nameless_2":[
+		["v1","v2","v3"],
+		["v4","v5","v6"]
+	],
+	"table_named_empty":[],
+	"table_named_1":[
+		["v1","v2","v3"]
+	],
+	"table_named_2":[
+		["v1","v2","v3"],
+		["v4","v5","v6"]
+	],
+	"table_named_3":[
+		["v1","v2","v3"],
+		["v4","v5","v6"],
+		["v7","v8","v9","v0"],
+		"vA\"",
+		"vB\\"
 	]
 }
 <h3>my</h3>
 {
-"object":"my"
+"object":"my at key object, with 1 option"
 }
 <h3>file</h3>
 {

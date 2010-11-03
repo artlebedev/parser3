@@ -48,6 +48,8 @@ $h[
 			$.1[$.table[object] $.indent(true)]
 			$.2[$.table[array]]
 			$.3[$.table[array] $.indent(true)]
+			$.4[$.table[compact]]
+			$.5[$.table[compact] $.indent(true)]
 		]
 	]
 
@@ -91,6 +93,8 @@ $h[
 ]
 
 ^h.table.table_named_3.append{v7	v8	v9	v0}
+^h.table.table_named_3.append{vA"}
+^h.table.table_named_3.append{vB\}
 
 $s[^h.foreach[k;v]{
 	<h3>$k</h3>
@@ -119,12 +123,12 @@ $bShouldBeException($options.exception)
 }
 
 
-@handler[v;p][kk;vv]
+@handler[k;v;p][kk;vv]
 $result[^switch[$v.CLASS_NAME]{
 	^case[date]{"new Date(^v.unix-timestamp[])"}
 	^case[file]{{"file":{"name":"$v.name", "text":"$v.text", "params":"-params-"}}}
 	^case[image]{"image []"}
-	^case[DEFAULT]{"$v.CLASS_NAME"}
+	^case[DEFAULT]{"$v.CLASS_NAME at key $k, with ^p._count[] option"}
 }]
 
 
