@@ -4,7 +4,7 @@
 	Copyright (c) 2010 ArtLebedev Group (http://www.artlebedev.com)
 */
 
-static const char * const IDENT_RESPONSE_C="$Date: 2010/10/26 11:41:42 $";
+static const char * const IDENT_RESPONSE_C="$Date: 2010/11/03 22:07:01 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -254,7 +254,7 @@ char *get_indent(uint level){
 	return cache[level];
 }
 
-const String& value_json_string(Value& v, Json_options* options);
+const String& value_json_string(String::Body key, Value& v, Json_options* options);
 
 const String& hash_json_string(HashStringValue &hash, Json_options* options) {
 	if(!hash.count())
@@ -275,7 +275,7 @@ const String& hash_json_string(HashStringValue &hash, Json_options* options) {
 				result << options->indent << "\"";
 				delim = new String(",\n", String::L_AS_IS); *delim << options->indent << "\"";
 			}
-			result << String(i.key(), String::L_JSON) << "\":" << value_json_string(*i.value(), options);
+			result << String(i.key(), String::L_JSON) << "\":" << value_json_string(i.key(), *i.value(), options);
 		}
 		result << "\n" << (options->indent=get_indent(level-1)) << "}";
 
@@ -284,7 +284,7 @@ const String& hash_json_string(HashStringValue &hash, Json_options* options) {
 		bool need_delim=false;
 		for(HashStringValue::Iterator i(hash); i; i.next() ){
 			result << (need_delim ? ",\n\"" : "\"");
-			result << String(i.key(), String::L_JSON) << "\":" << value_json_string(*i.value(), options);
+			result << String(i.key(), String::L_JSON) << "\":" << value_json_string(i.key(), *i.value(), options);
 			need_delim=true;
 		}
 		result << "\n}";
@@ -295,14 +295,14 @@ const String& hash_json_string(HashStringValue &hash, Json_options* options) {
 	return result;
 }
 
-const String& value_json_string(Value& v, Json_options* options) {
+const String& value_json_string(String::Body key, Value& v, Json_options* options) {
 	if(options && options->methods)
 		if(Value* method=options->methods->get(v.type())){
 			Junction* junction=method->get_junction();
 			VMethodFrame frame(*junction->method, options->r->method_frame, junction->self);
 
-			Value *params[]={&v, (options->params) ? options->params : VVoid::get()};
-			frame.store_params(params, 2);
+			Value *params[]={new VString(*new String(key, String::L_JSON)), &v, (options->params) ? options->params : VVoid::get()};
+			frame.store_params(params, 3);
 
 			options->r->execute_method(frame);
 
@@ -340,7 +340,7 @@ static void _string(Request& r, MethodParams& params) {
 				} else if(key == "table" && value->is_string()){
 					const String& svalue=value->as_string();
 					if(!json.set_table_format(svalue))
-						throw Exception(PARSER_RUNTIME, &svalue, "must be 'array' or 'object'");
+						throw Exception(PARSER_RUNTIME, &svalue, "must be 'array', 'object' or 'compact'");
 					valid_options++;
 				} else if(key == "file" && value->is_string()){
 					const String& svalue=value->as_string();
@@ -348,8 +348,8 @@ static void _string(Request& r, MethodParams& params) {
 						throw Exception(PARSER_RUNTIME, &svalue, "must be 'base64' or 'text'");
 					valid_options++;
 				} else if(Junction* junction=value->get_junction()){
-					if(!junction->method || !junction->method->params_names || junction->method->params_names->count() != 2)
-						throw Exception(PARSER_RUNTIME, 0, "$.%s must be parser method with 2 parameters", key.cstr());
+					if(!junction->method || !junction->method->params_names || junction->method->params_names->count() != 3)
+						throw Exception(PARSER_RUNTIME, 0, "$.%s must be parser method with 3 parameters", key.cstr());
 					methods->put(key, value);
 					valid_options++;
 				}
@@ -359,8 +359,9 @@ static void _string(Request& r, MethodParams& params) {
 			if(methods->count())
 				json.methods=methods;
 		}
-
-	r.write_pass_lang(value_json_string(params[0], &json));
+	const String& result_string=value_json_string(String::Body(), params[0], &json);
+	String::Body result_body=result_string.cstr_to_string_body_untaint(String::L_JSON, 0, &r.charsets);
+	r.write_pass_lang(*new String(result_body, String::L_AS_IS));
  }
 
 // constructor
