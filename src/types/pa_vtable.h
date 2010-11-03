@@ -8,7 +8,7 @@
 #ifndef PA_VTABLE_H
 #define PA_VTABLE_H
 
-static const char * const IDENT_VTABLE_H="$Date: 2010/09/16 23:33:52 $";
+static const char * const IDENT_VTABLE_H="$Date: 2010/11/03 22:08:45 $";
 
 #include "pa_vstateless_object.h"
 #include "pa_table.h"
@@ -64,6 +64,10 @@ public: // usage
 private:
 
 	Value* fields_element();
+
+	String& get_json_string_array(String&, const char *);
+	String& get_json_string_object(String&, const char *);
+	String& get_json_string_compact(String&, const char *);
 
 private:
 

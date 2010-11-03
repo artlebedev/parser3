@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-static const char * const IDENT_VALUE_H="$Date: 2010/09/24 08:28:03 $";
+static const char * const IDENT_VALUE_H="$Date: 2010/11/03 22:08:44 $";
 
 #include "pa_common.h"
 #include "pa_array.h"
@@ -39,7 +39,7 @@ struct Json_options {
 	bool skip_unknown;
 	const char* indent;
 	enum Date { D_SQL, D_GMT, D_TIMESTAMP } date;
-	enum Table { T_ARRAY, T_OBJECT } table;
+	enum Table { T_ARRAY, T_OBJECT, T_COMPACT } table;
 	enum File { F_BODYLESS, F_BASE64, F_TEXT } file;
 
 	Json_options(Request* arequest): 
@@ -64,6 +64,7 @@ struct Json_options {
 	bool set_table_format(const String &value){
 		if(value == "array") table = T_ARRAY;
 		else if (value == "object") table = T_OBJECT;
+		else if (value == "compact") table = T_COMPACT;
 		else return false;
 		return true;
 	}

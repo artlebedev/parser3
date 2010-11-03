@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VTABLE_C="$Date: 2010/09/24 08:18:57 $";
+static const char * const IDENT_VTABLE_C="$Date: 2010/11/03 22:08:45 $";
 
 #include "pa_vtable.h"
 #include "pa_vstring.h"
@@ -78,99 +78,126 @@ Value* VTable::get_element(const String& aname) {
 		"column not found");
 }
 
-const String* VTable::get_json_string(Json_options* options) {
-	String& result = *new String("[", String::L_AS_IS);
+
+String& VTable::get_json_string_array(String& result, const char *indent) {
+	// [
+	//		["c1",  "c2",  "c3"  ...] || null (for nameless),
+	//		["v11", "v12", "v13" ...],
+	//		["v21", "v22", "v23" ...],
+	//		...
+	// ]
 	Table& ltable=table();
-	if(options && options->table == Json_options::T_ARRAY){
-		// [
-		//		["c1",  "c2",  "c3"  ...] || null (for nameless),
-		//		["v11", "v12", "v13" ...],
-		//		["v21", "v22", "v23" ...],
-		//		...
-		// ]
 
-		// columns
-		if(ltable.columns()){
-			// named
-			if (options->indent){
-				result << "\n\t" << options->indent << "[\"";
-			} else {
-				result << "\n[\"";
-			}
+	// columns
+	if(ltable.columns()){
+		// named
+		indent ? result << "\n\t" << indent << "[\"" : result << "\n[\"";
 
+		bool need_delim=false;
+		for(Array_iterator<const String*> c(*ltable.columns()); c.has_next(); ) {
+			if(need_delim)
+				result << "\",\"";
+			result.append(*c.next(), String::L_JSON, true/*forced lang*/);
+			need_delim=true;
+		}
+		result << "\"]";
+	} else {
+		// nameless
+		indent ? result << "\n\t" << indent << "null" : result << "\nnull";
+	}
+
+	// data
+	if(ltable.count()){
+		result << ",";
+		for(Array_iterator<ArrayString*> r(ltable); r.has_next(); ) {
+			indent ? result << "\n\t" << indent << "[\"" : result << "\n[\"";
 			bool need_delim=false;
-			for(Array_iterator<const String*> c(*ltable.columns()); c.has_next(); ) {
+			for(Array_iterator<const String*> c(*r.next()); c.has_next(); ) {
 				if(need_delim)
 					result << "\",\"";
 				result.append(*c.next(), String::L_JSON, true/*forced lang*/);
 				need_delim=true;
 			}
-			result << "\"]";
-		} else {
-			// nameless
-			if (options->indent){
-				result << "\n\t" << options->indent << "null";
-			} else {
-				result << "\nnull";
-			}
-		}
-
-		// data
-		if(ltable.count()){
-			result << ",";
-			for(Array_iterator<ArrayString*> r(ltable); r.has_next(); ) {
-				if (options->indent){
-					result << "\n\t" << options->indent << "[\"";
-				} else {
-					result << "\n[\"";
-				}
-				bool need_delim=false;
-				for(Array_iterator<const String*> c(*r.next()); c.has_next(); ) {
-					if(need_delim)
-						result << "\",\"";
-					result.append(*c.next(), String::L_JSON, true/*forced lang*/);
-					need_delim=true;
-				}
-				result << (r.has_next() ? "\"]," : "\"]");
-			}
-		}
-		result << "\n";
-		result << options->indent;
-	} else {
-		// [
-		//		{"c1":"v11", "c2":"v12", "c3":"v13"},
-		//		{"c1":"v21", "c2":"v22", "c3":"v23"},
-		//		...
-		// ]
-		ArrayString* columns=ltable.columns();
-		size_t columns_count = (columns) ? columns->count() : 0;
-
-		for(Array_iterator<ArrayString*> r(ltable); r.has_next(); ) {
-			ArrayString* row=r.next();
-
-			if (options->indent){
-				result << "\n\t" << options->indent << "{\"";
-			} else {
-				result << "\n{\"";
-			}
-			for(size_t index=0; index<row->count(); index++){
-				if(index)
-					result << "\",\"";
-				result.append(index < columns_count ? *columns->get(index) : String(format(index, 0)), String::L_JSON, true/*forced lang*/);
-				result << "\":\"";
-				result.append(*row->get(index), String::L_JSON, true/*forced lang*/);
-			}
-			result << "\"}";
-
-			if (r.has_next()){
-				result << ",";
-			} else {
-				result << "\n";
-				result << options->indent;
-			}
+			r.has_next() ? result << "\"]," : result << "\"]";
 		}
 	}
 
-	result << "]";
-	return &result;
+	result << "\n" << indent; 
+	return result;
+}
+
+String& VTable::get_json_string_object(String& result, const char *indent) {
+	// [
+	//		{"c1":"v11", "c2":"v12", "c3":"v13"},
+	//		{"c1":"v21", "c2":"v22", "c3":"v23"},
+	//		...
+	// ]
+	Table& ltable=table();
+	ArrayString* columns=ltable.columns();
+	size_t columns_count = (columns) ? columns->count() : 0;
+
+	for(Array_iterator<ArrayString*> r(ltable); r.has_next(); ) {
+		indent ? result << "\n\t" << indent << "{\"" : result << "\n{\"";
+
+		ArrayString* row=r.next();
+		for(size_t index=0; index<row->count(); index++){
+			if(index)
+				result << "\",\"";
+			result.append(index < columns_count ? *columns->get(index) : String(format(index, 0)), String::L_JSON, true/*forced lang*/);
+			result << "\":\"";
+			result.append(*row->get(index), String::L_JSON, true/*forced lang*/);
+		}
+		r.has_next() ? result << "\"}," : result << "\"}\n" << indent;
+	}
+	return result;
+}
+
+String& VTable::get_json_string_compact(String& result, const char *indent) {
+	// [
+	//		"v11",
+	//		["v21", "v22", "v23" ...],
+	//		...
+	// ]
+	Table& ltable=table();
+
+	for(Array_iterator<ArrayString*> r(ltable); r.has_next(); ) {
+		ArrayString& line=*r.next();
+		if (line.count()==1){
+			indent ? result << "\n\t" << indent << "\"" : result << "\n\"";
+
+			result.append(*line[0], String::L_JSON, true/*forced lang*/);
+			r.has_next() ? result << "\"," : result << "\"\n" << indent;
+		} else {
+			indent ? result << "\n\t" << indent << "[\"" : 	result << "\n[\"";
+
+			bool need_delim=false;
+			for(Array_iterator<const String*> c(line); c.has_next(); ) {
+				if(need_delim)
+					result << "\",\"";
+				result.append(*c.next(), String::L_JSON, true/*forced lang*/);
+				need_delim=true;
+			}
+			r.has_next() ? result << "\"]," : result  << "\"]\n" << indent;
+		}
+	}
+	return result;
+}
+
+const String* VTable::get_json_string(Json_options* options) {
+	String* result = new String("[", String::L_AS_IS);
+
+	switch(options->table){
+	case Json_options::T_ARRAY:
+		result=&get_json_string_array(*result, options->indent);
+		break;
+	case Json_options::T_OBJECT:
+		result=&get_json_string_object(*result, options->indent);
+		break;
+	case Json_options::T_COMPACT:
+		result=&get_json_string_compact(*result, options->indent);
+		break;
+	}
+
+	*result << "]";
+	return result;
 }
