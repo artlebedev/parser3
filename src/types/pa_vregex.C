@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VREGEX_C="$Date: 2009/11/06 04:54:34 $";
+static const char * const IDENT_VREGEX_C="$Date: 2010/11/04 13:51:22 $";
 
 #include "pa_vregex.h"
 #include "pa_vint.h"
@@ -18,7 +18,7 @@ static const char * const IDENT_VREGEX_C="$Date: 2009/11/06 04:54:34 $";
 #define REGEX_OPTIONS_NAME "options"
 
 
-char* get_pcre_exec_error_text(int exec_result){
+const char* get_pcre_exec_error_text(int exec_result){
 	switch(exec_result){
 		case PCRE_ERROR_BADUTF8:
 		case PCRE_ERROR_BADUTF8_OFFSET:
@@ -57,15 +57,20 @@ void VRegex::regex_options(const String* options, int* result){
 			| PCRE_DOLLAR_ENDONLY /* dollar matches only end of string, but not newline chars */;
 	result[1]=0;
 
-	if(options && !options->is_empty()) 
-		for(Regex_option *o=regex_option; o->key; o++) 
+	if(options && !options->is_empty()){
+		int valid_options=0;
+		for(Regex_option *o=regex_option; o->key; o++)
 			if(
 				options->pos(o->key)!=STRING_NOT_FOUND
 				|| (o->keyAlt && options->pos(o->keyAlt)!=STRING_NOT_FOUND)
 			){
 				*o->result &= ~o->clear;
 				*o->result |= o->set;
+				valid_options++;
 			}
+		if(options->length()!=valid_options)
+			throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+	}
 }
 
 
