@@ -8,7 +8,7 @@
 #ifndef PA_VHASH_H
 #define PA_VHASH_H
 
-static const char * const IDENT_VHASH_H="$Date: 2009/08/08 13:30:21 $";
+static const char * const IDENT_VHASH_H="$Date: 2010/11/05 21:55:37 $";
 
 #include "classes.h"
 #include "pa_value.h"
@@ -19,11 +19,10 @@ static const char * const IDENT_VHASH_H="$Date: 2009/08/08 13:30:21 $";
 // defines
 
 #define VHASH_TYPE "hash"
+
 #define HASH_FIELDS_NAME "fields"
-
 #define HASH_DEFAULT_ELEMENT_NAME "_default"
-
-// externs
+extern const String hash_fields_name, hash_default_element_name;
 
 extern Methoded* hash_class;
 
@@ -60,7 +59,7 @@ public: // value
 			return result;
 
 		// $fields -- pseudo field to make 'hash' more like 'table'
-		if(aname == HASH_FIELDS_NAME)
+		if(aname == hash_fields_name)
 			return this;
 
 		// $method
@@ -73,7 +72,7 @@ public: // value
 	
 	/// VHash: (key)=value
 	override const VJunction* put_element(const String& aname, Value* avalue, bool /*replace*/) { 
-		if(aname==HASH_DEFAULT_ELEMENT_NAME)
+		if(aname==hash_default_element_name)
 			set_default(avalue);
 		else 
 			if(flocked) {

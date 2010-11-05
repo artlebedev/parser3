@@ -5,10 +5,13 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Date: 2005/08/09 08:14:54 $";
+static const char * const IDENT="$Date: 2010/11/05 21:55:37 $";
 
 #include "pa_vhash.h"
 #include "pa_vfile.h"
+
+// globals
+const String hash_fields_name(HASH_FIELDS_NAME), hash_default_element_name(HASH_DEFAULT_ELEMENT_NAME);
 
 VFile* VHash::as_vfile(String::Language /*lang*/,
 	const Request_charsets * /*charsets*/) 
