@@ -8,7 +8,7 @@
 #ifndef PA_ARRAY_H
 #define PA_ARRAY_H
 
-static const char * const IDENT_ARRAY_Y="$Date: 2009/05/23 04:29:18 $";
+static const char * const IDENT_ARRAY_Y="$Date: 2010/11/05 21:56:49 $";
 
 // includes
 
@@ -159,6 +159,13 @@ public:
 	inline void put(size_t index, T element) {
 		assert(index<count());
 		felements[index]=element;
+	}
+
+	/// remove index-element
+	inline void remove(size_t index) {
+		assert(index<count());
+		if (index<--fused)
+			memmove(felements+index+1, felements+index, (fused-index) * sizeof(T));
 	}
 
 	inline T operator [](size_t index) const { return get(index); }
