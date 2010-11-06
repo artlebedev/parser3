@@ -1,0 +1,39 @@
+Content-Type: text/html
+Content-Length: 664
+
+Hit:
+/_/rss/_rss.html
+/_goto.html
+/address/
+/
+/_goto.html
+/retail/
+/peterburg/
+Offset & limit:
+/,/_goto.html
+Miss:
+/novosibirsk/retail/
+/nizhninovgorod/
+/retail/credit/.../
+/sme/accounts/software/
+/ufa/
+/omsk/atm/omsk/.../
+/sochi/retail/cards/.../
+/corporate/loans/
+/perm/
+Limit:
+/novosibirsk/retail/,/nizhninovgorod/,/retail/credit/.../,/sme/accounts/software/
+Reverse test:
+/perm/
+/corporate/loans/
+/sochi/retail/cards/.../
+/omsk/atm/omsk/.../
+/ufa/
+/sme/accounts/software/
+/retail/credit/.../
+/nizhninovgorod/
+/novosibirsk/retail/
+Limit:
+/perm/,/corporate/loans/,/sochi/retail/cards/.../,/omsk/atm/omsk/.../
+Offset & limit:
+/nizhninovgorod/,/novosibirsk/retail/

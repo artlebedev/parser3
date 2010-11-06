@@ -1,0 +1,47 @@
+$log[^table::create{cpu	url
+0.2200	/novosibirsk/retail/
+0.1600	/nizhninovgorod/
+0.0200	/_/rss/_rss.html
+0.2233	/retail/credit/.../
+0.0000	/_goto.html
+0.1500	/sme/accounts/software/
+0.1700	/ufa/
+0.0100	/address/
+0.1367	/omsk/atm/omsk/.../
+0.1833	/sochi/retail/cards/.../
+0.0033	/
+0.0033	/_goto.html
+0.1533	/corporate/loans/
+0.0100	/retail/
+0.0033	/peterburg/
+0.1533	/perm/
+}]
+
+Hit:
+$hit[^log.select($log.cpu<0.05)]
+^hit.menu{$hit.url}[^#0A]
+
+Offset & limit:
+$hit[^log.select($log.cpu<0.05)[ $.limit[2] $.offset[3] ]]
+^hit.menu{$hit.url}[,]
+
+Miss:
+$miss[^log.select($log.cpu>0.05)]
+^miss.menu{$miss.url}[^#0A]
+
+Limit:
+$miss[^log.select($log.cpu>0.05)[ $.limit(4) ]]
+^miss.menu{$miss.url}[,]
+
+Reverse test:
+
+$miss[^log.select($log.cpu>0.05)[ $.reverse(true) ]]
+^miss.menu{$miss.url}[^#0A]
+
+Limit:
+$miss[^log.select($log.cpu>0.05)[ $.limit(4) $.reverse(true) ]]
+^miss.menu{$miss.url}[,]
+
+Offset & limit:
+$miss[^log.select($log.cpu>0.05)[ $.limit(4) $.offset(7) $.reverse(true) ]]
+^miss.menu{$miss.url}[,]
