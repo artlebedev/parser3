@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2010/10/21 15:06:29 $";
+static const char * const IDENT_TABLE_C="$Date: 2010/11/06 00:05:46 $";
 
 #if (!defined(NO_STRINGSTREAM) && !defined(FREEBSD4))
 #include <sstream>
@@ -21,6 +21,7 @@ static const char * const IDENT_TABLE_C="$Date: 2010/10/21 15:06:29 $";
 #include "pa_vint.h"
 #include "pa_sql_connection.h"
 #include "pa_vbool.h"
+#include "pa_array.h"
 
 // class
 
@@ -1242,16 +1243,58 @@ static void _select(Request& r, MethodParams& params) {
 	Table& source_table=GET_SELF(r, VTable).table();
 	Table& result_table=*new Table(source_table.columns());
 
+	int limit=source_table.count();
+	int offset = 0;
+	bool reverse = false;
+	if(params.count()>1) {
+		Value& voptions=params.as_no_junction(1, "options must be hash, not code");
+		if(voptions.is_defined() && !voptions.is_string())
+			if(HashStringValue* options=voptions.get_hash()) {
+				int valid_options=0;
+				if(Value* vlimit=options->get(sql_limit_name)) {
+					valid_options++;
+					limit=r.process_to_value(*vlimit).as_int();
+				}
+				if(Value* voffset=options->get(sql_offset_name)) {
+					valid_options++;
+					offset=r.process_to_value(*voffset).as_int();
+				}
+				if(Value* vreverse=options->get(table_reverse_name)) {
+					valid_options++;
+					reverse=r.process_to_value(*vreverse).as_bool();
+				}
+				if(valid_options!=options->count())
+					throw Exception(PARSER_RUNTIME,
+						0,
+						"called with invalid option");
+			} else
+				throw Exception(PARSER_RUNTIME,
+					0,
+					"options must be hash");
+	}
+
 	int saved_current=source_table.current();
 	int size=source_table.count();
-	for(int row=0; row<size; row++) {
+	int appended = 0;
+
+	if(reverse){
+		for(int row=size-1; row >=0 && result_table.count() < limit; row--) {
 		source_table.set_current(row);
 
-		bool condition=r.process_to_value(vcondition, 
-				false/*don't intercept string*/).as_bool();
+			bool condition=r.process_to_value(vcondition, false/*don't intercept string*/).as_bool();
 
-		if(condition) // ...condition is true=
-			result_table+=source_table[row]; // =green light to go to result
+			if(condition && ++appended > offset) // ...condition is true, adding to the result
+			result_table+=source_table[row];
+	}
+	} else {
+		for(int row=0; row < size && result_table.count() < limit; row++) {
+			source_table.set_current(row);
+
+			bool condition=r.process_to_value(vcondition, false/*don't intercept string*/).as_bool();
+
+			if(condition && ++appended > offset) // ...condition is true, adding to the result
+					result_table+=source_table[row];
+		}
 	}
 	source_table.set_current(saved_current);
 
@@ -1322,5 +1365,5 @@ MTable::MTable(): Methoded("table") {
 	add_native_method("columns", Method::CT_DYNAMIC, _columns, 0, 1);
 
 	// ^table.select(expression) = table
-	add_native_method("select", Method::CT_DYNAMIC, _select, 1, 1);
+	add_native_method("select", Method::CT_DYNAMIC, _select, 1, 2);
 }
