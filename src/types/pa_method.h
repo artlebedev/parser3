@@ -8,7 +8,7 @@
 #ifndef PA_METHOD_H
 #define PA_METHOD_H
 
-static const char * const IDENT_METHOD_H="$Date: 2009/08/08 13:30:21 $";
+static const char * const IDENT_METHOD_H="$Date: 2010/11/08 23:53:46 $";
 
 #define OPTIMIZE_CALL
 #define OPTIMIZE_RESULT
@@ -81,6 +81,7 @@ public:
 
 	bool all_vars_local; // in local vars list 'locals' was specified: all vars are local
 	bool allways_use_result; // write to $result detected. will not collect all writes to output scope.
+	String *extra_params; // method has *name as an argument
 #ifdef OPTIMIZE_RESULT
 	Result_optimization result_optimization;
 #endif
@@ -115,6 +116,15 @@ public:
 		call_optimization(acall_optimization),  
 #endif
 		all_vars_local(aall_vars_local){
+			if (params_names){
+				const char *last_param = params_names->get(params_names->count()-1)->cstr();
+				if (*last_param == '*'){
+					extra_params = new String(pa_strdup(last_param+1));
+					params_names->remove(params_names->count()-1);
+					return;
+				}
+			}
+			extra_params = NULL;
 	}
 
 	/// call this before invoking to ensure proper actual numbered params count

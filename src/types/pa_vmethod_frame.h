@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2010/08/04 13:27:44 $";
+static const char * const IDENT_VMETHOD_FRAME_H="$Date: 2010/11/08 23:53:46 $";
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
@@ -274,8 +274,25 @@ public: // usage
 	void store_params(Value **params, size_t count) {
 		if(method.params_names) {
 			size_t param_count=method.params_names->count();
+			size_t i=0;
 
-			if(count>param_count)
+			if(count>param_count){
+				if(method.extra_params){
+					for(; i<param_count; i++) {
+						const String& fname=*(*method.params_names)[i];
+						set_my_variable(fname, *params[i]);
+					}
+
+					VHash& vargs=*new VHash();
+					HashStringValue& args = vargs.hash();
+
+					for(; i<count; i++) {
+						args.put(format(args.count(), 0), params[i]);
+					}
+
+					set_my_variable(*method.extra_params, vargs);
+					return;
+				} else
 				throw Exception(PARSER_RUNTIME,
 					0, //&name(),
 					"method of %s (%s) accepts maximum %d parameter(s) (%d present)", 
@@ -283,8 +300,8 @@ public: // usage
 					self().type(),
 					param_count,
 					count);
+			}
 
-			size_t i=0;
 			for(; i<count; i++) {
 				const String& fname=*(*method.params_names)[i];
 				set_my_variable(fname, *params[i]);
