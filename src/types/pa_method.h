@@ -8,7 +8,7 @@
 #ifndef PA_METHOD_H
 #define PA_METHOD_H
 
-static const char * const IDENT_METHOD_H="$Date: 2010/11/08 23:53:46 $";
+static const char * const IDENT_METHOD_H="$Date: 2010/11/09 00:08:45 $";
 
 #define OPTIMIZE_CALL
 #define OPTIMIZE_RESULT
@@ -118,7 +118,7 @@ public:
 		all_vars_local(aall_vars_local){
 			if (params_names){
 				const char *last_param = params_names->get(params_names->count()-1)->cstr();
-				if (*last_param == '*'){
+				if (last_param[0] == '*' && last_param[1]){
 					extra_params = new String(pa_strdup(last_param+1));
 					params_names->remove(params_names->count()-1);
 					return;
