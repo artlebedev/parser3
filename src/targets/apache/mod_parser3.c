@@ -1,11 +1,11 @@
 /** @file
-Parser: apache 1.3 module, part, compiled by Apache.
+	Parser: apache 1.3 and 2.2 module
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2010 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_MOD_PARSER3_C="$Date: 2010/11/13 00:43:22 $";
+static const char * const IDENT_MOD_PARSER3_C="$Date: 2010/11/13 00:44:08 $";
 
 #ifdef WIN32
 #include <winsock2.h>
@@ -18,16 +18,45 @@ static const char * const IDENT_MOD_PARSER3_C="$Date: 2010/11/13 00:43:22 $";
 #include "http_main.h"
 #include "http_protocol.h"
 #include "util_script.h"
-#include "ap_md5.h"
-#include "ap_alloc.h"
 
 #include "pa_httpd.h"
+
+/*
+* To Ease Compatibility
+*/
+#ifdef STANDARD20_MODULE_STUFF
+
+#include "apr_strings.h"
+
+#define ap_pcalloc	apr_pcalloc
+#define ap_pstrdup	apr_pstrdup
+
+#define ap_table_get	apr_table_get
+#define ap_table_elts	apr_table_elts
+#define ap_table_addn	apr_table_addn
+#define ap_table_do	apr_table_do
+
+#else
+
+#include "ap_alloc.h"
+
+#define apr_pool_t pool
+#define apr_table_t table
+
+#define ap_add_version_component(p, v) ap_add_version_component(v) 
+
+#endif /* STANDARD20_MODULE_STUFF */
 
 /*
 * Declare ourselves so the configuration routines can find and know us.
 * We'll fill it in at the end of the module.
 */
-extern module MODULE_VAR_EXPORT parser3_module;
+
+#ifdef STANDARD20_MODULE_STUFF
+module AP_MODULE_DECLARE_DATA parser3_module;
+#else
+module MODULE_VAR_EXPORT parser3_module;
+#endif
 
 /*
 * Locate our directory configuration record for the current request.
@@ -45,8 +74,8 @@ static const char* cmd_parser_config(cmd_parms *cmd, void *mconfig, char *file_s
 	
 	return NULL;
 }
+
 static const char* cmd_parser_status_allowed(cmd_parms *cmd, void *mconfig, char *file_spec) {
-	//_asm int 3;
 	Parser_module_config *cfg = (Parser_module_config *) mconfig;
 	
 	cfg->parser_status_allowed=1;
@@ -54,62 +83,9 @@ static const char* cmd_parser_status_allowed(cmd_parms *cmd, void *mconfig, char
 	return NULL;
 }
 
-
-/*--------------------------------------------------------------------------*/
-/*                                                                          */
-/* Now we declare our content handlers, which are invoked when the server   */
-/* encounters a document which our module is supposed to have a chance to   */
-/* see.  (See mod_mime's SetHandler and AddHandler directives, and the      */
-/* mod_info and mod_status examples, for more details.)                     */
-/*                                                                          */
-/* Since content handlers are dumping data directly into the connexion      */
-/* (using the r*() routines, such as rputs() and rprintf()) without         */
-/* intervention by other parts of the server, they need to make             */
-/* sure any accumulated HTTP headers are sent first.  This is done by       */
-/* calling send_http_header().  Otherwise, no header will be sent at all,   */
-/* and the output sent to the client will actually be HTTP-uncompliant.     */
-/*--------------------------------------------------------------------------*/
 /* 
-* Sample content handler.  All this does is display the call list that has
-* been built up so far.
-*
-* The return value instructs the caller concerning what happened and what to
-* do next:
-*  OK ("we did our thing")
-*  DECLINED ("this isn't something with which we want to get involved")
-*  HTTP_mumble ("an error status should be reported")
+* Now let's declare routines for each of the callback phase in order.
 */
-
-
-/*--------------------------------------------------------------------------*/
-/*                                                                          */
-/* Now let's declare routines for each of the callback phase in order.      */
-/* (That's the order in which they're listed in the callback list, *not     */
-/* the order in which the server calls them!  See the command_rec           */
-/* declaration near the bottom of this file.)  Note that these may be       */
-/* called for situations that don't relate primarily to our function - in   */
-/* other words, the fixup handler shouldn't assume that the request has     */
-/* to do with "example" stuff.                                              */
-/*                                                                          */
-/* With the exception of the content handler, all of our routines will be   */
-/* called for each request, unless an earlier handler from another module   */
-/* aborted the sequence.                                                    */
-/*                                                                          */
-/* Handlers that are declared as "int" can return the following:            */
-/*                                                                          */
-/*  OK          Handler accepted the request and did its thing with it.     */
-/*  DECLINED    Handler took no action.                                     */
-/*  HTTP_mumble Handler looked at request and found it wanting.             */
-/*                                                                          */
-/* What the server does after calling a module handler depends upon the     */
-/* handler's return value.  In all cases, if the handler returns            */
-/* DECLINED, the server will continue to the next module with an handler    */
-/* for the current phase.  However, if the handler return a non-OK,         */
-/* non-DECLINED status, the server aborts the request right there.  If      */
-/* the handler returns OK, the server's next action is phase-specific;      */
-/* see the individual handler comments below for details.                   */
-/*                                                                          */
-/*--------------------------------------------------------------------------*/
 
 static int parser_handler(request_rec *ar) {
 	// record clone
@@ -136,16 +112,12 @@ static int parser_handler(request_rec *ar) {
 }
 
 /* 
-* This function is called during server initialisation.  Any information
-* that needs to be recorded must be in static cells, since there's no
-* configuration record.
-*
-* There is no return value.
+* This function is called during server initialisation.
 */
 
-static void parser_module_init(server_rec *s, pool *p) {
+static void parser_module_init(server_rec *s, apr_pool_t *p) {
 #if MODULE_MAGIC_NUMBER >= 19980527
-	ap_add_version_component(pa_version());
+	ap_add_version_component(p, pa_version());
 #endif	
 	
 	/*
@@ -155,72 +127,33 @@ static void parser_module_init(server_rec *s, pool *p) {
 }
 
 /* 
- * This function is called when an heavy-weight process (such as a child) is
- * being run down or destroyed.  As with the child-initialisation function,
- * any information that needs to be recorded must be in static cells, since
- * there's no configuration record.
- *
- * There is no return value.
- */
-
-/*
- * All our process-death routine does is add its trace to the log.
- */
-static void parser_module_done(server_rec *s, pool *p) {
+* All our process-death routine does is add its trace to the log.
+*/
+static void parser_module_done(server_rec *s, apr_pool_t *p) {
 	pa_destroy_module_cells();
 }
 
 /*
-* This function gets called to create a per-directory configuration
-* record.  This will be called for the "default" server environment, and for
-* each directory for which the parser finds any of our directives applicable.
-* If a directory doesn't have any of our directives involved (i.e., they
-* aren't in the .htaccess file, or a <Location>, <Directory>, or related
-* block), this routine will *not* be called - the configuration for the
-* closest ancestor is used.
-*
-* The return value is a pointer to the created module-specific
-* structure.
+* This function gets called to create a per-directory configuration record.
 */
-static void *parser_create_dir_config(pool *p, char *dirspec) {
-	//_asm int 3;
+static void *parser_create_dir_config(apr_pool_t *p, char *dirspec) {
 	/*
-	* Allocate the space for our record from the pool supplied.
+	* Allocate the space for our record from the apr_pool_t supplied.
 	*/
 	Parser_module_config *cfg=
 		(Parser_module_config *) ap_pcalloc(p, sizeof(Parser_module_config));
-		/*
-		* Now fill in the defaults.  If there are any `parent' configuration
-		* records, they'll get merged as part of a separate callback.
-	*/
-	
 	return (void *) cfg;
 }
 
 /*
-* This function gets called to merge two per-directory configuration
-* records.  This is typically done to cope with things like .htaccess files
-* or <Location> directives for directories that are beneath one for which a
-* configuration record was already created.  The routine has the
-* responsibility of creating a new record and merging the contents of the
-* other two into it appropriately.  If the module doesn't declare a merge
-* routine, the record for the closest ancestor location (that has one) is
-* used exclusively.
+* This function gets called to merge two per-directory configuration records.
 *
-* The routine MUST NOT modify any of its arguments!
+* 20011126 paf: noticed, that this is called even on virtual root merge with something "parent",
+* while thought that that is part of merge_server...
 *
-* The return value is a pointer to the created module-specific structure
-* containing the merged values.
-
- 20011126 paf: noticed, that this is called even on virtual root merge with something "parent",
- while thought that that is part of merge_server...
- 
 */
-static void *parser_merge_dir_config(pool *p, void *parent_conf,
-				     void *newloc_conf) {
-	//_asm int 3;
-	Parser_module_config *merged_config = 
-		(Parser_module_config *) ap_pcalloc(p, sizeof(Parser_module_config));
+static void *parser_merge_dir_config(apr_pool_t *p, void *parent_conf, void *newloc_conf) {
+	Parser_module_config *merged_config = (Parser_module_config *) ap_pcalloc(p, sizeof(Parser_module_config));
 	Parser_module_config *pconf = (Parser_module_config *) parent_conf;
 	Parser_module_config *nconf = (Parser_module_config *) newloc_conf;
 	
@@ -230,23 +163,13 @@ static void *parser_merge_dir_config(pool *p, void *parent_conf,
 		pconf->parser_status_allowed ||
 		nconf->parser_status_allowed;
 	
-		/*
-		* Some things get copied directly from the more-specific record, rather
-		* than getting merged.
-	*/
-	
 	return (void *) merged_config;
 }
 
 /*
-* This function gets called to create a per-server configuration
-* record.  It will always be called for the "default" server.
-*
-* The return value is a pointer to the created module-specific
-* structure.
+* This function gets called to create a per-server configuration record.
 */
-static void *parser_create_server_config(pool *p, server_rec *s) {
-	//_asm int 3;
+static void *parser_create_server_config(apr_pool_t *p, server_rec *s) {
 	/*
 	* As with the parser_create_dir_config() routine, we allocate and fill
 	* in an empty record.
@@ -258,25 +181,11 @@ static void *parser_create_server_config(pool *p, server_rec *s) {
 }
 
 /*
-* This function gets called to merge two per-server configuration
-* records.  This is typically done to cope with things like virtual hosts and
-* the default server configuration  The routine has the responsibility of
-* creating a new record and merging the contents of the other two into it
-* appropriately.  If the module doesn't declare a merge routine, the more
-* specific existing record is used exclusively.
-*
-* The routine MUST NOT modify any of its arguments!
-*
-* The return value is a pointer to the created module-specific structure
-* containing the merged values.
+* This function gets called to merge two per-server configuration records.
 */
-static void *parser_merge_server_config(pool *p, void *server1_conf,
-					void *server2_conf)
+static void *parser_merge_server_config(apr_pool_t *p, void *server1_conf, void *server2_conf)
 {
-	//_asm int 3;
-	
-	Parser_module_config *merged_config = 
-		(Parser_module_config *) ap_pcalloc(p, sizeof(Parser_module_config));
+	Parser_module_config *merged_config = (Parser_module_config *) ap_pcalloc(p, sizeof(Parser_module_config));
 	Parser_module_config *s1conf = (Parser_module_config *) server1_conf;
 	Parser_module_config *s2conf = (Parser_module_config *) server2_conf;
 	
@@ -295,11 +204,7 @@ static void *parser_merge_server_config(pool *p, void *server1_conf,
 
 /*
 * This routine gives our module an opportunity to translate the URI into an
-* actual filename.  If we don't do anything special, the server's default
-* rules (Alias directives and the like) will continue to be followed.
-*
-* The return value is OK, DECLINED, or HTTP_mumble.  If we return OK, no
-* further modules are called for this phase.
+* actual filename.
 */
 static int parser_translate_handler(request_rec *r) {
 	Parser_module_config *cfg=our_dconfig(r);
@@ -308,12 +213,7 @@ static int parser_translate_handler(request_rec *r) {
 
 /*
 * This routine is called to check the authentication information sent with
-* the request (such as looking up the user in a database and verifying that
-* the [encrypted] password sent matches the one in the database).
-*
-* The return value is OK, DECLINED, or some HTTP_mumble error (typically
-* HTTP_UNAUTHORIZED).  If we return OK, no other modules are given a chance
-* at the request during this phase.
+* the request
 */
 static int parser_check_user_id(request_rec *r) {
 	Parser_module_config *cfg=our_dconfig(r);
@@ -323,12 +223,6 @@ static int parser_check_user_id(request_rec *r) {
 /*
 * This routine is called to check to see if the resource being requested
 * requires authorisation.
-*
-* The return value is OK, DECLINED, or HTTP_mumble.  If we return OK, no
-* other modules are called during this phase.
-*
-* If *all* modules return DECLINED, the request is aborted with a server
-* error.
 */
 static int parser_auth_checker(request_rec *r) {
 	Parser_module_config *cfg=our_dconfig(r);
@@ -338,27 +232,12 @@ static int parser_auth_checker(request_rec *r) {
 /*
 * This routine is called to check for any module-specific restrictions placed
 * upon the requested resource.  (See the mod_access module for an example.)
-*
-* The return value is OK, DECLINED, or HTTP_mumble.  All modules with an
-* handler for this phase are called regardless of whether their predecessors
-* return OK or DECLINED.  The first one to return any other status, however,
-* will abort the sequence (and the request) as usual.
 */
 static int parser_access_checker(request_rec *r) {
-	
 	Parser_module_config *cfg=our_dconfig(r);
 	return DECLINED;
 }
 
-/*--------------------------------------------------------------------------*/
-/*                                                                          */
-/* All of the routines have been declared now.  Here's the list of          */
-/* directives specific to our module, and information about where they      */
-/* may appear and how the command parser should pass them to us for         */
-/* processing.  Note that care must be taken to ensure that there are NO    */
-/* collisions of directive names between modules.                           */
-/*                                                                          */
-/*--------------------------------------------------------------------------*/
 /* 
 * List of directives specific to our module.
 */
@@ -384,51 +263,55 @@ static const command_rec parser_cmds[] =
 };
 
 /*--------------------------------------------------------------------------*/
-/*                                                                          */
 /* Now the list of content handlers available from this module.             */
-/*                                                                          */
 /*--------------------------------------------------------------------------*/
-/* 
-* List of content handlers our module supplies.  Each handler is defined by
-* two parts: a name by which it can be referenced (such as by
-* {Add,Set}Handler), and the actual routine name.  The list is terminated by
-* a NULL block, since it can be of variable length.
-*
-* Note that content-handlers are invoked on a most-specific to least-specific
-* basis; that is, a handler that is declared for "text/plain" will be
-* invoked before one that was declared for "text / *".  Note also that
-* if a content-handler returns anything except DECLINED, no other
-* content-handlers will be called.
-*/
+
+#ifndef STANDARD20_MODULE_STUFF
 static const handler_rec parser_handlers[] =
 {
 	{"parser3-handler", parser_handler},
 	{NULL}
 };
+#endif
 
 /*--------------------------------------------------------------------------*/
-/*                                                                          */
 /* Finally, the list of callback routines and data structures that          */
 /* provide the hooks into our module from the other parts of the server.    */
-/*                                                                          */
 /*--------------------------------------------------------------------------*/
+
+#ifdef STANDARD20_MODULE_STUFF
+
 /* 
-* Module definition for configuration.  If a particular callback is not
-* needed, replace its routine name below with the word NULL.
-*
-* The number in brackets indicates the order in which the routine is called
-* during request processing.  Note that not all routines are necessarily
-* called (such as if a resource doesn't have access restrictions).
+* register hooks.
 */
+static void parser_register_hooks(apr_pool_t* pool)
+{
+	ap_add_version_component(pool, pa_version());
+//	ap_hook_post_config(parser_server_init, NULL, NULL, APR_HOOK_MIDDLE);
+	ap_hook_handler(parser_handler, NULL, NULL, APR_HOOK_MIDDLE);
+//	ap_hook_translate_name(parser_translate_handler, NULL, NULL, APR_HOOK_MIDDLE);
+//	ap_hook_check_user_id(parser_check_user_id, NULL, NULL, APR_HOOK_MIDDLE);
+//	ap_hook_auth_checker(parser_auth_checker, NULL, NULL, APR_HOOK_MIDDLE);
+//	ap_hook_access_checker(parser_access_checker, NULL, NULL, APR_HOOK_MIDDLE);
+};
+
+module AP_MODULE_DECLARE_DATA parser3_module =
+{
+	STANDARD20_MODULE_STUFF,
+#else
 module MODULE_VAR_EXPORT parser3_module =
 {
 	STANDARD_MODULE_STUFF,
 	parser_module_init,          /* module initializer */
+#endif
 	parser_create_dir_config,    /* per-directory config creator */
 	parser_merge_dir_config,     /* dir config merger */
 	parser_create_server_config, /* server config creator */
 	parser_merge_server_config,  /* server config merger */
-	parser_cmds,                 /* command table */
+	parser_cmds,                 /* command apr_table_t */
+#ifdef STANDARD20_MODULE_STUFF
+	parser_register_hooks        /* register hooks */
+#else
 	parser_handlers,             /* [9] list of handlers */
 	parser_translate_handler,    /* [2] filename-to-URI translation */
 	parser_check_user_id,        /* [5] check/validate user_id */
@@ -438,17 +321,16 @@ module MODULE_VAR_EXPORT parser3_module =
 	0,                           /* [8] fixups */
 	0                            /* [10] logger */
 #if MODULE_MAGIC_NUMBER >= 19970103
-    ,0      /* [3] header parser */
+	,0                           /* [3] header parser */
 #endif
 #if MODULE_MAGIC_NUMBER >= 19970719
-    ,0         /* process initializer */
+	,0                           /* process initializer */
 #endif
 #if MODULE_MAGIC_NUMBER >= 19970728
-    ,parser_module_done         /* process exit/cleanup */
+	,parser_module_done          /* process exit/cleanup */
 #endif
-#if MODULE_MAGIC_NUMBER >= 19970902
-    ,0   /* [1] post read_request handling */
-#endif
+
+#endif // STANDARD20_MODULE_STUFF
 };
 
 #if defined(_MSC_VER)
@@ -478,8 +360,7 @@ module MODULE_VAR_EXPORT parser3_module =
 
 #define PA_APLOG_MARK	__FILE__,__LINE__
 
-void pa_ap_log_rerror(const char *file, int line, int level,
-		      const pa_request_rec *s, const char *fmt, ...) {
+void pa_ap_log_rerror(const char *file, int line, int level, const pa_request_rec *s, const char *fmt, ...) {
 	const char* str;
 	va_list l;
 	va_start(l, fmt); 
@@ -487,12 +368,14 @@ void pa_ap_log_rerror(const char *file, int line, int level,
 	va_end(l); 
 
 	ap_log_rerror(file, line, level,
+#ifdef STANDARD20_MODULE_STUFF
+				0,
+#endif
 		      (request_rec*)s->real_request_rec, "%s", str);
 }
 
 
-void pa_ap_log_error(const char *file, int line, int level,
-		     const pa_server_rec *s, const char *fmt, ...) {
+void pa_ap_log_error(const char *file, int line, int level, const pa_server_rec *s, const char *fmt, ...) {
 	const char* str;
 	va_list l;
 	va_start(l, fmt); 
@@ -500,29 +383,31 @@ void pa_ap_log_error(const char *file, int line, int level,
 	va_end(l); 
 
 	ap_log_error(file, line, level,
+#ifdef STANDARD20_MODULE_STUFF
+				0,
+#endif
 		      (server_rec*)s, "%s", str);
 }
 
 // ap_alloc.h
 
 const char* pa_ap_table_get(const pa_table *t, const char *name) {
-	return ap_table_get((const table*)t, name);
+	return ap_table_get((const apr_table_t*)t, name);
 }
 void pa_ap_table_addn(pa_table *t, const char *name, const char *val) {
-	ap_table_addn((table*)t, name, val);
+	ap_table_addn((apr_table_t*)t, name, val);
 }
 
 int pa_ap_table_size(const pa_table *t) {
-	return ap_table_elts((const table*)t)->nelts;
+	return ap_table_elts((const apr_table_t*)t)->nelts;
 }
 
-void pa_ap_table_do(int (*comp) (void *, const char *, const char *), 
-		    void *rec, const pa_table *t, ...) {
-	ap_table_do(comp, rec, (table*)t, 0);
+void pa_ap_table_do(int (*comp) (void *, const char *, const char *), void *rec, const pa_table *t, ...) {
+	ap_table_do(comp, rec, (apr_table_t*)t, 0);
 }
 
 char * pa_ap_pstrdup(pa_pool *p, const char *s) {
-	return ap_pstrdup((pool*)p, s);
+	return ap_pstrdup((apr_pool_t*)p, s);
 }
 
 // http_protocol.h
@@ -539,25 +424,33 @@ long pa_ap_get_client_block(pa_request_rec *r, char *buffer, int bufsiz) {
 		buffer, bufsiz);
 }
 void pa_ap_send_http_header(pa_request_rec *r) {
+// Apache2 send headers before body automatically
+#ifndef STANDARD20_MODULE_STUFF
 	ap_send_http_header((request_rec*)r->real_request_rec);
+#endif
 }
 int pa_ap_rwrite(const void *buf, int nbyte, pa_request_rec *r) {
 	return ap_rwrite(buf, nbyte, (request_rec*)r->real_request_rec);
 }
 
-
 // http_main.h
 
 void pa_ap_hard_timeout(char *s, pa_request_rec *r) {
+// Apache 2 uses non-blocking I/O
+#ifndef STANDARD20_MODULE_STUFF
 	ap_hard_timeout(s, (request_rec*)r->real_request_rec);
+#endif
 }
 void pa_ap_reset_timeout(pa_request_rec *r) {
+#ifndef STANDARD20_MODULE_STUFF
 	ap_reset_timeout((request_rec*)r->real_request_rec);
+#endif
 }
 void pa_ap_kill_timeout(pa_request_rec *r) {
+#ifndef STANDARD20_MODULE_STUFF
 	ap_kill_timeout((request_rec*)r->real_request_rec);
+#endif
 }
-
 
 // util_script.h
 
@@ -568,20 +461,7 @@ void pa_ap_add_common_vars(pa_request_rec *r) {
 	ap_add_common_vars((request_rec*)r->real_request_rec);
 }
 
-
-// ap_md5.h
-
-void pa_MD5Init(PA_MD5_CTX *context) { ap_MD5Init((AP_MD5_CTX*)context); }
-void pa_MD5Update(PA_MD5_CTX *context, const unsigned char *input,
-			      unsigned int inputLen) { ap_MD5Update((AP_MD5_CTX *)context, input, inputLen); }
-void pa_MD5Final(unsigned char digest[MD5_DIGESTSIZE],
-			     PA_MD5_CTX *context) { ap_MD5Final(digest, (AP_MD5_CTX *)context); }
-void pa_MD5Encode(const unsigned char *password,
-			      const unsigned char *salt,
-			      char *result, size_t nbytes) { ap_MD5Encode(password, salt, result, nbytes); }
-void pa_to64(char *s, unsigned long v, int n) { ap_to64(s, v, n); }
-
-
+#ifndef WIN32
 // signal.h
 
 void (*pa_signal (int sig, void (*disp)(int)))(int) {
@@ -590,3 +470,4 @@ void (*pa_signal (int sig, void (*disp)(int)))(int) {
 
 	return 0;
 }
+#endif
