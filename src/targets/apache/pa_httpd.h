@@ -8,7 +8,7 @@
 #ifndef PA_HTTPD_H
 #define PA_HTTPD_H
 
-static const char * const IDENT_HTTPD_H="$Date: 2010/11/13 00:43:22 $";
+static const char * const IDENT_HTTPD_H="$Date: 2010/11/14 22:44:23 $";
 
 #ifdef __cplusplus
 extern "C" {
@@ -33,10 +33,10 @@ typedef struct pa_request_rec_tag {
 	const char ** content_type;
 
 	char *uri;			/* the path portion of the URI */
-	char *filename;		/* filename if found, otherwise NULL */
+	char *filename;			/* filename if found, otherwise NULL */
 	char *path_info;
 	char *args;			/* QUERY_ARGS, if any */
-	struct stat* finfo;		/* ST_MODE set to zero if no such file */
+	int file_not_found;		/* ST_MODE set to zero if no such file */
 } pa_request_rec;
 
 /// apache parser module configuration [httpd.conf + .htaccess-es]

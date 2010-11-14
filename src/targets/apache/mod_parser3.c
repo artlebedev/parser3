@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_MOD_PARSER3_C="$Date: 2010/11/13 00:44:08 $";
+static const char * const IDENT_MOD_PARSER3_C="$Date: 2010/11/14 22:44:23 $";
 
 #ifdef WIN32
 #include <winsock2.h>
@@ -20,6 +20,8 @@ static const char * const IDENT_MOD_PARSER3_C="$Date: 2010/11/13 00:44:08 $";
 #include "util_script.h"
 
 #include "pa_httpd.h"
+
+#define PARSER3_HANDLER "parser3-handler"
 
 /*
 * To Ease Compatibility
@@ -87,42 +89,56 @@ static const char* cmd_parser_status_allowed(cmd_parms *cmd, void *mconfig, char
 * Now let's declare routines for each of the callback phase in order.
 */
 
-static int parser_handler(request_rec *ar) {
-	// record clone
-	pa_request_rec lr={
-		ar,
-		ar->pool,
-		ar->header_only,
-		&ar->status,
-		ar->method,
-		ar->headers_out,
-		ar->subprocess_env,
-		&ar->content_type,
-		ar->uri,
-		ar->filename,
-		ar->path_info,
-		ar->args,
-		&ar->finfo
+static int parser_handler(request_rec *r) {
+
+//	ap_log_rerror(APLOG_MARK, APLOG_EMERG, 0, r, "handler, r->handler=%s", r->handler);
+
+#ifdef STANDARD20_MODULE_STUFF
+	if(strcmp(r->handler, PARSER3_HANDLER))
+		return DECLINED;
+#endif
+	// converting to parser version
+	pa_request_rec pr={
+		r,
+		r->pool,
+		r->header_only,
+		&r->status,
+		r->method,
+		r->headers_out,
+		r->subprocess_env,
+		&r->content_type,
+		r->uri,
+		r->filename,
+		r->path_info,
+		r->args,
+#ifdef STANDARD20_MODULE_STUFF
+		r->finfo.filetype == 0
+#else		
+		r->finfo.st_mode == 0
+#endif
 	};
 
 	// config
-	Parser_module_config *dcfg=our_dconfig(ar);
-	
-	return pa_parser_handler(&lr, dcfg);
+	Parser_module_config *dcfg=our_dconfig(r);
+
+	return pa_parser_handler(&pr, dcfg);
 }
 
 /* 
 * This function is called during server initialisation.
 */
 
+#ifdef STANDARD20_MODULE_STUFF
+static void parser_module_init(apr_pool_t *p, server_rec *s) {
+#else
+
 static void parser_module_init(server_rec *s, apr_pool_t *p) {
 #if MODULE_MAGIC_NUMBER >= 19980527
 	ap_add_version_component(p, pa_version());
 #endif	
-	
-	/*
-	* Set up any module cells that ought to be initialised.
-	*/
+
+#endif	
+	ap_log_perror(APLOG_MARK, APLOG_EMERG, 0, p, "parser inited %d", getpid());
 	pa_setup_module_cells();
 }
 
@@ -269,7 +285,7 @@ static const command_rec parser_cmds[] =
 #ifndef STANDARD20_MODULE_STUFF
 static const handler_rec parser_handlers[] =
 {
-	{"parser3-handler", parser_handler},
+	{PARSER3_HANDLER, parser_handler},
 	{NULL}
 };
 #endif
@@ -286,9 +302,10 @@ static const handler_rec parser_handlers[] =
 */
 static void parser_register_hooks(apr_pool_t* pool)
 {
-	ap_add_version_component(pool, pa_version());
+//	ap_add_version_component(pool, pa_version());
 //	ap_hook_post_config(parser_server_init, NULL, NULL, APR_HOOK_MIDDLE);
 	ap_hook_handler(parser_handler, NULL, NULL, APR_HOOK_MIDDLE);
+	ap_hook_child_init(parser_module_init, NULL, NULL, APR_HOOK_MIDDLE);
 //	ap_hook_translate_name(parser_translate_handler, NULL, NULL, APR_HOOK_MIDDLE);
 //	ap_hook_check_user_id(parser_check_user_id, NULL, NULL, APR_HOOK_MIDDLE);
 //	ap_hook_auth_checker(parser_auth_checker, NULL, NULL, APR_HOOK_MIDDLE);

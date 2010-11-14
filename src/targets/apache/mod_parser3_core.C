@@ -5,7 +5,7 @@ Parser: apache 1.3 module, part, compiled by parser3project.
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_MOD_PARSER3_MAIN_C="$Date: 2010/11/13 00:43:22 $";
+static const char * const IDENT_MOD_PARSER3_MAIN_C="$Date: 2010/11/14 22:44:23 $";
 
 #include "pa_config_includes.h"
 
@@ -232,7 +232,6 @@ static void real_parser_handler(SAPI_Info& SAPI_info, Parser_module_config *dcfg
 	request_info.cookie=SAPI::get_env(SAPI_info, "HTTP_COOKIE");
 	request_info.mail_received=false;
 	
-	//_asm int 3;
 	// prepare to process request
 	Request request(
 		SAPI_info,
@@ -296,19 +295,11 @@ static void call_real_parser_handler__supress_system_exception(
 
 /// @test r->finfo.st_mode check seems to work only on win32
 int pa_parser_handler(pa_request_rec *r, Parser_module_config *dcfg) {
-	//_asm int 3;
-
 	// SAPI info
 	SAPI_Info SAPI_info; SAPI_info.r=r;
 	
-	//_asm int 3;
-	if(r->finfo->st_mode == 0) 
+	if(r->file_not_found ) 
 		return PA_HTTP_NOT_FOUND;
-	
-		/* A flag which modules can set, to indicate that the data being
-		* returned is volatile, and clients should be told not to cache it.
-	*/
-	//	r->no_cache=1;
 	
 	try { // global try
 #ifdef PA_SUPPRESS_SYSTEM_EXCEPTION
