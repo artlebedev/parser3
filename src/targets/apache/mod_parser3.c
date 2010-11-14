@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_MOD_PARSER3_C="$Date: 2010/11/14 22:44:23 $";
+static const char * const IDENT_MOD_PARSER3_C="$Date: 2010/11/14 22:49:57 $";
 
 #ifdef WIN32
 #include <winsock2.h>
@@ -125,18 +125,14 @@ static int parser_handler(request_rec *r) {
 }
 
 /* 
-* This function is called during server initialisation.
+* This function is called during process initialisation.
 */
 
 #ifdef STANDARD20_MODULE_STUFF
 static void parser_module_init(apr_pool_t *p, server_rec *s) {
 #else
-
 static void parser_module_init(server_rec *s, apr_pool_t *p) {
-#if MODULE_MAGIC_NUMBER >= 19980527
 	ap_add_version_component(p, pa_version());
-#endif	
-
 #endif	
 	ap_log_perror(APLOG_MARK, APLOG_EMERG, 0, p, "parser inited %d", getpid());
 	pa_setup_module_cells();
@@ -336,17 +332,10 @@ module MODULE_VAR_EXPORT parser3_module =
 	parser_access_checker,       /* [4] check access by host address */
 	0,                           /* [7] MIME type checker/setter */
 	0,                           /* [8] fixups */
-	0                            /* [10] logger */
-#if MODULE_MAGIC_NUMBER >= 19970103
-	,0                           /* [3] header parser */
-#endif
-#if MODULE_MAGIC_NUMBER >= 19970719
-	,0                           /* process initializer */
-#endif
-#if MODULE_MAGIC_NUMBER >= 19970728
-	,parser_module_done          /* process exit/cleanup */
-#endif
-
+	0,                           /* [10] logger */
+	0,                           /* [3] header parser */
+	0,                           /* process initializer */
+	parser_module_done           /* process exit/cleanup */
 #endif // STANDARD20_MODULE_STUFF
 };
 
@@ -362,18 +351,18 @@ module MODULE_VAR_EXPORT parser3_module =
 
 // interface to C++
 
-#define	PA_APLOG_EMERG	0	/* system is unusable */
-#define	PA_APLOG_ALERT	1	/* action must be taken immediately */
-#define	PA_APLOG_CRIT	2	/* critical conditions */
-#define	PA_APLOG_ERR	3	/* error conditions */
+#define	PA_APLOG_EMERG		0	/* system is unusable */
+#define	PA_APLOG_ALERT		1	/* action must be taken immediately */
+#define	PA_APLOG_CRIT		2	/* critical conditions */
+#define	PA_APLOG_ERR		3	/* error conditions */
 #define	PA_APLOG_WARNING	4	/* warning conditions */
-#define	PA_APLOG_NOTICE	5	/* normal but significant condition */
-#define	PA_APLOG_INFO	6	/* informational */
-#define	PA_APLOG_DEBUG	7	/* debug-level messages */
+#define	PA_APLOG_NOTICE		5	/* normal but significant condition */
+#define	PA_APLOG_INFO		6	/* informational */
+#define	PA_APLOG_DEBUG		7	/* debug-level messages */
 
 #define	PA_APLOG_LEVELMASK	7	/* mask off the level value */
 
-#define PA_APLOG_NOERRNO		(PA_APLOG_LEVELMASK + 1)
+#define PA_APLOG_NOERRNO	(PA_APLOG_LEVELMASK + 1)
 
 #define PA_APLOG_MARK	__FILE__,__LINE__
 
