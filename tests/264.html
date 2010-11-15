@@ -1,0 +1,15 @@
+@main[]
+
+$s[ 
+	^taint[html][ some <a href="/?a&b">html</a> code ]
+	^taint[parser-code][ ^$b(2+2) ]
+	^taint[regex][ ^^(.*?)^$ ]
+	^taint[ some <?dirty?> code ]
+]
+
+^apply-taint[$s]
+^apply-taint[html;$s]
+^apply-taint[regex;$s]
+
+$f[^file::exec[cat.sh; $.stdin[$s] ;stdin]]
+$f.text
