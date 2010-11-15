@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2010/10/21 15:06:27 $";
+static const char * const IDENT_FILE_C="$Date: 2010/11/15 23:37:08 $";
 
 #include "pa_config_includes.h"
 
@@ -456,7 +456,6 @@ static void _exec_cgi(Request& r, MethodParams& params, bool cgi) {
 	env.put(String::Body("SCRIPT_NAME"), script_name);
 	//env.put(String::Body("SCRIPT_FILENAME"), ??&script_name);
 
-	bool stdin_specified=false;
 	// environment & stdin from param
 	String *in=new String();
 	Charset *charset=0; // default script works raw_in 'source' charset = no transcoding needed
@@ -478,9 +477,9 @@ static void _exec_cgi(Request& r, MethodParams& params, bool cgi) {
 			}
 			// $.stdin
 			if(info.vstdin) {
-				stdin_specified=true;
 				if(const String* sstdin=info.vstdin->get_string()) {
-					in->append(*sstdin, String::L_CLEAN, true);
+					// untaint stdin
+					in = new String(sstdin->cstr_to_string_body_untaint(String::L_AS_IS), String::L_AS_IS);
 				} else
 					if(VFile* vfile=static_cast<VFile *>(info.vstdin->as("file")))
 						in->append_know_length((const char* )vfile->value_ptr(), vfile->value_size(), String::L_TAINTED);
