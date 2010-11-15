@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2010/08/27 05:02:40 $";
+static const char * const IDENT_OP_C="$Date: 2010/11/15 23:31:08 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -143,6 +143,13 @@ static void _taint(Request& r, MethodParams& params) {
 		String result(vbody.as_string(), lang); // force result language to specified
 		r.write_assign_lang(result);
 	}
+}
+
+static void _apply_taint(Request& r, MethodParams& params) {
+	String::Language lang=params.count()==1 ? String::L_AS_IS : get_untaint_lang(params, 0);
+	const String &sbody=params.as_string(params.count()-1, "body must be string");
+	String::Body result_body=sbody.cstr_to_string_body_untaint(lang, 0, &r.charsets);
+	r.write_pass_lang(*new String(result_body, String::L_AS_IS));
 }
 
 static void _process(Request& r, MethodParams& params) {
@@ -899,6 +906,9 @@ VClassMAIN::VClassMAIN(): VClass() {
 
 	// ^taint[as-is|uri|sql|js|html|html-typo|regex|parser-code]{code}
 	add_native_method("taint", Method::CT_ANY, _taint, 1, 2, Method::CO_WITHOUT_FRAME);
+
+	// ^apply-taint[untaint lang][string]
+	add_native_method("apply-taint", Method::CT_ANY, _apply_taint, 1, 2, Method::CO_WITHOUT_FRAME);
 
 	// ^process[code]
 	add_native_method("process", Method::CT_ANY, _process, 1, 3);
