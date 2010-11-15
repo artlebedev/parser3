@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 459
+Content-Length: 495
 
  
 	 some &lt;a href=&quot;/?a&amp;b&quot;&gt;html&lt;/a&gt; code 
@@ -20,7 +20,7 @@ Content-Length: 459
 	 some <\?dirty\?> code 
 
  
-	 some <a href="/?a&b">html</a> code 
-	 $b(2+2) 
-	 ^(.*?)$ 
+	 some &lt;a href=&quot;/?a&amp;b&quot;&gt;html&lt;/a&gt; code 
+	 ^$b^(2+2^) 
+	 \^\(\.\*\?\)\$ 
 	 some <?dirty?> code 
