@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_MOD_PARSER3_C="$Date: 2010/11/14 22:49:57 $";
+static const char * const IDENT_MOD_PARSER3_C="$Date: 2010/11/16 00:43:19 $";
 
 #ifdef WIN32
 #include <winsock2.h>
@@ -64,8 +64,7 @@ module MODULE_VAR_EXPORT parser3_module;
 * Locate our directory configuration record for the current request.
 */
 static Parser_module_config *our_dconfig(request_rec *r) {
-	return (Parser_module_config *) 
-		ap_get_module_config(r->per_dir_config, &parser3_module);
+	return (Parser_module_config *) ap_get_module_config(r->per_dir_config, &parser3_module);
 }
 
 static const char* cmd_parser_config(cmd_parms *cmd, void *mconfig, char *file_spec) {
@@ -152,8 +151,7 @@ static void *parser_create_dir_config(apr_pool_t *p, char *dirspec) {
 	/*
 	* Allocate the space for our record from the apr_pool_t supplied.
 	*/
-	Parser_module_config *cfg=
-		(Parser_module_config *) ap_pcalloc(p, sizeof(Parser_module_config));
+	Parser_module_config *cfg= (Parser_module_config *) ap_pcalloc(p, sizeof(Parser_module_config));
 	return (void *) cfg;
 }
 
@@ -171,9 +169,7 @@ static void *parser_merge_dir_config(apr_pool_t *p, void *parent_conf, void *new
 	
 	merged_config->parser_config_filespec = ap_pstrdup(p, nconf->parser_config_filespec?
 		nconf->parser_config_filespec:pconf->parser_config_filespec);
-	merged_config->parser_status_allowed=
-		pconf->parser_status_allowed ||
-		nconf->parser_status_allowed;
+	merged_config->parser_status_allowed= pconf->parser_status_allowed || nconf->parser_status_allowed;
 	
 	return (void *) merged_config;
 }
@@ -186,8 +182,7 @@ static void *parser_create_server_config(apr_pool_t *p, server_rec *s) {
 	* As with the parser_create_dir_config() routine, we allocate and fill
 	* in an empty record.
 	*/
-	Parser_module_config *cfg=
-		(Parser_module_config *) ap_pcalloc(p, sizeof(Parser_module_config));
+	Parser_module_config *cfg= (Parser_module_config *) ap_pcalloc(p, sizeof(Parser_module_config));
 	
 	return (void *) cfg;
 }
@@ -207,47 +202,9 @@ static void *parser_merge_server_config(apr_pool_t *p, void *server1_conf, void 
 	*/
 	merged_config->parser_config_filespec = ap_pstrdup(p, s2conf->parser_config_filespec?
 		s2conf->parser_config_filespec:s1conf->parser_config_filespec);
-	merged_config->parser_status_allowed=
-		s1conf->parser_status_allowed || 
-		s2conf->parser_status_allowed;
+	merged_config->parser_status_allowed= s1conf->parser_status_allowed || s2conf->parser_status_allowed;
 	
 	return (void *) merged_config;
-}
-
-/*
-* This routine gives our module an opportunity to translate the URI into an
-* actual filename.
-*/
-static int parser_translate_handler(request_rec *r) {
-	Parser_module_config *cfg=our_dconfig(r);
-	return DECLINED;
-}
-
-/*
-* This routine is called to check the authentication information sent with
-* the request
-*/
-static int parser_check_user_id(request_rec *r) {
-	Parser_module_config *cfg=our_dconfig(r);
-	return DECLINED;
-}
-
-/*
-* This routine is called to check to see if the resource being requested
-* requires authorisation.
-*/
-static int parser_auth_checker(request_rec *r) {
-	Parser_module_config *cfg=our_dconfig(r);
-	return DECLINED;
-}
-
-/*
-* This routine is called to check for any module-specific restrictions placed
-* upon the requested resource.  (See the mod_access module for an example.)
-*/
-static int parser_access_checker(request_rec *r) {
-	Parser_module_config *cfg=our_dconfig(r);
-	return DECLINED;
 }
 
 /* 
@@ -256,19 +213,19 @@ static int parser_access_checker(request_rec *r) {
 static const command_rec parser_cmds[] =
 {
 	{
-		"ParserConfig",              /* directive name */
+		"ParserConfig",				/* directive name */
 			(const char* (*)(void))((void *)cmd_parser_config), // config action routine
-			(void*)0,                   /* argument to include in call */
-			(int)(OR_OPTIONS),             /* where available */
-			TAKE1,                /* arguments */
-			"Parser config filespec" // directive description
+			(void*)0,			/* argument to include in call */
+			(int)(OR_OPTIONS),		/* where available */
+			TAKE1,				/* arguments */
+			"Parser config filespec"	// directive description
 	},
 	{
-		"ParserStatusAllowed",              /* directive name */
+		"ParserStatusAllowed",			/* directive name */
 			(const char* (*)(void))((void *)cmd_parser_status_allowed), // config action routine
-			(void*)0,                   /* argument to include in call */
-			(int)(ACCESS_CONF),             /* where available */
-			NO_ARGS,                /* arguments */
+			(void*)0,			/* argument to include in call */
+			(int)(ACCESS_CONF),		/* where available */
+			NO_ARGS,			/* arguments */
 			"Parser status class can be used" // directive description
 	},
 	{NULL}
@@ -302,10 +259,6 @@ static void parser_register_hooks(apr_pool_t* pool)
 //	ap_hook_post_config(parser_server_init, NULL, NULL, APR_HOOK_MIDDLE);
 	ap_hook_handler(parser_handler, NULL, NULL, APR_HOOK_MIDDLE);
 	ap_hook_child_init(parser_module_init, NULL, NULL, APR_HOOK_MIDDLE);
-//	ap_hook_translate_name(parser_translate_handler, NULL, NULL, APR_HOOK_MIDDLE);
-//	ap_hook_check_user_id(parser_check_user_id, NULL, NULL, APR_HOOK_MIDDLE);
-//	ap_hook_auth_checker(parser_auth_checker, NULL, NULL, APR_HOOK_MIDDLE);
-//	ap_hook_access_checker(parser_access_checker, NULL, NULL, APR_HOOK_MIDDLE);
 };
 
 module AP_MODULE_DECLARE_DATA parser3_module =
@@ -315,27 +268,27 @@ module AP_MODULE_DECLARE_DATA parser3_module =
 module MODULE_VAR_EXPORT parser3_module =
 {
 	STANDARD_MODULE_STUFF,
-	parser_module_init,          /* module initializer */
+	parser_module_init,		/* module initializer */
 #endif
-	parser_create_dir_config,    /* per-directory config creator */
-	parser_merge_dir_config,     /* dir config merger */
-	parser_create_server_config, /* server config creator */
-	parser_merge_server_config,  /* server config merger */
-	parser_cmds,                 /* command apr_table_t */
+	parser_create_dir_config,	/* per-directory config creator */
+	parser_merge_dir_config,	/* dir config merger */
+	parser_create_server_config,	/* server config creator */
+	parser_merge_server_config,	/* server config merger */
+	parser_cmds,			/* command apr_table_t */
 #ifdef STANDARD20_MODULE_STUFF
-	parser_register_hooks        /* register hooks */
+	parser_register_hooks		/* register hooks */
 #else
-	parser_handlers,             /* [9] list of handlers */
-	parser_translate_handler,    /* [2] filename-to-URI translation */
-	parser_check_user_id,        /* [5] check/validate user_id */
-	parser_auth_checker,         /* [6] check user_id is valid *here* */
-	parser_access_checker,       /* [4] check access by host address */
-	0,                           /* [7] MIME type checker/setter */
-	0,                           /* [8] fixups */
-	0,                           /* [10] logger */
-	0,                           /* [3] header parser */
-	0,                           /* process initializer */
-	parser_module_done           /* process exit/cleanup */
+	parser_handlers,		/* [9] list of handlers */
+	0,				/* [2] filename-to-URI translation */
+	0,				/* [5] check/validate user_id */
+	0,				/* [6] check user_id is valid *here* */
+	0,				/* [4] check access by host address */
+	0,				/* [7] MIME type checker/setter */
+	0,				/* [8] fixups */
+	0,				/* [10] logger */
+	0,				/* [3] header parser */
+	0,				/* process initializer */
+	parser_module_done		/* process exit/cleanup */
 #endif // STANDARD20_MODULE_STUFF
 };
 
