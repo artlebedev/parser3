@@ -862,9 +862,10 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         $.skip-unknown(false)    отключить exception и выдавать 'null' при сериализации объектов с типами
                                  отличных от void, bool, string, int, double, date, table, hash и file
         $.date[sql-string|gmt-string|unix-timestamp]    формат вывода даты, по умолчанию -- sql-string
-        $.table[object|array]    формат вывода таблицы, по умолчанию -- object
+        $.table[object|array|compact]    формат вывода таблицы, по умолчанию -- object
                                  object: [{"c1":"v11","c2":"v12",...},{"c1":"v21","c2":"v22",...},...]
                                  array:  [["c1","c2",...] || null (for nameless),["v11","v12",...],...]
+                                 compact:  ["v11" || ["v11","v12",...],...]
         $.file[text|base64]      вывести тело файла в указанном виде (по умолчание тело файла 
                                  не попадает в output)
         $.тип[method-junction]   любой тип можно вывести с помощью пользовательского метода, который 
