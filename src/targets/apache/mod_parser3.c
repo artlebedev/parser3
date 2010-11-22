@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_MOD_PARSER3_C="$Date: 2010/11/22 23:24:58 $";
+static const char * const IDENT_MOD_PARSER3_C="$Date: 2010/11/22 23:42:09 $";
 
 #ifdef WIN32
 #include <winsock2.h>
@@ -44,8 +44,6 @@ static const char * const IDENT_MOD_PARSER3_C="$Date: 2010/11/22 23:24:58 $";
 
 #define apr_pool_t pool
 #define apr_table_t table
-
-#define ap_add_version_component(p, v) ap_add_version_component(v) 
 
 #endif /* STANDARD20_MODULE_STUFF */
 
@@ -113,7 +111,6 @@ static int parser_handler(request_rec *r) {
 static void parser_module_init(apr_pool_t *p, server_rec *s) {
 #else
 static void parser_module_init(server_rec *s, apr_pool_t *p) {
-	ap_add_version_component(p, pa_version());
 #endif	
 	ap_log_perror(APLOG_MARK, APLOG_EMERG, 0, p, "parser inited %d", getpid());
 	pa_setup_module_cells();
@@ -184,7 +181,6 @@ static const handler_rec parser_handlers[] =
 */
 static void parser_register_hooks(apr_pool_t* pool)
 {
-//	ap_add_version_component(pool, pa_version());
 //	ap_hook_post_config(parser_server_init, NULL, NULL, APR_HOOK_MIDDLE);
 	ap_hook_handler(parser_handler, NULL, NULL, APR_HOOK_MIDDLE);
 	ap_hook_child_init(parser_module_init, NULL, NULL, APR_HOOK_MIDDLE);
@@ -323,7 +319,7 @@ int pa_ap_rwrite(const void *buf, int nbyte, pa_request_rec *r) {
 
 // http_main.h
 
-void pa_ap_hard_timeout(char *s, pa_request_rec *r) {
+void pa_ap_hard_timeout(const char *s, pa_request_rec *r) {
 // Apache 2 uses non-blocking I/O
 #ifndef STANDARD20_MODULE_STUFF
 	ap_hard_timeout(s, (request_rec*)r->real_request_rec);
