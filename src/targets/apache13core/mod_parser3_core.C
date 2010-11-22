@@ -5,7 +5,7 @@ Parser: apache 1.3 module, part, compiled by parser3project.
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_MOD_PARSER3_MAIN_C="$Date: 2009/10/06 11:40:23 $";
+static const char * const IDENT_MOD_PARSER3_MAIN_C="$Date: 2010/11/22 22:24:23 $";
 
 #include "pa_config_includes.h"
 
@@ -237,8 +237,7 @@ static void real_parser_handler(SAPI_Info& SAPI_info, Parser_module_config *dcfg
 	Request request(
 		SAPI_info,
 		request_info,
-		String::Language(String::L_HTML|String::L_OPTIMIZE_BIT),
-		dcfg->parser_status_allowed?true:false
+		String::Language(String::L_HTML|String::L_OPTIMIZE_BIT)
 		);
 	
 	// process the request

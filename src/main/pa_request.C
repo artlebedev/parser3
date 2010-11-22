@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REQUEST_C="$Date: 2010/09/16 23:35:11 $";
+static const char * const IDENT_REQUEST_C="$Date: 2010/11/22 22:24:23 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -97,7 +97,7 @@ VStateless_class& VClassMAIN_create();
 
 //
 Request::Request(SAPI_Info& asapi_info, Request_info& arequest_info, 
-				 String::Language adefault_lang, bool status_allowed):
+				 String::Language adefault_lang):
 	// private
 	anti_endless_execute_recoursion(0),
 	anti_endless_json_string_recoursion(0),
@@ -158,8 +158,7 @@ Request::Request(SAPI_Info& asapi_info, Request_info& arequest_info,
 	// env class
 	classes().put(String::Body(ENV_CLASS_NAME), new VEnv(asapi_info));
 	// status class
-	if(status_allowed)
-		classes().put(String::Body(STATUS_CLASS_NAME), new VStatus());
+	classes().put(String::Body(STATUS_CLASS_NAME), new VStatus());
 	// request class
 	classes().put(String::Body(REQUEST_CLASS_NAME), new VRequest(arequest_info, charsets, form));	
 	// cookie class

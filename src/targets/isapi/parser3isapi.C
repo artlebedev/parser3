@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_PARSER3ISAPI_C="$Date: 2009/10/06 11:41:02 $";
+static const char * const IDENT_PARSER3ISAPI_C="$Date: 2010/11/22 22:24:23 $";
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -374,8 +374,7 @@ void real_parser_handler(SAPI_Info& SAPI_info, bool header_only) {
 	// prepare to process request
 	Request request(SAPI_info, 
 		request_info,
-		String::Language(String::L_HTML|String::L_OPTIMIZE_BIT),
-		true /* status_allowed */);
+		String::Language(String::L_HTML|String::L_OPTIMIZE_BIT));
 
 	// beside by binary
 	static char beside_binary_path[MAX_STRING];

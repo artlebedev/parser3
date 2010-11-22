@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char * const IDENT_REQUEST_H="$Date: 2010/09/24 08:18:57 $";
+static const char * const IDENT_REQUEST_H="$Date: 2010/11/22 22:24:23 $";
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -186,8 +186,7 @@ public:
 #endif	
 
 	Request(SAPI_Info& asapi_info, Request_info& arequest_info,
-		String::Language adefault_lang, ///< all tainted data default untainting lang
-		bool status_allowed ///<  status class allowed
+		String::Language adefault_lang ///< all tainted data default untainting lang
 	);
 	~Request();
 
