@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_MOD_PARSER3_C="$Date: 2010/11/16 00:43:19 $";
+static const char * const IDENT_MOD_PARSER3_C="$Date: 2010/11/22 23:24:58 $";
 
 #ifdef WIN32
 #include <winsock2.h>
@@ -69,18 +69,7 @@ static Parser_module_config *our_dconfig(request_rec *r) {
 
 static const char* cmd_parser_config(cmd_parms *cmd, void *mconfig, char *file_spec) {
 	Parser_module_config *cfg = (Parser_module_config *) mconfig;
-	
-	// remember assigned filespec into cfg
 	cfg->parser_config_filespec=file_spec;
-	
-	return NULL;
-}
-
-static const char* cmd_parser_status_allowed(cmd_parms *cmd, void *mconfig, char *file_spec) {
-	Parser_module_config *cfg = (Parser_module_config *) mconfig;
-	
-	cfg->parser_status_allowed=1;
-	
 	return NULL;
 }
 
@@ -89,9 +78,6 @@ static const char* cmd_parser_status_allowed(cmd_parms *cmd, void *mconfig, char
 */
 
 static int parser_handler(request_rec *r) {
-
-//	ap_log_rerror(APLOG_MARK, APLOG_EMERG, 0, r, "handler, r->handler=%s", r->handler);
-
 #ifdef STANDARD20_MODULE_STUFF
 	if(strcmp(r->handler, PARSER3_HANDLER))
 		return DECLINED;
@@ -116,11 +102,7 @@ static int parser_handler(request_rec *r) {
 		r->finfo.st_mode == 0
 #endif
 	};
-
-	// config
-	Parser_module_config *dcfg=our_dconfig(r);
-
-	return pa_parser_handler(&pr, dcfg);
+	return pa_parser_handler(&pr, our_dconfig(r));
 }
 
 /* 
@@ -148,63 +130,18 @@ static void parser_module_done(server_rec *s, apr_pool_t *p) {
 * This function gets called to create a per-directory configuration record.
 */
 static void *parser_create_dir_config(apr_pool_t *p, char *dirspec) {
-	/*
-	* Allocate the space for our record from the apr_pool_t supplied.
-	*/
-	Parser_module_config *cfg= (Parser_module_config *) ap_pcalloc(p, sizeof(Parser_module_config));
-	return (void *) cfg;
-}
-
-/*
-* This function gets called to merge two per-directory configuration records.
-*
-* 20011126 paf: noticed, that this is called even on virtual root merge with something "parent",
-* while thought that that is part of merge_server...
-*
-*/
-static void *parser_merge_dir_config(apr_pool_t *p, void *parent_conf, void *newloc_conf) {
-	Parser_module_config *merged_config = (Parser_module_config *) ap_pcalloc(p, sizeof(Parser_module_config));
-	Parser_module_config *pconf = (Parser_module_config *) parent_conf;
-	Parser_module_config *nconf = (Parser_module_config *) newloc_conf;
-	
-	merged_config->parser_config_filespec = ap_pstrdup(p, nconf->parser_config_filespec?
-		nconf->parser_config_filespec:pconf->parser_config_filespec);
-	merged_config->parser_status_allowed= pconf->parser_status_allowed || nconf->parser_status_allowed;
-	
-	return (void *) merged_config;
+	Parser_module_config *cfg= ap_pcalloc(p, sizeof(Parser_module_config));
+	cfg->parser_config_filespec=NULL;
+	return cfg;
 }
 
 /*
 * This function gets called to create a per-server configuration record.
 */
 static void *parser_create_server_config(apr_pool_t *p, server_rec *s) {
-	/*
-	* As with the parser_create_dir_config() routine, we allocate and fill
-	* in an empty record.
-	*/
-	Parser_module_config *cfg= (Parser_module_config *) ap_pcalloc(p, sizeof(Parser_module_config));
-	
-	return (void *) cfg;
-}
-
-/*
-* This function gets called to merge two per-server configuration records.
-*/
-static void *parser_merge_server_config(apr_pool_t *p, void *server1_conf, void *server2_conf)
-{
-	Parser_module_config *merged_config = (Parser_module_config *) ap_pcalloc(p, sizeof(Parser_module_config));
-	Parser_module_config *s1conf = (Parser_module_config *) server1_conf;
-	Parser_module_config *s2conf = (Parser_module_config *) server2_conf;
-	
-	/*
-	* Our inheritance rules are our own, and part of our module's semantics.
-	* Basically, just note whence we came.
-	*/
-	merged_config->parser_config_filespec = ap_pstrdup(p, s2conf->parser_config_filespec?
-		s2conf->parser_config_filespec:s1conf->parser_config_filespec);
-	merged_config->parser_status_allowed= s1conf->parser_status_allowed || s2conf->parser_status_allowed;
-	
-	return (void *) merged_config;
+	Parser_module_config *cfg= ap_pcalloc(p, sizeof(Parser_module_config));
+	cfg->parser_config_filespec=NULL;
+	return cfg;
 }
 
 /* 
@@ -219,14 +156,6 @@ static const command_rec parser_cmds[] =
 			(int)(OR_OPTIONS),		/* where available */
 			TAKE1,				/* arguments */
 			"Parser config filespec"	// directive description
-	},
-	{
-		"ParserStatusAllowed",			/* directive name */
-			(const char* (*)(void))((void *)cmd_parser_status_allowed), // config action routine
-			(void*)0,			/* argument to include in call */
-			(int)(ACCESS_CONF),		/* where available */
-			NO_ARGS,			/* arguments */
-			"Parser status class can be used" // directive description
 	},
 	{NULL}
 };
@@ -271,9 +200,9 @@ module MODULE_VAR_EXPORT parser3_module =
 	parser_module_init,		/* module initializer */
 #endif
 	parser_create_dir_config,	/* per-directory config creator */
-	parser_merge_dir_config,	/* dir config merger */
+	0,				/* dir config merger */
 	parser_create_server_config,	/* server config creator */
-	parser_merge_server_config,	/* server config merger */
+	0,				/* server config merger */
 	parser_cmds,			/* command apr_table_t */
 #ifdef STANDARD20_MODULE_STUFF
 	parser_register_hooks		/* register hooks */

@@ -8,7 +8,7 @@
 #ifndef PA_HTTPD_H
 #define PA_HTTPD_H
 
-static const char * const IDENT_HTTPD_H="$Date: 2010/11/14 22:44:23 $";
+static const char * const IDENT_HTTPD_H="$Date: 2010/11/22 23:24:58 $";
 
 #ifdef __cplusplus
 extern "C" {
@@ -36,13 +36,12 @@ typedef struct pa_request_rec_tag {
 	char *filename;			/* filename if found, otherwise NULL */
 	char *path_info;
 	char *args;			/* QUERY_ARGS, if any */
-	int file_not_found;		/* ST_MODE set to zero if no such file */
+	int file_not_found;		/* non-zero if no such file */
 } pa_request_rec;
 
 /// apache parser module configuration [httpd.conf + .htaccess-es]
 typedef struct Parser_module_config_tag {
 	const char* parser_config_filespec; ///< filespec of site's config file
-	int parser_status_allowed;
 } Parser_module_config;
 
 const char* pa_version();
@@ -59,14 +58,14 @@ int pa_parser_handler(pa_request_rec*, Parser_module_config*);
 #define	PA_APLOG_ALERT	1	/* action must be taken immediately */
 #define	PA_APLOG_CRIT	2	/* critical conditions */
 #define	PA_APLOG_ERR	3	/* error conditions */
-#define	PA_APLOG_WARNING	4	/* warning conditions */
+#define	PA_APLOG_WARNING 4	/* warning conditions */
 #define	PA_APLOG_NOTICE	5	/* normal but significant condition */
 #define	PA_APLOG_INFO	6	/* informational */
 #define	PA_APLOG_DEBUG	7	/* debug-level messages */
 
-#define	PA_APLOG_LEVELMASK	7	/* mask off the level value */
+#define	PA_APLOG_LEVELMASK 7	/* mask off the level value */
 
-#define PA_APLOG_NOERRNO		(PA_APLOG_LEVELMASK + 1)
+#define PA_APLOG_NOERRNO	(PA_APLOG_LEVELMASK + 1)
 
 #define PA_APLOG_MARK	__FILE__,__LINE__
 
