@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_MOD_PARSER3_C="$Date: 2010/11/23 00:13:47 $";
+static const char * const IDENT_MOD_PARSER3_C="$Date: 2010/11/23 00:27:02 $";
 
 #ifdef WIN32
 #include <winsock2.h>
@@ -146,7 +146,7 @@ static void *parser_create_server_config(apr_pool_t *p, server_rec *s) {
 */
 static const command_rec parser_cmds[] =
 {
-	{"ParserConfig", (cmd_func)cmd_parser_config, 0, OR_OPTIONS, TAKE1, "Parser config filespec"},
+	{"ParserConfig", (const char *(*)())cmd_parser_config, 0, OR_OPTIONS, TAKE1, "Parser config filespec"},
 	{NULL}
 };
 
@@ -299,7 +299,7 @@ int pa_ap_rwrite(const void *buf, int nbyte, pa_request_rec *r) {
 void pa_ap_hard_timeout(const char *s, pa_request_rec *r) {
 // Apache 2 uses non-blocking I/O
 #ifndef STANDARD20_MODULE_STUFF
-	ap_hard_timeout(s, (request_rec*)r->real_request_rec);
+	ap_hard_timeout((char *)s, (request_rec*)r->real_request_rec);
 #endif
 }
 void pa_ap_reset_timeout(pa_request_rec *r) {
