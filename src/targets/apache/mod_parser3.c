@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_MOD_PARSER3_C="$Date: 2010/11/22 23:42:09 $";
+static const char * const IDENT_MOD_PARSER3_C="$Date: 2010/11/23 00:00:32 $";
 
 #ifdef WIN32
 #include <winsock2.h>
@@ -228,21 +228,6 @@ module MODULE_VAR_EXPORT parser3_module =
 
 
 // interface to C++
-
-#define	PA_APLOG_EMERG		0	/* system is unusable */
-#define	PA_APLOG_ALERT		1	/* action must be taken immediately */
-#define	PA_APLOG_CRIT		2	/* critical conditions */
-#define	PA_APLOG_ERR		3	/* error conditions */
-#define	PA_APLOG_WARNING	4	/* warning conditions */
-#define	PA_APLOG_NOTICE		5	/* normal but significant condition */
-#define	PA_APLOG_INFO		6	/* informational */
-#define	PA_APLOG_DEBUG		7	/* debug-level messages */
-
-#define	PA_APLOG_LEVELMASK	7	/* mask off the level value */
-
-#define PA_APLOG_NOERRNO	(PA_APLOG_LEVELMASK + 1)
-
-#define PA_APLOG_MARK	__FILE__,__LINE__
 
 void pa_ap_log_rerror(const char *file, int line, int level, const pa_request_rec *s, const char *fmt, ...) {
 	const char* str;

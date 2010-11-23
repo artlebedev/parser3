@@ -8,7 +8,7 @@
 #ifndef PA_HTTPD_H
 #define PA_HTTPD_H
 
-static const char * const IDENT_HTTPD_H="$Date: 2010/11/22 23:24:58 $";
+static const char * const IDENT_HTTPD_H="$Date: 2010/11/23 00:00:33 $";
 
 #ifdef __cplusplus
 extern "C" {
@@ -44,7 +44,6 @@ typedef struct Parser_module_config_tag {
 	const char* parser_config_filespec; ///< filespec of site's config file
 } Parser_module_config;
 
-const char* pa_version();
 void pa_setup_module_cells();
 void pa_destroy_module_cells();
 int pa_parser_handler(pa_request_rec*, Parser_module_config*);
@@ -110,7 +109,7 @@ int pa_ap_rwrite(const void *buf, int nbyte, pa_request_rec *r);
 
 // http_main.h
 
-void pa_ap_hard_timeout(char *, pa_request_rec *);
+void pa_ap_hard_timeout(const char *, pa_request_rec *);
 void pa_ap_reset_timeout(pa_request_rec *);
 void pa_ap_kill_timeout(pa_request_rec *);
 
@@ -131,22 +130,6 @@ void pa_ap_add_common_vars(pa_request_rec *r);
 #define PA_SIG_IGN (void (*)(int))1           /* must translate to real one */
 
 void (*pa_signal (int sig, void (*disp)(int)))(int);
-
-// ap_md5.h
-
-#define PA_MD5_DIGESTSIZE 16
-typedef void PA_MD5_CTX;
-
-void pa_MD5Init(PA_MD5_CTX *context);
-void pa_MD5Update(PA_MD5_CTX *context, const unsigned char *input,
-			      unsigned int inputLen);
-void pa_MD5Final(unsigned char digest[PA_MD5_DIGESTSIZE],
-			     PA_MD5_CTX *context);
-void pa_MD5Encode(const unsigned char *password,
-			      const unsigned char *salt,
-			      char *result, size_t nbytes);
-void pa_to64(char *s, unsigned long v, int n);
-
 
 #ifdef __cplusplus
 }

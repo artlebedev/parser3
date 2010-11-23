@@ -5,7 +5,7 @@ Parser: apache 1.3 module, part, compiled by parser3project.
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_MOD_PARSER3_MAIN_C="$Date: 2010/11/22 23:24:58 $";
+static const char * const IDENT_MOD_PARSER3_MAIN_C="$Date: 2010/11/23 00:00:33 $";
 
 #include "pa_config_includes.h"
 
@@ -17,7 +17,6 @@ static const char * const IDENT_MOD_PARSER3_MAIN_C="$Date: 2010/11/22 23:24:58 $
 #include "pa_sapi.h"
 #include "classes.h"
 #include "pa_request.h"
-#include "pa_version.h"
 #include "pa_socks.h"
 
 #if _MSC_VER && !defined(_DEBUG)
@@ -27,12 +26,8 @@ static const char * const IDENT_MOD_PARSER3_MAIN_C="$Date: 2010/11/22 23:24:58 $
 
 // generals
 
-const char* pa_version() {
-	return "Parser/"PARSER_VERSION;
-}
-
 void pa_setup_module_cells() {
-	static bool  globals_inited=false;
+	static bool globals_inited=false;
 	if(globals_inited)
 		return;
 	globals_inited=true;
