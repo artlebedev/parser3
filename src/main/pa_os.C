@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMMON_C="$Date: 2007/05/24 10:32:57 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2010/11/23 19:32:08 $"; 
 
 #include "pa_config_includes.h"
 #include "pa_os.h"
@@ -83,7 +83,10 @@ int pa_unlock(int fd) {
 
 
 int pa_sleep(unsigned long secs, unsigned long usecs) {
-	for (;  usecs >= 1000000; ++secs, usecs -= 1000000); 
+	if(usecs >= 1000000){
+			secs += usecs/1000000;
+			usecs = usecs%1000000;
+	}
 
 #ifdef WIN32
 	Sleep(secs * 1000 + usecs / 1000); 
