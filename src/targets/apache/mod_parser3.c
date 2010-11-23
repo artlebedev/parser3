@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_MOD_PARSER3_C="$Date: 2010/11/23 00:00:32 $";
+static const char * const IDENT_MOD_PARSER3_C="$Date: 2010/11/23 00:07:33 $";
 
 #ifdef WIN32
 #include <winsock2.h>
@@ -65,7 +65,7 @@ static Parser_module_config *our_dconfig(request_rec *r) {
 	return (Parser_module_config *) ap_get_module_config(r->per_dir_config, &parser3_module);
 }
 
-static const char* cmd_parser_config(cmd_parms *cmd, void *mconfig, char *file_spec) {
+static const char* cmd_parser_config(cmd_parms *cmd, void *mconfig, const char *file_spec) {
 	Parser_module_config *cfg = (Parser_module_config *) mconfig;
 	cfg->parser_config_filespec=file_spec;
 	return NULL;
@@ -146,15 +146,8 @@ static void *parser_create_server_config(apr_pool_t *p, server_rec *s) {
 */
 static const command_rec parser_cmds[] =
 {
-	{
-		"ParserConfig",				/* directive name */
-			(const char* (*)(void))((void *)cmd_parser_config), // config action routine
-			(void*)0,			/* argument to include in call */
-			(int)(OR_OPTIONS),		/* where available */
-			TAKE1,				/* arguments */
-			"Parser config filespec"	// directive description
-	},
-	{NULL}
+	{ "ParserConfig", (cmd_func)cmd_parser_config, 0, OR_OPTIONS, TAKE1, "Parser config filespec" },
+	{ NULL }
 };
 
 /*--------------------------------------------------------------------------*/
