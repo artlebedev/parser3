@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_MOD_PARSER3_C="$Date: 2010/11/23 00:07:33 $";
+static const char * const IDENT_MOD_PARSER3_C="$Date: 2010/11/23 00:13:47 $";
 
 #ifdef WIN32
 #include <winsock2.h>
@@ -108,7 +108,7 @@ static int parser_handler(request_rec *r) {
 */
 
 #ifdef STANDARD20_MODULE_STUFF
-static void parser_module_init(apr_pool_t *p, server_rec *s) {
+static void parser_child_init(apr_pool_t *p, server_rec *s) {
 #else
 static void parser_module_init(server_rec *s, apr_pool_t *p) {
 #endif	
@@ -146,8 +146,8 @@ static void *parser_create_server_config(apr_pool_t *p, server_rec *s) {
 */
 static const command_rec parser_cmds[] =
 {
-	{ "ParserConfig", (cmd_func)cmd_parser_config, 0, OR_OPTIONS, TAKE1, "Parser config filespec" },
-	{ NULL }
+	{"ParserConfig", (cmd_func)cmd_parser_config, 0, OR_OPTIONS, TAKE1, "Parser config filespec"},
+	{NULL}
 };
 
 /*--------------------------------------------------------------------------*/
@@ -174,9 +174,8 @@ static const handler_rec parser_handlers[] =
 */
 static void parser_register_hooks(apr_pool_t* pool)
 {
-//	ap_hook_post_config(parser_server_init, NULL, NULL, APR_HOOK_MIDDLE);
 	ap_hook_handler(parser_handler, NULL, NULL, APR_HOOK_MIDDLE);
-	ap_hook_child_init(parser_module_init, NULL, NULL, APR_HOOK_MIDDLE);
+	ap_hook_child_init(parser_child_init, NULL, NULL, APR_HOOK_MIDDLE);
 };
 
 module AP_MODULE_DECLARE_DATA parser3_module =
@@ -231,9 +230,9 @@ void pa_ap_log_rerror(const char *file, int line, int level, const pa_request_re
 
 	ap_log_rerror(file, line, level,
 #ifdef STANDARD20_MODULE_STUFF
-				0,
+			0,
 #endif
-		      (request_rec*)s->real_request_rec, "%s", str);
+			(request_rec*)s->real_request_rec, "%s", str);
 }
 
 
@@ -246,9 +245,9 @@ void pa_ap_log_error(const char *file, int line, int level, const pa_server_rec 
 
 	ap_log_error(file, line, level,
 #ifdef STANDARD20_MODULE_STUFF
-				0,
+			0,
 #endif
-		      (server_rec*)s, "%s", str);
+			(server_rec*)s, "%s", str);
 }
 
 // ap_alloc.h
