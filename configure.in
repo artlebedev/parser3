@@ -266,7 +266,7 @@ AC_ARG_WITH(shared-gc,[  --with-shared-gc[=D]      D is the directory where
 ])
 AC_ARG_WITH(static-gc,[  --with-static-gc[=D]      D is the directory where
                           Boehm garbage collecting library is installed (static lib)],[
-	GC_LIBS="-L$withval -Wl,-Bstatic -l$GC_LIB_NAME -Wl,-Bdynamic"
+	GC_LIBS="$withval/lib$GC_LIB_NAME.a"
 ])
 if test -z "$GC_LIBS"; then
 	#undefined? use any found in system
@@ -444,16 +444,29 @@ AC_ARG_WITH(sendmail,[  \"--with-sendmail=COMMAND\" forces this command to send 
 )
 
 
-AC_ARG_WITH(apache13,[  --with-apache13=D       D is the Apache13 source distribution directory
-                          builds library for apache_module using that dir
-                          (do not add /src)],
-	APACHE13=$withval
-	if test \! -f "$APACHE13/src/include/httpd.h"; then
-		AC_MSG_ERROR($APACHE13 does not seem to be valid Apache13 source distribution directory)
+AC_ARG_WITH(apache,[  --with-apache=FILE is the full path for APXS
+                          builds apache DSO module using apxs],[
+	APXS=$withval
+
+	if test -z "$APXS" -o "$APXS" = "yes"; then
+		APXS=`which apxs 2>/dev/null`
+	fi;
+
+	APACHE=`$APXS -q TARGET 2>/dev/null`
+
+	if test -z "$APACHE"; then
+		AC_MSG_ERROR($APXS does not seem to be valid apache apxs utility path)
 	fi
-)
-AC_SUBST(APACHE13)
-AM_CONDITIONAL(COMPILE_APACHE13_MODULE, test -n "$APACHE13")
+
+	APACHE_MAIN_INC=`$APXS -q INCLUDEDIR`
+	APACHE_EXTRA_INC=`$APXS -q EXTRA_INCLUDES 2>/dev/null`
+	APACHE_INC="-I$APACHE_MAIN_INC $APACHE_EXTRA_INC"
+	APACHE_CFLAGS=`$APXS -q CFLAGS`
+])
+AC_SUBST(APACHE)
+AC_SUBST(APACHE_INC)
+AC_SUBST(APACHE_CFLAGS)
+AM_CONDITIONAL(COMPILE_APACHE_MODULE, test -n "$APACHE")
 
 
 dnl Enable building of the convenience library
@@ -693,9 +706,7 @@ AC_OUTPUT(
 	src/lib/json/Makefile
 	src/targets/Makefile
 	src/targets/cgi/Makefile
-	src/targets/apache13core/Makefile
-	src/targets/apache13/Makefile
-	src/targets/apache13/p3runConfigure
+	src/targets/apache/Makefile
 	src/targets/isapi/Makefile
 	etc/Makefile
 	etc/parser3.charsets/Makefile
