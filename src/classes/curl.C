@@ -8,7 +8,7 @@
 
 #ifdef HAVE_CURL
 
-static const char * const IDENT_INET_C="$Date: 2010/10/27 20:04:17 $";
+static const char * const IDENT_INET_C="$Date: 2010/11/24 00:20:47 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
@@ -88,13 +88,9 @@ public:
 	 
 };
 
-// using thread local variables instead of keeping them in request
-// not necessary for cgi version
-#ifdef WIN32
-#define __thread __declspec(thread)
-#endif
-__thread CURL *fcurl = 0;
-__thread ParserOptions *foptions = 0;
+// using TLS instead of keeping variables in request
+THREAD_LOCAL CURL *fcurl = 0;
+THREAD_LOCAL ParserOptions *foptions = 0;
 
 static CURL *curl(){
 	if(!fcurl)

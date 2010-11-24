@@ -175,6 +175,11 @@ inline size_t min(size_t a, size_t b){ return a<b?a:b; }
 
 #endif
 
+#ifdef WIN32
+#define THREAD_LOCAL __declspec(thread)
+#else
+#define THREAD_LOCAL // __thread // multithreading support required only for apache2 module
+#endif
 
 #if _MSC_VER
 // using this in calls to parent constructors

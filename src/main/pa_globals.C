@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_GLOBALS_C="$Date: 2009/10/13 06:31:59 $";
+static const char * const IDENT_GLOBALS_C="$Date: 2010/11/24 00:20:47 $";
 
 #include "pa_config_includes.h"
 
@@ -69,14 +69,14 @@ static void setup_hex_value() {
 	hex_value['f'] = 15;
 }
 
+THREAD_LOCAL Request* thread_request=NULL;
 
-Hash<pa_thread_t, Request*> thread_request;
 void pa_register_thread_request(Request& r) {
-	thread_request.put(pa_get_thread_id(), &r);
+	thread_request=&r;
 }
 /// retrives request set by pa_set_request function, useful in contextless places [slow]
 Request& pa_thread_request() {
-	return *thread_request.get(pa_get_thread_id());
+	return *thread_request;
 }
 
 #ifdef PA_RELEASE_ASSERTS
