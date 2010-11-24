@@ -75,7 +75,9 @@ ACLOCAL = @ACLOCAL@
 AMDEP_FALSE = @AMDEP_FALSE@
 AMDEP_TRUE = @AMDEP_TRUE@
 AMTAR = @AMTAR@
-APACHE13 = @APACHE13@
+APACHE = @APACHE@
+APACHE_CFLAGS = @APACHE_CFLAGS@
+APACHE_INC = @APACHE_INC@
 AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
@@ -83,8 +85,8 @@ AWK = @AWK@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
-COMPILE_APACHE13_MODULE_FALSE = @COMPILE_APACHE13_MODULE_FALSE@
-COMPILE_APACHE13_MODULE_TRUE = @COMPILE_APACHE13_MODULE_TRUE@
+COMPILE_APACHE_MODULE_FALSE = @COMPILE_APACHE_MODULE_FALSE@
+COMPILE_APACHE_MODULE_TRUE = @COMPILE_APACHE_MODULE_TRUE@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CPP_LIBS = @CPP_LIBS@
@@ -348,7 +350,7 @@ distclean-tags:
 distdir: $(DISTFILES)
 	$(am__remove_distdir)
 	mkdir $(distdir)
-	$(mkdir_p) $(distdir)/bin $(distdir)/src/targets/apache13
+	$(mkdir_p) $(distdir)/bin
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
