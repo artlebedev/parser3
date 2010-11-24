@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_GLOBALS_C="$Date: 2010/11/24 00:20:47 $";
+static const char * const IDENT_GLOBALS_C="$Date: 2010/11/24 00:44:09 $";
 
 #include "pa_config_includes.h"
 
@@ -101,21 +101,13 @@ public:
 	}
 };
 
-static Hash<pa_thread_t, XML_Generic_error_info*> xml_generic_error_infos;
+THREAD_LOCAL XML_Generic_error_info* xml_generic_error_info = NULL;
 
 static void xmlParserGenericErrorFunc(void *  /*ctx*/, const char* msg, ...) { 
-//_asm int 3;
-	pa_thread_t thread_id=pa_get_thread_id();
-
 	XML_Generic_error_info* p;
-	{
-		SYNCHRONIZED;  // find+fill blocked
-
-		// first try to get existing for this thread_id
-		p=xml_generic_error_infos.get(thread_id);
-		if(!p) // occupy empty one
-			xml_generic_error_infos.put(thread_id, (p=new(PointerFreeGC) XML_Generic_error_info));
-	}
+	
+	if(!(p=xml_generic_error_info)) // occupy empty one
+		p=xml_generic_error_info=new(PointerFreeGC) XML_Generic_error_info;
 		
 	va_list args;
 	va_start(args, msg);
@@ -124,20 +116,12 @@ static void xmlParserGenericErrorFunc(void *  /*ctx*/, const char* msg, ...) {
 }
 
 bool xmlHaveGenericErrors() {
-	pa_thread_t thread_id=pa_get_thread_id();
-
-	SYNCHRONIZED;  // find blocked
-
-	return xml_generic_error_infos.get(thread_id)!=0;
+	return xml_generic_error_info!=0;
 }
 
 const char* xmlGenericErrors() {
-	pa_thread_t thread_id=pa_get_thread_id();
-
-	SYNCHRONIZED;  // find+free blocked
-
-	if(XML_Generic_error_info *p=xml_generic_error_infos.get(thread_id)) {
-		xml_generic_error_infos.remove(thread_id);
+	if(XML_Generic_error_info *p=xml_generic_error_info) {
+		xml_generic_error_info=0;
 		return p->get();
 	}
 
@@ -145,18 +129,6 @@ const char* xmlGenericErrors() {
 }
 
 #endif
-
-void pa_globals_destroy(void *) {
-/*
-	try {
-#ifdef XML
-#endif
-	} catch(.../*const Exception& e* /) {
-//		SAPI::abort("pa_globals_destroy failed: %s", e.comment());
-	}
-*/
-}
-
 
 #ifdef XML
 

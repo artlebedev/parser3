@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT="$Date: 2009/09/25 12:58:39 $";
+static const char * const IDENT="$Date: 2010/11/24 00:44:09 $";
 
 #include "libxslt/extensions.h"
 
@@ -17,50 +17,25 @@ static const char * const IDENT="$Date: 2009/09/25 12:58:39 $";
 #include "pa_globals.h"
 #include "pa_request.h"
 
-static Hash<pa_thread_t, HashStringBool*> xml_dependencies;
+THREAD_LOCAL HashStringBool* xml_dependencies = NULL;
 
 static void add_dependency(const String::Body url) { 
-	pa_thread_t thread_id=pa_get_thread_id();
-	HashStringBool* urls;
-	{
-		SYNCHRONIZED;
-
-		// try to get existing for this thread_id
-		urls=xml_dependencies.get(thread_id);
-	}
-
-	if(urls) // do we need to monitor now?
-		urls->put(url, true);
+	if(xml_dependencies) // do we need to monitor now?
+		xml_dependencies->put(url, true);
 }
 
 void pa_xmlStartMonitoringDependencies() { 
-	pa_thread_t thread_id=pa_get_thread_id();
-	HashStringBool* urls=new HashStringBool;
-	{
-		SYNCHRONIZED;  // find+fill blocked
-
-		xml_dependencies.put(thread_id, urls);
-	}
+	xml_dependencies=new HashStringBool;
 }
 
 void pa_xmlStopMonitoringDependencies() { 
-	pa_thread_t thread_id=pa_get_thread_id();
-	{
-		SYNCHRONIZED;  // find+fill blocked
-
-		xml_dependencies.put(thread_id, 0);
-	}
+	xml_dependencies=NULL;
 }
 
 HashStringBool* pa_xmlGetDependencies() {
-	pa_thread_t thread_id=pa_get_thread_id();
-	{
-		SYNCHRONIZED;  // find+remove blocked
-
-		HashStringBool* result=xml_dependencies.get(thread_id);
-		xml_dependencies.remove(thread_id);
-		return result;
-	}
+	HashStringBool* result=xml_dependencies;
+	xml_dependencies=NULL;
+	return result;
 }
 
 #ifndef DOXYGEN
