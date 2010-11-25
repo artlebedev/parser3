@@ -861,6 +861,7 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !^json:string[system or user object[;
         $.skip-unknown(false)    отключить exception и выдавать 'null' при сериализации объектов с типами
                                  отличных от void, bool, string, int, double, date, table, hash и file
+        $.indent(true)           форматировать результирующую строку табул€ци€ми по глубине вложенности
         $.date[sql-string|gmt-string|unix-timestamp]    формат вывода даты, по умолчанию -- sql-string
         $.table[object|array|compact]    формат вывода таблицы, по умолчанию -- object
                                  object: [{"c1":"v11","c2":"v12",...},{"c1":"v21","c2":"v22",...},...]
