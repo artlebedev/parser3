@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2010/11/06 00:09:01 $";
+static const char * const IDENT_TABLE_C="$Date: 2010/11/26 06:40:01 $";
 
 #if (!defined(NO_STRINGSTREAM) && !defined(FREEBSD4))
 #include <sstream>
@@ -1064,7 +1064,7 @@ public:
 		columns(*new ArrayString), row(0), table(0) {
 	}
 
-	bool add_column(SQL_Error& error, const char *str, size_t length) {
+	bool add_column(SQL_Error& error, const char *str, size_t ) {
 		try {
 			columns+=new String(str, String::L_TAINTED /* no length as 0x00 can be inside */);
 			return false;
@@ -1092,7 +1092,7 @@ public:
 			return true;
 		}
 	}
-	bool add_row_cell(SQL_Error& error, const char* str, size_t length) {
+	bool add_row_cell(SQL_Error& error, const char* str, size_t ) {
 		try {
 			*row+=new String(str, String::L_TAINTED /* no length as 0x00 can be inside */);
 			return false;
