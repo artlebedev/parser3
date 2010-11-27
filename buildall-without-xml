@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Id: buildall-without-xml,v 1.23 2010/07/07 03:04:37 misha Exp $
+# $Id: buildall-without-xml,v 1.24 2010/11/27 06:36:55 misha Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -60,7 +60,7 @@ if test ! -f "$project_directory/pcre/lib/libpcre.a"; then
     --disable-shared \
     --disable-cpp \
     --disable-pcregrep-libz \
-    --disable-pcregrep-libz2 \
+    --disable-pcregrep-libbz2 \
     --silent
   echo "Building pcre..."
   make
