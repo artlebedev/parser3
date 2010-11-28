@@ -97,7 +97,7 @@ extern "C" {
 char *pa_pstrcat(pa_pool_t *p, ...);
 
 // use libgc
-void* pa_malloc(unsigned int size);
+void* pa_sdbm_malloc(unsigned int size);
 
 #ifdef __cplusplus
 }

@@ -135,7 +135,7 @@ static pa_status_t prep(pa_sdbm_t **pdb, const char *dirname, const char *pagnam
 
 //    db = malloc(sizeof(*db));
 //    memset(db, 0, sizeof(*db));
-	db = pa_malloc(sizeof(*db));
+    db = pa_sdbm_malloc(sizeof(*db));
 
     db->pool = p;
 

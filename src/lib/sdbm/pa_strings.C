@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Date: 2010/11/28 13:58:03 $";
+static const char * const IDENT="$Date: 2010/11/28 14:39:33 $";
 
 #include "pa_strings.h"
 #include "pa_memory.h"
@@ -67,3 +67,6 @@ char *pa_pstrcat(pa_pool_t *p, ...)
     return res;
 }
 
+void* pa_sdbm_malloc(unsigned int size){
+        return pa_malloc(size);
+}
