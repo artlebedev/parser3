@@ -1,3 +1,5 @@
+/**@TODO paf remove unneeded functions */
+
 /* ====================================================================
  * The Apache Software License, Version 1.1
  *
@@ -52,27 +54,53 @@
  * <http://www.apache.org/>.
  */
 
-/*
- * sdbm - ndbm work-alike hashed database library
- * tuning and portability constructs [not nearly enough]
- * author: oz@nexus.yorku.ca
- */
+/* Portions of this file are covered by */
+/* -*- mode: c; c-file-style: "k&r" -*-
 
-#ifndef SDBM_TUNE_H
-#define SDBM_TUNE_H
+  strnatcmp.c -- Perform 'natural order' comparisons of strings in C.
+  Copyright (C) 2000 by Martin Pool <mbp@humbug.org.au>
 
+  This software is provided 'as-is', without any express or implied
+  warranty.  In no event will the authors be held liable for any damages
+  arising from the use of this software.
+
+  Permission is granted to anyone to use this software for any purpose,
+  including commercial applications, and to alter it and redistribute it
+  freely, subject to the following restrictions:
+
+  1. The origin of this software must not be misrepresented; you must not
+     claim that you wrote the original software. If you use this software
+     in a product, an acknowledgment in the product documentation would be
+     appreciated but is not required.
+  2. Altered source versions must be plainly marked as such, and must not be
+     misrepresented as being the original software.
+  3. This notice may not be removed or altered from any source distribution.
+*/
+
+#ifndef PA_STRINGS_H
+#define PA_STRINGS_H
+
+#include "pa_config_includes.h"
+
+#include "pa_apr.h"
 #include "pa_errno.h"
 
-/* ### this might be better off as sizeof(char *) */
-#define BYTESIZ		8
-
-/*
- * misc
- */
-#ifdef DEBUG
-#define debug(x)	printf x
-#else
-#define debug(x)
+#ifdef HAVE_STDARG_H
+#include <stdarg.h>
 #endif
 
-#endif /* SDBM_TUNE_H */
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
+// Concatenate multiple strings, allocating memory out a pool
+char *pa_pstrcat(pa_pool_t *p, ...);
+
+// use libgc
+void* pa_malloc(unsigned int size);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif  /* !PA_STRINGS_H */

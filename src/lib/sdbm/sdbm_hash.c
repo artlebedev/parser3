@@ -61,7 +61,7 @@
  * hashing routine
  */
 
-#include "apr_sdbm.h"
+#include "pa_sdbm.h"
 #include "sdbm_private.h"
 
 /*

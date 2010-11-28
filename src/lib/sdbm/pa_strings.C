@@ -5,29 +5,29 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Date: 2008/01/25 18:57:52 $";
+static const char * const IDENT="$Date: 2010/11/28 13:58:03 $";
 
-#include "apr_strings.h"
+#include "pa_strings.h"
 #include "pa_memory.h"
 
-/** this is used to cache lengths in apr_pstrcat */
+/** this is used to cache lengths in pa_pstrcat */
 #define MAX_SAVED_LENGTHS  6
 
-APR_DECLARE_NONSTD(char *) apr_pstrcat(apr_pool_t *p, ...)
+char *pa_pstrcat(pa_pool_t *p, ...)
 {
     char *cp, *argp, *res;
-    apr_size_t saved_lengths[MAX_SAVED_LENGTHS];
+    pa_size_t saved_lengths[MAX_SAVED_LENGTHS];
     int nargs = 0;
 
     /* Pass one --- find length of required string */
 
-    apr_size_t len = 0;
+    pa_size_t len = 0;
     va_list adummy;
 
     va_start(adummy, p);
 
     while ((cp = va_arg(adummy, char *)) != NULL) {
-        apr_size_t cplen = strlen(cp);
+        pa_size_t cplen = strlen(cp);
         if (nargs < MAX_SAVED_LENGTHS) {
             saved_lengths[nargs++] = cplen;
         }
@@ -67,6 +67,3 @@ APR_DECLARE_NONSTD(char *) apr_pstrcat(apr_pool_t *p, ...)
     return res;
 }
 
-void* apr_malloc(unsigned int size){
-	return pa_malloc(size);
-}

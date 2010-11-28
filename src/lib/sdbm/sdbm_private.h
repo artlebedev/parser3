@@ -61,13 +61,12 @@
 #ifndef SDBM_PRIVATE_H
 #define SDBM_PRIVATE_H
 
-#include "apr.h"
-#include "apr_pools.h"
-#include "apr_file_io.h"
-#include "apr_errno.h" /* for apr_status_t */
+#include "pa_apr.h"
+#include "pa_file_io.h"
+#include "pa_errno.h" /* for pa_status_t */
 
 #if 1
-/* if the block/page size is increased, it breaks perl apr_sdbm_t compatibility */
+/* if the block/page size is increased, it breaks perl pa_sdbm_t compatibility */
 #define DBLKSIZ 16384
 #define PBLKSIZ 8192
 // !see PAIRMAX definition in pa_vhashfile.C. values should be the same
@@ -79,17 +78,17 @@
 #endif
 #define SPLTMAX	10			/* maximum allowed splits */
 
-/* for apr_sdbm_t.flags */
+/* for pa_sdbm_t.flags */
 #define SDBM_RDONLY	        0x1    /* data base open read-only */
 #define SDBM_SHARED	        0x2    /* data base open for sharing */
 #define SDBM_SHARED_LOCK	0x4    /* data base locked for shared read */
 #define SDBM_EXCLUSIVE_LOCK	0x8    /* data base locked for write */
 
-struct apr_sdbm_t {
-    apr_pool_t *pool;
-    apr_file_t *dirf;		       /* directory file descriptor */
-    apr_file_t *pagf;		       /* page file descriptor */
-    apr_int32_t flags;		       /* status/error flags, see below */
+struct pa_sdbm_t {
+    pa_pool_t *pool;
+    pa_file_t *dirf;		       /* directory file descriptor */
+    pa_file_t *pagf;		       /* page file descriptor */
+    pa_int32_t flags;		       /* status/error flags, see below */
     long maxbno;		       /* size of dirfile in bits */
     long curbit;		       /* current bit number */
     long hmask;			       /* current hash mask */
@@ -103,7 +102,7 @@ struct apr_sdbm_t {
     int  lckcnt;                       /* number of calls to sdbm_lock */
 };
 
-extern const apr_sdbm_datum_t sdbm_nullitem;
+extern const pa_sdbm_datum_t sdbm_nullitem;
 
 long sdbm_hash(const char *str, int len);
 

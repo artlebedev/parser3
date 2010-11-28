@@ -61,7 +61,7 @@
  * page-level routines
  */
 
-#include "apr_sdbm.h"
+#include "pa_sdbm.h"
 
 #include "sdbm_tune.h"
 #include "sdbm_pair.h"
@@ -119,8 +119,8 @@ int need;
 void
 putpair(pag, key, val)
 char *pag;
-apr_sdbm_datum_t key;
-apr_sdbm_datum_t val;
+pa_sdbm_datum_t key;
+pa_sdbm_datum_t val;
 {
 	register int n;
 	register int off;
@@ -145,14 +145,14 @@ apr_sdbm_datum_t val;
 	ino[0] += 2;
 }
 
-apr_sdbm_datum_t
+pa_sdbm_datum_t
 getpair(pag, key)
 char *pag;
-apr_sdbm_datum_t key;
+pa_sdbm_datum_t key;
 {
 	register int i;
 	register int n;
-	apr_sdbm_datum_t val;
+	pa_sdbm_datum_t val;
 	register short *ino = (short *) pag;
 
 	if ((n = ino[0]) == 0)
@@ -169,18 +169,18 @@ apr_sdbm_datum_t key;
 int
 duppair(pag, key)
 char *pag;
-apr_sdbm_datum_t key;
+pa_sdbm_datum_t key;
 {
 	register short *ino = (short *) pag;
 	return ino[0] > 0 && seepair(pag, ino[0], key.dptr, key.dsize) > 0;
 }
 
-apr_sdbm_datum_t
+pa_sdbm_datum_t
 getnkey(pag, num)
 char *pag;
 int num;
 {
-	apr_sdbm_datum_t key;
+	pa_sdbm_datum_t key;
 	register int off;
 	register short *ino = (short *) pag;
 
@@ -199,7 +199,7 @@ int num;
 int
 delpair(pag, key)
 char *pag;
-apr_sdbm_datum_t key;
+pa_sdbm_datum_t key;
 {
 	register int n;
 	register int i;
@@ -294,8 +294,8 @@ char *pag;
 char *new;
 long sbit;
 {
-	apr_sdbm_datum_t key;
-	apr_sdbm_datum_t val;
+	pa_sdbm_datum_t key;
+	pa_sdbm_datum_t val;
 
 	register int n;
 	register int off = PBLKSIZ;

@@ -60,11 +60,11 @@
  * core routines
  */
 
-#include "apr.h"
-#include "apr_file_io.h"
-#include "apr_strings.h"
-#include "apr_errno.h"
-#include "apr_sdbm.h"
+#include "pa_apr.h"
+#include "pa_file_io.h"
+#include "pa_strings.h"
+#include "pa_errno.h"
+#include "pa_sdbm.h"
 
 #include "sdbm_tune.h"
 #include "sdbm_pair.h"
@@ -76,11 +76,11 @@
 /*
  * forward
  */
-static int getdbit (apr_sdbm_t *, long);
-static apr_status_t setdbit(apr_sdbm_t *, long);
-static apr_status_t getpage(apr_sdbm_t *db, long);
-static apr_status_t getnext(apr_sdbm_datum_t *key, apr_sdbm_t *db);
-static apr_status_t makroom(apr_sdbm_t *, long, int);
+static int getdbit (pa_sdbm_t *, long);
+static pa_status_t setdbit(pa_sdbm_t *, long);
+static pa_status_t getpage(pa_sdbm_t *db, long);
+static pa_status_t getnext(pa_sdbm_datum_t *key, pa_sdbm_t *db);
+static pa_status_t makroom(pa_sdbm_t *, long, int);
 
 /*
  * useful macros
@@ -92,8 +92,8 @@ static apr_status_t makroom(apr_sdbm_t *, long, int);
 #define sdbm_dirfno(db)	((db)->dirf)
 #define sdbm_pagfno(db)	((db)->pagf)
 
-#define OFF_PAG(off)	(apr_off_t) (off) * PBLKSIZ
-#define OFF_DIR(off)	(apr_off_t) (off) * DBLKSIZ
+#define OFF_PAG(off)	(pa_off_t) (off) * PBLKSIZ
+#define OFF_DIR(off)	(pa_off_t) (off) * DBLKSIZ
 
 static long masks[] = {
         000000000000, 000000000001, 000000000003, 000000000007,
@@ -106,36 +106,36 @@ static long masks[] = {
         001777777777, 003777777777, 007777777777, 017777777777
 };
 
-const apr_sdbm_datum_t sdbm_nullitem = { NULL, 0 };
+const pa_sdbm_datum_t sdbm_nullitem = { NULL, 0 };
 
-static apr_status_t database_cleanup(void *data)
+static pa_status_t database_cleanup(void *data)
 {
-    apr_sdbm_t *db = data;
+    pa_sdbm_t *db = data;
 
     /*
-     * Can't rely on apr_sdbm_unlock, since it will merely
+     * Can't rely on pa_sdbm_unlock, since it will merely
      * decrement the refcnt if several locks are held.
      */
     if (db->flags & (SDBM_SHARED_LOCK | SDBM_EXCLUSIVE_LOCK))
-        (void) apr_file_unlock(db->dirf);
-    (void) apr_file_close(db->dirf);
-    (void) apr_file_close(db->pagf);
+        (void) pa_file_unlock(db->dirf);
+    (void) pa_file_close(db->dirf);
+    (void) pa_file_close(db->pagf);
 //    free(db); // libcg will do it
 
-    return APR_SUCCESS;
+    return PA_SUCCESS;
 }
 
-static apr_status_t prep(apr_sdbm_t **pdb, const char *dirname, const char *pagname,
-                         apr_int32_t flags, apr_fileperms_t perms, apr_pool_t *p)
+static pa_status_t prep(pa_sdbm_t **pdb, const char *dirname, const char *pagname,
+                         pa_int32_t flags, pa_fileperms_t perms, pa_pool_t *p)
 {
-    apr_sdbm_t *db;
-    apr_status_t status;
+    pa_sdbm_t *db;
+    pa_status_t status;
 
     *pdb = NULL;
 
 //    db = malloc(sizeof(*db));
 //    memset(db, 0, sizeof(*db));
-	db = apr_malloc(sizeof(*db));
+	db = pa_malloc(sizeof(*db));
 
     db->pool = p;
 
@@ -144,184 +144,184 @@ static apr_status_t prep(apr_sdbm_t **pdb, const char *dirname, const char *pagn
      * as required by this package. Also set our internal
      * flag for RDONLY if needed.
      */
-    if (!(flags & APR_WRITE)) {
+    if (!(flags & PA_WRITE)) {
         db->flags |= SDBM_RDONLY;
     }
 
     /*
      * adjust the file open flags so that we handle locking
      * on our own (don't rely on any locking behavior within
-     * an apr_file_t, in case it's ever introduced, and set
+     * an pa_file_t, in case it's ever introduced, and set
      * our own flag.
      */
-    if (flags & APR_SHARELOCK) {
+    if (flags & PA_SHARELOCK) {
         db->flags |= SDBM_SHARED;
-        flags &= ~APR_SHARELOCK;
+        flags &= ~PA_SHARELOCK;
     }
 
-    flags |= APR_BINARY | APR_READ;
+    flags |= PA_BINARY | PA_READ;
 
     /*
      * open the files in sequence, and stat the dirfile.
      * If we fail anywhere, undo everything, return NULL.
      */
 
-    if ((status = apr_file_open(&db->dirf, dirname, flags, perms, p))
-                != APR_SUCCESS)
+    if ((status = pa_file_open(&db->dirf, dirname, flags, perms, p))
+                != PA_SUCCESS)
         goto error;
 
-    if ((status = apr_file_open(&db->pagf, pagname, flags, perms, p))
-                != APR_SUCCESS)
+    if ((status = pa_file_open(&db->pagf, pagname, flags, perms, p))
+                != PA_SUCCESS)
         goto error;
 
-    if ((status = apr_sdbm_lock(db, (db->flags & SDBM_RDONLY) 
-                                        ? APR_FLOCK_SHARED
-                                        : APR_FLOCK_EXCLUSIVE))
-                != APR_SUCCESS)
+    if ((status = pa_sdbm_lock(db, (db->flags & SDBM_RDONLY) 
+                                        ? PA_FLOCK_SHARED
+                                        : PA_FLOCK_EXCLUSIVE))
+                != PA_SUCCESS)
         goto error;
 
-    /* apr_pcalloc zeroed the buffers
-     * apr_sdbm_lock stated the dirf->size and invalidated the cache
+    /* pa_pcalloc zeroed the buffers
+     * pa_sdbm_lock stated the dirf->size and invalidated the cache
      */
 
     /*
      * if we are opened in SHARED mode, unlock ourself 
      */
     if (db->flags & SDBM_SHARED)
-        if ((status = apr_sdbm_unlock(db)) != APR_SUCCESS)
+        if ((status = pa_sdbm_unlock(db)) != PA_SUCCESS)
             goto error;
 
     /* make sure that we close the database at some point */
-    //apr_pool_cleanup_register(p, db, database_cleanup, apr_pool_cleanup_null);
+    //pa_pool_cleanup_register(p, db, database_cleanup, pa_pool_cleanup_null);
 
     /* Done! */
     *pdb = db;
-    return APR_SUCCESS;
+    return PA_SUCCESS;
 
 error:
     if (db->dirf && db->pagf)
-        (void) apr_sdbm_unlock(db);
+        (void) pa_sdbm_unlock(db);
     if (db->dirf != NULL)
-        (void) apr_file_close(db->dirf);
+        (void) pa_file_close(db->dirf);
     if (db->pagf != NULL) {
-        (void) apr_file_close(db->pagf);
+        (void) pa_file_close(db->pagf);
     }
 //    free(db); // libcg will do it
     return status;
 }
 
-APU_DECLARE(apr_status_t) apr_sdbm_open(apr_sdbm_t **db, const char *file, 
-                                        apr_int32_t flags, 
-                                        apr_fileperms_t perms, apr_pool_t *p)
+pa_status_t pa_sdbm_open(pa_sdbm_t **db, const char *file, 
+                                        pa_int32_t flags, 
+                                        pa_fileperms_t perms, pa_pool_t *p)
 {
-    char *dirname = apr_pstrcat(p, file, APR_SDBM_DIRFEXT, NULL);
-    char *pagname = apr_pstrcat(p, file, APR_SDBM_PAGFEXT, NULL);
+    char *dirname = pa_pstrcat(p, file, PA_SDBM_DIRFEXT, NULL);
+    char *pagname = pa_pstrcat(p, file, PA_SDBM_PAGFEXT, NULL);
     
     return prep(db, dirname, pagname, flags, perms, p);
 }
 
-APU_DECLARE(apr_status_t) apr_sdbm_close(apr_sdbm_t *db)
+pa_status_t pa_sdbm_close(pa_sdbm_t *db)
 {
-	database_cleanup(db); return APR_SUCCESS;
-    //return apr_pool_cleanup_run(db->pool, db, database_cleanup);
+	database_cleanup(db); return PA_SUCCESS;
+    //return pa_pool_cleanup_run(db->pool, db, database_cleanup);
 }
 
-APU_DECLARE(apr_status_t) apr_sdbm_fetch(apr_sdbm_t *db, apr_sdbm_datum_t *val,
-                                         apr_sdbm_datum_t key)
+pa_status_t pa_sdbm_fetch(pa_sdbm_t *db, pa_sdbm_datum_t *val,
+                                         pa_sdbm_datum_t key)
 {
-    apr_status_t status;
+    pa_status_t status;
     
     if (db == NULL || bad(key))
-        return APR_EINVAL;
+        return PA_EINVAL;
 
-    if ((status = apr_sdbm_lock(db, APR_FLOCK_SHARED)) != APR_SUCCESS)
+    if ((status = pa_sdbm_lock(db, PA_FLOCK_SHARED)) != PA_SUCCESS)
         return status;
 
-    if ((status = getpage(db, exhash(key))) == APR_SUCCESS) {
+    if ((status = getpage(db, exhash(key))) == PA_SUCCESS) {
         *val = getpair(db->pagbuf, key);
         /* ### do we want a not-found result? */
     }
 
-    (void) apr_sdbm_unlock(db);
+    (void) pa_sdbm_unlock(db);
 
     return status;
 }
 
-static apr_status_t write_page(apr_sdbm_t *db, const char *buf, long pagno)
+static pa_status_t write_page(pa_sdbm_t *db, const char *buf, long pagno)
 {
-    apr_status_t status;
-    apr_off_t off = OFF_PAG(pagno);
+    pa_status_t status;
+    pa_off_t off = OFF_PAG(pagno);
     
-    if ((status = apr_file_seek(db->pagf, APR_SET, &off)) == APR_SUCCESS)
-        status = apr_file_write_full(db->pagf, buf, PBLKSIZ, NULL);
+    if ((status = pa_file_seek(db->pagf, PA_SET, &off)) == PA_SUCCESS)
+        status = pa_file_write_full(db->pagf, buf, PBLKSIZ, NULL);
 
     return status;
 }
 
-APU_DECLARE(apr_status_t) apr_sdbm_delete(apr_sdbm_t *db, 
-                                          const apr_sdbm_datum_t key)
+pa_status_t pa_sdbm_delete(pa_sdbm_t *db, 
+                                          const pa_sdbm_datum_t key)
 {
-    apr_status_t status;
+    pa_status_t status;
     
     if (db == NULL || bad(key))
-        return APR_EINVAL;
-    if (apr_sdbm_rdonly(db))
-        return APR_EINVAL;
+        return PA_EINVAL;
+    if (pa_sdbm_rdonly(db))
+        return PA_EINVAL;
     
-    if ((status = apr_sdbm_lock(db, APR_FLOCK_EXCLUSIVE)) != APR_SUCCESS)
+    if ((status = pa_sdbm_lock(db, PA_FLOCK_EXCLUSIVE)) != PA_SUCCESS)
         return status;
 
-    if ((status = getpage(db, exhash(key))) == APR_SUCCESS) {
+    if ((status = getpage(db, exhash(key))) == PA_SUCCESS) {
         if (!delpair(db->pagbuf, key))
             /* ### should we define some APRUTIL codes? */
-			status = APR_SUCCESS; /* PAF: were APR_EGENERAL, contradicting comment in .h file :( */
+			status = PA_SUCCESS; /* PAF: were PA_EGENERAL, contradicting comment in .h file :( */
         else
             status = write_page(db, db->pagbuf, db->pagbno);
     }
 
-    (void) apr_sdbm_unlock(db);
+    (void) pa_sdbm_unlock(db);
 
     return status;
 }
 
-APU_DECLARE(apr_status_t) apr_sdbm_store(apr_sdbm_t *db, apr_sdbm_datum_t key,
-                                         apr_sdbm_datum_t val, int flags)
+pa_status_t pa_sdbm_store(pa_sdbm_t *db, pa_sdbm_datum_t key,
+                                         pa_sdbm_datum_t val, int flags)
 {
     int need;
     register long hash;
-    apr_status_t status;
+    pa_status_t status;
     
     if (db == NULL || bad(key))
-        return APR_EINVAL;
-    if (apr_sdbm_rdonly(db))
-        return APR_EINVAL;
+        return PA_EINVAL;
+    if (pa_sdbm_rdonly(db))
+        return PA_EINVAL;
     need = key.dsize + val.dsize;
     /*
      * is the pair too big (or too small) for this database ??
      */
     if (need < 0 || need > PAIRMAX)
-        return APR_EINVAL;
+        return PA_EINVAL;
 
-    if ((status = apr_sdbm_lock(db, APR_FLOCK_EXCLUSIVE)) != APR_SUCCESS)
+    if ((status = pa_sdbm_lock(db, PA_FLOCK_EXCLUSIVE)) != PA_SUCCESS)
         return status;
 
-    if ((status = getpage(db, (hash = exhash(key)))) == APR_SUCCESS) {
+    if ((status = getpage(db, (hash = exhash(key)))) == PA_SUCCESS) {
 
         /*
          * if we need to replace, delete the key/data pair
          * first. If it is not there, ignore.
          */
-        if (flags == APR_SDBM_REPLACE)
+        if (flags == PA_SDBM_REPLACE)
             (void) delpair(db->pagbuf, key);
-        else if (!(flags & APR_SDBM_INSERTDUP) && duppair(db->pagbuf, key)) {
-            status = APR_EEXIST;
+        else if (!(flags & PA_SDBM_INSERTDUP) && duppair(db->pagbuf, key)) {
+            status = PA_EEXIST;
             goto error;
         }
         /*
          * if we do not have enough room, we have to split.
          */
         if (!fitpair(db->pagbuf, need))
-            if ((status = makroom(db, hash, need)) != APR_SUCCESS)
+            if ((status = makroom(db, hash, need)) != PA_SUCCESS)
                 goto error;
         /*
          * we have enough room or split is successful. insert the key,
@@ -333,7 +333,7 @@ APU_DECLARE(apr_status_t) apr_sdbm_store(apr_sdbm_t *db, apr_sdbm_datum_t key,
     }
 
 error:
-    (void) apr_sdbm_unlock(db);    
+    (void) pa_sdbm_unlock(db);    
 
     return status;
 }
@@ -343,14 +343,14 @@ error:
  * this routine will attempt to make room for SPLTMAX times before
  * giving up.
  */
-static apr_status_t makroom(apr_sdbm_t *db, long hash, int need)
+static pa_status_t makroom(pa_sdbm_t *db, long hash, int need)
 {
     long newp;
     char twin[PBLKSIZ];
     char *pag = db->pagbuf;
     char *new = twin;
     register int smax = SPLTMAX;
-    apr_status_t status;
+    pa_status_t status;
 
     do {
         /*
@@ -372,24 +372,24 @@ static apr_status_t makroom(apr_sdbm_t *db, long hash, int need)
          */
         if (hash & (db->hmask + 1)) {
             if ((status = write_page(db, db->pagbuf, db->pagbno)) 
-                        != APR_SUCCESS)
+                        != PA_SUCCESS)
                 return status;
                     
             db->pagbno = newp;
             (void) memcpy(pag, new, PBLKSIZ);
         }
         else {
-            if ((status = write_page(db, new, newp)) != APR_SUCCESS)
+            if ((status = write_page(db, new, newp)) != PA_SUCCESS)
                 return status;
         }
 
-        if ((status = setdbit(db, db->curbit)) != APR_SUCCESS)
+        if ((status = setdbit(db, db->curbit)) != PA_SUCCESS)
             return status;
         /*
          * see if we have enough room now
          */
         if (fitpair(pag, need))
-            return APR_SUCCESS;
+            return PA_SUCCESS;
         /*
          * try again... update curbit and hmask as getpage would have
          * done. because of our update of the current page, we do not
@@ -401,7 +401,7 @@ static apr_status_t makroom(apr_sdbm_t *db, long hash, int need)
         db->hmask |= db->hmask + 1;
             
         if ((status = write_page(db, db->pagbuf, db->pagbno))
-                    != APR_SUCCESS)
+                    != PA_SUCCESS)
             return status;
             
     } while (--smax);
@@ -414,7 +414,7 @@ static apr_status_t makroom(apr_sdbm_t *db, long hash, int need)
     (void) write(2, "sdbm: cannot insert after SPLTMAX attempts.\n", 44);
 #endif
     /* ### ENOSPC not really appropriate but better than nothing */
-    return APR_ENOSPC;
+    return PA_ENOSPC;
 
 }
 
@@ -422,17 +422,17 @@ static apr_status_t makroom(apr_sdbm_t *db, long hash, int need)
  * 'off' is given relative to the start of the file.
  * If EOF is returned while reading, this is taken as success.
  */
-static apr_status_t read_from(apr_file_t *f, void *buf, 
-             apr_off_t off, apr_size_t len)
+static pa_status_t read_from(pa_file_t *f, void *buf, 
+             pa_off_t off, pa_size_t len)
 {
-    apr_status_t status;
+    pa_status_t status;
 
-    if ((status = apr_file_seek(f, APR_SET, &off)) != APR_SUCCESS ||
-        ((status = apr_file_read_full(f, buf, len, NULL)) != APR_SUCCESS)) {
+    if ((status = pa_file_seek(f, PA_SET, &off)) != PA_SUCCESS ||
+        ((status = pa_file_read_full(f, buf, len, NULL)) != PA_SUCCESS)) {
         /* if EOF is reached, pretend we read all zero's */
-        if (status == APR_EOF) {
+        if (status == PA_EOF) {
             memset(buf, 0, len);
-            status = APR_SUCCESS;
+            status = PA_SUCCESS;
         }
     }
 
@@ -443,41 +443,41 @@ static apr_status_t read_from(apr_file_t *f, void *buf,
  * the following two routines will break if
  * deletions aren't taken into account. (ndbm bug)
  */
-APU_DECLARE(apr_status_t) apr_sdbm_firstkey(apr_sdbm_t *db, 
-                                            apr_sdbm_datum_t *key)
+pa_status_t pa_sdbm_firstkey(pa_sdbm_t *db, 
+                                            pa_sdbm_datum_t *key)
 {
-    apr_status_t status;
+    pa_status_t status;
     
-    if ((status = apr_sdbm_lock(db, APR_FLOCK_SHARED)) != APR_SUCCESS)
+    if ((status = pa_sdbm_lock(db, PA_FLOCK_SHARED)) != PA_SUCCESS)
         return status;
 
     /*
      * start at page 0
      */
     if ((status = read_from(db->pagf, db->pagbuf, OFF_PAG(0), PBLKSIZ))
-                == APR_SUCCESS) {
+                == PA_SUCCESS) {
         db->pagbno = 0;
         db->blkptr = 0;
         db->keyptr = 0;
         status = getnext(key, db);
     }
 
-    (void) apr_sdbm_unlock(db);
+    (void) pa_sdbm_unlock(db);
 
     return status;
 }
 
-APU_DECLARE(apr_status_t) apr_sdbm_nextkey(apr_sdbm_t *db, 
-                                           apr_sdbm_datum_t *key)
+pa_status_t pa_sdbm_nextkey(pa_sdbm_t *db, 
+                                           pa_sdbm_datum_t *key)
 {
-    apr_status_t status;
+    pa_status_t status;
     
-    if ((status = apr_sdbm_lock(db, APR_FLOCK_SHARED)) != APR_SUCCESS)
+    if ((status = pa_sdbm_lock(db, PA_FLOCK_SHARED)) != PA_SUCCESS)
         return status;
 
     status = getnext(key, db);
 
-    (void) apr_sdbm_unlock(db);
+    (void) pa_sdbm_unlock(db);
 
     return status;
 }
@@ -485,12 +485,12 @@ APU_DECLARE(apr_status_t) apr_sdbm_nextkey(apr_sdbm_t *db,
 /*
  * all important binary tree traversal
  */
-static apr_status_t getpage(apr_sdbm_t *db, long hash)
+static pa_status_t getpage(pa_sdbm_t *db, long hash)
 {
     register int hbit;
     register long dbit;
     register long pagb;
-    apr_status_t status;
+    pa_status_t status;
 
     dbit = 0;
     hbit = 0;
@@ -515,19 +515,19 @@ static apr_status_t getpage(apr_sdbm_t *db, long hash)
          * ### we make it so in read_from anyway.
          */
         if ((status = read_from(db->pagf, db->pagbuf, OFF_PAG(pagb), PBLKSIZ)) 
-                    != APR_SUCCESS)
+                    != PA_SUCCESS)
             return status;
 
         if (!chkpage(db->pagbuf))
-            return APR_ENOSPC; /* ### better error? */
+            return PA_ENOSPC; /* ### better error? */
         db->pagbno = pagb;
 
         debug(("pag read: %d\n", pagb));
     }
-    return APR_SUCCESS;
+    return PA_SUCCESS;
 }
 
-static int getdbit(apr_sdbm_t *db, long dbit)
+static int getdbit(pa_sdbm_t *db, long dbit)
 {
     register long c;
     register long dirb;
@@ -537,7 +537,7 @@ static int getdbit(apr_sdbm_t *db, long dbit)
 
     if (dirb != db->dirbno) {
         if (read_from(db->dirf, db->dirbuf, OFF_DIR(dirb), DBLKSIZ)
-                    != APR_SUCCESS)
+                    != PA_SUCCESS)
             return 0;
 
         db->dirbno = dirb;
@@ -548,19 +548,19 @@ static int getdbit(apr_sdbm_t *db, long dbit)
     return db->dirbuf[c % DBLKSIZ] & (1 << dbit % BYTESIZ);
 }
 
-static apr_status_t setdbit(apr_sdbm_t *db, long dbit)
+static pa_status_t setdbit(pa_sdbm_t *db, long dbit)
 {
     register long c;
     register long dirb;
-    apr_status_t status;
-    apr_off_t off;
+    pa_status_t status;
+    pa_off_t off;
 
     c = dbit / BYTESIZ;
     dirb = c / DBLKSIZ;
 
     if (dirb != db->dirbno) {
         if ((status = read_from(db->dirf, db->dirbuf, OFF_DIR(dirb), DBLKSIZ))
-                    != APR_SUCCESS)
+                    != PA_SUCCESS)
             return status;
 
         db->dirbno = dirb;
@@ -574,8 +574,8 @@ static apr_status_t setdbit(apr_sdbm_t *db, long dbit)
         db->maxbno += DBLKSIZ * BYTESIZ;
 
     off = OFF_DIR(dirb);
-    if ((status = apr_file_seek(db->dirf, APR_SET, &off)) == APR_SUCCESS)
-        status = apr_file_write_full(db->dirf, db->dirbuf, DBLKSIZ, NULL);
+    if ((status = pa_file_seek(db->dirf, PA_SET, &off)) == PA_SUCCESS)
+        status = pa_file_write_full(db->dirf, db->dirbuf, DBLKSIZ, NULL);
 
     return status;
 }
@@ -584,14 +584,14 @@ static apr_status_t setdbit(apr_sdbm_t *db, long dbit)
 * getnext - get the next key in the page, and if done with
 * the page, try the next page in sequence
 */
-static apr_status_t getnext(apr_sdbm_datum_t *key, apr_sdbm_t *db)
+static pa_status_t getnext(pa_sdbm_datum_t *key, pa_sdbm_t *db)
 {
-    apr_status_t status;
+    pa_status_t status;
     for (;;) {
         db->keyptr++;
         *key = getnkey(db->pagbuf, db->keyptr);
         if (key->dptr != NULL)
-            return APR_SUCCESS;
+            return PA_SUCCESS;
         /*
          * we either run out, or there is nothing on this page..
          * try the next one... If we lost our position on the
@@ -599,29 +599,29 @@ static apr_status_t getnext(apr_sdbm_datum_t *key, apr_sdbm_t *db)
          */
         db->keyptr = 0;
         if (db->pagbno != db->blkptr++) {
-            apr_off_t off = OFF_PAG(db->blkptr);
-            if ((status = apr_file_seek(db->pagf, APR_SET, &off) 
-                        != APR_SUCCESS))
+            pa_off_t off = OFF_PAG(db->blkptr);
+            if ((status = pa_file_seek(db->pagf, PA_SET, &off) 
+                        != PA_SUCCESS))
                 return status;
         }
 
         db->pagbno = db->blkptr;
         /* ### EOF acceptable here too? */
-        if ((status = apr_file_read_full(db->pagf, db->pagbuf, PBLKSIZ, NULL))
-                    != APR_SUCCESS)
+        if ((status = pa_file_read_full(db->pagf, db->pagbuf, PBLKSIZ, NULL))
+                    != PA_SUCCESS)
             return status;
         if (!chkpage(db->pagbuf))
-            return APR_EGENERAL;     /* ### need better error */
+            return PA_EGENERAL;     /* ### need better error */
     }
 
     /* NOTREACHED */
 }
 
 
-APU_DECLARE(int) apr_sdbm_rdonly(apr_sdbm_t *db)
+int pa_sdbm_rdonly(pa_sdbm_t *db)
 {
     /* ### Should we return true if the first lock is a share lock,
-     *     to reflect that apr_sdbm_store and apr_sdbm_delete will fail?
+     *     to reflect that pa_sdbm_store and pa_sdbm_delete will fail?
      */
     return (db->flags & SDBM_RDONLY) != 0;
 }

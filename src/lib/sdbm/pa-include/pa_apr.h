@@ -52,27 +52,23 @@
  * <http://www.apache.org/>.
  */
 
-/*
- * sdbm - ndbm work-alike hashed database library
- * tuning and portability constructs [not nearly enough]
- * author: oz@nexus.yorku.ca
- */
+#ifndef PA_APR_H
+#define PA_APR_H
 
-#ifndef SDBM_TUNE_H
-#define SDBM_TUNE_H
-
-#include "pa_errno.h"
-
-/* ### this might be better off as sizeof(char *) */
-#define BYTESIZ		8
-
-/*
- * misc
- */
-#ifdef DEBUG
-#define debug(x)	printf x
-#else
-#define debug(x)
+#include "pa_config_includes.h"
+#ifdef HAVE_ERRNO_H
+#define PA_HAVE_ERRNO_H 1
 #endif
 
-#endif /* SDBM_TUNE_H */
+#include <stddef.h>
+
+// apr.h
+typedef int pa_int32_t;
+typedef int pa_off_t;
+typedef size_t pa_size_t;
+
+// apr_pools.h
+typedef void pa_pool_t;
+
+#endif /* PA_APR_H */
+

@@ -66,13 +66,13 @@
 #define splpage sdbm__splpage
 
 int fitpair(char *, int);
-void  putpair(char *, apr_sdbm_datum_t, apr_sdbm_datum_t);
-apr_sdbm_datum_t getpair(char *, apr_sdbm_datum_t);
-int  delpair(char *, apr_sdbm_datum_t);
+void  putpair(char *, pa_sdbm_datum_t, pa_sdbm_datum_t);
+pa_sdbm_datum_t getpair(char *, pa_sdbm_datum_t);
+int  delpair(char *, pa_sdbm_datum_t);
 int  chkpage (char *);
-apr_sdbm_datum_t getnkey(char *, int);
+pa_sdbm_datum_t getnkey(char *, int);
 void splpage(char *, char *, long);
-int duppair(char *, apr_sdbm_datum_t);
+int duppair(char *, pa_sdbm_datum_t);
 
 #endif /* SDBM_PAIR_H */
 
