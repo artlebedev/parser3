@@ -19,7 +19,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="apr-include,../../include,../gc/include"
+				AdditionalIncludeDirectories="pa-include,../../include,../gc/include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -60,7 +60,7 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="apr-include,../../include,../gc/include"
+				AdditionalIncludeDirectories="pa-include,../../include,../gc/include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
@@ -130,35 +130,29 @@
 			Name="Fake Apache Header Files"
 			Filter="">
 			<File
-				RelativePath=".\apr-include\apr.h">
+				RelativePath=".\pa-include\pa_apr.h">
 			</File>
 			<File
-				RelativePath=".\apr-include\apr_errno.h">
+				RelativePath=".\pa-include\pa_errno.h">
 			</File>
 			<File
-				RelativePath=".\apr-include\apr_file_info.h">
+				RelativePath=".\pa-include\pa_file_info.h">
 			</File>
 			<File
-				RelativePath=".\apr-include\apr_file_io.h">
+				RelativePath=".\pa-include\pa_file_io.h">
 			</File>
 			<File
-				RelativePath=".\apr-include\apr_pools.h">
+				RelativePath=".\pa-include\pa_sdbm.h">
 			</File>
 			<File
-				RelativePath=".\apr-include\apr_sdbm.h">
-			</File>
-			<File
-				RelativePath=".\apr-include\apr_strings.h">
-			</File>
-			<File
-				RelativePath=".\apr-include\apu.h">
+				RelativePath=".\pa-include\pa_strings.h">
 			</File>
 		</Filter>
 		<Filter
-			Name="apr-impl"
+			Name="pa-impl"
 			Filter="">
 			<File
-				RelativePath=".\apr_file_io.C">
+				RelativePath=".\pa_file_io.C">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
@@ -173,7 +167,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\apr_strings.C">
+				RelativePath=".\pa_strings.C">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
