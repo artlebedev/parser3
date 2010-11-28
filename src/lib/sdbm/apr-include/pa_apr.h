@@ -52,36 +52,23 @@
  * <http://www.apache.org/>.
  */
 
-#ifndef APR_POOLS_H
-#define APR_POOLS_H
+#ifndef PA_APR_H
+#define PA_APR_H
 
-#include "apr_errno.h"
-
-#ifdef __cplusplus
-extern "C" {
+#include "pa_config_includes.h"
+#ifdef HAVE_ERRNO_H
+#define PA_HAVE_ERRNO_H 1
 #endif
 
-/**
- * @file apr_pools.h
- * @brief APR memory allocation
- *
- * Resource allocation routines...
- *
- * designed so that we don't have to keep track of EVERYTHING so that
- * it can be explicitly freed later (a fundamentally unsound strategy ---
- * particularly in the presence of die()).
- *
- * Instead, we maintain pools, and allocate items (both memory and I/O
- * handlers) from the pools --- currently there are two, one for per
- * transaction info, and one for config info.  When a transaction is over,
- * we can delete everything in the per-transaction apr_pool_t without fear,
- * and without thinking too hard about it either.
- */
+#include <stddef.h>
 
-typedef void apr_pool_t;
+// apr.h
+typedef int pa_int32_t;
+typedef int pa_off_t;
+typedef size_t pa_size_t;
 
-#ifdef __cplusplus
-}
-#endif
+// apr_pools.h
+typedef void pa_pool_t;
 
-#endif /* !APR_POOLS_H */
+#endif /* PA_APR_H */
+

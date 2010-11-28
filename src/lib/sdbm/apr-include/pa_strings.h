@@ -1,3 +1,5 @@
+/**@TODO paf remove unneeded functions */
+
 /* ====================================================================
  * The Apache Software License, Version 1.1
  *
@@ -52,62 +54,53 @@
  * <http://www.apache.org/>.
  */
 
-/*
- * apu.h is generated from apu.h.in by configure -- do not edit apu.h
- */
-/* @file apu.h
- * @brief APR-Utility main file
- */
-/**
- * @defgroup APR_Util APR Utility Functions
- * @{
- */
+/* Portions of this file are covered by */
+/* -*- mode: c; c-file-style: "k&r" -*-
 
+  strnatcmp.c -- Perform 'natural order' comparisons of strings in C.
+  Copyright (C) 2000 by Martin Pool <mbp@humbug.org.au>
 
-#ifndef APU_H
-#define APU_H
+  This software is provided 'as-is', without any express or implied
+  warranty.  In no event will the authors be held liable for any damages
+  arising from the use of this software.
 
-/**
- * APU_DECLARE_EXPORT is defined when building the APR-UTIL dynamic library,
- * so that all public symbols are exported.
- *
- * APU_DECLARE_STATIC is defined when including the APR-UTIL public headers,
- * to provide static linkage when the dynamic library may be unavailable.
- *
- * APU_DECLARE_STATIC and APU_DECLARE_EXPORT are left undefined when
- * including the APR-UTIL public headers, to import and link the symbols from 
- * the dynamic APR-UTIL library and assure appropriate indirection and calling
- * conventions at compile time.
- */
+  Permission is granted to anyone to use this software for any purpose,
+  including commercial applications, and to alter it and redistribute it
+  freely, subject to the following restrictions:
 
-/**
- * The public APR-UTIL functions are declared with APU_DECLARE(), so they may
- * use the most appropriate calling convention.  Public APR functions with 
- * variable arguments must use APU_DECLARE_NONSTD().
- *
- * @deffunc APU_DECLARE(rettype) apr_func(args);
- */
-#define APU_DECLARE(type)            type
-/**
- * The public APR-UTIL functions using variable arguments are declared with 
- * APU_DECLARE_NONSTD(), as they must use the C language calling convention.
- *
- * @deffunc APU_DECLARE_NONSTD(rettype) apr_func(args, ...);
- */
-#define APU_DECLARE_NONSTD(type)     type
-/**
- * The public APR-UTIL variables are declared with APU_DECLARE_DATA.
- * This assures the appropriate indirection is invoked at compile time.
- *
- * @deffunc APU_DECLARE_DATA type apr_variable;
- * @tip APU_DECLARE_DATA extern type apr_variable; syntax is required for
- * declarations within headers to properly import the variable.
- */
-#define APU_DECLARE_DATA
-/*
- * we always have SDBM (it's in our codebase)
- */
-#define APU_HAVE_SDBM
+  1. The origin of this software must not be misrepresented; you must not
+     claim that you wrote the original software. If you use this software
+     in a product, an acknowledgment in the product documentation would be
+     appreciated but is not required.
+  2. Altered source versions must be plainly marked as such, and must not be
+     misrepresented as being the original software.
+  3. This notice may not be removed or altered from any source distribution.
+*/
 
-#endif /* APU_H */
-/** @} */
+#ifndef PA_STRINGS_H
+#define PA_STRINGS_H
+
+#include "pa_config_includes.h"
+
+#include "pa_apr.h"
+#include "pa_errno.h"
+
+#ifdef HAVE_STDARG_H
+#include <stdarg.h>
+#endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
+// Concatenate multiple strings, allocating memory out a pool
+char *pa_pstrcat(pa_pool_t *p, ...);
+
+// use libgc
+void* pa_malloc(unsigned int size);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif  /* !PA_STRINGS_H */

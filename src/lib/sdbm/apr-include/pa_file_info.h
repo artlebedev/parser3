@@ -52,105 +52,105 @@
  * <http://www.apache.org/>.
  */
 
-#ifndef APR_FILE_INFO_H
-#define APR_FILE_INFO_H
+#ifndef PA_FILE_INFO_H
+#define PA_FILE_INFO_H
 
-#include "apr.h"
+#include "pa_apr.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
 /**
- * @file apr_file_info.h
+ * @file pa_file_info.h
  * @brief APR File handling
  */
 
 /**
  * Structure for determining file permissions.
- * @defvar apr_fileperms_t
+ * @defvar pa_fileperms_t
  */
-typedef apr_int32_t               apr_fileperms_t;
+typedef pa_int32_t               pa_fileperms_t;
 
 /**
- * @defgroup APR_File_Info Stat Functions
+ * @defgroup PA_File_Info Stat Functions
  * @{
  */
 #ifdef LATER
-#define APR_FINFO_LINK   0x00000001 /**< Stat the link not the file itself if it is a link */
-#define APR_FINFO_MTIME  0x00000010 /**< Modification Time */
-#define APR_FINFO_CTIME  0x00000020 /**< Creation Time */
-#define APR_FINFO_ATIME  0x00000040 /**< Access Time */
+#define PA_FINFO_LINK   0x00000001 /**< Stat the link not the file itself if it is a link */
+#define PA_FINFO_MTIME  0x00000010 /**< Modification Time */
+#define PA_FINFO_CTIME  0x00000020 /**< Creation Time */
+#define PA_FINFO_ATIME  0x00000040 /**< Access Time */
 #endif
-#define APR_FINFO_SIZE   0x00000100 /**< Size of the file */
+#define PA_FINFO_SIZE   0x00000100 /**< Size of the file */
 #ifdef LATER
-#define APR_FINFO_CSIZE  0x00000200 /**< Storage size consumed by the file */
-#define APR_FINFO_DEV    0x00001000
-#define APR_FINFO_INODE  0x00002000
-#define APR_FINFO_NLINK  0x00004000
-#define APR_FINFO_TYPE   0x00008000
-#define APR_FINFO_USER   0x00010000 
-#define APR_FINFO_GROUP  0x00020000 
-#define APR_FINFO_UPROT  0x00100000 
-#define APR_FINFO_GPROT  0x00200000
-#define APR_FINFO_WPROT  0x00400000
-#define APR_FINFO_ICASE  0x01000000  /**<  if dev is case insensitive */
-#define APR_FINFO_NAME   0x02000000  /**<  ->name in proper case */
+#define PA_FINFO_CSIZE  0x00000200 /**< Storage size consumed by the file */
+#define PA_FINFO_DEV    0x00001000
+#define PA_FINFO_INODE  0x00002000
+#define PA_FINFO_NLINK  0x00004000
+#define PA_FINFO_TYPE   0x00008000
+#define PA_FINFO_USER   0x00010000 
+#define PA_FINFO_GROUP  0x00020000 
+#define PA_FINFO_UPROT  0x00100000 
+#define PA_FINFO_GPROT  0x00200000
+#define PA_FINFO_WPROT  0x00400000
+#define PA_FINFO_ICASE  0x01000000  /**<  if dev is case insensitive */
+#define PA_FINFO_NAME   0x02000000  /**<  ->name in proper case */
 
-#define APR_FINFO_MIN    0x00008170  /**<  type, mtime, ctime, atime, size */
-#define APR_FINFO_IDENT  0x00003000  /**<  dev and inode */
-#define APR_FINFO_OWNER  0x00030000  /**<  user and group */
-#define APR_FINFO_PROT   0x00700000  /**<  all protections */
-#define APR_FINFO_NORM   0x0073b170  /**<  an atomic unix apr_stat() */
-#define APR_FINFO_DIRENT 0x02000000  /**<  an atomic unix apr_dir_read() */
+#define PA_FINFO_MIN    0x00008170  /**<  type, mtime, ctime, atime, size */
+#define PA_FINFO_IDENT  0x00003000  /**<  dev and inode */
+#define PA_FINFO_OWNER  0x00030000  /**<  user and group */
+#define PA_FINFO_PROT   0x00700000  /**<  all protections */
+#define PA_FINFO_NORM   0x0073b170  /**<  an atomic unix pa_stat() */
+#define PA_FINFO_DIRENT 0x02000000  /**<  an atomic unix pa_dir_read() */
 #endif
 
 /**
  * The file information structure.  This is analogous to the POSIX
  * stat structure.
  */
-typedef struct apr_finfo_t        apr_finfo_t;
+typedef struct pa_finfo_t        pa_finfo_t;
 
-struct apr_finfo_t {
+struct pa_finfo_t {
 #ifdef LATER
 	/** Allocates memory and closes lingering handles in the specified pool */
-    apr_pool_t *pool;
-    /** The bitmask describing valid fields of this apr_finfo_t structure 
+    pa_pool_t *pool;
+    /** The bitmask describing valid fields of this pa_finfo_t structure 
      *  including all available 'wanted' fields and potentially more */
-    apr_int32_t valid;
+    pa_int32_t valid;
     /** The access permissions of the file.  Mimics Unix access rights. */
-    apr_fileperms_t protection;
-    /** The type of file.  One of APR_NOFILE, APR_REG, APR_DIR, APR_CHR, 
-     *  APR_BLK, APR_PIPE, APR_LNK, APR_SOCK 
+    pa_fileperms_t protection;
+    /** The type of file.  One of PA_NOFILE, PA_REG, PA_DIR, PA_CHR, 
+     *  PA_BLK, PA_PIPE, PA_LNK, PA_SOCK 
      */
-    apr_filetype_e filetype;
+    pa_filetype_e filetype;
     /** The user id that owns the file */
-    apr_uid_t user;
+    pa_uid_t user;
     /** The group id that owns the file */
-    apr_gid_t group;
+    pa_gid_t group;
     /** The inode of the file. */
-    apr_ino_t inode;
+    pa_ino_t inode;
     /** The id of the device the file is on. */
-    apr_dev_t device;
+    pa_dev_t device;
     /** The number of hard links to the file. */
-    apr_int32_t nlink;
+    pa_int32_t nlink;
 #endif
     /** The size of the file */
-    apr_off_t size;
+    pa_off_t size;
 #ifdef LATER
     /** The storage size consumed by the file */
-    apr_off_t csize;
+    pa_off_t csize;
     /** The time the file was last accessed */
-    apr_time_t atime;
+    pa_time_t atime;
     /** The time the file was last modified */
-    apr_time_t mtime;
+    pa_time_t mtime;
     /** The time the file was last changed */
-    apr_time_t ctime;
+    pa_time_t ctime;
     /** The full pathname of the file */
     const char *fname;
     /** The file's name (no path) in filesystem case */
     const char *name;
-    /** The file's handle, if accessed (can be submitted to apr_duphandle) */
-    struct apr_file_t *filehand;
+    /** The file's handle, if accessed (can be submitted to pa_duphandle) */
+    struct pa_file_t *filehand;
 #endif
 };
 
@@ -162,4 +162,4 @@ struct apr_finfo_t {
 }
 #endif
 
-#endif  /* ! APR_FILE_INFO_H */
+#endif  /* ! PA_FILE_INFO_H */
