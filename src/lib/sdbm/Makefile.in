@@ -55,8 +55,8 @@ ARFLAGS = cru
 libsdbm_a_AR = $(AR) $(ARFLAGS)
 libsdbm_a_LIBADD =
 am_libsdbm_a_OBJECTS = sdbm.$(OBJEXT) sdbm_hash.$(OBJEXT) \
-	sdbm_lock.$(OBJEXT) sdbm_pair.$(OBJEXT) apr_file_io.$(OBJEXT) \
-	apr_strings.$(OBJEXT)
+	sdbm_lock.$(OBJEXT) sdbm_pair.$(OBJEXT) pa_file_io.$(OBJEXT) \
+	pa_strings.$(OBJEXT)
 libsdbm_a_OBJECTS = $(am_libsdbm_a_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -199,13 +199,13 @@ sqlite_client = @sqlite_client@
 subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-SUBDIRS = apr-include
-INCLUDES = -Iapr-include -I../../include -I../gc/include
+SUBDIRS = pa-include
+INCLUDES = -Ipa-include -I../../include -I../gc/include
 noinst_HEADERS = sdbm_pair.h sdbm_private.h sdbm_tune.h
 noinst_LIBRARIES = libsdbm.a
 libsdbm_a_SOURCES = \
 	sdbm.c sdbm_hash.c sdbm_lock.c sdbm_pair.c \
-	apr_file_io.C apr_strings.C
+	pa_file_io.C pa_strings.C
 
 EXTRA_DIST = sdbm.vcproj
 all: all-recursive
@@ -255,8 +255,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/apr_file_io.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/apr_strings.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_file_io.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_strings.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sdbm.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sdbm_hash.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sdbm_lock.Po@am__quote@
