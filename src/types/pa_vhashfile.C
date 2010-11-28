@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Date: 2009/08/08 13:30:21 $";
+static const char * const IDENT="$Date: 2010/11/28 14:08:35 $";
 
 #include "pa_globals.h"
 #include "pa_common.h"
@@ -21,8 +21,8 @@ const uint HASHFILE_VALUE_SERIALIZED_VERSION=0x0001;
 
 // methods
 
-void check(const char *step, apr_status_t status) {
-	if(status==APR_SUCCESS)
+void check(const char *step, pa_status_t status) {
+	if(status==PA_SUCCESS)
 		return;
 
 	const char* str=strerror(status);
@@ -47,7 +47,7 @@ void VHashfile::close() {
 	if(!is_open())
 		return;
 
-	check("apr_sdbm_close", apr_sdbm_close(m_db));
+	check("pa_sdbm_close", pa_sdbm_close(m_db));
 	m_db=0;
 }
 
@@ -55,15 +55,15 @@ bool VHashfile::is_open() {
 	return m_db != 0;
 }
 
-apr_sdbm_t *VHashfile::get_db_for_reading() {
+pa_sdbm_t *VHashfile::get_db_for_reading() {
 	if(is_open()){
 		return m_db;
 	}
 
 	if(file_name){
 		check_dir(file_name);
-		check("apr_sdbm_open(shared)", apr_sdbm_open(&m_db, file_name, 
-                                        APR_CREATE|APR_READ|APR_SHARELOCK, 
+		check("pa_sdbm_open(shared)", pa_sdbm_open(&m_db, file_name, 
+                                        PA_CREATE|PA_READ|PA_SHARELOCK, 
                                         0664, 0));
 	}
 
@@ -75,9 +75,9 @@ apr_sdbm_t *VHashfile::get_db_for_reading() {
 	return m_db;
 }
 
-apr_sdbm_t *VHashfile::get_db_for_writing() {
+pa_sdbm_t *VHashfile::get_db_for_writing() {
 	if(is_open()){
-		if(apr_sdbm_rdonly(m_db)) {
+		if(pa_sdbm_rdonly(m_db)) {
 			close(); // close if was opened for reading
 		} else {
 			return m_db;
@@ -87,8 +87,8 @@ apr_sdbm_t *VHashfile::get_db_for_writing() {
 	if(file_name) {
 		check_dir(file_name);
 		// reopen in write mode & exclusive lock
-		check("apr_sdbm_open(exclusive)", apr_sdbm_open(&m_db, file_name, 
-											APR_CREATE|APR_WRITE, 
+		check("pa_sdbm_open(exclusive)", pa_sdbm_open(&m_db, file_name, 
+											PA_CREATE|PA_WRITE, 
 											0664, 0));
 	}
 
@@ -110,8 +110,8 @@ struct Hashfile_value_serialized_prolog {
 	time_t time_to_die;
 };
 
-apr_sdbm_datum_t VHashfile::serialize_value(const String& string, time_t time_to_die) const {
-	apr_sdbm_datum_t result;
+pa_sdbm_datum_t VHashfile::serialize_value(const String& string, time_t time_to_die) const {
+	pa_sdbm_datum_t result;
 
 	size_t length=string.length();
 	result.dsize=sizeof(Hashfile_value_serialized_prolog)+length;
@@ -128,7 +128,7 @@ apr_sdbm_datum_t VHashfile::serialize_value(const String& string, time_t time_to
 	return result;
 }
 
-const String* VHashfile::deserialize_value(apr_sdbm_datum_t key, const apr_sdbm_datum_t value) {
+const String* VHashfile::deserialize_value(pa_sdbm_datum_t key, const pa_sdbm_datum_t value) {
 	// key not found || it's surely not in our format
 	if(!value.dptr || (size_t)value.dsize<sizeof(Hashfile_value_serialized_prolog))
 		return 0; 
@@ -157,7 +157,7 @@ void VHashfile::put_field(const String& aname, Value *avalue) {
 			0,
 			"hashfile key must not be empty");
 
-	apr_sdbm_t *db=get_db_for_writing();
+	pa_sdbm_t *db=get_db_for_writing();
 
 	time_t time_to_die=0;
 	const String *value_string;
@@ -184,11 +184,11 @@ void VHashfile::put_field(const String& aname, Value *avalue) {
 	} else
 		value_string=&avalue->as_string();
 
-	apr_sdbm_datum_t key;
+	pa_sdbm_datum_t key;
 	key.dptr=const_cast<char*>(aname.cstr());
 	key.dsize=aname.length();
 
-	apr_sdbm_datum_t value=serialize_value(*value_string, time_to_die);
+	pa_sdbm_datum_t value=serialize_value(*value_string, time_to_die);
 
 #ifndef PAIRMAX
 // !see PAIRMAX definition in sdbm_private.h. values should be the same
@@ -200,69 +200,69 @@ void VHashfile::put_field(const String& aname, Value *avalue) {
 			0,
 			"hashfile record length (key+value) exceeds limit (%d bytes)", PAIRMAX);
 
- 	check("apr_sdbm_store", apr_sdbm_store(db, key, value, APR_SDBM_REPLACE));
+ 	check("pa_sdbm_store", pa_sdbm_store(db, key, value, PA_SDBM_REPLACE));
 }
 
 Value *VHashfile::get_field(const String& aname) {
-	apr_sdbm_t *db=get_db_for_reading();
+	pa_sdbm_t *db=get_db_for_reading();
 
-	apr_sdbm_datum_t key;
+	pa_sdbm_datum_t key;
 	key.dptr=const_cast<char*>(aname.cstr());
 	key.dsize=aname.length();
 
-	apr_sdbm_datum_t value;
+	pa_sdbm_datum_t value;
 
-	check("apr_sdbm_fetch", apr_sdbm_fetch(db, &value, key));
+	check("pa_sdbm_fetch", pa_sdbm_fetch(db, &value, key));
 
 	const String *sresult=deserialize_value(key, value);
 	return sresult? new VString(*sresult): 0;
 }
 
-void VHashfile::remove(const apr_sdbm_datum_t key) {
-	apr_sdbm_t *db=get_db_for_writing();
+void VHashfile::remove(const pa_sdbm_datum_t key) {
+	pa_sdbm_t *db=get_db_for_writing();
 
-	check("apr_sdbm_delete", apr_sdbm_delete(db, key));
+	check("pa_sdbm_delete", pa_sdbm_delete(db, key));
 }
 
 void VHashfile::remove(const String& aname) {
-	apr_sdbm_datum_t key;
+	pa_sdbm_datum_t key;
 	key.dptr=const_cast<char*>(aname.cstr());
 	key.dsize=aname.length();
 
 	remove(key);
 }
 
-void VHashfile::for_each(bool callback(apr_sdbm_datum_t, void*), void* info) {
-	apr_sdbm_t *db=get_db_for_reading();
+void VHashfile::for_each(bool callback(pa_sdbm_datum_t, void*), void* info) {
+	pa_sdbm_t *db=get_db_for_reading();
 
 	// collect keys
-	Array<apr_sdbm_datum_t>* keys=0;
-	check("apr_sdbm_lock", apr_sdbm_lock(db, APR_FLOCK_SHARED));
+	Array<pa_sdbm_datum_t>* keys=0;
+	check("pa_sdbm_lock", pa_sdbm_lock(db, PA_FLOCK_SHARED));
 	try {
-		apr_sdbm_datum_t key;
-		if(apr_sdbm_firstkey(db, &key)==APR_SUCCESS)
+		pa_sdbm_datum_t key;
+		if(pa_sdbm_firstkey(db, &key)==PA_SUCCESS)
 		{
 			size_t count=0;
 			do {
 				// must cound beforehead, becase doing reallocs later would be VERY slow and cause HUGE fragmentation
 				count++;
-			} while(apr_sdbm_nextkey(db, &key)==APR_SUCCESS);
+			} while(pa_sdbm_nextkey(db, &key)==PA_SUCCESS);
 
-			keys=new Array<apr_sdbm_datum_t>(count);
+			keys=new Array<pa_sdbm_datum_t>(count);
 
-			if(apr_sdbm_firstkey(db, &key)==APR_SUCCESS)
+			if(pa_sdbm_firstkey(db, &key)==PA_SUCCESS)
 				do {
 					// must clone because it points to page which may go away 
 					// [if they modify hashfile inside foreach]
 					key.dptr = pa_strdup(key.dptr, key.dsize);
 					*keys+=key;
-				} while(apr_sdbm_nextkey(db, &key)==APR_SUCCESS);
+				} while(pa_sdbm_nextkey(db, &key)==PA_SUCCESS);
 		}
 	} catch(...) {
-			check("apr_sdbm_unlock", apr_sdbm_unlock(db));
+			check("pa_sdbm_unlock", pa_sdbm_unlock(db));
 			rethrow;
 	}
-	check("apr_sdbm_unlock", apr_sdbm_unlock(db));
+	check("pa_sdbm_unlock", pa_sdbm_unlock(db));
 
 	// iterate them
 	if(keys)
@@ -276,12 +276,12 @@ struct For_each_string_callback_info {
 	bool (*nested_callback)(const String::Body, const String&, void*);
 };
 #endif
-static bool for_each_string_callback(apr_sdbm_datum_t apkey, void* ainfo) {
+static bool for_each_string_callback(pa_sdbm_datum_t apkey, void* ainfo) {
 	For_each_string_callback_info& info=*static_cast<For_each_string_callback_info *>(ainfo);
-	apr_sdbm_t *db=info.self->get_db_for_reading();
+	pa_sdbm_t *db=info.self->get_db_for_reading();
 
-	apr_sdbm_datum_t apvalue;
-	check("apr_sdbm_fetch", apr_sdbm_fetch(db, &apvalue, apkey));
+	pa_sdbm_datum_t apvalue;
+	check("pa_sdbm_fetch", pa_sdbm_fetch(db, &apvalue, apkey));
 
 	if(const String* svalue=info.self->deserialize_value(apkey, apvalue)) {
 		const char *clkey=pa_strdup(apkey.dptr, apkey.dsize);
@@ -322,7 +322,7 @@ void VHashfile::delete_files() {
 		close();
 
 	if(file_name){
-		delete_file(file_name, APR_SDBM_DIRFEXT);
-		delete_file(file_name, APR_SDBM_PAGFEXT);
+		delete_file(file_name, PA_SDBM_DIRFEXT);
+		delete_file(file_name, PA_SDBM_PAGFEXT);
 	}
 }

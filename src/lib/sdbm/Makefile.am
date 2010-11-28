@@ -1,6 +1,6 @@
 SUBDIRS = pa-include
 
-INCLUDES = -Iapr-include -I../../include -I../gc/include
+INCLUDES = -Ipa-include -I../../include -I../gc/include
 
 noinst_HEADERS = sdbm_pair.h sdbm_private.h sdbm_tune.h
 noinst_LIBRARIES = libsdbm.a

@@ -8,7 +8,7 @@
 #ifndef PA_VHASHFILE_H
 #define PA_VHASHFILE_H
 
-static const char * const IDENT_VHASHFILE_H="$Date: 2009/08/08 13:30:21 $";
+static const char * const IDENT_VHASHFILE_H="$Date: 2010/11/28 14:08:35 $";
 
 #include "classes.h"
 #include "pa_pool.h"
@@ -16,7 +16,7 @@ static const char * const IDENT_VHASHFILE_H="$Date: 2009/08/08 13:30:21 $";
 #include "pa_hash.h"
 #include "pa_vint.h"
 
-#include "apr_sdbm.h"
+#include "pa_sdbm.h"
 
 // defines
 
@@ -60,21 +60,21 @@ public: // usage
 	void open(const String& afile_name);
 	void close();
 	bool is_open();
-	apr_sdbm_t *get_db_for_reading();
-	apr_sdbm_t *get_db_for_writing();
+	pa_sdbm_t *get_db_for_reading();
+	pa_sdbm_t *get_db_for_writing();
 	// void clear();
 	void delete_files();
 	void remove(const String& aname);
 
-	void for_each(bool callback(apr_sdbm_datum_t, void*), void* info);
+	void for_each(bool callback(pa_sdbm_datum_t, void*), void* info);
 	void for_each(bool callback(const String::Body, const String&, void*), void* info);
 
 public:
 
-	void remove(const apr_sdbm_datum_t key);
+	void remove(const pa_sdbm_datum_t key);
 
-	apr_sdbm_datum_t serialize_value(const String& string, time_t time_to_die) const;
-	const String* deserialize_value(const apr_sdbm_datum_t key, const apr_sdbm_datum_t value);
+	pa_sdbm_datum_t serialize_value(const String& string, time_t time_to_die) const;
+	const String* deserialize_value(const pa_sdbm_datum_t key, const pa_sdbm_datum_t value);
 
 private:
 
@@ -84,7 +84,7 @@ private:
 private:
 
 	const char* file_name;
-	apr_sdbm_t *m_db;
+	pa_sdbm_t *m_db;
 
 };
 
