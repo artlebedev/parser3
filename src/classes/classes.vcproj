@@ -80,7 +80,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="gd;..\include;..\types;..\lib\gc;..\lib\gd;..\lib\smtp;..\lib\gc\include;..\lib\cord\include;..\..\..\win32\pcre;..\lib\sdbm\apr-include;..\lib\md5;..\lib\json;..\sql;..\..\..\win32\gnome\libxml2-x.x.x\win32\debug\include;..\..\..\win32\gnome\libxslt-x.x.x\win32\debug\include;..\lib\ltdl;..\..\..\win32\curl\include;..\..\..\win32\curl\include\curl"
+				AdditionalIncludeDirectories="gd;..\include;..\types;..\lib\gc;..\lib\gd;..\lib\smtp;..\lib\gc\include;..\lib\cord\include;..\..\..\win32\pcre;..\lib\sdbm\pa-include;..\lib\md5;..\lib\json;..\sql;..\..\..\win32\gnome\libxml2-x.x.x\win32\debug\include;..\..\..\win32\gnome\libxslt-x.x.x\win32\debug\include;..\lib\ltdl;..\..\..\win32\curl\include;..\..\..\win32\curl\include\curl"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
