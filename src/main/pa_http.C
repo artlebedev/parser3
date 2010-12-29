@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
  */
 
-static const char * const IDENT_HTTP_C="$Date: 2010/10/28 22:40:25 $"; 
+static const char * const IDENT_HTTP_C="$Date: 2010/12/29 12:17:58 $"; 
 
 #include "pa_http.h"
 #include "pa_common.h"
@@ -295,6 +295,19 @@ struct Http_pass_header_info {
 	bool* content_type_url_encoded;
 };
 #endif
+
+char *pa_http_safe_header_name(const char *name) {
+	char *result=pa_strdup(name);
+	char *n=result;
+        if(isdigit(*n))
+		*n++ = '_';
+	for(; *n; ++n) {
+		if (!isalnum(*n) && *n != '_') 
+			*n = '_';
+	}
+	return result;
+}
+
 static void http_pass_header(HashStringValue::key_type aname, 
 				HashStringValue::value_type avalue, 
 				Http_pass_header_info *info) {
@@ -304,8 +317,8 @@ static void http_pass_header(HashStringValue::key_type aname,
 	if(strcasecmp(name_cstr, HTTP_CONTENT_LENGTH)==0)
 		return;
 
-	String name=String(capitalize(name_cstr), String::L_URI);
-	String value=attributed_meaning_to_string(*avalue, String::L_URI, true);
+	String name=String(pa_http_safe_header_name(capitalize(name_cstr)), String::L_AS_IS);
+	String value=attributed_meaning_to_string(*avalue, String::L_HTTP_HEADER, true);
 
 	*info->request << name << ": " << value << CRLF;
 	

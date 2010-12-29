@@ -8,7 +8,7 @@
 
 #ifdef HAVE_CURL
 
-static const char * const IDENT_INET_C="$Date: 2010/11/24 00:20:47 $";
+static const char * const IDENT_INET_C="$Date: 2010/12/29 12:17:58 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
@@ -314,9 +314,9 @@ static struct curl_slist *curl_headers(HashStringValue *value_hash, Request& r) 
 
 	for(HashStringValue::Iterator i(*value_hash); i; i.next() ){
 		String header = 
-			String(capitalize(i.key().cstr()), String::L_URI)
+			String(pa_http_safe_header_name(capitalize(i.key().cstr())), String::L_AS_IS)
 			<< ": " 
-			<< String(i.value()->as_string(), String::L_URI);
+			<< String(i.value()->as_string(), String::L_HTTP_HEADER);
 
 		slist=f_curl_slist_append(slist, curl_urlencode(header, r));
 	}

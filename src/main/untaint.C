@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_UNTAINT_C="$Date: 2010/11/15 23:47:56 $";
+static const char * const IDENT_UNTAINT_C="$Date: 2010/12/29 12:17:58 $";
 
 
 #include "pa_string.h"
@@ -366,9 +366,11 @@ int cstr_to_string_body_block(String::Language to_lang, size_t fragment_length, 
 		break;
 	case String::L_HTTP_HEADER:
 		// tainted, untaint language: http-field-content-text
-		escape_fragment(
-			encode(need_uri_encode, '%', c);
-		);
+		escape_fragment(switch(c) {
+			case '\n': 
+			case '\r': to_string(" ");  break;
+			default: _default; break;
+		});
 		break;
 	case String::L_MAIL_HEADER:
 		// tainted, untaint language: mail-header
