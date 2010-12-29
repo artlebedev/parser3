@@ -1,0 +1,22 @@
+@main[]
+
+$source[AB
+CD
+
+EF
+GH
+IJ
+
+KL
+MN
+OP]
+
+$parts[^source.match[^^(.*)^$][gm]]
+
+Total: ^parts.count[]
+
+^if($parts){
+	^parts.menu{
+		=$parts.1=
+	}
+}
