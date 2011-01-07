@@ -8,7 +8,7 @@
 
 #ifdef HAVE_CURL
 
-static const char * const IDENT_INET_C="$Date: 2010/12/29 12:17:58 $";
+static const char * const IDENT_INET_C="$Date: 2011/01/07 23:57:04 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
@@ -17,6 +17,7 @@ static const char * const IDENT_INET_C="$Date: 2010/12/29 12:17:58 $";
 #include "pa_vstring.h"
 #include "pa_vtable.h"
 #include "pa_common.h"
+#include "pa_http.h" 
 #include "ltdl.h"
 
 class MCurl: public Methoded {
@@ -245,7 +246,9 @@ public:
 		CURL_OPT(CURL_INT, HTTP_TRANSFER_DECODING);
 
 		CURL_OPT(CURL_INT, MAXREDIRS);
+#ifdef CURLOPT_POSTREDIR
 		CURL_OPT(CURL_INT, POSTREDIR);
+#endif
 
 		CURL_OPT(CURL_STRING, RANGE);
 
