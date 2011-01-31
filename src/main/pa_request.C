@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REQUEST_C="$Date: 2010/11/22 22:24:23 $";
+static const char * const IDENT_REQUEST_C="$Date: 2011/01/31 09:05:45 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -567,6 +567,11 @@ void Request::use_file_directly(VStateless_class& aclass,
 void Request::use_file(VStateless_class& aclass,
 				const String& file_name,
 				const String* use_filespec/*absolute*/) {
+
+	if(file_name.is_empty())
+		throw Exception(PARSER_RUNTIME,
+			0,
+			"usage failed - no filename was specified");
 
 	const String* filespec=0;
 
