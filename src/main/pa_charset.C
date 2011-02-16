@@ -5,7 +5,7 @@
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_CHARSET_C="$Date: 2010/09/21 21:45:20 $";
+static const char * const IDENT_CHARSET_C="$Date: 2011/02/16 06:44:33 $";
 
 #include "pa_charset.h"
 #include "pa_charsets.h"
@@ -938,14 +938,11 @@ const String::C Charset::transcodeFromUTF8(const String::C src) const {
 #ifdef PRECALCULATE_DEST_LENGTH
 	int dest_length=0;
 	for(UTF8_string_iterator i((XMLByte *)src.str, src_length); i.has_next(); ){
-		if(i.getCharSize()==1)
-			dest_length++;
-		else
-			dest_length+=(i.next() & 0xFFFF0000)
-							?i.getCharSize()*3	// '%XX' for each byte
-							:(xlatOneTo(i.next(), tables, 0)!=0)
-								?1		// can convert it to single char
-								:getDecNumLength(i.next())+3;		// &#XX; - &#XXXXX;
+		dest_length += ( i.next() & 0xFFFF0000 )
+						? 3*i.getCharSize()						// %XX for each byte
+						: ( xlatOneTo(i.next(), tables, 0) != 0 )
+							? 1									// can convert it to a single char
+							: 3+getDecNumLength( i.next() );	// print char as &#XX;, &#XXX;, &#XXXX; or &#XXXXX;
 	}
 #else
 	// so that surly enough, "&#XXX;" has max ratio (huh? 8 bytes needed for '&#XXXXX;')
