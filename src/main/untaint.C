@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_UNTAINT_C="$Date: 2010/12/29 12:17:58 $";
+static const char * const IDENT_UNTAINT_C="$Date: 2011/02/18 06:03:53 $";
 
 
 #include "pa_string.h"
@@ -82,10 +82,7 @@ inline bool need_file_encode(unsigned char c){
 }
 
 inline bool need_uri_encode(unsigned char c){
-	if((c>='0') && (c<='9') || (c>='A') && (c<='Z') || (c>='a') && (c<='z'))
-		return false;
-
-	return !strchr("_-./*", c);
+	return !(pa_isalnum(c) || strchr("_-./*", c));
 }
 
 inline bool need_regex_escape(unsigned char c){
@@ -251,10 +248,7 @@ RFC
 		and without "_", or in would mean 0x20
 */
 inline bool mail_header_char_valid_within_Qencoded(char c) {
-	return c>='A' && c<='Z'
-		|| c>='a' && c<='Z'
-		|| c>='0' && c<='9'
-		|| strchr("!*+-/", c);
+	return (pa_isalnum((unsigned char)c) || strchr("!*+-/", c));
 }
 inline bool addr_spec_soon(const char *src) {
 	for(char c; (c=*src); src++)

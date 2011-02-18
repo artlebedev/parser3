@@ -5,7 +5,7 @@
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_CHARSET_C="$Date: 2011/02/16 06:44:33 $";
+static const char * const IDENT_CHARSET_C="$Date: 2011/02/18 06:03:53 $";
 
 #include "pa_charset.h"
 #include "pa_charsets.h"
@@ -447,9 +447,7 @@ static bool need_escape(XMLByte c){
 		!(
 			(c<=127)
 			&& (
-				((c>='0') && (c<='9'))
-				|| ((c>='A') && (c<='Z'))
-				|| ((c>='a') && (c<='z'))
+				pa_isalnum((unsigned char)c)
 				|| strchr("*@-_+./", c)!=0
 			)
 		);

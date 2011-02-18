@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
  */
 
-static const char * const IDENT_HTTP_C="$Date: 2010/12/29 12:46:44 $"; 
+static const char * const IDENT_HTTP_C="$Date: 2011/02/18 06:03:53 $"; 
 
 #include "pa_http.h"
 #include "pa_common.h"
@@ -299,10 +299,10 @@ struct Http_pass_header_info {
 char *pa_http_safe_header_name(const char *name) {
 	char *result=pa_strdup(name);
 	char *n=result;
-        if(!isalpha(*n))
+	if(!pa_isalpha((unsigned char)*n))
 		*n++ = '_';
 	for(; *n; ++n) {
-		if (!isalnum(*n) && *n != '-' && *n != '_')
+		if (!pa_isalnum((unsigned char)*n) && *n != '-' && *n != '_')
 			*n = '_';
 	}
 	return result;
