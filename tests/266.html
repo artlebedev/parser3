@@ -1,0 +1,28 @@
+@USE
+266.p
+
+
+
+@main[][object;methods]
+$object[^c::_create[]]
+^^object.a[] = ^object.a[]<br />
+^^object.b[] = ^object.b[]<br />
+^^object.c[] = ^object.c[]<br />
+^^object.d[] = ^object.d[]<br />
+^^object.e[] = ^object.e[]<br />
+^^object.f[] = ^object.f[]<br />
+^^object.g[] = ^object.g[]<br />
+
+$hMethod[^reflection:methods[$object.CLASS_NAME]]
+$tMethod[^hMethod._keys[name]]
+^tMethod.sort{$tMethod.name}
+
+^tMethod.menu{
+	$sName[$tMethod.name]
+	<h2>$sName</h2>
+	$hInfo[^reflection:method_info[$object.CLASS_NAME;$sName]]
+	^hInfo.foreach[k;v]{^$.$k^[^if($k eq "file"){^v.match[^^.+/][]{/-real-path-was-here-/}}{$v}^]}[<br />]
+}[<hr />]
+
+
+<br /><br />done.
