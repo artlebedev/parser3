@@ -1,0 +1,34 @@
+Content-Type: text/html
+Content-Length: 711
+
+^object.a[] = aa<br />
+^object.b[] = bb<br />
+^object.c[] = cc<br />
+^object.d[] = cd<br />
+^object.e[] = ce<br />
+^object.f[] = cf<br />
+^object.g[] = bg<br />
+<h2>_create</h2>
+$.inherited[a]
+<hr />
+<h2>a</h2>
+$.inherited[a]<br />$.file[/-real-path-was-here-/266.p]
+<hr />
+<h2>b</h2>
+$.inherited[b]<br />$.file[/-real-path-was-here-/266.p]
+<hr />
+<h2>c</h2>
+$.file[/-real-path-was-here-/266.p]
+<hr />
+<h2>d</h2>
+$.overridden[b]<br />$.file[/-real-path-was-here-/266.p]
+<hr />
+<h2>e</h2>
+$.overridden[a]<br />$.file[/-real-path-was-here-/266.p]
+<hr />
+<h2>f</h2>
+$.overridden[b]<br />$.file[/-real-path-was-here-/266.p]
+<hr />
+<h2>g</h2>
+$.inherited[b]<br />$.file[/-real-path-was-here-/266.p]
+<br /><br />done.
