@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REFLECTION_C="$Date: 2010/10/21 15:06:29 $";
+static const char * const IDENT_REFLECTION_C="$Date: 2011/02/20 05:32:39 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
@@ -18,6 +18,7 @@ static const String method_type_parser("parser");
 
 static const String method_call_type("call_type");
 static const String method_inherited("inherited");
+static const String method_overridden("overridden");
 static const String method_call_type_static("static");
 static const String method_call_type_dynamic("dynamic");
 
@@ -235,11 +236,13 @@ static void _method_info(Request& r, MethodParams& params) {
 	HashStringValue* hash=result.get_hash();
 
 	VStateless_class* c=lclass;
-	while(c->base() && c->base()->get_method(method_name))
+	Method* base_method;
+	if(c->base() && (base_method=c->base()->get_method(method_name))){
 		c=c->base()->get_class();
-
-	if(c!=lclass)
-		hash->put(method_inherited, new VString(c->name()));
+		while(c->base() && base_method==c->base()->get_method(method_name))
+			c=c->base()->get_class();
+		hash->put((base_method==method) ? method_inherited : method_overridden, new VString(c->name()));
+	}
 
 	if(method->native_code){
 		// native code
