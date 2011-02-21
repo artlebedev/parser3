@@ -1,4 +1,1246 @@
+2011-02-21	misha
+	* operators.txt 1.238:
+	* src/include/pa_charset.h 1.47:
+	* src/include/pa_charset.h [release_3_4_1] 1.46.2.1:
+		- some methods mustn't be under #ifdef XML or parser can't be 
+		compiled without xml support
+
+	* src/targets/apache/Makefile.am 1.3:
+	* src/targets/apache/Makefile.am [release_3_4_1] 1.2.2.1:
+	* src/targets/apache/Makefile.in 1.2:
+	* src/targets/apache/Makefile.in [release_3_4_1] 1.1.2.1:
+		- mention ApacheModuleParser3.vcproj was removed
+
+	* Makefile.am [release_3_4_1] 1.80.2.1:
+	* Makefile.in [release_3_4_1] 1.97.2.1:
+	* acinclude.m4 [release_3_4_1] 1.66.2.1:
+	* aclocal.m4 [release_3_4_1] 1.69.2.1:
+	* acsite.m4 [release_3_4_1] 1.45.2.1:
+	* configure [release_3_4_1] 1.124.2.1:
+	* configure.in [release_3_4_1] 1.134.2.1:
+	* src/include/pa_config_auto.h.in [release_3_4_1] 1.53.2.1:
+	* src/include/pa_version.h [release_3_4_1] 1.41.2.2:
+		*** empty log message ***
+
+	* src/types/pa_vjunction.C 1.10:
+		- EOL before EOF was added (warning removed)
+
+	* src/include/pa_version.h [release_3_4_1] 1.41.2.1:
+		=no message
+
+2011-02-20	misha
+	* tests/results/266.processed 1.1:
+		*** empty log message ***
+
+	* tests/266.html 1.1:
+	* tests/266.p 1.1:
+		- tests for checking $.inherited and $.overridden in ^reflection:
+		method_info[...] were added
+
+	* src/classes/reflection.C 1.23:
+		- beautifying result of ^reflection:method_info[] ($.overridden/
+		inherited)
+
+2011-02-18	misha
+	* src/main/pa_charset.C 1.89:
+	* src/main/pa_http.C 1.52:
+	* src/main/untaint.C 1.162:
+		- use pa_isalpha and pa_isalnum instead of isalpha and isalnum
+		- bug with redundand quoting lowercased latin chars while building email body was fixed
+
+	* src/include/pa_common.h 1.144:
+		- pa_isalpha and ps_isalnum methods were added (they check for 
+		latin chars only)
+
+2011-02-16	misha
+	* src/main/pa_charset.C 1.88:
+		- bugfix: in some cases the calculating string size for 
+		transcoding gave too small value (should ever look for 
+		availability char in dest charset inspite of the char size)
+
+2011-02-04	moko
+	* tests/223.html 1.5:
+		header values now not url-encoded (issue #195)
+
+2011-02-01	misha
+	* buildall-with-xml 1.40:
+	* buildall-without-xml 1.25:
+		- 8.10 => 8.12
+
+2011-01-31	misha
+	* src/main/pa_request.C 1.326:
+		- throw exception if param file_name in use_file is empty
+
+2011-01-07	moko
+	* src/classes/curl.C 1.11:
+		compilations errors fixed
+
+2010-12-29	moko
+	* tests/265.html 1.1:
+	* tests/results/265.processed 1.1:
+		test for issue #200 added
+
+	* src/main/pa_string.C 1.236:
+		empty regex result check added (fixes issue #200)
+
+	* src/main/pa_http.C 1.51:
+		pa_http_safe_header_name corrected a bit
+
+	* tests/results/223.processed 1.6:
+		header values now not url-encoded (issue #195)
+
+	* src/classes/curl.C 1.10:
+	* src/include/pa_http.h 1.6:
+	* src/main/pa_http.C 1.50:
+	* src/main/untaint.C 1.161:
+		L_HTTP_HEADER now used in http headers values, 
+		pa_http_safe_header_name added for headers names (fixes bug #195)
+		
+
+2010-12-18	misha
+	* src/classes/classes.vcproj 1.27:
+	* src/types/types.vcproj 1.27:
+		- arp-include => pa-include
+
+2010-11-28	moko
+	* src/lib/sdbm/sdbm.vcproj 1.7:
+		apr -> pa (.vcproj)
+
+	* configure.in 1.133:
+	* src/classes/Makefile.am 1.57:
+	* src/classes/Makefile.in 1.72:
+	* src/lib/sdbm/Makefile.am 1.5:
+	* src/lib/sdbm/Makefile.in 1.8:
+	* src/lib/sdbm/pa-include/Makefile.am 1.1:
+	* src/lib/sdbm/pa-include/Makefile.in 1.1:
+	* src/lib/sdbm/pa-include/pa_strings.h 1.2:
+	* src/lib/sdbm/pa_strings.C 1.2:
+	* src/lib/sdbm/sdbm.c 1.6:
+	* src/types/Makefile.am 1.46:
+	* src/types/Makefile.in 1.70:
+	* src/types/pa_vhashfile.C 1.63:
+	* src/types/pa_vhashfile.h 1.39:
+		apr -> pa
+
+	* Makefile.am 1.80:
+	* Makefile.in 1.97:
+	* acinclude.m4 1.66:
+	* aclocal.m4 1.69:
+	* acsite.m4 1.45:
+	* configure 1.124:
+	* configure.in 1.134:
+	* src/include/pa_config_auto.h.in 1.53:
+		*** empty log message ***
+
+	* src/lib/sdbm/Makefile.am 1.4:
+	* src/lib/sdbm/apr_file_io.C 1.7:
+	* src/lib/sdbm/apr_strings.C 1.4:
+	* src/lib/sdbm/pa-include/pa_apr.h 1.1:
+	* src/lib/sdbm/pa-include/pa_errno.h 1.1:
+	* src/lib/sdbm/pa-include/pa_file_info.h 1.1:
+	* src/lib/sdbm/pa-include/pa_file_io.h 1.1:
+	* src/lib/sdbm/pa-include/pa_sdbm.h 1.1:
+	* src/lib/sdbm/pa-include/pa_strings.h 1.1:
+	* src/lib/sdbm/pa_file_io.C 1.1:
+	* src/lib/sdbm/pa_strings.C 1.1:
+	* src/lib/sdbm/sdbm.c 1.5:
+	* src/lib/sdbm/sdbm_hash.c 1.2:
+	* src/lib/sdbm/sdbm_lock.c 1.2:
+	* src/lib/sdbm/sdbm_pair.c 1.2:
+	* src/lib/sdbm/sdbm_pair.h 1.2:
+	* src/lib/sdbm/sdbm_private.h 1.4:
+	* src/lib/sdbm/sdbm_tune.h 1.2:
+		apr -> pa (apache2 module apr name conflict resolved)
+
+2010-11-27	misha
+	* buildall-with-xml 1.39:
+	* buildall-without-xml 1.24:
+		- typo fixed: libz2 -> libbz2
+
+2010-11-26	misha
+	* src/classes/hash.C 1.109:
+	* src/classes/table.C 1.279:
+	* src/types/pa_vregex.C 1.12:
+		- warnings removed
+
+2010-11-25	moko
+	* operators.txt 1.237:
+		$.indent(true)
+
+	* operators.txt 1.236:
+		another bugfix. :)
+
+	* operators.txt 1.235:
+		bugfix. :)
+
+	* buildall-with-xml 1.38:
+		libxml2-2.7.8 + with-apache
+
+2010-11-24	moko
+	* bin/Makefile.in 1.16:
+	* etc/Makefile.in 1.21:
+	* etc/parser3.charsets/Makefile.in 1.26:
+		APACHE13->APACHE
+
+	* Makefile.am 1.79:
+	* Makefile.in 1.96:
+	* acinclude.m4 1.65:
+	* aclocal.m4 1.68:
+	* acsite.m4 1.44:
+	* configure 1.123:
+	* configure.in 1.132:
+	* src/include/pa_config_auto.h.in 1.51:
+	* src/include/pa_config_auto.h.in 1.52:
+		*** empty log message ***
+
+	* Makefile.in 1.95:
+	* configure 1.122:
+	* src/targets/Makefile.am 1.11:
+	* src/targets/apache/Makefile.am 1.2:
+	* src/targets/apache/Makefile.in 1.1:
+		apxs support
+
+	* src/Makefile.in 1.62:
+	* src/classes/Makefile.in 1.71:
+	* src/include/Makefile.in 1.25:
+	* src/lib/Makefile.in 1.21:
+	* src/lib/cord/Makefile.in 1.10:
+	* src/lib/cord/include/Makefile.in 1.8:
+	* src/lib/cord/include/private/Makefile.in 1.8:
+	* src/lib/gc/Makefile.in 1.8:
+	* src/lib/gc/include/Makefile.in 1.9:
+	* src/lib/gd/Makefile.in 1.9:
+	* src/lib/json/Makefile.in 1.3:
+	* src/lib/ltdl/Makefile.in 1.13:
+	* src/lib/md5/Makefile.in 1.14:
+	* src/lib/pcre/Makefile.in 1.17:
+	* src/lib/sdbm/Makefile.in 1.7:
+	* src/lib/smtp/Makefile.in 1.9:
+	* src/main/Makefile.in 1.65:
+	* src/sql/Makefile.in 1.18:
+	* src/targets/Makefile.in 1.49:
+	* src/targets/cgi/Makefile.in 1.74:
+	* src/targets/isapi/Makefile.in 1.19:
+	* src/types/Makefile.in 1.69:
+		APACHE13 -> APACHE
+
+	* configure.in 1.131:
+		apxs support
+		-Bstatic gc removed for OS X
+
+	* src/main/pa_globals.C 1.186:
+	* src/main/pa_xml_io.C 1.27:
+		the rest converted to THREAD_LOCAL usage
+
+	* src/classes/curl.C 1.9:
+	* src/include/pa_config_includes.h 1.33:
+	* src/main/pa_globals.C 1.185:
+		THREAD_LOCAL defined and used
+
+2010-11-23	moko
+	* src/classes/op.C 1.206:
+	* src/main/pa_os.C 1.11:
+		microseconds, not milliseconds should be passed to pa_sleep, and 
+		only fractional part (bugfix: #188)
+
+	* src/targets/apache/mod_parser3.c 1.11:
+		1.3 compatibility
+
+	* src/targets/apache/mod_parser3.c 1.10:
+	* src/targets/apache/mod_parser3_core.C 1.5:
+		GC_dont_gc=1, as in cgi version
+
+	* src/targets/apache/mod_parser3.c 1.9:
+		warning war
+
+	* src/targets/apache/mod_parser3.c 1.8:
+	* src/targets/apache/mod_parser3_core.C 1.4:
+	* src/targets/apache/pa_httpd.h 1.4:
+		version removed, some trash removed
+
+2010-11-22	moko
+	* src/targets/apache/mod_parser3.c 1.7:
+		version removed (we don't want to show it), warning war
+
+	* src/targets/apache/mod_parser3.c 1.6:
+	* src/targets/apache/mod_parser3_core.C 1.3:
+	* src/targets/apache/pa_httpd.h 1.3:
+		parser_status_allowed removed + merge config functions removed (
+		override is the default) + beauty
+
+	* src/include/pa_request.h 1.208:
+	* src/main/pa_request.C 1.325:
+	* src/targets/apache13core/mod_parser3_core.C 1.16:
+	* src/targets/cgi/parser3.C 1.259:
+	* src/targets/isapi/parser3isapi.C 1.104:
+		option to hide $status used in apache module removed
+
+2010-11-18	moko
+	* operators.txt 1.234:
+		$.table[compact] added for ^json:string[]
+
+2010-11-16	moko
+	* src/targets/apache/mod_parser3.c 1.5:
+		some cleanup done
+
+2010-11-15	moko
+	* src/main/untaint.C 1.160:
+		bugfix: first, second String::Body argument is hashcode; second, 
+		info.fragment_begin is original, not resulting length
+
+	* src/classes/file.C 1.213:
+		new feature: $.stdin now untainted
+
+	* tests/results/264.processed 1.2:
+		new feature: $.stdin[] now untainted
+
+	* tests/cat.sh 1.3:
+		new feature: stdin arg to test $.stdin[value]
+
+	* src/classes/op.C 1.205:
+		^apply-taint[] method added
+
+	* tests/264.html 1.1:
+	* tests/results/264.processed 1.1:
+		^apply-taint[] test added; $.stdin untaint test added
+
+2010-11-14	moko
+	* src/targets/apache/mod_parser3.c 1.4:
+		outdated MODULE_MAGIC_NUMBER removed
+
+	* src/targets/apache/mod_parser3.c 1.3:
+	* src/targets/apache/mod_parser3_core.C 1.2:
+	* src/targets/apache/pa_httpd.h 1.2:
+		2x2 calculated under apache2. :)
+
+2010-11-13	moko
+	* src/targets/apache/mod_parser3.c 1.2:
+		initial changes to build module with apache 2.x includes
+
+	* src/targets/apache/Makefile.am 1.1:
+	* src/targets/apache/mod_parser3.c 1.1:
+	* src/targets/apache/mod_parser3_core.C 1.1:
+	* src/targets/apache/pa_httpd.h 1.1:
+	* src/targets/apache/pa_threads.C 1.1:
+		initial commit for united apache 1.3 / apache 2.x DSO module
+
+2010-11-09	moko
+	* src/types/pa_method.h 1.18:
+		check added to dissallow @method[name;*] syntax
+
+	* tests/263.html 1.1:
+	* tests/results/263.processed 1.1:
+		test from method[*args] added
+
+2010-11-08	moko
+	* src/types/pa_method.h 1.17:
+	* src/types/pa_vmethod_frame.h 1.89:
+		closes #26: variable number of params can now be passed to a 
+		method declared with *arg
+
+2010-11-06	moko
+	* src/classes/table.C 1.278:
+		formating fixed. :)
+
+	* src/classes/table.C 1.277:
+		closes #4: ^table.select now supports $.limit(), $.offset, $
+		.reverse() options
+
+	* tests/262.html 1.1:
+	* tests/results/262.processed 1.1:
+		test for ^table:select with options added (feature #4)
+
+2010-11-05	moko
+	* src/include/pa_array.h 1.80:
+		remove function added
+
+	* src/types/pa_vhash.C 1.9:
+	* src/types/pa_vhash.h 1.63:
+		avoiding temporal String object in get_element/put_element, 
+		using static one.
+
+2010-11-04	moko
+	* src/types/pa_vregex.C 1.11:
+		closes #6: exeption now thrown if invalid options is passed
+
+2010-11-03	moko
+	* tests/256.html 1.3:
+	* tests/results/256.processed 1.2:
+		$.table[compact] feature now tested; k and p in handler now 
+		tested.
+
+	* src/types/pa_value.h 1.142:
+	* src/types/pa_vtable.C 1.36:
+	* src/types/pa_vtable.h 1.57:
+		fixes #153, $.table[compact] feature added
+
+	* src/classes/json.C 1.13:
+		key is now passed to handler in value_json_string;
+		^json:string result now process tainting inside and returns clean string, related to issue #153
+
+	* src/main/untaint.C 1.159:
+		bugfix: charset can be null (in ^string:save[] as example), thus 
+		check is added
+
+2010-10-30	moko
+	* src/classes/string.C 1.198:
+		error message changed (fixes issue #149)
+
+2010-10-28	moko
+	* src/main/pa_http.C 1.49:
+		":port" is now added to "Host:" header if port is not default (fixes issue #155);
+		exception on invalid port added.
+
+	* src/main/untaint.C 1.158:
+		'*' is now not urlencoded to allow header "Accept: */*" to be 
+		passed
+
+2010-10-27	moko
+	* src/classes/curl.C 1.8:
+		bugfix: detect_charset() was throwing exception on unknown 
+		charset even if response_charset was specified
+
+2010-10-26	moko
+	* src/classes/string.C 1.197:
+		^string.append removed for void compatibility
+
+	* src/classes/json.C 1.12:
+		libjson supports array at top level, we too (GPF fixed)
+
+2010-10-24	moko
+	* tests/253.html 1.5:
+	* tests/results/253.processed 1.6:
+		libjson supports array at top level, parser now supports it as 
+		well.
+
+	* src/types/pa_vstring.h 1.64:
+	* tests/261.html 1.2:
+	* tests/results/261.processed 1.2:
+		empty string is now void compatible (allows $empty.key)
+
+2010-10-21	moko
+	* src/classes/string.C 1.196:
+	* src/classes/void.C 1.48:
+	* src/main/execute.C 1.367:
+	* src/types/pa_vvoid.C 1.4:
+	* src/types/pa_vvoid.h 1.34:
+		void now inherited from string (feature #111)
+
+	* tests/261.html 1.1:
+	* tests/results/261.processed 1.1:
+		checks void from string inheritance (feature #111)
+
+	* src/classes/bool.C 1.3:
+	* src/classes/classes.h 1.33:
+	* src/classes/curl.C 1.7:
+	* src/classes/date.C 1.89:
+	* src/classes/double.C 1.63:
+	* src/classes/file.C 1.212:
+	* src/classes/hash.C 1.108:
+	* src/classes/hashfile.C 1.52:
+	* src/classes/image.C 1.136:
+	* src/classes/inet.C 1.4:
+	* src/classes/int.C 1.59:
+	* src/classes/json.C 1.11:
+	* src/classes/reflection.C 1.22:
+	* src/classes/regex.C 1.6:
+	* src/classes/string.C 1.195:
+	* src/classes/table.C 1.276:
+	* src/classes/void.C 1.47:
+		used_directly() now true by default
+
+2010-10-21	misha
+	* src/types/pa_vcookie.C 1.85:
+		- fix for session cookie (was introduced while adding additional 
+		expires checkout)
+
+	* tests/results/030.processed 1.8:
+		*** empty log message ***
+
+	* tests/030.html 1.5:
+		- test for session cookie was added
+
+2010-10-16	moko
+	* src/include/pa_string.h 1.200:
+	* src/main/pa_http.C 1.48:
+	* src/main/untaint.C 1.157:
+		files upload now uses binary blocks instead of L_FILE_POST 
+		tainting. (bugfix: #128)
+
+	* tests/223.html 1.4:
+	* tests/results/223.processed 1.5:
+		binary file upload test added, GPF (issue #128) also checked in 
+		this test
+
+2010-10-13	misha
+	* tests/results/260.processed 1.1:
+		*** empty log message ***
+
+	* tests/260.html 1.1:
+		- test for math:convert
+
+	* src/classes/math.C 1.58:
+		- error in math:convert was fixed
+
+	* operators.txt 1.233:
+		- info about ^math:convert[number](from-base;to-base) was added
+
+	* src/classes/math.C 1.57:
+		- method ^math:convert[number](from-base;to-base) for converting 
+		number represention from one base to another was added ( new 
+		feature: #23 )
+
+2010-10-12	moko
+	* src/main/compile.tab.C 1.153:
+	* src/main/compile.y 1.261:
+		[] now is empty string, not void
+
+	* src/types/pa_vvoid.h 1.33:
+		void now passed as parameter
+
+	* tests/259.html 1.1:
+	* tests/results/259.processed 1.1:
+		to test difference between void and empty string (see ticket #
+		111)
+
+	* tests/results/152.processed 1.10:
+		$sEmpty[] is now empty string, not void
+
+	* tests/256.html 1.2:
+		$s[$void] is no longer empty string
+
+	* tests/254.html 1.3:
+		empty string is no longer void
+
+2010-10-12	misha
+	* tests/results/041.processed 1.7:
+		*** empty log message ***
+
+	* src/types/pa_vcookie.C 1.84:
+		- check if $.expires value can be converted to date during 
+		cookies set up ( bugfix: #104 )
+
+	* tests/041.html 1.3:
+		- more tests for ^table.locate were added
+
+	* src/classes/table.C 1.275:
+		- ^table.locate[field;value;options] didn't work ( bugfix: #129 )
+		- exception comment for incorrect options ^table.locate[field;value;options] was fixed
+
+2010-10-09	moko
+	* src/classes/reflection.C 1.21:
+	* src/main/execute.C 1.366:
+		constructor returning another object feature returned
+
+	* tests/results/258.processed 1.2:
+		test result updated as constructor returning another object 
+		feature returned
+
+	* tests/258.html 1.1:
+	* tests/results/258.processed 1.1:
+		test for constructor returning another object
+
+2010-10-08	misha
+	* src/main/compile.tab.C 1.152:
+	* src/main/compile.y 1.260:
+	* tests/results/257.processed 1.1:
+		*** empty log message ***
+
+	* tests/257.html 1.1:
+		- whitespaces after @METACOMMANDS and their options shouldn't 
+		cause exceptions any longer
+
+2010-10-05	moko
+	* src/classes/hash.C 1.107:
+	* src/classes/table.C 1.274:
+		length from sql server is now ignored, as sql string can contain 
+		0x00 inside (bugfix: #119)
+
+2010-10-02	misha
+	* operators.txt 1.232:
+		- the X mark was removed from ^cache[file]. it is usable to 
+		delete cache file.
+
+2010-10-01	moko
+	* tests/253.html 1.4:
+	* tests/results/253.processed 1.5:
+		hook_key added for key checking
+
+	* src/classes/json.C 1.10:
+		null key bug fixed
+
+2010-09-29	misha
+	* tests/results/256.processed 1.1:
+		*** empty log message ***
+
+	* tests/256.html 1.1:
+	* tests/256.txt 1.1:
+		- tests for ^json:string[] were added
+
+2010-09-24	moko
+	* src/classes/json.C 1.9:
+		small fixed
+
+	* tests/results/253.processed 1.4:
+	* tests/results/255.processed 1.2:
+		just updated
+
+	* tests/253.html 1.3:
+	* tests/253_json.txt 1.3:
+	* tests/255.html 1.1:
+	* tests/results/253.processed 1.3:
+	* tests/results/255.processed 1.1:
+		charset transcode test added for json:parse
+
+	* src/types/pa_value.h 1.141:
+		warning war :)
+
+	* src/classes/json.C 1.8:
+	* src/include/pa_request.h 1.207:
+	* src/types/pa_value.h 1.140:
+	* src/types/pa_vfile.C 1.49:
+	* src/types/pa_vtable.C 1.35:
+		$.indent implemented for ^json:string
+
+2010-09-24	misha
+	* src/main/compile.tab.C 1.151:
+		*** empty log message ***
+
+2010-09-21	moko
+	* src/main/pa_charset.C 1.87:
+		parser charset tables declare only white-space before 0x20, thus 
+		adding the missing chars
+
+	* etc/parser3.charsets/koi8-r.cfg 1.8:
+	* etc/parser3.charsets/koi8-u.cfg 1.1:
+		updated to conform to http://unicode.org/Public/MAPPINGS/VENDORS/
+		
+
+2010-09-21	misha
+	* src/main/compile.y 1.259:
+		- some semicolons were added (VS2010 don't want to compile 
+		grammar if they are absent)
+
+	* tests/make_tests.cmd 1.3:
+	* tests/run_tests.cmd 1.2:
+		- path tools is changed
+
+	* src/classes/classes.vcproj 1.26:
+		- pathes to ls and gawk are changed
+
+	* src/main/main.vcproj 1.27:
+		- path to bison is changed
+
+2010-09-20	moko
+	* etc/parser3.charsets/Makefile.in 1.25:
+	* etc/parser3.charsets/windows-1250.cfg 1.2:
+	* etc/parser3.charsets/windows-1251.cfg 1.14:
+	* etc/parser3.charsets/windows-1254.cfg 1.2:
+	* etc/parser3.charsets/windows-1257.cfg 1.3:
+	* etc/parser3.charsets/x-mac-cyrillic.cfg 1.3:
+		updated to conform to http://unicode.org/Public/MAPPINGS/VENDORS/
+		
+
+2010-09-20	misha
+	* Makefile.am 1.78:
+	* Makefile.in 1.94:
+	* acinclude.m4 1.64:
+	* aclocal.m4 1.67:
+	* acsite.m4 1.43:
+	* configure 1.121:
+	* configure.in 1.130:
+	* src/include/pa_config_auto.h.in 1.50:
+	* src/lib/json/Makefile.in 1.2:
+		*** empty log message ***
+
+	* src/types/pa_vtable.C 1.34:
+		- add EOLs while json-serializing table
+
+	* src/classes/json.C 1.7:
+		- add EOL while json-serializing hash
+
+	* src/lib/json/JSON_parser.C 1.4:
+		- 'ES' replaced by 'ESC' because some compilers don't like 'ES'.
+
+2010-09-17	misha
+	* operators.txt 1.231:
+		- info about json class was added
+
+2010-09-16	misha
+	* src/classes/json.C 1.6:
+		- ^json:string[object]
+
+	* src/include/pa_request.h 1.206:
+	* src/main/pa_request.C 1.324:
+		- stuff for preventing infinite recursion while executing json:
+		string was added
+
+	* src/include/pa_string.h 1.199:
+		- method append_quoted was added
+
+	* src/types/pa_value.C 1.30:
+	* src/types/pa_value.h 1.139:
+	* src/types/pa_vbool.h 1.32:
+	* src/types/pa_vdate.h 1.51:
+	* src/types/pa_vdouble.h 1.55:
+	* src/types/pa_vfile.C 1.48:
+	* src/types/pa_vfile.h 1.68:
+	* src/types/pa_vint.h 1.47:
+	* src/types/pa_vstring.h 1.63:
+	* src/types/pa_vtable.C 1.33:
+	* src/types/pa_vtable.h 1.56:
+	* src/types/pa_vvoid.h 1.32:
+		- method get_json_string was added to Value & Co
+
+	* src/classes/date.C 1.88:
+		- methods get_gmt_string and get_sql_string were used
+
+	* src/types/pa_vdate.h 1.50:
+		- methods get_gmt_string and get_sql_string were added
+
+2010-09-10	moko
+	* src/targets/cgi/parser3.C [release_3_4_0] 1.255.2.1:
+		vsnprintf now not called twice in die_or_abort (backport from 
+		3.4.1)
+
+	* src/targets/cgi/parser3.C 1.258:
+		vsnprintf now not called twice in die_or_abort (bugfix: #106)
+
+2010-09-09	moko
+	* src/classes/json.C 1.5:
+		warning war. :)
+
+2010-09-08	misha
+	* src/lib/json/Makefile.am 1.3:
+		- additional include directories were added (for pa_memory.h and 
+		gc.h)
+
+	* src/lib/json/json.vcproj 1.2:
+		- JSON_parser.c => JSON_parser.C
+		- compile as C++ instead default
+		- additional include directory was added (for gc.h)
+
+	* src/types/pa_vform.C 1.100:
+		- little code reformating
+
+	* src/classes/file.C 1.211:
+		- $.content-type option now can be specified in ^file::create ( 
+		new feature: #102 )
+
+2010-09-07	moko
+	* src/lib/json/JSON_parser.C 1.3:
+	* src/lib/json/JSON_parser.h 1.2:
+		json lib now uses pa_malloc/pa_free
+
+2010-09-06	moko
+	* tests/results/254.processed 1.3:
+		VStateless_class:put_element exception was fixed
+
+	* src/types/pa_value.h 1.138:
+	* src/types/pa_vstateless_class.h 1.72:
+		now VStateless_class:put_element barks self.type, not this.type (
+		bugfix: #105)
+
+2010-09-05	moko
+	* src/classes/reflection.C 1.20:
+		bugfix: new String() is required for exception handling
+
+	* tests/254.html 1.2:
+	* tests/results/254.processed 1.2:
+		test modified
+
+2010-09-04	moko
+	* tests/254.html 1.1:
+	* tests/results/254.processed 1.1:
+		^reflection:copy test added
+
+	* src/classes/reflection.C 1.19:
+	* src/include/pa_request.h 1.205:
+		^reflection:copy implemented (new feature: #100)
+
+2010-09-02	moko
+	* src/lib/json/JSON_parser.C 1.2:
+		c++ compatiblity
+
+	* tests/253.html 1.2:
+	* tests/253_json.txt 1.2:
+	* tests/results/253.processed 1.2:
+		$.distinct option testing added
+
+2010-09-01	moko
+	* src/classes/json.C 1.4:
+		$.distinct[first|last|all] added
+
+2010-08-31	moko
+	* tests/results/253.processed 1.1:
+		json test result
+
+	* tests/253.html 1.1:
+	* tests/253_json.txt 1.1:
+		json test added
+
+	* src/classes/json.C 1.3:
+		json.C update to actual version + hash key creation bugfix
+
+2010-08-31	misha
+	* Makefile.am 1.77:
+	* Makefile.in 1.93:
+	* acinclude.m4 1.63:
+	* aclocal.m4 1.66:
+	* acsite.m4 1.42:
+	* configure 1.120:
+	* configure.in 1.129:
+	* src/classes/Makefile.in 1.70:
+	* src/include/pa_config_auto.h.in 1.49:
+	* src/lib/Makefile.in 1.20:
+	* src/lib/json/Makefile.in 1.1:
+	* src/targets/apache13core/Makefile.in 1.11:
+	* src/targets/cgi/Makefile.in 1.73:
+		*** empty log message ***
+
+	* parser3.sln 1.13:
+	* src/classes/Makefile.am 1.56:
+	* src/classes/classes.vcproj 1.25:
+	* src/classes/json.C 1.1:
+	* src/lib/Makefile.am 1.11:
+	* src/lib/json/JSON_parser.C 1.1:
+	* src/lib/json/JSON_parser.h 1.1:
+	* src/lib/json/Makefile.am 1.1:
+	* src/lib/json/json.vcproj 1.1:
+		- json library was added
+
+2010-08-30	moko
+	* src/include/pa_request.h 1.204:
+	* src/main/execute.C 1.365:
+	* src/main/pa_request.C 1.323:
+	* src/types/pa_vobject.C 1.33:
+		cosmetic optimization in request:execute_method usage
+
+2010-08-29	moko
+	* src/include/pa_charset.h 1.46:
+	* src/main/pa_charset.C 1.86:
+		small optimization, just to decrease number of lines. :)
+
+2010-08-27	misha
+	* tests/results/250.processed 1.1:
+	* tests/results/251.processed 1.1:
+	* tests/results/252.processed 1.1:
+		*** empty log message ***
+
+	* src/classes/op.C 1.204:
+		- taint[json] was added
+
+	* tests/250.html 1.1:
+	* tests/251.html 1.1:
+	* tests/252.html 1.1:
+		- tests for taint[json] were added
+
+	* src/main/pa_exec.C 1.81:
+		- warning fix was rolled back.
+
+	* src/include/pa_charset.h 1.45:
+	* src/include/pa_string.h 1.198:
+	* src/main/pa_charset.C 1.85:
+	* src/main/untaint.C 1.156:
+		- taint[json] was added
+		- escaping was slightly modified
+
+2010-08-25	misha
+	* src/classes/file.C 1.210:
+		- typo in file:sql exception was fixed
+
+	* src/main/pa_exec.C 1.80:
+		- warning about declared and not used variable forced_allow was 
+		removed
+
+2010-08-14	misha
+	* src/classes/hash.C 1.106:
+		- two warnings about signed/unsigned mismatch were removed
+
+2010-08-11	moko
+	* tests/249.html 1.1:
+	* tests/results/249.processed 1.1:
+		default setter and anti-recursive default getter test added
+
+	* src/classes/reflection.C 1.18:
+	* src/include/pa_request.h 1.203:
+	* src/main/execute.C 1.364:
+	* src/types/pa_value.h 1.137:
+	* src/types/pa_vclass.C 1.44:
+	* src/types/pa_vobject.C 1.32:
+	* src/types/pa_vobject.h 1.56:
+	* src/types/pa_vstateless_class.C 1.46:
+	* src/types/pa_vstateless_class.h 1.71:
+		default setter support + anti-recursive default getter support ( 
+		new feature: #13 )
+
+	* src/include/pa_hash.h 1.83:
+		optimization: threshold member removed from hash, reducing 
+		sizeof(hash)
+
+2010-08-10	misha
+	* tests/results/196.processed 1.4:
+	* tests/results/247.processed 1.1:
+	* tests/results/248.processed 1.1:
+		*** empty log message ***
+
+	* tests/196.html 1.3:
+		- junction-method was added to the test
+
+	* tests/248.html 1.2:
+		- ups. typo :)
+
+	* tests/248.html 1.1:
+		- test for checking .match with 4 params
+
+	* tests/247.html 1.1:
+	* tests/247_utf8.txt 1.1:
+	* tests/247_utf8_bom.txt 1.1:
+	* tests/247_windows1251.txt 1.1:
+		- test for "transcode file from utf-8 to $request:charset during 
+		loading if the BOM code is detected"
+
+	* src/main/pa_common.C 1.263:
+	* src/main/pa_http.C 1.47:
+		- transcode file from utf-8 to $request:charset during loading 
+		if the BOM code is detected ( new feature: #98 )
+
+2010-08-05	misha
+	* src/classes/image.C 1.135:
+		- ^image.replace now can accept only 2 params. in this case the 
+		whole image is affected ( new feature: #95 )
+
+2010-08-04	misha
+	* tests/results/246.processed 1.1:
+		*** empty log message ***
+
+	* tests/246.html 1.1:
+		- test tor ^hash._at[] was added
+
+	* src/classes/hash.C 1.105:
+		- ^hash._at[first|last|[-]N] ( new feature: #53 )
+
+	* src/include/pa_hash.h 1.82:
+		- methods for accessing the first and the last values of ordered 
+		hash were added (first_value and last_value)
+
+	* src/classes/file.C 1.209:
+		- now ^file::base64 accepts up to 4 params (similar to others 
+		file's methods): ^file::base64[mode;user-file-name;encoded;
+		options] ( new feature: #68 )
+
+	* src/types/pa_vmethod_frame.h 1.88:
+		- helper method as_hash was added
+
+2010-08-01	moko
+	* src/classes/op.C 1.203:
+		to correctly process $result[] in code, called from ^process
+
+	* tests/245.html 1.2:
+		$result in ^process[] test added
+
+	* src/classes/op.C 1.202:
+	* src/classes/reflection.C 1.17:
+	* src/include/pa_request.h 1.202:
+	* src/main/execute.C 1.363:
+	* src/main/pa_request.C 1.322:
+	* src/types/pa_vmethod_frame.C 1.18:
+	* src/types/pa_vmethod_frame.h 1.87:
+	* src/types/pa_vobject.C 1.31:
+		optimization:
+		VMethodFrame(junction, caller) replaced with VMethodFrame(method, caller, self)
+		op_call(VMethodFrame &frame, bool constructing) removed, construct(class,method) added
+
+	* tests/results/192.processed 1.6:
+	* tests/results/244.processed 1.2:
+		request::construct added
+
+	* tests/244.html 1.1:
+	* tests/245.html 1.1:
+	* tests/results/244.processed 1.1:
+	* tests/results/245.processed 1.1:
+		object creation exceptions and ^process tests added
+
+2010-07-28	misha
+	* tests/make_tests.cmd 1.2:
+		- win32 EOLs
+
+	* tests/run_parser.cmd 1.1:
+	* tests/run_tests.cmd 1.1:
+		- cmd files for executing tests on Win32 were added (The system 
+		timezone should be GMT+3)
+
+2010-07-25	misha
+	* tests/212.html 1.4:
+	* tests/212.html 1.5:
+	* tests/results/212.processed 1.6:
+		- sizes were removed mecause they could be different on 
+		different OSs
+
+	* tests/065.html 1.4:
+		- make it "win32 friendly"
+
+	* src/main/compile.tab.C 1.150:
+	* tests/results/152.processed 1.9:
+		*** empty log message ***
+
+	* src/main/compile.y 1.258:
+		- all EOLs between methods are removed during compilation ( new 
+		feature: #47 )
+
+	* tests/006.html 1.5:
+	* tests/014.html 1.6:
+	* tests/022.html 1.6:
+	* tests/059.html 1.5:
+	* tests/071.html 1.3:
+	* tests/073.html 1.3:
+	* tests/096.html 1.6:
+	* tests/096.html 1.7:
+	* tests/107.html 1.5:
+	* tests/109.html 1.4:
+	* tests/109.html 1.5:
+	* tests/142.html 1.3:
+	* tests/142.html 1.4:
+	* tests/144.html 1.3:
+	* tests/144.html 1.4:
+	* tests/149.html 1.3:
+	* tests/149.html 1.4:
+	* tests/149.html 1.5:
+	* tests/152.html 1.8:
+	* tests/results/006.processed 1.8:
+	* tests/results/014.processed 1.7:
+	* tests/results/022.processed 1.8:
+	* tests/results/059.processed 1.8:
+	* tests/results/071.processed 1.7:
+	* tests/results/073.processed 1.7:
+	* tests/results/096.processed 1.8:
+	* tests/results/107.processed 1.8:
+	* tests/results/109.processed 1.6:
+	* tests/results/109.processed 1.7:
+	* tests/results/142.processed 1.4:
+	* tests/results/142.processed 1.5:
+	* tests/results/144.processed 1.4:
+	* tests/results/144.processed 1.5:
+	* tests/results/149.processed 1.6:
+	* tests/results/149.processed 1.7:
+		- prepare tests to trim trailing methods' EOLs
+
+2010-07-23	moko
+	* tests/results/156.processed 1.5:
+	* tests/results/224.processed 1.11:
+		fix for #54 changed the hash order in this test
+
+	* tests/014.html 1.5:
+		to check hash order, hash no is longer sorted before print
+
+	* src/include/pa_hash.h 1.81:
+		hash copy constructor now keeps order (bugfix: #54)
+
+2010-07-22	moko
+	* tests/results/224.processed 1.10:
+		@auto[] is no longer inherited
+
+	* src/types/pa_vstateless_class.C 1.45:
+	* tests/227.html 1.3:
+	* tests/results/227.processed 1.4:
+		@auto[] is no longer inherited (bugfix: #57)
+
+2010-07-21	misha
+	* src/classes/table.C 1.273:
+		- don't skip comment lines during table::load if encloser or 
+		separator is set as '#' ( new feature: #30 )
+
+	* src/targets/cgi/parser3.C 1.257:
+		- don't run as cgi if env:PARSER_VERSION was set for preventing 
+		infinite loot ( bugfix: #12 )
+
+	* src/classes/file.C 1.208:
+		- set PARSER_VARSION env before external script executing
+
+2010-07-13	misha
+	* tests/238.html 1.1:
+	* tests/240.html 1.1:
+	* tests/241.html 1.1:
+	* tests/242.html 1.1:
+	* tests/243.html 1.1:
+	* tests/outputs/242.processed 1.1:
+	* tests/results/058.processed 1.7:
+	* tests/results/212.processed 1.5:
+	* tests/results/238.processed 1.1:
+	* tests/results/240.processed 1.1:
+	* tests/results/241.processed 1.1:
+	* tests/results/242.processed 1.1:
+	* tests/results/243.processed 1.1:
+		*** empty log message ***
+
+	* tests/058.html 1.3:
+		- test for suppressing @border was added
+		- test for user attribute was added
+
+	* tests/186.html 1.4:
+	* tests/results/186.processed 1.3:
+		unescaping from \uXXXX
+
+	* tests/239.html 1.1:
+	* tests/results/239.processed 1.1:
+		method call type
+
+	* src/types/pa_vjunction.C 1.9:
+	* src/types/pa_vjunction.h 1.30:
+		- bugfix: #90 : $junction_method.CLASS_NAME (+CLASS)
+
+2010-07-07	misha
+	* buildall-with-xml 1.37:
+	* buildall-without-xml 1.23:
+		- moving to pcre 8.10 on *nix
+
+2010-07-05	misha
+	* src/main/compile.tab.C 1.149:
+	* tests/results/192.processed 1.5:
+	* tests/results/230.processed 1.4:
+		*** empty log message ***
+
+	* src/classes/curl.C 1.6:
+	* src/classes/file.C 1.207:
+	* src/classes/hash.C 1.104:
+	* src/classes/image.C 1.134:
+	* src/classes/op.C 1.201:
+	* src/classes/string.C 1.194:
+	* src/classes/table.C 1.272:
+	* src/classes/void.C 1.46:
+	* src/main/pa_common.C 1.262:
+	* src/main/pa_http.C 1.46:
+		- exception comment strings "options must be hash", "options must be hash, not code" and "called 
+		with invalid option" were replaced by constatns
+		- exception comment string "invalid option passed" was replaced by "called with invalid option" (now 
+		in different methods are the same exception comment string)
+
+	* src/include/pa_exception.h 1.57:
+		- more exception strings were defined
+
+	* src/main/compile.y 1.256:
+	* src/main/compile_tools.C 1.68:
+	* src/main/compile_tools.h 1.102:
+	* src/types/pa_vstateless_class.h 1.70:
+		- now we can define possible method's call type ( new feature: #5 )
+		  1. @OPTIONS\nstatic|dynamic (no option == any) -- for all classe's methods
+		  2. @static:method[params] (only static keyword could be used here) -- for specified methods
+
+	* src/main/pa_common.C 1.261:
+		- junction points should not be deleted on win32 during dirs cleanup ( bugfix: #83 )
+		- optimisation in dirs cleanup
+
+2010-07-03	misha
+	* tests/158.html 1.2:
+	* tests/160.html 1.5:
+	* tests/161.html 1.2:
+	* tests/162.html 1.2:
+	* tests/163.html 1.3:
+	* tests/167.html 1.2:
+	* tests/168.html 1.2:
+	* tests/169.html 1.2:
+	* tests/170.html 1.2:
+	* tests/171.html 1.4:
+	* tests/172.html 1.3:
+	* tests/173.html 1.2:
+	* tests/174.html 1.3:
+	* tests/175.html 1.2:
+	* tests/176.html 1.4:
+	* tests/180.html 1.3:
+	* tests/184.html 1.2:
+	* tests/185.html 1.6:
+	* tests/191.html 1.3:
+	* tests/192.html 1.3:
+	* tests/196.html 1.2:
+	* tests/197.html 1.2:
+	* tests/198.html 1.3:
+	* tests/199.html 1.3:
+	* tests/208.html 1.4:
+	* tests/209.html 1.2:
+	* tests/213.html 1.2:
+	* tests/214.html 1.3:
+	* tests/results/158.processed 1.4:
+	* tests/results/160.processed 1.6:
+	* tests/results/161.processed 1.3:
+	* tests/results/162.processed 1.3:
+	* tests/results/163.processed 1.4:
+	* tests/results/167.processed 1.3:
+	* tests/results/168.processed 1.4:
+	* tests/results/168.processed 1.5:
+	* tests/results/169.processed 1.3:
+	* tests/results/169.processed 1.4:
+	* tests/results/169.processed 1.5:
+	* tests/results/170.processed 1.3:
+	* tests/results/170.processed 1.4:
+	* tests/results/171.processed 1.5:
+	* tests/results/172.processed 1.4:
+	* tests/results/173.processed 1.3:
+	* tests/results/174.processed 1.4:
+	* tests/results/175.processed 1.3:
+	* tests/results/176.processed 1.6:
+	* tests/results/180.processed 1.4:
+	* tests/results/184.processed 1.3:
+	* tests/results/185.processed 1.6:
+	* tests/results/191.processed 1.5:
+	* tests/results/192.processed 1.4:
+	* tests/results/196.processed 1.3:
+	* tests/results/197.processed 1.3:
+	* tests/results/198.processed 1.4:
+	* tests/results/199.processed 1.4:
+	* tests/results/208.processed 1.3:
+	* tests/results/209.processed 1.3:
+	* tests/results/213.processed 1.3:
+	* tests/results/214.processed 1.3:
+		- prepare tests to trim trailing methods' EOLs
+
+2010-06-29	misha
+	* tests/215.html 1.2:
+	* tests/217.html 1.2:
+	* tests/218.html 1.2:
+	* tests/220.html 1.2:
+	* tests/223.html 1.3:
+	* tests/224.html 1.7:
+	* tests/226.html 1.2:
+	* tests/227.html 1.2:
+	* tests/228.html 1.3:
+	* tests/229.html 1.5:
+	* tests/230.html 1.2:
+	* tests/232.html 1.2:
+	* tests/235.html 1.2:
+	* tests/results/215.processed 1.3:
+	* tests/results/217.processed 1.3:
+	* tests/results/218.processed 1.3:
+	* tests/results/220.processed 1.3:
+	* tests/results/223.processed 1.4:
+	* tests/results/224.processed 1.9:
+	* tests/results/226.processed 1.3:
+	* tests/results/226.processed 1.4:
+	* tests/results/227.processed 1.3:
+	* tests/results/228.processed 1.3:
+	* tests/results/229.processed 1.4:
+	* tests/results/230.processed 1.2:
+	* tests/results/230.processed 1.3:
+	* tests/results/232.processed 1.2:
+	* tests/results/235.processed 1.2:
+		- prepare tests to trim trailing methods' EOLs
+
+2010-06-16	moko
+	* tests/229.html 1.4:
+	* tests/results/229.processed 1.3:
+		 elseif now supported in ^if
+
+	* src/classes/op.C 1.200:
+		new feature: #56 elseif now supported in ^if
+
+2010-06-03	misha
+	* src/main/pa_common.C 1.260:
+		- bugfix #74 -- memmove should be used instead of memcopy for 
+		overlaped regions
+
 2010-05-25	misha
+	* src/main/pa_common.C 1.259:
+		- wanring about unused vars was removed
+
 	* src/include/pa_request.h 1.201:
 	* src/main/execute.C 1.362:
 	* src/main/pa_request.C 1.321:
