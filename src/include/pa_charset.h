@@ -8,7 +8,7 @@
 #ifndef PA_CHARSET_H
 #define PA_CHARSET_H
 
-static const char * const IDENT_CHARSET_H="$Date: 2010/08/29 21:23:40 $";
+static const char * const IDENT_CHARSET_H="$Date: 2011/02/21 22:59:18 $";
 
 
 #include "pa_exception.h"
@@ -140,12 +140,6 @@ private:
 	bool fisUTF8;
 	Tables tables;
 
-#ifdef XML
-
-private:
-	void addEncoding(char* name_cstr);
-	void initTranscoder(const String::Body name, const char* name_cstr);
-
 	static size_t calc_escaped_length_UTF8(XMLByte* src, size_t src_length);
 	static size_t calc_escaped_length(const XMLByte* src, size_t src_length, const Charset::Tables& tables);
 	static size_t calc_escaped_length(const String::C src, const Charset& source_charset);
@@ -157,6 +151,12 @@ private:
 	static size_t calc_JSON_escaped_length(const String::C src, const Charset& source_charset);
 	static size_t escape_JSON_UTF8(const XMLByte* src, size_t src_length, XMLByte* dest);
 	static size_t escape_JSON(const XMLByte* src, size_t src_length, XMLByte* dest, const Charset::Tables& tables);
+
+#ifdef XML
+
+private:
+	void addEncoding(char* name_cstr);
+	void initTranscoder(const String::Body name, const char* name_cstr);
 
 public:
 	/// converts xmlChar* null-terminated string to char* 
