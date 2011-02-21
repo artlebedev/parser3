@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VJUNCTION_C="$Date: 2010/07/13 01:39:53 $";
+static const char * const IDENT_VJUNCTION_C="$Date: 2011/02/21 05:05:53 $";
 
 // include
 
