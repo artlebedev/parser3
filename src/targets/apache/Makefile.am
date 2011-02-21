@@ -10,7 +10,7 @@ noinst_LIBRARIES = libmod_parser3.a
 libmod_parser3_a_DEPENDENCIES=Makefile $(PA_LIBS)
 libmod_parser3_a_SOURCES = pa_threads.C mod_parser3_core.C mod_parser3.c
 
-EXTRA_DIST = ApacheModuleParser3.vcproj pa_httpd.h
+EXTRA_DIST = pa_httpd.h
 
 all-local: parser3module
 
