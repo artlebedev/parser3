@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Id: buildall-with-xml,v 1.40 2011/02/01 05:04:19 misha Exp $
+# $Id: buildall-with-xml,v 1.41 2011/03/29 08:12:55 misha Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -55,6 +55,8 @@ if test ! -f "$project_directory/pcre/lib/libpcre.a"; then
   current_dir=`pwd`
   echo "Configuring pcre..."
   ./configure --prefix="$project_directory/pcre" \
+    --with-match-limit=10000 \
+    --with-match-limit-recursion=10000 \
     --enable-utf8 \
     --enable-unicode-properties \
     --disable-shared \
