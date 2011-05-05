@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2010/12/29 12:53:33 $";
+static const char * const IDENT_STRING_C="$Date: 2011/05/05 23:45:45 $";
 
 #include "pa_string.h"
 #include "pa_exception.h"
@@ -483,8 +483,10 @@ void String::split(ArrayString& result,
 		   size_t& pos_after, 
 		   const char* delim, 
 		   Language lang, int limit) const {
+	if(is_empty())
+		return;
 	size_t self_length=length();
-	if(size_t delim_length=strlen(delim) && !is_empty()) {
+	if(size_t delim_length=strlen(delim)) {
 		size_t pos_before;
 		// while we have 'delim'...
 		for(; (pos_before=pos(delim, pos_after, lang))!=STRING_NOT_FOUND && limit; limit--) {
@@ -506,7 +508,9 @@ void String::split(ArrayString& result,
 		   size_t& pos_after, 
 		   const String& delim, Language lang, 
 		   int limit) const {
-	if(!delim.is_empty() && !is_empty()) {
+	if(is_empty())
+		return;
+	if(!delim.is_empty()) {
 		size_t pos_before;
 		// while we have 'delim'...
 		for(; (pos_before=pos(delim, pos_after, lang))!=STRING_NOT_FOUND && limit; limit--) {
