@@ -46,6 +46,18 @@ $tVertical[^sText.split[$sChar;v;$sColumnName]]
 $tVertical[^sText.split[$sChar;v;]]
 ^printColumns[$tVertical]
 
+
+<hr />
+<h3>Split of empty string with ','</h3>
+$sEmpty[]
+$t[^sEmpty.split[,]]
+^^t.count[]: ^t.count[]
+
+
+<h3>Split of void with ','</h3>
+$t[^vVoid.split[,]]
+^^t.count[]: ^t.count[]
+
 @printColumns[tData]
 $tColumn[^tData.columns[]]
 Columns:
