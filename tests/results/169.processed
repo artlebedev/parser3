@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 557
+Content-Length: 663
 
 <h3>Horisontal split '/a/b/c/' with '/'</h3>
 Columns:
@@ -19,3 +19,8 @@ zigi
 <h3>Vertical split '/a/b/c/' with '/' using empty column name</h3>
 Columns:
 piece
+<hr />
+<h3>Split of empty string with ','</h3>
+^t.count[]: 0
+<h3>Split of void with ','</h3>
+^t.count[]: 0
