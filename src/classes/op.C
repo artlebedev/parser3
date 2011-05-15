@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2010/11/23 19:32:08 $";
+static const char * const IDENT_OP_C="$Date: 2011/05/15 12:56:10 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -439,6 +439,7 @@ public:
 	Request& r;
 	const String* searching_string;
 	double searching_double;
+	bool searching_bool;
 	Value* found;
 	Value* _default;
 public:
@@ -448,9 +449,11 @@ public:
 		if(asearching.is_string() || asearching.is_void()){
 			searching_string=&asearching.as_string();
 			searching_double=0;
+			searching_bool=false;
 		} else {
 			searching_string=0;
 			searching_double=asearching.as_double();
+			searching_bool=asearching.is_bool();
 		}
 	}
 };
@@ -500,6 +503,8 @@ static void _case(Request& r, MethodParams& params) {
 		bool matches;
 		if(data->searching_string)
 			matches=(*data->searching_string) == value.as_string();
+		else if(data->searching_bool || value.is_bool())
+			matches=(data->searching_double != 0) == value.as_bool();
 		else
 			matches=data->searching_double == value.as_double();
 
