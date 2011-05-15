@@ -1,0 +1,12 @@
+@main[]
+^switch(42){
+	^case(true){true}
+	^case(false){false}
+	^case[DEFAULT]{!true && !false}
+}
+
+^switch(true){
+	^case(0){zero}
+	^case(42){answer}
+	^case[DEFAULT]{hm...}
+}
