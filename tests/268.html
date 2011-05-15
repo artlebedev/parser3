@@ -1,0 +1,27 @@
+@main[]
+$t1[^table::create[nameless]{1	2
+11	22	33
+111	222}]
+
+
+$t2[^table::create{a	b	c
+1	2
+11	22	33
+111	222}]
+
+$t3[^table::create[nameless]{}]
+
+^print[$t1;t1]
+<hr />
+^print[$t2;t2]
+<hr />
+^print[$t3;t3]
+
+
+@print[t;name]
+^^${name}.count[]: ^t.count[]<br />
+^^${name}.count[columns]: ^t.count[columns]<br />
+^t.menu{
+	Line: ^t.line[]: ^^${name}.count[cells]: ^t.count[cells]
+}[<br />]
+
