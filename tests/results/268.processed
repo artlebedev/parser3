@@ -1,0 +1,21 @@
+Content-Type: text/html
+Content-Length: 363
+
+^t1.count[]: 3<br />
+^t1.count[columns]: 0<br />
+Line: 1: ^t1.count[cells]: 2
+<br />
+Line: 2: ^t1.count[cells]: 3
+<br />
+Line: 3: ^t1.count[cells]: 2
+<hr />
+^t2.count[]: 3<br />
+^t2.count[columns]: 3<br />
+Line: 1: ^t2.count[cells]: 2
+<br />
+Line: 2: ^t2.count[cells]: 3
+<br />
+Line: 3: ^t2.count[cells]: 2
+<hr />
+^t3.count[]: 0<br />
+^t3.count[columns]: 0<br />
