@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2010/11/26 06:40:01 $";
+static const char * const IDENT_TABLE_C="$Date: 2011/05/15 13:20:07 $";
 
 #if (!defined(NO_STRINGSTREAM) && !defined(FREEBSD4))
 #include <sstream>
@@ -589,8 +589,22 @@ static void _save(Request& r, MethodParams& params) {
 #endif // don't use stringstream
 }
 
-static void _count(Request& r, MethodParams&) {
-	int result=GET_SELF(r, VTable).table().count();
+static void _count(Request& r, MethodParams& params) {
+	Table& table=GET_SELF(r, VTable).table();
+	size_t result=0;
+	if(params.count()) {
+		const String& param=params.as_string(0, PARAMETER_MUST_BE_STRING);
+		if(param == "columns")
+			result = table.columns() ? table.columns()->count() : 0;
+		else if(param == "cells")
+			result = table.count() ? table[table.current()]->count() : 0;
+		else if(param == "rows") // synonim for ^table.count[]
+			result = table.count();
+		else
+			throw Exception(PARSER_RUNTIME, &param, "parameter must be 'columns', 'cells' and 'rows' only");
+	} else
+		result = table.count();
+
 	r.write_no_lang(*new VInt(result));
 }
 
@@ -1323,7 +1337,10 @@ MTable::MTable(): Methoded("table") {
 	// add_native_method("save_old", Method::CT_DYNAMIC, _save_old, 1, 3);
 
 	// ^table.count[]
-	add_native_method("count", Method::CT_DYNAMIC, _count, 0, 0);
+	// ^table.count[rows]
+	// ^table.count[columns]
+	// ^table.count[cells]
+	add_native_method("count", Method::CT_DYNAMIC, _count, 0, 1);
 
 	// ^table.line[]
 	add_native_method("line", Method::CT_DYNAMIC, _line, 0, 0);
