@@ -373,7 +373,9 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !^таблица.offset[[whence]](5) сдвигает
         !whence=cur|set
         !без whence - это cur
-    !^таблица.count[]
+    !^таблица.count[], ^таблица.count[rows] - количество строк в таблице
+    !^таблица.count[columns] - дл€ named таблицы количество столбцов (сокращение от $c[^таблица.columns[]]^c.count[])
+    !^таблица.count[cells] - количество €чеек в текущей строке таблицы
     !^таблица.line[] 1-based offset
     !^таблица.sort{{ключеделатель строка}|(ключеделатель число)}[{desc|asc}] default=asc
     !^таблица.append{данные}
@@ -870,6 +872,7 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
                                  compact:  ["v11" || ["v11","v12",...],...]
         $.file[text|base64]      вывести тело файла в указанном виде (по умолчание тело файла 
                                  не попадает в output)
+        $.xdoc[hash]             параметры преобразовани€ xdoc в строку (как в ^xdoc.string[])
         $.тип[method-junction]   любой тип можно вывести с помощью пользовательского метода, который 
                                  должен принимать 3 параметра: ключ, объект данного типа и опции 
                                  вызова ^json:string[]
