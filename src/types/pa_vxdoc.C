@@ -7,7 +7,7 @@
 #include "pa_config_includes.h"
 #ifdef XML
 
-static const char * const IDENT_VXDOC="$Date: 2011/05/18 01:24:47 $";
+static const char * const IDENT_VXDOC="$Date: 2011/05/18 02:05:43 $";
 
 #include "pa_vxdoc.h"
 #include "pa_vbool.h"
@@ -128,11 +128,9 @@ XDocOutputOptions::XDocOutputOptions(Request& r, HashStringValue* options){
 */
 
 	if(options) {
-		// $.method[xml|html|text]
-		if(Value* vmethod=options->get(String::Body(XDOC_OUTPUT_METHOD_OPTION_NAME)))
-			this->method=&vmethod->as_string();
 		int valid_options=0;
-
+		// $.method[xml|html|text]
+		valid_options+=param_option_over_output_option(*options, XDOC_OUTPUT_METHOD_OPTION_NAME, this->method);
 		// $.version[1.0]
 		valid_options+=param_option_over_output_option(*options, "version", this->version);
 		// $.encoding[windows-1251|...]
