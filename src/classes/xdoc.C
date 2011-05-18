@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT_XDOC_C="$Date: 2009/09/08 09:11:51 $";
+static const char * const IDENT_XDOC_C="$Date: 2011/05/18 01:25:06 $";
 
 #include "libxml/tree.h"
 #include "libxml/HTMLtree.h"
@@ -32,11 +32,6 @@ static const char * const IDENT_XDOC_C="$Date: 2009/09/08 09:11:51 $";
 // defines
 
 #define XDOC_CLASS_NAME "xdoc"
-
-#define XDOC_OUTPUT_METHOD_OPTION_NAME "method"
-#define XDOC_OUTPUT_METHOD_OPTION_VALUE_XML "xml"
-#define XDOC_OUTPUT_METHOD_OPTION_VALUE_HTML "html"
-#define XDOC_OUTPUT_METHOD_OPTION_VALUE_TEXT "text"
 
 // class
 
@@ -472,101 +467,10 @@ static void _load(Request& r, MethodParams& params) {
 	vdoc.set_xmldoc(r.charsets, *xmldoc); 
 }
 
-static void param_option_over_output_option(
-					    HashStringValue& param_options, const char* option_name,
-					    const String*& output_option) {
-	if(Value* value=param_options.get(String::Body(option_name)))
-		output_option=&value->as_string();
-}
-static void param_option_over_output_option(
-					    HashStringValue& param_options, const char* option_name,
-					    int& output_option) {
-	if(Value* value=param_options.get(String::Body(option_name))) {
-		const String& s=value->as_string();
-		if(s=="yes")
-			output_option=1;
-		else if(s=="no")
-			output_option=0;
-		else
-			throw Exception(PARSER_RUNTIME,
-				&s,
-				"%s must be either 'yes' or 'no'", option_name);
-	}
-}
-
-/// @test valid_options check
-static void prepare_output_options(Request& r,
-				   MethodParams& params, size_t index,
-				   VXdoc::Output_options& oo) {
-/*
-<xsl:output
-  !method = "xml" | "html" | "text" | qname-but-not-ncname 
-  !version = nmtoken 
-  !encoding = string 
-  !omit-xml-declaration = "yes" | "no"
-  !standalone = "yes" | "no"
-  !doctype-public = string 
-  !doctype-system = string 
-  cdata-section-elements = qnames 
-  !indent = "yes" | "no"
-  !media-type = string /> 
-*/
-
-	// configuring with options from parameter...
-	if(params.count()>index) {
-		Value& voptions=params.as_no_junction(index, "options must be string");
-		if(voptions.is_defined()) {
-			if(HashStringValue *options=voptions.get_hash()) {
-				// $.method[xml|html|text]
-				if(Value* vmethod=options->get(String::Body(XDOC_OUTPUT_METHOD_OPTION_NAME)))
-					oo.method=&vmethod->as_string();
-
-				// $.version[1.0]
-				param_option_over_output_option(*options, "version", oo.version);
-				// $.encoding[windows-1251|...]
-				param_option_over_output_option(*options, "encoding", oo.encoding);
-				// $.omit-xml-declaration[yes|no]
-				param_option_over_output_option(*options, "omit-xml-declaration", oo.omitXmlDeclaration);
-				// $.standalone[yes|no]
-				param_option_over_output_option(*options, "standalone", oo.standalone);
-				// $.indent[yes|no]
-				param_option_over_output_option(*options, "indent", oo.indent);
-				// $.media-type[text/{html|xml|plain}]
-				param_option_over_output_option(*options, "media-type", oo.mediaType);				 
-			}
-		}
-	}
-
-	// default encoding from pool
-	if(!oo.encoding)
-		oo.encoding=new String(r.charsets.source().NAME(), String::L_TAINTED);
-	// default method=xml
-	if(!oo.method)
-		oo.method=new String(XDOC_OUTPUT_METHOD_OPTION_VALUE_XML);
-	// default mediaType = depending on method
-	if(!oo.mediaType) {
-		if(*oo.method==XDOC_OUTPUT_METHOD_OPTION_VALUE_XML)
-			oo.mediaType=new String("text/xml");
-		else if(*oo.method==XDOC_OUTPUT_METHOD_OPTION_VALUE_HTML)
-			oo.mediaType=new String("text/html");
-		else // XDOC_OUTPUT_METHOD_OPTION_VALUE_TEXT & all others
-			oo.mediaType=new String("text/plain");
-	}
-}
-
-struct Xdoc2buf_result {
-	char* str;
-	size_t length;
-};
-static Xdoc2buf_result xdoc2buf(Request& r, VXdoc& vdoc, 
-					 MethodParams& params, int index,
-					 VXdoc::Output_options& oo,
-					 const String* file_spec,
-					 bool use_source_charset_to_render_and_client_charset_to_write_to_header=false) {
-	Xdoc2buf_result result;
-	prepare_output_options(r, params, index,
-		oo);
-
+String::C xdoc2buf(Request& r, VXdoc& vdoc, 
+					XDocOutputOptions& oo,
+					const String* file_spec,
+					bool use_source_charset_to_render_and_client_charset_to_write_to_header=false) {
 	const char* render_encoding;
 	const char* header_encoding;
 	if(use_source_charset_to_render_and_client_charset_to_write_to_header) {
@@ -619,7 +523,8 @@ static Xdoc2buf_result xdoc2buf(Request& r, VXdoc& vdoc,
 		throw XmlException(0);
 
 	// write out result
-	char *gnome_str;  size_t gnome_length;
+	char *gnome_str;
+	size_t gnome_length;
 	if(outputBuffer->conv) {
 		gnome_length=outputBuffer->conv->use;
 		gnome_str=(char *)outputBuffer->conv->content;
@@ -628,31 +533,27 @@ static Xdoc2buf_result xdoc2buf(Request& r, VXdoc& vdoc,
 		gnome_str=(char *)outputBuffer->buffer->content;
 	}
 
-	if((result.length=gnome_length)) {
-		result.str=pa_strdup(gnome_str, gnome_length);
-	} else
-		result.str=0;
-
-	if(file_spec)
+	if(file_spec){
 		file_write(r.charsets,
 			*file_spec,
 			gnome_str,
 			gnome_length, 
 			true/*as_text*/);
+		return String::C(); // actually, we don't need this output at all
+	} else
+		return String::C(gnome_length ? pa_strdup(gnome_str, gnome_length) : 0, gnome_length);
+}
 
-	return result;
+inline HashStringValue* get_options(MethodParams& params, size_t index){
+	return (params.count()>index) ? params.as_hash(index) : 0;
 }
 
 static void _file(Request& r, MethodParams& params) {
 	VXdoc& vdoc=GET_SELF(r, VXdoc);
-	VXdoc::Output_options oo(vdoc.output_options);
-	Xdoc2buf_result buf=xdoc2buf(r, vdoc, params, 0, 
-		oo,
-		0/*not to file, to memory*/);
-	// write out result
-	r.write_no_lang(String(buf.str));
 
-	// write out result
+	XDocOutputOptions oo(r, get_options(params, 0));
+	String::C buf=xdoc2buf(r, vdoc, oo, 0/*file_name. not to file, to memory*/);
+
 	VFile& vfile=*new VFile;
 	VHash& vhcontent_type=*new VHash;
 	vhcontent_type.hash().put(
@@ -664,6 +565,8 @@ static void _file(Request& r, MethodParams& params) {
 
 	vfile.set(false/*tainted*/, buf.str?buf.str:""/*to distinguish from stat-ed file*/, buf.length, 
 		0/*file_name*/, &vhcontent_type);
+
+	// write out result
 	r.write_no_lang(vfile);
 }
 
@@ -672,21 +575,20 @@ static void _save(Request& r, MethodParams& params) {
 
 	const String& file_spec=r.absolute(params.as_string(0, FILE_NAME_MUST_BE_STRING));
 	
-	VXdoc::Output_options oo(vdoc.output_options);
-	xdoc2buf(r, vdoc, params, 1, 
-		oo,
-		&file_spec);
+	XDocOutputOptions oo(r, get_options(params, 1));
+	xdoc2buf(r, vdoc, oo, &file_spec);
 }
 
 static void _string(Request& r, MethodParams& params) {
 	VXdoc& vdoc=GET_SELF(r, VXdoc);
-	VXdoc::Output_options oo(vdoc.output_options);
-	Xdoc2buf_result buf=xdoc2buf(r, vdoc, params, 0, 
-		oo,
-		0/*not to file, to memory*/,
+
+	XDocOutputOptions oo(r, get_options(params, 0));
+	String::C buf=xdoc2buf(r, vdoc, oo,
+		0/*file_name. not to file, to memory*/,
 		true/*use source charset to render, client charset to put to header*/);
+
 	// write out result
-	r.write_no_lang(String(buf.str, String::L_AS_IS));
+	r.write_no_lang(String(buf, String::L_AS_IS));
 }
 
 #ifndef DOXYGEN
@@ -746,7 +648,7 @@ static VXdoc& _transform(Request& r, const String* stylesheet_source,
 		!indent = "yes" | "no"
 		!media-type = string /> 
 	*/
-	VXdoc::Output_options& oo=result.output_options;
+	XDocOutputOptions& oo=result.output_options;
 
 	oo.method=stylesheet->method?&r.transcode(stylesheet->method):0;
 	oo.encoding=stylesheet->encoding?&r.transcode(stylesheet->encoding):0;
@@ -765,23 +667,17 @@ static void _transform(Request& r, MethodParams& params) {
 	// params
 	Array<const xmlChar*> transform_strings;
 	const xmlChar** transform_params=0;
-	if(params.count()>1) {
-		Value& vparams=params.as_no_junction(1, "transform parameters must be hash");
-		if(!vparams.is_string())
-			if(HashStringValue* hash=vparams.get_hash()) {
-				transform_params=new(UseGC) const xmlChar*[hash->count()*2+1];
-				Add_xslt_param_info info={
-					&r, 
-					&transform_strings,
-					transform_params
-				};
-				hash->for_each<Add_xslt_param_info*>(add_xslt_param, &info);
-				transform_params[hash->count()*2]=0;				
-			} else
-				throw Exception(PARSER_RUNTIME,
-					0,
-					"transform parameters parameter must be hash");
-	}
+	if(params.count()>1)
+		if(HashStringValue* hash=params.as_hash(1)) {
+			transform_params=new(UseGC) const xmlChar*[hash->count()*2+1];
+			Add_xslt_param_info info={
+				&r, 
+				&transform_strings,
+				transform_params
+			};
+			hash->for_each<Add_xslt_param_info*>(add_xslt_param, &info);
+			transform_params[hash->count()*2]=0;
+		}
 
 	VXdoc* result;
 	if(Value *vxdoc=params[0].as(VXDOC_TYPE)) { // stylesheet (xdoc)

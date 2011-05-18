@@ -8,7 +8,7 @@
 #ifndef PA_VXDOC_H
 #define PA_VXDOC_H
 
-static const char * const IDENT_VXDOC_H="$Date: 2009/08/08 13:30:22 $";
+static const char * const IDENT_VXDOC_H="$Date: 2011/05/18 01:24:47 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -24,6 +24,24 @@ static const char * const IDENT_VXDOC_H="$Date: 2009/08/08 13:30:22 $";
 
 extern Methoded* xdoc_class;
 
+struct XDocOutputOptions {
+	const String* method;       /* the output method */
+	const String* encoding;     /* encoding string */
+	const String* mediaType;    /* media-type string */
+	int indent;                 /* should output being indented */
+	const String* version;      /* version string */
+	int standalone;             /* standalone = "yes" | "no" */
+	int omitXmlDeclaration;     /* omit-xml-declaration = "yes" | "no" */
+
+	XDocOutputOptions() {
+		memset(this, 0, sizeof(*this));
+		indent=standalone=omitXmlDeclaration=-1;
+	};
+
+	XDocOutputOptions(Request& r, HashStringValue* options);
+};
+
+
 /// value of type 'xdoc'. implemented with libxml & co
 class VXdoc: public VXnode {
 public: // Value
@@ -38,6 +56,9 @@ public: // Value
 
 	/// VXdoc: true	 
 	override Value& as_expr_result(bool /*return_string_as_is=false*/);
+
+	/// VFile: json-string
+	override const String* get_json_string(Json_options* options=0);
 
 	/// VXdoc: $CLASS,$method, fields
 	override Value* get_element(const String& aname);
@@ -92,20 +113,7 @@ public:
 
 	VHash search_namespaces;
 
-	struct Output_options {
-		const String* method;            /* the output method */
-		const String* encoding;          /* encoding string */
-		const String* mediaType;         /* media-type string */
-		int indent;                 /* should output being indented */
-		const String* version;           /* version string */
-		int standalone;             /* standalone = "yes" | "no" */
-		int omitXmlDeclaration;     /* omit-xml-declaration = "yes" | "no" */
-
-		Output_options() {
-			memset(this, 0, sizeof(*this));
-			indent=standalone=omitXmlDeclaration=-1;
-		};
-	} output_options;
+	XDocOutputOptions output_options;
 
 private:
 

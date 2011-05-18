@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-static const char * const IDENT_VALUE_H="$Date: 2010/11/03 22:08:44 $";
+static const char * const IDENT_VALUE_H="$Date: 2011/05/18 01:24:47 $";
 
 #include "pa_common.h"
 #include "pa_array.h"
@@ -30,6 +30,7 @@ class VObject;
 class VMethodFrame;
 class VFile;
 class Table;
+struct XDocOutputOptions;
 typedef Array<Value*> ArrayValue;
 
 struct Json_options {
@@ -38,6 +39,7 @@ struct Json_options {
 	Value* params;
 	bool skip_unknown;
 	const char* indent;
+	XDocOutputOptions* xdoc_options;
 	enum Date { D_SQL, D_GMT, D_TIMESTAMP } date;
 	enum Table { T_ARRAY, T_OBJECT, T_COMPACT } table;
 	enum File { F_BODYLESS, F_BASE64, F_TEXT } file;
@@ -47,6 +49,7 @@ struct Json_options {
 		methods(NULL),
 		params(NULL),
 		skip_unknown(false),
+		xdoc_options(NULL),
 		indent(NULL),
 		date(D_SQL),
 		table(T_OBJECT),

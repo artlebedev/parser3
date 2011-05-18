@@ -4,7 +4,7 @@
 	Copyright (c) 2010 ArtLebedev Group (http://www.artlebedev.com)
 */
 
-static const char * const IDENT_RESPONSE_C="$Date: 2010/11/03 22:07:01 $";
+static const char * const IDENT_RESPONSE_C="$Date: 2011/05/18 01:25:06 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -15,6 +15,10 @@ static const char * const IDENT_RESPONSE_C="$Date: 2010/11/03 22:07:01 $";
 #include "pa_charset.h"
 #include "pa_charsets.h"
 #include "JSON_parser.h"
+
+#ifdef XML
+#include "pa_vxdoc.h"
+#endif
 
 // class
 
@@ -323,6 +327,7 @@ static void _string(Request& r, MethodParams& params) {
 			json.params=params.get(1);
 			HashStringValue* methods=new HashStringValue();
 			int valid_options=0;
+			HashStringValue* vvalue;
 			for(HashStringValue::Iterator i(*options); i; i.next() ){
 				String::Body key=i.key();
 				Value* value=i.value();
@@ -347,6 +352,11 @@ static void _string(Request& r, MethodParams& params) {
 					if(!json.set_file_format(svalue))
 						throw Exception(PARSER_RUNTIME, &svalue, "must be 'base64' or 'text'");
 					valid_options++;
+#ifdef XML
+				} else if(key == "xdoc" && (vvalue = value->get_hash())){
+					json.xdoc_options=new XDocOutputOptions(r, vvalue);
+					valid_options++;
+#endif
 				} else if(Junction* junction=value->get_junction()){
 					if(!junction->method || !junction->method->params_names || junction->method->params_names->count() != 3)
 						throw Exception(PARSER_RUNTIME, 0, "$.%s must be parser method with 3 parameters", key.cstr());
@@ -359,6 +369,7 @@ static void _string(Request& r, MethodParams& params) {
 			if(methods->count())
 				json.methods=methods;
 		}
+
 	const String& result_string=value_json_string(String::Body(), params[0], &json);
 	String::Body result_body=result_string.cstr_to_string_body_untaint(String::L_JSON, 0, &r.charsets);
 	r.write_pass_lang(*new String(result_body, String::L_AS_IS));

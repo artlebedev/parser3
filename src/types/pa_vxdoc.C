@@ -7,14 +7,22 @@
 #include "pa_config_includes.h"
 #ifdef XML
 
-static const char * const IDENT_VXDOC="$Date: 2009/11/27 02:29:01 $";
+static const char * const IDENT_VXDOC="$Date: 2011/05/18 01:24:47 $";
 
 #include "pa_vxdoc.h"
 #include "pa_vbool.h"
 
+#include "pa_request.h"
+#include "pa_charset.h"
+
 // defines
 
 #define SEARCH_NAMESPACES_NAME "search-namespaces"
+
+#define XDOC_OUTPUT_METHOD_OPTION_NAME "method"
+#define XDOC_OUTPUT_METHOD_OPTION_VALUE_XML "xml"
+#define XDOC_OUTPUT_METHOD_OPTION_VALUE_HTML "html"
+#define XDOC_OUTPUT_METHOD_OPTION_VALUE_TEXT "text"
 
 
 VXnode& VXdoc::wrap(xmlNode& anode) {
@@ -72,6 +80,109 @@ Value* VXdoc::get_element(const String& aname) {
 
 		return bark("%s field not found", &aname);
 	}
+}
+
+static int param_option_over_output_option(
+						HashStringValue& param_options, const char* option_name,
+						const String*& output_option) {
+	if(Value* value=param_options.get(String::Body(option_name))){
+		output_option=&value->as_string();
+		return 1;
+	}
+	return 0;
+}
+static int param_option_over_output_option(
+						HashStringValue& param_options, const char* option_name,
+						int& output_option) {
+	if(Value* value=param_options.get(String::Body(option_name))) {
+		const String& s=value->as_string();
+		if(s=="yes")
+			output_option=1;
+		else if(s=="no")
+			output_option=0;
+		else
+			throw Exception(PARSER_RUNTIME,
+				&s,
+				"%s must be either 'yes' or 'no'", option_name);
+		return 1;
+	}
+	return 0;
+}
+
+XDocOutputOptions::XDocOutputOptions(Request& r, HashStringValue* options){
+	memset(this, 0, sizeof(*this));
+	indent=standalone=omitXmlDeclaration=-1;
+
+/*
+<xsl:output
+  !method = "xml" | "html" | "text" | qname-but-not-ncname 
+  !version = nmtoken 
+  !encoding = string 
+  !omit-xml-declaration = "yes" | "no"
+  !standalone = "yes" | "no"
+  !doctype-public = string 
+  !doctype-system = string 
+  cdata-section-elements = qnames 
+  !indent = "yes" | "no"
+  !media-type = string /> 
+*/
+
+	if(options) {
+		// $.method[xml|html|text]
+		if(Value* vmethod=options->get(String::Body(XDOC_OUTPUT_METHOD_OPTION_NAME)))
+			this->method=&vmethod->as_string();
+		int valid_options=0;
+
+		// $.version[1.0]
+		valid_options+=param_option_over_output_option(*options, "version", this->version);
+		// $.encoding[windows-1251|...]
+		valid_options+=param_option_over_output_option(*options, "encoding", this->encoding);
+		// $.omit-xml-declaration[yes|no]
+		valid_options+=param_option_over_output_option(*options, "omit-xml-declaration", this->omitXmlDeclaration);
+		// $.standalone[yes|no]
+		valid_options+=param_option_over_output_option(*options, "standalone", this->standalone);
+		// $.indent[yes|no]
+		valid_options+=param_option_over_output_option(*options, "indent", this->indent);
+		// $.media-type[text/{html|xml|plain}]
+		valid_options+=param_option_over_output_option(*options, "media-type", this->mediaType);				 
+
+		if(valid_options!=options->count())
+			throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+	}
+
+	// default encoding from pool
+	if(!this->encoding)
+		this->encoding=new String(r.charsets.source().NAME(), String::L_TAINTED);
+	// default method=xml
+	if(!this->method)
+		this->method=new String(XDOC_OUTPUT_METHOD_OPTION_VALUE_XML);
+	// default mediaType = depending on method
+	if(!this->mediaType) {
+		if(*this->method==XDOC_OUTPUT_METHOD_OPTION_VALUE_XML)
+			this->mediaType=new String("text/xml");
+		else if(*this->method==XDOC_OUTPUT_METHOD_OPTION_VALUE_HTML)
+			this->mediaType=new String("text/html");
+		else // XDOC_OUTPUT_METHOD_OPTION_VALUE_TEXT & all others
+			this->mediaType=new String("text/plain");
+	}
+}
+
+// defined at classes/xdoc.C
+String::C xdoc2buf(Request& r, VXdoc& vdoc, 
+					XDocOutputOptions& oo,
+					const String* file_spec,
+					bool use_source_charset_to_render_and_client_charset_to_write_to_header);
+
+const String* VXdoc::get_json_string(Json_options* options){
+	XDocOutputOptions xdoc_options_default;
+	String::C buf=xdoc2buf(*options->r, *this, options->xdoc_options ? *options->xdoc_options : xdoc_options_default,
+		0/*file_name. not to file, to memory*/,
+		true/*use source charset to render, client charset to put to header*/);
+
+	String& result=*new String("\"", String::L_AS_IS);
+	result << String(buf, String::L_JSON);
+	result << "\"";
+	return &result;
 }
 
 #endif
