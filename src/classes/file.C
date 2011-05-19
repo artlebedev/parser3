@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2010/11/15 23:37:08 $";
+static const char * const IDENT_FILE_C="$Date: 2011/05/19 06:58:40 $";
 
 #include "pa_config_includes.h"
 
@@ -126,7 +126,7 @@ static void _save(Request& r, MethodParams& params) {
 
 	Charset* asked_charset=0;
 	if(params.count()>2)
-		if(HashStringValue* options=params.as_no_junction(2, OPTIONS_MUST_NOT_BE_CODE).get_hash()){
+		if(HashStringValue* options=params.as_hash(2)){
 			int valid_options=0;
 			if(Value* vcharset_name=options->get(PA_CHARSET_NAME)){
 				asked_charset=&::charsets.get(vcharset_name->as_string().change_case(r.charsets.source(), String::CC_UPPER));
@@ -870,7 +870,7 @@ static void _sql(Request& r, MethodParams& params) {
 	ulong offset=0;
 
 	if(params.count()>1)
-		if(HashStringValue* options=params.as_no_junction(1, PARAM_MUST_NOT_BE_CODE).get_hash()){
+		if(HashStringValue* options=params.as_hash(1)){
 			int valid_options=0;
 			if(Value* vfilename=options->get(NAME_NAME)) {
 				valid_options++;

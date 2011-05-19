@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2011/05/15 13:20:07 $";
+static const char * const IDENT_TABLE_C="$Date: 2011/05/19 06:58:40 $";
 
 #if (!defined(NO_STRINGSTREAM) && !defined(FREEBSD4))
 #include <sstream>
@@ -471,20 +471,16 @@ static void _save(Request& r, MethodParams& params) {
 		output_column_names=false;
 
 	TableSeparators separators;
-	if(param_index<params.count()) {
-		Value& voptions=params.as_no_junction(param_index++, "additional params must be hash");
-		if( voptions.is_defined() && !voptions.is_string() ) {
-			if(HashStringValue* options=voptions.get_hash()) {
-				int valid_options=separators.load(*options);
-				if(valid_options!=options->count())
-					throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
-			} else {
-				throw Exception(PARSER_RUNTIME,
-					0,
-					"additional params must be hash (did you spell mode parameter correctly?)");
-			}
+	if(param_index<params.count())
+		if(HashStringValue* options=params.as_hash(param_index++, 
+				"additional params must be hash",
+				"additional params must be hash (did you spell mode parameter correctly?)"
+		)) {
+			int valid_options=separators.load(*options);
+			if(valid_options!=options->count())
+				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 		}
-	}
+
 	if(param_index<params.count())
 		throw Exception(PARSER_RUNTIME,
 			0,
@@ -1161,28 +1157,24 @@ static void _sql(Request& r, MethodParams& params) {
 	HashStringValue* bind=0;
 	ulong limit=SQL_NO_LIMIT;
 	ulong offset=0;
-	if(params.count()>1) {
-		Value& voptions=params.as_no_junction(1, "options must be hash, not code");
-		if(voptions.is_defined() && !voptions.is_string())
-			if(HashStringValue* options=voptions.get_hash()) {
-				int valid_options=0;
-				if(Value* vbind=options->get(sql_bind_name)) {
-					valid_options++;
-					bind=vbind->get_hash();
-				}
-				if(Value* vlimit=options->get(sql_limit_name)) {
-					valid_options++;
-					limit=(ulong)r.process_to_value(*vlimit).as_double();
-				}
-				if(Value* voffset=options->get(sql_offset_name)) {
-					valid_options++;
-					offset=(ulong)r.process_to_value(*voffset).as_double();
-				}
-				if(valid_options!=options->count())
-					throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
-			} else
-				throw Exception(PARSER_RUNTIME, 0, OPTIONS_MUST_BE_HASH);
-	}
+	if(params.count()>1)
+		if(HashStringValue* options=params.as_hash(1)) {
+			int valid_options=0;
+			if(Value* vbind=options->get(sql_bind_name)) {
+				valid_options++;
+				bind=vbind->get_hash();
+			}
+			if(Value* vlimit=options->get(sql_limit_name)) {
+				valid_options++;
+				limit=(ulong)r.process_to_value(*vlimit).as_double();
+			}
+			if(Value* voffset=options->get(sql_offset_name)) {
+				valid_options++;
+				offset=(ulong)r.process_to_value(*voffset).as_double();
+			}
+			if(valid_options!=options->count())
+				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+		}
 
 	SQL_Driver::Placeholder* placeholders=0;
 	uint placeholders_count=0;
@@ -1255,38 +1247,33 @@ static void _select(Request& r, MethodParams& params) {
 	Value& vcondition=params.as_expression(0, "condition must be number, bool or expression");
 
 	Table& source_table=GET_SELF(r, VTable).table();
-	Table& result_table=*new Table(source_table.columns());
 
 	int limit=source_table.count();
 	int offset = 0;
 	bool reverse = false;
 	
-	if(params.count()>1) {
-		Value& voptions=params.as_no_junction(1, "options must be hash, not code");
-		if(voptions.is_defined() && !voptions.is_string())
-			if(HashStringValue* options=voptions.get_hash()) {
-				int valid_options=0;
-				if(Value* vlimit=options->get(sql_limit_name)) {
-					valid_options++;
-					limit=r.process_to_value(*vlimit).as_int();
-				}
-				if(Value* voffset=options->get(sql_offset_name)) {
-					valid_options++;
-					offset=r.process_to_value(*voffset).as_int();
-				}
-				if(Value* vreverse=options->get(table_reverse_name)) {
-					valid_options++;
-					reverse=r.process_to_value(*vreverse).as_bool();
-				}
-				if(valid_options!=options->count())
-					throw Exception(PARSER_RUNTIME,
-						0,
-						"called with invalid option");
-			} else
+	if(params.count()>1)
+		if(HashStringValue* options=params.as_hash(1)) {
+			int valid_options=0;
+			if(Value* vlimit=options->get(sql_limit_name)) {
+				valid_options++;
+				limit=r.process_to_value(*vlimit).as_int();
+			}
+			if(Value* voffset=options->get(sql_offset_name)) {
+				valid_options++;
+				offset=r.process_to_value(*voffset).as_int();
+			}
+			if(Value* vreverse=options->get(table_reverse_name)) {
+				valid_options++;
+				reverse=r.process_to_value(*vreverse).as_bool();
+			}
+			if(valid_options!=options->count())
 				throw Exception(PARSER_RUNTIME,
 					0,
-					"options must be hash");
-	}
+					"called with invalid option");
+		}
+
+	Table& result_table=*new Table(source_table.columns());
 
 	int saved_current=source_table.current();
 	int size=source_table.count();

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VOID_C="$Date: 2010/10/21 15:25:07 $";
+static const char * const IDENT_VOID_C="$Date: 2011/05/19 06:58:40 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -55,20 +55,16 @@ static void _sql(Request& r, MethodParams& params) {
 	Value& statement=params.as_junction(0, "statement must be code");
 
 	HashStringValue* bind=0;
-	if(params.count()>1) {
-		Value& voptions=params.as_no_junction(1, "options must be hash, not code");
-		if(voptions.is_defined() && !voptions.is_string())
-			if(HashStringValue* options=voptions.get_hash()) {
-				int valid_options=0;
-				if(Value* vbind=options->get(sql_bind_name)) {
-					valid_options++;
-					bind=vbind->get_hash();
-				}
-				if(valid_options!=options->count())
-					throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
-			} else
-				throw Exception(PARSER_RUNTIME, 0, OPTIONS_MUST_BE_HASH);
-	}
+	if(params.count()>1)
+		if(HashStringValue* options=params.as_hash(1)) {
+			int valid_options=0;
+			if(Value* vbind=options->get(sql_bind_name)) {
+				valid_options++;
+				bind=vbind->get_hash();
+			}
+			if(valid_options!=options->count())
+				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+		}
 
 	SQL_Driver::Placeholder* placeholders=0;
 	uint placeholders_count=0;

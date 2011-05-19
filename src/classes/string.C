@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2010/10/30 22:37:53 $";
+static const char * const IDENT_STRING_C="$Date: 2011/05/19 06:58:40 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -534,31 +534,29 @@ const String* sql_result_string(Request& r, MethodParams& params,
 	ulong limit=SQL_NO_LIMIT;
 	ulong offset=0;
 	default_code=0;
-	if(params.count()>1) {
-		Value& voptions=params.as_no_junction(1, "options must be hash, not code");
-		if(voptions.is_defined() && !voptions.is_string())
-			if((options=voptions.get_hash())) {
-				int valid_options=0;
-				if(Value* vbind=options->get(sql_bind_name)) {
-					valid_options++;
-					bind=vbind->get_hash();
-				}
-				if(Value* vlimit=options->get(sql_limit_name)) {
-					valid_options++;
-					limit=(ulong)r.process_to_value(*vlimit).as_double();
-				}
-				if(Value* voffset=options->get(sql_offset_name)) {
-					valid_options++;
-					offset=(ulong)r.process_to_value(*voffset).as_double();
-				}
-				if((default_code=options->get(sql_default_name))) {
-					valid_options++;
-				}
-				if(valid_options!=options->count())
-					throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
-			} else
-				throw Exception(PARSER_RUNTIME, 0, OPTIONS_MUST_BE_HASH);
-	} else
+	if(params.count()>1)
+		if((options=params.as_hash(1))) {
+			int valid_options=0;
+			if(Value* vbind=options->get(sql_bind_name)) {
+				valid_options++;
+				bind=vbind->get_hash();
+			}
+			if(Value* vlimit=options->get(sql_limit_name)) {
+				valid_options++;
+				limit=(ulong)r.process_to_value(*vlimit).as_double();
+			}
+			if(Value* voffset=options->get(sql_offset_name)) {
+				valid_options++;
+				offset=(ulong)r.process_to_value(*voffset).as_double();
+			}
+			if((default_code=options->get(sql_default_name))) {
+				valid_options++;
+			}
+			if(valid_options!=options->count())
+				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+		} else
+			throw Exception(PARSER_RUNTIME, 0, OPTIONS_MUST_BE_HASH);
+	else
 		options=0;
 
 	SQL_Driver::Placeholder* placeholders=0;

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_HASH_C="$Date: 2010/11/26 06:40:01 $";
+static const char * const IDENT_HASH_C="$Date: 2011/05/19 06:58:40 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -306,36 +306,32 @@ static void _sql(Request& r, MethodParams& params) {
 	ulong offset=0;
 	bool distinct=false;
 	Table2hash_value_type value_type=C_HASH;
-	if(params.count()>1) {
-		Value& voptions=params.as_no_junction(1, "options must be hash, not code");
-		if(voptions.is_defined() && !voptions.is_string())
-			if(HashStringValue* options=voptions.get_hash()) {
-				int valid_options=0;
-				if(Value* vbind=options->get(sql_bind_name)) {
-					valid_options++;
-					bind=vbind->get_hash();
-				}
-				if(Value* vlimit=options->get(sql_limit_name)) {
-					valid_options++;
-					limit=(ulong)r.process_to_value(*vlimit).as_double();
-				}
-				if(Value* voffset=options->get(sql_offset_name)) {
-					valid_options++;
-					offset=(ulong)r.process_to_value(*voffset).as_double();
-				}
-				if(Value* vdistinct=options->get(sql_distinct_name)) {
-					valid_options++;
-					distinct=r.process_to_value(*vdistinct).as_bool();
-				}
-				if(Value* vvalue_type=options->get(sql_value_type_name)) {
-					valid_options++;
-					value_type=get_value_type(r.process_to_value(*vvalue_type));
-				}
-				if(valid_options!=options->count())
-					throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
-			} else
-				throw Exception(PARSER_RUNTIME, 0, OPTIONS_MUST_BE_HASH);
-	}
+	if(params.count()>1)
+		if(HashStringValue* options=params.as_hash(1)) {
+			int valid_options=0;
+			if(Value* vbind=options->get(sql_bind_name)) {
+				valid_options++;
+				bind=vbind->get_hash();
+			}
+			if(Value* vlimit=options->get(sql_limit_name)) {
+				valid_options++;
+				limit=(ulong)r.process_to_value(*vlimit).as_double();
+			}
+			if(Value* voffset=options->get(sql_offset_name)) {
+				valid_options++;
+				offset=(ulong)r.process_to_value(*voffset).as_double();
+			}
+			if(Value* vdistinct=options->get(sql_distinct_name)) {
+				valid_options++;
+				distinct=r.process_to_value(*vdistinct).as_bool();
+			}
+			if(Value* vvalue_type=options->get(sql_value_type_name)) {
+				valid_options++;
+				value_type=get_value_type(r.process_to_value(*vvalue_type));
+			}
+			if(valid_options!=options->count())
+				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+		}
 
 	SQL_Driver::Placeholder* placeholders=0;
 	uint placeholders_count=0;
