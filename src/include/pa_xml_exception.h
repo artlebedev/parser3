@@ -10,7 +10,18 @@
 
 #ifdef XML
 
-static const char * const IDENT_XML_EXCEPTION_H="$Date: 2005/12/16 10:15:12 $";
+static const char * const IDENT_XML_EXCEPTION_H="$Date: 2011/05/25 03:57:46 $";
+
+const char* const XML_VALUE_MUST_BE_STRING = "value must be string";
+const char* const XML_NAMESPACEURI_MUST_BE_STRING = "namespaceURI must be string";
+
+const char* const XML_QUALIFIED_NAME_MUST_BE_STRING = "qualifiedName must be string";
+const char* const XML_NC_NAME_MUST_BE_STRING = "NCName must be string";
+const char* const XML_LOCAL_NAME_MUST_BE_STRING = "localName must be string";
+
+const char* const XML_INVALID_QUALIFIED_NAME = "invalid qualifiedName '%s'";
+const char* const XML_INVALID_NC_NAME = "invalid NCName '%s'";
+const char* const XML_INVALID_LOCAL_NAME = "invalid localName '%s'";
 
 // includes
 
@@ -21,9 +32,7 @@ static const char * const IDENT_XML_EXCEPTION_H="$Date: 2005/12/16 10:15:12 $";
 class XmlException: public Exception {
 public:
 
-	XmlException(
-		const String* aproblem_source);
-
+	XmlException(const String* aproblem_source, const char* aproblem_comment=0, ...);
 };
 
 #endif
