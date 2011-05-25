@@ -1,0 +1,115 @@
+@main[]
+$uri[http://design.ru/uri]
+
+$xdoc[^xdoc::create{<?xml version="1.0"?><r xmlns:aa="$uri"><t a="1" aa:a="2" id="z"/><aa:t id="aa:z" a="11" aa:a="22"/></r>}]
+
+$firstChild[$xdoc.documentElement.firstChild]
+
+^$xdoc:
+<pre>^taint[^xdoc.string[$.indent[yes]]]</pre>
+
+
+
+$tAttr[^table::create{sName
+a
+aa:a
+*
+	empty
+}]
+
+<h2>^^node.getAttribute[]</h2>
+^tAttr.menu{
+	^do[^^firstChild.getAttribute[$tAttr.sName]]{
+		'^firstChild.getAttribute[$tAttr.sName]'
+	}
+}[<hr />]
+
+
+<h2>^^node.getAttributeNS[]</h2>
+^tAttr.menu{
+	^do[^^firstChild.getAttributeNS[$uri^;$tAttr.sName]]{
+		'^firstChild.getAttributeNS[$uri;$tAttr.sName]'
+	}
+}[<hr />]
+
+
+
+$tEl[^table::create{sName
+t
+a:t
+aa:t
+*
+^@
+	empty
+}]
+
+<h2>^^doc.getElementsByTagName[]</h2>
+^tEl.menu{
+	^do[^^xdoc.getElementsByTagName[$tEl.sName]]{
+		^eval(^xdoc.getElementsByTagName[$tEl.sName])
+	}
+}[<hr />]
+
+
+
+$tElNS[^table::create{sName	sURI
+t	$uri
+a:t	$uri
+aa:t	$uri
+*	$uri
+^@	$uri
+	$uri	empty tag
+		empty
+t		empty uri
+t	*
+*	*
+}]
+<h2>^^doc.getElementsByTagNameNS[]</h2>
+^tElNS.menu{
+	^do[^^xdoc.getElementsByTagNameNS[$tElNS.sURI^;$tElNS.sName]]{
+		^eval(^xdoc.getElementsByTagNameNS[$tElNS.sURI;$tElNS.sName])
+	}
+}[<hr />]
+
+
+
+
+$tTag[^table::create{sName
+doc
+ns:doc
+nu i dela - <"bred"!> 
+	empty
+}]
+
+
+<h2>^^xdoc::create[]</h2>
+^tTag.menu{
+	^do[^$x[^^xdoc::create[$tTag.sName]]]{
+		$x[^xdoc::create[$tTag.sName]]
+		^taint[^x.string[]]
+	}
+}[<hr />]
+
+
+<h2>^^doc.createElement[]</h2>
+^tTag.menu{
+	$x[^xdoc::create[test]]
+	^do[^taint[^$n[^^x.createElement[$tTag.sName]]]]{
+		$n[^x.createElement[$tTag.sName]]
+		$tmp[^x.documentElement.appendChild[$n]]
+		^taint[^x.string[]]
+	}
+}[<hr />]
+
+
+
+@do[sTitle;jCode]
+^if(def $sTitle){
+	<b>${sTitle}</b>:
+}
+^try{$jCode}{
+	$exception.handled(true)
+	exception (type: $exception.type,
+	source: $exception.source,
+	comment: $exception.comment)
+}
