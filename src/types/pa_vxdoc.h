@@ -8,7 +8,7 @@
 #ifndef PA_VXDOC_H
 #define PA_VXDOC_H
 
-static const char * const IDENT_VXDOC_H="$Date: 2011/05/18 01:24:47 $";
+static const char * const IDENT_VXDOC_H="$Date: 2011/05/25 03:55:04 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -112,8 +112,6 @@ public: // VXdoc
 public:
 
 	VHash search_namespaces;
-
-	XDocOutputOptions output_options;
 
 private:
 

@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT_XDOC_C="$Date: 2011/05/18 01:25:06 $";
+static const char * const IDENT_XDOC_C="$Date: 2011/05/25 03:54:46 $";
 
 #include "libxml/tree.h"
 #include "libxml/HTMLtree.h"
@@ -631,35 +631,9 @@ static VXdoc& _transform(Request& r, const String* stylesheet_source,
 
 	//gdome_xml_doc_mkref dislikes XML_HTML_DOCUMENT_NODE  type, fixing
 	transformed->type=XML_DOCUMENT_NODE;
+
 	// constructing result
-	VXdoc& result=*new VXdoc(r.charsets, *transformed);
-	/* grabbing options
-
-		<xsl:output
-		!method = "xml" | "html" | "text"
-			X| qname-but-not-ncname 
-		!version = nmtoken 
-		!encoding = string 
-		!omit-xml-declaration = "yes" | "no"
-		!standalone = "yes" | "no"
-		!doctype-public = string 
-		!doctype-system = string 
-		Xcdata-section-elements = qnames 
-		!indent = "yes" | "no"
-		!media-type = string /> 
-	*/
-	XDocOutputOptions& oo=result.output_options;
-
-	oo.method=stylesheet->method?&r.transcode(stylesheet->method):0;
-	oo.encoding=stylesheet->encoding?&r.transcode(stylesheet->encoding):0;
-	oo.mediaType=stylesheet->mediaType?&r.transcode(stylesheet->mediaType):0;
-	oo.indent=stylesheet->indent;
-	oo.version=stylesheet->version?&r.transcode(stylesheet->version):0;
-	oo.standalone=stylesheet->standalone;
-	oo.omitXmlDeclaration=stylesheet->omitXmlDeclaration;
-
-	// return
-	return result;
+	return *new VXdoc(r.charsets, *transformed);
 }
 static void _transform(Request& r, MethodParams& params) {
 	VXdoc& vdoc=GET_SELF(r, VXdoc);
