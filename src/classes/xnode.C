@@ -7,7 +7,7 @@
 #include "classes.h"
 #ifdef XML
 
-static const char * const IDENT_XNODE_C="$Date: 2009/08/08 13:30:20 $";
+static const char * const IDENT_XNODE_C="$Date: 2011/05/25 04:00:40 $";
 
 #include "pa_vmethod_frame.h"
 
@@ -109,6 +109,31 @@ xmlNode& as_node(MethodParams& params, int index, const char* msg) {
 
 xmlChar* as_xmlchar(Request& r, MethodParams& params, int index, const char* msg) {
 	return r.transcode(params.as_string(index, msg));
+}
+
+xmlChar* as_xmlqname(Request& r, MethodParams& params, int index, const char* msg) {
+	xmlChar* qname=r.transcode(params.as_string(index, msg ? msg : XML_QUALIFIED_NAME_MUST_BE_STRING));
+	if(xmlValidateQName(qname, 0))
+		throw XmlException(0, XML_INVALID_QUALIFIED_NAME, qname);
+	return qname;
+}
+
+xmlChar* as_xmlncname(Request& r, MethodParams& params, int index, const char* msg) {
+	xmlChar* ncname=r.transcode(params.as_string(index, msg ? msg : XML_NC_NAME_MUST_BE_STRING));
+	if(xmlValidateNCName(ncname, 0))
+		throw XmlException(0, XML_INVALID_NC_NAME, ncname);
+	return ncname;
+}
+
+xmlChar* as_xmlname(Request& r, MethodParams& params, int index, const char* msg) {
+	xmlChar* localName=r.transcode(params.as_string(index, msg ? msg : XML_LOCAL_NAME_MUST_BE_STRING));
+	if(xmlValidateName(localName, 0))
+		throw XmlException(0, XML_INVALID_LOCAL_NAME, localName);
+	return localName;
+}
+
+xmlChar* as_xmlnsuri(Request& r, MethodParams& params, int index) {
+	return r.transcode(params.as_string(index, XML_NAMESPACEURI_MUST_BE_STRING));
 }
 
 xmlAttr& as_attr(MethodParams& params, int index, const char* msg) {

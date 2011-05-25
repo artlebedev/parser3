@@ -8,7 +8,7 @@
 #ifndef XNODE_H
 #define XNODE_H
 
-static const char * const IDENT_XNODE_H="$Date: 2009/08/08 13:30:21 $";
+static const char * const IDENT_XNODE_H="$Date: 2011/05/25 04:00:41 $";
 
 class MXnode: public Methoded {
 public: // Value
@@ -47,6 +47,10 @@ private:
 
 xmlNode& as_node(MethodParams& params, int index, const char* msg);
 xmlChar* as_xmlchar(Request& r, MethodParams& params, int index, const char* msg);
+xmlChar* as_xmlqname(Request& r, MethodParams& params, int index, const char* msg=0);
+xmlChar* as_xmlncname(Request& r, MethodParams& params, int index, const char* msg=0);
+xmlChar* as_xmlname(Request& r, MethodParams& params, int index, const char* msg=0);
+xmlChar* as_xmlnsuri(Request& r, MethodParams& params, int index);
 xmlNs& pa_xmlMapNs(xmlDoc& doc, const xmlChar* href, const xmlChar* prefix);
 
 #endif
