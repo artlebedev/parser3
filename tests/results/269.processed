@@ -1,0 +1,137 @@
+Content-Type: text/html
+Content-Length: 3614
+
+$xdoc:
+<pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;r xmlns:aa=&quot;http://design.ru/uri&quot;&gt;
+&lt;t a=&quot;1&quot; aa:a=&quot;2&quot; id=&quot;z&quot;/&gt;
+&lt;aa:t id=&quot;aa:z&quot; a=&quot;11&quot; aa:a=&quot;22&quot;/&gt;
+&lt;/r&gt;
+</pre>
+<h2>^node.getAttribute[]</h2>
+<b>^firstChild.getAttribute[a]</b>:
+'1'
+<hr />
+<b>^firstChild.getAttribute[aa:a]</b>:
+''
+<hr />
+<b>^firstChild.getAttribute[*]</b>:
+exception (type: xml,
+source: getAttribute,
+comment: invalid localName '*')
+<hr />
+<b>^firstChild.getAttribute[]</b>:
+exception (type: xml,
+source: getAttribute,
+comment: invalid localName '')
+<h2>^node.getAttributeNS[]</h2>
+<b>^firstChild.getAttributeNS[http://design.ru/uri;a]</b>:
+'2'
+<hr />
+<b>^firstChild.getAttributeNS[http://design.ru/uri;aa:a]</b>:
+''
+<hr />
+<b>^firstChild.getAttributeNS[http://design.ru/uri;*]</b>:
+exception (type: xml,
+source: getAttributeNS,
+comment: invalid localName '*')
+<hr />
+<b>^firstChild.getAttributeNS[http://design.ru/uri;]</b>:
+exception (type: xml,
+source: getAttributeNS,
+comment: invalid localName '')
+<h2>^doc.getElementsByTagName[]</h2>
+<b>^xdoc.getElementsByTagName[t]</b>:
+2
+<hr />
+<b>^xdoc.getElementsByTagName[a:t]</b>:
+0
+<hr />
+<b>^xdoc.getElementsByTagName[aa:t]</b>:
+0
+<hr />
+<b>^xdoc.getElementsByTagName[*]</b>:
+3
+<hr />
+<b>^xdoc.getElementsByTagName[@]</b>:
+exception (type: xml,
+source: getElementsByTagName,
+comment: invalid localName '@')
+<hr />
+<b>^xdoc.getElementsByTagName[]</b>:
+exception (type: xml,
+source: getElementsByTagName,
+comment: invalid localName '')
+<h2>^doc.getElementsByTagNameNS[]</h2>
+<b>^xdoc.getElementsByTagNameNS[http://design.ru/uri;t]</b>:
+1
+<hr />
+<b>^xdoc.getElementsByTagNameNS[http://design.ru/uri;a:t]</b>:
+0
+<hr />
+<b>^xdoc.getElementsByTagNameNS[http://design.ru/uri;aa:t]</b>:
+0
+<hr />
+<b>^xdoc.getElementsByTagNameNS[http://design.ru/uri;*]</b>:
+1
+<hr />
+<b>^xdoc.getElementsByTagNameNS[http://design.ru/uri;@]</b>:
+exception (type: xml,
+source: getElementsByTagNameNS,
+comment: invalid localName '@')
+<hr />
+<b>^xdoc.getElementsByTagNameNS[http://design.ru/uri;]</b>:
+exception (type: xml,
+source: getElementsByTagNameNS,
+comment: invalid localName '')
+<hr />
+<b>^xdoc.getElementsByTagNameNS[;]</b>:
+exception (type: xml,
+source: getElementsByTagNameNS,
+comment: invalid localName '')
+<hr />
+<b>^xdoc.getElementsByTagNameNS[;t]</b>:
+0
+<hr />
+<b>^xdoc.getElementsByTagNameNS[*;t]</b>:
+2
+<hr />
+<b>^xdoc.getElementsByTagNameNS[*;*]</b>:
+3
+<h2>^xdoc::create[]</h2>
+<b>$x[^xdoc::create[doc]]</b>:
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;doc/&gt;
+<hr />
+<b>$x[^xdoc::create[ns:doc]]</b>:
+exception (type: xml,
+source: create,
+comment: invalid localName 'ns:doc')
+<hr />
+<b>$x[^xdoc::create[nu i dela - <"bred"!> ]]</b>:
+exception (type: xml,
+source: create,
+comment: invalid localName 'nu i dela - &lt;&quot;bred&quot;!&gt; ')
+<hr />
+<b>$x[^xdoc::create[]]</b>:
+exception (type: xml,
+source: create,
+comment: invalid localName '')
+<h2>^doc.createElement[]</h2>
+<b>$n[^x.createElement[doc]]</b>:
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;test&gt;&lt;doc/&gt;&lt;/test&gt;
+<hr />
+<b>$n[^x.createElement[ns:doc]]</b>:
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;test&gt;&lt;ns:doc/&gt;&lt;/test&gt;
+<hr />
+<b>$n[^x.createElement[nu i dela - &lt;&quot;bred&quot;!&gt; ]]</b>:
+exception (type: xml,
+source: createElement,
+comment: invalid localName 'nu i dela - &lt;&quot;bred&quot;!&gt; ')
+<hr />
+<b>$n[^x.createElement[]]</b>:
+exception (type: xml,
+source: createElement,
+comment: invalid localName '')
