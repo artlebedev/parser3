@@ -7,7 +7,7 @@
 #include "classes.h"
 #ifdef XML
 
-static const char * const IDENT_XNODE_C="$Date: 2011/05/25 04:00:40 $";
+static const char * const IDENT_XNODE_C="$Date: 2011/05/25 06:07:37 $";
 
 #include "pa_vmethod_frame.h"
 
@@ -272,12 +272,13 @@ pa_xmlNamedPreorderTraversal (
 
 // Node insertBefore(in Node newChild,in Node refChild) raises(DOMException);
 static void _insertBefore(Request& r, MethodParams& params) {
+	xmlNode& newChild=as_node(params, 0, "newChild must be node");
+	xmlNode& refChild=as_node(params, 1, "refChild must be node");
+
 	VXnode& vnode=GET_SELF(r, VXnode);
 	VXdoc& vxdoc=vnode.get_vxdoc();
 
 	//xmlNode& selfNode=vnode.get_xmlnode();
-	xmlNode& newChild=as_node(params, 0, "newChild must be node");
-	xmlNode& refChild=as_node(params, 1, "refChild must be node");
 	
 	xmlNode* retNode=xmlAddPrevSibling(&refChild, &newChild);
 	// write out result
@@ -286,12 +287,13 @@ static void _insertBefore(Request& r, MethodParams& params) {
 
 // Node replaceChild(in Node newChild,in Node oldChild) raises(DOMException);
 static void _replaceChild(Request& r, MethodParams& params) {
+	xmlNode& newChild=as_node(params, 0, "newChild must be node");
+	xmlNode& oldChild=as_node(params, 1, "oldChild must be node");
+
 	VXnode& vnode=GET_SELF(r, VXnode);
 	VXdoc& vxdoc=vnode.get_vxdoc();
 	xmlDoc& xmldoc=vxdoc.get_xmldoc();
 	xmlNode& selfNode=vnode.get_xmlnode();
-	xmlNode& newChild=as_node(params, 0, "newChild must be node");
-	xmlNode& oldChild=as_node(params, 1, "oldChild must be node");
 
 	if(newChild.doc!=&xmldoc)
 		throw Exception("xml.dom",
@@ -321,11 +323,12 @@ static void _replaceChild(Request& r, MethodParams& params) {
 
 // Node removeChild(in Node oldChild) raises(DOMException);
 static void _removeChild(Request& r, MethodParams& params) {
+	xmlNode& oldChild=as_node(params, 0, "refChild must be node");
+
 	VXnode& vnode=GET_SELF(r, VXnode);
 	VXdoc& vxdoc=vnode.get_vxdoc();
 	xmlDoc& xmldoc=vxdoc.get_xmldoc();
 //	xmlNode& selfNode=vnode.get_xmlnode();
-	xmlNode& oldChild=as_node(params, 0, "refChild must be node");
 	
 	if(oldChild.doc!=&xmldoc)
 		throw Exception("xml.dom",
@@ -339,10 +342,11 @@ static void _removeChild(Request& r, MethodParams& params) {
 
 // Node appendChild(in Node newChild) raises(DOMException);
 static void _appendChild(Request& r, MethodParams& params) {
+	xmlNode& newChild=as_node(params, 0, "newChild must be node");
+
 	VXnode& vnode=GET_SELF(r, VXnode);
 	VXdoc& vxdoc=vnode.get_vxdoc();
 	xmlNode& selfNode=vnode.get_xmlnode();
-	xmlNode& newChild=as_node(params, 0, "newChild must be node");
 	
 	xmlNode* retNode=xmlAddChild(&selfNode, &newChild);
 	// write out result
@@ -360,12 +364,12 @@ static void _hasChildNodes(Request& r, MethodParams&) {
 
 // Node cloneNode(in boolean deep);
 static void _cloneNode(Request& r, MethodParams& params) {
+	bool deep=params.as_bool(0, "deep must be bool", r);
+
 	VXnode& vnode=GET_SELF(r, VXnode);
 	xmlNode& selfNode=vnode.get_xmlnode();
 	VXdoc& vxdoc=vnode.get_vxdoc();
 	xmlDoc& xmldoc=vxdoc.get_xmldoc();
-
-	bool deep=params.as_bool(0, "deep must be bool", r);
 
 	xmlNode* retNode=xmlDocCopyNode(&selfNode, &xmldoc, deep?1: 0);
 	// write out result
@@ -385,11 +389,12 @@ xmlNode& get_self_element(VXnode& vnode) {
 	return node;
 }
 
-
+// DOMString getAttribute(in DOMString name);
 static void _getAttribute(Request& r, MethodParams& params) {
+	const xmlChar* name=as_xmlname(r, params, 0);
+
 	VXnode& vnode=GET_SELF(r, VXnode);
 	xmlNode& element=get_self_element(vnode);
-	const xmlChar* name=as_xmlchar(r, params, 0, NAME_MUST_BE_STRING);
 
 	// @todo: when name="xmlns"
 	xmlChar* attribute_value=xmlGetProp(&element, name);
@@ -399,10 +404,11 @@ static void _getAttribute(Request& r, MethodParams& params) {
 
 // void setAttribute(in DOMString name, in DOMString value) raises(DOMException);
 static void _setAttribute(Request& r, MethodParams& params) {
+	const xmlChar* name=as_xmlname(r, params, 0);
+	const xmlChar* attribute_value=as_xmlchar(r, params, 1, XML_VALUE_MUST_BE_STRING);
+
 	VXnode& vnode=GET_SELF(r, VXnode);
 	xmlNode& element=get_self_element(vnode);
-	const xmlChar* name=as_xmlchar(r, params, 0, NAME_MUST_BE_STRING);
-	const xmlChar* attribute_value=as_xmlchar(r, params, 1, VALUE_MUST_BE_STRING);
 
 	// @todo: when name="xmlns"
 	if(!xmlSetProp(&element, name,  attribute_value))
@@ -411,9 +417,10 @@ static void _setAttribute(Request& r, MethodParams& params) {
 
 // void removeAttribute(in DOMString name) raises(DOMException);
 static void _removeAttribute(Request& r, MethodParams& params) {
+	const xmlChar* name=as_xmlname(r, params, 0);
+
 	VXnode& vnode=GET_SELF(r, VXnode);
 	xmlNode& element=get_self_element(vnode);
-	const xmlChar* name=as_xmlchar(r, params, 0, NAME_MUST_BE_STRING);
 
 	// @todo: when name="xmlns"
 	xmlUnsetProp(&element, name);
@@ -421,10 +428,11 @@ static void _removeAttribute(Request& r, MethodParams& params) {
 
 // Attr getAttributeNode(in DOMString name);
 static void _getAttributeNode(Request& r, MethodParams& params) {
+	const xmlChar* localName=as_xmlname(r, params, 0);
+
 	VXnode& vnode=GET_SELF(r, VXnode);
 	VXdoc& vxdoc=vnode.get_vxdoc();
 	xmlNode& element=get_self_element(vnode);
-	const xmlChar* localName=as_xmlchar(r, params, 0, NAME_MUST_BE_STRING);
 
 	if(xmlNode* retNode=pa_getAttributeNodeNS(element, localName, 0)){
 		// write out result
@@ -439,6 +447,7 @@ static void _setAttributeNode(Request& r, MethodParams& params) {
 	VXdoc& vxdoc=vnode.get_vxdoc();
 	xmlNode& element=get_self_element(vnode);
 	xmlDoc& xmldoc=vxdoc.get_xmldoc();
+
 	xmlAttr& newAttr=as_attr(params, 0, "newAttr must be ATTRIBUTE node");
 
 	if(newAttr.doc!=&xmldoc)
@@ -462,10 +471,11 @@ static void _setAttributeNode(Request& r, MethodParams& params) {
 
 // Attr removeAttributeNode(in Attr oldAttr) raises(DOMException);
 static void _removeAttributeNode(Request& r, MethodParams& params) {
+	xmlAttr& oldAttr=as_attr(params, 0, "oldAttr must be ATTRIBUTE node");
+
 	VXnode& vnode=GET_SELF(r, VXnode);
 	VXdoc& vxdoc=vnode.get_vxdoc();
 	xmlNode& element=get_self_element(vnode);
-	xmlAttr& oldAttr=as_attr(params, 0, "oldAttr must be ATTRIBUTE node");
 
 	if(oldAttr.parent!=&element)
 		throw Exception("xml.dom",
@@ -479,12 +489,15 @@ static void _removeAttributeNode(Request& r, MethodParams& params) {
 }	
 
 // NodeList getElementsByTagName(in DOMString name);
+// '*' means all tags
 static void _getElementsByTagName(Request& r, MethodParams& params) {
+	xmlChar* tagName=as_xmlchar(r, params, 0, XML_LOCAL_NAME_MUST_BE_STRING);
+	if(xmlValidateName(tagName, 0) != 0 && strcmp((const char*)tagName, "*") != 0)
+		throw XmlException(0, XML_INVALID_LOCAL_NAME, tagName);
+
 	VXnode& vnode=GET_SELF(r, VXnode);
 	VXdoc& vxdoc=vnode.get_vxdoc();
 	xmlNode& xmlnode=vnode.get_xmlnode();
-
-	xmlChar* tagName=as_xmlchar(r, params, 0, NAME_MUST_BE_STRING);
 
 	VHash& result=*new VHash;
 	AccumulateFoundInfo info={&result.hash(), &vxdoc, 0};
@@ -502,12 +515,12 @@ static void _getElementsByTagName(Request& r, MethodParams& params) {
 
 // DOMString getAttributeNS(in DOMString namespaceURI, in DOMString localName);
 static void _getAttributeNS(Request& r, MethodParams& params) {
+	xmlChar* namespaceURI=as_xmlnsuri(r, params, 0);
+	xmlChar* localName=as_xmlname(r, params, 1);
+
 	VXnode& vnode=GET_SELF(r, VXnode);
 	xmlNode& element=get_self_element(vnode);
 	
-	xmlChar* namespaceURI=as_xmlchar(r, params, 0, NAMESPACEURI_MUST_BE_STRING);
-	xmlChar* localName=as_xmlchar(r, params, 1, LOCALNAME_MUST_BE_STRING);
-
 	// todo: when name="xmlns"
 	xmlChar* attribute_value=xmlGetNsProp(&element, localName, namespaceURI);
 	// write out result
@@ -517,13 +530,14 @@ static void _getAttributeNS(Request& r, MethodParams& params) {
 
 // void setAttributeNS(in DOMString namespaceURI, in DOMString qualifiedName, in DOMString value) raises(DOMException);
 static void _setAttributeNS(Request& r, MethodParams& params) {
+	const xmlChar* namespaceURI=as_xmlnsuri(r, params, 0);
+	const xmlChar* qualifiedName=as_xmlqname(r, params, 1);
+	const xmlChar* attribute_value=as_xmlchar(r, params, 2, XML_VALUE_MUST_BE_STRING);
+
 	VXnode& vnode=GET_SELF(r, VXnode);
 	xmlNode& element=get_self_element(vnode);
 	VXdoc& vxdoc=vnode.get_vxdoc();
 	xmlDoc& xmldoc=vxdoc.get_xmldoc();
-	const xmlChar* namespaceURI=as_xmlchar(r, params, 0, NAMESPACEURI_MUST_BE_STRING);
-	const xmlChar* qualifiedName=as_xmlchar(r, params, 1, "qualifiedName must be string");
-	const xmlChar* attribute_value=as_xmlchar(r, params, 2, VALUE_MUST_BE_STRING);
 
 	xmlChar* prefix=0;
 	xmlChar* localName=xmlSplitQName2(qualifiedName, &prefix);
@@ -548,12 +562,13 @@ static void _setAttributeNS(Request& r, MethodParams& params) {
 
 // void removeAttributeNS(in DOMString namespaceURI, in DOMString localName) raises(DOMException);
 static void _removeAttributeNS(Request& r, MethodParams& params) {
+	const xmlChar* namespaceURI=as_xmlnsuri(r, params, 0);
+	const xmlChar* localName=as_xmlname(r, params, 1);
+
 	VXnode& vnode=GET_SELF(r, VXnode);
 	xmlNode& element=get_self_element(vnode);
 	VXdoc& vxdoc=vnode.get_vxdoc();
 	xmlDoc& xmldoc=vxdoc.get_xmldoc();
-	const xmlChar* namespaceURI=as_xmlchar(r, params, 0, NAMESPACEURI_MUST_BE_STRING);
-	const xmlChar* localName=as_xmlchar(r, params, 1, LOCALNAME_MUST_BE_STRING);
 
 	// @todo: when name="xmlns"
 	xmlNs& ns=pa_xmlMapNs(xmldoc, namespaceURI, 0);
@@ -562,11 +577,12 @@ static void _removeAttributeNS(Request& r, MethodParams& params) {
 
 // Attr getAttributeNodeNS(in DOMString namespaceURI, in DOMString localName);
 static void _getAttributeNodeNS(Request& r, MethodParams& params) {
+	const xmlChar* namespaceURI=as_xmlnsuri(r, params, 0);
+	const xmlChar* localName=as_xmlname(r, params, 1);
+
 	VXnode& vnode=GET_SELF(r, VXnode);
 	VXdoc& vxdoc=vnode.get_vxdoc();
 	xmlNode& element=get_self_element(vnode);
-	const xmlChar* namespaceURI=as_xmlchar(r, params, 0, NAMESPACEURI_MUST_BE_STRING);
-	const xmlChar* localName=as_xmlchar(r, params, 1, LOCALNAME_MUST_BE_STRING);
 
 	if(xmlNode* retNode=pa_getAttributeNodeNS(element, localName, namespaceURI)){
 		// write out result
@@ -576,10 +592,10 @@ static void _getAttributeNodeNS(Request& r, MethodParams& params) {
 
 // boolean hasAttribute(in DOMString name) raises(DOMException);
 static void _hasAttribute(Request& r, MethodParams& params) {
+	const xmlChar* name=as_xmlname(r, params, 0);
+
 	VXnode& vnode=GET_SELF(r, VXnode);
 	xmlNode& element=get_self_element(vnode);
-
-	const xmlChar* name=as_xmlchar(r, params, 0, NAME_MUST_BE_STRING);
 
 	// @todo: when name="xmlns"
 	// write out result
@@ -588,11 +604,11 @@ static void _hasAttribute(Request& r, MethodParams& params) {
 
 // boolean hasAttributeNS(n DOMString namespaceURI, in DOMString localName) raises(DOMException);
 static void _hasAttributeNS(Request& r, MethodParams& params) {
+	const xmlChar* namespaceURI=as_xmlnsuri(r, params, 0);
+	const xmlChar* localName=as_xmlname(r, params, 1);
+
 	VXnode& vnode=GET_SELF(r, VXnode);
 	xmlNode& element=get_self_element(vnode);
-
-	const xmlChar* namespaceURI=as_xmlchar(r, params, 0, NAMESPACEURI_MUST_BE_STRING);
-	const xmlChar* localName=as_xmlchar(r, params, 1, LOCALNAME_MUST_BE_STRING);
 
 	// write out result
 	r.write_no_lang(VBool::get(xmlHasNsProp(&element, localName, namespaceURI)!=0));
@@ -607,14 +623,19 @@ static void _hasAttributes(Request& r, MethodParams&) {
 	r.write_no_lang(VBool::get(element.properties!=0));
 }
 
+// NodeList getElementsByTagNameNS(in DOMString namespaceURI, in DOMString localName);
+// '*' as namespaceURI means get all namespaces
+// '*' as localName means get all tags
 static void _getElementsByTagNameNS(Request& r, MethodParams& params) {
+	xmlChar* namespaceURI=as_xmlchar(r, params, 0, XML_NAMESPACEURI_MUST_BE_STRING);
+
+	xmlChar* localName=as_xmlchar(r, params, 1, XML_LOCAL_NAME_MUST_BE_STRING);
+	if(xmlValidateName(localName, 0) != 0 && strcmp((const char*)localName, "*") != 0)
+		throw XmlException(0, XML_INVALID_LOCAL_NAME, localName);
+
 	VXnode& vnode=GET_SELF(r, VXnode);
 	VXdoc& vdoc=vnode.get_vxdoc();
 	xmlDoc& xmldoc=vdoc.get_xmldoc();
-
-	// namespaceURI;localName
-	xmlChar* namespaceURI=as_xmlchar(r, params, 0, NAMESPACEURI_MUST_BE_STRING);
-	xmlChar* localName=as_xmlchar(r, params, 1, NAME_MUST_BE_STRING);
 
 	VHash& result=*new VHash;
 	AccumulateFoundInfo info={&result.hash(), &vdoc, 0};

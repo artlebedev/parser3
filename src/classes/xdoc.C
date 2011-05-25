@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT_XDOC_C="$Date: 2011/05/25 03:54:46 $";
+static const char * const IDENT_XDOC_C="$Date: 2011/05/25 06:07:37 $";
 
 #include "libxml/tree.h"
 #include "libxml/HTMLtree.h"
@@ -217,10 +217,10 @@ pa_importNode (xmlDoc& xmldoc, xmlNode& importedNode, bool deep) {
 
 // Element createElement(in DOMString tagName) raises(DOMException);
 static void _createElement(Request& r, MethodParams& params) {
+	xmlChar* tagName=as_xmlname(r, params, 0, "tagName must be string");
+
 	VXdoc& vdoc=GET_SELF(r, VXdoc);
 	xmlDoc& xmldoc=vdoc.get_xmldoc();
-
-	xmlChar* tagName=as_xmlchar(r, params, 0, "tagName must be string");
 
 	xmlNode *node=xmlNewDocNode(&xmldoc, NULL, tagName, NULL);
 	writeNode(r, vdoc, node);
@@ -228,12 +228,11 @@ static void _createElement(Request& r, MethodParams& params) {
 
 // Element createElementNS(in DOMString namespaceURI, in DOMString qualifiedName) raises(DOMException);
 static void _createElementNS(Request& r, MethodParams& params) {
+	xmlChar* namespaceURI=as_xmlnsuri(r, params, 0);
+	xmlChar* qualifiedName=as_xmlqname(r, params, 1);
+
 	VXdoc& vdoc=GET_SELF(r, VXdoc);
 	xmlDoc& xmldoc=vdoc.get_xmldoc();
-
-	// namespaceURI;localName
-	xmlChar* namespaceURI=as_xmlchar(r, params, 0, NAMESPACEURI_MUST_BE_STRING);
-	xmlChar* qualifiedName=as_xmlchar(r, params, 1, "qualifiedName must be string");
 
 	xmlChar* prefix=0;
 	xmlChar* localName=xmlSplitQName2(qualifiedName, &prefix);
@@ -258,10 +257,10 @@ static void _createDocumentFragment(Request& r, MethodParams&) {
 
 // Text createTextNode(in DOMString data);
 static void _createTextNode(Request& r, MethodParams& params) {
+	xmlChar* data=as_xmlchar(r, params, 0, XML_DATA_MUST_BE_STRING);
+
 	VXdoc& vdoc=GET_SELF(r, VXdoc);
 	xmlDoc& xmldoc=vdoc.get_xmldoc();
-
-	xmlChar* data=as_xmlchar(r, params, 0, DATA_MUST_BE_STRING);
 
 	xmlNode *node=xmlNewDocText(&xmldoc, data);
 	writeNode(r, vdoc, node);
@@ -269,9 +268,9 @@ static void _createTextNode(Request& r, MethodParams& params) {
 
 // Comment createComment(in DOMString data)
 static void _createComment(Request& r, MethodParams& params) {
-	VXdoc& vdoc=GET_SELF(r, VXdoc);
+	xmlChar* data=as_xmlchar(r, params, 0, XML_DATA_MUST_BE_STRING);
 
-	xmlChar* data=as_xmlchar(r, params, 0, DATA_MUST_BE_STRING);
+	VXdoc& vdoc=GET_SELF(r, VXdoc);
 
 	xmlNode *node=xmlNewComment(data);
 	writeNode(r, vdoc, node);
@@ -279,10 +278,10 @@ static void _createComment(Request& r, MethodParams& params) {
 
 // CDATASection createCDATASection(in DOMString data) raises(DOMException);
 static void _createCDATASection(Request& r, MethodParams& params) {
+	xmlChar* data=as_xmlchar(r, params, 0, XML_DATA_MUST_BE_STRING);
+
 	VXdoc& vdoc=GET_SELF(r, VXdoc);
 	xmlDoc& xmldoc=vdoc.get_xmldoc();
-
-	xmlChar* data=as_xmlchar(r, params, 0, DATA_MUST_BE_STRING);
 
 	xmlNode *node=xmlNewCDataBlock(&xmldoc, data, strlen((const char*)data));
 	writeNode(r, vdoc, node);
@@ -290,11 +289,11 @@ static void _createCDATASection(Request& r, MethodParams& params) {
 
 // ProcessingInstruction createProcessingInstruction(in DOMString target,in DOMString data) raises(DOMException);
 static void _createProcessingInstruction(Request& r, MethodParams& params) {
+	xmlChar* target=as_xmlchar(r, params, 0, XML_DATA_MUST_BE_STRING);
+	xmlChar* data=as_xmlchar(r, params, 1, XML_DATA_MUST_BE_STRING);
+
 	VXdoc& vdoc=GET_SELF(r, VXdoc);
 	xmlDoc& xmldoc=vdoc.get_xmldoc();
-
-	xmlChar* target=as_xmlchar(r, params, 0, DATA_MUST_BE_STRING);
-	xmlChar* data=as_xmlchar(r, params, 1, DATA_MUST_BE_STRING);
 
 	xmlNode *node=xmlNewDocPI(&xmldoc, target, data);
 	writeNode(r, vdoc, node);
@@ -302,10 +301,10 @@ static void _createProcessingInstruction(Request& r, MethodParams& params) {
 
 // Attr createAttribute(in DOMString name) raises(DOMException);
 static void _createAttribute(Request& r, MethodParams& params) {
+	xmlChar* name=as_xmlname(r, params, 0);
+
 	VXdoc& vdoc=GET_SELF(r, VXdoc);
 	xmlDoc& xmldoc=vdoc.get_xmldoc();
-
-	xmlChar* name=as_xmlchar(r, params, 0, NAME_MUST_BE_STRING);
 
 	xmlNode *node=(xmlNode*)xmlNewDocProp(&xmldoc, name, 0);
 	writeNode(r, vdoc, node);
@@ -313,11 +312,11 @@ static void _createAttribute(Request& r, MethodParams& params) {
 
 // Attr createAttributeNS(in DOMString namespaceURI, in DOMString qualifiedName) raises(DOMException);
 static void _createAttributeNS(Request& r, MethodParams& params) {
+	xmlChar* namespaceURI=as_xmlnsuri(r, params, 0);
+	xmlChar* qualifiedName=as_xmlqname(r, params, 1);
+
 	VXdoc& vdoc=GET_SELF(r, VXdoc);
 	xmlDoc& xmldoc=vdoc.get_xmldoc();
-
-	xmlChar* namespaceURI=as_xmlchar(r, params, 0, NAMESPACEURI_MUST_BE_STRING);
-	xmlChar* qualifiedName=as_xmlchar(r, params, 1, NAME_MUST_BE_STRING);
 
 	xmlChar* prefix=0;
 	xmlChar* localName=xmlSplitQName2(qualifiedName, &prefix);
@@ -334,10 +333,10 @@ static void _createAttributeNS(Request& r, MethodParams& params) {
 
 // EntityReference createEntityReference(in DOMString name) raises(DOMException);
 static void _createEntityReference(Request& r, MethodParams& params) {
+	xmlChar* name=as_xmlname(r, params, 0);
+
 	VXdoc& vdoc=GET_SELF(r, VXdoc);
 	xmlDoc& xmldoc=vdoc.get_xmldoc();
-
-	xmlChar* name=as_xmlchar(r, params, 0, NAME_MUST_BE_STRING);
 
 	xmlNode *node=xmlNewReference(&xmldoc, name);
 	writeNode(r, vdoc, node);
@@ -345,31 +344,26 @@ static void _createEntityReference(Request& r, MethodParams& params) {
 
 
 static void _getElementById(Request& r, MethodParams& params) {
+	xmlChar* elementId=as_xmlname(r, params, 0, "elementID must be string");
+
 	VXdoc& vdoc=GET_SELF(r, VXdoc);
 	xmlDoc& xmldoc=vdoc.get_xmldoc();
 
-	// elementId
-	xmlChar* elementId=as_xmlchar(r, params, 0, "elementID must be string");
-
-	if(xmlNode *node=pa_getElementById(xmldoc, elementId)) {
-		// write out result
+	if(xmlNode *node=pa_getElementById(xmldoc, elementId))
 		writeNode(r, vdoc, node);
-	}
 }
 
 static void _importNode(Request& r, MethodParams& params) {
+	xmlNode& importedNode=as_node(params, 0, "importedNode must be node");
+	bool deep=params.as_bool(1, "deep must be bool", r);
+
 	VXdoc& vdoc=GET_SELF(r, VXdoc);
 	xmlDoc& xmldoc=vdoc.get_xmldoc();
 
-	xmlNode& importedNode=
-		as_node(params, 0, "importedNode must be node");
-	bool deep=
-		params.as_bool(1, "deep must be bool", r);
-
 	xmlNode *node=xmlDocCopyNode(&importedNode, &xmldoc, deep?1: 0);
-	// write out result
 	writeNode(r, vdoc, node);
 }
+
 /*
 GdomeElement *gdome_doc_createElementNS (GdomeDocument *self, GdomeDOMString *namespaceURI, GdomeDOMString *qualifiedName, GdomeException *exc);
 GdomeAttr *gdome_doc_createAttributeNS (GdomeDocument *self, GdomeDOMString *namespaceURI, GdomeDOMString *qualifiedName, GdomeException *exc);
@@ -397,6 +391,9 @@ static void _create(Request& r, MethodParams& params) {
 	} else { // [localName]
 		if(const String* value = param.get_string()){
 			xmlChar* localName=r.transcode(*value);
+			if(xmlValidateNCName(localName, 0) != 0)
+				throw XmlException(0, XML_INVALID_LOCAL_NAME, localName);
+
 #if 0
 			GdomeDocumentType *documentType=gdome_di_createDocumentType (
 				docimpl, 
@@ -413,6 +410,7 @@ static void _create(Request& r, MethodParams& params) {
 			xmldoc=xmlNewDoc(0);
 			if(!xmldoc || xmlHaveGenericErrors())
 				throw XmlException(0);
+
 			xmlNode* node=xmlNewChild((xmlNode*)xmldoc, NULL, localName, NULL);
 			if(!node || xmlHaveGenericErrors())
 				throw XmlException(0);
