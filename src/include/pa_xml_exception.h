@@ -10,9 +10,10 @@
 
 #ifdef XML
 
-static const char * const IDENT_XML_EXCEPTION_H="$Date: 2011/05/25 03:57:46 $";
+static const char * const IDENT_XML_EXCEPTION_H="$Date: 2011/05/25 06:04:22 $";
 
 const char* const XML_VALUE_MUST_BE_STRING = "value must be string";
+const char* const XML_DATA_MUST_BE_STRING = "data must be string";
 const char* const XML_NAMESPACEURI_MUST_BE_STRING = "namespaceURI must be string";
 
 const char* const XML_QUALIFIED_NAME_MUST_BE_STRING = "qualifiedName must be string";

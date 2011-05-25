@@ -8,7 +8,7 @@
 #ifndef PA_EXCEPTION_H
 #define PA_EXCEPTION_H
 
-static const char * const IDENT_EXCEPTION_H="$Date: 2010/07/05 05:48:26 $";
+static const char * const IDENT_EXCEPTION_H="$Date: 2011/05/25 06:04:22 $";
 
 const char* const PARSER_RUNTIME = "parser.runtime";
 const char* const IMAGE_FORMAT = "image.format";
@@ -17,9 +17,6 @@ const char* const DATE_RANGE_EXCEPTION_TYPE = "date.range";
 
 const char* const NAME_MUST_BE_STRING = "name must be string";
 const char* const FILE_NAME_MUST_BE_STRING = "file name must be string";
-const char* const NAMESPACEURI_MUST_BE_STRING = "namespaceURI must be string";
-const char* const DATA_MUST_BE_STRING = "data must be string";
-const char* const LOCALNAME_MUST_BE_STRING = "localName must be string";
 const char* const VALUE_MUST_BE_STRING = "value must be string";
 const char* const PARAMETER_MUST_BE_STRING = "parameter must be string";
 const char* const COLUMN_NAME_MUST_BE_STRING = "column name must be string";
