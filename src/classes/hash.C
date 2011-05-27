@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_HASH_C="$Date: 2011/05/19 06:58:40 $";
+static const char * const IDENT_HASH_C="$Date: 2011/05/27 03:47:57 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -191,7 +191,7 @@ VBool Hash_sql_event_handlers::only_one_column_value(true);
 
 static void _create_or_add(Request& r, MethodParams& params) {
 	if(params.count()) {
-		Value& vsrc=params.as_no_junction(0, "param must be hash");
+		Value& vsrc=params.as_no_junction(0, PARAM_MUST_BE_HASH);
 		if(HashStringValue* src=vsrc.get_hash()) {
 			VHash& self=GET_SELF(r, VHash);
 			HashStringValue* self_hash=&(self.hash());
@@ -200,22 +200,15 @@ static void _create_or_add(Request& r, MethodParams& params) {
 			src->for_each<HashStringValue*>(copy_all_overwrite_to, self_hash);
 
 			if(VHash* vhash_src=static_cast<VHash*>(vsrc.as(VHASH_TYPE)))
-			{
 				if(Value* vdefault=vhash_src->get_default())
-				{
 					if(vdefault->is_defined())
-					{
 						self.set_default(vdefault);
-					}
-				}
-			}
 		}
 	}
 }
 
 static void _sub(Request& r, MethodParams& params) {
-	Value& vsrc=params.as_no_junction(0, "param must be hash");
-	if(HashStringValue* src=vsrc.get_hash()) {
+	if(HashStringValue* src=params.as_no_junction(0, PARAM_MUST_BE_HASH).get_hash()) {
 		HashStringValue* self=&(GET_SELF(r, VHash).hash());
 		if(src==self) { // same: clearing
 			self->clear();
@@ -235,8 +228,7 @@ static void _union(Request& r, MethodParams& params) {
 	// dest = copy of self
 	Value& result=*new VHash(GET_SELF(r, VHash).hash());
 	// dest += b
-	Value& vsrc=params.as_no_junction(0, "param must be hash");
-	if(HashStringValue* src=vsrc.get_hash())
+	if(HashStringValue* src=params.as_no_junction(0, PARAM_MUST_BE_HASH).get_hash())
 		src->for_each<HashStringValue*>(copy_all_dontoverwrite_to, result.get_hash());
 
 	// return result
@@ -259,8 +251,7 @@ static void copy_intersection_to(
 static void _intersection(Request& r, MethodParams& params) {
 	Value& result=*new VHash;
 	// dest += b
-	Value& vb=params.as_no_junction(0, "param must be hash");
-	if(HashStringValue* b=vb.get_hash()) {
+	if(HashStringValue* b=params.as_no_junction(0, PARAM_MUST_BE_HASH).get_hash()) {
 		Copy_intersection_to_info info={b, result.get_hash()};
 		GET_SELF(r, VHash).hash().for_each<Copy_intersection_to_info*>(copy_intersection_to, &info);
 	}
@@ -279,8 +270,7 @@ static bool intersects(
 static void _intersects(Request& r, MethodParams& params) {
 	bool result=false;
 
-	Value& vb=params.as_no_junction(0, "param must be hash");
-	if(HashStringValue* b=vb.get_hash())
+	if(HashStringValue* b=params.as_no_junction(0, PARAM_MUST_BE_HASH).get_hash())
 		result=GET_SELF(r, VHash).hash().first_that<HashStringValue*>(intersects, b)!=0;
 
 	// return result

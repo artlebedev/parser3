@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_MAIL_C="$Date: 2009/10/03 02:13:43 $";
+static const char * const IDENT_MAIL_C="$Date: 2011/05/27 03:47:57 $";
 
 #include "pa_config_includes.h"
 #include "pa_vmethod_frame.h"
@@ -191,8 +191,7 @@ static void sendmail(
 // methods
 
 static void _send(Request& r, MethodParams& params) {
-	Value& vhash=params.as_no_junction(0, "message must not be code");
-	HashStringValue* hash=vhash.get_hash();
+	HashStringValue* hash=params.as_no_junction(0, "message must not be code").get_hash();
 	if(!hash)
 		throw Exception(PARSER_RUNTIME,
 			0,
