@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT_XDOC_C="$Date: 2011/05/25 06:07:37 $";
+static const char * const IDENT_XDOC_C="$Date: 2011/05/27 06:55:47 $";
 
 #include "libxml/tree.h"
 #include "libxml/HTMLtree.h"
@@ -563,6 +563,8 @@ static void _file(Request& r, MethodParams& params) {
 
 	vfile.set(false/*tainted*/, buf.str?buf.str:""/*to distinguish from stat-ed file*/, buf.length, 
 		0/*file_name*/, &vhcontent_type);
+
+	vfile.set_mode(true/*text*/);
 
 	// write out result
 	r.write_no_lang(vfile);
