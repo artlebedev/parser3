@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VALUE_C="$Date: 2010/09/16 23:33:52 $";
+static const char * const IDENT_VALUE_C="$Date: 2011/05/28 22:54:14 $";
 
 #include "pa_value.h"
 #include "pa_vstateless_class.h"
@@ -83,15 +83,15 @@ static void append_attribute_meaning(String& result,
 }
 #ifndef DOXYGEN
 struct Attributed_meaning_info {
-	String* header; // header line being constructed
+	String* header;        // header line being constructed
 	String::Language lang; // language in which to append to that line
-	bool forced; // do they force that lang?
-	bool allow_bool; // allow bool types during print attributes
+	bool forced;           // do they force that lang?
+	bool allow_bool;       // allow bool types during print attributes
 };
 #endif
 static void append_attribute_subattribute(HashStringValue::key_type akey, 
-					  HashStringValue::value_type avalue, 
-					  Attributed_meaning_info *info) {
+					HashStringValue::value_type avalue, 
+					Attributed_meaning_info *info) {
 	if(akey==VALUE_NAME)
 		return;
 
@@ -101,13 +101,19 @@ static void append_attribute_subattribute(HashStringValue::key_type akey,
 	// ...; charset=windows1251
 	*info->header << "; ";
 	info->header->append(String(akey, String::L_TAINTED), info->lang, info->forced);
-	if(!avalue->is_bool()){
-		*info->header << "=";
-		append_attribute_meaning(*info->header, *avalue, info->lang, info->forced);
+	if(!avalue->is_bool()) {
+		if( akey==content_disposition_filename_name ) {
+			*info->header << "=\"";
+			append_attribute_meaning(*info->header, *avalue, info->lang, info->forced);
+			*info->header << "\"";
+		} else {
+			*info->header << "=";
+			append_attribute_meaning(*info->header, *avalue, info->lang, info->forced);
+		}
 	}
 }
 const String& attributed_meaning_to_string(Value& meaning, 
-					   String::Language lang, bool forced, bool allow_bool) {
+					String::Language lang, bool forced, bool allow_bool) {
 	String& result=*new String;
 	if(HashStringValue *hash=meaning.get_hash()) {
 		// $value(value) $subattribute(subattribute value)
