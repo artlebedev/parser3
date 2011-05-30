@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2011/05/19 06:58:40 $";
+static const char * const IDENT_STRING_C="$Date: 2011/05/30 12:50:59 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -554,8 +554,7 @@ const String* sql_result_string(Request& r, MethodParams& params,
 			}
 			if(valid_options!=options->count())
 				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
-		} else
-			throw Exception(PARSER_RUNTIME, 0, OPTIONS_MUST_BE_HASH);
+		}
 	else
 		options=0;
 
