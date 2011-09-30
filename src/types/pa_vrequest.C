@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VREQUEST_C="$Date: 2010/01/26 07:22:25 $";
+static const char * const IDENT_VREQUEST_C="$Date: 2011/09/30 06:30:53 $";
 
 #include "pa_vrequest.h"
 #include "pa_request_info.h"
@@ -54,7 +54,7 @@ Value* VRequest::get_element(const String& aname) {
 	// $resuest:post-body
 	if(aname==POST_BODY_NAME){
 		VFile& result=*new VFile;
-		result.set(true/*tainted*/, finfo.post_data, finfo.post_size);
+		result.set(true/*tainted*/, (finfo.post_data)?finfo.post_data:""/*to distinguish from stat-ed file*/, finfo.post_size);
 		result.set_mode(false/*binary*/);
 		return &result;
 	}
