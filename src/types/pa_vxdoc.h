@@ -8,7 +8,7 @@
 #ifndef PA_VXDOC_H
 #define PA_VXDOC_H
 
-static const char * const IDENT_VXDOC_H="$Date: 2011/05/25 03:55:04 $";
+static const char * const IDENT_VXDOC_H="$Date: 2011/10/11 13:40:16 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -32,13 +32,14 @@ struct XDocOutputOptions {
 	const String* version;      /* version string */
 	int standalone;             /* standalone = "yes" | "no" */
 	int omitXmlDeclaration;     /* omit-xml-declaration = "yes" | "no" */
+	const String* filename;     /* Parser3 option: filename */
 
 	XDocOutputOptions() {
 		memset(this, 0, sizeof(*this));
 		indent=standalone=omitXmlDeclaration=-1;
 	};
 
-	XDocOutputOptions(Request& r, HashStringValue* options);
+	XDocOutputOptions(Request& r, HashStringValue* options, bool with_filename=false);
 };
 
 

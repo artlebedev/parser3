@@ -7,7 +7,7 @@
 #include "pa_config_includes.h"
 #ifdef XML
 
-static const char * const IDENT_VXDOC="$Date: 2011/05/18 02:05:43 $";
+static const char * const IDENT_VXDOC="$Date: 2011/10/11 13:40:16 $";
 
 #include "pa_vxdoc.h"
 #include "pa_vbool.h"
@@ -23,7 +23,7 @@ static const char * const IDENT_VXDOC="$Date: 2011/05/18 02:05:43 $";
 #define XDOC_OUTPUT_METHOD_OPTION_VALUE_XML "xml"
 #define XDOC_OUTPUT_METHOD_OPTION_VALUE_HTML "html"
 #define XDOC_OUTPUT_METHOD_OPTION_VALUE_TEXT "text"
-
+#define XDOC_OUTPUT_FILENAME_OPTION_NAME "name"
 
 VXnode& VXdoc::wrap(xmlNode& anode) {
 	VXnode* result;
@@ -109,7 +109,7 @@ static int param_option_over_output_option(
 	return 0;
 }
 
-XDocOutputOptions::XDocOutputOptions(Request& r, HashStringValue* options){
+XDocOutputOptions::XDocOutputOptions(Request& r, HashStringValue* options, bool with_filename){
 	memset(this, 0, sizeof(*this));
 	indent=standalone=omitXmlDeclaration=-1;
 
@@ -142,7 +142,10 @@ XDocOutputOptions::XDocOutputOptions(Request& r, HashStringValue* options){
 		// $.indent[yes|no]
 		valid_options+=param_option_over_output_option(*options, "indent", this->indent);
 		// $.media-type[text/{html|xml|plain}]
-		valid_options+=param_option_over_output_option(*options, "media-type", this->mediaType);				 
+		valid_options+=param_option_over_output_option(*options, "media-type", this->mediaType);
+		if(with_filename)
+			// $.name[file name]
+			valid_options+=param_option_over_output_option(*options, XDOC_OUTPUT_FILENAME_OPTION_NAME, this->filename);
 
 		if(valid_options!=options->count())
 			throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);

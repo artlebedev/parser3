@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT_XDOC_C="$Date: 2011/05/27 06:55:47 $";
+static const char * const IDENT_XDOC_C="$Date: 2011/10/11 13:40:16 $";
 
 #include "libxml/tree.h"
 #include "libxml/HTMLtree.h"
@@ -549,7 +549,7 @@ inline HashStringValue* get_options(MethodParams& params, size_t index){
 static void _file(Request& r, MethodParams& params) {
 	VXdoc& vdoc=GET_SELF(r, VXdoc);
 
-	XDocOutputOptions oo(r, get_options(params, 0));
+	XDocOutputOptions oo(r, get_options(params, 0), true/* $.name[filename] could be specified by user */);
 	String::C buf=xdoc2buf(r, vdoc, oo, 0/*file_name. not to file, to memory*/);
 
 	VFile& vfile=*new VFile;
@@ -562,7 +562,7 @@ static void _file(Request& r, MethodParams& params) {
 		new VString(*oo.encoding));
 
 	vfile.set(false/*tainted*/, buf.str?buf.str:""/*to distinguish from stat-ed file*/, buf.length, 
-		0/*file_name*/, &vhcontent_type);
+		(oo.filename)?oo.filename->taint_cstr(String::L_FILE_SPEC):0, &vhcontent_type);
 
 	vfile.set_mode(true/*text*/);
 
