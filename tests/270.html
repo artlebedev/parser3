@@ -1,0 +1,10 @@
+@main[]
+$dir[/tests/270_dir]
+^file:find[$dir/subdir/270.txt]<br />
+^file:find[$dir/subdir/270.txt]{file not found}<br />
+^file:find[$dir/270.txt]<br />
+^file:find[$dir/270.txt]{file not found}<br />
+^file:find[$dir/270.html]<br />
+^file:find[$dir/270.html]{file not found}<br />
+^file:find[$dir/not-exist]<br />
+^file:find[$dir/not-exist]{file not found}<br />
