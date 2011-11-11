@@ -4,7 +4,7 @@
 	Copyright (c) 2010 ArtLebedev Group (http://www.artlebedev.com)
 */
 
-static const char * const IDENT_RESPONSE_C="$Date: 2011/05/18 01:25:06 $";
+static const char * const IDENT_RESPONSE_C="$Date: 2011/11/11 22:54:26 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -299,9 +299,19 @@ const String& hash_json_string(HashStringValue &hash, Json_options* options) {
 	return result;
 }
 
+static bool based_on(
+					HashStringValue::key_type key,
+					HashStringValue::value_type /*value*/,
+					Value* v) {
+	return v->is(key.cstr());
+}
+					
 const String& value_json_string(String::Body key, Value& v, Json_options* options) {
-	if(options && options->methods)
-		if(Value* method=options->methods->get(v.type())){
+	if(options && options->methods) {
+		Value* method=options->methods->get(v.type());
+		if(!method)
+			method=options->methods->first_that<Value*>(based_on, &v);
+		if(method) {
 			Junction* junction=method->get_junction();
 			VMethodFrame frame(*junction->method, options->r->method_frame, junction->self);
 
@@ -312,6 +322,7 @@ const String& value_json_string(String::Body key, Value& v, Json_options* option
 
 			return frame.result().as_string();
 		}
+	}
 
 	if(HashStringValue* hash=v.get_hash())
 		return hash_json_string(*hash, options);
