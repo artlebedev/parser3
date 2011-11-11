@@ -1,11 +1,35 @@
 @auto[filespec]
 $selffilespec[$filespec]
 
+
 @main[]
-#src=$selffilespec<br>
-$sDirName[^file:dirname[$selffilespec]]
-#dirname=$sDirName<br />
-dirname=^if(^sDirName.right(6) eq "/tests"){OK}<br />
-basename=^file:basename[$selffilespec]<br />
-justname=^file:justname[$selffilespec]<br />
-justext=^file:justext[$selffilespec]<br />
+$tRepl[^table::create[nameless]{$request:document-root	^$request:document-root}]
+
+^do[]
+^do[$selffilespec]
+^do[/a/some.tar.gz]
+^do[/a/b/]
+^do[/a/]
+^do[/a]
+^do[/]
+^do[/a/file]
+^do[/a/dir.zz/file.html]
+^do[file]
+^do[/a/dir.zz/file]
+^do[C:\temp\file.txt]
+# slashes mixes
+^do[C:\temp/file.txt]
+^do[C:/temp\file.txt]
+
+
+@do[sFileSpec]
+src=^printFS[$sFileSpec]<br />
+dirname=^printFS[^file:dirname[$sFileSpec]]<br />
+basename=^file:basename[$sFileSpec]<br />
+justname=^file:justname[$sFileSpec]<br />
+justext=^file:justext[$sFileSpec]
+<hr />
+
+
+@printFS[sFileSpec]
+$result[^sFileSpec.replace[$tRepl]]

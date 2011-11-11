@@ -1,7 +1,87 @@
 Content-Type: text/html
-Content-Length: 78
+Content-Length: 1391
 
-dirname=OK<br />
+src=<br />
+dirname=.<br />
+basename=<br />
+justname=<br />
+justext=
+<hr />
+src=$request:document-root/tests/065.html<br />
+dirname=$request:document-root/tests<br />
 basename=065.html<br />
 justname=065<br />
-justext=html<br />
+justext=html
+<hr />
+src=/a/some.tar.gz<br />
+dirname=/a<br />
+basename=some.tar.gz<br />
+justname=some.tar<br />
+justext=gz
+<hr />
+src=/a/b/<br />
+dirname=/a<br />
+basename=<br />
+justname=<br />
+justext=
+<hr />
+src=/a/<br />
+dirname=/<br />
+basename=<br />
+justname=<br />
+justext=
+<hr />
+src=/a<br />
+dirname=/<br />
+basename=a<br />
+justname=a<br />
+justext=
+<hr />
+src=/<br />
+dirname=/<br />
+basename=<br />
+justname=<br />
+justext=
+<hr />
+src=/a/file<br />
+dirname=/a<br />
+basename=file<br />
+justname=file<br />
+justext=
+<hr />
+src=/a/dir.zz/file.html<br />
+dirname=/a/dir.zz<br />
+basename=file.html<br />
+justname=file<br />
+justext=html
+<hr />
+src=file<br />
+dirname=.<br />
+basename=file<br />
+justname=file<br />
+justext=
+<hr />
+src=/a/dir.zz/file<br />
+dirname=/a/dir.zz<br />
+basename=file<br />
+justname=file<br />
+justext=
+<hr />
+src=C:\temp\file.txt<br />
+dirname=C:\temp<br />
+basename=file.txt<br />
+justname=file<br />
+justext=txt
+<hr />
+src=C:\temp/file.txt<br />
+dirname=C:\temp<br />
+basename=file.txt<br />
+justname=file<br />
+justext=txt
+<hr />
+src=C:/temp\file.txt<br />
+dirname=C:/temp<br />
+basename=file.txt<br />
+justname=file<br />
+justext=txt
+<hr />
