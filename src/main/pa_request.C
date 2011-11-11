@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REQUEST_C="$Date: 2011/01/31 09:05:45 $";
+static const char * const IDENT_REQUEST_C="$Date: 2011/11/11 23:36:04 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -851,7 +851,7 @@ void Request::output_result(VFile* body_file, bool header_only, bool as_attachme
 				name_cstr=after_slash;
 			if(char *after_slash=rsplit(name_cstr, '/'))
 				name_cstr=after_slash;
-			vfile_name=new VString(*new String(name_cstr));	
+			vfile_name=new VString(*new String(name_cstr));
 		}
 	}
 	if(vfile_name) {
@@ -860,7 +860,7 @@ void Request::output_result(VFile* body_file, bool header_only, bool as_attachme
 			VHash& hash=*new VHash();
 			HashStringValue &h=hash.hash();
 			h.put(value_name, new VString( as_attachment ? content_disposition_attachment : content_disposition_inline ));
-			h.put(content_disposition_filename_name, vfile_name);
+			h.put(content_disposition_filename_name, new VString(String(sfile_name, String::L_HTTP_HEADER)));
 
 			response.fields().put(content_disposition, &hash);
 
