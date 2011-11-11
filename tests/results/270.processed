@@ -1,11 +1,11 @@
 Content-Type: text/html
-Content-Length: 187
+Content-Length: 201
 
 /tests/270_dir/subdir/270.txt<br />
 /tests/270_dir/subdir/270.txt<br />
 /tests/270_dir/270.txt<br />
 /tests/270_dir/270.txt<br />
-270.html<br />
-270.html<br />
+/tests/270.html<br />
+/tests/270.html<br />
 <br />
 file not found<br />
