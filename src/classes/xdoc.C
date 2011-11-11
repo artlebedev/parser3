@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT_XDOC_C="$Date: 2011/10/11 13:40:16 $";
+static const char * const IDENT_XDOC_C="$Date: 2011/11/11 03:55:15 $";
 
 #include "libxml/tree.h"
 #include "libxml/HTMLtree.h"
@@ -28,6 +28,7 @@ static const char * const IDENT_XDOC_C="$Date: 2011/10/11 13:40:16 $";
 #include "pa_vfile.h"
 #include "pa_xml_exception.h"
 #include "xnode.h"
+#include "pa_charsets.h"
 
 // defines
 
@@ -469,24 +470,22 @@ String::C xdoc2buf(Request& r, VXdoc& vdoc,
 					XDocOutputOptions& oo,
 					const String* file_spec,
 					bool use_source_charset_to_render_and_client_charset_to_write_to_header=false) {
-	const char* render_encoding;
-	const char* header_encoding;
+	Charset* render=0;
+	Charset* header=0;
 	if(use_source_charset_to_render_and_client_charset_to_write_to_header) {
-		render_encoding=r.charsets.source().NAME_CSTR();
-		header_encoding=r.charsets.client().NAME_CSTR();
+		render=&r.charsets.source();
+		header=&r.charsets.client();
 	} else {
-		header_encoding=render_encoding=oo.encoding->cstr();
+		header=render=&charsets.get(oo.encoding->change_case(r.charsets.source(), String::CC_UPPER));
 	}
+	const char* render_encoding=render->NAME_CSTR();
+	const char* header_encoding=header->NAME_CSTR();
 
 	xmlCharEncodingHandler *renderer=xmlFindCharEncodingHandler(render_encoding);
-	if(!renderer)
-		throw Exception(PARSER_RUNTIME,
-			0,
-			"encoding '%s' not supported", render_encoding);
 	// UTF-8 renderer contains empty input/output converters, 
 	// which is wrong for xmlOutputBufferCreateIO
 	// while zero renderer goes perfectly 
-	if(strcmp(render_encoding, "UTF-8")==0)
+	if(render->isUTF8())
 		renderer=0;
 
 	xmlOutputBuffer_auto_ptr outputBuffer(xmlAllocOutputBuffer(renderer));
