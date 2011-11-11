@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_OP_C="$Date: 2011/05/15 12:56:10 $";
+static const char * const IDENT_OP_C="$Date: 2011/11/11 22:14:50 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -303,7 +303,7 @@ static void _use(Request& r, MethodParams& params) {
 
 static void set_skip(Request& r, Request::Skip askip) {
 	if(!r.get_in_cycle())
-		throw Exception(PARSER_RUNTIME,
+		throw Exception(askip==Request::SKIP_BREAK?"parser.break":"parser.continue",
 			0,
 			"without cycle");
 
