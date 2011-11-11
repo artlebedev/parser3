@@ -7,7 +7,7 @@
 #include "pa_config_includes.h"
 #ifdef XML
 
-static const char * const IDENT_VXDOC="$Date: 2011/10/11 13:40:16 $";
+static const char * const IDENT_VXDOC="$Date: 2011/11/11 03:57:12 $";
 
 #include "pa_vxdoc.h"
 #include "pa_vbool.h"
@@ -135,6 +135,14 @@ XDocOutputOptions::XDocOutputOptions(Request& r, HashStringValue* options, bool 
 		valid_options+=param_option_over_output_option(*options, "version", this->version);
 		// $.encoding[windows-1251|...]
 		valid_options+=param_option_over_output_option(*options, "encoding", this->encoding);
+		bool encoding_specified=this->encoding!=0;
+		// $.charset[windows-1251|...]
+		bool charset_specified=param_option_over_output_option(*options, "charset", this->encoding);
+		if( charset_specified ){
+			if(encoding_specified)
+				throw Exception(PARSER_RUNTIME, 0, "you can not specify $.charset and $.encoding together");
+			++valid_options;
+		}
 		// $.omit-xml-declaration[yes|no]
 		valid_options+=param_option_over_output_option(*options, "omit-xml-declaration", this->omitXmlDeclaration);
 		// $.standalone[yes|no]
