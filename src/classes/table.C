@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2011/05/19 06:58:40 $";
+static const char * const IDENT_TABLE_C="$Date: 2011/11/19 04:15:31 $";
 
 #if (!defined(NO_STRINGSTREAM) && !defined(FREEBSD4))
 #include <sstream>
@@ -1249,8 +1249,8 @@ static void _select(Request& r, MethodParams& params) {
 	Table& source_table=GET_SELF(r, VTable).table();
 
 	int limit=source_table.count();
-	int offset = 0;
-	bool reverse = false;
+	int offset=0;
+	bool reverse=false;
 	
 	if(params.count()>1)
 		if(HashStringValue* options=params.as_hash(1)) {
@@ -1275,30 +1275,32 @@ static void _select(Request& r, MethodParams& params) {
 
 	Table& result_table=*new Table(source_table.columns());
 
-	int saved_current=source_table.current();
-	int size=source_table.count();
-	int appended = 0;
+	if(size_t size=source_table.count() && limit>0){
+		size_t saved_current=source_table.current();
+		size_t appended=0;
 
-	if(reverse){
-		for(int row=size-1; row >=0 && result_table.count() < limit; row--) {
-			source_table.set_current(row);
+		if(reverse){
+			for(size_t row=size-1; result_table.count() < (size_t)limit; row--) {
+				source_table.set_current(row);
 
-			bool condition=r.process_to_value(vcondition, false/*don't intercept string*/).as_bool();
+				bool condition=r.process_to_value(vcondition, false/*don't intercept string*/).as_bool();
 
-			if(condition && ++appended > offset) // ...condition is true, adding to the result
-				result_table+=source_table[row];
+				if(condition && ++appended > (size_t)offset) // ...condition is true, adding to the result
+					result_table+=source_table[row];
+				if(row==0) break;
+			}
+		} else {
+			for(size_t row=0; row < size && result_table.count() < (size_t)limit; row++) {
+				source_table.set_current(row);
+
+				bool condition=r.process_to_value(vcondition, false/*don't intercept string*/).as_bool();
+
+				if(condition && ++appended > (size_t)offset) // ...condition is true, adding to the result
+					result_table+=source_table[row];
+			}
 		}
-	} else {
-		for(int row=0; row < size && result_table.count() < limit; row++) {
-			source_table.set_current(row);
-
-			bool condition=r.process_to_value(vcondition, false/*don't intercept string*/).as_bool();
-
-			if(condition && ++appended > offset) // ...condition is true, adding to the result
-				result_table+=source_table[row];
-		}
+		source_table.set_current(saved_current);
 	}
-	source_table.set_current(saved_current);
 
 	r.write_no_lang(*new VTable(&result_table));
 }
