@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2011/11/19 04:15:31 $";
+static const char * const IDENT_TABLE_C="$Date: 2011/11/22 22:23:19 $";
 
 #if (!defined(NO_STRINGSTREAM) && !defined(FREEBSD4))
 #include <sstream>
@@ -1275,7 +1275,10 @@ static void _select(Request& r, MethodParams& params) {
 
 	Table& result_table=*new Table(source_table.columns());
 
-	if(size_t size=source_table.count() && limit>0){
+	size_t size=source_table.count();
+	if(offset<0)
+		offset+=size;
+	if(size && limit>0 && offset>=0 && offset<size){
 		size_t saved_current=source_table.current();
 		size_t appended=0;
 
