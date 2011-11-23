@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-static const char * const IDENT_XDOC_C="$Date: 2011/11/11 03:55:15 $";
+static const char * const IDENT_XDOC_C="$Date: 2011/11/23 12:17:23 $";
 
 #include "libxml/tree.h"
 #include "libxml/HTMLtree.h"
@@ -560,8 +560,7 @@ static void _file(Request& r, MethodParams& params) {
 		String::Body("charset"), 
 		new VString(*oo.encoding));
 
-	vfile.set(false/*tainted*/, buf.str?buf.str:""/*to distinguish from stat-ed file*/, buf.length, 
-		(oo.filename)?oo.filename->taint_cstr(String::L_FILE_SPEC):0, &vhcontent_type);
+	vfile.set(false/*tainted*/, buf.str?buf.str:""/*to distinguish from stat-ed file*/, buf.length, oo.filename, &vhcontent_type);
 
 	vfile.set_mode(true/*text*/);
 

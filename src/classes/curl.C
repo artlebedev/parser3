@@ -8,7 +8,7 @@
 
 #ifdef HAVE_CURL
 
-static const char * const IDENT_INET_C="$Date: 2011/01/07 23:57:04 $";
+static const char * const IDENT_INET_C="$Date: 2011/11/23 12:17:22 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
@@ -28,9 +28,6 @@ public:
 // global variables
 
 DECLARE_CLASS_VAR(curl, new MCurl, 0);
-
-// from file.C
-extern bool is_text_mode(const String& mode);
 
 #include "curl.h"
 
@@ -76,7 +73,7 @@ const char *dlink(const char *dlopen_file_spec) {
 
 class ParserOptions {
 public:
-	const char *filename;
+	const String *filename;
 	const String *content_type;
 	bool is_text;
 	Charset *charset, *response_charset;
@@ -447,7 +444,7 @@ static void curl_setopt(HashStringValue::key_type key, HashStringValue::value_ty
 		}
 		case CurlOption::PARSER_NAME:{
 			// 'name' parser option
-			options().filename=v.as_string().taint_cstr(String::L_FILE_SPEC);
+			options().filename=&v.as_string();
 			break;
 		}
 		case CurlOption::PARSER_CONTENT_TYPE:{
@@ -457,7 +454,7 @@ static void curl_setopt(HashStringValue::key_type key, HashStringValue::value_ty
 		}
 		case CurlOption::PARSER_MODE:{
 			// 'mode' parser option
-			options().is_text=is_text_mode(v.as_string());
+			options().is_text=VFile::is_text_mode(v.as_string());
 			break;
 		}
 		case CurlOption::PARSER_CHARSET:{
@@ -466,7 +463,7 @@ static void curl_setopt(HashStringValue::key_type key, HashStringValue::value_ty
 			break;
 		}
 		case CurlOption::PARSER_RESPONSE_CHARSET:{
-			// 'charset' parser option
+			// 'response-charset' parser option
 			options().response_charset=&::charsets.get(v.as_string().change_case(r.charsets.source(), String::CC_UPPER));
 			break;
 		}
@@ -572,10 +569,6 @@ static void _curl_load_action(Request& r, MethodParams& params){
 	// assure trailing zero
 	body.buf[body.length]=0;
 
-	Value* vcontent_type=
-		options().content_type ? new VString(*options().content_type) :
-		options().filename ? new VString(r.mime_type_of(options().filename)) : 0;
-
 	VFile& result=*new VFile;
 
 	String::Body ct_header = headers.get(HTTP_CONTENT_TYPE_UPPER);
@@ -591,7 +584,9 @@ static void _curl_load_action(Request& r, MethodParams& params){
 		body.length=c.length;
 	}
 
-	result.set(true /*tainted*/, body.buf, body.length, options().filename, vcontent_type);
+	result.set(true /*tainted*/, body.buf, body.length, options().filename
+				, options().content_type ? new VString(*options().content_type) : 0
+				, &r);
 	result.set_mode(options().is_text);
 
 	long http_status = 0;

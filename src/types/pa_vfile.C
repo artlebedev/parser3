@@ -6,12 +6,13 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_VFILE_C="$Date: 2010/09/24 08:18:57 $";
+static const char * const IDENT_VFILE_C="$Date: 2011/11/23 12:17:23 $";
 
 #include "classes.h"
 #include "pa_vfile.h"
 #include "pa_vstring.h"
 #include "pa_vint.h"
+#include "pa_request.h"
 
 // externs
 
@@ -22,11 +23,16 @@ extern Methoded* file_class;
 #define SIZE_NAME "size"
 #define TEXT_NAME "text"
 
+#define MODE_VALUE_TEXT "text"
+#define MODE_VALUE_BINARY "binary"
+
 // statics
 
 static const String size_name(SIZE_NAME);
 static const String text_name(TEXT_NAME);
-static const String mode_name("mode");
+
+static const String mode_value_text(MODE_VALUE_TEXT);
+static const String mode_value_binary(MODE_VALUE_BINARY);
 
 // methods
 
@@ -34,39 +40,65 @@ VStateless_class *VFile::get_class() { return file_class; }
 
 void VFile::set(
 		bool atainted, 
-		const char* avalue_ptr, size_t avalue_size,
-		const char* afile_name_cstr,
-		Value* acontent_type) {
+		const char* avalue_ptr,
+		size_t avalue_size,
+		const String* afile_name,
+		Value* acontent_type,
+		Request* r) {
 	fvalue_ptr=avalue_ptr;
 	fvalue_size=avalue_size;
 	ftext_tainted=atainted;
 
 	ffields.clear();
 
+	// $size
+	ffields.put(size_name, new VInt(fvalue_size));
+
 	// $name
+	set_name(afile_name);
+
+	// $mime-type
+	set_content_type(acontent_type, afile_name, r);
+}
+
+void VFile::set(VFile& avfile){
+	set(
+		avfile.ftext_tainted,
+		avfile.fvalue_ptr,
+		avfile.fvalue_size
+	);
+
+	for(HashStringValue::Iterator i(avfile.ffields); i; i.next())
+		ffields.put_dont_replace(*new String(i.key(), String::L_TAINTED), i.value());
+}
+
+void VFile::set_mode(bool ais_text){
+	ffields.put(mode_name, new VString(ais_text? mode_value_text : mode_value_binary ));
+}
+
+void VFile::set_name(const String* afile_name){
 	char *lfile_name;
-	if(afile_name_cstr) {
-		lfile_name=strdup(afile_name_cstr);
+	if(afile_name) {
+		lfile_name=strdup(afile_name->taint_cstr(String::L_FILE_SPEC));
 		if(char *after_slash=rsplit(lfile_name, '\\'))
 			lfile_name=after_slash;
 		if(char *after_slash=rsplit(lfile_name, '/'))
 			lfile_name=after_slash;
 	} else
 		lfile_name=NONAME_DAT;
+
 	String& sfile_name=*new String;
 	sfile_name.append_help_length(lfile_name, 0, String::L_FILE_SPEC);
+
 	ffields.put(name_name, new VString(sfile_name));
-
-	// $size
-	ffields.put(size_name, new VInt(fvalue_size));
-
-	// $mime-type
-	if(acontent_type)
-		ffields.put(content_type_name, acontent_type);
 }
 
-void VFile::set_mode(bool aas_text){
-	ffields.put(mode_name, new VString(aas_text? text_mode_name : binary_mode_name ));
+void VFile::set_content_type(Value* acontent_type, const String* afile_name, Request* r){
+	if(!acontent_type && afile_name && r)
+		acontent_type=new VString(r->mime_type_of(afile_name));
+
+	if(acontent_type)
+		ffields.put(content_type_name, acontent_type);
 }
 
 void VFile::save(Request_charsets& charsets, const String& file_spec, bool is_text, Charset* asked_charset) {
@@ -76,6 +108,20 @@ void VFile::save(Request_charsets& charsets, const String& file_spec, bool is_te
 		throw Exception(PARSER_RUNTIME,
 			&file_spec,
 			"saving stat-ed file");
+}
+
+bool VFile::is_text_mode(const String& mode) {
+	if(mode==mode_value_text)
+		return true;
+	if(mode==mode_value_binary)
+		return false;
+	throw Exception(PARSER_RUNTIME,
+		&mode,
+		"is invalid mode, must be either '"MODE_VALUE_TEXT"' or '"MODE_VALUE_BINARY"'");
+}
+	
+bool VFile::is_valid_mode (const String& mode) {
+	return (mode==mode_value_text || mode==mode_value_binary);
 }
 
 Value* VFile::get_element(const String& aname) {

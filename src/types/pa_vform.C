@@ -7,7 +7,7 @@
 	based on The CGI_C library, by Thomas Boutell.
 */
 
-static const char * const IDENT_VFORM_C="$Date: 2010/09/08 02:58:13 $";
+static const char * const IDENT_VFORM_C="$Date: 2011/11/23 12:17:23 $";
 
 #include "pa_sapi.h"
 #include "pa_vform.h"
@@ -232,14 +232,14 @@ void VForm::AppendFormFileEntry(const char* cname_cstr,
 				const char* file_name_cstr, Charset* client_charset){
 
 	const char* fname = strdup(file_name_cstr);
-	const String& sfile_name=*new String(transcode(fname, strlen(fname), client_charset));
+	const String* sfile_name=new String(transcode(fname, strlen(fname), client_charset));
 
 	const String& sname=*new String(transcode(cname_cstr, strlen(cname_cstr), client_charset));
 	// maybe transcode text/* files?
 	// NO!!! some users want to upload file 'as is' or file encoding can be unknown
 
 	VFile* vfile=new VFile;
-	vfile->set(true/*tainted*/, raw_cvalue_ptr, raw_cvalue_size, sfile_name.cstr());
+	vfile->set(true/*tainted*/, raw_cvalue_ptr, raw_cvalue_size, sfile_name);
 
 	fields.put_dont_replace(sname, vfile);
 

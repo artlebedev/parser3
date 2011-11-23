@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2011/05/19 06:58:40 $";
+static const char * const IDENT_FILE_C="$Date: 2011/11/23 12:17:22 $";
 
 #include "pa_config_includes.h"
 
@@ -106,22 +106,8 @@ static const String::Body cdate_name("cdate");
 
 // methods
 
-static bool is_valid_mode (const String& mode) {
-	return (mode==text_mode_name || mode==binary_mode_name);
-}
-
-bool is_text_mode(const String& mode) {
-	if(mode==text_mode_name)
-		return true;
-	if(mode==binary_mode_name)
-		return false;
-	throw Exception(PARSER_RUNTIME,
-		&mode,
-		"is invalid mode, must be either '"TEXT_MODE_NAME"' or '"BINARY_MODE_NAME"'");
-}
-
 static void _save(Request& r, MethodParams& params) {
-	bool is_text=is_text_mode(params.as_no_junction(0, MODE_MUST_NOT_BE_CODE).as_string());
+	bool is_text=VFile::is_text_mode(params.as_string(0, MODE_MUST_NOT_BE_CODE));
 	Value& vfile_name=params.as_no_junction(1, FILE_NAME_MUST_NOT_BE_CODE);
 
 	Charset* asked_charset=0;
@@ -141,10 +127,10 @@ static void _save(Request& r, MethodParams& params) {
 }
 
 static void _delete(Request& r, MethodParams& params) {
-	Value& vfile_name=params.as_no_junction(0, FILE_NAME_MUST_NOT_BE_CODE);
+	const String& file_name=params.as_string(0, FILE_NAME_MUST_NOT_BE_CODE);
 
 	// unlink
-	file_delete(r.absolute(vfile_name.as_string()));
+	file_delete(r.absolute(file_name));
 }
 
 static void _move(Request& r, MethodParams& params) {
@@ -204,14 +190,14 @@ static void _load_pass_param(
 }
 
 static void _load(Request& r, MethodParams& params) {
-	bool as_text=is_text_mode(params.as_no_junction(0, MODE_MUST_NOT_BE_CODE).as_string());
-	const String& lfile_name=r.absolute(params.as_no_junction(1, FILE_NAME_MUST_NOT_BE_CODE).as_string());
+	bool as_text=VFile::is_text_mode(params.as_string(0, MODE_MUST_NOT_BE_CODE));
+	const String& lfile_name=r.absolute(params.as_string(1, FILE_NAME_MUST_NOT_BE_CODE));
 
 	size_t param_index=params.count()-1;
-	Value* param_value=param_index>1?&params.as_no_junction(param_index, "filename or options must not be code"):0;
+	Value* param_value=param_index>1?&params.as_no_junction(param_index, "file name or options must not be code"):0;
 
 	HashStringValue* options=0;
-	const char *user_file_name=0;
+	const String* user_file_name=0;
 
 	if(param_value){
 		options=param_value->get_hash();
@@ -220,11 +206,11 @@ static void _load(Request& r, MethodParams& params) {
 		if(param_index>1){
 			const String& luser_file_name=params.as_string(param_index, FILE_NAME_MUST_BE_STRING);
 			if(!luser_file_name.is_empty())
-				user_file_name=luser_file_name.taint_cstr(String::L_FILE_SPEC);
+				user_file_name=&luser_file_name;
 		}
 	}
 	if(!user_file_name)
-		user_file_name=lfile_name.taint_cstr(String::L_FILE_SPEC);
+		user_file_name=&lfile_name;
 
 	size_t offset=0;
 	size_t limit=0;
@@ -248,11 +234,9 @@ static void _load(Request& r, MethodParams& params) {
 		if(Value* remote_content_type=file.headers->get(HTTP_CONTENT_TYPE_UPPER))
 			vcontent_type=new VString(*new String(remote_content_type->as_string().cstr()));
 	} 
-	if(!vcontent_type)
-		vcontent_type=new VString(r.mime_type_of(user_file_name));
 	
 	VFile& self=GET_SELF(r, VFile);
-	self.set(true/*tainted*/, file.str, file.length, user_file_name, vcontent_type);
+	self.set(true/*tainted*/, file.str, file.length, user_file_name, vcontent_type, &r);
 
 	self.set_mode(as_text);
 
@@ -272,25 +256,42 @@ static void _load(Request& r, MethodParams& params) {
 }
 
 static void _create(Request& r, MethodParams& params) {
-	const String& mode_name=params.as_no_junction(0, MODE_MUST_NOT_BE_CODE).as_string();
-	if(!is_text_mode(mode_name))
-		throw Exception(PARSER_RUNTIME,
-			0,
-			"only text mode is currently supported");
+	const String* mode=0;
+	const String* file_name=0;
+	bool is_text=true;
 
-	const char* user_file_name_cstr=r.absolute(
-		params.as_no_junction(1, FILE_NAME_MUST_NOT_BE_CODE).as_string()).taint_cstr(String::L_FILE_SPEC);
+	// new format: ^file::create[string-or-file-content[;$.mode[text|binary] $.name[...] $.content-type[...] $.charset[...] ]]
+	size_t content_index=0;
+	size_t options_index=1;
+	bool extended_options=true;
 
-	const String& content=params.as_string(2, "content must be string");
-	String::Body content_body=content.cstr_to_string_body_untaint(String::L_AS_IS); // explode content, honor tainting changes
+	if(params.count()>=3){
+		// old format: ^file::create[text|binary;file-name;string-or-file-content[;options]] 
+		mode=&params.as_string(0, MODE_MUST_NOT_BE_CODE);
+		is_text=VFile::is_text_mode(*mode);
+		file_name=&params.as_string(1, FILE_NAME_MUST_NOT_BE_CODE);
+		content_index=2;
+		options_index=3;
+		extended_options=false;
+	}
 
 	VString* vcontent_type=0;
-	if(params.count()>3)
-		if(HashStringValue* options=params.as_hash(3)){
-			Charset* asked_charset=0;
-
+	Charset* asked_charset=0;
+	if(params.count()>options_index)
+		if(HashStringValue* options=params.as_hash(options_index)) {
 			int valid_options=0;
-			if(Value* vcharset_name=options->get(PA_CHARSET_NAME)){
+			if(extended_options) {
+				if(Value* vmode=options->get(MODE_NAME)) {
+					mode=&vmode->as_string();
+					is_text=VFile::is_text_mode(*mode);
+					valid_options++;
+				}
+				if(Value* vfile_name=options->get(NAME_NAME)) {
+					file_name=&vfile_name->as_string();
+					valid_options++;
+				}
+			}
+			if(Value* vcharset_name=options->get(PA_CHARSET_NAME)) {
 				asked_charset=&::charsets.get(vcharset_name->as_string().change_case(r.charsets.source(), String::CC_UPPER));
 				valid_options++;
 			}
@@ -300,24 +301,33 @@ static void _create(Request& r, MethodParams& params) {
 			}
 			if(valid_options != options->count())
 				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
-
-			if(asked_charset)
-				content_body=Charset::transcode(content_body, r.charsets.source(), *asked_charset);
 		}
 
-	if(!vcontent_type)
-		vcontent_type=new VString(r.mime_type_of(user_file_name_cstr));
-	
-	VFile& self=GET_SELF(r, VFile);
-	self.set(true/*tainted*/, content_body.cstr(), content_body.length(), user_file_name_cstr, vcontent_type);
+	Value& vcontent=params.as_no_junction(content_index, "content must be string or file");
 
-	self.set_mode(true/*as_text*/);
+	VFile& self=GET_SELF(r, VFile);
+
+	if(const String* content_str=vcontent.get_string()){
+		String::Body body=content_str->cstr_to_string_body_untaint(String::L_AS_IS); // explode content, honor tainting changes
+		if(asked_charset && is_text)
+			body=Charset::transcode(body, r.charsets.source(), *asked_charset);
+		self.set(true/*tainted*/, body.cstr(), body.length());
+		self.set_mode(is_text);
+	} else {
+		if(asked_charset)
+			throw Exception(PARSER_RUNTIME, 0, "charset option can not be used with file-content");
+		self.set(*vcontent.as_vfile(String::L_AS_IS));
+		if(mode)
+			self.set_mode(is_text);
+	}
+
+	self.set_name(file_name);
+
+	self.set_content_type(vcontent_type, file_name, &r);
 }
 
 static void _stat(Request& r, MethodParams& params) {
-	Value& vfile_name=params.as_no_junction(0, FILE_NAME_MUST_NOT_BE_CODE);
-
-	const String& lfile_name=vfile_name.as_string();
+	const String& lfile_name=params.as_string(0, FILE_NAME_MUST_NOT_BE_CODE);
 
 	size_t size;
 	time_t atime, mtime, ctime;
@@ -325,11 +335,9 @@ static void _stat(Request& r, MethodParams& params) {
 		size,
 		atime, mtime, ctime);
 	
-	const char* user_file_name=lfile_name.taint_cstr(String::L_FILE_SPEC);
-
 	VFile& self=GET_SELF(r, VFile);
 
-	self.set(true/*tainted*/, 0/*no bytes*/, size, user_file_name, new VString(r.mime_type_of(user_file_name)));
+	self.set(true/*tainted*/, 0/*no bytes*/, size, &lfile_name, 0, &r);
 	HashStringValue& ff=self.fields();
 	ff.put(adate_name, new VDate(atime));
 	ff.put(mdate_name, new VDate(mtime));
@@ -407,23 +415,18 @@ static void append_to_argv(Request& r, ArrayString& argv, const String* str){
 
 /// @todo fix `` in perl - they produced flipping consoles and no output to perl
 static void _exec_cgi(Request& r, MethodParams& params, bool cgi) {
-	bool as_text=true;
+	bool is_text=true;
 	size_t param_index=0;
-	const String& mode_name=params.as_no_junction(0, FIRST_ARG_MUST_NOT_BE_CODE).as_string();
-	if(is_valid_mode(mode_name)){
-		as_text=is_text_mode(mode_name);
+	const String& mode=params.as_string(0, FIRST_ARG_MUST_NOT_BE_CODE);
+	if(VFile::is_valid_mode(mode)) {
+		is_text=VFile::is_text_mode(mode);
 		param_index++;
 	}
 
 	if(param_index>=params.count())
-		throw Exception(PARSER_RUNTIME,
-			0,
-			"file name must be specified");
+		throw Exception(PARSER_RUNTIME, 0, FILE_NAME_MUST_BE_SPECIFIED);
 
-
-	Value& vfile_name=params.as_no_junction(param_index++, FILE_NAME_MUST_NOT_BE_CODE);
-
-	const String& script_name=r.absolute(vfile_name.as_string());
+	const String& script_name=r.absolute(params.as_string(param_index++, FILE_NAME_MUST_NOT_BE_CODE));
 
 	HashStringString env;
 	#define ECSTR(name, value_cstr) \
@@ -538,7 +541,7 @@ static void _exec_cgi(Request& r, MethodParams& params, bool cgi) {
 	if(charset)
 		real_err=&Charset::transcode(*real_err, *charset, r.charsets.source());
 
-	if(file_out->length && as_text){
+	if(file_out->length && is_text){
 		fix_line_breaks(file_out->str, file_out->length);
 		// treat output as string
 		String *real_out = new String(file_out->str);
@@ -622,7 +625,7 @@ static void _exec_cgi(Request& r, MethodParams& params, bool cgi) {
 		self.set(false/*not tainted*/, file_out->str, file_out->length);
 	}
 
-	self.set_mode(as_text);
+	self.set_mode(is_text);
 
 	// $status
 	self.fields().put(file_status_name, new VInt(execution.status));
@@ -708,7 +711,9 @@ static void _lock(Request& r, MethodParams& params) {
 }
 
 static void _find(Request& r, MethodParams& params) {
-	const String& file_name=params.as_no_junction(0, FILE_NAME_MUST_NOT_BE_CODE).as_string();
+	const String& file_name=params.as_string(0, FILE_NAME_MUST_NOT_BE_CODE);
+	Value* not_found_code=(params.count()==2)?&params.as_junction(1, "not-found param must be code"):0;
+
 	const String* file_spec;
 	if(file_name.first_char()=='/')
 		file_spec=&file_name;
@@ -738,10 +743,8 @@ static void _find(Request& r, MethodParams& params) {
 	}
 
 	// no way, not found
-	if(params.count()==2) {
-		Value& not_found_code=params.as_junction(1, "not-found param must be code");
-		r.write_pass_lang(r.process(not_found_code));
-	}
+	if(not_found_code)
+		r.write_pass_lang(r.process(*not_found_code));
 }
 
 static void _dirname(Request& r, MethodParams& params) {
@@ -905,15 +908,11 @@ static void _sql(Request& r, MethodParams& params) {
 			0,
 			"produced no result");
 
-	const char* user_file_name_cstr=handlers.user_file_name? handlers.user_file_name->cstr(): 0;
-
-	VString* vcontent_type=handlers.user_content_type? 
-		new VString(*handlers.user_content_type)
-		: user_file_name_cstr?
-			new VString(r.mime_type_of(user_file_name_cstr))
-			: 0;
 	VFile& self=GET_SELF(r, VFile);
-	self.set(true/*tainted*/, handlers.value.str, handlers.value.length, user_file_name_cstr, vcontent_type);
+
+	self.set(true/*tainted*/, handlers.value.str, handlers.value.length, handlers.user_file_name
+				, handlers.user_content_type ? new VString(*handlers.user_content_type) : 0
+				, &r);
 	self.set_mode(false/*binary*/);
 }
 
@@ -927,18 +926,18 @@ static void _base64(Request& r, MethodParams& params) {
 			//	^file::base64[mode;user-file-name;encoded[;$.content-type[...]]]
 			bool is_text=false;
 			VString* vcontent_type=0;
-			const char* user_file_name_cstr=0;
+			const String* user_file_name=0;
 			size_t param_index=0;
 
 			if(params.count() > 1) {
 				if(params.count() < 3)
 					throw Exception(PARSER_RUNTIME,
 						0,
-						"constructor can't have less then 3 parameters (has %d parameters)",
+						"constructor can not have less then 3 parameters (has %d parameters)",
 						params.count()); // actually it accepts 1 parameter (backward)
 
-				is_text=is_text_mode(params.as_no_junction(0, MODE_MUST_NOT_BE_CODE).as_string());
-				user_file_name_cstr=params.as_string(1, FILE_NAME_MUST_BE_STRING).taint_cstr(String::L_FILE_SPEC);
+				is_text=VFile::is_text_mode(params.as_string(0, MODE_MUST_NOT_BE_CODE));
+				user_file_name=&params.as_string(1, FILE_NAME_MUST_BE_STRING);
 
 				if(params.count() == 4)
 					if(HashStringValue* options=params.as_hash(3)) {
@@ -950,9 +949,6 @@ static void _base64(Request& r, MethodParams& params) {
 						if(valid_options!=options->count())
 							throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 					}
-
-				if(!vcontent_type)
-					vcontent_type=new VString(r.mime_type_of(user_file_name_cstr));
 
 				param_index=2;
 			}
@@ -966,7 +962,7 @@ static void _base64(Request& r, MethodParams& params) {
 			if(length && is_text)
 				fix_line_breaks(decoded, length);
 		
-			self.set(true/*tainted*/, decoded, length, user_file_name_cstr, vcontent_type);
+			self.set(true/*tainted*/, decoded, length, user_file_name, vcontent_type, &r);
 
 			if(params.count() > 1)
 				self.set_mode(is_text);
@@ -991,9 +987,7 @@ static void _crc32(Request& r, MethodParams& params) {
 			const String& file_spec=params.as_string(0, FILE_NAME_MUST_BE_STRING);
 			crc32=pa_crc32(r.absolute(file_spec));
 		} else {
-			throw Exception(PARSER_RUNTIME,
-				0,
-				"file name must be defined");
+			throw Exception(PARSER_RUNTIME, 0, FILE_NAME_MUST_BE_SPECIFIED);
 		}
 	} else {
 		// ^file.crc32[]
@@ -1053,9 +1047,7 @@ static void _md5(Request& r, MethodParams& params) {
 			const String& file_spec=params.as_string(0, FILE_NAME_MUST_BE_STRING);
 			md5=pa_md5(r.absolute(file_spec));
 		} else {
-			throw Exception(PARSER_RUNTIME,
-				0,
-				"file name must be defined");
+			throw Exception(PARSER_RUNTIME, 0, FILE_NAME_MUST_BE_SPECIFIED);
 		}
 	} else {
 		// ^file.md5[]
@@ -1069,11 +1061,9 @@ static void _md5(Request& r, MethodParams& params) {
 // constructor
 
 MFile::MFile(): Methoded("file") {
-	// ^file::create[text;user-name;string]
-	// ^file::create[text;user-name;string;options hash]
-	// ^file::create[binary;user-name;SOMEDAY SOMETHING]
-	// ^file::create[binary;user-name;SOMEDAY SOMETHING;options hash]
-	add_native_method("create", Method::CT_DYNAMIC, _create, 3, 4);
+	// ^file::create[text|binary;file-name;string-or-file[;options hash]]
+	// ^file::create[string-or-file[;options hash]]
+	add_native_method("create", Method::CT_DYNAMIC, _create, 1, 4);
 
 	// ^file.save[mode;file-name]
 	// ^file.save[mode;file-name;$.charset[...]]

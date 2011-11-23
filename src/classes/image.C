@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_IMAGE_C="$Date: 2011/05/27 06:55:47 $";
+static const char * const IDENT_IMAGE_C="$Date: 2011/11/23 12:17:22 $";
 
 /*
 	jpegsize: gets the width and height (in pixels) of a jpeg file
@@ -890,17 +890,15 @@ static void _create(Request& r, MethodParams& params) {
 static void _gif(Request& r, MethodParams& params) {
 	gdImage& image=GET_SELF(r, VImage).image();
 
-	const String *file_name=0;
-	if(params.count()>0)
-		file_name=&params.as_string(0, FILE_NAME_MUST_BE_STRING);
+	const String *file_name=params.count()>0?&params.as_string(0, FILE_NAME_MUST_BE_STRING):0;
 
 	gdBuf buf=image.Gif();
 	
 	VFile& vfile=*new VFile;
 
-	vfile.set(false/*not tainted*/, 
-		(const char*)buf.ptr, buf.size, 
-		file_name? file_name->taint_cstr(String::L_FILE_SPEC): 0, 
+	vfile.set(false/*not tainted*/,
+		(const char*)buf.ptr, buf.size,
+		file_name,
 		new VString(*new String("image/gif")));
 
 	vfile.set_mode(false/*binary*/);

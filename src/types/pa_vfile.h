@@ -8,7 +8,7 @@
 #ifndef PA_VFILE_H
 #define PA_VFILE_H
 
-static const char * const IDENT_VFILE_H="$Date: 2010/09/16 23:33:52 $";
+static const char * const IDENT_VFILE_H="$Date: 2011/11/23 12:17:23 $";
 
 // include
 
@@ -22,11 +22,8 @@ static const char * const IDENT_VFILE_H="$Date: 2010/09/16 23:33:52 $";
 #define NONAME_DAT "noname.dat"
 #define VFILE_TYPE "file"
 
-#define TEXT_MODE_NAME "text"
-#define BINARY_MODE_NAME "binary"
-
-static const String text_mode_name(TEXT_MODE_NAME);
-static const String binary_mode_name(BINARY_MODE_NAME);
+#define MODE_NAME "mode"
+static const String mode_name(MODE_NAME);
 
 // forwards
 
@@ -38,7 +35,6 @@ class Methoded;
 */
 class VFile: public VStateless_object {
 
-	const char* ffile_name_cstr;
 	const char* fvalue_ptr;
 	size_t fvalue_size;
 	bool ftext_tainted;
@@ -76,12 +72,22 @@ public: // usage
 		bool atainted,
 		const char* avalue_ptr,
 		size_t avalue_size,
-		const char* afile_name_cstr=0,
-		Value* acontent_type=0);
+		const String* afile_name=0,
+		Value* acontent_type=0,
+		Request* r=0);
 
-	void set_mode(bool aas_text);
-	
+	void set(VFile& avfile);
+
+	void set_mode(bool ais_text);
+
+	void set_name(const String* afile_name);
+
+	void set_content_type(Value* acontent_type, const String* afile_name=0, Request* r=0);
+
 	void save(Request_charsets& charsets, const String& file_spec, bool is_text, Charset* asked_charset=0);
+
+	static bool is_text_mode(const String& mode);
+	static bool is_valid_mode (const String& mode);
 
 	const char* value_ptr() const { 
 		if(!fvalue_ptr)
