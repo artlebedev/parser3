@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_REQUEST_C="$Date: 2011/11/11 23:36:04 $";
+static const char * const IDENT_REQUEST_C="$Date: 2011/11/23 11:41:22 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -914,6 +914,10 @@ void Request::output_result(VFile* body_file, bool header_only, bool as_attachme
 		output_sole_piece(*this, header_only, 
 			*body_file, body_file_content_type);
 	}
+}
+
+const String& Request::mime_type_of(const String* file_name) {
+	return mime_type_of(file_name?file_name->taint_cstr(String::L_FILE_SPEC):0);
 }
 
 const String& Request::mime_type_of(const char* user_file_name_cstr) {

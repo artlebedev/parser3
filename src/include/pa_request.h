@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-static const char * const IDENT_REQUEST_H="$Date: 2010/11/22 22:24:23 $";
+static const char * const IDENT_REQUEST_H="$Date: 2011/11/23 11:41:07 $";
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -318,6 +318,9 @@ public:
 
 	/// returns an absolute @a path to relative @a name
 	const String& absolute(const String& relative_name);
+
+	/// returns the mime type of 'user_file_name'
+	const String& mime_type_of(const String* file_name);
 
 	/// returns the mime type of 'user_file_name_cstr'
 	const String& mime_type_of(const char* user_file_name_cstr);
