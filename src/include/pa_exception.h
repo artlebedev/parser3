@@ -8,7 +8,7 @@
 #ifndef PA_EXCEPTION_H
 #define PA_EXCEPTION_H
 
-static const char * const IDENT_EXCEPTION_H="$Date: 2011/05/27 03:47:06 $";
+static const char * const IDENT_EXCEPTION_H="$Date: 2011/11/23 11:40:22 $";
 
 const char* const PARSER_RUNTIME = "parser.runtime";
 const char* const IMAGE_FORMAT = "image.format";
@@ -21,6 +21,7 @@ const char* const VALUE_MUST_BE_STRING = "value must be string";
 const char* const PARAMETER_MUST_BE_STRING = "parameter must be string";
 const char* const COLUMN_NAME_MUST_BE_STRING = "column name must be string";
 
+const char* const FILE_NAME_MUST_BE_SPECIFIED = "file name must be specified";
 const char* const FILE_NAME_MUST_NOT_BE_CODE = "file name must not be code";
 const char* const COORDINATES_MUST_NOT_BE_CODE = "coordinates must not be code";
 const char* const FIRST_ARG_MUST_NOT_BE_CODE = "first argument must not be code";
