@@ -4,7 +4,7 @@
 	Copyright (c) 2010 ArtLebedev Group (http://www.artlebedev.com)
 */
 
-static const char * const IDENT_RESPONSE_C="$Date: 2011/11/11 22:54:26 $";
+static const char * const IDENT_RESPONSE_C="$Date: 2011/11/30 06:15:26 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -39,14 +39,15 @@ struct Json {
 	String* key;
 	Value* result;
 
-	Junction* hook;
+	Junction* hook_object;
+	Junction* hook_array;
 	Request* request;
 
 	Charset *charset;
 	bool handle_double;
 	enum Distinct { D_EXCEPTION, D_FIRST, D_LAST, D_ALL } distinct;
 
-	Json(Charset* acharset): stack(), key_stack(), key(NULL), result(NULL), hook(NULL), request(NULL), charset(acharset), handle_double(true), distinct(D_EXCEPTION){}
+	Json(Charset* acharset): stack(), key_stack(), key(NULL), result(NULL), hook_object(NULL), hook_array(NULL), request(NULL), charset(acharset), handle_double(true), distinct(D_EXCEPTION){}
 
 	bool set_distinct(const String &value){
 		if (value == "first") distinct = D_FIRST;
@@ -109,8 +110,9 @@ static int json_callback(Json *json, int type, const JSON_value* value)
 	switch(type) {
 		case JSON_T_OBJECT_BEGIN:{
 			VHash *v = new VHash();
-			if (json->hook){
+			if (json->hook_object){
 				json->key_stack.push(json->key);
+				json->key=NULL;
 			} else {
 				if (json->stack.count()) set_json_value(json, v);
 			}
@@ -118,9 +120,9 @@ static int json_callback(Json *json, int type, const JSON_value* value)
 			break;
 		}
 		case JSON_T_OBJECT_END:{
-			if (json->hook){
+			if (json->hook_object){
 				String* key = json->key_stack.pop();
-				json->result = json_hook(*json->request, json->hook, key, json->stack.pop());
+				json->result = json_hook(*json->request, json->hook_object, key, json->stack.pop());
 				
 				if (json->stack.count()){
 					json->key = key;
@@ -133,17 +135,32 @@ static int json_callback(Json *json, int type, const JSON_value* value)
 		}
 		case JSON_T_ARRAY_BEGIN:{
 			VHash *v = new VHash();
-			if (json->stack.count()) set_json_value(json, v);
+			if (json->hook_array){
+				json->key_stack.push(json->key);
+				json->key=NULL;
+			} else {
+				if (json->stack.count()) set_json_value(json, v);
+			}
 			json->stack.push(v);
 			break;
 		}
 		case JSON_T_ARRAY_END:
 			// libjson supports array at top level, we too
-			json->result = json->stack.pop();
+			if (json->hook_array){
+				String* key = json->key_stack.pop();
+				json->result = json_hook(*json->request, json->hook_array, key, json->stack.pop());
+				
+				if (json->stack.count()){
+					json->key = key;
+					set_json_value(json, json->result);
+				}
+			} else {
+				json->result = json->stack.pop();
+			}
 			break;
 		case JSON_T_KEY:
 			json->key = json_string(json, value);
-			break;  
+			break;
 		case JSON_T_INTEGER:
 			set_json_value(json, new VInt((int)value->vu.integer_value));
 			break;
@@ -217,10 +234,17 @@ static void _parse(Request& r, MethodParams& params) {
 				valid_options++;
 			}
 			if(Value* value=options->get("object")) {
-				json.hook=value->get_junction();
+				json.hook_object=value->get_junction();
 				json.request=&r;
-				if (!json.hook || !json.hook->method || !json.hook->method->params_names || !(json.hook->method->params_names->count() == 2))
+				if (!json.hook_object || !json.hook_object->method || !json.hook_object->method->params_names || !(json.hook_object->method->params_names->count() == 2))
 					throw Exception(PARSER_RUNTIME, 0, "$.object must be parser method with 2 parameters");
+				valid_options++;
+			}
+			if(Value* value=options->get("array")) {
+				json.hook_array=value->get_junction();
+				json.request=&r;
+				if (!json.hook_array || !json.hook_array->method || !json.hook_array->method->params_names || !(json.hook_array->method->params_names->count() == 2))
+					throw Exception(PARSER_RUNTIME, 0, "$.array must be parser method with 2 parameters");
 				valid_options++;
 			}
 			if(valid_options!=options->count())
