@@ -1,0 +1,43 @@
+@main[]
+$h[^json:parse[{
+	"ii":1,
+	"hh":{
+		"a":"aa",
+		"b":"bb",
+		"c":"cc"
+	},
+	"aa":[
+		{"a":"a1", "b":"b1", "c":""},
+		{"a":"a2", "b":"", "c":"c2"},
+		{"a":"", "b":"b3", "c":"c3"}
+	] 
+}][
+	$.array[$hook_array]
+#	$.object[$hook_object]
+]]
+
+<pre>
+^json:string[$h.aa;
+	$.indent(true)
+	$.table[array]
+]
+</pre>
+
+
+@hook_array[key;value][n;row;k;v]
+^if($value){
+	^value.foreach[n;row]{
+		^if(!def $result){
+			$result[^table::create{n	^row.foreach[k;]{$k^#09}}]
+		}
+		^result.append{$n	^row.foreach[;v]{$v^#09}}
+	}
+}{
+	$result[^table::create{n}]
+}
+#$value
+#=^dstop[$value]=
+
+
+@hook_object[key;value]
+=^dstop[$value]=
