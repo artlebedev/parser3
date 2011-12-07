@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_TABLE_C="$Date: 2011/11/23 12:17:23 $";
+static const char * const IDENT_TABLE_C="$Date: 2011/12/07 00:49:59 $";
 
 #if (!defined(NO_STRINGSTREAM) && !defined(FREEBSD4))
 #include <sstream>
@@ -209,7 +209,10 @@ static void _create(Request& r, MethodParams& params) {
 		data.split(head, raw_pos_after, "\n", String::L_AS_IS, 1);
 		if(head.count()) {
 			size_t col_pos_after=0;
-			head[0]->split(*columns, col_pos_after, *separators.scolumn, String::L_AS_IS);
+			if(head[0]->is_empty())
+				*columns += new String();
+			else
+				head[0]->split(*columns, col_pos_after, *separators.scolumn, String::L_AS_IS);
 		}
 	}
 
