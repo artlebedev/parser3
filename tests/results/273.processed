@@ -1,0 +1,22 @@
+Content-Type: text/html
+Content-Length: 331
+
+'ccc- bbb&amp;'
+<hr />
+'aaa- bbb-'
+<hr />
+'aaa- bbb-'
+<hr />
+'ccc- bbb&amp;'
+<hr />
+'шило- рыло-'<br />
+<hr />
+'мыло- рыло&amp;'
+<hr />
+''
+<hr />
+exception ('from' must not be empty). it's OK
+<hr />
+exception (dictionary table 'from' column elements must not be empty). it's OK
+<hr />
+'шило&amp; рыло&amp;'
