@@ -1,0 +1,55 @@
+@main[]
+$s[^taint[aaa& bbb&]]
+#         012345678901
+
+'^s.replace[aaa&;ccc-]'
+<hr />
+
+
+'^s.replace[&;-]'
+<hr />
+
+
+'^s.replace[^table::create[nameless]{&	-}]'
+<hr />
+
+
+'^s.replace[^table::create[nameless]{aaa&	ccc-^#0Axxx&	yyy-}]'
+<hr />
+
+
+$s[^taint[шило& рыло&]]
+'^s.replace[&;-]'<br />
+<hr />
+
+
+'^s.replace[шило&;мыло-]'
+<hr />
+
+
+'^empty.replace[&;-]'
+<hr />
+
+^try{
+	'^s.replace[;-]'
+}{
+	$exception.handled(true)
+	exception ($exception.comment). it's OK
+}
+<hr />
+
+
+^try{
+	'^s.replace[^table::create[nameless]{	-}]'
+}{
+	$exception.handled(true)
+	exception ($exception.comment). it's OK
+}
+<hr />
+
+^try{
+	'^s.replace[^table::create[nameless]{}]'
+}{
+	$exception.handled(true)
+	exception ($exception.comment). it's OK
+}
