@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2011/05/30 12:50:59 $";
+static const char * const IDENT_STRING_C="$Date: 2012/01/08 05:58:27 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -605,14 +605,24 @@ static void _sql(Request& r, MethodParams& params) {
 static void _replace(Request& r, MethodParams& params) {
 	const String& src=GET_SELF(r, VString).string();
 
-	Table* table=params.as_no_junction(0, PARAM_MUST_NOT_BE_CODE).get_table();
-	if(!table)
-		throw Exception(PARSER_RUNTIME,
-			0,
-			"parameter must be table");
+	if(params.count()==1) {
+		// ^string.replace[table]
+		Table* table=params.as_no_junction(0, PARAM_MUST_NOT_BE_CODE).get_table();
+		if(!table)
+			throw Exception(PARSER_RUNTIME,
+				0,
+				"parameter must be table");
+		Dictionary dict(*table);
+		r.write_assign_lang(src.replace(dict));
+	} else {
+		// ^string.replace[from-string;to-string]
+		Dictionary dict(
+						params.as_string(0, "from must be string"),
+						params.as_string(1, "to must be string")
+					);
+		r.write_assign_lang(src.replace(dict));
+	}
 
-	Dictionary dict(*table);
-	r.write_assign_lang(src.replace(dict));
 }
 
 static void _save(Request& r, MethodParams& params) {
@@ -782,7 +792,7 @@ MString::MString(): Methoded("string") {
 	add_native_method("sql", Method::CT_STATIC, _sql, 1, 2);
 
 	// ^string.replace[table]
-	add_native_method("replace", Method::CT_DYNAMIC, _replace, 1, 1);
+	add_native_method("replace", Method::CT_DYNAMIC, _replace, 1, 2);
 
 	// ^string.save[append][file]
 	// ^string.save[file]

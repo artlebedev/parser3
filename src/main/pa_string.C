@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2011/05/05 23:45:45 $";
+static const char * const IDENT_STRING_C="$Date: 2012/01/08 05:58:27 $";
 
 #include "pa_string.h"
 #include "pa_exception.h"
@@ -655,34 +655,63 @@ const String& String::escape(Charset& source_charset) const {
 	return Charset::escape(*this, source_charset);
 }
 
+#define STRING_APPEND(result, from_cstr, langs, langs_offset, length) \
+			result.langs.append(result.body, langs, langs_offset, length); \
+			result.body.append_strdup_know_length(from_cstr, length);
+
 const String& String::replace(const Dictionary& dict) const {
+	if(!dict.count() || is_empty())
+		return *this;
+
 	String& result=*new String();
 	const char* old_cstr=cstr();
 	const char* prematch_begin=old_cstr;
 
-	const char* current=old_cstr;
-	while(*current) {
-		if(Dictionary::Subst subst=dict.first_that_begins(current)) {
+	if(dict.count()==1) {
+		// optimized simple case
+
+		Dictionary::Subst subst=dict.get(0);
+		while(char* p=strstr(prematch_begin, subst.from)) {
 			// prematch
-			if(size_t prematch_length=current-prematch_begin) {
-				result.langs.append(result.body, langs, prematch_begin-old_cstr, prematch_length);
-				result.body.append_strdup_know_length(prematch_begin, prematch_length);
+			if(size_t prematch_length=p-prematch_begin) {
+				STRING_APPEND(result, prematch_begin, langs, prematch_begin-old_cstr, prematch_length)
 			}
 
 			// match
-			// skip 'a' in 'current'; move prematch_begin
-			current+=subst.from_length; prematch_begin=current;
+			prematch_begin=p+subst.from_length;
 
 			if(const String* b=subst.to) // are there any b?
 				result<<*b;
-		} else // simply advance
-			current++; 
+		}
+
+	} else {
+
+		const char* current=old_cstr;
+		while(*current) {
+			if(Dictionary::Subst subst=dict.first_that_begins(current)) {
+				// prematch
+				if(size_t prematch_length=current-prematch_begin) {
+					STRING_APPEND(result, prematch_begin, langs, prematch_begin-old_cstr, prematch_length)
+				}
+
+				// match
+				// skip 'a' in 'current'; move prematch_begin
+				current+=subst.from_length; prematch_begin=current;
+
+				if(const String* b=subst.to) // are there any b?
+					result<<*b;
+			} else // simply advance
+				current++; 
+		}
+
 	}
 
+	if(prematch_begin==old_cstr) // not modified
+		return *this;
+
 	// postmatch
-	if(size_t postmatch_length=current-prematch_begin) {
-		result.langs.append(result.body, langs, prematch_begin-old_cstr, postmatch_length);
-		result.body.append_strdup_know_length(prematch_begin, postmatch_length);
+	if(size_t postmatch_length=old_cstr+length()-prematch_begin) {
+		STRING_APPEND(result, prematch_begin, langs, prematch_begin-old_cstr, postmatch_length)
 	}
 
 	ASSERT_STRING_INVARIANT(result);

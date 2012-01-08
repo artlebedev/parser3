@@ -8,7 +8,7 @@
 #ifndef PA_DICTIONARY_H
 #define PA_DICTIONARY_H
 
-static const char * const IDENT_DICTIONARY_H="$Date: 2005/08/09 08:14:49 $";
+static const char * const IDENT_DICTIONARY_H="$Date: 2012/01/08 05:58:27 $";
 
 #include "pa_table.h"
 
@@ -30,18 +30,25 @@ public:
 	/// construct wrapper, grabbing first letters of first column into @b first
 	Dictionary(Table& atable);
 
+	/// construct simple dictionary within a single pair only
+	Dictionary(const String& from, const String& to);
+
 	/// find first row that contains string in first column which starts @b src
 	Subst first_that_begins(const char* str) const;
 
 private:
-
 	Array<Subst> substs;
 
 private:
-	friend void pa_dictionary_add_first(Table::element_type row, Dictionary* self);
-	//friend bool starts(FromTo row, First_that_begins_info* info);
+	void append_subst(const String* from, const String* to, const char* exception=0);
 
 	int starting_line_of[0x100]; int constructor_line;
+
+public:
+	size_t count() const { return substs.count(); }
+
+	Subst get(size_t index) const { return substs.get(index); }
+
 };
 
 #endif
