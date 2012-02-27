@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2011/11/23 12:17:22 $";
+static const char * const IDENT_FILE_C="$Date: 2012/02/27 11:08:28 $";
 
 #include "pa_config_includes.h"
 
@@ -446,7 +446,7 @@ static void _exec_cgi(Request& r, MethodParams& params, bool cgi) {
 
 	// const
 	ECSTR(GATEWAY_INTERFACE, "CGI/1.1");
-	ECSTR(PARSER_VARSION, PARSER_VERSION);
+	ECSTR("PARSER_VERSION", PARSER_VERSION);
 	// from Request.info
 	ECSTR(DOCUMENT_ROOT, r.request_info.document_root);
 	ECSTR(PATH_TRANSLATED, r.request_info.path_translated);
