@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_HASH_C="$Date: 2011/05/27 03:47:57 $";
+static const char * const IDENT="$Id: hash.C,v 1.112 2012/02/28 05:07:44 moko Exp $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
