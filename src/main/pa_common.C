@@ -1,7 +1,7 @@
 /** @file
 	Parser: commonly functions.
 
-	Copyright(c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright(c) 2001-2012 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
  * BASE64 part
@@ -26,7 +26,7 @@
  *
  */
 
-static const char * const IDENT_COMMON_C="$Date: 2010/08/10 05:27:46 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2012/03/02 21:57:28 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -1304,14 +1304,17 @@ static void file_base64_file_action(
 }
 
 void pa_base64_decode(const char *in, size_t in_size, char*& result, size_t& result_size) {
-	/* wont go to more than had (overly conservative) */
-	result=new(PointerFreeGC) char[in_size+1/*terminator*/];
+	// every 4 base64 bytes are converted into 3 normal bytes
+	// not full set (tail) of 4-bytes set is ignored
+	size_t new_size=in_size/4*3;
+	result=new(PointerFreeGC) char[new_size+1/*terminator*/];
+
 	int state=0;
 	int save=0;
 	result_size=
 		g_mime_utils_base64_decode_step ((const unsigned char*)in, in_size, 
 		(unsigned char*)result, &state, &save);
-	assert(result_size <= in_size);
+	assert(result_size <= new_size);
 	result[result_size]=0; // for text files
 }
 
