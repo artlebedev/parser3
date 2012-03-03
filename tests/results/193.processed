@@ -1,7 +1,37 @@
 Content-Type: text/html
-Content-Length: 151
+Content-Length: 743
 
-'§ 1973. Ходят слухи, что «Зеленые рукава» написал сам…'
-<br />
-Invalid \x00 character found while decode to string. Decode it to file instead.
-<br />
+<table>
+<tr>
+<td>'§ 1973. Ходят слухи, что «Зеленые рукава» написал сам…'</td>
+<td>'§ 1973. Ходят слухи, что «Зеленые рукава» написал сам…'</td>
+</tr>
+<tr>
+<td>'§ 1973. Ходят слухи, что «З'</td>
+<td>
+Type: parser.runtime,
+Source: base64,
+Comment: Unexpected end of base64 chars during base64-decoding
+</td>
+</tr>
+<tr>
+<td>
+Type: parser.runtime,
+Source: base64,
+Comment: Invalid \x00 character found while decode to string. Decode it to file instead.
+</td>
+<td>
+Type: parser.runtime,
+Source: base64,
+Comment: Invalid \x00 character found while decode to string. Decode it to file instead.
+</td>
+</tr>
+<tr>
+<td>''</td>
+<td>
+Type: parser.runtime,
+Source: base64,
+Comment: Unexpected end of base64 chars during base64-decoding
+</td>
+</tr>
+</table>
