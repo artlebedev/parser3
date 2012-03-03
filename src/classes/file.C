@@ -1,11 +1,11 @@
 /** @file
 	Parser: @b file parser class.
 
-	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_FILE_C="$Date: 2012/02/27 11:08:28 $";
+static const char * const IDENT_FILE_C="$Date: 2012/03/03 00:21:47 $";
 
 #include "pa_config_includes.h"
 
@@ -923,8 +923,9 @@ static void _base64(Request& r, MethodParams& params) {
 		if(params.count()) {
 			// decode: 
 			//	^file::base64[encoded] // backward
-			//	^file::base64[mode;user-file-name;encoded[;$.content-type[...]]]
+			//	^file::base64[mode;user-file-name;encoded[;$.content-type[...] $.strict(true|false)]]
 			bool is_text=false;
+			bool strict=false;
 			VString* vcontent_type=0;
 			const String* user_file_name=0;
 			size_t param_index=0;
@@ -946,6 +947,10 @@ static void _base64(Request& r, MethodParams& params) {
 							vcontent_type=new VString(value->as_string());
 							valid_options++;
 						}
+						if(Value* vstrict=options->get(BASE64_STRICT_OPTION_NAME)) {
+							strict=r.process_to_value(*vstrict).as_bool();
+							valid_options++;
+						}
 						if(valid_options!=options->count())
 							throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 					}
@@ -957,7 +962,7 @@ static void _base64(Request& r, MethodParams& params) {
 
 			char* decoded=0;
 			size_t length=0;
-			pa_base64_decode(encoded, strlen(encoded), decoded, length);
+			pa_base64_decode(encoded, strlen(encoded), decoded, length, strict);
 
 			if(length && is_text)
 				fix_line_breaks(decoded, length);

@@ -1,14 +1,14 @@
 /** @file
 	Parser: commonly used functions.
 
-	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-static const char * const IDENT_COMMON_H="$Date: 2011/02/18 06:01:21 $";
+static const char * const IDENT_COMMON_H="$Date: 2012/03/03 00:21:56 $";
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -40,6 +40,8 @@ class Request;
 #define CONTENT_DISPOSITION_ATTACHMENT "attachment"
 #define CONTENT_DISPOSITION_INLINE "inline"
 #define CONTENT_DISPOSITION_FILENAME_NAME "filename"
+
+#define BASE64_STRICT_OPTION_NAME "strict"
 
 const String http_content_type(HTTP_CONTENT_TYPE);
 
@@ -284,7 +286,7 @@ inline bool pa_isalnum(unsigned char c) {
 
 void check_safe_mode(struct stat finfo, const String& file_spec, const char* fname); 
 
-void pa_base64_decode(const char *in, size_t in_size, char*& result, size_t& result_size);
+void pa_base64_decode(const char *in, size_t in_size, char*& result, size_t& result_size, bool strict=false);
 char* pa_base64_encode(const char *in, size_t in_size);
 struct File_base64_action_info {
 	unsigned char** base64;

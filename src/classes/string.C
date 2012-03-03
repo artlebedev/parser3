@@ -1,11 +1,11 @@
 /** @file
 	Parser: @b string parser class.
 
-	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2012/01/08 05:58:27 $";
+static const char * const IDENT_STRING_C="$Date: 2012/03/03 00:21:48 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -701,11 +701,24 @@ static void _trim(Request& r, MethodParams& params) {
 
 static void _base64(Request& r, MethodParams& params) {
 	if(params.count()) {
-		// decode: ^string:base64[encoded]
+		// decode: ^string:base64[encoded[;$.strict(true|false)]]
 		const char* cstr=params.as_string(0, PARAMETER_MUST_BE_STRING).cstr();
 		char* decoded=0;
 		size_t length=0;
-		pa_base64_decode(cstr, strlen(cstr), decoded, length);
+
+		bool strict=false;
+		if(params.count() > 1)
+			if(HashStringValue* options=params.as_hash(1)) {
+				int valid_options=0;
+				if(Value* vstrict=options->get(BASE64_STRICT_OPTION_NAME)) {
+					strict=r.process_to_value(*vstrict).as_bool();
+					valid_options++;
+				}
+				if(valid_options!=options->count())
+					throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+			}
+
+		pa_base64_decode(cstr, strlen(cstr), decoded, length, strict);
 		if(decoded && length){
 			if(memchr((const char*)decoded, 0, length))
 				throw Exception(PARSER_RUNTIME,
@@ -807,7 +820,7 @@ MString::MString(): Methoded("string") {
 
 	// ^string.base64[] << encode
 	// ^string:base64[encoded string] << decode	
-	add_native_method("base64", Method::CT_ANY, _base64, 0, 1);
+	add_native_method("base64", Method::CT_ANY, _base64, 0, 2);
 
 	// ^string.js-escape[]
 	add_native_method("js-escape", Method::CT_ANY, _escape, 0, 0);

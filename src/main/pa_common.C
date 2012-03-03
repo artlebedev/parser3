@@ -26,7 +26,7 @@
  *
  */
 
-static const char * const IDENT_COMMON_C="$Date: 2012/03/02 21:57:28 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2012/03/03 00:22:04 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -1303,7 +1303,7 @@ static void file_base64_file_action(
 	}
 }
 
-void pa_base64_decode(const char *in, size_t in_size, char*& result, size_t& result_size) {
+void pa_base64_decode(const char *in, size_t in_size, char*& result, size_t& result_size, bool strict) {
 	// every 4 base64 bytes are converted into 3 normal bytes
 	// not full set (tail) of 4-bytes set is ignored
 	size_t new_size=in_size/4*3;
@@ -1316,6 +1316,9 @@ void pa_base64_decode(const char *in, size_t in_size, char*& result, size_t& res
 		(unsigned char*)result, &state, &save);
 	assert(result_size <= new_size);
 	result[result_size]=0; // for text files
+
+	if(strict && state!=0)
+		throw Exception(PARSER_RUNTIME, 0, "Unexpected end of base64 chars during base64-decoding");
 }
 
 
