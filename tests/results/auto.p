@@ -14,6 +14,16 @@ $CLASS_PATH[^table::create{path
 
 
 
+@try-catch[jCode]
+^try{$jCode}{
+	$exception.handled(true)
+	Type: $exception.type,
+	Source: $exception.source,
+	Comment: $exception.comment
+}
+
+
+
 @1251[]
 ^from-1251[]
 ^to-1251[]
