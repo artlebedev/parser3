@@ -1,19 +1,16 @@
 @main[][tString]
 $tString[^table::create{sValue
-pyAxOTczLiDV7uT/8iDx6/P16Cwg9/LuIKvH5evl7fvlIPDz6uDi4Lsg7eDv6PHg6yDx4OyF	correct
-#pyAxOTczLiDV7uT/8iDx6/P16Cwg9/LuIKvH5ev	part of correct base64
-AAnwG0kBAAAAh_SuCQIA6VPA-1_2MCEg-_QY85U-6YePwp0AAAAAAAAAAAAUl_Op0QTPyrdJcMhlyHS9O4oOgA==	file with \x00 char
-#AAn	incorrect base64. probably it should result in an exception.
+pyAxOTczLiDV7uT/8iDx6/P16Cwg9/LuIKvH5evl7fvlIPDz6uDi4Lsg7eDv6PHg6yDx4OyF	Correct
+pyAxOTczLiDV7uT/8iDx6/P16Cwg9/LuIKvH5ev	A part of correct base64
+R0lGODlhFAAUAIAAAP0gIP///yH5BAEAAAEALAAAAAAUABQAAAImjI+py+0PYwDygHslxnFv53lN KC5kmZwoon5Ky70wZcKjCpHVXhUAOw==	File 103mark.gif with \x00 char
+AAn	An incorrect base64
 }]
 
-
+<table>
 ^tString.menu{
-	^try{
-		'^string:base64[$tString.sValue]'
-	}{
-		$exception.handled(true)
-		$exception.comment
-	}
-	<br />
+	<tr>
+	<td>^try-catch{'^string:base64[$tString.sValue]'}</td>
+	<td>^try-catch{'^string:base64[$tString.sValue;$.strict(true)]'}</td>
+	</tr>
 }
-
+</table>
