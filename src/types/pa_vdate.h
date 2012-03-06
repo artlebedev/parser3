@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b date parser class decl.
 
-	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VDATE_H
 #define PA_VDATE_H
 
-static const char * const IDENT_VDATE_H="$Date: 2010/09/16 23:33:52 $";
+static const char * const IDENT_VDATE_H="$Date: 2012/03/06 07:38:28 $";
 
 #include "classes.h"
 #include "pa_common.h"
@@ -103,10 +103,23 @@ public: // Value
 		return *result;
 	}
 
-	const String* get_sql_string(){
-		int size=1+ 4+1+2+1+2 +1+ 2+1+2+1+2 +1 +1;
+	enum sql_string_type {sql_string_datetime, sql_string_date, sql_string_time};
+
+	const String* get_sql_string(sql_string_type format = sql_string_datetime) {
+		static const char* formats[]={
+			"%Y-%m-%d %H:%M:%S",
+			"%Y-%m-%d",
+			"%H:%M:%S"
+		};
+		static int sizes[]={
+			4+1+2+1+2 +1+ 2+1+2+1+2 +1/*terminator*/,
+			4+1+2+1+2 +1/*terminator*/,
+			2+1+2+1+2 +1/*terminator*/
+		};
+		size_t size=sizes[format];
 		char *buf=new(PointerFreeGC) char[size];
-		size=strftime(buf, size, "%Y-%m-%d %H:%M:%S", &get_localtime());
+		strftime(buf, size, formats[format], &get_localtime());
+
 		return new String(buf);
 	}
 
