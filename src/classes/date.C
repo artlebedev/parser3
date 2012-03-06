@@ -1,11 +1,11 @@
 /** @file
 	Parser: @b date parser class.
 
-	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_DATE_C="$Date: 2010/10/21 15:06:27 $";
+static const char * const IDENT_DATE_C="$Date: 2012/03/06 07:41:49 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -55,6 +55,19 @@ static void _now(Request& r, MethodParams& params) {
 		t+=(time_t)round(params.as_double(0, "offset must be double", r)*SECS_PER_DAY);
 	
 	vdate.set_time(t);
+}
+
+static void _today(Request& r, MethodParams&) {
+	VDate& vdate=GET_SELF(r, VDate);
+
+	time_t t=time(0);
+
+	tm today=*localtime(&t);
+	today.tm_hour=0;
+	today.tm_min=0;
+	today.tm_sec=0;
+
+	vdate.set_time(today);
 }
 
 /// shrinked range: 1970/1/1 to 2038/1/1
@@ -150,10 +163,23 @@ static void _create(Request& r, MethodParams& params) {
 	};
 }
 
-static void _sql_string(Request& r, MethodParams&) {
+static void _sql_string(Request& r, MethodParams& params) {
 	VDate& vdate=GET_SELF(r, VDate);
 
-	r.write_assign_lang(*vdate.get_sql_string());
+	VDate::sql_string_type format = VDate::sql_string_datetime;
+	if(params.count() > 0) {
+		const String& what=params.as_string(0, "'type' must be string");
+		if(what.is_empty() || what == "datetime")
+			format = VDate::sql_string_datetime;
+		else if(what == "date")
+			format=VDate::sql_string_date;
+		else if(what == "time")
+			format=VDate::sql_string_time;
+		else
+			throw Exception(PARSER_RUNTIME, &what, "'type' must be 'date', 'time' or 'datetime'");
+	}
+
+	r.write_assign_lang(*vdate.get_sql_string(format));
 }
 
 static void _gmt_string(Request& r, MethodParams&) {
@@ -415,15 +441,23 @@ static void _last_day(Request& r, MethodParams& params) {
 
 MDate::MDate(): Methoded("date") {
 	// ^date::now[]
+	// ^date::now(offset float days)
 	add_native_method("now", Method::CT_DYNAMIC, _now, 0, 1);
 
+	// ^date::today[]
+	add_native_method("today", Method::CT_DYNAMIC, _today, 0, 0);
+
 	// ^date::create(float days)
+	// ^date::create[date]
+	// ^date::create(year;month;day[;hour[;minute[;sec]]])
+	// ^date::create[yyyy-mm-dd[ hh:mm:ss]]
+	// ^date::create[hh:mm:ss]
 	add_native_method("create", Method::CT_DYNAMIC, _create, 1, 6);
 	// old name for compatibility with <= v1.17 2002/2/18 12:13:42 paf
 	add_native_method("set", Method::CT_DYNAMIC, _create, 1, 6);
 
 	// ^date.sql-string[]
-	add_native_method("sql-string", Method::CT_DYNAMIC, _sql_string, 0, 0);
+	add_native_method("sql-string", Method::CT_DYNAMIC, _sql_string, 0, 1);
 
 	// ^date.gmt-string[]
 	add_native_method("gmt-string", Method::CT_DYNAMIC, _gmt_string, 0, 0);
@@ -432,15 +466,14 @@ MDate::MDate(): Methoded("date") {
 	// ^date.lastday[]
 	add_native_method("last-day", Method::CT_ANY, _last_day, 0, 2);
 
-	// ^date.roll(year|month|day;+/- 1)
+	// ^date.roll[year|month|day](+/- 1)
 	add_native_method("roll", Method::CT_DYNAMIC, _roll, 2, 2);
 
-	// ^date:calendar[month|montheng;year;month]  = table
-	// ^date:calendar[week|weekeng;year;month;day] = table
+	// ^date:calendar[rus|eng](year;month)  = table
+	// ^date:calendar[rus|eng](year;month;day) = table
 	add_native_method("calendar", Method::CT_STATIC, _calendar, 3, 4);
 
-
 	// ^date.unix-timestamp[]
-	// ^date::unix-timestamp[]
+	// ^date::unix-timestamp(timestamp)
 	add_native_method("unix-timestamp", Method::CT_DYNAMIC, _unix_timestamp, 0, 1);
 }
