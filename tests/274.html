@@ -1,0 +1,20 @@
+@main[][n;d;d2]
+$n[^date::now[]]
+$d[^date::today[]]
+^if($n.year == $d.year && $n.month == $d.month && $n.day == $d.day && $d.hour == 0 && $d.minute == 0 && $d.second == 0){OK}{Failed}
+
+<hr />
+
+$d2[^date::create(2000;02;29;01;23;45)]
+^d2.sql-string[]<br />
+^d2.sql-string[datetime]<br />
+^d2.sql-string[date]<br />
+^d2.sql-string[time]<br />
+^try{
+	^d2.sql-string[hren]
+}{
+	$exception.handled(true)
+	$exception.type
+	$exception.source
+	$exception.comment
+}
