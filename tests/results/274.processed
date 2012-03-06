@@ -1,0 +1,12 @@
+Content-Type: text/html
+Content-Length: 158
+
+OK
+<hr />
+2000-02-29 01:23:45<br />
+2000-02-29 01:23:45<br />
+2000-02-29<br />
+01:23:45<br />
+parser.runtime
+hren
+'type' must be 'date', 'time' or 'datetime'
