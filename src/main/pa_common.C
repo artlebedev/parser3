@@ -26,7 +26,7 @@
  *
  */
 
-static const char * const IDENT_COMMON_C="$Date: 2012/03/03 00:22:04 $"; 
+static const char * const IDENT_COMMON_C="$Date: 2012/03/08 21:19:38 $"; 
 
 #include "pa_common.h"
 #include "pa_exception.h"
@@ -1168,9 +1168,9 @@ g_mime_utils_base64_encode_close (const unsigned char *in, size_t inlen, unsigne
 }
 
 static unsigned char gmime_base64_rank[256] = {
+	255,255,255,255,255,255,255,255,255,254,254,255,255,254,255,255,
 	255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,
-	255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,
-	255,255,255,255,255,255,255,255,255,255,255, 62,255,255,255, 63,
+	254,255,255,255,255,255,255,255,255,255,255, 62,255,255,255, 63,
 	 52, 53, 54, 55, 56, 57, 58, 59, 60, 61,255,255,255,  0,255,255,
 	255,  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14,
 	 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,255,255,255,255,255,
@@ -1193,13 +1193,14 @@ static unsigned char gmime_base64_rank[256] = {
  * @out: output stream
  * @state: holds the number of bits that are stored in @save
  * @save: leftover bits that have not yet been decoded
+ * @strict: only base64 and whitespace chars are allowed
  *
  * Decodes a chunk of base64 encoded data.
  *
  * Returns the number of bytes decoded (which have been dumped in @out).
  **/
 size_t
-g_mime_utils_base64_decode_step (const unsigned char *in, size_t inlen, unsigned char *out, int *state, int *save)
+g_mime_utils_base64_decode_step(const unsigned char *in, size_t inlen, unsigned char *out, int *state, int *save, bool strict=false)
 {
 	const unsigned char *inptr;
 	unsigned char *outptr;
@@ -1217,15 +1218,21 @@ g_mime_utils_base64_decode_step (const unsigned char *in, size_t inlen, unsigned
 	inptr = in;
 	while (inptr < inend) {
 		c = gmime_base64_rank[*inptr++];
-		if (c != 0xff) {
-			saved = (saved << 6) | c;
-			i++;
-			if (i == 4) {
-				*outptr++ = (unsigned char)(saved >> 16);
-				*outptr++ = (unsigned char)(saved >> 8);
-				*outptr++ = (unsigned char)(saved);
-				i = 0;
-			}
+		switch(c) {
+			case 0xff: // non-base64 and non-whitespace chars. not allowed in strict mode
+				if(strict)
+					throw Exception(BASE64_FORMAT, 0, "Invalid base64 char on position %d is detected", inptr-in-1);
+			case 0xfe: // whitespace chars 0x09, 0x0A, 0x0D, 0x20 are allowed in any mode
+				break;
+			default:
+				saved = (saved << 6) | c;
+				i++;
+				if (i == 4) {
+					*outptr++ = (unsigned char)(saved >> 16);
+					*outptr++ = (unsigned char)(saved >> 8);
+					*outptr++ = (unsigned char)(saved);
+					i = 0;
+				}
 		}
 	}
 	
@@ -1237,7 +1244,7 @@ g_mime_utils_base64_decode_step (const unsigned char *in, size_t inlen, unsigned
 	i = 2;
 	while (inptr > in && i) {
 		inptr--;
-		if (gmime_base64_rank[*inptr] != 0xff) {
+		if (gmime_base64_rank[*inptr] <= 0xfe) {
 			if (*inptr == '=' && outptr > out)
 				outptr--;
 			i--;
@@ -1312,13 +1319,13 @@ void pa_base64_decode(const char *in, size_t in_size, char*& result, size_t& res
 	int state=0;
 	int save=0;
 	result_size=
-		g_mime_utils_base64_decode_step ((const unsigned char*)in, in_size, 
-		(unsigned char*)result, &state, &save);
+		g_mime_utils_base64_decode_step ((const unsigned char*)in, in_size,
+		(unsigned char*)result, &state, &save, strict);
 	assert(result_size <= new_size);
 	result[result_size]=0; // for text files
 
 	if(strict && state!=0)
-		throw Exception(PARSER_RUNTIME, 0, "Unexpected end of base64 chars during base64-decoding");
+		throw Exception(BASE64_FORMAT, 0, "Unexpected end of chars");
 }
 
 
