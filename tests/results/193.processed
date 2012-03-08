@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 743
+Content-Length: 897
 
 <table>
 <tr>
@@ -7,11 +7,19 @@ Content-Length: 743
 <td>'§ 1973. Ходят слухи, что «Зеленые рукава» написал сам…'</td>
 </tr>
 <tr>
+<td>'§ 1973. Ходят слухи, что «Зеленые рукава» написал сам…'</td>
+<td>
+Type: base64.format,
+Source: base64,
+Comment: Invalid base64 char on position 40 is detected
+</td>
+</tr>
+<tr>
 <td>'§ 1973. Ходят слухи, что «З'</td>
 <td>
-Type: parser.runtime,
+Type: base64.format,
 Source: base64,
-Comment: Unexpected end of base64 chars during base64-decoding
+Comment: Unexpected end of chars
 </td>
 </tr>
 <tr>
@@ -29,9 +37,13 @@ Comment: Invalid \x00 character found while decode to string. Decode it to file 
 <tr>
 <td>''</td>
 <td>
-Type: parser.runtime,
+Type: base64.format,
 Source: base64,
-Comment: Unexpected end of base64 chars during base64-decoding
+Comment: Unexpected end of chars
 </td>
+</tr>
+<tr>
+<td>''</td>
+<td>''</td>
 </tr>
 </table>
