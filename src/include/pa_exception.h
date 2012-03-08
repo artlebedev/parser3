@@ -1,19 +1,20 @@
 /** @file
 	Parser: exception decls.
 
-	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 ArtLebedev Group (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_EXCEPTION_H
 #define PA_EXCEPTION_H
 
-static const char * const IDENT_EXCEPTION_H="$Date: 2011/11/23 11:40:22 $";
+static const char * const IDENT_EXCEPTION_H="$Date: 2012/03/08 21:17:57 $";
 
 const char* const PARSER_RUNTIME = "parser.runtime";
 const char* const IMAGE_FORMAT = "image.format";
 const char* const PCRE_EXCEPTION_TYPE = "pcre.execute";
 const char* const DATE_RANGE_EXCEPTION_TYPE = "date.range";
+const char* const BASE64_FORMAT = "base64.format";
 
 const char* const NAME_MUST_BE_STRING = "name must be string";
 const char* const FILE_NAME_MUST_BE_STRING = "file name must be string";
