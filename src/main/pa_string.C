@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_STRING_C="$Date: 2012/01/08 05:58:27 $";
+static const char * const IDENT_STRING_C="$Date: 2012/03/12 22:29:41 $";
 
 #include "pa_string.h"
 #include "pa_exception.h"
@@ -671,7 +671,7 @@ const String& String::replace(const Dictionary& dict) const {
 		// optimized simple case
 
 		Dictionary::Subst subst=dict.get(0);
-		while(char* p=strstr(prematch_begin, subst.from)) {
+		while(const char* p=strstr(prematch_begin, subst.from)) {
 			// prematch
 			if(size_t prematch_length=p-prematch_begin) {
 				STRING_APPEND(result, prematch_begin, langs, prematch_begin-old_cstr, prematch_length)
