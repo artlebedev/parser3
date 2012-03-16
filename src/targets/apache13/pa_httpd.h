@@ -1,14 +1,14 @@
 /** @file
 	Parser: http wrapper.
 
-	Copyright (c) 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2000-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_HTTPD_H
 #define PA_HTTPD_H
 
-static const char * const IDENT_HTTPD_H="$Date: 2004/04/01 11:43:54 $";
+#define IDENT_PA_HTTPD_H "$Id: pa_httpd.h,v 1.7 2012/03/16 09:24:15 moko Exp $"
 
 #ifdef __cplusplus
 extern "C" {

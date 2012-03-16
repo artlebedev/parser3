@@ -1,14 +1,14 @@
 /** @file
 	Parser: random related functions.
 
-	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_RANDOM_H
 #define PA_RANDOM_H
 
-static const char * const IDENT_RANDOM_H="$Date: 2009/08/27 10:21:18 $";
+#define IDENT_PA_RANDOM_H "$Id: pa_random.h,v 1.3 2012/03/16 09:24:10 moko Exp $"
 
 #include "pa_types.h"
 

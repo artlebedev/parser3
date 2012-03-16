@@ -1,17 +1,17 @@
 /** @file
 	Parser: @b form parser class.
 
-	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
-
-static const char * const IDENT_FORM_C="$Date: 2009/08/08 13:30:20 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
 
 #include "pa_request.h"
 #include "pa_vform.h"
+
+volatile const char * IDENT_FORM_C="$Id: form.C,v 1.43 2012/03/16 09:24:07 moko Exp $";
 
 /// $LIMITS.max_post_size default 10M
 const size_t MAX_POST_SIZE_DEFAULT=10*0x400*0x400;

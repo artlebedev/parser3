@@ -1,13 +1,11 @@
 /** @node
 	Parser: @b dnode parser type.
 
-	Copyright(c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 #include "pa_config_includes.h"
 #ifdef XML
-
-static const char * const IDENT_VXNODE_C="$Date: 2009/08/08 13:30:22 $";
 
 #include "pa_vxnode.h"
 #include "pa_vxdoc.h"
@@ -17,6 +15,8 @@ static const char * const IDENT_VXNODE_C="$Date: 2009/08/08 13:30:22 $";
 #include "pa_request_charsets.h"
 #include "pa_charset.h"
 #include "pa_xml_exception.h"
+
+volatile const char * IDENT_PA_VXNODE_C="$Id: pa_vxnode.C,v 1.52 2012/03/16 09:24:20 moko Exp $" IDENT_PA_VXNODE_H;
 
 Request_charsets& VXnode::charsets() { 
 	return get_vxdoc().charsets();

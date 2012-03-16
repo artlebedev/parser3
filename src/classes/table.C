@@ -1,11 +1,9 @@
 /** @file
 	Parser: @b table parser class.
 
-	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
-
-static const char * const IDENT_TABLE_C="$Date: 2011/12/07 00:49:59 $";
 
 #if (!defined(NO_STRINGSTREAM) && !defined(FREEBSD4))
 #include <sstream>
@@ -22,6 +20,8 @@ static const char * const IDENT_TABLE_C="$Date: 2011/12/07 00:49:59 $";
 #include "pa_sql_connection.h"
 #include "pa_vbool.h"
 #include "pa_array.h"
+
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.286 2012/03/16 09:24:08 moko Exp $";
 
 // class
 

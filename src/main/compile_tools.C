@@ -1,11 +1,9 @@
 /** @file
 	Parser: compiler support helper functions.
 
-	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
-
-static const char * const IDENT_COMPILE_TOOLS_C="$Date: 2010/07/05 01:38:14 $";
 
 #include "compile_tools.h"
 #include "pa_string.h"
@@ -14,6 +12,8 @@ static const char * const IDENT_COMPILE_TOOLS_C="$Date: 2010/07/05 01:38:14 $";
 #include "pa_vstring.h"
 #include "pa_vdouble.h"
 #include "pa_vmethod_frame.h"
+
+volatile const char * IDENT_COMPILE_TOOLS_C="$Id: compile_tools.C,v 1.69 2012/03/16 09:24:12 moko Exp $" IDENT_COMPILE_TOOLS_H;
 
 Value* LA2V(ArrayOperation& literal_string_array, int offset, OP::OPCODE code) {
 	return literal_string_array[offset+0].code==code?literal_string_array[offset+2/*skip opcode&origin*/].value

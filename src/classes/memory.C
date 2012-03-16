@@ -1,15 +1,15 @@
 /** @file
 	Parser: @b memory parser class.
 
-	Copyright(c) 2001-2005 ArtLebedev Group(http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
-
-static const char * const IDENT_MATH_C="$Date: 2005/08/09 08:14:48 $";
 
 #include "pa_common.h"
 #include "pa_vmemory.h"
 #include "pa_request.h"
+
+volatile const char * IDENT_MEMORY_C="$Id: memory.C,v 1.9 2012/03/16 09:24:07 moko Exp $" IDENT_PA_VMEMORY_H;
 
 class MMemory: public Methoded {
 public:

@@ -1,7 +1,7 @@
 /** @file
 	Parser: xml exception decls.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
@@ -10,7 +10,7 @@
 
 #ifdef XML
 
-static const char * const IDENT_XML_EXCEPTION_H="$Date: 2011/05/25 06:04:22 $";
+#define IDENT_PA_XML_EXCEPTION_H "$Id: pa_xml_exception.h,v 1.8 2012/03/16 09:24:11 moko Exp $"
 
 const char* const XML_VALUE_MUST_BE_STRING = "value must be string";
 const char* const XML_DATA_MUST_BE_STRING = "data must be string";

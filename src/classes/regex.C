@@ -1,11 +1,9 @@
 /** @file
 	Parser: @b int parser class.
 
-	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
-
-static const char * const IDENT_REGEX_C="$Date: 2010/10/21 15:06:29 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -13,6 +11,8 @@ static const char * const IDENT_REGEX_C="$Date: 2010/10/21 15:06:29 $";
 #include "pa_request.h"
 #include "pa_vint.h"
 #include "pa_vregex.h"
+
+volatile const char * IDENT_REGEX_C="$Id: regex.C,v 1.7 2012/03/16 09:24:08 moko Exp $";
 
 // class
 

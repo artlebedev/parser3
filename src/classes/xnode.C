@@ -1,13 +1,11 @@
 /** @file
 	Parser: @b dom parser class.
 
-	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 #include "classes.h"
 #ifdef XML
-
-static const char * const IDENT_XNODE_C="$Date: 2011/05/25 06:07:37 $";
 
 #include "pa_vmethod_frame.h"
 
@@ -22,6 +20,8 @@ static const char * const IDENT_XNODE_C="$Date: 2011/05/25 06:07:37 $";
 #include "xnode.h"
 #include "libxml/xpath.h"
 #include "libxml/xpathInternals.h"
+
+volatile const char * IDENT_XNODE_C="$Id: xnode.C,v 1.87 2012/03/16 09:24:08 moko Exp $" IDENT_XNODE_H;
 
 // global variable
 

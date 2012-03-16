@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b status class decl.
 
-	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VSTATUS_H
 #define PA_VSTATUS_H
 
-static const char * const IDENT_VSTATUS_H="$Date: 2009/08/08 13:30:22 $";
+#define IDENT_PA_VSTATUS_H "$Id: pa_vstatus.h,v 1.21 2012/03/16 09:24:19 moko Exp $"
 
 // includes
 

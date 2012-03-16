@@ -1,13 +1,11 @@
 /**	@file
 	Parser: @b form class.
 
-	Copyright(c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
 	based on The CGI_C library, by Thomas Boutell.
 */
-
-static const char * const IDENT_VFORM_C="$Date: 2011/11/23 12:17:23 $";
 
 #include "pa_sapi.h"
 #include "pa_vform.h"
@@ -18,7 +16,8 @@ static const char * const IDENT_VFORM_C="$Date: 2011/11/23 12:17:23 $";
 #include "pa_common.h"
 #include "pa_vtable.h"
 #include "pa_charset.h"
-//#include "pa_charsets.h"
+
+volatile const char * IDENT_PA_VFORM_C="$Id: pa_vform.C,v 1.102 2012/03/16 09:24:17 moko Exp $" IDENT_PA_VFORM_H;
 
 // defines
 

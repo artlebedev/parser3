@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b hash parser type decl.
 
-	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VHASH_H
 #define PA_VHASH_H
 
-static const char * const IDENT_VHASH_H="$Date: 2010/11/05 21:55:37 $";
+#define IDENT_PA_VHASH_H "$Id: pa_vhash.h,v 1.64 2012/03/16 09:24:17 moko Exp $"
 
 #include "classes.h"
 #include "pa_value.h"

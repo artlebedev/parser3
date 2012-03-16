@@ -1,17 +1,17 @@
 /** @file
 	Parser: @b response parser class.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
-
-static const char * const IDENT_RESPONSE_C="$Date: 2005/08/09 08:14:48 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
 
 #include "pa_request.h"
 #include "pa_vresponse.h"
+
+volatile const char * IDENT_RESPONSE_C="$Id: response.C,v 1.28 2012/03/16 09:24:08 moko Exp $";
 
 // class
 

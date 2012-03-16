@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b form class decls.
 
-	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VFORM_H
 #define PA_VFORM_H
 
-static const char * const IDENT_VFORM_H="$Date: 2009/08/22 14:06:14 $";
+#define IDENT_PA_VFORM_H "$Id: pa_vform.h,v 1.59 2012/03/16 09:24:17 moko Exp $"
 
 // includes
 

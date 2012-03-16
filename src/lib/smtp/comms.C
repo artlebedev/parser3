@@ -1,13 +1,13 @@
 /** @file
 	Parser: SMTP sender impl.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMMS_C="$Date: 2005/08/09 08:14:51 $";
-
 #include "smtp.h"
+
+volatile const char * IDENT_COMMS_C="$Id: comms.C,v 1.9 2012/03/16 09:24:12 moko Exp $";
 
 // ---------------------------------------------------------------------------
 int SMTP:: 

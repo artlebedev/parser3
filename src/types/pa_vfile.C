@@ -2,17 +2,17 @@
 /** @file
 	Parser: @b file parser type.
 
-	Copyright(c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
-
-static const char * const IDENT_VFILE_C="$Date: 2011/11/23 12:17:23 $";
 
 #include "classes.h"
 #include "pa_vfile.h"
 #include "pa_vstring.h"
 #include "pa_vint.h"
 #include "pa_request.h"
+
+volatile const char * IDENT_PA_VFILE_C="$Id: pa_vfile.C,v 1.51 2012/03/16 09:24:17 moko Exp $" IDENT_PA_VFILE_H;
 
 // externs
 

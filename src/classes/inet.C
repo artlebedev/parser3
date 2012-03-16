@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b inet parser class.
 
-	Copyright(c) 2001-2009 ArtLebedev Group(http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_INET_C="$Date: 2010/10/21 15:06:27 $";
-
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
+
+volatile const char * IDENT_INET_C="$Id: inet.C,v 1.5 2012/03/16 09:24:07 moko Exp $";
 
 class MInet: public Methoded {
 public:

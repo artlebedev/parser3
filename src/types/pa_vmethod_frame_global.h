@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b method_frame write context
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VMETHOD_FRAME_GLOBAL_H
 #define PA_VMETHOD_FRAME_GLOBAL_H
 
-static const char * const IDENT_VMETHOD_FRAME_GLOBAL_H="$Date: 2008/05/30 12:24:13 $";
+static const char * const IDENT_VMETHOD_FRAME_GLOBAL_H="$Date: 2012/03/16 09:24:18 $";
 
 #include "pa_vmethod_frame.h"
 

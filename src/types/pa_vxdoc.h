@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b xdoc parser class decl.
 
-	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VXDOC_H
 #define PA_VXDOC_H
 
-static const char * const IDENT_VXDOC_H="$Date: 2011/10/11 13:40:16 $";
+#define IDENT_PA_VXDOC_H "$Id: pa_vxdoc.h,v 1.49 2012/03/16 09:24:20 moko Exp $"
 
 #include "classes.h"
 #include "pa_common.h"

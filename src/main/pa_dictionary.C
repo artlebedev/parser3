@@ -1,14 +1,14 @@
 /**	@file
 	Parser: dictionary class  impl.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_DICTIONARY_C="$Date: 2012/01/08 05:58:27 $";
-
 #include "pa_dictionary.h"
 #include "pa_exception.h"
+
+volatile const char * IDENT_PA_DICTIONARY_C="$Id: pa_dictionary.C,v 1.26 2012/03/16 09:24:13 moko Exp $" IDENT_PA_DICTIONARY_H;
 
 Dictionary::Dictionary(Table& atable): substs(atable.count()) {
 	// clear starting_lines

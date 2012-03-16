@@ -1,11 +1,9 @@
 /** @file
 	Parser: string class. @see untalength_t.C.
 
-	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
-
-static const char * const IDENT_STRING_C="$Date: 2012/03/12 22:29:41 $";
 
 #include "pa_string.h"
 #include "pa_exception.h"
@@ -13,6 +11,8 @@ static const char * const IDENT_STRING_C="$Date: 2012/03/12 22:29:41 $";
 #include "pa_dictionary.h"
 #include "pa_charset.h"
 #include "pa_vregex.h"
+
+volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.240 2012/03/16 09:24:14 moko Exp $" IDENT_PA_STRING_H;
 
 const String String::Empty;
 

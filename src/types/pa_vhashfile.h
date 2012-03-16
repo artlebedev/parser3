@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b hashfile parser type decl.
 
-	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VHASHFILE_H
 #define PA_VHASHFILE_H
 
-static const char * const IDENT_VHASHFILE_H="$Date: 2010/11/28 14:08:35 $";
+#define IDENT_PA_VHASHFILE_H "$Id: pa_vhashfile.h,v 1.40 2012/03/16 09:24:17 moko Exp $"
 
 #include "classes.h"
 #include "pa_pool.h"

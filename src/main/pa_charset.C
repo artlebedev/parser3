@@ -1,14 +1,14 @@
 /** @file
 	Parser: Charset connection implementation.
 
-	Copyright(c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexander Petrosyan<paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_CHARSET_C="$Date: 2011/02/18 06:03:53 $";
-
 #include "pa_charset.h"
 #include "pa_charsets.h"
+
+volatile const char * IDENT_PA_CHARSET_C="$Id: pa_charset.C,v 1.90 2012/03/16 09:24:13 moko Exp $" IDENT_PA_CHARSET_H;
 
 #ifdef XML
 #include "libxml/encoding.h"

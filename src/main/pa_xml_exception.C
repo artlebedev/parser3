@@ -1,7 +1,7 @@
 /** @file
 	Parser: exception class.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
@@ -9,11 +9,11 @@
 
 #ifdef XML
 
-static const char * const IDENT="$Date: 2011/05/25 03:58:11 $";
-
 #include "pa_xml_exception.h"
 #include "pa_globals.h"
 #include "pa_common.h"
+
+volatile const char * IDENT_PA_XML_EXCEPTION_C="$Id: pa_xml_exception.C,v 1.7 2012/03/16 09:24:14 moko Exp $" IDENT_PA_XML_EXCEPTION_H;
 
 // methods
 

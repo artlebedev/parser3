@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b int parser class decl.
 
-	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VINT_H
 #define PA_VINT_H
 
-static const char * const IDENT_VINT_H="$Date: 2010/09/16 23:33:52 $";
+#define IDENT_PA_VINT_H "$Id: pa_vint.h,v 1.48 2012/03/16 09:24:17 moko Exp $"
 
 // include
 

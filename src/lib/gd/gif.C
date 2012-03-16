@@ -1,7 +1,7 @@
 /** @file
 	Parser: image manipulations impl1.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 	based on: gd
 
@@ -14,12 +14,10 @@
 	can incorporate them into new versions. 
 */
 
-static const char * const IDENT_GIF_C="$Date: 2005/08/09 08:14:50 $";
-
 #include "gif.h"
-
 #include "mtables.h"
-//#include "pa_common.h"
+
+volatile const char * IDENT_GIF_C="$Id: gif.C,v 1.7 2012/03/16 09:24:11 moko Exp $" IDENT_GIF_H;
 
 //static void BrushApply(int x, int y);
 //static void TileApply(int x, int y);

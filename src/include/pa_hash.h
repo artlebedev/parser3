@@ -1,7 +1,7 @@
 /** @file
 	Parser: hash class decl.
 
-	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
@@ -17,7 +17,7 @@
 #ifndef PA_HASH_H
 #define PA_HASH_H
 
-static const char * const IDENT_HASH_H="$Date: 2010/08/11 16:17:27 $";
+#define IDENT_PA_HASH_H "$Id: pa_hash.h,v 1.84 2012/03/16 09:24:09 moko Exp $"
 
 #include "pa_memory.h"
 #include "pa_types.h"

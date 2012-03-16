@@ -1,11 +1,9 @@
 /** @file
 	Parser: @b file parser class.
 
-	Copyright (c) 2001-2012 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
-
-static const char * const IDENT_FILE_C="$Date: 2012/03/03 00:21:47 $";
 
 #include "pa_config_includes.h"
 
@@ -26,6 +24,8 @@ static const char * const IDENT_FILE_C="$Date: 2012/03/03 00:21:47 $";
 #include "pa_md5.h"
 #include "pa_vregex.h"
 #include "pa_version.h"
+
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.218 2012/03/16 09:24:06 moko Exp $";
 
 // defines
 

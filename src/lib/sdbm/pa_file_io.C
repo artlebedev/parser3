@@ -1,16 +1,15 @@
 /** @file
 	Parser: implementation of apr functions.
 
-	Copyright(c) 2003 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2000-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Date: 2010/11/28 13:58:03 $";
-
 #include "pa_file_io.h"
-
 #include "pa_memory.h"
 #include "pa_os.h"
+
+volatile const char * IDENT_PA_FILE_IO_C="$Id: pa_file_io.C,v 1.2 2012/03/16 09:24:11 moko Exp $";
 
 struct pa_file_t {
     int handle;

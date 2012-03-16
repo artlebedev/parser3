@@ -2,11 +2,9 @@
 	Parser: @b mail class.
 	relies on gmime library, by Jeffrey Stedfast <fejj@helixcode.com>
 
-	Copyright(c) 2001-2009 ArtLebedev Group(http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
-
-static const char * const IDENT_VMAIL_C="$Date: 2009/10/15 01:08:05 $";
 
 #include "pa_sapi.h"
 #include "pa_vmail.h"
@@ -18,6 +16,8 @@ static const char * const IDENT_VMAIL_C="$Date: 2009/10/15 01:08:05 $";
 #include "pa_vdate.h"
 #include "pa_vfile.h"
 #include "pa_uue.h"
+
+volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.98 2012/03/16 09:24:18 moko Exp $" IDENT_PA_VMAIL_H;
 
 #ifdef WITH_MAILRECEIVE
 extern "C" {

@@ -1,11 +1,9 @@
 /** @file
 	Parser: http support functions.
 
-	Copyright(c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
  */
-
-static const char * const IDENT_HTTP_C="$Date: 2011/02/18 06:03:53 $"; 
 
 #include "pa_http.h"
 #include "pa_common.h"
@@ -14,6 +12,8 @@ static const char * const IDENT_HTTP_C="$Date: 2011/02/18 06:03:53 $";
 #include "pa_request.h"
 #include "pa_vfile.h"
 #include "pa_random.h"
+
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.53 2012/03/16 09:24:13 moko Exp $" IDENT_PA_HTTP_H; 
 
 // defines
 

@@ -1,11 +1,9 @@
 /** @file
 	Parser: request class main part. @see compile.C and execute.C.
 
-	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
-
-static const char * const IDENT_REQUEST_C="$Date: 2011/11/23 11:41:22 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -33,6 +31,8 @@ static const char * const IDENT_REQUEST_C="$Date: 2011/11/23 11:41:22 $";
 #include "pa_vmemory.h"
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
+
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.329 2012/03/16 09:24:14 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 

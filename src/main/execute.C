@@ -1,11 +1,9 @@
 /** @file
 	Parser: executor part of request class.
 
-	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
-
-static const char * const IDENT_EXECUTE_C="$Date: 2010/10/21 15:25:07 $";
 
 #include "pa_opcode.h"
 #include "pa_array.h" 
@@ -22,6 +20,8 @@ static const char * const IDENT_EXECUTE_C="$Date: 2010/10/21 15:25:07 $";
 #include "pa_vfile.h"
 #include "pa_vimage.h"
 #include "pa_wwrapper.h"
+
+volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.368 2012/03/16 09:24:12 moko Exp $" IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
 
 //#define DEBUG_EXECUTE
 

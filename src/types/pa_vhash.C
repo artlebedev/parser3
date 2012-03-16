@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b hash class.
 
-	Copyright(c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT="$Date: 2010/11/05 21:55:37 $";
-
 #include "pa_vhash.h"
 #include "pa_vfile.h"
+
+volatile const char * IDENT_PA_VHASH_C="$Id: pa_vhash.C,v 1.10 2012/03/16 09:24:17 moko Exp $" IDENT_PA_VHASH_H;
 
 // globals
 const String hash_fields_name(HASH_FIELDS_NAME), hash_default_element_name(HASH_DEFAULT_ELEMENT_NAME);

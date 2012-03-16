@@ -1,14 +1,14 @@
 /** @file
 	Parser: string class decl.
 
-	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-static const char * const IDENT_STRING_H="$Date: 2010/10/16 22:24:20 $";
+#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.201 2012/03/16 09:24:10 moko Exp $"
 
 // includes
 #include "pa_types.h"

@@ -1,15 +1,15 @@
 /** @file
 	Parser: @b reflection parser class.
 
-	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
-
-static const char * const IDENT_REFLECTION_C="$Date: 2011/02/20 05:32:39 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
 #include "pa_vbool.h"
+
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.24 2012/03/16 09:24:08 moko Exp $";
 
 static const String class_type_methoded("methoded");
 

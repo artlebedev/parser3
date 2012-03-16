@@ -1,14 +1,14 @@
 /**	@file
 	Parser: @b math class.
 
-	Copyright(c) 2001-2005 ArtLebedev Group(http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
-static const char * const IDENT_VMATH_C="$Date: 2009/04/10 02:23:50 $";
-
 #include "pa_vmath.h"
 #include "pa_vdouble.h"
+
+volatile const char * IDENT_PA_VMATH_C="$Id: pa_vmath.C,v 1.10 2012/03/16 09:24:18 moko Exp $" IDENT_PA_VMATH_H;
 
 // externs
 

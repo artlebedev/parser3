@@ -1,11 +1,9 @@
 /** @file
 	Parser: @b date parser class.
 
-	Copyright (c) 2001-2012 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
-
-static const char * const IDENT_DATE_C="$Date: 2012/03/06 07:41:49 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -14,6 +12,8 @@ static const char * const IDENT_DATE_C="$Date: 2012/03/06 07:41:49 $";
 #include "pa_vdouble.h"
 #include "pa_vdate.h"
 #include "pa_vtable.h"
+
+volatile const char * IDENT_DATE_C="$Id: date.C,v 1.91 2012/03/16 09:24:06 moko Exp $" IDENT_PA_VDATE_H;
 
 // class
 

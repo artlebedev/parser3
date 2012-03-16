@@ -1,15 +1,15 @@
 /** @file
 	Parser: @b env class.
 
-	Copyright(c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
-
-static const char * const IDENT="$Date: 2009/08/08 13:30:21 $";
 
 #include "pa_venv.h"
 #include "pa_vstring.h"
 #include "pa_version.h"
+
+volatile const char * IDENT_PA_PA_VENV_C="$Id: pa_venv.C,v 1.12 2012/03/16 09:24:17 moko Exp $" IDENT_PA_VENV_H;
 
 #define PARSER_VERSION_ELEMENT_NAME "PARSER_VERSION"
 

@@ -1,11 +1,9 @@
 /** @file
 Parser: apache 1.3 module, part, compiled by Apache.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
-
-static const char * const IDENT_MOD_PARSER3_C="$Date: 2005/08/09 08:14:53 $";
 
 #ifdef WIN32
 #include <winsock2.h>
@@ -22,6 +20,8 @@ static const char * const IDENT_MOD_PARSER3_C="$Date: 2005/08/09 08:14:53 $";
 #include "ap_alloc.h"
 
 #include "pa_httpd.h"
+
+volatile const char * IDENT_MOD_PARSER3_C="$Id: mod_parser3.c,v 1.13 2012/03/16 09:24:15 moko Exp $" IDENT_PA_HTTPD_H;
 
 /*
 * Declare ourselves so the configuration routines can find and know us.

@@ -1,11 +1,9 @@
 /** @file
 	Parser: @b mail parser class.
 
-	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
-
-static const char * const IDENT_MAIL_C="$Date: 2011/05/27 03:47:57 $";
 
 #include "pa_config_includes.h"
 #include "pa_vmethod_frame.h"
@@ -20,6 +18,8 @@ static const char * const IDENT_MAIL_C="$Date: 2011/05/27 03:47:57 $";
 #include "pa_vmail.h"
 
 #include "smtp.h"
+
+volatile const char * IDENT_MAIL_C="$Id: mail.C,v 1.118 2012/03/16 09:24:07 moko Exp $";
 
 // defines
 

@@ -1,14 +1,12 @@
 /** @file
 	Parser: @b curl parser class.
 
-	Copyright(c) 2001-2009 ArtLebedev Group(http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 */
 
 #include "pa_config_includes.h"
 
 #ifdef HAVE_CURL
-
-static const char * const IDENT_INET_C="$Date: 2011/11/23 12:17:22 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
@@ -19,6 +17,8 @@ static const char * const IDENT_INET_C="$Date: 2011/11/23 12:17:22 $";
 #include "pa_common.h"
 #include "pa_http.h" 
 #include "ltdl.h"
+
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.13 2012/03/16 09:24:06 moko Exp $";
 
 class MCurl: public Methoded {
 public:

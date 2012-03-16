@@ -1,11 +1,9 @@
 /** @file
 	Parser: @b response class.
 
-	Copyright(c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
-
-static const char * const IDENT_VRESPONSE_C="$Date: 2009/08/08 13:30:21 $";
 
 #include "pa_vresponse.h"
 #include "pa_request_charsets.h"
@@ -14,6 +12,8 @@ static const char * const IDENT_VRESPONSE_C="$Date: 2009/08/08 13:30:21 $";
 #include "pa_vstring.h"
 #include "pa_vdate.h"
 #include "pa_vhash.h"
+
+volatile const char * IDENT_PA_VRESPONSE_C="$Id: pa_vresponse.C,v 1.30 2012/03/16 09:24:19 moko Exp $" IDENT_PA_VRESPONSE_H;
 
 // defines
 

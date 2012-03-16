@@ -1,14 +1,14 @@
 /**	@file
 	Parser: @b code_frame write wrapper write context
 
-	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VCODE_FRAME_H
 #define PA_VCODE_FRAME_H
 
-static const char * const IDENT_VCODE_FRAME_H="$Date: 2009/08/08 13:30:21 $";
+#define IDENT_PA_VCODE_FRAME_H "$Id: pa_vcode_frame.h,v 1.37 2012/03/16 09:24:16 moko Exp $"
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"

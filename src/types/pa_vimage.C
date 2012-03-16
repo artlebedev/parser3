@@ -1,11 +1,9 @@
 /** @file
 	Parser: @b image parser type.
 
-	Copyright(c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
-
-static const char * const IDENT_VIMAGE_C="$Date: 2009/08/08 13:30:21 $";
 
 #include "pa_vimage.h"
 #include "pa_vint.h"
@@ -13,6 +11,7 @@ static const char * const IDENT_VIMAGE_C="$Date: 2009/08/08 13:30:21 $";
 #include "gif.h"
 #include "pa_vbool.h"
 
+volatile const char * IDENT_PA_VIMAGE_C="$Id: pa_vimage.C,v 1.41 2012/03/16 09:24:17 moko Exp $" IDENT_PA_VIMAGE_H;
 
 void VImage::set(const String* src, int width, int height,
 				 gdImage* aimage,

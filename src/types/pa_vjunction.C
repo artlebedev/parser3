@@ -1,17 +1,17 @@
 /**	@file
 	Parser: @b junction class decl.
 
-	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
-
-static const char * const IDENT_VJUNCTION_C="$Date: 2011/02/21 05:05:53 $";
 
 // include
 
 #include "pa_vjunction.h"
 #include "pa_vbool.h"
 #include "pa_wcontext.h"
+
+volatile const char * IDENT_PA_VJUNCTION_C="$Id: pa_vjunction.C,v 1.11 2012/03/16 09:24:18 moko Exp $" IDENT_PA_VJUNCTION_H IDENT_PA_JUNCTION_H;
 
 void VJunction::reattach(WContext *new_wcontext){
 	if(new_wcontext) {

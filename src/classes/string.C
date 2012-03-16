@@ -1,11 +1,9 @@
 /** @file
 	Parser: @b string parser class.
 
-	Copyright (c) 2001-2012 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
-
-static const char * const IDENT_STRING_C="$Date: 2012/03/03 00:21:48 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -21,6 +19,8 @@ static const char * const IDENT_STRING_C="$Date: 2012/03/03 00:21:48 $";
 #include "pa_vmethod_frame.h"
 #include "pa_vregex.h"
 #include "pa_charsets.h"
+
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.203 2012/03/16 09:24:08 moko Exp $";
 
 // class
 

@@ -1,19 +1,19 @@
 /** @file
 	Parser: @b status class impl.
 
-	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
 	Win32 rusage author: Victor Fedoseev <vvf_ru@mail.ru>
 */
-
-static const char * const IDENT_VSTATUS_C="$Date: 2009/08/08 13:30:22 $";
 
 #include "pa_vstatus.h"
 #include "pa_cache_managers.h"
 #include "pa_vhash.h"
 #include "pa_vdouble.h"
 #include "pa_threads.h"
+
+volatile const char * IDENT_PA_VSTATUS_C="$Id: pa_vstatus.C,v 1.28 2012/03/16 09:24:19 moko Exp $" IDENT_PA_VSTATUS_H;
 
 #ifdef HAVE_SYS_RESOURCE_H
 // rusage

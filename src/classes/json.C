@@ -1,10 +1,8 @@
 /** @file
 	Parser: @b json parser class.
 
-	Copyright (c) 2010 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2000-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 */
-
-static const char * const IDENT_RESPONSE_C="$Date: 2011/11/30 06:15:26 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -19,6 +17,8 @@ static const char * const IDENT_RESPONSE_C="$Date: 2011/11/30 06:15:26 $";
 #ifdef XML
 #include "pa_vxdoc.h"
 #endif
+
+volatile const char * IDENT_JSON_C="$Id: json.C,v 1.17 2012/03/16 09:24:07 moko Exp $";
 
 // class
 

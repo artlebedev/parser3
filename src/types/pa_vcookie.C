@@ -1,11 +1,9 @@
 /** @file
 	Parser: cookie class.
 
-	Copyright(c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
-
-static const char * const IDENT_VCOOKIE_C="$Date: 2010/10/21 20:54:51 $";
 
 #include "pa_sapi.h"
 #include "pa_common.h"
@@ -14,6 +12,8 @@ static const char * const IDENT_VCOOKIE_C="$Date: 2010/10/21 20:54:51 $";
 #include "pa_vdate.h"
 #include "pa_vhash.h"
 #include "pa_request.h"
+
+volatile const char * IDENT_PA_VCOOKIE_C="$Id: pa_vcookie.C,v 1.86 2012/03/16 09:24:17 moko Exp $" IDENT_PA_VCOOKIE_H;
 
 // defines
 

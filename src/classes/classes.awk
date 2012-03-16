@@ -1,9 +1,9 @@
 #	Parser: classes.inc generator
 #
-#	Copyright (c) 2001 ArtLebedev Group (http://www.artlebedev.com)
+#	Copyright (c) 2000-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 #	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 #
-#	$Id: classes.awk,v 1.8 2003/08/18 08:27:39 paf Exp $
+#	$Id: classes.awk,v 1.9 2012/03/16 09:24:06 moko Exp $
 
 /\.C$/ && !/(op|classes)/ {
 	s=$0

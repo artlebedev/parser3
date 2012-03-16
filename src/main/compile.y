@@ -2,11 +2,13 @@
 /** @file
 	Parser: compiler(lexical parser and grammar).
 
-	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	$Id: compile.y,v 1.261 2010/10/12 21:55:14 moko Exp $
+	
 */
+
+volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.262 2012/03/16 09:24:12 moko Exp $";
 
 /**
 	@todo parser4: 

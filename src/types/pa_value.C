@@ -1,17 +1,17 @@
 /** @file
 	Parser: Value class.
 
-	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
-
-static const char * const IDENT_VALUE_C="$Date: 2011/05/28 22:54:14 $";
 
 #include "pa_value.h"
 #include "pa_vstateless_class.h"
 #include "pa_vmethod_frame.h"
 #include "pa_vdate.h"
 #include "pa_vobject.h"
+
+volatile const char * IDENT_PA_VALUE_C="$Id: pa_value.C,v 1.32 2012/03/16 09:24:16 moko Exp $" IDENT_PA_VALUE_H IDENT_PA_PROPERTY_H;
 
 // globals
 

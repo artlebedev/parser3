@@ -1,13 +1,11 @@
 /** @file
 	Parser: sql driver manager implementation.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 #include "pa_config_includes.h"
 #ifdef XML
-
-static const char * const IDENT_STYLESHEET_MANAGER_C="$Date: 2006/04/09 13:38:47 $";
 
 #include "pa_stylesheet_manager.h"
 #include "pa_exception.h"
@@ -16,6 +14,8 @@ static const char * const IDENT_STYLESHEET_MANAGER_C="$Date: 2006/04/09 13:38:47
 #include "pa_stack.h"
 #include "pa_vhash.h"
 #include "pa_vtable.h"
+
+volatile const char * IDENT_PA_STYLESHEET_MANAGER_C="$Id: pa_stylesheet_manager.C,v 1.29 2012/03/16 09:24:14 moko Exp $" IDENT_PA_STYLESHEET_MANAGER_H;
 
 // globals
 

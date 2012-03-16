@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b double parser class decl.
 
-	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VDOUBLE_H
 #define PA_VDOUBLE_H
 
-static const char * const IDENT_VDOUBLE_H="$Date: 2010/09/16 23:33:52 $";
+#define IDENT_PA_VDOUBLE_H "$Id: pa_vdouble.h,v 1.56 2012/03/16 09:24:17 moko Exp $"
 
 // includes
 

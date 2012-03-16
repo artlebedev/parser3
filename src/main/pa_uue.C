@@ -1,18 +1,18 @@
 /** @file
 	Parser: uuencoding impl.
 
-	Copyright(c) 2000-2009 ArtLebedev Group(http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
 	@todo setrlimit
 */
 
-static const char * const IDENT_UUE_C="$Date: 2009/09/28 11:39:30 $";
-
 #include "pa_config_includes.h"
 
 #include "pa_uue.h"
 #include "pa_memory.h"
+
+volatile const char * IDENT_PA_UUE_C="$Id: pa_uue.C,v 1.16 2012/03/16 09:24:14 moko Exp $" IDENT_PA_UUE_H;
 
 static unsigned char uue_table[64] = {
   '`', '!', '"', '#', '$', '%', '&', '\'',

@@ -1,7 +1,7 @@
 /** @file
 	Parser: sql driver manager decl.
 
-	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
 
@@ -11,7 +11,7 @@
 #ifndef PA_CHARSETS_H
 #define PA_CHARSETS_H
 
-static const char * const IDENT_CHARSETS_H="$Date: 2009/05/14 11:27:23 $";
+#define IDENT_PA_CHARSETS_H "$Id: pa_charsets.h,v 1.15 2012/03/16 09:24:09 moko Exp $"
 
 #include "pa_hash.h"
 #include "pa_charset.h"

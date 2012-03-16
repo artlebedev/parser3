@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b regex class decls.
 
-	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VREGEX_H
 #define PA_VREGEX_H
 
-static const char * const IDENT_VREGEX_H="$Date: 2009/09/17 02:06:18 $";
+#define IDENT_PA_VREGEX_H "$Id: pa_vregex.h,v 1.6 2012/03/16 09:24:19 moko Exp $"
 
 // include
 

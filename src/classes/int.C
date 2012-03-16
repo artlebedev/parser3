@@ -1,11 +1,9 @@
 /** @file
 	Parser: @b int parser class.
 
-	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
-
-static const char * const IDENT_INT_C="$Date: 2010/10/21 15:06:28 $";
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
@@ -14,6 +12,8 @@ static const char * const IDENT_INT_C="$Date: 2010/10/21 15:06:28 $";
 #include "pa_vdouble.h"
 #include "pa_vint.h"
 #include "pa_vbool.h"
+
+volatile const char * IDENT_INT_C="$Id: int.C,v 1.60 2012/03/16 09:24:07 moko Exp $" IDENT_PA_VINT_H;
 
 // externs
 

@@ -1,14 +1,12 @@
 /** @file
 	Parser: @b math parser class.
 
-	Copyright(c) 2001-2005 ArtLebedev Group(http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 
 	portions from gen_uuid.c,
 	Copyright (C) 1996, 1997, 1998, 1999 Theodore Ts'o.
 */
-
-static const char * const IDENT_MATH_C="$Date: 2010/10/13 12:28:45 $";
 
 #include "pa_vmethod_frame.h"
 #include "pa_common.h"
@@ -31,6 +29,8 @@ static const char * const IDENT_MATH_C="$Date: 2010/10/13 12:28:45 $";
 #else
 	extern char *crypt(const char* , const char* );
 #endif
+
+volatile const char * IDENT_MATH_C="$Id: math.C,v 1.59 2012/03/16 09:24:07 moko Exp $";
 
 // defines
 

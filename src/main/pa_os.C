@@ -1,14 +1,14 @@
 /** @file
 	Parser: commonly functions.
 
-	Copyright(c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-static const char * const IDENT_COMMON_C="$Date: 2010/11/23 19:32:08 $"; 
-
 #include "pa_config_includes.h"
 #include "pa_os.h"
+
+volatile const char * IDENT_PA_OS_C="$Id: pa_os.C,v 1.12 2012/03/16 09:24:14 moko Exp $" IDENT_PA_OS_H; 
 
 #	if defined(WIN32)
 #		include <windows.h>

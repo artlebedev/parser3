@@ -1,7 +1,7 @@
 /**	@file
 	Parser: @b object class impl.
 
-	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
@@ -12,7 +12,7 @@
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
 
-static const char * const IDENT_VOBJECT_C="$Date: 2010/08/30 10:49:05 $";
+volatile const char * IDENT_PA_VOBJECT_C="$Id: pa_vobject.C,v 1.34 2012/03/16 09:24:18 moko Exp $" IDENT_PA_VOBJECT_H;
 
 Value* VObject::get_scalar_value(char* as_something) const {
 	VObject* unconst_this=const_cast<VObject*>(this);

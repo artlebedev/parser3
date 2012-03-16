@@ -1,11 +1,9 @@
 /** @file
 	Parser: @b table class.
 
-	Copyright(c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
-
-static const char * const IDENT="$Date: 2010/11/28 14:08:35 $";
 
 #include "pa_globals.h"
 #include "pa_common.h"
@@ -14,6 +12,8 @@ static const char * const IDENT="$Date: 2010/11/28 14:08:35 $";
 #include "pa_vstring.h"
 #include "pa_vhashfile.h"
 #include "pa_vdate.h"
+
+volatile const char * IDENT_PA_VHASHFILE_C="$Id: pa_vhashfile.C,v 1.64 2012/03/16 09:24:17 moko Exp $" IDENT_PA_VHASHFILE_H;
 
 // consts
 

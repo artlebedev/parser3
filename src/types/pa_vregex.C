@@ -1,16 +1,15 @@
 /** @file
 	Parser: @b regex class.
 
-	Copyright(c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
-
-static const char * const IDENT_VREGEX_C="$Date: 2011/03/30 03:14:54 $";
 
 #include "pa_vregex.h"
 #include "pa_vint.h"
 #include "pa_vstring.h"
 
+volatile const char * IDENT_PA_VREGEX_C="$Id: pa_vregex.C,v 1.14 2012/03/16 09:24:19 moko Exp $" IDENT_PA_VREGEX_H;
 
 // defines
 

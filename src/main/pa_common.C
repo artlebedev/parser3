@@ -1,7 +1,7 @@
 /** @file
 	Parser: commonly functions.
 
-	Copyright(c) 2001-2012 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2000-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
  * BASE64 part
@@ -26,8 +26,6 @@
  *
  */
 
-static const char * const IDENT_COMMON_C="$Date: 2012/03/08 21:19:38 $"; 
-
 #include "pa_common.h"
 #include "pa_exception.h"
 #include "pa_hash.h"
@@ -37,6 +35,8 @@ static const char * const IDENT_COMMON_C="$Date: 2012/03/08 21:19:38 $";
 #include "pa_request_charsets.h"
 #include "pcre.h"
 #include "pa_request.h"
+
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.267 2012/03/16 09:24:13 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 

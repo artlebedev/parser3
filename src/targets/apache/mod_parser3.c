@@ -1,11 +1,9 @@
 /** @file
 	Parser: apache 1.3 and 2.2 module
 
-	Copyright (c) 2001-2010 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
-
-static const char * const IDENT_MOD_PARSER3_C="$Date: 2010/11/23 00:27:02 $";
 
 #ifdef WIN32
 #include <winsock2.h>
@@ -20,6 +18,8 @@ static const char * const IDENT_MOD_PARSER3_C="$Date: 2010/11/23 00:27:02 $";
 #include "util_script.h"
 
 #include "pa_httpd.h"
+
+volatile const char * IDENT_MOD_PARSER3_C="$Id: mod_parser3.c,v 1.12 2012/03/16 09:24:15 moko Exp $" IDENT_PA_HTTPD_H;
 
 #define PARSER3_HANDLER "parser3-handler"
 

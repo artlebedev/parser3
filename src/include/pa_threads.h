@@ -1,14 +1,14 @@
 /** @file
 	Parser: mutex & helpers decls.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_THREADS_H
 #define PA_THREADS_H
 
-static const char * const IDENT_THREADS_H="$Date: 2005/08/09 08:14:50 $";
+#define IDENT_PA_THREADS_H "$Id: pa_threads.h,v 1.31 2012/03/16 09:24:11 moko Exp $"
 
 #include "pa_config_includes.h"
 #include "pa_types.h"

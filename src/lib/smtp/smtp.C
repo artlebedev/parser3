@@ -1,16 +1,16 @@
 /** @file
 	Parser: SMTP sender.
 
-	Copyright (c) 2001-2005 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
 	Parts of the code here is based upon an early gensock and blat
 */
 
-static const char * const IDENT_SMTP_C="$Date: 2005/08/09 08:14:51 $";
-
 #include "pa_exception.h"
 #include "smtp.h"
+
+volatile const char * IDENT_SMTP_C="$Id: smtp.C,v 1.9 2012/03/16 09:24:12 moko Exp $" IDENT_SMTP_H;
 
 #undef snprintf
 // pa_common.C

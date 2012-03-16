@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b math class decls.
 
-	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VMATH_H
 #define PA_VMATH_H
 
-static const char * const IDENT_VMATH_H="$Date: 2009/08/08 13:30:21 $";
+#define IDENT_PA_VMATH_H "$Id: pa_vmath.h,v 1.21 2012/03/16 09:24:18 moko Exp $"
 
 // includes
 

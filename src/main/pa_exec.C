@@ -1,19 +1,19 @@
 /** @file
 	Parser: program executing for different OS-es.
 
-	Copyright(c) 2000-2009 ArtLebedev Group(http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
 	@todo setrlimit
 */
-
-static const char * const IDENT_EXEC_C="$Date: 2010/08/27 04:04:34 $";
 
 #include "pa_config_includes.h"
 
 #include "pa_exec.h"
 #include "pa_exception.h"
 #include "pa_common.h"
+
+volatile const char * IDENT_PA_EXEC_C="$Id: pa_exec.C,v 1.82 2012/03/16 09:24:13 moko Exp $" IDENT_PA_EXEC_H;
 
 #ifdef WIN32
 #	include <windows.h>

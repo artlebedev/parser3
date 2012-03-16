@@ -1,14 +1,14 @@
 /**	@file
 	Parser: write context class decl.
 
-	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_WCONTEXT_H
 #define PA_WCONTEXT_H
 
-static const char * const IDENT_WCONTEXT_H="$Date: 2009/08/01 04:59:02 $";
+#define IDENT_PA_WCONTEXT_H "$Id: pa_wcontext.h,v 1.58 2012/03/16 09:24:20 moko Exp $"
 
 #include "pa_value.h"
 #include "pa_vstring.h"

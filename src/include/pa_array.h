@@ -1,14 +1,14 @@
 /** @file
 	Parser: Array & Array_iterator classes decls.
 
-	Copyright (c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_ARRAY_H
 #define PA_ARRAY_H
 
-static const char * const IDENT_ARRAY_Y="$Date: 2010/11/05 21:56:49 $";
+#define IDENT_PA_ARRAY_H "$Id: pa_array.h,v 1.81 2012/03/16 09:24:08 moko Exp $"
 
 // includes
 

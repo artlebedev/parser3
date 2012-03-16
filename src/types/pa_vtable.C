@@ -1,16 +1,16 @@
 /** @file
 	Parser: @b table class.
 
-	Copyright(c) 2001-2009 ArtLebedev Group (http://www.artlebedev.com)
+	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
-
-static const char * const IDENT_VTABLE_C="$Date: 2010/11/03 22:08:45 $";
 
 #include "pa_vtable.h"
 #include "pa_vstring.h"
 #include "pa_vhash.h"
 #include "pa_vvoid.h"
+
+volatile const char * IDENT_PA_VTABLE_C="$Id: pa_vtable.C,v 1.37 2012/03/16 09:24:19 moko Exp $" IDENT_PA_VTABLE_H;
 
 #ifndef DOXYGEN
 struct Record_info {
