@@ -704,6 +704,7 @@ AC_OUTPUT(
 	src/lib/sdbm/Makefile
 	src/lib/sdbm/pa-include/Makefile
 	src/lib/json/Makefile
+	src/lib/memcached/Makefile
 	src/targets/Makefile
 	src/targets/cgi/Makefile
 	src/targets/apache/Makefile

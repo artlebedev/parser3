@@ -15,7 +15,7 @@
 @SET_MAKE@
 
 
-SOURCES = $(libtypes_a_SOURCES)
+SOURCES = $(libmemcached_a_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -23,7 +23,7 @@ VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
-top_builddir = ../..
+top_builddir = ../../..
 am__cd = CDPATH="$${ZSH_VERSION+.}$(PATH_SEPARATOR)" && cd
 INSTALL = @INSTALL@
 install_sh_DATA = $(install_sh) -c -m 644
@@ -38,7 +38,7 @@ NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
 host_triplet = @host@
-subdir = src/types
+subdir = src/lib/memcached
 DIST_COMMON = $(noinst_HEADERS) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -52,20 +52,10 @@ CONFIG_CLEAN_FILES =
 LIBRARIES = $(noinst_LIBRARIES)
 AR = ar
 ARFLAGS = cru
-libtypes_a_AR = $(AR) $(ARFLAGS)
-libtypes_a_LIBADD =
-am_libtypes_a_OBJECTS = pa_value.$(OBJEXT) pa_vcookie.$(OBJEXT) \
-	pa_vfile.$(OBJEXT) pa_vform.$(OBJEXT) pa_vimage.$(OBJEXT) \
-	pa_vjunction.$(OBJEXT) pa_vregex.$(OBJEXT) \
-	pa_vrequest.$(OBJEXT) pa_vresponse.$(OBJEXT) \
-	pa_vstateless_class.$(OBJEXT) pa_vstring.$(OBJEXT) \
-	pa_wcontext.$(OBJEXT) pa_vtable.$(OBJEXT) pa_vxnode.$(OBJEXT) \
-	pa_vxdoc.$(OBJEXT) pa_vstatus.$(OBJEXT) pa_vmail.$(OBJEXT) \
-	pa_vobject.$(OBJEXT) pa_vclass.$(OBJEXT) \
-	pa_vhashfile.$(OBJEXT) pa_vmath.$(OBJEXT) \
-	pa_vmethod_frame.$(OBJEXT) pa_vvoid.$(OBJEXT) \
-	pa_vhash.$(OBJEXT) pa_venv.$(OBJEXT) pa_vmemcached.$(OBJEXT)
-libtypes_a_OBJECTS = $(am_libtypes_a_OBJECTS)
+libmemcached_a_AR = $(AR) $(ARFLAGS)
+libmemcached_a_LIBADD =
+am_libmemcached_a_OBJECTS = pa_memcached.$(OBJEXT)
+libmemcached_a_OBJECTS = $(am_libmemcached_a_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -74,8 +64,8 @@ CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 CXXLD = $(CXX)
 CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
-SOURCES = $(libtypes_a_SOURCES)
-DIST_SOURCES = $(libtypes_a_SOURCES)
+SOURCES = $(libmemcached_a_SOURCES)
+DIST_SOURCES = $(libmemcached_a_SOURCES)
 HEADERS = $(noinst_HEADERS)
 ETAGS = etags
 CTAGS = ctags
@@ -196,11 +186,10 @@ sqlite_client = @sqlite_client@
 subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-INCLUDES = -I../classes -I../sql -I../lib/gd -I../lib/gc/include -I../lib/cord/include -I../lib/sdbm/pa-include -I../lib/memcached -I../classes/gd @PCRE_INCLUDES@ @XML_INCLUDES@ @MIME_INCLUDES@
-noinst_LIBRARIES = libtypes.a
-noinst_HEADERS = pa_value.h pa_junction.h pa_method.h pa_vbool.h pa_vclass.h pa_vcode_frame.h pa_vcookie.h pa_vdate.h pa_vdouble.h pa_venv.h pa_vfile.h pa_vform.h pa_vhash.h pa_vhashfile.h pa_vimage.h pa_vint.h pa_vjunction.h pa_vmath.h pa_vmethod_frame.h pa_vobject.h pa_vregex.h pa_vrequest.h pa_vresponse.h pa_vstateless_class.h pa_vstateless_object.h pa_vstatus.h pa_vstring.h pa_vtable.h pa_vvoid.h pa_vxdoc.h pa_vxnode.h pa_wcontext.h pa_wwrapper.h pa_vmail.h pa_vmemory.h pa_vconsole.h pa_property.h pa_vmemcached.h
-libtypes_a_SOURCES = pa_value.C pa_vcookie.C pa_vfile.C pa_vform.C pa_vimage.C pa_vjunction.C pa_vregex.C pa_vrequest.C pa_vresponse.C pa_vstateless_class.C pa_vstring.C pa_wcontext.C pa_vtable.C pa_vxnode.C pa_vxdoc.C pa_vstatus.C pa_vmail.C pa_vobject.C pa_vclass.C pa_vhashfile.C pa_vmath.C pa_vmethod_frame.C pa_vvoid.C pa_vhash.C pa_venv.C pa_vmemcached.C
-EXTRA_DIST = types.vcproj
+noinst_HEADERS = constants.h types.h pa_memcached.h
+noinst_LIBRARIES = libmemcached.a
+libmemcached_a_SOURCES = pa_memcached.C
+EXTRA_DIST = memcached.vcproj
 all: all-am
 
 .SUFFIXES:
@@ -214,9 +203,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  src/types/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  src/lib/memcached/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu  src/types/Makefile
+	  $(AUTOMAKE) --gnu  src/lib/memcached/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -237,10 +226,10 @@ $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
-libtypes.a: $(libtypes_a_OBJECTS) $(libtypes_a_DEPENDENCIES) 
-	-rm -f libtypes.a
-	$(libtypes_a_AR) libtypes.a $(libtypes_a_OBJECTS) $(libtypes_a_LIBADD)
-	$(RANLIB) libtypes.a
+libmemcached.a: $(libmemcached_a_OBJECTS) $(libmemcached_a_DEPENDENCIES) 
+	-rm -f libmemcached.a
+	$(libmemcached_a_AR) libmemcached.a $(libmemcached_a_OBJECTS) $(libmemcached_a_LIBADD)
+	$(RANLIB) libmemcached.a
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -248,32 +237,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_value.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vclass.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vcookie.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_venv.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vfile.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vform.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vhash.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vhashfile.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vimage.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vjunction.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vmail.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vmath.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vmemcached.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vmethod_frame.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vobject.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vregex.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vrequest.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vresponse.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vstateless_class.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vstatus.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vstring.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vtable.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vvoid.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vxdoc.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vxnode.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_wcontext.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_memcached.Po@am__quote@
 
 .C.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
