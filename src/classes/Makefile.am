@@ -1,9 +1,9 @@
-INCLUDES = -I../types -I../sql -I../lib/gd -I../lib/gc/include -I../lib/cord/include -I../lib/sdbm/pa-include -Igd $(INCLTDL) @CURL_INCLUDES@ @PCRE_INCLUDES@ @XML_INCLUDES@ -I../lib/md5 -I../lib/smtp -I../lib/json
+INCLUDES = -I../types -I../sql -I../lib/gd -I../lib/gc/include -I../lib/cord/include -I../lib/sdbm/pa-include -Igd $(INCLTDL) @CURL_INCLUDES@ @PCRE_INCLUDES@ @XML_INCLUDES@ -I../lib/md5 -I../lib/smtp -I../lib/json -I../lib/memcached
 
 noinst_LIBRARIES = libclasses.a
 noinst_HEADERS = classes.h xnode.h
 
-CLASSES_SOURCE_FILES = classes.awk bool.C curl.C date.C double.C file.C form.C hash.C hashfile.C image.C inet.C int.C json.C mail.C math.C memory.C op.C reflection.C regex.C response.C string.C table.C void.C xnode.C xdoc.C
+CLASSES_SOURCE_FILES = classes.awk bool.C curl.C date.C double.C file.C form.C hash.C hashfile.C image.C inet.C int.C json.C mail.C math.C memcached.C memory.C op.C reflection.C regex.C response.C string.C table.C void.C xnode.C xdoc.C
 
 libclasses_a_SOURCES = $(CLASSES_SOURCE_FILES) classes.C
 

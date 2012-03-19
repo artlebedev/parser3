@@ -1,1 +1,1 @@
-SUBDIRS = gd smtp cord ltdl pcre md5 gc sdbm json
+SUBDIRS = gd smtp cord ltdl pcre md5 gc sdbm json memcached
