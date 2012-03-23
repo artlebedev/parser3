@@ -7,17 +7,27 @@
 #include "pa_memcached.h"
 #include "ltdl.h"
 
-volatile const char * IDENT_PA_MEMCACHED_C="$Id: pa_memcached.C,v 1.1 2012/03/19 22:20:29 moko Exp $";
+volatile const char * IDENT_PA_MEMCACHED_C="$Id: pa_memcached.C,v 1.2 2012/03/23 22:33:23 moko Exp $";
 
 t_memcached_create f_memcached_create;
 t_memcached_free f_memcached_free;
 t_memcached_strerror f_memcached_strerror;
+
 t_memcached_server_push f_memcached_server_push;
 t_memcached_servers_parse f_memcached_servers_parse;
+
+t_memcached_flush f_memcached_flush;
+
 t_memcached_get f_memcached_get;
 t_memcached_delete f_memcached_delete;
 t_memcached_mget f_memcached_mget;
 t_memcached_set f_memcached_set;
+
+t_memcached_fetch_result f_memcached_fetch_result;
+t_memcached_result_create f_memcached_result_create;
+t_memcached_result_free f_memcached_result_free;
+t_memcached_result_key_value f_memcached_result_key_value;
+t_memcached_result_value f_memcached_result_value;
 
 #define GLINK(name) f_##name=(t_##name)lt_dlsym(handle, #name);
 #define DLINK(name) GLINK(name) if(!f_##name) return "function " #name " was not found";
@@ -37,12 +47,22 @@ static const char *dlink(const char *dlopen_file_spec) {
 	DLINK(memcached_create);
 	DLINK(memcached_free);
 	DLINK(memcached_strerror);
+
 	DLINK(memcached_server_push);
 	DLINK(memcached_servers_parse);
+
+	DLINK(memcached_flush);
+
 	DLINK(memcached_get);
 	DLINK(memcached_delete);
 	DLINK(memcached_mget);
 	DLINK(memcached_set);
+
+	DLINK(memcached_fetch_result);
+	DLINK(memcached_result_create);
+	DLINK(memcached_result_free);
+	DLINK(memcached_result_key_value);
+	DLINK(memcached_result_value);
 
 	return 0;
 }

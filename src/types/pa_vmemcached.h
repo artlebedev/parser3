@@ -10,7 +10,7 @@
 #ifndef PA_VMEMCACHED_H
 #define PA_VMEMCACHED_H
 
-#define IDENT_PA_VMEMCACHED_H "$Id: pa_vmemcached.h,v 1.1 2012/03/19 22:22:59 moko Exp $"
+#define IDENT_PA_VMEMCACHED_H "$Id: pa_vmemcached.h,v 1.2 2012/03/23 22:33:23 moko Exp $"
 
 #include "classes.h"
 #include "pa_vstateless_object.h"
@@ -33,19 +33,21 @@ public:
 	override const VJunction* put_element(const String& aname, Value* avalue, bool /*replace*/);
 
 public: // usage
-	VMemcached(): fm(0), fflags(0) {}
+	VMemcached(): fm(0), fttl(0) {}
 
 	~VMemcached(){
 		if(fm)
 			f_memcached_free(fm);
 	}
 
-	void open(const String& connect_string, size_t aflags=0);
+	void open(const String& connect_string, time_t attl=0);
 	void remove(const String& aname);
+	void flush(time_t attl=0);
+	Value &mget(ArrayString &akeys);
 
 private:
 	memcached_st* fm;
-	uint32_t fflags;
+	time_t fttl;
 
 };
 
