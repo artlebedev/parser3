@@ -30,8 +30,12 @@ typedef memcached_return_t (*t_memcached_set)(memcached_st *ptr, const char *key
 typedef memcached_result_st *(*t_memcached_fetch_result)(memcached_st *ptr, memcached_result_st *result, memcached_return_t *error);
 typedef memcached_result_st *(*t_memcached_result_create)(const memcached_st *ptr, memcached_result_st *result);
 typedef void (*t_memcached_result_free)(memcached_result_st *result);
+
 typedef const char *(*t_memcached_result_key_value)(const memcached_result_st *self);
 typedef const char *(*t_memcached_result_value)(const memcached_result_st *self);
+typedef size_t (*t_memcached_result_key_length)(const memcached_result_st *self);
+typedef size_t (*t_memcached_result_length)(const memcached_result_st *self);
+typedef uint32_t (*t_memcached_result_flags)(const memcached_result_st *self);
 
 
 extern t_memcached_create f_memcached_create;
@@ -51,7 +55,11 @@ extern t_memcached_set f_memcached_set;
 extern t_memcached_fetch_result f_memcached_fetch_result;
 extern t_memcached_result_create f_memcached_result_create;
 extern t_memcached_result_free f_memcached_result_free;
+
 extern t_memcached_result_key_value f_memcached_result_key_value;
 extern t_memcached_result_value f_memcached_result_value;
+extern t_memcached_result_key_length f_memcached_result_key_length;
+extern t_memcached_result_length f_memcached_result_length;
+extern t_memcached_result_flags f_memcached_result_flags;
 
 #endif /* PA_MEMCACHED_H */

@@ -13,7 +13,7 @@
 #include "pa_vhash.h"
 #include "pa_vvoid.h"
 
-volatile const char * IDENT_PA_VMEMCACHED_C="$Id: pa_vmemcached.C,v 1.3 2012/03/27 10:43:51 moko Exp $" IDENT_PA_VMEMCACHED_H;
+volatile const char * IDENT_PA_VMEMCACHED_C="$Id: pa_vmemcached.C,v 1.4 2012/03/27 21:25:18 moko Exp $" IDENT_PA_VMEMCACHED_H;
 
 #ifdef WIN32
 const char *memcached_library="libmemcached.dll";
@@ -78,7 +78,8 @@ Value* VMemcached::get_element(const String& aname) {
 
 	if(rc==MEMCACHED_SUCCESS)
 		// we can't use length from memcached as there can be '\0' inside
-		return new VString(*new String(val, String::L_TAINTED));
+		return new VString(*new String(pa_strdup(val, length), String::L_TAINTED));
+	
 	if(rc==MEMCACHED_NOTFOUND)
 		return new VVoid();
 
@@ -109,20 +110,17 @@ Value &VMemcached::mget(ArrayString& akeys) {
 	
 	memcached_result_st *results=f_memcached_result_create(fm, 0);
 	
-	for(;;){
-		memcached_return rc;
-		memcached_result_st *res = f_memcached_fetch_result(fm, results, &rc);
-		if (rc == MEMCACHED_SUCCESS){
-			const char *hkey = pa_strdup(f_memcached_result_key_value(res));
-			const char *hvalue = pa_strdup(f_memcached_result_value(res));
-			// we can't use length from memcached for String there can be '\0' inside
-			hresult.hash().put(hkey, new VString(*new String(hvalue, String::L_TAINTED)));
-		} else {
-			if (rc == MEMCACHED_END || rc == MEMCACHED_NOTFOUND)
-				break;
-			error("mget", fm, rc);
-		}
+	memcached_return rc;
+	
+	while(f_memcached_fetch_result(fm, results, &rc) && (rc == MEMCACHED_SUCCESS)){
+		const char *hkey = pa_strdup(f_memcached_result_key_value(results), f_memcached_result_key_length(results));
+		const char *hvalue = pa_strdup(f_memcached_result_value(results), f_memcached_result_length(results));
+		// we can't use length from memcached for String there can be '\0' inside
+		hresult.hash().put(hkey, new VString(*new String(hvalue, String::L_TAINTED)));
 	}
+
+	if (rc != MEMCACHED_END && rc != MEMCACHED_NOTFOUND)
+		error("mget", fm, rc);
 	
 	delete keys;
 	delete key_lengths;
