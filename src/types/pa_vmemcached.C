@@ -13,7 +13,7 @@
 #include "pa_vhash.h"
 #include "pa_vvoid.h"
 
-volatile const char * IDENT_PA_VMEMCACHED_C="$Id: pa_vmemcached.C,v 1.2 2012/03/23 22:33:23 moko Exp $" IDENT_PA_VMEMCACHED_H;
+volatile const char * IDENT_PA_VMEMCACHED_C="$Id: pa_vmemcached.C,v 1.3 2012/03/27 10:43:51 moko Exp $" IDENT_PA_VMEMCACHED_H;
 
 #ifdef WIN32
 const char *memcached_library="libmemcached.dll";
@@ -95,17 +95,17 @@ Value &VMemcached::mget(ArrayString& akeys) {
 		return hresult;
 	
 	const char **keys = new const char *[kl];
-	size_t *key_length = new size_t[kl];
+	size_t *key_lengths = new size_t[kl];
 	
 	for(int i=0; i<kl; i++){
 		const String *skey = akeys[i];
 		if(skey->is_empty())
 			throw Exception("memcached", 0, "key must not be empty");
 		keys[i] = skey->cstr();
-		key_length[i] = skey->length();
+		key_lengths[i] = skey->length();
 	}
 	
-	check("mget", fm, f_memcached_mget(fm, keys, key_length, kl));
+	check("mget", fm, f_memcached_mget(fm, keys, key_lengths, kl));
 	
 	memcached_result_st *results=f_memcached_result_create(fm, 0);
 	
@@ -113,16 +113,19 @@ Value &VMemcached::mget(ArrayString& akeys) {
 		memcached_return rc;
 		memcached_result_st *res = f_memcached_fetch_result(fm, results, &rc);
 		if (rc == MEMCACHED_SUCCESS){
-			// we can't use length from memcached as there can be '\0' inside
-			String::Body hkey(f_memcached_result_key_value(res), String::L_TAINTED);
-			String &hvalue = *new String(f_memcached_result_value(res), String::L_TAINTED);
-			hresult.hash().put(hkey, new VString(hvalue));
+			const char *hkey = pa_strdup(f_memcached_result_key_value(res));
+			const char *hvalue = pa_strdup(f_memcached_result_value(res));
+			// we can't use length from memcached for String there can be '\0' inside
+			hresult.hash().put(hkey, new VString(*new String(hvalue, String::L_TAINTED)));
 		} else {
-			if (rc != MEMCACHED_END)
-				error("mget", fm, rc);
-			break;
+			if (rc == MEMCACHED_END || rc == MEMCACHED_NOTFOUND)
+				break;
+			error("mget", fm, rc);
 		}
 	}
+	
+	delete keys;
+	delete key_lengths;
 	
 //	f_memcached_result_free(results);
 
