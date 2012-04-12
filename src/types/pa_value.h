@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.144 2012/03/16 09:24:16 moko Exp $"
+#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.145 2012/04/12 22:44:46 moko Exp $"
 
 #include "pa_common.h"
 #include "pa_array.h"
@@ -78,6 +78,19 @@ struct Json_options {
 		else return false;
 		return true;
 	}
+};
+
+#define SERIALIZED_STRING 256
+#define SERIALIZED_FILE 512
+
+struct Serialization_data{
+    unsigned int flags;
+    const char *ptr;
+    size_t length;
+
+    Serialization_data() : flags(0), ptr(0), length(0){}
+    Serialization_data(unsigned int aflags) : flags(aflags), ptr(0), length(0){}
+    Serialization_data(unsigned int aflags, const char *aptr, size_t alength) : flags(aflags), ptr(aptr), length(alength){}
 };
 
 ///	grandfather of all @a values in @b Parser
@@ -180,6 +193,9 @@ public: // Value
 	/// extract VTable
 	virtual Table* get_table() { return 0; }
 
+	/// serialization support
+	virtual void serialize(Serialization_data &data) { bark("is '%s', it does not support serialization"); }
+	
 public: // usage
 
 	/// @return sure String. if it doesn't have string value barks
@@ -231,5 +247,7 @@ extern const String expires_name;
 extern const String content_type_name;
 extern const String name_name;
 ///@}
+
+Value &memcached_deserialize(Serialization_data &data);
 
 #endif

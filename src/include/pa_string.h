@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.201 2012/03/16 09:24:10 moko Exp $"
+#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.202 2012/04/12 22:44:46 moko Exp $"
 
 // includes
 #include "pa_types.h"
@@ -553,6 +553,14 @@ public:
 	}
 
 	const char* untaint_and_transcode_cstr(Language lang, const Request_charsets *charsets) const;
+
+	bool is_not_just_lang() const {
+		return langs.opt.is_not_just_lang !=0;
+	}
+	
+	Language just_lang() const {
+		return langs.opt.lang;
+	}
 
 	/// puts pieces to buf
 	Cm serialize(size_t prolog_size) const;

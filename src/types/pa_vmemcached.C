@@ -13,7 +13,7 @@
 #include "pa_vhash.h"
 #include "pa_vvoid.h"
 
-volatile const char * IDENT_PA_VMEMCACHED_C="$Id: pa_vmemcached.C,v 1.4 2012/03/27 21:25:18 moko Exp $" IDENT_PA_VMEMCACHED_H;
+volatile const char * IDENT_PA_VMEMCACHED_C="$Id: pa_vmemcached.C,v 1.5 2012/04/12 22:44:47 moko Exp $" IDENT_PA_VMEMCACHED_H;
 
 #ifdef WIN32
 const char *memcached_library="libmemcached.dll";
@@ -71,14 +71,14 @@ Value* VMemcached::get_element(const String& aname) {
 	if(aname.is_empty())
 		throw Exception("memcached", 0, "key must not be empty");
 
-	size_t length;
-	uint32_t flags;
 	memcached_return rc;
-	const char* val=f_memcached_get(fm, aname.cstr(), aname.length(), &length, &flags, &rc);
+	Serialization_data data;
+	data.ptr=f_memcached_get(fm, aname.cstr(), aname.length(), &data.length, &data.flags, &rc);
 
-	if(rc==MEMCACHED_SUCCESS)
-		// we can't use length from memcached as there can be '\0' inside
-		return new VString(*new String(pa_strdup(val, length), String::L_TAINTED));
+	if(rc==MEMCACHED_SUCCESS){
+		data.ptr=pa_strdup(data.ptr, data.length);
+		return &memcached_deserialize(data);
+	}
 	
 	if(rc==MEMCACHED_NOTFOUND)
 		return new VVoid();
@@ -114,9 +114,12 @@ Value &VMemcached::mget(ArrayString& akeys) {
 	
 	while(f_memcached_fetch_result(fm, results, &rc) && (rc == MEMCACHED_SUCCESS)){
 		const char *hkey = pa_strdup(f_memcached_result_key_value(results), f_memcached_result_key_length(results));
-		const char *hvalue = pa_strdup(f_memcached_result_value(results), f_memcached_result_length(results));
-		// we can't use length from memcached for String there can be '\0' inside
-		hresult.hash().put(hkey, new VString(*new String(hvalue, String::L_TAINTED)));
+		
+		Serialization_data value(f_memcached_result_flags(results));
+		value.length = f_memcached_result_length(results);
+		value.ptr = pa_strdup(f_memcached_result_value(results), value.length);
+
+		hresult.hash().put(hkey, &memcached_deserialize(value));
 	}
 
 	if (rc != MEMCACHED_END && rc != MEMCACHED_NOTFOUND)
@@ -155,16 +158,17 @@ const VJunction* VMemcached::put_element(const String& aname, Value* avalue, boo
 	if(key_length > MEMCACHED_MAX_KEY)
 		throw Exception("memcached", &aname, "key length %d exceeds limit (%d bytes)", key_length, MEMCACHED_MAX_KEY);
 
-	const String &value=avalue->as_string();
+	Serialization_data value;
+	avalue->serialize(value);
 
 	check("set", fm, f_memcached_set(
 			fm,
 			key,
 			key_length,
-			value.cstr(),
-			value.length(),
+			value.ptr,
+			value.length,
 			ttl,
-			0));
+			value.flags));
 
 	return PUT_ELEMENT_REPLACED_ELEMENT;
 }

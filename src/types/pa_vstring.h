@@ -8,7 +8,7 @@
 #ifndef PA_VSTRING_H
 #define PA_VSTRING_H
 
-#define IDENT_PA_VSTRING_H "$Id: pa_vstring.h,v 1.65 2012/03/16 09:24:19 moko Exp $"
+#define IDENT_PA_VSTRING_H "$Id: pa_vstring.h,v 1.66 2012/04/12 22:44:47 moko Exp $"
 
 // includes
 
@@ -68,6 +68,10 @@ public: // Value
 		// bad $string.field
 		return bark("%s method not found", &aname);  
 	}
+
+	/// serialization support
+	virtual void serialize(Serialization_data &data);
+	static VString* deserialize(Serialization_data &data);
 
 public: // usage
 
