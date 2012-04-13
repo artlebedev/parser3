@@ -9,6 +9,10 @@
 #include "constants.h"
 #include "types.h"
 
+#ifndef uint32_t
+typedef unsigned int uint32_t;
+#endif
+
 // memcached library load function
 const char *memcached_load(const char *alt_library_name);
 
