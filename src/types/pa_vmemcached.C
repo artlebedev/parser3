@@ -13,7 +13,7 @@
 #include "pa_vhash.h"
 #include "pa_vvoid.h"
 
-volatile const char * IDENT_PA_VMEMCACHED_C="$Id: pa_vmemcached.C,v 1.5 2012/04/12 22:44:47 moko Exp $" IDENT_PA_VMEMCACHED_H;
+volatile const char * IDENT_PA_VMEMCACHED_C="$Id: pa_vmemcached.C,v 1.6 2012/04/13 22:59:36 moko Exp $" IDENT_PA_VMEMCACHED_H;
 
 #ifdef WIN32
 const char *memcached_library="libmemcached.dll";
@@ -30,6 +30,13 @@ inline void check(const char *action, memcached_st* m, memcached_return rc) {
 	if(rc==MEMCACHED_SUCCESS)
 		return;
 	error(action, m, rc);
+}
+
+inline void check_key(const String& akey) {
+	if(akey.is_empty())
+		throw Exception("memcached", 0, "key must not be empty");
+	if(akey.length() > MEMCACHED_MAX_KEY)
+		throw Exception("memcached", &akey, "key length %d exceeds limit (%d bytes)", akey.length(), MEMCACHED_MAX_KEY);
 }
 
 void VMemcached::open(const String& connect_string, time_t attl){
@@ -50,16 +57,15 @@ void VMemcached::open(const String& connect_string, time_t attl){
 	check("server_push", fm, f_memcached_server_push(fm, fservers));
 }
 
-void VMemcached::flush(time_t attl){
+void VMemcached::flush(time_t attl) {
 	check("flush", fm, f_memcached_flush(fm, attl));
 }
 
-void VMemcached::remove(const String& aname){
-	if(aname.is_empty())
-		throw Exception("memcached", 0, "key must not be empty");
-	const char* key_cstr=aname.cstr();
+void VMemcached::remove(const String& aname) {
+	check_key(aname);
 
-	memcached_return rc=f_memcached_delete(fm, key_cstr, strlen(key_cstr), (time_t)0);
+	memcached_return rc=f_memcached_delete(fm, aname.cstr(), aname.length(), (time_t)0);
+
 	if(rc != MEMCACHED_SUCCESS && rc != MEMCACHED_NOTFOUND)
 		error("delete", fm, rc);
 }
@@ -68,8 +74,7 @@ Value* VMemcached::get_element(const String& aname) {
 	if(Value *result=VStateless_object::get_element(aname))
 		return result;
 
-	if(aname.is_empty())
-		throw Exception("memcached", 0, "key must not be empty");
+	check_key(aname);
 
 	memcached_return rc;
 	Serialization_data data;
@@ -98,12 +103,11 @@ Value &VMemcached::mget(ArrayString& akeys) {
 	const char **keys = new const char *[kl];
 	size_t *key_lengths = new size_t[kl];
 	
-	for(int i=0; i<kl; i++){
-		const String *skey = akeys[i];
-		if(skey->is_empty())
-			throw Exception("memcached", 0, "key must not be empty");
-		keys[i] = skey->cstr();
-		key_lengths[i] = skey->length();
+	for(size_t i=0; i<kl; i++){
+		const String &skey = *(akeys[i]);
+		check_key(skey);
+		keys[i] = skey.cstr();
+		key_lengths[i] = skey.length();
 	}
 	
 	check("mget", fm, f_memcached_mget(fm, keys, key_lengths, kl));
@@ -134,8 +138,7 @@ Value &VMemcached::mget(ArrayString& akeys) {
 }
 
 const VJunction* VMemcached::put_element(const String& aname, Value* avalue, bool /*replace*/){
-	if(aname.is_empty())
-		throw Exception("memcached", 0, "key must not be empty");
+	check_key(aname);
 
 	time_t ttl=fttl;
 	Value* lvalue;
@@ -152,19 +155,13 @@ const VJunction* VMemcached::put_element(const String& aname, Value* avalue, boo
 		lvalue=avalue;
 	}
 
-	const char* key=aname.cstr();
-	size_t key_length=aname.length();
-
-	if(key_length > MEMCACHED_MAX_KEY)
-		throw Exception("memcached", &aname, "key length %d exceeds limit (%d bytes)", key_length, MEMCACHED_MAX_KEY);
-
 	Serialization_data value;
 	avalue->serialize(value);
 
 	check("set", fm, f_memcached_set(
 			fm,
-			key,
-			key_length,
+			aname.cstr(),
+			aname.length(),
 			value.ptr,
 			value.length,
 			ttl,
