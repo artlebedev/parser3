@@ -13,7 +13,7 @@
 #include "pa_vhash.h"
 #include "pa_vvoid.h"
 
-volatile const char * IDENT_PA_VMEMCACHED_C="$Id: pa_vmemcached.C,v 1.6 2012/04/13 22:59:36 moko Exp $" IDENT_PA_VMEMCACHED_H;
+volatile const char * IDENT_PA_VMEMCACHED_C="$Id: pa_vmemcached.C,v 1.7 2012/04/15 23:49:05 moko Exp $" IDENT_PA_VMEMCACHED_H;
 
 #ifdef WIN32
 const char *memcached_library="libmemcached.dll";
@@ -112,11 +112,12 @@ Value &VMemcached::mget(ArrayString& akeys) {
 	
 	check("mget", fm, f_memcached_mget(fm, keys, key_lengths, kl));
 	
-	memcached_result_st *results=f_memcached_result_create(fm, 0);
+	// memcached_fetch_result calls memcached_result_create and memcached_result_free, we don't need to do this.
+	memcached_result_st *results=0;
 	
 	memcached_return rc;
 	
-	while(f_memcached_fetch_result(fm, results, &rc) && (rc == MEMCACHED_SUCCESS)){
+	while((results=f_memcached_fetch_result(fm, results, &rc)) && (rc == MEMCACHED_SUCCESS)){
 		const char *hkey = pa_strdup(f_memcached_result_key_value(results), f_memcached_result_key_length(results));
 		
 		Serialization_data value(f_memcached_result_flags(results));
@@ -132,8 +133,6 @@ Value &VMemcached::mget(ArrayString& akeys) {
 	delete keys;
 	delete key_lengths;
 	
-//	f_memcached_result_free(results);
-
 	return hresult;
 }
 
