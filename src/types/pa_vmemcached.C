@@ -13,7 +13,7 @@
 #include "pa_vhash.h"
 #include "pa_vvoid.h"
 
-volatile const char * IDENT_PA_VMEMCACHED_C="$Id: pa_vmemcached.C,v 1.8 2012/04/18 21:42:51 moko Exp $" IDENT_PA_VMEMCACHED_H;
+volatile const char * IDENT_PA_VMEMCACHED_C="$Id: pa_vmemcached.C,v 1.9 2012/04/18 21:51:28 moko Exp $" IDENT_PA_VMEMCACHED_H;
 
 #ifdef WIN32
 const char *memcached_library="libmemcached.dll";
@@ -90,7 +90,8 @@ static Value &deserialize(Serialization_data &data){
 	
 	if(data.flags>=SERIALIZED_STRING && data.flags<(SERIALIZED_STRING+256)){
 		// String->deserialize uses passed string
-		data.ptr=pa_strdup(data.ptr, data.length);
+		if(data.length>0)
+			data.ptr=pa_strdup(data.ptr, data.length);
 		result=deserialize_string(data);
 	}
 
