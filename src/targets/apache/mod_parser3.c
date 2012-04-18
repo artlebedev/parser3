@@ -19,7 +19,7 @@
 
 #include "pa_httpd.h"
 
-volatile const char * IDENT_MOD_PARSER3_C="$Id: mod_parser3.c,v 1.12 2012/03/16 09:24:15 moko Exp $" IDENT_PA_HTTPD_H;
+volatile const char * IDENT_MOD_PARSER3_C="$Id: mod_parser3.c,v 1.13 2012/04/18 13:34:39 moko Exp $" IDENT_PA_HTTPD_H;
 
 #define PARSER3_HANDLER "parser3-handler"
 
@@ -80,6 +80,10 @@ static int parser_handler(request_rec *r) {
 	if(strcmp(r->handler, PARSER3_HANDLER))
 		return DECLINED;
 #endif
+
+	// we setup module here to avoid GPF on init with php5-xsl installed
+	pa_setup_module_cells();
+
 	// converting to parser version
 	pa_request_rec pr={
 		r,
@@ -112,8 +116,7 @@ static void parser_child_init(apr_pool_t *p, server_rec *s) {
 #else
 static void parser_module_init(server_rec *s, apr_pool_t *p) {
 #endif	
-	ap_log_perror(APLOG_MARK, APLOG_EMERG, 0, p, "parser inited %d", getpid());
-	pa_setup_module_cells();
+//	ap_log_perror(APLOG_MARK, APLOG_EMERG, 0, p, "parser inited %d", getpid());
 }
 
 /* 
