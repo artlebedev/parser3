@@ -11,7 +11,7 @@
 #include "pa_vdate.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_PA_VALUE_C="$Id: pa_value.C,v 1.33 2012/04/12 22:44:46 moko Exp $" IDENT_PA_VALUE_H IDENT_PA_PROPERTY_H;
+volatile const char * IDENT_PA_VALUE_C="$Id: pa_value.C,v 1.34 2012/04/18 21:42:51 moko Exp $" IDENT_PA_VALUE_H IDENT_PA_PROPERTY_H;
 
 // globals
 
@@ -126,22 +126,4 @@ const String& attributed_meaning_to_string(Value& meaning,
 		append_attribute_meaning(result, meaning, lang, forced);
 
 	return result;
-}
-
-Value &memcached_deserialize(Serialization_data &data){
-	Value *result=0;
-	
-	switch(data.flags) {
-		case SERIALIZED_FILE:
-//			result=VFile::deserialize(data);
-			break;
-		default:
-			if(data.flags>=SERIALIZED_STRING && data.flags<SERIALIZED_FILE)
-				result=VString::deserialize(data);
-	}
-	
-	if (!result)
-		throw Exception(PARSER_RUNTIME, 0, "unable to deserialize data id %d, size %d", data.flags, data.length);
-	
-	return *result;
 }

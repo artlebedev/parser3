@@ -13,7 +13,7 @@
 #include "pa_vhash.h"
 #include "pa_vvoid.h"
 
-volatile const char * IDENT_PA_VMEMCACHED_C="$Id: pa_vmemcached.C,v 1.7 2012/04/15 23:49:05 moko Exp $" IDENT_PA_VMEMCACHED_H;
+volatile const char * IDENT_PA_VMEMCACHED_C="$Id: pa_vmemcached.C,v 1.8 2012/04/18 21:42:51 moko Exp $" IDENT_PA_VMEMCACHED_H;
 
 #ifdef WIN32
 const char *memcached_library="libmemcached.dll";
@@ -21,7 +21,9 @@ const char *memcached_library="libmemcached.dll";
 const char *memcached_library="libmemcached.so";
 #endif
 
-void error(const char *step, memcached_st* m, memcached_return rc) {
+// support functions
+
+static void error(const char *step, memcached_st* m, memcached_return rc) {
 	const char* str=f_memcached_strerror(m, rc);
 	throw Exception("memcached", 0, "%s error: %s (%d)", step, str ? str : "<unknown>", rc);
 }
@@ -38,6 +40,67 @@ inline void check_key(const String& akey) {
 	if(akey.length() > MEMCACHED_MAX_KEY)
 		throw Exception("memcached", &akey, "key length %d exceeds limit (%d bytes)", akey.length(), MEMCACHED_MAX_KEY);
 }
+
+// serialization helpers
+
+#define SERIALIZED_STRING 256
+
+struct Serialization_data{
+    unsigned int flags;
+    const char *ptr;
+    size_t length;
+
+    Serialization_data() : flags(0), ptr(0), length(0){}
+    Serialization_data(unsigned int aflags) : flags(aflags), ptr(0), length(0){}
+    Serialization_data(unsigned int aflags, const char *aptr, size_t alength) : flags(aflags), ptr(aptr), length(alength){}
+};
+
+static void serialize_string(const String &str, Serialization_data &data){
+	if(str.is_empty()){
+		data = Serialization_data(SERIALIZED_STRING);
+		return;
+	}
+	
+	if (str.is_not_just_lang()){
+		String::Cm cm = str.serialize(0);
+		data = Serialization_data(SERIALIZED_STRING, cm.str, cm.length);
+	} else {
+		data = Serialization_data(SERIALIZED_STRING + (unsigned int)str.just_lang(), str.cstr(), str.length());
+	}
+}
+
+static VString *deserialize_string(Serialization_data &data){
+	String *result;
+
+	if(data.flags==SERIALIZED_STRING){
+		result = new String();
+		if (data.length>0 && !result->deserialize(0, (void *)data.ptr, data.length))
+			return NULL;
+	} else {
+		// we can't use length from memcached as there can be '\0' inside
+		String::Language lang=(String::Language)(data.flags-SERIALIZED_STRING);
+		result = new String(data.ptr, lang);
+	}
+
+	return new VString(*result);
+}
+
+static Value &deserialize(Serialization_data &data){
+	Value *result=NULL;
+	
+	if(data.flags>=SERIALIZED_STRING && data.flags<(SERIALIZED_STRING+256)){
+		// String->deserialize uses passed string
+		data.ptr=pa_strdup(data.ptr, data.length);
+		result=deserialize_string(data);
+	}
+
+	if (!result)
+		throw Exception(PARSER_RUNTIME, 0, "unable to deserialize data id %d, size %d", data.flags, data.length);
+
+	return *result;
+}
+
+// VMemcached
 
 void VMemcached::open(const String& connect_string, time_t attl){
 	const char *library = memcached_library;
@@ -81,8 +144,7 @@ Value* VMemcached::get_element(const String& aname) {
 	data.ptr=f_memcached_get(fm, aname.cstr(), aname.length(), &data.length, &data.flags, &rc);
 
 	if(rc==MEMCACHED_SUCCESS){
-		data.ptr=pa_strdup(data.ptr, data.length);
-		return &memcached_deserialize(data);
+		return &deserialize(data);
 	}
 	
 	if(rc==MEMCACHED_NOTFOUND)
@@ -114,17 +176,13 @@ Value &VMemcached::mget(ArrayString& akeys) {
 	
 	// memcached_fetch_result calls memcached_result_create and memcached_result_free, we don't need to do this.
 	memcached_result_st *results=0;
-	
 	memcached_return rc;
 	
 	while((results=f_memcached_fetch_result(fm, results, &rc)) && (rc == MEMCACHED_SUCCESS)){
 		const char *hkey = pa_strdup(f_memcached_result_key_value(results), f_memcached_result_key_length(results));
-		
-		Serialization_data value(f_memcached_result_flags(results));
-		value.length = f_memcached_result_length(results);
-		value.ptr = pa_strdup(f_memcached_result_value(results), value.length);
+		Serialization_data data(f_memcached_result_flags(results), f_memcached_result_value(results), f_memcached_result_length(results));
 
-		hresult.hash().put(hkey, &memcached_deserialize(value));
+		hresult.hash().put(hkey, &deserialize(data));
 	}
 
 	if (rc != MEMCACHED_END && rc != MEMCACHED_NOTFOUND)
@@ -154,17 +212,21 @@ const VJunction* VMemcached::put_element(const String& aname, Value* avalue, boo
 		lvalue=avalue;
 	}
 
-	Serialization_data value;
-	avalue->serialize(value);
+	Serialization_data data;
+	if(avalue->is_string()){
+		serialize_string(*avalue->get_string(), data);
+	} else {
+		throw Exception("memcached", &aname, "%s serialization not supported yet", avalue->type());
+	}
 
 	check("set", fm, f_memcached_set(
 			fm,
 			aname.cstr(),
 			aname.length(),
-			value.ptr,
-			value.length,
+			data.ptr,
+			data.length,
 			ttl,
-			value.flags));
+			data.flags));
 
 	return PUT_ELEMENT_REPLACED_ELEMENT;
 }
