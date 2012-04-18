@@ -19,7 +19,7 @@
 
 #include "pa_httpd.h"
 
-volatile const char * IDENT_MOD_PARSER3_C="$Id: mod_parser3.c,v 1.13 2012/04/18 13:34:39 moko Exp $" IDENT_PA_HTTPD_H;
+volatile const char * IDENT_MOD_PARSER3_C="$Id: mod_parser3.c,v 1.14 2012/04/18 18:58:33 moko Exp $" IDENT_PA_HTTPD_H;
 
 #define PARSER3_HANDLER "parser3-handler"
 
@@ -29,6 +29,7 @@ volatile const char * IDENT_MOD_PARSER3_C="$Id: mod_parser3.c,v 1.13 2012/04/18 
 #ifdef STANDARD20_MODULE_STUFF
 
 #include "apr_strings.h"
+#include "ap_mpm.h"
 
 #define ap_pcalloc	apr_pcalloc
 #define ap_pstrdup	apr_pstrdup
@@ -54,6 +55,7 @@ volatile const char * IDENT_MOD_PARSER3_C="$Id: mod_parser3.c,v 1.13 2012/04/18 
 
 #ifdef STANDARD20_MODULE_STUFF
 module AP_MODULE_DECLARE_DATA parser3_module;
+static int is_threaded = 0;
 #else
 module MODULE_VAR_EXPORT parser3_module;
 #endif
@@ -79,6 +81,14 @@ static int parser_handler(request_rec *r) {
 #ifdef STANDARD20_MODULE_STUFF
 	if(strcmp(r->handler, PARSER3_HANDLER))
 		return DECLINED;
+
+	if(is_threaded){
+		const char *message="Parser3 module requires apache2-mpm-prefork";
+		r->status=HTTP_INTERNAL_SERVER_ERROR;
+		r->content_type="text/plain";
+		ap_rwrite(message, strlen(message), r);
+		return OK;
+	}
 #endif
 
 	// we setup module here to avoid GPF on init with php5-xsl installed
@@ -177,6 +187,8 @@ static const handler_rec parser_handlers[] =
 */
 static void parser_register_hooks(apr_pool_t* pool)
 {
+	int mpm_query_info;
+	is_threaded = ap_mpm_query(AP_MPMQ_IS_THREADED, &mpm_query_info) == APR_SUCCESS && mpm_query_info != AP_MPMQ_NOT_SUPPORTED;
 	ap_hook_handler(parser_handler, NULL, NULL, APR_HOOK_MIDDLE);
 	ap_hook_child_init(parser_child_init, NULL, NULL, APR_HOOK_MIDDLE);
 };
@@ -267,7 +279,7 @@ int pa_ap_table_size(const pa_table *t) {
 }
 
 void pa_ap_table_do(int (*comp) (void *, const char *, const char *), void *rec, const pa_table *t, ...) {
-	ap_table_do(comp, rec, (apr_table_t*)t, 0);
+	ap_table_do(comp, rec, (apr_table_t*)t, NULL);
 }
 
 char * pa_ap_pstrdup(pa_pool *p, const char *s) {
