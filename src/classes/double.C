@@ -13,7 +13,7 @@
 #include "pa_vint.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_DOUBLE_C="$Id: double.C,v 1.64 2012/03/16 09:24:06 moko Exp $" IDENT_PA_VDOUBLE_H;
+volatile const char * IDENT_DOUBLE_C="$Id: double.C,v 1.65 2012/04/19 19:41:29 moko Exp $" IDENT_PA_VDOUBLE_H;
 
 // externs
 
@@ -82,15 +82,12 @@ static void _div(Request& r, MethodParams& params) { vdouble_op(r, params, &__di
 static void _mod(Request& r, MethodParams& params) { vdouble_op(r, params, &__mod); }
 
 // from string.C
-extern 
-const String* sql_result_string(Request& r, MethodParams& params,
-				HashStringValue*& options, Value*& default_code);
+extern const String* sql_result_string(Request& r, MethodParams& params, Value*& default_code);
 
 static void _sql(Request& r, MethodParams& params) {
 	double val;
-	HashStringValue* options;
 	Value* default_code;
-	if(const String* string=sql_result_string(r, params, options, default_code))
+	if(const String* string=sql_result_string(r, params, default_code))
 		val=string->as_double();
 	else
 		if(default_code)

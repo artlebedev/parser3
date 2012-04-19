@@ -17,7 +17,7 @@
 #include "pa_vtable.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_PA_VFORM_C="$Id: pa_vform.C,v 1.102 2012/03/16 09:24:17 moko Exp $" IDENT_PA_VFORM_H;
+volatile const char * IDENT_PA_VFORM_C="$Id: pa_vform.C,v 1.103 2012/04/19 19:41:30 moko Exp $" IDENT_PA_VFORM_H;
 
 // defines
 
@@ -199,7 +199,7 @@ void VForm::ParseMimeInput(
 
 		size_t headerSize=getHeader(dataStart, lastData-dataStart);
 
-		if(!dataStart|!dataEnd|!headerSize) break;
+		if(!dataStart || !dataEnd || !headerSize) break;
 		if(searchAttribute(dataStart, "content-disposition: form-data", headerSize)) {
 			size_t valueSize=(dataEnd-dataStart)-headerSize-5-strlen(boundary);
 			char *attr=getAttributeValue(dataStart, " name=", headerSize), 

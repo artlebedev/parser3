@@ -13,7 +13,7 @@
 #include "pa_vint.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_INT_C="$Id: int.C,v 1.60 2012/03/16 09:24:07 moko Exp $" IDENT_PA_VINT_H;
+volatile const char * IDENT_INT_C="$Id: int.C,v 1.61 2012/04/19 19:41:29 moko Exp $" IDENT_PA_VINT_H;
 
 // externs
 
@@ -81,14 +81,12 @@ static void _div(Request& r, MethodParams& params) { vint_op(r, params, &__div);
 static void _mod(Request& r, MethodParams& params) { vint_op(r, params, &__mod); }
 
 // from string.C
-extern 
-const String* sql_result_string(Request& r, MethodParams& params,
-				HashStringValue*& options, Value*& default_code);
+extern const String* sql_result_string(Request& r, MethodParams& params, Value*& default_code);
+
 static void _sql(Request& r, MethodParams& params) {
 	int val;
-	HashStringValue* options;
 	Value* default_code=0;
-	if(const String* string=sql_result_string(r, params, options, default_code))
+	if(const String* string=sql_result_string(r, params, default_code))
 		val=string->as_int();
 	else
 		if(default_code)

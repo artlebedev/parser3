@@ -20,7 +20,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.203 2012/03/16 09:24:08 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.204 2012/04/19 19:41:29 moko Exp $";
 
 // class
 
@@ -526,8 +526,7 @@ extern String sql_distinct_name;
 extern int marshal_binds(HashStringValue& hash, SQL_Driver::Placeholder*& placeholders);
 extern void unmarshal_bind_updates(HashStringValue& hash, int placeholder_count, SQL_Driver::Placeholder* placeholders);
 
-const String* sql_result_string(Request& r, MethodParams& params,
-				HashStringValue*& options, Value*& default_code) {
+const String* sql_result_string(Request& r, MethodParams& params, Value*& default_code) {
 	Value& statement=params.as_junction(0, "statement must be code");
 
 	HashStringValue* bind=0;
@@ -535,7 +534,7 @@ const String* sql_result_string(Request& r, MethodParams& params,
 	ulong offset=0;
 	default_code=0;
 	if(params.count()>1)
-		if((options=params.as_hash(1))) {
+		if(HashStringValue* options=params.as_hash(1)) {
 			int valid_options=0;
 			if(Value* vbind=options->get(sql_bind_name)) {
 				valid_options++;
@@ -555,8 +554,6 @@ const String* sql_result_string(Request& r, MethodParams& params,
 			if(valid_options!=options->count())
 				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 		}
-	else
-		options=0;
 
 	SQL_Driver::Placeholder* placeholders=0;
 	uint placeholders_count=0;
@@ -587,9 +584,8 @@ const String* sql_result_string(Request& r, MethodParams& params,
 
 static void _sql(Request& r, MethodParams& params) {
 
-	HashStringValue* options;
 	Value* default_code;
-	const String* string=sql_result_string(r, params, options, default_code);
+	const String* string=sql_result_string(r, params, default_code);
 	if(!string) {
 		if(default_code) {
 			string=&r.process_to_string(*default_code);

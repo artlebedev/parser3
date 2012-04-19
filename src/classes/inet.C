@@ -8,7 +8,7 @@
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_INET_C="$Id: inet.C,v 1.5 2012/03/16 09:24:07 moko Exp $";
+volatile const char * IDENT_INET_C="$Id: inet.C,v 1.6 2012/04/19 19:41:29 moko Exp $";
 
 class MInet: public Methoded {
 public:
@@ -49,10 +49,10 @@ static void _aton(Request& r, MethodParams& params){
 	bool err=false;
 	const char* p=ip_cstr;
 	while(char c=*p++){
-		uint digit=(uint)(c-'0');	// assume ascii
+		int digit=(int)(c-'0');	// assume ascii
 		if(digit>=0 && digit<=9){
 			byte_start=false;
-			if((byte_value=byte_value*10+digit) > 255){
+			if((byte_value=byte_value*10+(uint)digit) > 255){
 				err=true;
 				break;
 			}
