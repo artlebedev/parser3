@@ -16,7 +16,7 @@
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.16 2012/04/20 20:02:03 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.17 2012/04/20 20:25:47 moko Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -438,7 +438,7 @@ static void curl_setopt(HashStringValue::key_type key, HashStringValue::value_ty
 			if (stderr){
 				res=f_curl_easy_setopt(curl(), opt->id, stderr);
 			} else {
-				throw Exception("curl", 0, "failed to set option '%s': unable to open file %s", key.cstr(), value_str);
+				throw Exception("curl", 0, "failed to set option '%s': unable to open file '%s'", key.cstr(), value_str);
 			}
 			break;
 		}
