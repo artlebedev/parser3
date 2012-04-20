@@ -6,8 +6,6 @@
 
 #include "pa_config_includes.h"
 
-#ifdef HAVE_CURL
-
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
 #include "pa_vfile.h"
@@ -18,7 +16,7 @@
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.14 2012/03/19 21:28:43 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.15 2012/04/20 11:43:04 moko Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -186,6 +184,7 @@ public:
 		CURL_FORM,
 		CURL_HEADERS,
 		CURL_FILE,
+		CURL_STDERR,
 		PARSER_LIBRARY,
 		PARSER_NAME,
 		PARSER_CONTENT_TYPE,
@@ -209,13 +208,15 @@ public:
 		CURL_OPT(CURL_INT, LOCALPORT);
 		CURL_OPT(CURL_INT, PORT);
 		
+		CURL_OPT(CURL_INT, VERBOSE);
+		CURL_OPT(CURL_STDERR, STDERR);
+		CURL_OPT(CURL_INT, MAXFILESIZE);
+		
 		CURL_OPT(CURL_INT, HTTPAUTH);
 		CURL_OPT(CURL_STRING, USERPWD);
 
-#ifdef CURLOPT_USERNAME
 		CURL_OPT(CURL_STRING, USERNAME);
 		CURL_OPT(CURL_STRING, PASSWORD);
-#endif
 
 		CURL_OPT(CURL_URLENCODE, USERAGENT);
 		CURL_OPT(CURL_URLENCODE, REFERER);
@@ -243,9 +244,7 @@ public:
 		CURL_OPT(CURL_INT, HTTP_TRANSFER_DECODING);
 
 		CURL_OPT(CURL_INT, MAXREDIRS);
-#ifdef CURLOPT_POSTREDIR
 		CURL_OPT(CURL_INT, POSTREDIR);
-#endif
 
 		CURL_OPT(CURL_STRING, RANGE);
 
@@ -546,7 +545,7 @@ static void _curl_load_action(Request& r, MethodParams& params){
 	CURL_SETOPT(CURLOPT_WRITEHEADER, &headers, "curl header buffer");
 
 	if((res=f_curl_easy_perform(curl())) != CURLE_OK){
-		char *ex_type = 0; 
+		const char *ex_type = 0; 
 		switch(res){
 			case CURLE_OPERATION_TIMEDOUT:
 				ex_type = "curl.timeout"; break;
@@ -618,11 +617,3 @@ MCurl::MCurl(): Methoded("curl") {
 	add_native_method("options", Method::CT_STATIC, _curl_options, 1, 1);
 	add_native_method("load", Method::CT_STATIC, _curl_load, 0, 1);
 }
-
-#else // HAVE_CURL
-
-#include "classes.h"
-// global variable
-DECLARE_CLASS_VAR(curl, 0, 0); // fictive
-
-#endif // HAVE_CURL
