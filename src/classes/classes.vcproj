@@ -27,7 +27,7 @@
 				GlobalOptimizations="TRUE"
 				InlineFunctionExpansion="1"
 				OptimizeForWindowsApplication="TRUE"
-				AdditionalIncludeDirectories="gd;..\include;..\types;..\lib\gc;..\lib\gd;..\lib\smtp;..\lib\gc\include;..\lib\cord\include;..\..\..\win32\pcre;..\lib\sdbm\pa-include;..\lib\md5;..\lib\memcached;..\lib\json;..\sql;..\..\..\win32\gnome\libxml2-x.x.x\win32\release\include;..\..\..\win32\gnome\libxslt-x.x.x\win32\release\include;..\lib\ltdl;..\..\..\win32\curl\include;..\..\..\win32\curl\include\curl"
+				AdditionalIncludeDirectories="gd;..\include;..\types;..\lib\gc;..\lib\gd;..\lib\smtp;..\lib\gc\include;..\lib\cord\include;..\..\..\win32\pcre;..\lib\sdbm\pa-include;..\lib\md5;..\lib\memcached;..\lib\json;..\sql;..\..\..\win32\gnome\libxml2-x.x.x\win32\release\include;..\..\..\win32\gnome\libxslt-x.x.x\win32\release\include;..\lib\ltdl;..\lib\curl"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
@@ -80,7 +80,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="gd;..\include;..\types;..\lib\gc;..\lib\gd;..\lib\smtp;..\lib\gc\include;..\lib\cord\include;..\..\..\win32\pcre;&quot;..\lib\sdbm\pa-include&quot;;..\lib\md5;..\lib\memcached;..\lib\json;..\sql;&quot;..\..\..\win32\gnome\libxml2-x.x.x\win32\debug\include&quot;;&quot;..\..\..\win32\gnome\libxslt-x.x.x\win32\debug\include&quot;;..\lib\ltdl;..\..\..\win32\curl\include;..\..\..\win32\curl\include\curl"
+				AdditionalIncludeDirectories="gd;..\include;..\types;..\lib\gc;..\lib\gd;..\lib\smtp;..\lib\gc\include;..\lib\cord\include;..\..\..\win32\pcre;&quot;..\lib\sdbm\pa-include&quot;;..\lib\md5;..\lib\memcached;..\lib\json;..\sql;&quot;..\..\..\win32\gnome\libxml2-x.x.x\win32\debug\include&quot;;&quot;..\..\..\win32\gnome\libxslt-x.x.x\win32\debug\include&quot;;..\lib\ltdl;..\lib\curl"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
