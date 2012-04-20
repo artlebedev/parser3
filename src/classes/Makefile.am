@@ -1,4 +1,4 @@
-INCLUDES = -I../types -I../sql -I../lib/gd -I../lib/gc/include -I../lib/cord/include -I../lib/sdbm/pa-include -Igd $(INCLTDL) @CURL_INCLUDES@ @PCRE_INCLUDES@ @XML_INCLUDES@ -I../lib/md5 -I../lib/smtp -I../lib/json -I../lib/memcached
+INCLUDES = -I../types -I../sql -I../lib/gd -I../lib/gc/include -I../lib/cord/include -I../lib/sdbm/pa-include -Igd $(INCLTDL) @PCRE_INCLUDES@ @XML_INCLUDES@ -I../lib/md5 -I../lib/smtp -I../lib/json -I../lib/memcached -I../lib/curl
 
 noinst_LIBRARIES = libclasses.a
 noinst_HEADERS = classes.h xnode.h

@@ -75,7 +75,6 @@ COMPILE_APACHE_MODULE_TRUE = @COMPILE_APACHE_MODULE_TRUE@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CPP_LIBS = @CPP_LIBS@
-CURL_INCLUDES = @CURL_INCLUDES@
 CXX = @CXX@
 CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
@@ -172,7 +171,7 @@ sqlite_client = @sqlite_client@
 subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-SUBDIRS = gd smtp cord ltdl pcre md5 gc sdbm json memcached
+SUBDIRS = gd smtp cord ltdl pcre md5 gc sdbm json memcached curl
 all: all-recursive
 
 .SUFFIXES:

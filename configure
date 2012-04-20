@@ -310,7 +310,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar P3S build build_cpu build_vendor build_os host host_cpu host_vendor host_os RANLIB ac_ct_RANLIB YACC CXX CXXFLAGS LDFLAGS CPPFLAGS ac_ct_CXX EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE CC CFLAGS ac_ct_CC CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE commentcharset_windows1251 commentcharset_windows1250 commentcharset_windows1257 commentcharset_koi8r dll_extension mysql_client pgsql_client oracle_client sqlite_client CPP_LIBS GC_LIBS PCRE_INCLUDES PCRE_LIBS XML_INCLUDES XML_LIBS CURL_INCLUDES MIME_INCLUDES MIME_LIBS APACHE APACHE_INC APACHE_CFLAGS COMPILE_APACHE_MODULE_TRUE COMPILE_APACHE_MODULE_FALSE INCLTDL LIBLTDL subdirs LIBADD_DL CPP EGREP LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar P3S build build_cpu build_vendor build_os host host_cpu host_vendor host_os RANLIB ac_ct_RANLIB YACC CXX CXXFLAGS LDFLAGS CPPFLAGS ac_ct_CXX EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE CC CFLAGS ac_ct_CC CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE commentcharset_windows1251 commentcharset_windows1250 commentcharset_windows1257 commentcharset_koi8r dll_extension mysql_client pgsql_client oracle_client sqlite_client CPP_LIBS GC_LIBS PCRE_INCLUDES PCRE_LIBS XML_INCLUDES XML_LIBS MIME_INCLUDES MIME_LIBS APACHE APACHE_INC APACHE_CFLAGS COMPILE_APACHE_MODULE_TRUE COMPILE_APACHE_MODULE_FALSE INCLTDL LIBLTDL subdirs LIBADD_DL CPP EGREP LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -897,7 +897,6 @@ Optional Packages:
                           Gnome XML libraries are installed (shared libs)
   --with-static-xml=D     D is the directory where
                           Gnome XML libraries are installed (static libs)
-  --with-curl=D           D is the curl includes directory
   --with-glib-config=FILE FILE is glib library
                           configuration file (search for glib*-config)
   --with-shared-mailreceive=D is the directory where
@@ -4302,30 +4301,6 @@ fi;
 
 
 
-# Check whether --with-curl or --without-curl was given.
-if test "${with_curl+set}" = set; then
-  withval="$with_curl"
-
-	CURLINC=$withval
-
-	if test \! -d $CURLINC -o \! -r $CURLINC/curl.h; then
-		{ { echo "$as_me:$LINENO: error: $CURLINC does not seem to be valid curl includes directory" >&5
-echo "$as_me: error: $CURLINC does not seem to be valid curl includes directory" >&2;}
-   { (exit 1); exit 1; }; }
-	fi
-
-
-cat >>confdefs.h <<\_ACEOF
-#define HAVE_CURL
-_ACEOF
-
-
-	CURL_INCLUDES="-I$CURLINC -I$CURLINC/../"
-
-fi;
-
-
-
 # Check whether --with-glib-config or --without-glib-config was given.
 if test "${with_glib_config+set}" = set; then
   withval="$with_glib_config"
@@ -7569,7 +7544,7 @@ rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
 
           ac_config_headers="$ac_config_headers src/include/pa_config_auto.h"
 
-                                                                                                                                                                                                                                                                                                            ac_config_files="$ac_config_files Makefile src/Makefile src/types/Makefile src/classes/Makefile src/include/Makefile src/main/Makefile src/sql/Makefile src/lib/Makefile src/lib/gd/Makefile src/lib/smtp/Makefile src/lib/gc/Makefile src/lib/gc/include/Makefile src/lib/pcre/Makefile src/lib/cord/Makefile src/lib/cord/include/Makefile src/lib/cord/include/private/Makefile src/lib/ltdl/Makefile src/lib/md5/Makefile src/lib/sdbm/Makefile src/lib/sdbm/pa-include/Makefile src/lib/json/Makefile src/lib/memcached/Makefile src/targets/Makefile src/targets/cgi/Makefile src/targets/apache/Makefile src/targets/isapi/Makefile etc/Makefile etc/parser3.charsets/Makefile bin/Makefile bin/auto.p.dist"
+                                                                                                                                                                                                                                                                                                                      ac_config_files="$ac_config_files Makefile src/Makefile src/types/Makefile src/classes/Makefile src/include/Makefile src/main/Makefile src/sql/Makefile src/lib/Makefile src/lib/gd/Makefile src/lib/smtp/Makefile src/lib/gc/Makefile src/lib/gc/include/Makefile src/lib/pcre/Makefile src/lib/cord/Makefile src/lib/cord/include/Makefile src/lib/cord/include/private/Makefile src/lib/ltdl/Makefile src/lib/md5/Makefile src/lib/sdbm/Makefile src/lib/sdbm/pa-include/Makefile src/lib/json/Makefile src/lib/memcached/Makefile src/lib/curl/Makefile src/targets/Makefile src/targets/cgi/Makefile src/targets/apache/Makefile src/targets/isapi/Makefile etc/Makefile etc/parser3.charsets/Makefile bin/Makefile bin/auto.p.dist"
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure
@@ -8155,6 +8130,7 @@ do
   "src/lib/sdbm/pa-include/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/lib/sdbm/pa-include/Makefile" ;;
   "src/lib/json/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/lib/json/Makefile" ;;
   "src/lib/memcached/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/lib/memcached/Makefile" ;;
+  "src/lib/curl/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/lib/curl/Makefile" ;;
   "src/targets/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/targets/Makefile" ;;
   "src/targets/cgi/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/targets/cgi/Makefile" ;;
   "src/targets/apache/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/targets/apache/Makefile" ;;
@@ -8321,7 +8297,6 @@ s,@PCRE_INCLUDES@,$PCRE_INCLUDES,;t t
 s,@PCRE_LIBS@,$PCRE_LIBS,;t t
 s,@XML_INCLUDES@,$XML_INCLUDES,;t t
 s,@XML_LIBS@,$XML_LIBS,;t t
-s,@CURL_INCLUDES@,$CURL_INCLUDES,;t t
 s,@MIME_INCLUDES@,$MIME_INCLUDES,;t t
 s,@MIME_LIBS@,$MIME_LIBS,;t t
 s,@APACHE@,$APACHE,;t t

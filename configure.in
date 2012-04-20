@@ -350,19 +350,6 @@ AC_ARG_WITH(static-xml,[  --with-static-xml=D     D is the directory where
 AC_SUBST(XML_INCLUDES)
 AC_SUBST(XML_LIBS)
 
-AC_ARG_WITH(curl,[  --with-curl=D           D is the curl includes directory],[
-	CURLINC=$withval
-
-	if test \! -d $CURLINC -o \! -r $CURLINC/curl.h; then
-		AC_MSG_ERROR($CURLINC does not seem to be valid curl includes directory)
-	fi
-
-	AC_DEFINE(HAVE_CURL,,curl enabled parser)
-
-	CURL_INCLUDES="-I$CURLINC -I$CURLINC/../"
-])
-AC_SUBST(CURL_INCLUDES)
-
 AC_ARG_WITH(glib-config,[  --with-glib-config=FILE FILE is glib library
                           configuration file (search for glib*-config)],
 	GLIB_CONFIG=$withval
@@ -705,6 +692,7 @@ AC_OUTPUT(
 	src/lib/sdbm/pa-include/Makefile
 	src/lib/json/Makefile
 	src/lib/memcached/Makefile
+	src/lib/curl/Makefile
 	src/targets/Makefile
 	src/targets/cgi/Makefile
 	src/targets/apache/Makefile
