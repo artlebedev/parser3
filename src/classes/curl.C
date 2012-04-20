@@ -16,7 +16,7 @@
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.15 2012/04/20 11:43:04 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.16 2012/04/20 20:02:03 moko Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -76,10 +76,13 @@ public:
 	bool is_text;
 	Charset *charset, *response_charset;
 	struct curl_httppost *f_post;
+	FILE *stderr;
 
-	ParserOptions() : filename(0), content_type(0), is_text(true), charset(0), response_charset(0), f_post(0){}
+	ParserOptions() : filename(0), content_type(0), is_text(true), charset(0), response_charset(0), f_post(0), stderr(0){}
 	~ParserOptions() {
 		f_curl_formfree(f_post);
+		if(stderr)
+			fclose(stderr);
 	}
 	 
 };
@@ -275,13 +278,8 @@ public:
 		CURL_OPT(CURL_STRING, SSLENGINE);
 		CURL_OPT(CURL_STRING, SSLENGINE_DEFAULT);
 
-#ifdef CURLOPT_ISSUERCERT
 		CURL_OPT(CURL_FILE, ISSUERCERT);
-#endif
-
-#ifdef CURLOPT_CRLFILE
 		CURL_OPT(CURL_FILE, CRLFILE);
-#endif
 
 		CURL_OPT(CURL_STRING, CAINFO);
 		CURL_OPT(CURL_STRING, CAPATH);
@@ -416,7 +414,7 @@ static void curl_setopt(HashStringValue::key_type key, HashStringValue::value_ty
 				f_curl_formfree(options().f_post);
 				options().f_post = 0;
 			} else {
-				throw Exception("curl", 0, "%s must be a hash", key.cstr());
+				throw Exception("curl", 0, "failed to set option '%s': value must be a hash", key.cstr());
 			}
 			res=f_curl_easy_setopt(curl(), CURLOPT_HTTPPOST, foptions->f_post);
 			break;
@@ -433,12 +431,23 @@ static void curl_setopt(HashStringValue::key_type key, HashStringValue::value_ty
 			res=f_curl_easy_setopt(curl(), opt->id, value_str);
 			break;
 		}
+		case CurlOption::CURL_STDERR:{
+			// verbose output redirection from stderr to file curl option
+			const char *value_str=r.absolute(v.as_string()).taint_cstr(String::L_FILE_SPEC);
+			FILE *stderr=options().stderr=fopen(value_str, "at");
+			if (stderr){
+				res=f_curl_easy_setopt(curl(), opt->id, stderr);
+			} else {
+				throw Exception("curl", 0, "failed to set option '%s': unable to open file %s", key.cstr(), value_str);
+			}
+			break;
+		}
 		case CurlOption::PARSER_LIBRARY:{
 			// 'library' parser option
 			if(fcurl==0){
 				curl_library=v.as_string().taint_cstr(String::L_FILE_SPEC);
 			} else 
-				throw Exception("curl", 0, "failed to set option '%s': %s", key.cstr(), "already loaded");
+				throw Exception("curl", 0, "failed to set option '%s': already loaded", key.cstr());
 			break;
 		}
 		case CurlOption::PARSER_NAME:{
