@@ -16,7 +16,7 @@
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.17 2012/04/20 20:25:47 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.18 2012/04/22 20:03:02 moko Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -282,7 +282,7 @@ public:
 		CURL_OPT(CURL_FILE, CRLFILE);
 
 		CURL_OPT(CURL_STRING, CAINFO);
-		CURL_OPT(CURL_STRING, CAPATH);
+		CURL_OPT(CURL_FILE, CAPATH);
 		CURL_OPT(CURL_INT, SSL_VERIFYPEER);
 		CURL_OPT(CURL_INT, SSL_VERIFYHOST);
 		CURL_OPT(CURL_STRING, SSL_CIPHER_LIST);
@@ -357,6 +357,14 @@ static void curl_form(HashStringValue *value_hash, Request& r){
 	}
 }
 
+static const char *curl_check_file(const String &file_spec){
+	const char *file_spec_cstr=file_spec.taint_cstr(String::L_FILE_SPEC);
+	struct stat finfo;
+	if(stat(file_spec_cstr, &finfo)==0)
+		check_safe_mode(finfo, file_spec, file_spec_cstr);
+	return file_spec_cstr;
+}
+
 static void curl_setopt(HashStringValue::key_type key, HashStringValue::value_type value, Request& r) {
 	CurlOption *opt=curl_options->get(key);
 
@@ -427,18 +435,18 @@ static void curl_setopt(HashStringValue::key_type key, HashStringValue::value_ty
 		}
 		case CurlOption::CURL_FILE:{
 			// file-spec curl option
-			const char *value_str=r.absolute(v.as_string()).taint_cstr(String::L_FILE_SPEC);
-			res=f_curl_easy_setopt(curl(), opt->id, value_str);
+			const char *file_spec_cstr=curl_check_file(r.absolute(v.as_string()));
+			res=f_curl_easy_setopt(curl(), opt->id, file_spec_cstr);
 			break;
 		}
 		case CurlOption::CURL_STDERR:{
 			// verbose output redirection from stderr to file curl option
-			const char *value_str=r.absolute(v.as_string()).taint_cstr(String::L_FILE_SPEC);
-			FILE *stderr=options().stderr=fopen(value_str, "at");
+			const char *file_spec_cstr=curl_check_file(r.absolute(v.as_string()));
+			FILE *stderr=options().stderr=fopen(file_spec_cstr, "wt");
 			if (stderr){
 				res=f_curl_easy_setopt(curl(), opt->id, stderr);
 			} else {
-				throw Exception("curl", 0, "failed to set option '%s': unable to open file '%s'", key.cstr(), value_str);
+				throw Exception("curl", 0, "failed to set option '%s': unable to open file '%s'", key.cstr(), file_spec_cstr);
 			}
 			break;
 		}
