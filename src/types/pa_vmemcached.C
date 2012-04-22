@@ -13,7 +13,7 @@
 #include "pa_vhash.h"
 #include "pa_vvoid.h"
 
-volatile const char * IDENT_PA_VMEMCACHED_C="$Id: pa_vmemcached.C,v 1.9 2012/04/18 21:51:28 moko Exp $" IDENT_PA_VMEMCACHED_H;
+volatile const char * IDENT_PA_VMEMCACHED_C="$Id: pa_vmemcached.C,v 1.10 2012/04/22 22:06:50 moko Exp $" IDENT_PA_VMEMCACHED_H;
 
 #ifdef WIN32
 const char *memcached_library="libmemcached.dll";
@@ -103,20 +103,34 @@ static Value &deserialize(Serialization_data &data){
 
 // VMemcached
 
-void VMemcached::open(const String& connect_string, time_t attl){
-	const char *library = memcached_library;
+static void load_memcached(const char *library){
 	const char *memcached_status = memcached_load(library);
 
 	if(memcached_status)
 		throw Exception("memcached", 0, "failed to load memcached library %s: %s", library, memcached_status);
+}
 
-	if(connect_string.is_empty())
-		throw Exception("memcached", 0, "server name must not be empty");
-
+void VMemcached::open(const String& options_string, time_t attl){
+	load_memcached(memcached_library);
+	
+	if(f_memcached==NULL)
+		throw Exception("memcached", 0, "options hash requires libmemcached version 0.49 or later");
+	
+	if(options_string.is_empty())
+		throw Exception("memcached", 0, "options hash must not be empty");
+	
 	fttl=attl;
+	fm=f_memcached(options_string.cstr(), options_string.length());
+}
 
+void VMemcached::open_parse(const String& connect_string, time_t attl){
+	load_memcached(memcached_library);
+	
+	if(connect_string.is_empty())
+		throw Exception("memcached", 0, "connect string must not be empty");
+	
+	fttl=attl;
 	fm=f_memcached_create(NULL);
-
 	memcached_server_st* fservers = f_memcached_servers_parse(connect_string.cstr());
 	check("server_push", fm, f_memcached_server_push(fm, fservers));
 }

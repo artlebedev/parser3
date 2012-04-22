@@ -17,6 +17,7 @@ typedef unsigned int uint32_t;
 const char *memcached_load(const char *alt_library_name);
 
 // memcached library inferface
+typedef memcached_st *(*t_memcached)(const char *string, size_t string_length);
 typedef memcached_st *(*t_memcached_create)(memcached_st *ptr);
 typedef void (*t_memcached_free)(memcached_st *ptr);
 typedef const char *(*t_memcached_strerror)(memcached_st *ptr, memcached_return_t rc);
@@ -42,6 +43,7 @@ typedef size_t (*t_memcached_result_length)(const memcached_result_st *self);
 typedef uint32_t (*t_memcached_result_flags)(const memcached_result_st *self);
 
 
+extern t_memcached f_memcached;
 extern t_memcached_create f_memcached_create;
 extern t_memcached_free f_memcached_free;
 extern t_memcached_strerror f_memcached_strerror;

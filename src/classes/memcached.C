@@ -14,7 +14,7 @@
 #include "pa_vtable.h"
 #include "pa_vmemcached.h"
 
-volatile const char * IDENT_MEMCACHED_C="$Id: memcached.C,v 1.2 2012/03/23 22:33:23 moko Exp $";
+volatile const char * IDENT_MEMCACHED_C="$Id: memcached.C,v 1.3 2012/04/22 22:06:50 moko Exp $";
 
 class MMemcached: public Methoded {
 public: // VStateless_class
@@ -26,14 +26,27 @@ public:
 DECLARE_CLASS_VAR(memcached, new MMemcached, 0);
 
 static void _open(Request& r, MethodParams& params) {
-	const String& connect_string=params.as_string(0, "connection string must be string");
+	Value& param_value=params.as_no_junction(0, PARAM_MUST_NOT_BE_CODE);
+	VMemcached& self=GET_SELF(r, VMemcached);
+
 	int ttl=0;
 	
 	if(params.count()>1)
 		ttl=params.as_int(1, "default expiration must be int", r);
 
-	VMemcached& self=GET_SELF(r, VMemcached);
-	self.open(connect_string, ttl);
+	if(HashStringValue* options=param_value.get_hash()){
+		String result;
+		for(HashStringValue::Iterator i(*options); i; i.next()){
+			result << (result.is_empty() ? "--" : " --") << i.key();
+			const String& value=i.value()->as_string();
+			if(!value.is_empty())
+				result << "=" << value;
+		}
+		self.open(result, ttl);
+	} else {
+		const String& connect_string=params.as_string(0, "param must be connection string or options hash");
+		self.open_parse(connect_string, ttl);
+	}
 }
 
 static void _flush(Request& r, MethodParams& params) {
