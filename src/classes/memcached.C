@@ -12,9 +12,10 @@
 #include "pa_request.h"
 #include "pa_vstring.h"
 #include "pa_vtable.h"
+#include "pa_vbool.h"
 #include "pa_vmemcached.h"
 
-volatile const char * IDENT_MEMCACHED_C="$Id: memcached.C,v 1.3 2012/04/22 22:06:50 moko Exp $";
+volatile const char * IDENT_MEMCACHED_C="$Id: memcached.C,v 1.4 2012/04/24 22:41:09 moko Exp $";
 
 class MMemcached: public Methoded {
 public: // VStateless_class
@@ -89,6 +90,13 @@ static void _mget(Request& r, MethodParams& params) {
 	}
 }
 
+static void _add(Request& r, MethodParams& params) {
+	const String& key=params.as_string(0, "key must be string");
+
+	VMemcached& self=GET_SELF(r, VMemcached);
+	r.write_no_lang(VBool::get(self.add(key, params.get(1))));
+}
+
 static void _delete(Request& r, MethodParams& params) {
 	const String& key=params.as_string(0, "key must be string");
 
@@ -100,5 +108,6 @@ MMemcached::MMemcached() : Methoded("memcached") {
 	add_native_method("open", Method::CT_DYNAMIC, _open, 1, 2);
 	add_native_method("flush", Method::CT_DYNAMIC, _flush, 1, 1);
 	add_native_method("mget", Method::CT_DYNAMIC, _mget, 1, 1000);
+	add_native_method("add", Method::CT_DYNAMIC, _add, 2, 2);
 	add_native_method("delete", Method::CT_DYNAMIC, _delete, 1, 1);
 }

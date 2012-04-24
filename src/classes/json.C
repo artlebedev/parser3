@@ -18,7 +18,7 @@
 #include "pa_vxdoc.h"
 #endif
 
-volatile const char * IDENT_JSON_C="$Id: json.C,v 1.17 2012/03/16 09:24:07 moko Exp $";
+volatile const char * IDENT_JSON_C="$Id: json.C,v 1.18 2012/04/24 22:41:09 moko Exp $";
 
 // class
 
@@ -173,7 +173,7 @@ static int json_callback(Json *json, int type, const JSON_value* value)
 			set_json_value(json, new VString(*json_string(json, value)));
 			break;
 		case JSON_T_NULL:
-			set_json_value(json, new VVoid());
+			set_json_value(json, VVoid::get());
 			break;
 		case JSON_T_TRUE:
 			set_json_value(json, &VBool::get(true));

@@ -31,6 +31,7 @@ typedef char *(*t_memcached_get)(memcached_st *ptr, const char *key, size_t key_
 typedef memcached_return_t (*t_memcached_delete)(memcached_st *ptr, const char *key, size_t key_length, time_t expiration);
 typedef memcached_return_t (*t_memcached_mget)(memcached_st *ptr, const char * const *keys, const size_t *key_length, size_t number_of_keys);
 typedef memcached_return_t (*t_memcached_set)(memcached_st *ptr, const char *key, size_t key_length, const char *value, size_t value_length, time_t expiration, uint32_t flags);
+typedef memcached_return_t (*t_memcached_add)(memcached_st *ptr, const char *key, size_t key_length, const char *value, size_t value_length, time_t expiration, uint32_t flags);
 
 typedef memcached_result_st *(*t_memcached_fetch_result)(memcached_st *ptr, memcached_result_st *result, memcached_return_t *error);
 typedef memcached_result_st *(*t_memcached_result_create)(const memcached_st *ptr, memcached_result_st *result);
@@ -57,6 +58,7 @@ extern t_memcached_get f_memcached_get;
 extern t_memcached_delete f_memcached_delete;
 extern t_memcached_mget f_memcached_mget;
 extern t_memcached_set f_memcached_set;
+extern t_memcached_add f_memcached_add;
 
 extern t_memcached_fetch_result f_memcached_fetch_result;
 extern t_memcached_result_create f_memcached_result_create;

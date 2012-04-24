@@ -13,7 +13,7 @@
 #include "pa_vhash.h"
 #include "pa_vvoid.h"
 
-volatile const char * IDENT_PA_VMEMCACHED_C="$Id: pa_vmemcached.C,v 1.10 2012/04/22 22:06:50 moko Exp $" IDENT_PA_VMEMCACHED_H;
+volatile const char * IDENT_PA_VMEMCACHED_C="$Id: pa_vmemcached.C,v 1.11 2012/04/24 22:41:09 moko Exp $" IDENT_PA_VMEMCACHED_H;
 
 #ifdef WIN32
 const char *memcached_library="libmemcached.dll";
@@ -163,7 +163,7 @@ Value* VMemcached::get_element(const String& aname) {
 	}
 	
 	if(rc==MEMCACHED_NOTFOUND)
-		return new VVoid();
+		return VVoid::get();
 
 	error("get", fm, rc);
 	return 0; // calm down compiler
@@ -209,39 +209,57 @@ Value &VMemcached::mget(ArrayString& akeys) {
 	return hresult;
 }
 
-const VJunction* VMemcached::put_element(const String& aname, Value* avalue, bool /*replace*/){
-	check_key(aname);
-
-	time_t ttl=fttl;
-	Value* lvalue;
+static inline time_t serialize_value(time_t ttl, const String& aname, Value* avalue, Serialization_data &data){
 
 	if(HashStringValue* hash=avalue->get_hash()) {
-		if(Value* ttl_value=hash->get(expires_name))
+		int valid_options=1;
+		if(Value* ttl_value=hash->get(expires_name)){
 			ttl=ttl_value->as_int();
-		if(lvalue=hash->get(value_name)){
-			if(lvalue->get_junction())
+			valid_options++;
+		}
+		if(avalue=hash->get(value_name)){
+			if(avalue->get_junction())
 				throw Exception("memcached", 0, VALUE_NAME " must not be code");
 		} else
 			throw Exception("memcached", &aname, "value hash must contain ." VALUE_NAME);
-	} else {
-		lvalue=avalue;
+			
+		if(valid_options!=hash->count())
+			throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 	}
 
-	Serialization_data data;
 	if(avalue->is_string()){
 		serialize_string(*avalue->get_string(), data);
 	} else {
 		throw Exception("memcached", &aname, "%s serialization not supported yet", avalue->type());
 	}
 
-	check("set", fm, f_memcached_set(
-			fm,
-			aname.cstr(),
-			aname.length(),
-			data.ptr,
-			data.length,
-			ttl,
-			data.flags));
+	return ttl;
+}
+
+bool VMemcached::add(const String& aname, Value* avalue){
+	check_key(aname);
+
+	Serialization_data data;
+	time_t ttl=serialize_value(fttl, aname, avalue, data);
+
+	memcached_return rc=f_memcached_add(fm, aname.cstr(), aname.length(), data.ptr, data.length, ttl, data.flags);
+
+	if(rc == MEMCACHED_NOTSTORED)
+		return false;
+
+	if(rc != MEMCACHED_SUCCESS)
+		error("add", fm, rc);
+
+	return true;
+}
+
+const VJunction* VMemcached::put_element(const String& aname, Value* avalue, bool /*replace*/){
+	check_key(aname);
+
+	Serialization_data data;
+	time_t ttl=serialize_value(fttl, aname, avalue, data);
+
+	check("set", fm, f_memcached_set(fm, aname.cstr(), aname.length(), data.ptr, data.length, ttl, data.flags));
 
 	return PUT_ELEMENT_REPLACED_ELEMENT;
 }
