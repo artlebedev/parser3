@@ -16,7 +16,7 @@
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.18 2012/04/22 20:03:02 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.19 2012/04/24 21:53:32 moko Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -76,13 +76,13 @@ public:
 	bool is_text;
 	Charset *charset, *response_charset;
 	struct curl_httppost *f_post;
-	FILE *stderr;
+	FILE *f_stderr;
 
-	ParserOptions() : filename(0), content_type(0), is_text(true), charset(0), response_charset(0), f_post(0), stderr(0){}
+	ParserOptions() : filename(0), content_type(0), is_text(true), charset(0), response_charset(0), f_post(0), f_stderr(0){}
 	~ParserOptions() {
 		f_curl_formfree(f_post);
-		if(stderr)
-			fclose(stderr);
+		if(f_stderr)
+			fclose(f_stderr);
 	}
 	 
 };
@@ -442,9 +442,9 @@ static void curl_setopt(HashStringValue::key_type key, HashStringValue::value_ty
 		case CurlOption::CURL_STDERR:{
 			// verbose output redirection from stderr to file curl option
 			const char *file_spec_cstr=curl_check_file(r.absolute(v.as_string()));
-			FILE *stderr=options().stderr=fopen(file_spec_cstr, "wt");
-			if (stderr){
-				res=f_curl_easy_setopt(curl(), opt->id, stderr);
+			FILE *f_stderr=options().f_stderr=fopen(file_spec_cstr, "wt");
+			if (f_stderr){
+				res=f_curl_easy_setopt(curl(), opt->id, f_stderr);
 			} else {
 				throw Exception("curl", 0, "failed to set option '%s': unable to open file '%s'", key.cstr(), file_spec_cstr);
 			}
