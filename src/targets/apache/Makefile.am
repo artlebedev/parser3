@@ -3,7 +3,7 @@ INCLUDES := $(INCLUDES) $(APACHE_INC) -I./ -I../../classes -I../../types -I../..
 AM_CFLAGS := $(AM_CFLAGS) $(APACHE_CFLAGS)
 
 PA_LIBS = ../../classes/libclasses.a ../../types/libtypes.a ../../main/libmain.a ../../lib/gd/libgd.a ../../lib/cord/libcord.a \
-	  ../../lib/md5/libmd5.a ../../lib/sdbm/libsdbm.a ../../lib/smtp/libsmtp.a ../../lib/json/libjson.a $(LIBLTDL)
+	  ../../lib/md5/libmd5.a ../../lib/sdbm/libsdbm.a ../../lib/smtp/libsmtp.a ../../lib/json/libjson.a  ../../lib/memcached/libmemcached.a $(LIBLTDL)
 
 noinst_LIBRARIES = libmod_parser3.a
 
