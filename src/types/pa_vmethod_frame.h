@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.91 2012/05/07 20:05:10 moko Exp $"
+#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.92 2012/05/07 20:27:44 moko Exp $"
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
@@ -272,8 +272,8 @@ public: // usage
 	}
 
 	void store_params(Value **params, size_t count) {
-		if(method.params_names) {
-			size_t param_count=method.params_names->count();
+		if(my) {
+			size_t param_count=method.params_names ? method.params_names->count():0;
 			size_t i=0;
 
 			if(count>param_count){
