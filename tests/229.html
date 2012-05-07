@@ -28,9 +28,16 @@
 ^do{^method(1)}
 ^do{^method(1){1}}
 ^do{^method(1){1}{2}}
+^do{^method_no_args[1]}
+^do{^method_no_args(1)}
+^do{^method_no_args[]}
+^do{^method_no_args{}}
 
 @do[jCode]
 ^try{$jCode}{$exception.handled(true)$exception.source $exception.comment}<br />
 
 @method[a;b]
 $a=$b
+
+@method_no_args[]
+void
