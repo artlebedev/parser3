@@ -8,7 +8,7 @@
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VMETHOD_FRAME_C="$Id: pa_vmethod_frame.C,v 1.19 2012/03/16 09:24:18 moko Exp $" IDENT_PA_VMETHOD_FRAME_H;
+volatile const char * IDENT_PA_VMETHOD_FRAME_C="$Id: pa_vmethod_frame.C,v 1.20 2012/05/07 20:05:10 moko Exp $" IDENT_PA_VMETHOD_FRAME_H;
 
 // globals
 
@@ -41,7 +41,7 @@ VMethodFrame::VMethodFrame(const Method& amethod, VMethodFrame *acaller, Value& 
 			for(Array_iterator<const String*> i(*method.locals_names); i.has_next(); ) {
 				// speedup: not checking for clash with "result" fname
 				const String& fname=*i.next();
-				set_my_variable(fname, *VVoid::get());
+				set_my_variable(fname, *VString::empty());
 			}
 		}
 #ifdef OPTIMIZE_RESULT

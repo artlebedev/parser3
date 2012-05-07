@@ -32,7 +32,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.329 2012/03/16 09:24:14 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.330 2012/05/07 20:05:10 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -71,6 +71,7 @@ const String exception_handled_part_name(EXCEPTION_HANDLED_PART_NAME);
 
 #define CHARSETS_NAME "CHARSETS"
 #define MIME_TYPES_NAME "MIME-TYPES"
+#define STRICT_VARS_NAME "STRICT-VARS"
 #define ORIGINS_MODE_NAME "ORIGINS"
 #define CONF_METHOD_NAME "conf"
 #define POST_PROCESS_METHOD_NAME "postprocess"
@@ -83,6 +84,7 @@ const String exception_handled_part_name(EXCEPTION_HANDLED_PART_NAME);
 static const String charsets_name(CHARSETS_NAME);
 static const String main_class_name(MAIN_CLASS_NAME);
 static const String mime_types_name(MIME_TYPES_NAME);
+static const String strict_vars_name(STRICT_VARS_NAME);
 static const String origins_mode_name(ORIGINS_MODE_NAME);
 static const String conf_method_name(CONF_METHOD_NAME);
 static const String post_process_method_name(POST_PROCESS_METHOD_NAME);
@@ -247,6 +249,17 @@ void Request::configure_admin(VStateless_class& conf_class) {
 					0,
 					"$" MAIN_CLASS_NAME ":" CHARSETS_NAME " must be hash");
 	}
+
+#ifdef STRICT_VARS
+	if(Value* strict_vars=conf_class.get_element(strict_vars_name)) {
+		if(strict_vars->is_bool())
+			VVoid::strict_vars=strict_vars->as_bool();
+			else
+				throw Exception(PARSER_RUNTIME,
+					0,
+					"$" MAIN_CLASS_NAME ":" STRICT_VARS_NAME " must be bool");
+	}
+#endif
 
 	// configure method_frame options
 	//	until someone with less privileges have overriden them

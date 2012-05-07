@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.90 2012/03/16 09:24:18 moko Exp $"
+#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.91 2012/05/07 20:05:10 moko Exp $"
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
@@ -318,9 +318,13 @@ public: // usage
 	void empty_params(){
 		if(method.params_names){
 			size_t param_count=method.params_names->count();
-			for(size_t i=0; i<param_count; i++) {
-				const String& fname=*(*method.params_names)[i];
-				my->put(fname, VVoid::get());
+			if(param_count>0){
+				const String& fname=*(*method.params_names)[0];
+				my->put(fname, VString::empty());
+				for(size_t i=1; i<param_count; i++) {
+					const String& fname=*(*method.params_names)[i];
+					my->put(fname, VVoid::get());
+				}
 			}
 		}
 	}

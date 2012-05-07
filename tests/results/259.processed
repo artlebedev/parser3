@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 363
+Content-Length: 369
 
 Empty: string
 Empty copy: string
@@ -11,9 +11,9 @@ Void property: void
 Void as string: "", once again: ""
 Void as parameter: void
 Empty as parameter: string
-Empty parameter: void
-No params: void / void
+Empty parameter: string
+No params: string / void
 One param: string / void
 Two empty params: string / string
-Defined var: void
+Defined var: string
 Undefined var: void

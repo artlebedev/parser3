@@ -8,7 +8,7 @@
 #ifndef PA_VSTRING_H
 #define PA_VSTRING_H
 
-#define IDENT_PA_VSTRING_H "$Id: pa_vstring.h,v 1.67 2012/04/18 21:42:51 moko Exp $"
+#define IDENT_PA_VSTRING_H "$Id: pa_vstring.h,v 1.68 2012/05/07 20:05:10 moko Exp $"
 
 // includes
 
@@ -76,6 +76,11 @@ public: // usage
 
 	const String& string() const { return *fstring; }
 	void set_string(const String& astring) { fstring=&astring; }
+
+	inline static VString *empty(){
+		static VString singleton;
+		return &singleton;
+	}
 
 private:
 	const String* fstring;
