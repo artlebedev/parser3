@@ -8,7 +8,7 @@
 #ifndef PA_VVOID_H
 #define PA_VVOID_H
 
-#define IDENT_PA_VVOID_H "$Id: pa_vvoid.h,v 1.36 2012/05/07 20:05:10 moko Exp $"
+#define IDENT_PA_VVOID_H "$Id: pa_vvoid.h,v 1.37 2012/05/11 20:41:28 moko Exp $"
 
 #define STRICT_VARS
 
@@ -28,13 +28,19 @@ public: // Value
 
 	/// VVoid: true [the only one, that reports true]
 	override bool is_void() const { return true; }
-	/// VVoid: with OPTIMIZE_SINGLE_STRING_WRITE it allows void to survive in [$void]
-	override bool is_string() const { return true; }
 
 	/// VVoid: json-string ("null")
 	override const String* get_json_string(Json_options*) {
 		static const String singleton_json_null(String("null"));
 		return &singleton_json_null;
+	}
+
+	/// VVoid: methods
+	override Value* get_element(const String& aname) {
+		// methods
+		if(Value* result=VStateless_object::get_element(aname))
+			return result;
+		return 0;
 	}
 
 #ifdef STRICT_VARS
@@ -44,37 +50,20 @@ public: // Value
 #define CHECK_STRICT
 #endif
 
-	/// VVoid: methods
-	override Value* get_element(const String& aname) {
-		// methods
-		if(Value* result=VStateless_object::get_element(aname))
-			return result;
-
-#ifdef STRICT_VARS
-		if(strict_vars)
-			throw Exception(PARSER_RUNTIME, 0, "Use of uninitialized value field");
-#endif
-		return 0;
-	}
-
-	override Value& as_expr_result(bool return_string_as_is=false) { 
+	/// VVoid: with OPTIMIZE_SINGLE_STRING_WRITE it allows void to survive in [$void]
+	override bool is_string() const {
 		CHECK_STRICT
-		return VString::as_expr_result(return_string_as_is);
+		return true;
 	}
-	
+
 	override const String* get_string() {
 		CHECK_STRICT
 		return VString::get_string();
 	}
 
-	override double as_double() const { 
+	override Value& as_expr_result(bool return_string_as_is=false) {
 		CHECK_STRICT
-		return VString::as_double(); 
-	}
-
-	override int as_int() const { 
-		CHECK_STRICT
-		return VString::as_int(); 
+		return VString::as_expr_result(return_string_as_is);
 	}
 
 	inline static VVoid *get(){
