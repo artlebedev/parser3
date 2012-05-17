@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_UNTAINT_C="$Id: untaint.C,v 1.163 2012/03/16 09:24:15 moko Exp $";
+volatile const char * IDENT_UNTAINT_C="$Id: untaint.C,v 1.164 2012/05/17 10:54:03 misha Exp $";
 
 
 #include "pa_string.h"
@@ -74,7 +74,7 @@ inline bool need_file_encode(unsigned char c){
 	// russian letters and space ENABLED
 	// encoding only these...
 	return strchr(
-			"*?'\"<>|"
+			"*?\"<>|"
 #ifndef WIN32
 			":\\"
 #endif
