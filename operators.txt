@@ -336,6 +336,7 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !^строка.pos[подстрока](позиция, с которой ищем)
         <0 = не найдено
     !^строка.replace[$таблица_подстановок_строка_на_строку]
+    !^строка.replace[$что;$на-что]
     !^строка.save[[append;]путь]
     !^строка.save[путь[;$.charset[в какой кодировке сохраняем] $.append(true)]]
     !^строка.normalize[] выдает другую строку, в которой фрагменты на одном языке объединены
@@ -345,7 +346,7 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         default 'chars' -- whitespace chars
     !^строка.append[string]
     !^строка.base64[] encode
-    !^string:base64[encoded] decode
+    !^string:base64[encoded[;$.strict(true)]] decode
 
 !table
     в выражении 
@@ -751,8 +752,9 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !^file:find[имя файла][{когда не нашли}]
     !^file:list[путь[;шаблон-строка|шаблон-regex]] = table с колонкой name
     !^file::load[text|binary;!big.zip[;!domain_press_release_2001_03_01.zip][;опции]]
-    !^file::create[text;имя;data]
-    !^file::create[text;имя;data[;$.charset[кодировка букв в создаваемом файле]]]
+    !^file::create[text|binary;имя;data]
+    !^file::create[text|binary;имя;data[;$.charset[кодировка букв в создаваемом файле] $.content-type[...]]]
+    !^file::create[string-or-file-content[;$.name[имя] $.mode[text|binary] $.content-type[...] $.charset[...]]]
     !$файл_который_был_loaded.size
     !$файл_который_был_loaded_или_created.mode = text/binary
     !^file::stat[имя файла]
@@ -859,6 +861,7 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
                                      по умолчанию дублирующиеся ключи приведут к exception
         $.object[method-junction]    пользовательский метод[ключ;объект], которому будут передаваться все разобранные 
                                      объекты и ключи объекта, метод возвращает новый объект
+        $.array[method-junction]     пользовательский метод, которому будут передаваться массивы
     ]]
         парсит json-строку в хэш
     !^json:string[system or user object[;
@@ -889,6 +892,7 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     $date:TZ  наш часовой пояс, дробное, в часах (где-то есть с точностью до получаса)
     !^date::now[]
     !^date::now(смещение в днях) выдаёт сейчас+смещение
+    !^date::today[] дата на 00:00:00 текущего дня
     !^date::create(дней с epoch) // старое имя set
     !^date::create(year;month[;day[;hour[;minute[;second]]]]) // старое имя set
     !^date::create[дата в формате %Y-%m-%d %H:%M:%S]
@@ -902,7 +906,10 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         TZ="" << локальная зона
     !^дата.roll[year|month|day](+-смещение) сдвигает дату
     !^дата.roll[TZ;Новая зона] говорит, что дата в таком-то часовом поясе: влияет на .hour & Co
-    !^дата.sql-string[] %Y-%m-%d %H:%M:%S
+    !^дата.sql-string[[datetime|date|time]]
+        datetime или без параметра -- %Y-%m-%d %H:%M:%S
+        date                       -- %Y-%m-%d
+        time                       -- %H:%M:%S
         where published='^дата.sql-string[]'
     !^date:calendar[rus|eng](год;месяц) выдаёт неименованную таблицу 
         столбцы: 0..6, week, year
