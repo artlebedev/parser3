@@ -3,7 +3,9 @@
 $a[ $.v1[1] $.v2[2] $.v3[3] ]
 $b[^test::create[]]
 
+Uid: ^reflection:uid[$b] $c[$b]
 ^reflection:copy[$a;$b]
+Same uid: ^reflection:uid[$c]
 
 Object b:
 ^print[^hash::create[$b]]
