@@ -3,8 +3,15 @@
 $a[ $.v1[1] $.v2[2] $.v3[3] ]
 $b[^test::create[]]
 
-Uid: ^reflection:uid[$b] $c[$b]
+$c[$b]
+
 ^reflection:copy[$a;$b]
+
+Object uid: ^reflection:uid[$b]
+Same uid: ^reflection:uid[$c]
+
+$str[value] $c[$str]
+String uid: ^reflection:uid[$str]
 Same uid: ^reflection:uid[$c]
 
 Object b:
