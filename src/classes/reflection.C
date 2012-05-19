@@ -9,7 +9,7 @@
 #include "pa_request.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.24 2012/03/16 09:24:08 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.25 2012/05/19 20:44:57 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -293,6 +293,15 @@ static void _copy(Request& r, MethodParams& params) {
 		r.put_element(dst, *new String(i.key(), String::L_TAINTED), i.value());
 }
 
+static void _uid(Request& r, MethodParams& params) {
+	Value& obj=params.as_no_junction(0, "object must not be code");
+
+	char local_buf[MAX_NUMBER];
+	int size=snprintf(local_buf, sizeof(local_buf), "%p", &obj);
+
+	r.write_pass_lang(*new String(pa_strdup(local_buf, (size_t)size), String::L_CLEAN, size));
+}
+
 // constructor
 MReflection::MReflection(): Methoded("reflection") {
 	// ^reflection:create[class_name;constructor_name[;param1[;param2[;...]]]]
@@ -327,4 +336,7 @@ MReflection::MReflection(): Methoded("reflection") {
 
 	// ^reflection:copy[src;dst]
 	add_native_method("copy", Method::CT_STATIC, _copy, 2, 2);
+
+	// ^reflection:uid[object or class]
+	add_native_method("uid", Method::CT_STATIC, _uid, 1, 1);
 }
