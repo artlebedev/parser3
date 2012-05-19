@@ -1,3 +1,766 @@
+2012-05-17	misha
+	* src/main/untaint.C 1.164:
+		- do not replace ' char by _26 while exploding filespec-tainting 
+		( new feature: #829 )
+
+2012-05-11	moko
+	* src/types/pa_vvoid.h 1.37:
+		is_string now also checked, but get_* - not.
+
+2012-05-07	moko
+	* src/types/pa_vmethod_frame.h 1.92:
+		bug #782 fixed
+
+	* tests/229.html 1.6:
+		test for bug #782
+
+	* src/main/pa_request.C 1.330:
+	* src/types/pa_vmethod_frame.C 1.20:
+	* src/types/pa_vmethod_frame.h 1.91:
+	* src/types/pa_vstring.h 1.68:
+	* src/types/pa_vvoid.C 1.6:
+	* src/types/pa_vvoid.h 1.36:
+	* tests/results/259.processed 1.2:
+		feature #154 - first empty param now string; defined locals are 
+		empty strings; $STRICT-VARS(true) added
+
+2012-04-27	moko
+	* src/targets/apache/Makefile.am 1.4:
+	* src/targets/apache/Makefile.in 1.4:
+		../../lib/memcached/libmemcached.a added
+
+2012-04-27	misha
+	* buildall-with-xml 1.42:
+	* buildall-without-xml 1.27:
+		- prce 8.12 => pcre 8.30 ( #827 )
+
+2012-04-24	moko
+	* src/classes/json.C 1.18:
+	* src/classes/memcached.C 1.4:
+	* src/lib/memcached/pa_memcached.C 1.5:
+	* src/lib/memcached/pa_memcached.h 1.6:
+	* src/types/pa_vmemcached.C 1.11:
+	* src/types/pa_vmemcached.h 1.4:
+		memcached_add implemented.
+
+	* src/classes/curl.C 1.19:
+		stderr -> f_stderr for Windows compatibility
+
+2012-04-22	moko
+	* src/classes/memcached.C 1.3:
+	* src/lib/memcached/pa_memcached.C 1.4:
+	* src/lib/memcached/pa_memcached.h 1.5:
+	* src/types/pa_vmemcached.C 1.10:
+	* src/types/pa_vmemcached.h 1.3:
+		open allows options hash for new memcached(options) function
+
+	* src/classes/curl.C 1.18:
+		check_safe_mode added, stderr now rewritten, not appended
+
+2012-04-20	moko
+	* src/classes/curl.C 1.17:
+		'' added. :)
+
+	* src/classes/classes.vcproj 1.30:
+		new curl.h location
+
+	* src/classes/curl.C 1.16:
+		verbose output redirection from stderr to file curl option added
+
+	* src/classes/curl.C 1.15:
+		lib/curl/curl.h now contains what we need from curl, #ifdef 
+		HAVE_CURL removed
+
+	* Makefile.in 1.99:
+	* bin/Makefile.in 1.17:
+	* configure 1.127:
+	* configure.in 1.138:
+	* etc/Makefile.in 1.22:
+	* etc/parser3.charsets/Makefile.in 1.27:
+	* src/Makefile.in 1.63:
+	* src/classes/Makefile.am 1.59:
+	* src/classes/Makefile.in 1.74:
+	* src/include/Makefile.in 1.26:
+	* src/include/pa_config_auto.h.in 1.55:
+	* src/include/pa_version.h 1.43:
+	* src/lib/Makefile.am 1.13:
+	* src/lib/Makefile.in 1.23:
+	* src/lib/cord/Makefile.in 1.11:
+	* src/lib/cord/include/Makefile.in 1.9:
+	* src/lib/cord/include/private/Makefile.in 1.9:
+	* src/lib/gc/Makefile.in 1.9:
+	* src/lib/gc/include/Makefile.in 1.10:
+	* src/lib/gd/Makefile.in 1.10:
+	* src/lib/json/Makefile.in 1.4:
+	* src/lib/ltdl/Makefile.in 1.14:
+	* src/lib/md5/Makefile.in 1.15:
+	* src/lib/memcached/Makefile.in 1.3:
+	* src/lib/pcre/Makefile.in 1.18:
+	* src/lib/sdbm/Makefile.in 1.9:
+	* src/lib/sdbm/pa-include/Makefile.in 1.2:
+	* src/lib/smtp/Makefile.in 1.10:
+	* src/main/Makefile.in 1.66:
+	* src/sql/Makefile.in 1.19:
+	* src/targets/Makefile.in 1.50:
+	* src/targets/apache/Makefile.in 1.3:
+	* src/targets/cgi/Makefile.in 1.76:
+	* src/targets/isapi/Makefile.in 1.20:
+	* src/types/Makefile.in 1.73:
+		curl.h header now in src/lib/curl, not configure option
+
+2012-04-19	moko
+	* src/classes/double.C 1.65:
+	* src/classes/inet.C 1.6:
+	* src/classes/int.C 1.61:
+	* src/classes/string.C 1.204:
+	* src/lib/gc/include/gc_allocator.h 1.2:
+	* src/types/pa_vform.C 1.103:
+		PVS-Studio detected errors fixes, unused options from 
+		sql_result_string removed. (closes issue #468)
+
+2012-04-18	moko
+	* src/types/pa_vmemcached.C 1.9:
+		empty string fix
+
+	* src/types/pa_value.C 1.34:
+	* src/types/pa_value.h 1.146:
+	* src/types/pa_vmemcached.C 1.8:
+	* src/types/pa_vstring.C 1.30:
+	* src/types/pa_vstring.h 1.67:
+		serialization helpers moved to pa_vmemcached.C
+
+	* src/targets/apache/mod_parser3.c 1.14:
+		"Parser3 module requires apache2-mpm-prefork" error displayed in 
+		threaded mpm.
+
+	* src/targets/apache/mod_parser3.c 1.13:
+	* src/targets/apache/mod_parser3_core.C 1.7:
+		pa_setup_module_cells delayed to avoid GPF on init with php5-xsl 
+		installed (issue #354)
+
+2012-04-15	moko
+	* src/types/pa_vmemcached.C 1.7:
+		call to memcached_result_create and memcached_result_free 
+		removed
+
+2012-04-13	moko
+	* src/lib/memcached/pa_memcached.h 1.4:
+		uint32_t for Windows defined
+
+	* src/types/pa_vmemcached.C 1.6:
+		check_key added and used
+
+2012-04-12	moko
+	* src/include/pa_string.h 1.202:
+	* src/types/pa_value.C 1.33:
+	* src/types/pa_value.h 1.145:
+	* src/types/pa_vmemcached.C 1.5:
+	* src/types/pa_vstring.C 1.29:
+	* src/types/pa_vstring.h 1.66:
+		 Serialization_data now added and used, VString now serialized 
+		with languages into memcached.
+
+2012-03-27	moko
+	* src/lib/memcached/pa_memcached.C 1.3:
+	* src/lib/memcached/pa_memcached.h 1.3:
+	* src/types/pa_vmemcached.C 1.4:
+		result lengths added
+
+	* src/types/pa_vmemcached.C 1.3:
+		strdup added
+
+2012-03-23	moko
+	* src/classes/memcached.C 1.2:
+	* src/lib/memcached/pa_memcached.C 1.2:
+	* src/lib/memcached/pa_memcached.h 1.2:
+	* src/types/pa_vmemcached.C 1.2:
+	* src/types/pa_vmemcached.h 1.2:
+		memcached: mget, flush, fttl added
+
+2012-03-20	moko
+	* src/lib/memcached/Makefile.am 1.2:
+	* src/lib/memcached/Makefile.in 1.2:
+		*** empty log message ***
+
+2012-03-19	moko
+	* configure 1.126:
+	* configure.in 1.137:
+	* src/classes/Makefile.in 1.73:
+	* src/lib/Makefile.in 1.22:
+	* src/lib/memcached/Makefile.in 1.1:
+	* src/targets/cgi/Makefile.in 1.75:
+	* src/types/Makefile.in 1.72:
+		Makefiles.in updated for memcached
+
+	* src/targets/cgi/Makefile.am 1.55:
+		cleanup
+
+	* src/classes/Makefile.am 1.58:
+	* src/classes/memcached.C 1.1:
+	* src/lib/Makefile.am 1.12:
+	* src/lib/memcached/Makefile.am 1.1:
+	* src/lib/memcached/constants.h 1.1:
+	* src/lib/memcached/pa_memcached.C 1.1:
+	* src/lib/memcached/pa_memcached.h 1.1:
+	* src/lib/memcached/types.h 1.1:
+	* src/targets/cgi/Makefile.am 1.54:
+	* src/types/Makefile.am 1.48:
+	* src/types/pa_vmemcached.C 1.1:
+	* src/types/pa_vmemcached.h 1.1:
+		memcached initial
+
+	* src/classes/curl.C 1.14:
+		*** empty log message ***
+
+2012-03-16	moko
+	* src/main/execute.C 1.369:
+		ident now works under Linux + ident displays filenames (closes 
+		issue #818)
+
+	* src/types/Makefile.am 1.47:
+	* src/types/Makefile.in 1.71:
+	* src/types/pa_vmethod_frame_global.h 1.3:
+	* src/types/pa_vmethod_frame_local.h 1.3:
+		cleanup: pa_vmethod_frame_global.h pa_vmethod_frame_local.h 
+		removed
+
+	* src/classes/bool.C 1.4:
+	* src/classes/classes.C 1.25:
+	* src/classes/classes.awk 1.9:
+	* src/classes/classes.h 1.34:
+	* src/classes/curl.C 1.13:
+	* src/classes/date.C 1.91:
+	* src/classes/double.C 1.64:
+	* src/classes/file.C 1.218:
+	* src/classes/form.C 1.43:
+	* src/classes/hash.C 1.113:
+	* src/classes/hashfile.C 1.53:
+	* src/classes/image.C 1.139:
+	* src/classes/inet.C 1.5:
+	* src/classes/int.C 1.60:
+	* src/classes/json.C 1.17:
+	* src/classes/mail.C 1.118:
+	* src/classes/math.C 1.59:
+	* src/classes/memory.C 1.9:
+	* src/classes/op.C 1.209:
+	* src/classes/reflection.C 1.24:
+	* src/classes/regex.C 1.7:
+	* src/classes/response.C 1.28:
+	* src/classes/string.C 1.203:
+	* src/classes/table.C 1.286:
+	* src/classes/void.C 1.50:
+	* src/classes/xdoc.C 1.173:
+	* src/classes/xnode.C 1.87:
+	* src/classes/xnode.h 1.31:
+	* src/include/pa_array.h 1.81:
+	* src/include/pa_cache_managers.h 1.20:
+	* src/include/pa_charset.h 1.48:
+	* src/include/pa_charsets.h 1.15:
+	* src/include/pa_common.h 1.146:
+	* src/include/pa_config_fixed.h 1.75:
+	* src/include/pa_config_includes.h 1.34:
+	* src/include/pa_dictionary.h 1.20:
+	* src/include/pa_dir.h 1.20:
+	* src/include/pa_exception.h 1.62:
+	* src/include/pa_exec.h 1.20:
+	* src/include/pa_globals.h 1.114:
+	* src/include/pa_hash.h 1.84:
+	* src/include/pa_http.h 1.7:
+	* src/include/pa_memory.h 1.18:
+	* src/include/pa_opcode.h 1.46:
+	* src/include/pa_operation.h 1.8:
+	* src/include/pa_os.h 1.8:
+	* src/include/pa_pool.h 1.90:
+	* src/include/pa_random.h 1.3:
+	* src/include/pa_request.h 1.210:
+	* src/include/pa_request_charsets.h 1.6:
+	* src/include/pa_request_info.h 1.7:
+	* src/include/pa_sapi.h 1.29:
+	* src/include/pa_socks.h 1.18:
+	* src/include/pa_sql_connection.h 1.42:
+	* src/include/pa_sql_driver_manager.h 1.36:
+	* src/include/pa_stack.h 1.27:
+	* src/include/pa_string.h 1.201:
+	* src/include/pa_stylesheet_connection.h 1.41:
+	* src/include/pa_stylesheet_manager.h 1.24:
+	* src/include/pa_table.h 1.64:
+	* src/include/pa_threads.h 1.31:
+	* src/include/pa_types.h 1.51:
+	* src/include/pa_uue.h 1.11:
+	* src/include/pa_xml_exception.h 1.8:
+	* src/include/pa_xml_io.h 1.6:
+	* src/lib/gd/gif.C 1.7:
+	* src/lib/gd/gif.h 1.5:
+	* src/lib/gd/gifio.C 1.4:
+	* src/lib/md5/pa_md5.h 1.12:
+	* src/lib/md5/pa_md5c.c 1.14:
+	* src/lib/pcre/pcre_parser_ctype.c 1.6:
+	* src/lib/sdbm/pa_file_io.C 1.2:
+	* src/lib/sdbm/pa_strings.C 1.3:
+	* src/lib/smtp/comms.C 1.9:
+	* src/lib/smtp/smtp.C 1.9:
+	* src/lib/smtp/smtp.h 1.8:
+	* src/main/compile.C 1.82:
+	* src/main/compile.tab.C 1.154:
+	* src/main/compile.y 1.262:
+	* src/main/compile_tools.C 1.69:
+	* src/main/compile_tools.h 1.103:
+	* src/main/execute.C 1.368:
+	* src/main/helpers/simple_folding.pl 1.2:
+	* src/main/pa_cache_managers.C 1.18:
+	* src/main/pa_charset.C 1.90:
+	* src/main/pa_charsets.C 1.19:
+	* src/main/pa_common.C 1.267:
+	* src/main/pa_dictionary.C 1.26:
+	* src/main/pa_dir.C 1.21:
+	* src/main/pa_exception.C 1.50:
+	* src/main/pa_exec.C 1.82:
+	* src/main/pa_globals.C 1.187:
+	* src/main/pa_http.C 1.53:
+	* src/main/pa_memory.C 1.9:
+	* src/main/pa_os.C 1.12:
+	* src/main/pa_pool.C 1.63:
+	* src/main/pa_random.C 1.3:
+	* src/main/pa_request.C 1.329:
+	* src/main/pa_socks.C 1.26:
+	* src/main/pa_sql_driver_manager.C 1.91:
+	* src/main/pa_string.C 1.240:
+	* src/main/pa_stylesheet_connection.C 1.7:
+	* src/main/pa_stylesheet_manager.C 1.29:
+	* src/main/pa_table.C 1.63:
+	* src/main/pa_uue.C 1.16:
+	* src/main/pa_xml_exception.C 1.7:
+	* src/main/pa_xml_io.C 1.28:
+	* src/main/untaint.C 1.163:
+	* src/sql/pa_sql_driver.h 1.46:
+	* src/targets/apache/mod_parser3.c 1.12:
+	* src/targets/apache/mod_parser3_core.C 1.6:
+	* src/targets/apache/pa_httpd.h 1.5:
+	* src/targets/apache/pa_threads.C 1.2:
+	* src/targets/apache13/mod_parser3.c 1.13:
+	* src/targets/apache13/pa_httpd.h 1.7:
+	* src/targets/apache13core/mod_parser3_core.C 1.17:
+	* src/targets/apache13core/pa_threads.C 1.7:
+	* src/targets/cgi/pa_threads.C 1.17:
+	* src/targets/cgi/parser3.C 1.260:
+	* src/targets/isapi/pa_threads.C 1.19:
+	* src/targets/isapi/parser3isapi.C 1.105:
+	* src/types/pa_junction.h 1.11:
+	* src/types/pa_method.h 1.19:
+	* src/types/pa_property.h 1.5:
+	* src/types/pa_value.C 1.32:
+	* src/types/pa_value.h 1.144:
+	* src/types/pa_vbool.h 1.33:
+	* src/types/pa_vclass.C 1.45:
+	* src/types/pa_vclass.h 1.59:
+	* src/types/pa_vcode_frame.h 1.37:
+	* src/types/pa_vconsole.h 1.18:
+	* src/types/pa_vcookie.C 1.86:
+	* src/types/pa_vcookie.h 1.37:
+	* src/types/pa_vdate.h 1.53:
+	* src/types/pa_vdouble.h 1.56:
+	* src/types/pa_venv.C 1.12:
+	* src/types/pa_venv.h 1.38:
+	* src/types/pa_vfile.C 1.51:
+	* src/types/pa_vfile.h 1.70:
+	* src/types/pa_vform.C 1.102:
+	* src/types/pa_vform.h 1.59:
+	* src/types/pa_vhash.C 1.10:
+	* src/types/pa_vhash.h 1.64:
+	* src/types/pa_vhashfile.C 1.64:
+	* src/types/pa_vhashfile.h 1.40:
+	* src/types/pa_vimage.C 1.41:
+	* src/types/pa_vimage.h 1.53:
+	* src/types/pa_vint.h 1.48:
+	* src/types/pa_vjunction.C 1.11:
+	* src/types/pa_vjunction.h 1.31:
+	* src/types/pa_vmail.C 1.98:
+	* src/types/pa_vmail.h 1.20:
+	* src/types/pa_vmath.C 1.10:
+	* src/types/pa_vmath.h 1.21:
+	* src/types/pa_vmemory.h 1.7:
+	* src/types/pa_vmethod_frame.C 1.19:
+	* src/types/pa_vmethod_frame.h 1.90:
+	* src/types/pa_vmethod_frame_global.h 1.2:
+	* src/types/pa_vmethod_frame_local.h 1.2:
+	* src/types/pa_vobject.C 1.34:
+	* src/types/pa_vobject.h 1.57:
+	* src/types/pa_vregex.C 1.14:
+	* src/types/pa_vregex.h 1.6:
+	* src/types/pa_vrequest.C 1.52:
+	* src/types/pa_vrequest.h 1.39:
+	* src/types/pa_vresponse.C 1.30:
+	* src/types/pa_vresponse.h 1.43:
+	* src/types/pa_vstateless_class.C 1.47:
+	* src/types/pa_vstateless_class.h 1.73:
+	* src/types/pa_vstateless_object.h 1.40:
+	* src/types/pa_vstatus.C 1.28:
+	* src/types/pa_vstatus.h 1.21:
+	* src/types/pa_vstring.C 1.28:
+	* src/types/pa_vstring.h 1.65:
+	* src/types/pa_vtable.C 1.37:
+	* src/types/pa_vtable.h 1.58:
+	* src/types/pa_vvoid.C 1.5:
+	* src/types/pa_vvoid.h 1.35:
+	* src/types/pa_vxdoc.C 1.44:
+	* src/types/pa_vxdoc.h 1.49:
+	* src/types/pa_vxnode.C 1.52:
+	* src/types/pa_vxnode.h 1.41:
+	* src/types/pa_wcontext.C 1.36:
+	* src/types/pa_wcontext.h 1.58:
+	* src/types/pa_wwrapper.h 1.44:
+		ident now works under Linux + ident displays filenames (closes issue #818)
+		Copyright updated
+
+2012-03-12	moko
+	* src/main/pa_string.C 1.239:
+		compilation fix for feature #741
+
+2012-03-08	misha
+	* tests/results/193.processed 1.4:
+		*** empty log message ***
+
+	* tests/193.html 1.4:
+		- tests for ^string:base64[encoded] are updated
+
+	* src/main/pa_common.C 1.266:
+		- ^string:base64[encoded;$.strict(true)] now detects invalid 
+		base64 chars in the middle of encoded stricg ( new feature: #55 )
+		
+
+	* src/include/pa_exception.h 1.61:
+		- new exception type for base64 decoding is added
+
+2012-03-06	misha
+	* tests/results/224.processed 1.12:
+	* tests/results/274.processed 1.1:
+		*** empty log message ***
+
+	* tests/274.html 1.1:
+		- tests for ^date::today[] and ^date.sql-string[datetime|date|
+		time] are added
+
+	* src/classes/date.C 1.90:
+		- constructor ^date::today[] is added ( new feature: #811 )
+		- ^date.sql-string[] now can accept one param -- strings "datetime", "date" or "time"
+		- comments tidying up
+
+	* src/types/pa_vdate.h 1.52:
+		- get_sql_string now can print datetime, date and time
+
+2012-03-03	misha
+	* tests/results/193.processed 1.3:
+		*** empty log message ***
+
+	* tests/193.html 1.3:
+		- tests for ^string:base64[encoded;$.strict(true)] are added
+
+	* tests/results/auto.p 1.6:
+		- try-catch operator is added
+
+	* src/classes/file.C 1.217:
+	* src/classes/string.C 1.202:
+	* src/include/pa_common.h 1.145:
+	* src/main/pa_common.C 1.265:
+		- $.strict(true|false) option is added to base64 decode methods (
+		 new feature: #55 )
+
+2012-03-02	misha
+	* src/main/pa_common.C 1.264:
+		- base64 decode memory usage was decreased ( new feature: #819 )
+
+2012-02-28	moko
+	* src/classes/hash.C 1.112:
+		ident test
+
+2012-02-27	misha
+	* src/classes/file.C 1.216:
+		- PARSER_VaRSION => PARSER_VeRSION
+
+2012-01-08	misha
+	* tests/results/273.processed 1.1:
+		*** empty log message ***
+
+	* tests/273.html 1.1:
+		- tests for ^string.replace[from;to] are added
+
+	* src/classes/string.C 1.201:
+	* src/include/pa_dictionary.h 1.19:
+	* src/main/pa_dictionary.C 1.25:
+	* src/main/pa_string.C 1.238:
+		- ^string.replace[from;to] is added ( new feature: #741 )
+		- ^string.replace[one subst here] is slightly optimized
+
+2011-12-07	misha
+	* src/classes/table.C 1.285:
+		- $t[^table::create{$empty}] now creates named table with one 
+		empty column ( bugfix: #63 )
+
+2011-11-30	misha
+	* tests/results/272.processed 1.1:
+		*** empty log message ***
+
+	* src/classes/json.C 1.16:
+		- it's possible to set user's method for parsing arrays: ^json:
+		parse[...;$.array[$hook]] ( new feature: #763 )
+
+	* tests/272.html 1.1:
+		- test for ^json:parse[...;$.array[$hook]]
+
+2011-11-23	misha
+	* tests/183.html 1.3:
+	* tests/231.html 1.2:
+	* tests/results/183.processed 1.3:
+	* tests/results/231.processed 1.2:
+	* tests/results/256.processed 1.4:
+		*** empty log message ***
+
+	* src/classes/curl.C 1.12:
+	* src/classes/file.C 1.215:
+	* src/classes/image.C 1.138:
+	* src/classes/table.C 1.284:
+	* src/classes/xdoc.C 1.172:
+	* src/types/pa_vfile.C 1.50:
+	* src/types/pa_vfile.h 1.69:
+	* src/types/pa_vform.C 1.101:
+		- constructor ^file::create[mode;filename;content[;options]] now accepts binary mode and file-
+		content
+		- new constructor's format: ^file::create[string-or-file-content[;$.name[filename] $.mode[text|
+		binary] $.content-type[...] $.charset[...]]] ( new feature: #65 )
+
+	* src/include/pa_request.h 1.209:
+	* src/main/pa_request.C 1.328:
+		- new method mime_type_of(const String*) is added
+
+	* src/include/pa_exception.h 1.60:
+		- new exception constant FILE_NAME_MUST_BE_SPECIFIED is added
+
+2011-11-22	misha
+	* src/classes/table.C 1.283:
+		- bug with negative offset transformed into a feature. it means 
+		pointing to a row from the end of the table ( new feature: #810 )
+		
+
+2011-11-19	misha
+	* src/classes/table.C 1.282:
+		- несколько signed/unsigned warnings убраны в методе _select ( 
+		new feature: #810 )
+
+	* src/types/pa_vxdoc.C 1.43:
+		- checkout if $.encoding and $.charset options were specified 
+		together is simplified
+
+2011-11-11	misha
+	* src/main/pa_request.C 1.327:
+		- forgotten fix for escaping filename in HTTP content-
+		disposition header (a part of bug #361 )
+
+	* src/classes/json.C 1.15:
+		- ^json:string[$.class_name[jmethod]] now checks for ancestors' 
+		classes as well ( new feature: #456 )
+
+	* src/classes/op.C 1.208:
+		- exceptions for ^break[] and ^continue[] "without cycle" now 
+		have types "parser.break" and "parser.continue" instead of "
+		parser.runtime" ( new feature: #799 )
+
+	* tests/results/099.processed 1.8:
+	* tests/results/100.processed 1.6:
+	* tests/results/205.processed 1.4:
+	* tests/results/237.processed 1.2:
+		- since bug #361 was fixed the content of filename in HTTP 
+		headers is quoted
+
+	* tests/results/270.processed 1.1:
+		- result for test 270
+
+	* tests/065.html 1.5:
+	* tests/results/065.processed 1.7:
+		- more tests for ^file:basename[] & Co were added
+
+	* tests/270_dir/270.txt 1.1:
+	* tests/270_dir/subdir/270.txt 1.1:
+		- stuff for 270.html
+
+	* tests/270.html 1.1:
+		- tests for ^file:find[] are added
+
+	* src/types/pa_vxdoc.C 1.42:
+		- now it's possible to specify encoding using option $.charset. 
+		option $.engoding is still supported but these options can not 
+		be specified together
+
+	* src/classes/xdoc.C 1.171:
+		- charset.isUTF8 is used instead of comparation charset name 
+		with string "UTF-8" ( bugfix: #759 )
+
+2011-10-11	misha
+	* src/classes/xdoc.C 1.170:
+	* src/types/pa_vxdoc.C 1.41:
+	* src/types/pa_vxdoc.h 1.48:
+		- new option was added: ^xdoc.file[$.name[имя файла]] (new 
+		feature: #622)
+
+2011-09-30	misha
+	* src/types/pa_vrequest.C 1.51:
+		- saving empty $request:post-body causes exception "saving stat-
+		ed file" ( bugfix: #395 )
+
+2011-05-30	misha
+	* src/classes/string.C 1.200:
+		- fixed bug which was added with params.as_hash into string:sql
+
+2011-05-28	misha
+	* src/types/pa_value.C 1.31:
+		- filename in content-disposition header must be quoted ( bugfix:
+		 #361 )
+
+2011-05-27	misha
+	* src/classes/image.C 1.137:
+	* src/classes/xdoc.C 1.169:
+		- $.mode must be set for newly created file
+
+	* src/classes/hash.C 1.111:
+	* src/classes/mail.C 1.117:
+		- little tunning with get_hash usage
+
+	* src/include/pa_exception.h 1.59:
+		- one more string for exception was added
+
+2011-05-25	misha
+	* tests/results/269.processed 1.1:
+		*** empty log message ***
+
+	* tests/269.html 1.1:
+		- tests for checking input params in some dom methods
+
+	* src/classes/xdoc.C 1.168:
+	* src/classes/xnode.C 1.86:
+		- validation of some input params was added. it isn't possible 
+		not wo create xdoc with invalid tagName. ( bugfix: #160 )
+
+	* src/include/pa_exception.h 1.58:
+	* src/include/pa_xml_exception.h 1.7:
+		- exception's string "data must be string" was mover from 
+		pa_exception.h to pa_xml_exception.h
+
+	* src/classes/xnode.C 1.85:
+	* src/classes/xnode.h 1.30:
+		- methods as_xmlqname, as_xmlncname, as_xmlname and as_xmlnsuri 
+		were added
+
+	* src/main/pa_xml_exception.C 1.6:
+		- XmlException accepts more options
+
+	* src/include/pa_xml_exception.h 1.6:
+		- XmlException accepts more options
+		- XML-related exception's strings were added
+
+	* src/classes/xdoc.C 1.167:
+	* src/types/pa_vxdoc.h 1.47:
+		- code cleanup (unused output_options were removed)
+
+2011-05-19	misha
+	* src/classes/file.C 1.214:
+	* src/classes/hash.C 1.110:
+	* src/classes/string.C 1.199:
+	* src/classes/table.C 1.281:
+	* src/classes/void.C 1.49:
+		- params.as_hash is used more while parsing methods hash-options
+
+2011-05-18	misha
+	* tests/results/188.processed 1.5:
+	* tests/results/256.processed 1.3:
+		*** empty log message ***
+
+	* operators.txt 1.239:
+		- info about json-serialization of xdoc was added
+
+	* tests/256.html 1.4:
+		- tests for json-serialization xdoc were added
+
+	* src/types/pa_vxdoc.C 1.40:
+		- ups. I've forgot about "method" :)
+
+	* src/classes/json.C 1.14:
+	* src/classes/xdoc.C 1.166:
+	* src/types/pa_value.h 1.143:
+	* src/types/pa_vxdoc.C 1.39:
+	* src/types/pa_vxdoc.h 1.46:
+		- now json:string can serialize xdoc-objects. options (the same 
+		as ^xdoc.string[]) could be specified in $.xdoc[] ( new feature: 
+		#265 )
+
+2011-05-15	misha
+	* tests/results/267.processed 1.1:
+	* tests/results/268.processed 1.1:
+		*** empty log message ***
+
+	* tests/268.html 1.1:
+		- tests for ^table.count[with options] were added
+
+	* src/classes/table.C 1.280:
+		- method ^table.count[] now can accept options ( new feature: #93 ):
+		^table.count[column] returns number of columns for named table;
+		^table.count[cells] returns number of cells in the current row;
+		^table.count[] & ^table.count[rows] return number of rows in a table.
+
+	* tests/267.html 1.1:
+		- test for checking switch/case in boolean mode was added
+
+	* src/classes/op.C 1.207:
+		- if switch's or case's value is bool, they are compared as bool 
+		values, not as double values: new feature: #351
+
+2011-05-06	misha
+	* tests/242.html 1.2:
+		- EOL before EOF was added
+
+	* tests/results/169.processed 1.6:
+		*** empty log message ***
+
+2011-05-05	misha
+	* tests/169.html 1.3:
+		- tests for splitting empty string and void were added
+
+	* src/main/pa_string.C 1.237:
+		- fix of fix (^empty_string.split[...] returned table with one 
+		empty cell)
+
+2011-04-03	misha
+	* Makefile.am 1.81:
+	* Makefile.in 1.98:
+	* acinclude.m4 1.67:
+	* aclocal.m4 1.70:
+	* acsite.m4 1.46:
+	* configure 1.125:
+	* configure.in 1.136:
+	* src/include/pa_config_auto.h.in 1.54:
+		*** empty log message ***
+
+	* configure.in 1.135:
+	* src/include/pa_version.h 1.42:
+		- version in head was changed to 3.4.2b
+
+2011-03-30	misha
+	* src/types/pa_vregex.C 1.13:
+		- \w & Co now contain unicode properties as well ( new feature #
+		294 )
+
+2011-03-29	misha
+	* buildall-with-xml 1.41:
+	* buildall-without-xml 1.26:
+		- PCRE stack usage is limited to approx. 6 MB. previous limits 
+		were too big for real life. bugfix: #216
+
+2011-03-04	moko
+	* etc/parser3.charsets/cp866.cfg 1.2:
+		Conforms to http://unicode.org/Public/MAPPINGS/VENDORS/MICSFT/PC/
+		CP866.TXT
+
+	* etc/parser3.charsets/cp866.cfg 1.1:
+		cp866 initial version from vlalek@
+
 2011-02-21	misha
 	* operators.txt 1.238:
 	* src/include/pa_charset.h 1.47:
