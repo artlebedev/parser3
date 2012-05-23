@@ -7,12 +7,10 @@ $c[$b]
 
 ^reflection:copy[$a;$b]
 
-Object uid: ^reflection:uid[$b]
-Same uid: ^reflection:uid[$c]
+^if(^reflection:uid[$b] eq ^reflection:uid[$c]){Same uid}
 
 $str[value] $c[$str]
-String uid: ^reflection:uid[$str]
-Same uid: ^reflection:uid[$c]
+^if(^reflection:uid[$str] eq  ^reflection:uid[$c]){Same string}
 
 Object b:
 ^print[^hash::create[$b]]

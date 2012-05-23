@@ -1,10 +1,8 @@
 Content-Type: text/html
-Content-Length: 268
+Content-Length: 185
 
-Object uid: 0x2ad224adaac0
-Same uid: 0x2ad224adaac0
-String uid: 0x2ad224acc8b0
-Same uid: 0x2ad224acc8b0
+Same uid
+Same string
 Object b:
 v2 = 2
 v1 = 1
