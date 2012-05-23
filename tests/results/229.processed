@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 955
+Content-Length: 1224
 
 if native method of MAIN (MAIN) accepts minimum 2 parameter(s) (0 present)<br />
 if native method of MAIN (MAIN) accepts minimum 2 parameter(s) (1 present)<br />
@@ -27,3 +27,7 @@ process native method of MAIN (MAIN) accepts maximum 3 parameter(s) (4 present)<
 1=<br />
 1=1<br />
 method method of MAIN (MAIN) accepts maximum 2 parameter(s) (3 present)<br />
+method_no_args method of MAIN (MAIN) accepts maximum 0 parameter(s) (1 present)<br />
+method_no_args method of MAIN (MAIN) accepts maximum 0 parameter(s) (1 present)<br />
+void<br />
+method_no_args method of MAIN (MAIN) accepts maximum 0 parameter(s) (1 present)<br />
