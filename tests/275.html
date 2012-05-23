@@ -1,0 +1,17 @@
+@main[]
+
+^math:convert[F0000000](16;2)
+^math:convert[-F0000000](16;2)
+
+^try_catch{
+	$d(^math:convert[10000000000000000](16;2))
+}
+
+@try_catch[code]
+^try{
+	$code
+}{
+	$exception.handled(true)
+	$exception.source
+	$exception.comment
+}
