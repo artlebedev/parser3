@@ -8,7 +8,7 @@
 #ifndef PA_VVOID_H
 #define PA_VVOID_H
 
-#define IDENT_PA_VVOID_H "$Id: pa_vvoid.h,v 1.37 2012/05/11 20:41:28 moko Exp $"
+#define IDENT_PA_VVOID_H "$Id: pa_vvoid.h,v 1.38 2012/05/23 16:26:41 moko Exp $"
 
 #define STRICT_VARS
 
@@ -61,9 +61,9 @@ public: // Value
 		return VString::get_string();
 	}
 
-	override Value& as_expr_result(bool return_string_as_is=false) {
+	override Value& as_expr_result() {
 		CHECK_STRICT
-		return VString::as_expr_result(return_string_as_is);
+		return VString::as_expr_result();
 	}
 
 	inline static VVoid *get(){

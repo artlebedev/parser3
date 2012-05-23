@@ -8,7 +8,7 @@
 #ifndef PA_VSTRING_H
 #define PA_VSTRING_H
 
-#define IDENT_PA_VSTRING_H "$Id: pa_vstring.h,v 1.68 2012/05/07 20:05:10 moko Exp $"
+#define IDENT_PA_VSTRING_H "$Id: pa_vstring.h,v 1.69 2012/05/23 16:26:41 moko Exp $"
 
 // includes
 
@@ -31,13 +31,9 @@ public: // Value
 	override bool as_bool() const { return as_double()!=0; }
 	/// VString: true
 	override bool is_string() const { return true; }
-	/// VString: fstring as VDouble or this depending on return_string_as_is
-	override Value& as_expr_result(bool return_string_as_is=false) { 
-		if(return_string_as_is)
-			return *this;
-		else
-			return *new VDouble(as_double());
-	}
+
+	/// VString: VDouble
+	override Value& as_expr_result() { return *new VDouble(fstring->as_double()); }
 	/// VString: fstring
 	override const String* get_string() { return fstring; };
 	/// VString: fstring

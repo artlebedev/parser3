@@ -8,7 +8,7 @@
 #ifndef PA_VHASH_H
 #define PA_VHASH_H
 
-#define IDENT_PA_VHASH_H "$Id: pa_vhash.h,v 1.64 2012/03/16 09:24:17 moko Exp $"
+#define IDENT_PA_VHASH_H "$Id: pa_vhash.h,v 1.65 2012/05/23 16:26:40 moko Exp $"
 
 #include "classes.h"
 #include "pa_value.h"
@@ -47,7 +47,7 @@ public: // value
 	/// VHash: count!=0
 	override bool as_bool() const { return as_int()!=0; }
 	/// VHash: count
-	override Value& as_expr_result(bool ) { return *new VInt(as_int()); }
+	override Value& as_expr_result() { return *new VInt(as_int()); }
 
 	/// VHash: fhash
 	override HashStringValue *get_hash() { return &hash(); }

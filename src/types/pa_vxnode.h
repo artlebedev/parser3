@@ -8,7 +8,7 @@
 #ifndef PA_VXNODE_H
 #define PA_VXNODE_H
 
-#define IDENT_PA_VXNODE_H "$Id: pa_vxnode.h,v 1.41 2012/03/16 09:24:20 moko Exp $"
+#define IDENT_PA_VXNODE_H "$Id: pa_vxnode.h,v 1.42 2012/05/23 16:26:41 moko Exp $"
 
 #include "classes.h"
 #include "pa_common.h"
@@ -41,7 +41,7 @@ public: // Value
 	override bool as_bool() const { return true; }
 
 	/// VXnode: true	 
-	override Value& as_expr_result(bool /*return_string_as_is=false*/);
+	override Value& as_expr_result();
 
 	/// VXnode: $CLASS,$method, fields
 	override Value* get_element(const String& aname);

@@ -10,12 +10,12 @@
 #include "pa_vbool.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VSTATELESS_CLASS_C="$Id: pa_vstateless_class.C,v 1.47 2012/03/16 09:24:19 moko Exp $" IDENT_PA_VSTATELESS_CLASS_H IDENT_PA_METHOD_H;
+volatile const char * IDENT_PA_VSTATELESS_CLASS_C="$Id: pa_vstateless_class.C,v 1.48 2012/05/23 16:26:41 moko Exp $" IDENT_PA_VSTATELESS_CLASS_H IDENT_PA_METHOD_H;
 
 /// globals
 const String class_name(CLASS_NAME), class_nametext(CLASS_NAMETEXT);
 
-override Value& VStateless_class::as_expr_result(bool /*return_string_as_is=false*/) {
+override Value& VStateless_class::as_expr_result() {
 	return VBool::get(as_bool());
 }
 

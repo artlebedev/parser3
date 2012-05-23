@@ -8,7 +8,7 @@
 #ifndef PA_VXDOC_H
 #define PA_VXDOC_H
 
-#define IDENT_PA_VXDOC_H "$Id: pa_vxdoc.h,v 1.49 2012/03/16 09:24:20 moko Exp $"
+#define IDENT_PA_VXDOC_H "$Id: pa_vxdoc.h,v 1.50 2012/05/23 16:26:41 moko Exp $"
 
 #include "classes.h"
 #include "pa_common.h"
@@ -56,7 +56,7 @@ public: // Value
 	override bool as_bool() const { return true; }
 
 	/// VXdoc: true	 
-	override Value& as_expr_result(bool /*return_string_as_is=false*/);
+	override Value& as_expr_result();
 
 	/// VFile: json-string
 	override const String* get_json_string(Json_options* options=0);

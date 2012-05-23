@@ -11,7 +11,7 @@
 #include "gif.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_PA_VIMAGE_C="$Id: pa_vimage.C,v 1.41 2012/03/16 09:24:17 moko Exp $" IDENT_PA_VIMAGE_H;
+volatile const char * IDENT_PA_VIMAGE_C="$Id: pa_vimage.C,v 1.42 2012/05/23 16:26:40 moko Exp $" IDENT_PA_VIMAGE_H;
 
 void VImage::set(const String* src, int width, int height,
 				 gdImage* aimage,
@@ -37,7 +37,7 @@ void VImage::set(const String* src, int width, int height,
 	ffields.put(String::Body("line-width"), new VInt(1));
 }
 
-Value& VImage::as_expr_result(bool /*return_string_as_is=false*/) {
+Value& VImage::as_expr_result() {
 	return VBool::get(as_bool());
 }
 

@@ -8,7 +8,7 @@
 #ifndef PA_VINT_H
 #define PA_VINT_H
 
-#define IDENT_PA_VINT_H "$Id: pa_vint.h,v 1.48 2012/03/16 09:24:17 moko Exp $"
+#define IDENT_PA_VINT_H "$Id: pa_vint.h,v 1.49 2012/05/23 16:26:40 moko Exp $"
 
 // include
 
@@ -32,7 +32,7 @@ public: // Value
 	/// VInt: true
 	override bool is_evaluated_expr() const { return true; }
 	/// VInt: clone
-	override Value& as_expr_result(bool) { return *new VInt(finteger); }
+	override Value& as_expr_result() { return *new VInt(finteger); }
 
 	/// VInt: finteger
 	override const String* get_string() {

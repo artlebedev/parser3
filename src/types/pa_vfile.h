@@ -8,7 +8,7 @@
 #ifndef PA_VFILE_H
 #define PA_VFILE_H
 
-#define IDENT_PA_VFILE_H "$Id: pa_vfile.h,v 1.70 2012/03/16 09:24:17 moko Exp $"
+#define IDENT_PA_VFILE_H "$Id: pa_vfile.h,v 1.71 2012/05/23 16:26:40 moko Exp $"
 
 // include
 
@@ -49,7 +49,7 @@ public: // Value
 	override bool as_bool() const { return true; }
 
 	/// VFile: true
-	override Value& as_expr_result(bool /*return_string_as_is=false*/) { return VBool::get(as_bool()); }
+	override Value& as_expr_result() { return VBool::get(true); }
 
 	/// VFile: this
 	override VFile* as_vfile(String::Language /*lang*/, 

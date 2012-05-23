@@ -12,7 +12,7 @@
 #include "pa_request.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_PA_VXDOC_C="$Id: pa_vxdoc.C,v 1.44 2012/03/16 09:24:20 moko Exp $" IDENT_PA_VXDOC_H;
+volatile const char * IDENT_PA_VXDOC_C="$Id: pa_vxdoc.C,v 1.45 2012/05/23 16:26:41 moko Exp $" IDENT_PA_VXDOC_H;
 
 // defines
 
@@ -44,7 +44,7 @@ Value* VXdoc::as(const char* atype) {
 }
 
 /// VXdoc: true	 
-Value& VXdoc::as_expr_result(bool /*return_string_as_is=false*/) { return VBool::get(as_bool()); }
+Value& VXdoc::as_expr_result() { return VBool::get(as_bool()); }
 
 
 /// VXdoc: $CLASS,$method

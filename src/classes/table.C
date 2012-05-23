@@ -21,7 +21,7 @@
 #include "pa_vbool.h"
 #include "pa_array.h"
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.286 2012/03/16 09:24:08 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.287 2012/05/23 16:26:40 moko Exp $";
 
 // class
 
@@ -927,14 +927,14 @@ static void _sort(Request& r, MethodParams& params) {
 		old_table.set_current(i);
 		// calculate key value
 		seq[i].row=old_table[i];
-		Value& value=r.process_to_value(key_maker).as_expr_result(true/*return string as-is*/);
+		Value& value=r.process_to_value(key_maker);
 		if(i==0) // determining key values type by first one
 			key_values_are_strings=value.is_string();
 
 		if(key_values_are_strings)
 			seq[i].value.c_str=value.as_string().cstr();
 		else
-			seq[i].value.d=value.as_double();
+			seq[i].value.d=value.as_expr_result().as_double();
 	}
 
 	// @todo: handle this elsewhere

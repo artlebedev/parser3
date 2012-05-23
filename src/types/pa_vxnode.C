@@ -16,14 +16,14 @@
 #include "pa_charset.h"
 #include "pa_xml_exception.h"
 
-volatile const char * IDENT_PA_VXNODE_C="$Id: pa_vxnode.C,v 1.52 2012/03/16 09:24:20 moko Exp $" IDENT_PA_VXNODE_H;
+volatile const char * IDENT_PA_VXNODE_C="$Id: pa_vxnode.C,v 1.53 2012/05/23 16:26:41 moko Exp $" IDENT_PA_VXNODE_H;
 
 Request_charsets& VXnode::charsets() { 
 	return get_vxdoc().charsets();
 }
 
 /// VXnode: true	 
-Value& VXnode::as_expr_result(bool /*return_string_as_is=false*/) { return VBool::get(as_bool()); }
+Value& VXnode::as_expr_result() { return VBool::get(as_bool()); }
 
 
 Value* VXnode::get_element(const String& aname) { 

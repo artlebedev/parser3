@@ -8,7 +8,7 @@
 #ifndef PA_VDOUBLE_H
 #define PA_VDOUBLE_H
 
-#define IDENT_PA_VDOUBLE_H "$Id: pa_vdouble.h,v 1.56 2012/03/16 09:24:17 moko Exp $"
+#define IDENT_PA_VDOUBLE_H "$Id: pa_vdouble.h,v 1.57 2012/05/23 16:26:40 moko Exp $"
 
 // includes
 
@@ -33,7 +33,7 @@ public: // Value
 	/// VDouble: true
 	override bool is_evaluated_expr() const { return true; }
 	/// VDouble: clone
-	override Value& as_expr_result(bool ) { return *new VDouble(fdouble); }
+	override Value& as_expr_result() { return *new VDouble(fdouble); }
 
 	/** VDouble: fdouble 
 	*/

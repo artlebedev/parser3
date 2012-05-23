@@ -11,7 +11,7 @@
 #include "pa_vbool.h"
 #include "pa_wcontext.h"
 
-volatile const char * IDENT_PA_VJUNCTION_C="$Id: pa_vjunction.C,v 1.11 2012/03/16 09:24:18 moko Exp $" IDENT_PA_VJUNCTION_H IDENT_PA_JUNCTION_H;
+volatile const char * IDENT_PA_VJUNCTION_C="$Id: pa_vjunction.C,v 1.12 2012/05/23 16:26:41 moko Exp $" IDENT_PA_VJUNCTION_H IDENT_PA_JUNCTION_H;
 
 void VJunction::reattach(WContext *new_wcontext){
 	if(new_wcontext) {
@@ -26,8 +26,8 @@ void VJunction::reattach(WContext *new_wcontext){
 }
 
 
-override Value& VJunction::as_expr_result(bool) {
-	return VBool::get(as_bool());
+override Value& VJunction::as_expr_result() {
+	return VBool::get(false);
 }
 
 

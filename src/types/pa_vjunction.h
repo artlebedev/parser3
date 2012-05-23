@@ -8,7 +8,7 @@
 #ifndef PA_VJUNCTION_H
 #define PA_VJUNCTION_H
 
-#define IDENT_PA_VJUNCTION_H "$Id: pa_vjunction.h,v 1.31 2012/03/16 09:24:18 moko Exp $"
+#define IDENT_PA_VJUNCTION_H "$Id: pa_vjunction.h,v 1.32 2012/05/23 16:26:41 moko Exp $"
 
 // include
 
@@ -31,10 +31,10 @@ public: // VJunction
 	override bool is_defined() const { return false; }
 
 	/// VJunction: false
-	override bool as_bool() const { return is_defined(); }
+	override bool as_bool() const { return false; }
 
 	/// VJunction: false
-	override Value& as_expr_result(bool);
+	override Value& as_expr_result();
 
 	/// VJunction: method, root,self,rcontext, code
 	override Junction* get_junction() { return &fjunction; }

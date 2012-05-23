@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.146 2012/04/18 21:42:51 moko Exp $"
+#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.147 2012/05/23 16:26:40 moko Exp $"
 
 #include "pa_common.h"
 #include "pa_array.h"
@@ -113,7 +113,7 @@ public: // Value
 	virtual bool is_evaluated_expr() const { return false; }
 
 	/// what's the meaning of this value in context of expression?
-	virtual Value& as_expr_result(bool /*return_string_as_is*/=false) {
+	virtual Value& as_expr_result() {
 		return *bark("is '%s', can not be used in expression"); 
 	}
 	

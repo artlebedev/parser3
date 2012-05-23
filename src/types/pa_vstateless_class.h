@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
-#define IDENT_PA_VSTATELESS_CLASS_H "$Id: pa_vstateless_class.h,v 1.73 2012/03/16 09:24:19 moko Exp $"
+#define IDENT_PA_VSTATELESS_CLASS_H "$Id: pa_vstateless_class.h,v 1.74 2012/05/23 16:26:41 moko Exp $"
 
 // include
 
@@ -81,7 +81,7 @@ public: // Value
 		return 0;
 	}
 
-	override Value& as_expr_result(bool /*return_string_as_is=false*/);
+	override Value& as_expr_result();
 
 	Value* get_scalar(Value& aself);
 	void set_scalar(Method* amethod);

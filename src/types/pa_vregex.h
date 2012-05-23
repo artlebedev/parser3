@@ -8,7 +8,7 @@
 #ifndef PA_VREGEX_H
 #define PA_VREGEX_H
 
-#define IDENT_PA_VREGEX_H "$Id: pa_vregex.h,v 1.6 2012/03/16 09:24:19 moko Exp $"
+#define IDENT_PA_VREGEX_H "$Id: pa_vregex.h,v 1.7 2012/05/23 16:26:41 moko Exp $"
 
 // include
 
@@ -48,7 +48,7 @@ public: // Value
 	override bool is_evaluated_expr() const { return true; }
 
 	/// VRegex: scalar
-	override Value& as_expr_result(bool/*return_string_as_is=false*/);
+	override Value& as_expr_result();
 
 	/// VRegex: true
 	virtual bool is_defined() const { return as_bool(); }

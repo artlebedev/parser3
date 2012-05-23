@@ -8,7 +8,7 @@
 #ifndef PA_VOBJECT_H
 #define PA_VOBJECT_H
 
-#define IDENT_PA_VOBJECT_H "$Id: pa_vobject.h,v 1.57 2012/03/16 09:24:19 moko Exp $"
+#define IDENT_PA_VOBJECT_H "$Id: pa_vobject.h,v 1.58 2012/05/23 16:26:41 moko Exp $"
 
 // includes
 
@@ -46,7 +46,7 @@ public: // Value
 	override VStateless_class *get_class() { return &fclass; }
 
 	override bool is_defined() const;
-	override Value& as_expr_result(bool);
+	override Value& as_expr_result();
 	override int as_int() const;
 	override double as_double() const;
 	override bool as_bool() const;

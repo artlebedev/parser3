@@ -8,7 +8,7 @@
 #ifndef PA_VTABLE_H
 #define PA_VTABLE_H
 
-#define IDENT_PA_VTABLE_H "$Id: pa_vtable.h,v 1.58 2012/03/16 09:24:19 moko Exp $"
+#define IDENT_PA_VTABLE_H "$Id: pa_vtable.h,v 1.59 2012/05/23 16:26:41 moko Exp $"
 
 #include "pa_vstateless_object.h"
 #include "pa_table.h"
@@ -39,7 +39,7 @@ public: // Value
 	/// VTable: 0 or !0
 	override bool as_bool() const { return as_int()!=0; }
 	/// VTable: count
-	override Value& as_expr_result(bool /*return_string_as_is=false*/) { return *new VInt(as_int()); }
+	override Value& as_expr_result() { return *new VInt(as_int()); }
 	/// VTable: json-string
 	override const String* get_json_string(Json_options* options);
 	/// extract VTable

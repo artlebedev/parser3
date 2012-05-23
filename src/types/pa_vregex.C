@@ -9,7 +9,7 @@
 #include "pa_vint.h"
 #include "pa_vstring.h"
 
-volatile const char * IDENT_PA_VREGEX_C="$Id: pa_vregex.C,v 1.14 2012/03/16 09:24:19 moko Exp $" IDENT_PA_VREGEX_H;
+volatile const char * IDENT_PA_VREGEX_C="$Id: pa_vregex.C,v 1.15 2012/05/23 16:26:41 moko Exp $" IDENT_PA_VREGEX_H;
 
 // defines
 
@@ -29,7 +29,7 @@ const char* get_pcre_exec_error_text(int exec_result){
 }
 
 
-Value& VRegex::as_expr_result(bool/*return_string_as_is=false*/) {
+Value& VRegex::as_expr_result() {
 	return *new VInt(as_int());
 }
 

@@ -8,7 +8,7 @@
 #ifndef PA_VDATE_H
 #define PA_VDATE_H
 
-#define IDENT_PA_VDATE_H "$Id: pa_vdate.h,v 1.53 2012/03/16 09:24:17 moko Exp $"
+#define IDENT_PA_VDATE_H "$Id: pa_vdate.h,v 1.54 2012/05/23 16:26:40 moko Exp $"
 
 #include "classes.h"
 #include "pa_common.h"
@@ -65,7 +65,7 @@ public: // Value
 	}
 
 	/// VDate: ftime -> float days
-	override Value& as_expr_result(bool /*return_string_as_is=false*/) { return *new VDouble(as_double()); }
+	override Value& as_expr_result() { return *new VDouble(as_double()); }
 
 	/// VDate: true
 	override bool is_evaluated_expr() const { return true; }

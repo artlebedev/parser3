@@ -8,7 +8,7 @@
 #ifndef PA_VIMAGE_H
 #define PA_VIMAGE_H
 
-#define IDENT_PA_VIMAGE_H "$Id: pa_vimage.h,v 1.53 2012/03/16 09:24:17 moko Exp $"
+#define IDENT_PA_VIMAGE_H "$Id: pa_vimage.h,v 1.54 2012/05/23 16:26:40 moko Exp $"
 
 #include "classes.h"
 #include "pa_common.h"
@@ -74,7 +74,7 @@ public: // Value
 	override bool as_bool() const { return true; }
 
 	/// VImage: true	 
-	override Value& as_expr_result(bool /*return_string_as_is=false*/);
+	override Value& as_expr_result();
 
 	/// VImage: method,field
 	override Value* get_element(const String& aname);

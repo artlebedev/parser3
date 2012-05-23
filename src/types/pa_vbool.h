@@ -8,7 +8,7 @@
 #ifndef PA_VBOOL_H
 #define PA_VBOOL_H
 
-#define IDENT_PA_VBOOL_H "$Id: pa_vbool.h,v 1.33 2012/03/16 09:24:16 moko Exp $"
+#define IDENT_PA_VBOOL_H "$Id: pa_vbool.h,v 1.34 2012/05/23 16:26:40 moko Exp $"
 
 // include
 
@@ -34,13 +34,13 @@ public: // Value
 	/// VBool: true
 	override bool is_evaluated_expr() const { return true; }
 	/// VBool: clone
-	override Value& as_expr_result(bool) { return VBool::get(fbool); }
+	override Value& as_expr_result() { return *this; }
 
 	/// VBool: true
 	virtual bool is_defined() const { return true; }
 
 	/// VBool: fbool
-	override double as_double() const { return as_int(); }
+	override double as_double() const { return fbool ? 1 : 0; }
 	/// VBool: fbool
 	override int as_int() const { return fbool ? 1 : 0; }
 	/// VBool: fbool
