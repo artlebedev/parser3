@@ -12,7 +12,7 @@
 #include "pa_charset.h"
 #include "pa_vregex.h"
 
-volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.240 2012/03/16 09:24:14 moko Exp $" IDENT_PA_STRING_H;
+volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.241 2012/05/24 12:49:49 misha Exp $" IDENT_PA_STRING_H;
 
 const String String::Empty;
 
@@ -308,6 +308,57 @@ uint String::Body::get_hash_code() const {
 			CORD_batched_iter_fn_generic_hash_code, &hash_code);
 	}
 	return hash_code;
+}
+
+struct CORD_pos_info {
+	const char* chars;
+	size_t left;
+	size_t pos;
+};
+
+// can be called only for IS_FUNCTION(CORD) which is used in String::Body::strrpbrk
+static int CORD_iter_fn_rpos(char c, CORD_pos_info* info) {
+	if(info->pos < info->left){
+		info->pos=STRING_NOT_FOUND;
+		return 1;
+	}
+	if(strchr(info->chars, c))
+		return 1;
+	--(info->pos);
+	return 0;
+}
+
+size_t String::Body::strrpbrk(const char* chars, size_t left, size_t right) const {
+	if(is_empty() || !chars || !strlen(chars))
+		return STRING_NOT_FOUND;
+	CORD_pos_info info={chars, left, right};
+	if(CORD_riter4(body, right, (CORD_iter_fn)CORD_iter_fn_rpos, &info))
+		return info.pos;
+	else
+		return STRING_NOT_FOUND;
+}
+
+
+// can be called only for IS_FUNCTION(CORD) which is used in String::Body::rskipchars
+static int CORD_iter_fn_rskip(char c, CORD_pos_info* info) {
+	if(info->pos < info->left) {
+		info->pos=STRING_NOT_FOUND;
+		return 1;
+	}
+	if(!strchr(info->chars, c))
+		return 1;
+	--(info->pos);
+	return 0;
+}
+
+size_t String::Body::rskipchars(const char* chars, size_t left, size_t right) const {
+	if(is_empty() || !chars || !strlen(chars))
+		return STRING_NOT_FOUND;
+	CORD_pos_info info={chars, left, right};
+	if(CORD_riter4(body, right, (CORD_iter_fn)CORD_iter_fn_rskip, &info))
+		return info.pos;
+	else
+		return STRING_NOT_FOUND;
 }
 
 // String methods

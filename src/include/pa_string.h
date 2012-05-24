@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.202 2012/04/12 22:44:46 moko Exp $"
+#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.203 2012/05/24 12:49:25 misha Exp $"
 
 // includes
 #include "pa_types.h"
@@ -435,6 +435,10 @@ public:
 			return CORD_chr(body, offset, c);
 		}
 
+		size_t strrpbrk(const char* chars, size_t left, size_t right) const;
+
+		size_t rskipchars(const char* chars, size_t left, size_t right) const;
+
 		template<typename I>
 		int for_each(int (*f)(char c, I), I info) const {
 			return CORD_iter(body, (CORD_iter_fn)f, (void*)info);
@@ -637,6 +641,20 @@ public:
 	size_t pos(Charset& charset,
 		const String& substr, 
 		size_t this_offset=0, Language lang=L_UNSPECIFIED) const;
+
+	size_t strrpbrk(const char* chars, size_t left=0) const {
+		return (length()) ? body.strrpbrk(chars, left, length()-1) : STRING_NOT_FOUND;
+	}
+	size_t strrpbrk(const char* chars, size_t left, size_t right) const {
+		return body.strrpbrk(chars, left, right);
+	}
+
+	size_t rskipchars(const char* chars, size_t left=0) const {
+		return (length()) ? body.rskipchars(chars, left, length()-1) : STRING_NOT_FOUND;
+	}
+	size_t rskipchars(const char* chars, size_t left, size_t right) const {
+		return body.rskipchars(chars, left, right);
+	}
 
 	void split(ArrayString& result, 
 		size_t& pos_after,
