@@ -25,7 +25,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.218 2012/03/16 09:24:06 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.219 2012/05/24 12:52:14 misha Exp $";
 
 // defines
 
@@ -710,8 +710,19 @@ static void _lock(Request& r, MethodParams& params) {
 			&info);
 }
 
+static size_t afterlastslash(const String& str) {
+	size_t pos=str.strrpbrk("/\\");
+	return pos!=STRING_NOT_FOUND?pos+1:0;
+}
+
+static size_t afterlastslash(const String& str, size_t right) {
+	size_t pos=str.strrpbrk("/\\", 0, right);
+	return pos!=STRING_NOT_FOUND?pos+1:0;
+}
+
 static void _find(Request& r, MethodParams& params) {
 	const String& file_name=params.as_string(0, FILE_NAME_MUST_NOT_BE_CODE);
+
 	Value* not_found_code=(params.count()==2)?&params.as_junction(1, "not-found param must be code"):0;
 
 	const String* file_spec;
@@ -727,19 +738,23 @@ static void _find(Request& r, MethodParams& params) {
 	}
 
 	// monkey way
-	int after_base_slash=lastposafter(*file_spec, 0, "/", 1);
-	const String* dirname=&file_spec->mid(0, after_base_slash);
-	const String& basename=file_spec->mid(after_base_slash, file_spec->length());
+	size_t last_slash=file_spec->strrpbrk("/\\");
+	const String& dirname=file_spec->mid(0, last_slash!=STRING_NOT_FOUND?last_slash:0);
+	const String& basename=file_spec->mid(last_slash!=STRING_NOT_FOUND?last_slash+1:0, file_spec->length());
 
-	int after_monkey_slash;
-	while((after_monkey_slash=lastposafter(*dirname, 0, "/", 1, true))>0) {
+	size_t rpos=dirname.is_empty()?0:dirname.length()-1;
+	while((rpos=dirname.rskipchars("/\\", 0, rpos))!=STRING_NOT_FOUND){
+		size_t slash=dirname.strrpbrk("/\\", 0, rpos);
+		if(slash==STRING_NOT_FOUND)
+			break;
 		String test_name;
-		test_name<<*(dirname=&dirname->mid(0, after_monkey_slash));
-		test_name<<basename;
+		test_name << dirname.mid(0, slash+1);
+		test_name << basename;
 		if(file_exist(r.absolute(test_name))) {
 			r.write_assign_lang(test_name);
 			return;
 		}
+		rpos=slash;
 	}
 
 	// no way, not found
@@ -749,35 +764,82 @@ static void _find(Request& r, MethodParams& params) {
 
 static void _dirname(Request& r, MethodParams& params) {
 	const String& file_spec=params.as_string(0, FILE_NAME_MUST_BE_STRING);
+	// works as *nix dirname
+
+	// empty   > .
+	// /       > /
+	// /a      > /
+	// /a/     > /
 	// /a/some.tar.gz > /a
-	// /a/b/ > /a
-	int afterslash=lastposafter(file_spec, 0, "/", 1, true);
-	if(afterslash>0)
-		r.write_assign_lang(file_spec.mid(0, afterslash==1?1:afterslash-1));
-	else
+	// /a/b/   > /a
+	// /a///b/ > /a
+	// /a/b/// > /a
+	// file    > .
+
+	if(file_spec.is_empty()) {
 		r.write_assign_lang(String("."));
+		return;
+	}
+
+	size_t p;
+	size_t slash;
+	if((p=file_spec.rskipchars("/\\"))==STRING_NOT_FOUND)
+		r.write_assign_lang(String("/"));
+	else {
+		if((slash=file_spec.strrpbrk("/\\", 0, p))!=STRING_NOT_FOUND) {
+			if((p=file_spec.rskipchars("/\\", 0, slash))==STRING_NOT_FOUND)
+				p=slash;
+			r.write_assign_lang(file_spec.mid(0, p+1));
+			return;
+		}
+		r.write_assign_lang(String("."));
+	}
 }
 
 static void _basename(Request& r, MethodParams& params) {
 	const String& file_spec=params.as_string(0, FILE_NAME_MUST_BE_STRING);
+	// works as *nix basename
+
+	// empty   > .
+	// /       > /
+	// /a      > a
+	// /a/     > a
 	// /a/some.tar.gz > some.tar.gz
-	int afterslash=lastposafter(file_spec, 0, "/", 1);
-	r.write_assign_lang(file_spec.mid(afterslash, file_spec.length()));
+	// /a/b/   > b
+	// /a///b/ > b
+	// /a/b/// > b
+	// file    > file
+
+	if(file_spec.is_empty()) {
+		r.write_assign_lang(String("."));
+		return;
+	}
+
+	size_t p=file_spec.rskipchars("/\\");
+	if(p==STRING_NOT_FOUND)
+		r.write_assign_lang(String("/"));
+	else
+		r.write_assign_lang(file_spec.mid(afterlastslash(file_spec, p), p+1));
 }
 
 static void _justname(Request& r, MethodParams& params) {
 	const String& file_spec=params.as_string(0, FILE_NAME_MUST_BE_STRING);
 	// /a/some.tar.gz > some.tar
-	int afterslash=lastposafter(file_spec, 0, "/", 1);
-	int afterdot=lastposafter(file_spec, afterslash, ".", 1);
-	r.write_assign_lang(file_spec.mid(afterslash, afterdot!=afterslash?afterdot-1:file_spec.length()));
+	// /a/b.c/ > empty
+	// /a/b.c  > b
+	size_t pos=afterlastslash(file_spec);
+	size_t dotpos=file_spec.strrpbrk(".", pos);
+	r.write_assign_lang(file_spec.mid(pos, dotpos!=STRING_NOT_FOUND?dotpos:file_spec.length()));
 }
+
 static void _justext(Request& r, MethodParams& params) {
 	const String& file_spec=params.as_string(0, FILE_NAME_MUST_BE_STRING);
 	// /a/some.tar.gz > gz
-	int afterdot=lastposafter(file_spec, 0, ".", 1);
-	if(afterdot>0)
-		r.write_assign_lang(file_spec.mid(afterdot, file_spec.length()));
+	// /a/b.c/ > empty
+	size_t pos=afterlastslash(file_spec);
+	size_t dotpos=file_spec.strrpbrk(".", pos);
+	if(dotpos!=STRING_NOT_FOUND)
+		r.write_assign_lang(file_spec.mid(dotpos+1, file_spec.length()));
 }
 
 static void _fullpath(Request& r, MethodParams& params) {
