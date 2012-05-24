@@ -1,9 +1,9 @@
 Content-Type: text/html
-Content-Length: 1391
+Content-Length: 2024
 
 src=<br />
 dirname=.<br />
-basename=<br />
+basename=.<br />
 justname=<br />
 justext=
 <hr />
@@ -19,15 +19,39 @@ basename=some.tar.gz<br />
 justname=some.tar<br />
 justext=gz
 <hr />
+src=/a///some.tar.gz<br />
+dirname=/a<br />
+basename=some.tar.gz<br />
+justname=some.tar<br />
+justext=gz
+<hr />
+src=/a/b///<br />
+dirname=/a<br />
+basename=b<br />
+justname=<br />
+justext=
+<hr />
+src=/a/b///c//<br />
+dirname=/a/b<br />
+basename=c<br />
+justname=<br />
+justext=
+<hr />
 src=/a/b/<br />
 dirname=/a<br />
-basename=<br />
+basename=b<br />
 justname=<br />
+justext=
+<hr />
+src=/a/b<br />
+dirname=/a<br />
+basename=b<br />
+justname=b<br />
 justext=
 <hr />
 src=/a/<br />
 dirname=/<br />
-basename=<br />
+basename=a<br />
 justname=<br />
 justext=
 <hr />
@@ -39,7 +63,19 @@ justext=
 <hr />
 src=/<br />
 dirname=/<br />
-basename=<br />
+basename=/<br />
+justname=<br />
+justext=
+<hr />
+src=///<br />
+dirname=/<br />
+basename=/<br />
+justname=<br />
+justext=
+<hr />
+src=a///<br />
+dirname=.<br />
+basename=a<br />
 justname=<br />
 justext=
 <hr />
@@ -69,6 +105,12 @@ justext=
 <hr />
 src=C:\temp\file.txt<br />
 dirname=C:\temp<br />
+basename=file.txt<br />
+justname=file<br />
+justext=txt
+<hr />
+src=C:\file.txt<br />
+dirname=C:<br />
 basename=file.txt<br />
 justname=file<br />
 justext=txt
