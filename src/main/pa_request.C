@@ -32,7 +32,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.330 2012/05/07 20:05:10 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.331 2012/05/24 12:50:20 misha Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -591,9 +591,9 @@ void Request::use_file(VStateless_class& aclass,
 	if(file_name.first_char()=='/') //absolute path? [no need to scan MAIN:CLASS_PATH]
 		filespec=&absolute(file_name);
 	else if(use_filespec){ // search in current dir first
-		int afterslash=lastposafter(*use_filespec, 0, "/", 1, true);
-		if(afterslash>0)
-			filespec=file_exist(use_filespec->mid(0, afterslash-1), file_name); // found in current dir?
+		size_t last_slash_pos=use_filespec->strrpbrk("/");
+		if(last_slash_pos!=STRING_NOT_FOUND)
+			filespec=file_exist(use_filespec->mid(0, last_slash_pos), file_name); // found in current dir?
 	}
 
 	if(!filespec){
