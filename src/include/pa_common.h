@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.146 2012/03/16 09:24:09 moko Exp $"
+#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.147 2012/05/24 12:53:06 misha Exp $"
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -384,21 +384,6 @@ static String::C date_gmt_string(tm* tms) {
 		days[tms->tm_wday],
 		tms->tm_mday,month_names[tms->tm_mon],tms->tm_year+1900,
 		tms->tm_hour,tms->tm_min,tms->tm_sec));
-}
-
-static int lastposafter(const String& s, size_t after, const char* substr, size_t substr_size, bool beforelast=false) {
-	size_t size=0; // just to calm down compiler
-	if(beforelast)
-		size=s.length();
-	size_t at;
-	while((at=s.pos(String::Body(substr), after))!=STRING_NOT_FOUND) {
-		size_t newafter=at+substr_size/*skip substr*/;
-		if(beforelast && newafter==size)
-			break;
-		after=newafter;
-	}
-
-	return after;
 }
 
 // globals
