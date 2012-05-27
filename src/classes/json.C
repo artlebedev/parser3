@@ -18,7 +18,7 @@
 #include "pa_vxdoc.h"
 #endif
 
-volatile const char * IDENT_JSON_C="$Id: json.C,v 1.18 2012/04/24 22:41:09 moko Exp $";
+volatile const char * IDENT_JSON_C="$Id: json.C,v 1.19 2012/05/27 22:33:59 misha Exp $";
 
 // class
 
@@ -385,7 +385,7 @@ static void _string(Request& r, MethodParams& params) {
 				} else if(key == "file" && value->is_string()){
 					const String& svalue=value->as_string();
 					if(!json.set_file_format(svalue))
-						throw Exception(PARSER_RUNTIME, &svalue, "must be 'base64' or 'text'");
+						throw Exception(PARSER_RUNTIME, &svalue, "must be 'base64', 'text' or 'stat'");
 					valid_options++;
 #ifdef XML
 				} else if(key == "xdoc" && (vvalue = value->get_hash())){

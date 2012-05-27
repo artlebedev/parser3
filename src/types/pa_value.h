@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.147 2012/05/23 16:26:40 moko Exp $"
+#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.148 2012/05/27 22:34:15 misha Exp $"
 
 #include "pa_common.h"
 #include "pa_array.h"
@@ -75,6 +75,7 @@ struct Json_options {
 	bool set_file_format(const String &value){
 		if(value == "base64") file = F_BASE64;
 		else if (value == "text") file = F_TEXT;
+		else if (value == "stat") file = F_BODYLESS;
 		else return false;
 		return true;
 	}
