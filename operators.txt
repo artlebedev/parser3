@@ -550,6 +550,7 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !^reflection:base_name[объект]         имя родительского класса переданного объекта
     !^reflection:methods[класс]            хеш со списком методов указанного класса, значения -- строки 'native' или 'parser'
     !^reflection:fields[класс или объект]  хеш со списком статических полей указанного класса или динамических полей указанного объекта
+    !^reflection:uid[класс или объект]     возвращает идентификатор объекта или класса
     !^reflection:method_info[класс;метод]  хеш с параметрами указанного метода класса
          $.inherited[класс]                имя класса, где метод был определён (возвращается только если метод был определён в предке)
          $.overridden[класс]               имя класса, где метод был определён (возвращается только если метод был определён в предке)
@@ -562,6 +563,7 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !^reflection:dynamical[[object or class, caller if absent]]    возвращает true, если метод был вызван из динамического контекста
                                                                    при передаче параметра возвращает true, если передан динамический объект,
                                                                    false если класс
+    !^reflection:delete[класс или объект;имя переменной]           удаляет переменную с указанным именем в указанном классе или объекте
 
 
 !mail
@@ -778,15 +780,16 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         выполняется код
         разблокируется
     Xchmod[...] НЕТ И НЕ БУДЕТ, ЧТОБЫ НЕ МОГЛИ СДЕЛАТЬ executable и запустить, даже если ftp запрещает chmod.
-    !^file:dirname[/a/some.tar.gz]=/a
-    !^file:dirname[/a/b/]=/a
-    !^file:basename[/a/some.tar.gz]=some.tar.gz
+    !^file:dirname[/a/some.tar.gz]=/a (работает аналогично комманде *nix)
+    !^file:dirname[/a/b/]=/a (работает аналогично комманде *nix)
+    !^file:basename[/a/some.tar.gz]=some.tar.gz (работает аналогично комманде *nix)
+    !^file:basename[/a/b/]=b (работает аналогично комманде *nix)
     !^file:justname[/a/some.tar.gz]=some.tar
     !^file:justext[/a/some.tar.gz]=gz
     !/some/page.html: ^file:fullpath[a.gif] => /some/a.gif
     !^файл.sql-string[] внутри ^connect даст правильно escaped строку, которую можно в запрос отдать
-    X^file::sql[[имя_файла_для_download]]{}
-    !^file::sql{}[[
+    X^file::sql[[имя_файла_для_download]]{query}
+    !^file::sql{query}[[
         $.name[имя_файла_для_download]
         $.content-type[пользовательский content-type]
     ]]
@@ -873,7 +876,7 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
                                  object: [{"c1":"v11","c2":"v12",...},{"c1":"v21","c2":"v22",...},...]
                                  array:  [["c1","c2",...] || null (for nameless),["v11","v12",...],...]
                                  compact:  ["v11" || ["v11","v12",...],...]
-        $.file[text|base64]      вывести тело файла в указанном виде (по умолчание тело файла 
+        $.file[text|base64|stat] вывести тело файла в указанном виде (по умолчание тело файла 
                                  не попадает в output)
         $.xdoc[hash]             параметры преобразования xdoc в строку (как в ^xdoc.string[])
         $.тип[method-junction]   любой тип можно вывести с помощью пользовательского метода, который 

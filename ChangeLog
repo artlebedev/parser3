@@ -1,3 +1,118 @@
+2012-05-27	misha
+	* tests/results/256.processed 1.5:
+	* tests/results/276.processed 1.1:
+		*** empty log message ***
+
+	* tests/256.html 1.5:
+		- test for ^json:string[-file-;$.file[stat]] is added
+		- tests for unsupported values for options $.file, $.table and $.date are added
+
+	* src/classes/json.C 1.19:
+	* src/types/pa_value.h 1.148:
+		- ^json:string[...] now accepts "stat" $.file[] option's value 
+		in addition to existed  "text" and "base64" ( new feature: #835 )
+		
+
+	* tests/276.html 1.1:
+		- test for ^reflection:delete[$object-or-class;field-name]
+
+	* src/classes/reflection.C 1.26:
+		- ^reflection:delete[$object-or-class;field-name] is added ( new 
+		feature: #268 )
+
+2012-05-26	misha
+	* buildall-with-xml 1.43:
+		- libxml2 2.7.8 => 2.8.0
+
+2012-05-24	misha
+	* tests/results/065.processed 1.8:
+	* tests/results/270.processed 1.3:
+		*** empty log message ***
+
+	* src/include/pa_common.h 1.147:
+		- method lastposafter was removed
+
+	* src/classes/file.C 1.219:
+		- use strrpbrk & rskipchars instead of lastposafter
+		- ^file:dirname[] & Co proper handle windows file paths ( bug fix: #783 )
+		- ^file:dirname[] & ^file:basename[] now work as *nix commands
+
+	* src/main/pa_request.C 1.331:
+		- use strrpbrk instead of lastposafter
+
+	* src/include/pa_string.h 1.203:
+	* src/main/pa_string.C 1.241:
+		- strrpbrk & rskipchars were added
+
+	* tests/270.html 1.2:
+		- more tests for ^file:find[]
+
+	* tests/065.html 1.6:
+		- more tests for ^file:dirname[] & Co
+
+	* src/include/pa_version.h 1.44:
+		- must be "win32" here. it is auto-generated on *nix
+
+2012-05-23	moko
+	* src/classes/math.C 1.60:
+		^math:convert[] now supports uint32 and throws overflow 
+		exception ( new feature: #830 )
+
+	* tests/275.html 1.1:
+	* tests/results/275.processed 1.1:
+		test for ^math:convert[] uint32 support and overflow added ( new 
+		feature: #830 )
+
+	* src/classes/table.C 1.287:
+	* src/types/pa_value.h 1.147:
+	* src/types/pa_vbool.h 1.34:
+	* src/types/pa_vdate.h 1.54:
+	* src/types/pa_vdouble.h 1.57:
+	* src/types/pa_vfile.h 1.71:
+	* src/types/pa_vhash.h 1.65:
+	* src/types/pa_vimage.C 1.42:
+	* src/types/pa_vimage.h 1.54:
+	* src/types/pa_vint.h 1.49:
+	* src/types/pa_vjunction.C 1.12:
+	* src/types/pa_vjunction.h 1.32:
+	* src/types/pa_vobject.C 1.35:
+	* src/types/pa_vobject.h 1.58:
+	* src/types/pa_vregex.C 1.15:
+	* src/types/pa_vregex.h 1.7:
+	* src/types/pa_vstateless_class.C 1.48:
+	* src/types/pa_vstateless_class.h 1.74:
+	* src/types/pa_vstring.h 1.69:
+	* src/types/pa_vtable.h 1.59:
+	* src/types/pa_vvoid.h 1.38:
+	* src/types/pa_vxdoc.C 1.45:
+	* src/types/pa_vxdoc.h 1.50:
+	* src/types/pa_vxnode.C 1.53:
+	* src/types/pa_vxnode.h 1.42:
+		bool "return string as-is" removed from as_expr_result. ( new 
+		feature: #831 )
+
+	* tests/results/244.processed 1.3:
+		test changed after bug #782 fix commited
+
+	* tests/results/229.processed 1.5:
+		test results for bug #782 commited
+
+	* tests/254.html 1.6:
+	* tests/results/254.processed 1.6:
+		uid now just compared, not printed. :)
+
+2012-05-19	moko
+	* src/classes/reflection.C 1.25:
+		^reflection:uid[$object] added ( new feature: #341 )
+
+	* tests/254.html 1.5:
+	* tests/results/254.processed 1.5:
+		test for ^reflection:uid[] added
+
+	* tests/254.html 1.4:
+	* tests/results/254.processed 1.4:
+		test for ^reflection:uid[$obj] added
+
 2012-05-17	misha
 	* src/main/untaint.C 1.164:
 		- do not replace ' char by _26 while exploding filespec-tainting 
