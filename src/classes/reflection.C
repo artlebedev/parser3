@@ -9,7 +9,7 @@
 #include "pa_request.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.25 2012/05/19 20:44:57 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.26 2012/05/27 22:10:09 misha Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -302,6 +302,14 @@ static void _uid(Request& r, MethodParams& params) {
 	r.write_pass_lang(*new String(pa_strdup(local_buf, (size_t)size), String::L_CLEAN, size));
 }
 
+static void _delete(Request& r, MethodParams& params) {
+	const String& key=params.as_string(1, "field name must be string");
+	if(HashStringValue* fields=params[0].get_fields()){
+		fields->remove(key);
+	}
+}
+
+
 // constructor
 MReflection::MReflection(): Methoded("reflection") {
 	// ^reflection:create[class_name;constructor_name[;param1[;param2[;...]]]]
@@ -339,4 +347,7 @@ MReflection::MReflection(): Methoded("reflection") {
 
 	// ^reflection:uid[object or class]
 	add_native_method("uid", Method::CT_STATIC, _uid, 1, 1);
+
+	// ^reflection:delete[object or class;field_name]
+	add_native_method("delete", Method::CT_STATIC, _delete, 2, 2);
 }
