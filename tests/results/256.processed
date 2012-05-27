@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 4982
+Content-Length: 5839
 
 <h3>hash</h3>
 {
@@ -36,7 +36,7 @@ Content-Length: 4982
 "value":"2006-08-18 06:09:00"
 }, {
 "value":"new Date(1155866940)"
-}
+}, "exception":"unsupported, must be 'sql-string', 'gmt-string' or 'unix-timestamp'. That's OK"
 <h3>table</h3>
 {
 "table_nameless_empty":[],
@@ -200,11 +200,11 @@ null,
 		"vA\"",
 		"vB\\"
 	]
-}
+}, "exception":"unsupported, must be 'array', 'object' or 'compact'. That's OK"
 <h3>my</h3>
 {
 "object":"my at key object, with 1 option"
-}
+}, "exception":"string, called with invalid option. That's OK", "exception":"string, $.my must be parser method with 3 parameters. That's OK"
 <h3>file</h3>
 {
 "text":{
@@ -268,15 +268,42 @@ null,
 "text":{"file":{"name":"zigi", "text":"file-content", "params":"-params-"}},
 "binary":{"file":{"name":"256.txt", "text":"file-content", "params":"-params-"}},
 "stated":{"file":{"name":"256.txt", "text":"", "params":"-params-"}}
+}, {
+"text":{
+"class":"file",
+"size":12,
+"name":"zigi",
+"mode":"text",
+"content-type":"application\/octet-stream"
+},
+"binary":{
+"class":"file",
+"size":12,
+"name":"256.txt",
+"content-type":"application\/octet-stream",
+"mode":"binary",
+"adate":"-value-",
+"mdate":"-value-",
+"cdate":"-value-"
+},
+"stated":{
+"class":"file",
+"size":12,
+"name":"256.txt",
+"content-type":"application\/octet-stream",
+"adate":"-value-",
+"mdate":"-value-",
+"cdate":"-value-"
 }
+}, "exception":"unsupported, must be 'base64', 'text' or 'stat'. That's OK"
 <h3>image</h3>
 {
 "value":null
 }, {
 "value":"image []"
-}, Exception. That's OK (Unsupported value's type (image))
+}, "exception":"string, Unsupported value's type (image). That's OK"
 <h3>hash_with_infinite_recursion</h3>
-Exception. That's OK (call canceled - endless json recursion detected)
+"exception":"string, call canceled - endless json recursion detected. That's OK"
 <h3>xdoc</h3>
 {
 "value":"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<r><t z=\"1\"\/><\/r>\n"
