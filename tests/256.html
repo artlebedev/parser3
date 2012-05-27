@@ -1,4 +1,4 @@
-﻿@main[]
+@main[]
 $a[^hash::create[]]
 $b[$.a[$a]]
 $a.b[$b]
@@ -31,6 +31,10 @@ $h[
 			$.1[$.date[gmt-string]]
 			$.2[$.date[sql-string]]
 			$.3[$.date[$handler]]
+			$.4[
+				$.date[unsupported]
+				$.exception(true)
+			]
 		]
 	]
 
@@ -50,6 +54,10 @@ $h[
 			$.3[$.table[array] $.indent(true)]
 			$.4[$.table[compact]]
 			$.5[$.table[compact] $.indent(true)]
+			$.6[
+				$.table[unsupported]
+				$.exception(true)
+			]
 		]
 	]
 
@@ -58,6 +66,14 @@ $h[
 
 		$._options[
 			$.0[$.my[$handler]]
+			$.1[
+				$.my[$unknown]
+				$.exception(true)
+			]
+			$.2[
+				$.my[$main]
+				$.exception(true)
+			]
 		]
 	]
 
@@ -70,6 +86,11 @@ $h[
 			$.0[$.file[text]]
 			$.1[$.file[base64] $.indent(true)]
 			$.2[$.file[$handler]]
+			$.3[$.file[stat]]
+			$.4[
+				$.file[unsupported]
+				$.exception(true)
+			]
 		]
 	]
 
@@ -129,7 +150,7 @@ $bShouldBeException($options.exception)
 	$result[^json:string[$value;$options]^if($bShouldBeException){. FAILED. EXCEPTION SHOULD BE HERE}]
 }{
 	$exception.handled(true)
-	$result[Exception^if($bShouldBeException){. That's OK} ($exception.comment)]
+	$result["exception":"$exception.source, $exception.comment^if($bShouldBeException){. That's OK}"]
 }
 
 
