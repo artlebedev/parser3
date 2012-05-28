@@ -8,7 +8,7 @@
 #ifndef PA_VVOID_H
 #define PA_VVOID_H
 
-#define IDENT_PA_VVOID_H "$Id: pa_vvoid.h,v 1.39 2012/05/28 19:47:53 moko Exp $"
+#define IDENT_PA_VVOID_H "$Id: pa_vvoid.h,v 1.40 2012/05/28 20:22:08 moko Exp $"
 
 #define STRICT_VARS
 
@@ -52,7 +52,6 @@ public: // Value
 
 	/// VVoid: with OPTIMIZE_SINGLE_STRING_WRITE it allows void to survive in [$void]
 	override bool is_string() const {
-		CHECK_STRICT
 		return true;
 	}
 
