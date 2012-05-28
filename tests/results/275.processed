@@ -1,7 +1,16 @@
 Content-Type: text/html
-Content-Length: 117
+Content-Length: 532
 
 11110000000000000000000000000000
 -11110000000000000000000000000000
-convert
-'10000000000000000' is out of range (int)
+Exception: convert - '100000000' is out of range (int)
+Exception: div - Division by zero
+Exception: mod - Modulus by zero
+Exception: div - Division by zero
+Exception: mod - Modulus by zero
+0x100000000 as int: Exception: 0x100000000 - out of range (int)
+0x100000000 as double: Exception: 0x100000000 - out of range (int)
+0x7FFFFFFF as int: 2147483647
+-0x80000000 as int: -2147483648
+0x80000000 as double: 2147483648
+as int: Exception: 0x80000000 - out of range (int)

@@ -4,14 +4,56 @@
 ^math:convert[-F0000000](16;2)
 
 ^try_catch{
-	$d(^math:convert[10000000000000000](16;2))
+	$d(^math:convert[100000000](16;2))
 }
+
+$d(2)
+
+^try_catch{
+	^d.div(0)
+}
+^try_catch{
+	^d.mod(0)
+}
+
+$s[2]
+$i(^s.int[])
+
+^try_catch{
+	^i.div(0)
+}
+^try_catch{
+	^i.mod(0)
+}
+
+$s[0x100000000]
+$s as int: ^try_catch{
+	^s.int[]
+}
+
+$s as double: ^try_catch{
+	^s.double[]
+}
+
+
+$s[0x7FFFFFFF]
+$s as int: ^s.int[]
+
+$s[-0x80000000]
+$s as int: ^s.int[]
+
+$s[0x80000000]
+
+$s as double: ^s.double[]
+as int: ^try_catch{
+	^s.int[]
+}
+
 
 @try_catch[code]
 ^try{
 	$code
 }{
 	$exception.handled(true)
-	$exception.source
-	$exception.comment
+	$result[Exception: $exception.source - $exception.comment]
 }
