@@ -8,7 +8,7 @@
 #ifndef PA_VINT_H
 #define PA_VINT_H
 
-#define IDENT_PA_VINT_H "$Id: pa_vint.h,v 1.49 2012/05/23 16:26:40 moko Exp $"
+#define IDENT_PA_VINT_H "$Id: pa_vint.h,v 1.50 2012/05/28 10:33:19 moko Exp $"
 
 // include
 
@@ -57,9 +57,20 @@ public: // usage
 	void set_int(int ainteger) { finteger=ainteger; }
 
 	void inc(int increment) { finteger+=increment; }
+	
 	void mul(double k) { finteger=(int)(finteger*k); }
-	void div(double d) { finteger=(int)(finteger/d); }
-	void mod(int d) { finteger%=d; }
+	
+	void div(double d) {
+		if(d == 0)
+			throw Exception("number.zerodivision", 0, "Division by zero");
+		finteger=(int)(finteger/d); 
+	}
+	
+	void mod(int d) {
+		if(d == 0)
+			throw Exception("number.zerodivision", 0, "Modulus by zero");
+		finteger%=d; 
+	}
 
 private:
 

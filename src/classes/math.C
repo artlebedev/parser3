@@ -30,7 +30,7 @@
 	extern char *crypt(const char* , const char* );
 #endif
 
-volatile const char * IDENT_MATH_C="$Id: math.C,v 1.60 2012/05/23 20:51:40 moko Exp $";
+volatile const char * IDENT_MATH_C="$Id: math.C,v 1.61 2012/05/28 10:33:18 moko Exp $";
 
 // defines
 
@@ -357,7 +357,7 @@ static void _crc32(Request& r, MethodParams& params) {
 	r.write_no_lang(*new VInt(pa_crc32(string, strlen(string))));
 }
 
-static void toBase(unsigned long value, unsigned int base, char*& ptr){
+static void toBase(unsigned int value, unsigned int base, char*& ptr){
 	static const char* hex="0123456789ABCDEF";
 	int rest = value % base;
 	if(value >= base)
@@ -376,13 +376,11 @@ static void _convert(Request& r, MethodParams& params) {
 	if(base_to < 2 || base_to > 16)
 		throw Exception(PARSER_RUNTIME, 0, "base to must be an integer from 2 to 16");
 
-	while(*str && isspace((unsigned char)*str))
+	while(isspace(*str))
 		str++;
 
 	if(!*str)
 		return;
-
-	char *error_pos;
 
 	bool negative=false;
 	if(str[0]=='-') {
@@ -392,16 +390,9 @@ static void _convert(Request& r, MethodParams& params) {
 		str++;
 	}
 
-	errno=0;
-	unsigned long value=strtoul(str, &error_pos, base_from);
-	if(errno==ERANGE)
-			throw Exception("number.format", 0, "'%s' is out of range (int)", str);
+	unsigned int value=pa_atoui(str, base_from);
 
-	while(char c=*error_pos++)
-		if(!isspace((unsigned char)c))
-			throw Exception("number.format", 0, "'%s' is invalid number (int)", str);
-
-	char result_cstr[sizeof(unsigned long)*8+1/*minus for negative number*/+1/*terminator*/];
+	char result_cstr[sizeof(unsigned int)*8+1/*minus for negative number*/+1/*terminator*/];
 	char* ptr=result_cstr;
 	if(negative)
 		*ptr++='-';

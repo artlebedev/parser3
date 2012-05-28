@@ -8,7 +8,7 @@
 #include "pa_charset.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_PA_CHARSET_C="$Id: pa_charset.C,v 1.90 2012/03/16 09:24:13 moko Exp $" IDENT_PA_CHARSET_H;
+volatile const char * IDENT_PA_CHARSET_C="$Id: pa_charset.C,v 1.91 2012/05/28 10:33:18 moko Exp $" IDENT_PA_CHARSET_H;
 
 #ifdef XML
 #include "libxml/encoding.h"
@@ -58,8 +58,7 @@ inline unsigned int to_wchar_code(const char* cstr) {
 	if(cstr[1]==0)
 		return(unsigned int)(unsigned char)cstr[0];
 
-	char *error_pos;
-	return(unsigned int)strtol(cstr, &error_pos, 0);
+	return pa_atoui(cstr,0);
 }
 inline bool to_bool(const char* cstr) {
 	return cstr && *cstr!=0;

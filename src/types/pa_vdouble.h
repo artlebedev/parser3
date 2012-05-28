@@ -8,7 +8,7 @@
 #ifndef PA_VDOUBLE_H
 #define PA_VDOUBLE_H
 
-#define IDENT_PA_VDOUBLE_H "$Id: pa_vdouble.h,v 1.57 2012/05/23 16:26:40 moko Exp $"
+#define IDENT_PA_VDOUBLE_H "$Id: pa_vdouble.h,v 1.58 2012/05/28 10:33:19 moko Exp $"
 
 // includes
 
@@ -59,9 +59,20 @@ public: // usage
 	double get_double() const { return fdouble; }
 
 	void inc(double increment) { fdouble+=increment; }
+	
 	void mul(double k) { fdouble*=k; }
-	void div(double d) { fdouble/=d; }
-	void mod(int d) { fdouble=((int)fdouble)%d; }
+	
+	void div(double d) {
+		if(d == 0)
+			throw Exception("number.zerodivision", 0, "Division by zero");
+		fdouble/=d; 
+	}
+	
+	void mod(int d) {
+		if(d == 0)
+			throw Exception("number.zerodivision", 0, "Modulus by zero");
+		fdouble=((int)fdouble)%d;
+	}
 
 private:
 
