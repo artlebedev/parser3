@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.148 2012/05/27 22:34:15 misha Exp $"
+#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.149 2012/05/28 19:47:52 moko Exp $"
 
 #include "pa_common.h"
 #include "pa_array.h"
@@ -35,7 +35,9 @@ typedef Array<Value*> ArrayValue;
 
 struct Json_options {
 	Request* r;
+	String::Body key;
 	HashStringValue* methods;
+	Value* default_method;
 	Value* params;
 	bool skip_unknown;
 	const char* indent;
@@ -44,9 +46,10 @@ struct Json_options {
 	enum Table { T_ARRAY, T_OBJECT, T_COMPACT } table;
 	enum File { F_BODYLESS, F_BASE64, F_TEXT } file;
 
-	Json_options(Request* arequest): 
+	Json_options(Request* arequest):
 		r(arequest),
 		methods(NULL),
+		default_method(NULL),
 		params(NULL),
 		skip_unknown(false),
 		xdoc_options(NULL),
@@ -79,6 +82,8 @@ struct Json_options {
 		else return false;
 		return true;
 	}
+
+	const String* hash_json_string(HashStringValue &hash);
 };
 
 ///	grandfather of all @a values in @b Parser
@@ -129,7 +134,7 @@ public: // Value
 	virtual const String* get_string() { return 0; }
 
 	/// extract json-string
-	virtual const String* get_json_string(Json_options* options=0);
+	virtual const String* get_json_string(Json_options& options);
 
 	virtual HashStringValue* get_fields() { return 0; }
 	

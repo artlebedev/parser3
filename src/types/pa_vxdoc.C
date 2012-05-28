@@ -12,7 +12,7 @@
 #include "pa_request.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_PA_VXDOC_C="$Id: pa_vxdoc.C,v 1.45 2012/05/23 16:26:41 moko Exp $" IDENT_PA_VXDOC_H;
+volatile const char * IDENT_PA_VXDOC_C="$Id: pa_vxdoc.C,v 1.46 2012/05/28 19:47:53 moko Exp $" IDENT_PA_VXDOC_H;
 
 // defines
 
@@ -177,9 +177,9 @@ String::C xdoc2buf(Request& r, VXdoc& vdoc,
 					const String* file_spec,
 					bool use_source_charset_to_render_and_client_charset_to_write_to_header);
 
-const String* VXdoc::get_json_string(Json_options* options){
+const String* VXdoc::get_json_string(Json_options& options){
 	XDocOutputOptions xdoc_options_default;
-	String::C buf=xdoc2buf(*options->r, *this, options->xdoc_options ? *options->xdoc_options : xdoc_options_default,
+	String::C buf=xdoc2buf(*options.r, *this, options.xdoc_options ? *options.xdoc_options : xdoc_options_default,
 		0/*file_name. not to file, to memory*/,
 		true/*use source charset to render, client charset to put to header*/);
 

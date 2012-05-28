@@ -10,7 +10,7 @@
 #include "pa_vhash.h"
 #include "pa_vvoid.h"
 
-volatile const char * IDENT_PA_VTABLE_C="$Id: pa_vtable.C,v 1.37 2012/03/16 09:24:19 moko Exp $" IDENT_PA_VTABLE_H;
+volatile const char * IDENT_PA_VTABLE_C="$Id: pa_vtable.C,v 1.38 2012/05/28 19:47:52 moko Exp $" IDENT_PA_VTABLE_H;
 
 #ifndef DOXYGEN
 struct Record_info {
@@ -183,18 +183,18 @@ String& VTable::get_json_string_compact(String& result, const char *indent) {
 	return result;
 }
 
-const String* VTable::get_json_string(Json_options* options) {
+const String* VTable::get_json_string(Json_options& options) {
 	String* result = new String("[", String::L_AS_IS);
 
-	switch(options->table){
+	switch(options.table){
 	case Json_options::T_ARRAY:
-		result=&get_json_string_array(*result, options->indent);
+		result=&get_json_string_array(*result, options.indent);
 		break;
 	case Json_options::T_OBJECT:
-		result=&get_json_string_object(*result, options->indent);
+		result=&get_json_string_object(*result, options.indent);
 		break;
 	case Json_options::T_COMPACT:
-		result=&get_json_string_compact(*result, options->indent);
+		result=&get_json_string_compact(*result, options.indent);
 		break;
 	}
 

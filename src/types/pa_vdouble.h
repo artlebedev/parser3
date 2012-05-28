@@ -8,7 +8,7 @@
 #ifndef PA_VDOUBLE_H
 #define PA_VDOUBLE_H
 
-#define IDENT_PA_VDOUBLE_H "$Id: pa_vdouble.h,v 1.58 2012/05/28 10:33:19 moko Exp $"
+#define IDENT_PA_VDOUBLE_H "$Id: pa_vdouble.h,v 1.59 2012/05/28 19:47:52 moko Exp $"
 
 // includes
 
@@ -49,7 +49,7 @@ public: // Value
 	/// VDouble: 0 or !0
 	override bool as_bool() const { return fdouble!=0; }
 	/// VInt: json-string
-	override const String* get_json_string(Json_options*) { return get_string(); }
+	override const String* get_json_string(Json_options&) { return get_string(); }
 
 public: // usage
 

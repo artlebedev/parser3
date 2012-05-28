@@ -5,4 +5,28 @@ $json[{
 }]
 
 $o[^json:parse[$json]]
-^json:string[$o]
+$o.hash[ $.value[hash] ]
+
+$o.b[^test::create[]]
+$o.c[^test2::create[]]
+
+^json:string[$o; $.default[$2jsonDefault] $.test[$2json]]
+
+@2json[key;value;options]
+{key is: $key; value is: ^json:string[$value]}
+
+@2jsonDefault[key;value;options]
+{default, key is: $key; value is: ^json:string[$value]}
+
+
+@CLASS
+test
+
+@create[]
+$value[value]
+
+@CLASS
+test2
+
+@create[]
+$value2[value2]

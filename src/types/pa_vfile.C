@@ -12,7 +12,7 @@
 #include "pa_vint.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VFILE_C="$Id: pa_vfile.C,v 1.51 2012/03/16 09:24:17 moko Exp $" IDENT_PA_VFILE_H;
+volatile const char * IDENT_PA_VFILE_C="$Id: pa_vfile.C,v 1.52 2012/05/28 19:47:52 moko Exp $" IDENT_PA_VFILE_H;
 
 // externs
 
@@ -157,14 +157,14 @@ Value* VFile::get_element(const String& aname) {
 	return 0;
 }
 
-const String* VFile::get_json_string(Json_options* options){
+const String* VFile::get_json_string(Json_options& options){
 	String& result=*new String("{\n", String::L_AS_IS);
 	
 	String * indent=NULL;
 
-	if (options->indent){
-		indent = new String(",\n\t", String::L_AS_IS); *indent << options->indent << "\"";
-		result << "\t" << options->indent;
+	if (options.indent){
+		indent = new String(",\n\t", String::L_AS_IS); *indent << options.indent << "\"";
+		result << "\t" << options.indent;
 	}
 
 	result << "\"class\":\"file\"";
@@ -178,7 +178,7 @@ const String* VFile::get_json_string(Json_options* options){
 	}
 
 	if(fvalue_ptr){
-		switch(options->file){
+		switch(options.file){
 			case Json_options::F_BASE64:
 				{
 					indent ? result << *indent : result << ",\n\"";
@@ -199,6 +199,6 @@ const String* VFile::get_json_string(Json_options* options){
 		}
 	}
 
-	result << "\n" << options->indent << "}";
+	result << "\n" << options.indent << "}";
 	return &result;
 }

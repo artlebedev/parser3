@@ -9,7 +9,7 @@
 #include "pa_request.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.26 2012/05/27 22:10:09 misha Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.27 2012/05/28 19:47:52 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -302,7 +302,7 @@ static void _uid(Request& r, MethodParams& params) {
 	r.write_pass_lang(*new String(pa_strdup(local_buf, (size_t)size), String::L_CLEAN, size));
 }
 
-static void _delete(Request& r, MethodParams& params) {
+static void _delete(Request&, MethodParams& params) {
 	const String& key=params.as_string(1, "field name must be string");
 	if(HashStringValue* fields=params[0].get_fields()){
 		fields->remove(key);

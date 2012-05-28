@@ -18,7 +18,7 @@
 #include "pa_vxdoc.h"
 #endif
 
-volatile const char * IDENT_JSON_C="$Id: json.C,v 1.20 2012/05/28 10:43:58 moko Exp $";
+volatile const char * IDENT_JSON_C="$Id: json.C,v 1.21 2012/05/28 19:47:52 moko Exp $";
 
 // class
 
@@ -282,75 +282,72 @@ char *get_indent(uint level){
 	return cache[level];
 }
 
-const String& value_json_string(String::Body key, Value& v, Json_options* options);
+const String& value_json_string(String::Body key, Value& v, Json_options& options);
 
-const String& hash_json_string(HashStringValue &hash, Json_options* options) {
+const String* Json_options::hash_json_string(HashStringValue &hash) {
 	if(!hash.count())
-		return *new String("{}", String::L_AS_IS);
+		return new String("{}", String::L_AS_IS);
 
-	uint level = options->r->json_string_recoursion_go_down();
+	uint level = r->json_string_recoursion_go_down();
 
 	String& result = *new String("{\n", String::L_AS_IS);
 
-	if (options->indent){
+	if (indent){
 
 		String *delim=NULL;
-		options->indent=get_indent(level);
+		indent=get_indent(level);
 		for(HashStringValue::Iterator i(hash); i; i.next() ){
 			if (delim){
 				result << *delim;
 			} else {
-				result << options->indent << "\"";
-				delim = new String(",\n", String::L_AS_IS); *delim << options->indent << "\"";
+				result << indent << "\"";
+				delim = new String(",\n", String::L_AS_IS); *delim << indent << "\"";
 			}
-			result << String(i.key(), String::L_JSON) << "\":" << value_json_string(i.key(), *i.value(), options);
+			result << String(i.key(), String::L_JSON) << "\":" << value_json_string(i.key(), *i.value(), *this);
 		}
-		result << "\n" << (options->indent=get_indent(level-1)) << "}";
+		result << "\n" << (indent=get_indent(level-1)) << "}";
 
 	} else {
 
 		bool need_delim=false;
 		for(HashStringValue::Iterator i(hash); i; i.next() ){
 			result << (need_delim ? ",\n\"" : "\"");
-			result << String(i.key(), String::L_JSON) << "\":" << value_json_string(i.key(), *i.value(), options);
+			result << String(i.key(), String::L_JSON) << "\":" << value_json_string(i.key(), *i.value(), *this);
 			need_delim=true;
 		}
 		result << "\n}";
 
 	}
 
-	options->r->json_string_recoursion_go_up();
-	return result;
+	r->json_string_recoursion_go_up();
+	return &result;
 }
 
-static bool based_on(
-					HashStringValue::key_type key,
-					HashStringValue::value_type /*value*/,
-					Value* v) {
+static bool based_on(HashStringValue::key_type key, HashStringValue::value_type /*value*/, Value* v) {
 	return v->is(key.cstr());
 }
 					
-const String& value_json_string(String::Body key, Value& v, Json_options* options) {
-	if(options && options->methods) {
-		Value* method=options->methods->get(v.type());
-		if(!method)
-			method=options->methods->first_that<Value*>(based_on, &v);
-		if(method) {
+const String& value_json_string(String::Body key, Value& v, Json_options& options) {
+	if(options.methods) {
+		Value* method=options.methods->get(v.type());
+		if(!method){
+			method=options.methods->first_that<Value*>(based_on, &v);
+			options.methods->put(key, method ? method : VVoid::get());
+		}
+		if(method && !method->is_void()) {
 			Junction* junction=method->get_junction();
-			VMethodFrame frame(*junction->method, options->r->method_frame, junction->self);
+			VMethodFrame frame(*junction->method, options.r->method_frame, junction->self);
 
-			Value *params[]={new VString(*new String(key, String::L_JSON)), &v, (options->params) ? options->params : VVoid::get()};
+			Value *params[]={new VString(*new String(key, String::L_JSON)), &v, options.params ? options.params : VVoid::get()};
 			frame.store_params(params, 3);
 
-			options->r->execute_method(frame);
+			options.r->execute_method(frame);
 
 			return frame.result().as_string();
 		}
 	}
 
-	if(HashStringValue* hash=v.get_hash())
-		return hash_json_string(*hash, options);
-
+	options.key=key;
 	return *v.get_json_string(options);
 }
 
@@ -392,6 +389,12 @@ static void _string(Request& r, MethodParams& params) {
 					json.xdoc_options=new XDocOutputOptions(r, vvalue);
 					valid_options++;
 #endif
+				} else if(key == "default"){
+					Junction* junction=value->get_junction();
+					if(!junction || !junction->method || !junction->method->params_names || junction->method->params_names->count() != 3)
+						throw Exception(PARSER_RUNTIME, 0, "$.%s must be parser method with 3 parameters", key.cstr());
+					json.default_method=value;
+					valid_options++;
 				} else if(Junction* junction=value->get_junction()){
 					if(!junction->method || !junction->method->params_names || junction->method->params_names->count() != 3)
 						throw Exception(PARSER_RUNTIME, 0, "$.%s must be parser method with 3 parameters", key.cstr());
@@ -405,7 +408,7 @@ static void _string(Request& r, MethodParams& params) {
 				json.methods=methods;
 		}
 
-	const String& result_string=value_json_string(String::Body(), params[0], &json);
+	const String& result_string=value_json_string(String::Body(), params[0], json);
 	String::Body result_body=result_string.cstr_to_string_body_untaint(String::L_JSON, 0, &r.charsets);
 	r.write_pass_lang(*new String(result_body, String::L_AS_IS));
  }

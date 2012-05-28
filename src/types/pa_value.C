@@ -11,7 +11,7 @@
 #include "pa_vdate.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_PA_VALUE_C="$Id: pa_value.C,v 1.34 2012/04/18 21:42:51 moko Exp $" IDENT_PA_VALUE_H IDENT_PA_PROPERTY_H;
+volatile const char * IDENT_PA_VALUE_C="$Id: pa_value.C,v 1.35 2012/05/28 19:47:52 moko Exp $" IDENT_PA_VALUE_H IDENT_PA_PROPERTY_H;
 
 // globals
 
@@ -33,9 +33,13 @@ VFile* Value::as_vfile(String::Language /*lang*/, const Request_charsets* /*char
 	bark("is '%s', it does not have file value"); return 0;
 }
 
-const String* Value::get_json_string(Json_options* options) {
-	if(!options || !options->skip_unknown)
+const String* Value::get_json_string(Json_options& options) {
+	if(HashStringValue* hash=get_hash())
+		return options.hash_json_string(*hash);
+
+	if(!options.skip_unknown)
 		throw Exception(PARSER_RUNTIME, 0, "Unsupported value's type (%s)", type());
+
 	return new String("null");
 }
 

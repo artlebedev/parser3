@@ -8,7 +8,7 @@
 #ifndef PA_VVOID_H
 #define PA_VVOID_H
 
-#define IDENT_PA_VVOID_H "$Id: pa_vvoid.h,v 1.38 2012/05/23 16:26:41 moko Exp $"
+#define IDENT_PA_VVOID_H "$Id: pa_vvoid.h,v 1.39 2012/05/28 19:47:53 moko Exp $"
 
 #define STRICT_VARS
 
@@ -30,7 +30,7 @@ public: // Value
 	override bool is_void() const { return true; }
 
 	/// VVoid: json-string ("null")
-	override const String* get_json_string(Json_options*) {
+	override const String* get_json_string(Json_options&) {
 		static const String singleton_json_null(String("null"));
 		return &singleton_json_null;
 	}

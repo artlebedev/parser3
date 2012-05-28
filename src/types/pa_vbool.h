@@ -8,7 +8,7 @@
 #ifndef PA_VBOOL_H
 #define PA_VBOOL_H
 
-#define IDENT_PA_VBOOL_H "$Id: pa_vbool.h,v 1.34 2012/05/23 16:26:40 moko Exp $"
+#define IDENT_PA_VBOOL_H "$Id: pa_vbool.h,v 1.35 2012/05/28 19:47:52 moko Exp $"
 
 // include
 
@@ -49,7 +49,7 @@ public: // Value
 	override bool is_bool() const { return true; }
 
 	/// VBool: json-string ("true"|"false")
-	override const String* get_json_string(Json_options*) {
+	override const String* get_json_string(Json_options&) {
 		static const String singleton_json_true(String("true")), singleton_json_false(String("false"));
 		return fbool ? &singleton_json_true : &singleton_json_false;
 	}

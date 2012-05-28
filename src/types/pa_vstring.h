@@ -8,7 +8,7 @@
 #ifndef PA_VSTRING_H
 #define PA_VSTRING_H
 
-#define IDENT_PA_VSTRING_H "$Id: pa_vstring.h,v 1.69 2012/05/23 16:26:41 moko Exp $"
+#define IDENT_PA_VSTRING_H "$Id: pa_vstring.h,v 1.70 2012/05/28 19:47:52 moko Exp $"
 
 // includes
 
@@ -45,7 +45,7 @@ public: // Value
 	override VFile* as_vfile(String::Language lang, const Request_charsets *charsets=0);
 
 	/// VString: json string
-	override const String* get_json_string(Json_options*) { 
+	override const String* get_json_string(Json_options&) { 
 		String* result = new String();
 		result->append_quoted(fstring);
 		return result;

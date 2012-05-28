@@ -12,7 +12,7 @@
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VOBJECT_C="$Id: pa_vobject.C,v 1.35 2012/05/23 16:26:41 moko Exp $" IDENT_PA_VOBJECT_H;
+volatile const char * IDENT_PA_VOBJECT_C="$Id: pa_vobject.C,v 1.36 2012/05/28 19:47:52 moko Exp $" IDENT_PA_VOBJECT_H;
 
 Value* VObject::get_scalar_value(char* as_something) const {
 	VObject* unconst_this=const_cast<VObject*>(this);
@@ -112,4 +112,19 @@ const VJunction* VObject::put_element(const String& aname, Value* avalue, bool /
 		ffields.put(aname, avalue);
 	}
 	return 0;
+}
+
+const String* VObject::get_json_string(Json_options& options){
+	if(options.default_method){
+		Junction* junction=options.default_method->get_junction();
+			VMethodFrame frame(*junction->method, options.r->method_frame, junction->self);
+
+			Value *params[]={new VString(*new String(options.key, String::L_JSON)), this, options.params ? options.params : VVoid::get()};
+			frame.store_params(params, 3);
+
+			options.r->execute_method(frame);
+
+			return &frame.result().as_string();
+	}
+	return options.hash_json_string(*get_hash());
 }
