@@ -1,0 +1,8 @@
+@main[]
+
+$json[{
+"bigint": 123456789012345
+}]
+
+$o[^json:parse[$json]]
+^json:string[$o]
