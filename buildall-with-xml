@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Id: buildall-with-xml,v 1.43 2012/05/26 23:08:57 misha Exp $
+# $Id: buildall-with-xml,v 1.44 2012/05/28 05:33:04 misha Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -107,6 +107,7 @@ if test ! -f "$project_directory/gnome/lib/libxml2.a"; then
     --without-http \
     --without-docbook \
     --without-zlib \
+    --without-lzma \
     --disable-shared \
     --silent
   echo "int main(){return 0;}">testapi.c
