@@ -10,7 +10,7 @@ $o.hash[ $.value[hash] ]
 $o.b[^test::create[]]
 $o.c[^test2::create[]]
 
-^json:string[$o; $.default[$2jsonDefault] $.test[$2json]]
+^json:string[$o; $._default[$2jsonDefault] $.test[$2json]]
 
 @2json[key;value;options]
 {key is: $key; value is: ^json:string[$value]}
