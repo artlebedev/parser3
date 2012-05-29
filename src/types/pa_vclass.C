@@ -7,7 +7,7 @@
 
 #include "pa_vclass.h"
 
-volatile const char * IDENT_PA_VCLASS_C="$Id: pa_vclass.C,v 1.45 2012/03/16 09:24:16 moko Exp $" IDENT_PA_VCLASS_H;
+volatile const char * IDENT_PA_VCLASS_C="$Id: pa_vclass.C,v 1.46 2012/05/29 23:22:11 moko Exp $" IDENT_PA_VCLASS_H;
 
 Property& VClass::get_property(const String& aname) {
 	Property* result=ffields.get(aname);
@@ -73,10 +73,11 @@ Value* VClass::get_element(Value& aself, const String& aname) {
 		if(prop->getter)
 			return new VJunction(aself, prop->getter, true /*is_getter*/);
 
-		if(prop->setter)
-			throw Exception(PARSER_RUNTIME,
-				0,
-				"this property has no getter method (@GET_%s[])", aname.cstr());
+		if(prop->setter){
+			if(Value *result=get_default_getter(aself, aname))
+				return result;
+			throw Exception(PARSER_RUNTIME,	0, "this property has no getter method (@GET_%s[])", aname.cstr());
+		}
 		 
 		// just field, can be 0 as we don't remove 
 		return prop->value;
@@ -111,10 +112,11 @@ const VJunction* VClass::put_element(Value& aself, const String& aname, Value* a
 		if (prop->setter)
 			return new VJunction(aself, prop->setter);
 
-		if(prop->getter)
-			throw Exception(PARSER_RUNTIME,
-				0,
-				"this property has no setter method (@SET_%s[value])", aname.cstr());
+		if(prop->getter){
+			if(VJunction *result=get_default_setter(aself, aname))
+				return result;
+			throw Exception(PARSER_RUNTIME,	0, "this property has no setter method (@SET_%s[value])", aname.cstr());
+		}
 		
 		// just field, value can be 0 and unlike usual we don't remove it
 		prop->value=avalue;

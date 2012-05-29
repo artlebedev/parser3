@@ -1,0 +1,29 @@
+@main[]
+
+$o[^test::create[]]
+
+$o.a[1]
+set a: $o.log
+get a: $o.a
+
+$o.b[2]
+set b: $o.log
+get b: $o.b
+
+@CLASS
+test
+
+@create[]
+$log[]
+
+@GET_DEFAULT[]
+default
+
+@SET_a[value]
+$log[SET_a called with '$value']
+
+@GET_b[]
+b
+
+@SET_DEFAULT[name;value]
+$log[SET_DEFAULT called for '$name' with '$value']

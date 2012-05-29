@@ -1,0 +1,7 @@
+Content-Type: text/html
+Content-Length: 95
+
+set a: SET_a called with '1'
+get a: default
+set b: SET_DEFAULT called for 'b' with '2'
+get b: b
