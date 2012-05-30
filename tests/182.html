@@ -14,12 +14,7 @@ $sDir[182_dir]
 ^use[182_dir/a3.p]
 
 ^^a:a1[]: ^a:a1[]
-^^a:a2[]: 
-^try{
-	^a:a2[]
-}{
-	$exception.handled(1)
-	exception: $exception.comment <b>$exception.source</b><br />
-}
+^^a:a2[]: ^try-catch{^a:a2[]}
 ^^b:b1[]: ^b:b1[]
 ^^c:c1[]: ^c:c1[]
+^^c:c2[]: ^try-catch{^c:c2[]}
