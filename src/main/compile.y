@@ -8,7 +8,7 @@
 	
 */
 
-volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.262 2012/03/16 09:24:12 moko Exp $";
+volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.263 2012/05/30 02:25:47 misha Exp $";
 
 /**
 	@todo parser4: 
@@ -156,6 +156,7 @@ control_method: '@' STRING '\n'
 	}
 	if(command==CLASS_NAME) {
 		if(strings_code->count()==1*OPERATIONS_PER_OPVALUE) {
+			PC.class_add();
 			// new class' name
 			const String& name=LA2S(*strings_code)->trim(String::TRIM_END);
 			// creating the class
@@ -167,6 +168,7 @@ control_method: '@' STRING '\n'
 			YYERROR;
 		}
 	} else if(command==USE_CONTROL_METHOD_NAME) {
+		PC.class_add();
 		for(size_t i=0; i<strings_code->count(); i+=OPERATIONS_PER_OPVALUE) 
 			PC.request.use_file(PC.request.main_class, LA2S(*strings_code, i)->trim(String::TRIM_END), PC.request.get_used_filename(PC.file_no));
 	} else if(command==BASE_NAME) {
