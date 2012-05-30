@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 189
+Content-Length: 223
 
 ^a:a1[]: a1<br />
 ^a:a2[]: a2<br />
@@ -7,6 +7,9 @@ Content-Length: 189
 ^b:b1[]: b1<br />
 <hr />
 ^a:a1[]: new a1<br />
-^a:a2[]: exception: undefined method <b>a2</b><br />
+^a:a2[]: Type: parser.runtime,
+Source: a2,
+Comment: undefined method
 ^b:b1[]: b1<br />
 ^c:c1[]: c1<br />
+^c:c2[]: c2<br />
