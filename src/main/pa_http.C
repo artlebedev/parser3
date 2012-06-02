@@ -13,7 +13,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.53 2012/03/16 09:24:13 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.54 2012/06/02 22:52:36 misha Exp $" IDENT_PA_HTTP_H; 
 
 // defines
 
@@ -41,6 +41,23 @@ volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.53 2012/03/16 09:24:13
 
 #undef CRLF
 #define CRLF "\r\n"
+
+// helpers
+/// pa_internal_file_read_http uses this 
+class Cookies_table_template_columns: public ArrayString {
+public:
+	Cookies_table_template_columns() {
+		*this+=new String("name");
+		*this+=new String("value");
+		*this+=new String("expires");
+		*this+=new String("max-age");
+		*this+=new String("domain");
+		*this+=new String("path");
+		*this+=new String("httponly");
+		*this+=new String("secure");
+	}
+};
+
 
 static bool set_addr(struct sockaddr_in *addr, const char* host, const short port){
 	memset(addr, 0, sizeof(*addr)); 
@@ -525,6 +542,72 @@ static void find_headers_end(char* p,
 	headers_end_at=0;
 }
 
+// Set-Cookie: name=value; Domain=docs.foo.com; Path=/accounts; Expires=Wed, 13-Jan-2021 22:23:01 GMT; Secure; HttpOnly
+static ArrayString* parse_cookie(Request& r, const String& cookie) {
+	char *current=strdup(cookie.cstr());
+	
+	const String* name=0;
+	const String* value=0;
+	const String* expires=0;
+	const String* max_age=0;
+	const String* path=0;
+	const String* domain=0;
+	const String* httponly=0;
+	const String* secure=0;
+
+	bool first_pair=true;
+
+	do {
+		if(char *meaning=search_stop(current, ';'))
+			if(char *attribute=search_stop(meaning, '=')) {
+				const String* sname=new String(unescape_chars(attribute, strlen(attribute), &r.charsets.source(), true/*don't convert '"' to space*/), String::L_TAINTED);
+				const String* smeaning=0;
+				if(meaning)
+					smeaning=new String(unescape_chars(meaning, strlen(meaning), &r.charsets.source(), true/*don't convert '"' to space*/), String::L_TAINTED);
+
+				if(first_pair) {
+					// name + value
+					name=sname;
+					value=smeaning;
+					first_pair=false;
+				} else {
+					const String& slower=sname->change_case(r.charsets.source(), String::CC_LOWER);
+
+					if(slower == "expires")
+						expires=smeaning;
+					else if(slower == "max-age")
+						max_age=smeaning;
+					else if(slower == "domain")
+						domain=smeaning;
+					else if(slower == "path")
+						path=smeaning;
+					else if(slower == "httponly")
+						httponly=new String("1", String::L_CLEAN);
+					else if(slower == "secure")
+						secure=new String("1", String::L_CLEAN);
+					else {
+						// todo@ ?
+					}
+				}
+			}
+	} while(current);
+
+	if(!name)
+		return 0;
+
+	ArrayString* result=new ArrayString(8);
+	*result+=name;
+	*result+=value;
+	*result+=expires;
+	*result+=max_age;
+	*result+=domain;
+	*result+=path;
+	*result+=httponly;
+	*result+=secure;
+
+	return result;
+}
+
 /// @todo build .cookies field. use ^file.tables.SET-COOKIES.menu{ for now
 File_read_http_result pa_internal_file_read_http(Request& r,
 						const String& file_spec,
@@ -853,6 +936,17 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 			}
 
 			result.headers->put(HEADER_NAME, new VString(HEADER_VALUE));
+		}
+
+		// filling $.cookies
+		if(Value *vcookie=(Value *)tables.get("SET-COOKIE")){
+			Table& tcookies=*new Table(new Cookies_table_template_columns);
+
+			for(Array_iterator<Table::element_type> i(*vcookie->get_table()); i.has_next(); )
+				if(ArrayString* row=parse_cookie(r, *i.next()->get(0)))
+					tcookies+=row;
+
+			result.headers->put(HTTP_COOKIES_NAME, new VTable(&tcookies));
 		}
 	}
 
