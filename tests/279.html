@@ -1,0 +1,15 @@
+@main[]
+
+$json[{
+"sql": "<tag with=\"attribute\"/>"
+}]
+
+$o[^json:parse[$json]]
+
+$o.sql
+
+$o[^json:parse[$json; $.taint[as-is]]]
+
+$o.sql
+
+

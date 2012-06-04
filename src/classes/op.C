@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.209 2012/03/16 09:24:07 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.210 2012/06/04 13:46:18 moko Exp $";
 
 // limits
 
@@ -104,13 +104,10 @@ static void _if(Request& r, MethodParams& params) {
 		r.process_write(*params.get(i));
 }
 
-static String::Language get_untaint_lang(MethodParams& params, int index){
-	const String& lang_name=params.as_string(index, "lang must be string");
+String::Language get_untaint_lang(const String& lang_name){
 	String::Language lang=untaint_lang_name2enum.get(lang_name);
 	if(!lang)
-		throw Exception(PARSER_RUNTIME,
-			&lang_name,
-			"invalid taint language");
+		throw Exception(PARSER_RUNTIME,	&lang_name, "invalid taint language");
 	return lang;
 }
 
@@ -119,7 +116,7 @@ static void _untaint(Request& r, MethodParams& params) {
 	if(params.count()==1)
 		lang=String::L_AS_IS; // mark as simply 'as-is'. useful in html from sql 
 	else
-		lang=get_untaint_lang(params, 0);
+		lang=get_untaint_lang(params.as_string(0, "lang must be string"));
 
 	{
 		Value& vbody=params.as_junction(params.count()-1, "body must be code");
@@ -135,7 +132,7 @@ static void _taint(Request& r, MethodParams& params) {
 	if(params.count()==1)
 		lang=String::L_TAINTED; // mark as simply 'tainted'. useful in table:create
 	else
-		lang=get_untaint_lang(params, 0);
+		lang=get_untaint_lang(params.as_string(0, "lang must be string"));
 
 	{
 		Value& vbody=params.as_no_junction(params.count()-1, "body must not be code");
@@ -146,7 +143,7 @@ static void _taint(Request& r, MethodParams& params) {
 }
 
 static void _apply_taint(Request& r, MethodParams& params) {
-	String::Language lang=params.count()==1 ? String::L_AS_IS : get_untaint_lang(params, 0);
+	String::Language lang=params.count()==1 ? String::L_AS_IS : get_untaint_lang(params.as_string(0, "lang must be string"));
 	const String &sbody=params.as_string(params.count()-1, "body must be string");
 	String::Body result_body=sbody.cstr_to_string_body_untaint(lang, 0, &r.charsets);
 	r.write_pass_lang(*new String(result_body, String::L_AS_IS));

@@ -18,7 +18,7 @@
 #include "pa_vxdoc.h"
 #endif
 
-volatile const char * IDENT_JSON_C="$Id: json.C,v 1.22 2012/05/29 21:57:01 moko Exp $";
+volatile const char * IDENT_JSON_C="$Id: json.C,v 1.23 2012/06/04 13:46:18 moko Exp $";
 
 // class
 
@@ -44,10 +44,13 @@ struct Json {
 	Request* request;
 
 	Charset *charset;
+	String::Language taint;
+
 	bool handle_double;
 	enum Distinct { D_EXCEPTION, D_FIRST, D_LAST, D_ALL } distinct;
 
-	Json(Charset* acharset): stack(), key_stack(), key(NULL), result(NULL), hook_object(NULL), hook_array(NULL), request(NULL), charset(acharset), handle_double(true), distinct(D_EXCEPTION){}
+	Json(Charset* acharset): stack(), key_stack(), key(NULL), result(NULL), hook_object(NULL), hook_array(NULL), 
+		request(NULL), charset(acharset), taint(String::L_TAINTED), handle_double(true), distinct(D_EXCEPTION){}
 
 	bool set_distinct(const String &value){
 		if (value == "first") distinct = D_FIRST;
@@ -90,9 +93,9 @@ static void set_json_value(Json *json, Value *value){
 
 String* json_string(Json *json, const JSON_value* value){
 	String::C result = json->charset !=NULL ? 
-			Charset::transcode(String::C(value->vu.str.value, value->vu.str.length), UTF8_charset, *json->charset) :
-			String::C(pa_strdup(value->vu.str.value, value->vu.str.length), value->vu.str.length);
-	return new String(result.str, String::L_TAINTED, result.length);
+		Charset::transcode(String::C(value->vu.str.value, value->vu.str.length), UTF8_charset, *json->charset) :
+		String::C(pa_strdup(value->vu.str.value, value->vu.str.length), value->vu.str.length);
+	return new String(result.str, json->taint, result.length);
 }
 
 static Value *json_hook(Request &r, Junction *hook, String* key, Value* value){
@@ -202,6 +205,8 @@ static const char* json_error_message(int error_code){
 	return error_messages[error_code];
 }
 
+extern String::Language get_untaint_lang(const String& lang_name);
+
 static void _parse(Request& r, MethodParams& params) {
 	const String& json_string=params.as_string(0, "json must be string");
 
@@ -231,6 +236,10 @@ static void _parse(Request& r, MethodParams& params) {
 				const String& sdistinct=value->as_string();
 				if (!json.set_distinct(sdistinct))
 					throw Exception(PARSER_RUNTIME, &sdistinct, "must be 'first', 'last' or 'all'");
+				valid_options++;
+			}
+			if(Value* value=options->get("taint")) {
+				json.taint=get_untaint_lang(value->as_string());
 				valid_options++;
 			}
 			if(Value* value=options->get("object")) {
