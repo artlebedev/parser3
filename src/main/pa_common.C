@@ -36,7 +36,7 @@
 #include "pcre.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.267 2012/03/16 09:24:13 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.268 2012/06/04 05:47:29 misha Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -822,6 +822,26 @@ char* unescape_chars(const char* cp, int len, Charset* charset, bool js){
 
 	*dst=0; // zero-termination
 	return s;
+}
+
+char *search_stop(char*& current, char cstop_at) {
+	// sanity check
+	if(!current)
+		return 0;
+
+	// skip leading WS
+	while(*current==' ' || *current=='\t')
+		current++;
+	if(!*current)
+		return current=0;
+
+	char *result=current;
+	if(char *pstop_at=strchr(current, cstop_at)) {
+		*pstop_at=0;
+		current=pstop_at+1;
+	} else
+		current=0;
+	return result;
 }
 
 #ifdef WIN32

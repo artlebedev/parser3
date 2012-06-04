@@ -13,7 +13,7 @@
 #include "pa_vhash.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VCOOKIE_C="$Id: pa_vcookie.C,v 1.86 2012/03/16 09:24:17 moko Exp $" IDENT_PA_VCOOKIE_H;
+volatile const char * IDENT_PA_VCOOKIE_C="$Id: pa_vcookie.C,v 1.87 2012/06/04 05:47:35 misha Exp $" IDENT_PA_VCOOKIE_H;
 
 // defines
 
@@ -116,34 +116,14 @@ const VJunction* VCookie::put_element(const String& aname, Value* avalue, bool /
 	return PUT_ELEMENT_REPLACED_ELEMENT;
 }
 
-static char *search_stop(char*& current, char cstop_at) {
-	// sanity check
-	if(!current)
-		return 0;
-
-	// skip leading WS
-	while(*current==' ' || *current=='\t')
-		current++;
-	if(!*current)
-		return current=0;
-
-	char *result=current;
-	if(char *pstop_at=strchr(current, cstop_at)) {
-		*pstop_at=0;
-		current=pstop_at+1;
-	} else
-		current=0;
-	return result;
-}
-
-
 static Value& expires_vdate(double days_till_expire) {
 	return *new VDate(expires_sec(days_till_expire));
 }
 
 /*
 	@todo 
-	http://wp.netscape.com/newsref/std/cookie_spec.html
+	http://curl.haxx.se/rfc/cookie_spec.html
+	http://www.w3.org/Protocols/rfc2109/rfc2109
 	When sending cookies to a server, 
 	all cookies with a more specific path mapping should be sent before cookies 
 	with less specific path mappings. 
@@ -208,7 +188,8 @@ const String* output_set_cookie_value(
 
 	if(adelete) {// removing value
 		/*
-			http://wp.netscape.com/newsref/std/cookie_spec.html
+			http://curl.haxx.se/rfc/cookie_spec.html
+			http://www.w3.org/Protocols/rfc2109/rfc2109
 			to delete a cookie, it can do so by returning a cookie with the same name, 
 			and an expires time which is in the past
 		*/

@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.147 2012/05/24 12:53:06 misha Exp $"
+#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.148 2012/06/04 05:47:22 misha Exp $"
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -255,6 +255,8 @@ const char* format(double value, char *fmt);
 size_t stdout_write(const void *buf, size_t size);
 
 char* unescape_chars(const char* cp, int len, Charset* client_charset=0, bool js=false/*true==decode \uXXXX and don't convert '+' to space*/);
+
+char *search_stop(char*& current, char cstop_at);
 
 #ifdef WIN32
 void back_slashes_to_slashes(char *s);
