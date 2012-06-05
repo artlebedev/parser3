@@ -9,7 +9,7 @@
 #include "pa_request.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.27 2012/05/28 19:47:52 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.28 2012/06/05 10:30:32 misha Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -193,7 +193,7 @@ static void _methods(Request& r, MethodParams& params) {
 			"class is undefined");
 
 	VHash& result=*new VHash;
-	if(VStateless_class* lclass=class_value->get_class()){
+	if(VStateless_class* lclass=class_value->get_class()) {
 		HashStringMethod methods=lclass->get_methods();
 		methods.for_each(store_method_info, result.get_hash());
 	} else {
@@ -202,12 +202,35 @@ static void _methods(Request& r, MethodParams& params) {
 	r.write_no_lang(result);
 }
 
+static void _method(Request& r, MethodParams& params) {
+	Value& o=params.as_no_junction(0, "first param must be object or class, not junction");
+	const String& name=params.as_string(1, "method name must be string");
+
+	if(VStateless_class* lclass=o.get_class()) {
+		if(Method* method=lclass->get_method(name))
+			r.write_no_lang(*method->get_vjunction(o));
+	} else {
+		// class which does not have methods (env, console, etc)
+	}
+}
+
 static void _fields(Request& r, MethodParams& params) {
-	if(HashStringValue* fields=params[0].get_fields()){
+	Value& o=params.as_no_junction(0, "param must be object or class, not junction");
+
+	if(HashStringValue* fields=o.get_fields()) {
 		VHash& result=*new VHash(*fields);
 		r.write_no_lang(result);
 	} else
 		r.write_no_lang(*new VHash());
+}
+
+static void _field(Request& r, MethodParams& params) {
+	Value& o=params.as_no_junction(0, "first param must be object or class, not junction");
+	const String& name=params.as_string(1, "field name must be string");
+
+	if(HashStringValue* fields=o.get_fields())
+		if(Value* value=fields->get(name))
+			r.write_no_lang(*value);
 }
 
 static void _method_info(Request& r, MethodParams& params) {
@@ -333,11 +356,17 @@ MReflection::MReflection(): Methoded("reflection") {
 	// ^reflection:methods[class_name]
 	add_native_method("methods", Method::CT_STATIC, _methods, 1, 1);
 
-	// ^reflection:fields[object or class]
-	add_native_method("fields", Method::CT_STATIC, _fields, 1, 1);
+	// ^reflection:method[object or class;method_name]
+	add_native_method("method", Method::CT_STATIC, _method, 2, 2);
 
 	// ^reflection:method_info[class_name;method_name]
 	add_native_method("method_info", Method::CT_STATIC, _method_info, 2, 2);
+
+	// ^reflection:fields[object or class]
+	add_native_method("fields", Method::CT_STATIC, _fields, 1, 1);
+
+	// ^reflection:field[object or class;field_name]
+	add_native_method("field", Method::CT_STATIC, _field, 2, 2);
 
 	// ^reflection:dynamical[[object or class, caller if absent]]
 	add_native_method("dynamical", Method::CT_STATIC, _dynamical, 0, 1);
