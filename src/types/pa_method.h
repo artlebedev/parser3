@@ -8,12 +8,13 @@
 #ifndef PA_METHOD_H
 #define PA_METHOD_H
 
-#define IDENT_PA_METHOD_H "$Id: pa_method.h,v 1.19 2012/03/16 09:24:16 moko Exp $"
+#define IDENT_PA_METHOD_H "$Id: pa_method.h,v 1.20 2012/06/05 10:28:43 misha Exp $"
 
 #define OPTIMIZE_CALL
 #define OPTIMIZE_RESULT
 
 #include "pa_operation.h"
+#include "pa_vjunction.h"
 
 /**
 	native code method
@@ -130,6 +131,12 @@ public:
 	/// call this before invoking to ensure proper actual numbered params count
 	void check_actual_numbered_params(
 		Value& self, MethodParams* actual_numbered_params) const;
+
+	VJunction* get_vjunction(Value& aself) {
+		if(!junction_template)
+			return junction_template=new VJunction(aself, this);
+		return junction_template->get(aself);
+	}
 };
 
 ///	Auto-object used for temporarily substituting/removing elements
