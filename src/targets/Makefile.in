@@ -173,7 +173,7 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 #don't compile apache
 @COMPILE_APACHE_MODULE_FALSE@SUBDIRS = cgi isapi
-@COMPILE_APACHE_MODULE_TRUE@SUBDIRS = apache
+@COMPILE_APACHE_MODULE_TRUE@SUBDIRS = apache cgi
 all: all-recursive
 
 .SUFFIXES:
