@@ -15,7 +15,7 @@
 #include "pa_vbool.h"
 #include "pa_vmemcached.h"
 
-volatile const char * IDENT_MEMCACHED_C="$Id: memcached.C,v 1.4 2012/04/24 22:41:09 moko Exp $";
+volatile const char * IDENT_MEMCACHED_C="$Id: memcached.C,v 1.5 2012/06/05 07:56:48 moko Exp $";
 
 class MMemcached: public Methoded {
 public: // VStateless_class
@@ -27,13 +27,9 @@ public:
 DECLARE_CLASS_VAR(memcached, new MMemcached, 0);
 
 static void _open(Request& r, MethodParams& params) {
-	Value& param_value=params.as_no_junction(0, PARAM_MUST_NOT_BE_CODE);
 	VMemcached& self=GET_SELF(r, VMemcached);
-
-	int ttl=0;
-	
-	if(params.count()>1)
-		ttl=params.as_int(1, "default expiration must be int", r);
+	Value& param_value=params.as_no_junction(0, PARAM_MUST_NOT_BE_CODE);
+	time_t ttl=params.count()>1 ? params.as_int(1, "default expiration must be int", r) : 0;
 
 	if(HashStringValue* options=param_value.get_hash()){
 		String result;
@@ -51,19 +47,15 @@ static void _open(Request& r, MethodParams& params) {
 }
 
 static void _flush(Request& r, MethodParams& params) {
-	int ttl=0;
-
-	if(params.count()>0)
-		params.as_int(0, "expiration must be int", r);
-
 	VMemcached& self=GET_SELF(r, VMemcached);
+	time_t ttl=(params.count()>0) ? params.as_int(0, "expiration must be int", r) : 0;
+
 	self.flush(ttl);
 }
 
 static void _mget(Request& r, MethodParams& params) {
-	Value& param=params.as_no_junction(0, PARAM_MUST_NOT_BE_CODE);
-
 	VMemcached& self=GET_SELF(r, VMemcached);
+	Value& param=params.as_no_junction(0, PARAM_MUST_NOT_BE_CODE);
 
 	if(param.is_string()){
 
@@ -91,22 +83,22 @@ static void _mget(Request& r, MethodParams& params) {
 }
 
 static void _add(Request& r, MethodParams& params) {
+	VMemcached& self=GET_SELF(r, VMemcached);
 	const String& key=params.as_string(0, "key must be string");
 
-	VMemcached& self=GET_SELF(r, VMemcached);
-	r.write_no_lang(VBool::get(self.add(key, params.get(1))));
+	r.write_no_lang(VBool::get(self.add(key, &params.as_no_junction(1, PARAM_MUST_NOT_BE_CODE))));
 }
 
 static void _delete(Request& r, MethodParams& params) {
+	VMemcached& self=GET_SELF(r, VMemcached);
 	const String& key=params.as_string(0, "key must be string");
 
-	VMemcached& self=GET_SELF(r, VMemcached);
 	self.remove(key);
 }
 
 MMemcached::MMemcached() : Methoded("memcached") {
 	add_native_method("open", Method::CT_DYNAMIC, _open, 1, 2);
-	add_native_method("flush", Method::CT_DYNAMIC, _flush, 1, 1);
+	add_native_method("flush", Method::CT_DYNAMIC, _flush, 0, 1);
 	add_native_method("mget", Method::CT_DYNAMIC, _mget, 1, 1000);
 	add_native_method("add", Method::CT_DYNAMIC, _add, 2, 2);
 	add_native_method("delete", Method::CT_DYNAMIC, _delete, 1, 1);
