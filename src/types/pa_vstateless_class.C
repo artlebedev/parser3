@@ -10,7 +10,7 @@
 #include "pa_vbool.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VSTATELESS_CLASS_C="$Id: pa_vstateless_class.C,v 1.48 2012/05/23 16:26:41 moko Exp $" IDENT_PA_VSTATELESS_CLASS_H IDENT_PA_METHOD_H;
+volatile const char * IDENT_PA_VSTATELESS_CLASS_C="$Id: pa_vstateless_class.C,v 1.49 2012/06/05 10:29:18 misha Exp $" IDENT_PA_VSTATELESS_CLASS_H IDENT_PA_METHOD_H;
 
 /// globals
 const String class_name(CLASS_NAME), class_nametext(CLASS_NAMETEXT);
@@ -81,11 +81,8 @@ Value* VStateless_class::get_element(Value& aself, const String& aname) {
 		return new VString(name());
 
 	// $method=junction(self+class+method)
-	if(Method* method=get_method(aname)){
-		if(!method->junction_template)
-			return method->junction_template=new VJunction(aself, method);
-		return method->junction_template->get(aself);
-	}
+	if(Method* method=get_method(aname))
+		return method->get_vjunction(aself);
 
 	return 0;
 }
