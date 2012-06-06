@@ -1,0 +1,63 @@
+@main[]
+$h[
+	$.k1[v1]
+	$.k2[v2]
+	^rem{ key name == method name }
+	$.foreach[problem was here]
+	$.k3[v3]
+]
+
+^foreach[^reflection:fields[$h]]
+
+$o[^t::create[]]
+^foreach[^reflection:fields[$o]]
+^foreach[^reflection:fields[$t:CLASS]]
+
+^$h.foreach='^reflection:field[$h;foreach]'
+^$h.k3='^reflection:field[$h;k3]'
+
+^$o.s1='$o.s1'
+^$o.d1='$o.d1'
+
+^^reflection:field[^$o;s1]='^reflection:field[$o;s1]'
+^^reflection:field[^$o;d1]='^reflection:field[$o;d1]'
+
+^$t:CLASS.s1='$t:CLASS.s1'
+^$t:CLASS.d1='$t:CLASS.d1'
+
+^^reflection:field[^$t:CLASS;s1]='^reflection:field[$t:CLASS;s1]'
+^^reflection:field[^$t:CLASS;d1]='^reflection:field[$t:CLASS;d1]'
+
+$j[^reflection:method[$o;dynamic_call]]
+^j[]
+
+$j[^reflection:method[$t:CLASS;static_call]]
+^j[]
+
+
+@foreach[h][j;k;v]
+$j[^reflection:method[$h;foreach]]
+^j[k;v]{$k='$v'}[, ]
+
+
+
+@CLASS
+t
+
+@auto[]
+$s1[s1v]
+$s2[s2v]
+$static_call[static]
+
+@create[]
+$d1[d1v]
+$d2[d2v]
+$dynamic_call[dynamic]
+
+@static_call[]
+#problem was here
+$static_call
+
+@dynamic_call[]
+#problem was here
+$dynamic_call
