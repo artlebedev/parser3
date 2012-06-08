@@ -8,7 +8,7 @@
 #ifndef PA_VHASHFILE_H
 #define PA_VHASHFILE_H
 
-#define IDENT_PA_VHASHFILE_H "$Id: pa_vhashfile.h,v 1.40 2012/03/16 09:24:17 moko Exp $"
+#define IDENT_PA_VHASHFILE_H "$Id: pa_vhashfile.h,v 1.41 2012/06/08 02:02:31 misha Exp $"
 
 #include "classes.h"
 #include "pa_pool.h"
@@ -35,6 +35,8 @@ public: // value
 
 	/// VHashfile: convert to VHash
 	override HashStringValue *get_hash();
+
+	override HashStringValue* get_fields() { return get_hash(); }
 
 	/// VHashfile: (key)=value
 	override Value* get_element(const String& aname) { 
