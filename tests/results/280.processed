@@ -1,0 +1,18 @@
+Content-Type: text/html
+Content-Length: 380
+
+k1='v1', k2='v2', foreach='problem was here', k3='v3'
+d1='d1v', d2='d2v', dynamic_call='dynamic'
+static_call='static', s2='s2v', s1='s1v'
+$h.foreach='problem was here'
+$h.k3='v3'
+$o.s1='s1v'
+$o.d1='d1v'
+^reflection:field[$o;s1]=''
+^reflection:field[$o;d1]='d1v'
+$t:CLASS.s1='s1v'
+$t:CLASS.d1=''
+^reflection:field[$t:CLASS;s1]='s1v'
+^reflection:field[$t:CLASS;d1]=''
+dynamic
+static
