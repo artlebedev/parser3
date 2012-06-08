@@ -25,7 +25,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.219 2012/05/24 12:52:14 misha Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.220 2012/06/08 11:44:01 misha Exp $";
 
 // defines
 
@@ -463,8 +463,7 @@ static void _exec_cgi(Request& r, MethodParams& params, bool cgi) {
 	String *in=new String();
 	Charset *charset=0; // default script works raw_in 'source' charset = no transcoding needed
 	if(param_index < params.count()) {
-		Value& venv=params.as_no_junction(param_index++, "env must not be code");
-		if(HashStringValue* user_env=venv.get_hash()) {
+		if(HashStringValue* user_env=params.as_hash(param_index++, "env")) {
 			// $.charset  [previewing to handle URI pieces]
 			if(Value* vcharset=user_env->get(CHARSET_EXEC_PARAM_NAME))
 				charset=&charsets.get(vcharset->as_string()
@@ -935,7 +934,7 @@ static void _sql(Request& r, MethodParams& params) {
 	ulong offset=0;
 
 	if(params.count()>1)
-		if(HashStringValue* options=params.as_hash(1)){
+		if(HashStringValue* options=params.as_hash(1, "sql options")) {
 			int valid_options=0;
 			if(Value* vfilename=options->get(NAME_NAME)) {
 				valid_options++;

@@ -16,7 +16,7 @@
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.19 2012/04/24 21:53:32 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.20 2012/06/08 11:44:01 misha Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -493,10 +493,8 @@ static void _curl_options(Request& r, MethodParams& params){
 	if(curl_options==0)
 		curl_options=new CurlOptionHash();
 
-	if(HashStringValue* options=params.as_no_junction(0, OPTIONS_MUST_NOT_BE_CODE).get_hash()){
+	if(HashStringValue* options=params.as_hash(0))
 		options->for_each<Request&>(curl_setopt, r);
-	} else
-		throw Exception("curl", 0, OPTIONS_MUST_BE_HASH);
 }
 
 

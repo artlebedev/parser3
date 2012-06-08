@@ -12,7 +12,7 @@
 #include "pa_vvoid.h"
 #include "pa_sql_connection.h"
 
-volatile const char * IDENT_VOID_C="$Id: void.C,v 1.50 2012/03/16 09:24:08 moko Exp $";
+volatile const char * IDENT_VOID_C="$Id: void.C,v 1.51 2012/06/08 11:44:02 misha Exp $";
 
 // externs
 
@@ -56,7 +56,7 @@ static void _sql(Request& r, MethodParams& params) {
 
 	HashStringValue* bind=0;
 	if(params.count()>1)
-		if(HashStringValue* options=params.as_hash(1)) {
+		if(HashStringValue* options=params.as_hash(1, "sql options")) {
 			int valid_options=0;
 			if(Value* vbind=options->get(sql_bind_name)) {
 				valid_options++;

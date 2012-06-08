@@ -25,7 +25,7 @@
 #include "pa_vdate.h"
 #include "pa_table.h"
 
-volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.139 2012/03/16 09:24:07 moko Exp $";
+volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.140 2012/06/08 11:44:01 misha Exp $";
 
 // defines
 
@@ -975,11 +975,7 @@ static void _replace(Request& r, MethodParams& params) {
 	gdImage::Point* all_p=0;
 	size_t count=0;
 	if(params.count() == 3){
-		Table* table=params.as_no_junction(2, COORDINATES_MUST_NOT_BE_CODE).get_table();
-		if(!table) 
-			throw Exception(PARSER_RUNTIME,
-				0,
-				"coordinates must be table");
+		Table* table=params.as_table(2, "coordinates");
 		count=table->count();
 		all_p=new(PointerFreeGC) gdImage::Point[count];
 		gdImage::Point* add_p=all_p;
@@ -1005,11 +1001,7 @@ static void _replace(Request& r, MethodParams& params) {
 static void _polyline(Request& r, MethodParams& params) {
 	gdImage& image=GET_SELF(r, VImage).image();
 
-	Table* table=params.as_no_junction(1, COORDINATES_MUST_NOT_BE_CODE).get_table();
-	if(!table) 
-		throw Exception(PARSER_RUNTIME,
-			0,
-			"coordinates must be table");
+	Table* table=params.as_table(1, "coordinates");
 
 	gdImage::Point* all_p=new(PointerFreeGC) gdImage::Point[table->count()];
 	gdImage::Point *add_p=all_p;	
@@ -1022,11 +1014,7 @@ static void _polyline(Request& r, MethodParams& params) {
 static void _polygon(Request& r, MethodParams& params) {
 	gdImage& image=GET_SELF(r, VImage).image();
 
-	Table* table=params.as_no_junction(1, COORDINATES_MUST_NOT_BE_CODE).get_table();
-	if(!table) 
-		throw Exception(PARSER_RUNTIME,
-			0,
-			"coordinates must be table");
+	Table* table=(Table*)params.as_table(1, "coordinates");
 
 	gdImage::Point* all_p=new(PointerFreeGC) gdImage::Point[table->count()];
 	gdImage::Point *add_p=all_p;	
@@ -1038,11 +1026,7 @@ static void _polygon(Request& r, MethodParams& params) {
 static void _polybar(Request& r, MethodParams& params) {
 	gdImage& image=GET_SELF(r, VImage).image();
 
-	Table* table=params.as_no_junction(1, COORDINATES_MUST_NOT_BE_CODE).get_table();
-	if(!table) 
-		throw Exception(PARSER_RUNTIME,
-			0,
-			"coordinates must be table");
+	Table* table=(Table*)params.as_table(1, "coordinates");
 
 	gdImage::Point* all_p=new(PointerFreeGC) gdImage::Point[table->count()];
 	gdImage::Point *add_p=all_p;	

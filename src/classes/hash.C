@@ -16,7 +16,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.113 2012/03/16 09:24:07 moko Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.114 2012/06/08 11:44:01 misha Exp $";
 
 // class
 
@@ -208,7 +208,7 @@ static void _create_or_add(Request& r, MethodParams& params) {
 }
 
 static void _sub(Request& r, MethodParams& params) {
-	if(HashStringValue* src=params.as_no_junction(0, PARAM_MUST_BE_HASH).get_hash()) {
+	if(HashStringValue* src=params.as_hash(0, "param")) {
 		HashStringValue* self=&(GET_SELF(r, VHash).hash());
 		if(src==self) { // same: clearing
 			self->clear();
@@ -228,7 +228,7 @@ static void _union(Request& r, MethodParams& params) {
 	// dest = copy of self
 	Value& result=*new VHash(GET_SELF(r, VHash).hash());
 	// dest += b
-	if(HashStringValue* src=params.as_no_junction(0, PARAM_MUST_BE_HASH).get_hash())
+	if(HashStringValue* src=params.as_hash(0, "param"))
 		src->for_each<HashStringValue*>(copy_all_dontoverwrite_to, result.get_hash());
 
 	// return result
@@ -251,7 +251,7 @@ static void copy_intersection_to(
 static void _intersection(Request& r, MethodParams& params) {
 	Value& result=*new VHash;
 	// dest += b
-	if(HashStringValue* b=params.as_no_junction(0, PARAM_MUST_BE_HASH).get_hash()) {
+	if(HashStringValue* b=params.as_hash(0, "param")) {
 		Copy_intersection_to_info info={b, result.get_hash()};
 		GET_SELF(r, VHash).hash().for_each<Copy_intersection_to_info*>(copy_intersection_to, &info);
 	}
@@ -270,7 +270,7 @@ static bool intersects(
 static void _intersects(Request& r, MethodParams& params) {
 	bool result=false;
 
-	if(HashStringValue* b=params.as_no_junction(0, PARAM_MUST_BE_HASH).get_hash())
+	if(HashStringValue* b=params.as_hash(0, "param"))
 		result=GET_SELF(r, VHash).hash().first_that<HashStringValue*>(intersects, b)!=0;
 
 	// return result
@@ -297,7 +297,7 @@ static void _sql(Request& r, MethodParams& params) {
 	bool distinct=false;
 	Table2hash_value_type value_type=C_HASH;
 	if(params.count()>1)
-		if(HashStringValue* options=params.as_hash(1)) {
+		if(HashStringValue* options=params.as_hash(1, "sql options")) {
 			int valid_options=0;
 			if(Value* vbind=options->get(sql_bind_name)) {
 				valid_options++;

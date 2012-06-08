@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.210 2012/06/04 13:46:18 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.211 2012/06/08 11:44:02 misha Exp $";
 
 // limits
 
@@ -175,36 +175,30 @@ static void _process(Request& r, MethodParams& params) {
 		// temporary zero @auto so it wouldn't be auto-called in Request::use_buf
 		Temp_method temp_method_auto(*target_class, auto_method_name, 0);
 
-		size_t options_index=index+1;
-		HashStringValue* options=0;
-		if(options_index<params.count()) {
-			Value& voptions=params.as_no_junction(options_index, OPTIONS_MUST_NOT_BE_CODE);
-			options=voptions.get_hash();
-			if(!options)
-				throw Exception(PARSER_RUNTIME, 0, OPTIONS_MUST_BE_HASH);
-		}
-
 		const String* main_alias=0;
 		const String* file_alias=0;
 		int line_no_alias_offset=0;
-		if(options) {
-			int valid_options=0;
-			if(Value* vmain_alias=options->get(PROCESS_MAIN_OPTION_NAME)) {
-				valid_options++;
-				main_alias=&vmain_alias->as_string();
+
+		size_t options_index=index+1;
+		if(options_index<params.count())
+			if(HashStringValue* options=params.as_hash(options_index)) {
+				int valid_options=0;
+				if(Value* vmain_alias=options->get(PROCESS_MAIN_OPTION_NAME)) {
+					valid_options++;
+					main_alias=&vmain_alias->as_string();
+				}
+				if(Value* vfile_alias=options->get(PROCESS_FILE_OPTION_NAME)) {
+					valid_options++;
+					file_alias=&vfile_alias->as_string();
+				}
+				if(Value* vline_no_alias_offset=options->get(PROCESS_LINENO_OPTION_NAME)) {
+					valid_options++;
+					line_no_alias_offset=vline_no_alias_offset->as_int();
+				}
+		
+				if(valid_options!=options->count())
+					throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 			}
-			if(Value* vfile_alias=options->get(PROCESS_FILE_OPTION_NAME)) {
-				valid_options++;
-				file_alias=&vfile_alias->as_string();
-			}
-			if(Value* vline_no_alias_offset=options->get(PROCESS_LINENO_OPTION_NAME)) {
-				valid_options++;
-				line_no_alias_offset=vline_no_alias_offset->as_int();
-			}
-	
-			if(valid_options!=options->count())
-				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
-		}
 
 		uint processe_file_no=file_alias?
 			r.register_file(r.absolute(*file_alias))

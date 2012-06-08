@@ -28,7 +28,7 @@
 #include "xnode.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_XDOC_C="$Id: xdoc.C,v 1.173 2012/03/16 09:24:08 moko Exp $";
+volatile const char * IDENT_XDOC_C="$Id: xdoc.C,v 1.174 2012/06/08 11:44:02 misha Exp $";
 
 // defines
 
@@ -640,7 +640,7 @@ static void _transform(Request& r, MethodParams& params) {
 	Array<const xmlChar*> transform_strings;
 	const xmlChar** transform_params=0;
 	if(params.count()>1)
-		if(HashStringValue* hash=params.as_hash(1)) {
+		if(HashStringValue* hash=params.as_hash(1, "transform options")) {
 			transform_params=new(UseGC) const xmlChar*[hash->count()*2+1];
 			Add_xslt_param_info info={
 				&r, 

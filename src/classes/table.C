@@ -21,7 +21,7 @@
 #include "pa_vbool.h"
 #include "pa_array.h"
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.287 2012/05/23 16:26:40 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.288 2012/06/08 11:44:02 misha Exp $";
 
 // class
 
@@ -56,20 +56,7 @@ static Table::Action_options get_action_options(Request& r, MethodParams& params
 	if(params.count() <= options_index)
 		return result;
 
-	Value& maybe_options=params[options_index];
-/* can not do it: 
-	want to enable ^table::create[$source;
-#		$.option[]
-	]
-	but there is ^table.locate[name;value]
-
-	...if(voptions.is_defined() && !voptions.is_string()))
-	if(maybe_options.is_string()) { // allow empty options
-		result.defined=true;
-		return result;
-	}
-*/
-	HashStringValue* options=maybe_options.get_hash();
+	HashStringValue* options=params.as_hash(options_index);
 	if(!options)
 		return result;
 
@@ -179,7 +166,7 @@ static void _create(Request& r, MethodParams& params) {
 	size_t options_param_index=data_param_index+1;
 	if(
 		options_param_index<params.count()
-		&& (options=params.as_no_junction(options_param_index, "additional params must be hash").get_hash())
+		&& (options=params.as_hash(options_param_index))
 	) {
 		// cloning, so that we could change
 		options=new HashStringValue(*options);
@@ -347,7 +334,7 @@ static void _load(Request& r, MethodParams& params) {
 	HashStringValue *options=0;
 	TableSeparators separators;
 	if(options_param_index<params.count()
-		&& (options=params.as_no_junction(options_param_index, "additional params must be hash").get_hash())) {
+		&& (options=params.as_hash(options_param_index))) {
 		// cloning, so that we could change [to simplify checks on params inside file_read_text
 		options=new HashStringValue(*options);
 		separators.load(*options);
@@ -475,10 +462,7 @@ static void _save(Request& r, MethodParams& params) {
 
 	TableSeparators separators;
 	if(param_index<params.count())
-		if(HashStringValue* options=params.as_hash(param_index++, 
-				"additional params must be hash",
-				"additional params must be hash (did you spell mode parameter correctly?)"
-		)) {
+		if(HashStringValue* options=params.as_hash(param_index++)) {
 			int valid_options=separators.load(*options);
 			if(valid_options!=options->count())
 				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
@@ -782,7 +766,7 @@ static void _hash(Request& r, MethodParams& params) {
 			Table2hash_value_type value_type=C_HASH;
 			int param_index=params.count()-1;
 			if(param_index>0) {
-				if(HashStringValue* options=params.as_no_junction(param_index, PARAM_MUST_NOT_BE_CODE).get_hash()){ // options where specified
+				if(HashStringValue* options=params.as_hash(param_index)){ // options where specified
 					--param_index;
 					int valid_options=0;
 					if(Value* vdistinct_code=options->get(sql_distinct_name)) { // $.distinct ?
@@ -816,9 +800,6 @@ static void _hash(Request& r, MethodParams& params) {
 						throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 				}
 			}
-
-			if(param_index==2) // options was specified but not as hash
-				throw Exception(PARSER_RUNTIME, 0, OPTIONS_MUST_BE_HASH);
 
 			Array<int> value_fields;
 			if(param_index==0){ // list of columns wasn't specified
@@ -1042,16 +1023,10 @@ static void join_nameless_row(Table& src, Table* dest) {
 	*dest+=src[src.current()];
 }
 static void _join(Request& r, MethodParams& params) {
-	Table* maybe_src=params.as_no_junction(0, "table ref must not be code").get_table();
-	if(!maybe_src)
-		throw Exception(PARSER_RUNTIME, 
-			0, 
-			"source is not a table");
-	Table& src=*maybe_src;
+	Table& src=*params.as_table(0, "source");
 
 	Table::Action_options o=get_action_options(r, params, 1, src);
-	check_option_param(o.defined, params, 1,
-		"invalid extra parameter");
+	check_option_param(o.defined, params, 1, "invalid extra parameter");
 
 	Table& dest=GET_SELF(r, VTable).table();
 	if(&src == &dest)
@@ -1161,7 +1136,7 @@ static void _sql(Request& r, MethodParams& params) {
 	ulong limit=SQL_NO_LIMIT;
 	ulong offset=0;
 	if(params.count()>1)
-		if(HashStringValue* options=params.as_hash(1)) {
+		if(HashStringValue* options=params.as_hash(1, "sql options")) {
 			int valid_options=0;
 			if(Value* vbind=options->get(sql_bind_name)) {
 				valid_options++;
@@ -1271,9 +1246,7 @@ static void _select(Request& r, MethodParams& params) {
 				reverse=r.process_to_value(*vreverse).as_bool();
 			}
 			if(valid_options!=options->count())
-				throw Exception(PARSER_RUNTIME,
-					0,
-					"called with invalid option");
+				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 		}
 
 	Table& result_table=*new Table(source_table.columns());

@@ -20,7 +20,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.204 2012/04/19 19:41:29 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.205 2012/06/08 11:44:02 misha Exp $";
 
 // class
 
@@ -534,7 +534,7 @@ const String* sql_result_string(Request& r, MethodParams& params, Value*& defaul
 	ulong offset=0;
 	default_code=0;
 	if(params.count()>1)
-		if(HashStringValue* options=params.as_hash(1)) {
+		if(HashStringValue* options=params.as_hash(1, "sql options")) {
 			int valid_options=0;
 			if(Value* vbind=options->get(sql_bind_name)) {
 				valid_options++;
@@ -603,11 +603,7 @@ static void _replace(Request& r, MethodParams& params) {
 
 	if(params.count()==1) {
 		// ^string.replace[table]
-		Table* table=params.as_no_junction(0, PARAM_MUST_NOT_BE_CODE).get_table();
-		if(!table)
-			throw Exception(PARSER_RUNTIME,
-				0,
-				"parameter must be table");
+		Table* table=params.as_table(0, "param");
 		Dictionary dict(*table);
 		r.write_assign_lang(src.replace(dict));
 	} else {
@@ -628,6 +624,7 @@ static void _save(Request& r, MethodParams& params) {
 	size_t file_name_index=0;
 	if(params.count()>1)
 		if(HashStringValue* options=params.as_no_junction(1, "second parameter should be string or hash").get_hash()){
+			// ^file.save[filespec;$.charset[] $.append(true)]
 			int valid_options=0;
 			if(Value* vcharset_name=options->get(PA_CHARSET_NAME)){
 				asked_charset=&::charsets.get(vcharset_name->as_string().change_case(r.charsets.source(), String::CC_UPPER));
@@ -640,6 +637,7 @@ static void _save(Request& r, MethodParams& params) {
 			if(valid_options != options->count())
 				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 		} else {
+			// ^file.save[append;filespec]
 			const String& mode=params.as_string(0, "mode must be string");
 			if(mode==MODE_APPEND){
 				do_append=true;

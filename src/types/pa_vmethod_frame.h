@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.92 2012/05/07 20:27:44 moko Exp $"
+#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.93 2012/06/08 11:44:02 misha Exp $"
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
@@ -111,18 +111,11 @@ public:
 	const String& as_string(int index, const char* msg) { 
 		return as_no_junction(index, msg).as_string();
 	}
-	/// handy hash ensurer
-	HashStringValue* as_hash(int index, const char* msg_no_junction=0, const char* msg_incorrect_type=0){
-		Value& voptions=as_no_junction(index, msg_no_junction ? msg_no_junction : OPTIONS_MUST_BE_HASH_NOT_CODE);
-		if(voptions.is_defined() && !voptions.is_string())
-			if(HashStringValue* options=voptions.get_hash())
-				return options;
-			else
-				throw Exception(PARSER_RUNTIME,
-					0,
-					msg_incorrect_type ? msg_incorrect_type : OPTIONS_MUST_BE_HASH);
-		return 0;
-	}
+	/// handy hash ensurers
+	HashStringValue* as_hash(int index, const char* name=0);
+	/// handy table ensurer
+	Table* as_table(int index, const char* name=0);
+
 private:
 
 	Value **felements;

@@ -19,7 +19,7 @@
 
 #include "smtp.h"
 
-volatile const char * IDENT_MAIL_C="$Id: mail.C,v 1.118 2012/03/16 09:24:07 moko Exp $";
+volatile const char * IDENT_MAIL_C="$Id: mail.C,v 1.119 2012/06/08 11:44:02 misha Exp $";
 
 // defines
 
@@ -191,11 +191,11 @@ static void sendmail(
 // methods
 
 static void _send(Request& r, MethodParams& params) {
-	HashStringValue* hash=params.as_no_junction(0, "message must not be code").get_hash();
-	if(!hash)
-		throw Exception(PARSER_RUNTIME,
-			0,
-			"message must be hash");
+	HashStringValue* hash=params.as_hash(0, "message");
+	if(!hash || !hash->count())
+		return;
+	// todo@ check if enough options are specified.
+	// now ^mail:send[^hash::create[]] and ^mail:send[$.print-debug(1)] "work".
 
 	const String* soptions=0;
 	if(Value* voptions=hash->get(MAIL_OPTIONS_NAME))
