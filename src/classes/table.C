@@ -21,7 +21,7 @@
 #include "pa_vbool.h"
 #include "pa_array.h"
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.288 2012/06/08 11:44:02 misha Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.289 2012/06/08 12:10:18 misha Exp $";
 
 // class
 
@@ -766,7 +766,7 @@ static void _hash(Request& r, MethodParams& params) {
 			Table2hash_value_type value_type=C_HASH;
 			int param_index=params.count()-1;
 			if(param_index>0) {
-				if(HashStringValue* options=params.as_hash(param_index)){ // options where specified
+				if(HashStringValue* options=params.as_no_junction(param_index, PARAM_MUST_NOT_BE_CODE).get_hash()){ // can't use .as_has because the 2nd param could be table so .as_hash throws an error
 					--param_index;
 					int valid_options=0;
 					if(Value* vdistinct_code=options->get(sql_distinct_name)) { // $.distinct ?
@@ -800,6 +800,9 @@ static void _hash(Request& r, MethodParams& params) {
 						throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 				}
 			}
+
+			if(param_index==2) // options was specified but not as hash
+				throw Exception(PARSER_RUNTIME, 0, "options must be hash");
 
 			Array<int> value_fields;
 			if(param_index==0){ // list of columns wasn't specified
