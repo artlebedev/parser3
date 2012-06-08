@@ -8,7 +8,7 @@
 #ifndef PA_VCLASS_H
 #define PA_VCLASS_H
 
-#define IDENT_PA_VCLASS_H "$Id: pa_vclass.h,v 1.59 2012/03/16 09:24:16 moko Exp $"
+#define IDENT_PA_VCLASS_H "$Id: pa_vclass.h,v 1.60 2012/06/08 02:04:11 misha Exp $"
 
 // includes
 
@@ -32,7 +32,8 @@ public: // Value
 	override const VJunction* put_element(Value& self, const String& name, Value* value, bool replace);
 	override Value* create_new_value(Pool&);
 
-	override HashStringValue* get_fields();
+	override HashStringValue *get_hash();
+	override HashStringValue* get_fields() { return get_hash(); };
 
 public: 
 	

@@ -7,7 +7,7 @@
 
 #include "pa_vclass.h"
 
-volatile const char * IDENT_PA_VCLASS_C="$Id: pa_vclass.C,v 1.46 2012/05/29 23:22:11 moko Exp $" IDENT_PA_VCLASS_H;
+volatile const char * IDENT_PA_VCLASS_C="$Id: pa_vclass.C,v 1.47 2012/06/08 02:04:11 misha Exp $" IDENT_PA_VCLASS_H;
 
 Property& VClass::get_property(const String& aname) {
 	Property* result=ffields.get(aname);
@@ -100,7 +100,7 @@ static void add_field(
 		result->put(key, prop->value);
 }
 
-HashStringValue* VClass::get_fields(){
+HashStringValue* VClass::get_hash() {
 	HashStringValue* result=new HashStringValue();
 	ffields.for_each(add_field, result);
 	return result;
