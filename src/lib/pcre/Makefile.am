@@ -1,1 +1,1 @@
-noinst_HEADERS = config.h
+noinst_HEADERS = pcre_internal.h
