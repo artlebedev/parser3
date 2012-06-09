@@ -1,14 +1,19 @@
-dnl Process this file with autoconf to produce a configure script.
-AC_INIT(README)
-AC_PREREQ(2.57)
+dnl Autoconf initialisation
+AC_PREREQ(2.59)
+AC_INIT(parser, 3.4.2b)
+AC_CONFIG_SRCDIR(README)
 
-AM_INIT_AUTOMAKE(parser, 3.4.2b, nodefine)
 
-dnl expand srcdir
+dnl Automake Initialisation
+AM_INIT_AUTOMAKE
+
+
+dnl Expand srcdir
 P3S=`cd $srcdir/src ; pwd`
 AC_SUBST(P3S)
 
-dnl AC_CANONICAL_SYSTEM
+
+dnl Update pa_version.h
 AC_CANONICAL_HOST
 
 PARSER_VERSION="$VERSION (compiled on $host)"
@@ -23,17 +28,14 @@ else
 	rm -f $srcdir/src/include/pa_version.h.new
 fi
 
-
-
 AC_SUBST(host_os)
 case $host_os in
   *cygwin* ) AC_DEFINE(CYGWIN,,using cygwin building environment);;
 esac
 
-dnl Checks for programs.
+
+dnl Checks for programs
 AC_PROG_INSTALL
-AC_PROG_MAKE_SET
-AC_PROG_RANLIB
 AC_PROG_AWK
 
 AC_PROG_YACC
@@ -52,9 +54,10 @@ fi
 
 AC_PROG_CXX
 AC_PROG_CC
+
 dnl most tests should be compiled with C compiler [especially qsort test]
-AC_LANG_C 
-AC_C_INLINE
+AC_LANG_C
+
 
 dnl Dll extension
 AC_MSG_CHECKING(for dynamic-link library extension)
@@ -345,22 +348,16 @@ AM_CONDITIONAL(COMPILE_APACHE_MODULE, test -n "$APACHE")
 
 
 dnl Enable building of the convenience library
-dnl and set LIBLTDL accordingly
-AC_LIBLTDL_CONVENIENCE(src/lib/ltdl)
-dnl Substitute INCLTDL and LIBLTDL in the Makefiles
-AC_SUBST(INCLTDL)
-AC_SUBST(LIBLTDL)
+LT_CONFIG_LTDL_DIR(src/lib/ltdl)
+LT_INIT(dlopen win32-dll)
+LTDL_INIT
 
-dnl Configure libltdl
-AC_CONFIG_SUBDIRS(src/lib/ltdl)
 
-dnl detecting which libraries are needed to dynamic open
+dnl Configure libtool
+AC_DISABLE_STATIC
 
-AC_LTDL_DLLIB
-AC_SUBST(LIBADD_DL)
 
 dnl Checks for typedefs, structures, and compiler characteristics.
-
 AC_C_BIGENDIAN(
 	AC_DEFINE(PA_BIG_ENDIAN,,compile for sparc processor)
 ,
@@ -371,14 +368,13 @@ AC_C_BIGENDIAN(
 
 AC_TYPE_SIZE_T
 
-dnl gmime
 
+dnl gmime
 AC_CHECK_TYPE(off_t, long)
 AC_CHECK_TYPE(ssize_t, int)
 
 
 dnl Checks for C header files.
-
 AC_HEADER_TIME
 
 AC_CHECK_HEADERS(
@@ -414,10 +410,11 @@ arpa/inet.h \
 netdb.h
 )
 
-dnl Checks for libraries.
+
+dnl Checks for libraries
+
 
 dnl Some systems (Solaris 2.x) require libnsl (Network Services Library)
-
 case "$host" in
   *-freebsd4*)
 	  AC_DEFINE(FREEBSD4,,FreeBSD4X target platform)
@@ -459,7 +456,7 @@ siglongjmp \
 unsetenv
 )
 
-dnl on some linux[seen on 2.4] it's a macro 
+dnl on some linux[seen on 2.4] it's a macro
 PA_CHECK_SIGSETJMP
 
 dnl see comment above
@@ -518,7 +515,6 @@ AC_MSG_RESULT(no))
 
 
 dnl Output header and makefiles
-
 AH_TEMPLATE([HAVE_DLD],[Define if you have the GNU dld library])
 
 AH_TEMPLATE([HAVE_LIBDL],
