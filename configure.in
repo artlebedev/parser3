@@ -56,56 +56,7 @@ dnl most tests should be compiled with C compiler [especially qsort test]
 AC_LANG_C 
 AC_C_INLINE
 
-dnl Arguments
-
-AC_ARG_WITH(build-warnings, [  --with-build-warnings   to enable build-time compiler warnings if gcc is used],
-	AC_MSG_WARN(enabling compiler warnings)
-	CXXFLAGS="$CXXFLAGS -W -Wall -Wstrict-prototypes -Wmissing-prototypes"
-)
-
-
-AC_ARG_WITH(assertions, [  --with-assertions       to enable assertions],
-	AC_MSG_WARN(enabling assertions)
-,
-	AC_DEFINE(NDEBUG,,assertions disabled)
-)
-
-
-AC_ARG_ENABLE(safe-mode, [  --disable-safe-mode	  to enable reading and executing
-                          files belonging to group+user other then effective],
-[
-	SAFE_MODE=$enableval
-]
-)
-if test "$SAFE_MODE" = "no"; then
-	AC_MSG_WARN(enabling reading of files belonging to group+user other then effective)
-else
-	AC_DEFINE(PA_SAFE_MODE,,disabled reading of files belonging to group+user other then effective)
-fi
-
-
-AC_ARG_ENABLE(execs, [  --disable-execs	      to disable any execs
-                          (file::exec, file::cgi, unix mail:send)],
-[
-if test "$enableval" = "no"; then
-	AC_MSG_WARN(disabling file execs)
-	AC_DEFINE(NO_PA_EXECS,,pa_exec disabled)
-fi
-]
-)
-
-
-AC_ARG_ENABLE(stringstream, [  --disable-stringstream  to disable stringstream usage.
-                          when disabled table.save use more memory but it's safer on freebsd 4.x],
-[
-if test "$enableval" = "no"; then
-	AC_MSG_WARN(disabling stringstream usage)
-	AC_DEFINE(NO_STRINGSTREAM,,stringstream disabled)
-fi
-]
-)
-
-
+dnl Dll extension
 AC_MSG_CHECKING(for dynamic-link library extension)
 case "$host_os" in
 cygwin)
@@ -118,11 +69,68 @@ AC_MSG_RESULT($dll_extension)
 AC_SUBST(dll_extension)
 
 
+dnl Misc arguments
+AC_ARG_WITH(build-warnings, [  --with-build-warnings   to enable build-time compiler warnings if gcc is used],
+	AC_MSG_WARN(enabling compiler warnings)
+	CXXFLAGS="$CXXFLAGS -W -Wall -Wstrict-prototypes -Wmissing-prototypes"
+)
+
+AC_ARG_WITH(assertions, [  --with-assertions       to enable assertions],
+	AC_MSG_WARN(enabling assertions)
+,
+	AC_DEFINE(NDEBUG,,assertions disabled)
+)
+
 AC_ARG_WITH(pathlink,[  --with-pathlink=LKEY    put dynamic libraries paths to binary
                           using linker key (-R, -rpath-link)],
 	LD_PATHLINK=$withval
 )
 
+AC_ARG_WITH(sjlj-exceptions,[  --with-sjlj-exceptions  enable simple 'throw' from dynamic library],
+	AC_DEFINE(PA_WITH_SJLJ_EXCEPTIONS,,one can throw from dynamic library)
+)
+
+
+dnl Safe mode argument
+AC_ARG_ENABLE(safe-mode, [  --disable-safe-mode	  to enable reading and executing
+                          files belonging to group+user other then effective],
+[
+	SAFE_MODE=$enableval
+]
+)
+
+if test "$SAFE_MODE" = "no"; then
+	AC_MSG_WARN(enabling reading of files belonging to group+user other then effective)
+else
+	AC_DEFINE(PA_SAFE_MODE,,disabled reading of files belonging to group+user other then effective)
+fi
+
+
+dnl Disable execs argument
+AC_ARG_ENABLE(execs, [  --disable-execs	      to disable any execs
+                          (file::exec, file::cgi, unix mail:send)],
+[
+if test "$enableval" = "no"; then
+	AC_MSG_WARN(disabling file execs)
+	AC_DEFINE(NO_PA_EXECS,,pa_exec disabled)
+fi
+]
+)
+
+
+dnl String stream argument
+AC_ARG_ENABLE(stringstream, [  --disable-stringstream  to disable stringstream usage.
+                          when disabled table.save use more memory but it's safer on freebsd 4.x],
+[
+if test "$enableval" = "no"; then
+	AC_MSG_WARN(disabling stringstream usage)
+	AC_DEFINE(NO_STRINGSTREAM,,stringstream disabled)
+fi
+]
+)
+
+
+dnl Dynamic libstdc++ argument
 AC_ARG_WITH(dynamic-stdcpp, [  --with-dynamic-stdcpp   link libstdc++ dynamically
                           by default, libstdc++ is linked statically],[
 	AC_MSG_WARN(libstdc++ will be linked dynamically)
@@ -132,10 +140,8 @@ AC_ARG_WITH(dynamic-stdcpp, [  --with-dynamic-stdcpp   link libstdc++ dynamicall
 ])
 AC_SUBST(CPP_LIBS)
 
-AC_ARG_WITH(sjlj-exceptions,[  --with-sjlj-exceptions  enable simple 'throw' from dynamic library],
-	AC_DEFINE(PA_WITH_SJLJ_EXCEPTIONS,,one can throw from dynamic library)
-)
 
+dnl GC argument
 GC_LIB_NAME=gc
 AC_ARG_WITH(shared-gc,[  --with-shared-gc[=D]      D is the directory where
                           Boehm garbage collecting library is installed (shared lib)],[
@@ -168,6 +174,7 @@ AC_SUBST(GC_LIBS)
 LIBS=$SAVE_LIBS
 
 
+dnl PCRE argument
 AC_ARG_WITH(static-pcre,[  --with-static-pcre=D    D is the directory where
                           PCRE library is installed (static lib)],[
 	PCRE=$withval
@@ -185,6 +192,7 @@ AC_SUBST(PCRE_INCLUDES)
 AC_SUBST(PCRE_LIBS)
 
 
+dnl XML/XSLT argument
 AC_ARG_WITH(shared-xml,[  --with-shared-xml=D     D is the directory where
                           Gnome XML libraries are installed (shared libs)],[
 	GNOME_XML=$withval
@@ -227,6 +235,7 @@ AC_ARG_WITH(static-xml,[  --with-static-xml=D     D is the directory where
 AC_SUBST(XML_INCLUDES)
 AC_SUBST(XML_LIBS)
 
+dnl Mail receive argument
 AC_ARG_WITH(glib-config,[  --with-glib-config=FILE FILE is glib library
                           configuration file (search for glib*-config)],
 	GLIB_CONFIG=$withval
@@ -301,6 +310,7 @@ AC_SUBST(MIME_INCLUDES)
 AC_SUBST(MIME_LIBS)
 
 
+dnl Sendmail argument
 AC_ARG_WITH(sendmail,[  \"--with-sendmail=COMMAND\" forces this command to send mail.
                           example: \"--with-sendmail=/usr/sbin/sendmail -t\"
                           (makes parser ignore user-defined sendmail commands)],
@@ -308,6 +318,7 @@ AC_ARG_WITH(sendmail,[  \"--with-sendmail=COMMAND\" forces this command to send 
 )
 
 
+dnl Apache module argument
 AC_ARG_WITH(apache,[  --with-apache=FILE is the full path for APXS
                           builds apache DSO module using apxs],[
 	APXS=$withval
@@ -344,6 +355,7 @@ dnl Configure libltdl
 AC_CONFIG_SUBDIRS(src/lib/ltdl)
 
 dnl detecting which libraries are needed to dynamic open
+
 AC_LTDL_DLLIB
 AC_SUBST(LIBADD_DL)
 
@@ -358,7 +370,9 @@ AC_C_BIGENDIAN(
 )
 
 AC_TYPE_SIZE_T
+
 dnl gmime
+
 AC_CHECK_TYPE(off_t, long)
 AC_CHECK_TYPE(ssize_t, int)
 
@@ -403,6 +417,7 @@ netdb.h
 dnl Checks for libraries.
 
 dnl Some systems (Solaris 2.x) require libnsl (Network Services Library)
+
 case "$host" in
   *-freebsd4*)
 	  AC_DEFINE(FREEBSD4,,FreeBSD4X target platform)
@@ -466,50 +481,41 @@ dnl or it can be tm.tm_gmtoff
 dnl or it can be tm.tm_tzadj
 
 AC_MSG_CHECKING(for timezone variable)
-AC_TRY_COMPILE([#include <time.h>],		
+AC_TRY_COMPILE([#include <time.h>],
 [
 time_t test=timezone;
-],                        				 
-AC_DEFINE(HAVE_TIMEZONE)				  
-AC_MSG_RESULT(yes),                        
-AC_MSG_RESULT(no))                         
+],
+AC_DEFINE(HAVE_TIMEZONE)
+AC_MSG_RESULT(yes),
+AC_MSG_RESULT(no))
 
 AC_MSG_CHECKING(for daylight variable)
-AC_TRY_COMPILE([#include <time.h>],		
+AC_TRY_COMPILE([#include <time.h>],
 [
 int test=daylight;
-],                        				 
-AC_DEFINE(HAVE_DAYLIGHT)			  
-AC_MSG_RESULT(yes),                        
-AC_MSG_RESULT(no))                         
+],
+AC_DEFINE(HAVE_DAYLIGHT)
+AC_MSG_RESULT(yes),
+AC_MSG_RESULT(no))
 
 AC_MSG_CHECKING(for tm_gmtoff in struct tm)
-AC_TRY_COMPILE([#include <time.h>],		
-[struct tm tm;                        	 
-tm.tm_gmtoff=0;                        	
-],                        				 
-AC_DEFINE(HAVE_TM_GMTOFF)				  
-AC_MSG_RESULT(yes),                        
-AC_MSG_RESULT(no))                         
+AC_TRY_COMPILE([#include <time.h>],
+[struct tm tm;
+tm.tm_gmtoff=0;
+],
+AC_DEFINE(HAVE_TM_GMTOFF)
+AC_MSG_RESULT(yes),
+AC_MSG_RESULT(no))
 
 AC_MSG_CHECKING(for tm_tzadj in struct tm)
-AC_TRY_COMPILE([#include <time.h>],		
-[struct tm tm;                        	 
-tm.tm_tzadj=0;                        	
-],                        				 
-AC_DEFINE(HAVE_TM_TZADJ)				  
-AC_MSG_RESULT(yes),                        
-AC_MSG_RESULT(no))                         
+AC_TRY_COMPILE([#include <time.h>],
+[struct tm tm;
+tm.tm_tzadj=0;
+],
+AC_DEFINE(HAVE_TM_TZADJ)
+AC_MSG_RESULT(yes),
+AC_MSG_RESULT(no))
 
-
-dnl AC_ARG_ENABLE(db, [  --enable-db			 to enable 'hashfile' parser class],
-dnl [
-dnl if test "$enableval" != "no"; then
-dnl AC_CHECK_HEADERS(db.h)
-dnl AC_CHECK_LIB(db, __db_open)
-dnl fi
-dnl ]
-dnl )
 
 dnl Output header and makefiles
 
@@ -542,6 +548,7 @@ AH_TEMPLATE([HAVE_TM_TZADJ],
 
 
 AM_CONFIG_HEADER(src/include/pa_config_auto.h)
+
 AC_OUTPUT(
 	Makefile 
 	src/Makefile 
