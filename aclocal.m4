@@ -1042,4 +1042,10 @@ AC_SUBST([am__tar])
 AC_SUBST([am__untar])
 ]) # _AM_PROG_TAR
 
-m4_include([acinclude.m4])
+m4_include([src/lib/ltdl/m4/argz.m4])
+m4_include([src/lib/ltdl/m4/libtool.m4])
+m4_include([src/lib/ltdl/m4/ltdl.m4])
+m4_include([src/lib/ltdl/m4/ltoptions.m4])
+m4_include([src/lib/ltdl/m4/ltsugar.m4])
+m4_include([src/lib/ltdl/m4/ltversion.m4])
+m4_include([src/lib/ltdl/m4/lt~obsolete.m4])
