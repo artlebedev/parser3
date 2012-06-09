@@ -106,41 +106,8 @@ fi
 )
 
 
-srccharsetsdir=$srcdir/etc/parser3.charsets
-CHARSETS_REQUESTED="windows-1251"
-AC_ARG_WITH(charsets, [  --with-charsets=CHARSET[,CHARSET,...]  Enables charsets in root config (windows-1251,
-                          windows-1250 windows-1257 koi8-r; Default is windows-1251)],
-[CHARSETS_REQUESTED=`echo $withval | sed -e 's/,/ /g'`])
-
-# Checking whether all requested charsets have corresponding .cfg files
-for c in $CHARSETS_REQUESTED; do
-	if test \! -f $srccharsetsdir/$c.cfg; then
-		AC_MSG_ERROR(bad charset requested "$c" - file $srccharsetsdir/$c.cfg not found)
-	fi
-done
-
-# Switching on commentcharset_XXX='#'
-AC_DEFUN([PA_SUBSTCHARSET], [
-	commentcharset_$2='#'
-	for c in $CHARSETS_REQUESTED; do
-		if test "$1" = "$c"; then
-			AC_MSG_WARN(enabling charset $1)
-			commentcharset_$2=
-		fi
-	done
-	AC_SUBST(commentcharset_$2)
-])
-PA_SUBSTCHARSET(windows-1251,windows1251)
-PA_SUBSTCHARSET(windows-1250,windows1250)
-PA_SUBSTCHARSET(windows-1257,windows1257)
-PA_SUBSTCHARSET(koi8-r,koi8r)
-
-
 AC_MSG_CHECKING(for dynamic-link library extension)
 case "$host_os" in
-hpux9* | hpux10* | hpux11*)
-	dll_extension=sl
-	;;
 cygwin)
 	dll_extension=dll
 	;;
@@ -150,105 +117,15 @@ esac
 AC_MSG_RESULT($dll_extension)
 AC_SUBST(dll_extension)
 
-AC_ARG_WITH(mysql-client,[  --with-mysql-client=mysqlclientlib?withparams
-                          MySQL client dynamic library to root config],
-	mysql_client=$withval
-,
-	AC_MSG_CHECKING(for mysql client)
-	for lib in \
-		/usr/local/lib/mysql/libmysqlclient.$dll_extension \
-		/usr/local/lib/libmysqlclient.$dll_extension \
-		/usr/lib/libmysqlclient.$dll_extension; do
-		if test -f $lib; then mysql_client=$lib; fi
-	done
-
-	if test -z "$mysql_client"; then
-		mysql_client="-configure could not guess-"
-		AC_MSG_RESULT(could not guess)
-	else
-		AC_MSG_RESULT($mysql_client)
-	fi
-
-)
-AC_SUBST(mysql_client)
-
-
-AC_ARG_WITH(pgsql-client,[  --with-pgsql-client=pgsqlclientlib?withparams
-                          PgSQL client dynamic library to root config],
-	pgsql_client=$withval
-,
-	AC_MSG_CHECKING(for pgsql client)
-	for lib in \
-		/usr/local/pgsql/lib/libpq.$dll_extension \
-		/usr/local/lib/libpq.$dll_extension \
-		/usr/lib/libpq.$dll_extension; do
-		if test -f $lib; then pgsql_client=$lib; fi
-	done
-
-	if test -z "$pgsql_client"; then
-		pgsql_client="-configure could not guess-"
-		AC_MSG_RESULT(could not guess)
-	else
-		AC_MSG_RESULT($pgsql_client)
-	fi
-
-)
-AC_SUBST(pgsql_client)
-
-
-AC_ARG_WITH(oracle-client,[  --with-oracle-client=oracleclientlib?withparams
-                          Oracle client dynamic library],
-	oracle_client=$withval
-,
-	AC_MSG_CHECKING(for oracle client)
-	lib=$ORACLE_HOME/lib/libclntsh.$dll_extension
-	if test -f $lib; then oracle_client=$lib; fi
-
-	if test -z "$oracle_client"; then
-		oracle_client="-configure could not guess-"
-		AC_MSG_RESULT(could not guess)
-	else
-		oracle_client="$oracle_client?ORACLE_HOME=$ORACLE_HOME&ORA_NLS33=$ORACLE_HOME/ocommon/nls/admin/data"
-		AC_MSG_RESULT($oracle_client)
-	fi
-
-)
-AC_SUBST(oracle_client)
-
-
-AC_ARG_WITH(sqlite-client,[  --with-sqlite-client=sqliteclientlib?withparams
-                          SQLite client dynamic library to root config],
-	sqlite_client=$withval
-,
-	AC_MSG_CHECKING(for sqlite_client client)
-	for lib in \
-		/usr/local/sqlite/lib/sqlite3.$dll_extension \
-		/usr/local/lib/sqlite3.$dll_extension \
-		/usr/lib/sqlite3.$dll_extension; do
-		if test -f $lib; then sqlite_client=$lib; fi
-	done
-
-	if test -z "$sqlite_client"; then
-		sqlite_client="-configure could not guess-"
-		AC_MSG_RESULT(could not guess)
-	else
-		AC_MSG_RESULT($sqlite_client)
-	fi
-
-)
-AC_SUBST(sqlite_client)
-
-
 
 AC_ARG_WITH(pathlink,[  --with-pathlink=LKEY    put dynamic libraries paths to binary
                           using linker key (-R, -rpath-link)],
 	LD_PATHLINK=$withval
 )
+
 AC_ARG_WITH(dynamic-stdcpp, [  --with-dynamic-stdcpp   link libstdc++ dynamically
                           by default, libstdc++ is linked statically],[
-	AC_MSG_WARN(libstdc++ will be linked dynamically: this is probably incompatible with other platforms)
-	# this is for apache, it's linked with gcc and need to know
-	# and it would not harm linking with c++ toolchain
+	AC_MSG_WARN(libstdc++ will be linked dynamically)
 	CPP_LIBS="-lstdc++"
 ],[
 	CPP_LIBS="-Wl,-Bstatic -lstdc++ -Wl,-Bdynamic"
@@ -544,14 +421,9 @@ case "$host" in
 	  AC_DEFINE(WIN32,,Windows32 target platform)
 	  AC_CHECK_LIB(wsock32, socket)
   ;;
-# never tested this, only theoretically by letter from demos about parser2 build
-  *-hpux*)
-	  AC_CHECK_LIB(nsl, main)
-  ;;
 esac
 
 AC_CHECK_LIB(m, sin)
-
 AC_CHECK_LIB(crypt, crypt)
 
 dnl Checks for functions.
