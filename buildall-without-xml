@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Id: buildall-without-xml,v 1.27 2012/04/27 02:37:57 misha Exp $
+# $Id: buildall-without-xml,v 1.28 2012/06/09 07:58:49 moko Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -77,10 +77,9 @@ fi
 cd $parser3_directory
 
 if test ! -f "Makefile"; then
-  options=""
+  options="$@"
   options="$options --with-static-gc=$project_directory/gc/lib"
   options="$options --with-static-pcre=$project_directory/pcre"
-#  options="$options --with-curl=/usr/include/curl"
 #  options="$options --disable-safe-mode"
 #  options="$options --with-dynamic-stdcpp"
 #  options="$options --disable-stringstream"
