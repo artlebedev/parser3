@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Id: buildall-with-xml,v 1.45 2012/06/09 07:58:49 moko Exp $
+# $Id: buildall-with-xml,v 1.46 2012/06/09 08:35:00 moko Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -66,8 +66,6 @@ if test ! -f "$project_directory/pcre/lib/libpcre.a"; then
     --silent
   echo "Building pcre..."
   make
-  make install
-  echo "Copying required files (Parser3 uses some PCRE internals)..."
   cp pcre_internal.h ucp.h $project_directory/pcre/include
   cd ..
   rm -rf $libpcre
