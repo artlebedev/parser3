@@ -387,6 +387,7 @@ string.h \
 direct.h \
 setjmp.h \
 memory.h \
+limits.h \
 sys/file.h \
 sys/locking.h \
 sys/types.h \

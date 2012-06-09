@@ -80,6 +80,10 @@
 #	include <string.h>
 #endif
 
+#ifdef HAVE_LIMITS_H
+#include <limits.h>
+#endif
+
 #ifdef HAVE_DIRECT_H
 #	include <direct.h>
 #endif
