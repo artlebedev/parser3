@@ -652,7 +652,6 @@ commit:
 
 	cvs commit -m "$(m)" -f configure.in
 	cvs commit -m "$(m)" -f acsite.m4
-	cvs commit -m "$(m)" -f acinclude.m4
 	cvs commit -m "$(m)" -f aclocal.m4
 	cvs commit -m "$(m)" -f Makefile.am
 	cvs commit -m "$(m)" -f Makefile.in
