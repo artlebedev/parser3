@@ -1,6 +1,6 @@
-INCLUDES := $(INCLUDES) $(APACHE_INC) -I./ -I../../classes -I../../types -I../../lib/gc/include -I../../lib/cord/include @XML_INCLUDES@
+INCLUDES = $(INCLUDES) $(APACHE_INC) -I./ -I../../classes -I../../types -I../../lib/gc/include -I../../lib/cord/include @XML_INCLUDES@
 
-AM_CFLAGS := $(AM_CFLAGS) $(APACHE_CFLAGS)
+AM_CFLAGS = $(AM_CFLAGS) $(APACHE_CFLAGS)
 
 PA_LIBS = ../../classes/libclasses.a ../../types/libtypes.a ../../main/libmain.a ../../lib/gd/libgd.a ../../lib/cord/libcord.a \
 	  ../../lib/md5/libmd5.a ../../lib/sdbm/libsdbm.a ../../lib/smtp/libsmtp.a ../../lib/json/libjson.a  ../../lib/memcached/libmemcached.a $(LIBLTDL)
