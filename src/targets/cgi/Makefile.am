@@ -1,7 +1,7 @@
 # Parser switches linker to gcc to avoid -lstdc++ to be dynamically linked by g++
 CXXLD=$(CC)
 
-# Parser has circular library dependencies, this libmain.a linked twice and --preserve-dup-deps libtool option used
+# Parser has circular library dependencies, thus libmain.a is linked twice and --preserve-dup-deps libtool option is used
 PA_LIBS = ../../main/libmain.a ../../classes/libclasses.a ../../types/libtypes.a ../../main/libmain.a \
 	  ../../lib/gd/libgd.a ../../lib/cord/libcord.a ../../lib/md5/libmd5.a ../../lib/sdbm/libsdbm.a \
 	  ../../lib/smtp/libsmtp.a ../../lib/json/libjson.a ../../lib/memcached/libmemcached.a $(LIBLTDL)
