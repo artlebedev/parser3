@@ -133,17 +133,6 @@ fi
 )
 
 
-dnl Dynamic libstdc++ argument
-AC_ARG_WITH(dynamic-stdcpp, [  --with-dynamic-stdcpp   link libstdc++ dynamically
-                          by default, libstdc++ is linked statically],[
-	AC_MSG_WARN(libstdc++ will be linked dynamically)
-	CPP_LIBS="-lstdc++"
-],[
-	CPP_LIBS="-Wl,-Bstatic -lstdc++ -Wl,-Bdynamic"
-])
-AC_SUBST(CPP_LIBS)
-
-
 dnl GC argument
 GC_LIB_NAME=gc
 AC_ARG_WITH(shared-gc,[  --with-shared-gc[=D]      D is the directory where
@@ -333,7 +322,12 @@ AC_ARG_WITH(apache,[  --with-apache=FILE is the full path for APXS
 	APACHE=`$APXS -q TARGET 2>/dev/null`
 
 	if test -z "$APACHE"; then
-		AC_MSG_ERROR($APXS does not seem to be valid apache apxs utility path)
+		APXS=`which apxs2 2>/dev/null`
+		APACHE=`$APXS -q TARGET 2>/dev/null`
+
+		if test -z "$APACHE"; then
+			AC_MSG_ERROR($APXS does not seem to be valid apache apxs utility path)
+		fi
 	fi
 
 	APACHE_MAIN_INC=`$APXS -q INCLUDEDIR`
@@ -349,12 +343,8 @@ AM_CONDITIONAL(COMPILE_APACHE_MODULE, test -n "$APACHE")
 
 dnl Enable building of the convenience library
 LT_CONFIG_LTDL_DIR(src/lib/ltdl)
-LT_INIT(dlopen win32-dll)
+LT_INIT(disable-static dlopen win32-dll)
 LTDL_INIT
-
-
-dnl Configure libtool
-AC_DISABLE_STATIC
 
 
 dnl Checks for typedefs, structures, and compiler characteristics.
