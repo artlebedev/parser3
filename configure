@@ -316,7 +316,7 @@ ac_includes_default="\
 #endif"
 
 ac_subdirs_all="$ac_subdirs_all src/lib/ltdl"
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar P3S build build_cpu build_vendor build_os host host_cpu host_vendor host_os YACC CXX CXXFLAGS LDFLAGS CPPFLAGS ac_ct_CXX EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE CC CFLAGS ac_ct_CC CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE dll_extension CPP_LIBS GC_LIBS PCRE_INCLUDES PCRE_LIBS XML_INCLUDES XML_LIBS MIME_INCLUDES MIME_LIBS APACHE APACHE_INC APACHE_CFLAGS COMPILE_APACHE_MODULE_TRUE COMPILE_APACHE_MODULE_FALSE AS ac_ct_AS DLLTOOL ac_ct_DLLTOOL OBJDUMP ac_ct_OBJDUMP LIBTOOL SED EGREP FGREP GREP LD DUMPBIN ac_ct_DUMPBIN NM LN_S AR ac_ct_AR RANLIB ac_ct_RANLIB MANIFEST_TOOL ac_ct_MANIFEST_TOOL DSYMUTIL ac_ct_DSYMUTIL NMEDIT ac_ct_NMEDIT LIPO ac_ct_LIPO OTOOL ac_ct_OTOOL OTOOL64 ac_ct_OTOOL64 CPP CXXCPP LIBLTDL LTDLDEPS LTDLINCL INCLTDL LT_DLLOADERS LIBADD_DLOPEN LIBADD_SHL_LOAD LIBADD_DLD_LINK LT_DLPREOPEN LIBADD_DL sys_symbol_underscore ARGZ_H INSTALL_LTDL_TRUE INSTALL_LTDL_FALSE CONVENIENCE_LTDL_TRUE CONVENIENCE_LTDL_FALSE subdirs LT_CONFIG_H LTDLOPEN LIBOBJS LTLIBOBJS ltdl_LIBOBJS ltdl_LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar P3S build build_cpu build_vendor build_os host host_cpu host_vendor host_os YACC CXX CXXFLAGS LDFLAGS CPPFLAGS ac_ct_CXX EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE CC CFLAGS ac_ct_CC CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE dll_extension GC_LIBS PCRE_INCLUDES PCRE_LIBS XML_INCLUDES XML_LIBS MIME_INCLUDES MIME_LIBS APACHE APACHE_INC APACHE_CFLAGS COMPILE_APACHE_MODULE_TRUE COMPILE_APACHE_MODULE_FALSE AS ac_ct_AS DLLTOOL ac_ct_DLLTOOL OBJDUMP ac_ct_OBJDUMP LIBTOOL SED EGREP FGREP GREP LD DUMPBIN ac_ct_DUMPBIN NM LN_S AR ac_ct_AR RANLIB ac_ct_RANLIB MANIFEST_TOOL ac_ct_MANIFEST_TOOL DSYMUTIL ac_ct_DSYMUTIL NMEDIT ac_ct_NMEDIT LIPO ac_ct_LIPO OTOOL ac_ct_OTOOL OTOOL64 ac_ct_OTOOL64 CPP CXXCPP LIBLTDL LTDLDEPS LTDLINCL INCLTDL LT_DLLOADERS LIBADD_DLOPEN LIBADD_SHL_LOAD LIBADD_DLD_LINK LT_DLPREOPEN LIBADD_DL sys_symbol_underscore ARGZ_H INSTALL_LTDL_TRUE INSTALL_LTDL_FALSE CONVENIENCE_LTDL_TRUE CONVENIENCE_LTDL_FALSE subdirs LT_CONFIG_H LTDLOPEN LIBOBJS LTLIBOBJS ltdl_LIBOBJS ltdl_LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -878,10 +878,10 @@ Optional Features:
                           (file::exec, file::cgi, unix mail:send)
   --disable-stringstream  to disable stringstream usage.
                           when disabled table.save use more memory but it's safer on freebsd 4.x
+  --enable-static[=PKGS]
+                          build static libraries [default=no]
   --enable-shared[=PKGS]
                           build shared libraries [default=yes]
-  --enable-static[=PKGS]
-                          build static libraries [default=yes]
   --enable-fast-install[=PKGS]
                           optimize for fast installation [default=yes]
   --disable-libtool-lock  avoid locking (might break parallel builds)
@@ -895,8 +895,6 @@ Optional Packages:
   --with-pathlink=LKEY    put dynamic libraries paths to binary
                           using linker key (-R, -rpath-link)
   --with-sjlj-exceptions  enable simple 'throw' from dynamic library
-  --with-dynamic-stdcpp   link libstdc++ dynamically
-                          by default, libstdc++ is linked statically
   --with-shared-gc=D      D is the directory where
                           Boehm garbage collecting library is installed (shared lib)
   --with-static-gc=D      D is the directory where
@@ -3783,23 +3781,6 @@ fi
 fi;
 
 
-
-# Check whether --with-dynamic-stdcpp or --without-dynamic-stdcpp was given.
-if test "${with_dynamic_stdcpp+set}" = set; then
-  withval="$with_dynamic_stdcpp"
-
-	{ echo "$as_me:$LINENO: WARNING: libstdc++ will be linked dynamically" >&5
-echo "$as_me: WARNING: libstdc++ will be linked dynamically" >&2;}
-	CPP_LIBS="-lstdc++"
-
-else
-
-	CPP_LIBS="-Wl,-Bstatic -lstdc++ -Wl,-Bdynamic"
-
-fi;
-
-
-
 GC_LIB_NAME=gc
 
 # Check whether --with-shared-gc or --without-shared-gc was given.
@@ -4096,9 +4077,14 @@ if test "${with_apache+set}" = set; then
 	APACHE=`$APXS -q TARGET 2>/dev/null`
 
 	if test -z "$APACHE"; then
-		{ { echo "$as_me:$LINENO: error: $APXS does not seem to be valid apache apxs utility path" >&5
+		APXS=`which apxs2 2>/dev/null`
+		APACHE=`$APXS -q TARGET 2>/dev/null`
+
+		if test -z "$APACHE"; then
+			{ { echo "$as_me:$LINENO: error: $APXS does not seem to be valid apache apxs utility path" >&5
 echo "$as_me: error: $APXS does not seem to be valid apache apxs utility path" >&2;}
    { (exit 1); exit 1; }; }
+		fi
 	fi
 
 	APACHE_MAIN_INC=`$APXS -q INCLUDEDIR`
@@ -7661,6 +7647,35 @@ func_stripname_cnf ()
 
 
 # Set options
+# Check whether --enable-static or --disable-static was given.
+if test "${enable_static+set}" = set; then
+  enableval="$enable_static"
+  p=${PACKAGE-default}
+    case $enableval in
+    yes) enable_static=yes ;;
+    no) enable_static=no ;;
+    *)
+     enable_static=no
+      # Look at the argument we got.  We use all the common list separators.
+      lt_save_ifs="$IFS"; IFS="${IFS}$PATH_SEPARATOR,"
+      for pkg in $enableval; do
+	IFS="$lt_save_ifs"
+	if test "X$pkg" = "X$p"; then
+	  enable_static=yes
+	fi
+      done
+      IFS="$lt_save_ifs"
+      ;;
+    esac
+else
+  enable_static=no
+fi;
+
+
+
+
+
+
 enable_dlopen=yes
 enable_win32_dll=yes
 
@@ -7955,36 +7970,6 @@ else
   enable_shared=yes
 fi;
 
-
-
-
-
-
-
-
-  # Check whether --enable-static or --disable-static was given.
-if test "${enable_static+set}" = set; then
-  enableval="$enable_static"
-  p=${PACKAGE-default}
-    case $enableval in
-    yes) enable_static=yes ;;
-    no) enable_static=no ;;
-    *)
-     enable_static=no
-      # Look at the argument we got.  We use all the common list separators.
-      lt_save_ifs="$IFS"; IFS="${IFS}$PATH_SEPARATOR,"
-      for pkg in $enableval; do
-	IFS="$lt_save_ifs"
-	if test "X$pkg" = "X$p"; then
-	  enable_static=yes
-	fi
-      done
-      IFS="$lt_save_ifs"
-      ;;
-    esac
-else
-  enable_static=yes
-fi;
 
 
 
@@ -17930,36 +17915,6 @@ eval "LTDLOPEN=\"$libname_spec\""
 
 
 
-# Check whether --enable-static or --disable-static was given.
-if test "${enable_static+set}" = set; then
-  enableval="$enable_static"
-  p=${PACKAGE-default}
-    case $enableval in
-    yes) enable_static=yes ;;
-    no) enable_static=no ;;
-    *)
-     enable_static=no
-      # Look at the argument we got.  We use all the common list separators.
-      lt_save_ifs="$IFS"; IFS="${IFS}$PATH_SEPARATOR,"
-      for pkg in $enableval; do
-	IFS="$lt_save_ifs"
-	if test "X$pkg" = "X$p"; then
-	  enable_static=yes
-	fi
-      done
-      IFS="$lt_save_ifs"
-      ;;
-    esac
-else
-  enable_static=no
-fi;
-
-
-
-
-
-
-
 echo "$as_me:$LINENO: checking whether byte ordering is bigendian" >&5
 echo $ECHO_N "checking whether byte ordering is bigendian... $ECHO_C" >&6
 if test "${ac_cv_c_bigendian+set}" = set; then
@@ -20518,11 +20473,11 @@ double_quote_subst='$double_quote_subst'
 delay_variable_subst='$delay_variable_subst'
 macro_version='`$ECHO "$macro_version" | $SED "$delay_single_quote_subst"`'
 macro_revision='`$ECHO "$macro_revision" | $SED "$delay_single_quote_subst"`'
+enable_static='`$ECHO "$enable_static" | $SED "$delay_single_quote_subst"`'
 AS='`$ECHO "$AS" | $SED "$delay_single_quote_subst"`'
 DLLTOOL='`$ECHO "$DLLTOOL" | $SED "$delay_single_quote_subst"`'
 OBJDUMP='`$ECHO "$OBJDUMP" | $SED "$delay_single_quote_subst"`'
 enable_shared='`$ECHO "$enable_shared" | $SED "$delay_single_quote_subst"`'
-enable_static='`$ECHO "$enable_static" | $SED "$delay_single_quote_subst"`'
 pic_mode='`$ECHO "$pic_mode" | $SED "$delay_single_quote_subst"`'
 enable_fast_install='`$ECHO "$enable_fast_install" | $SED "$delay_single_quote_subst"`'
 SHELL='`$ECHO "$SHELL" | $SED "$delay_single_quote_subst"`'
@@ -21067,7 +21022,6 @@ s,@CCDEPMODE@,$CCDEPMODE,;t t
 s,@am__fastdepCC_TRUE@,$am__fastdepCC_TRUE,;t t
 s,@am__fastdepCC_FALSE@,$am__fastdepCC_FALSE,;t t
 s,@dll_extension@,$dll_extension,;t t
-s,@CPP_LIBS@,$CPP_LIBS,;t t
 s,@GC_LIBS@,$GC_LIBS,;t t
 s,@PCRE_INCLUDES@,$PCRE_INCLUDES,;t t
 s,@PCRE_LIBS@,$PCRE_LIBS,;t t
@@ -21877,6 +21831,9 @@ available_tags="CXX "
 macro_version=$macro_version
 macro_revision=$macro_revision
 
+# Whether or not to build static libraries.
+build_old_libs=$enable_static
+
 # Assembler program.
 AS=$lt_AS
 
@@ -21888,9 +21845,6 @@ OBJDUMP=$lt_OBJDUMP
 
 # Whether or not to build shared libraries.
 build_libtool_libs=$enable_shared
-
-# Whether or not to build static libraries.
-build_old_libs=$enable_static
 
 # What type of objects to build.
 pic_mode=$pic_mode

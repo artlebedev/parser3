@@ -62,13 +62,13 @@ PROGRAMS = $(bin_PROGRAMS)
 am_parser3_OBJECTS = pa_threads.$(OBJEXT) parser3.$(OBJEXT) \
 	getopt.$(OBJEXT)
 parser3_OBJECTS = $(am_parser3_OBJECTS)
-am__DEPENDENCIES_1 =
-am__DEPENDENCIES_2 = ../../main/libmain.a ../../classes/libclasses.a \
+am__DEPENDENCIES_1 = ../../main/libmain.a ../../classes/libclasses.a \
 	../../types/libtypes.a ../../main/libmain.a \
 	../../lib/gd/libgd.a ../../lib/cord/libcord.a \
 	../../lib/md5/libmd5.a ../../lib/sdbm/libsdbm.a \
 	../../lib/smtp/libsmtp.a ../../lib/json/libjson.a \
-	../../lib/memcached/libmemcached.a $(am__DEPENDENCIES_1)
+	../../lib/memcached/libmemcached.a
+am__DEPENDENCIES_2 =
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -77,6 +77,7 @@ CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 LTCXXCOMPILE = $(LIBTOOL) --mode=compile --tag=CXX $(CXX) $(DEFS) \
 	$(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \
 	$(AM_CXXFLAGS) $(CXXFLAGS)
+CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --mode=link --tag=CXX $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
@@ -116,7 +117,6 @@ CONVENIENCE_LTDL_FALSE = @CONVENIENCE_LTDL_FALSE@
 CONVENIENCE_LTDL_TRUE = @CONVENIENCE_LTDL_TRUE@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
-CPP_LIBS = @CPP_LIBS@
 CXX = @CXX@
 CXXCPP = @CXXCPP@
 CXXDEPMODE = @CXXDEPMODE@
@@ -248,13 +248,10 @@ sys_symbol_underscore = @sys_symbol_underscore@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 
-# Parser switches linker to gcc to avoid -lstdc++ to be dynamically linked by g++
-CXXLD = $(CC)
-
 # Parser has circular library dependencies, thus libmain.a is linked twice and --preserve-dup-deps libtool option is used
 PA_LIBS = ../../main/libmain.a ../../classes/libclasses.a ../../types/libtypes.a ../../main/libmain.a \
 	  ../../lib/gd/libgd.a ../../lib/cord/libcord.a ../../lib/md5/libmd5.a ../../lib/sdbm/libsdbm.a \
-	  ../../lib/smtp/libsmtp.a ../../lib/json/libjson.a ../../lib/memcached/libmemcached.a $(LIBLTDL)
+	  ../../lib/smtp/libsmtp.a ../../lib/json/libjson.a ../../lib/memcached/libmemcached.a
 
 INCLUDES = -I../../classes -I../../types -I../../sql -I../../lib/gc/include -I../../lib/cord/include \
 	   -I../../lib/md5 -I../../lib/json -I$(INCLTDL) @PCRE_INCLUDES@ @XML_INCLUDES@
@@ -262,7 +259,7 @@ INCLUDES = -I../../classes -I../../types -I../../sql -I../../lib/gc/include -I..
 noinst_HEADERS = getopt.h
 parser3_DEPENDENCIES = Makefile $(PA_LIBS)
 parser3_SOURCES = pa_threads.C parser3.C getopt.c
-parser3_LDADD = $(PA_LIBS) $(LIBADD_DL) @GC_LIBS@ @PCRE_LIBS@ @XML_LIBS@ @MIME_LIBS@ @CPP_LIBS@
+parser3_LDADD = $(PA_LIBS) $(LIBLTDL) @GC_LIBS@ @PCRE_LIBS@ @XML_LIBS@ @MIME_LIBS@
 parser3_LIBTOOLFLAGS = --preserve-dup-deps
 EXTRA_DIST = parser3.vcproj
 all: all-am
