@@ -1,9 +1,12 @@
 #!/bin/sh
 
-# $Id: buildall-with-xml,v 1.47 2012/06/11 22:21:19 moko Exp $
+# $Id: buildall-with-xml,v 1.48 2012/06/12 21:12:23 moko Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
+download="wget -c --passive-ftp"
+cflags=""
+cflags="CFLAGS=-fPIC CXXFLAGS=-fPIC" #required for apache module on x64
 
 echo "buildall-with-xml"
 echo "Script author: Alexander Petrosian <paf@design.ru> (http://paf.design.ru)"
@@ -21,7 +24,7 @@ if test ! -f "$project_directory/gc/lib/libgc.a"; then
   libgc="gc-7.1"
   if test ! -f "$libgc.tar.gz"; then
     echo "Downloading gc [1 lib of 4]..."
-    wget -c http://www.hpl.hp.com/personal/Hans_Boehm/gc/gc_source/$libgc.tar.gz
+    $download http://www.hpl.hp.com/personal/Hans_Boehm/gc/gc_source/$libgc.tar.gz
   fi
   echo "Unpacking gc..."
   rm -rf $libgc
@@ -32,7 +35,7 @@ if test ! -f "$project_directory/gc/lib/libgc.a"; then
   ./configure --prefix=$project_directory/gc \
     --disable-threads \
     --disable-shared \
-    --silent
+    --silent $cflags
   echo "Building gc..."
   make
   make install
@@ -40,13 +43,12 @@ if test ! -f "$project_directory/gc/lib/libgc.a"; then
   rm -rf $libgc
 fi
 
-
 if test ! -f "$project_directory/pcre/lib/libpcre.a"; then
   cd $project_directory/src
   libpcre="pcre-8.30"
   if test ! -f "$libpcre.tar.gz"; then
     echo "Downloading pcre [2 lib of 4]..."
-    wget -c --passive-ftp ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/$libpcre.tar.gz
+    $download ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/$libpcre.tar.gz
   fi
   echo "Unpacking pcre..."
   rm -rf $libpcre
@@ -63,21 +65,19 @@ if test ! -f "$project_directory/pcre/lib/libpcre.a"; then
     --disable-cpp \
     --disable-pcregrep-libz \
     --disable-pcregrep-libbz2 \
-    --silent
+    --silent $cflags
   echo "Building pcre..."
-  make
-  cp pcre_internal.h ucp.h $project_directory/pcre/include
+  make install
   cd ..
   rm -rf $libpcre
 fi
-
 
 if test ! -f "$project_directory/gnome/lib/libxml2.a"; then
   cd $project_directory/src
   libxml2="libxml2-2.8.0"
   if test ! -f "$libxml2.tar.gz"; then
     echo "Downloading libxml [3 lib of 4]..."
-    wget -c --passive-ftp ftp://xmlsoft.org/libxml2/$libxml2.tar.gz
+    $download ftp://xmlsoft.org/libxml2/$libxml2.tar.gz
   fi
   echo "Unpacking libxml2... (be patient)"
   rm -rf $libxml2
@@ -107,7 +107,7 @@ if test ! -f "$project_directory/gnome/lib/libxml2.a"; then
     --without-zlib \
     --without-lzma \
     --disable-shared \
-    --silent
+    --silent $cflags
   echo "int main(){return 0;}">testapi.c
   echo "int main(){return 0;}">runtest.c
   echo "Building libxml..."
@@ -122,7 +122,7 @@ if test ! -f "$project_directory/gnome/lib/libxslt.a"; then
   libxslt="libxslt-1.1.26"
   if test ! -f "$libxslt.tar.gz"; then
     echo "Downloading libxslt [4 lib of 4]..."
-    wget -c --passive-ftp ftp://xmlsoft.org/libxslt/$libxslt.tar.gz
+    $download ftp://xmlsoft.org/libxslt/$libxslt.tar.gz
   fi
   echo "Unpacking libxslt... (be patient)"
   rm -rf $libxslt
@@ -136,7 +136,7 @@ if test ! -f "$project_directory/gnome/lib/libxslt.a"; then
      --without-crypto \
      --without-plugins \
      --disable-shared \
-     --silent
+     --silent $cflags
   echo "Building libxslt..."
   make
   make install
@@ -144,9 +144,7 @@ if test ! -f "$project_directory/gnome/lib/libxslt.a"; then
   rm -rf $libxslt
 fi
 
-
 cd $parser3_directory
-
 
 if test ! -f "Makefile"; then
   options="$@"
@@ -156,13 +154,15 @@ if test ! -f "Makefile"; then
 #  options="$options --with-apache"
 #  options="$options --disable-safe-mode"
 #  options="$options --disable-stringstream"
-  options="$options --silent"
-
+  options="$options --with-included-ltdl"
+  options="$options --silent $cflags"
   echo "Configuring parser3..."
   ./configure --prefix=$install_directory "--with-sendmail=$sendmail_command" $options
 fi
+
 echo "Building parser3..."
 make install
+if test $? -ne 0; then exit 1; fi
 
 # remove debug info
 # strip ${install_directory}/bin/parser3
