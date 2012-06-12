@@ -343,7 +343,7 @@ AM_CONDITIONAL(COMPILE_APACHE_MODULE, test -n "$APACHE")
 
 dnl Enable building of the convenience library
 LT_CONFIG_LTDL_DIR(src/lib/ltdl)
-LT_INIT(dlopen win32-dll)
+LT_INIT((disable-static dlopen win32-dll)
 LTDL_INIT
 
 
