@@ -1,9 +1,12 @@
 #!/bin/sh
 
-# $Id: buildall-without-xml,v 1.30 2012/06/12 20:20:18 moko Exp $
+# $Id: buildall-without-xml,v 1.31 2012/06/12 22:04:26 moko Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
+download="wget -c --passive-ftp"
+cflags=""
+cflags="CFLAGS=-fPIC CXXFLAGS=-fPIC" #required for apache module on x64
 
 echo "buildall-without-xml"
 echo "Script author: Alexander Petrosian <paf@design.ru> (http://paf.design.ru)"
@@ -21,7 +24,7 @@ if test ! -f "$project_directory/gc/lib/libgc.a"; then
   libgc="gc-7.1"
   if test ! -f "$libgc.tar.gz"; then
     echo "Downloading libgc [1 lib of 2]..."
-    wget -c http://www.hpl.hp.com/personal/Hans_Boehm/gc/gc_source/$libgc.tar.gz
+    $download http://www.hpl.hp.com/personal/Hans_Boehm/gc/gc_source/$libgc.tar.gz
   fi
   echo "Unpacking gc..."
   rm -rf $libgc
@@ -32,7 +35,7 @@ if test ! -f "$project_directory/gc/lib/libgc.a"; then
   	./configure --prefix=$project_directory/gc \
   		--disable-threads \
   		--disable-shared \
-  		--silent
+  		--silent $cflags
   echo "Building libgc..."
   make
   make install
@@ -40,13 +43,12 @@ if test ! -f "$project_directory/gc/lib/libgc.a"; then
   rm -rf $libgc
 fi
 
-
 if test ! -f "$project_directory/pcre/lib/libpcre.a"; then
   cd $project_directory/src
   libpcre="pcre-8.30"
   if test ! -f "$libpcre.tar.gz"; then
     echo "Downloading pcre [2 lib of 2]..."
-    wget -c --passive-ftp ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/$libpcre.tar.gz
+    $download ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/$libpcre.tar.gz
   fi
   echo "Unpacking pcre..."
   rm -rf $libpcre
@@ -63,14 +65,13 @@ if test ! -f "$project_directory/pcre/lib/libpcre.a"; then
     --disable-cpp \
     --disable-pcregrep-libz \
     --disable-pcregrep-libbz2 \
-    --silent
+    --silent $cflags
   echo "Building pcre..."
   make
   make install
   cd ..
   rm -rf $libpcre
 fi
-
 
 cd $parser3_directory
 
@@ -80,13 +81,15 @@ if test ! -f "Makefile"; then
   options="$options --with-static-pcre=$project_directory/pcre"
 #  options="$options --disable-safe-mode"
 #  options="$options --disable-stringstream"
-  options="$options --silent"
+  options="$options --silent $cflags"
 
   echo "Configuring parser3..."
   ./configure --prefix=$install_directory "--with-sendmail=$sendmail_command" $options
 fi
+
 echo "Building parser3..."
 make install
+if test $? -ne 0; then exit 1; fi
 
 # remove debug info
 # strip ${install_directory}/bin/parser3
