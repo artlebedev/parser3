@@ -6,10 +6,12 @@ PA_LIBS = ../../main/libmain.a ../../classes/libclasses.a ../../types/libtypes.a
 INCLUDES = -I../../classes -I../../types -I../../sql -I../../lib/gc/include -I../../lib/cord/include \
 	   -I../../lib/md5 -I../../lib/json -I$(INCLTDL) @PCRE_INCLUDES@ @XML_INCLUDES@
 
+# Automake 1.9 does not support LIBTOOLFLAGS
+CXXLINK = $(LIBTOOL) --preserve-dup-deps --mode=link --tag=CXX $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+
 bin_PROGRAMS = parser3
 noinst_HEADERS = getopt.h
 parser3_DEPENDENCIES=Makefile $(PA_LIBS)
 parser3_SOURCES = pa_threads.C parser3.C getopt.c
-parser3_LDADD= $(PA_LIBS) $(LIBLTDL) @GC_LIBS@ @PCRE_LIBS@ @XML_LIBS@ @MIME_LIBS@
-parser3_LIBTOOLFLAGS=--preserve-dup-deps
+parser3_LIBS = $(PA_LIBS) $(LIBLTDL) @GC_LIBS@ @PCRE_LIBS@ @XML_LIBS@ @MIME_LIBS@
 EXTRA_DIST = parser3.vcproj
