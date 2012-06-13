@@ -1,1 +1,1 @@
-noinst_HEADERS = pa_sql_driver.h
+include_HEADERS = pa_sql_driver.h
