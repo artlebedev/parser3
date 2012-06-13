@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Id: buildall-without-xml,v 1.31 2012/06/12 22:04:26 moko Exp $
+# $Id: buildall-without-xml,v 1.32 2012/06/13 07:42:53 moko Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -81,6 +81,7 @@ if test ! -f "Makefile"; then
   options="$options --with-static-pcre=$project_directory/pcre"
 #  options="$options --disable-safe-mode"
 #  options="$options --disable-stringstream"
+  options="$options --with-included-ltdl"
   options="$options --silent $cflags"
 
   echo "Configuring parser3..."
