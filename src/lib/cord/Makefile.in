@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-SOURCES = $(libcord_a_SOURCES)
+SOURCES = $(libcord_la_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -53,13 +53,10 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/src/include/pa_config_auto.h
 CONFIG_CLEAN_FILES =
-LIBRARIES = $(noinst_LIBRARIES)
-ARFLAGS = cru
-libcord_a_AR = $(AR) $(ARFLAGS)
-libcord_a_LIBADD =
-am_libcord_a_OBJECTS = cordbscs.$(OBJEXT) cordprnt.$(OBJEXT) \
-	cordxtra.$(OBJEXT)
-libcord_a_OBJECTS = $(am_libcord_a_OBJECTS)
+LTLIBRARIES = $(noinst_LTLIBRARIES)
+libcord_la_LIBADD =
+am_libcord_la_OBJECTS = cordbscs.lo cordprnt.lo cordxtra.lo
+libcord_la_OBJECTS = $(am_libcord_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -71,8 +68,8 @@ LTCOMPILE = $(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) \
 CCLD = $(CC)
 LINK = $(LIBTOOL) --mode=link --tag=CC $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(libcord_a_SOURCES)
-DIST_SOURCES = $(libcord_a_SOURCES)
+SOURCES = $(libcord_la_SOURCES)
+DIST_SOURCES = $(libcord_la_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	html-recursive info-recursive install-data-recursive \
 	install-exec-recursive install-info-recursive \
@@ -237,8 +234,8 @@ sys_symbol_underscore = @sys_symbol_underscore@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 INCLUDES = -Iinclude -I../../include -I../gc/include
-noinst_LIBRARIES = libcord.a
-libcord_a_SOURCES = cordbscs.c cordprnt.c cordxtra.c
+noinst_LTLIBRARIES = libcord.la
+libcord_la_SOURCES = cordbscs.c cordprnt.c cordxtra.c
 EXTRA_DIST = cord.vcproj source.url
 SUBDIRS = include
 all: all-recursive
@@ -275,12 +272,16 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 
-clean-noinstLIBRARIES:
-	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
-libcord.a: $(libcord_a_OBJECTS) $(libcord_a_DEPENDENCIES) 
-	-rm -f libcord.a
-	$(libcord_a_AR) libcord.a $(libcord_a_OBJECTS) $(libcord_a_LIBADD)
-	$(RANLIB) libcord.a
+clean-noinstLTLIBRARIES:
+	-test -z "$(noinst_LTLIBRARIES)" || rm -f $(noinst_LTLIBRARIES)
+	@list='$(noinst_LTLIBRARIES)'; for p in $$list; do \
+	  dir="`echo $$p | sed -e 's|/[^/]*$$||'`"; \
+	  test "$$dir" != "$$p" || dir=.; \
+	  echo "rm -f \"$${dir}/so_locations\""; \
+	  rm -f "$${dir}/so_locations"; \
+	done
+libcord.la: $(libcord_la_OBJECTS) $(libcord_la_DEPENDENCIES) 
+	$(LINK)  $(libcord_la_LDFLAGS) $(libcord_la_OBJECTS) $(libcord_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -288,9 +289,9 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cordbscs.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cordprnt.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cordxtra.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cordbscs.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cordprnt.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cordxtra.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -487,7 +488,7 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-recursive
-all-am: Makefile $(LIBRARIES)
+all-am: Makefile $(LTLIBRARIES)
 installdirs: installdirs-recursive
 installdirs-am:
 install: install-recursive
@@ -516,7 +517,7 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-recursive
 
-clean-am: clean-generic clean-libtool clean-noinstLIBRARIES \
+clean-am: clean-generic clean-libtool clean-noinstLTLIBRARIES \
 	mostlyclean-am
 
 distclean: distclean-recursive
@@ -568,7 +569,7 @@ uninstall-am: uninstall-info-am
 uninstall-info: uninstall-info-recursive
 
 .PHONY: $(RECURSIVE_TARGETS) CTAGS GTAGS all all-am check check-am \
-	clean clean-generic clean-libtool clean-noinstLIBRARIES \
+	clean clean-generic clean-libtool clean-noinstLTLIBRARIES \
 	clean-recursive ctags ctags-recursive distclean \
 	distclean-compile distclean-generic distclean-libtool \
 	distclean-recursive distclean-tags distdir dvi dvi-am html \

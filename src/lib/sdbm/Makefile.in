@@ -15,7 +15,7 @@
 @SET_MAKE@
 
 
-SOURCES = $(libsdbm_a_SOURCES)
+SOURCES = $(libsdbm_la_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -55,14 +55,11 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/src/include/pa_config_auto.h
 CONFIG_CLEAN_FILES =
-LIBRARIES = $(noinst_LIBRARIES)
-ARFLAGS = cru
-libsdbm_a_AR = $(AR) $(ARFLAGS)
-libsdbm_a_LIBADD =
-am_libsdbm_a_OBJECTS = sdbm.$(OBJEXT) sdbm_hash.$(OBJEXT) \
-	sdbm_lock.$(OBJEXT) sdbm_pair.$(OBJEXT) pa_file_io.$(OBJEXT) \
-	pa_strings.$(OBJEXT)
-libsdbm_a_OBJECTS = $(am_libsdbm_a_OBJECTS)
+LTLIBRARIES = $(noinst_LTLIBRARIES)
+libsdbm_la_LIBADD =
+am_libsdbm_la_OBJECTS = sdbm.lo sdbm_hash.lo sdbm_lock.lo sdbm_pair.lo \
+	pa_file_io.lo pa_strings.lo
+libsdbm_la_OBJECTS = $(am_libsdbm_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -82,8 +79,8 @@ LTCOMPILE = $(LIBTOOL) --mode=compile --tag=CC $(CC) $(DEFS) \
 CCLD = $(CC)
 LINK = $(LIBTOOL) --mode=link --tag=CC $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(libsdbm_a_SOURCES)
-DIST_SOURCES = $(libsdbm_a_SOURCES)
+SOURCES = $(libsdbm_la_SOURCES)
+DIST_SOURCES = $(libsdbm_la_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	html-recursive info-recursive install-data-recursive \
 	install-exec-recursive install-info-recursive \
@@ -251,11 +248,8 @@ target_alias = @target_alias@
 SUBDIRS = pa-include
 INCLUDES = -Ipa-include -I../../include -I../gc/include
 noinst_HEADERS = sdbm_pair.h sdbm_private.h sdbm_tune.h
-noinst_LIBRARIES = libsdbm.a
-libsdbm_a_SOURCES = \
-	sdbm.c sdbm_hash.c sdbm_lock.c sdbm_pair.c \
-	pa_file_io.C pa_strings.C
-
+noinst_LTLIBRARIES = libsdbm.la
+libsdbm_la_SOURCES = sdbm.c sdbm_hash.c sdbm_lock.c sdbm_pair.c pa_file_io.C pa_strings.C
 EXTRA_DIST = sdbm.vcproj
 all: all-recursive
 
@@ -291,12 +285,16 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 
-clean-noinstLIBRARIES:
-	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
-libsdbm.a: $(libsdbm_a_OBJECTS) $(libsdbm_a_DEPENDENCIES) 
-	-rm -f libsdbm.a
-	$(libsdbm_a_AR) libsdbm.a $(libsdbm_a_OBJECTS) $(libsdbm_a_LIBADD)
-	$(RANLIB) libsdbm.a
+clean-noinstLTLIBRARIES:
+	-test -z "$(noinst_LTLIBRARIES)" || rm -f $(noinst_LTLIBRARIES)
+	@list='$(noinst_LTLIBRARIES)'; for p in $$list; do \
+	  dir="`echo $$p | sed -e 's|/[^/]*$$||'`"; \
+	  test "$$dir" != "$$p" || dir=.; \
+	  echo "rm -f \"$${dir}/so_locations\""; \
+	  rm -f "$${dir}/so_locations"; \
+	done
+libsdbm.la: $(libsdbm_la_OBJECTS) $(libsdbm_la_DEPENDENCIES) 
+	$(CXXLINK)  $(libsdbm_la_LDFLAGS) $(libsdbm_la_OBJECTS) $(libsdbm_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -304,12 +302,12 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_file_io.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_strings.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sdbm.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sdbm_hash.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sdbm_lock.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sdbm_pair.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_file_io.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_strings.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sdbm.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sdbm_hash.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sdbm_lock.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sdbm_pair.Plo@am__quote@
 
 .C.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -527,7 +525,7 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-recursive
-all-am: Makefile $(LIBRARIES) $(HEADERS)
+all-am: Makefile $(LTLIBRARIES) $(HEADERS)
 installdirs: installdirs-recursive
 installdirs-am:
 install: install-recursive
@@ -556,7 +554,7 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-recursive
 
-clean-am: clean-generic clean-libtool clean-noinstLIBRARIES \
+clean-am: clean-generic clean-libtool clean-noinstLTLIBRARIES \
 	mostlyclean-am
 
 distclean: distclean-recursive
@@ -608,7 +606,7 @@ uninstall-am: uninstall-info-am
 uninstall-info: uninstall-info-recursive
 
 .PHONY: $(RECURSIVE_TARGETS) CTAGS GTAGS all all-am check check-am \
-	clean clean-generic clean-libtool clean-noinstLIBRARIES \
+	clean clean-generic clean-libtool clean-noinstLTLIBRARIES \
 	clean-recursive ctags ctags-recursive distclean \
 	distclean-compile distclean-generic distclean-libtool \
 	distclean-recursive distclean-tags distdir dvi dvi-am html \

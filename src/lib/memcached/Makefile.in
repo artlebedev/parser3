@@ -15,7 +15,7 @@
 @SET_MAKE@
 
 
-SOURCES = $(libmemcached_a_SOURCES)
+SOURCES = $(libmemcached_la_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -55,12 +55,10 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/src/include/pa_config_auto.h
 CONFIG_CLEAN_FILES =
-LIBRARIES = $(noinst_LIBRARIES)
-ARFLAGS = cru
-libmemcached_a_AR = $(AR) $(ARFLAGS)
-libmemcached_a_LIBADD =
-am_libmemcached_a_OBJECTS = pa_memcached.$(OBJEXT)
-libmemcached_a_OBJECTS = $(am_libmemcached_a_OBJECTS)
+LTLIBRARIES = $(noinst_LTLIBRARIES)
+libmemcached_la_LIBADD =
+am_libmemcached_la_OBJECTS = pa_memcached.lo
+libmemcached_la_OBJECTS = $(am_libmemcached_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -72,8 +70,8 @@ LTCXXCOMPILE = $(LIBTOOL) --mode=compile --tag=CXX $(CXX) $(DEFS) \
 CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --mode=link --tag=CXX $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(libmemcached_a_SOURCES)
-DIST_SOURCES = $(libmemcached_a_SOURCES)
+SOURCES = $(libmemcached_la_SOURCES)
+DIST_SOURCES = $(libmemcached_la_SOURCES)
 HEADERS = $(noinst_HEADERS)
 ETAGS = etags
 CTAGS = ctags
@@ -233,8 +231,8 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 INCLUDES = $(INCLTDL)
 noinst_HEADERS = constants.h types.h pa_memcached.h
-noinst_LIBRARIES = libmemcached.a
-libmemcached_a_SOURCES = pa_memcached.C
+noinst_LTLIBRARIES = libmemcached.la
+libmemcached_la_SOURCES = pa_memcached.C
 EXTRA_DIST = memcached.vcproj
 all: all-am
 
@@ -270,12 +268,16 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 
-clean-noinstLIBRARIES:
-	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
-libmemcached.a: $(libmemcached_a_OBJECTS) $(libmemcached_a_DEPENDENCIES) 
-	-rm -f libmemcached.a
-	$(libmemcached_a_AR) libmemcached.a $(libmemcached_a_OBJECTS) $(libmemcached_a_LIBADD)
-	$(RANLIB) libmemcached.a
+clean-noinstLTLIBRARIES:
+	-test -z "$(noinst_LTLIBRARIES)" || rm -f $(noinst_LTLIBRARIES)
+	@list='$(noinst_LTLIBRARIES)'; for p in $$list; do \
+	  dir="`echo $$p | sed -e 's|/[^/]*$$||'`"; \
+	  test "$$dir" != "$$p" || dir=.; \
+	  echo "rm -f \"$${dir}/so_locations\""; \
+	  rm -f "$${dir}/so_locations"; \
+	done
+libmemcached.la: $(libmemcached_la_OBJECTS) $(libmemcached_la_DEPENDENCIES) 
+	$(CXXLINK)  $(libmemcached_la_LDFLAGS) $(libmemcached_la_OBJECTS) $(libmemcached_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -283,7 +285,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_memcached.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_memcached.Plo@am__quote@
 
 .C.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -393,7 +395,7 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(LIBRARIES) $(HEADERS)
+all-am: Makefile $(LTLIBRARIES) $(HEADERS)
 installdirs:
 install: install-am
 install-exec: install-exec-am
@@ -421,7 +423,7 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-libtool clean-noinstLIBRARIES \
+clean-am: clean-generic clean-libtool clean-noinstLTLIBRARIES \
 	mostlyclean-am
 
 distclean: distclean-am
@@ -471,7 +473,7 @@ ps-am:
 uninstall-am: uninstall-info-am
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
-	clean-libtool clean-noinstLIBRARIES ctags distclean \
+	clean-libtool clean-noinstLTLIBRARIES ctags distclean \
 	distclean-compile distclean-generic distclean-libtool \
 	distclean-tags distdir dvi dvi-am html html-am info info-am \
 	install install-am install-data install-data-am install-exec \

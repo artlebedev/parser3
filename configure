@@ -878,10 +878,10 @@ Optional Features:
                           (file::exec, file::cgi, unix mail:send)
   --disable-stringstream  to disable stringstream usage.
                           when disabled table.save use more memory but it's safer on freebsd 4.x
-  --enable-static[=PKGS]
-                          build static libraries [default=no]
   --enable-shared[=PKGS]
                           build shared libraries [default=yes]
+  --enable-static[=PKGS]
+                          build static libraries [default=yes]
   --enable-fast-install[=PKGS]
                           optimize for fast installation [default=yes]
   --disable-libtool-lock  avoid locking (might break parallel builds)
@@ -3795,7 +3795,7 @@ fi;
 if test "${with_static_gc+set}" = set; then
   withval="$with_static_gc"
 
-	GC_LIBS="$withval/lib$GC_LIB_NAME.a"
+	GC_LIBS="$withval/lib$GC_LIB_NAME.la"
 
 fi;
 if test -z "$GC_LIBS"; then
@@ -3803,12 +3803,11 @@ if test -z "$GC_LIBS"; then
 	GC_LIBS="-l$GC_LIB_NAME"
 	{ echo "$as_me:$LINENO: WARNING: neither --with-shared/static-gc were specified, hoping linker would find it" >&5
 echo "$as_me: WARNING: neither --with-shared/static-gc were specified, hoping linker would find it" >&2;}
-fi
 
-echo "$as_me:$LINENO: checking for libgc" >&5
+	echo "$as_me:$LINENO: checking for libgc" >&5
 echo $ECHO_N "checking for libgc... $ECHO_C" >&6
-SAVE_LIBS=$LIBS
-LIBS="$LIBS $GC_LIBS"
+	SAVE_LIBS=$LIBS
+	LIBS="$LIBS $GC_LIBS"
 
 cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -3817,13 +3816,13 @@ cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
 
-	extern int GC_dont_gc;
+		extern int GC_dont_gc;
 
 int
 main ()
 {
 
-	GC_dont_gc=0;
+		GC_dont_gc=0;
 
   ;
   return 0;
@@ -3860,15 +3859,16 @@ sed 's/^/| /' conftest.$ac_ext >&5
 
 echo "$as_me:$LINENO: result: no" >&5
 echo "${ECHO_T}no" >&6
-	{ { echo "$as_me:$LINENO: error: please specify path to libgc: --with-shared-gc OR --with-static-gc" >&5
+		{ { echo "$as_me:$LINENO: error: please specify path to libgc: --with-shared-gc OR --with-static-gc" >&5
 echo "$as_me: error: please specify path to libgc: --with-shared-gc OR --with-static-gc" >&2;}
    { (exit 1); exit 1; }; }
 
 fi
 rm -f conftest.err conftest.$ac_objext \
       conftest$ac_exeext conftest.$ac_ext
+	LIBS=$SAVE_LIBS
+fi
 
-LIBS=$SAVE_LIBS
 
 
 
@@ -3887,7 +3887,7 @@ echo "$as_me: error: $PCRE does not seem to be valid PCRE installation directory
 	fi
 
 	PCRE_INCLUDES="-I$PCREINC"
-	PCRE_LIBS="$PCRELIB/libpcre.a"
+	PCRE_LIBS="$PCRELIB/libpcre.la"
 
 fi;
 
@@ -3950,7 +3950,7 @@ _ACEOF
 
 
 	XML_INCLUDES="$GLIB_CFLAGS -I$XMLINC -I$XMLINC/libxml2"
-	XML_LIBS="$XMLLIB/libxslt.a $XMLLIB/libexslt.a $XMLLIB/libxml2.a"
+	XML_LIBS="$XMLLIB/libxslt.la $XMLLIB/libexslt.la $XMLLIB/libxml2.la"
 
 fi;
 
@@ -4043,7 +4043,7 @@ _ACEOF
 	GLIB_DIR=`$GLIB_CONFIG --libs | sed 's/.*-L\([^ ]*\).*/\1/'`
 	GLIB_NAME=`$GLIB_CONFIG --libs | sed 's/.*-l\([^ ]*\).*/\1/'`
 	MIME_INCLUDES="$GLIB_CFLAGS -I$MIMEINC/gmime"
-	MIME_LIBS="$MIMELIB/libgmime.a $GLIB_DIR/lib$GLIB_NAME.a"
+	MIME_LIBS="$MIMELIB/libgmime.la $GLIB_DIR/lib$GLIB_NAME.la"
 
 fi;
 
@@ -7647,35 +7647,6 @@ func_stripname_cnf ()
 
 
 # Set options
-# Check whether --enable-static or --disable-static was given.
-if test "${enable_static+set}" = set; then
-  enableval="$enable_static"
-  p=${PACKAGE-default}
-    case $enableval in
-    yes) enable_static=yes ;;
-    no) enable_static=no ;;
-    *)
-     enable_static=no
-      # Look at the argument we got.  We use all the common list separators.
-      lt_save_ifs="$IFS"; IFS="${IFS}$PATH_SEPARATOR,"
-      for pkg in $enableval; do
-	IFS="$lt_save_ifs"
-	if test "X$pkg" = "X$p"; then
-	  enable_static=yes
-	fi
-      done
-      IFS="$lt_save_ifs"
-      ;;
-    esac
-else
-  enable_static=no
-fi;
-
-
-
-
-
-
 enable_dlopen=yes
 enable_win32_dll=yes
 
@@ -7970,6 +7941,36 @@ else
   enable_shared=yes
 fi;
 
+
+
+
+
+
+
+
+  # Check whether --enable-static or --disable-static was given.
+if test "${enable_static+set}" = set; then
+  enableval="$enable_static"
+  p=${PACKAGE-default}
+    case $enableval in
+    yes) enable_static=yes ;;
+    no) enable_static=no ;;
+    *)
+     enable_static=no
+      # Look at the argument we got.  We use all the common list separators.
+      lt_save_ifs="$IFS"; IFS="${IFS}$PATH_SEPARATOR,"
+      for pkg in $enableval; do
+	IFS="$lt_save_ifs"
+	if test "X$pkg" = "X$p"; then
+	  enable_static=yes
+	fi
+      done
+      IFS="$lt_save_ifs"
+      ;;
+    esac
+else
+  enable_static=yes
+fi;
 
 
 
@@ -15719,6 +15720,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 # Only expand once:
 
 
+#LT_INIT(disable-shared dlopen win32-dll)
 echo "$as_me:$LINENO: checking which extension is used for runtime loadable modules" >&5
 echo $ECHO_N "checking which extension is used for runtime loadable modules... $ECHO_C" >&6
 if test "${libltdl_cv_shlibext+set}" = set; then
@@ -20473,11 +20475,11 @@ double_quote_subst='$double_quote_subst'
 delay_variable_subst='$delay_variable_subst'
 macro_version='`$ECHO "$macro_version" | $SED "$delay_single_quote_subst"`'
 macro_revision='`$ECHO "$macro_revision" | $SED "$delay_single_quote_subst"`'
-enable_static='`$ECHO "$enable_static" | $SED "$delay_single_quote_subst"`'
 AS='`$ECHO "$AS" | $SED "$delay_single_quote_subst"`'
 DLLTOOL='`$ECHO "$DLLTOOL" | $SED "$delay_single_quote_subst"`'
 OBJDUMP='`$ECHO "$OBJDUMP" | $SED "$delay_single_quote_subst"`'
 enable_shared='`$ECHO "$enable_shared" | $SED "$delay_single_quote_subst"`'
+enable_static='`$ECHO "$enable_static" | $SED "$delay_single_quote_subst"`'
 pic_mode='`$ECHO "$pic_mode" | $SED "$delay_single_quote_subst"`'
 enable_fast_install='`$ECHO "$enable_fast_install" | $SED "$delay_single_quote_subst"`'
 SHELL='`$ECHO "$SHELL" | $SED "$delay_single_quote_subst"`'
@@ -21831,9 +21833,6 @@ available_tags="CXX "
 macro_version=$macro_version
 macro_revision=$macro_revision
 
-# Whether or not to build static libraries.
-build_old_libs=$enable_static
-
 # Assembler program.
 AS=$lt_AS
 
@@ -21845,6 +21844,9 @@ OBJDUMP=$lt_OBJDUMP
 
 # Whether or not to build shared libraries.
 build_libtool_libs=$enable_shared
+
+# Whether or not to build static libraries.
+build_old_libs=$enable_static
 
 # What type of objects to build.
 pic_mode=$pic_mode

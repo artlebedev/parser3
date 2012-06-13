@@ -15,7 +15,7 @@
 @SET_MAKE@
 
 
-SOURCES = $(libsmtp_a_SOURCES)
+SOURCES = $(libsmtp_la_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -55,12 +55,10 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/src/include/pa_config_auto.h
 CONFIG_CLEAN_FILES =
-LIBRARIES = $(noinst_LIBRARIES)
-ARFLAGS = cru
-libsmtp_a_AR = $(AR) $(ARFLAGS)
-libsmtp_a_LIBADD =
-am_libsmtp_a_OBJECTS = comms.$(OBJEXT) smtp.$(OBJEXT)
-libsmtp_a_OBJECTS = $(am_libsmtp_a_OBJECTS)
+LTLIBRARIES = $(noinst_LTLIBRARIES)
+libsmtp_la_LIBADD =
+am_libsmtp_la_OBJECTS = comms.lo smtp.lo
+libsmtp_la_OBJECTS = $(am_libsmtp_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -72,8 +70,8 @@ LTCXXCOMPILE = $(LIBTOOL) --mode=compile --tag=CXX $(CXX) $(DEFS) \
 CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --mode=link --tag=CXX $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(libsmtp_a_SOURCES)
-DIST_SOURCES = $(libsmtp_a_SOURCES)
+SOURCES = $(libsmtp_la_SOURCES)
+DIST_SOURCES = $(libsmtp_la_SOURCES)
 HEADERS = $(noinst_HEADERS)
 ETAGS = etags
 CTAGS = ctags
@@ -232,10 +230,9 @@ sys_symbol_underscore = @sys_symbol_underscore@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 INCLUDES = -I../gc/include -I../cord/include
-# @XML_INCLUDES@
-noinst_LIBRARIES = libsmtp.a
 noinst_HEADERS = smtp.h
-libsmtp_a_SOURCES = comms.C smtp.C
+noinst_LTLIBRARIES = libsmtp.la
+libsmtp_la_SOURCES = comms.C smtp.C
 EXTRA_DIST = smtp.vcproj
 all: all-am
 
@@ -271,12 +268,16 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 
-clean-noinstLIBRARIES:
-	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
-libsmtp.a: $(libsmtp_a_OBJECTS) $(libsmtp_a_DEPENDENCIES) 
-	-rm -f libsmtp.a
-	$(libsmtp_a_AR) libsmtp.a $(libsmtp_a_OBJECTS) $(libsmtp_a_LIBADD)
-	$(RANLIB) libsmtp.a
+clean-noinstLTLIBRARIES:
+	-test -z "$(noinst_LTLIBRARIES)" || rm -f $(noinst_LTLIBRARIES)
+	@list='$(noinst_LTLIBRARIES)'; for p in $$list; do \
+	  dir="`echo $$p | sed -e 's|/[^/]*$$||'`"; \
+	  test "$$dir" != "$$p" || dir=.; \
+	  echo "rm -f \"$${dir}/so_locations\""; \
+	  rm -f "$${dir}/so_locations"; \
+	done
+libsmtp.la: $(libsmtp_la_OBJECTS) $(libsmtp_la_DEPENDENCIES) 
+	$(CXXLINK)  $(libsmtp_la_LDFLAGS) $(libsmtp_la_OBJECTS) $(libsmtp_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -284,8 +285,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/comms.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smtp.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/comms.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/smtp.Plo@am__quote@
 
 .C.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -395,7 +396,7 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(LIBRARIES) $(HEADERS)
+all-am: Makefile $(LTLIBRARIES) $(HEADERS)
 installdirs:
 install: install-am
 install-exec: install-exec-am
@@ -423,7 +424,7 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-libtool clean-noinstLIBRARIES \
+clean-am: clean-generic clean-libtool clean-noinstLTLIBRARIES \
 	mostlyclean-am
 
 distclean: distclean-am
@@ -473,7 +474,7 @@ ps-am:
 uninstall-am: uninstall-info-am
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
-	clean-libtool clean-noinstLIBRARIES ctags distclean \
+	clean-libtool clean-noinstLTLIBRARIES ctags distclean \
 	distclean-compile distclean-generic distclean-libtool \
 	distclean-tags distdir dvi dvi-am html html-am info info-am \
 	install install-am install-data install-data-am install-exec \
