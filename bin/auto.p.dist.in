@@ -1,4 +1,4 @@
-#$Id: auto.p.dist.in,v 1.15 2012/06/09 08:25:35 moko Exp $
+#$Id: auto.p.dist.in,v 1.16 2012/06/13 07:44:33 moko Exp $
 
 @conf[filespec]
 $confdir[^file:dirname[$filespec]]
@@ -6,14 +6,14 @@ $charsetsdir[$confdir/charsets]
 $sqldriversdir[$confdir/lib]
 
 $CHARSETS[
-#	$.cp866.cfg[$charsetsdir/cp866.cfg]
-#	$.koi8-r.cfg[$charsetsdir/koi8-r.cfg]
-#	$.koi8-u.cfg[$charsetsdir/koi8-u.cfg]
-#	$.windows-1250.cfg[$charsetsdir/windows-1250.cfg]
-	$.windows-1251.cfg[$charsetsdir/windows-1251.cfg]
-#	$.windows-1254.cfg[$charsetsdir/windows-1254.cfg]
-#	$.windows-1257.cfg[$charsetsdir/windows-1257.cfg]
-#	$.x-mac-cyrillic.cfg[$charsetsdir/x-mac-cyrillic.cfg]
+#	$.cp866[$charsetsdir/cp866.cfg]
+#	$.koi8-r[$charsetsdir/koi8-r.cfg]
+#	$.koi8-u[$charsetsdir/koi8-u.cfg]
+#	$.windows-1250[$charsetsdir/windows-1250.cfg]
+	$.windows-1251[$charsetsdir/windows-1251.cfg]
+#	$.windows-1254[$charsetsdir/windows-1254.cfg]
+#	$.windows-1257[$charsetsdir/windows-1257.cfg]
+#	$.x-mac-cyrillic[$charsetsdir/x-mac-cyrillic.cfg]
 ]
 
 #change your client libraries paths to those on your system
