@@ -1,0 +1,29 @@
+@main[]
+
+$h[ $.key[value] ]
+^h.foreach[k;v]{ ^test[$h] }
+
+@test[h]
+non-blocking hash operations:
+
+^h._count[]
+$k[^h._keys[]]
+$h2[^hash::create[$h]]
+$b[^h.contains[key]]
+^h.foreach[k;v]{$k=>$v}
+^h._at(0)
+
+blocking hash operations:
+
+$h2[ $.k[v] ]
+^try_catch{ ^h2.sub[$h] }
+^try_catch{ $h.k[v] }
+^try_catch{ ^h.delete[k] }
+
+@try_catch[code]
+^try{
+	$code
+}{
+	$exception.handled(true)
+	$result[Exception: $exception.source - $exception.comment]
+}

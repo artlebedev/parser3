@@ -16,7 +16,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.114 2012/06/08 11:44:01 misha Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.115 2012/06/13 22:53:47 moko Exp $";
 
 // class
 
@@ -192,18 +192,25 @@ VBool Hash_sql_event_handlers::only_one_column_value(true);
 static void _create_or_add(Request& r, MethodParams& params) {
 	if(params.count()) {
 		Value& vsrc=params.as_no_junction(0, PARAM_MUST_BE_HASH);
-		if(HashStringValue* src=vsrc.get_hash()) {
-			VHash& self=GET_SELF(r, VHash);
-			HashStringValue* self_hash=&(self.hash());
-			if(src==self_hash) // same: doing nothing
-				return;
-			src->for_each<HashStringValue*>(copy_all_overwrite_to, self_hash);
+		VHash& self=GET_SELF(r, VHash);
+		HashStringValue* src_hash;
+		HashStringValue* self_hash=&(self.hash());
 
-			if(VHash* vhash_src=static_cast<VHash*>(vsrc.as(VHASH_TYPE)))
-				if(Value* vdefault=vhash_src->get_default())
-					if(vdefault->is_defined())
-						self.set_default(vdefault);
+		if(VHash* src=static_cast<VHash*>(vsrc.as(VHASH_TYPE))) {
+			src_hash=&(src->hash_ro());
+
+			if(src_hash==self_hash) // same: doing nothing
+				return;
+
+			if(Value* vdefault=src->get_default())
+				if(vdefault->is_defined())
+					self.set_default(vdefault);
+		} else {
+			src_hash=vsrc.get_hash();
 		}
+
+		if(src_hash)
+			src_hash->for_each<HashStringValue*>(copy_all_overwrite_to, self_hash);
 	}
 }
 
@@ -370,13 +377,13 @@ static void _keys(Request& r, MethodParams& params) {
 	*columns+=keys_column_name;
 	Table* table=new Table(columns);
 
-	GET_SELF(r, VHash).hash().for_each<Table*>(keys_collector, table);
+	GET_SELF(r, VHash).hash_ro().for_each<Table*>(keys_collector, table);
 
 	r.write_no_lang(*new VTable(table));
 }
 
 static void _count(Request& r, MethodParams&) {
-	r.write_no_lang(*new VInt(GET_SELF(r, VHash).hash().count()));
+	r.write_no_lang(*new VInt(GET_SELF(r, VHash).hash_ro().count()));
 }
 
 static void _delete(Request& r, MethodParams& params) {
@@ -385,7 +392,7 @@ static void _delete(Request& r, MethodParams& params) {
 }
 
 static void _contains(Request& r, MethodParams& params) {
-	bool result=GET_SELF(r, VHash).hash().contains(params.as_string(0, "key must be string"));
+	bool result=GET_SELF(r, VHash).hash_ro().contains(params.as_string(0, "key must be string"));
 	r.write_no_lang(VBool::get(result));
 }
 
@@ -449,13 +456,13 @@ static void _foreach(Request& r, MethodParams& params) {
 	};
 
 	VHash& self=GET_SELF(r, VHash);
-	HashStringValue& hash=self.hash();
+	HashStringValue& hash=self.hash_ro();
 	VHash_lock lock(self);
 	hash.first_that<Foreach_info*>(one_foreach_cycle, &info);
 }
 
 static void _at(Request& r, MethodParams& params) {
-	HashStringValue& hash=GET_SELF(r, VHash).hash();
+	HashStringValue& hash=GET_SELF(r, VHash).hash_ro();
 	size_t count=hash.count();
 
 	int pos=0;

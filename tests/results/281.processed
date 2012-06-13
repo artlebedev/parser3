@@ -1,0 +1,11 @@
+Content-Type: text/html
+Content-Length: 230
+
+non-blocking hash operations:
+1
+key=>value
+value
+blocking hash operations:
+Exception: sub - can not modify hash (flocked)
+Exception: k - can not insert new hash key (hash flocked)
+Exception: delete - can not modify hash (flocked) 

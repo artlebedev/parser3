@@ -8,7 +8,7 @@
 #ifndef PA_VHASH_H
 #define PA_VHASH_H
 
-#define IDENT_PA_VHASH_H "$Id: pa_vhash.h,v 1.66 2012/06/08 02:02:31 misha Exp $"
+#define IDENT_PA_VHASH_H "$Id: pa_vhash.h,v 1.67 2012/06/13 22:53:47 moko Exp $"
 
 #include "classes.h"
 #include "pa_value.h"
@@ -98,6 +98,10 @@ public: // usage
 
 	HashStringValue& hash() { 
 		check_lock();
+		return fhash; 
+	}
+
+	HashStringValue& hash_ro() { 
 		return fhash; 
 	}
 
