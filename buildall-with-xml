@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Id: buildall-with-xml,v 1.49 2012/06/13 10:28:56 moko Exp $
+# $Id: buildall-with-xml,v 1.50 2012/06/13 21:44:40 moko Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -148,9 +148,9 @@ cd $parser3_directory
 
 if test ! -f "Makefile"; then
   options="$@"
-  options="$options --with-static-gc=$project_directory/gc/lib"
-  options="$options --with-static-pcre=$project_directory/pcre"
-  options="$options --with-static-xml=$project_directory/gnome"
+  options="$options --with-gc=$project_directory/gc/lib"
+  options="$options --with-pcre=$project_directory/pcre"
+  options="$options --with-xml=$project_directory/gnome"
 #  options="$options --with-apache"
 #  options="$options --disable-safe-mode"
 #  options="$options --disable-stringstream"
@@ -172,9 +172,8 @@ echo "DONE"
 echo
 echo
 echo "********************************************************************************************************"
-echo "Now you can copy $install_directory with subdirectories"
+echo "Now you can copy $install_directory/bin to your cgi-bin directory"
 echo "  -Parser3 with XML support-"
-echo "to your cgi-bin directory"
 echo "Read more about installing Parser here:"
 echo "  http://www.parser.ru/en/docs/lang/install4apachecgi.htm in English"
 echo "  http://www.parser.ru/docs/lang/install4apachecgi.htm in Russian"

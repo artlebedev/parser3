@@ -1,12 +1,12 @@
 #!/bin/sh
 
-# $Id: buildall-without-xml,v 1.32 2012/06/13 07:42:53 moko Exp $
+# $Id: buildall-without-xml,v 1.33 2012/06/13 21:44:41 moko Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
 download="wget -c --passive-ftp"
 cflags=""
-cflags="CFLAGS=-fPIC CXXFLAGS=-fPIC" #required for apache module on x64
+#cflags="--with-pic" #required for apache module on x64
 
 echo "buildall-without-xml"
 echo "Script author: Alexander Petrosian <paf@design.ru> (http://paf.design.ru)"
@@ -77,8 +77,8 @@ cd $parser3_directory
 
 if test ! -f "Makefile"; then
   options="$@"
-  options="$options --with-static-gc=$project_directory/gc/lib"
-  options="$options --with-static-pcre=$project_directory/pcre"
+  options="$options --with-gc=$project_directory/gc/lib"
+  options="$options --with-pcre=$project_directory/pcre"
 #  options="$options --disable-safe-mode"
 #  options="$options --disable-stringstream"
   options="$options --with-included-ltdl"
@@ -100,9 +100,8 @@ echo "DONE"
 echo
 echo
 echo "********************************************************************************************************"
-echo "Now you can copy $install_directory with subdirectories"
+echo "Now you can copy $install_directory/bin to your cgi-bin directory"
 echo "  -Parser3 WITHOUT XML support-"
-echo "to your cgi-bin directory"
 echo "Read more about installing Parser here:"
 echo "  http://www.parser.ru/en/docs/lang/install4apachecgi.htm in English"
 echo "  http://www.parser.ru/docs/lang/install4apachecgi.htm in Russian"
