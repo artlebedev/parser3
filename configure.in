@@ -177,8 +177,8 @@ AC_ARG_WITH(pcre,[  --with-pcre=D    D is the directory where
 	PCRE_INCLUDES="-I$PCRE/include"
 	PCRE_LIBS="$PCRE/lib/libpcre.la"
 
-	if test -f $PCR/include/pcre.h -a \! -f $PCRE_LIBS; then
-		GC_OK="yes"
+	if test -f $PCRE/include/pcre.h -a -f $PCRE_LIBS; then
+		PCRE_OK="yes"
 	else
 		PCRE_LIBS="-L$PCRE -lpcre"
 	fi
@@ -188,16 +188,16 @@ AC_ARG_WITH(pcre,[  --with-pcre=D    D is the directory where
 	AC_MSG_WARN([--with-pcre was not specified, hoping linker would find it])
 ])
 
-if test -z "$GC_OK"; then
+if test -z "$PCRE_OK"; then
 	AC_MSG_CHECKING(for prce)
 	SAVE_LIBS=$LIBS
 	LIBS="$LIBS $PCRE_LIBS $PCRE_INCLUDES"
-	AC_TRY_LINK([ #include <pcre.h> ],[ const char *v=pcre_version(void); ],
+	AC_TRY_LINK([ #include <pcre.h> ],[ const char *v=pcre_version(); ],
 		AC_MSG_RESULT(yes)
 	,
 		AC_MSG_RESULT(no)
 		if test -z "$PCRE"; then
-			AC_MSG_ERROR(please specify path to pcre: --with-pcre)
+			AC_MSG_ERROR(please specify path to PCRE: --with-pcre)
 		else
 			AC_MSG_ERROR($PCRE does not seem to be valid PCRE installation directory)
 		fi
@@ -210,45 +210,45 @@ AC_SUBST(PCRE_LIBS)
 
 
 dnl XML/XSLT argument
-AC_ARG_WITH(shared-xml,[  --with-shared-xml=D     D is the directory where
-                          Gnome XML libraries are installed (shared libs)],[
-	GNOME_XML=$withval
-	XMLBIN="$GNOME_XML/bin"
-	XMLINC="$GNOME_XML/include"
-	XMLLIB="$GNOME_XML/lib"
+AC_ARG_WITH(xml,[  --with-xml=D     D is the directory where
+                          Gnome XML libraries are installed],[
 
-	if test \! -d $XMLBIN -o \! -d $XMLINC -o \! -d $XMLLIB; then
-		AC_MSG_ERROR($GNOME_XML does not seem to be valid Gnome installation directory)
+	XML=$withval
+	XML_LIBS="-lxml2 -lxslt -lexslt"
+
+	if test -z "$XML" -o "$XML" = "yes"; then
+		XML=""
+		XML_INCLUDES="-I/usr/include/libxml2"
+		AC_MSG_WARN([--with-xml value was not specified, hoping linker would find it])
+	else
+		XML_INCLUDES="-I$XML/include -I$XML/include/libxml2"
+
+		if test -f $XML/include/libxslt/xslt.h -a -f $XML/lib/libxml2.la \
+			-a -f $XML/lib/libxslt.la -a -f $XML/lib/libexslt.la; then
+			XML_LIBS="$XML/lib/libxml2.la $XML/lib/libxslt.la $XML/lib/libexslt.la"
+			XML_OK="yes"
+		fi
 	fi
 
-	AC_DEFINE(XML,,xml-abled parser (uses shared library))
-	
-	LIBXML2_SO_NAME=`cd $XMLLIB ; ls libxml2.?? libxml2.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
-	LIBXSLT_SO_NAME=`cd $XMLLIB ; ls libxslt.?? libxslt.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
-	LIBEXSLT_SO_NAME=`cd $XMLLIB ; ls libexslt.?? libexslt.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
-
-	XML_INCLUDES="$GLIB_CFLAGS -I$XMLINC -I$XMLINC/libxml2"
-	XML_LIBS="-L$XMLLIB -l$LIBXML2_SO_NAME -l$LIBXSLT_SO_NAME -l$LIBEXSLT_SO_NAME"
-	if test \! -z "$LD_PATHLINK"; then
-	XML_LIBS="$XML_LIBS -Wl,$LD_PATHLINK -Wl,$XMLLIB"
+	if test -z "$XML_OK"; then
+		AC_MSG_CHECKING(for xml)
+		SAVE_LIBS=$LIBS
+		LIBS="$LIBS $XML_LIBS $XML_INCLUDES"
+		AC_TRY_LINK([ #include <libxslt/xslt.h> ],[ const char *v=xsltEngineVersion; ],
+			AC_MSG_RESULT(yes)
+		,
+			AC_MSG_RESULT(no)
+			if test -z "$XML"; then
+				AC_MSG_ERROR(please specify path to Gnome XML libraries: --with-xml)
+			else
+				AC_MSG_ERROR($XML does not seem to be valid Gnome XML installation directory)
+			fi
+		)
+		LIBS=$SAVE_LIBS
 	fi
+	AC_DEFINE(XML,,xml-abled parser)
 ])
-AC_ARG_WITH(static-xml,[  --with-static-xml=D     D is the directory where
-                          Gnome XML libraries are installed (static libs)],[
-	GNOME_XML=$withval
-	XMLBIN="$GNOME_XML/bin"
-	XMLINC="$GNOME_XML/include"
-	XMLLIB="$GNOME_XML/lib"
 
-	if test \! -d $XMLBIN -o \! -d $XMLINC -o \! -d $XMLLIB; then
-		AC_MSG_ERROR($GNOME_XML does not seem to be valid Gnome installation directory)
-	fi
-
-	AC_DEFINE(XML,,xml-abled parser (uses static library))
-
-	XML_INCLUDES="$GLIB_CFLAGS -I$XMLINC -I$XMLINC/libxml2"
-	XML_LIBS="$XMLLIB/libxslt.la $XMLLIB/libexslt.la $XMLLIB/libxml2.la"
-])
 AC_SUBST(XML_INCLUDES)
 AC_SUBST(XML_LIBS)
 
