@@ -369,7 +369,7 @@
 /* has \$mail:received (uses static library) */
 #undef WITH_MAILRECEIVE
 
-/* xml-abled parser (uses static library) */
+/* xml-abled parser */
 #undef XML
 
 /* Define so that glibc/gnulib argp.h does not typedef error_t. */

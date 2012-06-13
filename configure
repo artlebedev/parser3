@@ -895,16 +895,12 @@ Optional Packages:
   --with-pathlink=LKEY    put dynamic libraries paths to binary
                           using linker key (-R, -rpath-link)
   --with-sjlj-exceptions  enable simple 'throw' from dynamic library
-  --with-shared-gc=D      D is the directory where
-                          Boehm garbage collecting library is installed (shared lib)
-  --with-static-gc=D      D is the directory where
-                          Boehm garbage collecting library is installed (static lib)
-  --with-static-pcre=D    D is the directory where
-                          PCRE library is installed (static lib)
-  --with-shared-xml=D     D is the directory where
-                          Gnome XML libraries are installed (shared libs)
-  --with-static-xml=D     D is the directory where
-                          Gnome XML libraries are installed (static libs)
+  --with-gc=D      D is the directory where
+                          Boehm garbage collecting library is installed
+  --with-pcre=D    D is the directory where
+                          PCRE library is installed
+  --with-xml=D     D is the directory where
+                          Gnome XML libraries are installed
   --with-glib-config=FILE FILE is glib library
                           configuration file (search for glib*-config)
   --with-shared-mailreceive=D is the directory where
@@ -3781,29 +3777,30 @@ fi
 fi;
 
 
-GC_LIB_NAME=gc
 
-# Check whether --with-shared-gc or --without-shared-gc was given.
-if test "${with_shared_gc+set}" = set; then
-  withval="$with_shared_gc"
+# Check whether --with-gc or --without-gc was given.
+if test "${with_gc+set}" = set; then
+  withval="$with_gc"
 
-	GC_LIBS="-L$withval -l$GC_LIB_NAME"
+
+	GC=$withval
+	GC_LIBS="$GC/libgc.la"
+
+	if test -f $GC_LIBS; then
+		GC_OK="yes"
+	else
+		GC_LIBS="-L$GC -lgc"
+	fi
+
+else
+
+	GC_LIBS="-lgc"
+	{ echo "$as_me:$LINENO: WARNING: --with-gc was not specified, hoping linker would find it" >&5
+echo "$as_me: WARNING: --with-gc was not specified, hoping linker would find it" >&2;}
 
 fi;
 
-# Check whether --with-static-gc or --without-static-gc was given.
-if test "${with_static_gc+set}" = set; then
-  withval="$with_static_gc"
-
-	GC_LIBS="$withval/lib$GC_LIB_NAME.la"
-
-fi;
-if test -z "$GC_LIBS"; then
-	#undefined? use any found in system
-	GC_LIBS="-l$GC_LIB_NAME"
-	{ echo "$as_me:$LINENO: WARNING: neither --with-shared/static-gc were specified, hoping linker would find it" >&5
-echo "$as_me: WARNING: neither --with-shared/static-gc were specified, hoping linker would find it" >&2;}
-
+if test -z "$GC_OK"; then
 	echo "$as_me:$LINENO: checking for libgc" >&5
 echo $ECHO_N "checking for libgc... $ECHO_C" >&6
 	SAVE_LIBS=$LIBS
@@ -3815,15 +3812,11 @@ _ACEOF
 cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
-
-		extern int GC_dont_gc;
-
+ extern int GC_dont_gc;
 int
 main ()
 {
-
-		GC_dont_gc=0;
-
+ GC_dont_gc=0;
   ;
   return 0;
 }
@@ -3859,9 +3852,15 @@ sed 's/^/| /' conftest.$ac_ext >&5
 
 echo "$as_me:$LINENO: result: no" >&5
 echo "${ECHO_T}no" >&6
-		{ { echo "$as_me:$LINENO: error: please specify path to libgc: --with-shared-gc OR --with-static-gc" >&5
-echo "$as_me: error: please specify path to libgc: --with-shared-gc OR --with-static-gc" >&2;}
+		if test -z "$GC"; then
+			{ { echo "$as_me:$LINENO: error: please specify path to libgc: --with-gc" >&5
+echo "$as_me: error: please specify path to libgc: --with-gc" >&2;}
    { (exit 1); exit 1; }; }
+		else
+			{ { echo "$as_me:$LINENO: error: $GC does not seem to be valid libgc installation directory" >&5
+echo "$as_me: error: $GC does not seem to be valid libgc installation directory" >&2;}
+   { (exit 1); exit 1; }; }
+		fi
 
 fi
 rm -f conftest.err conftest.$ac_objext \
@@ -3872,87 +3871,199 @@ fi
 
 
 
-# Check whether --with-static-pcre or --without-static-pcre was given.
-if test "${with_static_pcre+set}" = set; then
-  withval="$with_static_pcre"
+
+# Check whether --with-pcre or --without-pcre was given.
+if test "${with_pcre+set}" = set; then
+  withval="$with_pcre"
 
 	PCRE=$withval
-	PCREINC="$PCRE/include"
-	PCRELIB="$PCRE/lib"
+	PCRE_INCLUDES="-I$PCRE/include"
+	PCRE_LIBS="$PCRE/lib/libpcre.la"
 
-	if test \! -d $PCREINC -o \! -d $PCRELIB; then
-		{ { echo "$as_me:$LINENO: error: $PCRE does not seem to be valid PCRE installation directory" >&5
+	if test -f $PCRE/include/pcre.h -a -f $PCRE_LIBS; then
+		PCRE_OK="yes"
+	else
+		PCRE_LIBS="-L$PCRE -lpcre"
+	fi
+
+
+else
+
+	PCRE_LIBS="-lpcre"
+	{ echo "$as_me:$LINENO: WARNING: --with-pcre was not specified, hoping linker would find it" >&5
+echo "$as_me: WARNING: --with-pcre was not specified, hoping linker would find it" >&2;}
+
+fi;
+
+if test -z "$PCRE_OK"; then
+	echo "$as_me:$LINENO: checking for prce" >&5
+echo $ECHO_N "checking for prce... $ECHO_C" >&6
+	SAVE_LIBS=$LIBS
+	LIBS="$LIBS $PCRE_LIBS $PCRE_INCLUDES"
+	cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+ #include <pcre.h>
+int
+main ()
+{
+ const char *v=pcre_version();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6
+
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+		if test -z "$PCRE"; then
+			{ { echo "$as_me:$LINENO: error: please specify path to PCRE: --with-pcre" >&5
+echo "$as_me: error: please specify path to PCRE: --with-pcre" >&2;}
+   { (exit 1); exit 1; }; }
+		else
+			{ { echo "$as_me:$LINENO: error: $PCRE does not seem to be valid PCRE installation directory" >&5
 echo "$as_me: error: $PCRE does not seem to be valid PCRE installation directory" >&2;}
    { (exit 1); exit 1; }; }
+		fi
+
+fi
+rm -f conftest.err conftest.$ac_objext \
+      conftest$ac_exeext conftest.$ac_ext
+	LIBS=$SAVE_LIBS
+fi
+
+
+
+
+
+
+# Check whether --with-xml or --without-xml was given.
+if test "${with_xml+set}" = set; then
+  withval="$with_xml"
+
+
+	XML=$withval
+	XML_LIBS="-lxml2 -lxslt -lexslt"
+
+	if test -z "$XML" -o "$XML" = "yes"; then
+		XML=""
+		XML_INCLUDES="-I/usr/include/libxml2"
+		{ echo "$as_me:$LINENO: WARNING: --with-xml value was not specified, hoping linker would find it" >&5
+echo "$as_me: WARNING: --with-xml value was not specified, hoping linker would find it" >&2;}
+	else
+		XML_INCLUDES="-I$XML/include -I$XML/include/libxml2"
+
+		if test -f $XML/include/libxslt/xslt.h -a -f $XML/lib/libxml2.la \
+			-a -f $XML/lib/libxslt.la -a -f $XML/lib/libexslt.la; then
+			XML_LIBS="$XML/lib/libxml2.la $XML/lib/libxslt.la $XML/lib/libexslt.la"
+			XML_OK="yes"
+		fi
 	fi
 
-	PCRE_INCLUDES="-I$PCREINC"
-	PCRE_LIBS="$PCRELIB/libpcre.la"
+	if test -z "$XML_OK"; then
+		echo "$as_me:$LINENO: checking for xml" >&5
+echo $ECHO_N "checking for xml... $ECHO_C" >&6
+		SAVE_LIBS=$LIBS
+		LIBS="$LIBS $XML_LIBS $XML_INCLUDES"
+		cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+ #include <libxslt/xslt.h>
+int
+main ()
+{
+ const char *v=xsltEngineVersion;
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6
 
-fi;
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
 
-
-
-
-
-# Check whether --with-shared-xml or --without-shared-xml was given.
-if test "${with_shared_xml+set}" = set; then
-  withval="$with_shared_xml"
-
-	GNOME_XML=$withval
-	XMLBIN="$GNOME_XML/bin"
-	XMLINC="$GNOME_XML/include"
-	XMLLIB="$GNOME_XML/lib"
-
-	if test \! -d $XMLBIN -o \! -d $XMLINC -o \! -d $XMLLIB; then
-		{ { echo "$as_me:$LINENO: error: $GNOME_XML does not seem to be valid Gnome installation directory" >&5
-echo "$as_me: error: $GNOME_XML does not seem to be valid Gnome installation directory" >&2;}
+echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+			if test -z "$XML"; then
+				{ { echo "$as_me:$LINENO: error: please specify path to Gnome XML libraries: --with-xml" >&5
+echo "$as_me: error: please specify path to Gnome XML libraries: --with-xml" >&2;}
    { (exit 1); exit 1; }; }
-	fi
+			else
+				{ { echo "$as_me:$LINENO: error: $XML does not seem to be valid Gnome XML installation directory" >&5
+echo "$as_me: error: $XML does not seem to be valid Gnome XML installation directory" >&2;}
+   { (exit 1); exit 1; }; }
+			fi
 
+fi
+rm -f conftest.err conftest.$ac_objext \
+      conftest$ac_exeext conftest.$ac_ext
+		LIBS=$SAVE_LIBS
+	fi
 
 cat >>confdefs.h <<\_ACEOF
 #define XML
 _ACEOF
 
 
-	LIBXML2_SO_NAME=`cd $XMLLIB ; ls libxml2.?? libxml2.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
-	LIBXSLT_SO_NAME=`cd $XMLLIB ; ls libxslt.?? libxslt.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
-	LIBEXSLT_SO_NAME=`cd $XMLLIB ; ls libexslt.?? libexslt.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
-
-	XML_INCLUDES="$GLIB_CFLAGS -I$XMLINC -I$XMLINC/libxml2"
-	XML_LIBS="-L$XMLLIB -l$LIBXML2_SO_NAME -l$LIBXSLT_SO_NAME -l$LIBEXSLT_SO_NAME"
-	if test \! -z "$LD_PATHLINK"; then
-	XML_LIBS="$XML_LIBS -Wl,$LD_PATHLINK -Wl,$XMLLIB"
-	fi
-
 fi;
 
-# Check whether --with-static-xml or --without-static-xml was given.
-if test "${with_static_xml+set}" = set; then
-  withval="$with_static_xml"
-
-	GNOME_XML=$withval
-	XMLBIN="$GNOME_XML/bin"
-	XMLINC="$GNOME_XML/include"
-	XMLLIB="$GNOME_XML/lib"
-
-	if test \! -d $XMLBIN -o \! -d $XMLINC -o \! -d $XMLLIB; then
-		{ { echo "$as_me:$LINENO: error: $GNOME_XML does not seem to be valid Gnome installation directory" >&5
-echo "$as_me: error: $GNOME_XML does not seem to be valid Gnome installation directory" >&2;}
-   { (exit 1); exit 1; }; }
-	fi
-
-
-cat >>confdefs.h <<\_ACEOF
-#define XML
-_ACEOF
-
-
-	XML_INCLUDES="$GLIB_CFLAGS -I$XMLINC -I$XMLINC/libxml2"
-	XML_LIBS="$XMLLIB/libxslt.la $XMLLIB/libexslt.la $XMLLIB/libxml2.la"
-
-fi;
 
 
 
@@ -4072,19 +4183,17 @@ if test "${with_apache+set}" = set; then
 
 	if test -z "$APXS" -o "$APXS" = "yes"; then
 		APXS=`which apxs 2>/dev/null`
-	fi;
+		if test -z "$APXS"; then
+			APXS=`which apxs2 2>/dev/null`
+		fi
+	fi
 
 	APACHE=`$APXS -q TARGET 2>/dev/null`
 
 	if test -z "$APACHE"; then
-		APXS=`which apxs2 2>/dev/null`
-		APACHE=`$APXS -q TARGET 2>/dev/null`
-
-		if test -z "$APACHE"; then
-			{ { echo "$as_me:$LINENO: error: $APXS does not seem to be valid apache apxs utility path" >&5
+		{ { echo "$as_me:$LINENO: error: $APXS does not seem to be valid apache apxs utility path" >&5
 echo "$as_me: error: $APXS does not seem to be valid apache apxs utility path" >&2;}
    { (exit 1); exit 1; }; }
-		fi
 	fi
 
 	APACHE_MAIN_INC=`$APXS -q INCLUDEDIR`
