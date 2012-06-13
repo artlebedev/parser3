@@ -141,29 +141,29 @@ AC_ARG_WITH(shared-gc,[  --with-shared-gc[=D]      D is the directory where
 ])
 AC_ARG_WITH(static-gc,[  --with-static-gc[=D]      D is the directory where
                           Boehm garbage collecting library is installed (static lib)],[
-	GC_LIBS="$withval/lib$GC_LIB_NAME.a"
+	GC_LIBS="$withval/lib$GC_LIB_NAME.la"
 ])
 if test -z "$GC_LIBS"; then
 	#undefined? use any found in system
 	GC_LIBS="-l$GC_LIB_NAME"
 	AC_MSG_WARN([neither --with-shared/static-gc were specified, hoping linker would find it])
-fi
 
-AC_MSG_CHECKING(for libgc)
-SAVE_LIBS=$LIBS
-LIBS="$LIBS $GC_LIBS"
-AC_TRY_LINK([
-	extern int GC_dont_gc;
-],[
-	GC_dont_gc=0;
-],
-	AC_MSG_RESULT(yes)
-,
-	AC_MSG_RESULT(no)
-	AC_MSG_ERROR(please specify path to libgc: --with-shared-gc OR --with-static-gc)
-)
+	AC_MSG_CHECKING(for libgc)
+	SAVE_LIBS=$LIBS
+	LIBS="$LIBS $GC_LIBS"
+	AC_TRY_LINK([
+		extern int GC_dont_gc;
+	],[
+		GC_dont_gc=0;
+	],
+		AC_MSG_RESULT(yes)
+	,
+		AC_MSG_RESULT(no)
+		AC_MSG_ERROR(please specify path to libgc: --with-shared-gc OR --with-static-gc)
+	)
+	LIBS=$SAVE_LIBS
+fi
 AC_SUBST(GC_LIBS)
-LIBS=$SAVE_LIBS
 
 
 dnl PCRE argument
@@ -178,7 +178,7 @@ AC_ARG_WITH(static-pcre,[  --with-static-pcre=D    D is the directory where
 	fi
 
 	PCRE_INCLUDES="-I$PCREINC"
-	PCRE_LIBS="$PCRELIB/libpcre.a"
+	PCRE_LIBS="$PCRELIB/libpcre.la"
 ])
 AC_SUBST(PCRE_INCLUDES)
 AC_SUBST(PCRE_LIBS)
@@ -222,7 +222,7 @@ AC_ARG_WITH(static-xml,[  --with-static-xml=D     D is the directory where
 	AC_DEFINE(XML,,xml-abled parser (uses static library))
 
 	XML_INCLUDES="$GLIB_CFLAGS -I$XMLINC -I$XMLINC/libxml2"
-	XML_LIBS="$XMLLIB/libxslt.a $XMLLIB/libexslt.a $XMLLIB/libxml2.a"
+	XML_LIBS="$XMLLIB/libxslt.la $XMLLIB/libexslt.la $XMLLIB/libxml2.la"
 ])
 AC_SUBST(XML_INCLUDES)
 AC_SUBST(XML_LIBS)
@@ -296,7 +296,7 @@ changequote(, )dnl
 	GLIB_NAME=`$GLIB_CONFIG --libs | sed 's/.*-l\([^ ]*\).*/\1/'`
 changequote([, ])dnl
 	MIME_INCLUDES="$GLIB_CFLAGS -I$MIMEINC/gmime"
-	MIME_LIBS="$MIMELIB/libgmime.a $GLIB_DIR/lib$GLIB_NAME.a"
+	MIME_LIBS="$MIMELIB/libgmime.la $GLIB_DIR/lib$GLIB_NAME.la"
 ])
 AC_SUBST(MIME_INCLUDES)
 AC_SUBST(MIME_LIBS)
@@ -343,7 +343,8 @@ AM_CONDITIONAL(COMPILE_APACHE_MODULE, test -n "$APACHE")
 
 dnl Enable building of the convenience library
 LT_CONFIG_LTDL_DIR(src/lib/ltdl)
-LT_INIT(disable-static dlopen win32-dll)
+LT_INIT(dlopen win32-dll)
+#LT_INIT(disable-shared dlopen win32-dll)
 LTDL_INIT
 
 
