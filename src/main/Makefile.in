@@ -15,7 +15,7 @@
 @SET_MAKE@
 
 
-SOURCES = $(libmain_a_SOURCES)
+SOURCES = $(libmain_la_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -55,25 +55,17 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/src/include/pa_config_auto.h
 CONFIG_CLEAN_FILES =
-LIBRARIES = $(noinst_LIBRARIES)
-ARFLAGS = cru
-libmain_a_AR = $(AR) $(ARFLAGS)
-libmain_a_LIBADD =
-am_libmain_a_OBJECTS = pa_pool.$(OBJEXT) pa_os.$(OBJEXT) \
-	pa_common.$(OBJEXT) compile.tab.$(OBJEXT) compile.$(OBJEXT) \
-	compile_tools.$(OBJEXT) execute.$(OBJEXT) \
-	pa_cache_managers.$(OBJEXT) pa_exception.$(OBJEXT) \
-	pa_xml_exception.$(OBJEXT) pa_globals.$(OBJEXT) \
-	pa_xml_io.$(OBJEXT) pa_memory.$(OBJEXT) pa_request.$(OBJEXT) \
-	pa_string.$(OBJEXT) pa_table.$(OBJEXT) untaint.$(OBJEXT) \
-	pa_dir.$(OBJEXT) pa_exec.$(OBJEXT) pa_socks.$(OBJEXT) \
-	pa_dictionary.$(OBJEXT) pa_charset.$(OBJEXT) \
-	pa_charsets.$(OBJEXT) pa_uue.$(OBJEXT) \
-	pa_sql_driver_manager.$(OBJEXT) \
-	pa_stylesheet_manager.$(OBJEXT) \
-	pa_stylesheet_connection.$(OBJEXT) pa_http.$(OBJEXT) \
-	pa_random.$(OBJEXT)
-libmain_a_OBJECTS = $(am_libmain_a_OBJECTS)
+LTLIBRARIES = $(noinst_LTLIBRARIES)
+libmain_la_LIBADD =
+am_libmain_la_OBJECTS = pa_pool.lo pa_os.lo pa_common.lo \
+	compile.tab.lo compile.lo compile_tools.lo execute.lo \
+	pa_cache_managers.lo pa_exception.lo pa_xml_exception.lo \
+	pa_globals.lo pa_xml_io.lo pa_memory.lo pa_request.lo \
+	pa_string.lo pa_table.lo untaint.lo pa_dir.lo pa_exec.lo \
+	pa_socks.lo pa_dictionary.lo pa_charset.lo pa_charsets.lo \
+	pa_uue.lo pa_sql_driver_manager.lo pa_stylesheet_manager.lo \
+	pa_stylesheet_connection.lo pa_http.lo pa_random.lo
+libmain_la_OBJECTS = $(am_libmain_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -85,8 +77,8 @@ LTCXXCOMPILE = $(LIBTOOL) --mode=compile --tag=CXX $(CXX) $(DEFS) \
 CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --mode=link --tag=CXX $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(libmain_a_SOURCES)
-DIST_SOURCES = $(libmain_a_SOURCES)
+SOURCES = $(libmain_la_SOURCES)
+DIST_SOURCES = $(libmain_la_SOURCES)
 HEADERS = $(noinst_HEADERS)
 ETAGS = etags
 CTAGS = ctags
@@ -246,8 +238,8 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 INCLUDES = -I../types -I../classes -I../sql -I../lib/gc/include -I../lib/cord/include $(INCLTDL) @PCRE_INCLUDES@ @XML_INCLUDES@
 noinst_HEADERS = compile_tools.h utf8-to-lower.inc utf8-to-upper.inc
-noinst_LIBRARIES = libmain.a
-libmain_a_SOURCES = pa_pool.C pa_os.C pa_common.C compile.tab.C compile.C compile_tools.C execute.C pa_cache_managers.C pa_exception.C pa_xml_exception.C pa_globals.C pa_xml_io.C pa_memory.C pa_request.C pa_string.C pa_table.C untaint.C pa_dir.C pa_exec.C pa_socks.C pa_dictionary.C pa_charset.C pa_charsets.C pa_uue.C pa_sql_driver_manager.C pa_stylesheet_manager.C pa_stylesheet_connection.C pa_http.C pa_random.C
+noinst_LTLIBRARIES = libmain.la
+libmain_la_SOURCES = pa_pool.C pa_os.C pa_common.C compile.tab.C compile.C compile_tools.C execute.C pa_cache_managers.C pa_exception.C pa_xml_exception.C pa_globals.C pa_xml_io.C pa_memory.C pa_request.C pa_string.C pa_table.C untaint.C pa_dir.C pa_exec.C pa_socks.C pa_dictionary.C pa_charset.C pa_charsets.C pa_uue.C pa_sql_driver_manager.C pa_stylesheet_manager.C pa_stylesheet_connection.C pa_http.C pa_random.C
 EXTRA_DIST = compile.y main.vcproj
 all: all-am
 
@@ -283,12 +275,16 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 
-clean-noinstLIBRARIES:
-	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
-libmain.a: $(libmain_a_OBJECTS) $(libmain_a_DEPENDENCIES) 
-	-rm -f libmain.a
-	$(libmain_a_AR) libmain.a $(libmain_a_OBJECTS) $(libmain_a_LIBADD)
-	$(RANLIB) libmain.a
+clean-noinstLTLIBRARIES:
+	-test -z "$(noinst_LTLIBRARIES)" || rm -f $(noinst_LTLIBRARIES)
+	@list='$(noinst_LTLIBRARIES)'; for p in $$list; do \
+	  dir="`echo $$p | sed -e 's|/[^/]*$$||'`"; \
+	  test "$$dir" != "$$p" || dir=.; \
+	  echo "rm -f \"$${dir}/so_locations\""; \
+	  rm -f "$${dir}/so_locations"; \
+	done
+libmain.la: $(libmain_la_OBJECTS) $(libmain_la_DEPENDENCIES) 
+	$(CXXLINK)  $(libmain_la_LDFLAGS) $(libmain_la_OBJECTS) $(libmain_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -296,35 +292,35 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/compile.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/compile.tab.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/compile_tools.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/execute.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_cache_managers.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_charset.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_charsets.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_common.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_dictionary.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_dir.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_exception.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_exec.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_globals.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_http.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_memory.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_os.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_pool.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_random.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_request.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_socks.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_sql_driver_manager.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_string.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_stylesheet_connection.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_stylesheet_manager.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_table.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_uue.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_xml_exception.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_xml_io.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/untaint.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/compile.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/compile.tab.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/compile_tools.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/execute.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_cache_managers.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_charset.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_charsets.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_common.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_dictionary.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_dir.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_exception.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_exec.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_globals.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_http.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_memory.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_os.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_pool.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_random.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_request.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_socks.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_sql_driver_manager.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_string.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_stylesheet_connection.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_stylesheet_manager.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_table.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_uue.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_xml_exception.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_xml_io.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/untaint.Plo@am__quote@
 
 .C.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -434,7 +430,7 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(LIBRARIES) $(HEADERS)
+all-am: Makefile $(LTLIBRARIES) $(HEADERS)
 installdirs:
 install: install-am
 install-exec: install-exec-am
@@ -462,7 +458,7 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-libtool clean-noinstLIBRARIES \
+clean-am: clean-generic clean-libtool clean-noinstLTLIBRARIES \
 	mostlyclean-am
 
 distclean: distclean-am
@@ -512,7 +508,7 @@ ps-am:
 uninstall-am: uninstall-info-am
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
-	clean-libtool clean-noinstLIBRARIES ctags distclean \
+	clean-libtool clean-noinstLTLIBRARIES ctags distclean \
 	distclean-compile distclean-generic distclean-libtool \
 	distclean-tags distdir dvi dvi-am html html-am info info-am \
 	install install-am install-data install-data-am install-exec \

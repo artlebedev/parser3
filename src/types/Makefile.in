@@ -15,7 +15,7 @@
 @SET_MAKE@
 
 
-SOURCES = $(libtypes_a_SOURCES)
+SOURCES = $(libtypes_la_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -55,22 +55,16 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/src/include/pa_config_auto.h
 CONFIG_CLEAN_FILES =
-LIBRARIES = $(noinst_LIBRARIES)
-ARFLAGS = cru
-libtypes_a_AR = $(AR) $(ARFLAGS)
-libtypes_a_LIBADD =
-am_libtypes_a_OBJECTS = pa_value.$(OBJEXT) pa_vcookie.$(OBJEXT) \
-	pa_vfile.$(OBJEXT) pa_vform.$(OBJEXT) pa_vimage.$(OBJEXT) \
-	pa_vjunction.$(OBJEXT) pa_vregex.$(OBJEXT) \
-	pa_vrequest.$(OBJEXT) pa_vresponse.$(OBJEXT) \
-	pa_vstateless_class.$(OBJEXT) pa_vstring.$(OBJEXT) \
-	pa_wcontext.$(OBJEXT) pa_vtable.$(OBJEXT) pa_vxnode.$(OBJEXT) \
-	pa_vxdoc.$(OBJEXT) pa_vstatus.$(OBJEXT) pa_vmail.$(OBJEXT) \
-	pa_vobject.$(OBJEXT) pa_vclass.$(OBJEXT) \
-	pa_vhashfile.$(OBJEXT) pa_vmath.$(OBJEXT) \
-	pa_vmethod_frame.$(OBJEXT) pa_vvoid.$(OBJEXT) \
-	pa_vhash.$(OBJEXT) pa_venv.$(OBJEXT) pa_vmemcached.$(OBJEXT)
-libtypes_a_OBJECTS = $(am_libtypes_a_OBJECTS)
+LTLIBRARIES = $(noinst_LTLIBRARIES)
+libtypes_la_LIBADD =
+am_libtypes_la_OBJECTS = pa_value.lo pa_vcookie.lo pa_vfile.lo \
+	pa_vform.lo pa_vimage.lo pa_vjunction.lo pa_vregex.lo \
+	pa_vrequest.lo pa_vresponse.lo pa_vstateless_class.lo \
+	pa_vstring.lo pa_wcontext.lo pa_vtable.lo pa_vxnode.lo \
+	pa_vxdoc.lo pa_vstatus.lo pa_vmail.lo pa_vobject.lo \
+	pa_vclass.lo pa_vhashfile.lo pa_vmath.lo pa_vmethod_frame.lo \
+	pa_vvoid.lo pa_vhash.lo pa_venv.lo pa_vmemcached.lo
+libtypes_la_OBJECTS = $(am_libtypes_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -82,8 +76,8 @@ LTCXXCOMPILE = $(LIBTOOL) --mode=compile --tag=CXX $(CXX) $(DEFS) \
 CXXLD = $(CXX)
 CXXLINK = $(LIBTOOL) --mode=link --tag=CXX $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(libtypes_a_SOURCES)
-DIST_SOURCES = $(libtypes_a_SOURCES)
+SOURCES = $(libtypes_la_SOURCES)
+DIST_SOURCES = $(libtypes_la_SOURCES)
 HEADERS = $(noinst_HEADERS)
 ETAGS = etags
 CTAGS = ctags
@@ -242,9 +236,9 @@ sys_symbol_underscore = @sys_symbol_underscore@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 INCLUDES = -I../classes -I../sql -I../lib/gd -I../lib/gc/include -I../lib/cord/include -I../lib/sdbm/pa-include -I../lib/memcached -I../classes/gd @PCRE_INCLUDES@ @XML_INCLUDES@ @MIME_INCLUDES@
-noinst_LIBRARIES = libtypes.a
 noinst_HEADERS = pa_value.h pa_junction.h pa_method.h pa_vbool.h pa_vclass.h pa_vcode_frame.h pa_vcookie.h pa_vdate.h pa_vdouble.h pa_venv.h pa_vfile.h pa_vform.h pa_vhash.h pa_vhashfile.h pa_vimage.h pa_vint.h pa_vjunction.h pa_vmath.h pa_vmethod_frame.h pa_vobject.h pa_vregex.h pa_vrequest.h pa_vresponse.h pa_vstateless_class.h pa_vstateless_object.h pa_vstatus.h pa_vstring.h pa_vtable.h pa_vvoid.h pa_vxdoc.h pa_vxnode.h pa_wcontext.h pa_wwrapper.h pa_vmail.h pa_vmemory.h pa_vconsole.h pa_property.h pa_vmemcached.h
-libtypes_a_SOURCES = pa_value.C pa_vcookie.C pa_vfile.C pa_vform.C pa_vimage.C pa_vjunction.C pa_vregex.C pa_vrequest.C pa_vresponse.C pa_vstateless_class.C pa_vstring.C pa_wcontext.C pa_vtable.C pa_vxnode.C pa_vxdoc.C pa_vstatus.C pa_vmail.C pa_vobject.C pa_vclass.C pa_vhashfile.C pa_vmath.C pa_vmethod_frame.C pa_vvoid.C pa_vhash.C pa_venv.C pa_vmemcached.C
+noinst_LTLIBRARIES = libtypes.la
+libtypes_la_SOURCES = pa_value.C pa_vcookie.C pa_vfile.C pa_vform.C pa_vimage.C pa_vjunction.C pa_vregex.C pa_vrequest.C pa_vresponse.C pa_vstateless_class.C pa_vstring.C pa_wcontext.C pa_vtable.C pa_vxnode.C pa_vxdoc.C pa_vstatus.C pa_vmail.C pa_vobject.C pa_vclass.C pa_vhashfile.C pa_vmath.C pa_vmethod_frame.C pa_vvoid.C pa_vhash.C pa_venv.C pa_vmemcached.C
 EXTRA_DIST = types.vcproj
 all: all-am
 
@@ -280,12 +274,16 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 
-clean-noinstLIBRARIES:
-	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
-libtypes.a: $(libtypes_a_OBJECTS) $(libtypes_a_DEPENDENCIES) 
-	-rm -f libtypes.a
-	$(libtypes_a_AR) libtypes.a $(libtypes_a_OBJECTS) $(libtypes_a_LIBADD)
-	$(RANLIB) libtypes.a
+clean-noinstLTLIBRARIES:
+	-test -z "$(noinst_LTLIBRARIES)" || rm -f $(noinst_LTLIBRARIES)
+	@list='$(noinst_LTLIBRARIES)'; for p in $$list; do \
+	  dir="`echo $$p | sed -e 's|/[^/]*$$||'`"; \
+	  test "$$dir" != "$$p" || dir=.; \
+	  echo "rm -f \"$${dir}/so_locations\""; \
+	  rm -f "$${dir}/so_locations"; \
+	done
+libtypes.la: $(libtypes_la_OBJECTS) $(libtypes_la_DEPENDENCIES) 
+	$(CXXLINK)  $(libtypes_la_LDFLAGS) $(libtypes_la_OBJECTS) $(libtypes_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -293,32 +291,32 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_value.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vclass.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vcookie.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_venv.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vfile.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vform.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vhash.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vhashfile.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vimage.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vjunction.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vmail.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vmath.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vmemcached.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vmethod_frame.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vobject.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vregex.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vrequest.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vresponse.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vstateless_class.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vstatus.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vstring.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vtable.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vvoid.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vxdoc.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vxnode.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_wcontext.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_value.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vclass.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vcookie.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_venv.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vfile.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vform.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vhash.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vhashfile.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vimage.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vjunction.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vmail.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vmath.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vmemcached.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vmethod_frame.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vobject.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vregex.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vrequest.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vresponse.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vstateless_class.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vstatus.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vstring.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vtable.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vvoid.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vxdoc.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_vxnode.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_wcontext.Plo@am__quote@
 
 .C.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -428,7 +426,7 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(LIBRARIES) $(HEADERS)
+all-am: Makefile $(LTLIBRARIES) $(HEADERS)
 installdirs:
 install: install-am
 install-exec: install-exec-am
@@ -456,7 +454,7 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-libtool clean-noinstLIBRARIES \
+clean-am: clean-generic clean-libtool clean-noinstLTLIBRARIES \
 	mostlyclean-am
 
 distclean: distclean-am
@@ -506,7 +504,7 @@ ps-am:
 uninstall-am: uninstall-info-am
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
-	clean-libtool clean-noinstLIBRARIES ctags distclean \
+	clean-libtool clean-noinstLTLIBRARIES ctags distclean \
 	distclean-compile distclean-generic distclean-libtool \
 	distclean-tags distdir dvi dvi-am html html-am info info-am \
 	install install-am install-data install-data-am install-exec \
