@@ -62,12 +62,12 @@ PROGRAMS = $(bin_PROGRAMS)
 am_parser3_OBJECTS = pa_threads.$(OBJEXT) parser3.$(OBJEXT) \
 	getopt.$(OBJEXT)
 parser3_OBJECTS = $(am_parser3_OBJECTS)
-am__DEPENDENCIES_1 = ../../main/libmain.a ../../classes/libclasses.a \
-	../../types/libtypes.a ../../main/libmain.a \
-	../../lib/gd/libgd.a ../../lib/cord/libcord.a \
-	../../lib/md5/libmd5.a ../../lib/sdbm/libsdbm.a \
-	../../lib/smtp/libsmtp.a ../../lib/json/libjson.a \
-	../../lib/memcached/libmemcached.a
+am__DEPENDENCIES_1 = ../../main/.libs/libmain.a \
+	../../classes/.libs/libclasses.a ../../types/.libs/libtypes.a \
+	../../main/.libs/libmain.a ../../lib/gd/libgd.la \
+	../../lib/cord/libcord.la ../../lib/md5/libmd5.la \
+	../../lib/sdbm/libsdbm.la ../../lib/smtp/libsmtp.la \
+	../../lib/json/libjson.la ../../lib/memcached/libmemcached.la
 am__DEPENDENCIES_2 =
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/src/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -247,13 +247,11 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 
 # Parser has circular library dependencies, thus libmain.a is linked twice and --preserve-dup-deps libtool option is used
-PA_LIBS = ../../main/libmain.a ../../classes/libclasses.a ../../types/libtypes.a ../../main/libmain.a \
-	  ../../lib/gd/libgd.a ../../lib/cord/libcord.a ../../lib/md5/libmd5.a ../../lib/sdbm/libsdbm.a \
-	  ../../lib/smtp/libsmtp.a ../../lib/json/libjson.a ../../lib/memcached/libmemcached.a
+PA_LIBS = ../../main/.libs/libmain.a ../../classes/.libs/libclasses.a ../../types/.libs/libtypes.a ../../main/.libs/libmain.a \
+	  ../../lib/gd/libgd.la ../../lib/cord/libcord.la ../../lib/md5/libmd5.la ../../lib/sdbm/libsdbm.la \
+	  ../../lib/smtp/libsmtp.la ../../lib/json/libjson.la ../../lib/memcached/libmemcached.la
 
-INCLUDES = -I../../classes -I../../types -I../../sql -I../../lib/gc/include -I../../lib/cord/include \
-	   -I../../lib/md5 -I../../lib/json -I$(INCLTDL) @PCRE_INCLUDES@ @XML_INCLUDES@
-
+INCLUDES = -I../../classes -I../../types -I../../lib/gc/include -I../../lib/cord/include @XML_INCLUDES@
 
 # Automake 1.9 does not support LIBTOOLFLAGS
 CXXLINK = $(LIBTOOL) --preserve-dup-deps --mode=link --tag=CXX $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
