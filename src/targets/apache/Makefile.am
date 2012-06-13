@@ -1,19 +1,14 @@
-INCLUDES = $(INCLUDES) $(APACHE_INC) -I./ -I../../classes -I../../types -I../../lib/gc/include -I../../lib/cord/include @XML_INCLUDES@
-
-AM_CFLAGS = $(AM_CFLAGS) $(APACHE_CFLAGS)
+INCLUDES = $(APACHE_INC) -I./ -I../../classes -I../../types -I../../lib/gc/include -I../../lib/cord/include @XML_INCLUDES@
 
 PA_LIBS = ../../classes/libclasses.a ../../types/libtypes.a ../../main/libmain.a ../../lib/gd/libgd.a ../../lib/cord/libcord.a \
-	  ../../lib/md5/libmd5.a ../../lib/sdbm/libsdbm.a ../../lib/smtp/libsmtp.a ../../lib/json/libjson.a  ../../lib/memcached/libmemcached.a $(LIBLTDL)
+	  ../../lib/md5/libmd5.a ../../lib/sdbm/libsdbm.a ../../lib/smtp/libsmtp.a ../../lib/json/libjson.a  ../../lib/memcached/libmemcached.a
 
-noinst_LIBRARIES = libmod_parser3.a
+noinst_HEADERS = pa_httpd.h
 
-libmod_parser3_a_DEPENDENCIES=Makefile $(PA_LIBS)
-libmod_parser3_a_SOURCES = pa_threads.C mod_parser3_core.C mod_parser3.c
+lib_LTLIBRARIES = libmod_parser3.la
 
-EXTRA_DIST = pa_httpd.h
-
-all-local: parser3module
-
-parser3module:
-	$(CC) -shared -o mod_parser3.so -Wl,--whole-archive libmod_parser3.a $(PA_LIBS) -Wl,--no-whole-archive \
-	@GC_LIBS@ @PCRE_LIBS@ @XML_LIBS@ @MIME_LIBS@ $(LIBADD_DL) @CPP_LIBS@
+libmod_parser3_la_SOURCES = pa_threads.C mod_parser3_core.C mod_parser3.c
+libmod_parser3_la_DEPENDENCIES = Makefile $(PA_LIBS)
+libmod_parser3_la_LDFLAGS = -module -avoid-version
+ 
+libmod_parser3_la_LIBADD = $(PA_LIBS) @GC_LIBS@ @PCRE_LIBS@ @XML_LIBS@ @MIME_LIBS@ $(LIBLTDL)
