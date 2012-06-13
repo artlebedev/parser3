@@ -134,52 +134,77 @@ fi
 
 
 dnl GC argument
-GC_LIB_NAME=gc
-AC_ARG_WITH(shared-gc,[  --with-shared-gc[=D]      D is the directory where
-                          Boehm garbage collecting library is installed (shared lib)],[
-	GC_LIBS="-L$withval -l$GC_LIB_NAME"
-])
-AC_ARG_WITH(static-gc,[  --with-static-gc[=D]      D is the directory where
-                          Boehm garbage collecting library is installed (static lib)],[
-	GC_LIBS="$withval/lib$GC_LIB_NAME.la"
-])
-if test -z "$GC_LIBS"; then
-	#undefined? use any found in system
-	GC_LIBS="-l$GC_LIB_NAME"
-	AC_MSG_WARN([neither --with-shared/static-gc were specified, hoping linker would find it])
+AC_ARG_WITH(gc,[  --with-gc[=D]      D is the directory where
+                          Boehm garbage collecting library is installed],[
 
+	GC=$withval
+	GC_LIBS="$GC/libgc.la"
+
+	if test -f $GC_LIBS; then
+		GC_OK="yes"
+	else
+		GC_LIBS="-L$GC -lgc"
+	fi
+],[
+	GC_LIBS="-lgc"
+	AC_MSG_WARN([--with-gc was not specified, hoping linker would find it])
+])
+
+if test -z "$GC_OK"; then
 	AC_MSG_CHECKING(for libgc)
 	SAVE_LIBS=$LIBS
 	LIBS="$LIBS $GC_LIBS"
-	AC_TRY_LINK([
-		extern int GC_dont_gc;
-	],[
-		GC_dont_gc=0;
-	],
+	AC_TRY_LINK([ extern int GC_dont_gc; ],[ GC_dont_gc=0; ],
 		AC_MSG_RESULT(yes)
 	,
 		AC_MSG_RESULT(no)
-		AC_MSG_ERROR(please specify path to libgc: --with-shared-gc OR --with-static-gc)
+		if test -z "$GC"; then
+			AC_MSG_ERROR(please specify path to libgc: --with-gc)
+		else
+			AC_MSG_ERROR($GC does not seem to be valid libgc installation directory)
+		fi
 	)
 	LIBS=$SAVE_LIBS
 fi
+
 AC_SUBST(GC_LIBS)
 
 
 dnl PCRE argument
-AC_ARG_WITH(static-pcre,[  --with-static-pcre=D    D is the directory where
-                          PCRE library is installed (static lib)],[
+AC_ARG_WITH(pcre,[  --with-pcre=D    D is the directory where
+                          PCRE library is installed],[
 	PCRE=$withval
-	PCREINC="$PCRE/include"
-	PCRELIB="$PCRE/lib"
+	PCRE_INCLUDES="-I$PCRE/include"
+	PCRE_LIBS="$PCRE/lib/libpcre.la"
 
-	if test \! -d $PCREINC -o \! -d $PCRELIB; then
-		AC_MSG_ERROR($PCRE does not seem to be valid PCRE installation directory)
+	if test -f $PCR/include/pcre.h -a \! -f $PCRE_LIBS; then
+		GC_OK="yes"
+	else
+		PCRE_LIBS="-L$PCRE -lpcre"
 	fi
 
-	PCRE_INCLUDES="-I$PCREINC"
-	PCRE_LIBS="$PCRELIB/libpcre.la"
+],[
+	PCRE_LIBS="-lpcre"
+	AC_MSG_WARN([--with-pcre was not specified, hoping linker would find it])
 ])
+
+if test -z "$GC_OK"; then
+	AC_MSG_CHECKING(for prce)
+	SAVE_LIBS=$LIBS
+	LIBS="$LIBS $PCRE_LIBS $PCRE_INCLUDES"
+	AC_TRY_LINK([ #include <pcre.h> ],[ const char *v=pcre_version(void); ],
+		AC_MSG_RESULT(yes)
+	,
+		AC_MSG_RESULT(no)
+		if test -z "$PCRE"; then
+			AC_MSG_ERROR(please specify path to pcre: --with-pcre)
+		else
+			AC_MSG_ERROR($PCRE does not seem to be valid PCRE installation directory)
+		fi
+	)
+	LIBS=$SAVE_LIBS
+fi
+
 AC_SUBST(PCRE_INCLUDES)
 AC_SUBST(PCRE_LIBS)
 
