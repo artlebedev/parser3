@@ -1,12 +1,12 @@
 #!/bin/sh
 
-# $Id: buildall-with-xml,v 1.48 2012/06/12 21:12:23 moko Exp $
+# $Id: buildall-with-xml,v 1.49 2012/06/13 10:28:56 moko Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
 download="wget -c --passive-ftp"
 cflags=""
-cflags="CFLAGS=-fPIC CXXFLAGS=-fPIC" #required for apache module on x64
+#cflags="--with-pic" #required for apache module on x64
 
 echo "buildall-with-xml"
 echo "Script author: Alexander Petrosian <paf@design.ru> (http://paf.design.ru)"
