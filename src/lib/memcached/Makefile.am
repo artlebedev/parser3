@@ -1,7 +1,7 @@
 INCLUDES = $(INCLTDL)
 
 noinst_HEADERS = constants.h types.h pa_memcached.h
-noinst_LIBRARIES = libmemcached.a
-libmemcached_a_SOURCES = pa_memcached.C
+noinst_LTLIBRARIES = libmemcached.la
+libmemcached_la_SOURCES = pa_memcached.C
 
 EXTRA_DIST = memcached.vcproj
