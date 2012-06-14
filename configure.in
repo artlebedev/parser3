@@ -1,6 +1,6 @@
 dnl Autoconf initialisation
 AC_PREREQ(2.59)
-AC_INIT(parser, 3.4.2b)
+AC_INIT(parser, 3.4.2 RC)
 AC_CONFIG_SRCDIR(README)
 
 
@@ -22,8 +22,8 @@ echo "/* edit configure.in to change version number */" >> $srcdir/src/include/p
 echo "#define PARSER_VERSION \"$PARSER_VERSION\"" >> $srcdir/src/include/pa_version.h.new
 cmp $srcdir/src/include/pa_version.h.new $srcdir/src/include/pa_version.h >/dev/null 2>&1
 if test $? -ne 0 ; then
-	rm -f $srcdir/src/include/pa_version.h && mv $srcdir/src/include/pa_version.h.new $srcdir/src/include/pa_version.h && \
-	echo Updated $srcdir/src/include/pa_version.h
+	mv $srcdir/src/include/pa_version.h.new $srcdir/src/include/pa_version.h
+	AC_MSG_WARN(Updated $srcdir/src/include/pa_version.h)
 else
 	rm -f $srcdir/src/include/pa_version.h.new
 fi
@@ -366,8 +366,7 @@ AM_CONDITIONAL(COMPILE_APACHE_MODULE, test -n "$APACHE")
 
 dnl Enable building of the convenience library
 LT_CONFIG_LTDL_DIR(src/lib/ltdl)
-LT_INIT(dlopen win32-dll)
-#LT_INIT(disable-shared dlopen win32-dll)
+LT_INIT(dlopen win32-dll no-pic)
 LTDL_INIT
 
 
