@@ -15,7 +15,7 @@ AC_SUBST(P3S)
 
 dnl Parser version update
 AC_CANONICAL_HOST
-AC_DEFINE(PARSER_VERSION,$VERSION (compiled on $host),parser version)
+AC_DEFINE_UNQUOTED(PARSER_VERSION,"$VERSION (compiled on $host)",parser version)
 
 AC_SUBST(host_os)
 case $host_os in
