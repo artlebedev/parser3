@@ -25,7 +25,7 @@
 #include "pa_vdate.h"
 #include "pa_table.h"
 
-volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.140 2012/06/08 11:44:01 misha Exp $";
+volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.141 2012/06/15 06:13:10 misha Exp $";
 
 // defines
 
@@ -895,11 +895,11 @@ static void _gif(Request& r, MethodParams& params) {
 	VFile& vfile=*new VFile;
 
 	vfile.set(false/*not tainted*/,
-		(const char*)buf.ptr, buf.size,
+		false/*binary*/,
+		(char*)buf.ptr,
+		buf.size,
 		file_name,
 		new VString(*new String("image/gif")));
-
-	vfile.set_mode(false/*binary*/);
 
 	r.write_no_lang(vfile);
 }

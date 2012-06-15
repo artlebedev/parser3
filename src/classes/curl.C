@@ -16,7 +16,7 @@
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.20 2012/06/08 11:44:01 misha Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.21 2012/06/15 06:13:10 misha Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -598,11 +598,9 @@ static void _curl_load_action(Request& r, MethodParams& params){
 		body.length=c.length;
 	}
 
-	result.set(true /*tainted*/, body.buf, body.length, options().filename
+	result.set(true/*tainted*/, options().is_text, body.buf, body.length, options().filename
 				, options().content_type ? new VString(*options().content_type) : 0
 				, &r);
-	result.set_mode(options().is_text);
-
 	long http_status = 0;
 	if(f_curl_easy_getinfo(curl(), CURLINFO_RESPONSE_CODE, &http_status) == CURLE_OK){
 		result.fields().put("status", new VInt(http_status));

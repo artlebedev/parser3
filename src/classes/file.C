@@ -25,7 +25,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.220 2012/06/08 11:44:01 misha Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.221 2012/06/15 06:13:10 misha Exp $";
 
 // defines
 
@@ -234,11 +234,9 @@ static void _load(Request& r, MethodParams& params) {
 		if(Value* remote_content_type=file.headers->get(HTTP_CONTENT_TYPE_UPPER))
 			vcontent_type=new VString(*new String(remote_content_type->as_string().cstr()));
 	} 
-	
-	VFile& self=GET_SELF(r, VFile);
-	self.set(true/*tainted*/, file.str, file.length, user_file_name, vcontent_type, &r);
 
-	self.set_mode(as_text);
+	VFile& self=GET_SELF(r, VFile);
+	self.set(true/*tainted*/, as_text, file.str, file.length, user_file_name, vcontent_type, &r);
 
 	if(file.headers){
 		file.headers->for_each<HashStringValue*>(_load_pass_param, &self.fields());
@@ -311,14 +309,13 @@ static void _create(Request& r, MethodParams& params) {
 		String::Body body=content_str->cstr_to_string_body_untaint(String::L_AS_IS); // explode content, honor tainting changes
 		if(asked_charset && is_text)
 			body=Charset::transcode(body, r.charsets.source(), *asked_charset);
-		self.set(true/*tainted*/, body.cstr(), body.length());
-		self.set_mode(is_text);
+
+		self.set(true/*tainted*/, is_text, body.cstrm(), body.length());
 	} else {
 		if(asked_charset)
 			throw Exception(PARSER_RUNTIME, 0, "charset option can not be used with file-content");
 		self.set(*vcontent.as_vfile(String::L_AS_IS));
-		if(mode)
-			self.set_mode(is_text);
+		self.set_mode(is_text);
 	}
 
 	self.set_name(file_name);
@@ -337,7 +334,7 @@ static void _stat(Request& r, MethodParams& params) {
 	
 	VFile& self=GET_SELF(r, VFile);
 
-	self.set(true/*tainted*/, 0/*no bytes*/, size, &lfile_name, 0, &r);
+	self.set(true/*tainted*/, false/*binary*/, 0/*no bytes*/, size, &lfile_name, 0, &r);
 	HashStringValue& ff=self.fields();
 	ff.put(adate_name, new VDate(atime));
 	ff.put(mdate_name, new VDate(mtime));
@@ -605,7 +602,7 @@ static void _exec_cgi(Request& r, MethodParams& params, bool cgi) {
 		file_out->length -= headersize;
 
 		// $body
-		self.set(false/*not tainted*/, file_out->str, file_out->length);
+		self.set(false/*not tainted*/, is_text, file_out->str, file_out->length);
 
 		// $fields << header
 		if(header) {
@@ -621,10 +618,8 @@ static void _exec_cgi(Request& r, MethodParams& params, bool cgi) {
 		}
 	} else { // ^file::exec
 		// $body
-		self.set(false/*not tainted*/, file_out->str, file_out->length);
+		self.set(false/*not tainted*/, is_text, file_out->str, file_out->length);
 	}
-
-	self.set_mode(is_text);
 
 	// $status
 	self.fields().put(file_status_name, new VInt(execution.status));
@@ -971,10 +966,9 @@ static void _sql(Request& r, MethodParams& params) {
 
 	VFile& self=GET_SELF(r, VFile);
 
-	self.set(true/*tainted*/, handlers.value.str, handlers.value.length, handlers.user_file_name
+	self.set(true/*tainted*/, false/*binary*/, (char*)handlers.value.str, handlers.value.length, handlers.user_file_name
 				, handlers.user_content_type ? new VString(*handlers.user_content_type) : 0
 				, &r);
-	self.set_mode(false/*binary*/);
 }
 
 static void _base64(Request& r, MethodParams& params) {
@@ -1025,13 +1019,7 @@ static void _base64(Request& r, MethodParams& params) {
 			size_t length=0;
 			pa_base64_decode(encoded, strlen(encoded), decoded, length, strict);
 
-			if(length && is_text)
-				fix_line_breaks(decoded, length);
-		
-			self.set(true/*tainted*/, decoded, length, user_file_name, vcontent_type, &r);
-
-			if(params.count() > 1)
-				self.set_mode(is_text);
+			self.set(true/*tainted*/, is_text, decoded, length, user_file_name, vcontent_type, &r);
 		} else {
 			// encode: ^f.base64[]
 			const char* encoded=pa_base64_encode(self.value_ptr(), self.value_size());

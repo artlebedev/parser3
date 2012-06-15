@@ -8,7 +8,7 @@
 #ifndef PA_VFILE_H
 #define PA_VFILE_H
 
-#define IDENT_PA_VFILE_H "$Id: pa_vfile.h,v 1.72 2012/05/28 19:47:52 moko Exp $"
+#define IDENT_PA_VFILE_H "$Id: pa_vfile.h,v 1.73 2012/06/15 06:13:11 misha Exp $"
 
 // include
 
@@ -35,9 +35,11 @@ class Methoded;
 */
 class VFile: public VStateless_object {
 
-	const char* fvalue_ptr;
+	char* fvalue_ptr;
 	size_t fvalue_size;
 	bool ftext_tainted;
+	bool fis_text_mode;
+	bool feols_normalized;
 	HashStringValue ffields;
 
 public: // Value
@@ -68,9 +70,11 @@ public: // usage
 	VFile(HashStringValue& afields): ffields(afields) {}
 
 	/// WARNING: when setting text files be sure to append terminating zero to avalue_ptr
+	/// WARNING: the content can be modified while creating "text" vfile
 	void set(
 		bool atainted,
-		const char* avalue_ptr,
+		bool ais_text_mode,
+		char* avalue_ptr,
 		size_t avalue_size,
 		const String* afile_name=0,
 		Value* acontent_type=0,
@@ -78,9 +82,9 @@ public: // usage
 
 	void set(VFile& avfile);
 
-	void set_mode(bool ais_text);
-
 	void set_name(const String* afile_name);
+
+	void set_mode(bool ais_text);
 
 	void set_content_type(Value* acontent_type, const String* afile_name=0, Request* r=0);
 
@@ -88,6 +92,8 @@ public: // usage
 
 	static bool is_text_mode(const String& mode);
 	static bool is_valid_mode (const String& mode);
+
+	void fix_line_breaks_set();
 
 	const char* value_ptr() const { 
 		if(!fvalue_ptr)
@@ -101,9 +107,7 @@ public: // usage
 	HashStringValue& fields() { return ffields; }
 
 private:
-
-	Value* fields_element();
-
+	const char* text_cstr();
 };
 
 #endif
