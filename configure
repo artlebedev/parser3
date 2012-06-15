@@ -4703,6 +4703,13 @@ if test "${with_gc+set}" = set; then :
 		GC_LIBS="-L$GC -lgc"
 	fi
 
+	if test "$GC" = "yes"; then
+		GC=""
+		GC_LIBS="-lgc"
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: --with-gc value was not specified, hoping linker would find it" >&5
+$as_echo "$as_me: WARNING: --with-gc value was not specified, hoping linker would find it" >&2;}
+	fi
+
 else
 
 	GC_LIBS="-lgc"
@@ -4737,7 +4744,7 @@ else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 		if test -z "$GC"; then
-			as_fn_error $? "please specify path to libgc: --with-gc" "$LINENO" 5
+			as_fn_error $? "please specify path to libgc: --with-gc=D" "$LINENO" 5
 		else
 			as_fn_error $? "$GC does not seem to be valid libgc installation directory" "$LINENO" 5
 		fi
@@ -4765,6 +4772,13 @@ if test "${with_pcre+set}" = set; then :
 		PCRE_LIBS="-L$PCRE -lpcre"
 	fi
 
+	if test "$PCRE" = "yes"; then
+		PCRE=""
+		PCRE_LIBS="-lpcre"
+		PCRE_INCLUDES=""
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: --with-pcre value was not specified, hoping linker would find it" >&5
+$as_echo "$as_me: WARNING: --with-pcre value was not specified, hoping linker would find it" >&2;}
+	fi
 
 else
 
@@ -4800,7 +4814,7 @@ else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 		if test -z "$PCRE"; then
-			as_fn_error $? "please specify path to PCRE: --with-pcre" "$LINENO" 5
+			as_fn_error $? "please specify path to PCRE: --with-pcre=D" "$LINENO" 5
 		else
 			as_fn_error $? "$PCRE does not seem to be valid PCRE installation directory" "$LINENO" 5
 		fi
@@ -4862,7 +4876,7 @@ else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 			if test -z "$XML"; then
-				as_fn_error $? "please specify path to Gnome XML libraries: --with-xml" "$LINENO" 5
+				as_fn_error $? "please specify path to Gnome XML libraries: --with-xml=D" "$LINENO" 5
 			else
 				as_fn_error $? "$XML does not seem to be valid Gnome XML installation directory" "$LINENO" 5
 			fi
