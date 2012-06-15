@@ -3883,6 +3883,7 @@ if test "${with_pcre+set}" = set; then
 else
 
 	PCRE_LIBS="-lpcre"
+	PCRE_INCLUDES=""
 	{ echo "$as_me:$LINENO: WARNING: --with-pcre was not specified, hoping linker would find it" >&5
 echo "$as_me: WARNING: --with-pcre was not specified, hoping linker would find it" >&2;}
 
