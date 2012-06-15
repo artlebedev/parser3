@@ -1,10 +1,9 @@
 #!/bin/sh
 
-# $Id: buildall-without-xml,v 1.33 2012/06/13 21:44:41 moko Exp $
+# $Id: buildall-without-xml,v 1.34 2012/06/15 19:54:16 moko Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
-download="wget -c --passive-ftp"
 cflags=""
 #cflags="--with-pic" #required for apache module on x64
 
@@ -12,6 +11,11 @@ echo "buildall-without-xml"
 echo "Script author: Alexander Petrosian <paf@design.ru> (http://paf.design.ru)"
 echo
 echo "Building..."
+
+download=`which fetch 2>/dev/null`
+if test -z "$download"; then
+	download="wget -c --passive-ftp"
+fi
 
 parser3_directory=`pwd`
 cd ..
@@ -23,20 +27,20 @@ if test ! -f "$project_directory/gc/lib/libgc.a"; then
 # libgc="gc6.8" # FreeBSD 4.X is not supported in newer gc version
   libgc="gc-7.1"
   if test ! -f "$libgc.tar.gz"; then
-    echo "Downloading libgc [1 lib of 2]..."
+    echo "Downloading gc [1 lib of 2]..."
     $download http://www.hpl.hp.com/personal/Hans_Boehm/gc/gc_source/$libgc.tar.gz
   fi
   echo "Unpacking gc..."
   rm -rf $libgc
   gunzip -c $libgc.tar.gz | tar vxf - >/dev/null
   cd $libgc
-  echo "Configuring libgc..."
+  echo "Configuring gc..."
   CPPFLAGS="-DUSE_LIBC_PRIVATES -DUSE_MMAP -DDONT_ADD_BYTE_AT_END" \
   	./configure --prefix=$project_directory/gc \
   		--disable-threads \
   		--disable-shared \
   		--silent $cflags
-  echo "Building libgc..."
+  echo "Building gc..."
   make
   make install
   cd ..
@@ -54,7 +58,6 @@ if test ! -f "$project_directory/pcre/lib/libpcre.a"; then
   rm -rf $libpcre
   gunzip -c $libpcre.tar.gz | tar vxf - >/dev/null
   cd $libpcre
-  current_dir=`pwd`
   echo "Configuring pcre..."
   ./configure --prefix="$project_directory/pcre" \
     --with-match-limit=10000 \
@@ -79,11 +82,11 @@ if test ! -f "Makefile"; then
   options="$@"
   options="$options --with-gc=$project_directory/gc/lib"
   options="$options --with-pcre=$project_directory/pcre"
+#  options="$options --with-apache"
 #  options="$options --disable-safe-mode"
 #  options="$options --disable-stringstream"
   options="$options --with-included-ltdl"
   options="$options --silent $cflags"
-
   echo "Configuring parser3..."
   ./configure --prefix=$install_directory "--with-sendmail=$sendmail_command" $options
 fi
