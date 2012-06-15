@@ -15,7 +15,7 @@
 #include "pa_vvoid.h"
 #include "pa_vfile.h"
 
-volatile const char * IDENT_PA_VREQUEST_C="$Id: pa_vrequest.C,v 1.53 2012/06/15 06:13:11 misha Exp $" IDENT_PA_VREQUEST_H;
+volatile const char * IDENT_PA_VREQUEST_C="$Id: pa_vrequest.C,v 1.54 2012/06/15 09:17:16 moko Exp $" IDENT_PA_VREQUEST_H;
 
 // defines
 
@@ -54,7 +54,7 @@ Value* VRequest::get_element(const String& aname) {
 	// $resuest:post-body
 	if(aname==POST_BODY_NAME){
 		VFile& result=*new VFile;
-		result.set(true/*tainted*/, false/*binary*/, (finfo.post_data)?finfo.post_data:""/*to distinguish from stat-ed file*/, finfo.post_size);
+		result.set(true/*tainted*/, false/*binary*/, (char *)((finfo.post_data)?finfo.post_data:"") /*to distinguish from stat-ed file*/, finfo.post_size);
 		return &result;
 	}
 
