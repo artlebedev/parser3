@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.260 2012/03/16 09:24:16 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.261 2012/06/15 09:30:01 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -106,7 +106,7 @@ static void log(const char* fmt, va_list args) {
 	time_t t=time(0);
 	if(const char* stamp=ctime(&t)) { // never saw that
 		if(size_t len=strlen(stamp)) // saw once stamp being =""
-			fprintf(f, "[%.*s] [%u] ", len-1, stamp,
+			fprintf(f, "[%.*s] [%u] ", (int)len-1, stamp,
 			(unsigned int)getpid()
 			);
 	}
@@ -118,7 +118,7 @@ static void log(const char* fmt, va_list args) {
 	fwrite(buf, size, 1, f);
 
 	if(request_info)
-		fprintf(f, " [uri=%s, method=%s, cl=%u]",
+		fprintf(f, " [uri=%s, method=%s, cl=%lu]",
 			request_info->uri? request_info->uri: "<unknown>",
 			request_info->method? request_info->method: "<unknown>",
 			request_info->content_length);
@@ -274,8 +274,8 @@ static void full_file_spec(const char* file_name, char *buf, size_t buf_size) {
 			)
 				strncpy(buf, file_name, buf_size);
 		else {
-			char cwd[MAX_STRING];  getcwd(cwd, MAX_STRING);
-			snprintf(buf, buf_size, "%s/%s", cwd, file_name);
+			char cwd[MAX_STRING];
+			snprintf(buf, buf_size, "%s/%s", getcwd(cwd, MAX_STRING) ? cwd : "", file_name);
 		}
 	else
 		buf[0]=0;
