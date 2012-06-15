@@ -339,6 +339,9 @@
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
 
+/* parser version */
+#undef PARSER_VERSION
+
 /* compile for sparc processor */
 #undef PA_BIG_ENDIAN
 
