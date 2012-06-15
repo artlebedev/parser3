@@ -28,7 +28,7 @@
 #include "xnode.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_XDOC_C="$Id: xdoc.C,v 1.175 2012/06/15 06:13:10 misha Exp $";
+volatile const char * IDENT_XDOC_C="$Id: xdoc.C,v 1.176 2012/06/15 11:54:18 moko Exp $";
 
 // defines
 
@@ -560,7 +560,7 @@ static void _file(Request& r, MethodParams& params) {
 		String::Body("charset"), 
 		new VString(*oo.encoding));
 
-	vfile.set(false/*not tainted*/, false/*binary*/, buf.str?buf.str:""/*to distinguish from stat-ed file*/, buf.length, oo.filename, &vhcontent_type);
+	vfile.set_binary(false/*not tainted*/, buf.str?buf.str:""/*to distinguish from stat-ed file*/, buf.length, oo.filename, &vhcontent_type);
 
 	// write out result
 	r.write_no_lang(vfile);

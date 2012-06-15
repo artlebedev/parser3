@@ -8,7 +8,7 @@
 #ifndef PA_VFILE_H
 #define PA_VFILE_H
 
-#define IDENT_PA_VFILE_H "$Id: pa_vfile.h,v 1.73 2012/06/15 06:13:11 misha Exp $"
+#define IDENT_PA_VFILE_H "$Id: pa_vfile.h,v 1.74 2012/06/15 11:54:18 moko Exp $"
 
 // include
 
@@ -35,11 +35,11 @@ class Methoded;
 */
 class VFile: public VStateless_object {
 
-	char* fvalue_ptr;
+	const char* fvalue_ptr;
 	size_t fvalue_size;
 	bool ftext_tainted;
 	bool fis_text_mode;
-	bool feols_normalized;
+	bool fis_text_content;
 	HashStringValue ffields;
 
 public: // Value
@@ -65,49 +65,42 @@ public: // Value
 
 public: // usage
 
-	VFile(): fvalue_ptr(0), fvalue_size(0) {}
+	VFile(): fvalue_ptr(0), fvalue_size(0), ftext_tainted(false), fis_text_mode(false), fis_text_content(false){}
 
-	VFile(HashStringValue& afields): ffields(afields) {}
+	VFile(HashStringValue& afields): fvalue_ptr(0), fvalue_size(0), ftext_tainted(false), fis_text_mode(false), fis_text_content(false), ffields(afields) {}
 
 	/// WARNING: when setting text files be sure to append terminating zero to avalue_ptr
 	/// WARNING: the content can be modified while creating "text" vfile
-	void set(
-		bool atainted,
-		bool ais_text_mode,
-		char* avalue_ptr,
-		size_t avalue_size,
-		const String* afile_name=0,
-		Value* acontent_type=0,
-		Request* r=0);
-
-	void set(VFile& avfile);
-
-	void set_name(const String* afile_name);
-
-	void set_mode(bool ais_text);
-
-	void set_content_type(Value* acontent_type, const String* afile_name=0, Request* r=0);
+	void set(bool atainted, bool ais_text_mode, char* avalue_ptr, size_t avalue_size, const String* afile_name=0, Value* acontent_type=0, Request* r=0);
+	void set_binary(bool atainted, const char* avalue_ptr, size_t avalue_size, const String* afile_name=0, Value* acontent_type=0, Request* r=0);
+	void set(VFile& avfile, bool ais_text_mode, const String* afile_name=0, Value* acontent_type=0, Request* r=0);
 
 	void save(Request_charsets& charsets, const String& file_spec, bool is_text, Charset* asked_charset=0);
 
 	static bool is_text_mode(const String& mode);
 	static bool is_valid_mode (const String& mode);
 
-	void fix_line_breaks_set();
-
 	const char* value_ptr() const { 
 		if(!fvalue_ptr)
-			throw Exception(PARSER_RUNTIME,
-				0,
-				"getting value of stat-ed file");
-
+			throw Exception(PARSER_RUNTIME, 0, "getting value of stat-ed file");
 		return fvalue_ptr; 
 	}
+
 	size_t value_size() const { return fvalue_size; }
+
 	HashStringValue& fields() { return ffields; }
 
 private:
 	const char* text_cstr();
+
+	void set(bool atainted, const char* avalue_ptr, size_t avalue_size, const String* afile_name=0, Value* acontent_type=0, Request* r=0);
+
+	void set_mode(bool ais_text);
+
+	void set_name(const String* afile_name);
+
+	void set_content_type(Value* acontent_type, const String* afile_name=0, Request* r=0);
+
 };
 
 #endif

@@ -17,7 +17,7 @@
 #include "pa_vtable.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_PA_VFORM_C="$Id: pa_vform.C,v 1.104 2012/06/15 06:13:11 misha Exp $" IDENT_PA_VFORM_H;
+volatile const char * IDENT_PA_VFORM_C="$Id: pa_vform.C,v 1.105 2012/06/15 11:54:18 moko Exp $" IDENT_PA_VFORM_H;
 
 // defines
 
@@ -238,7 +238,7 @@ void VForm::AppendFormFileEntry(const char* cname_cstr,
 	// NO!!! some users want to upload file 'as is' or file encoding can be unknown
 
 	VFile* vfile=new VFile;
-	vfile->set(true/*tainted*/, false/*binary*/, (char*)raw_cvalue_ptr, raw_cvalue_size, sfile_name);
+	vfile->set_binary(true/*tainted*/, raw_cvalue_ptr, raw_cvalue_size, sfile_name);
 
 	fields.put_dont_replace(sname, vfile);
 

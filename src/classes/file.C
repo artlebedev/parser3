@@ -25,7 +25,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.221 2012/06/15 06:13:10 misha Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.222 2012/06/15 11:54:18 moko Exp $";
 
 // defines
 
@@ -309,18 +309,13 @@ static void _create(Request& r, MethodParams& params) {
 		String::Body body=content_str->cstr_to_string_body_untaint(String::L_AS_IS); // explode content, honor tainting changes
 		if(asked_charset && is_text)
 			body=Charset::transcode(body, r.charsets.source(), *asked_charset);
-
-		self.set(true/*tainted*/, is_text, body.cstrm(), body.length());
+		self.set(true/*tainted*/, is_text, body.cstrm(), body.length(), file_name, vcontent_type, &r);
 	} else {
 		if(asked_charset)
 			throw Exception(PARSER_RUNTIME, 0, "charset option can not be used with file-content");
-		self.set(*vcontent.as_vfile(String::L_AS_IS));
-		self.set_mode(is_text);
+		self.set(*vcontent.as_vfile(String::L_AS_IS), is_text, file_name, vcontent_type, &r);
 	}
 
-	self.set_name(file_name);
-
-	self.set_content_type(vcontent_type, file_name, &r);
 }
 
 static void _stat(Request& r, MethodParams& params) {
@@ -334,7 +329,7 @@ static void _stat(Request& r, MethodParams& params) {
 	
 	VFile& self=GET_SELF(r, VFile);
 
-	self.set(true/*tainted*/, false/*binary*/, 0/*no bytes*/, size, &lfile_name, 0, &r);
+	self.set_binary(true/*tainted*/, 0/*no bytes*/, size, &lfile_name, 0, &r);
 	HashStringValue& ff=self.fields();
 	ff.put(adate_name, new VDate(atime));
 	ff.put(mdate_name, new VDate(mtime));
@@ -966,7 +961,7 @@ static void _sql(Request& r, MethodParams& params) {
 
 	VFile& self=GET_SELF(r, VFile);
 
-	self.set(true/*tainted*/, false/*binary*/, (char*)handlers.value.str, handlers.value.length, handlers.user_file_name
+	self.set_binary(true/*tainted*/, handlers.value.str, handlers.value.length, handlers.user_file_name
 				, handlers.user_content_type ? new VString(*handlers.user_content_type) : 0
 				, &r);
 }
