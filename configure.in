@@ -134,6 +134,12 @@ AC_ARG_WITH(gc,[  --with-gc[=D]             D is the directory where
 	else
 		GC_LIBS="-L$GC -lgc"
 	fi
+
+	if test "$GC" = "yes"; then
+		GC=""
+		GC_LIBS="-lgc"
+		AC_MSG_WARN([--with-gc value was not specified, hoping linker would find it])
+	fi
 ],[
 	GC_LIBS="-lgc"
 	AC_MSG_WARN([--with-gc was not specified, hoping linker would find it])
@@ -148,7 +154,7 @@ if test -z "$GC_OK"; then
 	,
 		AC_MSG_RESULT(no)
 		if test -z "$GC"; then
-			AC_MSG_ERROR(please specify path to libgc: --with-gc)
+			AC_MSG_ERROR(please specify path to libgc: --with-gc=D)
 		else
 			AC_MSG_ERROR($GC does not seem to be valid libgc installation directory)
 		fi
@@ -172,6 +178,12 @@ AC_ARG_WITH(pcre,[  --with-pcre=D           D is the directory where
 		PCRE_LIBS="-L$PCRE -lpcre"
 	fi
 
+	if test "$PCRE" = "yes"; then
+		PCRE=""
+		PCRE_LIBS="-lpcre"
+		PCRE_INCLUDES=""
+		AC_MSG_WARN([--with-pcre value was not specified, hoping linker would find it])
+	fi
 ],[
 	PCRE_LIBS="-lpcre"
 	PCRE_INCLUDES=""
@@ -187,7 +199,7 @@ if test -z "$PCRE_OK"; then
 	,
 		AC_MSG_RESULT(no)
 		if test -z "$PCRE"; then
-			AC_MSG_ERROR(please specify path to PCRE: --with-pcre)
+			AC_MSG_ERROR(please specify path to PCRE: --with-pcre=D)
 		else
 			AC_MSG_ERROR($PCRE does not seem to be valid PCRE installation directory)
 		fi
@@ -229,7 +241,7 @@ AC_ARG_WITH(xml,[  --with-xml=D            D is the directory where
 		,
 			AC_MSG_RESULT(no)
 			if test -z "$XML"; then
-				AC_MSG_ERROR(please specify path to Gnome XML libraries: --with-xml)
+				AC_MSG_ERROR(please specify path to Gnome XML libraries: --with-xml=D)
 			else
 				AC_MSG_ERROR($XML does not seem to be valid Gnome XML installation directory)
 			fi
