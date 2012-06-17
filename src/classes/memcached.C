@@ -15,7 +15,7 @@
 #include "pa_vbool.h"
 #include "pa_vmemcached.h"
 
-volatile const char * IDENT_MEMCACHED_C="$Id: memcached.C,v 1.5 2012/06/05 07:56:48 moko Exp $";
+volatile const char * IDENT_MEMCACHED_C="$Id: memcached.C,v 1.6 2012/06/17 21:19:03 moko Exp $";
 
 class MMemcached: public Methoded {
 public: // VStateless_class
@@ -34,10 +34,14 @@ static void _open(Request& r, MethodParams& params) {
 	if(HashStringValue* options=param_value.get_hash()){
 		String result;
 		for(HashStringValue::Iterator i(*options); i; i.next()){
-			result << (result.is_empty() ? "--" : " --") << i.key();
-			const String& value=i.value()->as_string();
-			if(!value.is_empty())
-				result << "=" << value;
+			if(Value *b=i.value()->as("bool")){
+				if(b->as_bool())
+					result << (result.is_empty() ? "--" : " --") << i.key();
+			} else {
+				const String& value=i.value()->as_string();
+				if(!value.is_empty())
+					result << (result.is_empty() ? "--" : " --") << i.key() << "=\"" << value.untaint_cstr(String::L_JS) << "\"";
+			}
 		}
 		self.open(result, ttl);
 	} else {

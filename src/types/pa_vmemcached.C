@@ -13,7 +13,7 @@
 #include "pa_vhash.h"
 #include "pa_vvoid.h"
 
-volatile const char * IDENT_PA_VMEMCACHED_C="$Id: pa_vmemcached.C,v 1.11 2012/04/24 22:41:09 moko Exp $" IDENT_PA_VMEMCACHED_H;
+volatile const char * IDENT_PA_VMEMCACHED_C="$Id: pa_vmemcached.C,v 1.12 2012/06/17 21:19:03 moko Exp $" IDENT_PA_VMEMCACHED_H;
 
 #ifdef WIN32
 const char *memcached_library="libmemcached.dll";
@@ -30,6 +30,12 @@ static void error(const char *step, memcached_st* m, memcached_return rc) {
 
 inline void check(const char *action, memcached_st* m, memcached_return rc) {
 	if(rc==MEMCACHED_SUCCESS)
+		return;
+	error(action, m, rc);
+}
+
+inline void check(const char *action, memcached_st* m, memcached_return rc, memcached_return ok) {
+	if(rc==MEMCACHED_SUCCESS || rc==ok)
 		return;
 	error(action, m, rc);
 }
@@ -121,6 +127,7 @@ void VMemcached::open(const String& options_string, time_t attl){
 	
 	fttl=attl;
 	fm=f_memcached(options_string.cstr(), options_string.length());
+	check("connect", fm, f_memcached_version(fm), MEMCACHED_NOT_SUPPORTED);
 }
 
 void VMemcached::open_parse(const String& connect_string, time_t attl){
@@ -133,6 +140,7 @@ void VMemcached::open_parse(const String& connect_string, time_t attl){
 	fm=f_memcached_create(NULL);
 	memcached_server_st* fservers = f_memcached_servers_parse(connect_string.cstr());
 	check("server_push", fm, f_memcached_server_push(fm, fservers));
+	check("connect", fm, f_memcached_version(fm), MEMCACHED_NOT_SUPPORTED);
 }
 
 void VMemcached::flush(time_t attl) {
@@ -141,11 +149,7 @@ void VMemcached::flush(time_t attl) {
 
 void VMemcached::remove(const String& aname) {
 	check_key(aname);
-
-	memcached_return rc=f_memcached_delete(fm, aname.cstr(), aname.length(), (time_t)0);
-
-	if(rc != MEMCACHED_SUCCESS && rc != MEMCACHED_NOTFOUND)
-		error("delete", fm, rc);
+	check("delete", fm, f_memcached_delete(fm, aname.cstr(), aname.length(), (time_t)0), MEMCACHED_NOTFOUND);
 }
 
 Value* VMemcached::get_element(const String& aname) {

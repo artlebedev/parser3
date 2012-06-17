@@ -7,7 +7,7 @@
 #include "pa_memcached.h"
 #include "ltdl.h"
 
-volatile const char * IDENT_PA_MEMCACHED_C="$Id: pa_memcached.C,v 1.5 2012/04/24 22:41:09 moko Exp $";
+volatile const char * IDENT_PA_MEMCACHED_C="$Id: pa_memcached.C,v 1.6 2012/06/17 21:19:03 moko Exp $";
 
 t_memcached f_memcached=0;
 t_memcached_create f_memcached_create;
@@ -16,6 +16,7 @@ t_memcached_strerror f_memcached_strerror;
 
 t_memcached_server_push f_memcached_server_push;
 t_memcached_servers_parse f_memcached_servers_parse;
+t_memcached_version f_memcached_version;
 
 t_memcached_flush f_memcached_flush;
 
@@ -57,6 +58,7 @@ static const char *dlink(const char *dlopen_file_spec) {
 
 	DLINK(memcached_server_push);
 	DLINK(memcached_servers_parse);
+	DLINK(memcached_version);
 
 	DLINK(memcached_flush);
 
