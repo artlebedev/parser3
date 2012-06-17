@@ -21,7 +21,7 @@
 #include "pa_vbool.h"
 #include "pa_array.h"
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.289 2012/06/08 12:10:18 misha Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.290 2012/06/17 11:04:02 moko Exp $";
 
 // class
 
@@ -268,19 +268,23 @@ static lsplit_result lsplit(char** string_ref, char delim1, char delim2, char en
 			char *write;
 			write=read=string;
 			char c;
-			while((c=*read++)) {
+			// we are enclosed, searching for second encloser
+			while(c=*read++) {
 				if(c==encloser) {
-					char n=*read;
-					if(n==encloser) // double-encloser stands for encloser
+					if(*read==encloser) // double-encloser stands for encloser
 						read++;
-					else if(n==delim1 || n==delim2) {
-						result.delim=n;
-						read++;
-						break;
-					}
+					else
+						break; // note: skipping encloser
 				}
-
 				*write++=c;
+			}
+			// we are no longer enclosed, searching for delimiter, skipping extra enclosers
+			while(c=*read++) {
+				if(c==delim1 || c==delim2) {
+					result.delim=c;
+					break;
+				} else 	if(c!=encloser)
+					*write++=c;
 			}
 			*write=0; // terminate
 			*string_ref=c? read: 0;
