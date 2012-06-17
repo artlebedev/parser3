@@ -15,7 +15,7 @@
 #include "pa_vbool.h"
 #include "pa_vmemcached.h"
 
-volatile const char * IDENT_MEMCACHED_C="$Id: memcached.C,v 1.6 2012/06/17 21:19:03 moko Exp $";
+volatile const char * IDENT_MEMCACHED_C="$Id: memcached.C,v 1.7 2012/06/17 21:46:47 moko Exp $";
 
 class MMemcached: public Methoded {
 public: // VStateless_class
@@ -40,7 +40,7 @@ static void _open(Request& r, MethodParams& params) {
 			} else {
 				const String& value=i.value()->as_string();
 				if(!value.is_empty())
-					result << (result.is_empty() ? "--" : " --") << i.key() << "=\"" << value.untaint_cstr(String::L_JS) << "\"";
+					result << (result.is_empty() ? "--" : " --") << i.key() << "=" << value;
 			}
 		}
 		self.open(result, ttl);
