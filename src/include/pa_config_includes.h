@@ -217,15 +217,6 @@ inline size_t min(size_t a, size_t b){ return a<b?a:b; }
 // memcpy deprecation
 #pragma warning(disable:4996)
 
-
-#if 0
-#ifdef _DEBUG
-#	define _CRTDBG_MAP_ALLOC
-// When the _CRTDBG_MAP_ALLOC flag is defined in the debug version of an application, 
-// the base version of the heap functions are directly mapped to their debug versions
-#endif
-#endif
-
 #endif
 
 #ifdef PA_RELEASE_ASSERTS

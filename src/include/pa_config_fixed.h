@@ -8,7 +8,7 @@
 #ifndef PA_CONFIG_FIXED_H
 #define PA_CONFIG_FIXED_H
 
-#define IDENT_PA_CONFIG_FIXED_H "$Id: pa_config_fixed.h,v 1.75 2012/03/16 09:24:09 moko Exp $"
+#define IDENT_PA_CONFIG_FIXED_H "$Id: pa_config_fixed.h,v 1.76 2012/06/17 11:14:11 moko Exp $"
 
 #define inline  __inline
 #define HAVE_ASSERT_H
@@ -58,14 +58,5 @@
 #	define LIBXSLT_STATIC
 #	define LIBEXSLT_STATIC
 #endif
-
-// if no access to console, but need asserts
-//#define PA_RELEASE_ASSERTS
-
-// PCRE
-#define PCRE_STATIC
-
-// with CULR
-#define HAVE_CURL
 
 #endif
