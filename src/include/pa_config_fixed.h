@@ -8,7 +8,7 @@
 #ifndef PA_CONFIG_FIXED_H
 #define PA_CONFIG_FIXED_H
 
-#define IDENT_PA_CONFIG_FIXED_H "$Id: pa_config_fixed.h,v 1.76 2012/06/17 11:14:11 moko Exp $"
+#define IDENT_PA_CONFIG_FIXED_H "$Id: pa_config_fixed.h,v 1.77 2012/06/18 21:51:42 moko Exp $"
 
 #define inline  __inline
 #define HAVE_ASSERT_H
@@ -58,5 +58,8 @@
 #	define LIBXSLT_STATIC
 #	define LIBEXSLT_STATIC
 #endif
+
+// otherwise functions in pcre.h will be declared as __declspec(dllimport)
+#define PCRE_STATIC
 
 #endif
