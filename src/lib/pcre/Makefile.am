@@ -1,1 +1,1 @@
-noinst_HEADERS = pcre_internal.h
+noinst_HEADERS = pa_pcre_internal.h

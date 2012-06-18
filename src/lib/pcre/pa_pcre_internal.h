@@ -33,18 +33,13 @@
 #define ctypes_offset (cbits_offset + cbit_length)
 #define tables_length (ctypes_offset + 256)
 
-/* All character handling must be done as unsigned characters. Otherwise there
-are problems with top-bit-set characters and functions such as isspace().
-However, we leave the interface to the outside world as char *, because that
-should make things easier for callers. We define a short type for unsigned char
-to save lots of typing. I tried "uchar", but it causes problems on Digital
-Unix, where it is defined in sys/types, so use "uschar" instead. */
-
-typedef unsigned char uschar;
-
 /* Internal shared data tables. These are tables that are used by more than one
 of the exported public functions. They have to be "external" in the C sense,
 but are not part of the PCRE public API. The data for these tables is in the
 pcre_tables.c module. */
 
-extern const uschar _pcre_default_tables[];
+#ifdef __cplusplus
+	extern "C" const unsigned char _pcre_default_tables[];
+#else
+	extern const const unsigned char _pcre_default_tables[];
+#endif

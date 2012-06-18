@@ -8,7 +8,7 @@
 #ifndef PA_CHARSET_H
 #define PA_CHARSET_H
 
-#define IDENT_PA_CHARSET_H "$Id: pa_charset.h,v 1.50 2012/06/09 12:15:00 moko Exp $"
+#define IDENT_PA_CHARSET_H "$Id: pa_charset.h,v 1.51 2012/06/18 20:45:02 moko Exp $"
 
 
 #include "pa_exception.h"
@@ -16,10 +16,9 @@
 #include "pa_hash.h"
 #include "pa_array.h"
 
-// pcre.h must be included BEFORE pcre_internal.h
 #include "pcre.h"
-// have to call config.h for using pcre_internal.h as well
-#include "../lib/pcre/pcre_internal.h"
+// we are using some pcre_internal.h stuff as well
+#include "../lib/pcre/pa_pcre_internal.h"
 
 #ifdef XML
 #include "libxml/encoding.h"
