@@ -72,10 +72,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "parser3isapi", "src\targets
 		{9B5091F7-0ED5-4E5A-ABAF-430ED79D231A} = {9B5091F7-0ED5-4E5A-ABAF-430ED79D231A}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pcre_ctype", "src\lib\pcre\pcre_parser_ctype.vcproj", "{AF84C088-A910-4375-A2D6-61D93238F78C}"
-	ProjectSection(ProjectDependencies) = postProject
-	EndProjectSection
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "types", "src\types\types.vcproj", "{09C0531B-9B8F-443A-A16B-BD9134712613}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
@@ -104,8 +100,6 @@ Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
 		Release = Release
-	EndGlobalSection
-	GlobalSection(ProjectDependencies) = postSolution
 	EndGlobalSection
 	GlobalSection(ProjectConfiguration) = postSolution
 		{61FD304C-2949-4400-845F-0B27CD088547}.Debug.ActiveCfg = Debug|Win32
@@ -141,8 +135,6 @@ Global
 		{33B3FF55-1BB6-4F22-A448-04065AC10AFB}.Release.Build.0 = Release|Win32
 		{2E7BF3D9-C58C-4808-B786-494E7C5F9FE2}.Debug.ActiveCfg = Debug|Win32
 		{2E7BF3D9-C58C-4808-B786-494E7C5F9FE2}.Release.ActiveCfg = Release|Win32
-		{AF84C088-A910-4375-A2D6-61D93238F78C}.Debug.ActiveCfg = Debug|Win32
-		{AF84C088-A910-4375-A2D6-61D93238F78C}.Release.ActiveCfg = Release|Win32
 		{09C0531B-9B8F-443A-A16B-BD9134712613}.Debug.ActiveCfg = Debug|Win32
 		{09C0531B-9B8F-443A-A16B-BD9134712613}.Debug.Build.0 = Debug|Win32
 		{09C0531B-9B8F-443A-A16B-BD9134712613}.Release.ActiveCfg = Release|Win32
