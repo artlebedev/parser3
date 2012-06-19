@@ -8,7 +8,7 @@
 #ifndef PA_CONFIG_FIXED_H
 #define PA_CONFIG_FIXED_H
 
-#define IDENT_PA_CONFIG_FIXED_H "$Id: pa_config_fixed.h,v 1.77 2012/06/18 21:51:42 moko Exp $"
+#define IDENT_PA_CONFIG_FIXED_H "$Id: pa_config_fixed.h,v 1.78 2012/06/19 08:51:09 moko Exp $"
 
 #define inline  __inline
 #define HAVE_ASSERT_H
@@ -27,6 +27,7 @@
 #define HAVE_DIRECT_H
 #define HAVE_SETJMP_H
 #define HAVE_MEMORY_H
+#define HAVE_LIMITS_H
 #define HAVE_SYS_LOCKING_H
 #define HAVE_SYS_TYPES_H
 #define HAVE_WINSOCK_H
