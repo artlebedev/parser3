@@ -12,7 +12,7 @@
 #include "pa_vint.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VFILE_C="$Id: pa_vfile.C,v 1.54 2012/06/15 11:54:18 moko Exp $" IDENT_PA_VFILE_H;
+volatile const char * IDENT_PA_VFILE_C="$Id: pa_vfile.C,v 1.55 2012/06/20 23:22:22 moko Exp $" IDENT_PA_VFILE_H;
 
 // externs
 
@@ -206,7 +206,7 @@ const String* VFile::get_json_string(Json_options& options){
 					indent ? result << *indent : result << ",\n\"";
 					result << "base64\":\"";
 					const char* encoded=pa_base64_encode(fvalue_ptr, fvalue_size);
-					result.append_help_length(encoded, strlen(encoded), String::L_JSON);
+					result.append_help_length(encoded, 0, String::L_JSON);
 					result << "\"";
 					break;
 				}
@@ -214,7 +214,7 @@ const String* VFile::get_json_string(Json_options& options){
 				{
 					indent ? result << *indent : result << ",\n\"";
 					result << "text\":\"";
-					result.append(get_element(text_name)->as_string(), String::L_JSON, true/*forced lang*/);
+					result.append_help_length(text_cstr(), 0, String::L_JSON);
 					result << "\"";
 					break;
 				}

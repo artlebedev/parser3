@@ -8,11 +8,12 @@
 #include "pa_vstring.h"
 #include "pa_vfile.h"
 
-volatile const char * IDENT_PA_VSTRING_C="$Id: pa_vstring.C,v 1.32 2012/06/15 11:54:18 moko Exp $" IDENT_PA_VSTRING_H;
+volatile const char * IDENT_PA_VSTRING_C="$Id: pa_vstring.C,v 1.33 2012/06/20 23:22:22 moko Exp $" IDENT_PA_VSTRING_H;
 
 VFile* VString::as_vfile(String::Language lang, const Request_charsets* charsets) {
 	VFile& result=*new VFile;
 	String::Body sbody=fstring->cstr_to_string_body_untaint(lang, 0, charsets);
-	result.set(false/*not tainted*/, true/*text*/, (char *)sbody.cstr() /*not cstrm to minimize memory usage*/, sbody.length());
+	/* we are using binary to avoid ^#0D to be altered */
+	result.set_binary(false/*not tainted*/, sbody.cstr() , sbody.length());
 	return &result;
 }
