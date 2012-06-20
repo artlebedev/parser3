@@ -285,17 +285,11 @@
 				<File
 					RelativePath=".\loaders\loadlibrary.c">
 				</File>
-				<File
-					RelativePath=".\loaders\preopen.c">
-				</File>
 			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl">
-			<File
-				RelativePath="config.h">
-			</File>
 			<File
 				RelativePath="config_fixed.h">
 			</File>
