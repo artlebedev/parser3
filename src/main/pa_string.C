@@ -12,7 +12,7 @@
 #include "pa_charset.h"
 #include "pa_vregex.h"
 
-volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.242 2012/05/28 10:33:18 moko Exp $" IDENT_PA_STRING_H;
+volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.243 2012/06/20 21:01:20 moko Exp $" IDENT_PA_STRING_H;
 
 const String String::Empty;
 
@@ -103,10 +103,10 @@ int pa_atoi(const char* str, const String* problem_source) {
 	unsigned int result=pa_atoui(str, 0, problem_source);
 
 	if(negative && result <= ((unsigned int)(-(1+INT_MIN)))+1)
-		return -result;
+		return -(int)result;
 	
 	if(result<=INT_MAX)
-		return result;
+		return (int)result;
 	
 	throw Exception("number.format", problem_source, problem_source ? "out of range (int)" : "'%s' is out of range (int)", str);
 }
