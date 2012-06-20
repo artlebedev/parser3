@@ -36,6 +36,7 @@ or obtained by writing to the Free Software Foundation, Inc.,
 
 /* --- MANIFEST CONSTANTS --- */
 
+#undef HAVE_LIBDLLOADER
 
 /* Standard libltdl search path environment variable name  */
 #undef  LTDL_SEARCHPATH_VAR
@@ -210,14 +211,18 @@ loader_init (lt_get_vtable *vtable_func, lt_user_data data)
   return errors;
 }
 
-/* Bootstrap the loader loading with the preopening loader.  */
-#define get_vtable		preopen_LTX_get_vtable
-#define preloaded_symbols	LT_CONC3(lt_, LTDLOPEN, _LTX_preloaded_symbols)
+/* preopening loader is buggy under FreeBSD and not supported under MSVC, thus using preconfigured loader.  */
+#if defined(__CYGWIN__) || defined(__WINDOWS__)
+#define get_vtable		loadlibrary_LTX_get_vtable
+#else
+#define get_vtable		dlopen_LTX_get_vtable
+#endif
 
 LT_BEGIN_C_DECLS
 LT_SCOPE const lt_dlvtable *	get_vtable (lt_user_data data);
 LT_END_C_DECLS
 #ifdef HAVE_LIBDLLOADER
+#define preloaded_symbols	LT_CONC3(lt_, LTDLOPEN, _LTX_preloaded_symbols)
 extern LT_DLSYM_CONST lt_dlsymlist preloaded_symbols[];
 #endif
 
@@ -234,9 +239,7 @@ lt_dlinit (void)
       handles		= 0;
       user_search_path	= 0; /* empty search path */
 
-      /* First set up the statically loaded preload module loader, so
-	 we can use it to preopen the other loaders we linked in at
-	 compile time.  */
+      /* Loading the only supported loader */
       errors += loader_init (get_vtable, 0);
 
       /* Now open all the preloaded module loaders, so the application

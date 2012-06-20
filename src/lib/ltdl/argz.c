@@ -34,7 +34,11 @@ or obtained by writing to the Free Software Foundation, Inc.,
 #  include <config.h>
 #endif
 
+#ifdef HAVE_WORKING_ARGZ
 #include <argz.h>
+#else
+#include <argz_.h>
+#endif
 
 #include <assert.h>
 #include <stddef.h>

@@ -58,7 +58,11 @@ or obtained by writing to the Free Software Foundation, Inc.,
 extern "C" {
 #endif
 
+#ifdef HAVE_WORKING_ARGZ
 #include <argz.h>
+#else
+#include <argz_.h>
+#endif
 
 #ifdef __cplusplus
 }
