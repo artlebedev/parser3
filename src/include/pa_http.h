@@ -8,7 +8,7 @@
 #ifndef PA_HTTP_H
 #define PA_HTTP_H
 
-#define IDENT_PA_HTTP_H "$Id: pa_http.h,v 1.7 2012/03/16 09:24:09 moko Exp $"
+#define IDENT_PA_HTTP_H "$Id: pa_http.h,v 1.8 2012/06/20 20:54:25 moko Exp $"
 
 #include "pa_vstring.h"
 #include "pa_vint.h"
@@ -16,19 +16,16 @@
 #include "pa_vtable.h"
 #include "pa_socks.h"
 
-#ifdef CYGWIN
-#define _GNU_H_WINDOWS32_SOCKETS
-// for PASCAL
+#ifdef WIN32
 #include <windows.h>
-// SOCKET
-typedef u_int	SOCKET;
-int PASCAL closesocket(SOCKET);
-#else
-#	if defined(WIN32)
-#		include <windows.h>
-#	else
-#		define closesocket close
-#	endif
+
+#ifdef CYGWIN
+typedef u_int SOCKET;
+extern "C" int PASCAL FAR closesocket(SOCKET);
+#endif
+
+#else // WIN32
+#define closesocket close
 #endif
 
 #ifndef DOXYGEN

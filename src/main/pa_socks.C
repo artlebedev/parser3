@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PA_SOCKS_C="$Id: pa_socks.C,v 1.26 2012/03/16 09:24:14 moko Exp $";
+volatile const char * IDENT_PA_SOCKS_C="$Id: pa_socks.C,v 1.27 2012/06/20 20:54:26 moko Exp $";
 
 #define NO_UNISTD_H
 #include "pa_config_includes.h"
@@ -17,7 +17,6 @@ volatile const char * IDENT_PA_SOCKS_C="$Id: pa_socks.C,v 1.26 2012/03/16 09:24:
 
 // in cygwin: for pascal
 // in MSVC: for everything
-#define  WINVER  0x0400
 #include <windows.h>
 
 #ifdef CYGWIN
@@ -35,9 +34,11 @@ typedef struct WSAData {
 } WSADATA;
 typedef WSADATA *LPWSADATA;
 
-int PASCAL WSAStartup(WORD,LPWSADATA);
-int PASCAL WSACleanup(void);
-#endif
+extern "C" int PASCAL FAR WSAStartup(WORD,LPWSADATA);
+extern "C" int PASCAL FAR WSACleanup(void);
+extern "C" int PASCAL FAR WSAGetLastError();
+
+#endif // CYGWIN
 
 WSADATA wsaData;
 

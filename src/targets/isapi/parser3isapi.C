@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.105 2012/03/16 09:24:16 moko Exp $";
+volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.106 2012/06/20 20:54:26 moko Exp $";
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -19,7 +19,6 @@ volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.105 2012/03/
 #include "pa_version.h"
 #include "pa_socks.h"
 
-#define  WINVER  0x0400
 #include <windows.h>
 #include <process.h>
 

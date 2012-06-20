@@ -5,89 +5,101 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-#define IDENT_SMTP_H "$Id: smtp.h,v 1.8 2012/03/16 09:24:12 moko Exp $"
+#define IDENT_SMTP_H "$Id: smtp.h,v 1.9 2012/06/20 20:54:26 moko Exp $"
 
 
 #include "pa_string.h"
 
-#ifdef CYGWIN
-#define _GNU_H_WINDOWS32_SOCKETS
-// for PASCAL
+#ifdef WIN32
 #include <windows.h>
-// SOCKET
-typedef u_int	SOCKET;
-int PASCAL closesocket(SOCKET);
-#else
-#	if defined(WIN32)
-#		define  WINVER  0x0400
-#		include <windows.h>
-#	else
-		typedef char    CHAR;
-		typedef u_int	SOCKET;
-#		define closesocket close
-		inline int WSAGetLastError() { return errno; }
+
+#ifdef CYGWIN
+typedef u_int SOCKET;
+#define INVALID_SOCKET (SOCKET)(~0)
+
+extern "C" int PASCAL FAR closesocket(SOCKET);
+extern "C" int PASCAL FAR WSAGetLastError();
+extern "C" int PASCAL FAR ioctlsocket(SOCKET, long, u_long FAR *);
+#endif
+
+#else // WIN32
+
+typedef char CHAR;
+typedef u_int SOCKET;
+#define closesocket close
+inline int WSAGetLastError() { return errno; }
 
 #ifdef EPROTONOSUPPORT
-#		define WSAEPROTONOSUPPORT EPROTONOSUPPORT
+#	define WSAEPROTONOSUPPORT EPROTONOSUPPORT
 #else
-#		define WSAEPROTONOSUPPORT (10000)
+#	define WSAEPROTONOSUPPORT (10000)
 #endif
+
 #ifdef ESOCKTNOSUPPORT
-#		define WSAESOCKTNOSUPPORT ESOCKTNOSUPPORT
+#	define WSAESOCKTNOSUPPORT ESOCKTNOSUPPORT
 #else
-#		define WSAESOCKTNOSUPPORT (10001)
+#	define WSAESOCKTNOSUPPORT (10001)
 #endif
+
 #ifdef ENOTCONN
-#		define WSAENOTCONN ENOTCONN
+#	define WSAENOTCONN ENOTCONN
 #else
-#		define WSAENOTCONN (10002)
+#	define WSAENOTCONN (10002)
 #endif
+
 #ifdef ESHUTDOWN
-#		define WSAENETDOWN ESHUTDOWN
+#	define WSAENETDOWN ESHUTDOWN
 #else
-#		define WSAENETDOWN (10003)
+#	define WSAENETDOWN (10003)
 #endif
+
 #ifdef EHOSTUNREACH
-#		define WSAENETUNREACH EHOSTUNREACH
+#	define WSAENETUNREACH EHOSTUNREACH
 #else
-#		define WSAENETUNREACH (10004)
+#	define WSAENETUNREACH (10004)
 #endif
+
 #ifdef ENETRESET
-#		define WSAENETRESET ENETRESET
+#	define WSAENETRESET ENETRESET
 #else
-#		define WSAENETRESET (10005)
+#	define WSAENETRESET (10005)
 #endif
+
 #ifdef ECONNABORTED
-#		define WSAECONNABORTED ECONNABORTED
+#	define WSAECONNABORTED ECONNABORTED
 #else
-#		define WSAECONNABORTED (10006)
+#	define WSAECONNABORTED (10006)
 #endif
+
 #ifdef ECONNRESET
-#		define WSAECONNRESET ECONNRESET
+#	define WSAECONNRESET ECONNRESET
 #else
-#		define WSAECONNRESET (10007)
+#	define WSAECONNRESET (10007)
 #endif
+
 #ifdef EWOULDBLOCK
-#		define WSAEWOULDBLOCK EWOULDBLOCK
+#	define WSAEWOULDBLOCK EWOULDBLOCK
 #else
-#		define WSAEWOULDBLOCK (10008)
+#	define WSAEWOULDBLOCK (10008)
 #endif
+
 #ifdef ECONNREFUSED
-#		define WSAECONNREFUSED ECONNREFUSED
+#	define WSAECONNREFUSED ECONNREFUSED
 #else
-#		define WSAECONNREFUSED (10009)
+#	define WSAECONNREFUSED (10009)
 #endif
-#		define WSAHOST_NOT_FOUND (10010)
 
-#		ifndef INADDR_NONE
-#			define INADDR_NONE ((unsigned long) -1)
-#		endif
+#define WSAHOST_NOT_FOUND (10010)
 
-#		ifndef INVALID_SOCKET
-#			define INVALID_SOCKET  (SOCKET)(~0)
-#		endif
-#	endif
+#ifndef INADDR_NONE
+#	define INADDR_NONE ((unsigned long) -1)
 #endif
+
+#ifndef INVALID_SOCKET
+#	define INVALID_SOCKET (SOCKET)(~0)
+#endif
+
+#endif // WIN32
 
 //////////////////////////////////////////////////////////////////////////////
 

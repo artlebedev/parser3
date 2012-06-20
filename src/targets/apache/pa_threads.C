@@ -7,13 +7,12 @@
 
 #include "pa_threads.h"
 
-volatile const char * IDENT_PA_THREADS_C="$Id: pa_threads.C,v 1.2 2012/03/16 09:24:15 moko Exp $" IDENT_PA_THREADS_H;
+volatile const char * IDENT_PA_THREADS_C="$Id: pa_threads.C,v 1.3 2012/06/20 20:54:26 moko Exp $" IDENT_PA_THREADS_H;
 
 Mutex global_mutex;
 
 #ifdef WIN32
 
-#define  WINVER  0x0400
 #include <windows.h>
 
 const bool parser_multithreaded=true;

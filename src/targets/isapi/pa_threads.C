@@ -7,9 +7,8 @@
 
 #include "pa_threads.h"
 
-volatile const char * IDENT_PA_THREADS_C="$Id: pa_threads.C,v 1.19 2012/03/16 09:24:16 moko Exp $" IDENT_PA_THREADS_H;
+volatile const char * IDENT_PA_THREADS_C="$Id: pa_threads.C,v 1.20 2012/06/20 20:54:26 moko Exp $" IDENT_PA_THREADS_H;
 
-#define  WINVER  0x0400
 #include <windows.h>
 
 const bool parser_multithreaded=true;

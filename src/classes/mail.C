@@ -19,7 +19,7 @@
 
 #include "smtp.h"
 
-volatile const char * IDENT_MAIL_C="$Id: mail.C,v 1.119 2012/06/08 11:44:02 misha Exp $";
+volatile const char * IDENT_MAIL_C="$Id: mail.C,v 1.120 2012/06/20 20:54:25 moko Exp $";
 
 // defines
 
@@ -94,7 +94,7 @@ static void sendmail(
 		return;
 	}
 
-#if WIN32
+#ifdef WIN32
 	// win32 without SMTP server configured
 	throw Exception(PARSER_RUNTIME,
 		0,

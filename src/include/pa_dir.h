@@ -8,7 +8,7 @@
 #ifndef PA_DIR_H
 #define PA_DIR_H
 
-#define IDENT_PA_DIR_H "$Id: pa_dir.h,v 1.20 2012/03/16 09:24:09 moko Exp $"
+#define IDENT_PA_DIR_H "$Id: pa_dir.h,v 1.21 2012/06/20 20:54:25 moko Exp $"
 
 #include "pa_config_includes.h"
 
@@ -19,7 +19,6 @@
 
 #ifdef WIN32
 
-#define  WINVER  0x0400
 #include <windows.h>
 
 #define MAXPATH MAX_PATH

@@ -13,15 +13,14 @@
 #include "pa_vdouble.h"
 #include "pa_threads.h"
 
-volatile const char * IDENT_PA_VSTATUS_C="$Id: pa_vstatus.C,v 1.28 2012/03/16 09:24:19 moko Exp $" IDENT_PA_VSTATUS_H;
+volatile const char * IDENT_PA_VSTATUS_C="$Id: pa_vstatus.C,v 1.29 2012/06/20 20:54:26 moko Exp $" IDENT_PA_VSTATUS_H;
 
 #ifdef HAVE_SYS_RESOURCE_H
 // rusage
 #include <sys/resource.h>
 #endif
 
-#ifdef WIN32
-#define  WINVER  0x0400
+#if defined(WIN32) && !defined(CYGWIN)
 #include <windows.h>
 #include "psapi.h"
 
@@ -64,7 +63,7 @@ Value& rusage_element() {
 	VHash& rusage=*new VHash;
 	HashStringValue& hash=rusage.hash();
 
-#ifdef WIN32
+#if defined(WIN32) && !defined(CYGWIN)
 	double d1;
 	HANDLE hProc = GetCurrentProcess();
 

@@ -11,13 +11,11 @@
 #include "pa_exception.h"
 #include "pa_threads.h"
 
-volatile const char * IDENT_PA_RANDOM_C="$Id: pa_random.C,v 1.3 2012/03/16 09:24:14 moko Exp $" IDENT_PA_RANDOM_H;
+volatile const char * IDENT_PA_RANDOM_C="$Id: pa_random.C,v 1.4 2012/06/20 20:54:26 moko Exp $" IDENT_PA_RANDOM_H;
 
-#ifdef WIN32
-#	include <windows.h>
-#endif
+#if defined(WIN32) && !defined(CYGWIN)
+#include <windows.h>
 
-#ifdef WIN32
 class Random_provider {
 	HCRYPTPROV fhProv;
 	
@@ -109,7 +107,7 @@ static void get_random_bytes(void *buf, int nbytes)
 #endif
 
 void random(void *buffer, size_t size) {
-#ifdef WIN32
+#if defined(WIN32) && !defined(CYGWIN)
 	random_provider.generate(buffer, size);
 #else
 	get_random_bytes(buffer, size);
