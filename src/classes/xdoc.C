@@ -28,7 +28,7 @@
 #include "xnode.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_XDOC_C="$Id: xdoc.C,v 1.176 2012/06/15 11:54:18 moko Exp $";
+volatile const char * IDENT_XDOC_C="$Id: xdoc.C,v 1.177 2012/06/21 14:22:09 moko Exp $";
 
 // defines
 
@@ -548,7 +548,8 @@ inline HashStringValue* get_options(MethodParams& params, size_t index){
 static void _file(Request& r, MethodParams& params) {
 	VXdoc& vdoc=GET_SELF(r, VXdoc);
 
-	XDocOutputOptions oo(r, get_options(params, 0), true/* $.name[filename] could be specified by user */);
+	XDocOutputOptions oo(vdoc.output_options);
+	oo.append(r, get_options(params, 0), true/* $.name[filename] could be specified by user */);
 	String::C buf=xdoc2buf(r, vdoc, oo, 0/*file_name. not to file, to memory*/);
 
 	VFile& vfile=*new VFile;
@@ -571,14 +572,16 @@ static void _save(Request& r, MethodParams& params) {
 
 	const String& file_spec=r.absolute(params.as_string(0, FILE_NAME_MUST_BE_STRING));
 	
-	XDocOutputOptions oo(r, get_options(params, 1));
+	XDocOutputOptions oo(vdoc.output_options);
+	oo.append(r, get_options(params, 1));
 	xdoc2buf(r, vdoc, oo, &file_spec);
 }
 
 static void _string(Request& r, MethodParams& params) {
 	VXdoc& vdoc=GET_SELF(r, VXdoc);
 
-	XDocOutputOptions oo(r, get_options(params, 0));
+	XDocOutputOptions oo(vdoc.output_options);
+	oo.append(r, get_options(params, 0));
 	String::C buf=xdoc2buf(r, vdoc, oo,
 		0/*file_name. not to file, to memory*/,
 		true/*use source charset to render, client charset to put to header*/);
@@ -627,9 +630,35 @@ static VXdoc& _transform(Request& r, const String* stylesheet_source,
 
 	//gdome_xml_doc_mkref dislikes XML_HTML_DOCUMENT_NODE  type, fixing
 	transformed->type=XML_DOCUMENT_NODE;
-
 	// constructing result
-	return *new VXdoc(r.charsets, *transformed);
+	VXdoc& result=*new VXdoc(r.charsets, *transformed);
+	/* grabbing options
+
+		<xsl:output
+		!method = "xml" | "html" | "text"
+			X| qname-but-not-ncname 
+		!version = nmtoken 
+		!encoding = string 
+		!omit-xml-declaration = "yes" | "no"
+		!standalone = "yes" | "no"
+		!doctype-public = string 
+		!doctype-system = string 
+		Xcdata-section-elements = qnames 
+		!indent = "yes" | "no"
+		!media-type = string /> 
+	*/
+	XDocOutputOptions& oo=result.output_options;
+
+	oo.method=stylesheet->method?&r.transcode(stylesheet->method):0;
+	oo.encoding=stylesheet->encoding?&r.transcode(stylesheet->encoding):0;
+	oo.mediaType=stylesheet->mediaType?&r.transcode(stylesheet->mediaType):0;
+	oo.indent=stylesheet->indent;
+	oo.version=stylesheet->version?&r.transcode(stylesheet->version):0;
+	oo.standalone=stylesheet->standalone;
+	oo.omitXmlDeclaration=stylesheet->omitXmlDeclaration;
+
+	// return
+	return result;
 }
 static void _transform(Request& r, MethodParams& params) {
 	VXdoc& vdoc=GET_SELF(r, VXdoc);

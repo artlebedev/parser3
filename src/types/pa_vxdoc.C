@@ -12,7 +12,7 @@
 #include "pa_request.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_PA_VXDOC_C="$Id: pa_vxdoc.C,v 1.46 2012/05/28 19:47:53 moko Exp $" IDENT_PA_VXDOC_H;
+volatile const char * IDENT_PA_VXDOC_C="$Id: pa_vxdoc.C,v 1.47 2012/06/21 14:22:09 moko Exp $" IDENT_PA_VXDOC_H;
 
 // defines
 
@@ -108,10 +108,7 @@ static int param_option_over_output_option(
 	return 0;
 }
 
-XDocOutputOptions::XDocOutputOptions(Request& r, HashStringValue* options, bool with_filename){
-	memset(this, 0, sizeof(*this));
-	indent=standalone=omitXmlDeclaration=-1;
-
+void XDocOutputOptions::append(Request& r, HashStringValue* options, bool with_filename){
 /*
 <xsl:output
   !method = "xml" | "html" | "text" | qname-but-not-ncname 

@@ -18,7 +18,7 @@
 #include "pa_vxdoc.h"
 #endif
 
-volatile const char * IDENT_JSON_C="$Id: json.C,v 1.23 2012/06/04 13:46:18 moko Exp $";
+volatile const char * IDENT_JSON_C="$Id: json.C,v 1.24 2012/06/21 14:22:09 moko Exp $";
 
 // class
 
@@ -395,7 +395,8 @@ static void _string(Request& r, MethodParams& params) {
 					valid_options++;
 #ifdef XML
 				} else if(key == "xdoc" && (vvalue = value->get_hash())){
-					json.xdoc_options=new XDocOutputOptions(r, vvalue);
+					json.xdoc_options=new XDocOutputOptions();
+					json.xdoc_options->append(r, vvalue);
 					valid_options++;
 #endif
 				} else if(Junction* junction=value->get_junction()){

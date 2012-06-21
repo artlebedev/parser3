@@ -8,7 +8,7 @@
 #ifndef PA_VXDOC_H
 #define PA_VXDOC_H
 
-#define IDENT_PA_VXDOC_H "$Id: pa_vxdoc.h,v 1.51 2012/05/28 19:47:53 moko Exp $"
+#define IDENT_PA_VXDOC_H "$Id: pa_vxdoc.h,v 1.52 2012/06/21 14:22:10 moko Exp $"
 
 #include "classes.h"
 #include "pa_common.h"
@@ -39,7 +39,7 @@ struct XDocOutputOptions {
 		indent=standalone=omitXmlDeclaration=-1;
 	};
 
-	XDocOutputOptions(Request& r, HashStringValue* options, bool with_filename=false);
+	void append(Request& r, HashStringValue* options, bool with_filename=false);
 };
 
 
@@ -113,6 +113,8 @@ public: // VXdoc
 public:
 
 	VHash search_namespaces;
+
+	XDocOutputOptions output_options;
 
 private:
 
