@@ -1,0 +1,11 @@
+@main[]
+
+$s['^#0D']
+$s - it should survive
+
+$f[^file::create[text;;$s]]
+$f.text - it should not survive
+
+$f[^file::create[binary;;$s]]
+$f.text - it should survive
+

@@ -1,0 +1,7 @@
+Content-Type: text/html
+Content-Length: 75
+
+'' - it should survive
+'
+' - it should not survive
+'' - it should survive
