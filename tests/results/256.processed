@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 5839
+Content-Length: 5892
 
 <h3>hash</h3>
 {
@@ -211,8 +211,8 @@ null,
 "class":"file",
 "size":12,
 "name":"zigi",
-"mode":"text",
 "content-type":"application\/octet-stream",
+"mode":"text",
 "text":"file-content"
 },
 "binary":{
@@ -231,6 +231,7 @@ null,
 "size":12,
 "name":"256.txt",
 "content-type":"application\/octet-stream",
+"mode":"binary",
 "adate":"-value-",
 "mdate":"-value-",
 "cdate":"-value-"
@@ -240,8 +241,8 @@ null,
 		"class":"file",
 		"size":12,
 		"name":"zigi",
-		"mode":"text",
 		"content-type":"application\/octet-stream",
+		"mode":"text",
 		"base64":"ZmlsZS1jb250ZW50"
 	},
 	"binary":{
@@ -260,6 +261,7 @@ null,
 		"size":12,
 		"name":"256.txt",
 		"content-type":"application\/octet-stream",
+		"mode":"binary",
 		"adate":"-value-",
 		"mdate":"-value-",
 		"cdate":"-value-"
@@ -273,8 +275,8 @@ null,
 "class":"file",
 "size":12,
 "name":"zigi",
-"mode":"text",
-"content-type":"application\/octet-stream"
+"content-type":"application\/octet-stream",
+"mode":"text"
 },
 "binary":{
 "class":"file",
@@ -291,6 +293,7 @@ null,
 "size":12,
 "name":"256.txt",
 "content-type":"application\/octet-stream",
+"mode":"binary",
 "adate":"-value-",
 "mdate":"-value-",
 "cdate":"-value-"
