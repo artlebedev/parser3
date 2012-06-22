@@ -1,3 +1,730 @@
+2012-06-22	moko
+	* src/types/pa_vfile.C 1.56:
+		returned empty mode to stated files (issue #815)
+
+	* tests/284.html 1.1:
+	* tests/results/284.processed 1.1:
+		output options test (feature #265)
+
+2012-06-22	misha
+	* tests/results/215.processed 1.4:
+	* tests/results/256.processed 1.6:
+		*** empty log message ***
+
+	* tests/215.html 1.3:
+		- little changes
+
+2012-06-21	moko
+	* src/classes/json.C 1.24:
+	* src/classes/xdoc.C 1.177:
+	* src/types/pa_vxdoc.C 1.47:
+	* src/types/pa_vxdoc.h 1.52:
+		output_options returned and used (bugfix for feature #265)
+
+	* buildall-with-xml 1.52:
+	* buildall-without-xml 1.35:
+		--with-match-limit=10000 breaks long .*, default 10M restored. (
+		issue #216)
+
+	* tests/283.html 1.1:
+	* tests/results/283.processed 1.1:
+		test for issue #815 added
+
+2012-06-20	moko
+	* src/types/pa_vfile.C 1.55:
+	* src/types/pa_vstring.C 1.33:
+		bugfix: ^#0D not altered again, cstrm not required.
+
+	* src/lib/ltdl/argz.c 1.2:
+	* src/lib/ltdl/libltdl/lt__glibc.h 1.2:
+	* src/lib/ltdl/ltdl.c 1.6:
+		fixes for Win32 and broken FreeBSD (issue #45)
+
+	* src/lib/ltdl/ltdl.vcproj 1.8:
+		preopen.c and config.h removed
+
+	* src/main/pa_string.C 1.243:
+		warnings war
+
+	* src/classes/mail.C 1.120:
+	* src/include/pa_dir.h 1.21:
+	* src/include/pa_http.h 1.8:
+	* src/lib/json/JSON_parser.h 1.4:
+	* src/lib/smtp/smtp.h 1.9:
+	* src/main/pa_random.C 1.4:
+	* src/main/pa_socks.C 1.27:
+	* src/targets/apache/pa_threads.C 1.3:
+	* src/targets/apache13core/pa_threads.C 1.8:
+	* src/targets/isapi/pa_threads.C 1.20:
+	* src/targets/isapi/parser3isapi.C 1.106:
+	* src/types/pa_vstatus.C 1.29:
+		compilation under cygwin fixed
+
+2012-06-19	moko
+	* src/lib/ltdl/config_fixed.h 1.5:
+	* src/lib/ltdl/ltdl.vcproj 1.7:
+		compilation under Windows fixed
+
+	* parser3.sln 1.16:
+		removed antique pcre_ctype
+
+	* src/include/pa_config_fixed.h 1.78:
+		required for INT_MAX / UINT_MAX
+
+2012-06-18	moko
+	* src/include/pa_config_fixed.h 1.77:
+		undefined reference to __imp__pcre_* fix for Windows
+
+	* src/include/pa_charset.h 1.51:
+	* src/lib/pcre/Makefile.am 1.8:
+	* src/lib/pcre/Makefile.in 1.22:
+	* src/lib/pcre/pa_pcre_internal.h 1.1:
+	* src/lib/pcre/pcre_internal.h 1.2:
+		pcre_internal.h -> pa_pcre_internal.h for Windows compatibility (win32/pcre has own copy of 
+		pcre_internal.h
+		_pcre_default_tables define fixed
+
+2012-06-17	moko
+	* src/classes/memcached.C 1.8:
+		flush -> clear
+
+	* src/classes/memcached.C 1.7:
+		memcached does not support quotes even in server name
+
+	* src/classes/memcached.C 1.6:
+	* src/lib/memcached/pa_memcached.C 1.6:
+	* src/lib/memcached/pa_memcached.h 1.7:
+	* src/types/pa_vmemcached.C 1.12:
+		version() called on open to check servers existance.
+		$.key(true) syntax now supported
+
+	* src/include/pa_config_fixed.h 1.76:
+	* src/include/pa_config_includes.h 1.36:
+		old stuff cleanup
+
+	* src/classes/table.C 1.290:
+	* tests/282.cfg 1.1:
+	* tests/282.html 1.1:
+	* tests/results/282.processed 1.1:
+		encloser at the EOF bug fixed, incorrectly enclosed data now 
+		processed more logicaly (fixes #339)
+
+2012-06-15	moko
+	* buildall-without-xml 1.34:
+		sync with buildall-with-xml
+
+	* buildall-with-xml 1.51:
+		download auto-detected between fetch and curl
+
+	* configure.in 1.171:
+		--with-gc and --with-pcre now also processed correctly
+
+	* Makefile.in 1.119:
+	* aclocal.m4 1.87:
+	* bin/Makefile.in 1.20:
+	* configure 1.150:
+	* etc/Makefile.in 1.25:
+	* etc/parser3.charsets/Makefile.in 1.30:
+	* src/Makefile.in 1.66:
+	* src/classes/Makefile.in 1.78:
+	* src/include/Makefile.in 1.29:
+	* src/include/pa_config_auto.h.in 1.73:
+	* src/lib/Makefile.in 1.26:
+	* src/lib/cord/Makefile.in 1.15:
+	* src/lib/cord/include/Makefile.in 1.12:
+	* src/lib/cord/include/private/Makefile.in 1.12:
+	* src/lib/curl/Makefile.in 1.4:
+	* src/lib/gc/Makefile.in 1.12:
+	* src/lib/gc/include/Makefile.in 1.13:
+	* src/lib/gd/Makefile.in 1.14:
+	* src/lib/json/Makefile.in 1.8:
+	* src/lib/md5/Makefile.in 1.19:
+	* src/lib/memcached/Makefile.in 1.7:
+	* src/lib/pcre/Makefile.in 1.21:
+	* src/lib/sdbm/Makefile.in 1.13:
+	* src/lib/sdbm/pa-include/Makefile.in 1.5:
+	* src/lib/smtp/Makefile.in 1.14:
+	* src/main/Makefile.in 1.70:
+	* src/sql/Makefile.in 1.23:
+	* src/targets/Makefile.in 1.54:
+	* src/targets/apache/Makefile.in 1.11:
+	* src/targets/cgi/Makefile.in 1.84:
+	* src/targets/isapi/Makefile.in 1.23:
+	* src/types/Makefile.in 1.77:
+		now aclocal -I src/lib/ltdl/m4/ && autoheader && automake && autoconf should be run on rol1 using
+		automake / aclocal (GNU automake) 1.11.1
+		autoconf (GNU Autoconf) 2.68
+
+	* configure.in 1.168:
+	* src/include/pa_version.h 1.47:
+	* src/types/pa_vrequest.C 1.54:
+		*** empty log message ***
+
+	* configure.in 1.166:
+		new PARSER_VERSION logic
+
+	* src/include/pa_version.h 1.46:
+		new pa_version.h logic
+
+	* src/classes/curl.C 1.22:
+	* src/classes/file.C 1.222:
+	* src/classes/image.C 1.142:
+	* src/classes/xdoc.C 1.176:
+	* src/types/pa_vfile.C 1.54:
+	* src/types/pa_vfile.h 1.74:
+	* src/types/pa_vform.C 1.105:
+	* src/types/pa_vrequest.C 1.55:
+	* src/types/pa_vstring.C 1.32:
+		feols_normalized -> fis_text_content
+		set_binary added
+
+	* src/targets/cgi/parser3.C 1.261:
+		gcc compilation warnings fixed
+
+2012-06-15	misha
+	* src/classes/curl.C 1.21:
+	* src/classes/file.C 1.221:
+	* src/classes/image.C 1.141:
+	* src/classes/xdoc.C 1.175:
+	* src/types/pa_vfile.C 1.53:
+	* src/types/pa_vfile.h 1.73:
+	* src/types/pa_vform.C 1.104:
+	* src/types/pa_vrequest.C 1.53:
+	* src/types/pa_vstring.C 1.31:
+		- ^file::create[text;content] EOLs in content now is normalized. 
+		( new feature: #815 )
+
+2012-06-14	moko
+	* configure.in 1.164:
+		--disable-version-update added to disable version update with host information (for debian package)
+		whitespace optimized
+
+	* configure.in 1.162:
+		version changed to 3.4.2 RC
+		no-pic added for libtool
+
+	* src/include/pa_version.h 1.45:
+		Nice pa_version.h default. Please keep it.
+
+2012-06-13	moko
+	* src/classes/hash.C 1.115:
+	* src/types/pa_vhash.h 1.67:
+	* tests/281.html 1.1:
+	* tests/results/281.processed 1.1:
+		"hash flocked" error removed for safe operations like ^h._count[]
+		 ( new feature: #335 )
+
+	* configure 1.138:
+	* configure 1.142:
+	* src/classes/Makefile.am 1.60:
+	* src/classes/Makefile.in 1.77:
+	* src/include/pa_config_auto.h.in 1.65:
+	* src/lib/cord/Makefile.in 1.14:
+	* src/lib/gd/Makefile.in 1.13:
+	* src/lib/json/Makefile.in 1.7:
+	* src/lib/md5/Makefile.in 1.18:
+	* src/lib/memcached/Makefile.in 1.6:
+	* src/lib/sdbm/Makefile.in 1.12:
+	* src/lib/smtp/Makefile.in 1.13:
+	* src/main/Makefile.am 1.49:
+	* src/main/Makefile.in 1.69:
+	* src/sql/Makefile.in 1.22:
+	* src/targets/apache/Makefile.am 1.8:
+	* src/targets/apache/Makefile.in 1.10:
+	* src/targets/apache/Makefile.in 1.7:
+	* src/targets/apache/Makefile.in 1.8:
+	* src/targets/cgi/Makefile.in 1.83:
+	* src/types/Makefile.am 1.49:
+	* src/types/Makefile.in 1.76:
+		*** empty log message ***
+
+	* src/targets/apache/Makefile.am 1.9:
+	* src/targets/apache/Makefile.in 1.9:
+		libmod_parser3 -> mod_parser3
+
+	* buildall-with-xml 1.50:
+	* buildall-without-xml 1.33:
+		--with-static -> --with
+
+	* configure.in 1.159:
+		--with-static/shared xml replaced with --with-xml, xml 
+		compilation check added
+
+	* configure.in 1.158:
+		--with-static/shared-gc, --with-static-pcre are replaced with --with-gc and --with-pcre
+		test for pcre linking added
+
+	* configure.in 1.157:
+		apxs2 check optimized
+
+	* src/targets/cgi/Makefile.am 1.63:
+		preserve-dup-deps requires .a, not .la, includes optimized
+
+	* buildall-with-xml 1.49:
+		--with-pic looks better for -fPIC
+
+	* configure.in 1.153:
+		switched to convenience library in static linking
+
+	* src/targets/apache/Makefile.am 1.7:
+		switched to convenience library usage to avoid libtool warnings
+
+	* src/lib/cord/Makefile.am 1.5:
+	* src/lib/gd/Makefile.am 1.3:
+	* src/lib/json/Makefile.am 1.5:
+	* src/lib/md5/Makefile.am 1.4:
+	* src/lib/memcached/Makefile.am 1.3:
+	* src/lib/sdbm/Makefile.am 1.6:
+	* src/lib/smtp/Makefile.am 1.3:
+		switched to convenience library usage
+
+	* src/sql/Makefile.am 1.4:
+		pa_sql_driver.h should be in includes
+
+	* src/targets/apache/Makefile.am 1.6:
+		updated for libtool usage
+
+	* bin/auto.p.dist.in 1.16:
+		.cfg removed from charset names.
+
+	* buildall-without-xml 1.32:
+		--with-included-ltdl added
+
+2012-06-12	moko
+	* buildall-without-xml 1.31:
+		sync with buildall-with-xml
+
+	* buildall-with-xml 1.48:
+		--with-included-ltdl added
+		$cflags added for -fPIC for x64
+		$download added for wget
+		success check added
+
+	* buildall-without-xml 1.30:
+		--with-dynamic-stdcpp removed
+
+	* configure 1.136:
+	* configure.in 1.151:
+	* src/targets/cgi/Makefile.am 1.62:
+	* src/targets/cgi/Makefile.in 1.82:
+		*** empty log message ***
+
+	* configure.in 1.150:
+		disable-static returned
+
+	* src/targets/cgi/Makefile.am 1.61:
+		Automake 1.9 does not support LIBTOOLFLAGS
+
+2012-06-11	moko
+	* Makefile.in 1.105:
+	* bin/Makefile.in 1.19:
+	* configure 1.132:
+	* configure 1.134:
+	* etc/Makefile.in 1.24:
+	* etc/parser3.charsets/Makefile.in 1.29:
+	* src/Makefile.in 1.65:
+	* src/classes/Makefile.in 1.76:
+	* src/include/Makefile.in 1.28:
+	* src/lib/Makefile.in 1.25:
+	* src/lib/cord/Makefile.in 1.13:
+	* src/lib/cord/include/Makefile.in 1.11:
+	* src/lib/cord/include/private/Makefile.in 1.11:
+	* src/lib/curl/Makefile.in 1.3:
+	* src/lib/gc/Makefile.in 1.11:
+	* src/lib/gc/include/Makefile.in 1.12:
+	* src/lib/gd/Makefile.in 1.12:
+	* src/lib/json/Makefile.in 1.6:
+	* src/lib/md5/Makefile.in 1.17:
+	* src/lib/memcached/Makefile.in 1.5:
+	* src/lib/pcre/Makefile.in 1.20:
+	* src/lib/sdbm/Makefile.in 1.11:
+	* src/lib/sdbm/pa-include/Makefile.in 1.4:
+	* src/lib/smtp/Makefile.in 1.12:
+	* src/main/Makefile.in 1.68:
+	* src/sql/Makefile.in 1.21:
+	* src/targets/Makefile.in 1.53:
+	* src/targets/apache/Makefile.in 1.6:
+	* src/targets/cgi/Makefile.am 1.59:
+	* src/targets/cgi/Makefile.in 1.79:
+	* src/targets/cgi/Makefile.in 1.80:
+	* src/targets/cgi/Makefile.in 1.81:
+	* src/targets/isapi/Makefile.in 1.22:
+	* src/types/Makefile.in 1.75:
+		*** empty log message ***
+
+	* configure.in 1.148:
+	* src/targets/cgi/Makefile.am 1.60:
+		disable-static not compatible with LIBTOOLFLAGS for unknown 
+		reasons
+
+	* buildall-with-xml 1.47:
+		--with-dynamic-stdcpp removed
+
+	* configure.in 1.146:
+		static/dynamic -lstdc++ linking option removed
+		apxs2 check added
+
+	* src/targets/cgi/Makefile.am 1.58:
+		static/dynamic -lstdc++ linking option removed
+
+2012-06-10	moko
+	* src/targets/cgi/Makefile.am 1.57:
+	* src/targets/cgi/Makefile.in 1.78:
+		*** empty log message ***
+
+	* src/targets/cgi/Makefile.am 1.56:
+		--preserve-dup-deps libtool option added
+
+	* src/targets/cgi/pp3.cmd 1.3:
+		old PAF stuff
+
+2012-06-09	moko
+	* Makefile.am 1.84:
+	* Makefile.in 1.103:
+		ACLOCAL_AMFLAGS = -I src/lib/ltdl/m4 added and some beauty
+
+	* depcomp 1.2:
+		from libtool 2.4.2
+
+	* Makefile.am 1.83:
+	* Makefile.in 1.101:
+	* Makefile.in 1.102:
+	* acinclude.m4 1.68:
+	* aclocal.m4 1.72:
+	* acsite.m4 1.47:
+	* configure 1.129:
+	* configure 1.130:
+	* configure.in 1.143:
+	* mkinstalldirs 1.3:
+	* src/include/pa_charset.h 1.49:
+	* src/include/pa_charset.h 1.50:
+	* src/include/pa_config_auto.h.in 1.57:
+	* src/lib/ltdl/acconfig.h 1.3:
+	* src/lib/ltdl/config.guess 1.4:
+	* src/lib/ltdl/config.sub 1.4:
+	* src/lib/ltdl/install-sh 1.4:
+	* src/lib/ltdl/ltdl.vcproj 1.6:
+	* src/lib/ltdl/ltmain.sh 1.3:
+	* src/lib/ltdl/missing 1.4:
+		*** empty log message ***
+
+	* configure.in 1.144:
+		ltdl directory removed, it has correct Makefile.in
+
+	* src/lib/ltdl/Makefile.in 1.17:
+		correct Makefile.in from libtoolize
+
+	* Makefile.am 1.82:
+	* Makefile.in 1.100:
+	* aclocal.m4 1.71:
+	* bin/Makefile.in 1.18:
+	* config.guess 1.4:
+	* config.sub 1.5:
+	* configure 1.128:
+	* etc/Makefile.in 1.23:
+	* etc/parser3.charsets/Makefile.in 1.28:
+	* install-sh 1.2:
+	* ltmain.sh 1.6:
+	* missing 1.3:
+	* src/Makefile.in 1.64:
+	* src/classes/Makefile.in 1.75:
+	* src/include/Makefile.in 1.27:
+	* src/include/pa_config_auto.h.in 1.56:
+	* src/lib/Makefile.in 1.24:
+	* src/lib/cord/Makefile.in 1.12:
+	* src/lib/cord/include/Makefile.in 1.10:
+	* src/lib/cord/include/private/Makefile.in 1.10:
+	* src/lib/curl/Makefile.in 1.2:
+	* src/lib/gc/Makefile.in 1.10:
+	* src/lib/gc/include/Makefile.in 1.11:
+	* src/lib/gd/Makefile.in 1.11:
+	* src/lib/json/Makefile.in 1.5:
+	* src/lib/md5/Makefile.in 1.16:
+	* src/lib/memcached/Makefile.in 1.4:
+	* src/lib/pcre/Makefile.in 1.19:
+	* src/lib/sdbm/Makefile.in 1.10:
+	* src/lib/sdbm/pa-include/Makefile.in 1.3:
+	* src/lib/smtp/Makefile.in 1.11:
+	* src/main/Makefile.in 1.67:
+	* src/sql/Makefile.in 1.20:
+	* src/targets/Makefile.in 1.52:
+	* src/targets/apache/Makefile.in 1.5:
+	* src/targets/cgi/Makefile.in 1.77:
+	* src/targets/isapi/Makefile.in 1.21:
+	* src/types/Makefile.in 1.74:
+		autogenerated files updated after libtool update
+
+	* src/lib/ltdl/COPYING.LIB 1.2:
+	* src/lib/ltdl/Makefile.am 1.4:
+	* src/lib/ltdl/Makefile.in 1.15:
+	* src/lib/ltdl/README 1.2:
+	* src/lib/ltdl/acinclude.m4 1.4:
+	* src/lib/ltdl/aclocal.m4 1.2:
+	* src/lib/ltdl/argz.c 1.1:
+	* src/lib/ltdl/argz_.h 1.1:
+	* src/lib/ltdl/config-h.in 1.1:
+	* src/lib/ltdl/config.h 1.3:
+	* src/lib/ltdl/config/compile 1.1:
+	* src/lib/ltdl/config/config.guess 1.1:
+	* src/lib/ltdl/config/config.sub 1.1:
+	* src/lib/ltdl/config/depcomp 1.1:
+	* src/lib/ltdl/config/install-sh 1.1:
+	* src/lib/ltdl/config/ltmain.sh 1.1:
+	* src/lib/ltdl/config/missing 1.1:
+	* src/lib/ltdl/config_auto.h.in 1.4:
+	* src/lib/ltdl/config_fixed.h 1.4:
+	* src/lib/ltdl/configure 1.5:
+	* src/lib/ltdl/configure.ac 1.1:
+	* src/lib/ltdl/configure.in 1.6:
+	* src/lib/ltdl/libltdl/lt__alloc.h 1.1:
+	* src/lib/ltdl/libltdl/lt__dirent.h 1.1:
+	* src/lib/ltdl/libltdl/lt__glibc.h 1.1:
+	* src/lib/ltdl/libltdl/lt__private.h 1.1:
+	* src/lib/ltdl/libltdl/lt__strl.h 1.1:
+	* src/lib/ltdl/libltdl/lt_dlloader.h 1.1:
+	* src/lib/ltdl/libltdl/lt_error.h 1.1:
+	* src/lib/ltdl/libltdl/lt_system.h 1.1:
+	* src/lib/ltdl/libltdl/slist.h 1.1:
+	* src/lib/ltdl/loaders/dld_link.c 1.1:
+	* src/lib/ltdl/loaders/dlopen.c 1.1:
+	* src/lib/ltdl/loaders/dyld.c 1.1:
+	* src/lib/ltdl/loaders/load_add_on.c 1.1:
+	* src/lib/ltdl/loaders/loadlibrary.c 1.1:
+	* src/lib/ltdl/loaders/preopen.c 1.1:
+	* src/lib/ltdl/loaders/shl_load.c 1.1:
+	* src/lib/ltdl/lt__alloc.c 1.1:
+	* src/lib/ltdl/lt__dirent.c 1.1:
+	* src/lib/ltdl/lt__strl.c 1.1:
+	* src/lib/ltdl/lt_dlloader.c 1.1:
+	* src/lib/ltdl/lt_error.c 1.1:
+	* src/lib/ltdl/ltdl.c 1.5:
+	* src/lib/ltdl/ltdl.h 1.3:
+	* src/lib/ltdl/m4/argz.m4 1.1:
+	* src/lib/ltdl/m4/libtool.m4 1.1:
+	* src/lib/ltdl/m4/ltdl.m4 1.1:
+	* src/lib/ltdl/m4/ltoptions.m4 1.1:
+	* src/lib/ltdl/m4/ltsugar.m4 1.1:
+	* src/lib/ltdl/m4/ltversion.m4 1.1:
+	* src/lib/ltdl/m4/lt~obsolete.m4 1.1:
+	* src/lib/ltdl/slist.c 1.1:
+		libtool updated to version 2.4.2
+
+	* configure.in 1.142:
+		preparation for new libtool
+
+	* configure.in 1.141:
+		Some beauty added :)
+
+	* src/targets/apache/Makefile.am 1.5:
+		:= -> =
+
+	* src/lib/pcre/Makefile.am 1.7:
+	* src/lib/pcre/config.h 1.4:
+		config.h removed once again. :)
+
+	* configure.in 1.140:
+	* src/include/pa_config_includes.h 1.35:
+		limits.h added, previously was taken from pcre_internal.h. :)
+
+	* src/lib/pcre/Makefile.am 1.6:
+		config.h returned
+
+	* src/lib/pcre/config.h 1.3:
+		still need this. :)
+
+	* src/lib/pcre/pcre_internal.h 1.1:
+		extracts from real pcre_internal.h
+
+	* configure.in 1.139:
+		--with-charsets removed; --with-mysql-client & co removed
+
+	* buildall-with-xml 1.46:
+	* buildall-without-xml 1.29:
+		pcre_internal.h extracts now in parser tree, no need to copy
+
+	* src/lib/pcre/Makefile.am 1.5:
+	* src/lib/pcre/config.h 1.2:
+	* src/lib/pcre/ibm-1250.ucm 1.2:
+	* src/lib/pcre/ibm-1251.ucm 1.2:
+	* src/lib/pcre/ibm-1254.ucm 1.2:
+	* src/lib/pcre/ibm-1257.ucm 1.2:
+	* src/lib/pcre/pcre_parser_ctype.c 1.7:
+	* src/lib/pcre/pcre_parser_ctype.vcproj 1.8:
+	* src/lib/pcre/ruspart_win2koi.pl 1.2:
+	* src/lib/pcre/win-koi.tab 1.2:
+		debian/patches/101_pcre.patch - local copy of pcre_internal.h extracts now used
+		old trash removed
+
+	* bin/auto.p.dist.in 1.15:
+		all charsets are listed, utf-8 by default, rare charsets/drivers 
+		are commented, sql driver quessing removed (debian/patches/
+		103_auto_p.patch)
+
+	* etc/parser3.charsets/Makefile.am 1.6:
+		charsets now in share (debian/patches/104_automake.patch) + all 
+		charsets are copied
+
+	* buildall-with-xml 1.45:
+	* buildall-without-xml 1.28:
+		curl option removed + extra arguments now supported
+
+2012-06-08	misha
+	* src/classes/table.C 1.289:
+		- one params.as_hash usage was rolled back: the 2nd option in ^
+		table.hash[] could be hash or table so .as_hash will throw an 
+		exception when table option is specified
+
+	* src/classes/curl.C 1.20:
+	* src/classes/file.C 1.220:
+	* src/classes/hash.C 1.114:
+	* src/classes/image.C 1.140:
+	* src/classes/mail.C 1.119:
+	* src/classes/op.C 1.211:
+	* src/classes/string.C 1.205:
+	* src/classes/table.C 1.288:
+	* src/classes/void.C 1.51:
+	* src/classes/xdoc.C 1.174:
+	* src/include/pa_exception.h 1.63:
+	* src/types/pa_vmethod_frame.C 1.21:
+	* src/types/pa_vmethod_frame.h 1.93:
+		- MethodParams::as_hash is optimized and improved (whitespaces are allowed as empty options)
+		- MethodParams::as_table is added
+		- above methods are used for parsing methods' options ( new feature: #9 )
+
+	* tests/results/280.processed 1.1:
+		*** empty log message ***
+
+	* src/types/pa_vclass.C 1.47:
+	* src/types/pa_vclass.h 1.60:
+		- method get_hash is added to vclass. now class fields can be 
+		accessible as a hash: $h[^hash::create[$asd:CLASS]]
+
+	* src/types/pa_vhash.h 1.66:
+	* src/types/pa_vhashfile.h 1.41:
+		- vhash and vhashfile now have get_fields method so their fields 
+		can be accessed with ^reflection:fields[...] & ^reflection:field[
+		...]
+
+2012-06-06	misha
+	* tests/280.html 1.1:
+		- tests for ^reflection:method[obj-or-class;method], ^reflection:
+		field[obj-or-class;field] and ^reflection:fields[obj-or-class] 
+		are added
+
+2012-06-05	moko
+	* src/targets/Makefile.am 1.12:
+	* src/targets/Makefile.in 1.51:
+		cgi now build with apache module
+
+	* src/classes/memcached.C 1.5:
+		flish ttl fixed
+
+2012-06-05	misha
+	* src/classes/reflection.C 1.28:
+		- ^reflection:method[class or object;method name] and ^
+		reflection:field[class or object;field name] are added
+
+	* src/types/pa_vstateless_class.C 1.49:
+		- Method::get_vjunction method is used
+
+	* src/types/pa_method.h 1.20:
+		- Method::as_vjunction method is added
+
+2012-06-04	moko
+	* src/classes/json.C 1.23:
+	* src/classes/op.C 1.210:
+	* tests/279.html 1.1:
+	* tests/results/279.processed 1.1:
+		^json:parse[] now supports $.taint option (new feature #833)
+
+2012-06-04	misha
+	* src/include/pa_common.h 1.148:
+	* src/main/pa_common.C 1.268:
+	* src/types/pa_vcookie.C 1.87:
+		- search_stop method was moved from pa_vcookie.C to pa_common.C
+
+2012-06-02	misha
+	* src/main/pa_http.C 1.54:
+		- ^file:load[...;http://...] - all received cookies are parced 
+		and stored into $.cookies ( new feature: #31 )
+
+2012-05-30	misha
+	* src/main/compile.tab.C 1.155:
+	* tests/results/182.processed 1.3:
+		*** empty log message ***
+
+	* tests/182.html 1.2:
+	* tests/182_dir/a3.p 1.2:
+	* tests/182_dir/a4.p 1.1:
+		- test for adding incomplete class into a scope while @USE is 
+		found
+
+	* src/main/compile.y 1.263:
+		- add incomplete class into a scope while @USE and @CLASS 
+		instructions are found ( bugfix: #838 )
+
+2012-05-29	moko
+	* src/types/pa_vclass.C 1.46:
+	* tests/278.html 1.1:
+	* tests/results/278.processed 1.1:
+		removed "property has no getter method" exception when 
+		GET_DEFAULT present (fixes #269)
+
+	* src/classes/json.C 1.22:
+	* tests/277.html 1.3:
+		^json:string[], $.default -> $._default
+
+2012-05-28	moko
+	* src/types/pa_vvoid.h 1.40:
+		$STRICT-VARS(true) implemented to check uninitialized values 
+		usage (new feature: #154)
+
+	* src/classes/json.C 1.21:
+	* src/classes/reflection.C 1.27:
+	* src/types/pa_value.C 1.35:
+	* src/types/pa_value.h 1.149:
+	* src/types/pa_vbool.h 1.35:
+	* src/types/pa_vdate.h 1.55:
+	* src/types/pa_vdouble.h 1.59:
+	* src/types/pa_vfile.C 1.52:
+	* src/types/pa_vfile.h 1.72:
+	* src/types/pa_vint.h 1.51:
+	* src/types/pa_vobject.C 1.36:
+	* src/types/pa_vobject.h 1.59:
+	* src/types/pa_vstring.h 1.70:
+	* src/types/pa_vtable.C 1.38:
+	* src/types/pa_vtable.h 1.60:
+	* src/types/pa_vvoid.h 1.39:
+	* src/types/pa_vxdoc.C 1.46:
+	* src/types/pa_vxdoc.h 1.51:
+	* tests/277.html 1.2:
+	* tests/results/277.processed 1.2:
+		^json:string[$o; $.default[$method]] implemented for VObject (
+		new feature #803)
+
+	* src/classes/json.C 1.20:
+	* src/lib/json/JSON_parser.h 1.3:
+	* tests/277.html 1.1:
+	* tests/results/277.processed 1.1:
+		json numbers are now treated as double ( new feature: #834 )
+
+	* src/classes/math.C 1.61:
+	* src/include/pa_string.h 1.204:
+	* src/main/pa_charset.C 1.91:
+	* src/main/pa_string.C 1.242:
+	* src/types/pa_vdouble.h 1.58:
+	* src/types/pa_vint.h 1.50:
+		pa_atoui added for out of range checks, zero division in vint/
+		vdouble check added ( fixes #832 )
+
+	* tests/275.html 1.2:
+	* tests/results/275.processed 1.2:
+		tests for pa_atoui added ( fixes #832 )
+
+2012-05-28	misha
+	* buildall-with-xml 1.44:
+		- --without-lzma option is added to libxml2 configure
+
 2012-05-27	misha
 	* tests/results/256.processed 1.5:
 	* tests/results/276.processed 1.1:
