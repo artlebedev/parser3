@@ -1,0 +1,23 @@
+@main[]
+
+$xml[^xdoc::create{<?xml version="1.0" encoding="utf-8" ?><doc>test</doc>}]
+$xsl[^xdoc::create{<?xml version="1.0" encoding="utf-8" ?>
+
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+  <xsl:output indent="no" method="html" omit-xml-declaration="yes" />
+
+  <xsl:template match="/">
+    <html>
+      <body>
+        <script src="test.js"/>
+      </body>
+    </html>
+  </xsl:template>
+</xsl:stylesheet>
+}]
+
+$result[^xml.transform[$xsl]]
+
+#<xsl:output ... /> options should be used here
+
+$result[^result.string[]]
