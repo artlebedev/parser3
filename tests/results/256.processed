@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 5892
+Content-Length: 5839
 
 <h3>hash</h3>
 {
@@ -231,7 +231,6 @@ null,
 "size":12,
 "name":"256.txt",
 "content-type":"application\/octet-stream",
-"mode":"binary",
 "adate":"-value-",
 "mdate":"-value-",
 "cdate":"-value-"
@@ -261,7 +260,6 @@ null,
 		"size":12,
 		"name":"256.txt",
 		"content-type":"application\/octet-stream",
-		"mode":"binary",
 		"adate":"-value-",
 		"mdate":"-value-",
 		"cdate":"-value-"
@@ -293,7 +291,6 @@ null,
 "size":12,
 "name":"256.txt",
 "content-type":"application\/octet-stream",
-"mode":"binary",
 "adate":"-value-",
 "mdate":"-value-",
 "cdate":"-value-"

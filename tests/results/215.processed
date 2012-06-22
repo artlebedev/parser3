@@ -1,10 +1,10 @@
 Content-Type: text/html
-Content-Length: 290
+Content-Length: 284
 
 ^file::load[text;filespec]: 'text'<br />
 ^file::load[binary;filespec]: 'binary'<br />
 ^file::create[text;...]: 'text'<br />
 ^file::create[binary;...]: 'binary'<br />
-^file::stat[filespec]: 'binary'<br />
+^file::stat[filespec]: ''<br />
 ^file::base64[...]: 'binary'<br />
 $img[^image::create(...)]^img.gif[]: 'binary'<br />
