@@ -12,7 +12,7 @@
 #include "pa_vint.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VFILE_C="$Id: pa_vfile.C,v 1.55 2012/06/20 23:22:22 moko Exp $" IDENT_PA_VFILE_H;
+volatile const char * IDENT_PA_VFILE_C="$Id: pa_vfile.C,v 1.56 2012/06/22 11:09:40 moko Exp $" IDENT_PA_VFILE_H;
 
 // externs
 
@@ -105,7 +105,8 @@ const char* VFile::text_cstr() {
 
 void VFile::set_mode(bool ais_text_mode){
 	fis_text_mode=ais_text_mode;
-	ffields.put(mode_name, new VString(ais_text_mode? mode_value_text : mode_value_binary ));
+	if(fvalue_ptr)
+		ffields.put(mode_name, new VString(ais_text_mode? mode_value_text : mode_value_binary ));
 }
 
 void VFile::set_name(const String* afile_name){
