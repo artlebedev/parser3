@@ -13,57 +13,6 @@
 	</Platforms>
 	<Configurations>
 		<Configuration
-			Name="Profile Release|Win32"
-			OutputDirectory=".\ProfileRelease"
-			IntermediateDirectory=".\ProfileRelease"
-			ConfigurationType="4"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="2"
-				GlobalOptimizations="TRUE"
-				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="libltdl"
-				PreprocessorDefinitions="LT_CONFIG_H=&lt;config_fixed.h&gt;"
-				StringPooling="TRUE"
-				RuntimeLibrary="2"
-				EnableFunctionLevelLinking="TRUE"
-				UsePrecompiledHeader="2"
-				PrecompiledHeaderFile=".\ProfileRelease/libltdl.pch"
-				AssemblerListingLocation=".\ProfileRelease/"
-				ObjectFile=".\ProfileRelease/"
-				ProgramDataBaseFileName=".\ProfileRelease/"
-				WarningLevel="0"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLibrarianTool"
-				OutputFile=".\ProfileRelease\libltdl.lib"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"/>
-			<Tool
-				Name="VCPostBuildEventTool"/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG"
-				Culture="1049"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
-		</Configuration>
-		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory=".\Debug"
 			IntermediateDirectory=".\Debug"
@@ -114,56 +63,6 @@
 				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 		<Configuration
-			Name="Profile Debug|Win32"
-			OutputDirectory=".\ProfileDebug"
-			IntermediateDirectory=".\ProfileDebug"
-			ConfigurationType="4"
-			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				AdditionalIncludeDirectories="libltdl"
-				PreprocessorDefinitions="LT_CONFIG_H=&lt;config_fixed.h&gt;"
-				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
-				UsePrecompiledHeader="2"
-				PrecompiledHeaderFile=".\ProfileDebug/libltdl.pch"
-				AssemblerListingLocation=".\ProfileDebug/"
-				ObjectFile=".\ProfileDebug/"
-				ProgramDataBaseFileName=".\ProfileDebug/"
-				BrowseInformation="1"
-				WarningLevel="0"
-				SuppressStartupBanner="TRUE"
-				DebugInformationFormat="3"/>
-			<Tool
-				Name="VCCustomBuildTool"/>
-			<Tool
-				Name="VCLibrarianTool"
-				OutputFile=".\ProfileDebug\libltdl.lib"
-				SuppressStartupBanner="TRUE"/>
-			<Tool
-				Name="VCMIDLTool"/>
-			<Tool
-				Name="VCPostBuildEventTool"/>
-			<Tool
-				Name="VCPreBuildEventTool"/>
-			<Tool
-				Name="VCPreLinkEventTool"/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG"
-				Culture="1049"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
-		</Configuration>
-		<Configuration
 			Name="Release|Win32"
 			OutputDirectory=".\Release"
 			IntermediateDirectory=".\Release"
@@ -173,20 +72,20 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
-				GlobalOptimizations="TRUE"
-				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="libltdl"
-				PreprocessorDefinitions="LT_CONFIG_H=&lt;config_fixed.h&gt;"
+				AdditionalIncludeDirectories=".;libltdl"
+				PreprocessorDefinitions="LTDL;LT_CONFIG_H=&lt;config_fixed.h&gt;"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
-				EnableFunctionLevelLinking="TRUE"
 				UsePrecompiledHeader="2"
 				PrecompiledHeaderFile=".\Release/libltdl.pch"
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
 				ProgramDataBaseFileName=".\Release/"
 				WarningLevel="0"
-				SuppressStartupBanner="TRUE"/>
+				SuppressStartupBanner="TRUE"
+				InlineFunctionExpansion="1"
+				GlobalOptimizations="TRUE"
+				EnableFunctionLevelLinking="TRUE"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
@@ -242,24 +141,7 @@
 			<File
 				RelativePath="ltdl.c">
 				<FileConfiguration
-					Name="Profile Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="2"
-						GlobalOptimizations="TRUE"
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						Optimization="0"
-						PreprocessorDefinitions=""
-						BasicRuntimeChecks="3"
-						BrowseInformation="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Profile Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
