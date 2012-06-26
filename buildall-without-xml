@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Id: buildall-without-xml,v 1.35 2012/06/21 09:04:55 moko Exp $
+# $Id: buildall-without-xml,v 1.36 2012/06/26 22:38:31 moko Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -13,7 +13,9 @@ echo
 echo "Building..."
 
 download=`which fetch 2>/dev/null`
-if test -z "$download"; then
+if test -f "$download"; then
+	download="fetch -p"
+else
 	download="wget -c --passive-ftp"
 fi
 
