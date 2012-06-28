@@ -1,3 +1,14 @@
+2012-06-26	moko
+	* buildall-with-xml 1.53:
+	* buildall-without-xml 1.36:
+		fetch requires -p for passive ftp
+
+	* src/lib/ltdl/ltdl.vcproj 1.9:
+		release build fixed
+
+	* configure.in 1.174:
+		3.4.2 RC -> 3.4.2
+
 2012-06-22	moko
 	* src/types/pa_vfile.C 1.56:
 		returned empty mode to stated files (issue #815)
@@ -8,11 +19,20 @@
 
 2012-06-22	misha
 	* tests/results/215.processed 1.4:
+	* tests/results/215.processed 1.5:
 	* tests/results/256.processed 1.6:
+	* tests/results/256.processed 1.7:
 		*** empty log message ***
 
 	* tests/215.html 1.3:
 		- little changes
+
+2012-06-21	moko
+	* src/classes/json.C 1.24:
+	* src/classes/xdoc.C 1.177:
+	* src/types/pa_vxdoc.C 1.47:
+	* src/types/pa_vxdoc.h 1.52:
+		output_options returned and used (bugfix for feature #265)
 
 2012-06-21	moko
 	* src/classes/json.C 1.24:
