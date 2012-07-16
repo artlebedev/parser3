@@ -17,11 +17,11 @@
 #include "pa_vfile.h"
 #include "pa_uue.h"
 
-volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.98 2012/03/16 09:24:18 moko Exp $" IDENT_PA_VMAIL_H;
+volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.99 2012/07/16 11:38:04 moko Exp $" IDENT_PA_VMAIL_H;
 
 #ifdef WITH_MAILRECEIVE
 extern "C" {
-#include "gmime.h"
+#include "gmime/gmime.h"
 }
 
 #include "pa_charsets.h"
@@ -38,11 +38,15 @@ enum PartType {
 	P_HTML,
 	P_FILE,
 	P_MESSAGE,
-
 	P_TYPES_COUNT
 };
 
-static const char* const part_name_begins[P_TYPES_COUNT]={"text", "html", "file", "message"};
+static const char* const part_name_begins[P_TYPES_COUNT] = {
+	"text",
+	"html",
+	"file",
+	"message"
+};
 
 // defines for statics
 
@@ -70,65 +74,29 @@ VMail::VMail(): VStateless_class(0, mail_base_class) {}
 
 #define EXCEPTION_VALUE "x-exception"
 
-static const String& maybeUpperCase(Charset& source_charset, 
-				    const String& src, bool toUpperCase) {
-	return toUpperCase?src.change_case(source_charset, String::CC_UPPER):src;
+static Charset* source_charset;
+
+static void putReceived(HashStringValue& received, const char* name, Value* value, bool capitalizeName=false) {
+	if(name && value)
+		received.put(capitalizeName ? capitalize(pa_strdup(name)) : pa_strdup(name), value);
 }
 
-static void putReceived(Charset& source_charset, 
-			HashStringValue& received, 
-			const char* must_clone_name, Value* value, 
-			bool nameToUpperCase=false) {
-
-	if(must_clone_name && value) {
-		received.put(
-			maybeUpperCase(source_charset, 
-				*new String(pa_strdup(must_clone_name)), nameToUpperCase),
-			value);
-	}
+static void putReceived(HashStringValue& received, const char* name, const char* value, bool capitalizeName=false) {
+	if(name && value)
+		putReceived(received, name, new VString(*new String(pa_strdup(value))), capitalizeName);
 }
 
-static void putReceived(Charset& source_charset, 
-			HashStringValue& received, 
-			const char* must_clone_name, const char* must_clone_value, 
-			bool nameToUpperCase=false) {
-	if(must_clone_name && must_clone_value) {
-
-		String::C must_clone_value_cstr(must_clone_value, strlen(must_clone_value));
-		//must_clone_value_cstr=Charset::transcode(must_clone_value_cstr, UTF8_charset, source_charset);
-
-		putReceived(source_charset,
-			received, 
-			pa_strdup(must_clone_name), 
-			new VString(*new String(pa_strdup(must_clone_value_cstr.str))),
-			nameToUpperCase
-		);
-	}
+static void putReceived(HashStringValue& received, const char* name, time_t value) {
+	if(name)
+		received.put(pa_strdup(name), new VDate(value) );
 }
 
-static void putReceived(HashStringValue& received, const char* must_clone_name, time_t value) {
-	if(must_clone_name)
-		received.put(
-			String::Body(pa_strdup(must_clone_name)), 
-			new VDate(value)
-		);
+static void MimeHeaderField2received(const char* name, const char* value, gpointer data) {
+	HashStringValue* received=static_cast<HashStringValue*>(data);
+	putReceived(*received, name, value, true /*capitalizeName*/);
 }
 
-#ifndef DOXYGEN
-struct MimeHeaderField2received_info {
-	Charset* source_charset;
-	HashStringValue* received;
-};
-#endif
-static void MimeHeaderField2received(const char* must_clone_name, const char* must_clone_value, gpointer data) {
-	MimeHeaderField2received_info& info=*static_cast<MimeHeaderField2received_info *>(data);
-
-	putReceived(*info.source_charset, 
-		*info.received, 
-		must_clone_name, must_clone_value, true/*nameInUpperCase*/);
-}
-
-static void parse(Request& r, GMimeStream *stream, HashStringValue& received);
+static void parse(Request& r, GMimeMessage *message, HashStringValue& received);
 
 #ifndef DOXYGEN
 struct MimePart2body_info {
@@ -137,110 +105,125 @@ struct MimePart2body_info {
 	int partCounts[P_TYPES_COUNT];
 };
 #endif
-static void MimePart2body(GMimePart *part, gpointer data) {
+
+
+static char *readStream(GMimeStream* gstream, size_t &length){
+	length=MAX_STRING;
+	char *result=(char*)pa_malloc_atomic(length+1);
+	char *ptr=result;
+
+	while(true) {
+		size_t current_size=ptr-result;
+		ssize_t todo_size=length-current_size;
+		ssize_t received_size=g_mime_stream_read (gstream, ptr, todo_size);
+
+		if(received_size<0)
+			throw Exception(PARSER_RUNTIME, 0,"mail content stream read error");
+		if(received_size==0)
+			break;
+		if(received_size==todo_size) {
+			length=length*2;
+			result=(char *)pa_realloc(result, length+1);
+			ptr=result+current_size+received_size;
+		} else {
+			ptr+=received_size;
+		}
+	}
+
+	length=ptr-result;
+	result[length]='\0';
+	return result;
+}
+
+static void MimePart2body(GMimeObject *parent, GMimeObject *part, gpointer data) {
 	MimePart2body_info& info=*static_cast<MimePart2body_info *>(data);
-	Charset& source_charset=info.r->charsets.source();
 
-	if(const GMimeContentType *type=g_mime_part_get_content_type(part)) {
-		if(g_mime_content_type_is_type(type, "multipart", "*"))
-			return; // skipping frames
-
-		PartType partType;
-		if(part->disposition) // inline/attachment
-			partType=P_FILE;
+	// skipping message/partial & frames
+	if (GMIME_IS_MESSAGE_PARTIAL (part) || GMIME_IS_MULTIPART (part))
+		return;
+	
+	if (GMimeContentType *type=g_mime_object_get_content_type(part)) {
+		PartType partType=P_FILE;
+		
+		if (GMIME_IS_MESSAGE_PART(part))
+			partType=P_MESSAGE;
 		else if(g_mime_content_type_is_type(type, "text", "plain"))
 			partType=P_TEXT;
 		else if(g_mime_content_type_is_type(type, "text", "html"))
 			partType=P_HTML;
-		else if(g_mime_content_type_is_type(type, "message", "*"))
-			partType=P_MESSAGE;
-		else
-			partType=P_FILE;
-		
+
 		// partName
-		const char* partNameNumbered;
-		char partNameBuf[MAX_STRING];
-		const char* partNameStart=part_name_begins[partType];
-		int partNo=++info.partCounts[partType];
-		snprintf(partNameBuf, MAX_STRING, "%s%d", partNameStart, partNo);
-		partNameNumbered=partNameBuf;
+		int partNumber=++info.partCounts[partType];
+		const char *partName=part_name_begins[partType];
 		
-		// $.partX[ 
-		VHash* vpartX(new VHash);  
-		putReceived(source_charset, *info.body, partNameNumbered, vpartX);
-		if(partNo==1)
-			putReceived(source_charset, *info.body, partNameStart, vpartX);
-			
-		HashStringValue& partX=vpartX->hash();
-		{
-			// $.raw[
-			VHash* vraw(new VHash);  putReceived(source_charset, partX, RAW_NAME, vraw);
-			MimeHeaderField2received_info hfr_info={&source_charset, &vraw->hash()};
-			g_mime_header_foreach(part->headers, MimeHeaderField2received, &hfr_info);
-		}
-		const char* content_filename=0;
-		{
-			// $.content-type[ 
-			VHash* vcontent_type(new VHash);  putReceived(source_charset, partX, "content-type", vcontent_type);
-			HashStringValue& content_type=vcontent_type->hash(); 
-			{
-				// $.value[text/plain] 
-				char value[MAX_STRING];
-				snprintf(value, MAX_STRING, "%s/%s", 
-					type->type?type->type:"x-unknown",
-					type->subtype?type->subtype:"x-unknown");
-				putReceived(source_charset, content_type, VALUE_NAME, value);
-			}
-			GMimeParam *param=type->params;
-			while(param) {
-				// $.charset[windows-1251]  && co
-				putReceived(source_charset, content_type, param->name, param->value, true);
-				if(strcasecmp(param->name, "name")==0)
-					content_filename=param->value;
-				param=param->next;
-			}
-		}
-		// $.description
-		putReceived(source_charset, partX, "description", part->description);
-		// $.content-id
-		putReceived(source_charset, partX, "content-id", part->content_id);
-		// $.content-md5
-		putReceived(source_charset, partX, "content-md5", part->content_md5);
-		// $.content-location
-		putReceived(source_charset, partX, "content-location", part->content_location);
-		
-		// @todo GMimePart:
-		//   GMimePartEncodingType encoding;
-		//   GMimeDisposition *disposition;
-		if(part->disposition) {
-			GMimeParam *param=part->disposition->params;
-			while(param) {
-				// $.charset[windows-1251]  && co
-				if(strcasecmp(param->name, "filename")==0)
-					content_filename=param->value;
-				param=param->next;
-			}
+		char partNameNumbered[MAX_STRING];
+		snprintf(partNameNumbered, MAX_STRING, "%s%d", partName, partNumber);
+
+		// $.partN[
+		VHash* vpartHash(new VHash);
+		if(partNumber==1)
+			putReceived(*info.body, partName, vpartHash);
+		putReceived(*info.body, partNameNumbered, vpartHash);
+
+		HashStringValue& partHash=vpartHash->hash();
+
+		// $.raw[
+		VHash* vraw(new VHash);
+		putReceived(partHash, RAW_NAME, vraw);
+		g_mime_header_list_foreach(part->headers, MimeHeaderField2received, &vraw->hash());
+
+		// $.content-type[
+		VHash* vcontent_type(new VHash);
+		putReceived(partHash, "content-type", vcontent_type);
+
+		// $.value[text/plain]
+		char value[MAX_STRING];
+		snprintf(value, MAX_STRING, "%s/%s", type->type ? type->type : "x-unknown", type->subtype ? type->subtype : "x-unknown");
+		putReceived(vcontent_type->hash(), VALUE_NAME, value);
+
+		const GMimeParam *param=g_mime_content_type_get_params(type);
+		while(param) {
+			// $.charset[windows-1251]  && co
+			putReceived(vcontent_type->hash(), g_mime_param_get_name(param), g_mime_param_get_value(param), true /*capitalizeName*/);
+			param=g_mime_param_next(param);
 		}
 
-		// MESSAGE
-		if(partType==P_MESSAGE) {
-			if(part->content)
-				if(GMimeStream *stream=part->content->stream)
-					parse(*info.r, stream, partX);
+		GMimePart *gpart = (GMimePart *)part;
+
+		putReceived(partHash, "description", g_mime_part_get_content_description(gpart));
+		putReceived(partHash, "content-id", g_mime_part_get_content_id(gpart));
+		putReceived(partHash, "content-md5", g_mime_part_get_content_md5(gpart));
+		putReceived(partHash, "content-location", g_mime_part_get_content_location(gpart));
+
+		if (GMIME_IS_MESSAGE_PART (part)) {
+			/* message/rfc822 */
+			GMimeMessage *message = g_mime_message_part_get_message ((GMimeMessagePart *) part);
+			parse(*info.r, message, partHash);
 		} else {
 			// $.value[string|file]
-			size_t buf_len;
-			const char* local_buf=(const char*)g_mime_part_get_content(part, &buf_len);
+			GMimeDataWrapper* gcontent=g_mime_part_get_content_object(gpart);
+			GMimeStream* gstream=g_mime_stream_filter_new(g_mime_data_wrapper_get_stream(gcontent));
+			
+			
+			if(GMimeFilter* filter=g_mime_filter_basic_new(g_mime_part_get_content_encoding(gpart), false))
+				g_mime_stream_filter_add(GMIME_STREAM_FILTER(gstream), filter);
+			
+			size_t length;
+			
 			if(partType==P_FILE) {
+				char *content=readStream(gstream, length);
+				const char* content_filename=g_mime_part_get_filename(gpart);
 				VFile* vfile(new VFile);
-				char *pooled_buf=pa_strdup(local_buf, buf_len);
-				VString* vcontent_type=content_filename?
-					new VString(info.r->mime_type_of(content_filename)):0;
-				vfile->set(true/*tainted*/, pooled_buf, buf_len, content_filename, vcontent_type);
-				putReceived(source_charset, partX, VALUE_NAME, vfile);
+				vfile->set_binary(true/*tainted*/, content, length, new String(content_filename), content_filename ? new VString(info.r->mime_type_of(content_filename)) : 0);
+				putReceived(partHash, VALUE_NAME, vfile);
 			} else {
 				// P_TEXT, P_HTML
-				putReceived(source_charset, partX, VALUE_NAME,(const char*)local_buf);
+				if(Value *charset=vcontent_type->hash().get("Charset"))
+					if(GMimeFilter* filter=g_mime_filter_charset_new(charset->get_string()->cstr(), source_charset->NAME_CSTR()))
+						g_mime_stream_filter_add(GMIME_STREAM_FILTER(gstream), filter);
+				
+				char *content=readStream(gstream, length);
+				putReceived(partHash, VALUE_NAME,new VString(*new String(content)));
 			}
 		}
 	}
@@ -262,113 +245,81 @@ int gmt_offset() {
 #endif
 }
 
-static void parse(Request& r, GMimeStream *stream, HashStringValue& received) {
-	Charset& source_charset=r.charsets.source();
-
-	GMimeMessage *message=g_mime_parser_construct_message(stream);
+static void parse(Request& r, GMimeMessage *message, HashStringValue& received) {
 	try {
-		const GMimeMessageHeader *messageHeader=message->header;
-		if(!messageHeader)
-			return;
-
 		// firstly user-defined strings go
 		//  user headers
 		{
 			// $.raw[
-			VHash* vraw(new VHash);  putReceived(source_charset, received, RAW_NAME, vraw);
-			MimeHeaderField2received_info hfr_info={&source_charset, &vraw->hash()};
-			g_mime_header_foreach(messageHeader->headers, MimeHeaderField2received, &hfr_info);
+			VHash* vraw(new VHash);  putReceived( received, RAW_NAME, vraw);
+			g_mime_header_list_foreach(g_mime_object_get_header_list(GMIME_OBJECT(message)), MimeHeaderField2received, &vraw->hash());
 		}
 
-		// maybe-todo-recipients
-		// x(messageHeader->recipients)
-
-		//  secondly standard headers&body go
-		//  standard header
-		// .from
-		putReceived(source_charset, received, "from", messageHeader->from);
-		// .reply-to
-		putReceived(source_charset, received, "reply-to", messageHeader->reply_to);
-		// .to
-		// @todo: messageHeader->recipients
-		// .subject
-		putReceived(source_charset, received, "subject", messageHeader->subject);
+		//  secondly standard headers
+		putReceived(received, "message-id", g_mime_message_get_message_id(message));
+		putReceived(received, "from", g_mime_message_get_sender(message));
+		putReceived(received, "reply-to", g_mime_message_get_reply_to(message));
+		putReceived(received, "subject", g_mime_message_get_subject(message));
+		// @todo: g_mime_message_get_recipients(message)
+		
 		// .date(date+gmt_offset)
-		int tt_offset = 
-			((messageHeader->gmt_offset / 100) *(60 * 60)) 
-			+(messageHeader->gmt_offset % 100) * 60;			
+		time_t date;
+		int tz_offset;
+		g_mime_message_get_date(message, &date, &tz_offset);
+		int tt_offset = ((tz_offset / 100) *(60 * 60)) + (tz_offset % 100) * 60;
 
-		putReceived(received, "date", 
-			messageHeader->date // local sender
+		putReceived(received, "date",
+			date // local sender
 			-tt_offset // move local sender to GMT sender
 			-gmt_offset() // move GMT sender to our local time
 		);
-		// .message-id
-		putReceived(source_charset, received, "message-id", messageHeader->message_id);
 
 		// .body[part/parts
-		GMimePart *part=message->mime_part;
 		MimePart2body_info info={&r, &received, {0}};
-		g_mime_part_foreach(part, MimePart2body, &info);
+		g_mime_message_foreach(message, MimePart2body, &info);
 
-		// normal unref
-		g_mime_object_unref(GMIME_OBJECT(message));
 	} catch(const Exception& e) {
-		// abnormal unref
-		g_mime_object_unref(GMIME_OBJECT(message));
-		putReceived(source_charset, received, VALUE_NAME, "<exception occured while parsing message>");
-		putReceived(source_charset, received, EXCEPTION_VALUE, e.comment());
+		putReceived(received, VALUE_NAME, "<exception occured while parsing message>");
+		putReceived(received, EXCEPTION_VALUE, e.comment());
 	} catch(...) {
-		// abnormal unref
-		g_mime_object_unref(GMIME_OBJECT(message));
-		putReceived(source_charset, received, VALUE_NAME, "<exception occured while parsing message>");
+		putReceived(received, VALUE_NAME, "<exception occured while parsing message>");
 	}
+	g_object_unref(GMIME_OBJECT(message));
 }
-#endif
 
-
-
-void VMail::fill_received(Request& 
-#ifdef WITH_MAILRECEIVE
-						r
-#endif
-						) {
-	// store letter to received
-#ifdef WITH_MAILRECEIVE
+void VMail::fill_received(Request& r) {
 	if(r.request_info.mail_received) {
-		// init
+		source_charset=&r.charsets.source();
 		g_mime_init(0);
-		//	g_mime_init(GMIME_INIT_FLAG_UTF8);
 
 		// create stream with CRLF filter
-		GMimeStream *stream = g_mime_stream_fs_new(fileno(stdin));
-		GMimeStream *istream = g_mime_stream_filter_new_with_stream(stream);
-		GMimeFilter *filter = g_mime_filter_crlf_new(GMIME_FILTER_CRLF_DECODE, GMIME_FILTER_CRLF_MODE_CRLF_ONLY);
-		g_mime_stream_filter_add(GMIME_STREAM_FILTER(istream), filter);
-		g_mime_stream_unref(stream);
-		stream = istream;
+		GMimeStream *stream = g_mime_stream_filter_new(g_mime_stream_fs_new(fileno(stdin)));
+		g_mime_stream_filter_add(GMIME_STREAM_FILTER(stream), g_mime_filter_crlf_new(false, false));
 		try {
-			// parse incoming stream
-			parse(r, stream, vreceived.hash());
-			// normal stream free 
-			g_mime_stream_unref(stream);
+			// parse incoming message
+			GMimeMessage *message=g_mime_parser_construct_message(g_mime_parser_new_with_stream(stream));
+			parse(r, message, vreceived.hash());
 		} catch(const Exception& e) {
-			// abnormal stream free 
-			g_mime_stream_unref(stream);
-			Charset& source_charset=r.charsets.source();
 			HashStringValue& received=vreceived.hash();
-			putReceived(source_charset, received, VALUE_NAME, "<exception occured while parsing messages>");
-			putReceived(source_charset, received, EXCEPTION_VALUE, e.comment());
+			putReceived(received, VALUE_NAME, "<exception occured while parsing message>");
+			putReceived(received, EXCEPTION_VALUE, e.comment());
 		} catch(...) {
-			// abnormal stream free 
-			g_mime_stream_unref(stream);
+			// abnormal stream free
+			g_object_unref(stream);
 			rethrow;
 		}
+		g_object_unref(stream);
+		
+		g_mime_shutdown();
 	}
-#endif
 }
 
+#else // WITH_MAILRECEIVE
+void VMail::fill_received(Request&){}
+#endif // WITH_MAILRECEIVE
+
 typedef int (*string_contains_char_which_check)(int);
+
 static bool string_contains_char_which(const char* string, string_contains_char_which_check check) {
 	while(char c=*string++) {
 		if(check((unsigned char)c))
@@ -376,6 +327,7 @@ static bool string_contains_char_which(const char* string, string_contains_char_
 	}
 	return false;
 }
+
 static char *trimBoth(char *s) {
 	// sanity check
 	if(!s)
@@ -396,6 +348,7 @@ static char *trimBoth(char *s) {
 	// return it
 	return s;
 }
+
 static void extractEmail(String& result, char *email) {
 	email=trimBoth(email);
 	result.append_help_length(email, 0, String::L_TAINTED);
@@ -489,6 +442,7 @@ struct Store_message_element_info {
 	}
 };
 #endif
+
 static void store_message_element(HashStringValue::key_type raw_element_name, 
 				HashStringValue::value_type element_value, 
 				Store_message_element_info *info) {
