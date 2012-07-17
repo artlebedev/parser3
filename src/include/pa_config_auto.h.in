@@ -375,7 +375,7 @@
 /* Windows32 target platform */
 #undef WIN32
 
-/* has \$mail:received (uses static library) */
+/* has \$mail:received */
 #undef WITH_MAILRECEIVE
 
 /* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
@@ -398,9 +398,6 @@
 
 /* Define to a type to use for `error_t' if it is not otherwise available. */
 #undef error_t
-
-/* Define to `long' if <sys/types.h> does not define. */
-#undef off_t
 
 /* Define to `unsigned int' if <sys/types.h> does not define. */
 #undef size_t

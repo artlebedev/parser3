@@ -776,7 +776,6 @@ enable_option_checking
 enable_dependency_tracking
 with_build_warnings
 with_assertions
-with_pathlink
 with_sjlj_exceptions
 enable_safe_mode
 enable_execs
@@ -784,9 +783,7 @@ enable_stringstream
 with_gc
 with_pcre
 with_xml
-with_glib_config
-with_shared_mailreceive
-with_static_mailreceive
+with_mailreceive
 with_sendmail
 with_apache
 with_pic
@@ -1456,8 +1453,6 @@ Optional Packages:
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-build-warnings   to enable build-time compiler warnings if gcc is used
   --with-assertions       to enable assertions
-  --with-pathlink=LKEY    put dynamic libraries paths to binary
-                          using linker key (-R, -rpath-link)
   --with-sjlj-exceptions  enable simple 'throw' from dynamic library
   --with-gc=D             D is the directory where
                           Boehm garbage collecting library is installed
@@ -1465,12 +1460,8 @@ Optional Packages:
                           PCRE library is installed
   --with-xml=D            D is the directory where
                           Gnome XML libraries are installed
-  --with-glib-config=FILE FILE is glib library
-                          configuration file (search for glib*-config)
-  --with-shared-mailreceive=D is the directory where
-                          Gnome MIME library is installed (shared lib)
-  --with-static-mailreceive=D is the directory where
-                          Gnome MIME library is installed (static lib)
+  --with-mailreceive=D is the directory where
+                          Gnome MIME library is installed
   \"--with-sendmail=COMMAND\" forces this command to send mail.
                           example: \"--with-sendmail=/usr/sbin/sendmail -t\"
                           (makes parser ignore user-defined sendmail commands)
@@ -4620,14 +4611,6 @@ fi
 
 
 
-# Check whether --with-pathlink was given.
-if test "${with_pathlink+set}" = set; then :
-  withval=$with_pathlink; LD_PATHLINK=$withval
-
-fi
-
-
-
 # Check whether --with-sjlj-exceptions was given.
 if test "${with_sjlj_exceptions+set}" = set; then :
   withval=$with_sjlj_exceptions;
@@ -4897,86 +4880,68 @@ fi
 
 
 
-# Check whether --with-glib-config was given.
-if test "${with_glib_config+set}" = set; then :
-  withval=$with_glib_config; GLIB_CONFIG=$withval
 
-fi
+# Check whether --with-mailreceive was given.
+if test "${with_mailreceive+set}" = set; then :
+  withval=$with_mailreceive;
+	MIME=$withval
+	GMIME="gmime-2.4"
 
-
-
-# Check whether --with-shared-mailreceive was given.
-if test "${with_shared_mailreceive+set}" = set; then :
-  withval=$with_shared_mailreceive;
-	GNOME_MIME=$withval
-	MIMEBIN="$GNOME_MIME/bin"
-	MIMEINC="$GNOME_MIME/include"
-	MIMELIB="$GNOME_MIME/lib"
-
-	if test \! -d $MIMEBIN -o \! -d $MIMEINC -o \! -d $MIMELIB; then
-		as_fn_error $? "$GNOME_MIME does not seem to be valid Gnome installation directory" "$LINENO" 5
+	if test -z "$MIME" -o "$MIME" = "yes"; then
+		MIME=""
+		MIME_INCLUDES=`pkg-config --cflags $GMIME 2>/dev/null`
+		MIME_LIBS=`pkg-config --libs $GMIME 2>/dev/null`
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: --with-mailreceive value was not specified, hoping linker would find Gnome MIME library" >&5
+$as_echo "$as_me: WARNING: --with-mailreceive value was not specified, hoping linker would find Gnome MIME library" >&2;}
+	else
+		MIME_INCLUDES="-I$MIME/include/$GMIME -I$MIME/include/glib-2.0"
+		MIME_LIBS="-l$GMIME"
+		if test -f $MIME/include/$GMIME/gmime/gmime.h -a -f $MIME/lib/lib$GMIME.la; then
+			MIME_LIBS="$MIME/lib/lib$GMIME.la"
+			MIME_OK="yes"
+		fi
 	fi
 
+	if test -z "$MIME_OK"; then
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for mime" >&5
+$as_echo_n "checking for mime... " >&6; }
+		SAVE_LIBS=$LIBS
+		LIBS="$LIBS $MIME_LIBS $MIME_INCLUDES"
+		cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+ #include <gmime/gmime.h>
+int
+main ()
+{
+ guint v=gmime_major_version;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+			if test -z "$MIME"; then
+				as_fn_error $? "please specify path to Gnome MIME library: --with-mailreceive=D" "$LINENO" 5
+			else
+				as_fn_error $? "$MIME does not seem to be valid Gnome MIME installation directory" "$LINENO" 5
+			fi
+
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+		LIBS=$SAVE_LIBS
+	fi
 
 $as_echo "#define WITH_MAILRECEIVE /**/" >>confdefs.h
 
 
-	LIBMIME_SO_NAME=`cd $MIMELIB ; ls libgmime.?? libgmime.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
-
-	if test -z "$GLIB_CONFIG"; then
-		GLIB_CONFIG=$XMLBIN/glib-config
-		if test \! -x $GLIB_CONFIG; then
-			GLIB_CONFIG=$XMLBIN/glib2-config
-			if test \! -x $GLIB_CONFIG; then
-				GLIB_CONFIG=glib-config
-			fi
-		fi
-	fi
-	GLIB_CFLAGS=`$GLIB_CONFIG --cflags`
-	GLIB_LIBS=`$GLIB_CONFIG --libs`
-
-	MIME_INCLUDES="$GLIB_CFLAGS -I$MIMEINC/gmime"
-	MIME_LIBS="$GLIB_LIBS -L$MIMELIB -l$LIBMIME_SO_NAME"
-	if test \! -z "$LD_PATHLINK"; then
-	MIME_LIBS="$MIME_LIBS -Wl,$LD_PATHLINK -Wl,$MIMELIB"
-	fi
-
 fi
 
-
-# Check whether --with-static-mailreceive was given.
-if test "${with_static_mailreceive+set}" = set; then :
-  withval=$with_static_mailreceive;
-	GNOME_MIME=$withval
-	MIMEBIN="$GNOME_MIME/bin"
-	MIMEINC="$GNOME_MIME/include"
-	MIMELIB="$GNOME_MIME/lib"
-
-	if test \! -d $MIMEBIN -o \! -d $MIMEINC -o \! -d $MIMELIB; then
-		as_fn_error $? "$GNOME_MIME does not seem to be valid Gnome installation directory" "$LINENO" 5
-	fi
-
-
-$as_echo "#define WITH_MAILRECEIVE /**/" >>confdefs.h
-
-
-	if test -z "$GLIB_CONFIG"; then
-		GLIB_CONFIG=$XMLBIN/glib-config
-		if test \! -x $GLIB_CONFIG; then
-			GLIB_CONFIG=$XMLBIN/glib2-config
-			if test \! -x $GLIB_CONFIG; then
-				GLIB_CONFIG=glib-config
-			fi
-		fi
-	fi
-	GLIB_CFLAGS=`$GLIB_CONFIG --cflags`
-
-	GLIB_DIR=`$GLIB_CONFIG --libs | sed 's/.*-L\([^ ]*\).*/\1/'`
-	GLIB_NAME=`$GLIB_CONFIG --libs | sed 's/.*-l\([^ ]*\).*/\1/'`
-	MIME_INCLUDES="$GLIB_CFLAGS -I$MIMEINC/gmime"
-	MIME_LIBS="$MIMELIB/libgmime.la $GLIB_DIR/lib$GLIB_NAME.la"
-
-fi
 
 
 
@@ -17354,30 +17319,6 @@ else
 
 cat >>confdefs.h <<_ACEOF
 #define size_t unsigned int
-_ACEOF
-
-fi
-
-
-
-ac_fn_c_check_type "$LINENO" "off_t" "ac_cv_type_off_t" "$ac_includes_default"
-if test "x$ac_cv_type_off_t" = xyes; then :
-
-else
-
-cat >>confdefs.h <<_ACEOF
-#define off_t long
-_ACEOF
-
-fi
-
-ac_fn_c_check_type "$LINENO" "ssize_t" "ac_cv_type_ssize_t" "$ac_includes_default"
-if test "x$ac_cv_type_ssize_t" = xyes; then :
-
-else
-
-cat >>confdefs.h <<_ACEOF
-#define ssize_t int
 _ACEOF
 
 fi
