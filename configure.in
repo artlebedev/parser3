@@ -73,11 +73,6 @@ AC_ARG_WITH(assertions, [  --with-assertions       to enable assertions],
 	AC_DEFINE(NDEBUG,,assertions disabled)
 )
 
-AC_ARG_WITH(pathlink,[  --with-pathlink=LKEY    put dynamic libraries paths to binary
-                          using linker key (-R, -rpath-link)],
-	LD_PATHLINK=$withval
-)
-
 AC_ARG_WITH(sjlj-exceptions,[  --with-sjlj-exceptions  enable simple 'throw' from dynamic library],
 	AC_DEFINE(PA_WITH_SJLJ_EXCEPTIONS,,one can throw from dynamic library)
 )
@@ -254,77 +249,46 @@ AC_ARG_WITH(xml,[  --with-xml=D            D is the directory where
 AC_SUBST(XML_INCLUDES)
 AC_SUBST(XML_LIBS)
 
+
 dnl Mail receive argument
-AC_ARG_WITH(glib-config,[  --with-glib-config=FILE FILE is glib library
-                          configuration file (search for glib*-config)],
-	GLIB_CONFIG=$withval
-)
+AC_ARG_WITH(mailreceive,[  --with-mailreceive=D is the directory where
+                          Gnome MIME library is installed],[
+	MIME=$withval
+	GMIME="gmime-2.4"
 
-AC_ARG_WITH(shared-mailreceive,[  --with-shared-mailreceive=D is the directory where
-                          Gnome MIME library is installed (shared lib)],[
-	GNOME_MIME=$withval
-	MIMEBIN="$GNOME_MIME/bin"
-	MIMEINC="$GNOME_MIME/include"
-	MIMELIB="$GNOME_MIME/lib"
-
-	if test \! -d $MIMEBIN -o \! -d $MIMEINC -o \! -d $MIMELIB; then
-		AC_MSG_ERROR($GNOME_MIME does not seem to be valid Gnome installation directory)
-	fi
-
-	AC_DEFINE(WITH_MAILRECEIVE,,has \$mail:received (uses shared library))
-	
-	LIBMIME_SO_NAME=`cd $MIMELIB ; ls libgmime.?? libgmime.??? 2>/dev/null | grep -v \.la$ | sed 's/lib//' | sed 's/\..*//'`
-
-	if test -z "$GLIB_CONFIG"; then
-		GLIB_CONFIG=$XMLBIN/glib-config
-		if test \! -x $GLIB_CONFIG; then
-			GLIB_CONFIG=$XMLBIN/glib2-config
-			if test \! -x $GLIB_CONFIG; then
-				GLIB_CONFIG=glib-config
-			fi
+	if test -z "$MIME" -o "$MIME" = "yes"; then
+		MIME=""
+		MIME_INCLUDES=`pkg-config --cflags $GMIME 2>/dev/null`
+		MIME_LIBS=`pkg-config --libs $GMIME 2>/dev/null`
+		AC_MSG_WARN([--with-mailreceive value was not specified, hoping linker would find Gnome MIME library])
+	else
+		MIME_INCLUDES="-I$MIME/include/$GMIME -I$MIME/include/glib-2.0"
+		MIME_LIBS="-l$GMIME"
+		if test -f $MIME/include/$GMIME/gmime/gmime.h -a -f $MIME/lib/lib$GMIME.la; then
+			MIME_LIBS="$MIME/lib/lib$GMIME.la"
+			MIME_OK="yes"
 		fi
 	fi
-	GLIB_CFLAGS=`$GLIB_CONFIG --cflags`
-	GLIB_LIBS=`$GLIB_CONFIG --libs`
 
-	MIME_INCLUDES="$GLIB_CFLAGS -I$MIMEINC/gmime"
-	MIME_LIBS="$GLIB_LIBS -L$MIMELIB -l$LIBMIME_SO_NAME"
-	if test \! -z "$LD_PATHLINK"; then
-	MIME_LIBS="$MIME_LIBS -Wl,$LD_PATHLINK -Wl,$MIMELIB"
-	fi
-])
-AC_ARG_WITH(static-mailreceive,[  --with-static-mailreceive=D is the directory where
-                          Gnome MIME library is installed (static lib)],[
-	GNOME_MIME=$withval
-	MIMEBIN="$GNOME_MIME/bin"
-	MIMEINC="$GNOME_MIME/include"
-	MIMELIB="$GNOME_MIME/lib"
-
-	if test \! -d $MIMEBIN -o \! -d $MIMEINC -o \! -d $MIMELIB; then
-		AC_MSG_ERROR($GNOME_MIME does not seem to be valid Gnome installation directory)
-	fi
-
-	AC_DEFINE(WITH_MAILRECEIVE,,has \$mail:received (uses static library))
-
-	if test -z "$GLIB_CONFIG"; then
-		GLIB_CONFIG=$XMLBIN/glib-config
-		if test \! -x $GLIB_CONFIG; then
-			GLIB_CONFIG=$XMLBIN/glib2-config
-			if test \! -x $GLIB_CONFIG; then
-				GLIB_CONFIG=glib-config
+	if test -z "$MIME_OK"; then
+		AC_MSG_CHECKING(for mime)
+		SAVE_LIBS=$LIBS
+		LIBS="$LIBS $MIME_LIBS $MIME_INCLUDES"
+		AC_TRY_LINK([ #include <gmime/gmime.h> ],[ guint v=gmime_major_version; ],
+			AC_MSG_RESULT(yes)
+		,
+			AC_MSG_RESULT(no)
+			if test -z "$MIME"; then
+				AC_MSG_ERROR(please specify path to Gnome MIME library: --with-mailreceive=D)
+			else
+				AC_MSG_ERROR($MIME does not seem to be valid Gnome MIME installation directory)
 			fi
-		fi
+		)
+		LIBS=$SAVE_LIBS
 	fi
-	GLIB_CFLAGS=`$GLIB_CONFIG --cflags`
-
-dnl  '-L/usr/local/lib -lglib' -> /usr/local/lib
-changequote(, )dnl
-	GLIB_DIR=`$GLIB_CONFIG --libs | sed 's/.*-L\([^ ]*\).*/\1/'`
-	GLIB_NAME=`$GLIB_CONFIG --libs | sed 's/.*-l\([^ ]*\).*/\1/'`
-changequote([, ])dnl
-	MIME_INCLUDES="$GLIB_CFLAGS -I$MIMEINC/gmime"
-	MIME_LIBS="$MIMELIB/libgmime.la $GLIB_DIR/lib$GLIB_NAME.la"
+	AC_DEFINE(WITH_MAILRECEIVE,,has \$mail:received)
 ])
+
 AC_SUBST(MIME_INCLUDES)
 AC_SUBST(MIME_LIBS)
 
@@ -382,11 +346,6 @@ AC_C_BIGENDIAN(
 )
 
 AC_TYPE_SIZE_T
-
-
-dnl gmime
-AC_CHECK_TYPE(off_t, long)
-AC_CHECK_TYPE(ssize_t, int)
 
 
 dnl Checks for C header files.
@@ -489,8 +448,7 @@ AC_CHECK_FUNCS(qsort, , AC_MSG_ERROR([No qsort library function.]))
 
 dnl For correct mail receiving we need to know local offset from GMT
 dnl it be timezone+(daylight?60*60*sign(timezone):0)
-dnl or it can be tm.tm_gmtoff
-dnl or it can be tm.tm_tzadj
+dnl or it can be tm.tm_gmtoff or it can be tm.tm_tzadj
 
 AC_MSG_CHECKING(for timezone variable)
 AC_TRY_COMPILE([#include <time.h>],
