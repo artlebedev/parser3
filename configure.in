@@ -254,6 +254,7 @@ dnl Mail receive argument
 AC_ARG_WITH(mailreceive,[  --with-mailreceive=D is the directory where
                           Gnome MIME library is installed],[
 	MIME=$withval
+	GLIB="glib-2.0"
 	GMIME="gmime-2.4"
 
 	if test -z "$MIME" -o "$MIME" = "yes"; then
@@ -262,10 +263,16 @@ AC_ARG_WITH(mailreceive,[  --with-mailreceive=D is the directory where
 		MIME_LIBS=`pkg-config --libs $GMIME 2>/dev/null`
 		AC_MSG_WARN([--with-mailreceive value was not specified, hoping linker would find Gnome MIME library])
 	else
-		MIME_INCLUDES="-I$MIME/include/$GMIME -I$MIME/include/glib-2.0"
+		MIME_INCLUDES="-I$MIME/include/$GMIME"
 		MIME_LIBS="-l$GMIME"
 		if test -f $MIME/include/$GMIME/gmime/gmime.h -a -f $MIME/lib/lib$GMIME.la; then
 			MIME_LIBS="$MIME/lib/lib$GMIME.la"
+			if test -f $MIME/lib/lib$GLIB.la; then
+				MIME_INCLUDES="$MIME_INCLUDES -I$MIME/include/$GLIB -I$MIME/lib/$GLIB/include"
+			else
+				GLIB_INCLUDES=`pkg-config --cflags $GLIB 2>/dev/null`
+				MIME_INCLUDES="$MIME_INCLUDES $GLIB_INCLUDES"
+			fi
 			MIME_OK="yes"
 		fi
 	fi
