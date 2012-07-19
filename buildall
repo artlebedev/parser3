@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: buildall,v 1.1 2012/07/19 13:53:05 moko Exp $
+# $Id: buildall,v 1.2 2012/07/19 15:05:19 moko Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -36,7 +36,8 @@ for PARAM; do
 	    build_gmime="yes"
 	    ;;
 	"--help")
-	    echo "usage"
+	    echo
+	    echo "Usage: buildall [--without-xml] [--with-apache] [--with-mailreceive] [other configure options ...]"
 	    exit 1
 	    ;;
 	*)
