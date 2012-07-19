@@ -1,0 +1,264 @@
+#!/bin/sh
+# $Id: buildall,v 1.1 2012/07/19 13:53:05 moko Exp $
+
+install_directory=$HOME/parser3install
+sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
+
+parser3_dir=`pwd`
+cd ..
+project_dir=`pwd`
+
+build_xml="yes"
+build_gmime=""
+build_apache=""
+
+options="--with-included-ltdl"
+options="$options --with-gc=$project_dir/gc/lib"
+options="$options --with-pcre=$project_dir/pcre"
+#options="$options --disable-safe-mode"
+#options="$options --disable-stringstream"
+
+echo -n "Building statically linked parser3"
+for PARAM; do
+    case "$PARAM" in
+	"--without-xml")
+	    echo -n ", without xml"
+	    build_xml=""
+	    ;;
+	"--with-apache")
+	    echo -n ", with apache module"
+	    options="$options --with-apache"
+	    build_apache="yes"
+	    ;;
+	"--with-mailreceive")
+	    echo -n ", with mail receiving"
+	    options="$options --with-mailreceive=$project_dir/gnome"
+	    build_gmime="yes"
+	    ;;
+	"--help")
+	    echo "usage"
+	    exit 1
+	    ;;
+	*)
+	    options="$options $PARAM"
+	    ;;
+    esac
+done
+
+if test "$build_xml" = "yes"; then
+    options="$options --with-xml=$project_dir/gnome"
+fi
+
+bits=`getconf LONG_BIT`
+if test "$bits" = "64" -a "$build_apache" = "yes"; then
+    cflags="$cflags --with-pic"
+else
+    cflags="$cflags --without-pic"
+fi
+
+if test ! "$build_apache" = "yes"; then
+    cflags="$cflags --disable-shared"
+fi
+
+download=`which fetch 2>/dev/null`
+if test -f "$download"; then
+    download="fetch -p"
+else
+    download="wget -c --passive-ftp"
+fi
+
+############################### Support functions ################################
+
+prepare.gz () {
+    cd $project_dir/src
+
+    if test ! -f "$lib.tar.gz"; then
+	echo "Downloading $1..."
+	$download $2
+    fi
+
+    echo "Unpacking $1..."
+    rm -rf $lib
+    gunzip -c $lib.tar.gz | tar xf - >/dev/null
+    cd $lib
+}
+
+prepare.xz () {
+    cd $project_dir/src
+
+    if test ! -f "$lib.tar.xz"; then
+	echo "Downloading $1..."
+	$download $2
+    fi
+
+    echo "Unpacking $1..."
+    rm -rf $lib
+    xzcat $lib.tar.xz | tar xf - >/dev/null
+    cd $lib
+}
+
+cleanup () {
+    cd ..
+    rm -rf $lib
+}
+
+#################################### Building ####################################
+
+echo
+mkdir src >/dev/null 2>&1
+
+if test ! -f "$project_dir/gc/lib/libgc.a"; then
+#   libgc="gc6.8" # FreeBSD 4.X is not supported in newer gc version
+    lib="gc-7.1"
+    prepare.gz gc http://www.hpl.hp.com/personal/Hans_Boehm/gc/gc_source/$lib.tar.gz
+    echo "Configuring gc..."
+    CPPFLAGS="-DUSE_LIBC_PRIVATES -DUSE_MMAP -DDONT_ADD_BYTE_AT_END" \
+    ./configure --prefix=$project_dir/gc \
+	--disable-threads \
+	--disable-shared \
+	--silent $cflags
+    echo "Building gc..."
+    make install
+    cleanup
+fi
+
+if test ! -f "$project_dir/pcre/lib/libpcre.a"; then
+    lib="pcre-8.30"
+    prepare.gz pcre ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/$libpcre.tar.gz
+    echo "Configuring pcre..."
+    ./configure --prefix="$project_dir/pcre" \
+	--with-match-limit-recursion=10000 \
+	--enable-utf8 \
+	--enable-unicode-properties \
+	--disable-shared \
+	--disable-cpp \
+	--disable-pcregrep-libz \
+	--disable-pcregrep-libbz2 \
+	--silent $cflags
+    echo "Building pcre..."
+    make install
+    cleanup
+fi
+
+if test "$build_xml" = "yes" -a ! -f "$project_dir/gnome/lib/libxml2.a"; then
+    lib="libxml2-2.8.0"
+    prepare.gz libxml ftp://xmlsoft.org/libxml2/$lib.tar.gz
+    #sax1, output, tree, xinclude[in libxslt], html[in libxslt, mode=html?], xptr[xinclude], pattern -- needed!
+    echo "Configuring libxml..."
+    ./configure --prefix=$project_dir/gnome \
+	--without-catalog \
+	--without-iconv \
+	--without-threads \
+	--without-debug \
+	--without-iso8859x \
+	--without-legacy \
+	--without-push \
+	--without-python \
+	--without-reader \
+	--without-writer \
+	--without-readline \
+	--without-regexps \
+	--without-schemas \
+	--without-schematron \
+	--without-modules \
+	--without-ftp \
+	--without-http \
+	--without-docbook \
+	--without-zlib \
+	--without-lzma \
+	--disable-shared \
+	--silent $cflags
+    echo "Building libxml..."
+    make install
+    cleanup
+fi
+
+if test "$build_xml" = "yes" -a ! -f "$project_dir/gnome/lib/libxslt.a"; then
+    lib="libxslt-1.1.26"
+    prepare.gz libxslt ftp://xmlsoft.org/libxslt/$libxslt.tar.gz
+    echo "Configuring libxslt..."
+    ./configure --prefix=$project_dir/gnome \
+	--with-libxml-prefix=$project_dir/gnome \
+	--without-debug \
+	--without-debugger \
+	--without-crypto \
+	--without-plugins \
+	--disable-shared \
+	--silent $cflags
+    echo "Building libxslt..."
+    make install
+    cleanup
+fi
+
+if test "$build_gmime" = "yes"; then
+
+glib_ldflags=""
+gmime_cflags=""
+gmime_ldflags="-L$project_dir/gnome/lib/"
+
+os=`uname`
+if test "$os" = "FreeBSD"; then
+    gmime_cflags="CFLAGS=-I/usr/local/include CXXFLAGS=-I/usr/local/include"
+    glib_ldflags="LDFLAGS=-L/usr/local/lib"
+    gmime_ldflags="$gmime_ldflags -L/usr/local/lib"
+fi
+
+if test ! -f "$project_dir/gnome/lib/libglib-2.0.a"; then
+    lib="glib-2.28.8"
+    prepare.xz glib ftp://ftp.gnome.org/pub/GNOME/sources/glib/2.28/$lib.tar.xz
+    echo "Configuring glib..."
+    ./configure --prefix=$project_dir/gnome \
+	--enable-dtrace=no \
+	--enable-debug=no \
+	--enable-iconv-cache=no \
+	--disable-threads \
+	--disable-fam \
+	--disable-selinux \
+	--disable-xattr \
+	--disable-shared \
+	--enable-static \
+	--silent $cflags $gmime_cflags $glib_ldflags
+    echo "Building glib..."
+    make install
+    cleanup
+fi
+
+if test ! -f "$project_dir/gnome/lib/libgmime-2.4.a"; then
+    lib="gmime-2.4.32"
+    prepare.xz gmime ftp://ftp.gnome.org/pub/GNOME/sources/gmime/2.4/$libgmime.tar.xz
+    echo "Configuring gmime..."
+    ./configure --prefix=$project_dir/gnome \
+	--disable-glibtest \
+	--disable-mono \
+	--disable-shared \
+	--enable-static \
+	--silent $cflags $gmime_cflags LDFLAGS="$gmime_ldflags" PKG_CONFIG_PATH="$project_dir/gnome/lib/pkgconfig"
+    echo "Building libgmime..."
+    make install
+    cleanup
+fi
+
+fi
+
+cd $parser3_dir
+#if test ! -f "Makefile"; then
+    echo "Configuring parser3..."
+    ./configure --prefix=$install_directory "--with-sendmail=$sendmail_command" $options --silent $cflags $gmime_cflags
+#fi
+
+echo "Building parser3..."
+make install
+if test $? -ne 0; then exit 1; fi
+
+#remove debug info
+#strip ${install_directory}/bin/parser3
+
+echo "DONE"
+echo
+echo "********************************************************************************************************"
+echo "Now you can copy $install_directory/bin to your cgi-bin directory"
+echo "Read more about installing Parser here:"
+echo "  http://www.parser.ru/en/docs/lang/install4apachecgi.htm in English"
+echo "  http://www.parser.ru/docs/lang/install4apachecgi.htm in Russian"
+echo "********************************************************************************************************"
+
