@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: buildall,v 1.4 2012/07/19 15:20:25 moko Exp $
+# $Id: buildall,v 1.5 2012/07/20 21:48:48 moko Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -212,7 +212,6 @@ if test ! -f "$project_dir/gnome/lib/libglib-2.0.a"; then
 	--enable-dtrace=no \
 	--enable-debug=no \
 	--enable-iconv-cache=no \
-	--disable-threads \
 	--disable-fam \
 	--disable-selinux \
 	--disable-xattr \
