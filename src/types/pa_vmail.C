@@ -17,7 +17,7 @@
 #include "pa_vfile.h"
 #include "pa_uue.h"
 
-volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.100 2012/07/20 20:01:16 moko Exp $" IDENT_PA_VMAIL_H;
+volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.101 2012/07/20 20:29:58 moko Exp $" IDENT_PA_VMAIL_H;
 
 #ifdef WITH_MAILRECEIVE
 extern "C" {
@@ -139,7 +139,7 @@ static void MimePart2body(GMimeObject *parent, GMimeObject *part, gpointer data)
 	MimePart2body_info& info=*static_cast<MimePart2body_info *>(data);
 
 	// skipping message/partial & frames
-	if (GMIME_IS_MESSAGE_PARTIAL (part) || GMIME_IS_MULTIPART (part) || !GMIME_IS_PART(part))
+	if (GMIME_IS_MESSAGE_PARTIAL (part) || GMIME_IS_MULTIPART (part))
 		return;
 	
 	if (GMimeContentType *type=g_mime_object_get_content_type(part)) {
@@ -188,18 +188,18 @@ static void MimePart2body(GMimeObject *parent, GMimeObject *part, gpointer data)
 			param=g_mime_param_next(param);
 		}
 
-		GMimePart *gpart = (GMimePart *)part;
-
-		putReceived(partHash, "description", g_mime_part_get_content_description(gpart));
-		putReceived(partHash, "content-id", g_mime_part_get_content_id(gpart));
-		putReceived(partHash, "content-md5", g_mime_part_get_content_md5(gpart));
-		putReceived(partHash, "content-location", g_mime_part_get_content_location(gpart));
-
 		if (GMIME_IS_MESSAGE_PART (part)) {
 			/* message/rfc822 */
 			GMimeMessage *message = g_mime_message_part_get_message ((GMimeMessagePart *) part);
 			parse(*info.r, message, partHash);
 		} else {
+			GMimePart *gpart = (GMimePart *)part;
+
+			putReceived(partHash, "description", g_mime_part_get_content_description(gpart));
+			putReceived(partHash, "content-id", g_mime_part_get_content_id(gpart));
+			putReceived(partHash, "content-md5", g_mime_part_get_content_md5(gpart));
+			putReceived(partHash, "content-location", g_mime_part_get_content_location(gpart));
+
 			// $.value[string|file]
 			GMimeDataWrapper* gcontent=g_mime_part_get_content_object(gpart);
 			GMimeStream* gstream=g_mime_stream_filter_new(g_mime_data_wrapper_get_stream(gcontent));
@@ -284,7 +284,6 @@ static void parse(Request& r, GMimeMessage *message, HashStringValue& received) 
 	} catch(...) {
 		putReceived(received, VALUE_NAME, "<exception occured while parsing message>");
 	}
-	g_object_unref(GMIME_OBJECT(message));
 }
 
 void VMail::fill_received(Request& r) {
@@ -299,6 +298,7 @@ void VMail::fill_received(Request& r) {
 			// parse incoming message
 			GMimeMessage *message=g_mime_parser_construct_message(g_mime_parser_new_with_stream(stream));
 			parse(r, message, vreceived.hash());
+			g_object_unref(GMIME_OBJECT(message));
 		} catch(const Exception& e) {
 			HashStringValue& received=vreceived.hash();
 			putReceived(received, VALUE_NAME, "<exception occured while parsing message>");
