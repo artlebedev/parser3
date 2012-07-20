@@ -17,7 +17,7 @@
 #include "pa_vfile.h"
 #include "pa_uue.h"
 
-volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.103 2012/07/20 20:54:24 moko Exp $" IDENT_PA_VMAIL_H;
+volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.104 2012/07/20 20:56:06 moko Exp $" IDENT_PA_VMAIL_H;
 
 #ifdef WITH_MAILRECEIVE
 extern "C" {
@@ -292,7 +292,7 @@ void VMail::fill_received(Request& r) {
 		g_mime_init(0);
 
 		// create stream with CRLF filter
-		GMimeStream *stream = g_mime_stream_filter_new(g_mime_stream_fs_new(fileno(stdin)));
+		GMimeStream *stream = g_mime_stream_filter_new(g_mime_stream_file_new(stdin));
 		g_mime_stream_filter_add(GMIME_STREAM_FILTER(stream), g_mime_filter_crlf_new(false, false));
 		try {
 			// parse incoming message
