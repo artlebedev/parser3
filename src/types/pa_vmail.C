@@ -17,7 +17,7 @@
 #include "pa_vfile.h"
 #include "pa_uue.h"
 
-volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.99 2012/07/16 11:38:04 moko Exp $" IDENT_PA_VMAIL_H;
+volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.100 2012/07/20 20:01:16 moko Exp $" IDENT_PA_VMAIL_H;
 
 #ifdef WITH_MAILRECEIVE
 extern "C" {
@@ -139,7 +139,7 @@ static void MimePart2body(GMimeObject *parent, GMimeObject *part, gpointer data)
 	MimePart2body_info& info=*static_cast<MimePart2body_info *>(data);
 
 	// skipping message/partial & frames
-	if (GMIME_IS_MESSAGE_PARTIAL (part) || GMIME_IS_MULTIPART (part))
+	if (GMIME_IS_MESSAGE_PARTIAL (part) || GMIME_IS_MULTIPART (part) || !GMIME_IS_PART(part))
 		return;
 	
 	if (GMimeContentType *type=g_mime_object_get_content_type(part)) {
