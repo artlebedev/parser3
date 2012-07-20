@@ -17,7 +17,7 @@
 #include "pa_vfile.h"
 #include "pa_uue.h"
 
-volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.102 2012/07/20 20:36:02 moko Exp $" IDENT_PA_VMAIL_H;
+volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.103 2012/07/20 20:54:24 moko Exp $" IDENT_PA_VMAIL_H;
 
 #ifdef WITH_MAILRECEIVE
 extern "C" {
@@ -201,29 +201,29 @@ static void MimePart2body(GMimeObject *parent, GMimeObject *part, gpointer data)
 			putReceived(partHash, "content-location", g_mime_part_get_content_location(gpart));
 
 			// $.value[string|file]
-			GMimeDataWrapper* gcontent=g_mime_part_get_content_object(gpart);
-			GMimeStream* gstream=g_mime_stream_filter_new(g_mime_data_wrapper_get_stream(gcontent));
-			
-			
-			if(GMimeFilter* filter=g_mime_filter_basic_new(g_mime_part_get_content_encoding(gpart), false))
-				g_mime_stream_filter_add(GMIME_STREAM_FILTER(gstream), filter);
-			
-			size_t length;
-			
-			if(partType==P_FILE) {
-				char *content=readStream(gstream, length);
-				const char* content_filename=g_mime_part_get_filename(gpart);
-				VFile* vfile(new VFile);
-				vfile->set_binary(true/*tainted*/, content, length, new String(content_filename), content_filename ? new VString(info.r->mime_type_of(content_filename)) : 0);
-				putReceived(partHash, VALUE_NAME, vfile);
-			} else {
-				// P_TEXT, P_HTML
-				if(Value *charset=vcontent_type->hash().get("Charset"))
-					if(GMimeFilter* filter=g_mime_filter_charset_new(charset->get_string()->cstr(), source_charset->NAME_CSTR()))
-						g_mime_stream_filter_add(GMIME_STREAM_FILTER(gstream), filter);
+			if(GMimeDataWrapper* gcontent=g_mime_part_get_content_object(gpart)){
+				GMimeStream* gstream=g_mime_stream_filter_new(g_mime_data_wrapper_get_stream(gcontent));
 				
-				char *content=readStream(gstream, length);
-				putReceived(partHash, VALUE_NAME,new VString(*new String(content)));
+				if(GMimeFilter* filter=g_mime_filter_basic_new(g_mime_part_get_content_encoding(gpart), false))
+					g_mime_stream_filter_add(GMIME_STREAM_FILTER(gstream), filter);
+				
+				size_t length;
+				
+				if(partType==P_FILE) {
+					char *content=readStream(gstream, length);
+					const char* content_filename=g_mime_part_get_filename(gpart);
+					VFile* vfile(new VFile);
+					vfile->set_binary(true/*tainted*/, content, length, new String(content_filename), content_filename ? new VString(info.r->mime_type_of(content_filename)) : 0);
+					putReceived(partHash, VALUE_NAME, vfile);
+				} else {
+					// P_TEXT, P_HTML
+					if(Value *charset=vcontent_type->hash().get("Charset"))
+						if(GMimeFilter* filter=g_mime_filter_charset_new(charset->get_string()->cstr(), source_charset->NAME_CSTR()))
+							g_mime_stream_filter_add(GMIME_STREAM_FILTER(gstream), filter);
+					
+					char *content=readStream(gstream, length);
+					putReceived(partHash, VALUE_NAME,new VString(*new String(content)));
+				}
 			}
 		}
 	}
