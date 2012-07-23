@@ -7,11 +7,9 @@ Read the documentation here
 Check the Changelog to keep track of progresses.
 Check the INSTALL to find out how to compile and install Parser3.
 
-SQL drivers are in separate modules, 
+SQL drivers are in separate modules,
 if you need any, download and install them separately.
 
-Report bugs to paf@design.ru or on http://www.parser.ru/forum/
+Report bugs to mailbox@parser.ru or on http://www.parser.ru/forum/
 
-Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
-
-$Id: README,v 1.2 2002/02/08 11:14:18 paf Exp $
+$Id: README,v 1.3 2012/07/23 04:07:02 moko Exp $

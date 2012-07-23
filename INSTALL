@@ -1,27 +1,22 @@
-Alexander Petrosian <paf@design.ru> (http://paf.design.ru)
-$Id: INSTALL,v 1.56 2009/10/06 13:16:48 misha Exp $
+$Id: INSTALL,v 1.57 2012/07/23 04:07:02 moko Exp $
 
 1.What is the process to compile Parser3?
 
-  Just start ./buildall-with-xml script and you would get $HOME/parser3install/bin/parser3 binary.
-
-
-  NOTE:
-  In case you do not need XML support, use ./buildall-without-xml
+  Just start ./buildall script and you would get $HOME/parser3install/bin/parser3 binary.
 
   NOTE:
-  On some platforms there is special version of libgc patched to support some
-  local piece of subtlety.
-  Official libgc does not work there, use special version instead.
-  (OpenBSD reported to be one of those)
-  If you need that special version, please change buildall script accordingly.
+  In case you do not need XML support, use ./buildall --without-xml
 
   NOTE:
-  In case you later would experience problems with gcc runtime exception handling
-  (most notable when reporting sql-related problems),
-  add this to configure line in buildall script:
-  --with-sjlj-exceptions
-  (HPUX is reported to have such problems)
+  If case you need apache parser module (DSO), use ./buildall --with-apache
+
+  NOTE:
+  If you have gc, prce, libxml and libxslt installed, you can use ./configure --with-xml
+
+  NOTE:
+  In case you later would experience problems with gcc runtime exception handling 
+  (most notable when reporting sql-related problems), pass this to buildall script:
+  --with-sjlj-exceptions (HPUX is reported to have such problems)
 
   NOTE:
   On some systems there are no "make" and you should run 'gmake', change buildall script accordingly then.
@@ -30,108 +25,40 @@ $Id: INSTALL,v 1.56 2009/10/06 13:16:48 misha Exp $
 
   Copy files from $HOME/parser3install directory into your cgi-bin directory.
 
-  Then install Parser3 as a handler of documents, step-by-step instrunctions:
+  Then install Parser3 to handle documents, step-by-step instrunctions:
     http://www.parser.ru/en/docs/lang/install4apachecgi.htm" in English
     http://www.parser.ru/docs/lang/install4apachecgi.htm" in Russian
 
   Directory layout:
     bin/
-      parser3             -- CGI and command line Parser3 interpreter
-      auto.p.dist         -- configuration file sample, 
-                             copy it to auto.p and adjust to your needs
-    etc/
-      parser3.charsets/   -- charset definition files
-        koi8-r.cfg        -- cyrillic charset [KOI8-R encoding]
-        windows-1250.cfg  -- central europian charset [windows-1250 encoding]
-        windows-1251.cfg  -- cyrillic charset [windows-1251 encoding]
-        windows-1257.cfg  -- baltic charset [windows-1257 encoding]
+      parser3               -- CGI and command line Parser3 interpreter
+      auto.p.dist           -- configuration file sample,
+                               copy it to auto.p and adjust to your needs
+    share/
+      charsets/
+        parser3.charsets/   -- charset definition files
+          koi8-r.cfg        -- cyrillic charset [KOI8-R encoding]
+          windows-1251.cfg  -- cyrillic charset [windows-1251 encoding]
+          ...
 
 3.I have heard about $mail:receive experimental support, how do I use it?
-  You need to bulid these additional libraries
-      glib >= 1.2.10
-      gmime >= 1.0.1 [http://spruce.sourceforge.net/gmime/sources/v1.0/gmime-1.0.8.tar.gz]
-    on your system, and specify path to them to Parser3 configure script.
 
-    glib:
-
-    cd $HOME/parser3project/src
-    #on freebsd5 this is reported to work: ftp://ftp.gtk.org/pub/gtk/v1.1/glib-1.1.16.tar.gz
-    wget --passive-ftp ftp://ftp.gtk.org/pub/gtk/v1.2/glib-1.2.10.tar.gz
-    gunzip -c glib-1.2.10.tar.gz | tar vxf -
-    cd glib-1.2.10
-    ./configure --prefix=$HOME/parser3project/gnome --silent
-    make install
-
-    gmime:
-
-    cd gmime-x.x.x
-    ./configure --prefix=$HOME/parser3project/gnome
-    make install
-
-    Then you need to change buildall script to add this to parser3 configure line:
-        --with-static-mailreceive=$HOME/parser3project/gnome
-    And start that changed ./buildall.
-
-    NOTE:
-    In case your glib as installed into some other prefix,
-    specify it's configuration file with
-        --with-glib-config=/path/to/your/glib-config
-    NOTE:
-    In case you are using SHARED mime library, you may want to link in direct path to it,
-    use this key to specify which linker key to use do do that:
-        --with-pathlink=LKEY    put dynamic libraries paths to binary
-                                using linker key (-R, -rpath-link)
+  Just start ./buildall --with-mailreceive.
+  If you have glib and gmime installed, you can run ./configure --with-mailreceive.
 
 4.Security issues
-  You can disable any exec operations by setting
-  --disable-execs
-  option to configure.
+  You can disable any exec operations by setting --disable-execs option.
   file::exec, file::cgi and mail:send (unix version) methods would be disabled.
 
   You can enable reading and executing files, not belonging to group+user 
-  other then effective by setting
-  --disable-safe-mode
-  option to configure.
-  
+  other then effective by setting --disable-safe-mode option.
+
   You can disable user-configured sendmail commands by forcing it, setting
-  "--with=sendmail=COMMAND"
-  option to configure, for example:
-  "--with-sendmail=/usr/sbin/sendmail -i -t -f postmaster"
+  "--with=sendmail=COMMAND" option.
 
-  By default libstdc++ is linked statically, you can re-enable dynamic libstdc++ linkage by specifying
-  --with-dynamic-stdcpp
-  option to configure.  
-
-
-  Some root config options can be specified at configure time, and would override autodetects.
-
-  List of enabled charsets:
-  --with-charsets=CHARSET[,CHARSET,...]  Enables charsets in root config (windows-1251,
-                          windows-1250 windows-1257 koi8-r; Default is windows-1251)
-  SQL clients:
-  --with-mysql-client=mysqlclientlib?params
-  --with-pgsql-client=pgsqlclientlib?params
-  --with-oracle-client=oracleclientlib?params
-  
-5.
-  If you need to build apache 1.3 parser module, get source distribution of apache 1.3,
-  run configure there, then run parser configure with one more option:
-  --with-apache13=Apache13 source distribution directory
-  after 'make' go to that directory and run
-
-  ./p3runConfigure <any additional options to apache configure to pass>
-  
-  example:
-  ./p3runConfigure --prefix=$HOME/apache13install --enable-module=rewrite
-
-  WARNING: if you want to use apache configure option --enable-shared=max, do this:
-  ./p3runConfigure --enable-shared=max --disable-shared=mod_parser3.c
-
-  Make build-std" command to compile just httpd binary, support stuff won't build with parser libs.
-
-6.
-  Since Parser 3.4.0 the several optimisations were implemented.
-  If you experience problems you can try to disable them by commenting corresponding defines and recompiling parser3.
+5.Since Parser 3.4.0 the several optimisations were implemented.
+  If you experience problems you can try to disable them by commenting corresponding 
+  defines and recompiling parser3.
 
   src/include/pa_opcode.h
     #define OPTIMIZE_BYTECODE_GET_CLASS               -- $a:
@@ -171,4 +98,3 @@ $Id: INSTALL,v 1.56 2009/10/06 13:16:48 misha Exp $
 
   src/include/pa_hash.h
     #define HASH_ORDER            -- hash keys are iterated in the order of insertion
-
