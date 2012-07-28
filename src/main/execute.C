@@ -21,7 +21,7 @@
 #include "pa_vimage.h"
 #include "pa_wwrapper.h"
 
-volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.369 2012/03/16 09:51:27 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
+volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.370 2012/07/28 20:10:58 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
 
 //#define DEBUG_EXECUTE
 
@@ -720,9 +720,14 @@ void Request::execute(ArrayOperation& ops) {
 								value.type());
 				}
 
-				VMethodFrame frame(*junction->method, method_frame, junction->self);
-				METHOD_FRAME_ACTION(op_call(frame));
-				stack.push(frame.result().as_value());
+				Value *result;
+				{
+					VMethodFrame frame(*junction->method, method_frame, junction->self);
+					METHOD_FRAME_ACTION(op_call(frame));
+					result=&frame.result().as_value();
+					// VMethodFrame desctructor deletes junctions in stack params here
+				}
+				stack.push(*result);
 
 				DEBUG_PRINT_STR("<-returned")
 
@@ -833,15 +838,20 @@ void Request::execute(ArrayOperation& ops) {
 				DEBUG_PRINT_OPS(local_ops)
 				DEBUG_PRINT_STR("->\n")
 
-				Value &object=construct(*class_value, *constructor_junction->method);
-				VConstructorFrame frame(*constructor_junction->method, method_frame, object);
-				METHOD_FRAME_ACTION(op_call(frame));
-				object.enable_default_setter();
+				Value *result;
+				{
+					Value& object=construct(*class_value, *constructor_junction->method);
+					VConstructorFrame frame(*constructor_junction->method, method_frame, object);
+					METHOD_FRAME_ACTION(op_call(frame));
+					object.enable_default_setter();
+					result=&frame.result().as_value();
+					// VMethodFrame desctructor deletes junctions in stack params here
+				}
 
 				if(opcode==OP::OP_CONSTRUCT_OBJECT)
-					stack.push(frame.result().as_value());
+					stack.push(*result);
 				else
-					write_pass_lang(frame.result());
+					write_pass_lang(*result);
 
 				DEBUG_PRINT_STR("<-returned")
 				break;
