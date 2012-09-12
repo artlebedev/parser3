@@ -1,9 +1,9 @@
 /**	@page Targets  Build targets
 
-Parser is build as [/targets]:
-- Apache 1.3 module [apache13/];
-- CGI script [cgi/];
-- ISAPI extension [isapi/].
+Parser has several build targets:
+- Apache module (universal for 1.3 and 2.X versions) [targets/apache];
+- CGI script [targets/cgi];
+- ISAPI extension [targets/isapi].
 
 Each target implements pure virtual static SAPI class - an interface of Parser with web-server.
 

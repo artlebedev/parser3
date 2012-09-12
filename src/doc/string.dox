@@ -1,12 +1,11 @@
 /**	@page String String
 
-In memory strings[String] are stored as letters[actually, cord objects from libgd cord library, see cord.h file] 
-plus list of fragments[String::Fragment] which contain language of fragment+it's length.
+In memory strings [String] are stored as letters [actually, cord objects from libgd cord library, see cord.h file] 
+plus list of fragments [String::Languages] which contain language of fragment+it's length.
 
 Fragments that are received from stdout of scripts are considered clean(String::Language ::L_CLEAN),
-but those from visitor - from stderr of scripts, from environment, from form, 
-from dist[table:load] or from sql server[table:sql] 
-are considered tainted(String::Language ::UL_TAINTED), 
+but those from visitor - from stderr of scripts, from environment, from forms,
+from dist [table:load] or from sql server [table:sql] are considered tainted(String::Language::L_TAINTED),
 when string involved in different operations, it can be split, but all resulting parts 
 still remember languages of their fragments.
 String can be written to Request::wcontext, then part of fragments can change their language. 
@@ -17,12 +16,10 @@ Say,
 ^void:sql{insert into news (title) values ('$form:title')]
 @endverbatim
 when parameter of sql is processed, with help of Temp_lang 
-we set "current language"[Request::flang],
-and when string got written[Request::write_assign_lang] 
-L_TAINTED string from $form:title part of parameter of sql-method, 
-the one in apostrophes, got assigned an L_SQL language.
+we set "current language" [Request::flang], and when string got written [Request::write_assign_lang] 
+L_TAINTED string from $form:title part of parameter of sql-method, the one in apostrophes, got assigned an L_SQL language.
 
-String can be converted to normal Ñ-string by String::cstr().
+String can be converted to normal string using String::cstr().
 If it is called with this parameter String::cstr(String::L_UNSPECIFIED) then
 when it will be converted, fragment languages would be taken into consideration, and 
 corresponding cleansing performed.
