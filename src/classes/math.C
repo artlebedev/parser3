@@ -30,7 +30,7 @@
 	extern char *crypt(const char* , const char* );
 #endif
 
-volatile const char * IDENT_MATH_C="$Id: math.C,v 1.61 2012/05/28 10:33:18 moko Exp $";
+volatile const char * IDENT_MATH_C="$Id: math.C,v 1.62 2012/09/13 22:44:36 moko Exp $";
 
 // defines
 
@@ -305,27 +305,135 @@ void SHA1PadMessage(SHA1Context *context) {
 	SHA1ProcessMessageBlock(context);
 }
 
+#ifdef PA_BIG_ENDIAN
+#define SWAP(n) (n)
+#else
+#define SWAP(n) (((n) << 24) | (((n) & 0xff00) << 8) | (((n) >> 8) & 0xff00) | ((n) >> 24))
+#endif
+
+void SHA1ReadDigest(SHA1Context &c, void *buf)
+{
+	if(!SHA1Result(&c))
+		throw Exception (PARSER_RUNTIME, 0, "Can not compute SHA1");
+
+	((uint32_t *)buf)[0] = SWAP(c.Message_Digest[0]);
+	((uint32_t *)buf)[1] = SWAP(c.Message_Digest[1]);
+	((uint32_t *)buf)[2] = SWAP(c.Message_Digest[2]);
+	((uint32_t *)buf)[3] = SWAP(c.Message_Digest[3]);
+	((uint32_t *)buf)[4] = SWAP(c.Message_Digest[4]);
+}
+
 static void _sha1(Request& r, MethodParams& params) {
 	const char *string = params.as_string(0, PARAMETER_MUST_BE_STRING).cstr();
 
 	SHA1Context c;
 	SHA1Reset (&c);
 	SHA1Input (&c, (const unsigned char*)string, strlen(string));
-	if(!SHA1Result(&c))
-		throw Exception (PARSER_RUNTIME, 0, "Can not compute SHA1");
 
-	const size_t bufsize=40+1/*zero-teminator*/+1/*for faulty snprintfs*/;
-	char* cstr=new(PointerFreeGC) char[bufsize];
+	unsigned char digest[20];
+	SHA1ReadDigest(c, digest);
+	r.write_pass_lang(*new String(hex_string(digest, sizeof(digest), false)));
+}
 
-	snprintf(cstr, bufsize,
-			"%08x%08x%08x%08x%08x",
-			c.Message_Digest[0],
-			c.Message_Digest[1],
-			c.Message_Digest[2],
-			c.Message_Digest[3],
-			c.Message_Digest[4]);
+#define IPAD 0x36
+#define OPAD 0x5c
 
-	r.write_pass_lang(*new String(cstr));
+void memxor(char *dest, const char *src, size_t n){
+	for (;n>0;n--) *dest++ ^= *src++;
+}
+
+static void _digest(Request& r, MethodParams& params) {
+	const String &sformat = params.as_string(0, PARAMETER_MUST_BE_STRING);
+	const char *string = params.as_string(1, PARAMETER_MUST_BE_STRING).cstr();
+
+	enum Format { F_MD5, F_SHA1 } format;
+
+	if (sformat == "md5") format = F_MD5;
+	else if (sformat == "sha1" ) format = F_SHA1;
+	else throw Exception(PARSER_RUNTIME, &sformat, "must be 'md5' or 'sha1'");
+
+	const char *hmac=0;
+	enum Encode { E_HEX, E_BASE64 } encode = E_HEX;
+
+	if(params.count() == 3)
+		if(HashStringValue* options=params.as_hash(2)) {
+			int valid_options=0;
+			if(Value* value=options->get("hmac")) {
+				hmac=value->as_string().cstr();
+				valid_options++;
+			}
+			if(Value* value=options->get("encode")) {
+				const String& sencode=value->as_string();
+				if (sencode == "hex") encode = E_HEX;
+				else if (sencode == "base64" ) encode = E_BASE64;
+				else throw Exception(PARSER_RUNTIME, &sencode, "must be 'hex' or 'base64'");
+				valid_options++;
+			}
+			if(valid_options!=options->count())
+				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+		}
+
+	String::C digest;
+
+	if(format == F_MD5){
+		PA_MD5_CTX context;
+		pa_MD5Init(&context);
+		pa_MD5Update(&context, (const unsigned char*)string, strlen(string));
+
+		char *str=(char *)pa_malloc(16);
+		pa_MD5Final((unsigned char *)str, &context);
+		digest = String::C(str, 16);
+	}
+
+	if(format == F_SHA1){
+		SHA1Context c;
+		if(hmac){
+			size_t keylen=strlen(hmac);
+			char digestbuf[20];
+
+			/* Reduce the key's size, so that it becomes <= 64 bytes large.  */
+			if (keylen > 64){
+				SHA1Reset (&c);
+				SHA1Input (&c, (const unsigned char*)hmac, keylen);
+
+				SHA1ReadDigest(c, digestbuf);
+				hmac = digestbuf;
+				keylen = 20;
+			}
+
+			/* Compute TEMP from KEY and STRING.  */
+			char block[64];
+			memset (block, IPAD, sizeof (block));
+			memxor (block, hmac, keylen);
+
+			SHA1Reset (&c);
+			SHA1Input (&c, (const unsigned char*)block, 64);
+			SHA1Input (&c, (const unsigned char*)string, strlen(string));
+
+			SHA1ReadDigest(c, digestbuf);
+
+			/* Compute result from KEY and TEMP.  */
+			memset (block, OPAD, sizeof (block));
+			memxor (block, hmac, keylen);
+
+			SHA1Reset (&c);
+			SHA1Input (&c, (const unsigned char*)block, 64);
+			SHA1Input (&c, (const unsigned char*)digestbuf, 20);
+		} else {
+			SHA1Reset (&c);
+			SHA1Input (&c, (const unsigned char*)string, strlen(string));
+		}
+		char *str=(char *)pa_malloc(20);
+		SHA1ReadDigest(c, str);
+		digest = String::C(str, 20);
+	}
+
+	if(encode == E_HEX){
+		r.write_pass_lang(*new String(hex_string((unsigned char *)digest.str, digest.length, false)));
+	}
+	if(encode == E_BASE64){
+		r.write_pass_lang(*new String(pa_base64_encode(digest.str, digest.length)));
+	}
 }
 
 static void _uuid(Request& r, MethodParams& /*params*/) {
@@ -435,6 +543,9 @@ MMath::MMath(): Methoded("math") {
 
 	// ^math:sha1[string]
 	ADD1(sha1);
+	
+	// ^math:digest[format;string;options]
+	add_native_method("digest", Method::CT_STATIC, _digest, 2, 3);
 	
 	// ^math:crc32[string]
 	ADD1(crc32);
