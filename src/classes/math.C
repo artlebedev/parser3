@@ -30,7 +30,7 @@
 	extern char *crypt(const char* , const char* );
 #endif
 
-volatile const char * IDENT_MATH_C="$Id: math.C,v 1.62 2012/09/13 22:44:36 moko Exp $";
+volatile const char * IDENT_MATH_C="$Id: math.C,v 1.63 2012/09/15 20:51:10 moko Exp $";
 
 // defines
 
@@ -343,17 +343,17 @@ void memxor(char *dest, const char *src, size_t n){
 }
 
 static void _digest(Request& r, MethodParams& params) {
-	const String &sformat = params.as_string(0, PARAMETER_MUST_BE_STRING);
+	const String &smethod = params.as_string(0, PARAMETER_MUST_BE_STRING);
 	const char *string = params.as_string(1, PARAMETER_MUST_BE_STRING).cstr();
 
-	enum Format { F_MD5, F_SHA1 } format;
+	enum Method { M_MD5, M_SHA1 } method;
 
-	if (sformat == "md5") format = F_MD5;
-	else if (sformat == "sha1" ) format = F_SHA1;
-	else throw Exception(PARSER_RUNTIME, &sformat, "must be 'md5' or 'sha1'");
+	if (smethod == "md5") method = M_MD5;
+	else if (smethod == "sha1" ) method = M_SHA1;
+	else throw Exception(PARSER_RUNTIME, &smethod, "must be 'md5' or 'sha1'");
 
 	const char *hmac=0;
-	enum Encode { E_HEX, E_BASE64 } encode = E_HEX;
+	enum Format { F_HEX, F_BASE64 } format = F_HEX;
 
 	if(params.count() == 3)
 		if(HashStringValue* options=params.as_hash(2)) {
@@ -362,11 +362,11 @@ static void _digest(Request& r, MethodParams& params) {
 				hmac=value->as_string().cstr();
 				valid_options++;
 			}
-			if(Value* value=options->get("encode")) {
-				const String& sencode=value->as_string();
-				if (sencode == "hex") encode = E_HEX;
-				else if (sencode == "base64" ) encode = E_BASE64;
-				else throw Exception(PARSER_RUNTIME, &sencode, "must be 'hex' or 'base64'");
+			if(Value* value=options->get("format")) {
+				const String& sformat=value->as_string();
+				if (sformat == "hex") format = F_HEX;
+				else if (sformat == "base64" ) format = F_BASE64;
+				else throw Exception(PARSER_RUNTIME, &sformat, "must be 'hex' or 'base64'");
 				valid_options++;
 			}
 			if(valid_options!=options->count())
@@ -375,7 +375,7 @@ static void _digest(Request& r, MethodParams& params) {
 
 	String::C digest;
 
-	if(format == F_MD5){
+	if(method == M_MD5){
 		PA_MD5_CTX context;
 		pa_MD5Init(&context);
 		pa_MD5Update(&context, (const unsigned char*)string, strlen(string));
@@ -385,7 +385,7 @@ static void _digest(Request& r, MethodParams& params) {
 		digest = String::C(str, 16);
 	}
 
-	if(format == F_SHA1){
+	if(method == M_SHA1){
 		SHA1Context c;
 		if(hmac){
 			size_t keylen=strlen(hmac);
@@ -428,10 +428,10 @@ static void _digest(Request& r, MethodParams& params) {
 		digest = String::C(str, 20);
 	}
 
-	if(encode == E_HEX){
+	if(format == F_HEX){
 		r.write_pass_lang(*new String(hex_string((unsigned char *)digest.str, digest.length, false)));
 	}
-	if(encode == E_BASE64){
+	if(format == F_BASE64){
 		r.write_pass_lang(*new String(pa_base64_encode(digest.str, digest.length)));
 	}
 }
@@ -544,7 +544,7 @@ MMath::MMath(): Methoded("math") {
 	// ^math:sha1[string]
 	ADD1(sha1);
 	
-	// ^math:digest[format;string;options]
+	// ^math:digest[method;string;options]
 	add_native_method("digest", Method::CT_STATIC, _digest, 2, 3);
 	
 	// ^math:crc32[string]
