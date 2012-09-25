@@ -30,7 +30,7 @@
 	extern char *crypt(const char* , const char* );
 #endif
 
-volatile const char * IDENT_MATH_C="$Id: math.C,v 1.63 2012/09/15 20:51:10 moko Exp $";
+volatile const char * IDENT_MATH_C="$Id: math.C,v 1.64 2012/09/25 11:31:03 moko Exp $";
 
 // defines
 
@@ -311,35 +311,62 @@ void SHA1PadMessage(SHA1Context *context) {
 #define SWAP(n) (((n) << 24) | (((n) & 0xff00) << 8) | (((n) >> 8) & 0xff00) | ((n) >> 24))
 #endif
 
-void SHA1ReadDigest(SHA1Context &c, void *buf)
+void SHA1ReadDigest(void *buf, SHA1Context *c)
 {
-	if(!SHA1Result(&c))
+	if(!SHA1Result(c))
 		throw Exception (PARSER_RUNTIME, 0, "Can not compute SHA1");
 
-	((uint32_t *)buf)[0] = SWAP(c.Message_Digest[0]);
-	((uint32_t *)buf)[1] = SWAP(c.Message_Digest[1]);
-	((uint32_t *)buf)[2] = SWAP(c.Message_Digest[2]);
-	((uint32_t *)buf)[3] = SWAP(c.Message_Digest[3]);
-	((uint32_t *)buf)[4] = SWAP(c.Message_Digest[4]);
+	((uint32_t *)buf)[0] = SWAP(c->Message_Digest[0]);
+	((uint32_t *)buf)[1] = SWAP(c->Message_Digest[1]);
+	((uint32_t *)buf)[2] = SWAP(c->Message_Digest[2]);
+	((uint32_t *)buf)[3] = SWAP(c->Message_Digest[3]);
+	((uint32_t *)buf)[4] = SWAP(c->Message_Digest[4]);
 }
 
 static void _sha1(Request& r, MethodParams& params) {
 	const char *string = params.as_string(0, PARAMETER_MUST_BE_STRING).cstr();
 
 	SHA1Context c;
+	unsigned char digest[20];
 	SHA1Reset (&c);
 	SHA1Input (&c, (const unsigned char*)string, strlen(string));
+	SHA1ReadDigest(digest, &c);
 
-	unsigned char digest[20];
-	SHA1ReadDigest(c, digest);
 	r.write_pass_lang(*new String(hex_string(digest, sizeof(digest), false)));
+}
+
+void memxor(char *dest, const char *src, size_t n){
+	for (;n>0;n--) *dest++ ^= *src++;
 }
 
 #define IPAD 0x36
 #define OPAD 0x5c
 
-void memxor(char *dest, const char *src, size_t n){
-	for (;n>0;n--) *dest++ ^= *src++;
+#define HMAC(key,init,update,final,digestlen){					\
+	unsigned char tempdigest[digestlen], keydigest[digestlen];		\
+	size_t keylen=strlen(key);						\
+	/* Reduce the key's size, so that it becomes <= 64 bytes. */		\
+	if (keylen > 64){							\
+		init(&c);							\
+		update(&c,(const unsigned char*)hmac, keylen);			\
+		final(keydigest, &c);						\
+		key = (char *)keydigest;					\
+		keylen = digestlen;						\
+	}									\
+	/* Compute TEMP from KEY and STRING. */					\
+	char block[64];								\
+	memset (block, IPAD, sizeof (block));					\
+	memxor (block, key, keylen);						\
+	init(&c);								\
+	update(&c, (const unsigned char*)block, 64);				\
+	update(&c, (const unsigned char*)string, strlen(string));		\
+	final(tempdigest, &c);							\
+	/* Compute result from KEY and TEMP. */					\
+	memset (block, OPAD, sizeof (block));					\
+	memxor (block, key, keylen);						\
+	init(&c);								\
+	update(&c, (const unsigned char*)block, 64);				\
+	update(&c, (const unsigned char*)tempdigest, digestlen);		\
 }
 
 static void _digest(Request& r, MethodParams& params) {
@@ -376,55 +403,28 @@ static void _digest(Request& r, MethodParams& params) {
 	String::C digest;
 
 	if(method == M_MD5){
-		PA_MD5_CTX context;
-		pa_MD5Init(&context);
-		pa_MD5Update(&context, (const unsigned char*)string, strlen(string));
-
+		PA_MD5_CTX c;
+		if(hmac){
+			HMAC(hmac, pa_MD5Init, pa_MD5Update, pa_MD5Final, 16);
+		} else {
+			pa_MD5Init(&c);
+			pa_MD5Update(&c, (const unsigned char*)string, strlen(string));
+		}
 		char *str=(char *)pa_malloc(16);
-		pa_MD5Final((unsigned char *)str, &context);
+		pa_MD5Final((unsigned char *)str, &c);
 		digest = String::C(str, 16);
 	}
 
 	if(method == M_SHA1){
 		SHA1Context c;
 		if(hmac){
-			size_t keylen=strlen(hmac);
-			char digestbuf[20];
-
-			/* Reduce the key's size, so that it becomes <= 64 bytes large.  */
-			if (keylen > 64){
-				SHA1Reset (&c);
-				SHA1Input (&c, (const unsigned char*)hmac, keylen);
-
-				SHA1ReadDigest(c, digestbuf);
-				hmac = digestbuf;
-				keylen = 20;
-			}
-
-			/* Compute TEMP from KEY and STRING.  */
-			char block[64];
-			memset (block, IPAD, sizeof (block));
-			memxor (block, hmac, keylen);
-
-			SHA1Reset (&c);
-			SHA1Input (&c, (const unsigned char*)block, 64);
-			SHA1Input (&c, (const unsigned char*)string, strlen(string));
-
-			SHA1ReadDigest(c, digestbuf);
-
-			/* Compute result from KEY and TEMP.  */
-			memset (block, OPAD, sizeof (block));
-			memxor (block, hmac, keylen);
-
-			SHA1Reset (&c);
-			SHA1Input (&c, (const unsigned char*)block, 64);
-			SHA1Input (&c, (const unsigned char*)digestbuf, 20);
+			HMAC(hmac, SHA1Reset, SHA1Input, SHA1ReadDigest, 20);
 		} else {
-			SHA1Reset (&c);
-			SHA1Input (&c, (const unsigned char*)string, strlen(string));
+			SHA1Reset(&c);
+			SHA1Input(&c, (const unsigned char*)string, strlen(string));
 		}
 		char *str=(char *)pa_malloc(20);
-		SHA1ReadDigest(c, str);
+		SHA1ReadDigest(str, &c);
 		digest = String::C(str, 20);
 	}
 
