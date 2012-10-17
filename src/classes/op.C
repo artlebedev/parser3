@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.211 2012/06/08 11:44:02 misha Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.212 2012/10/17 10:25:58 misha Exp $";
 
 // limits
 
@@ -145,7 +145,7 @@ static void _taint(Request& r, MethodParams& params) {
 static void _apply_taint(Request& r, MethodParams& params) {
 	String::Language lang=params.count()==1 ? String::L_AS_IS : get_untaint_lang(params.as_string(0, "lang must be string"));
 	const String &sbody=params.as_string(params.count()-1, "body must be string");
-	String::Body result_body=sbody.cstr_to_string_body_untaint(lang, 0, &r.charsets);
+	String::Body result_body=sbody.cstr_to_string_body_untaint(lang, r.connection(), &r.charsets);
 	r.write_pass_lang(*new String(result_body, String::L_AS_IS));
 }
 
