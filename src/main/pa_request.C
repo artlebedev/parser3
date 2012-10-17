@@ -32,7 +32,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.331 2012/05/24 12:50:20 misha Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.332 2012/10/17 10:12:39 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -251,6 +251,7 @@ void Request::configure_admin(VStateless_class& conf_class) {
 	}
 
 #ifdef STRICT_VARS
+	VVoid::strict_vars=false;
 	if(Value* strict_vars=conf_class.get_element(strict_vars_name)) {
 		if(strict_vars->is_bool())
 			VVoid::strict_vars=strict_vars->as_bool();
