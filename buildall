@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: buildall,v 1.5 2012/07/20 21:48:48 moko Exp $
+# $Id: buildall,v 1.6 2012/10/19 10:47:24 moko Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -11,11 +11,11 @@ project_dir=`pwd`
 build_xml="yes"
 build_gmime=""
 build_apache=""
+build_stripped=""
 
 options="--with-included-ltdl"
 options="$options --with-gc=$project_dir/gc/lib"
 options="$options --with-pcre=$project_dir/pcre"
-#options="$options --disable-safe-mode"
 #options="$options --disable-stringstream"
 
 echo -n "Building statically linked parser3"
@@ -35,9 +35,13 @@ for PARAM; do
 	    options="$options --with-mailreceive=$project_dir/gnome"
 	    build_gmime="yes"
 	    ;;
+	"--strip")
+	    echo -n ", without debug information"
+	    build_stripped="yes"
+	    ;;
 	"--help")
 	    echo
-	    echo "Usage: buildall [--without-xml] [--with-apache] [--with-mailreceive] [other configure options ...]"
+	    echo "Usage: buildall [--without-xml] [--with-apache] [--with-mailreceive] [--strip] [--disable-safe-mode] [other configure options ...]"
 	    exit 1
 	    ;;
 	*)
@@ -250,8 +254,9 @@ echo "Building parser3..."
 make install
 if test $? -ne 0; then exit 1; fi
 
-#remove debug info
-#strip ${install_directory}/bin/parser3
+if test "$build_stripped" = "yes"; then
+    strip ${install_directory}/bin/parser3
+fi
 
 echo "DONE"
 echo
