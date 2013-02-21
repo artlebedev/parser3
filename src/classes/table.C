@@ -21,7 +21,7 @@
 #include "pa_vbool.h"
 #include "pa_array.h"
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.290 2012/06/17 11:04:02 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.291 2013/02/21 04:27:12 moko Exp $";
 
 // class
 
@@ -980,7 +980,7 @@ static bool _locate_name_value(Table& table, Request& r, MethodParams& params) {
 static void _locate(Request& r, MethodParams& params) {
 	Table& table=GET_SELF(r, VTable).table();
 
-	bool result=params[0].get_junction()?
+	bool result=params[0].get_junction() || (params.count() == 1) ?
 		_locate_expression(table, r, params) :
 		_locate_name_value(table, r, params);
 	r.write_no_lang(VBool::get(result));
