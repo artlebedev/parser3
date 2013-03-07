@@ -8,7 +8,7 @@
 #ifndef PA_VDOUBLE_H
 #define PA_VDOUBLE_H
 
-#define IDENT_PA_VDOUBLE_H "$Id: pa_vdouble.h,v 1.59 2012/05/28 19:47:52 moko Exp $"
+#define IDENT_PA_VDOUBLE_H "$Id: pa_vdouble.h,v 1.60 2013/03/07 22:39:57 moko Exp $"
 
 // includes
 
@@ -39,7 +39,7 @@ public: // Value
 	*/
 	override const String* get_string() {
 		char local_buf[MAX_NUMBER];
-		size_t length=snprintf(local_buf, MAX_NUMBER, has_frac()? "%g": "%.0f", fdouble);
+		size_t length=snprintf(local_buf, MAX_NUMBER, "%.15g", fdouble);
 		return new String(strdup(local_buf, length));
 	}
 	/// VDouble: fdouble
@@ -72,12 +72,6 @@ public: // usage
 		if(d == 0)
 			throw Exception("number.zerodivision", 0, "Modulus by zero");
 		fdouble=((int)fdouble)%d;
-	}
-
-private:
-
-	bool has_frac() {
-		return fabs(fdouble-trunc(fdouble))>1e-100;
 	}
 
 private:
