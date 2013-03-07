@@ -13,7 +13,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.54 2012/06/02 22:52:36 misha Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.55 2013/03/07 23:14:16 moko Exp $" IDENT_PA_HTTP_H; 
 
 // defines
 
@@ -547,13 +547,13 @@ static ArrayString* parse_cookie(Request& r, const String& cookie) {
 	char *current=strdup(cookie.cstr());
 	
 	const String* name=0;
-	const String* value=0;
-	const String* expires=0;
-	const String* max_age=0;
-	const String* path=0;
-	const String* domain=0;
-	const String* httponly=0;
-	const String* secure=0;
+	const String* value=&String::Empty;
+	const String* expires=&String::Empty;
+	const String* max_age=&String::Empty;
+	const String* path=&String::Empty;
+	const String* domain=&String::Empty;
+	const String* httponly=&String::Empty;
+	const String* secure=&String::Empty;
 
 	bool first_pair=true;
 
