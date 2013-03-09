@@ -25,7 +25,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.222 2012/06/15 11:54:18 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.223 2013/03/09 05:38:33 misha Exp $";
 
 // defines
 
@@ -433,7 +433,7 @@ static void _exec_cgi(Request& r, MethodParams& params, bool cgi) {
 				if(eq_at[1]) // has value
 					env.put(
 						pa_strdup(pair, eq_at-pair),
-						pa_strdup(eq_at+1, 0));
+						pa_strdup(eq_at+1));
 	}
 
 	// const
