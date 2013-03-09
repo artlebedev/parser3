@@ -13,7 +13,7 @@
 #include "pa_vint.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_INT_C="$Id: int.C,v 1.61 2012/04/19 19:41:29 moko Exp $" IDENT_PA_VINT_H;
+volatile const char * IDENT_INT_C="$Id: int.C,v 1.62 2013/03/09 22:58:50 moko Exp $" IDENT_PA_VINT_H;
 
 // externs
 
@@ -33,28 +33,16 @@ DECLARE_CLASS_VAR(int, new MInt, 0);
 // methods
 
 static void _int(Request& r, MethodParams& params) {
-	// just checking (default) syntax validity, never really using it here, just for string.int compatibility
-	if(params.count()>0)
-		params.as_int(0, "default must be int", r);
-
 	VInt& vint=GET_SELF(r, VInt);
 	r.write_no_lang(*new VInt(vint.get_int()));
 }
 
 static void _double(Request& r, MethodParams& params) {
-	// just checking (default) syntax validity, never really using it here, just for string.double compatibility
-	if(params.count()>0)
-		params.as_double(0, "default must be double", r);
-
 	VInt& vint=GET_SELF(r, VInt);
 	r.write_no_lang(*new VDouble(vint.as_double()));
 }
 
 static void _bool(Request& r, MethodParams& params) {
-	// just checking (default) syntax validity, never really using it here, just for string.bool compatibility
-	if(params.count()>0)
-		params.as_bool(0, "default must be bool", r);
-
 	VInt& vint=GET_SELF(r, VInt);
 	r.write_no_lang(VBool::get(vint.as_bool()));
 }
@@ -103,12 +91,13 @@ static void _sql(Request& r, MethodParams& params) {
 
 MInt::MInt(): Methoded("int") {
 	// ^int.int[]
+	// ^int.int[default for ^string.int compatibility]
 	add_native_method("int", Method::CT_DYNAMIC, _int, 0, 1);
-
 	// ^int.double[]
+	// ^int.double[default for ^string.double compatibility]
 	add_native_method("double", Method::CT_DYNAMIC, _double, 0, 1);
-
-	// ^double.bool[]
+	// ^int.bool[]
+	// ^int.bool[default for ^string.bool compatibility]
 	add_native_method("bool", Method::CT_DYNAMIC, _bool, 0, 1);
 
 	// ^int.inc[] 
