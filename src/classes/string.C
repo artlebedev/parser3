@@ -20,7 +20,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.205 2012/06/08 11:44:02 misha Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.206 2013/03/09 21:55:21 moko Exp $";
 
 // class
 
@@ -67,35 +67,44 @@ static void _length(Request& r, MethodParams&) {
 static void _int(Request& r, MethodParams& params) {
 	const String& self_string=GET_SELF(r, VString).string();
 	int converted;
-	try {
-		if(self_string.is_empty())
-			throw Exception(PARSER_RUNTIME,
-				0,
-				"unable to convert empty string without default specified");
-		converted=self_string.as_int();
-	} catch(...) { // convert problem
+
+	if(self_string.is_empty()) {
 		if(params.count()>0)
 			converted=params.as_int(0, "default must be int", r); // (default)
 		else
-			rethrow; // we have a problem when no default			
+			throw Exception(PARSER_RUNTIME, 0, "unable to convert empty string without default specified");
+	} else {
+		try {
+			converted=self_string.as_int();
+		} catch(...) { // convert problem
+			if(params.count()>0)
+				converted=params.as_int(0, "default must be int", r); // (default)
+			else
+				rethrow; // we have a problem when no default
+		}
 	}
+
 	r.write_no_lang(*new VInt(converted));
 }
 
 static void _double(Request& r, MethodParams& params) {
 	const String& self_string=GET_SELF(r, VString).string();
 	double converted;
-	try {
-		if(self_string.is_empty())
-			throw Exception(PARSER_RUNTIME,
-				0,
-				"unable to convert empty string without default specified");
-		converted=self_string.as_double();
-	} catch(...) { // convert problem
+
+	if(self_string.is_empty()) {
 		if(params.count()>0)
 			converted=params.as_double(0, "default must be double", r); // (default)
 		else
-			rethrow; // we have a problem when no default
+			throw Exception(PARSER_RUNTIME, 0, "unable to convert empty string without default specified");
+	} else {
+		try {
+			converted=self_string.as_double();
+		} catch(...) { // convert problem
+			if(params.count()>0)
+				converted=params.as_double(0, "default must be double", r); // (default)
+			else
+				rethrow; // we have a problem when no default
+		}
 	}
 
 	r.write_no_lang(*new VDouble(converted));
@@ -104,29 +113,28 @@ static void _double(Request& r, MethodParams& params) {
 static void _bool(Request& r, MethodParams& params) {
 	const String& self_string=GET_SELF(r, VString).string();
 	bool converted;
-	try {
-		if(self_string.is_empty())
-			throw Exception(PARSER_RUNTIME,
-				0,
-				"unable to convert empty string without default specified");
-		
-		try {
-			converted=self_string.as_bool();
-		} catch(...) {
-			const String& lower_string=self_string.change_case(r.charsets.source(), String::CC_LOWER);
-			if(lower_string == "true"){
-				converted=true;
-			} else if (lower_string == "false"){
-				converted=false;
-			} else {
-				rethrow;
-			}
-		}
-	} catch(...) { // convert problem
+	const char *str=self_string.cstr();
+
+	if(self_string.is_empty()) {
 		if(params.count()>0)
 			converted=params.as_bool(0, "default must be bool", r); // (default)
 		else
-			rethrow; // we have a problem when no default
+			throw Exception(PARSER_RUNTIME, 0, "unable to convert empty string without default specified");
+	} else if( (str[0]=='T' || str[0]=='t') && (str[1]=='R' || str[1]=='r') && (str[2]=='U' || str[2]=='u') and
+		   (str[3]=='E' || str[3]=='e') && str[4]==0 ) { // "true"
+		converted=true;
+	} else if( (str[0]=='F' || str[0]=='f') && (str[1]=='A' || str[1]=='a') && (str[2]=='L' || str[2]=='l') and
+		   (str[3]=='S' || str[3]=='s') && (str[4]=='E' || str[4]=='e') && str[5]==0 ) { // "false"
+		converted=false;
+	} else {
+		try {
+			converted=self_string.as_bool();
+		} catch(...) { // convert problem
+			if(params.count()>0)
+				converted=params.as_bool(0, "default must be bool", r); // (default)
+			else
+				rethrow; // we have a problem when no default
+		}
 	}
 
 	r.write_no_lang(VBool::get(converted));
