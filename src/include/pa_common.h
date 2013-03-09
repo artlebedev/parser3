@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.148 2012/06/04 05:47:22 misha Exp $"
+#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.149 2013/03/09 23:34:07 misha Exp $"
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -219,12 +219,12 @@ void file_write(
 	delete specified file 
 	throws an exception in case of problems
 */
-bool file_delete(const String& file_spec, bool fail_on_problem=true);
+bool file_delete(const String& file_spec, bool fail_on_problem=true, bool keep_empty_dirs=false);
 /**
 	move specified file 
 	throws an exception in case of problems
 */
-void file_move(const String& old_spec, const String& new_spec);
+void file_move(const String& old_spec, const String& new_spec, bool keep_empty_dirs=false);
 
 bool entry_exists(const char* fname, struct stat *afinfo=0);
 bool entry_exists(const String& file_spec);

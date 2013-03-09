@@ -36,7 +36,7 @@
 #include "pcre.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.268 2012/06/04 05:47:29 misha Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.269 2013/03/09 23:34:15 misha Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -509,7 +509,7 @@ static void rmdir(const String& file_spec, size_t pos_after=0) {
 	};
 }
 
-bool file_delete(const String& file_spec, bool fail_on_problem) {
+bool file_delete(const String& file_spec, bool fail_on_problem, bool keep_empty_dirs) {
 	const char* fname=file_spec.taint_cstr(String::L_FILE_SPEC); 
 	if(unlink(fname)!=0)
 		if(fail_on_problem)
@@ -520,11 +520,13 @@ bool file_delete(const String& file_spec, bool fail_on_problem) {
 		else
 			return false;
 
-	rmdir(file_spec, 1); 
+	if(!keep_empty_dirs)
+		rmdir(file_spec, 1); 
+
 	return true;
 }
 
-void file_move(const String& old_spec, const String& new_spec) {
+void file_move(const String& old_spec, const String& new_spec, bool keep_empty_dirs) {
 	const char* old_spec_cstr=old_spec.taint_cstr(String::L_FILE_SPEC); 
 	const char* new_spec_cstr=new_spec.taint_cstr(String::L_FILE_SPEC); 
 	
@@ -536,7 +538,8 @@ void file_move(const String& old_spec, const String& new_spec) {
 			"rename failed: %s (%d), actual filename '%s' to '%s'", 
 				strerror(errno), errno, old_spec_cstr, new_spec_cstr);
 
-	rmdir(old_spec, 1); 
+	if(!keep_empty_dirs)
+		rmdir(old_spec, 1); 
 }
 
 
