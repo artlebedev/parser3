@@ -8,7 +8,7 @@
 #ifndef PA_VHASH_H
 #define PA_VHASH_H
 
-#define IDENT_PA_VHASH_H "$Id: pa_vhash.h,v 1.67 2012/06/13 22:53:47 moko Exp $"
+#define IDENT_PA_VHASH_H "$Id: pa_vhash.h,v 1.68 2013/03/09 06:20:40 misha Exp $"
 
 #include "classes.h"
 #include "pa_value.h"
@@ -41,11 +41,11 @@ public: // value
 	/// VHash: finteger
 	override int as_int() const { return fhash.count(); }
 	/// VHash: finteger
-	override double as_double() const { return as_int(); }
+	override double as_double() const { return fhash.count(); }
 	/// VHash: count!=0
-	override bool is_defined() const { return as_bool(); }
+	override bool is_defined() const { return fhash.count()!=0; }
 	/// VHash: count!=0
-	override bool as_bool() const { return as_int()!=0; }
+	override bool as_bool() const { return fhash.count()!=0; }
 	/// VHash: count
 	override Value& as_expr_result() { return *new VInt(as_int()); }
 
