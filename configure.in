@@ -343,7 +343,7 @@ LT_INIT(dlopen win32-dll no-pic)
 LTDL_INIT
 
 
-dnl Checks for typedefs, structures, and compiler characteristics.
+dnl Checks for typedefs, structures, and compiler characteristics
 AC_C_BIGENDIAN(
 	AC_DEFINE(PA_BIG_ENDIAN,,compile for sparc processor)
 ,
@@ -353,9 +353,10 @@ AC_C_BIGENDIAN(
 )
 
 AC_TYPE_SIZE_T
+AC_TYPE_SSIZE_T
+AC_TYPE_UINT32_T
 
-
-dnl Checks for C header files.
+dnl Checks for C header files
 AC_HEADER_TIME
 
 AC_CHECK_HEADERS(
@@ -393,9 +394,6 @@ netdb.h
 
 
 dnl Checks for libraries
-
-
-dnl Some systems (Solaris 2.x) require libnsl (Network Services Library)
 case "$host" in
   *-freebsd4*)
 	  AC_DEFINE(FREEBSD4,,FreeBSD4X target platform)
@@ -420,8 +418,8 @@ esac
 AC_CHECK_LIB(m, sin)
 AC_CHECK_LIB(crypt, crypt)
 
-dnl Checks for functions.
 
+dnl Checks for functions
 AC_CHECK_FUNCS(
 flock \
 _locking \
@@ -495,33 +493,15 @@ AC_MSG_RESULT(no))
 
 
 dnl Output header and makefiles
+
 AH_TEMPLATE([HAVE_DLD],[Define if you have the GNU dld library])
+AH_TEMPLATE([HAVE_LIBDL],[Define if you have the libdl library or equivalent.])
+AH_TEMPLATE([HAVE_SHL_LOAD],[Define if you have the shl_load function. ])
 
-AH_TEMPLATE([HAVE_LIBDL],
-	[Define if you have the libdl library or equivalent.])
-
-AH_TEMPLATE([HAVE_SHL_LOAD],
-	[Define if you have the shl_load function. ])
-
-
-AH_TEMPLATE([size_t],
-	[Define to `unsigned int' if <sys/types.h> does not define.])
-
-AH_TEMPLATE([ssize_t],
-	[Define to `int' if <sys/types.h> does not define.])
-
-AH_TEMPLATE([HAVE_DAYLIGHT],
-	[Define if you have daylight external variable in <time.h>])
-
-AH_TEMPLATE([HAVE_TIMEZONE],
-	[Define if you have timezone external variable in <time.h>])
-
-AH_TEMPLATE([HAVE_TM_GMTOFF],
-	[Define if you have tm_gmtoff member of tm structure in <time.h>])
-
-AH_TEMPLATE([HAVE_TM_TZADJ],
-	[Define if you have tm_tzadj member of tm structure in <time.h>])
-
+AH_TEMPLATE([HAVE_DAYLIGHT],[Define if you have daylight external variable in <time.h>])
+AH_TEMPLATE([HAVE_TIMEZONE],[Define if you have timezone external variable in <time.h>])
+AH_TEMPLATE([HAVE_TM_GMTOFF],[Define if you have tm_gmtoff member of tm structure in <time.h>])
+AH_TEMPLATE([HAVE_TM_TZADJ],[Define if you have tm_tzadj member of tm structure in <time.h>])
 
 AM_CONFIG_HEADER(src/include/pa_config_auto.h)
 
