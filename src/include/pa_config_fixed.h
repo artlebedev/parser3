@@ -8,7 +8,7 @@
 #ifndef PA_CONFIG_FIXED_H
 #define PA_CONFIG_FIXED_H
 
-#define IDENT_PA_CONFIG_FIXED_H "$Id: pa_config_fixed.h,v 1.78 2012/06/19 08:51:09 moko Exp $"
+#define IDENT_PA_CONFIG_FIXED_H "$Id: pa_config_fixed.h,v 1.79 2013/03/10 19:44:44 moko Exp $"
 
 #define inline  __inline
 #define HAVE_ASSERT_H
@@ -38,9 +38,15 @@
 #define PA_LITTLE_ENDIAN
 #define PA_WITH_SJLJ_EXCEPTIONS
 
-//gmime
-#define off_t _off_t
-#define ssize_t int
+//types
+
+#ifndef ssize_t
+typedef int ssize_t;
+#endif
+
+#ifndef uint32_t
+typedef unsigned int uint32_t;
+#endif
 
 // disable any execs (file::exec, file::cgi, unix mail:send)
 //#define NO_PA_EXECS
