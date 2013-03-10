@@ -16,7 +16,7 @@
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.22 2012/06/15 11:54:18 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.23 2013/03/10 23:36:00 misha Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -605,15 +605,33 @@ static void _curl_load_action(Request& r, MethodParams& params){
 		result.fields().put("status", new VInt(http_status));
 	}
 
+	Table *cookies=0;
 	for(HASH_STRING<char *>::Iterator i(headers); i; i.next() ){
-		String::Body key=i.key();	
+		String::Body HEADER_NAME=i.key();	
 		String::Body value=i.value();
 		if(asked_charset){
-			key=Charset::transcode(key, *asked_charset, r.charsets.source());
+			HEADER_NAME=Charset::transcode(HEADER_NAME, *asked_charset, r.charsets.source());
 			value=Charset::transcode(value, *asked_charset, r.charsets.source());
 		}
-		result.fields().put(key, new VString(*new String(value.trim(String::TRIM_BOTH, " \t\n\r"), String::L_TAINTED)));
+		const String& header_value=*new String(value.trim(String::TRIM_BOTH, " \t\n\r"), String::L_TAINTED);
+		result.fields().put(HEADER_NAME, new VString(header_value));
+
+		if(HEADER_NAME == "SET-COOKIE") {
+			if(!cookies){
+				// first appearence
+				Table::columns_type columns=new ArrayString(1);
+				*columns+=new String("value");
+				cookies=new Table(columns);
+			}
+			ArrayString& row=*new ArrayString(1);
+			row+=&header_value;
+			*cookies+=&row;
+		}
 	}
+
+	// filling $.cookies
+	if(cookies)
+		result.fields().put(HTTP_COOKIES_NAME, new VTable(parse_cookies(r, cookies)));
 
 	r.write_no_lang(result);
 }
