@@ -8,7 +8,7 @@
 #ifndef PA_HTTP_H
 #define PA_HTTP_H
 
-#define IDENT_PA_HTTP_H "$Id: pa_http.h,v 1.8 2012/06/20 20:54:25 moko Exp $"
+#define IDENT_PA_HTTP_H "$Id: pa_http.h,v 1.9 2013/03/10 23:32:36 misha Exp $"
 
 #include "pa_vstring.h"
 #include "pa_vint.h"
@@ -34,6 +34,8 @@ struct File_read_http_result {
 	HashStringValue* headers;
 }; 
 #endif
+
+Table* parse_cookies(Request& r, Table *cookies);
 
 char *pa_http_safe_header_name(const char *name);
 

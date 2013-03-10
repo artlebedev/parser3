@@ -13,7 +13,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.55 2013/03/07 23:14:16 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.56 2013/03/10 23:32:56 misha Exp $" IDENT_PA_HTTP_H; 
 
 // defines
 
@@ -43,7 +43,7 @@ volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.55 2013/03/07 23:14:16
 #define CRLF "\r\n"
 
 // helpers
-/// pa_internal_file_read_http uses this 
+
 class Cookies_table_template_columns: public ArrayString {
 public:
 	Cookies_table_template_columns() {
@@ -608,6 +608,16 @@ static ArrayString* parse_cookie(Request& r, const String& cookie) {
 	return result;
 }
 
+Table* parse_cookies(Request& r, Table *cookies){
+	Table& result=*new Table(new Cookies_table_template_columns);
+
+	for(Array_iterator<Table::element_type> i(*cookies); i.has_next(); )
+		if(ArrayString* row=parse_cookie(r, *i.next()->get(0)))
+			result+=row;
+
+	return &result;
+}
+
 /// @todo build .cookies field. use ^file.tables.SET-COOKIES.menu{ for now
 File_read_http_result pa_internal_file_read_http(Request& r,
 						const String& file_spec,
@@ -939,15 +949,8 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 		}
 
 		// filling $.cookies
-		if(Value *vcookie=(Value *)tables.get("SET-COOKIE")){
-			Table& tcookies=*new Table(new Cookies_table_template_columns);
-
-			for(Array_iterator<Table::element_type> i(*vcookie->get_table()); i.has_next(); )
-				if(ArrayString* row=parse_cookie(r, *i.next()->get(0)))
-					tcookies+=row;
-
-			result.headers->put(HTTP_COOKIES_NAME, new VTable(&tcookies));
-		}
+		if(Value *vcookies=(Value *)tables.get("SET-COOKIE"))
+			result.headers->put(HTTP_COOKIES_NAME, new VTable(parse_cookies(r, vcookies->get_table())));
 	}
 
 	if(as_text && raw_body_size>=3 && strncmp(raw_body, "\xEF\xBB\xBF", 3)==0){
