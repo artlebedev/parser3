@@ -1,3 +1,101 @@
+2013-03-10  misha
+
+	* src/classes/file.C: ^file:delete and ^file:move now support
+	  option $.keep-empty-dirs(true) ( new feature: #884 )
+
+	* src/: include/pa_common.h, main/pa_common.C: - option for keeping
+	  empty dirs is added
+
+2013-03-10  moko
+
+	* src/classes/: bool.C, double.C, int.C: default can be present,
+	  but default check removed from ^int/double/bool.int/double/bool
+	  for string.int/double/bool compatibility (related to issue #913)
+
+	* src/classes/string.C: ^string.int/dobule/bool no longer
+	  internally throws exception if default is present (closes issue
+	  #913)
+
+2013-03-09  misha
+
+	* src/types/: pa_vhash.h, pa_vregex.h, pa_vtable.h: - tiny
+	  optimisations ( #845 )
+
+	* src/types/pa_venv.C: - added $env:fields ( new feature: #906 )
+
+2013-03-08  moko
+
+	* src/main/pa_http.C: GPF on ^cookies:save fixed, $file.cookies now
+	  creates correct table (fixes issue #910)
+
+	* src/classes/op.C: r.connection() -> r.connection(false) to allow
+	  use outside of 'connect' operator (fixes issue #911)
+
+	* tests/results/: 096.processed, 122.processed: test results
+	  updated as doubles now printed with 15 significant digits, not 5
+	  (fixes issue #882)
+
+	* src/types/pa_vdouble.h: %.15g now used to format doubles instead
+	  of broken has_frac() ? "%g": "%.0f" logic (fixes issue #882)
+
+2013-02-21  moko
+
+	* src/classes/table.C: _locate_name_value does not check arguments
+	  count, so we check it in advance (fixes issue #905)
+
+2012-10-23  moko
+
+	* buildall: old shell for and echo compatibility (for six)
+
+2012-10-19  moko
+
+	* buildall: --strip added --disable-safe-mode listed in usage
+
+2012-10-17  misha
+
+	* src/classes/op.C: - apply-taint should not throw "outside
+	  connect" exception with sql lang now
+
+2012-10-17  moko
+
+	* src/main/pa_request.C: bugfix: safe mode should be inited for
+	  each request (for apache module)
+
+2012-09-26  moko
+
+	* src/doc/doxygen.cfg: png -> svg
+
+2012-09-25  moko
+
+	* tests/: 141.html, results/141.processed: md5 hmac added, long key
+	  test added
+
+	* src/classes/math.C: HMAC for MD5 added, bugfix for tempdigest
+	  double use when key is long
+
+2012-09-16  moko
+
+	* src/classes/math.C: Format -> Method Encode -> Format
+
+	* tests/: 141.html, results/141.processed: math:digest hmac test
+	  added
+
+2012-09-14  moko
+
+	* src/classes/math.C: SHA1ReadDigest added and used in ^sha1.
+	  ^digest[sha1|md5;data; $.encode[base64|hex] $.hmac[key]] basic
+	  implementation added
+
+2012-09-12  moko
+
+	* src/doc/: doxygen.cfg, footer.htm, index.dox, string.dox,
+	  targets.dox: doxygen.cfg and footer.htm updated for doxygen 1.7.3
+	  targets.dox and string.dox slightly actualized
+
+2012-08-31  moko
+
+	* ChangeLog: now generated with patched cvs2cl.pl
+
 2012-07-29  moko
 
 	* tests/285.html, src/main/execute.C, tests/results/285.processed:
@@ -13500,7 +13598,7 @@
 	  types/pa_vstring.h, types/pa_vtable.C, types/pa_vtable.h,
 	  types/pa_vvoid.h, types/pa_vxdoc.C, types/pa_vxdoc.h,
 	  types/pa_vxnode.C, types/pa_vxnode.h, types/pa_wcontext.C,
-	  types/pa_wcontext.h, types/pa_wwrapper.h: $Date: 2012/08/31 14:56:27 $
+	  types/pa_wcontext.h, types/pa_wwrapper.h: $Date: 2013/03/10 14:31:15 $
 
 	* src/: classes/classes.C, classes/classes.dsp, classes/classes.h,
 	  classes/date.C, classes/double.C, classes/file.C, classes/form.C,
@@ -18646,7 +18744,7 @@
 	  main/pa_table.C, main/untaint.C, sql/mysql/parser3mysql.C,
 	  targets/apache13/modules/extra/mod_parser3.C,
 	  targets/cgi/parser3.C, targets/isapi/parser3isapi.C: static char
-	  *RCSId="$Id: ChangeLog,v 1.86 2012/08/31 14:56:27 moko Exp $";
+	  *RCSId="$Id: ChangeLog,v 1.87 2013/03/10 14:31:15 moko Exp $";
 
 	* src/: main/compile.y, main/compile_tools.h,
 	  www/htdocs/index.html: $:name: == ${name}: $class:name: ==
@@ -21840,9 +21938,9 @@
 
 	* src/include/: pa_pool.h, pa_string.h: pa_pool split
 
-	* src/main/: main.dsp, pa_string.C: $Id: ChangeLog,v 1.86 2012/08/31 14:56:27 moko Exp $ check
+	* src/main/: main.dsp, pa_string.C: $Id: ChangeLog,v 1.87 2013/03/10 14:31:15 moko Exp $ check
 
-	* src/: main/pa_pool.C, main/pa_string.C, include/pa_pool.h: $Id: ChangeLog,v 1.86 2012/08/31 14:56:27 moko Exp $
+	* src/: main/pa_pool.C, main/pa_string.C, include/pa_pool.h: $Id: ChangeLog,v 1.87 2013/03/10 14:31:15 moko Exp $
 	  check
 
 	* src/: include/pa_pool.h, main/pa_string.C: String prealloc &
