@@ -20,7 +20,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.206 2013/03/09 21:55:21 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.207 2013/03/10 18:45:07 moko Exp $";
 
 // class
 
@@ -120,10 +120,10 @@ static void _bool(Request& r, MethodParams& params) {
 			converted=params.as_bool(0, "default must be bool", r); // (default)
 		else
 			throw Exception(PARSER_RUNTIME, 0, "unable to convert empty string without default specified");
-	} else if( (str[0]=='T' || str[0]=='t') && (str[1]=='R' || str[1]=='r') && (str[2]=='U' || str[2]=='u') and
+	} else if( (str[0]=='T' || str[0]=='t') && (str[1]=='R' || str[1]=='r') && (str[2]=='U' || str[2]=='u') &&
 		   (str[3]=='E' || str[3]=='e') && str[4]==0 ) { // "true"
 		converted=true;
-	} else if( (str[0]=='F' || str[0]=='f') && (str[1]=='A' || str[1]=='a') && (str[2]=='L' || str[2]=='l') and
+	} else if( (str[0]=='F' || str[0]=='f') && (str[1]=='A' || str[1]=='a') && (str[2]=='L' || str[2]=='l') &&
 		   (str[3]=='S' || str[3]=='s') && (str[4]=='E' || str[4]=='e') && str[5]==0 ) { // "false"
 		converted=false;
 	} else {
