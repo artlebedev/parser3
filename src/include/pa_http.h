@@ -8,13 +8,14 @@
 #ifndef PA_HTTP_H
 #define PA_HTTP_H
 
-#define IDENT_PA_HTTP_H "$Id: pa_http.h,v 1.9 2013/03/10 23:32:36 misha Exp $"
+#define IDENT_PA_HTTP_H "$Id: pa_http.h,v 1.10 2013/03/10 23:39:23 misha Exp $"
 
 #include "pa_vstring.h"
 #include "pa_vint.h"
 #include "pa_vhash.h"
 #include "pa_vtable.h"
 #include "pa_socks.h"
+#include "pa_request.h"
 
 #ifdef WIN32
 #include <windows.h>
