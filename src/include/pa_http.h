@@ -8,7 +8,7 @@
 #ifndef PA_HTTP_H
 #define PA_HTTP_H
 
-#define IDENT_PA_HTTP_H "$Id: pa_http.h,v 1.10 2013/03/10 23:39:23 misha Exp $"
+#define IDENT_PA_HTTP_H "$Id: pa_http.h,v 1.11 2013/03/11 05:51:09 misha Exp $"
 
 #include "pa_vstring.h"
 #include "pa_vint.h"
@@ -17,6 +17,7 @@
 #include "pa_socks.h"
 #include "pa_request.h"
 
+#define HTTP_COOKIES_NAME "cookies"
 #ifdef WIN32
 #include <windows.h>
 

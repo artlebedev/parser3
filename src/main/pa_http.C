@@ -13,7 +13,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.56 2013/03/10 23:32:56 misha Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.57 2013/03/11 05:51:17 misha Exp $" IDENT_PA_HTTP_H; 
 
 // defines
 
@@ -22,7 +22,6 @@ volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.56 2013/03/10 23:32:56
 #define HTTP_BODY_NAME	"body"
 #define HTTP_TIMEOUT_NAME	"timeout"
 #define HTTP_HEADERS_NAME	"headers"
-#define HTTP_COOKIES_NAME	"cookies"
 #define HTTP_FORM_ENCTYPE_NAME	"enctype"
 #define HTTP_ANY_STATUS_NAME	"any-status"
 #define HTTP_OMIT_POST_CHARSET_NAME	"omit-post-charset"	// ^file::load[...;http://...;$.form[...]$.method[post]]
