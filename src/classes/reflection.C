@@ -9,7 +9,7 @@
 #include "pa_request.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.28 2012/06/05 10:30:32 misha Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.29 2013/03/14 03:14:42 misha Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -24,6 +24,7 @@ static const String method_call_type_dynamic("dynamic");
 
 static const String method_min_params("min_params");
 static const String method_max_params("max_params");
+static const String method_extra_param("extra_param");
 
 // class
 
@@ -267,29 +268,36 @@ static void _method_info(Request& r, MethodParams& params) {
 		hash->put((base_method==method) ? method_inherited : method_overridden, new VString(c->name()));
 	}
 
+	Value* call_type=0;
+	switch(method->call_type){
+		case Method::CT_DYNAMIC:
+			call_type=new VString(method_call_type_dynamic);
+			break;
+		case Method::CT_STATIC:
+			call_type=new VString(method_call_type_static);
+			break;
+	}
+	if(call_type)
+		hash->put(method_call_type, call_type);
+
 	if(method->native_code){
 		// native code
 		hash->put(method_min_params, new VInt(method->min_numbered_params_count));
 		hash->put(method_max_params, new VInt(method->max_numbered_params_count));
-		Value* call_type=0;
-		switch(method->call_type){
-			case Method::CT_DYNAMIC:
-				call_type=new VString(method_call_type_dynamic);
-				break;
-			case Method::CT_STATIC:
-				call_type=new VString(method_call_type_static);
-				break;
-		}
-		if(call_type)
-			hash->put(method_call_type, call_type);
 	} else {
 		// parser code
 		const String* filespec = r.get_method_filename(method);
 		if( filespec )
 			hash->put("file", new VString(*filespec));
+
+		hash->put(method_max_params, new VInt(method->params_names ? method->params_names->count() : 0));
+
 		if(method->params_names)
 			for(size_t i=0; i<method->params_names->count(); i++)
 				hash->put(String::Body::Format(i), new VString(*method->params_names->get(i)));
+
+		if(method->extra_params)
+			hash->put(method_extra_param, new VString(*method->extra_params));
 	}
 
 	r.write_no_lang(result);
