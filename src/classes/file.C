@@ -25,7 +25,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.224 2013/03/09 23:35:28 misha Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.225 2013/03/14 02:50:58 misha Exp $";
 
 // defines
 
@@ -34,6 +34,7 @@ volatile const char * IDENT_FILE_C="$Id: file.C,v 1.224 2013/03/09 23:35:28 mish
 
 #define NAME_NAME "name"
 #define KEEP_EMPTY_DIRS_NAME "keep-empty-dirs"
+#define SUPPRESS_EXCEPTION_NAME "exception"
 
 // externs
 
@@ -130,6 +131,7 @@ static void _save(Request& r, MethodParams& params) {
 static void _delete(Request& r, MethodParams& params) {
 	const String& file_name=params.as_string(0, FILE_NAME_MUST_NOT_BE_CODE);
 	bool keep_empty_dirs=false;
+	bool fail_on_problem=true;
 
 	if(params.count()>1)
 		if(HashStringValue* options=params.as_hash(1)){
@@ -138,12 +140,16 @@ static void _delete(Request& r, MethodParams& params) {
 				keep_empty_dirs=r.process_to_value(*vkeep_empty_dirs).as_bool();
 				valid_options++;
 			}
+			if(Value* vsuppress_exception=options->get(SUPPRESS_EXCEPTION_NAME)){
+				fail_on_problem=r.process_to_value(*vsuppress_exception).as_bool();
+				valid_options++;
+			}
 			if(valid_options != options->count())
 				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 		}
 
 	// unlink
-	file_delete(r.absolute(file_name), true/*fail on problem*/, keep_empty_dirs);
+	file_delete(r.absolute(file_name), fail_on_problem, keep_empty_dirs);
 }
 
 static void _move(Request& r, MethodParams& params) {
@@ -1145,7 +1151,7 @@ MFile::MFile(): Methoded("file") {
 	add_native_method("save", Method::CT_DYNAMIC, _save, 2, 3);
 
 	// ^file:delete[file-name]
-	// ^file:delete[file-name;$.keep-empty-dir(true)]
+	// ^file:delete[file-name;$.keep-empty-dir(true)$.exception(false)]
 	add_native_method("delete", Method::CT_STATIC, _delete, 1, 2);
 
 	// ^file:move[from-file-name;to-file-name]
