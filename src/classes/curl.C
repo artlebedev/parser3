@@ -16,7 +16,7 @@
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.23 2013/03/10 23:36:00 misha Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.24 2013/03/14 02:42:57 misha Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -523,7 +523,13 @@ static int curl_writer(char *data, size_t size, size_t nmemb, Curl_buffer *resul
 	return size;
 }
 
-static int curl_header(char *data, size_t size, size_t nmemb, HASH_STRING<char *> *result){
+class Curl_response {
+public:
+	HASH_STRING<char*> headers;
+	Array<char*> cookies;
+};
+
+static int curl_header(char *data, size_t size, size_t nmemb, Curl_response *result){
 	if(result == 0)
 		return 0;
 
@@ -533,7 +539,10 @@ static int curl_header(char *data, size_t size, size_t nmemb, HASH_STRING<char *
 		char *value=lsplit(line,':');
 		if(value && *line){
 			// we need only headers, not the response code
-			result->put(str_upper(line), value);
+			const char* HEADER_NAME=str_upper(line);
+			result->headers.put(HEADER_NAME, value);
+			if(strcmp(HEADER_NAME, "SET-COOKIE")==0)
+				result->cookies+=value;
 		}
 	}
 	return size;
@@ -555,9 +564,9 @@ static void _curl_load_action(Request& r, MethodParams& params){
 	CURL_SETOPT(CURLOPT_WRITEDATA, &body, "curl write buffer");
 
 	// we need a container for headers as VFile fields can be put only after VFile.set
-	HASH_STRING<char *> headers; 
+	Curl_response response;
 	CURL_SETOPT(CURLOPT_HEADERFUNCTION, curl_header, "curl header function");
-	CURL_SETOPT(CURLOPT_WRITEHEADER, &headers, "curl header buffer");
+	CURL_SETOPT(CURLOPT_WRITEHEADER, &response, "curl header buffer");
 
 	if((res=f_curl_easy_perform(curl())) != CURLE_OK){
 		const char *ex_type = 0; 
@@ -585,7 +594,7 @@ static void _curl_load_action(Request& r, MethodParams& params){
 
 	VFile& result=*new VFile;
 
-	String::Body ct_header = headers.get(HTTP_CONTENT_TYPE_UPPER);
+	String::Body ct_header = response.headers.get(HTTP_CONTENT_TYPE_UPPER);
 	Charset *asked_charset = options().response_charset;
 	if (asked_charset == 0){
 		Charset *remote_charset = ct_header.is_empty() ? 0 : detect_charset(ct_header.trim(String::TRIM_BOTH, " \t\n\r").cstr());
@@ -605,33 +614,35 @@ static void _curl_load_action(Request& r, MethodParams& params){
 		result.fields().put("status", new VInt(http_status));
 	}
 
-	Table *cookies=0;
-	for(HASH_STRING<char *>::Iterator i(headers); i; i.next() ){
+	for(HASH_STRING<char *>::Iterator i(response.headers); i; i.next() ){
 		String::Body HEADER_NAME=i.key();	
 		String::Body value=i.value();
 		if(asked_charset){
 			HEADER_NAME=Charset::transcode(HEADER_NAME, *asked_charset, r.charsets.source());
 			value=Charset::transcode(value, *asked_charset, r.charsets.source());
 		}
-		const String& header_value=*new String(value.trim(String::TRIM_BOTH, " \t\n\r"), String::L_TAINTED);
-		result.fields().put(HEADER_NAME, new VString(header_value));
-
-		if(HEADER_NAME == "SET-COOKIE") {
-			if(!cookies){
-				// first appearence
-				Table::columns_type columns=new ArrayString(1);
-				*columns+=new String("value");
-				cookies=new Table(columns);
-			}
-			ArrayString& row=*new ArrayString(1);
-			row+=&header_value;
-			*cookies+=&row;
-		}
+		result.fields().put(HEADER_NAME, new VString(*new String(value.trim(String::TRIM_BOTH, " \t\n\r"), String::L_TAINTED)));
 	}
 
 	// filling $.cookies
-	if(cookies)
-		result.fields().put(HTTP_COOKIES_NAME, new VTable(parse_cookies(r, cookies)));
+	Table* tcookies=0;
+
+	for(Array_iterator<char*> i(response.cookies); i.has_next(); ){
+		if(!tcookies){
+			Table::columns_type columns=new ArrayString(1);
+			*columns+=new String("value");
+			tcookies=new Table(columns);
+		}
+		String::Body value=i.next();
+		if(asked_charset)
+			value=Charset::transcode(value, *asked_charset, r.charsets.source());
+		ArrayString& row=*new ArrayString(1);
+		row+=new String(value.trim(String::TRIM_BOTH, " \t\n\r"), String::L_TAINTED);
+		*tcookies+=&row;
+	}
+
+	if(tcookies)
+		result.fields().put(HTTP_COOKIES_NAME, new VTable(parse_cookies(r, tcookies)));
 
 	r.write_no_lang(result);
 }
