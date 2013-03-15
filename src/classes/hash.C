@@ -16,7 +16,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.115 2012/06/13 22:53:47 moko Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.116 2013/03/15 11:21:57 misha Exp $";
 
 // class
 
@@ -107,9 +107,9 @@ public:
 		return false;
 	}
 
-	bool add_row_cell(SQL_Error& error, const char *ptr, size_t ) {
+	bool add_row_cell(SQL_Error& error, const char *str, size_t ) {
 		try {
-			String& cell=*new String(ptr, String::L_TAINTED /* no length as 0x00 can be inside */);
+			const String& cell=str?*new String(str, String::L_TAINTED /* no length as 0x00 can be inside */):String::Empty;
 
 			bool duplicate=false;
 			if(one_bool_column) {

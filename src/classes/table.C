@@ -21,7 +21,7 @@
 #include "pa_vbool.h"
 #include "pa_array.h"
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.291 2013/02/21 04:27:12 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.292 2013/03/15 11:21:57 misha Exp $";
 
 // class
 
@@ -1089,7 +1089,7 @@ public:
 	}
 	bool add_row_cell(SQL_Error& error, const char* str, size_t ) {
 		try {
-			*row+=new String(str, String::L_TAINTED /* no length as 0x00 can be inside */);
+			*row+=str?new String(str, String::L_TAINTED /* no length as 0x00 can be inside */):&String::Empty;
 			return false;
 		} catch(...) {
 			error=SQL_Error("exception occured in Table_sql_event_handlers::add_row_cell");
