@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.149 2013/03/09 23:34:07 misha Exp $"
+#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.150 2013/04/21 20:37:55 moko Exp $"
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -399,6 +399,7 @@ extern const String file_status_name;
 #define PA_COLUMN_SEPARATOR_NAME "separator"
 #define PA_COLUMN_ENCLOSER_NAME "encloser"
 #define PA_CHARSET_NAME "charset"
+#define PA_RESPONSE_CHARSET_NAME "response-charset"
 
 // globals defines for sql options
 

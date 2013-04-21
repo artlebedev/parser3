@@ -13,7 +13,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.57 2013/03/11 05:51:17 misha Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.58 2013/04/21 20:37:55 moko Exp $" IDENT_PA_HTTP_H; 
 
 // defines
 
@@ -637,6 +637,7 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 	Value* vcookies=0;
 	Value* vbody=0;
 	Charset *asked_remote_charset=0;
+	Charset* real_remote_charset=0;
 	const char* user_cstr=0;
 	const char* password_cstr=0;
 	const char* encode=0;
@@ -680,8 +681,10 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 			omit_post_charset=vomit_post_charset->as_bool();
 		}
 		if(Value* vcharset_name=options->get(PA_CHARSET_NAME)) {
-			asked_remote_charset=&charsets.get(vcharset_name->as_string().
-				change_case(r.charsets.source(), String::CC_UPPER));
+			asked_remote_charset=&charsets.get(vcharset_name->as_string().change_case(r.charsets.source(), String::CC_UPPER));
+		} 
+		if(Value* vresponse_charset_name=options->get(PA_RESPONSE_CHARSET_NAME)) {
+			real_remote_charset=&charsets.get(vresponse_charset_name->as_string().change_case(r.charsets.source(), String::CC_UPPER));
 		} 
 		if(Value* vuser=options->get(HTTP_USER)) {
 			valid_options++;
@@ -895,7 +898,6 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 	result.headers=new HashStringValue;
 	VHash* vtables=new VHash;
 	result.headers->put(HTTP_TABLES_NAME, vtables);
-	Charset* real_remote_charset=0; // undetected, yet
 
 	if(headers_end_at) {
 		*headers_end_at=0;
@@ -918,7 +920,7 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 					"bad response from host - bad header \"%s\"", line.cstr());
 			const String::Body HEADER_NAME=line.mid(0, pos).change_case(r.charsets.source(), String::CC_UPPER);
 			const String& HEADER_VALUE=line.mid(pos+1, line.length()).trim(String::TRIM_BOTH, " \t\r");
-			if(as_text && HEADER_NAME==HTTP_CONTENT_TYPE_UPPER)
+			if(as_text && HEADER_NAME==HTTP_CONTENT_TYPE_UPPER && !real_remote_charset)
 				real_remote_charset=detect_charset(HEADER_VALUE.cstr());
 
 			// tables
