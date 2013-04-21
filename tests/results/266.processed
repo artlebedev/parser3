@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 711
+Content-Length: 879
 
 ^object.a[] = aa<br />
 ^object.b[] = bb<br />
@@ -9,26 +9,26 @@ Content-Length: 711
 ^object.f[] = cf<br />
 ^object.g[] = bg<br />
 <h2>_create</h2>
-$.inherited[a]
+$.inherited[a]<br />$.max_params[0]
 <hr />
 <h2>a</h2>
-$.inherited[a]<br />$.file[/-real-path-was-here-/266.p]
+$.inherited[a]<br />$.file[/-real-path-was-here-/266.p]<br />$.max_params[0]
 <hr />
 <h2>b</h2>
-$.inherited[b]<br />$.file[/-real-path-was-here-/266.p]
+$.inherited[b]<br />$.file[/-real-path-was-here-/266.p]<br />$.max_params[0]
 <hr />
 <h2>c</h2>
-$.file[/-real-path-was-here-/266.p]
+$.file[/-real-path-was-here-/266.p]<br />$.max_params[0]
 <hr />
 <h2>d</h2>
-$.overridden[b]<br />$.file[/-real-path-was-here-/266.p]
+$.overridden[b]<br />$.file[/-real-path-was-here-/266.p]<br />$.max_params[0]
 <hr />
 <h2>e</h2>
-$.overridden[a]<br />$.file[/-real-path-was-here-/266.p]
+$.overridden[a]<br />$.file[/-real-path-was-here-/266.p]<br />$.max_params[0]
 <hr />
 <h2>f</h2>
-$.overridden[b]<br />$.file[/-real-path-was-here-/266.p]
+$.overridden[b]<br />$.file[/-real-path-was-here-/266.p]<br />$.max_params[0]
 <hr />
 <h2>g</h2>
-$.inherited[b]<br />$.file[/-real-path-was-here-/266.p]
+$.inherited[b]<br />$.file[/-real-path-was-here-/266.p]<br />$.max_params[0]
 <br /><br />done.
