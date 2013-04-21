@@ -20,7 +20,7 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: curl.h,v 1.2 2012/04/20 11:43:04 moko Exp $
+ * $Id: curl.h,v 1.3 2013/04/21 21:24:53 moko Exp $
  ***************************************************************************/
 
 /*
@@ -499,7 +499,7 @@ typedef enum {
 
   /* Set the Accept-Encoding string. Use this to tell a server you would like
      the response to be compressed. */
-  CINIT(ENCODING, OBJECTPOINT, 102),
+  CINIT(ACCEPT_ENCODING, OBJECTPOINT, 102),
 
   /* Set pointer to private data */
   CINIT(PRIVATE, OBJECTPOINT, 103),
@@ -794,7 +794,10 @@ typedef enum {
   CURLOPT_LASTENTRY /* the last unused */
 } CURLoption;
 
-  /* three convenient "aliases" that follow the name scheme better */
+/* compatibility with older names */
+#define CURLOPT_ENCODING CURLOPT_ACCEPT_ENCODING
+
+/* three convenient "aliases" that follow the name scheme better */
 #define CURLOPT_WRITEDATA CURLOPT_FILE
 #define CURLOPT_READDATA  CURLOPT_INFILE
 #define CURLOPT_HEADERDATA CURLOPT_WRITEHEADER

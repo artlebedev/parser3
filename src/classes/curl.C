@@ -16,7 +16,7 @@
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.25 2013/04/20 01:07:23 misha Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.26 2013/04/21 21:24:53 moko Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -226,9 +226,7 @@ public:
 		CURL_OPT(CURL_INT, AUTOREFERER);
 
 		CURL_OPT(CURL_STRING, ENCODING); // gzip or deflate
-#ifdef CURLOPT_ACCEPT_ENCODING
 		CURL_OPT(CURL_STRING, ACCEPT_ENCODING); // gzip or deflate
-#endif
 
 		CURL_OPT(CURL_INT, FOLLOWLOCATION);
 		CURL_OPT(CURL_INT, UNRESTRICTED_AUTH);
