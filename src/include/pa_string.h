@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.204 2012/05/28 10:33:18 moko Exp $"
+#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.205 2013/04/21 21:59:07 moko Exp $"
 
 // includes
 #include "pa_types.h"
@@ -609,9 +609,12 @@ public:
 		return *this;
 	}
 
-	/// extracts first char of a string, if any
 	char first_char() const {
 		return is_empty()?0:body.fetch(0);
+	}
+
+	char last_char() const {
+		return is_empty()?0:body.fetch(body.length()-1);
 	}
 
 	bool operator < (const String& src) const { return body<src.body; }

@@ -36,7 +36,7 @@
 #include "pcre.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.269 2013/03/09 23:34:15 misha Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.270 2013/04/21 21:59:07 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -566,7 +566,8 @@ bool dir_exists(const String& file_spec) {
 
 const String* file_exist(const String& path, const String& name) {
 	String& result=*new String(path);
-	result << "/"; 
+	if(path.last_char() != '/')
+		result << "/"; 
 	result << name;
 	return file_exist(result)?&result:0;
 }
