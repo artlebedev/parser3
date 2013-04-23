@@ -23,6 +23,7 @@ typedef memcached_server_list_st (*t_memcached_servers_parse)(const char *server
 typedef memcached_return_t (*t_memcached_version)(memcached_st *ptr);
 
 typedef memcached_return_t (*t_memcached_flush)(memcached_st *ptr, time_t expiration);
+typedef void (*t_memcached_quit)(memcached_st *ptr);
 
 typedef char *(*t_memcached_get)(memcached_st *ptr, const char *key, size_t key_length, size_t *value_length, uint32_t *flags, memcached_return_t *error);
 typedef memcached_return_t (*t_memcached_delete)(memcached_st *ptr, const char *key, size_t key_length, time_t expiration);
@@ -51,6 +52,7 @@ extern t_memcached_servers_parse f_memcached_servers_parse;
 extern t_memcached_version f_memcached_version;
 
 extern t_memcached_flush f_memcached_flush;
+extern t_memcached_quit f_memcached_quit;
 
 extern t_memcached_get f_memcached_get;
 extern t_memcached_delete f_memcached_delete;

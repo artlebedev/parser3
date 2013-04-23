@@ -13,7 +13,7 @@
 #include "pa_vhash.h"
 #include "pa_vvoid.h"
 
-volatile const char * IDENT_PA_VMEMCACHED_C="$Id: pa_vmemcached.C,v 1.12 2012/06/17 21:19:03 moko Exp $" IDENT_PA_VMEMCACHED_H;
+volatile const char * IDENT_PA_VMEMCACHED_C="$Id: pa_vmemcached.C,v 1.13 2013/04/23 22:57:06 moko Exp $" IDENT_PA_VMEMCACHED_H;
 
 #ifdef WIN32
 const char *memcached_library="libmemcached.dll";
@@ -145,6 +145,10 @@ void VMemcached::open_parse(const String& connect_string, time_t attl){
 
 void VMemcached::flush(time_t attl) {
 	check("flush", fm, f_memcached_flush(fm, attl));
+}
+
+void VMemcached::quit() {
+	f_memcached_quit(fm);
 }
 
 void VMemcached::remove(const String& aname) {

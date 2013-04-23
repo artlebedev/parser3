@@ -10,7 +10,7 @@
 #ifndef PA_VMEMCACHED_H
 #define PA_VMEMCACHED_H
 
-#define IDENT_PA_VMEMCACHED_H "$Id: pa_vmemcached.h,v 1.4 2012/04/24 22:41:09 moko Exp $"
+#define IDENT_PA_VMEMCACHED_H "$Id: pa_vmemcached.h,v 1.5 2013/04/23 22:57:06 moko Exp $"
 
 #include "classes.h"
 #include "pa_vstateless_object.h"
@@ -46,6 +46,7 @@ public: // usage
 	bool add(const String& aname, Value* avalue);
 	void remove(const String& aname);
 	void flush(time_t attl=0);
+	void quit();
 	Value &mget(ArrayString &akeys);
 
 private:
