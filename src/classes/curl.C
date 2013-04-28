@@ -16,7 +16,7 @@
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.26 2013/04/21 21:24:53 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.27 2013/04/28 21:29:59 moko Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -112,6 +112,7 @@ public:
 		fcurl = f_curl_easy_init();
 		foptions = new ParserOptions();
 		f_curl_easy_setopt(fcurl, CURLOPT_POSTFIELDSIZE, 0); // fix libcurl bug
+		f_curl_easy_setopt(fcurl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4); // avoid ipv6 by default
 	}
 	~Temp_curl() {
 		f_curl_easy_cleanup(fcurl);
@@ -230,6 +231,7 @@ public:
 
 		CURL_OPT(CURL_INT, FOLLOWLOCATION);
 		CURL_OPT(CURL_INT, UNRESTRICTED_AUTH);
+		CURL_OPT(CURL_INT, IPRESOLVE);
 
 		CURL_OPT(CURL_INT, POST);
 		CURL_OPT(CURL_INT, HTTPGET);
