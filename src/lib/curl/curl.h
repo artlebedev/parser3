@@ -20,7 +20,7 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: curl.h,v 1.3 2013/04/21 21:24:53 moko Exp $
+ * $Id: curl.h,v 1.4 2013/04/28 21:28:43 moko Exp $
  ***************************************************************************/
 
 /*
@@ -882,6 +882,10 @@ typedef enum {
 
   CURLINFO_LASTONE          = 35
 } CURLINFO;
+
+#define CURL_IPRESOLVE_WHATEVER 0 /* default, resolves addresses to all IP versions that your system allows */
+#define CURL_IPRESOLVE_V4       1 /* resolve to ipv4 addresses */
+#define CURL_IPRESOLVE_V6       2 /* resolve to ipv6 addresses */
 
 
 typedef enum {
