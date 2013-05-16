@@ -11,20 +11,22 @@
 
 namespace OP {
 
-#define IDENT_PA_OPCODE_H "$Id: pa_opcode.h,v 1.46 2012/03/16 09:24:09 moko Exp $"
+#define IDENT_PA_OPCODE_H "$Id: pa_opcode.h,v 1.47 2013/05/16 02:51:26 misha Exp $"
 
-#define OPTIMIZE_BYTECODE_GET_ELEMENT				// $a ^a
-#define OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT		// $a.b ^a.b
-#define OPTIMIZE_BYTECODE_GET_OBJECT_VAR_ELEMENT	// $a.$b ^a.$b
+#define OPTIMIZE_BYTECODE_GET_ELEMENT                // $a ^a
+#define OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT         // $a.b ^a.b
+#define OPTIMIZE_BYTECODE_GET_OBJECT_VAR_ELEMENT     // $a.$b ^a.$b
 #define OPTIMIZE_BYTECODE_STRING_POOL
-#define OPTIMIZE_BYTECODE_CUT_REM_OPERATOR			// cut rem with all params
+#define OPTIMIZE_BYTECODE_OBJECT_POOL                // $var[$a.b], $var[$a.$b]
+#define OPTIMIZE_BYTECODE_CUT_REM_OPERATOR           // cut rem with all params
+
 
 #ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
-#define OPTIMIZE_BYTECODE_CONSTRUCT					// $a(expr),  $a[value]
-#endif												// $.a(expr), $.a[value]
-													// $self.a(expr), $self.a[value]
+#define OPTIMIZE_BYTECODE_CONSTRUCT                  // $a(expr),  $a[value]
+#endif                                               // $.a(expr), $.a[value]
+                                                     // $self.a(expr), $self.a[value]
 
-#define OPTIMIZE_BYTECODE_GET_SELF_ELEMENT			// $self.a ^self.a
+#define OPTIMIZE_BYTECODE_GET_SELF_ELEMENT           // $self.a ^self.a
 
 
 ///	Compiled operation code
