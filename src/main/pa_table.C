@@ -7,7 +7,7 @@
 
 #include "pa_table.h"
 
-volatile const char * IDENT_PA_TABLE_C="$Id: pa_table.C,v 1.63 2012/03/16 09:24:14 moko Exp $" IDENT_PA_TABLE_H;
+volatile const char * IDENT_PA_TABLE_C="$Id: pa_table.C,v 1.64 2013/05/16 02:24:06 misha Exp $" IDENT_PA_TABLE_H;
 
 #include "pa_exception.h"
 
@@ -28,7 +28,7 @@ Table::Table(columns_type acolumns, size_t initial_rows):
 }
 
 Table::Table(const Table& src, Action_options& options) :
-	Array<element_type>(options.limit==ARRAY_OPTION_LIMIT_ALL?0:options.limit/*may be more than needed, no harm done*/),
+	Array<element_type>(options.limit==ARRAY_OPTION_LIMIT_ALL?0:(options.limit < src.count())?options.limit:src.count()),
 
 	fcurrent(0),
 	fcolumns(src.fcolumns),
