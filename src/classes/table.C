@@ -21,7 +21,7 @@
 #include "pa_vbool.h"
 #include "pa_array.h"
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.292 2013/03/15 11:21:57 misha Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.293 2013/05/16 02:20:13 misha Exp $";
 
 // class
 
@@ -630,12 +630,12 @@ static void _menu(Request& r, MethodParams& params) {
 	Value* delim_maybe_code=params.count()>1?&params[1]:0;
 
 	Table& table=GET_SELF(r, VTable).table();
-	int saved_current=table.current();
-	int size=table.count();
+	size_t saved_current=table.current();
+	size_t size=table.count();
 
 	if(delim_maybe_code) { // delimiter set
 		bool need_delim=false;
-		for(int row=0; row<size; row++) {
+		for(size_t row=0; row<size; row++) {
 			table.set_current(row);
 
 			StringOrValue sv_processed=r.process(body_code);
@@ -655,7 +655,7 @@ static void _menu(Request& r, MethodParams& params) {
 				break;
 		}
 	} else {
-		for(int row=0; row<size; row++) {
+		for(size_t row=0; row<size; row++) {
 			table.set_current(row);
  
 			r.process_write(body_code);
@@ -1004,6 +1004,70 @@ static void _flip(Request& r, MethodParams&) {
 	r.write_no_lang(*new VTable(&new_table));
 }
 
+static void _foreach(Request& r, MethodParams& params) {
+	InCycle temp(r);
+
+	const String& rownum_name=params.as_string(0, "rownum-var name must be string");
+	const String& value_name=params.as_string(1, "value-var name must be string");
+
+	Value& body_code=params.as_junction(2, "body must be code");
+	
+	Value* delim_maybe_code=params.count()>3?&params[3]:0;
+
+	Table& table=GET_SELF(r, VTable).table();
+	size_t saved_current=table.current();
+	size_t size=table.count();
+
+	const String* rownum_var_name=rownum_name.is_empty()? 0 : &rownum_name;
+	const String* value_var_name=value_name.is_empty()? 0 : &value_name;
+
+	Value* var_context=r.get_method_frame()->caller();
+
+	if(delim_maybe_code) { // delimiter set
+		bool need_delim=false;
+		for(size_t row=0; row<size; row++) {
+			table.set_current(row);
+
+			if(rownum_var_name)
+				var_context->put_element(*rownum_var_name, new VString(*new String(String::Body::Format(row), String::L_CLEAN)), false);
+			if(value_var_name)
+				var_context->put_element(*value_var_name, new VTable(&table), false);
+
+			StringOrValue sv_processed=r.process(body_code);
+			Request::Skip lskip=r.get_skip(); r.set_skip(Request::SKIP_NOTHING);
+
+			const String* s_processed=sv_processed.get_string();
+			if(s_processed && !s_processed->is_empty()) { // we have body
+				if(need_delim) // need delim & iteration produced string?
+					r.write_pass_lang(r.process(*delim_maybe_code));
+				else
+					need_delim=true;
+			}
+
+			r.write_pass_lang(sv_processed);
+
+			if(lskip==Request::SKIP_BREAK)
+				break;
+		}
+	} else {
+		for(size_t row=0; row<size; row++) {
+			table.set_current(row);
+ 
+			if(rownum_var_name)
+				var_context->put_element(*rownum_var_name, new VString(*new String(String::Body::Format(row), String::L_CLEAN)), false);
+			if(value_var_name)
+				var_context->put_element(*value_var_name, new VTable(&table), false);
+
+			r.process_write(body_code);
+			Request::Skip lskip=r.get_skip(); r.set_skip(Request::SKIP_NOTHING);
+ 
+			if(lskip==Request::SKIP_BREAK)
+				break;
+		}
+	}
+	table.set_current(saved_current);
+}
+
 static void _append(Request& r, MethodParams& params) {
 	Temp_lang temp_lang(r, String::L_PASS_APPENDED);
 	const String& string=r.process_to_string(params[0]);
@@ -1342,6 +1406,10 @@ MTable::MTable(): Methoded("table") {
 
 	// ^table.flip[]
 	add_native_method("flip", Method::CT_DYNAMIC, _flip, 0, 0);
+
+	// ^table.foreach[row-num;value]{code}
+	// ^table.foreach[row-num;value]{code}[delim]
+	add_native_method("foreach", Method::CT_DYNAMIC, _foreach, 3, 4);
 
 	// ^table.append{r{tab}e{tab}c{tab}o{tab}r{tab}d}
 	add_native_method("append", Method::CT_DYNAMIC, _append, 1, 1);
