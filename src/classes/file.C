@@ -25,7 +25,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.225 2013/03/14 02:50:58 misha Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.226 2013/06/24 22:00:18 moko Exp $";
 
 // defines
 
@@ -345,7 +345,7 @@ static void _create(Request& r, MethodParams& params) {
 	} else {
 		if(asked_charset)
 			throw Exception(PARSER_RUNTIME, 0, "charset option can not be used with file-content");
-		self.set(*vcontent.as_vfile(String::L_AS_IS), is_text, file_name, vcontent_type, &r);
+		self.set(*vcontent.as_vfile(String::L_AS_IS), mode != 0, is_text, file_name, vcontent_type, &r);
 	}
 
 }

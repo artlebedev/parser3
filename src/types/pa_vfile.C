@@ -12,7 +12,7 @@
 #include "pa_vint.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VFILE_C="$Id: pa_vfile.C,v 1.57 2013/03/11 23:37:43 misha Exp $" IDENT_PA_VFILE_H;
+volatile const char * IDENT_PA_VFILE_C="$Id: pa_vfile.C,v 1.58 2013/06/24 22:00:18 moko Exp $" IDENT_PA_VFILE_H;
 
 // externs
 
@@ -26,6 +26,9 @@ extern Methoded* file_class;
 #define MODE_VALUE_TEXT "text"
 #define MODE_VALUE_BINARY "binary"
 
+#define CONTENT_TYPE_TEXT "text/plain"
+#define CONTENT_TYPE_BINARY "application/octet-stream"
+
 // statics
 
 static const String size_name(SIZE_NAME);
@@ -34,17 +37,23 @@ static const String text_name(TEXT_NAME);
 static const String mode_value_text(MODE_VALUE_TEXT);
 static const String mode_value_binary(MODE_VALUE_BINARY);
 
+static const String content_type_text(CONTENT_TYPE_TEXT);
+static const String content_type_binary(CONTENT_TYPE_BINARY);
+
 // methods
 
 VStateless_class *VFile::get_class() { return file_class; }
 
-void VFile::set(bool atainted, const char* avalue_ptr, size_t avalue_size, const String* afile_name, Value* acontent_type, Request* r) {
+void VFile::set_all(bool atainted, bool ais_text_mode, const char* avalue_ptr, size_t avalue_size, const String* afile_name, Value* acontent_type, Request* r) {
 	fvalue_ptr=avalue_ptr;
 	fvalue_size=avalue_size;
 
 	ftext_tainted=atainted;
 
 	ffields.clear();
+
+	// $.mode
+	set_mode(ais_text_mode);
 
 	// $.size
 	ffields.put(size_name, new VInt(fvalue_size));
@@ -60,30 +69,34 @@ void VFile::set(bool atainted, bool ais_text_mode, char* avalue_ptr, size_t aval
 	if(ais_text_mode && avalue_ptr && avalue_size) {
 		fix_line_breaks(avalue_ptr, avalue_size);
 	}
-	set(atainted, avalue_ptr, avalue_size, afile_name, acontent_type, r);
-	// $.mode
-	set_mode(ais_text_mode);
+	set_all(atainted, ais_text_mode, avalue_ptr, avalue_size, afile_name, acontent_type, r);
 	fis_text_content=ais_text_mode;
 }
 
 void VFile::set_binary(bool atainted, const char* avalue_ptr, size_t avalue_size, const String* afile_name, Value* acontent_type, Request* r) {
-	set(atainted, avalue_ptr, avalue_size, afile_name, acontent_type, r);
-	// $.mode
-	set_mode(false);
+	set_all(atainted, false, avalue_ptr, avalue_size, afile_name, acontent_type, r);
 	fis_text_content=false;
 }
 
-void VFile::set(VFile& avfile, bool ais_text_mode, const String* afile_name, Value* acontent_type, Request* r) {
-	set(avfile.ftext_tainted, avfile.fvalue_ptr, avfile.fvalue_size, afile_name, acontent_type, r);
+void VFile::set(VFile& avfile, bool aset_text_mode, bool ais_text_mode, const String* afile_name, Value* acontent_type, Request* r) {
+	fvalue_ptr=avfile.fvalue_ptr;
+	fvalue_size=avfile.fvalue_size;
+	ftext_tainted=avfile.ftext_tainted;
+	fis_text_content=avfile.fis_text_content;
 
 	ffields.clear();
 	for(HashStringValue::Iterator i(avfile.ffields); i; i.next())
 		if(i.key() != text_name) // do not copy cached .text value
-			ffields.put_dont_replace(*new String(i.key(), String::L_TAINTED), i.value());
+			ffields.put(*new String(i.key(), String::L_TAINTED), i.value());
 
-	// $.mode
-	set_mode(ais_text_mode);
-	fis_text_content= avfile.fis_text_content;
+	if(aset_text_mode)
+		set_mode(ais_text_mode);
+
+	if(afile_name)
+		set_name(afile_name);
+
+	if(acontent_type || afile_name)
+		set_content_type(acontent_type, afile_name, r);
 }
 
 const char* VFile::text_cstr() {
@@ -127,17 +140,17 @@ void VFile::set_content_type(Value* acontent_type, const String* afile_name, Req
 	if(!acontent_type && afile_name && r)
 		acontent_type=new VString(r->mime_type_of(afile_name));
 
-	if(acontent_type)
-		ffields.put(content_type_name, acontent_type);
+	if(!acontent_type)
+		acontent_type=new VString(fis_text_mode ? content_type_text : content_type_binary);
+
+	ffields.put(content_type_name, acontent_type);
 }
 
 void VFile::save(Request_charsets& charsets, const String& file_spec, bool is_text, Charset* asked_charset) {
 	if(fvalue_ptr)
 		file_write(charsets, file_spec, fvalue_ptr, fvalue_size, is_text, false/*do_append*/, asked_charset);
 	else
-		throw Exception(PARSER_RUNTIME,
-			&file_spec,
-			"saving stat-ed file");
+		throw Exception(PARSER_RUNTIME, &file_spec, "saving stat-ed file");
 }
 
 bool VFile::is_text_mode(const String& mode) {
@@ -145,11 +158,9 @@ bool VFile::is_text_mode(const String& mode) {
 		return true;
 	if(mode==mode_value_binary)
 		return false;
-	throw Exception(PARSER_RUNTIME,
-		&mode,
-		"is invalid mode, must be either '"MODE_VALUE_TEXT"' or '"MODE_VALUE_BINARY"'");
+	throw Exception(PARSER_RUNTIME, &mode, "is invalid mode, must be either '"MODE_VALUE_TEXT"' or '"MODE_VALUE_BINARY"'");
 }
-	
+
 bool VFile::is_valid_mode (const String& mode) {
 	return (mode==mode_value_text || mode==mode_value_binary);
 }
