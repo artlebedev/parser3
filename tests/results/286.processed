@@ -1,5 +1,5 @@
 Content-Type: application/octet-stream
-Content-Length: 600
+Content-Length: 836
 
 ft:null
 f1:{
@@ -28,7 +28,7 @@ f2:{
 }
 f3:{
 "class":"file",
-"mode":"text",
+"mode":"binary",
 "size":4,
 "name":"noname.dat",
 "content-type":"my\/format",
@@ -36,9 +36,25 @@ f3:{
 }
 f4:{
 "class":"file",
+"mode":"binary",
+"size":4,
+"name":"test.gif",
+"content-type":"application\/octet-stream",
+"status":0
+}
+f5:{
+"class":"file",
 "mode":"text",
 "size":4,
 "name":"test.gif",
 "content-type":"application\/octet-stream",
+"status":0
+}
+f6:{
+"class":"file",
+"mode":"binary",
+"size":4,
+"name":"test2.gif",
+"content-type":"image\/gif",
 "status":0
 }

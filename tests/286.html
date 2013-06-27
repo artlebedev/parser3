@@ -12,9 +12,15 @@ fb:^json:string[$fb]
 $f2[^file::create[$fb; $.mode[text] ]]
 f2:^json:string[$f2]
 
-$f3[^file::create[$ft; $.content-type[my/format] ]]
+$f3[^file::create[$fb; $.content-type[my/format] ]]
 f3:^json:string[$f3]
 
 $f4[^file::create[$f3; $.name[test.gif] ]]
 f4:^json:string[$f4]
+
+$f5[^file::create[$f4; $.mode[text] ]]
+f5:^json:string[$f5]
+
+$f6[^file::create[$f5; $.mode[binary] $.name[test2.gif] $.content-type[image/gif] ]]
+f6:^json:string[$f6]
 
