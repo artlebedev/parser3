@@ -12,7 +12,7 @@
 #include "pa_vint.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VFILE_C="$Id: pa_vfile.C,v 1.58 2013/06/24 22:00:18 moko Exp $" IDENT_PA_VFILE_H;
+volatile const char * IDENT_PA_VFILE_C="$Id: pa_vfile.C,v 1.59 2013/06/27 21:29:44 moko Exp $" IDENT_PA_VFILE_H;
 
 // externs
 
@@ -39,6 +39,14 @@ static const String mode_value_binary(MODE_VALUE_BINARY);
 
 static const String content_type_text(CONTENT_TYPE_TEXT);
 static const String content_type_binary(CONTENT_TYPE_BINARY);
+
+inline bool content_type_is_default(Value *content_type){
+	if(content_type){
+		const String *ct=content_type->get_string();
+		return ct == &content_type_text || ct == &content_type_binary;
+	}
+	return true;
+}
 
 // methods
 
@@ -95,7 +103,7 @@ void VFile::set(VFile& avfile, bool aset_text_mode, bool ais_text_mode, const St
 	if(afile_name)
 		set_name(afile_name);
 
-	if(acontent_type || afile_name)
+	if(acontent_type || afile_name || aset_text_mode && content_type_is_default(ffields.get(content_type_name)))
 		set_content_type(acontent_type, afile_name, r);
 }
 
