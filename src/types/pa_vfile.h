@@ -8,7 +8,7 @@
 #ifndef PA_VFILE_H
 #define PA_VFILE_H
 
-#define IDENT_PA_VFILE_H "$Id: pa_vfile.h,v 1.75 2013/06/24 22:00:18 moko Exp $"
+#define IDENT_PA_VFILE_H "$Id: pa_vfile.h,v 1.76 2013/07/04 13:09:18 moko Exp $"
 
 // include
 
@@ -72,8 +72,9 @@ public: // usage
 	/// WARNING: when setting text files be sure to append terminating zero to avalue_ptr
 	/// WARNING: the content can be modified while creating "text" vfile
 	void set(bool atainted, bool ais_text_mode, char* avalue_ptr, size_t avalue_size, const String* afile_name=0, Value* acontent_type=0, Request* r=0);
-	void set_binary(bool atainted, const char* avalue_ptr, size_t avalue_size, const String* afile_name=0, Value* acontent_type=0, Request* r=0);
 	void set(VFile& avfile, bool aset_text_mode, bool ais_text_mode, const String* afile_name=0, Value* acontent_type=0, Request* r=0);
+	void set_binary(bool atainted, const char* avalue_ptr, size_t avalue_size, const String* afile_name=0, Value* acontent_type=0, Request* r=0);
+	void set_binary_string(bool atainted, const char* avalue_ptr, size_t avalue_size);
 
 	void save(Request_charsets& charsets, const String& file_spec, bool is_text, Charset* asked_charset=0);
 
@@ -93,7 +94,7 @@ public: // usage
 private:
 	const char* text_cstr();
 
-	void set_all(bool atainted, bool ais_text_mode, const char* avalue_ptr, size_t avalue_size, const String* afile_name=0, Value* acontent_type=0, Request* r=0);
+	void set_all(bool atainted, bool ais_text_mode, const char* avalue_ptr, size_t avalue_size, const String* afile_name=0, Value* acontent_type=0);
 
 	void set_mode(bool ais_text);
 

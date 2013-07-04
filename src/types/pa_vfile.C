@@ -12,7 +12,7 @@
 #include "pa_vint.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VFILE_C="$Id: pa_vfile.C,v 1.59 2013/06/27 21:29:44 moko Exp $" IDENT_PA_VFILE_H;
+volatile const char * IDENT_PA_VFILE_C="$Id: pa_vfile.C,v 1.60 2013/07/04 13:09:18 moko Exp $" IDENT_PA_VFILE_H;
 
 // externs
 
@@ -52,38 +52,35 @@ inline bool content_type_is_default(Value *content_type){
 
 VStateless_class *VFile::get_class() { return file_class; }
 
-void VFile::set_all(bool atainted, bool ais_text_mode, const char* avalue_ptr, size_t avalue_size, const String* afile_name, Value* acontent_type, Request* r) {
+void VFile::set_all(bool atainted, bool ais_text_mode, const char* avalue_ptr, size_t avalue_size, const String* afile_name, Value* acontent_type) {
 	fvalue_ptr=avalue_ptr;
 	fvalue_size=avalue_size;
 
 	ftext_tainted=atainted;
+	fis_text_content=ais_text_mode;
 
 	ffields.clear();
 
-	// $.mode
-	set_mode(ais_text_mode);
-
-	// $.size
-	ffields.put(size_name, new VInt(fvalue_size));
-
-	// $.name
 	set_name(afile_name);
-
-	// $mime-type
-	set_content_type(acontent_type, afile_name, r);
+	ffields.put(size_name, new VInt(fvalue_size));
+	set_mode(ais_text_mode);
 }
 
 void VFile::set(bool atainted, bool ais_text_mode, char* avalue_ptr, size_t avalue_size, const String* afile_name, Value* acontent_type, Request* r) {
 	if(ais_text_mode && avalue_ptr && avalue_size) {
 		fix_line_breaks(avalue_ptr, avalue_size);
 	}
-	set_all(atainted, ais_text_mode, avalue_ptr, avalue_size, afile_name, acontent_type, r);
-	fis_text_content=ais_text_mode;
+	set_all(atainted, ais_text_mode, avalue_ptr, avalue_size, afile_name, acontent_type);
+	set_content_type(acontent_type, afile_name, r);
 }
 
 void VFile::set_binary(bool atainted, const char* avalue_ptr, size_t avalue_size, const String* afile_name, Value* acontent_type, Request* r) {
-	set_all(atainted, false, avalue_ptr, avalue_size, afile_name, acontent_type, r);
-	fis_text_content=false;
+	set_all(atainted, false, avalue_ptr, avalue_size, afile_name, acontent_type);
+	set_content_type(acontent_type, afile_name, r);
+}
+
+void VFile::set_binary_string(bool atainted, const char* avalue_ptr, size_t avalue_size) {
+	set_all(atainted, false, avalue_ptr, avalue_size, 0, 0);
 }
 
 void VFile::set(VFile& avfile, bool aset_text_mode, bool ais_text_mode, const String* afile_name, Value* acontent_type, Request* r) {
