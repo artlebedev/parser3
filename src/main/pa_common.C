@@ -36,7 +36,7 @@
 #include "pcre.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.270 2013/04/21 21:59:07 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.271 2013/07/04 10:27:49 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -118,23 +118,13 @@ void fix_line_breaks(char *str, size_t& length) {
 	str[length]=0; // terminating
 }
 
-char* file_read_text(Request_charsets& charsets, 
-			const String& file_spec, 
-			bool fail_on_read_problem,
-			HashStringValue* params,
-			bool transcode_result) {
-	File_read_result file=
-		file_read(charsets, file_spec, true, params, fail_on_read_problem, 0, 0, 0, transcode_result);
+char* file_read_text(Request_charsets& charsets, const String& file_spec, bool fail_on_read_problem, HashStringValue* params, bool transcode_result) {
+	File_read_result file=file_read(charsets, file_spec, true, params, fail_on_read_problem, 0, 0, 0, transcode_result);
 	return file.success?file.str:0;
 }
 
-char* file_load_text(Request& r, 
-			const String& file_spec, 
-			bool fail_on_read_problem,
-			HashStringValue* params,
-			bool transcode_result) {
-	File_read_result file=
-		file_load(r, file_spec, true, params, fail_on_read_problem, 0, 0, 0, transcode_result);
+char* file_load_text(Request& r, const String& file_spec, bool fail_on_read_problem, HashStringValue* params, bool transcode_result) {
+	File_read_result file=file_load(r, file_spec, true, params, fail_on_read_problem, 0, 0, 0, transcode_result);
 	return file.success?file.str:0;
 }
 
@@ -160,29 +150,21 @@ struct File_read_action_info {
 	char* buf; size_t offset; size_t count;
 }; 
 #endif
-static void file_read_action(
-				struct stat& finfo, 
-				int f, 
-				const String& file_spec, const char* /*fname*/, bool as_text, 
-				void *context) {
+
+static void file_read_action(struct stat& finfo, int f, const String& file_spec, const char* /*fname*/, bool as_text, void *context) {
 	File_read_action_info& info=*static_cast<File_read_action_info *>(context); 
 	size_t to_read_size=info.count;
 	if(!to_read_size)
 		to_read_size=(size_t)finfo.st_size;
 	assert( !(info.buf && as_text) );
-	if(to_read_size) { 
+	if(to_read_size) {
 		if(info.offset)
 			lseek(f, info.offset, SEEK_SET);
-		*info.data=info.buf
-			? info.buf
-			: (char *)pa_malloc_atomic(to_read_size+1);
-		*info.data_size=(size_t)read(f, *info.data, to_read_size); 
-
-		if(ssize_t(*info.data_size)<0 || *info.data_size>to_read_size)
-			throw Exception("file.read", 
-				&file_spec, 
-				"read failed: actually read %u bytes count not in [0..%u] valid range", 
-					*info.data_size, to_read_size); 
+		*info.data=info.buf ? info.buf : (char *)pa_malloc_atomic(to_read_size+1);
+		ssize_t result=read(f, *info.data, to_read_size);
+		if(result<0)
+			throw Exception("file.read", &file_spec, "read failed: %s (%d)", strerror(errno), errno);
+		*info.data_size=result;
 	} else { // empty file
 		// for both, text and binary: for text we need that terminator, for binary we need nonzero pointer to be able to save such files
 		*info.data=(char *)pa_malloc_atomic(1);
@@ -414,16 +396,18 @@ struct File_write_action_info {
 	size_t length;
 }; 
 #endif
+
 static void file_write_action(int f, void *context) {
 	File_write_action_info& info=*static_cast<File_write_action_info *>(context); 
 	if(info.length) {
-		int written=write(f, info.str, info.length); 
+		ssize_t written=write(f, info.str, info.length); 
 		if(written<0)
-			throw Exception("file.access", 
-				0, 
-				"write failed: %s (%d)",  strerror(errno), errno); 
+			throw Exception("file.write", 0, "write failed: %s (%d)",  strerror(errno), errno); 
+		if(written!=info.length)
+			throw Exception("file.write", 0, "write failed: %u of %u bytes written", written, info.length);
 	}
 }
+
 void file_write(
 				Request_charsets& charsets,
 				const String& file_spec,
@@ -1050,7 +1034,7 @@ int __snprintf(char* b, size_t s, const char* f, ...) {
  *  Foundation, Inc., 59 Temple Street #330, Boston, MA 02111-1307, USA.
  *
  */
-static char *base64_alphabet =
+static const char *base64_alphabet =
 	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 /**
