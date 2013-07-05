@@ -7,7 +7,7 @@
 #include "pa_memcached.h"
 #include "ltdl.h"
 
-volatile const char * IDENT_PA_MEMCACHED_C="$Id: pa_memcached.C,v 1.7 2013/04/23 22:57:06 moko Exp $";
+volatile const char * IDENT_PA_MEMCACHED_C="$Id: pa_memcached.C,v 1.8 2013/07/05 21:09:57 moko Exp $";
 
 t_memcached f_memcached=0;
 t_memcached_create f_memcached_create;
@@ -40,9 +40,10 @@ t_memcached_result_flags f_memcached_result_flags;
 #define GLINK(name) f_##name=(t_##name)lt_dlsym(handle, #name);
 #define DLINK(name) GLINK(name) if(!f_##name) return "function " #name " was not found";
 		
+void pa_dlinit();
+
 static const char *dlink(const char *dlopen_file_spec) {
-	if(lt_dlinit())
-		return lt_dlerror();
+	pa_dlinit();
 
 	lt_dlhandle handle=lt_dlopen(dlopen_file_spec);
 

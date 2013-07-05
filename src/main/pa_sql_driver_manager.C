@@ -15,7 +15,7 @@
 #include "pa_vtable.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_PA_SQL_DRIVER_MANAGER_C="$Id: pa_sql_driver_manager.C,v 1.91 2012/03/16 09:24:14 moko Exp $" IDENT_PA_SQL_DRIVER_MANAGER_H IDENT_PA_SQL_CONNECTION_H;
+volatile const char * IDENT_PA_SQL_DRIVER_MANAGER_C="$Id: pa_sql_driver_manager.C,v 1.92 2013/07/05 21:09:58 moko Exp $" IDENT_PA_SQL_DRIVER_MANAGER_H IDENT_PA_SQL_CONNECTION_H;
 
 // globals
 
@@ -101,15 +101,10 @@ static void expire_connections(SQL_Driver_manager::connection_cache_type::key_ty
 
 // SQL_Driver_manager
 
-SQL_Driver_manager::SQL_Driver_manager(): 
-	is_dlinited(false), prev_expiration_pass_time(0) {
-}
+SQL_Driver_manager::SQL_Driver_manager(): prev_expiration_pass_time(0) {}
 
 SQL_Driver_manager::~SQL_Driver_manager() {
 	connection_cache.for_each<time_t>(expire_connections, time(0)+(time_t)10/*=in future=expire all*/);
-
-	if(is_dlinited)
-		lt_dlexit();
 }
 
 /// @param aurl protocol://[driver-dependent]
@@ -170,14 +165,7 @@ SQL_Connection* SQL_Driver_manager::get_connection(const String& aurl,
 					"undefined protocol '%s'", 
 						protocol_cstr);
 
-			if(!is_dlinited) {
-				if(lt_dlinit())
-					throw Exception(0,
-						library,
-						"prepare to dynamic loading failed, %s", lt_dlerror());
-
-				is_dlinited=true;
-			}
+			pa_dlinit();
 
 			const char* filename=library->taint_cstr(String::L_FILE_SPEC);
 			lt_dlhandle handle=lt_dlopen(filename);

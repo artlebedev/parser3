@@ -25,9 +25,10 @@ extern "C" {
 
 #include "pa_cache_managers.h"
 
+#include "ltdl.h"
 #include "pcre.h"
 
-volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.187 2012/03/16 09:24:13 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
+volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.188 2013/07/05 21:09:58 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
 
 // defines
 
@@ -350,8 +351,20 @@ void pa_globals_init() {
 #endif
 }
 
+static bool is_dlinited=false;
+
 void pa_globals_done() {
 	delete cache_managers;  cache_managers=0;
+	if(is_dlinited)
+		lt_dlexit();
+}
+
+void pa_dlinit() {
+	if(!is_dlinited){
+		if(lt_dlinit())
+			throw Exception(0,0,"prepare to dynamic libary loading failed, %s", lt_dlerror());
+		is_dlinited=true;
+	}
 }
 
 #ifdef _MSC_VER

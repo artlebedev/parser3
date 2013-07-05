@@ -8,7 +8,7 @@
 #ifndef PA_GLOBALS_H
 #define PA_GLOBALS_H
 
-#define IDENT_PA_GLOBALS_H "$Id: pa_globals.h,v 1.114 2012/03/16 09:24:09 moko Exp $"
+#define IDENT_PA_GLOBALS_H "$Id: pa_globals.h,v 1.115 2013/07/05 21:09:57 moko Exp $"
 
 #ifdef XML
 #	include "libxml/tree.h"
@@ -21,6 +21,9 @@ void pa_globals_init();
 
 /// finalize global variables
 void pa_globals_done();
+
+/// for lt_dlinit to be called once
+void pa_dlinit();
 
 /// hex_value[c] = hex value of c
 extern short hex_value[0x100];

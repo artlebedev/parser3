@@ -16,7 +16,7 @@
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.27 2013/04/28 21:29:59 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.28 2013/07/05 21:09:57 moko Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -44,8 +44,7 @@ typedef void (*t_curl_formfree)(struct curl_httppost *form); t_curl_formfree f_c
 #define DLINK(name) GLINK(name) if(!f_##name) return "function " #name " was not found";
 		
 static const char *dlink(const char *dlopen_file_spec) {
-	if(lt_dlinit())
-		return lt_dlerror();
+	pa_dlinit();
 
 	lt_dlhandle handle=lt_dlopen(dlopen_file_spec);
 

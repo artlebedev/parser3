@@ -9,7 +9,7 @@
 #ifndef PA_SQL_DRIVER_MANAGER_H
 #define PA_SQL_DRIVER_MANAGER_H
 
-#define IDENT_PA_SQL_DRIVER_MANAGER_H "$Id: pa_sql_driver_manager.h,v 1.36 2012/03/16 09:24:10 moko Exp $"
+#define IDENT_PA_SQL_DRIVER_MANAGER_H "$Id: pa_sql_driver_manager.h,v 1.37 2013/07/05 21:09:57 moko Exp $"
 
 
 #include "pa_sql_driver.h"
@@ -40,7 +40,6 @@ private:
 	
 	friend class SQL_Connection;
 
-	bool is_dlinited;
 	driver_cache_type driver_cache;
 	connection_cache_type connection_cache;
 
