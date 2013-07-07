@@ -25,7 +25,7 @@
 #include "pa_vdate.h"
 #include "pa_table.h"
 
-volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.142 2012/06/15 11:54:18 moko Exp $";
+volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.143 2013/07/07 20:49:45 moko Exp $";
 
 // defines
 
@@ -243,13 +243,9 @@ public:
 			return 0;
 
 		char* lbuf=new(PointerFreeGC) char[limit];
-		size_t read_size=(size_t)::read(f, lbuf, limit);  abuf=lbuf;
-		if(ssize_t(read_size)<0 || read_size>limit)
-			throw Exception(0,
-				&file_name, 
-				"measure failed: actually read %u bytes count not in [0..%u] valid range", 
-			read_size, limit);
-
+		ssize_t read_size=::read(f, lbuf, limit);  abuf=lbuf;
+		if(read_size<0)
+			throw Exception(0, &file_name, "measure read failed: %s (%d)", strerror(errno), errno);
 		return read_size;
 	}
 
