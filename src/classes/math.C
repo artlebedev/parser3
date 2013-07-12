@@ -14,6 +14,7 @@
 #include "pa_vmath.h"
 #include "pa_request.h"
 #include "pa_md5.h"
+#include "pa_sha2.h"
 #include "pa_random.h"
 
 #ifdef WIN32
@@ -30,7 +31,7 @@
 	extern char *crypt(const char* , const char* );
 #endif
 
-volatile const char * IDENT_MATH_C="$Id: math.C,v 1.64 2012/09/25 11:31:03 moko Exp $";
+volatile const char * IDENT_MATH_C="$Id: math.C,v 1.65 2013/07/12 21:23:29 moko Exp $";
 
 // defines
 
@@ -342,11 +343,11 @@ void memxor(char *dest, const char *src, size_t n){
 #define IPAD 0x36
 #define OPAD 0x5c
 
-#define HMAC(key,init,update,final,digestlen){					\
+#define HMAC(key,init,update,final,blocklen,digestlen){				\
 	unsigned char tempdigest[digestlen], keydigest[digestlen];		\
 	size_t keylen=strlen(key);						\
-	/* Reduce the key's size, so that it becomes <= 64 bytes. */		\
-	if (keylen > 64){							\
+	/* Reduce the key's size, so that it becomes <= blocklen bytes. */	\
+	if (keylen > blocklen){							\
 		init(&c);							\
 		update(&c,(const unsigned char*)hmac, keylen);			\
 		final(keydigest, &c);						\
@@ -354,18 +355,18 @@ void memxor(char *dest, const char *src, size_t n){
 		keylen = digestlen;						\
 	}									\
 	/* Compute TEMP from KEY and STRING. */					\
-	char block[64];								\
-	memset (block, IPAD, sizeof (block));					\
+	char block[blocklen];							\
+	memset (block, IPAD, blocklen);						\
 	memxor (block, key, keylen);						\
 	init(&c);								\
-	update(&c, (const unsigned char*)block, 64);				\
+	update(&c, (const unsigned char*)block, blocklen);			\
 	update(&c, (const unsigned char*)string, strlen(string));		\
 	final(tempdigest, &c);							\
 	/* Compute result from KEY and TEMP. */					\
-	memset (block, OPAD, sizeof (block));					\
+	memset (block, OPAD, blocklen);						\
 	memxor (block, key, keylen);						\
 	init(&c);								\
-	update(&c, (const unsigned char*)block, 64);				\
+	update(&c, (const unsigned char*)block, blocklen);			\
 	update(&c, (const unsigned char*)tempdigest, digestlen);		\
 }
 
@@ -373,10 +374,12 @@ static void _digest(Request& r, MethodParams& params) {
 	const String &smethod = params.as_string(0, PARAMETER_MUST_BE_STRING);
 	const char *string = params.as_string(1, PARAMETER_MUST_BE_STRING).cstr();
 
-	enum Method { M_MD5, M_SHA1 } method;
+	enum Method { M_MD5, M_SHA1, M_SHA256, M_SHA512 } method;
 
 	if (smethod == "md5") method = M_MD5;
 	else if (smethod == "sha1" ) method = M_SHA1;
+	else if (smethod == "sha256" ) method = M_SHA256;
+	else if (smethod == "sha512" ) method = M_SHA512;
 	else throw Exception(PARSER_RUNTIME, &smethod, "must be 'md5' or 'sha1'");
 
 	const char *hmac=0;
@@ -405,7 +408,7 @@ static void _digest(Request& r, MethodParams& params) {
 	if(method == M_MD5){
 		PA_MD5_CTX c;
 		if(hmac){
-			HMAC(hmac, pa_MD5Init, pa_MD5Update, pa_MD5Final, 16);
+			HMAC(hmac, pa_MD5Init, pa_MD5Update, pa_MD5Final, 64, 16);
 		} else {
 			pa_MD5Init(&c);
 			pa_MD5Update(&c, (const unsigned char*)string, strlen(string));
@@ -418,7 +421,7 @@ static void _digest(Request& r, MethodParams& params) {
 	if(method == M_SHA1){
 		SHA1Context c;
 		if(hmac){
-			HMAC(hmac, SHA1Reset, SHA1Input, SHA1ReadDigest, 20);
+			HMAC(hmac, SHA1Reset, SHA1Input, SHA1ReadDigest, 64, 20);
 		} else {
 			SHA1Reset(&c);
 			SHA1Input(&c, (const unsigned char*)string, strlen(string));
@@ -426,6 +429,32 @@ static void _digest(Request& r, MethodParams& params) {
 		char *str=(char *)pa_malloc(20);
 		SHA1ReadDigest(str, &c);
 		digest = String::C(str, 20);
+	}
+
+	if(method == M_SHA256){
+		SHA256_CTX c;
+		if(hmac){
+			HMAC(hmac, pa_SHA256_Init, pa_SHA256_Update, pa_SHA256_Final, 64, SHA256_DIGEST_LENGTH);
+		} else {
+			pa_SHA256_Init(&c);
+			pa_SHA256_Update(&c, (const unsigned char*)string, strlen(string));
+		}
+		char *str=(char *)pa_malloc(SHA256_DIGEST_LENGTH);
+		pa_SHA256_Final((unsigned char *)str, &c);
+		digest = String::C(str, SHA256_DIGEST_LENGTH);
+	}
+
+	if(method == M_SHA512){
+		SHA512_CTX c;
+		if(hmac){
+			HMAC(hmac, pa_SHA512_Init, pa_SHA512_Update, pa_SHA512_Final, 128, SHA512_DIGEST_LENGTH);
+		} else {
+			pa_SHA512_Init(&c);
+			pa_SHA512_Update(&c, (const unsigned char*)string, strlen(string));
+		}
+		char *str=(char *)pa_malloc(SHA512_DIGEST_LENGTH);
+		pa_SHA512_Final((unsigned char *)str, &c);
+		digest = String::C(str, SHA512_DIGEST_LENGTH);
 	}
 
 	if(format == F_HEX){
