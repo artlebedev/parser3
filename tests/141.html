@@ -1,8 +1,21 @@
 $uuid[^math:uuid[]]^uuid.length[]<br />
 $uid64[^math:uid64[]]^uid64.length[]<br />
+
+$long[very-long-long-long-long-long-long-long-long-long-long-long-long-long-long-long-long-key]
+
 ^math:md5[123]<br />
-^math:sha1[123]<br />
-^math:digest[sha1;123; $.hmac[pwd] ]<br />
+^math:digest[md5;123]<br />
 ^math:digest[md5;123; $.hmac[pwd] ]<br />
-^math:digest[sha1;123; $.hmac[very-long-long-long-long-long-long-long-long-long-long-long-long-long-long-long-long-key] ]<br />
-^math:digest[md5;123; $.hmac[very-long-long-long-long-long-long-long-long-long-long-long-long-long-long-long-long-key] ]<br />
+^math:digest[md5;123; $.hmac[$long] $.format[base64] ]<br />
+
+^math:sha1[123]<br />
+^math:digest[sha1;123]<br />
+^math:digest[sha1;123; $.hmac[pwd] ]<br />
+^math:digest[sha1;123; $.hmac[$long] $.format[base64] ]<br />
+
+^math:digest[sha256;123; $.hmac[pwd] ]<br />
+^math:digest[sha256;123; $.hmac[$long] $.format[base64] ]<br />
+
+^math:digest[sha512;123]<br />
+^math:digest[sha512;123; $.hmac[pwd] ]<br />
+^math:digest[sha512;123; $.hmac[$long$long] $.format[base64] ]<br />
