@@ -351,43 +351,19 @@ AC_C_BIGENDIAN(
 
 AC_TYPE_SIZE_T
 AC_TYPE_SSIZE_T
+AC_TYPE_UINT8_T
 AC_TYPE_UINT32_T
+AC_TYPE_UINT64_T
+
 
 dnl Checks for C header files
+AC_HEADER_STDC
 AC_HEADER_TIME
 
-AC_CHECK_HEADERS(
-assert.h \
-signal.h \
-unistd.h \
-process.h \
-stddef.h \
-stdarg.h \
-fcntl.h \
-sys/stat.h \
-io.h \
-stdio.h \
-errno.h \
-ctype.h \
-math.h \
-crypt.h \
-time.h sys/time.h \
-string.h \
-direct.h \
-setjmp.h \
-memory.h \
-limits.h \
-sys/file.h \
-sys/locking.h \
-sys/types.h \
-sys/select.h \
-sys/resource.h \
-winsock.h \
-sys/socket.h \
-netinet/in.h \
-arpa/inet.h \
-netdb.h
-)
+AC_CHECK_HEADERS(stdio.h sys/types.h sys/stat.h stdlib.h stddef.h memory.h string.h strings.h inttypes.h stdint.h unistd.h)
+AC_CHECK_HEADERS(assert.h limits.h ctype.h math.h process.h stdarg.h setjmp.h signal.h)
+AC_CHECK_HEADERS(errno.h fcntl.h io.h sys/file.h sys/locking.h sys/select.h sys/resource.h)
+AC_CHECK_HEADERS(winsock.h sys/socket.h netinet/in.h arpa/inet.h netdb.h)
 
 
 dnl Checks for libraries
@@ -417,32 +393,23 @@ AC_CHECK_LIB(crypt, crypt)
 
 
 dnl Checks for functions
-AC_CHECK_FUNCS(
-flock \
-_locking \
-fcntl \
-lockf \
-ftruncate \
-fchmod \
-getrusage \
-gettimeofday \
-crypt \
-sigsetjmp \
-siglongjmp \
-unsetenv
-)
+AC_CHECK_FUNCS(flock _locking fcntl lockf ftruncate fchmod)
+AC_CHECK_FUNCS(getrusage gettimeofday crypt sigsetjmp siglongjmp unsetenv)
+
 
 dnl on some linux[seen on 2.4] it's a macro
 PA_CHECK_SIGSETJMP
+
 
 dnl see comment above
 AC_LANG_PUSH(C++)
 PA_CHECK_MATH_FUNCS_ONE_ARG(trunc round sign)
 AC_LANG_POP
 
-dnl We require qsort(3)
 
+dnl We require qsort(3)
 AC_CHECK_FUNCS(qsort, , AC_MSG_ERROR([No qsort library function.]))
+
 
 dnl For correct mail receiving we need to know local offset from GMT
 dnl it be timezone+(daylight?60*60*sign(timezone):0)
@@ -462,7 +429,6 @@ AC_TRY_COMPILE([#include <time.h>], [struct tm tm; tm.tm_tzadj=0;], AC_DEFINE(HA
 
 
 dnl Output header and makefiles
-
 AH_TEMPLATE([HAVE_DAYLIGHT],[Define if you have daylight external variable in <time.h>])
 AH_TEMPLATE([HAVE_TIMEZONE],[Define if you have timezone external variable in <time.h>])
 AH_TEMPLATE([HAVE_TM_GMTOFF],[Define if you have tm_gmtoff member of tm structure in <time.h>])
