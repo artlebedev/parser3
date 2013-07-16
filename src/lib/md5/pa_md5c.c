@@ -111,7 +111,7 @@
 
 #include "pa_md5.h"
 
-volatile const char * IDENT_PA_MD5_C="$Id: pa_md5c.c,v 1.14 2012/03/16 09:24:11 moko Exp $" IDENT_PA_MD5_H;
+volatile const char * IDENT_PA_MD5_C="$Id: pa_md5c.c,v 1.15 2013/07/16 21:48:36 moko Exp $" IDENT_PA_MD5_H;
 
 #define pa_pa_cpystrn(strDest, strSource, count) strncpy(strDest, strSource, count)
 
@@ -185,7 +185,7 @@ static unsigned char PADDING[64] =
 
 /* MD5 initialization. Begins an MD5 operation, writing a new context.
  */
-PA_API_EXPORT(void) pa_MD5Init(PA_MD5_CTX *context)
+void pa_MD5Init(PA_MD5_CTX *context)
 {
     context->count[0] = context->count[1] = 0;
     /* Load magic initialization constants. */
@@ -199,7 +199,7 @@ PA_API_EXPORT(void) pa_MD5Init(PA_MD5_CTX *context)
    operation, processing another message block, and updating the
    context.
  */
-PA_API_EXPORT(void) pa_MD5Update(PA_MD5_CTX *context, const unsigned char *input,
+void pa_MD5Update(PA_MD5_CTX *context, const unsigned char *input,
 			      unsigned int inputLen)
 {
     unsigned int i, idx, partLen;
@@ -259,7 +259,7 @@ PA_API_EXPORT(void) pa_MD5Update(PA_MD5_CTX *context, const unsigned char *input
 /* MD5 finalization. Ends an MD5 message-digest operation, writing the
    the message digest and zeroizing the context.
  */
-PA_API_EXPORT(void) pa_MD5Final(unsigned char digest[16], PA_MD5_CTX *context)
+void pa_MD5Final(unsigned char digest[16], PA_MD5_CTX *context)
 {
     unsigned char bits[8];
     unsigned int idx, padLen;
@@ -420,7 +420,7 @@ static void Decode(UINT4 *output, const unsigned char *input, unsigned int len)
  * the FreeBSD 3.0 /usr/src/lib/libcrypt/crypt.c file, which is
  * licenced as stated at the top of this file.
  */
-PA_API_EXPORT(void) pa_to64(char *s, unsigned long v, int n)
+void pa_to64(char *s, unsigned long v, int n)
 {
     static unsigned char itoa64[] =         /* 0 ... 63 => ASCII - 64 */
 	"./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
@@ -431,7 +431,7 @@ PA_API_EXPORT(void) pa_to64(char *s, unsigned long v, int n)
     }
 }
 
-PA_API_EXPORT(void) pa_MD5Encode(const unsigned char *pw,
+void pa_MD5Encode(const unsigned char *pw,
 			      const unsigned char *salt,
 			      char *result, size_t nbytes)
 {

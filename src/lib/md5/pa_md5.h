@@ -96,24 +96,18 @@
 #ifndef PA_MD5_H
 #define PA_MD5_H
 
-#define IDENT_PA_MD5_H "$Id: pa_md5.h,v 1.12 2012/03/16 09:24:11 moko Exp $"
-
-#define PA_API_EXPORT(rtype) rtype
+#define IDENT_PA_MD5_H "$Id: pa_md5.h,v 1.13 2013/07/16 21:48:36 moko Exp $"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#ifndef APACHE_MD5_H
-
-/* MD5.H - header file for MD5C.C */
+#include "pa_config_includes.h"
 
 #define MD5_DIGESTSIZE 16
 
 /* UINT4 defines a four byte word */
-typedef unsigned int UINT4;
-
-#endif
+typedef uint32_t UINT4;
 
 /* MD5 context. */
 typedef struct {
@@ -129,15 +123,11 @@ typedef struct {
 #define PA_MD5PW_ID "$apr1$"
 #define PA_MD5PW_IDLEN 6
 
-PA_API_EXPORT(void) pa_MD5Init(PA_MD5_CTX *context);
-PA_API_EXPORT(void) pa_MD5Update(PA_MD5_CTX *context, const unsigned char *input,
-			      unsigned int inputLen);
-PA_API_EXPORT(void) pa_MD5Final(unsigned char digest[MD5_DIGESTSIZE],
-			     PA_MD5_CTX *context);
-PA_API_EXPORT(void) pa_MD5Encode(const unsigned char *password,
-			      const unsigned char *salt,
-			      char *result, size_t nbytes);
-PA_API_EXPORT(void) pa_to64(char *s, unsigned long v, int n);
+void pa_MD5Init(PA_MD5_CTX *context);
+void pa_MD5Update(PA_MD5_CTX *context, const unsigned char *input, unsigned int inputLen);
+void pa_MD5Final(unsigned char digest[MD5_DIGESTSIZE], PA_MD5_CTX *context);
+void pa_MD5Encode(const unsigned char *password, const unsigned char *salt, char *result, size_t nbytes);
+void pa_to64(char *s, unsigned long v, int n);
 
 #ifdef __cplusplus
 }
