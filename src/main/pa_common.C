@@ -36,7 +36,7 @@
 #include "pcre.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.271 2013/07/04 10:27:49 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.272 2013/07/16 14:55:45 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -634,7 +634,7 @@ enum FormatType {
 	FormatUInt,
 	FormatDouble
 };
-FormatType format_type(char* fmt){
+FormatType format_type(const char* fmt){
 	enum FormatState {
 		Percent, 
 		Flags, 
@@ -645,7 +645,7 @@ FormatType format_type(char* fmt){
 
 	FormatType result=FormatInvalid;
 
-	char* pos=fmt;
+	const char* pos=fmt;
 	while(char c=*(pos++)){
 		switch(state){
 			case Percent:
@@ -689,7 +689,7 @@ FormatType format_type(char* fmt){
 }
 
 
-const char* format(double value, char* fmt) {
+const char* format(double value, const char* fmt) {
 	char local_buf[MAX_NUMBER];
 	int size=-1;
 
