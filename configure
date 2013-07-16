@@ -4628,11 +4628,8 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for dynamic-link library extension" >&5
 $as_echo_n "checking for dynamic-link library extension... " >&6; }
 case "$host_os" in
-cygwin)
-	dll_extension=dll
-	;;
-*)
-	dll_extension=so
+  *cygwin* ) dll_extension=dll;;
+  * ) dll_extension=so
 esac
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $dll_extension" >&5
 $as_echo "$dll_extension" >&6; }
@@ -17924,10 +17921,7 @@ ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
 
 
-for pa_func in trunc \
-round \
-sign
-
+for pa_func in trunc round sign
 do
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for (maybe built-in) math function $pa_func" >&5
@@ -17996,17 +17990,14 @@ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 int
 main ()
 {
-
 time_t test=timezone;
-
   ;
   return 0;
 }
 _ACEOF
 if ac_fn_c_try_compile "$LINENO"; then :
   $as_echo "#define HAVE_TIMEZONE 1" >>confdefs.h
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+ { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
@@ -18022,17 +18013,14 @@ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 int
 main ()
 {
-
 int test=daylight;
-
   ;
   return 0;
 }
 _ACEOF
 if ac_fn_c_try_compile "$LINENO"; then :
   $as_echo "#define HAVE_DAYLIGHT 1" >>confdefs.h
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+ { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
@@ -18048,17 +18036,14 @@ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 int
 main ()
 {
-struct tm tm;
-tm.tm_gmtoff=0;
-
+struct tm tm; tm.tm_gmtoff=0;
   ;
   return 0;
 }
 _ACEOF
 if ac_fn_c_try_compile "$LINENO"; then :
   $as_echo "#define HAVE_TM_GMTOFF 1" >>confdefs.h
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+ { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
@@ -18074,27 +18059,20 @@ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 int
 main ()
 {
-struct tm tm;
-tm.tm_tzadj=0;
-
+struct tm tm; tm.tm_tzadj=0;
   ;
   return 0;
 }
 _ACEOF
 if ac_fn_c_try_compile "$LINENO"; then :
   $as_echo "#define HAVE_TM_TZADJ 1" >>confdefs.h
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+ { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-
-
-
-
 
 
 

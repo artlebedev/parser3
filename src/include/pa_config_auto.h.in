@@ -64,7 +64,7 @@
 /* Define to 1 if you have the <dirent.h> header file. */
 #undef HAVE_DIRENT_H
 
-/* Define if you have the GNU dld library */
+/* Define if you have the GNU dld library. */
 #undef HAVE_DLD
 
 /* Define to 1 if you have the <dld.h> header file. */
