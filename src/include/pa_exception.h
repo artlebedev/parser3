@@ -8,7 +8,7 @@
 #ifndef PA_EXCEPTION_H
 #define PA_EXCEPTION_H
 
-#define IDENT_PA_EXCEPTION_H "$Id: pa_exception.h,v 1.63 2012/06/08 11:44:02 misha Exp $"
+#define IDENT_PA_EXCEPTION_H "$Id: pa_exception.h,v 1.64 2013/07/16 15:06:40 moko Exp $"
 
 const char* const PARSER_RUNTIME = "parser.runtime";
 const char* const IMAGE_FORMAT = "image.format";
@@ -76,7 +76,7 @@ protected:
 
 	const char* ftype;
 	const String* fproblem_source;
-	char* fcomment;
+	const char* fcomment;
 
 };
 

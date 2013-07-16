@@ -8,7 +8,7 @@
 	
 */
 
-volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.263 2012/05/30 02:25:47 misha Exp $";
+volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.264 2013/07/16 15:10:03 moko Exp $";
 
 /**
 	@todo parser4: 
@@ -49,7 +49,7 @@ volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.263 2012/05/30 02:25
 
 // forwards
 
-static int real_yyerror(Parse_control* pc, char* s);
+static int real_yyerror(Parse_control* pc, const char* s);
 static void yyprint(FILE* file, int type, YYSTYPE value);
 static int yylex(YYSTYPE* lvalp, void* pc);
 
@@ -1611,7 +1611,7 @@ break2:
 	return result;
 }
 
-static int real_yyerror(Parse_control *pc, char *s) {  // Called by yyparse on error
+static int real_yyerror(Parse_control *pc, const char *s) {  // Called by yyparse on error
 	   strncpy(PC.error, s, MAX_STRING);
 	   return 1;
 }
