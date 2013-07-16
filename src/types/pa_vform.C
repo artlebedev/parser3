@@ -17,7 +17,7 @@
 #include "pa_vtable.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_PA_VFORM_C="$Id: pa_vform.C,v 1.105 2012/06/15 11:54:18 moko Exp $" IDENT_PA_VFORM_H;
+volatile const char * IDENT_PA_VFORM_C="$Id: pa_vform.C,v 1.106 2013/07/16 15:21:06 moko Exp $" IDENT_PA_VFORM_H;
 
 // defines
 
@@ -85,7 +85,7 @@ char *VForm::strpart(const char* str, size_t len) {
 	return result;
 }
 
-char *VForm::getAttributeValue(const char* data, char *attr, size_t len) {
+char *VForm::getAttributeValue(const char* data, const char *attr, size_t len) {
 	const char* value=searchAttribute(data, attr, len);
 	if (value){
 		size_t i;

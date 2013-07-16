@@ -12,9 +12,9 @@
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VOBJECT_C="$Id: pa_vobject.C,v 1.36 2012/05/28 19:47:52 moko Exp $" IDENT_PA_VOBJECT_H;
+volatile const char * IDENT_PA_VOBJECT_C="$Id: pa_vobject.C,v 1.37 2013/07/16 15:21:06 moko Exp $" IDENT_PA_VOBJECT_H;
 
-Value* VObject::get_scalar_value(char* as_something) const {
+Value* VObject::get_scalar_value(const char* as_something) const {
 	VObject* unconst_this=const_cast<VObject*>(this);
 	if(Value* scalar=fclass.get_scalar(*unconst_this))
 		if(Junction* junction=scalar->get_junction())

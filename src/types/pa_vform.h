@@ -8,7 +8,7 @@
 #ifndef PA_VFORM_H
 #define PA_VFORM_H
 
-#define IDENT_PA_VFORM_H "$Id: pa_vform.h,v 1.59 2012/03/16 09:24:17 moko Exp $"
+#define IDENT_PA_VFORM_H "$Id: pa_vform.h,v 1.60 2013/07/16 15:21:06 moko Exp $"
 
 // includes
 
@@ -72,7 +72,7 @@ private:
 	POST_CONTENT_TYPE post_content_type;
 
 	char *strpart(const char* str, size_t len);
-	char *getAttributeValue(const char* data,char *attr,size_t len);
+	char *getAttributeValue(const char* data,const char *attr,size_t len);
 	void UnescapeChars(char **sp, const char* cp, size_t len);
 	void ParseGetFormInput(const char* query_string, size_t length);
 	void ParseFormInput(const char* data, size_t length, Charset* client_charset=0);

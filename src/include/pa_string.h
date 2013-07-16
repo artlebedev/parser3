@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.205 2013/04/21 21:59:07 moko Exp $"
+#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.206 2013/07/16 15:21:06 moko Exp $"
 
 // includes
 #include "pa_types.h"
@@ -508,7 +508,7 @@ public:
 		}
 	}
 
-	String(int value, char *format);
+	String(int value, const char *format);
 	String(Body abody, Language alang): body(abody), langs(alang) {
 		ASSERT_STRING_INVARIANT(*this);
 	}

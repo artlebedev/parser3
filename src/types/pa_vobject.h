@@ -8,7 +8,7 @@
 #ifndef PA_VOBJECT_H
 #define PA_VOBJECT_H
 
-#define IDENT_PA_VOBJECT_H "$Id: pa_vobject.h,v 1.59 2012/05/28 19:47:52 moko Exp $"
+#define IDENT_PA_VOBJECT_H "$Id: pa_vobject.h,v 1.60 2013/07/16 15:21:06 moko Exp $"
 
 // includes
 
@@ -75,7 +75,7 @@ public: // creation
 
 private:
 
-	Value* get_scalar_value(char* as_something) const;
+	Value* get_scalar_value(const char* as_something) const;
 };
 
 ///	Auto-objects used for temporarily disabling setter/getter
