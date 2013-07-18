@@ -24,14 +24,10 @@
 #endif
 
 #ifdef HAVE_CRYPT
-#	ifdef HAVE_CRYPT_H
-#		include <crypt.h>
-#	endif
-#else
-	extern char *crypt(const char* , const char* );
+extern char *crypt(const char* , const char* );
 #endif
 
-volatile const char * IDENT_MATH_C="$Id: math.C,v 1.65 2013/07/12 21:23:29 moko Exp $";
+volatile const char * IDENT_MATH_C="$Id: math.C,v 1.66 2013/07/18 14:29:49 moko Exp $";
 
 // defines
 
