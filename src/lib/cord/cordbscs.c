@@ -13,12 +13,10 @@
  * Author: Hans-J. Boehm (boehm@parc.xerox.com)
  */
 /* Boehm, October 3, 1994 5:19 pm PDT */
+
 #include "pa_config_includes.h"
-# include "gc.h"
-# include "cord.h"
-# include <stdlib.h>
-# include <stdio.h>
-# include <string.h>
+#include "gc.h"
+#include "cord.h"
 
 /* An implementation of the cord primitives.  These are the only 	*/
 /* Functions that understand the representation.  We perform only	*/
