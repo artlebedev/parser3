@@ -1,29 +1,38 @@
 Content-Type: text/html
-Content-Length: 177
+Content-Length: 271
 
-CVS
+CVS	1
 <br />
-a.html
+a.html	0
 <br />
-b.txt
+b.txt	0
 <br />
-b[b].txt
+b[b].txt	0
 <br />
-c.htm
+c.htm	0
 <hr />
-CVS
+CVS	1
 <br />
-a.html
+a.html	0
 <br />
-b.txt
+b.txt	0
 <br />
-b[b].txt
+b[b].txt	0
 <br />
-c.htm
+c.htm	0
+<hr />
+CVS	1
+<br />
+a.html	0
+<br />
+b.txt	0
+<br />
+b[b].txt	0
+<br />
+c.htm	0
+<hr />
+a.html	0
 <hr />
 <hr />
-a.html
-<hr />
-<hr />
-b[b].txt
+b[b].txt	0
 <hr />

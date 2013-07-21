@@ -25,7 +25,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.227 2013/07/21 14:45:32 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.228 2013/07/21 15:16:44 moko Exp $";
 
 // defines
 
@@ -1224,6 +1224,7 @@ MFile::MFile(): Methoded("file") {
 
 	// ^file:list[path]
 	// ^file:list[path][regexp]
+	// ^file:list[path][$.filter[regexp] $.stat(true)]
 	add_native_method("list", Method::CT_STATIC, _list, 1, 2);
 
 	// ^file:lock[path]{code}

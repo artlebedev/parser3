@@ -754,7 +754,8 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !^файл.save[text|binary;имя файла[;$.charset[в какой кодировке сохраняем]]]
     !^file:delete[имя файла]
     !^file:find[имя файла][{когда не нашли}]
-    !^file:list[путь[;шаблон-строка|шаблон-regex]] = table с колонкой name
+    !^file:list[путь[;шаблон-строка|шаблон-regex]] = table с колонками name dir
+    !^file:list[путь;$.filter[шаблон-строка|шаблон-regex] $.stat(true)] = table с колонками name dir size [mca]date
     !^file::load[text|binary;!big.zip[;!domain_press_release_2001_03_01.zip][;опции]]
     !^file::create[text|binary;имя;data]
     !^file::create[text|binary;имя;data[;$.charset[кодировка букв в создаваемом файле] $.content-type[...]]]
