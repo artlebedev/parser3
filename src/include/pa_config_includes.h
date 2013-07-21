@@ -132,10 +132,10 @@
 
 #ifdef HAVE_SYS_SOCKET_H
 # include <sys/socket.h>
-#else
-# if defined(HAVE_WINSOCK_H) && !defined(_MSC_VER) && !defined(CYGWIN)
-#  include <winsock.h>
-# endif
+#endif
+
+#ifdef HAVE_WINSOCK_H
+# include <winsock.h>
 #endif
 
 #ifdef HAVE_NETINET_IN_H
@@ -150,7 +150,6 @@
 # include <netdb.h>
 #endif
 
-// must go anywhere after winsock [cygwin time.h checks for already inclusion of winsock.h]
 
 #if TIME_WITH_SYS_TIME
 # include <sys/time.h>

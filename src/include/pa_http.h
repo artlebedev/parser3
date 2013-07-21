@@ -8,7 +8,7 @@
 #ifndef PA_HTTP_H
 #define PA_HTTP_H
 
-#define IDENT_PA_HTTP_H "$Id: pa_http.h,v 1.11 2013/03/11 05:51:09 misha Exp $"
+#define IDENT_PA_HTTP_H "$Id: pa_http.h,v 1.12 2013/07/21 22:17:13 moko Exp $"
 
 #include "pa_vstring.h"
 #include "pa_vint.h"
@@ -18,15 +18,12 @@
 #include "pa_request.h"
 
 #define HTTP_COOKIES_NAME "cookies"
+
 #ifdef WIN32
 #include <windows.h>
-
-#ifdef CYGWIN
-typedef u_int SOCKET;
-extern "C" int PASCAL FAR closesocket(SOCKET);
 #endif
 
-#else // WIN32
+#ifndef _MSC_VER
 #define closesocket close
 #endif
 

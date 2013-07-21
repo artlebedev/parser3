@@ -364,7 +364,7 @@ AC_HEADER_TIME
 AC_CHECK_HEADERS(stdio.h sys/types.h sys/stat.h stdlib.h stddef.h memory.h string.h strings.h inttypes.h stdint.h unistd.h)
 AC_CHECK_HEADERS(assert.h limits.h ctype.h math.h process.h stdarg.h setjmp.h signal.h)
 AC_CHECK_HEADERS(errno.h dirent.h fcntl.h io.h sys/file.h sys/locking.h  sys/select.h sys/resource.h)
-AC_CHECK_HEADERS(winsock.h sys/socket.h netinet/in.h arpa/inet.h netdb.h)
+AC_CHECK_HEADERS(sys/socket.h netinet/in.h arpa/inet.h netdb.h)
 
 
 dnl Checks for libraries
@@ -385,7 +385,6 @@ case "$host" in
   ;;
   *-cygwin*)
 	  AC_DEFINE(WIN32,,Windows32 target platform)
-	  AC_CHECK_LIB(wsock32, socket)
   ;;
 esac
 

@@ -11,7 +11,7 @@
 #define JSON_PARSER_DLL_API 
 
 /* Determine the integer type use to parse non-floating point numbers */
-#if defined(WIN32) && !defined(CYGWIN)
+#if _MSC_VER
 typedef __int64 JSON_int_t;
 #define JSON_PARSER_INTEGER_SSCANF_TOKEN "%I64d"
 #define JSON_PARSER_INTEGER_SPRINTF_TOKEN "%I64d"

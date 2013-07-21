@@ -5,40 +5,17 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PA_SOCKS_C="$Id: pa_socks.C,v 1.27 2012/06/20 20:54:26 moko Exp $";
+volatile const char * IDENT_PA_SOCKS_C="$Id: pa_socks.C,v 1.28 2013/07/21 22:17:13 moko Exp $";
 
-#define NO_UNISTD_H
 #include "pa_config_includes.h"
 
-#ifdef WIN32
+#ifdef _MSC_VER
+
 #include "pa_exception.h"
 #include "pa_socks.h"
 #include "pa_string.h"
 
-// in cygwin: for pascal
-// in MSVC: for everything
 #include <windows.h>
-
-#ifdef CYGWIN
-// WSADATA
-#define WSADESCRIPTION_LEN	256
-#define WSASYS_STATUS_LEN	128
-typedef struct WSAData {
-	WORD	wVersion;
-	WORD	wHighVersion;
-	char	szDescription[WSADESCRIPTION_LEN+1];
-	char	szSystemStatus[WSASYS_STATUS_LEN+1];
-	unsigned short	iMaxSockets;
-	unsigned short	iMaxUdpDg;
-	char * 	lpVendorInfo;
-} WSADATA;
-typedef WSADATA *LPWSADATA;
-
-extern "C" int PASCAL FAR WSAStartup(WORD,LPWSADATA);
-extern "C" int PASCAL FAR WSACleanup(void);
-extern "C" int PASCAL FAR WSAGetLastError();
-
-#endif // CYGWIN
 
 WSADATA wsaData;
 
@@ -46,15 +23,10 @@ void pa_socks_init() {
 	WORD wVersionRequested;
 	int err; 
 	wVersionRequested = MAKEWORD( 1, 1 ); 
-	//wVersionRequested = MAKEWORD( 2, 2 ); 
 	err = WSAStartup( wVersionRequested, &wsaData );
 	if ( err != 0 ) {
-	    /* Tell the user that we could not find a usable */
-		/* WinSock DLL.                                  */    
-		throw Exception(0,
-			0,
-			"can not WSAStartup, err=%d", 
-				err);
+		/* Tell the user that we could not find a usable */
+		throw Exception(0, 0, "can not WSAStartup, err=%d", err);
 	} 
 }
 
@@ -64,10 +36,9 @@ void pa_socks_done() {
 	/* than 2.2 in addition to 2.2, it will still return */
 	/* 2.2 in wVersion since that is the version we      */
 	/* requested.                                        */ 
-	if ( LOBYTE( wsaData.wVersion ) == 2 ||
-        HIBYTE( wsaData.wVersion ) == 2 ) {
-		WSACleanup( );
-		return; 
+	if ( LOBYTE( wsaData.wVersion ) == 2 || HIBYTE( wsaData.wVersion ) == 2 ) {
+		WSACleanup();
+		return;
 	} 
 }
 

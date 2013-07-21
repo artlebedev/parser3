@@ -11,9 +11,9 @@
 #include "pa_exception.h"
 #include "pa_threads.h"
 
-volatile const char * IDENT_PA_RANDOM_C="$Id: pa_random.C,v 1.4 2012/06/20 20:54:26 moko Exp $" IDENT_PA_RANDOM_H;
+volatile const char * IDENT_PA_RANDOM_C="$Id: pa_random.C,v 1.5 2013/07/21 22:17:13 moko Exp $" IDENT_PA_RANDOM_H;
 
-#if defined(WIN32) && !defined(CYGWIN)
+#ifdef _MSC_VER
 #include <windows.h>
 
 class Random_provider {
@@ -107,7 +107,7 @@ static void get_random_bytes(void *buf, int nbytes)
 #endif
 
 void random(void *buffer, size_t size) {
-#if defined(WIN32) && !defined(CYGWIN)
+#ifdef _MSC_VER
 	random_provider.generate(buffer, size);
 #else
 	get_random_bytes(buffer, size);
