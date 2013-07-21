@@ -55,8 +55,7 @@
    you don't. */
 #undef HAVE_DECL_CYGWIN_CONV_PATH
 
-/* Define to 1 if you have the <dirent.h> header file, and it defines `DIR'.
-   */
+/* Define to 1 if you have the <dirent.h> header file. */
 #undef HAVE_DIRENT_H
 
 /* Define if you have the GNU dld library. */
