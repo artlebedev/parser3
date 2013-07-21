@@ -57,10 +57,6 @@
 
 #include "pa_apr.h"
 
-#if PA_HAVE_ERRNO_H
-#include <errno.h>
-#endif
-
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */

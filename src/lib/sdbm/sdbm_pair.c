@@ -67,9 +67,6 @@
 #include "sdbm_pair.h"
 #include "sdbm_private.h"
 
-#include <string.h>	/* for memset() */
-
-
 #define exhash(item)	sdbm_hash((item).dptr, (item).dsize)
 
 /* 

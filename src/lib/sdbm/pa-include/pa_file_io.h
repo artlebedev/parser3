@@ -64,8 +64,6 @@
  * @{
  */
 
-#include <stdio.h>
-
 #include "pa_apr.h"
 #include "pa_errno.h"
 #include "pa_file_info.h"

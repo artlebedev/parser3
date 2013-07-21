@@ -56,11 +56,6 @@
 #define PA_APR_H
 
 #include "pa_config_includes.h"
-#ifdef HAVE_ERRNO_H
-#define PA_HAVE_ERRNO_H 1
-#endif
-
-#include <stddef.h>
 
 // apr.h
 typedef int pa_int32_t;

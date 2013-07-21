@@ -80,14 +80,8 @@
 #ifndef PA_STRINGS_H
 #define PA_STRINGS_H
 
-#include "pa_config_includes.h"
-
 #include "pa_apr.h"
 #include "pa_errno.h"
-
-#ifdef HAVE_STDARG_H
-#include <stdarg.h>
-#endif
 
 #ifdef __cplusplus
 extern "C" {

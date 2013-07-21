@@ -70,9 +70,6 @@
 #include "sdbm_pair.h"
 #include "sdbm_private.h"
 
-#include <string.h>     /* for memset() */
-// #include <stdlib.h>     /* for malloc() and free() */
-
 /*
  * forward
  */
