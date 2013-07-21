@@ -28,7 +28,7 @@ extern "C" {
 #include "ltdl.h"
 #include "pcre.h"
 
-volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.188 2013/07/05 21:09:58 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
+volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.189 2013/07/21 14:22:54 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
 
 // defines
 
@@ -79,12 +79,6 @@ void pa_register_thread_request(Request& r) {
 Request& pa_thread_request() {
 	return *thread_request;
 }
-
-#ifdef PA_RELEASE_ASSERTS
-void pa_release_assert(const char* str, const char* file, int line) {
-	SAPI::die("%s at %s:%d", str, file, line); 
-}
-#endif
 
 
 #ifdef XML
