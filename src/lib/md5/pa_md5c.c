@@ -109,9 +109,7 @@
 
 #include "pa_md5.h"
 
-volatile const char * IDENT_PA_MD5_C="$Id: pa_md5c.c,v 1.16 2013/07/21 02:33:58 moko Exp $" IDENT_PA_MD5_H;
-
-#define pa_pa_cpystrn(strDest, strSource, count) strncpy(strDest, strSource, count)
+volatile const char * IDENT_PA_MD5_C="$Id: pa_md5c.c,v 1.17 2013/07/21 14:04:41 moko Exp $" IDENT_PA_MD5_H;
 
 /* Constants for MD5Transform routine.
  */
@@ -529,8 +527,8 @@ void pa_MD5Encode(const unsigned char *pw,
      * Now make the output string.  We know our limitations, so we
      * can use the string routines without bounds checking.
      */
-    pa_pa_cpystrn(passwd, PA_MD5PW_ID, PA_MD5PW_IDLEN + 1);
-    pa_pa_cpystrn(passwd + PA_MD5PW_IDLEN, (char *)sp, sl + 1);
+    strncpy(passwd, PA_MD5PW_ID, PA_MD5PW_IDLEN + 1);
+    strncpy(passwd + PA_MD5PW_IDLEN, (char *)sp, sl + 1);
     passwd[PA_MD5PW_IDLEN + sl]     = '$';
     passwd[PA_MD5PW_IDLEN + sl + 1] = '\0';
 
@@ -581,5 +579,5 @@ void pa_MD5Encode(const unsigned char *pw,
      */
     memset(final, 0, sizeof(final));
 
-    pa_pa_cpystrn(result, passwd, nbytes - 1);
+    strncpy(result, passwd, nbytes - 1);
 }
