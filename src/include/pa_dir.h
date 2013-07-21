@@ -8,7 +8,7 @@
 #ifndef PA_DIR_H
 #define PA_DIR_H
 
-#define IDENT_PA_DIR_H "$Id: pa_dir.h,v 1.21 2012/06/20 20:54:25 moko Exp $"
+#define IDENT_PA_DIR_H "$Id: pa_dir.h,v 1.22 2013/07/21 14:45:32 moko Exp $"
 
 #include "pa_config_includes.h"
 
@@ -39,13 +39,18 @@ struct ffblk {
 	HANDLE handle;
 
 /*	
-	
 	unsigned char  ff_attrib __attribute__((packed));
   unsigned short ff_ftime __attribute__((packed));
   unsigned short ff_fdate __attribute__((packed));
   unsigned long  ff_fsize __attribute__((packed));
   char ff_name[260] __attribute__((packed));
  */
+	void stat_file();
+	bool is_dir();
+	double size();
+	time_t c_timestamp();
+	time_t m_timestamp();
+	time_t a_timestamp();
 };
 
 #else
@@ -60,11 +65,24 @@ struct ffblk {
 
 struct ffblk {
 	/*as if in windows :)*/
-    unsigned char ff_attrib;
     char ff_name[ MAXPATH ];
 	/*helpers*/
 	DIR *dir;
 	char filePath[MAXPATH];
+	struct stat _st;
+
+#ifdef HAVE_STRUCT_DIRENT_D_TYPE
+	unsigned char _d_type;
+	void stat_file();
+#else
+	void stat_file(){}
+	void real_stat_file();
+#endif
+	bool is_dir();
+	double size();
+	time_t c_timestamp();
+	time_t m_timestamp();
+	time_t a_timestamp();
 };
 
 #endif

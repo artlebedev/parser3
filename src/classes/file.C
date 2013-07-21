@@ -25,7 +25,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.226 2013/06/24 22:00:18 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.227 2013/07/21 14:45:32 moko Exp $";
 
 // defines
 
@@ -40,6 +40,22 @@ volatile const char * IDENT_FILE_C="$Id: file.C,v 1.226 2013/06/24 22:00:18 moko
 
 extern String sql_limit_name;
 extern String sql_offset_name;
+
+// helpers
+
+class File_list_table_template_columns: public ArrayString {
+public:
+	File_list_table_template_columns() {
+		*this+=new String("name");
+		*this+=new String("dir");
+		*this+=new String("size");
+		*this+=new String("cdate");
+		*this+=new String("mdate");
+		*this+=new String("adate");
+	}
+};
+
+Table file_list_table_template(new File_list_table_template_columns);
 
 // class
 
@@ -667,26 +683,47 @@ static void _cgi(Request& r, MethodParams& params) {
 static void _list(Request& r, MethodParams& params) {
 	Value& relative_path=params.as_no_junction(0, "path must not be code");
 
+	bool stat=false;
 	VRegex* vregex=0;
 	VRegexCleaner vrcleaner;
+
 	if(params.count()>1){
-		Value& regexp=params.as_no_junction(1, "regexp must not be code");
-		if(regexp.is_defined()){
-			if(Value* value=regexp.as(VREGEX_TYPE)){
-				vregex=static_cast<VRegex*>(value);
+		Value& voption=params.as_no_junction(1, "option must not be code");
+		if(voption.is_defined()) {
+			Value* vfilter=0;
+			if(HashStringValue* options=voption.get_hash()) {
+				int valid_options=0;
+				if(Value* vstat=options->get("stat")) {
+					stat=r.process_to_value(*vstat).as_bool();
+					valid_options++;
+				}
+				if(Value* value=options->get("filter")) {
+					vfilter=value;
+				}
+				if(valid_options!=options->count())
+					throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 			} else {
-				vregex=new VRegex(r.charsets.source(), &regexp.as_string(), 0/*options*/);
+				vfilter=&voption;
+			}
+			if(vfilter)
+				if(Value* value=vfilter->as(VREGEX_TYPE)) {
+					vregex=static_cast<VRegex*>(value);
+				} else if(vfilter->is_string()) {
+					if(!vfilter->get_string()->trim().is_empty()) {
+						vregex=new VRegex(r.charsets.source(), &vfilter->as_string(), 0/*options*/);
 				vregex->study();
 				vrcleaner.vregex=vregex;
 			}
+				} else {
+					throw Exception(PARSER_RUNTIME, 0, "filter must be regex or string");
+				}
 		}
 	}
 
 	const char* absolute_path_cstr=r.absolute(relative_path.as_string()).taint_cstr(String::L_FILE_SPEC);
 
-	Table::columns_type columns(new ArrayString);
-	*columns+=new String("name");
-	Table& table=*new Table(columns);
+	Table::Action_options table_options;
+	Table& table=*new Table(file_list_table_template, table_options);
 
 	const int ovector_size=(1/*match*/)*3;
 	int ovector[ovector_size];
@@ -698,6 +735,14 @@ static void _list(Request& r, MethodParams& params) {
 		if(!vregex || vregex->exec(ffblk.ff_name, file_name_size, ovector, ovector_size)>=0) {
 			Table::element_type row(new ArrayString);
 			*row+=new String(pa_strdup(file_name_cstr, file_name_size), String::L_TAINTED);
+			*row+=new String(String::Body::Format(ffblk.is_dir() ? 1 : 0), String::L_CLEAN);
+			if(stat) {
+				ffblk.stat_file();
+				*row+=VDouble(ffblk.size()).get_string();
+				*row+=new String(String::Body::Format(ffblk.c_timestamp()), String::L_CLEAN);
+				*row+=new String(String::Body::Format(ffblk.m_timestamp()), String::L_CLEAN);
+				*row+=new String(String::Body::Format(ffblk.a_timestamp()), String::L_CLEAN);
+			}
 			table+=row;
 		}
 	);
