@@ -313,42 +313,4 @@ size_t CORD_chr(CORD x, size_t i, int c);
 /* must be < CORD_len(x).						*/
 size_t CORD_rchr(CORD x, size_t i, int c);
 
-
-/* The following are also not primitive, but are implemented in 	*/
-/* cordprnt.c.  They provide functionality similar to the ANSI C	*/
-/* functions with corresponding names, but with the following		*/
-/* additions and changes:						*/
-/* 1. A %r conversion specification specifies a CORD argument.  Field	*/
-/*    width, precision, etc. have the same semantics as for %s.		*/
-/*    (Note that %c,%C, and %S were already taken.)			*/
-/* 2. The format string is represented as a CORD.		        */
-/* 3. CORD_sprintf and CORD_vsprintf assign the result through the 1st	*/ 	/*    argument.	Unlike their ANSI C versions, there is no need to guess	*/
-/*    the correct buffer size.						*/
-/* 4. Most of the conversions are implement through the native 		*/
-/*    vsprintf.  Hence they are usually no faster, and 			*/
-/*    idiosyncracies of the native printf are preserved.  However,	*/
-/*    CORD arguments to CORD_sprintf and CORD_vsprintf are NOT copied;	*/
-/*    the result shares the original structure.  This may make them	*/
-/*    very efficient in some unusual applications.			*/
-/*    The format string is copied.					*/
-/* All functions return the number of characters generated or -1 on	*/
-/* error.  This complies with the ANSI standard, but is inconsistent	*/
-/* with some older implementations of sprintf.				*/
-
-/* The implementation of these is probably less portable than the rest	*/
-/* of this package.							*/
-
-#ifndef CORD_NO_IO
-
-#include <stdarg.h>
-
-int CORD_sprintf(CORD * out, CORD format, ...);
-int CORD_vsprintf(CORD * out, CORD format, va_list args);
-int CORD_fprintf(FILE * f, CORD format, ...);
-int CORD_vfprintf(FILE * f, CORD format, va_list args);
-int CORD_printf(CORD format, ...);
-int CORD_vprintf(CORD format, va_list args);
-
-#endif /* CORD_NO_IO */
-
 # endif /* CORD_H */
