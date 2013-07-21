@@ -8,7 +8,7 @@
 #ifndef PA_DIR_H
 #define PA_DIR_H
 
-#define IDENT_PA_DIR_H "$Id: pa_dir.h,v 1.22 2013/07/21 14:45:32 moko Exp $"
+#define IDENT_PA_DIR_H "$Id: pa_dir.h,v 1.23 2013/07/21 20:33:44 moko Exp $"
 
 #include "pa_config_includes.h"
 
@@ -19,33 +19,23 @@
 
 #ifdef WIN32
 
-#include <windows.h>
-
 #define MAXPATH MAX_PATH
-#define FA_DIREC FILE_ATTRIBUTE_DIRECTORY
 
 struct ffblk {
-    DWORD ff_attrib;/*dwFileAttributes;*/
-    FILETIME ftCreationTime;
-    FILETIME ftLastAccessTime;
-    FILETIME ftLastWriteTime;
-    DWORD nFileSizeHigh;
-    DWORD nFileSizeLow;
-    DWORD dwReserved0;
-    DWORD dwReserved1;
-    CHAR   ff_name[ MAX_PATH ];/*cFileName[ MAX_PATH ];*/
-    CHAR   cAlternateFileName[ 14 ];
+	DWORD ff_attrib;/*dwFileAttributes;*/
+	FILETIME ftCreationTime;
+	FILETIME ftLastAccessTime;
+	FILETIME ftLastWriteTime;
+	DWORD nFileSizeHigh;
+	DWORD nFileSizeLow;
+	DWORD dwReserved0;
+	DWORD dwReserved1;
+	CHAR   ff_name[ MAX_PATH ];/*cFileName[ MAX_PATH ];*/
+	CHAR   cAlternateFileName[ 14 ];
 	/*helper*/
 	HANDLE handle;
 
-/*	
-	unsigned char  ff_attrib __attribute__((packed));
-  unsigned short ff_ftime __attribute__((packed));
-  unsigned short ff_fdate __attribute__((packed));
-  unsigned long  ff_fsize __attribute__((packed));
-  char ff_name[260] __attribute__((packed));
- */
-	void stat_file();
+	void stat_file(){}
 	bool is_dir();
 	double size();
 	time_t c_timestamp();
@@ -55,20 +45,14 @@ struct ffblk {
 
 #else
 
-#include <strings.h>	
-#include <sys/types.h>
-#include <dirent.h>
-#include <sys/stat.h>
-
 #define MAXPATH 1000 /*NAME_MAX*/
-#define FA_DIREC S_IFDIR
 
 struct ffblk {
 	/*as if in windows :)*/
     char ff_name[ MAXPATH ];
 	/*helpers*/
 	DIR *dir;
-	char filePath[MAXPATH];
+	const char *filePath;
 	struct stat _st;
 
 #ifdef HAVE_STRUCT_DIRENT_D_TYPE

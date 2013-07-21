@@ -101,6 +101,10 @@
 # include <errno.h>
 #endif
 
+#ifdef HAVE_DIRENT_H
+# include <dirent.h>
+#endif
+
 #ifdef HAVE_FCNTL_H
 # include <fcntl.h>
 #endif
@@ -157,6 +161,10 @@
 # else
 #  include <time.h>
 # endif
+#endif
+
+#ifdef WIN32
+#include <windows.h>
 #endif
 
 // math function replacements

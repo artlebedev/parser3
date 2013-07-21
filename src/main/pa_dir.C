@@ -8,7 +8,7 @@
 #include "pa_common.h"
 #include "pa_dir.h"
 
-volatile const char * IDENT_PA_DIR_C="$Id: pa_dir.C,v 1.22 2013/07/21 14:45:32 moko Exp $" IDENT_PA_DIR_H;
+volatile const char * IDENT_PA_DIR_C="$Id: pa_dir.C,v 1.23 2013/07/21 20:33:44 moko Exp $" IDENT_PA_DIR_H;
 
 #ifdef WIN32
 
@@ -65,8 +65,7 @@ time_t ffblk::a_timestamp() {
 #else
 
 bool findfirst(const char* _pathname, struct ffblk *_ffblk, int /*_attrib*/) {
-    strncpy(_ffblk->filePath, _pathname, MAXPATH-1);
-	_ffblk->filePath[MAXPATH-1]=0;
+	_ffblk->filePath=_pathname;
 	if(!(_ffblk->dir=opendir(_ffblk->filePath)))
         return true;
 
@@ -79,9 +78,8 @@ bool findnext(struct ffblk *_ffblk) {
         if(!entry)
             return true;
 
-		int maxsize=sizeof(_ffblk->ff_name)-1;
-		strncpy(_ffblk->ff_name, entry->d_name, maxsize-1);
-		_ffblk->ff_name[maxsize]=0;
+		strncpy(_ffblk->ff_name, entry->d_name, sizeof(_ffblk->ff_name)-1);
+		_ffblk->ff_name[sizeof(_ffblk->ff_name)-1]=0;
 		
 #ifdef HAVE_STRUCT_DIRENT_D_TYPE
 		// http://www.gnu.org/software/libc/manual/html_node/Directory-Entries.html
