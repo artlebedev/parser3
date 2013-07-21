@@ -107,11 +107,9 @@
  * ----------------------------------------------------------------------------
  */
 
-#include <string.h>
-
 #include "pa_md5.h"
 
-volatile const char * IDENT_PA_MD5_C="$Id: pa_md5c.c,v 1.15 2013/07/16 21:48:36 moko Exp $" IDENT_PA_MD5_H;
+volatile const char * IDENT_PA_MD5_C="$Id: pa_md5c.c,v 1.16 2013/07/21 02:33:58 moko Exp $" IDENT_PA_MD5_H;
 
 #define pa_pa_cpystrn(strDest, strSource, count) strncpy(strDest, strSource, count)
 
