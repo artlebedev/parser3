@@ -151,12 +151,6 @@
 	</References>
 	<Files>
 		<File
-			RelativePath=".\getopt.c">
-		</File>
-		<File
-			RelativePath=".\getopt.h">
-		</File>
-		<File
 			RelativePath=".\pa_threads.C">
 		</File>
 		<File

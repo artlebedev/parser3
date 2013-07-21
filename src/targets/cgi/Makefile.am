@@ -9,8 +9,7 @@ INCLUDES = -I../../classes -I../../types -I../../lib/gc/include -I../../lib/cord
 CXXLINK = $(LIBTOOL) --preserve-dup-deps --mode=link --tag=CXX $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 
 bin_PROGRAMS = parser3
-noinst_HEADERS = getopt.h
 parser3_DEPENDENCIES=Makefile $(PA_LIBS)
-parser3_SOURCES = pa_threads.C parser3.C getopt.c
+parser3_SOURCES = pa_threads.C parser3.C
 parser3_LDADD = $(PA_LIBS) $(LIBLTDL) @GC_LIBS@ @PCRE_LIBS@ @XML_LIBS@ @MIME_LIBS@
 EXTRA_DIST = parser3.vcproj
