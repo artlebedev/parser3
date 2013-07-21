@@ -53,7 +53,7 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libcord_la_LIBADD =
-am_libcord_la_OBJECTS = cordbscs.lo cordprnt.lo cordxtra.lo
+am_libcord_la_OBJECTS = cordbscs.lo cordxtra.lo
 libcord_la_OBJECTS = $(am_libcord_la_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/src/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -263,7 +263,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 INCLUDES = -Iinclude -I../../include -I../gc/include
 noinst_LTLIBRARIES = libcord.la
-libcord_la_SOURCES = cordbscs.c cordprnt.c cordxtra.c
+libcord_la_SOURCES = cordbscs.c cordxtra.c
 EXTRA_DIST = cord.vcproj source.url
 SUBDIRS = include
 all: all-recursive
@@ -319,7 +319,6 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cordbscs.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cordprnt.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cordxtra.Plo@am__quote@
 
 .c.o:
