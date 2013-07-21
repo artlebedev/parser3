@@ -63,17 +63,7 @@ SOFTWARE.
 
 
 
-#include <assert.h>
-#include <ctype.h>
-#include <float.h>
-#include <stddef.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <locale.h>
-
 #include "JSON_parser.h"
-
 #include "pa_memory.h"
 
 #ifdef _MSC_VER
@@ -509,7 +499,7 @@ new_JSON_parser(JSON_config* config)
     jc->handle_floats_manually = (signed char)config->handle_floats_manually != 0;
     
     /* set up decimal point */
-    jc->decimal_point = *localeconv()->decimal_point;
+    jc->decimal_point = '.';
     
     return jc;
 }

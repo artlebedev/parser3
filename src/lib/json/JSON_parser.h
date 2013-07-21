@@ -5,8 +5,7 @@
 
 /* JSON_parser.h */
 
-
-#include <stddef.h>
+#include "pa_config_includes.h"
 
 /* Windows DLL stuff */
 #define JSON_PARSER_DLL_API 
