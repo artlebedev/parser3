@@ -163,10 +163,6 @@
 # endif
 #endif
 
-#ifdef WIN32
-#include <windows.h>
-#endif
-
 // math function replacements
 
 #ifdef __cplusplus
