@@ -8,13 +8,14 @@
 #ifndef PA_CONFIG_FIXED_H
 #define PA_CONFIG_FIXED_H
 
-#define IDENT_PA_CONFIG_FIXED_H "$Id: pa_config_fixed.h,v 1.80 2013/07/16 21:51:09 moko Exp $"
+#define IDENT_PA_CONFIG_FIXED_H "$Id: pa_config_fixed.h,v 1.81 2013/07/22 19:49:11 moko Exp $"
 
 #define inline  __inline
 
 #define HAVE_STDIO_H
 #define HAVE_SYS_TYPES_H
 #define HAVE_SYS_STAT_H
+#define HAVE_STDLIB_H
 #define HAVE_STDDEF_H
 #define HAVE_MEMORY_H
 #define HAVE_STRING_H

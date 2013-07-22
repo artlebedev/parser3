@@ -31,13 +31,12 @@
 # include <sys/stat.h>
 #endif
 
-#ifdef STDC_HEADERS
+#ifdef HAVE_STDLIB_H
 # include <stdlib.h>
+#endif
+
+#ifdef HAVE_STDDEF_H
 # include <stddef.h>
-#else
-# ifdef HAVE_STDLIB_H
-#  include <stdlib.h>
-# endif
 #endif
 
 #ifdef HAVE_STRING_H
@@ -136,10 +135,6 @@
 
 #ifdef HAVE_SYS_SOCKET_H
 # include <sys/socket.h>
-#endif
-
-#ifdef HAVE_WINSOCK_H
-# include <winsock.h>
 #endif
 
 #ifdef HAVE_NETINET_IN_H
