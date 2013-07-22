@@ -8,7 +8,7 @@
 #ifndef PA_DIR_H
 #define PA_DIR_H
 
-#define IDENT_PA_DIR_H "$Id: pa_dir.h,v 1.24 2013/07/21 21:01:03 moko Exp $"
+#define IDENT_PA_DIR_H "$Id: pa_dir.h,v 1.25 2013/07/22 20:55:54 moko Exp $"
 
 #include "pa_config_includes.h"
 
@@ -17,7 +17,7 @@
 	for findfirst/next/close interface
 */
 
-#ifdef WIN32
+#ifdef _MSC_VER
 
 #include <windows.h>
 

@@ -8,9 +8,9 @@
 #include "pa_common.h"
 #include "pa_dir.h"
 
-volatile const char * IDENT_PA_DIR_C="$Id: pa_dir.C,v 1.23 2013/07/21 20:33:44 moko Exp $" IDENT_PA_DIR_H;
+volatile const char * IDENT_PA_DIR_C="$Id: pa_dir.C,v 1.24 2013/07/22 20:55:54 moko Exp $" IDENT_PA_DIR_H;
 
-#ifdef WIN32
+#ifdef _MSC_VER
 
 #define TICKS_PER_SECOND 10000000ULL
 #define EPOCH_DIFFERENCE 11644473600ULL
