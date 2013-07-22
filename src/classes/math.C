@@ -17,17 +17,11 @@
 #include "pa_sha2.h"
 #include "pa_random.h"
 
-#ifdef WIN32
-#	define _WIN32_WINNT 0x400
-#	include <windows.h>
-#	include <wincrypt.h>
-#endif
-
 #ifdef HAVE_CRYPT
 extern "C" char *crypt(const char* , const char* );
 #endif
 
-volatile const char * IDENT_MATH_C="$Id: math.C,v 1.67 2013/07/19 15:36:11 moko Exp $";
+volatile const char * IDENT_MATH_C="$Id: math.C,v 1.68 2013/07/22 20:25:53 moko Exp $";
 
 // defines
 
