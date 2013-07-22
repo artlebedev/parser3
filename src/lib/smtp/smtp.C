@@ -10,7 +10,7 @@
 #include "pa_exception.h"
 #include "smtp.h"
 
-volatile const char * IDENT_SMTP_C="$Id: smtp.C,v 1.9 2012/03/16 09:24:12 moko Exp $" IDENT_SMTP_H;
+volatile const char * IDENT_SMTP_C="$Id: smtp.C,v 1.10 2013/07/22 15:17:06 moko Exp $" IDENT_SMTP_H;
 
 #undef snprintf
 // pa_common.C
@@ -98,7 +98,7 @@ GetBuffer(int wait)
 
     if( (retval = select(1+the_socket, &fds, NULL, NULL, &timeout))<0 )
     {
-#ifdef WIN32
+#ifdef _MSC_VER
         int     error_code = WSAGetLastError();
 
         if( error_code == WSAEINPROGRESS && wait ) 

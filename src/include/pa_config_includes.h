@@ -129,6 +129,10 @@
 # include <sys/resource.h>
 #endif
 
+#ifdef HAVE_SYS_WAIT_H
+# include <sys/wait.h>
+#endif
+
 
 #ifdef HAVE_SYS_SOCKET_H
 # include <sys/socket.h>

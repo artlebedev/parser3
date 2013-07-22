@@ -7,7 +7,7 @@
 
 #include "smtp.h"
 
-volatile const char * IDENT_COMMS_C="$Id: comms.C,v 1.9 2012/03/16 09:24:12 moko Exp $";
+volatile const char * IDENT_COMMS_C="$Id: comms.C,v 1.10 2013/07/22 15:17:06 moko Exp $";
 
 // ---------------------------------------------------------------------------
 int SMTP:: 
@@ -54,7 +54,7 @@ ResolveService(const char* service, u_short *our_port)
             *our_port = serventry->s_port;
         else 
         {
-#ifdef WIN32
+#ifdef _MSC_VER
             int retval = WSAGetLastError();
             if( (retval == WSANO_DATA) || (retval == WSANO_RECOVERY) ) 
             {
@@ -148,7 +148,7 @@ GetConnection(SOCKET the_socket, struct sockaddr_in *sa_in)
 void SMTP:: 
 MiscSocketSetup(SOCKET soc, fd_set *fds, struct timeval *timeout)
 {
-#ifdef FIONBIO
+#ifdef _MSC_VER
     unsigned long   ioctl_blocking = 1;
     ioctlsocket(soc, FIONBIO, &ioctl_blocking);
 #endif

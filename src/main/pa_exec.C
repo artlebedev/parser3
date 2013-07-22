@@ -13,17 +13,11 @@
 #include "pa_exception.h"
 #include "pa_common.h"
 
-volatile const char * IDENT_PA_EXEC_C="$Id: pa_exec.C,v 1.82 2012/03/16 09:24:13 moko Exp $" IDENT_PA_EXEC_H;
+volatile const char * IDENT_PA_EXEC_C="$Id: pa_exec.C,v 1.83 2013/07/22 15:17:06 moko Exp $" IDENT_PA_EXEC_H;
 
 #ifdef WIN32
-#	include <windows.h>
-#else
-#	include <signal.h>
-#	include <sys/types.h>
-#	include <sys/wait.h>
-#endif
 
-#ifdef WIN32
+#include <windows.h>
 
 /// this func from http://www.ccas.ru/~posp/popov/spawn.htm
 static DWORD CreateHiddenConsoleProcess(LPCTSTR szCmdLine,
@@ -347,6 +341,7 @@ struct Append_env_pair_info {
 #endif
 };
 #endif
+
 ///@test maybe here and at argv construction --- untaint_cstr(String::L_AS_IS
 static void append_env_pair(HashStringString::key_type key, HashStringString::value_type value,
 		Append_env_pair_info *info) {
@@ -417,14 +412,10 @@ PA_exec_result pa_exec(
 		CloseHandle(hInWrite);
 		read_pipe(result.out, hOutRead);
 		CloseHandle(hOutRead);
-		read_pipe(result.err, hErrRead, String::L_TAINTED);		
+		read_pipe(result.err, hErrRead, String::L_TAINTED);
 		CloseHandle(hErrRead);
-/*	
-from http://www.apache.org/websrc/cvsweb.cgi/apache-1.3/src/main/util_script.c?rev=1.151&content-type=text/vnd.viewcvs-markup
-
-	* We must close the handles to the new process and its main thread
-	* to prevent handle and memory leaks.
-*/	
+		// We must close the handles to the new process and its main thread
+		// to prevent handle and memory leaks.
 		CloseHandle(pi.hProcess);
 		CloseHandle(pi.hThread);
 	}

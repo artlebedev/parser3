@@ -5,22 +5,14 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-#define IDENT_SMTP_H "$Id: smtp.h,v 1.9 2012/06/20 20:54:26 moko Exp $"
+#define IDENT_SMTP_H "$Id: smtp.h,v 1.10 2013/07/22 15:17:06 moko Exp $"
 
 
 #include "pa_string.h"
 
-#ifdef WIN32
+#ifdef _MSC_VER
+
 #include <windows.h>
-
-#ifdef CYGWIN
-typedef u_int SOCKET;
-#define INVALID_SOCKET (SOCKET)(~0)
-
-extern "C" int PASCAL FAR closesocket(SOCKET);
-extern "C" int PASCAL FAR WSAGetLastError();
-extern "C" int PASCAL FAR ioctlsocket(SOCKET, long, u_long FAR *);
-#endif
 
 #else // WIN32
 
