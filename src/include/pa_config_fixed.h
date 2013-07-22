@@ -8,7 +8,7 @@
 #ifndef PA_CONFIG_FIXED_H
 #define PA_CONFIG_FIXED_H
 
-#define IDENT_PA_CONFIG_FIXED_H "$Id: pa_config_fixed.h,v 1.81 2013/07/22 19:49:11 moko Exp $"
+#define IDENT_PA_CONFIG_FIXED_H "$Id: pa_config_fixed.h,v 1.82 2013/07/22 20:06:05 moko Exp $"
 
 #define inline  __inline
 
@@ -61,6 +61,8 @@ typedef unsigned __int32 uint32_t;
 #ifndef uint64_t
 typedef unsigned __int64 uint64_t;
 #endif
+
+#define LT_MODULE_EXT ".dll"
 
 // disable any execs (file::exec, file::cgi, unix mail:send)
 //#define NO_PA_EXECS
