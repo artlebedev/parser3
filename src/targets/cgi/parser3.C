@@ -5,12 +5,12 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.262 2013/07/22 12:29:39 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.263 2013/07/22 15:33:31 moko Exp $";
 
 #include "pa_config_includes.h"
 
-#if _MSC_VER
-#	include <crtdbg.h>
+#ifdef _MSC_VER
+#include <crtdbg.h>
 #endif
 
 #include "pa_sapi.h"
@@ -20,8 +20,9 @@ volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.262 2013/07/22 12:29:3
 #include "pa_socks.h"
 #include "pa_version.h"
 
-#ifdef WIN32
-#	include <windows.h>
+#ifdef _MSC_VER
+#include <windows.h>
+#include <direct.h>
 #endif
 
 // defines
