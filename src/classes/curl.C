@@ -16,7 +16,7 @@
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.28 2013/07/05 21:09:57 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.29 2013/07/22 20:06:50 moko Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -122,11 +122,7 @@ public:
 };
 
 bool curl_linked = false;
-#ifdef WIN32
-const char *curl_library="libcurl.dll";
-#else
-const char *curl_library="libcurl.so";
-#endif
+const char *curl_library="libcurl" LT_MODULE_EXT;
 
 const char *curl_status = 0;
 
