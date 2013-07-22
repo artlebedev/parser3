@@ -13,13 +13,9 @@
 #include "pa_vhash.h"
 #include "pa_vvoid.h"
 
-volatile const char * IDENT_PA_VMEMCACHED_C="$Id: pa_vmemcached.C,v 1.13 2013/04/23 22:57:06 moko Exp $" IDENT_PA_VMEMCACHED_H;
+volatile const char * IDENT_PA_VMEMCACHED_C="$Id: pa_vmemcached.C,v 1.14 2013/07/22 20:22:02 moko Exp $" IDENT_PA_VMEMCACHED_H;
 
-#ifdef WIN32
-const char *memcached_library="libmemcached.dll";
-#else
-const char *memcached_library="libmemcached.so";
-#endif
+const char *memcached_library="libmemcached" LT_MODULE_EXT;
 
 // support functions
 
