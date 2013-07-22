@@ -13,9 +13,9 @@
 #include "pa_exception.h"
 #include "pa_common.h"
 
-volatile const char * IDENT_PA_EXEC_C="$Id: pa_exec.C,v 1.83 2013/07/22 15:17:06 moko Exp $" IDENT_PA_EXEC_H;
+volatile const char * IDENT_PA_EXEC_C="$Id: pa_exec.C,v 1.84 2013/07/22 20:44:39 moko Exp $" IDENT_PA_EXEC_H;
 
-#ifdef WIN32
+#ifdef _MSC_VER
 
 #include <windows.h>
 
@@ -333,7 +333,7 @@ static void read_pipe(File_read_result& result, int file){
 
 #ifndef DOXYGEN
 struct Append_env_pair_info {
-#ifdef WIN32
+#ifdef _MSC_VER
 	String::Body& body;
 	Append_env_pair_info(String::Body& abody): body(abody) {}
 #else
@@ -345,7 +345,7 @@ struct Append_env_pair_info {
 ///@test maybe here and at argv construction --- untaint_cstr(String::L_AS_IS
 static void append_env_pair(HashStringString::key_type key, HashStringString::value_type value,
 		Append_env_pair_info *info) {
-#ifdef WIN32
+#ifdef _MSC_VER
 	info->body << key << "=" << value;
 	info->body.append_know_length("\1", 1); // placeholder for of zero byte
 #else
@@ -371,7 +371,7 @@ PA_exec_result pa_exec(
 			"parser execs are disabled [recompile parser without --disable-execs configure option]");
 #endif
 
-#ifdef WIN32
+#ifdef _MSC_VER
 
 	PROCESS_INFORMATION pi;	
 	HANDLE hInWrite, hOutRead, hErrRead;
