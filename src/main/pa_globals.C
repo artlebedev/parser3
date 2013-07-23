@@ -28,7 +28,7 @@ extern "C" {
 #include "ltdl.h"
 #include "pcre.h"
 
-volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.189 2013/07/21 14:22:54 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
+volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.190 2013/07/23 15:08:44 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
 
 // defines
 
@@ -132,7 +132,7 @@ static char *pa_GC_strdup(const char *s) {
 		return 0;
 
 	size_t size=strlen(s)+1;
-	char *result=(char *)GC_MALLOC_ATOMIC(size);
+	char *result=(char *)pa_gc_malloc_atomic(size);
 	if(!result)
 		pa_fail_alloc("duplicate XML string",size);
 
