@@ -13,7 +13,13 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.58 2013/04/21 20:37:55 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.59 2013/07/23 09:46:58 moko Exp $" IDENT_PA_HTTP_H; 
+
+#ifdef _MSC_VER
+#include <windows.h>
+#else
+#define closesocket close
+#endif
 
 // defines
 
@@ -24,8 +30,7 @@ volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.58 2013/04/21 20:37:55
 #define HTTP_HEADERS_NAME	"headers"
 #define HTTP_FORM_ENCTYPE_NAME	"enctype"
 #define HTTP_ANY_STATUS_NAME	"any-status"
-#define HTTP_OMIT_POST_CHARSET_NAME	"omit-post-charset"	// ^file::load[...;http://...;$.form[...]$.method[post]]
-													// by default add charset to content-type
+#define HTTP_OMIT_POST_CHARSET_NAME	"omit-post-charset"	// ^file::load[...;http://...;$.method[post]] by default adds charset to content-type
 
 #define HTTP_TABLES_NAME "tables"
 
@@ -34,9 +39,9 @@ volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.58 2013/04/21 20:37:55
 
 #define DEFAULT_USER_AGENT "parser3"
 
-#	ifndef INADDR_NONE
-#		define INADDR_NONE ((ulong) -1)
-#	endif
+#ifndef INADDR_NONE
+#define INADDR_NONE ((ulong) -1)
+#endif
 
 #undef CRLF
 #define CRLF "\r\n"
