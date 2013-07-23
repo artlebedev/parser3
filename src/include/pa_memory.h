@@ -9,32 +9,20 @@
 #ifndef PA_MEMORY_H
 #define PA_MEMORY_H
 
-#define IDENT_PA_MEMORY_H "$Id: pa_memory.h,v 1.18 2012/03/16 09:24:09 moko Exp $"
+#define IDENT_PA_MEMORY_H "$Id: pa_memory.h,v 1.19 2013/07/23 15:39:10 moko Exp $"
 
 // include
 
 #include "pa_config_includes.h"
 #include "gc.h"
 
-// defines
-
-// use destructors for Array, Hash and VMethodFrame
+// define destructors use for Array, Hash and VMethodFrame
 #define USE_DESTRUCTORS
 
-//#define PA_DEBUG_GC_MEMORY
-
-#ifdef PA_DEBUG_GC_MEMORY
-void* pa_gc_malloc(size_t size);
-void* pa_gc_malloc_atomic(size_t size);
-void* pa_gc_realloc(void* ptr, size_t size);
-void pa_gc_free(void* ptr);
-#else
 inline void* pa_gc_malloc(size_t size) { return GC_MALLOC(size); }
 inline void* pa_gc_malloc_atomic(size_t size) { return GC_MALLOC_ATOMIC(size); }
 inline void* pa_gc_realloc(void* ptr, size_t size) { return GC_REALLOC(ptr, size); }
 inline void pa_gc_free(void* ptr) { GC_FREE(ptr); }
-#endif
-
 
 // forwards
 
