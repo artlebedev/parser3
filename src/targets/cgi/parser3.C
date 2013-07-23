@@ -5,13 +5,9 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.263 2013/07/22 15:33:31 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.264 2013/07/23 13:07:49 moko Exp $";
 
 #include "pa_config_includes.h"
-
-#ifdef _MSC_VER
-#include <crtdbg.h>
-#endif
 
 #include "pa_sapi.h"
 #include "classes.h"
@@ -21,6 +17,7 @@ volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.263 2013/07/22 15:33:3
 #include "pa_version.h"
 
 #ifdef _MSC_VER
+#include <crtdbg.h>
 #include <windows.h>
 #include <direct.h>
 #endif
@@ -43,7 +40,7 @@ volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.263 2013/07/22 15:33:3
 #define PARSER_LOG_ENV_NAME "CGI_PARSER_LOG"
 
 /// IIS refuses to read bigger chunks
-const size_t READ_POST_CHUNK_SIZE=0x400*0x400; // 1M 
+const size_t READ_POST_CHUNK_SIZE=0x400*0x400; // 1M
 
 static const char* argv0;
 static const char* config_filespec_cstr=0;
@@ -175,13 +172,10 @@ static void die_or_abort(const char* fmt, va_list args, bool write_core) {
 
 	// exit & try to produce core dump[unix] or invoke debugger[Win32 Debug version]
 	if(write_core) {
-#if defined(WIN32) && !defined(_DEBUG)
+#ifdef WIN32
 		// IIS with abort failes to show STDOUT, it just barks "abnormal program termination"
 		exit(1);
 #else
-#if _MSC_VER
-		_asm int 3;
-#endif
 		abort();
 #endif
 	} 
@@ -646,17 +640,6 @@ int main(int argc, char *argv[]) {
 	// so deciding for speed
 	GC_dont_gc=1; 
 #endif
-/*
-	
-	Array<int> test;
-	test+=3;
-	test+=4;
-//	int a=test.count();
-	int i=0;
-	scanf("%d", &i);
-	int b=test.get(i);
-//	int b=test.get(10);
-	printf("%d", b);//test.count());*/
 
 #ifdef SIGUSR1
     if(signal(SIGUSR1, SIGUSR1_handler)==SIG_ERR)
@@ -674,9 +657,6 @@ int main(int argc, char *argv[]) {
 	}
 #endif
 
-#ifdef _DEBUG
-	//_crtBreakAlloc=46;
-#endif
 	argv_all=argv;
 	argv0=argv[0];
 
@@ -738,7 +718,7 @@ int main(int argc, char *argv[]) {
 		args_skip=optind;
 	}
 
-#ifdef WIN32
+#ifdef _MSC_VER
 	setmode(fileno(stdin), _O_BINARY);
 	setmode(fileno(stdout), _O_BINARY);
 	setmode(fileno(stderr), _O_BINARY);
@@ -753,7 +733,6 @@ int main(int argc, char *argv[]) {
 
 	// Set flag to the new value
 	_CrtSetDbgFlag( tmpFlag );
-//	_CrtSetBreakAlloc(61);
 
 	_CrtSetReportMode( _CRT_WARN, _CRTDBG_MODE_FILE );
 	_CrtSetReportFile( _CRT_WARN, _CRTDBG_FILE_STDERR );

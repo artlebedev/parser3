@@ -8,11 +8,11 @@
 #include "pa_config_includes.h"
 #include "pa_os.h"
 
-volatile const char * IDENT_PA_OS_C="$Id: pa_os.C,v 1.12 2012/03/16 09:24:14 moko Exp $" IDENT_PA_OS_H; 
+volatile const char * IDENT_PA_OS_C="$Id: pa_os.C,v 1.13 2013/07/23 13:07:49 moko Exp $" IDENT_PA_OS_H; 
 
-#	if defined(WIN32)
-#		include <windows.h>
-#	endif
+#ifdef _MSC_VER
+#include <windows.h>
+#endif
 
 #ifdef HAVE_FLOCK
 
