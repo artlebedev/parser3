@@ -32,7 +32,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.332 2012/10/17 10:12:39 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.333 2013/07/23 14:29:02 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -113,12 +113,6 @@ Request::Request(SAPI_Info& asapi_info, Request_info& arequest_info,
 	finterrupted(false),
 	fskip(SKIP_NOTHING),
 	fin_cycle(0),
-
-	// public
-#ifdef RESOURCES_DEBUG
-	sql_connect_time(0),
-	sql_request_time(0),
-#endif	
 
 	// public
 	request_info(arequest_info),
@@ -332,12 +326,6 @@ void Request::configure() {
 
 */
 void Request::core(const char* config_filespec, bool config_fail_on_read_problem, bool header_only) {
-#ifdef RESOURCES_DEBUG
-//measures
-struct timeval mt[10];
-//measure:before all
-gettimeofday(&mt[0],NULL);
-#endif
 	try {
 		// filling mail received
 		mail.fill_received(*this);
@@ -392,21 +380,12 @@ gettimeofday(&mt[0],NULL);
 			rethrow;
 		}
 
-#ifdef RESOURCES_DEBUG
-//measure:after compile
-gettimeofday(&mt[1],NULL);
-#endif
 		// execute @main[]
 		const String* body_string=execute_virtual_method(main_class, main_method_name);
 		if(!body_string)
 			throw Exception(PARSER_RUNTIME,
 				0,
 				"'"MAIN_METHOD_NAME"' method not found");
-
-#ifdef RESOURCES_DEBUG
-		//measure:after main
-gettimeofday(&mt[2],NULL);
-#endif
 
 		// extract response body
 		Value* body_value=response.fields().get(download_name); // $response:download?
@@ -432,32 +411,9 @@ gettimeofday(&mt[2],NULL);
 
 		VFile* body_file=body_value->as_vfile(flang, &charsets);
 
-#ifdef RESOURCES_DEBUG
-//measure:after postprocess
-gettimeofday(&mt[3],NULL);		
-#endif
-
 		// OK. write out the result
 		output_result(body_file, header_only, as_attachment);
 
-#ifdef RESOURCES_DEBUG
-		//measure:after output_result
-gettimeofday(&mt[9],NULL);		
-t[9]=mt[9].tv_sec+mt[9].tv_usec/1000000.0;
-
-double t[10];
-for(int i=0;i<10;i++)
-    t[i]=mt[i].tv_sec+mt[i].tv_usec/1000000.0;
-//measure:log2 compile,main,postprocess,output
-SAPI::log("rmeasure: %s,%.2f,%.2f,%.2f %.2f,%.2f %.2f", 
-request_info.uri,
-t[1]-t[0],
-t[2]-t[1],
-t[3]-t[2],
-sql_connect_time,sql_request_time,
-t[9]-t[3]
-);
-#endif
 	} catch(const Exception& e) { // request handling problem
 		try {
 		// we're returning not result, but error explanation

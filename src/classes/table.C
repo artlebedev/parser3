@@ -21,7 +21,7 @@
 #include "pa_vbool.h"
 #include "pa_array.h"
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.293 2013/05/16 02:20:13 misha Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.294 2013/07/23 14:29:02 moko Exp $";
 
 // class
 
@@ -1235,11 +1235,7 @@ static void _sql(Request& r, MethodParams& params) {
 	const char* statement_cstr=statement_string.untaint_cstr(r.flang, r.connection());
 
 	Table_sql_event_handlers handlers;
-#ifdef RESOURCES_DEBUG
-	struct timeval mt[2];
-	//measure:before
-	gettimeofday(&mt[0],NULL);
-#endif	
+
 	r.connection()->query(
 		statement_cstr, 
 		placeholders_count, placeholders,
@@ -1247,17 +1243,6 @@ static void _sql(Request& r, MethodParams& params) {
 		handlers,
 		statement_string);
 	
-#ifdef RESOURCES_DEBUG
-		//measure:after connect
-	gettimeofday(&mt[1],NULL);
-	
-	double t[2];
-	for(int i=0;i<2;i++)
-	    t[i]=mt[i].tv_sec+mt[i].tv_usec/1000000.0;
-	    
-	r.sql_request_time+=t[1]-t[0];
-#endif	    			
-
 	if(bind)
 		unmarshal_bind_updates(*bind, placeholders_count, placeholders);
 

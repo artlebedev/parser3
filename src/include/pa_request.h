@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.210 2012/03/16 09:24:10 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.211 2013/07/23 14:29:02 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -19,10 +19,6 @@
 #include "pa_request_charsets.h"
 #include "pa_sapi.h"
 #include "pa_vconsole.h"
-
-#ifdef RESOURCES_DEBUG
-#include <sys/resource.h>
-#endif
 
 // consts
 

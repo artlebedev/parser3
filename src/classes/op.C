@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.213 2013/03/07 23:00:13 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.214 2013/07/23 14:29:01 moko Exp $";
 
 // limits
 
@@ -378,9 +378,6 @@ static void _eval(Request& r, MethodParams& params) {
 }
 
 static void _connect(Request& r, MethodParams& params) {
-#ifdef RESOURCES_DEBUG
-struct timeval mt[2];
-#endif
 	Value& url=params.as_no_junction(0, "url must not be code");
 	Value& body_code=params.as_junction(1, "body must be code");
 
@@ -391,27 +388,14 @@ struct timeval mt[2];
 		}
 	}
 
-#ifdef RESOURCES_DEBUG
-//measure:before
-gettimeofday(&mt[0],NULL);
-#endif
 	// connect
 	SQL_Connection* connection=SQL_driver_manager->get_connection(url.as_string(), 
 		protocol2driver_and_client,
 		r.charsets.source().NAME().cstr(),
 		r.request_info.document_root);
 
-#ifdef RESOURCES_DEBUG
-//measure:after connect
-gettimeofday(&mt[1],NULL);
-
-double t[2];
-for(int i=0;i<2;i++)
-    t[i]=mt[i].tv_sec+mt[i].tv_usec/1000000.0;
-
-r.sql_connect_time+=t[1]-t[0];
-#endif
 	Temp_connection temp_connection(r, connection);
+
 	// execute body
 	try {
 		r.process_write(body_code);
