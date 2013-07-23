@@ -40,7 +40,7 @@
 #include <direct.h>
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.274 2013/07/23 07:51:30 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.275 2013/07/23 10:18:54 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -407,7 +407,7 @@ static void file_write_action(int f, void *context) {
 		ssize_t written=write(f, info.str, info.length); 
 		if(written<0)
 			throw Exception("file.write", 0, "write failed: %s (%d)",  strerror(errno), errno); 
-		if(written!=info.length)
+		if((size_t)written!=info.length)
 			throw Exception("file.write", 0, "write failed: %u of %u bytes written", written, info.length);
 	}
 }
