@@ -8,7 +8,7 @@
 #include "pa_config_includes.h"
 #include "pa_os.h"
 
-volatile const char * IDENT_PA_OS_C="$Id: pa_os.C,v 1.13 2013/07/23 13:07:49 moko Exp $" IDENT_PA_OS_H; 
+volatile const char * IDENT_PA_OS_C="$Id: pa_os.C,v 1.14 2013/07/23 21:32:18 moko Exp $" IDENT_PA_OS_H; 
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -88,7 +88,7 @@ int pa_sleep(unsigned long secs, unsigned long usecs) {
 			usecs = usecs%1000000;
 	}
 
-#ifdef WIN32
+#ifdef _MSC_VER
 	Sleep(secs * 1000 + usecs / 1000); 
 	return 0;
 #else
