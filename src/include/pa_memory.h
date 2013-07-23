@@ -9,7 +9,7 @@
 #ifndef PA_MEMORY_H
 #define PA_MEMORY_H
 
-#define IDENT_PA_MEMORY_H "$Id: pa_memory.h,v 1.19 2013/07/23 15:39:10 moko Exp $"
+#define IDENT_PA_MEMORY_H "$Id: pa_memory.h,v 1.20 2013/07/23 15:47:07 moko Exp $"
 
 // include
 
@@ -43,9 +43,10 @@ inline void *pa_malloc_atomic(size_t size) {
 
 	return pa_fail_alloc("allocate clean", size);
 }
+
 /// @a length may be null, which mean "autocalc it"
 inline char *pa_strdup(const char* auto_variable_never_null, size_t helper_length=0) {
-	size_t known_length=(helper_length?helper_length:strlen(auto_variable_never_null));
+	size_t known_length= helper_length ? helper_length : strlen(auto_variable_never_null);
 
 	size_t size=known_length+1;
 	if(char *result=static_cast<char*>(pa_gc_malloc_atomic(size))) {
