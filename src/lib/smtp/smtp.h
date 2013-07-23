@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-#define IDENT_SMTP_H "$Id: smtp.h,v 1.10 2013/07/22 15:17:06 moko Exp $"
+#define IDENT_SMTP_H "$Id: smtp.h,v 1.11 2013/07/23 07:55:18 moko Exp $"
 
 
 #include "pa_string.h"
@@ -14,7 +14,7 @@
 
 #include <windows.h>
 
-#else // WIN32
+#else _MSC_VER
 
 typedef char CHAR;
 typedef u_int SOCKET;
@@ -91,7 +91,7 @@ inline int WSAGetLastError() { return errno; }
 #	define INVALID_SOCKET (SOCKET)(~0)
 #endif
 
-#endif // WIN32
+#endif _MSC_VER
 
 //////////////////////////////////////////////////////////////////////////////
 
