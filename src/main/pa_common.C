@@ -40,7 +40,7 @@
 #include <direct.h>
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.273 2013/07/22 15:32:23 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.274 2013/07/23 07:51:30 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -481,7 +481,7 @@ static void rmdir(const String& file_spec, size_t pos_after=0) {
 	char* dir_spec=file_spec.taint_cstrm(String::L_FILE_SPEC);
 	size_t length=strlen(dir_spec);
 	while( (length=get_dir(dir_spec, length)) && (length > pos_after) ){
-#ifdef WIN32
+#ifdef _MSC_VER
 		if(!entry_readable(dir_spec, true))
 			break;
 		DWORD attrs=GetFileAttributes(dir_spec);
@@ -843,14 +843,6 @@ void back_slashes_to_slashes(char* s) {
 			if(*s=='\\')
 				*s='/'; 
 }
-/*
-void slashes_to_back_slashes(char* s) {
-	if(s)
-		for(; *s; s++)
-			if(*s=='/')
-				*s='\\'; 
-}
-*/
 #endif
 
 bool StrStartFromNC(const char* str, const char* substr, bool equal){

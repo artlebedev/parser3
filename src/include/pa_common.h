@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.151 2013/07/16 14:55:45 moko Exp $"
+#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.152 2013/07/23 07:51:30 moko Exp $"
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -260,12 +260,10 @@ char *search_stop(char*& current, char cstop_at);
 
 #ifdef WIN32
 void back_slashes_to_slashes(char *s);
-//void slashes_to_back_slashes(char *s);
 #endif
 
 #ifndef _qsort
-#	define _qsort(names,cnt,sizeof_names,func_addr) \
-		qsort(names,cnt,sizeof_names,func_addr)
+#define _qsort(names,cnt,sizeof_names,func_addr) qsort(names,cnt,sizeof_names,func_addr)
 #endif
 
 bool StrStartFromNC(const char* str, const char* substr, bool equal=false);
