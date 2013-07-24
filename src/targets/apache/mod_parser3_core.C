@@ -1,11 +1,11 @@
 /** @file
-Parser: apache 1.3 module, part, compiled by parser3project.
+Parser: apache 1.3/2.X module, part, compiled by parser3project.
 
 	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_MOD_PARSER3_CORE_C="$Id: mod_parser3_core.C,v 1.7 2012/04/18 13:34:40 moko Exp $";
+volatile const char * IDENT_MOD_PARSER3_CORE_C="$Id: mod_parser3_core.C,v 1.8 2013/07/24 21:21:43 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -20,7 +20,6 @@ volatile const char * IDENT_MOD_PARSER3_CORE_C="$Id: mod_parser3_core.C,v 1.7 20
 #include "pa_socks.h"
 
 #if _MSC_VER && !defined(_DEBUG)
-#	include <windows.h>
 #	define PA_SUPPRESS_SYSTEM_EXCEPTION
 #endif
 
@@ -192,8 +191,8 @@ size_t SAPI::send_body(SAPI_Info& SAPI_info, const void *buf, size_t size) {
 
 //@}
 
-#if !defined(PA_DEBUG_DISABLE_GC) && !defined(WIN32)
-extern long GC_large_alloc_warn_suppressed; 
+#ifndef PA_DEBUG_DISABLE_GC
+extern long GC_large_alloc_warn_suppressed;
 #endif
 
 /**
@@ -203,13 +202,11 @@ main workhorse
 */
 static void real_parser_handler(SAPI_Info& SAPI_info, Parser_module_config *dcfg) {
 	// collect garbage from prev request
-#if !defined(PA_DEBUG_DISABLE_GC) && !defined(WIN32)
-	{
-		GC_dont_gc=0;
-		GC_gcollect();
-		GC_dont_gc=1;
-		GC_large_alloc_warn_suppressed=0;
-	}
+#ifndef PA_DEBUG_DISABLE_GC
+	GC_dont_gc=0;
+	GC_gcollect();
+	GC_dont_gc=1;
+	GC_large_alloc_warn_suppressed=0;
 #endif
 
 	// populate env
