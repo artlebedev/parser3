@@ -5,10 +5,6 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-#ifdef WIN32
-#include <winsock2.h>
-#endif
-
 #include "httpd.h"
 #include "http_config.h"
 #include "http_core.h"
@@ -19,7 +15,7 @@
 
 #include "pa_httpd.h"
 
-volatile const char * IDENT_MOD_PARSER3_C="$Id: mod_parser3.c,v 1.14 2012/04/18 18:58:33 moko Exp $" IDENT_PA_HTTPD_H;
+volatile const char * IDENT_MOD_PARSER3_C="$Id: mod_parser3.c,v 1.15 2013/07/24 21:14:14 moko Exp $" IDENT_PA_HTTPD_H;
 
 #define PARSER3_HANDLER "parser3-handler"
 
@@ -225,11 +221,13 @@ module MODULE_VAR_EXPORT parser3_module =
 };
 
 #if defined(_MSC_VER)
-#	define APACHE_WIN32_SRC "../../../../win32/apache13/src"
+#	define APACHE_WIN32_SRC "../../../../win32/apache22/"
 #	ifdef _DEBUG
-#		pragma comment(lib, APACHE_WIN32_SRC "/CoreD/ApacheCore.lib")
+#		pragma comment(lib, APACHE_WIN32_SRC "srclib/apr/Debug/libapr-1.lib")
+#		pragma comment(lib, APACHE_WIN32_SRC "Debug/libhttpd.lib")
 #	else
-#		pragma comment(lib, APACHE_WIN32_SRC "/CoreR/ApacheCore.lib")
+#		pragma comment(lib, APACHE_WIN32_SRC "srclib/apr/Release/libapr-1.lib")
+#		pragma comment(lib, APACHE_WIN32_SRC "Release/libhttpd.lib")
 #	endif
 #endif
 
@@ -337,13 +335,12 @@ void pa_ap_add_common_vars(pa_request_rec *r) {
 	ap_add_common_vars((request_rec*)r->real_request_rec);
 }
 
-#ifndef WIN32
 // signal.h
 
 void (*pa_signal (int sig, void (*disp)(int)))(int) {
+#ifndef _MSC_VER
 	if(sig==PA_SIGPIPE && disp==PA_SIG_IGN)
 		return signal(SIGPIPE, SIG_IGN);
-
+#endif
 	return 0;
 }
-#endif
