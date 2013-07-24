@@ -1,5 +1,5 @@
 Microsoft Visual Studio Solution File, Format Version 8.00
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ApacheModuleParser3", "src\targets\apache13\ApacheModuleParser3.vcproj", "{61FD304C-2949-4400-845F-0B27CD088547}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ApacheModuleParser3", "src\targets\apache\ApacheModuleParser3.vcproj", "{61FD304C-2949-4400-845F-0B27CD088547}"
 	ProjectSection(ProjectDependencies) = postProject
 		{AE697E13-B86D-4408-B76D-EC54D2BEEFE0} = {AE697E13-B86D-4408-B76D-EC54D2BEEFE0}
 		{09C0531B-9B8F-443A-A16B-BD9134712613} = {09C0531B-9B8F-443A-A16B-BD9134712613}
@@ -14,7 +14,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ApacheModuleParser3", "src\
 		{9B5091F7-0ED5-4E5A-ABAF-430ED79D231A} = {9B5091F7-0ED5-4E5A-ABAF-430ED79D231A}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ApacheModuleParser3Core", "SRC\TARGETS\APACHE13CORE\ApacheModuleParser3Core.vcproj", "{CB915CEB-DC1A-40F6-9CA9-3B5212C0497D}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ApacheModuleParser3Core", "src\targets\apache\ApacheModuleParser3Core.vcproj", "{CB915CEB-DC1A-40F6-9CA9-3B5212C0497D}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
