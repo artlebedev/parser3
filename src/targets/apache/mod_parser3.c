@@ -15,7 +15,7 @@
 
 #include "pa_httpd.h"
 
-volatile const char * IDENT_MOD_PARSER3_C="$Id: mod_parser3.c,v 1.15 2013/07/24 21:14:14 moko Exp $" IDENT_PA_HTTPD_H;
+volatile const char * IDENT_MOD_PARSER3_C="$Id: mod_parser3.c,v 1.16 2013/07/24 21:38:43 moko Exp $" IDENT_PA_HTTPD_H;
 
 #define PARSER3_HANDLER "parser3-handler"
 
@@ -90,27 +90,29 @@ static int parser_handler(request_rec *r) {
 	// we setup module here to avoid GPF on init with php5-xsl installed
 	pa_setup_module_cells();
 
-	// converting to parser version
-	pa_request_rec pr={
-		r,
-		r->pool,
-		r->header_only,
-		&r->status,
-		r->method,
-		r->headers_out,
-		r->subprocess_env,
-		&r->content_type,
-		r->uri,
-		r->filename,
-		r->path_info,
-		r->args,
+	{
+		// converting to parser version
+		pa_request_rec pr={
+			r,
+			r->pool,
+			r->header_only,
+			&r->status,
+			r->method,
+			r->headers_out,
+			r->subprocess_env,
+			&r->content_type,
+			r->uri,
+			r->filename,
+			r->path_info,
+			r->args,
 #ifdef STANDARD20_MODULE_STUFF
-		r->finfo.filetype == 0
+			r->finfo.filetype == 0
 #else		
-		r->finfo.st_mode == 0
+			r->finfo.st_mode == 0
 #endif
-	};
-	return pa_parser_handler(&pr, our_dconfig(r));
+		};
+		return pa_parser_handler(&pr, our_dconfig(r));
+	}
 }
 
 /* 
