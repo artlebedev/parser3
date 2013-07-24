@@ -22,7 +22,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\..\..\win32\apache22\include;..\..\..\..\win32\apache22\os\win32;..\..\..\..\win32\apache22\srclib\apr\include\;"..\..\..\..\win32\apache22\srclib\apr-util\include\"
+				AdditionalIncludeDirectories="..\..\..\..\win32\apache22\include;..\..\..\..\win32\apache22\os\win32;..\..\..\..\win32\apache22\srclib\apr\include\;..\..\..\..\win32\apache22\srclib\apr-util\include\"
 				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;SHARED_MODULE"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="2"
@@ -97,7 +97,7 @@ dir&gt;nul
 				Optimization="2"
 				GlobalOptimizations="TRUE"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..\..\..\..\win32\apache22\include;..\..\..\..\win32\apache22\os\win32;..\..\..\..\win32\apache22\srclib\apr\include\;"..\..\..\..\win32\apache22\srclib\apr-util\include\"
+				AdditionalIncludeDirectories="..\..\..\..\win32\apache22\include;..\..\..\..\win32\apache22\os\win32;..\..\..\..\win32\apache22\srclib\apr\include\;..\..\..\..\win32\apache22\srclib\apr-util\include\"
 				PreprocessorDefinitions="NDEBUG;WIN32;_WINDOWS;SHARED_MODULE"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
