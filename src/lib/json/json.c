@@ -264,7 +264,7 @@ static int state_grow(json_parser *parser)
 	ptr = parser_realloc(parser, parser->stack, newsize * sizeof(uint8_t));
 	if (!ptr)
 		return JSON_ERROR_NO_MEMORY;
-	parser->stack = (uint8_t*)ptr;
+	parser->stack = ptr;
 	parser->stack_size = newsize;
 	return 0;
 }
@@ -305,7 +305,7 @@ static int buffer_grow(json_parser *parser)
 	ptr = parser_realloc(parser, parser->buffer, newsize * sizeof(char));
 	if (!ptr)
 		return JSON_ERROR_NO_MEMORY;
-	parser->buffer = (char *)ptr;
+	parser->buffer = ptr;
 	parser->buffer_size = newsize;
 	return 0;
 }
