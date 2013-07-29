@@ -264,12 +264,12 @@ static int state_grow(json_parser *parser)
 	ptr = parser_realloc(parser, parser->stack, newsize * sizeof(uint8_t));
 	if (!ptr)
 		return JSON_ERROR_NO_MEMORY;
-	parser->stack = ptr;
+	parser->stack = (uint8_t*)ptr;
 	parser->stack_size = newsize;
 	return 0;
 }
 
-static int state_push(json_parser *parser, int mode)
+static int state_push(json_parser *parser, uint8_t mode)
 {
 	if (parser->stack_offset >= parser->stack_size) {
 		int ret = state_grow(parser);
@@ -280,7 +280,7 @@ static int state_push(json_parser *parser, int mode)
 	return 0;
 }
 
-static int state_pop(json_parser *parser, int mode)
+static int state_pop(json_parser *parser, uint8_t mode)
 {
 	if (parser->stack_offset == 0)
 		return JSON_ERROR_POP_EMPTY;
@@ -294,7 +294,7 @@ static int buffer_grow(json_parser *parser)
 {
 	uint32_t newsize;
 	void *ptr;
-	int max = parser->config.max_data;
+	uint32_t max = parser->config.max_data;
 
 	if (max > 0 && parser->buffer_size == max)
 		return JSON_ERROR_DATA_LIMIT;
@@ -305,7 +305,7 @@ static int buffer_grow(json_parser *parser)
 	ptr = parser_realloc(parser, parser->buffer, newsize * sizeof(char));
 	if (!ptr)
 		return JSON_ERROR_NO_MEMORY;
-	parser->buffer = ptr;
+	parser->buffer = (char *)ptr;
 	parser->buffer_size = newsize;
 	return 0;
 }
@@ -358,14 +358,14 @@ static int do_buffer(json_parser *parser)
 }
 
 static const uint8_t hextable[] = {
-	-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-	-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-	-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-	 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,-1,-1,-1,-1,-1,-1,
-	-1,10,11,12,13,14,15,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-	-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-	-1,10,11,12,13,14,15,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-	-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+	255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,
+	255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,
+	255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,
+	  0,  1,  2,  3,  4,  5,  6,  7,  8,  9,255,255,255,255,255,255,
+	255, 10, 11, 12, 13, 14, 15,255,255,255,255,255,255,255,255,255,
+	255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,
+	255, 10, 11, 12, 13, 14, 15,255,255,255,255,255,255,255,255,255,
+	255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,
 };
 
 #define hex(c) (hextable[(uint8_t) c])
