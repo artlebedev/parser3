@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Vincent Hanquez <vincent@snarc.org>
+ * Copyright (C) 2009-2011 Vincent Hanquez <vincent@snarc.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -444,7 +444,7 @@ static int buffer_push_escape(json_parser *parser, unsigned char next)
 
 #define CHK(f) { ret = f; if (ret) return ret; }
 
-int act_uc(json_parser *parser)
+static int act_uc(json_parser *parser)
 {
 	int ret;
 	CHK(decode_unicode_char(parser));
@@ -452,7 +452,7 @@ int act_uc(json_parser *parser)
 	return 0;
 }
 
-int act_yb(json_parser *parser)
+static int act_yb(json_parser *parser)
 {
 	if (!parser->config.allow_yaml_comments)
 		return JSON_ERROR_COMMENT_NOT_ALLOWED;
@@ -460,7 +460,7 @@ int act_yb(json_parser *parser)
 	return 0;
 }
 
-int act_cb(json_parser *parser)
+static int act_cb(json_parser *parser)
 {
 	if (!parser->config.allow_c_comments)
 		return JSON_ERROR_COMMENT_NOT_ALLOWED;
@@ -468,13 +468,13 @@ int act_cb(json_parser *parser)
 	return 0;
 }
 
-int act_ce(json_parser *parser)
+static int act_ce(json_parser *parser)
 {
 	parser->state = (parser->save_state > STATE__A) ? STATE_OK : parser->save_state;
 	return 0;
 }
 
-int act_ob(json_parser *parser)
+static int act_ob(json_parser *parser)
 {
 	int ret;
 	CHK(do_callback(parser, JSON_OBJECT_BEGIN));
@@ -483,31 +483,31 @@ int act_ob(json_parser *parser)
 	return 0;
 }
 
-int act_oe(json_parser *parser)
+static int act_oe(json_parser *parser)
 {
 	int ret;
-	CHK(do_callback(parser, JSON_OBJECT_END));
 	CHK(state_pop(parser, MODE_OBJECT));
+	CHK(do_callback(parser, JSON_OBJECT_END));
 	parser->expecting_key = 0;
 	return 0;
 }
 
-int act_ab(json_parser *parser)
+static int act_ab(json_parser *parser)
 {
 	int ret;
 	CHK(do_callback(parser, JSON_ARRAY_BEGIN));
 	CHK(state_push(parser, MODE_ARRAY));
 	return 0;
 }
-int act_ae(json_parser *parser)
+static int act_ae(json_parser *parser)
 {
 	int ret;
-	CHK(do_callback(parser, JSON_ARRAY_END));
 	CHK(state_pop(parser, MODE_ARRAY));
+	CHK(do_callback(parser, JSON_ARRAY_END));
 	return 0;
 }
 
-int act_se(json_parser *parser)
+static int act_se(json_parser *parser)
 {
 	int ret;
 	CHK(do_callback_withbuf(parser, (parser->expecting_key) ? JSON_KEY : JSON_STRING));
@@ -517,7 +517,7 @@ int act_se(json_parser *parser)
 	return 0;
 }
 
-int act_sp(json_parser *parser)
+static int act_sp(json_parser *parser)
 {
 	if (parser->stack_offset == 0)
 		return JSON_ERROR_COMMA_OUT_OF_STRUCTURE;
@@ -538,25 +538,25 @@ struct action_descr
 };
 
 static struct action_descr actions_map[] = {
-  { NULL,   JSON_NONE,  STATE__V, 0 }, // STATE_KS
-  { act_sp, JSON_NONE,  0,        1 }, // STATE_SP
-  { act_ab, JSON_NONE,  STATE__A, 0 }, // STATE_AB
-  { act_ae, JSON_NONE,  STATE_OK, 1 }, // STATE_AE
-  { act_ob, JSON_NONE,  STATE__O, 0 }, // STATE_OB
-  { act_oe, JSON_NONE,  STATE_OK, 1 }, // STATE_OE
-  { act_cb, JSON_NONE,  STATE_C1, 1 }, // STATE_CB
-  { act_yb, JSON_NONE,  STATE_Y1, 1 }, // STATE_YB
-  { act_ce, JSON_NONE,  0,        0 }, // STATE_CE
-  { NULL,   JSON_FALSE, STATE_OK, 0 }, // STATE_FA
-  { NULL,   JSON_TRUE,  STATE_OK, 0 }, // STATE_TR
-  { NULL,   JSON_NULL,  STATE_OK, 0 }, // STATE_NU
-  { NULL,   JSON_FLOAT, STATE_X1, 0 }, // STATE_DE
-  { NULL,   JSON_FLOAT, STATE_R1, 0 }, // STATE_DF
-  { act_se, JSON_NONE,  0,        0 }, // STATE_SE
-  { NULL,   JSON_INT,   STATE_M0, 0 }, // STATE_MX
-  { NULL,   JSON_INT,   STATE_Z0, 0 }, // STATE_ZX
-  { NULL,   JSON_INT,   STATE_I0, 0 }, // STATE_IX
-  { act_uc, JSON_NONE,  0,        0 }  // STATE_UC
+	{ NULL,   JSON_NONE,  STATE__V, 0 }, /* KS */
+	{ act_sp, JSON_NONE,  0,        1 }, /* SP */
+	{ act_ab, JSON_NONE,  STATE__A, 0 }, /* AB */
+	{ act_ae, JSON_NONE,  STATE_OK, 1 }, /* AE */
+	{ act_ob, JSON_NONE,  STATE__O, 0 }, /* OB */
+	{ act_oe, JSON_NONE,  STATE_OK, 1 }, /* OE */
+	{ act_cb, JSON_NONE,  STATE_C1, 1 }, /* CB */
+	{ act_yb, JSON_NONE,  STATE_Y1, 1 }, /* YB */
+	{ act_ce, JSON_NONE,  0,        0 }, /* CE */
+	{ NULL,   JSON_FALSE, STATE_OK, 0 }, /* FA */
+	{ NULL,   JSON_TRUE,  STATE_OK, 0 }, /* TR */
+	{ NULL,   JSON_NULL,  STATE_OK, 0 }, /* NU */
+	{ NULL,   JSON_FLOAT, STATE_X1, 0 }, /* DE */
+	{ NULL,   JSON_FLOAT, STATE_R1, 0 }, /* DF */
+	{ act_se, JSON_NONE,  0,        0 }, /* SE */
+	{ NULL,   JSON_INT,   STATE_M0, 0 }, /* MX */
+	{ NULL,   JSON_INT,   STATE_Z0, 0 }, /* ZX */
+	{ NULL,   JSON_INT,   STATE_I0, 0 }, /* IX */
+	{ act_uc, JSON_NONE,  0,        0 }, /* UC */
 };
 
 static int do_action(json_parser *parser, uint8_t next_state)
