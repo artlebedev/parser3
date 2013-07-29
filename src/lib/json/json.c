@@ -380,7 +380,7 @@ static int decode_unicode_char(json_parser *parser)
 {
 	uint32_t uval;
 	char *b = parser->buffer;
-	int offset = parser->buffer_offset;
+	uint32_t offset = parser->buffer_offset;
 
 	uval = (hex(b[offset - 4]) << 12) | (hex(b[offset - 3]) << 8)
 	     | (hex(b[offset - 2]) << 4) | hex(b[offset - 1]);
@@ -409,7 +409,7 @@ static int decode_unicode_char(json_parser *parser)
 	if (IS_LOW_SURROGATE(uval))
 		return JSON_ERROR_UNICODE_UNEXPECTED_LOW_SURROGATE;
 	if (IS_HIGH_SURROGATE(uval)) {
-		parser->unicode_multi = uval;
+		parser->unicode_multi = (uint16_t)uval;
 		return 0;
 	}
 
@@ -645,8 +645,8 @@ int json_parser_string(json_parser *parser, const char *s,
                        uint32_t length, uint32_t *processed)
 {
 	int ret;
-	int next_class, next_state;
-	int buffer_policy;
+	uint32_t next_class, next_state;
+	uint32_t buffer_policy;
 	uint32_t i;
 
 	ret = 0;
