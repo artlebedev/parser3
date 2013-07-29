@@ -13,7 +13,7 @@
 #include "pa_vint.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_INT_C="$Id: int.C,v 1.62 2013/03/09 22:58:50 moko Exp $" IDENT_PA_VINT_H;
+volatile const char * IDENT_INT_C="$Id: int.C,v 1.63 2013/07/29 15:02:17 moko Exp $" IDENT_PA_VINT_H;
 
 // externs
 
@@ -32,17 +32,17 @@ DECLARE_CLASS_VAR(int, new MInt, 0);
 
 // methods
 
-static void _int(Request& r, MethodParams& params) {
+static void _int(Request& r, MethodParams&) {
 	VInt& vint=GET_SELF(r, VInt);
 	r.write_no_lang(*new VInt(vint.get_int()));
 }
 
-static void _double(Request& r, MethodParams& params) {
+static void _double(Request& r, MethodParams&) {
 	VInt& vint=GET_SELF(r, VInt);
 	r.write_no_lang(*new VDouble(vint.as_double()));
 }
 
-static void _bool(Request& r, MethodParams& params) {
+static void _bool(Request& r, MethodParams&) {
 	VInt& vint=GET_SELF(r, VInt);
 	r.write_no_lang(VBool::get(vint.as_bool()));
 }

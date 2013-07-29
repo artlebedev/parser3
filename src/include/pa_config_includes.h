@@ -212,6 +212,8 @@ inline size_t min(size_t a, size_t b){ return a<b?a:b; }
 
 #pragma warning(disable:4996)  // memcpy deprecation
 
+#pragma warning(disable:4702)  // unreachable code
+
 #endif
 
 /// to debug backtrace pointers switch this on:

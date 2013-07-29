@@ -8,7 +8,7 @@
 #ifndef PA_VFILE_H
 #define PA_VFILE_H
 
-#define IDENT_PA_VFILE_H "$Id: pa_vfile.h,v 1.76 2013/07/04 13:09:18 moko Exp $"
+#define IDENT_PA_VFILE_H "$Id: pa_vfile.h,v 1.77 2013/07/29 15:02:17 moko Exp $"
 
 // include
 
@@ -94,7 +94,7 @@ public: // usage
 private:
 	const char* text_cstr();
 
-	void set_all(bool atainted, bool ais_text_mode, const char* avalue_ptr, size_t avalue_size, const String* afile_name=0, Value* acontent_type=0);
+	void set_all(bool atainted, bool ais_text_mode, const char* avalue_ptr, size_t avalue_size, const String* afile_name);
 
 	void set_mode(bool ais_text);
 
