@@ -559,7 +559,7 @@ static struct action_descr actions_map[] = {
 	[STATE_SP & ~0x80] = { act_sp, JSON_NONE,  0,        1 },
 };
 
-static int do_action(json_parser *parser, int next_state)
+static int do_action(json_parser *parser, uint8_t next_state)
 {
 	struct action_descr *descr = &actions_map[next_state & ~0x80];
 
@@ -645,7 +645,7 @@ int json_parser_string(json_parser *parser, const char *s,
                        uint32_t length, uint32_t *processed)
 {
 	int ret;
-	uint32_t next_class, next_state;
+	uint8_t next_class, next_state;
 	uint32_t buffer_policy;
 	uint32_t i;
 
