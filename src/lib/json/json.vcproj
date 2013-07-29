@@ -123,7 +123,7 @@
 	</References>
 	<Files>
 		<File
-			RelativePath="JSON_parser.C">
+			RelativePath="json.c">
 			<FileConfiguration
 				Name="Debug|Win32">
 				<Tool
@@ -145,7 +145,7 @@
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath="JSON_parser.h">
+			RelativePath="json.h">
 		</File>
 	</Files>
 	<Globals>

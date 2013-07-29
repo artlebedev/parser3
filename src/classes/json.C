@@ -12,13 +12,13 @@
 
 #include "pa_charset.h"
 #include "pa_charsets.h"
-#include "JSON_parser.h"
+#include "json.h"
 
 #ifdef XML
 #include "pa_vxdoc.h"
 #endif
 
-volatile const char * IDENT_JSON_C="$Id: json.C,v 1.24 2012/06/21 14:22:09 moko Exp $";
+volatile const char * IDENT_JSON_C="$Id: json.C,v 1.25 2013/07/29 09:44:16 moko Exp $";
 
 // class
 
@@ -91,10 +91,10 @@ static void set_json_value(Json *json, Value *value){
 	}
 }
 
-String* json_string(Json *json, const JSON_value* value){
+String* json_string(Json *json, const char *value, uint32_t length){
 	String::C result = json->charset !=NULL ? 
-		Charset::transcode(String::C(value->vu.str.value, value->vu.str.length), UTF8_charset, *json->charset) :
-		String::C(pa_strdup(value->vu.str.value, value->vu.str.length), value->vu.str.length);
+		Charset::transcode(String::C(value, length), UTF8_charset, *json->charset) :
+		String::C(pa_strdup(value, length), length);
 	return new String(result.str, json->taint, result.length);
 }
 
@@ -108,10 +108,10 @@ static Value *json_hook(Request &r, Junction *hook, String* key, Value* value){
 	return &frame.result().as_value();
 }
 
-static int json_callback(Json *json, int type, const JSON_value* value)
+static int json_callback(Json *json, int type, const char *value, uint32_t length)
 {
 	switch(type) {
-		case JSON_T_OBJECT_BEGIN:{
+		case JSON_OBJECT_BEGIN:{
 			VHash *v = new VHash();
 			if (json->hook_object){
 				json->key_stack.push(json->key);
@@ -122,7 +122,7 @@ static int json_callback(Json *json, int type, const JSON_value* value)
 			json->stack.push(v);
 			break;
 		}
-		case JSON_T_OBJECT_END:{
+		case JSON_OBJECT_END:{
 			if (json->hook_object){
 				String* key = json->key_stack.pop();
 				json->result = json_hook(*json->request, json->hook_object, key, json->stack.pop());
@@ -136,7 +136,7 @@ static int json_callback(Json *json, int type, const JSON_value* value)
 			}
 			break;
 		}
-		case JSON_T_ARRAY_BEGIN:{
+		case JSON_ARRAY_BEGIN:{
 			VHash *v = new VHash();
 			if (json->hook_array){
 				json->key_stack.push(json->key);
@@ -147,7 +147,7 @@ static int json_callback(Json *json, int type, const JSON_value* value)
 			json->stack.push(v);
 			break;
 		}
-		case JSON_T_ARRAY_END:
+		case JSON_ARRAY_END:
 			// libjson supports array at top level, we too
 			if (json->hook_array){
 				String* key = json->key_stack.pop();
@@ -161,46 +161,48 @@ static int json_callback(Json *json, int type, const JSON_value* value)
 				json->result = json->stack.pop();
 			}
 			break;
-		case JSON_T_KEY:
-			json->key = json_string(json, value);
+		case JSON_KEY:
+			json->key = json_string(json, value, length);
 			break;
-		case JSON_T_INTEGER:
-			set_json_value(json, new VDouble((double)value->vu.integer_value));
+		case JSON_INT:
+			set_json_value(json, new VDouble( json_string(json, value, length)->as_double() ));
 			break;
-		case JSON_T_FLOAT:
+		case JSON_FLOAT:
 			if (json->handle_double){
-				set_json_value(json, new VDouble( json_string(json, value)->as_double() ));
+				set_json_value(json, new VDouble( json_string(json, value, length)->as_double() ));
 				break;
-			} // else is JSON_T_STRING
-		case JSON_T_STRING:
-			set_json_value(json, new VString(*json_string(json, value)));
+			} // else is JSON_STRING
+		case JSON_STRING:
+			set_json_value(json, new VString(*json_string(json, value, length)));
 			break;
-		case JSON_T_NULL:
+		case JSON_NULL:
 			set_json_value(json, VVoid::get());
 			break;
-		case JSON_T_TRUE:
+		case JSON_TRUE:
 			set_json_value(json, &VBool::get(true));
 			break;
-		case JSON_T_FALSE:
+		case JSON_FALSE:
 			set_json_value(json, &VBool::get(false));
-			break; 
+			break;
 	}
-	return 1;
+	return 0;
 }
 
 static const char* json_error_message(int error_code){
 	static const char* error_messages[] = {
 		NULL,
-		"invalid char",
-		"invalid keyword",
-		"invalid escape sequence",
-		"invalid unicode sequence",
-		"invalid number",
-		"nesting depth reached",
-		"unbalanced collection",
-		"expected key",
-		"expected colon",
-		"out of memory"
+		"out of memory",
+		"bad character",
+		"stack empty",
+		"pop unexpected mode",
+		"nesting limit",
+		"data limit",
+		"comment not allowed by config",
+		"unexpected char",
+		"missing unicode low surrogate",
+		"unexpected unicode low surrogate",
+		"error comma out of structure",
+		"error in a callback"
 	};
 	return error_messages[error_code];
 }
@@ -212,20 +214,22 @@ static void _parse(Request& r, MethodParams& params) {
 
 	Json json(r.charsets.source().isUTF8() ? NULL : &(r.charsets.source()));
 
-	JSON_config config;
-	init_JSON_config(&config);
-
-	config.depth                  = 19;
-	config.callback               = (JSON_parser_callback)&json_callback;
-	config.allow_comments         = 1;
-	config.handle_floats_manually = 1;
-	config.callback_ctx           = &json;
+	json_config config = {
+		0,		// buffer_initial_size
+		128,	// max_nesting
+		0,		// max_data
+		1,		// allow_c_comments
+		1,		// allow_yaml_comments
+		pa_malloc,
+		pa_realloc,
+		pa_free
+	};
 
 	if(params.count() == 2)
 		if(HashStringValue* options=params.as_hash(1)) {
 			int valid_options=0;
 			if(Value* value=options->get("depth")) {
-				config.depth=r.process_to_value(*value).as_int();
+				config.max_nesting=r.process_to_value(*value).as_int();
 				valid_options++;
 			}
 			if(Value* value=options->get("double")) {
@@ -263,19 +267,18 @@ static void _parse(Request& r, MethodParams& params) {
 	const String::Body json_body = json_string.cstr_to_string_body_untaint(String::L_JSON, 0, &(r.charsets));
 	const char *json_cstr = json.charset != NULL ? Charset::transcode(json_body, *json.charset, UTF8_charset).cstr() : json_body.cstr();
 
-	struct JSON_parser_struct* jc = new_JSON_parser(&config);
+	json_parser parser;
+	if(int result = json_parser_init(&parser, &config, (json_parser_callback)&json_callback, &json))
+		throw Exception("json.parse", 0, "%s", json_error_message(result));
 
-	for (const char *c=json_cstr; *c; c++){
-		if (!JSON_parser_char(jc, *((const unsigned char *)c))) {
-			throw Exception("json.parse", 0, "%s at byte %d", json_error_message(JSON_parser_get_last_error(jc)), c-json_cstr);
-		}
-	}
+	uint32_t processed;
+	if(int result = json_parser_string(&parser, json_cstr, strlen(json_cstr), &processed))
+		throw Exception("json.parse", 0, "%s at byte %d", json_error_message(result), processed);
 
-	if (!JSON_parser_done(jc)) {
-		throw Exception("json.parse", 0, "%s at the end", json_error_message(JSON_parser_get_last_error(jc)));
-	}
+	if (!json_parser_is_done(&parser))
+		throw Exception("json.parse", 0, "unexpected end of json data");
 	
-	delete_JSON_parser(jc);
+	json_parser_free(&parser);
 
 	if (json.result) r.write_no_lang(*json.result);
 }
