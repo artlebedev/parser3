@@ -8,7 +8,7 @@
 #ifndef PA_CONFIG_FIXED_H
 #define PA_CONFIG_FIXED_H
 
-#define IDENT_PA_CONFIG_FIXED_H "$Id: pa_config_fixed.h,v 1.82 2013/07/22 20:06:05 moko Exp $"
+#define IDENT_PA_CONFIG_FIXED_H "$Id: pa_config_fixed.h,v 1.83 2013/07/29 10:01:41 moko Exp $"
 
 #define inline  __inline
 
@@ -52,6 +52,10 @@ typedef int ssize_t;
 
 #ifndef uint8_t
 typedef unsigned __int8 uint8_t;
+#endif
+
+#ifndef uint16_t
+typedef unsigned __int16 uint16_t;
 #endif
 
 #ifndef uint32_t
