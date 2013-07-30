@@ -8,7 +8,7 @@
 #include "pa_charset.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_PA_CHARSET_C="$Id: pa_charset.C,v 1.91 2012/05/28 10:33:18 moko Exp $" IDENT_PA_CHARSET_H;
+volatile const char * IDENT_PA_CHARSET_C="$Id: pa_charset.C,v 1.92 2013/07/30 12:36:22 moko Exp $" IDENT_PA_CHARSET_H;
 
 #ifdef XML
 #include "libxml/encoding.h"
@@ -190,8 +190,7 @@ static int sort_cmp_Trans_rec_intCh(const void *a, const void *b) {
 }
 
 void Charset::sort_ToTable() {
-	_qsort(tables.toTable, tables.toTableSize, sizeof(*tables.toTable), 
-		sort_cmp_Trans_rec_intCh);
+	qsort(tables.toTable, tables.toTableSize, sizeof(*tables.toTable), sort_cmp_Trans_rec_intCh);
 	//FILE *f=fopen("c:\\temp\\a", "wb");
 	//fwrite(tables.toTable, tables.toTableSize, sizeof(*tables.toTable), f);
 	//fclose(f);

@@ -41,7 +41,13 @@
 #include <direct.h>
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.276 2013/07/23 12:10:56 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+#ifdef _MSC_VER
+#define pa_mkdir(path, mode) _mkdir(path)
+#else
+#define pa_mkdir(path, mode) mkdir(path, mode)
+#endif
+
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.277 2013/07/30 12:36:22 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -331,7 +337,7 @@ void create_dir_for_file(const String& file_spec) {
 	size_t pos_after=1;
 	size_t pos_before;
 	while((pos_before=file_spec.pos('/', pos_after))!=STRING_NOT_FOUND) {
-		mkdir(file_spec.mid(0, pos_before).taint_cstr(String::L_FILE_SPEC), 0775); 
+		pa_mkdir(file_spec.mid(0, pos_before).taint_cstr(String::L_FILE_SPEC), 0775); 
 		pos_after=pos_before+1;
 	}
 }
@@ -478,7 +484,7 @@ static bool entry_readable(const String& file_spec, bool need_dir) {
 }
 
 // throws nothing! [this is required in file_move & file_delete]
-static void rmdir(const String& file_spec, size_t pos_after=0) {
+static void rmdir(const String& file_spec, size_t pos_after) {
 	char* dir_spec=file_spec.taint_cstrm(String::L_FILE_SPEC);
 	size_t length=strlen(dir_spec);
 	while( (length=get_dir(dir_spec, length)) && (length > pos_after) ){

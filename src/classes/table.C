@@ -21,7 +21,7 @@
 #include "pa_vbool.h"
 #include "pa_array.h"
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.294 2013/07/23 14:29:02 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.295 2013/07/30 12:36:22 moko Exp $";
 
 // class
 
@@ -933,8 +933,7 @@ static void _sort(Request& r, MethodParams& params) {
 	}
 
 	// sort keys
-	_qsort(seq, old_count, sizeof(Table_seq_item), 
-		key_values_are_strings?sort_cmp_string:sort_cmp_double);
+	qsort(seq, old_count, sizeof(Table_seq_item), key_values_are_strings?sort_cmp_string:sort_cmp_double);
 
 	// reorder table as they require in 'seq'
 	for(i=0; i<old_count; i++)

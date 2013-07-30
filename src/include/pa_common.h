@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.152 2013/07/23 07:51:30 moko Exp $"
+#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.153 2013/07/30 12:36:22 moko Exp $"
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -71,15 +71,7 @@ int __vsnprintf(char *, size_t, const char* , va_list);
 int __snprintf(char *, size_t, const char* , ...);
 #define snprintf __snprintf
 
-#if _MSC_VER
-/*
-inline int open( const char* filename, int oflag ) { return _open(filename, oflag); }
-inline int close( int handle ) { return _close(handle); }
-inline int read( int handle, void *buffer, unsigned int count ) { return _read(handle,buffer,count); }
-inline int write( int handle, const void *buffer, unsigned int count ) { return _write(handle,buffer,count); }
-inline int stat( const char* path, struct _stat *buffer ) { return _stat(path, buffer); }
-inline long lseek( int handle, long offset, int origin ) { return _lseek(handle, offset, origin); }
-*/
+#ifdef _MSC_VER
 
 //access
 #define F_OK 0
@@ -89,16 +81,6 @@ inline long lseek( int handle, long offset, int origin ) { return _lseek(handle,
 
 #ifndef strcasecmp
 #	define strcasecmp _stricmp
-#endif
-#ifndef strncasecmp
-#	define strncasecmp _strnicmp
-#endif
-#ifndef mkdir
-#	define mkdir(path, mode) _mkdir(path)
-#endif
-
-#ifndef putenv
-#	define putenv _putenv
 #endif
 
 #endif
@@ -260,10 +242,6 @@ char *search_stop(char*& current, char cstop_at);
 
 #ifdef WIN32
 void back_slashes_to_slashes(char *s);
-#endif
-
-#ifndef _qsort
-#define _qsort(names,cnt,sizeof_names,func_addr) qsort(names,cnt,sizeof_names,func_addr)
 #endif
 
 bool StrStartFromNC(const char* str, const char* substr, bool equal=false);
