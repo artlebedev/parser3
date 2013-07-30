@@ -441,7 +441,7 @@ static int act_uc(json_parser *parser)
 {
 	int ret;
 	CHK(decode_unicode_char(parser));
-	parser->state = (parser->unicode_multi) ? STATE_D1 : STATE__S;
+	parser->state = (uint8_t)((parser->unicode_multi) ? STATE_D1 : STATE__S);
 	return 0;
 }
 
@@ -463,7 +463,7 @@ static int act_cb(json_parser *parser)
 
 static int act_ce(json_parser *parser)
 {
-	parser->state = (parser->save_state > STATE__A) ? STATE_OK : parser->save_state;
+	parser->state = (uint8_t)((parser->save_state > STATE__A) ? STATE_OK : parser->save_state);
 	return 0;
 }
 
@@ -505,7 +505,7 @@ static int act_se(json_parser *parser)
 	int ret;
 	CHK(do_callback_withbuf(parser, (parser->expecting_key) ? JSON_KEY : JSON_STRING));
 	parser->buffer_offset = 0;
-	parser->state = (parser->expecting_key) ? STATE_CO : STATE_OK;
+	parser->state = (uint8_t)((parser->expecting_key) ? STATE_CO : STATE_OK);
 	parser->expecting_key = 0;
 	return 0;
 }
@@ -647,7 +647,7 @@ int json_parser_string(json_parser *parser, const char *s,
 		unsigned char ch = s[i];
 
 		ret = 0;
-		next_class = (ch >= 128) ? C_OTHER : character_class[ch];
+		next_class = (uint8_t)((ch >= 128) ? C_OTHER : character_class[ch]);
 		if (next_class == C_ERROR) {
 			ret = JSON_ERROR_BAD_CHAR;
 			break;
