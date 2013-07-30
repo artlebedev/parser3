@@ -28,7 +28,7 @@ extern "C" {
 #include "ltdl.h"
 #include "pcre.h"
 
-volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.190 2013/07/23 15:08:44 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
+volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.191 2013/07/30 22:35:43 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
 
 // defines
 
@@ -144,90 +144,53 @@ static char *pa_GC_strdup(const char *s) {
 }
 
 #ifdef PA_DEBUG_XML_GC_MEMORY
-void *pa_look_for[]={(void*)0x84ba980,(void*)0x8969460,(void*)0x0,(void*)0x0,
-			(void*)0x0,(void*)0x0,(void*)0x0,(void*)0x0};
-bool pa_looked(void*p) {
-	for(int i=0; i<8; i++)
-		if(pa_look_for[i]==p) {
-			__asm__("int $3");
-			return true;
-		}
-	if((((int)p)&~0xFF)==0x89a7700) {
-		__asm__("int $3");
-		return true;
-	}
-	return false;
-}
+
 static void* pa_gc_malloc_log(size_t size){
 	void *p=pa_gc_malloc(size);
         fprintf(stderr, "pa_gc_malloc_log(%d)=0x%p\n", size, p);
-	if(pa_looked(p))
-		fprintf(stderr,"catched debug malloc(%d)=0x%p\n", size, p);
 	return p;
         
 }
+
 static void* pa_gc_malloc_atomic_log(size_t size){
-#ifdef PA_WORKAROUND_BUGGY_MALLOCATOMIC_IN_LIBXML_GC_MEMORY
-	void *p=pa_gc_malloc(size);
-        fprintf(stderr, "pa_gc_malloc_atomicFAKE_log(%d)=0x%p\n", size, p);
-#else
 	void *p=pa_gc_malloc_atomic(size);
         fprintf(stderr, "pa_gc_malloc_atomic_log(%d)=0x%p\n", size, p);
-#endif
-	if(pa_looked(p))
-		fprintf(stderr,"catched debug malloc atomic(%d)=0x%p\n", size, p);
 	return p;
 }
+
 static void* pa_gc_realloc_log(void *ptr, size_t size){
 	void *p=pa_gc_realloc(ptr, size);
         fprintf(stderr, "pa_gc_realloc_log(0x%p, %d)=0x%p\n", ptr, size, p);
-	if(pa_looked(p))
-		fprintf(stderr,"catched debug realloc(%d)=0x%p\n", size, p);
 	return p;
 }
+
 static void pa_gc_free_log(void *p){
-#ifdef PA_WORKAROUND_BUGGY_FREE_IN_LIBXML_GC_MEMORY
-        fprintf(stderr, "pa_gc_freeIGNORE_log(0x%p)\n", p);
-#else
         fprintf(stderr, "pa_gc_free_log(0x%p)\n", p);
-#endif
-	if(pa_looked(p))
-		fprintf(stderr,"catched debug free(0x%p)\n", p);
-#ifndef PA_WORKAROUND_BUGGY_FREE_IN_LIBXML_GC_MEMORY
         pa_gc_free(p);
-#endif
 }
+
 #else
 
 inline void *check(void *result, const char *where, size_t size) {
 	if(!result)
 		pa_fail_alloc(where, size);
-
 	return result;
 }
+
 static void* pa_gc_malloc_nonull(size_t size) { 
 	return check(pa_gc_malloc(size), "allocate XML compsite memory", size);
 }
+
 static void* pa_gc_malloc_atomic_nonull(size_t size) { 
-#ifdef PA_WORKAROUND_BUGGY_MALLOCATOMIC_IN_LIBXML_GC_MEMORY
-	return check(pa_gc_malloc(size), "allocate XML composite memory (asked atomic)", size);
-#else
 	return check(pa_gc_malloc_atomic(size), "allocate XML atomic memory", size);
-#endif
 }
+
 static void* pa_gc_realloc_nonull(void* ptr, size_t size) { 
 	return check(pa_gc_realloc(ptr, size), "reallocate XML memory", size);
 }
 
-static void pa_gc_free_maybeignore(
-	void* 
-#ifndef PA_WORKAROUND_BUGGY_FREE_IN_LIBXML_GC_MEMORY
-		ptr
-#endif
-	) {
-#ifndef PA_WORKAROUND_BUGGY_FREE_IN_LIBXML_GC_MEMORY
+static void pa_gc_free_maybeignore(void* ptr) {
 	pa_gc_free(ptr);
-#endif
 }
 
 #endif
@@ -244,7 +207,6 @@ static void gc_substitute_memory_management_functions() {
 	// in libxml & libxslt
 #ifdef XML
 	// asking to use GC memory
-#if LIBXML_VERSION >= 20507
 #ifdef PA_DEBUG_XML_GC_MEMORY
 	xmlGcMemSetup(
 		/*xmlFreeFunc */pa_gc_free_log,
@@ -261,20 +223,11 @@ static void gc_substitute_memory_management_functions() {
 		/*xmlStrdupFunc */pa_GC_strdup);
 #endif
 
-#else
-	xmlMemSetup(
-		/*xmlFreeFunc */pa_gc_free_maybeignore,
-		/*xmlMallocFunc */pa_gc_malloc,
-		/*xmlReallocFunc */pa_gc_realloc,
-		/*xmlStrdupFunc */pa_GC_strdup);
-#endif
-
 #endif
 
 	// pcre
 	pcre_malloc=pa_gc_malloc;
 	pcre_free=pa_gc_free;
-
 
 	// cord
 	CORD_oom_fn=pa_CORD_oom_fn;
@@ -297,22 +250,16 @@ void pa_globals_init() {
 #ifdef XML
 	// initializing xml libs
 
-	/*
-	* Register the EXSLT extensions and the test module
-	*/
+	// Register the EXSLT extensions and the test module
 	exsltRegisterAll();
 	xsltRegisterTestModule();
 	xmlDefaultSAXHandlerInit();
-	/*
-	* disable CDATA from being built in the document tree
-	*/
+
+	// disable CDATA from being built in the document tree
 	// never added yet  xmlDefaultSAXHandler.cdataBlock = NULL;
 	
-	/*
-	 * Initialization function for the XML parser.
-	 * This is not reentrant. Call once before processing in case of
-	 * use in multithreaded programs.
-	*/
+	// Initialization function for the XML parser. This is not reentrant. 
+	// Call once before processing in case of use in multithreaded programs.
 	xmlInitParser();
 
 	// 1. this is needed for proper parsing of stylesheets
@@ -331,13 +278,14 @@ void pa_globals_init() {
 	xmlLoadExtDtdDefaultValue |= XML_COMPLETE_ATTRS;
 
 	// validate each document after load/create (?)
-	//xmlDoValidityCheckingDefaultValue = 1;
+	// xmlDoValidityCheckingDefaultValue = 1;
 
-//regretfully this not only replaces entities on parse, but also on generate	xmlSubstituteEntitiesDefault(1);
+	// regretfully this not only replaces entities on parse, but also on generate	xmlSubstituteEntitiesDefault(1);
 	// never switched this on xmlIndentTreeOutput=1;
 
 	xmlSetGenericErrorFunc(0, xmlParserGenericErrorFunc);
 	xsltSetGenericErrorFunc(0, xmlParserGenericErrorFunc);
+
 //	FILE *f=fopen("y:\\xslt.log", "wt");
 //	xsltSetGenericDebugFunc(f/*stderr*/, 0);
 
@@ -348,7 +296,9 @@ void pa_globals_init() {
 static bool is_dlinited=false;
 
 void pa_globals_done() {
-	delete cache_managers;  cache_managers=0;
+	delete cache_managers;
+	cache_managers=0;
+
 	if(is_dlinited)
 		lt_dlexit();
 }
@@ -364,61 +314,47 @@ void pa_dlinit() {
 #ifdef _MSC_VER
 
 #ifndef PA_DEBUG_DISABLE_GC
-#	define GC_LIB "../../../../win32/gc"
-#	ifdef _DEBUG
-#		pragma comment(lib, GC_LIB "/Debug/gc.lib")
-#	else
-#		pragma comment(lib, GC_LIB "/Release/gc.lib")
-#	endif
+
+#define GC_LIB "../../../../win32/gc"
+#ifdef _DEBUG
+#pragma comment(lib, GC_LIB "/Debug/gc.lib")
+#else
+#pragma comment(lib, GC_LIB "/Release/gc.lib")
+#endif
 
 #endif
+
+
+#ifdef XML
 
 #define GNOME_LIBS "../../../../win32/gnome"
 
-#ifdef WITH_MAILRECEIVE
-#	pragma comment(lib, GNOME_LIBS "/glib/lib/libglib-1.3-11.lib")
+#ifdef _DEBUG
+#define LIB_XML GNOME_LIBS "/libxml2-x.x.x/win32/debug/lib/"
+#define LIB_XSLT GNOME_LIBS "/libxslt-x.x.x/win32/debug/lib/"
+#else
+#define LIB_XML GNOME_LIBS "/libxml2-x.x.x/win32/release/lib/"
+#define LIB_XSLT GNOME_LIBS "/libxslt-x.x.x/win32/release/lib/"
 #endif
 
-#ifdef XML
-#	ifdef _DEBUG
-
-#		ifdef LIBXML_STATIC
-#			pragma comment(lib, GNOME_LIBS "/libxml2-x.x.x/win32/debug/lib/libxml2_a.lib")
-#		else
-#			pragma comment(lib, GNOME_LIBS "/libxml2-x.x.x/win32/debug/lib/libxml2.lib")
-#		endif
-
-#		ifdef LIBXSLT_STATIC
-#			pragma comment(lib, GNOME_LIBS "/libxslt-x.x.x/win32/debug/lib/libxslt_a.lib")
-#		else
-#			pragma comment(lib, GNOME_LIBS "/libxslt-x.x.x/win32/debug/lib/libxslt.lib")
-#		endif
-#		ifdef LIBEXSLT_STATIC
-#			pragma comment(lib, GNOME_LIBS "/libxslt-x.x.x/win32/debug/lib/libexslt_a.lib")
-#		else
-#			pragma comment(lib, GNOME_LIBS "/libxslt-x.x.x/win32/debug/lib/libexslt.lib")
-#		endif
-
+#ifdef LIBXML_STATIC
+#pragma comment(lib, LIB_XML "libxml2_a.lib")
 #else
+#pragma comment(lib, LIB_XML "libxml2.lib")
+#endif
 
-#		ifdef LIBXML_STATIC
-#			pragma comment(lib, GNOME_LIBS "/libxml2-x.x.x/win32/release/lib/libxml2_a.lib")
-#		else
-#			pragma comment(lib, GNOME_LIBS "/libxml2-x.x.x/win32/release/lib/libxml2.lib")
-#		endif
+#ifdef LIBXSLT_STATIC
+#pragma comment(lib, LIB_XSLT "libxslt_a.lib")
+#else
+#pragma comment(lib, LIB_XSLT "libxslt.lib")
+#endif
 
-#		ifdef LIBXSLT_STATIC
-#			pragma comment(lib, GNOME_LIBS "/libxslt-x.x.x/win32/release/lib/libxslt_a.lib")
-#		else
-#			pragma comment(lib, GNOME_LIBS "/libxslt-x.x.x/win32/release/lib/libxslt.lib")
-#		endif
-#		ifdef LIBEXSLT_STATIC
-#			pragma comment(lib, GNOME_LIBS "/libxslt-x.x.x/win32/release/lib/libexslt_a.lib")
-#		else
-#			pragma comment(lib, GNOME_LIBS "/libxslt-x.x.x/win32/release/lib/libexslt.lib")
-#		endif
+#ifdef LIBEXSLT_STATIC
+#pragma comment(lib, LIB_XSLT "libexslt_a.lib")
+#else
+#pragma comment(lib, LIB_XSLT "libexslt.lib")
+#endif
 
-#	endif
 #endif
 
 #endif
