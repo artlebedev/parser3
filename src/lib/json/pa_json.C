@@ -20,13 +20,6 @@
 
 #include "json.h"
 
-#ifdef TRACING_ENABLE
-#include <stdio.h>
-#define TRACING(fmt, ...)	fprintf(stderr, "tracing: " fmt, ##__VA_ARGS__)
-#else
-#define TRACING(fmt, ...)	((void) 0)
-#endif
-
 enum classes {
 	C_SPACE, /* space */
 	C_NL,    /* newline */
@@ -662,8 +655,6 @@ int json_parser_string(json_parser *parser, const char *s,
 
 		next_state = state_transition_table[parser->state][next_class];
 		buffer_policy = buffer_policy_table[parser->state][next_class];
-		TRACING("addchar %d (current-state=%d, next-state=%d, buf-policy=%d)\n",
-			ch, parser->state, next_state, buffer_policy);
 		if (next_state == STATE___) {
 			ret = JSON_ERROR_UNEXPECTED_CHAR;
 			break;
