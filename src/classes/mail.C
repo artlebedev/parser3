@@ -19,7 +19,7 @@
 
 #include "smtp.h"
 
-volatile const char * IDENT_MAIL_C="$Id: mail.C,v 1.120 2012/06/20 20:54:25 moko Exp $";
+volatile const char * IDENT_MAIL_C="$Id: mail.C,v 1.121 2013/07/31 15:13:03 moko Exp $";
 
 // defines
 
@@ -66,7 +66,7 @@ static void sendmail(
 			const String* from,
 			const String* to,
 			const String* 
-#ifndef _MSC_VER
+#ifndef WIN32
 			 options
 #endif
 			 ) {
@@ -185,7 +185,7 @@ static void sendmail(
 				file_spec->cstr(),
 				exec.err.length()?exec.err.cstr():"UNKNOWN", 
 				exec.status);
-#endif
+#endif //WIN32
 }
 
 // methods

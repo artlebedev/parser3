@@ -17,7 +17,7 @@
 #include "pa_vfile.h"
 #include "pa_uue.h"
 
-volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.104 2012/07/20 20:56:06 moko Exp $" IDENT_PA_VMAIL_H;
+volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.105 2013/07/31 15:15:39 moko Exp $" IDENT_PA_VMAIL_H;
 
 #ifdef WITH_MAILRECEIVE
 extern "C" {
@@ -859,13 +859,3 @@ Value* VMail::get_element(const String& aname) {
 
 	return 0;
 }
-
-#if defined(WITH_MAILRECEIVE) && defined(_MSC_VER)
-#	define GNOME_LIBS "../../../../win32/gnome"
-#	pragma comment(lib, GNOME_LIBS "/glib/lib/libglib-1.3-11.lib")
-#	ifdef _DEBUG
-#		pragma comment(lib, GNOME_LIBS "/gmime-x.x.x/Debug/libgmime.lib")
-#	else
-#		pragma comment(lib, GNOME_LIBS "/gmime-x.x.x/Release/libgmime.lib")
-#	endif
-#endif
