@@ -88,12 +88,12 @@ static char *character_escape[36] = {
 enum states {
 	STATE_GO, /* start  */
 	STATE_OK, /* ok     */
-	STATE__O, /* object */
-	STATE__K, /* key    */
+	STATE_OO, /* object */
+	STATE_KK, /* key    */
 	STATE_CO, /* colon  */
-	STATE__V, /* value  */
-	STATE__A, /* array  */
-	STATE__S, /* string */
+	STATE_VV, /* value  */
+	STATE_AA, /* array  */
+	STATE_SS, /* string */
 	STATE_E0, /* escape */
 	STATE_U1, STATE_U2, STATE_U3, STATE_U4, /* unicode states */
 	STATE_M0, STATE_Z0, STATE_I0, /* number states */
@@ -149,14 +149,14 @@ static const uint8_t state_transition_table[NR_STATES][NR_CLASSES] = {
 /*         sp nl |  {  }  [  ]  :  ,  "  \  /  +  -  .  0  19 a  b  c  d  e  f  l  n  r  s  t  u  |  E  |  *  # */
 /*GO*/ PT_(GO,GO,GO,OB,__,AB,__,__,__,__,__,CB,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,YB),
 /*OK*/ PT_(OK,OK,OK,__,OE,__,AE,__,SP,__,__,CB,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,YB),
-/*_O*/ PT_(_O,_O,_O,__,OE,__,__,__,__,_S,__,CB,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,YB),
-/*_K*/ PT_(_K,_K,_K,__,__,__,__,__,__,_S,__,CB,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,YB),
+/*OO*/ PT_(OO,OO,OO,__,OE,__,__,__,__,SS,__,CB,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,YB),
+/*KK*/ PT_(KK,KK,KK,__,__,__,__,__,__,SS,__,CB,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,YB),
 /*CO*/ PT_(CO,CO,CO,__,__,__,__,KS,__,__,__,CB,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,YB),
-/*_V*/ PT_(_V,_V,_V,OB,__,AB,__,__,__,_S,__,CB,__,MX,__,ZX,IX,__,__,__,__,__,F1,__,N1,__,__,T1,__,__,__,__,__,YB),
-/*_A*/ PT_(_A,_A,_A,OB,__,AB,AE,__,__,_S,__,CB,__,MX,__,ZX,IX,__,__,__,__,__,F1,__,N1,__,__,T1,__,__,__,__,__,YB),
+/*VV*/ PT_(VV,VV,VV,OB,__,AB,__,__,__,SS,__,CB,__,MX,__,ZX,IX,__,__,__,__,__,F1,__,N1,__,__,T1,__,__,__,__,__,YB),
+/*AA*/ PT_(AA,AA,AA,OB,__,AB,AE,__,__,SS,__,CB,__,MX,__,ZX,IX,__,__,__,__,__,F1,__,N1,__,__,T1,__,__,__,__,__,YB),
 /****************************************************************************************************************/
-/*_S*/ PT_(_S,__,__,_S,_S,_S,_S,_S,_S,SE,E0,_S,_S,_S,_S,_S,_S,_S,_S,_S,_S,_S,_S,_S,_S,_S,_S,_S,_S,_S,_S,_S,_S,_S),
-/*E0*/ PT_(__,__,__,__,__,__,__,__,__,_S,_S,_S,__,__,__,__,__,__,_S,__,__,__,_S,__,_S,_S,__,_S,U1,__,__,__,__,__),
+/*SS*/ PT_(SS,__,__,SS,SS,SS,SS,SS,SS,SE,E0,SS,SS,SS,SS,SS,SS,SS,SS,SS,SS,SS,SS,SS,SS,SS,SS,SS,SS,SS,SS,SS,SS,SS),
+/*E0*/ PT_(__,__,__,__,__,__,__,__,__,SS,SS,SS,__,__,__,__,__,__,SS,__,__,__,SS,__,SS,SS,__,SS,U1,__,__,__,__,__),
 /*U1*/ PT_(__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,U2,U2,U2,U2,U2,U2,U2,U2,__,__,__,__,__,__,U2,U2,__,__,__),
 /*U2*/ PT_(__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,U3,U3,U3,U3,U3,U3,U3,U3,__,__,__,__,__,__,U3,U3,__,__,__),
 /*U3*/ PT_(__,__,__,__,__,__,__,__,__,__,__,__,__,__,__,U4,U4,U4,U4,U4,U4,U4,U4,__,__,__,__,__,__,U4,U4,__,__,__),
@@ -198,13 +198,13 @@ static const uint8_t buffer_policy_table[NR_STATES][NR_CLASSES] = {
 /*      sp nl  |  {  }  [  ]  :  ,  "  \  /  +  -  .  0  19 a  b  c  d  e  f  l  n  r  s  t  u  |  E  |  *  # */
 /*GO*/ { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 /*OK*/ { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-/*_O*/ { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-/*_K*/ { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+/*OO*/ { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+/*KK*/ { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 /*CO*/ { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-/*_V*/ { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-/*_A*/ { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+/*VV*/ { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+/*AA*/ { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 /**************************************************************************************************************/
-/*_S*/ { 1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+/*SS*/ { 1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
 /*E0*/ { 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 2, 2, 0, 2, 0, 0, 0, 0, 0, 0 },
 /*U1*/ { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0 },
 /*U2*/ { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0 },
@@ -441,7 +441,7 @@ static int act_uc(json_parser *parser)
 {
 	int ret;
 	CHK(decode_unicode_char(parser));
-	parser->state = (uint8_t)((parser->unicode_multi) ? STATE_D1 : STATE__S);
+	parser->state = (uint8_t)((parser->unicode_multi) ? STATE_D1 : STATE_SS);
 	return 0;
 }
 
@@ -463,7 +463,7 @@ static int act_cb(json_parser *parser)
 
 static int act_ce(json_parser *parser)
 {
-	parser->state = (uint8_t)((parser->save_state > STATE__A) ? STATE_OK : parser->save_state);
+	parser->state = (uint8_t)((parser->save_state > STATE_AA) ? STATE_OK : parser->save_state);
 	return 0;
 }
 
@@ -516,9 +516,9 @@ static int act_sp(json_parser *parser)
 		return JSON_ERROR_COMMA_OUT_OF_STRUCTURE;
 	if (parser->stack[parser->stack_offset - 1] == MODE_OBJECT) {
 		parser->expecting_key = 1;
-		parser->state = STATE__K;
+		parser->state = STATE_KK;
 	} else
-		parser->state = STATE__V;
+		parser->state = STATE_VV;
 	return 0;
 }
 
@@ -531,11 +531,11 @@ struct action_descr
 };
 
 static struct action_descr actions_map[] = {
-	{ NULL,   JSON_NONE,  STATE__V, 0 }, /* KS */
+	{ NULL,   JSON_NONE,  STATE_VV, 0 }, /* KS */
 	{ act_sp, JSON_NONE,  0,        1 }, /* SP */
-	{ act_ab, JSON_NONE,  STATE__A, 0 }, /* AB */
+	{ act_ab, JSON_NONE,  STATE_AA, 0 }, /* AB */
 	{ act_ae, JSON_NONE,  STATE_OK, 1 }, /* AE */
-	{ act_ob, JSON_NONE,  STATE__O, 0 }, /* OB */
+	{ act_ob, JSON_NONE,  STATE_OO, 0 }, /* OB */
 	{ act_oe, JSON_NONE,  STATE_OK, 1 }, /* OE */
 	{ act_cb, JSON_NONE,  STATE_C1, 1 }, /* CB */
 	{ act_yb, JSON_NONE,  STATE_Y1, 1 }, /* YB */
