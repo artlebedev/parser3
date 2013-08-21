@@ -19,3 +19,8 @@ $long[very-long-long-long-long-long-long-long-long-long-long-long-long-long-long
 ^math:digest[sha512;123]<br />
 ^math:digest[sha512;123; $.hmac[pwd] ]<br />
 ^math:digest[sha512;123; $.hmac[$long$long] $.format[base64] ]<br />
+
+$paf[^file::load[binary;019paf2001.gif]]
+
+^math:digest[md5;$paf]<br />
+^math:digest[sha256;$paf]<br />
