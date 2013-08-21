@@ -1,0 +1,27 @@
+Content-Type: text/html
+Content-Length: 204
+
+{
+	"a":{
+		"b":"c"
+	},
+	"object":{
+"o":"at key object, with 2 options",
+"h":{
+			"a":"b",
+			"c":"d"
+		}
+}
+}
+{
+	"a":{
+		"b":"c"
+	},
+	"object":{
+		"o":"placeholder",
+		"h":{
+			"a":"b",
+			"c":"d"
+		}
+	}
+}

@@ -1,0 +1,30 @@
+@main[]
+
+$h[
+	$.a[$.b[c]]
+	$.object[^my::create[]]
+]
+
+^json:string[$h;
+	$.indent(true)
+	$.my[$handler]
+]
+
+^json:string[$h;
+	$.indent(true)
+]
+
+
+
+@handler[k;v;p]
+{
+$p.indent	"o":"at key $k, with ^p._count[] options",
+$p.indent	"h":^json:string[$v.h;$.indent[$p.indent	]]
+$p.indent}
+
+@CLASS
+my
+
+@create[]
+$o[placeholder]
+$h[ $.a[b] $.c[d] ]
