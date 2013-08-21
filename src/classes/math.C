@@ -12,6 +12,7 @@
 #include "pa_common.h"
 #include "pa_vint.h"
 #include "pa_vmath.h"
+#include "pa_vfile.h"
 #include "pa_request.h"
 #include "pa_md5.h"
 #include "pa_sha2.h"
@@ -21,7 +22,7 @@
 extern "C" char *crypt(const char* , const char* );
 #endif
 
-volatile const char * IDENT_MATH_C="$Id: math.C,v 1.68 2013/07/22 20:25:53 moko Exp $";
+volatile const char * IDENT_MATH_C="$Id: math.C,v 1.69 2013/08/21 14:41:24 moko Exp $";
 
 // defines
 
@@ -350,7 +351,7 @@ void memxor(char *dest, const char *src, size_t n){
 	memxor (block, key, keylen);						\
 	init(&c);								\
 	update(&c, (const unsigned char*)block, blocklen);			\
-	update(&c, (const unsigned char*)string, strlen(string));		\
+	update(&c, (const unsigned char*)data.str, data.length);		\
 	final(tempdigest, &c);							\
 	/* Compute result from KEY and TEMP. */					\
 	memset (block, OPAD, blocklen);						\
@@ -362,7 +363,17 @@ void memxor(char *dest, const char *src, size_t n){
 
 static void _digest(Request& r, MethodParams& params) {
 	const String &smethod = params.as_string(0, PARAMETER_MUST_BE_STRING);
-	const char *string = params.as_string(1, PARAMETER_MUST_BE_STRING).cstr();
+
+	Value& vdata=params.as_no_junction(1, "parameter must be string or file");
+
+	String::C data;
+	if(const String* sdata=vdata.get_string()){
+		String::Body body=sdata->cstr_to_string_body_untaint(String::L_AS_IS); // explode content, honor tainting changes
+		data=String::C(body.cstr(), body.length());
+	} else {
+		VFile *file=vdata.as_vfile(String::L_AS_IS);
+		data=String::C(file->value_ptr(),file->value_size());
+	}
 
 	enum Method { M_MD5, M_SHA1, M_SHA256, M_SHA512 } method;
 
@@ -401,7 +412,7 @@ static void _digest(Request& r, MethodParams& params) {
 			HMAC(hmac, pa_MD5Init, pa_MD5Update, pa_MD5Final, 64, 16);
 		} else {
 			pa_MD5Init(&c);
-			pa_MD5Update(&c, (const unsigned char*)string, strlen(string));
+			pa_MD5Update(&c, (const unsigned char*)data.str, data.length);
 		}
 		char *str=(char *)pa_malloc(16);
 		pa_MD5Final((unsigned char *)str, &c);
@@ -414,7 +425,7 @@ static void _digest(Request& r, MethodParams& params) {
 			HMAC(hmac, SHA1Reset, SHA1Input, SHA1ReadDigest, 64, 20);
 		} else {
 			SHA1Reset(&c);
-			SHA1Input(&c, (const unsigned char*)string, strlen(string));
+			SHA1Input(&c, (const unsigned char*)data.str, data.length);
 		}
 		char *str=(char *)pa_malloc(20);
 		SHA1ReadDigest(str, &c);
@@ -427,7 +438,7 @@ static void _digest(Request& r, MethodParams& params) {
 			HMAC(hmac, pa_SHA256_Init, pa_SHA256_Update, pa_SHA256_Final, 64, SHA256_DIGEST_LENGTH);
 		} else {
 			pa_SHA256_Init(&c);
-			pa_SHA256_Update(&c, (const unsigned char*)string, strlen(string));
+			pa_SHA256_Update(&c, (const unsigned char*)data.str, data.length);
 		}
 		char *str=(char *)pa_malloc(SHA256_DIGEST_LENGTH);
 		pa_SHA256_Final((unsigned char *)str, &c);
@@ -440,7 +451,7 @@ static void _digest(Request& r, MethodParams& params) {
 			HMAC(hmac, pa_SHA512_Init, pa_SHA512_Update, pa_SHA512_Final, 128, SHA512_DIGEST_LENGTH);
 		} else {
 			pa_SHA512_Init(&c);
-			pa_SHA512_Update(&c, (const unsigned char*)string, strlen(string));
+			pa_SHA512_Update(&c, (const unsigned char*)data.str, data.length);
 		}
 		char *str=(char *)pa_malloc(SHA512_DIGEST_LENGTH);
 		pa_SHA512_Final((unsigned char *)str, &c);
