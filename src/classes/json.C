@@ -18,7 +18,7 @@
 #include "pa_vxdoc.h"
 #endif
 
-volatile const char * IDENT_JSON_C="$Id: json.C,v 1.26 2013/08/21 12:11:13 moko Exp $";
+volatile const char * IDENT_JSON_C="$Id: json.C,v 1.27 2013/08/21 14:47:16 moko Exp $";
 
 // class
 
@@ -365,7 +365,7 @@ const String& value_json_string(String::Body key, Value& v, Json_options& option
 			VMethodFrame frame(*junction->method, options.r->method_frame, junction->self);
 
 			HashStringValue* params_hash=options.params && options.indent ? options.params->get_hash() : NULL;
-			Temp_hash_value<HashStringValue, Value*> indent(params_hash, "indent", new VString(*new String(options.indent)));
+			Temp_hash_value<HashStringValue, Value*> indent(params_hash, "indent", new VString(*new String(options.indent, String::L_AS_IS)));
 
 			Value *params[]={new VString(*new String(key, String::L_JSON)), &v, options.params ? options.params : VVoid::get()};
 			frame.store_params(params, 3);
