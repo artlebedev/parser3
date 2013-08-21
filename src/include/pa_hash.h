@@ -17,7 +17,7 @@
 #ifndef PA_HASH_H
 #define PA_HASH_H
 
-#define IDENT_PA_HASH_H "$Id: pa_hash.h,v 1.84 2012/03/16 09:24:09 moko Exp $"
+#define IDENT_PA_HASH_H "$Id: pa_hash.h,v 1.85 2013/08/21 12:11:14 moko Exp $"
 
 #include "pa_memory.h"
 #include "pa_types.h"
@@ -623,20 +623,21 @@ template<typename V> class HASH_STRING: public HASH<const String::Body,V>{};
 
 #ifndef HASH_ORDER
 ///    Auto-object used to temporarily substituting/removing string hash values
-template <typename K, typename V>
+template <typename H, typename V>
 class Temp_hash_value {
-	HashString<V> &fhash;
-	K fname;
+	H *fhash;
+	String::Body fname;
 	V saved_value;
 public:
-	Temp_hash_value(HashString<V>& ahash, K aname, V avalue) :
-		fhash(ahash),
-		fname(aname),
-		saved_value(ahash.get(aname)) {
-		fhash.put(aname, avalue);
+	Temp_hash_value(H *ahash, String::Body aname, V avalue) : fhash(ahash), fname(aname) {
+		if(fhash){
+			saved_value=fhash->get(aname);
+			fhash->put(aname, avalue);
+		}
 	}
-	~Temp_hash_value() { 
-		fhash.put(fname, saved_value);
+	~Temp_hash_value() {
+		if(fhash)
+			fhash->put(fname, saved_value);
 	}
 };
 #endif

@@ -18,7 +18,7 @@
 #include "pa_vxdoc.h"
 #endif
 
-volatile const char * IDENT_JSON_C="$Id: json.C,v 1.25 2013/07/29 09:44:16 moko Exp $";
+volatile const char * IDENT_JSON_C="$Id: json.C,v 1.26 2013/08/21 12:11:13 moko Exp $";
 
 // class
 
@@ -216,7 +216,7 @@ static void _parse(Request& r, MethodParams& params) {
 
 	json_config config = {
 		0,		// buffer_initial_size
-		128,	// max_nesting
+		128,		// max_nesting
 		0,		// max_data
 		1,		// allow_c_comments
 		1,		// allow_yaml_comments
@@ -283,6 +283,8 @@ static void _parse(Request& r, MethodParams& params) {
 	if (json.result) r.write_no_lang(*json.result);
 }
 
+const uint ANTI_ENDLESS_JSON_STRING_RECOURSION=128;
+
 char *get_indent(uint level){
 	static char* cache[ANTI_ENDLESS_JSON_STRING_RECOURSION]={};
 	if (!cache[level]){
@@ -294,20 +296,33 @@ char *get_indent(uint level){
 	return cache[level];
 }
 
+class Json_string_recoursion {
+	Json_options& foptions;
+public:
+	Json_string_recoursion(Json_options& aoptions) : foptions(aoptions) {
+		if(++foptions.json_string_recoursion==ANTI_ENDLESS_JSON_STRING_RECOURSION)
+			throw Exception(PARSER_RUNTIME, 0, "call canceled - endless json recursion detected");
+	}
+	~Json_string_recoursion() {
+		if(foptions.json_string_recoursion)
+			foptions.json_string_recoursion--;
+	}
+};
+
 const String& value_json_string(String::Body key, Value& v, Json_options& options);
 
 const String* Json_options::hash_json_string(HashStringValue &hash) {
 	if(!hash.count())
 		return new String("{}", String::L_AS_IS);
 
-	uint level = r->json_string_recoursion_go_down();
+	Json_string_recoursion go_down(*this);
 
 	String& result = *new String("{\n", String::L_AS_IS);
 
 	if (indent){
 
 		String *delim=NULL;
-		indent=get_indent(level);
+		indent=get_indent(json_string_recoursion);
 		for(HashStringValue::Iterator i(hash); i; i.next() ){
 			if (delim){
 				result << *delim;
@@ -317,7 +332,7 @@ const String* Json_options::hash_json_string(HashStringValue &hash) {
 			}
 			result << String(i.key(), String::L_JSON) << "\":" << value_json_string(i.key(), *i.value(), *this);
 		}
-		result << "\n" << (indent=get_indent(level-1)) << "}";
+		result << "\n" << (indent=get_indent(json_string_recoursion-1)) << "}";
 
 	} else {
 
@@ -331,14 +346,13 @@ const String* Json_options::hash_json_string(HashStringValue &hash) {
 
 	}
 
-	r->json_string_recoursion_go_up();
 	return &result;
 }
 
 static bool based_on(HashStringValue::key_type key, HashStringValue::value_type /*value*/, Value* v) {
 	return v->is(key.cstr());
 }
-					
+
 const String& value_json_string(String::Body key, Value& v, Json_options& options) {
 	if(options.methods) {
 		Value* method=options.methods->get(v.type());
@@ -349,6 +363,9 @@ const String& value_json_string(String::Body key, Value& v, Json_options& option
 		if(method && !method->is_void()) {
 			Junction* junction=method->get_junction();
 			VMethodFrame frame(*junction->method, options.r->method_frame, junction->self);
+
+			HashStringValue* params_hash=options.params && options.indent ? options.params->get_hash() : NULL;
+			Temp_hash_value<HashStringValue, Value*> indent(params_hash, "indent", new VString(*new String(options.indent)));
 
 			Value *params[]={new VString(*new String(key, String::L_JSON)), &v, options.params ? options.params : VVoid::get()};
 			frame.store_params(params, 3);
@@ -384,7 +401,10 @@ static void _string(Request& r, MethodParams& params) {
 						throw Exception(PARSER_RUNTIME, &svalue, "must be 'sql-string', 'gmt-string' or 'unix-timestamp'");
 					valid_options++;
 				} else if(key == "indent"){
-					json.indent=r.process_to_value(*value).as_bool() ? "":NULL;
+					if(value->is_string()){
+						json.indent=value->as_string().cstr();
+						json.json_string_recoursion=strlen(json.indent);
+					} else json.indent=r.process_to_value(*value).as_bool() ? "" : NULL;
 					valid_options++;
 				} else if(key == "table" && value->is_string()){
 					const String& svalue=value->as_string();

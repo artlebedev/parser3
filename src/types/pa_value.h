@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.149 2012/05/28 19:47:52 moko Exp $"
+#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.150 2013/08/21 12:11:14 moko Exp $"
 
 #include "pa_common.h"
 #include "pa_array.h"
@@ -40,6 +40,7 @@ struct Json_options {
 	Value* default_method;
 	Value* params;
 	bool skip_unknown;
+	uint json_string_recoursion;
 	const char* indent;
 	XDocOutputOptions* xdoc_options;
 	enum Date { D_SQL, D_GMT, D_TIMESTAMP } date;
@@ -53,6 +54,7 @@ struct Json_options {
 		params(NULL),
 		skip_unknown(false),
 		xdoc_options(NULL),
+		json_string_recoursion(0),
 		indent(NULL),
 		date(D_SQL),
 		table(T_OBJECT),

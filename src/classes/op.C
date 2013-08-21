@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.214 2013/07/23 14:29:01 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.215 2013/08/21 12:11:13 moko Exp $";
 
 // limits
 
@@ -435,8 +435,7 @@ public:
 #endif
 static void _switch(Request& r, MethodParams& params) {
 	Switch_data* data=new Switch_data(r, r.process_to_value(params[0]));
-	Temp_hash_value<const String::Body, void*> 
-		switch_data_setter(r.classes_conf, switch_data_name, data);
+	Temp_hash_value<HashString<void*>, void*> switch_data_setter(&r.classes_conf, switch_data_name, data);
 
 	Value& cases_code=params.as_junction(1, "switch cases must be code");
 	// execution of found ^case[...]{code} must be in context of ^switch[...]{code}
@@ -747,8 +746,7 @@ static void _cache(Request& r, MethodParams& params) {
 
 	Cache_scope scope={as_expires(r, params, 1, now), 0};
 
-	Temp_hash_value<const String::Body, void*> 
-		cache_scope_setter(r.classes_conf, cache_data_name, &scope);
+	Temp_hash_value<HashString<void*>, void*> cache_scope_setter(&r.classes_conf, cache_data_name, &scope);
 	Value& body_code=params.as_junction(2, "body_code must be code");
 	Value* catch_code=0;
 	if(params.count()>3)
