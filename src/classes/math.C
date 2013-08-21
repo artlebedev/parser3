@@ -22,7 +22,7 @@
 extern "C" char *crypt(const char* , const char* );
 #endif
 
-volatile const char * IDENT_MATH_C="$Id: math.C,v 1.69 2013/08/21 14:41:24 moko Exp $";
+volatile const char * IDENT_MATH_C="$Id: math.C,v 1.70 2013/08/21 14:52:22 moko Exp $";
 
 // defines
 
@@ -164,7 +164,7 @@ static void _crypt(Request& r, MethodParams& params) {
 }
 
 static void _md5(Request& r, MethodParams& params) {
-	const char *string=params.as_string(0, PARAMETER_MUST_BE_STRING).cstr();
+	const char *string=params.as_string(0, PARAMETER_MUST_BE_STRING).cstr_to_string_body_untaint(String::L_AS_IS).cstr();
 
 	PA_MD5_CTX context;
 	unsigned char digest[16];
@@ -316,7 +316,7 @@ void SHA1ReadDigest(void *buf, SHA1Context *c)
 }
 
 static void _sha1(Request& r, MethodParams& params) {
-	const char *string = params.as_string(0, PARAMETER_MUST_BE_STRING).cstr();
+	const char *string = params.as_string(0, PARAMETER_MUST_BE_STRING).cstr_to_string_body_untaint(String::L_AS_IS).cstr();
 
 	SHA1Context c;
 	unsigned char digest[20];
