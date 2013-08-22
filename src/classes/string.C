@@ -20,7 +20,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.207 2013/03/10 18:45:07 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.208 2013/08/22 15:57:01 moko Exp $";
 
 // class
 
@@ -486,14 +486,14 @@ class String_sql_event_handlers: public SQL_Driver_query_event_handlers {
 	bool got_column;
 public:
 	bool got_cell;
-	String& result;
+	const String* result;
 public:
 	String_sql_event_handlers(
 		const String& astatement_string, const char* astatement_cstr):
 		statement_string(astatement_string), statement_cstr(astatement_cstr),
 		got_column(false),
 		got_cell(false),
-		result(*new String) {}
+		result(&String::Empty) {}
 
 	bool add_column(SQL_Error& error, const char* /*str*/, size_t /*length*/) {
 		if(got_column) {
@@ -517,7 +517,7 @@ public:
 
 		try {
 			got_cell=true;
-			result.append_know_length(str, length, String::L_TAINTED);
+			result=new String(str, String::L_TAINTED /* no length as 0x00 can be inside */ );
 			return false;
 		} catch(...) {
 			error=SQL_Error("exception occured in String_sql_event_handlers::add_row_cell");
@@ -587,7 +587,7 @@ const String* sql_result_string(Request& r, MethodParams& params, Value*& defaul
 	if(!handlers.got_cell)
 		return 0; // no lines, caller should return second param[default value]
 
-	return &handlers.result;
+	return handlers.result;
 }
 
 static void _sql(Request& r, MethodParams& params) {
