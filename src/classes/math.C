@@ -22,7 +22,7 @@
 extern "C" char *crypt(const char* , const char* );
 #endif
 
-volatile const char * IDENT_MATH_C="$Id: math.C,v 1.70 2013/08/21 14:52:22 moko Exp $";
+volatile const char * IDENT_MATH_C="$Id: math.C,v 1.71 2013/08/22 14:35:30 moko Exp $";
 
 // defines
 
@@ -574,7 +574,7 @@ MMath::MMath(): Methoded("math") {
 	// ^math:sha1[string]
 	ADD1(sha1);
 	
-	// ^math:digest[method;string;options]
+	// ^math:digest[method;string|file;options]
 	add_native_method("digest", Method::CT_STATIC, _digest, 2, 3);
 	
 	// ^math:crc32[string]
