@@ -8,7 +8,7 @@
 #ifndef PA_CONFIG_FIXED_H
 #define PA_CONFIG_FIXED_H
 
-#define IDENT_PA_CONFIG_FIXED_H "$Id: pa_config_fixed.h,v 1.83 2013/07/29 10:01:41 moko Exp $"
+#define IDENT_PA_CONFIG_FIXED_H "$Id: pa_config_fixed.h,v 1.84 2013/08/23 10:15:21 moko Exp $"
 
 #define inline  __inline
 
@@ -74,10 +74,12 @@ typedef unsigned __int64 uint64_t;
 // disable stringstream usage
 //#define NO_STRINGSTREAM
 
+#define GC_NOT_DLL
+
 //xml-abled parser
 #define XML
 
-//#define XML_STATIC
+#define XML_STATIC
 #ifdef XML_STATIC
 #	define LIBXML_STATIC
 #	define LIBXSLT_STATIC
