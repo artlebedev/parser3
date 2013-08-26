@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: buildall,v 1.7 2012/10/22 20:54:53 moko Exp $
+# $Id: buildall,v 1.8 2013/08/26 19:37:20 moko Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -77,28 +77,28 @@ fi
 prepare_gz () {
     cd $project_dir/src
 
-    if test ! -f "$lib.tar.gz"; then
-	echo "Downloading $1..."
-	$download $2
+    if test ! -f "$1"; then
+	echo "Downloading $lib..."
+	$download $2$1
     fi
 
-    echo "Unpacking $1..."
+    echo "Unpacking $lib..."
     rm -rf $lib
-    gunzip -c $lib.tar.gz | tar xf - >/dev/null
+    gunzip -c $1 | tar xf - >/dev/null
     cd $lib
 }
 
 prepare_xz () {
     cd $project_dir/src
 
-    if test ! -f "$lib.tar.xz"; then
-	echo "Downloading $1..."
-	$download $2
+    if test ! -f "$1"; then
+	echo "Downloading $lib..."
+	$download $2$1
     fi
 
-    echo "Unpacking $1..."
+    echo "Unpacking $lib..."
     rm -rf $lib
-    xzcat $lib.tar.xz | tar xf - >/dev/null
+    xzcat $1 | tar xf - >/dev/null
     cd $lib
 }
 
@@ -114,23 +114,23 @@ mkdir src >/dev/null 2>&1
 
 if test ! -f "$project_dir/gc/lib/libgc.a"; then
 #   libgc="gc6.8" # FreeBSD 4.X is not supported in newer gc version
-    lib="gc-7.1"
-    prepare_gz gc http://www.hpl.hp.com/personal/Hans_Boehm/gc/gc_source/$lib.tar.gz
-    echo "Configuring gc..."
+    lib="gc-7.2"
+    prepare_gz ${lib}d.tar.gz http://www.hpl.hp.com/personal/Hans_Boehm/gc/gc_source/
+    echo "Configuring $lib..."
     CPPFLAGS="-DUSE_LIBC_PRIVATES -DUSE_MMAP -DDONT_ADD_BYTE_AT_END" \
     ./configure --prefix=$project_dir/gc \
 	--disable-threads \
 	--disable-shared \
 	--silent $cflags
-    echo "Building gc..."
+    echo "Building $lib..."
     make install
     cleanup
 fi
 
 if test ! -f "$project_dir/pcre/lib/libpcre.a"; then
     lib="pcre-8.30"
-    prepare_gz pcre ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/$lib.tar.gz
-    echo "Configuring pcre..."
+    prepare_gz $lib.tar.gz ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/
+    echo "Configuring $lib..."
     ./configure --prefix="$project_dir/pcre" \
 	--with-match-limit-recursion=10000 \
 	--enable-utf8 \
@@ -140,16 +140,16 @@ if test ! -f "$project_dir/pcre/lib/libpcre.a"; then
 	--disable-pcregrep-libz \
 	--disable-pcregrep-libbz2 \
 	--silent $cflags
-    echo "Building pcre..."
+    echo "Building $lib..."
     make install
     cleanup
 fi
 
 if test "$build_xml" = "yes" -a ! -f "$project_dir/gnome/lib/libxml2.a"; then
     lib="libxml2-2.8.0"
-    prepare_gz libxml ftp://xmlsoft.org/libxml2/$lib.tar.gz
+    prepare_gz $lib.tar.gz ftp://xmlsoft.org/libxml2/
     #sax1, output, tree, xinclude[in libxslt], html[in libxslt, mode=html?], xptr[xinclude], pattern -- needed!
-    echo "Configuring libxml..."
+    echo "Configuring $lib..."
     ./configure --prefix=$project_dir/gnome \
 	--without-catalog \
 	--without-iconv \
@@ -173,15 +173,15 @@ if test "$build_xml" = "yes" -a ! -f "$project_dir/gnome/lib/libxml2.a"; then
 	--without-lzma \
 	--disable-shared \
 	--silent $cflags
-    echo "Building libxml..."
+    echo "Building $lib..."
     make install
     cleanup
 fi
 
 if test "$build_xml" = "yes" -a ! -f "$project_dir/gnome/lib/libxslt.a"; then
     lib="libxslt-1.1.26"
-    prepare_gz libxslt ftp://xmlsoft.org/libxslt/$lib.tar.gz
-    echo "Configuring libxslt..."
+    prepare_gz $lib.tar.gz ftp://xmlsoft.org/libxslt/
+    echo "Configuring $lib..."
     ./configure --prefix=$project_dir/gnome \
 	--with-libxml-prefix=$project_dir/gnome \
 	--without-debug \
@@ -190,7 +190,7 @@ if test "$build_xml" = "yes" -a ! -f "$project_dir/gnome/lib/libxslt.a"; then
 	--without-plugins \
 	--disable-shared \
 	--silent $cflags
-    echo "Building libxslt..."
+    echo "Building $lib..."
     make install
     cleanup
 fi
@@ -210,8 +210,8 @@ fi
 
 if test ! -f "$project_dir/gnome/lib/libglib-2.0.a"; then
     lib="glib-2.28.8"
-    prepare_xz glib ftp://ftp.gnome.org/pub/GNOME/sources/glib/2.28/$lib.tar.xz
-    echo "Configuring glib..."
+    prepare_xz $lib.tar.xz ftp://ftp.gnome.org/pub/GNOME/sources/glib/2.28/
+    echo "Configuring $lib..."
     ./configure --prefix=$project_dir/gnome \
 	--enable-dtrace=no \
 	--enable-debug=no \
@@ -222,22 +222,22 @@ if test ! -f "$project_dir/gnome/lib/libglib-2.0.a"; then
 	--disable-shared \
 	--enable-static \
 	--silent $cflags $gmime_cflags $glib_ldflags
-    echo "Building glib..."
+    echo "Building $lib..."
     make install
     cleanup
 fi
 
 if test ! -f "$project_dir/gnome/lib/libgmime-2.4.a"; then
     lib="gmime-2.4.32"
-    prepare_xz gmime ftp://ftp.gnome.org/pub/GNOME/sources/gmime/2.4/$lib.tar.xz
-    echo "Configuring gmime..."
+    prepare_xz $lib.tar.xz ftp://ftp.gnome.org/pub/GNOME/sources/gmime/2.4/
+    echo "Configuring $lib..."
     ./configure --prefix=$project_dir/gnome \
 	--disable-glibtest \
 	--disable-mono \
 	--disable-shared \
 	--enable-static \
 	--silent $cflags $gmime_cflags LDFLAGS="$gmime_ldflags" PKG_CONFIG_PATH="$project_dir/gnome/lib/pkgconfig"
-    echo "Building libgmime..."
+    echo "Building $lib..."
     make install
     cleanup
 fi
