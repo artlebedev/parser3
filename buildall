@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: buildall,v 1.8 2013/08/26 19:37:20 moko Exp $
+# $Id: buildall,v 1.9 2013/08/26 20:05:57 moko Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -55,7 +55,7 @@ if test "$build_xml" = "yes"; then
 fi
 
 bits=`getconf LONG_BIT`
-if test "$bits" = "64" -a "$build_apache" = "yes"; then
+if test "$bits" = "64" -o "$build_apache" = "yes"; then
     cflags="$cflags --with-pic"
 else
     cflags="$cflags --without-pic"
