@@ -25,7 +25,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.228 2013/07/21 15:16:44 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.229 2013/08/27 11:27:45 moko Exp $";
 
 // defines
 
@@ -354,7 +354,7 @@ static void _create(Request& r, MethodParams& params) {
 	VFile& self=GET_SELF(r, VFile);
 
 	if(const String* content_str=vcontent.get_string()){
-		String::Body body=content_str->cstr_to_string_body_untaint(String::L_AS_IS); // explode content, honor tainting changes
+		String::Body body=content_str->cstr_to_string_body_untaint(String::L_AS_IS, r.connection(false), &r.charsets); // explode content, honor tainting changes
 		if(asked_charset && is_text)
 			body=Charset::transcode(body, r.charsets.source(), *asked_charset);
 		self.set(true/*tainted*/, is_text, body.cstrm(), body.length(), file_name, vcontent_type, &r);
@@ -450,7 +450,7 @@ static void pass_cgi_header_attribute(
 
 static void append_to_argv(Request& r, ArrayString& argv, const String* str){
 	if(!str->is_empty())
-		argv+=new String(str->cstr_to_string_body_untaint(String::L_AS_IS, 0, &r.charsets), String::L_AS_IS);
+		argv+=new String(str->cstr_to_string_body_untaint(String::L_AS_IS, r.connection(false), &r.charsets), String::L_AS_IS);
 }
 
 /// @todo fix `` in perl - they produced flipping consoles and no output to perl
@@ -521,7 +521,7 @@ static void _exec_cgi(Request& r, MethodParams& params, bool cgi) {
 			if(info.vstdin) {
 				if(const String* sstdin=info.vstdin->get_string()) {
 					// untaint stdin
-					in = new String(sstdin->cstr_to_string_body_untaint(String::L_AS_IS), String::L_AS_IS);
+					in = new String(sstdin->cstr_to_string_body_untaint(String::L_AS_IS, r.connection(false), &r.charsets), String::L_AS_IS);
 				} else
 					if(VFile* vfile=static_cast<VFile *>(info.vstdin->as("file")))
 						in->append_know_length((const char* )vfile->value_ptr(), vfile->value_size(), String::L_TAINTED);

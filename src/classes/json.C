@@ -18,7 +18,7 @@
 #include "pa_vxdoc.h"
 #endif
 
-volatile const char * IDENT_JSON_C="$Id: json.C,v 1.27 2013/08/21 14:47:16 moko Exp $";
+volatile const char * IDENT_JSON_C="$Id: json.C,v 1.28 2013/08/27 11:27:45 moko Exp $";
 
 // class
 
@@ -264,7 +264,7 @@ static void _parse(Request& r, MethodParams& params) {
 				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 		}
 
-	const String::Body json_body = json_string.cstr_to_string_body_untaint(String::L_JSON, 0, &(r.charsets));
+	const String::Body json_body = json_string.cstr_to_string_body_untaint(String::L_JSON, r.connection(false), &r.charsets);
 	const char *json_cstr = json.charset != NULL ? Charset::transcode(json_body, *json.charset, UTF8_charset).cstr() : json_body.cstr();
 
 	json_parser parser;
@@ -447,7 +447,7 @@ static void _string(Request& r, MethodParams& params) {
 		}
 
 	const String& result_string=value_json_string(String::Body(), params[0], json);
-	String::Body result_body=result_string.cstr_to_string_body_untaint(String::L_JSON, 0, &r.charsets);
+	String::Body result_body=result_string.cstr_to_string_body_untaint(String::L_JSON, r.connection(false), &r.charsets);
 	r.write_pass_lang(*new String(result_body, String::L_AS_IS));
  }
 

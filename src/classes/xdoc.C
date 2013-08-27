@@ -28,7 +28,7 @@
 #include "xnode.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_XDOC_C="$Id: xdoc.C,v 1.177 2012/06/21 14:22:09 moko Exp $";
+volatile const char * IDENT_XDOC_C="$Id: xdoc.C,v 1.178 2013/08/27 11:27:45 moko Exp $";
 
 // defines
 
@@ -381,7 +381,7 @@ static void _create(Request& r, MethodParams& params) {
 		Temp_lang temp_lang(r, String::L_XML);
 		const String& xml=r.process_to_string(param);
 
-		String::Body sbody=xml.cstr_to_string_body_untaint(r.flang, 0, &r.charsets);
+		String::Body sbody=xml.cstr_to_string_body_untaint(r.flang, r.connection(false), &r.charsets);
 		xmldoc=xmlParseMemory(sbody.cstr(), sbody.length());
 
 		//printf("document=0x%p\n", document);

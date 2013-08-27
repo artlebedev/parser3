@@ -20,7 +20,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.208 2013/08/22 15:57:01 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.209 2013/08/27 11:27:45 moko Exp $";
 
 // class
 
@@ -659,7 +659,7 @@ static void _save(Request& r, MethodParams& params) {
 	const String& file_name=params.as_string(file_name_index, FILE_NAME_MUST_BE_STRING);
 	const String& src=GET_SELF(r, VString).string();
 
-	String::Body sbody=src.cstr_to_string_body_untaint(String::L_AS_IS, r.connection(false/*no error if none*/));
+	String::Body sbody=src.cstr_to_string_body_untaint(String::L_AS_IS, r.connection(false), &r.charsets);
 
 	// write
 	file_write(r.charsets, r.absolute(file_name), sbody.cstr(), sbody.length(), true, do_append, asked_charset);

@@ -22,7 +22,7 @@
 extern "C" char *crypt(const char* , const char* );
 #endif
 
-volatile const char * IDENT_MATH_C="$Id: math.C,v 1.71 2013/08/22 14:35:30 moko Exp $";
+volatile const char * IDENT_MATH_C="$Id: math.C,v 1.72 2013/08/27 11:27:45 moko Exp $";
 
 // defines
 
@@ -164,7 +164,7 @@ static void _crypt(Request& r, MethodParams& params) {
 }
 
 static void _md5(Request& r, MethodParams& params) {
-	const char *string=params.as_string(0, PARAMETER_MUST_BE_STRING).cstr_to_string_body_untaint(String::L_AS_IS).cstr();
+	const char *string=params.as_string(0, PARAMETER_MUST_BE_STRING).cstr_to_string_body_untaint(String::L_AS_IS, r.connection(false), &r.charsets).cstr();
 
 	PA_MD5_CTX context;
 	unsigned char digest[16];
@@ -316,7 +316,7 @@ void SHA1ReadDigest(void *buf, SHA1Context *c)
 }
 
 static void _sha1(Request& r, MethodParams& params) {
-	const char *string = params.as_string(0, PARAMETER_MUST_BE_STRING).cstr_to_string_body_untaint(String::L_AS_IS).cstr();
+	const char *string = params.as_string(0, PARAMETER_MUST_BE_STRING).cstr_to_string_body_untaint(String::L_AS_IS, r.connection(false), &r.charsets).cstr();
 
 	SHA1Context c;
 	unsigned char digest[20];
@@ -368,7 +368,7 @@ static void _digest(Request& r, MethodParams& params) {
 
 	String::C data;
 	if(const String* sdata=vdata.get_string()){
-		String::Body body=sdata->cstr_to_string_body_untaint(String::L_AS_IS); // explode content, honor tainting changes
+		String::Body body=sdata->cstr_to_string_body_untaint(String::L_AS_IS, r.connection(false), &r.charsets); // explode content, honor tainting changes
 		data=String::C(body.cstr(), body.length());
 	} else {
 		VFile *file=vdata.as_vfile(String::L_AS_IS);
