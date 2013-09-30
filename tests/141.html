@@ -24,3 +24,9 @@ $paf[^file::load[binary;019paf2001.gif]]
 
 ^math:digest[md5;$paf]<br />
 ^math:digest[sha256;$paf]<br />
+
+$s[{ "name": "^taint[json;va"lue]" }]
+$f[^file::create[$s]]
+
+^math:md5[$s] = ^math:md5[$f.text]<br />
+^math:digest[sha1;$s] = ^math:digest[sha1;$f.text]<br />
