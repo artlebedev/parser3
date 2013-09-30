@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.212 2013/08/21 12:11:14 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.213 2013/09/30 19:40:57 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -135,6 +135,8 @@ private:
 	/// exception stack trace
 	Exception_trace exception_trace;
 public:
+
+	bool allow_class_replace;
 
 	//@{ request processing status
 	/// contexts
@@ -534,6 +536,18 @@ public:
 	}
 	~InCycle() { 
 		frequest.set_in_cycle(-1);
+	}
+};
+
+///	Auto-object used for temporary changing Request::allow_class_replace.
+class Temp_class_replace {
+	Request& frequest;
+public:
+	Temp_class_replace(Request& arequest, bool avalue) : frequest(arequest){
+		frequest.allow_class_replace=avalue;
+	}
+	~Temp_class_replace() {
+		frequest.allow_class_replace=false;
 	}
 };
 

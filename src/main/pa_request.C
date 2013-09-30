@@ -32,7 +32,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.334 2013/08/21 12:11:14 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.335 2013/09/30 19:40:57 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -104,6 +104,7 @@ Request::Request(SAPI_Info& asapi_info, Request_info& arequest_info,
 	anti_endless_execute_recoursion(0),
 
 	// public
+	allow_class_replace(false),
 	method_frame(0),
 	rcontext(0),
 	wcontext(0),

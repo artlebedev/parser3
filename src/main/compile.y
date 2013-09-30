@@ -8,7 +8,7 @@
 	
 */
 
-volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.264 2013/07/16 15:10:03 moko Exp $";
+volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.265 2013/09/30 19:40:57 moko Exp $";
 
 /**
 	@todo parser4: 
@@ -63,6 +63,13 @@ static const VString vempty;
 #undef POOL
 #define POOL  (*PC.pool)
 #ifndef DOXYGEN
+
+#define CLASS_ADD if(PC.class_add()){					\
+	strncpy(PC.error, PC.cclass->name().cstr(), MAX_STRING/2);	\
+	strcat(PC.error, " - class is already defined");		\
+	YYERROR;							\
+}
+
 %}
 
 %pure_parser
@@ -156,7 +163,7 @@ control_method: '@' STRING '\n'
 	}
 	if(command==CLASS_NAME) {
 		if(strings_code->count()==1*OPERATIONS_PER_OPVALUE) {
-			PC.class_add();
+			CLASS_ADD;
 			// new class' name
 			const String& name=LA2S(*strings_code)->trim(String::TRIM_END);
 			// creating the class
@@ -168,7 +175,7 @@ control_method: '@' STRING '\n'
 			YYERROR;
 		}
 	} else if(command==USE_CONTROL_METHOD_NAME) {
-		PC.class_add();
+		CLASS_ADD;
 		for(size_t i=0; i<strings_code->count(); i+=OPERATIONS_PER_OPVALUE) 
 			PC.request.use_file(PC.request.main_class, LA2S(*strings_code, i)->trim(String::TRIM_END), PC.request.get_used_filename(PC.file_no));
 	} else if(command==BASE_NAME) {
@@ -178,7 +185,7 @@ control_method: '@' STRING '\n'
 			strcat(PC.error, "'");
 			YYERROR;
 		}
-		PC.class_add();
+		CLASS_ADD;
 		if(PC.cclass->base_class()) { // already changed from default?
 			strcpy(PC.error, "class already have a base '");
 			strncat(PC.error, PC.cclass->base_class()->name().cstr(), MAX_STRING/2);
@@ -259,7 +266,7 @@ control_string: maybe_string '\n';
 maybe_string: empty | STRING;
 
 code_method: '@' STRING bracketed_maybe_strings maybe_bracketed_strings maybe_comment '\n' { 
-	PC.class_add();
+	CLASS_ADD;
 	PC.explicit_result=false;
 
 	YYSTYPE params_names_code=$3;

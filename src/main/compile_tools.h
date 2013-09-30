@@ -8,7 +8,7 @@
 #ifndef COMPILE_TOOLS
 #define COMPILE_TOOLS
 
-#define IDENT_COMPILE_TOOLS_H "$Id: compile_tools.h,v 1.103 2012/03/16 09:24:12 moko Exp $"
+#define IDENT_COMPILE_TOOLS_H "$Id: compile_tools.h,v 1.104 2013/09/30 19:40:57 moko Exp $"
 
 #include "pa_opcode.h"
 #include "pa_types.h"
@@ -124,15 +124,17 @@ public:
 		*cclasses+=aclass;
 	}
 
-	void class_add(){
+	/// true if exception should be rised
+	bool class_add(){
 		if(cclass_new){
 			cclass=cclass_new;
-			// append to request's classes
-			request.classes().put(cclass->name(), cclass);
 			*cclasses+=cclass;
 			cclass_new=0;
 			append=false;
+			// append to request's classes
+			return request.classes().put_dont_replace(cclass->name(), cclass) && !request.allow_class_replace;
 		}
+		return false;
 	}
 
 	VStateless_class* get_existed_class(VStateless_class* aclass){

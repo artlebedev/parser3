@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.215 2013/08/21 12:11:13 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.216 2013/09/30 19:40:57 moko Exp $";
 
 // limits
 
@@ -27,9 +27,6 @@ volatile const char * IDENT_OP_C="$Id: op.C,v 1.215 2013/08/21 12:11:13 moko Exp
 // defines
 
 #define CASE_DEFAULT_VALUE "DEFAULT"
-#define PROCESS_MAIN_OPTION_NAME "main"
-#define PROCESS_FILE_OPTION_NAME "file"
-#define PROCESS_LINENO_OPTION_NAME "lineno"
 
 // class
 
@@ -178,24 +175,33 @@ static void _process(Request& r, MethodParams& params) {
 		const String* main_alias=0;
 		const String* file_alias=0;
 		int line_no_alias_offset=0;
+		bool allow_class_replace=false;
 
 		size_t options_index=index+1;
 		if(options_index<params.count())
 			if(HashStringValue* options=params.as_hash(options_index)) {
+
 				int valid_options=0;
-				if(Value* vmain_alias=options->get(PROCESS_MAIN_OPTION_NAME)) {
-					valid_options++;
-					main_alias=&vmain_alias->as_string();
+				for(HashStringValue::Iterator i(*options); i; i.next() ){
+
+					String::Body key=i.key();
+					Value* value=i.value();
+
+					if(key == "main") {
+						valid_options++;
+						main_alias=&value->as_string();
+					} else if(key == "file") {
+						valid_options++;
+						file_alias=&value->as_string();
+					} else if(key == "lineno") {
+						valid_options++;
+						line_no_alias_offset=value->as_int();
+					} else if(key == "replace") {
+						valid_options++;
+						allow_class_replace=r.process_to_value(*value).as_bool();
+					}
 				}
-				if(Value* vfile_alias=options->get(PROCESS_FILE_OPTION_NAME)) {
-					valid_options++;
-					file_alias=&vfile_alias->as_string();
-				}
-				if(Value* vline_no_alias_offset=options->get(PROCESS_LINENO_OPTION_NAME)) {
-					valid_options++;
-					line_no_alias_offset=vline_no_alias_offset->as_int();
-				}
-		
+
 				if(valid_options!=options->count())
 					throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 			}
@@ -207,6 +213,9 @@ static void _process(Request& r, MethodParams& params) {
 		Value& vjunction=params.as_junction(index, "body must be code");
 		// evaluate source to process
 		const String& source=r.process_to_string(vjunction);
+
+		Temp_class_replace class_replace(r, allow_class_replace);
+
 		r.use_buf(*target_class,
 			source.untaint_cstr(String::L_AS_IS, r.connection(false)),
 			main_alias,
@@ -287,6 +296,28 @@ static void _while(Request& r, MethodParams& params) {
 
 static void _use(Request& r, MethodParams& params) {
 	Value& vfile=params.as_no_junction(0, FILE_NAME_MUST_NOT_BE_CODE);
+
+	bool allow_class_replace=false;
+
+	if(params.count()==2)
+		if(HashStringValue* options=params.as_hash(1)) {
+			int valid_options=0;
+			for(HashStringValue::Iterator i(*options); i; i.next() ){
+
+				String::Body key=i.key();
+				Value* value=i.value();
+
+				if(key == "replace") {
+					valid_options++;
+					allow_class_replace=r.process_to_value(*value).as_bool();
+				}
+
+			if(valid_options!=options->count())
+				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+			}
+		}
+
+	Temp_class_replace class_replace(r, allow_class_replace);
 
 	// _use could be called from the parser3 method only, so caller is always defined
 	r.use_file(r.main_class, vfile.as_string(), r.get_method_filename(&r.get_method_frame()->caller()->method));
@@ -889,7 +920,8 @@ VClassMAIN::VClassMAIN(): VClass() {
 	// ^apply-taint[untaint lang][string]
 	add_native_method("apply-taint", Method::CT_ANY, _apply_taint, 1, 2, Method::CO_WITHOUT_FRAME);
 
-	// ^process[code]
+	// ^process{code}
+	// ^process[context]{code}[options hash]
 	add_native_method("process", Method::CT_ANY, _process, 1, 3);
 
 	// ^rem{code}
@@ -898,8 +930,8 @@ VClassMAIN::VClassMAIN(): VClass() {
 	// ^while(condition){code}
 	add_native_method("while", Method::CT_ANY, _while, 2, 3, Method::CO_WITHOUT_FRAME);
 
-	// ^use[file]
-	add_native_method("use", Method::CT_ANY, _use, 1, 1);
+	// ^use[file[;options hash]]
+	add_native_method("use", Method::CT_ANY, _use, 1, 2);
 
 	// ^break[]
 	add_native_method("break", Method::CT_ANY, _break, 0, 0, Method::CO_WITHOUT_FRAME);
