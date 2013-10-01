@@ -8,7 +8,7 @@
 #ifndef COMPILE_TOOLS
 #define COMPILE_TOOLS
 
-#define IDENT_COMPILE_TOOLS_H "$Id: compile_tools.h,v 1.104 2013/09/30 19:40:57 moko Exp $"
+#define IDENT_COMPILE_TOOLS_H "$Id: compile_tools.h,v 1.105 2013/10/01 22:09:57 moko Exp $"
 
 #include "pa_opcode.h"
 #include "pa_types.h"
@@ -132,7 +132,9 @@ public:
 			cclass_new=0;
 			append=false;
 			// append to request's classes
-			return request.classes().put_dont_replace(cclass->name(), cclass) && !request.allow_class_replace;
+			if(!request.allow_class_replace)
+				return request.classes().put_dont_replace(cclass->name(), cclass) != 0;
+			request.classes().put(cclass->name(), cclass);
 		}
 		return false;
 	}
