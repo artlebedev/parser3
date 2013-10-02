@@ -6,6 +6,9 @@ $image[^image::create(150;48;0x00FFFF)]
 
 $abc[ ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzАБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдежзийклмнопрстуфхцчшщъыьэюя0123456789-+=!\"%:,.^;<>?@()[]'&*/]
 
+$i(0)
+^image.font[$abc;$font]($i)
+
 ^image.font[$abc;$font][
 	$.width(0)		^rem{ monospaced font with auto-width }
 	$.space(5)		^rem{ space width }
