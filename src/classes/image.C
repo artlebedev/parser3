@@ -25,7 +25,7 @@
 #include "pa_vdate.h"
 #include "pa_table.h"
 
-volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.143 2013/07/07 20:49:45 moko Exp $";
+volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.144 2013/10/02 20:37:29 moko Exp $";
 
 // defines
 
@@ -1137,12 +1137,10 @@ static void _font(Request& r, MethodParams& params) {
 	int monospace_width=0; // proportional
 	int letter_spacing=1;
 	if(params.count()>2){
-		if(HashStringValue* options=params.as_no_junction(2, "param must be int or hash").get_hash()){
+		if(HashStringValue* options=params[2].get_hash()){
 			// third option is hash
 			if(params.count()>3)
-				throw Exception(PARSER_RUNTIME,
-					0,
-					"too many options were specified");
+				throw Exception(PARSER_RUNTIME, 0, "too many params were specified");
 			int valid_options=0;
 			if(Value* vspacebar_width=options->get(spacebar_width_name)){
 				valid_options++;
@@ -1162,7 +1160,7 @@ static void _font(Request& r, MethodParams& params) {
 				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 		} else {
 			// backward
-			spacebar_width=params.as_int(2, "spacebar_width must be int", r);
+			spacebar_width=params.as_int(2, "param must be int or hash", r);
 			if(params.count()>3) {
 				monospace_width=params.as_int(3, "monospace_width must be int", r);
 				if(!monospace_width)
