@@ -1,11 +1,14 @@
 Content-Type: text/html
-Content-Length: 223
+Content-Length: 352
 
 ^a:a1[]: a1<br />
 ^a:a2[]: a2<br />
 ^a:a3[]: a3<br />
 ^b:b1[]: b1<br />
 <hr />
+Type: parser.compile,
+Source: use,
+Comment: /home/moko/Work/parser/parser3/tests/182_dir/a5.p(4:6): a - class is already defined
 ^a:a1[]: new a1<br />
 ^a:a2[]: Type: parser.runtime,
 Source: a2,
