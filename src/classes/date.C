@@ -13,7 +13,7 @@
 #include "pa_vdate.h"
 #include "pa_vtable.h"
 
-volatile const char * IDENT_DATE_C="$Id: date.C,v 1.91 2012/03/16 09:24:06 moko Exp $" IDENT_PA_VDATE_H;
+volatile const char * IDENT_DATE_C="$Id: date.C,v 1.92 2013/10/02 20:57:28 moko Exp $" IDENT_PA_VDATE_H;
 
 // class
 
@@ -138,8 +138,8 @@ static void _create(Request& r, MethodParams& params) {
 	VDate& vdate=GET_SELF(r, VDate);
 
 	if(params.count()==1){
-		if(const String* sdate=params[0].get_string()){ // ^create[2002-04-25 18:14:00] ^create[18:14:00]
-			vdate.set_time(cstr_to_time_t(sdate->cstrm()));
+		if(params[0].is_string()){ // ^create[2002-04-25 18:14:00] ^create[18:14:00]
+			vdate.set_time(cstr_to_time_t(params[0].get_string()->cstrm()));
 		} else { // ^create(float days) or ^create[date object]
 			time_t t=(time_t)round(params.as_double(0, "float days must be double", r)*SECS_PER_DAY);
 			if(t<0 || !localtime(&t))
