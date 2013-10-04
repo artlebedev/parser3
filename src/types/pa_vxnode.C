@@ -16,7 +16,7 @@
 #include "pa_charset.h"
 #include "pa_xml_exception.h"
 
-volatile const char * IDENT_PA_VXNODE_C="$Id: pa_vxnode.C,v 1.53 2012/05/23 16:26:41 moko Exp $" IDENT_PA_VXNODE_H;
+volatile const char * IDENT_PA_VXNODE_C="$Id: pa_vxnode.C,v 1.54 2013/10/04 21:21:58 moko Exp $" IDENT_PA_VXNODE_H;
 
 Request_charsets& VXnode::charsets() { 
 	return get_vxdoc().charsets();
@@ -165,7 +165,7 @@ Value* VXnode::get_element(const String& aname) {
 	return bark("%s field not found", &aname);
 }
 
-const VJunction* VXnode::put_element(const String& aname, Value* avalue, bool /*replace*/)
+const VJunction* VXnode::put_element(const String& aname, Value* avalue)
 { 
 	xmlNode& selfNode=get_xmlnode();
 

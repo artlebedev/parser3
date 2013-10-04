@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.93 2012/06/08 11:44:02 misha Exp $"
+#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.94 2013/10/04 21:21:57 moko Exp $"
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
@@ -186,7 +186,7 @@ public: // Value
 	override VStateless_class* base() { return self().base(); }
 
 	/// VMethodFrame: my or self_transparent
-	override const VJunction* put_element(const String& aname, Value* avalue, bool /*areplace*/) {
+	override const VJunction* put_element(const String& aname, Value* avalue) {
 		return (this->*put_element_impl)(aname, avalue);
 	}
 
@@ -216,7 +216,7 @@ private:
 	const VJunction* put_element_global(const String& aname, Value* avalue){
 		if(my && my->put_replaced(aname, avalue))
 			return PUT_ELEMENT_REPLACED_ELEMENT;
-		return self().put_element(aname, avalue, false/*=always, areplace*/);
+		return self().put_element(aname, avalue);
 	}
 
 public: // WContext

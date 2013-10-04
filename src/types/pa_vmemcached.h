@@ -10,7 +10,7 @@
 #ifndef PA_VMEMCACHED_H
 #define PA_VMEMCACHED_H
 
-#define IDENT_PA_VMEMCACHED_H "$Id: pa_vmemcached.h,v 1.5 2013/04/23 22:57:06 moko Exp $"
+#define IDENT_PA_VMEMCACHED_H "$Id: pa_vmemcached.h,v 1.6 2013/10/04 21:21:56 moko Exp $"
 
 #include "classes.h"
 #include "pa_vstateless_object.h"
@@ -30,7 +30,7 @@ public:
 	override bool as_bool() const { return true; }
 
 	override Value* get_element(const String& aname);
-	override const VJunction* put_element(const String& aname, Value* avalue, bool /*replace*/);
+	override const VJunction* put_element(const String& aname, Value* avalue);
 
 public: // usage
 	VMemcached(): fm(0), fttl(0) {}

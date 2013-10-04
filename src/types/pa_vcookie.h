@@ -8,7 +8,7 @@
 #ifndef PA_VCOOKIE_H
 #define PA_VCOOKIE_H
 
-#define IDENT_PA_VCOOKIE_H "$Id: pa_vcookie.h,v 1.37 2012/03/16 09:24:17 moko Exp $"
+#define IDENT_PA_VCOOKIE_H "$Id: pa_vcookie.h,v 1.38 2013/10/04 21:21:56 moko Exp $"
 
 #include "pa_hash.h"
 #include "pa_common.h"
@@ -38,7 +38,7 @@ public: // Value
 	// cookie: CLASS, CLASS_NAME, field
 	override Value* get_element(const String& aname);
 	// cookie: field
-	override const VJunction* put_element(const String& name, Value* value, bool replace);
+	override const VJunction* put_element(const String& name, Value* value);
 
 public: // usage
 

@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_OBJECT_H
 #define PA_VSTATELESS_OBJECT_H
 
-#define IDENT_PA_VSTATELESS_OBJECT_H "$Id: pa_vstateless_object.h,v 1.40 2012/03/16 09:24:19 moko Exp $"
+#define IDENT_PA_VSTATELESS_OBJECT_H "$Id: pa_vstateless_object.h,v 1.41 2013/10/04 21:21:57 moko Exp $"
 
 // include
 
@@ -28,8 +28,8 @@ public: // Value
 	}
 
 	/// VStateless_object: class_transparent
-	override const VJunction* put_element(const String& aname, Value* avalue, bool areplace) { 
-		return get_class()->put_element(*this, aname, avalue, areplace);
+	override const VJunction* put_element(const String& aname, Value* avalue) { 
+		return get_class()->put_element(*this, aname, avalue);
 	}
 
 	/// VStateless_object: class_transparent

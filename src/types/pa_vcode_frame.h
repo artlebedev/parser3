@@ -8,7 +8,7 @@
 #ifndef PA_VCODE_FRAME_H
 #define PA_VCODE_FRAME_H
 
-#define IDENT_PA_VCODE_FRAME_H "$Id: pa_vcode_frame.h,v 1.37 2012/03/16 09:24:16 moko Exp $"
+#define IDENT_PA_VCODE_FRAME_H "$Id: pa_vcode_frame.h,v 1.38 2013/10/04 21:21:56 moko Exp $"
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
@@ -23,10 +23,10 @@ public: // Value
 		return fparent->get_element(aname); 
 	}
 	/// VCodeFrame: twice transparent
-	override const VJunction* put_element(const String& aname, Value* avalue, bool areplace) { 
+	override const VJunction* put_element(const String& aname, Value* avalue) { 
 		// $hash[^if(1){$.field[]}]
 		// put goes to $hash
-		return fparent->put_element(aname, avalue, areplace); 
+		return fparent->put_element(aname, avalue); 
 	}
 
 

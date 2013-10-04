@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
-#define IDENT_PA_VSTATELESS_CLASS_H "$Id: pa_vstateless_class.h,v 1.74 2012/05/23 16:26:41 moko Exp $"
+#define IDENT_PA_VSTATELESS_CLASS_H "$Id: pa_vstateless_class.h,v 1.75 2013/10/04 21:21:57 moko Exp $"
 
 // include
 
@@ -74,9 +74,9 @@ public: // Value
 	/// get_element with aself for VObject junctions
 	virtual Value* get_element(Value& aself, const String& aname);
 
-	override const VJunction* put_element(const String& aname, Value* avalue, bool areplace) {	return put_element(*this, aname, avalue, areplace); }
+	override const VJunction* put_element(const String& aname, Value* avalue) {	return put_element(*this, aname, avalue); }
 	/// put_element with aself for VObject junctions
-	virtual const VJunction* put_element(Value& aself, const String& aname, Value* /*avalue*/, bool /*areplace*/) {	
+	virtual const VJunction* put_element(Value& aself, const String& aname, Value* /*avalue*/) {	
 		aself.bark("element can not be stored to %s", &aname); 
 		return 0;
 	}

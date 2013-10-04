@@ -8,7 +8,7 @@
 #ifndef PA_VHASHFILE_H
 #define PA_VHASHFILE_H
 
-#define IDENT_PA_VHASHFILE_H "$Id: pa_vhashfile.h,v 1.42 2013/08/21 13:52:03 moko Exp $"
+#define IDENT_PA_VHASHFILE_H "$Id: pa_vhashfile.h,v 1.43 2013/10/04 21:21:56 moko Exp $"
 
 #include "classes.h"
 #include "pa_pool.h"
@@ -49,7 +49,7 @@ public: // value
 	}
 	
 	/// VHashfile: (key)=value, (key)=(value+expires)
-	override const VJunction* put_element(const String& aname, Value* avalue, bool /*replace*/) { 
+	override const VJunction* put_element(const String& aname, Value* avalue) {
 		put_field(aname, avalue);
 		return 0; // nobody is supposed to derive from hashfile, so does not matter
 	}

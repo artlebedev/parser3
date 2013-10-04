@@ -8,7 +8,7 @@
 #ifndef PA_VIMAGE_H
 #define PA_VIMAGE_H
 
-#define IDENT_PA_VIMAGE_H "$Id: pa_vimage.h,v 1.54 2012/05/23 16:26:40 moko Exp $"
+#define IDENT_PA_VIMAGE_H "$Id: pa_vimage.h,v 1.55 2013/10/04 21:21:56 moko Exp $"
 
 #include "classes.h"
 #include "pa_common.h"
@@ -80,7 +80,7 @@ public: // Value
 	override Value* get_element(const String& aname);
 
 	/// VImage: field
-	override const VJunction* put_element(const String& name, Value* value, bool replace);
+	override const VJunction* put_element(const String& name, Value* value);
 
 public: // usage
 

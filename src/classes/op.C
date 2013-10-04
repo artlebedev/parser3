@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.216 2013/09/30 19:40:57 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.217 2013/10/04 21:21:54 moko Exp $";
 
 // limits
 
@@ -357,7 +357,7 @@ static void _for(Request& r, MethodParams& params) {
 	VInt* vint=new VInt(0);
 
 	VMethodFrame& caller=*r.get_method_frame()->caller();
-	caller.put_element(var_name, vint, false);
+	caller.put_element(var_name, vint);
 	if(delim_maybe_code){ // delimiter set 
 		bool need_delim=false;
 
@@ -555,13 +555,13 @@ static Try_catch_result try_catch(Request& r,
 		Value* method_frame=junction->method_frame;
 		Value* saved_exception_var_value=method_frame->get_element(exception_var_name);
 		VMethodFrame& frame=*junction->method_frame;
-		frame.put_element(exception_var_name, &details.vhash, false);
+		frame.put_element(exception_var_name, &details.vhash);
 
 		result.processed_code=r.process(*catch_code);
 		
 		// retriving $exception.handled, restoring $exception var
 		Value* vhandled=details.vhash.hash().get(exception_handled_part_name);
-		frame.put_element(exception_var_name, saved_exception_var_value, false);
+		frame.put_element(exception_var_name, saved_exception_var_value);
 
 		bool bhandled=false;
 		if(vhandled) {

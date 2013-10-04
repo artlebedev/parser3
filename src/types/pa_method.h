@@ -8,7 +8,7 @@
 #ifndef PA_METHOD_H
 #define PA_METHOD_H
 
-#define IDENT_PA_METHOD_H "$Id: pa_method.h,v 1.20 2012/06/05 10:28:43 misha Exp $"
+#define IDENT_PA_METHOD_H "$Id: pa_method.h,v 1.21 2013/10/04 21:21:55 moko Exp $"
 
 #define OPTIMIZE_CALL
 #define OPTIMIZE_RESULT
@@ -149,10 +149,10 @@ public:
 		fwhere(awhere),
 		fname(aname),
 		saved(awhere.get_element(aname)) {
-		fwhere.put_element(aname, awhat, false);
+		fwhere.put_element(aname, awhat);
 	}
 	~Temp_value_element() { 
-		fwhere.put_element(fname, saved, false);
+		fwhere.put_element(fname, saved);
 	}
 };
 

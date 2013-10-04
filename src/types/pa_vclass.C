@@ -6,8 +6,9 @@
 */
 
 #include "pa_vclass.h"
+#include "pa_vobject.h"
 
-volatile const char * IDENT_PA_VCLASS_C="$Id: pa_vclass.C,v 1.47 2012/06/08 02:04:11 misha Exp $" IDENT_PA_VCLASS_H;
+volatile const char * IDENT_PA_VCLASS_C="$Id: pa_vclass.C,v 1.48 2013/10/04 21:21:55 moko Exp $" IDENT_PA_VCLASS_H;
 
 Property& VClass::get_property(const String& aname) {
 	Property* result=ffields.get(aname);
@@ -107,7 +108,7 @@ HashStringValue* VClass::get_hash() {
 }
 
 /// VClass: (field/property)=value - static values only
-const VJunction* VClass::put_element(Value& aself, const String& aname, Value* avalue, bool areplace) {
+const VJunction* VClass::put_element(Value& aself, const String& aname, Value* avalue) {
 	if(Property* prop=ffields.get(aname)) {
 		if (prop->setter)
 			return new VJunction(aself, prop->setter);
@@ -121,9 +122,6 @@ const VJunction* VClass::put_element(Value& aself, const String& aname, Value* a
 		// just field, value can be 0 and unlike usual we don't remove it
 		prop->value=avalue;
 	} else {
-		if(areplace)
-			return 0;
-
 		prop=new Property();
 		prop->value=avalue;
 		ffields.put(aname, prop);
@@ -137,6 +135,25 @@ const VJunction* VClass::put_element(Value& aself, const String& aname, Value* a
 	}
 
 	return PUT_ELEMENT_REPLACED_ELEMENT;
+}
+
+/// part of put_element
+const VJunction* VClass::put_element_replace_only(Value& aself, const String& aname, Value* avalue) {
+	if(Property* prop=ffields.get(aname)) {
+		if (prop->setter)
+			return new VJunction(aself, prop->setter);
+
+		if(prop->getter){
+			if(VJunction *result=get_default_setter(aself, aname))
+				return result;
+			throw Exception(PARSER_RUNTIME,	0, "this property has no setter method (@SET_%s[value])", aname.cstr());
+		}
+		
+		// just field, value can be 0 and unlike usual we don't remove it
+		prop->value=avalue;
+		return PUT_ELEMENT_REPLACED_ELEMENT;
+	}
+	return 0;
 }
 
 /// @returns object of this class

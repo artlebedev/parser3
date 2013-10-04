@@ -8,7 +8,7 @@
 #ifndef PA_VRESPONSE_H
 #define PA_VRESPONSE_H
 
-#define IDENT_PA_VRESPONSE_H "$Id: pa_vresponse.h,v 1.43 2012/03/16 09:24:19 moko Exp $"
+#define IDENT_PA_VRESPONSE_H "$Id: pa_vresponse.h,v 1.44 2013/10/04 21:21:57 moko Exp $"
 
 #include "pa_vstateless_object.h"
 #include "pa_string.h"
@@ -47,7 +47,7 @@ public: // Value
 	override Value* get_element(const String& aname);
 
 	/// Response: (attribute)=value
-	override const VJunction* put_element(const String& name, Value* value, bool replace);
+	override const VJunction* put_element(const String& name, Value* value);
 
 public:	// usage
 

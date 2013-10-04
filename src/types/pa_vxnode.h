@@ -8,7 +8,7 @@
 #ifndef PA_VXNODE_H
 #define PA_VXNODE_H
 
-#define IDENT_PA_VXNODE_H "$Id: pa_vxnode.h,v 1.42 2012/05/23 16:26:41 moko Exp $"
+#define IDENT_PA_VXNODE_H "$Id: pa_vxnode.h,v 1.43 2013/10/04 21:21:58 moko Exp $"
 
 #include "classes.h"
 #include "pa_common.h"
@@ -47,7 +47,7 @@ public: // Value
 	override Value* get_element(const String& aname);
 
 	/// VXnode: $nodeValue
-	override const VJunction* put_element(const String& aname, Value* avalue, bool replace);
+	override const VJunction* put_element(const String& aname, Value* avalue);
 
 public: // usage
 

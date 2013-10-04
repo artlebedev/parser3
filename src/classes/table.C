@@ -21,7 +21,7 @@
 #include "pa_vbool.h"
 #include "pa_array.h"
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.295 2013/07/30 12:36:22 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.296 2013/10/04 21:21:54 moko Exp $";
 
 // class
 
@@ -1028,9 +1028,9 @@ static void _foreach(Request& r, MethodParams& params) {
 			table.set_current(row);
 
 			if(rownum_var_name)
-				var_context->put_element(*rownum_var_name, new VString(*new String(String::Body::Format(row), String::L_CLEAN)), false);
+				var_context->put_element(*rownum_var_name, new VString(*new String(String::Body::Format(row), String::L_CLEAN)));
 			if(value_var_name)
-				var_context->put_element(*value_var_name, new VTable(&table), false);
+				var_context->put_element(*value_var_name, new VTable(&table));
 
 			StringOrValue sv_processed=r.process(body_code);
 			Request::Skip lskip=r.get_skip(); r.set_skip(Request::SKIP_NOTHING);
@@ -1053,9 +1053,9 @@ static void _foreach(Request& r, MethodParams& params) {
 			table.set_current(row);
  
 			if(rownum_var_name)
-				var_context->put_element(*rownum_var_name, new VString(*new String(String::Body::Format(row), String::L_CLEAN)), false);
+				var_context->put_element(*rownum_var_name, new VString(*new String(String::Body::Format(row), String::L_CLEAN)));
 			if(value_var_name)
-				var_context->put_element(*value_var_name, new VTable(&table), false);
+				var_context->put_element(*value_var_name, new VTable(&table));
 
 			r.process_write(body_code);
 			Request::Skip lskip=r.get_skip(); r.set_skip(Request::SKIP_NOTHING);

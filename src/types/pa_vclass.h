@@ -8,13 +8,12 @@
 #ifndef PA_VCLASS_H
 #define PA_VCLASS_H
 
-#define IDENT_PA_VCLASS_H "$Id: pa_vclass.h,v 1.60 2012/06/08 02:04:11 misha Exp $"
+#define IDENT_PA_VCLASS_H "$Id: pa_vclass.h,v 1.61 2013/10/04 21:21:55 moko Exp $"
 
 // includes
 
 #include "pa_vstateless_class.h"
 #include "pa_vjunction.h"
-#include "pa_vobject.h"
 
 /**	stores 
 - static fields, getters & setters: VClass::ffields
@@ -29,7 +28,10 @@ public: // Value
 	override Value* as(const char* atype);
 
 	override Value* get_element(Value& aself, const String& aname);
-	override const VJunction* put_element(Value& self, const String& name, Value* value, bool replace);
+	override const VJunction* put_element(Value& self, const String& name, Value* value);
+	// for VObject::put_element
+	const VJunction* put_element_replace_only(Value& self, const String& name, Value* value);
+
 	override Value* create_new_value(Pool&);
 
 	override HashStringValue *get_hash();

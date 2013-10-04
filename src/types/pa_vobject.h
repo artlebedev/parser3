@@ -8,7 +8,7 @@
 #ifndef PA_VOBJECT_H
 #define PA_VOBJECT_H
 
-#define IDENT_PA_VOBJECT_H "$Id: pa_vobject.h,v 1.60 2013/07/16 15:21:06 moko Exp $"
+#define IDENT_PA_VOBJECT_H "$Id: pa_vobject.h,v 1.61 2013/10/04 21:21:57 moko Exp $"
 
 // includes
 
@@ -27,7 +27,7 @@
 */
 class VObject: public Value {
 
-	VStateless_class& fclass;
+	VClass& fclass;
 	HashStringValue ffields;
 
 	enum State {
@@ -57,7 +57,7 @@ public: // Value
 	override HashStringValue* get_fields() { return &ffields; }
 
 	override Value* get_element(const String& aname);
-	override const VJunction* put_element(const String& name, Value* value, bool replace);
+	override const VJunction* put_element(const String& name, Value* value);
 
 	override const String* get_json_string(Json_options& options);
 
@@ -71,7 +71,7 @@ public: // Value
 
 public: // creation
 
-	VObject(VStateless_class& aclass): fclass(aclass), state(IS_GETTER_ACTIVE){}
+	VObject(VClass& aclass): fclass(aclass), state(IS_GETTER_ACTIVE){}
 
 private:
 

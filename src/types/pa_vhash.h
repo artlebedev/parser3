@@ -8,7 +8,7 @@
 #ifndef PA_VHASH_H
 #define PA_VHASH_H
 
-#define IDENT_PA_VHASH_H "$Id: pa_vhash.h,v 1.68 2013/03/09 06:20:40 misha Exp $"
+#define IDENT_PA_VHASH_H "$Id: pa_vhash.h,v 1.69 2013/10/04 21:21:56 moko Exp $"
 
 #include "classes.h"
 #include "pa_value.h"
@@ -73,7 +73,7 @@ public: // value
 	}
 	
 	/// VHash: (key)=value
-	override const VJunction* put_element(const String& aname, Value* avalue, bool /*replace*/) { 
+	override const VJunction* put_element(const String& aname, Value* avalue) {
 		if(aname==hash_default_element_name)
 			set_default(avalue);
 		else 

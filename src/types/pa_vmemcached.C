@@ -13,7 +13,7 @@
 #include "pa_vhash.h"
 #include "pa_vvoid.h"
 
-volatile const char * IDENT_PA_VMEMCACHED_C="$Id: pa_vmemcached.C,v 1.14 2013/07/22 20:22:02 moko Exp $" IDENT_PA_VMEMCACHED_H;
+volatile const char * IDENT_PA_VMEMCACHED_C="$Id: pa_vmemcached.C,v 1.15 2013/10/04 21:21:56 moko Exp $" IDENT_PA_VMEMCACHED_H;
 
 const char *memcached_library="libmemcached" LT_MODULE_EXT;
 
@@ -257,7 +257,7 @@ bool VMemcached::add(const String& aname, Value* avalue){
 	return true;
 }
 
-const VJunction* VMemcached::put_element(const String& aname, Value* avalue, bool /*replace*/){
+const VJunction* VMemcached::put_element(const String& aname, Value* avalue){
 	check_key(aname);
 
 	Serialization_data data;

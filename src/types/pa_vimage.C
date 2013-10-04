@@ -11,7 +11,7 @@
 #include "gif.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_PA_VIMAGE_C="$Id: pa_vimage.C,v 1.42 2012/05/23 16:26:40 moko Exp $" IDENT_PA_VIMAGE_H;
+volatile const char * IDENT_PA_VIMAGE_C="$Id: pa_vimage.C,v 1.43 2013/10/04 21:21:56 moko Exp $" IDENT_PA_VIMAGE_H;
 
 void VImage::set(const String* src, int width, int height,
 				 gdImage* aimage,
@@ -55,7 +55,7 @@ Value* VImage::get_element(const String& aname) {
 	return ffields.get(aname);
 }
 
-const VJunction* VImage::put_element(const String& aname, Value* avalue, bool /*replace*/) {
+const VJunction* VImage::put_element(const String& aname, Value* avalue) {
 	ffields.put(aname, avalue);
 
 	if(fimage) {

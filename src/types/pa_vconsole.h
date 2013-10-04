@@ -8,7 +8,7 @@
 #ifndef PA_VCONSOLE_H
 #define PA_VCONSOLE_H
 
-#define IDENT_PA_VCONSOLE_H "$Id: pa_vconsole.h,v 1.18 2012/03/16 09:24:16 moko Exp $"
+#define IDENT_PA_VCONSOLE_H "$Id: pa_vconsole.h,v 1.19 2013/10/04 21:21:56 moko Exp $"
 
 // includes
 
@@ -57,7 +57,7 @@ public: // Value
 	}
 
 	/// console: $line
-	override const VJunction* put_element(const String& aname, Value* avalue, bool /*areplace*/) { 
+	override const VJunction* put_element(const String& aname, Value* avalue) { 
 		// $line
 		if(aname==CONSOLE_LINE_NAME) {
 			fused=true;

@@ -21,7 +21,7 @@
 #include "pa_vimage.h"
 #include "pa_wwrapper.h"
 
-volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.370 2012/07/28 20:10:58 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
+volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.371 2013/10/04 21:21:55 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
 
 //#define DEBUG_EXECUTE
 
@@ -397,7 +397,7 @@ void Request::execute(ArrayOperation& ops) {
 
 				const String& name=stack.pop().string();  debug_name=&name;
 				Value& ncontext=stack.pop().value();
-				if(const VJunction* vjunction=ncontext.put_element(name, &value, false))
+				if(const VJunction* vjunction=ncontext.put_element(name, &value))
 					if(vjunction!=PUT_ELEMENT_REPLACED_ELEMENT)
 						throw Exception(PARSER_RUNTIME,
 							0,
@@ -1278,7 +1278,7 @@ Value& Request::get_element(Value& ncontext, const String& name) {
 
 void Request::put_element(Value& ncontext, const String& name, Value* value) {
 	// put_element can return property-setting-junction
-	if(const VJunction* vjunction=ncontext.put_element(name, value, false))
+	if(const VJunction* vjunction=ncontext.put_element(name, value))
 		if(vjunction!=PUT_ELEMENT_REPLACED_ELEMENT) {
 			const Junction& junction = vjunction->junction();
 			VConstructorFrame frame(*junction.method, method_frame /*caller*/, junction.self);

@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.150 2013/08/21 12:11:14 moko Exp $"
+#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.151 2013/10/04 21:21:55 moko Exp $"
 
 #include "pa_common.h"
 #include "pa_array.h"
@@ -164,7 +164,7 @@ public: // Value
 	/// store Value element under @a name
 	/// @returns putter method junction, or it can just report[PUT_ELEMENT_REPLACED_ELEMENT] 
 	/// that it replaced something in base fields 
-	virtual const VJunction* put_element(const String& aname, Value* /*avalue*/, bool /*areplace*/) { 
+	virtual const VJunction* put_element(const String& aname, Value* /*avalue*/) { 
 		// to prevent modification of system classes,
 		// created at system startup, and not having exception
 		// handler installed, we neet to bark using request.pool

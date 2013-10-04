@@ -12,7 +12,7 @@
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VOBJECT_C="$Id: pa_vobject.C,v 1.37 2013/07/16 15:21:06 moko Exp $" IDENT_PA_VOBJECT_H;
+volatile const char * IDENT_PA_VOBJECT_C="$Id: pa_vobject.C,v 1.38 2013/10/04 21:21:57 moko Exp $" IDENT_PA_VOBJECT_H;
 
 Value* VObject::get_scalar_value(const char* as_something) const {
 	VObject* unconst_this=const_cast<VObject*>(this);
@@ -100,9 +100,9 @@ Value* VObject::get_element(const String& aname) {
 	return fclass.get_element(*this, aname);
 }
 
-const VJunction* VObject::put_element(const String& aname, Value* avalue, bool /*areplace*/){
+const VJunction* VObject::put_element(const String& aname, Value* avalue){
 	// class property
-	if(const VJunction* result=fclass.put_element(*this, aname, avalue, true /*try to replace! NEVER overwrite*/))
+	if(const VJunction* result=fclass.put_element_replace_only(*this, aname, avalue))
 		return result; 
 	
 	// object field or default setter
