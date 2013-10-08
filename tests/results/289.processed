@@ -1,0 +1,9 @@
+Content-Type: text/html
+Content-Length: 157
+
+auto v 2
+auto log default
+set a: SET_DEFAULT called for 'log' with 'SET_a called with '1''
+get a: default
+set b: SET_DEFAULT called for 'b' with '2'
+get b: b
