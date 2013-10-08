@@ -1,0 +1,26 @@
+@main[]
+
+$o[^a::create[]]
+
+^try_catch{
+    $o.tmp[value]
+}
+
+@try_catch[code]
+^try{
+	$code
+}{
+	$exception.handled(true)
+	$result[Exception: $exception.source - $exception.comment]
+}
+
+@CLASS
+a
+
+@create[]
+
+@GET_tmp[]
+tmp
+
+@SET_DEFAULT[name;value]
+$$name[$value]
