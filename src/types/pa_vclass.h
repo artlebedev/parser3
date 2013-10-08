@@ -8,7 +8,7 @@
 #ifndef PA_VCLASS_H
 #define PA_VCLASS_H
 
-#define IDENT_PA_VCLASS_H "$Id: pa_vclass.h,v 1.61 2013/10/04 21:21:55 moko Exp $"
+#define IDENT_PA_VCLASS_H "$Id: pa_vclass.h,v 1.62 2013/10/08 21:25:46 moko Exp $"
 
 // includes
 
@@ -44,13 +44,30 @@ public:
 	override HashStringProperty* get_properties(){ return &ffields; };
 	override void set_base(VStateless_class* abase);
 
+	/// VClass default getter & setter support
+	override void enable_default_getter(){ state |= IS_GETTER_ACTIVE; }
+	override void enable_default_setter(){ if(has_default_setter()) state |= IS_SETTER_ACTIVE; }
+	override void disable_default_getter(){ state &= ~IS_GETTER_ACTIVE; }
+	override void disable_default_setter(){ state &= ~IS_SETTER_ACTIVE; }
+	override bool is_enabled_default_getter(){ return (state & IS_GETTER_ACTIVE) > 0; }
+	override bool is_enabled_default_setter(){ return (state & IS_SETTER_ACTIVE) > 0; }
+
 private:
+
+	enum State {
+		IS_GETTER_ACTIVE = 0x01,
+		IS_SETTER_ACTIVE = 0x02
+	};
+
+	int state; // default setter & getter state
+
+	HashStringProperty ffields;
 
 	Property& get_property(const String& aname);
 
-private: // self
+public:
 
-	HashStringProperty ffields;
+	VClass() : state(IS_GETTER_ACTIVE){}
 
 };
 

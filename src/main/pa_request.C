@@ -32,7 +32,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.335 2013/09/30 19:40:57 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.336 2013/10/08 21:25:46 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -614,6 +614,8 @@ void Request::use_buf(VStateless_class& aclass,
 		execute_nonvirtual_method(cclass, 
 			auto_method_name, vfilespec,
 			false/*no result needed*/);
+
+		cclass.enable_default_setter();
 	}
 }
 

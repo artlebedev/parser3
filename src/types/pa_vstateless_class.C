@@ -10,7 +10,7 @@
 #include "pa_vbool.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VSTATELESS_CLASS_C="$Id: pa_vstateless_class.C,v 1.49 2012/06/05 10:29:18 misha Exp $" IDENT_PA_VSTATELESS_CLASS_H IDENT_PA_METHOD_H;
+volatile const char * IDENT_PA_VSTATELESS_CLASS_C="$Id: pa_vstateless_class.C,v 1.50 2013/10/08 21:25:46 moko Exp $" IDENT_PA_VSTATELESS_CLASS_H IDENT_PA_METHOD_H;
 
 /// globals
 const String class_name(CLASS_NAME), class_nametext(CLASS_NAMETEXT);
@@ -112,7 +112,7 @@ bool VStateless_class::has_default_getter(){
 }
 
 VJunction* VStateless_class::get_default_setter(Value& aself, const String& aname){
-	if(fdefault_setter)
+	if(fdefault_setter && aself.is_enabled_default_setter())
 		return new VJunction(aself, fdefault_setter, false /*setter*/, (String*)&aname);
 	return 0;
 }

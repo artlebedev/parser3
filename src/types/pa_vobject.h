@@ -8,7 +8,7 @@
 #ifndef PA_VOBJECT_H
 #define PA_VOBJECT_H
 
-#define IDENT_PA_VOBJECT_H "$Id: pa_vobject.h,v 1.61 2013/10/04 21:21:57 moko Exp $"
+#define IDENT_PA_VOBJECT_H "$Id: pa_vobject.h,v 1.62 2013/10/08 21:25:46 moko Exp $"
 
 // includes
 
@@ -67,7 +67,7 @@ public: // Value
 	override void disable_default_getter(){ state &= ~IS_GETTER_ACTIVE; }
 	override void disable_default_setter(){ state &= ~IS_SETTER_ACTIVE; }
 	override bool is_enabled_default_getter(){ return (state & IS_GETTER_ACTIVE) > 0; }
-			 bool is_enabled_default_setter(){ return (state & IS_SETTER_ACTIVE) > 0; }
+	override bool is_enabled_default_setter(){ return (state & IS_SETTER_ACTIVE) > 0; }
 
 public: // creation
 

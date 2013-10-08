@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.151 2013/10/04 21:21:55 moko Exp $"
+#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.152 2013/10/08 21:25:46 moko Exp $"
 
 #include "pa_common.h"
 #include "pa_array.h"
@@ -178,6 +178,7 @@ public: // Value
 	virtual void disable_default_getter(){ }
 	virtual void disable_default_setter(){ }
 	virtual bool is_enabled_default_getter(){ return true; }
+	virtual bool is_enabled_default_setter(){ return true; }
 	
 	/// extract VStateless_class
 	virtual VStateless_class* get_class()=0;

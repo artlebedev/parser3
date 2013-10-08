@@ -8,7 +8,7 @@
 #include "pa_vclass.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_PA_VCLASS_C="$Id: pa_vclass.C,v 1.48 2013/10/04 21:21:55 moko Exp $" IDENT_PA_VCLASS_H;
+volatile const char * IDENT_PA_VCLASS_C="$Id: pa_vclass.C,v 1.49 2013/10/08 21:25:46 moko Exp $" IDENT_PA_VCLASS_H;
 
 Property& VClass::get_property(const String& aname) {
 	Property* result=ffields.get(aname);
@@ -121,7 +121,11 @@ const VJunction* VClass::put_element(Value& aself, const String& aname, Value* a
 		
 		// just field, value can be 0 and unlike usual we don't remove it
 		prop->value=avalue;
+		return PUT_ELEMENT_REPLACED_ELEMENT;
 	} else {
+		if(VJunction *result=get_default_setter(aself, aname))
+			return result;
+
 		prop=new Property();
 		prop->value=avalue;
 		ffields.put(aname, prop);
@@ -133,8 +137,7 @@ const VJunction* VClass::put_element(Value& aself, const String& aname, Value* a
 				props->put_dont_replace(aname, prop);
 		}
 	}
-
-	return PUT_ELEMENT_REPLACED_ELEMENT;
+	return 0;
 }
 
 /// part of put_element
