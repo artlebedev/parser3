@@ -20,7 +20,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.209 2013/08/27 11:27:45 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.210 2013/10/10 22:12:48 moko Exp $";
 
 // class
 
@@ -507,7 +507,7 @@ public:
 	}
 	bool before_rows(SQL_Error& /*error*/ ) { /* ignore */ return false; }
 	bool add_row(SQL_Error& /*error*/) { /* ignore */ return false; }
-	bool add_row_cell(SQL_Error& error, const char* str, size_t length) {
+	bool add_row_cell(SQL_Error& error, const char* str, size_t) {
 		if(got_cell) {
 			error=SQL_Error(PARSER_RUNTIME,
 				//statement_string,
