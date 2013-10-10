@@ -21,7 +21,7 @@
 #include "pa_vbool.h"
 #include "pa_array.h"
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.297 2013/10/10 23:06:28 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.298 2013/10/10 23:08:12 moko Exp $";
 
 // class
 
@@ -406,7 +406,7 @@ static void _load(Request& r, MethodParams& params) {
 typedef std::basic_stringstream<char, std::char_traits<char>, gc_allocator<char> > pa_stringstream;
 typedef std::basic_string<char, std::char_traits<char>, gc_allocator<char> > pa_string;
 
-void maybe_enclose( pa_stringstream& to, const String* from, char encloser ) {
+static void enclose( pa_stringstream& to, const String* from, char encloser ) {
 	if(from){
 		to<<encloser;
 		// while we have 'encloser'...
@@ -431,7 +431,7 @@ static void table_to_csv(pa_stringstream& result, Table& table, TableSeparators&
 		if(table.columns()) { // named table
 			if(separators.encloser){
 				for(Array_iterator<const String*> i(*table.columns()); i.has_next(); ) {
-					maybe_enclose( result, i.next(), separators.encloser );
+					enclose( result, i.next(), separators.encloser );
 					if(i.has_next())
 						result<<separators.column;
 				}
@@ -465,7 +465,7 @@ static void table_to_csv(pa_stringstream& result, Table& table, TableSeparators&
 	if(separators.encloser){
 		while(i.has_next()) {
 			for(Array_iterator<const String*> c(*i.next()); c.has_next(); ) {
-				maybe_enclose( result, c.next(), separators.encloser );
+				enclose( result, c.next(), separators.encloser );
 				if(c.has_next())
 					result<<separators.column;
 			}
@@ -485,7 +485,7 @@ static void table_to_csv(pa_stringstream& result, Table& table, TableSeparators&
 
 #else
 
-void maybe_enclose( String& to, const String* from, char encloser, const String* sencloser ) {
+void enclose( String& to, const String* from, char encloser, const String* sencloser ) {
 	if(from){
 		to<<*sencloser;
 		// while we have 'encloser'...
@@ -510,7 +510,7 @@ static void table_to_csv(String& result, Table& table, TableSeparators& separato
 		if(table.columns()) { // named table
 			if(separators.encloser) {
 				for(Array_iterator<const String*> i(*table.columns()); i.has_next(); ) {
-					maybe_enclose( result, i.next(), separators.encloser, separators.sencloser );
+					enclose( result, i.next(), separators.encloser, separators.sencloser );
 					if(i.has_next())
 						result<<*separators.scolumn;
 				}
@@ -524,11 +524,14 @@ static void table_to_csv(String& result, Table& table, TableSeparators& separato
 		} else { // nameless table [we were asked to output column names]
 			if(int lsize=table.count()?table[0]->count():0)
 				for(int column=0; column<lsize; column++) {
-					char *cindex_tab=new(PointerFreeGC) char[MAX_NUMBER];
-					result.append_know_length(cindex_tab, 
-						snprintf(cindex_tab, MAX_NUMBER, 
-							column<lsize-1?"%d%c":"%d", column, separators.column),
-							String::L_CLEAN);
+					if(separators.encloser) {
+						result<<*separators.sencloser<<String::Body::Format(column)<<*separators.sencloser;
+					} else {
+						result<<String::Body::Format(column);
+					}
+					if(column<lsize-1){
+						result<<*separators.scolumn;
+					}
 				}
 			else
 				result.append_help_length("empty nameless table", 0, String::L_CLEAN);
@@ -541,7 +544,7 @@ static void table_to_csv(String& result, Table& table, TableSeparators& separato
 	if(separators.encloser){
 		while(i.has_next()) {
 			for(Array_iterator<const String*> c(*i.next()); c.has_next(); ) {
-				maybe_enclose( result, c.next(), separators.encloser, separators.sencloser );
+				enclose( result, c.next(), separators.encloser, separators.sencloser );
 				if(c.has_next())
 					result<<*separators.scolumn;
 			}
