@@ -21,7 +21,7 @@
 #include "pa_vbool.h"
 #include "pa_array.h"
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.296 2013/10/04 21:21:54 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.297 2013/10/10 23:06:28 moko Exp $";
 
 // class
 
@@ -124,11 +124,15 @@ struct TableSeparators {
 		}
 		if(Value* vencloser=options.get(PA_COLUMN_ENCLOSER_NAME)) {
 			sencloser=&vencloser->as_string();
+			if(sencloser->is_empty()){
+				encloser=0;
+			} else {
 			if(sencloser->length()!=1)
 				throw Exception(PARSER_RUNTIME,
 					sencloser,
 					"encloser must be one character long");
 			encloser=sencloser->first_char();
+			}
 			result++;
 		}
 		return result;
@@ -393,55 +397,169 @@ static void _load(Request& r, MethodParams& params) {
 }
 
 #if (!defined(NO_STRINGSTREAM) && !defined(FREEBSD4))
+	#define USE_STRINGSTREAM
+#endif
 
+#ifdef USE_STRINGSTREAM
 #include "gc_allocator.h"
 
 typedef std::basic_stringstream<char, std::char_traits<char>, gc_allocator<char> > pa_stringstream;
 typedef std::basic_string<char, std::char_traits<char>, gc_allocator<char> > pa_string;
 
-void maybe_enclose( pa_stringstream& to, const String& from, char encloser ) {
-	if(encloser) {
+void maybe_enclose( pa_stringstream& to, const String* from, char encloser ) {
+	if(from){
 		to<<encloser;
 		// while we have 'encloser'...
 		size_t pos_after=0;
-		for( size_t pos_before; (pos_before=from.pos( encloser, pos_after ))!=STRING_NOT_FOUND; pos_after=pos_before) {
+		for( size_t pos_before; (pos_before=from->pos( encloser, pos_after ))!=STRING_NOT_FOUND; pos_after=pos_before) {
 			pos_before++; // including first encloser (and skipping it for next pos)
-			to<<from.mid(pos_after, pos_before).cstr();
+			to<<from->mid(pos_after, pos_before).cstr();
 			to<<encloser; // doubling encloser
 		}
 		// last piece
-		size_t from_length=from.length();
+		size_t from_length=from->length();
 		if(pos_after<from_length)
-			to<<from.mid(pos_after, from_length).cstr();
-
+			to<<from->mid(pos_after, from_length).cstr();
 		to<<encloser;
-	} else
-		to<<from.cstr();
+	} else {
+		to<<encloser<<encloser;
+	}
+}
+
+static void table_to_csv(pa_stringstream& result, Table& table, TableSeparators& separators, bool output_column_names) {
+	if(output_column_names) {
+		if(table.columns()) { // named table
+			if(separators.encloser){
+				for(Array_iterator<const String*> i(*table.columns()); i.has_next(); ) {
+					maybe_enclose( result, i.next(), separators.encloser );
+					if(i.has_next())
+						result<<separators.column;
+				}
+			} else {
+				for(Array_iterator<const String*> i(*table.columns()); i.has_next(); ) {
+					result<<i.next()->cstr();
+					if(i.has_next())
+						result<<separators.column;
+				}
+			}
+		} else { // nameless table [we were asked to output column names]
+			if(int lsize=table.count()?table[0]->count():0)
+				for(int column=0; column<lsize; column++) {
+					if(separators.encloser) {
+						result<<separators.encloser<<column<<separators.encloser;
+					} else {
+						result<<column;
+					}
+					if(column<lsize-1){
+						result<<separators.column;
+					}
+				}
+			else
+				result<<"empty nameless table";
+		}
+		result<<'\n';
+	}
+
+	// process data lines
+	Array_iterator<ArrayString*> i(table);
+	if(separators.encloser){
+		while(i.has_next()) {
+			for(Array_iterator<const String*> c(*i.next()); c.has_next(); ) {
+				maybe_enclose( result, c.next(), separators.encloser );
+				if(c.has_next())
+					result<<separators.column;
+			}
+			result<<'\n';
+		}
+	} else {
+		while(i.has_next()) {
+			for(Array_iterator<const String*> c(*i.next()); c.has_next(); ) {
+				result<<c.next()->cstr();
+				if(c.has_next())
+					result<<separators.column;
+			}
+			result<<'\n';
+		}
+	}
 }
 
 #else
 
-void maybe_enclose( String& to, const String& from, char encloser, const String* sencloser ) {
-	if(encloser) {
+void maybe_enclose( String& to, const String* from, char encloser, const String* sencloser ) {
+	if(from){
 		to<<*sencloser;
 		// while we have 'encloser'...
 		size_t pos_after=0;
-		for( size_t pos_before; (pos_before=from.pos( encloser, pos_after ))!=STRING_NOT_FOUND; pos_after=pos_before) {
+		for( size_t pos_before; (pos_before=from->pos( encloser, pos_after ))!=STRING_NOT_FOUND; pos_after=pos_before) {
 			pos_before++; // including first encloser (and skipping it for next pos)
-			to<<from.mid(pos_after, pos_before);
+			to<<from->mid(pos_after, pos_before);
 			to<<*sencloser; // doubling encloser
 		}
 		// last piece
-		size_t from_length=from.length();
+		size_t from_length=from->length();
 		if(pos_after<from_length)
-			to<<from.mid(pos_after, from_length);
-
+			to<<from->mid(pos_after, from_length);
 		to<<*sencloser;
-	} else
-		to<<from;
+	} else {
+		to<<*sencloser<<*sencloser;
+	}
 }
 
+static void table_to_csv(String& result, Table& table, TableSeparators& separators, bool output_column_names) {
+	if(output_column_names) {
+		if(table.columns()) { // named table
+			if(separators.encloser) {
+				for(Array_iterator<const String*> i(*table.columns()); i.has_next(); ) {
+					maybe_enclose( result, i.next(), separators.encloser, separators.sencloser );
+					if(i.has_next())
+						result<<*separators.scolumn;
+				}
+			} else {
+				for(Array_iterator<const String*> i(*table.columns()); i.has_next(); ) {
+					result<<*i.next();
+					if(i.has_next())
+						result<<*separators.scolumn;
+				}
+			}
+		} else { // nameless table [we were asked to output column names]
+			if(int lsize=table.count()?table[0]->count():0)
+				for(int column=0; column<lsize; column++) {
+					char *cindex_tab=new(PointerFreeGC) char[MAX_NUMBER];
+					result.append_know_length(cindex_tab, 
+						snprintf(cindex_tab, MAX_NUMBER, 
+							column<lsize-1?"%d%c":"%d", column, separators.column),
+							String::L_CLEAN);
+				}
+			else
+				result.append_help_length("empty nameless table", 0, String::L_CLEAN);
+		}
+		result.append_know_length("\n", 1, String::L_CLEAN);
+	}
+
+	// data lines
+	Array_iterator<ArrayString*> i(table);
+	if(separators.encloser){
+		while(i.has_next()) {
+			for(Array_iterator<const String*> c(*i.next()); c.has_next(); ) {
+				maybe_enclose( result, c.next(), separators.encloser, separators.sencloser );
+				if(c.has_next())
+					result<<*separators.scolumn;
+			}
+			result.append_know_length("\n", 1, String::L_CLEAN);
+		}
+	} else {
+		while(i.has_next()) {
+			for(Array_iterator<const String*> c(*i.next()); c.has_next(); ) {
+				result<<*c.next();
+				if(c.has_next())
+					result<<*separators.scolumn;
+			}
+			result.append_know_length("\n", 1, String::L_CLEAN);
+		}
+	}
+}
 #endif // don't use stringstream
+
 
 static void _save(Request& r, MethodParams& params) {
 	const String& first_arg=params.as_string(0, FIRST_ARG_MUST_NOT_BE_CODE);
@@ -479,101 +597,65 @@ static void _save(Request& r, MethodParams& params) {
 
 	Table& table=GET_SELF(r, VTable).table();
 
-#if (!defined(NO_STRINGSTREAM) && !defined(FREEBSD4))
-
+#ifdef USE_STRINGSTREAM
 	pa_stringstream ost(std::stringstream::out);
 
-	// process header
-	if(output_column_names) {
-		if(table.columns()) { // named table
-			for(Array_iterator<const String*> i(*table.columns()); i.has_next(); ) {
-				maybe_enclose( ost, *i.next(), separators.encloser );
-				if(i.has_next()){
-					ost<<separators.column;
-				}
-			}
-		} else { // nameless table [we were asked to output column names]
-			if(int lsize=table.count()?table[0]->count():0)
-				for(int column=0; column<lsize; column++) {
-					if(separators.encloser) {
-						ost<<separators.encloser<<column<<separators.encloser;
-					} else {
-						ost<<column;
-					}
-					if(column<lsize-1){
-						ost<<separators.column;
-					}
-				}
-			else
-				ost<<"empty nameless table";
-		}
-		ost<<'\n';
-	}
-
-	// process data lines
-	Array_iterator<ArrayString*> i(table);
-	while(i.has_next()) {
-		for(Array_iterator<const String*> c(*i.next()); c.has_next(); ) {
-			maybe_enclose( ost, *c.next(), separators.encloser );
-			if(c.has_next())
-				ost<<separators.column;
-		}
-		ost<<'\n';
-	}
+	table_to_csv(ost, table, separators, output_column_names);
 
 	// write
-	{
 		pa_string data=ost.str();
 		const char* data_cstr=data.c_str();
-
 		file_write(r.charsets, file_spec, data_cstr, data.length(), true /* as text */, do_append);
-	}
-
 #else
-
 	String sdata;
-	if(output_column_names) {
-		if(table.columns()) { // named table
-			for(Array_iterator<const String*> i(*table.columns()); i.has_next(); ) {
-				maybe_enclose( sdata, *i.next(), separators.encloser, separators.sencloser );
-				if(i.has_next())
-					sdata<<*separators.scolumn;
-			}
-		} else { // nameless table [we were asked to output column names]
-			if(int lsize=table.count()?table[0]->count():0)
-				for(int column=0; column<lsize; column++) {
-					char *cindex_tab=new(PointerFreeGC) char[MAX_NUMBER];
-					sdata.append_know_length(cindex_tab, 
-						snprintf(cindex_tab, MAX_NUMBER, 
-							column<lsize-1?"%d%c":"%d", column, separators.column),
-							String::L_CLEAN);
-				}
-			else
-				sdata.append_help_length("empty nameless table", 0, String::L_CLEAN);
-		}
-		sdata.append_know_length("\n", 1, String::L_CLEAN);
-	}
 
-	// data lines
-	Array_iterator<ArrayString*> i(table);
-	while(i.has_next()) {
-		for(Array_iterator<const String*> c(*i.next()); c.has_next(); ) {
-			maybe_enclose( sdata, *c.next(), separators.encloser, separators.sencloser );
-			if(c.has_next())
-				sdata<<*separators.scolumn;
-		}
-		sdata.append_know_length("\n", 1, String::L_CLEAN);
-	}
+	table_to_csv(sdata, table, separators, output_column_names);
 
 	// write
-	{
 		const char* data_cstr=sdata.cstr();
-		file_write(r.charsets, file_spec, data_cstr, sdata.length(), true, do_append);
+	file_write(r.charsets, file_spec, data_cstr, sdata.length(), true /* as text */, do_append);
 		if(*data_cstr) // not empty (when empty it's not heap memory)
 			pa_free((void*)data_cstr); // not needed anymore
+#endif
+}
+
+static void _csv_string(Request& r, MethodParams& params) {
+	bool output_column_names=true;
+	size_t param_index=0;
+	if(params.count()>0 && params[0].is_string()) {
+		if(params.as_string(0, FIRST_ARG_MUST_NOT_BE_CODE)=="nameless") {
+			output_column_names=false;
+			param_index++;
+		} else {
+			throw Exception(PARSER_RUNTIME,
+				0,
+				"bad mode (must be nameless)");
+		}
 	}
 
-#endif // don't use stringstream
+	TableSeparators separators;
+	if(param_index<params.count())
+		if(HashStringValue* options=params.as_hash(param_index++)) {
+			int valid_options=separators.load(*options);
+			if(valid_options!=options->count())
+				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+		}
+
+	Table& table=GET_SELF(r, VTable).table();
+
+#ifdef USE_STRINGSTREAM
+	pa_stringstream ost(std::stringstream::out);
+
+	table_to_csv(ost, table, separators, output_column_names);
+
+	r.write_no_lang(*new VString(*new String(pa_strdup(ost.str().c_str()), String::L_CLEAN)));
+#else
+	String sdata;
+
+	table_to_csv(sdata, table, separators, output_column_names);
+
+	r.write_no_lang(*new VString(*new String(sdata.cstr(), String::L_CLEAN)));
+#endif
 }
 
 static void _count(Request& r, MethodParams& params) {
@@ -1358,6 +1440,11 @@ MTable::MTable(): Methoded("table") {
 	add_native_method("save", Method::CT_DYNAMIC, _save, 1, 3);
 
 	// add_native_method("save_old", Method::CT_DYNAMIC, _save_old, 1, 3);
+
+	// ^table.csv-string[]
+	// ^table.csv-string[nameless]
+	// ^table.csv-string[nameless;$.encloser["] $.separator[,]]
+	add_native_method("csv-string", Method::CT_DYNAMIC, _csv_string, 0, 2);
 
 	// ^table.count[]
 	// ^table.count[rows]
