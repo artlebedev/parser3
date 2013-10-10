@@ -20,6 +20,9 @@ $tNameless[^table::create[nameless]{$sTable}]
 ^tOrigin.save[$sFileNamed;$hOption]
 $tOriginNew[^table::load[$sFileNamed;$hOption]]
 
+^tOriginNew.csv-string[$hOption]
+^tOriginNew.csv-string[nameless][$hOption]
+
 ^print[Loaded;$tOriginNew]<br />
 
 ^tOrigin.save[$sFileNamed]
@@ -30,6 +33,8 @@ $tOriginNew[^table::load[$sFileNamed]]
 ^print[Nameless;$tNameless]<br />
 ^tNameless.save[nameless;$sFileNameless;$hOption]
 $tNamelessNew[^table::load[nameless;$sFileNameless;$hOption]]
+
+^tNamelessNew.csv-string[$hOption]
 
 ^print[Loaded nameless;$tNamelessNew]<br />
 

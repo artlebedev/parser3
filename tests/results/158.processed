@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 1681
+Content-Length: 1906
 
 <table border="1">
 <caption>Origin</caption>
@@ -23,6 +23,19 @@ Content-Length: 1681
 Pen</td><td>12</td>
 </tr>
 </table><br />
+'name'	'age'
+'Вася'	'12'
+'Петя'	'24'
+'Маша'	'15'
+'O''Neil'	'33'
+'Piter
+Pen'	'12'
+'Вася'	'12'
+'Петя'	'24'
+'Маша'	'15'
+'O''Neil'	'33'
+'Piter
+Pen'	'12'
 <table border="1">
 <caption>Loaded</caption>
 <tr>
@@ -88,6 +101,13 @@ Pen</td><td>12</td>
 Pen</td><td>12</td>
 </tr>
 </table><br />
+'0'	'1'
+'Вася'	'12'
+'Петя'	'24'
+'Маша'	'15'
+'O''Neil'	'33'
+'Piter
+Pen'	'12'
 <table border="1">
 <caption>Loaded nameless</caption>
 <tr>
