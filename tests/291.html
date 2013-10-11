@@ -1,0 +1,38 @@
+@main[]
+$b[^b::create[]]
+^b.print[]
+^b.print(true)
+
+@CLASS
+a
+
+@create[]
+
+@void[]
+a void $self.CLASS_NAME ^rem{b is OK}
+
+@print[]
+a::print:CLASS: $self.CLASS_NAME
+
+@CLASS
+b
+
+@BASE
+a
+
+@void[]
+b void
+
+@print[bUseWorkaround][o]
+^a:void[] ^rem{ normal base class call, but wcontext now is get_somebody_entered_some_class() == true }
+
+$o[^a::create[]]
+
+Local a object CLASS: $o.CLASS_NAME
+
+^if($bUseWorkaround){
+    $s[^o.print[]]^rem{ another wcontext }
+    $s
+}{
+    ^o.print[]^rem{ same wcontext }
+}
