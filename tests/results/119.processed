@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 266
+Content-Length: 267
 
 $request:charset: UTF-8<br />
 $response:charset: UTF-8<br />
@@ -9,6 +9,5 @@ $response:charset: UTF-8<br />
 
 <hr />
 $exception.type: 'xml'<br />
-$exception.source: 'string'<br />
-$exception.comment: 'string is not in UTF-8
-'<br />
+$exception.source: 'create'<br />
+$exception.comment: 'invalid localName 'вася''<br />
