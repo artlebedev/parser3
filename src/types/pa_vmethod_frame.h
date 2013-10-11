@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.94 2013/10/04 21:21:57 moko Exp $"
+#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.95 2013/10/11 19:46:31 moko Exp $"
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
@@ -37,9 +37,11 @@ public:
 #ifdef USE_DESTRUCTORS
 	~MethodParams(){
 		Value **flast=felements+count();
-		for(Value **current=felements;current<flast;current++)
-			if ((*current)->get_junction()!=0)
+		for(Value **current=felements;current<flast;current++){
+			Junction* junction=(*current)->get_junction();
+			if (junction && junction->code)
 				delete *current;
+		}
 	}
 #endif
 
