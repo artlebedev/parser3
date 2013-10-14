@@ -47,7 +47,7 @@
 #define pa_mkdir(path, mode) mkdir(path, mode)
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.277 2013/07/30 12:36:22 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.278 2013/10/14 19:45:13 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -77,57 +77,6 @@ volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.277 2013/07/30 12:
 const String file_status_name(FILE_STATUS_NAME);
 
 // functions
-
-bool capitalized(const char* s){
-	bool upper=true;
-	for(const char* c=s; *c; c++){
-		if(*c != (upper ? toupper((unsigned char)*c) : tolower((unsigned char)*c)))
-			return false;
-		upper=strchr("-_ ", *c) != 0;
-	}
-	return true;
-}
-
-const char* capitalize(const char* s){
-	if(!s || capitalized(s))
-		return s;
-
-	char* result=pa_strdup(s);
-	if(result){
-		bool upper=true;
-		for(char* c=result; *c; c++){
-			*c=upper ? (char)toupper((unsigned char)*c) : (char)tolower((unsigned char)*c);
-			upper=strchr("-_ ", *c) != 0;
-		}
-	}
-	return (const char*)result;
-}
-
-void fix_line_breaks(char *str, size_t& length) {
-	//_asm int 3;
-	const char* const eob=str+length;
-	char* dest=str;
-	// fix DOS: \r\n -> \n
-	// fix Macintosh: \r -> \n
-	char* bol=str;
-	while(char* eol=(char*)memchr(bol, '\r', eob -bol)) {
-		size_t len=eol-bol;
-		if(dest!=bol)
-			memmove(dest, bol, len); 
-		dest+=len;
-		*dest++='\n'; 
-
-		if(&eol[1]<eob && eol[1]=='\n') { // \r, \n = DOS
-			bol=eol+2;
-			length--; 
-		} else // \r, not \n = Macintosh
-			bol=eol+1;
-	}
-	// last piece without \r
-	if(dest!=bol)
-		memmove(dest, bol, eob-bol); 
-	str[length]=0; // terminating
-}
 
 char* file_read_text(Request_charsets& charsets, const String& file_spec, bool fail_on_read_problem, HashStringValue* params, bool transcode_result) {
 	File_read_result file=file_read(charsets, file_spec, true, params, fail_on_read_problem, 0, 0, 0, transcode_result);
@@ -594,6 +543,68 @@ bool file_stat(const String& file_spec,
 	return true;
 }
 
+/** 
+	String related functions
+*/
+
+bool capitalized(const char* s){
+	bool upper=true;
+	for(const char* c=s; *c; c++){
+		if(*c != (upper ? toupper((unsigned char)*c) : tolower((unsigned char)*c)))
+			return false;
+		upper=strchr("-_ ", *c) != 0;
+	}
+	return true;
+}
+
+const char* capitalize(const char* s){
+	if(!s || capitalized(s))
+		return s;
+
+	char* result=pa_strdup(s);
+	if(result){
+		bool upper=true;
+		for(char* c=result; *c; c++){
+			*c=upper ? (char)toupper((unsigned char)*c) : (char)tolower((unsigned char)*c);
+			upper=strchr("-_ ", *c) != 0;
+		}
+	}
+	return (const char*)result;
+}
+
+void fix_line_breaks(char *str, size_t& length) {
+	//_asm int 3;
+	const char* const eob=str+length;
+	char* dest=str;
+	// fix DOS: \r\n -> \n
+	// fix Macintosh: \r -> \n
+	char* bol=str;
+	while(char* eol=(char*)memchr(bol, '\r', eob -bol)) {
+		size_t len=eol-bol;
+		if(dest!=bol)
+			memmove(dest, bol, len); 
+		dest+=len;
+		*dest++='\n'; 
+
+		if(&eol[1]<eob && eol[1]=='\n') { // \r, \n = DOS
+			bol=eol+2;
+			length--; 
+		} else // \r, not \n = Macintosh
+			bol=eol+1;
+	}
+	// last piece without \r
+	if(dest!=bol)
+		memmove(dest, bol, eob-bol); 
+	str[length]=0; // terminating
+}
+
+/**
+	scans for @a delim[default \n] in @a *row_ref, 
+	@return piece of line before it or end of string, if no @a delim found
+	assigns @a *row_ref to point right after delimiter if there were one
+	or to zero if no @a delim were found.
+*/
+
 char* getrow(char* *row_ref, char delim) {
 	char* result=*row_ref;
 	if(result) {
@@ -877,61 +888,6 @@ size_t strpos(const char *str, const char *substr) {
 	return (p==0)?STRING_NOT_FOUND:p-str;
 }
 
-// content-type: xxx; charset=WE-NEED-THIS
-// content-type: xxx; charset="WE-NEED-THIS"
-// content-type: xxx; charset="WE-NEED-THIS";
-Charset* detect_charset(const char* content_type){
-	if(content_type){
-		char* CONTENT_TYPE=pa_strdup(content_type);
-
-		for(char *p=CONTENT_TYPE; *p; p++)
-			*p=(char)toupper((unsigned char)*p);
-
-		if(const char* begin=strstr(CONTENT_TYPE, "CHARSET=")){
-			begin+=8; // skip "CHARSET="
-			char* end=0;
-			if(*begin && (*begin=='"' || *begin =='\'')){
-				char quote=*begin;
-				begin++;
-				end=(char*)strchr(begin, quote);
-			}
-			if(!end)
-				end=(char*)strchr(begin, ';');
-
-			if(end)
-				*end=0; // terminator
-
-			return *begin?&charsets.get(begin):0;
-		}
-	}
-	return 0;
-}
-
-
-static bool isLeap(int year) {
-	return !(
-				(year % 4) || ((year % 400) && !(year % 100))
-			); 
-}
-
-int getMonthDays(int year, int month) {
-	static int monthDays[]={
-		31, 
-		28, 
-		31, 
-		30, 
-		31, 
-		30, 
-		31, 
-		31, 
-		30, 
-		31, 
-		30, 
-		31
-	}; 
-	return (month == 1 /* january -- 0 */ && isLeap(year)) ? 29 : monthDays[month]; 
-}
-
 int remove_crlf(char* start, char* end) {
 	char* from=start;
 	char* to=start;
@@ -959,6 +915,22 @@ int remove_crlf(char* start, char* end) {
 	return to-start;
 }
 
+const char* hex_string(unsigned char* bytes, size_t size, bool upcase) {
+	char *bytes_hex=new(PointerFreeGC) char [size*2/*byte->hh*/+1/*for zero-teminator*/];
+	unsigned char *src=bytes;
+	unsigned char *end=bytes+size;
+	char *dest=bytes_hex;
+
+	const char *hex=upcase?"0123456789ABCDEF":"0123456789abcdef";
+
+	for(; src<end; src++) {
+		*dest++=hex[*src/0x10];
+		*dest++=hex[*src%0x10];
+	}
+	*dest=0;
+
+	return bytes_hex;
+}
 
 /// must be last in this file
 #undef vsnprintf
@@ -1284,17 +1256,9 @@ char* pa_base64_encode(const char *in, size_t in_size){
 	return result;
 }
 
-
-char* pa_base64_encode(const String& file_spec){
-	unsigned char* base64=0;
-	File_base64_action_info info={&base64}; 
-
-	file_read_action_under_lock(file_spec, 
-		"pa_base64_encode", file_base64_file_action, &info);
-
-	return (char*)base64; 
-}
-
+struct File_base64_action_info {
+	unsigned char** base64;
+}; 
 
 static void file_base64_file_action(
 				struct stat& finfo, 
@@ -1319,6 +1283,16 @@ static void file_base64_file_action(
 		} while(nCount > 0);
 		g_mime_utils_base64_encode_close (0, 0, base64, &state, &save);
 	}
+}
+
+char* pa_base64_encode(const String& file_spec){
+	unsigned char* base64=0;
+	File_base64_action_info info={&base64}; 
+
+	file_read_action_under_lock(file_spec, 
+		"pa_base64_encode", file_base64_file_action, &info);
+
+	return (char*)base64; 
 }
 
 void pa_base64_decode(const char *in, size_t in_size, char*& result, size_t& result_size, bool strict) {
@@ -1349,6 +1323,35 @@ int file_block_read(const int f, unsigned char* buffer, const size_t size){
 	return nCount;
 }
 
+static unsigned long crc32Table[256];
+static void InitCrc32Table()
+{
+	if(crc32Table[1] == 0){
+		// This is the official polynomial used by CRC32 in PKZip.
+		// Often times the polynomial shown reversed as 0x04C11DB7.
+		static const unsigned long dwPolynomial = 0xEDB88320;
+
+		for(int i = 0; i < 256; i++)
+		{
+			unsigned long dwCrc = i;
+			for(int j = 8; j > 0; j--)
+			{
+				if(dwCrc & 1)
+					dwCrc = (dwCrc >> 1) ^ dwPolynomial;
+				else
+					dwCrc >>= 1;
+			}
+			crc32Table[i] = dwCrc;
+		}
+	}
+}
+
+inline void CalcCrc32(const unsigned char byte, unsigned long &crc32)
+{
+	crc32 = ((crc32) >> 8) ^ crc32Table[(byte) ^ ((crc32) & 0x000000FF)];
+}
+
+
 const unsigned long pa_crc32(const char *in, size_t in_size){
 	unsigned long crc32=0xFFFFFFFF;
 
@@ -1356,12 +1359,6 @@ const unsigned long pa_crc32(const char *in, size_t in_size){
 	for(size_t i = 0; i<in_size; i++)
 		CalcCrc32(in[i], crc32);
 
-	return ~crc32; 
-}
-
-const unsigned long pa_crc32(const String& file_spec){
-	unsigned long crc32=0xFFFFFFFF;
-	file_read_action_under_lock(file_spec, "crc32", file_crc32_file_action, &crc32);
 	return ~crc32; 
 }
 
@@ -1382,3 +1379,78 @@ static void file_crc32_file_action(
 	}
 }
 
+const unsigned long pa_crc32(const String& file_spec){
+	unsigned long crc32=0xFFFFFFFF;
+	file_read_action_under_lock(file_spec, "crc32", file_crc32_file_action, &crc32);
+	return ~crc32; 
+}
+
+// content-type: xxx; charset=WE-NEED-THIS
+// content-type: xxx; charset="WE-NEED-THIS"
+// content-type: xxx; charset="WE-NEED-THIS";
+Charset* detect_charset(const char* content_type){
+	if(content_type){
+		char* CONTENT_TYPE=pa_strdup(content_type);
+
+		for(char *p=CONTENT_TYPE; *p; p++)
+			*p=(char)toupper((unsigned char)*p);
+
+		if(const char* begin=strstr(CONTENT_TYPE, "CHARSET=")){
+			begin+=8; // skip "CHARSET="
+			char* end=0;
+			if(*begin && (*begin=='"' || *begin =='\'')){
+				char quote=*begin;
+				begin++;
+				end=(char*)strchr(begin, quote);
+			}
+			if(!end)
+				end=(char*)strchr(begin, ';');
+
+			if(end)
+				*end=0; // terminator
+
+			return *begin?&charsets.get(begin):0;
+		}
+	}
+	return 0;
+}
+
+
+static bool isLeap(int year) {
+	return !(
+				(year % 4) || ((year % 400) && !(year % 100))
+			); 
+}
+
+int getMonthDays(int year, int month) {
+	static int monthDays[]={
+		31, 
+		28, 
+		31, 
+		30, 
+		31, 
+		30, 
+		31, 
+		31, 
+		30, 
+		31, 
+		30, 
+		31
+	}; 
+	return (month == 1 /* january -- 0 */ && isLeap(year)) ? 29 : monthDays[month]; 
+}
+
+String::C date_gmt_string(tm* tms) {
+	/// http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3
+	static const char month_names[12][4]={
+		"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
+	static const char days[7][4]={
+		"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
+
+	char *buf=new(PointerFreeGC) char[MAX_STRING];
+	return String::C(buf, 
+		snprintf(buf, MAX_STRING, "%s, %.2d %s %.4d %.2d:%.2d:%.2d GMT", 
+		days[tms->tm_wday],
+		tms->tm_mday,month_names[tms->tm_mon],tms->tm_year+1900,
+		tms->tm_hour,tms->tm_min,tms->tm_sec));
+}

@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.153 2013/07/30 12:36:22 moko Exp $"
+#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.154 2013/10/14 19:45:13 moko Exp $"
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -85,15 +85,11 @@ int __snprintf(char *, size_t, const char* , ...);
 
 #endif
 
-const char* capitalize(const char* s);
-
-/** under WIN32 "t" mode fixes DOS chars OK, 
-	can't say that about other systems/ line break styles
+/** 
+	file related functions
 */
-void fix_line_breaks(
-			char *str,
-			size_t& length///< may change! used to speedup next actions
-			);
+
+#define FILE_BUFFER_SIZE	4096
 
 int pa_lock_shared_blocking(int fd);
 int pa_lock_exclusive_blocking(int fd);
@@ -101,6 +97,8 @@ int pa_lock_exclusive_nonblocking(int fd);
 int pa_unlock(int fd);
 
 void create_dir_for_file(const String& file_spec);
+
+int pa_get_valid_file_options_count(HashStringValue& options);
 
 typedef void (*File_read_action)(
 				struct stat& finfo,
@@ -222,19 +220,28 @@ bool file_stat(const String& file_spec,
 				time_t& rctime,
 				bool fail_on_read_problem=true);
 
-/**
-	scans for @a delim[default \n] in @a *row_ref, 
-	@return piece of line before it or end of string, if no @a delim found
-	assigns @a *row_ref to point right after delimiter if there were one
-	or to zero if no @a delim were found.
+size_t stdout_write(const void *buf, size_t size);
+
+void check_safe_mode(struct stat finfo, const String& file_spec, const char* fname); 
+
+int file_block_read(const int f, unsigned char* buffer, const size_t size);
+
+/** 
+	String related functions
 */
+
+const char* capitalize(const char* s);
+
+/** under WIN32 "t" mode fixes DOS chars OK, 
+	can't say that about other systems/ line break styles
+*/
+void fix_line_breaks(char *str,	size_t& length /* < may change! used to speedup next actions */);
+
 char *getrow(char **row_ref,char delim='\n');
 char *lsplit(char *string, char delim);
 char *lsplit(char **string_ref,char delim);
 char *rsplit(char *string, char delim);
 const char* format(double value, const char *fmt);
-
-size_t stdout_write(const void *buf, size_t size);
 
 char* unescape_chars(const char* cp, int len, Charset* client_charset=0, bool js=false/*true==decode \uXXXX and don't convert '+' to space*/);
 
@@ -247,11 +254,6 @@ void back_slashes_to_slashes(char *s);
 bool StrStartFromNC(const char* str, const char* substr, bool equal=false);
 size_t strpos(const char *str, const char *substr);
 
-Charset* detect_charset(const char* content_type);
-
-#define SECS_PER_DAY (60*60*24)
-int getMonthDays(int year, int month);
-
 int remove_crlf(char *start, char *end);
 
 inline bool pa_isalpha(unsigned char c) {
@@ -262,77 +264,18 @@ inline bool pa_isalnum(unsigned char c) {
 	return (((c>='0') && (c<='9')) || pa_isalpha(c));
 }
 
-void check_safe_mode(struct stat finfo, const String& file_spec, const char* fname); 
+const char* hex_string(unsigned char* bytes, size_t size, bool upcase);
 
 void pa_base64_decode(const char *in, size_t in_size, char*& result, size_t& result_size, bool strict=false);
 char* pa_base64_encode(const char *in, size_t in_size);
-struct File_base64_action_info {
-	unsigned char** base64;
-}; 
 char* pa_base64_encode(const String& file_spec);
-static void file_base64_file_action(
-				struct stat& finfo, 
-				int f, 
-				const String&, const char* /*fname*/, bool, 
-				void *context);
-
-#define FILE_BUFFER_SIZE	4096
-static unsigned long crc32Table[256];
-static void InitCrc32Table()
-{
-	if(crc32Table[1] == 0){
-		// This is the official polynomial used by CRC32 in PKZip.
-		// Often times the polynomial shown reversed as 0x04C11DB7.
-		static const unsigned long dwPolynomial = 0xEDB88320;
-
-		for(int i = 0; i < 256; i++)
-		{
-			unsigned long dwCrc = i;
-			for(int j = 8; j > 0; j--)
-			{
-				if(dwCrc & 1)
-					dwCrc = (dwCrc >> 1) ^ dwPolynomial;
-				else
-					dwCrc >>= 1;
-			}
-			crc32Table[i] = dwCrc;
-		}
-	}
-}
-
-int file_block_read(const int f, unsigned char* buffer, const size_t size);
-
-inline void CalcCrc32(const unsigned char byte, unsigned long &crc32)
-{
-	crc32 = ((crc32) >> 8) ^ crc32Table[(byte) ^ ((crc32) & 0x000000FF)];
-}
 
 const unsigned long pa_crc32(const char *in, size_t in_size);
 const unsigned long pa_crc32(const String& file_spec);
-static void file_crc32_file_action(
-				struct stat& finfo, 
-				int f, 
-				const String&, const char* /*fname*/, bool, 
-				void *context);
 
-static const char* hex_string(unsigned char* bytes, size_t size, bool upcase) {
-	char *bytes_hex=new(PointerFreeGC) char [size*2/*byte->hh*/+1/*for zero-teminator*/];
-	unsigned char *src=bytes;
-	unsigned char *end=bytes+size;
-	char *dest=bytes_hex;
-
-	const char *hex=upcase?"0123456789ABCDEF":"0123456789abcdef";
-
-	for(; src<end; src++) {
-		*dest++=hex[*src/0x10];
-		*dest++=hex[*src%0x10];
-	}
-	*dest=0;
-
-	return bytes_hex;
-}
-
-int pa_get_valid_file_options_count(HashStringValue& options);
+/** 
+	Mix functions
+*/
 
 // some stuff for use with .for_each
 static void copy_all_overwrite_to(
@@ -349,20 +292,13 @@ static void remove_key_from(
 	dest->remove(key);
 }
 
-static String::C date_gmt_string(tm* tms) {
-	/// http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3
-	static const char month_names[12][4]={
-		"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
-	static const char days[7][4]={
-		"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
+Charset* detect_charset(const char* content_type);
 
-	char *buf=new(PointerFreeGC) char[MAX_STRING];
-	return String::C(buf, 
-		snprintf(buf, MAX_STRING, "%s, %.2d %s %.4d %.2d:%.2d:%.2d GMT", 
-		days[tms->tm_wday],
-		tms->tm_mday,month_names[tms->tm_mon],tms->tm_year+1900,
-		tms->tm_hour,tms->tm_min,tms->tm_sec));
-}
+#define SECS_PER_DAY (60*60*24)
+
+int getMonthDays(int year, int month);
+
+String::C date_gmt_string(tm* tms);
 
 // globals
 
