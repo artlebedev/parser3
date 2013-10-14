@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_UNTAINT_C="$Id: untaint.C,v 1.164 2012/05/17 10:54:03 misha Exp $";
+volatile const char * IDENT_UNTAINT_C="$Id: untaint.C,v 1.165 2013/10/14 21:17:38 moko Exp $";
 
 
 #include "pa_string.h"
@@ -61,10 +61,9 @@ extern "C" { // author forgot to do that
 #define _default CORD_ec_append(info->result, c)
 #define encode(need_encode_func, prefix, otherwise)  \
 	if(need_encode_func(c)) { \
-		static const char* hex="0123456789ABCDEF"; \
 		CORD_ec_append(info->result, prefix); \
-		CORD_ec_append(info->result, hex[((unsigned char)c)/0x10]); \
-		CORD_ec_append(info->result, hex[((unsigned char)c)%0x10]); \
+		CORD_ec_append(info->result, hex_digits[((unsigned char)c) >> 4]); \
+		CORD_ec_append(info->result, hex_digits[((unsigned char)c) & 0x0F]); \
 	} else \
 		CORD_ec_append(info->result, otherwise);
 #define to_char(c)  { CORD_ec_append(info->result, c); whitespace=false; }
@@ -504,7 +503,15 @@ int cstr_to_string_body_block(String::Language to_lang, size_t fragment_length, 
 					case '\r': to_string("\\r");  break;
 					case '\b': to_string("\\b");  break;
 					case '\f': to_string("\\f");  break;
-					default  : _default; break;
+					default: 
+						if((unsigned char)c < 0x20){
+							to_string("\\u00");
+							to_char(hex_digits[((unsigned char)c) >> 4]);
+							to_char(hex_digits[((unsigned char)c) & 0x0F]);
+						} else {
+							_default;
+						}
+						break;
 				});
 			} else {
 				const char *fragment_str=info->body->mid(info->fragment_begin, fragment_length).cstr();

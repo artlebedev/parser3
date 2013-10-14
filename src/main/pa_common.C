@@ -47,7 +47,7 @@
 #define pa_mkdir(path, mode) mkdir(path, mode)
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.278 2013/10/14 19:45:13 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.279 2013/10/14 21:17:38 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -915,13 +915,15 @@ int remove_crlf(char* start, char* end) {
 	return to-start;
 }
 
+const char* hex_digits="0123456789ABCDEF";
+
 const char* hex_string(unsigned char* bytes, size_t size, bool upcase) {
 	char *bytes_hex=new(PointerFreeGC) char [size*2/*byte->hh*/+1/*for zero-teminator*/];
 	unsigned char *src=bytes;
 	unsigned char *end=bytes+size;
 	char *dest=bytes_hex;
 
-	const char *hex=upcase?"0123456789ABCDEF":"0123456789abcdef";
+	const char *hex=upcase? hex_digits : "0123456789abcdef";
 
 	for(; src<end; src++) {
 		*dest++=hex[*src/0x10];

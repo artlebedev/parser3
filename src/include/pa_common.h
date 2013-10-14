@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.154 2013/10/14 19:45:13 moko Exp $"
+#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.155 2013/10/14 21:17:38 moko Exp $"
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -265,6 +265,7 @@ inline bool pa_isalnum(unsigned char c) {
 }
 
 const char* hex_string(unsigned char* bytes, size_t size, bool upcase);
+extern const char* hex_digits;
 
 void pa_base64_decode(const char *in, size_t in_size, char*& result, size_t& result_size, bool strict=false);
 char* pa_base64_encode(const char *in, size_t in_size);
