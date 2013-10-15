@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: buildall,v 1.9 2013/08/26 20:05:57 moko Exp $
+# $Id: buildall,v 1.10 2013/10/15 22:23:02 moko Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -128,7 +128,7 @@ if test ! -f "$project_dir/gc/lib/libgc.a"; then
 fi
 
 if test ! -f "$project_dir/pcre/lib/libpcre.a"; then
-    lib="pcre-8.30"
+    lib="pcre-8.33"
     prepare_gz $lib.tar.gz ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/
     echo "Configuring $lib..."
     ./configure --prefix="$project_dir/pcre" \
@@ -146,7 +146,7 @@ if test ! -f "$project_dir/pcre/lib/libpcre.a"; then
 fi
 
 if test "$build_xml" = "yes" -a ! -f "$project_dir/gnome/lib/libxml2.a"; then
-    lib="libxml2-2.8.0"
+    lib="libxml2-2.9.1"
     prepare_gz $lib.tar.gz ftp://xmlsoft.org/libxml2/
     #sax1, output, tree, xinclude[in libxslt], html[in libxslt, mode=html?], xptr[xinclude], pattern -- needed!
     echo "Configuring $lib..."
@@ -179,7 +179,7 @@ if test "$build_xml" = "yes" -a ! -f "$project_dir/gnome/lib/libxml2.a"; then
 fi
 
 if test "$build_xml" = "yes" -a ! -f "$project_dir/gnome/lib/libxslt.a"; then
-    lib="libxslt-1.1.26"
+    lib="libxslt-1.1.28"
     prepare_gz $lib.tar.gz ftp://xmlsoft.org/libxslt/
     echo "Configuring $lib..."
     ./configure --prefix=$project_dir/gnome \
