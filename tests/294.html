@@ -1,0 +1,21 @@
+@main[]
+
+$exception[^try_catch{
+
+$document[^xdoc::create{<?xml version="1.0"?>
+<document>
+текст текст текст текст текст текст текст текст </b> текст
+</document>}]
+
+}]
+
+^if(^exception.match[b]){valid encoding for match}
+$exception
+
+@try_catch[code]
+^try{
+	$code
+}{
+	$exception.handled(true)
+	$result[Exception: $exception.source - $exception.comment]
+}
