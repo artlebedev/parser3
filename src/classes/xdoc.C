@@ -28,7 +28,7 @@
 #include "xnode.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_XDOC_C="$Id: xdoc.C,v 1.178 2013/08/27 11:27:45 moko Exp $";
+volatile const char * IDENT_XDOC_C="$Id: xdoc.C,v 1.179 2013/10/15 22:28:36 moko Exp $";
 
 // defines
 
@@ -386,7 +386,7 @@ static void _create(Request& r, MethodParams& params) {
 
 		//printf("document=0x%p\n", document);
 		if(!xmldoc || xmlHaveGenericErrors())
-			throw XmlException(0);
+			throw XmlException(0, r);
 
 		// must be last action in if, see after if}
 	} else { // [localName]
@@ -410,11 +410,11 @@ static void _create(Request& r, MethodParams& params) {
 #endif
 			xmldoc=xmlNewDoc(0);
 			if(!xmldoc || xmlHaveGenericErrors())
-				throw XmlException(0);
+				throw XmlException(0, r);
 
 			xmlNode* node=xmlNewChild((xmlNode*)xmldoc, NULL, localName, NULL);
 			if(!node || xmlHaveGenericErrors())
-				throw XmlException(0);
+				throw XmlException(0, r);
 
 			set_encoding=true;
 			// must be last action in if, see after if}
@@ -422,7 +422,7 @@ static void _create(Request& r, MethodParams& params) {
 			VFile* vfile=param.as_vfile(String::L_AS_IS);
 			xmldoc=xmlParseMemory(vfile->value_ptr(), vfile->value_size());
 			if(!xmldoc || xmlHaveGenericErrors())
-				throw XmlException(0);
+				throw XmlException(0, r);
 		}
 	}
 	// must be first action after if}
@@ -459,7 +459,7 @@ static void _load(Request& r, MethodParams& params) {
 	/// @todo!! add SAFE MODE!!
 	xmlDoc* xmldoc=xmlParseFile(uri_cstr);
 	if(!xmldoc || xmlHaveGenericErrors())
-		throw XmlException(uri);
+		throw XmlException(uri, r);
 	
 	// must be first action after if}
 	// replace any previous parsed source
@@ -517,7 +517,7 @@ String::C xdoc2buf(Request& r, VXdoc& vdoc,
 		stylesheet->encoding=BAD_CAST xmlMemStrdup(header_encoding);
 	if(xsltSaveResultTo(outputBuffer.get(), &xmldoc, stylesheet.get())<0
 		|| xmlHaveGenericErrors())
-		throw XmlException(0);
+		throw XmlException(0, r);
 
 	// write out result
 	char *gnome_str;
@@ -626,7 +626,7 @@ static VXdoc& _transform(Request& r, const String* stylesheet_source,
 		0/*FILE *profile*/,
 		transformContext.get());
 	if(!transformed || xmlHaveGenericErrors())
-		throw XmlException(stylesheet_source);
+		throw XmlException(stylesheet_source, r);
 
 	//gdome_xml_doc_mkref dislikes XML_HTML_DOCUMENT_NODE  type, fixing
 	transformed->type=XML_DOCUMENT_NODE;
@@ -684,7 +684,7 @@ static void _transform(Request& r, MethodParams& params) {
 		// compile xdoc stylesheet
 		xsltStylesheet_auto_ptr stylesheet_ptr(xsltParseStylesheetDoc(&stylesheetdoc)); 
 		if(xmlHaveGenericErrors())
-			throw XmlException(0);
+			throw XmlException(0, r);
 		if(!stylesheet_ptr.get())
 			throw Exception("xml",
 				0,

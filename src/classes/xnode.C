@@ -21,7 +21,7 @@
 #include "libxml/xpath.h"
 #include "libxml/xpathInternals.h"
 
-volatile const char * IDENT_XNODE_C="$Id: xnode.C,v 1.87 2012/03/16 09:24:08 moko Exp $" IDENT_XNODE_H;
+volatile const char * IDENT_XNODE_C="$Id: xnode.C,v 1.88 2013/10/15 22:28:36 moko Exp $" IDENT_XNODE_H;
 
 // global variable
 
@@ -148,7 +148,7 @@ xmlAttr& as_attr(MethodParams& params, int index, const char* msg) {
 
 static void writeNode(Request& r, VXdoc& xdoc, xmlNode* node) {
 	if(!node|| xmlHaveGenericErrors())
-		throw XmlException(0); // OOM, bad name, things like that
+		throw XmlException(0, r); // OOM, bad name, things like that
 
 	// write out result
 	r.write_no_lang(xdoc.wrap(*node));
@@ -184,7 +184,7 @@ xmlNs& pa_xmlMapNs(xmlDoc& doc, const xmlChar *href, const xmlChar *prefix) {
 	if (cur == NULL) {
 		cur = xmlNewNs (NULL, href, prefix);
 		if(!cur || xmlHaveGenericErrors())
-			throw XmlException(0);
+			throw XmlException();
 		cur->next = doc.oldNs;
 		doc.oldNs = cur;
 	}
@@ -412,7 +412,7 @@ static void _setAttribute(Request& r, MethodParams& params) {
 
 	// @todo: when name="xmlns"
 	if(!xmlSetProp(&element, name,  attribute_value))
-		throw XmlException(0);
+		throw XmlException(0, r);
 }
 
 // void removeAttribute(in DOMString name) raises(DOMException);
@@ -557,7 +557,7 @@ static void _setAttributeNS(Request& r, MethodParams& params) {
 	}
 
 	if(!attrNode)
-		throw XmlException(0);
+		throw XmlException(0, r);
 }
 
 // void removeAttributeNS(in DOMString namespaceURI, in DOMString localName) raises(DOMException);
@@ -706,7 +706,7 @@ static void _selectX(Request& r, MethodParams& params,
 		xmlXPathEvalExpression(r.transcode(expression), ctxt.get()));
 
 	if(xmlHaveGenericErrors())
-		throw XmlException(0);
+		throw XmlException(0, r);
 
 	Value* result=0;
    	if(res.get())
