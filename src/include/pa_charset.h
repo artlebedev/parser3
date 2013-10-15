@@ -8,7 +8,7 @@
 #ifndef PA_CHARSET_H
 #define PA_CHARSET_H
 
-#define IDENT_PA_CHARSET_H "$Id: pa_charset.h,v 1.51 2012/06/18 20:45:02 moko Exp $"
+#define IDENT_PA_CHARSET_H "$Id: pa_charset.h,v 1.52 2013/10/15 21:27:36 moko Exp $"
 
 
 #include "pa_exception.h"
@@ -192,6 +192,7 @@ size_t getUTF8CharPos(const XMLByte* srcBegin, const XMLByte* srcEnd, size_t byt
 size_t lengthUTF8(const XMLByte* srcBegin, const XMLByte* srcEnd);
 unsigned int lengthUTF8Char(const XMLByte c);
 
+const char *fixUTF8(const char *src);
 
 class UTF8_string_iterator {
 	public:

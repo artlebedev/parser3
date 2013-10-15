@@ -8,7 +8,7 @@
 #include "pa_charset.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_PA_CHARSET_C="$Id: pa_charset.C,v 1.93 2013/10/14 21:17:38 moko Exp $" IDENT_PA_CHARSET_H;
+volatile const char * IDENT_PA_CHARSET_C="$Id: pa_charset.C,v 1.94 2013/10/15 21:27:37 moko Exp $" IDENT_PA_CHARSET_H;
 
 #ifdef XML
 #include "libxml/encoding.h"
@@ -1286,6 +1286,45 @@ size_t lengthUTF8(const XMLByte* srcBegin, const XMLByte* srcEnd){
 
 unsigned int lengthUTF8Char(const XMLByte c){
 	return gUTFBytes[c]+1;
+}
+
+const char *fixUTF8(const char *src){
+	if(src && *src){
+		size_t length=strlen(src);
+
+		int error_offset;
+		if(_pcre_valid_utf((unsigned char *)src, length, &error_offset)){
+
+			char *result=(char *)pa_malloc_atomic(length+1);
+			char *dst=result;
+
+			do {
+
+				if(error_offset){
+					strncpy(dst, src, error_offset);
+					dst+=error_offset;
+
+					src+=error_offset;
+					length-=error_offset;
+
+				}
+
+				*dst++='?';
+				src++;
+				length--;
+
+			} while (length && _pcre_valid_utf((unsigned char *)src, length, &error_offset));
+
+			if(length){
+				strcpy(dst, src);
+			} else {
+				*dst='\0';
+			}
+
+			return result;
+		}
+	}
+	return src;
 }
 
 bool UTF8_string_iterator::has_next(){

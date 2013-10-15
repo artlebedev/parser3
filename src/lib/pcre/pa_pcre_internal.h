@@ -33,9 +33,7 @@
 #define ctypes_offset (cbits_offset + cbit_length)
 #define tables_length (ctypes_offset + 256)
 
-/* Internal shared data tables. These are tables that are used by more than one
-of the exported public functions. They have to be "external" in the C sense,
-but are not part of the PCRE public API. The data for these tables is in the
+/* Internal shared data tables. The data for these tables is in the
 pcre_tables.c module. */
 
 #ifdef __cplusplus
@@ -43,3 +41,13 @@ pcre_tables.c module. */
 #else
 	extern const const unsigned char _pcre_default_tables[];
 #endif
+
+/* Internal function for validating UTF-8 character strings. The code
+for this function is in the pcre_valid_utf8.c module. */
+
+#ifdef __cplusplus
+    extern "C" int _pcre_valid_utf(unsigned char *string, int length, int *erroroffset);
+#else
+    extern int _pcre_valid_utf(unsigned char *string, int length, int *erroroffset);
+#endif
+
