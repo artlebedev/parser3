@@ -28,7 +28,7 @@
 #include "xnode.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_XDOC_C="$Id: xdoc.C,v 1.179 2013/10/15 22:28:36 moko Exp $";
+volatile const char * IDENT_XDOC_C="$Id: xdoc.C,v 1.180 2013/10/16 21:52:49 moko Exp $";
 
 // defines
 
@@ -522,6 +522,15 @@ String::C xdoc2buf(Request& r, VXdoc& vdoc,
 	// write out result
 	char *gnome_str;
 	size_t gnome_length;
+#ifdef LIBXML2_NEW_BUFFER
+	if(outputBuffer->conv) {
+		gnome_length=xmlBufUse(outputBuffer->conv);
+		gnome_str=(char *)xmlBufContent(outputBuffer->conv);
+	} else {
+		gnome_length=xmlOutputBufferGetSize(&(*outputBuffer));
+		gnome_str=(char *)xmlOutputBufferGetContent(&(*outputBuffer));
+	}
+#else
 	if(outputBuffer->conv) {
 		gnome_length=outputBuffer->conv->use;
 		gnome_str=(char *)outputBuffer->conv->content;
@@ -529,6 +538,7 @@ String::C xdoc2buf(Request& r, VXdoc& vdoc,
 		gnome_length=outputBuffer->buffer->use;
 		gnome_str=(char *)outputBuffer->buffer->content;
 	}
+#endif
 
 	if(file_spec){
 		file_write(r.charsets,
