@@ -1,3 +1,176 @@
+2013-10-17  moko
+
+	* src/classes/xdoc.C: libxml 2.9.1 compatibility with define
+	  LIBXML2_NEW_BUFFER check (closes issue #943)
+
+	* buildall: libxml 2.9.1 build is broken --without-reader.
+
+2013-10-16  moko
+
+	* configure.in, src/include/pa_version.h: 3.4.3b -> 3.4.3rc
+
+	* tests/: 294.html, results/294.processed: test for issue #938
+
+	* src/: classes/xdoc.C, classes/xnode.C,
+	  include/pa_xml_exception.h, main/pa_xml_exception.C: XmlException
+	  now calls fixUTF8 if source charset is UTF-8 (closes issue #938)
+
+	* buildall: pcre-8.30 -> pcre-8.33 libxml2-2.8.0 -> libxml2-2.9.1
+	  libxslt-1.1.26 -> libxslt-1.1.28
+
+	* src/: include/pa_charset.h, lib/pcre/pa_pcre_internal.h,
+	  main/pa_charset.C: fixUTF8 method added to replace invalid UTF-8
+	  to '?', related to issue #938
+
+2013-10-15  moko
+
+	* src/: include/pa_common.h, main/pa_charset.C, main/pa_common.C,
+	  main/untaint.C: json chars 0x01-0x1F now are escaped as \u00XX,
+	  minor optimizations (closes issue #896)
+
+	* tests/results/: 292.processed, 293.processed: results updated to
+	  comply with issue #896
+
+	* tests/: 292.html, 293.html, results/292.processed,
+	  results/293.processed: tests for json escaping
+
+2013-10-14  moko
+
+	* src/: include/pa_common.h, main/pa_common.C: minor rearrangements
+	  and cleanup, code moved from .h to .C, no changes in code
+
+2013-10-12  moko
+
+	* tests/results/119.processed: updated test result commited
+
+	* tests/: 291.html, results/291.processed: test for issue #894
+	  added
+
+	* src/types/pa_wcontext.h: base methods call support function
+	  get_somebody_entered_some_class should not be true forever, as
+	  wcontext can have many get_elements calls (fixes issue #894)
+
+2013-10-11  moko
+
+	* tests/: 290.html, results/290.processed: test for junction GPF
+	  issue #942 added
+
+	* src/types/pa_vmethod_frame.h: GPF if method junctions is passed
+	  to native method fixed (closes issue #942)
+
+	* tests/: 158.html, results/158.processed: test for csv-string[]
+	  added
+
+	* src/classes/table.C: minor fixes for table.csv-string[] (closes
+	  feature #907)
+
+	* src/classes/table.C: ^table.csv-string[] from misha@ (implements
+	  feature #907)
+
+2013-10-09  moko
+
+	* src/: main/pa_request.C, types/pa_value.h, types/pa_vclass.C,
+	  types/pa_vclass.h, types/pa_vobject.C, types/pa_vobject.h,
+	  types/pa_vstateless_class.C: GET_default, SET_default now works
+	  properly not only in objects, but in classes as well (closes
+	  issue #903)
+
+	* tests/: 289.html, results/289.processed: GET/SET_default now
+	  works in classes, not only objects, test case added, related to
+	  issue #903
+
+	* tests/: 288.html, results/288.processed: test for endless
+	  recursion bug added (related to issue #903)
+
+2013-10-05  moko
+
+	* src/: classes/hash.C, classes/hashfile.C, classes/op.C,
+	  classes/table.C, main/execute.C, types/pa_method.h,
+	  types/pa_value.h, types/pa_vclass.C, types/pa_vclass.h,
+	  types/pa_vcode_frame.h, types/pa_vconsole.h, types/pa_vcookie.C,
+	  types/pa_vcookie.h, types/pa_vhash.h, types/pa_vhashfile.h,
+	  types/pa_vimage.C, types/pa_vimage.h, types/pa_vmemcached.C,
+	  types/pa_vmemcached.h, types/pa_vmethod_frame.h,
+	  types/pa_vobject.C, types/pa_vobject.h, types/pa_vrequest.C,
+	  types/pa_vrequest.h, types/pa_vresponse.C, types/pa_vresponse.h,
+	  types/pa_vstateless_class.h, types/pa_vstateless_object.h,
+	  types/pa_vxnode.C, types/pa_vxnode.h, types/pa_wwrapper.h:
+	  optimization: put_element no longer has "bool areplace" argument,
+	  related to issue #903
+
+2013-10-03  moko
+
+	* tests/results/182.processed: result for $.replace(false) test
+	  commited
+
+	* src/classes/date.C: ^date::create(number) processed correctly
+	  (fixes issue #901)
+
+	* src/classes/image.C: as_no_junction removed, as param can be
+	  expression (closes issue #931)
+
+	* tests/233.html: test for issue #931 added
+
+2013-10-02  moko
+
+	* tests/: 182.html, 182_dir/a5.p: test for $.replace(true)
+	  modified, test for $.replace(false) added
+
+	* src/main/compile_tools.h: forgotten class replace returned. :)
+
+2013-09-30  moko
+
+	* tests/: 141.html, results/141.processed: md5 tainting test added
+
+	* src/: classes/op.C, include/pa_request.h, main/compile.y,
+	  main/compile_tools.h, main/pa_request.C: allow_class_replace
+	  implemented; $.replace option added to ^process and ^use
+
+2013-08-27  moko
+
+	* src/classes/: file.C, json.C, math.C, string.C, xdoc.C:
+	  cstr_to_string_body_untaint should be called with charsets for
+	  possible uri language and connection for possible sql language.
+	  related to issue #857
+
+	* buildall: and -> or fixed
+
+2013-08-26  moko
+
+	* buildall: prepare_ functions logic changed to support
+	  gc-7.2d.tar.gz extracting to gc-7.2 directory
+
+2013-08-23  moko
+
+	* src/include/pa_config_fixed.h: gc and xml libs are now linked
+	  statically
+
+2013-08-22  moko
+
+	* src/classes/string.C: String::Empty used (related to issue #912)
+	  append_know_length removed (related to old GPF bug)
+
+2013-08-21  moko
+
+	* src/classes/math.C: untaint(L_AS_IS) added for md5 and sha1
+
+	* src/classes/math.C: ^math:digest[...;$file] support added
+	  (related to ticket #857
+
+	* tests/: 141.html, results/141.processed: ^math:digest[...;$file]
+	  implemented
+
+	* src/types/pa_vhashfile.h: warning war
+
+	* src/: classes/json.C, classes/op.C, include/pa_hash.h,
+	  include/pa_request.h, main/pa_request.C, types/pa_value.h:
+	  anti_endless_json_string_recoursion removed from request;
+	  json_string_recoursion added to json_options; $.indent[indent
+	  value] now supported and passed within recoursion closes feature
+	  #937
+
+	* tests/: 287.html, results/287.processed: test for feature #937
+
 2013-07-31  moko
 
 	* src/lib/json/json.c: STATE__X -> STATE_XX for cygwin compilation
@@ -535,9 +708,8 @@
 	* src/: classes/mail.C, include/pa_dir.h, include/pa_http.h,
 	  lib/json/JSON_parser.h, lib/smtp/smtp.h, main/pa_random.C,
 	  main/pa_socks.C, targets/apache/pa_threads.C,
-	  targets/apache13core/pa_threads.C, targets/isapi/pa_threads.C,
-	  targets/isapi/parser3isapi.C, types/pa_vstatus.C: compilation
-	  under cygwin fixed
+	  targets/isapi/pa_threads.C, targets/isapi/parser3isapi.C,
+	  types/pa_vstatus.C: compilation under cygwin fixed
 
 2012-06-19  moko
 
@@ -1155,36 +1327,33 @@
 	  main/helpers/simple_folding.pl, sql/pa_sql_driver.h,
 	  targets/apache/mod_parser3.c, targets/apache/mod_parser3_core.C,
 	  targets/apache/pa_httpd.h, targets/apache/pa_threads.C,
-	  targets/apache13/mod_parser3.c, targets/apache13/pa_httpd.h,
-	  targets/apache13core/mod_parser3_core.C,
-	  targets/apache13core/pa_threads.C, targets/cgi/pa_threads.C,
-	  targets/cgi/parser3.C, targets/isapi/pa_threads.C,
-	  targets/isapi/parser3isapi.C, types/pa_junction.h,
-	  types/pa_method.h, types/pa_property.h, types/pa_value.C,
-	  types/pa_value.h, types/pa_vbool.h, types/pa_vclass.C,
-	  types/pa_vclass.h, types/pa_vcode_frame.h, types/pa_vconsole.h,
-	  types/pa_vcookie.C, types/pa_vcookie.h, types/pa_vdate.h,
-	  types/pa_vdouble.h, types/pa_venv.C, types/pa_venv.h,
-	  types/pa_vfile.C, types/pa_vfile.h, types/pa_vform.C,
-	  types/pa_vform.h, types/pa_vhash.C, types/pa_vhash.h,
-	  types/pa_vhashfile.C, types/pa_vhashfile.h, types/pa_vimage.C,
-	  types/pa_vimage.h, types/pa_vint.h, types/pa_vjunction.C,
-	  types/pa_vjunction.h, types/pa_vmail.C, types/pa_vmail.h,
-	  types/pa_vmath.C, types/pa_vmath.h, types/pa_vmemory.h,
-	  types/pa_vmethod_frame.C, types/pa_vmethod_frame.h,
-	  types/pa_vmethod_frame_global.h, types/pa_vmethod_frame_local.h,
-	  types/pa_vobject.C, types/pa_vobject.h, types/pa_vregex.C,
-	  types/pa_vregex.h, types/pa_vrequest.C, types/pa_vrequest.h,
-	  types/pa_vresponse.C, types/pa_vresponse.h,
-	  types/pa_vstateless_class.C, types/pa_vstateless_class.h,
-	  types/pa_vstateless_object.h, types/pa_vstatus.C,
-	  types/pa_vstatus.h, types/pa_vstring.C, types/pa_vstring.h,
-	  types/pa_vtable.C, types/pa_vtable.h, types/pa_vvoid.C,
-	  types/pa_vvoid.h, types/pa_vxdoc.C, types/pa_vxdoc.h,
-	  types/pa_vxnode.C, types/pa_vxnode.h, types/pa_wcontext.C,
-	  types/pa_wcontext.h, types/pa_wwrapper.h: ident now works under
-	  Linux + ident displays filenames (closes issue #818) Copyright
-	  updated
+	  targets/cgi/pa_threads.C, targets/cgi/parser3.C,
+	  targets/isapi/pa_threads.C, targets/isapi/parser3isapi.C,
+	  types/pa_junction.h, types/pa_method.h, types/pa_property.h,
+	  types/pa_value.C, types/pa_value.h, types/pa_vbool.h,
+	  types/pa_vclass.C, types/pa_vclass.h, types/pa_vcode_frame.h,
+	  types/pa_vconsole.h, types/pa_vcookie.C, types/pa_vcookie.h,
+	  types/pa_vdate.h, types/pa_vdouble.h, types/pa_venv.C,
+	  types/pa_venv.h, types/pa_vfile.C, types/pa_vfile.h,
+	  types/pa_vform.C, types/pa_vform.h, types/pa_vhash.C,
+	  types/pa_vhash.h, types/pa_vhashfile.C, types/pa_vhashfile.h,
+	  types/pa_vimage.C, types/pa_vimage.h, types/pa_vint.h,
+	  types/pa_vjunction.C, types/pa_vjunction.h, types/pa_vmail.C,
+	  types/pa_vmail.h, types/pa_vmath.C, types/pa_vmath.h,
+	  types/pa_vmemory.h, types/pa_vmethod_frame.C,
+	  types/pa_vmethod_frame.h, types/pa_vmethod_frame_global.h,
+	  types/pa_vmethod_frame_local.h, types/pa_vobject.C,
+	  types/pa_vobject.h, types/pa_vregex.C, types/pa_vregex.h,
+	  types/pa_vrequest.C, types/pa_vrequest.h, types/pa_vresponse.C,
+	  types/pa_vresponse.h, types/pa_vstateless_class.C,
+	  types/pa_vstateless_class.h, types/pa_vstateless_object.h,
+	  types/pa_vstatus.C, types/pa_vstatus.h, types/pa_vstring.C,
+	  types/pa_vstring.h, types/pa_vtable.C, types/pa_vtable.h,
+	  types/pa_vvoid.C, types/pa_vvoid.h, types/pa_vxdoc.C,
+	  types/pa_vxdoc.h, types/pa_vxnode.C, types/pa_vxnode.h,
+	  types/pa_wcontext.C, types/pa_wcontext.h, types/pa_wwrapper.h:
+	  ident now works under Linux + ident displays filenames (closes
+	  issue #818) Copyright updated
 
 2012-03-13  moko
 
@@ -1603,9 +1772,8 @@
 	  functions removed (override is the default) + beauty
 
 	* src/: include/pa_request.h, main/pa_request.C,
-	  targets/apache13core/mod_parser3_core.C, targets/cgi/parser3.C,
-	  targets/isapi/parser3isapi.C: option to hide $status used in
-	  apache module removed
+	  targets/cgi/parser3.C, targets/isapi/parser3isapi.C: option to
+	  hide $status used in apache module removed
 
 2010-11-18  moko
 
@@ -2521,9 +2689,8 @@
 
 	* src/targets/isapi/parser3isapi.C: - pass pre-capitalized headers
 
-	* src/targets/: cgi/parser3.C, apache13core/mod_parser3_core.C: -
-	  pass pre-capitalized headers - don't use format function because
-	  it calls malloc
+	* src/targets/cgi/parser3.C: - pass pre-capitalized headers - don't
+	  use format function because it calls malloc
 
 	* src/include/pa_common.h: - more capitalized headers were added
 
@@ -2607,18 +2774,10 @@
 	* INSTALL: - comment about building just httpd binary while
 	  building apache module was added
 
-	* src/targets/apache13/p3runConfigure.in: - INCLUDES added so
-	  problem with finding pa_httpd.h should be fixed now
-
 2009-09-21  misha
 
 	* buildall-with-xml: - moving to the latest versions of xml libs:
 	  libxml 2.7.4 and libxslt 1.1.25
-
-2009-09-20  misha
-
-	* src/targets/apache13/p3runConfigure.in: - path fo pcre libs was
-	  fixed
 
 2009-09-19  misha
 
@@ -2723,10 +2882,9 @@
 
 	* src/: main/pa_common.C, main/pa_http.C, main/pa_request.C,
 	  include/pa_common.h, include/pa_sapi.h, types/pa_vcookie.C,
-	  types/pa_vmail.C, targets/apache13core/mod_parser3_core.C,
-	  targets/cgi/parser3.C, targets/isapi/parser3isapi.C: - back to
-	  storing response http headers in lowercase - capitalize them
-	  during output
+	  types/pa_vmail.C, targets/cgi/parser3.C,
+	  targets/isapi/parser3isapi.C: - back to storing response http
+	  headers in lowercase - capitalize them during output
 
 2009-08-31  misha
 
@@ -2744,124 +2902,123 @@
 	* src/classes/file.C, src/include/pa_common.h,
 	  src/include/pa_request.h, src/main/pa_http.C,
 	  src/main/pa_request.C, src/types/pa_vcookie.C,
-	  src/types/pa_vmail.C,
-	  src/targets/apache13core/mod_parser3_core.C,
-	  src/targets/cgi/parser3.C, src/targets/isapi/parser3isapi.C,
-	  tests/results/001.processed, tests/results/002.processed,
-	  tests/results/003.processed, tests/results/004.processed,
-	  tests/results/005.processed, tests/results/006.processed,
-	  tests/results/007.processed, tests/results/008.processed,
-	  tests/results/009.processed, tests/results/010.processed,
-	  tests/results/011.processed, tests/results/012.processed,
-	  tests/results/013.processed, tests/results/014.processed,
-	  tests/results/015.processed, tests/results/016.processed,
-	  tests/results/017.processed, tests/results/018.processed,
-	  tests/results/019.processed, tests/results/020.processed,
-	  tests/results/021.processed, tests/results/022.processed,
-	  tests/results/023.processed, tests/results/024.processed,
-	  tests/results/025.processed, tests/results/026.processed,
-	  tests/results/027.processed, tests/results/028.processed,
-	  tests/results/029.processed, tests/results/030.processed,
-	  tests/results/031.processed, tests/results/032.processed,
-	  tests/results/033.processed, tests/results/034.processed,
-	  tests/results/035.processed, tests/results/036.processed,
-	  tests/results/037.processed, tests/results/038.processed,
-	  tests/results/039.processed, tests/results/040.processed,
-	  tests/results/041.processed, tests/results/042.processed,
-	  tests/results/043.processed, tests/results/044.processed,
-	  tests/results/045.processed, tests/results/046.processed,
-	  tests/results/047.processed, tests/results/048.processed,
-	  tests/results/049.processed, tests/results/050.processed,
-	  tests/results/051.processed, tests/results/052.processed,
-	  tests/results/053.processed, tests/results/054.processed,
-	  tests/results/055.processed, tests/results/056.processed,
-	  tests/results/057.processed, tests/results/058.processed,
-	  tests/results/059.processed, tests/results/060.processed,
-	  tests/results/061.processed, tests/results/062.processed,
-	  tests/results/063.processed, tests/results/064.processed,
-	  tests/results/065.processed, tests/results/066.processed,
-	  tests/results/067.processed, tests/results/068.processed,
-	  tests/results/069.processed, tests/results/070.processed,
-	  tests/results/071.processed, tests/results/072.processed,
-	  tests/results/073.processed, tests/results/074.processed,
-	  tests/results/075.processed, tests/results/076.processed,
-	  tests/results/077.processed, tests/results/078.processed,
-	  tests/results/079.processed, tests/results/080.processed,
-	  tests/results/081.processed, tests/results/082.processed,
-	  tests/results/083.processed, tests/results/084.processed,
-	  tests/results/085.processed, tests/results/086.processed,
-	  tests/results/087.processed, tests/results/088.processed,
-	  tests/results/089.processed, tests/results/090.processed,
-	  tests/results/091.processed, tests/results/092.processed,
-	  tests/results/093.processed, tests/results/094.processed,
-	  tests/results/095.processed, tests/results/096.processed,
-	  tests/results/097.processed, tests/results/098.processed,
-	  tests/results/099.processed, tests/results/100.processed,
-	  tests/results/101.processed, tests/results/102.processed,
-	  tests/results/103.processed, tests/results/104.processed,
-	  tests/results/105.processed, tests/results/106.processed,
-	  tests/results/107.processed, tests/results/108.processed,
-	  tests/results/109.processed, tests/results/110.processed,
-	  tests/results/111.processed, tests/results/112.processed,
-	  tests/results/113.processed, tests/results/114.processed,
-	  tests/results/115.processed, tests/results/116.processed,
-	  tests/results/117.processed, tests/results/118.processed,
-	  tests/results/119.processed, tests/results/120.processed,
-	  tests/results/121.processed, tests/results/122.processed,
-	  tests/results/123.processed, tests/results/124.processed,
-	  tests/results/125.processed, tests/results/126.processed,
-	  tests/results/127.processed, tests/results/128.processed,
-	  tests/results/129.processed, tests/results/130.processed,
-	  tests/results/131.processed, tests/results/132.processed,
-	  tests/results/133.processed, tests/results/134.processed,
-	  tests/results/135.processed, tests/results/136.processed,
-	  tests/results/138.processed, tests/results/139.processed,
-	  tests/results/140.processed, tests/results/141.processed,
-	  tests/results/142.processed, tests/results/143.processed,
-	  tests/results/144.processed, tests/results/145.processed,
-	  tests/results/146.processed, tests/results/147.processed,
-	  tests/results/148.processed, tests/results/149.processed,
-	  tests/results/150.processed, tests/results/151.processed,
-	  tests/results/152.processed, tests/results/153.processed,
-	  tests/results/154.processed, tests/results/155.processed,
-	  tests/results/156.processed, tests/results/157.processed,
-	  tests/results/158.processed, tests/results/159.processed,
-	  tests/results/160.processed, tests/results/161.processed,
-	  tests/results/162.processed, tests/results/163.processed,
-	  tests/results/164.processed, tests/results/165.processed,
-	  tests/results/166.processed, tests/results/167.processed,
-	  tests/results/168.processed, tests/results/169.processed,
-	  tests/results/170.processed, tests/results/171.processed,
-	  tests/results/172.processed, tests/results/173.processed,
-	  tests/results/174.processed, tests/results/175.processed,
-	  tests/results/176.processed, tests/results/177.processed,
-	  tests/results/178.processed, tests/results/179.processed,
-	  tests/results/180.processed, tests/results/181.processed,
-	  tests/results/182.processed, tests/results/183.processed,
-	  tests/results/184.processed, tests/results/185.processed,
-	  tests/results/186.processed, tests/results/187.processed,
-	  tests/results/188.processed, tests/results/189.processed,
-	  tests/results/190.processed, tests/results/191.processed,
-	  tests/results/192.processed, tests/results/193.processed,
-	  tests/results/194.processed, tests/results/195.processed,
-	  tests/results/196.processed, tests/results/197.processed,
-	  tests/results/198.processed, tests/results/199.processed,
-	  tests/results/200.processed, tests/results/201.processed,
-	  tests/results/202.processed, tests/results/203.processed,
-	  tests/results/204.processed, tests/results/205.processed,
-	  tests/results/206.processed, tests/results/207.processed,
-	  tests/results/208.processed, tests/results/209.processed,
-	  tests/results/210.processed, tests/results/211.processed,
-	  tests/results/212.processed, tests/results/213.processed,
-	  tests/results/214.processed, tests/results/215.processed,
-	  tests/results/216.processed, tests/results/217.processed,
-	  tests/results/218.processed, tests/results/219.processed,
-	  tests/results/220.processed, tests/results/221.processed,
-	  tests/results/222.processed, tests/results/223.processed,
-	  tests/results/224.processed, tests/results/225.processed,
-	  tests/results/226.processed, tests/results/227.processed,
-	  tests/results/228.processed, tests/results/229.processed: - http
-	  headers were changed: content-type => Content-type and so on
+	  src/types/pa_vmail.C, src/targets/cgi/parser3.C,
+	  src/targets/isapi/parser3isapi.C, tests/results/001.processed,
+	  tests/results/002.processed, tests/results/003.processed,
+	  tests/results/004.processed, tests/results/005.processed,
+	  tests/results/006.processed, tests/results/007.processed,
+	  tests/results/008.processed, tests/results/009.processed,
+	  tests/results/010.processed, tests/results/011.processed,
+	  tests/results/012.processed, tests/results/013.processed,
+	  tests/results/014.processed, tests/results/015.processed,
+	  tests/results/016.processed, tests/results/017.processed,
+	  tests/results/018.processed, tests/results/019.processed,
+	  tests/results/020.processed, tests/results/021.processed,
+	  tests/results/022.processed, tests/results/023.processed,
+	  tests/results/024.processed, tests/results/025.processed,
+	  tests/results/026.processed, tests/results/027.processed,
+	  tests/results/028.processed, tests/results/029.processed,
+	  tests/results/030.processed, tests/results/031.processed,
+	  tests/results/032.processed, tests/results/033.processed,
+	  tests/results/034.processed, tests/results/035.processed,
+	  tests/results/036.processed, tests/results/037.processed,
+	  tests/results/038.processed, tests/results/039.processed,
+	  tests/results/040.processed, tests/results/041.processed,
+	  tests/results/042.processed, tests/results/043.processed,
+	  tests/results/044.processed, tests/results/045.processed,
+	  tests/results/046.processed, tests/results/047.processed,
+	  tests/results/048.processed, tests/results/049.processed,
+	  tests/results/050.processed, tests/results/051.processed,
+	  tests/results/052.processed, tests/results/053.processed,
+	  tests/results/054.processed, tests/results/055.processed,
+	  tests/results/056.processed, tests/results/057.processed,
+	  tests/results/058.processed, tests/results/059.processed,
+	  tests/results/060.processed, tests/results/061.processed,
+	  tests/results/062.processed, tests/results/063.processed,
+	  tests/results/064.processed, tests/results/065.processed,
+	  tests/results/066.processed, tests/results/067.processed,
+	  tests/results/068.processed, tests/results/069.processed,
+	  tests/results/070.processed, tests/results/071.processed,
+	  tests/results/072.processed, tests/results/073.processed,
+	  tests/results/074.processed, tests/results/075.processed,
+	  tests/results/076.processed, tests/results/077.processed,
+	  tests/results/078.processed, tests/results/079.processed,
+	  tests/results/080.processed, tests/results/081.processed,
+	  tests/results/082.processed, tests/results/083.processed,
+	  tests/results/084.processed, tests/results/085.processed,
+	  tests/results/086.processed, tests/results/087.processed,
+	  tests/results/088.processed, tests/results/089.processed,
+	  tests/results/090.processed, tests/results/091.processed,
+	  tests/results/092.processed, tests/results/093.processed,
+	  tests/results/094.processed, tests/results/095.processed,
+	  tests/results/096.processed, tests/results/097.processed,
+	  tests/results/098.processed, tests/results/099.processed,
+	  tests/results/100.processed, tests/results/101.processed,
+	  tests/results/102.processed, tests/results/103.processed,
+	  tests/results/104.processed, tests/results/105.processed,
+	  tests/results/106.processed, tests/results/107.processed,
+	  tests/results/108.processed, tests/results/109.processed,
+	  tests/results/110.processed, tests/results/111.processed,
+	  tests/results/112.processed, tests/results/113.processed,
+	  tests/results/114.processed, tests/results/115.processed,
+	  tests/results/116.processed, tests/results/117.processed,
+	  tests/results/118.processed, tests/results/119.processed,
+	  tests/results/120.processed, tests/results/121.processed,
+	  tests/results/122.processed, tests/results/123.processed,
+	  tests/results/124.processed, tests/results/125.processed,
+	  tests/results/126.processed, tests/results/127.processed,
+	  tests/results/128.processed, tests/results/129.processed,
+	  tests/results/130.processed, tests/results/131.processed,
+	  tests/results/132.processed, tests/results/133.processed,
+	  tests/results/134.processed, tests/results/135.processed,
+	  tests/results/136.processed, tests/results/138.processed,
+	  tests/results/139.processed, tests/results/140.processed,
+	  tests/results/141.processed, tests/results/142.processed,
+	  tests/results/143.processed, tests/results/144.processed,
+	  tests/results/145.processed, tests/results/146.processed,
+	  tests/results/147.processed, tests/results/148.processed,
+	  tests/results/149.processed, tests/results/150.processed,
+	  tests/results/151.processed, tests/results/152.processed,
+	  tests/results/153.processed, tests/results/154.processed,
+	  tests/results/155.processed, tests/results/156.processed,
+	  tests/results/157.processed, tests/results/158.processed,
+	  tests/results/159.processed, tests/results/160.processed,
+	  tests/results/161.processed, tests/results/162.processed,
+	  tests/results/163.processed, tests/results/164.processed,
+	  tests/results/165.processed, tests/results/166.processed,
+	  tests/results/167.processed, tests/results/168.processed,
+	  tests/results/169.processed, tests/results/170.processed,
+	  tests/results/171.processed, tests/results/172.processed,
+	  tests/results/173.processed, tests/results/174.processed,
+	  tests/results/175.processed, tests/results/176.processed,
+	  tests/results/177.processed, tests/results/178.processed,
+	  tests/results/179.processed, tests/results/180.processed,
+	  tests/results/181.processed, tests/results/182.processed,
+	  tests/results/183.processed, tests/results/184.processed,
+	  tests/results/185.processed, tests/results/186.processed,
+	  tests/results/187.processed, tests/results/188.processed,
+	  tests/results/189.processed, tests/results/190.processed,
+	  tests/results/191.processed, tests/results/192.processed,
+	  tests/results/193.processed, tests/results/194.processed,
+	  tests/results/195.processed, tests/results/196.processed,
+	  tests/results/197.processed, tests/results/198.processed,
+	  tests/results/199.processed, tests/results/200.processed,
+	  tests/results/201.processed, tests/results/202.processed,
+	  tests/results/203.processed, tests/results/204.processed,
+	  tests/results/205.processed, tests/results/206.processed,
+	  tests/results/207.processed, tests/results/208.processed,
+	  tests/results/209.processed, tests/results/210.processed,
+	  tests/results/211.processed, tests/results/212.processed,
+	  tests/results/213.processed, tests/results/214.processed,
+	  tests/results/215.processed, tests/results/216.processed,
+	  tests/results/217.processed, tests/results/218.processed,
+	  tests/results/219.processed, tests/results/220.processed,
+	  tests/results/221.processed, tests/results/222.processed,
+	  tests/results/223.processed, tests/results/224.processed,
+	  tests/results/225.processed, tests/results/226.processed,
+	  tests/results/227.processed, tests/results/228.processed,
+	  tests/results/229.processed: - http headers were changed:
+	  content-type => Content-type and so on
 
 2009-08-27  misha
 
@@ -3108,9 +3265,8 @@
 
 2009-07-11  misha
 
-	* src/targets/: apache13/ApacheModuleParser3.vcproj,
-	  cgi/parser3.vcproj, isapi/parser3isapi.vcproj: - stack size was
-	  increaced to 2MB (default=1MB)
+	* src/targets/: cgi/parser3.vcproj, isapi/parser3isapi.vcproj: -
+	  stack size was increaced to 2MB (default=1MB)
 
 2009-07-08  misha
 
@@ -3192,11 +3348,9 @@
 	* tests/217.html: - test for recursion detection was added
 
 	* src/: types/types.vcproj, main/main.vcproj,
-	  classes/classes.vcproj,
-	  targets/apache13/ApacheModuleParser3.vcproj,
-	  targets/apache13core/ApacheModuleParser3Core.vcproj,
-	  targets/cgi/parser3.vcproj, targets/isapi/parser3isapi.vcproj: -
-	  RuntimeTypeInfo was removed from .vcproj
+	  classes/classes.vcproj, targets/cgi/parser3.vcproj,
+	  targets/isapi/parser3isapi.vcproj: - RuntimeTypeInfo was removed
+	  from .vcproj
 
 	* src/types/pa_wwrapper.h: - dynamic_cast was removed
 
@@ -3210,8 +3364,6 @@
 
 	* src/: classes/classes.vcproj, main/main.vcproj,
 	  types/types.vcproj, targets/cgi/parser3.vcproj,
-	  targets/apache13/ApacheModuleParser3.vcproj,
-	  targets/apache13core/ApacheModuleParser3Core.vcproj,
 	  targets/isapi/parser3isapi.vcproj: - enable runtime info (needed
 	  for dynamic_cast) - little options changes
 
@@ -3961,8 +4113,7 @@
 
 	* src/main/pa_common.C: - changes in formating
 
-	* src/: classes/file.C, main/pa_http.C,
-	  targets/apache13core/mod_parser3_core.C: - some constants changed
+	* src/: classes/file.C, main/pa_http.C: - some constants changed
 	  their names
 
 	* src/include/pa_http.h: - some spaces were converted to tabs
@@ -4104,9 +4255,8 @@
 
 	* src/lib/pcre/config.h: - configuration for PCRE library
 
-	* src/targets/: apache13core/ApacheModuleParser3Core.vcproj,
-	  cgi/parser3.vcproj, isapi/parser3isapi.vcproj: - use PCRE library
-	  from win32\pcre instead of parser3\src\lib\pcre
+	* src/targets/: cgi/parser3.vcproj, isapi/parser3isapi.vcproj: -
+	  use PCRE library from win32\pcre instead of parser3\src\lib\pcre
 
 	* src/: classes/file.C, main/pa_string.C: - moved to new PCRE
 	  library and set flag UTF8 if $request:charset is UTF-8
@@ -4748,8 +4898,6 @@
 	  src/lib/pcre/pcre.vcproj, src/lib/pcre/pcre_dftables.vcproj,
 	  src/lib/pcre/pcre_parser_ctype.vcproj, src/lib/sdbm/sdbm.vcproj,
 	  src/lib/smtp/smtp.vcproj, src/main/main.vcproj,
-	  src/targets/apache13/ApacheModuleParser3.vcproj,
-	  src/targets/apache13core/ApacheModuleParser3Core.vcproj,
 	  src/targets/cgi/parser3.vcproj,
 	  src/targets/isapi/parser3isapi.vcproj, src/types/types.vcproj: -
 	  back to VS2003 because of Apache 1.3 module can't work if it was
@@ -4784,8 +4932,8 @@
 	  not only strings with numbers but with values 'true'/'false' as
 	  well
 
-	* src/targets/: cgi/parser3.C, apache13core/mod_parser3_core.C,
-	  isapi/parser3isapi.C: - buffer size for parser3.log increased
+	* src/targets/: cgi/parser3.C, isapi/parser3isapi.C: - buffer size
+	  for parser3.log increased
 
 	* src/main/pa_common.C: - remove_crlf optimize whitespaces now
 
@@ -5660,10 +5808,7 @@
 	  src/main/pa_exec.C, src/main/pa_http.C, src/main/pa_request.C,
 	  src/main/pa_socks.C, src/main/pa_sql_driver_manager.C,
 	  src/main/pa_string.C, src/main/pa_stylesheet_connection.C,
-	  src/main/pa_stylesheet_manager.C,
-	  src/targets/apache13/ApacheModuleParser3.vcproj,
-	  src/targets/apache13core/ApacheModuleParser3Core.vcproj,
-	  src/targets/apache13core/pa_threads.C, src/targets/cgi/getopt.c,
+	  src/main/pa_stylesheet_manager.C, src/targets/cgi/getopt.c,
 	  src/targets/cgi/parser3.C, src/targets/cgi/parser3.vcproj,
 	  src/targets/isapi/pa_threads.C, src/targets/isapi/parser3isapi.C,
 	  src/targets/isapi/parser3isapi.vcproj, src/types/pa_value.C,
@@ -5692,10 +5837,7 @@
 	  src/main/pa_exec.C, src/main/pa_http.C, src/main/pa_request.C,
 	  src/main/pa_socks.C, src/main/pa_sql_driver_manager.C,
 	  src/main/pa_string.C, src/main/pa_stylesheet_connection.C,
-	  src/main/pa_stylesheet_manager.C,
-	  src/targets/apache13/ApacheModuleParser3.vcproj,
-	  src/targets/apache13core/ApacheModuleParser3Core.vcproj,
-	  src/targets/apache13core/pa_threads.C, src/targets/cgi/getopt.c,
+	  src/main/pa_stylesheet_manager.C, src/targets/cgi/getopt.c,
 	  src/targets/cgi/parser3.C, src/targets/cgi/parser3.vcproj,
 	  src/targets/isapi/pa_threads.C, src/targets/isapi/parser3isapi.C,
 	  src/targets/isapi/parser3isapi.vcproj, src/types/pa_value.C,
@@ -5827,7 +5969,6 @@
 	* src/classes/classes.vcproj, src/include/pa_config_fixed.h,
 	  src/lib/gd/gd.vcproj, src/lib/smtp/smtp.vcproj,
 	  src/main/main.vcproj, src/main/pa_globals.C,
-	  src/targets/apache13core/ApacheModuleParser3Core.vcproj,
 	  src/targets/cgi/parser3.vcproj,
 	  src/targets/isapi/parser3isapi.vcproj, src/types/types.vcproj,
 	  configure, configure.in, src/include/pa_version.h: . killing
@@ -6078,7 +6219,6 @@
 	  src/main/compile.y, src/main/compile_tools.h,
 	  src/main/pa_charset.C, src/main/pa_common.C,
 	  src/main/pa_globals.C, src/main/pa_string.C,
-	  src/targets/apache13core/mod_parser3_core.C,
 	  src/targets/cgi/getopt.c, src/targets/isapi/parser3isapi.C,
 	  src/types/pa_vmail.C, www/htdocs/.htaccess, www/htdocs/_bug.txt,
 	  www/htdocs/auto.p: . merged latest fixes from 3.2.0
@@ -6098,8 +6238,8 @@
 	* src/targets/isapi/parser3isapi.C: . undone some strange change
 	  since 3.1.5
 
-	* src/targets/: apache13core/mod_parser3_core.C,
-	  isapi/parser3isapi.C: . merged from 3.1.5 release link fixes
+	* src/targets/isapi/parser3isapi.C: . merged from 3.1.5 release
+	  link fixes
 
 	* src/classes/date.C, src/include/pa_config_fixed.h,
 	  src/main/compile.tab.C, src/main/compile.y,
@@ -6116,8 +6256,7 @@
 
 2005-12-07  paf
 
-	* src/targets/: apache13core/mod_parser3_core.C,
-	  isapi/parser3isapi.C: . now links in release mode
+	* src/targets/isapi/parser3isapi.C: . now links in release mode
 
 	* src/include/pa_version.h: makefiles
 
@@ -6298,14 +6437,12 @@
 	* src/types/pa_vresponse.C, www/htdocs/_bug.html: +
 	  $response:headers access to internal hash
 
-	* src/targets/: apache13core/mod_parser3_core.C,
-	  isapi/parser3isapi.C: merged from HEAD: +
+	* src/targets/isapi/parser3isapi.C: merged from HEAD: +
 	  GC_large_alloc_warn_suppressed=0 between requests [apache mod_,
 	  isapi] this reduces number of "GC Warning: Repeated allocation of
 	  very large block" messages to only important onces
 
-	* src/targets/apache13core/mod_parser3_core.C,
-	  src/targets/isapi/parser3isapi.C, www/htdocs/_bug.html: +
+	* src/targets/isapi/parser3isapi.C, www/htdocs/_bug.html: +
 	  GC_large_alloc_warn_suppressed=0 between requests [apache mod_,
 	  isapi] this reduces number of "GC Warning: Repeated allocation of
 	  very large block" messages to only important onces
@@ -6557,32 +6694,29 @@
 	  main/pa_stylesheet_connection.C, main/pa_stylesheet_manager.C,
 	  main/pa_table.C, main/pa_uue.C, main/pa_xml_exception.C,
 	  main/pa_xml_io.C, main/untaint.C, sql/pa_sql_driver.h,
-	  targets/apache13/mod_parser3.c,
-	  targets/apache13core/mod_parser3_core.C,
-	  targets/apache13core/pa_threads.C, targets/cgi/pa_threads.C,
-	  targets/cgi/parser3.C, targets/isapi/pa_threads.C,
-	  targets/isapi/parser3isapi.C, types/pa_junction.h,
-	  types/pa_method.h, types/pa_property.h, types/pa_value.C,
-	  types/pa_value.h, types/pa_vbool.h, types/pa_vclass.C,
-	  types/pa_vclass.h, types/pa_vcode_frame.h, types/pa_vconsole.h,
-	  types/pa_vcookie.C, types/pa_vcookie.h, types/pa_vdate.h,
-	  types/pa_vdouble.h, types/pa_venv.h, types/pa_vfile.C,
-	  types/pa_vfile.h, types/pa_vform.C, types/pa_vform.h,
-	  types/pa_vhash.C, types/pa_vhash.h, types/pa_vhashfile.h,
-	  types/pa_vimage.C, types/pa_vimage.h, types/pa_vint.h,
-	  types/pa_vjunction.h, types/pa_vmail.C, types/pa_vmail.h,
-	  types/pa_vmath.C, types/pa_vmath.h, types/pa_vmemory.h,
-	  types/pa_vmethod_frame.C, types/pa_vmethod_frame.h,
-	  types/pa_vobject.C, types/pa_vobject.h, types/pa_vproperty.h,
-	  types/pa_vrequest.C, types/pa_vrequest.h, types/pa_vresponse.C,
-	  types/pa_vresponse.h, types/pa_vstateless_class.C,
-	  types/pa_vstateless_class.h, types/pa_vstateless_object.h,
-	  types/pa_vstatus.C, types/pa_vstatus.h, types/pa_vstring.C,
-	  types/pa_vstring.h, types/pa_vtable.C, types/pa_vtable.h,
-	  types/pa_vvoid.C, types/pa_vvoid.h, types/pa_vxdoc.C,
-	  types/pa_vxdoc.h, types/pa_vxnode.C, types/pa_vxnode.h,
-	  types/pa_wcontext.C, types/pa_wcontext.h, types/pa_wwrapper.h:
-	  2005
+	  targets/cgi/pa_threads.C, targets/cgi/parser3.C,
+	  targets/isapi/pa_threads.C, targets/isapi/parser3isapi.C,
+	  types/pa_junction.h, types/pa_method.h, types/pa_property.h,
+	  types/pa_value.C, types/pa_value.h, types/pa_vbool.h,
+	  types/pa_vclass.C, types/pa_vclass.h, types/pa_vcode_frame.h,
+	  types/pa_vconsole.h, types/pa_vcookie.C, types/pa_vcookie.h,
+	  types/pa_vdate.h, types/pa_vdouble.h, types/pa_venv.h,
+	  types/pa_vfile.C, types/pa_vfile.h, types/pa_vform.C,
+	  types/pa_vform.h, types/pa_vhash.C, types/pa_vhash.h,
+	  types/pa_vhashfile.h, types/pa_vimage.C, types/pa_vimage.h,
+	  types/pa_vint.h, types/pa_vjunction.h, types/pa_vmail.C,
+	  types/pa_vmail.h, types/pa_vmath.C, types/pa_vmath.h,
+	  types/pa_vmemory.h, types/pa_vmethod_frame.C,
+	  types/pa_vmethod_frame.h, types/pa_vobject.C, types/pa_vobject.h,
+	  types/pa_vproperty.h, types/pa_vrequest.C, types/pa_vrequest.h,
+	  types/pa_vresponse.C, types/pa_vresponse.h,
+	  types/pa_vstateless_class.C, types/pa_vstateless_class.h,
+	  types/pa_vstateless_object.h, types/pa_vstatus.C,
+	  types/pa_vstatus.h, types/pa_vstring.C, types/pa_vstring.h,
+	  types/pa_vtable.C, types/pa_vtable.h, types/pa_vvoid.C,
+	  types/pa_vvoid.h, types/pa_vxdoc.C, types/pa_vxdoc.h,
+	  types/pa_vxnode.C, types/pa_vxnode.h, types/pa_wcontext.C,
+	  types/pa_wcontext.h, types/pa_wwrapper.h: 2005
 
 	* src/types/: pa_value.h, pa_vdouble.h, pa_vint.h,
 	  pa_vmethod_frame.h: merged from HEAD ! simplified (double)
@@ -6700,39 +6834,34 @@
 	  main/pa_stylesheet_connection.C, main/pa_stylesheet_manager.C,
 	  main/pa_table.C, main/pa_uue.C, main/pa_xml_exception.C,
 	  main/pa_xml_io.C, main/untaint.C, sql/pa_sql_driver.h,
-	  targets/apache13/mod_parser3.c,
-	  targets/apache13core/mod_parser3_core.C,
-	  targets/apache13core/pa_threads.C, targets/cgi/pa_threads.C,
-	  targets/cgi/parser3.C, targets/isapi/pa_threads.C,
-	  targets/isapi/parser3isapi.C, types/pa_junction.h,
-	  types/pa_method.h, types/pa_value.C, types/pa_value.h,
-	  types/pa_vbool.h, types/pa_vclass.C, types/pa_vclass.h,
-	  types/pa_vcode_frame.h, types/pa_vconsole.h, types/pa_vcookie.C,
-	  types/pa_vcookie.h, types/pa_vdate.h, types/pa_vdouble.h,
-	  types/pa_venv.h, types/pa_vfile.C, types/pa_vfile.h,
-	  types/pa_vform.C, types/pa_vform.h, types/pa_vhash.C,
-	  types/pa_vhash.h, types/pa_vhashfile.h, types/pa_vimage.C,
-	  types/pa_vimage.h, types/pa_vint.h, types/pa_vjunction.h,
-	  types/pa_vmail.C, types/pa_vmail.h, types/pa_vmath.C,
-	  types/pa_vmath.h, types/pa_vmemory.h, types/pa_vmethod_frame.C,
-	  types/pa_vmethod_frame.h, types/pa_vobject.C, types/pa_vobject.h,
-	  types/pa_vrequest.C, types/pa_vrequest.h, types/pa_vresponse.C,
-	  types/pa_vresponse.h, types/pa_vstateless_class.C,
-	  types/pa_vstateless_class.h, types/pa_vstateless_object.h,
-	  types/pa_vstatus.C, types/pa_vstatus.h, types/pa_vstring.C,
-	  types/pa_vstring.h, types/pa_vtable.C, types/pa_vtable.h,
-	  types/pa_vvoid.C, types/pa_vvoid.h, types/pa_vxdoc.C,
-	  types/pa_vxdoc.h, types/pa_vxnode.C, types/pa_vxnode.h,
-	  types/pa_wcontext.C, types/pa_wcontext.h, types/pa_wwrapper.h: .
-	  2005 ;)
+	  targets/cgi/pa_threads.C, targets/cgi/parser3.C,
+	  targets/isapi/pa_threads.C, targets/isapi/parser3isapi.C,
+	  types/pa_junction.h, types/pa_method.h, types/pa_value.C,
+	  types/pa_value.h, types/pa_vbool.h, types/pa_vclass.C,
+	  types/pa_vclass.h, types/pa_vcode_frame.h, types/pa_vconsole.h,
+	  types/pa_vcookie.C, types/pa_vcookie.h, types/pa_vdate.h,
+	  types/pa_vdouble.h, types/pa_venv.h, types/pa_vfile.C,
+	  types/pa_vfile.h, types/pa_vform.C, types/pa_vform.h,
+	  types/pa_vhash.C, types/pa_vhash.h, types/pa_vhashfile.h,
+	  types/pa_vimage.C, types/pa_vimage.h, types/pa_vint.h,
+	  types/pa_vjunction.h, types/pa_vmail.C, types/pa_vmail.h,
+	  types/pa_vmath.C, types/pa_vmath.h, types/pa_vmemory.h,
+	  types/pa_vmethod_frame.C, types/pa_vmethod_frame.h,
+	  types/pa_vobject.C, types/pa_vobject.h, types/pa_vrequest.C,
+	  types/pa_vrequest.h, types/pa_vresponse.C, types/pa_vresponse.h,
+	  types/pa_vstateless_class.C, types/pa_vstateless_class.h,
+	  types/pa_vstateless_object.h, types/pa_vstatus.C,
+	  types/pa_vstatus.h, types/pa_vstring.C, types/pa_vstring.h,
+	  types/pa_vtable.C, types/pa_vtable.h, types/pa_vvoid.C,
+	  types/pa_vvoid.h, types/pa_vxdoc.C, types/pa_vxdoc.h,
+	  types/pa_vxnode.C, types/pa_vxnode.h, types/pa_wcontext.C,
+	  types/pa_wcontext.h, types/pa_wwrapper.h: . 2005 ;)
 
 	* src/: lib/cord/cord.vcproj, lib/gd/gd.vcproj,
 	  lib/ltdl/ltdl.vcproj, lib/md5/md5.vcproj, lib/pcre/pcre.vcproj,
 	  lib/pcre/pcre_dftables.vcproj, lib/pcre/pcre_parser_ctype.vcproj,
 	  lib/sdbm/sdbm.vcproj, lib/smtp/smtp.vcproj, main/compile.tab.C,
 	  main/compile.y, main/compile_tools.C, main/compile_tools.h,
-	  targets/apache13/ApacheModuleParser3.vcproj,
-	  targets/apache13core/ApacheModuleParser3Core.vcproj,
 	  targets/cgi/parser3.vcproj, targets/isapi/parser3isapi.vcproj: +
 	  optimized constants in expressions vstring->vdouble
 
@@ -7264,7 +7393,6 @@
 2004-07-30  paf
 
 	* src/include/pa_request.h, src/main/pa_request.C,
-	  src/targets/apache13core/mod_parser3_core.C,
 	  src/targets/cgi/parser3.C, src/targets/isapi/parser3isapi.C,
 	  www/htdocs/.htaccess: bugfix: win32: system&parser exceptions in
 	  release mode reported properly parser exception in exception
@@ -7332,10 +7460,9 @@
 	* src/classes/file.C: moving file:send somewhere else..
 
 	* src/: classes/file.C, include/pa_sapi.h, main/pa_common.C,
-	  targets/apache13core/mod_parser3_core.C, targets/cgi/parser3.C,
-	  targets/isapi/parser3isapi.C: patched:  ^file:send by Victor
-	  Fedoseev <vvf_ru@mail.ru> todo: turn it to $response:download[
-	  $.filename[filename] $.option[] ,, ]
+	  targets/cgi/parser3.C, targets/isapi/parser3isapi.C: patched:
+	  ^file:send by Victor Fedoseev <vvf_ru@mail.ru> todo: turn it to
+	  $response:download[ $.filename[filename] $.option[] ,, ]
 
 	* src/classes/file.C: beauty: invalid mode thoroughly reported
 
@@ -7399,10 +7526,7 @@
 	  src/lib/md5/md5.vcproj, src/lib/pcre/pcre.vcproj,
 	  src/lib/pcre/pcre_dftables.vcproj,
 	  src/lib/pcre/pcre_parser_ctype.vcproj, src/lib/smtp/smtp.vcproj,
-	  src/main/main.vcproj,
-	  src/targets/apache13/ApacheModuleParser3.vcproj,
-	  src/targets/apache13core/ApacheModuleParser3Core.vcproj,
-	  src/targets/cgi/parser3.vcproj,
+	  src/main/main.vcproj, src/targets/cgi/parser3.vcproj,
 	  src/targets/isapi/parser3isapi.vcproj, src/types/types.vcproj,
 	  www/htdocs/.htaccess: win32: option: global optimization ON
 
@@ -7499,8 +7623,6 @@
 	  unknown errors reported and not cause SIGSEGV now
 
 2004-05-24  paf
-
-	* src/targets/apache13/p3runConfigure.in: bugfix: smtp added
 
 	* src/include/pa_string.h, src/lib/cord/cordbscs.c,
 	  src/lib/cord/include/cord.h, www/htdocs/_bug.html,
@@ -7657,9 +7779,7 @@
 
 	* src/: include/pa_cache_managers.h, include/pa_globals.h,
 	  include/pa_socks.h, main/pa_cache_managers.C, main/pa_globals.C,
-	  main/pa_socks.C, targets/apache13/mod_parser3.c,
-	  targets/apache13/pa_httpd.h,
-	  targets/apache13core/mod_parser3_core.C, targets/cgi/parser3.C,
+	  main/pa_socks.C, targets/cgi/parser3.C,
 	  targets/isapi/parser3isapi.C, targets/isapi/parser3isapi.def:
 	  bugfix: sql connections now are disconnected
 
@@ -7866,14 +7986,10 @@
 	  names got transcoded to $request:charset too [were only column
 	  data]
 
-	* src/targets/apache13/p3runConfigure.in: @LIBS@ mainly to include
-	  -lm to apache
-
 2004-03-01  paf
 
-	* src/targets/: apache13core/mod_parser3_core.C,
-	  isapi/parser3isapi.C: new: apache module & isapi extension
-	  memory:compact befor processingrequest
+	* src/targets/isapi/parser3isapi.C: new: apache module & isapi
+	  extension memory:compact befor processingrequest
 
 	* operators.txt, src/classes/hash.C, www/htdocs/_bug.html: new:
 	  ^hash._keys[>>name<<] to call sole column of result
@@ -8158,9 +8274,7 @@
 	  main/pa_sql_driver_manager.C, main/pa_string.C,
 	  main/pa_stylesheet_manager.C, main/pa_table.C, main/pa_uue.C,
 	  main/pa_xml_exception.C, main/pa_xml_io.C, main/untaint.C,
-	  sql/pa_sql_driver.h, targets/apache13/mod_parser3.c,
-	  targets/apache13core/mod_parser3_core.C,
-	  targets/apache13core/pa_threads.C, targets/cgi/pa_threads.C,
+	  sql/pa_sql_driver.h, targets/cgi/pa_threads.C,
 	  targets/isapi/pa_threads.C, targets/isapi/parser3isapi.C,
 	  types/pa_junction.h, types/pa_method.h, types/pa_value.C,
 	  types/pa_value.h, types/pa_vbool.h, types/pa_vclass.C,
@@ -8189,18 +8303,15 @@
 	  lib/pcre/pcre.vcproj, lib/pcre/pcre_dftables.vcproj,
 	  lib/pcre/pcre_parser_ctype.vcproj, lib/sdbm/sdbm.vcproj,
 	  lib/smtp/smtp.vcproj, main/main.vcproj, main/pa_globals.C,
-	  targets/apache13/ApacheModuleParser3.vcproj,
 	  targets/cgi/parser3.C, targets/cgi/parser3.vcproj,
 	  targets/isapi/parser3isapi.vcproj, types/types.vcproj: migrated
 	  to latest libxml[2.6.5] and libgdome[1.1.2] simplified lib build
 	  processes
 
 	* src/: classes/classes.vcproj, lib/gd/gd.vcproj, main/main.vcproj,
-	  main/pa_globals.C,
-	  targets/apache13core/ApacheModuleParser3Core.vcproj,
-	  targets/cgi/parser3.vcproj, targets/isapi/parser3isapi.vcproj,
-	  types/types.vcproj: continued changes to reflect libxml xsl new
-	  folders
+	  main/pa_globals.C, targets/cgi/parser3.vcproj,
+	  targets/isapi/parser3isapi.vcproj, types/types.vcproj: continued
+	  changes to reflect libxml xsl new folders
 
 	* src/: classes/classes.vcproj, lib/gd/gd.vcproj,
 	  lib/smtp/smtp.vcproj, main/main.vcproj,
@@ -8209,7 +8320,6 @@
 
 	* src/: classes/classes.vcproj, lib/gd/gd.vcproj,
 	  lib/smtp/smtp.vcproj, main/main.vcproj,
-	  targets/apache13core/ApacheModuleParser3Core.vcproj,
 	  targets/cgi/parser3.vcproj, targets/isapi/parser3isapi.vcproj,
 	  types/types.vcproj: started changes to reflect libxml xsl new
 	  folders
@@ -8217,9 +8327,7 @@
 	* ChangeLog, parser3.sln, src/classes/classes.vcproj,
 	  src/lib/gd/gd.vcproj, src/lib/smtp/smtp.vcproj,
 	  src/main/compile.tab.C, src/main/main.vcproj,
-	  src/main/pa_globals.C,
-	  src/targets/apache13core/ApacheModuleParser3Core.vcproj,
-	  src/targets/cgi/parser3.vcproj,
+	  src/main/pa_globals.C, src/targets/cgi/parser3.vcproj,
 	  src/targets/isapi/parser3isapi.vcproj, src/types/types.vcproj,
 	  www/htdocs/.htaccess: started changes to reflect libxml xsl new
 	  folders
@@ -8297,9 +8405,6 @@
 2004-01-29  paf
 
 	* src/include/pa_memory.h: typo error
-
-	* src/targets/apache13core/mod_parser3_core.C: bugfix: old style
-	  new used
 
 	* src/include/pa_memory.h: bugfix: [potential] strdup copied one
 	  more byte then specified, then zeroed it << useless and
@@ -8531,10 +8636,8 @@
 2003-11-21  paf
 
 	* Makefile.am, configure, configure.in, src/classes/Makefile.am,
-	  src/include/pa_config_auto.h.in,
-	  src/targets/apache13/p3runConfigure.in,
-	  src/targets/cgi/Makefile.am, src/types/Makefile.am: rearrange:
-	  gd&smtp moved to src/lib
+	  src/include/pa_config_auto.h.in, src/targets/cgi/Makefile.am,
+	  src/types/Makefile.am: rearrange: gd&smtp moved to src/lib
 
 	* src/classes/classes.vcproj: rearrange: gd&smtp moved to src/lib
 
@@ -8551,12 +8654,7 @@
 
 	* src/include/Makefile.am: pa_xml_exception.h
 
-	* src/targets/apache13core/: ApacheModuleParser3Core.vcproj,
-	  Makefile.am, mod_parser3.C, mod_parser3_core.C: renamed
-	  mod_parser3 to mod_parser3_core to help DOXYGEN
-
-	* src/targets/: apache13/ApacheModuleParser3.vcproj,
-	  isapi/parser3isapi.C: more warnings --
+	* src/targets/isapi/parser3isapi.C: more warnings --
 
 2003-11-20  paf
 
@@ -8616,9 +8714,7 @@
 	  main/pa_request.C, main/pa_socks.C, main/pa_sql_driver_manager.C,
 	  main/pa_string.C, main/pa_stylesheet_manager.C, main/pa_table.C,
 	  main/pa_uue.C, main/pa_xml_exception.C, main/untaint.C,
-	  sql/pa_sql_driver.h, targets/apache13/mod_parser3.c,
-	  targets/apache13/pa_httpd.h, targets/apache13core/mod_parser3.C,
-	  targets/apache13core/pa_threads.C, targets/cgi/pa_threads.C,
+	  sql/pa_sql_driver.h, targets/cgi/pa_threads.C,
 	  targets/cgi/parser3.C, targets/isapi/pa_threads.C,
 	  targets/isapi/parser3isapi.C, types/pa_junction.h,
 	  types/pa_method.h, types/pa_value.C, types/pa_value.h,
@@ -8661,13 +8757,11 @@
 	  main/main.vcproj, main/pa_cache_managers.C, main/pa_charset.C,
 	  main/pa_common.C, main/pa_dir.C, main/pa_exec.C,
 	  main/pa_globals.C, main/pa_os.C, main/pa_request.C,
-	  main/pa_string.C, main/pa_table.C,
-	  targets/apache13/ApacheModuleParser3.vcproj,
-	  targets/apache13core/ApacheModuleParser3Core.vcproj,
-	  targets/cgi/parser3.vcproj, targets/isapi/parser3isapi.vcproj,
-	  types/pa_value.h, types/pa_vconsole.h, types/pa_vdate.h,
-	  types/pa_vfile.h, types/pa_vhashfile.C, types/pa_vimage.C,
-	  types/pa_vimage.h, types/pa_vmail.C, types/pa_vobject.C,
+	  main/pa_string.C, main/pa_table.C, targets/cgi/parser3.vcproj,
+	  targets/isapi/parser3isapi.vcproj, types/pa_value.h,
+	  types/pa_vconsole.h, types/pa_vdate.h, types/pa_vfile.h,
+	  types/pa_vhashfile.C, types/pa_vimage.C, types/pa_vimage.h,
+	  types/pa_vmail.C, types/pa_vobject.C,
 	  types/pa_vstateless_class.h, types/pa_vtable.C,
 	  types/pa_vtable.h, types/pa_vvoid.h, types/pa_vxdoc.h,
 	  types/pa_vxnode.h, types/types.vcproj: turned on warnings level4
@@ -8745,9 +8839,8 @@
 	* src/: classes/Makefile.am, types/Makefile.am: .am sdbm INCLUDES
 	  updates
 
-	* parser3.sln, src/targets/apache13/p3runConfigure.in,
-	  src/targets/cgi/Makefile.am: .vcproj & .am updated to include
-	  sdbm
+	* parser3.sln, src/targets/cgi/Makefile.am: .vcproj & .am updated
+	  to include sdbm
 
 	* src/include/: pa_config_includes.h, pa_version.h: our
 	  replacements of max& co only for cpp
@@ -8809,24 +8902,18 @@
 	  src/lib/ltdl/libltdl.vcproj, src/lib/ltdl/libltdl.vcproj.vspscc,
 	  src/lib/ltdl/ltdl.vcproj, src/lib/ltdl/ltdl.vcproj.vspscc,
 	  src/main/compile.tab.C, src/main/main.vcproj,
-	  src/main/pa_charset.C,
-	  src/targets/apache13/ApacheModuleParser3.vcproj,
-	  src/targets/apache13/mod_parser3.c,
-	  src/targets/apache13core/ApacheModuleParser3Core.vcproj,
-	  src/targets/cgi/parser3.vcproj, src/types/Makefile.am,
-	  src/types/pa_vhash.C, src/types/pa_vhashfile.C,
-	  src/types/pa_vhashfile.h, src/types/pa_vxnode.h,
-	  src/types/types.vcproj, www/htdocs/.htaccess: hashfile: started
-	  again with sdbm from apache
+	  src/main/pa_charset.C, src/targets/cgi/parser3.vcproj,
+	  src/types/Makefile.am, src/types/pa_vhash.C,
+	  src/types/pa_vhashfile.C, src/types/pa_vhashfile.h,
+	  src/types/pa_vxnode.h, src/types/types.vcproj,
+	  www/htdocs/.htaccess: hashfile: started again with sdbm from
+	  apache
 
 2003-11-05  paf
 
 	* src/: classes/classes.vcproj, include/pa_config_fixed.h,
-	  main/main.vcproj, targets/apache13/ApacheModuleParser3.vcproj,
-	  targets/apache13/mod_parser3.c,
-	  targets/apache13core/ApacheModuleParser3Core.vcproj,
-	  targets/cgi/parser3.vcproj: not has to be in \parser3project dir
-	  anymore
+	  main/main.vcproj, targets/cgi/parser3.vcproj: not has to be in
+	  \parser3project dir anymore
 
 	* src/main/pa_charset.C: bugfix: had broken binary search [copied
 	  thoughtlessly from xalan]
@@ -8886,9 +8973,6 @@
 	* operators.txt, src/classes/date.C, src/types/pa_vdate.h: merged
 	  from 3.0.8: ^date.roll[TZ;GMT] $date.hour
 
-	* src/targets/apache13core/Makefile.am: gc include dir added,
-	  thanks to Victor Fedoseev for finding
-
 	* src/classes/: date.C, image.C: improvement diagnostics:
 	  $now[^date::create[$undefined]] now is error
 
@@ -8899,10 +8983,8 @@
 
 	* Makefile.am, src/classes/Makefile.am, src/lib/cord/Makefile.am,
 	  src/lib/md5/Makefile.am, src/lib/pcre/Makefile.am,
-	  src/main/Makefile.am, src/targets/apache13/Makefile.am,
-	  src/targets/apache13core/Makefile.am,
-	  src/targets/cgi/Makefile.am, src/targets/isapi/Makefile.am:
-	  .dsp/w -> .vcproj/sln
+	  src/main/Makefile.am, src/targets/cgi/Makefile.am,
+	  src/targets/isapi/Makefile.am: .dsp/w -> .vcproj/sln
 
 2003-10-22  paf
 
@@ -8948,9 +9030,6 @@
 	  http://www.parser.ru/forum/?id=21484
 
 2003-09-30  paf
-
-	* src/targets/: apache13/mod_parser3.c, apache13/pa_httpd.h,
-	  apache13core/mod_parser3.C: content-type now changes
 
 	* src/main/pa_string.C: string::replace bug fix [were ignoring
 	  occurrances after lang-mismatched
@@ -9123,8 +9202,6 @@
 	* src/types/pa_wcontext.C: output message: more practical
 	  suggestion
 
-	* src/targets/apache13/mod_parser3.c: now compiles on MSVC7
-
 	* src/main/pa_common.C, operators.txt: merged
 	  $f[^file::load[binary;http://...]] $f.tables
 
@@ -9139,32 +9216,15 @@
 
 	* src/types/pa_vdate.h: forgot initializer
 
-	* src/targets/apache13/mod_parser3.c: забытое изменение
-
 2003-09-01  paf
 
 	* src/: classes/date.C, include/pa_common.h, main/compile.tab.C,
 	  main/pa_common.C, types/pa_vdate.h: $date.TZ ^date.roll[TZ;new
 	  zone]
 
-	* src/targets/apache13/: Makefile.am, mod_parser3.c: merged with
-	  3.1.0: renamed to .c [lowercase] to correspond to runconfigure.
-	  added files to fix 'make dist'
-
-	* src/targets/apache13/: Makefile.am, mod_parser3.C, mod_parser3.c:
-	  renamed to .c [lowercase] to correspond to runconfigure.  added
-	  files to fix 'make dist'
-
 	* src/classes/image.C: memory handling bugs [unpatched 'new' calls]
 
 2003-08-19  paf
-
-	* src/targets/apache13/mod_parser3.c: .c
-
-	* src/targets/apache13/mod_parser3.C: .c
-
-	* src/targets/: apache13/mod_parser3.C, apache13/pa_httpd.h,
-	  apache13core/mod_parser3.C: apache module compiled on MSVC7
 
 	* src/types/: pa_value.C, pa_value.h, pa_vdate.h, pa_vrequest.C,
 	  pa_vstring.h, pa_vxdoc.C, pa_vxnode.C: bark intefrace obsoleted,
@@ -9208,8 +9268,6 @@
 	  src/lib/md5/md5.dsp, src/lib/pcre/pcre.dsp,
 	  src/lib/pcre/pcre_dftables.dsp,
 	  src/lib/pcre/pcre_parser_ctype.dsp, src/main/main.dsp,
-	  src/targets/apache13/ApacheModuleParser3.dsp,
-	  src/targets/apache13core/ApacheModuleParser3Core.dsp,
 	  src/targets/cgi/parser3.dsp, src/targets/isapi/parser3isapi.dsp,
 	  src/types/types.dsp: moved to MSVC 7
 
@@ -9221,8 +9279,6 @@
 	  src/lib/pcre/pcre_dftables.vcproj.vspscc,
 	  src/lib/pcre/pcre_parser_ctype.vcproj.vspscc,
 	  src/lib/pcre/pcre.vcproj.vspscc, src/main/main.vcproj.vspscc,
-	  src/targets/apache13/ApacheModuleParser3.vcproj.vspscc,
-	  src/targets/apache13core/ApacheModuleParser3Core.vcproj.vspscc,
 	  src/targets/isapi/parser3isapi.vcproj.vspscc,
 	  src/types/types.vcproj.vspscc, src/targets/cgi/parser3.vcproj:
 	  moved to MSVC 7
@@ -9232,8 +9288,6 @@
 	  src/lib/md5/md5.vcproj, src/lib/pcre/pcre.vcproj,
 	  src/lib/pcre/pcre_dftables.vcproj,
 	  src/lib/pcre/pcre_parser_ctype.vcproj, src/main/main.vcproj,
-	  src/targets/apache13/ApacheModuleParser3.vcproj,
-	  src/targets/apache13core/ApacheModuleParser3Core.vcproj,
 	  src/targets/cgi/parser3.vcproj,
 	  src/targets/isapi/parser3isapi.vcproj, src/types/types.vcproj:
 	  new VS project files
@@ -9285,13 +9339,11 @@
 	* src/lib/gc/include/: Makefile.am, gc.h: moved tempate_gc to HEAD
 
 	* ChangeLog, src/classes/classes.dsp, src/main/main.dsp,
-	  src/main/pa_globals.C,
-	  src/targets/apache13core/ApacheModuleParser3Core.dsp,
-	  src/targets/cgi/parser3.dsp, src/targets/isapi/parser3isapi.dsp,
-	  src/types/types.dsp: cvs: getting rid of win32xml pseudo project
+	  src/main/pa_globals.C, src/targets/cgi/parser3.dsp,
+	  src/targets/isapi/parser3isapi.dsp, src/types/types.dsp: cvs:
+	  getting rid of win32xml pseudo project
 
-	* src/: main/compile.tab.C, main/pa_memory.C,
-	  targets/apache13/pa_httpd.h: moved tempate_gc to HEAD
+	* src/main/: compile.tab.C, pa_memory.C: moved tempate_gc to HEAD
 
 	* ChangeLog, INSTALL, Makefile.am, acsite.m4, configure,
 	  configure.in, operators.txt, parser3.dsw,
@@ -9348,24 +9400,13 @@
 	  src/main/pa_sql_driver_manager.C, src/main/pa_string.C,
 	  src/main/pa_stylesheet_manager.C, src/main/pa_table.C,
 	  src/main/pa_uue.C, src/main/untaint.C, src/sql/pa_sql_driver.h,
-	  src/targets/Makefile.am,
-	  src/targets/apache13/ApacheModuleParser3.dsp,
-	  src/targets/apache13/Makefile.am,
-	  src/targets/apache13/mod_parser3.C,
-	  src/targets/apache13/p3runConfigure.in,
-	  src/targets/apache13/pa_md5c.c, src/targets/apache13/pa_pool.C,
-	  src/targets/apache13/pa_threads.C,
-	  src/targets/apache13core/ApacheModuleParser3Core.dsp,
-	  src/targets/apache13core/Makefile.am,
-	  src/targets/apache13core/mod_parser3.C,
-	  src/targets/apache13core/pa_threads.C,
-	  src/targets/cgi/Makefile.am, src/targets/cgi/getopt.c,
-	  src/targets/cgi/getopt.h, src/targets/cgi/pa_pool.C,
-	  src/targets/cgi/pa_threads.C, src/targets/cgi/parser3.C,
-	  src/targets/cgi/parser3.dsp, src/targets/cgi/pool_storage.h,
-	  src/targets/cgi/pp3.cmd, src/targets/isapi/Makefile.am,
-	  src/targets/isapi/pa_pool.C, src/targets/isapi/pa_threads.C,
-	  src/targets/isapi/parser3isapi.C,
+	  src/targets/Makefile.am, src/targets/cgi/Makefile.am,
+	  src/targets/cgi/getopt.c, src/targets/cgi/getopt.h,
+	  src/targets/cgi/pa_pool.C, src/targets/cgi/pa_threads.C,
+	  src/targets/cgi/parser3.C, src/targets/cgi/parser3.dsp,
+	  src/targets/cgi/pool_storage.h, src/targets/cgi/pp3.cmd,
+	  src/targets/isapi/Makefile.am, src/targets/isapi/pa_pool.C,
+	  src/targets/isapi/pa_threads.C, src/targets/isapi/parser3isapi.C,
 	  src/targets/isapi/parser3isapi.dsp,
 	  src/targets/isapi/pool_storage.h, src/types/Makefile.am,
 	  src/types/pa_junction.h, src/types/pa_method.h,
@@ -9495,14 +9536,12 @@
 	  results/139.processed, results/140.processed,
 	  results/141.processed: merged(copied) to HEAD from template_gc
 
-	* src/targets/: apache13/ApacheModuleParser3.dsp, cgi/parser3.dsp,
-	  isapi/parser3isapi.dsp: more step towards \parser3project not
-	  having to be in root
+	* src/targets/: cgi/parser3.dsp, isapi/parser3isapi.dsp: more step
+	  towards \parser3project not having to be in root
 
-	* src/: classes/math.C, lib/md5/pa_md5.h, lib/md5/pa_md5c.c,
-	  targets/apache13/ApacheModuleParser3.dsp,
-	  targets/apache13/pa_md5c.c: apache module compiled [were minor
-	  unnecessary changes in lib/md5 interface]
+	* src/: classes/math.C, lib/md5/pa_md5.h, lib/md5/pa_md5c.c: apache
+	  module compiled [were minor unnecessary changes in lib/md5
+	  interface]
 
 	* src/include/pa_version.h: release
 
@@ -9523,9 +9562,8 @@
 
 	* src/classes/math.C: uuid bugfix
 
-	* parser3.dsw, src/main/pa_globals.C,
-	  src/targets/apache13/ApacheModuleParser3.dsp,
-	  www/htdocs/.htaccess: few paths for libxml debug/release changes
+	* parser3.dsw, src/main/pa_globals.C, www/htdocs/.htaccess: few
+	  paths for libxml debug/release changes
 
 	* src/lib/md5/pa_md5c.c: PA_ -> pa_
 
@@ -9534,49 +9572,18 @@
 	* src/: classes/math.C, lib/md5/pa_md5.h, lib/md5/pa_md5c.c:
 	  renamed a little [to move to comman naming conv]
 
-	* src/targets/apache13/Makefile.am: proper dependence to rebuild
-	  p3conf from .in
-
-	* src/targets/: Makefile.am, apache13/Makefile.am,
-	  apache13/p3runConfigure.in, apache13/pa_httpd.h,
-	  apache13core/Makefile.am: apache13 splitted to simplify apache
+	* src/targets/Makefile.am: apache13 splitted to simplify apache
 	  build
-
-	* src/targets/: apache13/ApacheModuleParser3.dsp,
-	  apache13/mod_parser3.c, apache13/mod_parser3_main.C,
-	  apache13/pa_httpd.h, apache13/pa_threads.C,
-	  apache13core/ApacheModuleParser3Core.dsp,
-	  apache13core/mod_parser3.C, apache13core/pa_threads.C: splitted
-	  apache to two projects to simplify separate c/c++ compilation
-
-	* src/targets/apache13/mod_parser3.c: started splitting mod_parser3
-	  into two parts: C and C++
-
-	* src/targets/apache13/mod_parser3.c: started splitting mod_parser3
-	  into two parts: C and C++
-
-	* src/targets/apache13/: Makefile.am, mod_parser3.C,
-	  ApacheModuleParser3.dsp, mod_parser3_main.C, pa_httpd.h,
-	  pa_md5c.c: started splitting mod_parser3 into two parts: C and
-	  C++
-
-	* src/targets/apache13/pa_threads.C: decided to support
-	  multithreading in apache module only on win32 see that apache
-	  1.3.28 supports it only in win32+netware...
 
 	* src/: include/pa_request.h, include/pa_stack.h, main/execute.C,
 	  main/pa_request.C, main/pa_sql_driver_manager.C,
-	  main/pa_stylesheet_manager.C,
-	  targets/apache13/ApacheModuleParser3.dsp,
-	  targets/isapi/parser3isapi.dsp: stack top_index() fixed
+	  main/pa_stylesheet_manager.C, targets/isapi/parser3isapi.dsp:
+	  stack top_index() fixed
 
 	* src/main/pa_globals.C: minor style changes
 
 	* src/: classes/op.C, include/pa_sql_connection.h: connection
 	  closing/caching fixed [connections were not closed/put to cache]
-
-	* src/targets/apache13/: ApacheModuleParser3.dsp, mod_parser3.C:
-	  updated to new sapi interface
 
 2003-07-22  paf
 
@@ -9659,8 +9666,7 @@
 	* src/main/pa_common.C: date format now Sun, 06 Nov 1994 08:49:37
 	  GMT  ; RFC 822, updated by RFC 1123
 
-	* src/: classes/file.C, classes/form.C,
-	  targets/apache13/mod_parser3.C, targets/cgi/parser3.C,
+	* src/: classes/file.C, classes/form.C, targets/cgi/parser3.C,
 	  targets/isapi/parser3isapi.C: initialized request_info properly
 
 	* src/classes/xnode.C: found minor bug, commended for future
@@ -10332,7 +10338,6 @@
 
 	* src/: classes/classes.dsp, include/pa_config_fixed.h,
 	  main/compile.tab.C, main/main.dsp, main/pa_globals.C,
-	  targets/apache13/ApacheModuleParser3.dsp,
 	  targets/cgi/parser3.dsp, targets/isapi/parser3isapi.dsp,
 	  types/types.dsp: prepared xml-static configuration
 
@@ -10455,7 +10460,6 @@
 	  src/lib/cord/include/Makefile.am,
 	  src/lib/cord/include/private/Makefile.am, src/main/Makefile.am,
 	  src/main/pa_exec.C, src/main/pa_string.C, src/main/untaint.C,
-	  src/targets/apache13/p3runConfigure.in,
 	  src/targets/cgi/Makefile.am, src/types/Makefile.am,
 	  src/types/pa_vclass.h, src/types/pa_vcookie.h,
 	  src/types/pa_vform.h, src/types/pa_vhash.h,
@@ -10594,10 +10598,9 @@
 	  include/pa_sql_driver_manager.h, include/pa_table.h,
 	  main/pa_charset.C, main/pa_exception.C, main/pa_exec.C,
 	  main/pa_globals.C, main/pa_request.C, main/pa_uue.C,
-	  targets/apache13/mod_parser3.C, targets/isapi/parser3isapi.C,
-	  types/pa_value.C, types/pa_value.h, types/pa_vmail.C,
-	  types/pa_vmethod_frame.C, types/pa_vstateless_class.h: 2*2 worked
-	  :)
+	  targets/isapi/parser3isapi.C, types/pa_value.C, types/pa_value.h,
+	  types/pa_vmail.C, types/pa_vmethod_frame.C,
+	  types/pa_vstateless_class.h: 2*2 worked :)
 
 	* parser3.dsw, src/classes/date.C, src/classes/file.C,
 	  src/include/pa_exec.h, src/include/pa_string.h,
@@ -10739,17 +10742,16 @@
 	  main/pa_charset.C, main/pa_charsets.C, main/pa_common.C,
 	  main/pa_exec.C, main/pa_request.C, main/pa_sql_driver_manager.C,
 	  main/pa_string.C, main/pa_stylesheet_manager.C, main/untaint.C,
-	  targets/apache13/mod_parser3.C, targets/cgi/parser3.C,
-	  targets/isapi/parser3isapi.C, types/pa_junction.h,
-	  types/pa_method.h, types/pa_value.C, types/pa_value.h,
-	  types/pa_vbool.h, types/pa_vclass.C, types/pa_vclass.h,
-	  types/pa_vcode_frame.h, types/pa_vcookie.C, types/pa_vcookie.h,
-	  types/pa_vdate.h, types/pa_vdouble.h, types/pa_venv.h,
-	  types/pa_vfile.C, types/pa_vfile.h, types/pa_vform.C,
-	  types/pa_vform.h, types/pa_vhash.h, types/pa_vimage.C,
-	  types/pa_vimage.h, types/pa_vint.h, types/pa_vjunction.h,
-	  types/pa_vmail.C, types/pa_vmail.h, types/pa_vmath.C,
-	  types/pa_vmath.h, types/pa_vmethod_frame.C,
+	  targets/cgi/parser3.C, targets/isapi/parser3isapi.C,
+	  types/pa_junction.h, types/pa_method.h, types/pa_value.C,
+	  types/pa_value.h, types/pa_vbool.h, types/pa_vclass.C,
+	  types/pa_vclass.h, types/pa_vcode_frame.h, types/pa_vcookie.C,
+	  types/pa_vcookie.h, types/pa_vdate.h, types/pa_vdouble.h,
+	  types/pa_venv.h, types/pa_vfile.C, types/pa_vfile.h,
+	  types/pa_vform.C, types/pa_vform.h, types/pa_vhash.h,
+	  types/pa_vimage.C, types/pa_vimage.h, types/pa_vint.h,
+	  types/pa_vjunction.h, types/pa_vmail.C, types/pa_vmail.h,
+	  types/pa_vmath.C, types/pa_vmath.h, types/pa_vmethod_frame.C,
 	  types/pa_vmethod_frame.h, types/pa_vobject.C, types/pa_vobject.h,
 	  types/pa_vrequest.C, types/pa_vrequest.h, types/pa_vresponse.C,
 	  types/pa_vresponse.h, types/pa_vstateless_class.C,
@@ -10851,11 +10853,10 @@
 	  src/main/pa_exception.C, src/main/pa_exec.C,
 	  src/main/pa_request.C, src/main/pa_sql_driver_manager.C,
 	  src/main/pa_stylesheet_manager.C, src/main/untaint.C,
-	  src/sql/pa_sql_driver.h, src/targets/apache13/mod_parser3.C,
-	  src/targets/cgi/parser3.C, src/targets/isapi/parser3isapi.C,
-	  src/types/pa_value.C, src/types/pa_vcode_frame.h,
-	  src/types/pa_vcookie.C, src/types/pa_venv.h,
-	  src/types/pa_vform.C, src/types/pa_vmail.C,
+	  src/sql/pa_sql_driver.h, src/targets/cgi/parser3.C,
+	  src/targets/isapi/parser3isapi.C, src/types/pa_value.C,
+	  src/types/pa_vcode_frame.h, src/types/pa_vcookie.C,
+	  src/types/pa_venv.h, src/types/pa_vform.C, src/types/pa_vmail.C,
 	  src/types/pa_vmethod_frame.C, src/types/pa_vmethod_frame.h,
 	  src/types/pa_vobject.C, src/types/pa_vresponse.C,
 	  src/types/pa_vstatus.C, src/types/pa_vstring.C,
@@ -10939,8 +10940,7 @@
 	  src/main/pa_pool.C, src/main/pa_request.C,
 	  src/main/pa_sql_driver_manager.C, src/main/pa_string.C,
 	  src/main/pa_stylesheet_manager.C, src/main/pa_table.C,
-	  src/main/pa_uue.C, src/main/untaint.C,
-	  src/targets/apache13/mod_parser3.C, src/targets/cgi/parser3.C,
+	  src/main/pa_uue.C, src/main/untaint.C, src/targets/cgi/parser3.C,
 	  src/targets/cgi/parser3.dsp, src/targets/isapi/parser3isapi.C,
 	  src/types/pa_junction.h, src/types/pa_method.h,
 	  src/types/pa_value.C, src/types/pa_value.h,
@@ -11025,9 +11025,8 @@
 	  lib/ltdl/Makefile now created by /configure.in only [were by
 	  lib/ltdl/configure.in OVERWRITE]
 
-	* configure, configure.in, src/targets/apache13/p3runConfigure.in,
-	  src/targets/cgi/Makefile.am: libstdc++ linkage fixed for g++
-	  3.2.2
+	* configure, configure.in, src/targets/cgi/Makefile.am: libstdc++
+	  linkage fixed for g++ 3.2.2
 
 	* src/include/pa_stylesheet_manager.h: gcc 3.2 rightliy complained
 	  on using privately declared class [fixed]
@@ -11042,9 +11041,8 @@
 	  targets/cgi/parser3.C: SIGPIPE now can be intercepted and does
 	  not cause exception in exception handler
 
-	* configure, configure.in, src/targets/apache13/p3runConfigure.in,
-	  src/targets/cgi/Makefile.am: configure now default links
-	  libstdc++ statically.  that can be overriden by
+	* configure, configure.in, src/targets/cgi/Makefile.am: configure
+	  now default links libstdc++ statically.  that can be overriden by
 	  --with-dynamic-stdcpp
 
 2003-03-11  paf
@@ -11214,8 +11212,7 @@
 	  operators.p, parser-status.html, people.dtd, some.p: removed old
 	  tests
 
-	* src/targets/: apache13/p3runConfigure.in, cgi/Makefile.am: linker
-	  needed more tricks to link OK
+	* src/targets/cgi/Makefile.am: linker needed more tricks to link OK
 
 	* src/classes/math.C: can be: crypt in -lcrypt OK, but crypt.h be
 	  missing
@@ -11232,8 +11229,8 @@
 	  made static
 
 	* src/: classes/math.C, classes/op.C, classes/string.C,
-	  main/pa_exec.C, targets/apache13/Makefile.am,
-	  targets/cgi/Makefile.am: gcc more happy. todo:make linker happy
+	  main/pa_exec.C, targets/cgi/Makefile.am: gcc more happy.
+	  todo:make linker happy
 
 	* src/: classes/file.C, include/pa_exec.h, main/pa_exec.C: pa_exec
 	  env param made optional
@@ -11402,9 +11399,8 @@
 	  bug with name_cstr mutable CharPtr more tests
 
 	* src/: include/pa_sapi.h, main/pa_globals.C, main/pa_memory.C,
-	  targets/apache13/mod_parser3.C, targets/cgi/parser3.C,
-	  targets/isapi/parser3isapi.C: SAPI::abort << abort.  die now just
-	  exits
+	  targets/cgi/parser3.C, targets/isapi/parser3isapi.C: SAPI::abort
+	  << abort.  die now just exits
 
 	* src/classes/classes.awk, src/classes/classes.h,
 	  src/classes/date.C, src/classes/double.C, src/classes/file.C,
@@ -11413,10 +11409,10 @@
 	  src/classes/op.C, src/classes/response.C, src/classes/string.C,
 	  src/classes/table.C, src/classes/void.C, src/classes/xdoc.C,
 	  src/classes/xnode.C, src/include/pa_memory.h,
-	  src/include/pa_sapi.h, src/targets/apache13/mod_parser3.C,
-	  src/targets/cgi/parser3.C, src/targets/isapi/parser3isapi.C,
-	  src/types/pa_venv.h, src/types/pa_vform.C, tests/015.html,
-	  tests/016.html, tests/017.html, tests/018.html, tests/019.html,
+	  src/include/pa_sapi.h, src/targets/cgi/parser3.C,
+	  src/targets/isapi/parser3isapi.C, src/types/pa_venv.h,
+	  src/types/pa_vform.C, tests/015.html, tests/016.html,
+	  tests/017.html, tests/018.html, tests/019.html,
 	  tests/019paf2001.gif, tests/020.html, tests/021.html,
 	  tests/022.html, tests/023.html, tests/022_dir/a.html,
 	  tests/022_dir/b.txt, tests/022_dir/c.htm,
@@ -11535,15 +11531,14 @@
 
 	* src/: classes/form.C, include/pa_charset.h, include/pa_pool.h,
 	  main/pa_charset.C, main/pa_exception.C, main/pa_request.C,
-	  main/pa_stylesheet_manager.C,
-	  targets/apache13/ApacheModuleParser3.dsp, targets/cgi/parser3.C,
+	  main/pa_stylesheet_manager.C, targets/cgi/parser3.C,
 	  targets/isapi/parser3isapi.dsp, types/pa_vcookie.C,
 	  types/pa_vform.C, types/pa_vmail.C, types/pa_vxnode.C: found&kill
 	  all remaning leaks resulted from pooled::malloc calls [excluding
 	  in gd -- planning complete rewrite extremely ugly code]
 
-	* src/targets/: apache13/pa_pool.C, isapi/pa_pool.C,
-	  isapi/pool_storage.h: removed unneeded files
+	* src/targets/isapi/: pa_pool.C, pool_storage.h: removed unneeded
+	  files
 
 2003-02-17  paf
 
@@ -11577,9 +11572,9 @@
 	  include/pa_charset.h, main/Makefile.am, main/main.dsp,
 	  main/pa_charset.C, main/pa_common.C,
 	  main/pa_sql_driver_manager.C, main/pa_stylesheet_manager.C,
-	  targets/apache13/mod_parser3.C, targets/cgi/parser3.C,
-	  targets/isapi/parser3isapi.C, types/pa_vmail.C: fixed more leaks
-	  resulted from pooled::malloc calls
+	  targets/cgi/parser3.C, targets/isapi/parser3isapi.C,
+	  types/pa_vmail.C: fixed more leaks resulted from pooled::malloc
+	  calls
 
 	* src/: main/pa_request.C, targets/cgi/parser3.C, types/pa_vfile.C:
 	  couple mem leaks rusulted from old pooled::malloc usage.
@@ -11621,8 +11616,7 @@
 	* src/: classes/classes.C, classes/classes.awk, classes/file.C,
 	  classes/hash.C, classes/mail.C, classes/op.C,
 	  include/pa_common.h, include/pa_request.h, include/pa_sapi.h,
-	  main/pa_common.C, main/pa_request.C,
-	  targets/apache13/mod_parser3.C, targets/cgi/parser3.C,
+	  main/pa_common.C, main/pa_request.C, targets/cgi/parser3.C,
 	  targets/cgi/parser3.dsp, targets/isapi/parser3isapi.C:
 	  classes.lib - 0 error(s), 0 warning(s) parser.C compiled
 
@@ -11797,10 +11791,9 @@
 
 	* src/: include/pa_request.h, include/pa_sapi.h,
 	  main/compile.tab.C, main/compile.y, main/compile_tools.h,
-	  main/pa_request.C, targets/apache13/mod_parser3.C,
-	  targets/cgi/parser3.C, targets/isapi/parser3isapi.C,
-	  types/pa_vfile.C, types/pa_vfile.h, types/pa_vhash.h: pa_request
-	  compiled
+	  main/pa_request.C, targets/cgi/parser3.C,
+	  targets/isapi/parser3isapi.C, types/pa_vfile.C, types/pa_vfile.h,
+	  types/pa_vhash.h: pa_request compiled
 
 	* src/: classes/op.C, classes/string.C, include/pa_common.h,
 	  include/pa_globals.h, include/pa_request.h,
@@ -11843,23 +11836,20 @@
 	  main/pa_globals.C, main/pa_pool.C, main/pa_request.C,
 	  main/pa_socks.C, main/pa_sql_driver_manager.C, main/pa_string.C,
 	  main/pa_stylesheet_manager.C, main/pa_table.C, main/pa_uue.C,
-	  main/untaint.C, sql/pa_sql_driver.h,
-	  targets/apache13/mod_parser3.C, targets/apache13/pa_md5c.c,
-	  targets/apache13/pa_pool.C, targets/apache13/pa_threads.C,
-	  targets/cgi/getopt.c, targets/cgi/getopt.h,
-	  targets/cgi/pa_pool.C, targets/cgi/pa_threads.C,
-	  targets/cgi/parser3.C, targets/cgi/pool_storage.h,
-	  targets/isapi/pa_pool.C, targets/isapi/pa_threads.C,
-	  targets/isapi/parser3isapi.C, targets/isapi/pool_storage.h,
-	  types/pa_value.C, types/pa_value.h, types/pa_value_includes.h,
-	  types/pa_vbool.h, types/pa_vclass.C, types/pa_vclass.h,
-	  types/pa_vcode_frame.h, types/pa_vcookie.C, types/pa_vcookie.h,
-	  types/pa_vdate.h, types/pa_vdouble.h, types/pa_venv.h,
-	  types/pa_vfile.C, types/pa_vfile.h, types/pa_vform.C,
-	  types/pa_vform.h, types/pa_vhash.h, types/pa_vimage.C,
-	  types/pa_vimage.h, types/pa_vint.h, types/pa_vjunction.h,
-	  types/pa_vmail.C, types/pa_vmail.h, types/pa_vmath.C,
-	  types/pa_vmath.h, types/pa_vmethod_frame.C,
+	  main/untaint.C, sql/pa_sql_driver.h, targets/cgi/getopt.c,
+	  targets/cgi/getopt.h, targets/cgi/pa_pool.C,
+	  targets/cgi/pa_threads.C, targets/cgi/parser3.C,
+	  targets/cgi/pool_storage.h, targets/isapi/pa_pool.C,
+	  targets/isapi/pa_threads.C, targets/isapi/parser3isapi.C,
+	  targets/isapi/pool_storage.h, types/pa_value.C, types/pa_value.h,
+	  types/pa_value_includes.h, types/pa_vbool.h, types/pa_vclass.C,
+	  types/pa_vclass.h, types/pa_vcode_frame.h, types/pa_vcookie.C,
+	  types/pa_vcookie.h, types/pa_vdate.h, types/pa_vdouble.h,
+	  types/pa_venv.h, types/pa_vfile.C, types/pa_vfile.h,
+	  types/pa_vform.C, types/pa_vform.h, types/pa_vhash.h,
+	  types/pa_vimage.C, types/pa_vimage.h, types/pa_vint.h,
+	  types/pa_vjunction.h, types/pa_vmail.C, types/pa_vmail.h,
+	  types/pa_vmath.C, types/pa_vmath.h, types/pa_vmethod_frame.C,
 	  types/pa_vmethod_frame.h, types/pa_vobject.C, types/pa_vobject.h,
 	  types/pa_vrequest.C, types/pa_vrequest.h, types/pa_vresponse.C,
 	  types/pa_vresponse.h, types/pa_vstateless_class.C,
@@ -12177,8 +12167,6 @@
 	  main/pa_request.C, main/pa_socks.C, main/pa_sql_driver_manager.C,
 	  main/pa_string.C, main/pa_stylesheet_manager.C, main/pa_table.C,
 	  main/pa_uue.C, main/untaint.C, sql/pa_sql_driver.h,
-	  targets/apache13/mod_parser3.C, targets/apache13/pa_md5c.c,
-	  targets/apache13/pa_pool.C, targets/apache13/pa_threads.C,
 	  targets/cgi/pa_pool.C, targets/cgi/pa_threads.C,
 	  targets/cgi/parser3.C, targets/cgi/pool_storage.h,
 	  targets/isapi/pa_pool.C, targets/isapi/pa_threads.C,
@@ -12384,8 +12372,7 @@
 	* src/targets/: cgi/parser3.C, isapi/parser3isapi.C: ::die now
 	  tries to write core dump
 
-	* src/targets/: apache13/mod_parser3.C, cgi/parser3.C: ::die now
-	  tries to write core dump
+	* src/targets/cgi/parser3.C: ::die now tries to write core dump
 
 	* src/: classes/hash.C, classes/string.C, classes/table.C,
 	  classes/void.C, main/pa_sql_driver_manager.C,
@@ -12993,9 +12980,9 @@
 
 	* src/main/compile_tools.h: mistype
 
-	* src/targets/: apache13/Makefile.am, cgi/Makefile.am: binaries now
-	  depend on makefiles, thus taking linking options configure
-	  changes into account [were: ignoring]
+	* src/targets/cgi/Makefile.am: binaries now depend on makefiles,
+	  thus taking linking options configure changes into account [were:
+	  ignoring]
 
 	* src/types/: pa_vjunction.C, Makefile.am: introducing
 	  $junction.get/put(1) one can write iterators now:
@@ -13284,8 +13271,7 @@
 
 2002-08-26  paf
 
-	* configure, configure.in, src/targets/apache13/Makefile.am:
-	  apache13/hook added to make dist.
+	* configure, configure.in: apache13/hook added to make dist.
 
 2002-08-23  paf
 
@@ -13707,8 +13693,6 @@
 	  main/pa_request.C, main/pa_socks.C, main/pa_sql_driver_manager.C,
 	  main/pa_string.C, main/pa_stylesheet_manager.C, main/pa_table.C,
 	  main/pa_uue.C, main/untaint.C, sql/pa_sql_driver.h,
-	  targets/apache13/mod_parser3.C, targets/apache13/pa_md5c.c,
-	  targets/apache13/pa_pool.C, targets/apache13/pa_threads.C,
 	  targets/cgi/pa_pool.C, targets/cgi/pa_threads.C,
 	  targets/cgi/parser3.C, targets/cgi/pool_storage.h,
 	  targets/isapi/pa_pool.C, targets/isapi/pa_threads.C,
@@ -13729,7 +13713,7 @@
 	  types/pa_vstring.h, types/pa_vtable.C, types/pa_vtable.h,
 	  types/pa_vvoid.h, types/pa_vxdoc.C, types/pa_vxdoc.h,
 	  types/pa_vxnode.C, types/pa_vxnode.h, types/pa_wcontext.C,
-	  types/pa_wcontext.h, types/pa_wwrapper.h: $Date: 2013/08/20 10:48:29 $
+	  types/pa_wcontext.h, types/pa_wwrapper.h: $Date: 2013/10/16 22:31:06 $
 
 	* src/: classes/classes.C, classes/classes.dsp, classes/classes.h,
 	  classes/date.C, classes/double.C, classes/file.C, classes/form.C,
@@ -13759,34 +13743,30 @@
 	  main/pa_pool.C, main/pa_request.C, main/pa_socks.C,
 	  main/pa_sql_driver_manager.C, main/pa_string.C,
 	  main/pa_stylesheet_manager.C, main/pa_table.C, main/pa_uue.C,
-	  main/untaint.C, sql/pa_sql_driver.h,
-	  targets/apache13/ApacheModuleParser3.dsp,
-	  targets/apache13/mod_parser3.C, targets/apache13/pa_md5c.c,
-	  targets/apache13/pa_pool.C, targets/apache13/pa_threads.C,
-	  targets/cgi/pa_pool.C, targets/cgi/pa_threads.C,
-	  targets/cgi/parser3.C, targets/cgi/parser3.dsp,
-	  targets/cgi/pool_storage.h, targets/isapi/pa_pool.C,
-	  targets/isapi/pa_threads.C, targets/isapi/parser3isapi.C,
-	  targets/isapi/parser3isapi.dsp, targets/isapi/pool_storage.h,
-	  types/pa_valiased.C, types/pa_valiased.h, types/pa_value.C,
-	  types/pa_value.h, types/pa_vbool.h, types/pa_vclass.h,
-	  types/pa_vcode_frame.h, types/pa_vcookie.C, types/pa_vcookie.h,
-	  types/pa_vdate.h, types/pa_vdouble.h, types/pa_venv.h,
-	  types/pa_vfile.C, types/pa_vfile.h, types/pa_vform.C,
-	  types/pa_vform.h, types/pa_vhash.h, types/pa_vimage.C,
-	  types/pa_vimage.h, types/pa_vint.h, types/pa_vjunction.h,
-	  types/pa_vmail.C, types/pa_vmail.h, types/pa_vmath.h,
-	  types/pa_vmethod_frame.h, types/pa_vobject.h,
-	  types/pa_vrequest.C, types/pa_vrequest.h, types/pa_vresponse.C,
-	  types/pa_vresponse.h, types/pa_vstateless_class.C,
-	  types/pa_vstateless_class.h, types/pa_vstateless_object.h,
-	  types/pa_vstatus.C, types/pa_vstatus.h, types/pa_vstring.C,
-	  types/pa_vstring.h, types/pa_vtable.C, types/pa_vtable.h,
-	  types/pa_vvoid.h, types/pa_vxdoc.C, types/pa_vxdoc.h,
-	  types/pa_vxnode.C, types/pa_vxnode.h, types/pa_wcontext.C,
-	  types/pa_wcontext.h, types/pa_wwrapper.h, types/types.dsp,
-	  Makefile.am, classes/Makefile.am, main/Makefile.am,
-	  targets/apache13/Makefile.am, targets/cgi/Makefile.am,
+	  main/untaint.C, sql/pa_sql_driver.h, targets/cgi/pa_pool.C,
+	  targets/cgi/pa_threads.C, targets/cgi/parser3.C,
+	  targets/cgi/parser3.dsp, targets/cgi/pool_storage.h,
+	  targets/isapi/pa_pool.C, targets/isapi/pa_threads.C,
+	  targets/isapi/parser3isapi.C, targets/isapi/parser3isapi.dsp,
+	  targets/isapi/pool_storage.h, types/pa_valiased.C,
+	  types/pa_valiased.h, types/pa_value.C, types/pa_value.h,
+	  types/pa_vbool.h, types/pa_vclass.h, types/pa_vcode_frame.h,
+	  types/pa_vcookie.C, types/pa_vcookie.h, types/pa_vdate.h,
+	  types/pa_vdouble.h, types/pa_venv.h, types/pa_vfile.C,
+	  types/pa_vfile.h, types/pa_vform.C, types/pa_vform.h,
+	  types/pa_vhash.h, types/pa_vimage.C, types/pa_vimage.h,
+	  types/pa_vint.h, types/pa_vjunction.h, types/pa_vmail.C,
+	  types/pa_vmail.h, types/pa_vmath.h, types/pa_vmethod_frame.h,
+	  types/pa_vobject.h, types/pa_vrequest.C, types/pa_vrequest.h,
+	  types/pa_vresponse.C, types/pa_vresponse.h,
+	  types/pa_vstateless_class.C, types/pa_vstateless_class.h,
+	  types/pa_vstateless_object.h, types/pa_vstatus.C,
+	  types/pa_vstatus.h, types/pa_vstring.C, types/pa_vstring.h,
+	  types/pa_vtable.C, types/pa_vtable.h, types/pa_vvoid.h,
+	  types/pa_vxdoc.C, types/pa_vxdoc.h, types/pa_vxnode.C,
+	  types/pa_vxnode.h, types/pa_wcontext.C, types/pa_wcontext.h,
+	  types/pa_wwrapper.h, types/types.dsp, Makefile.am,
+	  classes/Makefile.am, main/Makefile.am, targets/cgi/Makefile.am,
 	  types/Makefile.am: ident.C* removed
 
 	* operators.txt, src/classes/file.C, src/main/pa_request.C:
@@ -13861,15 +13841,14 @@
 	  src/include/pa_charset.h, src/include/pa_config_fixed.h,
 	  src/include/pa_pool.h, src/include/pa_version.h,
 	  src/main/pa_charset.C, src/main/pa_pool.C,
-	  src/targets/apache13/ApacheModuleParser3.dsp,
 	  src/targets/cgi/parser3.dsp, src/targets/isapi/parser3isapi.dsp,
 	  src/types/pa_vmail.C, www/htdocs/index.html: merged latest
 	  updates to head
 
 2002-06-27  paf
 
-	* src/targets/: apache13/ApacheModuleParser3.dsp, cgi/parser3.dsp,
-	  isapi/parser3isapi.dsp: post-build not error now
+	* src/targets/: cgi/parser3.dsp, isapi/parser3isapi.dsp: post-build
+	  not error now
 
 	* operators.txt, src/classes/xdoc.C, src/include/pa_charset.h,
 	  src/include/pa_config_fixed.h, src/include/pa_pool.h,
@@ -13921,7 +13900,6 @@
 	* src/include/pa_config_fixed.h: ssize_t fixed
 
 	* configure, configure.in, src/include/pa_config_auto.h.in,
-	  src/targets/apache13/p3runConfigure.in,
 	  src/targets/cgi/Makefile.am, src/types/Makefile.am,
 	  src/types/pa_vmail.C: $mail:received makes update
 
@@ -13938,7 +13916,6 @@
 	  comp
 
 	* src/: classes/classes.dsp, main/main.dsp, main/pa_globals.C,
-	  targets/apache13/ApacheModuleParser3.dsp,
 	  targets/cgi/parser3.dsp, targets/isapi/parser3isapi.dsp,
 	  types/types.dsp: win32xml win32mailreceive pseudomodules paths
 	  now
@@ -13949,22 +13926,16 @@
 	  src/include/pa_uue.h, src/main/Makefile.am, src/main/main.dsp,
 	  src/main/pa_globals.C, src/main/pa_request.C,
 	  src/main/pa_string.C, src/main/pa_uue.C,
-	  src/targets/apache13/mod_parser3.C, src/targets/cgi/Makefile.am,
-	  src/targets/cgi/parser3.C, src/targets/cgi/parser3.dsp,
-	  src/targets/isapi/parser3isapi.C, src/types/pa_vform.C,
-	  src/types/pa_vform.h, src/types/types.dsp, www/htdocs/index.html:
-	  uue to separate file introducting $message:received ^mail:send
-	  rewritten with backward comp
+	  src/targets/cgi/Makefile.am, src/targets/cgi/parser3.C,
+	  src/targets/cgi/parser3.dsp, src/targets/isapi/parser3isapi.C,
+	  src/types/pa_vform.C, src/types/pa_vform.h, src/types/types.dsp,
+	  www/htdocs/index.html: uue to separate file introducting
+	  $message:received ^mail:send rewritten with backward comp
 
 2002-06-21  paf
 
-	* src/: lib/Makefile.am, lib/md5/pa_md5.h,
-	  targets/apache13/p3runConfigure.in, targets/apache13/pa_md5c.c:
-	  lib restructure apache .am & co changes
-
-	* src/targets/apache13/pa_md5c.c: moved libltdl and pcre to libs/
-	  added libs/md5 which is linked to non-apache targets
-	  ^math:crypt[password;$apr1$salt]
+	* src/lib/: Makefile.am, md5/pa_md5.h: lib restructure apache .am &
+	  co changes
 
 	* configure, configure.in, src/lib/md5/Makefile.am,
 	  src/lib/md5/pa_md5c.c, src/targets/cgi/Makefile.am: lib
@@ -13991,13 +13962,12 @@
 	  src/lib/pcre/ruspart_win2koi.pl, src/lib/pcre/study.c,
 	  src/lib/pcre/win-koi.tab, src/main/Makefile.am,
 	  src/main/compile.tab.C, src/main/main.dsp,
-	  src/targets/apache13/ApacheModuleParser3.dsp,
-	  src/targets/apache13/Makefile.am, src/targets/cgi/Makefile.am,
-	  src/targets/cgi/parser3.dsp, src/targets/isapi/parser3isapi.dsp,
-	  src/types/Makefile.am, src/types/types.dsp, www/htdocs/.htaccess,
-	  www/htdocs/index.html, src/lib/Makefile.am: moved libltdl and
-	  pcre to libs/ added libs/md5 which is linked to non-apache
-	  targets ^math:crypt[password;$apr1$salt]
+	  src/targets/cgi/Makefile.am, src/targets/cgi/parser3.dsp,
+	  src/targets/isapi/parser3isapi.dsp, src/types/Makefile.am,
+	  src/types/types.dsp, www/htdocs/.htaccess, www/htdocs/index.html,
+	  src/lib/Makefile.am: moved libltdl and pcre to libs/ added
+	  libs/md5 which is linked to non-apache targets
+	  ^math:crypt[password;$apr1$salt]
 
 2002-06-20  paf
 
@@ -14005,11 +13975,10 @@
 	  bin/auto.p.dist.in, src/classes/file.C, src/classes/op.C,
 	  src/doc/doxygen.cfg, src/include/pa_globals.h,
 	  src/include/pa_request.h, src/main/execute.C,
-	  src/main/pa_request.C, src/targets/apache13/mod_parser3.C,
-	  src/targets/cgi/parser3.C, src/targets/isapi/parser3isapi.C,
-	  src/types/pa_vmethod_frame.h, www/htdocs/auto.p,
-	  www/htdocs/index.html: marged latest HEAD updates, mainly
-	  file:justname&co & @auto/conf[filespec
+	  src/main/pa_request.C, src/targets/cgi/parser3.C,
+	  src/targets/isapi/parser3isapi.C, src/types/pa_vmethod_frame.h,
+	  www/htdocs/auto.p, www/htdocs/index.html: marged latest HEAD
+	  updates, mainly file:justname&co & @auto/conf[filespec
 
 	* operators.txt, src/classes/file.C, www/htdocs/auto.p,
 	  www/htdocs/index.html:     !^file:dirname[/a/some.tar.gz]=/a
@@ -14029,10 +13998,9 @@
 
 	* INSTALL, configure.in, operators.txt, bin/Makefile.am,
 	  bin/auto.p.dist.in, src/doc/doxygen.cfg,
-	  src/include/pa_globals.h, src/targets/apache13/mod_parser3.C,
-	  src/targets/cgi/parser3.C, src/targets/isapi/parser3isapi.C,
-	  www/htdocs/auto.p, www/htdocs/index.html: parser3.conf renamed to
-	  auto.p
+	  src/include/pa_globals.h, src/targets/cgi/parser3.C,
+	  src/targets/isapi/parser3isapi.C, www/htdocs/auto.p,
+	  www/htdocs/index.html: parser3.conf renamed to auto.p
 
 2002-06-18  paf
 
@@ -14083,9 +14051,8 @@
 	* INSTALL, configure.in, operators.txt, etc/Makefile.am,
 	  src/include/pa_globals.h, src/include/pa_request.h,
 	  src/main/compile.tab.C, src/main/pa_globals.C,
-	  src/main/pa_request.C, src/targets/apache13/mod_parser3.C,
-	  src/targets/cgi/parser3.C, src/targets/isapi/parser3isapi.C:
-	  parser3.conf now one and only
+	  src/main/pa_request.C, src/targets/cgi/parser3.C,
+	  src/targets/isapi/parser3isapi.C: parser3.conf now one and only
 
 	* src/classes/mail.C: sendmail -ti [default now]
 
@@ -14108,10 +14075,9 @@
 	  prefix
 
 	* src/classes/file.C, src/include/pa_request.h,
-	  src/include/pa_sapi.h, src/targets/apache13/mod_parser3.C,
-	  src/targets/cgi/parser3.C, src/targets/isapi/parser3isapi.C,
-	  www/htdocs/index.html: file::exec/cgi to pass HTTP_ vars
-	  introducing SAPI::environment
+	  src/include/pa_sapi.h, src/targets/cgi/parser3.C,
+	  src/targets/isapi/parser3isapi.C, www/htdocs/index.html:
+	  file::exec/cgi to pass HTTP_ vars introducing SAPI::environment
 
 2002-06-10  paf
 
@@ -14150,26 +14116,20 @@
 
 	* src/main/pa_common.C: fixed -d (bug)
 
-2002-06-04  paf
-
-	* src/targets/apache13/: mod_parser3.C: fixed .dsp-s along with
-	  reorganized cvs modules dirs structure
-
 2002-06-03  paf
 
 	* ChangeLog, operators.txt, etc/parser3.charsets/windows-1251.cfg,
 	  src/classes/classes.dsp, src/main/compile.tab.C,
 	  src/main/main.dsp, src/main/pa_globals.C,
-	  src/targets/apache13/ApacheModuleParser3.dsp,
 	  src/targets/cgi/parser3.C, src/targets/cgi/parser3.dsp,
 	  src/targets/isapi/parser3isapi.dsp, src/types/types.dsp,
 	  www/htdocs/index.html: fixed .dsp-s along with reorganized cvs
 	  modules dirs structure
 
 	* src/: classes/classes.dsp, main/compile.tab.C, main/main.dsp,
-	  main/pa_globals.C, targets/apache13/ApacheModuleParser3.dsp,
-	  targets/cgi/parser3.dsp, targets/isapi/parser3isapi.dsp,
-	  types/types.dsp: reorganized cvs modules
+	  main/pa_globals.C, targets/cgi/parser3.dsp,
+	  targets/isapi/parser3isapi.dsp, types/types.dsp: reorganized cvs
+	  modules
 
 2002-05-28  paf
 
@@ -14287,9 +14247,9 @@
 2002-04-24  paf
 
 	* src/: classes/classes.dsp, main/compile.tab.C, main/main.dsp,
-	  targets/apache13/ApacheModuleParser3.dsp, targets/cgi/parser3.C,
-	  targets/cgi/parser3.dsp, targets/isapi/parser3isapi.dsp,
-	  types/types.dsp: MSVC profile targets
+	  targets/cgi/parser3.C, targets/cgi/parser3.dsp,
+	  targets/isapi/parser3isapi.dsp, types/types.dsp: MSVC profile
+	  targets
 
 2002-04-23  paf
 
@@ -14618,10 +14578,9 @@
 	  src/main/pa_exec.C, src/main/pa_pool.C, src/main/pa_request.C,
 	  src/main/pa_socks.C, src/main/pa_sql_driver_manager.C,
 	  src/main/pa_string.C, src/main/pa_table.C, src/main/untaint.C,
-	  src/targets/apache13/mod_parser3.C, src/targets/cgi/parser3.C,
-	  src/targets/isapi/parser3isapi.C, src/types/pa_value.h,
-	  src/types/pa_vcookie.C, src/types/pa_vfile.h,
-	  src/types/pa_vform.C, src/types/pa_vhash.h,
+	  src/targets/cgi/parser3.C, src/targets/isapi/parser3isapi.C,
+	  src/types/pa_value.h, src/types/pa_vcookie.C,
+	  src/types/pa_vfile.h, src/types/pa_vform.C, src/types/pa_vhash.h,
 	  src/types/pa_vmethod_frame.h, src/types/pa_vstatus.C,
 	  src/types/pa_vtable.C, src/types/pa_vxdoc.h,
 	  src/types/pa_vxnode.h, src/types/pa_wcontext.C,
@@ -14763,13 +14722,9 @@
 	* src/main/pa_charsets.C: when placing charset to cache using
 	  global name now [were request]
 
-	* configure, configure.in, src/targets/apache13/p3runConfigure.in:
-	  apache module updated
+	* configure, configure.in: apache module updated
 
-	* src/targets/apache13/ApacheModuleParser3.dsp,
-	  src/targets/apache13/mod_parser3.C,
-	  src/targets/apache13/pa_threads.C, www/htdocs/auto.p: apache
-	  module updated
+	* www/htdocs/auto.p: apache module updated
 
 	* src/main/pa_string.C: origin by first piece preferred before last
 	  piece
@@ -14822,7 +14777,6 @@
 	  --with-shared-xml --with-static-xml
 
 	* src/: classes/classes.dsp, main/compile.tab.C, main/main.dsp,
-	  targets/apache13/ApacheModuleParser3.dsp,
 	  targets/cgi/parser3.dsp, targets/isapi/parser3isapi.dsp,
 	  types/types.dsp: *.dsp: removed refereces to win32db & ancient
 	  xalan&xml
@@ -14839,10 +14793,9 @@
 	  src/include/pa_db_manager.h, src/include/pa_db_table.h,
 	  src/main/Makefile.am, src/main/pa_db_connection.C,
 	  src/main/pa_db_manager.C, src/main/pa_db_table.C,
-	  src/main/pa_globals.C, src/targets/apache13/p3runConfigure.in,
-	  src/targets/cgi/Makefile.am, src/types/Makefile.am,
-	  src/types/pa_vhashfile.C, src/types/pa_vhashfile.h: removed
-	  hashfile support for now
+	  src/main/pa_globals.C, src/targets/cgi/Makefile.am,
+	  src/types/Makefile.am, src/types/pa_vhashfile.C,
+	  src/types/pa_vhashfile.h: removed hashfile support for now
 
 2002-02-21  paf
 
@@ -14937,10 +14890,8 @@
 
 	* acinclude.m4, aclocal.m4, configure, configure.in,
 	  src/include/pa_config_auto.h.in,
-	  src/include/pa_config_includes.h,
-	  src/targets/apache13/p3runConfigure.in,
-	  src/targets/cgi/Makefile.am, src/targets/cgi/parser3.C: removed
-	  libtool usage from build mech
+	  src/include/pa_config_includes.h, src/targets/cgi/Makefile.am,
+	  src/targets/cgi/parser3.C: removed libtool usage from build mech
 
 	* operators.txt: \ comment
 
@@ -14983,8 +14934,8 @@
 	  etc/parser3.charsets/Makefile.am, src/Makefile.am,
 	  src/classes/Makefile.am, src/main/Makefile.am,
 	  src/main/pa_status_provider.C, src/targets/Makefile.am,
-	  src/targets/apache13/Makefile.am, src/targets/cgi/Makefile.am,
-	  src/types/Makefile.am: 'make dist' works
+	  src/targets/cgi/Makefile.am, src/types/Makefile.am: 'make dist'
+	  works
 
 	* src/: classes/classes.C, classes/classes.h, classes/date.C,
 	  classes/double.C, classes/file.C, classes/form.C, classes/hash.C,
@@ -15014,19 +14965,18 @@
 	  main/pa_pool.C, main/pa_request.C, main/pa_socks.C,
 	  main/pa_sql_driver_manager.C, main/pa_status_provider.C,
 	  main/pa_string.C, main/pa_stylesheet_manager.C, main/pa_table.C,
-	  sql/pa_sql_driver.h, targets/apache13/mod_parser3.C,
-	  targets/apache13/pa_pool.C, targets/apache13/pa_threads.C,
-	  targets/cgi/pa_pool.C, targets/cgi/pa_threads.C,
-	  targets/cgi/pool_storage.h, targets/isapi/pa_pool.C,
-	  targets/isapi/pa_threads.C, targets/isapi/parser3isapi.C,
-	  targets/isapi/pool_storage.h, types/pa_valiased.C,
-	  types/pa_valiased.h, types/pa_value.h, types/pa_vbool.h,
-	  types/pa_vclass.h, types/pa_vcode_frame.h, types/pa_vcookie.h,
-	  types/pa_vdate.h, types/pa_vdouble.h, types/pa_venv.h,
-	  types/pa_vfile.h, types/pa_vform.h, types/pa_vhash.h,
-	  types/pa_vhashfile.h, types/pa_vimage.h, types/pa_vint.h,
-	  types/pa_vjunction.h, types/pa_vmath.h, types/pa_vmethod_frame.h,
-	  types/pa_vobject.h, types/pa_vrequest.h, types/pa_vresponse.h,
+	  sql/pa_sql_driver.h, targets/cgi/pa_pool.C,
+	  targets/cgi/pa_threads.C, targets/cgi/pool_storage.h,
+	  targets/isapi/pa_pool.C, targets/isapi/pa_threads.C,
+	  targets/isapi/parser3isapi.C, targets/isapi/pool_storage.h,
+	  types/pa_valiased.C, types/pa_valiased.h, types/pa_value.h,
+	  types/pa_vbool.h, types/pa_vclass.h, types/pa_vcode_frame.h,
+	  types/pa_vcookie.h, types/pa_vdate.h, types/pa_vdouble.h,
+	  types/pa_venv.h, types/pa_vfile.h, types/pa_vform.h,
+	  types/pa_vhash.h, types/pa_vhashfile.h, types/pa_vimage.h,
+	  types/pa_vint.h, types/pa_vjunction.h, types/pa_vmath.h,
+	  types/pa_vmethod_frame.h, types/pa_vobject.h,
+	  types/pa_vrequest.h, types/pa_vresponse.h,
 	  types/pa_vstateless_class.C, types/pa_vstateless_class.h,
 	  types/pa_vstateless_object.h, types/pa_vstatus.C,
 	  types/pa_vstatus.h, types/pa_vstring.h, types/pa_vtable.h,
@@ -15069,29 +15019,27 @@
 	  main/pa_socks.C, main/pa_sql_driver_manager.C,
 	  main/pa_status_provider.C, main/pa_string.C,
 	  main/pa_stylesheet_manager.C, main/pa_table.C, main/untaint.C,
-	  sql/pa_sql_driver.h, targets/apache13/mod_parser3.C,
-	  targets/apache13/pa_pool.C, targets/apache13/pa_threads.C,
-	  targets/cgi/pa_pool.C, targets/cgi/pa_threads.C,
-	  targets/cgi/parser3.C, targets/cgi/pool_storage.h,
-	  targets/isapi/pa_pool.C, targets/isapi/pa_threads.C,
-	  targets/isapi/parser3isapi.C, targets/isapi/pool_storage.h,
-	  types/pa_valiased.C, types/pa_valiased.h, types/pa_value.h,
-	  types/pa_vbool.h, types/pa_vclass.h, types/pa_vcode_frame.h,
-	  types/pa_vcookie.C, types/pa_vcookie.h, types/pa_vdate.h,
-	  types/pa_vdouble.h, types/pa_venv.h, types/pa_vfile.C,
-	  types/pa_vfile.h, types/pa_vform.C, types/pa_vform.h,
-	  types/pa_vhash.h, types/pa_vhashfile.C, types/pa_vhashfile.h,
-	  types/pa_vimage.C, types/pa_vimage.h, types/pa_vint.h,
-	  types/pa_vjunction.h, types/pa_vmath.h, types/pa_vmethod_frame.h,
-	  types/pa_vobject.h, types/pa_vrequest.C, types/pa_vrequest.h,
-	  types/pa_vresponse.C, types/pa_vresponse.h,
-	  types/pa_vstateless_class.C, types/pa_vstateless_class.h,
-	  types/pa_vstateless_object.h, types/pa_vstatus.C,
-	  types/pa_vstatus.h, types/pa_vstring.C, types/pa_vstring.h,
-	  types/pa_vtable.C, types/pa_vtable.h, types/pa_vvoid.h,
-	  types/pa_vxdoc.C, types/pa_vxdoc.h, types/pa_vxnode.C,
-	  types/pa_vxnode.h, types/pa_wcontext.C, types/pa_wcontext.h,
-	  types/pa_wwrapper.h: 2002
+	  sql/pa_sql_driver.h, targets/cgi/pa_pool.C,
+	  targets/cgi/pa_threads.C, targets/cgi/parser3.C,
+	  targets/cgi/pool_storage.h, targets/isapi/pa_pool.C,
+	  targets/isapi/pa_threads.C, targets/isapi/parser3isapi.C,
+	  targets/isapi/pool_storage.h, types/pa_valiased.C,
+	  types/pa_valiased.h, types/pa_value.h, types/pa_vbool.h,
+	  types/pa_vclass.h, types/pa_vcode_frame.h, types/pa_vcookie.C,
+	  types/pa_vcookie.h, types/pa_vdate.h, types/pa_vdouble.h,
+	  types/pa_venv.h, types/pa_vfile.C, types/pa_vfile.h,
+	  types/pa_vform.C, types/pa_vform.h, types/pa_vhash.h,
+	  types/pa_vhashfile.C, types/pa_vhashfile.h, types/pa_vimage.C,
+	  types/pa_vimage.h, types/pa_vint.h, types/pa_vjunction.h,
+	  types/pa_vmath.h, types/pa_vmethod_frame.h, types/pa_vobject.h,
+	  types/pa_vrequest.C, types/pa_vrequest.h, types/pa_vresponse.C,
+	  types/pa_vresponse.h, types/pa_vstateless_class.C,
+	  types/pa_vstateless_class.h, types/pa_vstateless_object.h,
+	  types/pa_vstatus.C, types/pa_vstatus.h, types/pa_vstring.C,
+	  types/pa_vstring.h, types/pa_vtable.C, types/pa_vtable.h,
+	  types/pa_vvoid.h, types/pa_vxdoc.C, types/pa_vxdoc.h,
+	  types/pa_vxnode.C, types/pa_vxnode.h, types/pa_wcontext.C,
+	  types/pa_wcontext.h, types/pa_wwrapper.h: 2002
 
 2002-02-07  paf
 
@@ -15210,7 +15158,7 @@
 
 	* INSTALL, configure, configure.in, ident.awk, etc/Makefile.am,
 	  src/classes/Makefile.am, src/main/Makefile.am,
-	  src/targets/apache13/Makefile.am, src/targets/cgi/Makefile.am,
+	  src/targets/cgi/Makefile.am,
 	  src/targets/cgi/pa_config_paths.h.in, src/targets/cgi/parser3.C,
 	  src/types/Makefile.am: lowered indent.awk back to src/
 
@@ -15224,15 +15172,14 @@
 	  etc/parser3.charsets/windows-1250.cfg,
 	  etc/parser3.charsets/windows-1251.cfg, src/Makefile.am,
 	  src/classes/Makefile.am, src/include/pa_config_auto.h.in,
-	  src/main/Makefile.am, src/targets/apache13/Makefile.am,
-	  src/targets/cgi/Makefile.am, src/targets/cgi/parser3.C,
-	  src/types/Makefile.am, www/Makefile.am, www/htdocs/auto.p,
-	  www/htdocs/global.xsl, www/htdocs/index.html,
-	  www/htdocs/parser-status.html, www/htdocs/people.dtd: moved
-	  etc&www out of src, moved configure&co out of src added
-	  windows-1250.cfg straightened installation scripts procedure made
-	  targets/cgi/parser3.C be dependant on ./configure --sysconfdir
-	  change
+	  src/main/Makefile.am, src/targets/cgi/Makefile.am,
+	  src/targets/cgi/parser3.C, src/types/Makefile.am,
+	  www/Makefile.am, www/htdocs/auto.p, www/htdocs/global.xsl,
+	  www/htdocs/index.html, www/htdocs/parser-status.html,
+	  www/htdocs/people.dtd: moved etc&www out of src, moved
+	  configure&co out of src added windows-1250.cfg straightened
+	  installation scripts procedure made targets/cgi/parser3.C be
+	  dependant on ./configure --sysconfdir change
 
 2002-01-30  paf
 
@@ -15411,9 +15358,8 @@
 
 	* src/: classes/xdoc.C, classes/xnode.C, include/pa_exception.h,
 	  include/pa_globals.h, include/pa_stylesheet_connection.h,
-	  main/pa_exception.C, main/pa_globals.C,
-	  targets/apache13/pa_threads.C, targets/cgi/pa_threads.C: xslt
-	  generic error 1
+	  main/pa_exception.C, main/pa_globals.C, targets/cgi/pa_threads.C:
+	  xslt generic error 1
 
 	* src/: include/pa_stylesheet_connection.h, main/pa_exception.C:
 	  xml generic message 1
@@ -15424,8 +15370,8 @@
 	* src/: include/pa_array.h, include/pa_globals.h,
 	  include/pa_request.h, include/pa_threads.h, main/pa_array.C,
 	  main/pa_exception.C, main/pa_globals.C, main/pa_request.C,
-	  targets/apache13/pa_threads.C, targets/cgi/pa_threads.C,
-	  targets/isapi/pa_threads.C: xml generic errors 0
+	  targets/cgi/pa_threads.C, targets/isapi/pa_threads.C: xml generic
+	  errors 0
 
 2002-01-16  paf
 
@@ -15583,9 +15529,6 @@
 
 2001-12-17  paf
 
-	* src/targets/apache13/mod_parser3.C: test r->finfo.st_mode check
-	  seems to work only on win32
-
 	* src/main/pa_charset.C: ifndef XML were bad type
 
 	* src/: include/pa_db_table.h, main/pa_db_table.C: db_table used
@@ -15646,8 +15589,7 @@
 
 	* src/main/pa_transcoder.C: transcodeToUTF8, now form&uri lang
 
-	* src/targets/: apache13/Makefile.am, cgi/Makefile.am: -I../../pcre
-	  to .am
+	* src/targets/cgi/Makefile.am: -I../../pcre  to .am
 
 	* src/: include/pa_globals.h, main/pa_globals.C: removed unused
 	  defalts_name global
@@ -15704,8 +15646,8 @@
 	* src/: include/pa_config_fixed.h, main/pa_common.C,
 	  main/pa_string.C: removed signed mismatch warnings
 
-	* src/targets/: apache13/mod_parser3.C, cgi/parser3.C,
-	  isapi/parser3isapi.C: removed 'expires' from header outputs
+	* src/targets/: cgi/parser3.C, isapi/parser3isapi.C: removed
+	  'expires' from header outputs
 
 	* src/main/pa_string.C: string::recustruct erroreusly used outdated
 	  row ptr
@@ -15776,15 +15718,6 @@
 	* src/: classes/op.C, classes/table.C, include/pa_request.h,
 	  main/pa_request.C: measures to log
 
-2001-11-26  paf
-
-	* src/targets/apache13/mod_parser3.C: merge dir config now works OK
-	  with parser_root_config_filespec
-
-	  20011126 paf: noticed, that this is called even on virtual root
-	  merge with something "parent", while thought that that is part of
-	  merge_server...
-
 2001-11-23  paf
 
 	* src/: classes/hashfile.C, classes/table.C, include/pa_db_table.h,
@@ -15848,16 +15781,16 @@
 
 	* src/: classes/op.C, include/pa_request.h, include/pa_string.h,
 	  include/pa_types.h, main/pa_globals.C, main/pa_request.C,
-	  main/pa_string.C, main/untaint.C, targets/apache13/mod_parser3.C,
-	  targets/cgi/parser3.C, targets/isapi/parser3isapi.C,
-	  types/pa_wcontext.C, types/pa_wcontext.h: UL_CLEAN pieces now
-	  inherit UL_OPTIMIZED_BIT at wcontext.write
+	  main/pa_string.C, main/untaint.C, targets/cgi/parser3.C,
+	  targets/isapi/parser3isapi.C, types/pa_wcontext.C,
+	  types/pa_wcontext.h: UL_CLEAN pieces now inherit UL_OPTIMIZED_BIT
+	  at wcontext.write
 
-	* src/targets/: Makefile.am, apache13/mod_parser3.C, cgi/parser3.C:
-	  #if _MSC_VER _set_new_handler
+	* src/targets/: Makefile.am, cgi/parser3.C: #if _MSC_VER
+	  _set_new_handler
 
-	* src/targets/: apache13/mod_parser3.C, cgi/parser3.C,
-	  isapi/parser3isapi.C: set_new_handler in apache&isapi
+	* src/targets/: cgi/parser3.C, isapi/parser3isapi.C:
+	  set_new_handler in apache&isapi
 
 2001-11-16  paf
 
@@ -16000,8 +15933,8 @@
 	  targets/cgi/pa_pool.C: makes
 
 	* src/: include/pa_request.h, main/pa_request.C,
-	  targets/apache13/mod_parser3.C, targets/cgi/parser3.C,
-	  targets/isapi/parser3isapi.C: apache 'status' class enabler
+	  targets/cgi/parser3.C, targets/isapi/parser3isapi.C: apache
+	  'status' class enabler
 
 	  <Location /parser-status.html> ParserStatusAllowed </Location>
 
@@ -16066,29 +15999,27 @@
 	  main/pa_socks.C, main/pa_sql_driver_manager.C,
 	  main/pa_status_provider.C, main/pa_string.C,
 	  main/pa_stylesheet_manager.C, main/pa_table.C, main/untaint.C,
-	  sql/pa_sql_driver.h, targets/apache13/mod_parser3.C,
-	  targets/apache13/pa_pool.C, targets/apache13/pa_threads.C,
-	  targets/cgi/pa_pool.C, targets/cgi/pa_threads.C,
-	  targets/cgi/parser3.C, targets/cgi/pool_storage.h,
-	  targets/isapi/pa_pool.C, targets/isapi/pa_threads.C,
-	  targets/isapi/parser3isapi.C, targets/isapi/pool_storage.h,
-	  types/pa_valiased.C, types/pa_valiased.h, types/pa_value.h,
-	  types/pa_vbool.h, types/pa_vclass.h, types/pa_vcode_frame.h,
-	  types/pa_vcookie.C, types/pa_vcookie.h, types/pa_vdate.h,
-	  types/pa_vdouble.h, types/pa_venv.h, types/pa_vfile.C,
-	  types/pa_vfile.h, types/pa_vform.C, types/pa_vform.h,
-	  types/pa_vhash.h, types/pa_vhashfile.C, types/pa_vhashfile.h,
-	  types/pa_vimage.C, types/pa_vimage.h, types/pa_vint.h,
-	  types/pa_vjunction.h, types/pa_vmath.h, types/pa_vmethod_frame.h,
-	  types/pa_vobject.h, types/pa_vrequest.C, types/pa_vrequest.h,
-	  types/pa_vresponse.h, types/pa_vstateless_class.C,
-	  types/pa_vstateless_class.h, types/pa_vstateless_object.h,
-	  types/pa_vstatus.h, types/pa_vstring.C, types/pa_vstring.h,
-	  types/pa_vtable.C, types/pa_vtable.h, types/pa_vvoid.h,
-	  types/pa_vxdoc.C, types/pa_vxdoc.h, types/pa_vxnode.C,
-	  types/pa_vxnode.h, types/pa_wcontext.C, types/pa_wcontext.h,
-	  types/pa_wwrapper.h: $status:db fixed used not initialized in
-	  db_connection & db_table
+	  sql/pa_sql_driver.h, targets/cgi/pa_pool.C,
+	  targets/cgi/pa_threads.C, targets/cgi/parser3.C,
+	  targets/cgi/pool_storage.h, targets/isapi/pa_pool.C,
+	  targets/isapi/pa_threads.C, targets/isapi/parser3isapi.C,
+	  targets/isapi/pool_storage.h, types/pa_valiased.C,
+	  types/pa_valiased.h, types/pa_value.h, types/pa_vbool.h,
+	  types/pa_vclass.h, types/pa_vcode_frame.h, types/pa_vcookie.C,
+	  types/pa_vcookie.h, types/pa_vdate.h, types/pa_vdouble.h,
+	  types/pa_venv.h, types/pa_vfile.C, types/pa_vfile.h,
+	  types/pa_vform.C, types/pa_vform.h, types/pa_vhash.h,
+	  types/pa_vhashfile.C, types/pa_vhashfile.h, types/pa_vimage.C,
+	  types/pa_vimage.h, types/pa_vint.h, types/pa_vjunction.h,
+	  types/pa_vmath.h, types/pa_vmethod_frame.h, types/pa_vobject.h,
+	  types/pa_vrequest.C, types/pa_vrequest.h, types/pa_vresponse.h,
+	  types/pa_vstateless_class.C, types/pa_vstateless_class.h,
+	  types/pa_vstateless_object.h, types/pa_vstatus.h,
+	  types/pa_vstring.C, types/pa_vstring.h, types/pa_vtable.C,
+	  types/pa_vtable.h, types/pa_vvoid.h, types/pa_vxdoc.C,
+	  types/pa_vxdoc.h, types/pa_vxnode.C, types/pa_vxnode.h,
+	  types/pa_wcontext.C, types/pa_wcontext.h, types/pa_wwrapper.h:
+	  $status:db fixed used not initialized in db_connection & db_table
 
 	* src/: include/pa_charset_connection.h, main/pa_charset_manager.C:
 	  $status:charset
@@ -16172,14 +16103,13 @@
 	  inside of ^cache
 
 	* src/: include/pa_threads.h, main/pa_db_connection.C,
-	  main/pa_db_table.C, targets/apache13/pa_threads.C,
-	  targets/cgi/pa_threads.C, targets/isapi/pa_threads.C: libdb
-	  DB_THREAD flag only when really needed
+	  main/pa_db_table.C, targets/cgi/pa_threads.C,
+	  targets/isapi/pa_threads.C: libdb DB_THREAD flag only when really
+	  needed
 
 2001-10-30  paf
 
 	* src/: classes/classes.dsp, main/main.dsp,
-	  targets/apache13/ApacheModuleParser3.dsp,
 	  targets/cgi/parser3.dsp, targets/isapi/parser3isapi.dsp,
 	  types/types.dsp: enabled debug incremental compile
 
@@ -16223,8 +16153,7 @@
 	* src/targets/isapi/pa_pool.C: added isapi&apache real_malloc debug
 	  param.someday either ifdef or remove it
 
-	* src/targets/: apache13/pa_pool.C, cgi/pa_pool.C, cgi/parser3.C:
-	  removed debug defines
+	* src/targets/cgi/: pa_pool.C, parser3.C: removed debug defines
 
 	* src/main/untaint.C: optimizing returned after debugging
 
@@ -16306,9 +16235,8 @@
 	* src/main/: pa_db_connection.C, pa_db_table.C: exception
 	  translation
 
-	* src/: classes/Makefile.am, targets/apache13/p3runConfigure.in,
-	  targets/cgi/Makefile.am: db makes. remember to build DB2 with
-	  -fexceptions!!!
+	* src/: classes/Makefile.am, targets/cgi/Makefile.am: db makes.
+	  remember to build DB2 with -fexceptions!!!
 
 	* src/main/pa_db_table.C: DB_RMW defed
 
@@ -16325,16 +16253,15 @@
 	  types/pa_vhashfile.C: DB2 ifdefs
 
 	* src/: classes/Makefile.am, include/pa_config_fixed.h,
-	  main/Makefile.am, targets/apache13/p3runConfigure.in,
-	  targets/cgi/Makefile.am, types/Makefile.am: makes with DB2
+	  main/Makefile.am, targets/cgi/Makefile.am, types/Makefile.am:
+	  makes with DB2
 
 	* src/: include/pa_config_auto.h.in, main/Makefile.am,
-	  targets/apache13/p3runConfigure.in, types/Makefile.am: makes db
+	  types/Makefile.am: makes db
 
-	* src/: main/pa_globals.C,
-	  targets/apache13/ApacheModuleParser3.dsp,
-	  targets/cgi/parser3.dsp, targets/isapi/parser3isapi.dsp: vc
-	  projects libdb ifdefed into globals.C
+	* src/: main/pa_globals.C, targets/cgi/parser3.dsp,
+	  targets/isapi/parser3isapi.dsp: vc projects libdb ifdefed into
+	  globals.C
 
 	* src/: classes/hashfile.C, include/pa_db_connection.h,
 	  include/pa_db_table.h, main/pa_db_connection.C,
@@ -16422,8 +16349,7 @@
 	  item, in its own read-modify-write cycle, will not result in
 	  deadlock
 
-	* src/targets/: apache13/ApacheModuleParser3.dsp,
-	  isapi/parser3isapi.dsp: doc
+	* src/targets/isapi/parser3isapi.dsp: doc
 
 	* src/: classes/hashfile.C, types/pa_vhashfile.h: hashfile 1
 
@@ -16490,8 +16416,7 @@
 	  main/pa_db_connection.C, main/pa_db_manager.C,
 	  main/pa_exception.C, main/pa_globals.C, main/pa_pool.C,
 	  main/pa_sql_driver_manager.C, main/pa_stylesheet_manager.C,
-	  main/pa_xslt_stylesheet_manager.C,
-	  targets/apache13/mod_parser3.C, targets/cgi/parser3.C,
+	  main/pa_xslt_stylesheet_manager.C, targets/cgi/parser3.C,
 	  targets/isapi/parser3isapi.C, types/pa_vhashfile.C,
 	  types/pa_vhashfile.h, types/pa_vxdoc.C, types/pa_vxnode.C,
 	  types/types.dsp: hashfile 0
@@ -16503,10 +16428,7 @@
 	  targets/cgi/parser3.dsp, types/pa_vhashfile.C,
 	  types/pa_vhashfile.h, types/types.dsp: hashfile -100
 
-	* src/targets/apache13/mod_parser3.C: html
-
-	* src/targets/: apache13/mod_parser3.C, isapi/parser3isapi.C: SEH
-	  minor ifdef changes
+	* src/targets/isapi/parser3isapi.C: SEH minor ifdef changes
 
 	* src/: include/pa_exception.h, include/pa_request.h,
 	  main/execute.C, main/pa_exception.C, main/pa_request.C,
@@ -16539,8 +16461,7 @@
 	  to c++ exceptions 1xml configure fixed to exclude xalan-patch
 	  from non-xml compile
 
-	* src/: main/pa_request.C, targets/apache13/mod_parser3.C: pool::
-	  context - get_context
+	* src/main/pa_request.C: pool:: context - get_context
 
 	* src/: classes/classes.h, classes/date.C, classes/double.C,
 	  classes/file.C, classes/form.C, classes/hash.C, classes/image.C,
@@ -16553,14 +16474,13 @@
 	  main/pa_exception.C, main/pa_exec.C, main/pa_pool.C,
 	  main/pa_request.C, main/pa_socks.C, main/pa_sql_driver_manager.C,
 	  main/pa_string.C, main/pa_table.C, main/untaint.C,
-	  targets/apache13/ApacheModuleParser3.dsp,
-	  targets/apache13/mod_parser3.C, targets/cgi/parser3.C,
-	  targets/isapi/parser3isapi.C, types/pa_value.h, types/pa_vbool.h,
-	  types/pa_vdouble.h, types/pa_vfile.h, types/pa_vform.C,
-	  types/pa_vhash.h, types/pa_vint.h, types/pa_vjunction.h,
-	  types/pa_vmethod_frame.h, types/pa_vstateless_class.h,
-	  types/pa_vtable.C, types/pa_wcontext.C, types/pa_wwrapper.h:
-	  switched to c++ exceptions 0
+	  targets/cgi/parser3.C, targets/isapi/parser3isapi.C,
+	  types/pa_value.h, types/pa_vbool.h, types/pa_vdouble.h,
+	  types/pa_vfile.h, types/pa_vform.C, types/pa_vhash.h,
+	  types/pa_vint.h, types/pa_vjunction.h, types/pa_vmethod_frame.h,
+	  types/pa_vstateless_class.h, types/pa_vtable.C,
+	  types/pa_wcontext.C, types/pa_wwrapper.h: switched to c++
+	  exceptions 0
 
 	* src/classes/classes.awk: $ removed
 
@@ -16628,7 +16548,6 @@
 	* src/classes/image.C: gd size/resize bugfix
 
 	* src/: classes/classes.dsp, main/main.dsp,
-	  targets/apache13/ApacheModuleParser3.dsp,
 	  targets/cgi/parser3.dsp, targets/isapi/parser3isapi.dsp,
 	  types/types.dsp: ident >nul 2>&1
 
@@ -16688,9 +16607,7 @@
 	  only at problem time, thus helping early problem spotting
 
 	* src/: classes/classes.dsp, classes/xdoc.C, main/compile.tab.C,
-	  main/main.dsp, main/pa_globals.C,
-	  targets/apache13/ApacheModuleParser3.dsp,
-	  targets/apache13/mod_parser3.C, targets/cgi/parser3.C,
+	  main/main.dsp, main/pa_globals.C, targets/cgi/parser3.C,
 	  targets/cgi/parser3.dsp, targets/isapi/parser3isapi.C,
 	  targets/isapi/parser3isapi.dsp, types/types.dsp: xalan&xerces
 	  multithread bug fixed. initialization&free on each thread!
@@ -16726,18 +16643,7 @@
 	  fixed.  got rid of empty_string, which caused errors - it hasnt
 	  exception but somebody[value.bark] tried to throw it on it's pool
 
-	* src/targets/apache13/ApacheModuleParser3.dsp: .dsp fixed due to
-	  relocate
-
-	* src/: include/pa_config_auto.h.in,
-	  targets/apache13/p3runConfigure.in: makes
-
-	* src/targets/apache13/: Makefile.am, p3runConfigure.in: added
-
-	* src/targets/apache13/: ApacheModuleParser3.dsp, mod_parser3.C,
-	  p3runConfigure.in, pa_pool.C, pa_threads.C: restructured
-
-	* src/targets/apache13/Makefile.am: started restructuring
+	* src/include/pa_config_auto.h.in: makes
 
 2001-10-10  parser
 
@@ -17053,9 +16959,8 @@
 
 	* src/targets/cgi/Makefile.am: makefiles
 
-	* src/: Makefile.am, targets/Makefile.am,
-	  targets/apache13/Makefile.am, targets/cgi/pa_pool.C: started unix
-	  makes update
+	* src/: Makefile.am, targets/Makefile.am, targets/cgi/pa_pool.C:
+	  started unix makes update
 
 	* src/: Makefile.am, main/Makefile.am, targets/cgi/Makefile.am:
 	  started unix makes update
@@ -17521,8 +17426,6 @@
 	* src/: classes/Makefile.am, main/Makefile.am,
 	  targets/cgi/Makefile.am, types/Makefile.am: .am-s
 
-	* src/targets/apache13/Makefile.am: COMPILE_APACHE13_MODULE
-
 	* src/: include/pa_dictionary.h, main/pa_dictionary.C,
 	  main/pa_sql_driver_manager.C: NO_STRING_ORIGIN check3
 
@@ -17537,8 +17440,6 @@
 	  main/untaint.C, targets/cgi/parser3.C,
 	  targets/isapi/parser3isapi.C: strncpy forced with zero ending in
 	  case of limit
-
-	* src/targets/apache13/Makefile.am: configure to skip apache
 
 	* src/: classes/file.C, main/pa_common.C: file:move
 	  autocreate/remove dest/src dir
@@ -17840,9 +17741,8 @@
 	* src/: classes/file.C, main/pa_exec.C: file:exec
 
 	* src/: Makefile.am, classes/Makefile.am, main/Makefile.am,
-	  targets/Makefile.am, targets/apache13/Makefile.am,
-	  targets/cgi/Makefile.am, types/Makefile.am: removed $id from *.in
-	  *.am
+	  targets/Makefile.am, targets/cgi/Makefile.am, types/Makefile.am:
+	  removed $id from *.in *.am
 
 	* src/main/: pa_request.C, untaint.C: ORIGINS langs name
 	  abbrevations
@@ -17963,7 +17863,7 @@
 	  main/pa_hash.C, main/pa_pool.C, main/pa_request.C,
 	  main/pa_socks.C, main/pa_sql_driver_manager.C, main/pa_string.C,
 	  main/pa_table.C, main/untaint.C, targets/cgi/parser3.C,
-	  targets/isapi/parser3isapi.C: static char *RCSId="$Id: ChangeLog,v 1.88 2013/08/20 10:48:29 moko Exp $";
+	  targets/isapi/parser3isapi.C: static char *RCSId="$Id: ChangeLog,v 1.89 2013/10/16 22:31:06 moko Exp $";
 
 	* src/main/: compile.y, compile_tools.h: $:name: == ${name}:
 	  $class:name: == ${class:name}:
@@ -18562,8 +18462,7 @@
 
 2001-04-24  paf
 
-	* src/targets/: Makefile.am, apache13/Makefile.am: apache module
-	  lib .am
+	* src/targets/Makefile.am: apache module lib .am
 
 	* src/main/pa_exec.C: windows32 buildCommand
 
@@ -20779,9 +20678,9 @@
 
 	* src/include/: pa_pool.h, pa_string.h: pa_pool split
 
-	* src/main/: main.dsp, pa_string.C: $Id: ChangeLog,v 1.88 2013/08/20 10:48:29 moko Exp $ check
+	* src/main/: main.dsp, pa_string.C: $Id: ChangeLog,v 1.89 2013/10/16 22:31:06 moko Exp $ check
 
-	* src/: main/pa_pool.C, main/pa_string.C, include/pa_pool.h: $Id: ChangeLog,v 1.88 2013/08/20 10:48:29 moko Exp $
+	* src/: main/pa_pool.C, main/pa_string.C, include/pa_pool.h: $Id: ChangeLog,v 1.89 2013/10/16 22:31:06 moko Exp $
 	  check
 
 	* src/: include/pa_pool.h, main/pa_string.C: String prealloc &
