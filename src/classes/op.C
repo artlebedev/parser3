@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.217 2013/10/04 21:21:54 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.218 2013/10/17 22:26:10 moko Exp $";
 
 // limits
 
@@ -357,7 +357,7 @@ static void _for(Request& r, MethodParams& params) {
 	VInt* vint=new VInt(0);
 
 	VMethodFrame& caller=*r.get_method_frame()->caller();
-	caller.put_element(var_name, vint);
+	r.put_element(caller, var_name, vint);
 	if(delim_maybe_code){ // delimiter set 
 		bool need_delim=false;
 
