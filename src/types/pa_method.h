@@ -8,7 +8,7 @@
 #ifndef PA_METHOD_H
 #define PA_METHOD_H
 
-#define IDENT_PA_METHOD_H "$Id: pa_method.h,v 1.21 2013/10/04 21:21:55 moko Exp $"
+#define IDENT_PA_METHOD_H "$Id: pa_method.h,v 1.22 2013/10/17 21:52:32 moko Exp $"
 
 #define OPTIMIZE_CALL
 #define OPTIMIZE_RESULT
@@ -138,23 +138,5 @@ public:
 		return junction_template->get(aself);
 	}
 };
-
-///	Auto-object used for temporarily substituting/removing elements
-class Temp_value_element {
-	Value& fwhere;
-	const String& fname;
-	Value* saved;
-public:
-	Temp_value_element(Value& awhere, const String& aname, Value* awhat) : 
-		fwhere(awhere),
-		fname(aname),
-		saved(awhere.get_element(aname)) {
-		fwhere.put_element(aname, awhat);
-	}
-	~Temp_value_element() { 
-		fwhere.put_element(fname, saved);
-	}
-};
-
 
 #endif

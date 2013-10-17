@@ -20,7 +20,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.210 2013/10/10 22:12:48 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.211 2013/10/17 21:52:32 moko Exp $";
 
 // class
 
@@ -454,7 +454,7 @@ static void _match(Request& r, MethodParams& params) {
 		};
 
 		if(is_junction){
-			Temp_value_element temp( *replacement_code->get_junction()->method_frame, match_var_name, vtable);
+			Temp_value_element temp(r, *replacement_code->get_junction()->method_frame, match_var_name, vtable);
 			src.match(vregex, replace_action, &info, matches_count);
 		} else {
 			src.match(vregex, replace_action, &info, matches_count);

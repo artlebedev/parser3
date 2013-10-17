@@ -16,7 +16,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.117 2013/10/04 21:21:54 moko Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.118 2013/10/17 21:52:32 moko Exp $";
 
 // class
 
@@ -415,10 +415,10 @@ static bool one_foreach_cycle(
 	Value& var_context=*info->var_context;
 	if(info->key_var_name){
 		VString* vkey=new VString(*new String(akey, String::L_TAINTED));
-		var_context.put_element(*info->key_var_name, vkey);
+		info->r->put_element(var_context, *info->key_var_name, vkey);
 	}
 	if(info->value_var_name)
-		var_context.put_element(*info->value_var_name, avalue);
+		info->r->put_element(var_context, *info->value_var_name, avalue);
 
 	if(info->delim_maybe_code){ // delimiter set
 		StringOrValue sv_processed=info->r->process(*info->body_code);

@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.213 2013/09/30 19:40:57 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.214 2013/10/17 21:52:32 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -40,8 +40,9 @@ class VStateless_class;
 class Request: public PA_Object {
 	friend class Temp_lang;
 	friend class Temp_connection;
-	friend class Request_context_saver;
 	friend class Temp_request_self;
+	friend class Temp_value_element;
+	friend class Request_context_saver;
 	friend class Exception_trace;
 
 public:
@@ -548,6 +549,25 @@ public:
 	}
 	~Temp_class_replace() {
 		frequest.allow_class_replace=false;
+	}
+};
+
+///	Auto-object used for temporarily substituting/removing elements
+class Temp_value_element {
+	Request& frequest;
+	Value& fwhere;
+	const String& fname;
+	Value& saved;
+public:
+	Temp_value_element(Request& arequest, Value& awhere, const String& aname, Value* awhat) :
+		frequest(arequest),
+		fwhere(awhere),
+		fname(aname),
+		saved(frequest.get_element(awhere, aname)) {
+		frequest.put_element(fwhere, aname, awhat);
+	}
+	~Temp_value_element() { 
+		frequest.put_element(fwhere, fname, &saved);
 	}
 };
 
