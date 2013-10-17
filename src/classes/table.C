@@ -21,7 +21,7 @@
 #include "pa_vbool.h"
 #include "pa_array.h"
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.299 2013/10/17 21:52:32 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.300 2013/10/17 22:07:23 moko Exp $";
 
 // class
 
@@ -1138,9 +1138,9 @@ static void _foreach(Request& r, MethodParams& params) {
 			table.set_current(row);
  
 			if(rownum_var_name)
-				var_context->put_element(*rownum_var_name, new VString(*new String(String::Body::Format(row), String::L_CLEAN)));
+				r.put_element(*var_context, *rownum_var_name, new VString(*new String(String::Body::Format(row), String::L_CLEAN)));
 			if(value_var_name)
-				var_context->put_element(*value_var_name, new VTable(&table));
+				r.put_element(*var_context, *value_var_name, new VTable(&table));
 
 			r.process_write(body_code);
 			Request::Skip lskip=r.get_skip(); r.set_skip(Request::SKIP_NOTHING);
