@@ -1,4 +1,4 @@
-#$Id: auto.p.dist.in,v 1.18 2013/07/22 20:20:17 moko Exp $
+#$Id: auto.p.dist.in,v 1.19 2013/10/19 11:34:33 misha Exp $
 
 @conf[filespec]
 $confdir[^file:dirname[$filespec]]
@@ -28,39 +28,57 @@ mysql	$sqldriversdir/libparser3mysql.@dll_extension@	libmysqlclient.@dll_extensi
 
 #for ^file::load[name;user-name] mime-type autodetection
 $MIME-TYPES[^table::create{ext	mime-type
-zip	application/zip
+7z	application/x-7z-compressed
+au	audio/basic
+avi	video/x-msvideo
+css	text/css
+cvs	text/csv
 doc	application/msword
-xls	application/vnd.ms-excel
-pdf	application/pdf
-ppt	application/powerpoint
-rtf	application/rtf
+docx	application/vnd.openxmlformats-officedocument.wordprocessingml.document
+dtd	application/xml-dtd
 gif	image/gif
-jpg	image/jpeg
-jpeg	image/jpeg
-png	image/png
-tif	image/tiff
-html	text/html
+gz	application/x-gzip
 htm	text/html
-txt	text/plain
-xml	text/xml
-mts	application/metastream
+html	text/html
+ico	image/x-icon
+jpeg	image/jpeg
+jpg	image/jpeg
+js	application/javascript
+log	text/plain
 mid	audio/midi
 midi	audio/midi
-mp3	audio/mpeg
-ram	audio/x-pn-realaudio
-rpm	audio/x-pn-realaudio-plugin
-ra	audio/x-realaudio
-wav	audio/x-wav
-au	audio/basic
-mpg	video/mpeg
-avi	video/x-msvideo
 mov	video/quicktime
+mp3	audio/mpeg
+mpg	video/mpeg
+mpeg	video/mpeg
+mts	application/metastream
+pdf	application/pdf
+png	image/png
+ppt	application/powerpoint
+ra	audio/x-realaudio
+ram	audio/x-pn-realaudio
+rar	application/x-rar-compressed
+rdf	application/rdf+xml
+rpm	audio/x-pn-realaudio-plugin
+rss	application/rss+xml
+rtf	application/rtf
+svg	image/svg+xml
 swf	application/x-shockwave-flash
+tar	application/x-tar
+tgz	application/x-gzip
+tif	image/tiff
+txt	text/plain
+wav	audio/x-wav
+xls	application/vnd.ms-excel
+xlsx	application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+xml	text/xml
+xsl	text/xml
+zip	application/zip
 }]
 
 $LIMITS[
 	$.post_max_size(10*0x400*0x400)
-]	
+]
 
 #$MAIL[
 #	$.sendmail[your sendmail command goes here]
