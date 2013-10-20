@@ -11,7 +11,7 @@
 #include "pa_stylesheet_connection.h"
 #include "pa_xml_exception.h"
 
-volatile const char * IDENT_PA_STYLESHEET_CONNECTION_C="$Id: pa_stylesheet_connection.C,v 1.7 2012/03/16 09:24:14 moko Exp $" IDENT_PA_STYLESHEET_CONNECTION_H;
+volatile const char * IDENT_PA_STYLESHEET_CONNECTION_C="$Id: pa_stylesheet_connection.C,v 1.8 2013/10/20 18:33:41 moko Exp $" IDENT_PA_STYLESHEET_CONNECTION_H;
 
 void Stylesheet_connection::load(time_t new_disk_time) {
 	xsltStylesheet *nstylesheet;
@@ -26,7 +26,7 @@ void Stylesheet_connection::load(time_t new_disk_time) {
 		dependencies=pa_xmlGetDependencies();
 	}
 	if(xmlHaveGenericErrors())
-		throw XmlException(new String(ffile_spec, String::L_TAINTED));
+		throw XmlException(new String(ffile_spec, String::L_TAINTED), pa_thread_request());
 	if(!nstylesheet)
 		throw Exception("file.missing",
 			new String(ffile_spec, String::L_TAINTED),

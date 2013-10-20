@@ -10,7 +10,7 @@
 
 #ifdef XML
 
-#define IDENT_PA_XML_EXCEPTION_H "$Id: pa_xml_exception.h,v 1.9 2013/10/15 22:28:36 moko Exp $"
+#define IDENT_PA_XML_EXCEPTION_H "$Id: pa_xml_exception.h,v 1.10 2013/10/20 18:33:41 moko Exp $"
 
 const char* const XML_VALUE_MUST_BE_STRING = "value must be string";
 const char* const XML_DATA_MUST_BE_STRING = "data must be string";
@@ -34,7 +34,7 @@ const char* const XML_INVALID_LOCAL_NAME = "invalid localName '%s'";
 class XmlException: public Exception {
 public:
 
-	XmlException(const String* aproblem_source, const char* aproblem_comment=0, ...);
+	XmlException(const String* aproblem_source, const char* aproblem_comment, ...);
 	XmlException(const String* aproblem_source, Request& r);
 	XmlException();
 };
