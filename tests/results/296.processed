@@ -1,11 +1,13 @@
 Content-Type: text/html
-Content-Length: 489
+Content-Length: 505
 
 "<?xml version="1.0" encoding="UTF-8"?>
 
 ok : test
 "
-Exception: parser://xsl/2 - parser://xsl/2:5: parser error : Opening and ending tag mismatch: fail line 4 and xsl:template
+Type: xml,
+Source: parser://xsl/2,
+Comment: parser://xsl/2:5: parser error : Opening and ending tag mismatch: fail line 4 and xsl:template
 &lt;/xsl:template&gt;
 ^
 parser://xsl/2:6: parser error : Opening and ending tag mismatch: template line 3 and stylesheet

@@ -16,14 +16,6 @@ $b[^h.contains[key]]
 blocking hash operations:
 
 $h2[ $.k[v] ]
-^try_catch{ ^h2.sub[$h] }
-^try_catch{ $h.k[v] }
-^try_catch{ ^h.delete[k] }
-
-@try_catch[code]
-^try{
-	$code
-}{
-	$exception.handled(true)
-	$result[Exception: $exception.source - $exception.comment]
-}
+^try-catch{ ^h2.sub[$h] }
+^try-catch{ $h.k[v] }
+^try-catch{ ^h.delete[k] }

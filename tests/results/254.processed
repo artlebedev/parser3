@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 185
+Content-Length: 265
 
 Same uid
 Same string
@@ -12,7 +12,9 @@ v1 = 1
 v2 = 2
 v3 = 3
 another3 = =3=
-copy
-source must have hash representation
-v1
-element can not be stored to string
+Type: parser.runtime,
+Source: copy,
+Comment: source must have hash representation
+Type: parser.runtime,
+Source: v1,
+Comment: element can not be stored to string

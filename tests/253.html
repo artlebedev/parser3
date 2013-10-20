@@ -3,7 +3,7 @@
 $f[^file::load[text;253_json.txt; $.charset[windows-1251]]]
 $s[^taint[as-is][$f.text]]
 
-^try_catch{$o[^json:parse[$s]]}
+^try-catch{$o[^json:parse[$s]]}
 
 $o[^json:parse[$s][ $.object[$hook] $.distinct[first] ]]
 ^print[$o]
@@ -21,15 +21,6 @@ $o[^json:parse[$s][ $.object[$hook] ]]
 
 $o[^json:parse[$s]]
 ^print[$o]
-
-@try_catch[code]
-^try{
-	$code
-}{
-	$exception.handled(true)
-	$exception.source
-	$exception.comment
-}
 
 @print[hash]
 ^json:string[$hash; $.indent(1)]

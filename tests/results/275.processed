@@ -1,16 +1,32 @@
 Content-Type: text/html
-Content-Length: 532
+Content-Length: 765
 
 11110000000000000000000000000000
 -11110000000000000000000000000000
-Exception: convert - '100000000' is out of range (int)
-Exception: div - Division by zero
-Exception: mod - Modulus by zero
-Exception: div - Division by zero
-Exception: mod - Modulus by zero
-0x100000000 as int: Exception: 0x100000000 - out of range (int)
-0x100000000 as double: Exception: 0x100000000 - out of range (int)
+Type: number.format,
+Source: convert,
+Comment: '100000000' is out of range (int)
+Type: number.zerodivision,
+Source: div,
+Comment: Division by zero
+Type: number.zerodivision,
+Source: mod,
+Comment: Modulus by zero
+Type: number.zerodivision,
+Source: div,
+Comment: Division by zero
+Type: number.zerodivision,
+Source: mod,
+Comment: Modulus by zero
+0x100000000 as int: Type: number.format,
+Source: 0x100000000,
+Comment: out of range (int)
+0x100000000 as double: Type: number.format,
+Source: 0x100000000,
+Comment: out of range (int)
 0x7FFFFFFF as int: 2147483647
 -0x80000000 as int: -2147483648
 0x80000000 as double: 2147483648
-as int: Exception: 0x80000000 - out of range (int)
+as int: Type: number.format,
+Source: 0x80000000,
+Comment: out of range (int)

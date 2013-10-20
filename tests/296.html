@@ -5,7 +5,7 @@ $document[^xdoc::create{<?xml version="1.0"?><document>test</document>}]
 $new[^document.transform[parser://xsl/1]]
 "^new.string[]"
 
-^try_catch{
+^try-catch{
     $new[^document.transform[parser://xsl/2]]
 }
 
@@ -17,11 +17,3 @@ $new[^document.transform[parser://xsl/1]]
 </xsl:template>
 </xsl:stylesheet>
 
-
-@try_catch[code]
-^try{
-	$code
-}{
-	$exception.handled(true)
-	$result[Exception: $exception.source - $exception.comment]
-}

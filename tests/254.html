@@ -21,24 +21,15 @@ Hash a:
 ^print[$a]
 
 $string[string]
-^try_catch{
+^try-catch{
 	^reflection:copy[$string;$a]
 }
-^try_catch{
+^try-catch{
 	^reflection:copy[$a;$string]
 }
 
 @print[hash]
 ^hash.foreach[k;v]{$k = $v
-}
-
-@try_catch[code]
-^try{
-	$code
-}{
-	$exception.handled(true)
-	$exception.source
-	$exception.comment
 }
 
 @CLASS

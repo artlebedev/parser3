@@ -1,8 +1,9 @@
 Content-Type: text/html
-Content-Length: 1176
+Content-Length: 1216
 
-object
-duplicate key
+Type: parser.runtime,
+Source: object,
+Comment: duplicate key
 {
 	"object":{
 		"value":"class1 sample1"

@@ -1,12 +1,16 @@
 Content-Type: text/html
-Content-Length: 337
+Content-Length: 497
 
-classname
-classname may not be overwritten with hash, store it to variable instead
-classname
-classname may not be overwritten with hash, store it to variable instead
+Type: parser.runtime,
+Source: classname,
+Comment: classname may not be overwritten with hash, store it to variable instead
+Type: parser.runtime,
+Source: classname,
+Comment: classname may not be overwritten with hash, store it to variable instead
 compare exceptions:
-create
-native method of hash (hash) accepts maximum 1 parameter(s) (2 present)
-_count
-method of hash (hash) accepts maximum 0 parameter(s) (1 present)
+Type: parser.runtime,
+Source: create,
+Comment: native method of hash (hash) accepts maximum 1 parameter(s) (2 present)
+Type: parser.runtime,
+Source: _count,
+Comment: method of hash (hash) accepts maximum 0 parameter(s) (1 present)
