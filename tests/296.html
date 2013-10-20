@@ -1,0 +1,27 @@
+@main[]
+
+$document[^xdoc::create{<?xml version="1.0"?><document>test</document>}]
+
+$new[^document.transform[parser://xsl/1]]
+"^new.string[]"
+
+^try_catch{
+    $new[^document.transform[parser://xsl/2]]
+}
+
+@xsl[param]
+<?xml version="1.0"?>
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
+<xsl:template match="/">
+^if($param eq '/1'){ok}{<fail>} : <xsl:value-of select="."/>
+</xsl:template>
+</xsl:stylesheet>
+
+
+@try_catch[code]
+^try{
+	$code
+}{
+	$exception.handled(true)
+	$result[Exception: $exception.source - $exception.comment]
+}
