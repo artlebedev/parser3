@@ -13,7 +13,8 @@ $sDir[182_dir]
 # override 'a' class and add 'c' class
 ^use[182_dir/a3.p; $.replace(true) ]
 
-^try-catch{ ^use[182_dir/a5.p] }
+$e[^try-catch{ ^use[182_dir/a5.p] }]
+^e.match[(Comment:) .*?(a5.p)][]{$match.1 $match.2}
 
 ^^a:a1[]: ^a:a1[]
 ^^a:a2[]: ^try-catch{^a:a2[]}
