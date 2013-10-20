@@ -1,3 +1,63 @@
+2013-10-21  moko
+
+	* tests/: 182.html, results/182.processed: local path removed for
+	  compatibility
+
+	* tests/: 244.html, 253.html, 254.html, 275.html, 281.html,
+	  results/244.processed, results/253.processed,
+	  results/254.processed, results/275.processed,
+	  results/281.processed: try_catch -> try-catch
+
+	* tests/: 288.html, 294.html, 296.html, results/288.processed,
+	  results/294.processed, results/296.processed: try_catch ->
+	  try-catch
+
+2013-10-20  moko
+
+	* tests/: 296.html, results/296.processed: test for xsl exception
+	  for issue #938 added.
+
+	* src/: include/pa_xml_exception.h,
+	  main/pa_stylesheet_connection.C: forgotten to be replaced
+	  XmlException is now replaced (once again closes issue #938)
+
+2013-10-19  misha
+
+	* bin/auto.p.dist.in: - more mime-types are added
+
+2013-10-18  moko
+
+	* buildall: disable clock_gettime detection to avoid librt linking
+	  (which in turn depends on libpthread), related to issue #943
+
+2013-10-18  misha
+
+	* src/: classes/classes.vcproj, lib/gd/gd.vcproj,
+	  lib/smtp/smtp.vcproj, main/main.vcproj,
+	  targets/apache/ApacheModuleParser3Core.vcproj,
+	  targets/cgi/parser3.vcproj, targets/isapi/parser3isapi.vcproj,
+	  types/types.vcproj: - new locations for libxml2 includes where
+	  added to vcproj files
+
+2013-10-18  moko
+
+	* src/classes/: hashfile.C, op.C: hopefully last part of issue #948
+	  fix
+
+	* tests/: 295.html, results/295.processed: test for issue #948
+	  updated
+
+	* src/classes/table.C: hopefully last lost part for issue #948 fix.
+	  :)
+
+	* tests/: 295.html, results/295.processed: test for issue #948
+	  added
+
+	* src/: classes/hash.C, classes/string.C, classes/table.C,
+	  include/pa_request.h, types/pa_method.h: for getters and setters
+	  to be executed request.put_element should be called, not
+	  context.put_element (fixes issue #948)
+
 2013-10-17  moko
 
 	* src/classes/xdoc.C: libxml 2.9.1 compatibility with define
@@ -13713,7 +13773,7 @@
 	  types/pa_vstring.h, types/pa_vtable.C, types/pa_vtable.h,
 	  types/pa_vvoid.h, types/pa_vxdoc.C, types/pa_vxdoc.h,
 	  types/pa_vxnode.C, types/pa_vxnode.h, types/pa_wcontext.C,
-	  types/pa_wcontext.h, types/pa_wwrapper.h: $Date: 2013/10/16 22:31:06 $
+	  types/pa_wcontext.h, types/pa_wwrapper.h: $Date: 2013/10/20 21:26:30 $
 
 	* src/: classes/classes.C, classes/classes.dsp, classes/classes.h,
 	  classes/date.C, classes/double.C, classes/file.C, classes/form.C,
@@ -17863,7 +17923,7 @@
 	  main/pa_hash.C, main/pa_pool.C, main/pa_request.C,
 	  main/pa_socks.C, main/pa_sql_driver_manager.C, main/pa_string.C,
 	  main/pa_table.C, main/untaint.C, targets/cgi/parser3.C,
-	  targets/isapi/parser3isapi.C: static char *RCSId="$Id: ChangeLog,v 1.89 2013/10/16 22:31:06 moko Exp $";
+	  targets/isapi/parser3isapi.C: static char *RCSId="$Id: ChangeLog,v 1.90 2013/10/20 21:26:30 moko Exp $";
 
 	* src/main/: compile.y, compile_tools.h: $:name: == ${name}:
 	  $class:name: == ${class:name}:
@@ -20678,9 +20738,9 @@
 
 	* src/include/: pa_pool.h, pa_string.h: pa_pool split
 
-	* src/main/: main.dsp, pa_string.C: $Id: ChangeLog,v 1.89 2013/10/16 22:31:06 moko Exp $ check
+	* src/main/: main.dsp, pa_string.C: $Id: ChangeLog,v 1.90 2013/10/20 21:26:30 moko Exp $ check
 
-	* src/: main/pa_pool.C, main/pa_string.C, include/pa_pool.h: $Id: ChangeLog,v 1.89 2013/10/16 22:31:06 moko Exp $
+	* src/: main/pa_pool.C, main/pa_string.C, include/pa_pool.h: $Id: ChangeLog,v 1.90 2013/10/20 21:26:30 moko Exp $
 	  check
 
 	* src/: include/pa_pool.h, main/pa_string.C: String prealloc &
