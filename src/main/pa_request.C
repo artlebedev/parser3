@@ -32,7 +32,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.336 2013/10/08 21:25:46 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.337 2013/10/21 20:49:21 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -983,4 +983,20 @@ Request::Exception_details Request::get_details(const Exception& e) {
 	hash.put(exception_handled_part_name, &VBool::get(false));
 
 	return Request::Exception_details(trace, problem_source, vhash);
+}
+
+Temp_value_element::Temp_value_element(Request& arequest, Value& awhere, const String& aname, Value* awhat) :
+	frequest(arequest),
+	fwhere(awhere),
+	fname(aname),
+	saved(awhere.get_element(aname))
+{
+	Junction* junction;
+	if(saved && (junction=saved->get_junction()) && junction->is_getter)
+		saved=0;
+	frequest.put_element(fwhere, aname, awhat);
+}
+
+Temp_value_element::~Temp_value_element() {
+	frequest.put_element(fwhere, fname, saved ? saved : VVoid::get());
 }

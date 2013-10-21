@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.215 2013/10/21 20:10:48 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.216 2013/10/21 20:49:21 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -557,18 +557,10 @@ class Temp_value_element {
 	Request& frequest;
 	Value& fwhere;
 	const String& fname;
-	Value& saved;
+	Value* saved;
 public:
-	Temp_value_element(Request& arequest, Value& awhere, const String& aname, Value* awhat) :
-		frequest(arequest),
-		fwhere(awhere),
-		fname(aname),
-		saved(frequest.get_element(awhere, aname)) {
-		frequest.put_element(fwhere, aname, awhat);
-	}
-	~Temp_value_element() { 
-		frequest.put_element(fwhere, fname, &saved);
-	}
+	Temp_value_element(Request& arequest, Value& awhere, const String& aname, Value* awhat);
+	~Temp_value_element();
 };
 
 // defines for externs
