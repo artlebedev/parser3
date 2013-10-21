@@ -1,0 +1,68 @@
+@main[]
+
+a1. $o[^a::create[]]
+^o.method[]
+
+a2. $o[^a::create[]]
+^o.method[value]
+
+b1. $o[^b::create[]]
+^o.method[]
+
+b2. $o[^b::create[]]
+^o.method[value]
+
+c1. $o[^c::create[]]
+^o.method[]
+
+c2. $o[^c::create[]]
+^o.method[value]
+
+@CLASS
+a
+
+@create[init]
+$log[]
+$fields[^hash::create[]]
+
+@l[v]
+$log[${log}log: $v^#0A]
+
+@p[v]
+$result['^if($v is table){table}{$v}' $v.CLASS_NAME]
+
+@method[init][str]
+^if(def $init){$match[$init]}
+
+$str[2002]
+
+^l[before match]
+^str.match[(\d+)][]{
+	year: $match.1
+	$match.CLASS_NAME
+}
+^l[after match]
+
+match: ^p[$match]
+$log
+
+@CLASS
+b
+
+@BASE
+a
+
+@SET_DEFAULT[n;v]
+^l[set_default[$n^;^p[$v]]]
+$fields.$n[$v]
+
+@CLASS
+c
+
+@BASE
+b
+
+@GET_DEFAULT[n][v]
+$v[$fields.$n]
+^l[get_default[$n] - ^p[$v]]
+$result[$v]

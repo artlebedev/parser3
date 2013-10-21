@@ -1,0 +1,47 @@
+Content-Type: text/html
+Content-Length: 1007
+
+a1. year: 2002
+table
+match: '' void
+log: before match
+log: after match
+a2. year: 2002
+table
+match: 'value' string
+log: before match
+log: after match
+b1. year: void
+match: '' void
+log: before match
+log: set_default[match;'table' table]
+log: set_default[match;'' void]
+log: after match
+b2. year: void
+match: '' void
+log: set_default[match;'value' string]
+log: before match
+log: set_default[match;'table' table]
+log: set_default[match;'' void]
+log: after match
+c1. year: 2002
+table
+match: '' void
+log: before match
+log: set_default[match;'table' table]
+log: get_default[match] - 'table' table
+log: get_default[match] - 'table' table
+log: set_default[match;'' void]
+log: after match
+log: get_default[match] - '' void
+c2. year: 2002
+table
+match: '' void
+log: set_default[match;'value' string]
+log: before match
+log: set_default[match;'table' table]
+log: get_default[match] - 'table' table
+log: get_default[match] - 'table' table
+log: set_default[match;'' void]
+log: after match
+log: get_default[match] - '' void
