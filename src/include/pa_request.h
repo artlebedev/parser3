@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.214 2013/10/17 21:52:32 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.215 2013/10/21 20:10:48 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -18,7 +18,6 @@
 #include "pa_request_info.h"
 #include "pa_request_charsets.h"
 #include "pa_sapi.h"
-#include "pa_vconsole.h"
 
 // consts
 
@@ -35,6 +34,7 @@ class VForm;
 class VResponse;
 class VCookie;
 class VStateless_class;
+class VConsole;
 
 /// Main workhorse.
 class Request: public PA_Object {

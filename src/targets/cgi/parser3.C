@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.265 2013/07/23 15:08:44 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.266 2013/10/21 20:10:48 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -15,6 +15,7 @@ volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.265 2013/07/23 15:08:4
 #include "pa_request.h"
 #include "pa_socks.h"
 #include "pa_version.h"
+#include "pa_vconsole.h"
 
 #ifdef _MSC_VER
 #include <crtdbg.h>
