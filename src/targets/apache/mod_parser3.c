@@ -15,7 +15,7 @@
 
 #include "pa_httpd.h"
 
-volatile const char * IDENT_MOD_PARSER3_C="$Id: mod_parser3.c,v 1.16 2013/07/24 21:38:43 moko Exp $" IDENT_PA_HTTPD_H;
+volatile const char * IDENT_MOD_PARSER3_C="$Id: mod_parser3.c,v 1.17 2013/10/22 16:36:55 moko Exp $" IDENT_PA_HTTPD_H;
 
 #define PARSER3_HANDLER "parser3-handler"
 
@@ -243,7 +243,11 @@ void pa_ap_log_rerror(const char *file, int line, int level, const pa_request_re
 	str=va_arg(l, const char*);
 	va_end(l); 
 
-	ap_log_rerror(file, line, level,
+	ap_log_rerror(file, line,
+#if (AP_SERVER_MAJORVERSION_NUMBER == 2) && (AP_SERVER_MINORVERSION_NUMBER >= 4)
+			APLOG_MODULE_INDEX,
+#endif
+			level,
 #ifdef STANDARD20_MODULE_STUFF
 			0,
 #endif
@@ -258,7 +262,11 @@ void pa_ap_log_error(const char *file, int line, int level, const pa_server_rec 
 	str=va_arg(l, const char*);
 	va_end(l); 
 
-	ap_log_error(file, line, level,
+	ap_log_error(file, line,
+#if (AP_SERVER_MAJORVERSION_NUMBER == 2) && (AP_SERVER_MINORVERSION_NUMBER >= 4)
+			APLOG_MODULE_INDEX,
+#endif
+			level,
 #ifdef STANDARD20_MODULE_STUFF
 			0,
 #endif
