@@ -1,15 +1,13 @@
-Parser3 sources
-	http://www.parser.ru/
+Parser3 website is http://www.parser.ru/
 
-Read the documentation here
-	http://www.parser.ru/docs/
+Read the documentation here at http://www.parser.ru/docs/
 
-Check the Changelog to keep track of progresses.
+Check the ChangeLog to keep track of progresses.
 Check the INSTALL to find out how to compile and install Parser3.
 
-SQL drivers are in separate modules,
-if you need any, download and install them separately.
+SQL drivers are in separate modules.
+If you need any, download and install them separately.
 
 Report bugs to mailbox@parser.ru or on http://www.parser.ru/forum/
 
-$Id: README,v 1.3 2012/07/23 04:07:02 moko Exp $
+$Id: README,v 1.4 2013/10/22 20:40:49 moko Exp $
