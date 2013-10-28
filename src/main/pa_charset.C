@@ -8,7 +8,7 @@
 #include "pa_charset.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_PA_CHARSET_C="$Id: pa_charset.C,v 1.94 2013/10/15 21:27:37 moko Exp $" IDENT_PA_CHARSET_H;
+volatile const char * IDENT_PA_CHARSET_C="$Id: pa_charset.C,v 1.95 2013/10/28 21:59:31 moko Exp $" IDENT_PA_CHARSET_H;
 
 #ifdef XML
 #include "libxml/encoding.h"
@@ -85,24 +85,26 @@ static void element2case(unsigned char from, unsigned char to,
 	fcc_table[from]=to; fcc_table[to]=from;
 }
 
-inline void append_hex_8(char*& dest, unsigned char c, const char* prefix=0) {
+inline XMLByte *append_hex_8(XMLByte *dest, unsigned char c, const char* prefix=0) {
     if(prefix) {
-        strcpy(dest, prefix);
+        strcpy((char *)dest, prefix);
         dest+=strlen(prefix);
     }
     *dest++=hex_digits[c >> 4];
     *dest++=hex_digits[c & 0x0F];
+    return dest;
 }
 
-inline void append_hex_16(char*& dest, unsigned int c, const char* prefix=0) {
+inline XMLByte *append_hex_16(XMLByte *dest, unsigned int c, const char* prefix=0) {
     if(prefix) {
-        strcpy(dest, prefix);
+        strcpy((char *)dest, prefix);
         dest+=strlen(prefix);
     }
     *dest++=hex_digits[(c >> 12) & 0x0F];
     *dest++=hex_digits[(c >> 8) & 0x0F];
     *dest++=hex_digits[(c >> 4) & 0x0F];
     *dest++=hex_digits[(c) & 0x0F];
+    return dest;
 }
 
 // methods
@@ -590,13 +592,13 @@ size_t Charset::calc_escaped_length(const String::C src, const Charset& source_c
 	if(char_size==1) \
 		if(first_byte){ \
 			if(need_escape(first_byte)) \
-				append_hex_8((char*&)dest_ptr, first_byte, "%");  /* %XX */ \
+				dest_ptr=append_hex_8(dest_ptr, first_byte, "%");  /* %XX */ \
 			else \
 				*dest_ptr++=first_byte; /*as is*/ \
 		} else \
 			*dest_ptr++='?'; /* replacement char '?' */ \
 	else \
-		append_hex_16((char*&)dest_ptr, UTF8_char, "%u"); /* %uXXXX */
+		dest_ptr=append_hex_16(dest_ptr, UTF8_char, "%u"); /* %uXXXX */
 
 
 size_t Charset::escape_UTF8(const XMLByte* src, size_t src_length, XMLByte* dest) {
@@ -715,11 +717,11 @@ size_t Charset::calc_JSON_escaped_length(const String::C src, const Charset& sou
 			case '\b': *dest_ptr++='\\'; *dest_ptr++='b';  break; \
 			case '\f': *dest_ptr++='\\'; *dest_ptr++='f';  break; \
 			case   0 : *dest_ptr++='?'; break; /*replacement char*/ \
-			default  : if(first_byte < 0x20) append_hex_16((char*&)dest_ptr, UTF8_char, "\\u"); \
+			default  : if(first_byte < 0x20) dest_ptr=append_hex_16(dest_ptr, UTF8_char, "\\u"); \
 						else *dest_ptr++=first_byte; \
 		} \
 	else \
-		append_hex_16((char*&)dest_ptr, UTF8_char, "\\u"); // \uXXXX
+		dest_ptr=append_hex_16(dest_ptr, UTF8_char, "\\u"); // \uXXXX
 
 
 size_t Charset::escape_JSON_UTF8(const XMLByte* src, size_t src_length, XMLByte* dest) {
