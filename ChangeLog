@@ -1,3 +1,18 @@
+2013-10-29  moko
+
+	* src/lib/json/json.vcproj: json.c -> pa_json.C
+
+	* src/lib/json/pa_json.C: C++ compatibility addes, related to issue
+	  #892
+
+	* src/: classes/json.C, lib/json/Makefile.am, lib/json/json.c,
+	  lib/json/json.h, lib/json/pa_json.C: json.c -> pa_json.C (for
+	  exceptions to be thrown thougth json library), related to issue
+	  #892
+
+	* src/main/pa_charset.C: avoid compilation bug in Debian 6.0.8 x32,
+	  related to issue #896
+
 2013-10-24  moko
 
 	* configure.in, src/include/pa_version.h: 3.4.3rc -> 3.4.3
@@ -256,8 +271,8 @@
 
 2013-07-31  moko
 
-	* src/lib/json/json.c: STATE__X -> STATE_XX for cygwin compilation
-	  having #define _S
+	* src/lib/json/: json.c, pa_json.C: STATE__X -> STATE_XX for cygwin
+	  compilation having #define _S
 
 	* src/main/pa_globals.C: cleanup
 
@@ -266,15 +281,16 @@
 	* src/: classes/table.C, include/pa_common.h, main/pa_charset.C,
 	  main/pa_common.C: vs2003 warning war
 
-	* src/lib/json/json.c: vs2003 warning war
+	* src/lib/json/: json.c, pa_json.C: vs2003 warning war
 
-	* src/lib/json/json.c: vs2003 compilation fix
+	* src/lib/json/: json.c, pa_json.C: vs2003 compilation fix
 
 	* src/lib/md5/pa_sha2.c: warning war
 
 2013-07-29  moko
 
-	* src/lib/json/: json.c, json.h: some libjson patches from github
+	* src/lib/json/: json.c, json.h, pa_json.C, pa_json.h: some libjson
+	  patches from github
 
 	* src/: classes/bool.C, classes/double.C, classes/int.C,
 	  classes/memcached.C, include/pa_config_includes.h,
@@ -282,15 +298,15 @@
 
 	* src/lib/json/json.vcproj: C++ -> C
 
-	* src/lib/json/json.c: C++ warning revert
+	* src/lib/json/: json.c, pa_json.C: C++ warning revert
 
-	* src/lib/json/json.c: windows compatibility
+	* src/lib/json/: json.c, pa_json.C: windows compatibility
 
-	* src/lib/json/json.c: windows compatibility
+	* src/lib/json/: json.c, pa_json.C: windows compatibility
 
-	* src/lib/json/: json.c: warning war
+	* src/lib/json/: json.c, pa_json.C: warning war
 
-	* src/lib/json/json.c: win32 compilation issues fixes
+	* src/lib/json/: json.c, pa_json.C: win32 compilation issues fixes
 
 	* src/include/pa_config_fixed.h: uint16_t added
 
@@ -298,9 +314,9 @@
 
 	* src/: classes/json.C, lib/json/JSON_parser.C,
 	  lib/json/JSON_parser.h, lib/json/Makefile.am, lib/json/json.c,
-	  lib/json/json.h, lib/json/json.vcproj: JSON_parser with non-free
-	  licence is replaced with similar GPL licenced libjson (fixes
-	  issue #892)
+	  lib/json/json.h, lib/json/json.vcproj, lib/json/pa_json.C,
+	  lib/json/pa_json.h: JSON_parser with non-free licence is replaced
+	  with similar GPL licenced libjson (fixes issue #892)
 
 2013-07-25  moko
 
@@ -13796,7 +13812,7 @@
 	  types/pa_vstring.h, types/pa_vtable.C, types/pa_vtable.h,
 	  types/pa_vvoid.h, types/pa_vxdoc.C, types/pa_vxdoc.h,
 	  types/pa_vxnode.C, types/pa_vxnode.h, types/pa_wcontext.C,
-	  types/pa_wcontext.h, types/pa_wwrapper.h: $Date: 2013/10/23 21:29:01 $
+	  types/pa_wcontext.h, types/pa_wwrapper.h: $Date: 2013/10/29 16:21:27 $
 
 	* src/: classes/classes.C, classes/classes.dsp, classes/classes.h,
 	  classes/date.C, classes/double.C, classes/file.C, classes/form.C,
@@ -17946,7 +17962,7 @@
 	  main/pa_hash.C, main/pa_pool.C, main/pa_request.C,
 	  main/pa_socks.C, main/pa_sql_driver_manager.C, main/pa_string.C,
 	  main/pa_table.C, main/untaint.C, targets/cgi/parser3.C,
-	  targets/isapi/parser3isapi.C: static char *RCSId="$Id: ChangeLog,v 1.91 2013/10/23 21:29:01 moko Exp $";
+	  targets/isapi/parser3isapi.C: static char *RCSId="$Id: ChangeLog,v 1.92 2013/10/29 16:21:27 moko Exp $";
 
 	* src/main/: compile.y, compile_tools.h: $:name: == ${name}:
 	  $class:name: == ${class:name}:
@@ -20761,9 +20777,9 @@
 
 	* src/include/: pa_pool.h, pa_string.h: pa_pool split
 
-	* src/main/: main.dsp, pa_string.C: $Id: ChangeLog,v 1.91 2013/10/23 21:29:01 moko Exp $ check
+	* src/main/: main.dsp, pa_string.C: $Id: ChangeLog,v 1.92 2013/10/29 16:21:27 moko Exp $ check
 
-	* src/: main/pa_pool.C, main/pa_string.C, include/pa_pool.h: $Id: ChangeLog,v 1.91 2013/10/23 21:29:01 moko Exp $
+	* src/: main/pa_pool.C, main/pa_string.C, include/pa_pool.h: $Id: ChangeLog,v 1.92 2013/10/29 16:21:27 moko Exp $
 	  check
 
 	* src/: include/pa_pool.h, main/pa_string.C: String prealloc &
