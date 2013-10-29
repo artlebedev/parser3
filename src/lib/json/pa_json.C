@@ -67,15 +67,6 @@ static uint8_t character_class[128] = {
 	C_OTHER, C_OTHER, C_OTHER, C_LCURB, C_OTHER, C_RCURB, C_OTHER, C_OTHER
 };
 
-/* only the first 36 ascii characters need an escape */
-static char *character_escape[36] = {
-	"\\u0000", "\\u0001", "\\u0002", "\\u0003", "\\u0004", "\\u0005", "\\u0006", "\\u0007", /*  0-7  */
-	"\\b"    ,     "\\t",     "\\n", "\\u000b",     "\\f",     "\\r", "\\u000e", "\\u000f", /*  8-f  */
-	"\\u0010", "\\u0011", "\\u0012", "\\u0013", "\\u0014", "\\u0015", "\\u0016", "\\u0017", /* 10-17 */
-	"\\u0018", "\\u0019", "\\u001a", "\\u001b", "\\u001c", "\\u001d", "\\u001e", "\\u001f", /* 18-1f */
-	" "      , "!"      , "\\\""   , "#",
-};
-
 /* define all states and actions that will be taken on each transition.
  *
  * states are defined first because of the fact they are use as index in the
@@ -257,7 +248,7 @@ static int state_grow(json_parser *parser)
 	ptr = parser_realloc(parser, parser->stack, newsize * sizeof(uint8_t));
 	if (!ptr)
 		return JSON_ERROR_NO_MEMORY;
-	parser->stack = ptr;
+	parser->stack = (uint8_t *)ptr;
 	parser->stack_size = newsize;
 	return 0;
 }
@@ -298,7 +289,7 @@ static int buffer_grow(json_parser *parser)
 	ptr = parser_realloc(parser, parser->buffer, newsize * sizeof(char));
 	if (!ptr)
 		return JSON_ERROR_NO_MEMORY;
-	parser->buffer = ptr;
+	parser->buffer = (char *)ptr;
 	parser->buffer_size = newsize;
 	return 0;
 }
@@ -525,7 +516,7 @@ static int act_sp(json_parser *parser)
 struct action_descr
 {
 	int (*call)(json_parser *parser);
-	uint8_t type;
+	json_type type;
 	uint8_t state; /* 0 if we let the callback set the value it want */
 	uint8_t dobuffer;
 };
@@ -591,7 +582,7 @@ int json_parser_init(json_parser *parser, json_config *config,
 		? parser->config.max_nesting
 		: LIBJSON_DEFAULT_STACK_SIZE;
 
-	parser->stack = parser_malloc(parser, parser->stack_size * sizeof(parser->stack[0]));
+	parser->stack = (uint8_t *)parser_malloc(parser, parser->stack_size * sizeof(parser->stack[0]));
 	if (!parser->stack)
 		return JSON_ERROR_NO_MEMORY;
 
@@ -603,7 +594,7 @@ int json_parser_init(json_parser *parser, json_config *config,
 	if (parser->config.max_data > 0 && parser->buffer_size > parser->config.max_data)
 		parser->buffer_size = parser->config.max_data;
 
-	parser->buffer = parser_malloc(parser, parser->buffer_size * sizeof(char));
+	parser->buffer = (char *)parser_malloc(parser, parser->buffer_size * sizeof(char));
 	if (!parser->buffer) {
 		parser_free(parser, parser->stack);
 		return JSON_ERROR_NO_MEMORY;
