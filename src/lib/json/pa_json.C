@@ -18,7 +18,7 @@
  * the JSON compliance.
  */
 
-#include "json.h"
+#include "pa_json.h"
 
 enum classes {
 	C_SPACE, /* space */

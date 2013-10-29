@@ -12,13 +12,13 @@
 
 #include "pa_charset.h"
 #include "pa_charsets.h"
-#include "json.h"
+#include "pa_json.h"
 
 #ifdef XML
 #include "pa_vxdoc.h"
 #endif
 
-volatile const char * IDENT_JSON_C="$Id: json.C,v 1.28 2013/08/27 11:27:45 moko Exp $";
+volatile const char * IDENT_JSON_C="$Id: json.C,v 1.29 2013/10/29 13:29:24 moko Exp $";
 
 // class
 

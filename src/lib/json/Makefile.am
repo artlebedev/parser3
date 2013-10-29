@@ -1,7 +1,7 @@
 INCLUDES = -I../../include -I../gc/include
 
-noinst_HEADERS = json.h
+noinst_HEADERS = pa_json.h
 noinst_LTLIBRARIES = libjson.la
-libjson_la_SOURCES = json.c
+libjson_la_SOURCES = pa_json.C
 
 EXTRA_DIST = json.vcproj
