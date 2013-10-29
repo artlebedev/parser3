@@ -37,7 +37,7 @@
 				WarningLevel="4"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="3"
-				CompileAs="1"/>
+				CompileAs="2"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
@@ -123,7 +123,7 @@
 	</References>
 	<Files>
 		<File
-			RelativePath="json.c">
+			RelativePath="pa_json.C">
 			<FileConfiguration
 				Name="Debug|Win32">
 				<Tool
@@ -145,7 +145,7 @@
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath="json.h">
+			RelativePath="pa_json.h">
 		</File>
 	</Files>
 	<Globals>
