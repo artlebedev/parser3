@@ -28,7 +28,7 @@ extern "C" {
 #include "ltdl.h"
 #include "pcre.h"
 
-volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.191 2013/07/30 22:35:43 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
+volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.192 2013/11/05 18:53:44 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
 
 // defines
 
@@ -306,7 +306,7 @@ void pa_globals_done() {
 void pa_dlinit() {
 	if(!is_dlinited){
 		if(lt_dlinit())
-			throw Exception(0,0,"prepare to dynamic libary loading failed, %s", lt_dlerror());
+			throw Exception(0,0,"preparation for dynamic library loading failed, %s", lt_dlerror());
 		is_dlinited=true;
 	}
 }
