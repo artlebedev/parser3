@@ -15,7 +15,7 @@
 #include "pa_vbool.h"
 #include "pa_vmemcached.h"
 
-volatile const char * IDENT_MEMCACHED_C="$Id: memcached.C,v 1.10 2013/07/29 15:02:17 moko Exp $";
+volatile const char * IDENT_MEMCACHED_C="$Id: memcached.C,v 1.11 2013/12/02 21:44:47 moko Exp $";
 
 class MMemcached: public Methoded {
 public: // VStateless_class
@@ -32,9 +32,12 @@ static void _open(Request& r, MethodParams& params) {
 	time_t ttl=params.count()>1 ? params.as_int(1, "default expiration must be int", r) : 0;
 
 	if(HashStringValue* options=param_value.get_hash()){
+		bool connect=true;
 		String result;
 		for(HashStringValue::Iterator i(*options); i; i.next()){
-			if(Value *b=i.value()->as("bool")){
+			if(i.key() == "skip-connect"){
+				connect=!i.value()->as_bool();
+			} else if(Value *b=i.value()->as("bool")){
 				if(b->as_bool())
 					result << (result.is_empty() ? "--" : " --") << i.key();
 			} else {
@@ -43,7 +46,7 @@ static void _open(Request& r, MethodParams& params) {
 					result << (result.is_empty() ? "--" : " --") << i.key() << "=" << value;
 			}
 		}
-		self.open(result, ttl);
+		self.open(result, ttl, connect);
 	} else {
 		const String& connect_string=params.as_string(0, "param must be connection string or options hash");
 		self.open_parse(connect_string, ttl);

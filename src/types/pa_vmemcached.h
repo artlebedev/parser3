@@ -10,7 +10,7 @@
 #ifndef PA_VMEMCACHED_H
 #define PA_VMEMCACHED_H
 
-#define IDENT_PA_VMEMCACHED_H "$Id: pa_vmemcached.h,v 1.6 2013/10/04 21:21:56 moko Exp $"
+#define IDENT_PA_VMEMCACHED_H "$Id: pa_vmemcached.h,v 1.7 2013/12/02 21:44:47 moko Exp $"
 
 #include "classes.h"
 #include "pa_vstateless_object.h"
@@ -40,7 +40,7 @@ public: // usage
 			f_memcached_free(fm);
 	}
 
-	void open(const String& options_string, time_t attl);
+	void open(const String& options_string, time_t attl, bool connect);
 	void open_parse(const String& connect_string, time_t attl);
 	
 	bool add(const String& aname, Value* avalue);

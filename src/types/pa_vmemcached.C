@@ -13,7 +13,7 @@
 #include "pa_vhash.h"
 #include "pa_vvoid.h"
 
-volatile const char * IDENT_PA_VMEMCACHED_C="$Id: pa_vmemcached.C,v 1.15 2013/10/04 21:21:56 moko Exp $" IDENT_PA_VMEMCACHED_H;
+volatile const char * IDENT_PA_VMEMCACHED_C="$Id: pa_vmemcached.C,v 1.16 2013/12/02 21:44:47 moko Exp $" IDENT_PA_VMEMCACHED_H;
 
 const char *memcached_library="libmemcached" LT_MODULE_EXT;
 
@@ -112,7 +112,7 @@ static void load_memcached(const char *library){
 		throw Exception("memcached", 0, "failed to load memcached library %s: %s", library, memcached_status);
 }
 
-void VMemcached::open(const String& options_string, time_t attl){
+void VMemcached::open(const String& options_string, time_t attl, bool connect){
 	load_memcached(memcached_library);
 	
 	if(f_memcached==NULL)
@@ -123,7 +123,8 @@ void VMemcached::open(const String& options_string, time_t attl){
 	
 	fttl=attl;
 	fm=f_memcached(options_string.cstr(), options_string.length());
-	check("connect", fm, f_memcached_version(fm), MEMCACHED_NOT_SUPPORTED);
+	if (connect)
+		check("connect", fm, f_memcached_version(fm), MEMCACHED_NOT_SUPPORTED);
 }
 
 void VMemcached::open_parse(const String& connect_string, time_t attl){
