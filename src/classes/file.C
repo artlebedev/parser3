@@ -25,7 +25,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.229 2013/08/27 11:27:45 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.230 2013/12/02 21:13:55 moko Exp $";
 
 // defines
 
@@ -699,6 +699,7 @@ static void _list(Request& r, MethodParams& params) {
 				}
 				if(Value* value=options->get("filter")) {
 					vfilter=value;
+					valid_options++;
 				}
 				if(valid_options!=options->count())
 					throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
