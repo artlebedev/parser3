@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 1823
+Content-Length: 1822
 
 <hr />
 Origin:
@@ -23,7 +23,6 @@ Unescaped [equal to source]:
 0123456789
 `+-=~!@#$%^&amp;*()_
 []{}&lt;&gt;;:'&quot;,./?
-
 абвгдеёжзийклмнопрстуфхцчшщъыьэюя	АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ=
 </pre>
 <hr />
