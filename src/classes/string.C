@@ -20,7 +20,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.211 2013/10/17 21:52:32 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.212 2013/12/29 18:39:50 moko Exp $";
 
 // class
 
@@ -748,7 +748,7 @@ static void _escape(Request& r, MethodParams&){
 static void _unescape(Request& r, MethodParams& params){
 	const String& src=params.as_string(0, PARAMETER_MUST_BE_STRING);
 	if(const char* result=unescape_chars(src.cstr(), src.length(), &r.charsets.source(), true))
-		r.write_assign_lang(*new String(result));
+		r.write_assign_lang(*new String(result, String::L_TAINTED));
 }
 
 // constructor
