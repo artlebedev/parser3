@@ -13,7 +13,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.59 2013/07/23 09:46:58 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.60 2014/04/15 21:52:57 moko Exp $" IDENT_PA_HTTP_H; 
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -686,6 +686,7 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 			omit_post_charset=vomit_post_charset->as_bool();
 		}
 		if(Value* vcharset_name=options->get(PA_CHARSET_NAME)) {
+			valid_options++;
 			asked_remote_charset=&charsets.get(vcharset_name->as_string().change_case(r.charsets.source(), String::CC_UPPER));
 		} 
 		if(Value* vresponse_charset_name=options->get(PA_RESPONSE_CHARSET_NAME)) {
