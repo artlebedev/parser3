@@ -25,7 +25,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.230 2013/12/02 21:13:55 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.231 2014/05/01 12:38:08 moko Exp $";
 
 // defines
 
@@ -486,7 +486,7 @@ static void _exec_cgi(Request& r, MethodParams& params, bool cgi) {
 
 	// const
 	ECSTR(GATEWAY_INTERFACE, "CGI/1.1");
-	ECSTR("PARSER_VERSION", PARSER_VERSION);
+	ECSTR(PARSER_VERSION, PARSER_VERSION);
 	// from Request.info
 	ECSTR(DOCUMENT_ROOT, r.request_info.document_root);
 	ECSTR(PATH_TRANSLATED, r.request_info.path_translated);
