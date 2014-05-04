@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 570
+Content-Length: 598
 
 Результат: Много букв в кодировке windows-1251
 {
@@ -23,8 +23,9 @@ Content-Length: 570
 		"4":false,
 		"5":true,
 		"6":2,
-		"7":2,
-		"8":null
+		"7":1.23456789012346e+19,
+		"8":2,
+		"9":null
 	},
 	"object_2":{
 		"type":"class2",

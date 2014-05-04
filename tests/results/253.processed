@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 1216
+Content-Length: 1675
 
 Type: parser.runtime,
 Source: object,
@@ -24,8 +24,9 @@ Comment: duplicate key
 		"4":false,
 		"5":true,
 		"6":2,
-		"7":2,
-		"8":null
+		"7":1.23456789012346e+19,
+		"8":2,
+		"9":null
 	}
 }
 {
@@ -49,8 +50,35 @@ Comment: duplicate key
 		"4":false,
 		"5":true,
 		"6":2,
-		"7":"2.0",
-		"8":null
+		"7":1.23456789012346e+19,
+		"8":"2.0",
+		"9":null
+	}
+}
+{
+	"object":{
+		"type":"class2",
+		"value":"sample2"
+	},
+	"array":{
+		"0":"Много букв в кодировке windows-1251",
+		"1":{
+			"id":"1",
+			"label":"test1"
+		},
+		"2":{
+			"id":"2",
+			"label":"test2"
+		},
+		"3":{
+			"Ключ":"Значение в windows-1251"
+		},
+		"4":false,
+		"5":true,
+		"6":"2",
+		"7":"12345678901234567890",
+		"8":2,
+		"9":null
 	}
 }
 {
@@ -73,8 +101,9 @@ Comment: duplicate key
 		"4":false,
 		"5":true,
 		"6":2,
-		"7":2,
-		"8":null
+		"7":1.23456789012346e+19,
+		"8":2,
+		"9":null
 	},
 	"object_2":{
 		"value":"class2 sample2"
