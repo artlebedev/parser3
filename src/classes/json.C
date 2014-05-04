@@ -18,7 +18,7 @@
 #include "pa_vxdoc.h"
 #endif
 
-volatile const char * IDENT_JSON_C="$Id: json.C,v 1.29 2013/10/29 13:29:24 moko Exp $";
+volatile const char * IDENT_JSON_C="$Id: json.C,v 1.30 2014/05/04 01:38:01 misha Exp $";
 
 // class
 
@@ -47,10 +47,12 @@ struct Json {
 	String::Language taint;
 
 	bool handle_double;
+	bool handle_int;
 	enum Distinct { D_EXCEPTION, D_FIRST, D_LAST, D_ALL } distinct;
 
 	Json(Charset* acharset): stack(), key_stack(), key(NULL), result(NULL), hook_object(NULL), hook_array(NULL), 
-		request(NULL), charset(acharset), taint(String::L_TAINTED), handle_double(true), distinct(D_EXCEPTION){}
+		request(NULL), charset(acharset), taint(String::L_TAINTED), handle_double(true), handle_int(true), 
+		distinct(D_EXCEPTION){}
 
 	bool set_distinct(const String &value){
 		if (value == "first") distinct = D_FIRST;
@@ -165,7 +167,12 @@ static int json_callback(Json *json, int type, const char *value, uint32_t lengt
 			json->key = json_string(json, value, length);
 			break;
 		case JSON_INT:
-			set_json_value(json, new VDouble( json_string(json, value, length)->as_double() ));
+			if (json->handle_int){
+				set_json_value(json, new VDouble( json_string(json, value, length)->as_double() ));
+			} else {
+				// JSON_STRING
+				set_json_value(json, new VString(*json_string(json, value, length)));
+			}
 			break;
 		case JSON_FLOAT:
 			if (json->handle_double){
@@ -234,6 +241,10 @@ static void _parse(Request& r, MethodParams& params) {
 			}
 			if(Value* value=options->get("double")) {
 				json.handle_double=r.process_to_value(*value).as_bool();
+				valid_options++;
+			}
+			if(Value* value=options->get("int")) {
+				json.handle_int=r.process_to_value(*value).as_bool();
 				valid_options++;
 			}
 			if(Value* value=options->get("distinct")) {
