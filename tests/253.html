@@ -11,6 +11,9 @@ $o[^json:parse[$s][ $.object[$hook] $.distinct[first] ]]
 $o[^json:parse[$s][ $.double(false) $.distinct[last] ]]
 ^print[$o]
 
+$o[^json:parse[$s][ $.int(false) $.distinct[last] ]]
+^print[$o]
+
 $o[^json:parse[$s][ $.object[$hook_key] $.distinct[all] ]]
 ^print[$o]
 
