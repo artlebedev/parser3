@@ -18,7 +18,7 @@
 #include "pa_vxdoc.h"
 #endif
 
-volatile const char * IDENT_JSON_C="$Id: json.C,v 1.30 2014/05/04 01:38:01 misha Exp $";
+volatile const char * IDENT_JSON_C="$Id: json.C,v 1.31 2014/05/23 02:47:16 misha Exp $";
 
 // class
 
@@ -369,7 +369,7 @@ const String& value_json_string(String::Body key, Value& v, Json_options& option
 		Value* method=options.methods->get(v.type());
 		if(!method){
 			method=options.methods->first_that<Value*>(based_on, &v);
-			options.methods->put(key, method ? method : VVoid::get());
+			options.methods->put(v.type(), method ? method : VVoid::get());
 		}
 		if(method && !method->is_void()) {
 			Junction* junction=method->get_junction();
