@@ -16,7 +16,7 @@
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.29 2013/07/22 20:06:50 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.30 2014/06/27 22:25:11 moko Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -474,8 +474,7 @@ static void curl_setopt(HashStringValue::key_type key, HashStringValue::value_ty
 			break;
 		}
 		case CurlOption::PARSER_CHARSET:{
-			// 'charset' parser option
-			options().charset=&::charsets.get(v.as_string().change_case(r.charsets.source(), String::CC_UPPER));
+			// 'charset' parser option should be processed before other options
 			break;
 		}
 		case CurlOption::PARSER_RESPONSE_CHARSET:{
@@ -493,8 +492,14 @@ static void _curl_options(Request& r, MethodParams& params){
 	if(curl_options==0)
 		curl_options=new CurlOptionHash();
 
-	if(HashStringValue* options=params.as_hash(0))
-		options->for_each<Request&>(curl_setopt, r);
+	if(HashStringValue* options_hash=params.as_hash(0)){
+		if(Value* value=options_hash->get("charset")){
+			// charset should be handled first as params may require transcode
+			Value &v=r.process_to_value(*value);
+			options().charset=&::charsets.get(v.as_string().change_case(r.charsets.source(), String::CC_UPPER));
+		}
+		options_hash->for_each<Request&>(curl_setopt, r);
+	}
 }
 
 
