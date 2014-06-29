@@ -1,0 +1,6 @@
+Content-Type: text/html
+Content-Length: 97
+
+testClass class is defined
+testClass2 class is not defined
+zigi is invalid type, must be 'class'
