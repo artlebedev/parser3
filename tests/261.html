@@ -13,6 +13,8 @@ $v[$void]
 Empty string vs void:
 
 Json: ^json:string[$s] vs ^json:string[$v]
+Json (void as string): ^json:string[$s;$.void[string]] vs ^json:string[$v;$.void[string]]
+Json (void as null): ^json:string[$s;$.void[null]] vs ^json:string[$v;$.void[null]]
 Length: ^s.length[] vs ^v.length[]
 Double: ^s.double(0) vs ^v.double(0)
 Base64: "^s.base64[]" vs "^v.base64[]"
