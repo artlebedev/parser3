@@ -9,7 +9,7 @@
 #include "pa_request.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.29 2013/03/14 03:14:42 misha Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.30 2014/06/29 22:55:21 misha Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -25,6 +25,8 @@ static const String method_call_type_dynamic("dynamic");
 static const String method_min_params("min_params");
 static const String method_max_params("max_params");
 static const String method_extra_param("extra_param");
+
+static const String def_class("class");
 
 // class
 
@@ -183,6 +185,16 @@ static void store_method_info(
 		HashStringValue* result
 ) {
 	result->put(key, new VString(method->native_code?method_type_native:method_type_parser));
+}
+
+static void _def(Request& r, MethodParams& params) {
+	const String& type=params.as_string(0, "type must be string");
+	if(type == def_class) {
+		const String& name=params.as_string(1, "name must be string");
+		r.write_no_lang(VBool::get(r.get_class(name)!=0));
+	} else {
+		throw Exception(PARSER_RUNTIME, &type, "is invalid type, must be '%s'", def_class);
+	}
 }
 
 static void _methods(Request& r, MethodParams& params) {
@@ -360,6 +372,9 @@ MReflection::MReflection(): Methoded("reflection") {
 
 	// ^reflection:base_class_name[object]
 	add_native_method("base_name", Method::CT_STATIC, _base_name, 1, 1);
+
+	// ^reflection:def[class|...;name]
+	add_native_method("def", Method::CT_STATIC, _def, 2, 2);
 
 	// ^reflection:methods[class_name]
 	add_native_method("methods", Method::CT_STATIC, _methods, 1, 1);
