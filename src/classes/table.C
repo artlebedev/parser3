@@ -21,7 +21,7 @@
 #include "pa_vbool.h"
 #include "pa_array.h"
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.300 2013/10/17 22:07:23 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.301 2014/06/29 06:30:25 misha Exp $";
 
 // class
 
@@ -185,7 +185,7 @@ static void _create(Request& r, MethodParams& params) {
 	// data
 	Temp_lang temp_lang(r, String::L_PASS_APPENDED);
 	const String&  data=
-		r.process_to_string(params.as_junction(data_param_index, "body must be code"));
+		r.process_to_string(params.as_junction(data_param_index, "body must be table or code"));
 
 	// parse columns
 	size_t raw_pos_after=0;
