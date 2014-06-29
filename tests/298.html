@@ -1,0 +1,20 @@
+@main[]
+^testClass[testClass]
+^testClass[testClass2]
+^try{
+	^reflection:def[zigi;name]
+}{
+	$exception.handled(true)
+	$exception.source $exception.comment
+}
+
+
+
+@testClass[name]
+$name class is ^if(^reflection:def[class;$name]){defined}{not defined}
+
+
+@CLASS
+testClass
+
+@auto[]
