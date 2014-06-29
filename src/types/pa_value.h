@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.152 2013/10/08 21:25:46 moko Exp $"
+#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.153 2014/06/29 05:55:35 misha Exp $"
 
 #include "pa_common.h"
 #include "pa_array.h"
@@ -46,6 +46,7 @@ struct Json_options {
 	enum Date { D_SQL, D_GMT, D_TIMESTAMP } date;
 	enum Table { T_ARRAY, T_OBJECT, T_COMPACT } table;
 	enum File { F_BODYLESS, F_BASE64, F_TEXT } file;
+	enum Void { V_NULL, V_STRING } fvoid;
 
 	Json_options(Request* arequest):
 		r(arequest),
@@ -58,7 +59,8 @@ struct Json_options {
 		indent(NULL),
 		date(D_SQL),
 		table(T_OBJECT),
-		file(F_BODYLESS)
+		file(F_BODYLESS),
+		fvoid(V_NULL)
 	{}
 
 	bool set_date_format(const String &value){
@@ -81,6 +83,13 @@ struct Json_options {
 		if(value == "base64") file = F_BASE64;
 		else if (value == "text") file = F_TEXT;
 		else if (value == "stat") file = F_BODYLESS;
+		else return false;
+		return true;
+	}
+
+	bool set_void_format(const String &value){
+		if(value == "null") fvoid = V_NULL;
+		else if(value == "string") fvoid = V_STRING;
 		else return false;
 		return true;
 	}
