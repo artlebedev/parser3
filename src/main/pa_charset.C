@@ -8,7 +8,10 @@
 #include "pa_charset.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_PA_CHARSET_C="$Id: pa_charset.C,v 1.95 2013/10/28 21:59:31 moko Exp $" IDENT_PA_CHARSET_H;
+// we are using some pcre_internal.h stuff as well
+#include "../lib/pcre/pa_pcre_internal.h"
+
+volatile const char * IDENT_PA_CHARSET_C="$Id: pa_charset.C,v 1.96 2014/08/28 17:09:36 moko Exp $" IDENT_PA_CHARSET_H;
 
 #ifdef XML
 #include "libxml/encoding.h"
@@ -122,7 +125,7 @@ Charset::Charset(Request_charsets* charsets, const String::Body ANAME, const Str
 	} else {
 		fisUTF8=true;
 		// grab default onces [for UTF-8 so to be able to make a-z =>A-Z
-		memcpy(pcre_tables, _pcre_default_tables, sizeof(pcre_tables));
+		memcpy(pcre_tables, pa_pcre_default_tables, sizeof(pcre_tables));
 	}
 
 #ifdef XML
@@ -1295,7 +1298,7 @@ const char *fixUTF8(const char *src){
 		size_t length=strlen(src);
 
 		int error_offset;
-		if(_pcre_valid_utf((unsigned char *)src, length, &error_offset)){
+		if(pa_pcre_valid_utf((unsigned char *)src, length, &error_offset)){
 
 			char *result=(char *)pa_malloc_atomic(length+1);
 			char *dst=result;
@@ -1315,7 +1318,7 @@ const char *fixUTF8(const char *src){
 				src++;
 				length--;
 
-			} while (length && _pcre_valid_utf((unsigned char *)src, length, &error_offset));
+			} while (length && pa_pcre_valid_utf((unsigned char *)src, length, &error_offset));
 
 			if(length){
 				strcpy(dst, src);
