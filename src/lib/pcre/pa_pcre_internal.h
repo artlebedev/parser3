@@ -34,20 +34,20 @@
 #define tables_length (ctypes_offset + 256)
 
 /* Internal shared data tables. The data for these tables is in the
-pcre_tables.c module. */
+pa_pcre_chartables.c module. */
 
 #ifdef __cplusplus
-	extern "C" const unsigned char _pcre_default_tables[];
+	extern "C" const unsigned char pa_pcre_default_tables[];
 #else
-	extern const const unsigned char _pcre_default_tables[];
+	extern const unsigned char pa_pcre_default_tables[];
 #endif
 
 /* Internal function for validating UTF-8 character strings. The code
 for this function is in the pcre_valid_utf8.c module. */
 
 #ifdef __cplusplus
-    extern "C" int _pcre_valid_utf(unsigned char *string, int length, int *erroroffset);
+    extern "C" int pa_pcre_valid_utf(unsigned char *string, int length, int *erroroffset);
 #else
-    extern int _pcre_valid_utf(unsigned char *string, int length, int *erroroffset);
+    extern int pa_pcre_valid_utf(unsigned char *string, int length, int *erroroffset);
 #endif
 
