@@ -3,6 +3,7 @@
 	ProjectType="Visual C++"
 	Version="7.10"
 	Name="md5"
+	ProjectGUID="{2FBFAD1C-76EE-4EA4-82B5-204B2671A05D}"
 	SccProjectName="md5"
 	SccAuxPath=""
 	SccLocalPath="."

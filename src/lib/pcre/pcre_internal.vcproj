@@ -3,6 +3,7 @@
 	ProjectType="Visual C++"
 	Version="7.10"
 	Name="pcre_internal"
+	ProjectGUID="{019EA036-519E-11E4-A984-001D7DE6219A}"
 	SccProjectName="pcre_internal"
 	SccAuxPath=""
 	SccLocalPath="."

@@ -3,6 +3,7 @@
 	ProjectType="Visual C++"
 	Version="7.10"
 	Name="ltdl"
+	ProjectGUID="{EB565D67-9950-4F5E-926F-63DAC8F7F314}"
 	SccProjectName="libltdl"
 	SccAuxPath=""
 	SccLocalPath="."

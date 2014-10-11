@@ -3,6 +3,7 @@
 	ProjectType="Visual C++"
 	Version="7.10"
 	Name="parser3isapi"
+	ProjectGUID="{2E7BF3D9-C58C-4808-B786-494E7C5F9FE2}"
 	SccProjectName="parser3isapi"
 	SccAuxPath=""
 	SccLocalPath="."

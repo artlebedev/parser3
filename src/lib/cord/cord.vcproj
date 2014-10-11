@@ -3,6 +3,7 @@
 	ProjectType="Visual C++"
 	Version="7.10"
 	Name="cord"
+	ProjectGUID="{74F38AE8-E0CF-4684-B4EA-B0555F0B30AE}"
 	SccProjectName="parser3/src/lib/cord"
 	SccAuxPath=""
 	SccLocalPath="."

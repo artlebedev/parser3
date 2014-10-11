@@ -3,6 +3,7 @@
 	ProjectType="Visual C++"
 	Version="7.10"
 	Name="ApacheModuleParser3"
+	ProjectGUID="{61FD304C-2949-4400-845F-0B27CD088547}"
 	SccProjectName="ApacheModuleParser3"
 	SccAuxPath=""
 	SccLocalPath="..\.."

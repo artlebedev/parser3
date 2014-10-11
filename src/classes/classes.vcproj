@@ -3,6 +3,7 @@
 	ProjectType="Visual C++"
 	Version="7.10"
 	Name="classes"
+	ProjectGUID="{B79D9D3D-DFD7-4D48-91AA-484378D5E76C}"
 	SccProjectName="classes"
 	SccAuxPath=""
 	SccLocalPath="."
