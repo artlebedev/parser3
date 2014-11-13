@@ -1,37 +1,57 @@
 @main[]
+^print[^o1::create[]]
+<br />
+^print[^o2::create[]]
 
-$o[^test::create[]]
 
-$v($o)
-=$v.CLASS_NAME=$v=
+@print[o][v]
+Class: <b>$o.CLASS_NAME</b><br />
+
+expression: ^eval($o)<br />
 
 $v[^hash::create[$o]]
-=$v.CLASS_NAME=$v.key=
+hash: $v.key<br />
 
 $v[^table::create[$o]]
-=$v.CLASS_NAME=$v.name=
+table: $v.name<br />
 
-$v(def $o)
-=$v.CLASS_NAME=^v.int[]=
+def: ^if(def $o){true}{false}<br />
 
-$v($o || 0)
-=$v.CLASS_NAME=^v.int[]=
+bool: ^if($o || 0){true}{false}<br />
 
-$v($o + 0)
-=$v.CLASS_NAME=$v=
+double: ^eval($o + 0)<br />
+
+
 
 @CLASS
-test
+o1
 
 @create[]
 
-@GET[sMode]
-^switch[$sMode]{
+@GET[mode]
+^switch[$mode]{
 	^case[expression]{ $result(-1) }
-	^case[hash]{ $result[$.key[hash value]] }
-	^case[table]{ $result[^table::create{name^#0Atable value}] }
-	^case[def]{ $result(1) }
+	^case[hash]{ $result[$.key[hash-value]] }
+	^case[table]{ $result[^table::create{name^#0Atable-value}] }
+	^case[def]{ $result(true) }
 	^case[bool]{ $result(false) }
-	^case[double]{ $result(5) }
+	^case[double]{ $result(255) }
+	^case[DEFAULT]{ ^throw[;unsupported mode '$sMode'] }
+}
+
+
+@CLASS
+o2
+
+@create[]
+
+@GET[mode]
+^switch[$mode]{
+	^case[expression]{ $result(0) }
+	^case[hash]{ $result[$.key[hash-value]] }
+	^case[table]{ $result[^table::create{name^#0Atable-value}] }
+	^case[def]{ $result(false) }
+	^case[bool]{ $result(true) }
+	^case[double]{ $result(32) }
 	^case[DEFAULT]{ ^throw[;unsupported mode '$sMode'] }
 }
