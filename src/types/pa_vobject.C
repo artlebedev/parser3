@@ -12,7 +12,7 @@
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VOBJECT_C="$Id: pa_vobject.C,v 1.39 2013/10/08 21:25:46 moko Exp $" IDENT_PA_VOBJECT_H;
+volatile const char * IDENT_PA_VOBJECT_C="$Id: pa_vobject.C,v 1.40 2014/11/13 04:48:10 misha Exp $" IDENT_PA_VOBJECT_H;
 
 Value* VObject::get_scalar_value(const char* as_something) const {
 	VObject* unconst_this=const_cast<VObject*>(this);
@@ -45,7 +45,7 @@ Value* VObject::as(const char* atype) {
 
 bool VObject::is_defined() const {
 	if(Value* value=get_scalar_value("def"))
-		return value->is_defined();
+		return value->as_bool();
 	return Value::is_defined();
 }
 
