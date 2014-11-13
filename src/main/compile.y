@@ -8,7 +8,7 @@
 	
 */
 
-volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.265 2013/09/30 19:40:57 moko Exp $";
+volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.266 2014/11/13 04:54:55 misha Exp $";
 
 /**
 	@todo parser4: 
@@ -170,6 +170,7 @@ control_method: '@' STRING '\n'
 			VStateless_class* cclass=new VClass;
 			PC.cclass_new=cclass;
 			PC.cclass_new->set_name(name);
+			PC.append=false;
 		} else {
 			strcpy(PC.error, "@"CLASS_NAME" must contain only one line with class name (contains more then one)");
 			YYERROR;
