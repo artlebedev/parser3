@@ -1,9 +1,18 @@
 Content-Type: text/html
-Content-Length: 78
+Content-Length: 292
 
-=double=-1=
-=hash=hash value=
-=table=table value=
-=bool=1=
-=bool=0=
-=double=5=
+Class: <b>o1</b><br />
+expression: -1<br />
+hash: hash-value<br />
+table: table-value<br />
+def: true<br />
+bool: false<br />
+double: 255<br />
+<br />
+Class: <b>o2</b><br />
+expression: 0<br />
+hash: hash-value<br />
+table: table-value<br />
+def: false<br />
+bool: true<br />
+double: 32<br />
