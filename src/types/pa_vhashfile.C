@@ -13,7 +13,7 @@
 #include "pa_vhashfile.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_VHASHFILE_C="$Id: pa_vhashfile.C,v 1.64 2012/03/16 09:24:17 moko Exp $" IDENT_PA_VHASHFILE_H;
+volatile const char * IDENT_PA_VHASHFILE_C="$Id: pa_vhashfile.C,v 1.65 2014/12/11 05:50:24 misha Exp $" IDENT_PA_VHASHFILE_H;
 
 // consts
 
@@ -151,11 +151,10 @@ const String* VHashfile::deserialize_value(pa_sdbm_datum_t key, const pa_sdbm_da
 	return new String(input_length? pa_strdup(input_cstr, input_length): 0, String::L_TAINTED);
 }
 
+#define CHECK(aname) if(aname.is_empty()) throw Exception(PARSER_RUNTIME, 0, "hashfile key must not be empty");
+
 void VHashfile::put_field(const String& aname, Value *avalue) {
-	if(aname.is_empty())
-		throw Exception(PARSER_RUNTIME,
-			0,
-			"hashfile key must not be empty");
+	CHECK(aname)
 
 	pa_sdbm_t *db=get_db_for_writing();
 
@@ -204,6 +203,8 @@ void VHashfile::put_field(const String& aname, Value *avalue) {
 }
 
 Value *VHashfile::get_field(const String& aname) {
+	CHECK(aname)
+
 	pa_sdbm_t *db=get_db_for_reading();
 
 	pa_sdbm_datum_t key;
@@ -225,6 +226,8 @@ void VHashfile::remove(const pa_sdbm_datum_t key) {
 }
 
 void VHashfile::remove(const String& aname) {
+	CHECK(aname)
+
 	pa_sdbm_datum_t key;
 	key.dptr=const_cast<char*>(aname.cstr());
 	key.dsize=aname.length();
