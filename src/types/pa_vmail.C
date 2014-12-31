@@ -17,7 +17,7 @@
 #include "pa_vfile.h"
 #include "pa_uue.h"
 
-volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.105 2013/07/31 15:15:39 moko Exp $" IDENT_PA_VMAIL_H;
+volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.106 2014/12/31 06:08:02 moko Exp $" IDENT_PA_VMAIL_H;
 
 #ifdef WITH_MAILRECEIVE
 extern "C" {
@@ -84,6 +84,17 @@ static void putReceived(HashStringValue& received, const char* name, Value* valu
 static void putReceived(HashStringValue& received, const char* name, const char* value, bool capitalizeName=false) {
 	if(name && value)
 		putReceived(received, name, new VString(*new String(pa_strdup(value))), capitalizeName);
+}
+
+static void putReceivedTranscode(HashStringValue& received, const char* name, const char* value, bool capitalizeName=false) {
+	if(name && value){
+		if(source_charset->isUTF8()){
+			putReceived(received, name, new VString(*new String(pa_strdup(value))), capitalizeName);
+		} else {
+			String::C transcoded=Charset::transcode(String::C(value, strlen(value)), UTF8_charset, *source_charset);
+			putReceived(received, name, new VString(*new String(transcoded)), capitalizeName);
+		}
+	}
 }
 
 static void putReceived(HashStringValue& received, const char* name, time_t value) {
@@ -257,9 +268,9 @@ static void parse(Request& r, GMimeMessage *message, HashStringValue& received) 
 
 		//  secondly standard headers
 		putReceived(received, "message-id", g_mime_message_get_message_id(message));
-		putReceived(received, "from", g_mime_message_get_sender(message));
 		putReceived(received, "reply-to", g_mime_message_get_reply_to(message));
-		putReceived(received, "subject", g_mime_message_get_subject(message));
+		putReceivedTranscode(received, "from", g_mime_message_get_sender(message));
+		putReceivedTranscode(received, "subject", g_mime_message_get_subject(message));
 		// @todo: g_mime_message_get_recipients(message)
 		
 		// .date(date+gmt_offset)
