@@ -32,7 +32,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.337 2013/10/21 20:49:21 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.338 2015/01/06 02:37:54 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -327,9 +327,6 @@ void Request::configure() {
 */
 void Request::core(const char* config_filespec, bool config_fail_on_read_problem, bool header_only) {
 	try {
-		// filling mail received
-		mail.fill_received(*this);
-
 		// loading config
 		if(config_filespec) {
 			const String& filespec=*new String(config_filespec);
@@ -338,6 +335,9 @@ void Request::core(const char* config_filespec, bool config_fail_on_read_problem
 				config_fail_on_read_problem, 
 				true /*file must exist if 'fail on read problem' not set*/);
 		}
+
+		// filling mail received
+		mail.fill_received(*this);
 
 		// loading auto.p files from document_root/.. 
 		// to the one beside requested file.
