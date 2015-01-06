@@ -17,7 +17,7 @@
 #include "pa_vfile.h"
 #include "pa_uue.h"
 
-volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.106 2014/12/31 06:08:02 moko Exp $" IDENT_PA_VMAIL_H;
+volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.107 2015/01/06 03:35:16 moko Exp $" IDENT_PA_VMAIL_H;
 
 #ifdef WITH_MAILRECEIVE
 extern "C" {
@@ -76,6 +76,14 @@ VMail::VMail(): VStateless_class(0, mail_base_class) {}
 
 static Charset* source_charset;
 
+static const char *transcode(const char *value) {
+	if(value && !source_charset->isUTF8()){
+		String::C transcoded=Charset::transcode(String::C(value, strlen(value)), UTF8_charset, *source_charset);
+		value=transcoded.str;
+	}
+	return value;
+}
+
 static void putReceived(HashStringValue& received, const char* name, Value* value, bool capitalizeName=false) {
 	if(name && value)
 		received.put(capitalizeName ? capitalize(pa_strdup(name)) : pa_strdup(name), value);
@@ -84,17 +92,6 @@ static void putReceived(HashStringValue& received, const char* name, Value* valu
 static void putReceived(HashStringValue& received, const char* name, const char* value, bool capitalizeName=false) {
 	if(name && value)
 		putReceived(received, name, new VString(*new String(pa_strdup(value))), capitalizeName);
-}
-
-static void putReceivedTranscode(HashStringValue& received, const char* name, const char* value, bool capitalizeName=false) {
-	if(name && value){
-		if(source_charset->isUTF8()){
-			putReceived(received, name, new VString(*new String(pa_strdup(value))), capitalizeName);
-		} else {
-			String::C transcoded=Charset::transcode(String::C(value, strlen(value)), UTF8_charset, *source_charset);
-			putReceived(received, name, new VString(*new String(transcoded)), capitalizeName);
-		}
-	}
 }
 
 static void putReceived(HashStringValue& received, const char* name, time_t value) {
@@ -156,12 +153,17 @@ static void MimePart2body(GMimeObject *parent, GMimeObject *part, gpointer data)
 	if (GMimeContentType *type=g_mime_object_get_content_type(part)) {
 		PartType partType=P_FILE;
 		
-		if (GMIME_IS_MESSAGE_PART(part))
+		if (GMIME_IS_MESSAGE_PART(part)){
 			partType=P_MESSAGE;
-		else if(g_mime_content_type_is_type(type, "text", "plain"))
-			partType=P_TEXT;
-		else if(g_mime_content_type_is_type(type, "text", "html"))
-			partType=P_HTML;
+		} else {
+			const char *disposition=g_mime_object_get_disposition(part);
+			if(!disposition || strcmp(disposition, GMIME_DISPOSITION_ATTACHMENT)){
+				if(g_mime_content_type_is_type(type, "text", "plain"))
+					partType=P_TEXT;
+				else if(g_mime_content_type_is_type(type, "text", "html"))
+					partType=P_HTML;
+			}
+		}
 
 		// partName
 		int partNumber=++info.partCounts[partType];
@@ -195,7 +197,7 @@ static void MimePart2body(GMimeObject *parent, GMimeObject *part, gpointer data)
 		const GMimeParam *param=g_mime_content_type_get_params(type);
 		while(param) {
 			// $.charset[windows-1251]  && co
-			putReceived(vcontent_type->hash(), g_mime_param_get_name(param), g_mime_param_get_value(param), true /*capitalizeName*/);
+			putReceived(vcontent_type->hash(), g_mime_param_get_name(param), transcode(g_mime_param_get_value(param)), true /*capitalizeName*/);
 			param=g_mime_param_next(param);
 		}
 
@@ -222,7 +224,7 @@ static void MimePart2body(GMimeObject *parent, GMimeObject *part, gpointer data)
 				
 				if(partType==P_FILE) {
 					char *content=readStream(gstream, length);
-					const char* content_filename=g_mime_part_get_filename(gpart);
+					const char* content_filename=transcode(g_mime_part_get_filename(gpart));
 					VFile* vfile(new VFile);
 					vfile->set_binary(true/*tainted*/, content, length, new String(content_filename), content_filename ? new VString(info.r->mime_type_of(content_filename)) : 0);
 					putReceived(partHash, VALUE_NAME, vfile);
@@ -268,9 +270,16 @@ static void parse(Request& r, GMimeMessage *message, HashStringValue& received) 
 
 		//  secondly standard headers
 		putReceived(received, "message-id", g_mime_message_get_message_id(message));
-		putReceived(received, "reply-to", g_mime_message_get_reply_to(message));
-		putReceivedTranscode(received, "from", g_mime_message_get_sender(message));
-		putReceivedTranscode(received, "subject", g_mime_message_get_subject(message));
+		putReceived(received, "from", transcode(g_mime_message_get_sender(message)));
+
+		const char *msg_to=internet_address_list_to_string(g_mime_message_get_recipients(message, GMIME_RECIPIENT_TYPE_TO), false);
+		putReceived(received, "to", transcode(msg_to));
+		const char *msg_cc=internet_address_list_to_string(g_mime_message_get_recipients(message, GMIME_RECIPIENT_TYPE_CC), false);
+		putReceived(received, "cc", transcode(msg_cc));
+
+		putReceived(received, "reply-to", transcode(g_mime_message_get_reply_to(message)));
+		putReceived(received, "subject", transcode(g_mime_message_get_subject(message)));
+
 		// @todo: g_mime_message_get_recipients(message)
 		
 		// .date(date+gmt_offset)
