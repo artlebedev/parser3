@@ -16,7 +16,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.119 2015/01/11 04:15:06 misha Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.120 2015/01/11 04:19:14 misha Exp $";
 
 // class
 
@@ -279,8 +279,10 @@ static void _intersects(Request& r, MethodParams& params) {
 
 	if(HashStringValue* b=params.as_hash(0, "param")) {
 		HashStringValue* self=&(GET_SELF(r, VHash).hash());
-		if(b==self)
-			return VBool::get(true);
+		if(b==self) {
+			r.write_no_lang(VBool::get(true));
+			return;
+		}
 		result=self->first_that<HashStringValue*>(intersects, b)!=0;
 	}
 
