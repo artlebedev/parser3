@@ -16,7 +16,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.118 2013/10/17 21:52:32 moko Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.119 2015/01/11 04:15:06 misha Exp $";
 
 // class
 
@@ -277,8 +277,12 @@ static bool intersects(
 static void _intersects(Request& r, MethodParams& params) {
 	bool result=false;
 
-	if(HashStringValue* b=params.as_hash(0, "param"))
-		result=GET_SELF(r, VHash).hash().first_that<HashStringValue*>(intersects, b)!=0;
+	if(HashStringValue* b=params.as_hash(0, "param")) {
+		HashStringValue* self=&(GET_SELF(r, VHash).hash());
+		if(b==self)
+			return VBool::get(true);
+		result=self->first_that<HashStringValue*>(intersects, b)!=0;
+	}
 
 	// return result
 	r.write_no_lang(VBool::get(result));
@@ -387,8 +391,10 @@ static void _count(Request& r, MethodParams&) {
 }
 
 static void _delete(Request& r, MethodParams& params) {
-
-	GET_SELF(r, VHash).hash().remove(params.as_string(0, "key must be string"));
+	if(params.count()>0)
+		GET_SELF(r, VHash).hash().remove(params.as_string(0, "key must be string"));
+	else
+		GET_SELF(r, VHash).hash().clear();
 }
 
 static void _contains(Request& r, MethodParams& params) {
@@ -515,7 +521,7 @@ MHash::MHash(): Methoded("hash")
 	add_native_method("intersects", Method::CT_DYNAMIC, _intersects, 1, 1);
 
 	// ^a.delete[key]
-	add_native_method("delete", Method::CT_DYNAMIC, _delete, 1, 1);
+	add_native_method("delete", Method::CT_DYNAMIC, _delete, 0, 1);
 
 	// ^a.contains[key]
 	add_native_method("contains", Method::CT_DYNAMIC, _contains, 1, 1);
