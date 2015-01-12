@@ -17,7 +17,7 @@
 #include "pa_vtable.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_PA_VFORM_C="$Id: pa_vform.C,v 1.106 2013/07/16 15:21:06 moko Exp $" IDENT_PA_VFORM_H;
+volatile const char * IDENT_PA_VFORM_C="$Id: pa_vform.C,v 1.107 2015/01/12 12:22:02 misha Exp $" IDENT_PA_VFORM_H;
 
 // defines
 
@@ -67,11 +67,11 @@ VForm::VForm(Request_charsets& acharsets, Request_info& arequest_info): VStatele
 	filled_client(0),
 	fpost_charset(0)
 {
-	is_post=(arequest_info.method && StrStartFromNC(arequest_info.method, "post", true));
-	is_post_charset_detected=false;
+	can_have_body=arequest_info.can_have_body();
+	charset_detected=false;
 
 	post_content_type=UNKNOWN;
-	if(is_post && arequest_info.content_type)
+	if(can_have_body && arequest_info.content_type)
 		if(StrStartFromNC(arequest_info.content_type, HTTP_CONTENT_TYPE_FORM_URLENCODED))
 			post_content_type=FORM_URLENCODED;
 		else if(StrStartFromNC(arequest_info.content_type, HTTP_CONTENT_TYPE_MULTIPART_FORMDATA))
@@ -311,7 +311,7 @@ void VForm::refill_fields_tables_and_files() {
 #endif
 
 	// parsing POST data
-	if(is_post && frequest_info.content_type)
+	if(can_have_body && frequest_info.content_type)
 		switch(post_content_type){
 			case FORM_URLENCODED:
 				{
@@ -331,9 +331,9 @@ void VForm::refill_fields_tables_and_files() {
 }
 
 void VForm::detect_post_charset(){
-	if(is_post && !is_post_charset_detected){
+	if(can_have_body && !charset_detected){
 		fpost_charset=detect_charset(frequest_info.content_type);
-		is_post_charset_detected=true;
+		charset_detected=true;
 	}
 }
 

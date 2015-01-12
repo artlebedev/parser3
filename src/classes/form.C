@@ -11,7 +11,7 @@
 #include "pa_request.h"
 #include "pa_vform.h"
 
-volatile const char * IDENT_FORM_C="$Id: form.C,v 1.43 2012/03/16 09:24:07 moko Exp $";
+volatile const char * IDENT_FORM_C="$Id: form.C,v 1.44 2015/01/12 12:22:02 misha Exp $";
 
 /// $LIMITS.max_post_size default 10M
 const size_t MAX_POST_SIZE_DEFAULT=10*0x400*0x400;
@@ -51,7 +51,7 @@ static const String limits_name(LIMITS_NAME);
 void MForm::configure_admin(Request& r) {
 
 	Value* limits=r.main_class.get_element(limits_name);
-	if(r.request_info.method && StrStartFromNC(r.request_info.method, "post", true)) {
+	if(r.request_info.can_have_body()){
 		// $limits.max_post_size default 10M
 		Value* element=limits?limits->get_element(max_post_size_name)
 			:0;

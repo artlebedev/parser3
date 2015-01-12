@@ -8,7 +8,7 @@
 #ifndef PA_VFORM_H
 #define PA_VFORM_H
 
-#define IDENT_PA_VFORM_H "$Id: pa_vform.h,v 1.60 2013/07/16 15:21:06 moko Exp $"
+#define IDENT_PA_VFORM_H "$Id: pa_vform.h,v 1.61 2015/01/12 12:22:02 misha Exp $"
 
 // includes
 
@@ -67,8 +67,8 @@ private:
 	Request_charsets& fcharsets;
 	Request_info& frequest_info;
 
-	bool is_post;
-	bool is_post_charset_detected;
+	bool can_have_body;
+	bool charset_detected;
 	POST_CONTENT_TYPE post_content_type;
 
 	char *strpart(const char* str, size_t len);

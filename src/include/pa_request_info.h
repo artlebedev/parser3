@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_INFO_H
 #define PA_REQUEST_INFO_H
 
-#define IDENT_PA_REQUEST_INFO_H "$Id: pa_request_info.h,v 1.7 2012/03/16 09:24:10 moko Exp $"
+#define IDENT_PA_REQUEST_INFO_H "$Id: pa_request_info.h,v 1.8 2015/01/12 12:22:02 misha Exp $"
 
 /// some information from web server
 class Request_info {
@@ -30,6 +30,16 @@ public:
 	//@{ these are filed by Request class itself: user's post data
 	const char* post_data;  size_t post_size;
 	//@}
+
+	// misha@ Probably it's a good idea to move this method into targets, but de facto the only POST and PUT can have the body and all targets should support it
+	bool can_have_body(){
+		return
+			method
+			&& (
+				strcasecmp(method, "POST") == 0
+				|| strcasecmp(method, "PUT") == 0
+			);
+	}
 };
 
 #endif

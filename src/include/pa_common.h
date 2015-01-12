@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.155 2013/10/14 21:17:38 moko Exp $"
+#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.156 2015/01/12 12:22:02 misha Exp $"
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -251,7 +251,7 @@ char *search_stop(char*& current, char cstop_at);
 void back_slashes_to_slashes(char *s);
 #endif
 
-bool StrStartFromNC(const char* str, const char* substr, bool equal=false);
+bool StrStartFromNC(const char* str, const char* substr);
 size_t strpos(const char *str, const char *substr);
 
 int remove_crlf(char *start, char *end);
