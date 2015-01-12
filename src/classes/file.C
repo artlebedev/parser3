@@ -25,7 +25,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.231 2014/05/01 12:38:08 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.232 2015/01/12 12:13:25 misha Exp $";
 
 // defines
 
@@ -740,9 +740,9 @@ static void _list(Request& r, MethodParams& params) {
 			if(stat) {
 				ffblk.stat_file();
 				*row+=VDouble(ffblk.size()).get_string();
-				*row+=new String(String::Body::Format(ffblk.c_timestamp()), String::L_CLEAN);
-				*row+=new String(String::Body::Format(ffblk.m_timestamp()), String::L_CLEAN);
-				*row+=new String(String::Body::Format(ffblk.a_timestamp()), String::L_CLEAN);
+				*row+=new String(String::Body::Format((int)ffblk.c_timestamp()), String::L_CLEAN);
+				*row+=new String(String::Body::Format((int)ffblk.m_timestamp()), String::L_CLEAN);
+				*row+=new String(String::Body::Format((int)ffblk.a_timestamp()), String::L_CLEAN);
 			}
 			table+=row;
 		}
