@@ -1,19 +1,42 @@
 Content-Type: text/html
-Content-Length: 481
+Content-Length: 1005
 
 $a: 1='a1', 2='a2', 3='a3'<br />
 $b: 2='b2', 3='b3', 4='b4'<br />
-<br />
-^a.add[$b]: 1='a1', 2='b2', 3='b3', 4='b4'<br />
-^a.sub[$b]: 1='a1'<br />
-$c[^a.intersection[$b]]: 2='a2', 3='a3'<br />
-$c[^a.union[$b]]: 1='a1', 2='a2', 3='a3', 4='b4'<br />
+^a.add[$b]<br />
+$a: 1='a1', 2='b2', 3='b3', 4='b4'<br />
+<hr />
+$a: 1='a1', 2='a2', 3='a3'<br />
+$b: 2='b2', 3='b3', 4='b4'<br />
+^a.sub[$b]<br />
+$a: 1='a1'<br />
+<hr />
+$a: 1='a1', 2='a2', 3='a3'<br />
+$b: 2='b2', 3='b3', 4='b4'<br />
+$d[^a.intersection[$b]], $d: 2='a2', 3='a3'<br />
+<hr />
+$a: 1='a1', 2='a2', 3='a3'<br />
+$b: 2='b2', 3='b3', 4='b4'<br />
+$d[^a.union[$b]], $d: 1='a1', 2='a2', 3='a3', 4='b4'<br />
+<hr />
+$a: 1='a1', 2='a2', 3='a3'<br />
+$b: 2='b2', 3='b3', 4='b4'<br />
 ^a.intersects[$b]? y<br />
 ^a.intersects[ ]? n<br />
 ^a.intersects[$.5[x5]]? n<br />
-^c.contains[1] ? y<br />
-^c.delete[2], ^c.contains[2] ? n<br />
-^c.delete[$empty]<br />
-^c.delete[]: error<br />
-1='a1', 3='a3', 4='b4'<br />
+<hr />
+$a: 1='a1', 2='a2', 3='a3'<br />
+^a.contains[1] ? y<br />
+^a.contains[2] ? y<br />
+^a.delete[2]<br />
+^a.contains[2] ? n<br />
+$a: 1='a1', 3='a3'<br />
+<hr />
+$c: 1='a1', 2='a2', 3='a3', 4='b4'<br />
+^c.delete[$VOID]<br />
+$c: 1='a1', 2='a2', 3='a3', 4='b4'<br />
+<hr />
+$c: 1='a1', 2='a2', 3='a3', 4='b4'<br />
+^c.delete[]: <br />
+$c: empty<br />
 <hr />
