@@ -1,0 +1,10 @@
+Content-Type: text/html
+Content-Length: 170
+
+$h.double: 1.2<br />
+$h.int: 1<br />
+$h.code: "code with string and ^eval(2+2)=4"<br />
+$h.date: "2001-02-03 04:05:06"<br />
+$h.table: [
+{"0":"a","1":"b","2":"c"}
+]<br />
