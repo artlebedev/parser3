@@ -1,0 +1,17 @@
+@main[]
+$double(1.2)
+$int(^double.int[])
+$s{code with string and ^^eval(2+2)=^eval(2+2)}
+
+$h[
+	$.double[^json:string($double)]
+	$.int[^json:string($int)]
+	$.code[^json:string{$s}]
+	$.date[^json:string[^date::create(2001;02;03;04;05;06)]]
+	$.table[^json:string[^table::create[nameless]{a	b	c}]]
+]
+^$h.double: $h.double<br />
+^$h.int: $h.int<br />
+^$h.code: $h.code<br />
+^$h.date: $h.date<br />
+^$h.table: $h.table<br />
