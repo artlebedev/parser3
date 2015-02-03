@@ -1,17 +1,213 @@
-2013-10-29  moko
+2015-01-12	misha
+	* src/classes/form.C 1.44:
+	* src/include/pa_common.h 1.156:
+	* src/include/pa_request_info.h 1.8:
+	* src/main/pa_common.C 1.280:
+	* src/types/pa_vform.C 1.107:
+	* src/types/pa_vform.h 1.61:
+		- supports body with PUT method as well ( new feature: #1006 )
 
-	* src/lib/json/json.vcproj: json.c -> pa_json.C
+	* src/classes/file.C 1.232:
+		- warnings war
 
-	* src/lib/json/pa_json.C: C++ compatibility addes, related to issue
-	  #892
+2015-01-11	misha
+	* tests/results/300.processed 1.1:
+		*** empty log message ***
 
-	* src/: classes/json.C, lib/json/Makefile.am, lib/json/json.c,
-	  lib/json/json.h, lib/json/pa_json.C: json.c -> pa_json.C (for
-	  exceptions to be thrown thougth json library), related to issue
-	  #892
+	* tests/300.html 1.1:
+		- test for ^hash.delete[] is added
 
-	* src/main/pa_charset.C: avoid compilation bug in Debian 6.0.8 x32,
-	  related to issue #896
+	* src/classes/hash.C 1.119:
+		- ^hash.delete[] clear all hash ( new feature: #989 )
+		- tiny optimization in intersects
+
+2015-01-06	moko
+	* src/types/pa_vmail.C 1.107:
+		file names transcode added, to and cc added with transcode, 
+		attachments detection fixed
+
+	* src/main/pa_request.C 1.338:
+		filling mail received after cgi/auto.p load to allow charset 
+		switch (related to issue #996)
+
+2014-12-31	moko
+	* src/types/pa_vmail.C 1.106:
+		from and subject now transcoded if not UTF-8 source charset (
+		fixes issue 996)
+
+	* src/main/pa_exception.C 1.52:
+		fixed string from stack bug (closes issue #1000)
+
+2014-12-11	misha
+	* src/types/pa_vhashfile.C 1.65:
+		- check if key is not empty before access ( bug fix: #1005 )
+
+2014-11-13	misha
+	* src/main/compile.tab.C 1.158:
+	* tests/results/232.processed 1.3:
+	* tests/results/299.processed 1.1:
+		*** empty log message ***
+
+	* src/main/compile.y 1.266:
+		- PC.append does not reset to false while creating a new class. 
+		bugfix: #990
+
+	* tests/299.html 1.1:
+		- test for creation class after working with partial class (
+		create+append)
+
+	* src/types/pa_vobject.C 1.40:
+		- @GET[def] always returns true. bugfix: #995
+
+	* tests/232.html 1.3:
+		- test for @get[def] added
+
+2014-10-12	moko
+	* src/lib/pcre/pcre_internal.vcproj 1.3:
+		correct path
+
+2014-10-11	moko
+	* src/classes/classes.vcproj 1.32:
+	* src/lib/cord/cord.vcproj 1.7:
+	* src/lib/ltdl/ltdl.vcproj 1.10:
+	* src/lib/md5/md5.vcproj 1.8:
+	* src/lib/pcre/pcre_internal.vcproj 1.2:
+	* src/main/main.vcproj 1.29:
+	* src/targets/apache/ApacheModuleParser3.vcproj 1.3:
+	* src/targets/apache/ApacheModuleParser3Core.vcproj 1.3:
+	* src/targets/cgi/parser3.vcproj 1.23:
+	* src/targets/isapi/parser3isapi.vcproj 1.18:
+	* src/types/types.vcproj 1.31:
+		project GUID inserted in *.vcproj for correct conversion in 
+		newer VS versions
+
+	* parser3.sln 1.19:
+	* src/lib/pcre/pcre_internal.vcproj 1.1:
+		pcre_internal.vcproj added
+
+2014-08-28	moko
+	* src/lib/pcre/Makefile.in 1.23:
+	* src/main/pa_charset.C 1.96:
+	* src/targets/apache/Makefile.am 1.11:
+	* src/targets/apache/Makefile.in 1.13:
+	* src/targets/cgi/Makefile.am 1.65:
+	* src/targets/cgi/Makefile.in 1.86:
+		*** empty log message ***
+
+	* src/lib/pcre/Makefile.am 1.9:
+	* src/lib/pcre/pa_pcre_chartables.c 1.1:
+	* src/lib/pcre/pa_pcre_internal.h 1.3:
+	* src/lib/pcre/pa_pcre_valid_utf8.c 1.1:
+		_pcre_default_tables and pcre_valid_utf are copied to parser3 
+		code (fixes issue #991)
+
+2014-06-29	misha
+	* tests/results/298.processed 1.1:
+		*** empty log message ***
+
+	* tests/298.html 1.1:
+		- tests for ^reflection:def[class;className] added
+
+	* src/classes/reflection.C 1.30:
+		- ^reflection:def[class;className] added ( new feature: #918 )
+
+	* src/classes/table.C 1.301:
+		- ^table::create[unsupported data] - exception comment changed 
+		to "body must be table or code" ( bug fix: #951 )
+
+	* tests/261.html 1.3:
+	* tests/results/261.processed 1.3:
+		- tests for ^json:string[...;$.void[null|string]] added
+
+	* src/classes/json.C 1.32:
+	* src/types/pa_value.h 1.153:
+	* src/types/pa_vvoid.h 1.41:
+		- new option $.void[string|null] added to ^json:string[...] ( 
+		new feature: #952 )
+
+2014-06-27	moko
+	* src/classes/curl.C 1.30:
+		$.charset now processed before other curl options (closes issue #
+		980)
+
+2014-05-23	misha
+	* src/classes/json.C 1.31:
+		- bug fix: #987
+
+2014-05-04	misha
+	* tests/results/253.processed 1.8:
+	* tests/results/255.processed 1.3:
+		*** empty log message ***
+
+	* tests/253.html 1.7:
+	* tests/253_json.txt 1.4:
+		- test for ^json:parse[$.int(false)] is added
+
+	* src/classes/json.C 1.30:
+		- To ^json:parse[] added option $.int(bool, default true). The 
+		option is similar to $.double(bool) but for integers.
+
+2014-05-01	moko
+	* src/classes/file.C 1.231:
+		"PARSER_VERSION" -> PARSER_VERSION ( bugfix: #12 )
+
+2014-04-15	moko
+	* src/main/pa_http.C 1.61:
+		response-charset option should finally work now (fix for issue #
+		867)
+
+	* src/main/pa_http.C 1.60:
+		response-charset option should work now (fix for issue #867)
+
+2014-03-07	moko
+	* buildall 1.13:
+	* buildall [release_3_4_3] 1.12.2.1:
+		libgc moved
+
+2013-12-29	moko
+	* src/classes/string.C 1.212:
+		^string:js-unescape result now tainted, closes issue #966
+
+	* tests/186.html 1.5:
+	* tests/results/186.processed 1.4:
+		^string:js-unescape result now tainted, issue #966
+
+2013-12-02	moko
+	* src/classes/memcached.C 1.11:
+	* src/types/pa_vmemcached.C 1.16:
+	* src/types/pa_vmemcached.h 1.7:
+		memcached open $.skip-connect(true|false) option was added for 
+		http://www.parser.ru/forum/?id=79343
+
+	* src/classes/file.C 1.230:
+		bugfix for http://www.parser.ru/forum/?id=79337
+
+2013-11-05	moko
+	* configure.in 1.202:
+	* src/include/pa_version.h 1.51:
+		3.4.3 -> 3.4.4b
+
+	* src/main/pa_globals.C 1.192:
+		spelling fixed
+
+2013-10-29	moko
+	* src/lib/json/json.vcproj 1.5:
+		json.c -> pa_json.C
+
+	* src/lib/json/pa_json.C 1.13:
+		C++ compatibility addes, related to issue #892
+
+	* src/classes/json.C 1.29:
+	* src/lib/json/Makefile.am 1.7:
+	* src/lib/json/json.c 1.12:
+	* src/lib/json/json.h 1.3:
+	* src/lib/json/pa_json.C 1.12:
+		json.c -> pa_json.C (for exceptions to be thrown thougth json 
+		library), related to issue #892
+
+2013-10-28	moko
+	* src/main/pa_charset.C 1.95:
+		avoid compilation bug in Debian 6.0.8 x32, related to issue #896
 
 2013-10-24  moko
 
@@ -13812,7 +14008,7 @@
 	  types/pa_vstring.h, types/pa_vtable.C, types/pa_vtable.h,
 	  types/pa_vvoid.h, types/pa_vxdoc.C, types/pa_vxdoc.h,
 	  types/pa_vxnode.C, types/pa_vxnode.h, types/pa_wcontext.C,
-	  types/pa_wcontext.h, types/pa_wwrapper.h: $Date: 2013/10/29 16:21:27 $
+	  types/pa_wcontext.h, types/pa_wwrapper.h: $Date: 2015/02/03 09:08:22 $
 
 	* src/: classes/classes.C, classes/classes.dsp, classes/classes.h,
 	  classes/date.C, classes/double.C, classes/file.C, classes/form.C,
@@ -17962,7 +18158,7 @@
 	  main/pa_hash.C, main/pa_pool.C, main/pa_request.C,
 	  main/pa_socks.C, main/pa_sql_driver_manager.C, main/pa_string.C,
 	  main/pa_table.C, main/untaint.C, targets/cgi/parser3.C,
-	  targets/isapi/parser3isapi.C: static char *RCSId="$Id: ChangeLog,v 1.92 2013/10/29 16:21:27 moko Exp $";
+	  targets/isapi/parser3isapi.C: static char *RCSId="$Id: ChangeLog,v 1.93 2015/02/03 09:08:22 misha Exp $";
 
 	* src/main/: compile.y, compile_tools.h: $:name: == ${name}:
 	  $class:name: == ${class:name}:
@@ -20777,9 +20973,9 @@
 
 	* src/include/: pa_pool.h, pa_string.h: pa_pool split
 
-	* src/main/: main.dsp, pa_string.C: $Id: ChangeLog,v 1.92 2013/10/29 16:21:27 moko Exp $ check
+	* src/main/: main.dsp, pa_string.C: $Id: ChangeLog,v 1.93 2015/02/03 09:08:22 misha Exp $ check
 
-	* src/: main/pa_pool.C, main/pa_string.C, include/pa_pool.h: $Id: ChangeLog,v 1.92 2013/10/29 16:21:27 moko Exp $
+	* src/: main/pa_pool.C, main/pa_string.C, include/pa_pool.h: $Id: ChangeLog,v 1.93 2015/02/03 09:08:22 misha Exp $
 	  check
 
 	* src/: include/pa_pool.h, main/pa_string.C: String prealloc &
