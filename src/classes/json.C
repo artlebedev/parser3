@@ -18,7 +18,7 @@
 #include "pa_vxdoc.h"
 #endif
 
-volatile const char * IDENT_JSON_C="$Id: json.C,v 1.32 2014/06/29 05:55:35 misha Exp $";
+volatile const char * IDENT_JSON_C="$Id: json.C,v 1.33 2015/02/03 09:47:47 misha Exp $";
 
 // class
 
@@ -462,7 +462,7 @@ static void _string(Request& r, MethodParams& params) {
 				json.methods=methods;
 		}
 
-	const String& result_string=value_json_string(String::Body(), params[0], json);
+	const String& result_string=value_json_string(String::Body(), r.process_to_value(params[0]), json);
 	String::Body result_body=result_string.cstr_to_string_body_untaint(String::L_JSON, r.connection(false), &r.charsets);
 	r.write_pass_lang(*new String(result_body, String::L_AS_IS));
  }
