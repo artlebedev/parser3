@@ -1,41 +1,67 @@
 @main[]
+$WHITESPACE[ ]
+
 ^setdata[]
 ^$a: ^print[$a]
 ^$b: ^print[$b]
-<br />
-
-^a.add[$b]
-^^a.add[^$b]: ^print[$a]
-
-^setdata[]
-^a.sub[$b]
-^^a.sub[^$b]: ^print[$a]
-
-^setdata[]
-$c[^a.intersection[$b]]
-^$c[^^a.intersection[^$b]]: ^print[$c]
-
-^setdata[]
-$c[^a.union[$b]]
-^$c[^^a.union[^$b]]: ^print[$c]
-
-^setdata[]
-^^a.intersects[^$b]? ^if(^a.intersects[$b]){y;n}<br />
-^^a.intersects[ ]? ^if(^a.intersects[ ]){y;n}<br />
-^^a.intersects[^$.5[x5]]? ^if(^a.intersects[$.5[x5]]){y;n}<br />
-
-^^c.contains[1] ? ^if(^c.contains[1]){y;n}<br />
-^c.delete[2]
-^^c.delete[2], ^^c.contains[2] ? ^if(^c.contains[2]){y;n}<br />
-
-^^c.delete[^$empty]^c.delete[$empty]<br />
-^^c.delete[]: ^try{^c.delete[]}{$exception.handled(1)error}<br />
-^print[$c]
+^^a.add[^$b]^a.add[$b]<br />
+^$a: ^print[$a]
 <hr />
+
+^setdata[]
+^$a: ^print[$a]
+^$b: ^print[$b]
+^^a.sub[^$b]^a.sub[$b]<br />
+^$a: ^print[$a]
+<hr />
+
+^setdata[]
+^$a: ^print[$a]
+^$b: ^print[$b]
+^$d[^^a.intersection[^$b]], ^$d: $d[^a.intersection[$b]]^print[$d]
+<hr />
+
+^setdata[]
+^$a: ^print[$a]
+^$b: ^print[$b]
+^$d[^^a.union[^$b]], ^$d: $d[^a.union[$b]]^print[$d]
+<hr />
+
+^setdata[]
+^$a: ^print[$a]
+^$b: ^print[$b]
+^^a.intersects[^$b]? ^if(^a.intersects[$b]){y;n}<br />
+^^a.intersects[$WHITESPACE]? ^if(^a.intersects[$WHITESPACE]){y;n}<br />
+^^a.intersects[^$.5[x5]]? ^if(^a.intersects[$.5[x5]]){y;n}<br />
+<hr />
+
+^setdata[]
+^$a: ^print[$a]
+^^a.contains[1] ? ^if(^a.contains[1]){y;n}<br />
+^^a.contains[2] ? ^if(^a.contains[2]){y;n}<br />
+^^a.delete[2]^a.delete[2]<br />
+^^a.contains[2] ? ^if(^a.contains[2]){y;n}<br />
+^$a: ^print[$a]
+<hr />
+
+^setdata[]
+^$c: ^print[$c]
+^^c.delete[^$VOID]^c.delete[$VOID]<br />
+^$c: ^print[$c]
+<hr />
+
+^setdata[]
+^$c: ^print[$c]
+^^c.delete[]: ^try{^c.delete[]}{$exception.handled(1)exception}<br />
+^$c: ^print[$c]
+<hr />
+
 
 @setdata[]
 $a[$.1[a1] $.2[a2] $.3[a3]]
-$b[    	$.2[b2] $.3[b3] $.4[b4]]
+$b[$.2[b2] $.3[b3] $.4[b4]]
+$c[^a.union[$b]]
+
 
 @print[h]
-^h.foreach[k;v]{$k='$v'}[, ]<br />
+^if($h){^h.foreach[k;v]{$k='$v'}[, ]}{empty}<br />
