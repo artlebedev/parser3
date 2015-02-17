@@ -17,7 +17,7 @@
 #include "pa_vfile.h"
 #include "pa_uue.h"
 
-volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.107 2015/01/06 03:35:16 moko Exp $" IDENT_PA_VMAIL_H;
+volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.108 2015/02/17 05:01:09 moko Exp $" IDENT_PA_VMAIL_H;
 
 #ifdef WITH_MAILRECEIVE
 extern "C" {
@@ -91,7 +91,7 @@ static void putReceived(HashStringValue& received, const char* name, Value* valu
 
 static void putReceived(HashStringValue& received, const char* name, const char* value, bool capitalizeName=false) {
 	if(name && value)
-		putReceived(received, name, new VString(*new String(pa_strdup(value))), capitalizeName);
+		putReceived(received, name, new VString(*new String(pa_strdup(value), String::L_TAINTED)), capitalizeName);
 }
 
 static void putReceived(HashStringValue& received, const char* name, time_t value) {
