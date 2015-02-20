@@ -12,7 +12,7 @@
 #include "pa_charset.h"
 #include "pa_vregex.h"
 
-volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.244 2013/07/16 15:21:06 moko Exp $" IDENT_PA_STRING_H;
+volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.245 2015/02/20 02:38:45 moko Exp $" IDENT_PA_STRING_H;
 
 const String String::Empty;
 
@@ -37,9 +37,10 @@ unsigned int pa_atoui(const char *str, int base, const String* problem_source){
 		base = 10; /* default is 10 */
 		if (*pos == '0') {
 			++pos;
-			if (*pos == 'x' || *pos == 'X')
+			if (*pos == 'x' || *pos == 'X'){
 				++pos;
 				base=16;
+			}
 		}
 	}
 
