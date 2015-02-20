@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 765
+Content-Length: 798
 
 11110000000000000000000000000000
 -11110000000000000000000000000000
@@ -12,6 +12,7 @@ Comment: Division by zero
 Type: number.zerodivision,
 Source: mod,
 Comment: Modulus by zero
+test oct support disabled: 11 11
 Type: number.zerodivision,
 Source: div,
 Comment: Division by zero
