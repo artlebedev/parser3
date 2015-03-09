@@ -17,7 +17,7 @@
 #include "pa_vfile.h"
 #include "pa_uue.h"
 
-volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.108 2015/02/17 05:01:09 moko Exp $" IDENT_PA_VMAIL_H;
+volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.109 2015/03/09 04:56:08 moko Exp $" IDENT_PA_VMAIL_H;
 
 #ifdef WITH_MAILRECEIVE
 extern "C" {
@@ -877,5 +877,5 @@ Value* VMail::get_element(const String& aname) {
 	if(Value* result=VStateless_class::get_element(aname))
 		return result;
 
-	return 0;
+	return bark("%s field not found", &aname);
 }
