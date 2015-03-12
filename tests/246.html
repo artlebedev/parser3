@@ -1,4 +1,4 @@
-﻿@main[]
+@main[]
 $h[^hash::create[]]
 ^first_and_last[Empty hash (^$h[^^hash::create[]]);$h]
 
@@ -40,18 +40,79 @@ $h[
 	$.4[d]
 	$.5[e]
 ]
-^^h._at(0)=^h._at(0)=<br />
-^^h._at(1)=^h._at(1)=<br />
-^^h._at(2)=^h._at(2)=<br />
-^^h._at(3)=^h._at(3)=<br />
-^^h._at(4)=^h._at(4)=<br />
+^at(0)
+^at(1)
+^at(2)
+^at(3)
+^at(4)
+
 <br />
-^^h._at(-1)=^h._at(-1)=<br />
-^^h._at(-2)=^h._at(-2)=<br />
-^^h._at(-3)=^h._at(-3)=<br />
-^^h._at(-4)=^h._at(-4)=<br />
-^^h._at(-5)=^h._at(-5)=<br />
+^at(-1)
+^at(-2)
+^at(-3)
+^at(-4)
+^at(-5)
+
+<br />
+^at(0)[key]
+^at(1)[key]
+^at(2)[key]
+^at(3)[key]
+^at(4)[key]
+
+<br />
+^at(0)[value]
+^at(1)[value]
+^at(2)[value]
+^at(3)[value]
+^at(4)[value]
+
+<br />
+^at(0)[hash]
+^at(1)[hash]
+^at(2)[hash]
+^at(3)[hash]
+^at(4)[hash]
+
+<br />
+# check if values preserve tainting. keys are always lost tainting
+<h3>The first element was replaced (^$h.1[b&b])</h3>
+$h.1[b&b]
+^^h._at[first;hash]=^print[^h._at[first;hash]]<br />
+^at(0)[key]
+^at(0)[value]
+^at(0)[hash]
+<h3>One element was added at the end (^$h.[c&c][^^taint[d&d]])</h3>
+$h.[c&c][^taint[d&d]]
+^at(5)[key]
+^at(5)[value]
+^at(5)[hash]
+^^h._at[last;hash]=^print[^h._at[last;hash]]<br />
+
+<br />
+^do[^^h._at[]]{must fail^h._at[]}
+^do[^^h._at[first^;key^;hren]]{must fail^h._at[first;key;hren]}
+^do[^^h._at(1){code}]{must fail^h._at(1){code}}
+^do[^^h._at(1)(true)]{must fail^h._at(1)(true)}
+^do[^^h._at[hren]]{must fail^h._at[hren]}
+^do[^^h._at[first][hren]]{must fail^h._at[first][hren]}
+^do[^^h._at[last][hren]]{must fail^h._at[last][hren]}
+^do[^^h._at(1)[hren]]{must fail^h._at(1)[hren]}
+
+@at[i;type]
+^^h._at($i)^if(def $type){[$type]}=^print[^if(def $type){^h._at($i)[$type]}{^h._at($i)}]<br />
 
 @first_and_last[sTitle;h]
 ^if(def $sTitle){<h3>$sTitle</h3>}
-first:last='^h._at[first]':'^h._at[last]'<br />
+first:last='^h._at[first]':'^h._at[last;value]'<br />
+first_key:last_key='^h._at[first;key]':'^h._at[last;key]'<br />
+
+@do[label;code]
+$label=^try{${code}}{$exception.handled(true)<b>$exception.comment</b>}<br />
+
+@print[u][k;v]
+^if($u is "hash"){
+	$result[^u.foreach[k;v]{'$k':'$v'}[, ]]
+}{
+	$result[$u]
+}
