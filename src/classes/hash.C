@@ -16,7 +16,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.120 2015/01/11 04:19:14 misha Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.121 2015/03/12 08:18:18 misha Exp $";
 
 // class
 
@@ -469,14 +469,40 @@ static void _foreach(Request& r, MethodParams& params) {
 	hash.first_that<Foreach_info*>(one_foreach_cycle, &info);
 }
 
+enum AtResultType {
+	AtResultTypeValue = 0,
+	AtResultTypeKey = 1,
+	AtResultTypeHash = 2
+};
+
+inline Value& SingleElementHash(String::Body akey, Value* avalue) {
+	Value& result=*new VHash;
+	result.put_element(*new String(akey, String::L_TAINTED), avalue);
+	return result;
+}
+
 static void _at(Request& r, MethodParams& params) {
 	HashStringValue& hash=GET_SELF(r, VHash).hash_ro();
 	size_t count=hash.count();
 
 	int pos=0;
 
+	// misha@
+	// I do not like that type is checked before whence.
+	// But I do not like the idea to move it after whence (where process_to_value can be called) even more.
+	AtResultType result_type=AtResultTypeValue;
+	if(params.count() > 1) {
+		const String& stype=params.as_string(1, "type must be string");
+		if(stype == "key")
+			result_type=AtResultTypeKey;
+		else if(stype == "hash")
+			result_type=AtResultTypeHash;
+		else if(stype != "value")
+			throw Exception(PARSER_RUNTIME, &stype, "type must be 'key', 'value' or 'hash'");
+	}
+
 	Value& vwhence=*params.get(0);
-	if(vwhence.is_string()){
+	if(vwhence.is_string()) {
 		const String& swhence=*vwhence.get_string();
 		if(swhence == "last")
 			pos=count-1;
@@ -491,18 +517,54 @@ static void _at(Request& r, MethodParams& params) {
 	}
 
 	if(count && pos >= 0 && (size_t)pos < count){
-		if(pos == 0)
-			r.write_assign_lang(*hash.first_value());
-		else if((size_t)pos == count-1)
-			r.write_assign_lang(*hash.last_value());
-		else
-			for(HashStringValue::Iterator i(hash); i; i.next(), pos-- )
-				if(!pos){
-					r.write_assign_lang(*i.value());
+		switch(result_type) {
+			case AtResultTypeKey:
+				{
+					if(pos == 0) {
+						r.write_assign_lang(*new VString(*new String(hash.first_key(), String::L_TAINTED)));
+					} else if((size_t)pos == count-1) {
+						r.write_assign_lang(*new VString(*new String(hash.last_key(), String::L_TAINTED)));
+					} else {
+						for(HashStringValue::Iterator i(hash); i; i.next(), pos-- )
+							if(!pos){
+								r.write_assign_lang(*new VString(*new String(i.key(), String::L_TAINTED)));
+								break;
+							}
+					}
 					break;
 				}
+			case AtResultTypeValue:
+				{
+					if(pos == 0) {
+						r.write_assign_lang(*hash.first_value());
+					} else if((size_t)pos == count-1) {
+						r.write_assign_lang(*hash.last_value());
+					} else {
+						for(HashStringValue::Iterator i(hash); i; i.next(), pos-- )
+							if(!pos){
+								r.write_assign_lang(*i.value());
+								break;
+							}
+					}
+					break;
+				}
+			case AtResultTypeHash:
+				{
+					if(pos == 0) {
+						r.write_no_lang(SingleElementHash(hash.first_key(), hash.first_value()));
+					} else if((size_t)pos == count-1) {
+						r.write_no_lang(SingleElementHash(hash.last_key(), hash.last_value()));
+					} else {
+						for(HashStringValue::Iterator i(hash); i; i.next(), pos-- )
+							if(!pos){
+								r.write_no_lang(SingleElementHash(i.key(), i.value()));
+								break;
+							}
+					}
+					break;
+				}
+		}
 	}
-	
 }
 
 // constructor
@@ -542,7 +604,7 @@ MHash::MHash(): Methoded("hash")
 	// ^hash.foreach[key;value]{code}[delim]
 	add_native_method("foreach", Method::CT_DYNAMIC, _foreach, 2+1, 2+1+1);
 
-	// ^hash._at[first|last]
-	// ^hash._at([-]offset)
-	add_native_method("_at", Method::CT_DYNAMIC, _at, 1, 1);
+	// ^hash._at[first|last[;'key'|'value'|'hash']]
+	// ^hash._at([-+]offset)[['key'|'value'|'hash']]
+	add_native_method("_at", Method::CT_DYNAMIC, _at, 1, 2);
 }

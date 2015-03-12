@@ -17,7 +17,7 @@
 #ifndef PA_HASH_H
 #define PA_HASH_H
 
-#define IDENT_PA_HASH_H "$Id: pa_hash.h,v 1.85 2013/08/21 12:11:14 moko Exp $"
+#define IDENT_PA_HASH_H "$Id: pa_hash.h,v 1.86 2015/03/12 08:18:18 misha Exp $"
 
 #include "pa_memory.h"
 #include "pa_types.h"
@@ -244,8 +244,21 @@ public:
 	}
 
 #ifdef HASH_ORDER
+	String::Body first_key() const {
+		return (first) ? String::Body(first->key, first->code) : String::Body();
+	}
+
 	V first_value() const {
 		return (first) ? first->value : V(0);
+	}
+
+	String::Body last_key() const {
+		if (fpairs_count) {
+			Pair* pair = (Pair*)((char *)last - offsetof(Pair, next));
+			return String::Body(pair->key, pair->code);
+		} else {
+			return String::Body();
+		}
 	}
 
 	V last_value() const {
