@@ -8,7 +8,7 @@
 #ifndef PA_VJUNCTION_H
 #define PA_VJUNCTION_H
 
-#define IDENT_PA_VJUNCTION_H "$Id: pa_vjunction.h,v 1.32 2012/05/23 16:26:41 moko Exp $"
+#define IDENT_PA_VJUNCTION_H "$Id: pa_vjunction.h,v 1.33 2015/03/16 09:47:35 misha Exp $"
 
 // include
 
@@ -39,8 +39,10 @@ public: // VJunction
 	/// VJunction: method, root,self,rcontext, code
 	override Junction* get_junction() { return &fjunction; }
 
+#ifndef OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL
 	// VJunction: CLASS, CLASS_NAME
 	override Value* get_element(const String& aname);
+#endif
 
 public: // usage
 

@@ -13,7 +13,7 @@
 #include "pa_vdouble.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_COMPILE_TOOLS_C="$Id: compile_tools.C,v 1.69 2012/03/16 09:24:12 moko Exp $" IDENT_COMPILE_TOOLS_H;
+volatile const char * IDENT_COMPILE_TOOLS_C="$Id: compile_tools.C,v 1.70 2015/03/16 09:47:34 misha Exp $" IDENT_COMPILE_TOOLS_H;
 
 Value* LA2V(ArrayOperation& literal_string_array, int offset, OP::OPCODE code) {
 	return literal_string_array[offset+0].code==code?literal_string_array[offset+2/*skip opcode&origin*/].value
@@ -32,25 +32,12 @@ void change_string_literal_value(ArrayOperation& literal_string_array, const Str
 	static_cast<VString*>(literal_string_array[2/*opcode+origin*/].value)->set_string(new_value);
 }
 
-void changetail_or_append(ArrayOperation& opcodes, 
-						  OP::OPCODE find, bool with_argument, OP::OPCODE replace, OP::OPCODE notfound) {
-	int tail=opcodes.count()-(with_argument?2:1);
-	if(tail>=0) {
-		Operation& op=opcodes.get_ref(tail);
-		if(op.code==find) {
-			op.code=replace;
-			return;
-		}
-	}
-
-	opcodes+=Operation(notfound);
-}
-
-bool maybe_change_first_opcode(ArrayOperation& opcodes, OP::OPCODE find, OP::OPCODE replace) {
-	if(opcodes[0].code!=find)
+bool change_first(ArrayOperation& opcodes, OP::OPCODE find, OP::OPCODE replace) {
+	Operation& op=opcodes.get_ref(0);
+	if(op.code!=find)
 		return false;
 
-	opcodes.put(0, replace);
+	op.code=replace;
 	return true;
 }
 
@@ -85,6 +72,31 @@ bool maybe_make_self(ArrayOperation& opcodes, ArrayOperation& diving_code, size_
 	return false;
 }
 
+#ifdef OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL
+bool maybe_append_simple_diving_code(ArrayOperation& code, ArrayOperation& diving_code){
+	if(
+		diving_code.count()==3
+		&& diving_code[0].code==OP::OP_STRING__WRITE
+	){
+		O(code, OP::OP_VALUE);
+		P(code, diving_code, 1/*offset*/, 2/*limit*/); /*copy origin+value*/
+		return true;
+	} else {
+		return false;
+	}
+}
+
+bool is_special_element(ArrayOperation& opcodes){
+	const String* name=LA2S(opcodes);
+	return (
+		name
+		&& (
+			*name==class_element_name
+			|| *name==class_name_element_name
+		)
+	);
+}
+#endif
 
 Method::Call_type GetMethodCallType(Parse_control& pc, ArrayOperation& literal_array) {
 	const String* full_name=LA2S(literal_array);

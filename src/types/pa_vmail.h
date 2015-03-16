@@ -8,7 +8,7 @@
 #ifndef PA_VMAIL_H
 #define PA_VMAIL_H
 
-#define IDENT_PA_VMAIL_H "$Id: pa_vmail.h,v 1.20 2012/03/16 09:24:18 moko Exp $"
+#define IDENT_PA_VMAIL_H "$Id: pa_vmail.h,v 1.21 2015/03/16 09:47:35 misha Exp $"
 
 #include "classes.h"
 #include "pa_common.h"
@@ -35,7 +35,7 @@ public: // Value
 	
 	override const char* type() const { return "mail"; }
 	
-	// mail: CLASS,methods,received field
+	// mail: methods,received field
 	Value* get_element(const String& aname);
 
 public: // usage

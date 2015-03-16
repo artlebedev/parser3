@@ -12,7 +12,7 @@
 #include "pa_request.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_PA_VXDOC_C="$Id: pa_vxdoc.C,v 1.47 2012/06/21 14:22:09 moko Exp $" IDENT_PA_VXDOC_H;
+volatile const char * IDENT_PA_VXDOC_C="$Id: pa_vxdoc.C,v 1.48 2015/03/16 09:47:36 misha Exp $" IDENT_PA_VXDOC_H;
 
 // defines
 
@@ -47,7 +47,7 @@ Value* VXdoc::as(const char* atype) {
 Value& VXdoc::as_expr_result() { return VBool::get(as_bool()); }
 
 
-/// VXdoc: $CLASS,$method
+/// VXdoc: $method
 Value* VXdoc::get_element(const String& aname) { 
 	if(aname==SEARCH_NAMESPACES_NAME) {
 		return &search_namespaces;

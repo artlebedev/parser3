@@ -10,7 +10,7 @@
 #include "pa_vhash.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_PA_PA_VENV_C="$Id: pa_venv.C,v 1.13 2013/03/09 05:39:41 misha Exp $" IDENT_PA_VENV_H;
+volatile const char * IDENT_PA_PA_VENV_C="$Id: pa_venv.C,v 1.14 2015/03/16 09:47:35 misha Exp $" IDENT_PA_VENV_H;
 
 #define PARSER_VERSION_ELEMENT_NAME "PARSER_VERSION"
 #define ENV_FIELDS_ELEMENT_NAME "fields"
@@ -18,6 +18,7 @@ volatile const char * IDENT_PA_PA_VENV_C="$Id: pa_venv.C,v 1.13 2013/03/09 05:39
 static const String parser_version(PARSER_VERSION);
 
 Value* VEnv::get_element(const String& aname) {
+#ifndef OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL
 	// $env:CLASS
 	if(aname==CLASS_NAME)
 		return this;
@@ -25,6 +26,7 @@ Value* VEnv::get_element(const String& aname) {
 	// $env:CLASS_NAME
 	if(aname==CLASS_NAMETEXT)
 		return new VString(env_class_name);
+#endif
 
 	// $env:PARSER_VERSION
 	if(aname==PARSER_VERSION_ELEMENT_NAME)

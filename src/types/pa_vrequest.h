@@ -8,7 +8,7 @@
 #ifndef PA_VREQUEST_H
 #define PA_VREQUEST_H
 
-#define IDENT_PA_VREQUEST_H "$Id: pa_vrequest.h,v 1.40 2013/10/04 21:21:57 moko Exp $"
+#define IDENT_PA_VREQUEST_H "$Id: pa_vrequest.h,v 1.41 2015/03/16 09:47:36 misha Exp $"
 
 // includes
 
@@ -43,7 +43,7 @@ public: // Value
 	/// VRequest: 0
 	override VStateless_class *get_class() { return 0; }
 
-	/// request: CLASS,CLASS_NAME,field
+	/// request: field
 	override Value* get_element(const String& name);
 
 	/// request: (key)=value

@@ -8,7 +8,7 @@
 	
 */
 
-volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.266 2014/11/13 04:54:55 misha Exp $";
+volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.267 2015/03/16 09:47:34 misha Exp $";
 
 /**
 	@todo parser4: 
@@ -339,33 +339,40 @@ get: get_value {
 #ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
 	if(
 		count!=3
-		|| !maybe_change_first_opcode(*code, OP::OP_VALUE__GET_ELEMENT, /*=>*/OP::OP_VALUE__GET_ELEMENT__WRITE)
+		|| !change_first(*code, OP::OP_VALUE__GET_ELEMENT, /*=>*/OP::OP_VALUE__GET_ELEMENT__WRITE)
 	)
 #endif
 
 #ifdef OPTIMIZE_BYTECODE_GET_SELF_ELEMENT
 	if(
 		count!=3
-		|| !maybe_change_first_opcode(*code, OP::OP_WITH_SELF__VALUE__GET_ELEMENT, /*=>*/OP::OP_WITH_SELF__VALUE__GET_ELEMENT__WRITE)
+		|| !change_first(*code, OP::OP_WITH_SELF__VALUE__GET_ELEMENT, /*=>*/OP::OP_WITH_SELF__VALUE__GET_ELEMENT__WRITE)
 	)
 #endif
 
 #ifdef OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT
 	if(
 		count!=5
-		|| !maybe_change_first_opcode(*code, OP::OP_GET_OBJECT_ELEMENT, /*=>*/OP::OP_GET_OBJECT_ELEMENT__WRITE)
+		|| !change_first(*code, OP::OP_GET_OBJECT_ELEMENT, /*=>*/OP::OP_GET_OBJECT_ELEMENT__WRITE)
 	)
 #endif
 
 #ifdef OPTIMIZE_BYTECODE_GET_OBJECT_VAR_ELEMENT
 	if(
 		count!=5
-		|| !maybe_change_first_opcode(*code, OP::OP_GET_OBJECT_VAR_ELEMENT, /*=>*/OP::OP_GET_OBJECT_VAR_ELEMENT__WRITE)
+		|| !change_first(*code, OP::OP_GET_OBJECT_VAR_ELEMENT, /*=>*/OP::OP_GET_OBJECT_VAR_ELEMENT__WRITE)
 	)
 #endif
+
+#ifdef OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL
+	if(
+		!change(*code, count-1/* last */, OP::OP_GET_ELEMENT__SPECIAL, /*=>*/OP::OP_GET_ELEMENT__SPECIAL__WRITE)
+	)
+#endif
+
 	{
-		changetail_or_append(*code,
-			OP::OP_GET_ELEMENT, false,  /*=>*/OP::OP_GET_ELEMENT__WRITE,
+		change_or_append(*code, count-1 /* last */,
+			OP::OP_GET_ELEMENT, /*=>*/OP::OP_GET_ELEMENT__WRITE,
 			/*or */OP::OP_WRITE_VALUE
 			); /* value=pop; wcontext.write(value) */
 	}
@@ -532,14 +539,15 @@ codes__excluding_sole_str_literal: action | code codes { $$=$1; P(*$$, *$2); };
 /* call */
 
 call: call_value {
+	size_t count=$1->count();
 #ifdef OPTIMIZE_BYTECODE_CUT_REM_OPERATOR
-	if((*$1).count())
+	if(count)
 #endif
 	{
 		$$=$1; /* stack: value */
-		if(!maybe_change_first_opcode(*$$, OP::OP_CONSTRUCT_OBJECT, /*=>*/OP::OP_CONSTRUCT_OBJECT__WRITE))
-			changetail_or_append(*$$, 
-				OP::OP_CALL, true,  /*=>*/ OP::OP_CALL__WRITE,
+		if(!change_first(*$$, OP::OP_CONSTRUCT_OBJECT, /*=>*/OP::OP_CONSTRUCT_OBJECT__WRITE))
+			change_or_append(*$$, count-2 /* second last */,
+				OP::OP_CALL, /*=>*/ OP::OP_CALL__WRITE,
 				/*or */OP::OP_WRITE_VALUE); /* value=pop; wcontext.write(value) */
 	}
 };
@@ -578,7 +586,7 @@ call_value: '^' {
 				&& (*var_code)[4].code==OP::OP_VALUE
 				&& (*var_code)[7].code==OP::OP_GET_ELEMENT
 			){
-				yyval=N();
+				$$=N();
 				O(*$$, OP::OP_CONSTRUCT_OBJECT);
 				P(*$$, *var_code, 1/*offset*/, 2/*limit*/); // class name
 				P(*$$, *var_code, 5/*offset*/, 2/*limit*/); // constructor name
@@ -658,12 +666,20 @@ name_advance1: name_expr_value {
 
 	/* stack: context */
 	$$=$1; /* stack: context,name */
+#ifdef OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL
+	O(*$$, is_special_element(*$$) ? OP::OP_GET_ELEMENT__SPECIAL : OP::OP_GET_ELEMENT);
+#else
 	O(*$$, OP::OP_GET_ELEMENT); /* name=pop; context=pop; stack: context.get_element(name) */
+#endif
 };
 name_advance2: name_expr_value {
 	/* stack: context */
 	$$=$1; /* stack: context,name */
+#ifdef OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL
+	O(*$$, is_special_element(*$$) ? OP::OP_GET_ELEMENT__SPECIAL : OP::OP_GET_ELEMENT);
+#else
 	O(*$$, OP::OP_GET_ELEMENT); /* name=pop; context=pop; stack: context.get_element(name) */
+#endif
 }
 |	STRING BOGUS
 ;
@@ -693,9 +709,14 @@ name_square_code_value: '[' {
 	PC.explicit_result=*reinterpret_cast<bool*>(&$2);
 } ']' {
 	$$=N(); 
+#ifdef OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL
+	if(!maybe_append_simple_diving_code(*$$, *$3))
+#endif
+	{
 	OA(*$$, OP::OP_OBJECT_POOL, $3); /* stack: empty write context */
 	/* some code that writes to that context */
 	/* context=pop; stack: context.value() */
+	}
 };
 subvar_ref_name_rdive: STRING {
 	$$=N(); 
@@ -723,7 +744,7 @@ class_static_prefix: STRING ':' {
 		}
 	}
 	// optimized OP_VALUE+origin+string+OP_GET_CLASS => OP_VALUE__GET_CLASS+origin+string
-	maybe_change_first_opcode(*$$, OP::OP_VALUE, OP::OP_VALUE__GET_CLASS);
+	change_first(*$$, OP::OP_VALUE, OP::OP_VALUE__GET_CLASS);
 };
 class_constructor_prefix: class_static_prefix ':' {
 	$$=$1;
@@ -796,7 +817,7 @@ string_inside_quotes_value: maybe_codes {
 	// it brakes ^if(" 09 "){...}
 	YYSTYPE code=$1;
 	$$=N();
-	if(code->count()==3 && maybe_change_first_opcode(*code, OP::OP_STRING__WRITE, OP::OP_VALUE)){
+	if(code->count()==3 && change_first(*code, OP::OP_STRING__WRITE, OP::OP_VALUE)){
 		// optimized OP_STRING__WRITE+origin+value => OP_VALUE+origin+value without starting OP_STRING_POOL
 		P(*$$, *code);
 	} else {

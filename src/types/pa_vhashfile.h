@@ -8,7 +8,7 @@
 #ifndef PA_VHASHFILE_H
 #define PA_VHASHFILE_H
 
-#define IDENT_PA_VHASHFILE_H "$Id: pa_vhashfile.h,v 1.43 2013/10/04 21:21:56 moko Exp $"
+#define IDENT_PA_VHASHFILE_H "$Id: pa_vhashfile.h,v 1.44 2015/03/16 09:47:35 misha Exp $"
 
 #include "classes.h"
 #include "pa_pool.h"
@@ -40,7 +40,7 @@ public: // value
 
 	/// VHashfile: (key)=value
 	override Value* get_element(const String& aname) { 
-		// $CLASS,$method
+		// $method
 		if(Value *result=VStateless_object::get_element(aname))
 			return result;
 		

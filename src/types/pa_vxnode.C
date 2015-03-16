@@ -16,7 +16,7 @@
 #include "pa_charset.h"
 #include "pa_xml_exception.h"
 
-volatile const char * IDENT_PA_VXNODE_C="$Id: pa_vxnode.C,v 1.54 2013/10/04 21:21:58 moko Exp $" IDENT_PA_VXNODE_H;
+volatile const char * IDENT_PA_VXNODE_C="$Id: pa_vxnode.C,v 1.55 2015/03/16 09:47:36 misha Exp $" IDENT_PA_VXNODE_H;
 
 Request_charsets& VXnode::charsets() { 
 	return get_vxdoc().charsets();
@@ -27,7 +27,7 @@ Value& VXnode::as_expr_result() { return VBool::get(as_bool()); }
 
 
 Value* VXnode::get_element(const String& aname) { 
-	// $CLASS,$method
+	// $method
 	if(Value* result=VStateless_object::get_element(aname))
 		return result;
 

@@ -11,7 +11,7 @@
 
 namespace OP {
 
-#define IDENT_PA_OPCODE_H "$Id: pa_opcode.h,v 1.47 2013/05/16 02:51:26 misha Exp $"
+#define IDENT_PA_OPCODE_H "$Id: pa_opcode.h,v 1.48 2015/03/16 09:47:34 misha Exp $"
 
 #define OPTIMIZE_BYTECODE_GET_ELEMENT                // $a ^a
 #define OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT         // $a.b ^a.b
@@ -27,7 +27,7 @@ namespace OP {
                                                      // $self.a(expr), $self.a[value]
 
 #define OPTIMIZE_BYTECODE_GET_SELF_ELEMENT           // $self.a ^self.a
-
+#define OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL       // .CLASS, .CLASS_NAME
 
 ///	Compiled operation code
 enum OPCODE {
@@ -83,7 +83,10 @@ enum OPCODE {
 	OP_WITH_SELF__VALUE__CONSTRUCT_VALUE,
 #endif
 	//@}
-
+#ifdef OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL
+	OP_GET_ELEMENT__SPECIAL,
+	OP_GET_ELEMENT__SPECIAL__WRITE,
+#endif
 	//@{
 	/// @name expression ops: unary
 	OP_NEG, OP_INV, OP_NOT, OP_DEF, OP_IN, OP_FEXISTS, OP_DEXISTS,

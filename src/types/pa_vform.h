@@ -8,7 +8,7 @@
 #ifndef PA_VFORM_H
 #define PA_VFORM_H
 
-#define IDENT_PA_VFORM_H "$Id: pa_vform.h,v 1.61 2015/01/12 12:22:02 misha Exp $"
+#define IDENT_PA_VFORM_H "$Id: pa_vform.h,v 1.62 2015/03/16 09:47:35 misha Exp $"
 
 // includes
 
@@ -54,7 +54,7 @@ public: // Value
 	
 	const char* type() const { return "form"; }
 	
-	// form: CLASS,CLASS_NAME,fields,tables,files,imap,method,field
+	// form: fields,tables,files,imap,method,field
 	Value* get_element(const String& aname);
 	Charset* get_post_charset();
 

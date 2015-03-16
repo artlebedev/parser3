@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
-#define IDENT_PA_VSTATELESS_CLASS_H "$Id: pa_vstateless_class.h,v 1.75 2013/10/04 21:21:57 moko Exp $"
+#define IDENT_PA_VSTATELESS_CLASS_H "$Id: pa_vstateless_class.h,v 1.76 2015/03/16 09:47:36 misha Exp $"
 
 // include
 
@@ -20,8 +20,10 @@
 // defines
 
 #define CLASS_NAME "CLASS"
+#ifndef OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL
 #define CLASS_NAMETEXT "CLASS_NAME"
 extern const String class_name, class_nametext;
+#endif
 
 // forwards
 

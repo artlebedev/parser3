@@ -8,7 +8,7 @@
 #ifndef PA_VENV_H
 #define PA_VENV_H
 
-#define IDENT_PA_VENV_H "$Id: pa_venv.h,v 1.38 2012/03/16 09:24:17 moko Exp $"
+#define IDENT_PA_VENV_H "$Id: pa_venv.h,v 1.39 2015/03/16 09:47:35 misha Exp $"
 
 // includes
 
@@ -30,7 +30,7 @@ public: // Value
 	/// VEnv: 0
 	VStateless_class *get_class() { return 0; }
 
-	// env: CLASS, CLASS_NAME, field
+	// env: field
 	Value* get_element(const String& aname);
 
 public: // usage

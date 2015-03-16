@@ -8,7 +8,7 @@
 #ifndef PA_VXDOC_H
 #define PA_VXDOC_H
 
-#define IDENT_PA_VXDOC_H "$Id: pa_vxdoc.h,v 1.52 2012/06/21 14:22:10 moko Exp $"
+#define IDENT_PA_VXDOC_H "$Id: pa_vxdoc.h,v 1.53 2015/03/16 09:47:36 misha Exp $"
 
 #include "classes.h"
 #include "pa_common.h"
@@ -61,7 +61,7 @@ public: // Value
 	/// VFile: json-string
 	override const String* get_json_string(Json_options& options);
 
-	/// VXdoc: $CLASS,$method, fields
+	/// VXdoc: $method, fields
 	override Value* get_element(const String& aname);
 
 public: // VXNode

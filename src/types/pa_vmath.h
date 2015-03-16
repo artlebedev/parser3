@@ -8,7 +8,7 @@
 #ifndef PA_VMATH_H
 #define PA_VMATH_H
 
-#define IDENT_PA_VMATH_H "$Id: pa_vmath.h,v 1.21 2012/03/16 09:24:18 moko Exp $"
+#define IDENT_PA_VMATH_H "$Id: pa_vmath.h,v 1.22 2015/03/16 09:47:35 misha Exp $"
 
 // includes
 
@@ -27,9 +27,9 @@ public: // Value
 	
 	const char* type() const { return "math"; }
 
-	// math: CLASS,method,field
+	// math: method,field
 	Value* get_element(const String& aname) {
-		// $CLASS,$method
+		// $method
 		if(Value* result=VStateless_class::get_element(aname))
 			return result;
 

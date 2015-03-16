@@ -11,7 +11,7 @@
 #include "pa_vbool.h"
 #include "pa_wcontext.h"
 
-volatile const char * IDENT_PA_VJUNCTION_C="$Id: pa_vjunction.C,v 1.12 2012/05/23 16:26:41 moko Exp $" IDENT_PA_VJUNCTION_H IDENT_PA_JUNCTION_H;
+volatile const char * IDENT_PA_VJUNCTION_C="$Id: pa_vjunction.C,v 1.13 2015/03/16 09:47:35 misha Exp $" IDENT_PA_VJUNCTION_H IDENT_PA_JUNCTION_H;
 
 void VJunction::reattach(WContext *new_wcontext){
 	if(new_wcontext) {
@@ -31,6 +31,7 @@ override Value& VJunction::as_expr_result() {
 }
 
 
+#ifndef OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL
 Value* VJunction::get_element(const String& aname) {
 	// .CLASS
 	if(aname==CLASS_NAME)
@@ -40,3 +41,4 @@ Value* VJunction::get_element(const String& aname) {
 		return new VString(junction_class_name);
 	return Value::get_element(aname);
 }
+#endif

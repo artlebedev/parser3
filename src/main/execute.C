@@ -21,7 +21,7 @@
 #include "pa_vimage.h"
 #include "pa_wwrapper.h"
 
-volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.371 2013/10/04 21:21:55 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
+volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.372 2015/03/16 09:47:34 misha Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
 
 //#define DEBUG_EXECUTE
 
@@ -76,6 +76,10 @@ char *opcode_name[]={
 	"WITH_SELF__VALUE__CONSTRUCT_VALUE",
 #endif
 
+#ifdef OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL
+	"GET_ELEMENT__SPECIAL",
+	"GET_ELEMENT__SPECIAL__WRITE",
+#endif
 	// expression ops: unary
 	"NEG", "INV", "NOT", "DEF", "IN", "FEXISTS", "DEXISTS",
 	// expression ops: binary
@@ -263,8 +267,7 @@ void Request::execute(ArrayOperation& ops) {
 				wcontext->set_somebody_entered_some_class();
 
 				debug_origin=i.next().origin;
-				Value& value=*i.next().value;
-				const String& name=*value.get_string(); debug_name=&name;
+				const String& name=*i.next().value->get_string(); debug_name=&name;
 
 				DEBUG_PRINT_STRING(name)
 
@@ -277,6 +280,38 @@ void Request::execute(ArrayOperation& ops) {
 				stack.push(*class_value);
 				break;
 			}
+
+#ifdef OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL
+		case OP::OP_GET_ELEMENT__SPECIAL:
+		case OP::OP_GET_ELEMENT__SPECIAL__WRITE:
+			{
+				const String& name=stack.pop().string();  debug_name=&name;
+				Value& ncontext=stack.pop().value();
+
+				Value* value=0;
+				if(VStateless_class* vclass=ncontext.get_class()){
+					if(name==class_element_name){
+						value=vclass;
+					} else if(name==class_name_element_name){
+						value=new VString(vclass->name());
+					}
+				} else {
+					// Value
+					if(name==class_element_name){
+						value=&ncontext;
+					}else if(name==class_name_element_name){
+						value=new VString(*new String(ncontext.type()));
+					}
+				};
+				if(opcode==OP::OP_GET_ELEMENT__SPECIAL){
+					stack.push(*value);
+				} else {
+					write_assign_lang(*value);
+				}
+				break;
+			}
+#endif
+
 		// OP_WITH
 		case OP::OP_WITH_ROOT:
 			{

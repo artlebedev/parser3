@@ -17,7 +17,7 @@
 #include "pa_vtable.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_PA_VFORM_C="$Id: pa_vform.C,v 1.107 2015/01/12 12:22:02 misha Exp $" IDENT_PA_VFORM_H;
+volatile const char * IDENT_PA_VFORM_C="$Id: pa_vform.C,v 1.108 2015/03/16 09:47:35 misha Exp $" IDENT_PA_VFORM_H;
 
 // defines
 
@@ -361,7 +361,7 @@ Value* VForm::get_element(const String& aname) {
 	if(aname==FORM_IMAP_ELEMENT_NAME)
 		return new VHash(imap);
 
-	// CLASS, CLASS_NAME
+	// methods (if any)
 	if(Value* result=VStateless_class::get_element(aname))
 		return result;
 

@@ -8,11 +8,15 @@
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VMETHOD_FRAME_C="$Id: pa_vmethod_frame.C,v 1.21 2012/06/08 11:44:02 misha Exp $" IDENT_PA_VMETHOD_FRAME_H;
+volatile const char * IDENT_PA_VMETHOD_FRAME_C="$Id: pa_vmethod_frame.C,v 1.22 2015/03/16 09:47:36 misha Exp $" IDENT_PA_VMETHOD_FRAME_H;
 
 // globals
 
 const String result_var_name(RESULT_VAR_NAME), caller_element_name(CALLER_ELEMENT_NAME), self_element_name(SELF_ELEMENT_NAME);
+#ifdef OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL
+const String class_element_name(CLASS_ELEMENT_NAME), class_name_element_name(CLASS_NAME_ELEMENT_NAME);
+#endif
+
 VVoid void_result; // unique value to be sure the result is changed
 
 // MethodParams: methods

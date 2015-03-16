@@ -8,7 +8,7 @@
 #ifndef COMPILE_TOOLS
 #define COMPILE_TOOLS
 
-#define IDENT_COMPILE_TOOLS_H "$Id: compile_tools.h,v 1.105 2013/10/01 22:09:57 moko Exp $"
+#define IDENT_COMPILE_TOOLS_H "$Id: compile_tools.h,v 1.106 2015/03/16 09:47:34 misha Exp $"
 
 #include "pa_opcode.h"
 #include "pa_types.h"
@@ -265,11 +265,25 @@ void maybe_change_string_literal_to_double_literal(ArrayOperation& literal_strin
 
 void change_string_literal_value(ArrayOperation& literal_string_array, const String& new_value);
 
-void changetail_or_append(ArrayOperation& opcodes, 
-						  OP::OPCODE find, bool with_argument, OP::OPCODE replace, OP::OPCODE notfound);
+inline bool change(ArrayOperation& opcodes, int pos, OP::OPCODE find, OP::OPCODE replace) {
+	if(pos>=0) {
+		Operation& op=opcodes.get_ref(pos);
+		if(op.code==find) {
+			op.code=replace;
+			return true;
+		}
+	}
+	return false;
+}
 
-bool maybe_change_first_opcode(ArrayOperation& opcodes, OP::OPCODE find, OP::OPCODE replace);
+inline void change_or_append(ArrayOperation& opcodes, int pos, OP::OPCODE find, OP::OPCODE replace, OP::OPCODE notfound) {
+	if(change(opcodes, pos, find, replace))
+		return;
 
+	opcodes+=Operation(notfound);
+};
+
+bool change_first(ArrayOperation& opcodes, OP::OPCODE find, OP::OPCODE replace);
 
 #ifdef OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT
 // OP_VALUE+origin+value+OP_GET_ELEMENT+OP_VALUE+origin+value+OP_GET_ELEMENT => OP_GET_OBJECT_ELEMENT+origin+value+origin+value
@@ -321,6 +335,11 @@ inline bool maybe_make_get_object_var_element(ArrayOperation& opcodes, ArrayOper
 
 bool maybe_make_self(ArrayOperation& opcodes, ArrayOperation& diving_code, size_t divine_count);
 
+#ifdef OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL
+bool maybe_append_simple_diving_code(ArrayOperation& code, ArrayOperation& diving_code);
+
+bool is_special_element(ArrayOperation& opcodes);
+#endif
 
 #ifdef OPTIMIZE_BYTECODE_CONSTRUCT
 inline bool maybe_optimize_construct(ArrayOperation& opcodes, ArrayOperation& var_ops, ArrayOperation& expr_ops){
