@@ -1,0 +1,28 @@
+Content-Type: text/html
+Content-Length: 603
+
+<pre>
+{
+	"h":{
+		"a":"aa",
+		"b":"bb",
+		"c":33
+	},
+	"string":"s",
+	"number":1,
+	"c_object":"object of class c" (class_c_value/object_c_value/),
+	"d_object":"object of class d" (class_c_value/object_c_value/class_d_value),
+	"x_class":{
+		"class_x":"class_x_value"
+	},
+	"x_object":{
+		"object_x":"object_x_value"
+	},
+	"y_class":"class of y (class_y_value)",
+	"y_object":"obj of y (class_y_value)",
+	"yy_class":"class of yy (class_y_value)",
+	"yy_object":"obj of yy (class_y_value)",
+	"z_object1":"obj of z (class_y_value/object_z_value1)",
+	"z_object2":"obj of z (class_y_value/object_z_value2)"
+}
+</pre>
