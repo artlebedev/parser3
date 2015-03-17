@@ -8,7 +8,7 @@
 #include "pa_vclass.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_PA_VCLASS_C="$Id: pa_vclass.C,v 1.49 2013/10/08 21:25:46 moko Exp $" IDENT_PA_VCLASS_H;
+volatile const char * IDENT_PA_VCLASS_C="$Id: pa_vclass.C,v 1.50 2015/03/17 07:28:44 misha Exp $" IDENT_PA_VCLASS_H;
 
 Property& VClass::get_property(const String& aname) {
 	Property* result=ffields.get(aname);
@@ -162,4 +162,11 @@ const VJunction* VClass::put_element_replace_only(Value& aself, const String& an
 /// @returns object of this class
 Value* VClass::create_new_value(Pool&) { 
 	return new VObject(*this);
+}
+
+const String* VClass::get_json_string(Json_options& options){
+	if(options.default_method){
+		return default_method_2_json_string(*options.default_method, options);
+	}
+	return options.hash_json_string(*get_hash());
 }

@@ -10,8 +10,10 @@
 #include "pa_vmethod_frame.h"
 #include "pa_vdate.h"
 #include "pa_vobject.h"
+#include "pa_request.h"
 
-volatile const char * IDENT_PA_VALUE_C="$Id: pa_value.C,v 1.35 2012/05/28 19:47:52 moko Exp $" IDENT_PA_VALUE_H IDENT_PA_PROPERTY_H;
+
+volatile const char * IDENT_PA_VALUE_C="$Id: pa_value.C,v 1.36 2015/03/17 07:28:43 misha Exp $" IDENT_PA_VALUE_H IDENT_PA_PROPERTY_H;
 
 // globals
 
@@ -41,6 +43,38 @@ const String* Value::get_json_string(Json_options& options) {
 		throw Exception(PARSER_RUNTIME, 0, "Unsupported value's type (%s)", type());
 
 	return new String("null");
+}
+
+const String* Value::default_method_2_json_string(Value& default_method, Json_options& options){
+	if(default_method.is_string()){
+		// specified as string with method name
+		const String& method_name=*default_method.get_string();
+		Method* method=this->get_class()->get_method(method_name);
+		if(!method) {
+			// class/object does not have method with specified name so serialize it as hash (default)
+			return options.hash_json_string(*get_hash());
+		}
+
+		VMethodFrame frame(*method, options.r->method_frame, *this);
+
+		Value *params[]={new VString(*new String(options.key, String::L_JSON)), options.params ? options.params : VVoid::get()};
+		frame.store_params(params, 2);
+
+		options.r->execute_method(frame);
+
+		return &frame.result().as_string();
+	} else {
+		// specified as method-junction
+		Junction* junction=default_method.get_junction();
+		VMethodFrame frame(*junction->method, options.r->method_frame, junction->self);
+
+		Value *params[]={new VString(*new String(options.key, String::L_JSON)), this, options.params ? options.params : VVoid::get()};
+		frame.store_params(params, 3);
+
+		options.r->execute_method(frame);
+
+		return &frame.result().as_string();
+	}
 }
 
 /// call this before invoking to ensure proper actual numbered params count

@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.153 2014/06/29 05:55:35 misha Exp $"
+#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.154 2015/03/17 07:28:43 misha Exp $"
 
 #include "pa_common.h"
 #include "pa_array.h"
@@ -146,6 +146,7 @@ public: // Value
 
 	/// extract json-string
 	virtual const String* get_json_string(Json_options& options);
+	const String* default_method_2_json_string(Value& default_method, Json_options& options);
 
 	virtual HashStringValue* get_fields() { return 0; }
 	
