@@ -1,0 +1,105 @@
+@main[]
+
+<pre>
+^json:string[
+	$.h[
+		$.a[aa]
+		$.b[bb]
+		$.c(33)
+	]
+
+	$.string[s]
+	$.number(1)
+
+	$.c_object[^c::create[]]
+	$.d_object[^d::create[]]
+
+	$.x_class[$x:CLASS]
+	$.x_object[^x::create[]]
+
+	$.y_class[$y:CLASS]
+	$.y_object[^y::create[]]
+
+	$.yy_class[$yy:CLASS]
+	$.yy_object[^yy::create[]]
+
+	$.z_object1[^z::create[object_z_value1]]
+	$.z_object2[^z::create[object_z_value2]]
+;
+	$.indent(true)
+	$.c[$serialization_method]
+	$._default[json]
+]
+</pre>
+
+
+@serialization_method[key;value;params]
+"object of class $value.CLASS_NAME" ($value.class_c/$value.object_c/$value.class_d)
+
+
+@CLASS
+c
+
+@auto[]
+$self.class_c[class_c_value]
+
+@create[]
+$self.object_c[object_c_value]
+
+
+@CLASS
+d
+
+@BASE
+c
+
+@auto[]
+$self.class_d[class_d_value]
+
+
+@CLASS
+x
+
+@auto[]
+$self.class_x[class_x_value]
+
+@create[]
+$self.object_x[object_x_value]
+
+# no json method in class so use default hash-serialization
+#@json[]
+
+
+@CLASS
+y
+
+@auto[]
+$self.class_y[class_y_value]
+
+@create[]
+
+@json[k;o]
+"^if(^reflection:dynamical[]){obj}{class} of $self.CLASS_NAME ($self.class_y)"
+
+
+
+@CLASS
+yy
+
+@BASE
+y
+
+
+@CLASS
+z
+
+@BASE
+y
+
+@create[value]
+^BASE:create[]
+$self.object_z[$value]
+
+@json[k;o]
+"^if(^reflection:dynamical[]){obj}{class} of $self.CLASS_NAME ($self.class_y/$self.object_z)"
+
