@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: buildall,v 1.13 2014/03/07 19:53:51 moko Exp $
+# $Id: buildall,v 1.14 2015/04/02 23:33:08 moko Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -128,7 +128,7 @@ if test ! -f "$project_dir/gc/lib/libgc.a"; then
 fi
 
 if test ! -f "$project_dir/pcre/lib/libpcre.a"; then
-    lib="pcre-8.33"
+    lib="pcre-8.36"
     prepare_gz $lib.tar.gz ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/
     echo "Configuring $lib..."
     ./configure --prefix="$project_dir/pcre" \
