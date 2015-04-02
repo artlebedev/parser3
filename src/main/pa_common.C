@@ -47,7 +47,7 @@
 #define pa_mkdir(path, mode) mkdir(path, mode)
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.280 2015/01/12 12:22:02 misha Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.281 2015/04/02 22:04:41 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -862,23 +862,6 @@ void back_slashes_to_slashes(char* s) {
 				*s='/'; 
 }
 #endif
-
-bool StrStartFromNC(const char* str, const char* substr){
-	while(true) {
-		if(!(*substr)){
-				return true;
-		}
-		if(!(*str))
-			return false;
-		if(isalpha((unsigned char)*str)) {
-			if(tolower((unsigned char)*str)!=tolower((unsigned char)*substr))
-				return false;
-		} else if((*str) != (*substr))
-			return false;
-		str++; 
-		substr++; 
-	}
-}
 
 size_t strpos(const char *str, const char *substr) {
 	const char *p = strstr(str, substr);

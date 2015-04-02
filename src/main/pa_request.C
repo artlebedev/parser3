@@ -32,7 +32,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.338 2015/01/06 02:37:54 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.339 2015/04/02 22:04:41 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -156,7 +156,7 @@ Request::Request(SAPI_Info& asapi_info, Request_info& arequest_info,
 	// status class
 	classes().put(String::Body(STATUS_CLASS_NAME), new VStatus());
 	// request class
-	classes().put(String::Body(REQUEST_CLASS_NAME), new VRequest(arequest_info, charsets, form));	
+	classes().put(String::Body(REQUEST_CLASS_NAME), new VRequest(arequest_info, charsets, form, asapi_info));
 	// cookie class
 	classes().put(String::Body(COOKIE_CLASS_NAME), &cookie);
 	// console class
@@ -737,7 +737,7 @@ static void output_pieces(Request& r,
 
 	const size_t BUFSIZE = 10*0x400;
 	char buf[BUFSIZE];
-	const char *range = SAPI::get_env(r.sapi_info, "HTTP_RANGE");
+	const char *range = SAPI::Env::get(r.sapi_info, "HTTP_RANGE");
 	size_t offset=0;
 	size_t part_length=content_length;
 	if(range){

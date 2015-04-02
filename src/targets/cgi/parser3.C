@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.266 2013/10/21 20:10:48 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.267 2015/04/02 22:04:41 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -210,14 +210,14 @@ void SAPI::abort(const char* fmt, ...) {
 //	va_end(args);
 }
 
-char* SAPI::get_env(SAPI_Info& , const char* name) {
+char* SAPI::Env::get(SAPI_Info& , const char* name) {
 	if(char *local=getenv(name))
 		return pa_strdup(local);
 	else
 		return 0;
 }
 
-const char* const *SAPI::environment(SAPI_Info&) {
+const char* const *SAPI::Env::get(SAPI_Info&) {
 #ifdef _MSC_VER
 	extern char **_environ;
 	return _environ;

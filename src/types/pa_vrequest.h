@@ -8,10 +8,11 @@
 #ifndef PA_VREQUEST_H
 #define PA_VREQUEST_H
 
-#define IDENT_PA_VREQUEST_H "$Id: pa_vrequest.h,v 1.41 2015/03/16 09:47:36 misha Exp $"
+#define IDENT_PA_VREQUEST_H "$Id: pa_vrequest.h,v 1.42 2015/04/02 22:04:42 moko Exp $"
 
 // includes
 
+#include "pa_sapi.h"
 #include "pa_common.h"
 #include "pa_value.h"
 
@@ -19,6 +20,8 @@
 
 #define REQUEST_CLASS_NAME "request"
 #define REQUEST_ARGV_ELEMENT_NAME "argv"
+#define REQUEST_BODY_CHARSET_NAME "body-charset"
+#define REQUEST_BODY_BODY_NAME "body-file"
 #define POST_CHARSET_NAME "post-charset"
 #define POST_BODY_NAME "post-body"
 
@@ -33,6 +36,7 @@ class VForm;
 class VRequest: public Value {
 
 	Request_info& finfo;
+	SAPI_Info& fsapi_info;
 	Request_charsets& fcharsets;
 	HashStringValue fargv;
 	VForm& fform;
@@ -51,8 +55,11 @@ public: // Value
 
 public: // usage
 
-	VRequest(Request_info& ainfo, Request_charsets& acharsets, VForm& aform);
+	VRequest(Request_info& ainfo, Request_charsets& acharsets, VForm& aform, SAPI_Info& asapi_info);
 
+private:
+	HashStringValue ffields;
+	void fill();
 };
 
 #endif

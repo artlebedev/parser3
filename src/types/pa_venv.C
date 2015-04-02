@@ -10,7 +10,7 @@
 #include "pa_vhash.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_PA_PA_VENV_C="$Id: pa_venv.C,v 1.14 2015/03/16 09:47:35 misha Exp $" IDENT_PA_VENV_H;
+volatile const char * IDENT_PA_PA_VENV_C="$Id: pa_venv.C,v 1.15 2015/04/02 22:04:41 moko Exp $" IDENT_PA_VENV_H;
 
 #define PARSER_VERSION_ELEMENT_NAME "PARSER_VERSION"
 #define ENV_FIELDS_ELEMENT_NAME "fields"
@@ -32,23 +32,20 @@ Value* VEnv::get_element(const String& aname) {
 	if(aname==PARSER_VERSION_ELEMENT_NAME)
 		return new VString(parser_version);
 
-	// $fields
+	// $env:fields
 	if(aname==ENV_FIELDS_ELEMENT_NAME){
 		HashStringValue *result=new HashStringValue();
-		if(const char *const *pairs=SAPI::environment(finfo)) {
-			while(const char* pair=*pairs++)
-				if(const char* eq_at=strchr(pair, '='))
-					if(eq_at[1]) // has value
-						result->put(
-							pa_strdup(pair, eq_at-pair),
-							new VString(*new String(pa_strdup(eq_at+1), String::L_TAINTED)));
-		}
+		for(SAPI::Env::Iterator i(finfo); i; i.next() )
+			result->put(
+				i.key(),
+				new VString(*new String(i.value(), String::L_TAINTED))
+			);
 		return new VHash(*result);
 	}
 
 	// $env:field
-	if(const char* value=SAPI::get_env(finfo, aname.cstr())){
-		return new VString(*new String(strdup(value, strlen(value)), String::L_TAINTED));
+	if(const char* value=SAPI::Env::get(finfo, aname.cstr())){
+		return new VString(*new String(value, String::L_TAINTED));
 	}
 	
 	return 0;

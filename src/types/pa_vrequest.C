@@ -15,16 +15,18 @@
 #include "pa_vvoid.h"
 #include "pa_vfile.h"
 
-volatile const char * IDENT_PA_VREQUEST_C="$Id: pa_vrequest.C,v 1.57 2015/03/16 09:47:36 misha Exp $" IDENT_PA_VREQUEST_H;
+volatile const char * IDENT_PA_VREQUEST_C="$Id: pa_vrequest.C,v 1.58 2015/04/02 22:04:42 moko Exp $" IDENT_PA_VREQUEST_H;
 
 // defines
 
 #define DOCUMENT_ROOT_NAME "document-root"
+#define REQUEST_HEADERS_ELEMENT_NAME "headers"
 
-VRequest::VRequest(Request_info& ainfo, Request_charsets& acharsets, VForm& aform): 
+VRequest::VRequest(Request_info& ainfo, Request_charsets& acharsets, VForm& aform, SAPI_Info& asapi_info): 
 		finfo(ainfo), 
 		fcharsets(acharsets),
-		fform(aform) {
+		fform(aform),
+		fsapi_info(asapi_info) {
 
 	if(ainfo.argv)
 		for(size_t i=ainfo.args_skip; ainfo.argv[i]; i++) {
@@ -39,25 +41,6 @@ VRequest::VRequest(Request_info& ainfo, Request_charsets& acharsets, VForm& afor
 }
 
 Value* VRequest::get_element(const String& aname) {
-	// $request:charset
-	if(aname==CHARSET_NAME)
-		return new VString(*new String(fcharsets.source().NAME(), String::L_TAINTED));
-
-	// $request:post-charset
-	if(aname==POST_CHARSET_NAME){
-		if(Charset* post_charset=fform.get_post_charset())
-			return new VString(*new String(post_charset->NAME(), String::L_TAINTED));
-		else
-			return VVoid::get();
-	}
-
-	// $resuest:post-body
-	if(aname==POST_BODY_NAME){
-		VFile& result=*new VFile;
-		result.set_binary(true/*tainted*/, (finfo.post_data)?finfo.post_data:"" /*to distinguish from stat-ed file*/, finfo.post_size);
-		return &result;
-	}
-
 #ifndef OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL
 	// $CLASS
 	if(aname==CLASS_NAME)
@@ -68,11 +51,37 @@ Value* VRequest::get_element(const String& aname) {
 		return new VString(request_class_name);
 #endif
 
+	// $request:charset
+	if(aname==CHARSET_NAME)
+		return new VString(*new String(fcharsets.source().NAME(), String::L_TAINTED));
+
+	// $request:body-charset
+	if(aname==REQUEST_BODY_CHARSET_NAME || aname==POST_CHARSET_NAME /*backward*/){
+		if(Charset* body_charset=fform.get_body_charset())
+			return new VString(*new String(body_charset->NAME(), String::L_TAINTED));
+		else
+			return VVoid::get();
+	}
+
+	// $resuest:body-file
+	if(aname==REQUEST_BODY_BODY_NAME || aname==POST_BODY_NAME /*backward*/){
+		VFile& result=*new VFile;
+		result.set_binary(true/*tainted*/, (finfo.post_data)?finfo.post_data:"" /*to distinguish from stat-ed file*/, finfo.post_size);
+		return &result;
+	}
+
 	// $request:argv
 	if(aname==REQUEST_ARGV_ELEMENT_NAME)
 		return new VHash(fargv);
 	
-	// $request:query $request:uri $request:document-root $request:body
+	//$request:headers
+	if(aname==REQUEST_HEADERS_ELEMENT_NAME){
+		if(!ffields.count())
+			fill();
+		return new VHash(ffields);
+	}
+
+	// $request:query $request:uri $request:document-root $request:body $request:method
 	const char* buf;
 	if(aname=="query")
 		buf=finfo.query_string;
@@ -82,6 +91,8 @@ Value* VRequest::get_element(const String& aname) {
 		buf=finfo.document_root;
 	else if(aname=="body")
 		buf=finfo.post_data;
+	else if(aname=="method")
+		buf=finfo.method;
 	else
 		return bark("%s field not found", &aname);
 
@@ -102,4 +113,20 @@ const VJunction* VRequest::put_element(const String& aname, Value* avalue) {
 	} 
 
 	return Value::put_element(aname, avalue);
+}
+
+void VRequest::fill(){
+	for(SAPI::Env::Iterator i(fsapi_info); i; i.next() ){
+		char* key=i.key();
+
+		if(pa_strncasecmp(key, "HTTP_")==0) {
+			for(char* c=key+5; *c; c++)
+				*c=(char)toupper((unsigned char)*c);
+
+			ffields.put(
+				key+5 /*skip "HTTP_" */,
+				new VString(*new String(i.value(), String::L_TAINTED))
+			);
+		}
+	}
 }

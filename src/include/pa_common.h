@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.156 2015/01/12 12:22:02 misha Exp $"
+#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.157 2015/04/02 22:04:41 moko Exp $"
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -81,6 +81,10 @@ int __snprintf(char *, size_t, const char* , ...);
 
 #ifndef strcasecmp
 #	define strcasecmp _stricmp
+#endif
+
+#ifndef strncasecmp
+#	define strncasecmp _strnicmp
 #endif
 
 #endif
@@ -247,11 +251,14 @@ char* unescape_chars(const char* cp, int len, Charset* client_charset=0, bool js
 
 char *search_stop(char*& current, char cstop_at);
 
+inline int pa_strncasecmp(const char* str, const char* substr, size_t count=0) {
+	return strncasecmp(str, substr, count ? count : strlen(substr));
+}
+
 #ifdef WIN32
 void back_slashes_to_slashes(char *s);
 #endif
 
-bool StrStartFromNC(const char* str, const char* substr);
 size_t strpos(const char *str, const char *substr);
 
 int remove_crlf(char *start, char *end);

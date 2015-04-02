@@ -8,7 +8,7 @@
 #ifndef PA_SAPI_H
 #define PA_SAPI_H
 
-#define IDENT_PA_SAPI_H "$Id: pa_sapi.h,v 1.29 2012/03/16 09:24:10 moko Exp $"
+#define IDENT_PA_SAPI_H "$Id: pa_sapi.h,v 1.30 2015/04/02 22:04:41 moko Exp $"
 
 // includes
 
@@ -27,10 +27,6 @@ struct SAPI {
 	static void die(const char* fmt, ...);
 	/// log error message & abort[write core]
 	static void abort(const char* fmt, ...);
-	/// environment strings
-	static const char* const* environment(SAPI_Info& info);
-	/// get environment string
-	static char* get_env(SAPI_Info& info, const char* name);
 	/// read POST request bytes
 	static size_t read_post(SAPI_Info& info, char *buf, size_t max_bytes);
 	/// add response header attribute [but do not send it to client]
@@ -39,6 +35,41 @@ struct SAPI {
 	static void send_header(SAPI_Info& info);
 	/// output body bytes
 	static size_t send_body(SAPI_Info& info, const void *buf, size_t size);
+
+	class Env {
+	public:
+		/// entire environment
+		static const char* const* get(SAPI_Info& ainfo);
+		/// single environment string
+		static char* get(SAPI_Info& ainfo, const char* name);
+
+		class Iterator {
+		private:
+			const char* const* pairs;
+			const char* pair;
+			const char* eq_at;
+		public:
+			Iterator(SAPI_Info& asapi_info) {
+				if(pairs=SAPI::Env::get(asapi_info))
+					next();
+			}
+			operator bool () {
+				return pair!=0;
+			}
+			void next() {
+				while(pair=*pairs++)
+					if(eq_at=strchr(pair, '=')) // valid pair (key=value)
+						if(eq_at[1]) // value is not empty
+							break;
+			}
+			char* key(){
+				return pa_strdup(pair, eq_at-pair);
+			}
+			char* value(){
+				return pa_strdup(eq_at+1);
+			}
+		};
+	};
 };
 
 #endif

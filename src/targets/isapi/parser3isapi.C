@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.106 2012/06/20 20:54:26 moko Exp $";
+volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.107 2015/04/02 22:04:41 moko Exp $";
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -41,12 +41,13 @@ const char* IIS51vars[]={
 	"CERT_COOKIE", "CERT_FLAGS", "CERT_ISSUER", "CERT_KEYSIZE", "CERT_SECRETKEYSIZE",
 	"CERT_SERIALNUMBER", "CERT_SERVER_ISSUER", "CERT_SERVER_SUBJECT", "CERT_SUBJECT",
 	"CONTENT_LENGTH", "CONTENT_TYPE",
-	"LOGON_USER",
+	"GATEWAY_INTERFACE",
 	"HTTPS", "HTTPS_KEYSIZE", "HTTPS_SECRETKEYSIZE", "HTTPS_SERVER_ISSUER", "HTTPS_SERVER_SUBJECT",
 	"INSTANCE_ID", 	"INSTANCE_META_PATH",
+	"LOCAL_ADDR", "LOGON_USER",
 	"PATH_INFO", 	"PATH_TRANSLATED",
 	"QUERY_STRING",
-	"REMOTE_ADDR", "REMOTE_HOST", "REMOTE_USER", "REQUEST_METHOD",
+	"REMOTE_ADDR", "REMOTE_HOST", "REMOTE_PORT", "REMOTE_USER", "REQUEST_METHOD",
 	"SCRIPT_NAME",
 	"SERVER_NAME", "SERVER_PORT", "SERVER_PORT_SECURE", "SERVER_PROTOCOL", "SERVER_SOFTWARE",
 	"URL",
@@ -110,7 +111,7 @@ void SAPI::abort(const char* fmt, ...) {
 //	va_end(args);
 }
 
-char* SAPI::get_env(SAPI_Info& SAPI_info, const char* name) {
+char* SAPI::Env::get(SAPI_Info& SAPI_info, const char* name) {
 	char *variable_buf=new(PointerFreeGC) char[MAX_STRING];
 	DWORD variable_len = MAX_STRING-1;
 
@@ -150,9 +151,9 @@ static const char* mk_env_pair(const char* key, const char* value) {
 	strcpy(result, key); strcat(result, "="); strcat(result, value);
 	return result;
 }
-const char* const *SAPI::environment(SAPI_Info& info) {
+const char* const *SAPI::Env::get(SAPI_Info& info) {
 	// we know this buf is writable
-	char* all_http_vars=SAPI::get_env(info, "ALL_HTTP");
+	char* all_http_vars=SAPI::Env::get(info, "ALL_HTTP");
 	const int http_var_count=grep_char(all_http_vars, '\n')+1/*\n for theoretical(never saw) this \0*/;
 
 	const char* *result=new(PointerFreeGC) const char*[IIS51var_count+http_var_count+1/*0*/];
@@ -161,7 +162,7 @@ const char* const *SAPI::environment(SAPI_Info& info) {
 	// IIS5.1 vars
 	for(int i=0; i<IIS51var_count; i++) {
 		const char* key=IIS51vars[i];
-		if(const char* value=SAPI::get_env(info, key))
+		if(const char* value=SAPI::Env::get(info, key))
 			*cur++=mk_env_pair(key, value);
 	}
 
@@ -340,7 +341,7 @@ void real_parser_handler(SAPI_Info& SAPI_info, bool header_only) {
 	back_slashes_to_slashes(filespec_to_process);
 #endif
 
-	if(const char* path_info=SAPI::get_env(SAPI_info, "PATH_INFO")) {
+	if(const char* path_info=SAPI::Env::get(SAPI_info, "PATH_INFO")) {
 		// IIS
 		size_t len=strlen(filespec_to_process)-strlen(path_info);
 		char *buf=new(PointerFreeGC) char[len+1];
@@ -367,7 +368,7 @@ void real_parser_handler(SAPI_Info& SAPI_info, bool header_only) {
 	
 	request_info.content_type=lpECB->lpszContentType;
 	request_info.content_length=lpECB->cbTotalBytes;
-	request_info.cookie=SAPI::get_env(SAPI_info, "HTTP_COOKIE");
+	request_info.cookie=SAPI::Env::get(SAPI_info, "HTTP_COOKIE");
 	request_info.mail_received=false;
 	
 	// prepare to process request

@@ -5,7 +5,7 @@ Parser: apache 1.3/2.X module, part, compiled by parser3project.
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_MOD_PARSER3_CORE_C="$Id: mod_parser3_core.C,v 1.10 2013/07/24 21:45:19 moko Exp $";
+volatile const char * IDENT_MOD_PARSER3_CORE_C="$Id: mod_parser3_core.C,v 1.11 2015/04/02 22:04:41 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -100,7 +100,7 @@ void SAPI::abort(const char* fmt, ...) {
 	va_end(args);
 }
 
-char* SAPI::get_env(SAPI_Info& SAPI_info, const char* name) {
+char* SAPI::Env::get(SAPI_Info& SAPI_info, const char* name) {
 	const char* dont_return_me=pa_ap_table_get(SAPI_info.r->subprocess_env, name);
 	return dont_return_me?pa_strdup(dont_return_me):0;
 }
@@ -123,7 +123,7 @@ static int SAPI_environment_append(void *d, const char* k, const char* val) {
 	}
 	return 1/*true*/;
 }
-const char* const* SAPI::environment(SAPI_Info& SAPI_info) {
+const char* const* SAPI::Env::get(SAPI_Info& SAPI_info) {
 	const pa_table *t=SAPI_info.r->subprocess_env;
 	const char** result=new(UseGC) const char*[pa_ap_table_size(t)+1/*0*/];
 	SAPI_environment_append_info info={result};
@@ -221,15 +221,15 @@ static void real_parser_handler(SAPI_Info& SAPI_info, Parser_module_config *dcfg
 	// Request info
 	Request_info request_info;  memset(&request_info, 0, sizeof(request_info));
 	
-	request_info.document_root=SAPI::get_env(SAPI_info, "DOCUMENT_ROOT");
+	request_info.document_root=SAPI::Env::get(SAPI_info, "DOCUMENT_ROOT");
 	request_info.path_translated=SAPI_info.r->filename;
 	request_info.method=SAPI_info.r->method;
 	request_info.query_string=SAPI_info.r->args;
-	request_info.uri=SAPI::get_env(SAPI_info, "REQUEST_URI");
-	request_info.content_type=SAPI::get_env(SAPI_info, "CONTENT_TYPE");
-	const char* content_length=SAPI::get_env(SAPI_info, "CONTENT_LENGTH");
+	request_info.uri=SAPI::Env::get(SAPI_info, "REQUEST_URI");
+	request_info.content_type=SAPI::Env::get(SAPI_info, "CONTENT_TYPE");
+	const char* content_length=SAPI::Env::get(SAPI_info, "CONTENT_LENGTH");
 	request_info.content_length=content_length?atoi(content_length):0;
-	request_info.cookie=SAPI::get_env(SAPI_info, "HTTP_COOKIE");
+	request_info.cookie=SAPI::Env::get(SAPI_info, "HTTP_COOKIE");
 	request_info.mail_received=false;
 	
 	// prepare to process request

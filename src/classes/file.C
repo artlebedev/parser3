@@ -25,7 +25,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.232 2015/01/12 12:13:25 misha Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.233 2015/04/02 22:04:40 moko Exp $";
 
 // defines
 
@@ -474,15 +474,12 @@ static void _exec_cgi(Request& r, MethodParams& params, bool cgi) {
 			env.put( \
 				String::Body(#name), \
 				String::Body(*value_cstr?value_cstr:0)); \
-	// passing SAPI::environment
-	if(const char *const *pairs=SAPI::environment(r.sapi_info)) {
-		while(const char* pair=*pairs++)
-			if(const char* eq_at=strchr(pair, '='))
-				if(eq_at[1]) // has value
-					env.put(
-						pa_strdup(pair, eq_at-pair),
-						pa_strdup(eq_at+1));
-	}
+	// passing environment
+	for(SAPI::Env::Iterator i(r.sapi_info); i; i.next() )
+		env.put(
+			i.key(),
+			i.value()
+		);
 
 	// const
 	ECSTR(GATEWAY_INTERFACE, "CGI/1.1");

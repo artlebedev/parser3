@@ -13,7 +13,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.61 2014/04/15 22:20:43 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.62 2015/04/02 22:04:41 moko Exp $" IDENT_PA_HTTP_H; 
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -347,7 +347,7 @@ static void http_pass_header(HashStringValue::key_type aname,
 		*info->user_agent_specified=true;
 	if(strcasecmp(name_cstr, HTTP_CONTENT_TYPE)==0){
 		*info->content_type_specified=true;
-		*info->content_type_url_encoded=StrStartFromNC(value.cstr(), HTTP_CONTENT_TYPE_FORM_URLENCODED);
+		*info->content_type_url_encoded=pa_strncasecmp(value.cstr(), HTTP_CONTENT_TYPE_FORM_URLENCODED)==0;
 	}
 }
 

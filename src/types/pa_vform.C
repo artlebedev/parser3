@@ -17,7 +17,7 @@
 #include "pa_vtable.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_PA_VFORM_C="$Id: pa_vform.C,v 1.108 2015/03/16 09:47:35 misha Exp $" IDENT_PA_VFORM_H;
+volatile const char * IDENT_PA_VFORM_C="$Id: pa_vform.C,v 1.109 2015/04/02 22:04:41 moko Exp $" IDENT_PA_VFORM_H;
 
 // defines
 
@@ -72,9 +72,9 @@ VForm::VForm(Request_charsets& acharsets, Request_info& arequest_info): VStatele
 
 	post_content_type=UNKNOWN;
 	if(can_have_body && arequest_info.content_type)
-		if(StrStartFromNC(arequest_info.content_type, HTTP_CONTENT_TYPE_FORM_URLENCODED))
+		if(pa_strncasecmp(arequest_info.content_type, HTTP_CONTENT_TYPE_FORM_URLENCODED)==0)
 			post_content_type=FORM_URLENCODED;
-		else if(StrStartFromNC(arequest_info.content_type, HTTP_CONTENT_TYPE_MULTIPART_FORMDATA))
+		else if(pa_strncasecmp(arequest_info.content_type, HTTP_CONTENT_TYPE_MULTIPART_FORMDATA)==0)
 			post_content_type=MULTIPART_FORMDATA;
 }
 
@@ -369,7 +369,7 @@ Value* VForm::get_element(const String& aname) {
 	return fields.get(aname);
 }
 
-Charset* VForm::get_post_charset(){
+Charset* VForm::get_body_charset(){
 	detect_post_charset();
 	return fpost_charset;
 }
