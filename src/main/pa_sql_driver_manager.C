@@ -15,7 +15,7 @@
 #include "pa_vtable.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_PA_SQL_DRIVER_MANAGER_C="$Id: pa_sql_driver_manager.C,v 1.92 2013/07/05 21:09:58 moko Exp $" IDENT_PA_SQL_DRIVER_MANAGER_H IDENT_PA_SQL_CONNECTION_H;
+volatile const char * IDENT_PA_SQL_DRIVER_MANAGER_C="$Id: pa_sql_driver_manager.C,v 1.93 2015/04/02 22:18:26 moko Exp $" IDENT_PA_SQL_DRIVER_MANAGER_H IDENT_PA_SQL_CONNECTION_H;
 
 // globals
 
@@ -116,7 +116,7 @@ SQL_Connection* SQL_Driver_manager::get_connection(const String& aurl,
 	if(!protocol2driver_and_client)
 		throw Exception(PARSER_RUNTIME,
 			&aurl,
-			"$"MAIN_SQL_NAME":"MAIN_SQL_DRIVERS_NAME" table must be defined");
+			"$" MAIN_SQL_NAME ":" MAIN_SQL_DRIVERS_NAME " table must be defined");
 
 	// first trying to get cached connection
 	SQL_Connection* connection=get_connection_from_cache(aurl);
@@ -181,7 +181,7 @@ SQL_Connection* SQL_Driver_manager::get_connection(const String& aurl,
 			if(!create)
 				throw Exception(0,
 					library,
-					"function '"SQL_DRIVER_CREATE_NAME"' was not found");
+					"function '" SQL_DRIVER_CREATE_NAME "' was not found");
 
 			// create library-driver!
 			driver=(*create)();

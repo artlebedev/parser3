@@ -13,7 +13,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.62 2015/04/02 22:04:41 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.63 2015/04/02 22:18:26 moko Exp $" IDENT_PA_HTTP_H; 
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -410,7 +410,7 @@ static void form_value2string(
 	} else
 		throw Exception(PARSER_RUNTIME,
 			new String(key, String::L_TAINTED),
-			"is %s, "HTTP_FORM_NAME" option value can be string or table only (file is allowed for $."HTTP_METHOD_NAME"[POST] + $."HTTP_FORM_ENCTYPE_NAME"["HTTP_CONTENT_TYPE_MULTIPART_FORMDATA"])", value->type());
+			"is %s, " HTTP_FORM_NAME " option value can be string or table only (file is allowed for $." HTTP_METHOD_NAME "[POST] + $." HTTP_FORM_ENCTYPE_NAME "[" HTTP_CONTENT_TYPE_MULTIPART_FORMDATA "])", value->type());
 }
 
 const char* pa_form2string(HashStringValue& form, Request_charsets& charsets) {
@@ -516,7 +516,7 @@ static void form_value2part(
 	} else
 		throw Exception(PARSER_RUNTIME,
 			new String(key, String::L_TAINTED),
-			"is %s, "HTTP_FORM_NAME" option value can be string, table or file only", value->type());
+			"is %s, " HTTP_FORM_NAME " option value can be string, table or file only", value->type());
 }
 
 const char* pa_form2string_multipart(HashStringValue& form, Request& r, const char* boundary, size_t& post_size){
@@ -711,26 +711,26 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 		if(method_is_get)
 			throw Exception(PARSER_RUNTIME,
 				0,
-				"you can not use $."HTTP_FORM_ENCTYPE_NAME" option with method GET");
+				"you can not use $." HTTP_FORM_ENCTYPE_NAME " option with method GET");
 
 		multipart=strcasecmp(encode, HTTP_CONTENT_TYPE_MULTIPART_FORMDATA)==0;
 
 		if(!multipart && strcasecmp(encode, HTTP_CONTENT_TYPE_FORM_URLENCODED)!=0)
 			throw Exception(PARSER_RUNTIME,
 				0,
-				"$."HTTP_FORM_ENCTYPE_NAME" option value can be "HTTP_CONTENT_TYPE_FORM_URLENCODED" or "HTTP_CONTENT_TYPE_MULTIPART_FORMDATA" only");
+				"$." HTTP_FORM_ENCTYPE_NAME " option value can be " HTTP_CONTENT_TYPE_FORM_URLENCODED " or " HTTP_CONTENT_TYPE_MULTIPART_FORMDATA " only");
 	}
 
 	if(vbody){
 		if(method_is_get)
 			throw Exception(PARSER_RUNTIME,
 				0,
-				"you can not use $."HTTP_BODY_NAME" option with method GET");
+				"you can not use $." HTTP_BODY_NAME " option with method GET");
 
 		if(form)
 			throw Exception(PARSER_RUNTIME,
 				0,
-				"you can not use options $."HTTP_BODY_NAME" and $."HTTP_FORM_NAME" together");
+				"you can not use options $." HTTP_BODY_NAME " and $." HTTP_FORM_NAME " together");
 	}
 
 	//preparing request

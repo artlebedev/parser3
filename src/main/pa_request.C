@@ -32,7 +32,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.339 2015/04/02 22:04:41 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.340 2015/04/02 22:18:26 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -385,7 +385,7 @@ void Request::core(const char* config_filespec, bool config_fail_on_read_problem
 		if(!body_string)
 			throw Exception(PARSER_RUNTIME,
 				0,
-				"'"MAIN_METHOD_NAME"' method not found");
+				"'" MAIN_METHOD_NAME "' method not found");
 
 		// extract response body
 		Value* body_value=response.fields().get(download_name); // $response:download?

@@ -13,7 +13,7 @@
 #include "pa_vhashfile.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_VHASHFILE_C="$Id: pa_vhashfile.C,v 1.65 2014/12/11 05:50:24 misha Exp $" IDENT_PA_VHASHFILE_H;
+volatile const char * IDENT_PA_VHASHFILE_C="$Id: pa_vhashfile.C,v 1.66 2015/04/02 22:18:26 moko Exp $" IDENT_PA_VHASHFILE_H;
 
 // consts
 
@@ -179,7 +179,7 @@ void VHashfile::put_field(const String& aname, Value *avalue) {
 		} else
 			throw Exception(PARSER_RUNTIME,
 				&aname,
-				"put hash value must contain ."VALUE_NAME);
+				"put hash value must contain ." VALUE_NAME);
 	} else
 		value_string=&avalue->as_string();
 

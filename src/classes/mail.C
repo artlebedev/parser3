@@ -19,7 +19,7 @@
 
 #include "smtp.h"
 
-volatile const char * IDENT_MAIL_C="$Id: mail.C,v 1.121 2013/07/31 15:13:03 moko Exp $";
+volatile const char * IDENT_MAIL_C="$Id: mail.C,v 1.122 2015/04/02 22:18:25 moko Exp $";
 
 // defines
 
@@ -109,7 +109,7 @@ static void sendmail(
 #ifdef PA_FORCED_SENDMAIL
 		throw Exception(PARSER_RUNTIME,
 			0,
-			"Parser was configured with --with-sendmail="PA_FORCED_SENDMAIL
+			"Parser was configured with --with-sendmail=" PA_FORCED_SENDMAIL
 			" key, to change sendmail you should reconfigure and recompie it");
 #else
 		if(Value* sendmail_value=vmail_conf->get_hash()->get(mail_sendmail_name))
@@ -117,7 +117,7 @@ static void sendmail(
 		else
 			throw Exception(PARSER_RUNTIME,
 				0,
-				"$"MAIN_CLASS_NAME":"MAIL_NAME"."SENDMAIL_NAME" not defined");
+				"$" MAIN_CLASS_NAME ":" MAIL_NAME "." SENDMAIL_NAME " not defined");
 #endif
 	} else {
 #ifdef PA_FORCED_SENDMAIL
@@ -161,7 +161,7 @@ static void sendmail(
 #ifdef PA_FORCED_SENDMAIL
 			" Use configure key \"--with-sendmail=appropriate sendmail command\""
 #else
-			" Set $"MAIN_CLASS_NAME":"MAIL_NAME"."SENDMAIL_NAME" to appropriate sendmail command"
+			" Set $" MAIN_CLASS_NAME ":" MAIL_NAME "." SENDMAIL_NAME " to appropriate sendmail command"
 #endif
 		);
 

@@ -11,7 +11,7 @@
 #include "pa_request.h"
 #include "pa_vform.h"
 
-volatile const char * IDENT_FORM_C="$Id: form.C,v 1.44 2015/01/12 12:22:02 misha Exp $";
+volatile const char * IDENT_FORM_C="$Id: form.C,v 1.45 2015/04/02 22:18:25 moko Exp $";
 
 /// $LIMITS.max_post_size default 10M
 const size_t MAX_POST_SIZE_DEFAULT=10*0x400*0x400;
@@ -61,7 +61,7 @@ void MForm::configure_admin(Request& r) {
 		if(r.request_info.content_length>max_post_size)
 			throw Exception(PARSER_RUNTIME,
 				0,
-				"posted content_length(%u) > $"LIMITS_NAME"."MAX_POST_SIZE_NAME"(%u)",
+				"posted content_length(%u) > $" LIMITS_NAME "." MAX_POST_SIZE_NAME "(%u)",
 					r.request_info.content_length, max_post_size);
 
 		// read POST data

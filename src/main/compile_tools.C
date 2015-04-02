@@ -13,7 +13,7 @@
 #include "pa_vdouble.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_COMPILE_TOOLS_C="$Id: compile_tools.C,v 1.70 2015/03/16 09:47:34 misha Exp $" IDENT_COMPILE_TOOLS_H;
+volatile const char * IDENT_COMPILE_TOOLS_C="$Id: compile_tools.C,v 1.71 2015/04/02 22:18:26 moko Exp $" IDENT_COMPILE_TOOLS_H;
 
 Value* LA2V(ArrayOperation& literal_string_array, int offset, OP::OPCODE code) {
 	return literal_string_array[offset+0].code==code?literal_string_array[offset+2/*skip opcode&origin*/].value
@@ -106,7 +106,7 @@ Method::Call_type GetMethodCallType(Parse_control& pc, ArrayOperation& literal_a
 		if(call_type!=method_call_type_static)
 			throw Exception("parser.compile",
 					&call_type,
-					"incorrect method call type. the only valid call type method prefix is '"METHOD_CALL_TYPE_STATIC"'"
+					"incorrect method call type. the only valid call type method prefix is '" METHOD_CALL_TYPE_STATIC "'"
 				);
 		const String *sole_name=&full_name->mid(pos+1, full_name->length());
 		// replace full method name (static:method) by sole method name (method). it will be used later.

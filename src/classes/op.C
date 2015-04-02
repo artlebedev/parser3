@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.218 2013/10/17 22:26:10 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.219 2015/04/02 22:18:25 moko Exp $";
 
 // limits
 
@@ -646,8 +646,8 @@ static void locked_process_and_cache_put_action(int f, void *context) {
 		} else
 			throw Exception(PARSER_RUNTIME,
 				result.exception_should_be_handled,
-				"$"EXCEPTION_VAR_NAME"."EXCEPTION_HANDLED_PART_NAME" value must be "
-				"either boolean or string '"CACHE_EXCEPTION_HANDLED_CACHE_NAME"'");
+				"$" EXCEPTION_VAR_NAME "." EXCEPTION_HANDLED_PART_NAME " value must be "
+				"either boolean or string '" CACHE_EXCEPTION_HANDLED_CACHE_NAME "'");
 	} else
 		info.processed_code=&result.processed_code.as_string();
 

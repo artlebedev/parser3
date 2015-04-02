@@ -77,7 +77,7 @@
 	
 */
 
-volatile const char * IDENT_COMPILE_Y = "$Id: compile.tab.C,v 1.159 2015/03/16 09:51:24 misha Exp $";
+volatile const char * IDENT_COMPILE_Y = "$Id: compile.tab.C,v 1.160 2015/04/02 22:18:25 moko Exp $";
 
 /**
 	@todo parser4: 
@@ -1805,7 +1805,7 @@ yyreduce:
 			PC.cclass_new->set_name(name);
 			PC.append=false;
 		} else {
-			strcpy(PC.error, "@"CLASS_NAME" must contain only one line with class name (contains more then one)");
+			strcpy(PC.error, "@" CLASS_NAME " must contain only one line with class name (contains more then one)");
 			YYERROR;
 		}
 	} else if(command==USE_CONTROL_METHOD_NAME) {
@@ -1832,22 +1832,22 @@ yyreduce:
 				// @CLASS == @BASE sanity check
 				if(VStateless_class *base_class=base_class_value->get_class()) {
 					if(PC.cclass==base_class) {
-						strcpy(PC.error, "@"CLASS_NAME" equals @"BASE_NAME);
+						strcpy(PC.error, "@" CLASS_NAME " equals @" BASE_NAME);
 						YYERROR;
 					}
 					PC.cclass->get_class()->set_base(base_class);
 				} else { // they asked to derive from a class without methods ['env' & co]
 					strcpy(PC.error, base_name.cstr());
-					strcat(PC.error, ": you can not derive from this class in @"BASE_NAME);
+					strcat(PC.error, ": you can not derive from this class in @" BASE_NAME);
 					YYERROR;
 				}
 			} else {
 				strcpy(PC.error, base_name.cstr());
-				strcat(PC.error, ": undefined class in @"BASE_NAME);
+				strcat(PC.error, ": undefined class in @" BASE_NAME);
 				YYERROR;
 			}
 		} else {
-			strcpy(PC.error, "@"BASE_NAME" must contain sole name");
+			strcpy(PC.error, "@" BASE_NAME " must contain sole name");
 			YYERROR;
 		}
 	} else if(command==OPTIONS_CONTROL_METHOD_NAME) {
@@ -1869,7 +1869,7 @@ yyreduce:
 						PC.cclass_new->set_partial();
 					}
 				} else {
-					strcpy(PC.error, "'"OPTION_PARTIAL_CLASS"' option should be used straight after @"CLASS_NAME);
+					strcpy(PC.error, "'" OPTION_PARTIAL_CLASS "' option should be used straight after @" CLASS_NAME);
 					YYERROR;
 				}
 			} else if(option==method_call_type_static){
@@ -1880,8 +1880,8 @@ yyreduce:
 				strcpy(PC.error, "'");
 				strncat(PC.error, option.cstr(), MAX_STRING/2);
 				strcat(PC.error, "' invalid option. valid options are "
-					"'"OPTION_PARTIAL_CLASS"', '"OPTION_ALL_VARS_LOCAL_NAME"'"
-					", '"METHOD_CALL_TYPE_STATIC"' and '"METHOD_CALL_TYPE_DYNAMIC"'"
+					"'" OPTION_PARTIAL_CLASS "', '" OPTION_ALL_VARS_LOCAL_NAME "'"
+					", '" METHOD_CALL_TYPE_STATIC "' and '" METHOD_CALL_TYPE_DYNAMIC "'"
 					);
 				YYERROR;
 			}
@@ -1890,7 +1890,7 @@ yyreduce:
 		strcpy(PC.error, "'");
 		strncat(PC.error, command.cstr(), MAX_STRING/2);
 		strcat(PC.error, "' invalid special name. valid names are "
-			"'"CLASS_NAME"', '"USE_CONTROL_METHOD_NAME"', '"BASE_NAME"' and '"OPTIONS_CONTROL_METHOD_NAME"'.");
+			"'" CLASS_NAME "', '" USE_CONTROL_METHOD_NAME "', '" BASE_NAME "' and '" OPTIONS_CONTROL_METHOD_NAME "'.");
 		YYERROR;
 	}
 }
