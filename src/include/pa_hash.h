@@ -17,7 +17,7 @@
 #ifndef PA_HASH_H
 #define PA_HASH_H
 
-#define IDENT_PA_HASH_H "$Id: pa_hash.h,v 1.86 2015/03/12 08:18:18 misha Exp $"
+#define IDENT_PA_HASH_H "$Id: pa_hash.h,v 1.87 2015/04/06 22:27:26 moko Exp $"
 
 #include "pa_memory.h"
 #include "pa_types.h"
@@ -121,7 +121,7 @@ public:
 	HASH() { 
 		allocated=Hash_allocates[allocates_index=0];
 		fpairs_count=fused_refs=0;
-		refs=new(UseGC) Pair*[allocated];
+		refs=new Pair*[allocated];
 #ifdef HASH_ORDER
 		first=0;
 		last=&first;
@@ -133,7 +133,7 @@ public:
 		allocated=source.allocated;
 		fused_refs=source.fused_refs;
 		fpairs_count=source.fpairs_count;
-		refs=new(UseGC) Pair*[allocated];
+		refs=new Pair*[allocated];
 		// clone & rehash
 #ifdef HASH_ORDER
 		first=0;
@@ -403,7 +403,7 @@ protected:
 		if (allocates_index<HASH_ALLOCATES_COUNT-1) allocates_index++;
 		// allocated bigger refs array
 		allocated=Hash_allocates[allocates_index];
-		refs=new(UseGC) Pair*[allocated];
+		refs=new Pair*[allocated];
 
 		// rehash
 		Pair **old_ref=old_refs;

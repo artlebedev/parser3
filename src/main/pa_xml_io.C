@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-volatile const char * IDENT_PA_XML_IO_C="$Id: pa_xml_io.C,v 1.28 2012/03/16 09:24:14 moko Exp $" IDENT_PA_XML_IO_H;
+volatile const char * IDENT_PA_XML_IO_C="$Id: pa_xml_io.C,v 1.29 2015/04/06 22:27:26 moko Exp $" IDENT_PA_XML_IO_H;
 
 #include "libxslt/extensions.h"
 
@@ -116,7 +116,7 @@ xmlFileOpen_ReadIntoStream (const char* do_not_store_filename, bool adjust_path_
 	} catch(...) {
 		buf="xmlFileOpen_ReadIntoStream: unknown error";
 	}
-	MemoryStream* stream=new(UseGC) MemoryStream;
+	MemoryStream* stream=new MemoryStream;
 	stream->m_buf=buf;
 	stream->m_size=strlen(buf);
 	return (void *)stream;
@@ -199,7 +199,7 @@ xmlFileOpenMethod (const char* afilename) {
 	} catch(...) {
 		buf="xmlFileOpenLocalhost: unknown error";
 	}
-	MemoryStream* stream=new(UseGC) MemoryStream;
+	MemoryStream* stream=new MemoryStream;
 	stream->m_buf=buf;
 	stream->m_size=strlen(buf);
 	return (void *)stream;

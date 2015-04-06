@@ -8,7 +8,7 @@
 	
 */
 
-volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.268 2015/04/02 22:17:22 moko Exp $";
+volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.269 2015/04/06 22:27:26 moko Exp $";
 
 /**
 	@todo parser4: 
@@ -28,6 +28,8 @@ volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.268 2015/04/02 22:17
 #define YYERROR_VERBOSE	1
 #define yyerror(msg)  real_yyerror((Parse_control *)pc, msg)
 #define YYPRINT(file, type, value)  yyprint(file, type, value)
+#define YYMALLOC pa_malloc
+#define YYFREE pa_free
 
 // includes
 

@@ -8,7 +8,7 @@
 #ifndef PA_VCONSOLE_H
 #define PA_VCONSOLE_H
 
-#define IDENT_PA_VCONSOLE_H "$Id: pa_vconsole.h,v 1.20 2015/03/16 09:47:35 misha Exp $"
+#define IDENT_PA_VCONSOLE_H "$Id: pa_vconsole.h,v 1.21 2015/04/06 22:27:27 moko Exp $"
 
 // includes
 
@@ -38,7 +38,7 @@ public: // Value
 		if(aname==CONSOLE_LINE_NAME) {
 			char local_value[MAX_STRING];
 			if(fgets(local_value, sizeof(local_value), stdin))
-				return new VString(*new String(strdup(local_value), String::L_TAINTED));
+				return new VString(*new String(pa_strdup(local_value), String::L_TAINTED));
 
 			return 0; // EOF
 		}

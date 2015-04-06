@@ -10,7 +10,7 @@
 #include "pa_exception.h"
 #include "smtp.h"
 
-volatile const char * IDENT_SMTP_C="$Id: smtp.C,v 1.10 2013/07/22 15:17:06 moko Exp $" IDENT_SMTP_H;
+volatile const char * IDENT_SMTP_C="$Id: smtp.C,v 1.11 2015/04/06 22:27:26 moko Exp $" IDENT_SMTP_H;
 
 #undef snprintf
 // pa_common.C
@@ -27,15 +27,15 @@ SMTP::SMTP() {
     in_buffer_total  = 0;
     out_buffer_total = 0;
 
-    in_buffer  = (char *)malloc(SOCKET_BUFFER_SIZE);
-    out_buffer = (char *)malloc(SOCKET_BUFFER_SIZE);
+    in_buffer  = (char *)pa_malloc(SOCKET_BUFFER_SIZE);
+    out_buffer = (char *)pa_malloc(SOCKET_BUFFER_SIZE);
 
     last_winsock_error = 0;
 }
 
 SMTP::~SMTP() {
-	free(in_buffer);
-    free(out_buffer);
+    pa_free(in_buffer);
+    pa_free(out_buffer);
 }
 
 

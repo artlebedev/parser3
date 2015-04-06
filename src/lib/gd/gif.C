@@ -17,7 +17,7 @@
 #include "gif.h"
 #include "mtables.h"
 
-volatile const char * IDENT_GIF_C="$Id: gif.C,v 1.7 2012/03/16 09:24:11 moko Exp $" IDENT_GIF_H;
+volatile const char * IDENT_GIF_C="$Id: gif.C,v 1.8 2015/04/06 22:27:26 moko Exp $" IDENT_GIF_H;
 
 //static void BrushApply(int x, int y);
 //static void TileApply(int x, int y);
@@ -27,12 +27,12 @@ void gdImage::Create(int asx, int asy) {
 	sy = asy;
 
 	int i;
-	pixels = (unsigned char **) malloc(sizeof(unsigned char *) * sx);
+	pixels = (unsigned char **) pa_malloc(sizeof(unsigned char *) * sx);
 	polyInts = 0;
 	polyAllocated = 0;
 	lineWidth = 1;
 	for (i=0; (i<asx); i++)
-		pixels[i] = (unsigned char *) malloc_atomic(asy);
+		pixels[i] = (unsigned char *) pa_malloc_atomic(asy);
 	colorsTotal = 0;
 	transparent = (-1);
 	interlace = 0;
@@ -818,14 +818,14 @@ void gdImage::FilledPolygon(Point *p, int n, int c)
 		return;
 	}
 	if (!polyAllocated) {
-		polyInts = (int *) malloc(sizeof(int) * n);
+		polyInts = (int *) pa_malloc(sizeof(int) * n);
 		polyAllocated = n;
 	}		
 	if (polyAllocated < n) {
 		while (polyAllocated < n) {
 			polyAllocated *= 2;
 		}	
-		polyInts = (int *) realloc(polyInts,
+		polyInts = (int *) pa_realloc(polyInts,
 			sizeof(int) * polyAllocated);
 	}
 	y1 = p[0].y;
@@ -944,14 +944,14 @@ void gdImage::FilledPolygonReplaceColor(Point *p, int n, int a, int b)
 		return;
 	}
 	if (!polyAllocated) {
-		polyInts = (int *) malloc(sizeof(int) * n);
+		polyInts = (int *) pa_malloc(sizeof(int) * n);
 		polyAllocated = n;
 	}		
 	if (polyAllocated < n) {
 		while (polyAllocated < n) {
 			polyAllocated *= 2;
 		}	
-		polyInts = (int *) realloc(polyInts,
+		polyInts = (int *) pa_realloc(polyInts,
 			sizeof(int) * polyAllocated);
 	}
 	y1 = p[0].y;

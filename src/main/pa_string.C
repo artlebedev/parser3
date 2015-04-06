@@ -12,7 +12,7 @@
 #include "pa_charset.h"
 #include "pa_vregex.h"
 
-volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.245 2015/02/20 02:38:45 moko Exp $" IDENT_PA_STRING_H;
+volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.246 2015/04/06 22:27:26 moko Exp $" IDENT_PA_STRING_H;
 
 const String String::Empty;
 
@@ -960,7 +960,7 @@ void String::Languages::dump() const {
 }
 const char* String::v() const {
 	const uint LIMIT_VIEW=20;
-	char* buf=(char*)malloc(MAX_STRING);
+	char* buf=(char*)pa_malloc(MAX_STRING);
 	const char*body_view=body.v();
 	const char*langs_view=langs.v();
 	snprintf(buf, MAX_STRING, 

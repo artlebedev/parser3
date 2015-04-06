@@ -18,7 +18,7 @@
 #ifndef GIF_H
 #define GIF_H
 
-#define IDENT_GIF_H "$Id: gif.h,v 1.5 2012/03/16 09:24:11 moko Exp $"
+#define IDENT_GIF_H "$Id: gif.h,v 1.6 2015/04/06 22:27:26 moko Exp $"
 
 #include "pa_config_includes.h"
 
@@ -42,7 +42,7 @@ class gdGrowingBuf: PA_Object {
 
 	void expand(size_t delta) {
 		size_t new_allocated=fallocated+delta;
-		fptr=(unsigned char*)realloc(fptr, new_allocated);
+		fptr=(unsigned char*)pa_realloc(fptr, new_allocated);
 		fallocated=new_allocated;
 	}
 public:

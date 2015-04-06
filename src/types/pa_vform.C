@@ -17,7 +17,7 @@
 #include "pa_vtable.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_PA_VFORM_C="$Id: pa_vform.C,v 1.109 2015/04/02 22:04:41 moko Exp $" IDENT_PA_VFORM_H;
+volatile const char * IDENT_PA_VFORM_C="$Id: pa_vform.C,v 1.110 2015/04/06 22:27:27 moko Exp $" IDENT_PA_VFORM_H;
 
 // defines
 
@@ -103,7 +103,7 @@ char *VForm::getAttributeValue(const char* data, const char *attr, size_t len) {
 
 String::C VForm::transcode(const char* client, size_t client_size, Charset* client_charset) {
 	return Charset::transcode(
-				String::C(strdup(client, client_size), client_size),
+				String::C(pa_strdup(client, client_size), client_size),
 				client_charset?*client_charset:fcharsets.client(),
 				fcharsets.source());
 }
@@ -230,7 +230,7 @@ void VForm::AppendFormFileEntry(const char* cname_cstr,
 				const char* raw_cvalue_ptr, const size_t raw_cvalue_size, 
 				const char* file_name_cstr, Charset* client_charset){
 
-	const char* fname = strdup(file_name_cstr);
+	const char* fname = pa_strdup(file_name_cstr);
 	const String* sfile_name=new String(transcode(fname, strlen(fname), client_charset));
 
 	const String& sname=*new String(transcode(cname_cstr, strlen(cname_cstr), client_charset));
@@ -260,7 +260,7 @@ void VForm::AppendFormEntry(const char* cname_cstr, const char* raw_cvalue_ptr, 
 	const char* premature_zero_pos=(const char* )memchr(raw_cvalue_ptr, 0, raw_cvalue_size);
 	size_t cvalue_size=premature_zero_pos?premature_zero_pos-(const char* )raw_cvalue_ptr
 		:raw_cvalue_size;
-	char *cvalue_ptr=strdup(raw_cvalue_ptr, cvalue_size); 
+	char *cvalue_ptr=pa_strdup(raw_cvalue_ptr, cvalue_size); 
 	fix_line_breaks(cvalue_ptr, cvalue_size);
 	String& string=*new String(transcode(cvalue_ptr, cvalue_size, client_charset), String::L_TAINTED);
 
@@ -297,7 +297,7 @@ void VForm::refill_fields_tables_and_files() {
 	// parsing QS [GET and ?name=value from uri rewrite)]
 	if(frequest_info.query_string) {
 		size_t length=strlen(frequest_info.query_string);
-		char *buf=strdup(frequest_info.query_string, length);
+		char *buf=pa_strdup(frequest_info.query_string, length);
 		ParseGetFormInput(buf, length);
 	}
 
@@ -321,7 +321,7 @@ void VForm::refill_fields_tables_and_files() {
 				}
 			case MULTIPART_FORMDATA:
 				{
-					ParseMimeInput(strdup(frequest_info.content_type), frequest_info.post_data, frequest_info.post_size);
+					ParseMimeInput(pa_strdup(frequest_info.content_type), frequest_info.post_data, frequest_info.post_size);
 					break;
 				}
 		}

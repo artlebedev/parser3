@@ -13,7 +13,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.63 2015/04/02 22:18:26 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.64 2015/04/06 22:27:26 moko Exp $" IDENT_PA_HTTP_H; 
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -548,7 +548,7 @@ static void find_headers_end(char* p,
 
 // Set-Cookie: name=value; Domain=docs.foo.com; Path=/accounts; Expires=Wed, 13-Jan-2021 22:23:01 GMT; Secure; HttpOnly
 static ArrayString* parse_cookie(Request& r, const String& cookie) {
-	char *current=strdup(cookie.cstr());
+	char *current=pa_strdup(cookie.cstr());
 	
 	const String* name=0;
 	const String* value=&String::Empty;

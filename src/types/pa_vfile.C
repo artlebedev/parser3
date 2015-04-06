@@ -12,7 +12,7 @@
 #include "pa_vint.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VFILE_C="$Id: pa_vfile.C,v 1.62 2015/04/02 22:18:26 moko Exp $" IDENT_PA_VFILE_H;
+volatile const char * IDENT_PA_VFILE_C="$Id: pa_vfile.C,v 1.63 2015/04/06 22:27:27 moko Exp $" IDENT_PA_VFILE_H;
 
 // externs
 
@@ -114,7 +114,7 @@ const char* VFile::text_cstr() {
 	if(const char *premature_zero_pos=(const char *)memchr(p, 0, size))
 		size=premature_zero_pos-p;
 
-	char *copy_ptr=size?strdup(p, size):0;
+	char *copy_ptr=size?pa_strdup(p, size):0;
 	// text mode but binary content
 	if(fis_text_mode && size)
 		fix_line_breaks(copy_ptr, size);
@@ -130,7 +130,7 @@ void VFile::set_mode(bool ais_text_mode){
 void VFile::set_name(const String* afile_name){
 	char *lfile_name;
 	if(afile_name && !afile_name->is_empty()) {
-		lfile_name=strdup(afile_name->taint_cstr(String::L_FILE_SPEC));
+		lfile_name=pa_strdup(afile_name->taint_cstr(String::L_FILE_SPEC));
 		if(char *after_slash=rsplit(lfile_name, '\\'))
 			lfile_name=after_slash;
 		if(char *after_slash=rsplit(lfile_name, '/'))

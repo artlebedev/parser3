@@ -9,7 +9,7 @@
 #ifndef PA_MEMORY_H
 #define PA_MEMORY_H
 
-#define IDENT_PA_MEMORY_H "$Id: pa_memory.h,v 1.20 2013/07/23 15:47:07 moko Exp $"
+#define IDENT_PA_MEMORY_H "$Id: pa_memory.h,v 1.21 2015/04/06 22:27:26 moko Exp $"
 
 // include
 
@@ -69,20 +69,10 @@ inline void *pa_realloc(void *ptr, size_t size) {
 	return pa_fail_alloc("reallocate to", size);
 }
 
-//{@ these operators can be used from stl. to be on a safe side, assume that data may contain pointers
-inline void *operator new[] (size_t size) {
-	return pa_malloc(size);
-}
-inline void *operator new(size_t size) {
-	return pa_malloc(size);
-}
-//}@
-
-#define UseGC ((int)1)
 #define PointerFreeGC (true)
 
 //{@ Array-oriented
-inline void *operator new[] (size_t size, int) { // UseGC
+inline void *operator new[] (size_t size) {
 	return pa_malloc(size);
 }
 inline void *operator new[] (size_t size, bool) { // PointerFreeGC
@@ -94,7 +84,7 @@ inline void operator delete[] (void *ptr) {
 //}@
 
 //{@ Structure-oriented
-inline void *operator new (size_t size, int) { // UseGC
+inline void *operator new(size_t size) {
 	return pa_malloc(size);
 }
 inline void *operator new (size_t size, bool) { // PointerFreeGC
@@ -104,6 +94,20 @@ inline void operator delete(void *ptr) {
 	pa_free(ptr);
 }
 //}@
+
+// disabled from accidental use
+
+void *calloc_disabled();
+void *malloc_disabled();
+void *realloc_disabled();
+void free_disabled();
+char *strdup_disabled();
+
+inline void *calloc(size_t){ return calloc_disabled(); }
+inline void *malloc(size_t){ return malloc_disabled(); }
+inline void *realloc(void *, size_t){ return realloc_disabled(); }
+inline void free(void *){ free_disabled(); }
+inline char *strdup(const char*, size_t){ return strdup_disabled(); }
 
 /// memory allocation/dallocation goes via pa_malloc/pa_free.
 class PA_Allocated {
@@ -115,56 +119,6 @@ public:
 	static void operator delete(void *ptr) {
 		pa_free(ptr);
 	}
-	static void *malloc(size_t size) {
-		return pa_malloc(size);
-	}
-	static void *malloc_atomic(size_t size) {
-		return pa_malloc_atomic(size);
-	}
-	static char *strdup(const char* auto_variable_never_null, size_t helper_length=0) {
-		return pa_strdup(auto_variable_never_null, helper_length);
-	}
-	static void free(void *ptr) {
-		pa_free(ptr);
-	}
-	static void *realloc(void *ptr, size_t size) {
-		return pa_realloc(ptr, size);
-	}
-
-private: // disabled from accidental use
-
-	/// use malloc/malloc_atomic instead [GC clears result of those]
-	static void *calloc(size_t size);
-
-};
-
-/// Those who want their destructor called during finalization, must derive from this class [also]
-class PA_Cleaned {
-#ifndef PA_DEBUG_DISABLE_GC
-	static void cleanup( void* obj, void* displ ) {
-	    ((PA_Cleaned*) ((char*) obj + (ptrdiff_t) displ))->~PA_Cleaned();
-	}
-
-public:
-	PA_Cleaned() {
-		GC_finalization_proc oldProc;
-		void* oldData;
-		void* base = GC_base( (void *) this );
-		if (0 != base)  {
-			// Don't call the debug version, since this is a real base address.
-			GC_register_finalizer_ignore_self( 
-				base, (GC_finalization_proc)cleanup, (void*) ((char*) this - (char*) base), 
-				&oldProc, &oldData );
-			if (0 != oldProc) {
-				GC_register_finalizer_ignore_self( base, oldProc, oldData, 0, 0 );
-			}
-		}
-	}
-
-	virtual ~PA_Cleaned() {
-	    GC_REGISTER_FINALIZER_IGNORE_SELF( GC_base(this), 0, 0, 0, 0 );
-	}
-#endif
 };
 
 /// Base for all Parser classes
@@ -174,6 +128,5 @@ typedef PA_Allocated PA_Object;
 
 #define override
 #define rethrow throw
-
 
 #endif

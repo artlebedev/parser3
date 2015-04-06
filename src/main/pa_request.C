@@ -32,7 +32,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.340 2015/04/02 22:18:26 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.341 2015/04/06 22:27:26 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -187,7 +187,7 @@ Request::~Request() {
 	// if for some strange reason xml generic errors failed to be reported, free them up
 	if(const char* xml_generic_errors=xmlGenericErrors()) {
 		SAPI::log(sapi_info, "warning: unreported xmlGenericErrors: %s", xml_generic_errors);
-		free((void *)xml_generic_errors);
+		pa_free((void *)xml_generic_errors);
 	}
 #endif
 }
@@ -620,7 +620,7 @@ void Request::use_buf(VStateless_class& aclass,
 }
 
 const String& Request::relative(const char* apath, const String& relative_name) {
-	char *hpath=strdup(apath);
+	char *hpath=pa_strdup(apath);
 	String& result=*new String;
 	if(rsplit(hpath, '/')) // if something/splitted
 		result << hpath << "/";
@@ -630,7 +630,7 @@ const String& Request::relative(const char* apath, const String& relative_name) 
 
 const String& Request::absolute(const String& relative_name) {
 	if(relative_name.first_char()=='/') {
-		String& result=*new String(strdup(request_info.document_root));
+		String& result=*new String(pa_strdup(request_info.document_root));
 		result << relative_name;
 		return result;
 	} else 

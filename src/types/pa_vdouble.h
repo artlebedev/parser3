@@ -8,7 +8,7 @@
 #ifndef PA_VDOUBLE_H
 #define PA_VDOUBLE_H
 
-#define IDENT_PA_VDOUBLE_H "$Id: pa_vdouble.h,v 1.60 2013/03/07 22:39:57 moko Exp $"
+#define IDENT_PA_VDOUBLE_H "$Id: pa_vdouble.h,v 1.61 2015/04/06 22:27:27 moko Exp $"
 
 // includes
 
@@ -40,7 +40,7 @@ public: // Value
 	override const String* get_string() {
 		char local_buf[MAX_NUMBER];
 		size_t length=snprintf(local_buf, MAX_NUMBER, "%.15g", fdouble);
-		return new String(strdup(local_buf, length));
+		return new String(pa_strdup(local_buf, length));
 	}
 	/// VDouble: fdouble
 	override double as_double() const { return fdouble; }

@@ -21,7 +21,7 @@
 #include "pa_vbool.h"
 #include "pa_array.h"
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.301 2014/06/29 06:30:25 misha Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.302 2015/04/06 22:27:25 moko Exp $";
 
 // class
 
@@ -1264,7 +1264,7 @@ static void marshal_bind(
 // not static, used elsewhere
 int marshal_binds(HashStringValue& hash, SQL_Driver::Placeholder*& placeholders) {
 	int hash_count=hash.count();
-	placeholders=new(UseGC) SQL_Driver::Placeholder[hash_count];
+	placeholders=new SQL_Driver::Placeholder[hash_count];
 	SQL_Driver::Placeholder* ptr=placeholders;
 	hash.for_each<SQL_Driver::Placeholder**>(marshal_bind, &ptr);
 	return hash_count;

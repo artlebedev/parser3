@@ -3,15 +3,12 @@
 Parser in it's work with memory relies on garbage collection. See  http://www.hpl.hp.com/personal/Hans_Boehm/gc
 
 Work with memory goes like this:
-all allocations are in the end get to  pa_malloc pa_malloc_atomic, pa_realloc, pa_free functions; 
-For C++ corresponding new operators are overloaded.
-To allocate a memory in C++ style not for objects one should specify,
-will the block to-be-allocated contain pointers,
-new(UseGC) when "it will". new(PointerFreeGC) when "it will not".
+all allocations are in the end get to pa_malloc pa_malloc_atomic, pa_realloc, pa_free functions;
+For C++ corresponding new operators are overloaded. To allocate a memory in C++ style one should specify,
+will the block contains pointers, use new when "it will" or new(PointerFreeGC) when "it will not".
 
-For convinient memory allocation for objects there is root class PA_Object, 
-overriding new operator, implementing it with pa_malloc, 
-and providing wrappers for malloc/malloc_atomic/realloc/free.
+For convinient memory allocation for objects there is root class PA_Object,
+overriding new operator and check usage for malloc/malloc_atomic/realloc/free.
 It is recommended, where it is possible, to allocate memory in C++ style [using new operator],
 exception can be made for a case where realloc is needed:
 on many platforms new-operator changes the pointer, returned by new-operator-implementation allocator.
