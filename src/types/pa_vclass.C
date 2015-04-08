@@ -8,7 +8,7 @@
 #include "pa_vclass.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_PA_VCLASS_C="$Id: pa_vclass.C,v 1.50 2015/03/17 07:28:44 misha Exp $" IDENT_PA_VCLASS_H;
+volatile const char * IDENT_PA_VCLASS_C="$Id: pa_vclass.C,v 1.51 2015/04/08 18:08:53 moko Exp $" IDENT_PA_VCLASS_H;
 
 Property& VClass::get_property(const String& aname) {
 	Property* result=ffields.get(aname);
@@ -53,13 +53,14 @@ void VClass::real_set_method(const String& aname, Method* amethod) {
 
 void VClass::set_base(VStateless_class* abase){
 	VStateless_class::set_base(abase);
-	if(abase)
+	if(abase) {
 		if(HashStringProperty *props=abase->get_properties())
 			ffields.merge_dont_replace(*props);
-		else 
+		else
 			throw Exception("parser.compile",
 				0,
 				"Class %s base class (%s) is not user-defined", name_cstr(), abase->name_cstr());
+	}
 }
 
 Value* VClass::as(const char* atype) {

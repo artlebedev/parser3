@@ -8,7 +8,7 @@
 #ifndef COMPILE_TOOLS
 #define COMPILE_TOOLS
 
-#define IDENT_COMPILE_TOOLS_H "$Id: compile_tools.h,v 1.106 2015/03/16 09:47:34 misha Exp $"
+#define IDENT_COMPILE_TOOLS_H "$Id: compile_tools.h,v 1.107 2015/04/08 18:08:53 moko Exp $"
 
 #include "pa_opcode.h"
 #include "pa_types.h"
@@ -366,6 +366,7 @@ inline bool maybe_optimize_construct(ArrayOperation& opcodes, ArrayOperation& va
 					with=0x30;
 					break;
 				}
+			default: break;
 		}
 
 		if(with && var_ops[1].code==OP::OP_VALUE && var_ops.count()==4){

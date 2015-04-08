@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.96 2015/03/16 09:47:36 misha Exp $"
+#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.97 2015/04/08 18:08:53 moko Exp $"
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
@@ -201,13 +201,14 @@ public: // Value
 	override void write(const String& astring, String::Language alang) {
 #ifdef OPTIMIZE_RESULT
 		switch (method.result_optimization){
-			case Method::RO_USE_RESULT: 
+			case Method::RO_USE_RESULT:
 				return;
 			case Method::RO_UNKNOWN:
 				if(get_result_variable()){
 					((Method *)&method)->result_optimization=Method::RO_USE_RESULT;
 					return;
 				}
+			case Method::RO_USE_WCONTEXT: break;
 		}
 #endif
 		WContext::write(astring, alang);

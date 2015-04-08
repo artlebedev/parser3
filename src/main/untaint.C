@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_UNTAINT_C="$Id: untaint.C,v 1.165 2013/10/14 21:17:38 moko Exp $";
+volatile const char * IDENT_UNTAINT_C="$Id: untaint.C,v 1.166 2015/04/08 18:08:53 moko Exp $";
 
 
 #include "pa_string.h"
@@ -392,8 +392,8 @@ int cstr_to_string_body_block(String::Language to_lang, size_t fragment_length, 
 				}
 				//RFC   + An 'encoded-word' MUST NOT appear in any portion of an 'addr-spec'.
 				if(!email && (
-					!to_quoted_printable && (c & 0x80)  // starting quote-printable-encoding on first 8bit char
-					|| to_quoted_printable && !mail_header_char_valid_within_Qencoded(c)
+					( !to_quoted_printable && (c & 0x80) )  // starting quote-printable-encoding on first 8bit char
+					|| ( to_quoted_printable && !mail_header_char_valid_within_Qencoded(c) )
 					)) {
 					if(!to_quoted_printable) {
 						to_string("=?");

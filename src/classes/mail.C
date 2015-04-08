@@ -19,7 +19,7 @@
 
 #include "smtp.h"
 
-volatile const char * IDENT_MAIL_C="$Id: mail.C,v 1.122 2015/04/02 22:18:25 moko Exp $";
+volatile const char * IDENT_MAIL_C="$Id: mail.C,v 1.123 2015/04/08 18:08:52 moko Exp $";
 
 // defines
 
@@ -235,7 +235,7 @@ MMail::MMail(): Methoded(MAIL_CLASS_NAME) {
 void MMail::configure_user(Request& r) {
 
 	// $MAIN:MAIL[$SMTP[mail.design.ru]]
-	if(Value* mail_element=r.main_class.get_element(mail_name))
+	if(Value* mail_element=r.main_class.get_element(mail_name)) {
 		if(mail_element->get_hash())
 			r.classes_conf.put(name(), mail_element);
 		else
@@ -243,4 +243,5 @@ void MMail::configure_user(Request& r) {
 				throw Exception(PARSER_RUNTIME,
 					0,
 					"$" MAIL_CLASS_NAME ":" MAIL_NAME " is not hash");
+	}
 }

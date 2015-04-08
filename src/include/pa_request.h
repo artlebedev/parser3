@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.216 2013/10/21 20:49:21 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.217 2015/04/08 18:08:52 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -263,7 +263,7 @@ public:
 	/// appending, sure of clean string inside
 	void write_no_lang(const String& astring) {
 		wcontext->write(astring, 
-			(String::Language)(String::L_CLEAN | flang&String::L_OPTIMIZE_BIT));
+			(String::Language)(String::L_CLEAN | (flang & String::L_OPTIMIZE_BIT) ));
 	}
 	/// appending sure value, that would be converted to clean string
 	void write_no_lang(Value& avalue) {
@@ -271,7 +271,7 @@ public:
 			wcontext->write(avalue);
 		else
 			wcontext->write(avalue, 
-				(String::Language)(String::L_CLEAN | flang&String::L_OPTIMIZE_BIT));
+				(String::Language)(String::L_CLEAN | (flang & String::L_OPTIMIZE_BIT) ));
 	}
 
 	/// appending string, passing language built into string being written

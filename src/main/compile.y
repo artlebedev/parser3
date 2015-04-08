@@ -8,7 +8,7 @@
 	
 */
 
-volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.269 2015/04/06 22:27:26 moko Exp $";
+volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.270 2015/04/08 18:08:52 moko Exp $";
 
 /**
 	@todo parser4: 
@@ -1073,8 +1073,8 @@ default:
 			case '"':
 			case '\'':
 				if(
-					pc.ls == LS_EXPRESSION_STRING_QUOTED && c=='"' ||
-					pc.ls == LS_EXPRESSION_STRING_APOSTROFED && c=='\'') {
+					(pc.ls == LS_EXPRESSION_STRING_QUOTED && c=='"') ||
+					(pc.ls == LS_EXPRESSION_STRING_APOSTROFED && c=='\'') ) {
 					pop_LS(pc); //"abc". | 'abc'.
 					RC;
 				}
@@ -1147,11 +1147,12 @@ default:
 		case LS_METHOD_ROUND:
 			switch(c) {
 			case ')':
-				if(--lexical_brackets_nestage==0)
+				if(--lexical_brackets_nestage==0) {
 					if(pc.ls==LS_METHOD_ROUND) // method round param ended
 						pc.ls=LS_METHOD_AFTER; // look for method end
 					else // pc.ls==LS_VAR_ROUND // variable constructor ended
 						pop_LS(pc); // return to normal life
+				}
 				RC;
 			case '#': // comment start skipping
 				if(end!=begin) {

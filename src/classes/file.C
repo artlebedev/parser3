@@ -25,7 +25,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.233 2015/04/02 22:04:40 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.234 2015/04/08 18:08:52 moko Exp $";
 
 // defines
 
@@ -387,7 +387,7 @@ static void _stat(Request& r, MethodParams& params) {
 static bool is_safe_env_key(const char* key) {
 	for(const char* validator=key; *validator; validator++) {
 		char c=*validator;
-		if(!(c>='A' && c<='Z' || c>='0' && c<='9' || c=='_' || c=='-'))
+		if(!( (c>='A' && c<='Z') || (c>='0' && c<='9') || (c=='_' || c=='-') ))
 			return false;
 	}
 #ifdef PA_SAFE_MODE
@@ -703,18 +703,19 @@ static void _list(Request& r, MethodParams& params) {
 			} else {
 				vfilter=&voption;
 			}
-			if(vfilter)
+			if(vfilter) {
 				if(Value* value=vfilter->as(VREGEX_TYPE)) {
 					vregex=static_cast<VRegex*>(value);
 				} else if(vfilter->is_string()) {
 					if(!vfilter->get_string()->trim().is_empty()) {
 						vregex=new VRegex(r.charsets.source(), &vfilter->as_string(), 0/*options*/);
-				vregex->study();
-				vrcleaner.vregex=vregex;
-			}
+						vregex->study();
+						vrcleaner.vregex=vregex;
+					}
 				} else {
 					throw Exception(PARSER_RUNTIME, 0, "filter must be regex or string");
 				}
+			}
 		}
 	}
 

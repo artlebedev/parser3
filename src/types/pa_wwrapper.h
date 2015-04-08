@@ -8,7 +8,7 @@
 #ifndef PA_WWRAPPER_H
 #define PA_WWRAPPER_H
 
-#define IDENT_PA_WWRAPPER_H "$Id: pa_wwrapper.h,v 1.45 2013/10/04 21:21:58 moko Exp $"
+#define IDENT_PA_WWRAPPER_H "$Id: pa_wwrapper.h,v 1.46 2015/04/08 18:08:54 moko Exp $"
 
 #define OPTIMIZE_SINGLE_STRING_WRITE
 
@@ -109,6 +109,7 @@ public:
 				flush();
 				break;
 			}
+			case WS_TRANSPARENT: break;
 		}
 		fstate=WS_TRANSPARENT;
 		// we copy WWrapper::write here to prevent virtual call to our class

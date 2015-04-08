@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.207 2015/04/08 17:36:19 moko Exp $"
+#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.208 2015/04/08 18:08:52 moko Exp $"
 
 // includes
 #include "pa_types.h"
@@ -185,7 +185,7 @@ public:
 			assert(alang);
 			assert(length);
 
-			if(!opt.is_not_just_lang)
+			if(!opt.is_not_just_lang) {
 				if(opt.lang) {
 					if(opt.lang==alang) // same language? ignoring
 						return;
@@ -193,6 +193,7 @@ public:
 					opt.lang=alang; // to uninitialized
 					return;
 				}
+			}
 
 			append(current, CORD_chars((char)alang, length));
 		}
@@ -201,7 +202,7 @@ public:
 			assert(alang);
 			assert(length);
 
-			if(!opt.is_not_just_lang)
+			if(!opt.is_not_just_lang) {
 				if(opt.lang) {
 					if(opt.lang==alang) // same language? ignoring
 						return;
@@ -209,6 +210,7 @@ public:
 					opt.lang=alang; // to uninitialized
 					return;
 				}
+			}
 
 			append(current, CORD_chars((char)alang, length));
 		}
@@ -216,7 +218,7 @@ public:
 		void appendHelper(const Body& current, Language alang, const Body &length_helper) {
 			assert(alang);
 
-			if(!opt.is_not_just_lang)
+			if(!opt.is_not_just_lang) {
 				if(opt.lang) {
 					if(opt.lang==alang) // same language? ignoring
 						return;
@@ -224,6 +226,7 @@ public:
 					opt.lang=alang; // to uninitialized
 					return;
 				}
+			}
 
 			append(current, CORD_chars((char)alang, length_helper.length()));
 		}

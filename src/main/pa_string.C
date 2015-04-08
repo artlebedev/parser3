@@ -12,7 +12,7 @@
 #include "pa_charset.h"
 #include "pa_vregex.h"
 
-volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.246 2015/04/06 22:27:26 moko Exp $" IDENT_PA_STRING_H;
+volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.247 2015/04/08 18:08:53 moko Exp $" IDENT_PA_STRING_H;
 
 const String String::Empty;
 
@@ -131,8 +131,8 @@ double pa_atod(const char* str, const String* problem_source) {
 	}
 
 	double result;
-	if(str[0]=='0')
-		if(str[1]=='x' || str[1]=='X'){
+	if(str[0]=='0') {
+		if(str[1]=='x' || str[1]=='X') {
 			// 0xABC
 			result=(double)pa_atoui(str, 0, problem_source);
 			return negative ? -result : result;
@@ -140,6 +140,7 @@ double pa_atod(const char* str, const String* problem_source) {
 			 // skip leading 0000, to disable octal interpretation
 			do str++; while(*str=='0');
 		}
+	}
 
 	char *error_pos;
 	result=strtod(str, &error_pos);

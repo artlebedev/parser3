@@ -12,7 +12,7 @@
 #include "pa_vint.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VFILE_C="$Id: pa_vfile.C,v 1.63 2015/04/06 22:27:27 moko Exp $" IDENT_PA_VFILE_H;
+volatile const char * IDENT_PA_VFILE_C="$Id: pa_vfile.C,v 1.64 2015/04/08 18:08:53 moko Exp $" IDENT_PA_VFILE_H;
 
 // externs
 
@@ -100,7 +100,7 @@ void VFile::set(VFile& avfile, bool aset_text_mode, bool ais_text_mode, const St
 	if(afile_name)
 		set_name(afile_name);
 
-	if(acontent_type || afile_name || aset_text_mode && content_type_is_default(ffields.get(content_type_name)))
+	if(acontent_type || afile_name || ( aset_text_mode && content_type_is_default(ffields.get(content_type_name)) ))
 		set_content_type(acontent_type, afile_name, r);
 }
 
@@ -235,6 +235,7 @@ const String* VFile::get_json_string(Json_options& options){
 					result << "\"";
 					break;
 				}
+			case Json_options::F_BODYLESS: break;
 		}
 	}
 

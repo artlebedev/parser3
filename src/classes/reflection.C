@@ -9,7 +9,7 @@
 #include "pa_request.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.31 2014/06/29 23:00:50 misha Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.32 2015/04/08 18:08:52 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -287,6 +287,8 @@ static void _method_info(Request& r, MethodParams& params) {
 			break;
 		case Method::CT_STATIC:
 			call_type=new VString(method_call_type_static);
+			break;
+		case Method::CT_ANY:
 			break;
 	}
 	if(call_type)

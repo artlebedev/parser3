@@ -20,7 +20,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.213 2015/04/02 22:18:25 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.214 2015/04/08 18:08:52 moko Exp $";
 
 // class
 
@@ -630,7 +630,7 @@ static void _save(Request& r, MethodParams& params) {
 	Charset* asked_charset=0;
 
 	size_t file_name_index=0;
-	if(params.count()>1)
+	if(params.count()>1) {
 		if(HashStringValue* options=params.as_no_junction(1, "second parameter should be string or hash").get_hash()){
 			// ^file.save[filespec;$.charset[] $.append(true)]
 			int valid_options=0;
@@ -655,6 +655,7 @@ static void _save(Request& r, MethodParams& params) {
 					&mode,
 					"unknown mode, must be 'append'");
 		}
+	}
 
 	const String& file_name=params.as_string(file_name_index, FILE_NAME_MUST_BE_STRING);
 	const String& src=GET_SELF(r, VString).string();
@@ -679,7 +680,7 @@ static void _trim(Request& r, MethodParams& params) {
 	const char* chars=0;
 	if(params_count>0) {
 		const String& skind=params.as_string(0, "'where' must be string");
-		if(!skind.is_empty())
+		if(!skind.is_empty()) {
 			if(skind==TRIM_BOTH_OPTION)
 				kind=String::TRIM_BOTH;
 			else if(skind==TRIM_START_OPTION || skind=="start")
@@ -690,6 +691,7 @@ static void _trim(Request& r, MethodParams& params) {
 				throw Exception(PARSER_RUNTIME,
 					&skind,
 					"'kind' must be one of " TRIM_START_OPTION ", " TRIM_BOTH_OPTION ", " TRIM_END_OPTION);
+		}
 
 		if(params_count>1) {
 			const String& schars=params.as_string(1, "'chars' must be string");

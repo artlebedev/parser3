@@ -13,7 +13,7 @@
 #include "pa_vdate.h"
 #include "pa_vtable.h"
 
-volatile const char * IDENT_DATE_C="$Id: date.C,v 1.92 2013/10/02 20:57:28 moko Exp $" IDENT_PA_VDATE_H;
+volatile const char * IDENT_DATE_C="$Id: date.C,v 1.93 2015/04/08 18:08:52 moko Exp $" IDENT_PA_VDATE_H;
 
 // class
 
@@ -112,7 +112,7 @@ static int to_tm_year(int iyear) {
 
 	tm tmIn;  memset(&tmIn, 0, sizeof(tmIn));
 	tmIn.tm_isdst=-1;
-	if(!month)
+	if(!month) {
 		if(min) {
 			year=mday=0; // HH:MM
 			time_t t=time(0);
@@ -122,7 +122,8 @@ static int to_tm_year(int iyear) {
 			tmIn.tm_mday=tmNow->tm_mday;
 			goto date_part_set;
 		} else
-			hour=min=sec=msec=0; // not YYYY- & not HH: = just YYYY					
+			hour=min=sec=msec=0; // not YYYY- & not HH: = just YYYY
+	}
 	tmIn.tm_year=to_tm_year(pa_atoi(year));
 	tmIn.tm_mon=month?pa_atoi(month)-1:0;
 	tmIn.tm_mday=mday?pa_atoi(mday):1;

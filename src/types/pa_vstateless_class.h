@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
-#define IDENT_PA_VSTATELESS_CLASS_H "$Id: pa_vstateless_class.h,v 1.76 2015/03/16 09:47:36 misha Exp $"
+#define IDENT_PA_VSTATELESS_CLASS_H "$Id: pa_vstateless_class.h,v 1.77 2015/04/08 18:08:54 moko Exp $"
 
 // include
 
@@ -197,7 +197,7 @@ public: // usage
 	VStateless_class* base_class() { return fbase; }
 
 	bool derived_from(VStateless_class& vclass){
-		return fbase==&vclass || fbase && fbase->derived_from(vclass);
+		return fbase==&vclass || ( fbase && fbase->derived_from(vclass) );
 	}
 
 	/// @returns new value for current class, used in classes/ & VClass

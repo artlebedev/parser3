@@ -13,7 +13,7 @@
 #include "pa_vhash.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VCOOKIE_C="$Id: pa_vcookie.C,v 1.89 2015/03/16 09:47:35 misha Exp $" IDENT_PA_VCOOKIE_H;
+volatile const char * IDENT_PA_VCOOKIE_C="$Id: pa_vcookie.C,v 1.90 2015/04/08 18:08:53 moko Exp $" IDENT_PA_VCOOKIE_H;
 
 // defines
 
@@ -63,11 +63,12 @@ Value* VCookie::get_element(const String& aname) {
 	if(deleted.get(aname)) // deleted?
 		return 0;
 	
-	if(Value* after_meaning=after.get(aname)) // assigned 'after'?
+	if(Value* after_meaning=after.get(aname)) { // assigned 'after'?
 		if(HashStringValue *hash=after_meaning->get_hash())
 			return hash->get(value_name);
 		else
 			return after_meaning;
+	}
 	
 	if(should_refill())
 		refill();

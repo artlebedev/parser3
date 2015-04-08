@@ -47,7 +47,7 @@
 #define pa_mkdir(path, mode) mkdir(path, mode)
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.281 2015/04/02 22:04:41 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.282 2015/04/08 18:08:53 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -455,7 +455,7 @@ static void rmdir(const String& file_spec, size_t pos_after) {
 
 bool file_delete(const String& file_spec, bool fail_on_problem, bool keep_empty_dirs) {
 	const char* fname=file_spec.taint_cstr(String::L_FILE_SPEC); 
-	if(unlink(fname)!=0)
+	if(unlink(fname)!=0) {
 		if(fail_on_problem)
 			throw Exception(errno==EACCES?"file.access":errno==ENOENT?"file.missing":0, 
 				&file_spec, 
@@ -463,6 +463,7 @@ bool file_delete(const String& file_spec, bool fail_on_problem, bool keep_empty_
 					strerror(errno), errno, fname);
 		else
 			return false;
+	}
 
 	if(!keep_empty_dirs)
 		rmdir(file_spec, 1); 
@@ -528,7 +529,7 @@ bool file_stat(const String& file_spec,
 			bool fail_on_read_problem) {
 	const char* fname=file_spec.taint_cstr(String::L_FILE_SPEC); 
 	struct stat finfo;
-	if(stat(fname, &finfo)!=0)
+	if(stat(fname, &finfo)!=0) {
 		if(fail_on_read_problem)
 			throw Exception("file.missing", 
 				&file_spec, 
@@ -536,6 +537,7 @@ bool file_stat(const String& file_spec,
 					strerror(errno), errno, fname);
 		else
 			return false;
+	}
 	rsize=finfo.st_size;
 	ratime=finfo.st_atime;
 	rmtime=finfo.st_mtime;

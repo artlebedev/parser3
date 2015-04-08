@@ -17,7 +17,7 @@
 #include "pa_vtable.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_PA_VFORM_C="$Id: pa_vform.C,v 1.110 2015/04/06 22:27:27 moko Exp $" IDENT_PA_VFORM_H;
+volatile const char * IDENT_PA_VFORM_C="$Id: pa_vform.C,v 1.111 2015/04/08 18:08:53 moko Exp $" IDENT_PA_VFORM_H;
 
 // defines
 
@@ -28,12 +28,15 @@ volatile const char * IDENT_PA_VFORM_C="$Id: pa_vform.C,v 1.110 2015/04/06 22:27
 static size_t getHeader(const char* data, size_t len){
 	size_t i;
 	int enter=-1;
-	if (data)
+	if (data) {
 		for (i=0;i<len;i++)
 			if (data[i]=='\n'){
 				if (enter>=0) enter++;
 				if (enter>1) return i;
-			} else if (data[i]!='\r') enter=0;
+			} else {
+				if (data[i]!='\r') enter=0;
+			}
+	}
 	return 0;
 }
 
@@ -71,11 +74,13 @@ VForm::VForm(Request_charsets& acharsets, Request_info& arequest_info): VStatele
 	charset_detected=false;
 
 	post_content_type=UNKNOWN;
-	if(can_have_body && arequest_info.content_type)
-		if(pa_strncasecmp(arequest_info.content_type, HTTP_CONTENT_TYPE_FORM_URLENCODED)==0)
+	if(can_have_body && arequest_info.content_type) {
+		if(pa_strncasecmp(arequest_info.content_type, HTTP_CONTENT_TYPE_FORM_URLENCODED)==0) {
 			post_content_type=FORM_URLENCODED;
-		else if(pa_strncasecmp(arequest_info.content_type, HTTP_CONTENT_TYPE_MULTIPART_FORMDATA)==0)
+		} else if(pa_strncasecmp(arequest_info.content_type, HTTP_CONTENT_TYPE_MULTIPART_FORMDATA)==0) {
 			post_content_type=MULTIPART_FORMDATA;
+		}
+	}
 }
 
 char *VForm::strpart(const char* str, size_t len) {
@@ -324,6 +329,7 @@ void VForm::refill_fields_tables_and_files() {
 					ParseMimeInput(pa_strdup(frequest_info.content_type), frequest_info.post_data, frequest_info.post_size);
 					break;
 				}
+			case UNKNOWN: break;
 		}
 
 	filled_source=&fcharsets.source();

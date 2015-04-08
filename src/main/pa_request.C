@@ -32,7 +32,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.341 2015/04/06 22:27:26 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.342 2015/04/08 18:08:53 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -235,13 +235,14 @@ void Request::configure_admin(VStateless_class& conf_class) {
 		]
 	*/
 	if(Value* vcharsets=conf_class.get_element(charsets_name)) {
-		if(!vcharsets->is_string())
+		if(!vcharsets->is_string()) {
 			if(HashStringValue* charsets=vcharsets->get_hash())
 				charsets->for_each<Request_charsets*>(load_charset, &this->charsets);
 			else
 				throw Exception(PARSER_RUNTIME,
 					0,
 					"$" MAIN_CLASS_NAME ":" CHARSETS_NAME " must be hash");
+		}
 	}
 
 #ifdef STRICT_VARS
@@ -897,13 +898,14 @@ const String& Request::mime_type_of(const char* user_file_name_cstr) {
 		if(const char* cext=strrchr(user_file_name_cstr, '.')) {
 			String sext(++cext);
 			Table::Action_options options;
-			if(mime_types->locate(0, sext.change_case(charsets.source(), String::CC_LOWER), options))
+			if(mime_types->locate(0, sext.change_case(charsets.source(), String::CC_LOWER), options)) {
 				if(const String* result=mime_types->item(1))
 					return *result;
 				else
 					throw Exception(PARSER_RUNTIME,
 						0,
 						MIME_TYPES_NAME  " table column elements must not be empty");
+			}
 		}
 
 	return *new String("application/octet-stream");

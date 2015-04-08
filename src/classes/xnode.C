@@ -21,7 +21,7 @@
 #include "libxml/xpath.h"
 #include "libxml/xpathInternals.h"
 
-volatile const char * IDENT_XNODE_C="$Id: xnode.C,v 1.88 2013/10/15 22:28:36 moko Exp $" IDENT_XNODE_H;
+volatile const char * IDENT_XNODE_C="$Id: xnode.C,v 1.89 2015/04/08 18:08:52 moko Exp $" IDENT_XNODE_H;
 
 // global variable
 
@@ -162,7 +162,7 @@ static xmlNode* pa_getAttributeNodeNS(xmlNode& selfNode,
 		currentNode;
 		currentNode=currentNode->next)
 	{
-		if(!namespaceURI || currentNode->ns && xmlStrEqual(currentNode->ns->href, namespaceURI))
+		if(!namespaceURI || (currentNode->ns && xmlStrEqual(currentNode->ns->href, namespaceURI)) )
 			if(!localName || xmlStrEqual(currentNode->name, localName))
 				return currentNode;
 	}

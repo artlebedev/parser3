@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-volatile const char * IDENT_PA_XML_IO_C="$Id: pa_xml_io.C,v 1.29 2015/04/06 22:27:26 moko Exp $" IDENT_PA_XML_IO_H;
+volatile const char * IDENT_PA_XML_IO_C="$Id: pa_xml_io.C,v 1.30 2015/04/08 18:08:53 moko Exp $" IDENT_PA_XML_IO_H;
 
 #include "libxslt/extensions.h"
 
@@ -80,8 +80,8 @@ xmlFileOpen_ReadIntoStream (const char* do_not_store_filename, bool adjust_path_
 		strcat(adjust_buf, &do_not_store_filename[16]);
 		do_not_store_filename=adjust_buf;
 	} else
-		if(!strstr(do_not_store_filename, "http://"))
-			if(strstr(do_not_store_filename, "file://")){
+		if(!strstr(do_not_store_filename, "http://")) {
+			if(strstr(do_not_store_filename, "file://")) {
 				do_not_store_filename+=7/*strlen("file://")*/;
 #ifdef WIN32
 				if(
@@ -89,15 +89,16 @@ xmlFileOpen_ReadIntoStream (const char* do_not_store_filename, bool adjust_path_
 					&& do_not_store_filename[1]
 					&& do_not_store_filename[2]==':'
 					&& do_not_store_filename[3]=='/'
-				){
+				) {
 					// skip leading slash for absolute path file:///C:/path/to/file
 					do_not_store_filename++;
 				}
 #endif
-			} else if(*do_not_store_filename && do_not_store_filename[1]!=':' && strstr(do_not_store_filename, "://"))  {
+			} else if(*do_not_store_filename && do_not_store_filename[1]!=':' && strstr(do_not_store_filename, "://")) {
 				pa_xmlStopMonitoringDependencies();
 				return 0; // plug out [do not handle other prefixes]
 			}
+		}
 
 	const char* can_store_filename=pa_strdup(do_not_store_filename);
 	add_dependency(can_store_filename);

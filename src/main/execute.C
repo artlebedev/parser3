@@ -21,7 +21,7 @@
 #include "pa_vimage.h"
 #include "pa_wwrapper.h"
 
-volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.372 2015/03/16 09:47:34 misha Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
+volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.373 2015/04/08 18:08:53 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
 
 //#define DEBUG_EXECUTE
 
@@ -1629,6 +1629,7 @@ const String* Request::get_method_filename(const Method* method){
 							origin=i.next().origin;
 							break;
 						}
+					default: break;
 				}
 				if(origin.file_no)
 					return get_used_filename(origin.file_no);

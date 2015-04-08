@@ -8,7 +8,7 @@
 #ifndef PA_STYLESHEET_CONNECTION_H
 #define PA_STYLESHEET_CONNECTION_H
 
-#define IDENT_PA_STYLESHEET_CONNECTION_H "$Id: pa_stylesheet_connection.h,v 1.41 2012/03/16 09:24:10 moko Exp $"
+#define IDENT_PA_STYLESHEET_CONNECTION_H "$Id: pa_stylesheet_connection.h,v 1.42 2015/04/08 18:08:52 moko Exp $"
 
 #include "libxslt/xslt.h"
 #include "libxslt/xsltInternals.h"
@@ -54,7 +54,7 @@ public:
 	}
 
 	bool expired(time_t older_dies) {
-		return uncachable() || !used && time_used<older_dies;
+		return uncachable() || (!used && time_used<older_dies);
 	}
 	time_t get_time_used() { return time_used; }
 
