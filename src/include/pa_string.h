@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.206 2013/07/16 15:21:06 moko Exp $"
+#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.207 2015/04/08 17:36:19 moko Exp $"
 
 // includes
 #include "pa_types.h"
@@ -406,13 +406,16 @@ public:
 
 		Body& operator << (const char* str) { append_know_length(str, strlen(str)); return *this; }
 
-		// could not figure out why this operator is needed [should do this chain: string->simple->==]
 		bool operator < (const Body src) const { return CORD_cmp(body, src.body)<0; }
 		bool operator > (const Body src) const { return CORD_cmp(body, src.body)>0; }
 		bool operator <= (const Body src) const { return CORD_cmp(body, src.body)<=0; }
 		bool operator >= (const Body src) const { return CORD_cmp(body, src.body)>=0; }
+
 		bool operator != (const Body src) const { return CORD_cmp(body, src.body)!=0; }
 		bool operator == (const Body src) const { return CORD_cmp(body, src.body)==0; }
+
+		bool operator != (const char *src) const { return CORD_cmp(body, src)!=0; }
+		bool operator == (const char *src) const { return CORD_cmp(body, src)==0; }
 
 		int ncmp(size_t x_begin, const Body y, size_t y_begin, size_t size) const {
 			return CORD_ncmp(body, x_begin, y.body, y_begin, size);
@@ -428,8 +431,7 @@ public:
 			// CORD_str checks for bad offset [CORD_chr does not]
 			return CORD_str(body, offset, substr.body, length()); 
 		}
-		size_t pos(char c, 
-			size_t offset=0) const {
+		size_t pos(char c, size_t offset=0) const {
 			if(offset>=length()) // CORD_chr does not check that [and ABORT's in that case]
 				return STRING_NOT_FOUND;
 
@@ -451,10 +453,6 @@ public:
 		}
 
 		void set_pos(CORD_pos& pos, size_t index) const { CORD_set_pos(pos, body, index); }
-
-		/*Body normalize() const {
-			return Body(CORD_balance(body));
-		}*/
 
 		/// @returns this or 0 or mid. if returns this or 0 out_* are not filled
 		Body trim(Trim_kind kind=TRIM_BOTH, const char* chars=0,
