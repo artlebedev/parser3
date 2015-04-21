@@ -35,9 +35,13 @@
 #include "pa_punycode.h"
 #include "pa_idna.h"
 
-volatile const char * IDENT_PA_IDNA_C="$Id: pa_idna.c,v 1.2 2015/04/21 23:34:29 moko Exp $";
+volatile const char * IDENT_PA_IDNA_C="$Id: pa_idna.c,v 1.3 2015/04/21 23:44:31 moko Exp $";
 
 #define DOTP(c) ((c) == 0x002E || (c) == 0x3002 || (c) == 0xFF0E || (c) == 0xFF61)
+
+#ifndef strncasecmp
+#	define strncasecmp _strnicmp
+#endif
 
 /* Core functions */
 
