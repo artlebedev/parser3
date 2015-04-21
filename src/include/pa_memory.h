@@ -9,7 +9,7 @@
 #ifndef PA_MEMORY_H
 #define PA_MEMORY_H
 
-#define IDENT_PA_MEMORY_H "$Id: pa_memory.h,v 1.21 2015/04/06 22:27:26 moko Exp $"
+#define IDENT_PA_MEMORY_H "$Id: pa_memory.h,v 1.22 2015/04/21 23:23:34 moko Exp $"
 
 // include
 
@@ -95,6 +95,7 @@ inline void operator delete(void *ptr) {
 }
 //}@
 
+#ifndef WIN32
 // disabled from accidental use
 
 void *calloc_disabled();
@@ -108,6 +109,7 @@ inline void *malloc(size_t){ return malloc_disabled(); }
 inline void *realloc(void *, size_t){ return realloc_disabled(); }
 inline void free(void *){ free_disabled(); }
 inline char *strdup(const char*, size_t){ return strdup_disabled(); }
+#endif
 
 /// memory allocation/dallocation goes via pa_malloc/pa_free.
 class PA_Allocated {
