@@ -389,7 +389,7 @@ findMaximalSubpartOfIllFormedUTF8Sequence(const UTF8 *source,
                                           const UTF8 *sourceEnd) {
   UTF8 b1, b2, b3;
 
-  assert(!isLegalUTF8Sequence(source, sourceEnd));
+  assert(!pa_isLegalUTF8Sequence(source, sourceEnd));
 
   /*
    * Unicode 6.3.0, D93b:
