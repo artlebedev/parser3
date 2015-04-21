@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.157 2015/04/02 22:04:41 moko Exp $"
+#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.158 2015/04/21 22:12:27 moko Exp $"
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -277,6 +277,9 @@ extern const char* hex_digits;
 void pa_base64_decode(const char *in, size_t in_size, char*& result, size_t& result_size, bool strict=false);
 char* pa_base64_encode(const char *in, size_t in_size);
 char* pa_base64_encode(const String& file_spec);
+
+const char *pa_idna_encode(const char *in, Charset &source);
+const char *pa_idna_decode(const char *in, Charset &source);
 
 const unsigned long pa_crc32(const char *in, size_t in_size);
 const unsigned long pa_crc32(const String& file_spec);

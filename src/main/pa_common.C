@@ -36,6 +36,9 @@
 #include "pcre.h"
 #include "pa_request.h"
 
+#include "pa_idna.h"
+#include "pa_convert_utf.h"
+
 #ifdef _MSC_VER
 #include <windows.h>
 #include <direct.h>
@@ -47,7 +50,7 @@
 #define pa_mkdir(path, mode) mkdir(path, mode)
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.282 2015/04/08 18:08:53 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.283 2015/04/21 22:12:27 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -1397,6 +1400,73 @@ Charset* detect_charset(const char* content_type){
 		}
 	}
 	return 0;
+}
+
+
+static bool is_latin(const char *in){
+	for(; *in; in++){
+		if ((unsigned char)(*in) > 0x7F)
+			return false;
+	}
+	return true;
+}
+
+#define MAX_IDNA_LENGTH 256
+
+const char *pa_idna_encode(const char *in, Charset &source_charset){
+	if(!in || is_latin(in))
+		return in;
+
+	uint32_t utf32[MAX_IDNA_LENGTH];
+	uint32_t *utf32_end=utf32;
+
+	String::C sIn(in,strlen(in));
+
+	if(!source_charset.isUTF8())
+		sIn=Charset::transcode(sIn, source_charset, UTF8_charset);
+
+	int status=pa_convertUTF8toUTF32((const UTF8**)&sIn.str, (const UTF8*)(sIn.str+sIn.length), &utf32_end, utf32+MAX_IDNA_LENGTH-1, strictConversion);
+	if(status != conversionOK)
+		throw Exception("idna encode", new String(in), "utf conversion failed (%d)", status);
+
+	*utf32_end=0;
+
+	char *result = (char *)pa_malloc(MAX_IDNA_LENGTH);
+	status=pa_idna_to_ascii_4z(utf32, result, MAX_IDNA_LENGTH, 0);
+	if(status != IDNA_SUCCESS)
+		throw Exception("idna encode", new String(in), "encode failed: %s", pa_idna_strerror(status));
+
+	return result;
+}
+
+const char *pa_idna_decode(const char *in, Charset &asked_charset){
+	if(!in || !(*in))
+		return in;
+
+	uint32_t utf32[MAX_IDNA_LENGTH];
+	const uint32_t *utf32_start=utf32;
+	uint32_t *utf32_end;
+
+	int status=pa_idna_to_unicode_4z(in, utf32, MAX_IDNA_LENGTH, 0);
+	if(status != IDNA_SUCCESS)
+		throw Exception("idna decode", new String(in), "decode failed: %s", pa_idna_strerror(status));
+
+	for(utf32_end=utf32; *utf32_end; utf32_end++);
+
+	char *result = (char *)pa_malloc(MAX_IDNA_LENGTH);
+	char *result_end = result;
+
+	status=pa_convertUTF32toUTF8(&utf32_start, utf32_end, (UTF8**)&result_end, (UTF8*)(result+MAX_IDNA_LENGTH-1), strictConversion);
+
+	if(status != conversionOK)
+		throw Exception("idna decode", new String(in), "utf conversion failed (%d)", status);
+
+	*result_end='\0';
+
+	if(!asked_charset.isUTF8())
+		result = (char *)Charset::transcode(result, UTF8_charset, asked_charset).cstr();
+
+	return result;
 }
 
 
