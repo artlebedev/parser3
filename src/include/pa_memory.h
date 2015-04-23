@@ -9,7 +9,7 @@
 #ifndef PA_MEMORY_H
 #define PA_MEMORY_H
 
-#define IDENT_PA_MEMORY_H "$Id: pa_memory.h,v 1.22 2015/04/21 23:23:34 moko Exp $"
+#define IDENT_PA_MEMORY_H "$Id: pa_memory.h,v 1.23 2015/04/23 17:59:16 moko Exp $"
 
 // include
 
@@ -95,7 +95,7 @@ inline void operator delete(void *ptr) {
 }
 //}@
 
-#ifndef WIN32
+#ifndef _MSC_VER
 // disabled from accidental use
 
 void *calloc_disabled();
