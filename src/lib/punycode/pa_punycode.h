@@ -78,30 +78,28 @@ extern "C"
 
 #include "pa_config_includes.h"
 
-  enum punycode_status
-  {
-    punycode_success = 0,
-    punycode_bad_input = 1,	/* Input is invalid.                       */
-    punycode_big_output = 2,	/* Output would exceed the space provided. */
-    punycode_overflow = 3	/* Wider integers needed to process input. */
-  };
+enum punycode_status {
+	punycode_success = 0,
+	punycode_bad_input = 1,	/* Input is invalid.                       */
+	punycode_big_output = 2,	/* Output would exceed the space provided. */
+	punycode_overflow = 3	/* Wider integers needed to process input. */
+};
 
-  typedef enum
-  {
-    PUNYCODE_SUCCESS = punycode_success,
-    PUNYCODE_BAD_INPUT = punycode_bad_input,
-    PUNYCODE_BIG_OUTPUT = punycode_big_output,
-    PUNYCODE_OVERFLOW = punycode_overflow
-  } Punycode_status;
+typedef enum {
+	PUNYCODE_SUCCESS = punycode_success,
+	PUNYCODE_BAD_INPUT = punycode_bad_input,
+	PUNYCODE_BIG_OUTPUT = punycode_big_output,
+	PUNYCODE_OVERFLOW = punycode_overflow
+} Punycode_status;
 
-  const char *punycode_strerror (Punycode_status rc);
+const char *punycode_strerror (Punycode_status rc);
 
 /* punycode_uint needs to be unsigned and needs to be */
 /* at least 26 bits wide.                             */
 
-  typedef uint32_t punycode_uint;
+typedef uint32_t punycode_uint;
 
-  int punycode_encode (size_t input_length, const punycode_uint input[], const unsigned char case_flags[], size_t * output_length, char output[]);
+int punycode_encode (size_t input_length, const punycode_uint input[], const unsigned char case_flags[], size_t * output_length, char output[]);
 
 /*
     punycode_encode() converts a sequence of code points (presumed to be
@@ -158,7 +156,7 @@ extern "C"
         and output might contain garbage.
 */
 
-  int punycode_decode (size_t input_length, const char input[], size_t * output_length, punycode_uint output[], unsigned char case_flags[]);
+int punycode_decode (size_t input_length, const char input[], size_t * output_length, punycode_uint output[], unsigned char case_flags[]);
 
 /*
     punycode_decode() converts Punycode to a sequence of code points

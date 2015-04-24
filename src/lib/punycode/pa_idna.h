@@ -42,32 +42,30 @@ extern "C"
 {
 # endif
 
-  /* Error codes. */
-  typedef enum
-  {
-    IDNA_SUCCESS = 0,
-    IDNA_CONTAINS_NON_LDH = 4,
-    IDNA_CONTAINS_MINUS = 5,
-    IDNA_NO_ACE_PREFIX = 6,
-    IDNA_ROUNDTRIP_VERIFY_ERROR = 7,
-    IDNA_CONTAINS_ACE_PREFIX = 8
-  } Idna_rc;
+/* Error codes. */
+typedef enum {
+	IDNA_SUCCESS = 0,
+	IDNA_CONTAINS_NON_LDH = 4,
+	IDNA_CONTAINS_MINUS = 5,
+	IDNA_NO_ACE_PREFIX = 6,
+	IDNA_ROUNDTRIP_VERIFY_ERROR = 7,
+	IDNA_CONTAINS_ACE_PREFIX = 8
+} Idna_rc;
 
-  /* IDNA flags */
-  typedef enum
-  {
-    IDNA_ALLOW_UNASSIGNED = 0x0001,
-    IDNA_USE_STD3_ASCII_RULES = 0x0002
-  } Idna_flags;
+/* IDNA flags */
+typedef enum {
+	IDNA_ALLOW_UNASSIGNED = 0x0001,
+	IDNA_USE_STD3_ASCII_RULES = 0x0002
+} Idna_flags;
 
 #ifndef IDNA_ACE_PREFIX
 #define IDNA_ACE_PREFIX "xn--"
 #endif
 
-  extern const char *pa_idna_strerror (int rc);
+const char *pa_idna_strerror (int rc);
 
-  extern int pa_idna_to_ascii_4z (const uint32_t *in, char *out, size_t out_len, int flags);
-  extern int pa_idna_to_unicode_4z (const char *in, uint32_t *out, size_t out_len, int flags);
+int pa_idna_to_ascii_4z (const uint32_t *in, char *out, size_t out_len, int flags);
+int pa_idna_to_unicode_4z (const char *in, uint32_t *out, size_t out_len, int flags);
 
 # ifdef __cplusplus
 }
