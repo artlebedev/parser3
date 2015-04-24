@@ -35,7 +35,7 @@
 #include "pa_punycode.h"
 #include "pa_idna.h"
 
-volatile const char * IDENT_PA_IDNA_C="$Id: pa_idna.c,v 1.4 2015/04/23 17:59:03 moko Exp $";
+volatile const char * IDENT_PA_IDNA_C="$Id: pa_idna.c,v 1.5 2015/04/24 15:26:27 moko Exp $";
 
 #define DOTP(c) ((c) == 0x002E || (c) == 0x3002 || (c) == 0xFF0E || (c) == 0xFF61)
 
@@ -307,7 +307,7 @@ int pa_idna_to_unicode_4z (const char *in, uint32_t *out, size_t out_len, int fl
 	size_t add_len;
 
 	do {
-		for (end = start; *end && !DOTP (*end); end++);
+		for (end = start; *end && (*end != '.'); end++);
 
 		if (end > start) {
 			add_len=out_len;
