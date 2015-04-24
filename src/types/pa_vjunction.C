@@ -11,7 +11,7 @@
 #include "pa_vbool.h"
 #include "pa_wcontext.h"
 
-volatile const char * IDENT_PA_VJUNCTION_C="$Id: pa_vjunction.C,v 1.13 2015/03/16 09:47:35 misha Exp $" IDENT_PA_VJUNCTION_H IDENT_PA_JUNCTION_H;
+volatile const char * IDENT_PA_VJUNCTION_C="$Id: pa_vjunction.C,v 1.14 2015/04/24 15:33:13 moko Exp $" IDENT_PA_VJUNCTION_H IDENT_PA_JUNCTION_H;
 
 void VJunction::reattach(WContext *new_wcontext){
 	if(new_wcontext) {
