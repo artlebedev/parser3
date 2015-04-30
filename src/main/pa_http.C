@@ -13,7 +13,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.64 2015/04/06 22:27:26 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.65 2015/04/30 17:37:43 moko Exp $" IDENT_PA_HTTP_H; 
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -68,19 +68,13 @@ static bool set_addr(struct sockaddr_in *addr, const char* host, const short por
 	addr->sin_family=AF_INET;
 	addr->sin_port=htons(port); 
 	if(host) {
-		ulong packed_ip=inet_addr(host);
-		if(packed_ip!=INADDR_NONE)
-			memcpy(&addr->sin_addr, &packed_ip, sizeof(packed_ip)); 
-		else {
-			struct hostent *hostIP=gethostbyname(host);
-			if(hostIP) 
-				memcpy(&addr->sin_addr, hostIP->h_addr, hostIP->h_length); 
-			else
-				return false;
-		} 
-	} else 
-		addr->sin_addr.s_addr=INADDR_ANY;
-	return true;
+		struct hostent *hostIP=gethostbyname(host);
+		if(hostIP && hostIP->h_addrtype == AF_INET){
+			memcpy(&addr->sin_addr, hostIP->h_addr, hostIP->h_length);
+			return true;
+		}
+	}
+	return false;
 }
 
 size_t guess_content_length(char* buf) {
@@ -890,7 +884,7 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 
 	// sending request
 	int status_code=http_request(response, response_size,
-		host, port, request, request_size,
+		pa_idna_encode(host, r.charsets.source()), port, request, request_size,
 		timeout_secs, fail_on_status_ne_200); 
 	
 	// processing results	
