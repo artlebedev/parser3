@@ -13,7 +13,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.65 2015/04/30 17:37:43 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.66 2015/04/30 18:34:22 moko Exp $" IDENT_PA_HTTP_H; 
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -624,6 +624,7 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 						bool transcode_text_result) {
 	File_read_http_result result;
 	char host[MAX_STRING];
+	const char *idna_host;
 	const char* uri; 
 	short port=80;
 	const char* method="GET";
@@ -757,13 +758,15 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 				throw Exception(PARSER_RUNTIME, &connect_string, "invalid port number '%s'", port_cstr);
 		}
 
+		idna_host=pa_idna_encode(host, r.charsets.source());
+
 		// making request head
 		String head;
 		head << method << " " << uri;
 		if(method_is_get && form)
 			head << (strchr(uri, '?')!=0?"&":"?") << pa_form2string(*form, r.charsets);
 
-		head <<" HTTP/1.0" CRLF "Host: "<< host;
+		head <<" HTTP/1.0" CRLF "Host: "<< idna_host;
 		if (port != 80)
 			head << ":" << port_cstr;
 		head << CRLF;
@@ -884,7 +887,7 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 
 	// sending request
 	int status_code=http_request(response, response_size,
-		pa_idna_encode(host, r.charsets.source()), port, request, request_size,
+		idna_host, port, request, request_size,
 		timeout_secs, fail_on_status_ne_200); 
 	
 	// processing results	
