@@ -9,7 +9,11 @@
 #include "pa_request.h"
 #include "pa_vtable.h"
 
-volatile const char * IDENT_INET_C="$Id: inet.C,v 1.7 2015/05/01 21:40:09 moko Exp $";
+#ifdef _MSC_VER
+#include "ws2tcpip.h"
+#endif
+
+volatile const char * IDENT_INET_C="$Id: inet.C,v 1.8 2015/05/01 21:51:01 moko Exp $";
 
 class MInet: public Methoded {
 public:
