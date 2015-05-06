@@ -1,0 +1,14 @@
+@main[]
+^inet:ip2name[91.197.112.64; $.ipv[any] ]
+
+ipv4
+^test[]
+ipv-any
+^test[ $.ipv[any] ]
+ipv6
+^test[ $.ipv[6] ]
+
+@test[options]
+$t[^inet:name2ip[test.артлебедев.рф; $options $.table(true)]]
+^t.menu{ip: $t.ip $t.version
+}
