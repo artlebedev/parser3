@@ -1,0 +1,15 @@
+Content-Type: text/html
+Content-Length: 469
+
+тест.ru. : xn--e1aybc.ru. (тест.ru.)
+.тест.ru : .xn--e1aybc.ru (.тест.ru)
+... : ... (...)
+.ч. : .xn--w1a. (.ч.)
+тест.ru : xn--e1aybc.ru (тест.ru)
+те34ст...рф : xn--34-mlc4cbe...xn--p1ai (те34ст...рф)
+те34ст...ru : xn--34-mlc4cbe...ru (те34ст...ru)
+xn--d1abbgf6aiiy : xn--d1abbgf6aiiy (президент)
+xn--abc-dma : xn--abc-dma (abcé)
+Type: idna decode,
+Source: xn--bug8888bug,
+Comment: decode failed: Input is invalid
