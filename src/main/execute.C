@@ -21,7 +21,7 @@
 #include "pa_vimage.h"
 #include "pa_wwrapper.h"
 
-volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.373 2015/04/08 18:08:53 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
+volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.374 2015/05/07 18:27:35 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
 
 //#define DEBUG_EXECUTE
 
@@ -1394,7 +1394,9 @@ StringOrValue Request::process(Value& input_value, bool intercept_string) {
 	Junction* junction=input_value.get_junction();
 	if(junction) {
 		if(junction->is_getter) { // is it a getter-junction?
-			return process_getter(*junction);
+			StringOrValue result=process_getter(*junction);
+			Value *value=result.get_value();
+			return value ? process(*value, intercept_string) : result;
 		}
 
 		if(junction->code) { // is it a code-junction?
@@ -1457,7 +1459,9 @@ void Request::process_write(Value& input_value) {
 	Junction* junction=input_value.get_junction();
 	if(junction) {
 		if(junction->is_getter) { // is it a getter-junction?
-			write_pass_lang(process_getter(*junction));
+			StringOrValue result=process_getter(*junction);
+			Value *value=result.get_value();
+			value ? process_write(*value) : write_pass_lang(result);
 			return;
 		}
 
