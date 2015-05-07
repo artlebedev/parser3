@@ -10,5 +10,6 @@ ipv6
 
 @test[options]
 $t[^inet:name2ip[test.артлебедев.рф; $options $.table(true)]]
+^t.sort{$t.ip}
 ^t.menu{ip: $t.ip $t.version
 }
