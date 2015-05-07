@@ -1,0 +1,22 @@
+@main[]
+^try-catch{^My:test[]}
+^try-catch{^My:Test[]}
+
+$x[$My:AnotherTest]
+^My:AnotherTest[1]
+^x[2]
+
+@CLASS
+My
+
+@GET_DEFAULT[]
+$result{Byaka}
+
+@GET_Test[]
+$result{Byaka}
+
+@GET_AnotherTest[]
+$result[$Method]
+
+@Method[suffix]
+Hello $suffix
