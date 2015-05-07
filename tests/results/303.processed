@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 469
+Content-Length: 1196
 
 тест.ru. : xn--e1aybc.ru. (тест.ru.)
 .тест.ru : .xn--e1aybc.ru (.тест.ru)
@@ -13,3 +13,9 @@ xn--abc-dma : xn--abc-dma (abcé)
 Type: idna decode,
 Source: xn--bug8888bug,
 Comment: decode failed: Input is invalid
+Type: idna encode,
+Source: очень.длинное.имя.очень.длинное.имя.очень.длинное.имя.очень.длинное.имя.очень.длинное.имя.очень.длинное.имя.очень.длинное.имя.очень.длинное.имя,
+Comment: encode failed: String is too long
+Type: idna decode,
+Source: xn--e1aqb0b1a.xn--d1acillah.xn--h1ai1d.xn--e1aqb0b1a.xn--d1acillah.xn--h1ai1d.xn--e1aqb0b1a.xn--d1acillah.xn--h1ai1d.xn--e1aqb0b1a.xn--d1acillah.xn--e1aqb0b1a.xn--d1acillah.xn--h1ai1d.xn--e1aqb0b1a.xn--d1acillah.xn--h1ai1d.xn--e1aqb0b1a.xn--d1acillah.xn--h1ai1d.xn--e1aqb0b1a.xn--d1acillah.xn--h1ai1d.xn--e1aqb0b1a.xn--d1acillah,
+Comment: utf conversion failed (2)
