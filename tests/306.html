@@ -1,0 +1,9 @@
+^from-1251[]
+
+$x[^xdoc::create{<root><node/></root>}]
+
+$node[^x.selectSingle[//node]]
+
+$node.nodeValue[даже^taint[&]интересно<br/>]
+
+^x.string[]
