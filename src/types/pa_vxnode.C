@@ -16,7 +16,7 @@
 #include "pa_charset.h"
 #include "pa_xml_exception.h"
 
-volatile const char * IDENT_PA_VXNODE_C="$Id: pa_vxnode.C,v 1.55 2015/03/16 09:47:36 misha Exp $" IDENT_PA_VXNODE_H;
+volatile const char * IDENT_PA_VXNODE_C="$Id: pa_vxnode.C,v 1.56 2015/05/07 16:59:21 moko Exp $" IDENT_PA_VXNODE_H;
 
 Request_charsets& VXnode::charsets() { 
 	return get_vxdoc().charsets();
@@ -170,8 +170,7 @@ const VJunction* VXnode::put_element(const String& aname, Value* avalue)
 	xmlNode& selfNode=get_xmlnode();
 
 	if(aname=="nodeValue") {
-		xmlNodeSetContent(&selfNode, 
-			charsets().source().transcode(avalue->as_string()));
+		xmlNodeSetContent(&selfNode, charsets().source().transcode(avalue->as_string().cstr_to_string_body_untaint(String::L_XML, 0, &charsets() )));
 
 		return PUT_ELEMENT_REPLACED_ELEMENT;
 	}
