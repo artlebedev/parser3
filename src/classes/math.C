@@ -22,7 +22,7 @@
 extern "C" char *crypt(const char* , const char* );
 #endif
 
-volatile const char * IDENT_MATH_C="$Id: math.C,v 1.72 2013/08/27 11:27:45 moko Exp $";
+volatile const char * IDENT_MATH_C="$Id: math.C,v 1.73 2015/05/08 15:52:53 moko Exp $";
 
 // defines
 
@@ -101,7 +101,7 @@ static void math2(Request& r, MethodParams& params, math2_func_ptr func) {
 MATH2(pow);
 
 inline bool is_salt_body_char(int c) {
-	return isalnum(c) || c == '.' || c=='/';
+	return pa_isalnum(c) || c == '.' || c=='/';
 }
 static size_t calc_prefix_size(const char* salt) {
 	if(strlen(salt)) {
