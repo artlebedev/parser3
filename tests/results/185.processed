@@ -1,14 +1,14 @@
 Content-Type: text/html; charset=UTF-8
-Content-Length: 5284
+Content-Length: 5306
 
 <pre>$str[ab&quot;"cd&amp;&ef] [10]</pre>
 ^str.left[]: error<br />
-^str.left(-2): error<br />
+^str.left(-2): 'ab&quot;"cd&amp;&ef' [10]<br />
 ^str.left(4): 'ab&quot;"' [4]<br />
 ^str.left(9): 'ab&quot;"cd&amp;&e' [9]<br />
 ^str.left(20): 'ab&quot;"cd&amp;&ef' [10]<br />
 ^str.right[]: error<br />
-^str.right(-3): error<br />
+^str.right(-3): '' [0]<br />
 ^str.right(4): '&amp;&ef' [4]<br />
 ^str.right(9): 'b&quot;"cd&amp;&ef' [9]<br />
 ^str.right(30): 'ab&quot;"cd&amp;&ef' [10]<br />
