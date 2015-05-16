@@ -20,7 +20,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.215 2015/04/21 22:12:26 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.216 2015/05/16 22:22:16 moko Exp $";
 
 // class
 
@@ -153,27 +153,18 @@ static void _bool(Request& r, MethodParams& params) {
 
 static void _left(Request& r, MethodParams& params) {
 	ssize_t sn=params.as_int(0, "n must be int", r);
-	if(sn<0)
-		throw Exception(PARSER_RUNTIME,
-			0, 
-			"n(%d) must be >=0", sn);
-	size_t n=(size_t)sn;
-
 	const String& string=GET_SELF(r, VString).string();
-	r.write_assign_lang(string.mid(r.charsets.source(), 0, n));
+	r.write_assign_lang(sn<0 ? string : string.mid(r.charsets.source(), 0, (size_t)sn));
 }
 
 static void _right(Request& r, MethodParams& params) {
 	ssize_t sn=(size_t)params.as_int(0, "n must be int", r);
-	if(sn<0)
-		throw Exception(PARSER_RUNTIME,
-			0, 
-			"n(%d) must be >=0", sn);
-	size_t n=(size_t)sn;
-
-	const String& string=GET_SELF(r, VString).string();
-	size_t length=string.length(r.charsets.source());
-	r.write_assign_lang(n<length?string.mid(r.charsets.source(), length-n, length, length):string);
+	if(sn>0){
+		size_t n=(size_t)sn;
+		const String& string=GET_SELF(r, VString).string();
+		size_t length=string.length(r.charsets.source());
+		r.write_assign_lang(n<length ? string.mid(r.charsets.source(), length-n, length, length) : string);
+	}
 }
 
 static void _mid(Request& r, MethodParams& params) {
