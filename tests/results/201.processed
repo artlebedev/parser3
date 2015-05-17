@@ -1,8 +1,14 @@
 Content-Type: text/html
-Content-Length: 193
+Content-Length: 386
 
 ' на дворе трава, на траве дрова '<br />
 'на дворе трава, на траве дрова'<br />
 'дворе трава, на траве дров'<br />
 'на дворе трава, на траве дрова '<br />
 ' на дворе трава, на траве дров'<br />
+'на дворе трава, на траве дрова'<br />
+'дворе трава, на траве дров'<br />
+'дворе трава, на траве дров'<br />
+Type: parser.runtime,
+Source: на,
+Comment: 'kind' must be one of left, both, right
