@@ -20,7 +20,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.217 2015/05/16 22:24:38 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.218 2015/05/17 23:24:44 moko Exp $";
 
 // class
 
@@ -678,6 +678,8 @@ static void _trim(Request& r, MethodParams& params) {
 				kind=String::TRIM_START;
 			else if(skind==TRIM_END_OPTION || skind=="end")
 				kind=String::TRIM_END;
+			else if(params_count==1)
+				chars=skind.cstr();
 			else
 				throw Exception(PARSER_RUNTIME,
 					&skind,
