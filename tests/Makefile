@@ -13,8 +13,8 @@ RM=rm
 
 #
 
-OUTPUTS=$(patsubst %.html,outputs/%.processed,$(wildcard *.html))
-RESULTS=$(patsubst %.html,results/%.processed,$(wildcard *.html))
+OUTPUTS=$(patsubst %.html,outputs/%.processed,$(sort $(wildcard *.html)))
+RESULTS=$(patsubst %.html,results/%.processed,$(sort $(wildcard *.html)))
 
 outputs/%.processed: %.html
 	$(RUN_PARSER) $(PARSER_EXECUTABLE) $< $(PARSER_CONFIG) > $@
