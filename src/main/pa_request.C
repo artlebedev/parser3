@@ -32,7 +32,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.342 2015/04/08 18:08:53 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.343 2015/05/27 13:34:11 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -833,7 +833,7 @@ void Request::output_result(VFile* body_file, bool header_only, bool as_attachme
 			VHash& hash=*new VHash();
 			HashStringValue &h=hash.hash();
 			h.put(value_name, new VString( as_attachment ? content_disposition_attachment : content_disposition_inline ));
-			h.put(content_disposition_filename_name, new VString(String(sfile_name, String::L_HTTP_HEADER)));
+			h.put(content_disposition_filename_name, new VString(*new String(sfile_name, String::L_HTTP_HEADER)));
 
 			response.fields().put(content_disposition, &hash);
 
