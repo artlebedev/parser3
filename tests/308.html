@@ -1,0 +1,21 @@
+$t[^table::create{name
+
+vasya
+petya}]
+
+$v[^table::create[$t;]]
+$v[^table::create[$t; ]]
+$v[^table::create[$t;^hash::create[]]]
+
+^v.join[$t;]
+^v.join[$t; ]
+
+^if(^t.locate(def $t.name)[] && ^t.locate(def $t.name)[ ]){
+    found at ^t.line[]
+}
+
+^v.menu{$v.name}[,]
+
+^try-catch{$b(^t.locate(0)[;])}
+^try-catch{$b(^t.locate(def $t.name)[;])}
+^try-catch{$v[^table::create[$t;;]]}
