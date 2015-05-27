@@ -21,7 +21,7 @@
 #include "pa_vbool.h"
 #include "pa_array.h"
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.302 2015/04/06 22:27:25 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.303 2015/05/27 21:33:14 moko Exp $";
 
 // class
 
@@ -94,14 +94,6 @@ static Table::Action_options get_action_options(Request& r, MethodParams& params
 
 	return result;
 }
-static void check_option_param(bool options_defined, 
-			  MethodParams& params, size_t next_param_index,
-			  const char *msg) {
-	if(next_param_index+(options_defined?1:0) != params.count())
-		throw Exception(PARSER_RUNTIME,
-			0,
-			"%s", msg);
-}
 
 struct TableSeparators {
 	char column;  const String* scolumn;
@@ -143,8 +135,8 @@ static void _create(Request& r, MethodParams& params) {
 	// clone/copy part?
 	if(Table *source=params[0].get_table()) {
 		Table::Action_options o=get_action_options(r, params, 1, *source);
-		check_option_param(o.defined, params, 1, 
-			"too many parameters");
+		if(params.count()>2)
+			throw Exception(PARSER_RUNTIME, 0, "too many parameters");
 		GET_SELF(r, VTable).set_table(*new Table(*source, o));
 		return;
 	}
@@ -1043,10 +1035,9 @@ static bool expression_is_true(Table&, Expression_is_true_info* info) {
 
 static bool _locate_expression(Table& table, Request& r, MethodParams& params) {
 	Value& expression_code=params.as_junction(0, "must be expression");
-	const size_t options_index=1;
-	Table::Action_options o=get_action_options(r, params, options_index, table);
-	check_option_param(o.defined, params, options_index, "locate by expression only has parameters: expression and, maybe, options");
-
+	Table::Action_options o=get_action_options(r, params, 1, table);
+	if(params.count()>2)
+		throw Exception(PARSER_RUNTIME, 0, "locate by expression only has parameters: expression and, maybe, options");
 	Expression_is_true_info info={&r, &expression_code};
 	return table.table_first_that(expression_is_true, &info, o);
 }
@@ -1054,10 +1045,7 @@ static bool _locate_expression(Table& table, Request& r, MethodParams& params) {
 static bool _locate_name_value(Table& table, Request& r, MethodParams& params) {
 	const String& name=params.as_string(0, "column name must be string");
 	const String& value=params.as_string(1, VALUE_MUST_BE_STRING);
-	const size_t options_index=2;
-	Table::Action_options o=get_action_options(r, params, options_index, table);
-	check_option_param(o.defined, params, options_index, "locate by name has parameters: name, value and, maybe, options");
-
+	Table::Action_options o=get_action_options(r, params, 2, table);
 	return table.locate(name, value, o);
 }
 
@@ -1181,7 +1169,6 @@ static void _join(Request& r, MethodParams& params) {
 	Table& src=*params.as_table(0, "source");
 
 	Table::Action_options o=get_action_options(r, params, 1, src);
-	check_option_param(o.defined, params, 1, "invalid extra parameter");
 
 	Table& dest=GET_SELF(r, VTable).table();
 	if(&src == &dest)
