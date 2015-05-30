@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.208 2015/04/08 18:08:52 moko Exp $"
+#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.209 2015/05/30 22:55:28 moko Exp $"
 
 // includes
 #include "pa_types.h"
@@ -22,7 +22,7 @@ extern "C" { // cord's author forgot to do that
 #define CORD_cat(x, y) CORD_cat_optimized(x, y)
 #define CORD_cat_char_star(x, y, leny) CORD_cat_char_star_optimized(x, y, leny)
 #endif
-};
+}
 
 // defines
 

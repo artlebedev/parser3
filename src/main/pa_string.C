@@ -12,10 +12,9 @@
 #include "pa_charset.h"
 #include "pa_vregex.h"
 
-volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.247 2015/04/08 18:08:53 moko Exp $" IDENT_PA_STRING_H;
+volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.248 2015/05/30 22:55:29 moko Exp $" IDENT_PA_STRING_H;
 
 const String String::Empty;
-
 
 // pa_atoui is based on Manuel Novoa III _strto_l for uClibc
 
@@ -160,6 +159,7 @@ typedef struct {
     int target;	/* Character we're looking for	*/
 } chr_data;
 #endif
+
 static int CORD_range_contains_chr_greater_then_proc(char c, size_t size, void* client_data)
 {
     register chr_data * d = (chr_data *)client_data;
@@ -169,6 +169,7 @@ static int CORD_range_contains_chr_greater_then_proc(char c, size_t size, void* 
     if (c > d -> target) return(1);
     return(0);
 }
+
 int CORD_range_contains_chr_greater_then(CORD x, size_t i, size_t n, int c)
 {
     chr_data d;
@@ -184,6 +185,7 @@ static int CORD_block_count_proc(char /*c*/, size_t /*size*/, void* client_data)
     (*result)++;
     return(0); // 0=continue
 }
+
 size_t CORD_block_count(CORD x)
 {
 	size_t result=0;
@@ -342,11 +344,13 @@ static int CORD_batched_iter_fn_generic_hash_code(char c, void * client_data) {
 	generic_hash_code(result, c);
 	return 0;
 }
+
 static int CORD_batched_iter_fn_generic_hash_code(const char*  s, void * client_data) {
 	uint& result=*static_cast<uint*>(client_data);
 	generic_hash_code(result, s);
 	return 0;
-};
+}
+
 uint String::Body::get_hash_code() const {
 #ifdef HASH_CODE_CACHING
 	if(hash_code)
@@ -429,6 +433,7 @@ String& String::append_know_length(const char* str, size_t known_length, Languag
 	ASSERT_STRING_INVARIANT(*this);
 	return *this;
 }
+
 String& String::append_help_length(const char* str, size_t helper_length, Language lang) {
 	if(!str)
 		return *this;
@@ -438,10 +443,12 @@ String& String::append_help_length(const char* str, size_t helper_length, Langua
 
 	return append_know_length(str, known_length, lang);
 }
+
 String::String(int value, const char *format) : langs(L_CLEAN){
 	char buf[MAX_NUMBER];
 	body.append_strdup_know_length(buf, snprintf(buf, MAX_NUMBER, format, value));
 }
+
 String& String::append_strdup(const char* str, size_t helper_length, Language lang) {
 	size_t known_length=helper_length?helper_length:strlen(str);
 	if(!known_length)
@@ -826,12 +833,14 @@ const String& String::replace(const Dictionary& dict) const {
 static int serialize_body_char(char c, char** cur) {
 	*((*cur)++)=c;
 	return 0; // 0=continue
-};
+}
+
 static int serialize_body_piece(const char* s, char** cur) {
 	size_t length=strlen(s);
 	memcpy(*cur, s, length);  *cur+=length;
 	return 0; // 0=continue
-};
+}
+
 static int serialize_lang_piece(char alang, size_t asize, char** cur) {
 	// lang
 	**cur=alang; (*cur)++;
@@ -840,6 +849,7 @@ static int serialize_lang_piece(char alang, size_t asize, char** cur) {
 
 	return 0; // 0=continue
 }
+
 String::Cm String::serialize(size_t prolog_length) const {
 	size_t fragments_count=langs.count();
 	size_t body_length=body.length();
@@ -868,6 +878,7 @@ String::Cm String::serialize(size_t prolog_length) const {
 
 	return result;
 }
+
 bool String::deserialize(size_t prolog_size, void *buf, size_t buf_size) {
 	size_t in_buf=buf_size;
 	if(in_buf<=prolog_size)
@@ -943,6 +954,7 @@ bool String::deserialize(size_t prolog_size, void *buf, size_t buf_size) {
 const char* String::Body::v() const {
 	return CORD_to_const_char_star(body, length());
 }
+
 void String::Body::dump() const {
 	CORD_dump(body);
 }
@@ -953,12 +965,14 @@ const char* String::Languages::v() const {
 	else
 		return (const char*)&langs;
 }
+
 void String::Languages::dump() const {
 	if(opt.is_not_just_lang)
 		CORD_dump(langs);
 	else
 		puts((const char*)&langs);
 }
+
 const char* String::v() const {
 	const uint LIMIT_VIEW=20;
 	char* buf=(char*)pa_malloc(MAX_STRING);

@@ -8,7 +8,7 @@
 #ifndef COMPILE_TOOLS
 #define COMPILE_TOOLS
 
-#define IDENT_COMPILE_TOOLS_H "$Id: compile_tools.h,v 1.107 2015/04/08 18:08:53 moko Exp $"
+#define IDENT_COMPILE_TOOLS_H "$Id: compile_tools.h,v 1.108 2015/05/30 22:55:29 moko Exp $"
 
 #include "pa_opcode.h"
 #include "pa_types.h"
@@ -281,7 +281,7 @@ inline void change_or_append(ArrayOperation& opcodes, int pos, OP::OPCODE find, 
 		return;
 
 	opcodes+=Operation(notfound);
-};
+}
 
 bool change_first(ArrayOperation& opcodes, OP::OPCODE find, OP::OPCODE replace);
 

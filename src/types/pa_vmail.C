@@ -17,7 +17,7 @@
 #include "pa_vfile.h"
 #include "pa_uue.h"
 
-volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.110 2015/03/16 09:47:35 misha Exp $" IDENT_PA_VMAIL_H;
+volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.111 2015/05/30 22:55:29 moko Exp $" IDENT_PA_VMAIL_H;
 
 #ifdef WITH_MAILRECEIVE
 extern "C" {
@@ -718,7 +718,7 @@ static const String& text_value_to_string(Request& r,
 	}
 
 	return result;
-};
+}
 
 /// @todo files and messages in order (file, file2, ...)
 const String& VMail::message_hash_to_string(Request& r,

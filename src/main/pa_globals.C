@@ -13,7 +13,7 @@
 #include "libxslt/xsltutils.h"
 extern "C" {
 #include "libexslt/exslt.h"
-};
+}
 #endif
 
 #include "pa_globals.h"
@@ -28,7 +28,7 @@ extern "C" {
 #include "ltdl.h"
 #include "pcre.h"
 
-volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.192 2013/11/05 18:53:44 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
+volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.193 2015/05/30 22:55:29 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
 
 // defines
 

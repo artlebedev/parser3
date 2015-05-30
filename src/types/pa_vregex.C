@@ -9,7 +9,7 @@
 #include "pa_vint.h"
 #include "pa_vstring.h"
 
-volatile const char * IDENT_PA_VREGEX_C="$Id: pa_vregex.C,v 1.16 2015/03/16 09:47:36 misha Exp $" IDENT_PA_VREGEX_H;
+volatile const char * IDENT_PA_VREGEX_C="$Id: pa_vregex.C,v 1.17 2015/05/30 22:55:29 moko Exp $" IDENT_PA_VREGEX_H;
 
 // defines
 
@@ -121,7 +121,7 @@ size_t VRegex::full_info(int type){
 	}
 
 	return result;
-};
+}
 
 
 size_t VRegex::get_info_size(){

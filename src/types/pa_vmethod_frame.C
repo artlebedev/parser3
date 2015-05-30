@@ -8,7 +8,7 @@
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VMETHOD_FRAME_C="$Id: pa_vmethod_frame.C,v 1.22 2015/03/16 09:47:36 misha Exp $" IDENT_PA_VMETHOD_FRAME_H;
+volatile const char * IDENT_PA_VMETHOD_FRAME_C="$Id: pa_vmethod_frame.C,v 1.23 2015/05/30 22:55:29 moko Exp $" IDENT_PA_VMETHOD_FRAME_H;
 
 // globals
 
@@ -57,7 +57,7 @@ Table* MethodParams::as_table(int index, const char* name) {
 	throw Exception(PARSER_RUNTIME,
 		0,
 		"%s param must have table representation (parameter #%d)", name ? name : "options", 1+index);
-};
+}
 
 // VMethodFrame: methods
 

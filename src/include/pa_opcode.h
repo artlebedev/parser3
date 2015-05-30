@@ -11,7 +11,7 @@
 
 namespace OP {
 
-#define IDENT_PA_OPCODE_H "$Id: pa_opcode.h,v 1.48 2015/03/16 09:47:34 misha Exp $"
+#define IDENT_PA_OPCODE_H "$Id: pa_opcode.h,v 1.49 2015/05/30 22:55:28 moko Exp $"
 
 #define OPTIMIZE_BYTECODE_GET_ELEMENT                // $a ^a
 #define OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT         // $a.b ^a.b
@@ -103,6 +103,6 @@ enum OPCODE {
 	OP_IS
 	//@}
 };
-};
+}
 
 #endif

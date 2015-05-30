@@ -33,7 +33,7 @@ typedef enum
 	JSON_KEY,
 	JSON_TRUE,
 	JSON_FALSE,
-	JSON_NULL,
+	JSON_NULL
 } json_type;
 
 typedef enum
@@ -62,7 +62,7 @@ typedef enum
 	/* found a comma not in structure (array/object) */
 	JSON_ERROR_COMMA_OUT_OF_STRUCTURE,
 	/* callback returns error */
-	JSON_ERROR_CALLBACK,
+	JSON_ERROR_CALLBACK
 } json_error;
 
 #define LIBJSON_DEFAULT_STACK_SIZE 256

@@ -22,7 +22,7 @@
 extern "C" char *crypt(const char* , const char* );
 #endif
 
-volatile const char * IDENT_MATH_C="$Id: math.C,v 1.73 2015/05/08 15:52:53 moko Exp $";
+volatile const char * IDENT_MATH_C="$Id: math.C,v 1.74 2015/05/30 22:55:28 moko Exp $";
 
 // defines
 
@@ -70,20 +70,31 @@ static void math1(Request& r, MethodParams& params, math1_func_ptr func) {
 	static void _##name(Request& r, MethodParams& params) {\
 		math1(r, params, &name);\
 	}
+
 #define MATH1P(name_parser, name_c) \
 	static void _##name_parser(Request& r, MethodParams& params) {\
 		math1(r, params, &name_c);\
 	}
-MATH1(round);	MATH1(floor);	MATH1P(ceiling, ceil);
-MATH1(trunc);	MATH1(frac);
-MATH1P(abs, fabs);	MATH1(sign);
-MATH1(exp);	
-MATH1(log);	MATH1(log10);
-MATH1(sin);	MATH1(asin);	
-MATH1(cos);	MATH1(acos);	
-MATH1(tan);	MATH1(atan);
-MATH1(degrees);	MATH1(radians);
-MATH1(sqrt);
+
+MATH1(round)
+MATH1(floor)
+MATH1P(ceiling, ceil)
+MATH1(trunc)
+MATH1(frac)
+MATH1P(abs, fabs)
+MATH1(sign)
+MATH1(exp)
+MATH1(log)
+MATH1(log10)
+MATH1(sin)
+MATH1(asin)
+MATH1(cos)
+MATH1(acos)
+MATH1(tan)
+MATH1(atan)
+MATH1(degrees)
+MATH1(radians)
+MATH1(sqrt)
 
 
 typedef double (*math2_func_ptr)(double, double);
@@ -98,7 +109,8 @@ static void math2(Request& r, MethodParams& params, math2_func_ptr func) {
 	static void _##name(Request& r, MethodParams& params) {\
 		math2(r, params, &name);\
 	}
-MATH2(pow);
+
+MATH2(pow)
 
 inline bool is_salt_body_char(int c) {
 	return pa_isalnum(c) || c == '.' || c=='/';

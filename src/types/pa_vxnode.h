@@ -8,7 +8,7 @@
 #ifndef PA_VXNODE_H
 #define PA_VXNODE_H
 
-#define IDENT_PA_VXNODE_H "$Id: pa_vxnode.h,v 1.44 2015/03/16 09:47:36 misha Exp $"
+#define IDENT_PA_VXNODE_H "$Id: pa_vxnode.h,v 1.45 2015/05/30 22:55:29 moko Exp $"
 
 #include "classes.h"
 #include "pa_common.h"
@@ -16,7 +16,7 @@
 
 extern "C" {
 #include "libxml/tree.h"
-};
+}
 
 // defines
 

@@ -25,7 +25,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.234 2015/04/08 18:08:52 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.235 2015/05/30 22:55:28 moko Exp $";
 
 // defines
 
@@ -214,7 +214,7 @@ static void copy_process_source(
 static void copy_open_target(int f, void *from_spec) {
 	String& file_spec=*static_cast<String *>(from_spec);
 	file_read_action_under_lock(file_spec, "copy", copy_process_source, &f);
-};
+}
 
 static void _copy(Request& r, MethodParams& params) {
 	Value& vfrom_file_name=params.as_no_junction(0, "from file name must not be code");
@@ -756,11 +756,13 @@ struct Lock_execute_body_info {
 	Value* body_code;
 };
 #endif
+
 static void lock_execute_body(int , void *ainfo) {
 	Lock_execute_body_info& info=*static_cast<Lock_execute_body_info *>(ainfo);
 	// execute body
 	info.r->write_assign_lang(info.r->process(*info.body_code));
-};
+}
+
 static void _lock(Request& r, MethodParams& params) {
 	const String& file_spec=r.absolute(params.as_string(0, FILE_NAME_MUST_BE_STRING));
 	Lock_execute_body_info info={

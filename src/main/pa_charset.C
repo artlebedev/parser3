@@ -11,7 +11,7 @@
 // we are using some pcre_internal.h stuff as well
 #include "../lib/pcre/pa_pcre_internal.h"
 
-volatile const char * IDENT_PA_CHARSET_C="$Id: pa_charset.C,v 1.97 2015/04/06 22:27:26 moko Exp $" IDENT_PA_CHARSET_H;
+volatile const char * IDENT_PA_CHARSET_C="$Id: pa_charset.C,v 1.98 2015/05/30 22:55:29 moko Exp $" IDENT_PA_CHARSET_H;
 
 #ifdef XML
 #include "libxml/encoding.h"
@@ -887,7 +887,8 @@ static void store_UTF8(XMLCh src, XMLByte*& outPtr){
 static void change_case_UTF8(XMLCh src, XMLByte*& outPtr, 
 						const Charset::UTF8CaseTable& table) {
 	store_UTF8(change_case_UTF8(src, table), outPtr);
-};
+}
+
 void change_case_UTF8(const XMLByte* srcData, size_t srcLen,
 					  XMLByte* toFill, size_t toFillLen,
 					  const Charset::UTF8CaseTable& table) {
