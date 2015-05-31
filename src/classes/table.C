@@ -7,6 +7,7 @@
 
 #if (!defined(NO_STRINGSTREAM) && !defined(FREEBSD4))
 #include <sstream>
+#define USE_STRINGSTREAM
 #endif
 
 #include "classes.h"
@@ -21,7 +22,7 @@
 #include "pa_vbool.h"
 #include "pa_array.h"
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.303 2015/05/27 21:33:14 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.304 2015/05/31 00:21:15 moko Exp $";
 
 // class
 
@@ -387,10 +388,6 @@ static void _load(Request& r, MethodParams& params) {
 	// replace any previous table value
 	GET_SELF(r, VTable).set_table(table);
 }
-
-#if (!defined(NO_STRINGSTREAM) && !defined(FREEBSD4))
-	#define USE_STRINGSTREAM
-#endif
 
 #ifdef USE_STRINGSTREAM
 #include "gc_allocator.h"
