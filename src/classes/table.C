@@ -5,11 +5,6 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-#if (!defined(NO_STRINGSTREAM) && !defined(FREEBSD4))
-#include <sstream>
-#define USE_STRINGSTREAM
-#endif
-
 #include "classes.h"
 #include "pa_vmethod_frame.h"
 
@@ -22,7 +17,12 @@
 #include "pa_vbool.h"
 #include "pa_array.h"
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.304 2015/05/31 00:21:15 moko Exp $";
+#if (!defined(NO_STRINGSTREAM) && !defined(FREEBSD4))
+#include <sstream>
+#define USE_STRINGSTREAM
+#endif
+
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.305 2015/05/31 23:54:24 moko Exp $";
 
 // class
 
