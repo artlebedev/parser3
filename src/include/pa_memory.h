@@ -9,12 +9,13 @@
 #ifndef PA_MEMORY_H
 #define PA_MEMORY_H
 
-#define IDENT_PA_MEMORY_H "$Id: pa_memory.h,v 1.23 2015/04/23 17:59:16 moko Exp $"
+#define IDENT_PA_MEMORY_H "$Id: pa_memory.h,v 1.24 2015/06/01 00:03:35 moko Exp $"
 
 // include
 
 #include "pa_config_includes.h"
 #include "gc.h"
+#include <new>
 
 // define destructors use for Array, Hash and VMethodFrame
 #define USE_DESTRUCTORS
@@ -72,25 +73,25 @@ inline void *pa_realloc(void *ptr, size_t size) {
 #define PointerFreeGC (true)
 
 //{@ Array-oriented
-inline void *operator new[] (size_t size) {
-	return pa_malloc(size);
-}
 inline void *operator new[] (size_t size, bool) { // PointerFreeGC
 	return pa_malloc_atomic(size);
 }
-inline void operator delete[] (void *ptr) {
+inline void *operator new[] (std::size_t size) throw (std::bad_alloc) {
+	return pa_malloc(size);
+}
+inline void operator delete[] (void *ptr) throw() {
 	pa_free(ptr);
 }
 //}@
 
 //{@ Structure-oriented
-inline void *operator new(size_t size) {
-	return pa_malloc(size);
-}
 inline void *operator new (size_t size, bool) { // PointerFreeGC
 	return pa_malloc_atomic(size);
 }
-inline void operator delete(void *ptr) {
+inline void *operator new(std::size_t size) throw (std::bad_alloc) {
+	return pa_malloc(size);
+}
+inline void operator delete(void *ptr) throw() {
 	pa_free(ptr);
 }
 //}@
@@ -104,10 +105,10 @@ void *realloc_disabled();
 void free_disabled();
 char *strdup_disabled();
 
-inline void *calloc(size_t){ return calloc_disabled(); }
-inline void *malloc(size_t){ return malloc_disabled(); }
-inline void *realloc(void *, size_t){ return realloc_disabled(); }
-inline void free(void *){ free_disabled(); }
+inline void *calloc(size_t) { return calloc_disabled(); }
+inline void *malloc(size_t) throw() { return malloc_disabled(); }
+inline void *realloc(void *, size_t) throw() { return realloc_disabled(); }
+inline void free(void *) throw() { free_disabled(); }
 inline char *strdup(const char*, size_t){ return strdup_disabled(); }
 #endif
 
