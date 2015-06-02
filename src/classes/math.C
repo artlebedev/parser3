@@ -19,10 +19,10 @@
 #include "pa_random.h"
 
 #ifdef HAVE_CRYPT
-extern "C" char *crypt(const char* , const char* ) throw();
+extern "C" char *crypt(const char* , const char* );
 #endif
 
-volatile const char * IDENT_MATH_C="$Id: math.C,v 1.75 2015/06/01 00:02:18 moko Exp $";
+volatile const char * IDENT_MATH_C="$Id: math.C,v 1.76 2015/06/02 18:46:05 moko Exp $";
 
 // defines
 

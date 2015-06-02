@@ -9,7 +9,7 @@
 #ifndef PA_MEMORY_H
 #define PA_MEMORY_H
 
-#define IDENT_PA_MEMORY_H "$Id: pa_memory.h,v 1.24 2015/06/01 00:03:35 moko Exp $"
+#define IDENT_PA_MEMORY_H "$Id: pa_memory.h,v 1.25 2015/06/02 18:45:49 moko Exp $"
 
 // include
 
@@ -106,9 +106,9 @@ void free_disabled();
 char *strdup_disabled();
 
 inline void *calloc(size_t) { return calloc_disabled(); }
-inline void *malloc(size_t) throw() { return malloc_disabled(); }
-inline void *realloc(void *, size_t) throw() { return realloc_disabled(); }
-inline void free(void *) throw() { free_disabled(); }
+inline void *malloc(size_t) { return malloc_disabled(); }
+inline void *realloc(void *, size_t) { return realloc_disabled(); }
+inline void free(void *) { free_disabled(); }
 inline char *strdup(const char*, size_t){ return strdup_disabled(); }
 #endif
 
