@@ -1,5 +1,12 @@
-Zigi: z
+Zigi: zz
 Content-Type: text/html
-Content-Length: 5
+Content-Length: 50
 
+{
+"ZIGI1":"1",
+"ZIGI2":"2"
+}
+{
+"ZIGI":"zz"
+}
 done.

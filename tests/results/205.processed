@@ -1,5 +1,13 @@
 Content-Disposition: inline; filename="zigi.txt"
 Content-Type: application/octet-stream
-Content-Length: 17
+Content-Length: 142
 
-text file content
+text file content plus {
+"BODY":{
+"class":"file",
+"name":"zigi.txt",
+"size":17,
+"mode":"text",
+"content-type":"application\/octet-stream"
+}
+} 

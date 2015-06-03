@@ -1,4 +1,5 @@
 $f[^file::create[text;zigi.txt;text file content]]
-
 $response:body[$f]
 
+$f[^file::create[text;zigi.txt;text file content plus ^json:string[$response:headers] ]]
+$response:body[$f]
