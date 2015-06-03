@@ -1,0 +1,8 @@
+Last-Modified: Thu, 09 Aug 1973 00:00:00 GMT
+Content-Disposition: inline; filename="310.html"
+Content-Type: application/octet-stream
+Accept-Ranges: bytes
+Content-Length: 135
+
+$response:body[ $.file[310.html] $.mdate[^date::unix-timestamp(121478400)] ]
+$response:last-modified[^date::unix-timestamp(113702400)]

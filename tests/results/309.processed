@@ -1,0 +1,7 @@
+Content-Disposition: inline; filename="309.html"
+Content-Type: application/octet-stream
+Accept-Ranges: bytes
+Content-Length: 77
+Last-Modified: Wed, 07 Nov 1973 00:00:00 GMT
+
+$response:body[ $.file[309.html] $.mdate[^date::unix-timestamp(121478400)] ]
