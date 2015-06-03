@@ -32,7 +32,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.344 2015/06/03 00:13:19 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.345 2015/06/03 23:49:18 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -672,15 +672,15 @@ static void add_header_attribute(HashStringValue::key_type name, HashStringValue
 	if(name==BODY_NAME_UPPER || name==DOWNLOAD_NAME_UPPER || name==CHARSET_NAME_UPPER)
 		return;
 	
+	if(name==LAST_MODIFIED_NAME_UPPER)
+		info->add_last_modified=false;
+
 	const char* aname=String(name, String::L_URI).untaint_and_transcode_cstr(String::L_URI, &info->r.charsets);
 
 	SAPI::add_header_attribute(info->r.sapi_info,
-			aname, 
+			aname,
 			attributed_meaning_to_string(*value, String::L_URI, false).untaint_and_transcode_cstr(String::L_URI, &info->r.charsets)
 		);
-
-	if(aname==LAST_MODIFIED_NAME_UPPER)
-		info->add_last_modified=false;
 }
 
 static void output_sole_piece(Request& r,
