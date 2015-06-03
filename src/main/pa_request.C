@@ -32,7 +32,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.343 2015/05/27 13:34:11 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.344 2015/06/03 00:13:19 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -50,7 +50,6 @@ const char* ORIGINS_CONTENT_TYPE="text/plain";
 #define MAIN_METHOD_NAME "main"
 #define AUTO_METHOD_NAME "auto"
 #define AUTOUSE_METHOD_NAME "autouse"
-#define BODY_NAME "body"
 #define EXCEPTION_TYPE_PART_NAME "type"
 #define EXCEPTION_SOURCE_PART_NAME "source"
 #define EXCEPTION_COMMENT_PART_NAME "comment"
@@ -61,7 +60,6 @@ const String main_method_name(MAIN_METHOD_NAME);
 const String auto_method_name(AUTO_METHOD_NAME);
 const String autouse_method_name(AUTOUSE_METHOD_NAME);
 
-const String body_name(BODY_NAME);
 const String exception_type_part_name(EXCEPTION_TYPE_PART_NAME);
 const String exception_source_part_name(EXCEPTION_SOURCE_PART_NAME);
 const String exception_comment_part_name(EXCEPTION_COMMENT_PART_NAME);
@@ -75,9 +73,11 @@ const String exception_handled_part_name(EXCEPTION_HANDLED_PART_NAME);
 #define ORIGINS_MODE_NAME "ORIGINS"
 #define CONF_METHOD_NAME "conf"
 #define POST_PROCESS_METHOD_NAME "postprocess"
-#define DOWNLOAD_NAME "download"
 #define CLASS_PATH_NAME "CLASS_PATH"
 #define RESPONSE_BODY_FILE_NAME "file"
+
+#define DOWNLOAD_NAME_UPPER "DOWNLOAD"
+#define BODY_NAME_UPPER "BODY"
 
 // statics
 
@@ -88,11 +88,23 @@ static const String strict_vars_name(STRICT_VARS_NAME);
 static const String origins_mode_name(ORIGINS_MODE_NAME);
 static const String conf_method_name(CONF_METHOD_NAME);
 static const String post_process_method_name(POST_PROCESS_METHOD_NAME);
-static const String download_name(DOWNLOAD_NAME);
 static const String class_path_name(CLASS_PATH_NAME);
 static const String response_body_file_name(RESPONSE_BODY_FILE_NAME);
 
+static const String download_name_upper(DOWNLOAD_NAME_UPPER);
+static const String body_name_upper(BODY_NAME_UPPER);
+
+// more static
+
+static const String content_type_name_upper(HTTP_CONTENT_TYPE_UPPER);
+static const String content_disposition_name_upper(CONTENT_DISPOSITION_UPPER);
+static const String content_disposition_inline(CONTENT_DISPOSITION_INLINE);
+static const String content_disposition_attachment(CONTENT_DISPOSITION_ATTACHMENT);
+
 // defines
+
+#define CHARSET_NAME_UPPER "CHARSET"
+#define LAST_MODIFIED_NAME_UPPER "LAST-MODIFIED"
 
 // op.C
 VStateless_class& VClassMAIN_create();
@@ -389,10 +401,10 @@ void Request::core(const char* config_filespec, bool config_fail_on_read_problem
 				"'" MAIN_METHOD_NAME "' method not found");
 
 		// extract response body
-		Value* body_value=response.fields().get(download_name); // $response:download?
+		Value* body_value=response.fields().get(download_name_upper); // $response:download?
 		bool as_attachment=body_value!=0;
 		if(!body_value)
-			body_value=response.fields().get(body_name); // $response:body
+			body_value=response.fields().get(body_name_upper); // $response:body
 		if(!body_value)
 			body_value=new VString(*body_string); // just result of ^main[]
 
@@ -480,7 +492,7 @@ void Request::core(const char* config_filespec, bool config_fail_on_read_problem
 			// doing that ugly
 
 			// future $response:content-type
-			response.fields().put(http_content_type, new VString(*new String(UNHANDLED_EXCEPTION_CONTENT_TYPE)));
+			response.fields().put(content_type_name_upper, new VString(*new String(UNHANDLED_EXCEPTION_CONTENT_TYPE)));
 			// future $response:body
 			body_string=new String(exception_cstr);
 		}
@@ -656,13 +668,8 @@ public:
 	bool add_last_modified;
 };
 #endif
-static void add_header_attribute(
-				 HashStringValue::key_type name, 
-				 HashStringValue::value_type value, 
-				 Add_header_attribute_info* info) {
-	if(name==BODY_NAME
-		|| name==DOWNLOAD_NAME
-		|| name==CHARSET_NAME)
+static void add_header_attribute(HashStringValue::key_type name, HashStringValue::value_type value, Add_header_attribute_info* info) {
+	if(name==BODY_NAME_UPPER || name==DOWNLOAD_NAME_UPPER || name==CHARSET_NAME_UPPER)
 		return;
 	
 	const char* aname=String(name, String::L_URI).untaint_and_transcode_cstr(String::L_URI, &info->r.charsets);
@@ -672,7 +679,7 @@ static void add_header_attribute(
 			attributed_meaning_to_string(*value, String::L_URI, false).untaint_and_transcode_cstr(String::L_URI, &info->r.charsets)
 		);
 
-	if(strcasecmp(aname, "last-modified")==0)
+	if(aname==LAST_MODIFIED_NAME_UPPER)
 		info->add_last_modified=false;
 }
 
@@ -835,7 +842,7 @@ void Request::output_result(VFile* body_file, bool header_only, bool as_attachme
 			h.put(value_name, new VString( as_attachment ? content_disposition_attachment : content_disposition_inline ));
 			h.put(content_disposition_filename_name, new VString(*new String(sfile_name, String::L_HTTP_HEADER)));
 
-			response.fields().put(content_disposition, &hash);
+			response.fields().put(content_disposition_name_upper, &hash);
 
 			if(!body_file_content_type)
 				body_file_content_type=new VString(mime_type_of(sfile_name.cstr()));
@@ -845,10 +852,10 @@ void Request::output_result(VFile* body_file, bool header_only, bool as_attachme
 	// set Content-Type
 	if(body_file_content_type) {
 		// body file content type
-		response.fields().put(content_type_name, body_file_content_type);
+		response.fields().put(content_type_name_upper, body_file_content_type);
 	} else {
 		// default content type
-		response.fields().put_dont_replace(content_type_name, new VString(*new String(DEFAULT_CONTENT_TYPE)));
+		response.fields().put_dont_replace(content_type_name_upper, new VString(*new String(DEFAULT_CONTENT_TYPE)));
 	}
 
 	// prepare header: $response:fields without :body, :download and :charset

@@ -17,7 +17,7 @@
 #include "pa_vfile.h"
 #include "pa_uue.h"
 
-volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.111 2015/05/30 22:55:29 moko Exp $" IDENT_PA_VMAIL_H;
+volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.112 2015/06/03 00:13:19 moko Exp $" IDENT_PA_VMAIL_H;
 
 #ifdef WITH_MAILRECEIVE
 extern "C" {
@@ -54,11 +54,16 @@ static const char* const part_name_begins[P_TYPES_COUNT] = {
 #define CHARSET_NAME "charset"
 #define CID_NAME "content-id"
 
+#define CONTENT_TRANSFER_ENCODING_NAME "content-transfer-encoding"
+#define CONTENT_TRANSFER_ENCODING_CAPITALIZED "Content-Transfer-Encoding"
+
 // statics
 
 static const String format_name(FORMAT_NAME);
 static const String charset_name(CHARSET_NAME);
 static const String cid_name(CID_NAME);
+
+static const String content_transfer_encoding_name(CONTENT_TRANSFER_ENCODING_NAME);
 
 // consts
 

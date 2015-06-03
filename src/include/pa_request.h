@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.217 2015/04/08 18:08:52 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.218 2015/06/03 00:13:19 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -572,7 +572,6 @@ public:
 
 extern const String main_method_name;
 extern const String auto_method_name;
-extern const String body_name;
 
 extern const String exception_type_part_name;
 extern const String exception_source_part_name;
