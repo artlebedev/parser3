@@ -25,7 +25,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.235 2015/05/30 22:55:28 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.236 2015/06/29 17:59:13 moko Exp $";
 
 // defines
 
@@ -734,9 +734,8 @@ static void _list(Request& r, MethodParams& params) {
 		if(!vregex || vregex->exec(ffblk.ff_name, file_name_size, ovector, ovector_size)>=0) {
 			Table::element_type row(new ArrayString);
 			*row+=new String(pa_strdup(file_name_cstr, file_name_size), String::L_TAINTED);
-			*row+=new String(String::Body::Format(ffblk.is_dir() ? 1 : 0), String::L_CLEAN);
+			*row+=new String(String::Body::Format(ffblk.is_dir(stat) ? 1 : 0), String::L_CLEAN);
 			if(stat) {
-				ffblk.stat_file();
 				*row+=VDouble(ffblk.size()).get_string();
 				*row+=new String(String::Body::Format((int)ffblk.c_timestamp()), String::L_CLEAN);
 				*row+=new String(String::Body::Format((int)ffblk.m_timestamp()), String::L_CLEAN);

@@ -8,7 +8,7 @@
 #ifndef PA_DIR_H
 #define PA_DIR_H
 
-#define IDENT_PA_DIR_H "$Id: pa_dir.h,v 1.25 2013/07/22 20:55:54 moko Exp $"
+#define IDENT_PA_DIR_H "$Id: pa_dir.h,v 1.26 2015/06/29 17:59:13 moko Exp $"
 
 #include "pa_config_includes.h"
 
@@ -37,8 +37,7 @@ struct ffblk {
 	/*helper*/
 	HANDLE handle;
 
-	void stat_file(){}
-	bool is_dir();
+	bool is_dir(bool);
 	double size();
 	time_t c_timestamp();
 	time_t m_timestamp();
@@ -59,12 +58,9 @@ struct ffblk {
 
 #ifdef HAVE_STRUCT_DIRENT_D_TYPE
 	unsigned char _d_type;
-	void stat_file();
-#else
-	void stat_file(){}
-	void real_stat_file();
 #endif
-	bool is_dir();
+	bool is_dir(bool);
+	void stat_file();
 	double size();
 	time_t c_timestamp();
 	time_t m_timestamp();

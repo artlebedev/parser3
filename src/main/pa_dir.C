@@ -8,7 +8,7 @@
 #include "pa_common.h"
 #include "pa_dir.h"
 
-volatile const char * IDENT_PA_DIR_C="$Id: pa_dir.C,v 1.24 2013/07/22 20:55:54 moko Exp $" IDENT_PA_DIR_H;
+volatile const char * IDENT_PA_DIR_C="$Id: pa_dir.C,v 1.25 2015/06/29 17:59:13 moko Exp $" IDENT_PA_DIR_H;
 
 #ifdef _MSC_VER
 
@@ -39,7 +39,7 @@ void findclose(struct ffblk *_ffblk) {
 	FindClose(_ffblk->handle);
 }
 
-bool ffblk::is_dir() {
+bool ffblk::is_dir(bool) {
 	return (ff_attrib & FILE_ATTRIBUTE_DIRECTORY) != 0;
 }
 
@@ -93,11 +93,7 @@ void findclose(struct ffblk *_ffblk) {
 	closedir(_ffblk->dir);
 }
 
-#ifdef HAVE_STRUCT_DIRENT_D_TYPE
 void ffblk::stat_file() {
-#else
-void ffblk::real_stat_file() {
-#endif
 	char fileSpec[MAXPATH];
 	snprintf(fileSpec, MAXPATH, "%s/%s", filePath, ff_name);
 	
@@ -106,13 +102,13 @@ void ffblk::real_stat_file() {
 	}
 }
 
-bool ffblk::is_dir() {
+bool ffblk::is_dir(bool stat) {
 #ifdef HAVE_STRUCT_DIRENT_D_TYPE
-	return (_d_type & DT_DIR) != 0;
-#else
-	real_stat_file();
-	return S_ISDIR(_st.st_mode) != 0;
+	if(!stat && _d_type != DT_UNKNOWN)
+		return _d_type == DT_DIR;
 #endif
+	stat_file();
+	return S_ISDIR(_st.st_mode) != 0;
 }
 
 double ffblk::size() {
