@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 4174
+Content-Length: 4308
 
 
     
@@ -170,6 +170,13 @@ cannot have leading zeroes": 013}
 	Comment: unexpected character at line 1
 ["Bad value", truth]
                  ^
+
+	
+	Type: json.parse,
+	Source: parse,
+	Comment: unexpected character at line 1
+?линные буквы", truth]
+                   ^
 
 	
 	Type: json.parse,
