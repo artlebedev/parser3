@@ -18,7 +18,7 @@
 #include "pa_vxdoc.h"
 #endif
 
-volatile const char * IDENT_JSON_C="$Id: json.C,v 1.34 2015/03/17 07:28:43 misha Exp $";
+volatile const char * IDENT_JSON_C="$Id: json.C,v 1.35 2015/07/22 18:29:09 moko Exp $";
 
 // class
 
@@ -205,7 +205,7 @@ static const char* json_error_message(int error_code){
 		"nesting limit",
 		"data limit",
 		"comment not allowed by config",
-		"unexpected char",
+		"unexpected character",
 		"missing unicode low surrogate",
 		"unexpected unicode low surrogate",
 		"error comma out of structure",
@@ -215,6 +215,67 @@ static const char* json_error_message(int error_code){
 }
 
 extern String::Language get_untaint_lang(const String& lang_name);
+
+#define SOURCE_MAX_LEN 60
+
+void json_exception_with_source(Request& r, const char* msg, const char* json, int offset){
+	int i;
+
+	int line=0;
+	int start=0;
+	int end=strlen(json);
+
+	if(offset>end)
+		offset=end;
+
+	for(i = 0; i < offset; i++){
+		if(json[i]=='\n'){
+			line++;
+		}
+	}
+
+	if(offset > SOURCE_MAX_LEN/2)
+		start = offset - SOURCE_MAX_LEN/2;
+
+	for(i = offset-1; i>=start; i--){
+		if(json[i]=='\n'){
+			start=i+1;
+			break;
+		}
+	}
+
+	if(start+SOURCE_MAX_LEN < end)
+		end=start+SOURCE_MAX_LEN;
+
+	for(i = offset+1; i<end; i++){
+		if(json[i]=='\n'){
+			end=i;
+			break;
+		}
+	}
+
+	char *source = pa_strdup(json+start, end-start);
+	int source_offset = offset-start;
+
+	if(source[source_offset]=='\n')
+		source[source_offset]=' ';
+
+	for(i = 0; i < source_offset; i++){
+		if(source[i]=='\t'){
+			source[i]=' ';
+		}
+	}
+
+	if(r.charsets.source().isUTF8()){
+		source=(char *)fixUTF8(source);
+		if(source_offset>0){
+			String s_source(pa_strdup(source,source_offset));
+			source_offset=s_source.length(r.charsets.source());
+		}
+	}
+
+	throw Exception("json.parse", 0, "%s at line %d\n%s\n%*s", msg, line+1, source, source_offset+1, "^");
+}
 
 static void _parse(Request& r, MethodParams& params) {
 	const String& json_string=params.as_string(0, "json must be string");
@@ -284,11 +345,11 @@ static void _parse(Request& r, MethodParams& params) {
 
 	uint32_t processed;
 	if(int result = json_parser_string(&parser, json_cstr, strlen(json_cstr), &processed))
-		throw Exception("json.parse", 0, "%s at byte %d", json_error_message(result), processed);
+		json_exception_with_source(r, json_error_message(result), json_cstr, processed);
 
 	if (!json_parser_is_done(&parser))
-		throw Exception("json.parse", 0, "unexpected end of json data");
-	
+		json_exception_with_source(r, "unexpected end of json data", json_cstr, processed);
+
 	json_parser_free(&parser);
 
 	if (json.result) r.write_no_lang(*json.result);
