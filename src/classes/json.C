@@ -18,7 +18,7 @@
 #include "pa_vxdoc.h"
 #endif
 
-volatile const char * IDENT_JSON_C="$Id: json.C,v 1.35 2015/07/22 18:29:09 moko Exp $";
+volatile const char * IDENT_JSON_C="$Id: json.C,v 1.36 2015/07/22 22:10:38 moko Exp $";
 
 // class
 
@@ -342,6 +342,13 @@ static void _parse(Request& r, MethodParams& params) {
 	json_parser parser;
 	if(int result = json_parser_init(&parser, &config, (json_parser_callback)&json_callback, &json))
 		throw Exception("json.parse", 0, "%s", json_error_message(result));
+
+	if(!*json_cstr)
+		throw Exception("json.parse", 0, "empty string is not valid json");
+
+	const char *first_quote=strchr(json_cstr,'"');
+	if(first_quote && first_quote>json_cstr && *(--first_quote) == '\\')
+		json_exception_with_source(r, "illegal quote escape, json may be tainted", json_cstr, first_quote-json_cstr);
 
 	uint32_t processed;
 	if(int result = json_parser_string(&parser, json_cstr, strlen(json_cstr), &processed))
