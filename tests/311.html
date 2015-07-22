@@ -1,0 +1,46 @@
+@main[]
+
+$08[^taint[	]]
+$0A[^taint[^#0A]]
+$t[^table::create{json
+^invalid_json[]}]
+
+^taint[as-is][
+    ^t.menu{^try-catch{$v[^json:parse[^taint[as-is][$t.json]]]}}
+]
+
+@invalid_json[]
+${0A}"A JSON payload should be an object or array, not a string....."
+["Unclosed array"
+["Empty error message"${0A}
+{unquoted_key: "keys must be quoted"}
+${08}["extra comma"${08},${08}]
+["double extra comma",,]
+[   , "<-- missing value"]
+["Comma after the close"],
+["Extra close"]]
+[${0A}{"Extra comma": true,}]
+{"Extra value after close": true} "misplaced quoted value"
+{"Illegal expression": 1 + 2}
+{"Illegal invocation": alert()}
+{"Numbers cannot have leading zeroes": 013}
+{"Numbers cannot be hex": 0x14}
+["Illegal backslash escape: \x15"]
+[\naked]
+["Illegal backslash escape: \017"]
+[[[[[[${0A}[[[[[[[${0A}[[[[["Too deep"]]]]]]]]]]]]]]]]]]]]
+{"Missing colon" null}
+{"Double colon":: null}
+{"Comma instead of colon", null}
+["Colon instead of comma": false]
+["Bad value", truth]
+['single quote']
+["${08}tab${08}character${08}in${08}very-very-very${08}long${08}string${08}"]
+["tab\   character\   in\  string\  "]
+["line${0A}break"]
+["line\${0A}break"]
+[0e]
+[0e+]
+[0e+-1]
+{"Comma instead if closing brace": true,
+["mismatch"}
