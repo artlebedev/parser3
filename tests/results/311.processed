@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 4308
+Content-Length: 4514
 
 
     
@@ -247,4 +247,18 @@ stead if closing brace": true,
 	Comment: pop unexpected mode at line 1
 ["mismatch"}
            ^
+
+    
+	
+	Type: json.parse,
+	Source: parse,
+	Comment: empty string is not valid json
+
+    
+	
+	Type: json.parse,
+	Source: parse,
+	Comment: illegal quote escape, json may be tainted at line 1
+[\"tainted\"]
+ ^
 

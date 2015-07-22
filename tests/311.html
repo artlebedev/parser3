@@ -7,6 +7,8 @@ $t[^table::create{json
 
 ^taint[as-is][
     ^t.menu{^try-catch{$v[^json:parse[^taint[as-is][$t.json]]]}}
+    ^try-catch{$v[^json:parse[$void]]}
+    ^try-catch{$v[^json:parse[^taint[["tainted"]]]]}
 ]
 
 @invalid_json[]
