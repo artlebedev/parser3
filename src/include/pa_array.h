@@ -8,7 +8,7 @@
 #ifndef PA_ARRAY_H
 #define PA_ARRAY_H
 
-#define IDENT_PA_ARRAY_H "$Id: pa_array.h,v 1.81 2012/03/16 09:24:08 moko Exp $"
+#define IDENT_PA_ARRAY_H "$Id: pa_array.h,v 1.82 2015/07/28 14:41:32 moko Exp $"
 
 // includes
 
@@ -105,40 +105,26 @@ public:
 	/// append other Array portion to this one. starting from offset
 	Array& append(const Array& src, 
 		size_t offset=0, 
-		size_t limit=ARRAY_OPTION_LIMIT_ALL, //< negative limit means 'all'. zero limit means 'nothing'
-		bool reverse=false) {
+		size_t limit=ARRAY_OPTION_LIMIT_ALL) { //< negative limit means 'all'. zero limit means 'nothing'
 
 		size_t src_count=src.count();
 		// skip tivials
 		if(!src_count || !limit || offset>=src_count)
 			return *this;
 		// max(limit)
-		size_t m=reverse?
-			1+offset
-			:src_count-offset;
-		if(!m)
-			return *this;
+		size_t m=src_count-offset;
 		// fix limit
 		if(limit==ARRAY_OPTION_LIMIT_ALL || limit>m)
 			limit=m;
 
-		ssize_t delta=reverse?
-			(ssize_t)limit
-			:limit-(fallocated-fused);
+		ssize_t delta=limit-(fallocated-fused);
 		if(delta>0)
 			expand(delta);
 
 		T* from=&src.felements[offset];
 		T* to=&felements[fused];
-		if(reverse) { // reverse
-			for(T* from_end=from-limit; from>from_end; --from)
-				*to++=*from;
-
-		} else { // forward
-			for(T* from_end=from+limit; from<from_end; from++)
-				*to++=*from;
-		}
-		
+		for(T* from_end=from+limit; from<from_end; from++)
+			*to++=*from;
 		fused+=limit;
 		return *this;
 	}
@@ -161,11 +147,24 @@ public:
 		felements[index]=element;
 	}
 
+	/// insert index-element
+	inline void insert(size_t index, T element) {
+		assert(index<=count());
+
+		if(is_full())
+			expand(fallocated>0? 2+fallocated/32 : 3); // 3 is PAF default, confirmed by tests
+
+		memmove(felements+index+1, felements+index, (fused-index) * sizeof(T));
+
+		felements[index]=element;
+		fused++;
+	}
+
 	/// remove index-element
 	inline void remove(size_t index) {
 		assert(index<count());
 		if (index<--fused)
-			memmove(felements+index+1, felements+index, (fused-index) * sizeof(T));
+			memmove(felements+index, felements+index+1, (fused-index) * sizeof(T));
 	}
 
 	inline T operator [](size_t index) const { return get(index); }
