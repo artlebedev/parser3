@@ -1,0 +1,45 @@
+@main[]
+$t[^table::create{c1	c2	c3}]
+
+^show[1]
+^try-catch{ $t.c3[v] }
+
+^t.insert{v}
+
+$copy[^table::create[$t]]
+
+^show[2]
+$t.c3[v]
+^show[3]
+$t.c1[]
+^show[4]
+^t.append{a	b	c	d	e}
+^t.offset(-5)
+^t.insert{v}
+^show[5]
+
+6: ^json:string[$copy; $.table[array] $.indent(true) ]
+
+
+$t[^table::create[nameless]{}]
+
+^show[n1]
+^try-catch{ $t.3[v] }
+
+^t.insert{v}
+
+$copy[^table::create[$t]]
+
+^show[n2]
+$t.3[v]
+^show[n3]
+$t.0[]
+^show[n4]
+
+^try-catch{ $t.100000[v] }
+
+$t.64[v]
+^show[n5]
+
+@show[n]
+$n : ^json:string[$t; $.table[array]  $.indent(true) ]
