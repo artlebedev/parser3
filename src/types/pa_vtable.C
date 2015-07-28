@@ -10,7 +10,10 @@
 #include "pa_vhash.h"
 #include "pa_vvoid.h"
 
-volatile const char * IDENT_PA_VTABLE_C="$Id: pa_vtable.C,v 1.38 2012/05/28 19:47:52 moko Exp $" IDENT_PA_VTABLE_H;
+volatile const char * IDENT_PA_VTABLE_C="$Id: pa_vtable.C,v 1.39 2015/07/28 14:42:44 moko Exp $" IDENT_PA_VTABLE_H;
+
+// limits
+#define MAX_COLUMNS 20000 // equal to MAX_LOOPS
 
 #ifndef DOXYGEN
 struct Record_info {
@@ -73,11 +76,25 @@ Value* VTable::get_element(const String& aname) {
 		}
 	}
 
-	throw Exception(PARSER_RUNTIME,
-		&aname, 
-		"column not found");
+	throw Exception(PARSER_RUNTIME, &aname, "column not found");
 }
 
+const VJunction* VTable::put_element(const String& aname, Value* avalue) {
+	if(ftable) {
+		int index=ftable->column_name2index(aname, false);
+		if(index>=0) // column aname|number valid
+		{
+			if(index > MAX_COLUMNS)
+				throw Exception(PARSER_RUNTIME, &aname, "too big column number");
+			if(!avalue->is_string())
+				throw Exception(PARSER_RUNTIME, 0, "column value must be string");
+			ftable->put_item(index, avalue->get_string());
+			return PUT_ELEMENT_REPLACED_ELEMENT;
+		}
+	}
+
+	throw Exception(PARSER_RUNTIME, &aname, "column not found");
+}
 
 String& VTable::get_json_string_array(String& result, const char *indent) {
 	// [

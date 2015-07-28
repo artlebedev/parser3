@@ -7,7 +7,7 @@
 
 #include "pa_table.h"
 
-volatile const char * IDENT_PA_TABLE_C="$Id: pa_table.C,v 1.64 2013/05/16 02:24:06 misha Exp $" IDENT_PA_TABLE_H;
+volatile const char * IDENT_PA_TABLE_C="$Id: pa_table.C,v 1.65 2015/07/28 14:42:44 moko Exp $" IDENT_PA_TABLE_H;
 
 #include "pa_exception.h"
 
@@ -27,14 +27,21 @@ Table::Table(columns_type acolumns, size_t initial_rows):
 	}
 }
 
+static void append_row(Table& src, Table* dest) {
+	Table::element_type src_row(src[src.current()]);
+	Table::element_type row(new ArrayString(src_row->count()));
+	row->append(*src_row);
+	*dest+=row;
+}
+
 Table::Table(const Table& src, Action_options& options) :
-	Array<element_type>(options.limit==ARRAY_OPTION_LIMIT_ALL?0:(options.limit < src.count())?options.limit:src.count()),
+	Array<element_type>( (options.limit==ARRAY_OPTION_LIMIT_ALL || options.limit>src.count()) ?  src.count() : options.limit),
 
 	fcurrent(0),
 	fcolumns(src.fcolumns),
 	name2number(src.name2number) {
 
-	append(src, options.offset, options.limit, options.reverse);
+	((Table &)src).table_for_each(append_row, this, options);
 }
 
 int Table::column_name2index(const String& column_name, bool bark) const {
@@ -56,6 +63,17 @@ const String* Table::item(size_t column) {
 			return row->get(column);
 	}
 	return 0; // it's OK we don't have row|column, just return nothing
+}
+
+void Table::put_item(size_t column, const String* value) {
+	if(!valid(fcurrent)) {
+		throw Exception(PARSER_RUNTIME, 0, "invalid current row");
+	}
+	element_type row=get(fcurrent);
+	while(row->count()<=column){
+	    *row+=&String::Empty;
+	}
+	row->put(column, value);
 }
 
 #ifndef DOXYGEN
@@ -81,6 +99,7 @@ bool Table::locate(const String& column, const String& value,
 }
 
 void Table::offset(bool absolute, int offset) {
+	// not +lcount, but "if either operand is unsigned, the other shall be converted to unsigned" C++ rule works here
 	if(size_t lcount=count())
 		fcurrent=((absolute?0:fcurrent)+offset+lcount)%lcount;
 }

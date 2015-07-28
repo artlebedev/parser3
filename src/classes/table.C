@@ -22,7 +22,7 @@
 #define USE_STRINGSTREAM
 #endif
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.305 2015/05/31 23:54:24 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.306 2015/07/28 14:42:44 moko Exp $";
 
 // class
 
@@ -1149,6 +1149,19 @@ static void _append(Request& r, MethodParams& params) {
 	GET_SELF(r, VTable).table()+=row;
 }
 
+static void _insert(Request& r, MethodParams& params) {
+	Temp_lang temp_lang(r, String::L_PASS_APPENDED);
+	const String& string=r.process_to_string(params[0]);
+
+	// parse cells
+	Table::element_type row=new ArrayString;
+	size_t pos_after=0;
+	string.split(*row, pos_after, "\t", String::L_AS_IS);
+
+	Table& table=GET_SELF(r, VTable).table();
+	table.insert(table.current(), row);
+}
+
 static void join_named_row(Table& src, Table* dest) {
 	Table::columns_type dest_columns=dest->columns();
 	size_t dest_columns_count=dest_columns->count();
@@ -1469,8 +1482,11 @@ MTable::MTable(): Methoded("table") {
 	// ^table.foreach[row-num;value]{code}[delim]
 	add_native_method("foreach", Method::CT_DYNAMIC, _foreach, 3, 4);
 
-	// ^table.append{r{tab}e{tab}c{tab}o{tab}r{tab}d}
+	// ^table.append{row{tab}data}
 	add_native_method("append", Method::CT_DYNAMIC, _append, 1, 1);
+
+	// ^table.insert{row{tab}data} before current row
+	add_native_method("insert", Method::CT_DYNAMIC, _insert, 1, 1);
 
 	// ^table.join[table][$.limit(10) $.offset(1) $.offset[cur] ]
 	add_native_method("join", Method::CT_DYNAMIC, _join, 1, 2);
