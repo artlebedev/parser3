@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 758
+Content-Length: 999
 
 1 : [
 	["c1","c2","c3"]
@@ -19,13 +19,32 @@ Comment: invalid current row
 	["c1","c2","c3"],
 	["","","v"]
 ]
+current: 2
 5 : [
 	["c1","c2","c3"],
 	["","","v"],
 	["v"],
 	["a","b","c","d","e"]
 ]
-6: [
+current: 2
+6 : [
+	["c1","c2","c3"],
+	["","","v"],
+	["a","b","c","d","e"]
+]
+current: 1
+7 : [
+	["c1","c2","c3"],
+	["","","v"]
+]
+current: 1
+8 : [
+	["c1","c2","c3"]
+]
+Type: parser.runtime,
+Source: delete,
+Comment: invalid current row
+9: [
 	["c1","c2","c3"],
 	["v"]
 ]
