@@ -8,7 +8,7 @@
 #ifndef PA_TABLE_H
 #define PA_TABLE_H
 
-#define IDENT_PA_TABLE_H "$Id: pa_table.h,v 1.65 2015/07/28 14:42:44 moko Exp $"
+#define IDENT_PA_TABLE_H "$Id: pa_table.h,v 1.66 2015/07/28 21:23:38 moko Exp $"
 
 #include "pa_types.h"
 #include "pa_hash.h"
@@ -60,6 +60,9 @@ public:
 
 	/// sets @a column value
 	void put_item(size_t column, const String*);
+
+	/// removes current row
+	void remove_current();
 
 	/// @return item from @a column. '0' if no such column
 	const String* item(const String& column) {

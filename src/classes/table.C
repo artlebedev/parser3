@@ -22,7 +22,7 @@
 #define USE_STRINGSTREAM
 #endif
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.306 2015/07/28 14:42:44 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.307 2015/07/28 21:23:38 moko Exp $";
 
 // class
 
@@ -1162,6 +1162,11 @@ static void _insert(Request& r, MethodParams& params) {
 	table.insert(table.current(), row);
 }
 
+static void _delete(Request& r, MethodParams& params) {
+	Table& table=GET_SELF(r, VTable).table();
+	table.remove_current();
+}
+
 static void join_named_row(Table& src, Table* dest) {
 	Table::columns_type dest_columns=dest->columns();
 	size_t dest_columns_count=dest_columns->count();
@@ -1487,6 +1492,9 @@ MTable::MTable(): Methoded("table") {
 
 	// ^table.insert{row{tab}data} before current row
 	add_native_method("insert", Method::CT_DYNAMIC, _insert, 1, 1);
+
+	// ^table.delete[] current row
+	add_native_method("delete", Method::CT_DYNAMIC, _delete, 0, 0);
 
 	// ^table.join[table][$.limit(10) $.offset(1) $.offset[cur] ]
 	add_native_method("join", Method::CT_DYNAMIC, _join, 1, 2);

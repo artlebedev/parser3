@@ -7,7 +7,7 @@
 
 #include "pa_table.h"
 
-volatile const char * IDENT_PA_TABLE_C="$Id: pa_table.C,v 1.65 2015/07/28 14:42:44 moko Exp $" IDENT_PA_TABLE_H;
+volatile const char * IDENT_PA_TABLE_C="$Id: pa_table.C,v 1.66 2015/07/28 21:23:39 moko Exp $" IDENT_PA_TABLE_H;
 
 #include "pa_exception.h"
 
@@ -74,6 +74,16 @@ void Table::put_item(size_t column, const String* value) {
 	    *row+=&String::Empty;
 	}
 	row->put(column, value);
+}
+
+void Table::remove_current(){
+	if(!valid(fcurrent)) {
+		throw Exception(PARSER_RUNTIME, 0, "invalid current row");
+	}
+	remove(fcurrent);
+	if(fcurrent==count() && count()>0){
+	    fcurrent--;
+	}
 }
 
 #ifndef DOXYGEN
