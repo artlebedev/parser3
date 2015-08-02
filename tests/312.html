@@ -16,7 +16,7 @@ $t.c1[]
 ^show[4]
 ^t.append{a	b	c	d	e}
 ^t.offset(-5)
-^t.insert{v2}
+^t.insert[ $.c1[v2] ]
 
 current: ^t.line[]
 ^show[5]
@@ -54,6 +54,7 @@ $t.0[]
 ^try-catch{ $t.100000[v2] }
 
 $t.64[v2]
+^t.append[ $.0[0] $.1[1] $.5[5] ]
 ^show[n5]
 
 @show[n]
