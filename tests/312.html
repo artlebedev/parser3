@@ -4,18 +4,19 @@ $t[^table::create{c1	c2	c3}]
 ^show[1]
 ^try-catch{ $t.c3[v] }
 
-^t.insert{v}
+^t.insert{v0}
 
 $copy[^table::create[$t]]
+$hcopy[^t.hash[c1; $.type[table] ]]
 
 ^show[2]
-$t.c3[v]
+$t.c3[v1]
 ^show[3]
 $t.c1[]
 ^show[4]
 ^t.append{a	b	c	d	e}
 ^t.offset(-5)
-^t.insert{v}
+^t.insert{v2}
 
 current: ^t.line[]
 ^show[5]
@@ -33,26 +34,26 @@ current: ^t.line[]
 
 
 9: ^json:string[$copy; $.table[array] $.indent(true) ]
-
+10: ^json:string[$hcopy; $.table[array] $.indent(true) ]
 
 $t[^table::create[nameless]{}]
 
 ^show[n1]
 ^try-catch{ $t.3[v] }
 
-^t.insert{v}
+^t.insert{v0}
 
 $copy[^table::create[$t]]
 
 ^show[n2]
-$t.3[v]
+$t.3[v1]
 ^show[n3]
 $t.0[]
 ^show[n4]
 
-^try-catch{ $t.100000[v] }
+^try-catch{ $t.100000[v2] }
 
-$t.64[v]
+$t.64[v2]
 ^show[n5]
 
 @show[n]
