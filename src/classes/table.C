@@ -22,7 +22,7 @@
 #define USE_STRINGSTREAM
 #endif
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.308 2015/08/02 21:21:25 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.309 2015/08/02 23:44:20 moko Exp $";
 
 // class
 
@@ -1139,29 +1139,51 @@ static void _foreach(Request& r, MethodParams& params) {
 	table.set_current(saved_current);
 }
 
-static void _append(Request& r, MethodParams& params) {
+static void update_cell(HashStringValue::key_type aname, HashStringValue::value_type avalue, VTable *dest) {
+	dest->put_element(String(aname, String::L_CLEAN), avalue); // new not required
+}
+
+inline Table::element_type row_from_string(Request& r, Value &param){
+	if(!param.is_string() && !param.get_junction())
+		throw Exception(PARSER_RUNTIME, 0, "row must be string, code or hash");
+
 	Temp_lang temp_lang(r, String::L_PASS_APPENDED);
-	const String& string=r.process_to_string(params[0]);
+	const String& string=r.process_to_string(param);
 
 	// parse cells
 	Table::element_type row=new ArrayString;
 	size_t pos_after=0;
 	string.split(*row, pos_after, "\t", String::L_AS_IS);
 
-	GET_SELF(r, VTable).table()+=row;
+	return row;
+}
+
+static void _append(Request& r, MethodParams& params) {
+	VTable vtable=GET_SELF(r, VTable);
+	Table& table=vtable.table();
+
+	HashStringValue* hash=params[0].get_hash();
+	if(hash){
+		table+=new ArrayString();
+		size_t saved_current=table.current();
+		table.set_current(table.count()-1);
+		hash->for_each<VTable*>(update_cell, &vtable);
+		table.set_current(saved_current);
+	} else {
+		table+=row_from_string(r, params[0]);
+	}
 }
 
 static void _insert(Request& r, MethodParams& params) {
-	Temp_lang temp_lang(r, String::L_PASS_APPENDED);
-	const String& string=r.process_to_string(params[0]);
-
-	// parse cells
-	Table::element_type row=new ArrayString;
-	size_t pos_after=0;
-	string.split(*row, pos_after, "\t", String::L_AS_IS);
-
-	Table& table=GET_SELF(r, VTable).table();
-	table.insert(table.current(), row);
+	VTable vtable=GET_SELF(r, VTable);
+	Table& table=vtable.table();
+	HashStringValue* hash=params[0].get_hash();
+	if(hash){
+		table.insert(table.current(), new ArrayString());
+		hash->for_each<VTable*>(update_cell, &vtable);
+	} else {
+		table.insert(table.current(), row_from_string(r, params[0]));
+	}
 }
 
 static void _delete(Request& r, MethodParams& params) {
