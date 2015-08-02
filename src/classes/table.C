@@ -22,7 +22,7 @@
 #define USE_STRINGSTREAM
 #endif
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.307 2015/07/28 21:23:38 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.308 2015/08/02 21:21:25 moko Exp $";
 
 // class
 
@@ -804,7 +804,9 @@ static void table_row_to_hash(Table::element_type row, Row_info *info) {
 				table=new Table(*info->table, table_options/*no rows, just structure*/);
 				info->hash->put(*key, new VTable(table));
 			}
-			*table+=row;
+			Table::element_type row_copy(new ArrayString(row->count()));
+			row_copy->append(*row);
+			*table+=row_copy;
 			break;
 		}
 	}
