@@ -1,0 +1,13 @@
+$t[^table::create[nameless]{5	50
+4	40
+3	30	check_this
+2	20
+1	10
+0	00
+}]
+
+columns: ^t.count[columns]
+
+$tf[^t.flip[]]
+^tf.count[]<br />
+^tf.menu{^for[i](0;5){'$tf.$i'}[, ]}[<br />]
