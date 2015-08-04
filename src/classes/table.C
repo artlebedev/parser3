@@ -22,7 +22,7 @@
 #define USE_STRINGSTREAM
 #endif
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.309 2015/08/02 23:44:20 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.310 2015/08/04 21:10:17 moko Exp $";
 
 // class
 
@@ -656,7 +656,7 @@ static void _count(Request& r, MethodParams& params) {
 	if(params.count()) {
 		const String& param=params.as_string(0, PARAMETER_MUST_BE_STRING);
 		if(param == "columns")
-			result = table.columns() ? table.columns()->count() : 0;
+			result = table.columns() ? table.columns()->count() : table.max_cells();
 		else if(param == "cells")
 			result = table.count() ? table[table.current()]->count() : 0;
 		else if(param == "rows") // synonim for ^table.count[]
@@ -1062,7 +1062,7 @@ static void _flip(Request& r, MethodParams&) {
 	Table& old_table=GET_SELF(r, VTable).table();
 	Table& new_table=*new Table(0);
 	if(size_t old_count=old_table.count())
-		if(size_t old_cols=old_table.columns()?old_table.columns()->count():old_table[0]->count()) 
+		if(size_t old_cols=old_table.columns()?old_table.columns()->count():old_table.max_cells())
 			for(size_t column=0; column<old_cols; column++) {
 				Table::element_type new_row(new ArrayString(old_count));
 				for(size_t i=0; i<old_count; i++) {

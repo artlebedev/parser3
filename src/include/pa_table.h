@@ -8,7 +8,7 @@
 #ifndef PA_TABLE_H
 #define PA_TABLE_H
 
-#define IDENT_PA_TABLE_H "$Id: pa_table.h,v 1.66 2015/07/28 21:23:38 moko Exp $"
+#define IDENT_PA_TABLE_H "$Id: pa_table.h,v 1.67 2015/08/04 21:10:17 moko Exp $"
 
 #include "pa_types.h"
 #include "pa_hash.h"
@@ -50,7 +50,10 @@ public:
 	size_t current() const { return fcurrent; }
 	void offset(bool absolute, int offset);
 
- 	/** @return column index from @a column_name. '<0' if no such column
+	/// @return checks all rows to find maximum cells number
+	int max_cells() const;
+
+	/** @return column index from @a column_name. '<0' if no such column
 		if no such - 'bark'
 	*/
 	int column_name2index(const String& column, bool bark) const;

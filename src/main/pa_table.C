@@ -7,7 +7,7 @@
 
 #include "pa_table.h"
 
-volatile const char * IDENT_PA_TABLE_C="$Id: pa_table.C,v 1.66 2015/07/28 21:23:39 moko Exp $" IDENT_PA_TABLE_H;
+volatile const char * IDENT_PA_TABLE_C="$Id: pa_table.C,v 1.67 2015/08/04 21:10:17 moko Exp $" IDENT_PA_TABLE_H;
 
 #include "pa_exception.h"
 
@@ -42,6 +42,16 @@ Table::Table(const Table& src, Action_options& options) :
 	name2number(src.name2number) {
 
 	((Table &)src).table_for_each(append_row, this, options);
+}
+
+int Table::max_cells() const {
+	int result=0;
+	for(int i=0; i<count(); i++){
+		element_type row=get(i);
+		if(row->count()>result)
+			result=row->count();
+	}
+	return result;
 }
 
 int Table::column_name2index(const String& column_name, bool bark) const {
