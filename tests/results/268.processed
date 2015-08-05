@@ -2,7 +2,7 @@ Content-Type: text/html
 Content-Length: 363
 
 ^t1.count[]: 3<br />
-^t1.count[columns]: 0<br />
+^t1.count[columns]: 3<br />
 Line: 1: ^t1.count[cells]: 2
 <br />
 Line: 2: ^t1.count[cells]: 3
