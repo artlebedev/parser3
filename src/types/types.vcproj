@@ -180,6 +180,9 @@
 			RelativePath=".\pa_venv.C">
 		</File>
 		<File
+			RelativePath=".\pa_vdate.C">
+		</File>
+		<File
 			RelativePath=".\pa_venv.h">
 		</File>
 		<File
