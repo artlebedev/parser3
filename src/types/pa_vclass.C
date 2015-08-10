@@ -8,7 +8,7 @@
 #include "pa_vclass.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_PA_VCLASS_C="$Id: pa_vclass.C,v 1.51 2015/04/08 18:08:53 moko Exp $" IDENT_PA_VCLASS_H;
+volatile const char * IDENT_PA_VCLASS_C="$Id: pa_vclass.C,v 1.52 2015/08/10 23:47:52 moko Exp $" IDENT_PA_VCLASS_H;
 
 Property& VClass::get_property(const String& aname) {
 	Property* result=ffields.get(aname);
@@ -169,5 +169,5 @@ const String* VClass::get_json_string(Json_options& options){
 	if(options.default_method){
 		return default_method_2_json_string(*options.default_method, options);
 	}
-	return options.hash_json_string(*get_hash());
+	return options.hash_json_string(get_hash());
 }

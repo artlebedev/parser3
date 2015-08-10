@@ -13,7 +13,7 @@
 #include "pa_request.h"
 
 
-volatile const char * IDENT_PA_VALUE_C="$Id: pa_value.C,v 1.36 2015/03/17 07:28:43 misha Exp $" IDENT_PA_VALUE_H IDENT_PA_PROPERTY_H;
+volatile const char * IDENT_PA_VALUE_C="$Id: pa_value.C,v 1.37 2015/08/10 23:47:52 moko Exp $" IDENT_PA_VALUE_H IDENT_PA_PROPERTY_H;
 
 // globals
 
@@ -37,7 +37,7 @@ VFile* Value::as_vfile(String::Language /*lang*/, const Request_charsets* /*char
 
 const String* Value::get_json_string(Json_options& options) {
 	if(HashStringValue* hash=get_hash())
-		return options.hash_json_string(*hash);
+		return options.hash_json_string(hash);
 
 	if(!options.skip_unknown)
 		throw Exception(PARSER_RUNTIME, 0, "Unsupported value's type (%s)", type());
@@ -52,7 +52,7 @@ const String* Value::default_method_2_json_string(Value& default_method, Json_op
 		Method* method=this->get_class()->get_method(method_name);
 		if(!method) {
 			// class/object does not have method with specified name so serialize it as hash (default)
-			return options.hash_json_string(*get_hash());
+			return options.hash_json_string(get_hash());
 		}
 
 		VMethodFrame frame(*method, options.r->method_frame, *this);

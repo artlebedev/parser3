@@ -18,7 +18,7 @@
 #include "pa_vxdoc.h"
 #endif
 
-volatile const char * IDENT_JSON_C="$Id: json.C,v 1.36 2015/07/22 22:10:38 moko Exp $";
+volatile const char * IDENT_JSON_C="$Id: json.C,v 1.37 2015/08/10 23:47:52 moko Exp $";
 
 // class
 
@@ -390,8 +390,8 @@ public:
 
 const String& value_json_string(String::Body key, Value& v, Json_options& options);
 
-const String* Json_options::hash_json_string(HashStringValue &hash) {
-	if(!hash.count())
+const String* Json_options::hash_json_string(HashStringValue *hash) {
+	if(!hash || !hash->count())
 		return new String("{}", String::L_AS_IS);
 
 	Json_string_recoursion go_down(*this);
@@ -402,7 +402,7 @@ const String* Json_options::hash_json_string(HashStringValue &hash) {
 
 		String *delim=NULL;
 		indent=get_indent(json_string_recoursion);
-		for(HashStringValue::Iterator i(hash); i; i.next() ){
+		for(HashStringValue::Iterator i(*hash); i; i.next() ){
 			if (delim){
 				result << *delim;
 			} else {
@@ -416,7 +416,7 @@ const String* Json_options::hash_json_string(HashStringValue &hash) {
 	} else {
 
 		bool need_delim=false;
-		for(HashStringValue::Iterator i(hash); i; i.next() ){
+		for(HashStringValue::Iterator i(*hash); i; i.next() ){
 			result << (need_delim ? ",\n\"" : "\"");
 			result << String(i.key(), String::L_JSON) << "\":" << value_json_string(i.key(), *i.value(), *this);
 			need_delim=true;

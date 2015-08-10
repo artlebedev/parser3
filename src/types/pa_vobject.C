@@ -12,7 +12,7 @@
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VOBJECT_C="$Id: pa_vobject.C,v 1.41 2015/03/17 07:28:44 misha Exp $" IDENT_PA_VOBJECT_H;
+volatile const char * IDENT_PA_VOBJECT_C="$Id: pa_vobject.C,v 1.42 2015/08/10 23:47:52 moko Exp $" IDENT_PA_VOBJECT_H;
 
 Value* VObject::get_scalar_value(const char* as_something) const {
 	VObject* unconst_this=const_cast<VObject*>(this);
@@ -118,5 +118,5 @@ const String* VObject::get_json_string(Json_options& options){
 	if(options.default_method){
 		return default_method_2_json_string(*options.default_method, options);
 	}
-	return options.hash_json_string(*get_hash());
+	return options.hash_json_string(get_hash());
 }

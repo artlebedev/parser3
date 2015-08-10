@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.154 2015/03/17 07:28:43 misha Exp $"
+#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.155 2015/08/10 23:47:52 moko Exp $"
 
 #include "pa_common.h"
 #include "pa_array.h"
@@ -94,7 +94,7 @@ struct Json_options {
 		return true;
 	}
 
-	const String* hash_json_string(HashStringValue &hash);
+	const String* hash_json_string(HashStringValue *hash);
 };
 
 ///	grandfather of all @a values in @b Parser
