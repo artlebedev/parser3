@@ -9,7 +9,7 @@
 #include "pa_vint.h"
 #include "pa_vstring.h"
 
-volatile const char * IDENT_PA_PA_VDATE_C="$Id: pa_vdate.C,v 1.1 2015/08/05 22:07:16 moko Exp $" IDENT_PA_VDATE_H;
+volatile const char * IDENT_PA_PA_VDATE_C="$Id: pa_vdate.C,v 1.2 2015/08/15 22:51:17 moko Exp $" IDENT_PA_VDATE_H;
 
 static void set_tz(const char* tz, char* buf, size_t buf_size) {
 #ifndef WIN32
@@ -122,4 +122,51 @@ const String* VDate::get_json_string(Json_options& options) {
 			break;
 	}
 	return result;
+}
+
+void VDate::set_time(time_t atime) {
+	if(atime==-1)
+		throw Exception(DATE_RANGE_EXCEPTION_TYPE, 0, "invalid datetime");
+	ftime=atime;
+}
+
+void VDate::set_time(tm tmIn) {
+	time_t t=mktime(&tmIn);
+	if(t==-1) {
+		// on some platforms mktime does not fix spring daylightsaving time hole
+		// in russia -- last sunday of march, 2am->3am hole
+		// trying to recover:
+		tmIn.tm_hour--;
+		t=mktime(&tmIn);
+	}
+	set_time(t);
+}
+
+static int ISOWeekCount (int year) {
+	static const unsigned int YearWeeks[] = {
+		52,52,52,52,53, 52,52,52,52,52,
+		53,52,52,52,52, 52,53,52,52,52,
+		52,53,52,52,52, 52,52,53
+	};
+	return YearWeeks[(year+1900) % 28];
+}
+
+VDate::yw VDate::CalcWeek(tm& tms) {
+	yw week = {tms.tm_year, 0};
+
+	// http://www.merlyn.demon.co.uk/weekinfo.htm
+	static const unsigned int FirstThurs[] = {7,5,4,3,2,7,6,5,4,2,1,7,6,4,3,2,1,6,5,4,3,1,7,6,5,3,2,1};
+	int diff = tms.tm_yday-(FirstThurs[(tms.tm_year+1900) % 28]-4);
+	if (diff < 0){
+		tms.tm_mday = diff;
+		mktime(&tms); // normalize
+		week = CalcWeek(tms);
+	} else {
+		week.week = 1 + diff/7;
+		if ( week.week > 52 && ISOWeekCount(week.year) < week.week ){
+			week.year++;
+			week.week = 1;
+		}
+	}
+	return week;
 }

@@ -8,7 +8,7 @@
 #ifndef PA_VDATE_H
 #define PA_VDATE_H
 
-#define IDENT_PA_VDATE_H "$Id: pa_vdate.h,v 1.56 2015/08/05 22:07:17 moko Exp $"
+#define IDENT_PA_VDATE_H "$Id: pa_vdate.h,v 1.57 2015/08/15 22:51:17 moko Exp $"
 
 #include "classes.h"
 #include "pa_common.h"
@@ -72,25 +72,10 @@ public: // usage
 
 	time_t get_time() const { return ftime; }
 
-	void set_time(time_t atime) {
-		if(atime==-1)
-			throw Exception(DATE_RANGE_EXCEPTION_TYPE, 0, "invalid datetime");
-		ftime=atime;
-	}
+	void set_time(time_t atime);
+	void set_time(tm tmIn);
 
-	void set_time(tm tmIn) {
-		time_t t=mktime(&tmIn);
-		if(t==-1) {
-			// on some platforms mktime does not fix spring daylightsaving time hole
-			// in russia -- last sunday of march, 2am->3am hole
-			// trying to recover:
-			tmIn.tm_hour--;
-			t=mktime(&tmIn);
-		}
-		set_time(t);
-	}
-
-	void set_tz(const String* atz) { 
+	void set_tz(const String* atz) {
 		if((ftz=atz))
 			ftz_cstr=ftz->cstr();
 	}
@@ -100,34 +85,7 @@ public: // usage
 		int week;
 	}; 
 	
-	static yw CalcWeek(tm& tms) {
-		yw week = {tms.tm_year, 0};
-
-		// http://www.merlyn.demon.co.uk/weekinfo.htm
-		static const unsigned int FirstThurs[] = {7,5,4,3,2,7,6,5,4,2,1,7,6,4,3,2,1,6,5,4,3,1,7,6,5,3,2,1};
-		int diff = tms.tm_yday-(FirstThurs[(tms.tm_year+1900) % 28]-4);
-		if (diff < 0){
-			tms.tm_mday = diff;
-			mktime(&tms); // normalize
-			week = CalcWeek(tms);
-		} else {
-			week.week = 1 + diff/7;
-			if ( week.week > 52 && ISOWeekCount(week.year) < week.week ){
-				week.year++;
-				week.week = 1;
-			}
-	}
-		return week;
-	}
-
-	static int ISOWeekCount (int year) {
-		static const unsigned int YearWeeks[] = {
-			52,52,52,52,53, 52,52,52,52,52,
-			53,52,52,52,52, 52,53,52,52,52,
-			52,53,52,52,52, 52,52,53
-		};
-		return YearWeeks[(year+1900) % 28];
-	}
+	static yw CalcWeek(tm& tms);
 
 private:
 	time_t ftime;
