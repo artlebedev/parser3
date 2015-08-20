@@ -50,7 +50,7 @@
 #define pa_mkdir(path, mode) mkdir(path, mode)
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.283 2015/04/21 22:12:27 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.284 2015/08/20 22:06:49 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -926,8 +926,9 @@ int __vsnprintf(char* b, size_t s, const char* f, va_list l) {
 		return 0;
 
 	int r;
-	// note: on win32& maybe somewhere else
+	// note: on win32 & maybe somewhere else
 	// vsnprintf do not writes terminating 0 in 'buffer full' case, reducing
+	// http://stackoverflow.com/questions/2915672/snprintf-and-visual-studio-2010
 	--s;
 
 	// clients do not check for negative 's', feature: ignore such prints
@@ -935,22 +936,16 @@ int __vsnprintf(char* b, size_t s, const char* f, va_list l) {
 		return 0;
 
 #ifdef _MSC_VER
-	/*
-	win32: 
-	mk:@MSITStore:C:\Program%20Files\Microsoft%20Visual%20Studio\MSDN\2001APR\1033\vccore.chm::/html/_crt__vsnprintf.2c_._vsnwprintf.htm
-
-	  if the number of bytes to write exceeds buffer, then count bytes are written and Ö1 is returned
-	*/
+	// win32: if the number of bytes to write exceeds buffer, then count bytes are written and -1 is returned
 	r=_vsnprintf(b, s, f, l); 
 	if(r<0) 
 		r=s;
 #else
 	r=vsnprintf(b, s, f, l); 
 	/*
-	solaris: 
-	man vsnprintf
+	solaris: man vsnprintf
 
-	  The snprintf() function returns  the  number  of  characters
+	The snprintf() function returns  the  number  of  characters
 	formatted, that is, the number of characters that would have
 	been written to the buffer if it were large enough.  If  the
 	value  of  n  is  0  on a call to snprintf(), an unspecified
