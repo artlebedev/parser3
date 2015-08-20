@@ -13,7 +13,7 @@
 #include "ws2tcpip.h"
 #endif
 
-volatile const char * IDENT_INET_C="$Id: inet.C,v 1.8 2015/05/01 21:51:01 moko Exp $";
+volatile const char * IDENT_INET_C="$Id: inet.C,v 1.9 2015/08/20 22:16:47 moko Exp $";
 
 class MInet: public Methoded {
 public:
@@ -27,7 +27,7 @@ DECLARE_CLASS_VAR(inet, new MInet, 0);
 
 static void _ntoa(Request& r, MethodParams& params){
 	unsigned long l=(unsigned long)trunc(params.as_double(0, "parameter must be expression", r));
-	static const int ip_cstr_bufsize=3*4+3+1+1;
+	static const int ip_cstr_bufsize=3*4+3+1/*zero-teminator*/+1/*for faulty snprintfs*/;
 	char* ip_cstr=new(PointerFreeGC) char[ip_cstr_bufsize];
 	snprintf(ip_cstr, ip_cstr_bufsize, "%u.%u.%u.%u", (l>>24) & 0xFF, (l>>16) & 0xFF, (l>>8) & 0xFF, l & 0xFF);
 	r.write_no_lang(*new String(ip_cstr));
