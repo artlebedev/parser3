@@ -17,7 +17,7 @@
 #include "pa_vfile.h"
 #include "pa_uue.h"
 
-volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.113 2015/08/28 16:24:42 moko Exp $" IDENT_PA_VMAIL_H;
+volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.114 2015/08/28 16:26:02 moko Exp $" IDENT_PA_VMAIL_H;
 
 #ifdef WITH_MAILRECEIVE
 extern "C" {
@@ -274,7 +274,7 @@ static void parse(Request& r, GMimeMessage *message, HashStringValue& received) 
 		// .date(time_t in UTC)
 		time_t date;
 		g_mime_message_get_date(message, &date, 0);
-		putReceived(received, "date" date);
+		putReceived(received, "date", date);
 
 		// .body[part/parts
 		MimePart2body_info info={&r, &received, {0}};
