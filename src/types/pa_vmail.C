@@ -17,7 +17,7 @@
 #include "pa_vfile.h"
 #include "pa_uue.h"
 
-volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.112 2015/06/03 00:13:19 moko Exp $" IDENT_PA_VMAIL_H;
+volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.113 2015/08/28 16:24:42 moko Exp $" IDENT_PA_VMAIL_H;
 
 #ifdef WITH_MAILRECEIVE
 extern "C" {
@@ -247,22 +247,6 @@ static void MimePart2body(GMimeObject *parent, GMimeObject *part, gpointer data)
 	}
 }
 
-int gmt_offset() {
-#if defined(HAVE_TIMEZONE) && defined(HAVE_DAYLIGHT)
-	return timezone+(daylight?60*60*(timezone<0?-1:timezone>0?+1:0):0);
-#else
-	time_t t=time(0);
-	tm *tm=localtime(&t);
-#if defined(HAVE_TM_GMTOFF)
-	return tm->tm_gmtoff;
-#elif defined(HAVE_TM_TZADJ)
-	return tm->tm_tzadj;
-#else
-#error neither HAVE_TIMEZONE&HAVE_DAYIGHT nor HAVE_TM_GMTOFF nor HAVE_TM_TZADJ defined
-#endif
-#endif
-}
-
 static void parse(Request& r, GMimeMessage *message, HashStringValue& received) {
 	try {
 		// firstly user-defined strings go
@@ -287,17 +271,10 @@ static void parse(Request& r, GMimeMessage *message, HashStringValue& received) 
 
 		// @todo: g_mime_message_get_recipients(message)
 		
-		// .date(date+gmt_offset)
+		// .date(time_t in UTC)
 		time_t date;
-		int tz_offset;
-		g_mime_message_get_date(message, &date, &tz_offset);
-		int tt_offset = ((tz_offset / 100) *(60 * 60)) + (tz_offset % 100) * 60;
-
-		putReceived(received, "date",
-			date // local sender
-			-tt_offset // move local sender to GMT sender
-			-gmt_offset() // move GMT sender to our local time
-		);
+		g_mime_message_get_date(message, &date, 0);
+		putReceived(received, "date" date);
 
 		// .body[part/parts
 		MimePart2body_info info={&r, &received, {0}};
