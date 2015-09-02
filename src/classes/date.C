@@ -13,7 +13,7 @@
 #include "pa_vdate.h"
 #include "pa_vtable.h"
 
-volatile const char * IDENT_DATE_C="$Id: date.C,v 1.93 2015/04/08 18:08:52 moko Exp $" IDENT_PA_VDATE_H;
+volatile const char * IDENT_DATE_C="$Id: date.C,v 1.94 2015/09/02 21:29:44 moko Exp $" IDENT_PA_VDATE_H;
 
 // class
 
@@ -67,35 +67,25 @@ static void _today(Request& r, MethodParams&) {
 	today.tm_min=0;
 	today.tm_sec=0;
 
-	vdate.set_time(today);
+	vdate.set_tm(today);
 }
 
-/// shrinked range: 1970/1/1 to 2038/1/1
 static int to_year(int iyear) {
-	if(iyear<1970 || iyear>2038)
-		throw Exception(DATE_RANGE_EXCEPTION_TYPE,
-			0,
-			"year '%d' is out of valid range", iyear);
-	return iyear;
+	if(iyear<0 || iyear>9999)
+		throw Exception(DATE_RANGE_EXCEPTION_TYPE, 0, "year '%d' is out of range 0..9999", iyear);
+	return iyear-1900;
 }
 
 static int to_month(int imonth) {
 	return max(1, min(imonth, 12)) -1;
 }
 
-static int to_tm_year(int iyear) {
-	return to_year(iyear)-1900;
-}
-
-
 // 2002-04-25 18:14:00
 // 18:14:00
 // 2002:04:25 [+maybe time]
 /*not static, used in image.C*/ tm cstr_to_time_t(char *cstr) {
 	if( !cstr || !*cstr )
-		throw Exception(DATE_RANGE_EXCEPTION_TYPE,
-			0,
-			"empty string is not valid datetime");
+		throw Exception(DATE_RANGE_EXCEPTION_TYPE, 0, "empty string is not valid datetime");
 
 	char *cur=cstr;
 	char date_delim=isdigit((unsigned char)cur[0])&&isdigit((unsigned char)cur[1])&&isdigit((unsigned char)cur[2])&&isdigit((unsigned char)cur[3])&&cur[4]==':'?':'
@@ -110,7 +100,8 @@ static int to_tm_year(int iyear) {
 	const char* sec=lsplit(&cur, '.');
 	const char* msec=cur;
 
-	tm tmIn;  memset(&tmIn, 0, sizeof(tmIn));
+	tm tmIn;
+	memset(&tmIn, 0, sizeof(tmIn));
 	tmIn.tm_isdst=-1;
 	if(!month) {
 		if(min) {
@@ -124,7 +115,7 @@ static int to_tm_year(int iyear) {
 		} else
 			hour=min=sec=msec=0; // not YYYY- & not HH: = just YYYY
 	}
-	tmIn.tm_year=to_tm_year(pa_atoi(year));
+	tmIn.tm_year=to_year(pa_atoi(year));
 	tmIn.tm_mon=month?pa_atoi(month)-1:0;
 	tmIn.tm_mday=mday?pa_atoi(mday):1;
 date_part_set:
@@ -140,27 +131,23 @@ static void _create(Request& r, MethodParams& params) {
 
 	if(params.count()==1){
 		if(params[0].is_string()){ // ^create[2002-04-25 18:14:00] ^create[18:14:00]
-			vdate.set_time(cstr_to_time_t(params[0].get_string()->cstrm()));
+			tm tmIn=cstr_to_time_t(params[0].get_string()->cstrm());
+			vdate.set_tm(tmIn);
 		} else { // ^create(float days) or ^create[date object]
-			time_t t=(time_t)round(params.as_double(0, "float days must be double", r)*SECS_PER_DAY);
-			if(t<0 || !localtime(&t))
-				throw Exception(DATE_RANGE_EXCEPTION_TYPE,
-					0,
-					"invalid datetime");
-			vdate.set_time(t);
+			vdate.set_time(round(params.as_double(0, "float days must be double", r)*SECS_PER_DAY));
 		}
 	} else { // ^create(y;m;d[;h[;m[;s]]])
 		assert(params.count()<=6);
 		tm tmIn; memset(&tmIn, 0, sizeof(tmIn));
 		tmIn.tm_isdst=-1;
-		tmIn.tm_year=to_tm_year(params.as_int(0, "year must be int", r));
+		tmIn.tm_year=to_year(params.as_int(0, "year must be int", r));
 		tmIn.tm_mon=params.as_int(1, "month must be int", r)-1;
 		tmIn.tm_mday=params.count()>2?params.as_int(2, "mday must be int", r):1;
 		int savedHour=0;
 		if(params.count()>3) savedHour=tmIn.tm_hour=params.as_int(3, "hour must be int", r);
 		if(params.count()>4) tmIn.tm_min=params.as_int(4, "minutes must be int", r);
 		if(params.count()>5) tmIn.tm_sec=params.as_int(5, "seconds must be int", r);
-		vdate.set_time(tmIn);
+		vdate.set_tm(tmIn);
 	};
 }
 
@@ -190,8 +177,6 @@ static void _gmt_string(Request& r, MethodParams&) {
 }
 
 static void _roll(Request& r, MethodParams& params) {
-	VDate& vdate=GET_SELF(r, VDate);
-
 	const String& what=params.as_string(0, "'what' must be string");
 	int oyear=0;
 	int omonth=0;
@@ -202,99 +187,65 @@ static void _roll(Request& r, MethodParams& params) {
 	else if(what=="day") offset=&oday;
 	else if(what=="TZ") {
 		const String& argument_tz=params.as_string(1, "'TZ' must be string");
-		vdate.set_tz(&argument_tz);
+		(&r.get_self() == date_class) ? VDate::set_default_tz(&argument_tz) : GET_SELF(r, VDate).set_tz(&argument_tz);
 		return;
 	} else
-		throw Exception(PARSER_RUNTIME,
-			&what,
-			"must be year|month|day|TZ");
+		throw Exception(PARSER_RUNTIME, &what, "must be year|month|day|TZ");
+
+	if(&r.get_self() == date_class)
+		throw Exception(PARSER_RUNTIME, &what, "must be TZ to be called statically");
+
+	VDate& vdate=GET_SELF(r, VDate);
 	
 	*offset=params.as_int(1, "offset must be int", r);
 
-	time_t self_time=vdate.get_time();
-	tm tmIn=*localtime(&self_time);
+	tm tmIn=vdate.get_tm();
 	tm tmSaved=tmIn;
 	int adjust_day=0;
-	time_t t_changed_date;
 	while(true) {
 		tmIn.tm_year+=oyear;
 		tmIn.tm_mon+=omonth;
 		tmIn.tm_mday+=oday+adjust_day;
-		tmIn.tm_hour=24/2; 
+		tmIn.tm_hour=24/2;
 		tmIn.tm_min=0;
 		tmIn.tm_sec=0;
-		int saved_mon=(tmIn.tm_mon+12*100)%12; // crossing year boundary backwards
-		t_changed_date=mktime/*normalizetime*/(&tmIn);
-		if(t_changed_date<0)
-			throw Exception(DATE_RANGE_EXCEPTION_TYPE,
-				0,
-				"bad resulting time (rolled out of valid date range)");
-		if(oday==0 && tmIn.tm_mon!=saved_mon/*but it changed*/) {
-			if(adjust_day <= -3/*31->28 max, so never, but...*/)
-				throw Exception(DATE_RANGE_EXCEPTION_TYPE,
-					0,
-					"bad resulting time (day hole still with %d day adjustment)", adjust_day );
+		int saved_day=tmIn.tm_mday;
+		vdate.set_tm(tmIn); /* normalize */
+
+		if(oday==0 && tmIn.tm_mday!=saved_day /* but it changed */ ) {
+			if(adjust_day <= -3 /* 31->28 max, so never, but... */ )
+				throw Exception(DATE_RANGE_EXCEPTION_TYPE, 0, "bad resulting time (day hole still with %d day adjustment)", adjust_day );
 			
 			tmIn=tmSaved; // restoring
 			--adjust_day; //retrying with prev day
 		} else
-			break;			
+			break;
 	}
 
-	tm *tmOut=localtime(&t_changed_date);
-	if(!tmOut)
-		throw Exception(DATE_RANGE_EXCEPTION_TYPE,
-			0,
-			"bad resulting time (seconds from epoch=%d)", t_changed_date);
-    
-	tmOut->tm_hour=tmSaved.tm_hour;
-	tmOut->tm_min=tmSaved.tm_min;
-	tmOut->tm_sec=tmSaved.tm_sec;
-	tmOut->tm_isdst=-1; 
-	{
-		time_t t_changed_time=mktime/*normalizetime*/(tmOut);
-		/*autofix: in msk timezone last sunday of march hour hole: [2am->3am)
-		if(
-			tmOut->tm_hour!=tmSaved.tm_hour
-			||tmOut->tm_min!=tmSaved.tm_min)
-			throw Exception(0,
-				0,
-				"bad resulting time (hour hole)");
-		*/
+	tmIn.tm_hour=tmSaved.tm_hour;
+	tmIn.tm_min=tmSaved.tm_min;
+	tmIn.tm_sec=tmSaved.tm_sec;
+	tmIn.tm_isdst=-1;
 
-		if(t_changed_time<0)
-			throw Exception(DATE_RANGE_EXCEPTION_TYPE,
-				0,
-				"bad resulting time (after reconstruction)");
-		
-		vdate.set_time(t_changed_time);
-	}
+	vdate.set_tm(tmIn);
 }
 
 static Table& fill_month_days(Request& r, MethodParams& params, bool rus){
 	Table::Action_options table_options;
 	Table& result=*new Table(date_calendar_table_template, table_options);
 	
-	int year=to_year(params.as_int(1, "year must be int", r));
-	int month=to_month(params.as_int(2, "month must be int", r));
-	
-	tm tmIn;  
-	memset(&tmIn, 0, sizeof(tmIn)); 
+	tm tmIn;
+	memset(&tmIn, 0, sizeof(tmIn));
+	tmIn.tm_year=to_year(params.as_int(1, "year must be int", r));
+	tmIn.tm_mon=to_month(params.as_int(2, "month must be int", r));
 	tmIn.tm_mday=1;
-	tmIn.tm_mon=month; 
-	tmIn.tm_year=year-1900;
 
-	time_t t=mktime(&tmIn);
-	if(t<0)
-		throw Exception(DATE_RANGE_EXCEPTION_TYPE, 
-			0, 
-			"invalid date");
-	tm *tmOut=localtime(&t);
-	
-	int weekDay1=tmOut->tm_wday;
-	if(rus) 
+	VDate t(tmIn); /* normalize */
+	int weekDay1=tmIn.tm_wday;
+
+	if(rus)
 		weekDay1=weekDay1?weekDay1-1:6; //sunday last
-	int monthDays=getMonthDays(year, month);
+	int monthDays=VDate::getMonthDays(tmIn.tm_year, tmIn.tm_mon);
 	
 	for(int _day=1-weekDay1; _day<=monthDays;) {
 		Table::element_type row(new ArrayString(7));
@@ -307,12 +258,12 @@ static Table& fill_month_days(Request& r, MethodParams& params, bool rus){
 
 			if(wday==(rus?3:4)/*thursday*/) {
 				tm tms;
-				memset(&tms, 0, sizeof(tmIn)); 
+				memset(&tms, 0, sizeof(tms));
 				tms.tm_mday=_day;
-				tms.tm_mon=month; 
-				tms.tm_year=year-1900;
+				tms.tm_mon=tmIn.tm_mon;
+				tms.tm_year=tmIn.tm_year;
 				
-				/*normalize*/mktime(&tms);
+				VDate ts(tms); /*normalize*/
 				weekyear=tms.tm_year+1900;
 				weekno=VDate::CalcWeek(tms).week;
 			}
@@ -337,38 +288,29 @@ static Table& fill_week_days(Request& r, MethodParams& params, bool rus){
 	*columns+=new String("weekday");
 	Table& result=*new Table(columns);
 
-	int year=to_year(params.as_int(1, "year must be int", r));
-	int month=to_month(params.as_int(2, "month must be int", r));
-	int day=params.as_int(3, "day must be int", r);
-	
 	tm tmIn;
-	memset(&tmIn, 0, sizeof(tmIn)); 
+	memset(&tmIn, 0, sizeof(tmIn));
+	tmIn.tm_year=to_year(params.as_int(1, "year must be int", r));
+	tmIn.tm_mon=to_month(params.as_int(2, "month must be int", r));
+	tmIn.tm_mday=params.as_int(3, "day must be int", r);
 	tmIn.tm_hour=18;
-	tmIn.tm_mday=day;
-	tmIn.tm_mon=month; 
-	tmIn.tm_year=year-1900;
-		
-	time_t t=mktime(&tmIn);
-	if(t<0)
-		throw Exception(DATE_RANGE_EXCEPTION_TYPE, 
-			0, 
-			"invalid date");
-	tm *tmOut=localtime(&t);
 
-	int baseWeekDay=tmOut->tm_wday;
+	VDate t(tmIn); /* normalize */
+	int baseWeekDay=tmIn.tm_wday;
+
 	if(rus) 
 		baseWeekDay=baseWeekDay?baseWeekDay-1:6; //sunday last
 	
-	t-=baseWeekDay*SECS_PER_DAY;
+	t.set_time(t.get_time()-baseWeekDay*SECS_PER_DAY);
 		
-	for(int curWeekDay=0; curWeekDay<7; curWeekDay++, t+=SECS_PER_DAY) {
-		tm *tmOut=localtime(&t);
+	for(int curWeekDay=0; curWeekDay<7; curWeekDay++, t.set_time(t.get_time()+SECS_PER_DAY)) {
 		Table::element_type row(new ArrayString(4));
-		
-		*row+=new String(1900+tmOut->tm_year, "%04d");
-		*row+=new String(1+tmOut->tm_mon, "%02d");
-		*row+=new String(tmOut->tm_mday, "%02d");
-		*row+=new String(tmOut->tm_wday, "%02d");
+
+		tm tmOut=t.get_tm();
+		*row+=new String(1900+tmOut.tm_year, "%04d");
+		*row+=new String(1+tmOut.tm_mon, "%02d");
+		*row+=new String(tmOut.tm_mday, "%02d");
+		*row+=new String(tmOut.tm_wday, "%02d");
 
 		result+=row;
 	}
@@ -384,9 +326,7 @@ static void _calendar(Request& r, MethodParams& params) {
 	else if(what=="eng")
 		rus=false;
 	else
-		throw Exception(PARSER_RUNTIME, 
-			&what, 
-			"must be rus|eng");
+		throw Exception(PARSER_RUNTIME, &what, "must be rus|eng");
 
 	Table* table;
 	if(params.count()==1+2) 
@@ -402,41 +342,31 @@ static void _unix_timestamp(Request& r, MethodParams& params) {
 
 	if(params.count()==0) { 
 		// ^date.unix-timestamp[]
-		r.write_no_lang(*new VInt((int)vdate.get_time()));
+		r.write_no_lang(*new VDouble((double)vdate.get_time()));
 	} else {
 		if(vdate.get_time())
-			throw Exception(PARSER_RUNTIME,
-				0,
-				"date object already constructed");
-
+			throw Exception(PARSER_RUNTIME, 0, "date object already constructed");
 		// ^unix-timestamp(time_t)
-		time_t t=(time_t)params.as_int(0, "Unix timestamp must be integer", r);
-
-		vdate.set_time(t);
+		vdate.set_time(params.as_double(0, "Unix timestamp must be number", r));
 	}
 }
 
 static void _last_day(Request& r, MethodParams& params) {
-	int year;
-	int month;
+	tm tmIn;
 	if(&r.get_self() == date_class) {
 		if(params.count() != 2)
-			throw Exception(PARSER_RUNTIME,
-				0,
-				"year and month must be defined");
-
+			throw Exception(PARSER_RUNTIME, 0, "year and month must be defined");
 		// ^date:lastday(year;month)
-		year=to_year(params.as_int(0, "year must be int", r));
-		month=to_month(params.as_int(1, "month must be int", r));
+		tmIn.tm_year=to_year(params.as_int(0, "year must be int", r));
+		tmIn.tm_mon=to_month(params.as_int(1, "month must be int", r));
 	} else {
+		if(params.count() != 0)
+			throw Exception(PARSER_RUNTIME, 0, "year and month must not be defined");
 		// ^date.lastday[]
-		tm &tmIn=GET_SELF(r, VDate).get_localtime();
-		year=tmIn.tm_year+1900;
-		month=tmIn.tm_mon;
+		tmIn=GET_SELF(r, VDate).get_tm();
 	}
-	r.write_no_lang(*new VInt(getMonthDays(year, month)));
+	r.write_no_lang(*new VInt(VDate::getMonthDays(tmIn.tm_year, tmIn.tm_mon)));
 }
-
 
 // constructor
 
@@ -468,7 +398,7 @@ MDate::MDate(): Methoded("date") {
 	add_native_method("last-day", Method::CT_ANY, _last_day, 0, 2);
 
 	// ^date.roll[year|month|day](+/- 1)
-	add_native_method("roll", Method::CT_DYNAMIC, _roll, 2, 2);
+	add_native_method("roll", Method::CT_ANY, _roll, 2, 2);
 
 	// ^date:calendar[rus|eng](year;month)  = table
 	// ^date:calendar[rus|eng](year;month;day) = table

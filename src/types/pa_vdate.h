@@ -8,7 +8,7 @@
 #ifndef PA_VDATE_H
 #define PA_VDATE_H
 
-#define IDENT_PA_VDATE_H "$Id: pa_vdate.h,v 1.57 2015/08/15 22:51:17 moko Exp $"
+#define IDENT_PA_VDATE_H "$Id: pa_vdate.h,v 1.58 2015/09/02 21:29:45 moko Exp $"
 
 #include "classes.h"
 #include "pa_common.h"
@@ -19,11 +19,21 @@
 
 #define VDATE_TYPE "date"
 
+//#define PA_DATE64
+
+#ifdef PA_DATE64
+#define pa_time_t time_t
+#else
+#define pa_time_t double
+#endif
+
+#define SECS_PER_DAY 86400L
+
 // externs
 
 extern Methoded* date_class;
 
-/// value of type 'date'. implemented with @c time_t
+/// value of type 'date'.
 class VDate: public VStateless_object {
 public: // Value
 
@@ -45,40 +55,33 @@ public: // Value
 	/// VDate: 0 or !0
 	override bool as_bool() const { return ftime!=0; }
 
-	tm& get_localtime();
-
-	enum sql_string_type {sql_string_datetime, sql_string_date, sql_string_time};
-
-	const String* get_sql_string(sql_string_type format = sql_string_datetime);
-	const String* get_gmt_string();
-
 	/// VDate: method,field
 	override Value* get_element(const String& aname);
 
 public: // usage
 
-	VDate(time_t adate) :
-		ftz(0),
-		ftz_cstr(0) {
+	VDate(pa_time_t adate) : ftz_cstr(0) {
 		set_time(adate);
 	}
 
-	VDate(tm tmIn) :
-		ftime(0),
-		ftz(0),
-		ftz_cstr(0) {
-		set_time(tmIn);
+	VDate(tm &tmIn) : ftz_cstr(0) {
+		set_tm(tmIn);
 	}
 
-	time_t get_time() const { return ftime; }
+	void set_time(pa_time_t atime);
+	void set_tm(tm &tmIn);
+	void validate();
 
-	void set_time(time_t atime);
-	void set_time(tm tmIn);
+	void set_tz(const String* atz);
+	static void set_default_tz(const String* atz);
 
-	void set_tz(const String* atz) {
-		if((ftz=atz))
-			ftz_cstr=ftz->cstr();
-	}
+	pa_time_t get_time() const { return ftime; }
+	tm get_tm() const { return ftm; }
+
+	enum sql_string_type {sql_string_datetime, sql_string_date, sql_string_time};
+
+	const String* get_sql_string(sql_string_type format = sql_string_datetime);
+	const String* get_gmt_string();
 
 	struct yw {
 		int year;
@@ -86,10 +89,11 @@ public: // usage
 	}; 
 	
 	static yw CalcWeek(tm& tms);
+	static int getMonthDays(int year, int month);
 
 private:
-	time_t ftime;
-	const String* ftz;
+	pa_time_t ftime;
+	tm ftm;
 	const char* ftz_cstr;
 
 };

@@ -13,7 +13,7 @@
 #include "pa_request.h"
 
 
-volatile const char * IDENT_PA_VALUE_C="$Id: pa_value.C,v 1.37 2015/08/10 23:47:52 moko Exp $" IDENT_PA_VALUE_H IDENT_PA_PROPERTY_H;
+volatile const char * IDENT_PA_VALUE_C="$Id: pa_value.C,v 1.38 2015/09/02 21:29:45 moko Exp $" IDENT_PA_VALUE_H IDENT_PA_PROPERTY_H;
 
 // globals
 
@@ -94,31 +94,17 @@ void Method::check_actual_numbered_params(Value& self,
 
 // attributed meaning
 
-static String::C date_attribute(const VDate& vdate) {
-	time_t when=vdate.get_time();
-	struct tm *tms=gmtime(&when);
-	if(!tms)
-		throw Exception(DATE_RANGE_EXCEPTION_TYPE,
-			0,
-			"bad time in attribute value (seconds from epoch=%u)", when);
-	return date_gmt_string(tms);
-}
-
 static void append_attribute_meaning(String& result,
 					Value& value, String::Language lang, bool forced) {
 	if(const String* string=value.get_string())
 		result.append(*string, lang, forced);
 	else
 		if(Value* vdate=value.as(VDATE_TYPE)) {
-			String::C attribute=date_attribute(static_cast<VDate&>(*vdate));
-
-			result.append_help_length(attribute.str, attribute.length, String::L_CLEAN);
+			result << *static_cast<VDate&>(*vdate).get_gmt_string();
 		} else
-			throw Exception(PARSER_RUNTIME,
-				&result,
-				"trying to append here neither string nor date (%s)",
-					value.type());
+			throw Exception(PARSER_RUNTIME, &result, "trying to append here neither string nor date (%s)", value.type());
 }
+
 #ifndef DOXYGEN
 struct Attributed_meaning_info {
 	String* header;        // header line being constructed

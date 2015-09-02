@@ -25,7 +25,7 @@
 #include "pa_vdate.h"
 #include "pa_table.h"
 
-volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.145 2015/04/08 18:08:52 moko Exp $";
+volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.146 2015/09/02 21:29:44 moko Exp $";
 
 // defines
 
@@ -459,7 +459,7 @@ static Value* parse_IFD_entry_formatted_one_value(
 }
 
 // date.C
-tm cstr_to_time_t(char *cstr);
+tm cstr_to_time_t(char *);
 
 static Value* parse_IFD_entry_formatted_value(bool is_big, ushort format, 
 					      size_t component_size, uint components_count, 
@@ -475,7 +475,8 @@ static Value* parse_IFD_entry_formatted_value(bool is_big, ushort format,
 			strcpy(cstr_writable, cstr);
 
 			try {
-				return new VDate(cstr_to_time_t(cstr_writable));
+				tm tmIn=cstr_to_time_t(cstr_writable);
+				return new VDate(tmIn);
 			}
 			catch(...) { /*ignore bad date times*/ }
 		}

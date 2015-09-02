@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.159 2015/06/03 00:13:19 moko Exp $"
+#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.160 2015/09/02 21:29:44 moko Exp $"
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -294,12 +294,6 @@ static void remove_key_from(
 }
 
 Charset* detect_charset(const char* content_type);
-
-#define SECS_PER_DAY (60*60*24)
-
-int getMonthDays(int year, int month);
-
-String::C date_gmt_string(tm* tms);
 
 // globals
 

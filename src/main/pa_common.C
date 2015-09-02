@@ -50,7 +50,7 @@
 #define pa_mkdir(path, mode) mkdir(path, mode)
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.284 2015/08/20 22:06:49 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.285 2015/09/02 21:29:45 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -1462,44 +1462,4 @@ const char *pa_idna_decode(const char *in, Charset &asked_charset){
 		result = (char *)Charset::transcode(result, UTF8_charset, asked_charset).cstr();
 
 	return result;
-}
-
-
-static bool isLeap(int year) {
-	return !(
-				(year % 4) || ((year % 400) && !(year % 100))
-			); 
-}
-
-int getMonthDays(int year, int month) {
-	static int monthDays[]={
-		31, 
-		28, 
-		31, 
-		30, 
-		31, 
-		30, 
-		31, 
-		31, 
-		30, 
-		31, 
-		30, 
-		31
-	}; 
-	return (month == 1 /* january -- 0 */ && isLeap(year)) ? 29 : monthDays[month]; 
-}
-
-String::C date_gmt_string(tm* tms) {
-	/// http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3
-	static const char month_names[12][4]={
-		"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
-	static const char days[7][4]={
-		"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
-
-	char *buf=new(PointerFreeGC) char[MAX_STRING];
-	return String::C(buf, 
-		snprintf(buf, MAX_STRING, "%s, %.2d %s %.4d %.2d:%.2d:%.2d GMT", 
-		days[tms->tm_wday],
-		tms->tm_mday,month_names[tms->tm_mon],tms->tm_year+1900,
-		tms->tm_hour,tms->tm_min,tms->tm_sec));
 }
