@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 1812
+Content-Length: 1802
 
 cookie<br />env<br />hash - methoded<br />table - methoded<br />test - methoded<br />test1 - methoded<br />test2 - methoded
 <hr />
@@ -66,7 +66,7 @@ env<br />
 <br />
 @now[0-1] {dynamic}
 <br />
-@roll[2] {dynamic}
+@roll[2]
 <br />
 @set[1-6] {dynamic}
 <br />
