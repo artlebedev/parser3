@@ -1,0 +1,7 @@
+Content-Type: text/html
+Content-Length: 115
+
+static call test
+1. 2. 3. Type: parser.runtime,
+Source: js-escape,
+Comment: is not allowed to be called statically
