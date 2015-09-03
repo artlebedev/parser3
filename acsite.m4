@@ -1,5 +1,5 @@
 # paf@design.ru
-# included in configure.in
+# included in configure.ac
 
 AC_DEFUN([PA_CHECK_MATH_FUNC_ONE_ARG],[
 AC_MSG_CHECKING(for (maybe built-in) math function $1)
