@@ -20,7 +20,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.218 2015/05/17 23:24:44 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.219 2015/09/03 20:47:21 moko Exp $";
 
 // class
 
@@ -697,9 +697,9 @@ static void _trim(Request& r, MethodParams& params) {
 }
 
 static void _base64(Request& r, MethodParams& params) {
-	if(params.count()) {
+	if(&r.get_self() == string_class) {
 		// decode: ^string:base64[encoded[;$.strict(true|false)]]
-		const char* cstr=params.as_string(0, PARAMETER_MUST_BE_STRING).cstr();
+		const char* cstr=params.count() ? params.as_string(0, PARAMETER_MUST_BE_STRING).cstr() : "";
 		char* decoded=0;
 		size_t length=0;
 
@@ -736,9 +736,9 @@ static void _base64(Request& r, MethodParams& params) {
 }
 
 static void _idna(Request& r, MethodParams& params) {
-	if(params.count()) {
+	if(&r.get_self() == string_class) {
 		// decode: ^string:idna[encoded]
-		const char* cstr=params.as_string(0, PARAMETER_MUST_BE_STRING).cstr();
+		const char* cstr=params.count() ? params.as_string(0, PARAMETER_MUST_BE_STRING).cstr() : "";
 		r.write_assign_lang(*new String(pa_idna_decode(cstr, r.charsets.source()), String::L_TAINTED));
 	} else {
 		// encode: ^str.idna[]
@@ -837,7 +837,7 @@ MString::MString(): Methoded("string") {
 	add_native_method("idna", Method::CT_ANY, _idna, 0, 1);
 
 	// ^string.js-escape[]
-	add_native_method("js-escape", Method::CT_ANY, _escape, 0, 0);
+	add_native_method("js-escape", Method::CT_DYNAMIC, _escape, 0, 0);
 
 	// ^string:js-unescape[escaped%uXXXXstring]
 	add_native_method("js-unescape", Method::CT_STATIC, _unescape, 1, 1);
