@@ -416,8 +416,10 @@ AC_CHECK_FUNCS(qsort, , AC_MSG_ERROR([No qsort library function.]))
 
 dnl For build-in date implementation we need to know local offset from GMT
 
+AC_LANG_PUSH(C++)
 AC_MSG_CHECKING(for timezone variable)
-AC_TRY_COMPILE([#include <time.h>], [time_t test=timezone;], AC_DEFINE(HAVE_TIMEZONE) AC_MSG_RESULT(yes), AC_MSG_RESULT(no))
+AC_TRY_COMPILE([#include <time.h>], [int test=timezone;], AC_DEFINE(HAVE_TIMEZONE) AC_MSG_RESULT(yes), AC_MSG_RESULT(no))
+AC_LANG_POP
 
 AC_MSG_CHECKING(for tm_gmtoff in struct tm)
 AC_TRY_COMPILE([#include <time.h>], [struct tm tm; tm.tm_gmtoff=0;], AC_DEFINE(HAVE_TM_GMTOFF) AC_MSG_RESULT(yes), AC_MSG_RESULT(no))
