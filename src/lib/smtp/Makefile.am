@@ -1,4 +1,4 @@
-INCLUDES = -I../gc/include -I../cord/include
+AM_CPPFLAGS = -I../gc/include -I../cord/include
 
 noinst_HEADERS = smtp.h
 noinst_LTLIBRARIES = libsmtp.la

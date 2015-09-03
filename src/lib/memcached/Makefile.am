@@ -1,4 +1,4 @@
-INCLUDES = $(INCLTDL)
+AM_CPPFLAGS = $(INCLTDL)
 
 noinst_HEADERS = constants.h types.h pa_memcached.h
 noinst_LTLIBRARIES = libmemcached.la

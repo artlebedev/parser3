@@ -414,15 +414,10 @@ dnl We require qsort(3)
 AC_CHECK_FUNCS(qsort, , AC_MSG_ERROR([No qsort library function.]))
 
 
-dnl For correct mail receiving we need to know local offset from GMT
-dnl it be timezone+(daylight?60*60*sign(timezone):0)
-dnl or it can be tm.tm_gmtoff or it can be tm.tm_tzadj
+dnl For build-in date implementation we need to know local offset from GMT
 
 AC_MSG_CHECKING(for timezone variable)
 AC_TRY_COMPILE([#include <time.h>], [time_t test=timezone;], AC_DEFINE(HAVE_TIMEZONE) AC_MSG_RESULT(yes), AC_MSG_RESULT(no))
-
-AC_MSG_CHECKING(for daylight variable)
-AC_TRY_COMPILE([#include <time.h>], [int test=daylight;], AC_DEFINE(HAVE_DAYLIGHT) AC_MSG_RESULT(yes), AC_MSG_RESULT(no))
 
 AC_MSG_CHECKING(for tm_gmtoff in struct tm)
 AC_TRY_COMPILE([#include <time.h>], [struct tm tm; tm.tm_gmtoff=0;], AC_DEFINE(HAVE_TM_GMTOFF) AC_MSG_RESULT(yes), AC_MSG_RESULT(no))
@@ -430,12 +425,29 @@ AC_TRY_COMPILE([#include <time.h>], [struct tm tm; tm.tm_gmtoff=0;], AC_DEFINE(H
 AC_MSG_CHECKING(for tm_tzadj in struct tm)
 AC_TRY_COMPILE([#include <time.h>], [struct tm tm; tm.tm_tzadj=0;], AC_DEFINE(HAVE_TM_TZADJ) AC_MSG_RESULT(yes), AC_MSG_RESULT(no))
 
+AC_MSG_CHECKING(for 0..9999 year date range support)
+AC_TRY_RUN([
+#include <string.h>
+#include <time.h>
+
+int main() {
+	struct tm tmL,tmH;
+	memset(&tmL, 0, sizeof(tmL));
+	memset(&tmH, 0, sizeof(tmH));
+	tmL.tm_year=-1900;
+	tmL.tm_mon=-1;
+	tmH.tm_year=9999-1900;
+	tmH.tm_mon=12-1;
+	tmH.tm_mday=31;
+	return mktime(&tmL)==-1 || mktime(&tmH)==-1;
+}
+], AC_DEFINE(PA_DATE64) AC_MSG_RESULT(yes), AC_MSG_RESULT(no), AC_MSG_RESULT(no))
 
 dnl Output header and makefiles
-AH_TEMPLATE([HAVE_DAYLIGHT],[Define if you have daylight external variable in <time.h>])
 AH_TEMPLATE([HAVE_TIMEZONE],[Define if you have timezone external variable in <time.h>])
 AH_TEMPLATE([HAVE_TM_GMTOFF],[Define if you have tm_gmtoff member of tm structure in <time.h>])
 AH_TEMPLATE([HAVE_TM_TZADJ],[Define if you have tm_tzadj member of tm structure in <time.h>])
+AH_TEMPLATE([PA_DATE64],[Define if you have 0..9999 year date range support])
 
 AM_CONFIG_HEADER(src/include/pa_config_auto.h)
 

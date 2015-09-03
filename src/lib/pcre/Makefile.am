@@ -1,4 +1,4 @@
-INCLUDES = @PCRE_INCLUDES@
+AM_CPPFLAGS = @PCRE_INCLUDES@
 
 noinst_HEADERS = pa_pcre_internal.h
 noinst_LTLIBRARIES = libpcre_internal.la

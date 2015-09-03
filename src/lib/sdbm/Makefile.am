@@ -1,6 +1,6 @@
 SUBDIRS = pa-include
 
-INCLUDES = -Ipa-include -I../../include -I../gc/include
+AM_CPPFLAGS = -Ipa-include -I../../include -I../gc/include
 
 noinst_HEADERS = sdbm_pair.h sdbm_private.h sdbm_tune.h
 noinst_LTLIBRARIES = libsdbm.la

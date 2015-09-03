@@ -1,4 +1,4 @@
-INCLUDES = -Iinclude -I../../include -I../gc/include
+AM_CPPFLAGS = -Iinclude -I../../include -I../gc/include
 
 noinst_LTLIBRARIES = libcord.la
 libcord_la_SOURCES = cordbscs.c cordxtra.c

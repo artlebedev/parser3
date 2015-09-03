@@ -1,4 +1,4 @@
-INCLUDES = -I../../include -I../gc/include
+AM_CPPFLAGS = -I../../include -I../gc/include
 
 noinst_HEADERS = pa_json.h
 noinst_LTLIBRARIES = libjson.la

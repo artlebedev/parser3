@@ -48,9 +48,6 @@
 /* Define to 1 if you have the <ctype.h> header file. */
 #undef HAVE_CTYPE_H
 
-/* Define if you have daylight external variable in <time.h> */
-#undef HAVE_DAYLIGHT
-
 /* Define to 1 if you have the declaration of `cygwin_conv_path', and to 0 if
    you don't. */
 #undef HAVE_DECL_CYGWIN_CONV_PATH
@@ -349,6 +346,9 @@
 
 /* compile for sparc processor */
 #undef PA_BIG_ENDIAN
+
+/* Define if you have 0..9999 year date range support */
+#undef PA_DATE64
 
 /* parser uses this command instead of user-defined sendmail commands */
 #undef PA_FORCED_SENDMAIL

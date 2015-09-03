@@ -4,7 +4,7 @@ PA_LIBS = ../../main/.libs/libmain.a ../../classes/.libs/libclasses.a ../../type
 	  ../../lib/pcre/libpcre_internal.la ../../lib/smtp/libsmtp.la ../../lib/json/libjson.la \
 	  ../../lib/punycode/libpunycode.la ../../lib/memcached/libmemcached.la
 
-INCLUDES = -I../../classes -I../../types -I../../lib/gc/include -I../../lib/cord/include @XML_INCLUDES@
+AM_CPPFLAGS = -I../../classes -I../../types -I../../lib/gc/include -I../../lib/cord/include @XML_INCLUDES@
 
 # Automake 1.9 does not support LIBTOOLFLAGS
 CXXLINK = $(LIBTOOL) --preserve-dup-deps --mode=link --tag=CXX $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
