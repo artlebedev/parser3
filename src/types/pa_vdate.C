@@ -9,10 +9,10 @@
 #include "pa_vint.h"
 #include "pa_vstring.h"
 
-volatile const char * IDENT_PA_PA_VDATE_C="$Id: pa_vdate.C,v 1.3 2015/09/02 21:29:45 moko Exp $" IDENT_PA_VDATE_H;
+volatile const char * IDENT_PA_PA_VDATE_C="$Id: pa_vdate.C,v 1.4 2015/09/03 16:25:05 moko Exp $" IDENT_PA_VDATE_H;
 
-#define ZERO_DATE (-62169984000-SECS_PER_DAY) // '0000-00-00 00:00:00' - 1 day
-#define MAX_DATE (253402300799+SECS_PER_DAY) // '9999-12-31 23:59:59' + 1 day
+#define ZERO_DATE (-62169984000ll-SECS_PER_DAY) // '0000-00-00 00:00:00' - 1 day
+#define MAX_DATE (253402300799ll+SECS_PER_DAY) // '9999-12-31 23:59:59' + 1 day
 
 #define MAX_32_DATE 2147483647
 
@@ -228,10 +228,11 @@ void VDate::set_time(pa_time_t atime) {
 }
 
 void VDate::set_tm(tm &tmIn) {
-	ftime=pa_mktime(ftz_cstr, tmIn);
-	ftm=tmIn;
-	if(ftime==-1)
+	pa_time_t atime=pa_mktime(ftz_cstr, tmIn);
+	if(atime==-1)
 		throw Exception(DATE_RANGE_EXCEPTION_TYPE, 0, "invalid datetime '%04d-%02d-%02d'", tmIn.tm_year+1900, tmIn.tm_mon+1, tmIn.tm_mday);
+	ftime=atime;
+	ftm=tmIn;
 	validate();
 }
 
