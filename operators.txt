@@ -892,15 +892,13 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
 !date
     !время типа time можно использовать в выражениях, подставляет 
         количество дней с epoch [1 января 1970 (UTC)], дробное
-    !всё происходит в localtime, 
-    !временная зона задаётся вне parser средствами OS
-    $date:UTC-offset  сколько дней надо прибавить,чтобы попасть в local время
-    $date:TZ  наш часовой пояс, дробное, в часах (где-то есть с точностью до получаса)
+    !строковое значение в местном времени, численное в UTC
+    !по умолчанию используется установленная средствами OS временная зона
     !^date::now[]
     !^date::now(смещение в днях) выдаёт сейчас+смещение
     !^date::today[] дата на 00:00:00 текущего дня
-    !^date::create(дней с epoch) // старое имя set
-    !^date::create(year;month[;day[;hour[;minute[;second]]]]) // старое имя set
+    !^date::create(дней с epoch)
+    !^date::create(year;month[;day[;hour[;minute[;second]]]])
     !^date::create[дата в формате %Y-%m-%d %H:%M:%S]
         для удобного создания по значению из базы
         формат1: %Y[-%m[-%d[ %H[:%M[:%S]]]]]
@@ -912,6 +910,7 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         TZ="" << локальная зона
     !^дата.roll[year|month|day](+-смещение) сдвигает дату
     !^дата.roll[TZ;Новая зона] говорит, что дата в таком-то часовом поясе: влияет на .hour & Co
+    !^date:roll[TZ;Новая зона] говорит, что по умолчанию все даты в таком-то часовом поясе
     !^дата.sql-string[[datetime|date|time]]
         datetime или без параметра -- %Y-%m-%d %H:%M:%S
         date                       -- %Y-%m-%d
