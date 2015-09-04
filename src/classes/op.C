@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.219 2015/04/02 22:18:25 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.220 2015/09/04 10:36:54 moko Exp $";
 
 // limits
 
@@ -725,7 +725,7 @@ static time_t as_expires(Request& r, MethodParams& params,
 						int index, time_t now) {
 	time_t result;
 	if(Value* vdate=params[index].as(VDATE_TYPE))
-		result=static_cast<VDate*>(vdate)->get_time();
+		result=(time_t)(static_cast<VDate*>(vdate)->get_time());
 	else
 		result=now+(time_t)params.as_double(index, "lifespan must be date or number", r);
 	

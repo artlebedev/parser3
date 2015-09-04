@@ -9,7 +9,7 @@
 #include "pa_vint.h"
 #include "pa_vstring.h"
 
-volatile const char * IDENT_PA_PA_VDATE_C="$Id: pa_vdate.C,v 1.4 2015/09/03 16:25:05 moko Exp $" IDENT_PA_VDATE_H;
+volatile const char * IDENT_PA_PA_VDATE_C="$Id: pa_vdate.C,v 1.5 2015/09/04 10:40:26 moko Exp $" IDENT_PA_VDATE_H;
 
 #define ZERO_DATE (-62169984000ll-SECS_PER_DAY) // '0000-00-00 00:00:00' - 1 day
 #define MAX_DATE (253402300799ll+SECS_PER_DAY) // '9999-12-31 23:59:59' + 1 day
@@ -94,7 +94,7 @@ static tm pa_localtime(const char *tz, pa_time_t atime, struct tm &tmIn) {
 	tmIn=*localtime(&atime);
 #else
 	if(atime >= 0 && atime <= MAX_32_DATE){
-		time_t itime=atime;
+		time_t itime=(time_t)atime;
 		tmIn=*localtime(&itime);
 	} else {
 		pa_gmtime(atime-gmt_offset(), &tmIn);
@@ -334,8 +334,8 @@ static void pa_gmtime(pa_time_t lcltime, struct tm *res) {
   unsigned erayear, yearday, month, day;
   unsigned long eraday;
 
-  days = lcltime / SECS_PER_DAY;
-  rem = lcltime - (pa_time_t)days * SECS_PER_DAY;
+  days = (long)(lcltime / SECS_PER_DAY);
+  rem = (long)(lcltime - (pa_time_t)days * SECS_PER_DAY);
   days += EPOCH_ADJUSTMENT_DAYS;
   if (rem < 0)
     {
