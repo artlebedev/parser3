@@ -8,7 +8,7 @@
 #ifndef PA_VDATE_H
 #define PA_VDATE_H
 
-#define IDENT_PA_VDATE_H "$Id: pa_vdate.h,v 1.58 2015/09/02 21:29:45 moko Exp $"
+#define IDENT_PA_VDATE_H "$Id: pa_vdate.h,v 1.59 2015/09/18 00:08:12 moko Exp $"
 
 #include "classes.h"
 #include "pa_common.h"
@@ -72,8 +72,8 @@ public: // usage
 	void set_tm(tm &tmIn);
 	void validate();
 
-	void set_tz(const String* atz);
-	static void set_default_tz(const String* atz);
+	void set_tz(const char* atz);
+	static void set_default_tz(const char* atz);
 
 	pa_time_t get_time() const { return ftime; }
 	tm get_tm() const { return ftm; }
@@ -82,6 +82,7 @@ public: // usage
 
 	const String* get_sql_string(sql_string_type format = sql_string_datetime);
 	const String* get_gmt_string();
+	const String* get_iso_string();
 
 	struct yw {
 		int year;

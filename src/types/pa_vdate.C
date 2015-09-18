@@ -9,7 +9,7 @@
 #include "pa_vint.h"
 #include "pa_vstring.h"
 
-volatile const char * IDENT_PA_PA_VDATE_C="$Id: pa_vdate.C,v 1.5 2015/09/04 10:40:26 moko Exp $" IDENT_PA_VDATE_H;
+volatile const char * IDENT_PA_PA_VDATE_C="$Id: pa_vdate.C,v 1.6 2015/09/18 00:08:12 moko Exp $" IDENT_PA_VDATE_H;
 
 #define ZERO_DATE (-62169984000ll-SECS_PER_DAY) // '0000-00-00 00:00:00' - 1 day
 #define MAX_DATE (253402300799ll+SECS_PER_DAY) // '9999-12-31 23:59:59' + 1 day
@@ -34,14 +34,14 @@ static pa_time_t pa_mktime(struct tm *tim_p);
 static int gmt_offset() {
 #if defined(HAVE_TIMEZONE)
 	tzset();
-	return timezone;
+	return -timezone;
 #else
 	time_t t=time(0);
 	tm *tm=localtime(&t);
 #if defined(HAVE_TM_GMTOFF)
-	return -tm->tm_gmtoff;
+	return tm->tm_gmtoff;
 #elif defined(HAVE_TM_TZADJ)
-	return tm->tm_tzadj;
+	return -tm->tm_tzadj;
 #else
 #error neither HAVE_TIMEZONE nor HAVE_TM_GMTOFF nor HAVE_TM_TZADJ defined
 #endif
@@ -97,7 +97,7 @@ static tm pa_localtime(const char *tz, pa_time_t atime, struct tm &tmIn) {
 		time_t itime=(time_t)atime;
 		tmIn=*localtime(&itime);
 	} else {
-		pa_gmtime(atime-gmt_offset(), &tmIn);
+		pa_gmtime(atime+gmt_offset(), &tmIn);
 	}
 #endif
 }
@@ -110,7 +110,7 @@ static pa_time_t pa_mktime(const char *tz, struct tm &tmIn) {
 	time_t result=mktime(&tmIn);
 	if(result != -1)
 		return result;
-	return pa_mktime(&tmIn)+gmt_offset();
+	return pa_mktime(&tmIn)-gmt_offset();
 #endif
 }
 
@@ -142,22 +142,42 @@ const String* VDate::get_sql_string(sql_string_type format) {
 
 
 const String* VDate::get_gmt_string() {
-	struct tm tms;
+	struct tm gtm;
 #ifdef PA_DATE64
-	tms=*gmtime(&ftime);
+	gtm=*gmtime(&ftime);
 #else
-	pa_gmtime(ftime, &tms);
+	pa_gmtime(ftime, &gtm);
 #endif
-
 	/// http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.3
 	static const char month_names[12][4]={"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
 	static const char days[7][4]={"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
 
+	static const char *format="%s, %.2d %s %.4d %.2d:%.2d:%.2d GMT";
 	static int size=3+1+1+2+1+3+1+4+1+2+1+2+1+2+4 +1/*zero-teminator*/+1/*for faulty snprintfs*/;
 	char *buf=new(PointerFreeGC) char[size];
-	snprintf(buf, size, "%s, %.2d %s %.4d %.2d:%.2d:%.2d GMT",
-		days[tms.tm_wday], tms.tm_mday, month_names[tms.tm_mon], tms.tm_year+1900, tms.tm_hour, tms.tm_min, tms.tm_sec);
+	snprintf(buf, size, format, days[gtm.tm_wday], gtm.tm_mday, month_names[gtm.tm_mon], gtm.tm_year+1900, gtm.tm_hour, gtm.tm_min, gtm.tm_sec);
 	return new String(buf);
+}
+
+const String* VDate::get_iso_string() {
+	Temp_tz temp_tz(ftz_cstr);
+	/// http://www.w3.org/TR/NOTE-datetime
+	if(int offset=gmt_offset()){
+		char sign=offset>0 ? '+':'-';
+		offset=abs(offset);
+		static const char *format="%.4d-%.2d-%.2dT%.2d:%.2d:%.2d%c%d:%.2d";
+		static int size=4+1+2+1+2 +1+ 2+1+2+1+2 +1+2+1+2 +1/*zero-teminator*/+1/*for faulty snprintfs*/;
+		char *buf=new(PointerFreeGC) char[size];
+		snprintf(buf, size, format, ftm.tm_year+1900, ftm.tm_mon+1, ftm.tm_mday, ftm.tm_hour, ftm.tm_min, ftm.tm_sec,
+			sign, offset/3600, (offset/60)%60);
+		return new String(buf);
+	} else {
+		static const char *format="%.4d-%.2d-%.2dT%.2d:%.2d:%.2dZ";
+		static int size=4+1+2+1+2 +1+ 2+1+2+1+2 +1 +1/*zero-teminator*/+1/*for faulty snprintfs*/;
+		char *buf=new(PointerFreeGC) char[size];
+		snprintf(buf, size, format, ftm.tm_year+1900, ftm.tm_mon+1, ftm.tm_mday, ftm.tm_hour, ftm.tm_min, ftm.tm_sec);
+		return new String(buf);
+	}
 }
 
 override Value* VDate::get_element(const String& aname) {
@@ -199,6 +219,9 @@ const String* VDate::get_json_string(Json_options& options) {
 		case Json_options::D_GMT:
 			result->append_quoted(get_gmt_string());
 			break;
+		case Json_options::D_ISO:
+			result->append_quoted(get_iso_string());
+			break;
 		case Json_options::D_TIMESTAMP:
 			*result << format((int)ftime, 0);
 			break;
@@ -236,14 +259,12 @@ void VDate::set_tm(tm &tmIn) {
 	validate();
 }
 
-void VDate::set_tz(const String* atz) {
-	ftz_cstr=atz && !atz->is_empty() ? atz->cstr() : 0;
-	pa_localtime(ftz_cstr, ftime, ftm);
-	validate();
+void VDate::set_tz(const char* atz) {
+	ftz_cstr=atz && atz[0] ? atz : 0; // ftm should be updated afterwards
 }
 
-void VDate::set_default_tz(const String* atz) {
-	Temp_tz::default_tz=atz && !atz->is_empty() ? atz->cstr() : 0;
+void VDate::set_default_tz(const char* atz) {
+	Temp_tz::default_tz=atz && atz[0] ? atz : 0;
 }
 
 static int ISOWeekCount (int year) {

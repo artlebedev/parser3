@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.155 2015/08/10 23:47:52 moko Exp $"
+#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.156 2015/09/18 00:08:12 moko Exp $"
 
 #include "pa_common.h"
 #include "pa_array.h"
@@ -43,7 +43,7 @@ struct Json_options {
 	uint json_string_recoursion;
 	const char* indent;
 	XDocOutputOptions* xdoc_options;
-	enum Date { D_SQL, D_GMT, D_TIMESTAMP } date;
+	enum Date { D_SQL, D_GMT, D_ISO, D_TIMESTAMP } date;
 	enum Table { T_ARRAY, T_OBJECT, T_COMPACT } table;
 	enum File { F_BODYLESS, F_BASE64, F_TEXT } file;
 	enum Void { V_NULL, V_STRING } fvoid;
@@ -64,8 +64,9 @@ struct Json_options {
 	{}
 
 	bool set_date_format(const String &value){
-		if(value == "gmt-string") date = D_GMT;
-		else if (value == "sql-string") date = D_SQL;
+		if(value == "sql-string") date = D_SQL;
+		else if (value == "gmt-string") date = D_GMT;
+		else if (value == "iso-string") date = D_ISO;
 		else if (value == "unix-timestamp") date = D_TIMESTAMP;
 		else return false;
 		return true;

@@ -13,7 +13,7 @@
 #include "pa_vdate.h"
 #include "pa_vtable.h"
 
-volatile const char * IDENT_DATE_C="$Id: date.C,v 1.94 2015/09/02 21:29:44 moko Exp $" IDENT_PA_VDATE_H;
+volatile const char * IDENT_DATE_C="$Id: date.C,v 1.95 2015/09/18 00:08:12 moko Exp $" IDENT_PA_VDATE_H;
 
 // class
 
@@ -80,49 +80,148 @@ static int to_month(int imonth) {
 	return max(1, min(imonth, 12)) -1;
 }
 
-// 2002-04-25 18:14:00
-// 18:14:00
-// 2002:04:25 [+maybe time]
-/*not static, used in image.C*/ tm cstr_to_time_t(char *cstr) {
+static char *skip_number(char* string, const char *valid_delim, char *delim) {
+	if(string) {
+		char *str=string;
+		// skipping whitespace
+		while(isspace(str[0])) str++;
+		// skipping +-
+		if(str[0]=='-' || str[0]=='+') str++;
+		// at least one digit should be present
+		if(!isdigit(*(str++)))
+			throw Exception("date.format", 0, "invalid number in date specification '%s'", string);
+		// skipping digits
+		while(isdigit(str[0])) str++;
+		// skipping trailing whitespace
+		if(!strchr(valid_delim, ' '))
+			while(isspace(str[0])) str++;
+		// delimiter check
+		if(char c=str[0]){
+			if(!strchr(valid_delim, c))
+				throw Exception("date.format", 0, "invalid character '%c' in date specification '%s'", c, string);
+			if(delim)
+				*delim=c;
+			str[0]=0;
+			return str+1;
+		}
+	}
+	if(delim)
+		*delim=0;
+	return 0;
+}
+
+static char *skip_number(char** string_ref, const char *valid_delim, char *delim=0) {
+	char *result=*string_ref;
+	*string_ref=skip_number(*string_ref, valid_delim, delim);
+	return result;
+}
+
+static char *skip_writespace(char* str) {
+	if(str){
+		while(isspace(str[0])) str++;
+		return str[0] ? str : 0;
+	}
+	return 0;
+}
+
+static char *numeric_tz(char prefix, char* tz) {
+	char *cur=tz;
+	// hours
+	if(!isdigit(*(cur++)))
+		return 0;
+	if(isdigit(cur[0]))
+		cur++;
+	if(cur[0] == ':'){
+		// optional minutes
+		cur++;
+		if(!isdigit(*(cur++)))
+			return 0;
+		if(isdigit(cur[0]))
+			cur++;
+	}
+	// nothing more
+	if(skip_writespace(cur))
+		return 0;
+	// returning POSIX TZ format
+	size_t size=4+(cur-tz)+1/*zero-teminator*/;
+	char *buf=new(PointerFreeGC) char[size];
+	strcpy(buf, prefix=='+' ? "SUB-":"SUB+");
+	strncpy(buf+4, tz, cur-tz);
+	buf[size]=0;
+	return buf;
+}
+
+// SQL 2002-04-25 18:14:00
+// ISO 2002-04-25T18:14:00.45+01:00
+// TIME 18:14:00
+// ':' DELIMITED 2002:04:25 [+maybe time]
+// not static, used in image.C
+tm cstr_to_time_t(char *cstr, const char **tzOut) {
 	if( !cstr || !*cstr )
 		throw Exception(DATE_RANGE_EXCEPTION_TYPE, 0, "empty string is not valid datetime");
-
-	char *cur=cstr;
-	char date_delim=isdigit((unsigned char)cur[0])&&isdigit((unsigned char)cur[1])&&isdigit((unsigned char)cur[2])&&isdigit((unsigned char)cur[3])&&cur[4]==':'?':'
-		:'-';
-	const char* year=lsplit(&cur, date_delim);
-	const char* month=lsplit(&cur, date_delim);
-	const char* mday=lsplit(&cur, ' ');
-	if(!month)
-		cur=cstr;
-	const char* hour=lsplit(&cur, ':');
-	const char* min=lsplit(&cur, ':');
-	const char* sec=lsplit(&cur, '.');
-	const char* msec=cur;
+	if(tzOut)
+		*tzOut=0;
 
 	tm tmIn;
 	memset(&tmIn, 0, sizeof(tmIn));
 	tmIn.tm_isdst=-1;
-	if(!month) {
-		if(min) {
-			year=mday=0; // HH:MM
-			time_t t=time(0);
-			tm *tmNow=localtime(&t);
-			tmIn.tm_year=tmNow->tm_year;
-			tmIn.tm_mon=tmNow->tm_mon;
-			tmIn.tm_mday=tmNow->tm_mday;
-			goto date_part_set;
-		} else
-			hour=min=sec=msec=0; // not YYYY- & not HH: = just YYYY
+
+	char delim;
+	char *cur=cstr;
+
+	const char *year, *month, *mday;
+	const char *hour, *min, *sec, *msec;
+
+	year=skip_number(&cur, ":-", &delim);
+	if(delim != ':' || delim == ':' && strlen(year) >=4 ){
+		// year present
+		month=skip_number(&cur, delim == ':' ? ":" : "-");
+		mday=skip_number(&cur, tzOut ? " \tT":" \t", &delim);
+		if(delim != 'T'){
+			// SQL date format
+			cur=skip_writespace(cur);
+			hour=skip_number(&cur, ":");
+			min=skip_number(&cur, ":");
+			sec=skip_number(&cur, ".");
+			msec=skip_number(&cur, "");
+		} else {
+			// ISO date format
+			hour=skip_number(&cur, ":");
+			min=skip_number(&cur, ":+-Z", &delim);
+			sec=delim==':' ? skip_number(&cur, ".+-Z", &delim) : 0;
+			msec=delim=='.' ? skip_number(&cur, "+-Z", &delim) : 0;
+			// timezone specification check
+			const char *tz = delim == 'Z' ? (skip_writespace(cur) ? 0 : "UTC") : (cur ? numeric_tz(delim, cur) : 0);
+			if(!tz){
+				if(!delim)
+					throw Exception("date.format", 0, "empty timezone specification");
+				throw Exception("date.format", 0, "invalid timezone specification '%c%s'", cur ? cur : "");
+			}
+			*tzOut=tz;
+		}
+
+		tmIn.tm_year=to_year(pa_atoi(year));
+		tmIn.tm_mon=month?pa_atoi(month)-1:0;
+		tmIn.tm_mday=mday?pa_atoi(mday):1;
+	} else {
+		// time only
+		hour=year;
+		min=skip_number(&cur, ":");
+		sec=skip_number(&cur, ".");
+		msec=skip_number(&cur, "");
+
+		time_t t=time(0);
+		tm *tmNow=localtime(&t);
+		tmIn.tm_year=tmNow->tm_year;
+		tmIn.tm_mon=tmNow->tm_mon;
+		tmIn.tm_mday=tmNow->tm_mday;
 	}
-	tmIn.tm_year=to_year(pa_atoi(year));
-	tmIn.tm_mon=month?pa_atoi(month)-1:0;
-	tmIn.tm_mday=mday?pa_atoi(mday):1;
-date_part_set:
+
 	tmIn.tm_hour=hour?pa_atoi(hour):0;
 	tmIn.tm_min=min?pa_atoi(min):0;
 	tmIn.tm_sec=sec?pa_atoi(sec):0;	
 	//tmIn.tm_[msec<<no such, waits reimplementation of the class]=f(msec);
+
 	return tmIn;
 }
 
@@ -131,7 +230,10 @@ static void _create(Request& r, MethodParams& params) {
 
 	if(params.count()==1){
 		if(params[0].is_string()){ // ^create[2002-04-25 18:14:00] ^create[18:14:00]
-			tm tmIn=cstr_to_time_t(params[0].get_string()->cstrm());
+			const char *tz;
+			tm tmIn=cstr_to_time_t(params[0].get_string()->cstrm(), &tz);
+			if(tz)
+				vdate.set_tz(tz);
 			vdate.set_tm(tmIn);
 		} else { // ^create(float days) or ^create[date object]
 			vdate.set_time(round(params.as_double(0, "float days must be double", r)*SECS_PER_DAY));
@@ -143,8 +245,7 @@ static void _create(Request& r, MethodParams& params) {
 		tmIn.tm_year=to_year(params.as_int(0, "year must be int", r));
 		tmIn.tm_mon=params.as_int(1, "month must be int", r)-1;
 		tmIn.tm_mday=params.count()>2?params.as_int(2, "mday must be int", r):1;
-		int savedHour=0;
-		if(params.count()>3) savedHour=tmIn.tm_hour=params.as_int(3, "hour must be int", r);
+		if(params.count()>3) tmIn.tm_hour=params.as_int(3, "hour must be int", r);
 		if(params.count()>4) tmIn.tm_min=params.as_int(4, "minutes must be int", r);
 		if(params.count()>5) tmIn.tm_sec=params.as_int(5, "seconds must be int", r);
 		vdate.set_tm(tmIn);
@@ -176,6 +277,12 @@ static void _gmt_string(Request& r, MethodParams&) {
 	r.write_assign_lang(*vdate.get_gmt_string());
 }
 
+static void _iso_string(Request& r, MethodParams&) {
+	VDate& vdate=GET_SELF(r, VDate);
+
+	r.write_assign_lang(*vdate.get_iso_string());
+}
+
 static void _roll(Request& r, MethodParams& params) {
 	const String& what=params.as_string(0, "'what' must be string");
 	int oyear=0;
@@ -187,7 +294,13 @@ static void _roll(Request& r, MethodParams& params) {
 	else if(what=="day") offset=&oday;
 	else if(what=="TZ") {
 		const String& argument_tz=params.as_string(1, "'TZ' must be string");
-		(&r.get_self() == date_class) ? VDate::set_default_tz(&argument_tz) : GET_SELF(r, VDate).set_tz(&argument_tz);
+		if(&r.get_self() == date_class){
+			VDate::set_default_tz(argument_tz.cstr());
+		} else {
+			VDate& vdate=GET_SELF(r, VDate);
+			vdate.set_tz(argument_tz.cstr());
+			vdate.set_time(vdate.get_time());
+		}
 		return;
 	} else
 		throw Exception(PARSER_RUNTIME, &what, "must be year|month|day|TZ");
@@ -392,6 +505,9 @@ MDate::MDate(): Methoded("date") {
 
 	// ^date.gmt-string[]
 	add_native_method("gmt-string", Method::CT_DYNAMIC, _gmt_string, 0, 0);
+
+	// ^date.iso-string[]
+	add_native_method("iso-string", Method::CT_DYNAMIC, _iso_string, 0, 0);
 
 	// ^date:lastday(year;month)
 	// ^date.lastday[]
