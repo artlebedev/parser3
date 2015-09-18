@@ -18,7 +18,7 @@
 #include "pa_vxdoc.h"
 #endif
 
-volatile const char * IDENT_JSON_C="$Id: json.C,v 1.37 2015/08/10 23:47:52 moko Exp $";
+volatile const char * IDENT_JSON_C="$Id: json.C,v 1.38 2015/09/18 00:43:47 moko Exp $";
 
 // class
 
@@ -477,7 +477,7 @@ static void _string(Request& r, MethodParams& params) {
 				} else if(key == "date" && value->is_string()){
 					const String& svalue=value->as_string();
 					if(!json.set_date_format(svalue))
-						throw Exception(PARSER_RUNTIME, &svalue, "must be 'sql-string', 'gmt-string' or 'unix-timestamp'");
+						throw Exception(PARSER_RUNTIME, &svalue, "must be 'sql-string', 'gmt-string', 'iso-string' or 'unix-timestamp'");
 					valid_options++;
 				} else if(key == "indent"){
 					if(value->is_string()){
