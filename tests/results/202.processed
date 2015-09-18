@@ -1,6 +1,8 @@
 Content-Type: text/html
-Content-Length: 405
+Content-Length: 506
 
+^d.gmt-string[]: Thu, 08 May 2008 21:00:00 GMT<br />
+^d.iso-string[]: 2008-05-09T00:00:00+3:00<br />
 ^d.last-day[]: 31<br />
 ^date:last-day(2008;02): 29<br />
 <br />^date:calendar[eng](2008;2;29)
