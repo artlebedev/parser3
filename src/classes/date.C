@@ -13,7 +13,7 @@
 #include "pa_vdate.h"
 #include "pa_vtable.h"
 
-volatile const char * IDENT_DATE_C="$Id: date.C,v 1.95 2015/09/18 00:08:12 moko Exp $" IDENT_PA_VDATE_H;
+volatile const char * IDENT_DATE_C="$Id: date.C,v 1.96 2015/09/21 22:37:36 moko Exp $" IDENT_PA_VDATE_H;
 
 // class
 
@@ -80,6 +80,16 @@ static int to_month(int imonth) {
 	return max(1, min(imonth, 12)) -1;
 }
 
+
+static const char *skip_number_throw(char *string, char c, const char *valid){
+	if(!valid[0])
+		throw Exception("date.format", 0, "invalid character '%c' after number in '%s'", c, string);
+	if(!strcmp(valid, "+-Z"))
+		throw Exception("date.format", 0, "invalid timezone character '%c' after number in '%s'", c, string);
+	throw Exception("date.format", 0, "number delimiter '%c'%s expected, but found '%c' in date '%s'",
+		valid[0], valid[strlen(valid)-1] == 'Z' ? " or timezone":"", c, string);
+}
+
 static char *skip_number(char* string, const char *valid_delim, char *delim) {
 	if(string) {
 		char *str=string;
@@ -88,8 +98,11 @@ static char *skip_number(char* string, const char *valid_delim, char *delim) {
 		// skipping +-
 		if(str[0]=='-' || str[0]=='+') str++;
 		// at least one digit should be present
-		if(!isdigit(*(str++)))
-			throw Exception("date.format", 0, "invalid number in date specification '%s'", string);
+		if(!str[0])
+			throw Exception("date.format", 0, "number expected in date '%s'", string);
+		if(!isdigit(str[0]))
+			throw Exception("date.format", 0, "'%c' must be number in date '%s'", str[0], string);
+		str++;
 		// skipping digits
 		while(isdigit(str[0])) str++;
 		// skipping trailing whitespace
@@ -98,7 +111,7 @@ static char *skip_number(char* string, const char *valid_delim, char *delim) {
 		// delimiter check
 		if(char c=str[0]){
 			if(!strchr(valid_delim, c))
-				throw Exception("date.format", 0, "invalid character '%c' in date specification '%s'", c, string);
+				skip_number_throw(string, c, valid_delim);
 			if(delim)
 				*delim=c;
 			str[0]=0;
@@ -172,7 +185,7 @@ tm cstr_to_time_t(char *cstr, const char **tzOut) {
 	const char *year, *month, *mday;
 	const char *hour, *min, *sec, *msec;
 
-	year=skip_number(&cur, ":-", &delim);
+	year=skip_number(&cur, "-:", &delim);
 	if(delim != ':' || delim == ':' && strlen(year) >=4 ){
 		// year present
 		month=skip_number(&cur, delim == ':' ? ":" : "-");
@@ -194,8 +207,8 @@ tm cstr_to_time_t(char *cstr, const char **tzOut) {
 			const char *tz = delim == 'Z' ? (skip_writespace(cur) ? 0 : "UTC") : (cur ? numeric_tz(delim, cur) : 0);
 			if(!tz){
 				if(!delim)
-					throw Exception("date.format", 0, "empty timezone specification");
-				throw Exception("date.format", 0, "invalid timezone specification '%c%s'", cur ? cur : "");
+					throw Exception("date.format", 0, "empty timezone");
+				throw Exception("date.format", 0, "invalid timezone '%c%s'", delim, cur ? cur : "");
 			}
 			*tzOut=tz;
 		}
