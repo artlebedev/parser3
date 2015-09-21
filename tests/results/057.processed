@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 626
+Content-Length: 616
 
 <table border=1>
 <tr>
@@ -20,7 +20,7 @@ Content-Length: 626
 <td>2000-02-03 15:30 :04</td><td align=right>2000-02-03 15:30:04</td>
 </tr> Type: date.format,
 Source: create,
-Comment: invalid number in date specification ' hren'
+Comment: 'h' must be number in date ' hren'
 <tr>
 <td>2002:12:02</td><td align=right>2002-12-02 00:00:00</td>
 </tr>
