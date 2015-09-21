@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 6273
+Content-Length: 6799
 
 [ ]
 Type: date.format,
@@ -200,3 +200,16 @@ Comment: empty timezone
 [2000-1-31T1:1:1.2Z] timestamp: 949280461
 [2000-1-31T1:1:1.2Z] sql-string: 2000-01-31 01:01:01 UTC
 [2000-1-31T1:1:1.2Z] iso-string: 2000-01-31T01:01:01Z
+[2000:1]
+[2000:1] timestamp: 946674000
+[2000:1] sql-string: 2000-01-01 00:00:00 [2000:1] iso-string: 2000-01-01T00:00:00+3:00
+[2000:1-31]
+Type: date.format,
+Source: create,
+Comment: number delimiter ':' expected, but found '-' in date '1-31'
+[2000:1:31]
+[2000:1:31] timestamp: 949266000
+[2000:1:31] sql-string: 2000-01-31 00:00:00 [2000:1:31] iso-string: 2000-01-31T00:00:00+3:00
+[2000:1:31 1]
+[2000:1:31 1] timestamp: 949269600
+[2000:1:31 1] sql-string: 2000-01-31 01:00:00 [2000:1:31 1] iso-string: 2000-01-31T01:00:00+3:00
