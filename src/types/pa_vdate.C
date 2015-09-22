@@ -9,7 +9,7 @@
 #include "pa_vint.h"
 #include "pa_vstring.h"
 
-volatile const char * IDENT_PA_PA_VDATE_C="$Id: pa_vdate.C,v 1.6 2015/09/18 00:08:12 moko Exp $" IDENT_PA_VDATE_H;
+volatile const char * IDENT_PA_PA_VDATE_C="$Id: pa_vdate.C,v 1.7 2015/09/22 16:16:14 moko Exp $" IDENT_PA_VDATE_H;
 
 #define ZERO_DATE (-62169984000ll-SECS_PER_DAY) // '0000-00-00 00:00:00' - 1 day
 #define MAX_DATE (253402300799ll+SECS_PER_DAY) // '9999-12-31 23:59:59' + 1 day
@@ -88,7 +88,7 @@ public:
 
 const char *Temp_tz::default_tz=0;
 
-static tm pa_localtime(const char *tz, pa_time_t atime, struct tm &tmIn) {
+void pa_localtime(const char *tz, pa_time_t atime, struct tm &tmIn) {
 	Temp_tz temp_tz(tz);
 #ifdef PA_DATE64
 	tmIn=*localtime(&atime);
