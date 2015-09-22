@@ -25,7 +25,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.236 2015/06/29 17:59:13 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.237 2015/09/22 23:49:29 moko Exp $";
 
 // defines
 
@@ -295,9 +295,9 @@ static void _load(Request& r, MethodParams& params) {
 		file_stat(lfile_name, size, atime, mtime, ctime);
 	
 		HashStringValue& ff=self.fields();
-		ff.put(adate_name, new VDate(atime));
-		ff.put(mdate_name, new VDate(mtime));
-		ff.put(cdate_name, new VDate(ctime));
+		ff.put(adate_name, new VDate((pa_time_t)atime));
+		ff.put(mdate_name, new VDate((pa_time_t)mtime));
+		ff.put(cdate_name, new VDate((pa_time_t)ctime));
 	}
 }
 
@@ -379,9 +379,9 @@ static void _stat(Request& r, MethodParams& params) {
 
 	self.set_binary(true/*tainted*/, 0/*no bytes*/, size, &lfile_name, 0, &r);
 	HashStringValue& ff=self.fields();
-	ff.put(adate_name, new VDate(atime));
-	ff.put(mdate_name, new VDate(mtime));
-	ff.put(cdate_name, new VDate(ctime));
+	ff.put(adate_name, new VDate((pa_time_t)atime));
+	ff.put(mdate_name, new VDate((pa_time_t)mtime));
+	ff.put(cdate_name, new VDate((pa_time_t)ctime));
 }
 
 static bool is_safe_env_key(const char* key) {

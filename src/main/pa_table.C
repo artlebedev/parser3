@@ -7,7 +7,7 @@
 
 #include "pa_table.h"
 
-volatile const char * IDENT_PA_TABLE_C="$Id: pa_table.C,v 1.67 2015/08/04 21:10:17 moko Exp $" IDENT_PA_TABLE_H;
+volatile const char * IDENT_PA_TABLE_C="$Id: pa_table.C,v 1.68 2015/09/22 23:46:22 moko Exp $" IDENT_PA_TABLE_H;
 
 #include "pa_exception.h"
 
@@ -44,9 +44,9 @@ Table::Table(const Table& src, Action_options& options) :
 	((Table &)src).table_for_each(append_row, this, options);
 }
 
-int Table::max_cells() const {
-	int result=0;
-	for(int i=0; i<count(); i++){
+size_t Table::max_cells() const {
+	size_t result=0;
+	for(size_t i=0; i<count(); i++){
 		element_type row=get(i);
 		if(row->count()>result)
 			result=row->count();

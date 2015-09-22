@@ -8,7 +8,7 @@
 #ifndef PA_TABLE_H
 #define PA_TABLE_H
 
-#define IDENT_PA_TABLE_H "$Id: pa_table.h,v 1.67 2015/08/04 21:10:17 moko Exp $"
+#define IDENT_PA_TABLE_H "$Id: pa_table.h,v 1.68 2015/09/22 23:46:22 moko Exp $"
 
 #include "pa_types.h"
 #include "pa_hash.h"
@@ -51,7 +51,7 @@ public:
 	void offset(bool absolute, int offset);
 
 	/// @return checks all rows to find maximum cells number
-	int max_cells() const;
+	size_t max_cells() const;
 
 	/** @return column index from @a column_name. '<0' if no such column
 		if no such - 'bark'
