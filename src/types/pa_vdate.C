@@ -9,7 +9,7 @@
 #include "pa_vint.h"
 #include "pa_vstring.h"
 
-volatile const char * IDENT_PA_PA_VDATE_C="$Id: pa_vdate.C,v 1.8 2015/09/22 22:25:55 moko Exp $" IDENT_PA_VDATE_H;
+volatile const char * IDENT_PA_PA_VDATE_C="$Id: pa_vdate.C,v 1.9 2015/09/22 23:21:08 moko Exp $" IDENT_PA_VDATE_H;
 
 #define ZERO_DATE (-62169984000ll-SECS_PER_DAY) // '0000-00-00 00:00:00' - 1 day
 #define MAX_DATE (253402300799ll+SECS_PER_DAY) // '9999-12-31 23:59:59' + 1 day
@@ -60,6 +60,7 @@ static void pa_set_tz(const char* ntz) {
 		putenv("TZ=");
 #endif
 	}
+	tzset(); // required in Windows
 }
 
 ///	Auto-object used for temporarily substituting/removing timezone variable
