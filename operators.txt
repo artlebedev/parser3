@@ -899,6 +899,9 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         для удобного создания по значению из базы
         формат1: %Y[-%m[-%d[ %H[:%M[:%S]]]]]
         формат2: %H:%M[:%S]
+    !^date::create[дата в формате %Y-%m-%dT%H:%M[:%S]TZ]
+        для создания по значению в формате ISO 8601
+        формат TZ: Z(UTC) или +-hour[:minute] (смещение от UTC)
     !^date::unix-timestamp()
     !^дата.unix-timestamp[]
     !$дата.year month day  hour minute second  weekday yearday(0...) daylightsaving TZ weekyear
