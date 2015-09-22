@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 6799
+Content-Length: 7188
 
 [ ]
 Type: date.format,
@@ -71,6 +71,22 @@ Comment: invalid timezone '+22:100'
 Type: date.format,
 Source: create,
 Comment: invalid timezone '+0 2:10 '
+[2000-1-31T 23:59:59 +02 X]
+Type: date.format,
+Source: create,
+Comment: invalid timezone '+02 X'
+[2000-1-31T 23:59:59+02:10 X]
+Type: date.format,
+Source: create,
+Comment: invalid timezone '+02:10 X'
+[2000-1-31T 23:59:59+02-10]
+Type: date.format,
+Source: create,
+Comment: invalid timezone '+02-10'
+[2000-1-31T 23:59:59Z X]
+Type: date.format,
+Source: create,
+Comment: invalid timezone 'Z X'
 [-1-31 23:59:59]
 Type: date.format,
 Source: create,
