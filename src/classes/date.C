@@ -13,7 +13,7 @@
 #include "pa_vdate.h"
 #include "pa_vtable.h"
 
-volatile const char * IDENT_DATE_C="$Id: date.C,v 1.97 2015/09/22 13:53:04 moko Exp $" IDENT_PA_VDATE_H;
+volatile const char * IDENT_DATE_C="$Id: date.C,v 1.98 2015/09/22 23:41:19 moko Exp $" IDENT_PA_VDATE_H;
 
 // class
 
@@ -50,9 +50,9 @@ Table date_calendar_table_template(new Date_calendar_table_template_columns);
 static void _now(Request& r, MethodParams& params) {
 	VDate& vdate=GET_SELF(r, VDate);
 
-	time_t t=time(0);
+	pa_time_t t=(pa_time_t)time(0);
 	if(params.count()==1) // ^now(offset)
-		t+=(time_t)round(params.as_double(0, "offset must be double", r)*SECS_PER_DAY);
+		t+=(pa_time_t)round(params.as_double(0, "offset must be double", r)*SECS_PER_DAY);
 	
 	vdate.set_time(t);
 }

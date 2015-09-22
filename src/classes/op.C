@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.220 2015/09/04 10:36:54 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.221 2015/09/22 23:37:44 moko Exp $";
 
 // limits
 
@@ -739,10 +739,8 @@ static void _cache(Request& r, MethodParams& params) {
 		// ^cache[] -- return current expiration time
 		Cache_scope* scope=static_cast<Cache_scope*>(r.classes_conf.get(cache_data_name));
 		if(!scope)
-			throw Exception(PARSER_RUNTIME,
-				0,
-				"expire-time get without cache");
-		r.write_no_lang(*new VDate(scope->expires));
+			throw Exception(PARSER_RUNTIME, 0, "expire-time get without cache");
+		r.write_no_lang(*new VDate((pa_time_t)scope->expires));
 		return;
 	}
 
