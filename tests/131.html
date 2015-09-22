@@ -1,12 +1,34 @@
 @main[]
-^try{	
-	^mustfail[]
-}{
-	^if($exception.type eq 'date.range'){
-		failed, that's OK
-		$exception.handled(1)
-	}
-}
+^do[3000-01-01]
+^date:roll[TZ;EST5]
+^show[EST5;^date::create[$dt]]
+^do[3000-01-01]
 
-@mustfail[]
-$d[^date::create(1018946575/60/60)] ^d.sql-string[]
+^do[1000-01-01]
+^date:roll[TZ;EST5]
+^show[EST5;^date::create[$dt]]
+^do[1000-01-01]
+
+^date:roll[TZ;UTC]
+
+^do[-1-01-01]
+^do[10000-01-01]
+^do[9999-12-32]
+^do[0]
+^do[0-1]
+^do[0-0]
+^do[0-0-1]
+^do[0-0-0]
+^do[0-1-1]
+^do[0-0-2999999]
+
+
+
+@do[s]
+[$s]
+^try-catch{$caller.dt[^date::create[$s]]^show[$s;$caller.dt]}
+
+@show[s;dt]
+[$s] timestamp:  ^dt.unix-timestamp[]
+[$s] sql-string: ^dt.sql-string[] $dt.TZ
+[$s] iso-string: ^dt.iso-string[]
