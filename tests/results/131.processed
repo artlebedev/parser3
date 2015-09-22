@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 804
+Content-Length: 1852
 
 [3000-01-01]
 [3000-01-01] timestamp: 32503669200
@@ -17,3 +17,38 @@ Content-Length: 804
 [1000-01-01]
 [1000-01-01] timestamp: -30610206000
 [1000-01-01] sql-string: 1000-01-01 00:00:00 [1000-01-01] iso-string: 1000-01-01T00:00:00-5:00
+[-1-01-01]
+Type: date.range,
+Source: create,
+Comment: year '-1' is out of range 0..9999
+[10000-01-01]
+Type: date.range,
+Source: create,
+Comment: year '10000' is out of range 0..9999
+[9999-12-32]
+Type: date.range,
+Source: create,
+Comment: year '10000' is out of range 0..9999
+[0]
+[0] timestamp: -62167219200
+[0] sql-string: 0000-01-01 00:00:00 [0] iso-string: 0000-01-01T00:00:00Z
+[0-1]
+[0-1] timestamp: -62167219200
+[0-1] sql-string: 0000-01-01 00:00:00 [0-1] iso-string: 0000-01-01T00:00:00Z
+[0-0]
+Type: date.range,
+Source: create,
+Comment: year '-1' is out of range 0..9999
+[0-0-1]
+Type: date.range,
+Source: create,
+Comment: year '-1' is out of range 0..9999
+[0-0-0]
+[0-0-0] timestamp: -62169984000
+[0-0-0] sql-string: 0000-00-00 00:00:00 [0-0-0] iso-string: 0000-00-00T00:00:00Z
+[0-1-1]
+[0-1-1] timestamp: -62167219200
+[0-1-1] sql-string: 0000-01-01 00:00:00 [0-1-1] iso-string: 0000-01-01T00:00:00Z
+[0-0-2999999]
+[0-0-2999999] timestamp: 197029929600
+[0-0-2999999] sql-string: 8213-08-19 00:00:00 [0-0-2999999] iso-string: 8213-08-19T00:00:00Z
