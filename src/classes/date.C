@@ -13,7 +13,7 @@
 #include "pa_vdate.h"
 #include "pa_vtable.h"
 
-volatile const char * IDENT_DATE_C="$Id: date.C,v 1.96 2015/09/21 22:37:36 moko Exp $" IDENT_PA_VDATE_H;
+volatile const char * IDENT_DATE_C="$Id: date.C,v 1.97 2015/09/22 13:53:04 moko Exp $" IDENT_PA_VDATE_H;
 
 // class
 
@@ -160,7 +160,7 @@ static char *numeric_tz(char prefix, char* tz) {
 	char *buf=new(PointerFreeGC) char[size];
 	strcpy(buf, prefix=='+' ? "SUB-":"SUB+");
 	strncpy(buf+4, tz, cur-tz);
-	buf[size]=0;
+	buf[size-1]=0;
 	return buf;
 }
 
