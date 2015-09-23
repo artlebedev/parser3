@@ -1,0 +1,25 @@
+$sDir[outputs/316]
+
+^cache[$sDir/test](0){
+	test0 ^throw[;test0]
+}{
+	handled0 $exception.handled(1)
+}
+
+^try-catch{^cache[$sDir/test](0){
+	test1 ^throw[;test1]
+}{
+	handled1 $exception.handled[$bool.CLASS]
+}}
+
+^cache[$sDir/test](1){
+	test
+}
+
+^sleep(1.1)
+
+^try-catch{^cache[$sDir/test](1){
+	test2 ^throw[;test2]
+}{
+	handled2 $exception.handled[error]
+}}

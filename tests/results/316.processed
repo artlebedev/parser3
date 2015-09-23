@@ -1,0 +1,10 @@
+Content-Type: text/html
+Content-Length: 225
+
+handled0 Type: parser.runtime,
+Source: cache,
+Comment: is 'stateless_class', it does not have logical value
+test
+Type: parser.runtime,
+Source: error,
+Comment: $exception.handled value must be either boolean or string 'cache'
