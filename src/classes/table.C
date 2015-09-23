@@ -22,7 +22,7 @@
 #define USE_STRINGSTREAM
 #endif
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.310 2015/08/04 21:10:17 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.311 2015/09/23 00:00:11 moko Exp $";
 
 // class
 
@@ -1186,7 +1186,7 @@ static void _insert(Request& r, MethodParams& params) {
 	}
 }
 
-static void _delete(Request& r, MethodParams& params) {
+static void _delete(Request& r, MethodParams&) {
 	Table& table=GET_SELF(r, VTable).table();
 	table.remove_current();
 }
