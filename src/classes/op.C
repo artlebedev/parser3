@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.221 2015/09/22 23:37:44 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.222 2015/09/23 21:27:44 moko Exp $";
 
 // limits
 
@@ -585,6 +585,10 @@ static Try_catch_result try_catch(Request& r,
 	return result;
 }
 
+static StringOrValue process_try_body_code(Request& r, Value* body_code) {
+	return r.process(*body_code);
+}
+
 // cache--
 
 // consts
@@ -812,15 +816,16 @@ static void _cache(Request& r, MethodParams& params) {
 		cache_delete(file_spec);
 	}
 	
-	// process without cacheing
-	const String& processed_body=r.process_to_string(body_code);
-	// write it out 
-	r.write_assign_lang(processed_body);
+	// process without caching
+	if(catch_code){
+		Try_catch_result result=try_catch(r, process_try_body_code, &body_code, catch_code);
+		r.write_assign_lang(result.processed_code);
+	} else {
+		const String& processed_body=r.process_to_string(body_code);
+		r.write_assign_lang(processed_body);
+	}
 }
 
-static StringOrValue process_try_body_code(Request& r, Value* body_code) {
-	return r.process(*body_code);
-}
 static void _try_operator(Request& r, MethodParams& params) {
 	Value& body_code=params.as_junction(0, "body_code must be code");
 	Value& catch_code=params.as_junction(1, "catch_code must be code");
@@ -829,13 +834,7 @@ static void _try_operator(Request& r, MethodParams& params) {
 	Try_catch_result result;
 	StringOrValue finally_result;
 	try{
-		result=try_catch(r, 
-			process_try_body_code, &body_code,
-			&catch_code);
-		if(result.exception_should_be_handled)
-			throw Exception(PARSER_RUNTIME,
-				result.exception_should_be_handled,
-				"catch block must set $exception.handled to some boolean value, not string");
+		result=try_catch(r, process_try_body_code, &body_code, &catch_code);
 	} catch(...){
 		if(finally_code)
 			finally_result=r.process(*finally_code);
