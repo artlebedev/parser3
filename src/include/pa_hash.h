@@ -17,7 +17,7 @@
 #ifndef PA_HASH_H
 #define PA_HASH_H
 
-#define IDENT_PA_HASH_H "$Id: pa_hash.h,v 1.89 2015/09/24 21:28:19 moko Exp $"
+#define IDENT_PA_HASH_H "$Id: pa_hash.h,v 1.90 2015/09/24 21:35:29 moko Exp $"
 
 #include "pa_memory.h"
 #include "pa_types.h"
@@ -615,7 +615,9 @@ public:
 	class Iterator {
 		const HASH_STRING<V>& fhash;
 		Pair *fcurrent;
+#ifndef HASH_ORDER
 		int i;
+#endif
 	public:
 		Iterator(const HASH_STRING<V>& ahash): fhash(ahash) {
 #ifdef HASH_ORDER
