@@ -9,6 +9,7 @@
 #include "pa_vmethod_frame.h"
 
 #include "pa_request.h"
+#include "pa_charsets.h"
 #include "pa_vhash.h"
 #include "pa_vvoid.h"
 #include "pa_sql_connection.h"
@@ -16,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.121 2015/03/12 08:18:18 misha Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.122 2015/09/24 20:14:03 moko Exp $";
 
 // class
 
@@ -481,6 +482,90 @@ inline Value& SingleElementHash(String::Body akey, Value* avalue) {
 	return result;
 }
 
+#ifndef DOXYGEN
+struct Hash_seq_item {
+	HashStringValue::Pair *hash_pair;
+	union {
+		const char *c_str;
+		double d;
+	} value;
+};
+#endif
+static int sort_cmp_string(const void *a, const void *b) {
+	return strcmp(
+		static_cast<const Hash_seq_item *>(a)->value.c_str,
+		static_cast<const Hash_seq_item *>(b)->value.c_str
+	);
+}
+static int sort_cmp_double(const void *a, const void *b) {
+	double va=static_cast<const Hash_seq_item *>(a)->value.d;
+	double vb=static_cast<const Hash_seq_item *>(b)->value.d;
+	if(va<vb)
+		return -1;
+	else if(va>vb)
+		return +1;
+	else 
+		return 0;
+}
+static void _sort(Request& r, MethodParams& params){
+	const String& key_var_name=params.as_string(0, "key-var name must be string");
+	const String& value_var_name=params.as_string(1, "value-var name must be string");
+	Value& key_maker=params.as_junction(2, "key-maker must be code");
+	bool reverse=params.count()>3/*..[desc|asc|]*/?
+		reverse=params.as_no_junction(3, "order must not be code").as_string()=="desc":
+		false; // default=asc
+
+	const String* key_var=key_var_name.is_empty()? 0 : &key_var_name;
+	const String* value_var=value_var_name.is_empty()? 0 : &value_var_name;
+	VMethodFrame* context=r.get_method_frame()->caller();
+
+	VHash& self=GET_SELF(r, VHash);
+	HashStringValue& hash=self.hash_ro();
+	int count=hash.count();
+	VHash_lock lock(self);
+
+	Hash_seq_item* seq=new(PointerFreeGC) Hash_seq_item[count];
+	int pos=0;
+	bool key_values_are_strings=true;
+
+	for(HashStringValue::Iterator i(hash); i; i.next(), pos++ ){
+		if(key_var)
+			r.put_element(*context, *key_var, new VString(*new String(i.key(), String::L_TAINTED)));
+		if(value_var)
+			r.put_element(*context, *value_var, i.value());
+	
+		Value& value=r.process_to_value(key_maker);
+		if(pos==0) // determining key values type by first one
+			key_values_are_strings=value.is_string();
+
+		seq[pos].hash_pair=i.pair();
+		if(key_values_are_strings)
+			seq[pos].value.c_str=value.as_string().cstr();
+		else
+			seq[pos].value.d=value.as_expr_result().as_double();
+	}
+
+	// @todo: handle this elsewhere
+	if(r.charsets.source().NAME()=="KOI8-R" && key_values_are_strings)
+		for(pos=0; pos<count; pos++)
+			if(*seq[pos].value.c_str)
+				seq[pos].value.c_str=Charset::transcode(seq[pos].value.c_str, r.charsets.source(), UTF8_charset).cstr();
+
+	// sort keys
+	qsort(seq, count, sizeof(Hash_seq_item), key_values_are_strings?sort_cmp_string:sort_cmp_double);
+
+	// reorder hash as required in 'seq'
+	hash.order_clear();
+	if(reverse)
+		for(pos=count-1; pos>=0; pos--)
+			hash.order_next(seq[pos].hash_pair);
+	else
+		for(pos=0; pos<count; pos++)
+			hash.order_next(seq[pos].hash_pair);
+
+	delete[] seq;
+}
+
 static void _at(Request& r, MethodParams& params) {
 	HashStringValue& hash=GET_SELF(r, VHash).hash_ro();
 	size_t count=hash.count();
@@ -603,6 +688,10 @@ MHash::MHash(): Methoded("hash")
 
 	// ^hash.foreach[key;value]{code}[delim]
 	add_native_method("foreach", Method::CT_DYNAMIC, _foreach, 2+1, 2+1+1);
+
+	// ^hash.sort[key;value]{string-key-maker}[[asc|desc]]
+	// ^hash.sort[key;value](numeric-key-maker)[[asc|desc]]
+	add_native_method("sort", Method::CT_DYNAMIC, _sort, 2+1, 2+1+1);
 
 	// ^hash._at[first|last[;'key'|'value'|'hash']]
 	// ^hash._at([-+]offset)[['key'|'value'|'hash']]

@@ -17,7 +17,7 @@
 #ifndef PA_HASH_H
 #define PA_HASH_H
 
-#define IDENT_PA_HASH_H "$Id: pa_hash.h,v 1.87 2015/04/06 22:27:26 moko Exp $"
+#define IDENT_PA_HASH_H "$Id: pa_hash.h,v 1.88 2015/09/24 20:14:03 moko Exp $"
 
 #include "pa_memory.h"
 #include "pa_types.h"
@@ -90,11 +90,13 @@ inline uint hash_code(int self) {
 #undef HASH
 #undef HASH_STRING
 #undef HASH_NEW_PAIR
+#undef HASH_ORDER_CLEAR
 #undef HASH_FOR_EACH
 
 #define HASH OrderedHash
 #define HASH_STRING OrderedHashString
 #define HASH_NEW_PAIR(code, key, value) *ref=new Pair(code, key, value, *ref, this->last); this->last=&((*ref)->next)
+#define HASH_ORDER_CLEAR() first=0; last=&first
 
 #define HASH_FOR_EACH \
 	for(Pair *pair=this->first; pair; pair=pair->next)
@@ -104,6 +106,7 @@ inline uint hash_code(int self) {
 #define HASH Hash
 #define HASH_STRING HashString
 #define HASH_NEW_PAIR(code, key, value) *ref=new Pair(code, key, value, *ref)
+#define HASH_ORDER_CLEAR()
 
 #define HASH_FOR_EACH \
 	Pair **ref=this->refs; \
@@ -117,15 +120,13 @@ public:
 
 	typedef K key_type;
 	typedef V value_type;
+	class Pair;
 
 	HASH() { 
 		allocated=Hash_allocates[allocates_index=0];
 		fpairs_count=fused_refs=0;
 		refs=new Pair*[allocated];
-#ifdef HASH_ORDER
-		first=0;
-		last=&first;
-#endif
+		HASH_ORDER_CLEAR();
 	}
 
 	HASH(const HASH& source) {
@@ -136,8 +137,7 @@ public:
 		refs=new Pair*[allocated];
 		// clone & rehash
 #ifdef HASH_ORDER
-		first=0;
-		last=&first;
+		HASH_ORDER_CLEAR();
 		for(Pair *pair=source.first; pair; pair=pair->next)
 		{
 			uint index=pair->code%allocated;
@@ -264,6 +264,18 @@ public:
 	V last_value() const {
 		return (fpairs_count) ? ((Pair *)((char *)last - offsetof(Pair, next)))->value : V(0);
 	}
+
+	void order_clear() {
+		HASH_ORDER_CLEAR();
+	}
+
+	void order_next(Pair* pair) {
+		pair->prev=last;
+		pair->next=0;
+		*last=pair;
+		last=&(pair->next);
+	}
+
 #endif
 
 	/// put a [value] under the [key] if that [key] existed @returns existed or not
@@ -348,11 +360,8 @@ public:
 	/// remove all elements
 	void clear() {
 		memset(refs, 0, sizeof(*refs)*allocated);
-		fpairs_count=fused_refs=0;	
-#ifdef HASH_ORDER
-		first=0;
-		last=&first;
-#endif
+		fpairs_count=fused_refs=0;
+		HASH_ORDER_CLEAR();
 	}
 
 protected:
@@ -625,6 +634,10 @@ public:
 
 		V value(){
 			return fcurrent->value;
+		}
+
+		Pair *pair(){
+			return fcurrent;
 		}
 	};
 };
