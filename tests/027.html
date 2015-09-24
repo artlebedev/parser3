@@ -1,10 +1,16 @@
 $h[
-	$.a[1] 
-	$.b[2]
+	$.d[1]
+	$.a[2]
+	$.c[3]
+	$.b[4]
 ]
 $c[
 	^h.foreach[key;value]{
 		$.$key[$value]
 	}
 ]
-$c.b
+^h.sort[k;]{$k}
+^json:string[$h]
+^json:string[$c]
+^c.sort[;v]($v)[desc]
+^json:string[$c]
