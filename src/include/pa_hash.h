@@ -17,7 +17,7 @@
 #ifndef PA_HASH_H
 #define PA_HASH_H
 
-#define IDENT_PA_HASH_H "$Id: pa_hash.h,v 1.88 2015/09/24 20:14:03 moko Exp $"
+#define IDENT_PA_HASH_H "$Id: pa_hash.h,v 1.89 2015/09/24 21:28:19 moko Exp $"
 
 #include "pa_memory.h"
 #include "pa_types.h"
@@ -615,9 +615,17 @@ public:
 	class Iterator {
 		const HASH_STRING<V>& fhash;
 		Pair *fcurrent;
+		int i;
 	public:
 		Iterator(const HASH_STRING<V>& ahash): fhash(ahash) {
+#ifdef HASH_ORDER
 			fcurrent=fhash.first;
+#else
+			fcurrent=0;
+			for(i=0; i<fhash.allocated; i++)
+				if (fcurrent=fhash.refs[i])
+					break;
+#endif
 		}
 
 		operator bool () {
@@ -625,7 +633,15 @@ public:
 		}
 
 		void next() {
+#ifdef HASH_ORDER
 			fcurrent=fcurrent->next;
+#else
+			if(fcurrent=fcurrent->link)
+				return;
+			for(i++; i<fhash.allocated; i++)
+				if (fcurrent=fhash.refs[i])
+					break;
+#endif
 		}
 
 		String::Body key(){

@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.122 2015/09/24 20:14:03 moko Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.123 2015/09/24 21:28:19 moko Exp $";
 
 // class
 
@@ -508,6 +508,7 @@ static int sort_cmp_double(const void *a, const void *b) {
 		return 0;
 }
 static void _sort(Request& r, MethodParams& params){
+#ifdef HASH_ORDER
 	const String& key_var_name=params.as_string(0, "key-var name must be string");
 	const String& value_var_name=params.as_string(1, "value-var name must be string");
 	Value& key_maker=params.as_junction(2, "key-maker must be code");
@@ -564,6 +565,7 @@ static void _sort(Request& r, MethodParams& params){
 			hash.order_next(seq[pos].hash_pair);
 
 	delete[] seq;
+#endif
 }
 
 static void _at(Request& r, MethodParams& params) {
@@ -605,11 +607,14 @@ static void _at(Request& r, MethodParams& params) {
 		switch(result_type) {
 			case AtResultTypeKey:
 				{
+#ifdef HASH_ORDER
 					if(pos == 0) {
 						r.write_assign_lang(*new VString(*new String(hash.first_key(), String::L_TAINTED)));
 					} else if((size_t)pos == count-1) {
 						r.write_assign_lang(*new VString(*new String(hash.last_key(), String::L_TAINTED)));
-					} else {
+					} else
+#endif
+					{
 						for(HashStringValue::Iterator i(hash); i; i.next(), pos-- )
 							if(!pos){
 								r.write_assign_lang(*new VString(*new String(i.key(), String::L_TAINTED)));
@@ -620,11 +625,14 @@ static void _at(Request& r, MethodParams& params) {
 				}
 			case AtResultTypeValue:
 				{
+#ifdef HASH_ORDER
 					if(pos == 0) {
 						r.write_assign_lang(*hash.first_value());
 					} else if((size_t)pos == count-1) {
 						r.write_assign_lang(*hash.last_value());
-					} else {
+					} else
+#endif
+					{
 						for(HashStringValue::Iterator i(hash); i; i.next(), pos-- )
 							if(!pos){
 								r.write_assign_lang(*i.value());
@@ -635,11 +643,14 @@ static void _at(Request& r, MethodParams& params) {
 				}
 			case AtResultTypeHash:
 				{
+#ifdef HASH_ORDER
 					if(pos == 0) {
 						r.write_no_lang(SingleElementHash(hash.first_key(), hash.first_value()));
 					} else if((size_t)pos == count-1) {
 						r.write_no_lang(SingleElementHash(hash.last_key(), hash.last_value()));
-					} else {
+					} else
+#endif
+					{
 						for(HashStringValue::Iterator i(hash); i; i.next(), pos-- )
 							if(!pos){
 								r.write_no_lang(SingleElementHash(i.key(), i.value()));
