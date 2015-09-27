@@ -8,7 +8,7 @@
 	
 */
 
-volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.270 2015/04/08 18:08:52 moko Exp $";
+volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.271 2015/09/27 20:12:42 moko Exp $";
 
 /**
 	@todo parser4: 
@@ -22,11 +22,9 @@ volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.270 2015/04/08 18:08
 */
 
 #define YYSTYPE  ArrayOperation* 
-#define YYPARSE_PARAM  pc
-#define YYLEX_PARAM  pc
 #define YYDEBUG  1
-#define YYERROR_VERBOSE	1
-#define yyerror(msg)  real_yyerror((Parse_control *)pc, msg)
+#define YYERROR_VERBOSE  1
+#define yyerror(pc, msg)  real_yyerror(pc, msg)
 #define YYPRINT(file, type, value)  yyprint(file, type, value)
 #define YYMALLOC pa_malloc
 #define YYFREE pa_free
@@ -61,7 +59,7 @@ static const VString vempty;
 
 // local convinient inplace typecast & var
 #undef PC
-#define PC  (*(Parse_control *)pc)
+#define PC  (*pc)
 #undef POOL
 #define POOL  (*PC.pool)
 #ifndef DOXYGEN
@@ -74,7 +72,9 @@ static const VString vempty;
 
 %}
 
-%pure_parser
+%pure-parser
+%lex-param {Parse_control* pc}
+%parse-param {Parse_control* pc}
 
 %token EON
 %token STRING

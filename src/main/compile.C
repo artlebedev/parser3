@@ -5,13 +5,13 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_COMPILE_C="$Id: compile.C,v 1.82 2012/03/16 09:24:12 moko Exp $";
+volatile const char * IDENT_COMPILE_C="$Id: compile.C,v 1.83 2015/09/27 20:12:42 moko Exp $";
 
 #include "pa_request.h"
 #include "compile_tools.h"
 
 extern int yydebug;
-extern int yyparse (void *);
+extern int yyparse (Parse_control *);
 
 ArrayClass& Request::compile(VStateless_class* aclass, 
 					const char* source, const String* main_alias, 
