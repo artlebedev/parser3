@@ -17,7 +17,7 @@
 #ifndef PA_HASH_H
 #define PA_HASH_H
 
-#define IDENT_PA_HASH_H "$Id: pa_hash.h,v 1.90 2015/09/24 21:35:29 moko Exp $"
+#define IDENT_PA_HASH_H "$Id: pa_hash.h,v 1.91 2015/09/28 21:35:51 moko Exp $"
 
 #include "pa_memory.h"
 #include "pa_types.h"
@@ -116,11 +116,11 @@ inline uint hash_code(int self) {
 #endif
 
 template<typename K, typename V> class HASH: public PA_Object {
+protected:
+	class Pair;
 public:
-
 	typedef K key_type;
 	typedef V value_type;
-	class Pair;
 
 	HASH() { 
 		allocated=Hash_allocates[allocates_index=0];
