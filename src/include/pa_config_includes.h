@@ -192,6 +192,9 @@ inline size_t min(size_t a, size_t b){ return a<b?a:b; }
 #define THREAD_LOCAL // __thread // multithreading support required only for apache2 module
 #endif
 
+#pragma clang diagnostic ignored "-Wparentheses"       // if(a=b)
+#pragma clang diagnostic ignored "-Winline-new-delete" // replacement operator cannot be declared 'inline'
+
 #if _MSC_VER
 
 #pragma warning(disable:4355)  // using this in calls to parent constructors
