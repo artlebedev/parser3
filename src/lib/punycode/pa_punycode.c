@@ -86,8 +86,7 @@ enum
 /* point (for use in representing integers) in the range 0 to */
 /* base-1, or base if cp does not represent a value.          */
 
-static punycode_uint
-decode_digit (punycode_uint cp)
+static punycode_uint decode_digit (punycode_uint cp)
 {
   return cp - 48 < 10 ? cp - 22 : cp - 65 < 26 ? cp - 65 :
     cp - 97 < 26 ? cp - 97 : base;
@@ -99,10 +98,9 @@ decode_digit (punycode_uint cp)
 /* nonzero, in which case the uppercase form is used.  The behavior   */
 /* is undefined if flag is nonzero and digit d has no uppercase form. */
 
-static char
-encode_digit (punycode_uint d, int flag)
+static char encode_digit (punycode_uint d, int flag)
 {
-  return d + 22 + 75 * (d < 26) - ((flag != 0) << 5);
+  return (char)(d + 22 + 75 * (d < 26) - ((flag != 0) << 5));
   /*  0..25 map to ASCII a..z or A..Z */
   /* 26..35 map to ASCII 0..9         */
 }
@@ -119,23 +117,21 @@ encode_digit (punycode_uint d, int flag)
 /* is caseless.  The behavior is undefined if bcp is not a basic */
 /* code point.                                                   */
 
-static char
-encode_basic (punycode_uint bcp, int flag)
+static char encode_basic (punycode_uint bcp, int flag)
 {
   bcp -= (bcp - 97 < 26) << 5;
-  return bcp + ((!flag && (bcp - 65 < 26)) << 5);
+  return (char)(bcp + ((!flag && (bcp - 65 < 26)) << 5));
 }
 
 /*** Platform-specific constants ***/
 
 /* maxint is the maximum value of a punycode_uint variable: */
-static const punycode_uint maxint = -1;
+static const punycode_uint maxint = 0xFFFFFFFF;
 /* Because maxint is unsigned, -1 becomes the maximum value. */
 
 /*** Bias adaptation function ***/
 
-static punycode_uint
-adapt (punycode_uint delta, punycode_uint numpoints, int firsttime)
+static punycode_uint adapt (punycode_uint delta, punycode_uint numpoints, int firsttime)
 {
   punycode_uint k;
 
@@ -190,8 +186,7 @@ adapt (punycode_uint delta, punycode_uint numpoints, int firsttime)
  *   %PUNYCODE_SUCCESS, then @output_size and @output might contain
  *   garbage.
  **/
-int
-punycode_encode (size_t input_length,
+int punycode_encode (size_t input_length,
 		 const punycode_uint input[],
 		 const unsigned char case_flags[],
 		 size_t * output_length, char output[])
@@ -339,8 +334,7 @@ punycode_encode (size_t input_length,
  *   @output_length, @output, and @case_flags might contain garbage.
  *
  **/
-int
-punycode_decode (size_t input_length,
+int punycode_decode (size_t input_length,
 		 const char input[],
 		 size_t * output_length,
 		 punycode_uint output[], unsigned char case_flags[])
