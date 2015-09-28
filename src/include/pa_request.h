@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.218 2015/06/03 00:13:19 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.219 2015/09/28 22:26:13 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -421,6 +421,9 @@ private: // compile.C
 private: // execute.C
 
 	Value& get_element(Value& ncontext, const String& name);
+#ifdef FEATURE_GET_ELEMENT4CALL
+	Value& get_element4call(Value& ncontext, const String& name);
+#endif
 
 private: // defaults
 

@@ -11,7 +11,7 @@
 
 namespace OP {
 
-#define IDENT_PA_OPCODE_H "$Id: pa_opcode.h,v 1.49 2015/05/30 22:55:28 moko Exp $"
+#define IDENT_PA_OPCODE_H "$Id: pa_opcode.h,v 1.50 2015/09/28 22:26:13 moko Exp $"
 
 #define OPTIMIZE_BYTECODE_GET_ELEMENT                // $a ^a
 #define OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT         // $a.b ^a.b
@@ -20,7 +20,6 @@ namespace OP {
 #define OPTIMIZE_BYTECODE_OBJECT_POOL                // $var[$a.b], $var[$a.$b]
 #define OPTIMIZE_BYTECODE_CUT_REM_OPERATOR           // cut rem with all params
 
-
 #ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
 #define OPTIMIZE_BYTECODE_CONSTRUCT                  // $a(expr),  $a[value]
 #endif                                               // $.a(expr), $.a[value]
@@ -28,6 +27,8 @@ namespace OP {
 
 #define OPTIMIZE_BYTECODE_GET_SELF_ELEMENT           // $self.a ^self.a
 #define OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL       // .CLASS, .CLASS_NAME
+
+//#define FEATURE_GET_ELEMENT4CALL                     // ^o.m[] calls get_element4call("m"), not get_element("m")
 
 ///	Compiled operation code
 enum OPCODE {
@@ -56,17 +57,28 @@ enum OPCODE {
 	OP_WITH_ROOT__VALUE__GET_ELEMENT,
 #endif
 #ifdef OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT
-	OP_GET_OBJECT_ELEMENT,				// $a.b & ^a.b
+	OP_GET_OBJECT_ELEMENT,			// $a.b & ^a.b
 	OP_GET_OBJECT_ELEMENT__WRITE,		// $a.b & ^a.b
 #endif
 #ifdef OPTIMIZE_BYTECODE_GET_OBJECT_VAR_ELEMENT
-	OP_GET_OBJECT_VAR_ELEMENT,			// $a.$b & ^a.$b
+	OP_GET_OBJECT_VAR_ELEMENT,		// $a.$b & ^a.$b
 	OP_GET_OBJECT_VAR_ELEMENT__WRITE,	// $a.$b & ^a.$b
 #endif
 #ifdef OPTIMIZE_BYTECODE_GET_SELF_ELEMENT
 	OP_WITH_SELF__VALUE__GET_ELEMENT,
 	OP_WITH_SELF__VALUE__GET_ELEMENT__WRITE,
 #endif
+
+#ifdef FEATURE_GET_ELEMENT4CALL
+	OP_GET_ELEMENT4CALL,
+#ifdef OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT
+	OP_GET_OBJECT_ELEMENT4CALL,
+#endif
+#ifdef OPTIMIZE_BYTECODE_GET_OBJECT_VAR_ELEMENT
+	OP_GET_OBJECT_VAR_ELEMENT4CALL,
+#endif
+#endif // FEATURE_GET_ELEMENT4CALL
+
 	OP_OBJECT_POOL,	OP_STRING_POOL,
 	OP_PREPARE_TO_CONSTRUCT_OBJECT,
 	OP_CONSTRUCT_OBJECT,

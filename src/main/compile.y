@@ -8,7 +8,7 @@
 	
 */
 
-volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.271 2015/09/27 20:12:42 moko Exp $";
+volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.272 2015/09/28 22:26:13 moko Exp $";
 
 /**
 	@todo parser4: 
@@ -586,7 +586,11 @@ call_value: '^' {
 				&& (*var_code)[0].code==OP::OP_VALUE__GET_CLASS
 				&& (*var_code)[3].code==OP::OP_PREPARE_TO_CONSTRUCT_OBJECT
 				&& (*var_code)[4].code==OP::OP_VALUE
+#ifdef FEATURE_GET_ELEMENT4CALL
+				&& (*var_code)[7].code==OP::OP_GET_ELEMENT4CALL
+#else
 				&& (*var_code)[7].code==OP::OP_GET_ELEMENT
+#endif
 			){
 				$$=N();
 				O(*$$, OP::OP_CONSTRUCT_OBJECT);
@@ -601,7 +605,21 @@ call_value: '^' {
 		}
 };
 
-call_name: name_without_curly_rdive;
+call_name: name_without_curly_rdive {
+#ifdef FEATURE_GET_ELEMENT4CALL
+	size_t count=$1->count();
+	if(count){
+		$$=$1;
+#ifdef OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT
+		!(count==5 && change_first(*$$, OP::OP_GET_OBJECT_ELEMENT, OP::OP_GET_OBJECT_ELEMENT4CALL)) &&
+#endif
+#ifdef OPTIMIZE_BYTECODE_GET_OBJECT_VAR_ELEMENT
+		!(count==5 && change_first(*$$, OP::OP_GET_OBJECT_VAR_ELEMENT, OP::OP_GET_OBJECT_VAR_ELEMENT4CALL)) &&
+#endif
+		!change(*$$, count-1, OP::OP_GET_ELEMENT, OP::OP_GET_ELEMENT4CALL);
+	}
+#endif
+};
 
 store_params: store_param | store_params store_param { $$=$1; P(*$$, *$2); };
 store_param: 

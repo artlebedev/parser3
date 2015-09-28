@@ -8,12 +8,13 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.156 2015/09/18 00:08:12 moko Exp $"
+#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.157 2015/09/28 22:26:14 moko Exp $"
 
 #include "pa_common.h"
 #include "pa_array.h"
 #include "pa_exception.h"
 #include "pa_property.h"
+#include "pa_opcode.h"
 
 // forwards
 
@@ -168,6 +169,13 @@ public: // Value
 	
 	/// @return Value element; can return Junction for methods; Code-Junction for code; Getter-Junction for property
 	virtual Value* get_element(const String& /*aname*/);
+
+#ifdef FEATURE_GET_ELEMENT4CALL
+	/// same as get_element, but methods have higher priority in table and hash
+	virtual Value* get_element4call(const String& aname){
+		return get_element(aname);
+	}
+#endif
 
 	/// indicator value meaning that put_element overwritten something
 	#define PUT_ELEMENT_REPLACED_ELEMENT reinterpret_cast<const VJunction*>(1)

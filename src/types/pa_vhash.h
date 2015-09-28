@@ -8,7 +8,7 @@
 #ifndef PA_VHASH_H
 #define PA_VHASH_H
 
-#define IDENT_PA_VHASH_H "$Id: pa_vhash.h,v 1.69 2013/10/04 21:21:56 moko Exp $"
+#define IDENT_PA_VHASH_H "$Id: pa_vhash.h,v 1.70 2015/09/28 22:26:14 moko Exp $"
 
 #include "classes.h"
 #include "pa_value.h"
@@ -56,7 +56,7 @@ public: // value
 
 	/// VHash: (key)=value
 	override Value* get_element(const String& aname) { 
-		// $element
+		// $element first
 		if(Value* result=fhash.get(aname))
 			return result;
 
@@ -71,6 +71,25 @@ public: // value
 		// default value
 		return get_default();
 	}
+	
+#ifdef FEATURE_GET_ELEMENT4CALL
+	override Value* get_element4call(const String& aname) {
+		// $method first
+		if(Value* result=VStateless_object::get_element(aname))
+			return result;
+
+		// $element
+		if(Value* result=fhash.get(aname))
+			return result;
+
+		// $fields -- pseudo field to make 'hash' more like 'table'
+		if(aname == hash_fields_name)
+			return this;
+
+		// default value
+		return get_default();
+	}
+#endif
 	
 	/// VHash: (key)=value
 	override const VJunction* put_element(const String& aname, Value* avalue) {

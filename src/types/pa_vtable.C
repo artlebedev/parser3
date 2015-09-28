@@ -10,10 +10,12 @@
 #include "pa_vhash.h"
 #include "pa_vvoid.h"
 
-volatile const char * IDENT_PA_VTABLE_C="$Id: pa_vtable.C,v 1.39 2015/07/28 14:42:44 moko Exp $" IDENT_PA_VTABLE_H;
+volatile const char * IDENT_PA_VTABLE_C="$Id: pa_vtable.C,v 1.40 2015/09/28 22:26:14 moko Exp $" IDENT_PA_VTABLE_H;
 
 // limits
 #define MAX_COLUMNS 20000 // equal to MAX_LOOPS
+
+const String table_fields_name(TABLE_FIELDS_ELEMENT_NAME);
 
 #ifndef DOXYGEN
 struct Record_info {
@@ -58,11 +60,35 @@ Value* VTable::fields_element() {
 }
 
 Value* VTable::get_element(const String& aname) {
+#ifdef FEATURE_GET_ELEMENT4CALL
 	// fields
-	if(aname==TABLE_FIELDS_ELEMENT_NAME)
+	if(aname==table_fields_name)
 		return fields_element();
 
+	// columns first
+	if(ftable) {
+		int index=ftable->column_name2index(aname, false);
+		if(index>=0) // column aname|number valid
+		{
+			const String* string=ftable->item(index); // there is such column
+			return new VString(string ? *string : String::Empty);
+		}
+	}
+
 	// methods
+	if(Value* result=VStateless_object::get_element(aname))
+		return result;
+
+	throw Exception(PARSER_RUNTIME, &aname, "column not found");
+}
+
+Value* VTable::get_element4call(const String& aname) {
+#endif
+	// fields
+	if(aname==table_fields_name)
+		return fields_element();
+
+	// methods first
 	if(Value* result=VStateless_object::get_element(aname))
 		return result;
 

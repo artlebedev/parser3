@@ -21,7 +21,7 @@
 #include "pa_vimage.h"
 #include "pa_wwrapper.h"
 
-volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.375 2015/05/08 14:30:44 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
+volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.376 2015/09/28 22:26:13 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
 
 //#define DEBUG_EXECUTE
 
@@ -60,6 +60,17 @@ char *opcode_name[]={
 	"WITH_SELF__VALUE__GET_ELEMENT",
 	"WITH_SELF__VALUE__GET_ELEMENT__WRITE",
 #endif
+
+#ifdef FEATURE_GET_ELEMENT4CALL
+	"GET_ELEMENT4CALL",
+#ifdef OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT
+	"GET_OBJECT_ELEMENT4CALL",
+#endif
+#ifdef OPTIMIZE_BYTECODE_GET_OBJECT_VAR_ELEMENT
+	"GET_OBJECT_VAR_ELEMENT4CALL",
+#endif
+#endif // FEATURE_GET_ELEMENT4CALL
+
 	"OBJECT_POOL",	"STRING_POOL",
 	"PREPARE_TO_CONSTRUCT_OBJECT",
 	"CONSTRUCT_OBJECT",
@@ -128,10 +139,16 @@ void debug_dump(SAPI_Info& sapi_info, int level, ArrayOperation& ops) {
 #ifdef OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT
 			|| opcode==OP::OP_GET_OBJECT_ELEMENT
 			|| opcode==OP::OP_GET_OBJECT_ELEMENT__WRITE
+#ifdef FEATURE_GET_ELEMENT4CALL
+			|| opcode==OP::OP_GET_OBJECT_ELEMENT4CALL
+#endif
 #endif
 #ifdef OPTIMIZE_BYTECODE_GET_OBJECT_VAR_ELEMENT
 			|| opcode==OP::OP_GET_OBJECT_VAR_ELEMENT
 			|| opcode==OP::OP_GET_OBJECT_VAR_ELEMENT__WRITE
+#ifdef FEATURE_GET_ELEMENT4CALL
+			|| opcode==OP::OP_GET_OBJECT_VAR_ELEMENT4CALL
+#endif
 #endif
 		){
 			i.next(); // skip origin
@@ -511,59 +528,64 @@ void Request::execute(ArrayOperation& ops) {
 #endif
 
 #ifdef OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT
-		case OP::OP_GET_OBJECT_ELEMENT:
-		case OP::OP_GET_OBJECT_ELEMENT__WRITE:
-			{
-				debug_origin=i.next().origin;
-				const String& context_name=*i.next().value->get_string();  debug_name=&context_name;
 
-				DEBUG_PRINT_STRING(context_name)
-
-				Value& object=get_element(*rcontext, context_name);
-
-				debug_origin=i.next().origin;
-				const String& field_name=*i.next().value->get_string();  debug_name=&field_name;
-
-				DEBUG_PRINT_STRING(field_name)
-
-				Value& value=get_element(object, field_name);
-
-				if(opcode==OP::OP_GET_OBJECT_ELEMENT){
-					stack.push(value);
-				} else {
-					write_assign_lang(value);
-				}
-				break;
+#define DO_GET_OBJECT_ELEMENT(code) {\
+				debug_origin=i.next().origin;								\
+				const String& context_name=*i.next().value->get_string();  debug_name=&context_name;	\
+				DEBUG_PRINT_STRING(context_name)							\
+				Value& object=get_element(*rcontext, context_name);					\
+				debug_origin=i.next().origin;								\
+				const String& field_name=*i.next().value->get_string();  debug_name=&field_name;	\
+				DEBUG_PRINT_STRING(field_name) 								\
+				code;											\
+				break;											\
 			}
+
+		case OP::OP_GET_OBJECT_ELEMENT: DO_GET_OBJECT_ELEMENT({
+				Value& value=get_element(object, field_name);
+				stack.push(value);
+			})
+		case OP::OP_GET_OBJECT_ELEMENT__WRITE: DO_GET_OBJECT_ELEMENT({
+				Value& value=get_element(object, field_name);
+				write_assign_lang(value);
+			})
+#ifdef FEATURE_GET_ELEMENT4CALL
+		case OP::OP_GET_OBJECT_ELEMENT4CALL: DO_GET_OBJECT_ELEMENT({
+				Value& value=get_element4call(object, field_name);
+				stack.push(value);
+			})
+#endif
 #endif
 
 #ifdef OPTIMIZE_BYTECODE_GET_OBJECT_VAR_ELEMENT
-		case OP::OP_GET_OBJECT_VAR_ELEMENT:
-		case OP::OP_GET_OBJECT_VAR_ELEMENT__WRITE:
-			{
-				debug_origin=i.next().origin;
-				const String& context_name=*i.next().value->get_string();  debug_name=&context_name;
 
-				DEBUG_PRINT_STRING(context_name)
-
-				Value& object=get_element(*rcontext, context_name);
-
-				debug_origin=i.next().origin;
-				const String& var_name=*i.next().value->get_string();  debug_name=&var_name;
-
-				DEBUG_PRINT_STRING(var_name)
-
-				const String* field=&get_element(*rcontext, var_name).as_string();
-
-				Value& value=get_element(object, *field);
-
-				if(opcode==OP::OP_GET_OBJECT_VAR_ELEMENT){
-					stack.push(value);
-				} else {
-					write_assign_lang(value);
-				}
-				break;
+#define DO_GET_OBJECT_VAR_ELEMENT(code) {\
+				debug_origin=i.next().origin;								\
+				const String& context_name=*i.next().value->get_string();  debug_name=&context_name;	\
+				DEBUG_PRINT_STRING(context_name)							\
+				Value& object=get_element(*rcontext, context_name);					\
+				debug_origin=i.next().origin;								\
+				const String& var_name=*i.next().value->get_string();  debug_name=&var_name;		\
+				DEBUG_PRINT_STRING(var_name)								\
+				const String* field=&get_element(*rcontext, var_name).as_string();			\
+				code;											\
+				break;											\
 			}
+
+		case OP::OP_GET_OBJECT_VAR_ELEMENT: DO_GET_OBJECT_VAR_ELEMENT({
+				Value& value=get_element(object, *field);
+				stack.push(value);
+			})
+		case OP::OP_GET_OBJECT_VAR_ELEMENT__WRITE: DO_GET_OBJECT_VAR_ELEMENT({
+				Value& value=get_element(object, *field);
+				write_assign_lang(value);
+			})
+#ifdef FEATURE_GET_ELEMENT4CALL
+		case OP::OP_GET_OBJECT_VAR_ELEMENT4CALL: DO_GET_OBJECT_VAR_ELEMENT({
+				Value& value=get_element4call(object, *field);
+				stack.push(value);
+			})
+#endif
 #endif
 
 		case OP::OP_GET_ELEMENT:
@@ -574,6 +596,17 @@ void Request::execute(ArrayOperation& ops) {
 				stack.push(value);
 				break;
 			}
+
+#ifdef FEATURE_GET_ELEMENT4CALL
+		case OP::OP_GET_ELEMENT4CALL:
+			{
+				const String& name=stack.pop().string();  debug_name=&name;
+				Value& ncontext=stack.pop().value();
+				Value& value=get_element4call(ncontext, name);
+				stack.push(value);
+				break;
+			}
+#endif
 
 		case OP::OP_GET_ELEMENT__WRITE:
 			{
@@ -1298,6 +1331,13 @@ void Request::op_call_write(VMethodFrame& frame){
 }
 
 Value& Request::get_element(Value& ncontext, const String& name) {
+#ifdef FEATURE_GET_ELEMENT4CALL
+	Value* value=ncontext.get_element(name);
+	return *(value ? &process_to_value(*value) : VVoid::get());
+}
+
+Value& Request::get_element4call(Value& ncontext, const String& name) {
+#endif
 	if(wcontext->get_somebody_entered_some_class()) // ^class:method
 		if(VStateless_class *called_class=ncontext.get_class())
 			if(VStateless_class *read_class=rcontext->get_class())
@@ -1306,8 +1346,11 @@ Value& Request::get_element(Value& ncontext, const String& name) {
 					return *(value ? &process_to_value(*value) : VVoid::get());
 				}
 
+#ifdef FEATURE_GET_ELEMENT4CALL
+	Value* value=ncontext.get_element4call(name);
+#else
 	Value* value=ncontext.get_element(name);
-
+#endif
 	return *(value ? &process_to_value(*value) : VVoid::get());
 }
 
