@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_UNTAINT_C="$Id: untaint.C,v 1.166 2015/04/08 18:08:53 moko Exp $";
+volatile const char * IDENT_UNTAINT_C="$Id: untaint.C,v 1.167 2015/10/03 00:03:49 moko Exp $";
 
 
 #include "pa_string.h"
@@ -52,22 +52,28 @@ extern "C" { // author forgot to do that
 	} \
     }
 
-
 #define escape_fragment(action) \
 	for(; fragment_length--; CORD_next(info->pos)) { \
 		char c=CORD_pos_fetch(info->pos); \
 		action \
 	}
-#define _default CORD_ec_append(info->result, c)
+
 #define encode(need_encode_func, prefix, otherwise)  \
 	if(need_encode_func(c)) { \
 		CORD_ec_append(info->result, prefix); \
-		CORD_ec_append(info->result, hex_digits[((unsigned char)c) >> 4]); \
-		CORD_ec_append(info->result, hex_digits[((unsigned char)c) & 0x0F]); \
+		to_hex(c); \
 	} else \
 		CORD_ec_append(info->result, otherwise);
+
+#define to_hex(c) \
+	{ \
+		CORD_ec_append(info->result, hex_digits[((unsigned char)c) >> 4]); \
+		CORD_ec_append(info->result, hex_digits[((unsigned char)c) & 0x0F]); \
+	}
+
 #define to_char(c)  { CORD_ec_append(info->result, c); whitespace=false; }
 #define to_string(s)  { CORD_ec_append_cord(info->result, s); whitespace=false; }
+#define _default CORD_ec_append(info->result, c)
 
 inline bool need_file_encode(unsigned char c){
 	// russian letters and space ENABLED
@@ -494,7 +500,7 @@ int cstr_to_string_body_block(String::Language to_lang, size_t fragment_length, 
 		{
 			if(info->charsets==NULL || info->charsets->client().isUTF8()){
 				// escaping to \uXXXX is not needed
-				escape_fragment(switch(c) {
+				escape_fragment(switch((unsigned char)c) {
 					case '\n': to_string("\\n");  break;
 					case '"' : to_string("\\\""); break;
 					case '\\': to_string("\\\\"); break;
@@ -503,11 +509,29 @@ int cstr_to_string_body_block(String::Language to_lang, size_t fragment_length, 
 					case '\r': to_string("\\r");  break;
 					case '\b': to_string("\\b");  break;
 					case '\f': to_string("\\f");  break;
+					case 0xE2: // \u2028 and \u2029 (line/paragraph separators), check bug #1023
+						if(info->charsets && info->charsets->source().isUTF8() && fragment_length>=2){
+							CORD_next(info->pos);
+							char c1=CORD_pos_fetch(info->pos);
+							CORD_next(info->pos);
+							char c2=CORD_pos_fetch(info->pos);
+							if((unsigned char)c1 == 0x80 && ((unsigned char)c2 >= 0xA8 && (unsigned char)c2 <= 0xAF)){
+								to_string("\\u20");
+								to_hex(((unsigned char)c2-0x80));
+							} else {
+								CORD_ec_append(info->result, c);
+								CORD_ec_append(info->result, c1);
+								CORD_ec_append(info->result, c2);
+							}
+							fragment_length-=2;
+						} else {
+							_default;
+						}
+						break;
 					default: 
 						if((unsigned char)c < 0x20){
 							to_string("\\u00");
-							to_char(hex_digits[((unsigned char)c) >> 4]);
-							to_char(hex_digits[((unsigned char)c) & 0x0F]);
+							to_hex(c);
 						} else {
 							_default;
 						}
