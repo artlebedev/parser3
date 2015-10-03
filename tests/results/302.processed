@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 603
+Content-Length: 694
 
 <pre>
 {
@@ -23,6 +23,7 @@ Content-Length: 603
 	"yy_class":"class of yy (class_y_value)",
 	"yy_object":"obj of yy (class_y_value)",
 	"z_object1":"obj of z (class_y_value/object_z_value1)",
-	"z_object2":"obj of z (class_y_value/object_z_value2)"
+	"z_object2":"obj of z (class_y_value/object_z_value2)",
+	"buggy_string":"test ‧\u2028\u2029‰\u202C\u202E\u202F⁨ string - testing bug #1023"
 }
 </pre>
