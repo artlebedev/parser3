@@ -1,11 +1,13 @@
 Content-Type: text/html
-Content-Length: 798
+Content-Length: 1017
 
 11110000000000000000000000000000
 -11110000000000000000000000000000
+1111000000000000000000000000000011110000000000000000000000000000
+-1111000000000000000000000000000011110000000000000000000000000000
 Type: number.format,
 Source: convert,
-Comment: '100000000' is out of range (int)
+Comment: '10000000000000000' is out of range (int)
 Type: number.zerodivision,
 Source: div,
 Comment: Division by zero
@@ -22,12 +24,13 @@ Comment: Modulus by zero
 0x100000000 as int: Type: number.format,
 Source: 0x100000000,
 Comment: out of range (int)
-0x100000000 as double: Type: number.format,
-Source: 0x100000000,
+0x10000000000000000 as double: Type: number.format,
+Source: 0x10000000000000000,
 Comment: out of range (int)
 0x7FFFFFFF as int: 2147483647
 -0x80000000 as int: -2147483648
-0x80000000 as double: 2147483648
+0xFFFFFFFFFFFFFFFF as double: 1.84467440737096e+19
+0x800000000000 as double: 140737488355328
 as int: Type: number.format,
-Source: 0x80000000,
+Source: 0x800000000000,
 Comment: out of range (int)

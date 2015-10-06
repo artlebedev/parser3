@@ -3,8 +3,11 @@
 ^math:convert[F0000000](16;2)
 ^math:convert[-F0000000](16;2)
 
+^math:convert[F0000000F0000000](16;2)
+^math:convert[-F0000000F0000000](16;2)
+
 ^try-catch{
-	$d(^math:convert[100000000](16;2))
+	$d(^math:convert[10000000000000000](16;2))
 }
 
 $d(2)
@@ -34,6 +37,7 @@ $s as int: ^try-catch{
 	^s.int[]
 }
 
+$s[0x10000000000000000]
 $s as double: ^try-catch{
 	^s.double[]
 }
@@ -45,8 +49,9 @@ $s as int: ^s.int[]
 $s[-0x80000000]
 $s as int: ^s.int[]
 
-$s[0x80000000]
-
+$s[0xFFFFFFFFFFFFFFFF]
+$s as double: ^s.double[]
+$s[0x800000000000]
 $s as double: ^s.double[]
 as int: ^try-catch{
 	^s.int[]
