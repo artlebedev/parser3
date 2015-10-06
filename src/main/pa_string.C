@@ -12,14 +12,14 @@
 #include "pa_charset.h"
 #include "pa_vregex.h"
 
-volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.248 2015/05/30 22:55:29 moko Exp $" IDENT_PA_STRING_H;
+volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.249 2015/10/06 22:20:50 moko Exp $" IDENT_PA_STRING_H;
 
 const String String::Empty;
 
 // pa_atoui is based on Manuel Novoa III _strto_l for uClibc
 
-unsigned int pa_atoui(const char *str, int base, const String* problem_source){
-	unsigned int result = 0;
+template<typename T> inline T pa_ato_any(const char *str, int base, const String* problem_source,const T max){
+	T result = 0;
 	const char *pos = str;
 
 	while (isspace(*pos)) /* skip leading whitespace */
@@ -47,8 +47,8 @@ unsigned int pa_atoui(const char *str, int base, const String* problem_source){
 		throw Exception(PARSER_RUNTIME, 0, "base to must be an integer from 2 to 16");
 	}
 
-	unsigned int cutoff = UINT_MAX / base;
-	int cutoff_digit = UINT_MAX - cutoff * base;
+	T cutoff = max / base;
+	int cutoff_digit = (int)(max - cutoff * base);
 
 	while(true) {
 		int digit;
@@ -80,6 +80,14 @@ unsigned int pa_atoui(const char *str, int base, const String* problem_source){
 			throw Exception("number.format", problem_source, problem_source ? "invalid number (int)" : "'%s' is invalid number (int)", str);
 
 	return result;
+}
+
+unsigned int pa_atoui(const char *str, int base, const String* problem_source){
+    return pa_ato_any<unsigned int>(str, base, problem_source, UINT_MAX);
+}
+
+unsigned long long pa_atoul(const char *str, int base, const String* problem_source){
+    return pa_ato_any<unsigned long long int>(str, base, problem_source, ULLONG_MAX);
 }
 
 int pa_atoi(const char* str, const String* problem_source) {
@@ -133,7 +141,7 @@ double pa_atod(const char* str, const String* problem_source) {
 	if(str[0]=='0') {
 		if(str[1]=='x' || str[1]=='X') {
 			// 0xABC
-			result=(double)pa_atoui(str, 0, problem_source);
+			result=(double)pa_atoul(str, 0, problem_source);
 			return negative ? -result : result;
 		} else {
 			 // skip leading 0000, to disable octal interpretation

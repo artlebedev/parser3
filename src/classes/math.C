@@ -22,7 +22,7 @@
 extern "C" char *crypt(const char* , const char* );
 #endif
 
-volatile const char * IDENT_MATH_C="$Id: math.C,v 1.77 2015/09/22 23:53:56 moko Exp $";
+volatile const char * IDENT_MATH_C="$Id: math.C,v 1.78 2015/10/06 22:20:50 moko Exp $";
 
 // defines
 
@@ -508,7 +508,7 @@ static void _crc32(Request& r, MethodParams& params) {
 	r.write_no_lang(*new VInt(pa_crc32(string, strlen(string))));
 }
 
-static void toBase(unsigned int value, unsigned int base, char*& ptr){
+static void toBase(unsigned long long int value, unsigned int base, char*& ptr){
 	static const char* hex="0123456789ABCDEF";
 	int rest = value % base;
 	if(value >= base)
@@ -541,9 +541,9 @@ static void _convert(Request& r, MethodParams& params) {
 		str++;
 	}
 
-	unsigned int value=pa_atoui(str, base_from);
+	unsigned long long int value=pa_atoul(str, base_from);
 
-	char result_cstr[sizeof(unsigned int)*8+1/*minus for negative number*/+1/*terminator*/];
+	char result_cstr[sizeof(unsigned long long int)*8+1/*minus for negative number*/+1/*terminator*/];
 	char* ptr=result_cstr;
 	if(negative)
 		*ptr++='-';
