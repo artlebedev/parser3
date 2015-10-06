@@ -9,12 +9,10 @@
 #include "pa_vint.h"
 #include "pa_vstring.h"
 
-volatile const char * IDENT_PA_PA_VDATE_C="$Id: pa_vdate.C,v 1.10 2015/09/22 23:35:30 moko Exp $" IDENT_PA_VDATE_H;
+volatile const char * IDENT_PA_PA_VDATE_C="$Id: pa_vdate.C,v 1.11 2015/10/06 20:38:32 moko Exp $" IDENT_PA_VDATE_H;
 
 #define ZERO_DATE (-62169984000ll-SECS_PER_DAY) // '0000-00-00 00:00:00' - 1 day
 #define MAX_DATE (253402300799ll+SECS_PER_DAY) // '9999-12-31 23:59:59' + 1 day
-
-#define MAX_32_DATE 2147483647
 
 static const int DAYS_IN_MONTH[12] =
 {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
@@ -94,7 +92,7 @@ static void pa_localtime(const char *tz, pa_time_t atime, struct tm &tmIn) {
 #ifdef PA_DATE64
 	tmIn=*localtime(&atime);
 #else
-	if(atime >= 0 && atime <= MAX_32_DATE){
+	if(atime >= 0 && atime <= INT_MAX){
 		time_t itime=(time_t)atime;
 		tmIn=*localtime(&itime);
 	} else {
