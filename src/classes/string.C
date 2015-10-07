@@ -20,7 +20,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.219 2015/09/03 20:47:21 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.220 2015/10/07 22:25:40 moko Exp $";
 
 // class
 
@@ -52,6 +52,9 @@ DECLARE_CLASS_VAR(void, new MVoid, 0);
 #define TRIM_BOTH_OPTION "both"
 
 #define MODE_APPEND "append"
+
+#define UNESCAPE_MODE_JS "js"
+#define UNESCAPE_MODE_URI "uri"
 
 // statics
 
@@ -748,15 +751,48 @@ static void _idna(Request& r, MethodParams& params) {
 	}
 }
 
-static void _escape(Request& r, MethodParams&){
+static void _js_escape(Request& r, MethodParams&){
 	const String& src=GET_SELF(r, VString).string();
 	r.write_assign_lang(src.escape(r.charsets.source()));
 }
 
-static void _unescape(Request& r, MethodParams& params){
+static void _js_unescape(Request& r, MethodParams& params){
 	const String& src=params.as_string(0, PARAMETER_MUST_BE_STRING);
 	if(const char* result=unescape_chars(src.cstr(), src.length(), &r.charsets.source(), true))
 		r.write_assign_lang(*new String(result, String::L_TAINTED));
+}
+
+static void _unescape(Request& r, MethodParams& params){
+	const String& mode=params.as_string(0, MODE_MUST_NOT_BE_CODE);
+	const String& src=params.as_string(1, PARAMETER_MUST_BE_STRING);
+
+	Charset* from_charset=&r.charsets.client();
+
+	if(params.count() > 2)
+		if(HashStringValue* options=params.as_hash(2)) {
+			int valid_options=0;
+			if(Value* vcharset_name=options->get(PA_CHARSET_NAME)){
+				from_charset=&::charsets.get(vcharset_name->as_string().change_case(r.charsets.source(), String::CC_UPPER));
+				valid_options++;
+			}
+			if(valid_options!=options->count())
+				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+		}
+
+	bool mode_js;
+	if(mode==UNESCAPE_MODE_JS){
+		mode_js=true;
+	} else if(mode==UNESCAPE_MODE_URI){
+		mode_js=false;
+	} else {
+		throw Exception(PARSER_RUNTIME, &mode, "is invalid mode, must be either '"UNESCAPE_MODE_JS"' or '"UNESCAPE_MODE_URI"'");
+	}
+
+	const char* unescaped=unescape_chars(src.cstr(), src.length(), from_charset, mode_js);
+	if(*unescaped){
+		const String* result=new String(Charset::transcode(String::Body(unescaped), *from_charset, r.charsets.source()), String::L_TAINTED);
+		r.write_assign_lang(*result);
+	}
 }
 
 // constructor
@@ -837,8 +873,11 @@ MString::MString(): Methoded("string") {
 	add_native_method("idna", Method::CT_ANY, _idna, 0, 1);
 
 	// ^string.js-escape[]
-	add_native_method("js-escape", Method::CT_DYNAMIC, _escape, 0, 0);
+	add_native_method("js-escape", Method::CT_DYNAMIC, _js_escape, 0, 0);
 
 	// ^string:js-unescape[escaped%uXXXXstring]
-	add_native_method("js-unescape", Method::CT_STATIC, _unescape, 1, 1);
-}	
+	add_native_method("js-unescape", Method::CT_STATIC, _js_unescape, 1, 1);
+
+	// ^string:unescape[js|uri;escaped;$.charset[...]]
+	add_native_method("unescape", Method::CT_STATIC, _unescape, 2, 3);
+}
