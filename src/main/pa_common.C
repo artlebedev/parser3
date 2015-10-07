@@ -50,7 +50,7 @@
 #define pa_mkdir(path, mode) mkdir(path, mode)
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.285 2015/09/02 21:29:45 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.286 2015/10/07 21:24:40 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -787,7 +787,7 @@ char* unescape_chars(const char* cp, int len, Charset* charset, bool js){
 		} else {
 			switch(escapeState) {
 				case EscapeRest:
-					if(!js && c=='+'){
+					if(c=='+' && !js){
 						*dst++=' ';
 					} else {
 						*dst++=c;
