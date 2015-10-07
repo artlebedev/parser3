@@ -1,3 +1,74 @@
+2015-10-07  moko
+
+	* tests/: 275.html, results/275.processed: test modified after
+	  unsigned long long int support implemented (feature #1034)
+
+	* src/: classes/math.C, include/pa_string.h, main/pa_string.C:
+	  pa_atoul added for unsigned long long int support
+
+2015-10-06  moko
+
+	* src/types/pa_vdate.C: INT_MAX used
+
+2015-10-03  moko
+
+	* tests/: 302.html, results/302.processed: test for bug #1023
+	  (\u2028, \u2029 escaping) added
+
+	* src/main/untaint.C: \u2028, \u2029 are now escaped in
+	  json:string[] (fixes bug #1023)
+
+2015-09-29  moko
+
+	* tests/305.html: try-catch added for OS without ipv6 support
+
+	* src/lib/json/pa_json.C: more unique prefixes for Solaris
+	  compilation
+
+	* src/: include/pa_opcode.h, include/pa_request.h, main/compile.y,
+	  main/execute.C, types/pa_value.h, types/pa_vhash.h,
+	  types/pa_vtable.C, types/pa_vtable.h: get_element4call
+	  implemented to distinguish ^hash.method from $hash.field
+	  (implements feature #1017)
+
+	* src/lib/punycode/pa_punycode.c: warning war
+
+	* src/include/pa_config_includes.h: warning war
+
+	* src/include/pa_config_includes.h: pragma warning actualized a bit
+
+	* src/include/pa_config_includes.h: warning war
+
+	* src/include/pa_hash.h: clang compilation fix
+
+2015-09-27  moko
+
+	* src/main/compile.tab.C: Bison 3 is now default
+
+	* src/main/: compile.C, compile.y: Bison 3 compatibility fixed
+
+2015-09-25  moko
+
+	* src/: classes/hash.C, include/pa_hash.h: parser now compiles and
+	  works with undefined HASH_ORDER (related to feature #196)
+
+2015-09-24  moko
+
+	* tests/: 027.html, results/027.processed: test modified to test
+	  ^hash.sort (feature #196)
+
+	* src/: classes/hash.C, include/pa_hash.h:
+	  ^hash.sort[key;value]{string-key-maker}|(numeric-key-maker)[[asc|desc]]
+	  added (implements feature #196)
+
+	* tests/: 316.html, results/316.processed: Added test for bug #1025
+	  (exception handling in non-cached ^cache), plus for "it does not
+	  have logical value" and "$exception.handled value must be either
+	  boolean or string 'cache'" exceptions.
+
+	* src/classes/op.C: ^cache: exceptions now handled in non-cached
+	  code (fixes bug #1025)
+
 2015-09-23  moko
 
 	* src/classes/table.C: warning war
@@ -14108,7 +14179,7 @@
 	  types/pa_vstring.h, types/pa_vtable.C, types/pa_vtable.h,
 	  types/pa_vvoid.h, types/pa_vxdoc.C, types/pa_vxdoc.h,
 	  types/pa_vxnode.C, types/pa_vxnode.h, types/pa_wcontext.C,
-	  types/pa_wcontext.h, types/pa_wwrapper.h: $Date: 2015/09/23 00:13:58 $
+	  types/pa_wcontext.h, types/pa_wwrapper.h: $Date: 2015/10/07 11:20:48 $
 
 	* src/: classes/classes.C, classes/classes.dsp, classes/classes.h,
 	  classes/date.C, classes/double.C, classes/file.C, classes/form.C,
@@ -18196,7 +18267,7 @@
 	  main/pa_hash.C, main/pa_pool.C, main/pa_request.C,
 	  main/pa_socks.C, main/pa_sql_driver_manager.C, main/pa_string.C,
 	  main/pa_table.C, main/untaint.C, targets/cgi/parser3.C,
-	  targets/isapi/parser3isapi.C: static char *RCSId="$Id: ChangeLog,v 1.95 2015/09/23 00:13:58 moko Exp $";
+	  targets/isapi/parser3isapi.C: static char *RCSId="$Id: ChangeLog,v 1.96 2015/10/07 11:20:48 moko Exp $";
 
 	* src/main/: compile.y, compile_tools.h: $:name: == ${name}:
 	  $class:name: == ${class:name}:
@@ -21011,9 +21082,9 @@
 
 	* src/include/: pa_pool.h, pa_string.h: pa_pool split
 
-	* src/main/: main.dsp, pa_string.C: $Id: ChangeLog,v 1.95 2015/09/23 00:13:58 moko Exp $ check
+	* src/main/: main.dsp, pa_string.C: $Id: ChangeLog,v 1.96 2015/10/07 11:20:48 moko Exp $ check
 
-	* src/: main/pa_pool.C, main/pa_string.C, include/pa_pool.h: $Id: ChangeLog,v 1.95 2015/09/23 00:13:58 moko Exp $
+	* src/: main/pa_pool.C, main/pa_string.C, include/pa_pool.h: $Id: ChangeLog,v 1.96 2015/10/07 11:20:48 moko Exp $
 	  check
 
 	* src/: include/pa_pool.h, main/pa_string.C: String prealloc &
