@@ -17,7 +17,7 @@
 #ifndef PA_HASH_H
 #define PA_HASH_H
 
-#define IDENT_PA_HASH_H "$Id: pa_hash.h,v 1.92 2015/10/08 15:33:25 moko Exp $"
+#define IDENT_PA_HASH_H "$Id: pa_hash.h,v 1.93 2015/10/08 23:32:44 moko Exp $"
 
 #include "pa_memory.h"
 #include "pa_types.h"
@@ -535,6 +535,22 @@ public:
 		uint index=code%this->allocated;
 		for(Pair *pair=this->refs[index]; pair; pair=pair->link)
 			if(pair->code==code && CORD_cmp(pair->key,key)==0)
+				return pair->value;
+
+		return V(0);
+	}
+
+	/// get associated [value] by the [key], optimized
+	V get(const char *key) const {
+		uint code=0;
+		if(key && *key){
+			generic_hash_code(code, key);
+		} else {
+			key=0;
+		}
+		uint index=code%this->allocated;
+		for(Pair *pair=this->refs[index]; pair; pair=pair->link)
+			if(pair->code==code && CORD_cmp(pair->key,(CORD)key)==0)
 				return pair->value;
 
 		return V(0);
