@@ -17,7 +17,7 @@
 #ifndef PA_HASH_H
 #define PA_HASH_H
 
-#define IDENT_PA_HASH_H "$Id: pa_hash.h,v 1.91 2015/09/28 21:35:51 moko Exp $"
+#define IDENT_PA_HASH_H "$Id: pa_hash.h,v 1.92 2015/10/08 15:33:25 moko Exp $"
 
 #include "pa_memory.h"
 #include "pa_types.h"
@@ -245,7 +245,11 @@ public:
 
 #ifdef HASH_ORDER
 	String::Body first_key() const {
+#ifdef HASH_CODE_CACHING
 		return (first) ? String::Body(first->key, first->code) : String::Body();
+#else
+		return (first) ? first->key : String::Body();
+#endif
 	}
 
 	V first_value() const {
@@ -255,7 +259,11 @@ public:
 	String::Body last_key() const {
 		if (fpairs_count) {
 			Pair* pair = (Pair*)((char *)last - offsetof(Pair, next));
+#ifdef HASH_CODE_CACHING
 			return String::Body(pair->key, pair->code);
+#else
+			return pair->key;
+#endif
 		} else {
 			return String::Body();
 		}
@@ -276,7 +284,7 @@ public:
 		last=&(pair->next);
 	}
 
-#endif
+#endif //HASH_ORDER
 
 	/// put a [value] under the [key] if that [key] existed @returns existed or not
 	bool put_replaced(K key, V value) {
@@ -611,6 +619,14 @@ public:
 		return V(0);
 	}
 
+#else //HASH_CODE_CACHING
+
+template<typename V> class HASH_STRING: public HASH<const String::Body,V>{
+public:
+	typedef typename HASH<const String::Body,V>::Pair Pair;
+
+#endif //HASH_CODE_CACHING
+
 	/// simple hash iterator
 	class Iterator {
 		const HASH_STRING<V>& fhash;
@@ -619,35 +635,41 @@ public:
 		int i;
 #endif
 	public:
-		Iterator(const HASH_STRING<V>& ahash): fhash(ahash) {
 #ifdef HASH_ORDER
+		Iterator(const HASH_STRING<V>& ahash): fhash(ahash) {
 			fcurrent=fhash.first;
+		}
+
+		void next() {
+			fcurrent=fcurrent->next;
+		}
 #else
+		Iterator(const HASH_STRING<V>& ahash): fhash(ahash) {
 			fcurrent=0;
 			for(i=0; i<fhash.allocated; i++)
 				if (fcurrent=fhash.refs[i])
 					break;
-#endif
-		}
-
-		operator bool () {
-			return fcurrent != 0;
 		}
 
 		void next() {
-#ifdef HASH_ORDER
-			fcurrent=fcurrent->next;
-#else
 			if(fcurrent=fcurrent->link)
 				return;
 			for(i++; i<fhash.allocated; i++)
 				if (fcurrent=fhash.refs[i])
 					break;
+		}
 #endif
+
+		operator bool () {
+			return fcurrent != 0;
 		}
 
 		String::Body key(){
+#ifdef HASH_CODE_CACHING
 			return String::Body(fcurrent->key, fcurrent->code);
+#else
+			return fcurrent->key;
+#endif
 		}
 
 		V value(){
@@ -658,12 +680,8 @@ public:
 			return fcurrent;
 		}
 	};
+
 };
-#else //HASH_CODE_CACHING
-
-template<typename V> class HASH_STRING: public HASH<const String::Body,V>{};
-
-#endif //HASH_CODE_CACHING
 
 #ifndef HASH_ORDER
 ///    Auto-object used to temporarily substituting/removing string hash values
