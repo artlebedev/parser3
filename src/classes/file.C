@@ -25,7 +25,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.237 2015/09/22 23:49:29 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.238 2015/10/08 18:29:15 moko Exp $";
 
 // defines
 
@@ -1031,10 +1031,8 @@ static void _sql(Request& r, MethodParams& params) {
 		handlers,
 		statement_string);
 
-	if(!handlers.value)
-		throw Exception(PARSER_RUNTIME,
-			0,
-			"produced no result");
+	if(!handlers.value.str)
+		throw Exception(PARSER_RUNTIME, 0, "produced no result");
 
 	VFile& self=GET_SELF(r, VFile);
 

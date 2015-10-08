@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.210 2015/10/06 22:20:50 moko Exp $"
+#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.211 2015/10/08 18:29:15 moko Exp $"
 
 // includes
 #include "pa_types.h"
@@ -59,6 +59,9 @@ unsigned long long int pa_atoul(const char *str, int base, const String* problem
 
 /// this is result of pos functions which mean that substr were not found
 #define STRING_NOT_FOUND ((size_t)-1)
+
+/// CORD can't be empty string, thus checking it in assigment
+#define AS_CORD(v) ((v) && *(v) ? (CORD)(v):0)
 
 /** 
 	String which knows the lang of all it's langs.
@@ -336,10 +339,12 @@ public:
 #ifdef HASH_CODE_CACHING
 		Body(): body(CORD_EMPTY), hash_code(0) INIT_LENGTH {}
 		Body(CORD abody, uint ahash_code): body(abody), hash_code(ahash_code) INIT_LENGTH {}
-		Body(CORD abody): body(abody), hash_code(0) INIT_LENGTH {
+		Body(const char *abody): body(AS_CORD(abody)), hash_code(0) INIT_LENGTH {}
+		explicit Body(CORD abody): body(abody), hash_code(0) INIT_LENGTH {
 #else
 		Body(): body(CORD_EMPTY) INIT_LENGTH {}
-		Body(CORD abody): body(abody) INIT_LENGTH {
+		Body(const char *abody): body(AS_CORD(abody)) INIT_LENGTH {}
+		explicit Body(CORD abody): body(abody) INIT_LENGTH {
 #endif
 #ifdef CORD_CAT_OPTIMIZATION
 			assert(!body // no body
@@ -365,14 +370,17 @@ public:
 
 		bool operator! () const { return is_empty(); }
 
-		CORD get_cord() const { return body; }
+		inline CORD get_cord() const { return body; }
 		uint get_hash_code() const;
 
 		const char* cstr() const {
 #ifdef STRING_LENGTH_CACHING
 			string_length = length();
-			if(string_length)
-				return const_cast<Body*>(this)->body=CORD_to_const_char_star(body, string_length);
+			if(string_length){
+				const char *result=CORD_to_const_char_star(body, string_length);
+				const_cast<Body*>(this)->body=(CORD)result;
+				return result;
+			}
 #endif
 			return CORD_to_const_char_star(body, length());
 		}
@@ -381,7 +389,7 @@ public:
 
 #ifdef STRING_LENGTH_CACHING
 		void set_length(size_t alength){ string_length = alength; }
-		size_t length() const { return body ? CORD_IS_STRING(body) ? string_length ? string_length : (string_length=strlen(body)) : CORD_len(body) : 0; }
+		size_t length() const { return body ? CORD_IS_STRING(body) ? string_length ? string_length : (string_length=strlen((const char *)body)) : CORD_len(body) : 0; }
 #else
 		size_t length() const { return CORD_len(body); }
 #endif
@@ -394,7 +402,7 @@ public:
 					body = CORD_cat_char_star(body, str, known_length);
 					ZERO_LENGTH 
 				} else {
-					body=str;
+					body=(CORD)str;
 #ifdef STRING_LENGTH_CACHING
 					string_length=known_length;
 #endif
@@ -418,16 +426,16 @@ public:
 		bool operator != (const Body src) const { return CORD_cmp(body, src.body)!=0; }
 		bool operator == (const Body src) const { return CORD_cmp(body, src.body)==0; }
 
-		bool operator != (const char *src) const { return CORD_cmp(body, src)!=0; }
-		bool operator == (const char *src) const { return CORD_cmp(body, src)==0; }
+		bool operator != (const char *src) const { return CORD_cmp(body, AS_CORD(src))!=0; }
+		bool operator == (const char *src) const { return CORD_cmp(body, AS_CORD(src))==0; }
 
 		int ncmp(size_t x_begin, const Body y, size_t y_begin, size_t size) const {
 			return CORD_ncmp(body, x_begin, y.body, y_begin, size);
 		}
 
 		char fetch(size_t index) const { return CORD_fetch(body, index); }
-		Body mid(size_t aindex, size_t alength) const { return CORD_substr(body, aindex, alength, length()); }
-		size_t pos(const char* substr, size_t offset=0) const { return CORD_str(body, offset, substr, length()); }
+		Body mid(size_t aindex, size_t alength) const { return Body(CORD_substr(body, aindex, alength, length())); }
+		size_t pos(const char* substr, size_t offset=0) const { return CORD_str(body, offset, AS_CORD(substr), length()); }
 		size_t pos(const Body substr, size_t offset=0) const { 
 			if(substr.is_empty())
 				return STRING_NOT_FOUND; // in this case CORD_str returns 0 [parser users got used to -1]
@@ -466,7 +474,7 @@ public:
 	struct C {
 		const char *str;
 		size_t length;
-		operator const char *() { return str; }
+		//operator const char *() { return str; }
 		C(): str(0), length(0) {}
 		C(const char *astr, size_t asize): str(astr), length(asize) {}
 	};
@@ -494,17 +502,24 @@ public:
 	static const String Empty;
 
 	explicit String(){};
-	explicit String(const char* cstr, Language alang=L_CLEAN){
-		if(cstr && *cstr){
-			body=cstr;
+	explicit String(const char* cstr, Language alang=L_CLEAN) : body(cstr){
+		if(body.get_cord()){
 			langs=alang;
 		}
 	}
-	explicit String(const char* cstr, Language alang, size_t alength){
-		if(cstr && *cstr){
-			body=cstr;
+	explicit String(const char* cstr, Language alang, size_t alength) : body(cstr){
+		if(body.get_cord()){
 #ifdef STRING_LENGTH_CACHING
 			body.set_length(alength);
+#endif
+			langs=alang;
+		}
+	}
+
+	explicit String(C ac, Language alang=L_CLEAN) : body(ac.str){
+		if(body.get_cord()){
+#ifdef STRING_LENGTH_CACHING
+			body.set_length(ac.length);
 #endif
 			langs=alang;
 		}

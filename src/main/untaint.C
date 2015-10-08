@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_UNTAINT_C="$Id: untaint.C,v 1.167 2015/10/03 00:03:49 moko Exp $";
+volatile const char * IDENT_UNTAINT_C="$Id: untaint.C,v 1.168 2015/10/08 18:29:16 moko Exp $";
 
 
 #include "pa_string.h"
@@ -72,7 +72,7 @@ extern "C" { // author forgot to do that
 	}
 
 #define to_char(c)  { CORD_ec_append(info->result, c); whitespace=false; }
-#define to_string(s)  { CORD_ec_append_cord(info->result, s); whitespace=false; }
+#define to_string(s)  { CORD_ec_append_cord(info->result, (CORD)(s)); whitespace=false; }
 #define _default CORD_ec_append(info->result, c)
 
 inline bool need_file_encode(unsigned char c){
@@ -544,7 +544,7 @@ int cstr_to_string_body_block(String::Language to_lang, size_t fragment_length, 
 				String::C output(fragment_str, fragment_length);
 
 				output=Charset::escape_JSON(output, info->charsets->source());
-				to_string(output);
+				to_string(output.str);
 			}
 		}
 		break;
@@ -557,7 +557,7 @@ int cstr_to_string_body_block(String::Language to_lang, size_t fragment_length, 
 			String::C output(fragment_str, fragment_length);
 			
 			output=Charset::escape(output, info->charsets->source());
-			to_string(output);
+			to_string(output.str);
 		} else
 			ec_append(info->result, optimize, whitespace, info->pos, fragment_length);
 		break;

@@ -12,7 +12,7 @@
 #include "pa_charset.h"
 #include "pa_vregex.h"
 
-volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.249 2015/10/06 22:20:50 moko Exp $" IDENT_PA_STRING_H;
+volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.250 2015/10/08 18:29:16 moko Exp $" IDENT_PA_STRING_H;
 
 const String String::Empty;
 
@@ -367,7 +367,7 @@ uint String::Body::get_hash_code() const {
 	uint hash_code=0;
 #endif
 	if (body && CORD_IS_STRING(body)){
-		generic_hash_code(hash_code, body);
+		generic_hash_code(hash_code, (const char *)body);
 	} else {
 		CORD_iter5(body, 0,
 			CORD_batched_iter_fn_generic_hash_code, 

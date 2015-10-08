@@ -66,7 +66,7 @@
 /* never modified in place.  The empty cord is represented by, and	*/
 /* can be written as, 0.						*/
 
-typedef const char * CORD;
+typedef const unsigned char * CORD;
 
 /* An empty cord is always represented as nil 	*/
 # define CORD_EMPTY 0
