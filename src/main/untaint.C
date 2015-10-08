@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_UNTAINT_C="$Id: untaint.C,v 1.168 2015/10/08 18:29:16 moko Exp $";
+volatile const char * IDENT_UNTAINT_C="$Id: untaint.C,v 1.169 2015/10/08 23:14:57 moko Exp $";
 
 
 #include "pa_string.h"
@@ -347,20 +347,18 @@ int cstr_to_string_body_block(String::Language to_lang, size_t fragment_length, 
 		}
 		break;
 	case String::L_URI:
-		// tainted, untaint language: uri	 
-		{	 
-			const char *fragment_str=info->body->mid(info->fragment_begin, fragment_length).cstr();	 
-			// skip source [we use recoded version]	 
-			pa_CORD_pos_advance(info->pos, fragment_length);	 
-			String::C output(fragment_str, fragment_length);	 
-			if(info->charsets)	 
-				output=Charset::transcode(output,	 
-					info->charsets->source(),	 
-					info->charsets->client());	 
+		// tainted, untaint language: uri
+		{
+			const char *fragment_str=info->body->mid(info->fragment_begin, fragment_length).cstr();
+			// skip source [we use recoded version]
+			pa_CORD_pos_advance(info->pos, fragment_length);
+			String::C output(fragment_str, fragment_length);
+			if(info->charsets)
+				output=Charset::transcode(output, info->charsets->source(), info->charsets->client());
 
-			char c;	 
-			for(const char* src=output.str; (c=*src++); )	 
-				encode(need_uri_encode, '%', c);	 
+			char c;
+			for(const char* src=output.str; (c=*src++); )
+				encode(need_uri_encode, '%', c);
 		}
 		break;
 	case String::L_HTTP_HEADER:
@@ -541,10 +539,7 @@ int cstr_to_string_body_block(String::Language to_lang, size_t fragment_length, 
 				const char *fragment_str=info->body->mid(info->fragment_begin, fragment_length).cstr();
 				// skip source [we use recoded version]
 				pa_CORD_pos_advance(info->pos, fragment_length);
-				String::C output(fragment_str, fragment_length);
-
-				output=Charset::escape_JSON(output, info->charsets->source());
-				to_string(output.str);
+				to_string(Charset::escape_JSON(String::C(fragment_str, fragment_length), info->charsets->source()).str);
 			}
 		}
 		break;
@@ -554,10 +549,7 @@ int cstr_to_string_body_block(String::Language to_lang, size_t fragment_length, 
 			const char *fragment_str=info->body->mid(info->fragment_begin, fragment_length).cstr();
 			// skip source [we use recoded version]
 			pa_CORD_pos_advance(info->pos, fragment_length);
-			String::C output(fragment_str, fragment_length);
-			
-			output=Charset::escape(output, info->charsets->source());
-			to_string(output.str);
+			to_string(Charset::escape(String::C(fragment_str, fragment_length), info->charsets->source()).str);
 		} else
 			ec_append(info->result, optimize, whitespace, info->pos, fragment_length);
 		break;

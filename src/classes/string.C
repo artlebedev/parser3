@@ -20,7 +20,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.220 2015/10/07 22:25:40 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.221 2015/10/08 23:14:56 moko Exp $";
 
 // class
 
@@ -790,7 +790,7 @@ static void _unescape(Request& r, MethodParams& params){
 
 	const char* unescaped=unescape_chars(src.cstr(), src.length(), from_charset, mode_js);
 	if(*unescaped){
-		const String* result=new String(Charset::transcode(String::Body(unescaped), *from_charset, r.charsets.source()), String::L_TAINTED);
+		const String* result=new String(Charset::transcode(unescaped, *from_charset, r.charsets.source()), String::L_TAINTED);
 		r.write_assign_lang(*result);
 	}
 }
