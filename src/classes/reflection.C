@@ -9,7 +9,7 @@
 #include "pa_request.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.32 2015/04/08 18:08:52 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.33 2015/10/08 22:49:36 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -344,7 +344,7 @@ static void _uid(Request& r, MethodParams& params) {
 	char local_buf[MAX_NUMBER];
 	int size=snprintf(local_buf, sizeof(local_buf), "%p", &obj);
 
-	r.write_pass_lang(*new String(pa_strdup(local_buf, (size_t)size), String::L_CLEAN, size));
+	r.write_pass_lang(*new String(String::C(pa_strdup(local_buf, (size_t)size), size)));
 }
 
 static void _delete(Request&, MethodParams& params) {

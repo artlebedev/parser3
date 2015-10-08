@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.211 2015/10/08 18:29:15 moko Exp $"
+#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.212 2015/10/08 22:49:36 moko Exp $"
 
 // includes
 #include "pa_types.h"
@@ -394,7 +394,7 @@ public:
 		size_t length() const { return CORD_len(body); }
 #endif
 
-		bool is_empty() const { return body==CORD_EMPTY; }
+		inline bool is_empty() const { return body==CORD_EMPTY; }
 
 		void append_know_length(const char *str, size_t known_length) {
 			if(known_length){
@@ -474,7 +474,6 @@ public:
 	struct C {
 		const char *str;
 		size_t length;
-		//operator const char *() { return str; }
 		C(): str(0), length(0) {}
 		C(const char *astr, size_t asize): str(astr), length(asize) {}
 	};
@@ -482,7 +481,6 @@ public:
 	struct Cm {
 		char *str;
 		size_t length;
-		//operator char *() { return str; }
 		Cm(): str(0), length(0) {}
 		Cm(char *astr, size_t asize): str(astr), length(asize) {}
 	};
@@ -507,15 +505,6 @@ public:
 			langs=alang;
 		}
 	}
-	explicit String(const char* cstr, Language alang, size_t alength) : body(cstr){
-		if(body.get_cord()){
-#ifdef STRING_LENGTH_CACHING
-			body.set_length(alength);
-#endif
-			langs=alang;
-		}
-	}
-
 	explicit String(C ac, Language alang=L_CLEAN) : body(ac.str){
 		if(body.get_cord()){
 #ifdef STRING_LENGTH_CACHING
@@ -524,14 +513,13 @@ public:
 			langs=alang;
 		}
 	}
-
-	String(int value, const char *format);
 	String(Body abody, Language alang): body(abody), langs(alang) {
 		ASSERT_STRING_INVARIANT(*this);
 	}
 	String(const String& src): body(src.body), langs(src.langs) {
 		ASSERT_STRING_INVARIANT(*this);
 	}
+	String(int value, const char *format);
 
 	/// for convinient hash lookup
 #ifdef HASH_CODE_CACHING
@@ -549,14 +537,9 @@ public:
 	/// convert to CORD with tainting dirty to lang
 	Body cstr_to_string_body_untaint(Language lang, SQL_Connection* connection=0, const Request_charsets *charsets=0) const;
 
-	/// 
-	const char* cstr() const {
-		return body.cstr();
-	}
-	/// 
-	char* cstrm() const {
-		return body.cstrm();
-	}
+	/// from body
+	const char* cstr() const { return body.cstr(); }
+	char* cstrm() const { return body.cstrm(); }
 
 	/// convert to constant C string forcing lang tainting
 	const char* taint_cstr(Language lang, SQL_Connection* connection=0, const Request_charsets *charsets=0) const {

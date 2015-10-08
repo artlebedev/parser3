@@ -18,7 +18,7 @@
 #include "pa_vxdoc.h"
 #endif
 
-volatile const char * IDENT_JSON_C="$Id: json.C,v 1.38 2015/09/18 00:43:47 moko Exp $";
+volatile const char * IDENT_JSON_C="$Id: json.C,v 1.39 2015/10/08 22:49:36 moko Exp $";
 
 // class
 
@@ -97,7 +97,7 @@ String* json_string(Json *json, const char *value, uint32_t length){
 	String::C result = json->charset !=NULL ? 
 		Charset::transcode(String::C(value, length), UTF8_charset, *json->charset) :
 		String::C(pa_strdup(value, length), length);
-	return new String(result.str, json->taint, result.length);
+	return new String(result, json->taint);
 }
 
 static Value *json_hook(Request &r, Junction *hook, String* key, Value* value){
