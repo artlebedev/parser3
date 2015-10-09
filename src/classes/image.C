@@ -25,7 +25,7 @@
 #include "pa_vdate.h"
 #include "pa_table.h"
 
-volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.147 2015/09/18 00:08:12 moko Exp $";
+volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.148 2015/10/09 11:42:38 moko Exp $";
 
 // defines
 
@@ -577,7 +577,7 @@ static void parse_IFD_entry(HashStringValue& hash,
 
 	if(Value* value=parse_IFD_entry_value(is_big, reader, tiff_base, entry)) {
 		if(const char* name=(gps)?exif_gps_tag_value2name.get(tag):exif_tag_value2name.get(tag))
-			hash.put(String::Body(name), value);
+			hash.put(name, value);
 		else
 			hash.put(String::Body::Format(tag), value);
 	}

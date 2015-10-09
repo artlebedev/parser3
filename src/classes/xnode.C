@@ -21,7 +21,7 @@
 #include "libxml/xpath.h"
 #include "libxml/xpathInternals.h"
 
-volatile const char * IDENT_XNODE_C="$Id: xnode.C,v 1.89 2015/04/08 18:08:52 moko Exp $" IDENT_XNODE_H;
+volatile const char * IDENT_XNODE_C="$Id: xnode.C,v 1.90 2015/10/09 11:42:38 moko Exp $" IDENT_XNODE_H;
 
 // global variable
 
@@ -943,10 +943,8 @@ MXnode::MXnode(const char* aname, VStateless_class *abase):
 
 	// consts
 
-#define CONST(name) \
-	consts.put(String::Body(#name), new VInt(XML_##name))
-#define CONST2(name, value) \
-	consts.put(String::Body(#name), new VInt(value))
+#define CONST(name) consts.put(#name, new VInt(XML_##name))
+#define CONST2(name, value) consts.put(#name, new VInt(value))
 
 	CONST(ELEMENT_NODE);
 	CONST(ATTRIBUTE_NODE);

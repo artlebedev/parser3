@@ -19,7 +19,7 @@
 
 #include "smtp.h"
 
-volatile const char * IDENT_MAIL_C="$Id: mail.C,v 1.123 2015/04/08 18:08:52 moko Exp $";
+volatile const char * IDENT_MAIL_C="$Id: mail.C,v 1.124 2015/10/09 11:42:38 moko Exp $";
 
 // defines
 
@@ -209,7 +209,7 @@ static void _send(Request& r, MethodParams& params) {
 	Value* smtp_server_port=0;
 	if(vmail_conf) {
 		// $MAIN:MAIL.SMTP[mail.yourdomain.ru[:port]]
-		smtp_server_port=vmail_conf->get_hash()->get(String::Body("SMTP"));
+		smtp_server_port=vmail_conf->get_hash()->get("SMTP");
 	}
 
 

@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.212 2015/10/08 22:49:36 moko Exp $"
+#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.213 2015/10/09 11:42:38 moko Exp $"
 
 // includes
 #include "pa_types.h"
@@ -311,6 +311,20 @@ public:
 		}
 	};
 
+	struct C {
+		const char *str;
+		size_t length;
+		C(): str(0), length(0) {}
+		C(const char *astr, size_t asize): str(astr), length(asize) {}
+	};
+
+	struct Cm {
+		char *str;
+		size_t length;
+		Cm(): str(0), length(0) {}
+		Cm(char *astr, size_t asize): str(astr), length(asize) {}
+	};
+
 	class Body {
 
 		CORD body;
@@ -319,15 +333,18 @@ public:
 		// cached hash code is not reseted on write operations as test shows 
 		// that string body does not change after it is stored as a hash key
 		mutable uint hash_code;
+#define INIT_HASH_CODE(c) ,hash_code(c)
+#else
+#define INIT_HASH_CODE(c)
 #endif
 
 #ifdef STRING_LENGTH_CACHING
 		// cached length is reseted on modification, used only for char*, not CORD
 		mutable size_t string_length;
-#define INIT_LENGTH ,string_length(0)
+#define INIT_LENGTH(l) ,string_length(l)
 #define ZERO_LENGTH string_length=0;
 #else
-#define INIT_LENGTH
+#define INIT_LENGTH(l)
 #define ZERO_LENGTH
 #endif
 
@@ -336,16 +353,11 @@ public:
 		const char* v() const;
 		void dump() const;
 
-#ifdef HASH_CODE_CACHING
-		Body(): body(CORD_EMPTY), hash_code(0) INIT_LENGTH {}
-		Body(CORD abody, uint ahash_code): body(abody), hash_code(ahash_code) INIT_LENGTH {}
-		Body(const char *abody): body(AS_CORD(abody)), hash_code(0) INIT_LENGTH {}
-		explicit Body(CORD abody): body(abody), hash_code(0) INIT_LENGTH {
-#else
-		Body(): body(CORD_EMPTY) INIT_LENGTH {}
-		Body(const char *abody): body(AS_CORD(abody)) INIT_LENGTH {}
-		explicit Body(CORD abody): body(abody) INIT_LENGTH {
-#endif
+		Body(): body(CORD_EMPTY) INIT_HASH_CODE(0) INIT_LENGTH(0) {}
+		Body(const char *abody): body(AS_CORD(abody)) INIT_HASH_CODE(0) INIT_LENGTH(0) {}
+		Body(CORD abody, uint ahash_code): body(abody) INIT_HASH_CODE(ahash_code) INIT_LENGTH(0) {}
+		explicit Body(C ac): body(AS_CORD(ac.str)) INIT_HASH_CODE(0) INIT_LENGTH(ac.length) {}
+		explicit Body(CORD abody): body(abody) INIT_HASH_CODE(0) INIT_LENGTH(0) {
 #ifdef CORD_CAT_OPTIMIZATION
 			assert(!body // no body
 				|| *body // ordinary string
@@ -363,6 +375,7 @@ public:
 				);
 #endif
 		}
+
 
 		static Body Format(int value);
 
@@ -471,20 +484,6 @@ public:
 			size_t* out_start=0, size_t* out_length=0, Charset* source_charset=0) const;
 	};
 
-	struct C {
-		const char *str;
-		size_t length;
-		C(): str(0), length(0) {}
-		C(const char *astr, size_t asize): str(astr), length(asize) {}
-	};
-
-	struct Cm {
-		char *str;
-		size_t length;
-		Cm(): str(0), length(0) {}
-		Cm(char *astr, size_t asize): str(astr), length(asize) {}
-	};
-
 private:
 
 	Body body; ///< all characters of string
@@ -505,11 +504,8 @@ public:
 			langs=alang;
 		}
 	}
-	explicit String(C ac, Language alang=L_CLEAN) : body(ac.str){
+	explicit String(C ac, Language alang=L_CLEAN) : body(ac){
 		if(body.get_cord()){
-#ifdef STRING_LENGTH_CACHING
-			body.set_length(ac.length);
-#endif
 			langs=alang;
 		}
 	}

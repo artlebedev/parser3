@@ -12,7 +12,7 @@
 #include "pa_charset.h"
 #include "pa_vregex.h"
 
-volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.250 2015/10/08 18:29:16 moko Exp $" IDENT_PA_STRING_H;
+volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.251 2015/10/09 11:42:39 moko Exp $" IDENT_PA_STRING_H;
 
 const String String::Empty;
 
@@ -910,10 +910,7 @@ bool String::deserialize(size_t prolog_size, void *buf, size_t buf_size) {
 	if(cur[body_length] != 0) // in place?
 		return false;
 	// 3: letters
-	body=String::Body(*cur?cur:0);
-#ifdef STRING_LENGTH_CACHING
-	body.set_length(body_length);
-#endif
+	body=String::Body(String::C(cur, body_length));
 	cur+=body_length+1;
 	in_buf-=body_length+1;
 

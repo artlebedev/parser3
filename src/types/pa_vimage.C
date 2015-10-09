@@ -11,7 +11,7 @@
 #include "gif.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_PA_VIMAGE_C="$Id: pa_vimage.C,v 1.43 2013/10/04 21:21:56 moko Exp $" IDENT_PA_VIMAGE_H;
+volatile const char * IDENT_PA_VIMAGE_C="$Id: pa_vimage.C,v 1.44 2015/10/09 11:42:39 moko Exp $" IDENT_PA_VIMAGE_H;
 
 void VImage::set(const String* src, int width, int height,
 				 gdImage* aimage,
@@ -21,20 +21,20 @@ void VImage::set(const String* src, int width, int height,
 
 	// $src
 	if(src)
-		ffields.put(String::Body("src"), new VString(*src));
+		ffields.put("src", new VString(*src));
 	// $width
 	if(width)
-		ffields.put(String::Body("width"), new VInt(width));
+		ffields.put("width", new VInt(width));
 	// $height
 	if(height)
-		ffields.put(String::Body("height"), new VInt(height));
+		ffields.put("height", new VInt(height));
 	// defaults
 	// $border(0)
-	ffields.put(String::Body("border"), new VInt(0));
+	ffields.put("border", new VInt(0));
 
 	// internals, take a look at image.C append_attrib_pair before update
 	// $line-width(1) 
-	ffields.put(String::Body("line-width"), new VInt(1));
+	ffields.put("line-width", new VInt(1));
 }
 
 Value& VImage::as_expr_result() {

@@ -32,7 +32,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.346 2015/09/22 23:38:59 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.347 2015/10/09 11:42:38 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -149,8 +149,8 @@ Request::Request(SAPI_Info& asapi_info, Request_info& arequest_info,
 	pa_register_thread_request(*this);
 
 	// file_no=0 => unknown
-	file_list+=String::Body("UNKNOWN");
-	file_list+=String::Body("-body of process-"); // pseudo_file_no__process
+	file_list+="UNKNOWN";
+	file_list+="-body of process-"; // pseudo_file_no__process
 
 	// maybe expire old caches
 	cache_managers->maybe_expire();
@@ -164,15 +164,15 @@ Request::Request(SAPI_Info& asapi_info, Request_info& arequest_info,
 
 	/// methodless
 	// env class
-	classes().put(String::Body(ENV_CLASS_NAME), new VEnv(asapi_info));
+	classes().put(ENV_CLASS_NAME, new VEnv(asapi_info));
 	// status class
-	classes().put(String::Body(STATUS_CLASS_NAME), new VStatus());
+	classes().put(STATUS_CLASS_NAME, new VStatus());
 	// request class
-	classes().put(String::Body(REQUEST_CLASS_NAME), new VRequest(arequest_info, charsets, form, asapi_info));
+	classes().put(REQUEST_CLASS_NAME, new VRequest(arequest_info, charsets, form, asapi_info));
 	// cookie class
-	classes().put(String::Body(COOKIE_CLASS_NAME), &cookie);
+	classes().put(COOKIE_CLASS_NAME, &cookie);
 	// console class
-	classes().put(String::Body(CONSOLE_CLASS_NAME), &console);
+	classes().put(CONSOLE_CLASS_NAME, &console);
 	/// methoded
 	// response class
 	classes().put(response.get_class()->name(), &response);
@@ -977,10 +977,9 @@ Request::Exception_details Request::get_details(const Exception& e) {
 	// $.file lineno colno
 	if(trace) {
 		const Operation::Origin origin=trace.origin();
-		hash.put(String::Body("file"),
-			new VString(*new String(file_list[origin.file_no], String::L_TAINTED)));
-		hash.put(String::Body("lineno"), new VInt(1+origin.line));
-		hash.put(String::Body("colno"), new VInt(1+origin.col));
+		hash.put("file", new VString(*new String(file_list[origin.file_no], String::L_TAINTED)));
+		hash.put("lineno", new VInt(1+origin.line));
+		hash.put("colno", new VInt(1+origin.col));
 	}
 
 	// $.comment

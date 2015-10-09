@@ -25,7 +25,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.239 2015/10/09 00:17:44 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.240 2015/10/09 11:42:38 moko Exp $";
 
 // defines
 
@@ -486,8 +486,7 @@ static void _exec_cgi(Request& r, MethodParams& params, bool cgi) {
 	ECSTR(CONTENT_TYPE, r.request_info.content_type);
 	ECSTR(CONTENT_LENGTH, format(r.request_info.content_length, "%u"));
 	// SCRIPT_*
-	env.put(String::Body("SCRIPT_NAME"), script_name);
-	//env.put(String::Body("SCRIPT_FILENAME"), ??&script_name);
+	env.put("SCRIPT_NAME", script_name);
 
 	// environment & stdin from param
 	String *in=new String();
@@ -659,9 +658,7 @@ static void _exec_cgi(Request& r, MethodParams& params, bool cgi) {
 	
 	// $stderr
 	if(!real_err->is_empty())
-		self.fields().put(
-			String::Body("stderr"),
-			new VString(*real_err));
+		self.fields().put("stderr", new VString(*real_err));
 }
 static void _exec(Request& r, MethodParams& params) {
 	_exec_cgi(r, params, false);

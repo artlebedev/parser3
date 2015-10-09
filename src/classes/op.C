@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.222 2015/09/23 21:27:44 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.223 2015/10/09 11:42:38 moko Exp $";
 
 // limits
 
@@ -61,8 +61,7 @@ static const String exception_var_name(EXCEPTION_VAR_NAME);
 class Untaint_lang_name2enum: public HashString<String::Language> {
 public:
 	Untaint_lang_name2enum() {
-		#define ULN(name, LANG) \
-			put(String::Body(name), (value_type)(String::L_##LANG));
+		#define ULN(name, LANG) put(name, (value_type)(String::L_##LANG));
 		ULN("clean", CLEAN);
 		ULN("as-is", AS_IS);
 		ULN("optimized-as-is", AS_IS|String::L_OPTIMIZE_BIT);

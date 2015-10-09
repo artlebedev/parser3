@@ -12,7 +12,7 @@
 #include "pa_request.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_PA_VXDOC_C="$Id: pa_vxdoc.C,v 1.48 2015/03/16 09:47:36 misha Exp $" IDENT_PA_VXDOC_H;
+volatile const char * IDENT_PA_VXDOC_C="$Id: pa_vxdoc.C,v 1.49 2015/10/09 11:42:39 moko Exp $" IDENT_PA_VXDOC_H;
 
 // defines
 
@@ -84,7 +84,7 @@ Value* VXdoc::get_element(const String& aname) {
 static int param_option_over_output_option(
 						HashStringValue& param_options, const char* option_name,
 						const String*& output_option) {
-	if(Value* value=param_options.get(String::Body(option_name))){
+	if(Value* value=param_options.get(option_name)){
 		output_option=&value->as_string();
 		return 1;
 	}
