@@ -11,12 +11,13 @@
 #include "pa_vfile.h"
 #include "pa_charsets.h"
 #include "pa_vstring.h"
+#include "pa_vdate.h"
 #include "pa_vtable.h"
 #include "pa_common.h"
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.31 2015/04/08 18:08:52 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.32 2015/10/09 15:43:52 moko Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -298,6 +299,54 @@ public:
 
 } *curl_options=0;
 
+class CurlInfo {
+public:
+
+	enum OptionType {
+		CURL_STRING,
+		CURL_INT,
+		CURL_DOUBLE
+	};
+
+	CURLINFO id;
+	OptionType type;
+	CurlInfo(CURLINFO aid, OptionType atype): id(aid), type(atype) {}
+};
+
+class CurlInfoHash: public HashString<CurlInfo*> {
+public:
+	CurlInfoHash() {
+#define	CURL_INF(type, name) put(str_lower(#name),new CurlInfo(CURLINFO_##name, CurlInfo::type));
+		CURL_INF(CURL_DOUBLE, APPCONNECT_TIME);
+		CURL_INF(CURL_DOUBLE, CONNECT_TIME);
+		CURL_INF(CURL_DOUBLE, CONTENT_LENGTH_DOWNLOAD);
+		CURL_INF(CURL_DOUBLE, CONTENT_LENGTH_UPLOAD);
+		CURL_INF(CURL_STRING, CONTENT_TYPE);
+		CURL_INF(CURL_STRING, EFFECTIVE_URL);
+		CURL_INF(CURL_INT, HEADER_SIZE);
+		CURL_INF(CURL_INT, HTTPAUTH_AVAIL);
+		CURL_INF(CURL_DOUBLE, NAMELOOKUP_TIME);
+		CURL_INF(CURL_INT, NUM_CONNECTS);
+		CURL_INF(CURL_INT, OS_ERRNO);
+		CURL_INF(CURL_DOUBLE, PRETRANSFER_TIME);
+		CURL_INF(CURL_STRING, PRIMARY_IP);
+		CURL_INF(CURL_INT, PROXYAUTH_AVAIL);
+		CURL_INF(CURL_INT, REDIRECT_COUNT);
+		CURL_INF(CURL_DOUBLE, REDIRECT_TIME);
+		CURL_INF(CURL_STRING, REDIRECT_URL);
+		CURL_INF(CURL_INT, REQUEST_SIZE);
+		CURL_INF(CURL_INT, RESPONSE_CODE);
+		CURL_INF(CURL_DOUBLE, SIZE_DOWNLOAD);
+		CURL_INF(CURL_DOUBLE, SIZE_UPLOAD);
+		CURL_INF(CURL_DOUBLE, SPEED_DOWNLOAD);
+		CURL_INF(CURL_DOUBLE, SPEED_UPLOAD);
+		CURL_INF(CURL_INT, SSL_VERIFYRESULT);
+		CURL_INF(CURL_DOUBLE, STARTTRANSFER_TIME);
+		CURL_INF(CURL_DOUBLE, TOTAL_TIME);
+	}
+
+} *curl_infos=0;
+
 static const char *curl_urlencode(const String &s, Request& r){
 	if(options().charset){
 		Temp_client_charset temp(r.charsets, *options().charset);
@@ -502,6 +551,53 @@ static void _curl_options(Request& r, MethodParams& params){
 	}
 }
 
+#define CURL_GETINFO(arg) \
+	if((res=f_curl_easy_getinfo(curl(), info->id, &arg)) != CURLE_OK){ \
+		throw Exception("curl", 0, "failed to get %s info: %s", key.cstr(), f_curl_easy_strerror(res)); \
+	}
+
+static Value *curl_getinfo(const String::Body &key) {
+	CurlInfo *info=curl_infos->get(key);
+
+	if(info==0)
+		throw Exception("curl", 0, "called with invalid parameter '%s'", key.cstr());
+
+	CURLcode res;
+	switch (info->type){
+		case CurlInfo::CURL_STRING:{
+			char *str=0;
+			CURL_GETINFO(str);
+			return new VString(*new String(str, String::L_TAINTED));
+		}
+		case CurlInfo::CURL_INT:{
+			long l=0;
+			CURL_GETINFO(l);
+			return new VInt(l);
+		}
+		case CurlInfo::CURL_DOUBLE:{
+			double d=0;
+			CURL_GETINFO(d);
+			return new VDouble(d);
+		}
+	}
+	return VVoid::get();
+}
+
+static void _curl_info(Request& r, MethodParams& params){
+	if(curl_infos==0)
+		curl_infos=new CurlInfoHash();
+	if(params.count()==1){
+		const String &name=params.as_string(0, "name must be string");
+		r.write_assign_lang(*curl_getinfo(name));
+	} else {
+		VHash& result=*new VHash;
+		for(CurlInfoHash::Iterator i(*curl_infos); i; i.next() ){
+			result.get_hash()->put(i.key(), curl_getinfo(i.key()));
+		}
+		r.write_no_lang(result);
+	}
+}
+
 
 class Curl_buffer{
 public:
@@ -662,5 +758,6 @@ MCurl::MCurl(): Methoded("curl") {
 	add_native_method("session", Method::CT_STATIC, _curl_session, 1, 1);
 	add_native_method("version", Method::CT_STATIC, _curl_version, 0, 0);
 	add_native_method("options", Method::CT_STATIC, _curl_options, 1, 1);
+	add_native_method("info", Method::CT_STATIC, _curl_info, 0, 1);
 	add_native_method("load", Method::CT_STATIC, _curl_load, 0, 1);
 }
