@@ -11,7 +11,7 @@
 // we are using some pcre_internal.h stuff as well
 #include "../lib/pcre/pa_pcre_internal.h"
 
-volatile const char * IDENT_PA_CHARSET_C="$Id: pa_charset.C,v 1.100 2015/10/09 11:52:22 moko Exp $" IDENT_PA_CHARSET_H;
+volatile const char * IDENT_PA_CHARSET_C="$Id: pa_charset.C,v 1.101 2015/10/09 12:15:14 moko Exp $" IDENT_PA_CHARSET_H;
 
 #ifdef XML
 #include "libxml/encoding.h"
@@ -1173,13 +1173,7 @@ xmlChar* Charset::transcode(const String::Body s) {
 #endif
 
 String::Body Charset::transcode(const String::Body src, const Charset& source_transcoder, const Charset& dest_transcoder) {
-
-	const char *src_ptr=src.cstr();
-	size_t src_size=src.length();
-
-	String::C dest=Charset::transcode(String::C(src_ptr, src_size), source_transcoder, dest_transcoder);
-
-	return String::Body(dest.length ? dest.str:0);
+	return String::Body(Charset::transcode(String::C(src.cstr(), src.length()), source_transcoder, dest_transcoder));
 }
 
 String& Charset::transcode(const String& src, const Charset& source_transcoder, const Charset& dest_transcoder) {
