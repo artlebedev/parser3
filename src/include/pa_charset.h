@@ -8,7 +8,7 @@
 #ifndef PA_CHARSET_H
 #define PA_CHARSET_H
 
-#define IDENT_PA_CHARSET_H "$Id: pa_charset.h,v 1.52 2013/10/15 21:27:36 moko Exp $"
+#define IDENT_PA_CHARSET_H "$Id: pa_charset.h,v 1.53 2015/10/09 11:49:54 moko Exp $"
 
 
 #include "pa_exception.h"
@@ -54,39 +54,19 @@ public:
 
 	bool isUTF8() const { return fisUTF8; }
 
-	static String::C transcode(const String::C src,
-		const Charset& source_charset, 
-		const Charset& dest_charset);
+	static String::C transcode(const String::C src, const Charset& source_charset, const Charset& dest_charset);
+	static String::Body transcode(const String::Body src, const Charset& source_transcoder, const Charset& dest_transcoder);
+	static String& transcode(const String& src, const Charset& source_transcoder, const Charset& dest_transcoder);
+	static void transcode(ArrayString& src, const Charset& source_transcoder, const Charset& dest_transcoder);
+	static void transcode(HashStringString& src, const Charset& source_transcoder, const Charset& dest_transcoder);
 
-	static String& transcode(const String& src,
-		const Charset& source_transcoder, 
-		const Charset& dest_transcoder);
+	static String::C escape(const String::C src, const Charset& source_charset);
+	static String::Body escape(const String::Body src, const Charset& source_charset);
+	static String& escape(const String& src, const Charset& source_charset);
 
-	static String::Body transcode(const String::Body src,
-		const Charset& source_transcoder, 
-		const Charset& dest_transcoder);
-
-	static void transcode(ArrayString& src,
-		const Charset& source_transcoder, 
-		const Charset& dest_transcoder);
-
-	static void transcode(HashStringString& src,
-		const Charset& source_transcoder, 
-		const Charset& dest_transcoder);
-
-	static String::C escape(const String::C src,
-		const Charset& source_charset);
-	static String::Body escape(const String::Body src,
-		const Charset& source_charset);
-	static String& escape(const String& src,
-		const Charset& source_charset);
-
-	static String::C escape_JSON(const String::C src,
-		const Charset& source_charset);
-	static String::Body escape_JSON(const String::Body src,
-		const Charset& source_charset);
-	static String& escape_JSON(const String& src,
-		const Charset& source_charset);
+	static String::C escape_JSON(const String::C src, const Charset& source_charset);
+	static String::Body escape_JSON(const String::Body src, const Charset& source_charset);
+	static String& escape_JSON(const String& src, const Charset& source_charset);
 
 	void store_Char(XMLByte*& outPtr, XMLCh src, XMLByte not_found);
 

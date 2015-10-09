@@ -11,7 +11,7 @@
 // we are using some pcre_internal.h stuff as well
 #include "../lib/pcre/pa_pcre_internal.h"
 
-volatile const char * IDENT_PA_CHARSET_C="$Id: pa_charset.C,v 1.98 2015/05/30 22:55:29 moko Exp $" IDENT_PA_CHARSET_H;
+volatile const char * IDENT_PA_CHARSET_C="$Id: pa_charset.C,v 1.99 2015/10/09 11:49:54 moko Exp $" IDENT_PA_CHARSET_H;
 
 #ifdef XML
 #include "libxml/encoding.h"
@@ -46,8 +46,7 @@ inline void prepare_case_tables(unsigned char *tables) {
 	for(int i=0; i<0x100; i++)
 		lcc_table[i]=fcc_table[i]=(unsigned char)i;
 }
-inline void cstr2ctypes(unsigned char *tables, const unsigned char *cstr, 
-						unsigned char bit) {
+inline void cstr2ctypes(unsigned char *tables, const unsigned char *cstr, unsigned char bit) {
 	unsigned char *ctypes_table=tables+ctypes_offset;
 	ctypes_table[0]=bit;
 	for(; *cstr; cstr++) {
@@ -66,8 +65,7 @@ inline unsigned int to_wchar_code(const char* cstr) {
 inline bool to_bool(const char* cstr) {
 	return cstr && *cstr!=0;
 }
-static void element2ctypes(unsigned char c, bool belongs,
-						   unsigned char *tables,  unsigned char bit, int group_offset=-1) {
+static void element2ctypes(unsigned char c, bool belongs, unsigned char *tables, unsigned char bit, int group_offset=-1) {
 	if(!belongs)
 		return;
 
@@ -77,8 +75,7 @@ static void element2ctypes(unsigned char c, bool belongs,
 	if(group_offset>=0)
 		tables[cbits_offset+group_offset+c/8] |= 1<<(c%8);
 }
-static void element2case(unsigned char from, unsigned char to,
-						 unsigned char *tables) {
+static void element2case(unsigned char from, unsigned char to, unsigned char *tables) {
 	if(!to) 
 		return;
 
@@ -222,9 +219,7 @@ void Charset::sort_ToTable() {
 }
 
 // @todo: precache for spedup searching
-static XMLByte xlatOneTo(const XMLCh toXlat,
-			 const Charset::Tables& tables,
-			 XMLByte not_found) {
+static XMLByte xlatOneTo(const XMLCh toXlat, const Charset::Tables& tables, XMLByte not_found) {
 	int lo = 0;
 	int hi = tables.toTableSize - 1;
 	while(lo<=hi) {
@@ -243,9 +238,7 @@ static XMLByte xlatOneTo(const XMLCh toXlat,
 	return not_found;
 }
 
-String::C Charset::transcode(const String::C src,
-	const Charset& source_charset, 
-	const Charset& dest_charset) {
+String::C Charset::transcode(const String::C src, const Charset& source_charset, const Charset& dest_charset) {
 	if(!src.length)
 		return String::C("", 0);
 
@@ -302,9 +295,7 @@ static const XMLByte gFirstByteMark[7] = {
 	0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC
 };
 
-static int transcodeToUTF8(const XMLByte* srcData, int& srcLen,
-				XMLByte *toFill, int& toFillLen,
-				const Charset::Tables& tables) {
+static int transcodeToUTF8(const XMLByte* srcData, int& srcLen, XMLByte *toFill, int& toFillLen, const Charset::Tables& tables) {
 	const XMLByte* srcPtr=srcData;
 	const XMLByte* srcEnd=srcData+srcLen;
 	XMLByte* outPtr=toFill;
@@ -385,9 +376,7 @@ of ocetes consumed.
 	return 0;
 }
 /// @todo digital entites only when xml/html output [at output in html/xml mode, in html part of a letter]
-static int transcodeFromUTF8(const XMLByte* srcData, int& srcLen,
-				XMLByte* toFill, int& toFillLen,
-				const Charset::Tables& tables) {
+static int transcodeFromUTF8(const XMLByte* srcData, int& srcLen, XMLByte* toFill, int& toFillLen, const Charset::Tables& tables) {
 	const XMLByte* srcPtr=srcData;
 	const XMLByte* srcEnd=srcData+srcLen;
 	XMLByte* outPtr=toFill;
@@ -884,14 +873,11 @@ static void store_UTF8(XMLCh src, XMLByte*& outPtr){
 	outPtr+= encodedBytes;
 }
 
-static void change_case_UTF8(XMLCh src, XMLByte*& outPtr, 
-						const Charset::UTF8CaseTable& table) {
+static void change_case_UTF8(XMLCh src, XMLByte*& outPtr, const Charset::UTF8CaseTable& table) {
 	store_UTF8(change_case_UTF8(src, table), outPtr);
 }
 
-void change_case_UTF8(const XMLByte* srcData, size_t srcLen,
-					  XMLByte* toFill, size_t toFillLen,
-					  const Charset::UTF8CaseTable& table) {
+void change_case_UTF8(const XMLByte* srcData, size_t srcLen, XMLByte* toFill, size_t toFillLen, const Charset::UTF8CaseTable& table) {
 	const XMLByte* srcPtr=srcData;
 	const XMLByte* srcEnd=srcData+srcLen;
 	XMLByte* outPtr=toFill;
@@ -992,8 +978,7 @@ const String::C Charset::transcodeFromUTF8(const String::C src) const {
 }
 
 /// transcode using both charsets
-const String::C Charset::transcodeToCharset(const String::C src, 
-						const Charset& dest_charset) const {
+const String::C Charset::transcodeToCharset(const String::C src, const Charset& dest_charset) const {
 	if(&dest_charset==this) 
 		return src;
 	else {
@@ -1210,9 +1195,7 @@ xmlChar* Charset::transcode(const String::Body s) {
 }
 #endif
 
-String::Body Charset::transcode(const String::Body src, 
-	const Charset& source_transcoder, 
-	const Charset& dest_transcoder) {
+String::Body Charset::transcode(const String::Body src, const Charset& source_transcoder, const Charset& dest_transcoder) {
 
 	const char *src_ptr=src.cstr();
 	size_t src_size=src.length();
@@ -1222,18 +1205,14 @@ String::Body Charset::transcode(const String::Body src,
 	return String::Body(dest.length ? dest.str:0);
 }
 
-String& Charset::transcode(const String& src, 
-	const Charset& source_transcoder, 
-	const Charset& dest_transcoder) {
+String& Charset::transcode(const String& src, const Charset& source_transcoder, const Charset& dest_transcoder) {
 	if(src.is_empty())
 		return *new String();
 
 	return *new String(transcode((String::Body)src, source_transcoder, dest_transcoder), String::L_CLEAN);
 }
 
-void Charset::transcode(ArrayString& src,
-	const Charset& source_transcoder, 
-	const Charset& dest_transcoder) {
+void Charset::transcode(ArrayString& src, const Charset& source_transcoder, const Charset& dest_transcoder) {
 	for(size_t i=0; i<src.count(); i++)
 		src.put(i, &transcode(*src[i], source_transcoder, dest_transcoder));
 }
@@ -1244,17 +1223,11 @@ struct Transcode_pair_info {
 	const Charset* dest_transcoder;
 };
 #endif
-static void transcode_pair(HashStringValue::key_type /*akey*/, 
-			 String::Body& avalue, 
-			 Transcode_pair_info* info) {
-	avalue=Charset::transcode(avalue,
-		*info->source_transcoder, 
-		*info->dest_transcoder);
+static void transcode_pair(HashStringValue::key_type /*akey*/, String::Body& avalue, Transcode_pair_info* info) {
+	avalue=Charset::transcode(avalue, *info->source_transcoder, *info->dest_transcoder);
 }
 
-void Charset::transcode(HashStringString& src,
-	const Charset& source_transcoder, 
-	const Charset& dest_transcoder) {
+void Charset::transcode(HashStringString& src, const Charset& source_transcoder, const Charset& dest_transcoder) {
 	Transcode_pair_info info={&source_transcoder, &dest_transcoder};
 	src.for_each_ref<Transcode_pair_info*>(transcode_pair, &info);
 }
