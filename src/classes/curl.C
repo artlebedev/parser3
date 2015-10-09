@@ -17,7 +17,7 @@
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.32 2015/10/09 15:43:52 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.33 2015/10/09 18:26:11 moko Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -567,7 +567,7 @@ static Value *curl_getinfo(const String::Body &key) {
 		case CurlInfo::CURL_STRING:{
 			char *str=0;
 			CURL_GETINFO(str);
-			return new VString(*new String(str, String::L_TAINTED));
+			return new VString(str ? *new String(pa_strdup(str), String::L_TAINTED) : String::Empty);
 		}
 		case CurlInfo::CURL_INT:{
 			long l=0;
