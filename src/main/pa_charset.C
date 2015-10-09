@@ -11,7 +11,7 @@
 // we are using some pcre_internal.h stuff as well
 #include "../lib/pcre/pa_pcre_internal.h"
 
-volatile const char * IDENT_PA_CHARSET_C="$Id: pa_charset.C,v 1.99 2015/10/09 11:49:54 moko Exp $" IDENT_PA_CHARSET_H;
+volatile const char * IDENT_PA_CHARSET_C="$Id: pa_charset.C,v 1.100 2015/10/09 11:52:22 moko Exp $" IDENT_PA_CHARSET_H;
 
 #ifdef XML
 #include "libxml/encoding.h"
@@ -173,9 +173,7 @@ void Charset::load_definition(Request_charsets& charsets, const String& afile_sp
 			case 8:
 				// charset
 				if(tables.toTableSize>MAX_CHARSET_UNI_CODES)
-					throw Exception(PARSER_RUNTIME,
-						&afile_spec,
-						"charset must contain not more then %d unicode values", MAX_CHARSET_UNI_CODES);
+					throw Exception(PARSER_RUNTIME, &afile_spec, "charset must contain not more then %d unicode values", MAX_CHARSET_UNI_CODES);
 
 				XMLCh unicode=(XMLCh)to_wchar_code(cell);
 				if(!unicode && column==7/*unicode1 column*/)
@@ -415,9 +413,7 @@ static int transcodeFromUTF8(const XMLByte* srcData, int& srcLen, XMLByte* toFil
 			break;
 			
 		default:
-			throw Exception(0,
-				0,
-				"transcodeFromUTF8 error: wrong trailingBytes value(%d)", trailingBytes); // never
+			throw Exception(0, 0, "transcodeFromUTF8 error: wrong trailingBytes value(%d)", trailingBytes); // never
 		}
 		tmpVal-=gUTFOffsets[trailingBytes];
 		
@@ -796,9 +792,7 @@ const String::C Charset::transcodeToUTF8(const String::C src) const {
 		(XMLByte *)src.str, src_length,
 		dest_body, dest_length,
 		tables)<0)
-		throw Exception(0,
-			0,
-			"Charset::transcodeToUTF8 buffer overflow");
+		throw Exception(0, 0, "Charset::transcodeToUTF8 buffer overflow");
 
 	assert(dest_length<=saved_dest_length);
 	dest_body[dest_length]=0; // terminator
@@ -909,9 +903,7 @@ void change_case_UTF8(const XMLByte* srcData, size_t srcLen, XMLByte* toFill, si
 			break;
 			
 		default:
-			throw Exception(0,
-				0,
-				"change_case_UTF8 error: wrong trailingBytes value(%d)", trailingBytes);
+			throw Exception(0, 0, "change_case_UTF8 error: wrong trailingBytes value(%d)", trailingBytes);
 		}
 		tmpVal-=gUTFOffsets[trailingBytes];
 		
@@ -921,15 +913,11 @@ void change_case_UTF8(const XMLByte* srcData, size_t srcLen, XMLByte* toFill, si
 		if(!(tmpVal & 0xFFFF0000))
 			change_case_UTF8(tmpVal, outPtr, table);
 		else
-			throw Exception(0,
-				0,
-				"change_case_UTF8 error: too big tmpVal(0x%08X)", tmpVal);
+			throw Exception(0, 0, "change_case_UTF8 error: too big tmpVal(0x%08X)", tmpVal);
 	}
 	
 	if(srcPtr!=outPtr)
-		throw Exception(0,  
-			0,
-			"change_case_UTF8 error: end pointers do not match");
+		throw Exception(0, 0, "change_case_UTF8 error: end pointers do not match");
 }
 
 static size_t getDecNumLength(XMLCh UTF8Char){
@@ -968,9 +956,7 @@ const String::C Charset::transcodeFromUTF8(const String::C src) const {
 		(XMLByte *)src.str, src_length,
 		dest_body, dest_length,
 		tables)<0)
-		throw Exception(0, 
-			0,
-			"Charset::transcodeFromUTF8 buffer overflow");
+		throw Exception(0, 0, "Charset::transcodeFromUTF8 buffer overflow");
 
 	assert(dest_length<=saved_dest_length);
 	dest_body[dest_length]=0; // terminator
@@ -1077,10 +1063,7 @@ static size_t handlers_count=0;
 
 void Charset::addEncoding(char *name_cstr) {
 	if(handlers_count==MAX_CHARSETS)
-		throw Exception(0,
-			0,
-			"already allocated %d handlers, no space for new encoding '%s'",
-				MAX_CHARSETS, name_cstr);
+		throw Exception(0, 0, "already allocated %d handlers, no space for new encoding '%s'", MAX_CHARSETS, name_cstr);
 
 	xmlCharEncodingHandler* handler=new xmlCharEncodingHandler;
 	{
@@ -1102,9 +1085,7 @@ void Charset::initTranscoder(const String::Body NAME, const char* name_cstr) {
 
 xmlCharEncodingHandler& Charset::transcoder(const String::Body NAME) {
 	if(!ftranscoder)
-		throw Exception(PARSER_RUNTIME,
-			new String(NAME, String::L_TAINTED),
-			"unsupported encoding");
+		throw Exception(PARSER_RUNTIME, new String(NAME, String::L_TAINTED), "unsupported encoding");
 	return *ftranscoder;
 }
 
@@ -1133,9 +1114,7 @@ String::C Charset::transcode_cstr(const xmlChar* s) {
 		error=0;
 	}
 	if(error<0)
-		throw Exception(0,
-			0,
-			"transcode_cstr failed (%d)", error);
+		throw Exception(0, 0, "transcode_cstr failed (%d)", error);
 
 	assert(outlen<=saved_outlen); out[outlen]=0;
 	return String::C(out, outlen);
@@ -1177,9 +1156,7 @@ xmlChar* Charset::transcode_buf2xchar(const char* buf, size_t buf_size) {
 	}
 	
 	if(error<0)
-		throw Exception(0,
-			0,
-			"transcode_buf failed (%d)", error);
+		throw Exception(0, 0, "transcode_buf failed (%d)", error);
 
 	assert(outlen<=saved_outlen); out[outlen]=0;
 	return out;
@@ -1250,9 +1227,7 @@ size_t getUTF8CharPos(const XMLByte* srcBegin, const XMLByte* srcEnd, size_t byt
 	}
 
 	// scan till end but position in bytes still too low
-	throw Exception(0,
-					0,
-					"Error convertion byte pos to char pos");
+	throw Exception(0, 0, "Error convertion byte pos to char pos");
 }
 
 size_t lengthUTF8(const XMLByte* srcBegin, const XMLByte* srcEnd){
