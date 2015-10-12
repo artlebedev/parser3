@@ -9,7 +9,7 @@
 #ifndef PA_MEMORY_H
 #define PA_MEMORY_H
 
-#define IDENT_PA_MEMORY_H "$Id: pa_memory.h,v 1.26 2015/10/12 14:36:56 moko Exp $"
+#define IDENT_PA_MEMORY_H "$Id: pa_memory.h,v 1.27 2015/10/12 14:38:03 moko Exp $"
 
 // include
 
@@ -85,7 +85,7 @@ inline void *operator new[] (size_t size, bool) { // PointerFreeGC
 inline void *operator new[] (std::size_t size) PA_THROW(std::bad_alloc) {
 	return pa_malloc(size);
 }
-inline void operator delete[] (void *ptr) PA_THROW() {
+inline void operator delete[] (void *ptr) throw() {
 	pa_free(ptr);
 }
 //}@
@@ -97,7 +97,7 @@ inline void *operator new (size_t size, bool) { // PointerFreeGC
 inline void *operator new(std::size_t size) PA_THROW(std::bad_alloc) {
 	return pa_malloc(size);
 }
-inline void operator delete(void *ptr) PA_THROW() {
+inline void operator delete(void *ptr) throw() {
 	pa_free(ptr);
 }
 //}@
