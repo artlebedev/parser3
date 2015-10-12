@@ -423,7 +423,7 @@ int punycode_decode (size_t input_length,
 	{
 	  memmove (case_flags + i + 1, case_flags + i, out - i);
 	  /* Case of last ASCII code point determines case flag: */
-	  case_flags[i] = flagged (input[in - 1]);
+	  case_flags[i] = (unsigned char)(flagged (input[in - 1]));
 	}
 
       memmove (output + i + 1, output + i, (out - i) * sizeof *output);
