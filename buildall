@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: buildall,v 1.14 2015/04/02 23:33:08 moko Exp $
+# $Id: buildall,v 1.15 2015/10/12 17:17:44 moko Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -115,7 +115,7 @@ mkdir src >/dev/null 2>&1
 if test ! -f "$project_dir/gc/lib/libgc.a"; then
 #   libgc="gc6.8" # FreeBSD 4.X is not supported in newer gc version
     lib="gc-7.2"
-    prepare_gz ${lib}d.tar.gz http://www.hboehm.info/gc/gc_source/
+    prepare_gz ${lib}f.tar.gz http://www.hboehm.info/gc/gc_source/
     echo "Configuring $lib..."
     CPPFLAGS="-DUSE_LIBC_PRIVATES -DUSE_MMAP -DDONT_ADD_BYTE_AT_END" \
     ./configure --prefix=$project_dir/gc \
@@ -128,7 +128,7 @@ if test ! -f "$project_dir/gc/lib/libgc.a"; then
 fi
 
 if test ! -f "$project_dir/pcre/lib/libpcre.a"; then
-    lib="pcre-8.36"
+    lib="pcre-8.37"
     prepare_gz $lib.tar.gz ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/
     echo "Configuring $lib..."
     ./configure --prefix="$project_dir/pcre" \
@@ -146,7 +146,7 @@ if test ! -f "$project_dir/pcre/lib/libpcre.a"; then
 fi
 
 if test "$build_xml" = "yes" -a ! -f "$project_dir/gnome/lib/libxml2.a"; then
-    lib="libxml2-2.9.1"
+    lib="libxml2-2.9.2"
     prepare_gz $lib.tar.gz ftp://xmlsoft.org/libxml2/
     #sax1, output, tree, xinclude[in libxslt], html[in libxslt, mode=html?], xptr[xinclude], pattern -- needed!
     echo "Configuring $lib..."
