@@ -25,7 +25,7 @@
 #include "pa_vdate.h"
 #include "pa_table.h"
 
-volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.148 2015/10/09 11:42:38 moko Exp $";
+volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.149 2015/10/12 16:59:43 moko Exp $";
 
 // defines
 
@@ -179,6 +179,14 @@ public:
 		EXIF_TAG(0xa40b,	DeviceSettingDescription);
 		EXIF_TAG(0xa40c,	SubjectDistanceRange);
 		EXIF_TAG(0xa420,	ImageUniqueID);
+
+		// other tags
+		EXIF_TAG(0xa430,	CameraOwnerName);
+		EXIF_TAG(0xa431,	BodySerialNumber);
+		EXIF_TAG(0xa432,	LensSpecification);
+		EXIF_TAG(0xa433,	LensManufactor);
+		EXIF_TAG(0xa434,	LensModel);
+		EXIF_TAG(0xa435,	LensSerialNumber);
 	}
 } exif_tag_value2name;
 
