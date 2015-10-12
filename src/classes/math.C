@@ -22,7 +22,7 @@
 extern "C" char *crypt(const char* , const char* );
 #endif
 
-volatile const char * IDENT_MATH_C="$Id: math.C,v 1.78 2015/10/06 22:20:50 moko Exp $";
+volatile const char * IDENT_MATH_C="$Id: math.C,v 1.79 2015/10/12 21:04:58 moko Exp $";
 
 // defines
 
@@ -510,7 +510,7 @@ static void _crc32(Request& r, MethodParams& params) {
 
 static void toBase(unsigned long long int value, unsigned int base, char*& ptr){
 	static const char* hex="0123456789ABCDEF";
-	int rest = value % base;
+	unsigned int rest = (unsigned int)(value % base);
 	if(value >= base)
 		toBase( (value-rest)/base, base, ptr);
 	*ptr++=(char)hex[rest];

@@ -109,7 +109,7 @@ static char encode_digit (punycode_uint d, int flag)
 /* (uppercase).  The behavior is undefined if bcp is not a  */
 /* basic code point.                                        */
 
-#define flagged(bcp) ((punycode_uint)(bcp) - 65 < 26)
+#define flagged(bcp) (unsigned char)((punycode_uint)(bcp) - 65 < 26)
 
 /* encode_basic(bcp,flag) forces a basic code point to lowercase */
 /* if flag is zero, uppercase if flag is nonzero, and returns    */
@@ -423,7 +423,7 @@ int punycode_decode (size_t input_length,
 	{
 	  memmove (case_flags + i + 1, case_flags + i, out - i);
 	  /* Case of last ASCII code point determines case flag: */
-	  case_flags[i] = (unsigned char)(flagged (input[in - 1]));
+	  case_flags[i] = flagged (input[in - 1]);
 	}
 
       memmove (output + i + 1, output + i, (out - i) * sizeof *output);
