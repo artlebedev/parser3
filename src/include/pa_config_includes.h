@@ -206,6 +206,7 @@ inline size_t min(size_t a, size_t b){ return a<b?a:b; }
 #pragma warning(disable:4706)  // assignment within conditional expression if(type var=somethig) OK
 #pragma warning(disable:4996)  // memcpy deprecation
 #pragma warning(disable:4702)  // unreachable code
+#pragma warning(disable:4511)  // copy constructor could not be generated (vs2003 specific)
 #endif
 
 /// to debug backtrace pointers switch this on:
