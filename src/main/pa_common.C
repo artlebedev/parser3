@@ -50,7 +50,7 @@
 #define pa_mkdir(path, mode) mkdir(path, mode)
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.286 2015/10/07 21:24:40 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.287 2015/10/13 21:27:57 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -157,16 +157,11 @@ File_read_result file_read(Request_charsets& charsets, const String& file_spec,
 	if(as_text){
 		if(result.success){
 			Charset* asked_charset=0;
-			if(result.length>=3 && strncmp(result.str, "\xEF\xBB\xBF", 3)==0){
-				// skip UTF-8 signature (BOM code)
-				result.str+=3;
-				result.length-=3;
-				asked_charset=&UTF8_charset;
-			}
-			
 			if(params)
 				if(Value* vcharset_name=params->get(PA_CHARSET_NAME))
 					asked_charset=&::charsets.get(vcharset_name->as_string().change_case(charsets.source(), String::CC_UPPER));
+
+			asked_charset=::charsets.checkBOM(result.str, result.length, asked_charset);
 
 			if(result.length && transcode_text_result && asked_charset){ // length must be checked because transcode returns CONST string in case length==0, which contradicts hacking few lines below
 				String::C body=String::C(result.str, result.length);

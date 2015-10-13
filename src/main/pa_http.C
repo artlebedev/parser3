@@ -13,7 +13,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.67 2015/10/08 18:29:15 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.68 2015/10/13 21:27:57 moko Exp $" IDENT_PA_HTTP_H; 
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -957,12 +957,8 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 			result.headers->put(HTTP_COOKIES_NAME, new VTable(parse_cookies(r, vcookies->get_table())));
 	}
 
-	if(as_text && raw_body_size>=3 && strncmp(raw_body, "\xEF\xBB\xBF", 3)==0){
-		// skip UTF-8 signature (BOM code)
-		raw_body+=3;
-		raw_body_size-=3;
-		if(!real_remote_charset)
-			real_remote_charset=&UTF8_charset;
+	if(as_text){
+		real_remote_charset=charsets.checkBOM(raw_body, raw_body_size, real_remote_charset);
 	}
 
 	// output response

@@ -7,7 +7,7 @@
 
 #include "pa_charsets.h"
 
-volatile const char * IDENT_PA_CHARSETS_C="$Id: pa_charsets.C,v 1.19 2012/03/16 09:24:13 moko Exp $" IDENT_PA_CHARSETS_H;
+volatile const char * IDENT_PA_CHARSETS_C="$Id: pa_charsets.C,v 1.20 2015/10/13 21:27:57 moko Exp $" IDENT_PA_CHARSETS_H;
 
 // defines for globals
 
@@ -32,6 +32,16 @@ Charset& Charsets::get(const String::Body ANAME) {
 		throw Exception(PARSER_RUNTIME,
 			new String(ANAME, String::L_TAINTED),
 			"unknown charset");
+}
+
+Charset* Charsets::checkBOM(char *&body,size_t &body_size, Charset* enforced_charset){
+	if((!enforced_charset || enforced_charset->isUTF8()) && (body_size>=3 && strncmp(body, "\xEF\xBB\xBF", 3)==0)){
+		// skip UTF-8 signature (BOM code)
+		body+=3;
+		body_size-=3;
+		return &UTF8_charset;
+	}
+	return enforced_charset;
 }
 
 void Charsets::load_charset(Request_charsets& charsets, const String::Body ANAME, const String& afile_spec) {
