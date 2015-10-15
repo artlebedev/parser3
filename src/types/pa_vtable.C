@@ -10,7 +10,7 @@
 #include "pa_vhash.h"
 #include "pa_vvoid.h"
 
-volatile const char * IDENT_PA_VTABLE_C="$Id: pa_vtable.C,v 1.41 2015/10/15 18:12:29 moko Exp $" IDENT_PA_VTABLE_H;
+volatile const char * IDENT_PA_VTABLE_C="$Id: pa_vtable.C,v 1.42 2015/10/15 18:32:03 moko Exp $" IDENT_PA_VTABLE_H;
 
 // limits
 #define MAX_COLUMNS 20000 // equal to MAX_LOOPS
@@ -75,9 +75,11 @@ Value* VTable::get_element(const String& aname) {
 		}
 	}
 
+#ifndef OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL
 	// methods
 	if(Value* result=VStateless_object::get_element(aname))
 		return result;
+#endif
 
 	throw Exception(PARSER_RUNTIME, &aname, "column not found");
 }
@@ -88,11 +90,9 @@ Value* VTable::get_element4call(const String& aname) {
 	if(aname==table_fields_name)
 		return fields_element();
 
-#if !defined(FEATURE_GET_ELEMENT4CALL) || !defined(OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL)
 	// methods first
 	if(Value* result=VStateless_object::get_element(aname))
 		return result;
-#endif
 
 	// columns
 	if(ftable) {
