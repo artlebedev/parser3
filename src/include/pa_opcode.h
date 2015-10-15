@@ -11,7 +11,7 @@
 
 namespace OP {
 
-#define IDENT_PA_OPCODE_H "$Id: pa_opcode.h,v 1.50 2015/09/28 22:26:13 moko Exp $"
+#define IDENT_PA_OPCODE_H "$Id: pa_opcode.h,v 1.51 2015/10/15 18:12:29 moko Exp $"
 
 #define OPTIMIZE_BYTECODE_GET_ELEMENT                // $a ^a
 #define OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT         // $a.b ^a.b
@@ -28,7 +28,7 @@ namespace OP {
 #define OPTIMIZE_BYTECODE_GET_SELF_ELEMENT           // $self.a ^self.a
 #define OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL       // .CLASS, .CLASS_NAME
 
-//#define FEATURE_GET_ELEMENT4CALL                     // ^o.m[] calls get_element4call("m"), not get_element("m")
+#define FEATURE_GET_ELEMENT4CALL                     // ^o.m[] calls get_element4call("m"), not get_element("m")
 
 ///	Compiled operation code
 enum OPCODE {

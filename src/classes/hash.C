@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.123 2015/09/24 21:28:19 moko Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.124 2015/10/15 18:12:29 moko Exp $";
 
 // class
 
@@ -692,10 +692,10 @@ MHash::MHash(): Methoded("hash")
 	add_native_method("sql", Method::CT_DYNAMIC, _sql, 1, 2);
 
 	// ^hash._keys[[column name]]
-	add_native_method("_keys", Method::CT_DYNAMIC, _keys, 0, 1);	
+	add_native_method("_keys", Method::CT_DYNAMIC, _keys, 0, 1);
 
 	// ^hash._count[]
-	add_native_method("_count", Method::CT_DYNAMIC, _count, 0, 0);	
+	add_native_method("_count", Method::CT_DYNAMIC, _count, 0, 0);
 
 	// ^hash.foreach[key;value]{code}[delim]
 	add_native_method("foreach", Method::CT_DYNAMIC, _foreach, 2+1, 2+1+1);
@@ -707,4 +707,12 @@ MHash::MHash(): Methoded("hash")
 	// ^hash._at[first|last[;'key'|'value'|'hash']]
 	// ^hash._at([-+]offset)[['key'|'value'|'hash']]
 	add_native_method("_at", Method::CT_DYNAMIC, _at, 1, 2);
+
+#ifdef FEATURE_GET_ELEMENT4CALL
+	// aliases without "_"
+	add_native_method("keys", Method::CT_DYNAMIC, _keys, 0, 1);
+	add_native_method("count", Method::CT_DYNAMIC, _count, 0, 0);
+	add_native_method("at", Method::CT_DYNAMIC, _at, 1, 2);
+#endif
+
 }
