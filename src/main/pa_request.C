@@ -32,7 +32,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.347 2015/10/09 11:42:38 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.348 2015/10/20 18:17:19 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -43,7 +43,6 @@ const char* UNHANDLED_EXCEPTION_CONTENT_TYPE="text/plain";
 
 /// content type of response when no $MAIN:defaults.content-type defined
 const char* DEFAULT_CONTENT_TYPE="text/html";
-const char* ORIGINS_CONTENT_TYPE="text/plain";
 
 // defines for globals
 
@@ -70,7 +69,6 @@ const String exception_handled_part_name(EXCEPTION_HANDLED_PART_NAME);
 #define CHARSETS_NAME "CHARSETS"
 #define MIME_TYPES_NAME "MIME-TYPES"
 #define STRICT_VARS_NAME "STRICT-VARS"
-#define ORIGINS_MODE_NAME "ORIGINS"
 #define CONF_METHOD_NAME "conf"
 #define POST_PROCESS_METHOD_NAME "postprocess"
 #define CLASS_PATH_NAME "CLASS_PATH"
@@ -85,7 +83,6 @@ static const String charsets_name(CHARSETS_NAME);
 static const String main_class_name(MAIN_CLASS_NAME);
 static const String mime_types_name(MIME_TYPES_NAME);
 static const String strict_vars_name(STRICT_VARS_NAME);
-static const String origins_mode_name(ORIGINS_MODE_NAME);
 static const String conf_method_name(CONF_METHOD_NAME);
 static const String post_process_method_name(POST_PROCESS_METHOD_NAME);
 static const String class_path_name(CLASS_PATH_NAME);
