@@ -1,0 +1,10 @@
+Content-Type: text/html
+Content-Length: 216
+
+Unhandled Exception: parser.compile
+Source: Comment: a - class is already defined
+File: /home/moko/Work/parser/parser3/tests/182_dir/a3.p(4:6)
+USE	a6.p(5:1)
+use	318.html(12:2)
+method	318.html(16:6)
+if	318.html(15:2)

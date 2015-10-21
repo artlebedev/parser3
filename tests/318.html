@@ -1,0 +1,17 @@
+@unhandled_exception[exception;stack]
+Unhandled Exception: $exception.type
+Source: $exception.source
+Comment: $exception.comment
+^if(def $exception.file){File: $exception.file^(${exception.lineno}:$exception.colno^)}
+^if($stack){^stack.menu{	$stack.name	^stack.file.match[.*/][]{}^(${stack.lineno}:$stack.colno^)
+}}
+
+@method[]
+$sDir[182_dir]
+^use[$sDir/a1.p]
+^use[$sDir/a6.p]
+
+@main[]
+^if(1){
+    ^method[]
+}
