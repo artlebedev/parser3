@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 307
+Content-Length: 297
 
 ^a:a1[]: a1<br />
 ^a:a2[]: a2<br />
@@ -8,10 +8,10 @@ Content-Length: 307
 <hr />
 Type: parser.compile,
 Source: use,
-Comment: a5.p(4:6): a - class is already defined
+Comment: a - class is already defined
 ^a:a1[]: new a1<br />
 ^a:a2[]: Type: parser.runtime,
-Source: a2,
+Source: use,
 Comment: undefined method
 ^b:b1[]: b1<br />
 ^c:c1[]: c1<br />
