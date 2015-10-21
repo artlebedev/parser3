@@ -32,7 +32,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.349 2015/10/21 21:45:25 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.350 2015/10/21 22:54:08 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -947,10 +947,11 @@ Request::Exception_details Request::get_details(const Exception& e) {
 
 	if(!exception_trace.is_empty()) {
 		Trace bottom=exception_trace.bottom_value();
-		if(!problem_source || bottom.name()==problem_source) { // we don't know who trigged the bug or it is that same guy
-			origin=bottom.origin();
-			if(!problem_source)
-				problem_source=bottom.name(); // we usually know source of next-from-throw-point exception did that
+		origin=bottom.origin();
+		if(!problem_source) { // we don't know who trigged the bug
+			problem_source=bottom.name(); // we usually know source of next-from-throw-point exception did that
+			exception_trace.set_bottom_index(exception_trace.bottom_index()+1);
+		} else if (bottom.name()==problem_source) { // it is that same guy?
 			exception_trace.set_bottom_index(exception_trace.bottom_index()+1); // throw away that trace
 		} else {
 			// stack top contains not us, leaving intact to help ^throw
