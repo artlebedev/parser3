@@ -32,7 +32,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.348 2015/10/20 18:17:19 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.349 2015/10/21 21:45:25 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -271,42 +271,40 @@ void Request::configure_admin(VStateless_class& conf_class) {
 	methoded_array().configure_admin(*this);
 }
 
-const char* Request::get_exception_cstr(
-										const Exception& e,
-										Request::Exception_details& details) {
+const char* Request::get_exception_cstr(const Exception& e, Request::Exception_details& details) {
+
 #define PA_URI_FORMAT "%s: "
+#define PA_COMMENT_TYPE_FORMAT "%s [%s]"
+
 #define PA_ORIGIN_FILE_POS_FORMAT "%s(%d:%d): "
 #define PA_SOURCE_FORMAT "'%s' "
-#define PA_COMMENT_TYPE_FORMAT "%s [%s]"
+
+#define PA_ORIGIN_FILE_POS_VALUE file_list[details.origin.file_no].cstr(), 1+details.origin.line, 1+details.origin.col,
+#define PA_SOURCE_VALUE details.problem_source->cstr(),
+
+#define EXCEPTION_CSTR(f1,v1,f2,v2) \
+			snprintf(result, MAX_STRING, \
+				PA_URI_FORMAT \
+				f1 f2 \
+				PA_COMMENT_TYPE_FORMAT, \
+				request_info.uri, \
+				v1 v2 \
+				e.comment(), e.type() \
+			);
+
 	char* result=new(PointerFreeGC) char[MAX_STRING];
 
 	if(details.problem_source) { // do we know the guy?
-		if(details.trace) { // do whe know where he came from?
-			Operation::Origin origin=details.trace.origin();
-			snprintf(result, MAX_STRING, 
-				PA_URI_FORMAT 
-				PA_ORIGIN_FILE_POS_FORMAT 
-				PA_SOURCE_FORMAT PA_COMMENT_TYPE_FORMAT,
-				request_info.uri,
-				file_list[origin.file_no].cstr(), 1+origin.line, 1+origin.col,
-				details.problem_source->cstr(),
-				e.comment(), e.type()
-			);
-		} else
-			snprintf(result, MAX_STRING, 
-				PA_URI_FORMAT 
-				PA_SOURCE_FORMAT PA_COMMENT_TYPE_FORMAT,
-				request_info.uri,
-				details.problem_source->cstr(),
-				e.comment(), e.type()
-			);
-	} else
-		snprintf(result, MAX_STRING, 
-			PA_URI_FORMAT 
-			PA_COMMENT_TYPE_FORMAT,
-			request_info.uri,
-			e.comment(), e.type()
-		);
+		if(details.origin.file_no) // do whe know where he came from?
+			EXCEPTION_CSTR(PA_ORIGIN_FILE_POS_FORMAT, PA_ORIGIN_FILE_POS_VALUE, PA_SOURCE_FORMAT, PA_SOURCE_VALUE)
+		else
+			EXCEPTION_CSTR(PA_SOURCE_FORMAT, PA_SOURCE_VALUE,,)
+	} else {
+		if(details.origin.file_no) // do whe know where he came from?
+			EXCEPTION_CSTR(PA_ORIGIN_FILE_POS_FORMAT, PA_ORIGIN_FILE_POS_VALUE,,)
+		else
+			EXCEPTION_CSTR(,,,)
+	}
 
 	return result;
 }
@@ -544,9 +542,7 @@ void Request::use_file_directly(VStateless_class& aclass,
 }
 
 
-void Request::use_file(VStateless_class& aclass,
-				const String& file_name,
-				const String* use_filespec/*absolute*/) {
+void Request::use_file(VStateless_class& aclass, const String& file_name, const String* use_filespec/*absolute*/) {
 
 	if(file_name.is_empty())
 		throw Exception(PARSER_RUNTIME,
@@ -594,6 +590,15 @@ void Request::use_file(VStateless_class& aclass,
 	use_file_directly(aclass, *filespec);
 }
 
+void Request::use_file(VStateless_class& aclass, const String& file_name, const String* use_filespec/*absolute*/, Operation::Origin origin) {
+	static String use("USE");
+	try {
+		use_file(aclass, file_name, use_filespec);
+	} catch (...) {
+		exception_trace.push(Trace(&use, origin));
+		rethrow;
+	}
+}
 
 void Request::use_buf(VStateless_class& aclass,
 				const char* source, const String* main_alias, 
@@ -935,45 +940,33 @@ const String& Request::transcode(const xmlChar* s) {
 }
 #endif
 
-
-const Request::Trace Request::Exception_trace::extract_origin(const String*& problem_source) {
-	Trace result;
-	if(!is_empty()) {
-		result=bottom_value();
-		if(!problem_source) { // we don't know who trigged the bug?
-			problem_source=result.name(); // consider the stack-top-guy (we usually know source of next-from-throw-point exception) did that
-			fbottom++;
-		} else if(result.name()==problem_source) // it is that same guy?
-			fbottom++; // throw away that trace
-		else {
-			// stack top contains not us, 
-			//	leaving result intact
-			//	it would help ^throw
-		}
-	}
-
-	return result;
-}
-
 Request::Exception_details Request::get_details(const Exception& e) {
 	const String* problem_source=e.problem_source();
-	Trace trace=exception_trace.extract_origin(problem_source);
-	
 	VHash& vhash=*new VHash;  HashStringValue& hash=vhash.hash();
+	Operation::Origin origin={0, 0, 0};
+
+	if(!exception_trace.is_empty()) {
+		Trace bottom=exception_trace.bottom_value();
+		if(!problem_source || bottom.name()==problem_source) { // we don't know who trigged the bug or it is that same guy
+			origin=bottom.origin();
+			if(!problem_source)
+				problem_source=bottom.name(); // we usually know source of next-from-throw-point exception did that
+			exception_trace.set_bottom_index(exception_trace.bottom_index()+1); // throw away that trace
+		} else {
+			// stack top contains not us, leaving intact to help ^throw
+		}
+	}
 
 	// $.type
 	if(const char* type=e.type(true))
 		hash.put(exception_type_part_name, new VString(*new String(type)));
 
 	// $.source
-	if(problem_source) {
-		String& source=*new String(*problem_source, String::L_TAINTED);
-		hash.put(exception_source_part_name, new VString(source));
-	}
+	if(problem_source)
+		hash.put(exception_source_part_name, new VString(*new String(*problem_source, String::L_TAINTED)));
 
-	// $.file lineno colno
-	if(trace) {
-		const Operation::Origin origin=trace.origin();
+	// $.file $.lineno $.colno
+	if(origin.file_no){
 		hash.put("file", new VString(*new String(file_list[origin.file_no], String::L_TAINTED)));
 		hash.put("lineno", new VInt(1+origin.line));
 		hash.put("colno", new VInt(1+origin.col));
@@ -981,13 +974,12 @@ Request::Exception_details Request::get_details(const Exception& e) {
 
 	// $.comment
 	if(const char* comment=e.comment(true))
-		hash.put(exception_comment_part_name, 
-			new VString(*new String(comment, String::L_TAINTED)));
+		hash.put(exception_comment_part_name, new VString(*new String(comment, String::L_TAINTED)));
 
 	// $.handled(0)
 	hash.put(exception_handled_part_name, &VBool::get(false));
 
-	return Request::Exception_details(trace, problem_source, vhash);
+	return Request::Exception_details(origin, problem_source, vhash);
 }
 
 Temp_value_element::Temp_value_element(Request& arequest, Value& awhere, const String& aname, Value* awhat) :

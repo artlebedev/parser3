@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.219 2015/09/28 22:26:13 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.220 2015/10/21 21:45:25 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -52,7 +52,6 @@ public:
 	public:
 		Trace(): fname(0) {}
 		void clear() { fname=0; }
-		operator bool() const { return fname!=0; }
 
 		Trace(const String* aname, const Operation::Origin aorigin):
 			fname(aname), forigin(aorigin) {}
@@ -108,8 +107,6 @@ private:
 		bool is_empty() {
 			return fused==fbottom;
 		}
-
-		const element_type extract_origin(const String*& problem_source);
 	};
 
 	///@{ core data
@@ -158,14 +155,10 @@ public:
 	uint register_file(String::Body file_spec);
 
 	struct Exception_details {
-		const Trace trace;
+		const Operation::Origin origin;
 		const String* problem_source;
 		VHash& vhash;
-
-		Exception_details(
-			const Trace atrace,
-			const String* aproblem_source,
-			VHash& avhash): trace(atrace), problem_source(aproblem_source), vhash(avhash) {}
+		Exception_details(const Operation::Origin aorigin, const String* aproblem_source, VHash& avhash): origin(aorigin), problem_source(aproblem_source), vhash(avhash) {}
 	};
 	Exception_details get_details(const Exception& e);
 	const char* get_exception_cstr(const Exception& e, Exception_details& details);
@@ -226,9 +219,8 @@ public:
 				bool fail_on_file_absence=true);
 				
 	/// compiles the file, maybe forcing it's class @a name and @a base_class.
-	void use_file(VStateless_class& aclass,
-		const String& file_name,
-		const String* use_filespec);
+	void use_file(VStateless_class& aclass, const String& file_name, const String* use_filespec);
+	void use_file(VStateless_class& aclass, const String& file_name, const String* use_filespec, Operation::Origin origin);
 
 	/// compiles a @a source buffer
 	void use_buf(VStateless_class& aclass,
