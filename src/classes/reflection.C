@@ -9,7 +9,7 @@
 #include "pa_request.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.33 2015/10/08 22:49:36 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.34 2015/10/22 11:45:36 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -160,6 +160,13 @@ static void _class_name(Request& r, MethodParams& params) {
 	r.write_no_lang(*get_class_name(&params[0]));
 }
 
+static void _class_by_name(Request& r, MethodParams& params) {
+	const String& class_name=params.as_string(0, "class_name must be string");
+	Value* class_value=r.get_class(class_name);
+	if(!class_value)
+		throw Exception(PARSER_RUNTIME, &class_name, "class is undefined");
+	r.write_no_lang(*class_value);
+}
 
 static void _base(Request& r, MethodParams& params) {
 	if(VStateless_class* lclass=params[0].get_class())
@@ -368,6 +375,9 @@ MReflection::MReflection(): Methoded("reflection") {
 
 	// ^reflection:class_name[object]
 	add_native_method("class_name", Method::CT_STATIC, _class_name, 1, 1);
+
+	// ^reflection:class_by_name[class_name]
+	add_native_method("class_by_name", Method::CT_STATIC, _class_by_name, 1, 1);
 
 	// ^reflection:base_class[object]
 	add_native_method("base", Method::CT_STATIC, _base, 1, 1);
