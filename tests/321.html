@@ -1,0 +1,29 @@
+@test1[a]
+^h.method[]
+
+@test2[a]
+^h.$method[]
+
+@test3[a]
+^h.a.method[]
+
+@test4[a]
+$a.$b[]
+
+@test5[a]
+
+@test6[a]
+$void
+
+@test7[a]
+$b[]
+
+@test8[a]
+value
+
+@main[]
+^for[i](1;8){
+	$h[^reflection:method_info[MAIN;test$i]]
+	^if(def $h.file){$h.file[^h.file.match[.*/][]{}]}
+	$result[${result}${i}: ^json:string[$h]^#0A]
+}
