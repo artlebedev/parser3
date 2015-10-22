@@ -1,4 +1,55 @@
+2015-10-22  moko
+
+	* tests/: 321.html, results/321.processed: test for
+	  ^reflection:method_info[] file detection added
+
+	* tests/: 320.html, results/320.processed: test for
+	  ^reflection:class_by_name[class_name] added (related to feature
+	  #993)
+
+	* src/classes/reflection.C: ^reflection:class_by_name[class_name]
+	  added (implements feature #993)
+
+	* src/main/execute.C: GET_ELEMENT4CALL added to get_method_filename
+	  (related to feature #1017)
+
+	* tests/: 319.html, results/319.processed: ^throw[] stacktrace test
+	  added (related to issue #1039)
+
+	* src/main/pa_request.C: ^throw origin fixed (related to feature
+	  #1039)
+
+	* src/types/pa_vcookie.C: bugfix: expires_sec should not be called
+	  for VDate
+
+	* tests/results/182.processed: updated after feature #1038
+	  implemented
+
+	* tests/: 318.html, 182_dir/a6.p, results/318.processed: test for
+	  compile-time exception origin added (test for feature #1039)
+
+	* src/: include/pa_request.h, main/compile.C, main/compile.y,
+	  main/pa_request.C: exception unification: compile-time exceptions
+	  now have origin, @USE origins also tracked (implements feature
+	  #1039)
+
+2015-10-20  moko
+
+	* src/main/pa_request.C: cleanup
+
+2015-10-15  moko
+
+	* src/types/pa_vtable.C: defines fixed (related to feature #1017)
+
+	* src/: classes/hash.C, include/pa_opcode.h, types/pa_vhash.h,
+	  types/pa_vtable.C: new feature: no more $table.method and
+	  $hash.method, aliases for _at, _count, _key (related to feature
+	  #1017)
+
 2015-10-14  moko
+
+	* tests/: 317.html, results/317.processed: test for
+	  ^string.unescape[] added (related to feature #120)
 
 	* buildall: reverted libxml 2.9.2 -> 2.9.1 due to "ID already
 	  defined" bug (described in issue #1036)
@@ -14526,7 +14577,7 @@
 	  types/pa_vstring.h, types/pa_vtable.C, types/pa_vtable.h,
 	  types/pa_vvoid.h, types/pa_vxdoc.C, types/pa_vxdoc.h,
 	  types/pa_vxnode.C, types/pa_vxnode.h, types/pa_wcontext.C,
-	  types/pa_wcontext.h, types/pa_wwrapper.h: $Date: 2015/10/14 17:48:42 $
+	  types/pa_wcontext.h, types/pa_wwrapper.h: $Date: 2015/10/22 18:11:51 $
 
 	* src/: classes/classes.C, classes/classes.dsp, classes/classes.h,
 	  classes/date.C, classes/double.C, classes/file.C, classes/form.C,
@@ -18765,7 +18816,7 @@
 	  main/pa_hash.C, main/pa_pool.C, main/pa_request.C,
 	  main/pa_socks.C, main/pa_sql_driver_manager.C, main/pa_string.C,
 	  main/pa_table.C, main/untaint.C, targets/cgi/parser3.C,
-	  targets/isapi/parser3isapi.C: static char *RCSId="$Id: ChangeLog,v 1.97 2015/10/14 17:48:42 moko Exp $";
+	  targets/isapi/parser3isapi.C: static char *RCSId="$Id: ChangeLog,v 1.98 2015/10/22 18:11:51 moko Exp $";
 
 	* src/main/: compile.y, compile_tools.h: $:name: == ${name}:
 	  $class:name: == ${class:name}:
@@ -21611,9 +21662,9 @@
 
 	* src/include/: pa_pool.h, pa_string.h: pa_pool split
 
-	* src/main/: main.dsp, pa_string.C: $Id: ChangeLog,v 1.97 2015/10/14 17:48:42 moko Exp $ check
+	* src/main/: main.dsp, pa_string.C: $Id: ChangeLog,v 1.98 2015/10/22 18:11:51 moko Exp $ check
 
-	* src/: main/pa_pool.C, main/pa_string.C, include/pa_pool.h: $Id: ChangeLog,v 1.97 2015/10/14 17:48:42 moko Exp $
+	* src/: main/pa_pool.C, main/pa_string.C, include/pa_pool.h: $Id: ChangeLog,v 1.98 2015/10/22 18:11:51 moko Exp $
 	  check
 
 	* src/: include/pa_pool.h, main/pa_string.C: String prealloc &
