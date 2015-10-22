@@ -1,0 +1,31 @@
+Content-Type: text/html
+Content-Length: 494
+
+MAIN: MAIN
+MAIN method: {
+"from-1251":"parser",
+"try":"native",
+"throw":"native",
+"main":"parser",
+"case":"native",
+"rem":"native",
+"break":"native",
+"cache":"native",
+"apply-taint":"native",
+"try-catch":"parser",
+"taint":"native",
+"1251":"parser",
+"for":"native",
+"untaint":"native",
+"continue":"native",
+"to-1251":"parser",
+"windows-1251":"parser",
+"if":"native",
+"use":"native",
+"connect":"native",
+"sleep":"native",
+"switch":"native",
+"eval":"native",
+"process":"native",
+"while":"native"
+}
