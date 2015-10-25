@@ -9,7 +9,7 @@
 #include "pa_request.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.34 2015/10/22 11:45:36 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.35 2015/10/25 22:24:05 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -333,6 +333,23 @@ static void _dynamical(Request& r, MethodParams& params) {
 	}
 }
 
+static void _is(Request& r, MethodParams& params) {
+	const String& type=params.as_string(0, "class name must be string");
+	const String& name=params.as_string(params.count()-1, "element name must be string");
+	Value &context=params.count()==3 ? params.as_no_junction(1, "context must not be code") : *(r.get_method_frame()->caller());
+	Value *value=context.get_element(name);
+
+	if(value) {
+		if(type == "code" || type == "method") {
+			Junction *junction=value->get_junction();
+			r.write_no_lang(VBool::get(junction && ((junction->code==0) ^ (type == "code"))) );
+		} else {
+			r.write_no_lang(VBool::get( value->is(type.cstr()) ));
+		}
+	} else
+		r.write_no_lang(VBool::get(false));
+}
+
 static void _copy(Request& r, MethodParams& params) {
 	HashStringValue* src=params.as_no_junction(0, "source must not be code").get_hash();
 
@@ -405,6 +422,9 @@ MReflection::MReflection(): Methoded("reflection") {
 
 	// ^reflection:dynamical[[object or class, caller if absent]]
 	add_native_method("dynamical", Method::CT_STATIC, _dynamical, 0, 1);
+
+	// ^reflection:is[class_name|code|method;[context;]element_name]
+	add_native_method("is", Method::CT_STATIC, _is, 2, 3);
 
 	// ^reflection:copy[src;dst]
 	add_native_method("copy", Method::CT_STATIC, _copy, 2, 2);
