@@ -9,7 +9,7 @@
 #include "pa_request.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.35 2015/10/25 22:24:05 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.36 2015/10/25 22:27:59 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -347,7 +347,7 @@ static void _is(Request& r, MethodParams& params) {
 			r.write_no_lang(VBool::get( value->is(type.cstr()) ));
 		}
 	} else
-		r.write_no_lang(VBool::get(false));
+		r.write_no_lang(VBool::get(type == "void"));
 }
 
 static void _copy(Request& r, MethodParams& params) {
