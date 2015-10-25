@@ -1,0 +1,23 @@
+@main[]
+^is_code{1}
+^is_method{1}
+^is_junction{1}
+
+^is_code[$main]
+^is_method[$main]
+^is_junction[$main]
+
+void: ^if(^reflection:is[void;no-such-value]){yes}{no}
+string: $s[] ^if(^reflection:is[string;s]){yes}{no}
+
+$a[ $.b[ $.c{code} ] ]
+context: ^if(^reflection:is[code;$a.b;c]){yes}{no}
+
+@is_code[x]
+code: ^if(^reflection:is[code;x]){yes}{no}
+
+@is_method[x]
+method: ^if(^reflection:is[method;x]){yes}{no}
+
+@is_junction[x]
+juction: ^if(^reflection:is[junction;x]){yes}{no}
