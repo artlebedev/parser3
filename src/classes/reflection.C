@@ -9,7 +9,7 @@
 #include "pa_request.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.36 2015/10/25 22:27:59 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.37 2015/10/26 01:03:42 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -336,8 +336,8 @@ static void _dynamical(Request& r, MethodParams& params) {
 static void _is(Request& r, MethodParams& params) {
 	const String& type=params.as_string(0, "class name must be string");
 	const String& name=params.as_string(params.count()-1, "element name must be string");
-	Value &context=params.count()==3 ? params.as_no_junction(1, "context must not be code") : *(r.get_method_frame()->caller());
-	Value *value=context.get_element(name);
+	Value *context=params.count()==3 ? &(params.as_no_junction(1, "context must not be code")) : r.get_method_frame()->caller();
+	Value *value=context ? context->get_element(name) : 0;
 
 	if(value) {
 		if(type == "code" || type == "method") {
