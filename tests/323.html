@@ -1,0 +1,4 @@
+@main[]
+$list[^reflection:classes[]]
+^list.foreach[name;]{ $class[^reflection:class_by_name[$name]] $name $class.CLASS_NAME ^reflection:base_name[$class]
+}
