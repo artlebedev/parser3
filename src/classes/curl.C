@@ -1,7 +1,7 @@
 /** @file
 	Parser: @b curl parser class.
 
-	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 */
 
 #include "pa_config_includes.h"
@@ -17,7 +17,7 @@
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.34 2015/10/11 00:06:57 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.35 2015/10/26 01:21:53 moko Exp $";
 
 class MCurl: public Methoded {
 public:

@@ -1,7 +1,7 @@
 /** @file
 	Parser: Value class.
 
-	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
@@ -13,7 +13,7 @@
 #include "pa_request.h"
 
 
-volatile const char * IDENT_PA_VALUE_C="$Id: pa_value.C,v 1.38 2015/09/02 21:29:45 moko Exp $" IDENT_PA_VALUE_H IDENT_PA_PROPERTY_H;
+volatile const char * IDENT_PA_VALUE_C="$Id: pa_value.C,v 1.39 2015/10/26 01:22:00 moko Exp $" IDENT_PA_VALUE_H IDENT_PA_PROPERTY_H;
 
 // globals
 

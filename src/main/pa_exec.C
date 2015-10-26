@@ -1,7 +1,7 @@
 /** @file
 	Parser: program executing for different OS-es.
 
-	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
 	@todo setrlimit
@@ -13,7 +13,7 @@
 #include "pa_exception.h"
 #include "pa_common.h"
 
-volatile const char * IDENT_PA_EXEC_C="$Id: pa_exec.C,v 1.84 2013/07/22 20:44:39 moko Exp $" IDENT_PA_EXEC_H;
+volatile const char * IDENT_PA_EXEC_C="$Id: pa_exec.C,v 1.85 2015/10/26 01:21:58 moko Exp $" IDENT_PA_EXEC_H;
 
 #ifdef _MSC_VER
 

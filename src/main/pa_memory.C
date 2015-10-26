@@ -1,14 +1,14 @@
 /** @file
 	Parser: memory reference counting classes.
 
-	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #include "pa_sapi.h"
 #include "pa_common.h"
 
-volatile const char * IDENT_PA_MEMORY_C="$Id: pa_memory.C,v 1.10 2013/07/23 15:39:10 moko Exp $" IDENT_PA_MEMORY_H;
+volatile const char * IDENT_PA_MEMORY_C="$Id: pa_memory.C,v 1.11 2015/10/26 01:21:59 moko Exp $" IDENT_PA_MEMORY_H;
 
 void *pa_fail_alloc(const char* what, size_t size) {
 #ifdef PA_DEBUG_DISABLE_GC

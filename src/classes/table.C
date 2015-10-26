@@ -1,7 +1,7 @@
 /** @file
 	Parser: @b table parser class.
 
-	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
@@ -22,7 +22,7 @@
 #define USE_STRINGSTREAM
 #endif
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.311 2015/09/23 00:00:11 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.312 2015/10/26 01:21:54 moko Exp $";
 
 // class
 

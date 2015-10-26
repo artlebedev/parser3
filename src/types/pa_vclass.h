@@ -1,14 +1,14 @@
 /**	@file
 	Parser: @b class parser class decl.
 
-	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VCLASS_H
 #define PA_VCLASS_H
 
-#define IDENT_PA_VCLASS_H "$Id: pa_vclass.h,v 1.63 2015/03/17 07:28:44 misha Exp $"
+#define IDENT_PA_VCLASS_H "$Id: pa_vclass.h,v 1.64 2015/10/26 01:22:01 moko Exp $"
 
 // includes
 

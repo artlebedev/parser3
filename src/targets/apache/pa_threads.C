@@ -1,13 +1,13 @@
 /** @file
 	Parser: Mutex realization class.
 
-	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #include "pa_threads.h"
 
-volatile const char * IDENT_PA_THREADS_C="$Id: pa_threads.C,v 1.3 2012/06/20 20:54:26 moko Exp $" IDENT_PA_THREADS_H;
+volatile const char * IDENT_PA_THREADS_C="$Id: pa_threads.C,v 1.4 2015/10/26 01:21:59 moko Exp $" IDENT_PA_THREADS_H;
 
 Mutex global_mutex;
 

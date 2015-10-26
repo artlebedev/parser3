@@ -1,7 +1,7 @@
 /** @file
 	Parser: exception class.
 
-	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
@@ -10,7 +10,7 @@
 #include "pa_sapi.h"
 #include "pa_globals.h"
 
-volatile const char * IDENT_PA_EXCEPTION_C="$Id: pa_exception.C,v 1.52 2014/12/31 05:42:30 moko Exp $" IDENT_PA_EXCEPTION_H;
+volatile const char * IDENT_PA_EXCEPTION_C="$Id: pa_exception.C,v 1.53 2015/10/26 01:21:58 moko Exp $" IDENT_PA_EXCEPTION_H;
 
 // methods
 

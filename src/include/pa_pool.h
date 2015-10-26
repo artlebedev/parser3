@@ -1,7 +1,7 @@
 /** @file
 	Parser: pool class decl.
 
-	Copyright (c) 2000-2012 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2000-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
@@ -9,7 +9,7 @@
 #ifndef PA_POOL_H
 #define PA_POOL_H
 
-#define IDENT_PA_POOL_H "$Id: pa_pool.h,v 1.90 2012/03/16 09:24:09 moko Exp $"
+#define IDENT_PA_POOL_H "$Id: pa_pool.h,v 1.91 2015/10/26 01:21:56 moko Exp $"
 
 #include "pa_config_includes.h"
 #include "pa_array.h"

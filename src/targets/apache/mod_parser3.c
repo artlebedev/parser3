@@ -1,7 +1,7 @@
 /** @file
 	Parser: apache 1.3 and 2.2 module
 
-	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
@@ -15,7 +15,7 @@
 
 #include "pa_httpd.h"
 
-volatile const char * IDENT_MOD_PARSER3_C="$Id: mod_parser3.c,v 1.17 2013/10/22 16:36:55 moko Exp $" IDENT_PA_HTTPD_H;
+volatile const char * IDENT_MOD_PARSER3_C="$Id: mod_parser3.c,v 1.18 2015/10/26 01:21:59 moko Exp $" IDENT_PA_HTTPD_H;
 
 #define PARSER3_HANDLER "parser3-handler"
 

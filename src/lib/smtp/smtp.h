@@ -1,11 +1,11 @@
 /** @file
 	Parser: SMTP sender decl.
 
-	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-#define IDENT_SMTP_H "$Id: smtp.h,v 1.12 2013/07/23 14:46:12 moko Exp $"
+#define IDENT_SMTP_H "$Id: smtp.h,v 1.13 2015/10/26 01:21:57 moko Exp $"
 
 
 #include "pa_string.h"

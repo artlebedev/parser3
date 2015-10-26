@@ -1,7 +1,7 @@
 /** @file
 	Parser: @b dom parser class.
 
-	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 #include "classes.h"
@@ -21,7 +21,7 @@
 #include "libxml/xpath.h"
 #include "libxml/xpathInternals.h"
 
-volatile const char * IDENT_XNODE_C="$Id: xnode.C,v 1.90 2015/10/09 11:42:38 moko Exp $" IDENT_XNODE_H;
+volatile const char * IDENT_XNODE_C="$Id: xnode.C,v 1.91 2015/10/26 01:21:55 moko Exp $" IDENT_XNODE_H;
 
 // global variable
 

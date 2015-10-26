@@ -1,11 +1,11 @@
 /**	@file
 	Parser: socks initialization/finalization.
 
-	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PA_SOCKS_C="$Id: pa_socks.C,v 1.28 2013/07/21 22:17:13 moko Exp $";
+volatile const char * IDENT_PA_SOCKS_C="$Id: pa_socks.C,v 1.29 2015/10/26 01:21:59 moko Exp $";
 
 #include "pa_config_includes.h"
 

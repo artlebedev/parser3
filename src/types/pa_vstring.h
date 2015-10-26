@@ -1,14 +1,14 @@
 /**	@file
 	Parser: @b string parser class decl.
 
-	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VSTRING_H
 #define PA_VSTRING_H
 
-#define IDENT_PA_VSTRING_H "$Id: pa_vstring.h,v 1.71 2015/10/26 00:40:59 moko Exp $"
+#define IDENT_PA_VSTRING_H "$Id: pa_vstring.h,v 1.72 2015/10/26 01:22:03 moko Exp $"
 
 // includes
 

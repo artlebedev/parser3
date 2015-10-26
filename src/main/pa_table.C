@@ -1,13 +1,13 @@
 /** @file
 	Parser: table class.
 
-	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #include "pa_table.h"
 
-volatile const char * IDENT_PA_TABLE_C="$Id: pa_table.C,v 1.68 2015/09/22 23:46:22 moko Exp $" IDENT_PA_TABLE_H;
+volatile const char * IDENT_PA_TABLE_C="$Id: pa_table.C,v 1.69 2015/10/26 01:21:59 moko Exp $" IDENT_PA_TABLE_H;
 
 #include "pa_exception.h"
 

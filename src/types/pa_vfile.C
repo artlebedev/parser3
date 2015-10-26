@@ -2,7 +2,7 @@
 /** @file
 	Parser: @b file parser type.
 
-	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
@@ -12,7 +12,7 @@
 #include "pa_vint.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VFILE_C="$Id: pa_vfile.C,v 1.64 2015/04/08 18:08:53 moko Exp $" IDENT_PA_VFILE_H;
+volatile const char * IDENT_PA_VFILE_C="$Id: pa_vfile.C,v 1.65 2015/10/26 01:22:01 moko Exp $" IDENT_PA_VFILE_H;
 
 // externs
 

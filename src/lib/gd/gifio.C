@@ -1,7 +1,7 @@
 /** @file
 	Parser: image manipulations impl2.
 
-	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
 	based on: gd
@@ -37,7 +37,7 @@
 
 #include "gif.h"
 
-volatile const char * IDENT_GIFIO_C="$Id: gifio.C,v 1.4 2012/03/16 09:24:11 moko Exp $";
+volatile const char * IDENT_GIFIO_C="$Id: gifio.C,v 1.5 2015/10/26 01:21:57 moko Exp $";
 
 static int colorstobpp(int colors);
 

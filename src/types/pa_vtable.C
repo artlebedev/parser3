@@ -1,7 +1,7 @@
 /** @file
 	Parser: @b table class.
 
-	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
@@ -10,7 +10,7 @@
 #include "pa_vhash.h"
 #include "pa_vvoid.h"
 
-volatile const char * IDENT_PA_VTABLE_C="$Id: pa_vtable.C,v 1.42 2015/10/15 18:32:03 moko Exp $" IDENT_PA_VTABLE_H;
+volatile const char * IDENT_PA_VTABLE_C="$Id: pa_vtable.C,v 1.43 2015/10/26 01:22:03 moko Exp $" IDENT_PA_VTABLE_H;
 
 // limits
 #define MAX_COLUMNS 20000 // equal to MAX_LOOPS

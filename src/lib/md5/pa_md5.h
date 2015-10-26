@@ -3,7 +3,7 @@
 	Replaced ap_ to pa_ prefixes. linked into all targets but Apache-module target,
 	where linked targets/apache/pa_md5c.c stub instead.
 
-	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 */
 
 /*
@@ -96,7 +96,7 @@
 #ifndef PA_MD5_H
 #define PA_MD5_H
 
-#define IDENT_PA_MD5_H "$Id: pa_md5.h,v 1.13 2013/07/16 21:48:36 moko Exp $"
+#define IDENT_PA_MD5_H "$Id: pa_md5.h,v 1.14 2015/10/26 01:21:57 moko Exp $"
 
 #ifdef __cplusplus
 extern "C" {

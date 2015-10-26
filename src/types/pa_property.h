@@ -1,14 +1,14 @@
 /** @file
 	Parser: Property class decl.
 
-	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_PROPERTY_H
 #define PA_PROPERTY_H
 
-#define IDENT_PA_PROPERTY_H "$Id: pa_property.h,v 1.5 2012/03/16 09:24:16 moko Exp $"
+#define IDENT_PA_PROPERTY_H "$Id: pa_property.h,v 1.6 2015/10/26 01:22:00 moko Exp $"
 
 class Method;
 class Value;

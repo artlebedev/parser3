@@ -1,14 +1,14 @@
 /**	@file
 	Parser: @b write_wrapper write context
 
-	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_WWRAPPER_H
 #define PA_WWRAPPER_H
 
-#define IDENT_PA_WWRAPPER_H "$Id: pa_wwrapper.h,v 1.46 2015/04/08 18:08:54 moko Exp $"
+#define IDENT_PA_WWRAPPER_H "$Id: pa_wwrapper.h,v 1.47 2015/10/26 01:22:03 moko Exp $"
 
 #define OPTIMIZE_SINGLE_STRING_WRITE
 

@@ -1,7 +1,7 @@
 /** @file
 	Parser: @b mail parser class.
 
-	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
@@ -19,7 +19,7 @@
 
 #include "smtp.h"
 
-volatile const char * IDENT_MAIL_C="$Id: mail.C,v 1.124 2015/10/09 11:42:38 moko Exp $";
+volatile const char * IDENT_MAIL_C="$Id: mail.C,v 1.125 2015/10/26 01:21:54 moko Exp $";
 
 // defines
 

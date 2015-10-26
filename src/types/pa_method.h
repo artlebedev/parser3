@@ -1,14 +1,14 @@
 /** @file
 	Parser: Method class decl.
 
-	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_METHOD_H
 #define PA_METHOD_H
 
-#define IDENT_PA_METHOD_H "$Id: pa_method.h,v 1.22 2013/10/17 21:52:32 moko Exp $"
+#define IDENT_PA_METHOD_H "$Id: pa_method.h,v 1.23 2015/10/26 01:22:00 moko Exp $"
 
 #define OPTIMIZE_CALL
 #define OPTIMIZE_RESULT

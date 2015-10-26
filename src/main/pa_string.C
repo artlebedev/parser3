@@ -1,7 +1,7 @@
 /** @file
 	Parser: string class. @see untalength_t.C.
 
-	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
@@ -16,7 +16,7 @@
 #define ULLONG_MAX 18446744073709551615ULL
 #endif
 
-volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.252 2015/10/09 16:03:28 moko Exp $" IDENT_PA_STRING_H;
+volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.253 2015/10/26 01:21:59 moko Exp $" IDENT_PA_STRING_H;
 
 const String String::Empty;
 

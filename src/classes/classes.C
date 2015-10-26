@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b Methoded and Methoded_array classes.
 
-	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #include "classes.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_CLASSES_C="$Id: classes.C,v 1.25 2012/03/16 09:24:06 moko Exp $" IDENT_CLASSES_H;
+volatile const char * IDENT_CLASSES_C="$Id: classes.C,v 1.26 2015/10/26 01:21:53 moko Exp $" IDENT_CLASSES_H;
 
 // Methoded
 

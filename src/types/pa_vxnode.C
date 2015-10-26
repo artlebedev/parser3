@@ -1,7 +1,7 @@
 /** @node
 	Parser: @b dnode parser type.
 
-	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 #include "pa_config_includes.h"
@@ -16,7 +16,7 @@
 #include "pa_charset.h"
 #include "pa_xml_exception.h"
 
-volatile const char * IDENT_PA_VXNODE_C="$Id: pa_vxnode.C,v 1.56 2015/05/07 16:59:21 moko Exp $" IDENT_PA_VXNODE_H;
+volatile const char * IDENT_PA_VXNODE_C="$Id: pa_vxnode.C,v 1.57 2015/10/26 01:22:03 moko Exp $" IDENT_PA_VXNODE_H;
 
 Request_charsets& VXnode::charsets() { 
 	return get_vxdoc().charsets();

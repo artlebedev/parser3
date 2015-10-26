@@ -1,14 +1,14 @@
 /** @file
 	Parser: directory scanning for different OS-es decls.
 
-	Copyright (c) 2000-2012 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2000-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_DIR_H
 #define PA_DIR_H
 
-#define IDENT_PA_DIR_H "$Id: pa_dir.h,v 1.26 2015/06/29 17:59:13 moko Exp $"
+#define IDENT_PA_DIR_H "$Id: pa_dir.h,v 1.27 2015/10/26 01:21:55 moko Exp $"
 
 #include "pa_config_includes.h"
 

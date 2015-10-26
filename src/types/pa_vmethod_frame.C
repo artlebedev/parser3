@@ -1,14 +1,14 @@
 /**	@file
 	Parser: method frame class.
 
-	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)\
 */
 
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VMETHOD_FRAME_C="$Id: pa_vmethod_frame.C,v 1.23 2015/05/30 22:55:29 moko Exp $" IDENT_PA_VMETHOD_FRAME_H;
+volatile const char * IDENT_PA_VMETHOD_FRAME_C="$Id: pa_vmethod_frame.C,v 1.24 2015/10/26 01:22:02 moko Exp $" IDENT_PA_VMETHOD_FRAME_H;
 
 // globals
 

@@ -1,7 +1,7 @@
 /** @file
 	Parser: plugins to xml library, controlling i/o; implementation
 
-	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-volatile const char * IDENT_PA_XML_IO_C="$Id: pa_xml_io.C,v 1.30 2015/04/08 18:08:53 moko Exp $" IDENT_PA_XML_IO_H;
+volatile const char * IDENT_PA_XML_IO_C="$Id: pa_xml_io.C,v 1.31 2015/10/26 01:21:59 moko Exp $" IDENT_PA_XML_IO_H;
 
 #include "libxslt/extensions.h"
 

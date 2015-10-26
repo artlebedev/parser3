@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b table parser class decl.
 
-	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VTABLE_H
 #define PA_VTABLE_H
 
-#define IDENT_PA_VTABLE_H "$Id: pa_vtable.h,v 1.63 2015/09/28 22:26:14 moko Exp $"
+#define IDENT_PA_VTABLE_H "$Id: pa_vtable.h,v 1.64 2015/10/26 01:22:03 moko Exp $"
 
 #include "pa_vstateless_object.h"
 #include "pa_table.h"

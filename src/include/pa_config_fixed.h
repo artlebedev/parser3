@@ -1,14 +1,14 @@
 /** @file
 	Parser: Configure file for autoconf-disabled platforms.
 
-	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_CONFIG_FIXED_H
 #define PA_CONFIG_FIXED_H
 
-#define IDENT_PA_CONFIG_FIXED_H "$Id: pa_config_fixed.h,v 1.84 2013/08/23 10:15:21 moko Exp $"
+#define IDENT_PA_CONFIG_FIXED_H "$Id: pa_config_fixed.h,v 1.85 2015/10/26 01:21:55 moko Exp $"
 
 #define inline  __inline
 

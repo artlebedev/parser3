@@ -1,14 +1,14 @@
 /** @file
 	Parser: stateless class decls.
 
-	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
-#define IDENT_PA_VSTATELESS_CLASS_H "$Id: pa_vstateless_class.h,v 1.77 2015/04/08 18:08:54 moko Exp $"
+#define IDENT_PA_VSTATELESS_CLASS_H "$Id: pa_vstateless_class.h,v 1.78 2015/10/26 01:22:02 moko Exp $"
 
 // include
 

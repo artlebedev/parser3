@@ -1,7 +1,7 @@
 /**	@file
 	Parser: stateless class.
 
-	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)\
 */
 
@@ -10,7 +10,7 @@
 #include "pa_vbool.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VSTATELESS_CLASS_C="$Id: pa_vstateless_class.C,v 1.51 2015/03/16 09:47:36 misha Exp $" IDENT_PA_VSTATELESS_CLASS_H IDENT_PA_METHOD_H;
+volatile const char * IDENT_PA_VSTATELESS_CLASS_C="$Id: pa_vstateless_class.C,v 1.52 2015/10/26 01:22:02 moko Exp $" IDENT_PA_VSTATELESS_CLASS_H IDENT_PA_METHOD_H;
 
 #ifndef OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL
 const String class_name(CLASS_NAME), class_nametext(CLASS_NAMETEXT);

@@ -1,7 +1,7 @@
 /** @file
 	Parser: @b request class.
 
-	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
@@ -15,7 +15,7 @@
 #include "pa_vvoid.h"
 #include "pa_vfile.h"
 
-volatile const char * IDENT_PA_VREQUEST_C="$Id: pa_vrequest.C,v 1.58 2015/04/02 22:04:42 moko Exp $" IDENT_PA_VREQUEST_H;
+volatile const char * IDENT_PA_VREQUEST_C="$Id: pa_vrequest.C,v 1.59 2015/10/26 01:22:02 moko Exp $" IDENT_PA_VREQUEST_H;
 
 // defines
 

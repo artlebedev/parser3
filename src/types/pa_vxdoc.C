@@ -1,7 +1,7 @@
 /** @dom
 	Parser: @b dom parser type.
 
-	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 #include "pa_config_includes.h"
@@ -12,7 +12,7 @@
 #include "pa_request.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_PA_VXDOC_C="$Id: pa_vxdoc.C,v 1.49 2015/10/09 11:42:39 moko Exp $" IDENT_PA_VXDOC_H;
+volatile const char * IDENT_PA_VXDOC_C="$Id: pa_vxdoc.C,v 1.50 2015/10/26 01:22:03 moko Exp $" IDENT_PA_VXDOC_H;
 
 // defines
 

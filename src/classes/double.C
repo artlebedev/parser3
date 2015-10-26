@@ -1,7 +1,7 @@
 /** @file
 	Parser: @b double parser class.
 
-	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
@@ -13,7 +13,7 @@
 #include "pa_vint.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_DOUBLE_C="$Id: double.C,v 1.67 2013/07/29 15:02:17 moko Exp $" IDENT_PA_VDOUBLE_H;
+volatile const char * IDENT_DOUBLE_C="$Id: double.C,v 1.68 2015/10/26 01:21:53 moko Exp $" IDENT_PA_VDOUBLE_H;
 
 // externs
 

@@ -1,14 +1,14 @@
 /**	@file
 	Parser: @b class parser class impl.
 
-	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #include "pa_vclass.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_PA_VCLASS_C="$Id: pa_vclass.C,v 1.52 2015/08/10 23:47:52 moko Exp $" IDENT_PA_VCLASS_H;
+volatile const char * IDENT_PA_VCLASS_C="$Id: pa_vclass.C,v 1.53 2015/10/26 01:22:00 moko Exp $" IDENT_PA_VCLASS_H;
 
 Property& VClass::get_property(const String& aname) {
 	Property* result=ffields.get(aname);

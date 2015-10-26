@@ -1,7 +1,7 @@
 /**	@file
 	Parser: @b object class impl.
 
-	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
@@ -12,7 +12,7 @@
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VOBJECT_C="$Id: pa_vobject.C,v 1.43 2015/10/26 00:39:37 moko Exp $" IDENT_PA_VOBJECT_H;
+volatile const char * IDENT_PA_VOBJECT_C="$Id: pa_vobject.C,v 1.44 2015/10/26 01:22:02 moko Exp $" IDENT_PA_VOBJECT_H;
 
 Value* VObject::get_scalar_value(const char* as_something) const {
 	VObject* unconst_this=const_cast<VObject*>(this);

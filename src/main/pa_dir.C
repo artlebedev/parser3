@@ -1,14 +1,14 @@
 /** @file
 	Parser: directory scanning for different OS-es.
 
-	Copyright (c) 2000-2012 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2000-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #include "pa_common.h"
 #include "pa_dir.h"
 
-volatile const char * IDENT_PA_DIR_C="$Id: pa_dir.C,v 1.25 2015/06/29 17:59:13 moko Exp $" IDENT_PA_DIR_H;
+volatile const char * IDENT_PA_DIR_C="$Id: pa_dir.C,v 1.26 2015/10/26 01:21:58 moko Exp $" IDENT_PA_DIR_H;
 
 #ifdef _MSC_VER
 

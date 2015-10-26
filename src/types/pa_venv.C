@@ -1,7 +1,7 @@
 /** @file
 	Parser: @b env class.
 
-	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
@@ -10,7 +10,7 @@
 #include "pa_vhash.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_PA_PA_VENV_C="$Id: pa_venv.C,v 1.15 2015/04/02 22:04:41 moko Exp $" IDENT_PA_VENV_H;
+volatile const char * IDENT_PA_PA_VENV_C="$Id: pa_venv.C,v 1.16 2015/10/26 01:22:01 moko Exp $" IDENT_PA_VENV_H;
 
 #define PARSER_VERSION_ELEMENT_NAME "PARSER_VERSION"
 #define ENV_FIELDS_ELEMENT_NAME "fields"

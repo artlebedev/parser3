@@ -1,7 +1,7 @@
 /** @file
 	Parser: memcached class decls.
 
-	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 	Authors:
 		Ivan Poluyanov <ivan-poluyanov@yandex.ru>
 		Artem Stepanov <timofei1394@thesecure.in>
@@ -10,7 +10,7 @@
 #ifndef PA_VMEMCACHED_H
 #define PA_VMEMCACHED_H
 
-#define IDENT_PA_VMEMCACHED_H "$Id: pa_vmemcached.h,v 1.7 2013/12/02 21:44:47 moko Exp $"
+#define IDENT_PA_VMEMCACHED_H "$Id: pa_vmemcached.h,v 1.8 2015/10/26 01:22:02 moko Exp $"
 
 #include "classes.h"
 #include "pa_vstateless_object.h"

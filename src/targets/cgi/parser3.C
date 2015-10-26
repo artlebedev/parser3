@@ -1,11 +1,11 @@
 /** @file
 	Parser: scripting and CGI main.
 
-	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.268 2015/10/26 01:09:57 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.269 2015/10/26 01:22:00 moko Exp $";
 
 #include "pa_config_includes.h"
 

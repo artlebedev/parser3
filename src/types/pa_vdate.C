@@ -1,7 +1,7 @@
 /** @file
 	Parser: @b date parser class.
 
-	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 */
 
 #include "pa_vstateless_object.h"
@@ -9,7 +9,7 @@
 #include "pa_vint.h"
 #include "pa_vstring.h"
 
-volatile const char * IDENT_PA_PA_VDATE_C="$Id: pa_vdate.C,v 1.12 2015/10/12 14:36:56 moko Exp $" IDENT_PA_VDATE_H;
+volatile const char * IDENT_PA_PA_VDATE_C="$Id: pa_vdate.C,v 1.13 2015/10/26 01:22:01 moko Exp $" IDENT_PA_VDATE_H;
 
 #define ZERO_DATE (-62169984000ll-SECS_PER_DAY) // '0000-00-00 00:00:00' - 1 day
 #define MAX_DATE (253402300799ll+SECS_PER_DAY) // '9999-12-31 23:59:59' + 1 day

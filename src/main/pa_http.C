@@ -1,7 +1,7 @@
 /** @file
 	Parser: http support functions.
 
-	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
  */
 
@@ -13,7 +13,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.68 2015/10/13 21:27:57 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.69 2015/10/26 01:21:58 moko Exp $" IDENT_PA_HTTP_H; 
 
 #ifdef _MSC_VER
 #include <windows.h>

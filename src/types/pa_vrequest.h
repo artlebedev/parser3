@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b request class decl.
 
-	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VREQUEST_H
 #define PA_VREQUEST_H
 
-#define IDENT_PA_VREQUEST_H "$Id: pa_vrequest.h,v 1.42 2015/04/02 22:04:42 moko Exp $"
+#define IDENT_PA_VREQUEST_H "$Id: pa_vrequest.h,v 1.43 2015/10/26 01:22:02 moko Exp $"
 
 // includes
 

@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b dnode methods class - MDnode class decl.
 
-	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef XNODE_H
 #define XNODE_H
 
-#define IDENT_XNODE_H "$Id: xnode.h,v 1.31 2012/03/16 09:24:08 moko Exp $"
+#define IDENT_XNODE_H "$Id: xnode.h,v 1.32 2015/10/26 01:21:55 moko Exp $"
 
 class MXnode: public Methoded {
 public: // Value

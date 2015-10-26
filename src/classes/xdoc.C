@@ -1,7 +1,7 @@
 /** @file
 	Parser: @b xdoc parser class.
 
-	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
@@ -28,7 +28,7 @@
 #include "xnode.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_XDOC_C="$Id: xdoc.C,v 1.182 2015/10/09 11:42:38 moko Exp $";
+volatile const char * IDENT_XDOC_C="$Id: xdoc.C,v 1.183 2015/10/26 01:21:55 moko Exp $";
 
 // defines
 

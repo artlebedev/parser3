@@ -1,14 +1,14 @@
 /** @file
 	Parser: web server api interface object decl.
 
-	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_SAPI_H
 #define PA_SAPI_H
 
-#define IDENT_PA_SAPI_H "$Id: pa_sapi.h,v 1.30 2015/04/02 22:04:41 moko Exp $"
+#define IDENT_PA_SAPI_H "$Id: pa_sapi.h,v 1.31 2015/10/26 01:21:56 moko Exp $"
 
 // includes
 

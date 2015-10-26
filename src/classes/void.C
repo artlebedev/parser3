@@ -1,7 +1,7 @@
 /** @file
 	Parser: @b VOID parser class.
 
-	Copyright (c) 2001-2012 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
@@ -12,7 +12,7 @@
 #include "pa_vvoid.h"
 #include "pa_sql_connection.h"
 
-volatile const char * IDENT_VOID_C="$Id: void.C,v 1.51 2012/06/08 11:44:02 misha Exp $";
+volatile const char * IDENT_VOID_C="$Id: void.C,v 1.52 2015/10/26 01:21:55 moko Exp $";
 
 // externs
 
