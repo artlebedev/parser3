@@ -2,10 +2,10 @@
 #		http://www.unicode.org/Public/UNIDATA/CaseFolding.txt
 #		to parser source code
 #
-#	Copyright (c) 2003-2012 Art. Lebedev Studio (http://www.artlebedev.com)
+#	Copyright (c) 2003-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 #	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
-# $Id: simple_folding.pl,v 1.2 2012/03/16 09:24:15 moko Exp $
+# $Id: simple_folding.pl,v 1.3 2015/10/26 01:29:59 moko Exp $
 
 #  usage:
 #    download CaseFolding.txt
