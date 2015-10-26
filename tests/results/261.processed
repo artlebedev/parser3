@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 220
+Content-Length: 510
 
 Empty string vs void:
 Json: "" vs null
@@ -9,4 +9,12 @@ Length: 0 vs 0
 Double: 0 vs 0
 Base64: "" vs ""
 Hash compatibility: "" ""
-Non-empty string: has no hash compatibility
+Non-empty string not hash compatible: Type: parser.runtime,
+Source: key,
+Comment: is 'string', it has no elements
+Absent method empty string error: Type: parser.runtime,
+Source: something,
+Comment: string method not found
+Absent method non-empty string error: Type: parser.runtime,
+Source: something,
+Comment: string method not found

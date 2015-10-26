@@ -20,12 +20,17 @@ Double: ^s.double(0) vs ^v.double(0)
 Base64: "^s.base64[]" vs "^v.base64[]"
 Hash compatibility: "$s.key" "$v.key"
 
-Non-empty string: ^try{
+Non-empty string not hash compatible: ^try-catch{
 	$s[string]
 	$s.key
-}{
-	$exception.handled(1)
-	has no hash compatibility
+}
+Absent method empty string error: ^try-catch{
+	$s[string]
+	^s.something[]
+}
+Absent method non-empty string error: ^try-catch{
+	$s[]
+	^s.something[]
 }
 
 ^string_methods.foreach[k;v]{
