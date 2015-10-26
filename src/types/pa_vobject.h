@@ -8,7 +8,7 @@
 #ifndef PA_VOBJECT_H
 #define PA_VOBJECT_H
 
-#define IDENT_PA_VOBJECT_H "$Id: pa_vobject.h,v 1.62 2013/10/08 21:25:46 moko Exp $"
+#define IDENT_PA_VOBJECT_H "$Id: pa_vobject.h,v 1.63 2015/10/26 00:39:37 moko Exp $"
 
 // includes
 
@@ -58,6 +58,9 @@ public: // Value
 
 	override Value* get_element(const String& aname);
 	override const VJunction* put_element(const String& name, Value* value);
+#ifdef FEATURE_GET_ELEMENT4CALL
+	override Value* get_element4call(const String& aname);
+#endif
 
 	override const String* get_json_string(Json_options& options);
 

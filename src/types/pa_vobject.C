@@ -12,7 +12,7 @@
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VOBJECT_C="$Id: pa_vobject.C,v 1.42 2015/08/10 23:47:52 moko Exp $" IDENT_PA_VOBJECT_H;
+volatile const char * IDENT_PA_VOBJECT_C="$Id: pa_vobject.C,v 1.43 2015/10/26 00:39:37 moko Exp $" IDENT_PA_VOBJECT_H;
 
 Value* VObject::get_scalar_value(const char* as_something) const {
 	VObject* unconst_this=const_cast<VObject*>(this);
@@ -99,6 +99,18 @@ Value* VObject::get_element(const String& aname) {
 	// class method or property, or _object_ default getter
 	return fclass.get_element(*this, aname);
 }
+
+#ifdef FEATURE_GET_ELEMENT4CALL
+// get_element copy to remove extra virtual call
+Value* VObject::get_element4call(const String& aname) {
+	// object field
+	if(Value* result=ffields.get(aname))
+		return result;
+
+	// class method or property, or _object_ default getter
+	return fclass.get_element(*this, aname);
+}
+#endif
 
 const VJunction* VObject::put_element(const String& aname, Value* avalue){
 	// class property
