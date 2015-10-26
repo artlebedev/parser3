@@ -8,21 +8,25 @@
 #include "pa_sapi.h"
 #include "pa_common.h"
 
-volatile const char * IDENT_PA_MEMORY_C="$Id: pa_memory.C,v 1.11 2015/10/26 01:21:59 moko Exp $" IDENT_PA_MEMORY_H;
+volatile const char * IDENT_PA_MEMORY_C="$Id: pa_memory.C,v 1.12 2015/10/26 23:33:32 moko Exp $" IDENT_PA_MEMORY_H;
 
 void *pa_fail_alloc(const char* what, size_t size) {
 #ifdef PA_DEBUG_DISABLE_GC
 	SAPI::die("out of memory (in pa_fail_alloc)");
 #else
-	SAPI::die("out of memory: failed to %s %u bytes. "
-		"heap_used=%u, heap_free=%u, bytes_since_gc=%u, total_bytes=%u",
-		what, size,
-		GC_get_heap_size(),
-		GC_get_free_bytes(),
-		GC_get_bytes_since_gc(),
-		GC_get_total_bytes()
-		);
+	SAPI::die("out of memory: failed to %s %u bytes. heap_used=%u, heap_free=%u, bytes_since_gc=%u, total_bytes=%u",
+		what, size, GC_get_heap_size(), GC_get_free_bytes(), GC_get_bytes_since_gc(), GC_get_total_bytes());
 #endif
 	// never reached
 	return 0;
 }
+
+#ifdef _MSC_VER
+extern "C" void *pa_fail_alloc(const char* what);
+void *pa_fail_alloc(const char* what) {
+	SAPI::die("fatal memory error: %s. heap_used=%u, heap_free=%u, bytes_since_gc=%u, total_bytes=%u",
+		what, GC_get_heap_size(), GC_get_free_bytes(), GC_get_bytes_since_gc(), GC_get_total_bytes());
+	// never reached
+	return 0;
+}
+#endif
