@@ -1,4 +1,14 @@
+2015-10-27  moko
+
+	* src/main/pa_memory.C: pa_fail_alloc added for GC_abort in Windows
+
 2015-10-26  moko
+
+	* tests/322.html, src/classes/reflection.C: arguments reorder
+	  (related to issue #1041)
+
+	* src/: classes/classes.awk, main/helpers/simple_folding.pl:
+	  Copyright year updated
 
 	* src/: classes/bool.C, classes/classes.C, classes/classes.h,
 	  classes/curl.C, classes/date.C, classes/double.C, classes/file.C,
@@ -14678,7 +14688,7 @@
 	  types/pa_vstring.h, types/pa_vtable.C, types/pa_vtable.h,
 	  types/pa_vvoid.h, types/pa_vxdoc.C, types/pa_vxdoc.h,
 	  types/pa_vxnode.C, types/pa_vxnode.h, types/pa_wcontext.C,
-	  types/pa_wcontext.h, types/pa_wwrapper.h: $Date: 2015/10/26 01:27:35 $
+	  types/pa_wcontext.h, types/pa_wwrapper.h: $Date: 2015/10/27 12:15:21 $
 
 	* src/: classes/classes.C, classes/classes.dsp, classes/classes.h,
 	  classes/date.C, classes/double.C, classes/file.C, classes/form.C,
@@ -18917,7 +18927,7 @@
 	  main/pa_hash.C, main/pa_pool.C, main/pa_request.C,
 	  main/pa_socks.C, main/pa_sql_driver_manager.C, main/pa_string.C,
 	  main/pa_table.C, main/untaint.C, targets/cgi/parser3.C,
-	  targets/isapi/parser3isapi.C: static char *RCSId="$Id: ChangeLog,v 1.99 2015/10/26 01:27:35 moko Exp $";
+	  targets/isapi/parser3isapi.C: static char *RCSId="$Id: ChangeLog,v 1.100 2015/10/27 12:15:21 moko Exp $";
 
 	* src/main/: compile.y, compile_tools.h: $:name: == ${name}:
 	  $class:name: == ${class:name}:
@@ -21763,9 +21773,9 @@
 
 	* src/include/: pa_pool.h, pa_string.h: pa_pool split
 
-	* src/main/: main.dsp, pa_string.C: $Id: ChangeLog,v 1.99 2015/10/26 01:27:35 moko Exp $ check
+	* src/main/: main.dsp, pa_string.C: $Id: ChangeLog,v 1.100 2015/10/27 12:15:21 moko Exp $ check
 
-	* src/: main/pa_pool.C, main/pa_string.C, include/pa_pool.h: $Id: ChangeLog,v 1.99 2015/10/26 01:27:35 moko Exp $
+	* src/: main/pa_pool.C, main/pa_string.C, include/pa_pool.h: $Id: ChangeLog,v 1.100 2015/10/27 12:15:21 moko Exp $
 	  check
 
 	* src/: include/pa_pool.h, main/pa_string.C: String prealloc &
