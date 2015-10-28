@@ -13,7 +13,7 @@
 #include "pa_exception.h"
 #include "pa_common.h"
 
-volatile const char * IDENT_PA_EXEC_C="$Id: pa_exec.C,v 1.86 2015/10/28 01:34:19 moko Exp $" IDENT_PA_EXEC_H;
+volatile const char * IDENT_PA_EXEC_C="$Id: pa_exec.C,v 1.87 2015/10/28 22:50:00 moko Exp $" IDENT_PA_EXEC_H;
 
 #ifdef _MSC_VER
 
@@ -115,6 +115,20 @@ error:
 	CloseHandle(*phErrRead);
 	
 	return result;
+}
+
+static int get_exit_status(HANDLE hProcess) {
+	DWORD dwExitCode = 0;
+	if(!GetExitCodeProcess(hProcess, &dwExitCode))
+		return -1;
+	if(dwExitCode != STILL_ACTIVE)
+		return dwExitCode;
+	// wait for 1 second for process to exit
+	if(WaitForSingleObject(hProcess, 1000) != WAIT_OBJECT_0)
+		return -2;
+	if(!GetExitCodeProcess(hProcess, &dwExitCode))
+		return -1;
+	return dwExitCode;
 }
 
 static void read_pipe(String& result, HANDLE hOutRead, String::Language lang){
@@ -422,6 +436,7 @@ PA_exec_result pa_exec(
 		CloseHandle(hOutRead);
 		read_pipe(result.err, hErrRead, String::L_TAINTED);
 		CloseHandle(hErrRead);
+		result.status=get_exit_status(pi.hProcess);
 		// We must close the handles to the new process and its main thread
 		// to prevent handle and memory leaks.
 		CloseHandle(pi.hProcess);
