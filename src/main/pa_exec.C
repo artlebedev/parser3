@@ -13,7 +13,7 @@
 #include "pa_exception.h"
 #include "pa_common.h"
 
-volatile const char * IDENT_PA_EXEC_C="$Id: pa_exec.C,v 1.85 2015/10/26 01:21:58 moko Exp $" IDENT_PA_EXEC_H;
+volatile const char * IDENT_PA_EXEC_C="$Id: pa_exec.C,v 1.86 2015/10/28 01:34:19 moko Exp $" IDENT_PA_EXEC_H;
 
 #ifdef _MSC_VER
 
@@ -45,15 +45,27 @@ static DWORD CreateHiddenConsoleProcess(LPCTSTR szCmdLine,
 	// create STDIN pipe
 	if(!CreatePipe(&hInRead, phInWrite, &sa, 0))
 		goto error;
-	
+
+	// Ensure the write handle to the pipe for STDIN is not inherited. 
+	if (!SetHandleInformation(*phInWrite, HANDLE_FLAG_INHERIT, 0))
+		goto error;
+
 	// create STDOUT pipe
 	if(!CreatePipe(phOutRead, &hOutWrite, &sa, 0))
 		goto error;
 	
+	// Ensure the read handle to the pipe for STDOUT is not inherited.
+	if (!SetHandleInformation(*phOutRead, HANDLE_FLAG_INHERIT, 0))
+		goto error;
+
 	// create STDERR pipe
 	if(!CreatePipe(phErrRead, &hErrWrite, &sa, 0))
 		goto error;
 	
+	// Ensure the read handle to the pipe for STDERR is not inherited.
+	if (!SetHandleInformation(*phErrRead, HANDLE_FLAG_INHERIT, 0))
+		goto error;
+
 	// process startup information
 	memset(&si, 0, sizeof(si));
 	si.cb=sizeof(si); 
@@ -405,10 +417,6 @@ PA_exec_result pa_exec(
 		const char* in_cstr=in.cstr();
 		DWORD written_size;
 		WriteFile(hInWrite, in_cstr, in.length(), &written_size, NULL);
-		// EOF for stupid text reads
-		// normally they should read CONTENT_LENGTH bytes,
-		// without this char
-		WriteFile(hInWrite, "\x1A", 1, &written_size, NULL);
 		CloseHandle(hInWrite);
 		read_pipe(result.out, hOutRead);
 		CloseHandle(hOutRead);
