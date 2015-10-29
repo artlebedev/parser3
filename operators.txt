@@ -93,7 +93,7 @@ Xне сделано, видимо, не будет сделано
     }
     !^break[] + - обрывает цикл
     !^continue[] + - обрывает итерацию цикла
-    !^untaint[[as-is|file-spec|http-header|mail-header|uri|sql|js|xml|html|optimized-html|regex|parser-code]]{код}
+    !^untaint[[as-is|file-spec|uri|http-header|mail-header|sql|js|json|parser-code|regex|xml|html|optimized-[as-is|xml|html]]]{код}
         default as-is
     !^taint[[lang]][код]
         default "just tainted, language unknown"
@@ -107,7 +107,7 @@ Xне сделано, видимо, не будет сделано
     !^connect[protocol://строка соединения]]{код с ^sql[...]-ями}
         !mysql://user:pass@{host[:port]|[/unix/socket]}/database?
             ClientCharset=parser-charset << charset in which parser thinks client works
-            charset=cp1251_koi8&
+            charset=UTF-8&
             timeout=3&
             compress=0&
             named_pipe=1&
@@ -145,10 +145,10 @@ Xне сделано, видимо, не будет сделано
 #sql drivers
 $SQL[
     $.drivers[^table::create{protocol	driver	client
-mysql	/www/parser3/libparser3mysql.so	/usr/local/lib/mysql/libmysqlclient.so
-pgsql	/www/parser3/libparser3pgsql.so	/usr/local/pgsql/lib/libpq.so
+mysql	/www/parser3/libparser3mysql.so	libmysqlclient.so
+pgsql	/www/parser3/libparser3pgsql.so	libpq.so
 oracle	/www/parser3/libparser3oracle.so	/u01/app/oracle/product/8.1.5/lib/libclntsh.so?ORACLE_HOME=/u01/app/oracle/product/8.1.5&ORA_NLS33=/u01/app/oracle/product/8.1.5/ocommon/nls/admin/data
-sqlite	/www/parser3/libparser3sqlite.so	/usr/local/sqlite/lib/sqlite3.so
+sqlite	/www/parser3/libparser3sqlite.so	sqlite3.so
 odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
 }]
 ]
@@ -183,15 +183,6 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         !сигнализирует вышестоящему ^cache "уменьши до стольких-то 'секунд'/'expires'"
         !в пределе: ^cache(0) отменить кэширование
     !^cache[] выдаёт текущую expires date
-    X^cache[read] 
-        сигнализирует вышестоящему ^cache "взять скэшированное насильно, игнорируя expires",
-        выдаёт bool "получилось/нет"
-	!^sleep(seconds)
-
-
-    Xесть глобальный флажок в свойствах/командной строке "не оптимизировать"
-    !и есть исключение: ^untaint[html]{код} не оптимизируется 
-        Xбезотностительно флажка
 
     !у всех методов есть локальная переменная $result, если в неё что положить,
     !то _это_ будет результатом макроса, а не его тело
@@ -252,22 +243,7 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
 
 
 !void
-    !^имя.length[]
-        0
-    !^имя.pos[...]
-        -1
-    !^имя.left(n)
-       ничего не выдаёт
-    !^имя.right(n)
-       ничего не выдаёт
-    !^имя.mid(p[;n])
-       ничего не выдаёт
-    !^имя.int[]  (default) 
-        0 или default
-    !^имя.double[] (default)
-        0 или default
-    !^имя.bool[] (default)
-        false или default
+    !доступны все методы, присутствующие у объекта класса string, результат как у пустой строки
     !^void:sql{запрос без результата}{$.bind[см. table::sql]}
 
 
@@ -322,11 +298,10 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !^строка.{l|r}split[разделитель] таблица из столбца $piece
         оставлен для совместимости
     !^строка.upper|lower[] 
-    X^строка.truncate(предел терпенья) стиль :(
     !^строка.length[]
     !^строка.mid(P[;N])
         без N - "до конца строки"
-    !^строка.left(N)
+    !^строка.left(N), -1 выдает всю строку
     !^строка.right(N)
     !^строка.pos[подстрока]
     !^строка.pos[подстрока](позиция, с которой ищем)
@@ -340,9 +315,14 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         состоит из большого числа фрагментов
     !^строка.trim[start|both|end|left|right[;chars]] выкидывает chars из начала/конца/и начала и конца
         default 'chars' -- whitespace chars
-    !^строка.append[string]
+    !^строка.trim[chars] выкидывает chars из начала и конца
     !^строка.base64[] encode
     !^string:base64[encoded[;$.strict(true)]] decode
+    !^строка.idna[] IDNA кодирование, поддержка кириллических доменов
+    !^string:idna[encoded] IDNA декодирование, поддержка кириллических доменов
+    !^строка.js-escape[] кодирование для передачи в JS (%uXXXX)
+    !^string:js-unescape[escaped] декодирование переданного из js
+    !^string:unescape[js|uri;escaped; $.charset[] ] декодирование переданного из js или uri
 
 !table
     в выражении 
@@ -364,6 +344,7 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         в параметре bind передать hash, из которого возьмётся(или куда запишется) значение
     !^таблица.save[[nameless|append;]путь[;опции, см. load]]
     !$таблица.поле
+    !$таблица.поле[новое значение]
     !$таблица.fields  из named таблицы выдаёт текущую запись как Hash
     !^таблица.menu{тело}[[разделитель]]
     !^таблица.offset[] печатает offset
@@ -371,17 +352,16 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         !whence=cur|set
         !без whence - это cur
     !^таблица.count[], ^таблица.count[rows] - количество строк в таблице
-    !^таблица.count[columns] - для named таблицы количество столбцов (сокращение от $c[^таблица.columns[]]^c.count[])
+    !^таблица.count[columns] - количество столбцов таблицы
     !^таблица.count[cells] - количество ячеек в текущей строке таблицы
     !^таблица.line[] 1-based offset
     !^таблица.sort{{ключеделатель строка}|(ключеделатель число)}[{desc|asc}] default=asc
     !^таблица.append{данные}
-    X^таблица.insert{данные}[(n)] добавить запись 
-        на текущую позицию [добавить запись на позицию n]
-    X^таблица.remove(position[;count]) - стирает запись 
-        из текущей позиции [стирает запись из конкретной позиции] 
-            [стирает count записей]
-    !^таблица.join[таблица][$.limit(1) $.offset(5) $.offset[cur]] - добавляет записи из таблицы. 
+    !^таблица.append[ $.имя столбца[значение столбца] ]
+    !^таблица.insert{данные} добавить запись на текущую позицию
+    !^таблица.insert[ $.имя столбца[значение столбца] ]
+    !^таблица.delete[] - стирает запись с текущей позиции
+    !^таблица.join[таблица][$.limit(1) $.offset(5) $.offset[cur]] - добавляет записи из таблицы.
         таблицы должны иметь одинаковую структуру.
     !^таблица.flip[] выдаёт транспонированную, надо куда-то сложить, потом пользовать
     !^таблица.locate[поле;значение][[$.limit(1) $.offset(5) $.offset[cur] $.reverse(1)]] 
@@ -420,14 +400,15 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !^hash::sql{запрос}[[$.distinct(1) $.limit(2) $.offset(4) todo:$.default{$.field[]...}]]
         получается hash(ключи=значения первая колонка ответа)
         of hash(ключи=названия остальных колонкок ответа)
-    !^хеш._keys[[название колонки с ключами]]+ таблица из одного столбца $key или как передадут
-    !^хеш._count[]
+    !^хеш.keys[[название колонки с ключами]]+ таблица из одного столбца key или как передадут
+    !^хеш.count[]
     !^хеш.foreach[key;value]{тело}[[разделитель]|{разделитель который выполняется перед непустым очередным не первым телом}]
     !^хеш.delete[ключ]  удалить ключ
     !^хеш.contain[ключ] - существует ли в хеше ключ (bool)
-    !^хэш._at[first|last]
-    !^хэш._at([-]N)
+    !^хэш.at[first|last][[key|value|hash]]
+    !^хэш.at([-]N)[[key|value|hash]]
         доступ к заданным элементам упорядоченного хеша
+    !^хэш.sort[key;value]{{ключеделатель строка}|(ключеделатель число)}[[desc|asc]] default=asc
 
 !hashfile
     !^hashfile::open[filename]
@@ -470,7 +451,8 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
 
 !env
     !$env:переменная
-    !$env:PARSER то же самое, что показывается при запуске parser.cgi
+    !$env:fields хэш с переменными окружения
+    !$env:PARSER_VERSION версия парсера
 
 
 !cookie
@@ -484,22 +466,22 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
 
 
 !request
-    !$request:query    
-    !$request:body unprocessed POST request body
+    !$request:query
     !$request:uri
     !$request:document-root
         каталог, относительно которого считаются пути в parser, по-умолчанию = $env:DOCUMENT_ROOT
         можно изменить, если на hosting что-то неудобно настроено
     !$request:argv = hash с параметрами коммандной строки. ключи 0, 1, ... [0 -- имя обрабатываемого файла].
-    X!$request:browser  это hash, поля:
-        !$type = ie/nn и !$version = номер, скажем 5.5       
-    X$request:user
-    X$request:password
     !$request:charset
         Кодировка исходного документа 
         !используется при upper/lower и match[][i]
         ПРЕДУПРЕЖДЕНИЕ: класс form получает свои поля после обработки всех auto класса MAIN
         поэтому необходимо задать $request/response:charset в одном из них. не после.
+    !$request:method метод запроса (GET|POST|PUT)
+    !$request:body тело POST-запроса в виде текста
+    !$request:body-file тело POST-запроса в виде файла
+    !$request:body-charset кодировка POST-запроса
+    !$request:headers хэш с заголовками запроса (без префикса HTTP_)
 
 
 !response
@@ -533,8 +515,6 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !^шаблон.size[] количество байт скомпилированного шаблона
         если значение очень большое -- стоит почитать документацию по pcre и, возможно, переписать шаблон.
     !^шаблон.study_size[] размер study-структуры. если==0 -- шаблон не может быть "изучен"
-    ^шаблон.save[filespec]
-    ^шаблон.load[filespec]
 
 
 !reflection
@@ -544,6 +524,8 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !^reflection:class_name[объект]        имя класса переданного объекта
     !^reflection:base[объект]              родительский класс переданного объекта
     !^reflection:base_name[объект]         имя родительского класса переданного объекта
+    !^reflection:class_by_name[имя класса] получение класса по имени
+    !^reflection:def[class;имя класса]     проверка класса на существование
     !^reflection:methods[класс]            хеш со списком методов указанного класса, значения -- строки 'native' или 'parser'
     !^reflection:method[класс или объект;имя метода] возвращает junction-method класса или объекта
     !^reflection:fields[класс или объект]  хеш со списком статических полей указанного класса или динамических полей указанного объекта
@@ -562,6 +544,7 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
                                                                    при передаче параметра возвращает true, если передан динамический объект,
                                                                    false если класс
     !^reflection:delete[класс или объект;имя переменной]           удаляет переменную с указанным именем в указанном классе или объекте
+    !^reflection:is[имя элемента;имя класса][[контекст]]           аналог оператора is, позволяющий определить, является ли элемент кодом.
 
 
 !mail
@@ -787,7 +770,6 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !^file:justext[/a/some.tar.gz]=gz
     !/some/page.html: ^file:fullpath[a.gif] => /some/a.gif
     !^файл.sql-string[] внутри ^connect даст правильно escaped строку, которую можно в запрос отдать
-    X^file::sql[[имя_файла_для_download]]{query}
     !^file::sql{query}[[
         $.name[имя_файла_для_download]
         $.content-type[пользовательский content-type]
@@ -844,16 +826,24 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
        вычисляет crc32 строки
     !^math:sha1[string]
     !^math:convert[number](base-from;base-to) преобразует строку с числом из одной системы исчисления в другую
+    !^math:digest[[md5|sha1|sha256|sha512];строка или файл][[ $.format[hex|base64] $.hmac[ключ] ]]
+       объединяет в себе возможность работы с разными алгоритмами криптографического хеширования.
+       $.hmac[ключ] для проверки целостности переданных данных
 
 
 !inet
     !^inet:ntoa(long)
     !^inet:aton[IP]
+    !^inet:name2ip[name][[ $.ipv[4|6|any] $.table(true) ]] прямое преобразование имени в IP адрес
+    !^inet:ip2name[ip][ $.ipv[4|6|any] ]] обратное преобразование из IP адреса в имя
+
 
 !json
     !^json:parse[-json-строка-[;
         $.depth(максимальная глубина, default == 19)
         $.double(false)              отключить встроенный парсинг чисел с плавающей точкой (по умолчанию включен)
+                                     в этом случае они попадут в результирующий объект как строки
+        $.int(false)                 отключить встроенный парсинг целых чисел (по умолчанию включен)
                                      в этом случае они попадут в результирующий объект как строки
         $.distinct[first|last|all]   как будет происходить разбор дублирующихся ключей у объектов
                                      first -- будет оставлен первый встретившийся элемент
@@ -881,6 +871,10 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
         $.тип[method-junction]   любой тип можно вывести с помощью пользовательского метода, который 
                                  должен принимать 3 параметра: ключ, объект данного типа и опции 
                                  вызова ^json:string[]
+        $._default[имя метода]   имя пользователького метода, при его наличии он будет вызван для
+                                 сериализации
+        $.void[null|string]      неопределенное значение будет выдано в виде null (по умолчанию)
+                                 или пустой строки
     ]]
         сериализует системный или пользовательский объект в json-строку
 
@@ -922,7 +916,7 @@ odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
     !^date:last-day(год;месяц) вернёт последний день месяца
     !^дата.last-day[] вернёт последний день месяца $дата
     !^дата.gmt-string[]  Fri, 23 Mar 2001 09:32:23 GMT
-    !^дата.iso-string[]  2001-03-23T06:32:23+3
+    !^дата.iso-string[]  2001-03-23T12:32:23+3
 
 
 xdoc(xnode)
@@ -1236,7 +1230,8 @@ DATA::=string | file | hash
         !по-умолчанию, получение http status != 200 >> создает http.status ошибку,
         !это можно отключить, передав
         !$.any-status(1)
-        !$.charset[кодировка удалённых докуметов по-умолчанию] << если сервер вернёт content-type:charset=ОНА_ПЕРЕБИВАЕТ
+        !$.charset[кодировка удалённых документов по-умолчанию], если сервер вернёт content-type:charset - ОНА_ПЕРЕБИВАЕТ
+        !$.response-charset[кодировка удалённых документов], не перебиваеся content-type:charset
         !$.user[пользователь]
         !$.password[пароль]
     !file::load в дополнительные поля записывает
@@ -1274,11 +1269,6 @@ DATA::=string | file | hash
     !http.response        ^file::load[http://ok/there]                host found, connection accepted, bad answer
     !http.status          ^file::load[http://ok/there]                host found, connection accepted, status!=200
     !date.range           ^date::create(1950;1;1)                     date out of valid range
-
-!нужно выключить русский apache: CharsetDisable on
-
-Xесли в MAIN будет определён флаг $ORIGINS(1) то вместо обычного вывода страницы будет
-    выдан список фрагментов результата с указанием их происхождения
 
 !если в MAIN определён $SIGPIPE(1) то в случае, если обработка была прервана пользователем, сообщение
 	об этом будет записано в parser3.log (раньше оно всегда писалось)
