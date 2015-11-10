@@ -1,0 +1,67 @@
+@main[]
+
+^rem{ OP_GET_ELEMENT4CALL, OP_GET_OBJECT_ELEMENT4CALL, OP_GET_OBJECT_VAR_ELEMENT4CALL are tested here }
+
+^test[ $.name[value] ]
+^test[ $._count[is count] $.name[value] ]
+
+^test[ ^table::create{name
+value} ]
+
+^test[ ^table::create{name	count
+value	is count} ]
+
+@test[h]
+Testing $h.CLASS_NAME
+
+Test-hash:
+^test-hash[$h]
+Test-table:
+^test-table[$h]
+Test-no-such-method:
+^test-no-such-method[$h]
+
+@test-hash[h][deep;var]
+
+$deep[ $.h[$h] ]
+$var[_count]
+
+^try-catch{var: $deep.h._count}
+^try-catch{method: ^deep.h._count[]}
+^try-catch{var: $deep.h.$var}
+^try-catch{method: ^deep.h.$var[]}
+
+^try-catch{var: $h._count}
+^try-catch{method: ^h._count[]}
+^try-catch{var: $h.$var}
+^try-catch{method: ^h.$var[]}
+
+@test-table[h][deep;var]
+
+$deep[ $.h[$h] ]
+$var[count]
+
+^try-catch{var: $deep.h.count}
+^try-catch{method: ^deep.h.count[]}
+^try-catch{var: $deep.h.$var}
+^try-catch{method: ^deep.h.$var[]}
+
+^try-catch{var: $h.count}
+^try-catch{method: ^h.count[]}
+^try-catch{var: $h.$var}
+^try-catch{method: ^h.$var[]}
+
+@test-no-such-method[h][deep;var]
+
+$deep[ $.h[$h] ]
+$var[no-such-method]
+
+^try-catch{var: $deep.h.no-such-method}
+^try-catch{method: ^deep.h.no-such-method[]}
+^try-catch{var: $deep.h.$var}
+^try-catch{method: ^deep.h.$var[]}
+
+^try-catch{var: $h.no-such-method}
+^try-catch{method: ^h.no-such-method[]}
+^try-catch{var: $h.$var}
+^try-catch{method: ^h.$var[]}
