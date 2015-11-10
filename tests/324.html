@@ -26,42 +26,46 @@ Test-no-such-method:
 $deep[ $.h[$h] ]
 $var[_count]
 
-^try-catch{var: $deep.h._count}
-^try-catch{method: ^deep.h._count[]}
-^try-catch{var: $deep.h.$var}
-^try-catch{method: ^deep.h.$var[]}
+^t-c{var: $deep.h._count}
+^t-c{method: ^deep.h._count[]}
+^t-c{var: $deep.h.$var}
+^t-c{method: ^deep.h.$var[]}
 
-^try-catch{var: $h._count}
-^try-catch{method: ^h._count[]}
-^try-catch{var: $h.$var}
-^try-catch{method: ^h.$var[]}
+^t-c{var: $h._count}
+^t-c{method: ^h._count[]}
+^t-c{var: $h.$var}
+^t-c{method: ^h.$var[]}
 
 @test-table[h][deep;var]
 
 $deep[ $.h[$h] ]
 $var[count]
 
-^try-catch{var: $deep.h.count}
-^try-catch{method: ^deep.h.count[]}
-^try-catch{var: $deep.h.$var}
-^try-catch{method: ^deep.h.$var[]}
+^t-c{var: $deep.h.count}
+^t-c{method: ^deep.h.count[]}
+^t-c{var: $deep.h.$var}
+^t-c{method: ^deep.h.$var[]}
 
-^try-catch{var: $h.count}
-^try-catch{method: ^h.count[]}
-^try-catch{var: $h.$var}
-^try-catch{method: ^h.$var[]}
+^t-c{var: $h.count}
+^t-c{method: ^h.count[]}
+^t-c{var: $h.$var}
+^t-c{method: ^h.$var[]}
 
 @test-no-such-method[h][deep;var]
 
 $deep[ $.h[$h] ]
 $var[no-such-method]
 
-^try-catch{var: $deep.h.no-such-method}
-^try-catch{method: ^deep.h.no-such-method[]}
-^try-catch{var: $deep.h.$var}
-^try-catch{method: ^deep.h.$var[]}
+^t-c{var: $deep.h.no-such-method}
+^t-c{method: ^deep.h.no-such-method[]}
+^t-c{var: $deep.h.$var}
+^t-c{method: ^deep.h.$var[]}
 
-^try-catch{var: $h.no-such-method}
-^try-catch{method: ^h.no-such-method[]}
-^try-catch{var: $h.$var}
-^try-catch{method: ^h.$var[]}
+^t-c{var: $h.no-such-method}
+^t-c{method: ^h.no-such-method[]}
+^t-c{var: $h.$var}
+^t-c{method: ^h.$var[]}
+
+@t-c[code]
+$result[^try-catch{$code}]
+^if($result is junction){$result[junction]}
