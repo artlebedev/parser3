@@ -20,7 +20,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.222 2015/10/26 01:21:54 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.223 2015/11/16 18:27:15 moko Exp $";
 
 // class
 
@@ -92,25 +92,22 @@ static void _int(Request& r, MethodParams& params) {
 
 static void _double(Request& r, MethodParams& params) {
 	const String& self_string=GET_SELF(r, VString).string();
-	double converted;
 
 	if(self_string.is_empty()) {
 		if(params.count()>0)
-			converted=params.as_double(0, "default must be double", r); // (default)
+			r.write_no_lang(*new VDouble(params.as_double(0, "default must be double", r))); // (default)
 		else
 			throw Exception(PARSER_RUNTIME, 0, "unable to convert empty string without default specified");
 	} else {
 		try {
-			converted=self_string.as_double();
+			r.write_no_lang(*new VDouble(self_string.as_double()));
 		} catch(...) { // convert problem
 			if(params.count()>0)
-				converted=params.as_double(0, "default must be double", r); // (default)
+				r.write_no_lang(*new VDouble(params.as_double(0, "default must be double", r))); // (default)
 			else
 				rethrow; // we have a problem when no default
 		}
 	}
-
-	r.write_no_lang(*new VDouble(converted));
 }
 
 static void _bool(Request& r, MethodParams& params) {

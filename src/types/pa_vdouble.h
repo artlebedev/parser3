@@ -8,7 +8,7 @@
 #ifndef PA_VDOUBLE_H
 #define PA_VDOUBLE_H
 
-#define IDENT_PA_VDOUBLE_H "$Id: pa_vdouble.h,v 1.62 2015/10/26 01:22:01 moko Exp $"
+#define IDENT_PA_VDOUBLE_H "$Id: pa_vdouble.h,v 1.63 2015/11/16 18:27:15 moko Exp $"
 
 // includes
 
@@ -17,7 +17,19 @@
 #include "pa_vstateless_object.h"
 
 // defines
+
 #define VDOUBLE_TYPE "double"
+
+// double validation defines
+
+#if _MSC_VER
+#include <float.h>
+#define pa_isnan(d) _isnan(d)
+#define pa_finite(d) _finite(d)
+#else
+#define pa_isnan(d) isnan(d)
+#define pa_finite(d) finite(d)
+#endif
 
 // externs
 
@@ -53,7 +65,10 @@ public: // Value
 
 public: // usage
 
-	VDouble(double adouble): fdouble(adouble) {}
+	VDouble(double adouble): fdouble(adouble) {
+		if(!pa_finite(adouble))
+			throw Exception("number.format", 0, pa_isnan(adouble) ? "invalid number (double)" : "out of range (double)");
+	}
 
 	int get_int() const { return (int)trunc(fdouble); }
 	double get_double() const { return fdouble; }
