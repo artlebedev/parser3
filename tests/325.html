@@ -1,0 +1,12 @@
+$s[NaN]
+NaN:^try-catch{^s.double[]}
+NaN:^try-catch{^s.double(0)}
+$s[INFINITY]
+Inf:^try-catch{^s.double[]}
+Inf:^try-catch{^s.double(0)}
+
+SQRT(-1):^try-catch{^math:sqrt(-1)}
+POW(0;-1):^try-catch{^math:pow(0;-1)}
+
+$x[^xdoc::create{<?xml version="1.0"?><x n=""/>}]
+^try-catch{^x.selectNumber[number(/x/@n)]}
