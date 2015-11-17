@@ -1,10 +1,33 @@
 Content-Type: text/html
-Content-Length: 409
+Content-Length: 493
 
-inet inet file file json json mail mail mail
-math math math
-memcached memcached form form form
-xnode xnode table table status status curl curl reflection reflection bool bool int int hash hash console console xdoc xdoc xnode
-string string memory memory memory
-void void string
-hashfile hashfile regex regex env env double double cookie cookie image image request request date date response response MAIN MAIN 
+MAIN MAIN ()
+bool bool ()
+console console ()
+cookie cookie ()
+curl curl ()
+date date ()
+double double ()
+env env ()
+file file ()
+form form (form)
+hash hash ()
+hashfile hashfile ()
+image image ()
+inet inet ()
+int int ()
+json json ()
+mail mail (mail)
+math math (math)
+memcached memcached ()
+memory memory (memory)
+reflection reflection ()
+regex regex ()
+request request ()
+response response ()
+status status ()
+string string ()
+table table ()
+void void (string)
+xdoc xdoc (xnode)
+xnode xnode ()
