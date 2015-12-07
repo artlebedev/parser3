@@ -1,0 +1,10 @@
+Content-Type: text/html
+Content-Length: 100
+
+via var: ""
+directly: "test"
+deep: "test"
+main: "test"
+via self var: ""
+via var: ""
+directly: "test"

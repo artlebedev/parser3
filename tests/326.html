@@ -1,0 +1,22 @@
+@main[]
+$t[^test::create[]]
+$v[CLASS_NAME]
+via var: "$t.$v"
+directly: "$t.CLASS_NAME"
+
+$h[ $.t[$t] ]
+deep: "$h.t.CLASS_NAME"
+main: "$MAIN:t.CLASS_NAME"
+
+^t.m[]
+
+@CLASS
+test
+
+@create[]
+
+@m[]
+$v[CLASS_NAME]
+via self var: "$self.$v"
+via var: "$$v"
+directly: "$self.CLASS_NAME"
