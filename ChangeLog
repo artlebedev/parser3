@@ -1,3 +1,28 @@
+2015-12-07  moko
+
+	* tests/: 326.html, results/326.processed: test for .CLASS &
+	  .CLASS_NAME optimization added (related to feature #844)
+
+2015-11-17  moko
+
+	* tests/: 323.html, results/323.processed: order added
+
+	* tests/: 325.html, results/325.processed: double range test added
+	  (related to bug #1049)
+
+2015-11-16  moko
+
+	* src/: classes/string.C, types/pa_vdouble.h: finite(double) check
+	  added to disallow NaN and Infinity (fixes bug #1049)
+
+2015-11-11  moko
+
+	* tests/324.html: parser 3.4.3 execution support added (related to
+	  feature #1017)
+
+	* tests/: 324.html, results/324.processed: test for
+	  GET_ELEMENT4CALL feature added (feature #1017)
+
 2015-10-29  moko
 
 	* operators.txt: updated for 3.4.4
@@ -14453,7 +14478,7 @@
 	  types/pa_vstring.h, types/pa_vtable.C, types/pa_vtable.h,
 	  types/pa_vvoid.h, types/pa_vxdoc.C, types/pa_vxdoc.h,
 	  types/pa_vxnode.C, types/pa_vxnode.h, types/pa_wcontext.C,
-	  types/pa_wcontext.h, types/pa_wwrapper.h: $Date: 2015/11/03 12:27:53 $
+	  types/pa_wcontext.h, types/pa_wwrapper.h: $Date: 2016/03/09 21:15:36 $
 
 	* src/: classes/classes.C, classes/classes.dsp, classes/classes.h,
 	  classes/date.C, classes/double.C, classes/file.C, classes/form.C,
@@ -18541,7 +18566,7 @@
 	  main/pa_hash.C, main/pa_pool.C, main/pa_request.C,
 	  main/pa_socks.C, main/pa_sql_driver_manager.C, main/pa_string.C,
 	  main/pa_table.C, main/untaint.C, targets/cgi/parser3.C,
-	  targets/isapi/parser3isapi.C: static char *RCSId="$Id: ChangeLog,v 1.101 2015/11/03 12:27:53 moko Exp $";
+	  targets/isapi/parser3isapi.C: static char *RCSId="$Id: ChangeLog,v 1.102 2016/03/09 21:15:36 moko Exp $";
 
 	* src/main/: compile.y, compile_tools.h: $:name: == ${name}:
 	  $class:name: == ${class:name}:
@@ -21356,9 +21381,9 @@
 
 	* src/include/: pa_pool.h, pa_string.h: pa_pool split
 
-	* src/main/: main.dsp, pa_string.C: $Id: ChangeLog,v 1.101 2015/11/03 12:27:53 moko Exp $ check
+	* src/main/: main.dsp, pa_string.C: $Id: ChangeLog,v 1.102 2016/03/09 21:15:36 moko Exp $ check
 
-	* src/: main/pa_pool.C, main/pa_string.C, include/pa_pool.h: $Id: ChangeLog,v 1.101 2015/11/03 12:27:53 moko Exp $
+	* src/: main/pa_pool.C, main/pa_string.C, include/pa_pool.h: $Id: ChangeLog,v 1.102 2016/03/09 21:15:36 moko Exp $
 	  check
 
 	* src/: include/pa_pool.h, main/pa_string.C: String prealloc &
