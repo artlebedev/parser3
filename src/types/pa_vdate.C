@@ -9,7 +9,7 @@
 #include "pa_vint.h"
 #include "pa_vstring.h"
 
-volatile const char * IDENT_PA_PA_VDATE_C="$Id: pa_vdate.C,v 1.15 2016/03/27 20:53:43 moko Exp $" IDENT_PA_VDATE_H;
+volatile const char * IDENT_PA_PA_VDATE_C="$Id: pa_vdate.C,v 1.16 2016/03/27 20:58:18 moko Exp $" IDENT_PA_VDATE_H;
 
 #define ZERO_DATE (-62169984000ll-SECS_PER_DAY) // '0000-00-00 00:00:00' - 1 day
 #define MAX_DATE (253402300799ll+SECS_PER_DAY) // '9999-12-31 23:59:59' + 1 day
@@ -164,7 +164,7 @@ const String* VDate::get_iso_string(iso_string_type format) {
 	int offset=gmt_offset();
 	/// http://www.w3.org/TR/NOTE-datetime
 	if(offset || (format & iso_string_no_z)){
-		char sign=offset>0 ? '+':'-';
+		char sign=offset<0 ? '-':'+';
 		offset=abs(offset);
 		static const char *sformats[]={
 			"%.4d-%.2d-%.2dT%.2d:%.2d:%.2d%c%.2d:%.2d",
