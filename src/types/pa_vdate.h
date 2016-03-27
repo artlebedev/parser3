@@ -8,7 +8,7 @@
 #ifndef PA_VDATE_H
 #define PA_VDATE_H
 
-#define IDENT_PA_VDATE_H "$Id: pa_vdate.h,v 1.61 2016/03/24 19:46:10 moko Exp $"
+#define IDENT_PA_VDATE_H "$Id: pa_vdate.h,v 1.62 2016/03/27 20:53:43 moko Exp $"
 
 #include "classes.h"
 #include "pa_common.h"
@@ -79,10 +79,11 @@ public: // usage
 	tm get_tm() const { return ftm; }
 
 	enum sql_string_type {sql_string_datetime, sql_string_date, sql_string_time};
+	enum iso_string_type {iso_string_default = 0, iso_string_ms = 1, iso_string_no_colon = 2, iso_string_no_z = 4};
 
 	const String* get_sql_string(sql_string_type format = sql_string_datetime);
+	const String* get_iso_string(iso_string_type format = iso_string_default);
 	const String* get_gmt_string();
-	const String* get_iso_string();
 
 	struct yw {
 		int year;

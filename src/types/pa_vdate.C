@@ -9,7 +9,7 @@
 #include "pa_vint.h"
 #include "pa_vstring.h"
 
-volatile const char * IDENT_PA_PA_VDATE_C="$Id: pa_vdate.C,v 1.14 2016/03/24 19:46:10 moko Exp $" IDENT_PA_VDATE_H;
+volatile const char * IDENT_PA_PA_VDATE_C="$Id: pa_vdate.C,v 1.15 2016/03/27 20:53:43 moko Exp $" IDENT_PA_VDATE_H;
 
 #define ZERO_DATE (-62169984000ll-SECS_PER_DAY) // '0000-00-00 00:00:00' - 1 day
 #define MAX_DATE (253402300799ll+SECS_PER_DAY) // '9999-12-31 23:59:59' + 1 day
@@ -159,23 +159,34 @@ const String* VDate::get_gmt_string() {
 	return new String(buf);
 }
 
-const String* VDate::get_iso_string() {
+const String* VDate::get_iso_string(iso_string_type format) {
 	Temp_tz temp_tz(ftz_cstr);
+	int offset=gmt_offset();
 	/// http://www.w3.org/TR/NOTE-datetime
-	if(int offset=gmt_offset()){
+	if(offset || (format & iso_string_no_z)){
 		char sign=offset>0 ? '+':'-';
 		offset=abs(offset);
-		static const char *format="%.4d-%.2d-%.2dT%.2d:%.2d:%.2d%c%d:%.2d";
-		static int size=4+1+2+1+2 +1+ 2+1+2+1+2 +1+2+1+2 +1/*zero-teminator*/+1/*for faulty snprintfs*/;
+		static const char *sformats[]={
+			"%.4d-%.2d-%.2dT%.2d:%.2d:%.2d%c%.2d:%.2d",
+			"%.4d-%.2d-%.2dT%.2d:%.2d:%.2d.000%c%.2d:%.2d",
+			"%.4d-%.2d-%.2dT%.2d:%.2d:%.2d%c%.2d%.2d",
+			"%.4d-%.2d-%.2dT%.2d:%.2d:%.2d.000%c%.2d%.2d",
+		};
+		static int size=4+1+2+1+2 +1 +2+1+2+1+2 +4 +1 +2+1+2 +1/*zero-teminator*/+1/*for faulty snprintfs*/;
+		const char *sformat=sformats[format & (iso_string_ms | iso_string_no_colon)];
 		char *buf=new(PointerFreeGC) char[size];
-		snprintf(buf, size, format, ftm.tm_year+1900, ftm.tm_mon+1, ftm.tm_mday, ftm.tm_hour, ftm.tm_min, ftm.tm_sec,
+		snprintf(buf, size, sformat, ftm.tm_year+1900, ftm.tm_mon+1, ftm.tm_mday, ftm.tm_hour, ftm.tm_min, ftm.tm_sec,
 			sign, offset/3600, (offset/60)%60);
 		return new String(buf);
 	} else {
-		static const char *format="%.4d-%.2d-%.2dT%.2d:%.2d:%.2dZ";
-		static int size=4+1+2+1+2 +1+ 2+1+2+1+2 +1 +1/*zero-teminator*/+1/*for faulty snprintfs*/;
+		static const char *sformats[]={
+			"%.4d-%.2d-%.2dT%.2d:%.2d:%.2dZ",
+			"%.4d-%.2d-%.2dT%.2d:%.2d:%.2d.000Z"
+		};
+		static int size=4+1+2+1+2 +1 +2+1+2+1+2 +4 +1 +1/*zero-teminator*/+1/*for faulty snprintfs*/;
+		const char *sformat=sformats[format & (iso_string_ms)];
 		char *buf=new(PointerFreeGC) char[size];
-		snprintf(buf, size, format, ftm.tm_year+1900, ftm.tm_mon+1, ftm.tm_mday, ftm.tm_hour, ftm.tm_min, ftm.tm_sec);
+		snprintf(buf, size, sformat, ftm.tm_year+1900, ftm.tm_mon+1, ftm.tm_mday, ftm.tm_hour, ftm.tm_min, ftm.tm_sec);
 		return new String(buf);
 	}
 }

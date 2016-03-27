@@ -13,7 +13,7 @@
 #include "pa_vdate.h"
 #include "pa_vtable.h"
 
-volatile const char * IDENT_DATE_C="$Id: date.C,v 1.99 2015/10/26 01:21:53 moko Exp $" IDENT_PA_VDATE_H;
+volatile const char * IDENT_DATE_C="$Id: date.C,v 1.100 2016/03/27 20:53:43 moko Exp $" IDENT_PA_VDATE_H;
 
 // class
 
@@ -290,10 +290,34 @@ static void _gmt_string(Request& r, MethodParams&) {
 	r.write_assign_lang(*vdate.get_gmt_string());
 }
 
-static void _iso_string(Request& r, MethodParams&) {
+static void _iso_string(Request& r, MethodParams& params) {
 	VDate& vdate=GET_SELF(r, VDate);
 
-	r.write_assign_lang(*vdate.get_iso_string());
+	VDate::iso_string_type format=VDate::iso_string_default;
+
+	if(params.count()>0)
+		if(HashStringValue* options=params.as_hash(0)){
+			int valid_options=0;
+			if(Value* vshow_ms=options->get("ms")){
+				if(r.process_to_value(*vshow_ms).as_bool())
+					format=VDate::iso_string_type(format|VDate::iso_string_ms);
+				valid_options++;
+			}
+			if(Value* vshow_colon=options->get("colon")){
+				if(!r.process_to_value(*vshow_colon).as_bool())
+					format=VDate::iso_string_type(format|VDate::iso_string_no_colon);
+				valid_options++;
+			}
+			if(Value* vshow_z=options->get("z")){
+				if(!r.process_to_value(*vshow_z).as_bool())
+					format=VDate::iso_string_type(format|VDate::iso_string_no_z);
+				valid_options++;
+			}
+			if(valid_options != options->count())
+				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+		}
+
+	r.write_assign_lang(*vdate.get_iso_string(format));
 }
 
 static void _roll(Request& r, MethodParams& params) {
@@ -519,8 +543,8 @@ MDate::MDate(): Methoded("date") {
 	// ^date.gmt-string[]
 	add_native_method("gmt-string", Method::CT_DYNAMIC, _gmt_string, 0, 0);
 
-	// ^date.iso-string[]
-	add_native_method("iso-string", Method::CT_DYNAMIC, _iso_string, 0, 0);
+	// ^date.iso-string[$.colon(true) $.z(true) $.ms(false)]
+	add_native_method("iso-string", Method::CT_DYNAMIC, _iso_string, 0, 1);
 
 	// ^date:lastday(year;month)
 	// ^date.lastday[]
