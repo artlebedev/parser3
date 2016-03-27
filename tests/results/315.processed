@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 7197
+Content-Length: 7214
 
 [ ]
 Type: date.format,
@@ -12,26 +12,26 @@ Comment: number expected in date '+'
 [1-1- -1T10:10:10.0+5]
 [1-1- -1T10:10:10.0+5] timestamp: -62135750990
 [1-1- -1T10:10:10.0+5] sql-string: 0000-12-30 10:10:10 SUB-5
-[1-1- -1T10:10:10.0+5] iso-string: 0000-12-30T10:10:10+5:00
+[1-1- -1T10:10:10.0+5] iso-string: 0000-12-30T10:10:10+05:00
 [same] timestamp: -62135750990
 [same] sql-string: 0000-12-30 08:10:10 SUB-3
-[same] iso-string: 0000-12-30T08:10:10+3:00
+[same] iso-string: 0000-12-30T08:10:10+03:00
 [1980-1-1T10:10:10.0+5]
 [1980-1-1T10:10:10.0+5] timestamp: 315551410
 [1980-1-1T10:10:10.0+5] sql-string: 1980-01-01 10:10:10 SUB-5
-[1980-1-1T10:10:10.0+5] iso-string: 1980-01-01T10:10:10+5:00
+[1980-1-1T10:10:10.0+5] iso-string: 1980-01-01T10:10:10+05:00
 [same] timestamp: 315551410
-[same] sql-string: 1980-01-01 08:10:10 [same] iso-string: 1980-01-01T08:10:10+3:00
+[same] sql-string: 1980-01-01 08:10:10 [same] iso-string: 1980-01-01T08:10:10+03:00
 [9999-12-31T10:10:10.0+5]
 [9999-12-31T10:10:10.0+5] timestamp: 253402233010
 [9999-12-31T10:10:10.0+5] sql-string: 9999-12-31 10:10:10 SUB-5
-[9999-12-31T10:10:10.0+5] iso-string: 9999-12-31T10:10:10+5:00
+[9999-12-31T10:10:10.0+5] iso-string: 9999-12-31T10:10:10+05:00
 [same] timestamp: 253402233010
-[same] sql-string: 9999-12-31 08:10:10 [same] iso-string: 9999-12-31T08:10:10+3:00
+[same] sql-string: 9999-12-31 08:10:10 [same] iso-string: 9999-12-31T08:10:10+03:00
 [9999-12-31T23:59:59-5]
 [9999-12-31T23:59:59-5] timestamp: 253402318799
 [9999-12-31T23:59:59-5] sql-string: 9999-12-31 23:59:59 SUB+5
-[9999-12-31T23:59:59-5] iso-string: 9999-12-31T23:59:59-5:00
+[9999-12-31T23:59:59-5] iso-string: 9999-12-31T23:59:59-05:00
 Type: date.range,
 Source: roll,
 Comment: year '10000' is out of range 0..9999
@@ -101,7 +101,7 @@ Source: create,
 Comment: '.' must be number in date '-.1-1 23:59:59'
 [2020]
 [2020] timestamp: 1577826000
-[2020] sql-string: 2020-01-01 00:00:00 [2020] iso-string: 2020-01-01T00:00:00+3:00
+[2020] sql-string: 2020-01-01 00:00:00 [2020] iso-string: 2020-01-01T00:00:00+03:00
 [2020-]
 Type: date.format,
 Source: create,
@@ -112,7 +112,7 @@ Source: create,
 Comment: number delimiter '-' expected, but found 'X' in date '2020X'
 [2020-1 ]
 [2020-1 ] timestamp: 1577826000
-[2020-1 ] sql-string: 2020-01-01 00:00:00 [2020-1 ] iso-string: 2020-01-01T00:00:00+3:00
+[2020-1 ] sql-string: 2020-01-01 00:00:00 [2020-1 ] iso-string: 2020-01-01T00:00:00+03:00
 [2020-1X]
 Type: date.format,
 Source: create,
@@ -123,14 +123,14 @@ Source: create,
 Comment: number expected in date ''
 [2020-1-31 ]
 [2020-1-31 ] timestamp: 1580418000
-[2020-1-31 ] sql-string: 2020-01-31 00:00:00 [2020-1-31 ] iso-string: 2020-01-31T00:00:00+3:00
+[2020-1-31 ] sql-string: 2020-01-31 00:00:00 [2020-1-31 ] iso-string: 2020-01-31T00:00:00+03:00
 [2020-1-31X]
 Type: date.format,
 Source: create,
 Comment: number delimiter ' ' expected, but found 'X' in date '31X'
 [2020-1-31 1 ]
 [2020-1-31 1 ] timestamp: 1580421600
-[2020-1-31 1 ] sql-string: 2020-01-31 01:00:00 [2020-1-31 1 ] iso-string: 2020-01-31T01:00:00+3:00
+[2020-1-31 1 ] sql-string: 2020-01-31 01:00:00 [2020-1-31 1 ] iso-string: 2020-01-31T01:00:00+03:00
 [2020-1-31 1X]
 Type: date.format,
 Source: create,
@@ -141,7 +141,7 @@ Source: create,
 Comment: number expected in date ''
 [2020-1-31 1:1 ]
 [2020-1-31 1:1 ] timestamp: 1580421660
-[2020-1-31 1:1 ] sql-string: 2020-01-31 01:01:00 [2020-1-31 1:1 ] iso-string: 2020-01-31T01:01:00+3:00
+[2020-1-31 1:1 ] sql-string: 2020-01-31 01:01:00 [2020-1-31 1:1 ] iso-string: 2020-01-31T01:01:00+03:00
 [2020-1-31 1:1X]
 Type: date.format,
 Source: create,
@@ -152,7 +152,7 @@ Source: create,
 Comment: number expected in date ''
 [2020-1-31 1:1:1 ]
 [2020-1-31 1:1:1 ] timestamp: 1580421661
-[2020-1-31 1:1:1 ] sql-string: 2020-01-31 01:01:01 [2020-1-31 1:1:1 ] iso-string: 2020-01-31T01:01:01+3:00
+[2020-1-31 1:1:1 ] sql-string: 2020-01-31 01:01:01 [2020-1-31 1:1:1 ] iso-string: 2020-01-31T01:01:01+03:00
 [2020-1-31 1:1:1X]
 Type: date.format,
 Source: create,
@@ -163,7 +163,7 @@ Source: create,
 Comment: number expected in date ''
 [2020-1-31 1:1:1.2 ]
 [2020-1-31 1:1:1.2 ] timestamp: 1580421661
-[2020-1-31 1:1:1.2 ] sql-string: 2020-01-31 01:01:01 [2020-1-31 1:1:1.2 ] iso-string: 2020-01-31T01:01:01+3:00
+[2020-1-31 1:1:1.2 ] sql-string: 2020-01-31 01:01:01 [2020-1-31 1:1:1.2 ] iso-string: 2020-01-31T01:01:01+03:00
 [2020-1-31 1:1:1.2X]
 Type: date.format,
 Source: create,
@@ -218,14 +218,14 @@ Comment: empty timezone
 [2020-1-31T1:1:1.2Z] iso-string: 2020-01-31T01:01:01Z
 [2020:1]
 [2020:1] timestamp: 1577826000
-[2020:1] sql-string: 2020-01-01 00:00:00 [2020:1] iso-string: 2020-01-01T00:00:00+3:00
+[2020:1] sql-string: 2020-01-01 00:00:00 [2020:1] iso-string: 2020-01-01T00:00:00+03:00
 [2020:1-31]
 Type: date.format,
 Source: create,
 Comment: number delimiter ':' expected, but found '-' in date '1-31'
 [2020:1:31]
 [2020:1:31] timestamp: 1580418000
-[2020:1:31] sql-string: 2020-01-31 00:00:00 [2020:1:31] iso-string: 2020-01-31T00:00:00+3:00
+[2020:1:31] sql-string: 2020-01-31 00:00:00 [2020:1:31] iso-string: 2020-01-31T00:00:00+03:00
 [2020:1:31 1]
 [2020:1:31 1] timestamp: 1580421600
-[2020:1:31 1] sql-string: 2020-01-31 01:00:00 [2020:1:31 1] iso-string: 2020-01-31T01:00:00+3:00
+[2020:1:31 1] sql-string: 2020-01-31 01:00:00 [2020:1:31 1] iso-string: 2020-01-31T01:00:00+03:00

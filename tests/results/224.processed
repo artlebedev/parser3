@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 1834
+Content-Length: 1836
 
 cookie<br />env<br />hash - methoded<br />table - methoded<br />test - methoded<br />test1 - methoded<br />test2 - methoded
 <hr />
@@ -62,7 +62,7 @@ env<br />
 <br />
 @gmt-string[0] {dynamic}
 <br />
-@iso-string[0] {dynamic}
+@iso-string[0-1] {dynamic}
 <br />
 @last-day[0-2]
 <br />

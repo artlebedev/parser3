@@ -21,3 +21,19 @@ $d[^date::create[2009-12-21T00:00:00+3:00]]
 ^d.roll[day](1)
 }
 
+$d[^date::create[2008-05-09T00:00:00+3:00]]
+
+^^d.iso-string[] options: ^d.iso-string[]<br />
+
+^d.iso-string[ $.ms(true) ]
+^d.iso-string[ $.colon(false) ]
+^d.iso-string[ $.colon(false) $.ms(true) ]
+
+$d[^date::create[2008-05-09T00:00:00Z]]
+
+^^d.iso-string[] options, zero offset: ^d.iso-string[]<br />
+
+^d.iso-string[ $.z(false) ]
+^d.iso-string[ $.z(false) $.ms(true) ]
+^d.iso-string[ $.z(false) $.colon(false) ]
+^d.iso-string[ $.z(false) $.colon(false) $.ms(true) ]
