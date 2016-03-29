@@ -13,7 +13,7 @@
 #include "pa_vdate.h"
 #include "pa_vtable.h"
 
-volatile const char * IDENT_DATE_C="$Id: date.C,v 1.100 2016/03/27 20:53:43 moko Exp $" IDENT_PA_VDATE_H;
+volatile const char * IDENT_DATE_C="$Id: date.C,v 1.101 2016/03/29 10:18:54 moko Exp $" IDENT_PA_VDATE_H;
 
 // class
 
@@ -138,29 +138,34 @@ static char *skip_writespace(char* str) {
 }
 
 static char *numeric_tz(char prefix, char* tz) {
-	char *cur=tz;
+	// preparing POSIX TZ format
+	char *buf=new(PointerFreeGC) char[4+5+1/*zero-teminator*/];
+	strcpy(buf, prefix=='+' ? "SUB-":"SUB+");
+	char *cur=buf+4;
+
 	// hours
-	if(!isdigit(*(cur++)))
+	if(!isdigit(*(cur++)=*(tz++)))
 		return 0;
-	if(isdigit(cur[0]))
-		cur++;
-	if(cur[0] == ':'){
-		// optional minutes
-		cur++;
-		if(!isdigit(*(cur++)))
+	if(isdigit(tz[0]))
+		*(cur++)=*(tz++);
+
+	if(tz[0] == ':'){
+		// HH:mm format
+		*(cur++)=*(tz++);
+		if(!isdigit(*(cur++)=*(tz++)))
 			return 0;
-		if(isdigit(cur[0]))
-			cur++;
+		if(isdigit(tz[0]))
+			*(cur++)=*(tz++);
+	} else if(isdigit(tz[0])){
+		// HHmm format
+		*(cur++)=':';
+		if(!isdigit(*(cur++)=*(tz++)) || !isdigit(*(cur++)=*(tz++)))
+			return 0;
 	}
 	// nothing more
-	if(skip_writespace(cur))
+	if(skip_writespace(tz))
 		return 0;
-	// returning POSIX TZ format
-	size_t size=4+(cur-tz)+1/*zero-teminator*/;
-	char *buf=new(PointerFreeGC) char[size];
-	strcpy(buf, prefix=='+' ? "SUB-":"SUB+");
-	strncpy(buf+4, tz, cur-tz);
-	buf[size-1]=0;
+	*cur=0;
 	return buf;
 }
 
