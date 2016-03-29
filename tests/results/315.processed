@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 7214
+Content-Length: 7810
 
 [ ]
 Type: date.format,
@@ -55,10 +55,30 @@ Comment: invalid timezone '+'
 Type: date.format,
 Source: create,
 Comment: invalid timezone '+a'
-[2020-1-31T23:59:59+222]
+[2020-1-31T23:59:59+111]
 Type: date.format,
 Source: create,
-Comment: invalid timezone '+222'
+Comment: invalid timezone '+111'
+[2020-1-31T23:59:59+1111]
+[2020-1-31T23:59:59+1111] timestamp: 1580474939
+[2020-1-31T23:59:59+1111] sql-string: 2020-01-31 23:59:59 SUB-11:11
+[2020-1-31T23:59:59+1111] iso-string: 2020-01-31T23:59:59+11:11
+[2020-1-31T23:59:59+11 11]
+Type: date.format,
+Source: create,
+Comment: invalid timezone '+11 11'
+[2020-1-31T23:59:59+1111x]
+Type: date.format,
+Source: create,
+Comment: invalid timezone '+1111x'
+[2020-1-31T23:59:59+1111 x]
+Type: date.format,
+Source: create,
+Comment: invalid timezone '+1111 x'
+[2020-1-31T23:59:59+11111]
+Type: date.format,
+Source: create,
+Comment: invalid timezone '+11111'
 [2020-1-31T23:59:59+22:]
 Type: date.format,
 Source: create,
