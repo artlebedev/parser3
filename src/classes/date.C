@@ -13,7 +13,7 @@
 #include "pa_vdate.h"
 #include "pa_vtable.h"
 
-volatile const char * IDENT_DATE_C="$Id: date.C,v 1.101 2016/03/29 10:18:54 moko Exp $" IDENT_PA_VDATE_H;
+volatile const char * IDENT_DATE_C="$Id: date.C,v 1.102 2016/03/30 19:45:37 moko Exp $" IDENT_PA_VDATE_H;
 
 // class
 
@@ -254,10 +254,11 @@ static void _create(Request& r, MethodParams& params) {
 				vdate.set_tz(tz);
 			vdate.set_tm(tmIn);
 		} else { // ^create(float days) or ^create[date object]
+			if(Value* adate=params[0].as(VDATE_TYPE))
+				vdate.set_tz(static_cast<VDate*>(adate)->get_tz());
 			vdate.set_time(round(params.as_double(0, "float days must be double", r)*SECS_PER_DAY));
 		}
-	} else { // ^create(y;m;d[;h[;m[;s]]])
-		assert(params.count()<=6);
+	} else { // ^create(y;m;d[;h[;m[;s[;TZ]]]])
 		tm tmIn; memset(&tmIn, 0, sizeof(tmIn));
 		tmIn.tm_isdst=-1;
 		tmIn.tm_year=to_year(params.as_int(0, "year must be int", r));
@@ -266,6 +267,7 @@ static void _create(Request& r, MethodParams& params) {
 		if(params.count()>3) tmIn.tm_hour=params.as_int(3, "hour must be int", r);
 		if(params.count()>4) tmIn.tm_min=params.as_int(4, "minutes must be int", r);
 		if(params.count()>5) tmIn.tm_sec=params.as_int(5, "seconds must be int", r);
+		if(params.count()>6) vdate.set_tz(params.as_string(6, "TZ must be string").cstr());
 		vdate.set_tm(tmIn);
 	};
 }
@@ -535,12 +537,12 @@ MDate::MDate(): Methoded("date") {
 
 	// ^date::create(float days)
 	// ^date::create[date]
-	// ^date::create(year;month;day[;hour[;minute[;sec]]])
+	// ^date::create(year;month;day[;hour[;minute[;sec[;TZ]]]])
 	// ^date::create[yyyy-mm-dd[ hh:mm:ss]]
 	// ^date::create[hh:mm:ss]
-	add_native_method("create", Method::CT_DYNAMIC, _create, 1, 6);
+	add_native_method("create", Method::CT_DYNAMIC, _create, 1, 7);
 	// old name for compatibility with <= v1.17 2002/2/18 12:13:42 paf
-	add_native_method("set", Method::CT_DYNAMIC, _create, 1, 6);
+	add_native_method("set", Method::CT_DYNAMIC, _create, 1, 7);
 
 	// ^date.sql-string[]
 	add_native_method("sql-string", Method::CT_DYNAMIC, _sql_string, 0, 1);
