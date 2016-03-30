@@ -1,0 +1,16 @@
+@main[]
+
+$dt[^date::create(2100;01;01;10;10;10)[EST5]]
+^show[EST5;$dt]
+$copy[^date::create[$dt]]
+^show[copy;$copy]
+^copy.roll[TZ;UTC]
+^show[UTC;$copy]
+^dt.roll[TZ;]
+$msk[^date::create[$dt]]
+^show[msk;$msk]
+
+@show[s;dt]
+[$s] timestamp:  ^dt.unix-timestamp[]
+[$s] sql-string: ^dt.sql-string[] $dt.TZ
+[$s] iso-string: ^dt.iso-string[]

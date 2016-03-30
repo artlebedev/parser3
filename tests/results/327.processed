@@ -1,0 +1,14 @@
+Content-Type: text/html
+Content-Length: 454
+
+[EST5] timestamp: 4102499410
+[EST5] sql-string: 2100-01-01 10:10:10 EST5
+[EST5] iso-string: 2100-01-01T10:10:10-05:00
+[copy] timestamp: 4102499410
+[copy] sql-string: 2100-01-01 10:10:10 EST5
+[copy] iso-string: 2100-01-01T10:10:10-05:00
+[UTC] timestamp: 4102499410
+[UTC] sql-string: 2100-01-01 15:10:10 UTC
+[UTC] iso-string: 2100-01-01T15:10:10Z
+[msk] timestamp: 4102499410
+[msk] sql-string: 2100-01-01 18:10:10 [msk] iso-string: 2100-01-01T18:10:10+03:00

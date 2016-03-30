@@ -58,7 +58,7 @@ env<br />
 <hr />
 @calendar[3-4] {static}
 <br />
-@create[1-6] {dynamic}
+@create[1-7] {dynamic}
 <br />
 @gmt-string[0] {dynamic}
 <br />
@@ -70,7 +70,7 @@ env<br />
 <br />
 @roll[2]
 <br />
-@set[1-6] {dynamic}
+@set[1-7] {dynamic}
 <br />
 @sql-string[0-1] {dynamic}
 <br />
