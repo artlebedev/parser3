@@ -9,7 +9,7 @@
 #include "pa_vmemory.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_MEMORY_C="$Id: memory.C,v 1.10 2015/10/26 01:21:54 moko Exp $" IDENT_PA_VMEMORY_H;
+volatile const char * IDENT_MEMORY_C="$Id: memory.C,v 1.11 2016/03/31 21:46:20 moko Exp $" IDENT_PA_VMEMORY_H;
 
 class MMemory: public Methoded {
 public:
@@ -21,7 +21,7 @@ public: // Methoded
 
 // global variables
 
-DECLARE_CLASS_VAR(memory, 0 /*fictive*/, new MMemory);
+DECLARE_CLASS_VAR(memory, new MMemory);
 
 #undef GC_DEBUG
 #ifdef GC_DEBUG

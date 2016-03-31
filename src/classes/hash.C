@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.125 2015/10/26 01:21:54 moko Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.126 2016/03/31 21:46:19 moko Exp $";
 
 // class
 
@@ -31,7 +31,7 @@ public:
 
 // global variable
 
-DECLARE_CLASS_VAR(hash, new MHash, 0);
+DECLARE_CLASS_VAR(hash, new MHash);
 
 // methods
 

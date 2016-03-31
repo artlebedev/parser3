@@ -18,7 +18,7 @@
 #include "pa_vxdoc.h"
 #endif
 
-volatile const char * IDENT_JSON_C="$Id: json.C,v 1.40 2015/10/26 01:21:54 moko Exp $";
+volatile const char * IDENT_JSON_C="$Id: json.C,v 1.41 2016/03/31 21:46:20 moko Exp $";
 
 // class
 
@@ -29,7 +29,7 @@ public:
 
 // global variable
 
-DECLARE_CLASS_VAR(json, new MJson, 0);
+DECLARE_CLASS_VAR(json, new MJson);
 
 // methods
 struct Json {

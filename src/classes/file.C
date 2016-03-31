@@ -25,7 +25,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.241 2015/10/26 01:21:53 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.242 2016/03/31 21:46:19 moko Exp $";
 
 // defines
 
@@ -68,7 +68,7 @@ public:
 
 // global variable
 
-DECLARE_CLASS_VAR(file, new MFile, 0);
+DECLARE_CLASS_VAR(file, new MFile);
 
 // consts
 

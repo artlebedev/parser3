@@ -17,7 +17,7 @@
 #include "pa_vtable.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_PA_VFORM_C="$Id: pa_vform.C,v 1.112 2015/10/26 01:22:01 moko Exp $" IDENT_PA_VFORM_H;
+volatile const char * IDENT_PA_VFORM_C="$Id: pa_vform.C,v 1.113 2016/03/31 21:46:20 moko Exp $" IDENT_PA_VFORM_H;
 
 // defines
 
@@ -61,9 +61,9 @@ static const char* searchAttribute(const char* data,
 
 // VForm
 
-extern Methoded* form_base_class;
+extern Methoded* form_class;
 
-VForm::VForm(Request_charsets& acharsets, Request_info& arequest_info): VStateless_class(0, form_base_class),
+VForm::VForm(Request_charsets& acharsets, Request_info& arequest_info): VStateless_class(0, form_class),
 	fcharsets(acharsets),
 	frequest_info(arequest_info),
 	filled_source(0),

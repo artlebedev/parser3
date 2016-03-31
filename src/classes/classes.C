@@ -8,7 +8,7 @@
 #include "classes.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_CLASSES_C="$Id: classes.C,v 1.26 2015/10/26 01:21:53 moko Exp $" IDENT_CLASSES_H;
+volatile const char * IDENT_CLASSES_C="$Id: classes.C,v 1.27 2016/03/31 21:46:19 moko Exp $" IDENT_CLASSES_H;
 
 // Methoded
 
@@ -41,24 +41,21 @@ Methoded_array::Methoded_array() {
 }
 
 static void configure_admin_one(Methoded_array::element_type methoded, Request *r) {
-	if(methoded)
-		methoded->configure_admin(*r);
+	methoded->configure_admin(*r);
 }
 void Methoded_array::configure_admin(Request& r) {
 	for_each(configure_admin_one, &r);
 }
 
 static void configure_user_one(Methoded_array::element_type methoded, Request *r) {
-	if(methoded)
-		methoded->configure_user(*r);
+	methoded->configure_user(*r);
 }
 void Methoded_array::configure_user(Request& r) {
 	for_each(configure_user_one, &r);
 }
 
 static void register_one(Methoded_array::element_type methoded, Request *r) {
-	if(methoded)
-		methoded->register_directly_used(*r);
+	methoded->register_directly_used(*r);
 }
 void Methoded_array::register_directly_used(Request& r) {
 	for_each(register_one, &r);

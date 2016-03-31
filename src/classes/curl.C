@@ -17,7 +17,7 @@
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.35 2015/10/26 01:21:53 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.36 2016/03/31 21:46:19 moko Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -26,7 +26,7 @@ public:
 
 // global variables
 
-DECLARE_CLASS_VAR(curl, new MCurl, 0);
+DECLARE_CLASS_VAR(curl, new MCurl);
 
 #include "curl.h"
 

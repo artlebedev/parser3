@@ -8,13 +8,14 @@
 #ifndef PA_VMEMORY_H
 #define PA_VMEMORY_H
 
-#define IDENT_PA_VMEMORY_H "$Id: pa_vmemory.h,v 1.9 2015/10/26 01:22:02 moko Exp $"
+#define IDENT_PA_VMEMORY_H "$Id: pa_vmemory.h,v 1.10 2016/03/31 21:46:21 moko Exp $"
 
 #include "classes.h"
 #include "pa_vstateless_object.h"
 #include "pa_globals.h"
 
-extern Methoded* memory_base_class;
+
+extern Methoded* memory_class;
 
 /// 
 class VMemory: public VStateless_class {
@@ -22,16 +23,7 @@ public: // Value
 	
 	const char* type() const { return "memory"; }
 
-	/// memory: method
-	Value* get_element(const String& aname) {
-		// $method
-		if(Value* result=VStateless_class::get_element(aname))
-			return result;
-
-		return 0;
-	}
-
-	VMemory(): VStateless_class(0, memory_base_class) {}
+	VMemory(): VStateless_class(0, memory_class) {}
 
 };
 

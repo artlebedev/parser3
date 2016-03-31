@@ -21,11 +21,11 @@
 #include "libxml/xpath.h"
 #include "libxml/xpathInternals.h"
 
-volatile const char * IDENT_XNODE_C="$Id: xnode.C,v 1.91 2015/10/26 01:21:55 moko Exp $" IDENT_XNODE_H;
+volatile const char * IDENT_XNODE_C="$Id: xnode.C,v 1.92 2016/03/31 21:46:20 moko Exp $" IDENT_XNODE_H;
 
 // global variable
 
-DECLARE_CLASS_VAR(xnode, new MXnode, 0);
+DECLARE_CLASS_VAR(xnode, new MXnode);
 
 // classes
 
@@ -964,6 +964,6 @@ MXnode::MXnode(const char* aname, VStateless_class *abase):
 
 // global variable
 
-DECLARE_CLASS_VAR(xnode, 0, 0); // fictive
+DECLARE_CLASS_VAR(xnode, 0); // fictive
 
 #endif

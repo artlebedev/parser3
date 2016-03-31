@@ -13,7 +13,7 @@
 #include "pa_vdate.h"
 #include "pa_vtable.h"
 
-volatile const char * IDENT_DATE_C="$Id: date.C,v 1.102 2016/03/30 19:45:37 moko Exp $" IDENT_PA_VDATE_H;
+volatile const char * IDENT_DATE_C="$Id: date.C,v 1.103 2016/03/31 21:46:19 moko Exp $" IDENT_PA_VDATE_H;
 
 // class
 
@@ -27,7 +27,7 @@ public:
 
 // global variable
 
-DECLARE_CLASS_VAR(date, new MDate, 0);
+DECLARE_CLASS_VAR(date, new MDate);
 
 // helpers
 

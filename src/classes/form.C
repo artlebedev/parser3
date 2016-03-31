@@ -11,7 +11,7 @@
 #include "pa_request.h"
 #include "pa_vform.h"
 
-volatile const char * IDENT_FORM_C="$Id: form.C,v 1.46 2015/10/26 01:21:53 moko Exp $";
+volatile const char * IDENT_FORM_C="$Id: form.C,v 1.47 2016/03/31 21:46:19 moko Exp $";
 
 /// $LIMITS.max_post_size default 10M
 const size_t MAX_POST_SIZE_DEFAULT=10*0x400*0x400;
@@ -32,7 +32,7 @@ public:
 
 // global variable
 
-DECLARE_CLASS_VAR(form, 0/*fictive*/, new MForm);
+DECLARE_CLASS_VAR(form, new MForm);
 
 // defines for statics
 

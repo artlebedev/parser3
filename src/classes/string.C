@@ -20,7 +20,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.223 2015/11/16 18:27:15 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.224 2016/03/31 21:46:20 moko Exp $";
 
 // class
 
@@ -31,7 +31,7 @@ public:
 
 // global variable
 
-DECLARE_CLASS_VAR(string, new MString, 0);
+DECLARE_CLASS_VAR(string, new MString);
 
 // void class, inherited from string and thus should be inited afterwards
 
@@ -42,7 +42,7 @@ public:
 
 // void global variable should be after string global variable
 
-DECLARE_CLASS_VAR(void, new MVoid, 0);
+DECLARE_CLASS_VAR(void, new MVoid);
 
 // defines for statics
 

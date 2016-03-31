@@ -9,7 +9,7 @@
 #include "pa_request.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.39 2015/10/26 13:47:12 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.40 2016/03/31 21:46:20 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -37,7 +37,7 @@ public:
 
 // global variable
 
-DECLARE_CLASS_VAR(reflection, new MReflection, 0);
+DECLARE_CLASS_VAR(reflection, new MReflection);
 
 // methods
 

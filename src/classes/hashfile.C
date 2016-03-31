@@ -12,7 +12,7 @@
 #include "pa_vhashfile.h"
 #include "pa_vhash.h"
 
-volatile const char * IDENT_HASHFILE_C="$Id: hashfile.C,v 1.56 2015/10/26 01:21:54 moko Exp $";
+volatile const char * IDENT_HASHFILE_C="$Id: hashfile.C,v 1.57 2016/03/31 21:46:19 moko Exp $";
 
 // class
 
@@ -25,7 +25,7 @@ public:
 
 // global variable
 
-DECLARE_CLASS_VAR(hashfile, new MHashfile, 0);
+DECLARE_CLASS_VAR(hashfile, new MHashfile);
 
 // defines for statics
 

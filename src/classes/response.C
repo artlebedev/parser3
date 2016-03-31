@@ -11,7 +11,7 @@
 #include "pa_request.h"
 #include "pa_vresponse.h"
 
-volatile const char * IDENT_RESPONSE_C="$Id: response.C,v 1.29 2015/10/26 01:21:54 moko Exp $";
+volatile const char * IDENT_RESPONSE_C="$Id: response.C,v 1.30 2016/03/31 21:46:20 moko Exp $";
 
 // class
 
@@ -24,7 +24,7 @@ public: // Methoded
 
 // global variable
 
-DECLARE_CLASS_VAR(response, new MResponse, 0);
+DECLARE_CLASS_VAR(response, new MResponse);
 
 // methods
 

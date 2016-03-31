@@ -12,7 +12,7 @@
 #include "pa_vint.h"
 #include "pa_vregex.h"
 
-volatile const char * IDENT_REGEX_C="$Id: regex.C,v 1.8 2015/10/26 01:21:54 moko Exp $";
+volatile const char * IDENT_REGEX_C="$Id: regex.C,v 1.9 2016/03/31 21:46:20 moko Exp $";
 
 // class
 
@@ -25,7 +25,7 @@ public:
 
 // global variable
 
-DECLARE_CLASS_VAR(regex, new MRegex, 0);
+DECLARE_CLASS_VAR(regex, new MRegex);
 
 // methods
 

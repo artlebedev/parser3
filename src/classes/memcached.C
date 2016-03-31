@@ -15,7 +15,7 @@
 #include "pa_vbool.h"
 #include "pa_vmemcached.h"
 
-volatile const char * IDENT_MEMCACHED_C="$Id: memcached.C,v 1.12 2015/10/26 01:21:54 moko Exp $";
+volatile const char * IDENT_MEMCACHED_C="$Id: memcached.C,v 1.13 2016/03/31 21:46:20 moko Exp $";
 
 class MMemcached: public Methoded {
 public: // VStateless_class
@@ -24,7 +24,7 @@ public:
 	MMemcached();
 };
 
-DECLARE_CLASS_VAR(memcached, new MMemcached, 0);
+DECLARE_CLASS_VAR(memcached, new MMemcached);
 
 static void _open(Request& r, MethodParams& params) {
 	VMemcached& self=GET_SELF(r, VMemcached);

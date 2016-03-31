@@ -8,15 +8,15 @@
 #include "pa_vmath.h"
 #include "pa_vdouble.h"
 
-volatile const char * IDENT_PA_VMATH_C="$Id: pa_vmath.C,v 1.12 2015/10/26 01:22:02 moko Exp $" IDENT_PA_VMATH_H;
+volatile const char * IDENT_PA_VMATH_C="$Id: pa_vmath.C,v 1.13 2016/03/31 21:46:21 moko Exp $" IDENT_PA_VMATH_H;
 
 // externs
 
-extern Methoded* math_base_class;
+extern Methoded* math_class;
 
 // methods
 
-VMath::VMath(): VStateless_class(0, math_base_class) {
+VMath::VMath(): VStateless_class(0, math_class) {
 	fconsts.put("PI", new VDouble(PI));
 	fconsts.put("E", new VDouble(MathE));
 }

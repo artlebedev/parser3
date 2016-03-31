@@ -17,7 +17,7 @@
 #include "pa_vfile.h"
 #include "pa_uue.h"
 
-volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.115 2015/10/26 01:22:02 moko Exp $" IDENT_PA_VMAIL_H;
+volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.116 2016/03/31 21:46:21 moko Exp $" IDENT_PA_VMAIL_H;
 
 #ifdef WITH_MAILRECEIVE
 extern "C" {
@@ -71,9 +71,9 @@ const int MAX_CHARS_IN_HEADER_LINE=500;
 
 // VMail
 
-extern Methoded* mail_base_class;
+extern Methoded* mail_class;
 
-VMail::VMail(): VStateless_class(0, mail_base_class) {}
+VMail::VMail(): VStateless_class(0, mail_class) {}
 
 #ifdef WITH_MAILRECEIVE
 

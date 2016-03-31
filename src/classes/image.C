@@ -25,7 +25,7 @@
 #include "pa_vdate.h"
 #include "pa_table.h"
 
-volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.150 2015/10/26 01:21:54 moko Exp $";
+volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.151 2016/03/31 21:46:19 moko Exp $";
 
 // defines
 
@@ -45,7 +45,7 @@ public:
 
 // globals
 
-DECLARE_CLASS_VAR(image, new MImage, 0);
+DECLARE_CLASS_VAR(image, new MImage);
 
 // helpers
 

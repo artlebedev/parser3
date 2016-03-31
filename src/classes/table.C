@@ -22,7 +22,7 @@
 #define USE_STRINGSTREAM
 #endif
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.312 2015/10/26 01:21:54 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.313 2016/03/31 21:46:20 moko Exp $";
 
 // class
 
@@ -35,7 +35,7 @@ public:
 
 // global variable
 
-DECLARE_CLASS_VAR(table, new MTable, 0);
+DECLARE_CLASS_VAR(table, new MTable);
 
 #define TABLE_REVERSE_NAME "reverse"
 

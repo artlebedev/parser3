@@ -14,7 +14,7 @@
 #include "ws2tcpip.h"
 #endif
 
-volatile const char * IDENT_INET_C="$Id: inet.C,v 1.11 2015/10/26 01:21:54 moko Exp $";
+volatile const char * IDENT_INET_C="$Id: inet.C,v 1.12 2016/03/31 21:46:20 moko Exp $";
 
 class MInet: public Methoded {
 public:
@@ -23,7 +23,7 @@ public:
 
 // global variables
 
-DECLARE_CLASS_VAR(inet, new MInet, 0);
+DECLARE_CLASS_VAR(inet, new MInet);
 
 
 static void _ntoa(Request& r, MethodParams& params){

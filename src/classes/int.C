@@ -13,7 +13,7 @@
 #include "pa_vint.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_INT_C="$Id: int.C,v 1.64 2015/10/26 01:21:54 moko Exp $" IDENT_PA_VINT_H;
+volatile const char * IDENT_INT_C="$Id: int.C,v 1.65 2016/03/31 21:46:20 moko Exp $" IDENT_PA_VINT_H;
 
 // externs
 
@@ -28,7 +28,7 @@ public:
 
 // global variable
 
-DECLARE_CLASS_VAR(int, new MInt, 0);
+DECLARE_CLASS_VAR(int, new MInt);
 
 // methods
 

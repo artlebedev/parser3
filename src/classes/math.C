@@ -22,7 +22,7 @@
 extern "C" char *crypt(const char* , const char* );
 #endif
 
-volatile const char * IDENT_MATH_C="$Id: math.C,v 1.80 2015/10/26 01:21:54 moko Exp $";
+volatile const char * IDENT_MATH_C="$Id: math.C,v 1.81 2016/03/31 21:46:20 moko Exp $";
 
 // defines
 
@@ -31,16 +31,16 @@ volatile const char * IDENT_MATH_C="$Id: math.C,v 1.80 2015/10/26 01:21:54 moko 
 // class
 
 class MMath: public Methoded {
-public:
-	MMath();
-
 public: // Methoded
 	bool used_directly() { return false; }
+
+public:
+	MMath();
 };
 
 // global variables
 
-DECLARE_CLASS_VAR(math, 0 /*fictive*/, new MMath);
+DECLARE_CLASS_VAR(math, new MMath);
 
 // methods
 

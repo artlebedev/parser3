@@ -19,7 +19,7 @@
 
 #include "smtp.h"
 
-volatile const char * IDENT_MAIL_C="$Id: mail.C,v 1.125 2015/10/26 01:21:54 moko Exp $";
+volatile const char * IDENT_MAIL_C="$Id: mail.C,v 1.126 2016/03/31 21:46:20 moko Exp $";
 
 // defines
 
@@ -43,7 +43,7 @@ public:
 
 // global variable
 
-DECLARE_CLASS_VAR(mail, 0/*fictive*/, new MMail);
+DECLARE_CLASS_VAR(mail, new MMail);
 
 // defines for statics
 
@@ -205,7 +205,7 @@ static void _send(Request& r, MethodParams& params) {
 	if(Value* vdebug=hash->get(MAIL_DEBUG_NAME))
 		print_debug=vdebug->as_bool();
 
-	Value* vmail_conf=static_cast<Value*>(r.classes_conf.get(mail_base_class->name()));
+	Value* vmail_conf=static_cast<Value*>(r.classes_conf.get(mail_name));
 	Value* smtp_server_port=0;
 	if(vmail_conf) {
 		// $MAIN:MAIL.SMTP[mail.yourdomain.ru[:port]]
