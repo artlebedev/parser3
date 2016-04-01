@@ -73,7 +73,7 @@
 	
 */
 
-volatile const char * IDENT_COMPILE_Y = "$Id: compile.tab.C,v 1.166 2015/10/26 01:21:57 moko Exp $";
+volatile const char * IDENT_COMPILE_Y = "$Id: compile.tab.C,v 1.167 2016/04/01 16:29:03 moko Exp $";
 
 /**
 	@todo parser4: 
@@ -130,7 +130,7 @@ static const VString vempty;
 #ifndef DOXYGEN
 
 #define CLASS_ADD if(PC.class_add()){					\
-	strncpy(PC.error, PC.cclass->name().cstr(), MAX_STRING/2);	\
+	strncpy(PC.error, PC.cclass->type(), MAX_STRING/2);		\
 	strcat(PC.error, " - class is already defined");		\
 	YYERROR;							\
 }
@@ -1598,7 +1598,7 @@ yyreduce:
 			// creating the class
 			VStateless_class* cclass=new VClass;
 			PC.cclass_new=cclass;
-			PC.cclass_new->set_name(name);
+			PC.cclass_new->set_type(name.cstr());
 			PC.append=false;
 		} else {
 			strcpy(PC.error, "@" CLASS_NAME " must contain only one line with class name (contains more then one)");
@@ -1613,14 +1613,14 @@ yyreduce:
 	} else if(command==BASE_NAME) {
 		if(PC.append){
 			strcpy(PC.error, "can't set base while appending methods to class '");
-			strncat(PC.error, PC.cclass->name().cstr(), MAX_STRING/2);
+			strncat(PC.error, PC.cclass->type(), MAX_STRING/2);
 			strcat(PC.error, "'");
 			YYERROR;
 		}
 		CLASS_ADD;
 		if(PC.cclass->base_class()) { // already changed from default?
 			strcpy(PC.error, "class already have a base '");
-			strncat(PC.error, PC.cclass->base_class()->name().cstr(), MAX_STRING/2);
+			strncat(PC.error, PC.cclass->base_class()->type(), MAX_STRING/2);
 			strcat(PC.error, "'");
 			YYERROR;
 		}
@@ -1658,7 +1658,7 @@ yyreduce:
 					if(VStateless_class* existed=PC.get_existed_class(PC.cclass_new)){
 						if(!PC.reuse_existed_class(existed)){
 							strcpy(PC.error, "can't append methods to '");
-							strncat(PC.error, PC.cclass_new->name().cstr(), MAX_STRING/2);
+							strncat(PC.error, PC.cclass_new->type(), MAX_STRING/2);
 							strcat(PC.error, "' - the class wasn't marked as partial");
 							YYERROR;
 						}
@@ -2371,7 +2371,7 @@ yyreduce:
 	(yyval)=(yyvsp[-1]); // stack: class name string
 	if(*LA2S(*(yyval)) == BASE_NAME) { // pseudo BASE class
 		if(VStateless_class* base=PC.cclass->base_class()) {
-			change_string_literal_value(*(yyval), base->name());
+			change_string_literal_value(*(yyval), *new String(base->type()));
 		} else {
 			strcpy(PC.error, "no base class declared");
 			YYERROR;
