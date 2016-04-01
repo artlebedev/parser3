@@ -1,11 +1,11 @@
 Content-Type: text/html
-Content-Length: 2901
+Content-Length: 2892
 
 <table border="1">
 <tr>
 <td>w/o param</td>
 <td>
-native method of double (double) accepts minimum 1 parameter(s) (0 present)
+native method of double accepts minimum 1 parameter(s) (0 present)
 <br /></td>
 </tr>
 <tr>

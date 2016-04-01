@@ -1,9 +1,9 @@
 Content-Type: text/html
-Content-Length: 225
+Content-Length: 214
 
 handled0 Type: parser.runtime,
 Source: cache,
-Comment: is 'stateless_class', it does not have logical value
+Comment: is 'void', it does not have logical value
 test
 Type: parser.runtime,
 Source: error,

@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 2668
+Content-Length: 2654
 
 <h3>Empty hash ($h[^hash::create[]])</h3>
 first:last='':''<br />
@@ -70,8 +70,8 @@ first_key:last_key='2':'5'<br />
 ^h._at(5)[hash]='c&amp;c':'d&amp;d'<br />
 ^h._at[last;hash]='c&amp;c':'d&amp;d'<br />
 <br />
-^h._at[]=<b>native method of hash (hash) accepts minimum 1 parameter(s) (0 present)</b><br />
-^h._at[first;key;hren]=<b>native method of hash (hash) accepts maximum 2 parameter(s) (3 present)</b><br />
+^h._at[]=<b>native method of hash accepts minimum 1 parameter(s) (0 present)</b><br />
+^h._at[first;key;hren]=<b>native method of hash accepts maximum 2 parameter(s) (3 present)</b><br />
 ^h._at(1){code}=<b>type must be string (parameter #2)</b><br />
 ^h._at(1)(true)=<b>is 'bool', it has no string representation</b><br />
 ^h._at[hren]=<b>whence must be 'first', 'last' or expression</b><br />

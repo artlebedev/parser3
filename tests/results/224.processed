@@ -1,16 +1,16 @@
 Content-Type: text/html
-Content-Length: 1836
+Content-Length: 1782
 
 cookie<br />env<br />hash - methoded<br />table - methoded<br />test - methoded<br />test1 - methoded<br />test2 - methoded
 <hr />
 create
-native method of class 'date' (stateless_class) accepts minimum 1 parameter(s) (0 passed)
+native method of class 'date' accepts minimum 1 parameter(s) (0 passed)
 <br />
 calendar
-native method of class 'date' (stateless_class) is not allowed to be called dynamically
+native method of class 'date' is not allowed to be called dynamically
 <br />
 now
-method of class 'date' (stateless_class) accepts maximum 1 parameter(s) (2 passed)
+method of class 'date' accepts maximum 1 parameter(s) (2 passed)
 <br />
 <hr />
 hash<br />
