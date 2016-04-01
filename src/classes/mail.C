@@ -19,7 +19,7 @@
 
 #include "smtp.h"
 
-volatile const char * IDENT_MAIL_C="$Id: mail.C,v 1.127 2016/03/31 21:55:07 moko Exp $";
+volatile const char * IDENT_MAIL_C="$Id: mail.C,v 1.128 2016/04/01 16:27:31 moko Exp $";
 
 // defines
 
@@ -205,7 +205,7 @@ static void _send(Request& r, MethodParams& params) {
 	if(Value* vdebug=hash->get(MAIL_DEBUG_NAME))
 		print_debug=vdebug->as_bool();
 
-	Value* vmail_conf=static_cast<Value*>(r.classes_conf.get(mail_class->name()));
+	Value* vmail_conf=static_cast<Value*>(r.classes_conf.get(mail_class->type()));
 	Value* smtp_server_port=0;
 	if(vmail_conf) {
 		// $MAIN:MAIL.SMTP[mail.yourdomain.ru[:port]]
@@ -237,7 +237,7 @@ void MMail::configure_user(Request& r) {
 	// $MAIN:MAIL[$SMTP[mail.design.ru]]
 	if(Value* mail_element=r.main_class.get_element(mail_name)) {
 		if(mail_element->get_hash())
-			r.classes_conf.put(name(), mail_element);
+			r.classes_conf.put(type(), mail_element);
 		else
 			if( !mail_element->is_string() )
 				throw Exception(PARSER_RUNTIME,

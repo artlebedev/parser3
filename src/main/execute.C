@@ -21,7 +21,7 @@
 #include "pa_vimage.h"
 #include "pa_wwrapper.h"
 
-volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.378 2015/10/26 01:21:58 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
+volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.379 2016/04/01 16:27:32 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
 
 //#define DEBUG_EXECUTE
 
@@ -310,7 +310,7 @@ void Request::execute(ArrayOperation& ops) {
 					if(name==class_element_name){
 						value=vclass;
 					} else if(name==class_name_element_name){
-						value=new VString(vclass->name());
+						value=new VString(*new String(vclass->type()));
 					}
 				} else {
 					// Value
@@ -900,7 +900,7 @@ void Request::execute(ArrayOperation& ops) {
 					throw Exception(PARSER_RUNTIME,
 						&constructor_name,
 						"constructor must be declared in class '%s'", 
-						class_value->get_class()->name_cstr());
+						class_value->type());
 
 				ArrayOperation* local_ops=i.next().ops;
 				DEBUG_PRINT_OPS(local_ops)
@@ -1269,7 +1269,7 @@ Value& Request::construct(Value &class_value, const Method &method){
 			throw Exception(PARSER_RUNTIME,
 				0, //&frame.name(),
 				"is not a constructor, system class '%s' can be constructed only implicitly", 
-					called_class.name().cstr());
+					called_class.type());
 	} else
 		throw Exception(PARSER_RUNTIME,
 			0, //&frame.name(),

@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.98 2015/10/26 01:22:02 moko Exp $"
+#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.99 2016/04/01 16:27:32 moko Exp $"
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
@@ -296,8 +296,7 @@ public: // usage
 				} else
 				throw Exception(PARSER_RUNTIME,
 					0, //&name(),
-					"method of %s (%s) accepts maximum %d parameter(s) (%d present)", 
-					self().get_class()->name_cstr(),
+					"method of %s accepts maximum %d parameter(s) (%d present)", 
 					self().type(),
 					param_count,
 					count);

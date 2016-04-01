@@ -8,7 +8,7 @@
 #ifndef PA_VOBJECT_H
 #define PA_VOBJECT_H
 
-#define IDENT_PA_VOBJECT_H "$Id: pa_vobject.h,v 1.64 2015/10/26 01:22:02 moko Exp $"
+#define IDENT_PA_VOBJECT_H "$Id: pa_vobject.h,v 1.65 2016/04/01 16:27:32 moko Exp $"
 
 // includes
 
@@ -39,7 +39,7 @@ class VObject: public Value {
 
 public: // Value
 	
-	const char* type() const { return fclass.name_cstr(); }
+	const char* type() const { return fclass.type(); }
 	override Value* as(const char* atype);
 
 	/// VObject: fclass

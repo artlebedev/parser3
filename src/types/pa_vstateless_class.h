@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
-#define IDENT_PA_VSTATELESS_CLASS_H "$Id: pa_vstateless_class.h,v 1.78 2015/10/26 01:22:02 moko Exp $"
+#define IDENT_PA_VSTATELESS_CLASS_H "$Id: pa_vstateless_class.h,v 1.79 2016/04/01 16:27:32 moko Exp $"
 
 // include
 
@@ -44,8 +44,7 @@ class Temp_method;
 class VStateless_class: public Value {
 	friend class Temp_method;
 
-	const String* fname;
-	mutable const char* fname_cstr;
+	const char* ftype;
 	HashStringMethod fmethods;
 
 	bool flocked;
@@ -65,7 +64,11 @@ protected:
 
 public: // Value
 	
-	const char* type() const { return "stateless_class"; }
+	const char* type() const {
+		if(!ftype)
+			throw Exception(PARSER_RUNTIME, 0, "getting type of nameless class");
+		return ftype;
+	}
 
 	/// VStateless_class: this
 	override VStateless_class* get_class() { return this; }
@@ -101,9 +104,9 @@ public: // Value
 public: // usage
 
 	VStateless_class(
-		const String* aname=0, 
+		const char* atype=0,
 		VStateless_class* abase=0):
-		fname(aname),
+		ftype(atype),
 		flocked(false),
 		fbase(0),
 		fderived(0),
@@ -119,27 +122,8 @@ public: // usage
 
 	void lock() { flocked=true; }
 
-	const String& name() const { 
-		if(!fname) {
-			if(fbase)
-				return fbase->name();
-
-			throw Exception(PARSER_RUNTIME,
-				0,
-				"getting name of nameless class");
-		}
-		return *fname; 
-	}
-
-	const char* name_cstr() const{
-		if(!fname_cstr) // remembering last calculated, and can't reassign 'fname_cstr'!
-			fname_cstr=name().cstr();
-		return fname_cstr;
-	}
-
-	void set_name(const String& aname) {
-		fname=&aname; 
-		fname_cstr=0;
+	void set_type(const char *atype) {
+		ftype=atype;
 	}
 
 	Method* get_method(const String& aname) const { 

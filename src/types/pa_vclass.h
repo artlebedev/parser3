@@ -8,7 +8,7 @@
 #ifndef PA_VCLASS_H
 #define PA_VCLASS_H
 
-#define IDENT_PA_VCLASS_H "$Id: pa_vclass.h,v 1.64 2015/10/26 01:22:01 moko Exp $"
+#define IDENT_PA_VCLASS_H "$Id: pa_vclass.h,v 1.65 2016/04/01 16:27:32 moko Exp $"
 
 // includes
 
@@ -21,8 +21,6 @@
 class VClass: public VStateless_class {
 public: // Value
 	
-	override const char* type() const { return name_cstr(); }
-
 	/// VClass: true
 	override bool as_bool() const { return true; }
 	override Value* as(const char* atype);

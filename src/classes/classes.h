@@ -8,7 +8,7 @@
 #ifndef CLASSES_H
 #define CLASSES_H
 
-#define IDENT_CLASSES_H "$Id: classes.h,v 1.36 2016/03/31 21:46:19 moko Exp $"
+#define IDENT_CLASSES_H "$Id: classes.h,v 1.37 2016/04/01 16:27:31 moko Exp $"
 
 // include
 
@@ -36,9 +36,7 @@ public: // Methoded
 
 public: // usage
 
-	Methoded(const char* aname, VStateless_class* abase=0): 
-		VStateless_class(new String(aname), abase) {
-	}
+	Methoded(const char* aname, VStateless_class* abase=0): VStateless_class(aname, abase) {}
 
 	void register_directly_used(Request& r);
 

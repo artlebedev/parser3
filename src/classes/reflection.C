@@ -9,7 +9,7 @@
 #include "pa_request.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.40 2016/03/31 21:46:20 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.41 2016/04/01 16:27:31 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -58,7 +58,7 @@ static void _create(Request& r, MethodParams& params) {
 		throw Exception(PARSER_RUNTIME,
 			&constructor_name,
 			"constructor must be declared in class '%s'",
-			class_value->get_class()->name_cstr());
+			class_value->type());
 
 	Junction* junction=constructor_value->get_junction();
 	const Method* method=junction->method;
@@ -70,15 +70,13 @@ static void _create(Request& r, MethodParams& params) {
 		if(method->call_type==Method::CT_STATIC)
 			throw Exception(PARSER_RUNTIME,
 				&constructor_name,
-				"native method of class '%s' (%s) is not allowed to be called dynamically",
-				class_value->get_class()->name_cstr(),
+				"native method of class '%s' is not allowed to be called dynamically",
 				class_value->type());
 
 		if(nparams<method->min_numbered_params_count)
 			throw Exception(PARSER_RUNTIME,
 				&constructor_name,
-				"native method of class '%s' (%s) accepts minimum %d parameter(s) (%d passed)",
-				class_value->get_class()->name_cstr(),
+				"native method of class '%s' accepts minimum %d parameter(s) (%d passed)",
 				class_value->type(),
 				method->min_numbered_params_count,
 				nparams);
@@ -91,8 +89,7 @@ static void _create(Request& r, MethodParams& params) {
 	if(nparams>max_params_count)
 		throw Exception(PARSER_RUNTIME,
 			&constructor_name,
-			"method of class '%s' (%s) accepts maximum %d parameter(s) (%d passed)",
-			class_value->get_class()->name_cstr(),
+			"method of class '%s' accepts maximum %d parameter(s) (%d passed)",
 			class_value->type(),
 			max_params_count,
 			nparams);
@@ -144,7 +141,7 @@ static Value* get_class(Value* value){
 
 static const String* get_class_name(Value* value){
 	if(VStateless_class* lclass=value->get_class())
-		return &lclass->name();
+		return new String(lclass->type());
 	else
 		// classes with fields only, like env & console
 		return new String(value->type());
@@ -284,7 +281,7 @@ static void _method_info(Request& r, MethodParams& params) {
 		c=c->base()->get_class();
 		while(c->base() && base_method==c->base()->get_method(method_name))
 			c=c->base()->get_class();
-		hash->put((base_method==method) ? method_inherited : method_overridden, new VString(c->name()));
+		hash->put((base_method==method) ? method_inherited : method_overridden, new VString(*new String(c->type())));
 	}
 
 	Value* call_type=0;

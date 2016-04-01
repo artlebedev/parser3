@@ -7,14 +7,14 @@
 
 #include "pa_wcontext.h"
 
-volatile const char * IDENT_PA_WCONTEXT_C="$Id: pa_wcontext.C,v 1.37 2015/10/26 01:22:03 moko Exp $" IDENT_PA_WCONTEXT_H;
+volatile const char * IDENT_PA_WCONTEXT_C="$Id: pa_wcontext.C,v 1.38 2016/04/01 16:27:32 moko Exp $" IDENT_PA_WCONTEXT_H;
 
 // appends a fstring to result
 void WContext::write(Value& avalue) {
 	if(fvalue) { // already have value?
 		// must not construct twice
 		throw Exception(PARSER_RUNTIME,
-			fvalue->get_class()?&fvalue->get_class()->name():0,
+			fvalue->get_class() ? new String(fvalue->get_class()->type()) : 0,
 			"%s may not be overwritten with %s, store it to variable instead",
 				fvalue->type(), 
 				avalue.type());

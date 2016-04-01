@@ -8,7 +8,7 @@
 #include "pa_vclass.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_PA_VCLASS_C="$Id: pa_vclass.C,v 1.53 2015/10/26 01:22:00 moko Exp $" IDENT_PA_VCLASS_H;
+volatile const char * IDENT_PA_VCLASS_C="$Id: pa_vclass.C,v 1.54 2016/04/01 16:27:32 moko Exp $" IDENT_PA_VCLASS_H;
 
 Property& VClass::get_property(const String& aname) {
 	Property* result=ffields.get(aname);
@@ -18,7 +18,7 @@ Property& VClass::get_property(const String& aname) {
 			Value *v=result->value;
 			throw Exception("parser.compile",
 				&aname,
-				"property can not be created, already exists field (%s) with that name", v ? v->get_class()->name_cstr() : "unknown");
+				"property can not be created, already exists field (%s) with that name", v ? v->type() : "unknown");
 		}
 
 		// cloning existing property
@@ -59,7 +59,7 @@ void VClass::set_base(VStateless_class* abase){
 		else
 			throw Exception("parser.compile",
 				0,
-				"Class %s base class (%s) is not user-defined", name_cstr(), abase->name_cstr());
+				"Class %s base class (%s) is not user-defined", type(), abase->type());
 	}
 }
 

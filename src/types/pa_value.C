@@ -13,7 +13,7 @@
 #include "pa_request.h"
 
 
-volatile const char * IDENT_PA_VALUE_C="$Id: pa_value.C,v 1.39 2015/10/26 01:22:00 moko Exp $" IDENT_PA_VALUE_H IDENT_PA_PROPERTY_H;
+volatile const char * IDENT_PA_VALUE_C="$Id: pa_value.C,v 1.40 2016/04/01 16:27:32 moko Exp $" IDENT_PA_VALUE_H IDENT_PA_PROPERTY_H;
 
 // globals
 
@@ -84,8 +84,7 @@ void Method::check_actual_numbered_params(Value& self,
 	if(actual_count<min_numbered_params_count || actual_count>max_numbered_params_count)
 		throw Exception(PARSER_RUNTIME,
 			0,
-			"native method of %s (%s) accepts %s %d parameter(s) (%d present)", 
-				self.get_class()->name_cstr(),
+			"native method of %s accepts %s %d parameter(s) (%d present)", 
 				self.type(),
 				actual_count<min_numbered_params_count ? "minimum" : "maximum",
 				actual_count<min_numbered_params_count ? min_numbered_params_count : max_numbered_params_count,

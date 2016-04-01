@@ -8,7 +8,7 @@
 #ifndef COMPILE_TOOLS
 #define COMPILE_TOOLS
 
-#define IDENT_COMPILE_TOOLS_H "$Id: compile_tools.h,v 1.109 2015/10/26 01:21:57 moko Exp $"
+#define IDENT_COMPILE_TOOLS_H "$Id: compile_tools.h,v 1.110 2016/04/01 16:27:32 moko Exp $"
 
 #include "pa_opcode.h"
 #include "pa_types.h"
@@ -133,8 +133,8 @@ public:
 			append=false;
 			// append to request's classes
 			if(!request.allow_class_replace)
-				return request.classes().put_dont_replace(cclass->name(), cclass) != 0;
-			request.classes().put(cclass->name(), cclass);
+				return request.classes().put_dont_replace(cclass->type(), cclass) != 0;
+			request.classes().put(cclass->type(), cclass);
 		}
 		return false;
 	}
@@ -143,7 +143,7 @@ public:
 		// checking existence of the class during processing @OPTIONS\npartial
 		// method should't use get_class because the last one will call operator @autouse[] if the class wasn't loaded
 		if(aclass)
-			if(Value* class_value=request.classes().get(aclass->name()))
+			if(Value* class_value=request.classes().get(aclass->type()))
 				return class_value->get_class();
 		return 0;
 	}
