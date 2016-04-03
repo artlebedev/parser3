@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.221 2015/10/26 01:21:56 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.222 2016/04/03 23:07:44 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -182,6 +182,7 @@ public:
 	/// global classes
 	HashString<Value*>& classes() { return fclasses; }
 	Value* get_class(const String& name);
+	Value* put_class(Value *aclass){ classes().put(aclass->type(), aclass); }
 
 	/**
 		core request processing

@@ -8,14 +8,13 @@
 #include "classes.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_CLASSES_C="$Id: classes.C,v 1.28 2016/04/01 16:27:31 moko Exp $" IDENT_CLASSES_H;
+volatile const char * IDENT_CLASSES_C="$Id: classes.C,v 1.29 2016/04/03 23:07:44 moko Exp $" IDENT_CLASSES_H;
 
 // Methoded
 
 void Methoded::register_directly_used(Request& r) {
-	if(used_directly()) {
-		r.classes().put(type(), this);
-	}
+	if(used_directly())
+		r.put_class(this);
 
 	// prevent system classes from modification [calling set_method]
 	// ^process[$string:CLASS]{@method} prohibited from now on...

@@ -32,7 +32,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.352 2016/04/01 16:27:32 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.353 2016/04/03 23:07:44 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -154,41 +154,34 @@ Request::Request(SAPI_Info& asapi_info, Request_info& arequest_info,
 	
 	/// directly used
 	// MAIN class, operators
-	classes().put(main_class.type(), &main_class);
+	put_class(&main_class);
 	// classes:
 	// table, file, random, mail, image, ...
 	methoded_array().register_directly_used(*this);
 
 	/// methodless
 	// env class
-	classes().put(ENV_CLASS_NAME, new VEnv(asapi_info));
+	put_class(new VEnv(asapi_info));
 	// status class
-	classes().put(STATUS_CLASS_NAME, new VStatus());
+	put_class(new VStatus());
 	// request class
-	classes().put(REQUEST_CLASS_NAME, new VRequest(arequest_info, charsets, form, asapi_info));
+	put_class(new VRequest(arequest_info, charsets, form, asapi_info));
 	// cookie class
-	classes().put(COOKIE_CLASS_NAME, &cookie);
+	put_class(&cookie);
 	// console class
-	classes().put(CONSOLE_CLASS_NAME, &console);
+	put_class(&console);
 	/// methoded
 	// response class
-	classes().put(response.get_class()->type(), &response);
+	put_class(&response);
 
-	/// bases used
 	// form class
-	classes().put(form.get_class()->base_class()->type(), &form);
+	put_class(&form);
 	// mail class
-	classes().put(mail.get_class()->base_class()->type(), &mail);
+	put_class(&mail);
 	// math class
-	{
-		Value& math=*new VMath;
-		classes().put(math.get_class()->base_class()->type(), &math);
-	}
+	put_class(new VMath);
 	// memory class
-	{
-		Value& memory=*new VMemory;
-		classes().put(memory.get_class()->base_class()->type(), &memory);
-	}
+	put_class(new VMemory);
 }
 
 Request::~Request() {
