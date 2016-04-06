@@ -10,7 +10,7 @@
 #include "pa_vbool.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VSTATELESS_CLASS_C="$Id: pa_vstateless_class.C,v 1.52 2015/10/26 01:22:02 moko Exp $" IDENT_PA_VSTATELESS_CLASS_H IDENT_PA_METHOD_H;
+volatile const char * IDENT_PA_VSTATELESS_CLASS_C="$Id: pa_vstateless_class.C,v 1.53 2016/04/06 20:47:15 moko Exp $" IDENT_PA_VSTATELESS_CLASS_H IDENT_PA_METHOD_H;
 
 #ifndef OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL
 const String class_name(CLASS_NAME), class_nametext(CLASS_NAMETEXT);
@@ -80,7 +80,7 @@ Value* VStateless_class::get_element(Value& aself, const String& aname) {
 
 	// $CLASS_NAME
 	if(aname==class_nametext)
-		return new VString(name());
+		return new VString(*new String(type()));
 #endif
 
 	// $method=junction(self+class+method)
