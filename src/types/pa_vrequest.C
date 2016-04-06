@@ -15,7 +15,7 @@
 #include "pa_vvoid.h"
 #include "pa_vfile.h"
 
-volatile const char * IDENT_PA_VREQUEST_C="$Id: pa_vrequest.C,v 1.59 2015/10/26 01:22:02 moko Exp $" IDENT_PA_VREQUEST_H;
+volatile const char * IDENT_PA_VREQUEST_C="$Id: pa_vrequest.C,v 1.60 2016/04/06 22:11:44 moko Exp $" IDENT_PA_VREQUEST_H;
 
 // defines
 
@@ -41,15 +41,9 @@ VRequest::VRequest(Request_info& ainfo, Request_charsets& acharsets, VForm& afor
 }
 
 Value* VRequest::get_element(const String& aname) {
-#ifndef OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL
-	// $CLASS
-	if(aname==CLASS_NAME)
-		return this;
-
-	// $CLASS_NAME
-	if(aname==CLASS_NAMETEXT)
-		return new VString(request_class_name);
-#endif
+	// $request:CLASS, CLASS_NAME or method
+	if(Value* result=VStateless_class::get_element(aname))
+		return result;
 
 	// $request:charset
 	if(aname==CHARSET_NAME)

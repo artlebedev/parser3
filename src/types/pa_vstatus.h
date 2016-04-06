@@ -8,23 +8,18 @@
 #ifndef PA_VSTATUS_H
 #define PA_VSTATUS_H
 
-#define IDENT_PA_VSTATUS_H "$Id: pa_vstatus.h,v 1.22 2015/10/26 01:22:03 moko Exp $"
+#define IDENT_PA_VSTATUS_H "$Id: pa_vstatus.h,v 1.23 2016/04/06 22:11:44 moko Exp $"
 
 // includes
 
-#include "pa_value.h"
-
-// define
-
-#define STATUS_CLASS_NAME "status"
+#include "pa_vstateless_class.h"
 
 /// status class
-class VStatus: public Value {
+class VStatus: public VStateless_class {
 
 public: // Value
 	
 	const char* type() const { return "status"; }
-	VStateless_class *get_class() { return 0; }
 
 	// VStatus: field
 	Value* get_element(const String& aname);

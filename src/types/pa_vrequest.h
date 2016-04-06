@@ -8,24 +8,21 @@
 #ifndef PA_VREQUEST_H
 #define PA_VREQUEST_H
 
-#define IDENT_PA_VREQUEST_H "$Id: pa_vrequest.h,v 1.43 2015/10/26 01:22:02 moko Exp $"
+#define IDENT_PA_VREQUEST_H "$Id: pa_vrequest.h,v 1.44 2016/04/06 22:11:44 moko Exp $"
 
 // includes
 
 #include "pa_sapi.h"
 #include "pa_common.h"
-#include "pa_value.h"
+#include "pa_vstateless_class.h"
 
 // defines
 
-#define REQUEST_CLASS_NAME "request"
 #define REQUEST_ARGV_ELEMENT_NAME "argv"
 #define REQUEST_BODY_CHARSET_NAME "body-charset"
 #define REQUEST_BODY_BODY_NAME "body-file"
 #define POST_CHARSET_NAME "post-charset"
 #define POST_BODY_NAME "post-body"
-
-static const String request_class_name(REQUEST_CLASS_NAME);
 
 // forwards
 
@@ -33,7 +30,7 @@ class Request_info;
 class VForm;
 
 /// request class
-class VRequest: public Value {
+class VRequest: public VStateless_class {
 
 	Request_info& finfo;
 	SAPI_Info& fsapi_info;
@@ -43,9 +40,7 @@ class VRequest: public Value {
 
 public: // Value
 	
-	override const char* type() const { return REQUEST_CLASS_NAME; }
-	/// VRequest: 0
-	override VStateless_class *get_class() { return 0; }
+	override const char* type() const { return "request"; }
 
 	/// request: field
 	override Value* get_element(const String& name);

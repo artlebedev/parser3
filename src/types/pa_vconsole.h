@@ -8,32 +8,31 @@
 #ifndef PA_VCONSOLE_H
 #define PA_VCONSOLE_H
 
-#define IDENT_PA_VCONSOLE_H "$Id: pa_vconsole.h,v 1.22 2015/10/26 01:22:01 moko Exp $"
+#define IDENT_PA_VCONSOLE_H "$Id: pa_vconsole.h,v 1.23 2016/04/06 22:11:43 moko Exp $"
 
 // includes
 
 #include "pa_sapi.h"
 #include "pa_common.h"
-#include "pa_value.h"
+#include "pa_vstateless_class.h"
 #include "pa_string.h"
 
 // defines
 
-#define CONSOLE_CLASS_NAME "console"
-static const String console_class_name(CONSOLE_CLASS_NAME);
-
 #define CONSOLE_LINE_NAME "line"
 
 /// console class
-class VConsole: public Value {
+class VConsole: public VStateless_class {
 public: // Value
 	
-	const char* type() const { return CONSOLE_CLASS_NAME; }
-	/// VConsole: 0
-	VStateless_class *get_class() { return 0; }
+	const char* type() const { return "console"; }
 
 	/// console: line
 	Value* get_element(const String& aname) {
+		// CLASS, CLASS_NAME or method
+		if(Value* result=VStateless_class::get_element(aname))
+			return result;
+
 		// $line
 		if(aname==CONSOLE_LINE_NAME) {
 			char local_value[MAX_STRING];
@@ -43,19 +42,7 @@ public: // Value
 			return 0; // EOF
 		}
 
-#ifndef OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL
-		// $CLASS
-		if(aname==CLASS_NAME)
-			return this;
-
-		// $CLASS_NAME
-		if(aname==CLASS_NAMETEXT)
-			return new VString(console_class_name);
-#endif
-
-		throw Exception(PARSER_RUNTIME,
-			&aname,
-			"reading of invalid field");
+		throw Exception(PARSER_RUNTIME, &aname, "reading of invalid field");
 	}
 
 	/// console: $line

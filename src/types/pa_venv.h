@@ -8,27 +8,19 @@
 #ifndef PA_VENV_H
 #define PA_VENV_H
 
-#define IDENT_PA_VENV_H "$Id: pa_venv.h,v 1.40 2015/10/26 01:22:01 moko Exp $"
+#define IDENT_PA_VENV_H "$Id: pa_venv.h,v 1.41 2016/04/06 22:11:44 moko Exp $"
 
 // includes
 
 #include "pa_sapi.h"
-#include "pa_value.h"
-#include "pa_string.h"
-
-// defines
-
-#define ENV_CLASS_NAME "env"
-static const String env_class_name(ENV_CLASS_NAME);
+#include "pa_vstateless_class.h"
 
 /// env class
-class VEnv: public Value {
+class VEnv: public VStateless_class {
 	SAPI_Info& finfo;
 public: // Value
 	
-	const char* type() const { return ENV_CLASS_NAME; }
-	/// VEnv: 0
-	VStateless_class *get_class() { return 0; }
+	const char* type() const { return "env"; }
 
 	// env: field
 	Value* get_element(const String& aname);

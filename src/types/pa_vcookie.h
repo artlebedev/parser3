@@ -8,22 +8,19 @@
 #ifndef PA_VCOOKIE_H
 #define PA_VCOOKIE_H
 
-#define IDENT_PA_VCOOKIE_H "$Id: pa_vcookie.h,v 1.40 2015/10/26 01:22:01 moko Exp $"
+#define IDENT_PA_VCOOKIE_H "$Id: pa_vcookie.h,v 1.41 2016/04/06 22:11:44 moko Exp $"
 
 #include "pa_hash.h"
 #include "pa_common.h"
-#include "pa_value.h"
+#include "pa_vstateless_class.h"
 #include "pa_sapi.h"
-
-#define COOKIE_CLASS_NAME "cookie"
-static const String cookie_class_name(COOKIE_CLASS_NAME);
 
 // forwards
 class Request_info;
 class Request_charsets;
 
 /// cookie class
-class VCookie: public Value {
+class VCookie: public VStateless_class {
 
 	HashStringValue before;
 	HashStringValue after;
@@ -31,9 +28,7 @@ class VCookie: public Value {
 
 public: // Value
 	
-	override const char* type() const { return COOKIE_CLASS_NAME; }
-	/// VCookie: 0
-	override VStateless_class *get_class() { return 0; }
+	override const char* type() const { return "cookie"; }
 
 	// cookie: field
 	override Value* get_element(const String& aname);
