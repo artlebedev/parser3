@@ -32,7 +32,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.353 2016/04/03 23:07:44 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.354 2016/04/06 16:08:20 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -160,6 +160,7 @@ Request::Request(SAPI_Info& asapi_info, Request_info& arequest_info,
 	methoded_array().register_directly_used(*this);
 
 	/// methodless
+
 	// env class
 	put_class(new VEnv(asapi_info));
 	// status class
@@ -170,10 +171,11 @@ Request::Request(SAPI_Info& asapi_info, Request_info& arequest_info,
 	put_class(&cookie);
 	// console class
 	put_class(&console);
+
 	/// methoded
+
 	// response class
 	put_class(&response);
-
 	// form class
 	put_class(&form);
 	// mail class

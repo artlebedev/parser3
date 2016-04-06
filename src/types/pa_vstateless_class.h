@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
-#define IDENT_PA_VSTATELESS_CLASS_H "$Id: pa_vstateless_class.h,v 1.79 2016/04/01 16:27:32 moko Exp $"
+#define IDENT_PA_VSTATELESS_CLASS_H "$Id: pa_vstateless_class.h,v 1.80 2016/04/06 16:08:20 moko Exp $"
 
 // include
 
@@ -44,7 +44,6 @@ class Temp_method;
 class VStateless_class: public Value {
 	friend class Temp_method;
 
-	const char* ftype;
 	HashStringMethod fmethods;
 
 	bool flocked;
@@ -64,12 +63,6 @@ protected:
 
 public: // Value
 	
-	const char* type() const {
-		if(!ftype)
-			throw Exception(PARSER_RUNTIME, 0, "getting type of nameless class");
-		return ftype;
-	}
-
 	/// VStateless_class: this
 	override VStateless_class* get_class() { return this; }
 	/// VStateless_class: fbase
@@ -103,10 +96,7 @@ public: // Value
 
 public: // usage
 
-	VStateless_class(
-		const char* atype=0,
-		VStateless_class* abase=0):
-		ftype(atype),
+	VStateless_class(VStateless_class* amethoded_donor=0):
 		flocked(false),
 		fbase(0),
 		fderived(0),
@@ -116,15 +106,12 @@ public: // usage
 		fdefault_getter(0),
 		fdefault_setter(0),
 		fcall_type(Method::CT_ANY)
-		{
-			set_base(abase);
+	{
+		if(amethoded_donor)
+			fmethods.merge_dont_replace(amethoded_donor->fmethods);
 	}
 
 	void lock() { flocked=true; }
-
-	void set_type(const char *atype) {
-		ftype=atype;
-	}
 
 	Method* get_method(const String& aname) const { 
 		return fmethods.get(aname);
@@ -174,6 +161,7 @@ public: // usage
 	void set_method(const String& aname, Method* amethod);
 
 	/// overrided in VClass
+	virtual void set_type(const char *atype) {}
 	virtual void real_set_method(const String& aname, Method* amethod);
 	virtual HashStringProperty* get_properties(){ return 0; };
 	virtual void set_base(VStateless_class* abase);

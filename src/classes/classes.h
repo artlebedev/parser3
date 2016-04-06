@@ -8,7 +8,7 @@
 #ifndef CLASSES_H
 #define CLASSES_H
 
-#define IDENT_CLASSES_H "$Id: classes.h,v 1.37 2016/04/01 16:27:31 moko Exp $"
+#define IDENT_CLASSES_H "$Id: classes.h,v 1.38 2016/04/06 16:08:19 moko Exp $"
 
 // include
 
@@ -19,6 +19,10 @@
 	@see Methoded_array
 */
 class Methoded: public VStateless_class {
+public: // Value
+	
+	override const char* type() const { return ftype; }
+
 public: // Methoded
 
 	/** should Methoded_array::register_directly_used register this class in
@@ -34,9 +38,13 @@ public: // Methoded
 	/// use it to construct static variables. check some static so that would be only ONCE!
 	virtual void construct_statics() {}
 
+private:
+
+	const char* ftype;
+
 public: // usage
 
-	Methoded(const char* aname, VStateless_class* abase=0): VStateless_class(aname, abase) {}
+	Methoded(const char* atype): ftype(atype){}
 
 	void register_directly_used(Request& r);
 

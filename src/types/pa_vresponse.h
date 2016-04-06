@@ -8,7 +8,7 @@
 #ifndef PA_VRESPONSE_H
 #define PA_VRESPONSE_H
 
-#define IDENT_PA_VRESPONSE_H "$Id: pa_vresponse.h,v 1.45 2015/10/26 01:22:02 moko Exp $"
+#define IDENT_PA_VRESPONSE_H "$Id: pa_vresponse.h,v 1.46 2016/04/06 16:08:20 moko Exp $"
 
 #include "pa_vstateless_object.h"
 #include "pa_string.h"
@@ -28,7 +28,7 @@ class Request_charsets;
 extern Methoded* response_class;
 
 /// value of type 'response'
-class VResponse: public VStateless_object {
+class VResponse: public VStateless_class {
 
 	Request_info& finfo;
 	Request_charsets& fcharsets;
@@ -38,7 +38,6 @@ class VResponse: public VStateless_object {
 public: // Value
 	
 	override const char* type() const { return RESPONSE_CLASS_NAME; }
-	override VStateless_class *get_class() { return response_class; }
 
 	/// Response: ffields
 	override HashStringValue* get_hash() { return &ffields; }
@@ -51,8 +50,7 @@ public: // Value
 
 public:	// usage
 
-	VResponse(Request_info& ainfo, Request_charsets& acharsets): 
-		finfo(ainfo), fcharsets(acharsets) {}
+	VResponse(Request_info& ainfo, Request_charsets& acharsets): VStateless_class(response_class), finfo(ainfo), fcharsets(acharsets) {}
 
 	/// used in pa_request.C
 	HashStringValue& fields() { return ffields; }

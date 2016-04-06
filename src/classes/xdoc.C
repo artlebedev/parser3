@@ -28,7 +28,7 @@
 #include "xnode.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_XDOC_C="$Id: xdoc.C,v 1.184 2016/03/31 21:46:20 moko Exp $";
+volatile const char * IDENT_XDOC_C="$Id: xdoc.C,v 1.185 2016/04/06 16:08:19 moko Exp $";
 
 // defines
 
@@ -722,7 +722,9 @@ static void _transform(Request& r, MethodParams& params) {
 // constructor
 
 /// @test how to create empty type html?
-MXdoc::MXdoc(): MXnode(XDOC_CLASS_NAME, xnode_class) {
+MXdoc::MXdoc(): MXnode(XDOC_CLASS_NAME) {
+	set_base(xnode_class);
+
 	/// DOM1
 
 	// Element createElement(in DOMString tagName) raises(DOMException);

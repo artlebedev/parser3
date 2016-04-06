@@ -21,7 +21,7 @@
 #include "libxml/xpath.h"
 #include "libxml/xpathInternals.h"
 
-volatile const char * IDENT_XNODE_C="$Id: xnode.C,v 1.92 2016/03/31 21:46:20 moko Exp $" IDENT_XNODE_H;
+volatile const char * IDENT_XNODE_C="$Id: xnode.C,v 1.93 2016/04/06 16:08:19 moko Exp $" IDENT_XNODE_H;
 
 // global variable
 
@@ -869,9 +869,7 @@ static void _selectString(Request& r, MethodParams& params) {
 // constructor
 
 /// @bug one can change const and ruin other's work, we need unchangable VIntConst class
-MXnode::MXnode(const char* aname, VStateless_class *abase):
-	Methoded(aname?aname:"xnode", abase)
-{
+MXnode::MXnode(const char* aname): Methoded(aname?aname:"xnode") {
 	/// DOM1 node
 
 	// Node insertBefore(in Node newChild,in Node refChild) raises(DOMException);

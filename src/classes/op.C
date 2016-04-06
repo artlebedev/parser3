@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.225 2016/04/01 16:27:31 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.226 2016/04/06 16:08:19 moko Exp $";
 
 // limits
 
@@ -894,8 +894,7 @@ static void _bpt(Request&, MethodParams&) {
 
 // constructor
 
-VClassMAIN::VClassMAIN(): VClass() {
-	set_type(MAIN_CLASS_NAME);
+VClassMAIN::VClassMAIN(): VClass(MAIN_CLASS_NAME) {
 
 #ifdef PA_BPT
 	// ^bpt[]

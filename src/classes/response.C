@@ -11,7 +11,7 @@
 #include "pa_request.h"
 #include "pa_vresponse.h"
 
-volatile const char * IDENT_RESPONSE_C="$Id: response.C,v 1.30 2016/03/31 21:46:20 moko Exp $";
+volatile const char * IDENT_RESPONSE_C="$Id: response.C,v 1.31 2016/04/06 16:08:19 moko Exp $";
 
 // class
 
@@ -36,5 +36,5 @@ static void _clear(Request& r, MethodParams&) {
 
 MResponse::MResponse(): Methoded("response") {
 	// ^clear[]
-	add_native_method("clear", Method::CT_DYNAMIC, _clear, 0, 0);
+	add_native_method("clear", Method::CT_STATIC, _clear, 0, 0);
 }

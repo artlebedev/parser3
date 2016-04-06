@@ -12,7 +12,7 @@
 #include "pa_vvoid.h"
 #include "pa_sql_connection.h"
 
-volatile const char * IDENT_VOID_C="$Id: void.C,v 1.52 2015/10/26 01:21:55 moko Exp $";
+volatile const char * IDENT_VOID_C="$Id: void.C,v 1.53 2016/04/06 16:08:19 moko Exp $";
 
 // externs
 
@@ -89,7 +89,9 @@ static void _sql(Request& r, MethodParams& params) {
 
 // constructor
 
-MVoid::MVoid(): Methoded("void", string_class) {
+MVoid::MVoid(): Methoded("void") {
+	set_base(string_class);
+
 	// ^void:sql{query}
 	add_native_method("sql", Method::CT_STATIC, _sql, 1, 2);
 

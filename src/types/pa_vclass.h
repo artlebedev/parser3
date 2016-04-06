@@ -8,7 +8,7 @@
 #ifndef PA_VCLASS_H
 #define PA_VCLASS_H
 
-#define IDENT_PA_VCLASS_H "$Id: pa_vclass.h,v 1.65 2016/04/01 16:27:32 moko Exp $"
+#define IDENT_PA_VCLASS_H "$Id: pa_vclass.h,v 1.66 2016/04/06 16:08:20 moko Exp $"
 
 // includes
 
@@ -21,6 +21,12 @@
 class VClass: public VStateless_class {
 public: // Value
 	
+	override const char* type() const {
+		if(!ftype)
+			throw Exception(PARSER_RUNTIME, 0, "getting type of nameless class");
+		return ftype;
+	}
+
 	/// VClass: true
 	override bool as_bool() const { return true; }
 	override Value* as(const char* atype);
@@ -39,6 +45,8 @@ public: // Value
 
 public: 
 	
+	void set_type(const char *atype) { ftype=atype; }
+
 	// VStateless_class
 	override void real_set_method(const String& aname, Method* amethod);
 	override HashStringProperty* get_properties(){ return &ffields; };
@@ -54,6 +62,8 @@ public:
 
 private:
 
+	const char* ftype;
+
 	enum State {
 		IS_GETTER_ACTIVE = 0x01,
 		IS_SETTER_ACTIVE = 0x02
@@ -67,7 +77,7 @@ private:
 
 public:
 
-	VClass() : state(IS_GETTER_ACTIVE){}
+	VClass(const char* atype=0) : ftype(atype), state(IS_GETTER_ACTIVE){}
 
 };
 

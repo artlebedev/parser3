@@ -8,7 +8,7 @@
 #ifndef XNODE_H
 #define XNODE_H
 
-#define IDENT_XNODE_H "$Id: xnode.h,v 1.32 2015/10/26 01:21:55 moko Exp $"
+#define IDENT_XNODE_H "$Id: xnode.h,v 1.33 2016/04/06 16:08:19 moko Exp $"
 
 class MXnode: public Methoded {
 public: // Value
@@ -35,7 +35,7 @@ public: // VStateless_class
 	}
 
 public:
-	MXnode(const char* aname=0, VStateless_class* abase=0);
+	MXnode(const char* aname=0);
 
 public: // Methoded
 	bool used_directly() { return true; }
