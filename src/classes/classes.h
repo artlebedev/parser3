@@ -8,7 +8,7 @@
 #ifndef CLASSES_H
 #define CLASSES_H
 
-#define IDENT_CLASSES_H "$Id: classes.h,v 1.38 2016/04/06 16:08:19 moko Exp $"
+#define IDENT_CLASSES_H "$Id: classes.h,v 1.39 2016/04/06 23:03:07 moko Exp $"
 
 // include
 
@@ -35,8 +35,6 @@ public: // Methoded
 	virtual void configure_admin(Request& ) {}
 	/// use this method to read parameters from 'MAIN' class; access r.main_class
 	virtual void configure_user(Request& ) {}
-	/// use it to construct static variables. check some static so that would be only ONCE!
-	virtual void construct_statics() {}
 
 private:
 
