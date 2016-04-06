@@ -1,7 +1,7 @@
 Content-Type: text/html
-Content-Length: 1782
+Content-Length: 1804
 
-cookie<br />env<br />hash - methoded<br />table - methoded<br />test - methoded<br />test1 - methoded<br />test2 - methoded
+cookie - methoded<br />env - methoded<br />hash - methoded<br />table - methoded<br />test - methoded<br />test1 - methoded<br />test2 - methoded
 <hr />
 create
 native method of class 'date' accepts minimum 1 parameter(s) (0 passed)
