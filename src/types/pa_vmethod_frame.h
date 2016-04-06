@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.99 2016/04/01 16:27:32 moko Exp $"
+#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.100 2016/04/06 22:45:33 moko Exp $"
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
@@ -20,11 +20,6 @@
 #define SELF_ELEMENT_NAME "self"
 #define RESULT_VAR_NAME "result"
 extern const String result_var_name, caller_element_name, self_element_name;
-#ifdef OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL
-#define CLASS_ELEMENT_NAME "CLASS"
-#define CLASS_NAME_ELEMENT_NAME "CLASS_NAME"
-extern const String class_element_name, class_name_element_name;
-#endif
 
 // forwards
 

@@ -10,11 +10,9 @@
 #include "pa_vbool.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VSTATELESS_CLASS_C="$Id: pa_vstateless_class.C,v 1.53 2016/04/06 20:47:15 moko Exp $" IDENT_PA_VSTATELESS_CLASS_H IDENT_PA_METHOD_H;
+volatile const char * IDENT_PA_VSTATELESS_CLASS_C="$Id: pa_vstateless_class.C,v 1.54 2016/04/06 22:45:33 moko Exp $" IDENT_PA_VSTATELESS_CLASS_H IDENT_PA_METHOD_H;
 
-#ifndef OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL
-const String class_name(CLASS_NAME), class_nametext(CLASS_NAMETEXT);
-#endif
+const String class_element_name(CLASS_NAME), class_name_element_name(CLASS_NAME_ELEMENT_NAME);
 
 override Value& VStateless_class::as_expr_result() {
 	return VBool::get(as_bool());
@@ -75,11 +73,11 @@ void VStateless_class::add_native_method(
 Value* VStateless_class::get_element(Value& aself, const String& aname) {
 #ifndef OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL
 	// $CLASS
-	if(aname==class_name)
+	if(aname==class_element_name)
 		return this;
 
 	// $CLASS_NAME
-	if(aname==class_nametext)
+	if(aname==class_name_element_name)
 		return new VString(*new String(type()));
 #endif
 
