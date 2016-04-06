@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 493
+Content-Length: 475
 
 MAIN MAIN ()
 bool bool ()
@@ -10,17 +10,17 @@ date date ()
 double double ()
 env env ()
 file file ()
-form form (form)
+form form ()
 hash hash ()
 hashfile hashfile ()
 image image ()
 inet inet ()
 int int ()
 json json ()
-mail mail (mail)
-math math (math)
+mail mail ()
+math math ()
 memcached memcached ()
-memory memory (memory)
+memory memory ()
 reflection reflection ()
 regex regex ()
 request request ()
