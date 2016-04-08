@@ -8,7 +8,7 @@
 #ifndef PA_VCONSOLE_H
 #define PA_VCONSOLE_H
 
-#define IDENT_PA_VCONSOLE_H "$Id: pa_vconsole.h,v 1.23 2016/04/06 22:11:43 moko Exp $"
+#define IDENT_PA_VCONSOLE_H "$Id: pa_vconsole.h,v 1.24 2016/04/08 22:34:37 moko Exp $"
 
 // includes
 
@@ -29,9 +29,11 @@ public: // Value
 
 	/// console: line
 	Value* get_element(const String& aname) {
-		// CLASS, CLASS_NAME or method
+#ifndef OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL
+		// CLASS, CLASS_NAME
 		if(Value* result=VStateless_class::get_element(aname))
 			return result;
+#endif
 
 		// $line
 		if(aname==CONSOLE_LINE_NAME) {

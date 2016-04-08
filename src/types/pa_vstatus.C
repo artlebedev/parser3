@@ -13,7 +13,7 @@
 #include "pa_vdouble.h"
 #include "pa_threads.h"
 
-volatile const char * IDENT_PA_VSTATUS_C="$Id: pa_vstatus.C,v 1.33 2016/04/06 22:11:44 moko Exp $" IDENT_PA_VSTATUS_H;
+volatile const char * IDENT_PA_VSTATUS_C="$Id: pa_vstatus.C,v 1.34 2016/04/08 22:34:38 moko Exp $" IDENT_PA_VSTATUS_H;
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -194,9 +194,11 @@ Value& memory_element() {
 #endif
 
 Value* VStatus::get_element(const String& aname) {
-	// CLASS, CLASS_NAME or method
+#ifndef OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL
+	// CLASS, CLASS_NAME
 	if(Value* result=VStateless_class::get_element(aname))
 		return result;
+#endif
 
 	// getstatus
 	if(Cache_manager* manager=cache_managers->get(aname))
