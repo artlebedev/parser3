@@ -1,3 +1,132 @@
+2016-04-09  moko
+
+	* tests/results/320.processed: ordered hash now used for class
+	  methods and properties (test results updated for feature #1069)
+
+	* src/types/pa_vstateless_class.h: ordered hash now used for class
+	  methods and properties (implements feature #1069)
+
+	* src/types/: pa_vconsole.h, pa_vcookie.C, pa_venv.C,
+	  pa_vrequest.C, pa_vstatus.C: minor optimization: #ifndef
+	  OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL returned (related to
+	  feature #1051)
+
+2016-04-07  moko
+
+	* src/main/execute.C: returned Value in .CLASS case for VJunction
+	  (related to feature #1051)
+
+	* src/types/: pa_vjunction.C, pa_vmethod_frame.C,
+	  pa_vmethod_frame.h, pa_vstateless_class.C, pa_vstateless_class.h:
+	  string constants deduplication (related to feature #1051)
+
+	* tests/results/224.processed: test result updated (related to
+	  feature #1051)
+
+	* src/: main/execute.C, types/pa_vconsole.h, types/pa_vcookie.C,
+	  types/pa_vcookie.h, types/pa_venv.C, types/pa_venv.h,
+	  types/pa_vrequest.C, types/pa_vrequest.h, types/pa_vstatus.C,
+	  types/pa_vstatus.h: classes hash now contains only
+	  VStateless_class derived objects, .CLASS is also allways
+	  VStateless_class derived object (related to feature #1051).
+
+2016-04-06  moko
+
+	* tests/results/323.processed: test result updated after feature
+	  #1051 implementation
+
+	* src/: classes/classes.h, classes/op.C, classes/response.C,
+	  classes/void.C, classes/xdoc.C, classes/xnode.C, classes/xnode.h,
+	  main/pa_request.C, types/pa_vclass.h, types/pa_vform.C,
+	  types/pa_vmail.C, types/pa_vmath.C, types/pa_vmemory.h,
+	  types/pa_vresponse.C, types/pa_vresponse.h,
+	  types/pa_vstateless_class.h: base -> methoded_donor for static
+	  classes, type() moved from VStateless_class to VClass and
+	  Methoded (implements feature #1051)
+
+2016-04-04  moko
+
+	* src/: classes/classes.C, include/pa_request.h, main/pa_request.C:
+	  beauty: put_class added (related to feature #1051)
+
+2016-04-01  moko
+
+	* tests/results/: 175.processed, 192.processed, 224.processed,
+	  229.processed, 244.processed, 246.processed, 316.processed: test
+	  results updated as class.type() removed from error messages, only
+	  type() left (related to feature #1051)
+
+	* src/: classes/classes.C, classes/classes.h, classes/mail.C,
+	  classes/op.C, classes/reflection.C, main/compile.y,
+	  main/compile_tools.h, main/execute.C, main/pa_request.C,
+	  types/pa_value.C, types/pa_vclass.C, types/pa_vclass.h,
+	  types/pa_vmethod_frame.h, types/pa_vobject.h,
+	  types/pa_vstateless_class.h, types/pa_wcontext.C: name() removed
+	  from VStateless_class, type() is used instead (related to feature
+	  #1051)
+
+	* src/classes/mail.C: old logic restored.
+
+	* src/: classes/bool.C, classes/classes.C, classes/classes.awk,
+	  classes/classes.h, classes/curl.C, classes/date.C,
+	  classes/double.C, classes/file.C, classes/form.C, classes/hash.C,
+	  classes/hashfile.C, classes/image.C, classes/inet.C,
+	  classes/int.C, classes/json.C, classes/mail.C, classes/math.C,
+	  classes/memcached.C, classes/memory.C, classes/reflection.C,
+	  classes/regex.C, classes/response.C, classes/string.C,
+	  classes/table.C, classes/xdoc.C, classes/xnode.C,
+	  types/pa_vform.C, types/pa_vmail.C, types/pa_vmath.C,
+	  types/pa_vmemory.h: optimizaion: *_base_class removed (related to
+	  feature #1051)
+
+2016-03-30  moko
+
+	* tests/: 327.html, results/224.processed, results/327.processed:
+	  test for TZ specification in ^date::create[], TZ is kept during
+	  ^date::create[$dt] (related to feature #1048)
+
+	* src/: classes/date.C, types/pa_vdate.h: TZ can be specified in
+	  ^date::create[], TZ is kept during ^date::create[$dt] (implements
+	  feature #1048)
+
+2016-03-29  moko
+
+	* tests/: 315.html, results/315.processed: test for timezone format
+	  +HHmm added (related to feature #1065)
+
+	* src/classes/date.C: timezone format +HHmm now supported
+	  (implements feature #1065)
+
+2016-03-28  moko
+
+	* tests/: 202.html, results/131.processed, results/202.processed,
+	  results/224.processed, results/256.processed,
+	  results/315.processed: test results updated after %.2d now
+	  default for hours offset in iso-string (was %2d), test for
+	  ^date.iso-string options $.colon(true) $.z(true) $.ms(false)
+	  added (related to feature #1065)
+
+2016-03-27  moko
+
+	* src/types/pa_vdate.C: '+' sign for zero offset (related to
+	  feature #1065)
+
+	* src/: classes/date.C, types/pa_vdate.C, types/pa_vdate.h:
+	  ^date.iso-string options $.colon(true) $.z(true) $.ms(false)
+	  added (implements feature #1065)
+
+2016-03-24  moko
+
+	* tests/: 202.html, results/202.processed: test $date.week added
+	  (related to bug #1067)
+
+	* src/types/: pa_vdate.C, pa_vdate.h: fix for $date.week changed
+	  date (fix for bug #1067)
+
+2016-03-10  moko
+
+	* configure.ac, src/include/pa_version.h: 3.4.4 -> 3.4.5b
+
 2015-12-07  moko
 
 	* tests/: 326.html, results/326.processed: test for .CLASS &
@@ -14478,7 +14607,7 @@
 	  types/pa_vstring.h, types/pa_vtable.C, types/pa_vtable.h,
 	  types/pa_vvoid.h, types/pa_vxdoc.C, types/pa_vxdoc.h,
 	  types/pa_vxnode.C, types/pa_vxnode.h, types/pa_wcontext.C,
-	  types/pa_wcontext.h, types/pa_wwrapper.h: $Date: 2016/03/09 21:15:36 $
+	  types/pa_wcontext.h, types/pa_wwrapper.h: $Date: 2016/04/08 22:49:23 $
 
 	* src/: classes/classes.C, classes/classes.dsp, classes/classes.h,
 	  classes/date.C, classes/double.C, classes/file.C, classes/form.C,
@@ -18566,7 +18695,7 @@
 	  main/pa_hash.C, main/pa_pool.C, main/pa_request.C,
 	  main/pa_socks.C, main/pa_sql_driver_manager.C, main/pa_string.C,
 	  main/pa_table.C, main/untaint.C, targets/cgi/parser3.C,
-	  targets/isapi/parser3isapi.C: static char *RCSId="$Id: ChangeLog,v 1.102 2016/03/09 21:15:36 moko Exp $";
+	  targets/isapi/parser3isapi.C: static char *RCSId="$Id: ChangeLog,v 1.103 2016/04/08 22:49:23 moko Exp $";
 
 	* src/main/: compile.y, compile_tools.h: $:name: == ${name}:
 	  $class:name: == ${class:name}:
@@ -21381,9 +21510,9 @@
 
 	* src/include/: pa_pool.h, pa_string.h: pa_pool split
 
-	* src/main/: main.dsp, pa_string.C: $Id: ChangeLog,v 1.102 2016/03/09 21:15:36 moko Exp $ check
+	* src/main/: main.dsp, pa_string.C: $Id: ChangeLog,v 1.103 2016/04/08 22:49:23 moko Exp $ check
 
-	* src/: main/pa_pool.C, main/pa_string.C, include/pa_pool.h: $Id: ChangeLog,v 1.102 2016/03/09 21:15:36 moko Exp $
+	* src/: main/pa_pool.C, main/pa_string.C, include/pa_pool.h: $Id: ChangeLog,v 1.103 2016/04/08 22:49:23 moko Exp $
 	  check
 
 	* src/: include/pa_pool.h, main/pa_string.C: String prealloc &
