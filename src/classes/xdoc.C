@@ -28,7 +28,7 @@
 #include "xnode.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_XDOC_C="$Id: xdoc.C,v 1.185 2016/04/06 16:08:19 moko Exp $";
+volatile const char * IDENT_XDOC_C="$Id: xdoc.C,v 1.186 2016/04/11 22:58:57 moko Exp $";
 
 // defines
 
@@ -47,6 +47,7 @@ public:
 
 // global variable
 
+DECLARE_CLASS_VAR(xnode, new MXnode); // must be here as Xdoc is inherited from Xnode and should be inited before
 DECLARE_CLASS_VAR(xdoc, new MXdoc);
 
 // helper classes
@@ -794,6 +795,7 @@ MXdoc::MXdoc(): MXnode(XDOC_CLASS_NAME) {
 
 // global variable
 
+DECLARE_CLASS_VAR(xnode, 0); // fictive
 DECLARE_CLASS_VAR(xdoc, 0); // fictive
 
 #endif

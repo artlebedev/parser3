@@ -21,11 +21,7 @@
 #include "libxml/xpath.h"
 #include "libxml/xpathInternals.h"
 
-volatile const char * IDENT_XNODE_C="$Id: xnode.C,v 1.93 2016/04/06 16:08:19 moko Exp $" IDENT_XNODE_H;
-
-// global variable
-
-DECLARE_CLASS_VAR(xnode, new MXnode);
+volatile const char * IDENT_XNODE_C="$Id: xnode.C,v 1.94 2016/04/11 22:58:57 moko Exp $" IDENT_XNODE_H;
 
 // classes
 
@@ -957,11 +953,5 @@ MXnode::MXnode(const char* aname): Methoded(aname?aname:"xnode") {
 	CONST2(DOCUMENT_FRAGMENT_NODE, XML_DOCUMENT_FRAG_NODE);
 	CONST(NOTATION_NODE);
 }
-
-#else
-
-// global variable
-
-DECLARE_CLASS_VAR(xnode, 0); // fictive
 
 #endif
