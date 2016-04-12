@@ -3,7 +3,7 @@ Content-Length: 380
 
 k1='v1', k2='v2', foreach='problem was here', k3='v3'
 d1='d1v', d2='d2v', dynamic_call='dynamic'
-static_call='static', s2='s2v', s1='s1v'
+s1='s1v', s2='s2v', static_call='static'
 $h.foreach='problem was here'
 $h.k3='v3'
 $o.s1='s1v'
