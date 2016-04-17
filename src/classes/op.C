@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.226 2016/04/06 16:08:19 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.227 2016/04/17 20:20:48 moko Exp $";
 
 // limits
 
@@ -324,19 +324,16 @@ static void _use(Request& r, MethodParams& params) {
 
 static void set_skip(Request& r, Request::Skip askip) {
 	if(!r.get_in_cycle())
-		throw Exception(askip==Request::SKIP_BREAK?"parser.break":"parser.continue",
-			0,
-			"without cycle");
-
+		throw Exception(askip==Request::SKIP_BREAK ? "parser.break" : "parser.continue", 0, "without cycle");
 	r.set_skip(askip);
 }
 
-static void _break(Request& r, MethodParams&) {
-	set_skip(r, Request::SKIP_BREAK);
+static void _break(Request& r, MethodParams& params) {
+	if(!params.count() || params.as_bool(0, "condition must be expression", r)) set_skip(r, Request::SKIP_BREAK);
 }
 
-static void _continue(Request& r, MethodParams&) {
-	set_skip(r, Request::SKIP_CONTINUE);
+static void _continue(Request& r, MethodParams& params) {
+	if(!params.count() || params.as_bool(0, "condition must be expression", r)) set_skip(r, Request::SKIP_CONTINUE);
 }
 
 static void _for(Request& r, MethodParams& params) {
@@ -929,10 +926,12 @@ VClassMAIN::VClassMAIN(): VClass(MAIN_CLASS_NAME) {
 	add_native_method("use", Method::CT_ANY, _use, 1, 2);
 
 	// ^break[]
-	add_native_method("break", Method::CT_ANY, _break, 0, 0, Method::CO_WITHOUT_FRAME);
+	// ^break(condition)
+	add_native_method("break", Method::CT_ANY, _break, 0, 1, Method::CO_WITHOUT_FRAME);
 
 	// ^continue[]
-	add_native_method("continue", Method::CT_ANY, _continue, 0, 0, Method::CO_WITHOUT_FRAME);
+	// ^continue(condition)
+	add_native_method("continue", Method::CT_ANY, _continue, 0, 1, Method::CO_WITHOUT_FRAME);
 
 	// ^for[i](from-number;to-number-inclusive){code}[delim]
 	add_native_method("for", Method::CT_ANY, _for, 3+1, 3+1+1, Method::CO_WITHOUT_WCONTEXT);
