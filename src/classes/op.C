@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.228 2016/05/11 16:41:55 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.229 2016/05/11 22:28:48 moko Exp $";
 
 // limits
 
@@ -522,6 +522,20 @@ struct Try_catch_result {
 
 	Try_catch_result(): exception_should_be_handled(0) {}
 };
+
+/// Auto-object used for temporary changing Request::skip.
+class Temp_skip {
+	Request& frequest;
+	Request::Skip saved_skip;
+public:
+	Temp_skip(Request& arequest) : frequest(arequest), saved_skip(arequest.get_skip()) {
+		arequest.set_skip(Request::SKIP_NOTHING);
+	}
+	~Temp_skip() {
+		if(frequest.get_skip() == Request::SKIP_NOTHING)
+			frequest.set_skip(saved_skip);
+	}
+};
 #endif
 
 /// used by ^try and ^cache, @returns $exception.handled[string] if any
@@ -545,6 +559,7 @@ static Try_catch_result try_catch(Request& r, StringOrValue body_code(Request&, 
 
 		{
 			Temp_value_element temp(r, *catch_code->get_junction()->method_frame, exception_var_name, &details.vhash);
+			Temp_skip temp_skip(r);
 			result.processed_code=r.process(*catch_code);
 		}
 		
@@ -676,12 +691,14 @@ const String* locked_process_and_cache_put(Request& r,
 		cache_delete(file_spec);
 	return result;
 }
+
 #ifndef DOXYGEN
 struct Cache_get_result {
 	const String* body;
 	bool expired;
 };
 #endif
+
 static Cache_get_result cache_get(Request_charsets& charsets, const String& file_spec, time_t now) {
 	Cache_get_result result={0, false};
 
@@ -718,9 +735,11 @@ static time_t as_expires(Request& r, MethodParams& params,
 	
 	return result;
 }
+
 static const String& as_file_spec(Request& r, MethodParams& params, int index) {
 	return r.absolute(params.as_string(index, "filespec must be string"));
 }
+
 static void _cache(Request& r, MethodParams& params) {
 	if(params.count()==0) {
 		// ^cache[] -- return current expiration time
@@ -816,16 +835,26 @@ static void _try_operator(Request& r, MethodParams& params) {
 
 	Try_catch_result result;
 	StringOrValue finally_result;
+
 	try{
+		// process try and catch code
 		result=try_catch(r, process_try_body_code, &body_code, &catch_code);
 	} catch(...){
-		if(finally_code)
+		// process finally code but ignore the result
+		if(finally_code){
+			Temp_skip temp(r);
 			finally_result=r.process(*finally_code);
+		}
 		rethrow;
 	}
 
-	if(finally_code)
+	// process finally code
+	if(finally_code){
+		Temp_skip temp(r);
 		finally_result=r.process(*finally_code);
+	}
+
+	// no exception in try, catch or finally, writing the result
 
 	// write out processed body_code or catch_code
 	r.write_pass_lang(result.processed_code);
