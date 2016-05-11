@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.227 2016/04/17 20:20:48 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.228 2016/05/11 16:41:55 moko Exp $";
 
 // limits
 
@@ -526,13 +526,10 @@ struct Try_catch_result {
 
 /// used by ^try and ^cache, @returns $exception.handled[string] if any
 template<class I>
-static Try_catch_result try_catch(Request& r, 
-		  StringOrValue body_code(Request&, I), I info, 
-		  Value* catch_code,
-		  bool could_be_handled_by_caller=false) 
-{
+static Try_catch_result try_catch(Request& r, StringOrValue body_code(Request&, I), I info, Value* catch_code, bool could_be_handled_by_caller=false) {
 	Try_catch_result result;
 
+	// minor bug: context not restored if only finally code is present, see #1062
 	if(!catch_code) {
 		result.processed_code=body_code(r, info);
 		return result;
@@ -543,39 +540,29 @@ static Try_catch_result try_catch(Request& r,
 	try {
 		result.processed_code=body_code(r, info);
 	} catch(const Exception& e) {
-		Request_context_saver throw_context(r); // taking snapshot of throw-context [stack trace contains error]
 		Request::Exception_details details=r.get_details(e);
-		try_context.restore(); // restoring try-context to perform catch-code
+		try_context.restore(); // restoring try-context for code after try and catch-code
 
-		Junction* junction=catch_code->get_junction();
-		Value* method_frame=junction->method_frame;
-		Value* saved_exception_var_value=method_frame->get_element(exception_var_name);
-		VMethodFrame& frame=*junction->method_frame;
-		frame.put_element(exception_var_name, &details.vhash);
-
-		result.processed_code=r.process(*catch_code);
+		{
+			Temp_value_element temp(r, *catch_code->get_junction()->method_frame, exception_var_name, &details.vhash);
+			result.processed_code=r.process(*catch_code);
+		}
 		
-		// retriving $exception.handled, restoring $exception var
+		// retriving $exception.handled
 		Value* vhandled=details.vhash.hash().get(exception_handled_part_name);
-		frame.put_element(exception_var_name, saved_exception_var_value);
 
 		bool bhandled=false;
 		if(vhandled) {
 			if(vhandled->is_string()) { // not simple $exception.handled(1/0)?
-				if(could_be_handled_by_caller) { // and we can possibly handle it
+				if(bhandled=could_be_handled_by_caller) { // and we can possibly handle it
 					result.exception_should_be_handled=vhandled->get_string(); // considering 'recovered' and let the caller recover
-					return result;
 				}
-				
-				bhandled=false;
 			} else
 				bhandled=vhandled->as_bool();
 		}
 
-		if(!bhandled) {
-			throw_context.restore(); // restoring throw-context [exception were not handled]
+		if(!bhandled)
 			rethrow;
-		}
 	}
 
 	return result;
