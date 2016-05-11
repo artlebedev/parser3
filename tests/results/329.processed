@@ -1,0 +1,14 @@
+Content-Type: text/html
+Content-Length: 252
+
+broken ^break[] demos (code works until first method call returns):
+1. in STRING_POOL
+debug 1
+first break demo: yes
+2. in CONSTRUCT_OBJECT
+debug 1
+first break demo: yes
+3. code in variable bug:
+Type: parser.break,
+Source: break,
+Comment: without cycle
