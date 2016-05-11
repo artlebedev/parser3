@@ -1,0 +1,106 @@
+@main[]
+
+1. break in try with catch and finally
+^while(1){
+	^try{
+		$a[aa^break[]bb]
+		^throw[;x]
+	}{
+		catch!
+		$exception.handled(1)
+		^method[1]
+		^method[2]
+	}{
+		finally!
+		^method[1]
+		^method[2]
+	}
+	brake happend.
+}
+break moment: $a
+
+2. break in try with finally
+^while(1){
+	^try{
+		^break[]
+	}{}{
+		finally!
+		^method[1]
+		^method[2]
+	}
+	brake happend.
+}
+
+3. break in try with finally and inactive catch
+^while(1){
+	^try{
+		^break[]
+	}{
+		catch!
+	}{
+		finally!
+		^method[1]
+		^method[2]
+	}
+	brake happend.
+}
+
+4. break in catch with finally
+^while(1){
+	^try{
+		^throw[;x]
+	}{
+		catch!
+		$exception.handled(1)
+		^break[]
+		^method[1]
+	}{
+		finally!
+		^method[1]
+		^method[2]
+	}
+	brake happend.
+}
+
+5. continue in catch with break in finally
+^while(1){
+	^try{
+		^throw[;x]
+	}{
+		catch!
+		$exception.handled(1)
+		^continue[]
+		^method[1]
+	}{
+		finally!
+		^method[1]
+		^method[2]
+		^break[]
+		^method[3]
+	}
+	brake happend.
+}
+
+6. break in nested try with finally inside
+^while(1){
+	^try{
+		^try{
+			$a[aa^break[]bb]
+			^throw[;x]
+		}{}{
+			$finally[finally!
+			^method[1]
+			^method[2]]
+		}
+	}{
+		catch!
+		$exception.handled(1)
+		^method[1]
+		^method[2]
+	}
+	brake happend.
+}
+$finally
+
+@method[n]
+call number $n

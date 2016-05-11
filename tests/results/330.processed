@@ -1,0 +1,36 @@
+Content-Type: text/html
+Content-Length: 555
+
+1. break in try with catch and finally
+catch!
+call number 1
+call number 2
+finally!
+call number 1
+call number 2
+break moment: aa
+2. break in try with finally
+finally!
+call number 1
+call number 2
+3. break in try with finally and inactive catch
+finally!
+call number 1
+call number 2
+4. break in catch with finally
+catch!
+finally!
+call number 1
+call number 2
+5. continue in catch with break in finally
+catch!
+finally!
+call number 1
+call number 2
+6. break in nested try with finally inside
+catch!
+call number 1
+call number 2
+finally!
+call number 1
+call number 2
