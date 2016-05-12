@@ -17,7 +17,7 @@
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.36 2016/03/31 21:46:19 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.37 2016/05/12 19:44:49 moko Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -694,10 +694,10 @@ static void _curl_load_action(Request& r, MethodParams& params){
 
 	VFile& result=*new VFile;
 
-	String::Body ct_header = response.headers.get(HTTP_CONTENT_TYPE_UPPER);
+	String::Body ct_header = String::Body(response.headers.get(HTTP_CONTENT_TYPE_UPPER)).trim(String::TRIM_BOTH, " \t\n\r");
 	Charset *asked_charset = options().response_charset;
 	if (asked_charset == 0){
-		Charset *remote_charset = ct_header.is_empty() ? 0 : detect_charset(ct_header.trim(String::TRIM_BOTH, " \t\n\r").cstr());
+		Charset *remote_charset = ct_header.is_empty() ? 0 : detect_charset(ct_header.cstr());
 		asked_charset = remote_charset ? remote_charset : options().charset;
 	}
 
@@ -707,8 +707,8 @@ static void _curl_load_action(Request& r, MethodParams& params){
 		body.length=c.length;
 	}
 
-	result.set(true/*tainted*/, options().is_text, body.buf, body.length, options().filename
-				, options().content_type ? new VString(*options().content_type) : 0, &r);
+	result.set(true/*tainted*/, options().is_text, body.buf, body.length, options().filename,
+		options().content_type ? new VString(*options().content_type) : ct_header.is_empty() ? 0 : new VString(*new String(ct_header, String::L_TAINTED)), &r);
 	long http_status = 0;
 	if(f_curl_easy_getinfo(curl(), CURLINFO_RESPONSE_CODE, &http_status) == CURLE_OK){
 		result.fields().put("status", new VInt(http_status));
