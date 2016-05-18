@@ -13,7 +13,7 @@
 #include "pa_request.h"
 
 
-volatile const char * IDENT_PA_VALUE_C="$Id: pa_value.C,v 1.40 2016/04/01 16:27:32 moko Exp $" IDENT_PA_VALUE_H IDENT_PA_PROPERTY_H;
+volatile const char * IDENT_PA_VALUE_C="$Id: pa_value.C,v 1.41 2016/05/18 17:47:22 moko Exp $" IDENT_PA_VALUE_H IDENT_PA_PROPERTY_H;
 
 // globals
 
@@ -28,7 +28,7 @@ const String content_type_name(CONTENT_TYPE_NAME);
 Junction* Value::get_junction() { return 0; }
 
 Value* Value::get_element(const String& /*aname*/) {
-	return bark("is '%s', it has no elements");
+	return bark("element can not be fetched from %s");
 }
 
 VFile* Value::as_vfile(String::Language /*lang*/, const Request_charsets* /*charsets*/) { 

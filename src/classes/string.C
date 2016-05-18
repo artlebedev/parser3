@@ -20,7 +20,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.224 2016/03/31 21:46:20 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.225 2016/05/18 17:47:22 moko Exp $";
 
 // class
 
@@ -792,6 +792,13 @@ static void _unescape(Request& r, MethodParams& params){
 	}
 }
 
+static void _contains(Request& r, MethodParams& params) {
+	// empty or whitespace string is hash compatible
+	GET_SELF(r, VString).get_element(params.as_string(0, "key must be string"));
+	// ignoring result as it allways null
+	r.write_no_lang(VBool::get(false));
+}
+
 // constructor
 
 MString::MString(): Methoded("string") {
@@ -877,4 +884,7 @@ MString::MString(): Methoded("string") {
 
 	// ^string:unescape[js|uri;escaped;$.charset[...]]
 	add_native_method("unescape", Method::CT_STATIC, _unescape, 2, 3);
+
+	// ^string.contains[key] for hash compatibility
+	add_native_method("contains", Method::CT_DYNAMIC, _contains, 1, 1);
 }

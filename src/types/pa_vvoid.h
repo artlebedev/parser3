@@ -8,7 +8,7 @@
 #ifndef PA_VVOID_H
 #define PA_VVOID_H
 
-#define IDENT_PA_VVOID_H "$Id: pa_vvoid.h,v 1.42 2015/10/26 01:22:03 moko Exp $"
+#define IDENT_PA_VVOID_H "$Id: pa_vvoid.h,v 1.43 2016/05/18 17:47:22 moko Exp $"
 
 #define STRICT_VARS
 
@@ -38,14 +38,6 @@ public: // Value
 			static const String singleton_json_null(String("null"));
 			return &singleton_json_null;
 		}
-	}
-
-	/// VVoid: methods
-	override Value* get_element(const String& aname) {
-		// methods
-		if(Value* result=VStateless_object::get_element(aname))
-			return result;
-		return 0;
 	}
 
 #ifdef STRICT_VARS

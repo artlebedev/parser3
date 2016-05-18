@@ -8,7 +8,7 @@
 #ifndef PA_VSTRING_H
 #define PA_VSTRING_H
 
-#define IDENT_PA_VSTRING_H "$Id: pa_vstring.h,v 1.72 2015/10/26 01:22:03 moko Exp $"
+#define IDENT_PA_VSTRING_H "$Id: pa_vstring.h,v 1.73 2016/05/18 17:47:22 moko Exp $"
 
 // includes
 
@@ -53,15 +53,17 @@ public: // Value
 
 	/// VString: $method
 	override Value* get_element(const String& aname) {
-		// $method
+#if !defined(FEATURE_GET_ELEMENT4CALL) || !defined(OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL)
+		// $method, CLASS, CLASS_NAME
 		if(Value* result=VStateless_object::get_element(aname))
 			return result;
-
-		// empty string is void compatible
-		if (fstring->is_empty())
+#endif
+		// empty or whitespace string is void compatible
+		if (fstring->is_empty() || fstring->trim().is_empty())
 			return 0;
-#ifdef FEATURE_GET_ELEMENT4CALL
+
 		// bad $string.field
+#ifdef FEATURE_GET_ELEMENT4CALL
 		return Value::get_element(aname);
 	}
 
@@ -70,7 +72,6 @@ public: // Value
 		if(Value* result=VStateless_object::get_element(aname))
 			return result;
 #endif
-		// bad $string.field
 		return bark("%s method not found", &aname);
 	}
 
