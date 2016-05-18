@@ -8,7 +8,7 @@
 	
 */
 
-volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.275 2016/04/01 16:27:31 moko Exp $";
+volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.276 2016/05/18 22:27:28 moko Exp $";
 
 /**
 	@todo parser4: 
@@ -84,7 +84,6 @@ static const VString vempty;
 %token BAD_HEX_LITERAL
 %token BAD_METHOD_DECL_START
 %token BAD_METHOD_PARAMETER_NAME_CHARACTER
-%token BAD_NONWHITESPACE_CHARACTER_IN_EXPLICIT_RESULT_MODE
 
 %token LAND "&&"
 %token LOR "||"
@@ -1064,13 +1063,12 @@ default:
 			}
 			if(pc.explicit_result && c)
 				switch(c) {
+				default:
+					pc.string.append(c);
 				case '\n': case ' ': case '\t':
 					begin=pc.source;
 					begin_pos=pc.pos;
-					continue; // skip it
-				default:
-					result=BAD_NONWHITESPACE_CHARACTER_IN_EXPLICIT_RESULT_MODE;
-					goto break2;
+					continue;
 				}
 			break;
 			
@@ -1597,13 +1595,12 @@ default:
 			}
 			if(pc.explicit_result && c)
 				switch(c) {
+				default:
+					pc.string.append(c);
 				case '\n': case ' ': case '\t':
 					begin=pc.source;
 					begin_pos=pc.pos;
-					continue; // skip it
-				default:
-					result=BAD_NONWHITESPACE_CHARACTER_IN_EXPLICIT_RESULT_MODE;
-					goto break2;
+					continue;
 				}
 			break;
 
