@@ -10,7 +10,7 @@
 #include "pa_vhash.h"
 #include "pa_vvoid.h"
 
-volatile const char * IDENT_PA_VTABLE_C="$Id: pa_vtable.C,v 1.43 2015/10/26 01:22:03 moko Exp $" IDENT_PA_VTABLE_H;
+volatile const char * IDENT_PA_VTABLE_C="$Id: pa_vtable.C,v 1.44 2016/05/18 18:27:55 moko Exp $" IDENT_PA_VTABLE_H;
 
 // limits
 #define MAX_COLUMNS 20000 // equal to MAX_LOOPS
@@ -60,11 +60,11 @@ Value* VTable::fields_element() {
 }
 
 Value* VTable::get_element(const String& aname) {
-#ifdef FEATURE_GET_ELEMENT4CALL
 	// fields
 	if(aname==table_fields_name)
 		return fields_element();
 
+#ifdef FEATURE_GET_ELEMENT4CALL
 	// columns first
 	if(ftable) {
 		int index=ftable->column_name2index(aname, false);
@@ -76,7 +76,7 @@ Value* VTable::get_element(const String& aname) {
 	}
 
 #ifndef OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL
-	// methods
+	// CLASS, CLASS_NAME
 	if(Value* result=VStateless_object::get_element(aname))
 		return result;
 #endif
@@ -85,11 +85,11 @@ Value* VTable::get_element(const String& aname) {
 }
 
 Value* VTable::get_element4call(const String& aname) {
-#endif
-	// fields
-	if(aname==table_fields_name)
-		return fields_element();
+	// methods
+	return VStateless_object::get_element(aname);
+}
 
+#else
 	// methods first
 	if(Value* result=VStateless_object::get_element(aname))
 		return result;
@@ -106,6 +106,7 @@ Value* VTable::get_element4call(const String& aname) {
 
 	throw Exception(PARSER_RUNTIME, &aname, "column not found");
 }
+#endif
 
 const VJunction* VTable::put_element(const String& aname, Value* avalue) {
 	if(ftable) {

@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 3664
+Content-Length: 3636
 
 Testing hash
 Test-hash:
@@ -60,25 +60,25 @@ Source: _count,
 Comment: column not found
 Type: parser.runtime,
 Source: _count,
-Comment: column not found
+Comment: undefined method
 Type: parser.runtime,
 Source: _count,
 Comment: column not found
 Type: parser.runtime,
 Source: _count,
-Comment: column not found
+Comment: undefined method
 Type: parser.runtime,
 Source: _count,
 Comment: column not found
 Type: parser.runtime,
 Source: _count,
-Comment: column not found
+Comment: undefined method
 Type: parser.runtime,
 Source: _count,
 Comment: column not found
 Type: parser.runtime,
-Source: _count,
-Comment: column not found
+Source: var,
+Comment: undefined method
 Test-table:
 Type: parser.runtime,
 Source: count,
@@ -102,25 +102,25 @@ Source: no-such-method,
 Comment: column not found
 Type: parser.runtime,
 Source: no-such-method,
-Comment: column not found
+Comment: undefined method
 Type: parser.runtime,
 Source: no-such-method,
 Comment: column not found
 Type: parser.runtime,
 Source: no-such-method,
-Comment: column not found
+Comment: undefined method
 Type: parser.runtime,
 Source: no-such-method,
 Comment: column not found
 Type: parser.runtime,
 Source: no-such-method,
-Comment: column not found
+Comment: undefined method
 Type: parser.runtime,
 Source: no-such-method,
 Comment: column not found
 Type: parser.runtime,
-Source: no-such-method,
-Comment: column not found
+Source: var,
+Comment: undefined method
 Testing table
 Test-hash:
 Type: parser.runtime,
@@ -128,25 +128,25 @@ Source: _count,
 Comment: column not found
 Type: parser.runtime,
 Source: _count,
-Comment: column not found
+Comment: undefined method
 Type: parser.runtime,
 Source: _count,
 Comment: column not found
 Type: parser.runtime,
 Source: _count,
-Comment: column not found
+Comment: undefined method
 Type: parser.runtime,
 Source: _count,
 Comment: column not found
 Type: parser.runtime,
 Source: _count,
-Comment: column not found
+Comment: undefined method
 Type: parser.runtime,
 Source: _count,
 Comment: column not found
 Type: parser.runtime,
-Source: _count,
-Comment: column not found
+Source: var,
+Comment: undefined method
 Test-table:
 var: is count
 method: 1
@@ -162,22 +162,22 @@ Source: no-such-method,
 Comment: column not found
 Type: parser.runtime,
 Source: no-such-method,
-Comment: column not found
+Comment: undefined method
 Type: parser.runtime,
 Source: no-such-method,
 Comment: column not found
 Type: parser.runtime,
 Source: no-such-method,
-Comment: column not found
+Comment: undefined method
 Type: parser.runtime,
 Source: no-such-method,
 Comment: column not found
 Type: parser.runtime,
 Source: no-such-method,
-Comment: column not found
+Comment: undefined method
 Type: parser.runtime,
 Source: no-such-method,
 Comment: column not found
 Type: parser.runtime,
-Source: no-such-method,
-Comment: column not found
+Source: var,
+Comment: undefined method
