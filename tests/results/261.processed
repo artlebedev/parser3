@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 510
+Content-Length: 711
 
 Empty string vs void:
 Json: "" vs null
@@ -8,13 +8,18 @@ Json (void as null): "" vs null
 Length: 0 vs 0
 Double: 0 vs 0
 Base64: "" vs ""
-Hash compatibility: "" ""
-Non-empty string not hash compatible: Type: parser.runtime,
+Hash compatibility: "" "" ""
+More hash compatibility: "false" "false" "false"
+Methods not visible: "" "" ""
+Non-empty or whitespace string not hash compatible: Type: parser.runtime,
 Source: key,
-Comment: is 'string', it has no elements
+Comment: element can not be fetched from string
 Absent method empty string error: Type: parser.runtime,
 Source: something,
 Comment: string method not found
+Absent method void error: Type: parser.runtime,
+Source: something,
+Comment: void method not found
 Absent method non-empty string error: Type: parser.runtime,
 Source: something,
 Comment: string method not found
