@@ -8,7 +8,7 @@
 #ifndef PA_VHASH_H
 #define PA_VHASH_H
 
-#define IDENT_PA_VHASH_H "$Id: pa_vhash.h,v 1.72 2015/10/26 01:22:01 moko Exp $"
+#define IDENT_PA_VHASH_H "$Id: pa_vhash.h,v 1.73 2016/05/19 12:46:35 moko Exp $"
 
 #include "classes.h"
 #include "pa_value.h"
@@ -65,7 +65,7 @@ public: // value
 			return this;
 
 #if !defined(FEATURE_GET_ELEMENT4CALL) || !defined(OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL)
-		// $method
+		// $method, CLASS, CLASS_NAME
 		if(Value* result=VStateless_object::get_element(aname))
 			return result;
 #endif
@@ -83,10 +83,6 @@ public: // value
 		// $element
 		if(Value* result=fhash.get(aname))
 			return result;
-
-		// $fields -- pseudo field to make 'hash' more like 'table'
-		if(aname == hash_fields_name)
-			return this;
 
 		// default value
 		return get_default();
