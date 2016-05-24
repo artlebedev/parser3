@@ -1,0 +1,56 @@
+@main[][local]
+
+$t[^table::create{c1	c2
+v1	v2}]
+
+$d[_default]
+
+$h[^hash::create[
+	$.a[a]
+	$.$d[empty]
+]]
+
+#works
+$f[fields]
+t.fields:^json:string[$t.$f]
+h.fields:^json:string[$h.$f]
+
+#should not work
+$f[lds] $f[fie$f]
+t.fields:^try-catch{^json:string[$t.$f]}
+h.fields:^json:string[$h.$f]
+
+#works
+404:$h.404
+
+#should not work
+$d[_] $d[${d}default]
+
+$h[^hash::create[
+	$.a[a]
+	$.$d[empty]
+]]
+
+404:$h.404
+
+$test[test]
+$local[local]
+^method[]
+
+@method[]
+#works
+$c[caller]
+local:$local
+caller local:$$c.local
+
+$s[self]
+test:$$s.test
+
+#should not work
+$c[r] $c[calle$c]
+
+caller local:$$c.local
+
+$s[f] $s[sel$s]
+
+test:$$s.test
