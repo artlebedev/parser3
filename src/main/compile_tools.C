@@ -13,7 +13,7 @@
 #include "pa_vdouble.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_COMPILE_TOOLS_C="$Id: compile_tools.C,v 1.74 2016/05/24 14:28:24 moko Exp $" IDENT_COMPILE_TOOLS_H;
+volatile const char * IDENT_COMPILE_TOOLS_C="$Id: compile_tools.C,v 1.75 2016/05/24 15:42:43 moko Exp $" IDENT_COMPILE_TOOLS_H;
 
 Value* LA2V(ArrayOperation& literal_string_array, int offset, OP::OPCODE code) {
 	return literal_string_array[offset+0].code==code?literal_string_array[offset+2/*skip opcode&origin*/].value
@@ -46,7 +46,7 @@ bool change_first(ArrayOperation& opcodes, OP::OPCODE find, OP::OPCODE replace) 
 bool maybe_make_self(ArrayOperation& opcodes, ArrayOperation& diving_code, size_t divine_count){
 	const String* first_name=LA2S(diving_code);
 
-	if(first_name && SYMBOLS_EQ(*first_name,Symbols::self)){
+	if(first_name && SYMBOLS_EQ(*first_name,SELF_SYMBOL)){
 #ifdef OPTIMIZE_BYTECODE_GET_SELF_ELEMENT
 		if(
 			divine_count>=8
@@ -88,13 +88,7 @@ bool maybe_append_simple_diving_code(ArrayOperation& code, ArrayOperation& divin
 
 bool is_special_element(ArrayOperation& opcodes){
 	const String* name=LA2S(opcodes);
-	return (
-		name
-		&& (
-			*name==class_element_name
-			|| *name==class_name_element_name
-		)
-	);
+	return ( name && ( *name==class_element_name || *name==class_name_element_name ) );
 }
 #endif
 
@@ -103,11 +97,8 @@ Method::Call_type GetMethodCallType(Parse_control& pc, ArrayOperation& literal_a
 	int pos=full_name->pos(':');
 	if(pos > 0) {
 		const String call_type=full_name->mid(0, pos);
-		if(call_type!=method_call_type_static)
-			throw Exception("parser.compile",
-					&call_type,
-					"incorrect method call type. the only valid call type method prefix is '" METHOD_CALL_TYPE_STATIC "'"
-				);
+		if(call_type!=Symbols::STATIC_SYMBOL)
+			throw Exception("parser.compile", &call_type, "incorrect method call type. the only valid call type method prefix is 'static'");
 		const String *sole_name=&full_name->mid(pos+1, full_name->length());
 		// replace full method name (static:method) by sole method name (method). it will be used later.
 		change_string_literal_value(literal_array, *sole_name);

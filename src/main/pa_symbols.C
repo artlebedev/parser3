@@ -6,11 +6,20 @@
 #include "pa_symbols.h"
 #include "pa_vstring.h"
 
-volatile const char * IDENT_PA_SYMBOLS_C="$Id: pa_symbols.C,v 1.3 2016/05/24 14:28:24 moko Exp $" IDENT_PA_SYMBOLS_H;
+volatile const char * IDENT_PA_SYMBOLS_C="$Id: pa_symbols.C,v 1.4 2016/05/24 15:42:43 moko Exp $" IDENT_PA_SYMBOLS_H;
 
-const String Symbols::result("result");
-const String Symbols::caller("caller");
-const String Symbols::self("self");
+const String Symbols::SELF_SYMBOL("self");
+const String Symbols::CALLER_SYMBOL("caller");
+const String Symbols::RESULT_SYMBOL("result");
+
+const String Symbols::STATIC_SYMBOL("static");
+const String Symbols::DYNAMIC_SYMBOL("dynamic");
+
+const String Symbols::LOCALS_SYMBOL("locals");
+const String Symbols::PARTIAL_SYMBOL("partial");
+
+const String Symbols::REM_SYMBOL("rem");
+
 
 #ifdef SYMBOLS_CACHING
 
@@ -32,9 +41,17 @@ Symbols &Symbols::instance(){
 void Symbols::init(){
 	symbols=&instance();
 
-	symbols->add(result);
-	symbols->add(caller);
-	symbols->add(self);
+	symbols->add(SELF_SYMBOL);
+	symbols->add(CALLER_SYMBOL);
+	symbols->add(RESULT_SYMBOL);
+
+	symbols->add(STATIC_SYMBOL);
+	symbols->add(DYNAMIC_SYMBOL);
+
+	symbols->add(LOCALS_SYMBOL);
+	symbols->add(PARTIAL_SYMBOL);
+
+	symbols->add(REM_SYMBOL);
 }
 
 #endif // SYMBOLS_CACHING

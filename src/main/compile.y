@@ -8,7 +8,7 @@
 	
 */
 
-volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.278 2016/05/24 14:28:24 moko Exp $";
+volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.279 2016/05/24 15:42:43 moko Exp $";
 
 /**
 	@todo parser4: 
@@ -43,9 +43,6 @@ volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.278 2016/05/24 14:28
 
 #define USE_CONTROL_METHOD_NAME "USE"
 #define OPTIONS_CONTROL_METHOD_NAME "OPTIONS"
-#define OPTION_ALL_VARS_LOCAL_NAME "locals"
-#define OPTION_PARTIAL_CLASS "partial"
-#define REM_OPERATOR_NAME "rem"
 
 // forwards
 
@@ -223,9 +220,9 @@ control_method: '@' STRING '\n'
 	} else if(command==OPTIONS_CONTROL_METHOD_NAME) {
 		for(size_t i=0; i<strings_code->count(); i+=OPERATIONS_PER_OPVALUE) {
 			const String& option=LA2S(*strings_code, i)->trim(String::TRIM_END);
-			if(option==OPTION_ALL_VARS_LOCAL_NAME){
+			if(option==Symbols::LOCALS_SYMBOL){
 				PC.set_all_vars_local();
-			} else if(option==OPTION_PARTIAL_CLASS){
+			} else if(option==Symbols::PARTIAL_SYMBOL){
 				if(PC.cclass_new){
 					if(VStateless_class* existed=PC.get_existed_class(PC.cclass_new)){
 						if(!PC.reuse_existed_class(existed)){
@@ -239,20 +236,17 @@ control_method: '@' STRING '\n'
 						PC.cclass_new->set_partial();
 					}
 				} else {
-					strcpy(PC.error, "'" OPTION_PARTIAL_CLASS "' option should be used straight after @" CLASS_NAME);
+					strcpy(PC.error, "'partial' option should be used straight after @" CLASS_NAME);
 					YYERROR;
 				}
-			} else if(option==method_call_type_static){
+			} else if(option==Symbols::STATIC_SYMBOL){
 				PC.set_methods_call_type(Method::CT_STATIC);
-			} else if(option==method_call_type_dynamic){
+			} else if(option==Symbols::DYNAMIC_SYMBOL){
 				PC.set_methods_call_type(Method::CT_DYNAMIC);
 			} else {
 				strcpy(PC.error, "'");
 				strncat(PC.error, option.cstr(), MAX_STRING/2);
-				strcat(PC.error, "' invalid option. valid options are "
-					"'" OPTION_PARTIAL_CLASS "', '" OPTION_ALL_VARS_LOCAL_NAME "'"
-					", '" METHOD_CALL_TYPE_STATIC "' and '" METHOD_CALL_TYPE_DYNAMIC "'"
-					);
+				strcat(PC.error, "' invalid option. valid options are 'partial', 'locals', 'static' and 'dynamic'");
 				YYERROR;
 			}
 		}
@@ -288,9 +282,9 @@ code_method: '@' STRING bracketed_maybe_strings maybe_bracketed_strings maybe_co
 		locals_names=new ArrayString;
 		for(int i=0; i<size; i+=OPERATIONS_PER_OPVALUE) {
 			const String* local_name=LA2S(*locals_names_code, i);
-			if(SYMBOLS_EQ(*local_name,Symbols::result))
+			if(SYMBOLS_EQ(*local_name,RESULT_SYMBOL))
 				PC.explicit_result=true;
-			else if(*local_name==OPTION_ALL_VARS_LOCAL_NAME)
+			else if(SYMBOLS_EQ(*local_name,LOCALS_SYMBOL))
 				all_vars_local=true;
 			else
 				*locals_names+=local_name;
@@ -567,7 +561,7 @@ call_value: '^' {
 #else
 	const String* operator_name=LA2S(*$3, 1);
 #endif
-	if(operator_name && *operator_name==REM_OPERATOR_NAME){
+	if(operator_name && SYMBOLS_EQ(*operator_name,REM_SYMBOL)){
 		$$=N();
 	} else 
 #endif
@@ -1651,8 +1645,7 @@ break2:
 		Value *lookup=0;
 #endif
  		*lvalp=VL(
-			lookup ? lookup : new VString(*new String(pc.string, String::L_CLEAN)),
-			pc.file_no, pc.string_start.line, pc.string_start.col);
+			lookup ? lookup : new VString(*new String(pc.string, String::L_CLEAN)), pc.file_no, pc.string_start.line, pc.string_start.col);
 		// new pieces storage
 		pc.string.clear();
 		pc.string_start.clear();

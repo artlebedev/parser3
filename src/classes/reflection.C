@@ -9,7 +9,7 @@
 #include "pa_request.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.41 2016/04/01 16:27:31 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.42 2016/05/24 15:42:43 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -19,8 +19,6 @@ static const String method_type_parser("parser");
 static const String method_call_type("call_type");
 static const String method_inherited("inherited");
 static const String method_overridden("overridden");
-static const String method_call_type_static("static");
-static const String method_call_type_dynamic("dynamic");
 
 static const String method_min_params("min_params");
 static const String method_max_params("max_params");
@@ -287,10 +285,10 @@ static void _method_info(Request& r, MethodParams& params) {
 	Value* call_type=0;
 	switch(method->call_type){
 		case Method::CT_DYNAMIC:
-			call_type=new VString(method_call_type_dynamic);
+			call_type=new VString(Symbols::DYNAMIC_SYMBOL);
 			break;
 		case Method::CT_STATIC:
-			call_type=new VString(method_call_type_static);
+			call_type=new VString(Symbols::STATIC_SYMBOL);
 			break;
 		case Method::CT_ANY:
 			break;

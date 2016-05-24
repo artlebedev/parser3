@@ -8,7 +8,7 @@
 #ifndef COMPILE_TOOLS
 #define COMPILE_TOOLS
 
-#define IDENT_COMPILE_TOOLS_H "$Id: compile_tools.h,v 1.110 2016/04/01 16:27:32 moko Exp $"
+#define IDENT_COMPILE_TOOLS_H "$Id: compile_tools.h,v 1.111 2016/05/24 15:42:43 moko Exp $"
 
 #include "pa_opcode.h"
 #include "pa_types.h"
@@ -17,11 +17,6 @@
 
 /// used to track source column number
 #define TAB_SIZE 8
-
-#define METHOD_CALL_TYPE_STATIC "static"
-#define METHOD_CALL_TYPE_DYNAMIC "dynamic"
-const String method_call_type_static(METHOD_CALL_TYPE_STATIC);
-const String method_call_type_dynamic(METHOD_CALL_TYPE_DYNAMIC);
 
 enum lexical_state {
 	LS_USER, LS_NAME_SQUARE_PART,
