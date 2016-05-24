@@ -8,21 +8,18 @@
 #ifndef PA_VHASH_H
 #define PA_VHASH_H
 
-#define IDENT_PA_VHASH_H "$Id: pa_vhash.h,v 1.73 2016/05/19 12:46:35 moko Exp $"
+#define IDENT_PA_VHASH_H "$Id: pa_vhash.h,v 1.74 2016/05/24 17:48:37 moko Exp $"
 
 #include "classes.h"
 #include "pa_value.h"
 #include "pa_hash.h"
 #include "pa_vint.h"
 #include "pa_globals.h"
+#include "pa_symbols.h"
 
 // defines
 
 #define VHASH_TYPE "hash"
-
-#define HASH_FIELDS_NAME "fields"
-#define HASH_DEFAULT_ELEMENT_NAME "_default"
-extern const String hash_fields_name, hash_default_element_name;
 
 extern Methoded* hash_class;
 
@@ -61,7 +58,7 @@ public: // value
 			return result;
 
 		// $fields -- pseudo field to make 'hash' more like 'table'
-		if(aname == hash_fields_name)
+		if(SYMBOLS_EQ(aname,FIELDS_SYMBOL))
 			return this;
 
 #if !defined(FEATURE_GET_ELEMENT4CALL) || !defined(OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL)
@@ -91,7 +88,7 @@ public: // value
 	
 	/// VHash: (key)=value
 	override const VJunction* put_element(const String& aname, Value* avalue) {
-		if(aname==hash_default_element_name)
+		if(SYMBOLS_EQ(aname,_DEFAULT_SYMBOL))
 			set_default(avalue);
 		else 
 			if(flocked) {

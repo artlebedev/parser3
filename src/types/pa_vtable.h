@@ -8,7 +8,7 @@
 #ifndef PA_VTABLE_H
 #define PA_VTABLE_H
 
-#define IDENT_PA_VTABLE_H "$Id: pa_vtable.h,v 1.64 2015/10/26 01:22:03 moko Exp $"
+#define IDENT_PA_VTABLE_H "$Id: pa_vtable.h,v 1.65 2016/05/24 17:48:38 moko Exp $"
 
 #include "pa_vstateless_object.h"
 #include "pa_table.h"
@@ -18,7 +18,6 @@
 // defines
 
 #define VTABLE_TYPE "table"
-#define TABLE_FIELDS_ELEMENT_NAME "fields"
 
 // externs
 

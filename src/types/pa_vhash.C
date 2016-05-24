@@ -8,19 +8,13 @@
 #include "pa_vhash.h"
 #include "pa_vfile.h"
 
-volatile const char * IDENT_PA_VHASH_C="$Id: pa_vhash.C,v 1.11 2015/10/26 01:22:01 moko Exp $" IDENT_PA_VHASH_H;
+volatile const char * IDENT_PA_VHASH_C="$Id: pa_vhash.C,v 1.12 2016/05/24 17:48:37 moko Exp $" IDENT_PA_VHASH_H;
 
-// globals
-const String hash_fields_name(HASH_FIELDS_NAME), hash_default_element_name(HASH_DEFAULT_ELEMENT_NAME);
-
-VFile* VHash::as_vfile(String::Language /*lang*/,
-	const Request_charsets * /*charsets*/) 
-{
+VFile* VHash::as_vfile(String::Language /*lang*/, const Request_charsets * /*charsets*/){
 	return new VFile(fhash);
 }
 
-void VHash::extract_default()
-{
-	if( (_default=fhash.get(HASH_DEFAULT_ELEMENT_NAME) ) )
-		fhash.remove(HASH_DEFAULT_ELEMENT_NAME);
+void VHash::extract_default(){
+	if( (_default=fhash.get(Symbols::_DEFAULT_SYMBOL) ) )
+		fhash.remove(Symbols::_DEFAULT_SYMBOL);
 }

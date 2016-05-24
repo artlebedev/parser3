@@ -10,12 +10,10 @@
 #include "pa_vhash.h"
 #include "pa_vvoid.h"
 
-volatile const char * IDENT_PA_VTABLE_C="$Id: pa_vtable.C,v 1.44 2016/05/18 18:27:55 moko Exp $" IDENT_PA_VTABLE_H;
+volatile const char * IDENT_PA_VTABLE_C="$Id: pa_vtable.C,v 1.45 2016/05/24 17:48:38 moko Exp $" IDENT_PA_VTABLE_H;
 
 // limits
 #define MAX_COLUMNS 20000 // equal to MAX_LOOPS
-
-const String table_fields_name(TABLE_FIELDS_ELEMENT_NAME);
 
 #ifndef DOXYGEN
 struct Record_info {
@@ -26,11 +24,7 @@ struct Record_info {
 
 static void store_column_item_to_hash(const String* column_name, Record_info *info) {
 	const String* column_item=info->table->item(*column_name);
-	info->hash->put(*column_name, 
-		(column_item && !column_item->is_empty())
-			?new VString(*column_item)
-			:new VString()
-	);
+	info->hash->put(*column_name, (column_item && !column_item->is_empty()) ? new VString(*column_item) : new VString() );
 }
 
 Value* VTable::fields_element() {
@@ -61,7 +55,7 @@ Value* VTable::fields_element() {
 
 Value* VTable::get_element(const String& aname) {
 	// fields
-	if(aname==table_fields_name)
+	if(SYMBOLS_EQ(aname,FIELDS_SYMBOL))
 		return fields_element();
 
 #ifdef FEATURE_GET_ELEMENT4CALL

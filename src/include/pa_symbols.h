@@ -8,7 +8,7 @@
 #ifndef PA_SYMBOLS_H
 #define PA_SYMBOLS_H
 
-#define IDENT_PA_SYMBOLS_H "$Id: pa_symbols.h,v 1.4 2016/05/24 16:38:40 moko Exp $"
+#define IDENT_PA_SYMBOLS_H "$Id: pa_symbols.h,v 1.5 2016/05/24 17:48:37 moko Exp $"
 
 #include "pa_common.h"
 
@@ -38,6 +38,9 @@ static const String LOCALS_SYMBOL;
 static const String PARTIAL_SYMBOL;
 
 static const String REM_SYMBOL;
+
+static const String FIELDS_SYMBOL;
+static const String _DEFAULT_SYMBOL;
 
 #ifdef SYMBOLS_CACHING
 void add(const String &astring);

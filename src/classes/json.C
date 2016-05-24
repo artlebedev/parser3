@@ -18,7 +18,7 @@
 #include "pa_vxdoc.h"
 #endif
 
-volatile const char * IDENT_JSON_C="$Id: json.C,v 1.41 2016/03/31 21:46:20 moko Exp $";
+volatile const char * IDENT_JSON_C="$Id: json.C,v 1.42 2016/05/24 17:48:37 moko Exp $";
 
 // class
 
@@ -523,7 +523,7 @@ static void _string(Request& r, MethodParams& params) {
 					if(!value->is_string()){
 					Junction* junction=value->get_junction();
 					if(!junction || !junction->method || !junction->method->params_names || junction->method->params_names->count() != 3)
-							throw Exception(PARSER_RUNTIME, 0, "$.%s must be string or parser method with 3 parameters", HASH_DEFAULT_ELEMENT_NAME);
+							throw Exception(PARSER_RUNTIME, 0, "$._default must be string or parser method with 3 parameters");
 					}
 					json.default_method=value;
 				}
