@@ -3,9 +3,10 @@
 	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
 */
 
-volatile const char * IDENT_PA_SYMBOLS_C="$Id: pa_symbols.C,v 1.1 2016/05/24 11:55:14 moko Exp $" IDENT_PA_SYMBOLS_H;
-
 #include "pa_symbols.h"
+#include "pa_vstring.h"
+
+volatile const char * IDENT_PA_SYMBOLS_C="$Id: pa_symbols.C,v 1.2 2016/05/24 12:36:57 moko Exp $" IDENT_PA_SYMBOLS_H;
 
 const String *Symbols::result=Symbols::instance().add("result");
 const String *Symbols::caller=Symbols::instance().add("caller");
