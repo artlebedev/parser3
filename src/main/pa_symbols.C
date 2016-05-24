@@ -6,23 +6,35 @@
 #include "pa_symbols.h"
 #include "pa_vstring.h"
 
-volatile const char * IDENT_PA_SYMBOLS_C="$Id: pa_symbols.C,v 1.2 2016/05/24 12:36:57 moko Exp $" IDENT_PA_SYMBOLS_H;
+volatile const char * IDENT_PA_SYMBOLS_C="$Id: pa_symbols.C,v 1.3 2016/05/24 14:28:24 moko Exp $" IDENT_PA_SYMBOLS_H;
 
-const String *Symbols::result=Symbols::instance().add("result");
-const String *Symbols::caller=Symbols::instance().add("caller");
-const String *Symbols::self=Symbols::instance().add("self");
+const String Symbols::result("result");
+const String Symbols::caller("caller");
+const String Symbols::self("self");
+
+#ifdef SYMBOLS_CACHING
+
+Symbols *symbols=0;
 
 void Symbols::add(const String &astring){
 	put_dont_replace(astring,new VString(astring));
 }
 
-const String *Symbols::add(const char *astring){
-	const String *result=new String(astring);
-	put(*result,new VString(*result));
-	return result;
+void Symbols::set(const String &astring){
+	put(astring,new VString(astring));
 }
 
 Symbols &Symbols::instance(){
-    static Symbols singleton;
-    return singleton;
+	static Symbols singleton;
+	return singleton;
 }
+
+void Symbols::init(){
+	symbols=&instance();
+
+	symbols->add(result);
+	symbols->add(caller);
+	symbols->add(self);
+}
+
+#endif // SYMBOLS_CACHING

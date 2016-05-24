@@ -21,13 +21,14 @@ extern "C" {
 #include "pa_threads.h"
 #include "pa_xml_io.h"
 #include "pa_common.h"
+#include "pa_symbols.h"
 
 #include "pa_cache_managers.h"
 
 #include "ltdl.h"
 #include "pcre.h"
 
-volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.195 2016/05/24 11:01:19 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
+volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.196 2016/05/24 14:28:24 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
 
 // defines
 
@@ -234,12 +235,16 @@ void pa_globals_init() {
 	// global variables 
 	cache_managers=new Cache_managers;
 
-
 	// in various libraries
 	gc_substitute_memory_management_functions();
 
 	// hex value
 	setup_hex_value();
+
+#ifdef SYMBOLS_CACHING
+	// symbols cache
+	Symbols::init();
+#endif
 
 #ifdef XML
 	// initializing xml libs

@@ -11,7 +11,7 @@
 #include "pa_symbols.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VSTATELESS_CLASS_C="$Id: pa_vstateless_class.C,v 1.55 2016/05/24 11:55:14 moko Exp $" IDENT_PA_VSTATELESS_CLASS_H IDENT_PA_METHOD_H;
+volatile const char * IDENT_PA_VSTATELESS_CLASS_C="$Id: pa_vstateless_class.C,v 1.56 2016/05/24 14:28:24 moko Exp $" IDENT_PA_VSTATELESS_CLASS_H IDENT_PA_METHOD_H;
 
 const String class_element_name(CLASS_NAME), class_name_element_name(CLASS_NAME_ELEMENT_NAME);
 
@@ -39,7 +39,10 @@ void VStateless_class::set_method(const String& aname, Method* amethod) {
 }
 
 void VStateless_class::real_set_method(const String& aname, Method* amethod) {
+#ifdef SYMBOLS_CACHING
+	// instance() as called from static constuctors
 	Symbols::instance().add(aname);
+#endif
 	fmethods.put(aname, amethod);
 }
 

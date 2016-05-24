@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.101 2016/05/24 11:55:14 moko Exp $"
+#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.102 2016/05/24 14:28:24 moko Exp $"
 
 #include "pa_symbols.h"
 #include "pa_wcontext.h"
@@ -159,10 +159,10 @@ public: // Value
 	
 	/// VMethodFrame: my or self_transparent or $caller
 	override Value* get_element(const String& aname) { 
-		if(&aname==Symbols::caller)
+		if(SYMBOLS_EQ(aname,Symbols::caller))
 			return caller();
 
-		if(&aname==Symbols::self)
+		if(SYMBOLS_EQ(aname,Symbols::self))
 			return &self();
 
 		Value* result;
