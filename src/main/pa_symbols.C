@@ -6,11 +6,14 @@
 #include "pa_symbols.h"
 #include "pa_vstring.h"
 
-volatile const char * IDENT_PA_SYMBOLS_C="$Id: pa_symbols.C,v 1.4 2016/05/24 15:42:43 moko Exp $" IDENT_PA_SYMBOLS_H;
+volatile const char * IDENT_PA_SYMBOLS_C="$Id: pa_symbols.C,v 1.5 2016/05/24 16:38:40 moko Exp $" IDENT_PA_SYMBOLS_H;
 
 const String Symbols::SELF_SYMBOL("self");
 const String Symbols::CALLER_SYMBOL("caller");
 const String Symbols::RESULT_SYMBOL("result");
+
+const String Symbols::CLASS_SYMBOL("CLASS");
+const String Symbols::CLASS_NAME_SYMBOL("CLASS_NAME");
 
 const String Symbols::STATIC_SYMBOL("static");
 const String Symbols::DYNAMIC_SYMBOL("dynamic");
@@ -44,6 +47,9 @@ void Symbols::init(){
 	symbols->add(SELF_SYMBOL);
 	symbols->add(CALLER_SYMBOL);
 	symbols->add(RESULT_SYMBOL);
+
+	symbols->add(CLASS_SYMBOL);
+	symbols->add(CLASS_NAME_SYMBOL);
 
 	symbols->add(STATIC_SYMBOL);
 	symbols->add(DYNAMIC_SYMBOL);

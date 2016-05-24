@@ -8,7 +8,7 @@
 	
 */
 
-volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.279 2016/05/24 15:42:43 moko Exp $";
+volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.280 2016/05/24 16:38:40 moko Exp $";
 
 /**
 	@todo parser4: 
@@ -41,6 +41,7 @@ volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.279 2016/05/24 15:42
 
 // defines
 
+#define CLASS_NAME "CLASS"
 #define USE_CONTROL_METHOD_NAME "USE"
 #define OPTIONS_CONTROL_METHOD_NAME "OPTIONS"
 

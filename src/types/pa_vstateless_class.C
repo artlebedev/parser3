@@ -11,9 +11,7 @@
 #include "pa_symbols.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VSTATELESS_CLASS_C="$Id: pa_vstateless_class.C,v 1.56 2016/05/24 14:28:24 moko Exp $" IDENT_PA_VSTATELESS_CLASS_H IDENT_PA_METHOD_H;
-
-const String class_element_name(CLASS_NAME), class_name_element_name(CLASS_NAME_ELEMENT_NAME);
+volatile const char * IDENT_PA_VSTATELESS_CLASS_C="$Id: pa_vstateless_class.C,v 1.57 2016/05/24 16:38:40 moko Exp $" IDENT_PA_VSTATELESS_CLASS_H IDENT_PA_METHOD_H;
 
 override Value& VStateless_class::as_expr_result() {
 	return VBool::get(as_bool());
@@ -78,11 +76,11 @@ void VStateless_class::add_native_method(
 Value* VStateless_class::get_element(Value& aself, const String& aname) {
 #ifndef OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL
 	// $CLASS
-	if(aname==class_element_name)
+	if(SYMBOLS_EQ(aname,CLASS_SYMBOL))
 		return this;
 
 	// $CLASS_NAME
-	if(aname==class_name_element_name)
+	if(SYMBOLS_EQ(aname,CLASS_NAME_SYMBOL))
 		return new VString(*new String(type()));
 #endif
 

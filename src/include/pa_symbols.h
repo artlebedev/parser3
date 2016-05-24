@@ -8,7 +8,7 @@
 #ifndef PA_SYMBOLS_H
 #define PA_SYMBOLS_H
 
-#define IDENT_PA_SYMBOLS_H "$Id: pa_symbols.h,v 1.3 2016/05/24 15:42:43 moko Exp $"
+#define IDENT_PA_SYMBOLS_H "$Id: pa_symbols.h,v 1.4 2016/05/24 16:38:40 moko Exp $"
 
 #include "pa_common.h"
 
@@ -27,6 +27,9 @@ public:
 static const String SELF_SYMBOL;
 static const String CALLER_SYMBOL;
 static const String RESULT_SYMBOL;
+
+static const String CLASS_SYMBOL;
+static const String CLASS_NAME_SYMBOL;
 
 static const String STATIC_SYMBOL;
 static const String DYNAMIC_SYMBOL;

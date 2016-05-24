@@ -21,7 +21,7 @@
 #include "pa_vimage.h"
 #include "pa_wwrapper.h"
 
-volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.381 2016/04/06 22:52:12 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
+volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.382 2016/05/24 16:38:40 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
 
 //#define DEBUG_EXECUTE
 
@@ -307,16 +307,16 @@ void Request::execute(ArrayOperation& ops) {
 
 				Value* value=0;
 				if(VStateless_class* vclass=ncontext.get_class()){
-					if(name==class_element_name){
+					if(SYMBOLS_EQ(name,CLASS_SYMBOL)){
 						value=vclass;
-					} else if(name==class_name_element_name){
+					} else if(SYMBOLS_EQ(name,CLASS_NAME_SYMBOL)){
 						value=new VString(*new String(vclass->type()));
 					}
 				} else {
 					// VJunction is without class, returning self
-					if(name==class_element_name){
+					if(SYMBOLS_EQ(name,CLASS_SYMBOL)){
 						value=&ncontext;
-					} else if(name==class_name_element_name){
+					} else if(SYMBOLS_EQ(name,CLASS_NAME_SYMBOL)){
 						value=new VString(*new String(ncontext.type()));
 					}
 				}

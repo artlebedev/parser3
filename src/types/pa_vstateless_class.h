@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
-#define IDENT_PA_VSTATELESS_CLASS_H "$Id: pa_vstateless_class.h,v 1.83 2016/04/24 10:06:32 moko Exp $"
+#define IDENT_PA_VSTATELESS_CLASS_H "$Id: pa_vstateless_class.h,v 1.84 2016/05/24 16:38:40 moko Exp $"
 
 // include
 
@@ -16,12 +16,6 @@
 #include "pa_hash.h"
 #include "pa_vjunction.h"
 #include "pa_method.h"
-
-// defines
-
-#define CLASS_NAME "CLASS"
-#define CLASS_NAME_ELEMENT_NAME "CLASS_NAME"
-extern const String class_element_name, class_name_element_name;
 
 // forwards
 
