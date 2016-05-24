@@ -13,7 +13,7 @@
 #include "pa_vdouble.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_COMPILE_TOOLS_C="$Id: compile_tools.C,v 1.77 2016/05/24 16:46:05 moko Exp $" IDENT_COMPILE_TOOLS_H;
+volatile const char * IDENT_COMPILE_TOOLS_C="$Id: compile_tools.C,v 1.78 2016/05/24 16:47:16 moko Exp $" IDENT_COMPILE_TOOLS_H;
 
 Value* LA2V(ArrayOperation& literal_string_array, int offset, OP::OPCODE code) {
 	return literal_string_array[offset+0].code==code?literal_string_array[offset+2/*skip opcode&origin*/].value
@@ -88,7 +88,7 @@ bool maybe_append_simple_diving_code(ArrayOperation& code, ArrayOperation& divin
 
 bool is_special_element(ArrayOperation& opcodes){
 	const String* name=LA2S(opcodes);
-	return ( name && ( SYMBOLS_EQ(*name,CLASS_SYMBOL) || SYMBOLS_EQ(*name,CLASS_NAME_SYMBOL) ) );
+	return name && ( SYMBOLS_EQ(*name,CLASS_SYMBOL) || SYMBOLS_EQ(*name,CLASS_NAME_SYMBOL) );
 }
 #endif
 
