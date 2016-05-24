@@ -62,7 +62,8 @@ am_libmain_la_OBJECTS = pa_pool.lo pa_os.lo pa_common.lo \
 	pa_string.lo pa_table.lo untaint.lo pa_dir.lo pa_exec.lo \
 	pa_socks.lo pa_dictionary.lo pa_charset.lo pa_charsets.lo \
 	pa_uue.lo pa_sql_driver_manager.lo pa_stylesheet_manager.lo \
-	pa_stylesheet_connection.lo pa_http.lo pa_random.lo
+	pa_stylesheet_connection.lo pa_http.lo pa_random.lo \
+	pa_symbols.lo
 libmain_la_OBJECTS = $(am_libmain_la_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/src/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -236,7 +237,7 @@ top_srcdir = @top_srcdir@
 AM_CPPFLAGS = -I../types -I../classes -I../sql -I../lib/gc/include -I../lib/cord/include -I../lib/punycode $(INCLTDL) @PCRE_INCLUDES@ @XML_INCLUDES@
 noinst_HEADERS = compile_tools.h utf8-to-lower.inc utf8-to-upper.inc
 noinst_LTLIBRARIES = libmain.la
-libmain_la_SOURCES = pa_pool.C pa_os.C pa_common.C compile.tab.C compile.C compile_tools.C execute.C pa_cache_managers.C pa_exception.C pa_xml_exception.C pa_globals.C pa_xml_io.C pa_memory.C pa_request.C pa_string.C pa_table.C untaint.C pa_dir.C pa_exec.C pa_socks.C pa_dictionary.C pa_charset.C pa_charsets.C pa_uue.C pa_sql_driver_manager.C pa_stylesheet_manager.C pa_stylesheet_connection.C pa_http.C pa_random.C
+libmain_la_SOURCES = pa_pool.C pa_os.C pa_common.C compile.tab.C compile.C compile_tools.C execute.C pa_cache_managers.C pa_exception.C pa_xml_exception.C pa_globals.C pa_xml_io.C pa_memory.C pa_request.C pa_string.C pa_table.C untaint.C pa_dir.C pa_exec.C pa_socks.C pa_dictionary.C pa_charset.C pa_charsets.C pa_uue.C pa_sql_driver_manager.C pa_stylesheet_manager.C pa_stylesheet_connection.C pa_http.C pa_random.C pa_symbols.C
 EXTRA_DIST = compile.y main.vcproj
 all: all-am
 
@@ -314,6 +315,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_string.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_stylesheet_connection.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_stylesheet_manager.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_symbols.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_table.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_uue.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_xml_exception.Plo@am__quote@
