@@ -13,7 +13,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.69 2015/10/26 01:21:58 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.70 2016/05/24 11:09:02 moko Exp $" IDENT_PA_HTTP_H; 
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -37,6 +37,7 @@ volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.69 2015/10/26 01:21:58
 #define HTTP_USER "user"
 #define HTTP_PASSWORD "password"
 
+#define HTTP_USER_AGENT "user-agent"
 #define DEFAULT_USER_AGENT "parser3"
 
 #ifndef INADDR_NONE

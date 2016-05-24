@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.161 2015/10/26 01:21:55 moko Exp $"
+#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.162 2016/05/24 11:09:02 moko Exp $"
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -16,8 +16,6 @@
 class Request;
 
 // defines
-#define HTTP_USER_AGENT	"user-agent"
-
 #define HTTP_STATUS	"status"
 #define HTTP_STATUS_CAPITALIZED	"Status"
 
@@ -279,17 +277,11 @@ const unsigned long pa_crc32(const String& file_spec);
 */
 
 // some stuff for use with .for_each
-static void copy_all_overwrite_to(
-								HashStringValue::key_type key, 
-								HashStringValue::value_type value, 
-								HashStringValue* dest) {
+static void copy_all_overwrite_to(HashStringValue::key_type key, HashStringValue::value_type value, HashStringValue* dest) {
 	dest->put(key, value);
 }
 
-static void remove_key_from(
-							HashStringValue::key_type key, 
-							HashStringValue::value_type /*value*/, 
-							HashStringValue* dest) {
+static void remove_key_from(HashStringValue::key_type key, HashStringValue::value_type /*value*/, HashStringValue* dest) {
 	dest->remove(key);
 }
 
