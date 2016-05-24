@@ -13,7 +13,7 @@
 #include "pa_vdouble.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_COMPILE_TOOLS_C="$Id: compile_tools.C,v 1.76 2016/05/24 16:38:40 moko Exp $" IDENT_COMPILE_TOOLS_H;
+volatile const char * IDENT_COMPILE_TOOLS_C="$Id: compile_tools.C,v 1.77 2016/05/24 16:46:05 moko Exp $" IDENT_COMPILE_TOOLS_H;
 
 Value* LA2V(ArrayOperation& literal_string_array, int offset, OP::OPCODE code) {
 	return literal_string_array[offset+0].code==code?literal_string_array[offset+2/*skip opcode&origin*/].value
@@ -112,15 +112,13 @@ void push_LS(Parse_control& pc, lexical_state new_state) {
 		pc.ls_stack[pc.ls_sp++]=pc.ls;  
 		pc.ls=new_state;
 	} else
-		throw Exception(0, 0, 
-			"push_LS: ls_stack overflow");
+		throw Exception(0, 0, "push_LS: ls_stack overflow");
 }
 void pop_LS(Parse_control& pc) {
 	if(--pc.ls_sp>=0)
 		pc.ls=pc.ls_stack[pc.ls_sp];
 	else
-		throw Exception(0, 0, 
-			"pop_LS: ls_stack underflow");
+		throw Exception(0, 0, "pop_LS: ls_stack underflow");
 }
 
 const String& Parse_control::alias_method(const String& name) {
