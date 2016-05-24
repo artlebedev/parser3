@@ -8,11 +8,7 @@
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VMETHOD_FRAME_C="$Id: pa_vmethod_frame.C,v 1.25 2016/04/06 22:45:33 moko Exp $" IDENT_PA_VMETHOD_FRAME_H;
-
-// globals
-
-const String result_var_name(RESULT_VAR_NAME), caller_element_name(CALLER_ELEMENT_NAME), self_element_name(SELF_ELEMENT_NAME);
+volatile const char * IDENT_PA_VMETHOD_FRAME_C="$Id: pa_vmethod_frame.C,v 1.26 2016/05/24 11:55:14 moko Exp $" IDENT_PA_VMETHOD_FRAME_H;
 
 VVoid void_result; // unique value to be sure the result is changed
 
@@ -82,7 +78,7 @@ VMethodFrame::VMethodFrame(const Method& amethod, VMethodFrame *acaller, Value& 
 #ifdef OPTIMIZE_RESULT
 		if(method.result_optimization!=Method::RO_USE_WCONTEXT)
 #endif
-			set_my_variable(result_var_name, void_result);
+			set_my_variable(*Symbols::result, void_result);
 	}
 }
 
@@ -90,6 +86,6 @@ Value* VMethodFrame::get_result_variable() {
 	if(!my)
 		return 0;
 
-	Value* result=my->get(result_var_name);
+	Value* result=my->get(*Symbols::result);
 	return result!=&void_result?result:0;
 }

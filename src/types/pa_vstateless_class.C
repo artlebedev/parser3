@@ -8,9 +8,10 @@
 #include "pa_vstateless_class.h"
 #include "pa_vstring.h"
 #include "pa_vbool.h"
+#include "pa_symbols.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VSTATELESS_CLASS_C="$Id: pa_vstateless_class.C,v 1.54 2016/04/06 22:45:33 moko Exp $" IDENT_PA_VSTATELESS_CLASS_H IDENT_PA_METHOD_H;
+volatile const char * IDENT_PA_VSTATELESS_CLASS_C="$Id: pa_vstateless_class.C,v 1.55 2016/05/24 11:55:14 moko Exp $" IDENT_PA_VSTATELESS_CLASS_H IDENT_PA_METHOD_H;
 
 const String class_element_name(CLASS_NAME), class_name_element_name(CLASS_NAME_ELEMENT_NAME);
 
@@ -38,6 +39,7 @@ void VStateless_class::set_method(const String& aname, Method* amethod) {
 }
 
 void VStateless_class::real_set_method(const String& aname, Method* amethod) {
+	Symbols::instance().add(aname);
 	fmethods.put(aname, amethod);
 }
 

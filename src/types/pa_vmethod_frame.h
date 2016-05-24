@@ -8,18 +8,12 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.100 2016/04/06 22:45:33 moko Exp $"
+#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.101 2016/05/24 11:55:14 moko Exp $"
 
+#include "pa_symbols.h"
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
 #include "pa_vjunction.h"
-
-// defines
-
-#define CALLER_ELEMENT_NAME "caller"
-#define SELF_ELEMENT_NAME "self"
-#define RESULT_VAR_NAME "result"
-extern const String result_var_name, caller_element_name, self_element_name;
 
 // forwards
 
@@ -165,10 +159,10 @@ public: // Value
 	
 	/// VMethodFrame: my or self_transparent or $caller
 	override Value* get_element(const String& aname) { 
-		if(aname==caller_element_name)
+		if(&aname==Symbols::caller)
 			return caller();
 
-		if(aname==self_element_name)
+		if(&aname==Symbols::self)
 			return &self();
 
 		Value* result;

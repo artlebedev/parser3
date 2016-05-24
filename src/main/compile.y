@@ -8,7 +8,7 @@
 	
 */
 
-volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.276 2016/05/18 22:27:28 moko Exp $";
+volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.277 2016/05/24 11:55:14 moko Exp $";
 
 /**
 	@todo parser4: 
@@ -288,7 +288,7 @@ code_method: '@' STRING bracketed_maybe_strings maybe_bracketed_strings maybe_co
 		locals_names=new ArrayString;
 		for(int i=0; i<size; i+=OPERATIONS_PER_OPVALUE) {
 			const String* local_name=LA2S(*locals_names_code, i);
-			if(*local_name==RESULT_VAR_NAME)
+			if(*local_name==*Symbols::result)
 				PC.explicit_result=true;
 			else if(*local_name==OPTION_ALL_VARS_LOCAL_NAME)
 				all_vars_local=true;
@@ -1645,8 +1645,9 @@ break2:
 	}
 	if(!pc.string.is_empty()) { // something accumulated?
 		// create STRING value: array of OP_VALUE+origin+vstring
+		Value *lookup=Symbols::instance().get(pc.string);
  		*lvalp=VL(
-			new VString(*new String(pc.string, String::L_CLEAN)),
+			lookup ? lookup : new VString(*new String(pc.string, String::L_CLEAN)),
 			pc.file_no, pc.string_start.line, pc.string_start.col);
 		// new pieces storage
 		pc.string.clear();

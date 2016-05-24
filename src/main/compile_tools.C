@@ -13,7 +13,7 @@
 #include "pa_vdouble.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_COMPILE_TOOLS_C="$Id: compile_tools.C,v 1.72 2015/10/26 01:21:57 moko Exp $" IDENT_COMPILE_TOOLS_H;
+volatile const char * IDENT_COMPILE_TOOLS_C="$Id: compile_tools.C,v 1.73 2016/05/24 11:55:14 moko Exp $" IDENT_COMPILE_TOOLS_H;
 
 Value* LA2V(ArrayOperation& literal_string_array, int offset, OP::OPCODE code) {
 	return literal_string_array[offset+0].code==code?literal_string_array[offset+2/*skip opcode&origin*/].value
@@ -46,7 +46,7 @@ bool change_first(ArrayOperation& opcodes, OP::OPCODE find, OP::OPCODE replace) 
 bool maybe_make_self(ArrayOperation& opcodes, ArrayOperation& diving_code, size_t divine_count){
 	const String* first_name=LA2S(diving_code);
 
-	if(first_name && *first_name==SELF_ELEMENT_NAME){
+	if(first_name && *first_name==*Symbols::self){
 #ifdef OPTIMIZE_BYTECODE_GET_SELF_ELEMENT
 		if(
 			divine_count>=8

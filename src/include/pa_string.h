@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.214 2015/10/26 01:21:56 moko Exp $"
+#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.215 2016/05/24 11:55:13 moko Exp $"
 
 // includes
 #include "pa_types.h"
@@ -334,8 +334,10 @@ public:
 		// that string body does not change after it is stored as a hash key
 		mutable uint hash_code;
 #define INIT_HASH_CODE(c) ,hash_code(c)
+#define ZERO_HASH_CODE hash_code=0;
 #else
 #define INIT_HASH_CODE(c)
+#define ZERO_HASH_CODE
 #endif
 
 #ifdef STRING_LENGTH_CACHING
@@ -379,7 +381,7 @@ public:
 
 		static Body Format(int value);
 
-		void clear() { ZERO_LENGTH body=CORD_EMPTY; }
+		void clear() { ZERO_LENGTH ZERO_HASH_CODE body=CORD_EMPTY; }
 
 		bool operator! () const { return is_empty(); }
 
