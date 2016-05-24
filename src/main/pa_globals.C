@@ -17,7 +17,6 @@ extern "C" {
 #endif
 
 #include "pa_globals.h"
-#include "pa_string.h"
 #include "pa_sapi.h"
 #include "pa_threads.h"
 #include "pa_xml_io.h"
@@ -28,33 +27,26 @@ extern "C" {
 #include "ltdl.h"
 #include "pcre.h"
 
-volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.194 2015/10/26 01:21:58 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
+volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.195 2016/05/24 11:01:19 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
 
 // defines
 
 //#define PA_DEBUG_XML_GC_MEMORY
 
-//20051130 trying to remove this, author claims that fixed a lot there // 20040920 for now both workarounds needed. wait for new libxml/xsl versions
-// // there is a problem with testcase, it's unstable. 
-// // see paf@six/bug20040920/cgi-bin/t for it-showed-bug-on-20040920-day
-// #define PA_WORKAROUND_BUGGY_FREE_IN_LIBXML_GC_MEMORY
-// #define PA_WORKAROUND_BUGGY_MALLOCATOMIC_IN_LIBXML_GC_MEMORY
-
 // globals
 
-short hex_value[0x100];
+short hex_value[0x100]={0};
 
 static void setup_hex_value() {
-	memset(hex_value, 0, sizeof(hex_value));
-	hex_value['0'] = 0;	
-	hex_value['1'] = 1;	
-	hex_value['2'] = 2;	
-	hex_value['3'] = 3;	
-	hex_value['4'] = 4;	
-	hex_value['5'] = 5;	
-	hex_value['6'] = 6;	
-	hex_value['7'] = 7;	
-	hex_value['8'] = 8;	
+	hex_value['0'] = 0;
+	hex_value['1'] = 1;
+	hex_value['2'] = 2;
+	hex_value['3'] = 3;
+	hex_value['4'] = 4;
+	hex_value['5'] = 5;
+	hex_value['6'] = 6;
+	hex_value['7'] = 7;
+	hex_value['8'] = 8;
 	hex_value['9'] = 9;
 	hex_value['A'] = 10;
 	hex_value['B'] = 11;
@@ -123,7 +115,7 @@ const char* xmlGenericErrors() {
 	return 0; // no errors for our thread_id registered
 }
 
-#endif
+#endif // XML
 
 #ifdef XML
 
@@ -133,6 +125,7 @@ static char *pa_GC_strdup(const char *s) {
 
 	size_t size=strlen(s)+1;
 	char *result=(char *)pa_gc_malloc_atomic(size);
+
 	if(!result)
 		pa_fail_alloc("duplicate XML string",size);
 
@@ -194,7 +187,8 @@ static void pa_gc_free_maybeignore(void* ptr) {
 }
 
 #endif
-#endif
+
+#endif // XML
 
 void pa_CORD_oom_fn(void) {
 	pa_fail_alloc("expand string", 0);
@@ -286,7 +280,7 @@ void pa_globals_init() {
 	xmlSetGenericErrorFunc(0, xmlParserGenericErrorFunc);
 	xsltSetGenericErrorFunc(0, xmlParserGenericErrorFunc);
 
-//	FILE *f=fopen("y:\\xslt.log", "wt");
+//	FILE *f=fopen("xslt.log", "wt");
 //	xsltSetGenericDebugFunc(f/*stderr*/, 0);
 
 	pa_xml_io_init();
@@ -322,7 +316,7 @@ void pa_dlinit() {
 #pragma comment(lib, GC_LIB "/Release/gc.lib")
 #endif
 
-#endif
+#endif // PA_DEBUG_DISABLE_GC
 
 
 #ifdef XML
@@ -355,6 +349,6 @@ void pa_dlinit() {
 #pragma comment(lib, LIB_XSLT "libexslt.lib")
 #endif
 
-#endif
+#endif // XML
 
-#endif
+#endif // _MSC_VER
