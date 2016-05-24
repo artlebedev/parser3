@@ -324,6 +324,12 @@
 			RelativePath="..\include\pa_stylesheet_manager.h">
 		</File>
 		<File
+			RelativePath=".\pa_symbols.C">
+		</File>
+		<File
+			RelativePath="..\include\pa_symbols.h">
+		</File>
+		<File
 			RelativePath=".\pa_table.C">
 		</File>
 		<File
