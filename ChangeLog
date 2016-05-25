@@ -1,3 +1,122 @@
+2016-05-25  moko
+
+	* src/main/compile.y: minor cleanup + beauty
+
+2016-05-24  moko
+
+	* tests/: 333.html, results/333.processed: more exceptions testing
+
+	* tests/: 332.html, results/332.processed: test for FIELDS_SYMBOL,
+	  _DEFAULT_SYMBOL, CALLER_SYMBOL, SELF_SYMBOL added (related to
+	  features #1056, #1026)
+
+	* src/: classes/json.C, include/pa_symbols.h, main/pa_symbols.C,
+	  types/pa_vhash.C, types/pa_vhash.h, types/pa_vtable.C,
+	  types/pa_vtable.h: FIELDS_SYMBOL, _DEFAULT_SYMBOL added and used
+	  (implements feature #1056)
+
+	* src/: include/pa_symbols.h, main/compile.y, main/compile_tools.C,
+	  main/execute.C, main/pa_symbols.C, types/pa_vjunction.C,
+	  types/pa_vstateless_class.C, types/pa_vstateless_class.h:
+	  CLASS_SYMBOL, CLASS_NAME_SYMBOL added and used (related to
+	  feature #1026)
+
+	* src/: classes/reflection.C, include/pa_symbols.h, main/compile.y,
+	  main/compile_tools.C, main/compile_tools.h, main/pa_symbols.C,
+	  types/pa_vmethod_frame.C, types/pa_vmethod_frame.h: Symbols now
+	  have *_SYMBOL naming convention. STATIC_SYMBOL, DYNAMIC_SYMBOL,
+	  LOCALS_SYMBOL, PARTIAL_SYMBOL, REM_SYMBOL where added (related to
+	  feature #1026)
+
+	* src/: include/pa_symbols.h, main/compile.y, main/compile_tools.C,
+	  main/pa_globals.C, main/pa_symbols.C, types/pa_vmethod_frame.C,
+	  types/pa_vmethod_frame.h, types/pa_vstateless_class.C:
+	  SYMBOLS_CACHING define implemented (related to feature #1026)
+
+	* src/main/main.vcproj: + ps_symbols
+
+	* src/: include/Makefile.am, include/pa_string.h,
+	  include/pa_symbols.h, main/Makefile.am, main/compile.tab.C,
+	  main/compile.y, main/compile_tools.C, main/pa_symbols.C,
+	  types/pa_vmethod_frame.C, types/pa_vmethod_frame.h,
+	  types/pa_vstateless_class.C: initial implementation for symbols
+	  cache (related to feature #1026)
+
+	* src/: include/pa_common.h, main/pa_http.C: minor cleanup
+
+	* src/main/pa_globals.C: minor cleanup
+
+2016-05-19  moko
+
+	* src/types/pa_vhash.h: minor optimization: ^hash.fields[] removed
+	  (related to feature #1046)
+
+	* tests/: 331.html, results/331.processed: test for
+	  BAD_NONWHITESPACE_CHARACTER_IN_EXPLICIT_RESULT_MODE removal added
+	  (related to feature #1051)
+
+	* src/main/compile.y:
+	  BAD_NONWHITESPACE_CHARACTER_IN_EXPLICIT_RESULT_MODE error removed
+	  (implements feature #1054)
+
+2016-05-18  moko
+
+	* src/types/pa_vtable.C, tests/results/324.processed: no more
+	  "column not found" exception for ^table.no-such-method[] (related
+	  to feature #1046)
+
+	* tests/: 261.html, results/261.processed: test added and updated
+	  after feature #1046 implementation
+
+	* src/: classes/string.C, types/pa_value.C, types/pa_vstring.h,
+	  types/pa_vvoid.h: $string.anything works for whitespace strings,
+	  ^string.contains added for hash compatibility, $string.method no
+	  longer returns stting method (implements feature #1046)
+
+2016-05-12  moko
+
+	* src/classes/curl.C: content-type response header no longer
+	  ignored (fixes issue #1045)
+
+	* tests/: 330.html, results/330.processed: test for incomplete
+	  finally execution when break occures added (related to issue
+	  #1077)
+
+	* src/classes/op.C: bugfix: Request::skip reset is called before
+	  executing catch and finally code (fixes issue #1062)
+
+2016-05-11  moko
+
+	* tests/: 329.html, results/329.processed: test for invalid
+	  ^break[] behavour added (bug #1077)
+
+	* src/classes/op.C: try_catch code cleanup (related to bug #1062)
+
+2016-04-24  moko
+
+	* src/types/pa_vstateless_class.h: warning war
+
+2016-04-17  moko
+
+	* tests/: 328.html, results/328.processed: test for
+	  ^break(condition) and ^continue(condition) (related to feature
+	  #1063)
+
+	* src/classes/op.C: ^break(condition) and ^continue(condition)
+	  implemented (feature #1063)
+
+2016-04-12  moko
+
+	* tests/results/280.processed: ordered hash now used for class
+	  methods and properties (test results updated for feature #1069)
+
+	* src/classes/: xdoc.C, xnode.C: xnode_class initialization moved
+	  to xdoc.C as under FreeBSD it was inited after and inheritance
+	  failed (related to issue #1051)
+
+	* tests/: 320.html, results/320.processed: xdoc and xnode methods
+	  are printed to check inheritance (related to feature #1051)
+
 2016-04-09  moko
 
 	* tests/results/320.processed: ordered hash now used for class
@@ -14607,7 +14726,7 @@
 	  types/pa_vstring.h, types/pa_vtable.C, types/pa_vtable.h,
 	  types/pa_vvoid.h, types/pa_vxdoc.C, types/pa_vxdoc.h,
 	  types/pa_vxnode.C, types/pa_vxnode.h, types/pa_wcontext.C,
-	  types/pa_wcontext.h, types/pa_wwrapper.h: $Date: 2016/04/08 22:49:23 $
+	  types/pa_wcontext.h, types/pa_wwrapper.h: $Date: 2016/05/25 20:34:08 $
 
 	* src/: classes/classes.C, classes/classes.dsp, classes/classes.h,
 	  classes/date.C, classes/double.C, classes/file.C, classes/form.C,
@@ -18695,7 +18814,7 @@
 	  main/pa_hash.C, main/pa_pool.C, main/pa_request.C,
 	  main/pa_socks.C, main/pa_sql_driver_manager.C, main/pa_string.C,
 	  main/pa_table.C, main/untaint.C, targets/cgi/parser3.C,
-	  targets/isapi/parser3isapi.C: static char *RCSId="$Id: ChangeLog,v 1.103 2016/04/08 22:49:23 moko Exp $";
+	  targets/isapi/parser3isapi.C: static char *RCSId="$Id: ChangeLog,v 1.104 2016/05/25 20:34:08 moko Exp $";
 
 	* src/main/: compile.y, compile_tools.h: $:name: == ${name}:
 	  $class:name: == ${class:name}:
@@ -21510,9 +21629,9 @@
 
 	* src/include/: pa_pool.h, pa_string.h: pa_pool split
 
-	* src/main/: main.dsp, pa_string.C: $Id: ChangeLog,v 1.103 2016/04/08 22:49:23 moko Exp $ check
+	* src/main/: main.dsp, pa_string.C: $Id: ChangeLog,v 1.104 2016/05/25 20:34:08 moko Exp $ check
 
-	* src/: main/pa_pool.C, main/pa_string.C, include/pa_pool.h: $Id: ChangeLog,v 1.103 2016/04/08 22:49:23 moko Exp $
+	* src/: main/pa_pool.C, main/pa_string.C, include/pa_pool.h: $Id: ChangeLog,v 1.104 2016/05/25 20:34:08 moko Exp $
 	  check
 
 	* src/: include/pa_pool.h, main/pa_string.C: String prealloc &
