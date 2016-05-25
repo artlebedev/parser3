@@ -8,7 +8,7 @@
 	
 */
 
-volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.280 2016/05/24 16:38:40 moko Exp $";
+volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.281 2016/05/25 11:35:15 moko Exp $";
 
 /**
 	@todo parser4: 
@@ -62,10 +62,16 @@ static const VString vempty;
 #define POOL  (*PC.pool)
 #ifndef DOXYGEN
 
-#define CLASS_ADD if(PC.class_add()){					\
-	strncpy(PC.error, PC.cclass->type(), MAX_STRING/2);		\
-	strcat(PC.error, " - class is already defined");		\
-	YYERROR;							\
+#define CLASS_ADD if(PC.class_add()){				\
+	strncpy(PC.error, PC.cclass->type(), MAX_STRING/2);	\
+	strcat(PC.error, " - class is already defined");	\
+	YYERROR;						\
+}
+
+#define PC_ERROR(header, value, footer){			\
+	strcpy(PC.error, header);				\
+	strncat(PC.error, value, MAX_STRING/2);			\
+	strcat(PC.error, footer);				\
 }
 
 %}
@@ -137,10 +143,7 @@ static const VString vempty;
 %%
 all:
 	one_big_piece {
-	Method* method=new Method(Method::CT_ANY,
-		0, 0, /*min, max numbered_params_count*/
-		0/*param_names*/, 0/*local_names*/, 
-		$1/*parser_code*/, 0/*native_code*/);
+	Method* method=new Method(Method::CT_ANY, 0, 0 /*min, max numbered_params_count*/, 0 /*param_names*/, 0 /*local_names*/, $1 /*parser_code*/, 0 /*native_code*/);
 	PC.cclass->set_method(PC.alias_method(main_method_name), method);
 }
 |	methods;
@@ -155,9 +158,7 @@ control_method: '@' STRING '\n'
 	const String& command=LA2S(*$2)->trim(String::TRIM_END);
 	YYSTYPE strings_code=$4;
 	if(strings_code->count()<1*OPERATIONS_PER_OPVALUE) {
-		strcpy(PC.error, "@");
-		strcat(PC.error, command.cstr());
-		strcat(PC.error, " is empty");
+		PC_ERROR("@", command.cstr(), " is empty");
 		YYERROR;
 	}
 	if(command==CLASS_NAME) {
@@ -182,16 +183,12 @@ control_method: '@' STRING '\n'
 		}
 	} else if(command==BASE_NAME) {
 		if(PC.append){
-			strcpy(PC.error, "can't set base while appending methods to class '");
-			strncat(PC.error, PC.cclass->type(), MAX_STRING/2);
-			strcat(PC.error, "'");
+			PC_ERROR("can't set base while appending methods to class '", PC.cclass->type(), "'");
 			YYERROR;
 		}
 		CLASS_ADD;
 		if(PC.cclass->base_class()) { // already changed from default?
-			strcpy(PC.error, "class already have a base '");
-			strncat(PC.error, PC.cclass->base_class()->type(), MAX_STRING/2);
-			strcat(PC.error, "'");
+			PC_ERROR("class already have a base '", PC.cclass->base_class()->type(), "'");
 			YYERROR;
 		}
 		if(strings_code->count()==1*OPERATIONS_PER_OPVALUE) {
@@ -205,13 +202,11 @@ control_method: '@' STRING '\n'
 					}
 					PC.cclass->get_class()->set_base(base_class);
 				} else { // they asked to derive from a class without methods ['env' & co]
-					strcpy(PC.error, base_name.cstr());
-					strcat(PC.error, ": you can not derive from this class in @" BASE_NAME);
+					PC_ERROR("'", base_name.cstr(), "': you can not derive from this class in @" BASE_NAME);
 					YYERROR;
 				}
 			} else {
-				strcpy(PC.error, base_name.cstr());
-				strcat(PC.error, ": undefined class in @" BASE_NAME);
+				PC_ERROR("'", base_name.cstr(), "': undefined class in @" BASE_NAME);
 				YYERROR;
 			}
 		} else {
@@ -227,9 +222,7 @@ control_method: '@' STRING '\n'
 				if(PC.cclass_new){
 					if(VStateless_class* existed=PC.get_existed_class(PC.cclass_new)){
 						if(!PC.reuse_existed_class(existed)){
-							strcpy(PC.error, "can't append methods to '");
-							strncat(PC.error, PC.cclass_new->type(), MAX_STRING/2);
-							strcat(PC.error, "' - the class wasn't marked as partial");
+							PC_ERROR("can't append methods to '", PC.cclass_new->type(), "' - the class wasn't marked as partial");
 							YYERROR;
 						}
 					} else {
@@ -245,17 +238,12 @@ control_method: '@' STRING '\n'
 			} else if(option==Symbols::DYNAMIC_SYMBOL){
 				PC.set_methods_call_type(Method::CT_DYNAMIC);
 			} else {
-				strcpy(PC.error, "'");
-				strncat(PC.error, option.cstr(), MAX_STRING/2);
-				strcat(PC.error, "' invalid option. valid options are 'partial', 'locals', 'static' and 'dynamic'");
+				PC_ERROR("'", option.cstr(), "' invalid option. valid options are 'partial', 'locals', 'static' and 'dynamic'");
 				YYERROR;
 			}
 		}
 	} else {
-		strcpy(PC.error, "'");
-		strncat(PC.error, command.cstr(), MAX_STRING/2);
-		strcat(PC.error, "' invalid special name. valid names are "
-			"'" CLASS_NAME "', '" USE_CONTROL_METHOD_NAME "', '" BASE_NAME "' and '" OPTIONS_CONTROL_METHOD_NAME "'.");
+		PC_ERROR("'", command.cstr(), "' invalid special name. valid names are '" CLASS_NAME "', '" USE_CONTROL_METHOD_NAME "', '" BASE_NAME "' and '" OPTIONS_CONTROL_METHOD_NAME "'.");
 		YYERROR;
 	}
 };
@@ -335,44 +323,27 @@ get: get_value {
 	size_t count=code->count();
 
 #ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
-	if(
-		count!=3
-		|| !change_first(*code, OP::OP_VALUE__GET_ELEMENT, /*=>*/OP::OP_VALUE__GET_ELEMENT__WRITE)
-	)
+	if(count!=3 || !change_first(*code, OP::OP_VALUE__GET_ELEMENT, /*=>*/OP::OP_VALUE__GET_ELEMENT__WRITE) )
 #endif
 
 #ifdef OPTIMIZE_BYTECODE_GET_SELF_ELEMENT
-	if(
-		count!=3
-		|| !change_first(*code, OP::OP_WITH_SELF__VALUE__GET_ELEMENT, /*=>*/OP::OP_WITH_SELF__VALUE__GET_ELEMENT__WRITE)
-	)
+	if(count!=3 || !change_first(*code, OP::OP_WITH_SELF__VALUE__GET_ELEMENT, /*=>*/OP::OP_WITH_SELF__VALUE__GET_ELEMENT__WRITE) )
 #endif
 
 #ifdef OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT
-	if(
-		count!=5
-		|| !change_first(*code, OP::OP_GET_OBJECT_ELEMENT, /*=>*/OP::OP_GET_OBJECT_ELEMENT__WRITE)
-	)
+	if(count!=5 || !change_first(*code, OP::OP_GET_OBJECT_ELEMENT, /*=>*/OP::OP_GET_OBJECT_ELEMENT__WRITE) )
 #endif
 
 #ifdef OPTIMIZE_BYTECODE_GET_OBJECT_VAR_ELEMENT
-	if(
-		count!=5
-		|| !change_first(*code, OP::OP_GET_OBJECT_VAR_ELEMENT, /*=>*/OP::OP_GET_OBJECT_VAR_ELEMENT__WRITE)
-	)
+	if(count!=5 || !change_first(*code, OP::OP_GET_OBJECT_VAR_ELEMENT, /*=>*/OP::OP_GET_OBJECT_VAR_ELEMENT__WRITE) )
 #endif
 
 #ifdef OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL
-	if(
-		!change(*code, count-1/* last */, OP::OP_GET_ELEMENT__SPECIAL, /*=>*/OP::OP_GET_ELEMENT__SPECIAL__WRITE)
-	)
+	if(!change(*code, count-1/* last */, OP::OP_GET_ELEMENT__SPECIAL, /*=>*/OP::OP_GET_ELEMENT__SPECIAL__WRITE) )
 #endif
 
 	{
-		change_or_append(*code, count-1 /* last */,
-			OP::OP_GET_ELEMENT, /*=>*/OP::OP_GET_ELEMENT__WRITE,
-			/*or */OP::OP_WRITE_VALUE
-			); /* value=pop; wcontext.write(value) */
+		change_or_append(*code, count-1 /* last */, OP::OP_GET_ELEMENT, /*=>*/OP::OP_GET_ELEMENT__WRITE, /*or */OP::OP_WRITE_VALUE ); /* value=pop; wcontext.write(value) */
 	}
 
 	P(*$$, *code);
@@ -405,11 +376,7 @@ name_without_curly_rdive_read: name_without_curly_rdive_code {
 #endif
 
 #ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
-	if(
-		count>=4
-		&& (*diving_code)[0].code==OP::OP_VALUE
-		&& (*diving_code)[3].code==OP::OP_GET_ELEMENT
-	){
+	if(count>=4 && (*diving_code)[0].code==OP::OP_VALUE && (*diving_code)[3].code==OP::OP_GET_ELEMENT ){
 		 // optimization
 		O(*$$,
 			(PC.in_call_value && count==4)
@@ -466,11 +433,7 @@ name_expr_wdive_root: name_expr_dive_code {
 		// $self.
 	} else
 #ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
-	if(
-		count>=4
-		&& (*diving_code)[0].code==OP::OP_VALUE
-		&& (*diving_code)[3].code==OP::OP_GET_ELEMENT
-	){
+	if(count>=4 && (*diving_code)[0].code==OP::OP_VALUE && (*diving_code)[3].code==OP::OP_GET_ELEMENT ){
 		O(*$$, OP::OP_WITH_ROOT__VALUE__GET_ELEMENT);
 		P(*$$, *diving_code, 1/*offset*/, 2/*limit*/); // copy origin+value
 		if(count>4)
@@ -543,19 +506,17 @@ call: call_value {
 #endif
 	{
 		$$=$1; /* stack: value */
-		if(!change_first(*$$, OP::OP_CONSTRUCT_OBJECT, /*=>*/OP::OP_CONSTRUCT_OBJECT__WRITE))
-			change_or_append(*$$, count-2 /* second last */,
-				OP::OP_CALL, /*=>*/ OP::OP_CALL__WRITE,
-				/*or */OP::OP_WRITE_VALUE); /* value=pop; wcontext.write(value) */
+		if(!change_first(*$$, OP::OP_CONSTRUCT_OBJECT, /*=>*/ OP::OP_CONSTRUCT_OBJECT__WRITE))
+			change_or_append(*$$, count-2 /* second last */, OP::OP_CALL, /*=>*/ OP::OP_CALL__WRITE, /*or */ OP::OP_WRITE_VALUE); /* value=pop; wcontext.write(value) */
 	}
 };
 call_value: '^' { 
-					PC.in_call_value=true; 
-			}
-			call_name {
-				PC.in_call_value=false;
-			} 
-			store_params EON { /* ^field.$method{vasya} */
+	PC.in_call_value=true; 
+}
+call_name {
+	PC.in_call_value=false;
+} 
+store_params EON { /* ^field.$method{vasya} */
 #ifdef OPTIMIZE_BYTECODE_CUT_REM_OPERATOR
 #ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
 	const String* operator_name=LA2S(*$3, 0, OP::OP_VALUE__GET_ELEMENT_OR_OPERATOR);
@@ -729,9 +690,9 @@ name_square_code_value: '[' {
 	if(!maybe_append_simple_diving_code(*$$, *$3))
 #endif
 	{
-	OA(*$$, OP::OP_OBJECT_POOL, $3); /* stack: empty write context */
-	/* some code that writes to that context */
-	/* context=pop; stack: context.value() */
+		OA(*$$, OP::OP_OBJECT_POOL, $3); /* stack: empty write context */
+		/* some code that writes to that context */
+		/* context=pop; stack: context.value() */
 	}
 };
 subvar_ref_name_rdive: STRING {
@@ -1604,17 +1565,17 @@ default:
 				pc.ls=LS_METHOD_SQUARE;
 				lexical_brackets_nestage=1;
 				RC;
-			}					   
+			}
 			if(c=='{') {/* ]{ }{ ){ */
 				pc.ls=LS_METHOD_CURLY;
 				lexical_brackets_nestage=1;
 				RC;
-			}					   
+			}
 			if(c=='(') {/* ]( }( )( */
 				pc.ls=LS_METHOD_ROUND;
 				lexical_brackets_nestage=1;
 				RC;
-			}					   
+			}
 			pop_LS(pc);
 			pc.ungetc();
 			result=EON;
@@ -1645,8 +1606,7 @@ break2:
 #else
 		Value *lookup=0;
 #endif
- 		*lvalp=VL(
-			lookup ? lookup : new VString(*new String(pc.string, String::L_CLEAN)), pc.file_no, pc.string_start.line, pc.string_start.col);
+		*lvalp=VL(lookup ? lookup : new VString(*new String(pc.string, String::L_CLEAN)), pc.file_no, pc.string_start.line, pc.string_start.col);
 		// new pieces storage
 		pc.string.clear();
 		pc.string_start.clear();
@@ -1660,8 +1620,8 @@ break2:
 }
 
 static int real_yyerror(Parse_control *pc, const char *s) {  // Called by yyparse on error
-	   strncpy(PC.error, s, MAX_STRING);
-	   return 1;
+	strncpy(PC.error, s, MAX_STRING);
+	return 1;
 }
 
 static void yyprint(FILE *file, int type, YYSTYPE value) {
