@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 555
+Content-Length: 663
 
 1. break in try with catch and finally
 catch!
@@ -34,3 +34,7 @@ call number 2
 finally!
 call number 1
 call number 2
+7. just try exception source check
+Type: parser.runtime,
+Source: no-such-method,
+Comment: undefined method

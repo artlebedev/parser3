@@ -102,5 +102,14 @@ break moment: $a
 }
 $finally
 
+7. just try exception source check
+
+^try-catch{
+^try{
+    ^no-such-method[]
+}{
+}
+}
+
 @method[n]
 call number $n
