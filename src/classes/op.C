@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.229 2016/05/11 22:28:48 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.230 2016/06/17 12:35:36 moko Exp $";
 
 // limits
 
@@ -554,7 +554,10 @@ static Try_catch_result try_catch(Request& r, StringOrValue body_code(Request&, 
 	try {
 		result.processed_code=body_code(r, info);
 	} catch(const Exception& e) {
+		Request_context_saver throw_context(r); // remembering exception stack trace
+
 		Request::Exception_details details=r.get_details(e);
+
 		try_context.restore(); // restoring try-context for code after try and catch-code
 
 		{
@@ -576,8 +579,10 @@ static Try_catch_result try_catch(Request& r, StringOrValue body_code(Request&, 
 				bhandled=vhandled->as_bool();
 		}
 
-		if(!bhandled)
+		if(!bhandled){
+			throw_context.restore(); // restoring exception stack trace creared by try_context.restore()
 			rethrow;
+		}
 	}
 
 	return result;
