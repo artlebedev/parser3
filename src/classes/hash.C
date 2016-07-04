@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.127 2016/07/04 17:26:23 moko Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.128 2016/07/04 21:40:00 moko Exp $";
 
 // class
 
@@ -405,68 +405,65 @@ static void _contains(Request& r, MethodParams& params) {
 	r.write_no_lang(VBool::get(result));
 }
 
-#ifndef DOXYGEN
-struct Foreach_info {
-	Request *r;
-	const String* key_var_name;
-	const String* value_var_name;
-	Value* body_code;
-	Value* delim_maybe_code;
-
-	Value* var_context;
-	bool need_delim;
-};
-#endif
-static bool one_foreach_cycle(
-				HashStringValue::key_type akey, 
-				HashStringValue::value_type avalue, 
-				Foreach_info *info) {
-	Value& var_context=*info->var_context;
-	if(info->key_var_name){
-		VString* vkey=new VString(*new String(akey, String::L_TAINTED));
-		info->r->put_element(var_context, *info->key_var_name, vkey);
-	}
-	if(info->value_var_name)
-		info->r->put_element(var_context, *info->value_var_name, avalue);
-
-	if(info->delim_maybe_code){ // delimiter set
-		StringOrValue sv_processed=info->r->process(*info->body_code);
-		Request::Skip lskip=info->r->get_skip(); info->r->set_skip(Request::SKIP_NOTHING);
-
-		const String* s_processed=sv_processed.get_string();
-		if(s_processed && !s_processed->is_empty()) { // we have body
-			if(info->need_delim) // need delim & iteration produced string?
-				info->r->write_pass_lang(info->r->process(*info->delim_maybe_code));
-			else
-				info->need_delim=true;
-		}
-		info->r->write_pass_lang(sv_processed);
-		return lskip==Request::SKIP_BREAK;
-	} else {
-		info->r->process_write(*info->body_code);
-		Request::Skip lskip=info->r->get_skip(); info->r->set_skip(Request::SKIP_NOTHING);
-		return lskip==Request::SKIP_BREAK;
-	}
-}
 static void _foreach(Request& r, MethodParams& params) {
 	InCycle temp(r);
 
-	const String& key_var_name=params.as_string(0, "key-var name must be string");
-	const String& value_var_name=params.as_string(1, "value-var name must be string");
+	const String* key_var_name=&params.as_string(0, "key-var name must be string");
+	const String* value_var_name=&params.as_string(1, "value-var name must be string");
+	Value* body_code=&params.as_junction(2, "body must be code");
+	Value* delim_maybe_code=params.count()>3?params.get(3):0;
+	Value& caller=*r.get_method_frame()->caller();
 
-	Foreach_info info={
-		&r,
-		key_var_name.is_empty()? 0 : &key_var_name,
-		value_var_name.is_empty()? 0 : &value_var_name,
-		&params.as_junction(2, "body must be code"),
-		/*delimiter*/params.count()>3?params.get(3):0,
-		/*var_context*/r.get_method_frame()->caller(),
-		false
-	};
+	if(key_var_name->is_empty()) key_var_name=0;
+	if(value_var_name->is_empty()) value_var_name=0;
 
 	VHash& self=GET_SELF(r, VHash);
 	HashStringValue& hash=self.hash();
-	hash.first_that<Foreach_info*>(one_foreach_cycle, &info);
+
+	if(delim_maybe_code){ // delimiter set
+		bool need_delim=false;;
+		for(HashStringValue::Iterator i(hash); i; i.next()){
+			if(key_var_name){
+				VString* vkey=new VString(*new String(i.key(), String::L_TAINTED));
+				r.put_element(caller, *key_var_name, vkey);
+			}
+
+			if(value_var_name)
+				r.put_element(caller, *value_var_name, i.value());
+
+			StringOrValue sv_processed=r.process(*body_code);
+			Request::Skip lskip=r.get_skip(); r.set_skip(Request::SKIP_NOTHING);
+
+			const String* s_processed=sv_processed.get_string();
+			if(s_processed && !s_processed->is_empty()) { // we have body
+				if(need_delim) // need delim & iteration produced string?
+					r.write_pass_lang(r.process(*delim_maybe_code));
+				else
+					need_delim=true;
+			}
+
+			r.write_pass_lang(sv_processed);
+
+			if(lskip==Request::SKIP_BREAK) 
+				break;
+		}
+	} else {
+		for(HashStringValue::Iterator i(hash); i; i.next()){
+			if(key_var_name){
+				VString* vkey=new VString(*new String(i.key(), String::L_TAINTED));
+				r.put_element(caller, *key_var_name, vkey);
+			}
+
+			if(value_var_name)
+				r.put_element(caller, *value_var_name, i.value());
+
+			r.process_write(*body_code);
+			Request::Skip lskip=r.get_skip(); r.set_skip(Request::SKIP_NOTHING);
+
+			if(lskip==Request::SKIP_BREAK)
+				break;
+		}
+	}
 }
 
 enum AtResultType {
