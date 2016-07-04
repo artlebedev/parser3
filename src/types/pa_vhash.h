@@ -8,7 +8,7 @@
 #ifndef PA_VHASH_H
 #define PA_VHASH_H
 
-#define IDENT_PA_VHASH_H "$Id: pa_vhash.h,v 1.74 2016/05/24 17:48:37 moko Exp $"
+#define IDENT_PA_VHASH_H "$Id: pa_vhash.h,v 1.75 2016/07/04 17:26:23 moko Exp $"
 
 #include "classes.h"
 #include "pa_value.h"
@@ -23,13 +23,8 @@
 
 extern Methoded* hash_class;
 
-// forwards
-
-class VHash_lock;
-
 /// value of type 'hash', implemented with Hash
 class VHash: public VStateless_object {
-	friend class VHash_lock;
 public: // value
 
 	override const char* type() const { return VHASH_TYPE; }
@@ -91,13 +86,7 @@ public: // value
 		if(SYMBOLS_EQ(aname,_DEFAULT_SYMBOL))
 			set_default(avalue);
 		else 
-			if(flocked) {
-				if(!fhash.put_replaced(aname, avalue))
-					throw Exception(PARSER_RUNTIME,
-						&aname,
-						"can not insert new hash key (hash flocked)");
-			} else
-					fhash.put(aname, avalue);
+			fhash.put(aname, avalue);
 
 		return PUT_ELEMENT_REPLACED_ELEMENT;
 	}
@@ -106,54 +95,28 @@ public: // value
 
 public: // usage
 
-	VHash(): flocked(false), _default(0) {}
+	VHash(): _default(0) {}
 
-	VHash(const HashStringValue& source): fhash(source), flocked(false), _default(0) {}
+	VHash(const HashStringValue& source): fhash(source), _default(0) {}
 
 	HashStringValue& hash() { 
-		check_lock();
-		return fhash; 
-	}
-
-	HashStringValue& hash_ro() { 
 		return fhash; 
 	}
 
 	void set_default(Value* adefault) { 
 		_default=adefault;
 	}
+
 	Value* get_default() { 
 		return _default;
 	}
 
 	void extract_default();
 
-	void check_lock() {
-		if(flocked)
-			throw Exception(PARSER_RUNTIME,
-				0,
-				"can not modify hash (flocked)");
-	}
-
 private:
 
 	HashStringValue fhash;
-	bool flocked;
 	Value* _default;
-
-};
-
-class VHash_lock {
-	VHash& fhash;
-	bool saved;
-public:
-	VHash_lock(VHash& ahash): fhash(ahash) {
-		saved=fhash.flocked;
-		fhash.flocked=true;
-	}
-	~VHash_lock() {
-		fhash.flocked=saved;
-	}
 
 };
 

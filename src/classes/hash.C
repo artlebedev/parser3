@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.126 2016/03/31 21:46:19 moko Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.127 2016/07/04 17:26:23 moko Exp $";
 
 // class
 
@@ -198,7 +198,7 @@ static void _create_or_add(Request& r, MethodParams& params) {
 		HashStringValue* self_hash=&(self.hash());
 
 		if(VHash* src=static_cast<VHash*>(vsrc.as(VHASH_TYPE))) {
-			src_hash=&(src->hash_ro());
+			src_hash=&(src->hash());
 
 			if(src_hash==self_hash) // same: doing nothing
 				return;
@@ -384,13 +384,13 @@ static void _keys(Request& r, MethodParams& params) {
 	*columns+=keys_column_name;
 	Table* table=new Table(columns);
 
-	GET_SELF(r, VHash).hash_ro().for_each<Table*>(keys_collector, table);
+	GET_SELF(r, VHash).hash().for_each<Table*>(keys_collector, table);
 
 	r.write_no_lang(*new VTable(table));
 }
 
 static void _count(Request& r, MethodParams&) {
-	r.write_no_lang(*new VInt(GET_SELF(r, VHash).hash_ro().count()));
+	r.write_no_lang(*new VInt(GET_SELF(r, VHash).hash().count()));
 }
 
 static void _delete(Request& r, MethodParams& params) {
@@ -401,7 +401,7 @@ static void _delete(Request& r, MethodParams& params) {
 }
 
 static void _contains(Request& r, MethodParams& params) {
-	bool result=GET_SELF(r, VHash).hash_ro().contains(params.as_string(0, "key must be string"));
+	bool result=GET_SELF(r, VHash).hash().contains(params.as_string(0, "key must be string"));
 	r.write_no_lang(VBool::get(result));
 }
 
@@ -465,8 +465,7 @@ static void _foreach(Request& r, MethodParams& params) {
 	};
 
 	VHash& self=GET_SELF(r, VHash);
-	HashStringValue& hash=self.hash_ro();
-	VHash_lock lock(self);
+	HashStringValue& hash=self.hash();
 	hash.first_that<Foreach_info*>(one_foreach_cycle, &info);
 }
 
@@ -521,9 +520,8 @@ static void _sort(Request& r, MethodParams& params){
 	VMethodFrame* context=r.get_method_frame()->caller();
 
 	VHash& self=GET_SELF(r, VHash);
-	HashStringValue& hash=self.hash_ro();
+	HashStringValue& hash=self.hash();
 	int count=hash.count();
-	VHash_lock lock(self);
 
 	Hash_seq_item* seq=new(PointerFreeGC) Hash_seq_item[count];
 	int pos=0;
@@ -569,7 +567,7 @@ static void _sort(Request& r, MethodParams& params){
 }
 
 static void _at(Request& r, MethodParams& params) {
-	HashStringValue& hash=GET_SELF(r, VHash).hash_ro();
+	HashStringValue& hash=GET_SELF(r, VHash).hash();
 	size_t count=hash.count();
 
 	int pos=0;

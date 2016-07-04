@@ -17,7 +17,7 @@
 #ifndef PA_HASH_H
 #define PA_HASH_H
 
-#define IDENT_PA_HASH_H "$Id: pa_hash.h,v 1.94 2015/10/26 01:21:55 moko Exp $"
+#define IDENT_PA_HASH_H "$Id: pa_hash.h,v 1.95 2016/07/04 17:26:23 moko Exp $"
 
 #include "pa_memory.h"
 #include "pa_types.h"
@@ -210,7 +210,6 @@ public:
 				else
 					last=pair->prev;
 #endif
-				delete pair;
 				*ref=next;
 				--fpairs_count;
 				return true;
@@ -505,7 +504,6 @@ public:
 				else
 					this->last=pair->prev;
 #endif
-				delete pair;
 				*ref=next;
 				--this->fpairs_count;
 				return true;
