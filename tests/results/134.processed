@@ -1,3 +1,46 @@
 Content-Type: text/html
-Content-Length: 0
+Content-Length: 342
 
+Update current:
+a -> 1
+b -> 2
+c -> 3
+{
+	"a":"-",
+	"b":"2",
+	"c":"3"
+}
+Insert:
+a -> 1
+b -> 2
+c -> 3
+d -> 4
+{
+	"a":"1",
+	"b":"2",
+	"c":"3",
+	"d":"4"
+}
+Delete current:
+a -> 1
+b -> 2
+c -> 3
+{
+	"b":"2",
+	"c":"3"
+}
+Delete before current:
+a -> 1
+delete: b -> 2
+c -> 3
+{
+	"b":"2",
+	"c":"3"
+}
+Delete after current:
+a -> 1
+c -> 3
+{
+	"a":"1",
+	"c":"3"
+}
