@@ -1,20 +1,43 @@
 @main[]
-^try{	
-	^mustfail[]
-}{
-	^if($exception.type eq parser.runtime){
-		failed, that's OK
-		$exception.handled(1)
+
+Update current:
+^action{
+	$hash.a[-]
+}
+
+Insert:
+^action{
+	$hash.d[4]
+}
+
+Delete current:
+^action{
+	^hash.delete[a]
+}
+
+Delete before current:
+^action{
+	^if($key eq 'b'){
+		delete: ^hash.delete[a]
 	}
 }
 
-@mustfail[]
+Delete after current:
+^action{
+	^hash.delete[b]
+}
+
+@action[code]
+
 $hash[
 	$.a[1]
 	$.b[2]
+	$.c[3]
 ]
-^hash.foreach[key;value]{
-	$hash.c[1]
-#	$hash.a[1]
-}	
 
+^hash.foreach[key;value]{
+	$code
+	$key -> $value
+}
+
+^json:string[$hash; $.indent(true) ]

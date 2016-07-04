@@ -1,17 +1,20 @@
 Content-Type: text/html
-Content-Length: 311
+Content-Length: 175
 
 non-blocking hash operations:
 1
 key=>value
 value
-blocking hash operations:
-Type: parser.runtime,
-Source: sub,
-Comment: can not modify hash (flocked)
-Type: parser.runtime,
-Source: k,
-Comment: can not insert new hash key (hash flocked)
-Type: parser.runtime,
-Source: delete,
-Comment: can not modify hash (flocked)
+hash no longer hash blocking operations:
+{
+"key":"value",
+"k":"v",
+"k2":"v2"
+}
+{
+"key":"value",
+"k2":"v2"
+}
+{
+"key":"value"
+} 

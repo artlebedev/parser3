@@ -13,9 +13,15 @@ $b[^h.contains[key]]
 ^h.foreach[k;v]{$k=>$v}
 ^h._at(0)
 
-blocking hash operations:
+hash no longer hash blocking operations:
+
+$h.k[v]
+$h.k2[v2]
+^json:string[$h]
 
 $h2[ $.k[v] ]
-^try-catch{ ^h2.sub[$h] }
-^try-catch{ $h.k[v] }
-^try-catch{ ^h.delete[k] }
+^h.sub[$h2]
+^json:string[$h]
+
+^h.delete[k2]
+^json:string[$h]
