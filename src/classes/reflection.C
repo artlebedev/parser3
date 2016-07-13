@@ -9,7 +9,7 @@
 #include "pa_request.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.42 2016/05/24 15:42:43 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.43 2016/07/13 15:03:51 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -193,7 +193,7 @@ static void _def(Request& r, MethodParams& params) {
 	const String& type=params.as_string(0, "type must be string");
 	if(type == def_class) {
 		const String& name=params.as_string(1, "name must be string");
-		r.write_no_lang(VBool::get(r.get_class(name)!=0));
+		r.write_no_lang(VBool::get(r.classes().get(name)!=0));
 	} else {
 		throw Exception(PARSER_RUNTIME, &type, "is invalid type, must be '%s'", def_class.cstr());
 	}
