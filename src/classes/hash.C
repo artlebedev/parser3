@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.128 2016/07/04 21:40:00 moko Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.129 2016/07/14 17:06:30 moko Exp $";
 
 // class
 
@@ -204,8 +204,7 @@ static void _create_or_add(Request& r, MethodParams& params) {
 				return;
 
 			if(Value* vdefault=src->get_default())
-				if(vdefault->is_defined())
-					self.set_default(vdefault);
+				self.set_default(vdefault);
 		} else {
 			src_hash=vsrc.get_hash();
 		}
@@ -401,7 +400,9 @@ static void _delete(Request& r, MethodParams& params) {
 }
 
 static void _contains(Request& r, MethodParams& params) {
-	bool result=GET_SELF(r, VHash).hash().contains(params.as_string(0, "key must be string"));
+	VHash& self=GET_SELF(r, VHash);
+	const String& key_name=params.as_string(0, "key must be string");
+	bool result=SYMBOLS_EQ(key_name,_DEFAULT_SYMBOL) ? (self.get_default() != 0) : self.hash().contains(key_name);
 	r.write_no_lang(VBool::get(result));
 }
 
