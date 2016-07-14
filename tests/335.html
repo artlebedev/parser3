@@ -1,0 +1,12 @@
+@main[]
+^test[ $.k[v] ]
+$h[ $.k[v] $._default[z] ]
+^test[$h]
+^test[^hash::create[$h]]
+
+$h[ $.k[v] $._default[] ]
+^test[$h]
+^test[^hash::create[$h]]
+
+@test[h]
+^if(^h.contains[_default]){default is '$h._default' ('$h.anything') }{no default}
