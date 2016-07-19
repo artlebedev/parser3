@@ -1,5 +1,5 @@
 @main[]
 $list[^reflection:classes[]]
 ^list.sort[name;]{$name}
-^list.foreach[name;]{ $class[^reflection:class_by_name[$name]] $name $class.CLASS_NAME (^reflection:base_name[$class])
+^list.foreach[name;type]{ $class[^reflection:class_by_name[$name]] $name $type $class.CLASS_NAME (^reflection:base_name[$class])
 }
