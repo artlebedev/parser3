@@ -1,0 +1,107 @@
+@main[]
+
+$a[^A::create[]]
+$b[^B::create[]]
+
+Testing old implementation bugs:
+
+ok: ^MAIN:a.test[]
+ok: ^b.ok[$a]
+bug1: ^b.bug1[$a]
+bug2: ^b.bug2[]
+bug3: ^b.bug3[]
+
+Testing new implementation:
+
+Dynamic properties:
+^b.test_property[]
+
+Static class properties:
+^B:test_property[]
+
+Misc:
+^b.test_implementation[]
+
+
+@CLASS
+A
+
+@create[]
+$valueA[value]
+
+@test[]
+self: $self.CLASS_NAME, ^if(^reflection:dynamical[]){dynamical}{static}
+
+@GET_property[]
+Get A property: '$valueA', self $self.CLASS_NAME, ^if(^reflection:dynamical[]){dynamical}{static}
+
+@SET_property[v]
+$MAIN:log[Set A property: '$v', self $self.CLASS_NAME, ^if(^reflection:dynamical[]){dynamical}{static}]
+$valueA[$v]
+
+
+@CLASS
+B
+
+@BASE
+A
+
+@create[]
+^BASE:create[]
+$valueB[anotherValue]
+$valueC[dynamic]
+
+@ok[a]
+^a.test[]
+
+@bug1[a]
+$A:whatever ^a.test[]
+
+@bug2[]
+^MAIN:a.test[]
+
+@bug3[]
+$t[test] ^A:$t[]
+
+
+@GET_property[]
+Get B property: '$valueB', self $self.CLASS_NAME, ^if(^reflection:dynamical[]){dynamical}{static}
+
+@SET_property[v]
+$MAIN:log[Set B property: '$v', self $self.CLASS_NAME, ^if(^reflection:dynamical[]){dynamical}{static}]
+$valueB[$v]
+
+
+@test_property[]
+$property
+$property[-]
+$MAIN:log
+
+$B:property
+$B:property[ups]
+$MAIN:log
+
+$A:property
+$A:property[-]
+$MAIN:log
+
+$BASE:property
+$BASE:property[-]
+$MAIN:log
+
+
+@dump[o]
+class: $o.CLASS_NAME
+content: ^json:string[$o; $.indent(true) ]
+
+@test_implementation[]
+B:CLASS: ^dump[$B:CLASS] - before
+B::create: ^dump[^B::create[]] - no valueA and valueB as they are now class B properties
+B:CLASS: ^dump[$B:CLASS] - after
+
+testing constructor:
+A::create: ^dump[^A::create[]]
+A:CLASS: ^dump[$A:CLASS]
+
+A:CLASS_NAME: $A:CLASS_NAME
+B:CLASS_NAME: $B:CLASS_NAME

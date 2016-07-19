@@ -1,0 +1,52 @@
+Content-Type: text/html
+Content-Length: 1244
+
+Testing old implementation bugs:
+ok: self: A, dynamical
+ok: self: A, dynamical
+bug1: self: A, dynamical
+bug2: self: A, dynamical
+bug3: self: B, dynamical
+Testing new implementation:
+Dynamic properties:
+Get B property: 'anotherValue', self B, dynamical
+Set B property: '-', self B, dynamical
+Get B property: '', self B, static
+Set B property: 'ups', self B, static
+Get A property: 'value', self B, dynamical
+Set A property: '-', self B, dynamical
+Get A property: '-', self B, dynamical
+Set A property: '-', self B, dynamical
+Static class properties:
+Get B property: 'ups', self B, static
+Set B property: '-', self B, static
+Get B property: '-', self B, static
+Set B property: 'ups', self B, static
+Get A property: '', self B, static
+Set A property: '-', self B, static
+Get A property: '-', self B, static
+Set A property: '-', self B, static
+Misc:
+B:CLASS: class: B
+content: {
+	"valueB":"ups",
+	"valueA":"-"
+} - before
+B::create: class: B
+content: {
+	"valueC":"dynamic"
+} - no valueA and valueB as they are now class B properties
+B:CLASS: class: B
+content: {
+	"valueB":"anotherValue",
+	"valueA":"value"
+} - after
+testing constructor:
+A::create: class: A
+content: {
+	"valueA":"value"
+}
+A:CLASS: class: A
+content: {}
+A:CLASS_NAME: A
+B:CLASS_NAME: B
