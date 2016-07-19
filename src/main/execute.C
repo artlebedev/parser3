@@ -21,7 +21,7 @@
 #include "pa_vimage.h"
 #include "pa_wwrapper.h"
 
-volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.382 2016/05/24 16:38:40 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
+volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.383 2016/07/19 16:35:36 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
 
 //#define DEBUG_EXECUTE
 
@@ -185,6 +185,7 @@ void debug_dump(SAPI_Info& sapi_info, int level, ArrayOperation& ops) {
 			opcode==OP::OP_VALUE
 			|| opcode==OP::OP_STRING__WRITE
 			|| opcode==OP::OP_VALUE__GET_CLASS
+			|| opcode==OP::OP_VALUE__GET_BASE_CLASS
 #ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
 			|| opcode==OP::OP_VALUE__GET_ELEMENT
 			|| opcode==OP::OP_VALUE__GET_ELEMENT__WRITE
@@ -280,8 +281,22 @@ void Request::execute(ArrayOperation& ops) {
 			}
 		case OP::OP_VALUE__GET_CLASS:
 			{
-				// maybe they do ^class:method[] call, remember the fact
-				wcontext->set_somebody_entered_some_class();
+				debug_origin=i.next().origin;
+				const String& name=*i.next().value->get_string(); debug_name=&name;
+
+				DEBUG_PRINT_STRING(name)
+
+				Value* class_value=get_class(name);
+				if(!class_value)
+					throw Exception(PARSER_RUNTIME, &name, "class is undefined"); 
+
+				stack.push(*class_value);
+				break;
+			}
+
+		case OP::OP_VALUE__GET_BASE_CLASS:
+			{
+				// ^class:method[] call
 
 				debug_origin=i.next().origin;
 				const String& name=*i.next().value->get_string(); debug_name=&name;
@@ -290,11 +305,9 @@ void Request::execute(ArrayOperation& ops) {
 
 				Value* class_value=get_class(name);
 				if(!class_value)
-					throw Exception(PARSER_RUNTIME,
-						&name,
-						"class is undefined"); 
+					throw Exception(PARSER_RUNTIME, &name, "class is undefined"); 
 
-				stack.push(*class_value);
+				stack.push(*new VBaseClassWrapper(*class_value->get_class(), get_self()));
 				break;
 			}
 
@@ -1331,28 +1344,16 @@ void Request::op_call_write(VMethodFrame& frame){
 }
 
 Value& Request::get_element(Value& ncontext, const String& name) {
-#ifdef FEATURE_GET_ELEMENT4CALL
 	Value* value=ncontext.get_element(name);
 	return *(value ? &process_to_value(*value) : VVoid::get());
 }
 
+#ifdef FEATURE_GET_ELEMENT4CALL
 Value& Request::get_element4call(Value& ncontext, const String& name) {
-#endif
-	if(wcontext->get_somebody_entered_some_class()) // ^class:method
-		if(VStateless_class *called_class=ncontext.get_class())
-			if(VStateless_class *read_class=rcontext->get_class())
-				if(read_class->derived_from(*called_class)){ // current derived from called
-					Value *value=called_class->get_element(get_self(), name);
-					return *(value ? &process_to_value(*value) : VVoid::get());
-				}
-
-#ifdef FEATURE_GET_ELEMENT4CALL
 	Value* value=ncontext.get_element4call(name);
-#else
-	Value* value=ncontext.get_element(name);
-#endif
 	return *(value ? &process_to_value(*value) : VVoid::get());
 }
+#endif
 
 void Request::put_element(Value& ncontext, const String& name, Value* value) {
 	// put_element can return property-setting-junction
@@ -1640,6 +1641,7 @@ const String* Request::get_method_filename(const Method* method){
 					case OP::OP_VALUE:
 					case OP::OP_STRING__WRITE:
 					case OP::OP_VALUE__GET_CLASS:
+					case OP::OP_VALUE__GET_BASE_CLASS:
 #ifdef OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT
 					case OP::OP_GET_OBJECT_ELEMENT:
 					case OP::OP_GET_OBJECT_ELEMENT__WRITE:

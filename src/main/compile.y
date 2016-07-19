@@ -8,7 +8,7 @@
 	
 */
 
-volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.281 2016/05/25 11:35:15 moko Exp $";
+volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.282 2016/07/19 16:35:35 moko Exp $";
 
 /**
 	@todo parser4: 
@@ -540,7 +540,7 @@ store_params EON { /* ^field.$method{vasya} */
 			YYSTYPE var_code=$3;
 			if(
 				var_code->count()==8
-				&& (*var_code)[0].code==OP::OP_VALUE__GET_CLASS
+				&& ( (*var_code)[0].code==OP::OP_VALUE__GET_CLASS || (*var_code)[0].code==OP::OP_VALUE__GET_BASE_CLASS )
 				&& (*var_code)[3].code==OP::OP_PREPARE_TO_CONSTRUCT_OBJECT
 				&& (*var_code)[4].code==OP::OP_VALUE
 #ifdef FEATURE_GET_ELEMENT4CALL
@@ -712,6 +712,7 @@ class_prefix:
 ;
 class_static_prefix: STRING ':' {
 	$$=$1; // stack: class name string
+	OP::OPCODE code = OP::OP_VALUE__GET_CLASS;
 	if(*LA2S(*$$) == BASE_NAME) { // pseudo BASE class
 		if(VStateless_class* base=PC.cclass->base_class()) {
 			change_string_literal_value(*$$, *new String(base->type()));
@@ -719,9 +720,14 @@ class_static_prefix: STRING ':' {
 			strcpy(PC.error, "no base class declared");
 			YYERROR;
 		}
+		code = OP::OP_VALUE__GET_BASE_CLASS;
+	} else {
+		Value *base=PC.request.get_class(*LA2S(*$$));
+		if(base && PC.cclass->derived_from(*base->get_class()))
+			code = OP::OP_VALUE__GET_BASE_CLASS;
 	}
 	// optimized OP_VALUE+origin+string+OP_GET_CLASS => OP_VALUE__GET_CLASS+origin+string
-	change_first(*$$, OP::OP_VALUE, OP::OP_VALUE__GET_CLASS);
+	change_first(*$$, OP::OP_VALUE, code);
 };
 class_constructor_prefix: class_static_prefix ':' {
 	$$=$1;

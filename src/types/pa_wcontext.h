@@ -8,7 +8,7 @@
 #ifndef PA_WCONTEXT_H
 #define PA_WCONTEXT_H
 
-#define IDENT_PA_WCONTEXT_H "$Id: pa_wcontext.h,v 1.60 2015/10/26 01:22:03 moko Exp $"
+#define IDENT_PA_WCONTEXT_H "$Id: pa_wcontext.h,v 1.61 2016/07/19 16:35:36 moko Exp $"
 
 #include "pa_value.h"
 #include "pa_vstring.h"
@@ -108,9 +108,6 @@ public: // usage
 
 	void set_in_expression(bool ain_expression) { in_expression=ain_expression; }
 	bool get_in_expression() { return in_expression; }
-
-	void set_somebody_entered_some_class() { entered_class=true; }
-	bool get_somebody_entered_some_class() { bool result=entered_class; entered_class=0; return result; }
 
 private:
 

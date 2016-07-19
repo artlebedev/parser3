@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
-#define IDENT_PA_VSTATELESS_CLASS_H "$Id: pa_vstateless_class.h,v 1.84 2016/05/24 16:38:40 moko Exp $"
+#define IDENT_PA_VSTATELESS_CLASS_H "$Id: pa_vstateless_class.h,v 1.85 2016/07/19 16:35:36 moko Exp $"
 
 // include
 
@@ -183,6 +183,27 @@ public:
 	~Temp_method() { 
 		fclass.set_method(fname, saved_method);
 	}
+};
+
+
+class VBaseClassWrapper: public Value {
+
+	VStateless_class& fclass;
+	Value& fself;
+
+public: // Value
+	
+	override const char* type() const { return fclass.type(); }
+	override VStateless_class* get_class() { return &fclass; }
+	override VStateless_class* base() { return fclass.base(); }
+
+	override Value* get_element(const String& aname) { return fclass.get_element(fself, aname); }
+	override const VJunction* put_element(const String& aname, Value* avalue) { return fclass.put_element(fself, aname, avalue); }
+	override Value& as_expr_result(){ return fclass.as_expr_result(); }
+
+public: // usage
+
+	VBaseClassWrapper(VStateless_class& aclass, Value& aself): fclass(aclass), fself(aself) {};
 };
 
 #endif
