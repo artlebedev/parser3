@@ -1,0 +1,34 @@
+@main[]
+$o[^A::create[]]
+
+$h[^reflection:fields_reference[$o]]
+
+^try-catch{$h[^reflection:fields_reference{$o}]}
+^try-catch{$h[^reflection:fields_reference[$A]]}
+
+$h.f2[v2]
+$h._default[def]
+$o.f3[v3]
+object:
+^json:string[$o;$.indent(true)]
+reference:
+^json:string[$h;$.indent(true)]
+
+object-fields:
+^json:string[^reflection:fields[$o];$.indent(true)]
+
+class: $h.CLASS_NAME
+default: $h._default
+non-existing: $h.404
+method: ^h.count[]
+
+^h.sub[$o]
+^json:string[$o;$.indent(true)]
+^json:string[$h;$.indent(true)]
+
+
+@CLASS
+A
+
+@create[]
+$f1[v1]

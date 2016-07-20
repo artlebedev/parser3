@@ -1,0 +1,35 @@
+Content-Type: text/html
+Content-Length: 463
+
+Type: parser.runtime,
+Source: fields_reference,
+Comment: param must be object or hash, not junction (parameter #1)
+Type: parser.runtime,
+Source: fields_reference,
+Comment: param must be object or hash
+object:
+{
+	"f1":"v1",
+	"f2":"v2",
+	"_default":"def",
+	"f3":"v3"
+}
+reference:
+{
+	"f1":"v1",
+	"f2":"v2",
+	"_default":"def",
+	"f3":"v3"
+}
+object-fields:
+{
+	"f1":"v1",
+	"f2":"v2",
+	"_default":"def",
+	"f3":"v3"
+}
+class: hash
+default: def
+non-existing: method: 4
+{}
+{}
