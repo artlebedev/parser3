@@ -32,7 +32,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.354 2016/04/06 16:08:20 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.355 2016/07/20 16:36:49 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -198,8 +198,8 @@ Request::~Request() {
 
 Value& Request::get_self() { return method_frame/*always have!*/->self(); }
 
-Value* Request::get_class(const String& name){
-	Value* result=classes().get(name);
+VStateless_class* Request::get_class(const String& name){
+	VStateless_class* result=classes().get(name);
 	if(!result)
 		if(Value* value=main_class.get_element(autouse_method_name))
 			if(Junction* junction=value->get_junction())

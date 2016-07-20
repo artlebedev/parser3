@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.223 2016/04/04 21:28:11 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.224 2016/07/20 16:36:48 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -112,7 +112,7 @@ private:
 	///@{ core data
 
 	/// classes
-	HashString<Value*> fclasses;
+	HashString<VStateless_class*> fclasses;
 
 	/// already used files to avoid cyclic uses
 	HashString<bool> used_files;
@@ -180,9 +180,9 @@ public:
 	~Request();
 
 	/// global classes
-	HashString<Value*>& classes() { return fclasses; }
-	Value* get_class(const String& name);
-	void put_class(Value *aclass){ classes().put(aclass->type(), aclass); }
+	HashString<VStateless_class*>& classes() { return fclasses; }
+	VStateless_class* get_class(const String& name);
+	void put_class(VStateless_class *aclass){ classes().put(aclass->type(), aclass); }
 
 	/**
 		core request processing

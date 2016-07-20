@@ -8,7 +8,7 @@
 	
 */
 
-volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.282 2016/07/19 16:35:35 moko Exp $";
+volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.283 2016/07/20 16:36:49 moko Exp $";
 
 /**
 	@todo parser4: 
@@ -193,18 +193,13 @@ control_method: '@' STRING '\n'
 		}
 		if(strings_code->count()==1*OPERATIONS_PER_OPVALUE) {
 			const String& base_name=LA2S(*strings_code)->trim(String::TRIM_END);
-			if(Value* base_class_value=PC.request.get_class(base_name)) {
+			if(VStateless_class *base_class=PC.request.get_class(base_name)) {
 				// @CLASS == @BASE sanity check
-				if(VStateless_class *base_class=base_class_value->get_class()) {
-					if(PC.cclass==base_class) {
-						strcpy(PC.error, "@" CLASS_NAME " equals @" BASE_NAME);
-						YYERROR;
-					}
-					PC.cclass->get_class()->set_base(base_class);
-				} else { // they asked to derive from a class without methods ['env' & co]
-					PC_ERROR("'", base_name.cstr(), "': you can not derive from this class in @" BASE_NAME);
+				if(PC.cclass==base_class) {
+					strcpy(PC.error, "@" CLASS_NAME " equals @" BASE_NAME);
 					YYERROR;
 				}
+				PC.cclass->get_class()->set_base(base_class);
 			} else {
 				PC_ERROR("'", base_name.cstr(), "': undefined class in @" BASE_NAME);
 				YYERROR;
@@ -722,8 +717,9 @@ class_static_prefix: STRING ':' {
 		}
 		code = OP::OP_VALUE__GET_BASE_CLASS;
 	} else {
-		Value *base=PC.request.get_class(*LA2S(*$$));
-		if(base && PC.cclass->derived_from(*base->get_class()))
+		// can't use get_class because it will call @autouse[] if the class wasn't loaded
+		VStateless_class* base=PC.request.classes().get(*LA2S(*$$));
+		if(base && PC.cclass->derived_from(*base))
 			code = OP::OP_VALUE__GET_BASE_CLASS;
 	}
 	// optimized OP_VALUE+origin+string+OP_GET_CLASS => OP_VALUE__GET_CLASS+origin+string

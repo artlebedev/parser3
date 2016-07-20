@@ -9,7 +9,7 @@
 #include "pa_request.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.45 2016/07/20 14:51:16 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.47 2016/07/20 16:36:48 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -109,22 +109,11 @@ static void _create(Request& r, MethodParams& params) {
 }
 
 
-static void store_vlass_info(
-		HashStringValue::key_type key, 
-		HashStringValue::value_type value,
-		HashStringValue* result
-){
-	Value* v;
-	if(value->get_class())
-		v=new VString(class_type_methoded);
-	else
-		v=VVoid::get();
-	result->put(key, v);
-}
-
 static void _classes(Request& r, MethodParams&) {
 	VHash& result=*new VHash;
-	r.classes().for_each(store_vlass_info, result.get_hash());
+	for(HashString<VStateless_class*>::Iterator i(r.classes()); i; i.next()){
+		result.hash().put(i.key(), i.value()->get_methods().count()>0 ? new VString(class_type_methoded) : VVoid::get() );
+	}
 	r.write_no_lang(result);
 }
 
@@ -193,6 +182,7 @@ static void _def(Request& r, MethodParams& params) {
 	const String& type=params.as_string(0, "type must be string");
 	if(type == def_class) {
 		const String& name=params.as_string(1, "name must be string");
+		// can't use get_class because it will call @autouse[] if the class wasn't loaded
 		r.write_no_lang(VBool::get(r.classes().get(name)!=0));
 	} else {
 		throw Exception(PARSER_RUNTIME, &type, "is invalid type, must be '%s'", def_class.cstr());
@@ -239,12 +229,12 @@ static void _fields(Request& r, MethodParams& params) {
 }
 
 static void _fields_reference(Request& r, MethodParams& params) {
-	Value& o=params.as_no_junction(0, "param must be object or class, not junction");
+	Value& o=params.as_no_junction(0, "param must be object or hash, not junction");
 
 	if(HashStringValue* fields=o.get_fields_reference())
 		r.write_no_lang(*new VHashReference(*fields));
 	else
-		throw Exception(PARSER_RUNTIME, 0, "param must be object or class");
+		throw Exception(PARSER_RUNTIME, 0, "param must be object or hash");
 }
 
 static void _field(Request& r, MethodParams& params) {

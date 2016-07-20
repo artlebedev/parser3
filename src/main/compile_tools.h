@@ -8,7 +8,7 @@
 #ifndef COMPILE_TOOLS
 #define COMPILE_TOOLS
 
-#define IDENT_COMPILE_TOOLS_H "$Id: compile_tools.h,v 1.111 2016/05/24 15:42:43 moko Exp $"
+#define IDENT_COMPILE_TOOLS_H "$Id: compile_tools.h,v 1.112 2016/07/20 16:36:49 moko Exp $"
 
 #include "pa_opcode.h"
 #include "pa_types.h"
@@ -136,10 +136,9 @@ public:
 
 	VStateless_class* get_existed_class(VStateless_class* aclass){
 		// checking existence of the class during processing @OPTIONS\npartial
-		// method should't use get_class because the last one will call operator @autouse[] if the class wasn't loaded
+		// can't use get_class because it will call @autouse[] if the class wasn't loaded
 		if(aclass)
-			if(Value* class_value=request.classes().get(aclass->type()))
-				return class_value->get_class();
+			return request.classes().get(aclass->type());
 		return 0;
 	}
 
