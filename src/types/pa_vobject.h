@@ -8,7 +8,7 @@
 #ifndef PA_VOBJECT_H
 #define PA_VOBJECT_H
 
-#define IDENT_PA_VOBJECT_H "$Id: pa_vobject.h,v 1.65 2016/04/01 16:27:32 moko Exp $"
+#define IDENT_PA_VOBJECT_H "$Id: pa_vobject.h,v 1.66 2016/07/20 13:57:04 moko Exp $"
 
 // includes
 
@@ -55,6 +55,7 @@ public: // Value
 	override HashStringValue* get_hash();
 	override Table *get_table();
 	override HashStringValue* get_fields() { return &ffields; }
+	override HashStringValue* get_fields_reference() { return &ffields; }
 
 	override Value* get_element(const String& aname);
 	override const VJunction* put_element(const String& name, Value* value);

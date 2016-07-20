@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.158 2015/10/26 01:22:00 moko Exp $"
+#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.159 2016/07/20 13:57:04 moko Exp $"
 
 #include "pa_common.h"
 #include "pa_array.h"
@@ -151,6 +151,7 @@ public: // Value
 	const String* default_method_2_json_string(Value& default_method, Json_options& options);
 
 	virtual HashStringValue* get_fields() { return 0; }
+	virtual HashStringValue* get_fields_reference() { return 0; }
 	
 	/// extract double
 	virtual double as_double() const { bark("is '%s', it does not have numerical (double) value"); return 0; }

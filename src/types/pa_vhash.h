@@ -8,7 +8,7 @@
 #ifndef PA_VHASH_H
 #define PA_VHASH_H
 
-#define IDENT_PA_VHASH_H "$Id: pa_vhash.h,v 1.75 2016/07/04 17:26:23 moko Exp $"
+#define IDENT_PA_VHASH_H "$Id: pa_vhash.h,v 1.76 2016/07/20 13:57:04 moko Exp $"
 
 #include "classes.h"
 #include "pa_value.h"
@@ -23,31 +23,38 @@
 
 extern Methoded* hash_class;
 
-/// value of type 'hash', implemented with Hash
-class VHash: public VStateless_object {
+class VHashBase: public VStateless_object {
 public: // value
 
 	override const char* type() const { return VHASH_TYPE; }
 	override VStateless_class *get_class() { return hash_class; }
 
-	/// VHash: finteger
-	override int as_int() const { return fhash.count(); }
-	/// VHash: finteger
-	override double as_double() const { return fhash.count(); }
-	/// VHash: count!=0
-	override bool is_defined() const { return fhash.count()!=0; }
-	/// VHash: count!=0
-	override bool as_bool() const { return fhash.count()!=0; }
+public: // usage
+
+	virtual HashStringValue& hash()=0;
+	virtual void set_default(Value* adefault)=0;
+	virtual Value* get_default()=0;
+};
+
+
+/// value of type 'hash', implemented with Hash
+class VHash: public VHashBase {
+public: // value
+
 	/// VHash: count
-	override Value& as_expr_result() { return *new VInt(as_int()); }
+	override int as_int() const { return fhash.count(); }
+	override double as_double() const { return fhash.count(); }
+	override bool is_defined() const { return fhash.count()!=0; }
+	override bool as_bool() const { return fhash.count()!=0; }
+	override Value& as_expr_result() { return *new VInt(fhash.count()); }
 
 	/// VHash: fhash
-	override HashStringValue *get_hash() { return &hash(); }
-
+	override HashStringValue *get_hash() { return &fhash; }
 	override HashStringValue* get_fields() { return &fhash; }
+	override HashStringValue* get_fields_reference() { return &fhash; }
 
 	/// VHash: (key)=value
-	override Value* get_element(const String& aname) { 
+	override Value* get_element(const String& aname) {
 		// $element first
 		if(Value* result=fhash.get(aname))
 			return result;
@@ -99,17 +106,9 @@ public: // usage
 
 	VHash(const HashStringValue& source): fhash(source), _default(0) {}
 
-	HashStringValue& hash() { 
-		return fhash; 
-	}
-
-	void set_default(Value* adefault) { 
-		_default=adefault;
-	}
-
-	Value* get_default() { 
-		return _default;
-	}
+	override HashStringValue& hash() { return fhash; }
+	override void set_default(Value* adefault) { _default=adefault; }
+	override Value* get_default() { return _default; }
 
 	void extract_default();
 
@@ -118,6 +117,73 @@ private:
 	HashStringValue fhash;
 	Value* _default;
 
+};
+
+/// value of type 'hash', implemented with Hash reference
+class VHashReference: public VHashBase {
+public: // value
+
+	/// VHash: count
+	override int as_int() const { return fhash->count(); }
+	override double as_double() const { return fhash->count(); }
+	override bool is_defined() const { return fhash->count()!=0; }
+	override bool as_bool() const { return fhash->count()!=0; }
+	override Value& as_expr_result() { return *new VInt(fhash->count()); }
+
+	/// VHash: fhash
+	override HashStringValue *get_hash() { return fhash; }
+	override HashStringValue* get_fields() { return fhash; }
+
+	/// VHash: (key)=value
+	override Value* get_element(const String& aname) { 
+		// $element first
+		if(Value* result=fhash->get(aname))
+			return result;
+
+		// $fields -- pseudo field to make 'hash' more like 'table'
+		if(SYMBOLS_EQ(aname,FIELDS_SYMBOL))
+			return this;
+
+#if !defined(FEATURE_GET_ELEMENT4CALL) || !defined(OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL)
+		// $method, CLASS, CLASS_NAME
+		if(Value* result=VStateless_object::get_element(aname))
+			return result;
+#endif
+
+		return 0;
+	}
+	
+#ifdef FEATURE_GET_ELEMENT4CALL
+	override Value* get_element4call(const String& aname) {
+		// $method first
+		if(Value* result=VStateless_object::get_element(aname))
+			return result;
+
+		// $element
+		if(Value* result=fhash->get(aname))
+			return result;
+
+		return 0;
+	}
+#endif
+	
+	/// VHash: (key)=value
+	override const VJunction* put_element(const String& aname, Value* avalue) {
+		fhash->put(aname, avalue);
+		return PUT_ELEMENT_REPLACED_ELEMENT;
+	}
+
+public: // usage
+
+	VHashReference(HashStringValue& source): fhash(&source) {}
+
+	override HashStringValue& hash() { return *fhash; }
+	override void set_default(Value* adefault) { }
+	override Value* get_default() { return 0; }
+
+private:
+
+	HashStringValue *fhash;
 };
 
 #endif

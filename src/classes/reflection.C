@@ -9,7 +9,7 @@
 #include "pa_request.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.43 2016/07/13 15:03:51 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.44 2016/07/20 13:57:04 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -232,11 +232,19 @@ static void _method(Request& r, MethodParams& params) {
 static void _fields(Request& r, MethodParams& params) {
 	Value& o=params.as_no_junction(0, "param must be object or class, not junction");
 
-	if(HashStringValue* fields=o.get_fields()) {
-		VHash& result=*new VHash(*fields);
-		r.write_no_lang(result);
-	} else
+	if(HashStringValue* fields=o.get_fields())
+		r.write_no_lang(*new VHash(*fields));
+	else
 		r.write_no_lang(*new VHash());
+}
+
+static void _fields_reference(Request& r, MethodParams& params) {
+	Value& o=params.as_no_junction(0, "param must be object or class, not junction");
+
+	if(HashStringValue* fields=o.get_fields())
+		r.write_no_lang(*new VHashReference(*fields));
+	else
+		throw Exception(PARSER_RUNTIME, 0, "param must be object or class");
 }
 
 static void _field(Request& r, MethodParams& params) {
@@ -252,23 +260,16 @@ static void _method_info(Request& r, MethodParams& params) {
 	const String& class_name=params.as_string(0, "class_name must be string");
 	Value* class_value=r.get_class(class_name);
 	if(!class_value)
-		throw Exception(PARSER_RUNTIME,
-			&class_name,
-			"class is undefined");
+		throw Exception(PARSER_RUNTIME, &class_name, "class is undefined");
 
 	VStateless_class* lclass=class_value->get_class();
 	if(!lclass)
-		throw Exception(PARSER_RUNTIME,
-			&class_name,
-			"class does not have methods");
+		throw Exception(PARSER_RUNTIME, &class_name, "class does not have methods");
 
 	const String& method_name=params.as_string(1, "method_name must be string");
 	Method* method=lclass->get_method(method_name);
 	if(!method)
-		throw Exception(PARSER_RUNTIME,
-			&method_name,
-			"method not found in class %s",
-			class_name.cstr());
+		throw Exception(PARSER_RUNTIME, &method_name, "method not found in class %s", class_name.cstr());
 
 	VHash& result=*new VHash;
 	HashStringValue* hash=result.get_hash();
@@ -348,7 +349,7 @@ static void _is(Request& r, MethodParams& params) {
 static void _copy(Request& r, MethodParams& params) {
 	HashStringValue* src=params.as_no_junction(0, "source must not be code").get_hash();
 
-	if(src==NULL) 
+	if(src==NULL)
 		throw Exception(PARSER_RUNTIME, 0, "source must have hash representation");
 
 	Value& dst=params.as_no_junction(1, "destination must not be code");
@@ -411,6 +412,9 @@ MReflection::MReflection(): Methoded("reflection") {
 
 	// ^reflection:fields[object or class]
 	add_native_method("fields", Method::CT_STATIC, _fields, 1, 1);
+
+	// ^reflection:fields_reference[object]
+	add_native_method("fields_reference", Method::CT_STATIC, _fields_reference, 1, 1);
 
 	// ^reflection:field[object or class;field_name]
 	add_native_method("field", Method::CT_STATIC, _field, 2, 2);

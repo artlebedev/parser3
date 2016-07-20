@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.129 2016/07/14 17:06:30 moko Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.130 2016/07/20 13:57:04 moko Exp $";
 
 // class
 
@@ -193,11 +193,11 @@ VBool Hash_sql_event_handlers::only_one_column_value(true);
 static void _create_or_add(Request& r, MethodParams& params) {
 	if(params.count()) {
 		Value& vsrc=params.as_no_junction(0, PARAM_MUST_BE_HASH);
-		VHash& self=GET_SELF(r, VHash);
-		HashStringValue* src_hash;
+		VHashBase& self=GET_SELF(r, VHashBase);
 		HashStringValue* self_hash=&(self.hash());
+		HashStringValue* src_hash;
 
-		if(VHash* src=static_cast<VHash*>(vsrc.as(VHASH_TYPE))) {
+		if(VHashBase* src=static_cast<VHashBase*>(vsrc.as(VHASH_TYPE))) {
 			src_hash=&(src->hash());
 
 			if(src_hash==self_hash) // same: doing nothing
@@ -216,7 +216,7 @@ static void _create_or_add(Request& r, MethodParams& params) {
 
 static void _sub(Request& r, MethodParams& params) {
 	if(HashStringValue* src=params.as_hash(0, "param")) {
-		HashStringValue* self=&(GET_SELF(r, VHash).hash());
+		HashStringValue* self=&(GET_SELF(r, VHashBase).hash());
 		if(src==self) { // same: clearing
 			self->clear();
 			return;
@@ -225,15 +225,12 @@ static void _sub(Request& r, MethodParams& params) {
 	}
 }
 
-static void copy_all_dontoverwrite_to(
-					HashStringValue::key_type key, 
-					HashStringValue::value_type value, 
-					HashStringValue* dest) {
+static void copy_all_dontoverwrite_to(HashStringValue::key_type key, HashStringValue::value_type value, HashStringValue* dest) {
 	dest->put_dont_replace(key, value);
 }
 static void _union(Request& r, MethodParams& params) {
 	// dest = copy of self
-	Value& result=*new VHash(GET_SELF(r, VHash).hash());
+	Value& result=*new VHash(GET_SELF(r, VHashBase).hash());
 	// dest += b
 	if(HashStringValue* src=params.as_hash(0, "param"))
 		src->for_each<HashStringValue*>(copy_all_dontoverwrite_to, result.get_hash());
@@ -248,10 +245,7 @@ struct Copy_intersection_to_info {
 	HashStringValue* dest;
 };
 #endif
-static void copy_intersection_to(
-					HashStringValue::key_type key, 
-					HashStringValue::value_type value, 
-					Copy_intersection_to_info *info) {
+static void copy_intersection_to(HashStringValue::key_type key, HashStringValue::value_type value, Copy_intersection_to_info *info) {
 	if(info->b->get(key))
 		info->dest->put_dont_replace(key, value);
 }
@@ -260,17 +254,14 @@ static void _intersection(Request& r, MethodParams& params) {
 	// dest += b
 	if(HashStringValue* b=params.as_hash(0, "param")) {
 		Copy_intersection_to_info info={b, result.get_hash()};
-		GET_SELF(r, VHash).hash().for_each<Copy_intersection_to_info*>(copy_intersection_to, &info);
+		GET_SELF(r, VHashBase).hash().for_each<Copy_intersection_to_info*>(copy_intersection_to, &info);
 	}
 
 	// return result
 	r.write_no_lang(result);
 }
 
-static bool intersects(
-					HashStringValue::key_type key, 
-					HashStringValue::value_type /*value*/, 
-					HashStringValue* b) {
+static bool intersects(	HashStringValue::key_type key, HashStringValue::value_type /*value*/, HashStringValue* b) {
 	return b->get(key)!=0;
 }
 
@@ -278,7 +269,7 @@ static void _intersects(Request& r, MethodParams& params) {
 	bool result=false;
 
 	if(HashStringValue* b=params.as_hash(0, "param")) {
-		HashStringValue* self=&(GET_SELF(r, VHash).hash());
+		HashStringValue* self=&(GET_SELF(r, VHashBase).hash());
 		if(b==self) {
 			r.write_no_lang(VBool::get(true));
 			return;
@@ -345,7 +336,7 @@ static void _sql(Request& r, MethodParams& params) {
 	const String& statement_string=r.process_to_string(statement);
 	const char* statement_cstr=statement_string.untaint_cstr(r.flang, r.connection());
 
-	HashStringValue& hash=GET_SELF(r, VHash).hash();
+	HashStringValue& hash=GET_SELF(r, VHashBase).hash();
 	hash.clear();	
 	Hash_sql_event_handlers handlers(
 		statement_string, statement_cstr, 
@@ -364,10 +355,7 @@ static void _sql(Request& r, MethodParams& params) {
 		unmarshal_bind_updates(*bind, placeholders_count, placeholders);
 }
 
-static void keys_collector(
-			HashStringValue::key_type key, 
-			HashStringValue::value_type, 
-			Table *table) {
+static void keys_collector(HashStringValue::key_type key, HashStringValue::value_type, Table *table) {
 	Table::element_type row(new ArrayString(1));
 	*row+=new String(key, String::L_TAINTED);
 	*table+=row;
@@ -383,24 +371,24 @@ static void _keys(Request& r, MethodParams& params) {
 	*columns+=keys_column_name;
 	Table* table=new Table(columns);
 
-	GET_SELF(r, VHash).hash().for_each<Table*>(keys_collector, table);
+	GET_SELF(r, VHashBase).hash().for_each<Table*>(keys_collector, table);
 
 	r.write_no_lang(*new VTable(table));
 }
 
 static void _count(Request& r, MethodParams&) {
-	r.write_no_lang(*new VInt(GET_SELF(r, VHash).hash().count()));
+	r.write_no_lang(*new VInt(GET_SELF(r, VHashBase).hash().count()));
 }
 
 static void _delete(Request& r, MethodParams& params) {
 	if(params.count()>0)
-		GET_SELF(r, VHash).hash().remove(params.as_string(0, "key must be string"));
+		GET_SELF(r, VHashBase).hash().remove(params.as_string(0, "key must be string"));
 	else
-		GET_SELF(r, VHash).hash().clear();
+		GET_SELF(r, VHashBase).hash().clear();
 }
 
 static void _contains(Request& r, MethodParams& params) {
-	VHash& self=GET_SELF(r, VHash);
+	VHashBase& self=GET_SELF(r, VHashBase);
 	const String& key_name=params.as_string(0, "key must be string");
 	bool result=SYMBOLS_EQ(key_name,_DEFAULT_SYMBOL) ? (self.get_default() != 0) : self.hash().contains(key_name);
 	r.write_no_lang(VBool::get(result));
@@ -418,8 +406,7 @@ static void _foreach(Request& r, MethodParams& params) {
 	if(key_var_name->is_empty()) key_var_name=0;
 	if(value_var_name->is_empty()) value_var_name=0;
 
-	VHash& self=GET_SELF(r, VHash);
-	HashStringValue& hash=self.hash();
+	HashStringValue& hash=GET_SELF(r, VHashBase).hash();
 
 	if(delim_maybe_code){ // delimiter set
 		bool need_delim=false;;
@@ -517,8 +504,7 @@ static void _sort(Request& r, MethodParams& params){
 	const String* value_var=value_var_name.is_empty()? 0 : &value_var_name;
 	VMethodFrame* context=r.get_method_frame()->caller();
 
-	VHash& self=GET_SELF(r, VHash);
-	HashStringValue& hash=self.hash();
+	HashStringValue& hash=GET_SELF(r, VHashBase).hash();
 	int count=hash.count();
 
 	Hash_seq_item* seq=new(PointerFreeGC) Hash_seq_item[count];
@@ -565,7 +551,7 @@ static void _sort(Request& r, MethodParams& params){
 }
 
 static void _at(Request& r, MethodParams& params) {
-	HashStringValue& hash=GET_SELF(r, VHash).hash();
+	HashStringValue& hash=GET_SELF(r, VHashBase).hash();
 	size_t count=hash.count();
 
 	int pos=0;
