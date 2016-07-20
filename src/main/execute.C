@@ -21,7 +21,7 @@
 #include "pa_vimage.h"
 #include "pa_wwrapper.h"
 
-volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.383 2016/07/19 16:35:36 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
+volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.384 2016/07/20 17:01:48 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
 
 //#define DEBUG_EXECUTE
 
@@ -286,11 +286,11 @@ void Request::execute(ArrayOperation& ops) {
 
 				DEBUG_PRINT_STRING(name)
 
-				Value* class_value=get_class(name);
-				if(!class_value)
+				VStateless_class* vclass=get_class(name);
+				if(!vclass)
 					throw Exception(PARSER_RUNTIME, &name, "class is undefined"); 
 
-				stack.push(*class_value);
+				stack.push(*vclass);
 				break;
 			}
 
@@ -303,11 +303,11 @@ void Request::execute(ArrayOperation& ops) {
 
 				DEBUG_PRINT_STRING(name)
 
-				Value* class_value=get_class(name);
-				if(!class_value)
+				VStateless_class* vclass=get_class(name);
+				if(!vclass)
 					throw Exception(PARSER_RUNTIME, &name, "class is undefined"); 
 
-				stack.push(*new VBaseClassWrapper(*class_value->get_class(), get_self()));
+				stack.push(*new VBaseClassWrapper(*vclass, get_self()));
 				break;
 			}
 
@@ -361,9 +361,7 @@ void Request::execute(ArrayOperation& ops) {
 		case OP::OP_WITH_WRITE:
 			{
 				if(wcontext==method_frame)
-					throw Exception(PARSER_RUNTIME,
-						0,
-						"$.name outside of $name[...]");
+					throw Exception(PARSER_RUNTIME, 0, "$.name outside of $name[...]");
 
 				stack.push(*wcontext);
 				break;
@@ -464,9 +462,7 @@ void Request::execute(ArrayOperation& ops) {
 				Value& ncontext=stack.pop().value();
 				if(const VJunction* vjunction=ncontext.put_element(name, &value))
 					if(vjunction!=PUT_ELEMENT_REPLACED_ELEMENT)
-						throw Exception(PARSER_RUNTIME,
-							0,
-							"property value can not be code, use [] or () brackets");
+						throw Exception(PARSER_RUNTIME, 0, "property value can not be code, use [] or () brackets");
 					
 				break;
 			}
@@ -896,11 +892,9 @@ void Request::execute(ArrayOperation& ops) {
 
 				DEBUG_PRINT_STRING(class_name)
 
-				Value* class_value=get_class(class_name);
-				if(!class_value)
-					throw Exception(PARSER_RUNTIME,
-						&class_name,
-						"class is undefined"); 
+				VStateless_class* vclass=get_class(class_name);
+				if(!vclass)
+					throw Exception(PARSER_RUNTIME, &class_name, "class is undefined"); 
 
 				debug_origin=i.next().origin;
 				Value& vconstructor_name=*i.next().value;
@@ -908,12 +902,9 @@ void Request::execute(ArrayOperation& ops) {
 
 				DEBUG_PRINT_STRING(constructor_name)
 
-				Junction* constructor_junction=get_element(*class_value, constructor_name).get_junction();
+				Junction* constructor_junction=get_element(*vclass, constructor_name).get_junction();
 				if(!constructor_junction)
-					throw Exception(PARSER_RUNTIME,
-						&constructor_name,
-						"constructor must be declared in class '%s'", 
-						class_value->type());
+					throw Exception(PARSER_RUNTIME, &constructor_name, "constructor must be declared in class '%s'", vclass->type());
 
 				ArrayOperation* local_ops=i.next().ops;
 				DEBUG_PRINT_OPS(local_ops)
@@ -921,7 +912,7 @@ void Request::execute(ArrayOperation& ops) {
 
 				Value *result;
 				{
-					Value& object=construct(*class_value, *constructor_junction->method);
+					Value& object=construct(*vclass, *constructor_junction->method);
 					VConstructorFrame frame(*constructor_junction->method, method_frame, object);
 					METHOD_FRAME_ACTION(op_call(frame));
 					object.enable_default_setter();
@@ -1270,8 +1261,7 @@ void Request::execute(ArrayOperation& ops) {
 	method_frame=saved_method_frame;
 
 
-Value& Request::construct(Value &class_value, const Method &method){
-	VStateless_class& called_class=*class_value.get_class();
+Value& Request::construct(VStateless_class &called_class, const Method &method){
 
 	if(method.call_type!=Method::CT_STATIC) {
 		// this is a constructor call

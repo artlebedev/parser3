@@ -9,7 +9,7 @@
 #include "pa_request.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.47 2016/07/20 16:36:48 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.48 2016/07/20 17:01:48 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -42,21 +42,19 @@ DECLARE_CLASS_VAR(reflection, new MReflection);
 
 static void _create(Request& r, MethodParams& params) {
 	const String& class_name=params.as_string(0, "class_name must be string");
-	Value* class_value=r.get_class(class_name);
+	VStateless_class* vclass=r.get_class(class_name);
 
-	if(!class_value)
-		throw Exception(PARSER_RUNTIME,
-			&class_name,
-			"class is undefined");
+	if(!vclass)
+		throw Exception(PARSER_RUNTIME, &class_name, "class is undefined");
 
 	const String& constructor_name=params.as_string(1, "constructor_name must be string");
-	Value* constructor_value=class_value->get_element(constructor_name);
+	Value* constructor_value=vclass->get_element(constructor_name);
 
 	if(!constructor_value || !constructor_value->get_junction())
 		throw Exception(PARSER_RUNTIME,
 			&constructor_name,
 			"constructor must be declared in class '%s'",
-			class_value->type());
+			vclass->type());
 
 	Junction* junction=constructor_value->get_junction();
 	const Method* method=junction->method;
@@ -69,13 +67,13 @@ static void _create(Request& r, MethodParams& params) {
 			throw Exception(PARSER_RUNTIME,
 				&constructor_name,
 				"native method of class '%s' is not allowed to be called dynamically",
-				class_value->type());
+				vclass->type());
 
 		if(nparams<method->min_numbered_params_count)
 			throw Exception(PARSER_RUNTIME,
 				&constructor_name,
 				"native method of class '%s' accepts minimum %d parameter(s) (%d passed)",
-				class_value->type(),
+				vclass->type(),
 				method->min_numbered_params_count,
 				nparams);
 
@@ -88,11 +86,11 @@ static void _create(Request& r, MethodParams& params) {
 		throw Exception(PARSER_RUNTIME,
 			&constructor_name,
 			"method of class '%s' accepts maximum %d parameter(s) (%d passed)",
-			class_value->type(),
+			vclass->type(),
 			max_params_count,
 			nparams);
 
-	Value &object = r.construct(*class_value, *method);
+	Value &object = r.construct(*vclass, *method);
 	VConstructorFrame frame(*method, r.get_method_frame(), object);
 
 	Value* v[100];
