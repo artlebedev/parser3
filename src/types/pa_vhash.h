@@ -8,7 +8,7 @@
 #ifndef PA_VHASH_H
 #define PA_VHASH_H
 
-#define IDENT_PA_VHASH_H "$Id: pa_vhash.h,v 1.76 2016/07/20 13:57:04 moko Exp $"
+#define IDENT_PA_VHASH_H "$Id: pa_vhash.h,v 1.77 2016/07/20 14:49:52 moko Exp $"
 
 #include "classes.h"
 #include "pa_value.h"
@@ -133,6 +133,7 @@ public: // value
 	/// VHash: fhash
 	override HashStringValue *get_hash() { return fhash; }
 	override HashStringValue* get_fields() { return fhash; }
+	override HashStringValue* get_fields_reference() { return fhash; }
 
 	/// VHash: (key)=value
 	override Value* get_element(const String& aname) { 

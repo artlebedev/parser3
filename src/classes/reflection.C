@@ -9,7 +9,7 @@
 #include "pa_request.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.44 2016/07/20 13:57:04 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.46 2016/07/20 14:53:55 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -239,12 +239,12 @@ static void _fields(Request& r, MethodParams& params) {
 }
 
 static void _fields_reference(Request& r, MethodParams& params) {
-	Value& o=params.as_no_junction(0, "param must be object or class, not junction");
+	Value& o=params.as_no_junction(0, "param must be object or hash, not junction");
 
-	if(HashStringValue* fields=o.get_fields())
+	if(HashStringValue* fields=o.get_fields_reference())
 		r.write_no_lang(*new VHashReference(*fields));
 	else
-		throw Exception(PARSER_RUNTIME, 0, "param must be object or class");
+		throw Exception(PARSER_RUNTIME, 0, "param must be object or hash");
 }
 
 static void _field(Request& r, MethodParams& params) {
