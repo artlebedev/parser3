@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
-#define IDENT_PA_VSTATELESS_CLASS_H "$Id: pa_vstateless_class.h,v 1.85 2016/07/19 16:35:36 moko Exp $"
+#define IDENT_PA_VSTATELESS_CLASS_H "$Id: pa_vstateless_class.h,v 1.86 2016/07/20 17:27:42 moko Exp $"
 
 // include
 
@@ -109,7 +109,7 @@ public: // usage
 		return fmethods.get(aname);
 	}
 
-	HashStringMethod get_methods(){
+	HashStringMethod& get_methods(){
 		return fmethods;
 	}
 

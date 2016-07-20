@@ -9,7 +9,7 @@
 #include "pa_request.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.48 2016/07/20 17:01:48 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.49 2016/07/20 17:27:42 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -120,15 +120,15 @@ static Value* get_class(Value* value){
 	if(VStateless_class* result=value->get_class())
 		return result;
 	else
-		// classes with fields only, like env & console
+		// junction
 		return value;
 }
 
 static const String* get_class_name(Value* value){
-	if(VStateless_class* lclass=value->get_class())
-		return new String(lclass->type());
+	if(VStateless_class* vclass=value->get_class())
+		return new String(vclass->type());
 	else
-		// classes with fields only, like env & console
+		// junction
 		return new String(value->type());
 }
 
@@ -151,8 +151,8 @@ static void _class_by_name(Request& r, MethodParams& params) {
 }
 
 static void _base(Request& r, MethodParams& params) {
-	if(VStateless_class* lclass=params[0].get_class())
-		if(Value* base=lclass->base()){
+	if(VStateless_class* vclass=params[0].get_class())
+		if(Value* base=vclass->base()){
 			r.write_no_lang(*get_class(base));
 			return;
 		}
@@ -163,17 +163,9 @@ static void _base(Request& r, MethodParams& params) {
 
 
 static void _base_name(Request& r, MethodParams& params) {
-	if(VStateless_class* lclass=params[0].get_class())
-		if(Value* base=lclass->base())
+	if(VStateless_class* vclass=params[0].get_class())
+		if(Value* base=vclass->base())
 			r.write_no_lang(*get_class_name(base));
-}
-
-static void store_method_info(
-		HashStringMethod::key_type key, 
-		HashStringMethod::value_type method,
-		HashStringValue* result
-) {
-	result->put(key, new VString(method->native_code?method_type_native:method_type_parser));
 }
 
 static void _def(Request& r, MethodParams& params) {
@@ -189,19 +181,15 @@ static void _def(Request& r, MethodParams& params) {
 
 static void _methods(Request& r, MethodParams& params) {
 	const String& class_name=params.as_string(0, "class_name must be string");
-	Value* class_value=r.get_class(class_name);
-	if(!class_value)
-		throw Exception(PARSER_RUNTIME,
-			&class_name,
-			"class is undefined");
+	VStateless_class* vclass=r.get_class(class_name);
+	if(!vclass)
+		throw Exception(PARSER_RUNTIME, &class_name, "class is undefined");
 
 	VHash& result=*new VHash;
-	if(VStateless_class* lclass=class_value->get_class()) {
-		HashStringMethod methods=lclass->get_methods();
-		methods.for_each(store_method_info, result.get_hash());
-	} else {
-		// class which does not have methods (env, console, etc)
+	for(HashStringMethod::Iterator i(vclass->get_methods()); i; i.next()){
+		result.hash().put(i.key(), new VString(i.value()->native_code ? method_type_native : method_type_parser));
 	}
+
 	r.write_no_lang(result);
 }
 
@@ -209,8 +197,8 @@ static void _method(Request& r, MethodParams& params) {
 	Value& o=params.as_no_junction(0, "first param must be object or class, not junction");
 	const String& name=params.as_string(1, "method name must be string");
 
-	if(VStateless_class* lclass=o.get_class()) {
-		if(Method* method=lclass->get_method(name))
+	if(VStateless_class* vclass=o.get_class()) {
+		if(Method* method=vclass->get_method(name))
 			r.write_no_lang(*method->get_vjunction(o));
 	} else {
 		// class which does not have methods (env, console, etc)
@@ -246,23 +234,19 @@ static void _field(Request& r, MethodParams& params) {
 
 static void _method_info(Request& r, MethodParams& params) {
 	const String& class_name=params.as_string(0, "class_name must be string");
-	Value* class_value=r.get_class(class_name);
-	if(!class_value)
+	VStateless_class* vclass=r.get_class(class_name);
+	if(!vclass)
 		throw Exception(PARSER_RUNTIME, &class_name, "class is undefined");
 
-	VStateless_class* lclass=class_value->get_class();
-	if(!lclass)
-		throw Exception(PARSER_RUNTIME, &class_name, "class does not have methods");
-
 	const String& method_name=params.as_string(1, "method_name must be string");
-	Method* method=lclass->get_method(method_name);
+	Method* method=vclass->get_method(method_name);
 	if(!method)
 		throw Exception(PARSER_RUNTIME, &method_name, "method not found in class %s", class_name.cstr());
 
 	VHash& result=*new VHash;
 	HashStringValue* hash=result.get_hash();
 
-	VStateless_class* c=lclass;
+	VStateless_class* c=vclass;
 	Method* base_method;
 	if(c->base() && (base_method=c->base()->get_method(method_name))){
 		c=c->base()->get_class();
