@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.162 2016/05/24 11:09:02 moko Exp $"
+#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.163 2016/07/21 18:30:10 moko Exp $"
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -92,11 +92,7 @@ void create_dir_for_file(const String& file_spec);
 
 int pa_get_valid_file_options_count(HashStringValue& options);
 
-typedef void (*File_read_action)(
-				struct stat& finfo,
-				int f, 
-				const String& file_spec, const char* fname, bool as_text,
-				void *context);
+typedef void (*File_read_action)(struct stat& finfo, int f, const String& file_spec, void *context);
 
 /**
 	shared-lock specified file, 

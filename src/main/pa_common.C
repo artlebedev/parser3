@@ -50,7 +50,7 @@
 #define pa_mkdir(path, mode) mkdir(path, mode)
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.288 2015/10/26 01:21:58 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.289 2016/07/21 18:30:10 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -114,12 +114,11 @@ struct File_read_action_info {
 }; 
 #endif
 
-static void file_read_action(struct stat& finfo, int f, const String& file_spec, const char* /*fname*/, bool as_text, void *context) {
+static void file_read_action(struct stat& finfo, int f, const String& file_spec, void *context) {
 	File_read_action_info& info=*static_cast<File_read_action_info *>(context); 
 	size_t to_read_size=info.count;
 	if(!to_read_size)
 		to_read_size=(size_t)finfo.st_size;
-	assert( !(info.buf && as_text) );
 	if(to_read_size) {
 		if(info.offset)
 			lseek(f, info.offset, SEEK_SET);
@@ -150,9 +149,7 @@ File_read_result file_read(Request_charsets& charsets, const String& file_spec,
 
 	File_read_action_info info={&result.str, &result.length, buf, offset, count}; 
 
-	result.success=file_read_action_under_lock(file_spec, 
-		"read", file_read_action, &info, 
-		as_text, fail_on_read_problem); 
+	result.success=file_read_action_under_lock(file_spec, "read", file_read_action, &info, as_text, fail_on_read_problem); 
 
 	if(as_text){
 		if(result.success){
@@ -186,9 +183,7 @@ File_read_result file_load(Request& r, const String& file_spec,
 	File_read_result result={false, 0, 0, 0};
 	if(file_spec.starts_with("http://")) {
 		if(offset || count)
-			throw Exception(PARSER_RUNTIME,
-				0,
-				"offset and load options are not supported for HTTP:// file load");
+			throw Exception(PARSER_RUNTIME, 0, "offset and load options are not supported for HTTP:// file load");
 
 		// fail on read problem
 		File_read_http_result http=pa_internal_file_read_http(r, file_spec, as_text, params, transcode_text_result);
@@ -208,16 +203,13 @@ File_read_result file_load(Request& r, const String& file_spec,
 void check_safe_mode(struct stat finfo, const String& file_spec, const char* fname) {
 	if(finfo.st_uid/*foreign?*/!=geteuid() 
 		&& finfo.st_gid/*foreign?*/!=getegid()) 
-		throw Exception(PARSER_RUNTIME,  
-			&file_spec,  
-			"parser is in safe mode: " 
-			"reading files of foreign group and user disabled " 
-			"[recompile parser with --disable-safe-mode configure option], " 
-			"actual filename '%s', " 
-			"fuid(%d)!=euid(%d) or fgid(%d)!=egid(%d)",  
-				fname, 
-				finfo.st_uid, geteuid(), 
-				finfo.st_gid, getegid());
+		throw Exception(PARSER_RUNTIME,
+			&file_spec,
+			"parser is in safe mode: reading files of foreign group and user disabled "
+			"[recompile parser with --disable-safe-mode configure option], "
+			"actual filename '%s', fuid(%d)!=euid(%d) or fgid(%d)!=egid(%d)",
+			fname, finfo.st_uid, geteuid(), finfo.st_gid, getegid()
+		);
 }
 #else
 void check_safe_mode(struct stat, const String&, const char*) {
@@ -245,37 +237,29 @@ bool file_read_action_under_lock(const String& file_spec,
 	if((f=open(fname, O_RDONLY|(as_text?_O_TEXT:_O_BINARY)))>=0) {
 		try {
 			if(pa_lock_shared_blocking(f)!=0)
-				throw Exception("file.lock", 
-						&file_spec, 
-						"shared lock failed: %s (%d), actual filename '%s'", 
-							strerror(errno), errno, fname);
+				throw Exception("file.lock", &file_spec, "shared lock failed: %s (%d), actual filename '%s'", strerror(errno), errno, fname);
 
 			struct stat finfo;
 			if(fstat(f, &finfo)!=0)
 				throw Exception("file.missing", // hardly possible: we just opened it OK
-					&file_spec, 
-					"stat failed: %s (%d), actual filename '%s'", 
-						strerror(errno), errno, fname);
+					&file_spec, "stat failed: %s (%d), actual filename '%s'", strerror(errno), errno, fname);
 
 			check_safe_mode(finfo, file_spec, fname);
 
-			action(finfo, f, file_spec, fname, as_text, context); 
+			action(finfo, f, file_spec, context); 
 		} catch(...) {
 			pa_unlock(f);close(f); 
 			if(fail_on_read_problem)
 				rethrow;
-			return false;			
+			return false;
 		} 
 
 		pa_unlock(f);close(f); 
 		return true;
 	} else {
 		if(fail_on_read_problem)
-			throw Exception(errno==EACCES?"file.access"
-							:(errno==ENOENT || errno==ENOTDIR || errno==ENODEV)?"file.missing":0, 
-				&file_spec, 
-				"%s failed: %s (%d), actual filename '%s'", 
-					action_name, strerror(errno), errno, fname);
+			throw Exception(errno==EACCES ? "file.access" : (errno==ENOENT || errno==ENOTDIR || errno==ENODEV) ? "file.missing" : 0,
+				&file_spec, "%s failed: %s (%d), actual filename '%s'", action_name, strerror(errno), errno, fname);
 		return false;
 	}
 }
@@ -308,10 +292,7 @@ bool file_write_action_under_lock(
 		|(as_text?_O_TEXT:_O_BINARY)
 		|(do_append?O_APPEND:PA_O_TRUNC), 0664))>=0) {
 		if((do_block?pa_lock_exclusive_blocking(f):pa_lock_exclusive_nonblocking(f))!=0) {
-			Exception e("file.lock", 
-				&file_spec, 
-				"shared lock failed: %s (%d), actual filename '%s'", 
-				strerror(errno), errno, fname);
+			Exception e("file.lock", &file_spec, "shared lock failed: %s (%d), actual filename '%s'", strerror(errno), errno, fname);
 			close(f); 
 			if(fail_on_lock_problem)
 				throw e;
@@ -341,10 +322,7 @@ bool file_write_action_under_lock(
 		pa_unlock(f);close(f); 
 		return true;
 	} else
-		throw Exception(errno==EACCES?"file.access":0, 
-			&file_spec, 
-			"%s failed: %s (%d), actual filename '%s'", 
-				action_name, strerror(errno), errno, fname);
+		throw Exception(errno==EACCES ? "file.access" : 0, &file_spec, "%s failed: %s (%d), actual filename '%s'", action_name, strerror(errno), errno, fname);
 	// here should be nothing, see rethrow above
 }
 
@@ -455,10 +433,8 @@ bool file_delete(const String& file_spec, bool fail_on_problem, bool keep_empty_
 	const char* fname=file_spec.taint_cstr(String::L_FILE_SPEC); 
 	if(unlink(fname)!=0) {
 		if(fail_on_problem)
-			throw Exception(errno==EACCES?"file.access":errno==ENOENT?"file.missing":0, 
-				&file_spec, 
-				"unlink failed: %s (%d), actual filename '%s'", 
-					strerror(errno), errno, fname);
+			throw Exception(errno==EACCES?"file.access":errno==ENOENT?"file.missing":0,
+				&file_spec, "unlink failed: %s (%d), actual filename '%s'", strerror(errno), errno, fname);
 		else
 			return false;
 	}
@@ -476,10 +452,8 @@ void file_move(const String& old_spec, const String& new_spec, bool keep_empty_d
 	create_dir_for_file(new_spec); 
 
 	if(rename(old_spec_cstr, new_spec_cstr)!=0)
-		throw Exception(errno==EACCES?"file.access":errno==ENOENT?"file.missing":0, 
-			&old_spec, 
-			"rename failed: %s (%d), actual filename '%s' to '%s'", 
-				strerror(errno), errno, old_spec_cstr, new_spec_cstr);
+		throw Exception(errno==EACCES ? "file.access" : errno==ENOENT ? "file.missing" : 0,
+			&old_spec, "rename failed: %s (%d), actual filename '%s' to '%s'", strerror(errno), errno, old_spec_cstr, new_spec_cstr);
 
 	if(!keep_empty_dirs)
 		rmdir(old_spec, 1); 
@@ -529,10 +503,7 @@ bool file_stat(const String& file_spec,
 	struct stat finfo;
 	if(stat(fname, &finfo)!=0) {
 		if(fail_on_read_problem)
-			throw Exception("file.missing", 
-				&file_spec, 
-				"getting file size failed: %s (%d), real filename '%s'", 
-					strerror(errno), errno, fname);
+			throw Exception("file.missing", &file_spec, "getting file size failed: %s (%d), real filename '%s'", strerror(errno), errno, fname);
 		else
 			return false;
 	}
@@ -727,17 +698,13 @@ const char* format(double value, const char* fmt) {
 				size=snprintf(local_buf, sizeof(local_buf), fmt, (uint)value); 
 				break;
 			case FormatInvalid:
-				throw Exception(PARSER_RUNTIME, 
-					0, 
-					"Incorrect format string '%s' was specified.", fmt);
+				throw Exception(PARSER_RUNTIME, 0, "Incorrect format string '%s' was specified.", fmt);
 		}
 	} else
 		size=snprintf(local_buf, sizeof(local_buf), "%d", (int)value);
 
 	if(size < 0 || size >= MAX_NUMBER-1){ // on win32 we manually reduce max size while printing
-		throw Exception(PARSER_RUNTIME, 
-			0, 
-			"Error occure white executing snprintf with format string '%s'.", fmt);
+		throw Exception(PARSER_RUNTIME, 0, "Error occure white executing snprintf with format string '%s'.", fmt);
 	}
 
 	return pa_strdup(local_buf, (size_t)size);
@@ -1237,11 +1204,7 @@ struct File_base64_action_info {
 	unsigned char** base64;
 }; 
 
-static void file_base64_file_action(
-				struct stat& finfo, 
-				int f, 
-				const String&, const char* /*fname*/, bool, 
-				void *context) {
+static void file_base64_file_action(struct stat& finfo, int f, const String&, void *context) {
 
 	if(finfo.st_size) { 
 		File_base64_action_info& info=*static_cast<File_base64_action_info *>(context);
@@ -1266,8 +1229,7 @@ char* pa_base64_encode(const String& file_spec){
 	unsigned char* base64=0;
 	File_base64_action_info info={&base64}; 
 
-	file_read_action_under_lock(file_spec, 
-		"pa_base64_encode", file_base64_file_action, &info);
+	file_read_action_under_lock(file_spec, "pa_base64_encode", file_base64_file_action, &info);
 
 	return (char*)base64; 
 }
@@ -1280,9 +1242,7 @@ void pa_base64_decode(const char *in, size_t in_size, char*& result, size_t& res
 
 	int state=0;
 	int save=0;
-	result_size=
-		g_mime_utils_base64_decode_step ((const unsigned char*)in, in_size,
-		(unsigned char*)result, &state, &save, strict);
+	result_size=g_mime_utils_base64_decode_step ((const unsigned char*)in, in_size, (unsigned char*)result, &state, &save, strict);
 	assert(result_size <= new_size);
 	result[result_size]=0; // for text files
 
@@ -1294,9 +1254,7 @@ void pa_base64_decode(const char *in, size_t in_size, char*& result, size_t& res
 int file_block_read(const int f, unsigned char* buffer, const size_t size){
 	int nCount = read(f, buffer, size);
 	if (nCount < 0)
-		throw Exception("file.read", 
-			0, 
-			"read failed: %s (%d)",  strerror(errno), errno); 
+		throw Exception("file.read", 0, "read failed: %s (%d)", strerror(errno), errno); 
 	return nCount;
 }
 
@@ -1339,11 +1297,7 @@ const unsigned long pa_crc32(const char *in, size_t in_size){
 	return ~crc32; 
 }
 
-static void file_crc32_file_action(
-				struct stat& finfo, 
-				int f, 
-				const String&, const char* /*fname*/, bool, 
-				void *context) {
+static void file_crc32_file_action(struct stat& finfo, int f, const String&, void *context) {
 	unsigned long& crc32=*static_cast<unsigned long *>(context);
 	if(finfo.st_size) {
 		InitCrc32Table();

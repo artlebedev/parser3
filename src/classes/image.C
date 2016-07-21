@@ -25,7 +25,7 @@
 #include "pa_vdate.h"
 #include "pa_table.h"
 
-volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.151 2016/03/31 21:46:19 moko Exp $";
+volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.152 2016/07/21 18:30:10 moko Exp $";
 
 // defines
 
@@ -238,12 +238,12 @@ public:
 };
 
 class Measure_file_reader: public Measure_reader {
-	const String& file_name; const char* fname;
+	const String& file_name;
 	int f;
 
 public:
-	Measure_file_reader(int af, const String& afile_name, const char* afname): 
-		file_name(afile_name), fname(afname), f(af) {
+	Measure_file_reader(int af, const String& afile_name):
+		file_name(afile_name), f(af) {
 	}
 
 	override size_t read(const char* &abuf, size_t limit) {
@@ -259,10 +259,7 @@ public:
 
 	override void seek(long value, int whence) {
 		if(lseek(f, value, whence)<0)
-			throw Exception(IMAGE_FORMAT,
-				&file_name, 
-				"seek(value=%ld, whence=%d) failed: %s (%d), actual filename '%s'", 
-					value, whence, strerror(errno), errno, fname);
+			throw Exception(IMAGE_FORMAT, &file_name, "seek(value=%ld, whence=%d) failed: %s (%d)", value, whence, strerror(errno), errno);
 	}
 
 	override long tell() { return lseek(f, 0, SEEK_CUR); }
@@ -400,8 +397,7 @@ inline uint endian_to_uint(bool is_big, const uchar *b /* [4] */) {
 		x_endian_to_uint(b[0], b[1], b[2], b[3]);
 }
 
-static void measure_gif(const String& origin_string, 
-			 Measure_reader& reader, ushort& width, ushort& height) {
+static void measure_gif(const String& origin_string, Measure_reader& reader, ushort& width, ushort& height) {
 
 	const char* buf;
 	const size_t head_size=sizeof(GIF_Header);
@@ -638,8 +634,7 @@ static Value* parse_exif(Measure_reader& reader, const String& origin_string) {
 	return vhash;
 }
 
-static void measure_jpeg(const String& origin_string, 
-			 Measure_reader& reader, ushort& width, ushort& height, Value** exif) {
+static void measure_jpeg(const String& origin_string, Measure_reader& reader, ushort& width, ushort& height, Value** exif) {
 	// JFIF format markers
 	const uchar MARKER=0xFF;
 	const uchar CODE_SIZE_A=0xC0;
@@ -706,21 +701,16 @@ static void measure_jpeg(const String& origin_string,
 		"broken JPEG file - size frame not found");
 }
 
-static void measure_png(const String& origin_string, 
-			 Measure_reader& reader, ushort& width, ushort& height) {
+static void measure_png(const String& origin_string, Measure_reader& reader, ushort& width, ushort& height) {
 
 	const char* buf;
 	const size_t head_size=sizeof(PNG_Header);
 	if(reader.read(buf, head_size)<head_size)
-		throw Exception(IMAGE_FORMAT, 
-			&origin_string, 
-			"not PNG file - too small");
+		throw Exception(IMAGE_FORMAT, &origin_string, "not PNG file - too small");
 	PNG_Header *head=(PNG_Header *)buf;
 
 	if(strncmp(head->signature, "IHDR", 4)!=0)
-		throw Exception(IMAGE_FORMAT, 
-			&origin_string, 
-			"not PNG file - wrong signature");	
+		throw Exception(IMAGE_FORMAT, &origin_string, "not PNG file - wrong signature");
 
 	width=endian_to_ushort(true, head->width);
 	height=endian_to_ushort(true, head->height);
@@ -728,8 +718,7 @@ static void measure_png(const String& origin_string,
 
 // measure center
 
-static void measure(const String& file_name, 
-			 Measure_reader& reader, ushort& width, ushort& height, Value** exif) {
+static void measure(const String& file_name, Measure_reader& reader, ushort& width, ushort& height, Value** exif) {
 	const char* file_name_cstr=file_name.taint_cstr(String::L_FILE_SPEC);
 	if(const char* cext=strrchr(file_name_cstr, '.')) {
 		cext++;
@@ -740,13 +729,9 @@ static void measure(const String& file_name,
 		else if(strcasecmp(cext, "PNG")==0)
 			measure_png(file_name, reader, width, height);
 		else
-			throw Exception(IMAGE_FORMAT, 
-				&file_name, 
-				"unhandled image file name extension '%s'", cext);
+			throw Exception(IMAGE_FORMAT, &file_name, "unhandled image file name extension '%s'", cext);
 	} else
-		throw Exception(IMAGE_FORMAT, 
-			&file_name, 
-			"can not determine image type - no file name extension");
+		throw Exception(IMAGE_FORMAT, &file_name, "can not determine image type - no file name extension");
 }
 
 // methods
@@ -756,17 +741,13 @@ struct File_measure_action_info {
 	ushort* width;
 	ushort* height;
 	Value** exif;
-	const String* file_name;
 };
 #endif
-static void file_measure_action(
-								struct stat& /*finfo*/, int f, 
-								const String& /*file_spec*/, const char* fname, bool /*as_text*/,
-								void *context) {
+static void file_measure_action(struct stat& /*finfo*/, int f, const String& file_spec, void *context) {
 	File_measure_action_info& info=*static_cast<File_measure_action_info *>(context);
 
-	Measure_file_reader reader(f, *info.file_name, fname);
-	measure(*info.file_name, reader, *info.width, *info.height, info.exif);
+	Measure_file_reader reader(f, file_spec);
+	measure(file_spec, reader, *info.width, *info.height, info.exif);
 }
 
 static void _measure(Request& r, MethodParams& params) {
@@ -779,11 +760,9 @@ static void _measure(Request& r, MethodParams& params) {
 	if((file_name=data.get_string())) {
 		File_measure_action_info info={
 			&width, &height,
-			&exif,
-			file_name
+			&exif
 		};
-		file_read_action_under_lock(r.absolute(*file_name), 
-			"measure", file_measure_action, &info);
+		file_read_action_under_lock(r.absolute(*file_name), "measure", file_measure_action, &info);
 	} else {
 		VFile* vfile=data.as_vfile(String::L_AS_IS);
 		file_name=&vfile->fields().get(name_name)->as_string();

@@ -25,7 +25,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.242 2016/03/31 21:46:19 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.243 2016/07/21 18:30:10 moko Exp $";
 
 // defines
 
@@ -191,11 +191,7 @@ static void _move(Request& r, MethodParams& params) {
 		keep_empty_dirs);
 }
 
-static void copy_process_source(
-				struct stat& , 
-				int from_file, 
-				const String& , const char* /*fname*/, bool, 
-				void *context) {
+static void copy_process_source(struct stat& , int from_file, const String&, void *context) {
 	int& to_file=*static_cast<int *>(context);
 
 	int nCount=0;
@@ -1112,11 +1108,7 @@ static void _crc32(Request& r, MethodParams& params) {
 }
 
 
-static void file_md5_file_action(
-				struct stat& finfo, 
-				int f, 
-				const String& , const char* /*fname*/, bool, 
-				void *context)
+static void file_md5_file_action(struct stat& finfo, int f, const String&, void *context)
 {
 	PA_MD5_CTX& md5context=*static_cast<PA_MD5_CTX *>(context);
 	if(finfo.st_size) {
