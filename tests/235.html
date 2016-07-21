@@ -43,6 +43,11 @@ $fBinary[^file::load[binary;$sAttachFileName]]
 	]
 ]
 
+@postprocess[text]
+^1251[]
+# replace boundary by fixed string
+$result[^text.match[(-{10,})[0-9a-fA-F]+(--)?][g]{${match.1}boundary-value$match.2}]
+
 @do[sCharset;hData]
 <pre>
 ^mail:send[
