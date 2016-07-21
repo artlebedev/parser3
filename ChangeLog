@@ -1,3 +1,99 @@
+2016-07-21  moko
+
+	* src/: classes/file.C, classes/image.C, include/pa_common.h,
+	  main/pa_common.C: pa_common.h: File_read_action: fname, as_text
+	  arguments removed; image.C - absolute path shown in exception
+	  (implements feature #1071)
+
+	* tests/: 235.html, results/235.processed: test and test result
+	  updated after static boundary in mail and Errors-To: mail header
+	  removed (related to feature #1047)
+
+	* src/: classes/math.C, include/pa_random.h, main/pa_http.C,
+	  main/pa_random.C, types/pa_vmail.C: get_uuid_boundary() added and
+	  used, static boundary in mail removed, Errors-To: mail header
+	  removed (implements feature #1047)
+
+2016-07-20  moko
+
+	* src/: classes/reflection.C, types/pa_vstateless_class.h:
+	  equest.classes(): Value -> VStateless_class, part 3 (related to
+	  issue #1051)
+
+	* src/: classes/reflection.C, include/pa_request.h, main/execute.C:
+	  request.classes(): Value -> VStateless_class, part 2 (related to
+	  issue #1051)
+
+	* tests/results/: 224.processed, 323.processed: classes without
+	  methods should not be methoded (related to issue #1051)
+
+	* src/: classes/reflection.C, include/pa_request.h, main/compile.y,
+	  main/compile_tools.h, main/pa_request.C: request.classes(): Value
+	  -> VStateless_class, part 1 (related to issue #1051)
+
+	* tests/: 337.html, results/337.processed: test for
+	  ^reflection:fields_reference[] and VHashReference class added
+	  (related to feature #1072)
+
+	* src/: classes/hash.C, classes/json.C, classes/reflection.C,
+	  types/pa_value.h, types/pa_vhash.h, types/pa_vobject.h: VHashBase
+	  and VHashReference added, allowing ^reflection:fields_reference[]
+	  implementation (closes feature #1072)
+
+2016-07-19  moko
+
+	* tests/: 323.html, results/323.processed: we want to see
+	  "methoded"
+
+	* tests/: 336.html, results/336.processed: test for $BASE:property
+	  and ^BASE:method (OP_VALUE__GET_BASE_CLASS) added (related to bug
+	  #1059)
+
+	* src/: include/pa_opcode.h, main/compile.y, main/execute.C,
+	  types/pa_vstateless_class.h, types/pa_wcontext.h: no more
+	  somebody_entered_some_class, $BASE:property works again,
+	  ^BASE:method[] bugs fixed (fixes bug #1059)
+
+2016-07-14  moko
+
+	* tests/: 335.html, results/335.processed: test for feature #1055
+	  added
+
+	* src/classes/hash.C: bugfix: $._default was not copied if empty
+	  feature: ^hash.contains[_default] added (implements feature
+	  #1055)
+
+2016-07-13  moko
+
+	* src/classes/reflection.C: bugfix: ^reflection:def[class;name]
+	  should not call @autouse (http://www.parser.ru/forum/?id=83480)
+
+2016-07-05  moko
+
+	* src/classes/hash.C: Optimization: HashStringValue::Iterator used
+	  in ^hash.foreach (related to feature #1073)
+
+2016-07-04  moko
+
+	* tests/: 134.html, 281.html, results/134.processed,
+	  results/281.processed: tests updated after hash blocking removed
+	  (related to feature #1073)
+
+	* src/: classes/hash.C, include/pa_hash.h, types/pa_vhash.h: hash
+	  no longer blocks on change during foreach (implements feature
+	  #1073)
+
+2016-06-17  moko
+
+	* tests/: 330.html, results/330.processed: try exception source
+	  test added (related to bug in #1062)
+
+	* tests/: 334.html, results/334.processed: Exception stack trace
+	  test added (related to bug in $1062)
+
+	* src/classes/op.C: Exception trace now correctly restored and
+	  errors reported (related to bug #1062)
+
 2016-05-25  moko
 
 	* src/main/compile.y: minor cleanup + beauty
@@ -14726,7 +14822,7 @@
 	  types/pa_vstring.h, types/pa_vtable.C, types/pa_vtable.h,
 	  types/pa_vvoid.h, types/pa_vxdoc.C, types/pa_vxdoc.h,
 	  types/pa_vxnode.C, types/pa_vxnode.h, types/pa_wcontext.C,
-	  types/pa_wcontext.h, types/pa_wwrapper.h: $Date: 2016/05/25 20:34:08 $
+	  types/pa_wcontext.h, types/pa_wwrapper.h: $Date: 2016/07/21 19:51:41 $
 
 	* src/: classes/classes.C, classes/classes.dsp, classes/classes.h,
 	  classes/date.C, classes/double.C, classes/file.C, classes/form.C,
@@ -18814,7 +18910,7 @@
 	  main/pa_hash.C, main/pa_pool.C, main/pa_request.C,
 	  main/pa_socks.C, main/pa_sql_driver_manager.C, main/pa_string.C,
 	  main/pa_table.C, main/untaint.C, targets/cgi/parser3.C,
-	  targets/isapi/parser3isapi.C: static char *RCSId="$Id: ChangeLog,v 1.104 2016/05/25 20:34:08 moko Exp $";
+	  targets/isapi/parser3isapi.C: static char *RCSId="$Id: ChangeLog,v 1.105 2016/07/21 19:51:41 moko Exp $";
 
 	* src/main/: compile.y, compile_tools.h: $:name: == ${name}:
 	  $class:name: == ${class:name}:
@@ -21629,9 +21725,9 @@
 
 	* src/include/: pa_pool.h, pa_string.h: pa_pool split
 
-	* src/main/: main.dsp, pa_string.C: $Id: ChangeLog,v 1.104 2016/05/25 20:34:08 moko Exp $ check
+	* src/main/: main.dsp, pa_string.C: $Id: ChangeLog,v 1.105 2016/07/21 19:51:41 moko Exp $ check
 
-	* src/: main/pa_pool.C, main/pa_string.C, include/pa_pool.h: $Id: ChangeLog,v 1.104 2016/05/25 20:34:08 moko Exp $
+	* src/: main/pa_pool.C, main/pa_string.C, include/pa_pool.h: $Id: ChangeLog,v 1.105 2016/07/21 19:51:41 moko Exp $
 	  check
 
 	* src/: include/pa_pool.h, main/pa_string.C: String prealloc &
