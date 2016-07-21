@@ -13,7 +13,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.70 2016/05/24 11:09:02 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.71 2016/07/21 17:05:37 moko Exp $" IDENT_PA_HTTP_H; 
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -772,19 +772,7 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 			head << ":" << port_cstr;
 		head << CRLF;
 
-		char* boundary=0;
-
-		if(multipart){
-			uuid uuid=get_uuid();
-			const int boundary_bufsize=10+32+1/*for zero-teminator*/+1/*for faulty snprintfs*/;
-			boundary=new(PointerFreeGC) char[boundary_bufsize];
-			snprintf(boundary, boundary_bufsize,
-				"----------%08X%04X%04X%02X%02X%02X%02X%02X%02X%02X%02X",
-				uuid.time_low, uuid.time_mid, uuid.time_hi_and_version,
-				uuid.clock_seq >> 8, uuid.clock_seq & 0xFF,
-				uuid.node[0], uuid.node[1], uuid.node[2],
-				uuid.node[3], uuid.node[4], uuid.node[5]);
-		}
+		char* boundary= multipart ? get_uuid_boundary() : 0;
 
 		String user_headers;
 		bool user_agent_specified=false;

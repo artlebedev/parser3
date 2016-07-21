@@ -11,7 +11,7 @@
 #include "pa_exception.h"
 #include "pa_threads.h"
 
-volatile const char * IDENT_PA_RANDOM_C="$Id: pa_random.C,v 1.6 2015/10/26 01:21:59 moko Exp $" IDENT_PA_RANDOM_H;
+volatile const char * IDENT_PA_RANDOM_C="$Id: pa_random.C,v 1.7 2016/07/21 17:05:37 moko Exp $" IDENT_PA_RANDOM_H;
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -26,9 +26,7 @@ class Random_provider {
 			return;
 
 		if(!CryptAcquireContext(&fhProv, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT))
-			throw Exception(0,
-				0,
-				"CryptAcquireContext failed");
+			throw Exception(0, 0, "CryptAcquireContext failed");
 	}
 	void release() {
 		if(fhProv)
@@ -42,9 +40,7 @@ public:
 		acquire();
 
 		if(!CryptGenRandom(fhProv, size, (BYTE*)buffer))
-			throw Exception(0,
-				0,
-				"CryptGenRandom failed");
+			throw Exception(0, 0, "CryptGenRandom failed");
 	}
 }
 	random_provider;
@@ -114,7 +110,16 @@ void random(void *buffer, size_t size) {
 #endif
 }
 
-uuid get_uuid() {
+/// to hell with extra bytes on 64bit platforms
+struct uuid {
+	unsigned int	time_low;
+	unsigned short	time_mid;
+	unsigned short	time_hi_and_version;
+	unsigned short	clock_seq;
+	unsigned char	node[6];
+};
+
+static uuid get_uuid() {
 	// random
 	uuid uuid;
 	random(&uuid, sizeof(uuid));
@@ -138,3 +143,32 @@ uuid get_uuid() {
 	return uuid;
 }
 
+char *get_uuid_cstr() {
+	uuid uuid=get_uuid();
+
+	const size_t bufsize=36+1/*zero-teminator*/+1/*for faulty snprintfs*/;
+	char* cstr=new(PointerFreeGC) char[bufsize];
+
+	snprintf(cstr, bufsize,
+		"%08X-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X",
+		uuid.time_low, uuid.time_mid, uuid.time_hi_and_version,
+		uuid.clock_seq >> 8, uuid.clock_seq & 0xFF,
+		uuid.node[0], uuid.node[1], uuid.node[2],
+		uuid.node[3], uuid.node[4], uuid.node[5]);
+	return cstr;
+}
+
+char *get_uuid_boundary() {
+	uuid uuid=get_uuid();
+
+	const int boundary_bufsize=10+32+1/*for zero-teminator*/+1/*for faulty snprintfs*/;
+	char* boundary=new(PointerFreeGC) char[boundary_bufsize];
+
+	snprintf(boundary, boundary_bufsize,
+		"----------%08X%04X%04X%02X%02X%02X%02X%02X%02X%02X%02X",
+		uuid.time_low, uuid.time_mid, uuid.time_hi_and_version,
+		uuid.clock_seq >> 8, uuid.clock_seq & 0xFF,
+		uuid.node[0], uuid.node[1], uuid.node[2],
+		uuid.node[3], uuid.node[4], uuid.node[5]);
+	return boundary;
+}

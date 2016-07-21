@@ -8,7 +8,7 @@
 #ifndef PA_RANDOM_H
 #define PA_RANDOM_H
 
-#define IDENT_PA_RANDOM_H "$Id: pa_random.h,v 1.4 2015/10/26 01:21:56 moko Exp $"
+#define IDENT_PA_RANDOM_H "$Id: pa_random.h,v 1.5 2016/07/21 17:05:37 moko Exp $"
 
 #include "pa_types.h"
 
@@ -22,15 +22,7 @@ static inline int _random(uint top) {
 	return int(double(raw) / MAX_UINT * top );
 }
 
-/// to hell with extra bytes on 64bit platforms
-struct uuid {
-	unsigned int	time_low;
-	unsigned short	time_mid;
-	unsigned short	time_hi_and_version;
-	unsigned short	clock_seq;
-	unsigned char	node[6];
-};
-
-uuid get_uuid();
+char *get_uuid_cstr();
+char *get_uuid_boundary();
 
 #endif

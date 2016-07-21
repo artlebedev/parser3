@@ -13,11 +13,12 @@
 #include "pa_common.h"
 #include "pa_charset.h"
 #include "pa_charsets.h"
+#include "pa_random.h"
 #include "pa_vdate.h"
 #include "pa_vfile.h"
 #include "pa_uue.h"
 
-volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.117 2016/04/06 16:08:20 moko Exp $" IDENT_PA_VMAIL_H;
+volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.118 2016/07/21 17:05:37 moko Exp $" IDENT_PA_VMAIL_H;
 
 #ifdef WITH_MAILRECEIVE
 extern "C" {
@@ -417,7 +418,6 @@ struct Store_message_element_info {
 	String& header;
 	const String* & from;
 	bool extract_to; String* & to;
-	const String* errors_to;
 	bool mime_version_specified;
 	ArrayValue* parts[P_TYPES_COUNT];
 	int parts_count;
@@ -436,7 +436,6 @@ struct Store_message_element_info {
 		header(aheader),
 		from(afrom),
 		extract_to(aextract_to), to(ato),
-		errors_to(0),
 		mime_version_specified(false),
 		parts_count(0),
 		backward_compatibility(false), content_type(0),
@@ -498,8 +497,6 @@ static void store_message_element(HashStringValue::key_type raw_element_name,
 		if(is_bcc) // blinding it
 			return;
 	}
-	if(low_element_name=="errors-to")
-		info->errors_to=&extractEmails(element_value->as_string());	
 	if(low_element_name=="mime-version")
 		info->mime_version_specified=true;
 
@@ -748,8 +745,6 @@ const String& VMail::message_hash_to_string(Request& r,
 			info.parts_count++;
 		}
 
-		if(!info.errors_to)
-			result << "Errors-To: postmaster\n"; // errors-to: default
 		if(!info.mime_version_specified)
 			result << "MIME-Version: 1.0\n"; // MIME-Version: default
 	}
@@ -771,8 +766,7 @@ const String& VMail::message_hash_to_string(Request& r,
 	// header
 	char *boundary=0;
 	if(multipart) {
-		boundary=new(PointerFreeGC) char[MAX_NUMBER];
-		snprintf(boundary, MAX_NUMBER-5/*lEvEl*/, "lEvEl%d", level);
+		boundary=get_uuid_boundary();
 
 		bool is_inline = false;
 		{

@@ -22,7 +22,7 @@
 extern "C" char *crypt(const char* , const char* );
 #endif
 
-volatile const char * IDENT_MATH_C="$Id: math.C,v 1.81 2016/03/31 21:46:20 moko Exp $";
+volatile const char * IDENT_MATH_C="$Id: math.C,v 1.82 2016/07/21 17:05:37 moko Exp $";
 
 // defines
 
@@ -480,23 +480,10 @@ static void _digest(Request& r, MethodParams& params) {
 }
 
 static void _uuid(Request& r, MethodParams& /*params*/) {
-	uuid uuid=get_uuid();
-
-	const size_t bufsize=36+1/*zero-teminator*/+1/*for faulty snprintfs*/;
-	char* cstr=new(PointerFreeGC) char[bufsize];
-
-	snprintf(cstr, bufsize,
-			"%08X-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X",
-			uuid.time_low, uuid.time_mid, uuid.time_hi_and_version,
-			uuid.clock_seq >> 8, uuid.clock_seq & 0xFF,
-			uuid.node[0], uuid.node[1], uuid.node[2],
-			uuid.node[3], uuid.node[4], uuid.node[5]);
-
-	r.write_pass_lang(*new String(cstr));
+	r.write_pass_lang(*new String(get_uuid_cstr()));
 }
 
 static void _uid64(Request& r, MethodParams& /*params*/) {
-
 	unsigned char id[64/8];
 	random(&id, sizeof(id));
 
