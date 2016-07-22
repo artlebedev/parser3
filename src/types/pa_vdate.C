@@ -9,7 +9,7 @@
 #include "pa_vint.h"
 #include "pa_vstring.h"
 
-volatile const char * IDENT_PA_PA_VDATE_C="$Id: pa_vdate.C,v 1.16 2016/03/27 20:58:18 moko Exp $" IDENT_PA_VDATE_H;
+volatile const char * IDENT_PA_PA_VDATE_C="$Id: pa_vdate.C,v 1.17 2016/07/22 16:53:46 moko Exp $" IDENT_PA_VDATE_H;
 
 #define ZERO_DATE (-62169984000ll-SECS_PER_DAY) // '0000-00-00 00:00:00' - 1 day
 #define MAX_DATE (253402300799ll+SECS_PER_DAY) // '9999-12-31 23:59:59' + 1 day
@@ -191,7 +191,7 @@ const String* VDate::get_iso_string(iso_string_type format) {
 	}
 }
 
-override Value* VDate::get_element(const String& aname) {
+Value* VDate::get_element(const String& aname) {
 	// $method
 	if(Value* result=VStateless_object::get_element(aname))
 		return result;
@@ -220,6 +220,25 @@ override Value* VDate::get_element(const String& aname) {
 	} else { return bark("%s field not found", &aname); }
 	return new VInt(result);
 }
+
+extern int to_year(int iyear);
+
+const VJunction* VDate::put_element(const String& aname, Value* avalue) {
+	tm tmIn=get_tm();
+
+	if(aname=="year") tmIn.tm_year=to_year(avalue->as_int());
+	else if(aname=="month") tmIn.tm_mon=avalue->as_int()-1;
+	else if(aname=="day") tmIn.tm_mday=avalue->as_int();
+	else if(aname=="hour") tmIn.tm_hour=avalue->as_int();
+	else if(aname=="minute") tmIn.tm_min=avalue->as_int();
+	else if(aname=="second") tmIn.tm_sec=avalue->as_int();
+	else bark("%s field not found", &aname);
+
+	set_tm(tmIn);
+
+	return PUT_ELEMENT_REPLACED_ELEMENT;
+}
+
 
 const String* VDate::get_json_string(Json_options& options) {
 	String* result=new String();

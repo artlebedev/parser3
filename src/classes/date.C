@@ -13,7 +13,7 @@
 #include "pa_vdate.h"
 #include "pa_vtable.h"
 
-volatile const char * IDENT_DATE_C="$Id: date.C,v 1.103 2016/03/31 21:46:19 moko Exp $" IDENT_PA_VDATE_H;
+volatile const char * IDENT_DATE_C="$Id: date.C,v 1.104 2016/07/22 16:53:46 moko Exp $" IDENT_PA_VDATE_H;
 
 // class
 
@@ -70,7 +70,7 @@ static void _today(Request& r, MethodParams&) {
 	vdate.set_tm(today);
 }
 
-static int to_year(int iyear) {
+int to_year(int iyear) {
 	if(iyear<0 || iyear>9999)
 		throw Exception(DATE_RANGE_EXCEPTION_TYPE, 0, "year '%d' is out of range 0..9999", iyear);
 	return iyear-1900;

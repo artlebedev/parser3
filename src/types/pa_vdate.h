@@ -8,7 +8,7 @@
 #ifndef PA_VDATE_H
 #define PA_VDATE_H
 
-#define IDENT_PA_VDATE_H "$Id: pa_vdate.h,v 1.63 2016/03/30 19:45:37 moko Exp $"
+#define IDENT_PA_VDATE_H "$Id: pa_vdate.h,v 1.64 2016/07/22 16:53:46 moko Exp $"
 
 #include "classes.h"
 #include "pa_common.h"
@@ -57,6 +57,9 @@ public: // Value
 
 	/// VDate: method,field
 	override Value* get_element(const String& aname);
+
+	/// VDate: field
+	override const VJunction* put_element(const String& aname, Value* avalue);
 
 public: // usage
 
