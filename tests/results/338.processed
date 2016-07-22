@@ -1,0 +1,13 @@
+Content-Type: text/html
+Content-Length: 264
+
+2048-11-02 02:11:10
+Type: date.range,
+Source: year,
+Comment: year '1000000' is out of range 0..9999
+Type: parser.runtime,
+Source: ups,
+Comment: date field not found
+Type: parser.runtime,
+Source: year,
+Comment: is 'junction', it does not have numerical (int) value

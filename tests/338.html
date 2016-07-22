@@ -1,0 +1,15 @@
+@main[]
+$d[^date::create[2050-01-01]]
+
+$d.year($d.year-1)
+$d.month[-1]
+$d.day(1)
+$d.hour(25)
+$d.minute(7e01)
+$d.second(70.999)
+
+^d.sql-string[]
+
+^try-catch{$d.year(1e6)}
+^try-catch{$d.ups[2]}
+^try-catch{$d.year{2000}}
