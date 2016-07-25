@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.163 2016/07/21 18:30:10 moko Exp $"
+#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.164 2016/07/25 17:16:36 moko Exp $"
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -16,26 +16,28 @@
 class Request;
 
 // defines
-#define HTTP_STATUS	"status"
+#define HTTP_STATUS		"status"
 #define HTTP_STATUS_CAPITALIZED	"Status"
 
-#define HTTP_CONTENT_LENGTH	"content-length"
+#define HTTP_CONTENT_LENGTH		"content-length"
 #define HTTP_CONTENT_LENGTH_CAPITALIZED	"Content-Length"
 
 #define HTTP_CONTENT_TYPE		"content-type"
 #define HTTP_CONTENT_TYPE_UPPER		"CONTENT-TYPE"
 #define HTTP_CONTENT_TYPE_CAPITALIZED	"Content-Type"
-#define HTTP_CONTENT_TYPE_FORM_URLENCODED	"application/x-www-form-urlencoded"
-#define HTTP_CONTENT_TYPE_MULTIPART_FORMDATA	"multipart/form-data"
-#define HTTP_CONTENT_TYPE_MULTIPART_RELATED	"multipart/related"
-#define HTTP_CONTENT_TYPE_MULTIPART_MIXED	"multipart/mixed"
 
 #define CONTENT_DISPOSITION		"content-disposition"
 #define CONTENT_DISPOSITION_UPPER	"CONTENT-DISPOSITION"
 #define CONTENT_DISPOSITION_CAPITALIZED	"Content-Disposition"
-#define CONTENT_DISPOSITION_ATTACHMENT "attachment"
-#define CONTENT_DISPOSITION_INLINE "inline"
+
+#define CONTENT_DISPOSITION_ATTACHMENT	"attachment"
+#define CONTENT_DISPOSITION_INLINE	"inline"
 #define CONTENT_DISPOSITION_FILENAME_NAME "filename"
+
+#define HTTP_CONTENT_TYPE_FORM_URLENCODED	"application/x-www-form-urlencoded"
+#define HTTP_CONTENT_TYPE_MULTIPART_FORMDATA	"multipart/form-data"
+#define HTTP_CONTENT_TYPE_MULTIPART_RELATED	"multipart/related"
+#define HTTP_CONTENT_TYPE_MULTIPART_MIXED	"multipart/mixed"
 
 #define BASE64_STRICT_OPTION_NAME "strict"
 
@@ -271,6 +273,8 @@ const unsigned long pa_crc32(const String& file_spec);
 /** 
 	Mix functions
 */
+
+#define PA_DEFAULT(A,B) ((A) ? (A):(B) )
 
 // some stuff for use with .for_each
 static void copy_all_overwrite_to(HashStringValue::key_type key, HashStringValue::value_type value, HashStringValue* dest) {
