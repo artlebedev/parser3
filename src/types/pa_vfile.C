@@ -12,7 +12,7 @@
 #include "pa_vint.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VFILE_C="$Id: pa_vfile.C,v 1.65 2015/10/26 01:22:01 moko Exp $" IDENT_PA_VFILE_H;
+volatile const char * IDENT_PA_VFILE_C="$Id: pa_vfile.C,v 1.66 2016/07/26 16:15:51 moko Exp $" IDENT_PA_VFILE_H;
 
 // externs
 
@@ -135,6 +135,8 @@ void VFile::set_name(const String* afile_name){
 			lfile_name=after_slash;
 		if(char *after_slash=rsplit(lfile_name, '/'))
 			lfile_name=after_slash;
+		if(!lfile_name[0])
+			lfile_name=(char *)NONAME_DAT;
 	} else
 		lfile_name=(char *)NONAME_DAT;
 
