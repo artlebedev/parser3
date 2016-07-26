@@ -17,7 +17,7 @@
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.37 2016/05/12 19:44:49 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.38 2016/07/26 13:20:23 moko Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -156,20 +156,6 @@ static void _curl_version_action(Request& r, MethodParams& ){
 
 static void _curl_version(Request& r, MethodParams& params){
 	fcurl ? _curl_version_action(r, params) : temp_curl(_curl_version_action, r, params);
-}
-
-static char *str_lower(const char *str){
-	char *result=pa_strdup(str);
-	for(char* c=result; *c; c++)
-		*c=(char)tolower((unsigned char)*c);
-	return result;
-}
-
-static char *str_upper(const char *str){
-	char *result=pa_strdup(str);
-	for(char* c=result; *c; c++)
-		*c=(char)toupper((unsigned char)*c);
-	return result;
 }
 
 class CurlOption {
@@ -622,27 +608,13 @@ static int curl_writer(char *data, size_t size, size_t nmemb, Curl_buffer *resul
 	return size;
 }
 
-class Curl_response {
-public:
-	HASH_STRING<char*> headers;
-	Array<char*> cookies;
-};
-
-static int curl_header(char *data, size_t size, size_t nmemb, Curl_response *result){
+static int curl_header(char *data, size_t size, size_t nmemb, ResponseHeaders *result){
 	if(result == 0)
 		return 0;
 
 	size=size*nmemb;
 	if(size>0){
-		char *line=pa_strdup(data, size);
-		char *value=lsplit(line,':');
-		if(value && *line){
-			// we need only headers, not the response code
-			const char* HEADER_NAME=str_upper(line);
-			result->headers.put(HEADER_NAME, value);
-			if(strcmp(HEADER_NAME, "SET-COOKIE")==0)
-				result->cookies+=value;
-		}
+		result->add_header(pa_strdup(data, size));
 	}
 	return size;
 }
@@ -663,7 +635,7 @@ static void _curl_load_action(Request& r, MethodParams& params){
 	CURL_SETOPT(CURLOPT_WRITEDATA, &body, "curl write buffer");
 
 	// we need a container for headers as VFile fields can be put only after VFile.set
-	Curl_response response;
+	ResponseHeaders response;
 	CURL_SETOPT(CURLOPT_HEADERFUNCTION, curl_header, "curl header function");
 	CURL_SETOPT(CURLOPT_WRITEHEADER, &response, "curl header buffer");
 
@@ -686,7 +658,7 @@ static void _curl_load_action(Request& r, MethodParams& params){
 				ex_type = "curl.ssl"; break;
 			default: break;
 		}
-		throw Exception( ex_type ? ex_type : "curl.fail", 0, "%s", f_curl_easy_strerror(res));
+		throw Exception( PA_DEFAULT(ex_type, "curl.fail"), 0, "%s", f_curl_easy_strerror(res));
 	}
 
 	// assure trailing zero
@@ -694,12 +666,15 @@ static void _curl_load_action(Request& r, MethodParams& params){
 
 	VFile& result=*new VFile;
 
-	String::Body ct_header = String::Body(response.headers.get(HTTP_CONTENT_TYPE_UPPER)).trim(String::TRIM_BOTH, " \t\n\r");
 	Charset *asked_charset = options().response_charset;
-	if (asked_charset == 0){
-		Charset *remote_charset = ct_header.is_empty() ? 0 : detect_charset(ct_header.cstr());
-		asked_charset = remote_charset ? remote_charset : options().charset;
-	}
+	if (!asked_charset && !response.content_type.is_empty())
+		asked_charset=detect_charset(response.content_type.cstr());
+
+	if(options().is_text)
+		asked_charset=charsets.checkBOM(body.buf, body.length, asked_charset);
+
+	if (!asked_charset)
+		asked_charset = options().charset;
 
 	if(options().is_text && asked_charset != 0){
 		String::C c=Charset::transcode(String::C(body.buf, body.length), *asked_charset, r.charsets.source());
@@ -707,42 +682,33 @@ static void _curl_load_action(Request& r, MethodParams& params){
 		body.length=c.length;
 	}
 
-	result.set(true/*tainted*/, options().is_text, body.buf, body.length, options().filename,
-		options().content_type ? new VString(*options().content_type) : ct_header.is_empty() ? 0 : new VString(*new String(ct_header, String::L_TAINTED)), &r);
+	const String *content_type = PA_DEFAULT(options().content_type, response.content_type.is_empty() ? 0 : new String(response.content_type, String::L_TAINTED));
+
+	result.set(true/*tainted*/, options().is_text, body.buf, body.length, options().filename, content_type ? new VString(*content_type) : 0, &r);
+
 	long http_status = 0;
 	if(f_curl_easy_getinfo(curl(), CURLINFO_RESPONSE_CODE, &http_status) == CURLE_OK){
 		result.fields().put("status", new VInt(http_status));
 	}
 
-	for(HASH_STRING<char *>::Iterator i(response.headers); i; i.next() ){
-		String::Body HEADER_NAME=i.key();	
-		String::Body value=i.value();
-		if(asked_charset){
-			HEADER_NAME=Charset::transcode(HEADER_NAME, *asked_charset, r.charsets.source());
-			value=Charset::transcode(value, *asked_charset, r.charsets.source());
-		}
-		result.fields().put(HEADER_NAME, new VString(*new String(value.trim(String::TRIM_BOTH, " \t\n\r"), String::L_TAINTED)));
+	VHash* vtables=new VHash;
+	result.fields().put("tables", vtables);
+
+	for(Array_iterator<ResponseHeaders::Header> i(response.headers); i.has_next(); ){
+		ResponseHeaders::Header header=i.next();
+
+		if(asked_charset)
+			header.transcode(*asked_charset, r.charsets.source());
+
+		String &header_value=*new String(header.value, String::L_TAINTED);
+
+		tables_update(vtables->hash(), header.name, header_value);
+		result.fields().put(header.name, new VString(header_value));
 	}
 
 	// filling $.cookies
-	Table* tcookies=0;
-
-	for(Array_iterator<char*> i(response.cookies); i.has_next(); ){
-		if(!tcookies){
-			Table::columns_type columns=new ArrayString(1);
-			*columns+=new String("value");
-			tcookies=new Table(columns);
-		}
-		String::Body value=i.next();
-		if(asked_charset)
-			value=Charset::transcode(value, *asked_charset, r.charsets.source());
-		ArrayString& row=*new ArrayString(1);
-		row+=new String(value.trim(String::TRIM_BOTH, " \t\n\r"), String::L_TAINTED);
-		*tcookies+=&row;
-	}
-
-	if(tcookies)
-		result.fields().put(HTTP_COOKIES_NAME, new VTable(parse_cookies(r, tcookies)));
+	if(Value *vcookies=vtables->hash().get("SET-COOKIE"))
+		result.fields().put(HTTP_COOKIES_NAME, new VTable(parse_cookies(r, vcookies->get_table())));
 
 	r.write_no_lang(result);
 }

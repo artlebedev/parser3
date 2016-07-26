@@ -13,7 +13,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.71 2016/07/21 17:05:37 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.72 2016/07/26 13:20:23 moko Exp $" IDENT_PA_HTTP_H; 
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -31,8 +31,6 @@ volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.71 2016/07/21 17:05:37
 #define HTTP_FORM_ENCTYPE_NAME	"enctype"
 #define HTTP_ANY_STATUS_NAME	"any-status"
 #define HTTP_OMIT_POST_CHARSET_NAME	"omit-post-charset"	// ^file::load[...;http://...;$.method[post]] by default adds charset to content-type
-
-#define HTTP_TABLES_NAME "tables"
 
 #define HTTP_USER "user"
 #define HTTP_PASSWORD "password"
@@ -617,12 +615,26 @@ Table* parse_cookies(Request& r, Table *cookies){
 	return &result;
 }
 
+void *tables_update(HashStringValue& tables, const String::Body name, const String& value){
+	Table *table;
+	if(Value *valready=tables.get(name)) {
+		// second+ appearence
+		table=valready->get_table();
+	} else {
+		// first appearence
+		Table::columns_type columns=new ArrayString(1);
+		*columns+=new String("value");
+		table=new Table(columns);
+		tables.put(name, new VTable(table));
+	}
+	// this string becomes next row
+	ArrayString& row=*new ArrayString(1);
+	row+=&value;
+	*table+=&row;
+}
+
 /// @todo build .cookies field. use ^file.tables.SET-COOKIES.menu{ for now
-File_read_http_result pa_internal_file_read_http(Request& r,
-						const String& file_spec,
-						bool as_text,
-						HashStringValue *options,
-						bool transcode_text_result) {
+File_read_http_result pa_internal_file_read_http(Request& r, const String& file_spec, bool as_text, HashStringValue *options, bool transcode_text_result) {
 	File_read_http_result result;
 	char host[MAX_STRING];
 	const char *idna_host;
@@ -637,7 +649,7 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 	Value* vheaders=0;
 	Value* vcookies=0;
 	Value* vbody=0;
-	Charset *asked_remote_charset=0;
+	Charset* asked_remote_charset=0;
 	Charset* real_remote_charset=0;
 	const char* user_cstr=0;
 	const char* password_cstr=0;
@@ -705,28 +717,20 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 
 	if(encode){
 		if(method_is_get)
-			throw Exception(PARSER_RUNTIME,
-				0,
-				"you can not use $." HTTP_FORM_ENCTYPE_NAME " option with method GET");
+			throw Exception(PARSER_RUNTIME, 0, "you can not use $." HTTP_FORM_ENCTYPE_NAME " option with method GET");
 
 		multipart=strcasecmp(encode, HTTP_CONTENT_TYPE_MULTIPART_FORMDATA)==0;
 
 		if(!multipart && strcasecmp(encode, HTTP_CONTENT_TYPE_FORM_URLENCODED)!=0)
-			throw Exception(PARSER_RUNTIME,
-				0,
-				"$." HTTP_FORM_ENCTYPE_NAME " option value can be " HTTP_CONTENT_TYPE_FORM_URLENCODED " or " HTTP_CONTENT_TYPE_MULTIPART_FORMDATA " only");
+			throw Exception(PARSER_RUNTIME, 0, "$." HTTP_FORM_ENCTYPE_NAME " option value can be " HTTP_CONTENT_TYPE_FORM_URLENCODED " or " HTTP_CONTENT_TYPE_MULTIPART_FORMDATA " only");
 	}
 
 	if(vbody){
 		if(method_is_get)
-			throw Exception(PARSER_RUNTIME,
-				0,
-				"you can not use $." HTTP_BODY_NAME " option with method GET");
+			throw Exception(PARSER_RUNTIME, 0, "you can not use $." HTTP_BODY_NAME " option with method GET");
 
 		if(form)
-			throw Exception(PARSER_RUNTIME,
-				0,
-				"you can not use options $." HTTP_BODY_NAME " and $." HTTP_FORM_NAME " together");
+			throw Exception(PARSER_RUNTIME, 0, "you can not use options $." HTTP_BODY_NAME " and $." HTTP_FORM_NAME " together");
 	}
 
 	//preparing request
@@ -742,9 +746,7 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 
 		const char* current=connect_string_cstr;
 		if(strncmp(current, "http://", 7)!=0)
-			throw Exception(PARSER_RUNTIME, 
-				&connect_string, 
-				"does not start with http://"); //never
+			throw Exception(PARSER_RUNTIME, &connect_string, "does not start with http://"); //never
 		current+=7;
 
 		strncpy(host, current, sizeof(host)-1);  host[sizeof(host)-1]=0;
@@ -788,9 +790,7 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 					&content_type_url_encoded};
 				headers->for_each<Http_pass_header_info*>(http_pass_header, &info); 
 			} else
-				throw Exception(PARSER_RUNTIME, 
-					0,
-					"headers param must be hash"); 
+				throw Exception(PARSER_RUNTIME, 0, "headers param must be hash"); 
 		};
 
 		const char* request_body=0;
@@ -816,11 +816,8 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 				request_body=vbody->as_string().untaint_and_transcode_cstr(String::L_URI, &(r.charsets));
 			} else {
 				// content-type != application/x-www-form-urlencoded -> transcode only, don't url-encode!
-				request_body=Charset::transcode(
-					String::C(vbody->as_string().cstr(), vbody->as_string().length()),
-					r.charsets.source(),
-					*asked_remote_charset
-				).str;
+				const String &sbody=vbody->as_string();
+				request_body=Charset::transcode(String::C(sbody.cstr(), sbody.length()), r.charsets.source(), *asked_remote_charset).str;
 			}
 			post_size=strlen(request_body);
 		}
@@ -835,9 +832,7 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 			head << "User-Agent: " DEFAULT_USER_AGENT CRLF;
 
 		if(form && !method_is_get && content_type_specified) // POST + form + content-type was specified
-			throw Exception(PARSER_RUNTIME,
-				0,
-				"$.content-type can't be specified with method POST"); 
+			throw Exception(PARSER_RUNTIME, 0, "$.content-type can't be specified with method POST"); 
 
 		if(vcookies && !vcookies->is_string()){ // allow empty
 			if(HashStringValue* cookies=vcookies->get_hash()) {
@@ -846,9 +841,7 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 				cookies->for_each<Http_pass_header_info*>(http_pass_cookie, &info); 
 				head << CRLF;
 			} else
-				throw Exception(PARSER_RUNTIME, 
-					0,
-					"cookies param must be hash");
+				throw Exception(PARSER_RUNTIME, 0, "cookies param must be hash");
 		}
 
 		if(request_body)
@@ -871,95 +864,71 @@ File_read_http_result pa_internal_file_read_http(Request& r,
 		}
 	}
 	
-	char* response;
+	char* response_str;
 	size_t response_size;
 
 	// sending request
-	int status_code=http_request(response, response_size,
-		idna_host, port, request, request_size,
-		timeout_secs, fail_on_status_ne_200); 
+	int status_code=http_request(response_str, response_size, idna_host, port, request, request_size, timeout_secs, fail_on_status_ne_200);
 	
-	// processing results	
+	// processing results
 	char* raw_body; size_t raw_body_size;
 	char* headers_end_at;
-	find_headers_end(response, 
-		headers_end_at,
-		raw_body);
-	raw_body_size=response_size-(raw_body-response);
+	find_headers_end(response_str, headers_end_at, raw_body);
+	raw_body_size=response_size-(raw_body-response_str);
 	
 	result.headers=new HashStringValue;
 	VHash* vtables=new VHash;
-	result.headers->put(HTTP_TABLES_NAME, vtables);
+	result.headers->put("tables", vtables);
+
+	ResponseHeaders response;
 
 	if(headers_end_at) {
 		*headers_end_at=0;
-		const String header_block(String::C(response, headers_end_at-response), String::L_TAINTED);
+		const String header_block(String::C(response_str, headers_end_at-response_str), String::L_TAINTED);
 		
 		ArrayString aheaders;
-		HashStringValue& tables=vtables->hash();
 
 		size_t pos_after=0;
 		header_block.split(aheaders, pos_after, "\n"); 
-		
-		// processing headers
-		size_t aheaders_count=aheaders.count();
-		for(size_t i=1; i<aheaders_count; i++) {
-			const String& line=*aheaders.get(i);
-			size_t pos=line.pos(':'); 
-			if(pos==STRING_NOT_FOUND || pos<1)
-				throw Exception("http.response", 
-					&connect_string,
-					"bad response from host - bad header \"%s\"", line.cstr());
-			const String::Body HEADER_NAME=line.mid(0, pos).change_case(r.charsets.source(), String::CC_UPPER);
-			const String& HEADER_VALUE=line.mid(pos+1, line.length()).trim(String::TRIM_BOTH, " \t\r");
-			if(as_text && HEADER_NAME==HTTP_CONTENT_TYPE_UPPER && !real_remote_charset)
-				real_remote_charset=detect_charset(HEADER_VALUE.cstr());
 
-			// tables
-			{
-				Value *valready=(Value *)tables.get(HEADER_NAME);
-				bool existed=valready!=0;
-				Table *table;
-				if(existed) {
-					// second+ appearence
-					table=valready->get_table();
-				} else {
-					// first appearence
-					Table::columns_type columns=new ArrayString(1);
-					*columns+=new String("value");
-					table=new Table(columns);
-				}
-				// this string becomes next row
-				ArrayString& row=*new ArrayString(1);
-				row+=&HEADER_VALUE;
-				*table+=&row;
-				// not existed before? add it
-				if(!existed)
-					tables.put(HEADER_NAME, new VTable(table));
-			}
-
-			result.headers->put(HEADER_NAME, new VString(HEADER_VALUE));
+		Array_iterator<const String*> i(aheaders);
+		i.next(); // skipping status
+		for(;i.has_next();){
+			const char *line=i.next()->cstr();
+			if(!response.add_header(line))
+				throw Exception("http.response", &connect_string, "bad response from host - bad header \"%s\"", line);
 		}
-
-		// filling $.cookies
-		if(Value *vcookies=(Value *)tables.get("SET-COOKIE"))
-			result.headers->put(HTTP_COOKIES_NAME, new VTable(parse_cookies(r, vcookies->get_table())));
 	}
 
-	if(as_text){
+	if (!real_remote_charset && !response.content_type.is_empty())
+		real_remote_charset= detect_charset(response.content_type.cstr());
+
+	if(as_text)
 		real_remote_charset=charsets.checkBOM(raw_body, raw_body_size, real_remote_charset);
+
+	if (!real_remote_charset)
+		real_remote_charset=asked_remote_charset; // never null
+
+	for(Array_iterator<ResponseHeaders::Header> i(response.headers); i.has_next(); ){
+		ResponseHeaders::Header header=i.next();
+
+		header.transcode(*real_remote_charset, r.charsets.source());
+
+		String &header_value=*new String(header.value, String::L_TAINTED);
+
+		tables_update(vtables->hash(), header.name, header_value);
+		result.headers->put(header.name, new VString(header_value));
 	}
+
+	// filling $.cookies
+	if(Value *vcookies=vtables->hash().get("SET-COOKIE"))
+		result.headers->put(HTTP_COOKIES_NAME, new VTable(parse_cookies(r, vcookies->get_table())));
 
 	// output response
 	String::C real_body=String::C(raw_body, raw_body_size);
 
 	if(as_text && transcode_text_result && raw_body_size) { // raw_body_size must be checked because transcode returns CONST string in case length==0, which contradicts hacking few lines below
-		// defaulting to used-asked charset [it's never empty!]
-		if(!real_remote_charset)
-			real_remote_charset=asked_remote_charset;
-
 		real_body=Charset::transcode(real_body, *real_remote_charset, r.charsets.source());
-
 	}
 
 	result.str=const_cast<char *>(real_body.str); // hacking a little

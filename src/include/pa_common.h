@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.164 2016/07/25 17:16:36 moko Exp $"
+#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.165 2016/07/26 13:20:23 moko Exp $"
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -203,12 +203,7 @@ bool dir_exists(const String& file_spec);
 const String* file_exist(const String& path, const String& name);
 bool file_executable(const String& file_spec);
 
-bool file_stat(const String& file_spec, 
-				size_t& rsize, 
-				time_t& ratime,
-				time_t& rmtime,
-				time_t& rctime,
-				bool fail_on_read_problem=true);
+bool file_stat(const String& file_spec, size_t& rsize, time_t& ratime, time_t& rmtime, time_t& rctime, bool fail_on_read_problem=true);
 
 size_t stdout_write(const void *buf, size_t size);
 
@@ -220,8 +215,6 @@ int file_block_read(const int f, unsigned char* buffer, const size_t size);
 	String related functions
 */
 
-const char* capitalize(const char* s);
-
 /** under WIN32 "t" mode fixes DOS chars OK, 
 	can't say that about other systems/ line break styles
 */
@@ -231,6 +224,7 @@ char *getrow(char **row_ref,char delim='\n');
 char *lsplit(char *string, char delim);
 char *lsplit(char **string_ref,char delim);
 char *rsplit(char *string, char delim);
+
 const char* format(double value, const char *fmt);
 
 char* unescape_chars(const char* cp, int len, Charset* client_charset=0, bool js=false/*true==decode \uXXXX and don't convert '+' to space*/);
@@ -249,13 +243,12 @@ size_t strpos(const char *str, const char *substr);
 
 int remove_crlf(char *start, char *end);
 
-inline bool pa_isalpha(unsigned char c) {
-	return (((c>='A') && (c<='Z')) || ((c>='a') && (c<='z')));
-}
+inline bool pa_isalpha(unsigned char c) { return (((c>='A') && (c<='Z')) || ((c>='a') && (c<='z'))); }
+inline bool pa_isalnum(unsigned char c) { return (((c>='0') && (c<='9')) || pa_isalpha(c)); }
 
-inline bool pa_isalnum(unsigned char c) {
-	return (((c>='0') && (c<='9')) || pa_isalpha(c));
-}
+const char* capitalize(const char* s);
+char *str_lower(const char *s, size_t helper_length=0);
+char *str_upper(const char *s, size_t helper_length=0);
 
 const char* hex_string(unsigned char* bytes, size_t size, bool upcase);
 extern const char* hex_digits;

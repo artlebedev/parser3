@@ -50,7 +50,7 @@
 #define pa_mkdir(path, mode) mkdir(path, mode)
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.289 2016/07/21 18:30:10 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.290 2016/07/26 13:20:23 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -541,6 +541,20 @@ const char* capitalize(const char* s){
 		}
 	}
 	return (const char*)result;
+}
+
+char *str_lower(const char *s, size_t helper_length){
+	char *result=pa_strdup(s, helper_length);
+	for(char* c=result; *c; c++)
+		*c=(char)tolower((unsigned char)*c);
+	return result;
+}
+
+char *str_upper(const char *s, size_t helper_length){
+	char *result=pa_strdup(s, helper_length);
+	for(char* c=result; *c; c++)
+		*c=(char)toupper((unsigned char)*c);
+	return result;
 }
 
 void fix_line_breaks(char *str, size_t& length) {
