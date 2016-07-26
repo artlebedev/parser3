@@ -13,7 +13,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.72 2016/07/26 13:20:23 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.73 2016/07/26 15:22:36 moko Exp $" IDENT_PA_HTTP_H; 
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -108,9 +108,7 @@ static int http_read_response(char*& response, size_t& response_size, int sock, 
 		goto done;
 	if(received_size<0) {
 		if(int no=pa_socks_errno())
-			throw Exception("http.timeout", 
-				0, 
-				"error receiving response header: %s (%d)", pa_socks_strerr(no), no); 
+			throw Exception("http.timeout", 0, "error receiving response header: %s (%d)", pa_socks_strerr(no), no); 
 		goto done;
 	}
 	// terminator [helps futher string searches]
@@ -125,9 +123,7 @@ static int http_read_response(char*& response, size_t& response_size, int sock, 
 		result=status_code.as_int(); 
 
 		if(fail_on_status_ne_200 && result!=200)
-			throw Exception("http.status",
-				&status_code,
-				"invalid HTTP response status");
+			throw Exception("http.status", &status_code, "invalid HTTP response status");
 	}
 	// detecting response_size
 	{
@@ -162,9 +158,7 @@ static int http_read_response(char*& response, size_t& response_size, int sock, 
 			}
 			if(received_size<0) {
 				if(int no=pa_socks_errno())
-					throw Exception("http.timeout", 
-						0, 
-						"error receiving response body: %s (%d)", pa_socks_strerr(no), no); 
+					throw Exception("http.timeout", 0, "error receiving response body: %s (%d)", pa_socks_strerr(no), no); 
 				break;
 			}
 			// they've touched the terminator?
@@ -190,9 +184,7 @@ done:
 		return result;
 	}
 	else
-		throw Exception("http.response",
-			0,
-			"bad response from host - no status found (size=%u)", response_size); 
+		throw Exception("http.response", 0, "bad response from host - no status found (size=%u)", response_size); 
 }
 
 /* ********************** request *************************** */
@@ -214,9 +206,7 @@ static int http_request(char*& response, size_t& response_size,
 			int timeout_secs,
 			bool fail_on_status_ne_200) {
 	if(!host)
-		throw Exception("http.host", 
-			0, 
-			"zero hostname");  //never
+		throw Exception("http.host", 0, "zero hostname");  //never
 
 	volatile // to prevent makeing it register variable, because it will be clobbered by longjmp [thanks gcc warning]
 		int sock=-1;
@@ -230,9 +220,7 @@ static int http_request(char*& response, size_t& response_size,
 		// rewritten simplier [athough duplicating closesocket code]
 		if(sock>=0) 
 			closesocket(sock); 
-		throw Exception("http.timeout", 
-			0, 
-			"timeout occured while retrieving document"); 
+		throw Exception("http.timeout", 0, "timeout occured while retrieving document"); 
 		return 0; // never
 	} else {
 		alarm(timeout_secs); 
@@ -242,15 +230,11 @@ static int http_request(char*& response, size_t& response_size,
 			struct sockaddr_in dest;
 		
 			if(!set_addr(&dest, host, port))
-				throw Exception("http.host", 
-					0, 
-					"can not resolve hostname \"%s\"", host); 
+				throw Exception("http.host", 0, "can not resolve hostname \"%s\"", host); 
 			
 			if((sock=socket(AF_INET, SOCK_STREAM, IPPROTO_TCP/*0*/))<0) {
 				int no=pa_socks_errno();
-				throw Exception("http.connect", 
-					0, 
-					"can not make socket: %s (%d)", pa_socks_strerr(no), no); 
+				throw Exception("http.connect", 0, "can not make socket: %s (%d)", pa_socks_strerr(no), no); 
 			}
 
 			// To enable SO_DONTLINGER (that is, disable SO_LINGER) 
@@ -269,16 +253,12 @@ static int http_request(char*& response, size_t& response_size,
 
 			if(connect(sock, (struct sockaddr *)&dest, sizeof(dest))) {
 				int no=pa_socks_errno();
-				throw Exception("http.connect", 
-					0, 
-					"can not connect to host \"%s\": %s (%d)", host, pa_socks_strerr(no), no); 
+				throw Exception("http.connect", 0, "can not connect to host \"%s\": %s (%d)", host, pa_socks_strerr(no), no); 
 			}
 
 			if(send(sock, request, request_size, 0)!=(ssize_t)request_size) {
 				int no=pa_socks_errno();
-				throw Exception("http.timeout", 
-					0, 
-					"error sending request: %s (%d)", pa_socks_strerr(no), no); 
+				throw Exception("http.timeout", 0, "error sending request: %s (%d)", pa_socks_strerr(no), no); 
 			}
 
 			result=http_read_response(response, response_size, sock, fail_on_status_ne_200); 
@@ -370,11 +350,7 @@ static const String* basic_authorization_field(const char* user, const char* pas
 	return result;
 }
 
-static void form_string_value2string(
-					HashStringValue::key_type key, 
-					const String& value, 
-					String& result) 
-{
+static void form_string_value2string(HashStringValue::key_type key, const String& value, String& result) {
 	result << String(key, String::L_URI) << "=" << String(value, String::L_URI) << "&";
 }
 
@@ -390,19 +366,15 @@ struct Form_table_value2string_info {
 static void form_table_value2string(Table::element_type row, Form_table_value2string_info* info) {
 	form_string_value2string(info->key, *row->get(0), info->result);
 }
-static void form_value2string(
-					HashStringValue::key_type key, 
-					HashStringValue::value_type value, 
-					String* result) 
-{
+
+static void form_value2string(HashStringValue::key_type key, HashStringValue::value_type value, String* result) {
 	if(const String* svalue=value->get_string())
 		form_string_value2string(key, *svalue, *result);
 	else if(Table* tvalue=value->get_table()) {
 		Form_table_value2string_info info(key, *result);
 		tvalue->for_each(form_table_value2string, &info);
 	} else
-		throw Exception(PARSER_RUNTIME,
-			new String(key, String::L_TAINTED),
+		throw Exception(PARSER_RUNTIME, new String(key, String::L_TAINTED),
 			"is %s, " HTTP_FORM_NAME " option value can be string or table only (file is allowed for $." HTTP_METHOD_NAME "[POST] + $." HTTP_FORM_ENCTYPE_NAME "[" HTTP_CONTENT_TYPE_MULTIPART_FORMDATA "])", value->type());
 }
 
@@ -455,11 +427,8 @@ struct FormPart {
 	}
 };
 
-static void form_part_boundary_header(FormPart& part, String::Body name, const char* file_name=0){
-	*part.string << "--" << part.boundary
-				<< CRLF CONTENT_DISPOSITION_CAPITALIZED ": form-data; name=\"" 
-				<< name
-				<< "\"";
+static void form_part_boundary_header(FormPart& part, String::Body name, const char* file_name=0) {
+	*part.string << "--" << part.boundary << CRLF CONTENT_DISPOSITION_CAPITALIZED ": form-data; name=\"" << name << "\"";
 	if(file_name){
 		if(strcmp(file_name, NONAME_DAT)!=0)
 			*part.string << "; filename=\"" << file_name << "\"";
@@ -468,20 +437,12 @@ static void form_part_boundary_header(FormPart& part, String::Body name, const c
 	*part.string << CRLF CRLF;
 }
 
-static void form_string_value2part(
-				HashStringValue::key_type key,
-				const String& value,
-				FormPart& part)
-{
+static void form_string_value2part(HashStringValue::key_type key, const String& value, FormPart& part) {
 	form_part_boundary_header(part, key);
 	*part.string << value << CRLF;
 }
 
-static void form_file_value2part(
-				HashStringValue::key_type key,
-				VFile& vfile,  
-				FormPart& part)
-{
+static void form_file_value2part(HashStringValue::key_type key, VFile& vfile, FormPart& part) {
 	form_part_boundary_header(part, key, vfile.fields().get(name_name)->as_string().cstr());
 	part.blocks+=FormPart::BinaryBlock(part.string, part.r);
 	part.blocks+=FormPart::BinaryBlock(vfile.value_ptr(), vfile.value_size());
@@ -493,11 +454,7 @@ static void form_table_value2part(Table::element_type row, FormPart* part) {
 	form_string_value2part(part->info->key, *row->get(0), *part);
 }
 
-static void form_value2part(
-				HashStringValue::key_type key,
-				HashStringValue::value_type value,
-				FormPart& part)
-{
+static void form_value2part(HashStringValue::key_type key, HashStringValue::value_type value, FormPart& part) {
 	if(const String* svalue=value->get_string())
 		form_string_value2part(key, *svalue, part);
 	else if(Table* tvalue=value->get_table()) {
@@ -507,9 +464,7 @@ static void form_value2part(
 	} else if(VFile* vfile=static_cast<VFile *>(value->as("file"))){
 		form_file_value2part(key, *vfile, part);
 	} else
-		throw Exception(PARSER_RUNTIME,
-			new String(key, String::L_TAINTED),
-			"is %s, " HTTP_FORM_NAME " option value can be string, table or file only", value->type());
+		throw Exception(PARSER_RUNTIME, new String(key, String::L_TAINTED), "is %s, " HTTP_FORM_NAME " option value can be string, table or file only", value->type());
 }
 
 const char* pa_form2string_multipart(HashStringValue& form, Request& r, const char* boundary, size_t& post_size){
@@ -520,10 +475,7 @@ const char* pa_form2string_multipart(HashStringValue& form, Request& r, const ch
 	return formpart.post(post_size);
 }
 
-static void find_headers_end(char* p,
-		char*& headers_end_at,
-		char*& raw_body)
-{
+static void find_headers_end(char* p, char*& headers_end_at, char*& raw_body) {
 	raw_body=p;
 	// \n\n
 	// \r\n\r\n
