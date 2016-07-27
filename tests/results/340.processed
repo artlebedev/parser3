@@ -1,0 +1,13 @@
+Content-Type: text/html
+Content-Length: 173
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!--some comment-->
+<people>
+<man>
+<name>ПИФ</name>
+</man>
+<man id="1" имя="word слово">
+<name>PAF</name>
+</man>
+</people>
