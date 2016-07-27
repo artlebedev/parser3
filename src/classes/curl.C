@@ -17,7 +17,7 @@
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.38 2016/07/26 13:20:23 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.39 2016/07/27 22:34:49 moko Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -71,14 +71,18 @@ static const char *dlink(const char *dlopen_file_spec) {
 
 class ParserOptions {
 public:
+	// real options
 	const String *filename;
 	const String *content_type;
 	bool is_text;
 	Charset *charset, *response_charset;
+
+	// stuff for internal use
+	const char *url;
 	struct curl_httppost *f_post;
 	FILE *f_stderr;
 
-	ParserOptions() : filename(0), content_type(0), is_text(true), charset(0), response_charset(0), f_post(0), f_stderr(0){}
+	ParserOptions() : filename(0), content_type(0), is_text(true), charset(0), response_charset(0), url(0), f_post(0), f_stderr(0){}
 	~ParserOptions() {
 		f_curl_formfree(f_post);
 		if(f_stderr)
@@ -427,8 +431,8 @@ static void curl_setopt(HashStringValue::key_type key, HashStringValue::value_ty
 			const String url = v.as_string();
 			if(!url.starts_with("http://") && !url.starts_with("https://"))
 				throw Exception("curl", 0, "failed to set option '%s': invalid url scheme '%s'", key.cstr(), url.cstr());
-			const char *value_str=curl_urlencode(url, r);
-			res=f_curl_easy_setopt(curl(), opt->id, value_str);
+			options().url=curl_urlencode(url, r);
+			res=f_curl_easy_setopt(curl(), opt->id, options().url);
 			break;
 		}
 		case CurlOption::CURL_INT:{
@@ -683,8 +687,9 @@ static void _curl_load_action(Request& r, MethodParams& params){
 	}
 
 	const String *content_type = PA_DEFAULT(options().content_type, response.content_type.is_empty() ? 0 : new String(response.content_type, String::L_TAINTED));
+	const String *filename = PA_DEFAULT(options().filename, new String(options().url));
 
-	result.set(true/*tainted*/, options().is_text, body.buf, body.length, options().filename, content_type ? new VString(*content_type) : 0, &r);
+	result.set(true/*tainted*/, options().is_text, body.buf, body.length, filename, content_type ? new VString(*content_type) : 0, &r);
 
 	long http_status = 0;
 	if(f_curl_easy_getinfo(curl(), CURLINFO_RESPONSE_CODE, &http_status) == CURLE_OK){
