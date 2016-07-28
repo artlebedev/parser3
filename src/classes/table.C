@@ -22,7 +22,7 @@
 #define USE_STRINGSTREAM
 #endif
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.313 2016/03/31 21:46:20 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.314 2016/07/28 21:48:57 moko Exp $";
 
 // class
 
@@ -781,9 +781,7 @@ static void table_row_to_hash(Table::element_type row, Row_info *info) {
 			for(Array_iterator<int> i(*info->value_fields); i.has_next(); ) {
 				size_t value_field=i.next();
 				if(value_field<row->count())
-					hash.put(
-						*info->table->columns()->get(value_field), 
-						new VString(*row->get(value_field)));
+					hash.put(*info->table->columns()->get(value_field), new VString(*row->get(value_field)));
 			}
 
 			exist=info->hash->put_dont_replace(*key, vhash);
@@ -811,9 +809,7 @@ static void table_row_to_hash(Table::element_type row, Row_info *info) {
 		}
 	}
 	if(exist && info->distinct==D_ILLEGAL)
-		throw Exception(PARSER_RUNTIME,
-			key,
-			"duplicate key");
+		throw Exception(PARSER_RUNTIME, key, "duplicate key");
 }
 
 Table2hash_value_type get_value_type(Value& vvalue_type){
@@ -826,14 +822,10 @@ Table2hash_value_type get_value_type(Value& vvalue_type){
 		} else if (svalue_type == "hash") {
 			return C_HASH;
 		} else {
-			throw Exception(PARSER_RUNTIME,
-				&svalue_type,
-				"must be 'hash', 'table' or 'string'");
+			throw Exception(PARSER_RUNTIME, &svalue_type, "must be 'hash', 'table' or 'string'");
 		}
 	} else {
-		throw Exception(PARSER_RUNTIME,
-			0,
-			"'type' must be hash");
+		throw Exception(PARSER_RUNTIME, 0, "'type' must be string");
 	}
 }
 
@@ -858,9 +850,7 @@ static void _hash(Request& r, MethodParams& params) {
 								value_type=C_TABLE;
 								distinct=D_FIRST;
 							} else {
-								throw Exception(PARSER_RUNTIME,
-									&sdistinct,
-									"must be 'tables' or true/false");
+								throw Exception(PARSER_RUNTIME, &sdistinct, "must be 'tables' or true/false");
 							}
 						} else {
 							distinct=vdistinct_value.as_bool()?D_FIRST:D_ILLEGAL;
@@ -868,10 +858,7 @@ static void _hash(Request& r, MethodParams& params) {
 					}
 					if(Value* vvalue_type_code=options->get(sql_value_type_name)) { // $.type ?
 						if(value_type==C_TABLE) // $.distinct[tables] already was specified
-							throw Exception(PARSER_RUNTIME,
-								0,
-								"you can't specify $.distinct[tables] and $.type[] together");
-
+							throw Exception(PARSER_RUNTIME, 0, "you can't specify $.distinct[tables] and $.type[] together");
 						valid_options++;
 						value_type=get_value_type(r.process_to_value(*vvalue_type_code));
 					}
@@ -887,18 +874,14 @@ static void _hash(Request& r, MethodParams& params) {
 			Array<int> value_fields;
 			if(param_index==0){ // list of columns wasn't specified
 				if(value_type==C_STRING) // $.type[string]
-					throw Exception(PARSER_RUNTIME,
-						0,
-						"you must specify one value field with option $.type[string]");
+					throw Exception(PARSER_RUNTIME, 0, "you must specify one value field with option $.type[string]");
 				
 				for(size_t i=0; i<columns->count(); i++) // by all columns, including key
 					value_fields+=i;
 
 			} else { // list of columns was specified
 				if(value_type==C_TABLE)
-					throw Exception(PARSER_RUNTIME,
-						0,
-						"you can't specify value field(s) with option $.distinct[tables] or $.type[tables]");
+					throw Exception(PARSER_RUNTIME, 0, "you can't specify value field(s) with option $.distinct[tables] or $.type[tables]");
 
 				Value& value_fields_param=params.as_no_junction(param_index, "value field(s) must not be code");
 				if(value_fields_param.is_string()) { // one column as string was specified
@@ -909,15 +892,11 @@ static void _hash(Request& r, MethodParams& params) {
 						value_fields +=self_table.column_name2index(value_field_name, true);
 					}
 				} else
-					throw Exception(PARSER_RUNTIME,
-						0,
-						"value field(s) must be string or table");
+					throw Exception(PARSER_RUNTIME, 0, "value field(s) must be string or table");
 			}
 
 			if(value_type==C_STRING && value_fields.count()!=1)
-				throw Exception(PARSER_RUNTIME,
-					0,
-					"you can specify only one value field with option $.type[string]");
+				throw Exception(PARSER_RUNTIME, 0, "you can specify only one value field with option $.type[string]");
 
 			{
 				Value* key_param=&params[0];
@@ -932,8 +911,7 @@ static void _hash(Request& r, MethodParams& params) {
 					/*row=*/0,
 					value_type
 				};
-				info.key_field=(info.key_code?-1
-						:self_table.column_name2index(key_param->as_string(), true));
+				info.key_field=(info.key_code ? -1 : self_table.column_name2index(key_param->as_string(), true));
 
 				int saved_current=self_table.current();
 				self_table.for_each(table_row_to_hash, &info);
