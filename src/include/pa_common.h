@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.165 2016/07/26 13:20:23 moko Exp $"
+#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.166 2016/07/29 13:30:41 moko Exp $"
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -302,7 +302,7 @@ extern const String file_status_name;
 
 #ifndef DOXYGEN
 enum Table2hash_distint { D_ILLEGAL, D_FIRST };
-enum Table2hash_value_type { C_HASH, C_STRING, C_TABLE };
+enum Table2hash_value_type { C_HASH, C_STRING, C_TABLE, C_CODE };
 #endif
 
 #endif

@@ -22,7 +22,7 @@
 #define USE_STRINGSTREAM
 #endif
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.314 2016/07/28 21:48:57 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.315 2016/07/29 13:30:42 moko Exp $";
 
 // class
 
@@ -749,6 +749,7 @@ struct Row_info {
 	Value* key_code;
 	size_t key_field;
 	Array<int>* value_fields;
+	Value* value_code;
 	HashStringValue* hash;
 	Table2hash_distint distinct;
 	size_t row;
@@ -807,6 +808,12 @@ static void table_row_to_hash(Table::element_type row, Row_info *info) {
 			*table+=row_copy;
 			break;
 		}
+		case C_CODE: {
+			if(!info->key_code)
+				info->table->set_current(info->row++); // change context row
+			exist=info->hash->put_dont_replace(*key, &info->r->process(*info->value_code).as_value());
+			break;
+		}
 	}
 	if(exist && info->distinct==D_ILLEGAL)
 		throw Exception(PARSER_RUNTIME, key, "duplicate key");
@@ -829,6 +836,17 @@ Table2hash_value_type get_value_type(Value& vvalue_type){
 	}
 }
 
+static Table2hash_distint get_distinct(Value& vdistinct, Table2hash_value_type& value_type){
+	if(vdistinct.is_string()) {
+		const String& sdistinct=*vdistinct.get_string();
+		if(sdistinct!="tables")
+			throw Exception(PARSER_RUNTIME, &sdistinct, "must be 'tables' or true/false");
+		value_type=C_TABLE;
+		return D_FIRST;
+	}
+	return vdistinct.as_bool() ? D_FIRST : D_ILLEGAL;
+}
+
 static void _hash(Request& r, MethodParams& params) {
 	Table& self_table=GET_SELF(r, VTable).table();
 	VHash& result=*new VHash;
@@ -838,27 +856,22 @@ static void _hash(Request& r, MethodParams& params) {
 			Table2hash_value_type value_type=C_HASH;
 			int param_index=params.count()-1;
 			if(param_index>0) {
-				if(HashStringValue* options=params.as_no_junction(param_index, PARAM_MUST_NOT_BE_CODE).get_hash()){ // can't use .as_has because the 2nd param could be table so .as_hash throws an error
+
+				if(params[1].get_junction())
+					value_type=C_CODE;
+
+				if(HashStringValue* options=params[param_index].get_hash()){ // can't use .as_hash because the 2nd param could be table so .as_hash throws an error
 					--param_index;
 					int valid_options=0;
 					if(Value* vdistinct_code=options->get(sql_distinct_name)) { // $.distinct ?
 						valid_options++;
-						Value& vdistinct_value=r.process_to_value(*vdistinct_code);
-						if(vdistinct_value.is_string()) {
-							const String& sdistinct=*vdistinct_value.get_string();
-							if(sdistinct=="tables") {
-								value_type=C_TABLE;
-								distinct=D_FIRST;
-							} else {
-								throw Exception(PARSER_RUNTIME, &sdistinct, "must be 'tables' or true/false");
-							}
-						} else {
-							distinct=vdistinct_value.as_bool()?D_FIRST:D_ILLEGAL;
-						}
+						distinct=get_distinct(r.process_to_value(*vdistinct_code), value_type);
 					}
 					if(Value* vvalue_type_code=options->get(sql_value_type_name)) { // $.type ?
 						if(value_type==C_TABLE) // $.distinct[tables] already was specified
 							throw Exception(PARSER_RUNTIME, 0, "you can't specify $.distinct[tables] and $.type[] together");
+						if(value_type==C_CODE)
+							throw Exception(PARSER_RUNTIME, 0, "you can't specify $.type[] if value is code");
 						valid_options++;
 						value_type=get_value_type(r.process_to_value(*vvalue_type_code));
 					}
@@ -868,10 +881,12 @@ static void _hash(Request& r, MethodParams& params) {
 				}
 			}
 
-			if(param_index==2) // options was specified but not as hash
+			if(param_index==2) // options were specified but not as hash
 				throw Exception(PARSER_RUNTIME, 0, "options must be hash");
 
 			Array<int> value_fields;
+			Value* value_code=0;
+
 			if(param_index==0){ // list of columns wasn't specified
 				if(value_type==C_STRING) // $.type[string]
 					throw Exception(PARSER_RUNTIME, 0, "you must specify one value field with option $.type[string]");
@@ -879,12 +894,14 @@ static void _hash(Request& r, MethodParams& params) {
 				for(size_t i=0; i<columns->count(); i++) // by all columns, including key
 					value_fields+=i;
 
-			} else { // list of columns was specified
+			} else { // list of columns or code was specified
 				if(value_type==C_TABLE)
 					throw Exception(PARSER_RUNTIME, 0, "you can't specify value field(s) with option $.distinct[tables] or $.type[tables]");
 
-				Value& value_fields_param=params.as_no_junction(param_index, "value field(s) must not be code");
-				if(value_fields_param.is_string()) { // one column as string was specified
+				Value& value_fields_param=params[1];
+				if(value_fields_param.get_junction()){
+					value_code=&value_fields_param;
+				} else if(value_fields_param.is_string()) { // one column as string was specified
 					value_fields+=self_table.column_name2index(*value_fields_param.get_string(), true);
 				} else if(Table* value_fields_table=value_fields_param.get_table()) { // list of columns were specified in table
 					for(Array_iterator<Table::element_type> i(*value_fields_table); i.has_next(); ) {
@@ -892,7 +909,7 @@ static void _hash(Request& r, MethodParams& params) {
 						value_fields +=self_table.column_name2index(value_field_name, true);
 					}
 				} else
-					throw Exception(PARSER_RUNTIME, 0, "value field(s) must be string or table");
+					throw Exception(PARSER_RUNTIME, 0, "value field(s) must be string or table or code");
 			}
 
 			if(value_type==C_STRING && value_fields.count()!=1)
@@ -903,9 +920,10 @@ static void _hash(Request& r, MethodParams& params) {
 				Row_info info={
 					&r,
 					&self_table,
-					/*key_code=*/key_param->get_junction()?key_param:0,
+					/*key_code=*/key_param->get_junction() ? key_param : 0,
 					/*key_field=*/0/*filled below*/,
 					&value_fields,
+					value_code,
 					&result.hash(),
 					distinct,
 					/*row=*/0,
