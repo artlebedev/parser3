@@ -1,0 +1,72 @@
+@main[]
+$t[^table::create{c1	c2	c3}]
+^for[i](1;4){
+	^t.insert{a$i	b	c	d	e}
+}
+
+code coverage:
+
+^t.menu{
+	^t.line[] : $t.c1
+	^if(^t.line[]==2){ ^break[] }
+}
+
+^t.menu{
+	^t.line[] : $t.c1
+	^if(^t.line[]==2){ ^break[] }
+}[,]
+
+insert/delete during menu:
+
+^t.menu{
+	^t.line[] : $t.c1
+	^if(^t.line[]==1){
+		^t.insert{more}
+		^t.insert{more and more}
+	}
+}
+
+^show[1]
+
+^t.menu{
+	^t.line[] : $t.c1
+	^if(^t.line[]==1){ ^t.delete[] }
+}
+
+
+foreach exceptions test:
+
+^try-catch{^t.foreach{1}[2]{code}}
+^try-catch{^t.foreach[1]{2}{code}}
+^try-catch{^t.foreach[1;2;3]}
+
+^t.foreach[n;v]{
+	$n : $v.c1
+	^if($n==1){
+		^v.insert{ups}
+		^t.insert{another ups}
+	}
+}
+
+^show[2]
+
+^t.foreach[n;v]{
+	$n : $v.c1
+	^if($n==1){ ^v.delete[] }
+}[,]
+
+^show[3]
+
+^t.foreach[n;v]{
+	$n : $v.c1
+	^if($n==1){ ^break[] }
+}
+
+^t.foreach[n;v]{
+	$n : $v.c1
+	^if($n==1){ ^break[] }
+}[,]
+
+
+@show[n]
+$n : ^json:string[$t; $.table[array]  $.indent(true) ]

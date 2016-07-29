@@ -1,0 +1,82 @@
+Content-Type: text/html
+Content-Length: 1075
+
+code coverage:
+1 : a4
+2 : a3
+1 : a4
+,
+2 : a3
+insert/delete during menu:
+1 : a4
+2 : more
+3 : a4
+4 : a3
+5 : a2
+6 : a1
+1 : [
+	["c1","c2","c3"],
+	["more and more"],
+	["more"],
+	["a4","b","c","d","e"],
+	["a3","b","c","d","e"],
+	["a2","b","c","d","e"],
+	["a1","b","c","d","e"]
+]
+1 : more and more
+2 : a4
+3 : a3
+4 : a2
+5 : a1
+foreach exceptions test:
+Type: parser.runtime,
+Source: foreach,
+Comment: rownum-var name must be string (parameter #1)
+Type: parser.runtime,
+Source: foreach,
+Comment: value-var name must be string (parameter #2)
+Type: parser.runtime,
+Source: foreach,
+Comment: body must be code (parameter #3)
+0 : more
+1 : a4
+2 : ups
+3 : a4
+4 : a3
+5 : a2
+6 : a1
+2 : [
+	["c1","c2","c3"],
+	["more"],
+	["another ups"],
+	["ups"],
+	["a4","b","c","d","e"],
+	["a3","b","c","d","e"],
+	["a2","b","c","d","e"],
+	["a1","b","c","d","e"]
+]
+0 : more
+,
+1 : another ups
+,
+2 : a4
+,
+3 : a3
+,
+4 : a2
+,
+5 : a1
+3 : [
+	["c1","c2","c3"],
+	["more"],
+	["ups"],
+	["a4","b","c","d","e"],
+	["a3","b","c","d","e"],
+	["a2","b","c","d","e"],
+	["a1","b","c","d","e"]
+]
+0 : more
+1 : ups
+0 : more
+,
+1 : ups
