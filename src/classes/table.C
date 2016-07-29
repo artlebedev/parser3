@@ -22,7 +22,7 @@
 #define USE_STRINGSTREAM
 #endif
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.315 2016/07/29 13:30:42 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.316 2016/07/29 20:30:10 moko Exp $";
 
 // class
 
@@ -705,11 +705,10 @@ static void _menu(Request& r, MethodParams& params) {
 
 	Table& table=GET_SELF(r, VTable).table();
 	size_t saved_current=table.current();
-	size_t size=table.count();
 
 	if(delim_maybe_code) { // delimiter set
 		bool need_delim=false;
-		for(size_t row=0; row<size; row++) {
+		for(size_t row=0; row<table.count(); row++) {
 			table.set_current(row);
 
 			StringOrValue sv_processed=r.process(body_code);
@@ -729,7 +728,7 @@ static void _menu(Request& r, MethodParams& params) {
 				break;
 		}
 	} else {
-		for(size_t row=0; row<size; row++) {
+		for(size_t row=0; row<table.count(); row++) {
 			table.set_current(row);
  
 			r.process_write(body_code);
@@ -1083,7 +1082,6 @@ static void _foreach(Request& r, MethodParams& params) {
 
 	Table& table=GET_SELF(r, VTable).table();
 	size_t saved_current=table.current();
-	size_t size=table.count();
 
 	const String* rownum_var_name=rownum_name.is_empty()? 0 : &rownum_name;
 	const String* value_var_name=value_name.is_empty()? 0 : &value_name;
@@ -1092,7 +1090,7 @@ static void _foreach(Request& r, MethodParams& params) {
 
 	if(delim_maybe_code) { // delimiter set
 		bool need_delim=false;
-		for(size_t row=0; row<size; row++) {
+		for(size_t row=0; row<table.count(); row++) {
 			table.set_current(row);
 
 			if(rownum_var_name)
@@ -1117,7 +1115,7 @@ static void _foreach(Request& r, MethodParams& params) {
 				break;
 		}
 	} else {
-		for(size_t row=0; row<size; row++) {
+		for(size_t row=0; row<table.count(); row++) {
 			table.set_current(row);
  
 			if(rownum_var_name)
