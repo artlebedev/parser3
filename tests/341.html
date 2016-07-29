@@ -17,6 +17,8 @@ Code coverage tests:
 ^try-catch{^t.hash[id][ $.wrong[] ][ $.type[string] ]}
 ^try-catch{^t.hash[id][$n][ $.type[string] ]}
 ^try-catch{^t.hash[id]{code}[ $.type[string] ]}
+^try-catch{^t.hash[ups;price]}
+^try-catch{^t.hash[id;ups]}
 
 Valid calls tests:
 
@@ -34,3 +36,5 @@ New functionality tests:
 
 ^json:string[^t.hash{id}{code}[ $.distinct(true) ]]
 ^json:string[^t.hash[id]{ $h[$.key[$t.price]] $h }]
+
+^json:string[^t.hash[id;]]

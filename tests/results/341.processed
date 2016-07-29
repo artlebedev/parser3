@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 1307
+Content-Length: 1456
 
 Code coverage tests:
 Type: parser.runtime,
@@ -23,6 +23,12 @@ Comment: you can specify only one value field with option $.type[string]
 Type: parser.runtime,
 Source: hash,
 Comment: you can't specify $.type[] if value is code
+Type: parser.runtime,
+Source: ups,
+Comment: column not found
+Type: parser.runtime,
+Source: ups,
+Comment: column not found
 Valid calls tests:
 {
 "1":{
@@ -109,4 +115,9 @@ New functionality tests:
 "3":{
 "key":"60.85"
 }
+}
+{
+"1":{},
+"2":{},
+"3":{}
 }
