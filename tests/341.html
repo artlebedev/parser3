@@ -1,0 +1,36 @@
+$t[^table::create{id	price
+1	6.50
+2	70.00
+3	60.85
+}]
+
+$n[^table::create{name
+id
+price}]
+
+Code coverage tests:
+
+^try-catch{^t.hash[id][ $.type[wrong] ]}
+^try-catch{^t.hash[id][ $.type[ $.not_string[] ] ]}
+^try-catch{^t.hash[id][ $.wrong[option] ]}
+^try-catch{^t.hash[id][price][ not hash ]}
+^try-catch{^t.hash[id][ $.wrong[] ][ $.type[string] ]}
+^try-catch{^t.hash[id][$n][ $.type[string] ]}
+^try-catch{^t.hash[id]{code}[ $.type[string] ]}
+
+Valid calls tests:
+
+^json:string[^t.hash[id]]
+^json:string[^t.hash[id][ $.type[table] ]]
+^json:string[^t.hash[id][price]]
+^json:string[^t.hash{id}[price][ $.distinct(true) ]]
+^json:string[^t.hash[id][$n]]
+^json:string[^t.hash{id}[$n][ $.distinct(true) ]]
+
+New functionality tests:
+
+^json:string[^t.hash{=$t.id=}{$t.id - $t.price}]
+^json:string[^t.hash[id]{$t.id - $t.price}]
+
+^json:string[^t.hash{id}{code}[ $.distinct(true) ]]
+^json:string[^t.hash[id]{ $h[$.key[$t.price]] $h }]

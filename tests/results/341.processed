@@ -1,0 +1,112 @@
+Content-Type: text/html
+Content-Length: 1307
+
+Code coverage tests:
+Type: parser.runtime,
+Source: wrong,
+Comment: must be 'hash', 'table' or 'string'
+Type: parser.runtime,
+Source: hash,
+Comment: 'type' must be string
+Type: parser.runtime,
+Source: hash,
+Comment: called with invalid option
+Type: parser.runtime,
+Source: hash,
+Comment: options must be hash
+Type: parser.runtime,
+Source: hash,
+Comment: value field(s) must be string or table or code
+Type: parser.runtime,
+Source: hash,
+Comment: you can specify only one value field with option $.type[string]
+Type: parser.runtime,
+Source: hash,
+Comment: you can't specify $.type[] if value is code
+Valid calls tests:
+{
+"1":{
+"id":"1",
+"price":"6.50"
+},
+"2":{
+"id":"2",
+"price":"70.00"
+},
+"3":{
+"id":"3",
+"price":"60.85"
+}
+}
+{
+"1":[
+{"id":"1","price":"6.50"}
+],
+"2":[
+{"id":"2","price":"70.00"}
+],
+"3":[
+{"id":"3","price":"60.85"}
+]
+}
+{
+"1":{
+"price":"6.50"
+},
+"2":{
+"price":"70.00"
+},
+"3":{
+"price":"60.85"
+}
+}
+{
+"id":{
+"price":"6.50"
+}
+}
+{
+"1":{
+"id":"1",
+"price":"6.50"
+},
+"2":{
+"id":"2",
+"price":"70.00"
+},
+"3":{
+"id":"3",
+"price":"60.85"
+}
+}
+{
+"id":{
+"id":"1",
+"price":"6.50"
+}
+}
+New functionality tests:
+{
+"=1=":"1 - 6.50",
+"=2=":"2 - 70.00",
+"=3=":"3 - 60.85"
+}
+{
+"1":"1 - 6.50",
+"2":"2 - 70.00",
+"3":"3 - 60.85"
+}
+{
+"id":"code"
+}
+{
+"1":{
+"key":"6.50"
+},
+"2":{
+"key":"70.00"
+},
+"3":{
+"key":"60.85"
+}
+}
