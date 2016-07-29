@@ -22,7 +22,7 @@
 #define USE_STRINGSTREAM
 #endif
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.316 2016/07/29 20:30:10 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.317 2016/07/29 22:40:58 moko Exp $";
 
 // class
 
@@ -771,8 +771,12 @@ static void table_row_to_hash(Table::element_type row, Row_info *info) {
 	bool exist=false;
 	switch(info->value_type) {
 		case C_STRING: {
-			size_t index=info->value_fields->get(0);
-			exist=info->hash->put_dont_replace(*key, (index < row->count()) ? new VString(*row->get(index)) : new VString());
+			if(info->value_fields->count()){
+				size_t index=info->value_fields->get(0);
+				exist=info->hash->put_dont_replace(*key, (index < row->count()) ? new VString(*row->get(index)) : VString::empty());
+			} else {
+				exist=info->hash->put_dont_replace(*key, VString::empty());
+			}
 			break;
 		}
 		case C_HASH: {
@@ -898,10 +902,12 @@ static void _hash(Request& r, MethodParams& params) {
 					throw Exception(PARSER_RUNTIME, 0, "you can't specify value field(s) with option $.distinct[tables] or $.type[tables]");
 
 				Value& value_fields_param=params[1];
-				if(value_fields_param.get_junction()){
+				if(value_fields_param.get_junction()){ // code specified
 					value_code=&value_fields_param;
 				} else if(value_fields_param.is_string()) { // one column as string was specified
-					value_fields+=self_table.column_name2index(*value_fields_param.get_string(), true);
+					const String &field_name=*value_fields_param.get_string();
+					if(!field_name.is_empty())
+						value_fields+=self_table.column_name2index(field_name, true);
 				} else if(Table* value_fields_table=value_fields_param.get_table()) { // list of columns were specified in table
 					for(Array_iterator<Table::element_type> i(*value_fields_table); i.has_next(); ) {
 						const String& value_field_name =*i.next()->get(0);
