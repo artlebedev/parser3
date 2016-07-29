@@ -11,7 +11,7 @@
 #ifndef PA_CHARSETS_H
 #define PA_CHARSETS_H
 
-#define IDENT_PA_CHARSETS_H "$Id: pa_charsets.h,v 1.17 2015/10/26 01:21:55 moko Exp $"
+#define IDENT_PA_CHARSETS_H "$Id: pa_charsets.h,v 1.18 2016/07/29 20:24:16 moko Exp $"
 
 #include "pa_hash.h"
 #include "pa_charset.h"
@@ -22,9 +22,10 @@ public:
 
 	Charsets();
 
-	Charset& get(const String::Body ANAME);
+	Charset& get(String::Body ANAME);
+	Charset& get_direct(const char *ANAME);
 
-	void load_charset(Request_charsets& charsets, const String::Body ANAME, const String& afile_spec);
+	void load_charset(Request_charsets& charsets, String::Body ANAME, const String& afile_spec);
 
 	// detects charset if it's not enforced, skips BOM signature if it complies charset
 	static Charset* checkBOM(char *&body,size_t &body_size, Charset* enforced_charset);

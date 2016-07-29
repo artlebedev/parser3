@@ -7,7 +7,7 @@
 
 #include "pa_charsets.h"
 
-volatile const char * IDENT_PA_CHARSETS_C="$Id: pa_charsets.C,v 1.21 2015/10/26 01:21:58 moko Exp $" IDENT_PA_CHARSETS_H;
+volatile const char * IDENT_PA_CHARSETS_C="$Id: pa_charsets.C,v 1.22 2016/07/29 20:24:16 moko Exp $" IDENT_PA_CHARSETS_H;
 
 // defines for globals
 
@@ -25,13 +25,19 @@ Charsets::Charsets() {
 	put(UTF8_charset.NAME(), &UTF8_charset);
 }
 
-Charset& Charsets::get(const String::Body ANAME) {
+Charset& Charsets::get(String::Body ANAME) {
+	ANAME=str_upper(ANAME.cstr(), ANAME.length());
 	if(Charset* result=HashString<value_type>::get(ANAME))
 		return *result;
 	else
-		throw Exception(PARSER_RUNTIME,
-			new String(ANAME, String::L_TAINTED),
-			"unknown charset");
+		throw Exception(PARSER_RUNTIME, new String(ANAME, String::L_TAINTED), "unknown charset");
+}
+
+Charset& Charsets::get_direct(const char *ANAME) {
+	if(Charset* result=HashString<value_type>::get(ANAME))
+		return *result;
+	else
+		throw Exception(PARSER_RUNTIME, new String(ANAME, String::L_TAINTED), "unknown charset");
 }
 
 Charset* Charsets::checkBOM(char *&body,size_t &body_size, Charset* enforced_charset){
@@ -44,7 +50,8 @@ Charset* Charsets::checkBOM(char *&body,size_t &body_size, Charset* enforced_cha
 	return enforced_charset;
 }
 
-void Charsets::load_charset(Request_charsets& charsets, const String::Body ANAME, const String& afile_spec) {
+void Charsets::load_charset(Request_charsets& charsets, String::Body ANAME, const String& afile_spec) {
+	ANAME=str_upper(ANAME.cstr(), ANAME.length());
 	//we know that charset?
 	if(HashString<value_type>::get(ANAME))
 		return; // don't load it then

@@ -13,7 +13,7 @@
 #include "pa_vdate.h"
 #include "pa_vhash.h"
 
-volatile const char * IDENT_PA_VRESPONSE_C="$Id: pa_vresponse.C,v 1.35 2016/04/06 16:08:20 moko Exp $" IDENT_PA_VRESPONSE_H;
+volatile const char * IDENT_PA_VRESPONSE_C="$Id: pa_vresponse.C,v 1.36 2016/07/29 20:24:17 moko Exp $" IDENT_PA_VRESPONSE_H;
 
 // defines
 
@@ -39,13 +39,9 @@ Value* VResponse::get_element(const String& aname) {
 const VJunction* VResponse::put_element(const String& aname, Value* avalue) { 
 	// guard charset change
 	if(aname==CHARSET_NAME)
-		fcharsets.set_client(charsets.get(avalue->as_string().
-			change_case(UTF8_charset, String::CC_UPPER)));
+		fcharsets.set_client(charsets.get(avalue->as_string()));
 	else
-		ffields.put(
-			aname.change_case(fcharsets.source(), String::CC_UPPER),
-			!avalue || (avalue->is_string() && !avalue->is_defined()) ? 0: avalue
-		);
+		ffields.put(aname.change_case(fcharsets.source(), String::CC_UPPER), !avalue || (avalue->is_string() && !avalue->is_defined()) ? 0: avalue);
 
 	return PUT_ELEMENT_REPLACED_ELEMENT;
 }

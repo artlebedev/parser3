@@ -20,7 +20,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.225 2016/05/18 17:47:22 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.226 2016/07/29 20:24:16 moko Exp $";
 
 // class
 
@@ -626,7 +626,7 @@ static void _save(Request& r, MethodParams& params) {
 			// ^file.save[filespec;$.charset[] $.append(true)]
 			int valid_options=0;
 			if(Value* vcharset_name=options->get(PA_CHARSET_NAME)){
-				asked_charset=&::charsets.get(vcharset_name->as_string().change_case(r.charsets.source(), String::CC_UPPER));
+				asked_charset=&::charsets.get(vcharset_name->as_string());
 				valid_options++;
 			}
 			if(Value* vappend=options->get(MODE_APPEND)){
@@ -769,7 +769,7 @@ static void _unescape(Request& r, MethodParams& params){
 		if(HashStringValue* options=params.as_hash(2)) {
 			int valid_options=0;
 			if(Value* vcharset_name=options->get(PA_CHARSET_NAME)){
-				from_charset=&::charsets.get(vcharset_name->as_string().change_case(r.charsets.source(), String::CC_UPPER));
+				from_charset=&::charsets.get(vcharset_name->as_string());
 				valid_options++;
 			}
 			if(valid_options!=options->count())

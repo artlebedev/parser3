@@ -15,7 +15,7 @@
 #include "pa_vvoid.h"
 #include "pa_vfile.h"
 
-volatile const char * IDENT_PA_VREQUEST_C="$Id: pa_vrequest.C,v 1.61 2016/04/08 22:34:38 moko Exp $" IDENT_PA_VREQUEST_H;
+volatile const char * IDENT_PA_VREQUEST_C="$Id: pa_vrequest.C,v 1.62 2016/07/29 20:24:17 moko Exp $" IDENT_PA_VREQUEST_H;
 
 // defines
 
@@ -98,7 +98,7 @@ Value* VRequest::get_element(const String& aname) {
 const VJunction* VRequest::put_element(const String& aname, Value* avalue) {
 	// $charset
 	if(aname==CHARSET_NAME) {
-		fcharsets.set_source(charsets.get(avalue->as_string().change_case(UTF8_charset, String::CC_UPPER)));
+		fcharsets.set_source(charsets.get(avalue->as_string()));
 		return PUT_ELEMENT_REPLACED_ELEMENT;
 	} 
 

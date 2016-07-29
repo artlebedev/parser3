@@ -18,7 +18,7 @@
 #include "pa_vfile.h"
 #include "pa_uue.h"
 
-volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.118 2016/07/21 17:05:37 moko Exp $" IDENT_PA_VMAIL_H;
+volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.119 2016/07/29 20:24:17 moko Exp $" IDENT_PA_VMAIL_H;
 
 #ifdef WITH_MAILRECEIVE
 extern "C" {
@@ -712,8 +712,7 @@ const String& VMail::message_hash_to_string(Request& r,
 	String& result=*new String;
 
 	if(Value* vrecodecharset_name=message_hash->get(charset_name))
-		r.charsets.set_mail(charsets.get(vrecodecharset_name->as_string()
-			.change_case(r.charsets.source(), String::CC_UPPER)));
+		r.charsets.set_mail(charsets.get(vrecodecharset_name->as_string()));
 	else
 		r.charsets.set_mail(r.charsets.source());
 	// no big deal that we leave it set. they wont miss this point which would reset it

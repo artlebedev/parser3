@@ -50,7 +50,7 @@
 #define pa_mkdir(path, mode) mkdir(path, mode)
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.290 2016/07/26 13:20:23 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.291 2016/07/29 20:24:16 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -156,7 +156,7 @@ File_read_result file_read(Request_charsets& charsets, const String& file_spec,
 			Charset* asked_charset=0;
 			if(params)
 				if(Value* vcharset_name=params->get(PA_CHARSET_NAME))
-					asked_charset=&::charsets.get(vcharset_name->as_string().change_case(charsets.source(), String::CC_UPPER));
+					asked_charset=&::charsets.get(vcharset_name->as_string());
 
 			asked_charset=::charsets.checkBOM(result.str, result.length, asked_charset);
 
@@ -1335,10 +1335,7 @@ const unsigned long pa_crc32(const String& file_spec){
 // content-type: xxx; charset="WE-NEED-THIS";
 Charset* detect_charset(const char* content_type){
 	if(content_type){
-		char* CONTENT_TYPE=pa_strdup(content_type);
-
-		for(char *p=CONTENT_TYPE; *p; p++)
-			*p=(char)toupper((unsigned char)*p);
+		char* CONTENT_TYPE=str_upper(content_type);
 
 		if(const char* begin=strstr(CONTENT_TYPE, "CHARSET=")){
 			begin+=8; // skip "CHARSET="
@@ -1354,7 +1351,7 @@ Charset* detect_charset(const char* content_type){
 			if(end)
 				*end=0; // terminator
 
-			return *begin?&charsets.get(begin):0;
+			return *begin?&charsets.get_direct(begin):0;
 		}
 	}
 	return 0;
