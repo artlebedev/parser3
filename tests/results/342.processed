@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 1075
+Content-Length: 1313
 
 code coverage:
 1 : a4
@@ -23,6 +23,7 @@ insert/delete during menu:
 	["a2","b","c","d","e"],
 	["a1","b","c","d","e"]
 ]
+offset: 2
 1 : more and more
 2 : a4
 3 : a3
@@ -55,6 +56,7 @@ Comment: body must be code (parameter #3)
 	["a2","b","c","d","e"],
 	["a1","b","c","d","e"]
 ]
+offset: 2
 0 : more
 ,
 1 : another ups
@@ -75,8 +77,17 @@ Comment: body must be code (parameter #3)
 	["a2","b","c","d","e"],
 	["a1","b","c","d","e"]
 ]
+offset: 2
 0 : more
 1 : ups
 0 : more
 ,
 1 : ups
+count: 6
+Type: parser.runtime,
+Source: error,
+Comment: parameter must be 'columns', 'cells' and 'rows' only
+offset: 3
+Type: parser.runtime,
+Source: error,
+Comment: is invalid whence, valid are 'cur' or 'set'

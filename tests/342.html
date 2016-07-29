@@ -4,6 +4,8 @@ $t[^table::create{c1	c2	c3}]
 	^t.insert{a$i	b	c	d	e}
 }
 
+^t.offset(2)
+
 code coverage:
 
 ^t.menu{
@@ -67,6 +69,16 @@ foreach exceptions test:
 	^if($n==1){ ^break[] }
 }[,]
 
+# more coverage tests
+
+count: ^t.count[rows]
+^try-catch{^t.count[error]}
+
+^t.offset[cur](1)
+offset: ^t.offset[]
+^try-catch{^t.offset[error](1)}
+
 
 @show[n]
 $n : ^json:string[$t; $.table[array]  $.indent(true) ]
+offset: ^t.offset[]
