@@ -10,9 +10,10 @@
 #include "pa_vfile.h"
 #include "pa_vstring.h"
 #include "pa_vint.h"
+#include "pa_charset.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VFILE_C="$Id: pa_vfile.C,v 1.67 2016/07/27 22:34:49 moko Exp $" IDENT_PA_VFILE_H;
+volatile const char * IDENT_PA_VFILE_C="$Id: pa_vfile.C,v 1.68 2016/08/01 22:30:20 moko Exp $" IDENT_PA_VFILE_H;
 
 // externs
 
@@ -158,6 +159,21 @@ void VFile::set_content_type(Value* acontent_type, const String* afile_name, Req
 	ffields.put(content_type_name, acontent_type);
 }
 
+Charset* VFile::detect_binary_charset(){
+	if(!fis_text_mode)
+		if(Value* content_type=ffields.get(content_type_name))
+			if(const String *ct=content_type->get_string())
+				return detect_charset(ct->cstr());
+	return 0;
+}
+
+void VFile::transcode(Charset& from_charset, Charset& to_charset){
+	String::C result=Charset::transcode(String::C(fvalue_ptr, fvalue_size), from_charset, to_charset);
+	fvalue_ptr=result.str;
+	fvalue_size=result.length;
+	ffields.put(size_name, new VInt(fvalue_size));
+}
+
 void VFile::save(Request_charsets& charsets, const String& file_spec, bool is_text, Charset* asked_charset) {
 	if(fvalue_ptr)
 		file_write(charsets, file_spec, fvalue_ptr, fvalue_size, is_text, false/*do_append*/, asked_charset);
@@ -173,7 +189,7 @@ bool VFile::is_text_mode(const String& mode) {
 	throw Exception(PARSER_RUNTIME, &mode, "is invalid mode, must be either '" MODE_VALUE_TEXT "' or '" MODE_VALUE_BINARY "'");
 }
 
-bool VFile::is_valid_mode (const String& mode) {
+bool VFile::is_valid_mode(const String& mode) {
 	return (mode==mode_value_text || mode==mode_value_binary);
 }
 

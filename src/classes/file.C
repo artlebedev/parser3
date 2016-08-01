@@ -25,7 +25,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.244 2016/07/29 20:24:16 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.245 2016/08/01 22:30:20 moko Exp $";
 
 // defines
 
@@ -318,7 +318,8 @@ static void _create(Request& r, MethodParams& params) {
 	}
 
 	VString* vcontent_type=0;
-	Charset* asked_charset=0;
+	Charset* to_charset=0;
+	Charset* from_charset=0;
 	if(params.count()>options_index)
 		if(HashStringValue* options=params.as_hash(options_index)) {
 			int valid_options=0;
@@ -333,8 +334,18 @@ static void _create(Request& r, MethodParams& params) {
 					valid_options++;
 				}
 			}
+			if(Value* vcharset_name=options->get("to-charset")) {
+				to_charset=&::charsets.get(vcharset_name->as_string());
+				valid_options++;
+			}
+			if(Value* vcharset_name=options->get("from-charset")) {
+				from_charset=&::charsets.get(vcharset_name->as_string());
+				valid_options++;
+			}
 			if(Value* vcharset_name=options->get(PA_CHARSET_NAME)) {
-				asked_charset=&::charsets.get(vcharset_name->as_string());
+				if(to_charset)
+					throw Exception(PARSER_RUNTIME, 0, "charset option can not be used with to-charset");
+				to_charset=&::charsets.get(vcharset_name->as_string());
 				valid_options++;
 			}
 			if(Value* value=options->get(CONTENT_TYPE_NAME)) {
@@ -351,15 +362,19 @@ static void _create(Request& r, MethodParams& params) {
 
 	if(const String* content_str=vcontent.get_string()){
 		String::Body body=content_str->cstr_to_string_body_untaint(String::L_AS_IS, r.connection(false), &r.charsets); // explode content, honor tainting changes
-		if(asked_charset && is_text)
-			body=Charset::transcode(body, r.charsets.source(), *asked_charset);
 		self.set(true/*tainted*/, is_text, body.cstrm(), body.length(), file_name, vcontent_type, &r);
 	} else {
-		if(asked_charset)
-			throw Exception(PARSER_RUNTIME, 0, "charset option can not be used with file-content");
-		self.set(*vcontent.as_vfile(String::L_AS_IS), mode != 0, is_text, file_name, vcontent_type, &r);
+		VFile& fcontent=*vcontent.as_vfile(String::L_AS_IS); // can't be null
+		if(is_text && !from_charset)
+			from_charset=fcontent.detect_binary_charset();
+		self.set(fcontent, mode != 0, is_text, file_name, vcontent_type, &r);
 	}
 
+	if(to_charset || from_charset)
+		if(is_text)
+			self.transcode(from_charset ? *from_charset : r.charsets.source(), to_charset ? *to_charset : r.charsets.source());
+		else
+			throw Exception(PARSER_RUNTIME, 0, "charset options can not be used with binary content");
 }
 
 static void _stat(Request& r, MethodParams& params) {
@@ -367,9 +382,7 @@ static void _stat(Request& r, MethodParams& params) {
 
 	size_t size;
 	time_t atime, mtime, ctime;
-	file_stat(r.absolute(lfile_name),
-		size,
-		atime, mtime, ctime);
+	file_stat(r.absolute(lfile_name), size, atime, mtime, ctime);
 	
 	VFile& self=GET_SELF(r, VFile);
 
