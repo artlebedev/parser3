@@ -1,0 +1,25 @@
+@main[]
+$sDir[outputs/345]
+$dDir[outputs/345.test]
+$f[test.txt]
+
+$s[test]
+^s.save[$sDir/$f]
+^file:move[$sDir/$f;$dDir/$f; $.keep-empty-dirs(true) ]
+
+^file:delete[$sDir/404.txt; $.exception(false) ]
+^file:delete[$dDir/$f; $.keep-empty-dirs(true) ]
+
+1. ^if(-d $sDir){ok}
+2. ^if(-d $dDir){ok}
+3. ^if(-d "$dDir/$f"){}{ok}
+
+^s.save[$sDir/$f]
+^file:move[$sDir/$f;$dDir/$f]
+^file:delete[$dDir/$f]
+
+4. ^if(-d $sDir){}{ok}
+5. ^if(-d $dDir){}{ok}
+
+^try-catch{ ^file:delete[name; $.no-such-option[] ] }
+^try-catch{ ^file:move[name;name; $.no-such-option[] ] }
