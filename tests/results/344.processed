@@ -1,0 +1,25 @@
+Content-Type: text/html
+Content-Length: 560
+
+f1 : {
+"class":"file",
+"name":"247_utf8_bom.txt",
+"size":19,
+"mode":"binary",
+"content-type":"application\/octet-stream",
+"adate":"2016-08-02 16:08:28",
+"mdate":"2010-08-10 09:35:01",
+"cdate":"2016-07-29 22:41:01",
+"text":"п»їРїСЂРѕРІРµСЂРєР°"
+}
+f text from binary, automatic transcode by UTF-8 preambule : {
+"class":"file",
+"name":"247_utf8_bom.txt",
+"size":8,
+"mode":"text",
+"content-type":"application\/octet-stream",
+"adate":"2016-08-02 16:08:28",
+"mdate":"2010-08-10 09:35:01",
+"cdate":"2016-07-29 22:41:01",
+"text":"проверка"
+}

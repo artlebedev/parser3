@@ -1,0 +1,11 @@
+@main[]
+^from-1251[]
+
+$f1[^file::load[binary;247_utf8_bom.txt]]
+^show[f1;$f1]
+
+$f[^file::create[$f1; $.mode[text] ]]
+^show[f text from binary, automatic transcode by UTF-8 preambule;$f]
+
+@show[title;f]
+$title : ^json:string[$f; $.file[text] ]

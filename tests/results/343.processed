@@ -1,0 +1,68 @@
+Content-Type: text/html
+Content-Length: 1356
+
+f1 : {
+"class":"file",
+"name":"noname.dat",
+"size":8,
+"mode":"text",
+"content-type":"text\/plain",
+"text":"С‚РµСЃС‚"
+}
+f2 : {
+"class":"file",
+"name":"noname.dat",
+"size":4,
+"mode":"text",
+"content-type":"text\/plain; charset=Windows-1251",
+"text":"тест"
+}
+f2 binary : {
+"class":"file",
+"name":"noname.dat",
+"size":4,
+"mode":"binary",
+"content-type":"text\/plain; charset=Windows-1251",
+"text":"тест"
+}
+f text from text, no transcode : {
+"class":"file",
+"name":"noname.dat",
+"size":4,
+"mode":"text",
+"content-type":"text\/plain; charset=Windows-1251",
+"text":"тест"
+}
+binary from binary, no transcode : {
+"class":"file",
+"name":"noname.dat",
+"size":4,
+"mode":"binary",
+"content-type":"text\/plain; charset=Windows-1251",
+"text":"тест"
+}
+f text from text with transcode : {
+"class":"file",
+"name":"noname.dat",
+"size":8,
+"mode":"text",
+"content-type":"text\/plain; charset=Windows-1251",
+"text":"С‚РµСЃС‚"
+}
+f text from binary, automatic transcode : {
+"class":"file",
+"name":"noname.dat",
+"size":8,
+"mode":"text",
+"content-type":"text\/plain; charset=Windows-1251",
+"text":"С‚РµСЃС‚"
+}
+Type: parser.runtime,
+Source: create,
+Comment: called with invalid option
+Type: parser.runtime,
+Source: create,
+Comment: charset options can not be used with binary content
+Type: parser.runtime,
+Source: create,
+Comment: charset options can not be used with binary content

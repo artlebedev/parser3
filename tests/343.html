@@ -1,0 +1,29 @@
+@main[]
+
+$f1[^file::create[тест]]
+^show[f1;$f1]
+
+$f2[^file::create[$f1; $.to-charset[windows-1251] $.content-type[text/plain^; charset=Windows-1251] ]]
+^show[f2;$f2]
+
+$f3[^file::create[$f2; $.mode[binary] ]]
+^show[f2 binary;$f3]
+
+$f[^file::create[$f2; $.mode[text] ]]
+^show[f text from text, no transcode;$f]
+
+$f[^file::create[$f3]]
+^show[binary from binary, no transcode;$f]
+
+$f[^file::create[$f2; $.from-charset[Windows-1251] ]]
+^show[f text from text with transcode;$f]
+
+$f[^file::create[$f3; $.mode[text] ]]
+^show[f text from binary, automatic transcode;$f]
+
+^try-catch{ ^file::create[$f3; $.no-such-option[] ] }
+^try-catch{ ^file::create[$f3; $.from-charset[Windows-1251] ] }
+^try-catch{ ^file::create[$f2; $.mode[binary] $.from-charset[Windows-1251] ] }
+
+@show[title;f]
+$title : ^json:string[$f; $.file[text] ]
