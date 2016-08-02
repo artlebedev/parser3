@@ -8,7 +8,7 @@
 #ifndef PA_VFILE_H
 #define PA_VFILE_H
 
-#define IDENT_PA_VFILE_H "$Id: pa_vfile.h,v 1.79 2016/08/01 22:30:20 moko Exp $"
+#define IDENT_PA_VFILE_H "$Id: pa_vfile.h,v 1.80 2016/08/02 14:36:48 moko Exp $"
 
 // include
 
@@ -88,10 +88,11 @@ public: // usage
 	}
 
 	size_t value_size() const { return fvalue_size; }
+	bool is_text_mode() const { return fis_text_mode; }
 
 	HashStringValue& fields() { return ffields; }
 
-	Charset* detect_binary_charset();
+	Charset* detect_binary_charset(Charset* charset);
 	void transcode(Charset& from_charset, Charset& to_charset);
 
 private:

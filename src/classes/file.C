@@ -25,7 +25,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.245 2016/08/01 22:30:20 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.246 2016/08/02 14:36:48 moko Exp $";
 
 // defines
 
@@ -365,9 +365,9 @@ static void _create(Request& r, MethodParams& params) {
 		self.set(true/*tainted*/, is_text, body.cstrm(), body.length(), file_name, vcontent_type, &r);
 	} else {
 		VFile& fcontent=*vcontent.as_vfile(String::L_AS_IS); // can't be null
-		if(is_text && !from_charset)
-			from_charset=fcontent.detect_binary_charset();
 		self.set(fcontent, mode != 0, is_text, file_name, vcontent_type, &r);
+		if(is_text && !fcontent.is_text_mode())
+			from_charset=self.detect_binary_charset(from_charset);
 	}
 
 	if(to_charset || from_charset)
