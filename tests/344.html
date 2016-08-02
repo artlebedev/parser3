@@ -22,5 +22,13 @@ $f[^file::create[$f1; $.mode[text] ]]
 $f[^file::create[$f1; $.mode[text] $.from-charset[UTF-8] ]]
 ^show[f text from binary transcode using from-charset;$f]
 
+^try-catch{ ^file::create[$f1; $.to-charset[UTF-8] $.charset[UTF-8] ] }
+
 @show[title;f]
-$title : ^json:string[$f; $.file[text] ]
+$title : {
+"name":"$f.name",
+"size":$f.size,
+"mode":"$f.mode",
+"content-type":"^taint[json;$f.content-type]",
+"text":"$f.text"
+}

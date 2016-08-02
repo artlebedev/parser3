@@ -1,80 +1,55 @@
 Content-Type: text/html
-Content-Length: 2034
+Content-Length: 1366
 
 f1 : {
-"class":"file",
 "name":"247_utf8_bom.txt",
 "size":19,
 "mode":"binary",
 "content-type":"application\/octet-stream",
-"adate":"2016-08-02 16:08:28",
-"mdate":"2010-08-10 09:35:01",
-"cdate":"2016-07-29 22:41:01",
 "text":"п»їРїСЂРѕРІРµСЂРєР°"
 }
 f text from binary, automatic transcode by UTF-8 preambule : {
-"class":"file",
 "name":"247_utf8_bom.txt",
 "size":8,
 "mode":"text",
 "content-type":"application\/octet-stream",
-"adate":"2016-08-02 16:08:28",
-"mdate":"2010-08-10 09:35:01",
-"cdate":"2016-07-29 22:41:01",
 "text":"проверка"
 }
 f text from binary no transcode as charset specified in content-type : {
-"class":"file",
 "name":"247_utf8_bom.txt",
 "size":19,
 "mode":"text",
 "content-type":"text\/plain; charset=Windows-1251",
-"adate":"2016-08-02 16:08:28",
-"mdate":"2010-08-10 09:35:01",
-"cdate":"2016-07-29 22:41:01",
 "text":"п»їРїСЂРѕРІРµСЂРєР°"
 }
 f text from binary no transcode as from-charset specified : {
-"class":"file",
 "name":"247_utf8_bom.txt",
 "size":19,
 "mode":"text",
 "content-type":"application\/octet-stream",
-"adate":"2016-08-02 16:08:28",
-"mdate":"2010-08-10 09:35:01",
-"cdate":"2016-07-29 22:41:01",
 "text":"п»їРїСЂРѕРІРµСЂРєР°"
 }
 f1 : {
-"class":"file",
 "name":"247_utf8.txt",
 "size":16,
 "mode":"binary",
 "content-type":"application\/octet-stream",
-"adate":"2016-08-02 16:08:28",
-"mdate":"2010-08-10 09:35:01",
-"cdate":"2016-07-29 22:41:01",
 "text":"РїСЂРѕРІРµСЂРєР°"
 }
 f text from binary, no transcode : {
-"class":"file",
 "name":"247_utf8.txt",
 "size":16,
 "mode":"text",
 "content-type":"application\/octet-stream",
-"adate":"2016-08-02 16:08:28",
-"mdate":"2010-08-10 09:35:01",
-"cdate":"2016-07-29 22:41:01",
 "text":"РїСЂРѕРІРµСЂРєР°"
 }
 f text from binary transcode using from-charset : {
-"class":"file",
 "name":"247_utf8.txt",
 "size":8,
 "mode":"text",
 "content-type":"application\/octet-stream",
-"adate":"2016-08-02 16:08:28",
-"mdate":"2010-08-10 09:35:01",
-"cdate":"2016-07-29 22:41:01",
 "text":"проверка"
 }
+Type: parser.runtime,
+Source: create,
+Comment: charset option can not be used with to-charset
