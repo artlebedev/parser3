@@ -7,5 +7,20 @@ $f1[^file::load[binary;247_utf8_bom.txt]]
 $f[^file::create[$f1; $.mode[text] ]]
 ^show[f text from binary, automatic transcode by UTF-8 preambule;$f]
 
+$f[^file::create[$f1; $.mode[text] $.content-type[text/plain^; charset=Windows-1251] ]]
+^show[f text from binary no transcode as charset specified in content-type;$f]
+
+$f[^file::create[$f1; $.mode[text] $.from-charset[Windows-1251] ]]
+^show[f text from binary no transcode as from-charset specified;$f]
+
+$f1[^file::load[binary;247_utf8.txt]]
+^show[f1;$f1]
+
+$f[^file::create[$f1; $.mode[text] ]]
+^show[f text from binary, no transcode;$f]
+
+$f[^file::create[$f1; $.mode[text] $.from-charset[UTF-8] ]]
+^show[f text from binary transcode using from-charset;$f]
+
 @show[title;f]
 $title : ^json:string[$f; $.file[text] ]
