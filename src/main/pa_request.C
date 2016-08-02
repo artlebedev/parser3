@@ -32,7 +32,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.355 2016/07/20 16:36:49 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.356 2016/08/02 13:06:20 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -217,17 +217,13 @@ VStateless_class* Request::get_class(const String& name){
 	return result;
 }
 
-static void load_charset(HashStringValue::key_type akey, 
-			 HashStringValue::value_type avalue, 
-			 Request_charsets* charsets) {
-	const String::Body NAME=String(akey, String::L_CLEAN).change_case(charsets->source(), String::CC_UPPER);
-	::charsets.load_charset(*charsets, NAME, avalue->as_string());
+static void load_charset(HashStringValue::key_type akey, HashStringValue::value_type avalue, Request_charsets* charsets) {
+	::charsets.load_charset(*charsets, akey, avalue->as_string());
 }
+
 void Request::configure_admin(VStateless_class& conf_class) {
 	if(configure_admin_done)
-		throw Exception(PARSER_RUNTIME,
-		0,
-		"parser already configured");
+		throw Exception(PARSER_RUNTIME, 0, "parser already configured");
 	configure_admin_done=true;
 	
 	// charsets must only be specified in method_frame config
@@ -243,9 +239,7 @@ void Request::configure_admin(VStateless_class& conf_class) {
 			if(HashStringValue* charsets=vcharsets->get_hash())
 				charsets->for_each<Request_charsets*>(load_charset, &this->charsets);
 			else
-				throw Exception(PARSER_RUNTIME,
-					0,
-					"$" MAIN_CLASS_NAME ":" CHARSETS_NAME " must be hash");
+				throw Exception(PARSER_RUNTIME, 0, "$" MAIN_CLASS_NAME ":" CHARSETS_NAME " must be hash");
 		}
 	}
 
