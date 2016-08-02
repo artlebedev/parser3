@@ -13,7 +13,7 @@
 #include "pa_charset.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VFILE_C="$Id: pa_vfile.C,v 1.68 2016/08/01 22:30:20 moko Exp $" IDENT_PA_VFILE_H;
+volatile const char * IDENT_PA_VFILE_C="$Id: pa_vfile.C,v 1.69 2016/08/02 12:01:31 moko Exp $" IDENT_PA_VFILE_H;
 
 // externs
 
@@ -88,6 +88,7 @@ void VFile::set(VFile& avfile, bool aset_text_mode, bool ais_text_mode, const St
 	fvalue_ptr=avfile.fvalue_ptr;
 	fvalue_size=avfile.fvalue_size;
 	ftext_tainted=avfile.ftext_tainted;
+	fis_text_mode=avfile.fis_text_mode;
 	fis_text_content=avfile.fis_text_content;
 
 	ffields.clear();
