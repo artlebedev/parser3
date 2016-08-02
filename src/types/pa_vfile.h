@@ -8,7 +8,7 @@
 #ifndef PA_VFILE_H
 #define PA_VFILE_H
 
-#define IDENT_PA_VFILE_H "$Id: pa_vfile.h,v 1.80 2016/08/02 14:36:48 moko Exp $"
+#define IDENT_PA_VFILE_H "$Id: pa_vfile.h,v 1.81 2016/08/02 14:41:35 moko Exp $"
 
 // include
 
@@ -72,7 +72,7 @@ public: // usage
 	/// WARNING: when setting text files be sure to append terminating zero to avalue_ptr
 	/// WARNING: the content can be modified while creating "text" vfile
 	void set(bool atainted, bool ais_text_mode, char* avalue_ptr, size_t avalue_size, const String* afile_name=0, Value* acontent_type=0, Request* r=0);
-	void set(VFile& avfile, bool aset_text_mode, bool ais_text_mode, const String* afile_name=0, Value* acontent_type=0, Request* r=0);
+	void set(VFile& avfile, bool *ais_text_mode, const String* afile_name=0, Value* acontent_type=0, Request* r=0);
 	void set_binary(bool atainted, const char* avalue_ptr, size_t avalue_size, const String* afile_name=0, Value* acontent_type=0, Request* r=0);
 	void set_binary_string(bool atainted, const char* avalue_ptr, size_t avalue_size);
 

@@ -13,7 +13,7 @@
 #include "pa_charsets.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VFILE_C="$Id: pa_vfile.C,v 1.70 2016/08/02 14:36:48 moko Exp $" IDENT_PA_VFILE_H;
+volatile const char * IDENT_PA_VFILE_C="$Id: pa_vfile.C,v 1.71 2016/08/02 14:41:35 moko Exp $" IDENT_PA_VFILE_H;
 
 // externs
 
@@ -84,7 +84,7 @@ void VFile::set_binary_string(bool atainted, const char* avalue_ptr, size_t aval
 	set_all(atainted, false, avalue_ptr, avalue_size, 0);
 }
 
-void VFile::set(VFile& avfile, bool aset_text_mode, bool ais_text_mode, const String* afile_name, Value* acontent_type, Request* r) {
+void VFile::set(VFile& avfile, bool *ais_text_mode, const String* afile_name, Value* acontent_type, Request* r) {
 	fvalue_ptr=avfile.fvalue_ptr;
 	fvalue_size=avfile.fvalue_size;
 	ftext_tainted=avfile.ftext_tainted;
@@ -96,13 +96,13 @@ void VFile::set(VFile& avfile, bool aset_text_mode, bool ais_text_mode, const St
 		if(i.key() != text_name) // do not copy cached .text value
 			ffields.put(*new String(i.key(), String::L_TAINTED), i.value());
 
-	if(aset_text_mode)
-		set_mode(ais_text_mode);
+	if(ais_text_mode)
+		set_mode(*ais_text_mode);
 
 	if(afile_name)
 		set_name(afile_name);
 
-	if(acontent_type || afile_name || ( aset_text_mode && content_type_is_default(ffields.get(content_type_name)) ))
+	if(acontent_type || afile_name || ( ais_text_mode && content_type_is_default(ffields.get(content_type_name)) ))
 		set_content_type(acontent_type, afile_name, r);
 }
 
