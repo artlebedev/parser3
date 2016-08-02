@@ -24,6 +24,12 @@ $f[^file::create[$f1; $.mode[text] $.from-charset[UTF-8] ]]
 
 ^try-catch{ ^file::create[$f1; $.to-charset[UTF-8] $.charset[UTF-8] ] }
 
+code coverage tests:
+
+$f1[^file::load[text;247_utf8_bom.txt; $.limit[8] $.offset[5] $.charset[UTF-8] ]]
+^show[f1;$f1]
+
+
 @show[title;f]
 $title : {
 "name":"$f.name",
