@@ -17,7 +17,7 @@
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.40 2016/07/29 20:24:16 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.41 2016/08/03 20:35:36 moko Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -127,17 +127,15 @@ public:
 };
 
 bool curl_linked = false;
+const char *curl_status = 0;
 const char *curl_library="libcurl" LT_MODULE_EXT;
 
-const char *curl_status = 0;
-
 static void temp_curl(void (*action)(Request&, MethodParams&), Request& r, MethodParams& params){
-	if(!curl_linked){
-		curl_linked=true;
+	if(!curl_linked)
 		curl_status=dlink(curl_library);
-	}
 
 	if(curl_status == 0){
+		curl_linked=true;
 		Temp_curl temp_curl;
 		action(r,params);
 	} else {
@@ -491,7 +489,7 @@ static void curl_setopt(HashStringValue::key_type key, HashStringValue::value_ty
 		}
 		case CurlOption::PARSER_LIBRARY:{
 			// 'library' parser option
-			if(fcurl==0){
+			if(!curl_linked){
 				curl_library=v.as_string().taint_cstr(String::L_FILE_SPEC);
 			} else 
 				throw Exception("curl", 0, "failed to set option '%s': already loaded", key.cstr());
