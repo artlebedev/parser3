@@ -28,7 +28,7 @@ RESULTS_SQL=$(patsubst %.html,results/%.processed,$(SQL))
 outputs/%.processed: %.html
 	$(RUN_PARSER) $(PARSER_EXECUTABLE) $< $(PARSER_CONFIG) > $@
 
-.PHONY: FORCE tests
+.PHONY: FORCE tests tests-curl tests-sql all clean
 
 results/%.processed: outputs/%.processed FORCE
 	-$(DIFF) $@ $<
