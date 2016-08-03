@@ -1,6 +1,12 @@
+^try-catch{ ^curl:info[] }
+^try-catch{ ^curl:options[ $.charset[UTF-8] ] }
+^try-catch{ ^curl:options[ $.url[http://parser.ru/] ] }
+
+^curl:session{ $s[^curl:version[]] }
+
+^try-catch{ ^curl:options[ $.library[no-such-library.so] ] }
+
 ^curl:session{
-    $s[^curl:version[]]
+    ^try-catch{ ^curl:options[ $.url[ftp://parser.ru/] ] }
     ^json:string[^curl:info[]]
 }
-$s[^curl:version[]]
-^try-catch{^curl:load[ $.url[ftp://parser.ru/] ]}

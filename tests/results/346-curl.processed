@@ -1,6 +1,21 @@
 Content-Type: text/html
-Content-Length: 621
+Content-Length: 910
 
+Type: curl,
+Source: info,
+Comment: outside of 'session' operator
+Type: curl,
+Source: options,
+Comment: outside of 'session' operator
+Type: curl,
+Source: options,
+Comment: outside of 'session' operator
+Type: curl,
+Source: options,
+Comment: failed to set option 'library': already loaded
+Type: curl,
+Source: options,
+Comment: failed to set option 'url': invalid url scheme 'ftp://parser.ru/'
 {
 "size_download":0,
 "request_size":0,
@@ -29,6 +44,3 @@ Content-Length: 621
 "content_length_upload":-1,
 "size_upload":0
 }
-Type: curl,
-Source: load,
-Comment: failed to set option 'url': invalid url scheme 'ftp://parser.ru/'
