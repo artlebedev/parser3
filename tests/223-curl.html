@@ -1,0 +1,75 @@
+﻿@main[]
+$hHeader[
+	$.[my-name][^taint[as-is][ЗнА^#0A^#0AчЕ&н"И:е%]]
+	$.[^#0A^taint[as-is][^#0Aфыв]][зна^#0Aчение]
+]
+
+$hForm[$hHeader]
+
+^do[POST in ^$response:charset (UTF-8) w/o file;;$hForm]
+
+^do[POST in UTF-8 w/o file with own User-Agent and ommiting charset declaration;UTF-8;$hForm;Мой-^taint[as-is][Странный]-User-Agent](true)
+
+^do[POST in WINDOWS-1251 w/o file;WINDOWS-1251;$hForm]
+
+^do[POST in ^$response:charset (UTF-8) with file in UTF-8;;
+	^hash::create[$hForm]
+	$.file[^file::load[binary;223_utf8.txt]]
+]
+
+^do[POST in WINDOWS-1251 with file in UTF-8;WINDOWS-1251;
+	^hash::create[$hForm]
+	$.file[^file::load[binary;223_utf8.txt;фай^#0Aл.html]]
+]
+
+^do[POST in WINDOWS-1251 with file in WINDOWS-1251;WINDOWS-1251;
+	^hash::create[$hForm]
+	$.file[^file::load[binary;223_win1251.txt]]
+]
+
+^do[Binary file post;WINDOWS-1251;
+	$file[^file::load[binary;103mark.gif]]
+	$.file[$file] $.file_1[$file] $.file_2[$file] $.file_3[$file] $.file_4[$file]
+]
+
+@do[sTitle;sCharset;hForm;sUserAgent;bOmmitPostCharset][f;text;t;post]
+<h2>$sTitle</h2>
+$f[^curl:load[
+	$.url[http://www.parser.ru/_/tests/223.pl]
+	$.timeout(5)
+
+	$.httppost[$hForm]
+	$.httpheader[
+		^hash::create[$hHeader]
+		^if(def $sUserAgent){
+			$.user-agent[$sUserAgent]
+		}
+	]
+
+	^if(def $sCharset){
+		$.charset[$sCharset]
+	}
+]]
+
+#<pre>$f.text</pre>
+
+$text[^taint[as-is][$f.text]]
+# replace boundary by fixed string
+$text[^text.match[(-{10,12})-*[0-9a-fA-F]+(--)?][g]{${match.1}boundary-value$match.2}]
+# cut off the post's body is any
+$text[^text.match[POST:(.*)<EOF>][]{$post[$match.1]}]
+
+# create table with http headers
+$t[^table::create[nameless]{^taint[as-is][^text.replace[^table::create{a	b
+ = 	^taint[^#09]
+^taint[^#0A]	^taint[^#0A]}]]}]
+#$t[^t.select(!$h.[$t.0])]
+^t.sort{$t.0}
+
+# print all
+<h3>Headers</h3>
+<pre>^t.menu{$t.0	: $t.1}[^#0A]</pre>
+
+<h3>Body</h3>
+<pre>^taint[as-is][$post]</pre>
+<hr />

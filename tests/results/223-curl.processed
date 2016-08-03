@@ -1,0 +1,247 @@
+Content-Type: text/html
+Content-Length: 6399
+
+<h2>POST in $response:charset (UTF-8) w/o file</h2>
+<h3>Headers</h3>
+<pre>CONTENT_LENGTH	: 278
+CONTENT_TYPE	: multipart/form-data; boundary=------------boundary-value
+HTTP_ACCEPT	: */*
+HTTP_EXPECT	: 100-continue
+HTTP_HOST	: www.parser.ru
+HTTP_MY_NAME	: ЗнА  чЕ&н"И:е%
+HTTP_________	: зна чение
+REQUEST_METHOD	: POST
+REQUEST_URI	: /_/tests/223.pl
+SCRIPT_NAME	: /_/tests/223.pl
+SERVER_NAME	: www.parser.ru</pre>
+<h3>Body</h3>
+<pre>------------boundary-value
+Content-Disposition: form-data; name="my-name"
+
+ЗнА
+
+чЕ&н"И:е%
+------------boundary-value
+Content-Disposition: form-data; name="
+
+фыв"
+
+зна
+чение
+------------boundary-value--
+</pre>
+<hr />
+<h2>POST in UTF-8 w/o file with own User-Agent and ommiting charset declaration</h2>
+<h3>Headers</h3>
+<pre>CONTENT_LENGTH	: 278
+CONTENT_TYPE	: multipart/form-data; boundary=------------boundary-value
+HTTP_ACCEPT	: */*
+HTTP_EXPECT	: 100-continue
+HTTP_HOST	: www.parser.ru
+HTTP_MY_NAME	: ЗнА  чЕ&н"И:е%
+HTTP_USER_AGENT	: Мой-Странный-User-Agent
+HTTP_________	: зна чение
+REQUEST_METHOD	: POST
+REQUEST_URI	: /_/tests/223.pl
+SCRIPT_NAME	: /_/tests/223.pl
+SERVER_NAME	: www.parser.ru</pre>
+<h3>Body</h3>
+<pre>------------boundary-value
+Content-Disposition: form-data; name="my-name"
+
+ЗнА
+
+чЕ&н"И:е%
+------------boundary-value
+Content-Disposition: form-data; name="
+
+фыв"
+
+зна
+чение
+------------boundary-value--
+</pre>
+<hr />
+<h2>POST in WINDOWS-1251 w/o file</h2>
+<h3>Headers</h3>
+<pre>CONTENT_LENGTH	: 259
+CONTENT_TYPE	: multipart/form-data; boundary=------------boundary-value
+HTTP_ACCEPT	: */*
+HTTP_EXPECT	: 100-continue
+HTTP_HOST	: www.parser.ru
+HTTP_MY_NAME	: ЗнА  чЕ&н"И:е%
+HTTP_________	: зна чение
+REQUEST_METHOD	: POST
+REQUEST_URI	: /_/tests/223.pl
+SCRIPT_NAME	: /_/tests/223.pl
+SERVER_NAME	: www.parser.ru</pre>
+<h3>Body</h3>
+<pre>------------boundary-value
+Content-Disposition: form-data; name="my-name"
+
+ЗнА
+
+чЕ&н"И:е%
+------------boundary-value
+Content-Disposition: form-data; name="
+
+фыв"
+
+зна
+чение
+------------boundary-value--
+</pre>
+<hr />
+<h2>POST in $response:charset (UTF-8) with file in UTF-8</h2>
+<h3>Headers</h3>
+<pre>CONTENT_LENGTH	: 452
+CONTENT_TYPE	: multipart/form-data; boundary=------------boundary-value
+HTTP_ACCEPT	: */*
+HTTP_EXPECT	: 100-continue
+HTTP_HOST	: www.parser.ru
+HTTP_MY_NAME	: ЗнА  чЕ&н"И:е%
+HTTP_________	: зна чение
+REQUEST_METHOD	: POST
+REQUEST_URI	: /_/tests/223.pl
+SCRIPT_NAME	: /_/tests/223.pl
+SERVER_NAME	: www.parser.ru</pre>
+<h3>Body</h3>
+<pre>------------boundary-value
+Content-Disposition: form-data; name="my-name"
+
+ЗнА
+
+чЕ&н"И:е%
+------------boundary-value
+Content-Disposition: form-data; name="
+
+фыв"
+
+зна
+чение
+------------boundary-value
+Content-Disposition: form-data; name="file"; filename="223_utf8.txt"
+Content-Type: application/octet-stream
+
+Проверка
+------------boundary-value--
+</pre>
+<hr />
+<h2>POST in WINDOWS-1251 with file in UTF-8</h2>
+<h3>Headers</h3>
+<pre>CONTENT_LENGTH	: 431
+CONTENT_TYPE	: multipart/form-data; boundary=------------boundary-value
+HTTP_ACCEPT	: */*
+HTTP_EXPECT	: 100-continue
+HTTP_HOST	: www.parser.ru
+HTTP_MY_NAME	: ЗнА  чЕ&н"И:е%
+HTTP_________	: зна чение
+REQUEST_METHOD	: POST
+REQUEST_URI	: /_/tests/223.pl
+SCRIPT_NAME	: /_/tests/223.pl
+SERVER_NAME	: www.parser.ru</pre>
+<h3>Body</h3>
+<pre>------------boundary-value
+Content-Disposition: form-data; name="my-name"
+
+ЗнА
+
+чЕ&н"И:е%
+------------boundary-value
+Content-Disposition: form-data; name="
+
+фыв"
+
+зна
+чение
+------------boundary-value
+Content-Disposition: form-data; name="file"; filename="фай
+л.html"
+Content-Type: application/octet-stream
+
+РџСЂРѕРІРµСЂРєР°
+------------boundary-value--
+</pre>
+<hr />
+<h2>POST in WINDOWS-1251 with file in WINDOWS-1251</h2>
+<h3>Headers</h3>
+<pre>CONTENT_LENGTH	: 428
+CONTENT_TYPE	: multipart/form-data; boundary=------------boundary-value
+HTTP_ACCEPT	: */*
+HTTP_EXPECT	: 100-continue
+HTTP_HOST	: www.parser.ru
+HTTP_MY_NAME	: ЗнА  чЕ&н"И:е%
+HTTP_________	: зна чение
+REQUEST_METHOD	: POST
+REQUEST_URI	: /_/tests/223.pl
+SCRIPT_NAME	: /_/tests/223.pl
+SERVER_NAME	: www.parser.ru</pre>
+<h3>Body</h3>
+<pre>------------boundary-value
+Content-Disposition: form-data; name="my-name"
+
+ЗнА
+
+чЕ&н"И:е%
+------------boundary-value
+Content-Disposition: form-data; name="
+
+фыв"
+
+зна
+чение
+------------boundary-value
+Content-Disposition: form-data; name="file"; filename="223_win1251.txt"
+Content-Type: application/octet-stream
+
+Проверка
+------------boundary-value--
+</pre>
+<hr />
+<h2>Binary file post</h2>
+<h3>Headers</h3>
+<pre>CONTENT_LENGTH	: 1234
+CONTENT_TYPE	: multipart/form-data; boundary=------------boundary-value
+HTTP_ACCEPT	: */*
+HTTP_EXPECT	: 100-continue
+HTTP_HOST	: www.parser.ru
+HTTP_MY_NAME	: ЗнА  чЕ&н"И:е%
+HTTP_________	: зна чение
+REQUEST_METHOD	: POST
+REQUEST_URI	: /_/tests/223.pl
+SCRIPT_NAME	: /_/tests/223.pl
+SERVER_NAME	: www.parser.ru</pre>
+<h3>Body</h3>
+<pre>------------boundary-value
+Content-Disposition: form-data; name="file"; filename="103mark.gif"
+Content-Type: application/octet-stream
+
+GIF89a\0\0Ђ\0\0э  яяя!щ\0\0\0,\0\0\0\0\0\0\0&ЊЏ©Лнc\0тЂ{%ЖqoзyM(.d™њ(ў~JЛЅ0eВЈ
+‘Х^\0;
+------------boundary-value
+Content-Disposition: form-data; name="file_1"; filename="103mark.gif"
+Content-Type: application/octet-stream
+
+GIF89a\0\0Ђ\0\0э  яяя!щ\0\0\0,\0\0\0\0\0\0\0&ЊЏ©Лнc\0тЂ{%ЖqoзyM(.d™њ(ў~JЛЅ0eВЈ
+‘Х^\0;
+------------boundary-value
+Content-Disposition: form-data; name="file_2"; filename="103mark.gif"
+Content-Type: application/octet-stream
+
+GIF89a\0\0Ђ\0\0э  яяя!щ\0\0\0,\0\0\0\0\0\0\0&ЊЏ©Лнc\0тЂ{%ЖqoзyM(.d™њ(ў~JЛЅ0eВЈ
+‘Х^\0;
+------------boundary-value
+Content-Disposition: form-data; name="file_3"; filename="103mark.gif"
+Content-Type: application/octet-stream
+
+GIF89a\0\0Ђ\0\0э  яяя!щ\0\0\0,\0\0\0\0\0\0\0&ЊЏ©Лнc\0тЂ{%ЖqoзyM(.d™њ(ў~JЛЅ0eВЈ
+‘Х^\0;
+------------boundary-value
+Content-Disposition: form-data; name="file_4"; filename="103mark.gif"
+Content-Type: application/octet-stream
+
+GIF89a\0\0Ђ\0\0э  яяя!щ\0\0\0,\0\0\0\0\0\0\0&ЊЏ©Лнc\0тЂ{%ЖqoзyM(.d™њ(ў~JЛЅ0eВЈ
+‘Х^\0;
+------------boundary-value--
+</pre>
+<hr />
