@@ -1,0 +1,34 @@
+Content-Type: text/html
+Content-Length: 621
+
+{
+"size_download":0,
+"request_size":0,
+"content_type":"",
+"effective_url":"",
+"header_size":0,
+"redirect_time":0,
+"appconnect_time":0,
+"pretransfer_time":0,
+"num_connects":0,
+"primary_ip":"",
+"speed_upload":0,
+"speed_download":0,
+"redirect_url":"",
+"proxyauth_avail":0,
+"starttransfer_time":0,
+"connect_time":0,
+"namelookup_time":0,
+"redirect_count":0,
+"httpauth_avail":0,
+"total_time":0,
+"content_length_download":-1,
+"os_errno":0,
+"ssl_verifyresult":0,
+"response_code":0,
+"content_length_upload":-1,
+"size_upload":0
+}
+Type: curl,
+Source: load,
+Comment: failed to set option 'url': invalid url scheme 'ftp://parser.ru/'

@@ -1,0 +1,6 @@
+^curl:session{
+    $s[^curl:version[]]
+    ^json:string[^curl:info[]]
+}
+$s[^curl:version[]]
+^try-catch{^curl:load[ $.url[ftp://parser.ru/] ]}

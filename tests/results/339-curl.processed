@@ -1,0 +1,93 @@
+Content-Type: text/html
+Content-Length: 2852
+
+curl : {
+	"class":"file",
+	"name":"nph-339.pl",
+	"size":129,
+	"mode":"text",
+	"content-type":"text\/plain; charset=WINDOWS-1251",
+	"status":200,
+	"tables":{
+	"CONTENT-TYPE":[
+		{"value":"text\/plain; charset=WINDOWS-1251"}
+	],
+	"TEST":[
+		{"value":"тест"},
+		{"value":"test"},
+		{"value":"TEST"}
+	],
+	"SET-COOKIE":[
+		{"value":"test=тест; Expires=Thu, 31-Dec-2037 23:59:59 GMT; Domain=.parser.ru; Path=\/"},
+		{"value":"TEST=test; Path=\/"}
+	]
+},
+	"CONTENT-TYPE":"text\/plain; charset=WINDOWS-1251",
+	"TEST":"TEST",
+	"SET-COOKIE":"TEST=test; Path=\/",
+	"cookies":[
+	{"name":"test","value":"тест","expires":"Thu, 31-Dec-2037 23:59:59 GMT","max-age":"","domain":".parser.ru","path":"\/","httponly":"","secure":""},
+	{"name":"TEST","value":"test","expires":"","max-age":"","domain":"","path":"\/","httponly":"","secure":""}
+],
+	"text":"Incoming test header: СЂСѓСЃСЃРєРёР№\nRussian body test: тест\nPOST: РёРјСЏ=СЂСѓСЃСЃРєРёР№\n"
+}
+curl : {
+	"class":"file",
+	"name":"nph-339.pl",
+	"size":93,
+	"mode":"text",
+	"content-type":"text\/plain; charset=WINDOWS-1251",
+	"status":200,
+	"tables":{
+	"CONTENT-TYPE":[
+		{"value":"text\/plain; charset=WINDOWS-1251"}
+	],
+	"TEST":[
+		{"value":"тест"},
+		{"value":"test"},
+		{"value":"TEST"}
+	],
+	"SET-COOKIE":[
+		{"value":"test=тест; Expires=Thu, 31-Dec-2037 23:59:59 GMT; Domain=.parser.ru; Path=\/"},
+		{"value":"TEST=test; Path=\/"}
+	]
+},
+	"CONTENT-TYPE":"text\/plain; charset=WINDOWS-1251",
+	"TEST":"TEST",
+	"SET-COOKIE":"TEST=test; Path=\/",
+	"cookies":[
+	{"name":"test","value":"тест","expires":"Thu, 31-Dec-2037 23:59:59 GMT","max-age":"","domain":".parser.ru","path":"\/","httponly":"","secure":""},
+	{"name":"TEST","value":"test","expires":"","max-age":"","domain":"","path":"\/","httponly":"","secure":""}
+],
+	"text":"Incoming test header: русский\nRussian body test: тест\nPOST: имя=русский\n"
+}
+curl : {
+	"class":"file",
+	"name":"noname.dat",
+	"size":89,
+	"mode":"text",
+	"content-type":"text\/plain; charset=WINDOWS-1251",
+	"status":200,
+	"tables":{
+	"CONTENT-TYPE":[
+		{"value":"text\/plain; charset=WINDOWS-1251"}
+	],
+	"TEST":[
+		{"value":"����"},
+		{"value":"test"},
+		{"value":"TEST"}
+	],
+	"SET-COOKIE":[
+		{"value":"test=����; Expires=Thu, 31-Dec-2037 23:59:59 GMT; Domain=.parser.ru; Path=\/"},
+		{"value":"TEST=test; Path=\/"}
+	]
+},
+	"CONTENT-TYPE":"text\/plain; charset=WINDOWS-1251",
+	"TEST":"TEST",
+	"SET-COOKIE":"TEST=test; Path=\/",
+	"cookies":[
+	{"name":"test","value":"����","expires":"Thu, 31-Dec-2037 23:59:59 GMT","max-age":"","domain":".parser.ru","path":"\/","httponly":"","secure":""},
+	{"name":"TEST","value":"test","expires":"","max-age":"","domain":"","path":"\/","httponly":"","secure":""}
+],
+	"text":"Incoming test header: русский\nRussian body test: ����\nPOST: имя=русский\n"
+}

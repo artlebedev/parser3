@@ -13,26 +13,33 @@ RM=rm
 
 #
 
-OUTPUTS=$(patsubst %.html,outputs/%.processed,$(sort $(wildcard *.html)))
-RESULTS=$(patsubst %.html,results/%.processed,$(sort $(wildcard *.html)))
+COMMON=$(sort $(wildcard ???.html))
+OUTPUTS_COMMON=$(patsubst %.html,outputs/%.processed,$(COMMON))
+RESULTS_COMMON=$(patsubst %.html,results/%.processed,$(COMMON))
+
+CURL=$(sort $(wildcard *-curl.html))
+OUTPUTS_CURL=$(patsubst %.html,outputs/%.processed,$(CURL))
+RESULTS_CURL=$(patsubst %.html,results/%.processed,$(CURL))
+
+SQL=$(sort $(wildcard *-sql.html))
+OUTPUTS_SQL=$(patsubst %.html,outputs/%.processed,$(SQL))
+RESULTS_SQL=$(patsubst %.html,results/%.processed,$(SQL))
 
 outputs/%.processed: %.html
 	$(RUN_PARSER) $(PARSER_EXECUTABLE) $< $(PARSER_CONFIG) > $@
 
-.PHONY: FORCE all tests clean install install-exec install-data
+.PHONY: FORCE tests
 
 results/%.processed: outputs/%.processed FORCE
-	-$(DIFF) $< $@
+	-$(DIFF) $@ $<
 
-tests: outputs compares
+tests: $(OUTPUTS_COMMON) $(RESULTS_COMMON)
 
-outputs: $(OUTPUTS)
+tests-curl: $(OUTPUTS_CURL) $(RESULTS_CURL)
 
-compares: $(RESULTS)
+tests-sql: $(OUTPUTS_SQL) $(RESULTS_SQL)
+
+all: tests tests-curl
 
 clean:
 	$(RM) -f outputs/*.processed
-
-install:
-install-exec:
-install-data:

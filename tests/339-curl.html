@@ -6,7 +6,7 @@
 @load[url;options]
 $headers[ $.test[русский] ]
 $form[ $.имя[русский] ]
-^show[file;^file::load[text;$url; ^hash::create[$options] $.headers[$headers] $.form[$form] $.method[POST] $.enctype[multipart/form-data] ]]
+^show[curl;^curl:load[ ^hash::create[$options] $.url[$url] $.httpheader[$headers] $.httppost[$form] ]]
 
 @show[title;f]
 $title : ^json:string[$f; $.indent(true) $.file[text] ]
