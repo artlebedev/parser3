@@ -29,6 +29,8 @@ code coverage tests:
 $f1[^file::load[text;247_utf8_bom.txt; $.limit[8] $.offset[5] $.charset[UTF-8] ]]
 ^show[f1;$f1]
 
+$f[^file::create[test]]
+^json:string[^hash::create[$f]]
 
 @show[title;f]
 $title : {
