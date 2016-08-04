@@ -1,3 +1,5 @@
+@main[]
+
 ^try-catch{ ^curl:info[] }
 ^try-catch{ ^curl:options[ $.charset[UTF-8] ] }
 ^try-catch{ ^curl:options[ $.url[http://parser.ru/] ] }
@@ -7,6 +9,71 @@
 ^try-catch{ ^curl:options[ $.library[no-such-library.so] ] }
 
 ^curl:session{
-    ^try-catch{ ^curl:options[ $.url[ftp://parser.ru/] ] }
-    ^json:string[^curl:info[]]
+	^try-catch{ ^curl:options[ $.url[ftp://parser.ru/] ] }
+	^try-catch{ ^curl:options[ $.httppost[ $.name[ $.hash[] ]] ] }
+	^try-catch{ ^curl:options[ $.no-such-option[] ] }
+	^try-catch{ ^curl:info[no-such-info] }
+	^json:string[^curl:info[]]
+
+	^curl:options[
+		$.url[http://www.parser.ru/_/tests/readme]
+		$.timeout(5)
+	]
+
+	$f[^curl:load[
+		$.range[4-] 
+	]]
+
+	$f.text $f.CONTENT-RANGE
+
+	$f[^curl:load[
+		$.range[33-]
+	]]
+
+	$f.text $f.CONTENT-RANGE
 }
+
+^show[text;^curl:load[
+	$.url[http://www.parser.ru/_/tests/223.pl]
+	$.timeout(5)
+	$.postfields[test]
+	$.useragent[^taint[parser 3]]
+
+	$.name[test.txt]
+	$.mode[binary]
+	$.content-type[something/text]
+]]
+
+^show[binary;^curl:load[
+	$.url[http://www.parser.ru/_/tests/223.pl]
+	$.timeout(5)
+	$.postfields[^file::load[binary;155.cfg]]
+]]
+
+^try-catch{ ^curl:load[ $.url[http://no-such-domain.parser.ru/] ] }
+
+@show[title;f]
+$title : {
+"name":"$f.name",
+"size":$f.size,
+"mode":"$f.mode",
+"content-type":"^taint[json;$f.content-type]",
+}
+
+$text[^taint[as-is][$f.text]]
+# cut off the post's body is any
+$text[^text.match[POST:(.*)<EOF>][]{$post[$match.1]}]
+
+# create table with http headers
+$t[^table::create[nameless]{^taint[as-is][^text.replace[^table::create{a	b
+ = 	^taint[^#09]
+^taint[^#0A]	^taint[^#0A]}]]}]
+^t.sort{$t.0}
+
+# print all
+<h3>Headers</h3>
+<pre>^t.menu{$t.0	: $t.1}[^#0A]</pre>
+
+<h3>Body</h3>
+<pre>^taint[as-is][$post]</pre>
+<hr />

@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 910
+Content-Length: 2152
 
 Type: curl,
 Source: info,
@@ -16,6 +16,15 @@ Comment: failed to set option 'library': already loaded
 Type: curl,
 Source: options,
 Comment: failed to set option 'url': invalid url scheme 'ftp://parser.ru/'
+Type: curl,
+Source: name,
+Comment: is hash, form option value can be string, table or file only
+Type: curl,
+Source: options,
+Comment: called with invalid option 'no-such-option'
+Type: curl,
+Source: info,
+Comment: called with invalid parameter 'no-such-info'
 {
 "size_download":0,
 "request_size":0,
@@ -44,3 +53,51 @@ Comment: failed to set option 'url': invalid url scheme 'ftp://parser.ru/'
 "content_length_upload":-1,
 "size_upload":0
 }
+Parser3 tests (make tests).
+Don't delete or modify them.
+bytes 4-62/63
+Don't delete or modify them.
+bytes 33-62/63
+text : {
+"name":"test.txt",
+"size":265,
+"mode":"binary",
+"content-type":"something\/text",
+}
+<h3>Headers</h3>
+<pre>CONTENT_LENGTH	: 4
+CONTENT_TYPE	: application/x-www-form-urlencoded
+HTTP_ACCEPT	: */*
+HTTP_HOST	: www.parser.ru
+HTTP_USER_AGENT	: parser%203
+REQUEST_METHOD	: POST
+REQUEST_URI	: /_/tests/223.pl
+SCRIPT_NAME	: /_/tests/223.pl
+SERVER_NAME	: www.parser.ru</pre>
+<h3>Body</h3>
+<pre>test</pre>
+<hr />
+binary : {
+"name":"223.pl",
+"size":255,
+"mode":"text",
+"content-type":"text\/plain",
+}
+<h3>Headers</h3>
+<pre>CONTENT_LENGTH	: 22
+CONTENT_TYPE	: application/x-www-form-urlencoded
+HTTP_ACCEPT	: */*
+HTTP_HOST	: www.parser.ru
+REQUEST_METHOD	: POST
+REQUEST_URI	: /_/tests/223.pl
+SCRIPT_NAME	: /_/tests/223.pl
+SERVER_NAME	: www.parser.ru</pre>
+<h3>Body</h3>
+<pre>"a"	"b"
+"av	av"	"b
+v"
+</pre>
+<hr />
+Type: curl.host,
+Source: load,
+Comment: Couldn't resolve host name
