@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 1456
+Content-Length: 1485
 
 Code coverage tests:
 Type: parser.runtime,
@@ -95,7 +95,8 @@ New functionality tests:
 {
 "=1=":"1 - 6.50",
 "=2=":"2 - 70.00",
-"=3=":"3 - 60.85"
+"=3=":"3 - 60.85",
+"=_default=":"_default - 0"
 }
 {
 "1":"1 - 6.50",
