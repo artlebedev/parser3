@@ -11,6 +11,7 @@
 ^curl:session{
 	^try-catch{ ^curl:options[ $.url[ftp://parser.ru/] ] }
 	^try-catch{ ^curl:options[ $.httppost[ $.name[ $.hash[] ]] ] }
+	^try-catch{ ^curl:options[ $.httppost[string] ] }
 	^try-catch{ ^curl:options[ $.no-such-option[] ] }
 	^try-catch{ ^curl:info[no-such-info] }
 	^json:string[^curl:info[]]
@@ -33,26 +34,33 @@
 	$f.text $f.CONTENT-RANGE
 }
 
-^show[text;^curl:load[
-	$.url[http://www.parser.ru/_/tests/223.pl]
-	$.timeout(5)
+^show[text;
 	$.postfields[test]
 	$.useragent[^taint[parser 3]]
 
 	$.name[test.txt]
 	$.mode[binary]
 	$.content-type[something/text]
-]]
+]
 
-^show[binary;^curl:load[
-	$.url[http://www.parser.ru/_/tests/223.pl]
-	$.timeout(5)
+^show[binary;
 	$.postfields[^file::load[binary;155.cfg]]
-]]
+]
+
+^show[empty post;
+	$.httppost[]
+]
 
 ^try-catch{ ^curl:load[ $.url[http://no-such-domain.parser.ru/] ] }
 
-@show[title;f]
+@show[title;options]
+
+$f[^curl:load[
+	$options
+	$.timeout(5)
+	$.url[http://www.parser.ru/_/tests/223.pl]
+]]
+
 $title : {
 "name":"$f.name",
 "size":$f.size,

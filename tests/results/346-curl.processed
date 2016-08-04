@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 2152
+Content-Length: 2569
 
 Type: curl,
 Source: info,
@@ -19,6 +19,9 @@ Comment: failed to set option 'url': invalid url scheme 'ftp://parser.ru/'
 Type: curl,
 Source: name,
 Comment: is hash, form option value can be string, table or file only
+Type: curl,
+Source: options,
+Comment: failed to set option 'httppost': value must be a hash
 Type: curl,
 Source: options,
 Comment: called with invalid option 'no-such-option'
@@ -97,6 +100,23 @@ SERVER_NAME	: www.parser.ru</pre>
 "av	av"	"b
 v"
 </pre>
+<hr />
+empty post : {
+"name":"223.pl",
+"size":183,
+"mode":"text",
+"content-type":"text\/plain",
+}
+<h3>Headers</h3>
+<pre>CONTENT_LENGTH	: 0
+HTTP_ACCEPT	: */*
+HTTP_HOST	: www.parser.ru
+REQUEST_METHOD	: POST
+REQUEST_URI	: /_/tests/223.pl
+SCRIPT_NAME	: /_/tests/223.pl
+SERVER_NAME	: www.parser.ru</pre>
+<h3>Body</h3>
+<pre></pre>
 <hr />
 Type: curl.host,
 Source: load,
