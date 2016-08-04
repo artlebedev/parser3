@@ -1,3 +1,152 @@
+2016-08-05  moko
+
+	* tests/: 344.html, results/344.processed: test for
+	  ^hash::create[$file] added (related to feature #1075)
+
+	* src/types/: pa_vfile.h, pa_vmail.C: ^hash::create[$file] now
+	  supported (implements feature #1075)
+
+2016-08-04  moko
+
+	* tests/: 341.html, results/341.processed: more code coverage tests
+
+	* tests/: 346-curl.html, results/346-curl.processed: more code
+	  coverage tests for curl
+
+	* tests/: 346-curl.html, results/346-curl.processed: more code
+	  coverage tests for curl
+
+	* tests/: 223-curl.html, 223.html, results/223-curl.processed,
+	  results/223.processed: code coverage tests: $.form[ $.table[] ]
+	  test added
+
+	* tests/: 223-curl.html, results/223-curl.processed: more code
+	  coverage tests for curl
+
+2016-08-03  moko
+
+	* src/classes/curl.C: dlink(curl_library) now called not once, but
+	  until it will be loaded, allowing to find existing library.
+
+	* tests/: 346-curl.html, 347-curl.html, results/346-curl.processed,
+	  results/347-curl.processed: more code coverage tests for curl
+
+	* tests/: 339-curl.html, 339.html, 346-curl.html, Makefile,
+	  results/339-curl.processed, results/346-curl.processed: curl
+	  functionality tests
+
+2016-08-02  moko
+
+	* tests/: 339.html, results/339.processed: test for tables in
+	  ^file:load[] and ^curl:load[] (commented) added (related to
+	  feature #1042)
+
+	* tests/: 345.html, results/345.processed: code coverage tests for
+	  file class
+
+	* tests/: 344.html, results/344.processed: code coverage tests
+
+	* tests/: 344.html, results/344.processed: mdate removed from
+	  output
+
+	* src/classes/file.C: minor bugfix: is_text should be taked from
+	  fcontent.is_text_mode() if not set (related to feature #1061)
+
+	* tests/: 344.html, results/344.processed: more tests
+
+	* tests/: 343.html, 344.html, results/343.processed,
+	  results/344.processed: tests for ^file::create[ $.from-charset
+	  and $.to-charset ] (related to feature #1061)
+
+	* src/: classes/file.C, types/pa_vfile.C, types/pa_vfile.h:
+	  aset_text_mode argument optimized
+
+	* src/: classes/file.C, types/pa_vfile.C, types/pa_vfile.h:
+	  checkBOM now used in detect_binary_content (related to feature
+	  #1061)
+
+	* src/main/pa_request.C: load_charset no longer required to_upper
+
+	* src/types/pa_vfile.C: bugfix: ^file::create[$text_file;...] now
+	  preserves original file mode (if no $.mode specified)
+
+	* src/: classes/file.C, types/pa_vfile.C, types/pa_vfile.h:
+	  ^file::create now supports $.from-charset[] and $.to-charset
+	  options (implements feature #1061), automatic transcode is done
+	  if text file is created from binary file and charset is detected.
+
+2016-07-30  moko
+
+	* src/classes/table.C: ^t.hash[..;] now supported (related to
+	  feature #1057)
+
+	* tests/: 341.html, results/341.processed: test for ^t.hash[..;]
+	  added (related to feature #1057)
+
+	* tests/: 286.html, results/286.processed: code tests coverage
+
+2016-07-29  moko
+
+	* src/classes/table.C: table size should be checked inside menu and
+	  foreach (related to feature #858)
+
+	* src/: classes/curl.C, classes/file.C, classes/string.C,
+	  classes/xdoc.C, include/pa_charsets.h, main/pa_charsets.C,
+	  main/pa_common.C, main/pa_http.C, main/pa_sql_driver_manager.C,
+	  types/pa_vmail.C, types/pa_vrequest.C, types/pa_vresponse.C:
+	  charsets.get now does str_upper inside (related to feature #1061)
+
+	* tests/: 342.html, results/342.processed: more code coverage tests
+
+	* tests/: 342.html, outputs/342.processed: table menu code coverage
+	  + foreach test added (related to feature #858)
+
+	* tests/: 341.html, results/341.processed: tests for
+	  ^table.hash[]{code} added + code coverage tests (related to
+	  feature #1057)
+
+	* src/: include/pa_common.h, classes/table.C: ^table.hash[]{code as
+	  value} support (implements feature #1057)
+
+	* src/classes/table.C: whitespace
+
+2016-07-28  moko
+
+	* src/: classes/curl.C, types/pa_vfile.C: curl now saves filename
+	  from URL, if not specified query string removed from url-based
+	  filenames in ^curl:load[] and ^file::load[] (related to feature
+	  #1042)
+
+2016-07-27  moko
+
+	* tests/: 340.html, results/340.processed: test for
+	  transcode_text_result=false added (related to issue #1042)
+
+2016-07-26  moko
+
+	* src/types/pa_vfile.C: file name should not be empty (if file path
+	  is folder and ends with /) (related to feature #1042)
+
+	* src/main/pa_http.C: whitespace optimizaion
+
+	* src/: classes/curl.C, include/pa_common.h, include/pa_http.h,
+	  main/pa_common.C, main/pa_http.C: ^curl:load[] now support
+	  multiple headers, ^file::load supports headers transcoding
+	  (implements feature #1042)
+
+2016-07-25  moko
+
+	* src/include/pa_common.h: PA_DEFAULT added
+
+2016-07-22  moko
+
+	* tests/: 338.html, results/338.processed: test for
+	  $date.field(value) added (related to feature #1066)
+
+	* src/: classes/date.C, types/pa_vdate.C, types/pa_vdate.h:
+	  $date.field(value) now supported for y/m/d/h/m/s (implements
+	  feature #1066)
+
 2016-07-21  moko
 
 	* src/: classes/file.C, classes/image.C, include/pa_common.h,
@@ -14822,7 +14971,7 @@
 	  types/pa_vstring.h, types/pa_vtable.C, types/pa_vtable.h,
 	  types/pa_vvoid.h, types/pa_vxdoc.C, types/pa_vxdoc.h,
 	  types/pa_vxnode.C, types/pa_vxnode.h, types/pa_wcontext.C,
-	  types/pa_wcontext.h, types/pa_wwrapper.h: $Date: 2016/07/21 19:51:41 $
+	  types/pa_wcontext.h, types/pa_wwrapper.h: $Date: 2016/08/04 22:45:32 $
 
 	* src/: classes/classes.C, classes/classes.dsp, classes/classes.h,
 	  classes/date.C, classes/double.C, classes/file.C, classes/form.C,
@@ -18910,7 +19059,7 @@
 	  main/pa_hash.C, main/pa_pool.C, main/pa_request.C,
 	  main/pa_socks.C, main/pa_sql_driver_manager.C, main/pa_string.C,
 	  main/pa_table.C, main/untaint.C, targets/cgi/parser3.C,
-	  targets/isapi/parser3isapi.C: static char *RCSId="$Id: ChangeLog,v 1.105 2016/07/21 19:51:41 moko Exp $";
+	  targets/isapi/parser3isapi.C: static char *RCSId="$Id: ChangeLog,v 1.106 2016/08/04 22:45:32 moko Exp $";
 
 	* src/main/: compile.y, compile_tools.h: $:name: == ${name}:
 	  $class:name: == ${class:name}:
@@ -21725,9 +21874,9 @@
 
 	* src/include/: pa_pool.h, pa_string.h: pa_pool split
 
-	* src/main/: main.dsp, pa_string.C: $Id: ChangeLog,v 1.105 2016/07/21 19:51:41 moko Exp $ check
+	* src/main/: main.dsp, pa_string.C: $Id: ChangeLog,v 1.106 2016/08/04 22:45:32 moko Exp $ check
 
-	* src/: main/pa_pool.C, main/pa_string.C, include/pa_pool.h: $Id: ChangeLog,v 1.105 2016/07/21 19:51:41 moko Exp $
+	* src/: main/pa_pool.C, main/pa_string.C, include/pa_pool.h: $Id: ChangeLog,v 1.106 2016/08/04 22:45:32 moko Exp $
 	  check
 
 	* src/: include/pa_pool.h, main/pa_string.C: String prealloc &
