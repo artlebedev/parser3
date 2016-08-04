@@ -4,7 +4,11 @@ $hHeader[
 	$.[^#0A^taint[as-is][^#0Aфыв]][зна^#0Aчение]
 ]
 
-$hForm[$hHeader]
+$hForm[^hash::create[$hHeader]
+	$.table[^table::create{value
+value
+значение}]
+]
 
 ^do[POST in ^$response:charset (UTF-8) w/o file;;$hForm]
 

@@ -1,9 +1,9 @@
 Content-Type: text/html
-Content-Length: 6399
+Content-Length: 7413
 
 <h2>POST in $response:charset (UTF-8) w/o file</h2>
 <h3>Headers</h3>
-<pre>CONTENT_LENGTH	: 278
+<pre>CONTENT_LENGTH	: 487
 CONTENT_TYPE	: multipart/form-data; boundary=------------boundary-value
 HTTP_ACCEPT	: */*
 HTTP_EXPECT	: 100-continue
@@ -28,12 +28,20 @@ Content-Disposition: form-data; name="
 
 зна
 чение
+------------boundary-value
+Content-Disposition: form-data; name="table"
+
+value
+------------boundary-value
+Content-Disposition: form-data; name="table"
+
+значение
 ------------boundary-value--
 </pre>
 <hr />
 <h2>POST in UTF-8 w/o file with own User-Agent and ommiting charset declaration</h2>
 <h3>Headers</h3>
-<pre>CONTENT_LENGTH	: 278
+<pre>CONTENT_LENGTH	: 487
 CONTENT_TYPE	: multipart/form-data; boundary=------------boundary-value
 HTTP_ACCEPT	: */*
 HTTP_EXPECT	: 100-continue
@@ -59,12 +67,20 @@ Content-Disposition: form-data; name="
 
 зна
 чение
+------------boundary-value
+Content-Disposition: form-data; name="table"
+
+value
+------------boundary-value
+Content-Disposition: form-data; name="table"
+
+значение
 ------------boundary-value--
 </pre>
 <hr />
 <h2>POST in WINDOWS-1251 w/o file</h2>
 <h3>Headers</h3>
-<pre>CONTENT_LENGTH	: 259
+<pre>CONTENT_LENGTH	: 460
 CONTENT_TYPE	: multipart/form-data; boundary=------------boundary-value
 HTTP_ACCEPT	: */*
 HTTP_EXPECT	: 100-continue
@@ -89,12 +105,20 @@ Content-Disposition: form-data; name="
 
 зна
 чение
+------------boundary-value
+Content-Disposition: form-data; name="table"
+
+value
+------------boundary-value
+Content-Disposition: form-data; name="table"
+
+значение
 ------------boundary-value--
 </pre>
 <hr />
 <h2>POST in $response:charset (UTF-8) with file in UTF-8</h2>
 <h3>Headers</h3>
-<pre>CONTENT_LENGTH	: 452
+<pre>CONTENT_LENGTH	: 661
 CONTENT_TYPE	: multipart/form-data; boundary=------------boundary-value
 HTTP_ACCEPT	: */*
 HTTP_EXPECT	: 100-continue
@@ -119,6 +143,14 @@ Content-Disposition: form-data; name="
 
 зна
 чение
+------------boundary-value
+Content-Disposition: form-data; name="table"
+
+value
+------------boundary-value
+Content-Disposition: form-data; name="table"
+
+значение
 ------------boundary-value
 Content-Disposition: form-data; name="file"; filename="223_utf8.txt"
 Content-Type: application/octet-stream
@@ -129,7 +161,7 @@ Content-Type: application/octet-stream
 <hr />
 <h2>POST in WINDOWS-1251 with file in UTF-8</h2>
 <h3>Headers</h3>
-<pre>CONTENT_LENGTH	: 431
+<pre>CONTENT_LENGTH	: 632
 CONTENT_TYPE	: multipart/form-data; boundary=------------boundary-value
 HTTP_ACCEPT	: */*
 HTTP_EXPECT	: 100-continue
@@ -154,6 +186,14 @@ Content-Disposition: form-data; name="
 
 зна
 чение
+------------boundary-value
+Content-Disposition: form-data; name="table"
+
+value
+------------boundary-value
+Content-Disposition: form-data; name="table"
+
+значение
 ------------boundary-value
 Content-Disposition: form-data; name="file"; filename="фай
 л.html"
@@ -165,7 +205,7 @@ Content-Type: application/octet-stream
 <hr />
 <h2>POST in WINDOWS-1251 with file in WINDOWS-1251</h2>
 <h3>Headers</h3>
-<pre>CONTENT_LENGTH	: 428
+<pre>CONTENT_LENGTH	: 629
 CONTENT_TYPE	: multipart/form-data; boundary=------------boundary-value
 HTTP_ACCEPT	: */*
 HTTP_EXPECT	: 100-continue
@@ -190,6 +230,14 @@ Content-Disposition: form-data; name="
 
 зна
 чение
+------------boundary-value
+Content-Disposition: form-data; name="table"
+
+value
+------------boundary-value
+Content-Disposition: form-data; name="table"
+
+значение
 ------------boundary-value
 Content-Disposition: form-data; name="file"; filename="223_win1251.txt"
 Content-Type: application/octet-stream

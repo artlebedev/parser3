@@ -12,7 +12,11 @@ $hCookie[
 абвгдеёжзийклмнопрстуфхцчшщъыьэюя	АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ]
 ]
 
-$hForm[$hHeader]
+$hForm[^hash::create[$hHeader]
+	$.table[^table::create{value
+value
+значение}]
+]
 
 
 ^do[POST in ^$response:charset (UTF-8) w/o file;;$hForm]
