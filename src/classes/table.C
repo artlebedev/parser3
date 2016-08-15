@@ -22,7 +22,7 @@
 #define USE_STRINGSTREAM
 #endif
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.317 2016/07/29 22:40:58 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.318 2016/08/15 15:14:26 moko Exp $";
 
 // class
 
@@ -73,9 +73,7 @@ static Table::Action_options get_action_options(Request& r, MethodParams& params
 			if(soffset == "cur")
 				result.offset=source.current();
 			else
-				throw Exception(PARSER_RUNTIME,
-					&soffset,
-					"must be 'cur' string or expression");
+				throw Exception(PARSER_RUNTIME, &soffset, "must be 'cur' string or expression");
 		} else 
 			result.offset=r.process_to_value(*voffset).as_int();
 	}
@@ -109,9 +107,7 @@ struct TableSeparators {
 		if(Value* vseparator=options.get(PA_COLUMN_SEPARATOR_NAME)) {
 			scolumn=&vseparator->as_string();
 			if(scolumn->length()!=1)
-				throw Exception(PARSER_RUNTIME,
-					scolumn,
-					"separator must be one character long");
+				throw Exception(PARSER_RUNTIME, scolumn, "separator must be one character long");
 			column=scolumn->first_char();
 			result++;
 		}
@@ -121,9 +117,7 @@ struct TableSeparators {
 				encloser=0;
 			} else {
 			if(sencloser->length()!=1)
-				throw Exception(PARSER_RUNTIME,
-					sencloser,
-					"encloser must be one character long");
+				throw Exception(PARSER_RUNTIME, sencloser, "encloser must be one character long");
 			encloser=sencloser->first_char();
 			}
 			result++;
@@ -149,9 +143,7 @@ static void _create(Request& r, MethodParams& params) {
 		if(params[0].is_string()){ // can be nameless only
 			const String& snameless=params.as_string(0, "called with more then 1 param, first param may be only string 'nameless' or junction");
 			if(snameless!="nameless")
-				throw Exception(PARSER_RUNTIME,
-					&snameless,
-					"table::create called with more then 1 param, first param may be only 'nameless'");
+				throw Exception(PARSER_RUNTIME, &snameless, "table::create called with more then 1 param, first param may be only 'nameless'");
 			nameless=true;
 			data_param_index++;
 		}
@@ -169,9 +161,7 @@ static void _create(Request& r, MethodParams& params) {
 		options=new HashStringValue(*options);
 		separators.load(*options);
 		if(separators.encloser){
-			throw Exception(PARSER_RUNTIME,
-				0,
-				"encloser not supported for table::create yet");
+			throw Exception(PARSER_RUNTIME, 0, "encloser not supported for table::create yet");
 		}
 	}
 
@@ -583,9 +573,7 @@ static void _save(Request& r, MethodParams& params) {
 		}
 
 	if(param_index<params.count())
-		throw Exception(PARSER_RUNTIME,
-			0,
-			"bad mode (must be nameless or append)");
+		throw Exception(PARSER_RUNTIME, 0, "bad mode (must be nameless or append)");
 
 	Table& table=GET_SELF(r, VTable).table();
 
@@ -619,9 +607,7 @@ static void _csv_string(Request& r, MethodParams& params) {
 			output_column_names=false;
 			param_index++;
 		} else {
-			throw Exception(PARSER_RUNTIME,
-				0,
-				"bad mode (must be nameless)");
+			throw Exception(PARSER_RUNTIME, 0, "bad mode (must be nameless)");
 		}
 	}
 
@@ -685,9 +671,7 @@ static void _offset(Request& r, MethodParams& params) {
 		    else if(whence=="set")
 				absolute=true;
 		    else
-				throw Exception(PARSER_RUNTIME,
-					&whence,
-					"is invalid whence, valid are 'cur' or 'set'");
+				throw Exception(PARSER_RUNTIME, &whence, "is invalid whence, valid are 'cur' or 'set'");
 		}
 		
 		int offset=params.as_int(params.count()-1, "offset must be expression", r);
@@ -1211,9 +1195,7 @@ static void _join(Request& r, MethodParams& params) {
 
 	Table& dest=GET_SELF(r, VTable).table();
 	if(&src == &dest)
-		throw Exception(PARSER_RUNTIME, 
-			0, 
-			"source and destination are same table");
+		throw Exception(PARSER_RUNTIME, 0, "source and destination are same table");
 
 	if(dest.columns()) // dest is named
 		src.table_for_each(join_named_row, &dest, o);
