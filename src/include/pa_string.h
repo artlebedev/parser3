@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.215 2016/05/24 11:55:13 moko Exp $"
+#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.216 2016/08/15 15:33:16 moko Exp $"
 
 // includes
 #include "pa_types.h"
@@ -631,18 +631,13 @@ public:
 		but when specified: look for substring that lies in ONE fragment in THAT lang
 		@return position of substr in string, -1 means "not found" [const char* version]
 	*/
-	size_t pos(const Body substr, 
-		size_t this_offset=0, Language lang=L_UNSPECIFIED) const;
+	size_t pos(const Body substr, size_t this_offset=0, Language lang=L_UNSPECIFIED) const;
 	/// String version of @see pos(const char*, int, Language)
-	size_t pos(const String& substr, 
-		size_t this_offset=0, Language lang=L_UNSPECIFIED) const;
-	size_t pos(char c, 
-		size_t this_offset=0) const {
+	size_t pos(const String& substr, size_t this_offset=0, Language lang=L_UNSPECIFIED) const;
+	size_t pos(char c, size_t this_offset=0) const {
 		return body.pos(c, this_offset);
 	}
-	size_t pos(Charset& charset,
-		const String& substr, 
-		size_t this_offset=0, Language lang=L_UNSPECIFIED) const;
+	size_t pos(Charset& charset, const String& substr, size_t this_offset=0, Language lang=L_UNSPECIFIED) const;
 
 	size_t strrpbrk(const char* chars, size_t left=0) const {
 		return (length()) ? body.strrpbrk(chars, left, length()-1) : STRING_NOT_FOUND;
@@ -658,19 +653,11 @@ public:
 		return body.rskipchars(chars, left, right);
 	}
 
-	void split(ArrayString& result, 
-		size_t& pos_after,
-		const char* delim, 
-		Language lang=L_UNSPECIFIED, int limit=-1) const;
-	void split(ArrayString& result, 
-		size_t& pos_after, 
-		const String& delim, 
-		Language lang=L_UNSPECIFIED, int limit=-1) const;
+	void split(ArrayString& result, size_t& pos_after, const char* delim, Language lang=L_UNSPECIFIED, int limit=-1) const;
+	void split(ArrayString& result, size_t& pos_after, const String& delim, Language lang=L_UNSPECIFIED, int limit=-1) const;
 
-	typedef void (*Row_action)(Table& table, ArrayString* row, 
-		int prestart, int prefinish, 
-		int poststart, int postfinish,
-		void *info);
+	typedef void (*Row_action)(Table& table, ArrayString* row, int prestart, int prefinish, int poststart, int postfinish, void *info);
+
 	/**
 		@return table of found items, if any.
 		table format is defined and fixed[can be used by others]: 
@@ -678,15 +665,14 @@ public:
 			prematch/match/postmatch/1/2/3/...
 		@endverbatim
 	*/
-	Table* match(VRegex* vregex,
-		Row_action row_action, void *info,
-		int& matches_count) const;
+	Table* match(VRegex* vregex, Row_action row_action, void *info, int& matches_count) const;
+
 	enum Change_case_kind {
 		CC_UPPER,
 		CC_LOWER
 	};
-	String& change_case(Charset& source_charset,
-		Change_case_kind kind) const;
+	String& change_case(Charset& source_charset, Change_case_kind kind) const;
+
 	const String& replace(const Dictionary& dict) const;
 	const String& trim(Trim_kind kind=TRIM_BOTH, const char* chars=0, Charset* source_charset=0) const;
 	double as_double() const { return pa_atod(cstr(), this); }
