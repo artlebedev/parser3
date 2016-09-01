@@ -13,7 +13,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.74 2016/07/29 20:24:17 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.75 2016/09/01 13:57:05 moko Exp $" IDENT_PA_HTTP_H; 
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -567,7 +567,7 @@ Table* parse_cookies(Request& r, Table *cookies){
 	return &result;
 }
 
-void *tables_update(HashStringValue& tables, const String::Body name, const String& value){
+void tables_update(HashStringValue& tables, const String::Body name, const String& value){
 	Table *table;
 	if(Value *valready=tables.get(name)) {
 		// second+ appearence

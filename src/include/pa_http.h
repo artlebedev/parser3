@@ -8,7 +8,7 @@
 #ifndef PA_HTTP_H
 #define PA_HTTP_H
 
-#define IDENT_PA_HTTP_H "$Id: pa_http.h,v 1.15 2016/07/26 13:20:23 moko Exp $"
+#define IDENT_PA_HTTP_H "$Id: pa_http.h,v 1.16 2016/09/01 13:57:04 moko Exp $"
 
 #include "pa_vstring.h"
 #include "pa_vint.h"
@@ -66,7 +66,7 @@ public:
 };
 
 Table* parse_cookies(Request& r, Table *cookies);
-void *tables_update(HashStringValue& tables, const String::Body name, const String& value);
+void tables_update(HashStringValue& tables, const String::Body name, const String& value);
 
 char *pa_http_safe_header_name(const char *name);
 
