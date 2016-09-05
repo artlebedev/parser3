@@ -16,7 +16,7 @@
 #define ULLONG_MAX 18446744073709551615ULL
 #endif
 
-volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.253 2015/10/26 01:21:59 moko Exp $" IDENT_PA_STRING_H;
+volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.254 2016/09/05 21:59:22 moko Exp $" IDENT_PA_STRING_H;
 
 const String String::Empty;
 
@@ -87,11 +87,11 @@ template<typename T> inline T pa_ato_any(const char *str, int base, const String
 }
 
 unsigned int pa_atoui(const char *str, int base, const String* problem_source){
-    return pa_ato_any<unsigned int>(str, base, problem_source, UINT_MAX);
+	return pa_ato_any<unsigned int>(str, base, problem_source, UINT_MAX);
 }
 
 unsigned long long pa_atoul(const char *str, int base, const String* problem_source){
-    return pa_ato_any<unsigned long long int>(str, base, problem_source, ULLONG_MAX);
+	return pa_ato_any<unsigned long long int>(str, base, problem_source, ULLONG_MAX);
 }
 
 int pa_atoi(const char* str, const String* problem_source) {
@@ -167,42 +167,42 @@ double pa_atod(const char* str, const String* problem_source) {
 
 #ifndef DOXYGEN
 typedef struct {
-    ssize_t countdown;
-    int target;	/* Character we're looking for	*/
+	ssize_t countdown;
+	int target;	/* Character we're looking for	*/
 } chr_data;
 #endif
 
 static int CORD_range_contains_chr_greater_then_proc(char c, size_t size, void* client_data)
 {
-    register chr_data * d = (chr_data *)client_data;
-    
-    if (d -> countdown<=0) return(2);
-    d -> countdown -= size;
-    if (c > d -> target) return(1);
-    return(0);
+	register chr_data * d = (chr_data *)client_data;
+
+	if (d -> countdown<=0) return(2);
+	d -> countdown -= size;
+	if (c > d -> target) return(1);
+	return(0);
 }
 
 int CORD_range_contains_chr_greater_then(CORD x, size_t i, size_t n, int c)
 {
-    chr_data d;
+	chr_data d;
 
-    d.countdown = n;
-    d.target = c;
-    return(CORD_block_iter(x, i, CORD_range_contains_chr_greater_then_proc, &d) == 1/*alternatives: 0 normally ended, 2=struck 'n'*/);
+	d.countdown = n;
+	d.target = c;
+	return(CORD_block_iter(x, i, CORD_range_contains_chr_greater_then_proc, &d) == 1/*alternatives: 0 normally ended, 2=struck 'n'*/);
 }
 
 static int CORD_block_count_proc(char /*c*/, size_t /*size*/, void* client_data)
 {
-    int* result=(int*)client_data;
-    (*result)++;
-    return(0); // 0=continue
+	int* result=(int*)client_data;
+	(*result)++;
+	return(0); // 0=continue
 }
 
 size_t CORD_block_count(CORD x)
 {
 	size_t result=0;
 	CORD_block_iter(x, 0, CORD_block_count_proc, &result);
-    return result;
+	return result;
 }
 
 // helpers
@@ -233,8 +233,7 @@ String::Body String::Body::Format(int value) {
 	return String::Body(pa_strdup(local, length));
 }
 
-String::Body String::Body::trim(String::Trim_kind kind, const char* chars, 
-								size_t* out_start, size_t* out_length, Charset* source_charset) const {
+String::Body String::Body::trim(String::Trim_kind kind, const char* chars, size_t* out_start, size_t* out_length, Charset* source_charset) const {
 	size_t our_length=length();
 	if(!our_length)
 		return *this;
@@ -576,13 +575,11 @@ size_t String::pos(const String::Body substr, size_t this_offset, Language lang)
 	}
 }
 
-size_t String::pos(const String& substr, 
-				size_t this_offset, Language lang) const {
+size_t String::pos(const String& substr, size_t this_offset, Language lang) const {
 	return pos(substr.body, this_offset, lang);
 }
 
-size_t String::pos(Charset& charset, const String& substr, 
-				size_t this_offset, Language lang) const {
+size_t String::pos(Charset& charset, const String& substr, size_t this_offset, Language lang) const {
 
 	if(charset.isUTF8()){
 		const XMLByte* srcPtr=(const XMLByte*)cstr();
@@ -603,10 +600,7 @@ size_t String::pos(Charset& charset, const String& substr,
 	}
 }
 
-void String::split(ArrayString& result, 
-		   size_t& pos_after, 
-		   const char* delim, 
-		   Language lang, int limit) const {
+void String::split(ArrayString& result, size_t& pos_after, const char* delim, Language lang, int limit) const {
 	if(is_empty())
 		return;
 	size_t self_length=length();
@@ -628,10 +622,7 @@ void String::split(ArrayString& result,
 	}
 }
 
-void String::split(ArrayString& result, 
-		   size_t& pos_after, 
-		   const String& delim, Language lang, 
-		   int limit) const {
+void String::split(ArrayString& result, size_t& pos_after, const String& delim, Language lang, int limit) const {
 	if(is_empty())
 		return;
 	if(!delim.is_empty()) {
@@ -652,9 +643,7 @@ void String::split(ArrayString& result,
 	}
 }
 
-Table* String::match(VRegex* vregex,
-			Row_action row_action, void *info,
-			int& matches_count) const { 
+Table* String::match(VRegex* vregex, Row_action row_action, void *info, int& matches_count) const {
 
 	// vregex->info(); // I have no idea what does it for?
 
