@@ -16,7 +16,7 @@
 #define ULLONG_MAX 18446744073709551615ULL
 #endif
 
-volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.254 2016/09/05 21:59:22 moko Exp $" IDENT_PA_STRING_H;
+volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.255 2016/09/05 22:06:13 moko Exp $" IDENT_PA_STRING_H;
 
 const String String::Empty;
 
@@ -480,7 +480,8 @@ struct CORD_length_info {
 };
 
 int CORD_batched_len(const char* s, CORD_length_info* info){
-	info->len += lengthUTF8( (const XMLByte *)s, (const XMLByte *)s+strlen(s));	return 0;
+	info->len += lengthUTF8( (const XMLByte *)s, (const XMLByte *)s+strlen(s));
+	return 0;
 }
 
 // can be called only for IS_FUNCTION(CORD) which are used in large String::Body::mid
@@ -527,7 +528,7 @@ String& String::mid(size_t substr_begin, size_t substr_end) const {
 String& String::mid(Charset& charset, size_t from, size_t to, size_t helper_length) const {
 	String& result=*new String;
 
-	size_t self_length=(helper_length)?helper_length:length(charset);
+	size_t self_length=helper_length ? helper_length : length(charset);
 
 	if(!self_length)
 		return result;
