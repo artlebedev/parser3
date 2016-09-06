@@ -22,7 +22,7 @@
 #define USE_STRINGSTREAM
 #endif
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.318 2016/08/15 15:14:26 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.319 2016/09/06 22:19:47 moko Exp $";
 
 // class
 
@@ -51,8 +51,7 @@ String table_reverse_name(TABLE_REVERSE_NAME);
 
 // methods
 
-static Table::Action_options get_action_options(Request& r, MethodParams& params, 
-						size_t options_index, const Table& source) {
+static Table::Action_options get_action_options(Request& r, MethodParams& params, size_t options_index, const Table& source) {
 	Table::Action_options result;
 	if(params.count() <= options_index)
 		return result;
@@ -94,21 +93,21 @@ static Table::Action_options get_action_options(Request& r, MethodParams& params
 	return result;
 }
 
-struct TableSeparators {
-	char column;  const String* scolumn;
+struct TableControlChars {
+	char separator;  const String* sseparator;
 	char encloser; const String* sencloser;
 
-	TableSeparators():
-		column('\t'), scolumn(new String("\t")),
+	TableControlChars():
+		separator('\t'), sseparator(new String("\t")),
 		encloser(0), sencloser(0)
 	{}
 	int load( HashStringValue& options ) {
 		int result=0;
 		if(Value* vseparator=options.get(PA_COLUMN_SEPARATOR_NAME)) {
-			scolumn=&vseparator->as_string();
-			if(scolumn->length()!=1)
-				throw Exception(PARSER_RUNTIME, scolumn, "separator must be one character long");
-			column=scolumn->first_char();
+			sseparator=&vseparator->as_string();
+			if(sseparator->length()!=1)
+				throw Exception(PARSER_RUNTIME, sseparator, "separator must be one character long");
+			separator=sseparator->first_char();
 			result++;
 		}
 		if(Value* vencloser=options.get(PA_COLUMN_ENCLOSER_NAME)) {
@@ -125,6 +124,7 @@ struct TableSeparators {
 		return result;
 	}
 };
+
 
 static void _create(Request& r, MethodParams& params) {
 	// clone/copy part?
@@ -150,7 +150,7 @@ static void _create(Request& r, MethodParams& params) {
 	}
 
 	HashStringValue *options=0;
-	TableSeparators separators;
+	TableControlChars control_chars;
 
 	size_t options_param_index=data_param_index+1;
 	if(
@@ -159,8 +159,8 @@ static void _create(Request& r, MethodParams& params) {
 	) {
 		// cloning, so that we could change
 		options=new HashStringValue(*options);
-		separators.load(*options);
-		if(separators.encloser){
+		control_chars.load(*options);
+		if(control_chars.encloser){
 			throw Exception(PARSER_RUNTIME, 0, "encloser not supported for table::create yet");
 		}
 	}
@@ -186,7 +186,7 @@ static void _create(Request& r, MethodParams& params) {
 			if(head[0]->is_empty())
 				*columns += new String();
 			else
-				head[0]->split(*columns, col_pos_after, *separators.scolumn, String::L_AS_IS);
+				head[0]->split(*columns, col_pos_after, *control_chars.sseparator, String::L_AS_IS);
 		}
 	}
 
@@ -204,7 +204,7 @@ static void _create(Request& r, MethodParams& params) {
 			continue;
 
 		size_t col_pos_after=0;
-		string.split(*row, col_pos_after, *separators.scolumn, String::L_AS_IS);
+		string.split(*row, col_pos_after, *control_chars.sseparator, String::L_AS_IS);
 		table+=row;
 	}
 
@@ -323,12 +323,12 @@ static void _load(Request& r, MethodParams& params) {
 	size_t options_param_index=filename_param_index+1;
 
 	HashStringValue *options=0;
-	TableSeparators separators;
+	TableControlChars control_chars;
 	if(options_param_index<params.count()
 		&& (options=params.as_hash(options_param_index))) {
 		// cloning, so that we could change [to simplify checks on params inside file_read_text
 		options=new HashStringValue(*options);
-		separators.load(*options);
+		control_chars.load(*options);
 	}
 
 	// loading text
@@ -338,7 +338,7 @@ static void _load(Request& r, MethodParams& params) {
 		options
 	);
 
-	Skip_lines_action skip_lines_action = (separators.column=='#' || separators.encloser=='#') ? skip_empty_lines : skip_empty_and_comment_lines;
+	Skip_lines_action skip_lines_action = (control_chars.separator=='#' || control_chars.encloser=='#') ? skip_empty_lines : skip_empty_and_comment_lines;
 
 	// parse columns
 	Table::columns_type columns;
@@ -348,7 +348,7 @@ static void _load(Request& r, MethodParams& params) {
 		columns=Table::columns_type(new ArrayString);
 
 		skip_lines_action(&data);
-		while( lsplit_result sr=lsplit(&data, separators.column, '\n', separators.encloser) ) {
+		while( lsplit_result sr=lsplit(&data, control_chars.separator, '\n', control_chars.encloser) ) {
 			*columns+=new String(sr.piece, String::L_TAINTED);
 			if(sr.delim=='\n') 
 				break;
@@ -361,7 +361,7 @@ static void _load(Request& r, MethodParams& params) {
 	// parse cells
 	Table::element_type row(new ArrayString(columns_count));
 	skip_lines_action(&data);
-	while( lsplit_result sr=lsplit(&data, separators.column, '\n', separators.encloser) ) {
+	while( lsplit_result sr=lsplit(&data, control_chars.separator, '\n', control_chars.encloser) ) {
 		if(!*sr.piece && !sr.delim && !row->count()) // append last empty column [if without \n]
 			break;
 		*row+=new String(sr.piece, String::L_TAINTED);
@@ -405,32 +405,32 @@ static void enclose( pa_stringstream& to, const String* from, char encloser ) {
 	}
 }
 
-static void table_to_csv(pa_stringstream& result, Table& table, TableSeparators& separators, bool output_column_names) {
+static void table_to_csv(pa_stringstream& result, Table& table, TableControlChars& control_chars, bool output_column_names) {
 	if(output_column_names) {
 		if(table.columns()) { // named table
-			if(separators.encloser){
+			if(control_chars.encloser){
 				for(Array_iterator<const String*> i(*table.columns()); i.has_next(); ) {
-					enclose( result, i.next(), separators.encloser );
+					enclose( result, i.next(), control_chars.encloser );
 					if(i.has_next())
-						result<<separators.column;
+						result<<control_chars.separator;
 				}
 			} else {
 				for(Array_iterator<const String*> i(*table.columns()); i.has_next(); ) {
 					result<<i.next()->cstr();
 					if(i.has_next())
-						result<<separators.column;
+						result<<control_chars.separator;
 				}
 			}
 		} else { // nameless table [we were asked to output column names]
 			if(int lsize=table.count()?table[0]->count():0)
 				for(int column=0; column<lsize; column++) {
-					if(separators.encloser) {
-						result<<separators.encloser<<column<<separators.encloser;
+					if(control_chars.encloser) {
+						result<<control_chars.encloser<<column<<control_chars.encloser;
 					} else {
 						result<<column;
 					}
 					if(column<lsize-1){
-						result<<separators.column;
+						result<<control_chars.separator;
 					}
 				}
 			else
@@ -441,12 +441,12 @@ static void table_to_csv(pa_stringstream& result, Table& table, TableSeparators&
 
 	// process data lines
 	Array_iterator<ArrayString*> i(table);
-	if(separators.encloser){
+	if(control_chars.encloser){
 		while(i.has_next()) {
 			for(Array_iterator<const String*> c(*i.next()); c.has_next(); ) {
-				enclose( result, c.next(), separators.encloser );
+				enclose( result, c.next(), control_chars.encloser );
 				if(c.has_next())
-					result<<separators.column;
+					result<<control_chars.separator;
 			}
 			result<<'\n';
 		}
@@ -455,7 +455,7 @@ static void table_to_csv(pa_stringstream& result, Table& table, TableSeparators&
 			for(Array_iterator<const String*> c(*i.next()); c.has_next(); ) {
 				result<<c.next()->cstr();
 				if(c.has_next())
-					result<<separators.column;
+					result<<control_chars.separator;
 			}
 			result<<'\n';
 		}
@@ -484,32 +484,32 @@ void enclose( String& to, const String* from, char encloser, const String* sencl
 	}
 }
 
-static void table_to_csv(String& result, Table& table, TableSeparators& separators, bool output_column_names) {
+static void table_to_csv(String& result, Table& table, TableControlChars& control_chars, bool output_column_names) {
 	if(output_column_names) {
 		if(table.columns()) { // named table
-			if(separators.encloser) {
+			if(control_chars.encloser) {
 				for(Array_iterator<const String*> i(*table.columns()); i.has_next(); ) {
-					enclose( result, i.next(), separators.encloser, separators.sencloser );
+					enclose( result, i.next(), control_chars.encloser, control_chars.sencloser );
 					if(i.has_next())
-						result<<*separators.scolumn;
+						result<<*control_chars.sseparator;
 				}
 			} else {
 				for(Array_iterator<const String*> i(*table.columns()); i.has_next(); ) {
 					result<<*i.next();
 					if(i.has_next())
-						result<<*separators.scolumn;
+						result<<*control_chars.sseparator;
 				}
 			}
 		} else { // nameless table [we were asked to output column names]
 			if(int lsize=table.count()?table[0]->count():0)
 				for(int column=0; column<lsize; column++) {
-					if(separators.encloser) {
-						result<<*separators.sencloser<<String::Body::Format(column)<<*separators.sencloser;
+					if(control_chars.encloser) {
+						result<<*control_chars.sencloser<<String::Body::Format(column)<<*control_chars.sencloser;
 					} else {
 						result<<String::Body::Format(column);
 					}
 					if(column<lsize-1){
-						result<<*separators.scolumn;
+						result<<*control_chars.sseparator;
 					}
 				}
 			else
@@ -520,12 +520,12 @@ static void table_to_csv(String& result, Table& table, TableSeparators& separato
 
 	// data lines
 	Array_iterator<ArrayString*> i(table);
-	if(separators.encloser){
+	if(control_chars.encloser){
 		while(i.has_next()) {
 			for(Array_iterator<const String*> c(*i.next()); c.has_next(); ) {
-				enclose( result, c.next(), separators.encloser, separators.sencloser );
+				enclose( result, c.next(), control_chars.encloser, control_chars.sencloser );
 				if(c.has_next())
-					result<<*separators.scolumn;
+					result<<*control_chars.sseparator;
 			}
 			result.append_know_length("\n", 1, String::L_CLEAN);
 		}
@@ -534,7 +534,7 @@ static void table_to_csv(String& result, Table& table, TableSeparators& separato
 			for(Array_iterator<const String*> c(*i.next()); c.has_next(); ) {
 				result<<*c.next();
 				if(c.has_next())
-					result<<*separators.scolumn;
+					result<<*control_chars.sseparator;
 			}
 			result.append_know_length("\n", 1, String::L_CLEAN);
 		}
@@ -564,10 +564,10 @@ static void _save(Request& r, MethodParams& params) {
 	if(do_append && file_exist(file_spec))
 		output_column_names=false;
 
-	TableSeparators separators;
+	TableControlChars control_chars;
 	if(param_index<params.count())
 		if(HashStringValue* options=params.as_hash(param_index++)) {
-			int valid_options=separators.load(*options);
+			int valid_options=control_chars.load(*options);
 			if(valid_options!=options->count())
 				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 		}
@@ -580,7 +580,7 @@ static void _save(Request& r, MethodParams& params) {
 #ifdef USE_STRINGSTREAM
 	pa_stringstream ost(std::stringstream::out);
 
-	table_to_csv(ost, table, separators, output_column_names);
+	table_to_csv(ost, table, control_chars, output_column_names);
 
 	// write
 		pa_string data=ost.str();
@@ -589,7 +589,7 @@ static void _save(Request& r, MethodParams& params) {
 #else
 	String sdata;
 
-	table_to_csv(sdata, table, separators, output_column_names);
+	table_to_csv(sdata, table, control_chars, output_column_names);
 
 	// write
 		const char* data_cstr=sdata.cstr();
@@ -611,10 +611,10 @@ static void _csv_string(Request& r, MethodParams& params) {
 		}
 	}
 
-	TableSeparators separators;
+	TableControlChars control_chars;
 	if(param_index<params.count())
 		if(HashStringValue* options=params.as_hash(param_index++)) {
-			int valid_options=separators.load(*options);
+			int valid_options=control_chars.load(*options);
 			if(valid_options!=options->count())
 				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 		}
@@ -624,13 +624,13 @@ static void _csv_string(Request& r, MethodParams& params) {
 #ifdef USE_STRINGSTREAM
 	pa_stringstream ost(std::stringstream::out);
 
-	table_to_csv(ost, table, separators, output_column_names);
+	table_to_csv(ost, table, control_chars, output_column_names);
 
 	r.write_no_lang(*new VString(*new String(pa_strdup(ost.str().c_str()), String::L_CLEAN)));
 #else
 	String sdata;
 
-	table_to_csv(sdata, table, separators, output_column_names);
+	table_to_csv(sdata, table, control_chars, output_column_names);
 
 	r.write_no_lang(*new VString(*new String(sdata.cstr(), String::L_CLEAN)));
 #endif
