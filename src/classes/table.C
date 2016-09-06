@@ -22,7 +22,7 @@
 #define USE_STRINGSTREAM
 #endif
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.319 2016/09/06 22:19:47 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.320 2016/09/06 22:38:44 moko Exp $";
 
 // class
 
@@ -97,10 +97,15 @@ struct TableControlChars {
 	char separator;  const String* sseparator;
 	char encloser; const String* sencloser;
 
+	char separators[3];
+
 	TableControlChars():
 		separator('\t'), sseparator(new String("\t")),
 		encloser(0), sencloser(0)
-	{}
+	{
+		strcpy(separators,"\t\n");
+	}
+
 	int load( HashStringValue& options ) {
 		int result=0;
 		if(Value* vseparator=options.get(PA_COLUMN_SEPARATOR_NAME)) {
@@ -108,6 +113,7 @@ struct TableControlChars {
 			if(sseparator->length()!=1)
 				throw Exception(PARSER_RUNTIME, sseparator, "separator must be one character long");
 			separator=sseparator->first_char();
+			separators[0]=separator;
 			result++;
 		}
 		if(Value* vencloser=options.get(PA_COLUMN_ENCLOSER_NAME)) {
@@ -219,10 +225,9 @@ struct lsplit_result {
 	operator bool() { return piece!=0; }
 };
 
-inline lsplit_result lsplit(char* string, char delim1, char delim2) {
+inline lsplit_result lsplit(char* string, const char* delims) {
 	lsplit_result result;
 	if(string) {
-		char delims[]={delim1, delim2, 0};
 		if(char* v=strpbrk(string, delims)) {
 			result.delim=*v;
 			*v=0;
@@ -235,16 +240,16 @@ inline lsplit_result lsplit(char* string, char delim1, char delim2) {
 	return result;
 }
 
-inline lsplit_result lsplit(char* *string_ref, char delim1, char delim2) {
+inline lsplit_result lsplit(char* *string_ref, const char* delims) {
 	lsplit_result result;
 	result.piece=*string_ref;
-	lsplit_result next=lsplit(*string_ref, delim1, delim2);
+	lsplit_result next=lsplit(*string_ref, delims);
 	result.delim=next.delim;
 	*string_ref=next.piece;
 	return result;
 }
 
-static lsplit_result lsplit(char** string_ref, char delim1, char delim2, char encloser) {
+static lsplit_result lsplit(char** string_ref, const char* delims, char encloser) {
 	lsplit_result result;
 
 	if(char* string=*string_ref) {
@@ -267,7 +272,7 @@ static lsplit_result lsplit(char** string_ref, char delim1, char delim2, char en
 			}
 			// we are no longer enclosed, searching for delimiter, skipping extra enclosers
 			while(c=*read++) {
-				if(c==delim1 || c==delim2) {
+				if(c==delims[0] || c==delims[1]) {
 					result.delim=c;
 					break;
 				} else 	if(c!=encloser)
@@ -278,7 +283,7 @@ static lsplit_result lsplit(char** string_ref, char delim1, char delim2, char en
 			result.piece=string;
 			return result;
 		} else
-			return lsplit(string_ref, delim1, delim2);
+			return lsplit(string_ref, delims);
 	}
 	result.piece=0;
 	return result;
@@ -348,7 +353,7 @@ static void _load(Request& r, MethodParams& params) {
 		columns=Table::columns_type(new ArrayString);
 
 		skip_lines_action(&data);
-		while( lsplit_result sr=lsplit(&data, control_chars.separator, '\n', control_chars.encloser) ) {
+		while( lsplit_result sr=lsplit(&data, control_chars.separators, control_chars.encloser) ) {
 			*columns+=new String(sr.piece, String::L_TAINTED);
 			if(sr.delim=='\n') 
 				break;
@@ -361,7 +366,7 @@ static void _load(Request& r, MethodParams& params) {
 	// parse cells
 	Table::element_type row(new ArrayString(columns_count));
 	skip_lines_action(&data);
-	while( lsplit_result sr=lsplit(&data, control_chars.separator, '\n', control_chars.encloser) ) {
+	while( lsplit_result sr=lsplit(&data, control_chars.separators, control_chars.encloser) ) {
 		if(!*sr.piece && !sr.delim && !row->count()) // append last empty column [if without \n]
 			break;
 		*row+=new String(sr.piece, String::L_TAINTED);
