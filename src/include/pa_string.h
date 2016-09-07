@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.216 2016/08/15 15:33:16 moko Exp $"
+#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.217 2016/09/07 14:40:07 moko Exp $"
 
 // includes
 #include "pa_types.h"
@@ -486,7 +486,7 @@ public:
 			size_t* out_start=0, size_t* out_length=0, Charset* source_charset=0) const;
 	};
 
-private:
+protected:
 
 	Body body; ///< all characters of string
 	Languages langs; ///< string characters lang
