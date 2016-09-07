@@ -22,7 +22,7 @@
 #define USE_STRINGSTREAM
 #endif
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.320 2016/09/06 22:38:44 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.321 2016/09/07 11:56:20 moko Exp $";
 
 // class
 
@@ -222,44 +222,37 @@ struct lsplit_result {
 	char* piece;
 	char delim;
 
+	lsplit_result(char *apiece=0) : piece(apiece), delim(0){}
 	operator bool() { return piece!=0; }
 };
 
-inline lsplit_result lsplit(char* string, const char* delims) {
-	lsplit_result result;
-	if(string) {
-		if(char* v=strpbrk(string, delims)) {
+inline lsplit_result lsplit(char* *string_ref, const char* delims) {
+	lsplit_result result(*string_ref);
+	if(result.piece) {
+		if(char* v=strpbrk(result.piece, delims)) {
 			result.delim=*v;
 			*v=0;
-			result.piece=v+1;
+			*string_ref=v+1;
 			return result;
+		} else {
+			*string_ref=0;
 		}
 	}
-	result.piece=0;
-	result.delim=0;
-	return result;
-}
-
-inline lsplit_result lsplit(char* *string_ref, const char* delims) {
-	lsplit_result result;
-	result.piece=*string_ref;
-	lsplit_result next=lsplit(*string_ref, delims);
-	result.delim=next.delim;
-	*string_ref=next.piece;
 	return result;
 }
 
 static lsplit_result lsplit(char** string_ref, const char* delims, char encloser) {
-	lsplit_result result;
+	lsplit_result result(*string_ref);
 
-	if(char* string=*string_ref) {
-		if(encloser && *string==encloser) {
-			string++;
+	if(result.piece) {
+		if(encloser && *result.piece==encloser) {
+			result.piece++;
 			
+			char c;
 			char *read;
 			char *write;
-			write=read=string;
-			char c;
+			write=read=result.piece;
+
 			// we are enclosed, searching for second encloser
 			while(c=*read++) {
 				if(c==encloser) {
@@ -270,6 +263,7 @@ static lsplit_result lsplit(char** string_ref, const char* delims, char encloser
 				}
 				*write++=c;
 			}
+
 			// we are no longer enclosed, searching for delimiter, skipping extra enclosers
 			while(c=*read++) {
 				if(c==delims[0] || c==delims[1]) {
@@ -278,14 +272,13 @@ static lsplit_result lsplit(char** string_ref, const char* delims, char encloser
 				} else 	if(c!=encloser)
 					*write++=c;
 			}
+
 			*write=0; // terminate
-			*string_ref=c? read: 0;
-			result.piece=string;
+			*string_ref=c ? read : 0;
 			return result;
 		} else
 			return lsplit(string_ref, delims);
 	}
-	result.piece=0;
 	return result;
 }
 
@@ -337,11 +330,7 @@ static void _load(Request& r, MethodParams& params) {
 	}
 
 	// loading text
-	char *data=file_load_text(r,
-		r.absolute(params.as_string(filename_param_index, FILE_NAME_MUST_BE_STRING)),
-		true,
-		options
-	);
+	char *data=file_load_text(r, r.absolute(params.as_string(filename_param_index, FILE_NAME_MUST_BE_STRING)), true, options);
 
 	Skip_lines_action skip_lines_action = (control_chars.separator=='#' || control_chars.encloser=='#') ? skip_empty_lines : skip_empty_and_comment_lines;
 
