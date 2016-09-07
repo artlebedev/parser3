@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.217 2016/09/07 14:40:07 moko Exp $"
+#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.218 2016/09/07 15:03:25 moko Exp $"
 
 // includes
 #include "pa_types.h"
@@ -73,6 +73,7 @@ unsigned long long int pa_atoul(const char *str, int base, const String* problem
 
 
 class String: public PA_Object {
+	friend class StringSplitHelper;
 public:
 
 	/** piece is tainted or not. the lang to use when detaint
@@ -486,7 +487,7 @@ public:
 			size_t* out_start=0, size_t* out_length=0, Charset* source_charset=0) const;
 	};
 
-protected:
+private:
 
 	Body body; ///< all characters of string
 	Languages langs; ///< string characters lang
