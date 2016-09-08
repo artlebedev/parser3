@@ -23,6 +23,31 @@ a	b	c
 c	d	e
 	]
 
+$t[^table::create[$t; $.reverse(true) ]]
+
+^try-catch{
+	$t[^table::create[$t; $.offset[no-such-name] ]]
+}
+^try-catch{
+	$t[^table::create[$t; $.no-such-option[yes] ]]
+}
+^try-catch{
+	$t[^table::create{}[ $.no-such-option[yes] ]]
+}
+^try-catch{
+	$t[^table::create{}[ $.separator[abc] ]]
+}
+^try-catch{
+	$t[^table::create{}[ $.encloser[] ]]
+}
+^try-catch{
+	$t[^table::create{}[ $.encloser[ю] ]]
+}
+^try-catch{
+	$t[^table::create[no-such-name]{}]
+}
+
+
 @test[data]
 $t[^table::create{$data}]
 ^json:string[$t; $.indent(true) ]
