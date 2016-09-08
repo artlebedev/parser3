@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 736
+Content-Length: 810
 
 [
 	{"v1":"a\tb","v2":"d","v3":"e","3":""}
@@ -23,6 +23,9 @@ Content-Length: 736
 Type: parser.runtime,
 Source: no-such-name,
 Comment: must be 'cur' string or expression
+Type: parser.runtime,
+Source: create,
+Comment: called with invalid option
 Type: parser.runtime,
 Source: create,
 Comment: called with invalid option

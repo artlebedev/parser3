@@ -22,7 +22,7 @@
 #define USE_STRINGSTREAM
 #endif
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.323 2016/09/08 17:01:49 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.324 2016/09/08 19:28:34 moko Exp $";
 
 // class
 
@@ -271,9 +271,8 @@ static void _create(Request& r, MethodParams& params) {
 
 	size_t options_param_index=data_param_index+1;
 	if( options_param_index<params.count() && (options=params.as_hash(options_param_index)) ) {
-		// cloning, so that we could change
-		options=new HashStringValue(*options);
-		control_chars.load(*options);
+		if(control_chars.load(*options)!=options->count())
+			throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 	}
 
 	// data
