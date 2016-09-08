@@ -22,7 +22,7 @@
 #define USE_STRINGSTREAM
 #endif
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.324 2016/09/08 19:28:34 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.325 2016/09/08 19:34:18 moko Exp $";
 
 // class
 
@@ -121,9 +121,9 @@ struct TableControlChars {
 			if(sencloser->is_empty()){
 				encloser=0;
 			} else {
-			if(sencloser->length()!=1)
-				throw Exception(PARSER_RUNTIME, sencloser, "encloser must be one byte character");
-			encloser=sencloser->first_char();
+				if(sencloser->length()!=1)
+					throw Exception(PARSER_RUNTIME, sencloser, "encloser must be empty or one byte character");
+				encloser=sencloser->first_char();
 			}
 			result++;
 		}
