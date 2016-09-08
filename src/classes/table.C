@@ -22,7 +22,7 @@
 #define USE_STRINGSTREAM
 #endif
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.322 2016/09/08 16:31:35 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.323 2016/09/08 17:01:49 moko Exp $";
 
 // class
 
@@ -111,7 +111,7 @@ struct TableControlChars {
 		if(Value* vseparator=options.get(PA_COLUMN_SEPARATOR_NAME)) {
 			sseparator=&vseparator->as_string();
 			if(sseparator->length()!=1)
-				throw Exception(PARSER_RUNTIME, sseparator, "separator must be one character long");
+				throw Exception(PARSER_RUNTIME, sseparator, "separator must be one byte character");
 			separator=sseparator->first_char();
 			separators[0]=separator;
 			result++;
@@ -122,7 +122,7 @@ struct TableControlChars {
 				encloser=0;
 			} else {
 			if(sencloser->length()!=1)
-				throw Exception(PARSER_RUNTIME, sencloser, "encloser must be one character long");
+				throw Exception(PARSER_RUNTIME, sencloser, "encloser must be one byte character");
 			encloser=sencloser->first_char();
 			}
 			result++;
