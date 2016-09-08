@@ -5,6 +5,11 @@ $cfg[^table::load[nameless;282.cfg;
 	$.encloser["]
 ]]
 
-^cfg.menu{
-	[^cfg.line[]] - '$cfg.0'-'$cfg.1'-'$cfg.2'
-}
+^json:string[$cfg; $.table[array] ]
+
+$cfg[^table::load[nameless;282.cfg;
+	$.separator[,]
+	$.encloser[#]
+]]
+
+^json:string[$cfg; $.table[array] ]
