@@ -30,11 +30,8 @@ $t[^table::create{^untaint{^taint[$a-comma-b]}}[$.separator[,]]]
 <hr>
 
 
-^try{
-	$t[^table::create{$a-comma-b}[$.separator[,]$.encloser["]]]
-	=$t.a=
-}{
-	$exception.handled(1)
-	$exception.comment
-}
+$a-comma-b[a,b
+"1",2]
 
+$t[^table::create{$a-comma-b}[$.separator[,]$.encloser["]]]
+=$t.a=
