@@ -22,7 +22,7 @@
 #define USE_STRINGSTREAM
 #endif
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.321 2016/09/07 11:56:20 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.322 2016/09/08 16:31:35 moko Exp $";
 
 // class
 
@@ -132,6 +132,117 @@ struct TableControlChars {
 };
 
 
+struct lsplit_sresult {
+	String* piece;
+	char delim;
+
+	lsplit_sresult() : piece(0), delim(0){}
+
+	operator bool() { return piece!=0; }
+
+	void append(String *str){
+		if(piece)
+			*piece << *str;
+		else
+			piece = str;
+	}
+};
+
+class StringSplitHelper : public String {
+public:
+	char* base;
+
+	StringSplitHelper(String astring) : String(astring), base(cstrm()) {}
+
+	bool check_lang(const char *pos){
+		return langs.check_lang(L_AS_IS, pos-base, 1);
+	}
+
+	String *extract(char *pos){
+		String *result=new String;
+		// first: their langs
+		result->langs.append(result->body, langs, pos-base, strlen(pos));
+		// next: letters themselves
+		result->body=Body(pos);
+		return result;
+	}
+};
+
+inline lsplit_sresult lsplit(char* *string_ref, const char* delims, StringSplitHelper& helper) {
+	lsplit_sresult result;
+	if(char *pos=*string_ref) {
+		while(char* v=strpbrk(pos, delims)) {
+			if(helper.check_lang(v)){
+				result.delim=*v;
+				*v=0;
+				result.piece=helper.extract(*string_ref);
+				*string_ref=v+1;
+				return result;
+			}
+			pos=v+1;
+		}
+		result.piece=helper.extract(*string_ref);
+		*string_ref=0;
+	}
+	return result;
+}
+
+static lsplit_sresult lsplit(char** string_ref, const char* delims, char encloser, StringSplitHelper& helper) {
+	lsplit_sresult result;
+
+	if(char *pos=*string_ref) {
+		if(encloser && *pos==encloser && helper.check_lang(pos)) {
+			*string_ref=++pos;
+
+			// we are enclosed, searching for second encloser
+			while(1) {
+				if(char* v=strchr(pos, encloser)){
+					if(helper.check_lang(v)){
+						*(v++)=0;
+						result.append(helper.extract(*string_ref));
+						if(*v==encloser && helper.check_lang(v)){ // double-encloser stands for encloser
+							*string_ref=v+1;
+						} else {
+							*string_ref=pos=v;
+							break;
+						}
+					}
+					pos=v+1;
+				}{
+					result.append(helper.extract(*string_ref));
+					*string_ref=0;
+					return result;
+				}
+			}
+
+			// we are no longer enclosed, searching for delimiter
+			while(char* v=strpbrk(pos, delims)) {
+				if(helper.check_lang(v)){
+					result.delim=*v;
+					if(v>*string_ref){
+						*v=0;
+						result.append(helper.extract(*string_ref));
+					}
+					*string_ref=v+1;
+					return result;
+				}
+				pos=v+1;
+			}
+			result.append(helper.extract(*string_ref));
+			*string_ref=0;
+		} else
+			return lsplit(string_ref, delims, helper);
+	}
+	return result;
+}
+
+static void skip_clean_empty_lines(char** data_ref, StringSplitHelper& helper) {
+	if(*data_ref) {
+		while(**data_ref == '\n' && helper.check_lang(*data_ref))
+			(*data_ref)++;
+	}
+}
+
 static void _create(Request& r, MethodParams& params) {
 	// clone/copy part?
 	if(Table *source=params[0].get_table()) {
@@ -159,61 +270,50 @@ static void _create(Request& r, MethodParams& params) {
 	TableControlChars control_chars;
 
 	size_t options_param_index=data_param_index+1;
-	if(
-		options_param_index<params.count()
-		&& (options=params.as_hash(options_param_index))
-	) {
+	if( options_param_index<params.count() && (options=params.as_hash(options_param_index)) ) {
 		// cloning, so that we could change
 		options=new HashStringValue(*options);
 		control_chars.load(*options);
-		if(control_chars.encloser){
-			throw Exception(PARSER_RUNTIME, 0, "encloser not supported for table::create yet");
-		}
 	}
 
 	// data
 	Temp_lang temp_lang(r, String::L_PASS_APPENDED);
-	const String&  data=
-		r.process_to_string(params.as_junction(data_param_index, "body must be table or code"));
+	StringSplitHelper sdata(r.process_to_string(params.as_junction(data_param_index, "body must be table or code")));
+	char *data=sdata.base;
 
 	// parse columns
-	size_t raw_pos_after=0;
 	Table::columns_type columns;
-
-	if(nameless){
-		columns=Table::columns_type(0); // nameless
+	if(nameless) {
+		columns=0; // nameless
 	} else {
-		columns=Table::columns_type(new ArrayString);
-
-		ArrayString head;
-		data.split(head, raw_pos_after, "\n", String::L_AS_IS, 1);
-		if(head.count()) {
-			size_t col_pos_after=0;
-			if(head[0]->is_empty())
-				*columns += new String();
-			else
-				head[0]->split(*columns, col_pos_after, *control_chars.sseparator, String::L_AS_IS);
+		columns=new ArrayString;
+		while( lsplit_sresult sr=lsplit(&data, control_chars.separators, control_chars.encloser, sdata) ) {
+			*columns+=sr.piece;
+			if(sr.delim=='\n') 
+				break;
 		}
 	}
-
+	
 	Table& table=*new Table(columns);
+	int columns_count=columns ? columns->count(): 0;
+
 	// parse cells
-
-	ArrayString rows;
-	data.split(rows, raw_pos_after, "\n", String::L_AS_IS);
-	Array_iterator<const String*> i(rows);
-	while(i.has_next()) {
-		Table::element_type row(new ArrayString);
-		const String& string=*i.next();
-		// remove comment lines
-		if(string.is_empty())
-			continue;
-
-		size_t col_pos_after=0;
-		string.split(*row, col_pos_after, *control_chars.sseparator, String::L_AS_IS);
-		table+=row;
+	Table::element_type row(new ArrayString(columns_count));
+	skip_clean_empty_lines(&data, sdata);
+	while( lsplit_sresult sr=lsplit(&data, control_chars.separators, control_chars.encloser, sdata) ) {
+		if(sr.piece->is_empty() && !sr.delim && !row->count()) // append last empty column [if without \n]
+			break;
+		*row+=sr.piece;
+		if(sr.delim=='\n') {
+			table+=row;
+			row=new ArrayString(columns_count);
+			skip_clean_empty_lines(&data, sdata);
+		}
 	}
-
+	// last line [if without \n]
+	if(row->count())
+		table+=row;
+	
 	// replace any previous table value
 	GET_SELF(r, VTable).set_table(table);
 }
@@ -234,9 +334,8 @@ inline lsplit_result lsplit(char* *string_ref, const char* delims) {
 			*v=0;
 			*string_ref=v+1;
 			return result;
-		} else {
-			*string_ref=0;
 		}
+		*string_ref=0;
 	}
 	return result;
 }
@@ -283,30 +382,22 @@ static lsplit_result lsplit(char** string_ref, const char* delims, char encloser
 }
 
 static void skip_empty_and_comment_lines( char** data_ref ) {
-	if(char *data=*data_ref) {
-		while( char c=*data ) {
-			if( c== '\n' || c == '#' ) {
-				/*nowhere=*/getrow(&data); // remove empty&comment lines
-				if(!(*data_ref=data))
-					break;
-				continue;
-			}
-			break;
+	while(*data_ref) {
+		if(**data_ref == '\n'){
+			(*data_ref)++;
+		} else {
+			if(**data_ref == '#' )
+				/*nowhere=*/getrow(data_ref);
+			else
+				break;
 		}
 	}
 }
 
 static void skip_empty_lines( char** data_ref ) {
-	if(char *data=*data_ref) {
-		while( char c=*data ) {
-			if( c== '\n' ) {
-				/*nowhere=*/getrow(&data); // remove empty lines
-				if(!(*data_ref=data))
-					break;
-				continue;
-			}
-			break;
-		}
+	if(*data_ref) {
+		while(**data_ref == '\n')
+			(*data_ref)++;
 	}
 }
 
@@ -337,9 +428,9 @@ static void _load(Request& r, MethodParams& params) {
 	// parse columns
 	Table::columns_type columns;
 	if(nameless) {
-		columns=Table::columns_type(0); // nameless
+		columns=0; // nameless
 	} else {
-		columns=Table::columns_type(new ArrayString);
+		columns=new ArrayString;
 
 		skip_lines_action(&data);
 		while( lsplit_result sr=lsplit(&data, control_chars.separators, control_chars.encloser) ) {
@@ -350,7 +441,7 @@ static void _load(Request& r, MethodParams& params) {
 	}
 	
 	Table& table=*new Table(columns);
-	int columns_count=columns? columns->count(): 0;
+	int columns_count=columns ? columns->count(): 0;
 
 	// parse cells
 	Table::element_type row(new ArrayString(columns_count));
