@@ -20,7 +20,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.226 2016/07/29 20:24:16 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.227 2016/09/08 20:41:47 moko Exp $";
 
 // class
 
@@ -202,21 +202,15 @@ static void _pos(Request& r, MethodParams& params) {
 	if(params.count()>1){
 		offset=params.as_int(1, "n must be int", r);
 		if(offset<0)
-			throw Exception(PARSER_RUNTIME,
-				0, 
-				"n(%d) must be >=0", offset);
+			throw Exception(PARSER_RUNTIME, 0, "n(%d) must be >=0", offset);
 	}
 
 	r.write_no_lang(*new VInt((int)string.pos(r.charsets.source(), substr.as_string(), (size_t)offset)));
 }
 
-static void split_list(MethodParams& params, int paramIndex,
-		       const String& string, 
-		       ArrayString& result) {
+static void split_list(MethodParams& params, int paramIndex, const String& string, ArrayString& result) {
 	Value& delim_value=params.as_no_junction(paramIndex, "delimiter must not be code");
-
-	size_t pos_after=0;
-	string.split(result, pos_after, delim_value.as_string());
+	string.split(result, 0, delim_value.as_string());
 }
 
 #define SPLIT_LEFT 0x0001

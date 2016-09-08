@@ -22,7 +22,7 @@
 #define USE_STRINGSTREAM
 #endif
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.325 2016/09/08 19:34:18 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.326 2016/09/08 20:41:47 moko Exp $";
 
 // class
 
@@ -1220,8 +1220,7 @@ inline Table::element_type row_from_string(Request& r, Value &param){
 
 	// parse cells
 	Table::element_type row=new ArrayString;
-	size_t pos_after=0;
-	string.split(*row, pos_after, "\t", String::L_AS_IS);
+	string.split(*row, 0, "\t", String::L_AS_IS);
 
 	return row;
 }

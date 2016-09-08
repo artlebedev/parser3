@@ -13,7 +13,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.75 2016/09/01 13:57:05 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.76 2016/09/08 20:41:47 moko Exp $" IDENT_PA_HTTP_H; 
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -117,8 +117,7 @@ static int http_read_response(char*& response, size_t& response_size, int sock, 
 	if(char* EOLat=strstr(preview_buf, "\n")) { 
 		const String status_line(pa_strdup(preview_buf, EOLat-preview_buf));
 		ArrayString astatus; 
-		size_t pos_after=0;
-		status_line.split(astatus, pos_after, " "); 
+		status_line.split(astatus, 0, " ");
 		const String& status_code=*astatus.get(astatus.count()>1?1:0);
 		result=status_code.as_int(); 
 
@@ -839,9 +838,7 @@ File_read_http_result pa_internal_file_read_http(Request& r, const String& file_
 		const String header_block(String::C(response_str, headers_end_at-response_str), String::L_TAINTED);
 		
 		ArrayString aheaders;
-
-		size_t pos_after=0;
-		header_block.split(aheaders, pos_after, "\n"); 
+		header_block.split(aheaders, 0, "\n");
 
 		Array_iterator<const String*> i(aheaders);
 		i.next(); // skipping status

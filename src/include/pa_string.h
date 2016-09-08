@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.218 2016/09/07 15:03:25 moko Exp $"
+#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.219 2016/09/08 20:41:48 moko Exp $"
 
 // includes
 #include "pa_types.h"
@@ -654,8 +654,8 @@ public:
 		return body.rskipchars(chars, left, right);
 	}
 
-	void split(ArrayString& result, size_t& pos_after, const char* delim, Language lang=L_UNSPECIFIED, int limit=-1) const;
-	void split(ArrayString& result, size_t& pos_after, const String& delim, Language lang=L_UNSPECIFIED, int limit=-1) const;
+	void split(ArrayString& result, size_t pos_after, const char* delim, Language lang=L_UNSPECIFIED) const;
+	void split(ArrayString& result, size_t pos_after, const String& delim, Language lang=L_UNSPECIFIED) const;
 
 	typedef void (*Row_action)(Table& table, ArrayString* row, int prestart, int prefinish, int poststart, int postfinish, void *info);
 

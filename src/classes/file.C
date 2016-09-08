@@ -25,7 +25,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.248 2016/08/02 15:06:39 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.249 2016/09/08 20:41:47 moko Exp $";
 
 // defines
 
@@ -652,8 +652,7 @@ static void _exec_cgi(Request& r, MethodParams& params, bool cgi) {
 		// $fields << header
 		if(header) {
 			ArrayString rows;
-			size_t pos_after=0;
-			header->split(rows, pos_after, eol_marker);
+			header->split(rows, 0, eol_marker);
 			Pass_cgi_header_attribute_info info={0, 0, 0};
 			info.charset=&r.charsets.source();
 			info.fields=&self.fields();

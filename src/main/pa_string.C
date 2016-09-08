@@ -16,7 +16,7 @@
 #define ULLONG_MAX 18446744073709551615ULL
 #endif
 
-volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.255 2016/09/05 22:06:13 moko Exp $" IDENT_PA_STRING_H;
+volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.256 2016/09/08 20:41:47 moko Exp $" IDENT_PA_STRING_H;
 
 const String String::Empty;
 
@@ -601,46 +601,40 @@ size_t String::pos(Charset& charset, const String& substr, size_t this_offset, L
 	}
 }
 
-void String::split(ArrayString& result, size_t& pos_after, const char* delim, Language lang, int limit) const {
+void String::split(ArrayString& result, size_t pos_after, const char* delim, Language lang) const {
 	if(is_empty())
 		return;
 	size_t self_length=length();
 	if(size_t delim_length=strlen(delim)) {
 		size_t pos_before;
 		// while we have 'delim'...
-		for(; (pos_before=pos(delim, pos_after, lang))!=STRING_NOT_FOUND && limit; limit--) {
+		while((pos_before=pos(delim, pos_after, lang))!=STRING_NOT_FOUND) {
 			result+=&mid(pos_after, pos_before);
 			pos_after=pos_before+delim_length;
 		}
 		// last piece
-		if(pos_after<self_length && limit) {
+		if(pos_after<self_length)
 			result+=&mid(pos_after, self_length);
-			pos_after=self_length;
-		}
 	} else { // empty delim
 		result+=this;
-		pos_after+=self_length;
 	}
 }
 
-void String::split(ArrayString& result, size_t& pos_after, const String& delim, Language lang, int limit) const {
+void String::split(ArrayString& result, size_t pos_after, const String& delim, Language lang) const {
 	if(is_empty())
 		return;
 	if(!delim.is_empty()) {
 		size_t pos_before;
 		// while we have 'delim'...
-		for(; (pos_before=pos(delim, pos_after, lang))!=STRING_NOT_FOUND && limit; limit--) {
+		while((pos_before=pos(delim, pos_after, lang))!=STRING_NOT_FOUND) {
 			result+=&mid(pos_after, pos_before);
 			pos_after=pos_before+delim.length();
 		}
 		// last piece
-		if(pos_after<length() && limit) {
+		if(pos_after<length())
 			result+=&mid(pos_after, length());
-			pos_after=length();
-		}
 	} else { // empty delim
 		result+=this;
-		pos_after+=length();
 	}
 }
 

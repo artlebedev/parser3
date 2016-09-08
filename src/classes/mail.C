@@ -19,7 +19,7 @@
 
 #include "smtp.h"
 
-volatile const char * IDENT_MAIL_C="$Id: mail.C,v 1.128 2016/04/01 16:27:31 moko Exp $";
+volatile const char * IDENT_MAIL_C="$Id: mail.C,v 1.129 2016/09/08 20:41:47 moko Exp $";
 
 // defines
 
@@ -149,9 +149,8 @@ static void sendmail(
 	if(after_file_spec==STRING_NOT_FOUND || after_file_spec==0)
 		file_spec=sendmail_command;
 	else {
-		size_t pos_after=after_file_spec;
-		file_spec=&sendmail_command->mid(0, pos_after++);
-		sendmail_command->split(argv, pos_after, " ", String::L_AS_IS);
+		file_spec=&sendmail_command->mid(0, after_file_spec);
+		sendmail_command->split(argv, after_file_spec+1, " ", String::L_AS_IS);
 	}
 
 	if(!file_executable(*file_spec))
