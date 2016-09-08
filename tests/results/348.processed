@@ -1,0 +1,4 @@
+Content-Type: text/plain
+Content-Length: 241
+
+/tests/348.html: /home/moko/Work/parser/parser3/tests/348.html(26:12): '/home/moko/Work/parser/parser3/tests/test.cfg' read failed: No such file or directory (2), actual filename '/home/moko/Work/parser/parser3/tests/test.cfg' [file.missing]

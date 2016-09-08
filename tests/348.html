@@ -1,0 +1,32 @@
+@main[]
+$v[a^taint[	]b]
+
+^test[v1	v2	v3
+$v	d	e	]
+
+^test[
+v1	$v	v3
+a	b	c]
+
+^test[v1	$v	v3
+a	b	c
+]
+
+^test[v1	v2	v3
+
+a	b	c]
+
+^test[v1	v2	v3
+	
+a	b	c
+
+c	d	e
+	]
+
+$t[^table::load[test.cfg]]
+^json:string[$t; $.indent(true) ]
+
+
+@test[data]
+$t[^table::create{$data}]
+^json:string[$t; $.indent(true) ]
