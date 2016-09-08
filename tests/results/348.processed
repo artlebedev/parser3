@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 810
+Content-Length: 819
 
 [
 	{"v1":"a\tb","v2":"d","v3":"e","3":""}
@@ -34,7 +34,7 @@ Source: abc,
 Comment: separator must be one byte character
 Type: parser.runtime,
 Source: ю,
-Comment: encloser must be one byte character
+Comment: encloser must be empty or one byte character
 Type: parser.runtime,
 Source: no-such-name,
 Comment: table::create called with more then 1 param, first param may be only 'nameless'
