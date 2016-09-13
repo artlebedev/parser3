@@ -8,7 +8,9 @@
 #ifndef PA_VCLASS_H
 #define PA_VCLASS_H
 
-#define IDENT_PA_VCLASS_H "$Id: pa_vclass.h,v 1.66 2016/04/06 16:08:20 moko Exp $"
+#define IDENT_PA_VCLASS_H "$Id: pa_vclass.h,v 1.67 2016/09/13 16:12:56 moko Exp $"
+
+#define OBJECT_PROTOTYPE
 
 // includes
 
@@ -43,8 +45,12 @@ public: // Value
 	override HashStringValue *get_hash();
 	override HashStringValue* get_fields() { return get_hash(); };
 
-public: 
-	
+public:
+
+#ifdef OBJECT_PROTOTYPE
+	static bool prototype;
+#endif
+
 	void set_type(const char *atype) { ftype=atype; }
 
 	// VStateless_class

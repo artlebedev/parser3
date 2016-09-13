@@ -32,7 +32,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.356 2016/08/02 13:06:20 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.357 2016/09/13 16:12:55 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -69,6 +69,7 @@ const String exception_handled_part_name(EXCEPTION_HANDLED_PART_NAME);
 #define CHARSETS_NAME "CHARSETS"
 #define MIME_TYPES_NAME "MIME-TYPES"
 #define STRICT_VARS_NAME "STRICT-VARS"
+#define PROTOTYPE_NAME "OBJECT-PROTOTYPE"
 #define CONF_METHOD_NAME "conf"
 #define POST_PROCESS_METHOD_NAME "postprocess"
 #define CLASS_PATH_NAME "CLASS_PATH"
@@ -83,6 +84,7 @@ static const String charsets_name(CHARSETS_NAME);
 static const String main_class_name(MAIN_CLASS_NAME);
 static const String mime_types_name(MIME_TYPES_NAME);
 static const String strict_vars_name(STRICT_VARS_NAME);
+static const String prototype_name(PROTOTYPE_NAME);
 static const String conf_method_name(CONF_METHOD_NAME);
 static const String post_process_method_name(POST_PROCESS_METHOD_NAME);
 static const String class_path_name(CLASS_PATH_NAME);
@@ -248,10 +250,18 @@ void Request::configure_admin(VStateless_class& conf_class) {
 	if(Value* strict_vars=conf_class.get_element(strict_vars_name)) {
 		if(strict_vars->is_bool())
 			VVoid::strict_vars=strict_vars->as_bool();
-			else
-				throw Exception(PARSER_RUNTIME,
-					0,
-					"$" MAIN_CLASS_NAME ":" STRICT_VARS_NAME " must be bool");
+		else
+			throw Exception(PARSER_RUNTIME, 0, "$" MAIN_CLASS_NAME ":" STRICT_VARS_NAME " must be bool");
+	}
+#endif
+
+#ifdef OBJECT_PROTOTYPE
+	VClass::prototype=true;
+	if(Value* prototype=conf_class.get_element(prototype_name)) {
+		if(prototype->is_bool())
+			VClass::prototype=prototype->as_bool();
+		else
+			throw Exception(PARSER_RUNTIME, 0, "$" MAIN_CLASS_NAME ":" PROTOTYPE_NAME " must be bool");
 	}
 #endif
 

@@ -8,7 +8,11 @@
 #include "pa_vclass.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_PA_VCLASS_C="$Id: pa_vclass.C,v 1.54 2016/04/01 16:27:32 moko Exp $" IDENT_PA_VCLASS_H;
+volatile const char * IDENT_PA_VCLASS_C="$Id: pa_vclass.C,v 1.55 2016/09/13 16:12:55 moko Exp $" IDENT_PA_VCLASS_H;
+
+#ifdef OBJECT_PROTOTYPE
+	bool VClass::prototype = true;
+#endif
 
 Property& VClass::get_property(const String& aname) {
 	Property* result=ffields.get(aname);
@@ -153,9 +157,14 @@ const VJunction* VClass::put_element_replace_only(Value& aself, const String& an
 			throw Exception(PARSER_RUNTIME,	0, "this property has no setter method (@SET_%s[value])", aname.cstr());
 		}
 		
-		// just field, value can be 0 and unlike usual we don't remove it
-		prop->value=avalue;
-		return PUT_ELEMENT_REPLACED_ELEMENT;
+#ifdef OBJECT_PROTOTYPE
+		if(!prototype)
+#endif
+		{
+			// just field, value can be 0 and unlike usual we don't remove it
+			prop->value=avalue;
+			return PUT_ELEMENT_REPLACED_ELEMENT;
+		}
 	}
 	return 0;
 }
