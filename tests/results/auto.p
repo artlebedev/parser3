@@ -8,6 +8,15 @@ $CLASS_PATH[^table::create{path
 /tests
 }]
 
+$NO_PROTOTYPE[
+    $.[336.html][yes]
+    $.[225.html][yes]
+    $.[051.html][yes]
+]
+
+^if(def $NO_PROTOTYPE.[$env:PATH_TRANSLATED]){
+	$OBJECT-PROTOTYPE(false)
+}
 
 
 @auto[]

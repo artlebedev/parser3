@@ -1,0 +1,47 @@
+@main[]
+
+обычный объект
+$o[^test::create[]]
+$o.default
+^o.method[]
+
+можно сделать объект, у которого значения свойства отличается от значения в классе
+$o1[^test::create[some]]
+$o1.default
+
+можно сделать объект, у которого метод отличается от обычной реализации
+$o2[^test::create[special]]
+^o2.method[]
+
+как и раньше, статическое поле класса можно переопределить
+before: $test:default
+$test:default[all but one]
+after: $test:default
+
+и оно изменится у использующих его объектов
+$o.default
+
+но не у тех, у кого специльное значение
+$o1.default
+
+вот и сказочке конец,
+а кто слушал - молодец.
+
+@CLASS
+test
+
+@auto[]
+$default[all]
+
+@create[d]
+^if($d eq 'special'){
+    $method[$special]
+}(def $d){
+    $default[$d]
+}
+
+@method[]
+common
+
+@special[]
+special
