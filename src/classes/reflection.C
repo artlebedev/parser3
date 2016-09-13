@@ -8,8 +8,9 @@
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
 #include "pa_vbool.h"
+#include "pa_vobject.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.49 2016/07/20 17:27:42 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.50 2016/09/13 22:30:30 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -51,10 +52,7 @@ static void _create(Request& r, MethodParams& params) {
 	Value* constructor_value=vclass->get_element(constructor_name);
 
 	if(!constructor_value || !constructor_value->get_junction())
-		throw Exception(PARSER_RUNTIME,
-			&constructor_name,
-			"constructor must be declared in class '%s'",
-			vclass->type());
+		throw Exception(PARSER_RUNTIME, &constructor_name, "constructor must be declared in class '%s'", vclass->type());
 
 	Junction* junction=constructor_value->get_junction();
 	const Method* method=junction->method;
@@ -193,16 +191,41 @@ static void _methods(Request& r, MethodParams& params) {
 	r.write_no_lang(result);
 }
 
-static void _method(Request& r, MethodParams& params) {
-	Value& o=params.as_no_junction(0, "first param must be object or class, not junction");
-	const String& name=params.as_string(1, "method name must be string");
+static VJunction &method_junction(Value &self, Method &method, const String *name=0){
+	if(method.native_code)
+		throw Exception(PARSER_RUNTIME, name, "method should not be native");
 
-	if(VStateless_class* vclass=o.get_class()) {
-		if(Method* method=vclass->get_method(name))
-			r.write_no_lang(*method->get_vjunction(o));
-	} else {
-		// class which does not have methods (env, console, etc)
+//	if(dynamic_cast<VObject*>(&self))
+//		throw Exception(PARSER_RUNTIME, 0, "self should be parser object");
+
+	return *method.get_vjunction(self);
+}
+
+static void _method(Request& r, MethodParams& params) {
+	Value &source=*params.get(0);
+
+	if(Junction *j=source.get_junction()){
+		if(Method* method=const_cast<Method*>(j->method)){
+			Value& self=params.count()>1 ? params.as_no_junction(1, "self must be object, not junction") : r.get_method_frame()->caller()->self();
+			r.write_no_lang(method_junction(self, *method));
+			return;
+		}
+		throw Exception(PARSER_RUNTIME, 0, "param should be method junction");
 	}
+
+	if(params.count()==1)
+		throw Exception(PARSER_RUNTIME, 0, "method name should be specified");
+
+	const String& name=params.as_string(1, "method name must be string");
+	Value& self=params.count()>2 ? params.as_no_junction(2, "self must be object, not junction") : source;
+
+	if(VStateless_class* vclass=source.get_class()) {
+		if(Method* method=vclass->get_method(name)){
+			r.write_no_lang(method_junction(self, *method, &name));
+			return;
+		}
+	}
+	throw Exception(PARSER_RUNTIME, &name, "method not found in class '%s'", source.type());
 }
 
 static void _fields(Request& r, MethodParams& params) {
@@ -241,7 +264,7 @@ static void _method_info(Request& r, MethodParams& params) {
 	const String& method_name=params.as_string(1, "method_name must be string");
 	Method* method=vclass->get_method(method_name);
 	if(!method)
-		throw Exception(PARSER_RUNTIME, &method_name, "method not found in class %s", class_name.cstr());
+		throw Exception(PARSER_RUNTIME, &method_name, "method not found in class '%s'", vclass->type());
 
 	VHash& result=*new VHash;
 	HashStringValue* hash=result.get_hash();
@@ -377,7 +400,7 @@ MReflection::MReflection(): Methoded("reflection") {
 	add_native_method("methods", Method::CT_STATIC, _methods, 1, 1);
 
 	// ^reflection:method[object or class;method_name]
-	add_native_method("method", Method::CT_STATIC, _method, 2, 2);
+	add_native_method("method", Method::CT_STATIC, _method, 1, 3);
 
 	// ^reflection:method_info[class_name;method_name]
 	add_native_method("method_info", Method::CT_STATIC, _method_info, 2, 2);
