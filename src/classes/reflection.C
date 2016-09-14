@@ -10,7 +10,7 @@
 #include "pa_vbool.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.50 2016/09/13 22:30:30 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.51 2016/09/14 15:20:09 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -193,10 +193,10 @@ static void _methods(Request& r, MethodParams& params) {
 
 static VJunction &method_junction(Value &self, Method &method, const String *name=0){
 	if(method.native_code)
-		throw Exception(PARSER_RUNTIME, name, "method should not be native");
+		throw Exception(PARSER_RUNTIME, name, "method must not be native");
 
-//	if(dynamic_cast<VObject*>(&self))
-//		throw Exception(PARSER_RUNTIME, 0, "self should be parser object");
+	if(!(dynamic_cast<VObject*>(&self) || dynamic_cast<VClass*>(&self)))
+		throw Exception(PARSER_RUNTIME, 0, "self must be parser object or class");
 
 	return *method.get_vjunction(self);
 }
@@ -210,18 +210,17 @@ static void _method(Request& r, MethodParams& params) {
 			r.write_no_lang(method_junction(self, *method));
 			return;
 		}
-		throw Exception(PARSER_RUNTIME, 0, "param should be method junction");
+		throw Exception(PARSER_RUNTIME, 0, "param must be method junction");
 	}
 
 	if(params.count()==1)
-		throw Exception(PARSER_RUNTIME, 0, "method name should be specified");
+		throw Exception(PARSER_RUNTIME, 0, "method name must be specified");
 
 	const String& name=params.as_string(1, "method name must be string");
-	Value& self=params.count()>2 ? params.as_no_junction(2, "self must be object, not junction") : source;
 
 	if(VStateless_class* vclass=source.get_class()) {
 		if(Method* method=vclass->get_method(name)){
-			r.write_no_lang(method_junction(self, *method, &name));
+			r.write_no_lang( params.count()>2 ? method_junction(params.as_no_junction(2, "self must be object, not junction"), *method, &name) : *method->get_vjunction(source) );
 			return;
 		}
 	}
