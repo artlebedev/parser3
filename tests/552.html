@@ -1,0 +1,44 @@
+@main[]
+
+$v[M]
+
+$s[ ]
+$o[^O::create[]]
+
+^try-catch{ ^reflection:method{code} }
+^try-catch{ ^reflection:method[$o] }
+
+^try-catch{ ^reflection:method[$test]{code} }
+^try-catch{ ^reflection:method[$test;$s] }
+^try-catch{ ^reflection:method[$string:length] }
+
+^try-catch{ ^reflection:method[$s;no-such-method] }
+^try-catch{ ^reflection:method[$s;length]{code} }
+^try-catch{ ^reflection:method[$s;length;$self] }
+^try-catch{ ^reflection:method[$MAIN:CLASS;test;$s] }
+
+^try-catch{ $m[^reflection:method[$string:CLASS;length]] ^m[] }
+
+$m[^reflection:method[$test;$o]]
+^m[]
+$m[^reflection:method[$o.test;$o]]
+^m[]
+$m[^reflection:method[$o.test]]
+^m[]
+
+$m[^reflection:method[$s;length]]
+^m[]
+
+@test[]
+MAIN [$v] $self.CLASS_NAME ^if(^reflection:dynamical[]){dynamic}{static}
+
+
+@CLASS
+O
+
+@create[]
+$v[O]
+
+@test[]
+CLASS [$v] $self.CLASS_NAME ^if(^reflection:dynamical[]){dynamic}{static}
+
