@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.230 2016/06/17 12:35:36 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.231 2016/09/14 14:02:21 moko Exp $";
 
 // limits
 
@@ -168,8 +168,6 @@ static void _process(Request& r, MethodParams& params) {
 		Temp_lang temp_lang(r, String::L_PARSER_CODE);
 		// temporary zero @main so to maybe-replace it in processed code
 		Temp_method temp_method_main(*target_class, main_method_name, 0);
-		// temporary zero @auto so it wouldn't be auto-called in Request::use_buf
-		Temp_method temp_method_auto(*target_class, auto_method_name, 0);
 
 		const String* main_alias=0;
 		const String* file_alias=0;

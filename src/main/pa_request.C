@@ -32,7 +32,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.357 2016/09/13 16:12:55 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.358 2016/09/14 14:02:21 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -599,13 +599,10 @@ void Request::use_file(VStateless_class& aclass, const String& file_name, const 
 	}
 }
 
-void Request::use_buf(VStateless_class& aclass,
-				const char* source, const String* main_alias, 
-				uint file_no,
-				int line_no_offset) {
-	// temporary zero @conf so to maybe-replace it in compiled code
+void Request::use_buf(VStateless_class& aclass, const char* source, const String* main_alias, uint file_no, int line_no_offset) {
+	// temporary zero @conf to avoid it second execution
 	Temp_method temp_method_conf(aclass, conf_method_name, 0);
-	// temporary zero @auto so to maybe-replace it in compiled code
+	// temporary zero @auto to avoid it second execution
 	Temp_method temp_method_auto(aclass, auto_method_name, 0);
 
 	// compile loaded classes
@@ -618,16 +615,12 @@ void Request::use_buf(VStateless_class& aclass,
 		VStateless_class& cclass=*cclasses.get(i);
 
 		// locate and execute possible @conf[] static
-		Execute_nonvirtual_method_result executed=execute_nonvirtual_method(cclass, 
-			conf_method_name, vfilespec,
-			false/*no string result needed*/);
+		Execute_nonvirtual_method_result executed=execute_nonvirtual_method(cclass, conf_method_name, vfilespec, false/*no string result needed*/);
 		if(executed.method)
 			configure_admin(cclass/*, executed.method->name*/);
 
 		// locate and execute possible @auto[] static
-		execute_nonvirtual_method(cclass, 
-			auto_method_name, vfilespec,
-			false/*no result needed*/);
+		execute_nonvirtual_method(cclass, auto_method_name, vfilespec, false/*no result needed*/);
 
 		cclass.enable_default_setter();
 	}
