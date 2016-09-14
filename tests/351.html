@@ -1,0 +1,48 @@
+@main[]
+$o[^c2::create[]]
+$o.property1<br/>
+
+$b[^base::create[]]
+$b.property1<br/>
+
+real:
+$o.log
+checking auto is kept:
+^base:auto[]
+$o.log
+
+
+@CLASS
+base
+
+@auto[]
+$log[${log}base auto $self.CLASS_NAME^#0A]
+
+^process[$self.CLASS]{@GET_property1[]
+    included base property1
+}
+^process[$self.CLASS]{@auto[]
+^$log[^${log}process auto ^$self.CLASS_NAME^^#0A]
+}
+
+@create[]
+
+
+@CLASS
+c1
+
+@BASE
+base
+
+@GET_property1[]
+defined class property1
+
+
+@CLASS
+c2
+
+@BASE
+c1
+
+@auto[]
+$log[${log}class auto $self.CLASS_NAME^#0A]

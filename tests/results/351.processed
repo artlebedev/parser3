@@ -1,0 +1,15 @@
+Content-Type: text/html
+Content-Length: 214
+
+defined class property1<br/>
+included base property1<br/>
+real:
+base auto base
+process auto base
+class auto c2
+checking auto is kept:
+base auto base
+process auto base
+class auto c2
+base auto base
+process auto base
