@@ -7,11 +7,12 @@
 
 // includes
 
+#include "pa_common.h"
 #include "pa_random.h"
 #include "pa_exception.h"
 #include "pa_threads.h"
 
-volatile const char * IDENT_PA_RANDOM_C="$Id: pa_random.C,v 1.7 2016/07/21 17:05:37 moko Exp $" IDENT_PA_RANDOM_H;
+volatile const char * IDENT_PA_RANDOM_C="$Id: pa_random.C,v 1.8 2016/09/19 15:18:14 moko Exp $" IDENT_PA_RANDOM_H;
 
 #ifdef _MSC_VER
 #include <windows.h>
