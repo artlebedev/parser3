@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 891
+Content-Length: 806
 
 Type: parser.runtime,
 Source: method,
@@ -16,9 +16,7 @@ Comment: self must be parser object or class
 Type: parser.runtime,
 Source: method,
 Comment: method must not be native
-Type: parser.runtime,
-Source: no-such-method,
-Comment: method not found in class 'string'
+void
 Type: parser.runtime,
 Source: method,
 Comment: self must be object, not junction (parameter #3)

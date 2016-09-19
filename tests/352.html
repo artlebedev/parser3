@@ -12,7 +12,8 @@ $o[^O::create[]]
 ^try-catch{ ^reflection:method[$test;$s] }
 ^try-catch{ ^reflection:method[$string:length] }
 
-^try-catch{ ^reflection:method[$s;no-such-method] }
+$no[^reflection:method[$s;no-such-method]] $no.CLASS_NAME
+
 ^try-catch{ ^reflection:method[$s;length]{code} }
 ^try-catch{ ^reflection:method[$s;length;$self] }
 ^try-catch{ ^reflection:method[$MAIN:CLASS;test;$s] }
