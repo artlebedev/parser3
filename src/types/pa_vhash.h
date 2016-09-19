@@ -8,7 +8,7 @@
 #ifndef PA_VHASH_H
 #define PA_VHASH_H
 
-#define IDENT_PA_VHASH_H "$Id: pa_vhash.h,v 1.77 2016/07/20 14:49:52 moko Exp $"
+#define IDENT_PA_VHASH_H "$Id: pa_vhash.h,v 1.78 2016/09/19 15:15:40 moko Exp $"
 
 #include "classes.h"
 #include "pa_value.h"
@@ -179,7 +179,7 @@ public: // usage
 	VHashReference(HashStringValue& source): fhash(&source) {}
 
 	override HashStringValue& hash() { return *fhash; }
-	override void set_default(Value* adefault) { }
+	override void set_default(Value*) { }
 	override Value* get_default() { return 0; }
 
 private:
