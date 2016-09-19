@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.225 2016/07/20 17:01:48 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.226 2016/09/19 22:23:56 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -286,6 +286,11 @@ public:
 		wcontext->write(astring, flang); 
 	}
 	DEFINE_DUAL(assign)
+
+	/// appending sure value
+	void write_value(Value& avalue) {
+		wcontext->write(avalue);
+	}
 
 	/// returns relative to @a path  path to @a file 
 	const String& relative(const char* apath, const String& relative_name);
