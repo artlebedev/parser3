@@ -10,7 +10,7 @@
 #include "pa_vbool.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.51 2016/09/14 15:20:09 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.52 2016/09/19 22:27:57 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -156,7 +156,7 @@ static void _base(Request& r, MethodParams& params) {
 		}
 
 	// classes with fields only, like env & console or without base
-	r.write_no_lang(*VVoid::get());
+	r.write_value(*VVoid::get());
 }
 
 
@@ -224,7 +224,7 @@ static void _method(Request& r, MethodParams& params) {
 			return;
 		}
 	}
-	throw Exception(PARSER_RUNTIME, &name, "method not found in class '%s'", source.type());
+	r.write_value(*VVoid::get());
 }
 
 static void _fields(Request& r, MethodParams& params) {
