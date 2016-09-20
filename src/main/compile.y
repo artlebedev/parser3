@@ -8,7 +8,7 @@
 	
 */
 
-volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.283 2016/07/20 16:36:49 moko Exp $";
+volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.284 2016/09/20 12:02:22 moko Exp $";
 
 /**
 	@todo parser4: 
@@ -143,7 +143,7 @@ static const VString vempty;
 %%
 all:
 	one_big_piece {
-	Method* method=new Method(Method::CT_ANY, 0, 0 /*min, max numbered_params_count*/, 0 /*param_names*/, 0 /*local_names*/, $1 /*parser_code*/, 0 /*native_code*/);
+	Method* method=new Method(Method::CT_ANY, 0, 0 /*min, max numbered_params_count*/, 0 /*param_names*/, 0 /*local_names*/, $1 /*parser_code*/, 0 /*native_code*/, PC.cclass->is_vars_local());
 	PC.cclass->set_method(PC.alias_method(main_method_name), method);
 }
 |	methods;
@@ -261,7 +261,8 @@ code_method: '@' STRING bracketed_maybe_strings maybe_bracketed_strings maybe_co
 
 	YYSTYPE locals_names_code=$4;
 	ArrayString* locals_names=0;
-	bool all_vars_local=false;
+	bool all_vars_local=PC.cclass->is_vars_local();
+
 	if(int size=locals_names_code->count()) {
 		locals_names=new ArrayString;
 		for(int i=0; i<size; i+=OPERATIONS_PER_OPVALUE) {
@@ -274,8 +275,6 @@ code_method: '@' STRING bracketed_maybe_strings maybe_bracketed_strings maybe_co
 				*locals_names+=local_name;
 		}
 	}
-	if(!all_vars_local && PC.cclass && PC.cclass->is_vars_local())
-		all_vars_local=true;
 
 	Method* method=new Method(
 		//name, 
