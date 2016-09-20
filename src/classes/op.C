@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.232 2016/09/20 09:55:02 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.233 2016/09/20 10:21:03 moko Exp $";
 
 // limits
 
@@ -154,7 +154,10 @@ static void _process(Request& r, MethodParams& params) {
 	if(maybe_target_self.get_string() || maybe_target_self.get_junction())
 		target_self=&r.get_method_frame()->caller()->self();
 	else {
-		target_self=&maybe_target_self;  index++;
+		target_self=&maybe_target_self;
+		if(params.count()==1)
+			throw Exception(PARSER_RUNTIME, 0, "no body specified");
+		index++;
 	}
 
 	{
