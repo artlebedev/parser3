@@ -10,7 +10,7 @@
 #include "pa_vbool.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.52 2016/09/19 22:27:57 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.53 2016/09/20 09:43:05 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -114,30 +114,31 @@ static void _classes(Request& r, MethodParams&) {
 }
 
 
-static Value* get_class(Value* value){
-	if(VStateless_class* result=value->get_class())
-		return result;
-	else
-		// junction
+static Value& get_class(Value& value){
+	if(VStateless_class* result=value.get_class())
+		return *result;
+	else {
+		// we can't return code junction to outside as it's stack value
+		if(Junction *j=value.get_junction())
+			if(j->code)
+				throw Exception(PARSER_RUNTIME, 0, "param must not be code junction");
+		// method junction
 		return value;
+	}
 }
 
-static const String* get_class_name(Value* value){
-	if(VStateless_class* vclass=value->get_class())
-		return new String(vclass->type());
-	else
-		// junction
-		return new String(value->type());
+static const String& get_class_name(Value& value){
+	return *new String(get_class(value).type());
 }
 
 
 static void _class(Request& r, MethodParams& params) {
-	r.write_no_lang(*get_class(&params[0]));
+	r.write_no_lang(get_class(params[0]));
 }
 
 
 static void _class_name(Request& r, MethodParams& params) {
-	r.write_no_lang(*get_class_name(&params[0]));
+	r.write_no_lang(get_class_name(params[0]));
 }
 
 static void _class_by_name(Request& r, MethodParams& params) {
@@ -151,7 +152,7 @@ static void _class_by_name(Request& r, MethodParams& params) {
 static void _base(Request& r, MethodParams& params) {
 	if(VStateless_class* vclass=params[0].get_class())
 		if(Value* base=vclass->base()){
-			r.write_no_lang(*get_class(base));
+			r.write_no_lang(get_class(*base));
 			return;
 		}
 
@@ -163,7 +164,7 @@ static void _base(Request& r, MethodParams& params) {
 static void _base_name(Request& r, MethodParams& params) {
 	if(VStateless_class* vclass=params[0].get_class())
 		if(Value* base=vclass->base())
-			r.write_no_lang(*get_class_name(base));
+			r.write_no_lang(get_class_name(*base));
 }
 
 static void _def(Request& r, MethodParams& params) {
