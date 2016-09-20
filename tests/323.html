@@ -4,5 +4,14 @@ $list[^reflection:classes[]]
 ^list.foreach[name;type]{ $class[^reflection:class_by_name[$name]] $name $type $class.CLASS_NAME (^reflection:base_name[$class])
 }
 
-$b[^reflection:class{code}]
-$b.CLASS_NAME
+^try-catch{ ^reflection:class{code} }
+
+^show[$show]
+^show[$void-var]
+^show{still string}
+
+@show[o][x;b]
+$x[^reflection:class[$o]]
+class: "$x.CLASS_NAME" "^reflection:class_name[$o]"
+$b[^reflection:base[$o]]
+base: "$b.CLASS_NAME" "^reflection:base_name[$o]"
