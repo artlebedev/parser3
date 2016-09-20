@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.231 2016/09/14 14:02:21 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.232 2016/09/20 09:55:02 moko Exp $";
 
 // limits
 
@@ -160,9 +160,7 @@ static void _process(Request& r, MethodParams& params) {
 	{
 		VStateless_class *target_class=target_self->get_class();
 		if(!target_class)
-			throw Exception(PARSER_RUNTIME,
-				0,
-				"no target class");
+			throw Exception(PARSER_RUNTIME, 0, "no target class");
 
 		// temporary remove language change
 		Temp_lang temp_lang(r, String::L_PARSER_CODE);
@@ -203,9 +201,7 @@ static void _process(Request& r, MethodParams& params) {
 					throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 			}
 
-		uint processe_file_no=file_alias?
-			r.register_file(r.absolute(*file_alias))
-			: pseudo_file_no__process;
+		uint processe_file_no=file_alias ? r.register_file(r.absolute(*file_alias)) : pseudo_file_no__process;
 		// process...{string}
 		Value& vjunction=params.as_junction(index, "body must be code");
 		// evaluate source to process
@@ -213,11 +209,7 @@ static void _process(Request& r, MethodParams& params) {
 
 		Temp_class_replace class_replace(r, allow_class_replace);
 
-		r.use_buf(*target_class,
-			source.untaint_cstr(String::L_AS_IS, r.connection(false)),
-			main_alias,
-			processe_file_no,
-			line_no_alias_offset);
+		r.use_buf(*target_class, source.untaint_cstr(String::L_AS_IS, r.connection(false)), main_alias, processe_file_no, line_no_alias_offset);
 
 		// main_method
 		main_method=target_class->get_method(main_method_name);
