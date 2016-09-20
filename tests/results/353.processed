@@ -1,0 +1,7 @@
+Content-Type: text/html
+Content-Length: 127
+
+loop: 1 vs class, 2 vs class, 3 vs class, 4 vs class, 5 vs class
+end: class
+loop: 1 vs 1, 2 vs 2, 3 vs 3, 4 vs 4, 5 vs 5
+end: 5

@@ -1,0 +1,30 @@
+@main[]
+    ^core[^obj-local::create[]]
+    ^core[^obj-global::create[]]
+
+@core[o]
+    ^loop[$o]
+    ^o.loop[]
+    end: $o.i
+
+@loop[o]
+    ^process[$o]{
+        loop: ^^for[i](1^;5){^$i vs ^$self.i}[, ]
+    }[$.main[loop]]
+
+
+@CLASS
+obj-global
+
+@create[]
+    $self.i[class]
+
+
+@CLASS
+obj-local
+
+@OPTIONS
+locals
+
+@BASE
+obj-global
