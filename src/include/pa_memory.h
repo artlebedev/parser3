@@ -9,7 +9,7 @@
 #ifndef PA_MEMORY_H
 #define PA_MEMORY_H
 
-#define IDENT_PA_MEMORY_H "$Id: pa_memory.h,v 1.28 2015/10/26 01:21:56 moko Exp $"
+#define IDENT_PA_MEMORY_H "$Id: pa_memory.h,v 1.29 2016/09/21 12:03:40 moko Exp $"
 
 // include
 
@@ -79,27 +79,15 @@ inline void *pa_realloc(void *ptr, size_t size) {
 #define PointerFreeGC (true)
 
 //{@ Array-oriented
-inline void *operator new[] (size_t size, bool) { // PointerFreeGC
-	return pa_malloc_atomic(size);
-}
-inline void *operator new[] (std::size_t size) PA_THROW(std::bad_alloc) {
-	return pa_malloc(size);
-}
-inline void operator delete[] (void *ptr) throw() {
-	pa_free(ptr);
-}
+void *operator new[] (size_t size, bool); // PointerFreeGC
+void *operator new[] (std::size_t size) PA_THROW(std::bad_alloc);
+void operator delete[] (void *ptr) throw();
 //}@
 
 //{@ Structure-oriented
-inline void *operator new (size_t size, bool) { // PointerFreeGC
-	return pa_malloc_atomic(size);
-}
-inline void *operator new(std::size_t size) PA_THROW(std::bad_alloc) {
-	return pa_malloc(size);
-}
-inline void operator delete(void *ptr) throw() {
-	pa_free(ptr);
-}
+void *operator new (size_t size, bool); // PointerFreeGC
+void *operator new(std::size_t size) PA_THROW(std::bad_alloc);
+void operator delete(void *ptr) throw();
 //}@
 
 #ifndef _MSC_VER

@@ -8,7 +8,32 @@
 #include "pa_sapi.h"
 #include "pa_common.h"
 
-volatile const char * IDENT_PA_MEMORY_C="$Id: pa_memory.C,v 1.12 2015/10/26 23:33:32 moko Exp $" IDENT_PA_MEMORY_H;
+volatile const char * IDENT_PA_MEMORY_C="$Id: pa_memory.C,v 1.13 2016/09/21 12:03:40 moko Exp $" IDENT_PA_MEMORY_H;
+
+//{@ Array-oriented
+void *operator new[] (size_t size, bool) { // PointerFreeGC
+	return pa_malloc_atomic(size);
+}
+void *operator new[] (std::size_t size) PA_THROW(std::bad_alloc) {
+	return pa_malloc(size);
+}
+void operator delete[] (void *ptr) throw() {
+	pa_free(ptr);
+}
+//}@
+
+//{@ Structure-oriented
+void *operator new (size_t size, bool) { // PointerFreeGC
+	return pa_malloc_atomic(size);
+}
+void *operator new(std::size_t size) PA_THROW(std::bad_alloc) {
+	return pa_malloc(size);
+}
+void operator delete(void *ptr) throw() {
+	pa_free(ptr);
+}
+//}@
+
 
 void *pa_fail_alloc(const char* what, size_t size) {
 #ifdef PA_DEBUG_DISABLE_GC
