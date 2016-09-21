@@ -1,9 +1,9 @@
 Content-Type: text/html
-Content-Length: 389
+Content-Length: 393
 
 [
 null,
-["1 - column\" one","column two","column three"],
+["1 - column\" one","column t\"w\"o","column three"],
 ["2 - column one","column, two"],
 ["empty line"],
 ["3 - column one","","column, three <no new line at eof>"]
