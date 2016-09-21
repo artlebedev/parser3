@@ -22,7 +22,7 @@
 #define USE_STRINGSTREAM
 #endif
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.326 2016/09/08 20:41:47 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.327 2016/09/21 00:04:05 moko Exp $";
 
 // class
 
@@ -171,15 +171,15 @@ public:
 inline lsplit_sresult lsplit(char* *string_ref, const char* delims, StringSplitHelper& helper) {
 	lsplit_sresult result;
 	if(char *pos=*string_ref) {
-		while(char* v=strpbrk(pos, delims)) {
-			if(helper.check_lang(v)){
-				result.delim=*v;
-				*v=0;
+		while(pos=strpbrk(pos, delims)) {
+			if(helper.check_lang(pos)){
+				result.delim=*pos;
+				*pos=0;
 				result.piece=helper.extract(*string_ref);
-				*string_ref=v+1;
+				*string_ref=pos+1;
 				return result;
 			}
-			pos=v+1;
+			pos++;
 		}
 		result.piece=helper.extract(*string_ref);
 		*string_ref=0;
@@ -208,7 +208,7 @@ static lsplit_sresult lsplit(char** string_ref, const char* delims, char enclose
 						}
 					}
 					pos=v+1;
-				}{
+				} else {
 					result.append(helper.extract(*string_ref));
 					*string_ref=0;
 					return result;
