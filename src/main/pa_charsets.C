@@ -7,7 +7,7 @@
 
 #include "pa_charsets.h"
 
-volatile const char * IDENT_PA_CHARSETS_C="$Id: pa_charsets.C,v 1.22 2016/07/29 20:24:16 moko Exp $" IDENT_PA_CHARSETS_H;
+volatile const char * IDENT_PA_CHARSETS_C="$Id: pa_charsets.C,v 1.23 2016/09/21 15:35:10 moko Exp $" IDENT_PA_CHARSETS_H;
 
 // defines for globals
 
@@ -15,14 +15,14 @@ volatile const char * IDENT_PA_CHARSETS_C="$Id: pa_charsets.C,v 1.22 2016/07/29 
 
 // globals
 
-Charset UTF8_charset(0, *new String(CHARSET_UTF8_NAME), 0/*no file=system*/);
+Charset pa_UTF8_charset(0, *new String(CHARSET_UTF8_NAME), 0/*no file=system*/);
 
-Charsets charsets;
+Charsets pa_charsets;
 
 // methods
 
 Charsets::Charsets() {
-	put(UTF8_charset.NAME(), &UTF8_charset);
+	put(pa_UTF8_charset.NAME(), &pa_UTF8_charset);
 }
 
 Charset& Charsets::get(String::Body ANAME) {
@@ -45,7 +45,7 @@ Charset* Charsets::checkBOM(char *&body,size_t &body_size, Charset* enforced_cha
 		// skip UTF-8 signature (BOM code)
 		body+=3;
 		body_size-=3;
-		return &UTF8_charset;
+		return &pa_UTF8_charset;
 	}
 	return enforced_charset;
 }

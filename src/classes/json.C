@@ -18,7 +18,7 @@
 #include "pa_vxdoc.h"
 #endif
 
-volatile const char * IDENT_JSON_C="$Id: json.C,v 1.43 2016/07/20 13:57:04 moko Exp $";
+volatile const char * IDENT_JSON_C="$Id: json.C,v 1.44 2016/09/21 15:35:10 moko Exp $";
 
 // class
 
@@ -95,7 +95,7 @@ static void set_json_value(Json *json, Value *value){
 
 String* json_string(Json *json, const char *value, uint32_t length){
 	String::C result = json->charset !=NULL ? 
-		Charset::transcode(String::C(value, length), UTF8_charset, *json->charset) :
+		Charset::transcode(String::C(value, length), pa_UTF8_charset, *json->charset) :
 		String::C(pa_strdup(value, length), length);
 	return new String(result, json->taint);
 }
@@ -337,7 +337,7 @@ static void _parse(Request& r, MethodParams& params) {
 		}
 
 	const String::Body json_body = json_string.cstr_to_string_body_untaint(String::L_JSON, r.connection(false), &r.charsets);
-	const char *json_cstr = json.charset != NULL ? Charset::transcode(json_body, *json.charset, UTF8_charset).cstr() : json_body.cstr();
+	const char *json_cstr = json.charset != NULL ? Charset::transcode(json_body, *json.charset, pa_UTF8_charset).cstr() : json_body.cstr();
 
 	json_parser parser;
 	if(int result = json_parser_init(&parser, &config, (json_parser_callback)&json_callback, &json))

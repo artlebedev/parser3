@@ -22,7 +22,7 @@
 #define USE_STRINGSTREAM
 #endif
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.331 2016/09/21 15:14:39 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.332 2016/09/21 15:35:10 moko Exp $";
 
 // class
 
@@ -1075,7 +1075,7 @@ static void _sort(Request& r, MethodParams& params) {
 	if(r.charsets.source().NAME()=="KOI8-R" && key_values_are_strings) {
 		for(i=0; i<old_count; i++)
 			if(*seq[i].value.c_str)
-				seq[i].value.c_str=Charset::transcode(seq[i].value.c_str, r.charsets.source(), UTF8_charset).cstr();
+				seq[i].value.c_str=Charset::transcode(seq[i].value.c_str, r.charsets.source(), pa_UTF8_charset).cstr();
 	}
 
 	// sort keys

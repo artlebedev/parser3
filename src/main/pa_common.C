@@ -50,7 +50,7 @@
 #define pa_mkdir(path, mode) mkdir(path, mode)
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.294 2016/09/21 15:07:34 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.295 2016/09/21 15:35:10 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -156,9 +156,9 @@ File_read_result file_read(Request_charsets& charsets, const String& file_spec,
 			Charset* asked_charset=0;
 			if(params)
 				if(Value* vcharset_name=params->get(PA_CHARSET_NAME))
-					asked_charset=&::charsets.get(vcharset_name->as_string());
+					asked_charset=&pa_charsets.get(vcharset_name->as_string());
 
-			asked_charset=::charsets.checkBOM(result.str, result.length, asked_charset);
+			asked_charset=pa_charsets.checkBOM(result.str, result.length, asked_charset);
 
 			if(result.length && transcode_text_result && asked_charset){ // length must be checked because transcode returns CONST string in case length==0, which contradicts hacking few lines below
 				String::C body=String::C(result.str, result.length);
@@ -1301,7 +1301,7 @@ Charset* detect_charset(const char* content_type){
 			if(end)
 				*end=0; // terminator
 
-			return *begin?&charsets.get_direct(begin):0;
+			return *begin ? &pa_charsets.get_direct(begin) : 0;
 		}
 	}
 	return 0;
@@ -1328,7 +1328,7 @@ const char *pa_idna_encode(const char *in, Charset &source_charset){
 	String::C sIn(in,strlen(in));
 
 	if(!source_charset.isUTF8())
-		sIn=Charset::transcode(sIn, source_charset, UTF8_charset);
+		sIn=Charset::transcode(sIn, source_charset, pa_UTF8_charset);
 
 	int status=pa_convertUTF8toUTF32((const UTF8**)&sIn.str, (const UTF8*)(sIn.str+sIn.length), &utf32_end, utf32+MAX_IDNA_LENGTH-1, strictConversion);
 	if(status != conversionOK)
@@ -1369,7 +1369,7 @@ const char *pa_idna_decode(const char *in, Charset &asked_charset){
 	*result_end='\0';
 
 	if(!asked_charset.isUTF8())
-		result = (char *)Charset::transcode(result, UTF8_charset, asked_charset).cstr();
+		result = (char *)Charset::transcode(result, pa_UTF8_charset, asked_charset).cstr();
 
 	return result;
 }

@@ -28,7 +28,7 @@
 #include "xnode.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_XDOC_C="$Id: xdoc.C,v 1.187 2016/07/29 20:24:16 moko Exp $";
+volatile const char * IDENT_XDOC_C="$Id: xdoc.C,v 1.188 2016/09/21 15:35:10 moko Exp $";
 
 // defines
 
@@ -477,7 +477,7 @@ String::C xdoc2buf(Request& r, VXdoc& vdoc,
 		render=&r.charsets.source();
 		header=&r.charsets.client();
 	} else {
-		header=render=&charsets.get(*oo.encoding);
+		header=render=&pa_charsets.get(*oo.encoding);
 	}
 	const char* render_encoding=render->NAME_CSTR();
 	const char* header_encoding=header->NAME_CSTR();

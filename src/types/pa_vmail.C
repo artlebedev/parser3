@@ -18,7 +18,7 @@
 #include "pa_vfile.h"
 #include "pa_uue.h"
 
-volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.120 2016/08/04 22:12:50 moko Exp $" IDENT_PA_VMAIL_H;
+volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.121 2016/09/21 15:35:11 moko Exp $" IDENT_PA_VMAIL_H;
 
 #ifdef WITH_MAILRECEIVE
 extern "C" {
@@ -84,7 +84,7 @@ static Charset* source_charset;
 
 static const char *transcode(const char *value) {
 	if(value && !source_charset->isUTF8()){
-		String::C transcoded=Charset::transcode(String::C(value, strlen(value)), UTF8_charset, *source_charset);
+		String::C transcoded=Charset::transcode(String::C(value, strlen(value)), pa_UTF8_charset, *source_charset);
 		value=transcoded.str;
 	}
 	return value;
@@ -711,7 +711,7 @@ const String& VMail::message_hash_to_string(Request& r,
 	String& result=*new String;
 
 	if(Value* vrecodecharset_name=message_hash->get(charset_name))
-		r.charsets.set_mail(charsets.get(vrecodecharset_name->as_string()));
+		r.charsets.set_mail(pa_charsets.get(vrecodecharset_name->as_string()));
 	else
 		r.charsets.set_mail(r.charsets.source());
 	// no big deal that we leave it set. they wont miss this point which would reset it

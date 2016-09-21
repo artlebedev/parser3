@@ -11,7 +11,7 @@
 #ifndef PA_CHARSETS_H
 #define PA_CHARSETS_H
 
-#define IDENT_PA_CHARSETS_H "$Id: pa_charsets.h,v 1.18 2016/07/29 20:24:16 moko Exp $"
+#define IDENT_PA_CHARSETS_H "$Id: pa_charsets.h,v 1.19 2016/09/21 15:35:10 moko Exp $"
 
 #include "pa_hash.h"
 #include "pa_charset.h"
@@ -32,8 +32,8 @@ public:
 };
 
 //@{ globals
-extern Charset UTF8_charset;
-extern Charsets charsets;
+extern Charset pa_UTF8_charset;
+extern Charsets pa_charsets;
 //@}
 
 #endif

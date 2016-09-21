@@ -13,7 +13,7 @@
 #include "pa_charsets.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VFILE_C="$Id: pa_vfile.C,v 1.71 2016/08/02 14:41:35 moko Exp $" IDENT_PA_VFILE_H;
+volatile const char * IDENT_PA_VFILE_C="$Id: pa_vfile.C,v 1.72 2016/09/21 15:35:11 moko Exp $" IDENT_PA_VFILE_H;
 
 // externs
 
@@ -165,7 +165,7 @@ Charset* VFile::detect_binary_charset(Charset *charset){
 		if(Value* content_type=ffields.get(content_type_name))
 			if(const String *ct=content_type->get_string())
 				charset=detect_charset(ct->cstr());
-	return charsets.checkBOM((char*&)fvalue_ptr, fvalue_size, charset); // checkBOM can alter ptr, but not the content
+	return pa_charsets.checkBOM((char*&)fvalue_ptr, fvalue_size, charset); // checkBOM can alter ptr, but not the content
 }
 
 void VFile::transcode(Charset& from_charset, Charset& to_charset){

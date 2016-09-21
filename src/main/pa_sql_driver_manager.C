@@ -15,7 +15,7 @@
 #include "pa_vtable.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_PA_SQL_DRIVER_MANAGER_C="$Id: pa_sql_driver_manager.C,v 1.95 2016/07/29 20:24:17 moko Exp $" IDENT_PA_SQL_DRIVER_MANAGER_H IDENT_PA_SQL_CONNECTION_H;
+volatile const char * IDENT_PA_SQL_DRIVER_MANAGER_C="$Id: pa_sql_driver_manager.C,v 1.96 2016/09/21 15:35:11 moko Exp $" IDENT_PA_SQL_DRIVER_MANAGER_H IDENT_PA_SQL_CONNECTION_H;
 
 // globals
 
@@ -65,13 +65,13 @@ void SQL_Driver_services_impl::transcode(const char* src, size_t src_length,
 			charset_from_object=cache[0].object;
 		} else {
 			cache[0].name=charset_from_name;
-			cache[0].object=charset_from_object=&charsets.get_direct(charset_from_name);
+			cache[0].object=charset_from_object=&pa_charsets.get_direct(charset_from_name);
 		}
 		if(charset_to_name==cache[1].name) {
 			charset_to_object=cache[1].object;
 		} else {
 			cache[1].name=charset_to_name;
-			cache[1].object=charset_to_object=&charsets.get_direct(charset_to_name);
+			cache[1].object=charset_to_object=&pa_charsets.get_direct(charset_to_name);
 		}
 
 		String::C result=Charset::transcode(String::C(src, src_length), *charset_from_object, *charset_to_object);

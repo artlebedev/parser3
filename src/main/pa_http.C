@@ -13,7 +13,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.76 2016/09/08 20:41:47 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.77 2016/09/21 15:35:10 moko Exp $" IDENT_PA_HTTP_H; 
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -645,11 +645,11 @@ File_read_http_result pa_internal_file_read_http(Request& r, const String& file_
 			omit_post_charset=vomit_post_charset->as_bool();
 		}
 		if(Value* vcharset_name=options->get(PA_CHARSET_NAME)) {
-			asked_remote_charset=&charsets.get(vcharset_name->as_string());
+			asked_remote_charset=&pa_charsets.get(vcharset_name->as_string());
 		} 
 		if(Value* vresponse_charset_name=options->get(PA_RESPONSE_CHARSET_NAME)) {
 			valid_options++;
-			real_remote_charset=&charsets.get(vresponse_charset_name->as_string());
+			real_remote_charset=&pa_charsets.get(vresponse_charset_name->as_string());
 		} 
 		if(Value* vuser=options->get(HTTP_USER)) {
 			valid_options++;
@@ -853,7 +853,7 @@ File_read_http_result pa_internal_file_read_http(Request& r, const String& file_
 		real_remote_charset= detect_charset(response.content_type.cstr());
 
 	if(as_text)
-		real_remote_charset=charsets.checkBOM(raw_body, raw_body_size, real_remote_charset);
+		real_remote_charset=pa_charsets.checkBOM(raw_body, raw_body_size, real_remote_charset);
 
 	if (!real_remote_charset)
 		real_remote_charset=asked_remote_charset; // never null

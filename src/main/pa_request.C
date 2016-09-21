@@ -32,7 +32,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.358 2016/09/14 14:02:21 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.359 2016/09/21 15:35:11 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -128,7 +128,7 @@ Request::Request(SAPI_Info& asapi_info, Request_info& arequest_info,
 	// public
 	request_info(arequest_info),
 	sapi_info(asapi_info),
-	charsets(UTF8_charset, UTF8_charset, UTF8_charset), // default charsets
+	charsets(pa_UTF8_charset, pa_UTF8_charset, pa_UTF8_charset), // default charsets
 
 	main_class(VClassMAIN_create()),
 	form(*new VForm(charsets, arequest_info)),
@@ -220,7 +220,7 @@ VStateless_class* Request::get_class(const String& name){
 }
 
 static void load_charset(HashStringValue::key_type akey, HashStringValue::value_type avalue, Request_charsets* charsets) {
-	::charsets.load_charset(*charsets, akey, avalue->as_string());
+	pa_charsets.load_charset(*charsets, akey, avalue->as_string());
 }
 
 void Request::configure_admin(VStateless_class& conf_class) {

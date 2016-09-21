@@ -25,7 +25,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.250 2016/09/21 12:45:10 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.251 2016/09/21 15:35:10 moko Exp $";
 
 // defines
 
@@ -133,7 +133,7 @@ static void _save(Request& r, MethodParams& params) {
 		if(HashStringValue* options=params.as_hash(2)){
 			int valid_options=0;
 			if(Value* vcharset_name=options->get(PA_CHARSET_NAME)){
-				asked_charset=&::charsets.get(vcharset_name->as_string());
+				asked_charset=&pa_charsets.get(vcharset_name->as_string());
 				valid_options++;
 			}
 			if(valid_options != options->count())
@@ -335,17 +335,17 @@ static void _create(Request& r, MethodParams& params) {
 				}
 			}
 			if(Value* vcharset_name=options->get("to-charset")) {
-				to_charset=&::charsets.get(vcharset_name->as_string());
+				to_charset=&pa_charsets.get(vcharset_name->as_string());
 				valid_options++;
 			}
 			if(Value* vcharset_name=options->get("from-charset")) {
-				from_charset=&::charsets.get(vcharset_name->as_string());
+				from_charset=&pa_charsets.get(vcharset_name->as_string());
 				valid_options++;
 			}
 			if(Value* vcharset_name=options->get(PA_CHARSET_NAME)) {
 				if(to_charset)
 					throw Exception(PARSER_RUNTIME, 0, "charset option can not be used with to-charset");
-				to_charset=&::charsets.get(vcharset_name->as_string());
+				to_charset=&pa_charsets.get(vcharset_name->as_string());
 				valid_options++;
 			}
 			if(Value* value=options->get(CONTENT_TYPE_NAME)) {
@@ -509,7 +509,7 @@ static void _exec_cgi(Request& r, MethodParams& params, bool cgi) {
 		if(HashStringValue* user_env=params.as_hash(param_index++, "env")) {
 			// $.charset  [previewing to handle URI pieces]
 			if(Value* vcharset=user_env->get(CHARSET_EXEC_PARAM_NAME))
-				charset=&charsets.get(vcharset->as_string());
+				charset=&pa_charsets.get(vcharset->as_string());
 
 			// $.others
 			Append_env_pair_info info={&r.charsets, &env, 0};

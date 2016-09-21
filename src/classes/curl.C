@@ -17,7 +17,7 @@
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.41 2016/08/03 20:35:36 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.42 2016/09/21 15:35:10 moko Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -516,7 +516,7 @@ static void curl_setopt(HashStringValue::key_type key, HashStringValue::value_ty
 		}
 		case CurlOption::PARSER_RESPONSE_CHARSET:{
 			// 'response-charset' parser option
-			options().response_charset=&::charsets.get(v.as_string());
+			options().response_charset=&pa_charsets.get(v.as_string());
 			break;
 		}
 	}
@@ -533,7 +533,7 @@ static void _curl_options(Request& r, MethodParams& params){
 		if(Value* value=options_hash->get("charset")){
 			// charset should be handled first as params may require transcode
 			Value &v=r.process_to_value(*value);
-			options().charset=&::charsets.get(v.as_string());
+			options().charset=&pa_charsets.get(v.as_string());
 		}
 		options_hash->for_each<Request&>(curl_setopt, r);
 	}
@@ -673,7 +673,7 @@ static void _curl_load_action(Request& r, MethodParams& params){
 		asked_charset=detect_charset(response.content_type.cstr());
 
 	if(options().is_text)
-		asked_charset=charsets.checkBOM(body.buf, body.length, asked_charset);
+		asked_charset=pa_charsets.checkBOM(body.buf, body.length, asked_charset);
 
 	if (!asked_charset)
 		asked_charset = options().charset;

@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.130 2016/07/20 13:57:04 moko Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.131 2016/09/21 15:35:10 moko Exp $";
 
 // class
 
@@ -532,7 +532,7 @@ static void _sort(Request& r, MethodParams& params){
 	if(r.charsets.source().NAME()=="KOI8-R" && key_values_are_strings)
 		for(pos=0; pos<count; pos++)
 			if(*seq[pos].value.c_str)
-				seq[pos].value.c_str=Charset::transcode(seq[pos].value.c_str, r.charsets.source(), UTF8_charset).cstr();
+				seq[pos].value.c_str=Charset::transcode(seq[pos].value.c_str, r.charsets.source(), pa_UTF8_charset).cstr();
 
 	// sort keys
 	qsort(seq, count, sizeof(Hash_seq_item), key_values_are_strings?sort_cmp_string:sort_cmp_double);
