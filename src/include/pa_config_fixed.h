@@ -8,9 +8,11 @@
 #ifndef PA_CONFIG_FIXED_H
 #define PA_CONFIG_FIXED_H
 
-#define IDENT_PA_CONFIG_FIXED_H "$Id: pa_config_fixed.h,v 1.85 2015/10/26 01:21:55 moko Exp $"
+#define IDENT_PA_CONFIG_FIXED_H "$Id: pa_config_fixed.h,v 1.86 2016/09/21 15:45:06 moko Exp $"
 
+#if _MSC_VER < 1310
 #define inline  __inline
+#endif
 
 #define HAVE_STDIO_H
 #define HAVE_SYS_TYPES_H
