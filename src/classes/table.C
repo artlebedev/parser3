@@ -22,7 +22,7 @@
 #define USE_STRINGSTREAM
 #endif
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.327 2016/09/21 00:04:05 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.328 2016/09/21 00:08:38 moko Exp $";
 
 // class
 
@@ -196,18 +196,17 @@ static lsplit_sresult lsplit(char** string_ref, const char* delims, char enclose
 
 			// we are enclosed, searching for second encloser
 			while(1) {
-				if(char* v=strchr(pos, encloser)){
-					if(helper.check_lang(v)){
-						*(v++)=0;
+				if(pos=strchr(pos, encloser)){
+					if(helper.check_lang(pos)){
+						*(pos++)=0;
 						result.append(helper.extract(*string_ref));
-						if(*v==encloser && helper.check_lang(v)){ // double-encloser stands for encloser
-							*string_ref=v+1;
+						if(*pos==encloser && helper.check_lang(pos)){ // double-encloser stands for encloser
+							*string_ref=pos+1;
 						} else {
-							*string_ref=pos=v;
+							*string_ref=pos;
 							break;
 						}
 					}
-					pos=v+1;
 				} else {
 					result.append(helper.extract(*string_ref));
 					*string_ref=0;
@@ -216,17 +215,17 @@ static lsplit_sresult lsplit(char** string_ref, const char* delims, char enclose
 			}
 
 			// we are no longer enclosed, searching for delimiter
-			while(char* v=strpbrk(pos, delims)) {
-				if(helper.check_lang(v)){
-					result.delim=*v;
-					if(v>*string_ref){
-						*v=0;
+			while(pos=strpbrk(pos, delims)) {
+				if(helper.check_lang(pos)){
+					result.delim=*pos;
+					if(pos>*string_ref){
+						*pos=0;
 						result.append(helper.extract(*string_ref));
 					}
-					*string_ref=v+1;
+					*string_ref=pos+1;
 					return result;
 				}
-				pos=v+1;
+				pos++;
 			}
 			result.append(helper.extract(*string_ref));
 			*string_ref=0;
