@@ -22,7 +22,7 @@
 #define USE_STRINGSTREAM
 #endif
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.329 2016/09/21 00:44:50 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.330 2016/09/21 01:48:54 moko Exp $";
 
 // class
 
@@ -160,10 +160,12 @@ public:
 
 	String *extract(char *pos){
 		String *result=new String;
-		// first: their langs
-		result->langs.append(result->body, langs, pos-base, strlen(pos));
-		// next: letters themselves
-		result->body=Body(pos);
+		if(size_t len=strlen(pos)){
+			// first: their langs
+			result->langs.append(result->body, langs, pos-base, len);
+			// next: letters themselves
+			result->body=Body(pos);
+		}
 		return result;
 	}
 };
@@ -201,7 +203,7 @@ static lsplit_sresult lsplit(char** string_ref, const char* delims, char enclose
 						*(pos++)=0;
 						result.append(helper.extract(*string_ref));
 						if(*pos==encloser && helper.check_lang(pos)){ // double-encloser stands for encloser
-							*string_ref=++pos;
+							*string_ref=pos++;
 						} else {
 							*string_ref=pos;
 							break;
