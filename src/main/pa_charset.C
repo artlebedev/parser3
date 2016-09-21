@@ -11,7 +11,7 @@
 // we are using some pcre_internal.h stuff as well
 #include "../lib/pcre/pa_pcre_internal.h"
 
-volatile const char * IDENT_PA_CHARSET_C="$Id: pa_charset.C,v 1.102 2015/10/26 01:21:58 moko Exp $" IDENT_PA_CHARSET_H;
+volatile const char * IDENT_PA_CHARSET_C="$Id: pa_charset.C,v 1.103 2016/09/21 12:40:20 moko Exp $" IDENT_PA_CHARSET_H;
 
 #ifdef XML
 #include "libxml/encoding.h"
@@ -109,13 +109,13 @@ inline XMLByte *append_hex_16(XMLByte *dest, unsigned int c, const char* prefix=
 
 // methods
 
-Charset::Charset(Request_charsets* charsets, const String::Body ANAME, const String* afile_spec): 
+Charset::Charset(Request_charsets* acharsets, const String::Body ANAME, const String* afile_spec): 
 	FNAME(ANAME),
 	FNAME_CSTR(ANAME.cstrm()) {
 
 	if(afile_spec) {
 		fisUTF8=false;
-		load_definition(*charsets, *afile_spec);
+		load_definition(*acharsets, *afile_spec);
 #ifdef XML
 		addEncoding(FNAME_CSTR);
 #endif

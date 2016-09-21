@@ -8,7 +8,7 @@
 #ifndef PA_WCONTEXT_H
 #define PA_WCONTEXT_H
 
-#define IDENT_PA_WCONTEXT_H "$Id: pa_wcontext.h,v 1.61 2016/07/19 16:35:36 moko Exp $"
+#define IDENT_PA_WCONTEXT_H "$Id: pa_wcontext.h,v 1.62 2016/09/21 12:35:19 moko Exp $"
 
 #include "pa_value.h"
 #include "pa_vstring.h"
@@ -73,8 +73,8 @@ public: // WContext
 		else writes Value; raises an error if already, providing origin
 	*/
 	virtual void write(Value& avalue, String::Language alang) {
-		if(const String* fstring=avalue.get_string())
-			write(*fstring, alang);
+		if(const String* string=avalue.get_string())
+			write(*string, alang);
 		else
 			write(avalue);
 	}
