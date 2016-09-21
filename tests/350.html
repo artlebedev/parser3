@@ -1,0 +1,34 @@
+$s[first,"second",
+"1 - column"" one","column" t"w"o,column three
+2 - column one,"column, two","", "
+empty line
+
+"""",""" x","multiline
+entry"
+"3 - column one","","column, three <no new line at eof>"]
+
+$cfg[^table::create{$s}[
+	$.separator[,]
+	$.encloser["]
+]]
+
+^json:string[$cfg]
+
+$s[" zero-^taint["]-zero",one,^taint["]three
+zero^taint[,]zero,one^taint[
+]one","]
+
+$cfg[^table::create[nameless]{$s}[
+	$.separator[,]
+	$.encloser["]
+]]
+
+^json:string[$cfg]
+
+$s[" """" quotes to check language ""shift"" <^taint[xml][<>]> ]
+
+$cfg[^table::create[nameless]{$s}[
+	$.encloser["]
+]]
+
+^apply-taint[$cfg.0]

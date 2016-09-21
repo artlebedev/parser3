@@ -1,0 +1,15 @@
+Content-Type: text/html
+Content-Length: 443
+
+[
+{"first":"1 - column\" one","second":"column t\"w\"o","":"column three"},
+{"first":"2 - column one","second":"column, two","":"","3":" \""},
+{"first":"empty line"},
+{"first":"\"","second":"\" x","":"multiline\nentry"},
+{"first":"3 - column one","second":"","":"column, three <no new line at eof>"}
+]
+[
+{"0":" zero-\"-zero","1":"one","2":"\"three"},
+{"0":"zero,zero","1":"one\none\"","2":""}
+]
+ "" quotes to check language "shift" <&lt;&gt;> 
