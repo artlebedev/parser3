@@ -121,6 +121,11 @@ enum actions {
 	STATE_UC, /* Unicode character read */
 };
 
+/* some compilers have the following names defined */
+#undef _C2
+#undef ST_
+#undef PT_
+
 /* error state */
 #define STATE___ 	0xff
 
@@ -180,9 +185,6 @@ static const uint8_t state_transition_table[NR_STATES][NR_CLASSES] = {
 /*D1*/ PT_(___,___,___,___,___,___,___,___,___,___,_D2,___,___,___,___,___,___,___,___,___,___,___,___,___,___,___,___,___,___,___,___,___,___,___),
 /*D2*/ PT_(___,___,___,___,___,___,___,___,___,___,___,___,___,___,___,___,___,___,___,___,___,___,___,___,___,___,___,___,_U1,___,___,___,___,___),
 };
-#undef ST_
-#undef PT_
-
 /* map from (previous state+new character class) to the buffer policy. ignore=0/append=1/escape=2 */
 static const uint8_t buffer_policy_table[NR_STATES][NR_CLASSES] = {
 /*          white                                                                            ABCDF  other     */

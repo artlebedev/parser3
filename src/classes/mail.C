@@ -19,7 +19,7 @@
 
 #include "smtp.h"
 
-volatile const char * IDENT_MAIL_C="$Id: mail.C,v 1.129 2016/09/08 20:41:47 moko Exp $";
+volatile const char * IDENT_MAIL_C="$Id: mail.C,v 1.130 2016/09/21 11:59:09 moko Exp $";
 
 // defines
 
@@ -98,7 +98,7 @@ static void sendmail(
 	// win32 without SMTP server configured
 	throw Exception(PARSER_RUNTIME,
 		0,
-		"$"MAIN_CLASS_NAME":"MAIL_NAME".SMTP not defined");
+		"$" MAIN_CLASS_NAME ":" MAIL_NAME ".SMTP not defined");
 #else
 	// unix
 	// $MAIN:MAIL.sendmail["/usr/sbin/sendmail -t -i -f postmaster"] default
