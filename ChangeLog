@@ -1,3 +1,195 @@
+2016-09-21  moko
+
+	* src/include/pa_config_fixed.h: vs2015 compilation fixes
+
+	* src/: classes/curl.C, classes/file.C, classes/hash.C,
+	  classes/json.C, classes/string.C, classes/table.C,
+	  classes/xdoc.C, include/pa_charsets.h, main/pa_charsets.C,
+	  main/pa_common.C, main/pa_http.C, main/pa_request.C,
+	  main/pa_sql_driver_manager.C, types/pa_vfile.C, types/pa_vmail.C,
+	  types/pa_vrequest.C, types/pa_vresponse.C: charsets ->
+	  pa_charsets, vs2015 warning war
+
+	* src/classes/table.C: vs2015 warning war
+
+	* src/types/pa_vdate.C: vs2015 warning war
+
+	* src/main/: pa_common.C, pa_globals.C: vs2015 compilation fixes
+
+	* src/targets/cgi/parser3.vcproj: wsock32 -> ws2_32.lib (winsock 1
+	  -> winsock 2) for vs2015 compatibility (getaddrinfo functions)
+
+	* src/main/pa_common.C: vs2015 compilation fixes
+
+	* src/: include/pa_common.h, lib/smtp/smtp.C, main/pa_common.C:
+	  vs2015 compilation fixes
+
+	* src/main/pa_charset.C: vs2015 warning war
+
+	* src/: classes/file.C, types/pa_wwrapper.h: vs2015 warning war
+
+	* src/main/pa_charset.C: vs2015 warning war
+
+	* src/types/: pa_wcontext.h, pa_vmethod_frame.h: vs2015 warning war
+
+	* src/types/pa_vdate.C: vs2015 compilation fix
+
+	* src/: include/pa_memory.h, main/pa_memory.C: VS2015 warning war
+
+	* src/: lib/json/pa_json.C, classes/mail.C, classes/string.C:
+	  VS2015 compilation fixes
+
+	* src/classes/table.C: minor fix (related to feature #11)
+
+	* tests/results/282.processed: no longer skipping extra enclosers
+	  (related to feature #11)
+
+	* src/classes/table.C: minor fix + no longer skipping extra
+	  enclosers (related to feature #11)
+
+	* src/classes/table.C: minor optimization (related to feature #11)
+
+	* src/classes/table.C: minor fix and optimization (related to
+	  feature #11)
+
+2016-09-20  moko
+
+	* tests/: 353.html, results/353.processed: test for
+	  PC.cclass->is_vars_local() check in one_big_piece in ^process[]
+	  added (related to bug #1090)
+
+	* src/main/compile.y: PC.cclass->is_vars_local() check added for
+	  one_big_piece (fixes bug #1090)
+
+	* tests/: 229.html, results/229.processed: code coverage tests
+
+	* src/classes/op.C: bugfix: no more GPF if ^process[$context] (no
+	  body) was called
+
+	* src/classes/op.C: whitespace
+
+	* tests/: 323.html, results/323.processed: test for code junction
+	  should not be returned by ^reflection:class, ^reflection:base
+
+	* src/classes/reflection.C: bugfix: code junction should not be
+	  returned by ^reflection:class, ^reflection:base
+
+	* tests/: 323.html, 352.html, results/352.processed: no more
+	  exception for ^reflection:method[class;no-such-method] (related
+	  to feature #1087)
+
+	* src/classes/reflection.C:
+	  ^reflection:method[class;no-such-method] : exception -> void
+	  (related to feature #1087)
+
+	* src/include/pa_request.h: request::write_value added to allow
+	  write value without convertion (related to issue #1091)
+
+2016-09-19  moko
+
+	* src/main/pa_random.C: windows build fix
+
+	* src/types/pa_vhash.h: warning war
+
+2016-09-14  moko
+
+	* tests/: 352.html, 552.html, results/352.processed,
+	  results/552.processed: test for ^reflection:method[] extension
+	  added (related to feature #1087)
+
+	* tests/: 552.html, results/552.processed: test for
+	  ^reflection:method[] extension added (related to feature #1087)
+
+	* src/classes/reflection.C: compatibility issue fixed, VClass
+	  dynamic_cast check added (related to feature #1087)
+
+	* tests/: 351.html, results/351.processed: test for @auto[]
+	  inheritance bug diring ^process[] added (related to bug #1088)
+
+	* src/: classes/op.C, main/pa_request.C,
+	  types/pa_vstateless_class.C: set_method now checks for @auto[] to
+	  disable it inheritance during ^process (fixes bug #1088)
+
+	* src/classes/reflection.C: ^reflection:method[$class:method;$self]
+	  added (implements feature #1087)
+
+2016-09-13  moko
+
+	* tests/: 349.html, results/auto.p: test for objects prototyping
+	  added and $OBJECT-PROTOTYPE(false) is used for old tests (related
+	  to feature #1086)
+
+	* src/: main/pa_request.C, types/pa_vclass.C, types/pa_vclass.h,
+	  types/pa_vobject.C: objects now are not class instances, but have
+	  class as prototype, can be overridden by $OBJECT-PROTOTYPE(false)
+	  in @conf (implements feature #1086)
+
+2016-09-08  moko
+
+	* src/: classes/file.C, classes/mail.C, classes/string.C,
+	  classes/table.C, main/pa_http.C, main/pa_string.C,
+	  include/pa_string.h: cleanup: string::split limit argument
+	  removed as no longer required, pos_after no longer reference
+	  (related to feature #11)
+
+	* src/classes/table.C, tests/results/348.processed: now exception
+	  is rised when invalid option is passed to ^table::create[]
+
+	* tests/: 282.cfg, 282.html, results/282.processed: more code
+	  coverage tests
+
+	* tests/: 348.html, results/348.processed: code coverage tests
+	  added
+
+	* tests/: 348.html, results/348.processed: generic ^table::create[]
+	  tests
+
+	* tests/: 035.html, results/035.processed, results/272.processed:
+	  tests updated after $.encloser[] support for ^table::create
+	  implementation (related to feature #11)
+
+	* src/classes/table.C: $.encloser[] support for ^table::create
+	  finally added (implements feature #11)
+
+2016-09-07  moko
+
+	* src/include/pa_string.h: added StringSplitHelper as friend
+	  (related to feature #11)
+
+	* src/include/pa_string.h: body and langs now protected, not
+	  private to allow inheritance (related to feature #11)
+
+	* src/classes/table.C: lsplit optimized before cloning for
+	  ^table::create with $.encloser[] (related to feature #11)
+
+	* src/classes/table.C: optimizaion: TableControlChars.separators
+	  added and used (related to feature #11)
+
+	* src/classes/table.C: spelling:
+
+	  TableSeparators -> TableControlChars column -> separator
+	  separators -> control_chars
+
+2016-09-06  moko
+
+	* src/main/pa_string.C: whitespace
+
+	* src/main/pa_string.C: whitespace
+
+2016-09-01  moko
+
+	* tests/: 347-curl.html, results/347-curl.processed: to make tests
+	  results OS-independent
+
+	* src/: include/pa_http.h, main/pa_http.C: typo bugfix for clang
+	  compiler (related to feature #1042)
+
+2016-08-15  moko
+
+	* src/include/pa_string.h: whitespace
+
+	* src/classes/table.C: whitespace
+
 2016-08-05  moko
 
 	* tests/: 344.html, results/344.processed: test for
@@ -14971,7 +15163,7 @@
 	  types/pa_vstring.h, types/pa_vtable.C, types/pa_vtable.h,
 	  types/pa_vvoid.h, types/pa_vxdoc.C, types/pa_vxdoc.h,
 	  types/pa_vxnode.C, types/pa_vxnode.h, types/pa_wcontext.C,
-	  types/pa_wcontext.h, types/pa_wwrapper.h: $Date: 2016/08/04 22:45:32 $
+	  types/pa_wcontext.h, types/pa_wwrapper.h: $Date: 2016/09/21 16:00:00 $
 
 	* src/: classes/classes.C, classes/classes.dsp, classes/classes.h,
 	  classes/date.C, classes/double.C, classes/file.C, classes/form.C,
@@ -19059,7 +19251,7 @@
 	  main/pa_hash.C, main/pa_pool.C, main/pa_request.C,
 	  main/pa_socks.C, main/pa_sql_driver_manager.C, main/pa_string.C,
 	  main/pa_table.C, main/untaint.C, targets/cgi/parser3.C,
-	  targets/isapi/parser3isapi.C: static char *RCSId="$Id: ChangeLog,v 1.106 2016/08/04 22:45:32 moko Exp $";
+	  targets/isapi/parser3isapi.C: static char *RCSId="$Id: ChangeLog,v 1.107 2016/09/21 16:00:00 moko Exp $";
 
 	* src/main/: compile.y, compile_tools.h: $:name: == ${name}:
 	  $class:name: == ${class:name}:
@@ -21874,9 +22066,9 @@
 
 	* src/include/: pa_pool.h, pa_string.h: pa_pool split
 
-	* src/main/: main.dsp, pa_string.C: $Id: ChangeLog,v 1.106 2016/08/04 22:45:32 moko Exp $ check
+	* src/main/: main.dsp, pa_string.C: $Id: ChangeLog,v 1.107 2016/09/21 16:00:00 moko Exp $ check
 
-	* src/: main/pa_pool.C, main/pa_string.C, include/pa_pool.h: $Id: ChangeLog,v 1.106 2016/08/04 22:45:32 moko Exp $
+	* src/: main/pa_pool.C, main/pa_string.C, include/pa_pool.h: $Id: ChangeLog,v 1.107 2016/09/21 16:00:00 moko Exp $
 	  check
 
 	* src/: include/pa_pool.h, main/pa_string.C: String prealloc &
