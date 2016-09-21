@@ -9,7 +9,7 @@
 #include "pa_vint.h"
 #include "pa_vstring.h"
 
-volatile const char * IDENT_PA_PA_VDATE_C="$Id: pa_vdate.C,v 1.17 2016/07/22 16:53:46 moko Exp $" IDENT_PA_VDATE_H;
+volatile const char * IDENT_PA_PA_VDATE_C="$Id: pa_vdate.C,v 1.18 2016/09/21 12:09:02 moko Exp $" IDENT_PA_VDATE_H;
 
 #define ZERO_DATE (-62169984000ll-SECS_PER_DAY) // '0000-00-00 00:00:00' - 1 day
 #define MAX_DATE (253402300799ll+SECS_PER_DAY) // '9999-12-31 23:59:59' + 1 day
@@ -32,6 +32,10 @@ static pa_time_t pa_mktime(struct tm *tim_p);
 static int gmt_offset() {
 #if defined(HAVE_TIMEZONE)
 	tzset();
+#if _MSC_VER >= 1900
+	long timezone = 0;
+	_get_timezone(&timezone);
+#endif
 	return -timezone;
 #else
 	time_t t=time(0);
