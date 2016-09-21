@@ -9,7 +9,7 @@
 #include "pa_vint.h"
 #include "pa_vstring.h"
 
-volatile const char * IDENT_PA_PA_VDATE_C="$Id: pa_vdate.C,v 1.18 2016/09/21 12:09:02 moko Exp $" IDENT_PA_VDATE_H;
+volatile const char * IDENT_PA_PA_VDATE_C="$Id: pa_vdate.C,v 1.19 2016/09/21 15:09:24 moko Exp $" IDENT_PA_VDATE_H;
 
 #define ZERO_DATE (-62169984000ll-SECS_PER_DAY) // '0000-00-00 00:00:00' - 1 day
 #define MAX_DATE (253402300799ll+SECS_PER_DAY) // '9999-12-31 23:59:59' + 1 day
@@ -117,8 +117,8 @@ static pa_time_t pa_mktime(const char *tz, struct tm &tmIn) {
 #endif
 }
 
-const String* VDate::get_sql_string(sql_string_type format) {
-	switch(format){
+const String* VDate::get_sql_string(sql_string_type aformat) {
+	switch(aformat){
 		case sql_string_datetime:{
 			static const char *format="%.4d-%.2d-%.2d %.2d:%.2d:%.2d";
 			static int size=4+1+2+1+2 +1+ 2+1+2+1+2 +1/*zero-teminator*/+1/*for faulty snprintfs*/;
