@@ -10,12 +10,12 @@
 #include "pa_exception.h"
 #include "smtp.h"
 
-volatile const char * IDENT_SMTP_C="$Id: smtp.C,v 1.12 2015/10/26 01:21:57 moko Exp $" IDENT_SMTP_H;
+volatile const char * IDENT_SMTP_C="$Id: smtp.C,v 1.13 2016/09/21 14:01:45 moko Exp $" IDENT_SMTP_H;
 
-#undef snprintf
 // pa_common.C
-extern int __snprintf(char *, size_t, const char* , ...);
-#define snprintf __snprintf
+#undef snprintf
+extern int pa_snprintf(char *, size_t, const char* , ...);
+#define snprintf pa_snprintf
 
 //#define DEBUG_SHOW
 

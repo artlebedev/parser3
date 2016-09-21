@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.166 2016/07/29 13:30:41 moko Exp $"
+#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.167 2016/09/21 14:01:45 moko Exp $"
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -55,11 +55,11 @@ typedef HASH_STRING<Value*> HashStringValue;
 
 // replace system s*nprintf with our versions
 #undef vsnprintf 
-int __vsnprintf(char *, size_t, const char* , va_list);
-#define vsnprintf __vsnprintf 
+int pa_vsnprintf(char *, size_t, const char* , va_list);
+#define vsnprintf pa_vsnprintf 
 #undef snprintf
-int __snprintf(char *, size_t, const char* , ...);
-#define snprintf __snprintf
+int pa_snprintf(char *, size_t, const char* , ...);
+#define snprintf pa_snprintf
 
 #ifdef _MSC_VER
 
