@@ -25,7 +25,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.249 2016/09/08 20:41:47 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.250 2016/09/21 12:45:10 moko Exp $";
 
 // defines
 
@@ -549,13 +549,10 @@ static void _exec_cgi(Request& r, MethodParams& params, bool cgi) {
 				} else {
 					Table* table=param.get_table();
 					if(table){
-						for(size_t i=0; i<table->count(); i++) {
-							append_to_argv(r, argv, table->get(i)->get(0));
-						}
+						for(size_t j=0; j<table->count(); j++)
+							append_to_argv(r, argv, table->get(j)->get(0));
 					} else {
-						throw Exception(PARSER_RUNTIME,
-							0,
-							"param must be string or table");
+						throw Exception(PARSER_RUNTIME, 0, "param must be string or table");
 					}
 				}
 			}

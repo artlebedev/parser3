@@ -8,7 +8,7 @@
 #ifndef PA_WWRAPPER_H
 #define PA_WWRAPPER_H
 
-#define IDENT_PA_WWRAPPER_H "$Id: pa_wwrapper.h,v 1.47 2015/10/26 01:22:03 moko Exp $"
+#define IDENT_PA_WWRAPPER_H "$Id: pa_wwrapper.h,v 1.48 2016/09/21 12:47:33 moko Exp $"
 
 #define OPTIMIZE_SINGLE_STRING_WRITE
 
@@ -113,8 +113,8 @@ public:
 		}
 		fstate=WS_TRANSPARENT;
 		// we copy WWrapper::write here to prevent virtual call to our class
-		if(const String* fstring=avalue.get_string())
-			WWrapper::write(*fstring, alang);
+		if(const String* string=avalue.get_string())
+			WWrapper::write(*string, alang);
 		else
 			WWrapper::write(avalue);
 	}

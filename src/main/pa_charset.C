@@ -11,7 +11,7 @@
 // we are using some pcre_internal.h stuff as well
 #include "../lib/pcre/pa_pcre_internal.h"
 
-volatile const char * IDENT_PA_CHARSET_C="$Id: pa_charset.C,v 1.103 2016/09/21 12:40:20 moko Exp $" IDENT_PA_CHARSET_H;
+volatile const char * IDENT_PA_CHARSET_C="$Id: pa_charset.C,v 1.104 2016/09/21 12:49:25 moko Exp $" IDENT_PA_CHARSET_H;
 
 #ifdef XML
 #include "libxml/encoding.h"
@@ -130,7 +130,7 @@ Charset::Charset(Request_charsets* acharsets, const String::Body ANAME, const St
 #endif
 }
 
-void Charset::load_definition(Request_charsets& charsets, const String& afile_spec) {
+void Charset::load_definition(Request_charsets& acharsets, const String& afile_spec) {
 	// pcre_tables
 	// lowcase, flipcase, bits digit+word+whitespace, masks
 
@@ -144,7 +144,7 @@ void Charset::load_definition(Request_charsets& charsets, const String& afile_sp
 	memset(&tables, 0, sizeof(tables));
 
 	// loading text
-	char *data=file_read_text(charsets, afile_spec);
+	char *data=file_read_text(acharsets, afile_spec);
 
 	// ignore header
 	getrow(&data);
