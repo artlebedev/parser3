@@ -22,7 +22,7 @@
 #define USE_STRINGSTREAM
 #endif
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.330 2016/09/21 01:48:54 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.331 2016/09/21 15:14:39 moko Exp $";
 
 // class
 
@@ -1148,8 +1148,8 @@ static void _flip(Request& r, MethodParams&) {
 static void _foreach(Request& r, MethodParams& params) {
 	InCycle temp(r);
 
-	const String& rownum_name=params.as_string(0, "rownum-var name must be string");
-	const String& value_name=params.as_string(1, "value-var name must be string");
+	const String* rownum_var_name=&params.as_string(0, "rownum-var name must be string");
+	const String* value_var_name=&params.as_string(1, "value-var name must be string");
 
 	Value& body_code=params.as_junction(2, "body must be code");
 	
@@ -1158,8 +1158,8 @@ static void _foreach(Request& r, MethodParams& params) {
 	Table& table=GET_SELF(r, VTable).table();
 	size_t saved_current=table.current();
 
-	const String* rownum_var_name=rownum_name.is_empty()? 0 : &rownum_name;
-	const String* value_var_name=value_name.is_empty()? 0 : &value_name;
+	rownum_var_name=rownum_var_name->is_empty()? 0 : rownum_var_name;
+	value_var_name=value_var_name->is_empty()? 0 : value_var_name;
 
 	Value* var_context=r.get_method_frame()->caller();
 
