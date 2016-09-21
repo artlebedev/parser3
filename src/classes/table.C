@@ -22,7 +22,7 @@
 #define USE_STRINGSTREAM
 #endif
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.332 2016/09/21 15:35:10 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.333 2016/09/21 21:48:37 moko Exp $";
 
 // class
 
@@ -203,12 +203,13 @@ static lsplit_sresult lsplit(char** string_ref, const char* delims, char enclose
 						*(pos++)=0;
 						result.append(helper.extract(*string_ref));
 						if(*pos==encloser && helper.check_lang(pos)){ // double-encloser stands for encloser
-							*string_ref=pos++;
+							*string_ref=pos;
 						} else {
 							*string_ref=pos;
 							break;
 						}
 					}
+					pos++;
 				} else {
 					result.append(helper.extract(*string_ref));
 					*string_ref=0;
