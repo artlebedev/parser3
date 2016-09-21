@@ -50,7 +50,7 @@
 #define pa_mkdir(path, mode) mkdir(path, mode)
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.292 2016/09/21 14:01:45 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.293 2016/09/21 14:12:23 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -74,6 +74,11 @@ volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.292 2016/09/21 14:
 // defines for globals
 
 #define FILE_STATUS_NAME  "status"
+
+// defines for vs2015 linking with old libs
+#if _MSC_VER >= 1900
+int (WINAPIV * __vsnprintf)(char *, size_t, const char*, va_list) = _vsnprintf;
+#endif
 
 // globals
 
