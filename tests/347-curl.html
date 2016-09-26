@@ -1,17 +1,10 @@
 @main[]
 
-^curl:options[ $.library[no-such-library.so] ]
-^try-catch{ ^curl:session{ } }
-^try-catch{ ^curl:session{ } }
-^curl:options[ $.library[another-library.so] ]
-^try-catch{ ^curl:session{ } }
-^curl:options[ $.library[libcurl.so] ]
-^curl:session{ OK }
+1. ^curl:options[ $.library[no-such-library.so] ]
+2. ^try-catch{ ^curl:session{ } }
+3. ^try-catch{ ^curl:session{ } }
+4. ^curl:options[ $.library[another-library.so] ]
+5. ^try-catch{ ^curl:session{ } }
+6. ^curl:options[ $.library[libcurl.so] ]
+7. ^curl:session{ OK }
 
-@try-catch[jCode]
-^try{$jCode}{
-	$exception.handled(true)
-	Type: $exception.type,
-	Source: $exception.source,
-	Comment: ^exception.comment.left(46)
-}

@@ -25,25 +25,25 @@ c	d	e
 
 $t[^table::create[$t; $.reverse(true) ]]
 
-^try-catch{
+1. ^try-catch{
 	$t[^table::create[$t; $.offset[no-such-name] ]]
 }
-^try-catch{
+2. ^try-catch{
 	$t[^table::create[$t; $.no-such-option[yes] ]]
 }
-^try-catch{
+3. ^try-catch{
 	$t[^table::create{}[ $.no-such-option[yes] ]]
 }
-^try-catch{
+4. ^try-catch{
 	$t[^table::create{}[ $.separator[abc] ]]
 }
-^try-catch{
+5. ^try-catch{
 	$t[^table::create{}[ $.encloser[] ]]
 }
-^try-catch{
+6. ^try-catch{
 	$t[^table::create{}[ $.encloser[ю] ]]
 }
-^try-catch{
+7. ^try-catch{
 	$t[^table::create[no-such-name]{}]
 }
 

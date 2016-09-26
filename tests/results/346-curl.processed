@@ -1,34 +1,34 @@
 Content-Type: text/html
-Content-Length: 2569
+Content-Length: 2628
 
-Type: curl,
+1. Type: curl,
 Source: info,
 Comment: outside of 'session' operator
-Type: curl,
+2. Type: curl,
 Source: options,
 Comment: outside of 'session' operator
-Type: curl,
+3. Type: curl,
 Source: options,
 Comment: outside of 'session' operator
-Type: curl,
+4. 5. Type: curl,
 Source: options,
 Comment: failed to set option 'library': already loaded
-Type: curl,
+6. Type: curl,
 Source: options,
 Comment: failed to set option 'url': invalid url scheme 'ftp://parser.ru/'
-Type: curl,
+7. Type: curl,
 Source: name,
 Comment: is hash, form option value can be string, table or file only
-Type: curl,
+8. Type: curl,
 Source: options,
 Comment: failed to set option 'httppost': value must be a hash
-Type: curl,
+9. Type: curl,
 Source: options,
 Comment: called with invalid option 'no-such-option'
-Type: curl,
+10. Type: curl,
 Source: info,
 Comment: called with invalid parameter 'no-such-info'
-{
+11. {
 "size_download":0,
 "request_size":0,
 "content_type":"",
@@ -56,12 +56,12 @@ Comment: called with invalid parameter 'no-such-info'
 "content_length_upload":-1,
 "size_upload":0
 }
-Parser3 tests (make tests).
+12. Parser3 tests (make tests).
 Don't delete or modify them.
 bytes 4-62/63
-Don't delete or modify them.
+13. Don't delete or modify them.
 bytes 33-62/63
-text : {
+14. text : {
 "name":"test.txt",
 "size":265,
 "mode":"binary",
@@ -80,7 +80,7 @@ SERVER_NAME	: www.parser.ru</pre>
 <h3>Body</h3>
 <pre>test</pre>
 <hr />
-binary : {
+15. binary : {
 "name":"223.pl",
 "size":255,
 "mode":"text",
@@ -101,7 +101,7 @@ SERVER_NAME	: www.parser.ru</pre>
 v"
 </pre>
 <hr />
-empty post : {
+16. empty post : {
 "name":"223.pl",
 "size":183,
 "mode":"text",
@@ -118,6 +118,6 @@ SERVER_NAME	: www.parser.ru</pre>
 <h3>Body</h3>
 <pre></pre>
 <hr />
-Type: curl.host,
+17. Type: curl.host,
 Source: load,
 Comment: Couldn't resolve host name

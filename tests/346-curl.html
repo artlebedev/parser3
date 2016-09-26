@@ -1,40 +1,40 @@
 @main[]
 
-^try-catch{ ^curl:info[] }
-^try-catch{ ^curl:options[ $.charset[UTF-8] ] }
-^try-catch{ ^curl:options[ $.url[http://parser.ru/] ] }
+1. ^try-catch{ ^curl:info[] }
+2. ^try-catch{ ^curl:options[ $.charset[UTF-8] ] }
+3. ^try-catch{ ^curl:options[ $.url[http://parser.ru/] ] }
 
-^curl:session{ $s[^curl:version[]] }
+4. ^curl:session{ $s[^curl:version[]] }
 
-^try-catch{ ^curl:options[ $.library[no-such-library.so] ] }
+5. ^try-catch{ ^curl:options[ $.library[no-such-library.so] ] }
 
 ^curl:session{
-	^try-catch{ ^curl:options[ $.url[ftp://parser.ru/] ] }
-	^try-catch{ ^curl:options[ $.httppost[ $.name[ $.hash[] ]] ] }
-	^try-catch{ ^curl:options[ $.httppost[string] ] }
-	^try-catch{ ^curl:options[ $.no-such-option[] ] }
-	^try-catch{ ^curl:info[no-such-info] }
-	^json:string[^curl:info[]]
+	6. ^try-catch{ ^curl:options[ $.url[ftp://parser.ru/] ] }
+	7. ^try-catch{ ^curl:options[ $.httppost[ $.name[ $.hash[] ]] ] }
+	8. ^try-catch{ ^curl:options[ $.httppost[string] ] }
+	9. ^try-catch{ ^curl:options[ $.no-such-option[] ] }
+	10. ^try-catch{ ^curl:info[no-such-info] }
+	11. ^json:string[^curl:info[]]
 
 	^curl:options[
 		$.url[http://www.parser.ru/_/tests/readme]
 		$.timeout(5)
 	]
 
-	$f[^curl:load[
+	12. $f[^curl:load[
 		$.range[4-] 
 	]]
 
 	$f.text $f.CONTENT-RANGE
 
-	$f[^curl:load[
+	13. $f[^curl:load[
 		$.range[33-]
 	]]
 
 	$f.text $f.CONTENT-RANGE
 }
 
-^show[text;
+14. ^show[text;
 	$.postfields[test]
 	$.useragent[^taint[parser 3]]
 
@@ -43,15 +43,15 @@
 	$.content-type[something/text]
 ]
 
-^show[binary;
+15. ^show[binary;
 	$.postfields[^file::load[binary;155.cfg]]
 ]
 
-^show[empty post;
+16. ^show[empty post;
 	$.httppost[]
 ]
 
-^try-catch{ ^curl:load[ $.url[http://no-such-domain.parser.ru/] ] }
+17. ^try-catch{ ^curl:load[ $.url[http://no-such-domain.parser.ru/] ] }
 
 @show[title;options][f;text;t;post]
 
