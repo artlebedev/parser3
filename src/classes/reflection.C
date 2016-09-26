@@ -10,7 +10,7 @@
 #include "pa_vbool.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.54 2016/09/23 15:56:51 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.55 2016/09/26 16:29:08 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -369,6 +369,81 @@ static void _delete(Request&, MethodParams& params) {
 	}
 }
 
+static void _mixin(Request& r, MethodParams& params) {
+	Value& vsource=params.as_no_junction(0, "source must not be code");
+
+	Value* vtarget=0;
+	const String *name=0;
+	bool copy_methods=true;
+	bool copy_fields=true;
+	bool overwrite=true;
+
+	if(params.count()>1)
+		if(HashStringValue* options=params.as_hash(1, "mixin options")) {
+			int valid_options=0;
+			if(vtarget=options->get("to")) {
+				valid_options++;
+			}
+			if(Value* vname=options->get("name")) {
+				name=&vname->as_string();
+				valid_options++;
+			}
+			if(Value* vmethods=options->get("methods")) {
+				copy_methods=r.process_to_value(*vmethods).as_bool();
+				valid_options++;
+			}
+			if(Value* vfields=options->get("fields")) {
+				copy_fields=r.process_to_value(*vfields).as_bool();
+				valid_options++;
+			}
+			if(Value* voverwrite=options->get("overwrite")) {
+				overwrite=r.process_to_value(*voverwrite).as_bool();
+				valid_options++;
+			}
+			if(valid_options!=options->count())
+				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+		}
+
+	if(!vtarget)
+		vtarget=&r.get_method_frame()->caller()->self();
+
+	VClass* source=dynamic_cast<VClass*>(vsource.get_class());
+	VClass* target=dynamic_cast<VClass*>(vtarget->get_class());
+
+	if(!source)
+		throw Exception(PARSER_RUNTIME, 0, "source must be parser object or class");
+	if(!target)
+		throw Exception(PARSER_RUNTIME, 0, "destination must be parser object or class");
+
+	if(name){
+		if(copy_methods)
+			if(Method* method=source->get_method(*name))
+				if(overwrite || !target->get_method(*name)){
+					target->set_method(*name, method);
+					return;
+				}
+
+		if(copy_fields)
+			if(Property* property=source->get_properties()->get(*name))
+				if(property->value && (overwrite || !target->get_properties()->get(*name))){
+					target->put_element(*target, *name, property->value);
+					return;
+				}
+
+	} else {
+		if(copy_methods)
+			for(HashStringMethod::Iterator i(source->get_methods()); i; i.next()){
+				if(overwrite || !target->get_method(i.key()))
+					target->set_method(*new String(i.key(), String::L_TAINTED), i.value());
+			}
+		if(copy_fields)
+			for(HashStringProperty::Iterator i(*source->get_properties()); i; i.next()){
+				if(i.value()->value && ( overwrite || !target->get_properties()->get(i.key()) ))
+					target->put_element(*target, *new String(i.key(), String::L_TAINTED), i.value()->value);
+			}
+	}
+}
+
 
 // constructor
 MReflection::MReflection(): Methoded("reflection") {
@@ -431,6 +506,6 @@ MReflection::MReflection(): Methoded("reflection") {
 	add_native_method("delete", Method::CT_STATIC, _delete, 2, 2);
 
 	// ^reflection:mixin[object or class or junction;options]
-	// add_native_method("mixin", Method::CT_STATIC, _mixin, 1, 2);
+	add_native_method("mixin", Method::CT_STATIC, _mixin, 1, 2);
 
 }
