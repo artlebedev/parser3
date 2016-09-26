@@ -1,0 +1,23 @@
+@main[]
+
+$o[^A::create[]]
+
+$o.m
+$m[^reflection:method[$o;m]]
+^m[]
+
+$A:m
+$m[^reflection:method[$A:CLASS;m]]
+^m[]
+
+
+@CLASS
+A
+
+@auto[]
+$m[string]
+
+@create[]
+
+@m[]
+method $self.CLASS_NAME ^if(^reflection:dynamical[]){dynamic}{static}
