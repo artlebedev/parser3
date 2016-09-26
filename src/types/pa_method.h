@@ -8,7 +8,7 @@
 #ifndef PA_METHOD_H
 #define PA_METHOD_H
 
-#define IDENT_PA_METHOD_H "$Id: pa_method.h,v 1.23 2015/10/26 01:22:00 moko Exp $"
+#define IDENT_PA_METHOD_H "$Id: pa_method.h,v 1.24 2016/09/26 20:10:52 moko Exp $"
 
 #define OPTIMIZE_CALL
 #define OPTIMIZE_RESULT
@@ -63,26 +63,20 @@ public:
 		CO_WITHOUT_WCONTEXT // for some native methods wcontext is not required, faster
 	};
 
-	///
 	Call_type call_type;
-	//@{
-	/// @name either numbered params // for native-code methods = operators
+	/// either numbered params for native-code methods = operators
 	int min_numbered_params_count, max_numbered_params_count;
-	//@}
-	//@{
-	/// @name or named params&locals // for parser-code methods
+	/// or named params&locals for parser-code methods
 	ArrayString* params_names;  ArrayString* locals_names;
-	//@}
-	//@{
-	/// @name the Code
-	ArrayOperation* parser_code;/*OR*/NativeCodePtr native_code;
-	//@}
+	/// the Code
+	ArrayOperation* parser_code; /*OR*/ NativeCodePtr native_code;
+
+	bool all_vars_local; // in local vars list 'locals' was specified: all vars are local
 
 	VJunction *junction_template;
 
-	bool all_vars_local; // in local vars list 'locals' was specified: all vars are local
-	bool allways_use_result; // write to $result detected. will not collect all writes to output scope.
 	String *extra_params; // method has *name as an argument
+
 #ifdef OPTIMIZE_RESULT
 	Result_optimization result_optimization;
 #endif
@@ -106,17 +100,17 @@ public:
 		) :
 
 		call_type(acall_type),
-		min_numbered_params_count(amin_numbered_params_count),
-		max_numbered_params_count(amax_numbered_params_count),
+		min_numbered_params_count(amin_numbered_params_count), max_numbered_params_count(amax_numbered_params_count),
 		params_names(aparams_names), locals_names(alocals_names),
 		parser_code(aparser_code), native_code(anative_code),
+		all_vars_local(aall_vars_local),
 #ifdef OPTIMIZE_RESULT
 		result_optimization(aresult_optimization),
 #endif
 #ifdef OPTIMIZE_CALL
-		call_optimization(acall_optimization),  
+		call_optimization(acall_optimization),
 #endif
-		all_vars_local(aall_vars_local){
+		junction_template(0) {
 			if (params_names){
 				const char *last_param = params_names->get(params_names->count()-1)->cstr();
 				if (last_param[0] == '*' && last_param[1]){
@@ -129,8 +123,7 @@ public:
 	}
 
 	/// call this before invoking to ensure proper actual numbered params count
-	void check_actual_numbered_params(
-		Value& self, MethodParams* actual_numbered_params) const;
+	void check_actual_numbered_params(Value& self, MethodParams* actual_numbered_params) const;
 
 	VJunction* get_vjunction(Value& aself) {
 		if(!junction_template)
