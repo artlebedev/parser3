@@ -10,7 +10,7 @@
 #include "pa_vbool.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.55 2016/09/26 16:29:08 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.56 2016/09/26 17:02:19 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -420,14 +420,12 @@ static void _mixin(Request& r, MethodParams& params) {
 			if(Method* method=source->get_method(*name))
 				if(overwrite || !target->get_method(*name)){
 					target->set_method(*name, method);
-					return;
 				}
 
 		if(copy_fields)
 			if(Property* property=source->get_properties()->get(*name))
 				if(property->value && (overwrite || !target->get_properties()->get(*name))){
 					target->put_element(*target, *name, property->value);
-					return;
 				}
 
 	} else {
