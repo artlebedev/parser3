@@ -5,29 +5,29 @@ $v[M]
 $s[ ]
 $o[^O::create[]]
 
-^try-catch{ ^reflection:method{code} }
-^try-catch{ ^reflection:method[$o] }
+1. ^try-catch{ ^reflection:method{code} }
+2. ^try-catch{ ^reflection:method[$o] }
 
-^try-catch{ ^reflection:method[$test]{code} }
-^try-catch{ ^reflection:method[$test;$s] }
-^try-catch{ ^reflection:method[$string:length] }
+3. ^try-catch{ ^reflection:method[$test]{code} }
+4. ^try-catch{ ^reflection:method[$test;$s] }
+5. ^try-catch{ ^reflection:method[$string:length] }
 
-$no[^reflection:method[$s;no-such-method]] $no.CLASS_NAME
+6. $no[^reflection:method[$s;no-such-method]] $no.CLASS_NAME
 
-^try-catch{ ^reflection:method[$s;length]{code} }
-^try-catch{ ^reflection:method[$s;length;$self] }
-^try-catch{ ^reflection:method[$MAIN:CLASS;test;$s] }
+7. ^try-catch{ ^reflection:method[$s;length]{code} }
+8. ^try-catch{ ^reflection:method[$s;length;$self] }
+9. ^try-catch{ ^reflection:method[$MAIN:CLASS;test;$s] }
 
-^try-catch{ $m[^reflection:method[$string:CLASS;length]] ^m[] }
+10. ^try-catch{ $m[^reflection:method[$string:CLASS;length]] ^m[] }
 
-$m[^reflection:method[$test;$o]]
+11. $m[^reflection:method[$test;$o]]
 ^m[]
-$m[^reflection:method[$o.test;$o]]
+12. $m[^reflection:method[$o.test;$o]]
 ^m[]
-$m[^reflection:method[$o.test]]
+13. $m[^reflection:method[$o.test]]
 ^m[]
 
-$m[^reflection:method[$s;length]]
+14. $m[^reflection:method[$s;length]]
 ^m[]
 
 @test[]
