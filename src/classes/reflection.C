@@ -10,7 +10,7 @@
 #include "pa_vbool.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.56 2016/09/26 17:02:19 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.57 2016/09/26 20:38:33 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -192,9 +192,9 @@ static void _methods(Request& r, MethodParams& params) {
 	r.write_no_lang(result);
 }
 
-static VJunction &method_junction(Value &self, Method &method, const String *name=0){
+static VJunction &method_junction(Value &self, Method &method){
 	if(method.native_code)
-		throw Exception(PARSER_RUNTIME, name, "method must not be native");
+		throw Exception(PARSER_RUNTIME, method.name, "method must not be native");
 
 	if(!(dynamic_cast<VObject*>(&self) || dynamic_cast<VClass*>(&self)))
 		throw Exception(PARSER_RUNTIME, 0, "self must be parser object or class");
@@ -221,7 +221,7 @@ static void _method(Request& r, MethodParams& params) {
 
 	if(VStateless_class* vclass=source.get_class()) {
 		if(Method* method=vclass->get_method(name)){
-			r.write_no_lang( params.count()>2 ? method_junction(params.as_no_junction(2, "self must be object, not junction"), *method, &name) : *method->get_vjunction(source) );
+			r.write_no_lang( params.count()>2 ? method_junction(params.as_no_junction(2, "self must be object, not junction"), *method) : *method->get_vjunction(source) );
 			return;
 		}
 	}
@@ -432,7 +432,7 @@ static void _mixin(Request& r, MethodParams& params) {
 		if(copy_methods)
 			for(HashStringMethod::Iterator i(source->get_methods()); i; i.next()){
 				if(overwrite || !target->get_method(i.key()))
-					target->set_method(*new String(i.key(), String::L_TAINTED), i.value());
+					target->set_method(*i.value()->name, i.value());
 			}
 		if(copy_fields)
 			for(HashStringProperty::Iterator i(*source->get_properties()); i; i.next()){
