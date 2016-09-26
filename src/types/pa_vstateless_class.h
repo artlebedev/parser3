@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
-#define IDENT_PA_VSTATELESS_CLASS_H "$Id: pa_vstateless_class.h,v 1.86 2016/07/20 17:27:42 moko Exp $"
+#define IDENT_PA_VSTATELESS_CLASS_H "$Id: pa_vstateless_class.h,v 1.87 2016/09/26 14:40:27 moko Exp $"
 
 // include
 
@@ -64,9 +64,9 @@ public: // Value
 	/// get_element with aself for VObject junctions
 	virtual Value* get_element(Value& aself, const String& aname);
 
-	override const VJunction* put_element(const String& aname, Value* avalue) {	return put_element(*this, aname, avalue); }
+	override const VJunction* put_element(const String& aname, Value* avalue) { return put_element(*this, aname, avalue); }
 	/// put_element with aself for VObject junctions
-	virtual const VJunction* put_element(Value& aself, const String& aname, Value* /*avalue*/) {	
+	virtual const VJunction* put_element(Value& aself, const String& aname, Value* /*avalue*/) {
 		aself.bark("element can not be stored to %s", &aname); 
 		return 0;
 	}
@@ -105,7 +105,7 @@ public: // usage
 
 	void lock() { flocked=true; }
 
-	Method* get_method(const String& aname) const { 
+	Method* get_method(const String::Body &aname) const {
 		return fmethods.get(aname);
 	}
 
@@ -135,10 +135,7 @@ public: // usage
 
 	void set_methods_call_type(Method::Call_type call_type){
 		if(fcall_type!=Method::CT_ANY)
-			throw Exception(PARSER_RUNTIME,
-						0,
-						"You can specify call type option in a class only once"
-					);
+			throw Exception(PARSER_RUNTIME, 0, "You can specify call type option in a class only once");
 		fcall_type=call_type;
 	}
 
@@ -146,8 +143,8 @@ public: // usage
 		const char* cstr_name,
 		Method::Call_type call_type,
 		NativeCodePtr native_code,
-		int min_numbered_params_count, 
-		int max_numbered_params_count, 
+		int min_numbered_params_count,
+		int max_numbered_params_count,
 		Method::Call_optimization call_optimization=Method::CO_WITHOUT_WCONTEXT);
 
 	void set_method(const String& aname, Method* amethod);
@@ -174,7 +171,7 @@ class Temp_method {
 	const String& fname;
 	Method* saved_method;
 public:
-	Temp_method(VStateless_class& aclass, const String& aname, Method* amethod) : 
+	Temp_method(VStateless_class& aclass, const String& aname, Method* amethod) :
 		fclass(aclass),
 		fname(aname),
 		saved_method(aclass.get_method(aname)) {
