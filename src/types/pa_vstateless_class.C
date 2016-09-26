@@ -11,7 +11,7 @@
 #include "pa_symbols.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VSTATELESS_CLASS_C="$Id: pa_vstateless_class.C,v 1.58 2016/09/14 14:02:21 moko Exp $" IDENT_PA_VSTATELESS_CLASS_H IDENT_PA_METHOD_H;
+volatile const char * IDENT_PA_VSTATELESS_CLASS_C="$Id: pa_vstateless_class.C,v 1.59 2016/09/26 20:22:33 moko Exp $" IDENT_PA_VSTATELESS_CLASS_H IDENT_PA_METHOD_H;
 
 override Value& VStateless_class::as_expr_result() {
 	return VBool::get(as_bool());
@@ -40,6 +40,8 @@ void VStateless_class::real_set_method(const String& aname, Method* amethod) {
 	Symbols::instance().add(aname);
 #endif
 	fmethods.put(aname, amethod);
+	if(amethod)
+		amethod->name=&aname;
 }
 
 void VStateless_class::add_native_method(

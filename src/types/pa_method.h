@@ -8,7 +8,7 @@
 #ifndef PA_METHOD_H
 #define PA_METHOD_H
 
-#define IDENT_PA_METHOD_H "$Id: pa_method.h,v 1.24 2016/09/26 20:10:52 moko Exp $"
+#define IDENT_PA_METHOD_H "$Id: pa_method.h,v 1.25 2016/09/26 20:22:33 moko Exp $"
 
 #define OPTIMIZE_CALL
 #define OPTIMIZE_RESULT
@@ -75,7 +75,8 @@ public:
 
 	VJunction *junction_template;
 
-	String *extra_params; // method has *name as an argument
+	const String *name; // method name, never null
+	const String *extra_params; // method has *name as an argument
 
 #ifdef OPTIMIZE_RESULT
 	Result_optimization result_optimization;
@@ -110,7 +111,8 @@ public:
 #ifdef OPTIMIZE_CALL
 		call_optimization(acall_optimization),
 #endif
-		junction_template(0) {
+		junction_template(0),
+		name(&String::Empty) {
 			if (params_names){
 				const char *last_param = params_names->get(params_names->count()-1)->cstr();
 				if (last_param[0] == '*' && last_param[1]){
