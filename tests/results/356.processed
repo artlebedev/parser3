@@ -1,0 +1,43 @@
+Content-Type: text/html
+Content-Length: 761
+
+1. Type: parser.runtime,
+Source: no-such-class,
+Comment: class is undefined
+2. Type: parser.runtime,
+Source: method_info,
+Comment: method name must be specified
+3. Type: parser.runtime,
+Source: no-such-method,
+Comment: method not found in class 'string'
+4. Type: parser.runtime,
+Source: method_info,
+Comment: method name must be string (parameter #2)
+5. Type: parser.runtime,
+Source: method_info,
+Comment: param must be class name or method junction
+6. {
+"name":"mid",
+"inherited":"string",
+"call_type":"dynamic",
+"min_params":1,
+"max_params":2
+}
+7. {
+"name":"mid",
+"call_type":"dynamic",
+"min_params":1,
+"max_params":2
+}
+8. {
+"name":"try-catch",
+"file":"skip",
+"max_params":1,
+"0":"jCode"
+}
+9. {
+"name":"try-catch",
+"file":"skip",
+"max_params":1,
+"0":"jCode"
+}

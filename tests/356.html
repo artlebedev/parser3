@@ -1,0 +1,12 @@
+@main[]
+1. ^try-catch{ ^reflection:method_info[no-such-class] }
+2. ^try-catch{ ^reflection:method_info[string] }
+3. ^try-catch{ ^reflection:method_info[string;no-such-method] }
+4. ^try-catch{ ^reflection:method_info[string]{code} }
+5. ^try-catch{ ^reflection:method_info{code junction} }
+
+6. ^json:string[^reflection:method_info[void;mid]]
+7. ^json:string[^reflection:method_info[$void:mid]]
+
+8. ^json:string[^reflection:method_info[$try-catch] $.file[skip] ]
+9. ^json:string[^reflection:method_info[MAIN;try-catch] $.file[skip] ]
