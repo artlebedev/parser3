@@ -10,13 +10,14 @@
 #include "pa_vbool.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.58 2016/09/27 21:11:18 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.59 2016/09/27 22:01:19 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
 static const String method_type_native("native");
 static const String method_type_parser("parser");
 
+static const String method_name("name");
 static const String method_call_type("call_type");
 static const String method_inherited("inherited");
 static const String method_overridden("overridden");
@@ -256,24 +257,33 @@ static void _field(Request& r, MethodParams& params) {
 }
 
 static void _method_info(Request& r, MethodParams& params) {
-	const String& class_name=params.as_string(0, "class_name must be string");
-	VStateless_class* vclass=r.get_class(class_name);
-	if(!vclass)
-		throw Exception(PARSER_RUNTIME, &class_name, "class is undefined");
+	const Method* method;
+	VStateless_class* vclass=0;
 
-	const String& method_name=params.as_string(1, "method_name must be string");
-	Method* method=vclass->get_method(method_name);
-	if(!method)
-		throw Exception(PARSER_RUNTIME, &method_name, "method not found in class '%s'", vclass->type());
+	if(Junction *j=params.get(0)->get_junction()){
+		if(!(method=j->method))
+			throw Exception(PARSER_RUNTIME, 0, "param must be class name or method junction");
+	} else {
+		const String& class_name=params.as_string(0, "param must be class name or method junction");
+		if(!(vclass=r.get_class(class_name)))
+			throw Exception(PARSER_RUNTIME, &class_name, "class is undefined");
+
+		if(params.count()==1)
+			throw Exception(PARSER_RUNTIME, 0, "method name must be specified");
+
+		const String& method_name=params.as_string(1, "method name must be string");
+		if(!(method=vclass->get_method(method_name)))
+			throw Exception(PARSER_RUNTIME, &method_name, "method not found in class '%s'", vclass->type());
+	}
 
 	VHash& result=*new VHash;
 	HashStringValue* hash=result.get_hash();
+	hash->put(method_name, new VString(*method->name));
 
-	VStateless_class* c=vclass;
 	Method* base_method;
-	if(c->base() && (base_method=c->base()->get_method(method_name))){
-		c=c->base()->get_class();
-		while(c->base() && base_method==c->base()->get_method(method_name))
+	if(vclass && vclass->base() && (base_method=vclass->base()->get_method(*method->name))){
+		VStateless_class* c=vclass->base()->get_class();
+		while(c->base() && base_method==c->base()->get_method(*method->name))
 			c=c->base()->get_class();
 		hash->put((base_method==method) ? method_inherited : method_overridden, new VString(*new String(c->type())));
 	}
@@ -426,7 +436,7 @@ static void _mixin(Request& r, MethodParams& params) {
 		if(copy_methods)
 			if(Method* method=source->get_method(*name))
 				if(overwrite || !target->get_method(*name)){
-					target->set_method(*name, method);
+					target->set_method(*name, new Method(*method));
 				}
 
 		if(copy_fields)
@@ -439,7 +449,7 @@ static void _mixin(Request& r, MethodParams& params) {
 		if(copy_methods)
 			for(HashStringMethod::Iterator i(source->get_methods()); i; i.next()){
 				if(overwrite || !target->get_method(i.key()))
-					target->set_method(*i.value()->name, i.value());
+					target->set_method(*i.value()->name, new Method(*i.value()));
 			}
 		if(copy_fields)
 			for(HashStringProperty::Iterator i(*source->get_properties()); i; i.next()){
@@ -484,7 +494,8 @@ MReflection::MReflection(): Methoded("reflection") {
 	add_native_method("method", Method::CT_STATIC, _method, 1, 3);
 
 	// ^reflection:method_info[class_name;method_name]
-	add_native_method("method_info", Method::CT_STATIC, _method_info, 2, 2);
+	// ^reflection:method_info[junction]
+	add_native_method("method_info", Method::CT_STATIC, _method_info, 1, 2);
 
 	// ^reflection:fields[object or class]
 	add_native_method("fields", Method::CT_STATIC, _fields, 1, 1);
