@@ -1,17 +1,21 @@
 @main[]
 $a[^a::create[]]
-^print[$a]
 
+1. ^print[$a]
 ^reflection:delete[$a;b]
+2. ^print[$a]
 
-^print[$a]
+3. ^print[$a.CLASS]
+^reflection:delete[$a.CLASS;c]
+4. ^print[$a.CLASS]
 
+5. $a.x
+^reflection:delete[$a.CLASS;x]
+6. $a.x
 
 @print[x][h;k;v]
-<hr />
 $h[^hash::create[$x]]
-^h.foreach[k;v]{$k='$v'}[<br />]
-
+$result[^h.foreach[k;v]{$k='$v'}[, ]]
 
 
 @CLASS
@@ -20,4 +24,11 @@ a
 @create[]
 $a[1]
 $b[2]
+
+@auto[]
+$c[3]
+$d[4]
+
+@GET_x[]
+x property
 
