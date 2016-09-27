@@ -10,7 +10,7 @@
 #include "pa_vbool.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.57 2016/09/26 20:38:33 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.58 2016/09/27 21:11:18 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -363,9 +363,16 @@ static void _uid(Request& r, MethodParams& params) {
 }
 
 static void _delete(Request&, MethodParams& params) {
+	Value* v=&params.as_no_junction(0, "param must be object or class, not junction");
 	const String& key=params.as_string(1, "field name must be string");
-	if(HashStringValue* fields=params[0].get_fields()){
-		fields->remove(key);
+
+	if(VObject* o=dynamic_cast<VObject*>(v)){
+		o->get_fields()->remove(key);
+	} else if(VClass* c=dynamic_cast<VClass*>(v)){
+		HashStringProperty &p=*c->get_properties();
+		if(Property* property=p.get(key))
+			if(property->value)
+				p.remove(key);
 	}
 }
 
