@@ -8,7 +8,7 @@
 #ifndef PA_WCONTEXT_H
 #define PA_WCONTEXT_H
 
-#define IDENT_PA_WCONTEXT_H "$Id: pa_wcontext.h,v 1.63 2016/09/29 18:49:43 moko Exp $"
+#define IDENT_PA_WCONTEXT_H "$Id: pa_wcontext.h,v 1.64 2016/09/29 22:08:14 moko Exp $"
 
 #include "pa_value.h"
 #include "pa_vstring.h"
@@ -91,8 +91,7 @@ public: // usage
 		fparent(aparent),
 		fstring(0),
 		fvalue(0),
-		in_expression(false),
-		entered_class(false){}
+		in_expression(false){}
 
 	virtual ~WContext() {
 		detach_junctions();
@@ -113,7 +112,6 @@ protected:
 private: // status
 
 	bool in_expression;
-	bool entered_class;
 
 private:
 	Array<VJunction*> junctions;
