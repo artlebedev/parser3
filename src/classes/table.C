@@ -22,7 +22,7 @@
 #define USE_STRINGSTREAM
 #endif
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.333 2016/09/21 21:48:37 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.334 2016/09/29 18:49:43 moko Exp $";
 
 // class
 
@@ -781,7 +781,7 @@ static void _menu(Request& r, MethodParams& params) {
 		for(size_t row=0; row<table.count(); row++) {
 			table.set_current(row);
 
-			StringOrValue sv_processed=r.process(body_code);
+			Value& sv_processed=r.process(body_code);
 			Request::Skip lskip=r.get_skip(); r.set_skip(Request::SKIP_NOTHING);
 
 			const String* s_processed=sv_processed.get_string();
@@ -829,7 +829,7 @@ static void table_row_to_hash(Table::element_type row, Row_info *info) {
 	const String* key;
 	if(info->key_code) {
 		info->table->set_current(info->row++); // change context row
-		StringOrValue sv_processed=info->r->process(*info->key_code);
+		Value& sv_processed=info->r->process(*info->key_code);
 		key=&sv_processed.as_string();
 	} else {
 		key=info->key_field<row->count()?row->get(info->key_field):0;
@@ -884,7 +884,7 @@ static void table_row_to_hash(Table::element_type row, Row_info *info) {
 		case C_CODE: {
 			if(!info->key_code)
 				info->table->set_current(info->row++); // change context row
-			exist=info->hash->put_dont_replace(*key, &info->r->process(*info->value_code).as_value());
+			exist=info->hash->put_dont_replace(*key, &info->r->process(*info->value_code));
 			break;
 		}
 	}
@@ -1174,7 +1174,7 @@ static void _foreach(Request& r, MethodParams& params) {
 			if(value_var_name)
 				r.put_element(*var_context, *value_var_name, new VTable(&table));
 
-			StringOrValue sv_processed=r.process(body_code);
+			Value& sv_processed=r.process(body_code);
 			Request::Skip lskip=r.get_skip(); r.set_skip(Request::SKIP_NOTHING);
 
 			const String* s_processed=sv_processed.get_string();

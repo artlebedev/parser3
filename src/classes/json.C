@@ -18,7 +18,7 @@
 #include "pa_vxdoc.h"
 #endif
 
-volatile const char * IDENT_JSON_C="$Id: json.C,v 1.44 2016/09/21 15:35:10 moko Exp $";
+volatile const char * IDENT_JSON_C="$Id: json.C,v 1.45 2016/09/29 18:49:42 moko Exp $";
 
 // class
 
@@ -107,7 +107,7 @@ static Value *json_hook(Request &r, Junction *hook, String* key, Value* value){
 	frame.store_params(params, 2);
 	r.execute_method(frame);
 
-	return &frame.result().as_value();
+	return &frame.result();
 }
 
 static int json_callback(Json *json, int type, const char *value, uint32_t length)

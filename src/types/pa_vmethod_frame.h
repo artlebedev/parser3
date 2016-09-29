@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.104 2016/09/21 12:37:07 moko Exp $"
+#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.105 2016/09/29 18:49:43 moko Exp $"
 
 #include "pa_symbols.h"
 #include "pa_wcontext.h"
@@ -218,16 +218,16 @@ private:
 
 public: // WContext
 
-	override StringOrValue result() {
+	override Value& result() {
 		if(my){
 			// check the $result value
 			Value* result_value=get_result_variable();
 			// if we have one, return it, else return as usual: accumulated fstring or fvalue
 			if(result_value)
-				return StringOrValue(*result_value);
+				return *result_value;
 #ifdef OPTIMIZE_RESULT
 			if(method.result_optimization==Method::RO_USE_RESULT)
-				return StringOrValue(*VVoid::get());
+				return *VVoid::get();
 			((Method *)&method)->result_optimization=Method::RO_USE_WCONTEXT;
 #ifdef OPTIMIZE_CALL // nested as CO_WITHOUT_WCONTEXT assumes that $result not used
 			((Method *)&method)->call_optimization=Method::CO_WITHOUT_WCONTEXT;

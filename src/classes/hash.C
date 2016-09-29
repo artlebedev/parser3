@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.131 2016/09/21 15:35:10 moko Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.132 2016/09/29 18:49:42 moko Exp $";
 
 // class
 
@@ -419,7 +419,7 @@ static void _foreach(Request& r, MethodParams& params) {
 			if(value_var_name)
 				r.put_element(caller, *value_var_name, i.value());
 
-			StringOrValue sv_processed=r.process(*body_code);
+			Value& sv_processed=r.process(*body_code);
 			Request::Skip lskip=r.get_skip(); r.set_skip(Request::SKIP_NOTHING);
 
 			const String* s_processed=sv_processed.get_string();

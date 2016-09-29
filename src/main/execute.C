@@ -21,7 +21,7 @@
 #include "pa_vimage.h"
 #include "pa_wwrapper.h"
 
-volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.384 2016/07/20 17:01:48 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
+volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.385 2016/09/29 18:49:43 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
 
 //#define DEBUG_EXECUTE
 
@@ -700,7 +700,7 @@ void Request::execute(ArrayOperation& ops) {
 
 				execute(local_ops);
 
-				stack.push(wcontext->result().as_value());
+				stack.push(wcontext->result());
 				flang=saved_lang;
 				wcontext=saved_wcontext;
 				break;
@@ -801,7 +801,7 @@ void Request::execute(ArrayOperation& ops) {
 				{
 					VMethodFrame frame(*junction->method, method_frame, junction->self);
 					METHOD_FRAME_ACTION(op_call(frame));
-					result=&frame.result().as_value();
+					result=&frame.result();
 					// VMethodFrame desctructor deletes junctions in stack params here
 				}
 				stack.push(*result);
@@ -916,7 +916,7 @@ void Request::execute(ArrayOperation& ops) {
 					VConstructorFrame frame(*constructor_junction->method, method_frame, object);
 					METHOD_FRAME_ACTION(op_call(frame));
 					object.enable_default_setter();
-					result=&frame.result().as_value();
+					result=&frame.result();
 					// VMethodFrame desctructor deletes junctions in stack params here
 				}
 
@@ -1379,7 +1379,7 @@ void Request::put_element(Value& ncontext, const String& name, Value* value) {
 		}
 }
 
-StringOrValue Request::process_getter(Junction& junction) {
+Value& Request::process_getter(Junction& junction) {
 	VMethodFrame frame(*junction.method, method_frame/*caller*/, junction.self);
 	size_t param_count=frame.method_params_count();
 
@@ -1424,16 +1424,16 @@ StringOrValue Request::process_getter(Junction& junction) {
 	using the fact it's either string_ or value_ result requested to speed up checkes
 */
 
-StringOrValue Request::process(Value& input_value, bool intercept_string) {
+Value& Request::process(Value& input_value, bool intercept_string) {
 	Junction* junction=input_value.get_junction();
 	if(junction) {
 		if(junction->is_getter) { // is it a getter-junction?
-			return process(process_getter(*junction).as_value(), intercept_string);
+			return process(process_getter(*junction), intercept_string);
 		}
 
 		if(junction->code) { // is it a code-junction?
 			// process it
-			StringOrValue result;
+			ValueRef result;
 
 			DEBUG_PRINT_STR("ja->\n")
 

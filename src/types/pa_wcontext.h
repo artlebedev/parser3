@@ -8,7 +8,7 @@
 #ifndef PA_WCONTEXT_H
 #define PA_WCONTEXT_H
 
-#define IDENT_PA_WCONTEXT_H "$Id: pa_wcontext.h,v 1.62 2016/09/21 12:35:19 moko Exp $"
+#define IDENT_PA_WCONTEXT_H "$Id: pa_wcontext.h,v 1.63 2016/09/29 18:49:43 moko Exp $"
 
 #include "pa_value.h"
 #include "pa_vstring.h"
@@ -16,26 +16,16 @@
 
 class Request;
 
-class StringOrValue {
-public:
-	StringOrValue() : fstring(0), fvalue(0) {}
-	/// anticipating either String or Value [must not be 0&0]
-	StringOrValue(const String& astring) : fstring(&astring), fvalue(0) {}
-	StringOrValue(Value& avalue) : fstring(0), fvalue(&avalue) {}
+/** ValueRef
+	convenient helper when delayed initialization required
+*/
 
-	void set_string(const String& astring) { fstring=&astring; }
-	void set_value(Value& avalue) { fvalue=&avalue; }
-	const String* get_string() { return fstring; }
-	Value* get_value() { return fvalue; }
-	Value& as_value() const {
-		Value* result=fvalue?fvalue:new VString(*fstring);
-		return *result;
-	}
-	const String& as_string() const {
-		return fstring?*fstring:fvalue->as_string();
-	}
+class ValueRef {
+public:
+	ValueRef() : fvalue(0) {}
+	ValueRef(Value& avalue) : fvalue(&avalue) {}
+	operator Value& () { return *fvalue; }
 private:
-	const String* fstring;
 	Value* fvalue;
 };
 
@@ -43,6 +33,7 @@ private:
 	they do different write()s here, later picking up the result
 	@see Request::wcontext
 */
+
 class WContext: public Value {
 	friend class Request;
 
@@ -52,11 +43,11 @@ public: // Value
 	/// WContext: accumulated fstring
 	override const String* get_string() {
 		static String empty;
-		return fstring?fstring:&empty;
+		return fstring ? fstring : &empty;
 	};
 
 	/// WContext: none yet | transparent
-	override VStateless_class *get_class() { return fvalue?fvalue->get_class():0; }
+	override VStateless_class *get_class() { return fvalue ? fvalue->get_class() : 0; }
 
 public: // WContext
 
@@ -84,9 +75,10 @@ public: // WContext
 		that can be String if value==0 or the Value object
 		wmethod_frame first checks for $result and if there is one, returns it instead
 	*/
-	virtual StringOrValue result() {
+	virtual Value& result() {
 		static String empty;
-		return fvalue?StringOrValue(*fvalue):StringOrValue(fstring?*fstring:empty);
+		static VString vempty(empty);
+		return fvalue ? *fvalue: fstring ? *new VString(*fstring) : vempty;
 	}
 
 	void attach_junction(VJunction* ajunction) {

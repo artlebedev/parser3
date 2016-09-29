@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.233 2016/09/20 10:21:03 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.234 2016/09/29 18:49:42 moko Exp $";
 
 // limits
 
@@ -118,7 +118,7 @@ static void _untaint(Request& r, MethodParams& params) {
 		Value& vbody=params.as_junction(params.count()-1, "body must be code");
 		
 		Temp_lang temp_lang(r, lang); // set temporarily specified ^untaint[language;
-		StringOrValue result=r.process(vbody); // process marking tainted with that lang
+		Value& result=r.process(vbody); // process marking tainted with that lang
 		r.write_assign_lang(result);
 	}
 }
@@ -252,7 +252,7 @@ static void _while(Request& r, MethodParams& params) {
 			if(!r.process_to_value(vcondition, false/*don't intercept string*/).as_bool())
 				break;
 
-			StringOrValue sv_processed=r.process(body_code);
+			Value& sv_processed=r.process(body_code);
 			Request::Skip lskip=r.get_skip(); r.set_skip(Request::SKIP_NOTHING);
 
 			const String* s_processed=sv_processed.get_string();
@@ -353,7 +353,7 @@ static void _for(Request& r, MethodParams& params) {
 		for(int i=from; i<=to; i++) {
 			vint->set_int(i);
 
-			StringOrValue sv_processed=r.process(body_code);
+			Value& sv_processed=r.process(body_code);
 			Request::Skip lskip=r.get_skip(); r.set_skip(Request::SKIP_NOTHING);
 
 			const String* s_processed=sv_processed.get_string();
@@ -510,7 +510,7 @@ static void _case(Request& r, MethodParams& params) {
 }
 #ifndef DOXYGEN
 struct Try_catch_result {
-	StringOrValue processed_code;
+	ValueRef processed_code;
 	const String* exception_should_be_handled;
 
 	Try_catch_result(): exception_should_be_handled(0) {}
@@ -533,7 +533,7 @@ public:
 
 /// used by ^try and ^cache, @returns $exception.handled[string] if any
 template<class I>
-static Try_catch_result try_catch(Request& r, StringOrValue body_code(Request&, I), I info, Value* catch_code, bool could_be_handled_by_caller=false) {
+static Try_catch_result try_catch(Request& r, Value& body_code(Request&, I), I info, Value* catch_code, bool could_be_handled_by_caller=false) {
 	Try_catch_result result;
 
 	// minor bug: context not restored if only finally code is present, see #1062
@@ -581,7 +581,7 @@ static Try_catch_result try_catch(Request& r, StringOrValue body_code(Request&, 
 	return result;
 }
 
-static StringOrValue process_try_body_code(Request& r, Value* body_code) {
+static Value& process_try_body_code(Request& r, Value* body_code) {
 	return r.process(*body_code);
 }
 
@@ -621,8 +621,8 @@ struct Locked_process_and_cache_put_action_info {
 
 
 
-static StringOrValue process_cache_body_code(Request& r, Value* body_code) {
-	return StringOrValue(r.process_to_string(*body_code));
+static Value& process_cache_body_code(Request& r, Value* body_code) {
+	return r.process(*body_code);
 }
 
 /* @todo maybe network order worth spending some effort?
@@ -649,7 +649,7 @@ static void locked_process_and_cache_put_action(int f, void *context) {
 				"$" EXCEPTION_VAR_NAME "." EXCEPTION_HANDLED_PART_NAME " value must be "
 				"either boolean or string '" CACHE_EXCEPTION_HANDLED_CACHE_NAME "'");
 	} else
-		info.processed_code=&result.processed_code.as_string();
+		info.processed_code=&((Value &)result.processed_code).as_string();
 
 	// expiration time not spoiled by ^cache(0) or something?
 	if(info.scope->expires > time(0)) {
@@ -821,8 +821,7 @@ static void _cache(Request& r, MethodParams& params) {
 		Try_catch_result result=try_catch(r, process_try_body_code, &body_code, catch_code);
 		r.write_assign_lang(result.processed_code);
 	} else {
-		const String& processed_body=r.process_to_string(body_code);
-		r.write_assign_lang(processed_body);
+		r.write_assign_lang(r.process_to_string(body_code));
 	}
 }
 
@@ -832,7 +831,6 @@ static void _try_operator(Request& r, MethodParams& params) {
 	Value* finally_code=(params.count()==3) ? &params.as_junction(2, "finally_code must be code") : 0;
 
 	Try_catch_result result;
-	StringOrValue finally_result;
 
 	try{
 		// process try and catch code
@@ -841,7 +839,7 @@ static void _try_operator(Request& r, MethodParams& params) {
 		// process finally code but ignore the result
 		if(finally_code){
 			Temp_skip temp(r);
-			finally_result=r.process(*finally_code);
+			Value &finally_result=r.process(*finally_code);
 		}
 		rethrow;
 	}
@@ -849,17 +847,18 @@ static void _try_operator(Request& r, MethodParams& params) {
 	// process finally code
 	if(finally_code){
 		Temp_skip temp(r);
-		finally_result=r.process(*finally_code);
+		Value& finally_result=r.process(*finally_code);
+
+		// no exception in try/catch or finally, writing processed body_code or catch_code
+		r.write_pass_lang(result.processed_code);
+
+		// write out processed finally code
+		r.write_pass_lang(finally_result);
+	} else {
+		// no exception in try/catch, writing processed body_code or catch_code
+		r.write_pass_lang(result.processed_code);
 	}
 
-	// no exception in try, catch or finally, writing the result
-
-	// write out processed body_code or catch_code
-	r.write_pass_lang(result.processed_code);
-
-	// write out processed finally code
-	if(finally_code)
-		r.write_pass_lang(finally_result);
 }
 
 static void _throw_operator(Request&, MethodParams& params) {

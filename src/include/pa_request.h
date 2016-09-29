@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.226 2016/09/19 22:23:56 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.227 2016/09/29 18:49:43 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -231,28 +231,20 @@ public:
 		int line_no_offset=0);
 
 	/// processes any code-junction there may be inside of @a value
-	StringOrValue process_getter(Junction& junction); // execute.C
-	StringOrValue process(Value& input_value, bool intercept_string=true); // execute.C
+	Value& process_getter(Junction& junction); // execute.C
+	Value& process(Value& input_value, bool intercept_string=true); // execute.C
 	void process_write(Value& input_value); // execute.C
 	//@{ convinient helpers
 	const String& process_to_string(Value& input_value) {
 		return process(input_value, true/*intercept_string*/).as_string();
 	}
 	Value& process_to_value(Value& input_value, bool intercept_string=true) {
-		return process(input_value, intercept_string).as_value();
+		return process(input_value, intercept_string);
 	}
 	//@}
 	const String* get_method_filename(const Method* method); // execute.C
 	const String* get_used_filename(uint file_no);
 	
-#define DEFINE_DUAL(modification) \
-	void write_##modification##_lang(StringOrValue dual) { \
-		if(const String* string=dual.get_string()) \
-			write_##modification##_lang(*string); \
-		else \
-			write_##modification##_lang(*dual.get_value()); \
-	}
-
 	/// appending, sure of clean string inside
 	void write_no_lang(const String& astring) {
 		wcontext->write(astring, 
@@ -275,7 +267,6 @@ public:
 	void write_pass_lang(Value& avalue) {
 		wcontext->write(avalue, String::L_PASS_APPENDED); 
 	}
-	DEFINE_DUAL(pass)
 
 	/// appending possible string, assigning untaint language
 	void write_assign_lang(Value& avalue) {
@@ -285,7 +276,6 @@ public:
 	void write_assign_lang(const String& astring) {
 		wcontext->write(astring, flang); 
 	}
-	DEFINE_DUAL(assign)
 
 	/// appending sure value
 	void write_value(Value& avalue) {
@@ -354,6 +344,7 @@ public: // status read methods
 
 	VMethodFrame *get_method_frame() { return method_frame; }
 	Value& get_self();
+
 #define GET_SELF(request, type) (static_cast<type &>(request.get_self()))
 	/* for strange reason call to this: 
 		r.get_self<VHash>() 

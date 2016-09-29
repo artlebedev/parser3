@@ -12,7 +12,7 @@
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VOBJECT_C="$Id: pa_vobject.C,v 1.45 2016/09/13 16:12:56 moko Exp $" IDENT_PA_VOBJECT_H;
+volatile const char * IDENT_PA_VOBJECT_C="$Id: pa_vobject.C,v 1.46 2016/09/29 18:49:43 moko Exp $" IDENT_PA_VOBJECT_H;
 
 Value* VObject::get_scalar_value(const char* as_something) const {
 	VObject* unconst_this=const_cast<VObject*>(this);
@@ -34,7 +34,7 @@ Value* VObject::get_scalar_value(const char* as_something) const {
 				} // no need for else frame.empty_params()
 
 				pa_thread_request().execute_method(frame);
-				return &frame.result().as_value();
+				return &frame.result();
 			}
 	return 0;
 }

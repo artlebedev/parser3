@@ -32,7 +32,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.359 2016/09/21 15:35:11 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.360 2016/09/29 18:49:43 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -413,7 +413,7 @@ void Request::core(const char* config_filespec, bool config_fail_on_read_problem
 					frame.store_params(&body_value, 1);
 					execute_method(frame);
 
-					body_value=&frame.result().as_value();
+					body_value=&frame.result();
 				}
 
 		VFile* body_file=body_value->as_vfile(flang, &charsets);
