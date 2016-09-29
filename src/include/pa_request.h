@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.227 2016/09/29 18:49:43 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.228 2016/09/29 18:55:43 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -86,7 +86,7 @@ private:
 
 		/// needed to fill unused Array entries
 		StackItem() {}
-		StackItem(Value& avalue): fvalue(&avalue) {}		
+		StackItem(Value& avalue): fvalue(&avalue) {}
 		StackItem(ArrayOperation& aops): fops(&aops) {}
 		StackItem(VMethodFrame& amethod_frame): fmethod_frame(&amethod_frame) {}
 	};
@@ -142,7 +142,7 @@ public:
 	Value* rcontext;
 	WContext* wcontext;
 	/// current language
-	String::Language flang; 
+	String::Language flang;
 	/// current connection
 	SQL_Connection* fconnection;
 	//@}
@@ -205,35 +205,27 @@ public:
 		// anti_endless_execute_recoursion
 		if(++anti_endless_execute_recoursion==ANTI_ENDLESS_EXECUTE_RECOURSION) {
 			anti_endless_execute_recoursion=0; // give @exception a chance
-			throw Exception(PARSER_RUNTIME,
-				0, //&name,
-				"call canceled - endless recursion detected");
+			throw Exception(PARSER_RUNTIME, 0, "call canceled - endless recursion detected");
 		}
 		execute(ops); // execute it
 		anti_endless_execute_recoursion--;
 	}
 
 	///
-	void use_file_directly(VStateless_class& aclass,
-				const String& file_spec,
-				bool fail_on_read_problem=true, 
-				bool fail_on_file_absence=true);
-				
+	void use_file_directly(VStateless_class& aclass, const String& file_spec, bool fail_on_read_problem=true, bool fail_on_file_absence=true);
+
 	/// compiles the file, maybe forcing it's class @a name and @a base_class.
 	void use_file(VStateless_class& aclass, const String& file_name, const String* use_filespec);
 	void use_file(VStateless_class& aclass, const String& file_name, const String* use_filespec, Operation::Origin origin);
 
 	/// compiles a @a source buffer
-	void use_buf(VStateless_class& aclass,
-		const char* source, 
-		const String* main_alias,
-		uint file_no,
-		int line_no_offset=0);
+	void use_buf(VStateless_class& aclass, const char* source, const String* main_alias, uint file_no, int line_no_offset=0);
 
 	/// processes any code-junction there may be inside of @a value
 	Value& process_getter(Junction& junction); // execute.C
 	Value& process(Value& input_value, bool intercept_string=true); // execute.C
 	void process_write(Value& input_value); // execute.C
+
 	//@{ convinient helpers
 	const String& process_to_string(Value& input_value) {
 		return process(input_value, true/*intercept_string*/).as_string();
@@ -255,17 +247,16 @@ public:
 		if(wcontext->get_in_expression())
 			wcontext->write(avalue);
 		else
-			wcontext->write(avalue, 
-				(String::Language)(String::L_CLEAN | (flang & String::L_OPTIMIZE_BIT) ));
+			wcontext->write(avalue, (String::Language)(String::L_CLEAN | (flang & String::L_OPTIMIZE_BIT) ));
 	}
 
 	/// appending string, passing language built into string being written
 	void write_pass_lang(const String& astring) {
-		wcontext->write(astring, String::L_PASS_APPENDED); 
+		wcontext->write(astring, String::L_PASS_APPENDED);
 	}
 	/// appending possible string, passing language built into string being written
 	void write_pass_lang(Value& avalue) {
-		wcontext->write(avalue, String::L_PASS_APPENDED); 
+		wcontext->write(avalue, String::L_PASS_APPENDED);
 	}
 
 	/// appending possible string, assigning untaint language
@@ -295,13 +286,10 @@ public:
 	const String& mime_type_of(const char* user_file_name_cstr);
 
 	/// returns current SQL connection if any
-	SQL_Connection* connection(bool fail_on_error=true) { 
+	SQL_Connection* connection(bool fail_on_error=true) {
 		if(fail_on_error && !fconnection)
-			throw Exception(PARSER_RUNTIME,
-				0,
-				"outside of 'connect' operator");
-
-		return fconnection; 
+			throw Exception(PARSER_RUNTIME, 0, "outside of 'connect' operator");
+		return fconnection;
 	}
 
 	void set_interrupted(bool ainterrupted) { finterrupted=ainterrupted; }
@@ -346,14 +334,6 @@ public: // status read methods
 	Value& get_self();
 
 #define GET_SELF(request, type) (static_cast<type &>(request.get_self()))
-	/* for strange reason call to this: 
-		r.get_self<VHash>() 
-		refuses to compile
-
-	template<typename T> T& get_self() {
-		return *static_cast<T*>(get_self().get());
-	}
-	*/
 
 	/// public for ^reflection:copy[]
 	void put_element(Value& ncontext, const String& name, Value* value);
@@ -365,18 +345,15 @@ public: // status read methods
 	void execute_method(VMethodFrame& aframe);
 
 	//{ for @conf[filespec] and @auto[filespec] and parser://method/call
-	const String* execute_method(Value& aself, 
-		const Method& method, Value* optional_param,
-		bool do_return_string);
+	const String* execute_method(Value& aself, const Method& method, Value* optional_param, bool do_return_string);
+
 	struct Execute_nonvirtual_method_result {
 		const String* string;
 		Method* method;
 		Execute_nonvirtual_method_result(): string(0), method(0) {}
 	};
-	Execute_nonvirtual_method_result execute_nonvirtual_method(VStateless_class& aclass, 
-		const String& method_name,
-		VString* optional_param,
-		bool do_return_string);
+
+	Execute_nonvirtual_method_result execute_nonvirtual_method(VStateless_class& aclass, const String& method_name, VString* optional_param, bool do_return_string);
 	//}
 
 #ifdef XML
@@ -402,10 +379,7 @@ private:
 
 private: // compile.C
 
-	ArrayClass& compile(VStateless_class* aclass, 
-		const char* source, const String* main_alias, 
-		uint file_no,
-		int line_no_offset);
+	ArrayClass& compile(VStateless_class* aclass, const char* source, const String* main_alias, uint file_no, int line_no_offset);
 
 private: // execute.C
 
@@ -470,10 +444,10 @@ class Request_context_saver {
 	SQL_Connection* fconnection;
 
 public:
-	Request_context_saver(Request& ar) : 
+	Request_context_saver(Request& ar) :
 		fr(ar),
-		exception_trace_top(ar.exception_trace.top_index()),	
-		exception_trace_bottom(ar.exception_trace.bottom_index()),	
+		exception_trace_top(ar.exception_trace.top_index()),
+		exception_trace_bottom(ar.exception_trace.bottom_index()),
 		stack(ar.stack.top_index()),
 		anti_endless_execute_recoursion(ar.anti_endless_execute_recoursion),
 		method_frame(ar.method_frame),
@@ -497,12 +471,12 @@ class Temp_lang {
 	Request& frequest;
 	String::Language saved_lang;
 public:
-	Temp_lang(Request& arequest, String::Language alang) : 
+	Temp_lang(Request& arequest, String::Language alang) :
 		frequest(arequest),
 		saved_lang(arequest.set_lang(alang)) {
 	}
-	~Temp_lang() { 
-		frequest.restore_lang(saved_lang); 
+	~Temp_lang() {
+		frequest.restore_lang(saved_lang);
 	}
 };
 
@@ -511,11 +485,11 @@ class Temp_connection {
 	Request& frequest;
 	SQL_Connection* saved_connection;
 public:
-	Temp_connection(Request& arequest, SQL_Connection* aconnection) : 
+	Temp_connection(Request& arequest, SQL_Connection* aconnection) :
 		frequest(arequest),
 		saved_connection(arequest.set_connection(aconnection)) {
 	}
-	~Temp_connection() { 
+	~Temp_connection() {
 		frequest.restore_connection(saved_connection); 
 	}
 };
@@ -527,7 +501,7 @@ public:
 	InCycle(Request& arequest) : frequest(arequest) {
 		frequest.set_in_cycle(1);
 	}
-	~InCycle() { 
+	~InCycle() {
 		frequest.set_in_cycle(-1);
 	}
 };
