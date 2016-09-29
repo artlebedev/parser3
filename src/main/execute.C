@@ -21,7 +21,7 @@
 #include "pa_vimage.h"
 #include "pa_wwrapper.h"
 
-volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.385 2016/09/29 18:49:43 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
+volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.386 2016/09/29 19:37:29 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
 
 //#define DEBUG_EXECUTE
 
@@ -110,7 +110,7 @@ const char* debug_value_to_cstr(Value& value){
 		return string->cstr();
 	else
 		if(value.is_bool())
-			return value.as_bool()?"<true>":"<false>";
+			return value.as_bool() ? "<true>" : "<false>";
 		else
 			return "<value>";
 }
@@ -155,11 +155,7 @@ void debug_dump(SAPI_Info& sapi_info, int level, ArrayOperation& ops) {
 			Value& value1=*i.next().value;
 			i.next(); // skip origin
 			Value& value2=*i.next().value;
-			debug_printf(sapi_info, 
-				"%*s%s"
-				" \"%s\" \"%s\"", 
-				level*4, "", opcode_name[opcode],
-				debug_value_to_cstr(value1), debug_value_to_cstr(value2));
+			debug_printf(sapi_info, "%*s%s \"%s\" \"%s\"", level*4, "", opcode_name[opcode], debug_value_to_cstr(value1), debug_value_to_cstr(value2));
 			continue;
 		}
 #endif
@@ -763,16 +759,16 @@ void Request::execute(ArrayOperation& ops) {
 				break;
 			}
 
-#define METHOD_FRAME_ACTION(action)													\
-		if(local_ops){																\
-			size_t first = stack.top_index();										\
-			execute(*local_ops);													\
-			frame.store_params((Value**)stack.ptr(first), stack.top_index()-first);	\
-			action;																	\
-			stack.set_top_index(first);												\
-		} else {																	\
-			frame.empty_params();													\
-			action;																	\
+#define METHOD_FRAME_ACTION(action)											\
+		if(local_ops){												\
+			size_t first = stack.top_index();								\
+			execute(*local_ops);										\
+			frame.store_params((Value**)stack.ptr(first), stack.top_index()-first);				\
+			action;												\
+			stack.set_top_index(first);									\
+		} else {												\
+			frame.empty_params();										\
+			action;												\
 		}
 
 		case OP::OP_CALL:
@@ -787,14 +783,9 @@ void Request::execute(ArrayOperation& ops) {
 				Junction* junction=value.get_junction();
 				if(!junction) {
 					if(value.is("void"))
-						throw Exception(PARSER_RUNTIME,
-							0,
-							"undefined method");
+						throw Exception(PARSER_RUNTIME, 0, "undefined method");
 					else
-						throw Exception(PARSER_RUNTIME,
-							0,
-							"is '%s', not a method or junction, can not call it",
-								value.type());
+						throw Exception(PARSER_RUNTIME, 0, "is '%s', not a method or junction, can not call it", value.type());
 				}
 
 				Value *result;
@@ -812,9 +803,7 @@ void Request::execute(ArrayOperation& ops) {
 					return;
 				if(get_interrupted()) {
 					set_interrupted(false);
-					throw Exception("parser.interrupted",
-						0,
-						"execution stopped");
+					throw Exception("parser.interrupted", 0, "execution stopped");
 				}
 				break;
 			}
@@ -831,14 +820,9 @@ void Request::execute(ArrayOperation& ops) {
 				Junction* junction=value.get_junction();
 				if(!junction) {
 					if(value.is("void"))
-						throw Exception(PARSER_RUNTIME,
-							0,
-							"undefined method");
+						throw Exception(PARSER_RUNTIME, 0, "undefined method");
 					else
-						throw Exception(PARSER_RUNTIME,
-							0,
-							"is '%s', not a method or junction, can not call it",
-							value.type());
+						throw Exception(PARSER_RUNTIME, 0, "is '%s', not a method or junction, can not call it", value.type());
 				}
 
 #ifdef OPTIMIZE_CALL
@@ -876,9 +860,7 @@ void Request::execute(ArrayOperation& ops) {
 					return;
 				if(get_interrupted()) {
 					set_interrupted(false);
-					throw Exception("parser.interrupted",
-						0,
-						"execution stopped");
+					throw Exception("parser.interrupted", 0, "execution stopped");
 				}
 				break;
 			}
@@ -1012,9 +994,7 @@ void Request::execute(ArrayOperation& ops) {
 
 				if(b_double == 0) {
 					//const String* problem_source=b.as_string();
-					throw Exception("number.zerodivision",
-						0, //problem_source,
-						"Division by zero");
+					throw Exception("number.zerodivision", 0, "Division by zero");
 				}
 
 				Value& value=*new VDouble(a_double / b_double);
@@ -1030,9 +1010,7 @@ void Request::execute(ArrayOperation& ops) {
 
 				if(b_double == 0) {
 					//const String* problem_source=b.as_string();
-					throw Exception("number.zerodivision",
-						0, //problem_source,
-						"Modulus by zero");
+					throw Exception("number.zerodivision", 0, "Modulus by zero");
 				}
 
 				Value& value=*new VDouble(fmod(a_double, b_double));
@@ -1048,9 +1026,7 @@ void Request::execute(ArrayOperation& ops) {
 
 				if(b_int == 0) {
 					//const String* problem_source=b.as_string();
-					throw Exception("number.zerodivision",
-						0, //problem_source,
-						"Division by zero");
+					throw Exception("number.zerodivision", 0, "Division by zero");
 				}
 
 				Value& value=*new VInt(a_int / b_int);
@@ -1237,9 +1213,7 @@ void Request::execute(ArrayOperation& ops) {
 			}
 
 		default:
-			throw Exception(0,
-				0,
-				"invalid opcode %d", opcode); 
+			throw Exception(0, 0, "invalid opcode %d", opcode); 
 		}
 	}
 	} catch(const Exception&) {
@@ -1251,13 +1225,13 @@ void Request::execute(ArrayOperation& ops) {
 }
 
 #define SAVE_CONTEXT								\
-	VMethodFrame *saved_method_frame=method_frame;	\
-	Value* saved_rcontext=rcontext;					\
+	VMethodFrame *saved_method_frame=method_frame;				\
+	Value* saved_rcontext=rcontext;						\
 	WContext *saved_wcontext=wcontext;
 
-#define RESTORE_CONTEXT					\
-	wcontext=saved_wcontext;			\
-	rcontext=saved_rcontext;			\
+#define RESTORE_CONTEXT								\
+	wcontext=saved_wcontext;						\
+	rcontext=saved_rcontext;						\
 	method_frame=saved_method_frame;
 
 
@@ -1274,9 +1248,7 @@ Value& Request::construct(VStateless_class &called_class, const Method &method){
 				"is not a constructor, system class '%s' can be constructed only implicitly", 
 					called_class.type());
 	} else
-		throw Exception(PARSER_RUNTIME,
-			0, //&frame.name(),
-				"method is static and can not be used as constructor");
+		throw Exception(PARSER_RUNTIME, 0, "method is static and can not be used as constructor");
 }
 
 void Request::op_call(VMethodFrame& frame){
@@ -1298,10 +1270,7 @@ void Request::op_call(VMethodFrame& frame){
 		} else // parser code, execute it
 			recoursion_checked_execute(*method.parser_code);
 	} else
-		throw Exception(PARSER_RUNTIME,
-			0,
-			"is not allowed to be called %s", 
-			call_type==Method::CT_STATIC?"statically":"dynamically");
+		throw Exception(PARSER_RUNTIME, 0, "is not allowed to be called %s", call_type==Method::CT_STATIC ? "statically" : "dynamically");
 
 	RESTORE_CONTEXT
 }
@@ -1324,10 +1293,7 @@ void Request::op_call_write(VMethodFrame& frame){
 		} else // parser code, execute it
 			recoursion_checked_execute(*method.parser_code);
 	} else
-		throw Exception(PARSER_RUNTIME,
-			0,
-			"is not allowed to be called %s", 
-			call_type==Method::CT_STATIC?"statically":"dynamically");
+		throw Exception(PARSER_RUNTIME, 0, "is not allowed to be called %s", call_type==Method::CT_STATIC ? "statically" : "dynamically");
 	
 	rcontext=saved_rcontext;
 	method_frame=saved_method_frame;
@@ -1357,9 +1323,7 @@ void Request::put_element(Value& ncontext, const String& name, Value* value) {
  			if(junction.auto_name){ 
 				// default setter
  				if(param_count!=2)
- 					throw Exception(PARSER_RUNTIME,
- 						0,
- 						"default setter method must have TWO parameters (has %d parameters)", param_count);
+ 					throw Exception(PARSER_RUNTIME, 0, "default setter method must have TWO parameters (has %d parameters)", param_count);
 
 				Value* params[2] = { new VString(*junction.auto_name), value };
 				frame.store_params(params, 2);
@@ -1369,9 +1333,7 @@ void Request::put_element(Value& ncontext, const String& name, Value* value) {
  			} else {
 				// setter
  				if(param_count!=1)
- 					throw Exception(PARSER_RUNTIME,
- 						0,
- 						"setter method must have ONE parameter (has %d parameters)", param_count);
+ 					throw Exception(PARSER_RUNTIME, 0, "setter method must have ONE parameter (has %d parameters)", param_count);
 
 				frame.store_params(&value, 1);
 				execute_method(frame);
@@ -1389,9 +1351,7 @@ Value& Request::process_getter(Junction& junction) {
 
 		if(param_count){
 			if(param_count>1)
-				throw Exception(PARSER_RUNTIME,
-					0,
-					"default getter method can't have more then 1 parameter (has %d parameters)", param_count);
+				throw Exception(PARSER_RUNTIME, 0, "default getter method can't have more then 1 parameter (has %d parameters)", param_count);
 			param=new VString(*junction.auto_name);
 			frame.store_params(&param, 1);
 		} // no need for else frame.empty_params()
@@ -1401,9 +1361,7 @@ Value& Request::process_getter(Junction& junction) {
 	} else {
 		// getter
 		if(param_count!=0)
-			throw Exception(PARSER_RUNTIME,
-				0,
-				"getter method must have no parameters (has %d parameters)", param_count);
+			throw Exception(PARSER_RUNTIME, 0, "getter method must have no parameters (has %d parameters)", param_count);
 		
 		// no need for frame.empty_params()
 		execute_method(frame);
@@ -1438,9 +1396,7 @@ Value& Request::process(Value& input_value, bool intercept_string) {
 			DEBUG_PRINT_STR("ja->\n")
 
 			if(!junction->method_frame)
-				throw Exception(PARSER_RUNTIME,
-					0,
-					"junction used outside of context");
+				throw Exception(PARSER_RUNTIME, 0, "junction used outside of context");
 
 			SAVE_CONTEXT
 
@@ -1499,9 +1455,7 @@ void Request::process_write(Value& input_value) {
 			DEBUG_PRINT_STR("ja->\n")
 
 			if(!junction->method_frame)
-				throw Exception(PARSER_RUNTIME,
-					0,
-					"junction used outside of context");
+				throw Exception(PARSER_RUNTIME, 0, "junction used outside of context");
 
 			SAVE_CONTEXT
 
@@ -1557,15 +1511,13 @@ void Request::execute_method(VMethodFrame& aframe) {
 	// initialize contexts
 	rcontext=wcontext=method_frame=&aframe;
 	
-	// execute!	
+	// execute!
 	recoursion_checked_execute(*aframe.method.parser_code);
 	
 	RESTORE_CONTEXT
 }
 
-const String* Request::execute_method(Value& aself, 
-					const Method& method, Value* optional_param,
-					bool do_return_string) {
+const String* Request::execute_method(Value& aself, const Method& method, Value* optional_param, bool do_return_string) {
 
 	VMethodFrame local_frame(method, method_frame/*caller*/, aself);
 
@@ -1585,10 +1537,7 @@ const String* Request::execute_method(Value& aself,
 }
 
 Request::Execute_nonvirtual_method_result 
-Request::execute_nonvirtual_method(VStateless_class& aclass, 
-					const String& method_name,
-					VString* optional_param,
-					bool do_return_string) {
+Request::execute_nonvirtual_method(VStateless_class& aclass, const String& method_name, VString* optional_param, bool do_return_string) {
 	Execute_nonvirtual_method_result result;
 	result.method=aclass.get_method(method_name);
 	if(result.method)
@@ -1596,8 +1545,7 @@ Request::execute_nonvirtual_method(VStateless_class& aclass,
 	return result;
 }
 
-const String* Request::execute_virtual_method(Value& aself, 
-					const String& method_name) {
+const String* Request::execute_virtual_method(Value& aself, const String& method_name) {
 	if(Value* value=aself.get_element(method_name))
 		if(Junction* junction=value->get_junction())
 			if(const Method *method=junction->method) 
