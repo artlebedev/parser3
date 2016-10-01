@@ -10,7 +10,7 @@
 #include "pa_vbool.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.59 2016/09/27 22:01:19 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.60 2016/10/01 18:50:46 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -393,7 +393,7 @@ static void _mixin(Request& r, MethodParams& params) {
 	const String *name=0;
 	bool copy_methods=true;
 	bool copy_fields=true;
-	bool overwrite=true;
+	bool overwrite=false;
 
 	if(params.count()>1)
 		if(HashStringValue* options=params.as_hash(1, "mixin options")) {
