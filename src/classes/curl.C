@@ -17,7 +17,7 @@
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.42 2016/09/21 15:35:10 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.43 2016/10/03 12:12:56 moko Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -276,6 +276,7 @@ public:
 		CURL_OPT(CURL_INT, SSL_VERIFYHOST);
 		CURL_OPT(CURL_STRING, SSL_CIPHER_LIST);
 		CURL_OPT(CURL_INT, SSL_SESSIONID_CACHE);
+		CURL_OPT(CURL_INT, SSLVERSION);
 
 		PARSER_OPT(PARSER_LIBRARY, "library");
 		PARSER_OPT(PARSER_NAME, "name");
