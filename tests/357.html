@@ -1,0 +1,6 @@
+@main[]
+^try-catch{ ^for[1](1;100){a} }
+^try-catch{ ^recoursion(100) }
+
+@recoursion[i]
+a^if($i>0){^recoursion($i-1)}

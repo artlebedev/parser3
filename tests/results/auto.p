@@ -9,18 +9,26 @@ $CLASS_PATH[^table::create{path
 }]
 
 $NO_PROTOTYPE[
-    $.[336.html][yes]
-    $.[225.html][yes]
-    $.[051.html][yes]
+	$.[336.html][yes]
+	$.[225.html][yes]
+	$.[051.html][yes]
 ]
 
 ^if(def $NO_PROTOTYPE.[$env:PATH_TRANSLATED]){
 	$OBJECT-PROTOTYPE(false)
 }
 
+^if($env:PATH_TRANSLATED eq '357.html'){
+	$LOOP_LIMIT(50)
+	$RECOURSION_LIMIT(50)
+}
+^if($env:PATH_TRANSLATED eq '358.html'){
+	$LOOP_LIMIT(0)
+	$RECOURSION_LIMIT(0)
+}
+
 
 @auto[]
-
 
 
 @try-catch[jCode]
@@ -32,21 +40,17 @@ $NO_PROTOTYPE[
 }
 
 
-
 @1251[]
 ^from-1251[]
 ^to-1251[]
-
 
 
 @from-1251[]
 $request:charset[windows-1251]
 
 
-
 @to-1251[]
 $response:charset[windows-1251]
-
 
 
 # backward
