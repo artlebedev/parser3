@@ -9,11 +9,9 @@
 #include "pa_vstring.h"
 #include "pa_vhash.h"
 #include "pa_vvoid.h"
+#include "pa_request.h"
 
-volatile const char * IDENT_PA_VTABLE_C="$Id: pa_vtable.C,v 1.45 2016/05/24 17:48:38 moko Exp $" IDENT_PA_VTABLE_H;
-
-// limits
-#define MAX_COLUMNS 20000 // equal to MAX_LOOPS
+volatile const char * IDENT_PA_VTABLE_C="$Id: pa_vtable.C,v 1.46 2016/10/03 20:34:48 moko Exp $" IDENT_PA_VTABLE_H;
 
 #ifndef DOXYGEN
 struct Record_info {
@@ -107,7 +105,7 @@ const VJunction* VTable::put_element(const String& aname, Value* avalue) {
 		int index=ftable->column_name2index(aname, false);
 		if(index>=0) // column aname|number valid
 		{
-			if(index > MAX_COLUMNS)
+			if(index > pa_loop_limit)
 				throw Exception(PARSER_RUNTIME, &aname, "too big column number");
 			if(!avalue->is_string())
 				throw Exception(PARSER_RUNTIME, 0, "column value must be string");

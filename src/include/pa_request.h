@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.228 2016/09/29 18:55:43 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.229 2016/10/03 20:34:48 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -21,7 +21,6 @@
 
 // consts
 
-const uint ANTI_ENDLESS_EXECUTE_RECOURSION=1000;
 const size_t pseudo_file_no__process=1;
 
 // forwards
@@ -35,6 +34,9 @@ class VResponse;
 class VCookie;
 class VStateless_class;
 class VConsole;
+
+extern int pa_execute_recoursion_limit;
+extern int pa_loop_limit;
 
 /// Main workhorse.
 class Request: public PA_Object {
@@ -120,9 +122,7 @@ private:
 	/// list of all used files, Operation::file_no = index to it
 	Array<String::Body> file_list;
 
-	/**	endless execute(execute(... preventing counter 
-		@see ANTI_ENDLESS_EXECUTE_RECOURSION
-	*/
+	/// endless execute(execute(... preventing counter
 	uint anti_endless_execute_recoursion;
 
 	///@}
@@ -201,9 +201,8 @@ public:
 	Value& construct(VStateless_class &class_value, const Method &method);
 
 	/// execute ops with anti-recoursion check
-	void recoursion_checked_execute(/*const String& name, */ArrayOperation& ops) {
-		// anti_endless_execute_recoursion
-		if(++anti_endless_execute_recoursion==ANTI_ENDLESS_EXECUTE_RECOURSION) {
+	void recoursion_checked_execute(ArrayOperation& ops) {
+		if(++anti_endless_execute_recoursion==pa_execute_recoursion_limit) {
 			anti_endless_execute_recoursion=0; // give @exception a chance
 			throw Exception(PARSER_RUNTIME, 0, "call canceled - endless recursion detected");
 		}

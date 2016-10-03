@@ -18,11 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.234 2016/09/29 18:49:42 moko Exp $";
-
-// limits
-
-#define MAX_LOOPS 20000
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.235 2016/10/03 20:34:48 moko Exp $";
 
 // defines
 
@@ -244,10 +240,8 @@ static void _while(Request& r, MethodParams& params) {
 	if(delim_maybe_code){ // delimiter set
 		bool need_delim=false;
 		while(true) {
-			if(++endless_loop_count>=MAX_LOOPS) // endless loop?
-				throw Exception(PARSER_RUNTIME,
-					0,
-					"endless loop detected");
+			if(++endless_loop_count>=pa_loop_limit) // endless loop?
+				throw Exception(PARSER_RUNTIME, 0, "endless loop detected");
 
 			if(!r.process_to_value(vcondition, false/*don't intercept string*/).as_bool())
 				break;
@@ -269,10 +263,8 @@ static void _while(Request& r, MethodParams& params) {
 		}
 	} else {
 		while(true) {
-			if(++endless_loop_count>=MAX_LOOPS) // endless loop?
-				throw Exception(PARSER_RUNTIME,
-					0,
-					"endless loop detected");
+			if(++endless_loop_count>=pa_loop_limit) // endless loop?
+				throw Exception(PARSER_RUNTIME, 0, "endless loop detected");
 
 			if(!r.process_to_value(vcondition, false/*don't intercept string*/).as_bool())
 				break;
@@ -338,10 +330,8 @@ static void _for(Request& r, MethodParams& params) {
 	Value& body_code=params.as_junction(3, "body must be code");
 	Value* delim_maybe_code=params.count()>4?&params[4]:0;
 
-	if(to-from>=MAX_LOOPS) // too long loop?
-		throw Exception(PARSER_RUNTIME,
-			0,
-			"endless loop detected");
+	if(to-from>=pa_loop_limit) // too long loop?
+		throw Exception(PARSER_RUNTIME, 0, "endless loop detected");
 
 	VInt* vint=new VInt(0);
 
