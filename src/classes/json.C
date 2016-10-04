@@ -18,7 +18,7 @@
 #include "pa_vxdoc.h"
 #endif
 
-volatile const char * IDENT_JSON_C="$Id: json.C,v 1.45 2016/09/29 18:49:42 moko Exp $";
+volatile const char * IDENT_JSON_C="$Id: json.C,v 1.46 2016/10/04 13:23:46 moko Exp $";
 
 // class
 
@@ -297,15 +297,15 @@ static void _parse(Request& r, MethodParams& params) {
 		if(HashStringValue* options=params.as_hash(1)) {
 			int valid_options=0;
 			if(Value* value=options->get("depth")) {
-				config.max_nesting=r.process_to_value(*value).as_int();
+				config.max_nesting=r.process(*value).as_int();
 				valid_options++;
 			}
 			if(Value* value=options->get("double")) {
-				json.handle_double=r.process_to_value(*value).as_bool();
+				json.handle_double=r.process(*value).as_bool();
 				valid_options++;
 			}
 			if(Value* value=options->get("int")) {
-				json.handle_int=r.process_to_value(*value).as_bool();
+				json.handle_int=r.process(*value).as_bool();
 				valid_options++;
 			}
 			if(Value* value=options->get("distinct")) {
@@ -472,7 +472,7 @@ static void _string(Request& r, MethodParams& params) {
 				String::Body key=i.key();
 				Value* value=i.value();
 				if(key == "skip-unknown"){
-					json.skip_unknown=r.process_to_value(*value).as_bool();
+					json.skip_unknown=r.process(*value).as_bool();
 					valid_options++;
 				} else if(key == "date" && value->is_string()){
 					const String& svalue=value->as_string();
@@ -483,7 +483,7 @@ static void _string(Request& r, MethodParams& params) {
 					if(value->is_string()){
 						json.indent=value->as_string().cstr();
 						json.json_string_recoursion=strlen(json.indent);
-					} else json.indent=r.process_to_value(*value).as_bool() ? "" : NULL;
+					} else json.indent=r.process(*value).as_bool() ? "" : NULL;
 					valid_options++;
 				} else if(key == "table" && value->is_string()){
 					const String& svalue=value->as_string();
@@ -532,7 +532,7 @@ static void _string(Request& r, MethodParams& params) {
 				json.methods=methods;
 		}
 
-	const String& result_string=value_json_string(String::Body(), r.process_to_value(params[0]), json);
+	const String& result_string=value_json_string(String::Body(), r.process(params[0]), json);
 	String::Body result_body=result_string.cstr_to_string_body_untaint(String::L_JSON, r.connection(false), &r.charsets);
 	r.write_pass_lang(*new String(result_body, String::L_AS_IS));
  }

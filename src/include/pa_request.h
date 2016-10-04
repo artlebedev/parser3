@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.229 2016/10/03 20:34:48 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.230 2016/10/04 13:23:46 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -228,9 +228,6 @@ public:
 	//@{ convinient helpers
 	const String& process_to_string(Value& input_value) {
 		return process(input_value, true/*intercept_string*/).as_string();
-	}
-	Value& process_to_value(Value& input_value, bool intercept_string=true) {
-		return process(input_value, intercept_string);
 	}
 	//@}
 	const String* get_method_filename(const Method* method); // execute.C

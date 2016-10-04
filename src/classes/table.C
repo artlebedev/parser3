@@ -22,7 +22,7 @@
 #define USE_STRINGSTREAM
 #endif
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.334 2016/09/29 18:49:43 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.335 2016/10/04 13:23:46 moko Exp $";
 
 // class
 
@@ -74,15 +74,15 @@ static Table::Action_options get_action_options(Request& r, MethodParams& params
 			else
 				throw Exception(PARSER_RUNTIME, &soffset, "must be 'cur' string or expression");
 		} else 
-			result.offset=r.process_to_value(*voffset).as_int();
+			result.offset=r.process(*voffset).as_int();
 	}
 	if(Value* vlimit=options->get(sql_limit_name)) {
 		valid_options++;
-		result.limit=r.process_to_value(*vlimit).as_int();
+		result.limit=r.process(*vlimit).as_int();
 	}
 	if(Value *vreverse=(Value *)options->get(table_reverse_name)) { 
 		valid_options++; 
-		result.reverse=r.process_to_value(*vreverse).as_bool(); 
+		result.reverse=r.process(*vreverse).as_bool(); 
 		if(result.reverse && !defined_offset) 
 			result.offset=source.count()-1; 
 	} 
@@ -938,7 +938,7 @@ static void _hash(Request& r, MethodParams& params) {
 					int valid_options=0;
 					if(Value* vdistinct_code=options->get(sql_distinct_name)) { // $.distinct ?
 						valid_options++;
-						distinct=get_distinct(r.process_to_value(*vdistinct_code), value_type);
+						distinct=get_distinct(r.process(*vdistinct_code), value_type);
 					}
 					if(Value* vvalue_type_code=options->get(sql_value_type_name)) { // $.type ?
 						if(value_type==C_TABLE) // $.distinct[tables] already was specified
@@ -946,7 +946,7 @@ static void _hash(Request& r, MethodParams& params) {
 						if(value_type==C_CODE)
 							throw Exception(PARSER_RUNTIME, 0, "you can't specify $.type[] if value is code");
 						valid_options++;
-						value_type=get_value_type(r.process_to_value(*vvalue_type_code));
+						value_type=get_value_type(r.process(*vvalue_type_code));
 					}
 
 					if(valid_options!=options->count())
@@ -1062,7 +1062,7 @@ static void _sort(Request& r, MethodParams& params) {
 		old_table.set_current(i);
 		// calculate key value
 		seq[i].row=old_table[i];
-		Value& value=r.process_to_value(key_maker);
+		Value& value=r.process(key_maker);
 		if(i==0) // determining key values type by first one
 			key_values_are_strings=value.is_string();
 
@@ -1100,7 +1100,7 @@ struct Expression_is_true_info {
 #endif
 
 static bool expression_is_true(Table&, Expression_is_true_info* info) {
-	return info->r->process_to_value(*info->expression_code).as_bool();
+	return info->r->process(*info->expression_code).as_bool();
 }
 
 static bool _locate_expression(Table& table, Request& r, MethodParams& params) {
@@ -1392,11 +1392,11 @@ static void _sql(Request& r, MethodParams& params) {
 			}
 			if(Value* vlimit=options->get(sql_limit_name)) {
 				valid_options++;
-				limit=(ulong)r.process_to_value(*vlimit).as_double();
+				limit=(ulong)r.process(*vlimit).as_double();
 			}
 			if(Value* voffset=options->get(sql_offset_name)) {
 				valid_options++;
-				offset=(ulong)r.process_to_value(*voffset).as_double();
+				offset=(ulong)r.process(*voffset).as_double();
 			}
 			if(valid_options!=options->count())
 				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
@@ -1468,15 +1468,15 @@ static void _select(Request& r, MethodParams& params) {
 			int valid_options=0;
 			if(Value* vlimit=options->get(sql_limit_name)) {
 				valid_options++;
-				limit=r.process_to_value(*vlimit).as_int();
+				limit=r.process(*vlimit).as_int();
 			}
 			if(Value* voffset=options->get(sql_offset_name)) {
 				valid_options++;
-				offset=r.process_to_value(*voffset).as_int();
+				offset=r.process(*voffset).as_int();
 			}
 			if(Value* vreverse=options->get(table_reverse_name)) {
 				valid_options++;
-				reverse=r.process_to_value(*vreverse).as_bool();
+				reverse=r.process(*vreverse).as_bool();
 			}
 			if(valid_options!=options->count())
 				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
@@ -1495,7 +1495,7 @@ static void _select(Request& r, MethodParams& params) {
 			for(size_t row=size-1; result_table.count() < (size_t)limit; row--) {
 				source_table.set_current(row);
 
-				bool condition=r.process_to_value(vcondition, false/*don't intercept string*/).as_bool();
+				bool condition=r.process(vcondition, false/*don't intercept string*/).as_bool();
 
 				if(condition && ++appended > (size_t)offset) // ...condition is true, adding to the result
 					result_table+=source_table[row];
@@ -1505,7 +1505,7 @@ static void _select(Request& r, MethodParams& params) {
 			for(size_t row=0; row < size && result_table.count() < (size_t)limit; row++) {
 				source_table.set_current(row);
 
-				bool condition=r.process_to_value(vcondition, false/*don't intercept string*/).as_bool();
+				bool condition=r.process(vcondition, false/*don't intercept string*/).as_bool();
 
 				if(condition && ++appended > (size_t)offset) // ...condition is true, adding to the result
 					result_table+=source_table[row];

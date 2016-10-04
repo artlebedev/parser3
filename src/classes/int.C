@@ -13,7 +13,7 @@
 #include "pa_vint.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_INT_C="$Id: int.C,v 1.65 2016/03/31 21:46:20 moko Exp $" IDENT_PA_VINT_H;
+volatile const char * IDENT_INT_C="$Id: int.C,v 1.66 2016/10/04 13:23:45 moko Exp $" IDENT_PA_VINT_H;
 
 // externs
 
@@ -78,7 +78,7 @@ static void _sql(Request& r, MethodParams& params) {
 		val=string->as_int();
 	else
 		if(default_code)
-			val=r.process_to_value(*default_code).as_int();
+			val=r.process(*default_code).as_int();
 		else {
 			throw Exception(PARSER_RUNTIME,
 				0,

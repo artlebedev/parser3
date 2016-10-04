@@ -14,7 +14,7 @@
 #include "ws2tcpip.h"
 #endif
 
-volatile const char * IDENT_INET_C="$Id: inet.C,v 1.12 2016/03/31 21:46:20 moko Exp $";
+volatile const char * IDENT_INET_C="$Id: inet.C,v 1.13 2016/10/04 13:23:45 moko Exp $";
 
 class MInet: public Methoded {
 public:
@@ -102,7 +102,7 @@ static void _ip2name(Request& r, MethodParams& params){
 		if(HashStringValue* options=params.as_hash(1)){
 			int valid_options=0;
 			if(Value* value=options->get("ipv")){
-				hints.ai_family=ipv_format(r.process_to_value(*value).as_string());
+				hints.ai_family=ipv_format(r.process(*value).as_string());
 				valid_options++;
 			}
 			if(valid_options!=options->count())
@@ -144,11 +144,11 @@ static void _name2ip(Request& r, MethodParams& params){
 		if(HashStringValue* options=params.as_hash(1)){
 			int valid_options=0;
 			if(Value* value=options->get("ipv")){
-				hints.ai_family=ipv_format(r.process_to_value(*value).as_string());
+				hints.ai_family=ipv_format(r.process(*value).as_string());
 				valid_options++;
 			}
 			if(Value* value=options->get("table")){
-				if(r.process_to_value(*value).as_bool()){
+				if(r.process(*value).as_bool()){
 					Table::columns_type columns(new ArrayString);
 					static const String sip("ip"), sversion("version");
 					*columns+=&sip; *columns+=&sversion;

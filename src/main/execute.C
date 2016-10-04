@@ -21,7 +21,7 @@
 #include "pa_vimage.h"
 #include "pa_wwrapper.h"
 
-volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.387 2016/10/04 12:48:59 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
+volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.388 2016/10/04 13:23:46 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
 
 //#define DEBUG_EXECUTE
 
@@ -1301,13 +1301,13 @@ void Request::op_call_write(VMethodFrame& frame){
 
 Value& Request::get_element(Value& ncontext, const String& name) {
 	Value* value=ncontext.get_element(name);
-	return *(value ? &process_to_value(*value) : VVoid::get());
+	return *(value ? &process(*value) : VVoid::get());
 }
 
 #ifdef FEATURE_GET_ELEMENT4CALL
 Value& Request::get_element4call(Value& ncontext, const String& name) {
 	Value* value=ncontext.get_element4call(name);
-	return *(value ? &process_to_value(*value) : VVoid::get());
+	return *(value ? &process(*value) : VVoid::get());
 }
 #endif
 

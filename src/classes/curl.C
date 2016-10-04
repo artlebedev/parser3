@@ -17,7 +17,7 @@
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.43 2016/10/03 12:12:56 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.44 2016/10/04 13:23:45 moko Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -410,7 +410,7 @@ static void curl_setopt(HashStringValue::key_type key, HashStringValue::value_ty
 		throw Exception("curl", 0, "called with invalid option '%s'", key.cstr());
 
 	CURLcode res = CURLE_OK;
-	Value &v=r.process_to_value(*value);
+	Value &v=r.process(*value);
 
 	switch (opt->type){
 		case CurlOption::CURL_STRING:{
@@ -533,7 +533,7 @@ static void _curl_options(Request& r, MethodParams& params){
 	if(HashStringValue* options_hash=params.as_hash(0)){
 		if(Value* value=options_hash->get("charset")){
 			// charset should be handled first as params may require transcode
-			Value &v=r.process_to_value(*value);
+			Value &v=r.process(*value);
 			options().charset=&pa_charsets.get(v.as_string());
 		}
 		options_hash->for_each<Request&>(curl_setopt, r);

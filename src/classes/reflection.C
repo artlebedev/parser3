@@ -10,7 +10,7 @@
 #include "pa_vbool.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.60 2016/10/01 18:50:46 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.61 2016/10/04 13:23:46 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -95,7 +95,7 @@ static void _create(Request& r, MethodParams& params) {
 	Value* v[100];
 	if(nparams>0){
 		for(int i=0; i<nparams; i++)
-			v[i]=&r.process_to_value(params[i+2]);
+			v[i]=&r.process(params[i+2]);
 		frame.store_params((Value**)&v, nparams);
 	} else {
 		frame.empty_params();
@@ -406,15 +406,15 @@ static void _mixin(Request& r, MethodParams& params) {
 				valid_options++;
 			}
 			if(Value* vmethods=options->get("methods")) {
-				copy_methods=r.process_to_value(*vmethods).as_bool();
+				copy_methods=r.process(*vmethods).as_bool();
 				valid_options++;
 			}
 			if(Value* vfields=options->get("fields")) {
-				copy_fields=r.process_to_value(*vfields).as_bool();
+				copy_fields=r.process(*vfields).as_bool();
 				valid_options++;
 			}
 			if(Value* voverwrite=options->get("overwrite")) {
-				overwrite=r.process_to_value(*voverwrite).as_bool();
+				overwrite=r.process(*voverwrite).as_bool();
 				valid_options++;
 			}
 			if(valid_options!=options->count())

@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.132 2016/09/29 18:49:42 moko Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.133 2016/10/04 13:23:45 moko Exp $";
 
 // class
 
@@ -309,19 +309,19 @@ static void _sql(Request& r, MethodParams& params) {
 			}
 			if(Value* vlimit=options->get(sql_limit_name)) {
 				valid_options++;
-				limit=(ulong)r.process_to_value(*vlimit).as_double();
+				limit=(ulong)r.process(*vlimit).as_double();
 			}
 			if(Value* voffset=options->get(sql_offset_name)) {
 				valid_options++;
-				offset=(ulong)r.process_to_value(*voffset).as_double();
+				offset=(ulong)r.process(*voffset).as_double();
 			}
 			if(Value* vdistinct=options->get(sql_distinct_name)) {
 				valid_options++;
-				distinct=r.process_to_value(*vdistinct).as_bool();
+				distinct=r.process(*vdistinct).as_bool();
 			}
 			if(Value* vvalue_type=options->get(sql_value_type_name)) {
 				valid_options++;
-				value_type=get_value_type(r.process_to_value(*vvalue_type));
+				value_type=get_value_type(r.process(*vvalue_type));
 			}
 			if(valid_options!=options->count())
 				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
@@ -517,7 +517,7 @@ static void _sort(Request& r, MethodParams& params){
 		if(value_var)
 			r.put_element(*context, *value_var, i.value());
 	
-		Value& value=r.process_to_value(key_maker);
+		Value& value=r.process(key_maker);
 		if(pos==0) // determining key values type by first one
 			key_values_are_strings=value.is_string();
 
@@ -558,7 +558,7 @@ static void _at(Request& r, MethodParams& params) {
 
 	// misha@
 	// I do not like that type is checked before whence.
-	// But I do not like the idea to move it after whence (where process_to_value can be called) even more.
+	// But I do not like the idea to move it after whence (where process can be called) even more.
 	AtResultType result_type=AtResultTypeValue;
 	if(params.count() > 1) {
 		const String& stype=params.as_string(1, "type must be string");
@@ -580,7 +580,7 @@ static void _at(Request& r, MethodParams& params) {
 				&swhence,
 				"whence must be 'first', 'last' or expression");
 	} else {
-		pos=r.process_to_value(vwhence).as_int();
+		pos=r.process(vwhence).as_int();
 		if(pos < 0)
 			pos+=count;
 	}

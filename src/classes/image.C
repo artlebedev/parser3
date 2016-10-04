@@ -25,7 +25,7 @@
 #include "pa_vdate.h"
 #include "pa_table.h"
 
-volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.152 2016/07/21 18:30:10 moko Exp $";
+volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.153 2016/10/04 13:23:45 moko Exp $";
 
 // defines
 
@@ -810,7 +810,7 @@ static void _html(Request& r, MethodParams& params) {
 
 	if(params.count()) {
 		// for backward compatibility: someday was ^html{}
-		Value& vattribs=r.process_to_value(params[0], false/*don't intercept string*/);
+		Value& vattribs=r.process(params[0], false/*don't intercept string*/);
 		if(!vattribs.is_string()) { // allow empty
 			if((attribs=vattribs.get_hash())) {
 				Attrib_info info={&tag, 0};
@@ -1133,17 +1133,17 @@ static void _font(Request& r, MethodParams& params) {
 			int valid_options=0;
 			if(Value* vspacebar_width=options->get(spacebar_width_name)){
 				valid_options++;
-				spacebar_width=r.process_to_value(*vspacebar_width).as_int();
+				spacebar_width=r.process(*vspacebar_width).as_int();
 			}
 			if(Value* vmonospace_width=options->get(monospace_width_name)){
 				valid_options++;
-				monospace_width=r.process_to_value(*vmonospace_width).as_int();
+				monospace_width=r.process(*vmonospace_width).as_int();
 				if(!monospace_width)
 					monospace_width=image->SX();
 			}
 			if(Value* vletter_spacing=options->get(letter_spacing_name)){
 				valid_options++;
-				letter_spacing=r.process_to_value(*vletter_spacing).as_int();
+				letter_spacing=r.process(*vletter_spacing).as_int();
 			}
 			if(valid_options!=options->count())
 				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);

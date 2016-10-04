@@ -20,7 +20,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.229 2016/09/21 15:35:10 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.230 2016/10/04 13:23:46 moko Exp $";
 
 // class
 
@@ -535,11 +535,11 @@ const String* sql_result_string(Request& r, MethodParams& params, Value*& defaul
 			}
 			if(Value* vlimit=options->get(sql_limit_name)) {
 				valid_options++;
-				limit=(ulong)r.process_to_value(*vlimit).as_double();
+				limit=(ulong)r.process(*vlimit).as_double();
 			}
 			if(Value* voffset=options->get(sql_offset_name)) {
 				valid_options++;
-				offset=(ulong)r.process_to_value(*voffset).as_double();
+				offset=(ulong)r.process(*voffset).as_double();
 			}
 			if((default_code=options->get(sql_default_name))) {
 				valid_options++;
@@ -702,7 +702,7 @@ static void _base64(Request& r, MethodParams& params) {
 			if(HashStringValue* options=params.as_hash(1)) {
 				int valid_options=0;
 				if(Value* vstrict=options->get(BASE64_STRICT_OPTION_NAME)) {
-					strict=r.process_to_value(*vstrict).as_bool();
+					strict=r.process(*vstrict).as_bool();
 					valid_options++;
 				}
 				if(valid_options!=options->count())

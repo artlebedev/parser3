@@ -25,7 +25,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.251 2016/09/21 15:35:10 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.252 2016/10/04 13:23:45 moko Exp $";
 
 // defines
 
@@ -153,11 +153,11 @@ static void _delete(Request& r, MethodParams& params) {
 		if(HashStringValue* options=params.as_hash(1)){
 			int valid_options=0;
 			if(Value* vkeep_empty_dirs=options->get(KEEP_EMPTY_DIRS_NAME)){
-				keep_empty_dirs=r.process_to_value(*vkeep_empty_dirs).as_bool();
+				keep_empty_dirs=r.process(*vkeep_empty_dirs).as_bool();
 				valid_options++;
 			}
 			if(Value* vsuppress_exception=options->get(SUPPRESS_EXCEPTION_NAME)){
-				fail_on_problem=r.process_to_value(*vsuppress_exception).as_bool();
+				fail_on_problem=r.process(*vsuppress_exception).as_bool();
 				valid_options++;
 			}
 			if(valid_options != options->count())
@@ -177,7 +177,7 @@ static void _move(Request& r, MethodParams& params) {
 		if(HashStringValue* options=params.as_hash(2)){
 			int valid_options=0;
 			if(Value* vkeep_empty_dirs=options->get(KEEP_EMPTY_DIRS_NAME)){
-				keep_empty_dirs=r.process_to_value(*vkeep_empty_dirs).as_bool();
+				keep_empty_dirs=r.process(*vkeep_empty_dirs).as_bool();
 				valid_options++;
 			}
 			if(valid_options != options->count())
@@ -262,10 +262,10 @@ static void _load(Request& r, MethodParams& params) {
 	if(options){
 		options=new HashStringValue(*options);
 		if(Value *voffset=(Value *)options->get(sql_offset_name)){
-			offset=r.process_to_value(*voffset).as_int();
+			offset=r.process(*voffset).as_int();
 		}
 		if(Value *vlimit=(Value *)options->get(sql_limit_name)){
-			limit=r.process_to_value(*vlimit).as_int();
+			limit=r.process(*vlimit).as_int();
 		}
 		// no check on options count here, see file_read
 	}
@@ -690,7 +690,7 @@ static void _list(Request& r, MethodParams& params) {
 			if(HashStringValue* options=voption.get_hash()) {
 				int valid_options=0;
 				if(Value* vstat=options->get("stat")) {
-					stat=r.process_to_value(*vstat).as_bool();
+					stat=r.process(*vstat).as_bool();
 					valid_options++;
 				}
 				if(Value* value=options->get("filter")) {
@@ -1012,11 +1012,11 @@ static void _sql(Request& r, MethodParams& params) {
 			}
 			if(Value* vlimit=options->get(sql_limit_name)) {
 				valid_options++;
-				limit=(ulong)r.process_to_value(*vlimit).as_double();
+				limit=(ulong)r.process(*vlimit).as_double();
 			}
 			if(Value* voffset=options->get(sql_offset_name)) {
 				valid_options++;
-				offset=(ulong)r.process_to_value(*voffset).as_double();
+				offset=(ulong)r.process(*voffset).as_double();
 			}
 			if(valid_options!=options->count())
 				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
@@ -1072,7 +1072,7 @@ static void _base64(Request& r, MethodParams& params) {
 							valid_options++;
 						}
 						if(Value* vstrict=options->get(BASE64_STRICT_OPTION_NAME)) {
-							strict=r.process_to_value(*vstrict).as_bool();
+							strict=r.process(*vstrict).as_bool();
 							valid_options++;
 						}
 						if(valid_options!=options->count())

@@ -13,7 +13,7 @@
 #include "pa_vdate.h"
 #include "pa_vtable.h"
 
-volatile const char * IDENT_DATE_C="$Id: date.C,v 1.104 2016/07/22 16:53:46 moko Exp $" IDENT_PA_VDATE_H;
+volatile const char * IDENT_DATE_C="$Id: date.C,v 1.105 2016/10/04 13:23:45 moko Exp $" IDENT_PA_VDATE_H;
 
 // class
 
@@ -306,17 +306,17 @@ static void _iso_string(Request& r, MethodParams& params) {
 		if(HashStringValue* options=params.as_hash(0)){
 			int valid_options=0;
 			if(Value* vshow_ms=options->get("ms")){
-				if(r.process_to_value(*vshow_ms).as_bool())
+				if(r.process(*vshow_ms).as_bool())
 					format=VDate::iso_string_type(format|VDate::iso_string_ms);
 				valid_options++;
 			}
 			if(Value* vshow_colon=options->get("colon")){
-				if(!r.process_to_value(*vshow_colon).as_bool())
+				if(!r.process(*vshow_colon).as_bool())
 					format=VDate::iso_string_type(format|VDate::iso_string_no_colon);
 				valid_options++;
 			}
 			if(Value* vshow_z=options->get("z")){
-				if(!r.process_to_value(*vshow_z).as_bool())
+				if(!r.process(*vshow_z).as_bool())
 					format=VDate::iso_string_type(format|VDate::iso_string_no_z);
 				valid_options++;
 			}

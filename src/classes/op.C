@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.235 2016/10/03 20:34:48 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.236 2016/10/04 13:23:46 moko Exp $";
 
 // defines
 
@@ -192,7 +192,7 @@ static void _process(Request& r, MethodParams& params) {
 						line_no_alias_offset=value->as_int();
 					} else if(key == "replace") {
 						valid_options++;
-						allow_class_replace=r.process_to_value(*value).as_bool();
+						allow_class_replace=r.process(*value).as_bool();
 					}
 				}
 
@@ -243,7 +243,7 @@ static void _while(Request& r, MethodParams& params) {
 			if(++endless_loop_count>=pa_loop_limit) // endless loop?
 				throw Exception(PARSER_RUNTIME, 0, "endless loop detected");
 
-			if(!r.process_to_value(vcondition, false/*don't intercept string*/).as_bool())
+			if(!r.process(vcondition, false/*don't intercept string*/).as_bool())
 				break;
 
 			Value& sv_processed=r.process(body_code);
@@ -266,7 +266,7 @@ static void _while(Request& r, MethodParams& params) {
 			if(++endless_loop_count>=pa_loop_limit) // endless loop?
 				throw Exception(PARSER_RUNTIME, 0, "endless loop detected");
 
-			if(!r.process_to_value(vcondition, false/*don't intercept string*/).as_bool())
+			if(!r.process(vcondition, false/*don't intercept string*/).as_bool())
 				break;
 
 			r.process_write(body_code);
@@ -293,7 +293,7 @@ static void _use(Request& r, MethodParams& params) {
 
 				if(key == "replace") {
 					valid_options++;
-					allow_class_replace=r.process_to_value(*value).as_bool();
+					allow_class_replace=r.process(*value).as_bool();
 				}
 
 			if(valid_options!=options->count())
@@ -374,7 +374,7 @@ static void _for(Request& r, MethodParams& params) {
 static void _eval(Request& r, MethodParams& params) {
 	Value& expr=params.as_junction(0, "need expression");
 	// evaluate expresion
-	Value& value_result=r.process_to_value(expr, 
+	Value& value_result=r.process(expr, 
 		false/*don't intercept string*/).as_expr_result();
 	if(params.count()>1) {
 		const String& fmt=params.as_string(1, "fmt must be string").trim();
@@ -444,7 +444,7 @@ public:
 };
 #endif
 static void _switch(Request& r, MethodParams& params) {
-	Switch_data* data=new Switch_data(r, r.process_to_value(params[0]));
+	Switch_data* data=new Switch_data(r, r.process(params[0]));
 	Temp_hash_value<HashString<void*>, void*> switch_data_setter(&r.classes_conf, switch_data_name, data);
 
 	Value& cases_code=params.as_junction(1, "switch cases must be code");
@@ -477,7 +477,7 @@ static void _case(Request& r, MethodParams& params) {
 #endif
 	
 	for(int i=0; i<count; i++){
-		Value& value=r.process_to_value(params[i]);
+		Value& value=r.process(params[i]);
 
 		if(value.is_string() && value.as_string() == CASE_DEFAULT_VALUE){
 			data->_default=code;
