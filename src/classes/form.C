@@ -11,7 +11,7 @@
 #include "pa_request.h"
 #include "pa_vform.h"
 
-volatile const char * IDENT_FORM_C="$Id: form.C,v 1.47 2016/03/31 21:46:19 moko Exp $";
+volatile const char * IDENT_FORM_C="$Id: form.C,v 1.48 2016/10/04 12:51:14 moko Exp $";
 
 /// $LIMITS.max_post_size default 10M
 const size_t MAX_POST_SIZE_DEFAULT=10*0x400*0x400;
@@ -53,22 +53,17 @@ void MForm::configure_admin(Request& r) {
 	Value* limits=r.main_class.get_element(limits_name);
 	if(r.request_info.can_have_body()){
 		// $limits.max_post_size default 10M
-		Value* element=limits?limits->get_element(max_post_size_name)
-			:0;
-		size_t value=element?(size_t)element->as_double():0;
-		size_t max_post_size=value?value:MAX_POST_SIZE_DEFAULT;
+		Value* element=limits ? limits->get_element(max_post_size_name) : 0;
+		size_t value=element ? (size_t)element->as_double() : 0;
+		size_t max_post_size=value ? value : MAX_POST_SIZE_DEFAULT;
 		
 		if(r.request_info.content_length>max_post_size)
-			throw Exception(PARSER_RUNTIME,
-				0,
-				"posted content_length(%u) > $" LIMITS_NAME "." MAX_POST_SIZE_NAME "(%u)",
-					r.request_info.content_length, max_post_size);
+			throw Exception(PARSER_RUNTIME, 0, "posted content_length(%u) > $" LIMITS_NAME "." MAX_POST_SIZE_NAME "(%u)", r.request_info.content_length, max_post_size);
 
 		// read POST data
 		if(r.request_info.content_length) {
 			char *post_data=new(PointerFreeGC) char[r.request_info.content_length+1/*terminating zero*/];
-			size_t post_size=SAPI::read_post(r.sapi_info, 
-					post_data, r.request_info.content_length);
+			size_t post_size=SAPI::read_post(r.sapi_info, post_data, r.request_info.content_length);
 			post_data[post_size]=0; // terminating zero
 			r.request_info.post_data=post_data;
 			r.request_info.post_size=post_size;
@@ -77,9 +72,6 @@ void MForm::configure_admin(Request& r) {
 			r.request_info.post_size=0;
 		}
 		if(r.request_info.post_size!=r.request_info.content_length)
-			throw Exception(0, 
-				0, 
-				"post_size(%u) != content_length(%u)", 
-					r.request_info.post_size, r.request_info.content_length);
+			throw Exception(0, 0, "post_size(%u) != content_length(%u)", r.request_info.post_size, r.request_info.content_length);
 	}
 }
