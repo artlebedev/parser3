@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.105 2016/09/29 18:49:43 moko Exp $"
+#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.106 2016/10/04 21:20:41 moko Exp $"
 
 #include "pa_symbols.h"
 #include "pa_wcontext.h"
@@ -120,9 +120,7 @@ private:
 	/// handy value-is/not-a-junction ensurer
 	Value& get_as(Value* value, bool as_junction, const char* msg, int index) { 
 		if((value->get_junction()!=0) ^ as_junction)
-			throw Exception(PARSER_RUNTIME,
-				0,
-				"%s (parameter #%d)", msg, 1+index);
+			throw Exception(PARSER_RUNTIME, 0, "%s (parameter #%d)", msg, 1+index);
 
 		return *value;
 	}

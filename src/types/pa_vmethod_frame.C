@@ -8,7 +8,7 @@
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VMETHOD_FRAME_C="$Id: pa_vmethod_frame.C,v 1.29 2016/10/04 13:23:46 moko Exp $" IDENT_PA_VMETHOD_FRAME_H;
+volatile const char * IDENT_PA_VMETHOD_FRAME_C="$Id: pa_vmethod_frame.C,v 1.30 2016/10/04 21:20:41 moko Exp $" IDENT_PA_VMETHOD_FRAME_H;
 
 VVoid void_result; // unique value to be sure the result is changed
 
@@ -22,9 +22,7 @@ HashStringValue* MethodParams::as_hash(int index, const char* name) {
 	Value* value=get(index);
 	if(value) {
 		if(value->get_junction())
-			throw Exception(PARSER_RUNTIME,
-				0,
-				"%s param must not be code (parameter #%d)", name ? name : "options", 1+index);
+			throw Exception(PARSER_RUNTIME, 0, "%s param must not be code (parameter #%d)", name ? name : "options", 1+index);
 		if(!value->is_defined()) // empty hash is not defined, but we don't need it anyway
 			return 0;
 		if(HashStringValue* result=value->get_hash())
@@ -41,27 +39,23 @@ Table* MethodParams::as_table(int index, const char* name) {
 	Value* value=get(index);
 	if(value) {
 		if(value->get_junction())
-			throw Exception(PARSER_RUNTIME,
-				0,
-				"%s param must not be code (parameter #%d)", name ? name : "options", 1+index);
+			throw Exception(PARSER_RUNTIME, 0, "%s param must not be code (parameter #%d)", name ? name : "options", 1+index);
 		if(Table* result=value->get_table())
 			return result;
 	}
-	throw Exception(PARSER_RUNTIME,
-		0,
-		"%s param must have table representation (parameter #%d)", name ? name : "options", 1+index);
+	throw Exception(PARSER_RUNTIME, 0, "%s param must have table representation (parameter #%d)", name ? name : "options", 1+index);
 }
 
 // VMethodFrame: methods
 
-VMethodFrame::VMethodFrame(const Method& amethod, VMethodFrame *acaller, Value& aself) : 
+VMethodFrame::VMethodFrame(const Method& amethod, VMethodFrame *acaller, Value& aself) :
 	WContext(0 /* no parent, junctions can be reattached only up to VMethodFrame */),
 	fcaller(acaller),
 	my(0),
 	fself(aself),
 	method(amethod) {
 
-	put_element_impl=(method.all_vars_local)?&VMethodFrame::put_element_local:&VMethodFrame::put_element_global;
+	put_element_impl=(method.all_vars_local) ? &VMethodFrame::put_element_local : &VMethodFrame::put_element_global;
 
 	if(!method.max_numbered_params_count){ // this method uses numbered params?
 		my=new HashString<Value*>;
@@ -87,5 +81,5 @@ Value* VMethodFrame::get_result_variable() {
 		return 0;
 
 	Value* result=my->get(Symbols::RESULT_SYMBOL);
-	return result!=&void_result?result:0;
+	return result!=&void_result ? result : 0;
 }
