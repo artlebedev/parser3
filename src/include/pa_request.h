@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.230 2016/10/04 13:23:46 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.231 2016/10/04 22:05:28 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -222,12 +222,12 @@ public:
 
 	/// processes any code-junction there may be inside of @a value
 	Value& process_getter(Junction& junction); // execute.C
-	Value& process(Value& input_value, bool intercept_string=true); // execute.C
+	Value& process(Value& input_value); // execute.C
 	void process_write(Value& input_value); // execute.C
 
 	//@{ convinient helpers
 	const String& process_to_string(Value& input_value) {
-		return process(input_value, true/*intercept_string*/).as_string();
+		return process(input_value).as_string();
 	}
 	//@}
 	const String* get_method_filename(const Method* method); // execute.C

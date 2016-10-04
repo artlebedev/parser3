@@ -22,7 +22,7 @@
 #define USE_STRINGSTREAM
 #endif
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.335 2016/10/04 13:23:46 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.336 2016/10/04 22:05:28 moko Exp $";
 
 // class
 
@@ -1495,7 +1495,7 @@ static void _select(Request& r, MethodParams& params) {
 			for(size_t row=size-1; result_table.count() < (size_t)limit; row--) {
 				source_table.set_current(row);
 
-				bool condition=r.process(vcondition, false/*don't intercept string*/).as_bool();
+				bool condition=r.process(vcondition).as_bool();
 
 				if(condition && ++appended > (size_t)offset) // ...condition is true, adding to the result
 					result_table+=source_table[row];
@@ -1505,7 +1505,7 @@ static void _select(Request& r, MethodParams& params) {
 			for(size_t row=0; row < size && result_table.count() < (size_t)limit; row++) {
 				source_table.set_current(row);
 
-				bool condition=r.process(vcondition, false/*don't intercept string*/).as_bool();
+				bool condition=r.process(vcondition).as_bool();
 
 				if(condition && ++appended > (size_t)offset) // ...condition is true, adding to the result
 					result_table+=source_table[row];

@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.236 2016/10/04 13:23:46 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.237 2016/10/04 22:05:28 moko Exp $";
 
 // defines
 
@@ -243,7 +243,7 @@ static void _while(Request& r, MethodParams& params) {
 			if(++endless_loop_count>=pa_loop_limit) // endless loop?
 				throw Exception(PARSER_RUNTIME, 0, "endless loop detected");
 
-			if(!r.process(vcondition, false/*don't intercept string*/).as_bool())
+			if(!r.process(vcondition).as_bool())
 				break;
 
 			Value& sv_processed=r.process(body_code);
@@ -266,7 +266,7 @@ static void _while(Request& r, MethodParams& params) {
 			if(++endless_loop_count>=pa_loop_limit) // endless loop?
 				throw Exception(PARSER_RUNTIME, 0, "endless loop detected");
 
-			if(!r.process(vcondition, false/*don't intercept string*/).as_bool())
+			if(!r.process(vcondition).as_bool())
 				break;
 
 			r.process_write(body_code);
@@ -374,8 +374,7 @@ static void _for(Request& r, MethodParams& params) {
 static void _eval(Request& r, MethodParams& params) {
 	Value& expr=params.as_junction(0, "need expression");
 	// evaluate expresion
-	Value& value_result=r.process(expr, 
-		false/*don't intercept string*/).as_expr_result();
+	Value& value_result=r.process(expr).as_expr_result();
 	if(params.count()>1) {
 		const String& fmt=params.as_string(1, "fmt must be string").trim();
 		if(fmt.is_empty()){
@@ -450,7 +449,7 @@ static void _switch(Request& r, MethodParams& params) {
 	Value& cases_code=params.as_junction(1, "switch cases must be code");
 	// execution of found ^case[...]{code} must be in context of ^switch[...]{code}
 	// because of stacked WWrapper used there as wcontext
-	r.process(cases_code, true/*intercept_string*/);
+	r.process(cases_code);
 	if(Value* selected_code=data->found? data->found: data->_default)
 		r.write_pass_lang(r.process(*selected_code));
 }

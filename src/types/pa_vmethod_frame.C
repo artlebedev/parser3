@@ -8,14 +8,14 @@
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VMETHOD_FRAME_C="$Id: pa_vmethod_frame.C,v 1.30 2016/10/04 21:20:41 moko Exp $" IDENT_PA_VMETHOD_FRAME_H;
+volatile const char * IDENT_PA_VMETHOD_FRAME_C="$Id: pa_vmethod_frame.C,v 1.31 2016/10/04 22:05:29 moko Exp $" IDENT_PA_VMETHOD_FRAME_H;
 
 VVoid void_result; // unique value to be sure the result is changed
 
 // MethodParams: methods
 
 Value& MethodParams::get_processed(Value* value, const char* msg, int index, Request& r) {
-		return r.process(as_junction(value, msg, index), false /*do not intercept string*/);
+		return r.process(as_junction(value, msg, index));
 }
 
 HashStringValue* MethodParams::as_hash(int index, const char* name) {

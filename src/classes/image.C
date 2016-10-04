@@ -25,7 +25,7 @@
 #include "pa_vdate.h"
 #include "pa_table.h"
 
-volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.153 2016/10/04 13:23:45 moko Exp $";
+volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.154 2016/10/04 22:05:28 moko Exp $";
 
 // defines
 
@@ -810,7 +810,7 @@ static void _html(Request& r, MethodParams& params) {
 
 	if(params.count()) {
 		// for backward compatibility: someday was ^html{}
-		Value& vattribs=r.process(params[0], false/*don't intercept string*/);
+		Value& vattribs=r.process(params[0]);
 		if(!vattribs.is_string()) { // allow empty
 			if((attribs=vattribs.get_hash())) {
 				Attrib_info info={&tag, 0};

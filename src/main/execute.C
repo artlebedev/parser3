@@ -21,7 +21,7 @@
 #include "pa_vimage.h"
 #include "pa_wwrapper.h"
 
-volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.388 2016/10/04 13:23:46 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
+volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.389 2016/10/04 22:05:28 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
 
 //#define DEBUG_EXECUTE
 
@@ -1370,23 +1370,11 @@ Value& Request::process_getter(Junction& junction) {
 	return frame.result();
 }
 
-/**	@param intercept_string
-	- true:
-		they want result=string value, 
-		possible object result goes to wcontext
-	- false:
-		they want any result[string|object]
-		nothing goes to wcontext.
-		used in @c (expression) params evaluation
-
-	using the fact it's either string_ or value_ result requested to speed up checkes
-*/
-
-Value& Request::process(Value& input_value, bool intercept_string) {
+Value& Request::process(Value& input_value) {
 	Junction* junction=input_value.get_junction();
 	if(junction) {
 		if(junction->is_getter) { // is it a getter-junction?
-			return process(process_getter(*junction), intercept_string);
+			return process(process_getter(*junction));
 		}
 
 		if(junction->code) { // is it a code-junction?
@@ -1403,23 +1391,21 @@ Value& Request::process(Value& input_value, bool intercept_string) {
 			method_frame=junction->method_frame;
 			rcontext=junction->rcontext;
 
-			// for expression method params
-			// wcontext is set 0
-			// using the fact in decision "which wwrapper to use"
-			bool using_code_frame=intercept_string && junction->wcontext;
+			// for code in [] and () wcontext is set 0
+			// using the fact in decision "which wrapper to use"
+			bool using_code_frame=junction->wcontext;
 			if(using_code_frame) {
-				// almost plain wwrapper about junction wcontext 
-
+				throw Exception(PARSER_RUNTIME, 0, "VCodeFrame used");
+				// {} code wrapper
 				VCodeFrame local(*junction->wcontext);
 				wcontext=&local;
 
 				// execute it
 				recoursion_checked_execute(*junction->code);
 
-				// CodeFrame soul:
 				result=wcontext->result();
 			} else {
-				// plain wwrapper
+				// [] or () code wrapper
 				WWrapper local(wcontext);
 				wcontext=&local;
 
@@ -1450,7 +1436,7 @@ void Request::process_write(Value& input_value) {
 		// to process method arguments, not from get_element
 
 		if(junction->code) { // is it a code-junction?
-							// process it
+			// process it
 
 			DEBUG_PRINT_STR("ja->\n")
 
@@ -1462,8 +1448,7 @@ void Request::process_write(Value& input_value) {
 			method_frame=junction->method_frame;
 			rcontext=junction->rcontext;
 
-			// for expression method params
-			// wcontext is set 0
+			// for code in [] and () wcontext is set 0
 			// using the fact in decision "which wwrapper to use"
 #ifdef OPTIMIZE_CALL
 			if(wcontext==junction->wcontext){
@@ -1474,7 +1459,7 @@ void Request::process_write(Value& input_value) {
 			} else
 #endif
 			if(junction->wcontext) {
-				// almost plain wwrapper about junction wcontext 
+				// {} code wrapper
 				VCodeFrame local(*junction->wcontext);
 				wcontext=&local;
 
@@ -1483,7 +1468,7 @@ void Request::process_write(Value& input_value) {
 				RESTORE_CONTEXT
 				write_pass_lang(local.result());
 			} else {
-				// plain wwrapper
+				// [] or () code wrapper
 				WWrapper local(wcontext);
 				wcontext=&local;
 
