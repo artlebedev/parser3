@@ -1,0 +1,14 @@
+@main[]
+
+^json:string[
+	^if{0 $.key[value]}{ $.344[then] }{ $.345[else] }
+
+	^rem{VCodeFrame usage test, bug if WWrapper used}
+	^m{$.1[1]}
+	^m{$.2[2]}
+
+	^while{0 $._345[yes]}{ $._344[yes] ^break[] }
+]
+
+@m[code]
+$code
