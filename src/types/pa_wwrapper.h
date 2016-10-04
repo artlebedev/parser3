@@ -8,7 +8,7 @@
 #ifndef PA_WWRAPPER_H
 #define PA_WWRAPPER_H
 
-#define IDENT_PA_WWRAPPER_H "$Id: pa_wwrapper.h,v 1.48 2016/09/21 12:47:33 moko Exp $"
+#define IDENT_PA_WWRAPPER_H "$Id: pa_wwrapper.h,v 1.49 2016/10/04 21:10:16 moko Exp $"
 
 #define OPTIMIZE_SINGLE_STRING_WRITE
 
@@ -20,10 +20,7 @@ class WWrapper: public WContext {
 public: // Value
 
 	override const char* type() const { return "wwrapper"; }
-	/// WWrapper: transparent
-	override Value* get_element(const String& aname) { 
-		return as_value().get_element(aname); 
-	}
+
 	/// WWrapper: transparent
 	override const VJunction* put_element(const String& aname, Value* avalue) { 
 		if(!fvalue) {
@@ -36,7 +33,6 @@ public: // Value
 			//		^i.inc[]  ^rem{allow such calls}
 			//		$.key2[$1]
 		}
-
 		return fvalue->put_element(aname, avalue); 
 	}
 
@@ -50,10 +46,7 @@ private:
 	// raises an exception on 0 value
 	Value& as_value() const {
 		if(!fvalue)
-			throw Exception(0,
-				0,
-				"accessing wrapper without value");
-
+			throw Exception(0, 0, "accessing wrapper without value");
 		return *fvalue;
 	}
 };

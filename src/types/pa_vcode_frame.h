@@ -8,7 +8,7 @@
 #ifndef PA_VCODE_FRAME_H
 #define PA_VCODE_FRAME_H
 
-#define IDENT_PA_VCODE_FRAME_H "$Id: pa_vcode_frame.h,v 1.39 2015/10/26 01:22:01 moko Exp $"
+#define IDENT_PA_VCODE_FRAME_H "$Id: pa_vcode_frame.h,v 1.40 2016/10/04 21:10:15 moko Exp $"
 
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
@@ -18,12 +18,9 @@ class VCodeFrame: public WContext {
 public: // Value
 
 	override const char* type() const { return "code_frame"; }
+
 	/// VCodeFrame: twice transparent
-	override Value* get_element(const String& aname) { 
-		return fparent->get_element(aname); 
-	}
-	/// VCodeFrame: twice transparent
-	override const VJunction* put_element(const String& aname, Value* avalue) { 
+	override const VJunction* put_element(const String& aname, Value* avalue) {
 		// $hash[^if(1){$.field[]}]
 		// put goes to $hash
 		return fparent->put_element(aname, avalue); 
@@ -32,7 +29,7 @@ public: // Value
 
 public: // usage
 
-	VCodeFrame(WContext& parent): 
+	VCodeFrame(WContext& parent):
 		WContext(&parent){
 	}
 
