@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.231 2016/10/04 22:05:28 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.232 2016/10/05 18:41:54 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -186,13 +186,9 @@ public:
 
 	/**
 		core request processing
-
 		BEWARE: may throw exception to you: catch it!
 	*/
-	void core(
-		const char* config_filespec, ///< system config filespec
-		bool config_fail_on_read_problem, ///< fail if system config file not found
-		bool header_only);
+	void core(const char* config_filespec, bool config_fail_on_read_problem, bool header_only);
 
 	/// executes ops
 	void execute(ArrayOperation& ops); // execute.C
