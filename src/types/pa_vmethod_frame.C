@@ -8,14 +8,16 @@
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VMETHOD_FRAME_C="$Id: pa_vmethod_frame.C,v 1.31 2016/10/04 22:05:29 moko Exp $" IDENT_PA_VMETHOD_FRAME_H;
+volatile const char * IDENT_PA_VMETHOD_FRAME_C="$Id: pa_vmethod_frame.C,v 1.32 2016/10/06 16:18:21 moko Exp $" IDENT_PA_VMETHOD_FRAME_H;
 
 VVoid void_result; // unique value to be sure the result is changed
 
 // MethodParams: methods
 
-Value& MethodParams::get_processed(Value* value, const char* msg, int index, Request& r) {
-		return r.process(as_junction(value, msg, index));
+Value& MethodParams::get_processed(Value& value, const char* msg, int index, Request& r) {
+	if(!value.get_junction())
+		throw Exception(PARSER_RUNTIME, 0, "%s (parameter #%d)", msg, 1+index);
+	return r.process(value);
 }
 
 HashStringValue* MethodParams::as_hash(int index, const char* name) {
@@ -30,9 +32,7 @@ HashStringValue* MethodParams::as_hash(int index, const char* name) {
 		if(value->is_string() && value->get_string()->trim().is_empty())
 			return 0;
 	}
-	throw Exception(PARSER_RUNTIME,
-		0,
-		"%s must have hash representation (parameter #%d)", name ? name : "options", 1+index);
+	throw Exception(PARSER_RUNTIME, 0, "%s must have hash representation (parameter #%d)", name ? name : "options", 1+index);
 }
 
 Table* MethodParams::as_table(int index, const char* name) {

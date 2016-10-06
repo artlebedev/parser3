@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.106 2016/10/04 21:20:41 moko Exp $"
+#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.107 2016/10/06 16:18:21 moko Exp $"
 
 #include "pa_symbols.h"
 #include "pa_wcontext.h"
@@ -57,58 +57,64 @@ public:
 
 	/// handy is-value-a-junction ensurer
 	Value& as_junction(int index, const char* msg) { 
-		Value* value=get(index);
-		return as_junction(value, msg, index); 
+		Value& value=*get(index);
+		if(!value.get_junction())
+			throw Exception(PARSER_RUNTIME, 0, "%s (parameter #%d)", msg, 1+index);
+		return value;
 	}
-	/// handy is-value-a-junction ensurer
-	Value& as_junction(Value* value, const char* msg, int index) { 
-		return get_as(value, true, msg, index); 
-	}
+
 	/// handy value-is-not-a-junction ensurer
 	Value& as_no_junction(int index, const char* msg) { 
-		Value* value=get(index);
-		return as_no_junction(value, msg, index); 
+		Value& value=*get(index);
+		if(value.get_junction())
+			throw Exception(PARSER_RUNTIME, 0, "%s (parameter #%d)", msg, 1+index);
+		return value;
 	}
-	/// handy value-is-not-a-junction ensurer
-	Value& as_no_junction(Value* value, const char* msg, int index) { 
-		return get_as(value, false, msg, index); 
-	}
+
 	/// handy is-value-a-junction ensurer or can be auto-processed
 	Value& as_expression(int index, const char* msg) { 
-		Value* value=get(index);
-		if(value->is_evaluated_expr()){
-			return *value;
+		Value& value=*get(index);
+		if(value.is_evaluated_expr()){
+			return value;
 		} else {
-			return get_as(value, true, msg, index);
+			if(!value.get_junction())
+				throw Exception(PARSER_RUNTIME, 0, "%s (parameter #%d)", msg, 1+index);
+			return value;
 		}
 	}
+
 	/// handy expression auto-processing to double
-	double as_double(int index, const char* msg, Request& r) { 
-		Value* value=get(index);
-		if(!value->is_evaluated_expr())
-			value=&get_processed(value, msg, index, r);
-		return value->as_double(); 
+	double as_double(int index, const char* msg, Request& r) {
+		Value& value=*get(index);
+		if(value.is_evaluated_expr())
+			return value.as_double();
+		return get_processed(value, msg, index, r).as_double();
 	}
+
 	/// handy expression auto-processing to int
-	int as_int(int index, const char* msg, Request& r) { 
-		Value* value=get(index);
-		if(!value->is_evaluated_expr())
-			value=&get_processed(value, msg, index, r);
-		return value->as_int(); 
+	int as_int(int index, const char* msg, Request& r) {
+		Value& value=*get(index);
+		if(value.is_evaluated_expr())
+			return value.as_int();
+		return get_processed(value, msg, index, r).as_int();
 	}
+
 	/// handy expression auto-processing to bool
-	bool as_bool(int index, const char* msg, Request& r) { 
-		Value* value=get(index);
-		if(!value->is_evaluated_expr())
-			value=&get_processed(value, msg, index, r);
-		return value->as_bool(); 
+	bool as_bool(int index, const char* msg, Request& r) {
+		Value& value=*get(index);
+		if(value.is_evaluated_expr())
+			return value.as_bool();
+		return get_processed(value, msg, index, r).as_bool();
 	}
+
 	/// handy string ensurer
 	const String& as_string(int index, const char* msg) { 
 		return as_no_junction(index, msg).as_string();
 	}
+
 	/// handy hash ensurers
 	HashStringValue* as_hash(int index, const char* name=0);
+
 	/// handy table ensurer
 	Table* as_table(int index, const char* name=0);
 
@@ -117,15 +123,7 @@ private:
 	Value **felements;
 	size_t fused;
 
-	/// handy value-is/not-a-junction ensurer
-	Value& get_as(Value* value, bool as_junction, const char* msg, int index) { 
-		if((value->get_junction()!=0) ^ as_junction)
-			throw Exception(PARSER_RUNTIME, 0, "%s (parameter #%d)", msg, 1+index);
-
-		return *value;
-	}
-
-	Value& get_processed(Value* value, const char* msg, int index, Request& r);
+	Value& get_processed(Value& value, const char* msg, int index, Request& r);
 
 };
 
