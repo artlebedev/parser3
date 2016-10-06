@@ -13,7 +13,7 @@
 #include "pa_vdate.h"
 #include "pa_vtable.h"
 
-volatile const char * IDENT_DATE_C="$Id: date.C,v 1.105 2016/10/04 13:23:45 moko Exp $" IDENT_PA_VDATE_H;
+volatile const char * IDENT_DATE_C="$Id: date.C,v 1.106 2016/10/06 20:38:36 moko Exp $" IDENT_PA_VDATE_H;
 
 // class
 
@@ -476,7 +476,7 @@ static Table& fill_week_days(Request& r, MethodParams& params, bool rus){
 }
 
 static void _calendar(Request& r, MethodParams& params) {
-	const String& what=params.as_string(0, "format must be strig");
+	const String& what=params.as_string(0, "format must be string");
 	bool rus=false;
 	if(what=="rus")
 		rus=true;
