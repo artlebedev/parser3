@@ -12,7 +12,7 @@
 #include "pa_vhashfile.h"
 #include "pa_vhash.h"
 
-volatile const char * IDENT_HASHFILE_C="$Id: hashfile.C,v 1.58 2016/09/29 18:49:42 moko Exp $";
+volatile const char * IDENT_HASHFILE_C="$Id: hashfile.C,v 1.59 2016/10/06 19:41:36 moko Exp $";
 
 // class
 
@@ -132,7 +132,7 @@ static void _foreach(Request& r, MethodParams& params) {
 		key_var_name.is_empty()? 0 : &key_var_name,
 		value_var_name.is_empty()? 0 : &value_var_name,
 		&params.as_junction(2, "body must be code"),
-		/*delimiter*/params.count()>3 ? params.get(3) : 0,
+		/*delimiter*/params.count()>3 ? &params[3] : 0,
 		/*var_context*/r.get_method_frame()->caller(),
 		false
 	};

@@ -10,7 +10,7 @@
 #include "pa_vbool.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.61 2016/10/04 13:23:46 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.62 2016/10/06 19:41:36 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -204,7 +204,7 @@ static VJunction &method_junction(Value &self, Method &method){
 }
 
 static void _method(Request& r, MethodParams& params) {
-	Value &source=*params.get(0);
+	Value &source=params[0];
 
 	if(Junction *j=source.get_junction()){
 		if(Method* method=const_cast<Method*>(j->method)){
@@ -260,7 +260,7 @@ static void _method_info(Request& r, MethodParams& params) {
 	const Method* method;
 	VStateless_class* vclass=0;
 
-	if(Junction *j=params.get(0)->get_junction()){
+	if(Junction *j=params[0].get_junction()){
 		if(!(method=j->method))
 			throw Exception(PARSER_RUNTIME, 0, "param must be class name or method junction");
 	} else {

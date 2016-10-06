@@ -18,7 +18,7 @@
 #include "pa_vxdoc.h"
 #endif
 
-volatile const char * IDENT_JSON_C="$Id: json.C,v 1.46 2016/10/04 13:23:46 moko Exp $";
+volatile const char * IDENT_JSON_C="$Id: json.C,v 1.47 2016/10/06 19:41:36 moko Exp $";
 
 // class
 
@@ -464,7 +464,7 @@ static void _string(Request& r, MethodParams& params) {
 
 	if(params.count() == 2)
 		if(HashStringValue* options=params.as_hash(1)) {
-			json.params=params.get(1);
+			json.params=&params[1];
 			HashStringValue* methods=new HashStringValue();
 			int valid_options=0;
 			HashStringValue* vvalue;

@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.237 2016/10/04 22:05:28 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.238 2016/10/06 19:41:36 moko Exp $";
 
 // defines
 
@@ -86,14 +86,14 @@ static void _if(Request& r, MethodParams& params) {
 	do {
 		bool condition=params.as_bool(i, "condition must be expression", r);
 		if(condition) {
-			r.process_write(*params.get(i+1));
+			r.process_write(params[i+1]);
 			return;
 		}
 		i+=2;
 	} while (i < max_param);
 
 	if(i == max_param)
-		r.process_write(*params.get(i));
+		r.process_write(params[i]);
 }
 
 String::Language get_untaint_lang(const String& lang_name){

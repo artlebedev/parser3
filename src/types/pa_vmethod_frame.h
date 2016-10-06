@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.107 2016/10/06 16:18:21 moko Exp $"
+#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.108 2016/10/06 19:41:36 moko Exp $"
 
 #include "pa_symbols.h"
 #include "pa_wcontext.h"
@@ -46,18 +46,18 @@ public:
 
 	inline size_t count() const { return fused; }
 
-	inline Value *get(size_t index) const {
+	inline Value& get(size_t index) const {
 		assert(index<count());
-		return felements[index];
+		return *felements[index];
 	}
 
-	inline Value& operator[] (size_t index) { return *get(index); }
+	inline Value& operator[] (size_t index) { return get(index); }
 
-	Value& last() { return *get(count()-1); }
+//	Value& last() { return *get(count()-1); }
 
 	/// handy is-value-a-junction ensurer
 	Value& as_junction(int index, const char* msg) { 
-		Value& value=*get(index);
+		Value& value=get(index);
 		if(!value.get_junction())
 			throw Exception(PARSER_RUNTIME, 0, "%s (parameter #%d)", msg, 1+index);
 		return value;
@@ -65,7 +65,7 @@ public:
 
 	/// handy value-is-not-a-junction ensurer
 	Value& as_no_junction(int index, const char* msg) { 
-		Value& value=*get(index);
+		Value& value=get(index);
 		if(value.get_junction())
 			throw Exception(PARSER_RUNTIME, 0, "%s (parameter #%d)", msg, 1+index);
 		return value;
@@ -73,7 +73,7 @@ public:
 
 	/// handy is-value-a-junction ensurer or can be auto-processed
 	Value& as_expression(int index, const char* msg) { 
-		Value& value=*get(index);
+		Value& value=get(index);
 		if(value.is_evaluated_expr()){
 			return value;
 		} else {
@@ -85,7 +85,7 @@ public:
 
 	/// handy expression auto-processing to double
 	double as_double(int index, const char* msg, Request& r) {
-		Value& value=*get(index);
+		Value& value=get(index);
 		if(value.is_evaluated_expr())
 			return value.as_double();
 		return get_processed(value, msg, index, r).as_double();
@@ -93,7 +93,7 @@ public:
 
 	/// handy expression auto-processing to int
 	int as_int(int index, const char* msg, Request& r) {
-		Value& value=*get(index);
+		Value& value=get(index);
 		if(value.is_evaluated_expr())
 			return value.as_int();
 		return get_processed(value, msg, index, r).as_int();
@@ -101,7 +101,7 @@ public:
 
 	/// handy expression auto-processing to bool
 	bool as_bool(int index, const char* msg, Request& r) {
-		Value& value=*get(index);
+		Value& value=get(index);
 		if(value.is_evaluated_expr())
 			return value.as_bool();
 		return get_processed(value, msg, index, r).as_bool();

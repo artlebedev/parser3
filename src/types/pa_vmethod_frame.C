@@ -8,7 +8,7 @@
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VMETHOD_FRAME_C="$Id: pa_vmethod_frame.C,v 1.33 2016/10/06 19:33:59 moko Exp $" IDENT_PA_VMETHOD_FRAME_H;
+volatile const char * IDENT_PA_VMETHOD_FRAME_C="$Id: pa_vmethod_frame.C,v 1.34 2016/10/06 19:41:36 moko Exp $" IDENT_PA_VMETHOD_FRAME_H;
 
 VVoid void_result; // unique value to be sure the result is changed
 
@@ -21,7 +21,7 @@ Value& MethodParams::get_processed(Value& value, const char* msg, int index, Req
 }
 
 HashStringValue* MethodParams::as_hash(int index, const char* name) {
-	Value& value=*get(index);
+	Value& value=get(index);
 	if(value.get_junction())
 		throw Exception(PARSER_RUNTIME, 0, "%s param must not be code (parameter #%d)", name ? name : "options", 1+index);
 	if(!value.is_defined()) // empty hash is not defined, but we don't need it anyway
@@ -34,7 +34,7 @@ HashStringValue* MethodParams::as_hash(int index, const char* name) {
 }
 
 Table* MethodParams::as_table(int index, const char* name) {
-	Value& value=*get(index);
+	Value& value=get(index);
 	if(value.get_junction())
 		throw Exception(PARSER_RUNTIME, 0, "%s param must not be code (parameter #%d)", name ? name : "options", 1+index);
 	if(Table* result=value.get_table())

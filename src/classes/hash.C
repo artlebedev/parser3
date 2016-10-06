@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.133 2016/10/04 13:23:45 moko Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.134 2016/10/06 19:41:36 moko Exp $";
 
 // class
 
@@ -400,7 +400,7 @@ static void _foreach(Request& r, MethodParams& params) {
 	const String* key_var_name=&params.as_string(0, "key-var name must be string");
 	const String* value_var_name=&params.as_string(1, "value-var name must be string");
 	Value* body_code=&params.as_junction(2, "body must be code");
-	Value* delim_maybe_code=params.count()>3?params.get(3):0;
+	Value* delim_maybe_code=params.count()>3?&params[3]:0;
 	Value& caller=*r.get_method_frame()->caller();
 
 	if(key_var_name->is_empty()) key_var_name=0;
@@ -570,7 +570,7 @@ static void _at(Request& r, MethodParams& params) {
 			throw Exception(PARSER_RUNTIME, &stype, "type must be 'key', 'value' or 'hash'");
 	}
 
-	Value& vwhence=*params.get(0);
+	Value& vwhence=params[0];
 	if(vwhence.is_string()) {
 		const String& swhence=*vwhence.get_string();
 		if(swhence == "last")
