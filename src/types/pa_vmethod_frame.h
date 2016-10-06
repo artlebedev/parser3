@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.109 2016/10/06 20:16:06 moko Exp $"
+#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.110 2016/10/06 21:00:10 moko Exp $"
 
 #include "pa_symbols.h"
 #include "pa_wcontext.h"
@@ -56,29 +56,27 @@ public:
 	/// handy is-value-a-junction ensurer
 	Value& as_junction(int index, const char* msg) {
 		Value& value=get(index);
-		if(!value.get_junction())
-			throw Exception(PARSER_RUNTIME, 0, "%s (parameter #%d)", msg, 1+index);
-		return value;
+		if(value.get_junction())
+			return value;
+		throw Exception(PARSER_RUNTIME, 0, "%s (parameter #%d)", msg, 1+index);
 	}
 
 	/// handy value-is-not-a-junction ensurer
 	Value& as_no_junction(int index, const char* msg) {
 		Value& value=get(index);
-		if(value.get_junction())
-			throw Exception(PARSER_RUNTIME, 0, "%s (parameter #%d)", msg, 1+index);
-		return value;
+		if(!value.get_junction())
+			return value;
+		throw Exception(PARSER_RUNTIME, 0, "%s (parameter #%d)", msg, 1+index);
 	}
 
 	/// handy is-value-a-junction ensurer or can be auto-processed
 	Value& as_expression(int index, const char* msg) {
 		Value& value=get(index);
-		if(value.is_evaluated_expr()){
+		if(value.is_evaluated_expr())
 			return value;
-		} else {
-			if(!value.get_junction())
-				throw Exception(PARSER_RUNTIME, 0, "%s (parameter #%d)", msg, 1+index);
+		if(value.get_junction())
 			return value;
-		}
+		throw Exception(PARSER_RUNTIME, 0, "%s (parameter #%d)", msg, 1+index);
 	}
 
 	/// handy expression auto-processing to double
