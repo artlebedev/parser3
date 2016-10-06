@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.108 2016/10/06 19:41:36 moko Exp $"
+#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.109 2016/10/06 20:16:06 moko Exp $"
 
 #include "pa_symbols.h"
 #include "pa_wcontext.h"
@@ -26,10 +26,10 @@ class Request;
 */
 class MethodParams {
 public:
-	MethodParams() : felements(0), fused(0){}
+	MethodParams() : felements(0), fused(0) {}
 
 #ifdef USE_DESTRUCTORS
-	~MethodParams(){
+	~MethodParams() {
 		Value **flast=felements+count();
 		for(Value **current=felements;current<flast;current++){
 			Junction* junction=(*current)->get_junction();
@@ -39,7 +39,7 @@ public:
 	}
 #endif
 
-	void store_params(Value **params, size_t count){ 
+	void store_params(Value **params, size_t count) {
 		felements=params;
 		fused=count;
 	}
@@ -53,10 +53,8 @@ public:
 
 	inline Value& operator[] (size_t index) { return get(index); }
 
-//	Value& last() { return *get(count()-1); }
-
 	/// handy is-value-a-junction ensurer
-	Value& as_junction(int index, const char* msg) { 
+	Value& as_junction(int index, const char* msg) {
 		Value& value=get(index);
 		if(!value.get_junction())
 			throw Exception(PARSER_RUNTIME, 0, "%s (parameter #%d)", msg, 1+index);
@@ -64,7 +62,7 @@ public:
 	}
 
 	/// handy value-is-not-a-junction ensurer
-	Value& as_no_junction(int index, const char* msg) { 
+	Value& as_no_junction(int index, const char* msg) {
 		Value& value=get(index);
 		if(value.get_junction())
 			throw Exception(PARSER_RUNTIME, 0, "%s (parameter #%d)", msg, 1+index);
@@ -72,7 +70,7 @@ public:
 	}
 
 	/// handy is-value-a-junction ensurer or can be auto-processed
-	Value& as_expression(int index, const char* msg) { 
+	Value& as_expression(int index, const char* msg) {
 		Value& value=get(index);
 		if(value.is_evaluated_expr()){
 			return value;
@@ -108,7 +106,7 @@ public:
 	}
 
 	/// handy string ensurer
-	const String& as_string(int index, const char* msg) { 
+	const String& as_string(int index, const char* msg) {
 		return as_no_junction(index, msg).as_string();
 	}
 
@@ -146,7 +144,7 @@ public: // Value
 	override const char* type() const { return "method_frame"; }
 
 	/// VMethodFrame: $result | parent get_string(=accumulated fstring)
-	override const String* get_string() { 
+	override const String* get_string() {
 		// check the $result value
 		Value* result=get_result_variable();
 		// if we have one, return it's string value, else return as usual: accumulated fstring or fvalue
@@ -154,7 +152,7 @@ public: // Value
 	}
 	
 	/// VMethodFrame: my or self_transparent or $caller
-	override Value* get_element(const String& aname) { 
+	override Value* get_element(const String& aname) {
 		if(SYMBOLS_EQ(aname,CALLER_SYMBOL))
 			return caller();
 
@@ -279,12 +277,7 @@ public: // usage
 					set_my_variable(*method.extra_params, vargs);
 					return;
 				} else
-				throw Exception(PARSER_RUNTIME,
-					0, //&name(),
-					"method of %s accepts maximum %d parameter(s) (%d present)", 
-					self().type(),
-					param_count,
-					count);
+				throw Exception(PARSER_RUNTIME, 0, "method of %s accepts maximum %d parameter(s) (%d present)", self().type(), param_count, count);
 			}
 
 			for(; i<count; i++) {
