@@ -13,7 +13,7 @@
 #include "pa_vint.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_DOUBLE_C="$Id: double.C,v 1.70 2016/10/04 13:23:45 moko Exp $" IDENT_PA_VDOUBLE_H;
+volatile const char * IDENT_DOUBLE_C="$Id: double.C,v 1.71 2016/10/08 18:35:26 moko Exp $" IDENT_PA_VDOUBLE_H;
 
 // externs
 
@@ -55,11 +55,9 @@ static void __mul(VDouble& vdouble, double param) { vdouble.mul(param); }
 static void __div(VDouble& vdouble, double param) { vdouble.div(param); }
 static void __mod(VDouble& vdouble, double param) { vdouble.mod((int)param); }
 
-static void vdouble_op(Request& r, MethodParams& params, 
-					   vdouble_op_func_ptr func) {
+static void vdouble_op(Request& r, MethodParams& params, vdouble_op_func_ptr func) {
 	VDouble& vdouble=GET_SELF(r, VDouble);
-	double param=params.count()?
-			params.as_double(0, "param must be double", r):1/*used in inc/dec*/;
+	double param=params.count() ? params.as_double(0, "param must be double", r) : 1/*used in inc/dec*/;
 	(*func)(vdouble, param);
 }
 
@@ -81,9 +79,7 @@ static void _sql(Request& r, MethodParams& params) {
 		if(default_code)
 			val=r.process(*default_code).as_double();
 		else {
-			throw Exception(PARSER_RUNTIME,
-				0,
-				"produced no result, but no default option specified");
+			throw Exception(PARSER_RUNTIME, 0, "produced no result, but no default option specified");
 		}
 	r.write_no_lang(*new VDouble(val));
 }
