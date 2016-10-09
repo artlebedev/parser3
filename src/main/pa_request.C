@@ -32,7 +32,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.361 2016/10/03 20:34:48 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.362 2016/10/09 21:32:19 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -76,8 +76,9 @@ int pa_loop_limit=LOOP_LIMIT;
 #define MIME_TYPES_NAME "MIME-TYPES"
 #define STRICT_VARS_NAME "STRICT-VARS"
 #define PROTOTYPE_NAME "OBJECT-PROTOTYPE"
-#define RECOURSION_LIMIT_NAME "RECOURSION_LIMIT"
-#define LOOP_LIMIT_NAME "LOOP_LIMIT"
+#define LIMITS_NAME "LIMITS"
+#define RECOURSION_LIMIT_NAME "max_recoursion"
+#define LOOP_LIMIT_NAME "max_loop"
 #define CONF_METHOD_NAME "conf"
 #define POST_PROCESS_METHOD_NAME "postprocess"
 #define CLASS_PATH_NAME "CLASS_PATH"
@@ -93,6 +94,7 @@ static const String main_class_name(MAIN_CLASS_NAME);
 static const String mime_types_name(MIME_TYPES_NAME);
 static const String strict_vars_name(STRICT_VARS_NAME);
 static const String prototype_name(PROTOTYPE_NAME);
+static const String limits_name(LIMITS_NAME);
 static const String recoursion_limit_name(RECOURSION_LIMIT_NAME);
 static const String loop_limit_name(LOOP_LIMIT_NAME);
 
@@ -276,23 +278,27 @@ void Request::configure_admin(VStateless_class& conf_class) {
 	}
 #endif
 
+	Value* limits=conf_class.get_element(limits_name);
+
 	pa_loop_limit=LOOP_LIMIT;
-	if(Value* loop_limit=conf_class.get_element(loop_limit_name)) {
-		if(loop_limit->is_evaluated_expr()) {
-			pa_loop_limit=loop_limit->as_int();
-			if(pa_loop_limit==0) pa_loop_limit=INT_MAX;
-		} else
-			throw Exception(PARSER_RUNTIME, 0, "$" MAIN_CLASS_NAME ":" LOOP_LIMIT_NAME " must be int");
-	}
+	if(limits)
+		if(Value* loop_limit=limits->get_element(loop_limit_name)) {
+			if(loop_limit->is_evaluated_expr()) {
+				pa_loop_limit=loop_limit->as_int();
+				if(pa_loop_limit==0) pa_loop_limit=INT_MAX;
+			} else
+				throw Exception(PARSER_RUNTIME, 0, "$" MAIN_CLASS_NAME ":" LOOP_LIMIT_NAME " must be int");
+		}
 
 	pa_execute_recoursion_limit=EXECUTE_RECOURSION_LIMIT;
-	if(Value* recoursion_limit=conf_class.get_element(recoursion_limit_name)) {
-		if(recoursion_limit->is_evaluated_expr()) {
-			pa_execute_recoursion_limit=recoursion_limit->as_int();
-			if(pa_execute_recoursion_limit==0) pa_execute_recoursion_limit=INT_MAX;
-		} else
-			throw Exception(PARSER_RUNTIME, 0, "$" MAIN_CLASS_NAME ":" RECOURSION_LIMIT_NAME " must be int");
-	}
+	if(limits)
+		if(Value* recoursion_limit=limits->get_element(recoursion_limit_name)) {
+			if(recoursion_limit->is_evaluated_expr()) {
+				pa_execute_recoursion_limit=recoursion_limit->as_int();
+				if(pa_execute_recoursion_limit==0) pa_execute_recoursion_limit=INT_MAX;
+			} else
+				throw Exception(PARSER_RUNTIME, 0, "$" MAIN_CLASS_NAME ":" RECOURSION_LIMIT_NAME " must be int");
+		}
 
 	// configure method_frame options
 	//	until someone with less privileges have overriden them
