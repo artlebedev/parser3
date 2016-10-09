@@ -19,12 +19,16 @@ $NO_PROTOTYPE[
 }
 
 ^if($env:PATH_TRANSLATED eq '357.html'){
-	$LOOP_LIMIT(50)
-	$RECOURSION_LIMIT(50)
+	$LIMITS[
+		$.max_loop(50)
+		$.max_recoursion(50)
+	]
 }
 ^if($env:PATH_TRANSLATED eq '358.html'){
-	$LOOP_LIMIT(0)
-	$RECOURSION_LIMIT(0)
+	$LIMITS[
+		$.max_loop(0)
+		$.max_recoursion(0)
+	]
 }
 
 
