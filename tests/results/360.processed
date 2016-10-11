@@ -1,7 +1,13 @@
 Content-Type: text/html
-Content-Length: 113
+Content-Length: 353
 
+code junctions ignore in expression flag, this it works:
 11
+this code will work if OPTIMIZE_CALL is undefined after OP_PREPARE_TO_EXPRESSION removed (#1104):
 Type: parser.runtime,
 Source: int,
 Comment: int may not be overwritten with int, store it to variable instead
+this code does not work in 3.4.4:
+11
+string and value: 1 int
+string and object: hash
