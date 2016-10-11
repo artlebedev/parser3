@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.238 2016/10/06 19:41:36 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.239 2016/10/11 19:56:41 moko Exp $";
 
 // defines
 
@@ -936,7 +936,7 @@ VClassMAIN::VClassMAIN(): VClass(MAIN_CLASS_NAME) {
 	add_native_method("continue", Method::CT_ANY, _continue, 0, 1, Method::CO_WITHOUT_FRAME);
 
 	// ^for[i](from-number;to-number-inclusive){code}[delim]
-	add_native_method("for", Method::CT_ANY, _for, 3+1, 3+1+1, Method::CO_WITHOUT_WCONTEXT);
+	add_native_method("for", Method::CT_ANY, _for, 3+1, 3+1+1);
 
 	// ^eval(expr)
 	// ^eval(expr)[format]
