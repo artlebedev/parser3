@@ -8,7 +8,7 @@
 #ifndef PA_METHOD_H
 #define PA_METHOD_H
 
-#define IDENT_PA_METHOD_H "$Id: pa_method.h,v 1.25 2016/09/26 20:22:33 moko Exp $"
+#define IDENT_PA_METHOD_H "$Id: pa_method.h,v 1.26 2016/10/11 21:25:34 moko Exp $"
 
 #define OPTIMIZE_CALL
 #define OPTIMIZE_RESULT
@@ -59,8 +59,8 @@ public:
 
 	enum Call_optimization {
 		CO_NONE,
-		CO_WITHOUT_FRAME, // for some native methods method frame is not required, faster
-		CO_WITHOUT_WCONTEXT // for some native methods wcontext is not required, faster
+		CO_WITHOUT_FRAME, // for some native methods method frame is not required, faster but $self is unavailable
+		CO_WITHOUT_WCONTEXT // for all native methods wcontext is not required, as no $result, faster
 	};
 
 	Call_type call_type;
