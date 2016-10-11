@@ -21,7 +21,7 @@
 #include "pa_vimage.h"
 #include "pa_wwrapper.h"
 
-volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.390 2016/10/04 22:06:40 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
+volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.391 2016/10/11 19:58:39 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
 
 //#define DEBUG_EXECUTE
 
@@ -825,8 +825,8 @@ void Request::execute(ArrayOperation& ops) {
 						throw Exception(PARSER_RUNTIME, 0, "is '%s', not a method or junction, can not call it", value.type());
 				}
 
-#ifdef OPTIMIZE_CALL
 				const Method& method=*junction->method;
+#ifdef OPTIMIZE_CALL
 				if(method.call_optimization==Method::CO_WITHOUT_FRAME){
 					if(local_ops){ // store param code goes here
 						size_t first = stack.top_index();
