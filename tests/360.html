@@ -1,0 +1,14 @@
+@main[]
+$n(1)
+
+# code junctions ignore in expression flag, this it works
+$x(^if(2){^n.int[]^n.int[]})
+$x
+
+#this code will work if OPTIMIZE_CALL is undefined after OP_PREPARE_TO_EXPRESSION removed (#1104)
+^try-catch{ $y(^test[]) }
+$y
+
+@test[]
+#test is in expression + CO_WITHOUT_WCONTEXT is on by default, thus exception
+^n.int[]^n.int[]
