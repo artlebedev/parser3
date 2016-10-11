@@ -13,7 +13,7 @@
 #include "pa_vhash.h"
 #include "pa_vvoid.h"
 
-volatile const char * IDENT_PA_VMEMCACHED_C="$Id: pa_vmemcached.C,v 1.17 2015/10/26 01:22:02 moko Exp $" IDENT_PA_VMEMCACHED_H;
+volatile const char * IDENT_PA_VMEMCACHED_C="$Id: pa_vmemcached.C,v 1.18 2016/10/11 17:39:28 moko Exp $" IDENT_PA_VMEMCACHED_H;
 
 const char *memcached_library="libmemcached" LT_MODULE_EXT;
 
@@ -208,8 +208,8 @@ Value &VMemcached::mget(ArrayString& akeys) {
 	if (rc != MEMCACHED_END && rc != MEMCACHED_NOTFOUND)
 		error("mget", fm, rc);
 	
-	delete keys;
-	delete key_lengths;
+	delete[] keys;
+	delete[] key_lengths;
 	
 	return hresult;
 }

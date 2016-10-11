@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.110 2016/10/06 21:00:10 moko Exp $"
+#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.111 2016/10/11 17:36:15 moko Exp $"
 
 #include "pa_symbols.h"
 #include "pa_wcontext.h"
@@ -34,7 +34,7 @@ public:
 		for(Value **current=felements;current<flast;current++){
 			Junction* junction=(*current)->get_junction();
 			if (junction && junction->code)
-				delete *current;
+				delete (VJunction*)(*current);
 		}
 	}
 #endif
