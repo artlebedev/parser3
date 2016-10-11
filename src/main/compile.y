@@ -8,7 +8,7 @@
 	
 */
 
-volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.284 2016/09/20 12:02:22 moko Exp $";
+volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.285 2016/10/11 21:30:16 moko Exp $";
 
 /**
 	@todo parser4: 
@@ -465,7 +465,6 @@ construct_square: '[' {
 ;
 construct_round: '(' expr_value ')' { 
 	$$=N(); 
-	O(*$$, OP::OP_PREPARE_TO_EXPRESSION);
 	// stack: context, name
 	P(*$$, *$2); // stack: context, name, value
 	O(*$$, OP::OP_CONSTRUCT_EXPR); /* value=pop->as_expr_result; name=pop; context=pop; construct(context,name,value) */
@@ -608,7 +607,6 @@ store_expr_param_part: expr_value {
 		$$=expr_code; 
 	} else {
 		YYSTYPE code=N();
-		O(*code, OP::OP_PREPARE_TO_EXPRESSION);
 		P(*code, *expr_code);
 		O(*code, OP::OP_WRITE_EXPR_RESULT);
 		$$=N(); 

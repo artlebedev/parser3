@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.232 2016/10/05 18:41:54 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.233 2016/10/11 21:30:16 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -192,8 +192,9 @@ public:
 
 	/// executes ops
 	void execute(ArrayOperation& ops); // execute.C
-	void op_call(VMethodFrame &frame);
-	void op_call_write(VMethodFrame &frame);
+	void call(VMethodFrame &frame);
+	void call_expression(VMethodFrame &frame);
+	void call_write(VMethodFrame &frame);
 	Value& construct(VStateless_class &class_value, const Method &method);
 
 	/// execute ops with anti-recoursion check

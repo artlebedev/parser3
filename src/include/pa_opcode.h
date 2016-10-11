@@ -11,7 +11,7 @@
 
 namespace OP {
 
-#define IDENT_PA_OPCODE_H "$Id: pa_opcode.h,v 1.53 2016/07/19 16:35:35 moko Exp $"
+#define IDENT_PA_OPCODE_H "$Id: pa_opcode.h,v 1.54 2016/10/11 21:30:16 moko Exp $"
 
 #define OPTIMIZE_BYTECODE_GET_ELEMENT                // $a ^a
 #define OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT         // $a.b ^a.b
@@ -83,7 +83,6 @@ enum OPCODE {
 	OP_PREPARE_TO_CONSTRUCT_OBJECT,
 	OP_CONSTRUCT_OBJECT,
 	OP_CONSTRUCT_OBJECT__WRITE,
-	OP_PREPARE_TO_EXPRESSION, 
 	OP_CALL, OP_CALL__WRITE,
 
 #ifdef OPTIMIZE_BYTECODE_CONSTRUCT

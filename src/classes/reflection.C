@@ -10,7 +10,7 @@
 #include "pa_vbool.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.62 2016/10/06 19:41:36 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.63 2016/10/11 21:30:16 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -100,7 +100,7 @@ static void _create(Request& r, MethodParams& params) {
 	} else {
 		frame.empty_params();
 	}
-	r.op_call(frame);
+	r.call(frame);
 	object.enable_default_setter();
 	r.write_pass_lang(frame.result());
 }

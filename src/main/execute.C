@@ -21,7 +21,7 @@
 #include "pa_vimage.h"
 #include "pa_wwrapper.h"
 
-volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.391 2016/10/11 19:58:39 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
+volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.392 2016/10/11 21:30:16 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
 
 //#define DEBUG_EXECUTE
 
@@ -75,7 +75,6 @@ const char *opcode_name[]={
 	"PREPARE_TO_CONSTRUCT_OBJECT",
 	"CONSTRUCT_OBJECT",
 	"CONSTRUCT_OBJECT__WRITE",
-	"PREPARE_TO_EXPRESSION", 
 	"CALL", "CALL__WRITE",
 
 #ifdef OPTIMIZE_BYTECODE_CONSTRUCT
@@ -366,7 +365,7 @@ void Request::execute(ArrayOperation& ops) {
 		// OTHER ACTIONS BUT WITHs
 
 #ifdef OPTIMIZE_BYTECODE_CONSTRUCT
-#define DO_CONSTRUCT(context, vvalue) {                                                 \
+#define DO_CONSTRUCT(context, vvalue) {                                                                 \
 				debug_origin=i.next().origin;                                           \
 				const String& name=*i.next().value->get_string();  debug_name=&name;    \
 				DEBUG_PRINT_STRING(name)                                                \
@@ -375,8 +374,7 @@ void Request::execute(ArrayOperation& ops) {
 				break;                                                                  \
 		}
 #define DO_CONSTRUCT_VALUE(context) DO_CONSTRUCT(context, &value)
-#define DO_CONSTRUCT_EXPR(context) {                                                    \
-				wcontext->set_in_expression(false);                                     \
+#define DO_CONSTRUCT_EXPR(context) {                                                                    \
 				DO_CONSTRUCT(context, &value.as_expr_result())                          \
 		}
 
@@ -422,9 +420,6 @@ void Request::execute(ArrayOperation& ops) {
 
 		case OP::OP_CONSTRUCT_EXPR:
 			{
-				// see OP_PREPARE_TO_EXPRESSION
-				wcontext->set_in_expression(false);
-
 #ifdef OPTIMIZE_BYTECODE_CONSTRUCT
 				const String& name=stack.pop().string();  debug_name=&name;
 				Value& ncontext=stack.pop().value();
@@ -479,9 +474,6 @@ void Request::execute(ArrayOperation& ops) {
 			}
 		case OP::OP_WRITE_EXPR_RESULT:
 			{
-				// see OP_PREPARE_TO_EXPRESSION
-				wcontext->set_in_expression(false);
-
 				Value& value=stack.pop().value();
 				wcontext->write(value.as_expr_result());
 				break;
@@ -753,12 +745,6 @@ void Request::execute(ArrayOperation& ops) {
 				break;
 			}
 
-		case OP::OP_PREPARE_TO_EXPRESSION:
-			{
-				wcontext->set_in_expression(true);
-				break;
-			}
-
 #define METHOD_FRAME_ACTION(action)											\
 		if(local_ops){												\
 			size_t first = stack.top_index();								\
@@ -791,7 +777,7 @@ void Request::execute(ArrayOperation& ops) {
 				Value *result;
 				{
 					VMethodFrame frame(*junction->method, method_frame, junction->self);
-					METHOD_FRAME_ACTION(op_call(frame));
+					METHOD_FRAME_ACTION(call_expression(frame));
 					result=&frame.result();
 					// VMethodFrame desctructor deletes junctions in stack params here
 				}
@@ -845,12 +831,12 @@ void Request::execute(ArrayOperation& ops) {
 					}
 				} else if(method.call_optimization==Method::CO_WITHOUT_WCONTEXT){
 					VMethodFrame frame(method, method_frame, junction->self);
-					METHOD_FRAME_ACTION(op_call_write(frame));
+					METHOD_FRAME_ACTION(call_write(frame));
 				} else 
 #endif // OPTIMIZE_CALL
 				{
 					VMethodFrame frame(method, method_frame, junction->self);
-					METHOD_FRAME_ACTION(op_call(frame));
+					METHOD_FRAME_ACTION(call(frame));
 					write_pass_lang(frame.result());
 				}
 
@@ -896,7 +882,7 @@ void Request::execute(ArrayOperation& ops) {
 				{
 					Value& object=construct(*vclass, *constructor_junction->method);
 					VConstructorFrame frame(*constructor_junction->method, method_frame, object);
-					METHOD_FRAME_ACTION(op_call(frame));
+					METHOD_FRAME_ACTION(call(frame));
 					object.enable_default_setter();
 					result=&frame.result();
 					// VMethodFrame desctructor deletes junctions in stack params here
@@ -1234,7 +1220,6 @@ void Request::execute(ArrayOperation& ops) {
 	rcontext=saved_rcontext;						\
 	method_frame=saved_method_frame;
 
-
 Value& Request::construct(VStateless_class &called_class, const Method &method){
 
 	if(method.call_type!=Method::CT_STATIC) {
@@ -1251,50 +1236,50 @@ Value& Request::construct(VStateless_class &called_class, const Method &method){
 		throw Exception(PARSER_RUNTIME, 0, "method is static and can not be used as constructor");
 }
 
-void Request::op_call(VMethodFrame& frame){
-	// see OP_PREPARE_TO_EXPRESSION
-	frame.set_in_expression(wcontext->get_in_expression());
-				
+inline void do_call(VMethodFrame& frame, Request &r){
+	Value& self=frame.self();
+	const Method& method=frame.method;
+	Method::Call_type call_type=self.get_class()==&self ? Method::CT_STATIC : Method::CT_DYNAMIC;
+
+	if(method.call_type==Method::CT_ANY || method.call_type==call_type) { // allowed call type?
+		if(method.native_code) { // native code?
+			method.check_actual_numbered_params(self, frame.numbered_params());
+			method.native_code(r, *frame.numbered_params()); // execute it
+		} else // parser code, execute it
+			r.recoursion_checked_execute(*method.parser_code);
+	} else
+		throw Exception(PARSER_RUNTIME, 0, "is not allowed to be called %s", call_type==Method::CT_STATIC ? "statically" : "dynamically");
+}
+
+void Request::call(VMethodFrame& frame){
 	SAVE_CONTEXT
 
 	rcontext=wcontext=method_frame=&frame;
 
-	Value& self=frame.self();
-	const Method& method=frame.method;
-	Method::Call_type call_type=self.get_class()==&self ? Method::CT_STATIC : Method::CT_DYNAMIC;
-
-	if(method.call_type==Method::CT_ANY || method.call_type==call_type) { // allowed call type?
-		if(method.native_code) { // native code?
-			method.check_actual_numbered_params(self, frame.numbered_params());
-			method.native_code(*this, *frame.numbered_params()); // execute it
-		} else // parser code, execute it
-			recoursion_checked_execute(*method.parser_code);
-	} else
-		throw Exception(PARSER_RUNTIME, 0, "is not allowed to be called %s", call_type==Method::CT_STATIC ? "statically" : "dynamically");
+	do_call(frame, *this);
 
 	RESTORE_CONTEXT
 }
 
-void Request::op_call_write(VMethodFrame& frame){
+void Request::call_expression(VMethodFrame& frame){
+	SAVE_CONTEXT
+
+	frame.set_in_expression(true);
+	rcontext=wcontext=method_frame=&frame;
+
+	do_call(frame, *this);
+
+	RESTORE_CONTEXT
+}
+
+void Request::call_write(VMethodFrame& frame){
 	VMethodFrame *saved_method_frame=method_frame;
 	Value* saved_rcontext=rcontext;
 
-	rcontext=&frame;
-	method_frame=&frame;
+	rcontext=method_frame=&frame;
 
-	Value& self=frame.self();
-	const Method& method=frame.method;
-	Method::Call_type call_type=self.get_class()==&self ? Method::CT_STATIC : Method::CT_DYNAMIC;
+	do_call(frame, *this);
 
-	if(method.call_type==Method::CT_ANY || method.call_type==call_type) { // allowed call type?
-		if(method.native_code) { // native code?
-			method.check_actual_numbered_params(self, frame.numbered_params());
-			method.native_code(*this, *frame.numbered_params()); // execute it
-		} else // parser code, execute it
-			recoursion_checked_execute(*method.parser_code);
-	} else
-		throw Exception(PARSER_RUNTIME, 0, "is not allowed to be called %s", call_type==Method::CT_STATIC ? "statically" : "dynamically");
-	
 	rcontext=saved_rcontext;
 	method_frame=saved_method_frame;
 }
