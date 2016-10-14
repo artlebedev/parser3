@@ -1,3 +1,195 @@
+2016-10-12  moko
+
+	* tests/: 360.html, results/360.processed: more test code (related
+	  to feature #1104)
+
+	* src/: classes/op.C, classes/reflection.C, include/pa_opcode.h,
+	  include/pa_request.h, main/compile.y, main/execute.C: opcode
+	  OP_PREPARE_TO_EXPRESSION removed as not required, optimized
+	  WContext is next task (implements feature #1104)
+
+	* src/types/pa_method.h: more detailed comment for CO_WITHOUT_FRAME
+	  / CO_WITHOUT_WCONTEXT
+
+	* tests/: 360.html, results/360.processed: test for in expression
+	  state (related to feature #1104)
+
+2016-10-11  moko
+
+	* src/main/execute.C: compilation without OPTIMIZE_CALL fixed
+
+	* src/classes/op.C: default value removed from initializer
+
+	* src/types/pa_vmemcached.C: FreeBSD 11 warning war
+
+	* src/types/pa_vmethod_frame.h: FreeBSD 11 warning war
+
+2016-10-10  moko
+
+	* tests/results/auto.p: test updated adter $RECOURSION_LIMIT,
+	  $LOOP_LIMIT  -> $LIMITS[ $.max_recoursion, $.max_loop ] (related
+	  to feature #42)
+
+	* src/main/pa_request.C: $RECOURSION_LIMIT, $LOOP_LIMIT  ->
+	  $LIMITS[ $.max_recoursion, $.max_loop ] (related to feature #42)
+
+2016-10-08  moko
+
+	* src/classes/double.C: whitespace
+
+2016-10-07  moko
+
+	* src/types/pa_vmethod_frame.h: reorder
+
+2016-10-06  moko
+
+	* src/classes/date.C: typo
+
+	* src/types/pa_vmethod_frame.h: whitespace + cleanup
+
+	* src/: classes/hash.C, classes/hashfile.C, classes/json.C,
+	  classes/op.C, classes/reflection.C, types/pa_vmethod_frame.C,
+	  types/pa_vmethod_frame.h: params.get now returns Value&, not
+	  Value*
+
+	* src/types/pa_vmethod_frame.C: params.get should return Value&.
+
+	* src/types/: pa_vmethod_frame.C, pa_vmethod_frame.h: get_as
+	  removed; first as_* code rewrite
+
+2016-10-05  moko
+
+	* src/include/pa_request.h: whitespace
+
+	* tests/: 359.html, results/359.processed: test for VCodeFrame and
+	  intercept_string added (related to feature #1097)
+
+	* src/: classes/image.C, classes/op.C, classes/table.C,
+	  include/pa_request.h, main/execute.C, types/pa_vmethod_frame.C:
+	  optimization: intercept_string removed (implements feature #1097)
+
+	* src/types/: pa_vmethod_frame.C, pa_vmethod_frame.h: whitespace
+
+	* src/types/: pa_vcode_frame.h, pa_wwrapper.h: get_element removed
+	  from VCodeFrame and WWrapper as not required
+
+2016-10-04  moko
+
+	* src/: classes/curl.C, classes/date.C, classes/double.C,
+	  classes/file.C, classes/hash.C, classes/image.C, classes/inet.C,
+	  classes/int.C, classes/json.C, classes/op.C,
+	  classes/reflection.C, classes/string.C, classes/table.C,
+	  include/pa_request.h, main/execute.C, types/pa_vmethod_frame.C:
+	  proces_to_value -> process after StringOrValue removed (related
+	  to feature #1020)
+
+	* src/classes/form.C: whitespace
+
+	* src/main/execute.C: VALUE__GET_BASE_CLASS added to opcode_names
+
+	* tests/: 357.html, 358.html, results/357.processed,
+	  results/358.processed, results/auto.p: test for @conf
+	  $RECOURSION_LIMIT and $LOOP_LIMIT added (related to feature #42)
+
+2016-10-03  moko
+
+	* src/: classes/op.C, include/pa_request.h, main/pa_request.C,
+	  types/pa_vtable.C: @conf $RECOURSION_LIMIT and $LOOP_LIMIT now
+	  supported (implements feature #42)
+
+	* src/types/pa_vregex.h: no reason for VRegex to be
+	  is_evaluated_expr
+
+	* src/classes/curl.C: CURL_OPT(CURL_INT, SSLVERSION) added
+	  (implements feature #1095)
+
+2016-10-01  moko
+
+	* src/classes/reflection.C: $.overwrite in ^reflection:mixin is now
+	  false by default (related to feature #1089)
+
+2016-09-30  moko
+
+	* src/types/pa_wcontext.h: cleanup
+
+2016-09-29  moko
+
+	* src/main/execute.C: whitespace
+
+	* src/include/pa_request.h: whitespace
+
+	* src/: classes/hash.C, classes/hashfile.C, classes/json.C,
+	  classes/op.C, classes/table.C, include/pa_request.h,
+	  main/execute.C, main/pa_request.C, types/pa_vmethod_frame.h,
+	  types/pa_vobject.C, types/pa_wcontext.h: optimization:
+	  StringOrValue removed as it just slows down and adds complexity
+	  (implements feature #1020)
+
+2016-09-28  moko
+
+	* tests/: 356.html, results/266.processed, results/321.processed,
+	  results/356.processed: tests updated after name was added to
+	  method_info hash, test for ^reflection:method_info[junction]
+	  added (related to feature #1068)
+
+	* src/classes/reflection.C: ^reflection:method_info[junction] now
+	  supported, method name added to the resulting hash (implements
+	  feature #1068)
+
+	* tests/: 276.html, results/276.processed: more tests for
+	  ^reflection:delete[]
+
+	* src/classes/reflection.C: fixed bug then ^reflection:delete
+	  didn't work on class and could damage native objects (like file)
+
+2016-09-26  moko
+
+	* tests/: 345.html, 346-curl.html, 347-curl.html, 348.html,
+	  results/345.processed, results/346-curl.processed,
+	  results/347-curl.processed, results/348.processed: numbers added
+	  to simplify diff analysis
+
+	* tests/: 352.html, results/352.processed: test result updated as
+	  method name used
+
+	* src/classes/reflection.C: method name used
+
+	* src/types/: pa_method.h, pa_vstateless_class.C: method now keeps
+	  its name
+
+	* src/types/pa_method.h: whitespace
+
+	* src/classes/reflection.C: both method and field with one name can
+	  exist.
+
+	* src/classes/reflection.C: ^reflection:mixin added (implements
+	  feature #1089)
+
+	* tests/: 355.html, results/355.processed: property appears in
+	  derived class if added in base test added
+
+	* src/types/pa_vstateless_class.h: get_method declaration +
+	  whitespace
+
+	* tests/: 354.html, results/354.processed: nice test from method
+	  and property with one name in class added
+
+2016-09-23  moko
+
+	* src/classes/reflection.C: ^reflection:method usage documented
+
+2016-09-22  moko
+
+	* src/: classes/classes.vcproj, types/types.vcproj: we need RTTI as
+	  we use 'dynamic_cast' on polymorphic type 'Value'. Without it
+	  compile warning and GPF occures on VS2003 (related to feature
+	  #1087)
+
+	* tests/: 350.html, results/350.processed: test added for
+	  $.encloser[] support in ^table::create (related to feature #11)
+
+	* src/classes/table.C: another minor fix (related to feature #11)
+
 2016-09-21  moko
 
 	* src/include/pa_config_fixed.h: vs2015 compilation fixes
@@ -15163,7 +15355,7 @@
 	  types/pa_vstring.h, types/pa_vtable.C, types/pa_vtable.h,
 	  types/pa_vvoid.h, types/pa_vxdoc.C, types/pa_vxdoc.h,
 	  types/pa_vxnode.C, types/pa_vxnode.h, types/pa_wcontext.C,
-	  types/pa_wcontext.h, types/pa_wwrapper.h: $Date: 2016/09/21 16:00:00 $
+	  types/pa_wcontext.h, types/pa_wwrapper.h: $Date: 2016/10/14 15:39:18 $
 
 	* src/: classes/classes.C, classes/classes.dsp, classes/classes.h,
 	  classes/date.C, classes/double.C, classes/file.C, classes/form.C,
@@ -19251,7 +19443,7 @@
 	  main/pa_hash.C, main/pa_pool.C, main/pa_request.C,
 	  main/pa_socks.C, main/pa_sql_driver_manager.C, main/pa_string.C,
 	  main/pa_table.C, main/untaint.C, targets/cgi/parser3.C,
-	  targets/isapi/parser3isapi.C: static char *RCSId="$Id: ChangeLog,v 1.107 2016/09/21 16:00:00 moko Exp $";
+	  targets/isapi/parser3isapi.C: static char *RCSId="$Id: ChangeLog,v 1.108 2016/10/14 15:39:18 moko Exp $";
 
 	* src/main/: compile.y, compile_tools.h: $:name: == ${name}:
 	  $class:name: == ${class:name}:
@@ -22066,9 +22258,9 @@
 
 	* src/include/: pa_pool.h, pa_string.h: pa_pool split
 
-	* src/main/: main.dsp, pa_string.C: $Id: ChangeLog,v 1.107 2016/09/21 16:00:00 moko Exp $ check
+	* src/main/: main.dsp, pa_string.C: $Id: ChangeLog,v 1.108 2016/10/14 15:39:18 moko Exp $ check
 
-	* src/: main/pa_pool.C, main/pa_string.C, include/pa_pool.h: $Id: ChangeLog,v 1.107 2016/09/21 16:00:00 moko Exp $
+	* src/: main/pa_pool.C, main/pa_string.C, include/pa_pool.h: $Id: ChangeLog,v 1.108 2016/10/14 15:39:18 moko Exp $
 	  check
 
 	* src/: include/pa_pool.h, main/pa_string.C: String prealloc &
