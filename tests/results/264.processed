@@ -1,26 +1,22 @@
 Content-Type: text/html
-Content-Length: 495
+Content-Length: 471
 
- 
-	 some &lt;a href=&quot;/?a&amp;b&quot;&gt;html&lt;/a&gt; code 
-	 ^$b^(2+2^) 
-	 \^\(\.\*\?\)\$ 
-	 some <?dirty?> code 
+ some &lt;a href=&quot;/?a&amp;b&quot;&gt;html&lt;/a&gt; code 
+ ^$b^(2+2^) 
+ \^\(\.\*\?\)\$ 
+ some <?dirty?> code 
 
- 
-	 some &lt;a href=&quot;/?a&amp;b&quot;&gt;html&lt;/a&gt; code 
-	 ^$b^(2+2^) 
-	 \^\(\.\*\?\)\$ 
-	 some &lt;?dirty?&gt; code 
+ some &lt;a href=&quot;/?a&amp;b&quot;&gt;html&lt;/a&gt; code 
+ ^$b^(2+2^) 
+ \^\(\.\*\?\)\$ 
+ some &lt;?dirty?&gt; code 
 
- 
-	 some &lt;a href=&quot;/?a&amp;b&quot;&gt;html&lt;/a&gt; code 
-	 ^$b^(2+2^) 
-	 \^\(\.\*\?\)\$ 
-	 some <\?dirty\?> code 
+ some &lt;a href=&quot;/?a&amp;b&quot;&gt;html&lt;/a&gt; code 
+ ^$b^(2+2^) 
+ \^\(\.\*\?\)\$ 
+ some <\?dirty\?> code 
 
- 
-	 some &lt;a href=&quot;/?a&amp;b&quot;&gt;html&lt;/a&gt; code 
-	 ^$b^(2+2^) 
-	 \^\(\.\*\?\)\$ 
-	 some <?dirty?> code 
+ some &lt;a href=&quot;/?a&amp;b&quot;&gt;html&lt;/a&gt; code 
+ ^$b^(2+2^) 
+ \^\(\.\*\?\)\$ 
+ some <?dirty?> code 
