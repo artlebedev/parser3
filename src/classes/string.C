@@ -20,7 +20,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.230 2016/10/04 13:23:46 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.231 2016/10/25 23:37:52 moko Exp $";
 
 // class
 
@@ -154,7 +154,7 @@ static void _bool(Request& r, MethodParams& params) {
 static void _left(Request& r, MethodParams& params) {
 	ssize_t sn=params.as_int(0, "n must be int", r);
 	const String& string=GET_SELF(r, VString).string();
-	r.write_assign_lang(sn<0 ? string : string.mid(r.charsets.source(), 0, (size_t)sn));
+	r.write_pass_lang(sn<0 ? string : string.mid(r.charsets.source(), 0, (size_t)sn));
 }
 
 static void _right(Request& r, MethodParams& params) {
@@ -163,7 +163,7 @@ static void _right(Request& r, MethodParams& params) {
 		size_t n=(size_t)sn;
 		const String& string=GET_SELF(r, VString).string();
 		size_t length=string.length(r.charsets.source());
-		r.write_assign_lang(n<length ? string.mid(r.charsets.source(), length-n, length, length) : string);
+		r.write_pass_lang(n<length ? string.mid(r.charsets.source(), length-n, length, length) : string);
 	}
 }
 
@@ -191,7 +191,7 @@ static void _mid(Request& r, MethodParams& params) {
 		end=length;
 	}
 
-	r.write_assign_lang(string.mid(r.charsets.source(), begin, end, length));
+	r.write_pass_lang(string.mid(r.charsets.source(), begin, end, length));
 }
 
 static void _pos(Request& r, MethodParams& params) {
@@ -448,7 +448,7 @@ static void _match(Request& r, MethodParams& params) {
 		if(!matches_count && default_code)
 			r.process_write(*default_code);
 		else
-			r.write_assign_lang(result);
+			r.write_pass_lang(result);
 	}
 }
 
@@ -456,7 +456,7 @@ static void change_case(Request& r, MethodParams&,
 						String::Change_case_kind kind) {
 	const String& src=GET_SELF(r, VString).string();
 
-	r.write_assign_lang(src.change_case(r.charsets.source(), kind));
+	r.write_pass_lang(src.change_case(r.charsets.source(), kind));
 }
 static void _upper(Request& r, MethodParams& params) {
 	change_case(r, params, String::CC_UPPER);
@@ -588,7 +588,7 @@ static void _sql(Request& r, MethodParams& params) {
 				"produced no result, but no default option specified");
 	}
 
-	r.write_assign_lang(*string);
+	r.write_pass_lang(*string);
 }
 
 static void _replace(Request& r, MethodParams& params) {
@@ -598,14 +598,14 @@ static void _replace(Request& r, MethodParams& params) {
 		// ^string.replace[table]
 		Table* table=params.as_table(0, "param");
 		Dictionary dict(*table);
-		r.write_assign_lang(src.replace(dict));
+		r.write_pass_lang(src.replace(dict));
 	} else {
 		// ^string.replace[from-string;to-string]
 		Dictionary dict(
 						params.as_string(0, "from must be string"),
 						params.as_string(1, "to must be string")
 					);
-		r.write_assign_lang(src.replace(dict));
+		r.write_pass_lang(src.replace(dict));
 	}
 
 }
@@ -654,7 +654,7 @@ static void _save(Request& r, MethodParams& params) {
 static void _normalize(Request& r, MethodParams&) {
 	const String& src=GET_SELF(r, VString).string();
 
-	r.write_assign_lang(src);
+	r.write_pass_lang(src);
 }
 
 static void _trim(Request& r, MethodParams& params) {
@@ -687,7 +687,7 @@ static void _trim(Request& r, MethodParams& params) {
 		}
 	}
 
-	r.write_assign_lang(src.trim(kind, chars, &r.charsets.source()));
+	r.write_pass_lang(src.trim(kind, chars, &r.charsets.source()));
 }
 
 static void _base64(Request& r, MethodParams& params) {
@@ -718,14 +718,14 @@ static void _base64(Request& r, MethodParams& params) {
 
 			fix_line_breaks(decoded, length);
 			if(length)
-				r.write_assign_lang(*new String(decoded, String::L_TAINTED));
+				r.write_pass_lang(*new String(decoded, String::L_TAINTED));
 		}
 	} else {
 		// encode: ^str.base64[]
 		VString& self=GET_SELF(r, VString);
 		const char* cstr=self.string().cstr();
 		const char* encoded=pa_base64_encode(cstr, strlen(cstr));
-		r.write_assign_lang(*new String(encoded, String::L_TAINTED/*once ?param=base64(something) was needed*/));
+		r.write_pass_lang(*new String(encoded, String::L_TAINTED/*once ?param=base64(something) was needed*/));
 	}
 }
 
@@ -733,24 +733,24 @@ static void _idna(Request& r, MethodParams& params) {
 	if(&r.get_self() == string_class) {
 		// decode: ^string:idna[encoded]
 		const char* cstr=params.count() ? params.as_string(0, PARAMETER_MUST_BE_STRING).cstr() : "";
-		r.write_assign_lang(*new String(pa_idna_decode(cstr, r.charsets.source()), String::L_TAINTED));
+		r.write_pass_lang(*new String(pa_idna_decode(cstr, r.charsets.source()), String::L_TAINTED));
 	} else {
 		// encode: ^str.idna[]
 		VString& self=GET_SELF(r, VString);
 		const char* cstr=self.string().cstr();
-		r.write_assign_lang(*new String(pa_idna_encode(cstr, r.charsets.source()), String::L_TAINTED));
+		r.write_pass_lang(*new String(pa_idna_encode(cstr, r.charsets.source()), String::L_TAINTED));
 	}
 }
 
 static void _js_escape(Request& r, MethodParams&){
 	const String& src=GET_SELF(r, VString).string();
-	r.write_assign_lang(src.escape(r.charsets.source()));
+	r.write_pass_lang(src.escape(r.charsets.source()));
 }
 
 static void _js_unescape(Request& r, MethodParams& params){
 	const String& src=params.as_string(0, PARAMETER_MUST_BE_STRING);
 	if(const char* result=unescape_chars(src.cstr(), src.length(), &r.charsets.source(), true))
-		r.write_assign_lang(*new String(result, String::L_TAINTED));
+		r.write_pass_lang(*new String(result, String::L_TAINTED));
 }
 
 static void _unescape(Request& r, MethodParams& params){
@@ -782,7 +782,7 @@ static void _unescape(Request& r, MethodParams& params){
 	const char* unescaped=unescape_chars(src.cstr(), src.length(), from_charset, mode_js);
 	if(*unescaped){
 		const String* result=new String(Charset::transcode(unescaped, *from_charset, r.charsets.source()), String::L_TAINTED);
-		r.write_assign_lang(*result);
+		r.write_pass_lang(*result);
 	}
 }
 

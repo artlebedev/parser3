@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.134 2016/10/06 19:41:36 moko Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.135 2016/10/25 23:37:52 moko Exp $";
 
 // class
 
@@ -591,15 +591,15 @@ static void _at(Request& r, MethodParams& params) {
 				{
 #ifdef HASH_ORDER
 					if(pos == 0) {
-						r.write_assign_lang(*new VString(*new String(hash.first_key(), String::L_TAINTED)));
+						r.write_pass_lang(*new VString(*new String(hash.first_key(), String::L_TAINTED)));
 					} else if((size_t)pos == count-1) {
-						r.write_assign_lang(*new VString(*new String(hash.last_key(), String::L_TAINTED)));
+						r.write_pass_lang(*new VString(*new String(hash.last_key(), String::L_TAINTED)));
 					} else
 #endif
 					{
 						for(HashStringValue::Iterator i(hash); i; i.next(), pos-- )
 							if(!pos){
-								r.write_assign_lang(*new VString(*new String(i.key(), String::L_TAINTED)));
+								r.write_pass_lang(*new VString(*new String(i.key(), String::L_TAINTED)));
 								break;
 							}
 					}
@@ -609,15 +609,15 @@ static void _at(Request& r, MethodParams& params) {
 				{
 #ifdef HASH_ORDER
 					if(pos == 0) {
-						r.write_assign_lang(*hash.first_value());
+						r.write_pass_lang(*hash.first_value());
 					} else if((size_t)pos == count-1) {
-						r.write_assign_lang(*hash.last_value());
+						r.write_pass_lang(*hash.last_value());
 					} else
 #endif
 					{
 						for(HashStringValue::Iterator i(hash); i; i.next(), pos-- )
 							if(!pos){
-								r.write_assign_lang(*i.value());
+								r.write_pass_lang(*i.value());
 								break;
 							}
 					}

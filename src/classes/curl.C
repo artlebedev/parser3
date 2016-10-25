@@ -17,7 +17,7 @@
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.44 2016/10/04 13:23:45 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.45 2016/10/25 23:37:52 moko Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -575,7 +575,7 @@ static void _curl_info(Request& r, MethodParams& params){
 		curl_infos=new CurlInfoHash();
 	if(params.count()==1){
 		const String &name=params.as_string(0, "name must be string");
-		r.write_assign_lang(*curl_getinfo(name));
+		r.write_pass_lang(*curl_getinfo(name));
 	} else {
 		VHash& result=*new VHash;
 		for(CurlInfoHash::Iterator i(*curl_infos); i; i.next() ){

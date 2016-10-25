@@ -21,7 +21,7 @@
 #include "pa_vimage.h"
 #include "pa_wwrapper.h"
 
-volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.392 2016/10/11 21:30:16 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
+volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.393 2016/10/25 23:37:52 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
 
 //#define DEBUG_EXECUTE
 
@@ -331,7 +331,7 @@ void Request::execute(ArrayOperation& ops) {
 				if(opcode==OP::OP_GET_ELEMENT__SPECIAL){
 					stack.push(*value);
 				} else {
-					write_assign_lang(*value);
+					write_pass_lang(*value);
 				}
 				break;
 			}
@@ -469,7 +469,7 @@ void Request::execute(ArrayOperation& ops) {
 		case OP::OP_WRITE_VALUE:
 			{
 				Value& value=stack.pop().value();
-				write_assign_lang(value);
+				write_pass_lang(value);
 				break;
 			}
 		case OP::OP_WRITE_EXPR_RESULT:
@@ -544,7 +544,7 @@ void Request::execute(ArrayOperation& ops) {
 			})
 		case OP::OP_GET_OBJECT_ELEMENT__WRITE: DO_GET_OBJECT_ELEMENT({
 				Value& value=get_element(object, field_name);
-				write_assign_lang(value);
+				write_pass_lang(value);
 			})
 #ifdef FEATURE_GET_ELEMENT4CALL
 		case OP::OP_GET_OBJECT_ELEMENT4CALL: DO_GET_OBJECT_ELEMENT({
@@ -575,7 +575,7 @@ void Request::execute(ArrayOperation& ops) {
 			})
 		case OP::OP_GET_OBJECT_VAR_ELEMENT__WRITE: DO_GET_OBJECT_VAR_ELEMENT({
 				Value& value=get_element(object, *field);
-				write_assign_lang(value);
+				write_pass_lang(value);
 			})
 #ifdef FEATURE_GET_ELEMENT4CALL
 		case OP::OP_GET_OBJECT_VAR_ELEMENT4CALL: DO_GET_OBJECT_VAR_ELEMENT({
@@ -610,7 +610,7 @@ void Request::execute(ArrayOperation& ops) {
 				const String& name=stack.pop().string();  debug_name=&name;
 				Value& ncontext=stack.pop().value();
 				Value& value=get_element(ncontext, name);
-				write_assign_lang(value);
+				write_pass_lang(value);
 				break;
 			}
 
@@ -635,7 +635,7 @@ void Request::execute(ArrayOperation& ops) {
 				DEBUG_PRINT_STRING(name)
 
 				Value& value=get_element(*rcontext, name);
-				write_assign_lang(value);
+				write_pass_lang(value);
 				break;
 			}
 
@@ -666,7 +666,7 @@ void Request::execute(ArrayOperation& ops) {
 				if(opcode==OP::OP_WITH_SELF__VALUE__GET_ELEMENT){
 					stack.push(value);
 				} else {
-					write_assign_lang(value);
+					write_pass_lang(value);
 				}
 				break;
 			}
@@ -677,8 +677,6 @@ void Request::execute(ArrayOperation& ops) {
 				ArrayOperation& local_ops=*i.next().ops;
 				
 				WContext *saved_wcontext=wcontext;
-				String::Language saved_lang=flang;
-				flang=String::L_PASS_APPENDED;
 #ifdef OPTIMIZE_SINGLE_STRING_WRITE
 				WObjectPoolWrapper local(wcontext);
 #else
@@ -689,7 +687,6 @@ void Request::execute(ArrayOperation& ops) {
 				execute(local_ops);
 
 				stack.push(wcontext->result());
-				flang=saved_lang;
 				wcontext=saved_wcontext;
 				break;
 			}

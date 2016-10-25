@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.240 2016/10/11 21:30:16 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.241 2016/10/25 23:37:52 moko Exp $";
 
 // defines
 
@@ -106,17 +106,19 @@ String::Language get_untaint_lang(const String& lang_name){
 static void _untaint(Request& r, MethodParams& params) {
 	String::Language lang;
 	if(params.count()==1)
-		lang=String::L_AS_IS; // mark as simply 'as-is'. useful in html from sql 
+		lang=String::L_AS_IS; // mark as simply 'as-is'. useful in html from sql
 	else
 		lang=get_untaint_lang(params.as_string(0, "lang must be string"));
 
-	{
-		Value& vbody=params.as_junction(params.count()-1, "body must be code");
-		
-		Temp_lang temp_lang(r, lang); // set temporarily specified ^untaint[language;
-		Value& result=r.process(vbody); // process marking tainted with that lang
-		r.write_assign_lang(result);
-	}
+	Value& vbody=params.as_junction(params.count()-1, "body must be code");
+	Value& result=r.process(vbody);
+
+	if(const String* string=result.get_string()){
+		String &untainted=*new String();
+		string->append_to(untainted, lang); // mark all tainted to specified language
+		r.write_pass_lang(untainted);
+	} else
+		r.write_pass_lang(result); // this is not normal, just backward compatibility
 }
 
 static void _taint(Request& r, MethodParams& params) {
@@ -130,7 +132,7 @@ static void _taint(Request& r, MethodParams& params) {
 		Value& vbody=params.as_no_junction(params.count()-1, "body must not be code");
 		
 		String result(vbody.as_string(), lang); // force result language to specified
-		r.write_assign_lang(result);
+		r.write_pass_lang(result);
 	}
 }
 
@@ -161,8 +163,6 @@ static void _process(Request& r, MethodParams& params) {
 		if(!target_class)
 			throw Exception(PARSER_RUNTIME, 0, "no target class");
 
-		// temporary remove language change
-		Temp_lang temp_lang(r, String::L_PARSER_CODE);
 		// temporary zero @main so to maybe-replace it in processed code
 		Temp_method temp_method_main(*target_class, main_method_name, 0);
 
@@ -203,12 +203,14 @@ static void _process(Request& r, MethodParams& params) {
 		uint processe_file_no=file_alias ? r.register_file(r.absolute(*file_alias)) : pseudo_file_no__process;
 		// process...{string}
 		Value& vjunction=params.as_junction(index, "body must be code");
+		// temporary remove language change
+		Temp_lang temp_lang(r, String::L_PARSER_CODE);
 		// evaluate source to process
 		const String& source=r.process_to_string(vjunction);
 
 		Temp_class_replace class_replace(r, allow_class_replace);
 
-		r.use_buf(*target_class, source.untaint_cstr(String::L_AS_IS, r.connection(false)), main_alias, processe_file_no, line_no_alias_offset);
+		r.use_buf(*target_class, source.untaint_cstr(String::L_PARSER_CODE, r.connection(false)), main_alias, processe_file_no, line_no_alias_offset);
 
 		// main_method
 		main_method=target_class->get_method(main_method_name);
@@ -782,7 +784,7 @@ static void _cache(Request& r, MethodParams& params) {
 				scope.body_from_disk=cached.body; // storing for user to retrive it with ^cache[]
 			} else {
 				// and it's not expired yet write it out 
-   				r.write_assign_lang(*cached.body);
+   				r.write_pass_lang(*cached.body);
    				// happy with it
    				return;
    			}
@@ -794,7 +796,7 @@ static void _cache(Request& r, MethodParams& params) {
 		const String* processed_body=locked_process_and_cache_put(r, body_code, catch_code, scope, file_spec);
 		if(processed_body){
 			// write it out 
-			r.write_assign_lang(*processed_body);
+			r.write_pass_lang(*processed_body);
 			// happy with it
 			return;
 		} else {
@@ -808,9 +810,9 @@ static void _cache(Request& r, MethodParams& params) {
 	// process without caching
 	if(catch_code){
 		Try_catch_result result=try_catch(r, process_try_body_code, &body_code, catch_code);
-		r.write_assign_lang(result.processed_code);
+		r.write_pass_lang(result.processed_code);
 	} else {
-		r.write_assign_lang(r.process_to_string(body_code));
+		r.write_pass_lang(r.process_to_string(body_code));
 	}
 }
 

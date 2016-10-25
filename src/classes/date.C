@@ -13,7 +13,7 @@
 #include "pa_vdate.h"
 #include "pa_vtable.h"
 
-volatile const char * IDENT_DATE_C="$Id: date.C,v 1.106 2016/10/06 20:38:36 moko Exp $" IDENT_PA_VDATE_H;
+volatile const char * IDENT_DATE_C="$Id: date.C,v 1.107 2016/10/25 23:37:52 moko Exp $" IDENT_PA_VDATE_H;
 
 // class
 
@@ -288,13 +288,13 @@ static void _sql_string(Request& r, MethodParams& params) {
 			throw Exception(PARSER_RUNTIME, &what, "'type' must be 'date', 'time' or 'datetime'");
 	}
 
-	r.write_assign_lang(*vdate.get_sql_string(format));
+	r.write_pass_lang(*vdate.get_sql_string(format));
 }
 
 static void _gmt_string(Request& r, MethodParams&) {
 	VDate& vdate=GET_SELF(r, VDate);
 
-	r.write_assign_lang(*vdate.get_gmt_string());
+	r.write_pass_lang(*vdate.get_gmt_string());
 }
 
 static void _iso_string(Request& r, MethodParams& params) {
@@ -324,7 +324,7 @@ static void _iso_string(Request& r, MethodParams& params) {
 				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 		}
 
-	r.write_assign_lang(*vdate.get_iso_string(format));
+	r.write_pass_lang(*vdate.get_iso_string(format));
 }
 
 static void _roll(Request& r, MethodParams& params) {

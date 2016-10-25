@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.233 2016/10/11 21:30:16 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.234 2016/10/25 23:37:52 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -250,15 +250,6 @@ public:
 	/// appending possible string, passing language built into string being written
 	void write_pass_lang(Value& avalue) {
 		wcontext->write(avalue, String::L_PASS_APPENDED);
-	}
-
-	/// appending possible string, assigning untaint language
-	void write_assign_lang(Value& avalue) {
-		wcontext->write(avalue, flang); 
-	}
-	/// appending string, assigning untaint language
-	void write_assign_lang(const String& astring) {
-		wcontext->write(astring, flang); 
 	}
 
 	/// appending sure value
