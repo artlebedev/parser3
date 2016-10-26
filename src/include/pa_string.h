@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.219 2016/09/08 20:41:48 moko Exp $"
+#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.220 2016/10/26 16:40:49 moko Exp $"
 
 // includes
 #include "pa_types.h"
@@ -96,11 +96,6 @@ public:
 		L_CLEAN='0',	///< clean  WARNING: read above warning before changing
 		L_AS_IS='A',	///< leave all characters intact  WARNING: read above warning before changing
 
-		L_PASS_APPENDED='P',
-			/**<
-				leave lang built into string being appended.
-				just a flag, that value not stored
-			*/
 		L_TAINTED='T',	///< tainted, untaint lang as assigned later 
 		// untaint langs. assigned by ^untaint[lang]{...}
 		L_FILE_SPEC='F',	///< file specification
@@ -588,6 +583,7 @@ public:
 		return Body(x).ncmp(0/*x_begin*/, body, 0/*y_begin*/, length())==0;
 	}
 
+	String& append_to(String& dest) const;
 	String& append_to(String& dest, Language lang, bool forced=false) const;
 	String& append(const String& src, Language lang, bool forced=false) { 
 		return src.append_to(*this, lang, forced);
@@ -600,7 +596,7 @@ public:
 		return *this;
 	}
 
-	String& operator << (const String& src) { return append(src, L_PASS_APPENDED); }
+	String& operator << (const String& src) { return src.append_to(*this); }
 	String& operator << (const char* src) { return append_help_length(src, 0, L_AS_IS); }
 	String& operator << (const Body& src){
 		langs.appendHelper(body, L_AS_IS, src);

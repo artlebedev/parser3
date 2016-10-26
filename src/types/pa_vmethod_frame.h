@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.111 2016/10/11 17:36:15 moko Exp $"
+#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.112 2016/10/26 16:40:50 moko Exp $"
 
 #include "pa_symbols.h"
 #include "pa_wcontext.h"
@@ -179,7 +179,7 @@ public: // Value
 	}
 
 	/// VMethodFrame: appends a fstring to result
-	override void write(const String& astring, String::Language alang) {
+	override void write(const String& astring) {
 #ifdef OPTIMIZE_RESULT
 		switch (method.result_optimization){
 			case Method::RO_USE_RESULT:
@@ -192,7 +192,7 @@ public: // Value
 			case Method::RO_USE_WCONTEXT: break;
 		}
 #endif
-		WContext::write(astring, alang);
+		WContext::write(astring);
 	}
 
 private:

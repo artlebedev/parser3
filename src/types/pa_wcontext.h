@@ -8,7 +8,7 @@
 #ifndef PA_WCONTEXT_H
 #define PA_WCONTEXT_H
 
-#define IDENT_PA_WCONTEXT_H "$Id: pa_wcontext.h,v 1.64 2016/09/29 22:08:14 moko Exp $"
+#define IDENT_PA_WCONTEXT_H "$Id: pa_wcontext.h,v 1.65 2016/10/26 16:40:50 moko Exp $"
 
 #include "pa_value.h"
 #include "pa_vstring.h"
@@ -52,9 +52,9 @@ public: // Value
 public: // WContext
 
 	/// appends a fstring to result
-	virtual void write(const String& astring, String::Language alang) {
+	virtual void write(const String& astring) {
 		if(!fstring) fstring=new String;
-		astring.append_to(*fstring, alang);
+		astring.append_to(*fstring);
 	}
 	/// writes Value; raises an error if already, providing origin
 	virtual void write(Value& avalue);
@@ -63,9 +63,9 @@ public: // WContext
 		if value is VString writes fstring,
 		else writes Value; raises an error if already, providing origin
 	*/
-	virtual void write(Value& avalue, String::Language alang) {
+	virtual void write_as_string(Value& avalue) {
 		if(const String* string=avalue.get_string())
-			write(*string, alang);
+			write(*string);
 		else
 			write(avalue);
 	}

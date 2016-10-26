@@ -8,7 +8,7 @@
 #ifndef PA_WWRAPPER_H
 #define PA_WWRAPPER_H
 
-#define IDENT_PA_WWRAPPER_H "$Id: pa_wwrapper.h,v 1.49 2016/10/04 21:10:16 moko Exp $"
+#define IDENT_PA_WWRAPPER_H "$Id: pa_wwrapper.h,v 1.50 2016/10/26 16:40:50 moko Exp $"
 
 #define OPTIMIZE_SINGLE_STRING_WRITE
 
@@ -72,11 +72,11 @@ public:
 		return WWrapper::put_element(aname, avalue); 
 	}
 
-	override void write(const String& astring, String::Language alang) {
+	override void write(const String& astring) {
 		if(fstate == WS_KEEP_VALUE)
 			flush();
 		fstate=WS_TRANSPARENT;
-		WWrapper::write(astring, alang);
+		WWrapper::write(astring);
 	}
 
 	override void write(Value& avalue) {
@@ -86,12 +86,12 @@ public:
 		WWrapper::write(avalue);
 	}
 
-	override void write(Value& avalue, String::Language alang) {
+	override void write_as_string(Value& avalue) {
 		switch(fstate){
 			case WS_NONE:{
 				// alang is allways L_PASS_APPENDED, but just in case we check it
 				// only VString can be cached, no get_string() call as VInt/etc will be affected
-				if(avalue.is_string() && alang == String::L_PASS_APPENDED){
+				if(avalue.is_string()){
 					fvalue=&avalue;
 					fstate=WS_KEEP_VALUE;
 					return;
@@ -107,7 +107,7 @@ public:
 		fstate=WS_TRANSPARENT;
 		// we copy WWrapper::write here to prevent virtual call to our class
 		if(const String* string=avalue.get_string())
-			WWrapper::write(*string, alang);
+			WWrapper::write(*string);
 		else
 			WWrapper::write(avalue);
 	}
@@ -118,7 +118,7 @@ private:
 	WState fstate;
 
 	inline void flush(){
-		WWrapper::write(*fvalue->get_string(), String::L_PASS_APPENDED);
+		WWrapper::write(*fvalue->get_string());
 		fvalue=0;
 	}
 };

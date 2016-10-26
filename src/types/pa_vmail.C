@@ -18,7 +18,7 @@
 #include "pa_vfile.h"
 #include "pa_uue.h"
 
-volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.122 2016/10/26 15:44:50 moko Exp $" IDENT_PA_VMAIL_H;
+volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.123 2016/10/26 16:40:50 moko Exp $" IDENT_PA_VMAIL_H;
 
 #ifdef WITH_MAILRECEIVE
 extern "C" {
@@ -508,8 +508,8 @@ static void store_message_element(HashStringValue::key_type raw_element_name,
 	}
 
 	// preparing header line
-	const String& source_line=attributed_meaning_to_string(*element_value,
-		String::L_PASS_APPENDED/*does not matter, would cstr(AS_IS) right away*/);
+	const String& source_line=attributed_meaning_to_string(*element_value, String::L_AS_IS);
+
 	if(source_line.is_empty())
 		return; // we don't need empty headers here [used in clearing content-disposition]
 

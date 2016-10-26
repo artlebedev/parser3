@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_UNTAINT_C="$Id: untaint.C,v 1.170 2015/10/26 01:21:59 moko Exp $";
+volatile const char * IDENT_UNTAINT_C="$Id: untaint.C,v 1.171 2016/10/26 16:40:50 moko Exp $";
 
 
 #include "pa_string.h"
@@ -179,6 +179,25 @@ int append_fragment_nonoptimizing(char alang, size_t asize, Append_fragment_info
 	return 0; // 0=continue
 }
 
+
+/** 
+	appends to other String without language change
+*/
+
+String& String::append_to(String& dest) const {
+	if(is_empty())
+		return dest;
+
+	// first: fragment infos
+	dest.langs.appendHelper(dest.body, langs, body);
+
+	// next: letters
+	dest.body<<body;
+
+	ASSERT_STRING_INVARIANT(dest);
+	return dest;
+}
+
 /** 
 	appends to other String,
 	marking all tainted pieces of it with @a lang.
@@ -191,9 +210,7 @@ String& String::append_to(String& dest, Language ilang, bool forced) const {
 
 	// first: fragment infos
 	
-	if(ilang==L_PASS_APPENDED) // without language-change?
-		dest.langs.appendHelper(dest.body, langs, body);
-	else if(forced) //forcing passed lang?
+	if(forced) //forcing passed lang?
 		dest.langs.appendHelper(dest.body, ilang, body);
 	else {
 		if(langs.opt.is_not_just_lang){
