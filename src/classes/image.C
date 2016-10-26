@@ -25,7 +25,7 @@
 #include "pa_vdate.h"
 #include "pa_table.h"
 
-volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.154 2016/10/04 22:05:28 moko Exp $";
+volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.155 2016/10/26 19:10:31 moko Exp $";
 
 // defines
 
@@ -291,16 +291,12 @@ public:
 		case SEEK_CUR: new_offset=offset+value; break;
 		case SEEK_SET: new_offset=(size_t)value; break;
 		default: 
-			throw Exception(0, 
-				0, 
-				"whence #%d not supported", 0, whence); 
+			throw Exception(0, 0, "whence #%d not supported", 0, whence); 
 			break; // never
 		}
 		
 		if((ssize_t)new_offset<0 || new_offset>size)
-			throw Exception(IMAGE_FORMAT,
-				&file_name, 
-				"seek(value=%l, whence=%d) failed: out of buffer, new_offset>size (%l>%l) or new_offset<0", 
+			throw Exception(IMAGE_FORMAT, &file_name, "seek(value=%l, whence=%d) failed: out of buffer, new_offset>size (%l>%l) or new_offset<0", 
 					value, whence, new_offset, size);
 		offset=new_offset;
 	}
@@ -402,25 +398,17 @@ static void measure_gif(const String& origin_string, Measure_reader& reader, ush
 	const char* buf;
 	const size_t head_size=sizeof(GIF_Header);
 	if(reader.read(buf, head_size)<head_size)
-		throw Exception(IMAGE_FORMAT, 
-			&origin_string, 
-			"not GIF file - too small");
+		throw Exception(IMAGE_FORMAT, &origin_string, "not GIF file - too small");
 	GIF_Header *head=(GIF_Header *)buf;
 
 	if(strncmp(head->signature, "GIF", 3)!=0)
-		throw Exception(IMAGE_FORMAT, 
-			&origin_string, 
-			"not GIF file - wrong signature");	
+		throw Exception(IMAGE_FORMAT, &origin_string, "not GIF file - wrong signature");
 
 	width=endian_to_ushort(false, head->width);
 	height=endian_to_ushort(false, head->height);
 }
 
-static Value* parse_IFD_entry_formatted_one_value(
-												  bool is_big,
-												  ushort format, 
-												  size_t component_size, 
-												  const uchar *value) {
+static Value* parse_IFD_entry_formatted_one_value(bool is_big, ushort format, size_t component_size, const uchar *value) {
 	switch(format) {
 	case 1: // unsigned byte
 		return new VInt((uchar)value[0]);
@@ -465,17 +453,13 @@ static Value* parse_IFD_entry_formatted_one_value(
 // date.C
 tm cstr_to_time_t(char *, const char **);
 
-static Value* parse_IFD_entry_formatted_value(bool is_big, ushort format, 
-					      size_t component_size, uint components_count, 
-					      const uchar *value) {
+static Value* parse_IFD_entry_formatted_value(bool is_big, ushort format, size_t component_size, uint components_count, const uchar *value) {
 	if(format==2) { // ascii string, exception: the only type with varying size
 		const char* cstr=(const char* )value;
 		size_t length=components_count;
 		// Data format is "YYYY:MM:DD HH:MM:SS"+0x00, total 20bytes
-		if(length==JPEG_EXIF_DATE_CHARS 
-			&& isdigit((unsigned char)cstr[0])
-			&& cstr[length-1]==0) {
-			char cstr_writable[JPEG_EXIF_DATE_CHARS]; 
+		if(length==JPEG_EXIF_DATE_CHARS && isdigit((unsigned char)cstr[0]) && cstr[length-1]==0) {
+			char cstr_writable[JPEG_EXIF_DATE_CHARS];
 			strcpy(cstr_writable, cstr);
 
 			try {
@@ -502,9 +486,7 @@ static Value* parse_IFD_entry_formatted_value(bool is_big, ushort format,
 	return result;
 }
 
-static Value* parse_IFD_entry_value(
-									bool is_big, Measure_reader& reader, long tiff_base,
-									JPG_Exif_IFD_entry& entry) {
+static Value* parse_IFD_entry_value(bool is_big, Measure_reader& reader, long tiff_base, JPG_Exif_IFD_entry& entry) {
 	size_t format2component_size[]={
 		0, // undefined
 		1, // unsigned byte
@@ -539,10 +521,7 @@ static Value* parse_IFD_entry_value(
 	Value* result;
 
 	if(value_size<=4)
-		result=parse_IFD_entry_formatted_value(
-			is_big, format, 
-			component_size, components_count, 
-			entry.value_or_offset_to_it);
+		result=parse_IFD_entry_formatted_value(is_big, format, component_size, components_count, entry.value_or_offset_to_it);
 	else {
 		long remembered=reader.tell();
 		{
@@ -550,10 +529,7 @@ static Value* parse_IFD_entry_value(
 			const char* value;
 			if(reader.read(value, value_size)<sizeof(value_size))
 				return 0;
-			result=parse_IFD_entry_formatted_value(
-				is_big, format, 
-				component_size, components_count, 
-				(const uchar*)value);
+			result=parse_IFD_entry_formatted_value(is_big, format, component_size, components_count, (const uchar*)value);
 		}
 		reader.seek(remembered, SEEK_SET);
 	}
@@ -561,12 +537,9 @@ static Value* parse_IFD_entry_value(
 	return result;
 }
 
-static void parse_IFD(HashStringValue& hash,
-		      bool is_big, Measure_reader& reader, long tiff_base, bool gps=false);
+static void parse_IFD(HashStringValue& hash, bool is_big, Measure_reader& reader, long tiff_base, bool gps=false);
 
-static void parse_IFD_entry(HashStringValue& hash,
-			    bool is_big, Measure_reader& reader, long tiff_base,
-			    JPG_Exif_IFD_entry& entry, bool gps=false) {
+static void parse_IFD_entry(HashStringValue& hash, bool is_big, Measure_reader& reader, long tiff_base, JPG_Exif_IFD_entry& entry, bool gps=false) {
 	ushort tag=endian_to_ushort(is_big, entry.tag);
 
 	if(tag==JPG_IFD_TAG_EXIF_OFFSET || tag==JPG_IFD_TAG_EXIF_GPS_OFFSET){
@@ -587,9 +560,7 @@ static void parse_IFD_entry(HashStringValue& hash,
 	}
 }
 
-static void parse_IFD(
-		      HashStringValue& hash,
-		      bool is_big, Measure_reader& reader, long tiff_base, bool gps) {
+static void parse_IFD(HashStringValue& hash, bool is_big, Measure_reader& reader, long tiff_base, bool gps) {
 	const char* buf;
 	if(reader.read(buf, sizeof(JPG_Exif_IFD_begin))<sizeof(JPG_Exif_IFD_begin))
 		return;
@@ -608,9 +579,7 @@ static void parse_IFD(
 static Value* parse_exif(Measure_reader& reader, const String& origin_string) {
 	const char* buf;
 	if(reader.read(buf, sizeof(JPG_Exif_segment_begin))<sizeof(JPG_Exif_segment_begin))
-		throw Exception(IMAGE_FORMAT, 
-			&origin_string, 
-			"not JPEG file - can not fully read Exif segment start");
+		throw Exception(IMAGE_FORMAT, &origin_string, "not JPEG file - can not fully read Exif segment start");
 
 	JPG_Exif_segment_begin *start=(JPG_Exif_segment_begin *)buf;
 	if(memcmp(start->signature, "Exif\0\0", 4+2)!=0) //signature invalid?
@@ -646,15 +615,11 @@ static void measure_jpeg(const String& origin_string, Measure_reader& reader, us
 	const char* buf;
 	const size_t prefix_size=2;
 	if(reader.read(buf, prefix_size)<prefix_size)
-		throw Exception(IMAGE_FORMAT, 
-			&origin_string, 
-			"not JPEG file - too small");
+		throw Exception(IMAGE_FORMAT, &origin_string, "not JPEG file - too small");
 	uchar *signature=(uchar *)buf;
 	
 	if(!(signature[0]==0xFF && signature[1]==0xD8)) 
-		throw Exception(IMAGE_FORMAT, 
-			&origin_string, 
-			"not JPEG file - wrong signature");
+		throw Exception(IMAGE_FORMAT, &origin_string, "not JPEG file - wrong signature");
 
 	while(true) {
 		uint segment_base=reader.tell()+2/*marker,code*/;
@@ -664,9 +629,7 @@ static void measure_jpeg(const String& origin_string, Measure_reader& reader, us
 
         // Verify that it's a valid segment.
 		if(head->marker!=MARKER)
-			throw Exception(IMAGE_FORMAT, 
-				&origin_string, 
-				"not JPEG file - marker not found");
+			throw Exception(IMAGE_FORMAT, &origin_string, "not JPEG file - marker not found");
 
 		switch(head->code) {
 		// http://park2.wakwak.com/~tsuruzoh/Computer/Digicams/exif-e.html
@@ -682,9 +645,7 @@ static void measure_jpeg(const String& origin_string, Measure_reader& reader, us
 			{
 				// Segments that contain size info
 				if(reader.read(buf, sizeof(JPG_Size_segment_body))<sizeof(JPG_Size_segment_body))
-					throw Exception(IMAGE_FORMAT, 
-						&origin_string, 
-						"not JPEG file - can not fully read Size segment");
+					throw Exception(IMAGE_FORMAT, &origin_string, "not JPEG file - can not fully read Size segment");
 				JPG_Size_segment_body *body=(JPG_Size_segment_body *)buf;
 				
 				width=endian_to_ushort(true, body->width);
@@ -696,9 +657,7 @@ static void measure_jpeg(const String& origin_string, Measure_reader& reader, us
 		reader.seek(segment_base+endian_to_ushort(true, head->length), SEEK_SET);
 	}
 
-	throw Exception(IMAGE_FORMAT, 
-		&origin_string, 
-		"broken JPEG file - size frame not found");
+	throw Exception(IMAGE_FORMAT, &origin_string, "broken JPEG file - size frame not found");
 }
 
 static void measure_png(const String& origin_string, Measure_reader& reader, ushort& width, ushort& height) {
@@ -783,10 +742,7 @@ struct Attrib_info {
 	HashStringValue* skip; ///< tag attributes not to append to tag string [to skip]
 };
 #endif
-static void append_attrib_pair(
-				HashStringValue::key_type key, 
-				HashStringValue::value_type value, 
-				Attrib_info* info) {
+static void append_attrib_pair(HashStringValue::key_type key, HashStringValue::value_type value, Attrib_info* info) {
 	// skip user-specified, internal(starting with "line-") attributes and border attribute with empty value
 	if(
 		(info->skip && info->skip->get(key))
@@ -816,9 +772,7 @@ static void _html(Request& r, MethodParams& params) {
 				Attrib_info info={&tag, 0};
 				attribs->for_each<Attrib_info*>(append_attrib_pair, &info);
 			} else
-				throw Exception(PARSER_RUNTIME, 
-					0, 
-					"attributes must be hash");
+				throw Exception(PARSER_RUNTIME, 0, "attributes must be hash");
 		}
 	}
 
@@ -831,22 +785,17 @@ static void _html(Request& r, MethodParams& params) {
 }
 
 /// @test wrap FILE to auto-object
-static gdImage* load(Request& r, 
-					 const String& file_name){
+static gdImage* load(Request& r, const String& file_name){
 	const char* file_name_cstr=r.absolute(file_name).taint_cstr(String::L_FILE_SPEC);
 	if(FILE *f=fopen(file_name_cstr, "rb")) {
 		gdImage* image=new gdImage;
 		bool ok=image->CreateFromGif(f);
 		fclose(f);
 		if(!ok)
-			throw Exception(IMAGE_FORMAT, 
-				&file_name,
-				"is not in GIF format");
+			throw Exception(IMAGE_FORMAT, &file_name, "is not in GIF format");
 		return image;
 	} else {
-		throw Exception("file.missing", 
-			0, 
-			"can not open '%s'", file_name_cstr);
+		throw Exception("file.missing", 0, "can not open '%s'", file_name_cstr);
 	}
 }
 
@@ -927,20 +876,16 @@ static void _bar(Request& r, MethodParams& params) {
 }
 
 #ifndef DOXYGEN
-static void add_point(Table::element_type row, 
-					  gdImage::Point **p) {
+static void add_point(Table::element_type row, gdImage::Point **p) {
 	if(row->count()!=2)
-		throw Exception(0,
-			0,
-			"coordinates table must contain two columns: x and y values");
+		throw Exception(0, 0, "coordinates table must contain two columns: x and y values");
 	(**p).x=row->get(0)->as_int();
 	(**p).y=row->get(1)->as_int();
 	(*p)++;
 }
 #endif
 #ifndef DOXYGEN
-static void add_point(int x, int y, 
-					  gdImage::Point **p) {
+static void add_point(int x, int y, gdImage::Point **p) {
 	(**p).x=x;
 	(**p).y=y;
 	(*p)++;
@@ -1021,10 +966,7 @@ static void _polybar(Request& r, MethodParams& params) {
 
 // Font class
 
-Font::Font(
-	Charset& asource_charset, 
-	const String& aalphabet, 
-	gdImage* aifont, int aheight, int amonospace, int aspacebarspace, int aletterspacing):
+Font::Font(Charset& asource_charset, const String& aalphabet, gdImage* aifont, int aheight, int amonospace, int aspacebarspace, int aletterspacing):
 	fsource_charset(asource_charset),
 	height(aheight),
 	monospace(amonospace),
@@ -1116,9 +1058,7 @@ static void _font(Request& r, MethodParams& params) {
 	const String& alphabet=params.as_string(0, "alphabet must not be code");
 	size_t alphabet_length=alphabet.length(r.charsets.source());
 	if(!alphabet_length)
-		throw Exception(PARSER_RUNTIME,
-			0,
-			"alphabet must not be empty");
+		throw Exception(PARSER_RUNTIME, 0, "alphabet must not be empty");
 
 	gdImage* image=load(r, params.as_string(1, FILE_NAME_MUST_NOT_BE_CODE));
 
@@ -1159,16 +1099,9 @@ static void _font(Request& r, MethodParams& params) {
 	}
 
 	if(int remainder=image->SY() % alphabet_length)
-		throw Exception(PARSER_RUNTIME,
-			0,
-			"font-file height(%d) not divisable by alphabet size(%d), remainder=%d",
-				image->SY(), alphabet_length, remainder);
+		throw Exception(PARSER_RUNTIME, 0, "font-file height(%d) not divisable by alphabet size(%d), remainder=%d", image->SY(), alphabet_length, remainder);
 	
-	GET_SELF(r, VImage).set_font(new Font(
-		r.charsets.source(),
-		alphabet, 
-		image, 
-		image->SY() / alphabet_length, monospace_width, spacebar_width, letter_spacing));
+	GET_SELF(r, VImage).set_font(new Font(r.charsets.source(), alphabet, image, image->SY() / alphabet_length, monospace_width, spacebar_width, letter_spacing));
 }
 
 static void _text(Request& r, MethodParams& params) {
@@ -1233,9 +1166,7 @@ gdImage& as_image(MethodParams& params, int index, const char* msg) {
 	if(Value* vimage=value.as(VIMAGE_TYPE)) {
 		return static_cast<VImage *>(vimage)->image();
 	} else
-		throw Exception(PARSER_RUNTIME, 
-			0, 
-			msg);
+		throw Exception(PARSER_RUNTIME, 0, msg);
 }
 
 static void _copy(Request& r, MethodParams& params) {
