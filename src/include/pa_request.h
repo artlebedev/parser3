@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.234 2016/10/25 23:37:52 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.235 2016/10/26 15:44:49 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -232,15 +232,14 @@ public:
 	
 	/// appending, sure of clean string inside
 	void write_no_lang(const String& astring) {
-		wcontext->write(astring, 
-			(String::Language)(String::L_CLEAN | (flang & String::L_OPTIMIZE_BIT) ));
+		wcontext->write(astring, String::L_PASS_APPENDED);
 	}
 	/// appending sure value, that would be converted to clean string
 	void write_no_lang(Value& avalue) {
 		if(wcontext->get_in_expression())
 			wcontext->write(avalue);
 		else
-			wcontext->write(avalue, (String::Language)(String::L_CLEAN | (flang & String::L_OPTIMIZE_BIT) ));
+			wcontext->write(avalue, String::L_PASS_APPENDED);
 	}
 
 	/// appending string, passing language built into string being written
@@ -447,20 +446,6 @@ public:
 		fr.method_frame=method_frame, fr.rcontext=rcontext; fr.wcontext=wcontext;
 		fr.flang=flang;
 		fr.fconnection=fconnection;
-	}
-};
-
-///	Auto-object used for temporary changing Request::flang.
-class Temp_lang {
-	Request& frequest;
-	String::Language saved_lang;
-public:
-	Temp_lang(Request& arequest, String::Language alang) :
-		frequest(arequest),
-		saved_lang(arequest.set_lang(alang)) {
-	}
-	~Temp_lang() {
-		frequest.restore_lang(saved_lang);
 	}
 };
 

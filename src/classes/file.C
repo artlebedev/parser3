@@ -25,7 +25,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.253 2016/10/25 23:37:52 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.254 2016/10/26 15:44:49 moko Exp $";
 
 // defines
 
@@ -990,9 +990,8 @@ public:
 static void _sql(Request& r, MethodParams& params) {
 	Value& statement=params.as_junction(0, "statement must be code");
 
-	Temp_lang temp_lang(r, String::L_SQL);
 	const String& statement_string=r.process_to_string(statement);
-	const char* statement_cstr=statement_string.untaint_cstr(r.flang, r.connection());
+	const char* statement_cstr=statement_string.untaint_cstr(String::L_SQL, r.connection());
 
 	File_sql_event_handlers handlers(statement_string, statement_cstr);
 

@@ -18,7 +18,7 @@
 #include "pa_vfile.h"
 #include "pa_uue.h"
 
-volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.121 2016/09/21 15:35:11 moko Exp $" IDENT_PA_VMAIL_H;
+volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.122 2016/10/26 15:44:50 moko Exp $" IDENT_PA_VMAIL_H;
 
 #ifdef WITH_MAILRECEIVE
 extern "C" {
@@ -666,32 +666,30 @@ static const String& text_value_to_string(Request& r,
 
 	// body
 	const String* body;
+	String::Language body_lang=String::L_AS_IS;
+
 	switch(pt) {
 	case P_TEXT:
 		{
 			body=&text_value->as_string();
 			break;
 		}
-	case P_HTML: 
+	case P_HTML:
 		{
-			Temp_lang temp_lang(r, String::Language(String::L_HTML | String::L_OPTIMIZE_BIT));
+			body_lang=String::Language(String::L_HTML | String::L_OPTIMIZE_BIT);
 			if(text_value->get_junction())
 				body=&r.process_to_string(*text_value);
 			else
-				throw Exception(PARSER_RUNTIME,
-					0,
-					"html part value must be code");
-
+				throw Exception(PARSER_RUNTIME, 0, "html part value must be code");
 			break;
 		}
 	default:
-		throw Exception(0,
-			0,
-			"unhandled part type #%d", pt);
+		throw Exception(0, 0, "unhandled part type #%d", pt);
 	}
+
 	if(body) {
 		Request_charsets charsets(r.charsets.source(), r.charsets.mail()/*uri!*/, r.charsets.mail());
-		const char* body_cstr=body->untaint_and_transcode_cstr(String::L_AS_IS, &charsets);
+		const char* body_cstr=body->untaint_and_transcode_cstr(body_lang, &charsets);
 		result.append_know_length(body_cstr, strlen(body_cstr), String::L_CLEAN);
 	}
 

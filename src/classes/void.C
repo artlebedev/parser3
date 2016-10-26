@@ -12,7 +12,7 @@
 #include "pa_vvoid.h"
 #include "pa_sql_connection.h"
 
-volatile const char * IDENT_VOID_C="$Id: void.C,v 1.53 2016/04/06 16:08:19 moko Exp $";
+volatile const char * IDENT_VOID_C="$Id: void.C,v 1.54 2016/10/26 15:44:49 moko Exp $";
 
 // externs
 
@@ -71,9 +71,8 @@ static void _sql(Request& r, MethodParams& params) {
 	if(bind)
 		placeholders_count=marshal_binds(*bind, placeholders);
 
-	Temp_lang temp_lang(r, String::L_SQL);
 	const String& statement_string=r.process_to_string(statement);
-	const char* statement_cstr=statement_string.untaint_cstr(r.flang, r.connection());
+	const char* statement_cstr=statement_string.untaint_cstr(String::L_SQL, r.connection());
 
 	Void_sql_event_handlers handlers(statement_string);
 	r.connection()->query(

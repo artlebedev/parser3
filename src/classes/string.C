@@ -20,7 +20,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.231 2016/10/25 23:37:52 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.232 2016/10/26 15:44:49 moko Exp $";
 
 // class
 
@@ -394,7 +394,6 @@ static void _match(Request& r, MethodParams& params) {
 		vrcleaner.vregex=vregex;
 	}
 
-	Temp_lang temp_lang(r, String::L_PASS_APPENDED);
 	const String& src=GET_SELF(r, VString).string();
 	int matches_count=0;
 
@@ -553,9 +552,8 @@ const String* sql_result_string(Request& r, MethodParams& params, Value*& defaul
 	if(bind)
 		placeholders_count=marshal_binds(*bind, placeholders);
 
-	Temp_lang temp_lang(r, String::L_SQL);
 	const String& statement_string=r.process_to_string(statement);
-	const char* statement_cstr=statement_string.untaint_cstr(r.flang, r.connection());
+	const char* statement_cstr=statement_string.untaint_cstr(String::L_SQL, r.connection());
 
 	String_sql_event_handlers handlers(statement_string, statement_cstr);
 

@@ -22,7 +22,7 @@
 #define USE_STRINGSTREAM
 #endif
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.336 2016/10/04 22:05:28 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.337 2016/10/26 15:44:49 moko Exp $";
 
 // class
 
@@ -278,7 +278,6 @@ static void _create(Request& r, MethodParams& params) {
 	}
 
 	// data
-	Temp_lang temp_lang(r, String::L_PASS_APPENDED);
 	StringSplitHelper sdata(r.process_to_string(params.as_junction(data_param_index, "body must be table or code")));
 	char *data=sdata.base;
 
@@ -1217,7 +1216,6 @@ inline Table::element_type row_from_string(Request& r, Value &param){
 	if(!param.is_string() && !param.get_junction())
 		throw Exception(PARSER_RUNTIME, 0, "row must be string, code or hash");
 
-	Temp_lang temp_lang(r, String::L_PASS_APPENDED);
 	const String& string=r.process_to_string(param);
 
 	// parse cells
@@ -1407,9 +1405,8 @@ static void _sql(Request& r, MethodParams& params) {
 	if(bind)
 		placeholders_count=marshal_binds(*bind, placeholders);
 
-	Temp_lang temp_lang(r, String::L_SQL);
 	const String&  statement_string=r.process_to_string(statement);
-	const char* statement_cstr=statement_string.untaint_cstr(r.flang, r.connection());
+	const char* statement_cstr=statement_string.untaint_cstr(String::L_SQL, r.connection());
 
 	Table_sql_event_handlers handlers;
 

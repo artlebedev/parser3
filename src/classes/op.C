@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.241 2016/10/25 23:37:52 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.242 2016/10/26 15:44:49 moko Exp $";
 
 // defines
 
@@ -203,8 +203,6 @@ static void _process(Request& r, MethodParams& params) {
 		uint processe_file_no=file_alias ? r.register_file(r.absolute(*file_alias)) : pseudo_file_no__process;
 		// process...{string}
 		Value& vjunction=params.as_junction(index, "body must be code");
-		// temporary remove language change
-		Temp_lang temp_lang(r, String::L_PARSER_CODE);
 		// evaluate source to process
 		const String& source=r.process_to_string(vjunction);
 

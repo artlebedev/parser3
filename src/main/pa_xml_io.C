@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-volatile const char * IDENT_PA_XML_IO_C="$Id: pa_xml_io.C,v 1.31 2015/10/26 01:21:59 moko Exp $" IDENT_PA_XML_IO_H;
+volatile const char * IDENT_PA_XML_IO_C="$Id: pa_xml_io.C,v 1.32 2016/10/26 15:44:50 moko Exp $" IDENT_PA_XML_IO_H;
 
 #include "libxslt/extensions.h"
 
@@ -183,18 +183,11 @@ xmlFileOpenMethod (const char* afilename) {
 			param_body.append_know_length(s, strlen(s));
 
 		VString* vparam=new VString(*new String(param_body, String::L_TAINTED));
-		{
-			Temp_lang temp_lang(r, String::L_XML); // default language: XML
-			Request::Execute_nonvirtual_method_result body=
-				r.execute_nonvirtual_method(r.main_class, *method, vparam, true);
-			if(body.string) {
-				buf=body.string->untaint_cstr(r.flang);
-			} else
-				throw Exception(0,
-					new String(afilename),
-					"'%s' method not found in %s class", 
-							method_cstr, MAIN_CLASS_NAME);
-		}
+		Request::Execute_nonvirtual_method_result body=r.execute_nonvirtual_method(r.main_class, *method, vparam, true);
+		if(body.string) {
+			buf=body.string->untaint_cstr(String::L_XML);
+		} else
+			throw Exception(0, new String(afilename), "'%s' method not found in %s class", method_cstr, MAIN_CLASS_NAME);
 	} catch(const Exception& e) {
 		buf=e.comment();
 	} catch(...) {
