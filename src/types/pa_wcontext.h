@@ -8,7 +8,7 @@
 #ifndef PA_WCONTEXT_H
 #define PA_WCONTEXT_H
 
-#define IDENT_PA_WCONTEXT_H "$Id: pa_wcontext.h,v 1.65 2016/10/26 16:40:50 moko Exp $"
+#define IDENT_PA_WCONTEXT_H "$Id: pa_wcontext.h,v 1.66 2016/10/27 22:40:48 moko Exp $"
 
 #include "pa_value.h"
 #include "pa_vstring.h"
@@ -59,10 +59,7 @@ public: // WContext
 	/// writes Value; raises an error if already, providing origin
 	virtual void write(Value& avalue);
 
-	/**
-		if value is VString writes fstring,
-		else writes Value; raises an error if already, providing origin
-	*/
+	/// if value is string convertable writes fstring, else writes Value
 	virtual void write_as_string(Value& avalue) {
 		if(const String* string=avalue.get_string())
 			write(*string);
@@ -116,6 +113,15 @@ private: // status
 private:
 	Array<VJunction*> junctions;
 
+};
+
+
+class WExpressionContext: public WContext {
+
+	/// in expressions we don't attempt to convert to string
+	virtual void write_as_string(Value& avalue) {
+		write(avalue);
+	}
 };
 
 #endif
