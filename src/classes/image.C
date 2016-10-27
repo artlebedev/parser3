@@ -25,7 +25,7 @@
 #include "pa_vdate.h"
 #include "pa_table.h"
 
-volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.155 2016/10/26 19:10:31 moko Exp $";
+volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.156 2016/10/27 22:05:32 moko Exp $";
 
 // defines
 
@@ -527,7 +527,7 @@ static Value* parse_IFD_entry_value(bool is_big, Measure_reader& reader, long ti
 		{
 			reader.seek(tiff_base+endian_to_uint(is_big, entry.value_or_offset_to_it), SEEK_SET);
 			const char* value;
-			if(reader.read(value, value_size)<sizeof(value_size))
+			if(reader.read(value, value_size)<value_size)
 				return 0;
 			result=parse_IFD_entry_formatted_value(is_big, format, component_size, components_count, (const uchar*)value);
 		}
