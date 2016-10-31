@@ -13,7 +13,7 @@
 #include "pa_request.h"
 
 
-volatile const char * IDENT_PA_VALUE_C="$Id: pa_value.C,v 1.41 2016/05/18 17:47:22 moko Exp $" IDENT_PA_VALUE_H IDENT_PA_PROPERTY_H;
+volatile const char * IDENT_PA_VALUE_C="$Id: pa_value.C,v 1.42 2016/10/31 01:55:07 moko Exp $" IDENT_PA_VALUE_H IDENT_PA_PROPERTY_H;
 
 // globals
 
@@ -78,23 +78,19 @@ const String* Value::default_method_2_json_string(Value& default_method, Json_op
 }
 
 /// call this before invoking to ensure proper actual numbered params count
-void Method::check_actual_numbered_params(Value& self, 
-					MethodParams* actual_numbered_params) const {
-	int actual_count=actual_numbered_params?actual_numbered_params->count():0;
+void Method::check_actual_numbered_params(Value& self, MethodParams* actual_numbered_params) const {
+	int actual_count=actual_numbered_params ? actual_numbered_params->count() : 0;
 	if(actual_count<min_numbered_params_count || actual_count>max_numbered_params_count)
-		throw Exception(PARSER_RUNTIME,
-			0,
-			"native method of %s accepts %s %d parameter(s) (%d present)", 
-				self.type(),
-				actual_count<min_numbered_params_count ? "minimum" : "maximum",
-				actual_count<min_numbered_params_count ? min_numbered_params_count : max_numbered_params_count,
-				actual_count);
+		throw Exception(PARSER_RUNTIME, 0, "native method of %s accepts %s %d parameter(s) (%d present)", 
+			self.type(),
+			actual_count<min_numbered_params_count ? "minimum" : "maximum",
+			actual_count<min_numbered_params_count ? min_numbered_params_count : max_numbered_params_count,
+			actual_count);
 }
 
 // attributed meaning
 
-static void append_attribute_meaning(String& result,
-					Value& value, String::Language lang, bool forced) {
+static void append_attribute_meaning(String& result, Value& value, String::Language lang, bool forced) {
 	if(const String* string=value.get_string())
 		result.append(*string, lang, forced);
 	else
@@ -112,9 +108,8 @@ struct Attributed_meaning_info {
 	bool allow_bool;       // allow bool types during print attributes
 };
 #endif
-static void append_attribute_subattribute(HashStringValue::key_type akey, 
-					HashStringValue::value_type avalue, 
-					Attributed_meaning_info *info) {
+
+static void append_attribute_subattribute(HashStringValue::key_type akey, HashStringValue::value_type avalue, Attributed_meaning_info *info) {
 	if(akey==VALUE_NAME)
 		return;
 
@@ -135,8 +130,7 @@ static void append_attribute_subattribute(HashStringValue::key_type akey,
 		}
 	}
 }
-const String& attributed_meaning_to_string(Value& meaning, 
-					String::Language lang, bool forced, bool allow_bool) {
+const String& attributed_meaning_to_string(Value& meaning, String::Language lang, bool forced, bool allow_bool) {
 	String& result=*new String;
 	if(HashStringValue *hash=meaning.get_hash()) {
 		// $value(value) $subattribute(subattribute value)
