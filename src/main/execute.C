@@ -21,7 +21,7 @@
 #include "pa_vimage.h"
 #include "pa_wwrapper.h"
 
-volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.394 2016/11/01 22:39:00 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
+volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.395 2016/11/01 22:53:20 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
 
 //#define DEBUG_EXECUTE
 
@@ -774,9 +774,9 @@ void Request::execute(ArrayOperation& ops) {
 				Value *result;
 				{
 					VExpressionFrame frame(*junction->method, method_frame, junction->self);
-					METHOD_FRAME_ACTION(call_expression(frame));
+					METHOD_FRAME_ACTION(call(frame));
 					result=&frame.result();
-					// VMethodFrame desctructor deletes junctions in stack params here
+					// desctructor deletes junctions in stack params here
 				}
 				stack.push(*result);
 
@@ -882,7 +882,7 @@ void Request::execute(ArrayOperation& ops) {
 					METHOD_FRAME_ACTION(call(frame));
 					object.enable_default_setter();
 					result=&frame.result();
-					// VMethodFrame desctructor deletes junctions in stack params here
+					// desctructor deletes junctions in stack params here
 				}
 
 				if(opcode==OP::OP_CONSTRUCT_OBJECT)
@@ -1249,16 +1249,6 @@ inline void do_call(VMethodFrame& frame, Request &r){
 }
 
 void Request::call(VMethodFrame& frame){
-	SAVE_CONTEXT
-
-	rcontext=wcontext=method_frame=&frame;
-
-	do_call(frame, *this);
-
-	RESTORE_CONTEXT
-}
-
-void Request::call_expression(VMethodFrame& frame){
 	SAVE_CONTEXT
 
 	rcontext=wcontext=method_frame=&frame;
