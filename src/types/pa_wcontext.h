@@ -8,7 +8,7 @@
 #ifndef PA_WCONTEXT_H
 #define PA_WCONTEXT_H
 
-#define IDENT_PA_WCONTEXT_H "$Id: pa_wcontext.h,v 1.66 2016/10/27 22:40:48 moko Exp $"
+#define IDENT_PA_WCONTEXT_H "$Id: pa_wcontext.h,v 1.67 2016/11/01 22:39:00 moko Exp $"
 
 #include "pa_value.h"
 #include "pa_vstring.h"
@@ -87,15 +87,11 @@ public: // usage
 	WContext(WContext *aparent):
 		fparent(aparent),
 		fstring(0),
-		fvalue(0),
-		in_expression(false){}
+		fvalue(0){}
 
 	virtual ~WContext() {
 		detach_junctions();
 	}
-
-	void set_in_expression(bool ain_expression) { in_expression=ain_expression; }
-	bool get_in_expression() { return in_expression; }
 
 private:
 
@@ -106,22 +102,9 @@ protected:
 	String* fstring;
 	Value* fvalue;
 
-private: // status
-
-	bool in_expression;
-
 private:
 	Array<VJunction*> junctions;
 
-};
-
-
-class WExpressionContext: public WContext {
-
-	/// in expressions we don't attempt to convert to string
-	virtual void write_as_string(Value& avalue) {
-		write(avalue);
-	}
 };
 
 #endif

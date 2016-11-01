@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.112 2016/10/26 16:40:50 moko Exp $"
+#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.113 2016/11/01 22:39:00 moko Exp $"
 
 #include "pa_symbols.h"
 #include "pa_wcontext.h"
@@ -318,6 +318,17 @@ public:
 
 };
 
+class VExpressionFrame: public VMethodFrame {
+public:
+	VExpressionFrame(const Method& amethod, VMethodFrame *acaller, Value& aself) : VMethodFrame(amethod, acaller, aself) {}
+
+	/// in expressions we don't attempt to convert to string
+	override void write_as_string(Value& avalue) {
+		VMethodFrame::write(avalue);
+	}
+};
+
+
 class VConstructorFrame: public VMethodFrame {
 public:
 	VConstructorFrame(const Method& amethod, VMethodFrame *acaller, Value& aself) : VMethodFrame(amethod, acaller, aself) {
@@ -325,7 +336,7 @@ public:
 		VMethodFrame::write(aself);
 	}
 
-	override void write(const String& /*astring*/, String::Language /*alang*/) {}
+	override void write(const String& /*astring*/) {}
 };
 
 #endif

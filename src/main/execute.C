@@ -21,7 +21,7 @@
 #include "pa_vimage.h"
 #include "pa_wwrapper.h"
 
-volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.393 2016/10/25 23:37:52 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
+volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.394 2016/11/01 22:39:00 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
 
 //#define DEBUG_EXECUTE
 
@@ -773,7 +773,7 @@ void Request::execute(ArrayOperation& ops) {
 
 				Value *result;
 				{
-					VMethodFrame frame(*junction->method, method_frame, junction->self);
+					VExpressionFrame frame(*junction->method, method_frame, junction->self);
 					METHOD_FRAME_ACTION(call_expression(frame));
 					result=&frame.result();
 					// VMethodFrame desctructor deletes junctions in stack params here
@@ -1261,7 +1261,6 @@ void Request::call(VMethodFrame& frame){
 void Request::call_expression(VMethodFrame& frame){
 	SAVE_CONTEXT
 
-	frame.set_in_expression(true);
 	rcontext=wcontext=method_frame=&frame;
 
 	do_call(frame, *this);

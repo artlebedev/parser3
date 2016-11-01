@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.236 2016/10/26 16:40:49 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.237 2016/11/01 22:39:00 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -236,10 +236,7 @@ public:
 	}
 	/// appending sure value, that would be converted to clean string
 	void write_no_lang(Value& avalue) {
-		if(wcontext->get_in_expression())
-			wcontext->write(avalue);
-		else
-			wcontext->write_as_string(avalue);
+		wcontext->write_as_string(avalue);
 	}
 
 	/// appending string, passing language built into string being written
