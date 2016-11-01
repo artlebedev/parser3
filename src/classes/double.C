@@ -13,7 +13,7 @@
 #include "pa_vint.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_DOUBLE_C="$Id: double.C,v 1.71 2016/10/08 18:35:26 moko Exp $" IDENT_PA_VDOUBLE_H;
+volatile const char * IDENT_DOUBLE_C="$Id: double.C,v 1.72 2016/11/01 23:10:40 moko Exp $" IDENT_PA_VDOUBLE_H;
 
 // externs
 
@@ -34,17 +34,17 @@ DECLARE_CLASS_VAR(double, new MDouble);
 
 static void _int(Request& r, MethodParams&) {
 	VDouble& vdouble=GET_SELF(r, VDouble);
-	r.write_no_lang(*new VInt(vdouble.as_int()));
+	r.write(*new VInt(vdouble.as_int()));
 }
 
 static void _double(Request& r, MethodParams&) {
 	VDouble& vdouble=GET_SELF(r, VDouble);
-	r.write_no_lang(*new VDouble(vdouble.as_double()));
+	r.write(*new VDouble(vdouble.as_double()));
 }
 
 static void _bool(Request& r, MethodParams&) {
 	VDouble& vdouble=GET_SELF(r, VDouble);
-	r.write_no_lang(VBool::get(vdouble.as_bool()));
+	r.write(VBool::get(vdouble.as_bool()));
 }
 
 typedef void (*vdouble_op_func_ptr)(VDouble& vdouble, double param);
@@ -81,7 +81,7 @@ static void _sql(Request& r, MethodParams& params) {
 		else {
 			throw Exception(PARSER_RUNTIME, 0, "produced no result, but no default option specified");
 		}
-	r.write_no_lang(*new VDouble(val));
+	r.write(*new VDouble(val));
 }
 
 // constructor

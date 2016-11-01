@@ -25,7 +25,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.254 2016/10/26 15:44:49 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.255 2016/11/01 23:10:40 moko Exp $";
 
 // defines
 
@@ -745,7 +745,7 @@ static void _list(Request& r, MethodParams& params) {
 	);
 
 	// write out result
-	r.write_no_lang(*new VTable(&table));
+	r.write(*new VTable(&table));
 }
 
 #ifndef DOXYGEN
@@ -758,7 +758,7 @@ struct Lock_execute_body_info {
 static void lock_execute_body(int , void *ainfo) {
 	Lock_execute_body_info& info=*static_cast<Lock_execute_body_info *>(ainfo);
 	// execute body
-	info.r->write_pass_lang(info.r->process(*info.body_code));
+	info.r->write(info.r->process(*info.body_code));
 }
 
 static void _lock(Request& r, MethodParams& params) {
@@ -798,7 +798,7 @@ static void _find(Request& r, MethodParams& params) {
 
 	// easy way
 	if(file_exist(r.absolute(*file_spec))) {
-		r.write_pass_lang(*file_spec);
+		r.write(*file_spec);
 		return;
 	}
 
@@ -816,7 +816,7 @@ static void _find(Request& r, MethodParams& params) {
 		test_name << dirname.mid(0, slash+1);
 		test_name << basename;
 		if(file_exist(r.absolute(test_name))) {
-			r.write_pass_lang(test_name);
+			r.write(test_name);
 			return;
 		}
 		rpos=slash;
@@ -824,7 +824,7 @@ static void _find(Request& r, MethodParams& params) {
 
 	// no way, not found
 	if(not_found_code)
-		r.write_pass_lang(r.process(*not_found_code));
+		r.write(r.process(*not_found_code));
 }
 
 static void _dirname(Request& r, MethodParams& params) {
@@ -842,22 +842,22 @@ static void _dirname(Request& r, MethodParams& params) {
 	// file    > .
 
 	if(file_spec.is_empty()) {
-		r.write_pass_lang(String("."));
+		r.write(String("."));
 		return;
 	}
 
 	size_t p;
 	size_t slash;
 	if((p=file_spec.rskipchars("/\\"))==STRING_NOT_FOUND)
-		r.write_pass_lang(String("/"));
+		r.write(String("/"));
 	else {
 		if((slash=file_spec.strrpbrk("/\\", 0, p))!=STRING_NOT_FOUND) {
 			if((p=file_spec.rskipchars("/\\", 0, slash))==STRING_NOT_FOUND)
 				p=slash;
-			r.write_pass_lang(file_spec.mid(0, p+1));
+			r.write(file_spec.mid(0, p+1));
 			return;
 		}
-		r.write_pass_lang(String("."));
+		r.write(String("."));
 	}
 }
 
@@ -876,15 +876,15 @@ static void _basename(Request& r, MethodParams& params) {
 	// file    > file
 
 	if(file_spec.is_empty()) {
-		r.write_pass_lang(String("."));
+		r.write(String("."));
 		return;
 	}
 
 	size_t p=file_spec.rskipchars("/\\");
 	if(p==STRING_NOT_FOUND)
-		r.write_pass_lang(String("/"));
+		r.write(String("/"));
 	else
-		r.write_pass_lang(file_spec.mid(afterlastslash(file_spec, p), p+1));
+		r.write(file_spec.mid(afterlastslash(file_spec, p), p+1));
 }
 
 static void _justname(Request& r, MethodParams& params) {
@@ -894,7 +894,7 @@ static void _justname(Request& r, MethodParams& params) {
 	// /a/b.c  > b
 	size_t pos=afterlastslash(file_spec);
 	size_t dotpos=file_spec.strrpbrk(".", pos);
-	r.write_pass_lang(file_spec.mid(pos, dotpos!=STRING_NOT_FOUND?dotpos:file_spec.length()));
+	r.write(file_spec.mid(pos, dotpos!=STRING_NOT_FOUND?dotpos:file_spec.length()));
 }
 
 static void _justext(Request& r, MethodParams& params) {
@@ -904,7 +904,7 @@ static void _justext(Request& r, MethodParams& params) {
 	size_t pos=afterlastslash(file_spec);
 	size_t dotpos=file_spec.strrpbrk(".", pos);
 	if(dotpos!=STRING_NOT_FOUND)
-		r.write_pass_lang(file_spec.mid(dotpos+1, file_spec.length()));
+		r.write(file_spec.mid(dotpos+1, file_spec.length()));
 }
 
 static void _fullpath(Request& r, MethodParams& params) {
@@ -924,14 +924,14 @@ static void _fullpath(Request& r, MethodParams& params) {
 		}
 		result=&full_disk_path.mid(document_root_length,  full_disk_path.length());
 	}
-	r.write_pass_lang(*result);
+	r.write(*result);
 }
 
 static void _sql_string(Request& r, MethodParams&) {
 	VFile& self=GET_SELF(r, VFile);
 
 	const char *quoted=r.connection()->quote(self.value_ptr(), self.value_size());
-	r.write_pass_lang(*new String(quoted));
+	r.write(*new String(quoted));
 }
 
 #ifndef DOXYGEN
@@ -1091,13 +1091,13 @@ static void _base64(Request& r, MethodParams& params) {
 		} else {
 			// encode: ^f.base64[]
 			const char* encoded=pa_base64_encode(self.value_ptr(), self.value_size());
-			r.write_pass_lang(*new String(encoded, String::L_TAINTED/*once ?param=base64(something) was needed**/));
+			r.write(*new String(encoded, String::L_TAINTED/*once ?param=base64(something) was needed**/));
 		}
 	} else {
 		// encode: ^file:base64[filespec]
 		const String& file_spec=params.as_string(0, FILE_NAME_MUST_BE_STRING);
 		const char* encoded=pa_base64_encode(r.absolute(file_spec));
-		r.write_pass_lang(*new String(encoded, String::L_TAINTED/*once ?param=base64(something) was needed*/));
+		r.write(*new String(encoded, String::L_TAINTED/*once ?param=base64(something) was needed*/));
 	}
 }
 
@@ -1116,7 +1116,7 @@ static void _crc32(Request& r, MethodParams& params) {
 		VFile& self=GET_SELF(r, VFile);
 		crc32=pa_crc32(self.value_ptr(), self.value_size());
 	}
-	r.write_no_lang(*new VInt(crc32));
+	r.write(*new VInt(crc32));
 }
 
 
@@ -1173,7 +1173,7 @@ static void _md5(Request& r, MethodParams& params) {
 		md5=pa_md5(self.value_ptr(), self.value_size());
 
 	}
-	r.write_no_lang(*new String(md5));
+	r.write(*new String(md5));
 }
 
 // constructor

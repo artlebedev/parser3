@@ -25,7 +25,7 @@
 #include "pa_vdate.h"
 #include "pa_table.h"
 
-volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.156 2016/10/27 22:05:32 moko Exp $";
+volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.157 2016/11/01 23:10:40 moko Exp $";
 
 // defines
 
@@ -781,7 +781,7 @@ static void _html(Request& r, MethodParams& params) {
 		fields.for_each<Attrib_info*>(append_attrib_pair, &info);
 	}
 	tag << " />";
-	r.write_pass_lang(tag);
+	r.write(tag);
 }
 
 /// @test wrap FILE to auto-object
@@ -830,7 +830,7 @@ static void _gif(Request& r, MethodParams& params) {
 
 	vfile.set_binary(false/*not tainted*/, (const char *)buf.ptr, buf.size, file_name, new VString(*new String("image/gif")));
 
-	r.write_no_lang(vfile);
+	r.write(vfile);
 }
 
 static void _line(Request& r, MethodParams& params) {
@@ -1117,7 +1117,7 @@ static void _length(Request& r, MethodParams& params) {
 	const String& s=params.as_string(0, "text must not be code");
 
 	VImage& vimage=GET_SELF(r, VImage);
-	r.write_no_lang(*new VInt(vimage.font().string_width(s)));
+	r.write(*new VInt(vimage.font().string_width(s)));
 }
 
 static void _arc(Request& r, MethodParams& params) {
@@ -1202,7 +1202,7 @@ static void _pixel(Request& r, MethodParams& params) {
 		image.SetPixel(x, y, 
 			image.Color(params.as_int(2, "color must be int", r)));
 	} else 
-		r.write_no_lang(*new VInt(image.DecodeColor(image.GetPixel(x, y))));
+		r.write(*new VInt(image.DecodeColor(image.GetPixel(x, y))));
 }
 
 

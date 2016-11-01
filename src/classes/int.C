@@ -13,7 +13,7 @@
 #include "pa_vint.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_INT_C="$Id: int.C,v 1.66 2016/10/04 13:23:45 moko Exp $" IDENT_PA_VINT_H;
+volatile const char * IDENT_INT_C="$Id: int.C,v 1.67 2016/11/01 23:10:40 moko Exp $" IDENT_PA_VINT_H;
 
 // externs
 
@@ -34,17 +34,17 @@ DECLARE_CLASS_VAR(int, new MInt);
 
 static void _int(Request& r, MethodParams&) {
 	VInt& vint=GET_SELF(r, VInt);
-	r.write_no_lang(*new VInt(vint.get_int()));
+	r.write(*new VInt(vint.get_int()));
 }
 
 static void _double(Request& r, MethodParams&) {
 	VInt& vint=GET_SELF(r, VInt);
-	r.write_no_lang(*new VDouble(vint.as_double()));
+	r.write(*new VDouble(vint.as_double()));
 }
 
 static void _bool(Request& r, MethodParams&) {
 	VInt& vint=GET_SELF(r, VInt);
-	r.write_no_lang(VBool::get(vint.as_bool()));
+	r.write(VBool::get(vint.as_bool()));
 }
 
 typedef void (*vint_op_func_ptr)(VInt& vint, double param);
@@ -84,7 +84,7 @@ static void _sql(Request& r, MethodParams& params) {
 				0,
 				"produced no result, but no default option specified");
 		}
-	r.write_no_lang(*new VInt(val));
+	r.write(*new VInt(val));
 }
 
 // constructor

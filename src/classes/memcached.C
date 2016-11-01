@@ -15,7 +15,7 @@
 #include "pa_vbool.h"
 #include "pa_vmemcached.h"
 
-volatile const char * IDENT_MEMCACHED_C="$Id: memcached.C,v 1.13 2016/03/31 21:46:20 moko Exp $";
+volatile const char * IDENT_MEMCACHED_C="$Id: memcached.C,v 1.14 2016/11/01 23:10:40 moko Exp $";
 
 class MMemcached: public Methoded {
 public: // VStateless_class
@@ -72,7 +72,7 @@ static void _mget(Request& r, MethodParams& params) {
 			keys+=&params.as_string(i, "key must be string");
 		}
 
-		r.write_no_lang(self.mget(keys));
+		r.write(self.mget(keys));
 	} else {
 		Table* table=param.get_table();
 		if(table==0){
@@ -85,7 +85,7 @@ static void _mget(Request& r, MethodParams& params) {
 			keys+=table->get(i)->get(0);
 		}
 
-		r.write_no_lang(self.mget(keys));
+		r.write(self.mget(keys));
 	}
 }
 
@@ -93,7 +93,7 @@ static void _add(Request& r, MethodParams& params) {
 	VMemcached& self=GET_SELF(r, VMemcached);
 	const String& key=params.as_string(0, "key must be string");
 
-	r.write_no_lang(VBool::get(self.add(key, &params.as_no_junction(1, PARAM_MUST_NOT_BE_CODE))));
+	r.write(VBool::get(self.add(key, &params.as_no_junction(1, PARAM_MUST_NOT_BE_CODE))));
 }
 
 static void _delete(Request& r, MethodParams& params) {

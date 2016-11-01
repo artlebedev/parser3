@@ -22,7 +22,7 @@
 extern "C" char *crypt(const char* , const char* );
 #endif
 
-volatile const char * IDENT_MATH_C="$Id: math.C,v 1.82 2016/07/21 17:05:37 moko Exp $";
+volatile const char * IDENT_MATH_C="$Id: math.C,v 1.83 2016/11/01 23:10:40 moko Exp $";
 
 // defines
 
@@ -51,7 +51,7 @@ static void _random(Request& r, MethodParams& params) {
 			0,
 			"top(%g) must be [1..%u]", top, MAX_UINT);
 	
-	r.write_no_lang(*new VInt(_random(uint(top))));
+	r.write(*new VInt(_random(uint(top))));
 }
 
 
@@ -63,7 +63,7 @@ static double radians(double param) { return param /180 *PI; }
 static void math1(Request& r, MethodParams& params, math1_func_ptr func) {
 	double param=params.as_double(0, "parameter must be expression", r);
 	double result=func(param);
-	r.write_no_lang(*new VDouble(result));
+	r.write(*new VDouble(result));
 }
 
 #define MATH1(name) \
@@ -102,7 +102,7 @@ static void math2(Request& r, MethodParams& params, math2_func_ptr func) {
 	double a=params.as_double(0, "parameter must be expression", r);
 	double b=params.as_double(1, "parameter must be expression", r);
 	double result=func(a, b);
-	r.write_no_lang(*new VDouble(result));
+	r.write(*new VDouble(result));
 }
 
 #define MATH2(name) \
@@ -156,7 +156,7 @@ static void _crypt(Request& r, MethodParams& params) {
 		pa_MD5Encode((const unsigned char *)password,
 				(const unsigned char *)normal_salt, sample_buf, sample_size);
 		String sample(sample_buf);
-		r.write_pass_lang(sample);
+		r.write(sample);
 	} else {
 #ifdef HAVE_CRYPT
 		const char* static_sample_buf=crypt(password, normal_salt);
@@ -167,7 +167,7 @@ static void _crypt(Request& r, MethodParams& params) {
 				0,
 				"crypt on this platform does not support '%.*s' salt prefix", prefix_size, normal_salt);
 		
-		r.write_pass_lang(String(pa_strdup(static_sample_buf)));
+		r.write(String(pa_strdup(static_sample_buf)));
 #else
 		throw Exception(PARSER_RUNTIME,
 			0,
@@ -185,7 +185,7 @@ static void _md5(Request& r, MethodParams& params) {
 	pa_MD5Update(&context, (const unsigned char*)string, strlen(string));
 	pa_MD5Final(digest, &context);
 
-	r.write_pass_lang(*new String(hex_string(digest, sizeof(digest), false)));
+	r.write(*new String(hex_string(digest, sizeof(digest), false)));
 }
 
 
@@ -337,7 +337,7 @@ static void _sha1(Request& r, MethodParams& params) {
 	SHA1Input (&c, (const unsigned char*)string, strlen(string));
 	SHA1ReadDigest(digest, &c);
 
-	r.write_pass_lang(*new String(hex_string(digest, sizeof(digest), false)));
+	r.write(*new String(hex_string(digest, sizeof(digest), false)));
 }
 
 void memxor(char *dest, const char *src, size_t n){
@@ -472,27 +472,27 @@ static void _digest(Request& r, MethodParams& params) {
 	}
 
 	if(format == F_HEX){
-		r.write_pass_lang(*new String(hex_string((unsigned char *)digest.str, digest.length, false)));
+		r.write(*new String(hex_string((unsigned char *)digest.str, digest.length, false)));
 	}
 	if(format == F_BASE64){
-		r.write_pass_lang(*new String(pa_base64_encode(digest.str, digest.length)));
+		r.write(*new String(pa_base64_encode(digest.str, digest.length)));
 	}
 }
 
 static void _uuid(Request& r, MethodParams& /*params*/) {
-	r.write_pass_lang(*new String(get_uuid_cstr()));
+	r.write(*new String(get_uuid_cstr()));
 }
 
 static void _uid64(Request& r, MethodParams& /*params*/) {
 	unsigned char id[64/8];
 	random(&id, sizeof(id));
 
-	r.write_pass_lang(*new String(hex_string(id, sizeof(id), true)));
+	r.write(*new String(hex_string(id, sizeof(id), true)));
 }
 
 static void _crc32(Request& r, MethodParams& params) {
 	const char *string=params.as_string(0, PARAMETER_MUST_BE_STRING).cstr();
-	r.write_no_lang(*new VInt(pa_crc32(string, strlen(string))));
+	r.write(*new VInt(pa_crc32(string, strlen(string))));
 }
 
 static void toBase(unsigned long long int value, unsigned int base, char*& ptr){
@@ -537,7 +537,7 @@ static void _convert(Request& r, MethodParams& params) {
 
 	toBase(value, base_to, ptr);
 	*ptr=0;
-	r.write_pass_lang(*new String(pa_strdup(result_cstr)));
+	r.write(*new String(pa_strdup(result_cstr)));
 }
 
 // constructor

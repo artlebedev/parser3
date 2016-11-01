@@ -14,7 +14,7 @@
 #include "ws2tcpip.h"
 #endif
 
-volatile const char * IDENT_INET_C="$Id: inet.C,v 1.13 2016/10/04 13:23:45 moko Exp $";
+volatile const char * IDENT_INET_C="$Id: inet.C,v 1.14 2016/11/01 23:10:40 moko Exp $";
 
 class MInet: public Methoded {
 public:
@@ -31,7 +31,7 @@ static void _ntoa(Request& r, MethodParams& params){
 	static const int ip_cstr_bufsize=3*4+3+1/*zero-teminator*/+1/*for faulty snprintfs*/;
 	char* ip_cstr=new(PointerFreeGC) char[ip_cstr_bufsize];
 	snprintf(ip_cstr, ip_cstr_bufsize, "%u.%u.%u.%u", (l>>24) & 0xFF, (l>>16) & 0xFF, (l>>8) & 0xFF, l & 0xFF);
-	r.write_no_lang(*new String(ip_cstr));
+	r.write(*new String(ip_cstr));
 }
 
 static void _aton(Request& r, MethodParams& params){
@@ -74,7 +74,7 @@ static void _aton(Request& r, MethodParams& params){
 		throw Exception(PARSER_RUNTIME, 0, "Invalid IP address '%s' specified.", ip_cstr);
 	} else {
 		result=(result << 8)+(ulong)byte_value;
-		r.write_no_lang(*new VDouble(result));
+		r.write(*new VDouble(result));
 	}
 }
 
@@ -121,7 +121,7 @@ static void _ip2name(Request& r, MethodParams& params){
 	freeaddrinfo(info);
 
 	if(!error){
-		r.write_no_lang(*new String(pa_idna_decode(pa_strdup(hbuf), r.charsets.source()), String::L_TAINTED));
+		r.write(*new String(pa_idna_decode(pa_strdup(hbuf), r.charsets.source()), String::L_TAINTED));
 	} else if(error!=EAI_NONAME){
 		throw Exception(PARSER_RUNTIME, 0, "Can't resolve IP address '%s': %s", ip_cstr, gai_strerror(error));
 	}
@@ -178,13 +178,13 @@ static void _name2ip(Request& r, MethodParams& params){
 			*row+=cur->ai_family == AF_INET ? &sv4 : cur->ai_family == AF_INET6 ? &sv6 : &sunknown;
 			*table+=row;
 		} else {
-			r.write_no_lang(*saddr);
+			r.write(*saddr);
 			break;
 		}
 	}
 
 	if(table)
-		r.write_no_lang(*new VTable(table));
+		r.write(*new VTable(table));
 
 	freeaddrinfo(info);
 }

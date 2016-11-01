@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.136 2016/10/26 15:44:49 moko Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.137 2016/11/01 23:10:40 moko Exp $";
 
 // class
 
@@ -236,7 +236,7 @@ static void _union(Request& r, MethodParams& params) {
 		src->for_each<HashStringValue*>(copy_all_dontoverwrite_to, result.get_hash());
 
 	// return result
-	r.write_no_lang(result);
+	r.write(result);
 }
 
 #ifndef DOXYGEN
@@ -258,7 +258,7 @@ static void _intersection(Request& r, MethodParams& params) {
 	}
 
 	// return result
-	r.write_no_lang(result);
+	r.write(result);
 }
 
 static bool intersects(	HashStringValue::key_type key, HashStringValue::value_type /*value*/, HashStringValue* b) {
@@ -271,14 +271,14 @@ static void _intersects(Request& r, MethodParams& params) {
 	if(HashStringValue* b=params.as_hash(0, "param")) {
 		HashStringValue* self=&(GET_SELF(r, VHashBase).hash());
 		if(b==self) {
-			r.write_no_lang(VBool::get(true));
+			r.write(VBool::get(true));
 			return;
 		}
 		result=self->first_that<HashStringValue*>(intersects, b)!=0;
 	}
 
 	// return result
-	r.write_no_lang(VBool::get(result));
+	r.write(VBool::get(result));
 }
 
 
@@ -372,11 +372,11 @@ static void _keys(Request& r, MethodParams& params) {
 
 	GET_SELF(r, VHashBase).hash().for_each<Table*>(keys_collector, table);
 
-	r.write_no_lang(*new VTable(table));
+	r.write(*new VTable(table));
 }
 
 static void _count(Request& r, MethodParams&) {
-	r.write_no_lang(*new VInt(GET_SELF(r, VHashBase).hash().count()));
+	r.write(*new VInt(GET_SELF(r, VHashBase).hash().count()));
 }
 
 static void _delete(Request& r, MethodParams& params) {
@@ -390,7 +390,7 @@ static void _contains(Request& r, MethodParams& params) {
 	VHashBase& self=GET_SELF(r, VHashBase);
 	const String& key_name=params.as_string(0, "key must be string");
 	bool result=SYMBOLS_EQ(key_name,_DEFAULT_SYMBOL) ? (self.get_default() != 0) : self.hash().contains(key_name);
-	r.write_no_lang(VBool::get(result));
+	r.write(VBool::get(result));
 }
 
 static void _foreach(Request& r, MethodParams& params) {
@@ -424,12 +424,12 @@ static void _foreach(Request& r, MethodParams& params) {
 			const String* s_processed=sv_processed.get_string();
 			if(s_processed && !s_processed->is_empty()) { // we have body
 				if(need_delim) // need delim & iteration produced string?
-					r.write_pass_lang(r.process(*delim_maybe_code));
+					r.write(r.process(*delim_maybe_code));
 				else
 					need_delim=true;
 			}
 
-			r.write_pass_lang(sv_processed);
+			r.write(sv_processed);
 
 			if(lskip==Request::SKIP_BREAK) 
 				break;
@@ -590,15 +590,15 @@ static void _at(Request& r, MethodParams& params) {
 				{
 #ifdef HASH_ORDER
 					if(pos == 0) {
-						r.write_pass_lang(*new VString(*new String(hash.first_key(), String::L_TAINTED)));
+						r.write(*new VString(*new String(hash.first_key(), String::L_TAINTED)));
 					} else if((size_t)pos == count-1) {
-						r.write_pass_lang(*new VString(*new String(hash.last_key(), String::L_TAINTED)));
+						r.write(*new VString(*new String(hash.last_key(), String::L_TAINTED)));
 					} else
 #endif
 					{
 						for(HashStringValue::Iterator i(hash); i; i.next(), pos-- )
 							if(!pos){
-								r.write_pass_lang(*new VString(*new String(i.key(), String::L_TAINTED)));
+								r.write(*new VString(*new String(i.key(), String::L_TAINTED)));
 								break;
 							}
 					}
@@ -608,15 +608,15 @@ static void _at(Request& r, MethodParams& params) {
 				{
 #ifdef HASH_ORDER
 					if(pos == 0) {
-						r.write_pass_lang(*hash.first_value());
+						r.write(*hash.first_value());
 					} else if((size_t)pos == count-1) {
-						r.write_pass_lang(*hash.last_value());
+						r.write(*hash.last_value());
 					} else
 #endif
 					{
 						for(HashStringValue::Iterator i(hash); i; i.next(), pos-- )
 							if(!pos){
-								r.write_pass_lang(*i.value());
+								r.write(*i.value());
 								break;
 							}
 					}
@@ -626,15 +626,15 @@ static void _at(Request& r, MethodParams& params) {
 				{
 #ifdef HASH_ORDER
 					if(pos == 0) {
-						r.write_no_lang(SingleElementHash(hash.first_key(), hash.first_value()));
+						r.write(SingleElementHash(hash.first_key(), hash.first_value()));
 					} else if((size_t)pos == count-1) {
-						r.write_no_lang(SingleElementHash(hash.last_key(), hash.last_value()));
+						r.write(SingleElementHash(hash.last_key(), hash.last_value()));
 					} else
 #endif
 					{
 						for(HashStringValue::Iterator i(hash); i; i.next(), pos-- )
 							if(!pos){
-								r.write_no_lang(SingleElementHash(i.key(), i.value()));
+								r.write(SingleElementHash(i.key(), i.value()));
 								break;
 							}
 					}

@@ -12,7 +12,7 @@
 #include "pa_vhashfile.h"
 #include "pa_vhash.h"
 
-volatile const char * IDENT_HASHFILE_C="$Id: hashfile.C,v 1.59 2016/10/06 19:41:36 moko Exp $";
+volatile const char * IDENT_HASHFILE_C="$Id: hashfile.C,v 1.60 2016/11/01 23:10:40 moko Exp $";
 
 // class
 
@@ -58,7 +58,7 @@ static void _hash(Request& r, MethodParams&) {
 	
 	// write out result
 	VHash& result=*new VHash(*self.get_hash());
-	r.write_no_lang(result);
+	r.write(result);
 }
 
 static void _delete(Request& r, MethodParams& params) {
@@ -112,12 +112,12 @@ static bool one_foreach_cycle(
 	const String* s_processed=sv_processed.get_string();
 	if(info.delim_maybe_code && s_processed && !s_processed->is_empty()) { // delimiter set and we have body
 		if(info.need_delim) // need delim & iteration produced string?
-			info.r->write_pass_lang(info.r->process(*info.delim_maybe_code));
+			info.r->write(info.r->process(*info.delim_maybe_code));
 		else
 			info.need_delim=true;
 	}
 
-	info.r->write_pass_lang(sv_processed);
+	info.r->write(sv_processed);
 
 	return lskip==Request::SKIP_BREAK;
 }

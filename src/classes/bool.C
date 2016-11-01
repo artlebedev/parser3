@@ -13,7 +13,7 @@
 #include "pa_vint.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_BOOL_C="$Id: bool.C,v 1.8 2016/03/31 21:46:19 moko Exp $" IDENT_PA_VBOOL_H;
+volatile const char * IDENT_BOOL_C="$Id: bool.C,v 1.9 2016/11/01 23:10:39 moko Exp $" IDENT_PA_VBOOL_H;
 
 // externs
 
@@ -34,16 +34,16 @@ DECLARE_CLASS_VAR(bool, new MBool);
 
 static void _int(Request& r, MethodParams&) {
 	VBool& vbool=GET_SELF(r, VBool);
-	r.write_no_lang(*new VInt(vbool.as_bool()));
+	r.write(*new VInt(vbool.as_bool()));
 }
 
 static void _double(Request& r, MethodParams&) {
 	VBool& vbool=GET_SELF(r, VBool);
-	r.write_no_lang(*new VDouble(vbool.as_bool()));
+	r.write(*new VDouble(vbool.as_bool()));
 }
 
 static void _bool(Request& r, MethodParams&) {
-	r.write_no_lang(GET_SELF(r, VBool));
+	r.write(GET_SELF(r, VBool));
 }
 
 // constructor

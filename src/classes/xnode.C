@@ -21,7 +21,7 @@
 #include "libxml/xpath.h"
 #include "libxml/xpathInternals.h"
 
-volatile const char * IDENT_XNODE_C="$Id: xnode.C,v 1.94 2016/04/11 22:58:57 moko Exp $" IDENT_XNODE_H;
+volatile const char * IDENT_XNODE_C="$Id: xnode.C,v 1.95 2016/11/01 23:10:41 moko Exp $" IDENT_XNODE_H;
 
 // classes
 
@@ -147,7 +147,7 @@ static void writeNode(Request& r, VXdoc& xdoc, xmlNode* node) {
 		throw XmlException(0, r); // OOM, bad name, things like that
 
 	// write out result
-	r.write_no_lang(xdoc.wrap(*node));
+	r.write(xdoc.wrap(*node));
 }
 
 static xmlNode* pa_getAttributeNodeNS(xmlNode& selfNode, 
@@ -355,7 +355,7 @@ static void _hasChildNodes(Request& r, MethodParams&) {
 	xmlNode& node=vnode.get_xmlnode();
 
 	// write out result
-	r.write_no_lang(VBool::get(node.children!=0));
+	r.write(VBool::get(node.children!=0));
 }
 
 // Node cloneNode(in boolean deep);
@@ -395,7 +395,7 @@ static void _getAttribute(Request& r, MethodParams& params) {
 	// @todo: when name="xmlns"
 	xmlChar* attribute_value=xmlGetProp(&element, name);
 	// write out result
-	r.write_pass_lang(r.transcode(attribute_value));
+	r.write(r.transcode(attribute_value));
 }
 
 // void setAttribute(in DOMString name, in DOMString value) raises(DOMException);
@@ -504,7 +504,7 @@ static void _getElementsByTagName(Request& r, MethodParams& params) {
 							  &info);
 
 	// write out result
-	r.write_no_lang(result);
+	r.write(result);
 }
 
 // DOM 2
@@ -520,7 +520,7 @@ static void _getAttributeNS(Request& r, MethodParams& params) {
 	// todo: when name="xmlns"
 	xmlChar* attribute_value=xmlGetNsProp(&element, localName, namespaceURI);
 	// write out result
-	r.write_pass_lang(r.transcode(attribute_value));
+	r.write(r.transcode(attribute_value));
 }
 
 
@@ -595,7 +595,7 @@ static void _hasAttribute(Request& r, MethodParams& params) {
 
 	// @todo: when name="xmlns"
 	// write out result
-	r.write_no_lang(VBool::get(xmlHasProp(&element, name)!=0));
+	r.write(VBool::get(xmlHasProp(&element, name)!=0));
 }
 
 // boolean hasAttributeNS(n DOMString namespaceURI, in DOMString localName) raises(DOMException);
@@ -607,7 +607,7 @@ static void _hasAttributeNS(Request& r, MethodParams& params) {
 	xmlNode& element=get_self_element(vnode);
 
 	// write out result
-	r.write_no_lang(VBool::get(xmlHasNsProp(&element, localName, namespaceURI)!=0));
+	r.write(VBool::get(xmlHasNsProp(&element, localName, namespaceURI)!=0));
 }
 
 // boolean hasAttributes
@@ -616,7 +616,7 @@ static void _hasAttributes(Request& r, MethodParams&) {
 	xmlNode& element=get_self_element(vnode);
 
 	// write out result
-	r.write_no_lang(VBool::get(element.properties!=0));
+	r.write(VBool::get(element.properties!=0));
 }
 
 // NodeList getElementsByTagNameNS(in DOMString namespaceURI, in DOMString localName);
@@ -642,7 +642,7 @@ static void _getElementsByTagNameNS(Request& r, MethodParams& params) {
 							  &info);
 
 	// write out result
-	r.write_no_lang(result);
+	r.write(result);
 }
 
 
@@ -708,7 +708,7 @@ static void _selectX(Request& r, MethodParams& params,
    	if(res.get())
 		handler(r, expression, res, vdoc, result);
 	if(result)
-		r.write_no_lang(*result);
+		r.write(*result);
 }
 
 static void selectNodesHandler(Request&,

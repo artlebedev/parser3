@@ -10,7 +10,7 @@
 #include "pa_vbool.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.63 2016/10/11 21:30:16 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.64 2016/11/01 23:10:41 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -102,7 +102,7 @@ static void _create(Request& r, MethodParams& params) {
 	}
 	r.call(frame);
 	object.enable_default_setter();
-	r.write_pass_lang(frame.result());
+	r.write(frame.result());
 }
 
 
@@ -111,7 +111,7 @@ static void _classes(Request& r, MethodParams&) {
 	for(HashString<VStateless_class*>::Iterator i(r.classes()); i; i.next()){
 		result.hash().put(i.key(), i.value()->get_methods().count()>0 ? new VString(class_type_methoded) : VVoid::get() );
 	}
-	r.write_no_lang(result);
+	r.write(result);
 }
 
 
@@ -134,12 +134,12 @@ static const String& get_class_name(Value& value){
 
 
 static void _class(Request& r, MethodParams& params) {
-	r.write_no_lang(get_class(params[0]));
+	r.write(get_class(params[0]));
 }
 
 
 static void _class_name(Request& r, MethodParams& params) {
-	r.write_no_lang(get_class_name(params[0]));
+	r.write(get_class_name(params[0]));
 }
 
 static void _class_by_name(Request& r, MethodParams& params) {
@@ -147,13 +147,13 @@ static void _class_by_name(Request& r, MethodParams& params) {
 	Value* class_value=r.get_class(class_name);
 	if(!class_value)
 		throw Exception(PARSER_RUNTIME, &class_name, "class is undefined");
-	r.write_no_lang(*class_value);
+	r.write(*class_value);
 }
 
 static void _base(Request& r, MethodParams& params) {
 	if(VStateless_class* vclass=params[0].get_class())
 		if(Value* base=vclass->base()){
-			r.write_no_lang(get_class(*base));
+			r.write(get_class(*base));
 			return;
 		}
 
@@ -165,7 +165,7 @@ static void _base(Request& r, MethodParams& params) {
 static void _base_name(Request& r, MethodParams& params) {
 	if(VStateless_class* vclass=params[0].get_class())
 		if(Value* base=vclass->base())
-			r.write_no_lang(get_class_name(*base));
+			r.write(get_class_name(*base));
 }
 
 static void _def(Request& r, MethodParams& params) {
@@ -173,7 +173,7 @@ static void _def(Request& r, MethodParams& params) {
 	if(type == def_class) {
 		const String& name=params.as_string(1, "name must be string");
 		// can't use get_class because it will call @autouse[] if the class wasn't loaded
-		r.write_no_lang(VBool::get(r.classes().get(name)!=0));
+		r.write(VBool::get(r.classes().get(name)!=0));
 	} else {
 		throw Exception(PARSER_RUNTIME, &type, "is invalid type, must be '%s'", def_class.cstr());
 	}
@@ -190,7 +190,7 @@ static void _methods(Request& r, MethodParams& params) {
 		result.hash().put(i.key(), new VString(i.value()->native_code ? method_type_native : method_type_parser));
 	}
 
-	r.write_no_lang(result);
+	r.write(result);
 }
 
 static VJunction &method_junction(Value &self, Method &method){
@@ -209,7 +209,7 @@ static void _method(Request& r, MethodParams& params) {
 	if(Junction *j=source.get_junction()){
 		if(Method* method=const_cast<Method*>(j->method)){
 			Value& self=params.count()>1 ? params.as_no_junction(1, "self must be object, not junction") : r.get_method_frame()->caller()->self();
-			r.write_no_lang(method_junction(self, *method));
+			r.write(method_junction(self, *method));
 			return;
 		}
 		throw Exception(PARSER_RUNTIME, 0, "param must be method junction");
@@ -222,7 +222,7 @@ static void _method(Request& r, MethodParams& params) {
 
 	if(VStateless_class* vclass=source.get_class()) {
 		if(Method* method=vclass->get_method(name)){
-			r.write_no_lang( params.count()>2 ? method_junction(params.as_no_junction(2, "self must be object, not junction"), *method) : *method->get_vjunction(source) );
+			r.write( params.count()>2 ? method_junction(params.as_no_junction(2, "self must be object, not junction"), *method) : *method->get_vjunction(source) );
 			return;
 		}
 	}
@@ -233,16 +233,16 @@ static void _fields(Request& r, MethodParams& params) {
 	Value& o=params.as_no_junction(0, "param must be object or class, not junction");
 
 	if(HashStringValue* fields=o.get_fields())
-		r.write_no_lang(*new VHash(*fields));
+		r.write(*new VHash(*fields));
 	else
-		r.write_no_lang(*new VHash());
+		r.write(*new VHash());
 }
 
 static void _fields_reference(Request& r, MethodParams& params) {
 	Value& o=params.as_no_junction(0, "param must be object or hash, not junction");
 
 	if(HashStringValue* fields=o.get_fields_reference())
-		r.write_no_lang(*new VHashReference(*fields));
+		r.write(*new VHashReference(*fields));
 	else
 		throw Exception(PARSER_RUNTIME, 0, "param must be object or hash");
 }
@@ -253,7 +253,7 @@ static void _field(Request& r, MethodParams& params) {
 
 	if(HashStringValue* fields=o.get_fields())
 		if(Value* value=fields->get(name))
-			r.write_no_lang(*value);
+			r.write(*value);
 }
 
 static void _method_info(Request& r, MethodParams& params) {
@@ -322,15 +322,15 @@ static void _method_info(Request& r, MethodParams& params) {
 			hash->put(method_extra_param, new VString(*method->extra_params));
 	}
 
-	r.write_no_lang(result);
+	r.write(result);
 }
 
 static void _dynamical(Request& r, MethodParams& params) {
 	if(params.count()){
-		r.write_no_lang(VBool::get(params[0].get_class() != &params[0]));
+		r.write(VBool::get(params[0].get_class() != &params[0]));
 	} else {
 		VMethodFrame* caller=r.get_method_frame()->caller();
-		r.write_no_lang(VBool::get(caller && caller->get_class() != &caller->self()));
+		r.write(VBool::get(caller && caller->get_class() != &caller->self()));
 	}
 }
 
@@ -343,12 +343,12 @@ static void _is(Request& r, MethodParams& params) {
 	if(value) {
 		if(type == "code" || type == "method") {
 			Junction *junction=value->get_junction();
-			r.write_no_lang(VBool::get(junction && ((junction->code==0) ^ (type == "code"))) );
+			r.write(VBool::get(junction && ((junction->code==0) ^ (type == "code"))) );
 		} else {
-			r.write_no_lang(VBool::get( value->is(type.cstr()) ));
+			r.write(VBool::get( value->is(type.cstr()) ));
 		}
 	} else
-		r.write_no_lang(VBool::get(type == "void"));
+		r.write(VBool::get(type == "void"));
 }
 
 static void _copy(Request& r, MethodParams& params) {
@@ -369,7 +369,7 @@ static void _uid(Request& r, MethodParams& params) {
 	char local_buf[MAX_NUMBER];
 	int size=snprintf(local_buf, sizeof(local_buf), "%p", &obj);
 
-	r.write_pass_lang(*new String(String::C(pa_strdup(local_buf, (size_t)size), size)));
+	r.write(*new String(String::C(pa_strdup(local_buf, (size_t)size), size)));
 }
 
 static void _delete(Request&, MethodParams& params) {

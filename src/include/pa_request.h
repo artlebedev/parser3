@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.237 2016/11/01 22:39:00 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.238 2016/11/01 23:10:41 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -230,25 +230,18 @@ public:
 	const String* get_method_filename(const Method* method); // execute.C
 	const String* get_used_filename(uint file_no);
 	
-	/// appending, sure of clean string inside
-	void write_no_lang(const String& astring) {
+	/// appending string with it's languages
+	void write(const String& astring) {
 		wcontext->write(astring);
 	}
-	/// appending sure value, that would be converted to clean string
-	void write_no_lang(Value& avalue) {
+	
+	/// in [] and {} appending string if get_string is not null, else appending value
+	/// in () allways appending value
+	void write(Value& avalue) {
 		wcontext->write_as_string(avalue);
 	}
 
-	/// appending string, passing language built into string being written
-	void write_pass_lang(const String& astring) {
-		wcontext->write(astring);
-	}
-	/// appending possible string, passing language built into string being written
-	void write_pass_lang(Value& avalue) {
-		wcontext->write_as_string(avalue);
-	}
-
-	/// appending sure value
+	/// allways appending value
 	void write_value(Value& avalue) {
 		wcontext->write(avalue);
 	}

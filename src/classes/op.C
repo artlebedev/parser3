@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.242 2016/10/26 15:44:49 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.243 2016/11/01 23:10:40 moko Exp $";
 
 // defines
 
@@ -116,9 +116,9 @@ static void _untaint(Request& r, MethodParams& params) {
 	if(const String* string=result.get_string()){
 		String &untainted=*new String();
 		string->append_to(untainted, lang); // mark all tainted to specified language
-		r.write_pass_lang(untainted);
+		r.write(untainted);
 	} else
-		r.write_pass_lang(result); // this is not normal, just backward compatibility
+		r.write(result); // this is not normal, just backward compatibility
 }
 
 static void _taint(Request& r, MethodParams& params) {
@@ -132,7 +132,7 @@ static void _taint(Request& r, MethodParams& params) {
 		Value& vbody=params.as_no_junction(params.count()-1, "body must not be code");
 		
 		String result(vbody.as_string(), lang); // force result language to specified
-		r.write_pass_lang(result);
+		r.write(result);
 	}
 }
 
@@ -140,7 +140,7 @@ static void _apply_taint(Request& r, MethodParams& params) {
 	String::Language lang=params.count()==1 ? String::L_AS_IS : get_untaint_lang(params.as_string(0, "lang must be string"));
 	const String &sbody=params.as_string(params.count()-1, "body must be string");
 	String::Body result_body=sbody.cstr_to_string_body_untaint(lang, r.connection(false), &r.charsets);
-	r.write_pass_lang(*new String(result_body, String::L_AS_IS));
+	r.write(*new String(result_body, String::L_AS_IS));
 }
 
 static void _process(Request& r, MethodParams& params) {
@@ -219,7 +219,7 @@ static void _process(Request& r, MethodParams& params) {
 		VMethodFrame frame(*main_method, r.get_method_frame()->caller(), *target_self);
 		frame.empty_params();
 		r.call(frame);
-		r.write_pass_lang(frame.result());
+		r.write(frame.result());
 	}
 }
 	
@@ -252,11 +252,11 @@ static void _while(Request& r, MethodParams& params) {
 			const String* s_processed=sv_processed.get_string();
 			if(s_processed && !s_processed->is_empty()) { // we have body
 				if(need_delim) // need delim & iteration produced string?
-					r.write_pass_lang(r.process(*delim_maybe_code));
+					r.write(r.process(*delim_maybe_code));
 				else
 					need_delim=true;
 			}
-			r.write_pass_lang(sv_processed);
+			r.write(sv_processed);
 
 			if(lskip==Request::SKIP_BREAK)
 				break;
@@ -349,11 +349,11 @@ static void _for(Request& r, MethodParams& params) {
 			const String* s_processed=sv_processed.get_string();
 			if(s_processed && !s_processed->is_empty()) { // we have body
 				if(need_delim) // need delim & iteration produced string?
-					r.write_pass_lang(r.process(*delim_maybe_code));
+					r.write(r.process(*delim_maybe_code));
 				else
 					need_delim=true;
 			}
-			r.write_pass_lang(sv_processed);
+			r.write(sv_processed);
 
 			if(lskip==Request::SKIP_BREAK)
 				break;
@@ -378,12 +378,12 @@ static void _eval(Request& r, MethodParams& params) {
 	if(params.count()>1) {
 		const String& fmt=params.as_string(1, "fmt must be string").trim();
 		if(fmt.is_empty()){
-			r.write_no_lang(value_result);
+			r.write(value_result);
 		} else {
-			r.write_no_lang(String(format(value_result.as_double(), fmt.cstrm())));
+			r.write(String(format(value_result.as_double(), fmt.cstrm())));
 		}
 	} else
-		r.write_no_lang(value_result);
+		r.write(value_result);
 }
 
 static void _connect(Request& r, MethodParams& params) {
@@ -451,7 +451,7 @@ static void _switch(Request& r, MethodParams& params) {
 	// because of stacked WWrapper used there as wcontext
 	r.process(cases_code);
 	if(Value* selected_code=data->found? data->found: data->_default)
-		r.write_pass_lang(r.process(*selected_code));
+		r.write(r.process(*selected_code));
 }
 
 static void _case(Request& r, MethodParams& params) {
@@ -733,7 +733,7 @@ static void _cache(Request& r, MethodParams& params) {
 		Cache_scope* scope=static_cast<Cache_scope*>(r.classes_conf.get(cache_data_name));
 		if(!scope)
 			throw Exception(PARSER_RUNTIME, 0, "expire-time get without cache");
-		r.write_no_lang(*new VDate((pa_time_t)scope->expires));
+		r.write(*new VDate((pa_time_t)scope->expires));
 		return;
 	}
 
@@ -782,7 +782,7 @@ static void _cache(Request& r, MethodParams& params) {
 				scope.body_from_disk=cached.body; // storing for user to retrive it with ^cache[]
 			} else {
 				// and it's not expired yet write it out 
-   				r.write_pass_lang(*cached.body);
+   				r.write(*cached.body);
    				// happy with it
    				return;
    			}
@@ -794,7 +794,7 @@ static void _cache(Request& r, MethodParams& params) {
 		const String* processed_body=locked_process_and_cache_put(r, body_code, catch_code, scope, file_spec);
 		if(processed_body){
 			// write it out 
-			r.write_pass_lang(*processed_body);
+			r.write(*processed_body);
 			// happy with it
 			return;
 		} else {
@@ -808,9 +808,9 @@ static void _cache(Request& r, MethodParams& params) {
 	// process without caching
 	if(catch_code){
 		Try_catch_result result=try_catch(r, process_try_body_code, &body_code, catch_code);
-		r.write_pass_lang(result.processed_code);
+		r.write(result.processed_code);
 	} else {
-		r.write_pass_lang(r.process_to_string(body_code));
+		r.write(r.process_to_string(body_code));
 	}
 }
 
@@ -839,13 +839,13 @@ static void _try_operator(Request& r, MethodParams& params) {
 		Value& finally_result=r.process(*finally_code);
 
 		// no exception in try/catch or finally, writing processed body_code or catch_code
-		r.write_pass_lang(result.processed_code);
+		r.write(result.processed_code);
 
 		// write out processed finally code
-		r.write_pass_lang(finally_result);
+		r.write(finally_result);
 	} else {
 		// no exception in try/catch, writing processed body_code or catch_code
-		r.write_pass_lang(result.processed_code);
+		r.write(result.processed_code);
 	}
 
 }

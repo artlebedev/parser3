@@ -18,7 +18,7 @@
 #include "pa_vxdoc.h"
 #endif
 
-volatile const char * IDENT_JSON_C="$Id: json.C,v 1.47 2016/10/06 19:41:36 moko Exp $";
+volatile const char * IDENT_JSON_C="$Id: json.C,v 1.48 2016/11/01 23:10:40 moko Exp $";
 
 // class
 
@@ -359,7 +359,7 @@ static void _parse(Request& r, MethodParams& params) {
 
 	json_parser_free(&parser);
 
-	if (json.result) r.write_no_lang(*json.result);
+	if (json.result) r.write(*json.result);
 }
 
 const uint ANTI_ENDLESS_JSON_STRING_RECOURSION=128;
@@ -534,7 +534,7 @@ static void _string(Request& r, MethodParams& params) {
 
 	const String& result_string=value_json_string(String::Body(), r.process(params[0]), json);
 	String::Body result_body=result_string.cstr_to_string_body_untaint(String::L_JSON, r.connection(false), &r.charsets);
-	r.write_pass_lang(*new String(result_body, String::L_AS_IS));
+	r.write(*new String(result_body, String::L_AS_IS));
  }
 
 // constructor

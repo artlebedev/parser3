@@ -13,7 +13,7 @@
 #include "pa_vdate.h"
 #include "pa_vtable.h"
 
-volatile const char * IDENT_DATE_C="$Id: date.C,v 1.107 2016/10/25 23:37:52 moko Exp $" IDENT_PA_VDATE_H;
+volatile const char * IDENT_DATE_C="$Id: date.C,v 1.108 2016/11/01 23:10:39 moko Exp $" IDENT_PA_VDATE_H;
 
 // class
 
@@ -288,13 +288,13 @@ static void _sql_string(Request& r, MethodParams& params) {
 			throw Exception(PARSER_RUNTIME, &what, "'type' must be 'date', 'time' or 'datetime'");
 	}
 
-	r.write_pass_lang(*vdate.get_sql_string(format));
+	r.write(*vdate.get_sql_string(format));
 }
 
 static void _gmt_string(Request& r, MethodParams&) {
 	VDate& vdate=GET_SELF(r, VDate);
 
-	r.write_pass_lang(*vdate.get_gmt_string());
+	r.write(*vdate.get_gmt_string());
 }
 
 static void _iso_string(Request& r, MethodParams& params) {
@@ -324,7 +324,7 @@ static void _iso_string(Request& r, MethodParams& params) {
 				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 		}
 
-	r.write_pass_lang(*vdate.get_iso_string(format));
+	r.write(*vdate.get_iso_string(format));
 }
 
 static void _roll(Request& r, MethodParams& params) {
@@ -491,7 +491,7 @@ static void _calendar(Request& r, MethodParams& params) {
 	else // 1+3
 		table=&fill_week_days(r, params, rus);
 
-	r.write_no_lang(*new VTable(table));
+	r.write(*new VTable(table));
 }
 
 static void _unix_timestamp(Request& r, MethodParams& params) {
@@ -499,7 +499,7 @@ static void _unix_timestamp(Request& r, MethodParams& params) {
 
 	if(params.count()==0) { 
 		// ^date.unix-timestamp[]
-		r.write_no_lang(*new VDouble((double)vdate.get_time()));
+		r.write(*new VDouble((double)vdate.get_time()));
 	} else {
 		if(vdate.get_time())
 			throw Exception(PARSER_RUNTIME, 0, "date object already constructed");
@@ -522,7 +522,7 @@ static void _last_day(Request& r, MethodParams& params) {
 		// ^date.lastday[]
 		tmIn=GET_SELF(r, VDate).get_tm();
 	}
-	r.write_no_lang(*new VInt(VDate::getMonthDays(tmIn.tm_year, tmIn.tm_mon)));
+	r.write(*new VInt(VDate::getMonthDays(tmIn.tm_year, tmIn.tm_mon)));
 }
 
 // constructor

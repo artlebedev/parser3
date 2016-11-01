@@ -22,7 +22,7 @@
 #define USE_STRINGSTREAM
 #endif
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.337 2016/10/26 15:44:49 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.338 2016/11/01 23:10:41 moko Exp $";
 
 // class
 
@@ -711,13 +711,13 @@ static void _csv_string(Request& r, MethodParams& params) {
 
 	table_to_csv(ost, table, control_chars, output_column_names);
 
-	r.write_no_lang(*new VString(*new String(pa_strdup(ost.str().c_str()), String::L_CLEAN)));
+	r.write(*new VString(*new String(pa_strdup(ost.str().c_str()), String::L_CLEAN)));
 #else
 	String sdata;
 
 	table_to_csv(sdata, table, control_chars, output_column_names);
 
-	r.write_no_lang(*new VString(*new String(sdata.cstr(), String::L_CLEAN)));
+	r.write(*new VString(*new String(sdata.cstr(), String::L_CLEAN)));
 #endif
 }
 
@@ -737,12 +737,12 @@ static void _count(Request& r, MethodParams& params) {
 	} else
 		result = table.count();
 
-	r.write_no_lang(*new VInt(result));
+	r.write(*new VInt(result));
 }
 
 static void _line(Request& r, MethodParams&) {
 	int result=1+GET_SELF(r, VTable).table().current();
-	r.write_no_lang(*new VInt(result));
+	r.write(*new VInt(result));
 }
 
 static void _offset(Request& r, MethodParams& params) {
@@ -762,7 +762,7 @@ static void _offset(Request& r, MethodParams& params) {
 		int offset=params.as_int(params.count()-1, "offset must be expression", r);
 		table.offset(absolute, offset);
 	} else
-		r.write_no_lang(*new VInt(table.current()));
+		r.write(*new VInt(table.current()));
 }
 
 static void _menu(Request& r, MethodParams& params) {
@@ -786,12 +786,12 @@ static void _menu(Request& r, MethodParams& params) {
 			const String* s_processed=sv_processed.get_string();
 			if(s_processed && !s_processed->is_empty()) { // we have body
 				if(need_delim) // need delim & iteration produced string?
-					r.write_pass_lang(r.process(*delim_maybe_code));
+					r.write(r.process(*delim_maybe_code));
 				else
 					need_delim=true;
 			}
 
-			r.write_pass_lang(sv_processed);
+			r.write(sv_processed);
 
 			if(lskip==Request::SKIP_BREAK)
 				break;
@@ -1013,7 +1013,7 @@ static void _hash(Request& r, MethodParams& params) {
 			}
 		}
 	}
-	r.write_no_lang(result);
+	r.write(result);
 }
 
 #ifndef DOXYGEN
@@ -1124,7 +1124,7 @@ static void _locate(Request& r, MethodParams& params) {
 	bool result=params[0].get_junction() || (params.count() == 1) ?
 		_locate_expression(table, r, params) :
 		_locate_name_value(table, r, params);
-	r.write_no_lang(VBool::get(result));
+	r.write(VBool::get(result));
 }
 
 
@@ -1142,7 +1142,7 @@ static void _flip(Request& r, MethodParams&) {
 				new_table+=new_row;
 			}
 
-	r.write_no_lang(*new VTable(&new_table));
+	r.write(*new VTable(&new_table));
 }
 
 static void _foreach(Request& r, MethodParams& params) {
@@ -1179,12 +1179,12 @@ static void _foreach(Request& r, MethodParams& params) {
 			const String* s_processed=sv_processed.get_string();
 			if(s_processed && !s_processed->is_empty()) { // we have body
 				if(need_delim) // need delim & iteration produced string?
-					r.write_pass_lang(r.process(*delim_maybe_code));
+					r.write(r.process(*delim_maybe_code));
 				else
 					need_delim=true;
 			}
 
-			r.write_pass_lang(sv_processed);
+			r.write(sv_processed);
 
 			if(lskip==Request::SKIP_BREAK)
 				break;
@@ -1448,7 +1448,7 @@ static void _columns(Request& r, MethodParams& params) {
 		}
 	}
 
-	r.write_no_lang(*new VTable(&result_table));
+	r.write(*new VTable(&result_table));
 }
 
 static void _select(Request& r, MethodParams& params) {
@@ -1511,7 +1511,7 @@ static void _select(Request& r, MethodParams& params) {
 		source_table.set_current(saved_current);
 	}
 
-	r.write_no_lang(*new VTable(&result_table));
+	r.write(*new VTable(&result_table));
 }
 
 // constructor

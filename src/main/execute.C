@@ -21,7 +21,7 @@
 #include "pa_vimage.h"
 #include "pa_wwrapper.h"
 
-volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.395 2016/11/01 22:53:20 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
+volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.396 2016/11/01 23:10:41 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
 
 //#define DEBUG_EXECUTE
 
@@ -331,7 +331,7 @@ void Request::execute(ArrayOperation& ops) {
 				if(opcode==OP::OP_GET_ELEMENT__SPECIAL){
 					stack.push(*value);
 				} else {
-					write_pass_lang(*value);
+					write(*value);
 				}
 				break;
 			}
@@ -469,7 +469,7 @@ void Request::execute(ArrayOperation& ops) {
 		case OP::OP_WRITE_VALUE:
 			{
 				Value& value=stack.pop().value();
-				write_pass_lang(value);
+				write(value);
 				break;
 			}
 		case OP::OP_WRITE_EXPR_RESULT:
@@ -487,7 +487,7 @@ void Request::execute(ArrayOperation& ops) {
 
 				DEBUG_PRINT_STRING(string_value)
 
-				write_no_lang(string_value);
+				write(string_value);
 				break;
 			}
 
@@ -544,7 +544,7 @@ void Request::execute(ArrayOperation& ops) {
 			})
 		case OP::OP_GET_OBJECT_ELEMENT__WRITE: DO_GET_OBJECT_ELEMENT({
 				Value& value=get_element(object, field_name);
-				write_pass_lang(value);
+				write(value);
 			})
 #ifdef FEATURE_GET_ELEMENT4CALL
 		case OP::OP_GET_OBJECT_ELEMENT4CALL: DO_GET_OBJECT_ELEMENT({
@@ -575,7 +575,7 @@ void Request::execute(ArrayOperation& ops) {
 			})
 		case OP::OP_GET_OBJECT_VAR_ELEMENT__WRITE: DO_GET_OBJECT_VAR_ELEMENT({
 				Value& value=get_element(object, *field);
-				write_pass_lang(value);
+				write(value);
 			})
 #ifdef FEATURE_GET_ELEMENT4CALL
 		case OP::OP_GET_OBJECT_VAR_ELEMENT4CALL: DO_GET_OBJECT_VAR_ELEMENT({
@@ -610,7 +610,7 @@ void Request::execute(ArrayOperation& ops) {
 				const String& name=stack.pop().string();  debug_name=&name;
 				Value& ncontext=stack.pop().value();
 				Value& value=get_element(ncontext, name);
-				write_pass_lang(value);
+				write(value);
 				break;
 			}
 
@@ -635,7 +635,7 @@ void Request::execute(ArrayOperation& ops) {
 				DEBUG_PRINT_STRING(name)
 
 				Value& value=get_element(*rcontext, name);
-				write_pass_lang(value);
+				write(value);
 				break;
 			}
 
@@ -666,7 +666,7 @@ void Request::execute(ArrayOperation& ops) {
 				if(opcode==OP::OP_WITH_SELF__VALUE__GET_ELEMENT){
 					stack.push(value);
 				} else {
-					write_pass_lang(value);
+					write(value);
 				}
 				break;
 			}
@@ -834,7 +834,7 @@ void Request::execute(ArrayOperation& ops) {
 				{
 					VMethodFrame frame(method, method_frame, junction->self);
 					METHOD_FRAME_ACTION(call(frame));
-					write_pass_lang(frame.result());
+					write(frame.result());
 				}
 
 				DEBUG_PRINT_STR("<-returned")
@@ -888,7 +888,7 @@ void Request::execute(ArrayOperation& ops) {
 				if(opcode==OP::OP_CONSTRUCT_OBJECT)
 					stack.push(*result);
 				else
-					write_pass_lang(*result);
+					write(*result);
 
 				DEBUG_PRINT_STR("<-returned")
 				break;
@@ -1436,7 +1436,7 @@ void Request::process_write(Value& input_value) {
 				// execute it
 				recoursion_checked_execute(*junction->code);
 				RESTORE_CONTEXT
-				write_pass_lang(local.result());
+				write(local.result());
 			} else {
 				// [] or () code wrapper
 				WWrapper local(wcontext);
@@ -1445,7 +1445,7 @@ void Request::process_write(Value& input_value) {
 				// execute it
 				recoursion_checked_execute(*junction->code);
 				RESTORE_CONTEXT
-				write_pass_lang(local.result());
+				write(local.result());
 			}
 
 			DEBUG_PRINT_STR("<-ja returned")
@@ -1457,7 +1457,7 @@ void Request::process_write(Value& input_value) {
 		// just return it as we do for usual objects
 	}
 
-	write_pass_lang(input_value);
+	write(input_value);
 }
 
 void Request::execute_method(VMethodFrame& aframe) {

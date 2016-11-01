@@ -20,7 +20,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.232 2016/10/26 15:44:49 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.233 2016/11/01 23:10:41 moko Exp $";
 
 // class
 
@@ -64,7 +64,7 @@ static const String match_var_name(MATCH_VAR_NAME);
 
 static void _length(Request& r, MethodParams&) {
 	double result=GET_SELF(r, VString).string().length(r.charsets.source());
-	r.write_no_lang(*new VDouble(result));
+	r.write(*new VDouble(result));
 }
 
 static void _int(Request& r, MethodParams& params) {
@@ -87,7 +87,7 @@ static void _int(Request& r, MethodParams& params) {
 		}
 	}
 
-	r.write_no_lang(*new VInt(converted));
+	r.write(*new VInt(converted));
 }
 
 static void _double(Request& r, MethodParams& params) {
@@ -95,15 +95,15 @@ static void _double(Request& r, MethodParams& params) {
 
 	if(self_string.is_empty()) {
 		if(params.count()>0)
-			r.write_no_lang(*new VDouble(params.as_double(0, "default must be double", r))); // (default)
+			r.write(*new VDouble(params.as_double(0, "default must be double", r))); // (default)
 		else
 			throw Exception(PARSER_RUNTIME, 0, "unable to convert empty string without default specified");
 	} else {
 		try {
-			r.write_no_lang(*new VDouble(self_string.as_double()));
+			r.write(*new VDouble(self_string.as_double()));
 		} catch(...) { // convert problem
 			if(params.count()>0)
-				r.write_no_lang(*new VDouble(params.as_double(0, "default must be double", r))); // (default)
+				r.write(*new VDouble(params.as_double(0, "default must be double", r))); // (default)
 			else
 				rethrow; // we have a problem when no default
 		}
@@ -137,7 +137,7 @@ static void _bool(Request& r, MethodParams& params) {
 		}
 	}
 
-	r.write_no_lang(VBool::get(converted));
+	r.write(VBool::get(converted));
 }
 
 /*not static*/void _string_format(Request& r, MethodParams& params) {
@@ -148,13 +148,13 @@ static void _bool(Request& r, MethodParams& params) {
 
 	const char* buf=format(r.get_self().as_double(), fmt.trim().cstrm());
 
-	r.write_no_lang(String(buf));
+	r.write(String(buf));
 }
 
 static void _left(Request& r, MethodParams& params) {
 	ssize_t sn=params.as_int(0, "n must be int", r);
 	const String& string=GET_SELF(r, VString).string();
-	r.write_pass_lang(sn<0 ? string : string.mid(r.charsets.source(), 0, (size_t)sn));
+	r.write(sn<0 ? string : string.mid(r.charsets.source(), 0, (size_t)sn));
 }
 
 static void _right(Request& r, MethodParams& params) {
@@ -163,7 +163,7 @@ static void _right(Request& r, MethodParams& params) {
 		size_t n=(size_t)sn;
 		const String& string=GET_SELF(r, VString).string();
 		size_t length=string.length(r.charsets.source());
-		r.write_pass_lang(n<length ? string.mid(r.charsets.source(), length-n, length, length) : string);
+		r.write(n<length ? string.mid(r.charsets.source(), length-n, length, length) : string);
 	}
 }
 
@@ -191,7 +191,7 @@ static void _mid(Request& r, MethodParams& params) {
 		end=length;
 	}
 
-	r.write_pass_lang(string.mid(r.charsets.source(), begin, end, length));
+	r.write(string.mid(r.charsets.source(), begin, end, length));
 }
 
 static void _pos(Request& r, MethodParams& params) {
@@ -205,7 +205,7 @@ static void _pos(Request& r, MethodParams& params) {
 			throw Exception(PARSER_RUNTIME, 0, "n(%d) must be >=0", offset);
 	}
 
-	r.write_no_lang(*new VInt((int)string.pos(r.charsets.source(), substr.as_string(), (size_t)offset)));
+	r.write(*new VInt((int)string.pos(r.charsets.source(), substr.as_string(), (size_t)offset)));
 }
 
 static void split_list(MethodParams& params, int paramIndex, const String& string, ArrayString& result) {
@@ -318,7 +318,7 @@ static void split_with_options(Request& r, MethodParams& params,
 
 	Table& table=horizontal?split_horizontal(pieces, right):split_vertical(pieces, right, column_name);
 
-	r.write_no_lang(*new VTable(&table));
+	r.write(*new VTable(&table));
 }
 static void _split(Request& r, MethodParams& params) {
 	split_with_options(r, params, 0 /* maybe-determine from param #2 */);
@@ -403,9 +403,9 @@ static void _match(Request& r, MethodParams& params) {
 			matches_count);
 
 		if(table){
-			r.write_no_lang(*new VTable(table));
+			r.write(*new VTable(table));
 		} else {
-			r.write_no_lang(*new VInt(matches_count));
+			r.write(*new VInt(matches_count));
 		}
 
 	} else { // replace
@@ -447,7 +447,7 @@ static void _match(Request& r, MethodParams& params) {
 		if(!matches_count && default_code)
 			r.process_write(*default_code);
 		else
-			r.write_pass_lang(result);
+			r.write(result);
 	}
 }
 
@@ -455,7 +455,7 @@ static void change_case(Request& r, MethodParams&,
 						String::Change_case_kind kind) {
 	const String& src=GET_SELF(r, VString).string();
 
-	r.write_pass_lang(src.change_case(r.charsets.source(), kind));
+	r.write(src.change_case(r.charsets.source(), kind));
 }
 static void _upper(Request& r, MethodParams& params) {
 	change_case(r, params, String::CC_UPPER);
@@ -586,7 +586,7 @@ static void _sql(Request& r, MethodParams& params) {
 				"produced no result, but no default option specified");
 	}
 
-	r.write_pass_lang(*string);
+	r.write(*string);
 }
 
 static void _replace(Request& r, MethodParams& params) {
@@ -596,14 +596,14 @@ static void _replace(Request& r, MethodParams& params) {
 		// ^string.replace[table]
 		Table* table=params.as_table(0, "param");
 		Dictionary dict(*table);
-		r.write_pass_lang(src.replace(dict));
+		r.write(src.replace(dict));
 	} else {
 		// ^string.replace[from-string;to-string]
 		Dictionary dict(
 						params.as_string(0, "from must be string"),
 						params.as_string(1, "to must be string")
 					);
-		r.write_pass_lang(src.replace(dict));
+		r.write(src.replace(dict));
 	}
 
 }
@@ -652,7 +652,7 @@ static void _save(Request& r, MethodParams& params) {
 static void _normalize(Request& r, MethodParams&) {
 	const String& src=GET_SELF(r, VString).string();
 
-	r.write_pass_lang(src);
+	r.write(src);
 }
 
 static void _trim(Request& r, MethodParams& params) {
@@ -685,7 +685,7 @@ static void _trim(Request& r, MethodParams& params) {
 		}
 	}
 
-	r.write_pass_lang(src.trim(kind, chars, &r.charsets.source()));
+	r.write(src.trim(kind, chars, &r.charsets.source()));
 }
 
 static void _base64(Request& r, MethodParams& params) {
@@ -716,14 +716,14 @@ static void _base64(Request& r, MethodParams& params) {
 
 			fix_line_breaks(decoded, length);
 			if(length)
-				r.write_pass_lang(*new String(decoded, String::L_TAINTED));
+				r.write(*new String(decoded, String::L_TAINTED));
 		}
 	} else {
 		// encode: ^str.base64[]
 		VString& self=GET_SELF(r, VString);
 		const char* cstr=self.string().cstr();
 		const char* encoded=pa_base64_encode(cstr, strlen(cstr));
-		r.write_pass_lang(*new String(encoded, String::L_TAINTED/*once ?param=base64(something) was needed*/));
+		r.write(*new String(encoded, String::L_TAINTED/*once ?param=base64(something) was needed*/));
 	}
 }
 
@@ -731,24 +731,24 @@ static void _idna(Request& r, MethodParams& params) {
 	if(&r.get_self() == string_class) {
 		// decode: ^string:idna[encoded]
 		const char* cstr=params.count() ? params.as_string(0, PARAMETER_MUST_BE_STRING).cstr() : "";
-		r.write_pass_lang(*new String(pa_idna_decode(cstr, r.charsets.source()), String::L_TAINTED));
+		r.write(*new String(pa_idna_decode(cstr, r.charsets.source()), String::L_TAINTED));
 	} else {
 		// encode: ^str.idna[]
 		VString& self=GET_SELF(r, VString);
 		const char* cstr=self.string().cstr();
-		r.write_pass_lang(*new String(pa_idna_encode(cstr, r.charsets.source()), String::L_TAINTED));
+		r.write(*new String(pa_idna_encode(cstr, r.charsets.source()), String::L_TAINTED));
 	}
 }
 
 static void _js_escape(Request& r, MethodParams&){
 	const String& src=GET_SELF(r, VString).string();
-	r.write_pass_lang(src.escape(r.charsets.source()));
+	r.write(src.escape(r.charsets.source()));
 }
 
 static void _js_unescape(Request& r, MethodParams& params){
 	const String& src=params.as_string(0, PARAMETER_MUST_BE_STRING);
 	if(const char* result=unescape_chars(src.cstr(), src.length(), &r.charsets.source(), true))
-		r.write_pass_lang(*new String(result, String::L_TAINTED));
+		r.write(*new String(result, String::L_TAINTED));
 }
 
 static void _unescape(Request& r, MethodParams& params){
@@ -780,7 +780,7 @@ static void _unescape(Request& r, MethodParams& params){
 	const char* unescaped=unescape_chars(src.cstr(), src.length(), from_charset, mode_js);
 	if(*unescaped){
 		const String* result=new String(Charset::transcode(unescaped, *from_charset, r.charsets.source()), String::L_TAINTED);
-		r.write_pass_lang(*result);
+		r.write(*result);
 	}
 }
 
@@ -788,7 +788,7 @@ static void _contains(Request& r, MethodParams& params) {
 	// empty or whitespace string is hash compatible
 	GET_SELF(r, VString).get_element(params.as_string(0, "key must be string"));
 	// ignoring result as it allways null
-	r.write_no_lang(VBool::get(false));
+	r.write(VBool::get(false));
 }
 
 // constructor

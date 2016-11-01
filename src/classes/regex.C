@@ -12,7 +12,7 @@
 #include "pa_vint.h"
 #include "pa_vregex.h"
 
-volatile const char * IDENT_REGEX_C="$Id: regex.C,v 1.9 2016/03/31 21:46:20 moko Exp $";
+volatile const char * IDENT_REGEX_C="$Id: regex.C,v 1.10 2016/11/01 23:10:41 moko Exp $";
 
 // class
 
@@ -46,12 +46,12 @@ static void _create(Request& r, MethodParams& params) {
 
 static void _size(Request& r, MethodParams&) {
 	VRegex& vregex=GET_SELF(r, VRegex);
-	r.write_no_lang(*new VInt(vregex.get_info_size()));
+	r.write(*new VInt(vregex.get_info_size()));
 }
 
 static void _study_size(Request& r, MethodParams&) {
 	VRegex& vregex=GET_SELF(r, VRegex);
-	r.write_no_lang(*new VInt(vregex.get_study_size()));
+	r.write(*new VInt(vregex.get_study_size()));
 }
 
 // constructor

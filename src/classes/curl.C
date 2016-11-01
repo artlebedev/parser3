@@ -17,7 +17,7 @@
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.45 2016/10/25 23:37:52 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.46 2016/11/01 23:10:39 moko Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -153,7 +153,7 @@ static void _curl_session(Request& r, MethodParams& params){
 }
 
 static void _curl_version_action(Request& r, MethodParams& ){
-	r.write_no_lang(*new VString(*new String(f_curl_version(), String::L_TAINTED)));
+	r.write(*new VString(*new String(f_curl_version(), String::L_TAINTED)));
 }
 
 static void _curl_version(Request& r, MethodParams& params){
@@ -575,13 +575,13 @@ static void _curl_info(Request& r, MethodParams& params){
 		curl_infos=new CurlInfoHash();
 	if(params.count()==1){
 		const String &name=params.as_string(0, "name must be string");
-		r.write_pass_lang(*curl_getinfo(name));
+		r.write(*curl_getinfo(name));
 	} else {
 		VHash& result=*new VHash;
 		for(CurlInfoHash::Iterator i(*curl_infos); i; i.next() ){
 			result.get_hash()->put(i.key(), curl_getinfo(i.key(), i.value()));
 		}
-		r.write_no_lang(result);
+		r.write(result);
 	}
 }
 
@@ -714,7 +714,7 @@ static void _curl_load_action(Request& r, MethodParams& params){
 	if(Value *vcookies=vtables->hash().get("SET-COOKIE"))
 		result.fields().put(HTTP_COOKIES_NAME, new VTable(parse_cookies(r, vcookies->get_table())));
 
-	r.write_no_lang(result);
+	r.write(result);
 }
 
 static void _curl_load(Request& r, MethodParams& params){

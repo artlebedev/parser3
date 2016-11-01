@@ -28,7 +28,7 @@
 #include "xnode.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_XDOC_C="$Id: xdoc.C,v 1.189 2016/10/26 15:44:49 moko Exp $";
+volatile const char * IDENT_XDOC_C="$Id: xdoc.C,v 1.190 2016/11/01 23:10:41 moko Exp $";
 
 // defines
 
@@ -160,7 +160,7 @@ static void writeNode(Request& r, VXdoc& xdoc, xmlNode* node) {
 			"error creating node"); // OOM, bad name, things like that
 
 	// write out result
-	r.write_no_lang(xdoc.wrap(*node));
+	r.write(xdoc.wrap(*node));
 }
 
 struct IdsIteratorInfo {
@@ -571,7 +571,7 @@ static void _file(Request& r, MethodParams& params) {
 	vfile.set_binary(false/*not tainted*/, buf.str?buf.str:""/*to distinguish from stat-ed file*/, buf.length, oo.filename, &vhcontent_type);
 
 	// write out result
-	r.write_no_lang(vfile);
+	r.write(vfile);
 }
 
 static void _save(Request& r, MethodParams& params) {
@@ -594,7 +594,7 @@ static void _string(Request& r, MethodParams& params) {
 		true/*use source charset to render, client charset to put to header*/);
 
 	// write out result
-	r.write_no_lang(String(buf, String::L_AS_IS));
+	r.write(String(buf, String::L_AS_IS));
 }
 
 #ifndef DOXYGEN
@@ -717,7 +717,7 @@ static void _transform(Request& r, MethodParams& params) {
 	}
 
 	// write out result
-	r.write_no_lang(*result);
+	r.write(*result);
 }
 
 // constructor

@@ -19,7 +19,7 @@
 
 #include "smtp.h"
 
-volatile const char * IDENT_MAIL_C="$Id: mail.C,v 1.130 2016/09/21 11:59:09 moko Exp $";
+volatile const char * IDENT_MAIL_C="$Id: mail.C,v 1.131 2016/11/01 23:10:40 moko Exp $";
 
 // defines
 
@@ -219,7 +219,7 @@ static void _send(Request& r, MethodParams& params) {
 			smtp_server_port?true:false /*send by SMTP=strip to?*/, to);
 
 	if(print_debug)
-		r.write_pass_lang(message);
+		r.write(message);
 	else
 		sendmail(vmail_conf, smtp_server_port, message, from, to, soptions);
 }
