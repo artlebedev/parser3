@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.243 2016/11/01 23:10:40 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.244 2016/11/03 16:17:37 moko Exp $";
 
 // defines
 
@@ -216,10 +216,11 @@ static void _process(Request& r, MethodParams& params) {
 	// after restoring current-request-lang
 	// maybe-execute @main[]
 	if(main_method) {
-		VMethodFrame frame(*main_method, r.get_method_frame()->caller(), *target_self);
-		frame.empty_params();
-		r.call(frame);
-		r.write(frame.result());
+		METHOD_FRAME_ACTION(*main_method, r.get_method_frame()->caller(), *target_self, {
+			frame.empty_params();
+			r.call(frame);
+			r.write(frame.result());
+		});
 	}
 }
 	

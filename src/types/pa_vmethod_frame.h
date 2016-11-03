@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.113 2016/11/01 22:39:00 moko Exp $"
+#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.114 2016/11/03 16:17:38 moko Exp $"
 
 #include "pa_symbols.h"
 #include "pa_wcontext.h"
@@ -22,8 +22,8 @@ class Request;
 /**
 	@b method parameters passed in this array.
 	contains handy typecast ad junction/not junction ensurers
-
 */
+
 class MethodParams {
 public:
 	MethodParams() : felements(0), fused(0) {}
@@ -123,49 +123,19 @@ private:
 
 };
 
-/**	Method frame write context
+/**
+	Method frame write context
 	accepts values written by method code
-	also handles method parameters and local variables
 */
+
 class VMethodFrame: public WContext {
 protected:
 	VMethodFrame *fcaller;
-
-	HashString<Value*>* my; /*OR*/ MethodParams fnumbered_params;
 	Value& fself;
-
-	typedef const VJunction* (VMethodFrame::*put_element_t)(const String& aname, Value* avalue);
-	put_element_t put_element_impl;
 
 public: // Value
 
 	override const char* type() const { return "method_frame"; }
-
-	/// VMethodFrame: $result | parent get_string(=accumulated fstring)
-	override const String* get_string() {
-		// check the $result value
-		Value* result=get_result_variable();
-		// if we have one, return it's string value, else return as usual: accumulated fstring or fvalue
-		return result ? result->get_string() : WContext::get_string();
-	}
-	
-	/// VMethodFrame: my or self_transparent or $caller
-	override Value* get_element(const String& aname) {
-		if(SYMBOLS_EQ(aname,CALLER_SYMBOL))
-			return caller();
-
-		if(SYMBOLS_EQ(aname,SELF_SYMBOL))
-			return &self();
-
-		Value* result;
-		if(my && (result=my->get(aname)))
-			return result;
-
-		if(result=self().get_element(aname))
-			return result;
-
-		return 0;
-	}
 
 	/// VMethodFrame: self_transparent
 	override VStateless_class* get_class() { return self().get_class(); }
@@ -173,12 +143,119 @@ public: // Value
 	/// VMethodFrame: self_transparent
 	override VStateless_class* base() { return self().base(); }
 
-	/// VMethodFrame: my or self_transparent
-	override const VJunction* put_element(const String& aname, Value* avalue) {
-		return (this->*put_element_impl)(aname, avalue);
+public: // usage
+
+	VMethodFrame(const Method& amethod, VMethodFrame *acaller, Value& aself):
+		WContext(0 /* no parent, junctions can be reattached only up to VMethodFrame */),
+		fcaller(acaller),
+		fself(aself),
+		method(amethod) {
 	}
 
-	/// VMethodFrame: appends a fstring to result
+	VMethodFrame *caller() { return fcaller; }
+
+	Value& self() { return fself; }
+
+	void check_call_type(){
+		Method::Call_type call_type=self().get_class()==&self() ? Method::CT_STATIC : Method::CT_DYNAMIC;
+		if(method.call_type!=Method::CT_ANY && method.call_type!=call_type) // call type not allowed?
+			throw Exception(PARSER_RUNTIME, 0, "is not allowed to be called %s", call_type==Method::CT_STATIC ? "statically" : "dynamically");
+	}
+
+public:
+
+	const Method& method;
+};
+
+
+class VNativeMethodFrame: public VMethodFrame {
+protected:
+	MethodParams fnumbered_params;
+
+public: // Value
+
+	/// VNativeMethodFrame: self_transparent or $caller
+	override Value* get_element(const String& aname) {
+		if(SYMBOLS_EQ(aname,CALLER_SYMBOL))
+			return caller();
+
+		if(SYMBOLS_EQ(aname,SELF_SYMBOL))
+			return &self();
+
+		if(Value* result=self().get_element(aname))
+			return result;
+
+		return 0;
+	}
+
+	/// VNativeMethodFrame: self_transparent
+	override const VJunction* put_element(const String& aname, Value* avalue) {
+		return self().put_element(aname, avalue);
+	}
+
+public: // usage
+
+	VNativeMethodFrame(const Method& amethod, VMethodFrame *acaller, Value& aself) : VMethodFrame(amethod, acaller, aself){}
+
+	void store_params(Value **params, size_t count) {
+		fnumbered_params.store_params(params, count);
+		method.check_actual_numbered_params(self(), &fnumbered_params);
+	}
+
+	void empty_params() {
+		method.check_actual_numbered_params(self(), &fnumbered_params);
+	}
+
+	void call(Request &r);
+
+};
+
+
+/**
+	Handles named parameters and local variables
+*/
+
+class VParserMethodFrame: public VMethodFrame {
+protected:
+	HashString<Value*> my;
+
+public: // Value
+
+	/// VParserMethodFrame: $result | parent get_string(=accumulated fstring)
+	override const String* get_string() {
+		// check the $result value
+		Value* result=get_result_variable();
+		// if we have one, return it's string value, else return as usual: accumulated fstring or fvalue
+		return result ? result->get_string() : WContext::get_string();
+	}
+
+	/// VParserMethodFrame: my or self_transparent or $caller
+	override Value* get_element(const String& aname) {
+		if(SYMBOLS_EQ(aname,CALLER_SYMBOL))
+			return caller();
+
+		if(SYMBOLS_EQ(aname,SELF_SYMBOL))
+			return &self();
+
+		if(Value* result=my.get(aname))
+			return result;
+
+		if(Value* result=self().get_element(aname))
+			return result;
+
+		return 0;
+	}
+
+	/// VParserMethodFrame: my or self_transparent
+	override const VJunction* put_element(const String& aname, Value* avalue) {
+		if(my.put_replaced(aname, avalue))
+			return PUT_ELEMENT_REPLACED_ELEMENT;
+		return self().put_element(aname, avalue);
+	}
+
+public: // WContext
+
+	/// VParserMethodFrame: skip write when RO_USE_RESULT
 	override void write(const String& astring) {
 #ifdef OPTIMIZE_RESULT
 		switch (method.result_optimization){
@@ -195,148 +272,165 @@ public: // Value
 		WContext::write(astring);
 	}
 
-private:
-
-	const VJunction* put_element_local(const String& aname, Value* avalue){
-		set_my_variable(aname, *avalue);
-		return PUT_ELEMENT_REPLACED_ELEMENT;
-	}
-
-	const VJunction* put_element_global(const String& aname, Value* avalue){
-		if(my && my->put_replaced(aname, avalue))
-			return PUT_ELEMENT_REPLACED_ELEMENT;
-		return self().put_element(aname, avalue);
-	}
-
-public: // WContext
-
-	override Value& result() {
-		if(my){
-			// check the $result value
-			Value* result_value=get_result_variable();
-			// if we have one, return it, else return as usual: accumulated fstring or fvalue
-			if(result_value)
-				return *result_value;
-#ifdef OPTIMIZE_RESULT
-			if(method.result_optimization==Method::RO_USE_RESULT)
-				return *VVoid::get();
-			((Method *)&method)->result_optimization=Method::RO_USE_WCONTEXT;
-#ifdef OPTIMIZE_CALL // nested as CO_WITHOUT_WCONTEXT assumes that $result not used
-			((Method *)&method)->call_optimization=Method::CO_WITHOUT_WCONTEXT;
-#endif
-#endif
-		}
-		return WContext::result();
-	}
-
 	override void write(Value& avalue) {
 		WContext::write(avalue);
 	}
 
+	override Value& result() {
+		// check the $result value
+		Value* result_value=get_result_variable();
+		// if we have one, return it, else return as usual: accumulated fstring or fvalue
+		if(result_value)
+			return *result_value;
+#ifdef OPTIMIZE_RESULT
+		if(method.result_optimization==Method::RO_USE_RESULT)
+			return *VVoid::get();
+		((Method *)&method)->result_optimization=Method::RO_USE_WCONTEXT;
+#ifdef OPTIMIZE_CALL // nested as CO_WITHOUT_WCONTEXT assumes that $result not used
+		((Method *)&method)->call_optimization=Method::CO_WITHOUT_WCONTEXT;
+#endif
+#endif
+		return WContext::result();
+	}
+
 public: // usage
 
-	VMethodFrame(const Method& amethod, VMethodFrame *acaller, Value& aself);
-
-	VMethodFrame *caller() { return fcaller; }
-
-#ifdef USE_DESTRUCTORS
-	~VMethodFrame(){
-		if(my){
-			delete my;
-		}
-	}
-#endif
-
-	Value& self() { return fself; }
-
-	size_t method_params_count() {
-		return method.params_names ? method.params_names->count():0;
-	}
+	VParserMethodFrame(const Method& amethod, VMethodFrame *acaller, Value& aself);
 
 	void store_params(Value **params, size_t count) {
-		if(my) {
-			size_t param_count=method.params_names ? method.params_names->count():0;
-			size_t i=0;
+		size_t param_count=method.params_count;
+		size_t i=0;
 
-			if(count>param_count){
-				if(method.extra_params){
-					for(; i<param_count; i++) {
-						const String& fname=*(*method.params_names)[i];
-						set_my_variable(fname, *params[i]);
-					}
+		if(count>param_count){
+			if(method.extra_params){
+				for(; i<param_count; i++) {
+					const String& fname=*(*method.params_names)[i];
+					set_my_variable(fname, *params[i]);
+				}
 
-					VHash& vargs=*new VHash();
-					HashStringValue& args = vargs.hash();
+				VHash& vargs=*new VHash();
+				HashStringValue& args = vargs.hash();
 
-					for(; i<count; i++) {
-						args.put(format(args.count(), 0), params[i]);
-					}
+				for(; i<count; i++) {
+					args.put(format(args.count(), 0), params[i]);
+				}
 
-					set_my_variable(*method.extra_params, vargs);
-					return;
-				} else
+				set_my_variable(*method.extra_params, vargs);
+				return;
+			} else
 				throw Exception(PARSER_RUNTIME, 0, "method of %s accepts maximum %d parameter(s) (%d present)", self().type(), param_count, count);
-			}
+		}
 
-			for(; i<count; i++) {
-				const String& fname=*(*method.params_names)[i];
-				set_my_variable(fname, *params[i]);
-			}
+		for(; i<count; i++) {
+			const String& fname=*(*method.params_names)[i];
+			set_my_variable(fname, *params[i]);
+		}
 
-			for(; i<param_count; i++) {
-				const String& fname=*(*method.params_names)[i];
-				my->put(fname, VVoid::get());
-			}
-		} else
-			fnumbered_params.store_params(params,count);
+		for(; i<param_count; i++) {
+			const String& fname=*(*method.params_names)[i];
+			my.put(fname, VVoid::get());
+		}
 	}
 
 	void empty_params(){
-		if(method.params_names){
-			size_t param_count=method.params_names->count();
-			if(param_count>0){
-				my->put(*(*method.params_names)[0], VString::empty());
-				for(size_t i=1; i<param_count; i++)
-					my->put(*(*method.params_names)[i], VVoid::get());
-			}
+		size_t param_count=method.params_count;
+		if(param_count>0){
+			my.put(*(*method.params_names)[0], VString::empty());
+			for(size_t i=1; i<param_count; i++)
+				my.put(*(*method.params_names)[i], VVoid::get());
 		}
 	}
 
-	MethodParams* numbered_params() { return &fnumbered_params; }
+	void call(Request &r);
 
 protected:
 
 	void set_my_variable(const String& fname, Value& value) {
-		my->put(fname, &value); // remember param
+		my.put(fname, &value); // remember param
 	}
 
 	Value* get_result_variable();
 
-public:
-	
-	const Method& method;
+};
+
+
+class VLocalParserMethodFrame: public VParserMethodFrame {
+public: // Value
+
+	override const VJunction* put_element(const String& aname, Value* avalue){
+		set_my_variable(aname, *avalue);
+		return PUT_ELEMENT_REPLACED_ELEMENT;
+	}
+
+public: // usage
+
+	VLocalParserMethodFrame(const Method& amethod, VMethodFrame *acaller, Value& aself) : VParserMethodFrame(amethod, acaller, aself) {}
 
 };
 
-class VExpressionFrame: public VMethodFrame {
+
+template<typename Parent> class VExpressionFrame: public Parent {
 public:
-	VExpressionFrame(const Method& amethod, VMethodFrame *acaller, Value& aself) : VMethodFrame(amethod, acaller, aself) {}
+	VExpressionFrame(const Method& amethod, VMethodFrame *acaller, Value& aself) : Parent(amethod, acaller, aself) {}
 
 	/// in expressions we don't attempt to convert to string
 	override void write_as_string(Value& avalue) {
-		VMethodFrame::write(avalue);
+		Parent::write(avalue);
 	}
 };
 
 
-class VConstructorFrame: public VMethodFrame {
+template<typename Parent> class VConstructorFrame: public Parent {
 public:
-	VConstructorFrame(const Method& amethod, VMethodFrame *acaller, Value& aself) : VMethodFrame(amethod, acaller, aself) {
+	VConstructorFrame(const Method& amethod, VMethodFrame *acaller, Value& aself) : Parent(amethod, acaller, aself) {
 		// prevent non-string writes for better error reporting [constructors are not expected to return anything]
 		VMethodFrame::write(aself);
 	}
 
 	override void write(const String& /*astring*/) {}
 };
+
+
+#define METHOD_FRAME_ACTION(method, caller, self, action)					\
+	if((method).native_code){								\
+		VNativeMethodFrame frame(method, caller, self);					\
+		action;										\
+	} else {										\
+		if((method).all_vars_local){							\
+			VLocalParserMethodFrame frame(method, caller, self);			\
+			action;									\
+		} else {									\
+			VParserMethodFrame frame(method, caller, self);				\
+			action;									\
+		}										\
+	}
+
+#define EXPRESSION_FRAME_ACTION(method, caller, self, action)					\
+	if((method).native_code){								\
+		VExpressionFrame<VNativeMethodFrame> frame(method, caller, self);		\
+		action;										\
+	} else {										\
+		if((method).all_vars_local){							\
+			VExpressionFrame<VLocalParserMethodFrame> frame(method, caller, self);	\
+			action;									\
+		} else {									\
+			VExpressionFrame<VParserMethodFrame> frame(method, caller, self);	\
+			action;									\
+		}										\
+	}
+
+#define CONSTRUCTOR_FRAME_ACTION(method, caller, self, action)					\
+	if((method).native_code){								\
+		VConstructorFrame<VNativeMethodFrame> frame(method, caller, self);		\
+		action;										\
+	} else {										\
+		if((method).all_vars_local){							\
+			VConstructorFrame<VLocalParserMethodFrame> frame(method, caller, self);	\
+			action;									\
+		} else {									\
+			VConstructorFrame<VParserMethodFrame> frame(method, caller, self);	\
+			action;									\
+		}										\
+	}
 
 #endif

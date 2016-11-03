@@ -12,29 +12,24 @@
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VOBJECT_C="$Id: pa_vobject.C,v 1.46 2016/09/29 18:49:43 moko Exp $" IDENT_PA_VOBJECT_H;
+volatile const char * IDENT_PA_VOBJECT_C="$Id: pa_vobject.C,v 1.47 2016/11/03 16:17:38 moko Exp $" IDENT_PA_VOBJECT_H;
 
 Value* VObject::get_scalar_value(const char* as_something) const {
 	VObject* unconst_this=const_cast<VObject*>(this);
 	if(Value* scalar=fclass.get_scalar(*unconst_this))
 		if(Junction* junction=scalar->get_junction())
 			if(const Method *method=junction->method){
-				VMethodFrame frame(*method, 0 /*no caller*/, *unconst_this);
-
-				Value *param;
-
-				if(size_t param_count=frame.method_params_count()){
-					if(param_count==1){
+				if(method->params_count>1)
+					throw Exception(PARSER_RUNTIME, 0, "scalar getter method can't have more then 1 parameter (has %d parameters)", method->params_count);
+				METHOD_FRAME_ACTION(*method, 0 /*no caller*/, *unconst_this, {
+					Value *param;
+					if(method->params_count==1){
 						param=new VString(*new String(as_something));
 						frame.store_params(&param, 1);
-					} else
-						throw Exception(PARSER_RUNTIME,
-							0,
-							"scalar getter method can't have more then 1 parameter (has %d parameters)", param_count);
-				} // no need for else frame.empty_params()
-
-				pa_thread_request().execute_method(frame);
-				return &frame.result();
+					} /* no need for else frame.empty_params() */
+					pa_thread_request().call(frame);
+					return &frame.result();
+				});
 			}
 	return 0;
 }

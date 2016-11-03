@@ -8,7 +8,7 @@
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VMETHOD_FRAME_C="$Id: pa_vmethod_frame.C,v 1.34 2016/10/06 19:41:36 moko Exp $" IDENT_PA_VMETHOD_FRAME_H;
+volatile const char * IDENT_PA_VMETHOD_FRAME_C="$Id: pa_vmethod_frame.C,v 1.35 2016/11/03 16:17:38 moko Exp $" IDENT_PA_VMETHOD_FRAME_H;
 
 VVoid void_result; // unique value to be sure the result is changed
 
@@ -44,38 +44,33 @@ Table* MethodParams::as_table(int index, const char* name) {
 
 // VMethodFrame: methods
 
-VMethodFrame::VMethodFrame(const Method& amethod, VMethodFrame *acaller, Value& aself) :
-	WContext(0 /* no parent, junctions can be reattached only up to VMethodFrame */),
-	fcaller(acaller),
-	my(0),
-	fself(aself),
-	method(amethod) {
-
-	put_element_impl=(method.all_vars_local) ? &VMethodFrame::put_element_local : &VMethodFrame::put_element_global;
-
-	if(!method.max_numbered_params_count){ // this method uses numbered params?
-		my=new HashString<Value*>;
-
-		if(method.locals_names) { // are there any local var names?
-			// remember them
-			// those are flags that fname is local == to be looked up in 'my'
-			for(Array_iterator<const String*> i(*method.locals_names); i.has_next(); ) {
-				// speedup: not checking for clash with "result" fname
-				const String& fname=*i.next();
-				set_my_variable(fname, *VString::empty());
-			}
-		}
-#ifdef OPTIMIZE_RESULT
-		if(method.result_optimization!=Method::RO_USE_WCONTEXT)
-#endif
-			set_my_variable(Symbols::RESULT_SYMBOL, void_result);
-	}
+void VNativeMethodFrame::call(Request &r){
+	check_call_type();
+	method.native_code(r, fnumbered_params);
 }
 
-Value* VMethodFrame::get_result_variable() {
-	if(!my)
-		return 0;
+void VParserMethodFrame::call(Request &r){
+	check_call_type();
+	r.recoursion_checked_execute(*method.parser_code);
+}
 
-	Value* result=my->get(Symbols::RESULT_SYMBOL);
+VParserMethodFrame::VParserMethodFrame(const Method& amethod, VMethodFrame *acaller, Value& aself) : VMethodFrame(amethod, acaller, aself) {
+	if(method.locals_names) { // are there any local var names?
+		// remember them
+		// those are flags that fname is local == to be looked up in 'my'
+		for(Array_iterator<const String*> i(*method.locals_names); i.has_next(); ) {
+			// speedup: not checking for clash with "result" fname
+			const String& fname=*i.next();
+			set_my_variable(fname, *VString::empty());
+		}
+	}
+#ifdef OPTIMIZE_RESULT
+	if(method.result_optimization!=Method::RO_USE_WCONTEXT)
+#endif
+		set_my_variable(Symbols::RESULT_SYMBOL, void_result);
+}
+
+Value* VParserMethodFrame::get_result_variable() {
+	Value* result=my.get(Symbols::RESULT_SYMBOL);
 	return result!=&void_result ? result : 0;
 }

@@ -10,7 +10,7 @@
 #include "pa_vbool.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.64 2016/11/01 23:10:41 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.65 2016/11/03 16:17:37 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -78,7 +78,7 @@ static void _create(Request& r, MethodParams& params) {
 
 		max_params_count=method->max_numbered_params_count;
 	} else {
-		max_params_count=method->params_names?method->params_names->count():0;
+		max_params_count=method->params_count;
 	}
 
 	if(nparams>max_params_count)
@@ -90,19 +90,20 @@ static void _create(Request& r, MethodParams& params) {
 			nparams);
 
 	Value &object = r.construct(*vclass, *method);
-	VConstructorFrame frame(*method, r.get_method_frame(), object);
 
-	Value* v[100];
-	if(nparams>0){
-		for(int i=0; i<nparams; i++)
-			v[i]=&r.process(params[i+2]);
-		frame.store_params((Value**)&v, nparams);
-	} else {
-		frame.empty_params();
-	}
-	r.call(frame);
-	object.enable_default_setter();
-	r.write(frame.result());
+	CONSTRUCTOR_FRAME_ACTION(*method, r.get_method_frame(), object, {
+		Value* v[100];
+		if(nparams>0){
+			for(int i=0; i<nparams; i++)
+				v[i]=&r.process(params[i+2]);
+			frame.store_params((Value**)&v, nparams);
+		} else {
+			frame.empty_params();
+		}
+		r.call(frame);
+		object.enable_default_setter();
+		r.write(frame.result());
+	});
 }
 
 

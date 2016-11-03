@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.238 2016/11/01 23:10:41 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.239 2016/11/03 16:17:37 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -192,9 +192,33 @@ public:
 
 	/// executes ops
 	void execute(ArrayOperation& ops); // execute.C
-	void call(VMethodFrame &frame);
-	void call_expression(VMethodFrame &frame);
-	void call_write(VMethodFrame &frame);
+
+	template<typename Frame> void call(Frame& frame){
+		VMethodFrame *saved_method_frame=method_frame;
+		Value* saved_rcontext=rcontext;
+		WContext *saved_wcontext=wcontext;
+
+		rcontext=wcontext=method_frame=&frame;
+
+		frame.call(*this);
+
+		wcontext=saved_wcontext;
+		rcontext=saved_rcontext;
+		method_frame=saved_method_frame;
+	}
+
+	template<typename Frame> void call_write(Frame& frame){
+		VMethodFrame *saved_method_frame=method_frame;
+		Value* saved_rcontext=rcontext;
+
+		rcontext=method_frame=&frame;
+
+		frame.call(*this);
+
+		rcontext=saved_rcontext;
+		method_frame=saved_method_frame;
+	}
+
 	Value& construct(VStateless_class &class_value, const Method &method);
 
 	/// execute ops with anti-recoursion check
@@ -231,18 +255,18 @@ public:
 	const String* get_used_filename(uint file_no);
 	
 	/// appending string with it's languages
-	void write(const String& astring) {
+	inline void write(const String& astring) {
 		wcontext->write(astring);
 	}
 	
 	/// in [] and {} appending string if get_string is not null, else appending value
 	/// in () allways appending value
-	void write(Value& avalue) {
+	inline void write(Value& avalue) {
 		wcontext->write_as_string(avalue);
 	}
 
 	/// allways appending value
-	void write_value(Value& avalue) {
+	inline void write_value(Value& avalue) {
 		wcontext->write(avalue);
 	}
 
@@ -313,9 +337,6 @@ public: // status read methods
 
 	/// for @main[]
 	const String* execute_virtual_method(Value& aself, const String& method_name);
-
-	/// executes parser method, use op_call(frame) to execute native method
-	void execute_method(VMethodFrame& aframe);
 
 	//{ for @conf[filespec] and @auto[filespec] and parser://method/call
 	const String* execute_method(Value& aself, const Method& method, Value* optional_param, bool do_return_string);

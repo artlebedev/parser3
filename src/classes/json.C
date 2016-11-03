@@ -18,7 +18,7 @@
 #include "pa_vxdoc.h"
 #endif
 
-volatile const char * IDENT_JSON_C="$Id: json.C,v 1.48 2016/11/01 23:10:40 moko Exp $";
+volatile const char * IDENT_JSON_C="$Id: json.C,v 1.49 2016/11/03 16:17:37 moko Exp $";
 
 // class
 
@@ -101,13 +101,12 @@ String* json_string(Json *json, const char *value, uint32_t length){
 }
 
 static Value *json_hook(Request &r, Junction *hook, String* key, Value* value){
-	VMethodFrame frame(*hook->method, r.method_frame, hook->self);
 	Value *params[]={new VString(key ? *key : String::Empty), value};
-
-	frame.store_params(params, 2);
-	r.execute_method(frame);
-
-	return &frame.result();
+	METHOD_FRAME_ACTION(*hook->method, r.method_frame, hook->self, {
+		frame.store_params(params, 2);
+		r.call(frame);
+		return &frame.result();
+	});
 }
 
 static int json_callback(Json *json, int type, const char *value, uint32_t length)
@@ -321,14 +320,14 @@ static void _parse(Request& r, MethodParams& params) {
 			if(Value* value=options->get("object")) {
 				json.hook_object=value->get_junction();
 				json.request=&r;
-				if (!json.hook_object || !json.hook_object->method || !json.hook_object->method->params_names || !(json.hook_object->method->params_names->count() == 2))
+				if (!json.hook_object || !json.hook_object->method || !json.hook_object->method->params_names || !(json.hook_object->method->params_count == 2))
 					throw Exception(PARSER_RUNTIME, 0, "$.object must be parser method with 2 parameters");
 				valid_options++;
 			}
 			if(Value* value=options->get("array")) {
 				json.hook_array=value->get_junction();
 				json.request=&r;
-				if (!json.hook_array || !json.hook_array->method || !json.hook_array->method->params_names || !(json.hook_array->method->params_names->count() == 2))
+				if (!json.hook_array || !json.hook_array->method || !json.hook_array->method->params_names || !(json.hook_array->method->params_count == 2))
 					throw Exception(PARSER_RUNTIME, 0, "$.array must be parser method with 2 parameters");
 				valid_options++;
 			}
@@ -441,17 +440,16 @@ const String& value_json_string(String::Body key, Value& v, Json_options& option
 		}
 		if(method && !method->is_void()) {
 			Junction* junction=method->get_junction();
-			VMethodFrame frame(*junction->method, options.r->method_frame, junction->self);
-
 			HashStringValue* params_hash=options.params && options.indent ? options.params->get_hash() : NULL;
 			Temp_hash_value<HashStringValue, Value*> indent(params_hash, "indent", new VString(*new String(options.indent, String::L_AS_IS)));
 
 			Value *params[]={new VString(*new String(key, String::L_JSON)), &v, options.params ? options.params : VVoid::get()};
-			frame.store_params(params, 3);
 
-			options.r->execute_method(frame);
-
-			return frame.result().as_string();
+			METHOD_FRAME_ACTION(*junction->method, options.r->method_frame, junction->self, {
+				frame.store_params(params, 3);
+				options.r->call(frame);
+				return frame.result().as_string();
+			});
 		}
 	}
 
@@ -507,7 +505,7 @@ static void _string(Request& r, MethodParams& params) {
 					valid_options++;
 #endif
 				} else if(Junction* junction=value->get_junction()){
-					if(!junction->method || !junction->method->params_names || junction->method->params_names->count() != 3)
+					if(!junction->method || !junction->method->params_names || junction->method->params_count != 3)
 						throw Exception(PARSER_RUNTIME, 0, "$.%s must be parser method with 3 parameters", key.cstr());
 					methods->put(key, value);
 					valid_options++;
@@ -522,7 +520,7 @@ static void _string(Request& r, MethodParams& params) {
 				if(Value* value=vhash->get_default()) {
 					if(!value->is_string()){
 						Junction* junction=value->get_junction();
-						if(!junction || !junction->method || !junction->method->params_names || junction->method->params_names->count() != 3)
+						if(!junction || !junction->method || !junction->method->params_names || junction->method->params_count != 3)
 							throw Exception(PARSER_RUNTIME, 0, "$._default must be string or parser method with 3 parameters");
 					}
 					json.default_method=value;

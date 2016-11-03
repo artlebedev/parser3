@@ -13,7 +13,7 @@
 #include "pa_request.h"
 
 
-volatile const char * IDENT_PA_VALUE_C="$Id: pa_value.C,v 1.42 2016/10/31 01:55:07 moko Exp $" IDENT_PA_VALUE_H IDENT_PA_PROPERTY_H;
+volatile const char * IDENT_PA_VALUE_C="$Id: pa_value.C,v 1.43 2016/11/03 16:17:38 moko Exp $" IDENT_PA_VALUE_H IDENT_PA_PROPERTY_H;
 
 // globals
 
@@ -55,25 +55,24 @@ const String* Value::default_method_2_json_string(Value& default_method, Json_op
 			return options.hash_json_string(get_hash());
 		}
 
-		VMethodFrame frame(*method, options.r->method_frame, *this);
-
 		Value *params[]={new VString(*new String(options.key, String::L_JSON)), options.params ? options.params : VVoid::get()};
-		frame.store_params(params, 2);
 
-		options.r->execute_method(frame);
-
-		return &frame.result().as_string();
+		METHOD_FRAME_ACTION(*method, options.r->method_frame, *this,{
+			frame.store_params(params, 2);
+			options.r->call(frame);
+			return &frame.result().as_string();
+		});
 	} else {
 		// specified as method-junction
 		Junction* junction=default_method.get_junction();
-		VMethodFrame frame(*junction->method, options.r->method_frame, junction->self);
 
 		Value *params[]={new VString(*new String(options.key, String::L_JSON)), this, options.params ? options.params : VVoid::get()};
-		frame.store_params(params, 3);
 
-		options.r->execute_method(frame);
-
-		return &frame.result().as_string();
+		METHOD_FRAME_ACTION(*junction->method, options.r->method_frame, junction->self,{
+			frame.store_params(params, 3);
+			options.r->call(frame);
+			return &frame.result().as_string();
+		});
 	}
 }
 

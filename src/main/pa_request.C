@@ -32,7 +32,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.362 2016/10/09 21:32:19 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.363 2016/11/03 16:17:37 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -220,15 +220,13 @@ VStateless_class* Request::get_class(const String& name){
 			if(Junction* junction=value->get_junction())
 				if(const Method *method=junction->method) {
 					Value *vname=new VString(name);
-					VMethodFrame frame(*method, 0 /*no parent*/, main_class);
-
-					frame.store_params(&vname, 1);
-					// we don't need the result
-					execute_method(frame);
-
+					CONSTRUCTOR_FRAME_ACTION(*method, 0 /*no parent*/, main_class, {
+						frame.store_params(&vname, 1);
+						// we don't need the result
+						call(frame);
+					});
 					result=classes().get(name);
 				}
-
 	return result;
 }
 
@@ -443,12 +441,11 @@ void Request::core(const char* config_filespec, bool config_fail_on_read_problem
 				if(const Method *method=junction->method) {
 					// preparing to pass parameters to 
 					//	@postprocess[data]
-					VMethodFrame frame(*method, 0 /*no parent*/, main_class);
-
-					frame.store_params(&body_value, 1);
-					execute_method(frame);
-
-					body_value=&frame.result();
+					METHOD_FRAME_ACTION(*method, 0 /*no parent*/, main_class, {
+						frame.store_params(&body_value, 1);
+						call(frame);
+						body_value=&frame.result();
+					});
 				}
 
 		VFile* body_file=body_value->as_vfile(flang, &charsets);
@@ -506,13 +503,12 @@ void Request::core(const char* config_filespec, bool config_fail_on_read_problem
 					//   execute ^unhandled_exception[exception;stack]
 					exception_trace.clear(); // forget all about previous life, in case there would be error inside of this method, error handled  would not be mislead by old stack contents (see extract_origin)
 
-					VMethodFrame frame(*method, 0 /*no caller*/, main_class);
 					Value *params[]={&details.vhash, new VTable(&stack_trace)};
-
-					frame.store_params(params, 2);
-					execute_method(frame);
-
-					body_string=&frame.result().as_string();
+					METHOD_FRAME_ACTION(*method, 0 /*no caller*/, main_class, {
+						frame.store_params(params, 2);
+						call(frame);
+						body_string=&frame.result().as_string();
+					});
 				}
 			}
 		}
