@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.114 2016/11/03 16:17:38 moko Exp $"
+#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.115 2016/11/03 16:30:36 moko Exp $"
 
 #include "pa_symbols.h"
 #include "pa_wcontext.h"
@@ -157,8 +157,12 @@ public: // usage
 	Value& self() { return fself; }
 
 	void check_call_type(){
+		if(method.call_type==Method::CT_ANY)
+			return;
+
 		Method::Call_type call_type=self().get_class()==&self() ? Method::CT_STATIC : Method::CT_DYNAMIC;
-		if(method.call_type!=Method::CT_ANY && method.call_type!=call_type) // call type not allowed?
+
+		 if(method.call_type!=call_type) // call type not allowed?
 			throw Exception(PARSER_RUNTIME, 0, "is not allowed to be called %s", call_type==Method::CT_STATIC ? "statically" : "dynamically");
 	}
 
