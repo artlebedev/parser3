@@ -8,7 +8,7 @@
 #ifndef PA_METHOD_H
 #define PA_METHOD_H
 
-#define IDENT_PA_METHOD_H "$Id: pa_method.h,v 1.26 2016/10/11 21:25:34 moko Exp $"
+#define IDENT_PA_METHOD_H "$Id: pa_method.h,v 1.27 2016/11/03 16:17:38 moko Exp $"
 
 #define OPTIMIZE_CALL
 #define OPTIMIZE_RESULT
@@ -64,10 +64,15 @@ public:
 	};
 
 	Call_type call_type;
+
 	/// either numbered params for native-code methods = operators
 	int min_numbered_params_count, max_numbered_params_count;
+
 	/// or named params&locals for parser-code methods
-	ArrayString* params_names;  ArrayString* locals_names;
+	ArrayString* params_names;
+	int params_count;
+	ArrayString* locals_names;
+
 	/// the Code
 	ArrayOperation* parser_code; /*OR*/ NativeCodePtr native_code;
 
@@ -102,7 +107,7 @@ public:
 
 		call_type(acall_type),
 		min_numbered_params_count(amin_numbered_params_count), max_numbered_params_count(amax_numbered_params_count),
-		params_names(aparams_names), locals_names(alocals_names),
+		params_names(aparams_names), params_count(0), locals_names(alocals_names),
 		parser_code(aparser_code), native_code(anative_code),
 		all_vars_local(aall_vars_local),
 #ifdef OPTIMIZE_RESULT
@@ -114,10 +119,11 @@ public:
 		junction_template(0),
 		name(&String::Empty) {
 			if (params_names){
-				const char *last_param = params_names->get(params_names->count()-1)->cstr();
+				params_count=params_names->count();
+				const char *last_param = params_names->get(params_count-1)->cstr();
 				if (last_param[0] == '*' && last_param[1]){
 					extra_params = new String(pa_strdup(last_param+1));
-					params_names->remove(params_names->count()-1);
+					params_names->remove(--params_count);
 					return;
 				}
 			}
