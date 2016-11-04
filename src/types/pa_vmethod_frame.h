@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.115 2016/11/03 16:30:36 moko Exp $"
+#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.116 2016/11/04 22:06:02 moko Exp $"
 
 #include "pa_symbols.h"
 #include "pa_wcontext.h"
@@ -175,27 +175,6 @@ public:
 class VNativeMethodFrame: public VMethodFrame {
 protected:
 	MethodParams fnumbered_params;
-
-public: // Value
-
-	/// VNativeMethodFrame: self_transparent or $caller
-	override Value* get_element(const String& aname) {
-		if(SYMBOLS_EQ(aname,CALLER_SYMBOL))
-			return caller();
-
-		if(SYMBOLS_EQ(aname,SELF_SYMBOL))
-			return &self();
-
-		if(Value* result=self().get_element(aname))
-			return result;
-
-		return 0;
-	}
-
-	/// VNativeMethodFrame: self_transparent
-	override const VJunction* put_element(const String& aname, Value* avalue) {
-		return self().put_element(aname, avalue);
-	}
 
 public: // usage
 
