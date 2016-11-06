@@ -8,7 +8,7 @@
 #ifndef PA_VXDOC_H
 #define PA_VXDOC_H
 
-#define IDENT_PA_VXDOC_H "$Id: pa_vxdoc.h,v 1.54 2015/10/26 01:22:03 moko Exp $"
+#define IDENT_PA_VXDOC_H "$Id: pa_vxdoc.h,v 1.55 2016/11/06 20:25:24 moko Exp $"
 
 #include "classes.h"
 #include "pa_common.h"
@@ -66,7 +66,7 @@ public: // Value
 
 public: // VXNode
 
-	override xmlNode& get_xmlnode() { 
+	override xmlNode& get_xmlnode() {
 		return *reinterpret_cast<xmlNode*>(&get_xmldoc());
 	}
 
@@ -76,10 +76,7 @@ public: // VXNode
 
 public: // usage
 
-	VXdoc() : 
-		VXnode(*this), 
-		fcharsets(0),
-		fdocument(0) {}
+	VXdoc() : VXnode(*this), fcharsets(0), fdocument(0) {}
 
 	VXdoc(Request_charsets& acharsets, xmlDoc& adocument) : VXnode(*this) {
 		set_xmldoc(acharsets, adocument);
@@ -92,20 +89,16 @@ public: // VXdoc
 		fdocument=&adocument;
 		fdocument->_private=this;
 	}
-	xmlDoc& get_xmldoc() { 
+	xmlDoc& get_xmldoc() {
 		if(!fdocument)
-			throw Exception(PARSER_RUNTIME,
-				0,
-				"using unitialized xdoc object");
-		return *fdocument; 
+			throw Exception(PARSER_RUNTIME, 0, "using unitialized xdoc object");
+		return *fdocument;
 	}
 
-	Request_charsets& charsets() { 
+	Request_charsets& charsets() {
 		if(!fcharsets)
-			throw Exception(PARSER_RUNTIME,
-				0,
-				"using unitialized xdoc object");
-		return *fcharsets; 
+			throw Exception(PARSER_RUNTIME, 0, "using unitialized xdoc object");
+		return *fcharsets;
 	}
 
 	VXnode& wrap(xmlNode& anode);
