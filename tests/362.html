@@ -1,0 +1,38 @@
+@main[]
+$template[^xdoc::create{<?xml version="1.0" encoding="utf-8"?>
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+    <xsl:template match="*">
+	<xsl:value-of select="."/>
+    </xsl:template>
+</xsl:stylesheet>}]
+
+
+1. original template: ^taint[as-is][^template.string[]]
+transform OK: ^transform[1]
+
+
+2. libxml modifies template: ^taint[as-is][^template.string[]]
+but transform OK as we cache compiled one: ^transform[2]
+
+
+$m[^template.documentElement.selectSingle[*[1]]]
+$m.nodeValue[test]
+
+3. after manual template modification: ^taint[as-is][^template.string[]]
+transform still OK: ^transform[3]
+
+
+$new[^template.documentElement.appendChild[^template.createElementNS[http://www.w3.org/1999/XSL/Transform;xsl:template]]]
+^new.setAttribute[match;root]
+$new.nodeValue[works if used before first transform]
+
+4. new templates are ignored: ^taint[as-is][^template.string[]]
+transform: ^transform[3]
+
+
+@transform[param]
+$doc[^xdoc::create{<?xml version="1.0" encoding="utf-8"?>
+<root>$param</root>}]
+
+$result[^doc.transform[$template]]
+$result[^result.string[ $.omit-xml-declaration[yes] ]]
