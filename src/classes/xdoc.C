@@ -28,7 +28,7 @@
 #include "xnode.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_XDOC_C="$Id: xdoc.C,v 1.190 2016/11/01 23:10:41 moko Exp $";
+volatile const char * IDENT_XDOC_C="$Id: xdoc.C,v 1.191 2016/11/07 00:01:31 moko Exp $";
 
 // defines
 
@@ -687,23 +687,21 @@ static void _transform(Request& r, MethodParams& params) {
 
 	VXdoc* result;
 	if(Value *vxdoc=params[0].as(VXDOC_TYPE)) { // stylesheet (xdoc)
-		xmlDoc& stylesheetdoc=static_cast<VXdoc *>(vxdoc)->get_xmldoc();
-		// compile xdoc stylesheet
-		xsltStylesheet_auto_ptr stylesheet_ptr(xsltParseStylesheetDoc(&stylesheetdoc)); 
-		if(xmlHaveGenericErrors())
-			throw XmlException(0, r);
-		if(!stylesheet_ptr.get())
-			throw Exception("xml",
-				0,
-				"stylesheet failed to compile");
-		// strange thing - xsltParseStylesheetDoc records document and destroys it in stylesheet destructor
-		// we don't need that
-		stylesheet_ptr->doc=0;
+		VXdoc& vstylesheet=static_cast<VXdoc &>(*vxdoc);
+
+		if(!vstylesheet.stylesheet){
+			xmlDoc& stylesheetdoc=vstylesheet.get_xmldoc();
+
+			// compile xdoc stylesheet
+			vstylesheet.stylesheet=xsltParseStylesheetDoc(&stylesheetdoc);
+			if(xmlHaveGenericErrors())
+				throw XmlException(0, r);
+			if(!vstylesheet.stylesheet)
+				throw Exception("xml", 0, "stylesheet failed to compile");
+		}
 
 		// transform!
-		result=&_transform(r, 0,
-			vdoc, stylesheet_ptr.get(),
-			transform_params);
+		result=&_transform(r, 0, vdoc, vstylesheet.stylesheet, transform_params);
 	} else { // stylesheet (file name)
 		// extablish stylesheet connection
 		const String& stylesheet_filespec=
@@ -712,8 +710,7 @@ static void _transform(Request& r, MethodParams& params) {
 
 		// load and compile file to stylesheet [or get cached if any]
 		// transform!
-		result=&_transform(r, &stylesheet_filespec, vdoc, connection->stylesheet(),
-			transform_params);
+		result=&_transform(r, &stylesheet_filespec, vdoc, connection->stylesheet(), transform_params);
 	}
 
 	// write out result
