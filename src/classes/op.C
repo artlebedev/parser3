@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.244 2016/11/03 16:17:37 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.245 2016/11/10 22:52:49 moko Exp $";
 
 // defines
 
@@ -452,7 +452,7 @@ static void _switch(Request& r, MethodParams& params) {
 	// because of stacked WWrapper used there as wcontext
 	r.process(cases_code);
 	if(Value* selected_code=data->found? data->found: data->_default)
-		r.write(r.process(*selected_code));
+		r.process_write(*selected_code);
 }
 
 static void _case(Request& r, MethodParams& params) {
