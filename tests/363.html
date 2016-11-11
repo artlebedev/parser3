@@ -1,0 +1,59 @@
+@main[]
+$i(1)
+$s[s]
+
+^for[n](1;11){test$n : ^try-catch{ $t(def ^test$n[]) } ^taint[as-is;^#0A]}
+^for[n](12;14){test$n : ^try-catch{ $t(^test$n[]) $t } ^taint[as-is;^#0A]}
+
+@test0[]
+^for[x](1;5){ }[ ]
+
+@test2[]
+^m[]
+^m[]
+
+@test3[]
+$void
+$void
+
+@test4[]
+$s
+$s
+
+@test5[]
+$i
+$i
+
+@test6[]
+^i.int[]
+^i.int[]
+
+@test7[]
+^i.int[]
+^if(1){ ^i.int[] }
+
+@test8[]
+^i.int[]
+^switch[x]{
+  ^case[x]{ ^i.int[] }
+}
+
+@test9[]
+^for[x](1;5){ }{ ^i.int[] }
+
+@test10[]
+^for[x](1;5){ ^i.int[] }
+
+@test11[]
+^for[x](1;5){ ^i.int[] }[ ]
+
+@test12[]
+23^i.int[]45
+
+@test13[]
+23${i}45
+
+@test14[]
+
+@m[]
+$result[]

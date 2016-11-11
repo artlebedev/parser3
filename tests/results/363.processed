@@ -1,0 +1,36 @@
+Content-Type: text/html
+Content-Length: 755
+
+test1 : Type: parser.runtime,
+Source: test1,
+Comment: undefined method
+
+test2 : 
+test3 : 
+test4 : 
+test5 : Type: parser.runtime,
+Source: i,
+Comment: double may not be overwritten with double, store it to variable instead
+
+test6 : Type: parser.runtime,
+Source: int,
+Comment: int may not be overwritten with int, store it to variable instead
+
+test7 : Type: parser.runtime,
+Source: int,
+Comment: int may not be overwritten with int, store it to variable instead
+
+test8 : Type: parser.runtime,
+Source: int,
+Comment: int may not be overwritten with int, store it to variable instead
+
+test9 : 
+test10 : Type: parser.runtime,
+Source: int,
+Comment: int may not be overwritten with int, store it to variable instead
+
+test11 : 
+
+test12 : 1 
+test13 : 1 
+test14 : 0 
