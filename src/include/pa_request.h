@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.239 2016/11/03 16:17:37 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.240 2016/11/11 00:02:59 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -260,7 +260,7 @@ public:
 	}
 	
 	/// in [] and {} appending string if get_string is not null, else appending value
-	/// in () allways appending value
+	/// in () appending string if is_string, else appending value
 	inline void write(Value& avalue) {
 		wcontext->write_as_string(avalue);
 	}

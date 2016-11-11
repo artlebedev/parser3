@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.116 2016/11/04 22:06:02 moko Exp $"
+#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.117 2016/11/11 00:02:59 moko Exp $"
 
 #include "pa_symbols.h"
 #include "pa_wcontext.h"
@@ -356,9 +356,12 @@ template<typename Parent> class VExpressionFrame: public Parent {
 public:
 	VExpressionFrame(const Method& amethod, VMethodFrame *acaller, Value& aself) : Parent(amethod, acaller, aself) {}
 
-	/// in expressions we don't attempt to convert to string
+	/// in expressions only strings are written as strings
 	override void write_as_string(Value& avalue) {
-		Parent::write(avalue);
+		if(avalue.is_string())
+			Parent::write(*avalue.get_string());
+		else
+			Parent::write(avalue);
 	}
 };
 
