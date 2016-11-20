@@ -8,7 +8,7 @@
 #ifndef PA_VDOUBLE_H
 #define PA_VDOUBLE_H
 
-#define IDENT_PA_VDOUBLE_H "$Id: pa_vdouble.h,v 1.63 2015/11/16 18:27:15 moko Exp $"
+#define IDENT_PA_VDOUBLE_H "$Id: pa_vdouble.h,v 1.64 2016/11/20 20:45:28 moko Exp $"
 
 // includes
 
@@ -47,8 +47,7 @@ public: // Value
 	/// VDouble: clone
 	override Value& as_expr_result() { return *new VDouble(fdouble); }
 
-	/** VDouble: fdouble 
-	*/
+	/// VDouble: fdouble
 	override const String* get_string() {
 		char local_buf[MAX_NUMBER];
 		size_t length=snprintf(local_buf, MAX_NUMBER, "%.15g", fdouble);
