@@ -1,3 +1,127 @@
+2016-11-21  moko
+
+	* src/: include/pa_symbols.h, main/pa_symbols.C, types/pa_method.h,
+	  types/pa_vcaller_wrapper.h, types/pa_vmethod_frame.C,
+	  types/pa_vmethod_frame.h:  redesign: VCallerWrapper added and
+	  used (implements feature #1110)
+
+2016-11-20  moko
+
+	* src/types/pa_vdouble.h: whitespace
+
+2016-11-11  moko
+
+	* tests/: 363.html, results/363.processed: more tests for feature
+	  #1091 (how parser methods work in expression context)
+
+	* src/: include/pa_request.h, types/pa_vmethod_frame.h: in
+	  expressions strings are now written as strings, not values by
+	  write_as_string (related to feature #1091)
+
+	* src/classes/op.C: to make more correct behavour in expression
+	  context
+
+2016-11-07  moko
+
+	* tests/: 362.html, results/362.processed: test for
+	  xsltParseStylesheetDoc caching as xsl modification after it added
+	  (related to bug #1108)
+
+	* src/: classes/xdoc.C, types/pa_vxdoc.h: xsltParseStylesheetDoc
+	  result now cached as xdoc is modified after it (fixes bug #1108)
+
+2016-11-06  moko
+
+	* src/types/pa_vxdoc.h: whitespace
+
+2016-11-05  moko
+
+	* src/types/pa_vmethod_frame.h: cleanup
+
+2016-11-03  moko
+
+	* tests/results/244.processed: more correct exception after method
+	  frames separation
+
+	* src/types/pa_vmethod_frame.h: minor optimizaion
+
+	* src/types/pa_method.h: optimization: params_count added
+
+	* src/: classes/json.C, classes/op.C, classes/reflection.C,
+	  include/pa_request.h, main/execute.C, main/pa_request.C,
+	  types/pa_value.C, types/pa_vmethod_frame.C,
+	  types/pa_vmethod_frame.h, types/pa_vobject.C: Optimization:
+	  VMethodFrame now divided into VNativeMethodFrame,
+	  VParserMethodFrame, VLocalParserMethodFrame; METHOD_FRAME_ACTION,
+	  EXPRESSION_FRAME_ACTION, CONSTRUCTOR_FRAME_ACTION defines added
+	  and used (related to feature #1104)
+
+2016-11-02  moko
+
+	* src/: classes/bool.C, classes/curl.C, classes/date.C,
+	  classes/double.C, classes/file.C, classes/hash.C,
+	  classes/hashfile.C, classes/image.C, classes/inet.C,
+	  classes/int.C, classes/json.C, classes/mail.C, classes/math.C,
+	  classes/memcached.C, classes/op.C, classes/reflection.C,
+	  classes/regex.C, classes/string.C, classes/table.C,
+	  classes/xdoc.C, classes/xnode.C, include/pa_request.h,
+	  main/execute.C: cleanup: r.write_pass_lang, r.write_no_lang ->
+	  r.write (implements feature #1091)
+
+	* src/main/execute.C: cleanup (related to feature #1104)
+
+	* src/: include/pa_request.h, main/execute.C,
+	  types/pa_vmethod_frame.h, types/pa_wcontext.h: VExpressionFrame
+	  added, in_expression removed (implements feature #1104)
+
+2016-10-31  moko
+
+	* src/types/pa_value.C: whitespace
+
+2016-10-28  moko
+
+	* tests/results/244.processed: updated after error reporting fixed
+	  in pa_wcontext.C
+
+	* src/types/pa_wcontext.C: error reporting fixed
+
+	* src/types/pa_wcontext.h: whitespace
+
+	* src/classes/image.C: not fully readed entries are no longer
+	  processed (fixes bug #1106)
+
+2016-10-26  moko
+
+	* src/classes/image.C: whitespace
+
+	* src/: include/pa_request.h, include/pa_string.h, main/untaint.C,
+	  types/pa_vmail.C, types/pa_vmethod_frame.h, types/pa_wcontext.h,
+	  types/pa_wwrapper.h: optimization: L_PASS_APPENDED removed as no
+	  longer required (related to feature #1091)
+
+	* tests/results/: 264.processed, 350.processed: test results update
+	  reverted (whitespace optimization) after write_no_lang removed :)
+	  (related to feature #1091)
+
+	* src/: classes/file.C, classes/hash.C, classes/op.C,
+	  classes/string.C, classes/table.C, classes/void.C,
+	  classes/xdoc.C, include/pa_request.h, main/pa_xml_io.C,
+	  types/pa_vmail.C: Temp_lang removed, write_no_lang now almost
+	  equal write_pass_lang (related to feature #1091)
+
+	* tests/results/: 264.processed, 350.processed: test results
+	  updated (whitespace optimization) after write_assign_lang removed
+	  (related to feature #1091)
+
+	* tests/: 361.html, results/361.processed: test for non-string
+	  ^untaint added (related to feature #1091)
+
+	* src/: classes/curl.C, classes/date.C, classes/file.C,
+	  classes/hash.C, classes/op.C, classes/string.C,
+	  include/pa_request.h, main/execute.C: optimization:
+	  write_assign_lang removed as not required (first part of feature
+	  #1091 implementation)
+
 2016-10-12  moko
 
 	* tests/: 360.html, results/360.processed: more test code (related
@@ -15355,7 +15479,7 @@
 	  types/pa_vstring.h, types/pa_vtable.C, types/pa_vtable.h,
 	  types/pa_vvoid.h, types/pa_vxdoc.C, types/pa_vxdoc.h,
 	  types/pa_vxnode.C, types/pa_vxnode.h, types/pa_wcontext.C,
-	  types/pa_wcontext.h, types/pa_wwrapper.h: $Date: 2016/10/14 15:39:18 $
+	  types/pa_wcontext.h, types/pa_wwrapper.h: $Date: 2016/11/21 20:04:05 $
 
 	* src/: classes/classes.C, classes/classes.dsp, classes/classes.h,
 	  classes/date.C, classes/double.C, classes/file.C, classes/form.C,
@@ -19443,7 +19567,7 @@
 	  main/pa_hash.C, main/pa_pool.C, main/pa_request.C,
 	  main/pa_socks.C, main/pa_sql_driver_manager.C, main/pa_string.C,
 	  main/pa_table.C, main/untaint.C, targets/cgi/parser3.C,
-	  targets/isapi/parser3isapi.C: static char *RCSId="$Id: ChangeLog,v 1.108 2016/10/14 15:39:18 moko Exp $";
+	  targets/isapi/parser3isapi.C: static char *RCSId="$Id: ChangeLog,v 1.109 2016/11/21 20:04:05 moko Exp $";
 
 	* src/main/: compile.y, compile_tools.h: $:name: == ${name}:
 	  $class:name: == ${class:name}:
@@ -22258,9 +22382,9 @@
 
 	* src/include/: pa_pool.h, pa_string.h: pa_pool split
 
-	* src/main/: main.dsp, pa_string.C: $Id: ChangeLog,v 1.108 2016/10/14 15:39:18 moko Exp $ check
+	* src/main/: main.dsp, pa_string.C: $Id: ChangeLog,v 1.109 2016/11/21 20:04:05 moko Exp $ check
 
-	* src/: main/pa_pool.C, main/pa_string.C, include/pa_pool.h: $Id: ChangeLog,v 1.108 2016/10/14 15:39:18 moko Exp $
+	* src/: main/pa_pool.C, main/pa_string.C, include/pa_pool.h: $Id: ChangeLog,v 1.109 2016/11/21 20:04:05 moko Exp $
 	  check
 
 	* src/: include/pa_pool.h, main/pa_string.C: String prealloc &
