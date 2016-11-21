@@ -6,11 +6,12 @@
 */
 
 #include "pa_vmethod_frame.h"
+#include "pa_vcaller_wrapper.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VMETHOD_FRAME_C="$Id: pa_vmethod_frame.C,v 1.35 2016/11/03 16:17:38 moko Exp $" IDENT_PA_VMETHOD_FRAME_H;
+volatile const char * IDENT_PA_VMETHOD_FRAME_C="$Id: pa_vmethod_frame.C,v 1.36 2016/11/21 19:31:56 moko Exp $" IDENT_PA_VMETHOD_FRAME_H IDENT_PA_VCALLER_WRAPPER_H;
 
-VVoid void_result; // unique value to be sure the result is changed
+static VVoid void_result; // unique value to be sure the result is changed
 
 // MethodParams: methods
 
@@ -73,4 +74,13 @@ VParserMethodFrame::VParserMethodFrame(const Method& amethod, VMethodFrame *acal
 Value* VParserMethodFrame::get_result_variable() {
 	Value* result=my.get(Symbols::RESULT_SYMBOL);
 	return result!=&void_result ? result : 0;
+}
+
+Value* VParserMethodFrame::get_caller_wrapper(){
+	static VCallerWrapper *caller_wrapper_template=0;
+	if(!caller())
+		return 0;
+	if(caller_wrapper_template && &caller_wrapper_template->caller() == caller())
+		return caller_wrapper_template;
+	return caller_wrapper_template=new VCallerWrapper(*caller());
 }

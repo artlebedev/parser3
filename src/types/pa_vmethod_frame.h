@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.117 2016/11/11 00:02:59 moko Exp $"
+#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.118 2016/11/21 19:31:56 moko Exp $"
 
 #include "pa_symbols.h"
 #include "pa_wcontext.h"
@@ -215,7 +215,7 @@ public: // Value
 	/// VParserMethodFrame: my or self_transparent or $caller
 	override Value* get_element(const String& aname) {
 		if(SYMBOLS_EQ(aname,CALLER_SYMBOL))
-			return caller();
+			return get_caller_wrapper();
 
 		if(SYMBOLS_EQ(aname,SELF_SYMBOL))
 			return &self();
@@ -333,6 +333,8 @@ protected:
 	}
 
 	Value* get_result_variable();
+
+	Value* get_caller_wrapper();
 
 };
 

@@ -8,7 +8,7 @@
 #ifndef PA_METHOD_H
 #define PA_METHOD_H
 
-#define IDENT_PA_METHOD_H "$Id: pa_method.h,v 1.27 2016/11/03 16:17:38 moko Exp $"
+#define IDENT_PA_METHOD_H "$Id: pa_method.h,v 1.28 2016/11/21 19:31:56 moko Exp $"
 
 #define OPTIMIZE_CALL
 #define OPTIMIZE_RESULT
@@ -78,7 +78,7 @@ public:
 
 	bool all_vars_local; // in local vars list 'locals' was specified: all vars are local
 
-	VJunction *junction_template;
+	mutable VJunction *junction_template;
 
 	const String *name; // method name, never null
 	const String *extra_params; // method has *name as an argument
@@ -133,7 +133,7 @@ public:
 	/// call this before invoking to ensure proper actual numbered params count
 	void check_actual_numbered_params(Value& self, MethodParams* actual_numbered_params) const;
 
-	VJunction* get_vjunction(Value& aself) {
+	VJunction* get_vjunction(Value& aself) const {
 		if(!junction_template)
 			return junction_template=new VJunction(aself, this);
 		return junction_template->get(aself);
