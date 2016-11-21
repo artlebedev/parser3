@@ -1,0 +1,17 @@
+Content-Type: text/html
+Content-Length: 439
+
+object/string: expression: Type: parser.runtime,
+Source: caller,
+Comment: is 'caller', can not be used in expression
+hash: {}
+table: Type: parser.runtime,
+Source: create,
+Comment: body must be table or code (parameter #1)
+def: true
+bool: Type: parser.runtime,
+Source: caller,
+Comment: is 'caller', it does not have logical value
+double: Type: parser.runtime,
+Source: caller,
+Comment: is 'caller', it does not have numerical (double) value

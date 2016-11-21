@@ -1,0 +1,19 @@
+@main[][local]
+$result(true)
+$result[^print[]]
+
+@print[arg]
+
+object/string: $caller
+
+expression: ^try-catch{^eval($caller)}
+
+hash: ^try-catch{$h[^hash::create[$caller]] ^json:string[$h]}
+
+table: ^try-catch{^table::create[$caller]}
+
+def: ^try-catch{^if(def $caller){true}{false}}
+
+bool: ^try-catch{^if($caller || 0){true}{false}}
+
+double: ^try-catch{^eval($caller + 0)}
