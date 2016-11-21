@@ -1,0 +1,23 @@
+@main[]
+
+^proxy[]
+
+3.4.4 saved caller bug test: $CALLER.CLASS_NAME;
+3.4.4 uncatchable exception "'local' element can not be fetched from wcontext": $CALLER.local;
+
+@proxy[][local]
+$local[local]
+$result(true)
+$result[^print[]]
+
+@print[arg]
+
+3.4.4 endless recoursion bug test: $caller;
+
+caller local: $caller.local;
+
+caller class name: ^reflection:class_name[$caller] $caller.CLASS_NAME;
+
+caller backup: $CALLER[$caller] $CALLER.CLASS_NAME $CALLER.local;
+
+3.4.5 has ^$caller.method: $m[^reflection:method_info[$caller.method]] $m.name;

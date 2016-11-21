@@ -1,0 +1,10 @@
+Content-Type: text/html
+Content-Length: 265
+
+3.4.4 endless recoursion bug test: ;
+caller local: local;
+caller class name: string MAIN;
+caller backup: string ;
+3.4.5 has $caller.method: proxy;
+3.4.4 saved caller bug test: string;
+3.4.4 uncatchable exception "'local' element can not be fetched from wcontext": ;
