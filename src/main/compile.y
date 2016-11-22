@@ -8,7 +8,7 @@
 	
 */
 
-volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.285 2016/10/11 21:30:16 moko Exp $";
+volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.286 2016/11/22 22:31:38 moko Exp $";
 
 /**
 	@todo parser4: 
@@ -178,8 +178,7 @@ control_method: '@' STRING '\n'
 	} else if(command==USE_CONTROL_METHOD_NAME) {
 		CLASS_ADD;
 		for(size_t i=0; i<strings_code->count(); i+=OPERATIONS_PER_OPVALUE){
-			PC.request.use_file(PC.request.main_class, LA2S(*strings_code, i)->trim(String::TRIM_END),
-				PC.request.get_used_filename(PC.file_no), strings_code->get(i+1).origin);
+			PC.request.use_file(LA2S(*strings_code, i)->trim(String::TRIM_END), PC.request.get_used_filename(PC.file_no), strings_code->get(i+1).origin);
 		}
 	} else if(command==BASE_NAME) {
 		if(PC.append){

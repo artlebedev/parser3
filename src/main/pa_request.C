@@ -32,7 +32,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.363 2016/11/03 16:17:37 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.364 2016/11/22 22:31:38 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -51,21 +51,28 @@ const uint LOOP_LIMIT=20000;
 
 #define MAIN_METHOD_NAME "main"
 #define AUTO_METHOD_NAME "auto"
+#define USE_METHOD_NAME "use"
 #define AUTOUSE_METHOD_NAME "autouse"
+
 #define EXCEPTION_TYPE_PART_NAME "type"
 #define EXCEPTION_SOURCE_PART_NAME "source"
 #define EXCEPTION_COMMENT_PART_NAME "comment"
+
+#define ORIGIN_KEY "origin"
 
 // globals
 
 const String main_method_name(MAIN_METHOD_NAME);
 const String auto_method_name(AUTO_METHOD_NAME);
-const String autouse_method_name(AUTOUSE_METHOD_NAME);
+static const String use_method_name(USE_METHOD_NAME);
+static const String autouse_method_name(AUTOUSE_METHOD_NAME);
 
 const String exception_type_part_name(EXCEPTION_TYPE_PART_NAME);
 const String exception_source_part_name(EXCEPTION_SOURCE_PART_NAME);
 const String exception_comment_part_name(EXCEPTION_COMMENT_PART_NAME);
 const String exception_handled_part_name(EXCEPTION_HANDLED_PART_NAME);
+
+static const String origin_key(ORIGIN_KEY);
 
 int pa_execute_recoursion_limit=EXECUTE_RECOURSION_LIMIT;
 int pa_loop_limit=LOOP_LIMIT;
@@ -216,17 +223,15 @@ Value& Request::get_self() { return method_frame/*always have!*/->self(); }
 VStateless_class* Request::get_class(const String& name){
 	VStateless_class* result=classes().get(name);
 	if(!result)
-		if(Value* value=main_class.get_element(autouse_method_name))
-			if(Junction* junction=value->get_junction())
-				if(const Method *method=junction->method) {
-					Value *vname=new VString(name);
-					CONSTRUCTOR_FRAME_ACTION(*method, 0 /*no parent*/, main_class, {
-						frame.store_params(&vname, 1);
-						// we don't need the result
-						call(frame);
-					});
-					result=classes().get(name);
-				}
+		if(const Method *method=main_class.get_method(autouse_method_name)){
+			Value *vname=new VString(name);
+			CONSTRUCTOR_FRAME_ACTION(*method, 0 /*no parent*/, main_class, {
+				frame.store_params(&vname, 1);
+				// we don't need the result
+				call(frame);
+			});
+			result=classes().get(name);
+		}
 	return result;
 }
 
@@ -620,10 +625,20 @@ void Request::use_file(VStateless_class& aclass, const String& file_name, const 
 	use_file_directly(aclass, *filespec);
 }
 
-void Request::use_file(VStateless_class& aclass, const String& file_name, const String* use_filespec/*absolute*/, Operation::Origin origin) {
+void Request::use_file(const String& file_name, const String* use_filespec/*absolute*/, Operation::Origin origin) {
 	static String use("USE");
 	try {
-		use_file(aclass, file_name, use_filespec);
+		static VHash* voptions=new VHash();
+		if(const Method *method=main_class.get_method(use_method_name)){
+			Value *params[]={new VString(file_name), voptions};
+			voptions->hash().put(origin_key, new VString(*use_filespec));
+
+			CONSTRUCTOR_FRAME_ACTION(*method, 0 /*no parent*/, main_class, {
+				frame.store_params(params, 2);
+				// we don't need the result
+				call(frame);
+			});
+		}
 	} catch (...) {
 		exception_trace.push(Trace(&use, origin));
 		rethrow;

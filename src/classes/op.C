@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.245 2016/11/10 22:52:49 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.246 2016/11/22 22:31:38 moko Exp $";
 
 // defines
 
@@ -283,6 +283,7 @@ static void _use(Request& r, MethodParams& params) {
 	Value& vfile=params.as_no_junction(0, FILE_NAME_MUST_NOT_BE_CODE);
 
 	bool allow_class_replace=false;
+	const String* use_origin=0;
 
 	if(params.count()==2)
 		if(HashStringValue* options=params.as_hash(1)) {
@@ -297,15 +298,23 @@ static void _use(Request& r, MethodParams& params) {
 					allow_class_replace=r.process(*value).as_bool();
 				}
 
-			if(valid_options!=options->count())
-				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+				if(key == "origin") {
+					valid_options++;
+					use_origin=&value->as_string();
+				}
+
+				if(valid_options!=options->count())
+					throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 			}
 		}
 
+	if(!use_origin)
+		if(VMethodFrame* caller=r.get_method_frame()->caller())
+			use_origin=r.get_method_filename(&caller->method);
+
 	Temp_class_replace class_replace(r, allow_class_replace);
 
-	// _use could be called from the parser3 method only, so caller is always defined
-	r.use_file(r.main_class, vfile.as_string(), r.get_method_filename(&r.get_method_frame()->caller()->method));
+	r.use_file(r.main_class, vfile.as_string(), use_origin);
 }
 
 static void set_skip(Request& r, Request::Skip askip) {

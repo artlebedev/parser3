@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.240 2016/11/11 00:02:59 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.241 2016/11/22 22:31:38 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -236,7 +236,9 @@ public:
 
 	/// compiles the file, maybe forcing it's class @a name and @a base_class.
 	void use_file(VStateless_class& aclass, const String& file_name, const String* use_filespec);
-	void use_file(VStateless_class& aclass, const String& file_name, const String* use_filespec, Operation::Origin origin);
+
+	/// for @USE only, calls ^use (which may be user-defined)
+	void use_file(const String& file_name, const String* use_filespec, Operation::Origin origin);
 
 	/// compiles a @a source buffer
 	void use_buf(VStateless_class& aclass, const char* source, const String* main_alias, uint file_no, int line_no_offset=0);
