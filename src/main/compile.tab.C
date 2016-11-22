@@ -73,7 +73,7 @@
 	
 */
 
-volatile const char * IDENT_COMPILE_Y = "$Id: compile.tab.C,v 1.175 2016/10/12 19:52:21 moko Exp $";
+volatile const char * IDENT_COMPILE_Y = "$Id: compile.tab.C,v 1.176 2016/11/22 22:36:12 moko Exp $";
 
 /**
 	@todo parser4: 
@@ -522,23 +522,23 @@ static const yytype_uint8 yytranslate[] =
 static const yytype_uint16 yyrline[] =
 {
        0,   145,   145,   149,   151,   151,   152,   154,   154,   156,
-     245,   245,   246,   246,   247,   248,   248,   250,   250,   297,
-     297,   298,   299,   299,   300,   300,   302,   302,   306,   306,
-     308,   308,   309,   309,   310,   310,   310,   314,   345,   346,
-     346,   347,   349,   350,   351,   400,   401,   401,   405,   418,
-     419,   420,   421,   443,   448,   451,   452,   453,   455,   458,
-     455,   466,   473,   480,   481,   482,   484,   490,   491,   491,
-     495,   506,   509,   506,   558,   574,   574,   576,   577,   578,
-     580,   583,   580,   586,   587,   589,   590,   593,   594,   597,
-     598,   600,   603,   616,   621,   622,   623,   628,   628,   630,
-     630,   631,   632,   644,   653,   656,   657,   658,   659,   661,
-     665,   674,   677,   674,   690,   695,   695,   696,   702,   703,
-     705,   725,   737,   739,   740,   741,   742,   743,   744,   745,
-     746,   748,   749,   750,   751,   752,   753,   754,   755,   757,
-     758,   759,   760,   761,   762,   763,   764,   765,   766,   767,
-     768,   769,   770,   771,   772,   773,   774,   775,   776,   777,
-     778,   779,   780,   781,   782,   783,   786,   791,   812,   817,
-     818,   819,   821
+     244,   244,   245,   245,   246,   247,   247,   249,   249,   296,
+     296,   297,   298,   298,   299,   299,   301,   301,   305,   305,
+     307,   307,   308,   308,   309,   309,   309,   313,   344,   345,
+     345,   346,   348,   349,   350,   399,   400,   400,   404,   417,
+     418,   419,   420,   442,   447,   450,   451,   452,   454,   457,
+     454,   465,   472,   479,   480,   481,   483,   489,   490,   490,
+     494,   505,   508,   505,   557,   573,   573,   575,   576,   577,
+     579,   582,   579,   585,   586,   588,   589,   592,   593,   596,
+     597,   599,   602,   615,   620,   621,   622,   627,   627,   629,
+     629,   630,   631,   643,   652,   655,   656,   657,   658,   660,
+     664,   673,   676,   673,   689,   694,   694,   695,   701,   702,
+     704,   724,   736,   738,   739,   740,   741,   742,   743,   744,
+     745,   747,   748,   749,   750,   751,   752,   753,   754,   756,
+     757,   758,   759,   760,   761,   762,   763,   764,   765,   766,
+     767,   768,   769,   770,   771,   772,   773,   774,   775,   776,
+     777,   778,   779,   780,   781,   782,   785,   790,   811,   816,
+     817,   818,   820
 };
 #endif
 
@@ -1604,8 +1604,7 @@ yyreduce:
 	} else if(command==USE_CONTROL_METHOD_NAME) {
 		CLASS_ADD;
 		for(size_t i=0; i<strings_code->count(); i+=OPERATIONS_PER_OPVALUE){
-			PC.request.use_file(PC.request.main_class, LA2S(*strings_code, i)->trim(String::TRIM_END),
-				PC.request.get_used_filename(PC.file_no), strings_code->get(i+1).origin);
+			PC.request.use_file(LA2S(*strings_code, i)->trim(String::TRIM_END), PC.request.get_used_filename(PC.file_no), strings_code->get(i+1).origin);
 		}
 	} else if(command==BASE_NAME) {
 		if(PC.append){
@@ -1668,17 +1667,17 @@ yyreduce:
 		YYERROR;
 	}
 }
-#line 1672 "compile.tab.C" /* yacc.c:1646  */
+#line 1671 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 13:
-#line 246 "compile.y" /* yacc.c:1646  */
+#line 245 "compile.y" /* yacc.c:1646  */
     { (yyval)=(yyvsp[-1]); P(*(yyval), *(yyvsp[0])); }
-#line 1678 "compile.tab.C" /* yacc.c:1646  */
+#line 1677 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 17:
-#line 250 "compile.y" /* yacc.c:1646  */
+#line 249 "compile.y" /* yacc.c:1646  */
     { 
 	CLASS_ADD;
 	PC.explicit_result=false;
@@ -1717,11 +1716,11 @@ yyreduce:
 
 	*reinterpret_cast<Method**>(&(yyval))=method;
 }
-#line 1721 "compile.tab.C" /* yacc.c:1646  */
+#line 1720 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 287 "compile.y" /* yacc.c:1646  */
+#line 286 "compile.y" /* yacc.c:1646  */
     {
 		Method* method=reinterpret_cast<Method*>((yyvsp[-1]));
 		// fill in the code
@@ -1731,29 +1730,29 @@ yyreduce:
 		const String& name=*LA2S(*(yyvsp[-6]));
 		PC.cclass->set_method(PC.alias_method(name), method);
 }
-#line 1735 "compile.tab.C" /* yacc.c:1646  */
+#line 1734 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 21:
-#line 298 "compile.y" /* yacc.c:1646  */
+#line 297 "compile.y" /* yacc.c:1646  */
     {(yyval)=(yyvsp[-1]);}
-#line 1741 "compile.tab.C" /* yacc.c:1646  */
+#line 1740 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 25:
-#line 300 "compile.y" /* yacc.c:1646  */
+#line 299 "compile.y" /* yacc.c:1646  */
     { (yyval)=(yyvsp[-2]); P(*(yyval), *(yyvsp[0])); }
-#line 1747 "compile.tab.C" /* yacc.c:1646  */
+#line 1746 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 31:
-#line 308 "compile.y" /* yacc.c:1646  */
+#line 307 "compile.y" /* yacc.c:1646  */
     { (yyval)=(yyvsp[-1]); P(*(yyval), *(yyvsp[0])); }
-#line 1753 "compile.tab.C" /* yacc.c:1646  */
+#line 1752 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 37:
-#line 314 "compile.y" /* yacc.c:1646  */
+#line 313 "compile.y" /* yacc.c:1646  */
     {
 	(yyval)=N();
 	YYSTYPE code=(yyvsp[0]);
@@ -1785,23 +1784,23 @@ yyreduce:
 
 	P(*(yyval), *code);
 }
-#line 1789 "compile.tab.C" /* yacc.c:1646  */
+#line 1788 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 38:
-#line 345 "compile.y" /* yacc.c:1646  */
+#line 344 "compile.y" /* yacc.c:1646  */
     { (yyval)=(yyvsp[0]); }
-#line 1795 "compile.tab.C" /* yacc.c:1646  */
+#line 1794 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 41:
-#line 347 "compile.y" /* yacc.c:1646  */
+#line 346 "compile.y" /* yacc.c:1646  */
     { (yyval)=(yyvsp[-1]); }
-#line 1801 "compile.tab.C" /* yacc.c:1646  */
+#line 1800 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 44:
-#line 351 "compile.y" /* yacc.c:1646  */
+#line 350 "compile.y" /* yacc.c:1646  */
     {
 	(yyval)=N(); 
 	YYSTYPE diving_code=(yyvsp[0]);
@@ -1851,23 +1850,23 @@ yyreduce:
 #endif
 	/* diving code; stack: current context */
 }
-#line 1855 "compile.tab.C" /* yacc.c:1646  */
+#line 1854 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 45:
-#line 400 "compile.y" /* yacc.c:1646  */
+#line 399 "compile.y" /* yacc.c:1646  */
     { (yyval)=(yyvsp[-1]); P(*(yyval), *(yyvsp[0])); }
-#line 1861 "compile.tab.C" /* yacc.c:1646  */
+#line 1860 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 47:
-#line 401 "compile.y" /* yacc.c:1646  */
+#line 400 "compile.y" /* yacc.c:1646  */
     { (yyval)=(yyvsp[-1]); P(*(yyval), *(yyvsp[0])); }
-#line 1867 "compile.tab.C" /* yacc.c:1646  */
+#line 1866 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 48:
-#line 405 "compile.y" /* yacc.c:1646  */
+#line 404 "compile.y" /* yacc.c:1646  */
     {
 	(yyval)=N();
 #ifdef OPTIMIZE_BYTECODE_CONSTRUCT
@@ -1880,11 +1879,11 @@ yyreduce:
 		P(*(yyval), *(yyvsp[0])); /* stack: context,name,constructor_value */
 	}
 }
-#line 1884 "compile.tab.C" /* yacc.c:1646  */
+#line 1883 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 52:
-#line 421 "compile.y" /* yacc.c:1646  */
+#line 420 "compile.y" /* yacc.c:1646  */
     {
 	(yyval)=N();
 	YYSTYPE diving_code=(yyvsp[0]);
@@ -1907,92 +1906,92 @@ yyreduce:
 	}
 	/* diving code; stack: current context */
 }
-#line 1911 "compile.tab.C" /* yacc.c:1646  */
+#line 1910 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 53:
-#line 443 "compile.y" /* yacc.c:1646  */
+#line 442 "compile.y" /* yacc.c:1646  */
     {
 	(yyval)=N(); 
 	O(*(yyval), OP::OP_WITH_WRITE); /* stack: starting context */
 	P(*(yyval), *(yyvsp[0])); /* diving code; stack: context,name */
 }
-#line 1921 "compile.tab.C" /* yacc.c:1646  */
+#line 1920 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 54:
-#line 448 "compile.y" /* yacc.c:1646  */
+#line 447 "compile.y" /* yacc.c:1646  */
     { (yyval)=(yyvsp[-1]); P(*(yyval), *(yyvsp[0])); }
-#line 1927 "compile.tab.C" /* yacc.c:1646  */
+#line 1926 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 58:
-#line 455 "compile.y" /* yacc.c:1646  */
+#line 454 "compile.y" /* yacc.c:1646  */
     {
 	// allow $result_or_other_variable[ letters here any time ]
 	*reinterpret_cast<bool*>(&(yyval))=PC.explicit_result; PC.explicit_result=false;
 }
-#line 1936 "compile.tab.C" /* yacc.c:1646  */
+#line 1935 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 59:
-#line 458 "compile.y" /* yacc.c:1646  */
+#line 457 "compile.y" /* yacc.c:1646  */
     {
 	PC.explicit_result=*reinterpret_cast<bool*>(&(yyvsp[-1]));
 }
-#line 1944 "compile.tab.C" /* yacc.c:1646  */
+#line 1943 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 60:
-#line 460 "compile.y" /* yacc.c:1646  */
+#line 459 "compile.y" /* yacc.c:1646  */
     {
 	// stack: context, name
 	(yyval)=(yyvsp[-2]); // stack: context, name, value
 	O(*(yyval), OP::OP_CONSTRUCT_VALUE); /* value=pop; name=pop; context=pop; construct(context,name,value) */
 }
-#line 1954 "compile.tab.C" /* yacc.c:1646  */
+#line 1953 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 61:
-#line 466 "compile.y" /* yacc.c:1646  */
+#line 465 "compile.y" /* yacc.c:1646  */
     { 
 	(yyval)=N(); 
 	// stack: context, name
 	P(*(yyval), *(yyvsp[-1])); // stack: context, name, value
 	O(*(yyval), OP::OP_CONSTRUCT_EXPR); /* value=pop->as_expr_result; name=pop; context=pop; construct(context,name,value) */
 }
-#line 1965 "compile.tab.C" /* yacc.c:1646  */
+#line 1964 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 62:
-#line 473 "compile.y" /* yacc.c:1646  */
+#line 472 "compile.y" /* yacc.c:1646  */
     {
 	// stack: context, name
 	(yyval)=N(); 
 	OA(*(yyval), OP::OP_CURLY_CODE__CONSTRUCT, (yyvsp[-1])); /* code=pop; name=pop; context=pop; construct(context,name,junction(code)) */
 }
-#line 1975 "compile.tab.C" /* yacc.c:1646  */
+#line 1974 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 66:
-#line 484 "compile.y" /* yacc.c:1646  */
+#line 483 "compile.y" /* yacc.c:1646  */
     {
 	(yyval)=N(); 
 	OA(*(yyval), OP::OP_OBJECT_POOL, (yyvsp[0])); /* stack: empty write context */
 	/* some code that writes to that context */
 	/* context=pop; stack: context.value() */
 }
-#line 1986 "compile.tab.C" /* yacc.c:1646  */
+#line 1985 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 69:
-#line 491 "compile.y" /* yacc.c:1646  */
+#line 490 "compile.y" /* yacc.c:1646  */
     { (yyval)=(yyvsp[-1]); P(*(yyval), *(yyvsp[0])); }
-#line 1992 "compile.tab.C" /* yacc.c:1646  */
+#line 1991 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 70:
-#line 495 "compile.y" /* yacc.c:1646  */
+#line 494 "compile.y" /* yacc.c:1646  */
     {
 	size_t count=(yyvsp[0])->count();
 #ifdef OPTIMIZE_BYTECODE_CUT_REM_OPERATOR
@@ -2004,27 +2003,27 @@ yyreduce:
 			change_or_append(*(yyval), count-2 /* second last */, OP::OP_CALL, /*=>*/ OP::OP_CALL__WRITE, /*or */ OP::OP_WRITE_VALUE); /* value=pop; wcontext.write(value) */
 	}
 }
-#line 2008 "compile.tab.C" /* yacc.c:1646  */
+#line 2007 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 71:
-#line 506 "compile.y" /* yacc.c:1646  */
+#line 505 "compile.y" /* yacc.c:1646  */
     { 
 	PC.in_call_value=true; 
 }
-#line 2016 "compile.tab.C" /* yacc.c:1646  */
+#line 2015 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 72:
-#line 509 "compile.y" /* yacc.c:1646  */
+#line 508 "compile.y" /* yacc.c:1646  */
     {
 	PC.in_call_value=false;
 }
-#line 2024 "compile.tab.C" /* yacc.c:1646  */
+#line 2023 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 73:
-#line 512 "compile.y" /* yacc.c:1646  */
+#line 511 "compile.y" /* yacc.c:1646  */
     { /* ^field.$method{vasya} */
 #ifdef OPTIMIZE_BYTECODE_CUT_REM_OPERATOR
 #ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
@@ -2070,11 +2069,11 @@ yyreduce:
 				}
 		}
 }
-#line 2074 "compile.tab.C" /* yacc.c:1646  */
+#line 2073 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 74:
-#line 558 "compile.y" /* yacc.c:1646  */
+#line 557 "compile.y" /* yacc.c:1646  */
     {
 #ifdef FEATURE_GET_ELEMENT4CALL
 	size_t count=(yyvsp[0])->count();
@@ -2090,78 +2089,78 @@ yyreduce:
 	}
 #endif
 }
-#line 2094 "compile.tab.C" /* yacc.c:1646  */
+#line 2093 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 76:
-#line 574 "compile.y" /* yacc.c:1646  */
+#line 573 "compile.y" /* yacc.c:1646  */
     { (yyval)=(yyvsp[-1]); P(*(yyval), *(yyvsp[0])); }
-#line 2100 "compile.tab.C" /* yacc.c:1646  */
+#line 2099 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 80:
-#line 580 "compile.y" /* yacc.c:1646  */
+#line 579 "compile.y" /* yacc.c:1646  */
     {
 	// allow ^call[ letters here any time ]
 	*reinterpret_cast<bool*>(&(yyval))=PC.explicit_result; PC.explicit_result=false;
 }
-#line 2109 "compile.tab.C" /* yacc.c:1646  */
+#line 2108 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 81:
-#line 583 "compile.y" /* yacc.c:1646  */
+#line 582 "compile.y" /* yacc.c:1646  */
     {
 	PC.explicit_result=*reinterpret_cast<bool*>(&(yyvsp[-1]));
 }
-#line 2117 "compile.tab.C" /* yacc.c:1646  */
+#line 2116 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 82:
-#line 585 "compile.y" /* yacc.c:1646  */
+#line 584 "compile.y" /* yacc.c:1646  */
     {(yyval)=(yyvsp[-2]);}
-#line 2123 "compile.tab.C" /* yacc.c:1646  */
+#line 2122 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 83:
-#line 586 "compile.y" /* yacc.c:1646  */
+#line 585 "compile.y" /* yacc.c:1646  */
     {(yyval)=(yyvsp[-1]);}
-#line 2129 "compile.tab.C" /* yacc.c:1646  */
+#line 2128 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 84:
-#line 587 "compile.y" /* yacc.c:1646  */
+#line 586 "compile.y" /* yacc.c:1646  */
     {(yyval)=(yyvsp[-1]);}
-#line 2135 "compile.tab.C" /* yacc.c:1646  */
+#line 2134 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 86:
-#line 590 "compile.y" /* yacc.c:1646  */
+#line 589 "compile.y" /* yacc.c:1646  */
     { (yyval)=(yyvsp[-2]); P(*(yyval), *(yyvsp[0])); }
-#line 2141 "compile.tab.C" /* yacc.c:1646  */
+#line 2140 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 88:
-#line 594 "compile.y" /* yacc.c:1646  */
+#line 593 "compile.y" /* yacc.c:1646  */
     { (yyval)=(yyvsp[-2]); P(*(yyval), *(yyvsp[0])); }
-#line 2147 "compile.tab.C" /* yacc.c:1646  */
+#line 2146 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 90:
-#line 598 "compile.y" /* yacc.c:1646  */
+#line 597 "compile.y" /* yacc.c:1646  */
     { (yyval)=(yyvsp[-2]); P(*(yyval), *(yyvsp[0])); }
-#line 2153 "compile.tab.C" /* yacc.c:1646  */
+#line 2152 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 91:
-#line 600 "compile.y" /* yacc.c:1646  */
+#line 599 "compile.y" /* yacc.c:1646  */
     {
 	(yyval)=(yyvsp[0]);
 }
-#line 2161 "compile.tab.C" /* yacc.c:1646  */
+#line 2160 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 92:
-#line 603 "compile.y" /* yacc.c:1646  */
+#line 602 "compile.y" /* yacc.c:1646  */
     {
 	YYSTYPE expr_code=(yyvsp[0]);
 	if(expr_code->count()==3
@@ -2175,32 +2174,32 @@ yyreduce:
 		OA(*(yyval), OP::OP_EXPR_CODE__STORE_PARAM, code);
 	}
 }
-#line 2179 "compile.tab.C" /* yacc.c:1646  */
+#line 2178 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 93:
-#line 616 "compile.y" /* yacc.c:1646  */
+#line 615 "compile.y" /* yacc.c:1646  */
     {
 	(yyval)=N(); 
 	OA(*(yyval), OP::OP_CURLY_CODE__STORE_PARAM, (yyvsp[0]));
 }
-#line 2188 "compile.tab.C" /* yacc.c:1646  */
+#line 2187 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 98:
-#line 628 "compile.y" /* yacc.c:1646  */
+#line 627 "compile.y" /* yacc.c:1646  */
     { (yyval)=(yyvsp[-1]); P(*(yyval), *(yyvsp[0])); }
-#line 2194 "compile.tab.C" /* yacc.c:1646  */
+#line 2193 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 100:
-#line 630 "compile.y" /* yacc.c:1646  */
+#line 629 "compile.y" /* yacc.c:1646  */
     { (yyval)=(yyvsp[-1]); P(*(yyval), *(yyvsp[0])); }
-#line 2200 "compile.tab.C" /* yacc.c:1646  */
+#line 2199 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 102:
-#line 632 "compile.y" /* yacc.c:1646  */
+#line 631 "compile.y" /* yacc.c:1646  */
     {
 	// we know that name_advance1 not called from ^xxx context
 	// so we'll not check for operator call possibility as we do in name_advance2
@@ -2213,11 +2212,11 @@ yyreduce:
 	O(*(yyval), OP::OP_GET_ELEMENT); /* name=pop; context=pop; stack: context.get_element(name) */
 #endif
 }
-#line 2217 "compile.tab.C" /* yacc.c:1646  */
+#line 2216 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 103:
-#line 644 "compile.y" /* yacc.c:1646  */
+#line 643 "compile.y" /* yacc.c:1646  */
     {
 	/* stack: context */
 	(yyval)=(yyvsp[0]); /* stack: context,name */
@@ -2227,20 +2226,20 @@ yyreduce:
 	O(*(yyval), OP::OP_GET_ELEMENT); /* name=pop; context=pop; stack: context.get_element(name) */
 #endif
 }
-#line 2231 "compile.tab.C" /* yacc.c:1646  */
+#line 2230 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 109:
-#line 661 "compile.y" /* yacc.c:1646  */
+#line 660 "compile.y" /* yacc.c:1646  */
     {
 	(yyval)=(yyvsp[0]);
 	O(*(yyval), OP::OP_GET_ELEMENT);
 }
-#line 2240 "compile.tab.C" /* yacc.c:1646  */
+#line 2239 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 110:
-#line 665 "compile.y" /* yacc.c:1646  */
+#line 664 "compile.y" /* yacc.c:1646  */
     {
 	YYSTYPE code;
 	{
@@ -2250,28 +2249,28 @@ yyreduce:
 	(yyval)=N(); 
 	OA(*(yyval), OP::OP_STRING_POOL, code);
 }
-#line 2254 "compile.tab.C" /* yacc.c:1646  */
+#line 2253 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 111:
-#line 674 "compile.y" /* yacc.c:1646  */
+#line 673 "compile.y" /* yacc.c:1646  */
     {
 	// allow $result_or_other_variable[ letters here any time ]
 	*reinterpret_cast<bool*>(&(yyval))=PC.explicit_result; PC.explicit_result=false;
 }
-#line 2263 "compile.tab.C" /* yacc.c:1646  */
+#line 2262 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 112:
-#line 677 "compile.y" /* yacc.c:1646  */
+#line 676 "compile.y" /* yacc.c:1646  */
     {
 	PC.explicit_result=*reinterpret_cast<bool*>(&(yyvsp[-1]));
 }
-#line 2271 "compile.tab.C" /* yacc.c:1646  */
+#line 2270 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 113:
-#line 679 "compile.y" /* yacc.c:1646  */
+#line 678 "compile.y" /* yacc.c:1646  */
     {
 	(yyval)=N(); 
 #ifdef OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL
@@ -2283,36 +2282,36 @@ yyreduce:
 		/* context=pop; stack: context.value() */
 	}
 }
-#line 2287 "compile.tab.C" /* yacc.c:1646  */
+#line 2286 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 114:
-#line 690 "compile.y" /* yacc.c:1646  */
+#line 689 "compile.y" /* yacc.c:1646  */
     {
 	(yyval)=N(); 
 	O(*(yyval), OP::OP_WITH_READ);
 	P(*(yyval), *(yyvsp[0]));
 }
-#line 2297 "compile.tab.C" /* yacc.c:1646  */
+#line 2296 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 116:
-#line 695 "compile.y" /* yacc.c:1646  */
+#line 694 "compile.y" /* yacc.c:1646  */
     { (yyval)=(yyvsp[-1]); P(*(yyval), *(yyvsp[0])); }
-#line 2303 "compile.tab.C" /* yacc.c:1646  */
+#line 2302 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 117:
-#line 696 "compile.y" /* yacc.c:1646  */
+#line 695 "compile.y" /* yacc.c:1646  */
     {
 	(yyval)=(yyvsp[0]);
 	O(*(yyval), OP::OP_GET_ELEMENT__WRITE);
 }
-#line 2312 "compile.tab.C" /* yacc.c:1646  */
+#line 2311 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 120:
-#line 705 "compile.y" /* yacc.c:1646  */
+#line 704 "compile.y" /* yacc.c:1646  */
     {
 	(yyval)=(yyvsp[-1]); // stack: class name string
 	OP::OPCODE code = OP::OP_VALUE__GET_CLASS;
@@ -2333,11 +2332,11 @@ yyreduce:
 	// optimized OP_VALUE+origin+string+OP_GET_CLASS => OP_VALUE__GET_CLASS+origin+string
 	change_first(*(yyval), OP::OP_VALUE, code);
 }
-#line 2337 "compile.tab.C" /* yacc.c:1646  */
+#line 2336 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 121:
-#line 725 "compile.y" /* yacc.c:1646  */
+#line 724 "compile.y" /* yacc.c:1646  */
     {
 	(yyval)=(yyvsp[-1]);
 	if(!PC.in_call_value) {
@@ -2346,248 +2345,248 @@ yyreduce:
 	}
 	O(*(yyval), OP::OP_PREPARE_TO_CONSTRUCT_OBJECT);
 }
-#line 2350 "compile.tab.C" /* yacc.c:1646  */
+#line 2349 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 128:
-#line 744 "compile.y" /* yacc.c:1646  */
+#line 743 "compile.y" /* yacc.c:1646  */
     { (yyval) = (yyvsp[-1]); }
-#line 2356 "compile.tab.C" /* yacc.c:1646  */
+#line 2355 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 129:
-#line 745 "compile.y" /* yacc.c:1646  */
+#line 744 "compile.y" /* yacc.c:1646  */
     { (yyval) = (yyvsp[-1]); }
-#line 2362 "compile.tab.C" /* yacc.c:1646  */
+#line 2361 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 130:
-#line 746 "compile.y" /* yacc.c:1646  */
+#line 745 "compile.y" /* yacc.c:1646  */
     { (yyval) = (yyvsp[-1]); }
-#line 2368 "compile.tab.C" /* yacc.c:1646  */
+#line 2367 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 131:
-#line 748 "compile.y" /* yacc.c:1646  */
+#line 747 "compile.y" /* yacc.c:1646  */
     { (yyval)=(yyvsp[0]);  O(*(yyval), OP::OP_NEG); }
-#line 2374 "compile.tab.C" /* yacc.c:1646  */
+#line 2373 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 132:
-#line 749 "compile.y" /* yacc.c:1646  */
+#line 748 "compile.y" /* yacc.c:1646  */
     { (yyval)=(yyvsp[0]); }
-#line 2380 "compile.tab.C" /* yacc.c:1646  */
+#line 2379 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 133:
-#line 750 "compile.y" /* yacc.c:1646  */
+#line 749 "compile.y" /* yacc.c:1646  */
     { (yyval)=(yyvsp[0]);	 O(*(yyval), OP::OP_INV); }
-#line 2386 "compile.tab.C" /* yacc.c:1646  */
+#line 2385 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 134:
-#line 751 "compile.y" /* yacc.c:1646  */
+#line 750 "compile.y" /* yacc.c:1646  */
     { (yyval)=(yyvsp[0]);  O(*(yyval), OP::OP_NOT); }
-#line 2392 "compile.tab.C" /* yacc.c:1646  */
+#line 2391 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 135:
-#line 752 "compile.y" /* yacc.c:1646  */
+#line 751 "compile.y" /* yacc.c:1646  */
     { (yyval)=(yyvsp[0]);  O(*(yyval), OP::OP_DEF); }
-#line 2398 "compile.tab.C" /* yacc.c:1646  */
+#line 2397 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 136:
-#line 753 "compile.y" /* yacc.c:1646  */
+#line 752 "compile.y" /* yacc.c:1646  */
     { (yyval)=(yyvsp[0]);  O(*(yyval), OP::OP_IN); }
-#line 2404 "compile.tab.C" /* yacc.c:1646  */
+#line 2403 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 137:
-#line 754 "compile.y" /* yacc.c:1646  */
+#line 753 "compile.y" /* yacc.c:1646  */
     { (yyval)=(yyvsp[0]);  O(*(yyval), OP::OP_FEXISTS); }
-#line 2410 "compile.tab.C" /* yacc.c:1646  */
+#line 2409 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 138:
-#line 755 "compile.y" /* yacc.c:1646  */
+#line 754 "compile.y" /* yacc.c:1646  */
     { (yyval)=(yyvsp[0]);  O(*(yyval), OP::OP_DEXISTS); }
-#line 2416 "compile.tab.C" /* yacc.c:1646  */
+#line 2415 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 139:
-#line 757 "compile.y" /* yacc.c:1646  */
+#line 756 "compile.y" /* yacc.c:1646  */
     {	(yyval)=(yyvsp[-2]);  P(*(yyval), *(yyvsp[0]));  O(*(yyval), OP::OP_SUB); }
-#line 2422 "compile.tab.C" /* yacc.c:1646  */
+#line 2421 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 140:
-#line 758 "compile.y" /* yacc.c:1646  */
+#line 757 "compile.y" /* yacc.c:1646  */
     { (yyval)=(yyvsp[-2]);  P(*(yyval), *(yyvsp[0]));  O(*(yyval), OP::OP_ADD); }
-#line 2428 "compile.tab.C" /* yacc.c:1646  */
+#line 2427 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 141:
-#line 759 "compile.y" /* yacc.c:1646  */
+#line 758 "compile.y" /* yacc.c:1646  */
     { (yyval)=(yyvsp[-2]);  P(*(yyval), *(yyvsp[0]));  O(*(yyval), OP::OP_MUL); }
-#line 2434 "compile.tab.C" /* yacc.c:1646  */
+#line 2433 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 142:
-#line 760 "compile.y" /* yacc.c:1646  */
+#line 759 "compile.y" /* yacc.c:1646  */
     { (yyval)=(yyvsp[-2]);  P(*(yyval), *(yyvsp[0]));  O(*(yyval), OP::OP_DIV); }
-#line 2440 "compile.tab.C" /* yacc.c:1646  */
+#line 2439 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 143:
-#line 761 "compile.y" /* yacc.c:1646  */
+#line 760 "compile.y" /* yacc.c:1646  */
     { (yyval)=(yyvsp[-2]);  P(*(yyval), *(yyvsp[0]));  O(*(yyval), OP::OP_MOD); }
-#line 2446 "compile.tab.C" /* yacc.c:1646  */
+#line 2445 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 144:
-#line 762 "compile.y" /* yacc.c:1646  */
+#line 761 "compile.y" /* yacc.c:1646  */
     { (yyval)=(yyvsp[-2]);  P(*(yyval), *(yyvsp[0]));  O(*(yyval), OP::OP_INTDIV); }
-#line 2452 "compile.tab.C" /* yacc.c:1646  */
+#line 2451 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 145:
-#line 763 "compile.y" /* yacc.c:1646  */
+#line 762 "compile.y" /* yacc.c:1646  */
     { (yyval)=(yyvsp[-2]);  P(*(yyval), *(yyvsp[0]));  O(*(yyval), OP::OP_BIN_SL); }
-#line 2458 "compile.tab.C" /* yacc.c:1646  */
+#line 2457 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 146:
-#line 764 "compile.y" /* yacc.c:1646  */
+#line 763 "compile.y" /* yacc.c:1646  */
     { (yyval)=(yyvsp[-2]);  P(*(yyval), *(yyvsp[0]));  O(*(yyval), OP::OP_BIN_SR); }
-#line 2464 "compile.tab.C" /* yacc.c:1646  */
+#line 2463 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 147:
-#line 765 "compile.y" /* yacc.c:1646  */
+#line 764 "compile.y" /* yacc.c:1646  */
     { (yyval)=(yyvsp[-2]); 	P(*(yyval), *(yyvsp[0]));  O(*(yyval), OP::OP_BIN_AND); }
-#line 2470 "compile.tab.C" /* yacc.c:1646  */
+#line 2469 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 148:
-#line 766 "compile.y" /* yacc.c:1646  */
+#line 765 "compile.y" /* yacc.c:1646  */
     { (yyval)=(yyvsp[-2]);  P(*(yyval), *(yyvsp[0]));  O(*(yyval), OP::OP_BIN_OR); }
-#line 2476 "compile.tab.C" /* yacc.c:1646  */
+#line 2475 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 149:
-#line 767 "compile.y" /* yacc.c:1646  */
+#line 766 "compile.y" /* yacc.c:1646  */
     { (yyval)=(yyvsp[-2]);  P(*(yyval), *(yyvsp[0]));  O(*(yyval), OP::OP_BIN_XOR); }
-#line 2482 "compile.tab.C" /* yacc.c:1646  */
+#line 2481 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 150:
-#line 768 "compile.y" /* yacc.c:1646  */
+#line 767 "compile.y" /* yacc.c:1646  */
     { (yyval)=(yyvsp[-2]);  OA(*(yyval), OP::OP_NESTED_CODE, (yyvsp[0]));  O(*(yyval), OP::OP_LOG_AND); }
-#line 2488 "compile.tab.C" /* yacc.c:1646  */
+#line 2487 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 151:
-#line 769 "compile.y" /* yacc.c:1646  */
+#line 768 "compile.y" /* yacc.c:1646  */
     { (yyval)=(yyvsp[-2]);  OA(*(yyval), OP::OP_NESTED_CODE, (yyvsp[0]));  O(*(yyval), OP::OP_LOG_OR); }
-#line 2494 "compile.tab.C" /* yacc.c:1646  */
+#line 2493 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 152:
-#line 770 "compile.y" /* yacc.c:1646  */
+#line 769 "compile.y" /* yacc.c:1646  */
     { (yyval)=(yyvsp[-2]);  P(*(yyval), *(yyvsp[0]));  O(*(yyval), OP::OP_LOG_XOR); }
-#line 2500 "compile.tab.C" /* yacc.c:1646  */
+#line 2499 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 153:
-#line 771 "compile.y" /* yacc.c:1646  */
+#line 770 "compile.y" /* yacc.c:1646  */
     { (yyval)=(yyvsp[-2]);  P(*(yyval), *(yyvsp[0]));  O(*(yyval), OP::OP_NUM_LT); }
-#line 2506 "compile.tab.C" /* yacc.c:1646  */
+#line 2505 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 154:
-#line 772 "compile.y" /* yacc.c:1646  */
+#line 771 "compile.y" /* yacc.c:1646  */
     { (yyval)=(yyvsp[-2]);  P(*(yyval), *(yyvsp[0]));  O(*(yyval), OP::OP_NUM_GT); }
-#line 2512 "compile.tab.C" /* yacc.c:1646  */
+#line 2511 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 155:
-#line 773 "compile.y" /* yacc.c:1646  */
+#line 772 "compile.y" /* yacc.c:1646  */
     { (yyval)=(yyvsp[-2]);  P(*(yyval), *(yyvsp[0]));  O(*(yyval), OP::OP_NUM_LE); }
-#line 2518 "compile.tab.C" /* yacc.c:1646  */
+#line 2517 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 156:
-#line 774 "compile.y" /* yacc.c:1646  */
+#line 773 "compile.y" /* yacc.c:1646  */
     { (yyval)=(yyvsp[-2]);  P(*(yyval), *(yyvsp[0]));  O(*(yyval), OP::OP_NUM_GE); }
-#line 2524 "compile.tab.C" /* yacc.c:1646  */
+#line 2523 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 157:
-#line 775 "compile.y" /* yacc.c:1646  */
+#line 774 "compile.y" /* yacc.c:1646  */
     { (yyval)=(yyvsp[-2]);  P(*(yyval), *(yyvsp[0]));  O(*(yyval), OP::OP_NUM_EQ); }
-#line 2530 "compile.tab.C" /* yacc.c:1646  */
+#line 2529 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 158:
-#line 776 "compile.y" /* yacc.c:1646  */
+#line 775 "compile.y" /* yacc.c:1646  */
     { (yyval)=(yyvsp[-2]);  P(*(yyval), *(yyvsp[0]));  O(*(yyval), OP::OP_NUM_NE); }
-#line 2536 "compile.tab.C" /* yacc.c:1646  */
+#line 2535 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 159:
-#line 777 "compile.y" /* yacc.c:1646  */
+#line 776 "compile.y" /* yacc.c:1646  */
     { (yyval)=(yyvsp[-2]);  P(*(yyval), *(yyvsp[0]));  O(*(yyval), OP::OP_STR_LT); }
-#line 2542 "compile.tab.C" /* yacc.c:1646  */
+#line 2541 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 160:
-#line 778 "compile.y" /* yacc.c:1646  */
+#line 777 "compile.y" /* yacc.c:1646  */
     { (yyval)=(yyvsp[-2]);  P(*(yyval), *(yyvsp[0]));  O(*(yyval), OP::OP_STR_GT); }
-#line 2548 "compile.tab.C" /* yacc.c:1646  */
+#line 2547 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 161:
-#line 779 "compile.y" /* yacc.c:1646  */
+#line 778 "compile.y" /* yacc.c:1646  */
     { (yyval)=(yyvsp[-2]);  P(*(yyval), *(yyvsp[0]));  O(*(yyval), OP::OP_STR_LE); }
-#line 2554 "compile.tab.C" /* yacc.c:1646  */
+#line 2553 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 162:
-#line 780 "compile.y" /* yacc.c:1646  */
+#line 779 "compile.y" /* yacc.c:1646  */
     { (yyval)=(yyvsp[-2]);  P(*(yyval), *(yyvsp[0]));  O(*(yyval), OP::OP_STR_GE); }
-#line 2560 "compile.tab.C" /* yacc.c:1646  */
+#line 2559 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 163:
-#line 781 "compile.y" /* yacc.c:1646  */
+#line 780 "compile.y" /* yacc.c:1646  */
     { (yyval)=(yyvsp[-2]);  P(*(yyval), *(yyvsp[0]));  O(*(yyval), OP::OP_STR_EQ); }
-#line 2566 "compile.tab.C" /* yacc.c:1646  */
+#line 2565 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 164:
-#line 782 "compile.y" /* yacc.c:1646  */
+#line 781 "compile.y" /* yacc.c:1646  */
     { (yyval)=(yyvsp[-2]);  P(*(yyval), *(yyvsp[0]));  O(*(yyval), OP::OP_STR_NE); }
-#line 2572 "compile.tab.C" /* yacc.c:1646  */
+#line 2571 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 165:
-#line 783 "compile.y" /* yacc.c:1646  */
+#line 782 "compile.y" /* yacc.c:1646  */
     { (yyval)=(yyvsp[-2]);  P(*(yyval), *(yyvsp[0]));  O(*(yyval), OP::OP_IS); }
-#line 2578 "compile.tab.C" /* yacc.c:1646  */
+#line 2577 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 166:
-#line 786 "compile.y" /* yacc.c:1646  */
+#line 785 "compile.y" /* yacc.c:1646  */
     {
 	// optimized OP_STRING => OP_VALUE for doubles
 	maybe_change_string_literal_to_double_literal(*((yyval)=(yyvsp[0])));
 }
-#line 2587 "compile.tab.C" /* yacc.c:1646  */
+#line 2586 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 167:
-#line 791 "compile.y" /* yacc.c:1646  */
+#line 790 "compile.y" /* yacc.c:1646  */
     {
 #ifdef OPTIMIZE_BYTECODE_STRING_POOL
 	// it brakes ^if(" 09 "){...}
@@ -2606,44 +2605,44 @@ yyreduce:
 	/* some code that writes to that context */
 	/* context=pop; stack: context.get_string() */
 }
-#line 2610 "compile.tab.C" /* yacc.c:1646  */
+#line 2609 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 168:
-#line 812 "compile.y" /* yacc.c:1646  */
+#line 811 "compile.y" /* yacc.c:1646  */
     {
 	// optimized OP_STRING+OP_WRITE_VALUE => OP_STRING__WRITE
 	change_string_literal_to_write_string_literal(*((yyval)=(yyvsp[0])));
 }
-#line 2619 "compile.tab.C" /* yacc.c:1646  */
+#line 2618 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 169:
-#line 817 "compile.y" /* yacc.c:1646  */
+#line 816 "compile.y" /* yacc.c:1646  */
     { (yyval)=VL(/*we know that we will not change it*/const_cast<VString*>(&vempty), 0, 0, 0); }
-#line 2625 "compile.tab.C" /* yacc.c:1646  */
+#line 2624 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 170:
-#line 818 "compile.y" /* yacc.c:1646  */
+#line 817 "compile.y" /* yacc.c:1646  */
     { (yyval) = VL(/*we know that we will not change it*/const_cast<VBool*>(&vtrue), 0, 0, 0); }
-#line 2631 "compile.tab.C" /* yacc.c:1646  */
+#line 2630 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 171:
-#line 819 "compile.y" /* yacc.c:1646  */
+#line 818 "compile.y" /* yacc.c:1646  */
     { (yyval) = VL(/*we know that we will not change it*/const_cast<VBool*>(&vfalse), 0, 0, 0); }
-#line 2637 "compile.tab.C" /* yacc.c:1646  */
+#line 2636 "compile.tab.C" /* yacc.c:1646  */
     break;
 
   case 172:
-#line 821 "compile.y" /* yacc.c:1646  */
+#line 820 "compile.y" /* yacc.c:1646  */
     { (yyval)=N(); }
-#line 2643 "compile.tab.C" /* yacc.c:1646  */
+#line 2642 "compile.tab.C" /* yacc.c:1646  */
     break;
 
 
-#line 2647 "compile.tab.C" /* yacc.c:1646  */
+#line 2646 "compile.tab.C" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -2871,7 +2870,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 823 "compile.y" /* yacc.c:1906  */
+#line 822 "compile.y" /* yacc.c:1906  */
 
 #endif
 
