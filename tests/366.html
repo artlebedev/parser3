@@ -1,0 +1,55 @@
+# checking native implementation first
+@USE
+366_dir/test.p
+
+# parser implementation of native ^use[] logic
+@use[name;options][origin;mi;first;path]
+$result[]
+
+^if(^name.left(1) eq '/'){
+	^include[$name]
+}{
+	$origin[$options.origin]
+
+	^if(!def $origin){
+		$mi[^reflection:method_info[$caller.method]]
+		$origin[$mi.file]
+	}
+
+	$origin[/^origin.mid(^request:document-root.length[])]
+
+	$first[^file:dirname[$origin]/$name]
+
+	^if(-f $first){
+		^include[$first]
+	}($CLASS_PATH is table && $CLASS_PATH){
+		^CLASS_PATH.menu{
+			$path[$CLASS_PATH.path/$name]
+			^if(-f $path){
+				^include[$path]
+				$name[]
+				^break[]
+			}
+		}
+		^if(def $name){
+			^throw[use;'$name' not found along ^$MAIN:CLASS_PATH]
+		}
+	}{
+		^throw[use;'$name' usage failed - no ^$MAIN:CLASS_PATH were specified]
+	}
+}
+
+@include[filename][file]
+$filename[^filename.replace[//;/]]
+^if(!$USED.$filename){
+	$file[^file::load[text;$filename]]
+	^process[$MAIN:CLASS]{^taint[as-is][$file.text]}[ $.file[$filename] ]
+	$USED[$USED $.$filename(true)]
+}
+
+@main[]
+
+native LOG: $LOG
+$LOG[]
+^use[366_dir/test.p]
+parser LOG: $LOG
