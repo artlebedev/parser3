@@ -8,7 +8,7 @@
 #ifndef PA_HTTP_H
 #define PA_HTTP_H
 
-#define IDENT_PA_HTTP_H "$Id: pa_http.h,v 1.16 2016/09/01 13:57:04 moko Exp $"
+#define IDENT_PA_HTTP_H "$Id: pa_http.h,v 1.17 2016/11/24 19:24:46 moko Exp $"
 
 #include "pa_vstring.h"
 #include "pa_vint.h"
@@ -61,6 +61,11 @@ public:
 			return true;
 		}
 		return false;
+	}
+
+	void clear(){
+		headers.clear();
+		content_type="";
 	}
 
 };

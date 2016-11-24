@@ -8,7 +8,7 @@
 #ifndef PA_ARRAY_H
 #define PA_ARRAY_H
 
-#define IDENT_PA_ARRAY_H "$Id: pa_array.h,v 1.83 2015/10/26 01:21:55 moko Exp $"
+#define IDENT_PA_ARRAY_H "$Id: pa_array.h,v 1.84 2016/11/24 19:24:45 moko Exp $"
 
 // includes
 
@@ -168,6 +168,10 @@ public:
 	}
 
 	inline T operator [](size_t index) const { return get(index); }
+
+	inline void clear() {
+		fused=0;
+	}
 
 	/// iterate over all elements
 	template<typename I> void for_each(void (*callback)(T, I), I info) const {

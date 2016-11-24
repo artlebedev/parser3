@@ -17,7 +17,7 @@
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.46 2016/11/01 23:10:39 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.47 2016/11/24 19:24:45 moko Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -617,7 +617,13 @@ static int curl_header(char *data, size_t size, size_t nmemb, ResponseHeaders *r
 
 	size=size*nmemb;
 	if(size>0){
-		result->add_header(pa_strdup(data, size));
+		char *header=pa_strdup(data, size);
+		if(!pa_strncasecmp(header, "HTTP/") && !strchr(header, ':')){
+			// response code, clearing possible headers from previous requests
+			result->clear();
+		} else {
+			result->add_header(header);
+		}
 	}
 	return size;
 }
