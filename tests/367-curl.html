@@ -1,0 +1,16 @@
+@main[]
+^curl:session{
+	$response[^curl:load[
+		$.url[http://www.parser.ru/_/tests/367.html?redirect=yes]
+		$.followlocation(true)
+	]]
+
+	$max(0)
+	^response.tables.foreach[;header]{ ^if($header>$max){$max($header)} }
+
+	text: $response.text ($response.size bytes)
+	name: $response.name
+	charset: $response.content-type
+	max identical headers: $max
+	url: ^curl:info[effective_url] after ^curl:info[num_connects] requests (^curl:info[redirect_count] redirect)
+}
