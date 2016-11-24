@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 761
+Content-Length: 727
 
 1. Type: parser.runtime,
 Source: no-such-class,
@@ -17,7 +17,6 @@ Comment: method name must be string (parameter #2)
 Source: method_info,
 Comment: param must be class name or method junction
 6. {
-"name":"mid",
 "inherited":"string",
 "call_type":"dynamic",
 "min_params":1,
@@ -36,7 +35,6 @@ Comment: param must be class name or method junction
 "0":"jCode"
 }
 9. {
-"name":"try-catch",
 "file":"skip",
 "max_params":1,
 "0":"jCode"
