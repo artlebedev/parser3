@@ -10,7 +10,7 @@
 #include "pa_vbool.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.65 2016/11/03 16:17:37 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.66 2016/11/24 14:59:32 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -259,14 +259,20 @@ static void _field(Request& r, MethodParams& params) {
 
 static void _method_info(Request& r, MethodParams& params) {
 	const Method* method;
-	VStateless_class* vclass=0;
+
+	VHash& result=*new VHash;
+	HashStringValue* hash=result.get_hash();
 
 	if(Junction *j=params[0].get_junction()){
 		if(!(method=j->method))
 			throw Exception(PARSER_RUNTIME, 0, "param must be class name or method junction");
+
+		hash->put(method_name, new VString(*method->name));
 	} else {
 		const String& class_name=params.as_string(0, "param must be class name or method junction");
-		if(!(vclass=r.get_class(class_name)))
+		VStateless_class* vclass=r.get_class(class_name);
+
+		if(!vclass)
 			throw Exception(PARSER_RUNTIME, &class_name, "class is undefined");
 
 		if(params.count()==1)
@@ -275,18 +281,14 @@ static void _method_info(Request& r, MethodParams& params) {
 		const String& method_name=params.as_string(1, "method name must be string");
 		if(!(method=vclass->get_method(method_name)))
 			throw Exception(PARSER_RUNTIME, &method_name, "method not found in class '%s'", vclass->type());
-	}
 
-	VHash& result=*new VHash;
-	HashStringValue* hash=result.get_hash();
-	hash->put(method_name, new VString(*method->name));
-
-	Method* base_method;
-	if(vclass && vclass->base() && (base_method=vclass->base()->get_method(*method->name))){
-		VStateless_class* c=vclass->base()->get_class();
-		while(c->base() && base_method==c->base()->get_method(*method->name))
-			c=c->base()->get_class();
-		hash->put((base_method==method) ? method_inherited : method_overridden, new VString(*new String(c->type())));
+		Method* base_method;
+		if(vclass && vclass->base() && (base_method=vclass->base()->get_method(*method->name))){
+			VStateless_class* c=vclass->base()->get_class();
+			while(c->base() && base_method==c->base()->get_method(*method->name))
+				c=c->base()->get_class();
+			hash->put((base_method==method) ? method_inherited : method_overridden, new VString(*new String(c->type())));
+		}
 	}
 
 	Value* call_type=0;
