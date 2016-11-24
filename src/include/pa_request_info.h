@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_INFO_H
 #define PA_REQUEST_INFO_H
 
-#define IDENT_PA_REQUEST_INFO_H "$Id: pa_request_info.h,v 1.9 2015/10/26 01:21:56 moko Exp $"
+#define IDENT_PA_REQUEST_INFO_H "$Id: pa_request_info.h,v 1.10 2016/11/24 22:18:59 moko Exp $"
 
 /// some information from web server
 class Request_info {
@@ -39,6 +39,22 @@ public:
 				strcasecmp(method, "POST") == 0
 				|| strcasecmp(method, "PUT") == 0
 			);
+	}
+
+	static const char* remove_absolute_uri(const char *auri){
+		if(*auri == '/')
+			return auri;
+
+		// extractring https?://site.name prefix allowed by http://www.w3.org/Protocols/rfc2616/rfc2616-sec5.html#sec5.1.2
+
+		if(!pa_strncasecmp(auri, "http://"))
+			auri+=7;
+		else if(!pa_strncasecmp(auri, "https://"))
+			auri+=8;
+		else
+			return auri;
+		for(; *auri && *auri != '/'; auri++);
+		return auri;
 	}
 };
 

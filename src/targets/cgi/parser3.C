@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.269 2015/10/26 01:22:00 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.270 2016/11/24 22:18:59 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -430,7 +430,7 @@ static void real_parser_handler(const char* filespec_to_process,
 		if(!script_name)
 				SAPI::die("CGI: illegal call (missing SCRIPT_NAME)");
 
-		const char* env_request_uri=getenv("REQUEST_URI");
+		const char* env_request_uri=request_info.remove_absolute_uri(getenv("REQUEST_URI"));
 		if(env_request_uri)
 			request_info.uri=env_request_uri;
 		else 
