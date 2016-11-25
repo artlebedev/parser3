@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_INFO_H
 #define PA_REQUEST_INFO_H
 
-#define IDENT_PA_REQUEST_INFO_H "$Id: pa_request_info.h,v 1.11 2016/11/25 23:35:44 moko Exp $"
+#define IDENT_PA_REQUEST_INFO_H "$Id: pa_request_info.h,v 1.12 2016/11/25 23:37:06 moko Exp $"
 
 /// some information from web server
 class Request_info {
@@ -42,7 +42,7 @@ public:
 	}
 
 	static const char* strip_absolute_uri(const char *auri){
-		if(!uri || *auri == '/')
+		if(!auri || *auri == '/')
 			return auri;
 
 		// extractring https?://site.name prefix allowed by http://www.w3.org/Protocols/rfc2616/rfc2616-sec5.html#sec5.1.2
