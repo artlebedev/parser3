@@ -5,7 +5,7 @@ Parser: apache 1.3/2.X module, part, compiled by parser3project.
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_MOD_PARSER3_CORE_C="$Id: mod_parser3_core.C,v 1.14 2016/11/24 22:18:59 moko Exp $";
+volatile const char * IDENT_MOD_PARSER3_CORE_C="$Id: mod_parser3_core.C,v 1.15 2016/11/25 23:35:45 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -225,7 +225,7 @@ static void real_parser_handler(SAPI_Info& SAPI_info, Parser_module_config *dcfg
 	request_info.path_translated=SAPI_info.r->filename;
 	request_info.method=SAPI_info.r->method;
 	request_info.query_string=SAPI_info.r->args;
-	request_info.uri=request_info.remove_absolute_uri(SAPI::Env::get(SAPI_info, "REQUEST_URI"));
+	request_info.uri=request_info.strip_absolute_uri(SAPI::Env::get(SAPI_info, "REQUEST_URI"));
 	request_info.content_type=SAPI::Env::get(SAPI_info, "CONTENT_TYPE");
 	const char* content_length=SAPI::Env::get(SAPI_info, "CONTENT_LENGTH");
 	request_info.content_length=content_length?atoi(content_length):0;
