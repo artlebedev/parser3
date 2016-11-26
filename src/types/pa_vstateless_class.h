@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
-#define IDENT_PA_VSTATELESS_CLASS_H "$Id: pa_vstateless_class.h,v 1.87 2016/09/26 14:40:27 moko Exp $"
+#define IDENT_PA_VSTATELESS_CLASS_H "$Id: pa_vstateless_class.h,v 1.88 2016/11/26 22:54:18 moko Exp $"
 
 // include
 
@@ -150,7 +150,6 @@ public: // usage
 	void set_method(const String& aname, Method* amethod);
 
 	/// overrided in VClass
-	virtual void set_type(const char *) {}
 	virtual void real_set_method(const String& aname, Method* amethod);
 	virtual HashStringProperty* get_properties(){ return 0; };
 	virtual void set_base(VStateless_class* abase);

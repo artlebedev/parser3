@@ -10,7 +10,7 @@
 #include "pa_vbool.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.66 2016/11/24 14:59:32 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.67 2016/11/26 22:54:17 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -328,6 +328,14 @@ static void _method_info(Request& r, MethodParams& params) {
 	r.write(result);
 }
 
+static void _filename(Request& r, MethodParams& params) {
+	Value& o=params.as_no_junction(0, "param must be object or class, not junction");
+
+	if(VClass* vclass = dynamic_cast<VClass*>(o.get_class())){
+		r.write(*new VString(vclass->get_filename()));
+	}
+}
+
 static void _dynamical(Request& r, MethodParams& params) {
 	if(params.count()){
 		r.write(VBool::get(params[0].get_class() != &params[0]));
@@ -499,6 +507,9 @@ MReflection::MReflection(): Methoded("reflection") {
 	// ^reflection:method_info[class_name;method_name]
 	// ^reflection:method_info[junction]
 	add_native_method("method_info", Method::CT_STATIC, _method_info, 1, 2);
+
+	// ^reflection:filename[object or class]
+	add_native_method("filename", Method::CT_STATIC, _filename, 1, 1);
 
 	// ^reflection:fields[object or class]
 	add_native_method("fields", Method::CT_STATIC, _fields, 1, 1);

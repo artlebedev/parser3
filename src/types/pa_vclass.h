@@ -8,7 +8,7 @@
 #ifndef PA_VCLASS_H
 #define PA_VCLASS_H
 
-#define IDENT_PA_VCLASS_H "$Id: pa_vclass.h,v 1.67 2016/09/13 16:12:56 moko Exp $"
+#define IDENT_PA_VCLASS_H "$Id: pa_vclass.h,v 1.68 2016/11/26 22:54:18 moko Exp $"
 
 #define OBJECT_PROTOTYPE
 
@@ -51,8 +51,6 @@ public:
 	static bool prototype;
 #endif
 
-	void set_type(const char *atype) { ftype=atype; }
-
 	// VStateless_class
 	override void real_set_method(const String& aname, Method* amethod);
 	override HashStringProperty* get_properties(){ return &ffields; };
@@ -69,6 +67,7 @@ public:
 private:
 
 	const char* ftype;
+	const String& ffilename;
 
 	enum State {
 		IS_GETTER_ACTIVE = 0x01,
@@ -83,7 +82,9 @@ private:
 
 public:
 
-	VClass(const char* atype=0) : ftype(atype), state(IS_GETTER_ACTIVE){}
+	VClass(const char* atype, const String* afilename=0) : ftype(atype), ffilename(afilename ? *afilename : String::Empty), state(IS_GETTER_ACTIVE){}
+
+	const String& get_filename(){ return ffilename; }
 
 };
 

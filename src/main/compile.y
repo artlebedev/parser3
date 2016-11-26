@@ -8,7 +8,7 @@
 	
 */
 
-volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.286 2016/11/22 22:31:38 moko Exp $";
+volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.287 2016/11/26 22:54:18 moko Exp $";
 
 /**
 	@todo parser4: 
@@ -167,9 +167,8 @@ control_method: '@' STRING '\n'
 			// new class' name
 			const String& name=LA2S(*strings_code)->trim(String::TRIM_END);
 			// creating the class
-			VStateless_class* cclass=new VClass;
+			VStateless_class* cclass=new VClass(name.cstr(), PC.request.get_used_filename(PC.file_no));
 			PC.cclass_new=cclass;
-			PC.cclass_new->set_type(name.cstr());
 			PC.append=false;
 		} else {
 			strcpy(PC.error, "@" CLASS_NAME " must contain only one line with class name (contains more then one)");
