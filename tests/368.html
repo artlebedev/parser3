@@ -1,0 +1,35 @@
+@main[]
+
+$o[^O::create[]]
+object: ^show[$o]
+class: ^show[$O:CLASS]
+
+^process{@CLASS
+P
+
+^@create[]
+}[ $.file[process.p] ]
+
+$p[^P::create[]]
+process object: ^show[$p]
+process class: ^show[$P:CLASS]
+
+^process{@CLASS
+P2
+
+^@create[]
+}
+process without file specified: ^show[$P2:CLASS]
+
+^try-catch{
+	^show[$show]
+}
+
+@show[o]
+$v[^reflection:filename[$o]]
+^v.match[^^.+/][]{/-real-path-was-here-/}
+
+@CLASS
+O
+
+@create[]
