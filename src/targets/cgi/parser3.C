@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.271 2016/11/25 23:35:45 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.272 2016/11/27 23:30:09 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -31,8 +31,6 @@ volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.271 2016/11/25 23:35:4
 #if _MSC_VER && !defined(_DEBUG)
 #	define PA_SUPPRESS_SYSTEM_EXCEPTION
 #endif
-
-//#define DEBUG_MAILRECEIVE "mailreceive.eml"
 
 // consts
 
@@ -73,7 +71,7 @@ static void log(const char* fmt, va_list args) {
 		f=fopen(log_by_env, "at");
 		opened=f!=0;
 	}
-#ifdef PA_DEBUG_CGI_ENTRY_EXIT	
+#ifdef PA_DEBUG_CGI_ENTRY_EXIT
 	f=fopen(PA_DEBUG_CGI_ENTRY_EXIT, "at");
 	opened=f!=0;
 #endif
@@ -81,16 +79,13 @@ static void log(const char* fmt, va_list args) {
 	if(!opened && config_filespec_cstr) {
 		char beside_config_path[MAX_STRING];
 		strncpy(beside_config_path, config_filespec_cstr, MAX_STRING-1);  beside_config_path[MAX_STRING-1]=0;
-		if(!(
-			rsplit(beside_config_path, '/') || 
-			rsplit(beside_config_path, '\\'))) { // strip filename
+		if(!(rsplit(beside_config_path, '/') || rsplit(beside_config_path, '\\'))) { // strip filename
 			// no path, just filename
 			beside_config_path[0]='.'; beside_config_path[1]=0;
 		}
 
 		char file_spec[MAX_STRING];
-		snprintf(file_spec, MAX_STRING, 
-			"%s/parser3.log", beside_config_path);
+		snprintf(file_spec, MAX_STRING, "%s/parser3.log", beside_config_path);
 		f=fopen(file_spec, "at");
 		opened=f!=0;
 	}
@@ -105,9 +100,7 @@ static void log(const char* fmt, va_list args) {
 	time_t t=time(0);
 	if(const char* stamp=ctime(&t)) { // never saw that
 		if(size_t len=strlen(stamp)) // saw once stamp being =""
-			fprintf(f, "[%.*s] [%u] ", (int)len-1, stamp,
-			(unsigned int)getpid()
-			);
+			fprintf(f, "[%.*s] [%u] ", (int)len-1, stamp, (unsigned int)getpid() );
 	}
 	// message
 
@@ -132,9 +125,10 @@ static void log(const char* fmt, va_list args) {
 	else
 		fflush(f);
 }
+
 #ifdef PA_DEBUG_CGI_ENTRY_EXIT
 static void log(const char* fmt, ...) {
-    va_list args;
+	va_list args;
 	va_start(args,fmt);
 	log(fmt, args);
 	va_end(args);
@@ -143,7 +137,7 @@ static void log(const char* fmt, ...) {
 
 // appends to parser3.log located beside my binary if openable, to stderr otherwize
 void SAPI::log(SAPI_Info&, const char* fmt, ...) {
-    va_list args;
+	va_list args;
 	va_start(args,fmt);
 	::log(fmt, args);
 	va_end(args);
@@ -179,8 +173,7 @@ static void die_or_abort(const char* fmt, va_list args, bool write_core) {
 #else
 		abort();
 #endif
-	} 
-	else
+	} else
 		exit(1);
 }
 
@@ -230,8 +223,7 @@ const char* const *SAPI::Env::get(SAPI_Info&) {
 size_t SAPI::read_post(SAPI_Info& , char *buf, size_t max_bytes) {
 	size_t read_size=0;
 	do {
-		ssize_t chunk_size=read(fileno(stdin), 
-			buf+read_size, min(READ_POST_CHUNK_SIZE, max_bytes-read_size));
+		ssize_t chunk_size=read(fileno(stdin), buf+read_size, min(READ_POST_CHUNK_SIZE, max_bytes-read_size));
 		if(chunk_size<=0)
 			break;
 		read_size+=chunk_size;
@@ -245,12 +237,8 @@ void SAPI::add_header_attribute(SAPI_Info& , const char* dont_store_key, const c
 		printf("%s: %s\n", capitalize(dont_store_key), dont_store_value);
 }
 
-/// @todo intelligent cache-control
 void SAPI::send_header(SAPI_Info& ) {
 	if(cgi) {
-//		puts("expires: Fri, 23 Mar 2001 09:32:23 GMT");
-
-		// header | body  delimiter
 		puts("");
 	}
 }
@@ -258,8 +246,6 @@ void SAPI::send_header(SAPI_Info& ) {
 size_t SAPI::send_body(SAPI_Info& , const void *buf, size_t size) {
 	return stdout_write(buf, size);
 }
-
-//
 
 static void full_file_spec(const char* file_name, char *buf, size_t buf_size) {
 	if(file_name)
@@ -284,7 +270,7 @@ static void log_signal(const char* signal_name) {
 	if(request_info)
 		SAPI::log(SAPI_info, "%s received while %s. uri=%s, method=%s, cl=%u",
 			signal_name,
-			request?"executing code":"reading data",
+			request ? "executing code" : "reading data",
 			request_info->uri,
 			request_info->method,
 			request_info->content_length);
@@ -322,17 +308,9 @@ const char* maybe_reconstruct_IIS_status_in_qs(const char* original)
 	// ';' should be urlencoded by HTTP standard, so we shouldn't get it from browser 
 	// and can consider that as an indication that this is IIS way to report errors
 
-	if(original 
-		&& isdigit((unsigned char)original[0])
-		&& isdigit((unsigned char)original[1])
-		&& isdigit((unsigned char)original[2])
-		&& original[3]==';') 
-	{
+	if(original && isdigit((unsigned char)original[0]) && isdigit((unsigned char)original[1]) && isdigit((unsigned char)original[2]) && original[3]==';'){
 		size_t original_len=strlen(original);
-        char* reconstructed=new(PointerFreeGC) char[original_len
-			+12/*IIS-STATUS=&*/
-			+14/*IIS-DOCUMENT=&*/
-			+1];
+		char* reconstructed=new(PointerFreeGC) char[original_len +12/*IIS-STATUS=&*/ +14/*IIS-DOCUMENT=&*/ +1];
 		char* cur=reconstructed;
 		memcpy(cur, "IIS-STATUS=", 11);	 cur+=11;
 		memcpy(cur, original, 3); cur+=3;
@@ -341,7 +319,7 @@ const char* maybe_reconstruct_IIS_status_in_qs(const char* original)
 		const char* qmark_at=strchr(original, '?');
 		memcpy(cur, "IIS-DOCUMENT=", 13);  cur+=13;
 		{
-			size_t value_len=(qmark_at? qmark_at-original: original_len)-4;
+			size_t value_len=(qmark_at ? qmark_at-original : original_len)-4;
 			memcpy(cur, original+4, value_len);  cur+=value_len;
 		}
 
@@ -373,14 +351,12 @@ public:
 /**
 main workhorse
 
-  @todo 
-		IIS: remove trailing default-document[index.html] from $request.uri.
-		to do that we need to consult metabase,
-		wich is tested but seems slow.
+  @todo
+	IIS: remove trailing default-document[index.html] from $request.uri.
+	to do that we need to consult metabase,
+	wich is tested but seems slow.
 */
-static void real_parser_handler(const char* filespec_to_process,
-				const char* request_method, bool header_only) 
-{
+static void real_parser_handler(const char* filespec_to_process, const char* request_method, bool header_only) {
 	// init socks
 	pa_socks_init();
 
@@ -406,9 +382,7 @@ static void real_parser_handler(const char* filespec_to_process,
 			memcpy(document_root_buf, filespec_to_process, len); document_root_buf[len]=0;
 			request_info.document_root=document_root_buf;
 		} else
-			throw Exception(PARSER_RUNTIME,
-				0,
-				"CGI: no PATH_INFO defined(in reinventing DOCUMENT_ROOT)");
+			throw Exception(PARSER_RUNTIME, 0, "CGI: no PATH_INFO defined(in reinventing DOCUMENT_ROOT)");
 	} else {
 		full_file_spec("", document_root_buf, sizeof(document_root_buf));
 		request_info.document_root=document_root_buf;
@@ -435,9 +409,7 @@ static void real_parser_handler(const char* filespec_to_process,
 			request_info.uri=env_request_uri;
 		else 
 			if(query_string) {
-				char* reconstructed_uri=new(PointerFreeGC) char[
-					strlen(path_info)+1/*'?'*/+
-					strlen(query_string)+1/*0*/];
+				char* reconstructed_uri=new(PointerFreeGC) char[strlen(path_info) + 1/*'?'*/+ strlen(query_string) + 1/*0*/];
 				strcpy(reconstructed_uri, path_info);
 				strcat(reconstructed_uri, "?");
 				strcat(reconstructed_uri, query_string);
@@ -461,8 +433,7 @@ static void real_parser_handler(const char* filespec_to_process,
 			*/
 			size_t script_name_len=strlen(script_name);
 			size_t uri_len=strlen(env_request_uri);
-			if(strncmp(env_request_uri, script_name, script_name_len)==0 &&
-				script_name_len != uri_len) // under IIS they are the same
+			if(strncmp(env_request_uri, script_name, script_name_len)==0 && script_name_len != uri_len) // under IIS they are the same
 				SAPI::die("CGI: illegal call (1)");
 		} else { // seen on IIS5
 			/*
@@ -510,8 +481,7 @@ static void real_parser_handler(const char* filespec_to_process,
 #endif
 
 	// prepare to process request
-	Request request(SAPI_info, request_info,
-		cgi ? String::Language(String::L_HTML|String::L_OPTIMIZE_BIT) : String::L_AS_IS);
+	Request request(SAPI_info, request_info, cgi ? String::Language(String::L_HTML|String::L_OPTIMIZE_BIT) : String::L_AS_IS);
 
 	{
 		// get ::request ptr for signal handlers
@@ -528,25 +498,19 @@ static void real_parser_handler(const char* filespec_to_process,
 				// beside by binary
 				char beside_binary_path[MAX_STRING];
 				strncpy(beside_binary_path, argv0, MAX_STRING-1);  beside_binary_path[MAX_STRING-1]=0; // filespec of my binary
-				if(!(
-					rsplit(beside_binary_path, '/') || 
-					rsplit(beside_binary_path, '\\'))) { // strip filename
+				if(!(rsplit(beside_binary_path, '/') || rsplit(beside_binary_path, '\\'))) { // strip filename
 					// no path, just filename
 					// @todo full path, not ./!
 					beside_binary_path[0]='.'; beside_binary_path[1]=0;
 				}
-				snprintf(config_filespec_buf, MAX_STRING, 
-					"%s/%s", 
-					beside_binary_path, AUTO_FILE_NAME);
+				snprintf(config_filespec_buf, MAX_STRING, "%s/%s", beside_binary_path, AUTO_FILE_NAME);
 				config_filespec_cstr=config_filespec_buf;
 				fail_on_config_read_problem=entry_exists(config_filespec_cstr);
 			}
 		}
 		
 		// process the request
-		request.core(
-			config_filespec_cstr, fail_on_config_read_problem,
-			header_only);
+		request.core(config_filespec_cstr, fail_on_config_read_problem, header_only);
 
 		// ::request cleared in RequestController desctructor to prevent signal handlers from accessing invalid memory
 	}
@@ -559,32 +523,22 @@ static void real_parser_handler(const char* filespec_to_process,
 }
 
 #ifdef PA_SUPPRESS_SYSTEM_EXCEPTION
-static const Exception 
-call_real_parser_handler__do_PEH_return_it(
-	const char* filespec_to_process,
-	const char* request_method, bool header_only) 
-{
+static const Exception call_real_parser_handler__do_PEH_return_it(const char* filespec_to_process, const char* request_method, bool header_only){
 	try {
-		real_parser_handler(
-			filespec_to_process,
-			request_method, header_only);
+		real_parser_handler(filespec_to_process, request_method, header_only);
 	} catch(const Exception& e) {
 		return e;
 	}
 
 	return Exception();
 }
-static void call_real_parser_handler__supress_system_exception(
-	const char* filespec_to_process,
-	const char* request_method, bool header_only) 
-{
+
+static void call_real_parser_handler__supress_system_exception(const char* filespec_to_process, const char* request_method, bool header_only){
 	Exception parser_exception;
 	LPEXCEPTION_POINTERS system_exception=0;
 
 	__try {
-		parser_exception=call_real_parser_handler__do_PEH_return_it(
-			filespec_to_process,
-			request_method, header_only);
+		parser_exception=call_real_parser_handler__do_PEH_return_it(filespec_to_process, request_method, header_only);
 	} __except (
 		(system_exception=GetExceptionInformation()), 
 		EXCEPTION_EXECUTE_HANDLER) 
@@ -592,17 +546,11 @@ static void call_real_parser_handler__supress_system_exception(
 
 		if(system_exception)
 			if(_EXCEPTION_RECORD *er=system_exception->ExceptionRecord)
-				throw Exception("system",
-					0,
-					"0x%08X at 0x%08X", er->ExceptionCode,  er->ExceptionAddress);
+				throw Exception("system", 0, "0x%08X at 0x%08X", er->ExceptionCode,  er->ExceptionAddress);
 			else
-				throw Exception("system", 
-					0, 
-					"<no exception record>");
+				throw Exception("system", 0, "<no exception record>");
 		else
-			throw Exception("system", 
-				0, 
-				"<no exception information>");
+			throw Exception("system", 0, "<no exception information>");
 	}
 
 	if(parser_exception)
@@ -622,8 +570,8 @@ static void usage(const char* program) {
 		"    -m              Parse mail, put received letter to $mail:received\n"
 #endif
 		"    -f config_file  Use this config file (/path/to/auto.p)\n"
-		"    -h              Display usage information (this message)\n"
-		, PARSER_VERSION, 
+		"    -h              Display usage information (this message)\n",
+		PARSER_VERSION,
 		program);
 	exit(EINVAL);
 }
@@ -650,28 +598,14 @@ int main(int argc, char *argv[]) {
 		SAPI::die("Can not set handler for SIGPIPE");
 #endif
 
-
-#ifdef DEBUG_MAILRECEIVE
-	if(FILE *fake_in=fopen(DEBUG_MAILRECEIVE, "rt")) {
-		dup2(fake_in->_file, 0/*STDIN_FILENO*/);
-	}
-#endif
-
 	argv_all=argv;
 	argv0=argv[0];
 
 	umask(2);
 
 	// were we started as CGI?
-	cgi=
-		(
-			getenv("SERVER_SOFTWARE") || 
-			getenv("SERVER_NAME") || 
-			getenv("GATEWAY_INTERFACE") || 
-			getenv("REQUEST_METHOD")
-		)
-		&& !getenv("PARSER_VERSION");
-	
+	cgi=(getenv("SERVER_SOFTWARE") || getenv("SERVER_NAME") || getenv("GATEWAY_INTERFACE") || getenv("REQUEST_METHOD")) && !getenv("PARSER_VERSION");
+
 	char *raw_filespec_to_process;
 	if(cgi) {
 		raw_filespec_to_process=getenv("PATH_TRANSLATED");
@@ -757,8 +691,7 @@ int main(int argc, char *argv[]) {
 		//   possible pool' exception not catch-ed now
 		//   and there could be out-of-memory exception
 		char buf[MAX_STRING];
-		snprintf(buf, MAX_STRING, "Unhandled exception %s",
-			e.comment());
+		snprintf(buf, MAX_STRING, "Unhandled exception %s", e.comment());
 		// log it
 		SAPI::log(SAPI_info, "%s", buf);
 
