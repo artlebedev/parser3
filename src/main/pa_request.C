@@ -32,7 +32,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.364 2016/11/22 22:31:38 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.365 2016/11/27 23:08:28 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -958,7 +958,7 @@ const String& Request::mime_type_of(const char* user_file_name_cstr) {
 	return *new String("application/octet-stream");
 }
 
-const String* Request::get_used_filename(uint file_no){
+const String* Request::get_used_filespec(uint file_no){
 	if(file_no < file_list.count())
 		return new String(file_list[file_no], String::L_TAINTED);
 	return 0;

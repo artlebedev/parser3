@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.241 2016/11/22 22:31:38 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.242 2016/11/27 23:08:28 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -253,8 +253,8 @@ public:
 		return process(input_value).as_string();
 	}
 	//@}
-	const String* get_method_filename(const Method* method); // execute.C
-	const String* get_used_filename(uint file_no);
+	const String* get_method_filespec(const Method* method); // execute.C
+	const String* get_used_filespec(uint file_no);
 	
 	/// appending string with it's languages
 	inline void write(const String& astring) {

@@ -10,7 +10,7 @@
 #include "pa_vbool.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.67 2016/11/26 22:54:17 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.68 2016/11/27 23:08:28 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -311,7 +311,7 @@ static void _method_info(Request& r, MethodParams& params) {
 		hash->put(method_max_params, new VInt(method->max_numbered_params_count));
 	} else {
 		// parser code
-		const String* filespec = r.get_method_filename(method);
+		const String* filespec = r.get_method_filespec(method);
 		if( filespec )
 			hash->put("file", new VString(*filespec));
 
@@ -329,10 +329,18 @@ static void _method_info(Request& r, MethodParams& params) {
 }
 
 static void _filename(Request& r, MethodParams& params) {
-	Value& o=params.as_no_junction(0, "param must be object or class, not junction");
+	if(Junction *j=params[0].get_junction()){
+		if(const Method* method=j->method){
+			if(!method->native_code)
+				if(const String* filespec = r.get_method_filespec(method))
+					r.write(*new VString(*filespec));
+			return;
+		}
+		throw Exception(PARSER_RUNTIME, 0, "param must be object, class or method junction");
+	}
 
-	if(VClass* vclass = dynamic_cast<VClass*>(o.get_class())){
-		r.write(*new VString(vclass->get_filename()));
+	if(VClass* vclass = dynamic_cast<VClass*>(params[0].get_class())){
+		r.write(*new VString(vclass->get_filespec()));
 	}
 }
 

@@ -8,7 +8,7 @@
 #ifndef PA_VCLASS_H
 #define PA_VCLASS_H
 
-#define IDENT_PA_VCLASS_H "$Id: pa_vclass.h,v 1.68 2016/11/26 22:54:18 moko Exp $"
+#define IDENT_PA_VCLASS_H "$Id: pa_vclass.h,v 1.69 2016/11/27 23:08:28 moko Exp $"
 
 #define OBJECT_PROTOTYPE
 
@@ -67,7 +67,7 @@ public:
 private:
 
 	const char* ftype;
-	const String& ffilename;
+	const String& ffilespec;
 
 	enum State {
 		IS_GETTER_ACTIVE = 0x01,
@@ -82,9 +82,9 @@ private:
 
 public:
 
-	VClass(const char* atype, const String* afilename=0) : ftype(atype), ffilename(afilename ? *afilename : String::Empty), state(IS_GETTER_ACTIVE){}
+	VClass(const char* atype, const String* afilespec=0) : ftype(atype), ffilespec(afilespec ? *afilespec : String::Empty), state(IS_GETTER_ACTIVE){}
 
-	const String& get_filename(){ return ffilename; }
+	const String& get_filespec(){ return ffilespec; }
 
 };
 

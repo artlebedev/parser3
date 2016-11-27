@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.246 2016/11/22 22:31:38 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.247 2016/11/27 23:08:27 moko Exp $";
 
 // defines
 
@@ -310,7 +310,7 @@ static void _use(Request& r, MethodParams& params) {
 
 	if(!use_origin)
 		if(VMethodFrame* caller=r.get_method_frame()->caller())
-			use_origin=r.get_method_filename(&caller->method);
+			use_origin=r.get_method_filespec(&caller->method);
 
 	Temp_class_replace class_replace(r, allow_class_replace);
 

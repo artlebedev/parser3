@@ -8,7 +8,7 @@
 	
 */
 
-volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.287 2016/11/26 22:54:18 moko Exp $";
+volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.288 2016/11/27 23:08:28 moko Exp $";
 
 /**
 	@todo parser4: 
@@ -167,7 +167,7 @@ control_method: '@' STRING '\n'
 			// new class' name
 			const String& name=LA2S(*strings_code)->trim(String::TRIM_END);
 			// creating the class
-			VStateless_class* cclass=new VClass(name.cstr(), PC.request.get_used_filename(PC.file_no));
+			VStateless_class* cclass=new VClass(name.cstr(), PC.request.get_used_filespec(PC.file_no));
 			PC.cclass_new=cclass;
 			PC.append=false;
 		} else {
@@ -177,7 +177,7 @@ control_method: '@' STRING '\n'
 	} else if(command==USE_CONTROL_METHOD_NAME) {
 		CLASS_ADD;
 		for(size_t i=0; i<strings_code->count(); i+=OPERATIONS_PER_OPVALUE){
-			PC.request.use_file(LA2S(*strings_code, i)->trim(String::TRIM_END), PC.request.get_used_filename(PC.file_no), strings_code->get(i+1).origin);
+			PC.request.use_file(LA2S(*strings_code, i)->trim(String::TRIM_END), PC.request.get_used_filespec(PC.file_no), strings_code->get(i+1).origin);
 		}
 	} else if(command==BASE_NAME) {
 		if(PC.append){
