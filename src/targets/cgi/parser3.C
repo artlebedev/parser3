@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.272 2016/11/27 23:30:09 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.273 2016/11/27 23:42:26 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -556,6 +556,10 @@ static void call_real_parser_handler__supress_system_exception(const char* files
 	if(parser_exception)
 		throw Exception(parser_exception);
 }
+
+#define REAL_PARSER_HANDLER call_real_parser_handler__supress_system_exception
+#else
+#define REAL_PARSER_HANDLER real_parser_handler
 #endif
 
 static void usage(const char* program) {
@@ -679,13 +683,7 @@ int main(int argc, char *argv[]) {
 	bool header_only=request_method && strcasecmp(request_method, "HEAD")==0;
 
 	try { // global try
-#ifdef PA_SUPPRESS_SYSTEM_EXCEPTION
-		call_real_parser_handler__supress_system_exception(
-#else
-		real_parser_handler(
-#endif
-			filespec_to_process,
-			request_method, header_only);
+		REAL_PARSER_HANDLER(filespec_to_process, request_method, header_only);
 	} catch(const Exception& e) { // global problem 
 		// don't allocate anything on pool here:
 		//   possible pool' exception not catch-ed now
