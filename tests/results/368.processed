@@ -1,11 +1,13 @@
 Content-Type: text/html
-Content-Length: 330
+Content-Length: 390
 
 object: /-real-path-was-here-/368.html
 class: /-real-path-was-here-/368.html
 process object: /-real-path-was-here-/process.p
 process class: /-real-path-was-here-/process.p
 process without file specified: -body of process-
-Type: parser.runtime,
+parser method: "/-real-path-was-here-/368.html"
+native method: ""
+code: Type: parser.runtime,
 Source: filename,
-Comment: param must be object or class, not junction (parameter #1)
+Comment: param must be object, class or method junction

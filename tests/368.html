@@ -21,13 +21,15 @@ P2
 }
 process without file specified: ^show[$P2:CLASS]
 
-^try-catch{
-	^show[$show]
+parser method: "^show[$show]"
+native method: "^show[$string:length]"
+code: ^try-catch{
+    $v[^reflection:filename{code}]
 }
 
 @show[o]
 $v[^reflection:filename[$o]]
-^v.match[^^.+/][]{/-real-path-was-here-/}
+$result[^v.match[^^.+/][]{/-real-path-was-here-/}]
 
 @CLASS
 O
