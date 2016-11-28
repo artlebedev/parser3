@@ -13,7 +13,7 @@
 #include "pa_exception.h"
 #include "pa_common.h"
 
-volatile const char * IDENT_PA_EXEC_C="$Id: pa_exec.C,v 1.87 2015/10/28 22:50:00 moko Exp $" IDENT_PA_EXEC_H;
+volatile const char * IDENT_PA_EXEC_C="$Id: pa_exec.C,v 1.88 2016/11/28 20:31:15 moko Exp $" IDENT_PA_EXEC_H;
 
 #ifdef _MSC_VER
 
@@ -21,12 +21,12 @@ volatile const char * IDENT_PA_EXEC_C="$Id: pa_exec.C,v 1.87 2015/10/28 22:50:00
 
 /// this func from http://www.ccas.ru/~posp/popov/spawn.htm
 static DWORD CreateHiddenConsoleProcess(LPCTSTR szCmdLine,
-										LPCTSTR szScriptFileSpec,
-										char *szEnv,
-										PROCESS_INFORMATION* ppi, 
-										LPHANDLE phInWrite,
-										LPHANDLE phOutRead,
-										LPHANDLE phErrRead)
+					LPCTSTR szScriptFileSpec,
+					char *szEnv,
+					PROCESS_INFORMATION* ppi, 
+					LPHANDLE phInWrite,
+					LPHANDLE phOutRead,
+					LPHANDLE phErrRead)
 {
 	DWORD result=0;
 	BOOL fCreated;
@@ -392,9 +392,7 @@ PA_exec_result pa_exec(
 
 #ifdef NO_PA_EXECS
 	if(!forced_allow)
-		throw Exception(PARSER_RUNTIME,
-			&file_spec,
-			"parser execs are disabled [recompile parser without --disable-execs configure option]");
+		throw Exception(PARSER_RUNTIME, &file_spec, "parser execs are disabled [recompile parser without --disable-execs configure option]");
 #endif
 
 #ifdef _MSC_VER
@@ -423,10 +421,7 @@ PA_exec_result pa_exec(
 		if(error_size>3) // ".\r\n"
 			szErrorDesc[error_size-3]=0;
 
-		throw Exception("file.execute",
-			&file_spec,
-			"exec failed - %s (%u). Consider adding shbang line (#!x:\\interpreter\\command line)", 
-				error_size?szErrorDesc:"<unknown>", error);
+		throw Exception("file.execute", &file_spec, "exec failed - %s (%u). Consider adding shbang line (#!x:\\interpreter\\command line)", error_size ? szErrorDesc : "<unknown>", error);
 	} else {
 		const char* in_cstr=in.cstr();
 		DWORD written_size;
@@ -453,10 +448,7 @@ PA_exec_result pa_exec(
 	if(!forced_allow) {
 		struct stat finfo;
 		if(stat(file_spec_cstr, &finfo)!=0)
-			throw Exception("file.missing", 
-				&file_spec, 
-				"stat failed: %s (%d), actual filename '%s'", 
-					strerror(errno), errno, file_spec_cstr);
+			throw Exception("file.missing", &file_spec, "stat failed: %s (%d), actual filename '%s'", strerror(errno), errno, file_spec_cstr);
 
 		check_safe_mode(finfo, file_spec, file_spec_cstr);
 	}
@@ -465,9 +457,7 @@ PA_exec_result pa_exec(
 	const int argv_size=argv.count();
 	const int argv_max=sizeof(argv_cstrs)/sizeof(argv_cstrs[0])-1-1;
 	if(argv_size>argv_max)
-		throw Exception(PARSER_RUNTIME,
-			&file_spec,
-			"too many arguments (%d > max %d)", argv_size, argv_max);
+		throw Exception(PARSER_RUNTIME, &file_spec, "too many arguments (%d > max %d)", argv_size, argv_max);
 	for(int i=0; i<argv_size; i++)
 		argv_cstrs[1+i]=argv[i]->cstrm();
 	argv_cstrs[1+argv_size]=0;
@@ -500,9 +490,7 @@ PA_exec_result pa_exec(
 		result.status=get_exit_status(pid); // negative may mean "-errno[execl()]"
 	} else { 
 		const char* str=strerror(errno);
-		throw Exception("file.execute",
-			&file_spec,
-			"%s error: %s (%d)", pid<0?"fork":"pipe", str?str:"<unknown>", errno); 
+		throw Exception("file.execute", &file_spec, "%s error: %s (%d)", pid<0?"fork":"pipe", str?str:"<unknown>", errno); 
 	}
 #endif
 
