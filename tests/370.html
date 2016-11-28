@@ -1,0 +1,20 @@
+@main[]
+
+$f[^file::load[binary;370.dat]]
+
+$fb[^file::exec[binary;cat.sh; $.stdin[$f] ;stdin]]
+
+binary with first 0x00 byte:^json:string[$fb; $.file[base64] ]
+
+$f[^file::create[text;sample.txt;АБВ]]
+
+$ft[^file::exec[cat.sh; $.stdin[$f] $.charset[windows-1251] ;stdin]]
+text stdin (input converted, output converted back): $ft.text
+
+$f[^file::create[binary;sample.txt;АБВ]]
+
+$ft[^file::exec[cat.sh; $.stdin[$f] $.charset[windows-1251] ;stdin]]
+binary stdin (input not converted, output converted win->utf): $ft.text
+
+$ft[^file::exec[binary;cat.sh; $.stdin[$f] $.charset[windows-1251] ;stdin]]
+binary exec + binary stdin (input not converted, output not converted): $ft.text

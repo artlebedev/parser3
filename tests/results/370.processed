@@ -1,0 +1,15 @@
+Content-Type: text/html
+Content-Length: 388
+
+binary with first 0x00 byte:{
+"class":"file",
+"name":"noname.dat",
+"size":4,
+"mode":"binary",
+"content-type":"application\/octet-stream",
+"status":0,
+"base64":"AAAzAA=="
+}
+text stdin (input converted, output converted back): АБВ
+binary stdin (input not converted, output converted win->utf): РђР‘Р’
+binary exec + binary stdin (input not converted, output not converted): АБВ
