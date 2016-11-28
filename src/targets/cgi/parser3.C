@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.273 2016/11/27 23:42:26 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.274 2016/11/28 00:37:16 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -58,7 +58,9 @@ bool execution_canceled=false;
 
 // SAPI
 
-class SAPI_Info{} SAPI_info;
+struct SAPI_Info {
+	int http_response_code;
+} SAPI_info = { 0 };
 
 static void log(const char* fmt, va_list args) {
 	bool opened=false;
@@ -233,6 +235,8 @@ size_t SAPI::read_post(SAPI_Info& , char *buf, size_t max_bytes) {
 }
 
 void SAPI::add_header_attribute(SAPI_Info& , const char* dont_store_key, const char* dont_store_value) {
+	if(strcasecmp(dont_store_key, HTTP_STATUS)==0)
+		SAPI_info.http_response_code=atoi(dont_store_value);
 	if( cgi && (!request || !request->console.was_used()) )
 		printf("%s: %s\n", capitalize(dont_store_key), dont_store_value);
 }
@@ -717,5 +721,5 @@ int main(int argc, char *argv[]) {
 #ifdef PA_DEBUG_CGI_ENTRY_EXIT
 	log("main: successful return");
 #endif
-	return 0;
+	return SAPI_info.http_response_code < 100 ? SAPI_info.http_response_code : 0;
 }
