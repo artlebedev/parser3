@@ -13,7 +13,7 @@
 #include "pa_exception.h"
 #include "pa_common.h"
 
-volatile const char * IDENT_PA_EXEC_C="$Id: pa_exec.C,v 1.88 2016/11/28 20:31:15 moko Exp $" IDENT_PA_EXEC_H;
+volatile const char * IDENT_PA_EXEC_C="$Id: pa_exec.C,v 1.89 2016/11/28 22:42:58 moko Exp $" IDENT_PA_EXEC_H;
 
 #ifdef _MSC_VER
 
@@ -382,12 +382,7 @@ static void append_env_pair(HashStringString::key_type key, HashStringString::va
 #endif
 }
 
-PA_exec_result pa_exec(
-			bool forced_allow,
-			const String& file_spec, 
-			const HashStringString* env, 
-			const ArrayString& argv, 
-			String& in) {
+PA_exec_result pa_exec(bool forced_allow, const String& file_spec, const HashStringString* env, const ArrayString& argv, String::C in) {
 	PA_exec_result result;
 
 #ifdef NO_PA_EXECS
@@ -423,9 +418,9 @@ PA_exec_result pa_exec(
 
 		throw Exception("file.execute", &file_spec, "exec failed - %s (%u). Consider adding shbang line (#!x:\\interpreter\\command line)", error_size ? szErrorDesc : "<unknown>", error);
 	} else {
-		const char* in_cstr=in.cstr();
 		DWORD written_size;
-		WriteFile(hInWrite, in_cstr, in.length(), &written_size, NULL);
+		if(in.length>0)
+			WriteFile(hInWrite, in.str, in.length, &written_size, NULL);
 		CloseHandle(hInWrite);
 		read_pipe(result.out, hOutRead);
 		CloseHandle(hOutRead);
@@ -477,10 +472,8 @@ PA_exec_result pa_exec(
 		&pipe_write, &pipe_read, &pipe_err);
 	if(pid>0) {
 		// in child
-		if(!in.is_empty()) {// there is some in data
-			const char* in_cstr=in.cstr();
-			write(pipe_write, in_cstr, in.length());
-		}
+		if(in.length>0) // there is some in data
+			write(pipe_write, in.str, in.length);
 		close(pipe_write);
 		read_pipe(result.out, pipe_read);
 		close(pipe_read);

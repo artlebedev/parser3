@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.220 2016/10/26 16:40:49 moko Exp $"
+#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.221 2016/11/28 22:42:57 moko Exp $"
 
 // includes
 #include "pa_types.h"
@@ -312,6 +312,7 @@ public:
 		size_t length;
 		C(): str(0), length(0) {}
 		C(const char *astr, size_t asize): str(astr), length(asize) {}
+		explicit C(Body abody): str(abody.cstr()), length(abody.length()) {}
 	};
 
 	struct Cm {
@@ -319,6 +320,7 @@ public:
 		size_t length;
 		Cm(): str(0), length(0) {}
 		Cm(char *astr, size_t asize): str(astr), length(asize) {}
+		explicit Cm(Body abody): str(abody.cstrm()), length(abody.length()) {}
 	};
 
 	class Body {
@@ -384,6 +386,7 @@ public:
 		inline CORD get_cord() const { return body; }
 		uint get_hash_code() const;
 
+		// never null
 		const char* cstr() const {
 #ifdef STRING_LENGTH_CACHING
 			string_length = length();
@@ -396,6 +399,7 @@ public:
 			return CORD_to_const_char_star(body, length());
 		}
 
+		// never null
 		char* cstrm() const { return CORD_to_char_star(body, length()); }
 
 #ifdef STRING_LENGTH_CACHING

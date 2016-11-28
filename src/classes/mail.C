@@ -19,7 +19,7 @@
 
 #include "smtp.h"
 
-volatile const char * IDENT_MAIL_C="$Id: mail.C,v 1.131 2016/11/01 23:10:40 moko Exp $";
+volatile const char * IDENT_MAIL_C="$Id: mail.C,v 1.132 2016/11/28 22:42:57 moko Exp $";
 
 // defines
 
@@ -164,8 +164,6 @@ static void sendmail(
 #endif
 		);
 
-
-	String in(message_cstr);
 	PA_exec_result exec=pa_exec(
 		// forced_allow
 #ifdef PA_FORCED_SENDMAIL
@@ -176,14 +174,10 @@ static void sendmail(
 		, *file_spec,
 		0 /* pass env */,
 		argv,
-		in);
+		String::C(message_cstr, strlen(message_cstr)));
+
 	if(exec.status || exec.err.length())
-		throw Exception("email.send",
-			0,
-			"'%s' reported problem: %s (%d)",
-				file_spec->cstr(),
-				exec.err.length()?exec.err.cstr():"UNKNOWN", 
-				exec.status);
+		throw Exception("email.send", 0, "'%s' reported problem: %s (%d)", file_spec->cstr(), exec.err.length() ? exec.err.cstr() : "UNKNOWN", exec.status);
 #endif //WIN32
 }
 

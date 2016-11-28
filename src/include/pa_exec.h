@@ -8,7 +8,7 @@
 #ifndef PA_EXEC_H
 #define PA_EXEC_H
 
-#define IDENT_PA_EXEC_H "$Id: pa_exec.h,v 1.21 2015/10/26 01:21:55 moko Exp $"
+#define IDENT_PA_EXEC_H "$Id: pa_exec.h,v 1.22 2016/11/28 22:42:57 moko Exp $"
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -29,6 +29,6 @@ PA_exec_result pa_exec(
 			const String& file_spec, 
 			const HashStringString* env, ///< 0 | Hash of String
 			const ArrayString& argv, ///< 0 | Array of command line arguments
-			String& in);
+			String::C in);
 
 #endif

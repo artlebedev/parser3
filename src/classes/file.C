@@ -25,7 +25,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.255 2016/11/01 23:10:40 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.256 2016/11/28 22:42:57 moko Exp $";
 
 // defines
 
@@ -503,7 +503,8 @@ static void _exec_cgi(Request& r, MethodParams& params, bool cgi) {
 	env.put("SCRIPT_NAME", script_name);
 
 	// environment & stdin from param
-	String *in=new String();
+	bool in_is_text_mode=true;
+	String::C in;
 	Charset *charset=0; // default script works raw_in 'source' charset = no transcoding needed
 	if(param_index < params.count()) {
 		if(HashStringValue* user_env=params.as_hash(param_index++, "env")) {
@@ -523,14 +524,13 @@ static void _exec_cgi(Request& r, MethodParams& params, bool cgi) {
 			if(info.vstdin) {
 				if(const String* sstdin=info.vstdin->get_string()) {
 					// untaint stdin
-					in = new String(sstdin->cstr_to_string_body_untaint(String::L_AS_IS, r.connection(false), &r.charsets), String::L_AS_IS);
+					in = String::C(sstdin->cstr_to_string_body_untaint(String::L_AS_IS, r.connection(false), &r.charsets));
 				} else
-					if(VFile* vfile=static_cast<VFile *>(info.vstdin->as("file")))
-						in->append_know_length((const char* )vfile->value_ptr(), vfile->value_size(), String::L_TAINTED);
-					else
-						throw Exception(PARSER_RUNTIME,
-							0,
-							STDIN_EXEC_PARAM_NAME " parameter must be string or file");
+					if(VFile* vfile=static_cast<VFile *>(info.vstdin->as("file"))){
+						in = String::C((const char* )vfile->value_ptr(), vfile->value_size());
+						in_is_text_mode = vfile->is_text_mode();
+					} else
+						throw Exception(PARSER_RUNTIME, 0, STDIN_EXEC_PARAM_NAME " parameter must be string or file");
 			}
 		}
 	}
@@ -563,14 +563,15 @@ static void _exec_cgi(Request& r, MethodParams& params, bool cgi) {
 	if(charset) {
 		Charset::transcode(env, r.charsets.source(), *charset);
 		Charset::transcode(argv, r.charsets.source(), *charset);
-		in=&Charset::transcode(*in, r.charsets.source(), *charset);
+		if(in_is_text_mode)
+			in=Charset::transcode(in, r.charsets.source(), *charset);
 	}
 	// @todo 
 	// ifdef WIN32 do  OEM->ANSI transcode on some(.cmd?) programs to 
 	// match silent conversion in OS
 
 	// exec!
-	PA_exec_result execution=pa_exec(false/*forced_allow*/, script_name, &env, argv, *in);
+	PA_exec_result execution=pa_exec(false/*forced_allow*/, script_name, &env, argv, in);
 
 	File_read_result *file_out=&execution.out;
 	String *real_err=&execution.err;
