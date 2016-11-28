@@ -32,7 +32,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.365 2016/11/27 23:08:28 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.366 2016/11/28 20:24:59 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -375,10 +375,7 @@ void Request::core(const char* config_filespec, bool config_fail_on_read_problem
 		// loading config
 		if(config_filespec) {
 			const String& filespec=*new String(config_filespec);
-			use_file_directly(main_class,
-				filespec,
-				config_fail_on_read_problem, 
-				true /*file must exist if 'fail on read problem' not set*/);
+			use_file_directly(main_class, filespec, config_fail_on_read_problem, true /*file must exist if 'fail on read problem' not set*/);
 		}
 
 		// filling mail received
@@ -399,15 +396,10 @@ void Request::core(const char* config_filespec, bool config_fail_on_read_problem
 			while(const char* before=strchr(after, '/')) {
 				String& sfile_spec=*new String;
 				if(after!=request_info.path_translated) {
-					sfile_spec.append_strdup(
-						request_info.path_translated, before-request_info.path_translated,
-						String::L_CLEAN);
+					sfile_spec.append_strdup(request_info.path_translated, before-request_info.path_translated, String::L_CLEAN);
 					sfile_spec << "/" AUTO_FILE_NAME;
 
-					use_file_directly(main_class,
-						sfile_spec, 
-						true /*fail on read problem*/, 
-						false /*but ignore absence, sole user*/);
+					use_file_directly(main_class, sfile_spec, true /*fail on read problem*/, false /*but ignore absence, sole user*/);
 				}
 				for(after=before+1;*after=='/';after++);
 			}
@@ -428,9 +420,7 @@ void Request::core(const char* config_filespec, bool config_fail_on_read_problem
 		// execute @main[]
 		const String* body_string=execute_virtual_method(main_class, main_method_name);
 		if(!body_string)
-			throw Exception(PARSER_RUNTIME,
-				0,
-				"'" MAIN_METHOD_NAME "' method not found");
+			throw Exception(PARSER_RUNTIME, 0, "'" MAIN_METHOD_NAME "' method not found");
 
 		// extract response body
 		Value* body_value=response.fields().get(download_name_upper); // $response:download?
@@ -545,10 +535,7 @@ void Request::core(const char* config_filespec, bool config_fail_on_read_problem
 			// unconditionally log the beast
 			SAPI::log(sapi_info, "%s", exception_cstr);
 
-			throw Exception(0,
-				0,
-				"in %s", 
-					exception_cstr);
+			throw Exception(0, 0, "in %s", exception_cstr);
 		}
 	}
 }
@@ -558,11 +545,7 @@ uint Request::register_file(String::Body file_spec) {
 	return file_list.count()-1;
 }
 
-void Request::use_file_directly(VStateless_class& aclass,
-				const String& file_spec,
-				bool fail_on_read_problem, 
-				bool fail_on_file_absence) {
-
+void Request::use_file_directly(VStateless_class& aclass, const String& file_spec, bool fail_on_read_problem, bool fail_on_file_absence) {
 	// cyclic dependence check
 	if(used_files.get(file_spec))
 		return;
@@ -578,11 +561,8 @@ void Request::use_file_directly(VStateless_class& aclass,
 
 
 void Request::use_file(VStateless_class& aclass, const String& file_name, const String* use_filespec/*absolute*/) {
-
 	if(file_name.is_empty())
-		throw Exception(PARSER_RUNTIME,
-			0,
-			"usage failed - no filename was specified");
+		throw Exception(PARSER_RUNTIME, 0, "usage failed - no filename was specified");
 
 	const String* filespec=0;
 
@@ -609,17 +589,11 @@ void Request::use_file(VStateless_class& aclass, const String& file_name, const 
 						break; // found along class_path
 				}
 			} else
-				throw Exception(PARSER_RUNTIME,
-					0,
-					"$" CLASS_PATH_NAME " must be string or table");
+				throw Exception(PARSER_RUNTIME, 0, "$" CLASS_PATH_NAME " must be string or table");
 			if(!filespec)
-				throw Exception(PARSER_RUNTIME,
-					&file_name,
-					"not found along " MAIN_CLASS_NAME ":" CLASS_PATH_NAME);
+				throw Exception(PARSER_RUNTIME, &file_name, "not found along $" MAIN_CLASS_NAME ":" CLASS_PATH_NAME);
 		} else 
-			throw Exception(PARSER_RUNTIME,
-				&file_name,
-				"usage failed - no $" MAIN_CLASS_NAME  ":" CLASS_PATH_NAME " were specified");
+			throw Exception(PARSER_RUNTIME, &file_name, "usage failed - no $" MAIN_CLASS_NAME  ":" CLASS_PATH_NAME " were specified");
 	}
 
 	use_file_directly(aclass, *filespec);
@@ -723,16 +697,11 @@ static void add_header_attribute(HashStringValue::key_type name, HashStringValue
 		);
 }
 
-static void output_sole_piece(Request& r,
-							  bool header_only, 
-							  VFile& body_file,
-							  Value* body_file_content_type) {
+static void output_sole_piece(Request& r, bool header_only, VFile& body_file, Value* body_file_content_type) {
 	// transcode text body when "text/*" or simple result
 	String::C output(body_file.value_ptr(), body_file.value_size());
 	if(!body_file_content_type/*vstring.as_vfile*/ || body_file_content_type->as_string().pos("text/")==0)
-		output=Charset::transcode(output, 
-			r.charsets.source(), 
-			r.charsets.client());
+		output=Charset::transcode(output, r.charsets.source(), r.charsets.client());
 
 	// prepare header: Content-Length
 	SAPI::add_header_attribute(r.sapi_info, HTTP_CONTENT_LENGTH, format(output.length, "%u"));
@@ -774,13 +743,7 @@ static void parse_range(const String* s, Array<Range> &ar) {
 	}
 }
 
-static void output_pieces(Request& r,
-						  bool header_only, 
-						  const String& filename,
-						  size_t content_length,
-						  Value& date,
-						  bool add_last_modified) 
-{
+static void output_pieces(Request& r, bool header_only, const String& filename, size_t content_length, Value& date, bool add_last_modified) {
 	SAPI::add_header_attribute(r.sapi_info, "accept-ranges", "bytes");
 
 	const size_t BUFSIZE = 10*0x400;
@@ -907,9 +870,7 @@ void Request::output_result(VFile* body_file, bool header_only, bool as_attachme
 		const String& sresponse_body_file=vresponse_body_file->as_string();
 		size_t content_length=0;
 		time_t atime=0, mtime=0, ctime=0;
-		file_stat(absolute(sresponse_body_file),
-			content_length,
-			atime, mtime, ctime);
+		file_stat(absolute(sresponse_body_file), content_length, atime, mtime, ctime);
 
 		VDate* vdate=0;
 		if(Value* v=body_file->fields().get("mdate")) {
@@ -921,18 +882,13 @@ void Request::output_result(VFile* body_file, bool header_only, bool as_attachme
 		if(!vdate)
 			vdate=new VDate((pa_time_t)mtime);
 
-		output_pieces(*this, header_only, 
-			sresponse_body_file,
-			content_length,
-			*vdate,
-			info.add_last_modified);
+		output_pieces(*this, header_only, sresponse_body_file, content_length, *vdate, info.add_last_modified);
 	} else {
 		if(body_file_content_type)
 			if(HashStringValue *hash=body_file_content_type->get_hash())
 				body_file_content_type=hash->get(value_name);
 
-		output_sole_piece(*this, header_only, 
-			*body_file, body_file_content_type);
+		output_sole_piece(*this, header_only, *body_file, body_file_content_type);
 	}
 }
 
@@ -949,9 +905,7 @@ const String& Request::mime_type_of(const char* user_file_name_cstr) {
 				if(const String* result=mime_types->item(1))
 					return *result;
 				else
-					throw Exception(PARSER_RUNTIME,
-						0,
-						MIME_TYPES_NAME  " table column elements must not be empty");
+					throw Exception(PARSER_RUNTIME, 0, MIME_TYPES_NAME  " table column elements must not be empty");
 			}
 		}
 
