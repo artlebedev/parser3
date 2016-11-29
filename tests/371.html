@@ -1,0 +1,15 @@
+@main[]
+
+#WWrapper.get_element used here
+
+$hTemplate[ $.test[ $.key[value] ] ]
+
+^json:string[
+	$hTemplate
+	$.test.key2[value2]
+]
+
+^json:string[
+	$.test[ $.key[value] ]
+	$.test.key2[value2]
+]
