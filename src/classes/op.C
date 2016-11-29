@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.247 2016/11/27 23:08:27 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.248 2016/11/29 15:28:05 moko Exp $";
 
 // defines
 
@@ -838,7 +838,7 @@ static void _try_operator(Request& r, MethodParams& params) {
 		// process finally code but ignore the result
 		if(finally_code){
 			Temp_skip temp(r);
-			Value &finally_result=r.process(*finally_code);
+			/* Value &finally_result= */ r.process(*finally_code);
 		}
 		rethrow;
 	}
