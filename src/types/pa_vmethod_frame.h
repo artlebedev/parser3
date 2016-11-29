@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.118 2016/11/21 19:31:56 moko Exp $"
+#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.119 2016/11/29 15:20:18 moko Exp $"
 
 #include "pa_symbols.h"
 #include "pa_wcontext.h"
@@ -259,7 +259,7 @@ public: // WContext
 		WContext::write(avalue);
 	}
 
-	override Value& result() {
+	override ValueRef result() {
 		// check the $result value
 		Value* result_value=get_result_variable();
 		// if we have one, return it, else return as usual: accumulated fstring or fvalue

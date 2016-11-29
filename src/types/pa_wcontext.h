@@ -8,7 +8,7 @@
 #ifndef PA_WCONTEXT_H
 #define PA_WCONTEXT_H
 
-#define IDENT_PA_WCONTEXT_H "$Id: pa_wcontext.h,v 1.67 2016/11/01 22:39:00 moko Exp $"
+#define IDENT_PA_WCONTEXT_H "$Id: pa_wcontext.h,v 1.68 2016/11/29 15:20:18 moko Exp $"
 
 #include "pa_value.h"
 #include "pa_vstring.h"
@@ -25,6 +25,8 @@ public:
 	ValueRef() : fvalue(0) {}
 	ValueRef(Value& avalue) : fvalue(&avalue) {}
 	operator Value& () { return *fvalue; }
+	Value* operator &() { return fvalue; }
+	const String &as_string() { return fvalue->as_string(); }
 private:
 	Value* fvalue;
 };
@@ -72,10 +74,10 @@ public: // WContext
 		that can be String if value==0 or the Value object
 		wmethod_frame first checks for $result and if there is one, returns it instead
 	*/
-	virtual Value& result() {
+	virtual ValueRef result() {
 		static String empty;
 		static VString vempty(empty);
-		return fvalue ? *fvalue: fstring ? *new VString(*fstring) : vempty;
+		return fvalue ? *fvalue : fstring ? *new VString(*fstring) : vempty;
 	}
 
 	void attach_junction(VJunction* ajunction) {
