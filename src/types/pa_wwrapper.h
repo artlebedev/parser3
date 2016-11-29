@@ -8,7 +8,7 @@
 #ifndef PA_WWRAPPER_H
 #define PA_WWRAPPER_H
 
-#define IDENT_PA_WWRAPPER_H "$Id: pa_wwrapper.h,v 1.50 2016/10/26 16:40:50 moko Exp $"
+#define IDENT_PA_WWRAPPER_H "$Id: pa_wwrapper.h,v 1.51 2016/11/29 21:14:08 moko Exp $"
 
 #define OPTIMIZE_SINGLE_STRING_WRITE
 
@@ -20,6 +20,11 @@ class WWrapper: public WContext {
 public: // Value
 
 	override const char* type() const { return "wwrapper"; }
+
+	/// WWrapper: transparent
+	override Value* get_element(const String& aname) { 
+		return as_value().get_element(aname); 
+	}
 
 	/// WWrapper: transparent
 	override const VJunction* put_element(const String& aname, Value* avalue) { 
