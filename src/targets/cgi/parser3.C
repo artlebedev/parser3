@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.274 2016/11/28 00:37:16 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.275 2016/11/29 14:35:00 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -58,7 +58,8 @@ bool execution_canceled=false;
 
 // SAPI
 
-struct SAPI_Info {
+class SAPI_Info {
+public:
 	int http_response_code;
 } SAPI_info = { 0 };
 
