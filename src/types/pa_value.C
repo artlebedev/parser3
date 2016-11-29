@@ -13,7 +13,7 @@
 #include "pa_request.h"
 
 
-volatile const char * IDENT_PA_VALUE_C="$Id: pa_value.C,v 1.43 2016/11/03 16:17:38 moko Exp $" IDENT_PA_VALUE_H IDENT_PA_PROPERTY_H;
+volatile const char * IDENT_PA_VALUE_C="$Id: pa_value.C,v 1.44 2016/11/29 23:51:41 moko Exp $" IDENT_PA_VALUE_H IDENT_PA_PROPERTY_H;
 
 // globals
 
@@ -80,7 +80,7 @@ const String* Value::default_method_2_json_string(Value& default_method, Json_op
 void Method::check_actual_numbered_params(Value& self, MethodParams* actual_numbered_params) const {
 	int actual_count=actual_numbered_params ? actual_numbered_params->count() : 0;
 	if(actual_count<min_numbered_params_count || actual_count>max_numbered_params_count)
-		throw Exception(PARSER_RUNTIME, 0, "native method of %s accepts %s %d parameter(s) (%d present)", 
+		throw Exception(PARSER_RUNTIME, name, "native method of '%s' accepts %s %d parameter(s) (%d present)", 
 			self.type(),
 			actual_count<min_numbered_params_count ? "minimum" : "maximum",
 			actual_count<min_numbered_params_count ? min_numbered_params_count : max_numbered_params_count,

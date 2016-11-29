@@ -10,7 +10,7 @@
 #include "pa_vbool.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.69 2016/11/29 23:25:59 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.70 2016/11/29 23:51:41 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -62,26 +62,10 @@ static void _create(Request& r, MethodParams& params) {
 	int max_params_count;
 
 	if(method->native_code){
-		if(nparams<method->min_numbered_params_count)
-			throw Exception(PARSER_RUNTIME,
-				&constructor_name,
-				"native method of class '%s' accepts minimum %d parameter(s) (%d passed)",
-				vclass->type(),
-				method->min_numbered_params_count,
-				nparams);
-
 		max_params_count=method->max_numbered_params_count;
 	} else {
 		max_params_count=method->params_count;
 	}
-
-	if(nparams>max_params_count)
-		throw Exception(PARSER_RUNTIME,
-			&constructor_name,
-			"method of class '%s' accepts maximum %d parameter(s) (%d passed)",
-			vclass->type(),
-			max_params_count,
-			nparams);
 
 	Value &object = r.construct(*vclass, *method);
 

@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.120 2016/11/29 15:27:07 moko Exp $"
+#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.121 2016/11/29 23:51:41 moko Exp $"
 
 #include "pa_symbols.h"
 #include "pa_wcontext.h"
@@ -163,7 +163,8 @@ public: // usage
 		Method::Call_type call_type=self().get_class()==&self() ? Method::CT_STATIC : Method::CT_DYNAMIC;
 
 		 if(method.call_type!=call_type) // call type not allowed?
-			throw Exception(PARSER_RUNTIME, 0, "is not allowed to be called %s", call_type==Method::CT_STATIC ? "statically" : "dynamically");
+			throw Exception(PARSER_RUNTIME, method.name, "method of '%s' is not allowed to be called %s", 
+				self().type(), call_type==Method::CT_STATIC ? "statically" : "dynamically");
 	}
 
 public:
@@ -301,7 +302,7 @@ public: // usage
 				set_my_variable(*method.extra_params, vargs);
 				return;
 			} else
-				throw Exception(PARSER_RUNTIME, 0, "method of %s accepts maximum %d parameter(s) (%d present)", self().type(), param_count, count);
+				throw Exception(PARSER_RUNTIME, method.name, "method of '%s' accepts maximum %d parameter(s) (%d present)", self().type(), param_count, count);
 		}
 
 		for(; i<count; i++) {

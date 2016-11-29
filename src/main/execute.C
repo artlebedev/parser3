@@ -21,7 +21,7 @@
 #include "pa_vimage.h"
 #include "pa_wwrapper.h"
 
-volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.401 2016/11/29 23:25:59 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
+volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.402 2016/11/29 23:51:41 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
 
 //#define DEBUG_EXECUTE
 
@@ -1232,7 +1232,7 @@ Value& Request::construct(VStateless_class &called_class, const Method &method){
 			throw Exception(PARSER_RUNTIME, method.name,
 				"is not a constructor, system class '%s' can be constructed only implicitly", called_class.type());
 	} else
-		throw Exception(PARSER_RUNTIME, method.name, "method of %s is static and can not be used as constructor", called_class.type());
+		throw Exception(PARSER_RUNTIME, method.name, "method of '%s' is static and can not be used as constructor", called_class.type());
 }
 
 Value& Request::get_element(Value& ncontext, const String& name) {
