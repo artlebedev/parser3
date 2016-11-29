@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.242 2016/11/27 23:08:28 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.243 2016/11/29 14:32:32 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -123,7 +123,7 @@ private:
 	Array<String::Body> file_list;
 
 	/// endless execute(execute(... preventing counter
-	uint anti_endless_execute_recoursion;
+	int anti_endless_execute_recoursion;
 
 	///@}
 
