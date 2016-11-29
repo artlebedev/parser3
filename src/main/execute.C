@@ -21,7 +21,7 @@
 #include "pa_vimage.h"
 #include "pa_wwrapper.h"
 
-volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.398 2016/11/27 23:08:28 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
+volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.399 2016/11/29 14:42:29 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
 
 //#define DEBUG_EXECUTE
 
@@ -1338,8 +1338,7 @@ Value& Request::process(Value& input_value) {
 
 			// for code in [] and () wcontext is set 0
 			// using the fact in decision "which wrapper to use"
-			bool using_code_frame=junction->wcontext;
-			if(using_code_frame) {
+			if(junction->wcontext) {
 				// {} code wrapper
 				VCodeFrame local(*junction->wcontext);
 				wcontext=&local;
