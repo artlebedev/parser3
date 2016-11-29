@@ -10,7 +10,7 @@
 #include "pa_vbool.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.68 2016/11/27 23:08:28 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.69 2016/11/29 23:25:59 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -62,12 +62,6 @@ static void _create(Request& r, MethodParams& params) {
 	int max_params_count;
 
 	if(method->native_code){
-		if(method->call_type==Method::CT_STATIC)
-			throw Exception(PARSER_RUNTIME,
-				&constructor_name,
-				"native method of class '%s' is not allowed to be called dynamically",
-				vclass->type());
-
 		if(nparams<method->min_numbered_params_count)
 			throw Exception(PARSER_RUNTIME,
 				&constructor_name,
