@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 853
+Content-Length: 877
 
 1. Type: parser.runtime,
 Source: method,
@@ -27,8 +27,8 @@ Comment: method must not be native
 Source: method,
 Comment: self must be parser object or class
 10. Type: parser.runtime,
-Source: m,
-Comment: is not allowed to be called statically
+Source: length,
+Comment: method of 'string' is not allowed to be called statically
 11. MAIN [O] O dynamic
 12. CLASS [O] O dynamic
 13. CLASS [M] MAIN static

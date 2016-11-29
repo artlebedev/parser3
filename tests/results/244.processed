@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 484
+Content-Length: 488
 
 Type: parser.runtime,
 Source: create,
@@ -10,7 +10,7 @@ Comment: classname may not be overwritten with hash, store it to variable instea
 compare exceptions:
 Type: parser.runtime,
 Source: create,
-Comment: native method of hash accepts maximum 1 parameter(s) (2 present)
+Comment: native method of 'hash' accepts maximum 1 parameter(s) (2 present)
 Type: parser.runtime,
 Source: _count,
-Comment: native method of hash accepts maximum 0 parameter(s) (1 present)
+Comment: native method of 'hash' accepts maximum 0 parameter(s) (1 present)

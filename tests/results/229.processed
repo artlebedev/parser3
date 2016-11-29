@@ -1,8 +1,8 @@
 Content-Type: text/html
-Content-Length: 1165
+Content-Length: 1191
 
-if native method of MAIN accepts minimum 2 parameter(s) (0 present)<br />
-if native method of MAIN accepts minimum 2 parameter(s) (1 present)<br />
+if native method of 'MAIN' accepts minimum 2 parameter(s) (0 present)<br />
+if native method of 'MAIN' accepts minimum 2 parameter(s) (1 present)<br />
 1<br />
 1<br />
 3<br />
@@ -10,25 +10,25 @@ if native method of MAIN accepts minimum 2 parameter(s) (1 present)<br />
 <br />
 4<br />
 <hr />
-for native method of MAIN accepts minimum 4 parameter(s) (0 present)<br />
-for native method of MAIN accepts minimum 4 parameter(s) (1 present)<br />
-for native method of MAIN accepts minimum 4 parameter(s) (2 present)<br />
-for native method of MAIN accepts minimum 4 parameter(s) (3 present)<br />
+for native method of 'MAIN' accepts minimum 4 parameter(s) (0 present)<br />
+for native method of 'MAIN' accepts minimum 4 parameter(s) (1 present)<br />
+for native method of 'MAIN' accepts minimum 4 parameter(s) (2 present)<br />
+for native method of 'MAIN' accepts minimum 4 parameter(s) (3 present)<br />
 0 1 <br />
 0 ,1 <br />
-for native method of MAIN accepts maximum 5 parameter(s) (6 present)<br />
+for native method of 'MAIN' accepts maximum 5 parameter(s) (6 present)<br />
 <hr />
-process native method of MAIN accepts minimum 1 parameter(s) (0 present)<br />
+process native method of 'MAIN' accepts minimum 1 parameter(s) (0 present)<br />
 process no body specified<br />
 1<br />
 1<br />
-process native method of MAIN accepts maximum 3 parameter(s) (4 present)<br />
+process native method of 'MAIN' accepts maximum 3 parameter(s) (4 present)<br />
 <hr />
 =<br />
 1=<br />
 1=1<br />
-method method of MAIN accepts maximum 2 parameter(s) (3 present)<br />
-method_no_args method of MAIN accepts maximum 0 parameter(s) (1 present)<br />
-method_no_args method of MAIN accepts maximum 0 parameter(s) (1 present)<br />
+method method of 'MAIN' accepts maximum 2 parameter(s) (3 present)<br />
+method_no_args method of 'MAIN' accepts maximum 0 parameter(s) (1 present)<br />
+method_no_args method of 'MAIN' accepts maximum 0 parameter(s) (1 present)<br />
 void<br />
-method_no_args method of MAIN accepts maximum 0 parameter(s) (1 present)<br />
+method_no_args method of 'MAIN' accepts maximum 0 parameter(s) (1 present)<br />
