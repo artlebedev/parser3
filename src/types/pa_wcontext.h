@@ -8,7 +8,7 @@
 #ifndef PA_WCONTEXT_H
 #define PA_WCONTEXT_H
 
-#define IDENT_PA_WCONTEXT_H "$Id: pa_wcontext.h,v 1.68 2016/11/29 15:20:18 moko Exp $"
+#define IDENT_PA_WCONTEXT_H "$Id: pa_wcontext.h,v 1.69 2016/11/29 15:27:07 moko Exp $"
 
 #include "pa_value.h"
 #include "pa_vstring.h"
@@ -24,6 +24,7 @@ class ValueRef {
 public:
 	ValueRef() : fvalue(0) {}
 	ValueRef(Value& avalue) : fvalue(&avalue) {}
+	ValueRef(Value* avalue) : fvalue(avalue) {}
 	operator Value& () { return *fvalue; }
 	Value* operator &() { return fvalue; }
 	const String &as_string() { return fvalue->as_string(); }
@@ -77,7 +78,7 @@ public: // WContext
 	virtual ValueRef result() {
 		static String empty;
 		static VString vempty(empty);
-		return fvalue ? *fvalue : fstring ? *new VString(*fstring) : vempty;
+		return fvalue ? fvalue : fstring ? new VString(*fstring) : &vempty;
 	}
 
 	void attach_junction(VJunction* ajunction) {
