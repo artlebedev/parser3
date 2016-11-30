@@ -10,7 +10,7 @@
 #include "pa_vbool.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.70 2016/11/29 23:51:41 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.71 2016/11/30 21:30:24 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -18,6 +18,7 @@ static const String method_type_native("native");
 static const String method_type_parser("parser");
 
 static const String method_name("name");
+static const String method_class_name("class");
 static const String method_call_type("call_type");
 static const String method_inherited("inherited");
 static const String method_overridden("overridden");
@@ -246,6 +247,8 @@ static void _method_info(Request& r, MethodParams& params) {
 			throw Exception(PARSER_RUNTIME, 0, "param must be class name or method junction");
 
 		hash->put(method_name, new VString(*method->name));
+		hash->put(method_class_name, new VString(*new String(j->self.type())));
+
 	} else {
 		const String& class_name=params.as_string(0, "param must be class name or method junction");
 		VStateless_class* vclass=r.get_class(class_name);
