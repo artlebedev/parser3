@@ -10,3 +10,23 @@
 
 8. ^json:string[^reflection:method_info[$try-catch] $.file[skip] ]
 9. ^json:string[^reflection:method_info[MAIN;try-catch] $.file[skip] ]
+
+$o[^O::create[]]
+10. ^json:string[^reflection:method_info[$o.create] $.file[skip] ]
+11. ^json:string[^reflection:method_info[$O:create] $.file[skip] ]
+
+$c[^C::create[]]
+10. ^json:string[^reflection:method_info[$c.create] $.file[skip] ]
+11. ^json:string[^reflection:method_info[$C:create] $.file[skip] ]
+
+@CLASS
+O
+
+@create[param]
+code
+
+@CLASS
+C
+
+@BASE
+O

@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 727
+Content-Length: 1083
 
 1. Type: parser.runtime,
 Source: no-such-class,
@@ -24,12 +24,14 @@ Comment: param must be class name or method junction
 }
 7. {
 "name":"mid",
+"class":"void",
 "call_type":"dynamic",
 "min_params":1,
 "max_params":2
 }
 8. {
 "name":"try-catch",
+"class":"MAIN",
 "file":"skip",
 "max_params":1,
 "0":"jCode"
@@ -38,4 +40,32 @@ Comment: param must be class name or method junction
 "file":"skip",
 "max_params":1,
 "0":"jCode"
+}
+10. {
+"name":"create",
+"class":"O",
+"file":"skip",
+"max_params":1,
+"0":"param"
+}
+11. {
+"name":"create",
+"class":"O",
+"file":"skip",
+"max_params":1,
+"0":"param"
+}
+10. {
+"name":"create",
+"class":"C",
+"file":"skip",
+"max_params":1,
+"0":"param"
+}
+11. {
+"name":"create",
+"class":"C",
+"file":"skip",
+"max_params":1,
+"0":"param"
 }
