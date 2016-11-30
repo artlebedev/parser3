@@ -13,7 +13,7 @@
 #include "pa_vhashfile.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_VHASHFILE_C="$Id: pa_vhashfile.C,v 1.68 2015/10/26 01:22:01 moko Exp $" IDENT_PA_VHASHFILE_H;
+volatile const char * IDENT_PA_VHASHFILE_C="$Id: pa_vhashfile.C,v 1.69 2016/11/30 20:08:26 moko Exp $" IDENT_PA_VHASHFILE_H;
 
 // consts
 
@@ -26,10 +26,7 @@ void check(const char *step, pa_status_t status) {
 		return;
 
 	const char* str=strerror(status);
-	throw Exception("file.access",
-		0,
-		"%s error: %s (%d)", 
-			step, str?str:"<unknown>", status);
+	throw Exception("file.access", 0, "%s error: %s (%d)", step, str ? str : "<unknown>", status);
 }
 
 void check_dir(const char* file_name){
@@ -62,15 +59,11 @@ pa_sdbm_t *VHashfile::get_db_for_reading() {
 
 	if(file_name){
 		check_dir(file_name);
-		check("pa_sdbm_open(shared)", pa_sdbm_open(&m_db, file_name, 
-                                        PA_CREATE|PA_READ|PA_SHARELOCK, 
-                                        0664, 0));
+		check("pa_sdbm_open(shared)", pa_sdbm_open(&m_db, file_name, PA_CREATE|PA_READ|PA_SHARELOCK, 0664, 0));
 	}
 
 	if(!is_open())
-		throw Exception("file.read",
-			0,
-			"can't open %s for reading", type());
+		throw Exception("file.read", 0, "can't open %s for reading", type());
 
 	return m_db;
 }
@@ -87,15 +80,11 @@ pa_sdbm_t *VHashfile::get_db_for_writing() {
 	if(file_name) {
 		check_dir(file_name);
 		// reopen in write mode & exclusive lock
-		check("pa_sdbm_open(exclusive)", pa_sdbm_open(&m_db, file_name, 
-											PA_CREATE|PA_WRITE, 
-											0664, 0));
+		check("pa_sdbm_open(exclusive)", pa_sdbm_open(&m_db, file_name, PA_CREATE|PA_WRITE, 0664, 0));
 	}
 
 	if(!is_open())
-		throw Exception("file.access",
-			0,
-			"can't open %s for writing", type());
+		throw Exception("file.access", 0, "can't open %s for writing", type());
 
 	return m_db;
 }
@@ -148,7 +137,7 @@ const String* VHashfile::deserialize_value(pa_sdbm_datum_t key, const pa_sdbm_da
 	char *input_cstr=value.dptr+sizeof(Hashfile_value_serialized_prolog);
 	size_t input_length=value.dsize-sizeof(Hashfile_value_serialized_prolog);
 
-	return new String(input_length? pa_strdup(input_cstr, input_length): 0, String::L_TAINTED);
+	return new String(input_length ? pa_strdup(input_cstr, input_length) : 0, String::L_TAINTED);
 }
 
 #define CHECK(aname) if(aname.is_empty()) throw Exception(PARSER_RUNTIME, 0, "hashfile key must not be empty");
@@ -164,9 +153,7 @@ void VHashfile::put_field(const String& aname, Value *avalue) {
 	if(HashStringValue *hash=avalue->get_hash()) {
 		if(Value *value_value=hash->get(value_name)) {
 			if(value_value->get_junction())
-				throw Exception(PARSER_RUNTIME,
-					0,
-					VALUE_NAME" must not be code");
+				throw Exception(PARSER_RUNTIME, 0, VALUE_NAME" must not be code");
 
 			value_string=&value_value->as_string();
 
@@ -177,9 +164,7 @@ void VHashfile::put_field(const String& aname, Value *avalue) {
 					time_to_die=time(NULL)+(time_t)(60*60*24*days_till_expire); // $expires(days)
 			}
 		} else
-			throw Exception(PARSER_RUNTIME,
-				&aname,
-				"put hash value must contain ." VALUE_NAME);
+			throw Exception(PARSER_RUNTIME, &aname, "put hash value must contain ." VALUE_NAME);
 	} else
 		value_string=&avalue->as_string();
 
@@ -195,9 +180,7 @@ void VHashfile::put_field(const String& aname, Value *avalue) {
 #endif
 
 	if(key.dsize+value.dsize > PAIRMAX)
-		throw Exception(PARSER_RUNTIME,
-			0,
-			"hashfile record length (key+value) exceeds limit (%d bytes)", PAIRMAX);
+		throw Exception(PARSER_RUNTIME, 0,"hashfile record length (key+value) exceeds limit (%d bytes)", PAIRMAX);
 
  	check("pa_sdbm_store", pa_sdbm_store(db, key, value, PA_SDBM_REPLACE));
 }
@@ -262,8 +245,8 @@ void VHashfile::for_each(bool callback(pa_sdbm_datum_t, void*), void* info) {
 				} while(pa_sdbm_nextkey(db, &key)==PA_SUCCESS);
 		}
 	} catch(...) {
-			check("pa_sdbm_unlock", pa_sdbm_unlock(db));
-			rethrow;
+		check("pa_sdbm_unlock", pa_sdbm_unlock(db));
+		rethrow;
 	}
 	check("pa_sdbm_unlock", pa_sdbm_unlock(db));
 
