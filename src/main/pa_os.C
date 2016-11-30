@@ -8,7 +8,7 @@
 #include "pa_config_includes.h"
 #include "pa_os.h"
 
-volatile const char * IDENT_PA_OS_C="$Id: pa_os.C,v 1.15 2015/10/26 01:21:59 moko Exp $" IDENT_PA_OS_H; 
+volatile const char * IDENT_PA_OS_C="$Id: pa_os.C,v 1.16 2016/11/30 17:01:01 moko Exp $" IDENT_PA_OS_H; 
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -57,10 +57,10 @@ volatile const char * IDENT_PA_OS_C="$Id: pa_os.C,v 1.15 2015/10/26 01:21:59 mok
 int pa_lock(int fd, int attempts, int operation){
 	while(true){
 		FLOCK(operation);
-		attempts--;
-		if(status==0 || attempts<=0){
-			return status;
-		}
+		if(status==0)
+			return 0;
+		if(--attempts<=0)
+			return errno;
 		pa_sleep(PA_LOCK_WAIT_TIMEOUT_SECS, PA_LOCK_WAIT_TIMEOUT_USECS);
 	}
 };
