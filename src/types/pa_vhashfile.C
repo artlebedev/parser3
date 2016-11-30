@@ -13,7 +13,7 @@
 #include "pa_vhashfile.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_VHASHFILE_C="$Id: pa_vhashfile.C,v 1.69 2016/11/30 20:08:26 moko Exp $" IDENT_PA_VHASHFILE_H;
+volatile const char * IDENT_PA_VHASHFILE_C="$Id: pa_vhashfile.C,v 1.70 2016/11/30 20:43:40 moko Exp $" IDENT_PA_VHASHFILE_H;
 
 // consts
 
@@ -21,20 +21,19 @@ const uint HASHFILE_VALUE_SERIALIZED_VERSION=0x0001;
 
 // methods
 
-void check(const char *step, pa_status_t status) {
-	if(status==PA_SUCCESS)
-		return;
-
-	const char* str=strerror(status);
-	throw Exception("file.access", 0, "%s error: %s (%d)", step, str ? str : "<unknown>", status);
-}
-
 void check_dir(const char* file_name){
 	String& sfile_name = *new String(file_name);
 	if(!entry_exists(sfile_name))
 		create_dir_for_file(sfile_name);
 }
 
+void VHashfile::check(const char *step, pa_status_t status) {
+	if(status==PA_SUCCESS)
+		return;
+
+	const char* str=strerror(status);
+	throw Exception("file.access", 0, "%s error: %s (%d), actual filename '%s'", step, str ? str : "<unknown>", status, file_name);
+}
 
 void VHashfile::open(const String& afile_name) {
 	file_name=afile_name.taint_cstr(String::L_FILE_SPEC);
@@ -267,7 +266,7 @@ static bool for_each_string_callback(pa_sdbm_datum_t apkey, void* ainfo) {
 	pa_sdbm_t *db=info.self->get_db_for_reading();
 
 	pa_sdbm_datum_t apvalue;
-	check("pa_sdbm_fetch", pa_sdbm_fetch(db, &apvalue, apkey));
+	info.self->check("pa_sdbm_fetch", pa_sdbm_fetch(db, &apvalue, apkey));
 
 	if(const String* svalue=info.self->deserialize_value(apkey, apvalue)) {
 		const char *clkey=pa_strdup(apkey.dptr, apkey.dsize);

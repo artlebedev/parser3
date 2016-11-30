@@ -8,7 +8,7 @@
 #ifndef PA_VHASHFILE_H
 #define PA_VHASHFILE_H
 
-#define IDENT_PA_VHASHFILE_H "$Id: pa_vhashfile.h,v 1.45 2015/10/26 01:22:01 moko Exp $"
+#define IDENT_PA_VHASHFILE_H "$Id: pa_vhashfile.h,v 1.46 2016/11/30 20:43:40 moko Exp $"
 
 #include "classes.h"
 #include "pa_pool.h"
@@ -77,6 +77,8 @@ public:
 
 	pa_sdbm_datum_t serialize_value(const String& string, time_t time_to_die) const;
 	const String* deserialize_value(const pa_sdbm_datum_t key, const pa_sdbm_datum_t value);
+
+	void check(const char *step, pa_status_t status);
 
 private:
 
