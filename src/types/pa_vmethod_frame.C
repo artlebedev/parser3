@@ -9,7 +9,7 @@
 #include "pa_vcaller_wrapper.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VMETHOD_FRAME_C="$Id: pa_vmethod_frame.C,v 1.36 2016/11/21 19:31:56 moko Exp $" IDENT_PA_VMETHOD_FRAME_H IDENT_PA_VCALLER_WRAPPER_H;
+volatile const char * IDENT_PA_VMETHOD_FRAME_C="$Id: pa_vmethod_frame.C,v 1.37 2016/12/01 23:42:35 moko Exp $" IDENT_PA_VMETHOD_FRAME_H IDENT_PA_VCALLER_WRAPPER_H;
 
 static VVoid void_result; // unique value to be sure the result is changed
 
@@ -21,6 +21,7 @@ Value& MethodParams::get_processed(Value& value, const char* msg, int index, Req
 	return r.process(value);
 }
 
+// Should be synced with Value::as_hash
 HashStringValue* MethodParams::as_hash(int index, const char* name) {
 	Value& value=get(index);
 	if(value.get_junction())

@@ -13,7 +13,7 @@
 #include "pa_request.h"
 
 
-volatile const char * IDENT_PA_VALUE_C="$Id: pa_value.C,v 1.44 2016/11/29 23:51:41 moko Exp $" IDENT_PA_VALUE_H IDENT_PA_PROPERTY_H;
+volatile const char * IDENT_PA_VALUE_C="$Id: pa_value.C,v 1.45 2016/12/01 23:42:35 moko Exp $" IDENT_PA_VALUE_H IDENT_PA_PROPERTY_H;
 
 // globals
 
@@ -33,6 +33,19 @@ Value* Value::get_element(const String& /*aname*/) {
 
 VFile* Value::as_vfile(String::Language /*lang*/, const Request_charsets* /*charsets*/) { 
 	bark("is '%s', it does not have file value"); return 0;
+}
+
+// Should be synced with MethodParams::as_hash
+HashStringValue* Value::as_hash(const char* name) {
+	if(get_junction())
+		throw Exception(PARSER_RUNTIME, 0, "%s must not be code", name ? name : "options");
+	if(!is_defined()) // empty hash is not defined, but we don't need it anyway
+		return 0;
+	if(HashStringValue* result=get_hash())
+		return result;
+	if(is_string() && get_string()->trim().is_empty())
+		return 0;
+	throw Exception(PARSER_RUNTIME, 0, "%s must have hash representation", name ? name : "options");
 }
 
 const String* Value::get_json_string(Json_options& options) {

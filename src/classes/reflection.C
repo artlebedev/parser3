@@ -10,7 +10,7 @@
 #include "pa_vbool.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.72 2016/12/01 21:49:02 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.73 2016/12/01 23:42:35 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -42,29 +42,76 @@ DECLARE_CLASS_VAR(reflection, new MReflection);
 
 // methods
 
+const int MAX_CREATE_PARAMS = 100;
 
 static void _create(Request& r, MethodParams& params) {
-	const Method* method;
-	const String& class_name=params.as_string(0, "class name must be string");
-	VStateless_class* vclass=r.get_class(class_name);
+	int params_offset;
+	HashStringValue* params_hash=0;
 
+	const String* class_name=0;
+	const String* constructor_name=0;
+
+	Value& voptions=params.as_no_junction(0, "params must not be code");
+	if(HashStringValue* options=voptions.get_hash()) {
+		int valid_options=0;
+		if(Value* vclass_name=options->get("class")) {
+			valid_options++;
+			class_name=&vclass_name->as_string();
+		}
+		if(Value* vconstructor_name=options->get("constructor")) {
+			valid_options++;
+			constructor_name=&vconstructor_name->as_string();
+		}
+		if(Value* vparams_hash=options->get("arguments")) {
+			valid_options++;
+			params_hash=vparams_hash->as_hash("arguments");
+			if(params.count()>1)
+				throw Exception(PARSER_RUNTIME, 0, "agruments should not be specified as hash and as create params");
+		}
+		if(valid_options!=options->count())
+			throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+
+		if(!class_name)
+			throw Exception(PARSER_RUNTIME, 0, "class name must be specified");
+		if(!constructor_name)
+			throw Exception(PARSER_RUNTIME, 0, "constructor name must be specified");
+
+		params_offset=1;
+	} else {
+		class_name=&params.as_string(0, "param must be string or hash");
+
+		if(params.count()==1)
+			throw Exception(PARSER_RUNTIME, 0, "constructor name must be specified");
+
+		constructor_name=&params.as_string(1, "constructor name must be string");
+
+		params_offset=2;
+	}
+
+	VStateless_class* vclass=r.get_class(*class_name);
 	if(!vclass)
-		throw Exception(PARSER_RUNTIME, &class_name, "class is undefined");
+		throw Exception(PARSER_RUNTIME, class_name, "class is undefined");
 
-	const String& constructor_name=params.as_string(1, "constructor name must be string");
-
-	if(!(method=vclass->get_method(constructor_name)))
-		throw Exception(PARSER_RUNTIME, &constructor_name, "constructor not found in class '%s'", vclass->type());
+	const Method* method=vclass->get_method(*constructor_name);
+	if(!method)
+		throw Exception(PARSER_RUNTIME, constructor_name, "constructor not found in class '%s'", vclass->type());
 
 	Value &object = r.construct(*vclass, *method);
 
-	int nparams=params.count()-2;
+	int nparams=params_hash ? params_hash->count() : (params.count()-params_offset);
+	if(nparams>MAX_CREATE_PARAMS)
+		throw Exception(PARSER_RUNTIME, 0, "arguments count should not exceed %d", MAX_CREATE_PARAMS);
 
 	CONSTRUCTOR_FRAME_ACTION(*method, r.get_method_frame(), object, {
-		Value* v[100];
+		Value* v[MAX_CREATE_PARAMS];
 		if(nparams>0){
-			for(int i=0; i<nparams; i++)
-				v[i]=&r.process(params[i+2]);
+			if(params_hash){
+				for(HashStringValue::Iterator i(*params_hash); i; i.next() )
+					v[i]=i.value();
+			} else {
+				for(int i=0; i<nparams; i++)
+					v[i]=&r.process(params[i+params_offset]);
+			}
 			frame.store_params((Value**)&v, nparams);
 		} else {
 			frame.empty_params();
@@ -453,7 +500,8 @@ static void _mixin(Request& r, MethodParams& params) {
 // constructor
 MReflection::MReflection(): Methoded("reflection") {
 	// ^reflection:create[class_name;constructor_name[;param1[;param2[;...]]]]
-	add_native_method("create", Method::CT_STATIC, _create, 1, 101);
+	// ^reflection:create[ $.class[name] $.constructor[name] $.arguments[ $.1[param1] $.2[param2] ...] ]
+	add_native_method("create", Method::CT_STATIC, _create, 1, MAX_CREATE_PARAMS + 2);
 
 	// ^reflection:classes[]
 	add_native_method("classes", Method::CT_STATIC, _classes, 0, 0);

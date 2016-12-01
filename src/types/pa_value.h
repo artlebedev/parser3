@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.159 2016/07/20 13:57:04 moko Exp $"
+#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.160 2016/12/01 23:42:35 moko Exp $"
 
 #include "pa_common.h"
 #include "pa_array.h"
@@ -211,14 +211,17 @@ public: // Value
 
 public: // usage
 
-	/// @return sure String. if it doesn't have string value barks
+	/// @return sure String or barks if it doesn't have string value
 	const String& as_string() {
-		const String* result=get_string(); 
+		const String* result=get_string();
 		if(!result)
 			bark("is '%s', it has no string representation");
 
 		return *result;
 	}
+
+	/// @return Hash or barks if it is not hash compatible
+	HashStringValue* as_hash(const char* name=0);
 
 	/// throws exception specifying bark-reason and name() type() of problematic value
 	Value* bark(const char *reason, const String *problem_source=0) const {
