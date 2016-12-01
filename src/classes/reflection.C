@@ -10,7 +10,7 @@
 #include "pa_vbool.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.71 2016/11/30 21:30:24 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.72 2016/12/01 21:49:02 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -44,31 +44,21 @@ DECLARE_CLASS_VAR(reflection, new MReflection);
 
 
 static void _create(Request& r, MethodParams& params) {
-	const String& class_name=params.as_string(0, "class_name must be string");
+	const Method* method;
+	const String& class_name=params.as_string(0, "class name must be string");
 	VStateless_class* vclass=r.get_class(class_name);
 
 	if(!vclass)
 		throw Exception(PARSER_RUNTIME, &class_name, "class is undefined");
 
-	const String& constructor_name=params.as_string(1, "constructor_name must be string");
-	Value* constructor_value=vclass->get_element(constructor_name);
+	const String& constructor_name=params.as_string(1, "constructor name must be string");
 
-	if(!constructor_value || !constructor_value->get_junction())
-		throw Exception(PARSER_RUNTIME, &constructor_name, "constructor must be declared in class '%s'", vclass->type());
-
-	Junction* junction=constructor_value->get_junction();
-	const Method* method=junction->method;
-
-	int nparams=params.count()-2;
-	int max_params_count;
-
-	if(method->native_code){
-		max_params_count=method->max_numbered_params_count;
-	} else {
-		max_params_count=method->params_count;
-	}
+	if(!(method=vclass->get_method(constructor_name)))
+		throw Exception(PARSER_RUNTIME, &constructor_name, "constructor not found in class '%s'", vclass->type());
 
 	Value &object = r.construct(*vclass, *method);
+
+	int nparams=params.count()-2;
 
 	CONSTRUCTOR_FRAME_ACTION(*method, r.get_method_frame(), object, {
 		Value* v[100];
@@ -463,7 +453,7 @@ static void _mixin(Request& r, MethodParams& params) {
 // constructor
 MReflection::MReflection(): Methoded("reflection") {
 	// ^reflection:create[class_name;constructor_name[;param1[;param2[;...]]]]
-	add_native_method("create", Method::CT_STATIC, _create, 2, 102);
+	add_native_method("create", Method::CT_STATIC, _create, 1, 101);
 
 	// ^reflection:classes[]
 	add_native_method("classes", Method::CT_STATIC, _classes, 0, 0);
