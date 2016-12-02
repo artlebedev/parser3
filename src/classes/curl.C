@@ -17,7 +17,7 @@
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.47 2016/11/24 19:24:45 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.48 2016/12/02 21:37:16 moko Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -453,21 +453,19 @@ static void curl_setopt(HashStringValue::key_type key, HashStringValue::value_ty
 			break;
 		}
 		case CurlOption::CURL_FORM:{
-			HashStringValue *value_hash = v.get_hash();
+			HashStringValue *value_hash = v.as_hash("failed to set option 'httppost': value");
 			if(value_hash){
 				curl_form(value_hash, r);
-			} else if(v.get_string()->is_empty()){
+			} else {
 				f_curl_formfree(options().f_post);
 				options().f_post = 0;
-			} else {
-				throw Exception("curl", 0, "failed to set option '%s': value must be a hash", key.cstr());
 			}
 			res=f_curl_easy_setopt(curl(), CURLOPT_HTTPPOST, foptions->f_post);
 			break;
 		}
 		case CurlOption::CURL_HEADERS:{
 			// http headers curl option
-			HashStringValue *value_hash=v.get_hash();
+			HashStringValue *value_hash=v.as_hash("failed to set option 'httpheader': value");
 			res=f_curl_easy_setopt(curl(), opt->id, value_hash ? curl_headers(value_hash, r) : 0);
 			break;
 		}
