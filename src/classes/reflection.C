@@ -10,7 +10,7 @@
 #include "pa_vbool.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.73 2016/12/01 23:42:35 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.74 2016/12/02 17:39:29 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -102,17 +102,18 @@ static void _create(Request& r, MethodParams& params) {
 	if(nparams>MAX_CREATE_PARAMS)
 		throw Exception(PARSER_RUNTIME, 0, "arguments count should not exceed %d", MAX_CREATE_PARAMS);
 
+	Value* args[MAX_CREATE_PARAMS];
 	CONSTRUCTOR_FRAME_ACTION(*method, r.get_method_frame(), object, {
-		Value* v[MAX_CREATE_PARAMS];
 		if(nparams>0){
 			if(params_hash){
-				for(HashStringValue::Iterator i(*params_hash); i; i.next() )
-					v[i]=i.value();
+				int i=0;
+				for(HashStringValue::Iterator h(*params_hash); h; h.next())
+					args[i++]=h.value();
 			} else {
 				for(int i=0; i<nparams; i++)
-					v[i]=&r.process(params[i+params_offset]);
+					args[i]=&r.process(params[i+params_offset]);
 			}
-			frame.store_params((Value**)&v, nparams);
+			frame.store_params((Value**)&args, nparams);
 		} else {
 			frame.empty_params();
 		}
