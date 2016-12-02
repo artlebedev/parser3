@@ -1,0 +1,77 @@
+Content-Type: text/html
+Content-Length: 1551
+
+1. {
+"v1":"",
+"v2":null
+}
+2. {
+"v1":"1",
+"v2":null
+}
+3. {
+"v1":"1",
+"v2":null
+}
+4. {
+"v1":"",
+"v2":null
+}
+5. {
+"v1":"string + string",
+"v2":"code  1 + code  2",
+"v3":"0 + 0"
+}
+6. {
+"v1":"string + string",
+"v2":"code  3 + code  3",
+"v3":"3 + 3"
+}
+7. {
+"k":"v"
+}
+10. Type: parser.runtime,
+Source: create,
+Comment: method of 'O' accepts maximum 2 parameter(s) (3 present)
+11. Type: parser.runtime,
+Source: create,
+Comment: agruments should not be specified as hash and as create params
+12. Type: parser.runtime,
+Source: create,
+Comment: params must not be code (parameter #1)
+13. Type: parser.runtime,
+Source: create,
+Comment: constructor name must be specified
+14. Type: parser.runtime,
+Source: create,
+Comment: class name must be specified
+15. Type: parser.runtime,
+Source: create,
+Comment: called with invalid option
+16. Type: parser.runtime,
+Source: create,
+Comment: constructor name must be specified
+17. Type: parser.runtime,
+Source: create,
+Comment: constructor name must be string (parameter #2)
+18. Type: parser.runtime,
+Source: A,
+Comment: class is undefined
+19. Type: parser.runtime,
+Source: b,
+Comment: constructor not found in class 'O'
+20. Type: parser.runtime,
+Source: A,
+Comment: class is undefined
+21. Type: parser.runtime,
+Source: b,
+Comment: constructor not found in class 'O'
+22. Type: parser.runtime,
+Source: create,
+Comment: arguments count should not exceed 100
+23. Type: parser.runtime,
+Source: create,
+Comment: arguments must not be code
+24. Type: parser.runtime,
+Source: create,
+Comment: arguments must have hash representation
