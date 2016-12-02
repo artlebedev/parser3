@@ -10,7 +10,7 @@
 #include "pa_vbool.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.74 2016/12/02 17:39:29 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.75 2016/12/02 21:36:25 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -51,7 +51,7 @@ static void _create(Request& r, MethodParams& params) {
 	const String* class_name=0;
 	const String* constructor_name=0;
 
-	Value& voptions=params.as_no_junction(0, "params must not be code");
+	Value& voptions=params.as_no_junction(0, "param must not be code");
 	if(HashStringValue* options=voptions.get_hash()) {
 		int valid_options=0;
 		if(Value* vclass_name=options->get("class")) {
@@ -78,7 +78,7 @@ static void _create(Request& r, MethodParams& params) {
 
 		params_offset=1;
 	} else {
-		class_name=&params.as_string(0, "param must be string or hash");
+		class_name=&params.as_string(0, "param must not be code");
 
 		if(params.count()==1)
 			throw Exception(PARSER_RUNTIME, 0, "constructor name must be specified");
