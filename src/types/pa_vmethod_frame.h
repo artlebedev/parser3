@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.121 2016/11/29 23:51:41 moko Exp $"
+#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.122 2016/12/02 19:26:19 moko Exp $"
 
 #include "pa_symbols.h"
 #include "pa_wcontext.h"
@@ -181,6 +181,7 @@ public: // usage
 
 	VNativeMethodFrame(const Method& amethod, VMethodFrame *acaller, Value& aself) : VMethodFrame(amethod, acaller, aself){}
 
+	// params should be declared outside of *_FRAME_ACTION as MethodParams destructor will be called in ~VNativeMethodFrame
 	void store_params(Value **params, size_t count) {
 		fnumbered_params.store_params(params, count);
 		method.check_actual_numbered_params(self(), &fnumbered_params);
