@@ -12,6 +12,12 @@
 	6. ^try-catch{ ^curl:options[ $.url[ftp://parser.ru/] ] }
 	7. ^try-catch{ ^curl:options[ $.httppost[ $.name[ $.hash[] ]] ] }
 	8. ^try-catch{ ^curl:options[ $.httppost[string] ] }
+	8.1. ^try-catch{ ^curl:options[ $.httppost{code} ] }
+
+	8.2. ^try-catch{ ^curl:options[ $.httpheader[string] ] }
+	8.3. ^try-catch{ ^curl:options[ $.httpheader{code} ] }
+	8.4. ^try-catch{ ^curl:options[ $.httpheader{  } ] }
+
 	9. ^try-catch{ ^curl:options[ $.no-such-option[] ] }
 	10. ^try-catch{ ^curl:info[no-such-info] }
 	11. ^json:string[^curl:info[]]

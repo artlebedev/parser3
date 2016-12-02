@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 2628
+Content-Length: 3028
 
 1. Type: curl,
 Source: info,
@@ -19,10 +19,19 @@ Comment: failed to set option 'url': invalid url scheme 'ftp://parser.ru/'
 7. Type: curl,
 Source: name,
 Comment: is hash, form option value can be string, table or file only
-8. Type: curl,
+8. Type: parser.runtime,
 Source: options,
-Comment: failed to set option 'httppost': value must be a hash
-9. Type: curl,
+Comment: failed to set option 'httppost': value must have hash representation
+8.1. Type: parser.runtime,
+Source: options,
+Comment: failed to set option 'httppost': value must have hash representation
+8.2. Type: parser.runtime,
+Source: options,
+Comment: failed to set option 'httpheader': value must have hash representation
+8.3. Type: parser.runtime,
+Source: options,
+Comment: failed to set option 'httpheader': value must have hash representation
+8.4. 9. Type: curl,
 Source: options,
 Comment: called with invalid option 'no-such-option'
 10. Type: curl,
