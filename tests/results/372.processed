@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 1551
+Content-Length: 1550
 
 1. {
 "v1":"",
@@ -38,7 +38,7 @@ Source: create,
 Comment: agruments should not be specified as hash and as create params
 12. Type: parser.runtime,
 Source: create,
-Comment: params must not be code (parameter #1)
+Comment: param must not be code (parameter #1)
 13. Type: parser.runtime,
 Source: create,
 Comment: constructor name must be specified
