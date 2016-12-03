@@ -1,7 +1,9 @@
 Content-Type: text/html
-Content-Length: 83
+Content-Length: 100
 
 2+2: 4
 :)<br />
 1/0: exception while executing code (number.zerodivision)
 :(<br />
+0/-1: 0
+:)<br />
