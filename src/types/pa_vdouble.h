@@ -8,7 +8,7 @@
 #ifndef PA_VDOUBLE_H
 #define PA_VDOUBLE_H
 
-#define IDENT_PA_VDOUBLE_H "$Id: pa_vdouble.h,v 1.64 2016/11/20 20:45:28 moko Exp $"
+#define IDENT_PA_VDOUBLE_H "$Id: pa_vdouble.h,v 1.65 2016/12/04 22:49:02 moko Exp $"
 
 // includes
 
@@ -64,7 +64,7 @@ public: // Value
 
 public: // usage
 
-	VDouble(double adouble): fdouble(adouble) {
+	VDouble(double adouble): fdouble(adouble == 0 ? 0 : adouble) {
 		if(!pa_finite(adouble))
 			throw Exception("number.format", 0, pa_isnan(adouble) ? "invalid number (double)" : "out of range (double)");
 	}
