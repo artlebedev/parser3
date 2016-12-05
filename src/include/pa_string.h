@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.221 2016/11/28 22:42:57 moko Exp $"
+#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.222 2016/12/05 23:52:49 moko Exp $"
 
 // includes
 #include "pa_types.h"
@@ -171,7 +171,7 @@ public:
 
 	public:
 
-		const char* v() const;
+		const char* visualize() const;
 		void dump() const;
 
 		Languages(): langs(0) {}
@@ -350,7 +350,6 @@ public:
 
 	public:
 
-		const char* v() const;
 		void dump() const;
 
 		Body(): body(CORD_EMPTY) INIT_HASH_CODE(0) INIT_LENGTH(0) {}
@@ -491,7 +490,6 @@ private:
 	Body body; ///< all characters of string
 	Languages langs; ///< string characters lang
 
-	const char* v() const;
 	void dump() const;
 	#define ASSERT_STRING_INVARIANT(string) \
 		assert((string).langs.invariant((string).body.length()))
@@ -564,6 +562,8 @@ public:
 	Language just_lang() const {
 		return langs.opt.lang;
 	}
+
+	char* visualize_langs() const;
 
 	/// puts pieces to buf
 	Cm serialize(size_t prolog_size) const;

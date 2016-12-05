@@ -16,7 +16,7 @@
 #define ULLONG_MAX 18446744073709551615ULL
 #endif
 
-volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.256 2016/09/08 20:41:47 moko Exp $" IDENT_PA_STRING_H;
+volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.257 2016/12/05 23:52:49 moko Exp $" IDENT_PA_STRING_H;
 
 const String String::Empty;
 
@@ -944,19 +944,15 @@ bool String::deserialize(size_t prolog_size, void *buf, size_t buf_size) {
 	return true;
 }
 
-const char* String::Body::v() const {
-	return CORD_to_const_char_star(body, length());
-}
-
 void String::Body::dump() const {
 	CORD_dump(body);
 }
 
-const char* String::Languages::v() const {
+const char* String::Languages::visualize() const {
 	if(opt.is_not_just_lang)
 		return CORD_to_const_char_star(langs, 0);
 	else
-		return (const char*)&langs;
+		return 0;
 }
 
 void String::Languages::dump() const {
@@ -966,24 +962,20 @@ void String::Languages::dump() const {
 		puts((const char*)&langs);
 }
 
-const char* String::v() const {
-	const uint LIMIT_VIEW=20;
-	char* buf=(char*)pa_malloc(MAX_STRING);
-	const char*body_view=body.v();
-	const char*langs_view=langs.v();
-	snprintf(buf, MAX_STRING, 
-		"%d:%.*s%s}   "
-		"{%d:%s",
-		langs.count(), LIMIT_VIEW, langs_view, strlen(langs_view)>LIMIT_VIEW?"...":"",
-		strlen(body_view), body_view
-	);
-
-	return buf;
-}
-
 void String::dump() const {
 	body.dump();
 	langs.dump();
+}
+
+static char *n_chars(char c, size_t length){
+	char *result=(char *)pa_malloc_atomic(length+1);
+	memset(result, c, length);
+	result[length] = '\0';
+	return result;
+}
+
+char* String::visualize_langs() const {
+	return is_not_just_lang() ? pa_strdup(langs.visualize()) : n_chars(just_lang(), length());
 }
 
 const String& String::trim(String::Trim_kind kind, const char* chars, Charset* source_charset) const {
