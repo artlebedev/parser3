@@ -10,7 +10,7 @@
 #include "pa_vbool.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.77 2016/12/05 23:55:11 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.78 2016/12/08 21:05:43 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -500,12 +500,12 @@ static void _mixin(Request& r, MethodParams& params) {
 String::Language get_untaint_lang(const String& lang_name); // op.C
 
 static void _tainting(Request& r, MethodParams& params) {
-	const String& str=params.as_string(0, "param must be string");
+	const String& str=params.as_string(params.count()-1, "param must be string");
 	String::Language lang = String::L_UNSPECIFIED;
 	bool optimized=false;
 
 	if(params.count()==2){
-		const String& slang=params.as_string(1, "language name must be string");
+		const String& slang=params.as_string(0, "language name must be string");
 		if(slang == "optimized")
 			optimized=true;
 		else if(slang == "tainted")
@@ -599,7 +599,7 @@ MReflection::MReflection(): Methoded("reflection") {
 	// ^reflection:mixin[object or class or junction;options]
 	add_native_method("mixin", Method::CT_STATIC, _mixin, 1, 2);
 
-	// ^reflection:tainting[string[;language or 'tainted' or 'optimized']]
+	// ^reflection:tainting[[language or 'tainted' or 'optimized';]string]
 	add_native_method("tainting", Method::CT_STATIC, _tainting, 1, 2);
 
 }
