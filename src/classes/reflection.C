@@ -10,7 +10,7 @@
 #include "pa_vbool.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.78 2016/12/08 21:05:43 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.79 2016/12/08 21:54:21 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -569,7 +569,7 @@ MReflection::MReflection(): Methoded("reflection") {
 	// ^reflection:method_info[junction]
 	add_native_method("method_info", Method::CT_STATIC, _method_info, 1, 2);
 
-	// ^reflection:filename[object or class]
+	// ^reflection:filename[object or class or method]
 	add_native_method("filename", Method::CT_STATIC, _filename, 1, 1);
 
 	// ^reflection:fields[object or class]
