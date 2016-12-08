@@ -1,0 +1,11 @@
+1.          ^reflection:tainting[  ^taint[  ]  ]
+2.  ^reflection:tainting[tainted;  ^taint[  ]  ]
+3.    ^reflection:tainting[clean;  ^taint[  ]  ]
+
+4.          ^reflection:tainting[  ^taint[optimized-html;  ]  ]
+5. ^reflection:tainting[optimized;  ^taint[optimized-html;  ]  ]
+
+6. ^try-catch{^reflection:tainting{ not_string }[ ]}
+7. ^try-catch{^reflection:tainting[ ]{ not string }}
+8. ^try-catch{^reflection:tainting[no-such-lang][]}
+9. '^reflection:tainting[optimized;]'

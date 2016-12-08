@@ -1,0 +1,18 @@
+Content-Type: text/html
+Content-Length: 318
+
+1. 00TT00
+2. --++--
+3. ++--++
+4. 00HH00
+5. --++--
+6. Type: parser.runtime,
+Source: tainting,
+Comment: language name must be string (parameter #1)
+7. Type: parser.runtime,
+Source: tainting,
+Comment: param must be string (parameter #2)
+8. Type: parser.runtime,
+Source: no-such-lang,
+Comment: invalid taint language
+9. ''
