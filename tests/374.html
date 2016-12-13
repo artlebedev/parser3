@@ -1,0 +1,15 @@
+@main[]
+
+^test[$main]
+^test[$string:length]
+^method-returns-valid-junction-test[]
+
+@test[m]
+$m.name
+
+@method-returns-valid-junction-test[]
+$j[^test-code{code $i($i+1) $i}]
+$j $j
+
+@test-code[result]
+empty
