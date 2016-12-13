@@ -12,7 +12,7 @@
 #include "pa_wcontext.h"
 #include "pa_symbols.h"
 
-volatile const char * IDENT_PA_VJUNCTION_C="$Id: pa_vjunction.C,v 1.17 2016/05/24 16:38:40 moko Exp $" IDENT_PA_VJUNCTION_H IDENT_PA_JUNCTION_H;
+volatile const char * IDENT_PA_VJUNCTION_C="$Id: pa_vjunction.C,v 1.18 2016/12/13 20:54:41 moko Exp $" IDENT_PA_VJUNCTION_H IDENT_PA_JUNCTION_H;
 
 void VJunction::reattach(WContext *new_wcontext){
 	if(new_wcontext) {
@@ -32,8 +32,8 @@ override Value& VJunction::as_expr_result() {
 }
 
 
-#ifndef OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL
 Value* VJunction::get_element(const String& aname) {
+#ifndef OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL
 	// $CLASS
 	if(SYMBOLS_EQ(aname,CLASS_SYMBOL))
 		return this;
@@ -41,7 +41,12 @@ Value* VJunction::get_element(const String& aname) {
 	// $CLASS_NAME
 	if(SYMBOLS_EQ(aname,CLASS_NAME_SYMBOL))
 		return new VString(junction_class_name);
+#endif
+
+	// $name
+	if(SYMBOLS_EQ(aname,NAME_SYMBOL))
+		if(fjunction.method)
+			return new VString(*fjunction.method->name);
 
 	return Value::get_element(aname);
 }
-#endif
