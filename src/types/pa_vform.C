@@ -17,7 +17,7 @@
 #include "pa_vtable.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_PA_VFORM_C="$Id: pa_vform.C,v 1.114 2016/04/06 16:08:20 moko Exp $" IDENT_PA_VFORM_H;
+volatile const char * IDENT_PA_VFORM_C="$Id: pa_vform.C,v 1.115 2016/12/13 20:24:12 moko Exp $" IDENT_PA_VFORM_H;
 
 // defines
 
@@ -68,12 +68,12 @@ VForm::VForm(Request_charsets& acharsets, Request_info& arequest_info): VStatele
 	frequest_info(arequest_info),
 	filled_source(0),
 	filled_client(0),
-	fpost_charset(0)
-{
-	can_have_body=arequest_info.can_have_body();
-	charset_detected=false;
+	fpost_charset(0),
 
-	post_content_type=UNKNOWN;
+	can_have_body(arequest_info.can_have_body()),
+	post_content_type(UNKNOWN),
+	charset_detected(false)
+{
 	if(can_have_body && arequest_info.content_type) {
 		if(pa_strncasecmp(arequest_info.content_type, HTTP_CONTENT_TYPE_FORM_URLENCODED)==0) {
 			post_content_type=FORM_URLENCODED;
@@ -316,21 +316,18 @@ void VForm::refill_fields_tables_and_files() {
 #endif
 
 	// parsing POST data
-	if(can_have_body && frequest_info.content_type)
-		switch(post_content_type){
-			case FORM_URLENCODED:
-				{
-					detect_post_charset();
-					ParseFormInput(frequest_info.post_data, frequest_info.post_size, fpost_charset);
-					break;
-				}
-			case MULTIPART_FORMDATA:
-				{
-					ParseMimeInput(pa_strdup(frequest_info.content_type), frequest_info.post_data, frequest_info.post_size);
-					break;
-				}
-			case UNKNOWN: break;
+	switch(post_content_type){
+		case FORM_URLENCODED: {
+			detect_post_charset();
+			ParseFormInput(frequest_info.post_data, frequest_info.post_size, fpost_charset);
+			break;
 		}
+		case MULTIPART_FORMDATA: {
+			ParseMimeInput(pa_strdup(frequest_info.content_type), frequest_info.post_data, frequest_info.post_size);
+			break;
+		}
+		case UNKNOWN: break;
+	}
 
 	filled_source=&fcharsets.source();
 	filled_client=&fcharsets.client();
