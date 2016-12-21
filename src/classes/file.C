@@ -25,7 +25,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.256 2016/11/28 22:42:57 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.257 2016/12/21 16:53:46 moko Exp $";
 
 // defines
 
@@ -660,7 +660,7 @@ static void _exec_cgi(Request& r, MethodParams& params, bool cgi) {
 		}
 	} else { // ^file::exec
 		// $body
-		self.set(false/*not tainted*/, is_text, file_out->str, file_out->length);
+		self.set(false/*not tainted*/, is_text, file_out->str ? file_out->str : pa_strdup("") /*to distinguish from stat-ed file*/, file_out->length);
 	}
 
 	// $status
