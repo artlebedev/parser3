@@ -25,7 +25,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.257 2016/12/21 16:53:46 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.258 2016/12/21 21:14:42 moko Exp $";
 
 // defines
 
@@ -118,6 +118,7 @@ static const char* suexec_safe_env_lst[]={
 
 // statics
 
+static const String::Body size_name("size");
 static const String::Body adate_name("adate");
 static const String::Body mdate_name("mdate");
 static const String::Body cdate_name("cdate");
@@ -285,7 +286,7 @@ static void _load(Request& r, MethodParams& params) {
 	if(file.headers){
 		file.headers->for_each<HashStringValue*>(_load_pass_param, &self.fields());
 	} else {
-		size_t size;
+		uint64_t size;
 		time_t atime, mtime, ctime;
 
 		file_stat(lfile_name, size, atime, mtime, ctime);
@@ -385,14 +386,15 @@ static void _create(Request& r, MethodParams& params) {
 static void _stat(Request& r, MethodParams& params) {
 	const String& lfile_name=params.as_string(0, FILE_NAME_MUST_NOT_BE_CODE);
 
-	size_t size;
+	uint64_t size;
 	time_t atime, mtime, ctime;
 	file_stat(r.absolute(lfile_name), size, atime, mtime, ctime);
 	
 	VFile& self=GET_SELF(r, VFile);
 
-	self.set_binary(true/*tainted*/, 0/*no bytes*/, size, &lfile_name, 0, &r);
+	self.set_binary(true/*tainted*/, 0 /*no bytes*/, 0 /*fake size*/, &lfile_name, 0, &r);
 	HashStringValue& ff=self.fields();
+	ff.put(size_name, new VDouble(size) /*real size*/);
 	ff.put(adate_name, new VDate((pa_time_t)atime));
 	ff.put(mdate_name, new VDate((pa_time_t)mtime));
 	ff.put(cdate_name, new VDate((pa_time_t)ctime));

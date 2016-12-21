@@ -11,7 +11,7 @@
 #include "pa_stylesheet_connection.h"
 #include "pa_xml_exception.h"
 
-volatile const char * IDENT_PA_STYLESHEET_CONNECTION_C="$Id: pa_stylesheet_connection.C,v 1.9 2015/10/26 01:21:59 moko Exp $" IDENT_PA_STYLESHEET_CONNECTION_H;
+volatile const char * IDENT_PA_STYLESHEET_CONNECTION_C="$Id: pa_stylesheet_connection.C,v 1.10 2016/12/21 21:14:43 moko Exp $" IDENT_PA_STYLESHEET_CONNECTION_H;
 
 void Stylesheet_connection::load(time_t new_disk_time) {
 	xsltStylesheet *nstylesheet;
@@ -38,12 +38,9 @@ void Stylesheet_connection::load(time_t new_disk_time) {
 }
 
 static void update_max_mtime(HashStringValue::key_type stat_file_spec_cstr, bool /*value*/, time_t* max) {
-	size_t size;
+	uint64_t size;
 	time_t atime, mtime, ctime;
-	file_stat(*new String(stat_file_spec_cstr, String::L_AS_IS), 
-		size,
-		atime, mtime, ctime,
-		true/*exception on error*/);
+	file_stat(*new String(stat_file_spec_cstr, String::L_AS_IS), size, atime, mtime, ctime, true/*exception on error*/);
 
 	if(mtime>*max)
 		*max=mtime;

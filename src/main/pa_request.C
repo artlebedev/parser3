@@ -32,7 +32,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.366 2016/11/28 20:24:59 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.367 2016/12/21 21:14:42 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -868,7 +868,7 @@ void Request::output_result(VFile* body_file, bool header_only, bool as_attachme
 	if(Value* vresponse_body_file=body_file->fields().get(response_body_file_name)) {
 		// $response:[download|body][$.file[filespec]] -- optput specified file
 		const String& sresponse_body_file=vresponse_body_file->as_string();
-		size_t content_length=0;
+		uint64_t content_length=0;
 		time_t atime=0, mtime=0, ctime=0;
 		file_stat(absolute(sresponse_body_file), content_length, atime, mtime, ctime);
 

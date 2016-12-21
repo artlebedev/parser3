@@ -50,7 +50,7 @@
 #define pa_mkdir(path, mode) mkdir(path, mode)
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.295 2016/09/21 15:35:10 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.296 2016/12/21 21:14:42 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -493,12 +493,7 @@ bool file_executable(const String& file_spec) {
 	return access(file_spec.taint_cstr(String::L_FILE_SPEC), X_OK)==0;
 }
 
-bool file_stat(const String& file_spec, 
-			size_t& rsize,
-			time_t& ratime,
-			time_t& rmtime,
-			time_t& rctime,
-			bool fail_on_read_problem) {
+bool file_stat(const String& file_spec, uint64_t& rsize, time_t& ratime, time_t& rmtime, time_t& rctime, bool fail_on_read_problem) {
 	const char* fname=file_spec.taint_cstr(String::L_FILE_SPEC); 
 	struct stat finfo;
 	if(stat(fname, &finfo)!=0) {
