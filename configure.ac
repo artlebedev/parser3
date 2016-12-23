@@ -64,6 +64,21 @@ AC_ARG_WITH(build-warnings, [  --with-build-warnings   to enable build-time comp
 	CXXFLAGS="$CXXFLAGS -W -Wall -Wstrict-prototypes -Wmissing-prototypes"
 )
 
+AC_ARG_WITH(coverage, [  --with-coverage   to enable gcov code coverage support],
+	AC_MSG_WARN(enabling gcov support)
+	CFLAGS=`echo "$CFLAGS" | $SED -e 's/-O[0-9]*//g'`
+	CXXFLAGS=`echo "$XXCFLAGS" | $SED -e 's/-O[0-9]*//g'`
+	CFLAGS="$CFLAGS -O0 -fprofile-arcs -ftest-coverage"
+	CXXFLAGS="$CXXFLAGS -O0 -fprofile-arcs -ftest-coverage"
+	LDFLAGS="$LDFLAGS -lgcov"
+)
+
+AC_ARG_WITH(profiler, [  --with-profiler   to enable gprof code profiler support],
+	AC_MSG_WARN(enabling gprof support)
+	CFLAGS="$CFLAGS -pg"
+	CXXFLAGS="$CXXFLAGS -pg"
+)
+
 AC_ARG_WITH(assertions, [  --with-assertions       to enable assertions],
 	AC_MSG_WARN(enabling assertions)
 ,

@@ -795,6 +795,8 @@ ac_user_opts='
 enable_option_checking
 enable_dependency_tracking
 with_build_warnings
+with_coverage
+with_profiler
 with_assertions
 with_sjlj_exceptions
 enable_safe_mode
@@ -1472,6 +1474,8 @@ Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-build-warnings   to enable build-time compiler warnings if gcc is used
+  --with-coverage   to enable gcov code coverage support
+  --with-profiler   to enable gprof code profiler support
   --with-assertions       to enable assertions
   --with-sjlj-exceptions  enable simple 'throw' from dynamic library
   --with-gc=D             D is the directory where
@@ -4719,6 +4723,31 @@ if test "${with_build_warnings+set}" = set; then :
   withval=$with_build_warnings; { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: enabling compiler warnings" >&5
 $as_echo "$as_me: WARNING: enabling compiler warnings" >&2;}
 	CXXFLAGS="$CXXFLAGS -W -Wall -Wstrict-prototypes -Wmissing-prototypes"
+
+fi
+
+
+
+# Check whether --with-coverage was given.
+if test "${with_coverage+set}" = set; then :
+  withval=$with_coverage; { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: enabling gcov support" >&5
+$as_echo "$as_me: WARNING: enabling gcov support" >&2;}
+	CFLAGS=`echo "$CFLAGS" | $SED -e 's/-O0-9*//g'`
+	CXXFLAGS=`echo "$XXCFLAGS" | $SED -e 's/-O0-9*//g'`
+	CFLAGS="$CFLAGS -O0 -fprofile-arcs -ftest-coverage"
+	CXXFLAGS="$CXXFLAGS -O0 -fprofile-arcs -ftest-coverage"
+	LDFLAGS="$LDFLAGS -lgcov"
+
+fi
+
+
+
+# Check whether --with-profiler was given.
+if test "${with_profiler+set}" = set; then :
+  withval=$with_profiler; { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: enabling gprof support" >&5
+$as_echo "$as_me: WARNING: enabling gprof support" >&2;}
+	CFLAGS="$CFLAGS -pg"
+	CXXFLAGS="$CXXFLAGS -pg"
 
 fi
 
