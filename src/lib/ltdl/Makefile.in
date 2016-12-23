@@ -316,9 +316,9 @@ noinst_LTLIBRARIES = $(LT_DLLOADERS) $(am__append_3)
 lib_LTLIBRARIES = $(am__append_2)
 EXTRA_LTLIBRARIES = dlopen.la dld_link.la dyld.la load_add_on.la \
 	loadlibrary.la shl_load.la
-EXTRA_DIST = lt__dirent.c lt__strl.c COPYING.LIB configure.ac \
-	Makefile.am aclocal.m4 Makefile.in configure config-h.in \
-	README argz_.h argz.c
+EXTRA_DIST = config_fixed.h ltdl.vcproj lt__dirent.c lt__strl.c \
+	COPYING.LIB configure.ac Makefile.am aclocal.m4 Makefile.in \
+	configure config-h.in README argz_.h argz.c
 CLEANFILES = libltdl.la libltdlc.la libdlloader.la $(LIBOBJS) \
 	$(LTLIBOBJS)
 MOSTLYCLEANFILES = argz.h argz.h-t
