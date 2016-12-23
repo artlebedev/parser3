@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 1588
+Content-Length: 1603
 
 f1 : {
 "name":"247_utf8_bom.txt",
@@ -65,5 +65,6 @@ f1 : {
 "name":"noname.dat",
 "size":4,
 "mode":"text",
-"content-type":"text\/plain"
+"content-type":"text\/plain",
+"text":"test"
 }
