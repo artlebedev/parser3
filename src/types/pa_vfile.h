@@ -8,7 +8,7 @@
 #ifndef PA_VFILE_H
 #define PA_VFILE_H
 
-#define IDENT_PA_VFILE_H "$Id: pa_vfile.h,v 1.82 2016/08/04 22:12:50 moko Exp $"
+#define IDENT_PA_VFILE_H "$Id: pa_vfile.h,v 1.83 2016/12/23 15:30:16 moko Exp $"
 
 // include
 
@@ -64,7 +64,7 @@ public: // Value
 	override Value* get_element(const String& aname);
 
 	/// VFile: fields
-	override HashStringValue *get_hash() { return &ffields; }
+	override HashStringValue *get_hash();
 
 public: // usage
 

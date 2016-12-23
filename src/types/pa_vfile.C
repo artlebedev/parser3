@@ -13,7 +13,7 @@
 #include "pa_charsets.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VFILE_C="$Id: pa_vfile.C,v 1.73 2016/12/21 21:14:43 moko Exp $" IDENT_PA_VFILE_H;
+volatile const char * IDENT_PA_VFILE_C="$Id: pa_vfile.C,v 1.74 2016/12/23 15:30:16 moko Exp $" IDENT_PA_VFILE_H;
 
 // externs
 
@@ -52,6 +52,9 @@ inline bool content_type_is_default(Value *content_type){
 // methods
 
 VStateless_class *VFile::get_class() { return file_class; }
+
+HashStringValue *VFile::get_hash() { Value *prefetch=get_element(text_name); return &ffields; }
+
 
 void VFile::set_all(bool atainted, bool ais_text_mode, const char* avalue_ptr, size_t avalue_size, const String* afile_name) {
 	fvalue_ptr=avalue_ptr;
