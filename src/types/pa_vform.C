@@ -17,7 +17,7 @@
 #include "pa_vtable.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_PA_VFORM_C="$Id: pa_vform.C,v 1.115 2016/12/13 20:24:12 moko Exp $" IDENT_PA_VFORM_H;
+volatile const char * IDENT_PA_VFORM_C="$Id: pa_vform.C,v 1.116 2016/12/24 23:00:02 moko Exp $" IDENT_PA_VFORM_H;
 
 // defines
 
@@ -66,13 +66,14 @@ extern Methoded* form_class;
 VForm::VForm(Request_charsets& acharsets, Request_info& arequest_info): VStateless_class(form_class),
 	fcharsets(acharsets),
 	frequest_info(arequest_info),
-	filled_source(0),
-	filled_client(0),
-	fpost_charset(0),
 
 	can_have_body(arequest_info.can_have_body()),
+	charset_detected(false),
 	post_content_type(UNKNOWN),
-	charset_detected(false)
+
+	filled_source(0),
+	filled_client(0),
+	fpost_charset(0)
 {
 	if(can_have_body && arequest_info.content_type) {
 		if(pa_strncasecmp(arequest_info.content_type, HTTP_CONTENT_TYPE_FORM_URLENCODED)==0) {

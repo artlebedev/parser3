@@ -50,7 +50,7 @@
 #define pa_mkdir(path, mode) mkdir(path, mode)
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.296 2016/12/21 21:14:42 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.297 2016/12/24 23:02:13 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -1246,7 +1246,7 @@ inline void CalcCrc32(const unsigned char byte, unsigned long &crc32)
 }
 
 
-const unsigned long pa_crc32(const char *in, size_t in_size){
+unsigned long pa_crc32(const char *in, size_t in_size){
 	unsigned long crc32=0xFFFFFFFF;
 
 	InitCrc32Table();
@@ -1269,7 +1269,7 @@ static void file_crc32_file_action(struct stat& finfo, int f, const String&, voi
 	}
 }
 
-const unsigned long pa_crc32(const String& file_spec){
+unsigned long pa_crc32(const String& file_spec){
 	unsigned long crc32=0xFFFFFFFF;
 	file_read_action_under_lock(file_spec, "crc32", file_crc32_file_action, &crc32);
 	return ~crc32; 

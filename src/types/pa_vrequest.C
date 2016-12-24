@@ -15,19 +15,19 @@
 #include "pa_vvoid.h"
 #include "pa_vfile.h"
 
-volatile const char * IDENT_PA_VREQUEST_C="$Id: pa_vrequest.C,v 1.63 2016/09/21 15:35:11 moko Exp $" IDENT_PA_VREQUEST_H;
+volatile const char * IDENT_PA_VREQUEST_C="$Id: pa_vrequest.C,v 1.64 2016/12/24 23:00:03 moko Exp $" IDENT_PA_VREQUEST_H;
 
 // defines
 
 #define DOCUMENT_ROOT_NAME "document-root"
 #define REQUEST_HEADERS_ELEMENT_NAME "headers"
 
-VRequest::VRequest(Request_info& ainfo, Request_charsets& acharsets, VForm& aform, SAPI_Info& asapi_info): 
-		finfo(ainfo), 
-		fcharsets(acharsets),
-		fform(aform),
-		fsapi_info(asapi_info) {
-
+VRequest::VRequest(Request_info& ainfo, Request_charsets& acharsets, VForm& aform, SAPI_Info& asapi_info):
+	finfo(ainfo),
+	fsapi_info(asapi_info),
+	fcharsets(acharsets),
+	fform(aform)
+{
 	if(ainfo.argv)
 		for(size_t i=ainfo.args_skip; ainfo.argv[i]; i++) {
 			char* value=new(PointerFreeGC) char[strlen(ainfo.argv[i])+1];
