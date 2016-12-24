@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.160 2016/12/01 23:42:35 moko Exp $"
+#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.161 2016/12/24 22:53:31 moko Exp $"
 
 #include "pa_common.h"
 #include "pa_array.h"
@@ -55,9 +55,9 @@ struct Json_options {
 		default_method(NULL),
 		params(NULL),
 		skip_unknown(false),
-		xdoc_options(NULL),
 		json_string_recoursion(0),
 		indent(NULL),
+		xdoc_options(NULL),
 		date(D_SQL),
 		table(T_OBJECT),
 		file(F_BODYLESS),

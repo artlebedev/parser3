@@ -8,7 +8,7 @@
 #ifndef PA_SAPI_H
 #define PA_SAPI_H
 
-#define IDENT_PA_SAPI_H "$Id: pa_sapi.h,v 1.31 2015/10/26 01:21:56 moko Exp $"
+#define IDENT_PA_SAPI_H "$Id: pa_sapi.h,v 1.32 2016/12/24 22:53:30 moko Exp $"
 
 // includes
 
@@ -49,7 +49,7 @@ struct SAPI {
 			const char* pair;
 			const char* eq_at;
 		public:
-			Iterator(SAPI_Info& asapi_info) {
+			Iterator(SAPI_Info& asapi_info) : pair(NULL), eq_at(NULL){
 				if(pairs=SAPI::Env::get(asapi_info))
 					next();
 			}

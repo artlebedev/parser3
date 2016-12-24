@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
-#define IDENT_PA_VSTATELESS_CLASS_H "$Id: pa_vstateless_class.h,v 1.88 2016/11/26 22:54:18 moko Exp $"
+#define IDENT_PA_VSTATELESS_CLASS_H "$Id: pa_vstateless_class.h,v 1.89 2016/12/24 22:53:31 moko Exp $"
 
 // include
 
@@ -90,14 +90,14 @@ public: // usage
 
 	VStateless_class(VStateless_class* amethoded_donor=0):
 		flocked(false),
-		fbase(0),
-		fderived(0),
 		fall_vars_local(false),
 		fpartial(false),
+		fcall_type(Method::CT_ANY),
+		fbase(0),
+		fderived(0),
 		fscalar(0),
 		fdefault_getter(0),
-		fdefault_setter(0),
-		fcall_type(Method::CT_ANY)
+		fdefault_setter(0)
 	{
 		if(amethoded_donor)
 			fmethods.merge_dont_replace(amethoded_donor->fmethods);

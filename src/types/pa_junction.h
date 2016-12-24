@@ -8,7 +8,7 @@
 #ifndef PA_JUNCTION_H
 #define PA_JUNCTION_H
 
-#define IDENT_PA_JUNCTION_H "$Id: pa_junction.h,v 1.12 2015/10/26 01:22:00 moko Exp $"
+#define IDENT_PA_JUNCTION_H "$Id: pa_junction.h,v 1.13 2016/12/24 22:53:30 moko Exp $"
 
 
 #include "pa_string.h"
@@ -72,8 +72,8 @@ public:
 		String* aauto_name=0
 	): self(aself),
 		method(amethod),
-		is_getter(ais_getter),
-		auto_name(aauto_name)
+		auto_name(aauto_name),
+		is_getter(ais_getter)
 	 	{}
 
 

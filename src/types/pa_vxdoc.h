@@ -8,7 +8,7 @@
 #ifndef PA_VXDOC_H
 #define PA_VXDOC_H
 
-#define IDENT_PA_VXDOC_H "$Id: pa_vxdoc.h,v 1.56 2016/11/07 00:01:31 moko Exp $"
+#define IDENT_PA_VXDOC_H "$Id: pa_vxdoc.h,v 1.57 2016/12/24 22:53:31 moko Exp $"
 
 #include "classes.h"
 #include "pa_common.h"
@@ -77,7 +77,7 @@ public: // VXNode
 
 public: // usage
 
-	VXdoc() : VXnode(*this), fcharsets(0), fdocument(0), stylesheet(0) {}
+	VXdoc() : VXnode(*this), stylesheet(0), fcharsets(0), fdocument(0) {}
 
 	VXdoc(Request_charsets& acharsets, xmlDoc& adocument) : VXnode(*this) {
 		set_xmldoc(acharsets, adocument);

@@ -8,7 +8,7 @@
 #ifndef PA_METHOD_H
 #define PA_METHOD_H
 
-#define IDENT_PA_METHOD_H "$Id: pa_method.h,v 1.28 2016/11/21 19:31:56 moko Exp $"
+#define IDENT_PA_METHOD_H "$Id: pa_method.h,v 1.29 2016/12/24 22:53:30 moko Exp $"
 
 #define OPTIMIZE_CALL
 #define OPTIMIZE_RESULT
@@ -78,11 +78,6 @@ public:
 
 	bool all_vars_local; // in local vars list 'locals' was specified: all vars are local
 
-	mutable VJunction *junction_template;
-
-	const String *name; // method name, never null
-	const String *extra_params; // method has *name as an argument
-
 #ifdef OPTIMIZE_RESULT
 	Result_optimization result_optimization;
 #endif
@@ -90,6 +85,11 @@ public:
 #ifdef OPTIMIZE_CALL
 	Call_optimization call_optimization;
 #endif
+
+	mutable VJunction *junction_template;
+
+	const String *name; // method name, never null
+	const String *extra_params; // method has *name as an argument
 
 	Method(
 		Call_type acall_type,
