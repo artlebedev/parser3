@@ -13,7 +13,7 @@
 #include "pa_exception.h"
 #include "pa_common.h"
 
-volatile const char * IDENT_PA_EXEC_C="$Id: pa_exec.C,v 1.89 2016/11/28 22:42:58 moko Exp $" IDENT_PA_EXEC_H;
+volatile const char * IDENT_PA_EXEC_C="$Id: pa_exec.C,v 1.90 2016/12/24 23:07:50 moko Exp $" IDENT_PA_EXEC_H;
 
 #ifdef _MSC_VER
 
@@ -335,7 +335,7 @@ static void read_pipe(String& result, int file, String::Language lang){
 
 static void read_pipe(File_read_result& result, int file){
 	char *buf=(char*)pa_malloc(MAX_STRING+1);
-	ssize_t bufsize = MAX_STRING;
+	size_t bufsize = MAX_STRING;
 
 	result.headers = 0;
 	result.length = 0;
