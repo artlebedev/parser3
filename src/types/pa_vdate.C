@@ -9,7 +9,7 @@
 #include "pa_vint.h"
 #include "pa_vstring.h"
 
-volatile const char * IDENT_PA_PA_VDATE_C="$Id: pa_vdate.C,v 1.20 2016/12/24 22:53:31 moko Exp $" IDENT_PA_VDATE_H;
+volatile const char * IDENT_PA_PA_VDATE_C="$Id: pa_vdate.C,v 1.21 2016/12/26 20:15:01 moko Exp $" IDENT_PA_VDATE_H;
 
 #define ZERO_DATE (-62169984000ll-SECS_PER_DAY) // '0000-00-00 00:00:00' - 1 day
 #define MAX_DATE (253402300799ll+SECS_PER_DAY) // '9999-12-31 23:59:59' + 1 day
@@ -383,7 +383,7 @@ VDate::yw VDate::CalcWeek(tm tms) {
 /* number of years per era */
 #define YEARS_PER_ERA		400
 
-static void pa_gmtime(pa_time_t lcltime, struct tm *res) {
+void pa_gmtime(pa_time_t lcltime, struct tm *res) {
   long days, rem;
   int era, weekday, year;
   unsigned erayear, yearday, month, day;
@@ -533,7 +533,7 @@ static void validate_structure(struct tm *tim_p) {
     }
 }
 
-static pa_time_t pa_mktime(struct tm *tim_p) {
+pa_time_t pa_mktime(struct tm *tim_p) {
   pa_time_t tim = 0;
   long days = 0;
   int year;
