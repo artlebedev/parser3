@@ -37,7 +37,7 @@
 
 #include "gif.h"
 
-volatile const char * IDENT_GIFIO_C="$Id: gifio.C,v 1.5 2015/10/26 01:21:57 moko Exp $";
+volatile const char * IDENT_GIFIO_C="$Id: gifio.C,v 1.6 2016/12/26 19:48:30 moko Exp $";
 
 static int colorstobpp(int colors);
 
@@ -774,9 +774,6 @@ bool gdImage::CreateFromGif(FILE *fd)
 {
 	int imageNumber;
 	int BitPixel;
-	int ColorResolution;
-	int Background;
-	int AspectRatio;
 	int Transparent =(-1);
 	unsigned char   buf[16];
 	unsigned char   c;
@@ -806,9 +803,6 @@ bool gdImage::CreateFromGif(FILE *fd)
 		return false;
 	}
 	BitPixel        = 2<<(buf[4]&0x07);
-	ColorResolution =(int)(((buf[4]&0x70)>>3)+1);
-	Background      = buf[5];
-	AspectRatio     = buf[6];
 	
 	if(BitSet(buf[4], LOCALCOLORMAP)) {    /* Global Colormap */
 		if(ReadColorMap(fd, BitPixel, ColorMap)) {
@@ -909,17 +903,13 @@ int gdImage::DoExtension(FILE *fd, int label, int *Transparent)
 	switch(label) {
 	case 0xf9: {             /* Graphic Control Extension */
 		(void) GetDataBlock(fd,(unsigned char*) buf);
-		Gif89 gif89 = { -1, -1, -1, 0 }; // PAF:huh?
-		gif89.disposal    =(buf[0] >> 2) & 0x7;
-		gif89.inputFlag   =(buf[0] >> 1) & 0x1;
-		gif89.delayTime   = LM_to_uint(buf[1],buf[2]);
 		if((buf[0] & 0x1) != 0)
 			*Transparent = buf[3];
 		
 		while(GetDataBlock(fd,(unsigned char*) buf) != 0)
 			;
 		return FALSE;
-			   }
+		}
 	default:
 		break;
 	}
