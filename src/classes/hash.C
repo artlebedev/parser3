@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.137 2016/11/01 23:10:40 moko Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.138 2016/12/26 15:56:35 moko Exp $";
 
 // class
 
@@ -210,7 +210,8 @@ static void _create_or_add(Request& r, MethodParams& params) {
 		}
 
 		if(src_hash)
-			src_hash->for_each<HashStringValue*>(copy_all_overwrite_to, self_hash);
+			for(HashStringValue::Iterator i(*src_hash); i; i.next())
+				self_hash->put(i.key(), i.value());
 	}
 }
 
@@ -221,7 +222,8 @@ static void _sub(Request& r, MethodParams& params) {
 			self->clear();
 			return;
 		}
-		src->for_each<HashStringValue*>(remove_key_from, self);
+		for(HashStringValue::Iterator i(*src); i; i.next())
+			self->remove(i.key());
 	}
 }
 

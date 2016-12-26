@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.169 2016/12/24 22:53:30 moko Exp $"
+#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.170 2016/12/26 15:56:35 moko Exp $"
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -268,15 +268,6 @@ unsigned long pa_crc32(const String& file_spec);
 */
 
 #define PA_DEFAULT(A,B) ((A) ? (A):(B) )
-
-// some stuff for use with .for_each
-static void copy_all_overwrite_to(HashStringValue::key_type key, HashStringValue::value_type value, HashStringValue* dest) {
-	dest->put(key, value);
-}
-
-static void remove_key_from(HashStringValue::key_type key, HashStringValue::value_type /*value*/, HashStringValue* dest) {
-	dest->remove(key);
-}
 
 Charset* detect_charset(const char* content_type);
 

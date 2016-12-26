@@ -13,7 +13,7 @@
 #include "pa_vhash.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VCOOKIE_C="$Id: pa_vcookie.C,v 1.95 2016/04/08 22:34:37 moko Exp $" IDENT_PA_VCOOKIE_H;
+volatile const char * IDENT_PA_VCOOKIE_C="$Id: pa_vcookie.C,v 1.96 2016/12/26 15:56:35 moko Exp $" IDENT_PA_VCOOKIE_H;
 
 // defines
 
@@ -50,8 +50,10 @@ Value* VCookie::get_element(const String& aname) {
 			refill();
 
 		HashStringValue *result=new HashStringValue(before);
-		after.for_each<HashStringValue*>(copy_all_overwrite_to, result);
-		deleted.for_each<HashStringValue*>(remove_key_from, result);
+		for(HashStringValue::Iterator i(after); i; i.next())
+			result->put(i.key(), i.value());
+		for(HashStringValue::Iterator i(deleted); i; i.next())
+			result->remove(i.key());
 		return new VHash(*result);
 	}
 
