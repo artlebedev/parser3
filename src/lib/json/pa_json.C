@@ -456,7 +456,7 @@ static int act_cb(json_parser *parser)
 
 static int act_ce(json_parser *parser)
 {
-	parser->state = (uint8_t)((parser->save_state > STATE_AA) ? STATE_OK : parser->save_state);
+	parser->state = (parser->save_state > STATE_AA) ? (uint8_t)(STATE_OK) : (uint8_t)(parser->save_state);
 	return 0;
 }
 
@@ -640,7 +640,7 @@ int json_parser_string(json_parser *parser, const char *s,
 		unsigned char ch = s[i];
 
 		ret = 0;
-		next_class = (uint8_t)((ch >= 128) ? C_OTHER : character_class[ch]);
+		next_class = (ch >= 128) ? (uint8_t)(C_OTHER) : (uint8_t)(character_class[ch]);
 		if (next_class == C_ERROR) {
 			ret = JSON_ERROR_BAD_CHAR;
 			break;
