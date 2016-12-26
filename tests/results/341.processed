@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 1485
+Content-Length: 1519
 
 Code coverage tests:
 Type: parser.runtime,
@@ -19,7 +19,7 @@ Source: hash,
 Comment: value field(s) must be string or table or code
 Type: parser.runtime,
 Source: hash,
-Comment: you can specify only one value field with option $.type[string]
+Comment: you can't specify more then one value field with option $.type[string]
 Type: parser.runtime,
 Source: hash,
 Comment: you can't specify $.type[] if value is code
@@ -121,4 +121,9 @@ New functionality tests:
 "1":{},
 "2":{},
 "3":{}
+}
+{
+"1":"",
+"2":"",
+"3":""
 }
