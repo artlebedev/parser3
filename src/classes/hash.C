@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.138 2016/12/26 15:56:35 moko Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.139 2016/12/26 16:24:03 moko Exp $";
 
 // class
 
@@ -61,11 +61,11 @@ public:
 		statement_cstr(astatement_cstr),
 		distinct(adistinct),
 		rows_hash(arows_hash),
-		value_type(avalue_type),
 		row_value(0),
 		column_index(0),
-		one_bool_column(false),
 		columns(*new ArrayString),
+		one_bool_column(false),
+		value_type(avalue_type),
 		empty(0) {
 	}
 
@@ -497,9 +497,7 @@ static void _sort(Request& r, MethodParams& params){
 	const String& key_var_name=params.as_string(0, "key-var name must be string");
 	const String& value_var_name=params.as_string(1, "value-var name must be string");
 	Value& key_maker=params.as_junction(2, "key-maker must be code");
-	bool reverse=params.count()>3/*..[desc|asc|]*/?
-		reverse=params.as_no_junction(3, "order must not be code").as_string()=="desc":
-		false; // default=asc
+	bool reverse=params.count()>3 /*..[desc|asc|]*/ && params.as_no_junction(3, "order must not be code").as_string()=="desc"; // default=asc
 
 	const String* key_var=key_var_name.is_empty()? 0 : &key_var_name;
 	const String* value_var=value_var_name.is_empty()? 0 : &value_var_name;
