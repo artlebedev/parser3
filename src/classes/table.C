@@ -22,7 +22,7 @@
 #define USE_STRINGSTREAM
 #endif
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.339 2016/12/26 20:04:05 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.340 2016/12/26 20:37:53 moko Exp $";
 
 // class
 
@@ -986,8 +986,8 @@ static void _hash(Request& r, MethodParams& params) {
 					throw Exception(PARSER_RUNTIME, 0, "value field(s) must be string or table or code");
 			}
 
-			if(value_type==C_STRING && value_fields.count()!=1)
-				throw Exception(PARSER_RUNTIME, 0, "you can specify only one value field with option $.type[string]");
+			if(value_type==C_STRING && value_fields.count()>1)
+				throw Exception(PARSER_RUNTIME, 0, "you can't specify more then one value field with option $.type[string]");
 
 			{
 				Value* key_param=&params[0];
