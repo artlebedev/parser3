@@ -25,7 +25,7 @@
 #include "pa_vdate.h"
 #include "pa_table.h"
 
-volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.157 2016/11/01 23:10:40 moko Exp $";
+volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.158 2016/12/26 20:04:05 moko Exp $";
 
 // defines
 
@@ -967,13 +967,13 @@ static void _polybar(Request& r, MethodParams& params) {
 // Font class
 
 Font::Font(Charset& asource_charset, const String& aalphabet, gdImage* aifont, int aheight, int amonospace, int aspacebarspace, int aletterspacing):
-	fsource_charset(asource_charset),
+	letterspacing(aletterspacing),
 	height(aheight),
 	monospace(amonospace),
 	spacebarspace(aspacebarspace),
-	letterspacing(aletterspacing),
 	ifont(aifont),
-	alphabet(aalphabet)	{
+	alphabet(aalphabet),
+	fsource_charset(asource_charset){
 
 	if(fsource_charset.isUTF8()){
 		size_t index=0;

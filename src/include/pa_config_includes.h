@@ -186,6 +186,12 @@ inline size_t min(size_t a, size_t b){ return a<b?a:b; }
 
 #endif
 
+#if defined(__GNUC__)
+#  define PA_ATTR_UNUSED __attribute__((unused))
+#else
+#  define PA_ATTR_UNUSED
+#endif
+
 #ifdef WIN32
 #define THREAD_LOCAL __declspec(thread)
 #else
@@ -194,7 +200,6 @@ inline size_t min(size_t a, size_t b){ return a<b?a:b; }
 
 #if __clang__
 #pragma clang diagnostic ignored "-Wparentheses"       // if(a=b)
-#pragma clang diagnostic ignored "-Winline-new-delete" // replacement operator cannot be declared 'inline'
 #endif
 
 #if _MSC_VER

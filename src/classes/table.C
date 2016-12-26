@@ -22,7 +22,7 @@
 #define USE_STRINGSTREAM
 #endif
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.338 2016/11/01 23:10:41 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.339 2016/12/26 20:04:05 moko Exp $";
 
 // class
 
@@ -1044,9 +1044,7 @@ static int sort_cmp_double(const void *a, const void *b) {
 static void _sort(Request& r, MethodParams& params) {
 	Value& key_maker=params.as_junction(0, "key-maker must be code");
 
-	bool reverse=params.count()>1/*..[desc|asc|]*/?
-		reverse=params.as_no_junction(1, "order must not be code").as_string()=="desc":
-		false; // default=asc
+	bool reverse=params.count()>1 /*..[desc|asc|]*/ && params.as_no_junction(1, "order must not be code").as_string()=="desc"; // default=asc
 
 	Table& old_table=GET_SELF(r, VTable).table();
 	Table& new_table=*new Table(old_table.columns());

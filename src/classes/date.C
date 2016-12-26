@@ -13,7 +13,7 @@
 #include "pa_vdate.h"
 #include "pa_vtable.h"
 
-volatile const char * IDENT_DATE_C="$Id: date.C,v 1.108 2016/11/01 23:10:39 moko Exp $" IDENT_PA_VDATE_H;
+volatile const char * IDENT_DATE_C="$Id: date.C,v 1.109 2016/12/26 20:04:05 moko Exp $" IDENT_PA_VDATE_H;
 
 // class
 
@@ -188,7 +188,7 @@ tm cstr_to_time_t(char *cstr, const char **tzOut) {
 	char *cur=cstr;
 
 	const char *year, *month, *mday;
-	const char *hour, *min, *sec, *msec;
+	const char *hour, *min, *sec, *msec PA_ATTR_UNUSED;
 
 	year=skip_number(&cur, "-:", &delim);
 	if(delim != ':' || delim == ':' && strlen(year) >=4 ){
