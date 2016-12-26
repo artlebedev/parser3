@@ -4722,7 +4722,7 @@ $as_echo "$dll_extension" >&6; }
 if test "${with_build_warnings+set}" = set; then :
   withval=$with_build_warnings; { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: enabling compiler warnings" >&5
 $as_echo "$as_me: WARNING: enabling compiler warnings" >&2;}
-	CXXFLAGS="$CXXFLAGS -W -Wall -Wstrict-prototypes -Wmissing-prototypes"
+	CXXFLAGS="$CXXFLAGS -Wextra -Wall -Wno-parentheses"
 
 fi
 
