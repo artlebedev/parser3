@@ -61,7 +61,7 @@ AC_SUBST(dll_extension)
 dnl Misc arguments
 AC_ARG_WITH(build-warnings, [  --with-build-warnings   to enable build-time compiler warnings if gcc is used],
 	AC_MSG_WARN(enabling compiler warnings)
-	CXXFLAGS="$CXXFLAGS -W -Wall -Wstrict-prototypes -Wmissing-prototypes"
+	CXXFLAGS="$CXXFLAGS -Wextra -Wall -Wno-parentheses"
 )
 
 AC_ARG_WITH(coverage, [  --with-coverage   to enable gcov code coverage support],
