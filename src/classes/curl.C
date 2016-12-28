@@ -17,7 +17,7 @@
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.48 2016/12/02 21:37:16 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.49 2016/12/28 22:50:06 moko Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -398,7 +398,7 @@ static void curl_form(HashStringValue *value_hash, Request& r){
 static const char *curl_check_file(const String &file_spec){
 	const char *file_spec_cstr=file_spec.taint_cstr(String::L_FILE_SPEC);
 	struct stat finfo;
-	if(stat(file_spec_cstr, &finfo)==0)
+	if(pa_stat(file_spec_cstr, &finfo)==0)
 		check_safe_mode(finfo, file_spec, file_spec_cstr);
 	return file_spec_cstr;
 }

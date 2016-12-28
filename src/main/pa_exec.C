@@ -13,7 +13,7 @@
 #include "pa_exception.h"
 #include "pa_common.h"
 
-volatile const char * IDENT_PA_EXEC_C="$Id: pa_exec.C,v 1.90 2016/12/24 23:07:50 moko Exp $" IDENT_PA_EXEC_H;
+volatile const char * IDENT_PA_EXEC_C="$Id: pa_exec.C,v 1.91 2016/12/28 22:50:07 moko Exp $" IDENT_PA_EXEC_H;
 
 #ifdef _MSC_VER
 
@@ -442,7 +442,7 @@ PA_exec_result pa_exec(bool forced_allow, const String& file_spec, const HashStr
 
 	if(!forced_allow) {
 		struct stat finfo;
-		if(stat(file_spec_cstr, &finfo)!=0)
+		if(pa_stat(file_spec_cstr, &finfo)!=0)
 			throw Exception("file.missing", &file_spec, "stat failed: %s (%d), actual filename '%s'", strerror(errno), errno, file_spec_cstr);
 
 		check_safe_mode(finfo, file_spec, file_spec_cstr);

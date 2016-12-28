@@ -25,7 +25,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.259 2016/12/28 17:41:15 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.260 2016/12/28 22:50:06 moko Exp $";
 
 // defines
 
@@ -192,7 +192,7 @@ static void _move(Request& r, MethodParams& params) {
 		keep_empty_dirs);
 }
 
-static void copy_process_source(struct stat& , int from_file, const String&, void *context) {
+static void copy_process_source(struct stat&, int from_file, const String&, void *context) {
 	int& to_file=*static_cast<int *>(context);
 
 	int nCount=0;

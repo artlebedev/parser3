@@ -50,7 +50,7 @@
 #define pa_mkdir(path, mode) mkdir(path, mode)
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.297 2016/12/24 23:02:13 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.298 2016/12/28 22:50:07 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -240,7 +240,7 @@ bool file_read_action_under_lock(const String& file_spec,
 				throw Exception("file.lock", &file_spec, "shared lock failed: %s (%d), actual filename '%s'", strerror(errno), errno, fname);
 
 			struct stat finfo;
-			if(fstat(f, &finfo)!=0)
+			if(pa_fstat(f, &finfo)!=0)
 				throw Exception("file.missing", // hardly possible: we just opened it OK
 					&file_spec, "stat failed: %s (%d), actual filename '%s'", strerror(errno), errno, fname);
 
@@ -302,7 +302,7 @@ bool file_write_action_under_lock(
 		try {
 #if (defined(HAVE_FCHMOD) && defined(PA_SAFE_MODE))
 			struct stat finfo;
-			if(fstat(f, &finfo)==0 && finfo.st_mode & 0111)
+			if(pa_fstat(f, &finfo)==0 && finfo.st_mode & 0111)
 				fchmod(f, finfo.st_mode & 0666/*clear executable bits*/); // backward: ignore errors if any
 #endif
 			action(f, context);
@@ -462,7 +462,7 @@ void file_move(const String& old_spec, const String& new_spec, bool keep_empty_d
 
 bool entry_exists(const char* fname, struct stat *afinfo) {
 	struct stat lfinfo;
-	bool result=stat(fname, &lfinfo)==0;
+	bool result=pa_stat(fname, &lfinfo)==0;
 	if(afinfo)
 		*afinfo=lfinfo;
 	return result;
@@ -496,7 +496,7 @@ bool file_executable(const String& file_spec) {
 bool file_stat(const String& file_spec, uint64_t& rsize, time_t& ratime, time_t& rmtime, time_t& rctime, bool fail_on_read_problem) {
 	const char* fname=file_spec.taint_cstr(String::L_FILE_SPEC); 
 	struct stat finfo;
-	if(stat(fname, &finfo)!=0) {
+	if(pa_stat(fname, &finfo)!=0) {
 		if(fail_on_read_problem)
 			throw Exception("file.missing", &file_spec, "getting file size failed: %s (%d), real filename '%s'", strerror(errno), errno, fname);
 		else

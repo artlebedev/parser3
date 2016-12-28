@@ -8,7 +8,7 @@
 #include "pa_common.h"
 #include "pa_dir.h"
 
-volatile const char * IDENT_PA_DIR_C="$Id: pa_dir.C,v 1.26 2015/10/26 01:21:58 moko Exp $" IDENT_PA_DIR_H;
+volatile const char * IDENT_PA_DIR_C="$Id: pa_dir.C,v 1.27 2016/12/28 22:50:07 moko Exp $" IDENT_PA_DIR_H;
 
 #ifdef _MSC_VER
 
@@ -97,7 +97,7 @@ void ffblk::stat_file() {
 	char fileSpec[MAXPATH];
 	snprintf(fileSpec, MAXPATH, "%s/%s", filePath, ff_name);
 	
-	if(stat(fileSpec, &_st) != 0) {
+	if(pa_stat(fileSpec, &_st) != 0) {
 		memset(&_st,0,sizeof(_st));
 	}
 }
