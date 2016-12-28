@@ -16,7 +16,7 @@
 #define ULLONG_MAX 18446744073709551615ULL
 #endif
 
-volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.257 2016/12/05 23:52:49 moko Exp $" IDENT_PA_STRING_H;
+volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.258 2016/12/28 17:41:15 moko Exp $" IDENT_PA_STRING_H;
 
 const String String::Empty;
 
@@ -975,7 +975,7 @@ static char *n_chars(char c, size_t length){
 }
 
 char* String::visualize_langs() const {
-	return is_not_just_lang() ? pa_strdup(langs.visualize()) : n_chars(just_lang(), length());
+	return is_not_just_lang() ? pa_strdup(langs.visualize()) : n_chars((char)just_lang(), length());
 }
 
 const String& String::trim(String::Trim_kind kind, const char* chars, Charset* source_charset) const {

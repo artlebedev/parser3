@@ -32,7 +32,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.367 2016/12/21 21:14:42 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.368 2016/12/28 17:41:15 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -882,7 +882,7 @@ void Request::output_result(VFile* body_file, bool header_only, bool as_attachme
 		if(!vdate)
 			vdate=new VDate((pa_time_t)mtime);
 
-		output_pieces(*this, header_only, sresponse_body_file, content_length, *vdate, info.add_last_modified);
+		output_pieces(*this, header_only, sresponse_body_file, (size_t)content_length, *vdate, info.add_last_modified);
 	} else {
 		if(body_file_content_type)
 			if(HashStringValue *hash=body_file_content_type->get_hash())
