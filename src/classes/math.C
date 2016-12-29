@@ -22,7 +22,7 @@
 extern "C" char *crypt(const char* , const char* );
 #endif
 
-volatile const char * IDENT_MATH_C="$Id: math.C,v 1.83 2016/11/01 23:10:40 moko Exp $";
+volatile const char * IDENT_MATH_C="$Id: math.C,v 1.84 2016/12/29 15:24:48 moko Exp $";
 
 // defines
 
@@ -46,11 +46,8 @@ DECLARE_CLASS_VAR(math, new MMath);
 
 static void _random(Request& r, MethodParams& params) {
 	double top=params.as_double(0, "range must be expression", r);
-	if(top<=0 || top>MAX_UINT)
-		throw Exception(PARSER_RUNTIME,
-			0,
-			"top(%g) must be [1..%u]", top, MAX_UINT);
-	
+	if(top<1 || top>INT32_MAX)
+		throw Exception(PARSER_RUNTIME, 0, "top(%.15g) must be [1..%u]", top, INT32_MAX);
 	r.write(*new VInt(_random(uint(top))));
 }
 

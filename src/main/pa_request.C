@@ -32,7 +32,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.368 2016/12/28 17:41:15 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.369 2016/12/29 15:24:49 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -44,8 +44,9 @@ const char* UNHANDLED_EXCEPTION_CONTENT_TYPE="text/plain";
 /// content type of response when no $MAIN:defaults.content-type defined
 const char* DEFAULT_CONTENT_TYPE="text/html";
 
-const uint EXECUTE_RECOURSION_LIMIT=1000;
 const uint LOOP_LIMIT=20000;
+const uint EXECUTE_RECOURSION_LIMIT=1000;
+const size_t FILE_SIZE_LIMIT=512*1024*1024;
 
 // defines for globals
 
@@ -74,8 +75,9 @@ const String exception_handled_part_name(EXCEPTION_HANDLED_PART_NAME);
 
 static const String origin_key(ORIGIN_KEY);
 
-int pa_execute_recoursion_limit=EXECUTE_RECOURSION_LIMIT;
 int pa_loop_limit=LOOP_LIMIT;
+int pa_execute_recoursion_limit=EXECUTE_RECOURSION_LIMIT;
+size_t pa_file_size_limit=FILE_SIZE_LIMIT;
 
 // defines for statics
 
@@ -84,8 +86,9 @@ int pa_loop_limit=LOOP_LIMIT;
 #define STRICT_VARS_NAME "STRICT-VARS"
 #define PROTOTYPE_NAME "OBJECT-PROTOTYPE"
 #define LIMITS_NAME "LIMITS"
-#define RECOURSION_LIMIT_NAME "max_recoursion"
 #define LOOP_LIMIT_NAME "max_loop"
+#define RECOURSION_LIMIT_NAME "max_recoursion"
+#define FILE_SIZE_LIMIT_NAME "max_file_size"
 #define CONF_METHOD_NAME "conf"
 #define POST_PROCESS_METHOD_NAME "postprocess"
 #define CLASS_PATH_NAME "CLASS_PATH"
@@ -102,8 +105,9 @@ static const String mime_types_name(MIME_TYPES_NAME);
 static const String strict_vars_name(STRICT_VARS_NAME);
 static const String prototype_name(PROTOTYPE_NAME);
 static const String limits_name(LIMITS_NAME);
-static const String recoursion_limit_name(RECOURSION_LIMIT_NAME);
 static const String loop_limit_name(LOOP_LIMIT_NAME);
+static const String recoursion_limit_name(RECOURSION_LIMIT_NAME);
+static const String file_size_limit_name(FILE_SIZE_LIMIT_NAME);
 
 static const String conf_method_name(CONF_METHOD_NAME);
 static const String post_process_method_name(POST_PROCESS_METHOD_NAME);
@@ -290,7 +294,7 @@ void Request::configure_admin(VStateless_class& conf_class) {
 				pa_loop_limit=loop_limit->as_int();
 				if(pa_loop_limit==0) pa_loop_limit=INT_MAX;
 			} else
-				throw Exception(PARSER_RUNTIME, 0, "$" MAIN_CLASS_NAME ":" LOOP_LIMIT_NAME " must be int");
+				throw Exception(PARSER_RUNTIME, 0, "$" MAIN_CLASS_NAME ":LIMITS." LOOP_LIMIT_NAME " must be int");
 		}
 
 	pa_execute_recoursion_limit=EXECUTE_RECOURSION_LIMIT;
@@ -300,7 +304,20 @@ void Request::configure_admin(VStateless_class& conf_class) {
 				pa_execute_recoursion_limit=recoursion_limit->as_int();
 				if(pa_execute_recoursion_limit==0) pa_execute_recoursion_limit=INT_MAX;
 			} else
-				throw Exception(PARSER_RUNTIME, 0, "$" MAIN_CLASS_NAME ":" RECOURSION_LIMIT_NAME " must be int");
+				throw Exception(PARSER_RUNTIME, 0, "$" MAIN_CLASS_NAME ":LIMITS." RECOURSION_LIMIT_NAME " must be int");
+		}
+
+	pa_file_size_limit=FILE_SIZE_LIMIT;
+	if(limits)
+		if(Value* file_size_limit=limits->get_element(file_size_limit_name)) {
+			if(file_size_limit->is_evaluated_expr()) {
+				double limit=file_size_limit->as_double();
+				if(limit >= (double)SSIZE_MAX)
+					throw Exception(PARSER_RUNTIME, 0, "$" MAIN_CLASS_NAME ":LIMITS." FILE_SIZE_LIMIT_NAME " must be less then %.15g", (double)SSIZE_MAX);
+				pa_file_size_limit=(size_t)limit;
+				if(pa_file_size_limit==0) pa_file_size_limit=SSIZE_MAX;
+			} else
+				throw Exception(PARSER_RUNTIME, 0, "$" MAIN_CLASS_NAME ":LIMITS." FILE_SIZE_LIMIT_NAME " must be number");
 		}
 
 	// configure method_frame options

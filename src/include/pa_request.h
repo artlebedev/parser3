@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.243 2016/11/29 14:32:32 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.244 2016/12/29 15:24:49 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -35,8 +35,9 @@ class VCookie;
 class VStateless_class;
 class VConsole;
 
-extern int pa_execute_recoursion_limit;
 extern int pa_loop_limit;
+extern int pa_execute_recoursion_limit;
+extern size_t pa_file_size_limit;
 
 /// Main workhorse.
 class Request: public PA_Object {

@@ -12,11 +12,7 @@
 #include "pa_charset.h"
 #include "pa_vregex.h"
 
-#ifndef ULLONG_MAX
-#define ULLONG_MAX 18446744073709551615ULL
-#endif
-
-volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.258 2016/12/28 17:41:15 moko Exp $" IDENT_PA_STRING_H;
+volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.259 2016/12/29 15:24:49 moko Exp $" IDENT_PA_STRING_H;
 
 const String String::Empty;
 
