@@ -50,7 +50,7 @@
 #define pa_mkdir(path, mode) mkdir(path, mode)
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.298 2016/12/28 22:50:07 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.299 2016/12/29 15:55:40 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -503,9 +503,9 @@ bool file_stat(const String& file_spec, uint64_t& rsize, time_t& ratime, time_t&
 			return false;
 	}
 	rsize=finfo.st_size;
-	ratime=finfo.st_atime;
-	rmtime=finfo.st_mtime;
-	rctime=finfo.st_ctime;
+	ratime=(time_t)finfo.st_atime;
+	rmtime=(time_t)finfo.st_mtime;
+	rctime=(time_t)finfo.st_ctime;
 	return true;
 }
 
