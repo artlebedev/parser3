@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.275 2016/11/29 14:35:00 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.276 2017/01/13 13:50:29 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -302,7 +302,7 @@ static void SIGPIPE_handler(int /*sig*/){
 
 	execution_canceled=true;
 	if(request)
-		request->set_interrupted(true);
+		request->set_skip(Request::SKIP_INTERRUPTED);
 }
 #endif
 

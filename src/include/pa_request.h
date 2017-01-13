@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.244 2016/12/29 15:24:49 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.245 2017/01/13 13:50:28 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -65,8 +65,10 @@ public:
 
 	enum Skip {
 		SKIP_NOTHING,
+		SKIP_CONTINUE,
 		SKIP_BREAK,
-		SKIP_CONTINUE
+		SKIP_RETURN,
+		SKIP_INTERRUPTED
 	};
 
 private:
@@ -147,10 +149,12 @@ public:
 	/// current connection
 	SQL_Connection* fconnection;
 	//@}
-	/// interrupted flag, raised on signals [SIGPIPE]
-	bool finterrupted;
-	Skip fskip;
+
+private:
+
 	int fin_cycle;
+	Skip fskip;
+	VMethodFrame* freturn_method_frame;
 
 public:
 	uint register_file(String::Body file_spec);
@@ -292,11 +296,11 @@ public:
 		return fconnection;
 	}
 
-	void set_interrupted(bool ainterrupted) { finterrupted=ainterrupted; }
-	bool get_interrupted() { return finterrupted; }
-
-	void set_skip(Skip askip) { fskip=askip; }
 	Skip get_skip() { return fskip; }
+	void set_skip(Skip askip) { fskip=askip; }
+	void set_skip_return() { fskip=SKIP_RETURN; freturn_method_frame=method_frame; }
+	inline bool check_skip_break() { bool result=fskip >= SKIP_BREAK; if(fskip <= SKIP_BREAK) fskip=SKIP_NOTHING; return result; }
+	inline void check_skip_return() { if(fskip==SKIP_RETURN && method_frame==freturn_method_frame) fskip=SKIP_NOTHING; }
 
 	void set_in_cycle(int adelta) { fin_cycle+=adelta; }
 	bool get_in_cycle() { return fin_cycle>0; }
@@ -486,6 +490,23 @@ public:
 	}
 	~InCycle() {
 		frequest.set_in_cycle(-1);
+	}
+};
+
+///	Auto-object used for break out of cycle check
+class TempSkip4Delimiter {
+	Request& frequest;
+	Request::Skip fskip;
+public:
+	TempSkip4Delimiter(Request& arequest) : frequest(arequest), fskip(arequest.get_skip()) {
+		frequest.set_skip(Request::SKIP_NOTHING);
+	}
+	// returns true if break required, should be called
+	bool check_break() {
+		if(frequest.get_skip())
+			fskip=frequest.get_skip();
+		frequest.set_skip(fskip <= Request::SKIP_BREAK ? Request::SKIP_NOTHING : fskip);
+		return fskip >= Request::SKIP_BREAK;
 	}
 };
 

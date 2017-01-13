@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.248 2016/11/29 15:28:05 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.249 2017/01/13 13:50:28 moko Exp $";
 
 // defines
 
@@ -248,7 +248,7 @@ static void _while(Request& r, MethodParams& params) {
 				break;
 
 			Value& sv_processed=r.process(body_code);
-			Request::Skip lskip=r.get_skip(); r.set_skip(Request::SKIP_NOTHING);
+			TempSkip4Delimiter skip(r);
 
 			const String* s_processed=sv_processed.get_string();
 			if(s_processed && !s_processed->is_empty()) { // we have body
@@ -259,7 +259,7 @@ static void _while(Request& r, MethodParams& params) {
 			}
 			r.write(sv_processed);
 
-			if(lskip==Request::SKIP_BREAK)
+			if(skip.check_break())
 				break;
 		}
 	} else {
@@ -271,9 +271,8 @@ static void _while(Request& r, MethodParams& params) {
 				break;
 
 			r.process_write(body_code);
-			Request::Skip lskip=r.get_skip(); r.set_skip(Request::SKIP_NOTHING);
 
-			if(lskip==Request::SKIP_BREAK)
+			if(r.check_skip_break())
 				break;
 		}
 	}
@@ -331,6 +330,12 @@ static void _continue(Request& r, MethodParams& params) {
 	if(!params.count() || params.as_bool(0, "condition must be expression", r)) set_skip(r, Request::SKIP_CONTINUE);
 }
 
+static void _return(Request& r, MethodParams& params) {
+	if(params.count())
+		r.put_element(*r.get_method_frame(), Symbols::RESULT_SYMBOL, &params[0]); // not caller as CO_WITHOUT_FRAME
+	r.set_skip_return();
+}
+
 static void _for(Request& r, MethodParams& params) {
 	InCycle temp(r);
 
@@ -354,7 +359,7 @@ static void _for(Request& r, MethodParams& params) {
 			vint->set_int(i);
 
 			Value& sv_processed=r.process(body_code);
-			Request::Skip lskip=r.get_skip(); r.set_skip(Request::SKIP_NOTHING);
+			TempSkip4Delimiter skip(r);
 
 			const String* s_processed=sv_processed.get_string();
 			if(s_processed && !s_processed->is_empty()) { // we have body
@@ -365,7 +370,7 @@ static void _for(Request& r, MethodParams& params) {
 			}
 			r.write(sv_processed);
 
-			if(lskip==Request::SKIP_BREAK)
+			if(skip.check_break())
 				break;
 		}
 	} else {
@@ -373,9 +378,8 @@ static void _for(Request& r, MethodParams& params) {
 			vint->set_int(i);
  
 			r.process_write(body_code);
-			Request::Skip lskip=r.get_skip(); r.set_skip(Request::SKIP_NOTHING);
 
-			if(lskip==Request::SKIP_BREAK)
+			if(r.check_skip_break())
 				break;
 		}
 	}
@@ -944,6 +948,10 @@ VClassMAIN::VClassMAIN(): VClass(MAIN_CLASS_NAME) {
 	// ^continue[]
 	// ^continue(condition)
 	add_native_method("continue", Method::CT_ANY, _continue, 0, 1, Method::CO_WITHOUT_FRAME);
+
+	// ^return[]
+	// ^return[result]
+	add_native_method("return", Method::CT_ANY, _return, 0, 1, Method::CO_WITHOUT_FRAME);
 
 	// ^for[i](from-number;to-number-inclusive){code}[delim]
 	add_native_method("for", Method::CT_ANY, _for, 3+1, 3+1+1);

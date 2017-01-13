@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.139 2016/12/26 16:24:03 moko Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.140 2017/01/13 13:50:28 moko Exp $";
 
 // class
 
@@ -421,7 +421,7 @@ static void _foreach(Request& r, MethodParams& params) {
 				r.put_element(caller, *value_var_name, i.value());
 
 			Value& sv_processed=r.process(*body_code);
-			Request::Skip lskip=r.get_skip(); r.set_skip(Request::SKIP_NOTHING);
+			TempSkip4Delimiter skip(r);
 
 			const String* s_processed=sv_processed.get_string();
 			if(s_processed && !s_processed->is_empty()) { // we have body
@@ -433,7 +433,7 @@ static void _foreach(Request& r, MethodParams& params) {
 
 			r.write(sv_processed);
 
-			if(lskip==Request::SKIP_BREAK) 
+			if(skip.check_break())
 				break;
 		}
 	} else {
@@ -447,9 +447,8 @@ static void _foreach(Request& r, MethodParams& params) {
 				r.put_element(caller, *value_var_name, i.value());
 
 			r.process_write(*body_code);
-			Request::Skip lskip=r.get_skip(); r.set_skip(Request::SKIP_NOTHING);
 
-			if(lskip==Request::SKIP_BREAK)
+			if(r.check_skip_break())
 				break;
 		}
 	}

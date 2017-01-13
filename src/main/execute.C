@@ -21,7 +21,7 @@
 #include "pa_vimage.h"
 #include "pa_wwrapper.h"
 
-volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.402 2016/11/29 23:51:41 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
+volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.403 2017/01/13 13:50:28 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
 
 //#define DEBUG_EXECUTE
 
@@ -242,7 +242,6 @@ void debug_dump(SAPI_Info& sapi_info, int level, ArrayOperation& ops) {
 #define DEBUG_PRINT_OPS(local_ops)
 #endif
 
-
 // Request
 
 void Request::execute(ArrayOperation& ops) {
@@ -371,7 +370,7 @@ void Request::execute(ArrayOperation& ops) {
 				DEBUG_PRINT_STRING(name)                                                \
 				Value& value=stack.pop().value();                                       \
 				put_element( context, name, vvalue );                                   \
-				break;                                                                  \
+				goto check_skip;                                                        \
 		}
 #define DO_CONSTRUCT_VALUE(context) DO_CONSTRUCT(context, &value)
 #define DO_CONSTRUCT_EXPR(context) {                                                                    \
@@ -414,8 +413,7 @@ void Request::execute(ArrayOperation& ops) {
 				Value& ncontext=stack.pop().value();
 #endif
 				put_element(ncontext, name, &value);
-
-				break;
+				goto check_skip;
 			}
 
 		case OP::OP_CONSTRUCT_EXPR:
@@ -431,7 +429,7 @@ void Request::execute(ArrayOperation& ops) {
 #endif
 				Value& value=expr.as_expr_result();
 				put_element(ncontext, name, &value);
-				break;
+				goto check_skip;
 			}
 
 		case OP::OP_CURLY_CODE__CONSTRUCT:
@@ -454,7 +452,7 @@ void Request::execute(ArrayOperation& ops) {
 				if(const VJunction* vjunction=ncontext.put_element(name, &value))
 					if(vjunction!=PUT_ELEMENT_REPLACED_ELEMENT)
 						throw Exception(PARSER_RUNTIME, 0, "property value can not be code, use [] or () brackets");
-					
+
 				break;
 			}
 		case OP::OP_NESTED_CODE:
@@ -506,7 +504,7 @@ void Request::execute(ArrayOperation& ops) {
 				}
 				Value& value=get_element(*rcontext, name);
 				stack.push(value);
-				break;
+				goto check_skip;
 			}
 #else
 		case OP::OP_GET_ELEMENT_OR_OPERATOR:
@@ -520,7 +518,7 @@ void Request::execute(ArrayOperation& ops) {
 				}
 				Value& value=get_element(ncontext, name);
 				stack.push(value);
-				break;
+				goto check_skip;
 			}
 #endif
 
@@ -535,7 +533,7 @@ void Request::execute(ArrayOperation& ops) {
 				const String& field_name=*i.next().value->get_string();  debug_name=&field_name;	\
 				DEBUG_PRINT_STRING(field_name) 								\
 				code;											\
-				break;											\
+				goto check_skip;									\
 			}
 
 		case OP::OP_GET_OBJECT_ELEMENT: DO_GET_OBJECT_ELEMENT({
@@ -566,7 +564,7 @@ void Request::execute(ArrayOperation& ops) {
 				DEBUG_PRINT_STRING(var_name)								\
 				const String* field=&get_element(*rcontext, var_name).as_string();			\
 				code;											\
-				break;											\
+				goto check_skip;									\
 			}
 
 		case OP::OP_GET_OBJECT_VAR_ELEMENT: DO_GET_OBJECT_VAR_ELEMENT({
@@ -591,7 +589,7 @@ void Request::execute(ArrayOperation& ops) {
 				Value& ncontext=stack.pop().value();
 				Value& value=get_element(ncontext, name);
 				stack.push(value);
-				break;
+				goto check_skip;
 			}
 
 #ifdef FEATURE_GET_ELEMENT4CALL
@@ -601,7 +599,7 @@ void Request::execute(ArrayOperation& ops) {
 				Value& ncontext=stack.pop().value();
 				Value& value=get_element4call(ncontext, name);
 				stack.push(value);
-				break;
+				goto check_skip;
 			}
 #endif
 
@@ -611,7 +609,7 @@ void Request::execute(ArrayOperation& ops) {
 				Value& ncontext=stack.pop().value();
 				Value& value=get_element(ncontext, name);
 				write(value);
-				break;
+				goto check_skip;
 			}
 
 #ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
@@ -624,7 +622,7 @@ void Request::execute(ArrayOperation& ops) {
 
 				Value& value=get_element(*rcontext, name);
 				stack.push(value);
-				break;
+				goto check_skip;
 			}
 
 		case OP::OP_VALUE__GET_ELEMENT__WRITE:
@@ -636,7 +634,7 @@ void Request::execute(ArrayOperation& ops) {
 
 				Value& value=get_element(*rcontext, name);
 				write(value);
-				break;
+				goto check_skip;
 			}
 
 		case OP::OP_WITH_ROOT__VALUE__GET_ELEMENT:
@@ -648,7 +646,7 @@ void Request::execute(ArrayOperation& ops) {
 
 				Value& value=get_element(*method_frame, name);
 				stack.push(value);
-				break;
+				goto check_skip;
 			}
 #endif
 
@@ -668,7 +666,7 @@ void Request::execute(ArrayOperation& ops) {
 				} else {
 					write(value);
 				}
-				break;
+				goto check_skip;
 			}
 #endif
 
@@ -687,8 +685,9 @@ void Request::execute(ArrayOperation& ops) {
 				execute(local_ops);
 
 				stack.push((Value&)wcontext->result());
+
 				wcontext=saved_wcontext;
-				break;
+				goto check_skip;
 			}
 			
 		case OP::OP_STRING_POOL:
@@ -708,7 +707,7 @@ void Request::execute(ArrayOperation& ops) {
 				stack.push(*value);
 
 				wcontext=saved_wcontext;
-				break;
+				goto check_skip;
 			}
 
 		// CALL
@@ -746,8 +745,10 @@ void Request::execute(ArrayOperation& ops) {
 		if(local_ops){												\
 			size_t first = stack.top_index();								\
 			execute(*local_ops);										\
-			frame.store_params((Value**)stack.ptr(first), stack.top_index()-first);				\
-			action;												\
+			if(!fskip){											\
+				frame.store_params((Value**)stack.ptr(first), stack.top_index()-first);			\
+				action;											\
+			}												\
 			stack.set_top_index(first);									\
 		} else {												\
 			frame.empty_params();										\
@@ -782,14 +783,7 @@ void Request::execute(ArrayOperation& ops) {
 				stack.push(*result);
 
 				DEBUG_PRINT_STR("<-returned")
-
-				if(get_skip())
-					return;
-				if(get_interrupted()) {
-					set_interrupted(false);
-					throw Exception("parser.interrupted", 0, "execution stopped");
-				}
-				break;
+				goto check_skip;
 			}
 
 		case OP::OP_CALL__WRITE:
@@ -816,10 +810,12 @@ void Request::execute(ArrayOperation& ops) {
 						size_t first = stack.top_index();
 						execute(*local_ops);
 
-						MethodParams method_params;
-						method_params.store_params((Value**)stack.ptr(first), stack.top_index()-first);
-						method.check_actual_numbered_params(junction->self, &method_params);
-						method.native_code(*this, method_params); // execute it
+						if(!fskip){
+							MethodParams method_params;
+							method_params.store_params((Value**)stack.ptr(first), stack.top_index()-first);
+							method.check_actual_numbered_params(junction->self, &method_params);
+							method.native_code(*this, method_params); // execute it
+						}
 
 						stack.set_top_index(first);
 					} else {
@@ -841,14 +837,7 @@ void Request::execute(ArrayOperation& ops) {
 				}
 
 				DEBUG_PRINT_STR("<-returned")
-
-				if(get_skip())
-					return;
-				if(get_interrupted()) {
-					set_interrupted(false);
-					throw Exception("parser.interrupted", 0, "execution stopped");
-				}
-				break;
+				goto check_skip;
 			}
 
 		case OP::OP_CONSTRUCT_OBJECT:
@@ -895,7 +884,7 @@ void Request::execute(ArrayOperation& ops) {
 					write(*result);
 
 				DEBUG_PRINT_STR("<-returned")
-				break;
+				goto check_skip;
 			}
 
 		// expression ops: unary
@@ -1077,7 +1066,7 @@ void Request::execute(ArrayOperation& ops) {
 					result=false;
 				Value& value=VBool::get(result);
 				stack.push(value);
-				break;
+				goto check_skip;
 			}
 		case OP::OP_LOG_OR:
 			{
@@ -1092,7 +1081,7 @@ void Request::execute(ArrayOperation& ops) {
 				}
 				Value& value=VBool::get(result);
 				stack.push(value);
-				break;
+				goto check_skip;
 			}
 		case OP::OP_LOG_XOR:
 			{
@@ -1198,9 +1187,21 @@ void Request::execute(ArrayOperation& ops) {
 				stack.push(value);
 				break;
 			}
-
 		default:
-			throw Exception(0, 0, "invalid opcode %d", opcode); 
+			{
+				throw Exception(0, 0, "invalid opcode %d", opcode); 
+			}
+		check_skip:
+			{
+				if(fskip){
+					if(fskip==Request::SKIP_INTERRUPTED){
+						set_skip(Request::SKIP_NOTHING);
+						throw Exception("parser.interrupted", 0, "execution stopped");
+					}
+					return;
+				}
+				break;
+			}
 		}
 	}
 	} catch(const Exception&) {

@@ -12,7 +12,7 @@
 #include "pa_vhashfile.h"
 #include "pa_vhash.h"
 
-volatile const char * IDENT_HASHFILE_C="$Id: hashfile.C,v 1.60 2016/11/01 23:10:40 moko Exp $";
+volatile const char * IDENT_HASHFILE_C="$Id: hashfile.C,v 1.61 2017/01/13 13:50:28 moko Exp $";
 
 // class
 
@@ -107,7 +107,7 @@ static bool one_foreach_cycle(
 	}
 
 	Value& sv_processed=info.r->process(*info.body_code);
-	Request::Skip lskip=info.r->get_skip(); info.r->set_skip(Request::SKIP_NOTHING);
+	TempSkip4Delimiter skip(*info.r);
 
 	const String* s_processed=sv_processed.get_string();
 	if(info.delim_maybe_code && s_processed && !s_processed->is_empty()) { // delimiter set and we have body
@@ -119,7 +119,7 @@ static bool one_foreach_cycle(
 
 	info.r->write(sv_processed);
 
-	return lskip==Request::SKIP_BREAK;
+	return skip.check_break();
 }
 static void _foreach(Request& r, MethodParams& params) {
 	InCycle temp(r);

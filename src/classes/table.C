@@ -22,7 +22,7 @@
 #define USE_STRINGSTREAM
 #endif
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.340 2016/12/26 20:37:53 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.341 2017/01/13 13:50:28 moko Exp $";
 
 // class
 
@@ -781,7 +781,7 @@ static void _menu(Request& r, MethodParams& params) {
 			table.set_current(row);
 
 			Value& sv_processed=r.process(body_code);
-			Request::Skip lskip=r.get_skip(); r.set_skip(Request::SKIP_NOTHING);
+			TempSkip4Delimiter skip(r);
 
 			const String* s_processed=sv_processed.get_string();
 			if(s_processed && !s_processed->is_empty()) { // we have body
@@ -793,7 +793,7 @@ static void _menu(Request& r, MethodParams& params) {
 
 			r.write(sv_processed);
 
-			if(lskip==Request::SKIP_BREAK)
+			if(skip.check_break())
 				break;
 		}
 	} else {
@@ -801,9 +801,8 @@ static void _menu(Request& r, MethodParams& params) {
 			table.set_current(row);
  
 			r.process_write(body_code);
-			Request::Skip lskip=r.get_skip(); r.set_skip(Request::SKIP_NOTHING);
  
-			if(lskip==Request::SKIP_BREAK)
+			if(r.check_skip_break())
 				break;
 		}
 	}
@@ -1172,7 +1171,7 @@ static void _foreach(Request& r, MethodParams& params) {
 				r.put_element(*var_context, *value_var_name, new VTable(&table));
 
 			Value& sv_processed=r.process(body_code);
-			Request::Skip lskip=r.get_skip(); r.set_skip(Request::SKIP_NOTHING);
+			TempSkip4Delimiter skip(r);
 
 			const String* s_processed=sv_processed.get_string();
 			if(s_processed && !s_processed->is_empty()) { // we have body
@@ -1184,7 +1183,7 @@ static void _foreach(Request& r, MethodParams& params) {
 
 			r.write(sv_processed);
 
-			if(lskip==Request::SKIP_BREAK)
+			if(skip.check_break())
 				break;
 		}
 	} else {
@@ -1197,9 +1196,8 @@ static void _foreach(Request& r, MethodParams& params) {
 				r.put_element(*var_context, *value_var_name, new VTable(&table));
 
 			r.process_write(body_code);
-			Request::Skip lskip=r.get_skip(); r.set_skip(Request::SKIP_NOTHING);
  
-			if(lskip==Request::SKIP_BREAK)
+			if(r.check_skip_break())
 				break;
 		}
 	}
