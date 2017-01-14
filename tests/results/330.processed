@@ -1,14 +1,11 @@
 Content-Type: text/html
-Content-Length: 663
+Content-Length: 593
 
 1. break in try with catch and finally
-catch!
-call number 1
-call number 2
 finally!
 call number 1
 call number 2
-break moment: aa
+break moment: ""
 2. break in try with finally
 finally!
 call number 1
@@ -28,9 +25,6 @@ finally!
 call number 1
 call number 2
 6. break in nested try with finally inside
-catch!
-call number 1
-call number 2
 finally!
 call number 1
 call number 2
