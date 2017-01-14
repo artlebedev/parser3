@@ -1,6 +1,6 @@
 @main[]
 
-broken ^^break[] demos (code works until first method call returns):
+broken ^^break[] demos (code worked until first method call returns):
 
 1. in STRING_POOL
 
@@ -9,7 +9,7 @@ broken ^^break[] demos (code works until first method call returns):
 	^method[1]
 	^method[2]
 }
-first break demo: $demo
+first break demo: "$demo"
 
 2. in CONSTRUCT_OBJECT
 ^while(1){
@@ -17,18 +17,15 @@ first break demo: $demo
 	^method[1]
 	^method[2]
 }
-first break demo: $demo
+first break demo: "$demo"
 
 3. code in variable bug:
 
-^try-catch{
 ^while(1){
 	$demo{yes^break[]no}
 	$demo
 	^method[1]
 	^method[2]
-}
-$demo
 }
 
 @method[s]
