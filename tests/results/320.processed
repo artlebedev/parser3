@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 2502
+Content-Length: 2521
 
 MAIN: MAIN
 MAIN methods: {
@@ -13,6 +13,7 @@ MAIN methods: {
 "use":"native",
 "break":"native",
 "continue":"native",
+"return":"native",
 "for":"native",
 "eval":"native",
 "connect":"native",
