@@ -1,0 +1,13 @@
+Content-Type: text/html
+Content-Length: 694
+
+1. continue in body does not influence delimiter code and vice versa
+body1 %%, [2] ==body2 %%, [3] ==body3 %%, [4] ==body4 %%, [5] ==body5 %, [6] ==body6 %, [7] ==body7 %, [8] ==body8 %, [9] =body9 %, [10] =body10 %
+2. break can be called from delimiter
+body1, [2] ==body2, [3] ==body3, [4] ==body4, [5] =body5
+3. break in body still allows next delimiter execution
+body1 ==, [2] body2 ==, [3] body3 ==, [4] body4 ==, [5] body5 =
+4. continue in delimiter called after and thus has precedence over break in body
+body1 ==, [2] %body2 ==, [3] %body3 ==, [4] %body4 ==, [5] %body5 =, [6] %body6 =, [7] %body7 =, [8] %body8 =
+5. ^break[] can be passed to break from the called method inner cicle
+% =

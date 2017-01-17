@@ -1,0 +1,14 @@
+@main[]
+1. continue in body does not influence delimiter code and vice versa
+    ^for[i](1;10){body$i %^if($i>4){^continue[]}%}{, [$i] =^if($i>8){^continue[]}=}
+2. break can be called from delimiter
+    ^for[i](1;8){body$i}{, [$i] =^if($i>4){^break[]}=}
+3. break in body still allows next delimiter execution
+    ^for[i](1;8){body$i =^if($i>4){^break[]}=}{, [$i] }
+4. continue in delimiter called after and thus has precedence over break in body
+    ^for[i](1;8){body$i =^if($i>4){^break[]}=}{, [$i] %^continue[]%}
+5. ^^break[] can be passed to break from the called method inner cicle
+    ^test5{ =^break[]= }
+
+@test5[code]
+^while(1){ %$code% }
