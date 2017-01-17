@@ -1,0 +1,105 @@
+@main[]
+1. break in method string param
+    ^while(1){=^test1[]=}
+2. break in method code param
+    ^while(1){=^test2[]=}
+3. break in variable in code
+    ^while(1){=^test3[]=}
+4. stack usage is not visible, but exists
+    ^test4[]
+5. break can be called from getter
+    ^while(1){ ^test5[] } "$o.v"
+6. break can be called from setter
+    6.0 ^while(1){ ^test6[] } "$o.v"
+    6.1 ^while(1){ ^test6-1[] } "$o.v"
+7. break can be called from constructor
+    ^while(1){ ^test7[] } "$z.CLASS_NAME"
+8. break in method name (unusial, but still possible)
+    ^while(1){ ^test8[] }
+9. break in expression or parser method expression param is allowed
+    9.0 ^while(1){ ^test9[] }
+    9.1 ^while(1){ ^test9-1[] }
+10. break in native methods expression params is not allowed
+    10.0 ^while(1){ ^test10[] }
+    10.1 ^while(1){ ^test10-1[] }
+
+@test1[]
+^method1[%^break[]%;gpf]
+
+@method1[arg1;arg2]
+should not be called
+
+@test2[]
+^method2{%^break[]%;gpf}
+
+@method2[arg1;arg2]
+arg: [$arg1] [$arg2]
+
+@test3[]
+$code{%^break[]%}
+|$code|
+
+@test4[]
+# each iteration uses leaves 6 unwiped values on stack,
+# but they are cleaned upon exit from ^for without side effects
+$v[^for[i](1;10){- $l1[$l2[$l3[$l4[$l5[$l6[^continue[]?]]]]]] + }]
+[$v]
+
+@test5[]
+$o[^O::create[]]
+=$o.property=
+
+@test6[]
+$o[^O::create[]]
+=$o.property[value]=
+
+@test6-1[]
+$o[^O::create[]]
+=$o.property(1+1)=
+
+@test7[]
+=$z[^O::create-with-break[]]=
+
+@test8[]
+$code{%^break[]%}
+=^code[]=
+
+@test9[]
+%$x(1+^break[])%
+
+@test9-1[]
+=^method9(^break[])=
+
+@method9[cond]
+%$x($cond)%
+
+@test10[]
+$c{1 ^continue[]}
+^try-catch{
+=^if($c){yes}{no}=
+}
+%^break[]%
+
+@test10-1[]
+^try-catch{
+    =^method10(^break[]){yes}{no}=
+}
+%^break[]%
+
+@method10[cond;yes;no]
+%^if($cond){$yes}{$no}%
+
+@CLASS
+O
+
+@create[]
+$v[]
+
+@create-with-break[]
+%^break[]%
+
+@GET_property[]
+$v[before] %^break[]% $v[after]
+
+@SET_property[value]
+$v[before] %^break[]% $v[after]

@@ -1,0 +1,33 @@
+Content-Type: text/html
+Content-Length: 782
+
+1. break in method string param
+=
+2. break in method code param
+=arg: [%
+3. break in variable in code
+=
+|%
+4. stack usage is not visible, but exists
+[- - - - - - - - - - ]
+5. break can be called from getter
+= % "before"
+6. break can be called from setter
+6.0 = "before"
+6.1 = "before"
+7. break can be called from constructor
+= "void"
+8. break in method name (unusial, but still possible)
+=
+9. break in expression or parser method expression param is allowed
+9.0 %
+9.1 =%
+10. break in native methods expression params is not allowed
+10.0 Type: parser.runtime,
+Source: if,
+Comment: continue is not allowed in expression passed to native method (parameter #1)
+%
+10.1 Type: parser.runtime,
+Source: if,
+Comment: break is not allowed in expression passed to native method (parameter #1)
+%
