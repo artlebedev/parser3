@@ -9,7 +9,7 @@
 #include "pa_vcaller_wrapper.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VMETHOD_FRAME_C="$Id: pa_vmethod_frame.C,v 1.39 2017/01/17 17:26:54 moko Exp $" IDENT_PA_VMETHOD_FRAME_H IDENT_PA_VCALLER_WRAPPER_H;
+volatile const char * IDENT_PA_VMETHOD_FRAME_C="$Id: pa_vmethod_frame.C,v 1.40 2017/01/17 17:31:20 moko Exp $" IDENT_PA_VMETHOD_FRAME_H IDENT_PA_VCALLER_WRAPPER_H;
 
 static VVoid void_result; // unique value to be sure the result is changed
 
@@ -26,8 +26,11 @@ Value& MethodParams::get_processed(Value& value, const char* msg, int index, Req
 	if(!value.get_junction())
 		throw Exception(PARSER_RUNTIME, 0, "%s (parameter #%d)", msg, 1+index);
 	Value& result=r.process(value);
-	if(r.get_skip())
-		throw Exception(PARSER_RUNTIME, 0, "%s is not allowed in expression passed to native method (parameter #%d)", skip_name[r.get_skip()], 1+index);
+	if(r.get_skip()){
+		const char *skip=skip_name[r.get_skip()];
+		r.set_skip(Request::SKIP_NOTHING);
+		throw Exception(PARSER_RUNTIME, 0, "%s is not allowed in expression passed to native method (parameter #%d)", skip, 1+index);
+	}
 	return result;
 }
 
