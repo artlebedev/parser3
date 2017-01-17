@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.245 2017/01/13 13:50:28 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.246 2017/01/17 23:53:28 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -298,7 +298,7 @@ public:
 
 	Skip get_skip() { return fskip; }
 	void set_skip(Skip askip) { fskip=askip; }
-	void set_skip_return() { fskip=SKIP_RETURN; freturn_method_frame=method_frame; }
+	void set_skip_return(VMethodFrame& amethod_frame) { fskip=SKIP_RETURN; freturn_method_frame=&amethod_frame; }
 	inline bool check_skip_break() { bool result=fskip >= SKIP_BREAK; if(fskip <= SKIP_BREAK) fskip=SKIP_NOTHING; return result; }
 	inline void check_skip_return() { if(fskip==SKIP_RETURN && method_frame==freturn_method_frame) fskip=SKIP_NOTHING; }
 

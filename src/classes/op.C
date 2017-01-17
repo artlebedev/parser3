@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.249 2017/01/13 13:50:28 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.250 2017/01/17 23:53:27 moko Exp $";
 
 // defines
 
@@ -331,9 +331,10 @@ static void _continue(Request& r, MethodParams& params) {
 }
 
 static void _return(Request& r, MethodParams& params) {
+	VMethodFrame& caller=*r.get_method_frame()->caller();
 	if(params.count())
-		r.put_element(*r.get_method_frame(), Symbols::RESULT_SYMBOL, &params[0]); // not caller as CO_WITHOUT_FRAME
-	r.set_skip_return();
+		r.put_element(caller, Symbols::RESULT_SYMBOL, &params[0]);
+	r.set_skip_return(caller);
 }
 
 static void _for(Request& r, MethodParams& params) {
@@ -951,7 +952,7 @@ VClassMAIN::VClassMAIN(): VClass(MAIN_CLASS_NAME) {
 
 	// ^return[]
 	// ^return[result]
-	add_native_method("return", Method::CT_ANY, _return, 0, 1, Method::CO_WITHOUT_FRAME);
+	add_native_method("return", Method::CT_ANY, _return, 0, 1);
 
 	// ^for[i](from-number;to-number-inclusive){code}[delim]
 	add_native_method("for", Method::CT_ANY, _for, 3+1, 3+1+1);
