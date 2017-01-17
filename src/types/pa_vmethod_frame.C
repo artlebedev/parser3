@@ -9,16 +9,26 @@
 #include "pa_vcaller_wrapper.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VMETHOD_FRAME_C="$Id: pa_vmethod_frame.C,v 1.38 2017/01/13 13:50:29 moko Exp $" IDENT_PA_VMETHOD_FRAME_H IDENT_PA_VCALLER_WRAPPER_H;
+volatile const char * IDENT_PA_VMETHOD_FRAME_C="$Id: pa_vmethod_frame.C,v 1.39 2017/01/17 17:26:54 moko Exp $" IDENT_PA_VMETHOD_FRAME_H IDENT_PA_VCALLER_WRAPPER_H;
 
 static VVoid void_result; // unique value to be sure the result is changed
 
 // MethodParams: methods
 
+const char *skip_name[]={
+	"",
+	"continue",
+	"break",
+	"return"
+};
+
 Value& MethodParams::get_processed(Value& value, const char* msg, int index, Request& r) {
 	if(!value.get_junction())
 		throw Exception(PARSER_RUNTIME, 0, "%s (parameter #%d)", msg, 1+index);
-	return r.process(value);
+	Value& result=r.process(value);
+	if(r.get_skip())
+		throw Exception(PARSER_RUNTIME, 0, "%s is not allowed in expression passed to native method (parameter #%d)", skip_name[r.get_skip()], 1+index);
+	return result;
 }
 
 // Should be synced with Value::as_hash
