@@ -1,0 +1,161 @@
+@main[]
+1. return in method string param
+    ^test1[]
+2. return in method code param
+    ^test2[]
+3. return in variable in code
+    ^test3[]
+4. return from getter
+    ^test4[] "$o.v"
+5. return from setter
+    ^test5[]  "$o.v"
+6. return from constructor
+    6.0 ^test6[] "$x.v"
+    6.1 ^test6-1[] "$y.CLASS_NAME"
+7. return in method name (unusial, but still possible)
+    ^test7[]
+8. return in expression or parser method expression param is allowed
+    8.0 ^test8[]
+    8.1 ^test8-1[]
+9. return is not allowed in expression passed to native method
+    ^test9[]
+10. testing return value
+    ^test10[] "$v"
+11. testing return value
+    ^test11[]
+12. testing return value
+    ^test12[]
+13. testing return value
+    ^test13[]
+14. testing continue replacing return
+    ^test14[]
+15. testing continue replacing return, but result is set
+    ^test15[]
+16. testing continue in finally replacing return
+    ^test16[]
+17. testing finally not replacing return
+    ^test17[]
+[eof]
+
+@test1[]
+=^method1[%^return[]%;^throw[;should not be called]]=
+
+@method1[arg1;arg2]
+[should not be called]
+
+@test2[]
+=^method2{%^return[]%;^throw[;should not be called]}=
+[should not be shown]
+
+@method2[arg1;arg2]
+arg: [$arg1] [$arg2]
+
+@test3[]
+$code{%^return[]%}
+|$code|
+
+@test4[]
+$o[^O::create[]]
+=$o.property=
+
+@test5[]
+$o[^O::create[]]
+=$o.property[value]=
+
+@test6[]
+=$x[^O::create-with-return[]]=
+
+@test6-1[]
+=$y[^O::create-with-code{^return[]}]=
+
+@test7[]
+$code{%^return[]%}
+=^code[]=
+
+@test8[]
+%$x(1+^return[])%
+
+@test8-1[]
+=^method8(^return[])=
+
+@method8[cond]
+%$x($cond)%
+
+@test9[]
+$r{1 ^return[]}
+^try-catch{
+=^if($r){yes}{no}=
+}
+
+@test10[]
+=^method10{%^return[result value]%}=
+
+@method10[arg1]
+$v[before]
+arg: [$arg1]
+$v[after]
+
+@test11[]
+$result[result set]
+=^method10{%^return[]%}=
+
+@test12[]
+$result[result set]
+=^method10{%^return[result replaced]%}=
+
+@test13[]
+$result[result set ^return[result replaced]]
+
+@test14[]
+^for[i](1;8){body $i =^if($i>4){%^return[]%}= }{, [$i] ^continue[]}
+
+@test15[]
+^for[i](1;8){body $i =^if($i>4){%^return[$i]%}= }{, [$i] ^continue[]}
+
+@test16[]
+=^method16{%^return[]%}=
+
+@method16[code]
+^for[i](1;2){
+    [$i]
+    ^try{
+	try =$code=
+    }{}{
+	ups ^continue[]
+    }
+}
+
+@test17[]
+=^method17{%^return[]%}=
+
+@method17[code]
+^for[i](1;2){
+    [$i]
+    ^try{
+	try =$code=
+    }{}{
+	ups
+    }
+}
+
+@CLASS
+O
+
+@create[]
+$v[]
+
+@create-with-return[]
+$v[before]
+^return[]
+$v[after]
+
+@create-with-code[code]
+$v[before]
+$code
+$v[after]
+
+@GET_property[]
+$v[before] %^return[]% $v[after]
+
+@SET_property[value]
+$v[before] %^return[]% $v[after]

@@ -1,0 +1,50 @@
+Content-Type: text/html
+Content-Length: 1081
+
+1. return in method string param
+=
+2. return in method code param
+=arg: [%
+3. return in variable in code
+|%
+4. return from getter
+= %= "before"
+5. return from setter
+== "before"
+6. return from constructor
+6.0 == "before"
+6.1 = "void"
+7. return in method name (unusial, but still possible)
+=
+8. return in expression or parser method expression param is allowed
+8.0 %
+8.1 =%
+9. return is not allowed in expression passed to native method
+Type: parser.runtime,
+Source: if,
+Comment: return is not allowed in expression passed to native method (parameter #1)
+10. testing return value
+result value "before"
+11. testing return value
+result set
+12. testing return value
+result replaced
+13. testing return value
+result replaced
+14. testing continue replacing return
+body 1 == , [2] body 2 == , [3] body 3 == , [4] body 4 == , [5] body 5 =%, [6] body 6 =%, [7] body 7 =%, [8] body 8 =%
+15. testing continue replacing return, but result is set
+8
+16. testing continue in finally replacing return
+=
+[1]
+try =%
+ups [2]
+try =%
+ups =
+17. testing finally not replacing return
+=
+[1]
+try =%
+ups
+[eof]
