@@ -30,6 +30,11 @@ $NO_PROTOTYPE[
 		$.max_recoursion(0)
 	]
 }
+^if($env:PATH_TRANSLATED eq '380.html'){
+	$LIMITS[
+		$.max_file_size(10000)
+	]
+}
 
 
 @auto[]

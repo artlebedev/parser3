@@ -1,0 +1,21 @@
+@main[]
+1.     ^test[slow]
+2.     ^test[valid-content-length]
+3.     ^test[invalid-content-length]
+4.     ^test[empty-body]
+4-win. ^test[empty-body-win]
+5.     ^test[null-body]
+6.     ^test[empty-headers]
+6-win. ^test[empty-headers-win]
+6-win. ^test[empty-headers-win;binary]
+7.     ^test[null-headers]
+8.     ^test[invalid-status]
+9.     ^test[no-status-1]
+10.    ^test[no-status-2]
+11.    ^test[no-status-3]
+
+@test[query;mode]
+$query test result:
+^try-catch{
+    ^json:string[^file::load[^if(def $mode){$mode}{text};http://www.parser.ru/_/tests/nph-379.pl?$query]; $.file[text] ]
+}
