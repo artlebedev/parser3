@@ -17,7 +17,7 @@
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.50 2017/01/23 09:33:02 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.51 2017/01/23 13:34:42 moko Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -607,7 +607,7 @@ static int curl_writer(char *data, size_t size, size_t nmemb, Curl_buffer *resul
 	if(size>0){
 		size_t buf_required = result->length + size;
 		if(buf_required > result->buf_size)
-			result->resize(buf_required <= result->headers.content_length ? result->headers.content_length : result->buf_size*2 + size);
+			result->resize(buf_required <= result->headers.content_length ? (size_t)result->headers.content_length : result->buf_size*2 + size);
 		memcpy(result->buf+result->length, data, size);
 		result->length += size;
 	}
