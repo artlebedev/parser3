@@ -1,3 +1,5 @@
+@main[]
+
 $name[019paf2001.gif]
 
 $f[^file::load[binary;$name; $.offset(20000) $.limit(1000) ]]
@@ -5,4 +7,11 @@ $f[^file::load[binary;$name; $.offset(20000) $.limit(1000) ]]
 
 ^try-catch{
     $f[^file::load[binary;$name]]
+}
+
+@try-catch[jCode]
+^try{$jCode}{
+        $exception.handled(true)
+        Type: $exception.type,
+        Comment: $exception.comment
 }
