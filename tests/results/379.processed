@@ -1,0 +1,174 @@
+Content-Type: text/html
+Content-Length: 3218
+
+1. slow test result:
+{
+"class":"file",
+"name":"nph-379.pl",
+"size":20,
+"mode":"text",
+"content-type":"text\/plain",
+"tables":{
+"CONTENT-TYPE":[
+{"value":"text\/plain"}
+],
+"SOME HEADER":[
+{"value":"value"}
+]
+},
+"CONTENT-TYPE":"text\/plain",
+"SOME HEADER":"value",
+"status":200,
+"text":"body\nbody continues\n"
+}
+2. valid-content-length test result:
+{
+"class":"file",
+"name":"nph-379.pl",
+"size":105,
+"mode":"text",
+"content-type":"text\/plain",
+"tables":{
+"CONTENT-TYPE":[
+{"value":"text\/plain"}
+],
+"CONTENT-LENGTH":[
+{"value":"5"}
+]
+},
+"CONTENT-TYPE":"text\/plain",
+"CONTENT-LENGTH":"5",
+"status":200,
+"text":"body\n...................................................................................................."
+}
+3. invalid-content-length test result:
+Type: parser.runtime,
+Source: http://www.parser.ru/_/tests/nph-379.pl?invalid-content-length,
+Comment: content size of 10000000000 bytes exceeds the limit (536870912 bytes)
+4. empty-body test result:
+{
+"class":"file",
+"name":"nph-379.pl",
+"size":0,
+"mode":"text",
+"content-type":"text\/plain",
+"tables":{
+"CONTENT-TYPE":[
+{"value":"text\/plain"}
+]
+},
+"CONTENT-TYPE":"text\/plain",
+"status":200,
+"text":""
+}
+4-win. empty-body-win test result:
+{
+"class":"file",
+"name":"nph-379.pl",
+"size":0,
+"mode":"text",
+"content-type":"text\/plain",
+"tables":{
+"CONTENT-TYPE":[
+{"value":"text\/plain"}
+]
+},
+"CONTENT-TYPE":"text\/plain",
+"status":200,
+"text":""
+}
+5. null-body test result:
+{
+"class":"file",
+"name":"nph-379.pl",
+"size":0,
+"mode":"text",
+"content-type":"text\/plain",
+"tables":{
+"CONTENT-TYPE":[
+{"value":"text\/plain"}
+]
+},
+"CONTENT-TYPE":"text\/plain",
+"status":200,
+"text":""
+}
+6. empty-headers test result:
+{
+"class":"file",
+"name":"nph-379.pl",
+"size":5,
+"mode":"text",
+"content-type":"application\/octet-stream",
+"tables":{},
+"status":200,
+"text":"body\n"
+}
+6-win. empty-headers-win test result:
+{
+"class":"file",
+"name":"nph-379.pl",
+"size":5,
+"mode":"text",
+"content-type":"application\/octet-stream",
+"tables":{},
+"status":200,
+"text":"body\n"
+}
+6-win. empty-headers-win test result:
+{
+"class":"file",
+"name":"nph-379.pl",
+"size":6,
+"mode":"binary",
+"content-type":"application\/octet-stream",
+"tables":{},
+"status":200,
+"text":"body\r\n"
+}
+7. null-headers test result:
+{
+"class":"file",
+"name":"nph-379.pl",
+"size":0,
+"mode":"text",
+"content-type":"application\/octet-stream",
+"tables":{},
+"status":200,
+"text":""
+}
+8. invalid-status test result:
+Type: http.status,
+Source: bad,
+Comment: invalid HTTP response status
+9. no-status-1 test result:
+Type: http.status,
+Source: HTTP/1.0 OK,
+Comment: invalid HTTP response status
+10. no-status-2 test result:
+Type: http.status,
+Source: HTTP/1.0 OK,
+Comment: invalid HTTP response status
+11. no-status-3 test result:
+Type: http.status,
+Source: HTTP/1.0,
+Comment: invalid HTTP response status
+12. strange-status test result:
+{
+"class":"file",
+"name":"nph-379.pl",
+"size":0,
+"mode":"text",
+"content-type":"application\/octet-stream",
+"tables":{},
+"status":200,
+"text":""
+}
+13. strange-content-length-1 test result:
+Type: number.format,
+Source: load,
+Comment: '-1' is invalid number (int)
+14. strange-content-length-2 test result:
+Type: number.format,
+Source: load,
+Comment: '200OK?' is invalid number (int)
