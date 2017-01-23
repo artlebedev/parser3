@@ -55,7 +55,7 @@
 				GenerateMapFile="TRUE"
 				MapLines="TRUE"
 				SubSystem="1"
-				StackReserveSize="2097152"
+				StackReserveSize="5242880"
 				OptimizeReferences="2"
 				OptimizeForWindows98="1"
 				TargetMachine="1"/>
