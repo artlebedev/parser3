@@ -18,7 +18,7 @@
 #include "pa_vxdoc.h"
 #endif
 
-volatile const char * IDENT_JSON_C="$Id: json.C,v 1.49 2016/11/03 16:17:37 moko Exp $";
+volatile const char * IDENT_JSON_C="$Id: json.C,v 1.50 2017/01/23 12:43:36 moko Exp $";
 
 // class
 
@@ -472,6 +472,9 @@ static void _string(Request& r, MethodParams& params) {
 				if(key == "skip-unknown"){
 					json.skip_unknown=r.process(*value).as_bool();
 					valid_options++;
+				} else if(key == "one-line"){
+					json.one_line=r.process(*value).as_bool();
+					valid_options++;
 				} else if(key == "date" && value->is_string()){
 					const String& svalue=value->as_string();
 					if(!json.set_date_format(svalue))
@@ -532,8 +535,15 @@ static void _string(Request& r, MethodParams& params) {
 
 	const String& result_string=value_json_string(String::Body(), r.process(params[0]), json);
 	String::Body result_body=result_string.cstr_to_string_body_untaint(String::L_JSON, r.connection(false), &r.charsets);
+	if(json.one_line){
+		char *result=result_body.cstrm();
+		for(char *c=result;*c;c++)
+			if(*c=='\n')
+				*c=' ';
+		result_body=result;
+	}
 	r.write(*new String(result_body, String::L_AS_IS));
- }
+}
 
 // constructor
 

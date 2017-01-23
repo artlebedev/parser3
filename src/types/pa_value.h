@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.161 2016/12/24 22:53:31 moko Exp $"
+#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.162 2017/01/23 12:43:36 moko Exp $"
 
 #include "pa_common.h"
 #include "pa_array.h"
@@ -41,6 +41,7 @@ struct Json_options {
 	Value* default_method;
 	Value* params;
 	bool skip_unknown;
+	bool one_line;
 	uint json_string_recoursion;
 	const char* indent;
 	XDocOutputOptions* xdoc_options;
@@ -55,6 +56,7 @@ struct Json_options {
 		default_method(NULL),
 		params(NULL),
 		skip_unknown(false),
+		one_line(false),
 		json_string_recoursion(0),
 		indent(NULL),
 		xdoc_options(NULL),
