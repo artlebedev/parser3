@@ -10,7 +10,7 @@
 #include "pa_vbool.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.79 2016/12/08 21:54:21 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.80 2017/01/23 20:13:18 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -436,24 +436,25 @@ static void _mixin(Request& r, MethodParams& params) {
 	if(params.count()>1)
 		if(HashStringValue* options=params.as_hash(1, "mixin options")) {
 			int valid_options=0;
-			if(vtarget=options->get("to")) {
-				valid_options++;
-			}
-			if(Value* vname=options->get("name")) {
-				name=&vname->as_string();
-				valid_options++;
-			}
-			if(Value* vmethods=options->get("methods")) {
-				copy_methods=r.process(*vmethods).as_bool();
-				valid_options++;
-			}
-			if(Value* vfields=options->get("fields")) {
-				copy_fields=r.process(*vfields).as_bool();
-				valid_options++;
-			}
-			if(Value* voverwrite=options->get("overwrite")) {
-				overwrite=r.process(*voverwrite).as_bool();
-				valid_options++;
+			for(HashStringValue::Iterator i(*options); i; i.next() ){
+				String::Body key=i.key();
+				Value* value=i.value();
+				if(key == "to") {
+					vtarget=value;
+					valid_options++;
+				} else if(key == "name") {
+					name=&value->as_string();
+					valid_options++;
+				} else if(key == "methods") {
+					copy_methods=r.process(*value).as_bool();
+					valid_options++;
+				} else if(key == "fields") {
+					copy_fields=r.process(*value).as_bool();
+					valid_options++;
+				} else if(key == "overwrite") {
+					overwrite=r.process(*value).as_bool();
+					valid_options++;
+				}
 			}
 			if(valid_options!=options->count())
 				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
