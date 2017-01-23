@@ -1,0 +1,49 @@
+@auto[]
+$t[^table::create{column1	column2
+1	one
+2	two
+3	three
+4	four}]
+$tn[^table::create[nameless]{7	seven
+8	eight
+9	nine
+}]
+
+$h[
+    $.1[$.one[data 1] $.two[data 2]]
+    $.2[two]
+    $.3[three^#0A -- 3]
+    $.4[
+      $.table[$t]
+      $.nameless[$tn]
+    ]
+$.5[^date::now[]]
+$.6(12345.15)
+$.7[$__void__]
+$.8[^xdoc::create{<?xml version="1.0" encoding="utf-8" ?>
+<document>
+текст
+</document>}]
+$.9[^file::create[file body]]
+$.10[^image::create(100;100)]
+]
+
+@main[]
+^json:string[$h;
+  $.one-line(true)
+  $.image[$image_handler]
+  $.table[array]
+]
+
+^json:string[$h.4;
+  $.one-line(true)
+  $.table[object]
+]
+
+^json:string[$h.4;
+  $.one-line(true)
+  $.table[compact]
+]
+
+@image_handler[key;value;params]
+"custom value of image $key - ^params.one-line.int[]"
