@@ -1,0 +1,8 @@
+$name[019paf2001.gif]
+
+$f[^file::load[binary;$name; $.offset(20000) $.limit(1000) ]]
+^f.base64[]
+
+^try-catch{
+    $f[^file::load[binary;$name]]
+}
