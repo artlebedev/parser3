@@ -17,7 +17,7 @@
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.49 2016/12/28 22:50:06 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.50 2017/01/23 09:33:02 moko Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -589,8 +589,14 @@ public:
 	char *buf;
 	size_t length;
 	size_t buf_size;
+	ResponseHeaders& headers;
 
-	Curl_buffer() : buf((char *)pa_malloc(MAX_STRING+1)), length(0), buf_size(MAX_STRING){}
+	Curl_buffer(ResponseHeaders& aheaders) : buf(NULL), length(0), buf_size(0), headers(aheaders){}
+
+	void resize(size_t size){
+		buf_size=size;
+		buf=(char *)pa_realloc(buf, size+1);
+	}
 };
 
 static int curl_writer(char *data, size_t size, size_t nmemb, Curl_buffer *result){
@@ -599,10 +605,9 @@ static int curl_writer(char *data, size_t size, size_t nmemb, Curl_buffer *resul
 
 	size=size*nmemb;
 	if(size>0){
-		if(result->length + size >= result->buf_size){
-			result->buf_size = result->buf_size*2 + size;
-			result->buf = (char *)pa_realloc(result->buf, result->buf_size+1);
-		}
+		size_t buf_required = result->length + size;
+		if(buf_required > result->buf_size)
+			result->resize(buf_required <= result->headers.content_length ? result->headers.content_length : result->buf_size*2 + size);
 		memcpy(result->buf+result->length, data, size);
 		result->length += size;
 	}
@@ -621,6 +626,8 @@ static int curl_header(char *data, size_t size, size_t nmemb, ResponseHeaders *r
 			result->clear();
 		} else {
 			result->add_header(header);
+			if(result->content_length>pa_file_size_limit)
+				return 0;
 		}
 	}
 	return size;
@@ -637,14 +644,14 @@ static void _curl_load_action(Request& r, MethodParams& params){
 
 	CURLcode res;
 
-	Curl_buffer body;
-	CURL_SETOPT(CURLOPT_WRITEFUNCTION, curl_writer, "curl writer function");
-	CURL_SETOPT(CURLOPT_WRITEDATA, &body, "curl write buffer");
-
 	// we need a container for headers as VFile fields can be put only after VFile.set
 	ResponseHeaders response;
 	CURL_SETOPT(CURLOPT_HEADERFUNCTION, curl_header, "curl header function");
 	CURL_SETOPT(CURLOPT_WRITEHEADER, &response, "curl header buffer");
+
+	Curl_buffer body(response);
+	CURL_SETOPT(CURLOPT_WRITEFUNCTION, curl_writer, "curl writer function");
+	CURL_SETOPT(CURLOPT_WRITEDATA, &body, "curl write buffer");
 
 	if((res=f_curl_easy_perform(curl())) != CURLE_OK){
 		const char *ex_type = 0; 
@@ -663,6 +670,8 @@ static void _curl_load_action(Request& r, MethodParams& params){
 			case CURLE_SSL_CACERT:
 			case CURLE_SSL_ENGINE_INITFAILED:
 				ex_type = "curl.ssl"; break;
+			case CURLE_WRITE_ERROR:
+				check_file_size(response.content_length, *new String(options().url)); break;
 			default: break;
 		}
 		throw Exception( PA_DEFAULT(ex_type, "curl.fail"), 0, "%s", f_curl_easy_strerror(res));

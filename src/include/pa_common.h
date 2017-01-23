@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.171 2016/12/28 22:50:07 moko Exp $"
+#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.172 2017/01/23 09:33:02 moko Exp $"
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -213,6 +213,7 @@ const String* file_exist(const String& path, const String& name);
 bool file_executable(const String& file_spec);
 
 bool file_stat(const String& file_spec, uint64_t& rsize, time_t& ratime, time_t& rmtime, time_t& rctime, bool fail_on_read_problem=true);
+size_t check_file_size(uint64_t size, const String& file_spec);
 
 size_t stdout_write(const void *buf, size_t size);
 

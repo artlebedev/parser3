@@ -8,7 +8,7 @@
 #ifndef PA_HTTP_H
 #define PA_HTTP_H
 
-#define IDENT_PA_HTTP_H "$Id: pa_http.h,v 1.17 2016/11/24 19:24:46 moko Exp $"
+#define IDENT_PA_HTTP_H "$Id: pa_http.h,v 1.18 2017/01/23 09:33:02 moko Exp $"
 
 #include "pa_vstring.h"
 #include "pa_vint.h"
@@ -46,26 +46,16 @@ public:
 	Array<Header> headers;
 
 	String::Body content_type;
+	uint64_t content_length;
 
-	bool add_header(const char *line){
-		const char *value=strchr(line, ':');
+	ResponseHeaders() : content_type(""), content_length(0){}
 
-		if(value && value != line){ // we need only headers, not the response code
-			Header header(str_upper(line, value-line), String::Body(value+1).trim(String::TRIM_BOTH, " \t\n\r"));
-
-			if(header.name == String::Body(HTTP_CONTENT_TYPE_UPPER) && content_type.is_empty())
-				content_type=header.value;
-
-			headers+=header;
-
-			return true;
-		}
-		return false;
-	}
+	bool add_header(const char *line);
 
 	void clear(){
 		headers.clear();
 		content_type="";
+		content_length=0;
 	}
 
 };

@@ -50,7 +50,7 @@
 #define pa_mkdir(path, mode) mkdir(path, mode)
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.299 2016/12/29 15:55:40 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.300 2017/01/23 09:33:02 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -118,7 +118,7 @@ static void file_read_action(struct stat& finfo, int f, const String& file_spec,
 	File_read_action_info& info=*static_cast<File_read_action_info *>(context); 
 	size_t to_read_size=info.count;
 	if(!to_read_size)
-		to_read_size=(size_t)finfo.st_size;
+		to_read_size=check_file_size(finfo.st_size, file_spec);
 	if(to_read_size) {
 		if(info.offset)
 			lseek(f, info.offset, SEEK_SET);
@@ -507,6 +507,12 @@ bool file_stat(const String& file_spec, uint64_t& rsize, time_t& ratime, time_t&
 	rmtime=(time_t)finfo.st_mtime;
 	rctime=(time_t)finfo.st_ctime;
 	return true;
+}
+
+size_t check_file_size(uint64_t size, const String& file_spec){
+	if(size > pa_file_size_limit)
+		throw Exception(PARSER_RUNTIME, &file_spec, "content size of %.15g bytes exceeds the limit (%.15g bytes)", (double)size, (double)pa_file_size_limit);
+	return (size_t)size;
 }
 
 /** 
@@ -1163,11 +1169,11 @@ struct File_base64_action_info {
 	unsigned char** base64;
 }; 
 
-static void file_base64_file_action(struct stat& finfo, int f, const String&, void *context) {
+static void file_base64_file_action(struct stat& finfo, int f, const String& file_spec, void *context) {
 
 	if(finfo.st_size) { 
 		File_base64_action_info& info=*static_cast<File_base64_action_info *>(context);
-		*info.base64=new(PointerFreeGC) unsigned char[finfo.st_size * 2 + 6]; 
+		*info.base64=new(PointerFreeGC) unsigned char[check_file_size(finfo.st_size, file_spec) * 2 + 6]; 
 		unsigned char* base64 = *info.base64;
 		int state=0;
 		int save=0;

@@ -13,7 +13,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.77 2016/09/21 15:35:10 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.78 2017/01/23 09:33:02 moko Exp $" IDENT_PA_HTTP_H; 
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -47,6 +47,25 @@ volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.77 2016/09/21 15:35:10
 
 // helpers
 
+bool ResponseHeaders::add_header(const char *line){
+	const char *value=strchr(line, ':');
+
+	if(value && value != line){ // we need only headers, not the response code
+		Header header(str_upper(line, value-line), String::Body(value+1).trim(String::TRIM_BOTH, " \t\n\r"));
+
+		if(header.name == String::Body(HTTP_CONTENT_TYPE_UPPER) && content_type.is_empty())
+			content_type=header.value;
+
+		if(header.name == String::Body("CONTENT-LENGTH") && content_length==0)
+			content_length=pa_atoul(header.value.cstr(), 10);
+
+		headers+=header;
+
+		return true;
+	}
+	return false;
+}
+
 class Cookies_table_template_columns: public ArrayString {
 public:
 	Cookies_table_template_columns() {
@@ -76,114 +95,160 @@ static bool set_addr(struct sockaddr_in *addr, const char* host, const short por
 	return false;
 }
 
-size_t guess_content_length(char* buf) {
-	char* ptr;
-	if((ptr=strstr(buf, "Content-Length:"))) // Apache
-		goto found;
-	if((ptr=strstr(buf, "content-length:"))) // Parser 3 before 3.4.0
-		goto found;
-	if((ptr=strstr(buf, "Content-length:"))) // maybe 1
-		goto found;
-	if((ptr=strstr(buf, "CONTENT-LENGTH:"))) // maybe 2
-		goto found;
-	return 0;
-found:
-	char *error_pos;
-	size_t result=(size_t)strtol(ptr+15/*strlen("Content-Length:")*/, &error_pos, 0);
-	
-	const size_t reasonable_initial_max=0x400*0x400*10 /*10M*/;
-	if(result>reasonable_initial_max) // sanity check
-		return reasonable_initial_max;
-	return 0;//result;
-}
+class HTTP_response {
+public:
+	char *buf;
+	size_t length;
+	size_t buf_size;
+	size_t body_offset;
 
-static int http_read_response(char*& response, size_t& response_size, int sock, bool fail_on_status_ne_200) {
-	int result=0;
-	// fetching some to local buffer, guessing on possible Content-Length
-	response_size=0x400*20; // initial size if Content-Length could not be determined	
-	const size_t preview_size=0x400*20;
-	char preview_buf[preview_size+1/*terminator*/];  // 20K buffer to preview headers
-	ssize_t received_size=recv(sock, preview_buf, preview_size, 0); 
-	if(received_size==0)
-		goto done;
-	if(received_size<0) {
-		if(int no=pa_socks_errno())
-			throw Exception("http.timeout", 0, "error receiving response header: %s (%d)", pa_socks_strerr(no), no); 
-		goto done;
-	}
-	// terminator [helps futher string searches]
-	preview_buf[received_size]=0; 
-	// checking status
-	if(char* EOLat=strstr(preview_buf, "\n")) { 
-		const String status_line(pa_strdup(preview_buf, EOLat-preview_buf));
-		ArrayString astatus; 
-		status_line.split(astatus, 0, " ");
-		const String& status_code=*astatus.get(astatus.count()>1?1:0);
-		result=status_code.as_int(); 
+	ResponseHeaders headers;
+	String &url;
 
-		if(fail_on_status_ne_200 && result!=200)
-			throw Exception("http.status", &status_code, "invalid HTTP response status");
-	}
-	// detecting response_size
-	{
-		if(size_t content_length=guess_content_length(preview_buf))
-			response_size=preview_size+content_length; // a little more than needed, will adjust response_size by actual received size later
+	HTTP_response(String& aurl) : buf(NULL), length(0), buf_size(0), body_offset(0), url(aurl){}
+
+	void resize(size_t size){
+		buf_size=size;
+		buf=(char *)pa_realloc(buf, size + 1);
 	}
 
-	// [gcc is happier this way, see goto above]
-	{
-		// allocating initial buf
-		response=(char*)pa_malloc_atomic(response_size+1/*terminator*/); // just setting memory block type
-		char* ptr=response;
-		size_t todo_size=response_size;
-		// coping part of already received body
-		memcpy(ptr, preview_buf, received_size);
-		ptr+=received_size;
-		todo_size-=received_size;		
+	bool read(int sock, size_t size){
+		if(length+size>buf_size)
+			resize(buf_size*2 + size);
+		ssize_t received_size=recv(sock, buf + length, size, 0);
+		if(received_size==0)
+			return false;
+		if(received_size<0) {
+			if(int no=pa_socks_errno())
+				throw Exception("http.timeout", &url, "error receiving response body: %s (%d)", pa_socks_strerr(no), no);
+			return false;
+		}
+		length+=received_size;
+		buf[length]='\0';
+		return true;
+	}
 
-		// we use terminator byte for two purposes here:
-		// 1. we return there zero always, not knowing: maybe they would want to create String form $file.body?
-		//     invariant: all Strings should have zero-terminated buffers
-		// 2. we use that out-of-size byte to detect if our Content-Length guess was wrong
-		//    when recv gets more than we expected
-		//    a) we know that the Content-Length guess was wrong
-		//    b) we have space to put the first byte of extra data
-		//    c) we use less code to detect normal situation: on last while-cycle recv expected to just return 0
-		while(true) {
-			received_size=recv(sock, ptr, todo_size+1/*there is always a place for terminator*/, 0); 
-			if(received_size==0) {
-				response_size-=todo_size; // in case we received less than expected, cut down the reported size
-				break;
+	size_t status_size(){
+		char *headers=strchr(buf, '\n');
+		if(!headers)
+			return false;
+
+		return headers-buf;
+	}
+
+	const char *status_code(char *status_line, int &result){
+		char* status_start = strchr(status_line, ' ');
+
+		if(!(status_start++))
+			return status_line;
+
+		char* status_end=strchr(status_start, ' ');
+
+		if(!status_end)
+			return status_line;
+
+		if(status_end==status_start)
+			return status_line;
+
+		const char *result_str=pa_strdup(status_start, status_end-status_start);
+		result=atoi(result_str);
+		return result_str;
+	}
+
+	bool body_start(){
+		char *p=buf;
+		while((p=strchr(p, '\n'))) {
+			if(p[1]=='\r' && p[2]=='\n'){  // \r\n\r\n
+				*p='\0';
+				body_offset=p-buf+3;
+				return true;
 			}
-			if(received_size<0) {
-				if(int no=pa_socks_errno())
-					throw Exception("http.timeout", 0, "error receiving response body: %s (%d)", pa_socks_strerr(no), no); 
-				break;
+			if(p[1]=='\n') { // \n\n
+				*p='\0';
+				body_offset=p-buf+2;
+				return true;
 			}
-			// they've touched the terminator?
-			if((size_t)received_size>todo_size)
-			{
-				// that means that our guessed response_size was not big enough
-				const size_t grow_chunk_size=0x400*0x400; // 1M
-				response_size+=grow_chunk_size;
-				size_t ptr_offset=ptr-response;
-				response=(char*)pa_realloc(response, response_size+1/*terminator*/);
-				ptr=response+ptr_offset;
-				todo_size+=grow_chunk_size;
-			}
-			// can't do this before realloc: we need <todo_size check
-			ptr+=received_size;
-			todo_size-=received_size;
+			p++;
+		}
+		return false;
+	}
+
+	void parse_headers(){
+		const String header_block(buf, String::L_TAINTED);
+		
+		ArrayString aheaders;
+		header_block.split(aheaders, 0, "\n");
+
+		Array_iterator<const String*> i(aheaders);
+		i.next(); // skipping status
+		for(;i.has_next();){
+			const char *line=i.next()->cstr();
+			if(!headers.add_header(line))
+				throw Exception("http.response", &url, "bad response from host - bad header \"%s\"", line);
 		}
 	}
-done:
-	if(result)
-	{
-		response[response_size]=0;
-		return result;
+
+};
+
+enum HTTP_response_state {
+	HTTP_STATUS_CODE,
+	HTTP_HEADERS,
+	HTTP_BODY
+};
+
+static int http_read_response(HTTP_response& response, int sock, bool fail_on_status_ne_200) {
+	HTTP_response_state state=HTTP_STATUS_CODE;
+	int result=0;
+
+	size_t chunk_size=0x400*16;
+	response.resize(2*chunk_size);
+
+	while(response.read(sock, chunk_size)){
+		switch(state){
+			case HTTP_STATUS_CODE: {
+				size_t status_size=response.status_size();
+				if(!status_size)
+					break;
+
+				const char *status=response.status_code(pa_strdup(response.buf, status_size), result);
+
+				if(!result || fail_on_status_ne_200 && result!=200)
+					throw Exception("http.status", status ? new String(status) : &String::Empty, "invalid HTTP response status");
+
+				state=HTTP_HEADERS;
+			}
+
+			case HTTP_HEADERS: {
+				if(!response.body_start())
+					break;
+
+				response.parse_headers();
+
+				size_t content_length=check_file_size(response.headers.content_length, response.url);
+				if(content_length>0 && (content_length + response.body_offset) > response.length){
+					response.resize(content_length + response.body_offset + 0x400*64);
+				}
+
+				state=HTTP_BODY;
+				break;
+			}
+
+			case HTTP_BODY: {
+				chunk_size=0x400*64;
+				break;
+			}
+		}
 	}
-	else
-		throw Exception("http.response", 0, "bad response from host - no status found (size=%u)", response_size); 
+
+	if(state==HTTP_STATUS_CODE)
+		throw Exception("http.response", &response.url, "bad response from host - no status found (size=%u)", response.length);
+
+	if(state==HTTP_HEADERS){
+		response.parse_headers();
+		response.body_offset=response.length;
+	}
+
+	return result;
 }
 
 /* ********************** request *************************** */
@@ -199,11 +264,7 @@ static void timeout_handler(int /*sig*/){
 }
 #endif
 
-static int http_request(char*& response, size_t& response_size,
-			const char* host, short port, 
-			const char* request, size_t request_size,
-			int timeout_secs,
-			bool fail_on_status_ne_200) {
+static int http_request(HTTP_response& response, const char* host, short port, const char* request, size_t request_size, int timeout_secs, bool fail_on_status_ne_200) {
 	if(!host)
 		throw Exception("http.host", 0, "zero hostname");  //never
 
@@ -252,26 +313,26 @@ static int http_request(char*& response, size_t& response_size,
 
 			if(connect(sock, (struct sockaddr *)&dest, sizeof(dest))) {
 				int no=pa_socks_errno();
-				throw Exception("http.connect", 0, "can not connect to host \"%s\": %s (%d)", host, pa_socks_strerr(no), no); 
+				throw Exception("http.connect", 0, "can not connect to host \"%s\": %s (%d)", host, pa_socks_strerr(no), no);
 			}
 
 			if(send(sock, request, request_size, 0)!=(ssize_t)request_size) {
 				int no=pa_socks_errno();
-				throw Exception("http.timeout", 0, "error sending request: %s (%d)", pa_socks_strerr(no), no); 
+				throw Exception("http.timeout", 0, "error sending request: %s (%d)", pa_socks_strerr(no), no);
 			}
 
-			result=http_read_response(response, response_size, sock, fail_on_status_ne_200); 
-			closesocket(sock); 
+			result=http_read_response(response, sock, fail_on_status_ne_200);
+			closesocket(sock);
 #ifdef PA_USE_ALARM
-			alarm(0); 
+			alarm(0);
 #endif
 			return result;
 		} catch(...) {
 #ifdef PA_USE_ALARM
-			alarm(0); 
+			alarm(0);
 #endif
-			if(sock>=0) 
-				closesocket(sock); 
+			if(sock>=0)
+				closesocket(sock);
 			rethrow;
 		}
 #ifdef PA_USE_ALARM
@@ -472,22 +533,6 @@ const char* pa_form2string_multipart(HashStringValue& form, Request& r, const ch
 	*formpart.string << "--" << boundary << "--";
 	// @todo: return binary blocks here to save memory in pa_internal_file_read_http
 	return formpart.post(post_size);
-}
-
-static void find_headers_end(char* p, char*& headers_end_at, char*& raw_body) {
-	raw_body=p;
-	// \n\n
-	// \r\n\r\n
-	while((p=strchr(p, '\n'))) {
-		headers_end_at=++p; // \n>.<
-		if(*p=='\r')  // \r\n>\r?<\n
-			p++;
-		if(*p=='\n') { // \r\n\r>\n?<
-			raw_body=p+1;
-			return;			
-		}
-	}
-	headers_end_at=0;
 }
 
 // Set-Cookie: name=value; Domain=docs.foo.com; Path=/accounts; Expires=Wed, 13-Jan-2021 22:23:01 GMT; Secure; HttpOnly
@@ -815,42 +860,22 @@ File_read_http_result pa_internal_file_read_http(Request& r, const String& file_
 		}
 	}
 	
-	char* response_str;
-	size_t response_size;
+
+	HTTP_response response(connect_string);
 
 	// sending request
-	int status_code=http_request(response_str, response_size, idna_host, port, request, request_size, timeout_secs, fail_on_status_ne_200);
-	
+	int status_code=http_request(response, idna_host, port, request, request_size, timeout_secs, fail_on_status_ne_200);
+
 	// processing results
-	char* raw_body; size_t raw_body_size;
-	char* headers_end_at;
-	find_headers_end(response_str, headers_end_at, raw_body);
-	raw_body_size=response_size-(raw_body-response_str);
-	
+	char* raw_body=response.buf + response.body_offset;
+	size_t raw_body_size=response.length - response.body_offset;
+
 	result.headers=new HashStringValue;
 	VHash* vtables=new VHash;
 	result.headers->put("tables", vtables);
 
-	ResponseHeaders response;
-
-	if(headers_end_at) {
-		*headers_end_at=0;
-		const String header_block(String::C(response_str, headers_end_at-response_str), String::L_TAINTED);
-		
-		ArrayString aheaders;
-		header_block.split(aheaders, 0, "\n");
-
-		Array_iterator<const String*> i(aheaders);
-		i.next(); // skipping status
-		for(;i.has_next();){
-			const char *line=i.next()->cstr();
-			if(!response.add_header(line))
-				throw Exception("http.response", &connect_string, "bad response from host - bad header \"%s\"", line);
-		}
-	}
-
-	if (!real_remote_charset && !response.content_type.is_empty())
-		real_remote_charset= detect_charset(response.content_type.cstr());
+	if (!real_remote_charset && !response.headers.content_type.is_empty())
+		real_remote_charset=detect_charset(response.headers.content_type.cstr());
 
 	if(as_text)
 		real_remote_charset=pa_charsets.checkBOM(raw_body, raw_body_size, real_remote_charset);
@@ -858,7 +883,7 @@ File_read_http_result pa_internal_file_read_http(Request& r, const String& file_
 	if (!real_remote_charset)
 		real_remote_charset=asked_remote_charset; // never null
 
-	for(Array_iterator<ResponseHeaders::Header> i(response.headers); i.has_next(); ){
+	for(Array_iterator<ResponseHeaders::Header> i(response.headers.headers); i.has_next(); ){
 		ResponseHeaders::Header header=i.next();
 
 		header.transcode(*real_remote_charset, r.charsets.source());
