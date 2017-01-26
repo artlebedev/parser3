@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.246 2017/01/17 23:53:28 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.247 2017/01/26 22:57:47 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -258,6 +258,7 @@ public:
 		return process(input_value).as_string();
 	}
 	//@}
+	const Operation::Origin get_method_origin(const Method* method); // execute.C
 	const String* get_method_filespec(const Method* method); // execute.C
 	const String* get_used_filespec(uint file_no);
 	

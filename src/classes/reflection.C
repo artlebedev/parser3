@@ -10,7 +10,7 @@
 #include "pa_vbool.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.80 2017/01/23 20:13:18 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.81 2017/01/26 22:57:46 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -532,6 +532,111 @@ static void _tainting(Request& r, MethodParams& params) {
 	}
 }
 
+static void _stack(Request& r, MethodParams& params) {
+	bool show_args=false;
+	bool show_locals=false;
+
+	int limit=1000000;
+	int offset=0;
+
+	if(params.count()>0)
+		if(HashStringValue* options=params.as_hash(0, "stack options")) {
+			int valid_options=0;
+			for(HashStringValue::Iterator i(*options); i; i.next() ){
+				String::Body key=i.key();
+				Value* value=i.value();
+
+				if(key == "args") {
+					show_args=r.process(*value).as_bool();
+					valid_options++;
+				}
+				if(key == "locals") {
+					show_locals=r.process(*value).as_bool();
+					valid_options++;
+				}
+				if(key == "limit") {
+					limit=r.process(*value).as_int();
+					valid_options++;
+				}
+				if(key == "offset") {
+					offset=r.process(*value).as_int();
+					valid_options++;
+				}
+			}
+
+			if(valid_options!=options->count())
+				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+		}
+
+	limit+=offset;
+
+	VHash& vresult=*new VHash;
+	HashStringValue* result=vresult.get_hash();
+	int index=1;
+	VMethodFrame* caller=r.get_method_frame()->caller();
+	while(caller && index <= limit){
+		if(index>offset){
+			VHash& vcurrent=*new VHash;
+			HashStringValue* current=vcurrent.get_hash();
+
+			current->put(Symbols::SELF_SYMBOL, &caller->self());
+
+			const Method& method=caller->method;
+
+			current->put(method_name, new VString(*method.name));
+
+			if(!method.native_code){
+				Operation::Origin origin=r.get_method_origin(&method);
+				if(origin.file_no){
+					current->put("file", new VString(*r.get_used_filespec(origin.file_no)));
+					current->put("line", new VInt(origin.line)); // no +1 as declaration before first command
+				}
+
+				if(show_args || show_locals){
+
+					VHash& vargs=*new VHash;
+					HashStringValue* args=vargs.get_hash();
+
+					if(method.params_names){
+						for(size_t i=0; i<method.params_names->count(); i++){
+							const String& pname=*(*method.params_names)[i];
+							Value* value=caller->get_element(pname);
+							args->put(pname, value->get_junction() ? VVoid::get() : value);
+						}
+					}
+					if(method.extra_params)
+						args->put(*method.extra_params, caller->get_element(*method.extra_params));
+
+					if(show_args)
+						current->put("args", &vargs);
+
+					if(show_locals){
+						VHash& vlocals=*new VHash;
+						HashStringValue* locals=vlocals.get_hash();
+
+						if(VParserMethodFrame* frame=dynamic_cast<VParserMethodFrame*>(caller))
+							for(HashString<Value*>::Iterator h(frame->my); h; h.next()){
+								String::Body key=h.key();
+								Value* value=h.value();
+								if(!args->contains(key) && (key != "result")){
+									locals->put(key, value->get_junction() ? VVoid::get() : value);
+								}
+							}
+
+						current->put("locals", &vlocals);
+					}
+				}
+			}
+
+			result->put(format(index, 0), &vcurrent);
+		}
+		caller=caller->caller();
+		index++;
+	}
+
+	r.write(vresult);
+}
+
 // constructor
 MReflection::MReflection(): Methoded("reflection") {
 	// ^reflection:create[class_name;constructor_name[;param1[;param2[;...]]]]
@@ -602,5 +707,8 @@ MReflection::MReflection(): Methoded("reflection") {
 
 	// ^reflection:tainting[[language or 'tainted' or 'optimized';]string]
 	add_native_method("tainting", Method::CT_STATIC, _tainting, 1, 2);
+
+	// ^reflection:stack[options]
+	add_native_method("stack", Method::CT_STATIC, _stack, 0, 1);
 
 }

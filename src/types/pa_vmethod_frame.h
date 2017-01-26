@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.122 2016/12/02 19:26:19 moko Exp $"
+#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.123 2017/01/26 22:57:47 moko Exp $"
 
 #include "pa_symbols.h"
 #include "pa_wcontext.h"
@@ -201,9 +201,6 @@ public: // usage
 */
 
 class VParserMethodFrame: public VMethodFrame {
-protected:
-	HashString<Value*> my;
-
 public: // Value
 
 	/// VParserMethodFrame: $result | parent get_string(=accumulated fstring)
@@ -279,6 +276,8 @@ public: // WContext
 	}
 
 public: // usage
+
+	HashString<Value*> my; // public for ^stack[]
 
 	VParserMethodFrame(const Method& amethod, VMethodFrame *acaller, Value& aself);
 

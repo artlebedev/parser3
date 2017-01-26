@@ -21,7 +21,7 @@
 #include "pa_vimage.h"
 #include "pa_wwrapper.h"
 
-volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.403 2017/01/13 13:50:28 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
+volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.404 2017/01/26 22:57:47 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
 
 //#define DEBUG_EXECUTE
 
@@ -1470,9 +1470,15 @@ const String* Request::execute_virtual_method(Value& aself, const String& method
 }
 
 const String* Request::get_method_filespec(const Method* method){
+	Operation::Origin origin=get_method_origin(method);
+	return origin.file_no ? get_used_filespec(origin.file_no) : NULL;
+}
+
+const Operation::Origin Request::get_method_origin(const Method* method){
+	Operation::Origin origin={0, 0, 0};
+
 	if(ArrayOperation* code=method->parser_code)
 		if(code){
-			Operation::Origin origin={0, 0, 0};
 			Array_iterator<Operation> i(*code);
 			while( i.has_next() ){
 				switch( i.next().code ){
@@ -1539,9 +1545,9 @@ const String* Request::get_method_filespec(const Method* method){
 					default: break;
 				}
 				if(origin.file_no)
-					return get_used_filespec(origin.file_no);
+					return origin;
 			}
 		}
-	return 0;
+	return origin;
 }
 

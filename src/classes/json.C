@@ -18,7 +18,7 @@
 #include "pa_vxdoc.h"
 #endif
 
-volatile const char * IDENT_JSON_C="$Id: json.C,v 1.50 2017/01/23 12:43:36 moko Exp $";
+volatile const char * IDENT_JSON_C="$Id: json.C,v 1.51 2017/01/26 22:57:46 moko Exp $";
 
 // class
 
@@ -66,7 +66,7 @@ struct Json {
 static void set_json_value(Json *json, Value *value){
 	VHash *top = json->stack.top_value();
 	if(json->key == NULL){
-		top->hash().put(String(format(top->get_hash()->count(), 0)), value);
+		top->hash().put(format(top->get_hash()->count(), 0), value);
 	} else {
 		switch (json->distinct){
 			case Json::D_EXCEPTION:
