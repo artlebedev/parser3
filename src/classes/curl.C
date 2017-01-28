@@ -17,7 +17,7 @@
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.51 2017/01/23 13:34:42 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.52 2017/01/28 15:26:50 moko Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -591,7 +591,7 @@ public:
 	size_t buf_size;
 	ResponseHeaders& headers;
 
-	Curl_buffer(ResponseHeaders& aheaders) : buf(NULL), length(0), buf_size(0), headers(aheaders){}
+	Curl_buffer(ResponseHeaders& aheaders) : buf((char *)pa_malloc_atomic(MAX_STRING)), length(0), buf_size(MAX_STRING-1), headers(aheaders){}
 
 	void resize(size_t size){
 		buf_size=size;
