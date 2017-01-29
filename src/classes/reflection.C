@@ -10,7 +10,7 @@
 #include "pa_vbool.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.81 2017/01/26 22:57:46 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.82 2017/01/29 20:28:44 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -549,16 +549,13 @@ static void _stack(Request& r, MethodParams& params) {
 				if(key == "args") {
 					show_args=r.process(*value).as_bool();
 					valid_options++;
-				}
-				if(key == "locals") {
+				} else if(key == "locals") {
 					show_locals=r.process(*value).as_bool();
 					valid_options++;
-				}
-				if(key == "limit") {
+				} else if(key == "limit") {
 					limit=r.process(*value).as_int();
 					valid_options++;
-				}
-				if(key == "offset") {
+				} else if(key == "offset") {
 					offset=r.process(*value).as_int();
 					valid_options++;
 				}
