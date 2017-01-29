@@ -8,11 +8,13 @@
 #ifndef PA_OS_H
 #define PA_OS_H
 
-#define IDENT_PA_OS_H "$Id: pa_os.h,v 1.9 2015/10/26 01:21:56 moko Exp $"
+#define IDENT_PA_OS_H "$Id: pa_os.h,v 1.10 2017/01/29 19:41:17 moko Exp $"
 
 #define PA_LOCK_ATTEMPTS 20
 #define PA_LOCK_WAIT_TIMEOUT_SECS 0
 #define PA_LOCK_WAIT_TIMEOUT_USECS 500000
+
+extern unsigned int pa_lock_attempts;
 
 // 'blocking' mean we will wait till other process release lock 
 // but we'll make PA_LOCK_ATTEMPTS attempts with PA_LOCK_WAIT_TIMEOUT secs delaus between attempts 

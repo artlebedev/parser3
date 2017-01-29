@@ -8,7 +8,9 @@
 #include "pa_config_includes.h"
 #include "pa_os.h"
 
-volatile const char * IDENT_PA_OS_C="$Id: pa_os.C,v 1.16 2016/11/30 17:01:01 moko Exp $" IDENT_PA_OS_H; 
+volatile const char * IDENT_PA_OS_C="$Id: pa_os.C,v 1.17 2017/01/29 19:41:17 moko Exp $" IDENT_PA_OS_H; 
+
+unsigned int pa_lock_attempts=PA_LOCK_ATTEMPTS;
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -66,11 +68,11 @@ int pa_lock(int fd, int attempts, int operation){
 };
 
 int pa_lock_shared_blocking(int fd) {
-	return pa_lock(fd, PA_LOCK_ATTEMPTS, PA_SH_LOCK);
+	return pa_lock(fd, pa_lock_attempts, PA_SH_LOCK);
 }
 
 int pa_lock_exclusive_blocking(int fd) {
-	return pa_lock(fd, PA_LOCK_ATTEMPTS, PA_EX_LOCK);
+	return pa_lock(fd, pa_lock_attempts, PA_EX_LOCK);
 }
 
 int pa_lock_exclusive_nonblocking(int fd) {
