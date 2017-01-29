@@ -1,0 +1,50 @@
+@main[]
+^m1[p1]
+$set_prop
+$constructor
+
+@m1[p1][local1]
+$local1[value1]
+$global[global value]
+
+^if(1){
+	^m2{ code }
+}
+
+@m2[p2][i;o]
+
+$o[^O::create[]]
+^for[i](0;0){
+	^o.m-o[p-m-o]
+}
+$o.prop
+$o.prop[value]
+
+@m3[p3]
+1: ^json[^reflection:stack[ $.args(true) $.locals(true) ]]
+2: ^json[^reflection:stack[ $.args(true) $.limit(2) $.offset(2) ]]
+
+@json[stack][v]
+^stack.foreach[;v]{
+	$v.file[^v.file.match[^^.+/][]{/-real-path-was-here-/}]
+}
+^json:string[$stack; $.indent(true) ]
+
+@CLASS
+O
+
+@create[]
+$value[self value]
+
+@m-o[p]
+^m3[p3]
+
+@GET_prop[]
+3: ^json[^reflection:stack[ $.args(true) ]]
+
+@SET_prop[value][temp]
+$MAIN:set_prop[4: ^json[^reflection:stack[ $.args(true) ]]]
+$temp[^O::constructor[]]
+
+@constructor[]
+$MAIN:constructor[5: ^json[^reflection:stack[ $.args(true) $.limit(2) ]]]
