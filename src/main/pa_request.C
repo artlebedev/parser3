@@ -33,7 +33,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.372 2017/01/29 19:41:17 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.373 2017/01/29 21:01:50 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -90,7 +90,7 @@ size_t pa_file_size_limit=FILE_SIZE_LIMIT;
 #define LOOP_LIMIT_NAME "max_loop"
 #define RECOURSION_LIMIT_NAME "max_recoursion"
 #define FILE_SIZE_LIMIT_NAME "max_file_size"
-#define FILE_LOCK_WAIT_LIMIT_NAME "max_file_lock_wait"
+#define LOCK_WAIT_TIMEOUT_NAME "lock_wait_timeout"
 #define CONF_METHOD_NAME "conf"
 #define POST_PROCESS_METHOD_NAME "postprocess"
 #define CLASS_PATH_NAME "CLASS_PATH"
@@ -110,7 +110,7 @@ static const String limits_name(LIMITS_NAME);
 static const String loop_limit_name(LOOP_LIMIT_NAME);
 static const String recoursion_limit_name(RECOURSION_LIMIT_NAME);
 static const String file_size_limit_name(FILE_SIZE_LIMIT_NAME);
-static const String file_lock_wait_limit_name(FILE_LOCK_WAIT_LIMIT_NAME);
+static const String lock_wait_timeout_name(LOCK_WAIT_TIMEOUT_NAME);
 
 static const String conf_method_name(CONF_METHOD_NAME);
 static const String post_process_method_name(POST_PROCESS_METHOD_NAME);
@@ -324,14 +324,14 @@ void Request::configure_admin(VStateless_class& conf_class) {
 
 	pa_lock_attempts=PA_LOCK_ATTEMPTS;
 	if(limits)
-		if(Value* file_lock_wait_limit=limits->get_element(file_lock_wait_limit_name)) {
-			if(file_lock_wait_limit->is_evaluated_expr()) {
-				double limit=file_lock_wait_limit->as_double();
+		if(Value* lock_wait_timeout=limits->get_element(lock_wait_timeout_name)) {
+			if(lock_wait_timeout->is_evaluated_expr()) {
+				double limit=lock_wait_timeout->as_double();
 				if(limit >= 3600*24)
-					throw Exception(PARSER_RUNTIME, 0, "$" MAIN_CLASS_NAME ":LIMITS." FILE_LOCK_WAIT_LIMIT_NAME " must be less then %d", 3600*24);
+					throw Exception(PARSER_RUNTIME, 0, "$" MAIN_CLASS_NAME ":LIMITS." LOCK_WAIT_TIMEOUT_NAME " must be less then %d", 3600*24);
 				pa_lock_attempts=(unsigned int)(limit*2)+1;
 			} else
-				throw Exception(PARSER_RUNTIME, 0, "$" MAIN_CLASS_NAME ":LIMITS." FILE_LOCK_WAIT_LIMIT_NAME " must be number");
+				throw Exception(PARSER_RUNTIME, 0, "$" MAIN_CLASS_NAME ":LIMITS." LOCK_WAIT_TIMEOUT_NAME " must be number");
 		}
 
 	// configure method_frame options
