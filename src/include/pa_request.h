@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.247 2017/01/26 22:57:47 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.248 2017/02/01 14:40:10 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -398,17 +398,6 @@ private: // mime types
 
 	/// $MAIN:MIME-TYPES
 	Table *mime_types;
-
-private: // lang manipulation
-
-	String::Language set_lang(String::Language alang) {
-		String::Language result=flang;
-		flang=alang;
-		return result;
-	}
-	void restore_lang(String::Language alang) {
-		flang=alang;
-	}
 
 private: // connection manipulation
 
