@@ -13,7 +13,7 @@
 #include "pa_vhash.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VCOOKIE_C="$Id: pa_vcookie.C,v 1.96 2016/12/26 15:56:35 moko Exp $" IDENT_PA_VCOOKIE_H;
+volatile const char * IDENT_PA_VCOOKIE_C="$Id: pa_vcookie.C,v 1.97 2017/02/06 12:26:16 moko Exp $" IDENT_PA_VCOOKIE_H;
 
 // defines
 
@@ -263,11 +263,7 @@ void VCookie::refill(){
 	//request_info.cookie="enabled=yes; auth.uid=196325308053599810; enabled=yes; msnames; msuri"; // mdm 
 	if(!frequest_info.cookie)
 		return;
-/*
-	FILE *f=fopen("c:\\temp\\a", "wt");
-	fprintf(f, "cookie=%s", request_info.cookie);
-	fclose(f);
-*/
+
 	char *cookies=strdup(frequest_info.cookie);
 	char *current=cookies;
 	//_asm int 3;

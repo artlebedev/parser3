@@ -11,7 +11,7 @@
 // we are using some pcre_internal.h stuff as well
 #include "../lib/pcre/pa_pcre_internal.h"
 
-volatile const char * IDENT_PA_CHARSET_C="$Id: pa_charset.C,v 1.104 2016/09/21 12:49:25 moko Exp $" IDENT_PA_CHARSET_H;
+volatile const char * IDENT_PA_CHARSET_C="$Id: pa_charset.C,v 1.105 2017/02/06 12:27:29 moko Exp $" IDENT_PA_CHARSET_H;
 
 #ifdef XML
 #include "libxml/encoding.h"
@@ -211,9 +211,6 @@ static int sort_cmp_Trans_rec_intCh(const void *a, const void *b) {
 
 void Charset::sort_ToTable() {
 	qsort(tables.toTable, tables.toTableSize, sizeof(*tables.toTable), sort_cmp_Trans_rec_intCh);
-	//FILE *f=fopen("c:\\temp\\a", "wb");
-	//fwrite(tables.toTable, tables.toTableSize, sizeof(*tables.toTable), f);
-	//fclose(f);
 }
 
 // @todo: precache for spedup searching
