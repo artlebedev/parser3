@@ -50,7 +50,7 @@
 #define pa_mkdir(path, mode) mkdir(path, mode)
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.301 2017/02/06 16:17:12 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.302 2017/02/06 16:33:33 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -1333,24 +1333,24 @@ Charset* detect_charset(const char* content_type){
 }
 
 const UTF16* pa_utf16_encode(const char* in, Charset& source_charset){
-       if(!in)
-               return 0;
+	if(!in)
+		return 0;
 
-       String::C sIn(in,strlen(in));
+	String::C sIn(in,strlen(in));
 
-       UTF16* utf16=(UTF16*)pa_malloc_atomic(sIn.length*2+2);
-       UTF16* utf16_end=utf16;
+	UTF16* utf16=(UTF16*)pa_malloc_atomic(sIn.length*2+2);
+	UTF16* utf16_end=utf16;
 
-       if(!source_charset.isUTF8())
-               sIn=Charset::transcode(sIn, source_charset, pa_UTF8_charset);
+	if(!source_charset.isUTF8())
+		sIn=Charset::transcode(sIn, source_charset, pa_UTF8_charset);
 
-       int status=pa_convertUTF8toUTF16((const UTF8**)&sIn.str, (const UTF8*)(sIn.str+sIn.length), &utf16_end, utf16+sIn.length+1, strictConversion);
-       if(status != conversionOK)
-               throw Exception("utf-16 encode", new String(in), "utf-16 conversion failed (%d)", status);
+	int status=pa_convertUTF8toUTF16((const UTF8**)&sIn.str, (const UTF8*)(sIn.str+sIn.length), &utf16_end, utf16+sIn.length, strictConversion);
+	if(status != conversionOK)
+		throw Exception("utf-16 encode", new String(in), "utf-16 conversion failed (%d)", status);
 
-	   *utf16_end=0;
+	*utf16_end=0;
 
-       return utf16;
+	return utf16;
 }
 
 const char* pa_utf16_decode(const UTF16* in, Charset& asked_charset){
@@ -1372,10 +1372,10 @@ const char* pa_utf16_decode(const UTF16* in, Charset& asked_charset){
 
 	*result_end='\0';
 
-	if(!asked_charset.isUTF8())
-		result = (char *)Charset::transcode(result, pa_UTF8_charset, asked_charset).cstr();
+	if(asked_charset.isUTF8())
+		return result;
 
-	return result;
+	return Charset::transcode(result, pa_UTF8_charset, asked_charset).cstr();
 }
 
 static bool is_latin(const char *in){
