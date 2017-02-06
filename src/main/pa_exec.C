@@ -13,7 +13,7 @@
 #include "pa_exception.h"
 #include "pa_common.h"
 
-volatile const char * IDENT_PA_EXEC_C="$Id: pa_exec.C,v 1.91 2016/12/28 22:50:07 moko Exp $" IDENT_PA_EXEC_H;
+volatile const char * IDENT_PA_EXEC_C="$Id: pa_exec.C,v 1.92 2017/02/06 16:17:12 moko Exp $" IDENT_PA_EXEC_H;
 
 #ifdef _MSC_VER
 
@@ -167,7 +167,7 @@ static void read_pipe(File_read_result& result, HANDLE hOutRead){
 
 static const char* buildCommand(const char* file_spec_cstr, const ArrayString& argv) {
 	const char* result=file_spec_cstr;
-	if(FILE *f=fopen(file_spec_cstr, "r")) {
+	if(FILE *f=pa_fopen(file_spec_cstr, "r")) {
 		try {
 		char buf[MAX_STRING];
 		size_t size=fread(buf, 1, MAX_STRING-1, f);

@@ -50,7 +50,7 @@
 #define pa_mkdir(path, mode) mkdir(path, mode)
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.300 2017/01/23 09:33:02 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.301 2017/02/06 16:17:12 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -79,7 +79,31 @@ volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.300 2017/01/23 09:
 
 const String file_status_name(FILE_STATUS_NAME);
 
+// forwards
+
+const UTF16* pa_utf16_encode(const char* in, Charset& source_charset);
+
 // functions
+
+#ifdef _MSC_VER
+
+int pa_stat(const char *pathname, struct stat *buffer){
+	const UTF16* utf16name=pa_utf16_encode(pathname, pa_thread_request().charsets.source());
+	return _wstat64((const wchar_t *)utf16name, buffer);
+}
+
+int pa_open(const char *pathname, int flags, int mode){
+	const UTF16* utf16name=pa_utf16_encode(pathname, pa_thread_request().charsets.source());
+	return _wopen((const wchar_t *)utf16name, flags, mode);
+}
+
+FILE *pa_fopen(const char *pathname, const char *mode){
+	const UTF16* utf16name=pa_utf16_encode(pathname, pa_thread_request().charsets.source());
+	const UTF16* utf16mode=pa_utf16_encode(mode, pa_thread_request().charsets.source());
+	return _wfopen((const wchar_t *)utf16name, (const wchar_t *)utf16mode);
+}
+
+#endif
 
 char* file_read_text(Request_charsets& charsets, const String& file_spec, bool fail_on_read_problem, HashStringValue* params, bool transcode_result) {
 	File_read_result file=file_read(charsets, file_spec, true, params, fail_on_read_problem, 0, 0, 0, transcode_result);
@@ -234,7 +258,7 @@ bool file_read_action_under_lock(const String& file_spec,
 	//   they delay update till open, so we would receive "!^test[" string
 	//   if would do stat, next open.
 	// later: it seems, even this does not help sometimes
-	if((f=open(fname, O_RDONLY|(as_text?_O_TEXT:_O_BINARY)))>=0) {
+	if((f=pa_open(fname, O_RDONLY|(as_text?_O_TEXT:_O_BINARY)))>=0) {
 		try {
 			if(pa_lock_shared_blocking(f)!=0)
 				throw Exception("file.lock", &file_spec, "shared lock failed: %s (%d), actual filename '%s'", strerror(errno), errno, fname);
@@ -287,7 +311,7 @@ bool file_write_action_under_lock(
 	if(access(fname, W_OK)!=0) // no
 		create_dir_for_file(file_spec); 
 
-	if((f=open(fname, 
+	if((f=pa_open(fname, 
 		O_CREAT|O_RDWR
 		|(as_text?_O_TEXT:_O_BINARY)
 		|(do_append?O_APPEND:PA_O_TRUNC), 0664))>=0) {
@@ -1308,6 +1332,51 @@ Charset* detect_charset(const char* content_type){
 	return 0;
 }
 
+const UTF16* pa_utf16_encode(const char* in, Charset& source_charset){
+       if(!in)
+               return 0;
+
+       String::C sIn(in,strlen(in));
+
+       UTF16* utf16=(UTF16*)pa_malloc_atomic(sIn.length*2+2);
+       UTF16* utf16_end=utf16;
+
+       if(!source_charset.isUTF8())
+               sIn=Charset::transcode(sIn, source_charset, pa_UTF8_charset);
+
+       int status=pa_convertUTF8toUTF16((const UTF8**)&sIn.str, (const UTF8*)(sIn.str+sIn.length), &utf16_end, utf16+sIn.length+1, strictConversion);
+       if(status != conversionOK)
+               throw Exception("utf-16 encode", new String(in), "utf-16 conversion failed (%d)", status);
+
+	   *utf16_end=0;
+
+       return utf16;
+}
+
+const char* pa_utf16_decode(const UTF16* in, Charset& asked_charset){
+	if(!in)
+		return 0;
+
+	const UTF16* utf16_start=in;
+	const UTF16* utf16_end;
+
+	for(utf16_end=in; *utf16_end; utf16_end++);
+
+	char *result = (char *)pa_malloc_atomic((utf16_end-in)*6+1);
+	char *result_end = result;
+
+	int status=pa_convertUTF16toUTF8(&utf16_start, utf16_end, (UTF8**)&result_end, (UTF8*)(result+(utf16_end-in)*6), strictConversion);
+
+	if(status != conversionOK)
+		throw Exception("utf-16 decode", 0, "utf conversion failed (%d)", status);
+
+	*result_end='\0';
+
+	if(!asked_charset.isUTF8())
+		result = (char *)Charset::transcode(result, pa_UTF8_charset, asked_charset).cstr();
+
+	return result;
+}
 
 static bool is_latin(const char *in){
 	for(; *in; in++){
@@ -1319,7 +1388,7 @@ static bool is_latin(const char *in){
 
 #define MAX_IDNA_LENGTH 256
 
-const char *pa_idna_encode(const char *in, Charset &source_charset){
+const char *pa_idna_encode(const char *in, Charset& source_charset){
 	if(!in || is_latin(in))
 		return in;
 

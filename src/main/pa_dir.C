@@ -7,13 +7,19 @@
 
 #include "pa_common.h"
 #include "pa_dir.h"
+#include "pa_request.h"
+#include "pa_convert_utf.h"
 
-volatile const char * IDENT_PA_DIR_C="$Id: pa_dir.C,v 1.27 2016/12/28 22:50:07 moko Exp $" IDENT_PA_DIR_H;
+volatile const char * IDENT_PA_DIR_C="$Id: pa_dir.C,v 1.28 2017/02/06 16:17:12 moko Exp $" IDENT_PA_DIR_H;
 
 #ifdef _MSC_VER
 
+const UTF16* pa_utf16_encode(const char* in, Charset& source_charset);
+const char* pa_utf16_decode(const UTF16* in, Charset& asked_charset);
+
 #define TICKS_PER_SECOND 10000000ULL
 #define EPOCH_DIFFERENCE 11644473600ULL
+
 time_t filetime_to_timet(FILETIME const& ft){
 	ULARGE_INTEGER ull;
 	ull.LowPart = ft.dwLowDateTime;
@@ -27,39 +33,45 @@ bool findfirst(const char* _pathname, struct ffblk *_ffblk, int /*_attrib*/) {
 	char mask[MAXPATH];
 	snprintf(mask, MAXPATH, "%s/*.*", _pathname);
 
-	_ffblk->handle=FindFirstFile(mask, (_WIN32_FIND_DATAA *)_ffblk);
+	const UTF16* utf16mask=pa_utf16_encode(mask, pa_thread_request().charsets.source());
+
+	_ffblk->handle=FindFirstFileW((const wchar_t *)utf16mask, &_ffblk->stat);
 	return _ffblk->handle==INVALID_HANDLE_VALUE;
 }
 
 bool findnext(struct ffblk *_ffblk) {
-	return !FindNextFile(_ffblk->handle, (_WIN32_FIND_DATAA *)_ffblk);
+	return !FindNextFileW(_ffblk->handle, &_ffblk->stat);
 }
 
 void findclose(struct ffblk *_ffblk) {
 	FindClose(_ffblk->handle);
 }
 
+const char *ffblk::name() {
+	return pa_utf16_decode((const UTF16*)stat.cFileName, pa_thread_request().charsets.source());
+}
+
 bool ffblk::is_dir(bool) {
-	return (ff_attrib & FILE_ATTRIBUTE_DIRECTORY) != 0;
+	return (stat.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
 }
 
 double ffblk::size() {
 	ULARGE_INTEGER ull;
-	ull.LowPart = nFileSizeLow;
-	ull.HighPart = nFileSizeHigh;
+	ull.LowPart = stat.nFileSizeLow;
+	ull.HighPart = stat.nFileSizeHigh;
 	return (double)ull.QuadPart;
 }
 
 time_t ffblk::c_timestamp() {
-	return filetime_to_timet(ftCreationTime);
+	return filetime_to_timet(stat.ftCreationTime);
 }
 
 time_t ffblk::m_timestamp() {
-	return filetime_to_timet(ftLastWriteTime);
+	return filetime_to_timet(stat.ftLastWriteTime);
 }
 
 time_t ffblk::a_timestamp() {
-	return filetime_to_timet(ftLastAccessTime);
+	return filetime_to_timet(stat.ftLastAccessTime);
 }
 
 #else
@@ -67,16 +79,16 @@ time_t ffblk::a_timestamp() {
 bool findfirst(const char* _pathname, struct ffblk *_ffblk, int /*_attrib*/) {
 	_ffblk->filePath=_pathname;
 	if(!(_ffblk->dir=opendir(_ffblk->filePath)))
-        return true;
+		return true;
 
 	return findnext(_ffblk);
 }
 
 bool findnext(struct ffblk *_ffblk) {
-    while(true) {
-        struct dirent *entry=readdir(_ffblk->dir);
-        if(!entry)
-            return true;
+	while(true) {
+		struct dirent *entry=readdir(_ffblk->dir);
+		if(!entry)
+			return true;
 
 		strncpy(_ffblk->ff_name, entry->d_name, sizeof(_ffblk->ff_name)-1);
 		_ffblk->ff_name[sizeof(_ffblk->ff_name)-1]=0;

@@ -8,7 +8,7 @@
 #ifndef PA_DIR_H
 #define PA_DIR_H
 
-#define IDENT_PA_DIR_H "$Id: pa_dir.h,v 1.27 2015/10/26 01:21:55 moko Exp $"
+#define IDENT_PA_DIR_H "$Id: pa_dir.h,v 1.28 2017/02/06 16:17:12 moko Exp $"
 
 #include "pa_config_includes.h"
 
@@ -24,19 +24,10 @@
 #define MAXPATH MAX_PATH
 
 struct ffblk {
-	DWORD ff_attrib;/*dwFileAttributes;*/
-	FILETIME ftCreationTime;
-	FILETIME ftLastAccessTime;
-	FILETIME ftLastWriteTime;
-	DWORD nFileSizeHigh;
-	DWORD nFileSizeLow;
-	DWORD dwReserved0;
-	DWORD dwReserved1;
-	CHAR   ff_name[ MAX_PATH ];/*cFileName[ MAX_PATH ];*/
-	CHAR   cAlternateFileName[ 14 ];
-	/*helper*/
+	struct _WIN32_FIND_DATAW stat;
 	HANDLE handle;
 
+	const char *name();
 	bool is_dir(bool);
 	double size();
 	time_t c_timestamp();
@@ -50,7 +41,7 @@ struct ffblk {
 
 struct ffblk {
 	/*as if in windows :)*/
-    char ff_name[ MAXPATH ];
+	char ff_name[ MAXPATH ];
 	/*helpers*/
 	DIR *dir;
 	const char *filePath;
@@ -59,6 +50,8 @@ struct ffblk {
 #ifdef HAVE_STRUCT_DIRENT_D_TYPE
 	unsigned char _d_type;
 #endif
+
+	const char *name(){ return ff_name; }
 	bool is_dir(bool);
 	void stat_file();
 	double size();
@@ -74,16 +67,17 @@ bool findnext(struct ffblk *_ffblk);
 void findclose(struct ffblk *_ffblk);
 
 /// main dir workhorse: calles win32/unix unified functions findfirst/next/close [skip . and ..]
-#define LOAD_DIR(dir,action) {\
-    ffblk ffblk; \
-    if(!findfirst(dir, &ffblk, 0)) { \
-		do \
-			if(*ffblk.ff_name && !(ffblk.ff_name[0]=='.' && (ffblk.ff_name[1]==0 || ffblk.ff_name[1]=='.' && ffblk.ff_name[2]==0)  )) {\
+#define LOAD_DIR(dir,action) { \
+	ffblk ffblk; \
+	if(!findfirst(dir, &ffblk, 0)) { \
+		do { \
+			const char *file_name=ffblk.name(); \
+			if(*file_name && !(file_name[0]=='.' && (file_name[1]==0 || file_name[1]=='.' && file_name[2]==0)  )) { \
 				action; \
 			} \
-		while(!findnext(&ffblk)); \
+		} while(!findnext(&ffblk)); \
 		findclose(&ffblk); \
 	} \
-} 
+}
 
 #endif

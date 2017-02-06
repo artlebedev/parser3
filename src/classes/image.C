@@ -25,7 +25,7 @@
 #include "pa_vdate.h"
 #include "pa_table.h"
 
-volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.158 2016/12/26 20:04:05 moko Exp $";
+volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.159 2017/02/06 16:17:12 moko Exp $";
 
 // defines
 
@@ -787,7 +787,7 @@ static void _html(Request& r, MethodParams& params) {
 /// @test wrap FILE to auto-object
 static gdImage* load(Request& r, const String& file_name){
 	const char* file_name_cstr=r.absolute(file_name).taint_cstr(String::L_FILE_SPEC);
-	if(FILE *f=fopen(file_name_cstr, "rb")) {
+	if(FILE *f=pa_fopen(file_name_cstr, "rb")) {
 		gdImage* image=new gdImage;
 		bool ok=image->CreateFromGif(f);
 		fclose(f);

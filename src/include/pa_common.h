@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.172 2017/01/23 09:33:02 moko Exp $"
+#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.173 2017/02/06 16:17:12 moko Exp $"
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -78,13 +78,19 @@ int pa_snprintf(char *, size_t, const char* , ...);
 #endif
 
 #define stat __stat64
-#define pa_stat _stat64
 #define pa_fstat _fstat64
+
+int pa_stat(const char *pathname, struct stat *buffer);
+int pa_open(const char *pathname, int flags, int mode=0);
+FILE *pa_fopen(const char *pathname, const char *mode);
 
 #else
 
 #define pa_stat stat
 #define pa_fstat fstat
+
+#define pa_open open
+#define pa_fopen fopen
 
 #endif
 

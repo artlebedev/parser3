@@ -25,7 +25,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.260 2016/12/28 22:50:06 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.261 2017/02/06 16:17:12 moko Exp $";
 
 // defines
 
@@ -730,10 +730,10 @@ static void _list(Request& r, MethodParams& params) {
 	int ovector[ovector_size];
 
 	LOAD_DIR(absolute_path_cstr, 
-		const char* file_name_cstr=ffblk.ff_name;
+		const char* file_name_cstr=ffblk.name();
 		size_t file_name_size=strlen(file_name_cstr);
 
-		if(!vregex || vregex->exec(ffblk.ff_name, file_name_size, ovector, ovector_size)>=0) {
+		if(!vregex || vregex->exec(file_name_cstr, file_name_size, ovector, ovector_size)>=0) {
 			Table::element_type row(new ArrayString);
 			*row+=new String(pa_strdup(file_name_cstr, file_name_size), String::L_TAINTED);
 			*row+=new String(String::Body::Format(ffblk.is_dir(stat) ? 1 : 0), String::L_CLEAN);
