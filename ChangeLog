@@ -1,4 +1,441 @@
+2017-02-07  moko
+
+	* configure.ac, src/include/pa_version.h: 3.4.5b -> 3.4.5rc
+
+2017-02-06  moko
+
+	* src/main/pa_common.C: minor fixes, whitespace
+
+	* src/: classes/curl.C, classes/file.C, classes/image.C,
+	  include/pa_common.h, include/pa_dir.h, main/pa_common.C,
+	  main/pa_dir.C, main/pa_exec.C: wchar filenames API under Windows
+	  now used (implements feature #1081)
+
+	* src/: types/pa_vcookie.C, main/pa_charset.C: cleanup
+
+2017-02-01  moko
+
+	* src/include/pa_request.h: cleanup
+
+2017-01-30  moko
+
+	* src/main/pa_request.C: file_lock_wait_limit -> lock_wait_timeout
+
+2017-01-29  moko
+
+	* tests/: 383.html, results/383.processed: test for
+	  ^reflection:stack[] added (related to feature #1052)
+
+	* src/classes/reflection.C: else added
+
+	* src/: include/pa_os.h, main/pa_os.C, main/pa_request.C:
+	  $.max_file_lock_wait added (implements feature #1128)
+
+2017-01-28  moko
+
+	* tests/: 379-curl.html, results/379-curl.processed: curl empty
+	  body and other cases tests added (related to featue #1014)
+
+	* src/classes/curl.C: bug if response is empty fixed (related to
+	  feature #1014)
+
+2017-01-27  moko
+
+	* src/: classes/json.C, classes/reflection.C, include/pa_request.h,
+	  main/execute.C, types/pa_vmethod_frame.h: ^reflection:stack[]
+	  added (implements feature #1052)
+
+2017-01-25  moko
+
+	* tests/: 382.html, results/382.processed: @GET_DEFAULT returning
+	  method test added
+
+2017-01-23  moko
+
+	* src/classes/reflection.C: optimization: options->get replaced by
+	  hash iterator
+
+	* tests/: 381.html, results/381.processed: now -> fixed date
+
+	* src/main/pa_request.C: warning war
+
+	* src/targets/cgi/parser3.vcproj: Stack size increased from 2Mb to
+	  5Mb (fixes bug #1058)
+
+	* src/classes/curl.C: warning war
+
+	* tests/: 381.html, results/381.processed: tests for ^json:string
+	  $.one-line(true) option added (related to feature #1124)
+
+	* src/: classes/json.C, types/pa_value.h: $json-string
+	  $.one-line(true|false) options is now supported (implements
+	  feature #1124)
+
+	* tests/: 380.html, results/380.processed: test for modified
+	  $.max_file_size added (related to bug #1014)
+
+	* tests/: 379.html, results/auto.p: tests for rewritten http file
+	  load added (related to bug #1014)
+
+	* src/: classes/curl.C, include/pa_common.h, include/pa_http.h,
+	  main/pa_common.C, main/pa_http.C: check_file_size added and used
+	  in curl / file load from disk and http, http file load rewritten
+	  (related to bug #1014)
+
+2017-01-18  moko
+
+	* tests/: 378.html, results/378.processed: tests for ^result[]
+	  added (related to feature #66)
+
+	* src/: classes/op.C, include/pa_request.h: ^return[] can't be
+	  Method::CO_WITHOUT_FRAME as frame still added in expression
+	  (related to feature #66)
+
+2017-01-17  moko
+
+	* tests/: 377.html, results/377.processed: test for different
+	  combinations of breaks in body and delimiter (related to bug
+	  #1077)
+
+	* tests/: 376.html, results/376.processed: many ^break[] tests
+	  added (related to bug #1077)
+
+	* src/types/pa_vmethod_frame.C: "break is not allowed in expression
+	  passed to native method" exception added to avoid bugs due to
+	  WRITE_EXPR_RESULT skipped and native methods execution continues
+	  after ^break[] (related to bug #1077)
+
+2017-01-14  moko
+
+	* tests/: 330.html, results/330.processed: test results updated
+	  after ^break[] bugs where fixed (related to bug #1077)
+
+	* tests/: 329.html, results/329.processed: test results updated
+	  after ^break[] bugs where fixed (related to bug #1077)
+
+	* tests/results/320.processed: ^return[] added
+
+2017-01-13  moko
+
+	* src/: classes/hash.C, classes/hashfile.C, classes/op.C,
+	  classes/table.C, include/pa_request.h, main/execute.C,
+	  main/pa_request.C, targets/cgi/parser3.C,
+	  types/pa_vmethod_frame.C: Request::SKIP_INTERRUPTED,
+	  Request::SKIP_RETURN added and implemented, Request::SKIP_* now
+	  checked after each possible process/execute call (fixes bug
+	  #1077)
+
+2016-12-29  moko
+
+	* src/main/pa_common.C: warning war
+
+	* src/: classes/math.C, include/pa_random.h, include/pa_request.h,
+	  include/pa_types.h, main/pa_request.C, main/pa_string.C:
+	  pa_file_size_limit added, ^math:random fixed for upper limit and
+	  limits more then 0x7FFFFFFF, limits now declared in pa_types.h
+	  (related to feature #1014)
+
+	* src/: classes/curl.C, classes/file.C, include/pa_common.h,
+	  main/pa_common.C, main/pa_dir.C, main/pa_exec.C: stat -> pa_stat
+	  (related to feature #1014)
+
+2016-12-28  moko
+
+	* src/: classes/file.C, main/pa_request.C, main/pa_string.C: VS2003
+	  warning war
+
+2016-12-26  moko
+
+	* tests/: 341.html, results/341.processed: test for
+	  ^table.hash[id;;$.type[string]] added (related to feature #1057)
+
+	* src/classes/table.C: ^table.hash[id;;$.type[string]] support fix
+	  (related to feature #1057)
+
+	* src/types/pa_vdate.C: warning war continues...
+
+	* src/: classes/date.C, classes/image.C, classes/table.C,
+	  include/pa_config_includes.h, types/pa_vfile.C: warning war
+
+	* src/lib/gd/gifio.C: warning war / cleanup
+
+	* src/lib/json/pa_json.C: warning war
+
+	* src/classes/hash.C: warning war
+
+	* src/types/pa_vfile.C: warning war
+
+	* src/: classes/hash.C, include/pa_common.h, types/pa_vcookie.C:
+	  -Wall warning war continues
+
+	* configure.ac: --with-build-warnings actualized
+
+2016-12-25  moko
+
+	* src/main/pa_exec.C: -wAll warning war
+
+	* src/: types/pa_vform.C, types/pa_vrequest.C, main/pa_common.C:
+	  -wAll warning war
+
+	* src/: include/pa_common.h, include/pa_sapi.h,
+	  types/pa_junction.h, types/pa_method.h, types/pa_value.h,
+	  types/pa_vdate.C, types/pa_vstateless_class.h, types/pa_vxdoc.h:
+	  -wAll warning war
+
+2016-12-23  moko
+
+	* src/lib/ltdl/Makefile.am: extra dist added
+
+	* tests/results/344.processed: test result updated after $file.text
+	  prefetched in ^hash::create[$file] (related to feature #1075)
+
+	* src/types/: pa_vfile.C, pa_vfile.h: $file.text prefetched in
+	  ^hash::create[$file] (related to feature #1075)
+
+2016-12-22  moko
+
+	* src/: classes/file.C, include/pa_common.h, main/pa_common.C,
+	  main/pa_request.C, main/pa_stylesheet_connection.C,
+	  types/pa_vfile.C: file_stat now return 64-bit size (implements
+	  #1014 under 32-bit unix versions)
+
+2016-12-21  moko
+
+	* tests/: 375.html, results/375.processed: test for exec returning
+	  stated file added (related to feature #1119)
+
+	* src/classes/file.C: load should not return file with null body
+	  (fixes bug #1119)
+
+2016-12-14  moko
+
+	* tests/: 374.html, results/374.processed: test for $method.name
+	  added (related to feature #1117) plus method returning junction
+	  test
+
+2016-12-13  moko
+
+	* src/: include/pa_symbols.h, main/pa_symbols.C,
+	  types/pa_vjunction.C, types/pa_vjunction.h: $method.name added
+	  (implements feature #1117)
+
+	* src/: types/pa_vform.C, include/pa_request_info.h: now only GET,
+	  HEAD and TRACE can't have body (implements feature #1116)
+
+2016-12-09  moko
+
+	* tests/: 373.html, results/373.processed: tests for
+	  ^reflection:tainting added (related to feature #1098)
+
+	* src/classes/reflection.C: ^reflection:tainting arguments order
+	  change (related to feature #1098)
+
+2016-12-06  moko
+
+	* src/: classes/reflection.C, include/pa_string.h,
+	  main/pa_string.C: ^reflection:tainting[$string] added (implements
+	  feature #1098)
+
+2016-12-05  moko
+
+	* src/types/pa_vdouble.h: negative zero (-0) now converted to 0
+	  (fixes bug #1114)
+
+2016-12-04  moko
+
+	* tests/: 206.html, results/206.processed: negative zero (0/-1)
+	  check added
+
+2016-12-03  moko
+
+	* tests/: 346-curl.html, results/346-curl.processed: test modified
+	  to test value.as_hash() usage
+
+	* src/classes/curl.C: value.as_hash() used for correct hash
+	  processing
+
+	* src/classes/reflection.C: exceptions texts fixes
+
+2016-12-02  moko
+
+	* tests/: 372.html, results/372.processed: tests for
+	  ^reflection:create[ $.class[name] $.constructor[name]
+	  $.arguments[ $.1[param1] $.2[param2] ... ] ] added (related to
+	  feature #1094)
+
+	* src/types/pa_vmethod_frame.h: comment added: params should be
+	  declared outside of *_FRAME_ACTION as MethodParams destructor
+	  will be called in ~VNativeMethodFrame
+
+	* src/classes/reflection.C: ^reflection:create[ $.arguments[ ... ]
+	  ] minor fix
+
+	* src/: classes/reflection.C, types/pa_value.C, types/pa_value.h,
+	  types/pa_vmethod_frame.C: ^reflection:create[ $.class[name]
+	  $.constructor[name] $.arguments[ $.1[param1] $.2[param2] ... ] ]
+	  now supported (implements feature #1094) value::as_hash added
+	  (and should be used everywhere)
+
+	* src/classes/reflection.C: cleanup
+
+2016-12-01  moko
+
+	* tests/: 356.html, results/356.processed: test for method
+	  junctions class name added to the resulting hash added (related
+	  to feature #1068)
+
+	* src/classes/reflection.C: for method junctions class name added
+	  to the resulting hash (related to feature #1068)
+
+2016-11-30  moko
+
+	* src/types/: pa_vhashfile.C, pa_vhashfile.h: file_name included in
+	  exception (related to bug #1113)
+
+	* src/types/pa_vhashfile.C: whitespace
+
+	* src/main/pa_os.C: errno now returned as it should (fixes bug
+	  #1113)
+
+	* tests/results/: 175.processed, 192.processed, 224.processed,
+	  229.processed, 239.processed, 244.processed, 246.processed,
+	  314.processed, 352.processed: tests results updated after method
+	  call exceptions improved as method now keeps its name
+
+	* src/: classes/reflection.C, main/execute.C, types/pa_value.C,
+	  types/pa_vmethod_frame.h: method call exceptions improved as
+	  method now keeps its name
+
+	* tests/: 224.html, 239.html, results/224.processed,
+	  results/239.processed: tests and tests results updated after
+	  Request::construct exception changed
+
+	* src/: classes/reflection.C, main/execute.C: Request::construct
+	  exception optimized
+
+	* tests/: 371.html, results/371.processed: test for
+	  WWrapper.get_element call in $.name.key[value] code added
+	  (related to feature #1091)
+
+	* src/types/pa_wwrapper.h: WWrapper.get_element returned, as used
+	  in $.name.key[value] code (related to feature #1091)
+
+2016-11-29  moko
+
+	* src/classes/op.C: VS warning war
+
+	* src/types/: pa_vmethod_frame.h, pa_wcontext.h: VS warning war:
+	  C4239: nonstandard extension used : 'return' : conversion from
+	  'Value' to 'Value &' (related to feature #1020)
+
+	* src/: main/execute.C, types/pa_vmethod_frame.h,
+	  types/pa_wcontext.h: VS warning war: C4239: nonstandard extension
+	  used : 'return' : conversion from 'Value' to 'Value &' (related
+	  to feature #1020)
+
+	* src/main/execute.C: VS warning war
+
+	* src/targets/cgi/parser3.C: VS compatibility fix
+
+	* src/include/pa_request.h: VS warning war
+
+	* tests/: 370.html, results/370.processed: test for ^file::exec[
+	  ... $.stdin[$binary_file] ] added (related to bug #1044)
+
+	* src/: classes/file.C, classes/mail.C, include/pa_exec.h,
+	  include/pa_string.h, main/pa_exec.C: pa_exec now supports
+	  $.stdin[$binary_file] (fixes bug #1044)
+
+2016-11-28  moko
+
+	* src/main/pa_exec.C: whitespace
+
+	* src/main/pa_request.C: whitespace
+
+	* tests/: 369.html, results/369.processed: test for
+	  $response:status usage added (related to feature #1099)
+
+	* src/targets/cgi/parser3.C: HTTP response code used as exit status
+	  if < 100 (implements feature #1099)
+
+	* src/targets/cgi/parser3.C: whitespace
+
+	* src/targets/cgi/parser3.C: whitespace
+
+	* tests/: 368.html, results/368.processed: test updated after
+	  ^reflection:filename[$method] added (related to feature #1053)
+
+	* src/: classes/op.C, classes/reflection.C, include/pa_request.h,
+	  main/compile.y, main/execute.C, main/pa_request.C,
+	  types/pa_vclass.h: filename -> filespec,
+	  ^reflection:filename[$method] added (related to feature #1053)
+
+2016-11-27  moko
+
+	* tests/: 368.html, results/368.processed: test for
+	  reflection:filename[$class or object] added (related to feature
+	  #1053)
+
+	* src/: classes/reflection.C, main/compile.y, types/pa_vclass.h,
+	  types/pa_vstateless_class.h: ^reflection:filename[$class or
+	  object] added (implements feature #1053)
+
+2016-11-26  moko
+
+	* src/: include/pa_request_info.h,
+	  targets/apache/mod_parser3_core.C, targets/cgi/parser3.C:
+	  remove_absolute_uri -> strip_absolute_uri
+
+2016-11-25  moko
+
+	* src/: include/pa_request_info.h,
+	  targets/apache/mod_parser3_core.C, targets/cgi/parser3.C:
+	  request_info.remove_absolute_uri added to remove possible
+	  http://site.name/ from $request:uri (implements feature #1112)
+
+2016-11-24  moko
+
+	* tests/: 367-curl.html, results/367-curl.processed: test for
+	  previous request headers clearing after redirect added (related
+	  to bug #1109)
+
+	* src/: classes/curl.C, include/pa_array.h, include/pa_http.h:
+	  response headers from previous requests are now cleared, only
+	  last request headers are collected (fixes bug #1109)
+
+	* tests/results/: 266.processed, 321.processed, 356.processed:
+	  tests results updated as method name now added to the resulting
+	  hash for new syntax only (Imp1 compatimility fixed, related to
+	  feature #1068)
+
+	* src/classes/reflection.C: method name now added to the resulting
+	  hash for new syntax only (Imp1 compatimility fixed, related to
+	  feature #1068)
+
+	* tests/results/366.processed: test for native and parser
+	  implementation of ^use[] logic (related to feature #1074)
+
+	* tests/: 366.html, 366_dir/test-duplicate.p, 366_dir/test.p: test
+	  for native and parser implementation of ^use[] logic (related to
+	  feature #1074)
+
+2016-11-23  moko
+
+	* src/: classes/op.C, include/pa_request.h, main/compile.y,
+	  main/pa_request.C: @USE file now implemented as ^use[file;
+	  $.origin[origin_file] ] (implements feature #1074)
+
 2016-11-21  moko
+
+	* tests/: 365.html, results/365.processed: test for $caller bugs in
+	  3.4.4 and $caller.method now tested (related to feature #1110)
+
+	* tests/: 364.html, results/364.processed: $caller usage in
+	  different contexts now tested (related to feature #1110)
+
+	* src/types/types.vcproj: +pa_vcaller_wrapper.h
+
+	* src/types/Makefile.am: pa_vcaller_wrapper.h added
 
 	* src/: include/pa_symbols.h, main/pa_symbols.C, types/pa_method.h,
 	  types/pa_vcaller_wrapper.h, types/pa_vmethod_frame.C,
@@ -15479,7 +15916,7 @@
 	  types/pa_vstring.h, types/pa_vtable.C, types/pa_vtable.h,
 	  types/pa_vvoid.h, types/pa_vxdoc.C, types/pa_vxdoc.h,
 	  types/pa_vxnode.C, types/pa_vxnode.h, types/pa_wcontext.C,
-	  types/pa_wcontext.h, types/pa_wwrapper.h: $Date: 2016/11/21 20:04:05 $
+	  types/pa_wcontext.h, types/pa_wwrapper.h: $Date: 2017/02/07 21:47:19 $
 
 	* src/: classes/classes.C, classes/classes.dsp, classes/classes.h,
 	  classes/date.C, classes/double.C, classes/file.C, classes/form.C,
@@ -19567,7 +20004,7 @@
 	  main/pa_hash.C, main/pa_pool.C, main/pa_request.C,
 	  main/pa_socks.C, main/pa_sql_driver_manager.C, main/pa_string.C,
 	  main/pa_table.C, main/untaint.C, targets/cgi/parser3.C,
-	  targets/isapi/parser3isapi.C: static char *RCSId="$Id: ChangeLog,v 1.109 2016/11/21 20:04:05 moko Exp $";
+	  targets/isapi/parser3isapi.C: static char *RCSId="$Id: ChangeLog,v 1.110 2017/02/07 21:47:19 moko Exp $";
 
 	* src/main/: compile.y, compile_tools.h: $:name: == ${name}:
 	  $class:name: == ${class:name}:
@@ -22382,9 +22819,9 @@
 
 	* src/include/: pa_pool.h, pa_string.h: pa_pool split
 
-	* src/main/: main.dsp, pa_string.C: $Id: ChangeLog,v 1.109 2016/11/21 20:04:05 moko Exp $ check
+	* src/main/: main.dsp, pa_string.C: $Id: ChangeLog,v 1.110 2017/02/07 21:47:19 moko Exp $ check
 
-	* src/: main/pa_pool.C, main/pa_string.C, include/pa_pool.h: $Id: ChangeLog,v 1.109 2016/11/21 20:04:05 moko Exp $
+	* src/: main/pa_pool.C, main/pa_string.C, include/pa_pool.h: $Id: ChangeLog,v 1.110 2017/02/07 21:47:19 moko Exp $
 	  check
 
 	* src/: include/pa_pool.h, main/pa_string.C: String prealloc &
