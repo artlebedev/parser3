@@ -1,3 +1,77 @@
+2017-02-08  moko
+
+	* src/: classes/bool.C, classes/classes.C, classes/classes.awk,
+	  classes/classes.h, classes/curl.C, classes/date.C,
+	  classes/double.C, classes/file.C, classes/form.C, classes/hash.C,
+	  classes/hashfile.C, classes/image.C, classes/inet.C,
+	  classes/int.C, classes/json.C, classes/mail.C, classes/math.C,
+	  classes/memcached.C, classes/memory.C, classes/op.C,
+	  classes/reflection.C, classes/regex.C, classes/response.C,
+	  classes/string.C, classes/table.C, classes/void.C,
+	  classes/xdoc.C, classes/xnode.C, classes/xnode.h,
+	  include/pa_array.h, include/pa_cache_managers.h,
+	  include/pa_charset.h, include/pa_charsets.h, include/pa_common.h,
+	  include/pa_config_fixed.h, include/pa_config_includes.h,
+	  include/pa_dictionary.h, include/pa_dir.h,
+	  include/pa_exception.h, include/pa_exec.h, include/pa_globals.h,
+	  include/pa_hash.h, include/pa_http.h, include/pa_memory.h,
+	  include/pa_opcode.h, include/pa_operation.h, include/pa_os.h,
+	  include/pa_pool.h, include/pa_random.h, include/pa_request.h,
+	  include/pa_request_charsets.h, include/pa_request_info.h,
+	  include/pa_sapi.h, include/pa_socks.h,
+	  include/pa_sql_connection.h, include/pa_sql_driver_manager.h,
+	  include/pa_stack.h, include/pa_string.h,
+	  include/pa_stylesheet_connection.h,
+	  include/pa_stylesheet_manager.h, include/pa_symbols.h,
+	  include/pa_table.h, include/pa_threads.h, include/pa_types.h,
+	  include/pa_uue.h, include/pa_xml_exception.h,
+	  include/pa_xml_io.h, lib/gd/gif.C, lib/gd/gif.h, lib/gd/gifio.C,
+	  lib/md5/pa_md5.h, lib/md5/pa_md5c.c,
+	  lib/memcached/pa_memcached.C, lib/memcached/pa_memcached.h,
+	  lib/punycode/pa_idna.c, lib/punycode/pa_idna.h,
+	  lib/sdbm/pa_file_io.C, lib/sdbm/pa_strings.C, lib/smtp/comms.C,
+	  lib/smtp/smtp.C, lib/smtp/smtp.h, main/compile.C,
+	  main/compile.tab.C, main/compile.y, main/compile_tools.C,
+	  main/compile_tools.h, main/execute.C, main/pa_cache_managers.C,
+	  main/pa_charset.C, main/pa_charsets.C, main/pa_common.C,
+	  main/pa_dictionary.C, main/pa_dir.C, main/pa_exception.C,
+	  main/pa_exec.C, main/pa_globals.C, main/pa_http.C,
+	  main/pa_memory.C, main/pa_os.C, main/pa_pool.C, main/pa_random.C,
+	  main/pa_request.C, main/pa_socks.C, main/pa_sql_driver_manager.C,
+	  main/pa_string.C, main/pa_stylesheet_connection.C,
+	  main/pa_stylesheet_manager.C, main/pa_symbols.C, main/pa_table.C,
+	  main/pa_uue.C, main/pa_xml_exception.C, main/pa_xml_io.C,
+	  main/untaint.C, sql/pa_sql_driver.h,
+	  targets/apache/mod_parser3.c, targets/apache/mod_parser3_core.C,
+	  targets/apache/pa_httpd.h, targets/apache/pa_threads.C,
+	  targets/cgi/pa_threads.C, targets/cgi/parser3.C,
+	  targets/isapi/pa_threads.C, targets/isapi/parser3isapi.C,
+	  types/pa_junction.h, types/pa_method.h, types/pa_property.h,
+	  types/pa_value.C, types/pa_value.h, types/pa_vbool.h,
+	  types/pa_vcaller_wrapper.h, types/pa_vclass.C, types/pa_vclass.h,
+	  types/pa_vcode_frame.h, types/pa_vconsole.h, types/pa_vcookie.C,
+	  types/pa_vcookie.h, types/pa_vdate.C, types/pa_vdate.h,
+	  types/pa_vdouble.h, types/pa_venv.C, types/pa_venv.h,
+	  types/pa_vfile.C, types/pa_vfile.h, types/pa_vform.C,
+	  types/pa_vform.h, types/pa_vhash.C, types/pa_vhash.h,
+	  types/pa_vhashfile.C, types/pa_vhashfile.h, types/pa_vimage.C,
+	  types/pa_vimage.h, types/pa_vint.h, types/pa_vjunction.C,
+	  types/pa_vjunction.h, types/pa_vmail.C, types/pa_vmail.h,
+	  types/pa_vmath.C, types/pa_vmath.h, types/pa_vmemcached.C,
+	  types/pa_vmemcached.h, types/pa_vmemory.h,
+	  types/pa_vmethod_frame.C, types/pa_vmethod_frame.h,
+	  types/pa_vobject.C, types/pa_vobject.h, types/pa_vregex.C,
+	  types/pa_vregex.h, types/pa_vrequest.C, types/pa_vrequest.h,
+	  types/pa_vresponse.C, types/pa_vresponse.h,
+	  types/pa_vstateless_class.C, types/pa_vstateless_class.h,
+	  types/pa_vstateless_object.h, types/pa_vstatus.C,
+	  types/pa_vstatus.h, types/pa_vstring.C, types/pa_vstring.h,
+	  types/pa_vtable.C, types/pa_vtable.h, types/pa_vvoid.C,
+	  types/pa_vvoid.h, types/pa_vxdoc.C, types/pa_vxdoc.h,
+	  types/pa_vxnode.C, types/pa_vxnode.h, types/pa_wcontext.C,
+	  types/pa_wcontext.h, types/pa_wwrapper.h: Copyright year:
+	  2015->2017
+
 2017-02-07  moko
 
 	* configure.ac, src/include/pa_version.h: 3.4.5b -> 3.4.5rc
@@ -15916,7 +15990,7 @@
 	  types/pa_vstring.h, types/pa_vtable.C, types/pa_vtable.h,
 	  types/pa_vvoid.h, types/pa_vxdoc.C, types/pa_vxdoc.h,
 	  types/pa_vxnode.C, types/pa_vxnode.h, types/pa_wcontext.C,
-	  types/pa_wcontext.h, types/pa_wwrapper.h: $Date: 2017/02/07 21:47:19 $
+	  types/pa_wcontext.h, types/pa_wwrapper.h: $Date: 2017/02/07 22:04:34 $
 
 	* src/: classes/classes.C, classes/classes.dsp, classes/classes.h,
 	  classes/date.C, classes/double.C, classes/file.C, classes/form.C,
@@ -20004,7 +20078,7 @@
 	  main/pa_hash.C, main/pa_pool.C, main/pa_request.C,
 	  main/pa_socks.C, main/pa_sql_driver_manager.C, main/pa_string.C,
 	  main/pa_table.C, main/untaint.C, targets/cgi/parser3.C,
-	  targets/isapi/parser3isapi.C: static char *RCSId="$Id: ChangeLog,v 1.110 2017/02/07 21:47:19 moko Exp $";
+	  targets/isapi/parser3isapi.C: static char *RCSId="$Id: ChangeLog,v 1.111 2017/02/07 22:04:34 moko Exp $";
 
 	* src/main/: compile.y, compile_tools.h: $:name: == ${name}:
 	  $class:name: == ${class:name}:
@@ -22819,9 +22893,9 @@
 
 	* src/include/: pa_pool.h, pa_string.h: pa_pool split
 
-	* src/main/: main.dsp, pa_string.C: $Id: ChangeLog,v 1.110 2017/02/07 21:47:19 moko Exp $ check
+	* src/main/: main.dsp, pa_string.C: $Id: ChangeLog,v 1.111 2017/02/07 22:04:34 moko Exp $ check
 
-	* src/: main/pa_pool.C, main/pa_string.C, include/pa_pool.h: $Id: ChangeLog,v 1.110 2017/02/07 21:47:19 moko Exp $
+	* src/: main/pa_pool.C, main/pa_string.C, include/pa_pool.h: $Id: ChangeLog,v 1.111 2017/02/07 22:04:34 moko Exp $
 	  check
 
 	* src/: include/pa_pool.h, main/pa_string.C: String prealloc &
