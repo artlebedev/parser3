@@ -1,14 +1,14 @@
 /** @file
 	Parser: commonly used functions.
 
-	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_OS_H
 #define PA_OS_H
 
-#define IDENT_PA_OS_H "$Id: pa_os.h,v 1.10 2017/01/29 19:41:17 moko Exp $"
+#define IDENT_PA_OS_H "$Id: pa_os.h,v 1.11 2017/02/07 22:00:35 moko Exp $"
 
 #define PA_LOCK_ATTEMPTS 20
 #define PA_LOCK_WAIT_TIMEOUT_SECS 0

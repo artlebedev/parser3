@@ -3,7 +3,7 @@
 	Replaced ap_ to pa_ prefixes. linked into all targets but Apache-module target,
 	where linked targets/apache/pa_md5c.c stub instead.
 
-	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
 */
 
 /*
@@ -109,7 +109,7 @@
 
 #include "pa_md5.h"
 
-volatile const char * IDENT_PA_MD5_C="$Id: pa_md5c.c,v 1.18 2015/10/26 01:21:57 moko Exp $" IDENT_PA_MD5_H;
+volatile const char * IDENT_PA_MD5_C="$Id: pa_md5c.c,v 1.19 2017/02/07 22:00:38 moko Exp $" IDENT_PA_MD5_H;
 
 /* Constants for MD5Transform routine.
  */

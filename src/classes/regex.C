@@ -1,7 +1,7 @@
 /** @file
 	Parser: @b int parser class.
 
-	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
@@ -12,7 +12,7 @@
 #include "pa_vint.h"
 #include "pa_vregex.h"
 
-volatile const char * IDENT_REGEX_C="$Id: regex.C,v 1.10 2016/11/01 23:10:41 moko Exp $";
+volatile const char * IDENT_REGEX_C="$Id: regex.C,v 1.11 2017/02/07 22:00:29 moko Exp $";
 
 // class
 

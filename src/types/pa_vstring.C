@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b string class.
 
-	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #include "pa_vstring.h"
 #include "pa_vfile.h"
 
-volatile const char * IDENT_PA_VSTRING_C="$Id: pa_vstring.C,v 1.35 2015/10/26 01:22:03 moko Exp $" IDENT_PA_VSTRING_H;
+volatile const char * IDENT_PA_VSTRING_C="$Id: pa_vstring.C,v 1.36 2017/02/07 22:00:51 moko Exp $" IDENT_PA_VSTRING_H;
 
 VFile* VString::as_vfile(String::Language lang, const Request_charsets* charsets) {
 	VFile& result=*new VFile;

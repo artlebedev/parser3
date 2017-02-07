@@ -1,14 +1,14 @@
 /** @file
 	Parser: commonly used functions.
 
-	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.173 2017/02/06 16:17:12 moko Exp $"
+#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.174 2017/02/07 22:00:32 moko Exp $"
 
 #include "pa_string.h"
 #include "pa_hash.h"

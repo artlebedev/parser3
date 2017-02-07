@@ -1,13 +1,13 @@
 /**	@file
 	Parser: write context class.
 
-	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #include "pa_wcontext.h"
 
-volatile const char * IDENT_PA_WCONTEXT_C="$Id: pa_wcontext.C,v 1.39 2016/10/27 22:57:00 moko Exp $" IDENT_PA_WCONTEXT_H;
+volatile const char * IDENT_PA_WCONTEXT_C="$Id: pa_wcontext.C,v 1.40 2017/02/07 22:00:52 moko Exp $" IDENT_PA_WCONTEXT_H;
 
 // appends a fstring to result
 void WContext::write(Value& avalue) {

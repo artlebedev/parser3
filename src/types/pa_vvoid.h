@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b void parser class.
 
-	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VVOID_H
 #define PA_VVOID_H
 
-#define IDENT_PA_VVOID_H "$Id: pa_vvoid.h,v 1.43 2016/05/18 17:47:22 moko Exp $"
+#define IDENT_PA_VVOID_H "$Id: pa_vvoid.h,v 1.44 2017/02/07 22:00:52 moko Exp $"
 
 #define STRICT_VARS
 

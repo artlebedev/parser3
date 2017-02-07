@@ -1,14 +1,14 @@
 /**	@file
 	Parser: @b class parser class impl.
 
-	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #include "pa_vclass.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_PA_VCLASS_C="$Id: pa_vclass.C,v 1.55 2016/09/13 16:12:55 moko Exp $" IDENT_PA_VCLASS_H;
+volatile const char * IDENT_PA_VCLASS_C="$Id: pa_vclass.C,v 1.56 2017/02/07 22:00:46 moko Exp $" IDENT_PA_VCLASS_H;
 
 #ifdef OBJECT_PROTOTYPE
 	bool VClass::prototype = true;

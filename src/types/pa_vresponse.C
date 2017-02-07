@@ -1,7 +1,7 @@
 /** @file
 	Parser: @b response class.
 
-	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
@@ -13,7 +13,7 @@
 #include "pa_vdate.h"
 #include "pa_vhash.h"
 
-volatile const char * IDENT_PA_VRESPONSE_C="$Id: pa_vresponse.C,v 1.37 2016/09/21 15:35:11 moko Exp $" IDENT_PA_VRESPONSE_H;
+volatile const char * IDENT_PA_VRESPONSE_C="$Id: pa_vresponse.C,v 1.38 2017/02/07 22:00:50 moko Exp $" IDENT_PA_VRESPONSE_H;
 
 // defines
 

@@ -1,7 +1,7 @@
 /** @file
 	Parser: memcached class.
 
-	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
 	Authors:
 		Ivan Poluyanov <ivan-poluyanov@yandex.ru>
 		Artem Stepanov <timofei1394@thesecure.in>
@@ -15,7 +15,7 @@
 #include "pa_vbool.h"
 #include "pa_vmemcached.h"
 
-volatile const char * IDENT_MEMCACHED_C="$Id: memcached.C,v 1.14 2016/11/01 23:10:40 moko Exp $";
+volatile const char * IDENT_MEMCACHED_C="$Id: memcached.C,v 1.15 2017/02/07 22:00:28 moko Exp $";
 
 class MMemcached: public Methoded {
 public: // VStateless_class

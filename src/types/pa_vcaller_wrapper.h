@@ -1,7 +1,7 @@
 /** @file
 	Parser: VCaller class decl. as wrapper for $caller access
 
-	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
 */
 
 #ifndef PA_VCALLER_WRAPPER_H
@@ -10,7 +10,7 @@
 #include "pa_value.h"
 #include "pa_vmethod_frame.h"
 
-#define IDENT_PA_VCALLER_WRAPPER_H "$Id: pa_vcaller_wrapper.h,v 1.1 2016/11/21 19:31:56 moko Exp $"
+#define IDENT_PA_VCALLER_WRAPPER_H "$Id: pa_vcaller_wrapper.h,v 1.2 2017/02/07 22:00:46 moko Exp $"
 
 class VCallerWrapper: public Value {
 	VMethodFrame &fcaller;

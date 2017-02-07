@@ -1,14 +1,14 @@
 /** @file
 	Parser: memory reference counting classes.
 
-	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #include "pa_sapi.h"
 #include "pa_common.h"
 
-volatile const char * IDENT_PA_MEMORY_C="$Id: pa_memory.C,v 1.13 2016/09/21 12:03:40 moko Exp $" IDENT_PA_MEMORY_H;
+volatile const char * IDENT_PA_MEMORY_C="$Id: pa_memory.C,v 1.14 2017/02/07 22:00:43 moko Exp $" IDENT_PA_MEMORY_H;
 
 //{@ Array-oriented
 void *operator new[] (size_t size, bool) { // PointerFreeGC

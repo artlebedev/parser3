@@ -1,7 +1,7 @@
 /** @file
 	Parser: Stylesheet connection implementation.
 
-	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
@@ -11,7 +11,7 @@
 #include "pa_stylesheet_connection.h"
 #include "pa_xml_exception.h"
 
-volatile const char * IDENT_PA_STYLESHEET_CONNECTION_C="$Id: pa_stylesheet_connection.C,v 1.10 2016/12/21 21:14:43 moko Exp $" IDENT_PA_STYLESHEET_CONNECTION_H;
+volatile const char * IDENT_PA_STYLESHEET_CONNECTION_C="$Id: pa_stylesheet_connection.C,v 1.11 2017/02/07 22:00:44 moko Exp $" IDENT_PA_STYLESHEET_CONNECTION_H;
 
 void Stylesheet_connection::load(time_t new_disk_time) {
 	xsltStylesheet *nstylesheet;

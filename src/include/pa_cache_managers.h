@@ -1,14 +1,14 @@
 /** @file
 	Parser: cache managers center decl.
 
-	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_CACHE_MANAGERS_H
 #define PA_CACHE_MANAGERS_H
 
-#define IDENT_PA_CACHE_MANAGERS_H "$Id: pa_cache_managers.h,v 1.21 2015/10/26 01:21:55 moko Exp $"
+#define IDENT_PA_CACHE_MANAGERS_H "$Id: pa_cache_managers.h,v 1.22 2017/02/07 22:00:31 moko Exp $"
 
 #include "pa_hash.h"
 #include "pa_value.h"

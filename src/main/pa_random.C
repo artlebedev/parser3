@@ -1,7 +1,7 @@
 /** @file
 	Parser: random related functions.
 
-	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
@@ -12,7 +12,7 @@
 #include "pa_exception.h"
 #include "pa_threads.h"
 
-volatile const char * IDENT_PA_RANDOM_C="$Id: pa_random.C,v 1.8 2016/09/19 15:18:14 moko Exp $" IDENT_PA_RANDOM_H;
+volatile const char * IDENT_PA_RANDOM_C="$Id: pa_random.C,v 1.9 2017/02/07 22:00:43 moko Exp $" IDENT_PA_RANDOM_H;
 
 #ifdef _MSC_VER
 #include <windows.h>

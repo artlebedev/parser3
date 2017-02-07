@@ -1,7 +1,7 @@
 /** @file
 	Parser: cookie class.
 
-	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
@@ -13,7 +13,7 @@
 #include "pa_vhash.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VCOOKIE_C="$Id: pa_vcookie.C,v 1.97 2017/02/06 12:26:16 moko Exp $" IDENT_PA_VCOOKIE_H;
+volatile const char * IDENT_PA_VCOOKIE_C="$Id: pa_vcookie.C,v 1.98 2017/02/07 22:00:47 moko Exp $" IDENT_PA_VCOOKIE_H;
 
 // defines
 

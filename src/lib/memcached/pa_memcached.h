@@ -1,6 +1,6 @@
 /** @file
 	Parser: memcached support decl.
-	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
 */
 
 #ifndef PA_MEMCACHED_H

@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b date parser class decl.
 
-	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VDATE_H
 #define PA_VDATE_H
 
-#define IDENT_PA_VDATE_H "$Id: pa_vdate.h,v 1.64 2016/07/22 16:53:46 moko Exp $"
+#define IDENT_PA_VDATE_H "$Id: pa_vdate.h,v 1.65 2017/02/07 22:00:47 moko Exp $"
 
 #include "classes.h"
 #include "pa_common.h"

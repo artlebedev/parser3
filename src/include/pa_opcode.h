@@ -1,7 +1,7 @@
 /** @file
 	Parser: compiled code related decls.
 
-	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
 
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
@@ -11,7 +11,7 @@
 
 namespace OP {
 
-#define IDENT_PA_OPCODE_H "$Id: pa_opcode.h,v 1.54 2016/10/11 21:30:16 moko Exp $"
+#define IDENT_PA_OPCODE_H "$Id: pa_opcode.h,v 1.55 2017/02/07 22:00:35 moko Exp $"
 
 #define OPTIMIZE_BYTECODE_GET_ELEMENT                // $a ^a
 #define OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT         // $a.b ^a.b

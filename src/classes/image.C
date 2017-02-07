@@ -1,7 +1,7 @@
 /** @file
 	Parser: @b image parser class.
 
-	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
@@ -25,7 +25,7 @@
 #include "pa_vdate.h"
 #include "pa_table.h"
 
-volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.159 2017/02/06 16:17:12 moko Exp $";
+volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.160 2017/02/07 22:00:27 moko Exp $";
 
 // defines
 

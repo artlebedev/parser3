@@ -1,7 +1,7 @@
 /** @file
 	Parser: @b status class impl.
 
-	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
 	Win32 rusage author: Victor Fedoseev <vvf_ru@mail.ru>
@@ -13,7 +13,7 @@
 #include "pa_vdouble.h"
 #include "pa_threads.h"
 
-volatile const char * IDENT_PA_VSTATUS_C="$Id: pa_vstatus.C,v 1.34 2016/04/08 22:34:38 moko Exp $" IDENT_PA_VSTATUS_H;
+volatile const char * IDENT_PA_VSTATUS_C="$Id: pa_vstatus.C,v 1.35 2017/02/07 22:00:51 moko Exp $" IDENT_PA_VSTATUS_H;
 
 #ifdef _MSC_VER
 #include <windows.h>

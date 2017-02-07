@@ -1,7 +1,7 @@
 /** @file
 	Parser: pool class.
 
-	Copyright (c) 2000-2015 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2000-2017 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
@@ -11,7 +11,7 @@
 #include "pa_sapi.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_PA_POOL_C="$Id: pa_pool.C,v 1.64 2015/10/26 01:21:59 moko Exp $" IDENT_PA_POOL_H;
+volatile const char * IDENT_PA_POOL_C="$Id: pa_pool.C,v 1.65 2017/02/07 22:00:43 moko Exp $" IDENT_PA_POOL_H;
 
 // Pool
 

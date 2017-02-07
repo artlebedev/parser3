@@ -1,14 +1,14 @@
 /** @file
 	Parser: stack class decl.
 
-	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_STACK_H
 #define PA_STACK_H
 
-#define IDENT_PA_STACK_H "$Id: pa_stack.h,v 1.28 2015/10/26 01:21:56 moko Exp $"
+#define IDENT_PA_STACK_H "$Id: pa_stack.h,v 1.29 2017/02/07 22:00:36 moko Exp $"
 
 #include "pa_array.h"
 

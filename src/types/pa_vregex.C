@@ -1,7 +1,7 @@
 /** @file
 	Parser: @b regex class.
 
-	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
@@ -9,7 +9,7 @@
 #include "pa_vint.h"
 #include "pa_vstring.h"
 
-volatile const char * IDENT_PA_VREGEX_C="$Id: pa_vregex.C,v 1.18 2015/10/26 01:22:02 moko Exp $" IDENT_PA_VREGEX_H;
+volatile const char * IDENT_PA_VREGEX_C="$Id: pa_vregex.C,v 1.19 2017/02/07 22:00:50 moko Exp $" IDENT_PA_VREGEX_H;
 
 // defines
 

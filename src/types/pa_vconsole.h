@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b console class decl.
 
-	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VCONSOLE_H
 #define PA_VCONSOLE_H
 
-#define IDENT_PA_VCONSOLE_H "$Id: pa_vconsole.h,v 1.24 2016/04/08 22:34:37 moko Exp $"
+#define IDENT_PA_VCONSOLE_H "$Id: pa_vconsole.h,v 1.25 2017/02/07 22:00:47 moko Exp $"
 
 // includes
 

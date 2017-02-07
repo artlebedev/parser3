@@ -1,7 +1,7 @@
 /** @file
 	Parser: @b hashfile parser class.
 
-	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
@@ -12,7 +12,7 @@
 #include "pa_vhashfile.h"
 #include "pa_vhash.h"
 
-volatile const char * IDENT_HASHFILE_C="$Id: hashfile.C,v 1.61 2017/01/13 13:50:28 moko Exp $";
+volatile const char * IDENT_HASHFILE_C="$Id: hashfile.C,v 1.62 2017/02/07 22:00:27 moko Exp $";
 
 // class
 

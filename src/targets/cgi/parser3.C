@@ -1,11 +1,11 @@
 /** @file
 	Parser: scripting and CGI main.
 
-	Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.276 2017/01/13 13:50:29 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.277 2017/02/07 22:00:45 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -570,7 +570,7 @@ static void call_real_parser_handler__supress_system_exception(const char* files
 static void usage(const char* program) {
 	printf(
 		"Parser/%s\n"
-		"Copyright (c) 2001-2015 Art. Lebedev Studio (http://www.artlebedev.com)\n"
+		"Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)\n"
 		"Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)\n"
 		"\n"
 		"Usage: %s [options] file\n"
