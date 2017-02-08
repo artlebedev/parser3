@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.277 2017/02/07 22:00:45 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.278 2017/02/08 13:05:46 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -28,7 +28,7 @@ volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.277 2017/02/07 22:00:4
 // comment remove me after debugging
 //#define PA_DEBUG_CGI_ENTRY_EXIT	"c:\\parser\\debug-parser3.log"
 
-#if _MSC_VER && !defined(_DEBUG)
+#if defined(_MSC_VER) && !defined(_DEBUG)
 #	define PA_SUPPRESS_SYSTEM_EXCEPTION
 #endif
 

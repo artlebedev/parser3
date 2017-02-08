@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.109 2017/02/07 22:00:45 moko Exp $";
+volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.110 2017/02/08 13:05:46 moko Exp $";
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -26,7 +26,7 @@ volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.109 2017/02/
 
 // defines
 
-#if _MSC_VER && !defined(_DEBUG)
+#if defined(_MSC_VER) && !defined(_DEBUG)
 #	define PA_SUPPRESS_SYSTEM_EXCEPTION
 #endif
 

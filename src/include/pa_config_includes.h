@@ -202,7 +202,7 @@ inline size_t min(size_t a, size_t b){ return a<b?a:b; }
 #pragma clang diagnostic ignored "-Wparentheses"       // if(a=b)
 #endif
 
-#if _MSC_VER
+#ifdef _MSC_VER
 #pragma warning(disable:4355)  // using this in calls to parent constructors
 #pragma warning(disable:4291)  // no matching operator delete found; memory will not be freed if initialization throws an exception
 #pragma warning(disable:4512)  // assignment operator could not be generated

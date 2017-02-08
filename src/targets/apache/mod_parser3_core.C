@@ -5,7 +5,7 @@ Parser: apache 1.3/2.X module, part, compiled by parser3project.
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_MOD_PARSER3_CORE_C="$Id: mod_parser3_core.C,v 1.16 2017/02/07 22:00:45 moko Exp $";
+volatile const char * IDENT_MOD_PARSER3_CORE_C="$Id: mod_parser3_core.C,v 1.17 2017/02/08 13:05:46 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -19,7 +19,7 @@ volatile const char * IDENT_MOD_PARSER3_CORE_C="$Id: mod_parser3_core.C,v 1.16 2
 #include "pa_request.h"
 #include "pa_socks.h"
 
-#if _MSC_VER && !defined(_DEBUG)
+#if defined(_MSC_VER) && !defined(_DEBUG)
 #	include <windows.h>
 #	define PA_SUPPRESS_SYSTEM_EXCEPTION
 #endif

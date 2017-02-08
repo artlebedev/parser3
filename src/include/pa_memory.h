@@ -9,7 +9,7 @@
 #ifndef PA_MEMORY_H
 #define PA_MEMORY_H
 
-#define IDENT_PA_MEMORY_H "$Id: pa_memory.h,v 1.30 2017/02/07 22:00:34 moko Exp $"
+#define IDENT_PA_MEMORY_H "$Id: pa_memory.h,v 1.31 2017/02/08 13:05:46 moko Exp $"
 
 // include
 
@@ -70,7 +70,7 @@ inline void *pa_realloc(void *ptr, size_t size) {
 	return pa_fail_alloc("reallocate to", size);
 }
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || (__cplusplus>=201103L)
 #define PA_THROW(what)
 #else
 #define PA_THROW(what) throw(what)

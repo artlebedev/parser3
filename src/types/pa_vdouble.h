@@ -8,7 +8,7 @@
 #ifndef PA_VDOUBLE_H
 #define PA_VDOUBLE_H
 
-#define IDENT_PA_VDOUBLE_H "$Id: pa_vdouble.h,v 1.66 2017/02/07 22:00:47 moko Exp $"
+#define IDENT_PA_VDOUBLE_H "$Id: pa_vdouble.h,v 1.67 2017/02/08 13:05:46 moko Exp $"
 
 // includes
 
@@ -22,7 +22,7 @@
 
 // double validation defines
 
-#if _MSC_VER
+#ifdef _MSC_VER
 #include <float.h>
 #define pa_isnan(d) _isnan(d)
 #define pa_finite(d) _finite(d)
