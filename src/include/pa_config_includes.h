@@ -186,7 +186,7 @@ inline size_t min(size_t a, size_t b){ return a<b?a:b; }
 
 #endif
 
-#if defined(__GNUC__)
+#ifdef __GNUC__
 #  define PA_ATTR_UNUSED __attribute__((unused))
 #else
 #  define PA_ATTR_UNUSED
@@ -198,8 +198,9 @@ inline size_t min(size_t a, size_t b){ return a<b?a:b; }
 #define THREAD_LOCAL // __thread // multithreading support required only for apache2 module
 #endif
 
-#if __clang__
+#ifdef __clang__
 #pragma clang diagnostic ignored "-Wparentheses"       // if(a=b)
+#pragma clang diagnostic ignored "-Wpointer-sign"      // CORD (unsigned char *) to char * in libcord
 #endif
 
 #ifdef _MSC_VER
