@@ -15,7 +15,6 @@ for %%f in (*.html) do ( call :outputs %%f %%~nf )
 
 for %%f in (*.html) do ( call :compares %%f %%~nf )
 
-pause
 goto :end
 
 

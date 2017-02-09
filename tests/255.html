@@ -7,4 +7,8 @@ $s[^taint[as-is][$f.text]]
 
 $o[^json:parse[$s][ $.distinct[all] ]]
 Результат: $o.array.0
-^json:string[$o; $.indent(1)]
+
+^print[^json:string[$o; $.indent(1)]]
+
+@print[s]
+$result[^s.replace[e+0;e+]]

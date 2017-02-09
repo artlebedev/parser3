@@ -6,5 +6,5 @@
 4. ^curl:options[ $.library[another-library.so] ]
 5. ^try-catch{ ^curl:session{ } }
 6. ^curl:options[ $.library[libcurl.so] ]
-7. ^curl:session{ OK }
+7. ^try-catch{ ^curl:session{ OK } }
 

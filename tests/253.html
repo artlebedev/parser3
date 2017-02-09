@@ -26,7 +26,8 @@ $o[^json:parse[$s]]
 ^print[$o]
 
 @print[hash]
-^json:string[$hash; $.indent(1)]
+$result[^json:string[$hash; $.indent(1)]]
+$result[^result.replace[e+0;e+]]
 
 @hook[key;value]
 $result[^if(def $value.type){^reflection:create[$value.type;create;$value]}{$value}]
