@@ -66,5 +66,6 @@ $response:charset[windows-1251]
 @windows-1251[]
 ^1251[]
 
-@os[win;unix]
-$result[^if(^env:OS.left(7) eq 'WINDOWS'){$win}{$unix}]
+@os[win;unix][name]
+$name[^env:OS.left(7)]
+$result[^if(^name.lower[] eq 'windows'){$win}{$unix}]
