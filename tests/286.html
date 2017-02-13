@@ -1,12 +1,14 @@
 @main[]
 
-$ft[^file::exec[cat.sh; $.stdin[test^#0D^#0A] ;stdin]]
+$script[./cat^os[-windows].sh]
+
+$ft[^file::exec[$script; $.stdin[test^#0D^#0A] ;stdin]]
 ft:^json:string[$fb; $.file[text] ]
 
 $f1[^file::create[$ft; $.mode[binary] ]]
 f1:^json:string[$f1; $.file[text] ]
 
-$fb[^file::exec[binary;cat.sh; $.stdin[test^#0D^#0A] ;stdin]]
+$fb[^file::exec[binary;$script; $.stdin[test^#0D^#0A] ;stdin]]
 fb:^json:string[$fb; $.file[text] ]
 
 $f2[^file::create[$fb; $.mode[text] ]]

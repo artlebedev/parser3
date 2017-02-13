@@ -1,7 +1,7 @@
 @main[]
 $request:charset[windows-1251]
 $response:charset[$request:charset]
-$sScript[./cat.sh]
+$sScript[./cat^os[-windows].sh]
 
 $tData[^table::create{sType	sFormat	sContentType	sFileName	iStatus	sText	sCharset
 exec		text/plain	notfound.txt	1

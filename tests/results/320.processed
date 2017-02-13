@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 2521
+Content-Length: 2536
 
 MAIN: MAIN
 MAIN methods: {
@@ -28,6 +28,7 @@ MAIN methods: {
 "from-1251":"parser",
 "to-1251":"parser",
 "windows-1251":"parser",
+"os":"parser",
 "main":"parser"
 }
 xnode methods: {

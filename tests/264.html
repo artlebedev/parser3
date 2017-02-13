@@ -11,5 +11,5 @@ $s[
 ^apply-taint[html;$s]
 ^apply-taint[regex;$s]
 
-$f[^file::exec[cat.sh; $.stdin[$s] ;stdin]]
+$f[^file::exec[cat^os[-windows].sh; $.stdin[$s] ;stdin]]
 $f.text
