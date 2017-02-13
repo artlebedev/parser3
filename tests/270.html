@@ -1,21 +1,10 @@
 @main[]
 $dir[/tests/270_dir]
 
-^do[$dir///subdir/270.txt]{file not found (error)}
-^do[$dir/270.txt]{file not found (error)}
-^do[$dir/subdir/zzz/270.html]{file not found (error)}
-^do[$dir/not-exist]
-^do[$dir///not-exist]{file not found (OK)}
-^do[/not-exist]{file not found (OK)}
+#^do[$dir///subdir/270.txt]{file not found (error)}
 
-^do[/Makefile]{file not found (error)}
+#^do[/Makefile]{file not found (error)}
 ^do[Makefile]{file not found (error)}
-
-^do[]{file not found (OK)}
-^do[/]{file not found (OK)}
-^do[///]{file not found (OK)}
-^do[$dir/subdir//z/]{file not found (OK)}
-
 
 @do[sFileSpec;*hParams]
 ^if($hParams){
