@@ -1,7 +1,7 @@
 Content-Type: text/html
-Content-Length: 162
+Content-Length: 351
 
-{
+1. {
 "bigint":123456789012345,
 "hash":{
 "value":"hash"
@@ -13,3 +13,16 @@ Content-Length: 162
 "value2":"value2"
 }}
 }
+2. {
+"bigint":123456789012345,
+"hash":{
+"value":"hash"
+},
+"b":{default, key is: b; value is: {
+"value":"value"
+}},
+"c":{default, key is: c; value is: {
+"value2":"value2"
+}}
+}
+defined OK
