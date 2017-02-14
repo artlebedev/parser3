@@ -8,7 +8,7 @@
 #ifndef PA_VHASH_H
 #define PA_VHASH_H
 
-#define IDENT_PA_VHASH_H "$Id: pa_vhash.h,v 1.79 2017/02/07 22:00:48 moko Exp $"
+#define IDENT_PA_VHASH_H "$Id: pa_vhash.h,v 1.80 2017/02/14 14:34:08 moko Exp $"
 
 #include "classes.h"
 #include "pa_value.h"
@@ -44,7 +44,7 @@ public: // value
 	/// VHash: count
 	override int as_int() const { return fhash.count(); }
 	override double as_double() const { return fhash.count(); }
-	override bool is_defined() const { return fhash.count()!=0; }
+	override bool is_defined() const { return fhash.count()!=0 || _default!=NULL; }
 	override bool as_bool() const { return fhash.count()!=0; }
 	override Value& as_expr_result() { return *new VInt(fhash.count()); }
 
