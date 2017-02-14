@@ -50,6 +50,8 @@ $tTable[^table::create{a	b
 
 ^$hEmptyHash[^^hash::create[]]<br />
 $hEmptyHash[^hash::create[]]
+^$hDefaultHash[^^hash::create[ ^$._default[yes] ]]<br />
+$hDefaultHash[^hash::create[ $._default[yes] ]]
 ^$hHash[<br />
 &nbsp^;&nbsp^;^$.a[1]<br />
 &nbsp^;&nbsp^;^$.b[2]<br />
@@ -104,6 +106,7 @@ $xNode[$h.0]
 ^printLine[^$tTable;$tTable.CLASS_NAME;^checkDef[$tTable];^checkExp[$tTable];$tTable]
 
 ^printLine[^$hEmptyHash;$hEmptyHash.CLASS_NAME;^checkDef[$hEmptyHash];^checkExp[$hEmptyHash];$hEmptyHash]
+^printLine[^$hDefaultHash;$hDefaultHash.CLASS_NAME;^checkDef[$hDefaultHash];^checkExp[$hDefaultHash];$hDefaultHash]
 ^printLine[^$hHash;$hHash.CLASS_NAME;^checkDef[$hHash];^checkExp[$hHash];$hHash]
 
 ^printLine[^$fFile;$fFile.CLASS_NAME;^checkDef[$fFile];^checkExp[$fFile];$fFile]

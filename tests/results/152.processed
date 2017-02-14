@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 7975
+Content-Length: 8264
 
 <h2>Defines</h2>
 $sEmpty[]<br />
@@ -26,6 +26,7 @@ $tTable[^table::create{a&nbsp;&nbsp;b<br />
 1&nbsp;&nbsp;2}]<br />
 <br />
 $hEmptyHash[^hash::create[]]<br />
+$hDefaultHash[^hash::create[ $._default[yes] ]]<br />
 $hHash[<br />
 &nbsp;&nbsp;$.a[1]<br />
 &nbsp;&nbsp;$.b[2]<br />
@@ -339,6 +340,23 @@ $xNode[$h.0]<br />
 <td>$hEmptyHash</td>
 <td>hash</td>
 <td>no<br /></td>
+<td>false<br /></td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td><b>yes</b></td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+</tr>
+<tr>
+<td>$hDefaultHash</td>
+<td>hash</td>
+<td><b>yes</b><br /></td>
 <td>false<br /></td>
 <td>no</td>
 <td>no</td>
