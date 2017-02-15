@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
-#define IDENT_PA_VSTATELESS_CLASS_H "$Id: pa_vstateless_class.h,v 1.90 2017/02/07 22:00:51 moko Exp $"
+#define IDENT_PA_VSTATELESS_CLASS_H "$Id: pa_vstateless_class.h,v 1.91 2017/02/15 17:21:28 moko Exp $"
 
 // include
 
@@ -21,8 +21,8 @@
 
 class VStateless_class;
 typedef Array<VStateless_class*> ArrayClass;
-typedef OrderedHashString<Property *> HashStringProperty;
-typedef OrderedHashString<Method *> HashStringMethod;
+typedef HASH_STRING<Property *> HashStringProperty;
+typedef HASH_STRING<Method *> HashStringMethod;
 
 class Temp_method;
 

@@ -10,7 +10,7 @@
 #include "pa_vbool.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.84 2017/02/15 17:05:21 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.85 2017/02/15 17:21:28 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -222,11 +222,15 @@ static void _methods(Request& r, MethodParams& params) {
 
 	VHash& result=*new VHash;
 
+#ifdef HASH_ORDER
 	if(reverse){
 		for(HashStringMethod::ReverseIterator i(vclass->get_methods()); i; i.prev()){
 			result.hash().put(i.key(), new VString(i.value()->native_code ? method_type_native : method_type_parser));
 		}
 	} else {
+#else
+	{
+#endif
 		for(HashStringMethod::Iterator i(vclass->get_methods()); i; i.next()){
 			result.hash().put(i.key(), new VString(i.value()->native_code ? method_type_native : method_type_parser));
 		}
