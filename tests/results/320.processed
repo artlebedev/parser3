@@ -1,7 +1,36 @@
 Content-Type: text/html
-Content-Length: 2536
+Content-Length: 3064
 
 MAIN: MAIN
+MAIN methods reversed: {
+"main":"parser",
+"os":"parser",
+"windows-1251":"parser",
+"to-1251":"parser",
+"from-1251":"parser",
+"1251":"parser",
+"try-catch":"parser",
+"sleep":"native",
+"throw":"native",
+"try":"native",
+"case":"native",
+"switch":"native",
+"cache":"native",
+"connect":"native",
+"eval":"native",
+"for":"native",
+"return":"native",
+"continue":"native",
+"break":"native",
+"use":"native",
+"while":"native",
+"rem":"native",
+"process":"native",
+"apply-taint":"native",
+"taint":"native",
+"untaint":"native",
+"if":"native"
+}
 MAIN methods: {
 "if":"native",
 "untaint":"native",
