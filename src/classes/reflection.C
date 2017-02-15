@@ -10,7 +10,7 @@
 #include "pa_vbool.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.83 2017/02/07 22:00:29 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.84 2017/02/15 17:05:21 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -203,9 +203,33 @@ static void _methods(Request& r, MethodParams& params) {
 	if(!vclass)
 		throw Exception(PARSER_RUNTIME, &class_name, "class is undefined");
 
+	bool reverse=true;
+
+	if(params.count()>1)
+		if(HashStringValue* options=params.as_hash(1, "methods options")) {
+			int valid_options=0;
+			for(HashStringValue::Iterator i(*options); i; i.next() ){
+				String::Body key=i.key();
+				Value* value=i.value();
+				if(key == "reverse") {
+					reverse=r.process(*value).as_bool();
+					valid_options++;
+				}
+			}
+			if(valid_options!=options->count())
+				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+		}
+
 	VHash& result=*new VHash;
-	for(HashStringMethod::Iterator i(vclass->get_methods()); i; i.next()){
-		result.hash().put(i.key(), new VString(i.value()->native_code ? method_type_native : method_type_parser));
+
+	if(reverse){
+		for(HashStringMethod::ReverseIterator i(vclass->get_methods()); i; i.prev()){
+			result.hash().put(i.key(), new VString(i.value()->native_code ? method_type_native : method_type_parser));
+		}
+	} else {
+		for(HashStringMethod::Iterator i(vclass->get_methods()); i; i.next()){
+			result.hash().put(i.key(), new VString(i.value()->native_code ? method_type_native : method_type_parser));
+		}
 	}
 
 	r.write(result);
@@ -662,7 +686,7 @@ MReflection::MReflection(): Methoded("reflection") {
 	add_native_method("def", Method::CT_STATIC, _def, 2, 2);
 
 	// ^reflection:methods[class_name]
-	add_native_method("methods", Method::CT_STATIC, _methods, 1, 1);
+	add_native_method("methods", Method::CT_STATIC, _methods, 1, 2);
 
 	// ^reflection:method[object or class;method_name[;self]]
 	// ^reflection:method[junction[;self]]

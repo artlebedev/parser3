@@ -17,7 +17,7 @@
 #ifndef PA_HASH_H
 #define PA_HASH_H
 
-#define IDENT_PA_HASH_H "$Id: pa_hash.h,v 1.96 2017/02/07 22:00:34 moko Exp $"
+#define IDENT_PA_HASH_H "$Id: pa_hash.h,v 1.97 2017/02/15 17:05:21 moko Exp $"
 
 #include "pa_memory.h"
 #include "pa_types.h"
@@ -255,9 +255,12 @@ public:
 		return (first) ? first->value : V(0);
 	}
 
+	inline Pair* last_pair() const {
+		return (fpairs_count) ? (Pair*)((char *)last - offsetof(Pair, next)) : NULL;
+	}
+
 	String::Body last_key() const {
-		if (fpairs_count) {
-			Pair* pair = (Pair*)((char *)last - offsetof(Pair, next));
+		if(Pair* pair = last_pair()) {
 #ifdef HASH_CODE_CACHING
 			return String::Body(pair->key, pair->code);
 #else
@@ -269,7 +272,9 @@ public:
 	}
 
 	V last_value() const {
-		return (fpairs_count) ? ((Pair *)((char *)last - offsetof(Pair, next)))->value : V(0);
+		if(Pair* pair = last_pair())
+			return pair->value;
+		return NULL;
 	}
 
 	void order_clear() {
@@ -282,7 +287,6 @@ public:
 		*last=pair;
 		last=&(pair->next);
 	}
-
 #endif //HASH_ORDER
 
 	/// put a [value] under the [key] if that [key] existed @returns existed or not
@@ -675,7 +679,7 @@ public:
 #endif
 
 		operator bool () {
-			return fcurrent != 0;
+			return fcurrent != NULL;
 		}
 
 		String::Body key(){
@@ -694,6 +698,38 @@ public:
 			return fcurrent;
 		}
 	};
+
+#ifdef HASH_ORDER
+	/// simple reverse hash iterator
+	class ReverseIterator {
+		const HASH_STRING<V>& fhash;
+		Pair *fcurrent;
+	public:
+		ReverseIterator(const HASH_STRING<V>& ahash): fhash(ahash) {
+			fcurrent=fhash.last_pair();
+		}
+
+		void prev() {
+			fcurrent=(fcurrent->prev == &fhash.first) ? NULL : (Pair*)((char *)fcurrent->prev - offsetof(Pair, next));
+		}
+
+		operator bool () {
+			return fcurrent != NULL;
+		}
+
+		String::Body key(){
+			return String::Body(fcurrent->key, fcurrent->code);
+		}
+
+		V value(){
+			return fcurrent->value;
+		}
+
+		Pair *pair(){
+			return fcurrent;
+		}
+	};
+#endif
 
 };
 
