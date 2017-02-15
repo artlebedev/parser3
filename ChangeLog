@@ -1,4 +1,70 @@
+2017-02-15  moko
+
+	* src/include/pa_hash.h: compilation without HASH_CODE_CACHING
+	  fixed
+
+	* tests/: 320.html, results/320.processed: $.reverse(true/false)
+	  test added (related to feature #1069)
+
+	* src/: classes/reflection.C, types/pa_vstateless_class.h:
+	  compilation without HASH_ORDER fixed
+
+	* src/: classes/reflection.C, include/pa_hash.h:
+	  $.reverse(true/false) added to ^reflection:methods[] (related to
+	  feature #1069)
+
+2017-02-14  moko
+
+	* tests/: 152.html, results/152.processed: test for $._default hash
+	  added (related to bug #1131)
+
+	* tests/: 277.html, results/277.processed: test for hash with only
+	  $._default is now defined (related to bug #1131)
+
+	* src/types/pa_vhash.h: hash with only $._default is now defined
+	  (fixed bug #1131)
+
+2017-02-13  moko
+
+	* tests/cat-windows.sh: cat-windows added (cygwin required)
+
+	* tests/: 171.html, 264.html, 286.html, 370.html,
+	  results/320.processed, results/375.processed, results/auto.p:
+	  cat-windows.sh support added
+
+	* tests/375.html: Windows support
+
+	* tests/270.html: documented
+
+	* tests/: 270.html, run_parser.cmd: bugfix: PATH_INFO has slashes
+	  (not backslashes) even under Windows (broke test 270)
+
+2017-02-12  moko
+
+	* tests/: descript.ion, todo.txt: cleanup
+
+2017-02-09  moko
+
+	* tests/: 253.html, 255.html, 275.html, 347-curl.html,
+	  run_tests.cmd: Windows compatibility
+
+	* tests/make_tests.cmd: removed as test can't be passed - TZ is set
+	  incorrectly (GMT) if parser is called from cygwin
+
 2017-02-08  moko
+
+	* operators.txt: actualization 15% completed
+
+	* operators.txt: cp1251 -> utf-8
+
+	* NEWS, README: minor update
+
+	* src/include/pa_config_includes.h: warning war continues
+
+	* src/: include/pa_config_includes.h, include/pa_memory.h,
+	  targets/apache/mod_parser3_core.C, targets/cgi/parser3.C,
+	  targets/isapi/parser3isapi.C, types/pa_vdouble.h: warning war:
+	  gcc 6.x issues fixed
 
 	* src/: classes/bool.C, classes/classes.C, classes/classes.awk,
 	  classes/classes.h, classes/curl.C, classes/date.C,
@@ -15990,7 +16056,7 @@
 	  types/pa_vstring.h, types/pa_vtable.C, types/pa_vtable.h,
 	  types/pa_vvoid.h, types/pa_vxdoc.C, types/pa_vxdoc.h,
 	  types/pa_vxnode.C, types/pa_vxnode.h, types/pa_wcontext.C,
-	  types/pa_wcontext.h, types/pa_wwrapper.h: $Date: 2017/02/07 22:04:34 $
+	  types/pa_wcontext.h, types/pa_wwrapper.h: $Date: 2017/02/15 17:42:37 $
 
 	* src/: classes/classes.C, classes/classes.dsp, classes/classes.h,
 	  classes/date.C, classes/double.C, classes/file.C, classes/form.C,
@@ -20078,7 +20144,7 @@
 	  main/pa_hash.C, main/pa_pool.C, main/pa_request.C,
 	  main/pa_socks.C, main/pa_sql_driver_manager.C, main/pa_string.C,
 	  main/pa_table.C, main/untaint.C, targets/cgi/parser3.C,
-	  targets/isapi/parser3isapi.C: static char *RCSId="$Id: ChangeLog,v 1.111 2017/02/07 22:04:34 moko Exp $";
+	  targets/isapi/parser3isapi.C: static char *RCSId="$Id: ChangeLog,v 1.112 2017/02/15 17:42:37 moko Exp $";
 
 	* src/main/: compile.y, compile_tools.h: $:name: == ${name}:
 	  $class:name: == ${class:name}:
@@ -22893,9 +22959,9 @@
 
 	* src/include/: pa_pool.h, pa_string.h: pa_pool split
 
-	* src/main/: main.dsp, pa_string.C: $Id: ChangeLog,v 1.111 2017/02/07 22:04:34 moko Exp $ check
+	* src/main/: main.dsp, pa_string.C: $Id: ChangeLog,v 1.112 2017/02/15 17:42:37 moko Exp $ check
 
-	* src/: main/pa_pool.C, main/pa_string.C, include/pa_pool.h: $Id: ChangeLog,v 1.111 2017/02/07 22:04:34 moko Exp $
+	* src/: main/pa_pool.C, main/pa_string.C, include/pa_pool.h: $Id: ChangeLog,v 1.112 2017/02/15 17:42:37 moko Exp $
 	  check
 
 	* src/: include/pa_pool.h, main/pa_string.C: String prealloc &
