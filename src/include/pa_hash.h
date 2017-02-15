@@ -17,7 +17,7 @@
 #ifndef PA_HASH_H
 #define PA_HASH_H
 
-#define IDENT_PA_HASH_H "$Id: pa_hash.h,v 1.97 2017/02/15 17:05:21 moko Exp $"
+#define IDENT_PA_HASH_H "$Id: pa_hash.h,v 1.98 2017/02/15 17:30:10 moko Exp $"
 
 #include "pa_memory.h"
 #include "pa_types.h"
@@ -718,7 +718,11 @@ public:
 		}
 
 		String::Body key(){
+#ifdef HASH_CODE_CACHING
 			return String::Body(fcurrent->key, fcurrent->code);
+#else
+			return fcurrent->key;
+#endif
 		}
 
 		V value(){
