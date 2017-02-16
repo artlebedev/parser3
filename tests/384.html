@@ -1,0 +1,78 @@
+@main[]
+
+a before: ^show[$a:CLASS]
+
+b before: ^show[$b:CLASS]
+
+^reflection:mixin[$b:CLASS; $.to[$a:CLASS] $.fields(false) ]
+1. ^show[$a:CLASS]
+
+^reflection:mixin[$b:CLASS; $.to[$a:CLASS] ]
+2. ^show[$a:CLASS]
+
+^a:mixin[ $.methods(false) $.overwrite(true) ]
+3. ^show[$a:CLASS]
+
+$a:b[check]
+property copied: $a:b
+
+^a:mixin[ $.overwrite(true) ]
+4. ^show[$a:CLASS]
+
+
+inheritance check: ^show[$c:CLASS]
+
+@show[v]
+fields: ^json:string[$v]
+$methods[^reflection:methods[$v.CLASS_NAME; $.reverse(false) ]]
+^methods.foreach[name;]{method ${name}:^if(^name.left(6) eq 'method'){ ^v.$name[]}
+}
+
+
+@CLASS
+a
+
+@auto[]
+$field[a]
+$field_a[a specific]
+
+@create[]
+$value[a]
+
+@method[]
+a
+
+@method_a[]
+a specific
+
+@mixin[options]
+^reflection:mixin[$b:CLASS;$options]
+
+@CLASS
+b
+
+@auto[]
+$field[b]
+$field_b[b specific]
+
+@method[]
+b
+
+@method_b[]
+b specific
+
+@GET_b[]
+b property "$property"
+
+@SET_b[value]
+$self.property[$value]
+
+
+@CLASS
+c
+
+@BASE
+a
+
+@method_c[]
+c specific

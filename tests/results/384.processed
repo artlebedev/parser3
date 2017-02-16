@@ -1,0 +1,88 @@
+Content-Type: text/html
+Content-Length: 1462
+
+a before: fields: {
+"field":"a",
+"field_a":"a specific"
+}
+method auto:
+method create:
+method method: a
+method method_a: a specific
+method mixin:
+b before: fields: {
+"field":"b",
+"field_b":"b specific"
+}
+method auto:
+method method: b
+method method_b: b specific
+method GET_b:
+method SET_b:
+1. fields: {
+"field":"a",
+"field_a":"a specific"
+}
+method auto:
+method create:
+method method: a
+method method_a: a specific
+method mixin:
+method method_b: b specific
+method GET_b:
+method SET_b:
+2. fields: {
+"field":"a",
+"field_a":"a specific",
+"field_b":"b specific"
+}
+method auto:
+method create:
+method method: a
+method method_a: a specific
+method mixin:
+method method_b: b specific
+method GET_b:
+method SET_b:
+3. fields: {
+"field":"b",
+"field_a":"a specific",
+"field_b":"b specific"
+}
+method auto:
+method create:
+method method: a
+method method_a: a specific
+method mixin:
+method method_b: b specific
+method GET_b:
+method SET_b:
+property copied: b property "check"
+4. fields: {
+"field":"b",
+"field_a":"a specific",
+"field_b":"b specific",
+"property":"check"
+}
+method auto:
+method create:
+method method: b
+method method_a: a specific
+method mixin:
+method method_b: b specific
+method GET_b:
+method SET_b:
+inheritance check: fields: {
+"field":"b",
+"field_a":"a specific",
+"field_b":"b specific",
+"property":"check"
+}
+method create:
+method method: b
+method method_a: a specific
+method mixin:
+method method_c: c specific
+method method_b: b specific
+method GET_b:
+method SET_b:
