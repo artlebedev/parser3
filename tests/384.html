@@ -4,20 +4,26 @@ a before: ^show[$a:CLASS]
 
 b before: ^show[$b:CLASS]
 
-^reflection:mixin[$b:CLASS; $.to[$a:CLASS] $.fields(false) ]
+^reflection:mixin[$b:CLASS; $.name[method_b] $.to[$a:CLASS] $.fields(false) ]
 1. ^show[$a:CLASS]
 
-^reflection:mixin[$b:CLASS; $.to[$a:CLASS] ]
+^reflection:mixin[$b:CLASS; $.to[$a:CLASS] $.fields(false) ]
 2. ^show[$a:CLASS]
 
-^a:mixin[ $.methods(false) $.overwrite(true) ]
+^reflection:mixin[$b:CLASS; $.to[$a:CLASS] ]
 3. ^show[$a:CLASS]
+
+^a:mixin[ $.methods(false) $.name[field] $.overwrite(true) ]
+4. ^show[$a:CLASS]
+
+^a:mixin[ $.methods(false) $.overwrite(true) ]
+5. ^show[$a:CLASS]
 
 $a:b[check]
 property copied: $a:b
 
 ^a:mixin[ $.overwrite(true) ]
-4. ^show[$a:CLASS]
+6. ^show[$a:CLASS]
 
 
 inheritance check: ^show[$c:CLASS]

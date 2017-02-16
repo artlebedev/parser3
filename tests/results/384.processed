@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 1462
+Content-Length: 1846
 
 a before: fields: {
 "field":"a",
@@ -29,9 +29,19 @@ method method: a
 method method_a: a specific
 method mixin:
 method method_b: b specific
+2. fields: {
+"field":"a",
+"field_a":"a specific"
+}
+method auto:
+method create:
+method method: a
+method method_a: a specific
+method mixin:
+method method_b: b specific
 method GET_b:
 method SET_b:
-2. fields: {
+3. fields: {
 "field":"a",
 "field_a":"a specific",
 "field_b":"b specific"
@@ -44,7 +54,20 @@ method mixin:
 method method_b: b specific
 method GET_b:
 method SET_b:
-3. fields: {
+4. fields: {
+"field":"b",
+"field_a":"a specific",
+"field_b":"b specific"
+}
+method auto:
+method create:
+method method: a
+method method_a: a specific
+method mixin:
+method method_b: b specific
+method GET_b:
+method SET_b:
+5. fields: {
 "field":"b",
 "field_a":"a specific",
 "field_b":"b specific"
@@ -58,7 +81,7 @@ method method_b: b specific
 method GET_b:
 method SET_b:
 property copied: b property "check"
-4. fields: {
+6. fields: {
 "field":"b",
 "field_a":"a specific",
 "field_b":"b specific",
