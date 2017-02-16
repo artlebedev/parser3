@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.163 2017/02/07 22:00:46 moko Exp $"
+#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.164 2017/02/16 12:16:34 moko Exp $"
 
 #include "pa_common.h"
 #include "pa_array.h"
@@ -115,12 +115,13 @@ public: // Value
 	virtual Value* as(const char* atype) {
 		return atype && strcmp(type(), atype)==0?this:0;
 	}
+
 	/// type checking helper, uses Value::as
 	bool is(const char* atype) { return as(atype)!=0; }
-	
+
 	/// is this value defined?
 	virtual bool is_defined() const { return true; }
-	
+
 	/// is this value string?
 	virtual bool is_string() const { return false; }
 
@@ -137,14 +138,12 @@ public: // Value
 	virtual Value& as_expr_result() {
 		return *bark("is '%s', can not be used in expression"); 
 	}
-	
-	
 
 	/** extract HashStringValue if any
 		WARNING: FOR LOCAL USE ONLY, THIS POINTER IS NOT TO PASS TO ANYBODY!
 	*/
 	virtual HashStringValue* get_hash() { return 0; }
-	
+
 	/// extract const String
 	virtual const String* get_string() { return 0; }
 
@@ -152,24 +151,25 @@ public: // Value
 	virtual const String* get_json_string(Json_options& options);
 	const String* default_method_2_json_string(Value& default_method, Json_options& options);
 
+	/// for reflection
 	virtual HashStringValue* get_fields() { return 0; }
 	virtual HashStringValue* get_fields_reference() { return 0; }
-	
+
 	/// extract double
 	virtual double as_double() const { bark("is '%s', it does not have numerical (double) value"); return 0; }
-	
+
 	/// extract integer
 	virtual int as_int () const { bark("is '%s', it does not have numerical (int) value"); return 0; }
 
 	/// extract bool
 	virtual bool as_bool() const { bark("is '%s', it does not have logical value"); return 0; }
-	
+
 	/// extract file
 	virtual VFile* as_vfile(String::Language lang, const Request_charsets* charsets=0);
-	
+
 	/// extract Junction
 	virtual Junction* get_junction();
-	
+
 	/// @return Value element; can return Junction for methods; Code-Junction for code; Getter-Junction for property
 	virtual Value* get_element(const String& /*aname*/);
 
@@ -201,7 +201,7 @@ public: // Value
 	virtual void disable_default_setter(){ }
 	virtual bool is_enabled_default_getter(){ return true; }
 	virtual bool is_enabled_default_setter(){ return true; }
-	
+
 	/// extract VStateless_class
 	virtual VStateless_class* get_class()=0;
 
@@ -210,6 +210,9 @@ public: // Value
 
 	/// extract VTable
 	virtual Table* get_table() { return 0; }
+
+	/// warning war, no overhead as destructors are called manually only when required
+	virtual ~Value() {}
 
 public: // usage
 
@@ -236,18 +239,14 @@ public: // usage
 	}
 
 };
-	
 
 /**
-	$content-type[text/html] -> 
+	$content-type[text/html] ->
 		content-type: text/html
-	$content-type[$.value[text/html] $.charset[windows-1251]] -> 
+	$content-type[$.value[text/html] $.charset[windows-1251]] ->
 		content-type: text/html; charset=windows-1251
 */
-const String& attributed_meaning_to_string(Value& meaning, 
-					   String::Language lang, 
-					   bool forced=false,
-					   bool allow_bool=false);
+const String& attributed_meaning_to_string(Value& meaning, String::Language lang, bool forced=false, bool allow_bool=false);
 
 // defines
 
