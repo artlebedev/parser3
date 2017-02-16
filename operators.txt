@@ -446,145 +446,143 @@ hash
         доступ к заданным элементам упорядоченного хеша
     ^хэш.sort[key;value]{{ключеделатель строка}|(ключеделатель число)}[[desc|asc]] default=asc
 
-!hashfile
-    !^hashfile::open[filename]
-    !^хешфайл.clear[]  забыть всё
-    !$хешфайл.ключ[значение]  положить значение
-    !$хешфайл.ключ[$.value[значение] $.expires[ЗНАЧЕНИЕ]}
+hashfile
+    ^hashfile::open[filename]
+    ^хешфайл.clear[]  забыть всё
+    $хешфайл.ключ[значение]  положить значение
+    $хешфайл.ключ[$.value[значение] $.expires[ЗНАЧЕНИЕ]}
       положить значение до expires
       значение поля expires может быть date, или число дней(0дней=на вечно)
-    !$хешфайл.ключ  достать
-    !^хешфайл.delete[ключ]  удалить ключ
-    !^хешфайл.delete[]  удалить файлы, содержащие данные
-    !^хешфайл.hash[]
+    $хешфайл.ключ  достать
+    ^хешфайл.delete[ключ]  удалить ключ
+    ^хешфайл.delete[]  удалить файлы, содержащие данные
+    ^хешфайл.hash[]
         преобразовать в обычный hash
         попутно стирает устаревшие пары
-    !^хешфайл.foreach[key;value]{тело}[[разделитель]|{разделитель который выполняется перед непустым очередным не первым телом}]
-    !^хешфайл.release[]
+    ^хешфайл.foreach[key;value]{тело}[[разделитель]|{разделитель который выполняется перед непустым очередным не первым телом}]
+    ^хешфайл.release[]
         записать данные и снять блокировки.
         при повторном обращении к элементам откроется автоматически.
-    !^хешфайл.cleanup[]  пробежаться по всем элементам и удалить устаревшие.
+    ^хешфайл.cleanup[]  пробежаться по всем элементам и удалить устаревшие.
 
     пример:
     $sessions[^hashfile::open[/db/sessions]]
-   
+
     $sid[^math:uuid[]]
     $sessions.$sid[$.value[$uid] $.expires(1)]
     $uid[$sessions.$sid]
 
 
-!form
+form
     [берётся первый элемент из одноимённых из GET, потом первый из POST]
-    !$form:поле = string/file 
-    !$form:nameless = поле со значением поля без имени "?value&...", "...&value&...", "...&value"
-    !$form:qtail = строка со значением текста после второго "?xxxxx", если там не было ',' [imap]
-    !$form:fields = hash со всеми полями формы
-    !$form:tables.поле = table с одним столбцом "field" со значениями "поля"
-    !$form:files.поле = hash со значениями полей типа файл, ключи - 0, 1, ..., значение - файл
-    !$form:imap = хэш с ключами 'x' и 'y'
+    $form:поле = string/file 
+    $form:nameless = поле со значением поля без имени "?value&...", "...&value&...", "...&value"
+    $form:qtail = строка со значением текста после второго "?xxxxx", если там не было ',' [imap]
+    $form:fields = hash со всеми полями формы
+    $form:tables.поле = table с одним столбцом "field" со значениями "поля", для множественных значений
+    $form:files.поле = hash со значениями полей типа файл, ключи - 0, 1, ..., значение - файл
+    $form:imap = хэш с ключами 'x' и 'y'
         со значением ?1,2 приписки при использовании server-site image map
 
 
-!env
-    !$env:переменная
-    !$env:fields хэш с переменными окружения
-    !$env:PARSER_VERSION версия парсера
+env
+    $env:переменная
+    $env:fields хэш с переменными окружения
+    $env:PARSER_VERSION версия парсера
 
 
-!cookie
-    !$cookie:имя считать старое или свежезаданное
-    !$cookie:имя[значение] на 90 дней
-    !$cookie:имя[$.value[значение]  $.expires[ЗНАЧЕНИЕ] $.secure(true)]
-    !значение поля expires может быть 'session', date, или число дней(0дней=session)
-    ! если дата, она будет преобразована к формату "Sun, 25-Aug-2002 12:03:45 GMT"
-    ! можно устанавливать bool свойства, например $.secure(true), $.httponly(true)
-    !$cookie:fields = hash со всеми cookies
+cookie
+    $cookie:имя считать старое или свежезаданное
+    $cookie:имя[значение] на 90 дней
+    $cookie:имя[$.value[значение] $.expires[ЗНАЧЕНИЕ] $.secure(true) $.domain[имя домена] $.httponly(true)]
+        значение поля expires может быть 'session', date, или число дней(0дней=session)
+        если дата, она будет преобразована к формату "Sun, 25-Aug-2002 12:03:45 GMT"
+    $cookie:fields = hash со всеми cookies
 
 
-!request
-    !$request:query
-    !$request:uri
-    !$request:document-root
+request
+    $request:query
+    $request:uri
+    $request:document-root
         каталог, относительно которого считаются пути в parser, по-умолчанию = $env:DOCUMENT_ROOT
-        можно изменить, если на hosting что-то неудобно настроено
-    !$request:argv = hash с параметрами коммандной строки. ключи 0, 1, ... [0 -- имя обрабатываемого файла].
-    !$request:charset
+    $request:argv = hash с параметрами коммандной строки. ключи 0, 1, ... [0 -- имя обрабатываемого файла].
+    $request:charset
         Кодировка исходного документа 
-        !используется при upper/lower и match[][i]
-        ПРЕДУПРЕЖДЕНИЕ: класс form получает свои поля после обработки всех auto класса MAIN
-        поэтому необходимо задать $request/response:charset в одном из них. не после.
-    !$request:method метод запроса (GET|POST|PUT)
-    !$request:body тело POST-запроса в виде текста
-    !$request:body-file тело POST-запроса в виде файла
-    !$request:body-charset кодировка POST-запроса
-    !$request:headers хэш с заголовками запроса (без префикса HTTP_)
+        используется при upper/lower и match[][i]
+        ПРЕДУПРЕЖДЕНИЕ: необходимо задать $request/response:charset до использования полей класса form
+    $request:method метод запроса (GET|POST|PUT)
+    $request:body тело POST-запроса в виде текста
+    $request:body-file тело POST-запроса в виде файла
+    $request:body-charset кодировка POST-запроса
+    $request:headers хэш с заголовками запроса (без префикса HTTP_)
 
 
-!response
-    !$response:поле[значение]  и можно считать старое -- $response:поле
-        !значение может быть string а может быть hash:
-        ! $value[abc] field: {abc}<<часть
-        ! $attribute[zzz] field: abc; {attribute=zzz}<<часть
-        !значение поля или атрибута может быть string или date
-        ! если дата, она будет преобразована к формату "Sun, 25-Aug-2002 12:03:45 GMT"
-    !$response:headers накопленные поля
-    !$response:body[DATA]  замещает стандартный ответ
-    !$response:download[DATA]  замещает стандартный ответ, 
+response
+    $response:поле[значение]  и можно считать старое - $response:поле
+        значение может быть string а может быть hash:
+            $value[abc] field: {abc}<<часть
+            $attribute[zzz] field: abc; {attribute=zzz}<<часть
+        значение поля или атрибута может быть string или date
+            если дата, она будет преобразована к формату "Sun, 25-Aug-2002 12:03:45 GMT"
+    $response:headers накопленные поля
+    $response:body[DATA]  замещает стандартный ответ
+    $response:download[DATA]  замещает стандартный ответ,
         выставляет флаг, заставляющий browser предложить download
-    !$response:status
-    !^response:clear[] забыть все заданные response поля
-    !$response:charset
-        кодировка клиента т.е. та, 
+    $response:status
+    ^response:clear[] забыть все заданные response поля
+    $response:charset
+        кодировка клиента т.е. та,
         1) из которой будут перекодированы $form:поля после забирания из browser'а
         2) в которую документ будет перекодирован перед отдаванием в browser
         3) в которую будет перекодирован текст языка uri
         не добавляет к content-type ничего, если хочется, это надо сделать вручную
-        ПРЕДУПРЕЖДЕНИЕ: класс form получает свои поля после обработки всех auto класса MAIN
-        поэтому необходимо задать $request/response:charset в одном из них. не после.
+        ПРЕДУПРЕЖДЕНИЕ: необходимо задать $request/response:charset до использования полей класса form
 
 
-!regex
-    !в выражении 
-        !логическое значение всегда равно true
-        !числовое значение равно количеству байт скомпилированного шаблона.
-    !^regex::create[шаблон-строка][[опции поиска]]
-    !^шаблон.size[] количество байт скомпилированного шаблона
-        если значение очень большое -- стоит почитать документацию по pcre и, возможно, переписать шаблон.
-    !^шаблон.study_size[] размер study-структуры. если==0 -- шаблон не может быть "изучен"
+regex
+    в выражении
+        логическое значение всегда равно true
+        числовое значение равно количеству байт скомпилированного шаблона.
+    ^regex::create[шаблон-строка][[опции поиска]]
+    ^шаблон.size[] количество байт скомпилированного шаблона
+        если значение очень большое - стоит почитать документацию по pcre и, возможно, переписать шаблон.
+    ^шаблон.study_size[] размер study-структуры. если==0 - шаблон не может быть "изучен"
+    $шаблон.pattern текст шаблона
+    $шаблон.options строка с исходным текстом опций
 
 
-!reflection
-    !^reflection:create[класс;конструктор[;пара;[мет[;ры]]]]  вызывает указанный конструктор класса (не более 100 параметров)
-    !^reflection:classes[]                 хеш со всеми классами. ключ -- имя класса, значение бывает methoded (класс с методами) или void
-    !^reflection:class[объект]             класс переданного объекта
-    !^reflection:class_name[объект]        имя класса переданного объекта
-    !^reflection:base[объект]              родительский класс переданного объекта
-    !^reflection:base_name[объект]         имя родительского класса переданного объекта
-    !^reflection:class_by_name[имя класса] получение класса по имени
-    !^reflection:def[class;имя класса]     проверка класса на существование
-    !^reflection:methods[класс]            хеш со списком методов указанного класса, значения -- строки 'native' или 'parser'
-    !^reflection:method[класс или объект;имя метода] возвращает junction-method класса или объекта
-    !^reflection:fields[класс или объект]  хеш со списком статических полей указанного класса или динамических полей указанного объекта
-    !^reflection:field[класс или объект;имя поля]  возвращает значение указанного поля класса или объекта. getter-ы игнорируются.
-    !^reflection:uid[класс или объект]     возвращает идентификатор объекта или класса
-    !^reflection:method_info[класс;метод]  хеш с параметрами указанного метода класса
-         $.inherited[класс]                имя класса, где метод был определён (возвращается только если метод был определён в предке)
-         $.overridden[класс]               имя класса, где метод был определён (возвращается только если метод был определён в предке)
-         для native классов возвращается хеш:
-             .min_params(минимально необходимое число параметров)
-             .max_params(максимально возможное число параметров)
-             .call_type[dynamic|static|any]
-         для parser классов возвращается хеш:
-             ключ -- номер параметра (0, 1, ...), значение - имя параметра
-    !^reflection:dynamical[[object or class, caller if absent]]    возвращает true, если метод был вызван из динамического контекста
-                                                                   при передаче параметра возвращает true, если передан динамический объект,
-                                                                   false если класс
-    !^reflection:delete[класс или объект;имя переменной]           удаляет переменную с указанным именем в указанном классе или объекте
-    !^reflection:is[имя элемента;имя класса][[контекст]]           аналог оператора is, позволяющий определить, является ли элемент кодом.
+TODO: reflection
+    ^reflection:create[класс;конструктор[;пара;[мет[;ры]]]]  вызывает указанный конструктор класса (не более 100 параметров)
+    ^reflection:classes[]                 хеш со всеми классами. ключ -- имя класса, значение бывает methoded (класс с методами) или void
+    ^reflection:class[объект]             класс переданного объекта
+    ^reflection:class_name[объект]        имя класса переданного объекта
+    ^reflection:base[объект]              родительский класс переданного объекта
+    ^reflection:base_name[объект]         имя родительского класса переданного объекта
+    ^reflection:class_by_name[имя класса] получение класса по имени
+    ^reflection:def[class;имя класса]     проверка класса на существование
+    ^reflection:methods[класс]            хеш со списком методов указанного класса, значения -- строки 'native' или 'parser'
+    ^reflection:method[класс или объект;имя метода] возвращает junction-method класса или объекта
+    ^reflection:fields[класс или объект]  хеш со списком статических полей указанного класса или динамических полей указанного объекта
+    ^reflection:field[класс или объект;имя поля]  возвращает значение указанного поля класса или объекта. getter-ы игнорируются.
+    ^reflection:uid[класс или объект]     возвращает идентификатор объекта или класса
+    ^reflection:method_info[класс;метод]  хеш с параметрами указанного метода класса
+        $.inherited[класс]                имя класса, где метод был определён (возвращается только если метод был определён в предке)
+        $.overridden[класс]               имя класса, где метод был определён (возвращается только если метод был определён в предке)
+        для native классов возвращается хеш:
+            .min_params(минимально необходимое число параметров)
+            .max_params(максимально возможное число параметров)
+            .call_type[dynamic|static|any]
+        для parser классов возвращается хеш:
+            ключ -- номер параметра (0, 1, ...), значение - имя параметра
+    ^reflection:dynamical[[object or class, caller if absent]]    
+        возвращает true, если метод был вызван из динамического контекста при передаче
+        параметра возвращает true, если передан динамический объект, false если класс
+    ^reflection:delete[класс или объект;имя переменной]      удаляет переменную с указанным именем в указанном классе или объекте
+    ^reflection:is[имя элемента;имя класса][[контекст]]      аналог оператора is, позволяющий определить, является ли элемент кодом.
 
 
-!mail
-    !$mail.received=MESSAGE:
+mail
+    $mail.received=MESSAGE:
         .from
         .reply-to
         .subject
@@ -610,36 +608,63 @@ hash
         ]
         $.message#[MESSAGE] (message, message2, ...)
 
-    !^mail:send[
+    ^mail:send[
         $.options[-odd]
             unix: строка, которая будет добавлена к команде запуска sendmail
                 -odd означает "быстро поставь в очередь без проверки email"
             win32: игнорируется
-        $.charset[кодировка заголовка и текстовых блоков] 
-        $.any-header-field 
+        $.charset[кодировка заголовка и текстовых блоков]
+        $.any-header-field
         $.text[string]
         $.text[
-           $.any-header-field 
+           $.any-header-field
            $.value[string]
         ]
         $.html{string}
         $.html[
-            $.any-header-field 
+            $.any-header-field
             $.value{string}
         ]
         $.file#[FILE]
         $.file#[
-            $.any-header-field 
+            $.any-header-field
             $value[FILE]
         ]
     ]
-    !если charset указан, письмо перекодируется в этот charset
-    !content-type.charset не влияет на перекодирование
-    !после имени части может идти # число
+    если charset указан, письмо перекодируется в этот charset
+    content-type.charset не влияет на перекодирование
+    после имени части может идти # число
+
+    ^mail:send[
+#       по-умолчанию, совпадает с source encoding.
+#       задаёт кодировку body
+        $.charset[windows-1251]
+#       нет умолчания
+        $.content-type[$.value[text/plain] $.charset[windows-1251]]
+        $.from["вася" <vasya@design.ru>]
+        $.to["петя" <petya@design.ru>]
+        $.subject[пойдём пивка]
+        $.body[
+            слова
+        ]
+    ]
+
+    ^mail:send[$.header-field[] $.charset[кодировка письма] $.body[когда body не строка, а hash, отсылается multipart письмо]]
+        если charset указан, письмо перекодируется в этот charset
+        content-type.charset не влияет на перекодирование
+        после имени части может идти целое число, части пойдут в порядке чисел.
+        если body указан строкой, то это текст письма, никаких вложений.
+        если body указан hash, то это части, будут собраны текстовые блоки, затем вложения
+        это старый формат, поддерживается для обратной совместимости
+        если имя части начинается со слова text, то это текстовый блок.
+        если имя части начинается со слова file, то это вложение, формат задания::
+            $file[$.format[!uue|!base64] $.value[DATA] $.name[user-file-name]]
+        важно: при multipart не указывать content-type
+
         ^mail:send[
 #           по-умолчанию, совпадает с source encoding.
 #           задаёт кодировку body
-            $.charset[windows-1251] 
+            $.charset[windows-1251]
 #           нет умолчания
             $.content-type[$.value[text/plain] $.charset[windows-1251]]
             $.from["вася" <vasya@design.ru>]
@@ -649,31 +674,7 @@ hash
                 слова
             ]
         ]
-    !:send[$.header-field[] $.charset[кодировка письма] $.body[когда body не строка, 
-        а hash, отсылается multipart письмо]]
-    !если charset указан, письмо перекодируется в этот charset
-    !content-type.charset не влияет на перекодирование
-    !после имени части может идти целое число, части пойдут в порядке чисел.
-    !если body указан строкой, то это текст письма, никаких вложений.
-    !если body указан hash, то это части, будут собраны текстовые блоки, затем вложения
-    !это старый формат, поддерживается для обратной совместимости
-    !если имя части начинается со слова text, то это текстовый блок.
-    !если имя части начинается со слова file, то это вложение, формат задания::
-        !$file[$.format[!uue|!base64] $.value[DATA] $.name[user-file-name]]
-    !важно: при multipart не указывать content-type
-        ^mail:send[
-#           по-умолчанию, совпадает с source encoding.
-#           задаёт кодировку body
-            $.charset[windows-1251] 
-#           нет умолчания
-            $.content-type[$.value[text/plain] $.charset[windows-1251]]
-            $.from["вася" <vasya@design.ru>]
-            $.to["петя" <petya@design.ru>]
-            $.subject[пойдём пивка]
-            $.body[
-                слова
-            ]
-        ]
+
         ^mail:send[
             $.from["вася" <vasya@design.ru>]
             $.to["петя" <petya@design.ru>]
@@ -686,7 +687,7 @@ hash
                     $.content-type[$.value[text/plain] $.charset[windows-1251]]
                     $.body[слова]
                 ]
-#для удобства скриптования можно указать только одну часть, при этом не будет multipart
+#               для удобства можно указать только одну часть, при этом не будет multipart
                 $.file[
                    $.value[^file::load[my beloved.doc]]
                    $.name[мой любимый.doc]
@@ -698,57 +699,55 @@ hash
                ]
             ]
         ]
-    !для отправки 
-    под unix используется программа с параметрами, задаваемая 
+    для отправки под unix используется программа с параметрами, задаваемая
         $MAIL.sendmail[команда]
-        если не будет задана, проверяется, доступна ли 
-        /usr/sbin/sendmail или
-        /usr/lib/sendmail
-        и, если доступна, то запускается с параметром "-t".    
-    под win32 используется SMTP протокол, сервер задаётся 
+    если не будет задана, проверяется, доступна ли /usr/sbin/sendmail или
+    /usr/lib/sendmail и, если доступна, то запускается с параметром "-t".
+
+    под win32 используется SMTP протокол, сервер задаётся
         $MAIL.SMTP[smtp.domain.ru]
 
-!image
-    !$картинка[^image::measure[DATA]]
+image
+    $картинка[^image::measure[DATA]]
         смотрит на .ext case insensitive, 
         умеет мерить пока только .gif и .jpg .jpeg
-    !$картинка.exif << hash после measure jpeg с exif информацией 
-        !$image.exif.DateTime & co 
+    $картинка.exif << hash после measure jpeg с exif информацией 
+        $image.exif.DateTime & co 
             [полный список см. http://www.ba.wakwak.com/~tsuruzoh/Computer/Digicams/exif-e.html]
-        !числа типа int/double,
-        !даты типа date
-        !перечисления в виде hash с ключами 0..count-1
-    !$картинка.src .width .height
-    !$картинка.line-width  число=ширина линий
-       !$картинка.line-style строка=стиль линий '*** * '='*** * *** * *** * '
-    !^картинка.html[[hash]] = <img ...>
-    !^image::load[фон.gif]
+        числа типа int/double,
+        даты типа date
+        перечисления в виде hash с ключами 0..count-1
+    $картинка.src .width .height
+    $картинка.line-width  число=ширина линий
+       $картинка.line-style строка=стиль линий '*** * '='*** * *** * *** * '
+    ^картинка.html[[hash]] = <img ...>
+    ^image::load[фон.gif]
         только gif пока
-    !^image::create(размер X;размер Y[;цвет фона default белый]])
-    !^картинка.line(x0;y0;x1;y1;0xffFFff)
-    !^картинка.fill(x;y;0xffFFff)
-    !^картинка.rectangle(x0;y0;x1;y1;0xffFFff)
-    !^картинка.bar(x0;y0;x1;y1;0xffFFff)
-    !^картинка.replace(hex-цвет1;hex-цвет2)[table x:y вершины_многоугольника]
-    !^картинка.polyline+(цвет)[table x:y точки]
-    !^картинка.polygon(цвет)[table x:y вершины_многоугольника]
-    !^картинка.polybar(цвет)[table x;y вершины_многоугольника]
-    !^картинка.font[набор_букв;имя_файла_шрифта.gif][(ширина_пробела[;ширина_символа])]
+    ^image::create(размер X;размер Y[;цвет фона default белый]])
+    ^картинка.line(x0;y0;x1;y1;0xffFFff)
+    ^картинка.fill(x;y;0xffFFff)
+    ^картинка.rectangle(x0;y0;x1;y1;0xffFFff)
+    ^картинка.bar(x0;y0;x1;y1;0xffFFff)
+    ^картинка.replace(hex-цвет1;hex-цвет2)[table x:y вершины_многоугольника]
+    ^картинка.polyline(цвет)[table x:y точки]
+    ^картинка.polygon(цвет)[table x:y вершины_многоугольника]
+    ^картинка.polybar(цвет)[table x;y вершины_многоугольника]
+    ^картинка.font[набор_букв;имя_файла_шрифта.gif][(ширина_пробела[;ширина_символа])]
         высота символа = высота картинки/количество букв в наборе
         если указана ширина_символа, то monospaced, если 0, то ширина_символа = ширине gif
-    !^картинка.font[набор_букв;имя_файла_шрифта.gif;
+    ^картинка.font[набор_букв;имя_файла_шрифта.gif;
            $.space(ширина_пробела)             // по умолчанию = ширине gif
            $.width(ширина_символа)             // см. выше, по умолчанию proportional
            $.spacing(расстояние между буквами) // по умолчанию = 1
-     ]
-    !^картинка.text(x;y)[текст_надписи] AS_IS
-    !^картинка.length[текст_надписи] AS_IS
-    !^картинка.gif[возможно, имя файла] -- кодирует в FILE с content-type=image/gif
+    ]
+    ^картинка.text(x;y)[текст_надписи] AS_IS
+    ^картинка.length[текст_надписи] AS_IS
+    ^картинка.gif[возможно, имя файла] -- кодирует в FILE с content-type=image/gif
         имя файла будет использовано при $response:download
-    !^картинка.arc(center x;center y;width;height;start in degrees;end in degrees;color)
-    !^картинка.sector(center x;center y;width;height;start in degrees;end in degrees;color)
-    !^картинка.circle(center x;center y;r;color)
-    !^картинка.copy[source](src x;src y;src w;src h;dst x;dst y[;dest w[;dest h[;tolerance]]])
+    ^картинка.arc(center x;center y;width;height;start in degrees;end in degrees;color)
+    ^картинка.sector(center x;center y;width;height;start in degrees;end in degrees;color)
+    ^картинка.circle(center x;center y;r;color)
+    ^картинка.copy[source](src x;src y;src w;src h;dst x;dst y[;dest w[;dest h[;tolerance]]])
         при заданных dest_w/dest_h делает изменение размера кусочка
             при уменьшении делает resample
             годится только для уменьшения простой[малоцветной] дребедени вроде графиков/pie,
@@ -758,7 +757,7 @@ hash
         определяющее прожорливость выделялки цветов из палитры [default=150]
             меньше - точнее приближает цвета, но они быстро кончаются
             больше - неточно приближает цвет, но бОльшей части хватит
-    !^картинка.pixel(x;y)[(color)]
+    ^картинка.pixel(x;y)[(color)]
         узнать или задать цвет пиксела
 
 
@@ -874,8 +873,8 @@ hash
     !^inet:ip2name[ip][ $.ipv[4|6|any] ]] обратное преобразование из IP адреса в имя
 
 
-!json
-    !^json:parse[-json-строка-[;
+json
+    ^json:parse[-json-строка-[;
         $.depth(максимальная глубина, default == 19)
         $.double(false)              отключить встроенный парсинг чисел с плавающей точкой (по умолчанию включен)
                                      в этом случае они попадут в результирующий объект как строки
@@ -892,7 +891,8 @@ hash
         $.array[method-junction]     пользовательский метод, которому будут передаваться массивы
     ]]
         парсит json-строку в хэш
-    !^json:string[system or user object[;
+
+    ^json:string[system or user object[;
         $.skip-unknown(false)    отключить exception и выдавать 'null' при сериализации объектов с типами
                                  отличных от void, bool, string, int, double, date, table, hash и file
         $.indent(true)           форматировать результирующую строку табуляциями по глубине вложенности
@@ -1111,42 +1111,6 @@ xdoc(xnode)
     !^node.selectBool[xpath/query/expression] = bool if any or die
     !^node.selectNumber[xpath/query/expression] = double if any or die
     !^node.selectString[xpath/query/expression] = string if any or die
-
-    !error codes(пока придут как текст в случае соответствующих ошибок):
-        INDEX_SIZE_ERR
-        If index or size is negative, or greater
-        than the allowed value
-        DOMSTRING_SIZE_ERR
-        If the specified range of text does not
-        fit into a DOMString
-        HIERARCHY_REQUEST_ERR
-        If any node is inserted somewhere it
-        doesn't belong
-        WRONG_DOCUMENT_ERR
-        If a node is used in a different
-        document than the one that created it
-        (that doesn't support it)
-        INVALID_CHARACTER_ERR
-        If an invalid character is specified,
-        such as in a name.
-        NO_DATA_ALLOWED_ERR
-        If data is specified for a node which
-        does not support data
-        NO_MODIFICATION_ALLOWED_ERR
-        If an attempt is made to modify an
-            object where modifications are not
-        allowed
-        NOT_FOUND_ERR
-        If an attempt was made to reference a
-        node in a context where it does not
-        exist
-        NOT_SUPPORTED_ERR
-        If the implementation does not support
-        the type of object requested
-        INUSE_ATTRIBUTE_ERR
-        If an attempt is made to add an
-        attribute that is already inuse
-        elsewhere
 
 !memory
     !^memory:compact[] собрать мусор, освободив место под новые данные
