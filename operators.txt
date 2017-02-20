@@ -419,7 +419,7 @@ hash
         логическое значение равно "не пуст?", хеш с _default уже не пуст
         числовое значение равно count[]
     $хеш.ключ
-        !_default - специальный ключ, если задан,
+        _default - специальный ключ, если задан,
         то при обращении по ключу, которому нет соответствия, выдаётся _default значение
     $хеш.fields выдает $hash. чтобы класс hash был чуть больше похож на класс table
     ^hash::create[[|copy_from_hash|copy_from_hashfile]]
@@ -658,7 +658,7 @@ mail
         это старый формат, поддерживается для обратной совместимости
         если имя части начинается со слова text, то это текстовый блок.
         если имя части начинается со слова file, то это вложение, формат задания::
-            $file[$.format[!uue|!base64] $.value[DATA] $.name[user-file-name]]
+            $file[$.format[uue|base64] $.value[DATA] $.name[user-file-name]]
         важно: при multipart не указывать content-type
 
         ^mail:send[
@@ -719,7 +719,7 @@ image
         перечисления в виде hash с ключами 0..count-1
     $картинка.src .width .height
     $картинка.line-width  число=ширина линий
-       $картинка.line-style строка=стиль линий '*** * '='*** * *** * *** * '
+        $картинка.line-style строка=стиль линий '*** * '='*** * *** * *** * '
     ^картинка.html[[hash]] = <img ...>
     ^image::load[фон.gif]
         только gif пока
@@ -761,51 +761,50 @@ image
         узнать или задать цвет пиксела
 
 
-!file
-    !$файл_из_post.name 
-    !$файл_из_post.size 
-    !$файлtиз_post.text
-    !^файл.save[text|binary;имя файла[;$.charset[в какой кодировке сохраняем]]]
-    !^file:delete[имя файла]
-    !^file:find[имя файла][{когда не нашли}]
-    !^file:list[путь[;шаблон-строка|шаблон-regex]] = table с колонками name dir
-    !^file:list[путь;$.filter[шаблон-строка|шаблон-regex] $.stat(true)] = table с колонками name dir size [mca]date
-    !^file::load[text|binary;!big.zip[;!domain_press_release_2001_03_01.zip][;опции]]
-    !^file::create[text|binary;имя;data]
-    !^file::create[text|binary;имя;data[;$.charset[кодировка букв в создаваемом файле] $.content-type[...]]]
-    !^file::create[string-or-file-content[;$.name[имя] $.mode[text|binary] $.content-type[...] $.charset[...]]]
-    !$файл_который_был_loaded.size
-    !$файл_который_был_loaded_или_created.mode = text/binary
-    !^file::stat[имя файла]
-    !$файл_который_был_stated_или_loaded.size !.adate !.mdate !.cdate
-    !^file::cgi[[text|binary;]имя файла[;env hash +options[;1cmd[;2line[;3ar[;4g[;5s]]]]]]]
+file
+    $файл_из_post.name
+    $файл_из_post.size
+    $файлt_из_post.text
+    ^файл.save[text|binary;имя файла[;$.charset[в какой кодировке сохраняем]]]
+    ^file:delete[имя файла]
+    ^file:find[имя файла][{когда не нашли}]
+    ^file:list[путь[;шаблон-строка|шаблон-regex]] = table с колонками name dir
+    ^file:list[путь;$.filter[шаблон-строка|шаблон-regex] $.stat(true)] = table с колонками name dir size [mca]date
+    ^file::load[text|binary;big.zip[;domain_press_release_2001_03_01.zip][;опции]]
+    ^file::create[text|binary;имя;data]
+    ^file::create[text|binary;имя;data[;$.charset[кодировка букв в создаваемом файле] $.content-type[...]]]
+    ^file::create[string-or-file-content[;$.name[имя] $.mode[text|binary] $.content-type[...] $.charset[...]]]
+    $файл_который_был_loaded.size
+    $файл_который_был_loaded_или_created.mode = text/binary
+    ^file::stat[имя файла]
+    $файл_который_был_stated_или_loaded.size .adate .mdate .cdate
+    ^file::cgi[[text|binary;]имя файла[;env hash +options[;1cmd[;2line[;3ar[;4g[;5s]]]]]]]
         возвращённый заголовок рассыпается на $поля
         $status
         $stderr
-    !^file::exec[[text|binary;]имя файла[;env hash[;1cmd[;2line[;3ar[;4g[;5s;...under unix max 50 args]]]]]]]
+    ^file::exec[[text|binary;]имя файла[;env hash[;1cmd[;2line[;3ar[;4g[;5s;...under unix max 50 args]]]]]]]
         options:
-            $.stdin[текст]  если текст пуст, отключается автоматическое пересовывание данных HTTP-POST 
-    !^file:move[старое имя файла;новое имя файла] 
+            $.stdin[текст|файл]  если пусто, отключается автоматическое пересовывание данных HTTP-POST
+    ^file:move[старое имя файла;новое имя файла]
         можно переименовывать и двигать каталоги[win32: но не через границу дисков]
         каталоги для dest создаются с правами 775
         каталог старого файла стирается, если после move он остаётся пуст
-    !^file:copy[имя файла;имя копии файла] 
+    ^file:copy[имя файла;имя копии файла]
         можно копировать только файлы
-    !^file:lock[имя файла]{код}
+    ^file:lock[имя файла]{код}
         файл при необходимости создаётся
         блокируется
         выполняется код
         разблокируется
-    Xchmod[...] НЕТ И НЕ БУДЕТ, ЧТОБЫ НЕ МОГЛИ СДЕЛАТЬ executable и запустить, даже если ftp запрещает chmod.
-    !^file:dirname[/a/some.tar.gz]=/a (работает аналогично комманде *nix)
-    !^file:dirname[/a/b/]=/a (работает аналогично комманде *nix)
-    !^file:basename[/a/some.tar.gz]=some.tar.gz (работает аналогично комманде *nix)
-    !^file:basename[/a/b/]=b (работает аналогично комманде *nix)
-    !^file:justname[/a/some.tar.gz]=some.tar
-    !^file:justext[/a/some.tar.gz]=gz
-    !/some/page.html: ^file:fullpath[a.gif] => /some/a.gif
-    !^файл.sql-string[] внутри ^connect даст правильно escaped строку, которую можно в запрос отдать
-    !^file::sql{query}[[
+    ^file:dirname[/a/some.tar.gz]=/a (работает аналогично комманде *nix)
+    ^file:dirname[/a/b/]=/a (работает аналогично комманде *nix)
+    ^file:basename[/a/some.tar.gz]=some.tar.gz (работает аналогично комманде *nix)
+    ^file:basename[/a/b/]=b (работает аналогично комманде *nix)
+    ^file:justname[/a/some.tar.gz]=some.tar
+    ^file:justext[/a/some.tar.gz]=gz
+    /some/page.html: ^file:fullpath[a.gif] => /some/a.gif
+    ^файл.sql-string[] внутри ^connect даст правильно escaped строку, которую можно в запрос отдать
+    ^file::sql{query}[[
         $.name[имя_файла_для_download]
         $.content-type[пользовательский content-type]
     ]]
@@ -814,63 +813,64 @@ image
         первая колонка - данные
         если есть вторая - это имя файла
         если есть третья - это content-type
-    !^файл.base64[] encode
-    !^file:base64[имя файла]
+    ^файл.base64[] encode
+    ^file:base64[имя файла]
         encode
-    !^file::base64[encoded string]
-    !^file::base64[mode;имя файла;encoded string[;$.content-type[...]]]
+    ^file::base64[encoded string]
+    ^file::base64[mode;имя файла;encoded string[;$.content-type[...]]]
         decode
-    !^file:crc32[имя файла]
+    ^file:crc32[имя файла]
         вычисляет crc32 файла с указанным именем
-    !^файл.crc32[]
+    ^файл.crc32[]
         вычисляет crc32 объекта
-    !^файл.md5[]
-    !^file:md5[имя файла]
+    ^файл.md5[]
+    ^file:md5[имя файла]
         выдает digest файла, длиной 16 байт в виде строки, 
         где байты digest выданы в hex виде, впритык, в нижнем регистре
 
 
-!math
-    !$math:PI
-    !^math:round floor ceiling 
-    !^math:trunc frac
-    !^math:abs sign 
-    !^math:exp log 
-    !^math:sin asin cos acos tan atan 
-    !^math:degrees radians
-    !^math:pow sqrt
-    !^math:random(ширина диапазона)
-    !^math:uuid[]
+math
+    $math:PI
+    ^math:round floor ceiling
+    ^math:trunc frac
+    ^math:abs sign
+    ^math:exp log
+    ^math:sin asin cos acos tan atan
+    ^math:degrees radians
+    ^math:pow sqrt
+    ^math:random(ширина диапазона)
+    ^math:convert[number](base-from;base-to)
+        преобразует строку с числом из одной системы исчисления в другую
+    ^math:uuid[]
         22C0983C-E26E-4169-BD07-77ECE9405BA5
         win32: пользуется cryptapi
-        unix: пользуется /dev/urandom, 
-            если нет, /dev/random, 
-            если нет, rand 
+        unix: пользуется /dev/urandom,
+            если нет, /dev/random,
+            если нет, rand
             [на solaris /dev/random можно добавить]
-    !^math:uid64[]
-       BA39BAB6340BE370
-    !^math:md5[string]
+    ^math:uid64[]
+        BA39BAB6340BE370
+    ^math:md5[string]
         выдает digest строки, длиной 16 байт в виде строки, 
         где байты digest выданы в hex виде, впритык, в нижнем регистре
-    !^math:crypt[password;salt]
-       salt prefix $apr1$ вызывает встроенный MD5 алгоритм, 
-         если нет тела salt, оно создаётся случайным
-       $1$ вызывает MD5 алгоритм функции OS 'crypt', если поддерживается [заведомо нет на solaris].
-       другие salt читайте документацию по функции OS 'crypt'.
-    !^math:crc32[string]
-       вычисляет crc32 строки
-    !^math:sha1[string]
-    !^math:convert[number](base-from;base-to) преобразует строку с числом из одной системы исчисления в другую
-    !^math:digest[[md5|sha1|sha256|sha512];строка или файл][[ $.format[hex|base64] $.hmac[ключ] ]]
-       объединяет в себе возможность работы с разными алгоритмами криптографического хеширования.
-       $.hmac[ключ] для проверки целостности переданных данных
+    ^math:crypt[password;salt]
+        salt prefix $apr1$ вызывает встроенный MD5 алгоритм,
+        если нет тела salt, оно создаётся случайным
+        $1$ вызывает MD5 алгоритм функции OS 'crypt', если поддерживается [заведомо нет на solaris].
+        другие salt читайте документацию по функции OS 'crypt'.
+    ^math:crc32[string]
+        вычисляет crc32 строки
+    ^math:sha1[string]
+    ^math:digest[[md5|sha1|sha256|sha512];строка или файл][[ $.format[hex|base64] $.hmac[ключ] ]]
+        объединяет в себе возможность работы с разными алгоритмами криптографического хеширования.
+        $.hmac[ключ] для проверки целостности переданных данных
 
 
-!inet
-    !^inet:ntoa(long)
-    !^inet:aton[IP]
-    !^inet:name2ip[name][[ $.ipv[4|6|any] $.table(true) ]] прямое преобразование имени в IP адрес
-    !^inet:ip2name[ip][ $.ipv[4|6|any] ]] обратное преобразование из IP адреса в имя
+inet
+    ^inet:ntoa(long)
+    ^inet:aton[IP]
+    ^inet:name2ip[name][[ $.ipv[4|6|any] $.table(true) ]] прямое преобразование имени в IP адрес
+    ^inet:ip2name[ip][ $.ipv[4|6|any] ]] обратное преобразование из IP адреса в имя
 
 
 json
@@ -889,6 +889,7 @@ json
         $.object[method-junction]    пользовательский метод[ключ;объект], которому будут передаваться все разобранные 
                                      объекты и ключи объекта, метод возвращает новый объект
         $.array[method-junction]     пользовательский метод, которому будут передаваться массивы
+        $.taint[язык преобразования] задаёт язык преобразования для всех строк результата
     ]]
         парсит json-строку в хэш
 
@@ -907,6 +908,8 @@ json
         $.тип[method-junction]   любой тип можно вывести с помощью пользовательского метода, который 
                                  должен принимать 3 параметра: ключ, объект данного типа и опции 
                                  вызова ^json:string[]
+        $._default[метод]        пользовательский метод, будет вызываться для вывода всех объектов пользовательских 
+                                 классов. Метод должен принимать 3 параметра: ключ, объект и опции вызова.
         $._default[имя метода]   имя пользователького метода, при его наличии он будет вызван для
                                  сериализации
         $.void[null|string]      неопределенное значение будет выдано в виде null (по умолчанию)
@@ -915,365 +918,344 @@ json
         сериализует системный или пользовательский объект в json-строку
 
 
-!date
-    !время типа time можно использовать в выражениях, подставляет 
-        количество дней с epoch [1 января 1970 (UTC)], дробное
-    !строковое значение в местном времени, численное в UTC
-    !по умолчанию используется установленная средствами OS временная зона
-    !^date::now[]
-    !^date::now(смещение в днях) выдаёт сейчас+смещение
-    !^date::today[] дата на 00:00:00 текущего дня
-    !^date::create(дней с epoch)
-    !^date::create(year;month[;day[;hour[;minute[;second]]]])
-    !^date::create[дата в формате %Y-%m-%d %H:%M:%S]
+date
+    время типа time можно использовать в выражениях, подставляет количество дней с epoch [1 января 1970 (UTC)], дробное.
+    Строковое значение в местном времени, численное в UTC, диапазон от 0000-00-00 00:00:00 до 9999-12-31 23:59:59.
+    по умолчанию используется установленная средствами OS временная зона
+    ^date::now[]
+    ^date::now(смещение в днях) выдаёт сейчас+смещение
+    ^date::today[] дата на 00:00:00 текущего дня
+    ^date::create(дней с epoch)
+    ^date::create(year;month[;day[;hour[;minute[;second[;TZ]]]]])
+    ^date::create[дата в формате %Y-%m-%d %H:%M:%S]
         для удобного создания по значению из базы
         формат1: %Y[-%m[-%d[ %H[:%M[:%S]]]]]
         формат2: %H:%M[:%S]
-    !^date::create[дата в формате %Y-%m-%dT%H:%M[:%S]TZ]
+    ^date::create[дата в формате %Y-%m-%dT%H:%M[:%S]TZ]
         для создания по значению в формате ISO 8601
         формат TZ: Z(UTC) или +-hour[:minute] (смещение от UTC)
-    !^date::unix-timestamp()
-    !^дата.unix-timestamp[]
-    !$дата.year month day  hour minute second  weekday yearday(0...) daylightsaving TZ weekyear
-        read-only
+    ^date::unix-timestamp()
+    ^дата.unix-timestamp[]
+    $дата.year month day hour minute second weekday yearday(0...) daylightsaving TZ weekyear
         TZ="" << локальная зона
-    !^дата.roll[year|month|day](+-смещение) сдвигает дату
-    !^дата.roll[TZ;Новая зона] говорит, что дата в таком-то часовом поясе: влияет на .hour & Co
-    !^date:roll[TZ;Новая зона] говорит, что по умолчанию все даты в таком-то часовом поясе
-    !^дата.sql-string[[datetime|date|time]]
+    $дата.year month day hour minute second можно задать новое значение, остальные read only
+    ^дата.roll[year|month|day](+-смещение) сдвигает дату
+    ^дата.roll[TZ;Новая зона] говорит, что дата в таком-то часовом поясе: влияет на .hour & Co
+    ^date:roll[TZ;Новая зона] говорит, что по умолчанию все даты в таком-то часовом поясе
+    ^дата.sql-string[[datetime|date|time]]
         datetime или без параметра -- %Y-%m-%d %H:%M:%S
         date                       -- %Y-%m-%d
         time                       -- %H:%M:%S
         where published='^дата.sql-string[]'
-    !^date:calendar[rus|eng](год;месяц) выдаёт неименованную таблицу 
+    ^date:calendar[rus|eng](год;месяц) выдаёт неименованную таблицу
         столбцы: 0..6, week, year
-    !^date:calendar[rus|eng](год;месяц;день) выдаёт именнованную таблицу
+    ^date:calendar[rus|eng](год;месяц;день) выдаёт именнованную таблицу
         столбцы: year, month, day, weekday
-    !^date:last-day(год;месяц) вернёт последний день месяца
-    !^дата.last-day[] вернёт последний день месяца $дата
-    !^дата.gmt-string[]  Fri, 23 Mar 2001 09:32:23 GMT
-    !^дата.iso-string[]  2001-03-23T12:32:23+3
+    ^date:last-day(год;месяц) вернёт последний день месяца
+    ^дата.last-day[] вернёт последний день месяца $дата
+    ^дата.gmt-string[]  Fri, 23 Mar 2001 09:32:23 GMT
+    ^дата.iso-string[]  2001-03-23T12:32:23+03
 
 
 xdoc(xnode)
-    !$xdoc.search-namespaces hash, where keys=prefixes, values=urls
-    
+    $xdoc.search-namespaces hash, where keys=prefixes, values=urls
+
     DOM1 attributes:
-    !readonly attribute DocumentType doctype
-    Xreadonly attribute DOMImplementation implementation
-    !readonly attribute Element documentElement
+    readonly attribute DocumentType doctype
+    readonly attribute Element documentElement
 
     DOM1 methods:
-    !Element createElement(in DOMString tagName)
-    !DocumentFragment createDocumentFragment()
-    !Text createTextNode(in DOMString data)
-    !Comment createComment(in DOMString data)
-    !CDATASection createCDATASection(in DOMString data)
-    !ProcessingInstruction createProcessingInstruction(in DOMString target,in DOMString data)
-    !Attr createAttribute(in DOMString name)
-    !EntityReference createEntityReference(in DOMString name)
-    !NodeList getElementsByTagName(in DOMString tagname)
+    Element createElement(in DOMString tagName)
+    DocumentFragment createDocumentFragment()
+    Text createTextNode(in DOMString data)
+    Comment createComment(in DOMString data)
+    CDATASection createCDATASection(in DOMString data)
+    ProcessingInstruction createProcessingInstruction(in DOMString target,in DOMString data)
+    Attr createAttribute(in DOMString name)
+    EntityReference createEntityReference(in DOMString name)
+    NodeList getElementsByTagName(in DOMString tagname)
 
     DOM2 some methods:
-    !^.getElementById[elementId] = xnode
-        The DOM implementation must have information that says which attributes are of type ID. 
-        Attributes with the name "ID" are not of type ID unless so defined. 
-        Implementations that do not know whether attributes are of type ID or not 
+    ^.getElementById[elementId] = xnode
+        The DOM implementation must have information that says which attributes are of type ID.
+        Attributes with the name "ID" are not of type ID unless so defined.
+        Implementations that do not know whether attributes are of type ID or not
         are expected to return null.
 
-    !кодировка строк и умолчание для $.encoding 
-    !равно текущей кодировке выходной страницы,
+    кодировка строк и умолчание для $.encoding 
+    равно текущей кодировке выходной страницы,
         $response:charset
     ::sql{...}
-    !::create[[URI]]{<?xml?><string/>} старое имя 'set'
-    !::create[[URI]][qualifiedName]
+    ::create[[URI]]{<?xml?><string/>} старое имя 'set'
+    ::create[[URI]][qualifiedName]
       URI default = disk path to requested document
       для каталогов конечный / обязателен
-    !::create[file] can be usable:
-    	$f[^file::load[binary;http://;some HTTP options here...]]
-    	$x[^xdoc::create[$f]]
-    !::load[file.xml[;опции]]
-    !.transform[rules.xsl|xdoc][[params hash]] выдаёт dom
+    ::create[file] can be usable:
+        $f[^file::load[binary;http://;some HTTP options here...]]
+        $x[^xdoc::create[$f]]
+    ::load[file.xml[;опции]]
+    .transform[rules.xsl|xdoc][[params hash]] выдаёт dom
         шаблон кешируется, кеш обновляется при изменении даты файла шаблона,
         или изменении даты файла "имя шаблона.stamp"[проверка даты stamp приоритетнее]
         <xsl:output
-        !method = "xml" | "html" | "text"
-            X| qname-but-not-ncname 
-        !version = nmtoken 
-        !encoding = string 
-        !omit-xml-declaration = "yes" | "no"
-        !standalone = "yes" | "no"
-        X[передал, но xsltSaveResultTo не использовал его]doctype-public = string 
-            Xесли начинается с "-//W3C//DTD XHTML" то будет выводить XHTML
-        X[передал, но xsltSaveResultTo не использовал его]doctype-system = string 
-        !cdata-section-elements = qnames 
-        !indent = "yes" | "no"
-        !media-type = string /> 
-        !параметры передаются как есть, не xpath выражения
+        method = "xml" | "html" | "text"
+        version = nmtoken 
+        encoding = string 
+        omit-xml-declaration = "yes" | "no"
+        standalone = "yes" | "no"
+        cdata-section-elements = qnames 
+        indent = "yes" | "no"
+        media-type = string /> 
+        параметры передаются как есть, не xpath выражения
 
-    !.string[[output options]]
-    !.save[file.xml[;output options]] с шапкой
-    !.file[[output options]] = file
-        output options идентичны атрибутам xsl:output 
+    .string[[output options]]
+    .save[file.xml[;output options]] с шапкой
+    .file[[output options]] = file
+        output options идентичны атрибутам xsl:output
             [исключение: игнорируется cdata-section-elements, нужно будет, сделаю]
         выдаёт media-type при подстановке $response:body[сюда]
 
+    если на документ ссылаются так:
+        parser://method/param/to/that/method
+        то в качестве документа используется ^MAIN:method[/param/to/that/method]
+        [примечание: в параметр всегда приходит лидирующая /, даже, если параметров вообще не было]
 
-	!если на документ ссылаются так:
-	    parser://method/param/to/that/method
-	    то в качестве документа используется ^MAIN:method[/param/to/that/method]
-	    [примечание: в параметр всегда приходит лидирующая /, даже, если параметров вообще не было]
 
-!xnode
+xnode
     DOM1 attributes:
-    !$node.nodeName
-    !$node.nodeValue
-    	!read
-    	!write
-    !$node.nodeType = int
-      ELEMENT_NODE                   = 1 
-      ATTRIBUTE_NODE                 = 2 
-      TEXT_NODE                      = 3 
-      CDATA_SECTION_NODE             = 4 
-      ENTITY_REFERENCE_NODE          = 5 
-      ENTITY_NODE                    = 6 
-      PROCESSING_INSTRUCTION_NODE    = 7 
-      COMMENT_NODE                   = 8 
-      DOCUMENT_NODE                  = 9 
-      DOCUMENT_TYPE_NODE             = 10 
-      DOCUMENT_FRAGMENT_NODE         = 11 
-      NOTATION_NODE                  = 12 
+    $node.nodeName
+    $node.nodeValue
+        read
+        write
+    $node.nodeType = int
+        ELEMENT_NODE                   = 1
+        ATTRIBUTE_NODE                 = 2
+        TEXT_NODE                      = 3
+        CDATA_SECTION_NODE             = 4
+        ENTITY_REFERENCE_NODE          = 5
+        ENTITY_NODE                    = 6
+        PROCESSING_INSTRUCTION_NODE    = 7
+        COMMENT_NODE                   = 8
+        DOCUMENT_NODE                  = 9
+        DOCUMENT_TYPE_NODE             = 10
+        DOCUMENT_FRAGMENT_NODE         = 11
+        NOTATION_NODE                  = 12
             $vasyaNode.type==$xnode:ELEMENT_NODE
-    !$node.parentNode
-    !$node.childNodes = array of nodes
-    !$node.firstChild
-    !$node.lastChild
-    !$node.previousSibling
-    !$node.nextSibling
-    !$node.ownerDocument = xdoc
-    !$node.prefix
-    !$node.namespaceURI
-    !$element_node.attributes = hash of xnodes
-    !$element_node.tagName
-    !$attribute_node.specified = boolean
-        true if the attribute received its value explicitly in the XML document, 
+    $node.parentNode
+    $node.childNodes = array of nodes
+    $node.firstChild
+    $node.lastChild
+    $node.previousSibling
+    $node.nextSibling
+    $node.ownerDocument = xdoc
+    $node.prefix
+    $node.namespaceURI
+    $element_node.attributes = hash of xnodes
+    $element_node.tagName
+    $attribute_node.specified = boolean
+        true if the attribute received its value explicitly in the XML document,
         or if a value was assigned programatically with the setValue function.
-        false if the attribute value came from the default value declared in the document's DTD. 
-    !$attribute_node.name
-    !$attribute_node.value
+        false if the attribute value came from the default value declared in the document's DTD.
+    $attribute_node.name
+    $attribute_node.value
     $text_node/cdata_node/comment_node.substringData
-    !$pi_node.target = target of this processing instruction
-        XML defines this as being the first token following the markup 
+    $pi_node.target = target of this processing instruction
+        XML defines this as being the first token following the markup
         that begins the processing instruction.
-    !$pi_node.data = The content of this processing instruction
-        This is from the first non white space character after the target 
-        to the character immediately preceding the ?>. 
+    $pi_node.data = The content of this processing instruction
+        This is from the first non white space character after the target
+        to the character immediately preceding the ?>.
     document_node.
         readonly attribute DocumentType doctype
-        readonly attribute DOMImplementation implementation    
+        readonly attribute DOMImplementation implementation
         readonly attribute Element documentElement
     document_type_node.
-        !readonly attribute DOMString name
+        readonly attribute DOMString name
         readonly attribute NamedNodeMap entities
         readonly attribute NamedNodeMap notations
-    !notation_node.
-        !readonly attribute DOMString publicId
-        !readonly attribute DOMString systemId
+    notation_node.
+        readonly attribute DOMString publicId
+        readonly attribute DOMString systemId
 
-    !DOM1 node methods:
-    !Node insertBefore(in Node newChild,in Node refChild)
-    !Node replaceChild(in Node newChild,in Node oldChild)
-    !Node removeChild(in Node oldChild)
-    !Node appendChild(in Node newChild)
-    !boolean hasChildNodes()
-    !Node cloneNode(in boolean deep)
+    DOM1 node methods:
+    Node insertBefore(in Node newChild,in Node refChild)
+    Node replaceChild(in Node newChild,in Node oldChild)
+    Node removeChild(in Node oldChild)
+    Node appendChild(in Node newChild)
+    boolean hasChildNodes()
+    Node cloneNode(in boolean deep)
 
-    !DOM1 element methods:
-    !DOMString getAttribute(in DOMString name)
-    !void setAttribute(in DOMString name, in DOMString value) raises(DOMException)
-    !void removeAttribute(in DOMString name) raises(DOMException)
-    !Attr getAttributeNode(in DOMString name)
-    !Attr setAttributeNode(in Attr newAttr) raises(DOMException)
-    !Attr removeAttributeNode(in Attr oldAttr) raises(DOMException)
-    !NodeList getElementsByTagName(in DOMString name)
-    !void normalize()
+    DOM1 element methods:
+    DOMString getAttribute(in DOMString name)
+    void setAttribute(in DOMString name, in DOMString value) raises(DOMException)
+    void removeAttribute(in DOMString name) raises(DOMException)
+    Attr getAttributeNode(in DOMString name)
+    Attr setAttributeNode(in Attr newAttr) raises(DOMException)
+    Attr removeAttributeNode(in Attr oldAttr) raises(DOMException)
+    NodeList getElementsByTagName(in DOMString name)
+    void normalize()
 
 
-    !Introduced in DOM Level 2:
-    !Node importNode(in Node importedNode, in boolean deep) raises(DOMException)
-    !NodeList getElementsByTagNameNS(in DOMString namespaceURI, in DOMString localName)
-    !boolean hasAttributes()
+    Introduced in DOM Level 2:
+    Node importNode(in Node importedNode, in boolean deep) raises(DOMException)
+    NodeList getElementsByTagNameNS(in DOMString namespaceURI, in DOMString localName)
+    boolean hasAttributes()
 
-    !XPath:
-    !^node.select[xpath/query/expression] = array of nodes, 
+    XPath:
+    ^node.select[xpath/query/expression] = array of nodes, 
         empty array if nothing found
-    !^node.selectSingle[xpath/query/expression] = first node if any
-    !^node.selectBool[xpath/query/expression] = bool if any or die
-    !^node.selectNumber[xpath/query/expression] = double if any or die
-    !^node.selectString[xpath/query/expression] = string if any or die
+    ^node.selectSingle[xpath/query/expression] = first node if any
+    ^node.selectBool[xpath/query/expression] = bool if any or die
+    ^node.selectNumber[xpath/query/expression] = double if any or die
+    ^node.selectString[xpath/query/expression] = string if any or die
 
-!memory
-    !^memory:compact[] собрать мусор, освободив место под новые данные
+memory
+    ^memory:compact[] собрать мусор, освободив место под новые данные
     (предупреждение: память процесса никогда не освобождается)
     полезно делать перед XSL transform.
 
-!status
-    !чтобы класс был доступен, в apache нужно сказать 
-    <Location /parser-status.html>
-    ParserStatusAllowed
-    </Location>
-    !в cgi доступен везде
-    !в isapi не доступен нигде
 
-    !$status:sql hash
-        !cache table
-            url    time    
-            url    time    
-            url    time    
-    !$status:stylesheet
-        !cache table
+status
+    $status:sql
+        cache table
+            url    time
+            url    time
+            url    time
+    $status:stylesheet
+        cache table
             file    time
             file    time
             file    time
 
-    !$status:rusage hash
-        !utime user time used
-        !stime system time used
-        !maxrss max resident set size
-        !ixrss integral shared text memory size
-        !idrss integral unshared data size
-        !isrss integral unshared stack size
-        !tv_sec
-        !tv_usec
+    $status:rusage hash
+        utime user time used
+        stime system time used
+        maxrss max resident set size
+        ixrss integral shared text memory size
+        idrss integral unshared data size
+        isrss integral unshared stack size
+        tv_sec
+        tv_usec
            $s[$status:rusage]
            ^s.tv_sec.format[%.0f].^s.tv_usec.format[%06.0f]
 
-    !$status:memory hash
-        !used
+    $status:memory hash
+        used
             Includes some pages that were allocated but never written.
-
-        !free
-
-        !ever_allocated_since_compact
-            Return the number of bytes allocated since the last collection.	
-
-        !ever_allocated_since_start
+        free
+        ever_allocated_since_compact
+            Return the number of bytes allocated since the last collection.
+        ever_allocated_since_start
             Return the total number of bytes [EVER(c)PAF] allocated in this process.
             Never decreases.
 
-    !$status:pid process id
-    !$status:tid thread id
+    $status:pid process id
+    $status:tid thread id
+
 
 console
     $console:timeout
-    !$console:line
+    $console:line
         read/write строку
+
 
 DATA::=string | file | hash
 
-!hash вида
-[
-	$.file[имя файла на диске]
-	$.name[имя файла для пользователя]
-	$.mdate[date]
-]
+    hash вида
+    [
+        $.file[имя файла на диске]
+        $.name[имя файла для пользователя]
+        $.mdate[date]
+    ]
 
-!MAIN
-    это класс, загружаемый на автомате из конфигурационного auto.p, 
-    кучи auto.p и запрашиваемого документа:
-        !конфигурационный auto.p 
-            cgi: 
-                1. или полный путь из переменной окружения CGI_PARSER_SITE_CONFIG
-                   или рядом с бинарником parser'а 
+
+MAIN
+    это класс, загружаемый на автомате из конфигурационного auto.p, кучи auto.p и запрашиваемого документа:
+        конфигурационный auto.p
+            cgi:
+                1. или полный путь из переменной окружения CGI_PARSER_SITE_CONFIG или рядом с бинарником parser'а
             isapi: windows directory
-            apache module: 
+            apache module:
                 1) ParserConfig [can be in .htaccess]
-        !auto.p вниз от DOCUMENT_ROOT/ по дереву до каталога с обрабатываемым файлом включительно
+        auto.p вниз от DOCUMENT_ROOT/ по дереву до каталога с обрабатываемым файлом включительно
     класс собирается из всех этих файлов, последующие становятся родителями предыдущих
     имя последнего загруженного MAIN, имён у предыдущих нет
-    
-    !после загрузки MAIN класса вызывается его @main[]
-    !результат которого передаётся в его @postprocess[data] if($data is string) ...
-    !результат которого отдаётся пользователю
 
-!если встречается ошибка и try не задан, её можно красиво сообщить пользователю, 
-    !определив
-    !@unhandled_exception[exception;stack]
-    !$exception.type  строка "тип проблемы"
-    !$exception.file $exception.lineno $exception.colno файл, строка и позиция, где случилась проблема [если не запрещены при компиляции]
-    !$exception.source строка, из-за которой случилась проблема
-    !$exception.comment комментарий english
-    !stack табличка из колонок file line name,
-        там лежат в обратном порядке имена[name] и места вызовов[file line] 
-        операторов/методов, приведших к ошибке.
+    после загрузки MAIN класса вызывается его @main[]
+    результат которого передаётся в его @postprocess[data] if($data is string) ...
+    результат которого отдаётся пользователю
 
-!при загрузке файла (file::load, table::load, xdoc::load) можно указать такое имя файла:
-    !http://domain/document[?params<<deprecated, use $.form[...]]
-    !а также, возможно, указать опции:
-        !$.method[GET|POST|HEAD]
-        !$.timeout(3)  << в секундах, по-умолчанию =2
-        !$.cookies[
-        	$.имя[значение]
+если встречается ошибка и try не задан, её можно красиво сообщить пользователю, определив
+    @unhandled_exception[exception;stack]
+        $exception.type  строка "тип проблемы"
+        $exception.file $exception.lineno $exception.colno файл, строка и позиция, где случилась проблема [если не запрещены при компиляции]
+        $exception.source строка, из-за которой случилась проблема
+        $exception.comment комментарий english
+        stack табличка из колонок file line name,
+            там лежат в обратном порядке имена[name] и места вызовов[file line] 
+            операторов/методов, приведших к ошибке.
+
+при загрузке файла (file::load, table::load, xdoc::load) можно указать такое имя файла:
+    http://domain/document[?params<<deprecated, use $.form[...]]
+    а также, возможно, указать опции:
+        $.method[GET|POST|HEAD]
+        $.timeout(3)  << в секундах, по-умолчанию =2
+        $.cookies[
+            $.имя[значение]
         ]
-        !$.headers[
-        !    $.поле[значение] << значение имеет формат, как $response:ЗАГОЛОВОК
-        !]
+        $.headers[
+            $.поле[значение] << значение имеет формат, как $response:ЗАГОЛОВОК
+        ]
         $.enctype[multipart/form-data]
         $.form[
-            !$.field1[string]
-            !$.field2[^table::create{one_column_only^#0Avalue1^#0Avalue2}]
+            $.field1[string]
+            $.field2[^table::create{one_column_only^#0Avalue1^#0Avalue2}]
             $.field3[file]
         ]
-        !$.body[string]
-        	|file
-        !по-умолчанию, user-agent=parser3
-        !по-умолчанию, получение http status != 200 >> создает http.status ошибку,
-        !это можно отключить, передав
-        !$.any-status(1)
-        !$.charset[кодировка удалённых документов по-умолчанию], если сервер вернёт content-type:charset - ОНА_ПЕРЕБИВАЕТ
-        !$.response-charset[кодировка удалённых документов], не перебиваеся content-type:charset
-        !$.user[пользователь]
-        !$.password[пароль]
-    !file::load в дополнительные поля записывает
-        !ПОЛЕ:значение (имена полей ответа заглавными буквами)
-        !tables << хеш их ПОЛЕ->table с единственным столбцом "value". 
+        $.body[string|file]
+        по-умолчанию, user-agent=parser3
+        по-умолчанию, получение http status != 200 >> создает http.status ошибку, это можно отключить, передав $.any-status(1)
+        $.charset[кодировка удалённых документов по-умолчанию], если сервер вернёт content-type:charset - ОНА_ПЕРЕБИВАЕТ
+        $.response-charset[кодировка удалённых документов], не перебиваеся content-type:charset
+        $.user[пользователь]
+        $.password[пароль]
+    file::load в дополнительные поля записывает
+        ПОЛЕ:значение (имена полей ответа заглавными буквами)
+        tables << хеш их ПОЛЕ->table с единственным столбцом "value".
             в таких таблицах можно брать повторяющиеся заголовки. например, несколько set-cookies
             todo:сделать отдельный cookies
 
-!системные типы ошибок:
-    !parser.compile       ^test[}                компиляция (непарная скобка, ...)
-    !parser.runtime       ^if(0).                параметры (больше/меньше, чем нужно, не тех типов, ...)
-    !number.zerodivision  ^eval(1/0) ^eval(1%0)
-    !number.format        ^eval(abc*5)
-    !file.lock                                                        shared/exclusive lock error
-    !file.missing         ^file:delete[delme]                         not found
-    !file.access          ^table::load[.]                             no rights
-    !file.read            ^file::load[...]                            error while reading file
-    !file.seek                                                        seek failed
-    !file.execute         ^file::cgi[...]                             incorrect cgi header/can't execute
-    !image.format         ^image::measure[index.html]                 not gif/jpg
-    !sql.connect          ^connect[mysql://baduser:pass@host/db]{}    not found/timeout
-    !sql.execute          ^void:sql{select bad}                       syntax error
+системные типы ошибок:
+    parser.compile       ^test[}                компиляция (непарная скобка, ...)
+    parser.runtime       ^if(0).                параметры (больше/меньше, чем нужно, не тех типов, ...)
+    number.zerodivision  ^eval(1/0) ^eval(1%0)
+    number.format        ^eval(abc*5)
+    file.lock                                                        shared/exclusive lock error
+    file.missing         ^file:delete[delme]                         not found
+    file.access          ^table::load[.]                             no rights
+    file.read            ^file::load[...]                            error while reading file
+    file.seek                                                        seek failed
+    file.execute         ^file::cgi[...]                             incorrect cgi header/can't execute
+    image.format         ^image::measure[index.html]                 not gif/jpg
+    sql.connect          ^connect[mysql://baduser:pass@host/db]{}    not found/timeout
+    sql.execute          ^void:sql{select bad}                       syntax error
     sql.duplicate
     sql.access
     sql.missing
-    sql.xxx [serge asked]
-    !xml                  ^xdoc::create{<forgot?>}                    any error in xml/xslt libs
-    !smtp.connect                                                     not found/timeout
-    !smtp.execute                                                     communication error
-    !email.format         hren tam@null.ru                            wrong email format(bad chars/empty)
-    !email.send           $MAIL.sendmail[/shit]                       sendmail not executable
-    !http.host            ^file::load[http://notfound/there]          host not found
-    !http.connect         ^file::load[http://not_accepting/there]     host found, but do not accept connections
-    !http.timeout         ^file::load[http://host/doc]                whole load operation failed to complete in # seconds
-    !http.response        ^file::load[http://ok/there]                host found, connection accepted, bad answer
-    !http.status          ^file::load[http://ok/there]                host found, connection accepted, status!=200
-    !date.range           ^date::create(1950;1;1)                     date out of valid range
+    xml                  ^xdoc::create{<forgot?>}                    any error in xml/xslt libs
+    smtp.connect                                                     not found/timeout
+    smtp.execute                                                     communication error
+    email.format         hren tam@null.ru                            wrong email format(bad chars/empty)
+    email.send           $MAIL.sendmail[/shit]                       sendmail not executable
+    http.host            ^file::load[http://notfound/there]          host not found
+    http.connect         ^file::load[http://not_accepting/there]     host found, but do not accept connections
+    http.timeout         ^file::load[http://host/doc]                whole load operation failed to complete in # seconds
+    http.response        ^file::load[http://ok/there]                host found, connection accepted, bad answer
+    http.status          ^file::load[http://ok/there]                host found, connection accepted, status!=200
+    date.range           ^date::create(10000;1;1)                    date out of valid range
 
 если в MAIN определён $SIGPIPE(1) то в случае, если обработка была прервана пользователем, сообщение
-    об этом будет записано в parser3.log (раньше оно всегда писалось)
+    об этом будет записано в parser3.log
 
-если описание метода содержит локальную переменную result в явном виде
-    (есть и неявная переменная)
+если описание метода содержит локальную переменную result в явном виде (есть и неявная переменная)
     то код вывода пробельных литералов не попадает в конечный байт-код.
-
