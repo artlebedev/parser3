@@ -64,7 +64,7 @@ AC_ARG_WITH(build-warnings, [  --with-build-warnings   to enable build-time comp
 	CXXFLAGS="$CXXFLAGS -Wextra -Wall -Wno-parentheses"
 )
 
-AC_ARG_WITH(coverage, [  --with-coverage           to enable gcov code coverage support],
+AC_ARG_WITH(coverage, [  --with-coverage         to enable gcov code coverage support],
 	AC_MSG_WARN(enabling gcov support)
 	CFLAGS=`echo "$CFLAGS" | $SED -e 's/-O[0-9]*//g'`
 	CXXFLAGS=`echo "$XXCFLAGS" | $SED -e 's/-O[0-9]*//g'`
@@ -73,7 +73,7 @@ AC_ARG_WITH(coverage, [  --with-coverage           to enable gcov code coverage 
 	LDFLAGS="$LDFLAGS -lgcov"
 )
 
-AC_ARG_WITH(profiler, [  --with-profiler           to enable gprof code profiler support],
+AC_ARG_WITH(profiler, [  --with-profiler         to enable gprof code profiler support],
 	AC_MSG_WARN(enabling gprof support)
 	CFLAGS="$CFLAGS -O0 -pg"
 	CXXFLAGS="$CXXFLAGS -O0 -pg"
