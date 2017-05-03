@@ -1,9 +1,11 @@
 # autouse checking
 @main[]
 ^try-catch{^test:call[]}
+$autouse[$autouse_method]
+^try-catch{^test:call[]}
 ^try-catch{^zigi:call[]}
 
-@autouse[name]
+@autouse_method[name]
 ^if($name eq "test"){
 	^use[226.p]
 }
