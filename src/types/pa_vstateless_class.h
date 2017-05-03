@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
-#define IDENT_PA_VSTATELESS_CLASS_H "$Id: pa_vstateless_class.h,v 1.91 2017/02/15 17:21:28 moko Exp $"
+#define IDENT_PA_VSTATELESS_CLASS_H "$Id: pa_vstateless_class.h,v 1.92 2017/05/03 17:53:19 moko Exp $"
 
 // include
 
@@ -162,6 +162,14 @@ public: // usage
 
 	/// @returns new value for current class, used in classes/ & VClass
 	virtual Value* create_new_value(Pool&) { return 0; }
+
+	const Method* get_element_method(const String &aname) {  // not get_method() to allow $aname[$method]
+		if(Value* value=get_element(aname))
+			if(Junction* junction=value->get_junction())
+				return junction->method;
+		return 0;
+	}
+
 };
 
 ///	Auto-object used for temporarily substituting/removing class method
