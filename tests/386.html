@@ -1,8 +1,0 @@
-# autouse checking
-@main[]
-$use-original[$use]
-$use[$use-custom]
-^try-catch{^use-original[386.p]}
-
-@use-custom[name;options]
-^throw[test;trying to use $name from ^options.origin.match[^^.+/][]{/-real-path-was-here-/}]
