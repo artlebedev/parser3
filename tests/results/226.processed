@@ -1,5 +1,7 @@
 Content-Type: text/html
-Content-Length: 40
+Content-Length: 74
 
-it works!<br />
-zigi class is undefined
+it works!
+Type: parser.runtime,
+Source: zigi,
+Comment: class is undefined
