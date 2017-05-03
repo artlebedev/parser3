@@ -1,6 +1,6 @@
 dnl Autoconf initialisation
 AC_PREREQ(2.59)
-AC_INIT(parser, 3.4.5)
+AC_INIT(parser, 3.4.6b)
 AC_CONFIG_SRCDIR(README)
 
 
