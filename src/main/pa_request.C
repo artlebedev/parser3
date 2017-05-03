@@ -33,7 +33,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.375 2017/05/03 17:53:19 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.376 2017/05/03 19:32:53 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -634,7 +634,7 @@ void Request::use_file(const String& file_name, const String* use_filespec/*abso
 	static String use("USE");
 	try {
 		static VHash* voptions=new VHash();
-		if(const Method *method=main_class.get_element_method(use_method_name)){
+		if(const Method *method=main_class.get_method(use_method_name)){
 			Value *params[]={new VString(file_name), voptions};
 			voptions->hash().put(origin_key, new VString(*use_filespec));
 
