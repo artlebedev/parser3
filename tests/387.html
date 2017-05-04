@@ -1,0 +1,9 @@
+@main[]
+
+^try-catch{$o[^A::create[]]}
+
+$a_base[^reflection:base[$A:CLASS]] A base: $a_base.CLASS_NAME
+$b_base[^reflection:base[$B:CLASS]] B base: $b_base.CLASS_NAME
+
+@autouse[class]
+^use[387_dir/${class}.p]
