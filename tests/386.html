@@ -1,0 +1,12 @@
+@main[]
+$t[^table::create{c1	c2	c3}]
+^t.insert[ $.c2(1) ]
+^try-catch{ $t.c3[^hash::create[]] }
+
+^json:string[$t]
+
+$t[^table::create[nameless]{}]
+^t.insert[ $.10(10) $.12[12] ]
+^try-catch{ ^t.insert[ $.1[ok] $.2{bad} ] }
+
+^json:string[$t]

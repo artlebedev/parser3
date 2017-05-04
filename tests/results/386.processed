@@ -1,0 +1,16 @@
+Content-Type: text/html
+Content-Length: 313
+
+Type: parser.runtime,
+Source: c3,
+Comment: column value must be string compatible
+[
+{"c1":"","c2":"1"}
+]
+Type: parser.runtime,
+Source: insert,
+Comment: column value must be string compatible
+[
+{"0":"","1":"ok"},
+{"0":"","1":"","2":"","3":"","4":"","5":"","6":"","7":"","8":"","9":"","10":"10","11":"","12":"12"}
+]
