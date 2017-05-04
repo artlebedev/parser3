@@ -11,7 +11,7 @@
 #include "pa_symbols.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VSTATELESS_CLASS_C="$Id: pa_vstateless_class.C,v 1.60 2017/02/07 22:00:51 moko Exp $" IDENT_PA_VSTATELESS_CLASS_H IDENT_PA_METHOD_H;
+volatile const char * IDENT_PA_VSTATELESS_CLASS_C="$Id: pa_vstateless_class.C,v 1.61 2017/05/04 21:16:15 moko Exp $" IDENT_PA_VSTATELESS_CLASS_H IDENT_PA_METHOD_H;
 
 override Value& VStateless_class::as_expr_result() {
 	return VBool::get(as_bool());
@@ -131,8 +131,8 @@ bool VStateless_class::has_default_setter(){
 
 void VStateless_class::set_base(VStateless_class* abase){
 	if(abase){
+		abase->add_derived(*this);
 		fbase=abase;
-		fbase->add_derived(*this);
 
 		bool no_auto = fmethods.get(auto_method_name) == NULL;
 		// we assume there is no derivatives at this point
@@ -150,6 +150,8 @@ void VStateless_class::set_base(VStateless_class* abase){
 }
 
 void VStateless_class::add_derived(VStateless_class &aclass){
+	if(this == &aclass)
+		throw Exception(PARSER_RUNTIME, 0, "circular class inheritance detected in class '%s'", type());
 	fderived+=&aclass;
 	if (fbase)
 		fbase->add_derived(aclass);
