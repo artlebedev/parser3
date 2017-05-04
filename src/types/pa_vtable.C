@@ -11,7 +11,7 @@
 #include "pa_vvoid.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VTABLE_C="$Id: pa_vtable.C,v 1.47 2017/02/07 22:00:51 moko Exp $" IDENT_PA_VTABLE_H;
+volatile const char * IDENT_PA_VTABLE_C="$Id: pa_vtable.C,v 1.48 2017/05/04 16:23:14 moko Exp $" IDENT_PA_VTABLE_H;
 
 #ifndef DOXYGEN
 struct Record_info {
@@ -107,9 +107,10 @@ const VJunction* VTable::put_element(const String& aname, Value* avalue) {
 		{
 			if(index > pa_loop_limit)
 				throw Exception(PARSER_RUNTIME, &aname, "too big column number");
-			if(!avalue->is_string())
-				throw Exception(PARSER_RUNTIME, 0, "column value must be string");
-			ftable->put_item(index, avalue->get_string());
+			const String *svalue=avalue->get_string();
+			if(!svalue)
+				throw Exception(PARSER_RUNTIME, 0, "column value must be string compatible");
+			ftable->put_item(index, svalue);
 			return PUT_ELEMENT_REPLACED_ELEMENT;
 		}
 	}
