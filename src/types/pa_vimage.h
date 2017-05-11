@@ -8,7 +8,7 @@
 #ifndef PA_VIMAGE_H
 #define PA_VIMAGE_H
 
-#define IDENT_PA_VIMAGE_H "$Id: pa_vimage.h,v 1.57 2017/02/07 22:00:48 moko Exp $"
+#define IDENT_PA_VIMAGE_H "$Id: pa_vimage.h,v 1.58 2017/05/11 21:09:42 moko Exp $"
 
 #include "classes.h"
 #include "pa_common.h"
@@ -18,7 +18,6 @@
 // defines
 
 #define VIMAGE_TYPE "image"
-#define EXIF_ELEMENT_NAME "exif"
 
 // forwards
 
@@ -29,7 +28,7 @@ class Font: public PA_Object {
 public:
 	
 	int letterspacing;
-	int height;			///< Font heigth
+	int height;		///< Font heigth
 	int monospace;		///< Default char width
 	int spacebarspace;	///< spacebar width
 	gdImage* ifont;
@@ -39,7 +38,7 @@ public:
 		Charset& acharset, const String& aalphabet, 
 		gdImage* aifont, int aheight, int amonospace, int aspacebarspace, int aletterspacing);
 
-	//@{******************************** char **********************************	
+	//@{******************************** char **********************************
 	size_t index_of(char ch);
 	size_t index_of(XMLCh ch);
 	int index_width(size_t index);
@@ -50,7 +49,7 @@ public:
 	//@}
 	/// counts trailing letter_spacing, consider this OK. useful for contiuations
 	int string_width(const String& s);
-	void string_display(gdImage& image, int x, int y, const String& s);	
+	void string_display(gdImage& image, int x, int y, const String& s);
 
 private:
 	Charset& fsource_charset;
@@ -73,7 +72,7 @@ public: // Value
 	/// VImage: true
 	override bool as_bool() const { return true; }
 
-	/// VImage: true	 
+	/// VImage: true
 	override Value& as_expr_result();
 
 	/// VImage: method,field
@@ -84,9 +83,7 @@ public: // Value
 
 public: // usage
 
-	void set(const String* src, int width, int height,
-		gdImage* aimage,
-		Value* aexif=0);
+	void set(const String* src, int width, int height, gdImage* aimage, Value* aexif=0);
 
 	HashStringValue& fields() { return ffields; }
 
@@ -94,19 +91,15 @@ public:
 
 	gdImage& image() { 
 		if(!fimage)
-			throw Exception(PARSER_RUNTIME,
-				0,
-				"using unitialized image object");
-
+			throw Exception(PARSER_RUNTIME, 0, "using unitialized image object");
 		return *fimage;
 	}
 
 	void set_font(Font* afont) { ffont=afont; }
+
 	Font& font() {
 		if(!ffont)
-			throw Exception(PARSER_RUNTIME,
-				0,
-				"set the font first");
+			throw Exception(PARSER_RUNTIME, 0, "set the font first");
 		return *ffont;
 	}
 
@@ -115,7 +108,6 @@ private:
 	gdImage* fimage; 
 	Font* ffont;
 	HashStringValue ffields;
-	Value* fexif;
 
 };
 

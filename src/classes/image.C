@@ -25,7 +25,7 @@
 #include "pa_vdate.h"
 #include "pa_table.h"
 
-volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.160 2017/02/07 22:00:27 moko Exp $";
+volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.161 2017/05/11 21:09:42 moko Exp $";
 
 // defines
 
@@ -736,28 +736,18 @@ static void _measure(Request& r, MethodParams& params) {
 	GET_SELF(r, VImage).set(file_name, width, height, 0, exif);
 }
 
-#ifndef DOXYGEN
-struct Attrib_info {
-	String* tag; ///< html tag being constructed
-	HashStringValue* skip; ///< tag attributes not to append to tag string [to skip]
-};
-#endif
-static void append_attrib_pair(HashStringValue::key_type key, HashStringValue::value_type value, Attrib_info* info) {
-	// skip user-specified, internal(starting with "line-") attributes and border attribute with empty value
-	if(
-		(info->skip && info->skip->get(key))
-		|| key.pos("line-")==0
-		|| (key=="border" && !value->is_defined())
-	)
+static void append_attrib_pair(String &tag, String::Body key, Value* value){
+	// skip border attribute with empty value
+	if(key=="border" && !value->is_defined())
 		return;
 
 	// src="a.gif" width="123" ismap[=-1]
-	*info->tag << " " << key;
+	tag << " " << key;
 	if(value->is_string() || value->as_int()>=0)
-		*info->tag << "=\"" << value->as_string() << "\"";
+		tag << "=\"" << value->as_string() << "\"";
 }
-static void _html(Request& r, MethodParams& params) {
 
+static void _html(Request& r, MethodParams& params) {
 	String tag;
 	tag << "<img";
 
@@ -769,17 +759,23 @@ static void _html(Request& r, MethodParams& params) {
 		Value& vattribs=r.process(params[0]);
 		if(!vattribs.is_string()) { // allow empty
 			if((attribs=vattribs.get_hash())) {
-				Attrib_info info={&tag, 0};
-				attribs->for_each<Attrib_info*>(append_attrib_pair, &info);
+				for(HashStringValue::Iterator i(*attribs); i; i.next() )
+					append_attrib_pair(tag, i.key(), i.value());
 			} else
 				throw Exception(PARSER_RUNTIME, 0, "attributes must be hash");
 		}
 	}
 
-	{
-		Attrib_info info={&tag, attribs};
-		fields.for_each<Attrib_info*>(append_attrib_pair, &info);
+	for(HashStringValue::Iterator i(fields); i; i.next() ){
+		String::Body key=i.key();
+		// skip user-specified attributes
+		if(attribs && attribs->get(key))
+			continue;
+		// allow only html attributes (to exclude exif, line-*)
+		if(key=="src" || key=="width" || key=="height" || key=="border")
+			append_attrib_pair(tag, key, i.value());
 	}
+
 	tag << " />";
 	r.write(tag);
 }

@@ -11,13 +11,10 @@
 #include "gif.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_PA_VIMAGE_C="$Id: pa_vimage.C,v 1.46 2017/02/07 22:00:48 moko Exp $" IDENT_PA_VIMAGE_H;
+volatile const char * IDENT_PA_VIMAGE_C="$Id: pa_vimage.C,v 1.47 2017/05/11 21:09:42 moko Exp $" IDENT_PA_VIMAGE_H;
 
-void VImage::set(const String* src, int width, int height,
-				 gdImage* aimage,
-				 Value* aexif) {
+void VImage::set(const String* src, int width, int height, gdImage* aimage, Value* aexif) {
 	fimage=aimage;
-	fexif=aexif;
 
 	// $src
 	if(src)
@@ -28,12 +25,16 @@ void VImage::set(const String* src, int width, int height,
 	// $height
 	if(height)
 		ffields.put("height", new VInt(height));
+	// $exif
+	if(aexif)
+		ffields.put("exif", aexif);
+
 	// defaults
 	// $border(0)
 	ffields.put("border", new VInt(0));
 
 	// internals, take a look at image.C append_attrib_pair before update
-	// $line-width(1) 
+	// $line-width(1)
 	ffields.put("line-width", new VInt(1));
 }
 
@@ -46,10 +47,6 @@ Value* VImage::get_element(const String& aname) {
 	// $method
 	if(Value* result=VStateless_object::get_element(aname))
 		return result;
-
-	// $exif
-	if(aname==EXIF_ELEMENT_NAME)
-		return fexif;
 
 	// $src, $size
 	return ffields.get(aname);
@@ -67,5 +64,5 @@ const VJunction* VImage::put_element(const String& aname, Value* avalue) {
 		}
 	}
 
-	return PUT_ELEMENT_REPLACED_ELEMENT;	
+	return PUT_ELEMENT_REPLACED_ELEMENT;
 }
