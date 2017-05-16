@@ -24,8 +24,9 @@
 #include "pa_vimage.h"
 #include "pa_vdate.h"
 #include "pa_table.h"
+#include "pa_charsets.h"
 
-volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.162 2017/05/16 14:42:07 moko Exp $";
+volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.163 2017/05/16 22:39:19 moko Exp $";
 
 // defines
 
@@ -375,6 +376,7 @@ struct Measure_info {
 	ushort height;
 	Value** exif;
 	Value** xmp;
+	Charset* xmp_charset;
 };
 #endif
 
@@ -602,11 +604,13 @@ static Value* parse_exif(Measure_reader& reader) {
 	return vhash;
 }
 
-static Value* parse_xmp(Measure_reader& reader, ushort xmp_length) {
+static Value* parse_xmp(Measure_reader& reader, ushort xmp_length, Measure_info &info) {
 	const char* buf;
 	if(reader.read(buf, xmp_length)<xmp_length)
 		return 0;
-	return new VString(*new String(pa_strdup(buf, xmp_length)));
+
+	String::C xmp = Charset::transcode(String::C(pa_strdup(buf, xmp_length), xmp_length), *info.xmp_charset, pa_thread_request().charsets.source());
+	return new VString(*new String(xmp, String::L_TAINTED));
 }
 
 static void measure_jpeg(const String& origin_string, Measure_reader& reader, Measure_info &info) {
@@ -660,7 +664,7 @@ static void measure_jpeg(const String& origin_string, Measure_reader& reader, Me
 					break;
 				if(memcmp(buf, "/ns.adobe.com/xap/1.0/\0", XMP_SIG_LEN-EXIF_SIG_LEN)==0){
 					if(info.xmp && !*info.xmp) // backward compatibility: using first segment
-						*info.xmp=parse_xmp(reader, segment_length - XMP_SIG_LEN - 2 /* segment_length */);
+						*info.xmp=parse_xmp(reader, segment_length - XMP_SIG_LEN - 2 /* segment_length */, info);
 				}
 
 			}
@@ -733,7 +737,32 @@ static void _measure(Request& r, MethodParams& params) {
 
 	Value* exif=0;
 	Value* xmp=0;
-	Measure_info info={ 0, 0, &exif, &xmp };
+	Measure_info info={ 0, 0, 0, 0, &pa_UTF8_charset };
+
+	if(params.count()>1)
+		if(HashStringValue* options=params.as_hash(1, "methods options")) {
+			int valid_options=0;
+			for(HashStringValue::Iterator i(*options); i; i.next() ){
+				String::Body key=i.key();
+				Value* value=i.value();
+				if(key == "exif") {
+					if(r.process(*value).as_bool())
+						info.exif=&exif;
+					valid_options++;
+				}
+				if(key == "xmp") {
+					if(r.process(*value).as_bool())
+						info.xmp=&xmp;
+					valid_options++;
+				}
+				if(key == "xmp-charset") {
+					info.xmp_charset=&pa_charsets.get(value->as_string());
+					valid_options++;
+				}
+			}
+			if(valid_options!=options->count())
+				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+		}
 
 	const String* file_name;
 
@@ -1219,7 +1248,8 @@ static void _pixel(Request& r, MethodParams& params) {
 
 MImage::MImage(): Methoded("image") {
 	// ^image:measure[DATA]
-	add_native_method("measure", Method::CT_DYNAMIC, _measure, 1, 1);
+	// ^image:measure[DATA; $.exif(false) $.xmp(false) $.xmp-charset[UTF-8] ]
+	add_native_method("measure", Method::CT_DYNAMIC, _measure, 1, 2);
 
 	// ^image.html[]
 	// ^image.html[hash]
