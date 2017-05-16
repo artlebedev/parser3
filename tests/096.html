@@ -1,4 +1,5 @@
 @main[]
+^1251[]
 ^test_exif[096_dir]
 
 @test_exif[dir][file;image;keys]
@@ -7,10 +8,10 @@ $file[^file:list[$dir;\.(?i:jpe?g)^$]]
 <table border="1">
 ^file.menu{
 	<tr valign="top">
-		$image[^image::measure[$dir/$file.name]]
+		$image[^image::measure[$dir/$file.name; $.exif(true) $.xmp(true) ]]
 		<td>^image.html[$.width(100)$.height(100)]</td>
 		<td>
-			$file.name<hr>
+			$file.name<hr/>
 			^if($image.exif){
 				$keys[^image.exif._keys[]]
 				^keys.sort{$keys.key}
@@ -20,6 +21,9 @@ $file[^file:list[$dir;\.(?i:jpe?g)^$]]
 			}{
 				no EXIF info<br />
 			}
+		</td>
+		<td>
+			XMP<hr/> <pre>$image.xmp</pre>
 		</td>
 	</tr>
 }
