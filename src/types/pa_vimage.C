@@ -11,23 +11,28 @@
 #include "gif.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_PA_VIMAGE_C="$Id: pa_vimage.C,v 1.47 2017/05/11 21:09:42 moko Exp $" IDENT_PA_VIMAGE_H;
+volatile const char * IDENT_PA_VIMAGE_C="$Id: pa_vimage.C,v 1.48 2017/05/16 14:42:07 moko Exp $" IDENT_PA_VIMAGE_H;
 
-void VImage::set(const String* src, int width, int height, gdImage* aimage, Value* aexif) {
+void VImage::set(const String* src, int width, int height, gdImage* aimage, Value* aexif, Value* axmp) {
 	fimage=aimage;
 
 	// $src
 	if(src)
 		ffields.put("src", new VString(*src));
+
 	// $width
 	if(width)
 		ffields.put("width", new VInt(width));
 	// $height
 	if(height)
 		ffields.put("height", new VInt(height));
+
 	// $exif
 	if(aexif)
 		ffields.put("exif", aexif);
+	// $xmp
+	if(axmp)
+		ffields.put("xmp", axmp);
 
 	// defaults
 	// $border(0)

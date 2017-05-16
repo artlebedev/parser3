@@ -25,7 +25,7 @@
 #include "pa_vdate.h"
 #include "pa_table.h"
 
-volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.161 2017/05/11 21:09:42 moko Exp $";
+volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.162 2017/05/16 14:42:07 moko Exp $";
 
 // defines
 
@@ -342,11 +342,6 @@ struct JPG_Size_segment_body {
 	char numComponents;           //< number of color components
 };
 
-/// JPEG frame header
-struct JPG_Exif_segment_begin {
-	char signature[6]; // Exif\0\0
-};
-
 /// JPEG Exif TIFF Header
 struct JPG_Exif_TIFF_header {
 	uchar byte_align_identifier[2];
@@ -372,6 +367,16 @@ struct JPG_Exif_IFD_entry {
 #define JPG_IFD_TAG_EXIF_GPS_OFFSET 0x8825
 
 #define JPEG_EXIF_DATE_CHARS 20
+
+
+#ifndef DOXYGEN
+struct Measure_info {
+	ushort width;
+	ushort height;
+	Value** exif;
+	Value** xmp;
+};
+#endif
 
 //
 
@@ -576,14 +581,8 @@ static void parse_IFD(HashStringValue& hash, bool is_big, Measure_reader& reader
 	// then goes: LLLLLLLL Offset to next IFD [not going there]
 }
 
-static Value* parse_exif(Measure_reader& reader, const String& origin_string) {
+static Value* parse_exif(Measure_reader& reader) {
 	const char* buf;
-	if(reader.read(buf, sizeof(JPG_Exif_segment_begin))<sizeof(JPG_Exif_segment_begin))
-		throw Exception(IMAGE_FORMAT, &origin_string, "not JPEG file - can not fully read Exif segment start");
-
-	JPG_Exif_segment_begin *start=(JPG_Exif_segment_begin *)buf;
-	if(memcmp(start->signature, "Exif\0\0", 4+2)!=0) //signature invalid?
-		return 0; // ignore invalid block
 
 	uint tiff_base=reader.tell();
 	if(reader.read(buf, sizeof(JPG_Exif_TIFF_header))<sizeof(JPG_Exif_TIFF_header))
@@ -603,14 +602,21 @@ static Value* parse_exif(Measure_reader& reader, const String& origin_string) {
 	return vhash;
 }
 
-static void measure_jpeg(const String& origin_string, Measure_reader& reader, ushort& width, ushort& height, Value** exif) {
+static Value* parse_xmp(Measure_reader& reader, ushort xmp_length) {
+	const char* buf;
+	if(reader.read(buf, xmp_length)<xmp_length)
+		return 0;
+	return new VString(*new String(pa_strdup(buf, xmp_length)));
+}
+
+static void measure_jpeg(const String& origin_string, Measure_reader& reader, Measure_info &info) {
 	// JFIF format markers
 	const uchar MARKER=0xFF;
 	const uchar CODE_SIZE_A=0xC0;
 	const uchar CODE_SIZE_B=0xC1;
 	const uchar CODE_SIZE_C=0xC2;
 	const uchar CODE_SIZE_D=0xC3;
-	const uchar CODE_EXIF=0xE1;
+	const uchar CODE_APP1=0xE1;
 
 	const char* buf;
 	const size_t prefix_size=2;
@@ -627,15 +633,37 @@ static void measure_jpeg(const String& origin_string, Measure_reader& reader, us
 			break;
 		JPG_Segment_head *head=(JPG_Segment_head *)buf;
 
-        // Verify that it's a valid segment.
+		// Verify that it's a valid segment.
 		if(head->marker!=MARKER)
 			throw Exception(IMAGE_FORMAT, &origin_string, "not JPEG file - marker not found");
 
+		ushort segment_length=endian_to_ushort(true, head->length);
+
 		switch(head->code) {
-		// http://park2.wakwak.com/~tsuruzoh/Computer/Digicams/exif-e.html
-		case CODE_EXIF:
-			if(exif && !*exif) // seen .jpg with some xml under EXIF tag, after real exif block :)
-				*exif=parse_exif(reader, origin_string);
+		// http://dev.exiv2.org/projects/exiv2/wiki/The_Metadata_in_JPEG_files
+		case CODE_APP1:
+			{
+				const size_t EXIF_SIG_LEN=6; // Exif\0\0
+				const size_t XMP_SIG_LEN=29; // http://ns.adobe.com/xap/1.0/\0
+
+				if(segment_length<EXIF_SIG_LEN+2 || reader.read(buf, EXIF_SIG_LEN)<EXIF_SIG_LEN)
+					break;
+				if(memcmp(buf, "Exif\0\0", EXIF_SIG_LEN)==0){
+					if(info.exif && !*info.exif) // backward compatibility: using first segment
+						*info.exif=parse_exif(reader);
+					break;
+				}
+
+				if(memcmp(buf, "http:/", EXIF_SIG_LEN))
+					break;
+				if(segment_length<XMP_SIG_LEN+2 || reader.read(buf, XMP_SIG_LEN-EXIF_SIG_LEN)<XMP_SIG_LEN-EXIF_SIG_LEN)
+					break;
+				if(memcmp(buf, "/ns.adobe.com/xap/1.0/\0", XMP_SIG_LEN-EXIF_SIG_LEN)==0){
+					if(info.xmp && !*info.xmp) // backward compatibility: using first segment
+						*info.xmp=parse_xmp(reader, segment_length - XMP_SIG_LEN - 2 /* segment_length */);
+				}
+
+			}
 			break;
 
 		case CODE_SIZE_A:
@@ -648,13 +676,13 @@ static void measure_jpeg(const String& origin_string, Measure_reader& reader, us
 					throw Exception(IMAGE_FORMAT, &origin_string, "not JPEG file - can not fully read Size segment");
 				JPG_Size_segment_body *body=(JPG_Size_segment_body *)buf;
 				
-				width=endian_to_ushort(true, body->width);
-				height=endian_to_ushort(true, body->height);
-			}			
+				info.width=endian_to_ushort(true, body->width);
+				info.height=endian_to_ushort(true, body->height);
+			}
 			return;
 		};
 
-		reader.seek(segment_base+endian_to_ushort(true, head->length), SEEK_SET);
+		reader.seek(segment_base + segment_length, SEEK_SET);
 	}
 
 	throw Exception(IMAGE_FORMAT, &origin_string, "broken JPEG file - size frame not found");
@@ -677,16 +705,16 @@ static void measure_png(const String& origin_string, Measure_reader& reader, ush
 
 // measure center
 
-static void measure(const String& file_name, Measure_reader& reader, ushort& width, ushort& height, Value** exif) {
+static void measure(const String& file_name, Measure_reader& reader, Measure_info &info) {
 	const char* file_name_cstr=file_name.taint_cstr(String::L_FILE_SPEC);
 	if(const char* cext=strrchr(file_name_cstr, '.')) {
 		cext++;
 		if(strcasecmp(cext, "GIF")==0)
-			measure_gif(file_name, reader, width, height);
+			measure_gif(file_name, reader, info.width, info.height);
 		else if(strcasecmp(cext, "JPG")==0 || strcasecmp(cext, "JPEG")==0) 
-			measure_jpeg(file_name, reader, width, height, exif);
+			measure_jpeg(file_name, reader, info);
 		else if(strcasecmp(cext, "PNG")==0)
-			measure_png(file_name, reader, width, height);
+			measure_png(file_name, reader, info.width, info.height);
 		else
 			throw Exception(IMAGE_FORMAT, &file_name, "unhandled image file name extension '%s'", cext);
 	} else
@@ -695,45 +723,30 @@ static void measure(const String& file_name, Measure_reader& reader, ushort& wid
 
 // methods
 
-#ifndef DOXYGEN
-struct File_measure_action_info {
-	ushort* width;
-	ushort* height;
-	Value** exif;
-};
-#endif
 static void file_measure_action(struct stat& /*finfo*/, int f, const String& file_spec, void *context) {
-	File_measure_action_info& info=*static_cast<File_measure_action_info *>(context);
-
 	Measure_file_reader reader(f, file_spec);
-	measure(file_spec, reader, *info.width, *info.height, info.exif);
+	measure(file_spec, reader, *static_cast<Measure_info *>(context));
 }
 
 static void _measure(Request& r, MethodParams& params) {
 	Value& data=params.as_no_junction(0, "data must not be code");
 
-	ushort width=0;
-	ushort height=0;
 	Value* exif=0;
+	Value* xmp=0;
+	Measure_info info={ 0, 0, &exif, &xmp };
+
 	const String* file_name;
-	if((file_name=data.get_string())) {
-		File_measure_action_info info={
-			&width, &height,
-			&exif
-		};
+
+	if(file_name=data.get_string()) {
 		file_read_action_under_lock(r.absolute(*file_name), "measure", file_measure_action, &info);
 	} else {
 		VFile* vfile=data.as_vfile(String::L_AS_IS);
 		file_name=&vfile->fields().get(name_name)->as_string();
-		Measure_buf_reader reader(
-			vfile->value_ptr(),
-			vfile->value_size(),
-			*file_name
-		);
-		measure(*file_name, reader, width, height, &exif);
+		Measure_buf_reader reader(vfile->value_ptr(), vfile->value_size(), *file_name);
+		measure(*file_name, reader, info);
 	}
 
-	GET_SELF(r, VImage).set(file_name, width, height, 0, exif);
+	GET_SELF(r, VImage).set(file_name, info.width, info.height, 0, exif, xmp);
 }
 
 static void append_attrib_pair(String &tag, String::Body key, Value* value){

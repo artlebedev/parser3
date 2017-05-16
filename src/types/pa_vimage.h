@@ -8,7 +8,7 @@
 #ifndef PA_VIMAGE_H
 #define PA_VIMAGE_H
 
-#define IDENT_PA_VIMAGE_H "$Id: pa_vimage.h,v 1.58 2017/05/11 21:09:42 moko Exp $"
+#define IDENT_PA_VIMAGE_H "$Id: pa_vimage.h,v 1.59 2017/05/16 14:42:07 moko Exp $"
 
 #include "classes.h"
 #include "pa_common.h"
@@ -81,9 +81,12 @@ public: // Value
 	/// VImage: field
 	override const VJunction* put_element(const String& name, Value* value);
 
+	/// VImage: fields
+	HashStringValue *get_hash() { return &ffields; }
+
 public: // usage
 
-	void set(const String* src, int width, int height, gdImage* aimage, Value* aexif=0);
+	void set(const String* src, int width, int height, gdImage* aimage, Value* aexif=0, Value* axmp=0);
 
 	HashStringValue& fields() { return ffields; }
 
@@ -105,7 +108,7 @@ public:
 
 private:
 
-	gdImage* fimage; 
+	gdImage* fimage;
 	Font* ffont;
 	HashStringValue ffields;
 
