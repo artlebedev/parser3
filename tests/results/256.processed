@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 5894
+Content-Length: 5880
 
 <h3>hash</h3>
 {
@@ -300,10 +300,15 @@ null,
 }, "exception":"unsupported, must be 'base64', 'text' or 'stat'. That's OK"
 <h3>image</h3>
 {
-"value":null
-}, {
 "value":"image []"
-}, "exception":"string, Unsupported value's type (image). That's OK"
+}, {
+"value":{
+"width":100,
+"height":100,
+"border":0,
+"line-width":1
+}
+}
 <h3>hash_with_infinite_recursion</h3>
 "exception":"string, call canceled - endless json recursion detected. That's OK"
 <h3>xdoc</h3>
