@@ -1,11 +1,11 @@
 Content-Type: text/html
-Content-Length: 1614
+Content-Length: 2515
 
 <table border="1">
 <tr valign="top">
 <td><img width="100" height="100" src="096_dir/163.jpg" border="0" /></td>
 <td>
-163.jpg<hr>
+163.jpg<hr/>
 ColorSpace: <b>
 1
 </b>
@@ -113,11 +113,14 @@ YResolution: <b>
 300
 </b>
 </td>
+<td>
+XMP<hr/> <pre></pre>
+</td>
 </tr>
 <tr valign="top">
 <td><img width="100" height="100" src="096_dir/188.jpg" border="0" /></td>
 <td>
-188.jpg<hr>
+188.jpg<hr/>
 ColorSpace: <b>
 65535
 </b>
@@ -157,6 +160,26 @@ XResolution: <b>
 YResolution: <b>
 72
 </b>
+</td>
+<td>
+XMP<hr/> <pre>&lt;?xpacket begin='&amp;#65279;' id='W5M0MpCehiHzreSzNTczkc9d'?&gt;
+&lt;x:xmpmeta xmlns:x='adobe:ns:meta/' x:xmptk='Image::ExifTool 9.74'&gt;
+&lt;rdf:RDF xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'&gt;
+&lt;rdf:Description rdf:about='uuid:951bde42-a138-11d6-9514-d4463314997a'
+xmlns:dc='http://purl.org/dc/elements/1.1/'&gt;
+&lt;dc:description&gt;
+&lt;rdf:Alt&gt;
+&lt;rdf:li xml:lang='x-default'&gt;before Просто тест after&lt;/rdf:li&gt;
+&lt;/rdf:Alt&gt;
+&lt;/dc:description&gt;
+&lt;/rdf:Description&gt;
+&lt;rdf:Description rdf:about='uuid:951bde42-a138-11d6-9514-d4463314997a'
+xmlns:xapMM='http://ns.adobe.com/xap/1.0/mm/'&gt;
+&lt;xapMM:DocumentID&gt;adobe:docid:photoshop:951bde40-a138-11d6-9514-d4463314997a&lt;/xapMM:DocumentID&gt;
+&lt;/rdf:Description&gt;
+&lt;/rdf:RDF&gt;
+&lt;/x:xmpmeta&gt;
+&lt;?xpacket end='w'?&gt;</pre>
 </td>
 </tr>
 </table>
