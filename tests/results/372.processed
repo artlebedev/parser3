@@ -35,7 +35,7 @@ Source: create,
 Comment: method of 'O' accepts maximum 2 parameter(s) (3 present)
 11. Type: parser.runtime,
 Source: create,
-Comment: agruments should not be specified as hash and as create params
+Comment: arguments should not be specified as hash and as create params
 12. Type: parser.runtime,
 Source: create,
 Comment: param must not be code (parameter #1)

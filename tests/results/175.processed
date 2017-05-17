@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 2894
+Content-Length: 2896
 
 <table border="1">
 <tr>
@@ -245,7 +245,7 @@ Incorrect format string '%1+9.03f' was specified.
 <tr>
 <td>%99d</td>
 <td>
-Error occure white executing snprintf with format string '%99d'.
+Error occurred white executing snprintf with format string '%99d'.
 <br /></td>
 </tr>
 <tr>
