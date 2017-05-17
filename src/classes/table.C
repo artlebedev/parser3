@@ -22,7 +22,7 @@
 #define USE_STRINGSTREAM
 #endif
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.342 2017/02/07 22:00:30 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.343 2017/05/17 14:22:11 moko Exp $";
 
 // class
 
@@ -1299,7 +1299,7 @@ public:
 			columns+=new String(str, String::L_TAINTED /* no length as 0x00 can be inside */);
 			return false;
 		} catch(...) {
-			error=SQL_Error("exception occured in Table_sql_event_handlers::add_column");
+			error=SQL_Error("exception occurred in Table_sql_event_handlers::add_column");
 			return true;
 		}
 	}
@@ -1309,7 +1309,7 @@ public:
 			columns_count=columns.count();
 			return false;
 		} catch(...) {
-			error=SQL_Error("exception occured in Table_sql_event_handlers::before_rows");
+			error=SQL_Error("exception occurred in Table_sql_event_handlers::before_rows");
 			return true;
 		}
 	}
@@ -1318,7 +1318,7 @@ public:
 			*table+=row=new ArrayString(columns_count);
 			return false;
 		} catch(...) {
-			error=SQL_Error("exception occured in Table_sql_event_handlers::add_row");
+			error=SQL_Error("exception occurred in Table_sql_event_handlers::add_row");
 			return true;
 		}
 	}
@@ -1327,7 +1327,7 @@ public:
 			*row+=str?new String(str, String::L_TAINTED /* no length as 0x00 can be inside */):&String::Empty;
 			return false;
 		} catch(...) {
-			error=SQL_Error("exception occured in Table_sql_event_handlers::add_row_cell");
+			error=SQL_Error("exception occurred in Table_sql_event_handlers::add_row_cell");
 			return true;
 		}
 	}

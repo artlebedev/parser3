@@ -20,7 +20,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.234 2017/02/07 22:00:30 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.235 2017/05/17 14:22:11 moko Exp $";
 
 // class
 
@@ -504,7 +504,7 @@ public:
 			result=new String(str, String::L_TAINTED /* no length as 0x00 can be inside */ );
 			return false;
 		} catch(...) {
-			error=SQL_Error("exception occured in String_sql_event_handlers::add_row_cell");
+			error=SQL_Error("exception occurred in String_sql_event_handlers::add_row_cell");
 			return true;
 		}
 	}

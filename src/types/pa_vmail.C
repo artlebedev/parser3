@@ -18,7 +18,7 @@
 #include "pa_vfile.h"
 #include "pa_uue.h"
 
-volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.124 2017/02/07 22:00:49 moko Exp $" IDENT_PA_VMAIL_H;
+volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.125 2017/05/17 14:22:12 moko Exp $" IDENT_PA_VMAIL_H;
 
 #ifdef WITH_MAILRECEIVE
 extern "C" {
@@ -282,10 +282,10 @@ static void parse(Request& r, GMimeMessage *message, HashStringValue& received) 
 		g_mime_message_foreach(message, MimePart2body, &info);
 
 	} catch(const Exception& e) {
-		putReceived(received, VALUE_NAME, "<exception occured while parsing message>");
+		putReceived(received, VALUE_NAME, "<exception occurred while parsing message>");
 		putReceived(received, EXCEPTION_VALUE, e.comment());
 	} catch(...) {
-		putReceived(received, VALUE_NAME, "<exception occured while parsing message>");
+		putReceived(received, VALUE_NAME, "<exception occurred while parsing message>");
 	}
 }
 
@@ -304,7 +304,7 @@ void VMail::fill_received(Request& r) {
 			g_object_unref(GMIME_OBJECT(message));
 		} catch(const Exception& e) {
 			HashStringValue& received=vreceived.hash();
-			putReceived(received, VALUE_NAME, "<exception occured while parsing message>");
+			putReceived(received, VALUE_NAME, "<exception occurred while parsing message>");
 			putReceived(received, EXCEPTION_VALUE, e.comment());
 		} catch(...) {
 			// abnormal stream free

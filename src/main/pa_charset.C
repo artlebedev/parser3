@@ -11,7 +11,7 @@
 // we are using some pcre_internal.h stuff as well
 #include "../lib/pcre/pa_pcre_internal.h"
 
-volatile const char * IDENT_PA_CHARSET_C="$Id: pa_charset.C,v 1.106 2017/02/07 22:00:41 moko Exp $" IDENT_PA_CHARSET_H;
+volatile const char * IDENT_PA_CHARSET_C="$Id: pa_charset.C,v 1.107 2017/05/17 14:22:11 moko Exp $" IDENT_PA_CHARSET_H;
 
 #ifdef XML
 #include "libxml/encoding.h"
@@ -1218,7 +1218,7 @@ size_t getUTF8CharPos(const XMLByte* srcBegin, const XMLByte* srcEnd, size_t byt
 	}
 
 	// scan till end but position in bytes still too low
-	throw Exception(0, 0, "Error convertion byte pos to char pos");
+	throw Exception(0, 0, "Error conversion byte pos to char pos");
 }
 
 size_t lengthUTF8(const XMLByte* srcBegin, const XMLByte* srcEnd){

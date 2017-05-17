@@ -13,7 +13,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.79 2017/02/07 22:00:43 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.80 2017/05/17 14:22:12 moko Exp $" IDENT_PA_HTTP_H; 
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -280,7 +280,7 @@ static int http_request(HTTP_response& response, const char* host, short port, c
 		// rewritten simplier [athough duplicating closesocket code]
 		if(sock>=0) 
 			closesocket(sock); 
-		throw Exception("http.timeout", 0, "timeout occured while retrieving document"); 
+		throw Exception("http.timeout", 0, "timeout occurred while retrieving document"); 
 		return 0; // never
 	} else {
 		alarm(timeout_secs); 

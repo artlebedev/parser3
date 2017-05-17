@@ -10,7 +10,7 @@
 #include "pa_vbool.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.85 2017/02/15 17:21:28 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.86 2017/05/17 14:22:11 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -66,7 +66,7 @@ static void _create(Request& r, MethodParams& params) {
 			valid_options++;
 			params_hash=vparams_hash->as_hash("arguments");
 			if(params.count()>1)
-				throw Exception(PARSER_RUNTIME, 0, "agruments should not be specified as hash and as create params");
+				throw Exception(PARSER_RUNTIME, 0, "arguments should not be specified as hash and as create params");
 		}
 		if(valid_options!=options->count())
 			throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);

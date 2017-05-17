@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.141 2017/02/07 22:00:27 moko Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.142 2017/05/17 14:22:11 moko Exp $";
 
 // class
 
@@ -74,7 +74,7 @@ public:
 			columns+=new String(str, String::L_TAINTED /* no length as 0x00 can be inside */);
 			return false;
 		} catch(...) {
-			error=SQL_Error("exception occured in Hash_sql_event_handlers::add_column");
+			error=SQL_Error("exception occurred in Hash_sql_event_handlers::add_column");
 			return true;
 		}
 	}
@@ -180,7 +180,7 @@ public:
 			column_index++;
 			return false;
 		} catch(...) {
-			error=SQL_Error("exception occured in Hash_sql_event_handlers::add_row_cell");
+			error=SQL_Error("exception occurred in Hash_sql_event_handlers::add_row_cell");
 			return true;
 		}
 	}

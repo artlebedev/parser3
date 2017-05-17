@@ -8,7 +8,7 @@
 #ifndef PA_VIMAGE_H
 #define PA_VIMAGE_H
 
-#define IDENT_PA_VIMAGE_H "$Id: pa_vimage.h,v 1.59 2017/05/16 14:42:07 moko Exp $"
+#define IDENT_PA_VIMAGE_H "$Id: pa_vimage.h,v 1.60 2017/05/17 14:22:12 moko Exp $"
 
 #include "classes.h"
 #include "pa_common.h"
@@ -92,9 +92,9 @@ public: // usage
 
 public:
 
-	gdImage& image() { 
+	gdImage& image() {
 		if(!fimage)
-			throw Exception(PARSER_RUNTIME, 0, "using unitialized image object");
+			throw Exception(PARSER_RUNTIME, 0, "using uninitialized image object");
 		return *fimage;
 	}
 

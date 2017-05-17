@@ -8,7 +8,7 @@
 #ifndef PA_VXDOC_H
 #define PA_VXDOC_H
 
-#define IDENT_PA_VXDOC_H "$Id: pa_vxdoc.h,v 1.58 2017/02/07 22:00:52 moko Exp $"
+#define IDENT_PA_VXDOC_H "$Id: pa_vxdoc.h,v 1.59 2017/05/17 14:22:12 moko Exp $"
 
 #include "classes.h"
 #include "pa_common.h"
@@ -94,13 +94,13 @@ public: // VXdoc
 
 	xmlDoc& get_xmldoc() {
 		if(!fdocument)
-			throw Exception(PARSER_RUNTIME, 0, "using unitialized xdoc object");
+			throw Exception(PARSER_RUNTIME, 0, "using uninitialized xdoc object");
 		return *fdocument;
 	}
 
 	Request_charsets& charsets() {
 		if(!fcharsets)
-			throw Exception(PARSER_RUNTIME, 0, "using unitialized xdoc object");
+			throw Exception(PARSER_RUNTIME, 0, "using uninitialized xdoc object");
 		return *fcharsets;
 	}
 

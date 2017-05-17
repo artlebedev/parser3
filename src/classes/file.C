@@ -25,7 +25,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.262 2017/02/07 22:00:27 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.263 2017/05/17 14:22:11 moko Exp $";
 
 // defines
 
@@ -984,7 +984,7 @@ public:
 			}
 			return false;
 		} catch(...) {
-			error=SQL_Error("exception occured in File_sql_event_handlers::add_row_cell");
+			error=SQL_Error("exception occurred in File_sql_event_handlers::add_row_cell");
 			return true;
 		}
 	}
