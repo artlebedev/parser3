@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: buildall,v 1.17 2015/10/14 17:04:21 moko Exp $
+# $Id: buildall,v 1.18 2017/05/19 21:17:51 moko Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -79,7 +79,7 @@ prepare_gz () {
 
     if test ! -f "$1"; then
 	echo "Downloading $lib (master at $2)..."
-	$download http://www.parser.ru/off-line/download/libs/$1
+	$download https://www.parser.ru/off-line/download/libs/$1
     fi
 
     echo "Unpacking $lib..."
@@ -128,7 +128,7 @@ if test ! -f "$project_dir/gc/lib/libgc.a"; then
 fi
 
 if test ! -f "$project_dir/pcre/lib/libpcre.a"; then
-    lib="pcre-8.37"
+    lib="pcre-8.40"
     prepare_gz $lib.tar.gz ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/
     echo "Configuring $lib..."
     ./configure --prefix="$project_dir/pcre" \
@@ -146,7 +146,7 @@ if test ! -f "$project_dir/pcre/lib/libpcre.a"; then
 fi
 
 if test "$build_xml" = "yes" -a ! -f "$project_dir/gnome/lib/libxml2.a"; then
-    lib="libxml2-2.9.1"
+    lib="libxml2-2.9.4"
     prepare_gz $lib.tar.gz ftp://xmlsoft.org/libxml2/
     #sax1, output, tree, xinclude[in libxslt], html[in libxslt, mode=html?], xptr[xinclude], pattern -- needed!
     echo "Configuring $lib..."
@@ -178,7 +178,7 @@ if test "$build_xml" = "yes" -a ! -f "$project_dir/gnome/lib/libxml2.a"; then
 fi
 
 if test "$build_xml" = "yes" -a ! -f "$project_dir/gnome/lib/libxslt.a"; then
-    lib="libxslt-1.1.28"
+    lib="libxslt-1.1.29"
     prepare_gz $lib.tar.gz ftp://xmlsoft.org/libxslt/
     echo "Configuring $lib..."
     CFLAGS="-D__stub_clock_gettime -Dclock_gettime=choke_me" \
