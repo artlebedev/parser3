@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: buildall,v 1.19 2017/05/22 15:59:31 moko Exp $
+# $Id: buildall,v 1.20 2017/05/22 16:15:30 moko Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -93,7 +93,7 @@ prepare_xz () {
 
     if test ! -f "$1"; then
 	echo "Downloading $lib (master at $2)..."
-	$download http://www.parser.ru/off-line/download/libs/$1
+	$download https://www.parser.ru/off-line/download/libs/$1
     fi
 
     echo "Unpacking $lib..."
