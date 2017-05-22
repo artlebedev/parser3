@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: buildall,v 1.21 2017/05/22 16:48:31 moko Exp $
+# $Id: buildall,v 1.22 2017/05/22 16:57:27 moko Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -121,7 +121,7 @@ if test ! -f "$project_dir/gc/lib/libgc.a"; then
     mv ../libatomic_ops-7.4.4 libatomic_ops
 
     echo "Configuring $lib..."
-    CPPFLAGS="-DUSE_LIBC_PRIVATES -DUSE_MMAP -DDONT_ADD_BYTE_AT_END" \
+    CPPFLAGS="-DUSE_MMAP -DDONT_ADD_BYTE_AT_END" \
     ./configure --prefix=$project_dir/gc \
 	--disable-threads \
 	--disable-shared \
