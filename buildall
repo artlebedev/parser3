@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: buildall,v 1.18 2017/05/19 21:17:51 moko Exp $
+# $Id: buildall,v 1.19 2017/05/22 15:59:31 moko Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -113,9 +113,13 @@ echo
 mkdir src >/dev/null 2>&1
 
 if test ! -f "$project_dir/gc/lib/libgc.a"; then
-#   libgc="gc6.8" # FreeBSD 4.X is not supported in newer gc version
-    lib="gc-7.2"
-    prepare_gz ${lib}f.tar.gz http://www.hboehm.info/gc/gc_source/
+    lib="libatomic_ops-7.4.4"
+    prepare_gz ${lib}.tar.gz http://www.hboehm.info/gc/gc_source/
+    lib="gc-7.6.0"
+    prepare_gz ${lib}.tar.gz http://www.hboehm.info/gc/gc_source/
+
+    mv ../libatomic_ops-7.4.4 libatomic_ops
+
     echo "Configuring $lib..."
     CPPFLAGS="-DUSE_LIBC_PRIVATES -DUSE_MMAP -DDONT_ADD_BYTE_AT_END" \
     ./configure --prefix=$project_dir/gc \
