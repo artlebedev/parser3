@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: buildall,v 1.20 2017/05/22 16:15:30 moko Exp $
+# $Id: buildall,v 1.21 2017/05/22 16:48:31 moko Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -185,7 +185,7 @@ if test "$build_xml" = "yes" -a ! -f "$project_dir/gnome/lib/libxslt.a"; then
     lib="libxslt-1.1.29"
     prepare_gz $lib.tar.gz ftp://xmlsoft.org/libxslt/
     echo "Configuring $lib..."
-    CFLAGS="-D__stub_clock_gettime -Dclock_gettime=choke_me" \
+    CFLAGS="$CFLAGS -D__stub_clock_gettime -Dclock_gettime=choke_me" \
     ./configure --prefix=$project_dir/gnome \
 	--with-libxml-prefix=$project_dir/gnome \
 	--without-debug \
