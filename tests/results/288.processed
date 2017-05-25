@@ -1,6 +1,9 @@
 Content-Type: text/html
-Content-Length: 97
+Content-Length: 175
 
+prop1: prop1
+prop2: set_prop2
+prop1 modified: set_prop1 - via SET_DEFAULT
 Type: parser.runtime,
-Source: tmp,
-Comment: this property has no setter method (@SET_tmp[value])
+Source: prop1,
+Comment: this property has no setter method (@SET_prop1[value])

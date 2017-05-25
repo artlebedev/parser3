@@ -1,18 +1,27 @@
 @main[]
 
-$o[^a::create[]]
+$o[^O::create[]]
+
+prop1: $o.prop1
+prop2: $o.prop2
+$o.prop1[set_prop1]
+prop1 modified: $o.prop1
 
 ^try-catch{
-    $o.tmp[value]
+    $O:prop1[value]
 }
 
 @CLASS
-a
+O
 
 @create[]
+$prop2[set_prop2]
 
-@GET_tmp[]
-tmp
+@GET_prop1[]
+prop1
+
+@GET_prop2[]
+prop2
 
 @SET_DEFAULT[name;value]
-$$name[$value]
+$$name[$value - via SET_DEFAULT]
