@@ -18708,7 +18708,7 @@ ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
 
 
-for pa_func in trunc round sign
+for pa_func in trunc round sign isfinite
 do
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for (maybe built-in) math function $pa_func" >&5

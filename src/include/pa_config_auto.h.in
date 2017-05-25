@@ -106,6 +106,10 @@
 /* Define to 1 if you have the <io.h> header file. */
 #undef HAVE_IO_H
 
+/* Define to 1 if you have the `isfinite' (maybe built-in) math function
+   function. */
+#undef HAVE_ISFINITE
+
 /* Define to 1 if you have the `crypt' library (-lcrypt). */
 #undef HAVE_LIBCRYPT
 

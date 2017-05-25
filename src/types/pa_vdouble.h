@@ -8,7 +8,7 @@
 #ifndef PA_VDOUBLE_H
 #define PA_VDOUBLE_H
 
-#define IDENT_PA_VDOUBLE_H "$Id: pa_vdouble.h,v 1.69 2017/05/23 16:52:08 moko Exp $"
+#define IDENT_PA_VDOUBLE_H "$Id: pa_vdouble.h,v 1.70 2017/05/25 12:23:36 moko Exp $"
 
 // includes
 
@@ -28,7 +28,7 @@
 #define pa_finite(d) _finite(d)
 #else
 #define pa_isnan(d) isnan(d)
-#ifdef isfinite
+#ifdef HAVE_ISFINITE
 #define pa_finite(d) isfinite(d)
 #else
 #define pa_finite(d) finite(d)

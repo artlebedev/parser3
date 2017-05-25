@@ -421,7 +421,7 @@ PA_CHECK_SIGSETJMP
 
 dnl see comment above
 AC_LANG_PUSH(C++)
-PA_CHECK_MATH_FUNCS_ONE_ARG(trunc round sign)
+PA_CHECK_MATH_FUNCS_ONE_ARG(trunc round sign isfinite)
 AC_LANG_POP
 
 
