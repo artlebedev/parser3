@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: buildall,v 1.23 2017/05/25 12:26:46 moko Exp $
+# $Id: buildall,v 1.24 2017/05/28 21:07:29 moko Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -18,25 +18,25 @@ options="$options --with-gc=$project_dir/gc/lib"
 options="$options --with-pcre=$project_dir/pcre"
 #options="$options --disable-stringstream"
 
-echo -n "Building statically linked parser3"
+printf "Building statically linked parser3"
 for PARAM in "$@"; do
     case "$PARAM" in
 	"--without-xml")
-	    echo -n ", without xml"
+	    printf ", without xml"
 	    build_xml=""
 	    ;;
 	"--with-apache")
-	    echo -n ", with apache module"
+	    printf ", with apache module"
 	    options="$options --with-apache"
 	    build_apache="yes"
 	    ;;
 	"--with-mailreceive")
-	    echo -n ", with mail receiving"
+	    printf ", with mail receiving"
 	    options="$options --with-mailreceive=$project_dir/gnome"
 	    build_gmime="yes"
 	    ;;
 	"--strip")
-	    echo -n ", without debug information"
+	    printf ", without debug information"
 	    build_stripped="yes"
 	    ;;
 	"--help")
