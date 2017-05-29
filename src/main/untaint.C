@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_UNTAINT_C="$Id: untaint.C,v 1.172 2017/02/07 22:00:45 moko Exp $";
+volatile const char * IDENT_UNTAINT_C="$Id: untaint.C,v 1.173 2017/05/29 11:00:22 moko Exp $";
 
 
 #include "pa_string.h"
@@ -403,17 +403,17 @@ int cstr_to_string_body_block(String::Language to_lang, size_t fragment_length, 
 
 			bool email=false;
 			uchar c;
-			for(const char* src=mail_ptr; (c=(uchar)*src++); ) {
+			for(const char* src=mail_ptr; c=(uchar)*src; src++) {
 				if(c=='\r' || c=='\n')
 					c=' ';
-				if(to_quoted_printable && (c==',' || c == '"' || addr_spec_soon(src-1/*position to 'c'*/))) {
+				if(to_quoted_printable && (c==',' || c == '"' || addr_spec_soon(src))) {
 					email=c=='<';
 					to_string("?=");
 					to_quoted_printable=false;
 				}
 				//RFC   + An 'encoded-word' MUST NOT appear in any portion of an 'addr-spec'.
 				if(!email && (
-					( !to_quoted_printable && (c & 0x80) )  // starting quote-printable-encoding on first 8bit char
+					( !to_quoted_printable && (c & 0x80 || (c == ' ' && src == mail_ptr) ) )  // starting quote-printable-encoding on first 8bit char or leading space (issue #123)
 					|| ( to_quoted_printable && !mail_header_char_valid_within_Qencoded(c) )
 					)) {
 					if(!to_quoted_printable) {
