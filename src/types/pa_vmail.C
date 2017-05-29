@@ -18,7 +18,7 @@
 #include "pa_vfile.h"
 #include "pa_uue.h"
 
-volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.125 2017/05/17 14:22:12 moko Exp $" IDENT_PA_VMAIL_H;
+volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.126 2017/05/29 11:03:23 moko Exp $" IDENT_PA_VMAIL_H;
 
 #ifdef WITH_MAILRECEIVE
 extern "C" {
@@ -68,7 +68,7 @@ static const String content_transfer_encoding_name(CONTENT_TRANSFER_ENCODING_NAM
 
 // consts
 
-const int MAX_CHARS_IN_HEADER_LINE=500;
+const int MAX_CHARS_IN_HEADER_LINE = (991 - 9 /* Subject: */ - 19 /* =?Windows-1251?Q?...?= */ - 128 /* just in case */) / 3 /* quote-printable */ - 5 /* maximum part of trancated UTF-8 char */;
 
 // VMail
 
@@ -380,21 +380,13 @@ static void extractEmail(String& result, char *email) {
 	*/
 	const char* exception_type="email.format";
 	if(strpbrk(email, "()<>,;:\\\"[]"/*specials minus @ and . */))
-		throw Exception(exception_type,
-			&result,
-			"email contains bad characters (specials)");
+		throw Exception(exception_type, &result, "email contains bad characters (specials)");
 	if(string_contains_char_which(email, (string_contains_char_which_check)isspace))
-		throw Exception(exception_type,
-			&result,
-			"email contains bad characters (whitespace)");
+		throw Exception(exception_type, &result, "email contains bad characters (whitespace)");
 	if(string_contains_char_which(email, (string_contains_char_which_check)iscntrl))
-		throw Exception(exception_type,
-			&result,
-			"email contains bad characters (control)");
+		throw Exception(exception_type, &result, "email contains bad characters (control)");
 	if(result.is_empty())
-		throw Exception(exception_type,
-			0,
-			"email is empty");
+		throw Exception(exception_type, 0, "email is empty");
 }
 
 static const String& extractEmails(const String& string) {
@@ -425,13 +417,7 @@ struct Store_message_element_info {
 	Value* content_type;
 	bool had_content_disposition;
 
-	Store_message_element_info(
-		Request_charsets& acharsets,
-		String& aheader,
-		const String* & afrom,
-		bool aextract_to, String* & ato
-		):
-		
+	Store_message_element_info(Request_charsets& acharsets, String& aheader, const String* & afrom, bool aextract_to, String* & ato):
 		charsets(acharsets),
 		header(aheader),
 		from(afrom),
@@ -444,11 +430,20 @@ struct Store_message_element_info {
 };
 #endif
 
-static void store_message_element(HashStringValue::key_type raw_element_name, 
-				HashStringValue::value_type element_value, 
-				Store_message_element_info *info) {
-	const String& low_element_name=String(raw_element_name, String::L_TAINTED).change_case(
-		info->charsets.source(), String::CC_LOWER);
+size_t mail_header_utf8_substring(const char *mail, size_t sub_length, size_t length){
+	int error_offset;
+	if(int error_code=pa_pcre_valid_utf((unsigned char *)mail, sub_length, &error_offset)){
+		if(error_code<PCRE_UTF8_ERR6){ // Missing X byte at the end of the string errors
+			sub_length+=error_code; // adding X bytes
+			return sub_length < length ? sub_length : length;
+		}
+	}
+
+	return sub_length;
+}
+
+static void store_message_element(HashStringValue::key_type raw_element_name, HashStringValue::value_type element_value, Store_message_element_info *info) {
+	const String& low_element_name=String(raw_element_name, String::L_TAINTED).change_case(info->charsets.source(), String::CC_LOWER);
 
 	// exclude internals
 	if(low_element_name==MAIL_OPTIONS_NAME
@@ -514,31 +509,26 @@ static void store_message_element(HashStringValue::key_type raw_element_name,
 		return; // we don't need empty headers here [used in clearing content-disposition]
 
 	const char* source_line_cstr=source_line.cstr();
-	String::C mail=Charset::transcode(
-		String::C(source_line_cstr, source_line.length()),
-		info->charsets.source(), 
-		info->charsets.mail());
+	String::C mail=Charset::transcode(String::C(source_line_cstr, source_line.length()), info->charsets.source(), info->charsets.mail());
 
 	String& mail_line=*new String;
-	if(low_element_name=="to"
-		|| low_element_name=="cc" 
-		|| low_element_name=="bcc") 
+	if(low_element_name=="to" || low_element_name=="cc" || low_element_name=="bcc")
 	{
 		// never wrap address lines, mailer can not handle wrapped properly
 		mail_line.append_strdup(mail.str, mail.length, String::L_MAIL_HEADER);
 	} else {
 		while(mail.length) {
-			bool too_long=mail.length>MAX_CHARS_IN_HEADER_LINE;
-			size_t length=too_long
-				? MAX_CHARS_IN_HEADER_LINE
-				: mail.length;
+			bool too_long=mail.length > MAX_CHARS_IN_HEADER_LINE;
+			size_t length=too_long ? info->charsets.mail().isUTF8() ? mail_header_utf8_substring(mail.str, MAX_CHARS_IN_HEADER_LINE, mail.length) : MAX_CHARS_IN_HEADER_LINE : mail.length;
 
 			mail_line.append_strdup(mail.str, length, String::L_MAIL_HEADER);
+
 			mail.length-=length;
+			mail.str+=length;
 
 			if(too_long)
 				mail_line << "\n "; // break header and continue it on next line
-		}	
+		}
 	}
 
 	// append header line
