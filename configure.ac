@@ -182,7 +182,7 @@ AC_ARG_WITH(pcre,[  --with-pcre=D           D is the directory where
 	if test -f $PCRE/include/pcre.h -a -f $PCRE_LIBS; then
 		PCRE_OK="yes"
 	else
-		PCRE_LIBS="-L$PCRE -lpcre"
+		PCRE_LIBS="-L$PCRE/lib -lpcre"
 	fi
 
 	if test "$PCRE" = "yes"; then
