@@ -18,7 +18,7 @@
 #include "pa_vxdoc.h"
 #endif
 
-volatile const char * IDENT_JSON_C="$Id: json.C,v 1.52 2017/02/07 22:00:28 moko Exp $";
+volatile const char * IDENT_JSON_C="$Id: json.C,v 1.53 2017/11/15 22:48:57 moko Exp $";
 
 // class
 
@@ -32,7 +32,7 @@ public:
 DECLARE_CLASS_VAR(json, new MJson);
 
 // methods
-struct Json {
+struct Json : public PA_Allocated {
 	Stack<VHash*> stack;
 	Stack<String*> key_stack;
 

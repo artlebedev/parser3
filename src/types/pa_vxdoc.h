@@ -8,7 +8,7 @@
 #ifndef PA_VXDOC_H
 #define PA_VXDOC_H
 
-#define IDENT_PA_VXDOC_H "$Id: pa_vxdoc.h,v 1.59 2017/05/17 14:22:12 moko Exp $"
+#define IDENT_PA_VXDOC_H "$Id: pa_vxdoc.h,v 1.60 2017/11/15 22:48:58 moko Exp $"
 
 #include "classes.h"
 #include "pa_common.h"
@@ -24,7 +24,7 @@
 
 extern Methoded* xdoc_class;
 
-struct XDocOutputOptions {
+struct XDocOutputOptions : public PA_Allocated {
 	const String* method;       /* the output method */
 	const String* encoding;     /* encoding string */
 	const String* mediaType;    /* media-type string */

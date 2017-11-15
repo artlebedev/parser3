@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-volatile const char * IDENT_PA_XML_IO_C="$Id: pa_xml_io.C,v 1.33 2017/02/07 22:00:45 moko Exp $" IDENT_PA_XML_IO_H;
+volatile const char * IDENT_PA_XML_IO_C="$Id: pa_xml_io.C,v 1.34 2017/11/15 22:48:58 moko Exp $" IDENT_PA_XML_IO_H;
 
 #include "libxslt/extensions.h"
 
@@ -39,7 +39,7 @@ HashStringBool* pa_xmlGetDependencies() {
 }
 
 #ifndef DOXYGEN
-struct MemoryStream {
+struct MemoryStream : public PA_Allocated {
 	const char* m_buf;
 	size_t m_size;
 	size_t m_position;

@@ -9,7 +9,7 @@
 #ifndef PA_POOL_H
 #define PA_POOL_H
 
-#define IDENT_PA_POOL_H "$Id: pa_pool.h,v 1.92 2017/02/07 22:00:35 moko Exp $"
+#define IDENT_PA_POOL_H "$Id: pa_pool.h,v 1.93 2017/11/15 22:48:57 moko Exp $"
 
 #include "pa_config_includes.h"
 #include "pa_array.h"
@@ -21,10 +21,10 @@
 	@see Pooled
 */
 
-class Pool {
+class Pool : public PA_Allocated {
 public:
 
-	struct Cleanup {
+	struct Cleanup : public PA_Allocated {
 		void (*cleanup) (void *);
 		void *data;
 
@@ -65,7 +65,7 @@ private: //disabled
 	Base for all classes that are allocated in 'pools'.
 	Holds Pool object.
 */
-class Pooled {
+class Pooled : public PA_Allocated {
 	// the pool i'm allocated on
 	Pool& fpool;
 public:

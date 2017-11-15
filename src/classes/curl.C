@@ -17,7 +17,7 @@
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.54 2017/02/07 22:00:25 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.55 2017/11/15 22:48:57 moko Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -69,8 +69,7 @@ static const char *dlink(const char *dlopen_file_spec) {
 }
 
 
-class ParserOptions {
-public:
+struct ParserOptions : public PA_Allocated {
 	// real options
 	const String *filename;
 	const String *content_type;
@@ -88,7 +87,7 @@ public:
 		if(f_stderr)
 			fclose(f_stderr);
 	}
-	 
+
 };
 
 // using TLS instead of keeping variables in request
@@ -160,8 +159,7 @@ static void _curl_version(Request& r, MethodParams& params){
 	fcurl ? _curl_version_action(r, params) : temp_curl(_curl_version_action, r, params);
 }
 
-class CurlOption {
-public:
+struct CurlOption : public PA_Allocated{
 
 	enum OptionType {
 		CURL_STRING,
@@ -288,8 +286,7 @@ public:
 
 } *curl_options=0;
 
-class CurlInfo {
-public:
+struct CurlInfo : public PA_Allocated{
 
 	enum OptionType {
 		CURL_STRING,

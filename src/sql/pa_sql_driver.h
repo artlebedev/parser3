@@ -26,7 +26,7 @@
 #ifndef PA_SQL_DRIVER_H
 #define PA_SQL_DRIVER_H
 
-#define IDENT_PA_SQL_DRIVER_H "$Id: pa_sql_driver.h,v 1.48 2017/02/07 22:00:45 moko Exp $"
+#define IDENT_PA_SQL_DRIVER_H "$Id: pa_sql_driver.h,v 1.49 2017/11/15 22:48:58 moko Exp $"
 
 #include <sys/types.h>
 #include <setjmp.h>
@@ -134,16 +134,6 @@ public:
 		bool were_updated;
 	};
 
-	/** allocated using our allocator,
-		@todo never freed
-	*/
-	static void *operator new(size_t size) { 
-		void *result=::malloc(size);
-		if(!result)
-			abort();
-
-		return result;
-	}
 	/// get api version
 	virtual int api_version() =0;
 	/// initialize driver by loading sql dynamic link library

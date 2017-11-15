@@ -9,7 +9,7 @@
 #ifndef PA_MEMORY_H
 #define PA_MEMORY_H
 
-#define IDENT_PA_MEMORY_H "$Id: pa_memory.h,v 1.31 2017/02/08 13:05:46 moko Exp $"
+#define IDENT_PA_MEMORY_H "$Id: pa_memory.h,v 1.32 2017/11/15 22:48:57 moko Exp $"
 
 // include
 
@@ -70,28 +70,65 @@ inline void *pa_realloc(void *ptr, size_t size) {
 	return pa_fail_alloc("reallocate to", size);
 }
 
+/// memory allocation/dallocation goes via pa_malloc/pa_free.
+class PA_Allocated {
+public:
+	/// the sole: instances allocated using our functions
+	static void *operator new(size_t size) {
+		return pa_malloc(size);
+	}
+	static void operator delete(void *ptr) {
+		pa_free(ptr);
+	}
+	static void *operator new[](size_t size) {
+		return pa_malloc(size);
+	}
+	static void operator delete[](void *ptr) {
+		pa_free(ptr);
+	}
+};
+
+// new(PointerFreeGC)/new(PointerGC) should be used to allocate types not inherited from PA_Allocated
+
+#define PointerFreeGC (true)
+#define PointerGC (false)
+
+inline void *operator new[] (size_t size, bool pointer_free) {
+	return pointer_free ? pa_malloc_atomic(size) : pa_malloc(size);
+}
+
+inline void *operator new (size_t size, bool pointer_free) {
+	return pointer_free ? pa_malloc_atomic(size) : pa_malloc(size);
+}
+
+/// Base for all Parser classes
+typedef PA_Allocated PA_Object;
+
+// defines
+
+#define override
+#define rethrow throw
+
 #if defined(_MSC_VER) || (__cplusplus>=201103L)
 #define PA_THROW(what)
 #else
 #define PA_THROW(what) throw(what)
 #endif
 
-#define PointerFreeGC (true)
-
-//{@ Array-oriented
-void *operator new[] (size_t size, bool); // PointerFreeGC
-void *operator new[] (std::size_t size) PA_THROW(std::bad_alloc);
-void operator delete[] (void *ptr) throw();
-//}@
-
-//{@ Structure-oriented
-void *operator new (size_t size, bool); // PointerFreeGC
-void *operator new(std::size_t size) PA_THROW(std::bad_alloc);
-void operator delete(void *ptr) throw();
-//}@
-
 #ifndef _MSC_VER
-// disabled from accidental use
+
+// regular new/delete are disabled from accidental use
+
+void *new_disabled();
+void delete_disabled();
+
+inline void *operator new[] (std::size_t size) PA_THROW(std::bad_alloc){ return new_disabled(); }
+inline void operator delete[](void *ptr) throw(){ delete_disabled(); }
+
+inline void *operator new(std::size_t size) PA_THROW(std::bad_alloc){ return new_disabled(); }
+inline void operator delete(void *ptr) throw(){ delete_disabled(); }
+
+// other regular allocators as disabled from accidental use as well
 
 void *calloc_disabled();
 void *malloc_disabled();
@@ -104,26 +141,7 @@ inline void *malloc(size_t) { return malloc_disabled(); }
 inline void *realloc(void *, size_t) { return realloc_disabled(); }
 inline void free(void *) { free_disabled(); }
 inline char *strdup(const char*, size_t){ return strdup_disabled(); }
+
 #endif
-
-/// memory allocation/dallocation goes via pa_malloc/pa_free.
-class PA_Allocated {
-public:
-	/// the sole: instances allocated using our functions
-	static void *operator new(size_t size) { 
-		return pa_malloc(size);
-	}
-	static void operator delete(void *ptr) {
-		pa_free(ptr);
-	}
-};
-
-/// Base for all Parser classes
-typedef PA_Allocated PA_Object;
-
-// defines
-
-#define override
-#define rethrow throw
 
 #endif

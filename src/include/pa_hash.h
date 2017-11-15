@@ -17,7 +17,7 @@
 #ifndef PA_HASH_H
 #define PA_HASH_H
 
-#define IDENT_PA_HASH_H "$Id: pa_hash.h,v 1.98 2017/02/15 17:30:10 moko Exp $"
+#define IDENT_PA_HASH_H "$Id: pa_hash.h,v 1.99 2017/11/15 22:48:57 moko Exp $"
 
 #include "pa_memory.h"
 #include "pa_types.h"
@@ -125,7 +125,7 @@ public:
 	HASH() { 
 		allocated=Hash_allocates[allocates_index=0];
 		fpairs_count=fused_refs=0;
-		refs=new Pair*[allocated];
+		refs=new(PointerGC) Pair*[allocated];
 		HASH_ORDER_CLEAR();
 	}
 
@@ -134,7 +134,7 @@ public:
 		allocated=source.allocated;
 		fused_refs=source.fused_refs;
 		fpairs_count=source.fpairs_count;
-		refs=new Pair*[allocated];
+		refs=new(PointerGC) Pair*[allocated];
 		// clone & rehash
 #ifdef HASH_ORDER
 		HASH_ORDER_CLEAR();
@@ -163,7 +163,7 @@ public:
 				delete pair;
 				pair=next;
 			}
-		delete[] refs;
+		operator delete[](refs);
 	}
 #endif
 
@@ -423,7 +423,7 @@ protected:
 		if (allocates_index<HASH_ALLOCATES_COUNT-1) allocates_index++;
 		// allocated bigger refs array
 		allocated=Hash_allocates[allocates_index];
-		refs=new Pair*[allocated];
+		refs=new(PointerGC) Pair*[allocated];
 
 		// rehash
 		Pair **old_ref=old_refs;
@@ -439,7 +439,7 @@ protected:
 				pair=next;
 			}
 
-		delete[] old_refs;
+		operator delete[](old_refs);
 	}
 
 private: //disabled

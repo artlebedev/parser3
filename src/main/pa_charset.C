@@ -11,7 +11,7 @@
 // we are using some pcre_internal.h stuff as well
 #include "../lib/pcre/pa_pcre_internal.h"
 
-volatile const char * IDENT_PA_CHARSET_C="$Id: pa_charset.C,v 1.107 2017/05/17 14:22:11 moko Exp $" IDENT_PA_CHARSET_H;
+volatile const char * IDENT_PA_CHARSET_C="$Id: pa_charset.C,v 1.108 2017/11/15 22:48:58 moko Exp $" IDENT_PA_CHARSET_H;
 
 #ifdef XML
 #include "libxml/encoding.h"
@@ -1062,7 +1062,7 @@ void Charset::addEncoding(char *name_cstr) {
 	if(handlers_count==MAX_CHARSETS)
 		throw Exception(0, 0, "already allocated %d handlers, no space for new encoding '%s'", MAX_CHARSETS, name_cstr);
 
-	xmlCharEncodingHandler* handler=new xmlCharEncodingHandler;
+	xmlCharEncodingHandler* handler=new(PointerGC) xmlCharEncodingHandler;
 	{
 		handler->name=name_cstr;
 		handler->input=inputFuncs[handlers_count]; 

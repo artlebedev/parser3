@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.142 2017/05/17 14:22:11 moko Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.143 2017/11/15 22:48:57 moko Exp $";
 
 // class
 
@@ -467,7 +467,7 @@ inline Value& SingleElementHash(String::Body akey, Value* avalue) {
 }
 
 #ifndef DOXYGEN
-struct Hash_seq_item {
+struct Hash_seq_item : public PA_Allocated {
 	HashStringValue::Pair *hash_pair;
 	union {
 		const char *c_str;
@@ -505,7 +505,7 @@ static void _sort(Request& r, MethodParams& params){
 	HashStringValue& hash=GET_SELF(r, VHashBase).hash();
 	int count=hash.count();
 
-	Hash_seq_item* seq=new(PointerFreeGC) Hash_seq_item[count];
+	Hash_seq_item* seq=new Hash_seq_item[count];
 	int pos=0;
 	bool key_values_are_strings=true;
 

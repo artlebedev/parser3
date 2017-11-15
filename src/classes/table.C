@@ -22,7 +22,7 @@
 #define USE_STRINGSTREAM
 #endif
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.343 2017/05/17 14:22:11 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.344 2017/11/15 22:48:57 moko Exp $";
 
 // class
 
@@ -1016,7 +1016,7 @@ static void _hash(Request& r, MethodParams& params) {
 }
 
 #ifndef DOXYGEN
-struct Table_seq_item {
+struct Table_seq_item : public PA_Allocated {
 	ArrayString* row;
 	union {
 		const char *c_str;
@@ -1048,7 +1048,7 @@ static void _sort(Request& r, MethodParams& params) {
 	Table& old_table=GET_SELF(r, VTable).table();
 	Table& new_table=*new Table(old_table.columns());
 
-	Table_seq_item* seq=new(PointerFreeGC) Table_seq_item[old_table.count()];
+	Table_seq_item* seq=new Table_seq_item[old_table.count()];
 	int i;
 
 	// calculate key values
@@ -1351,7 +1351,7 @@ static void marshal_bind(
 // not static, used elsewhere
 int marshal_binds(HashStringValue& hash, SQL_Driver::Placeholder*& placeholders) {
 	int hash_count=hash.count();
-	placeholders=new SQL_Driver::Placeholder[hash_count];
+	placeholders=new(PointerGC) SQL_Driver::Placeholder[hash_count];
 	SQL_Driver::Placeholder* ptr=placeholders;
 	hash.for_each<SQL_Driver::Placeholder**>(marshal_bind, &ptr);
 	return hash_count;

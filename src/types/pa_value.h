@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.164 2017/02/16 12:16:34 moko Exp $"
+#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.165 2017/11/15 22:48:58 moko Exp $"
 
 #include "pa_common.h"
 #include "pa_array.h"
@@ -34,7 +34,7 @@ class Table;
 struct XDocOutputOptions;
 typedef Array<Value*> ArrayValue;
 
-struct Json_options {
+struct Json_options : public PA_Allocated {
 	Request* r;
 	String::Body key;
 	HashStringValue* methods;
