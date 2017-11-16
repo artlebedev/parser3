@@ -9,7 +9,7 @@
 #ifndef PA_MEMORY_H
 #define PA_MEMORY_H
 
-#define IDENT_PA_MEMORY_H "$Id: pa_memory.h,v 1.32 2017/11/15 22:48:57 moko Exp $"
+#define IDENT_PA_MEMORY_H "$Id: pa_memory.h,v 1.33 2017/11/16 22:50:25 moko Exp $"
 
 // include
 
@@ -19,6 +19,8 @@
 
 // define destructors use for Array, Hash and VMethodFrame
 #define USE_DESTRUCTORS
+// std::basic_stringstream used in ^table.csv-string[] is compatible with delete usage check only under Debian 9
+// #define CHECK_DELETE_USAGE
 
 inline void* pa_gc_malloc(size_t size) { return GC_MALLOC(size); }
 inline void* pa_gc_malloc_atomic(size_t size) { return GC_MALLOC_ATOMIC(size); }
@@ -126,7 +128,9 @@ inline void *operator new[] (std::size_t size) PA_THROW(std::bad_alloc){ return 
 inline void operator delete[](void *ptr) throw(){ delete_disabled(); }
 
 inline void *operator new(std::size_t size) PA_THROW(std::bad_alloc){ return new_disabled(); }
+#ifdef CHECK_DELETE_USAGE
 inline void operator delete(void *ptr) throw(){ delete_disabled(); }
+#endif
 
 // other regular allocators as disabled from accidental use as well
 
