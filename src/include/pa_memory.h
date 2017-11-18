@@ -9,7 +9,7 @@
 #ifndef PA_MEMORY_H
 #define PA_MEMORY_H
 
-#define IDENT_PA_MEMORY_H "$Id: pa_memory.h,v 1.33 2017/11/16 22:50:25 moko Exp $"
+#define IDENT_PA_MEMORY_H "$Id: pa_memory.h,v 1.34 2017/11/18 17:42:39 moko Exp $"
 
 // include
 
@@ -124,12 +124,12 @@ typedef PA_Allocated PA_Object;
 void *new_disabled();
 void delete_disabled();
 
-inline void *operator new[] (std::size_t size) PA_THROW(std::bad_alloc){ return new_disabled(); }
-inline void operator delete[](void *ptr) throw(){ delete_disabled(); }
+inline void *operator new[] (std::size_t) PA_THROW(std::bad_alloc){ return new_disabled(); }
+inline void operator delete[](void *) throw(){ delete_disabled(); }
 
-inline void *operator new(std::size_t size) PA_THROW(std::bad_alloc){ return new_disabled(); }
+inline void *operator new(std::size_t) PA_THROW(std::bad_alloc){ return new_disabled(); }
 #ifdef CHECK_DELETE_USAGE
-inline void operator delete(void *ptr) throw(){ delete_disabled(); }
+inline void operator delete(void *) throw(){ delete_disabled(); }
 #endif
 
 // other regular allocators as disabled from accidental use as well
