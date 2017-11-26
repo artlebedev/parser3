@@ -17,7 +17,7 @@
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.55 2017/11/15 22:48:57 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.56 2017/11/26 21:24:07 moko Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -114,14 +114,21 @@ public:
 	Temp_curl() : saved_curl(fcurl), saved_options(foptions){
 		fcurl = f_curl_easy_init();
 		foptions = new ParserOptions();
-		f_curl_easy_setopt(fcurl, CURLOPT_POSTFIELDSIZE, 0); // fix libcurl bug
+		if(curl_is_old_and_buggy(f_curl_version()))
+			f_curl_easy_setopt(fcurl, CURLOPT_POSTFIELDSIZE, 0); // fix libcurl bug
 		f_curl_easy_setopt(fcurl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4); // avoid ipv6 by default
 	}
+
 	~Temp_curl() {
 		f_curl_easy_cleanup(fcurl);
 		fcurl = saved_curl;
 		delete foptions;
 		foptions = saved_options;
+	}
+
+	static bool curl_is_old_and_buggy(const char *version){
+		if(strncmp(version,"libcurl/7.",10)) return false;
+		return atoi(version+10)<38; // 7.38 in Debian Jessie is first known non-buggy version
 	}
 };
 
@@ -171,6 +178,7 @@ struct CurlOption : public PA_Allocated{
 		CURL_HEADERS,
 		CURL_FILE,
 		CURL_STDERR,
+		CURL_HTTP_VERSION,
 		PARSER_LIBRARY,
 		PARSER_NAME,
 		PARSER_CONTENT_TYPE,
@@ -275,6 +283,7 @@ public:
 		CURL_OPT(CURL_STRING, SSL_CIPHER_LIST);
 		CURL_OPT(CURL_INT, SSL_SESSIONID_CACHE);
 		CURL_OPT(CURL_INT, SSLVERSION);
+		CURL_OPT(CURL_HTTP_VERSION, HTTP_VERSION);
 
 		PARSER_OPT(PARSER_LIBRARY, "library");
 		PARSER_OPT(PARSER_NAME, "name");
@@ -291,7 +300,8 @@ struct CurlInfo : public PA_Allocated{
 	enum OptionType {
 		CURL_STRING,
 		CURL_INT,
-		CURL_DOUBLE
+		CURL_DOUBLE,
+		CURL_HTTP_VERSION
 	};
 
 	CURLINFO id;
@@ -329,6 +339,9 @@ public:
 		CURL_INF(CURL_INT, SSL_VERIFYRESULT);
 		CURL_INF(CURL_DOUBLE, STARTTRANSFER_TIME);
 		CURL_INF(CURL_DOUBLE, TOTAL_TIME);
+		CURL_INF(CURL_HTTP_VERSION, HTTP_VERSION);
+		CURL_INF(CURL_INT, PROTOCOL);
+		CURL_INF(CURL_STRING, SCHEME);
 	}
 
 } *curl_infos=0;
@@ -387,7 +400,7 @@ static void curl_form(HashStringValue *value_hash, Request& r){
 				CURLFORM_CONTENTTYPE, fvalue->fields().get("content-type")->as_string().taint_cstr(String::L_URI), 
 				CURLFORM_END);
 		} else {
-			throw Exception("curl", new String(i.key(), String::L_TAINTED), "is %s, form option value can be string, table or file only", i.value()->type());			
+			throw Exception("curl", new String(i.key(), String::L_TAINTED), "is %s, form option value can be string, table or file only", i.value()->type());
 		}
 	}
 }
@@ -398,6 +411,28 @@ static const char *curl_check_file(const String &file_spec){
 	if(pa_stat(file_spec_cstr, &finfo)==0)
 		check_safe_mode(finfo, file_spec, file_spec_cstr);
 	return file_spec_cstr;
+}
+
+static long curl_http_version(const String &name){
+	if(name.is_empty()) return CURL_HTTP_VERSION_NONE;
+
+	if(name == "1.0") return CURL_HTTP_VERSION_1_0;
+	if(name == "1.1") return CURL_HTTP_VERSION_1_1;
+	if(name == "2") return CURL_HTTP_VERSION_2;
+	if(name == "2.0") return CURL_HTTP_VERSION_2_0;
+
+	const char *sname = str_upper(name.cstr());
+	if(!strcmp(sname,"2TLS")) return CURL_HTTP_VERSION_2TLS;
+	if(!strcmp(sname,"2ONLY")) return CURL_HTTP_VERSION_2_PRIOR_KNOWLEDGE;
+	throw Exception("curl", &name, "invalid http_version option value");
+}
+
+static const char *curl_http_version_name(long value){
+	if(value == CURL_HTTP_VERSION_NONE) return "none";
+	if(value == CURL_HTTP_VERSION_1_0) return "1.0";
+	if(value == CURL_HTTP_VERSION_1_1) return "1.1";
+	if(value == CURL_HTTP_VERSION_2) return "2";
+	throw Exception("curl", 0, "invalid http version '%d' in info", value);
 }
 
 static void curl_setopt(HashStringValue::key_type key, HashStringValue::value_type value, Request& r) {
@@ -483,6 +518,12 @@ static void curl_setopt(HashStringValue::key_type key, HashStringValue::value_ty
 			}
 			break;
 		}
+		case CurlOption::CURL_HTTP_VERSION:{
+			// http protocol version name curl option
+			long value_int=curl_http_version(v.as_string());
+			res=f_curl_easy_setopt(curl(), opt->id, value_int);
+			break;
+		}
 		case CurlOption::PARSER_LIBRARY:{
 			// 'library' parser option
 			if(!curl_linked){
@@ -560,6 +601,11 @@ static Value *curl_getinfo(const String::Body &key, CurlInfo *info=0) {
 			double d=0;
 			CURL_GETINFO(d);
 			return new VDouble(d);
+		}
+		case CurlInfo::CURL_HTTP_VERSION:{
+			long l=0;
+			CURL_GETINFO(l);
+			return new VString(*new String(curl_http_version_name(l), String::L_TAINTED));
 		}
 	}
 	return VVoid::get();
