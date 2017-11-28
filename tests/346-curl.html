@@ -53,11 +53,24 @@
 	$.postfields[^file::load[binary;155.cfg]]
 ]
 
+^curl:session{
+
 16. ^show[empty post;
-	$.httppost[]
+	$.post(true)
 ]
 
-17. ^try-catch{ ^curl:load[ $.url[http://no-such-domain.parser.ru/] ] }
+17. ^show[empty get;
+	$.httppost[]
+	$.post(false)
+]
+
+}
+
+18. ^show[empty custompost;
+	$.customrequest[POST]
+]
+
+19. ^try-catch{ ^curl:load[ $.url[http://no-such-domain.parser.ru/] ] }
 
 @show[title;options][f;text;t;post]
 
