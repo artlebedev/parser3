@@ -17,7 +17,7 @@
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.56 2017/11/26 21:24:07 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.57 2017/11/28 20:48:37 moko Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -81,7 +81,11 @@ struct ParserOptions : public PA_Allocated {
 	struct curl_httppost *f_post;
 	FILE *f_stderr;
 
-	ParserOptions() : filename(0), content_type(0), is_text(true), charset(0), response_charset(0), url(0), f_post(0), f_stderr(0){}
+	// stuff to walkaround curl content-length bugs
+	bool is_post;
+	bool has_content_length;
+
+	ParserOptions() : filename(0), content_type(0), is_text(true), charset(0), response_charset(0), url(0), f_post(0), f_stderr(0), is_post(false), has_content_length(false){}
 	~ParserOptions() {
 		f_curl_formfree(f_post);
 		if(f_stderr)
@@ -114,8 +118,6 @@ public:
 	Temp_curl() : saved_curl(fcurl), saved_options(foptions){
 		fcurl = f_curl_easy_init();
 		foptions = new ParserOptions();
-		if(curl_is_old_and_buggy(f_curl_version()))
-			f_curl_easy_setopt(fcurl, CURLOPT_POSTFIELDSIZE, 0); // fix libcurl bug
 		f_curl_easy_setopt(fcurl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4); // avoid ipv6 by default
 	}
 
@@ -124,11 +126,6 @@ public:
 		fcurl = saved_curl;
 		delete foptions;
 		foptions = saved_options;
-	}
-
-	static bool curl_is_old_and_buggy(const char *version){
-		if(strncmp(version,"libcurl/7.",10)) return false;
-		return atoi(version+10)<38; // 7.38 in Debian Jessie is first known non-buggy version
 	}
 };
 
@@ -174,6 +171,7 @@ struct CurlOption : public PA_Allocated{
 		CURL_URL,
 		CURL_INT,
 		CURL_POST,
+		CURL_POSTFIELDS,
 		CURL_FORM,
 		CURL_HEADERS,
 		CURL_FILE,
@@ -223,13 +221,13 @@ public:
 		CURL_OPT(CURL_INT, UNRESTRICTED_AUTH);
 		CURL_OPT(CURL_INT, IPRESOLVE);
 
-		CURL_OPT(CURL_INT, POST);
+		CURL_OPT(CURL_POST, POST);
 		CURL_OPT(CURL_INT, HTTPGET);
 		CURL_OPT(CURL_INT, NOBODY);
 		CURL_OPT(CURL_STRING, CUSTOMREQUEST);
 
-		CURL_OPT(CURL_POST, POSTFIELDS); // hopefully is safe too
-		CURL_OPT(CURL_POST, COPYPOSTFIELDS);
+		CURL_OPT(CURL_POSTFIELDS, POSTFIELDS); // hopefully is safe too
+		CURL_OPT(CURL_POSTFIELDS, COPYPOSTFIELDS);
 		CURL_OPT(CURL_FORM, HTTPPOST);
 
 		CURL_OPT(CURL_HEADERS, HTTPHEADER);
@@ -473,6 +471,13 @@ static void curl_setopt(HashStringValue::key_type key, HashStringValue::value_ty
 			break;
 		}
 		case CurlOption::CURL_POST:{
+			// integer curl option
+			long value_int=(long)v.as_double();
+			res=f_curl_easy_setopt(curl(), opt->id, value_int);
+			options().is_post=value_int != 0;
+			break;
+		}
+		case CurlOption::CURL_POSTFIELDS:{
 			// http post curl option
 			if(v.get_string()){
 				if( (res=f_curl_easy_setopt(curl(), CURLOPT_POSTFIELDSIZE, -1L)) == CURLE_OK )
@@ -482,6 +487,7 @@ static void curl_setopt(HashStringValue::key_type key, HashStringValue::value_ty
 				if( (res=f_curl_easy_setopt(curl(), CURLOPT_POSTFIELDSIZE, (long)file->value_size())) == CURLE_OK )
 					res=f_curl_easy_setopt(curl(), opt->id, file->value_ptr());
 			}
+			options().has_content_length=true;
 			break;
 		}
 		case CurlOption::CURL_FORM:{
@@ -489,10 +495,12 @@ static void curl_setopt(HashStringValue::key_type key, HashStringValue::value_ty
 			if(value_hash){
 				curl_form(value_hash, r);
 			} else {
-				f_curl_formfree(options().f_post);
+				if(options().f_post)
+					f_curl_formfree(options().f_post);
 				options().f_post = 0;
 			}
 			res=f_curl_easy_setopt(curl(), CURLOPT_HTTPPOST, foptions->f_post);
+			options().has_content_length=true;
 			break;
 		}
 		case CurlOption::CURL_HEADERS:{
@@ -695,6 +703,12 @@ static void _curl_load_action(Request& r, MethodParams& params){
 	Curl_buffer body(response);
 	CURL_SETOPT(CURLOPT_WRITEFUNCTION, curl_writer, "curl writer function");
 	CURL_SETOPT(CURLOPT_WRITEDATA, &body, "curl write buffer");
+
+	if(options().is_post && !options().has_content_length){
+		// libcurl bug walkaround. Prior to 7.38 (Debian Jessie) curl passed Content-length: -1
+		// after that no Content-length header is passed, that hangs request to nginx.
+		CURL_SETOPT(CURLOPT_POSTFIELDSIZE, 0, "post content-length");
+	}
 
 	if((res=f_curl_easy_perform(curl())) != CURLE_OK){
 		const char *ex_type = 0; 
