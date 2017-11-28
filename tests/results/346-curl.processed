@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 3028
+Content-Length: 3078
 
 1. Type: curl,
 Source: info,
@@ -38,6 +38,7 @@ Comment: called with invalid option 'no-such-option'
 Source: info,
 Comment: called with invalid parameter 'no-such-info'
 11. {
+"http_version":"none",
 "size_download":0,
 "request_size":0,
 "content_type":"",
@@ -47,6 +48,7 @@ Comment: called with invalid parameter 'no-such-info'
 "appconnect_time":0,
 "pretransfer_time":0,
 "num_connects":0,
+"scheme":"",
 "primary_ip":"",
 "speed_upload":0,
 "speed_download":0,
@@ -57,6 +59,7 @@ Comment: called with invalid parameter 'no-such-info'
 "namelookup_time":0,
 "redirect_count":0,
 "httpauth_avail":0,
+"protocol":0,
 "total_time":0,
 "content_length_download":-1,
 "os_errno":0,
