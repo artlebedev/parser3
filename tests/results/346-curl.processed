@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 3078
+Content-Length: 3751
 
 1. Type: curl,
 Source: info,
@@ -115,12 +115,13 @@ v"
 <hr />
 16. empty post : {
 "name":"223.pl",
-"size":183,
+"size":232,
 "mode":"text",
 "content-type":"text\/plain",
 }
 <h3>Headers</h3>
 <pre>CONTENT_LENGTH	: 0
+CONTENT_TYPE	: application/x-www-form-urlencoded
 HTTP_ACCEPT	: */*
 HTTP_HOST	: www.parser.ru
 REQUEST_METHOD	: POST
@@ -130,6 +131,38 @@ SERVER_NAME	: www.parser.ru</pre>
 <h3>Body</h3>
 <pre></pre>
 <hr />
-17. Type: curl.host,
+17. empty get : {
+"name":"223.pl",
+"size":153,
+"mode":"text",
+"content-type":"text\/plain",
+}
+<h3>Headers</h3>
+<pre>HTTP_ACCEPT	: */*
+HTTP_HOST	: www.parser.ru
+REQUEST_METHOD	: GET
+REQUEST_URI	: /_/tests/223.pl
+SCRIPT_NAME	: /_/tests/223.pl
+SERVER_NAME	: www.parser.ru</pre>
+<h3>Body</h3>
+<pre></pre>
+<hr />
+18. empty custompost : {
+"name":"223.pl",
+"size":164,
+"mode":"text",
+"content-type":"text\/plain",
+}
+<h3>Headers</h3>
+<pre>HTTP_ACCEPT	: */*
+HTTP_HOST	: www.parser.ru
+REQUEST_METHOD	: POST
+REQUEST_URI	: /_/tests/223.pl
+SCRIPT_NAME	: /_/tests/223.pl
+SERVER_NAME	: www.parser.ru</pre>
+<h3>Body</h3>
+<pre></pre>
+<hr />
+19. Type: curl.host,
 Source: load,
 Comment: Couldn't resolve host name
