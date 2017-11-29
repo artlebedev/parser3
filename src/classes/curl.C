@@ -17,7 +17,7 @@
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.57 2017/11/28 20:48:37 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.58 2017/11/29 19:05:47 moko Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -338,7 +338,6 @@ public:
 		CURL_INF(CURL_DOUBLE, STARTTRANSFER_TIME);
 		CURL_INF(CURL_DOUBLE, TOTAL_TIME);
 		CURL_INF(CURL_HTTP_VERSION, HTTP_VERSION);
-		CURL_INF(CURL_INT, PROTOCOL);
 		CURL_INF(CURL_STRING, SCHEME);
 	}
 
@@ -586,13 +585,12 @@ static void _curl_options(Request& r, MethodParams& params){
 
 #define CURL_GETINFO(arg) \
 	if((res=f_curl_easy_getinfo(curl(), info->id, &arg)) != CURLE_OK){ \
-		throw Exception("curl", 0, "failed to get %s info: %s", key.cstr(), f_curl_easy_strerror(res)); \
+		if (fail_on_error) \
+			throw Exception("curl", 0, "failed to get %s info: %s", key.cstr(), f_curl_easy_strerror(res)); \
+		return 0; \
 	}
 
-static Value *curl_getinfo(const String::Body &key, CurlInfo *info=0) {
-	if(info==0 && !(info=curl_infos->get(key)))
-		throw Exception("curl", 0, "called with invalid parameter '%s'", key.cstr());
-
+static Value *curl_getinfo(const String::Body &key, CurlInfo *info, bool fail_on_error=false) {
 	CURLcode res;
 	switch (info->type){
 		case CurlInfo::CURL_STRING:{
@@ -624,16 +622,20 @@ static void _curl_info(Request& r, MethodParams& params){
 		curl_infos=new CurlInfoHash();
 	if(params.count()==1){
 		const String &name=params.as_string(0, "name must be string");
-		r.write(*curl_getinfo(name));
+		CurlInfo *info=curl_infos->get(name);
+		if(info==0)
+			throw Exception("curl", 0, "called with invalid parameter '%s'", name.cstr());
+		r.write(*curl_getinfo(name, info));
 	} else {
 		VHash& result=*new VHash;
 		for(CurlInfoHash::Iterator i(*curl_infos); i; i.next() ){
-			result.get_hash()->put(i.key(), curl_getinfo(i.key(), i.value()));
+			Value *value=curl_getinfo(i.key(), i.value(), true);
+			if(value)
+				result.get_hash()->put(i.key(), value);
 		}
 		r.write(result);
 	}
 }
-
 
 class Curl_buffer{
 public:
