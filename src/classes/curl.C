@@ -17,7 +17,7 @@
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.58 2017/11/29 19:05:47 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.59 2017/11/29 19:10:05 moko Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -625,11 +625,11 @@ static void _curl_info(Request& r, MethodParams& params){
 		CurlInfo *info=curl_infos->get(name);
 		if(info==0)
 			throw Exception("curl", 0, "called with invalid parameter '%s'", name.cstr());
-		r.write(*curl_getinfo(name, info));
+		r.write(*curl_getinfo(name, info, true));
 	} else {
 		VHash& result=*new VHash;
 		for(CurlInfoHash::Iterator i(*curl_infos); i; i.next() ){
-			Value *value=curl_getinfo(i.key(), i.value(), true);
+			Value *value=curl_getinfo(i.key(), i.value());
 			if(value)
 				result.get_hash()->put(i.key(), value);
 		}

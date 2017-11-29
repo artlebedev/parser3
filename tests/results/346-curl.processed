@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 3751
+Content-Length: 3737
 
 1. Type: curl,
 Source: info,
@@ -59,7 +59,6 @@ Comment: called with invalid parameter 'no-such-info'
 "namelookup_time":0,
 "redirect_count":0,
 "httpauth_avail":0,
-"protocol":0,
 "total_time":0,
 "content_length_download":-1,
 "os_errno":0,
