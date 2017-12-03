@@ -18,7 +18,7 @@
 #include "pa_vxdoc.h"
 #endif
 
-volatile const char * IDENT_JSON_C="$Id: json.C,v 1.53 2017/11/15 22:48:57 moko Exp $";
+volatile const char * IDENT_JSON_C="$Id: json.C,v 1.54 2017/12/03 23:13:49 moko Exp $";
 
 // class
 
@@ -366,7 +366,7 @@ const uint ANTI_ENDLESS_JSON_STRING_RECOURSION=128;
 char *get_indent(uint level){
 	static char* cache[ANTI_ENDLESS_JSON_STRING_RECOURSION]={};
 	if (!cache[level]){
-		char *result = 	static_cast<char*>(pa_gc_malloc_atomic(level+1));
+		char *result = 	static_cast<char*>(pa_malloc_atomic(level+1));
 		memset(result, '\t', level);
 		result[level]='\0';
 		return cache[level]=result;
