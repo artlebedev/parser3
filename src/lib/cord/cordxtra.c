@@ -27,7 +27,6 @@
 				/* We use this for lazy file reading, 	*/
 				/* so that we remain independent 	*/
 				/* of the threads primitives.		*/
-# include "gc.h"
 
 /* For now we assume that pointer reads and writes are atomic, 	*/
 /* i.e. another thread always sees the state before or after	*/
@@ -458,6 +457,8 @@ CORD CORD_chars(char c, size_t i)
 	}
 }
 
+#ifndef PA_DEBUG_DISABLE_GC
+
 CORD CORD_from_file_eager(FILE * f)
 {
     register int c;
@@ -580,7 +581,6 @@ void CORD_lf_close_proc(void * obj, void * client_data)
     }
 }			
 
-#ifndef PA_DEBUG_DISABLE_GC
 CORD CORD_from_file_lazy_inner(FILE * f, size_t len)
 {
     register lf_state * state = GC_NEW(lf_state);

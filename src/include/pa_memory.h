@@ -9,23 +9,18 @@
 #ifndef PA_MEMORY_H
 #define PA_MEMORY_H
 
-#define IDENT_PA_MEMORY_H "$Id: pa_memory.h,v 1.34 2017/11/18 17:42:39 moko Exp $"
+#define IDENT_PA_MEMORY_H "$Id: pa_memory.h,v 1.35 2017/12/03 23:36:23 moko Exp $"
 
 // include
 
 #include "pa_config_includes.h"
-#include "gc.h"
 #include <new>
 
 // define destructors use for Array, Hash and VMethodFrame
 #define USE_DESTRUCTORS
+
 // std::basic_stringstream used in ^table.csv-string[] is compatible with delete usage check only under Debian 9
 // #define CHECK_DELETE_USAGE
-
-inline void* pa_gc_malloc(size_t size) { return GC_MALLOC(size); }
-inline void* pa_gc_malloc_atomic(size_t size) { return GC_MALLOC_ATOMIC(size); }
-inline void* pa_gc_realloc(void* ptr, size_t size) { return GC_REALLOC(ptr, size); }
-inline void pa_gc_free(void* ptr) { GC_FREE(ptr); }
 
 // forwards
 
@@ -34,14 +29,14 @@ void *pa_fail_alloc(const char* what, size_t size);
 // inlines
 
 inline void *pa_malloc(size_t size) {
-	if(void *result=pa_gc_malloc(size))
+	if(void *result=GC_MALLOC(size))
 		return result;
 
 	return pa_fail_alloc("allocate", size);
 }
 
 inline void *pa_malloc_atomic(size_t size) {
-	if(void *result=pa_gc_malloc_atomic(size))
+	if(void *result=GC_MALLOC_ATOMIC(size))
 		return result;
 
 	return pa_fail_alloc("allocate clean", size);
@@ -52,7 +47,7 @@ inline char *pa_strdup(const char* auto_variable_never_null, size_t helper_lengt
 	size_t known_length= helper_length ? helper_length : strlen(auto_variable_never_null);
 
 	size_t size=known_length+1;
-	if(char *result=static_cast<char*>(pa_gc_malloc_atomic(size))) {
+	if(char *result=static_cast<char*>(GC_MALLOC_ATOMIC(size))) {
 		memcpy(result, auto_variable_never_null, known_length);
 		result[known_length]=0;
 		return result;
@@ -62,11 +57,11 @@ inline char *pa_strdup(const char* auto_variable_never_null, size_t helper_lengt
 }
 
 inline void pa_free(void *ptr) {
-	pa_gc_free(ptr);
+	GC_FREE(ptr);
 }
 
 inline void *pa_realloc(void *ptr, size_t size) {
-	if(void *result=pa_gc_realloc(ptr, size))
+	if(void *result=GC_REALLOC(ptr, size))
 		return result;
 
 	return pa_fail_alloc("reallocate to", size);
@@ -118,7 +113,6 @@ typedef PA_Allocated PA_Object;
 #endif
 
 #ifndef _MSC_VER
-
 // regular new/delete are disabled from accidental use
 
 void *new_disabled();
@@ -132,6 +126,7 @@ inline void *operator new(std::size_t) PA_THROW(std::bad_alloc){ return new_disa
 inline void operator delete(void *) throw(){ delete_disabled(); }
 #endif
 
+#ifndef PA_DEBUG_DISABLE_GC
 // other regular allocators as disabled from accidental use as well
 
 void *calloc_disabled();
@@ -145,7 +140,8 @@ inline void *malloc(size_t) { return malloc_disabled(); }
 inline void *realloc(void *, size_t) { return realloc_disabled(); }
 inline void free(void *) { free_disabled(); }
 inline char *strdup(const char*, size_t){ return strdup_disabled(); }
+#endif // PA_DEBUG_DISABLE_GC
 
-#endif
+#endif // _MSC_VER
 
 #endif

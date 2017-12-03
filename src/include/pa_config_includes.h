@@ -184,7 +184,27 @@ inline size_t max(size_t a, size_t b) { return a>b?a:b; }
 inline size_t min(size_t a, size_t b){ return a<b?a:b; }
 #endif
 
-#endif
+#endif // __cplusplus
+
+// libgc usage configuration
+//#define PA_DEBUG_DISABLE_GC
+
+#ifdef PA_DEBUG_DISABLE_GC
+
+#define GC_MALLOC(size) memset(malloc(size), 0 , size)
+#define GC_MALLOC_ATOMIC(size) memset(malloc(size), 0 , size)
+#define GC_REALLOC(ptr, size) realloc(ptr, size)
+#define GC_FREE(ptr) free(ptr)
+
+#define GC_NEW(t) (t *)GC_MALLOC(sizeof (t))
+#define GC_NEW_ATOMIC(t) (t *)GC_MALLOC_ATOMIC(sizeof (t))
+
+#else
+
+#include "gc.h"
+
+#endif // PA_DEBUG_DISABLE_GC
+
 
 #ifdef __GNUC__
 #  define PA_ATTR_UNUSED __attribute__((unused))

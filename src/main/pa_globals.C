@@ -28,7 +28,7 @@ extern "C" {
 #include "ltdl.h"
 #include "pcre.h"
 
-volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.198 2017/02/07 22:00:43 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
+volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.199 2017/12/03 23:36:23 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
 
 // defines
 
@@ -125,7 +125,7 @@ static char *pa_GC_strdup(const char *s) {
 		return 0;
 
 	size_t size=strlen(s)+1;
-	char *result=(char *)pa_gc_malloc_atomic(size);
+	char *result=(char *)GC_MALLOC_ATOMIC(size);
 
 	if(!result)
 		pa_fail_alloc("duplicate XML string",size);
@@ -140,27 +140,27 @@ static char *pa_GC_strdup(const char *s) {
 #ifdef PA_DEBUG_XML_GC_MEMORY
 
 static void* pa_gc_malloc_log(size_t size){
-	void *p=pa_gc_malloc(size);
+	void *p=GC_MALLOC(size);
         fprintf(stderr, "pa_gc_malloc_log(%d)=0x%p\n", size, p);
 	return p;
         
 }
 
 static void* pa_gc_malloc_atomic_log(size_t size){
-	void *p=pa_gc_malloc_atomic(size);
+	void *p=GC_MALLOC_ATOMIC(size);
         fprintf(stderr, "pa_gc_malloc_atomic_log(%d)=0x%p\n", size, p);
 	return p;
 }
 
 static void* pa_gc_realloc_log(void *ptr, size_t size){
-	void *p=pa_gc_realloc(ptr, size);
+	void *p=GC_REALLOC(ptr, size);
         fprintf(stderr, "pa_gc_realloc_log(0x%p, %d)=0x%p\n", ptr, size, p);
 	return p;
 }
 
 static void pa_gc_free_log(void *p){
         fprintf(stderr, "pa_gc_free_log(0x%p)\n", p);
-        pa_gc_free(p);
+        GC_FREE(p);
 }
 
 #else
@@ -172,19 +172,19 @@ inline void *check(void *result, const char *where, size_t size) {
 }
 
 static void* pa_gc_malloc_nonull(size_t size) { 
-	return check(pa_gc_malloc(size), "allocate XML compsite memory", size);
+	return check(GC_MALLOC(size), "allocate XML compsite memory", size);
 }
 
 static void* pa_gc_malloc_atomic_nonull(size_t size) { 
-	return check(pa_gc_malloc_atomic(size), "allocate XML atomic memory", size);
+	return check(GC_MALLOC_ATOMIC(size), "allocate XML atomic memory", size);
 }
 
 static void* pa_gc_realloc_nonull(void* ptr, size_t size) { 
-	return check(pa_gc_realloc(ptr, size), "reallocate XML memory", size);
+	return check(GC_REALLOC(ptr, size), "reallocate XML memory", size);
 }
 
 static void pa_gc_free_maybeignore(void* ptr) {
-	pa_gc_free(ptr);
+	GC_FREE(ptr);
 }
 
 #endif
@@ -221,8 +221,8 @@ static void gc_substitute_memory_management_functions() {
 #endif
 
 	// pcre
-	pcre_malloc=pa_gc_malloc;
-	pcre_free=pa_gc_free;
+	pcre_malloc=pa_malloc;
+	pcre_free=pa_free;
 
 	// cord
 	CORD_oom_fn=pa_CORD_oom_fn;

@@ -17,12 +17,12 @@
 #include "pa_vbool.h"
 #include "pa_array.h"
 
-#if (!defined(NO_STRINGSTREAM) && !defined(FREEBSD4))
+#if (!defined(NO_STRINGSTREAM) && !defined(FREEBSD4) && !defined(PA_DEBUG_DISABLE_GC))
 #include <sstream>
 #define USE_STRINGSTREAM
 #endif
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.344 2017/11/15 22:48:57 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.345 2017/12/03 23:36:23 moko Exp $";
 
 // class
 
