@@ -201,6 +201,9 @@ inline size_t min(size_t a, size_t b){ return a<b?a:b; }
 
 #else
 
+// allows to backtrace pointers
+//#define GC_DEBUG
+
 #include "gc.h"
 
 #endif // PA_DEBUG_DISABLE_GC
@@ -234,13 +237,6 @@ inline size_t min(size_t a, size_t b){ return a<b?a:b; }
 #pragma warning(disable:4996)  // memcpy deprecation
 #pragma warning(disable:4702)  // unreachable code
 #pragma warning(disable:4511)  // copy constructor could not be generated (vs2003 specific)
-#endif
-
-/// to debug backtrace pointers switch this on:
-#if defined(_DEBUG) || defined(PA_RELEASE_ASSERTS)
-//// this switches on straightforward realloc implementation, bad for profiling
-//// note: this is incompatible with -DGC_ASSERTIONS, which can be switched ON in win32/gc/NT_THREADS_MAKEFILE
-#define GC_DEBUG
 #endif
 
 #endif

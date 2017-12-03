@@ -9,7 +9,7 @@
 #include "pa_vmemory.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_MEMORY_C="$Id: memory.C,v 1.12 2017/02/07 22:00:29 moko Exp $" IDENT_PA_VMEMORY_H;
+volatile const char * IDENT_MEMORY_C="$Id: memory.C,v 1.13 2017/12/03 23:56:05 moko Exp $" IDENT_PA_VMEMORY_H;
 
 class MMemory: public Methoded {
 public:
@@ -23,10 +23,8 @@ public: // Methoded
 
 DECLARE_CLASS_VAR(memory, new MMemory);
 
-#undef GC_DEBUG
 #ifdef GC_DEBUG
-extern "C" GC_API void GC_print_backtrace(void *);
-void *debug_print_backtrace=0;
+extern "C" void GC_generate_random_backtrace();
 #endif
 
 static void _compact(Request& r, MethodParams&) {
@@ -36,14 +34,13 @@ static void _compact(Request& r, MethodParams&) {
 		int saved=GC_dont_gc;
 		GC_dont_gc=0;
 		GC_gcollect();
+#ifdef GC_DEBUG
+		GC_generate_random_backtrace();
+#endif
 		GC_dont_gc=saved;
 	}
-#ifdef GC_DEBUG
-	if(debug_print_backtrace)
-		GC_print_backtrace(debug_print_backtrace);
 #endif
-#endif
-	}
+}
 
 // constructor
 
