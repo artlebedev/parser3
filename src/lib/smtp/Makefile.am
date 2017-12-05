@@ -1,5 +1,3 @@
-AM_CPPFLAGS = -I../gc/include -I../cord/include
-
 noinst_HEADERS = smtp.h
 noinst_LTLIBRARIES = libsmtp.la
 libsmtp_la_SOURCES = comms.C smtp.C

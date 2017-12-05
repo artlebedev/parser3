@@ -1,4 +1,4 @@
-AM_CPPFLAGS = -I../types -I../classes -I../sql -I../lib/gc/include -I../lib/cord/include -I../lib/punycode $(INCLTDL) @PCRE_INCLUDES@ @XML_INCLUDES@
+AM_CPPFLAGS = -I../types -I../classes -I../sql -I../lib/punycode $(INCLTDL) @PCRE_INCLUDES@ @XML_INCLUDES@
 
 noinst_HEADERS = compile_tools.h utf8-to-lower.inc utf8-to-upper.inc
 noinst_LTLIBRARIES = libmain.la

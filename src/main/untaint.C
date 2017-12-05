@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_UNTAINT_C="$Id: untaint.C,v 1.173 2017/05/29 11:00:22 moko Exp $";
+volatile const char * IDENT_UNTAINT_C="$Id: untaint.C,v 1.174 2017/12/05 22:59:59 moko Exp $";
 
 
 #include "pa_string.h"
@@ -20,7 +20,7 @@ volatile const char * IDENT_UNTAINT_C="$Id: untaint.C,v 1.173 2017/05/29 11:00:2
 #include "pa_sapi.h"
 
 extern "C" { // author forgot to do that
-#include "ec.h"
+#include "../lib/cord/include/ec.h"
 }
 
 #include "pa_sql_connection.h"

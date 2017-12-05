@@ -1,4 +1,4 @@
-AM_CPPFLAGS = -I../classes -I../sql -I../lib/gd -I../lib/gc/include -I../lib/cord/include -I../lib/sdbm/pa-include -I../lib/memcached -I../classes/gd @PCRE_INCLUDES@ @XML_INCLUDES@ @MIME_INCLUDES@
+AM_CPPFLAGS = -I../classes -I../sql -I../lib/gd -I../lib/sdbm/pa-include -I../lib/memcached -I../classes/gd @PCRE_INCLUDES@ @XML_INCLUDES@ @MIME_INCLUDES@
 
 noinst_HEADERS = pa_value.h pa_junction.h pa_method.h pa_vbool.h pa_vcaller_wrapper.h pa_vclass.h pa_vcode_frame.h pa_vcookie.h pa_vdate.h pa_vdouble.h pa_venv.h pa_vfile.h pa_vform.h pa_vhash.h pa_vhashfile.h pa_vimage.h pa_vint.h pa_vjunction.h pa_vmath.h pa_vmethod_frame.h pa_vobject.h pa_vregex.h pa_vrequest.h pa_vresponse.h pa_vstateless_class.h pa_vstateless_object.h pa_vstatus.h pa_vstring.h pa_vtable.h pa_vvoid.h pa_vxdoc.h pa_vxnode.h pa_wcontext.h pa_wwrapper.h pa_vmail.h pa_vmemory.h pa_vconsole.h pa_property.h pa_vmemcached.h
 noinst_LTLIBRARIES = libtypes.la

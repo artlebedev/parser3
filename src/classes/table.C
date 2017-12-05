@@ -22,7 +22,7 @@
 #define USE_STRINGSTREAM
 #endif
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.345 2017/12/03 23:36:23 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.346 2017/12/05 22:59:57 moko Exp $";
 
 // class
 
@@ -465,7 +465,7 @@ static void _load(Request& r, MethodParams& params) {
 }
 
 #ifdef USE_STRINGSTREAM
-#include "gc_allocator.h"
+#include "../lib/gc/include/gc_allocator.h"
 
 typedef std::basic_stringstream<char, std::char_traits<char>, gc_allocator<char> > pa_stringstream;
 typedef std::basic_string<char, std::char_traits<char>, gc_allocator<char> > pa_string;

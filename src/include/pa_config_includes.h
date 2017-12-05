@@ -204,7 +204,7 @@ inline size_t min(size_t a, size_t b){ return a<b?a:b; }
 // allows to backtrace pointers
 //#define GC_DEBUG
 
-#include "gc.h"
+#include "../lib/gc/include/gc.h"
 
 #endif // PA_DEBUG_DISABLE_GC
 
