@@ -1,4 +1,11 @@
 @main[]
+
+$SQL[
+	$.drivers[^table::create{protocol	driver	client
+sqlite	../../sql/sqlite/.libs/libparser3sqlite.so	libsqlite3.so
+}]
+]
+
 ^connect[sqlite://:memory:]{
 	1. 2 + 2 = ^string:sql{select 2+2}
 
