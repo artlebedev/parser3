@@ -3,11 +3,6 @@ $CHARSETS[
 	$.windows-1251[../etc/parser3.charsets/windows-1251.cfg]
 ]
 
-$SQL[
-	$.drivers[^table::create{protocol	driver	client
-sqlite	../etc/libparser3sqlite.so	libsqlite3.so
-}]
-]
 $CLASS_PATH[^table::create{path
 /
 /tests
