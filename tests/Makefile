@@ -39,7 +39,7 @@ tests-curl: $(OUTPUTS_CURL) $(RESULTS_CURL)
 
 tests-sql: $(OUTPUTS_SQL) $(RESULTS_SQL)
 
-all: tests tests-curl
+all: tests tests-curl tests-sql
 
 clean:
 	$(RM) -f outputs/*.processed
