@@ -14,7 +14,7 @@ $tList[^file:list[$sDir]]
 $hf[^hashfile::open[$sDir/$sName]]
 $hf2[^hashfile::open[$sDir/${sName}2]]
 
-
+^try-catch{ ^hashfile::open[$sDir/$sName] }
 
 # check hashfile files -- it mustn't exist because of delayed opened
 ^checkFiles[$sDir;$sName]
@@ -25,7 +25,8 @@ $hf2[^hashfile::open[$sDir/${sName}2]]
 ^fill[$hf2]
 $iSizeBefore(^getFileSize[$sDir;${sName}2])
 
-
+$hf.temp[temp]
+^hf.clear[]
 
 # add item with key '0' for 2 sec
 $hf.0[
@@ -38,6 +39,8 @@ $hf.0[
 	$hf.[$i][=$i=]
 }
 
+
+^json:string[^hf.hash[]]
 
 
 <hr />

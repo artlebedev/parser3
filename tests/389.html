@@ -17,3 +17,47 @@ code coverage tests:
     3.1 ^b.double(2)
     3.2 ^if(^b.bool(false)){true}{false}
 
+4. inet
+    4.1 ^try-catch{ ^inet:aton[1.1.1.300] }
+    4.2 ^try-catch{ ^inet:aton[a.b.c.d] }
+
+    4.5 ^try-catch{ ^inet:ip2name[$empty] }
+    4.6 ^try-catch{ ^inet:ip2name[ip; $.no-such-option[] ] }
+    4.7 ^try-catch{ ^inet:ip2name[ip; $.ipv[invalid] ] }
+    4.8 ^try-catch{ ^inet:ip2name[1.1.1.300] }
+    4.9 ^try-catch{ ^inet:ip2name[1.1.1.1; $.ipv[6] ] }
+
+    4.11 ^try-catch{ ^inet:name2ip[$empty] }
+    4.12 ^try-catch{ ^inet:name2ip[name; $.no-such-option[] ] }
+    4.13 ^try-catch{ ^inet:name2ip[no-such-domain.артлебедев.рф; $.ipv[6] ] }
+    4.14 ^inet:name2ip[test.артлебедев.рф; $.ipv[6] ]
+
+5. math
+    5.1 ^math:random(1)
+    5.2 ^try-catch{ ^math:random(1e10) }
+
+    5.4 ^try-catch{ ^math:digest[shaX;123] }
+    5.5 ^try-catch{ ^math:digest[sha1;123; $.format[unknown] ] }
+    5.6 ^try-catch{ ^math:digest[sha1;123; $.no-such-option[] ] }
+
+    5.10 ^try-catch{ ^math:convert[1](17;10) }
+    5.11 ^try-catch{ ^math:convert[1](10;17) }
+    5.12 ^math:convert[$empty](10;10)
+    5.13 ^math:convert[+FF](16;10)
+
+6. string
+    6.1 ^try-catch{ $s[] ^s.int[] }
+    6.2 ^try-catch{ $s[] ^s.double[] }
+    6.3 ^try-catch{ $s[] ^s.bool[] }
+    6.4 ^try-catch{ $s[] ^s.bool(bug) }
+    6.5 ^try-catch{ $s[bug] ^s.bool[] }
+    6.6 ^if(^s.bool(1)){true}{false}
+    6.7 ^try-catch{ $s[s] ^s.pos[s](-1) }
+    6.8 $s[a,b,c] ^json:string[^s.rsplit[,]; $.indent(true) ]
+    6.9 $s[a,,b,c] ^json:string[^s.split[,,;rh]; $.indent(true) ]
+    6.10 ^try-catch{  ^s.split[,;hv] }
+    6.11 ^try-catch{ ^string:base64[anything; $.no-such-option[] ] }
+    6.12 ^try-catch{ ^string:unescape[anything;anything; $.no-such-option[] ] }
+    6.13 ^try-catch{ ^string:unescape[no-such-mode;anything] }
+    6.14 ^try-catch{ ^string:unescape[js;any%20thing] }
+    6.15 ^try-catch{ ^s.save[no-such-mode;file.txt] }

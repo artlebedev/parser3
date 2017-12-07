@@ -74,6 +74,14 @@ sqlite	../../sql/sqlite/.libs/libparser3sqlite.so	libsqlite3.so
 
 	6.8 $f[^file::create["'test'"]] ^f.sql-string[]
 
+	7. string
+
+	7.1 ^try-catch{ ^s[select * from pets; $.limit(1) $.offset(1) ] }
+	7.2 ^try-catch{ ^s[select pet from pets] }
+	7.3 ^try-catch{ ^s[select 2+2; $.bind[ $.name[$value] ] ] }
+	7.4 ^try-catch{ ^s[select 2+2; $.no-such-option[] ] }
+	7.5 ^try-catch{ ^s[select pet from pets; $.limit(0) ] }
+	7.6 ^s[select pet from pets; $.limit(0) $.default{default} ]
 
 }
 
@@ -88,3 +96,7 @@ sqlite	../../sql/sqlite/.libs/libparser3sqlite.so	libsqlite3.so
 @f[query;options]
 	$f[^file::sql{$query}[$options]]
 	^json:string[$f; $.indent(1) $.file[text] ]
+
+@s[query;options]
+	$s[^string:sql{$query}[$options]]
+	"$s"

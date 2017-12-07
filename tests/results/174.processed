@@ -1,10 +1,25 @@
 Content-Type: text/html
-Content-Length: 793
+Content-Length: 1007
 
+Type: parser.runtime,
+Source: open,
+Comment: this hashfile is already opened, use existing variable
 174/data.dir -- not exist<br />
 174/data.pag -- not exist<br />
 174/data2.dir -- not exist<br />
 174/data2.pag -- not exist<br />
+{
+"0":"zigi",
+"1":"=1=",
+"2":"=2=",
+"3":"=3=",
+"4":"=4=",
+"5":"=5=",
+"6":"=6=",
+"7":"=7=",
+"8":"=8=",
+"9":"=9="
+}
 <hr />
 174/data.dir -- exist<br />
 174/data.pag -- exist<br />
