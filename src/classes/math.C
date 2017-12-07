@@ -22,7 +22,7 @@
 extern "C" char *crypt(const char* , const char* );
 #endif
 
-volatile const char * IDENT_MATH_C="$Id: math.C,v 1.85 2017/02/07 22:00:28 moko Exp $";
+volatile const char * IDENT_MATH_C="$Id: math.C,v 1.86 2017/12/07 00:23:16 moko Exp $";
 
 // defines
 
@@ -391,7 +391,7 @@ static void _digest(Request& r, MethodParams& params) {
 	else if (smethod == "sha1" ) method = M_SHA1;
 	else if (smethod == "sha256" ) method = M_SHA256;
 	else if (smethod == "sha512" ) method = M_SHA512;
-	else throw Exception(PARSER_RUNTIME, &smethod, "must be 'md5' or 'sha1'");
+	else throw Exception(PARSER_RUNTIME, &smethod, "must be 'md5' or 'sha1' or 'sha256' or 'sha512'");
 
 	const char *hmac=0;
 	enum Format { F_HEX, F_BASE64 } format = F_HEX;
