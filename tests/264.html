@@ -13,3 +13,10 @@ $s[
 
 $f[^file::exec[cat^os[-windows].sh; $.stdin[$s] ;stdin]]
 $f.text
+
+code coverage tests:
+
+2. ^try-catch{ ^file::exec[cat^os[-windows].sh; $.HTTP_OK[value] $.CGI_OK[value] $.REMOTE_ADDR[allowed]  $.unsafe_env_name[env_value] ] }
+3. ^try-catch{ ^file::exec[text] }
+4. ^try-catch{ ^file::exec[cat^os[-windows].sh; $.stdin[ $.hash[] ] ] }
+5. ^try-catch{ ^file::exec[cat^os[-windows].sh; ;arg1;^table::create[nameless]{arg2}; $.arg_hash[] ] }
