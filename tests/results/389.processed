@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 2721
+Content-Length: 3399
 
 code coverage tests:
 1. int
@@ -108,3 +108,33 @@ Comment: is invalid mode, must be either 'js' or 'uri'
 6.14 any thing 6.15 Type: parser.runtime,
 Source: no-such-mode,
 Comment: unknown mode, must be 'append'
+7. file
+7.1 Type: parser.runtime,
+Source: base64,
+Comment: constructor can not have less then 3 parameters (has 2 parameters)
+7.2 Type: parser.runtime,
+Source: base64,
+Comment: mode must not be code (parameter #1)
+7.3 Type: parser.runtime,
+Source: base64,
+Comment: called with invalid option
+7.4 Type: base64.format,
+Source: base64,
+Comment: Unexpected end of chars
+7.5 {
+"class":"file",
+"name":"fname.text",
+"size":3,
+"mode":"text",
+"content-type":"strange"
+}
+7.10 /fname.txt
+7.11 /tests/fname.txt
+7.15 Type: parser.runtime,
+Source: list,
+Comment: called with invalid option
+7.15 Type: parser.runtime,
+Source: list,
+Comment: filter must be regex or string
+8. image
+7.1 7.2 7.3 

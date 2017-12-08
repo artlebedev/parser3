@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 3737
+Content-Length: 3821
 
 1. Type: curl,
 Source: info,
@@ -72,7 +72,10 @@ Don't delete or modify them.
 bytes 4-62/63
 13. Don't delete or modify them.
 bytes 33-62/63
-14. text : {
+13.1. Type: curl,
+Source: unknown,
+Comment: invalid http_version option value
+13.2. 14. text : {
 "name":"test.txt",
 "size":265,
 "mode":"binary",

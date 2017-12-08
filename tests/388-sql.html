@@ -55,6 +55,10 @@ sqlite	../../sql/sqlite/.libs/libparser3sqlite.so	libsqlite3.so
 
 	5.2. ^t[select * from pets; $.limit(1) $.offset(1) ]
 
+	5.3 ^try-catch{ ^t[select * from pets; $.bind[ $.name[value] ] ] }
+
+	5.4 ^try-catch{ ^t[select * from pets; $.no-such-option[] ] }
+
 
 	6. file
 

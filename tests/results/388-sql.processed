@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 2755
+Content-Length: 2923
 
 1. 2 + 2 = 4
 2. void
@@ -74,6 +74,12 @@ Comment: only 2 columns allowed for $.type[string].
 5.2. [
 	{"pet":"dog","food":"bone","aggressive":"\"never\"","weigth":"10"}
 ]
+5.3 Type: sql.execute,
+Source: select * from pets,
+Comment: bind variables not supported yet
+5.4 Type: parser.runtime,
+Source: sql,
+Comment: called with invalid option
 6. file
 6.1 {
 	"class":"file",

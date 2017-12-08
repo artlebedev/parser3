@@ -61,3 +61,22 @@ code coverage tests:
     6.13 ^try-catch{ ^string:unescape[no-such-mode;anything] }
     6.14 ^try-catch{ ^string:unescape[js;any%20thing] }
     6.15 ^try-catch{ ^s.save[no-such-mode;file.txt] }
+
+7. file
+    7.1 ^try-catch{ ^file::base64[1;2] }
+    7.2 ^try-catch{ ^file::base64{1}[2;3] }
+    7.3 ^try-catch{ ^file::base64[text;fname.text;XXXXXX; $.no-such-option[] ] }
+    7.4 ^try-catch{ ^file::base64[text;fname.text;XXXXXX; $.strict(true) ] }
+    7.5 $f[^file::base64[text;fname.text;XXXXXX; $.content-type[strange] ]] ^json:string[$f]
+
+    7.10 ^file:fullpath[/fname.txt]
+    7.11 ^file:fullpath[fname.txt]
+
+    7.15 ^try-catch{ ^file:list[.; $.stat(true) $.filter[.*] $.no-such-options[] ] }
+    7.15 ^try-catch{ ^file:list[.; $.filter[ $.hash[] ] ] }
+
+8. image
+    $i[^image::create(100;100)]
+    7.1 ^i.line(0;0;100;100;255)
+    7.2 ^i.bar(30;0;60;30;255*256)
+    7.3 ^i.replace(255;128)
