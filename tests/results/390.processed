@@ -1,0 +1,45 @@
+Content-Type: text/html
+Content-Length: 2218
+
+image code coverage tests:
+1. 2. 3. 4. 5. Type: ,
+Source: replace,
+Comment: coordinates table must contain two columns: x and y values
+6. 7. 8. 9. 10. 128
+11. {
+"class":"file",
+"name":"name.gif",
+"size":741,
+"mode":"binary",
+"content-type":"image\/gif",
+"base64":"R0lGODdhZABkAOMAAP\/\/\/wAA\/wD\/AAAAgODg4P8A\/\/\/d3f8AAKqq\/wAAAAAAAAAAAAAAAAAAAAAA\nAAAAACwAAAAAZABkAAAE\/nCASau9OFPBu\/9gKH5aSUhlqlZj67rrRZxxnb14ztnUTPNAnbAFBPh+\nxdhwCSoekckUU1CoWq\/YrPOJipam2bB4y\/V+meL0lVw2Y8BqNbvtZqHj6Tm9DoDjw3p7bn5\/WIGC\nXoSFVoeISYqLBY2OQXeRjEBPmkddUZCLk5qdRZ+FoaKJlpeSmZuuM6M2pX+nm7FKqpdzA6+UUrmR\nta63v0urmDy9ylArs3jCr8Q3wKCty73SF85x0Ni4xsesydfL2RtTU93K5n3oTOrrxe5C8PEa80v1\n9m\/49Nbk5NjxGdgDoEGBBPkYXIgwoZmFDB1KrAAx4kSJFS1eJJhR48Y6\/h09fvQSUuTISQhKojoZ\n5VVKlStZ\/nvyEqYvmRpc1bR5E6eMTTt5cvIZA6jQaERVGD06LKkJmky9OcWgKWjUnjihXpU6taAP\nq1ux8jigB2xYHw1VHDBAdtwRs2dh1VlrgK3bt3GReqFb126NpXltReHb1+8KnYGbAiFc2HAKxIkF\nj21cuK1SyJHFVmBcuSjmzENrcO5r+bFL0DHVUibt+TNquStG1y399DVAgbId17YdUPVq3Tl5H0yR\nm3Zw4bdLFG8t\/EDvDAeiS59uPINt6ti5OkQt\/VV3xdszR782HjzHxOUBptdsA71ziO8lD0RfMb55\nN4Htq7+W1vTZ9eTonKcdSXEJuIyBAyZRIILeVdQfVf8txGA5D0W4X0gPUmQheTBlOEGBAfLk4X8T\n+lAiRBmCyKFQD6q4ooh3XXXiETMO99eGIbJ4Y1gAHngUQnnVSOOPhy0IH5H+4XghjLspmSOT1uUn\n5JA6RimlhFM+91NkPW7SpU23cPclAd9tFct12E0X2CjIzZAllEa0yVsXcgqHQp12xomnbQNEAAA7\n"
+}
+12. <img src="name.gif" width="100" height="100" border="0" />
+13. Type: image.format,
+Source: unknown.format,
+Comment: unhandled image file name extension 'format'
+Type: image.format,
+Source: no-format,
+Comment: can not determine image type - no file name extension
+15. Type: image.format,
+Source: format.png,
+Comment: not PNG file - too small
+Type: image.format,
+Source: format.png,
+Comment: not PNG file - wrong signature
+16. Type: image.format,
+Source: format.jpg,
+Comment: not JPEG file - too small
+Type: image.format,
+Source: format.jpg,
+Comment: not JPEG file - wrong signature
+Type: image.format,
+Source: format.jpg,
+Comment: not JPEG file - marker not found
+17. <img src="163.jpg" width="100" height="100" border="0" />
+18. Type: file.missing,
+Source: load,
+Comment: can not open '/home/moko/Work/parser/parser3/tests/no-such-file.gif'
+19. Type: image.format,
+Source: 390.html,
+Comment: is not in GIF format

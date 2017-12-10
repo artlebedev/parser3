@@ -74,9 +74,3 @@ code coverage tests:
 
     7.15 ^try-catch{ ^file:list[.; $.stat(true) $.filter[.*] $.no-such-options[] ] }
     7.15 ^try-catch{ ^file:list[.; $.filter[ $.hash[] ] ] }
-
-8. image
-    $i[^image::create(100;100)]
-    7.1 ^i.line(0;0;100;100;255)
-    7.2 ^i.bar(30;0;60;30;255*256)
-    7.3 ^i.replace(255;128)

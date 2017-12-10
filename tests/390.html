@@ -1,0 +1,71 @@
+@main[]
+
+image code coverage tests:
+
+$i[^image::create(100;100)]
+
+1. ^i.line(0;0;100;100;255)
+2. ^i.bar(40;0;80;30;0xFF00)
+3. ^i.replace(255;128)
+4. ^i.fill(5;50;0xE0E0E0)
+
+5. ^i.replace(0xFF00;0xFF00FF)[^replace_region[]]
+    ^try-catch{ ^i.replace(0xFF00;0xFF00FF)[^table::create[nameless]{1	2	3}] }
+
+6. ^i.polybar(0xFFDDDD)[^paint_region[]]
+7. ^i.polygon(0xFF0000)[^paint_region[]]
+8. ^i.polyline(0xAAAAFF)[^line_region[]]
+
+9. ^i.sector(50;80;30;30;45;315;255*256*256)
+
+10. ^i.pixel(5;20;128) ^i.pixel(5;20)
+
+11. $f[^i.gif[name.gif]] ^json:string[$f; $.file[base64] ]
+
+12. $ii[^image::measure[$f]] ^ii.html[]
+
+13. $f[^file::create[content; $.name[unknown.format] ]]
+    ^try-catch{ ^image::measure[$f] }
+    $f[^file::create[content; $.name[no-format] ]]
+    ^try-catch{ ^image::measure[$f] }
+
+15. $f[^file::create[content; $.name[format.png] ]]
+    ^try-catch{ ^image::measure[$f] }
+    $f[^file::create[big enough content ****************************** ; $.name[format.png] ]]
+    ^try-catch{ ^image::measure[$f] }
+
+16. $f[^file::create[1; $.name[format.jpg] ]]
+    ^try-catch{ ^image::measure[$f] }
+    $f[^file::create[content; $.name[format.jpg] ]]
+    ^try-catch{ ^image::measure[$f] }
+    $f[^file::create[^#FF^#D8 JPEG content; $.name[format.jpg] ]]
+    ^try-catch{ ^image::measure[$f] }
+
+17. $f[^file::load[binary;096_dir/163.jpg]]
+    $ii[^image::measure[$f]] ^ii.html[]
+
+18. ^try-catch{ ^image::load[no-such-file.gif] }
+19. ^try-catch{ ^image::load[390.html] }
+
+@replace_region[]
+^table::create{x	y
+60	5
+90	5
+90	25
+60	25
+}]
+
+@paint_region[]
+^table::create{x	y
+80	50
+85	55
+85	65
+75	65
+75	55}]
+
+@line_region[]
+^table::create{x	y
+10	40
+5	50
+10	60}]
+

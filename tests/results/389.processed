@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 3399
+Content-Length: 3378
 
 code coverage tests:
 1. int
@@ -136,5 +136,3 @@ Comment: called with invalid option
 7.15 Type: parser.runtime,
 Source: list,
 Comment: filter must be regex or string
-8. image
-7.1 7.2 7.3 
