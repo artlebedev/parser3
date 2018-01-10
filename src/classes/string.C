@@ -20,7 +20,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.235 2017/05/17 14:22:11 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.236 2018/01/10 23:04:57 moko Exp $";
 
 // class
 
@@ -826,12 +826,12 @@ MString::MString(): Methoded("string") {
 	// ^string.split[delim][options]
 	// ^string.split[delim][options][column name]
 	add_native_method("split", Method::CT_DYNAMIC, _split, 1, 3);
-		// old names for backward compatibility
-		// ^string.lsplit[delim]
-		add_native_method("lsplit", Method::CT_DYNAMIC, _lsplit, 1, 1);
-		// ^string.rsplit[delim]
-		add_native_method("rsplit", Method::CT_DYNAMIC, _rsplit, 1, 1);
-	
+	// old names for backward compatibility
+	// ^string.lsplit[delim]
+	add_native_method("lsplit", Method::CT_DYNAMIC, _lsplit, 1, 1);
+	// ^string.rsplit[delim]
+	add_native_method("rsplit", Method::CT_DYNAMIC, _rsplit, 1, 1);
+
 	// ^string.match[regexp][options]
 	// ^string.match[regexp][options]{replacement-code}
 	// ^string.match[regexp][options]{replacement-code}{code-if-nothing-is-found}
