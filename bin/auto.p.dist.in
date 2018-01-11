@@ -1,4 +1,4 @@
-#$Id: auto.p.dist.in,v 1.19 2013/10/19 11:34:33 misha Exp $
+#$Id: auto.p.dist.in,v 1.20 2018/01/11 16:18:38 moko Exp $
 
 @conf[filespec]
 $confdir[^file:dirname[$filespec]]
@@ -20,7 +20,7 @@ $CHARSETS[
 $SQL[
 	$.drivers[^table::create{protocol	driver	client
 mysql	$sqldriversdir/libparser3mysql.@dll_extension@	libmysqlclient.@dll_extension@
-#sqlite	$sqldriversdir/libparser3sqlite.@dll_extension@	sqlite3.@dll_extension@
+#sqlite	$sqldriversdir/libparser3sqlite.@dll_extension@	libsqlite3.@dll_extension@
 #pgsql	$sqldriversdir/libparser3pgsql.@dll_extension@	libpq.@dll_extension@
 #oracle	$sqldriversdir/libparser3oracle.@dll_extension@	libclntsh.@dll_extension@
 }]
