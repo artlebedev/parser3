@@ -28,7 +28,7 @@
 #include "xnode.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_XDOC_C="$Id: xdoc.C,v 1.193 2017/11/15 22:48:57 moko Exp $";
+volatile const char * IDENT_XDOC_C="$Id: xdoc.C,v 1.194 2018/01/11 00:03:56 moko Exp $";
 
 // defines
 
@@ -383,7 +383,7 @@ static void _create(Request& r, MethodParams& params) {
 		const String& xml=r.process_to_string(param);
 		String::Body sbody=xml.cstr_to_string_body_untaint(String::L_XML, r.connection(false), &r.charsets);
 
-		xmldoc=xmlParseMemory(sbody.cstr(), sbody.length());
+		xmldoc=xmlReadMemory(sbody.cstr(), sbody.length(), NULL, NULL, XML_PARSE_HUGE);
 
 		//printf("document=0x%p\n", document);
 		if(!xmldoc || xmlHaveGenericErrors())
@@ -421,7 +421,7 @@ static void _create(Request& r, MethodParams& params) {
 			// must be last action in if, see after if}
 		} else {
 			VFile* vfile=param.as_vfile(String::L_AS_IS);
-			xmldoc=xmlParseMemory(vfile->value_ptr(), vfile->value_size());
+			xmldoc=xmlReadMemory(vfile->value_ptr(), vfile->value_size(), NULL, NULL, XML_PARSE_HUGE);
 			if(!xmldoc || xmlHaveGenericErrors())
 				throw XmlException(0, r);
 		}
@@ -458,7 +458,7 @@ static void _load(Request& r, MethodParams& params) {
 		uri_cstr=uri->taint_cstr(String::L_AS_IS); // leave as-is for xmlParseFile to handle
 
 	/// @todo!! add SAFE MODE!!
-	xmlDoc* xmldoc=xmlParseFile(uri_cstr);
+	xmlDoc* xmldoc=xmlReadFile(uri_cstr, NULL, XML_PARSE_HUGE);
 	if(!xmldoc || xmlHaveGenericErrors())
 		throw XmlException(uri, r);
 	
