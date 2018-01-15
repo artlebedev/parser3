@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 2218
+Content-Length: 2205
 
 image code coverage tests:
 1. 2. 3. 4. 5. Type: ,
@@ -39,7 +39,8 @@ Comment: not JPEG file - marker not found
 17. <img src="163.jpg" width="100" height="100" border="0" />
 18. Type: file.missing,
 Source: load,
-Comment: can not open '/home/moko/Work/parser/parser3/tests/no-such-file.gif'
+Comment: can not open '/-real-path-was-here-/no-such-file.gif'
+]
 19. Type: image.format,
 Source: 390.html,
 Comment: is not in GIF format

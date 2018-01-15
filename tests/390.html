@@ -44,7 +44,7 @@ $i[^image::create(100;100)]
 17. $f[^file::load[binary;096_dir/163.jpg]]
     $ii[^image::measure[$f]] ^ii.html[]
 
-18. ^try-catch{ ^image::load[no-such-file.gif] }
+18. $s[^try-catch{ ^image::load[no-such-file.gif] }] ^s.match[/.+/][]{/-real-path-was-here-/}]
 19. ^try-catch{ ^image::load[390.html] }
 
 @replace_region[]
