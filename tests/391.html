@@ -1,4 +1,4 @@
-$attr[^for[i](1;100){attr-$i="$i" }]
+$attr[^for[i](1;111){attr-$i="$i" }]
 $data[^for[i](0;10000){<data $attr />}]
 ^data.length[]
 ^try-catch{ $x[^xdoc::create{<?xml version="1.0" encoding="utf-8"?><root>$data</root>}] }
