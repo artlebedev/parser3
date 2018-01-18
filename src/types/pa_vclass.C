@@ -8,7 +8,7 @@
 #include "pa_vclass.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_PA_VCLASS_C="$Id: pa_vclass.C,v 1.57 2017/05/25 15:37:45 moko Exp $" IDENT_PA_VCLASS_H;
+volatile const char * IDENT_PA_VCLASS_C="$Id: pa_vclass.C,v 1.58 2018/01/18 23:06:51 moko Exp $" IDENT_PA_VCLASS_H;
 
 #ifdef OBJECT_PROTOTYPE
 	bool VClass::prototype = true;
@@ -121,7 +121,11 @@ const VJunction* VClass::put_element(Value& aself, const String& aname, Value* a
 		if(prop->getter){
 			if(VJunction *result=get_default_setter(aself, aname))
 				return result;
+#ifdef CLASS_GETTER_UNPROTECTED
+			prop->getter=0;
+#else
 			throw Exception(PARSER_RUNTIME,	0, "this property has no setter method (@SET_%s[value])", aname.cstr());
+#endif
 		}
 		
 		// just field, value can be 0 and unlike usual we don't remove it

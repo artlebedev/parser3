@@ -8,9 +8,10 @@
 #ifndef PA_VCLASS_H
 #define PA_VCLASS_H
 
-#define IDENT_PA_VCLASS_H "$Id: pa_vclass.h,v 1.70 2017/02/07 22:00:47 moko Exp $"
+#define IDENT_PA_VCLASS_H "$Id: pa_vclass.h,v 1.71 2018/01/18 23:06:51 moko Exp $"
 
 #define OBJECT_PROTOTYPE
+//#define CLASS_GETTER_UNPROTECTED
 
 // includes
 
