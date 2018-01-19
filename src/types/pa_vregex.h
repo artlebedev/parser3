@@ -8,7 +8,7 @@
 #ifndef PA_VREGEX_H
 #define PA_VREGEX_H
 
-#define IDENT_PA_VREGEX_H "$Id: pa_vregex.h,v 1.11 2017/02/07 22:00:50 moko Exp $"
+#define IDENT_PA_VREGEX_H "$Id: pa_vregex.h,v 1.12 2018/01/19 00:27:43 moko Exp $"
 
 // include
 
@@ -85,6 +85,7 @@ public: // usage
 	}
 
 	void set(Charset& acharset, const String* aregex, const String* aoptions);
+	void set(VRegex& avregex);
 
 	void compile();
 

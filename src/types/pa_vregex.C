@@ -9,7 +9,7 @@
 #include "pa_vint.h"
 #include "pa_vstring.h"
 
-volatile const char * IDENT_PA_VREGEX_C="$Id: pa_vregex.C,v 1.19 2017/02/07 22:00:50 moko Exp $" IDENT_PA_VREGEX_H;
+volatile const char * IDENT_PA_VREGEX_C="$Id: pa_vregex.C,v 1.20 2018/01/19 00:27:43 moko Exp $" IDENT_PA_VREGEX_H;
 
 // defines
 
@@ -75,17 +75,26 @@ void VRegex::regex_options(const String* options, int* result){
 
 void VRegex::set(Charset& acharset, const String* aregex, const String* aoptions){
 	if(aregex->is_empty())
-		throw Exception(PARSER_RUNTIME,
-			0,
-			"regexp is empty");
+		throw Exception(PARSER_RUNTIME, 0, "regexp is empty");
 
 	fcharset=&acharset;
 
 	fpattern=aregex->untaint_cstr(String::L_REGEX);
 
-	foptions_cstr=aoptions?aoptions->cstr():0;
+	foptions_cstr=aoptions ? aoptions->cstr() : 0;
 
 	regex_options(aoptions, foptions);
+}
+
+
+void VRegex::set(VRegex& avregex){
+	fcharset=avregex.fcharset;
+
+	fpattern=avregex.fpattern;
+
+	foptions_cstr=avregex.foptions_cstr;
+
+	regex_options(foptions_cstr ? new String(foptions_cstr) : 0, foptions);
 }
 
 
