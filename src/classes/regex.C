@@ -12,7 +12,7 @@
 #include "pa_vint.h"
 #include "pa_vregex.h"
 
-volatile const char * IDENT_REGEX_C="$Id: regex.C,v 1.12 2018/01/19 00:27:43 moko Exp $";
+volatile const char * IDENT_REGEX_C="$Id: regex.C,v 1.13 2018/01/19 00:31:18 moko Exp $";
 
 // class
 
@@ -30,8 +30,6 @@ DECLARE_CLASS_VAR(regex, new MRegex);
 // methods
 
 static void _create(Request& r, MethodParams& params) {
-	const String& pattern=params.as_string(0, "regexp must not be code");
-
 	VRegex& vregex=GET_SELF(r, VRegex);
 
 	if(VRegex* aregex = static_cast<VRegex*>(params[0].as(VREGEX_TYPE))){
@@ -39,11 +37,11 @@ static void _create(Request& r, MethodParams& params) {
 			throw Exception(PARSER_RUNTIME, 0, "options can't be specified");
 		vregex.set(*aregex);
 	} else {
+		const String& pattern=params.as_string(0, "regexp must not be code");
 		vregex.set(r.charsets.source(), &pattern, params.count()>1 ? &params.as_string(1, OPTIONS_MUST_NOT_BE_CODE) : 0);
 	}
 
 	vregex.compile();
-
 	vregex.study();
 }
 
