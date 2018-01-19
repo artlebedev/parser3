@@ -20,7 +20,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.236 2018/01/10 23:04:57 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.237 2018/01/19 16:47:35 moko Exp $";
 
 // class
 
@@ -381,15 +381,10 @@ static void _match(Request& r, MethodParams& params) {
 
 	if(Value* value=regexp.as(VREGEX_TYPE)){
 		if(options && options->is_defined())
-			throw Exception(PARSER_RUNTIME,
-				0,
-				"you can not specify regex-object and options together"
-			);
+			throw Exception(PARSER_RUNTIME, 0, "you can not specify regex-object and options together");
 		vregex=static_cast<VRegex*>(value);
 	} else {
-		vregex=new VRegex(r.charsets.source(),
-			&regexp.as_string(),
-			(options)?(&options->as_string()):0);
+		vregex=new VRegex(r.charsets.source(), &regexp.as_string(), (options) ? (&options->as_string()) : 0);
 		vregex->study();
 		vrcleaner.vregex=vregex;
 	}
@@ -398,9 +393,7 @@ static void _match(Request& r, MethodParams& params) {
 	int matches_count=0;
 
 	if(params_count<3) { // search
-		Table* table=src.match(vregex,
-			search_action, 0,
-			matches_count);
+		Table* table=src.match(vregex, search_action, 0, matches_count);
 
 		if(table){
 			r.write(*new VTable(table));
