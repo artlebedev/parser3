@@ -20,7 +20,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.237 2018/01/19 16:47:35 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.238 2018/01/19 16:52:50 moko Exp $";
 
 // class
 
@@ -172,9 +172,7 @@ static void _mid(Request& r, MethodParams& params) {
 
 	ssize_t sbegin=params.as_int(0, "p must be int", r);
 	if(sbegin<0)
-		throw Exception(PARSER_RUNTIME,
-			0, 
-			"p(%d) must be >=0", sbegin);
+		throw Exception(PARSER_RUNTIME, 0,  "p(%d) must be >=0", sbegin);
 	size_t begin=(size_t)sbegin;
 
 	size_t end;
@@ -182,9 +180,7 @@ static void _mid(Request& r, MethodParams& params) {
 	if(params.count()>1) {
 		ssize_t sn=params.as_int(1, "n must be int", r);
 		if(sn<0)
-			throw Exception(PARSER_RUNTIME,
-				0, 
-				"n(%d) must be >=0", sn);
+			throw Exception(PARSER_RUNTIME, 0, "n(%d) must be >=0", sn);
 		end=begin+(size_t)sn;
 	} else {
 		length=string.length(r.charsets.source());
@@ -238,9 +234,7 @@ static int split_options(const String* options) {
 			if(options->pos(o->keyL)!=STRING_NOT_FOUND 
 				|| (o->keyU && options->pos(o->keyU)!=STRING_NOT_FOUND)) {
 				if(result & o->checkBit)
-					throw Exception(PARSER_RUNTIME,
-						options,
-						"conflicting split options");
+					throw Exception(PARSER_RUNTIME, options, "conflicting split options");
 				result |= o->setBit;
 			}
 	}
@@ -286,8 +280,7 @@ static Table& split_horizontal(ArrayString& pieces, bool right) {
 	return table;
 }
 
-static void split_with_options(Request& r, MethodParams& params,
-							   int bits) {
+static void split_with_options(Request& r, MethodParams& params, int bits) {
 	const String& string=GET_SELF(r, VString).string();
 	size_t params_count=params.count();
 
@@ -298,7 +291,6 @@ static void split_with_options(Request& r, MethodParams& params,
 		const String* options=0;
 		if(params_count>1)
 			options=&params.as_string(1, OPTIONS_MUST_NOT_BE_CODE);
-		
 		bits=split_options(options);
 	}
 
@@ -309,9 +301,7 @@ static void split_with_options(Request& r, MethodParams& params,
 	if(params_count>2){
 		column_name=&params.as_string(2, COLUMN_NAME_MUST_BE_STRING);
 		if (horizontal && !column_name->is_empty()) 
-			throw Exception(PARSER_RUNTIME,
-				column_name,
-				"column name can't be specified with horisontal split");
+			throw Exception(PARSER_RUNTIME, column_name, "column name can't be specified with horisontal split");
 	} 
 	if(!column_name || column_name->is_empty())
 		column_name=new String("piece");
@@ -345,10 +335,7 @@ struct Replace_action_info {
 };
 #endif
 /// @todo they can do $global[$result] there, getting pointer to later-invalid local var, kill this
-static void replace_action(Table& table, ArrayString* row, 
-				int prestart, int prefinish, 
-				int poststart, int postfinish,
-				void *info) {
+static void replace_action(Table& table, ArrayString* row, int prestart, int prefinish, int poststart, int postfinish, void *info) {
 	Replace_action_info& ai=*static_cast<Replace_action_info *>(info);
 	if(row) { // begin&middle
 		// piece from last match['prestart'] to beginning of this match['prefinish']
@@ -414,11 +401,9 @@ static void _match(Request& r, MethodParams& params) {
 			if(replacement->is_defined())
 				replacement_code=replacement;
 		} else if(!replacement->is_void())
-			throw Exception(PARSER_RUNTIME,
-				0,
-				"replacement option should be junction or string");
+			throw Exception(PARSER_RUNTIME, 0, "replacement option should be junction or string");
 
-		Value* default_code=(params_count==4)?&params.as_junction(3, "default value must be code"):0;
+		Value* default_code=(params_count==4) ? &params.as_junction(3, "default value must be code") : 0;
 
 		String result;
 		VTable* vtable=new VTable;
@@ -444,8 +429,7 @@ static void _match(Request& r, MethodParams& params) {
 	}
 }
 
-static void change_case(Request& r, MethodParams&, 
-						String::Change_case_kind kind) {
+static void change_case(Request& r, MethodParams&, String::Change_case_kind kind) {
 	const String& src=GET_SELF(r, VString).string();
 
 	r.write(src.change_case(r.charsets.source(), kind));
@@ -474,9 +458,7 @@ public:
 
 	bool add_column(SQL_Error& error, const char* /*str*/, size_t /*length*/) {
 		if(got_column) {
-			error=SQL_Error(PARSER_RUNTIME,
-				//statement_string,
-				"result must contain exactly one column");
+			error=SQL_Error(PARSER_RUNTIME, /*statement_string,*/ "result must contain exactly one column");
 			return true;
 		}
 		got_column=true;
@@ -486,9 +468,7 @@ public:
 	bool add_row(SQL_Error& /*error*/) { /* ignore */ return false; }
 	bool add_row_cell(SQL_Error& error, const char* str, size_t) {
 		if(got_cell) {
-			error=SQL_Error(PARSER_RUNTIME,
-				//statement_string,
-				"result must not contain more then one row");
+			error=SQL_Error(PARSER_RUNTIME, /*statement_string,*/ "result must not contain more then one row");
 			return true;
 		}
 
@@ -574,9 +554,7 @@ static void _sql(Request& r, MethodParams& params) {
 		if(default_code) {
 			string=&r.process_to_string(*default_code);
 		} else
-			throw Exception(PARSER_RUNTIME,
-				0,
-				"produced no result, but no default option specified");
+			throw Exception(PARSER_RUNTIME, 0, "produced no result, but no default option specified");
 	}
 
 	r.write(*string);
@@ -592,10 +570,7 @@ static void _replace(Request& r, MethodParams& params) {
 		r.write(src.replace(dict));
 	} else {
 		// ^string.replace[from-string;to-string]
-		Dictionary dict(
-						params.as_string(0, "from must be string"),
-						params.as_string(1, "to must be string")
-					);
+		Dictionary dict(params.as_string(0, "from must be string"), params.as_string(1, "to must be string"));
 		r.write(src.replace(dict));
 	}
 
@@ -666,9 +641,7 @@ static void _trim(Request& r, MethodParams& params) {
 			else if(params_count==1)
 				chars=skind.cstr();
 			else
-				throw Exception(PARSER_RUNTIME,
-					&skind,
-					"'kind' must be one of " TRIM_START_OPTION ", " TRIM_BOTH_OPTION ", " TRIM_END_OPTION);
+				throw Exception(PARSER_RUNTIME, &skind, "'kind' must be one of " TRIM_START_OPTION ", " TRIM_BOTH_OPTION ", " TRIM_END_OPTION);
 		}
 
 		if(params_count>1) {
@@ -703,9 +676,7 @@ static void _base64(Request& r, MethodParams& params) {
 		pa_base64_decode(cstr, strlen(cstr), decoded, length, strict);
 		if(decoded && length){
 			if(memchr((const char*)decoded, 0, length))
-				throw Exception(PARSER_RUNTIME,
-					0,
-					"Invalid \\x00 character found while decode to string. Decode it to file instead.");
+				throw Exception(PARSER_RUNTIME, 0, "Invalid \\x00 character found while decode to string. Decode it to file instead.");
 
 			fix_line_breaks(decoded, length);
 			if(length)
