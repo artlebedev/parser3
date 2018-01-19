@@ -1,0 +1,8 @@
+@main[]
+
+$r[^regex::create[(\w+);g]]
+^json:string[^match[w1 w2;$r]]
+^json:string[^match[w1 w2;(\w+);g]]
+
+@match[aStr;aRegex;aOptions]
+^aStr.match[^regex::create[$aRegex;$aOptions]]
