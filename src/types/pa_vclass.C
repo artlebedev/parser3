@@ -8,7 +8,7 @@
 #include "pa_vclass.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_PA_VCLASS_C="$Id: pa_vclass.C,v 1.58 2018/01/18 23:06:51 moko Exp $" IDENT_PA_VCLASS_H;
+volatile const char * IDENT_PA_VCLASS_C="$Id: pa_vclass.C,v 1.59 2018/02/02 22:52:30 moko Exp $" IDENT_PA_VCLASS_H;
 
 #ifdef OBJECT_PROTOTYPE
 	bool VClass::prototype = true;
@@ -18,16 +18,14 @@ Property& VClass::get_property(const String& aname) {
 	Property* result=ffields.get(aname);
 	if (result) {
 		if (!result->getter && !result->setter) {
-			// can occur in ^process
-			Value *v=result->value;
-			throw Exception("parser.compile",
-				&aname,
-				"property can not be created, already exists field (%s) with that name", v ? v->type() : "unknown");
+			// replacing field with property
+			result=new Property();
+		} else {
+			// cloning existing property to avoid ancestor modification
+			result=new Property(*result);
 		}
-
-		// cloning existing property
-		result=new Property(*result);
 	} else {
+		// creating new property
 		result=new Property();
 	}
 	ffields.put(aname, result);
