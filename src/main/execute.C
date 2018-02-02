@@ -21,7 +21,7 @@
 #include "pa_vimage.h"
 #include "pa_wwrapper.h"
 
-volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.405 2017/02/07 22:00:40 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
+volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.406 2018/02/02 22:59:55 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
 
 //#define DEBUG_EXECUTE
 
@@ -672,6 +672,8 @@ void Request::execute(ArrayOperation& ops) {
 
 		case OP::OP_OBJECT_POOL:
 			{
+				debug_name=0;
+
 				ArrayOperation& local_ops=*i.next().ops;
 				
 				WContext *saved_wcontext=wcontext;
