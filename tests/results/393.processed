@@ -1,0 +1,7 @@
+Content-Type: text/html
+Content-Length: 148
+
+base field replaced with property: property
+self field replaced with property: child property
+base untached: base field
+just in case: child property

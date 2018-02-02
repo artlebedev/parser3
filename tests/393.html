@@ -1,0 +1,43 @@
+@main[]
+
+$o[^test::create[]]
+
+base field replaced with property: $o.field
+self field replaced with property: $o.child_field
+
+base untached: $base:field
+just in case: $child:child_field
+
+
+@CLASS
+base
+
+@auto[]
+$field[base field]
+
+@create[]
+
+@CLASS
+child
+
+@BASE
+base
+
+@auto[]
+
+$child_field[child field]
+
+^process{@GET_field[]
+property}
+
+^process{@GET_child_field[]
+child property
+}
+
+@CLASS
+test
+
+@BASE
+child
+
+@auto[]
