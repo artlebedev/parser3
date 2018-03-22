@@ -33,7 +33,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.376 2017/05/03 19:32:53 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.377 2018/03/22 16:04:05 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -777,7 +777,7 @@ static void parse_range(const String* s, Array<Range> &ar) {
 static void output_pieces(Request& r, bool header_only, const String& filename, size_t content_length, Value& date, bool add_last_modified) {
 	SAPI::add_header_attribute(r.sapi_info, "accept-ranges", "bytes");
 
-	const size_t BUFSIZE = 10*0x400;
+	const size_t BUFSIZE = 128*0x400;
 	char buf[BUFSIZE];
 	const char *range = SAPI::Env::get(r.sapi_info, "HTTP_RANGE");
 	size_t offset=0;
