@@ -142,24 +142,6 @@
 		<File
 			RelativePath="cordbscs.c">
 			<FileConfiguration
-				Name="Profile Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					GlobalOptimizations="TRUE"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"/>
-			</FileConfiguration>
-			<FileConfiguration
 				Name="Release|Win32">
 				<Tool
 					Name="VCCLCompilerTool"
@@ -180,24 +162,6 @@
 		</File>
 		<File
 			RelativePath="cordxtra.c">
-			<FileConfiguration
-				Name="Profile Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					GlobalOptimizations="TRUE"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Profile Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"/>
-			</FileConfiguration>
 			<FileConfiguration
 				Name="Release|Win32">
 				<Tool
