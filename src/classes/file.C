@@ -25,7 +25,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.263 2017/05/17 14:22:11 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.264 2018/05/10 23:05:10 moko Exp $";
 
 // defines
 
@@ -217,6 +217,18 @@ static void _copy(Request& r, MethodParams& params) {
 	Value& vfrom_file_name=params.as_no_junction(0, "from file name must not be code");
 	Value& vto_file_name=params.as_no_junction(1, "to file name must not be code");
 
+	bool append=false;
+	if(params.count()>2)
+		if(HashStringValue* options=params.as_hash(2)){
+			int valid_options=0;
+			if(Value* vappend=options->get("append")){
+				append=r.process(*vappend).as_bool();
+				valid_options++;
+			}
+			if(valid_options != options->count())
+				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+		}
+
 	String from_spec = r.absolute(vfrom_file_name.as_string());
 	const String& to_spec = r.absolute(vto_file_name.as_string());
 	
@@ -224,7 +236,9 @@ static void _copy(Request& r, MethodParams& params) {
 			to_spec,
 			"copy",
 			copy_open_target,
-			&from_spec);
+			&from_spec,
+			false /*as text*/,
+			append);
 }
 
 static void _load_pass_param(
@@ -1266,5 +1280,6 @@ MFile::MFile(): Methoded("file") {
 	add_native_method("md5", Method::CT_ANY, _md5, 0, 1);
 
 	// ^file:copy[from-file-name;to-file-name]
-	add_native_method("copy", Method::CT_STATIC, _copy, 2, 2);
+	// ^file:copy[from-file-name;to-file-name;$.append(false)]
+	add_native_method("copy", Method::CT_STATIC, _copy, 2, 3);
 }
