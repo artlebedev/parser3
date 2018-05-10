@@ -1,36 +1,45 @@
-$sFrom[157.html]
+$sSrc[157.html]
+
+$stSrc[^file::stat[$sSrc]]
+
 $sCopy[newdir1/157.copy]
 $sMove[newdir2/157.move]
-^try{
-	Copying file:
-	^file:copy[$sFrom;$sCopy]
+^try-catch{
+	Copying file: ^file:copy[$sSrc;$sCopy]
 	^if(-f $sCopy){
 		ok.
 	}{
 		no copy errors but target file doesn't exist.
 	}
-}{
-	failed.
-	$exception.handled(1)
 }
 <br />
 
-^if(-f $sCopy){
-	Moving file:
-	^try{
-		^file:move[$sCopy;$sMove]
-		^if(-f $sMove){
-			^if(-d ^file:dirname[$sCopy]){
-				moving ok but source dir still exist.
-			}{
-				ok.
-			}
-			^file:delete[$sMove]
-		}{
-			no move errors but target file doesn't exist.
-		}
+^if(! -f $sCopy){
+	^return[]
+}
+
+^try-catch{
+	Appending file: ^file:copy[$sSrc;$sCopy; $.append(true) ]
+
+	$stCopy[^file::stat[$sCopy]]
+	^if($stCopy.size == $stSrc.size*2){
+		ok.
 	}{
-		failed.
-		$exception.handled(1)
+		appended file size $stCopy.size is not double of source file size ${stSrc.size}.
+	}
+}
+<br />
+
+^try-catch{
+	Moving file: ^file:move[$sCopy;$sMove]
+	^if(-f $sMove){
+		^if(-d ^file:dirname[$sCopy]){
+			moving ok but source dir still exist.
+		}{
+			ok.
+		}
+		^file:delete[$sMove]
+	}{
+		no move errors but target file doesn't exist.
 	}
 }
