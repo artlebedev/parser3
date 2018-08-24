@@ -17,7 +17,7 @@
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.59 2017/11/29 19:10:05 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.60 2018/08/24 16:31:06 moko Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -81,11 +81,13 @@ struct ParserOptions : public PA_Allocated {
 	struct curl_httppost *f_post;
 	FILE *f_stderr;
 
-	// stuff to walkaround curl content-length bugs
+	// if response content-length check required
+	bool no_body;
+	// stuff to walkaround curl request content-length bugs
 	bool is_post;
 	bool has_content_length;
 
-	ParserOptions() : filename(0), content_type(0), is_text(true), charset(0), response_charset(0), url(0), f_post(0), f_stderr(0), is_post(false), has_content_length(false){}
+	ParserOptions() : filename(0), content_type(0), is_text(true), charset(0), response_charset(0), url(0), f_post(0), f_stderr(0), no_body(false), is_post(false), has_content_length(false){}
 	~ParserOptions() {
 		f_curl_formfree(f_post);
 		if(f_stderr)
@@ -170,6 +172,7 @@ struct CurlOption : public PA_Allocated{
 		CURL_URLENCODE, // url-encoded string
 		CURL_URL,
 		CURL_INT,
+		CURL_NO_BODY,
 		CURL_POST,
 		CURL_POSTFIELDS,
 		CURL_FORM,
@@ -223,7 +226,7 @@ public:
 
 		CURL_OPT(CURL_POST, POST);
 		CURL_OPT(CURL_INT, HTTPGET);
-		CURL_OPT(CURL_INT, NOBODY);
+		CURL_OPT(CURL_NO_BODY, NOBODY);
 		CURL_OPT(CURL_STRING, CUSTOMREQUEST);
 
 		CURL_OPT(CURL_POSTFIELDS, POSTFIELDS); // hopefully is safe too
@@ -469,6 +472,13 @@ static void curl_setopt(HashStringValue::key_type key, HashStringValue::value_ty
 			res=f_curl_easy_setopt(curl(), opt->id, value_int);
 			break;
 		}
+		case CurlOption::CURL_NO_BODY:{
+			// integer curl option
+			long value_int=(long)v.as_double();
+			res=f_curl_easy_setopt(curl(), opt->id, value_int);
+			options().no_body=value_int != 0;
+			break;
+		}
 		case CurlOption::CURL_POST:{
 			// integer curl option
 			long value_int=(long)v.as_double();
@@ -679,7 +689,7 @@ static int curl_header(char *data, size_t size, size_t nmemb, ResponseHeaders *r
 			result->clear();
 		} else {
 			result->add_header(header);
-			if(result->content_length>pa_file_size_limit)
+			if(result->content_length>pa_file_size_limit && !options().no_body)
 				return 0;
 		}
 	}
