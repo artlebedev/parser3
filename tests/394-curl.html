@@ -1,0 +1,10 @@
+@main[]
+^try-catch{ ^load[394.dat] }
+^load[394.dat; $.nobody(true) ]
+^load[readme]
+
+@load[url;options]
+^show[^curl:load[ ^hash::create[$options] $.url[http://www.parser.ru/_/tests/$url] ]]
+
+@show[f]
+file size: $f.size vs $f.CONTENT-LENGTH

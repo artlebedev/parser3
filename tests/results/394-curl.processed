@@ -1,0 +1,8 @@
+Content-Type: text/html
+Content-Length: 178
+
+Type: parser.runtime,
+Source: http://www.parser.ru/_/tests/394.dat,
+Comment: content size of 10240 bytes exceeds the limit (10000 bytes)
+file size: 0 vs 10240
+file size: 61 vs 63

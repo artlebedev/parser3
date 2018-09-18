@@ -30,7 +30,7 @@ $NO_PROTOTYPE[
 		$.max_recoursion(0)
 	]
 }
-^if($env:PATH_TRANSLATED eq '380.html'){
+^if($env:PATH_TRANSLATED eq '380.html' || $env:PATH_TRANSLATED eq '394-curl.html' ){
 	$LIMITS[
 		$.max_file_size(10000)
 	]
