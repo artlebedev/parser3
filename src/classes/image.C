@@ -26,7 +26,7 @@
 #include "pa_table.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.163 2017/05/16 22:39:19 moko Exp $";
+volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.164 2018/09/20 20:37:33 moko Exp $";
 
 // defines
 
@@ -291,6 +291,7 @@ public:
 		switch(whence) {
 		case SEEK_CUR: new_offset=offset+value; break;
 		case SEEK_SET: new_offset=(size_t)value; break;
+		case SEEK_END: new_offset=size; break;
 		default: 
 			throw Exception(0, 0, "whence #%d not supported", 0, whence); 
 			break; // never
@@ -310,23 +311,36 @@ public:
 
 /// PNG file header
 struct PNG_Header {
-	char dummy[12];
-	char signature[4]; //< must be "IHDR"
-	uchar high_width[2]; //< image width high bytes [we ignore for now]
-	uchar width[2]; //< image width low bytes
-	uchar high_height[2]; //< image height high bytes [we ignore for now]
-	uchar height[4]; //< image height
+	char	dummy[12];
+	char	signature[4];   //< must be "IHDR"
+	uchar	high_width[2];  //< image width high bytes [we ignore for now]
+	uchar	width[2];       //< image width low bytes
+	uchar	high_height[2]; //< image height high bytes [we ignore for now]
+	uchar	height[4];      //< image height
 };
 
 /// GIF file header
 struct GIF_Header {
-	char       signature[3];         // 'GIF'
-	char       version[3];
-	uchar       width[2];
-	uchar       height[2];
-	char       dif;
-	char       fonColor;
-	char       nulls;
+	char	signature[3];   // 'GIF'
+	char	version[3];
+	uchar	width[2];
+	uchar	height[2];
+	char	dif;
+	char	fonColor;
+	char	nulls;
+};
+
+/// BMP file header + DIB header part
+struct BMP_Header {
+	char	signature[2];   // 'BM'
+	uchar	file_size[4];
+	uchar	reserved[4];
+	uchar	bitmap_offset[4];
+	uchar	header_size[4];
+	uchar	width[2];
+	uchar	high_width[2];  //< image width high bytes [we ignore for now]
+	uchar	height[2];
+	uchar	high_height[2]; //< image height high bytes [we ignore for now]
 };
 
 /// JPEG record head
@@ -337,10 +351,10 @@ struct JPG_Segment_head {
 };
 /// JPEG frame header
 struct JPG_Size_segment_body {
-	char data;                    //< data precision of bits/sample
-	uchar height[2];               //< image height
-	uchar width[2];                //< image width
-	char numComponents;           //< number of color components
+	char data;              //< data precision of bits/sample
+	uchar height[2];        //< image height
+	uchar width[2];         //< image width
+	char numComponents;     //< number of color components
 };
 
 /// JPEG Exif TIFF Header
@@ -398,21 +412,6 @@ inline ushort endian_to_ushort(bool is_big, const uchar *b/* [2] */) {
 inline uint endian_to_uint(bool is_big, const uchar *b /* [4] */) {
 	return is_big?x_endian_to_uint(b[3], b[2], b[1], b[0]):
 		x_endian_to_uint(b[0], b[1], b[2], b[3]);
-}
-
-static void measure_gif(const String& origin_string, Measure_reader& reader, ushort& width, ushort& height) {
-
-	const char* buf;
-	const size_t head_size=sizeof(GIF_Header);
-	if(reader.read(buf, head_size)<head_size)
-		throw Exception(IMAGE_FORMAT, &origin_string, "not GIF file - too small");
-	GIF_Header *head=(GIF_Header *)buf;
-
-	if(strncmp(head->signature, "GIF", 3)!=0)
-		throw Exception(IMAGE_FORMAT, &origin_string, "not GIF file - wrong signature");
-
-	width=endian_to_ushort(false, head->width);
-	height=endian_to_ushort(false, head->height);
 }
 
 static Value* parse_IFD_entry_formatted_one_value(bool is_big, ushort format, size_t component_size, const uchar *value) {
@@ -692,6 +691,21 @@ static void measure_jpeg(const String& origin_string, Measure_reader& reader, Me
 	throw Exception(IMAGE_FORMAT, &origin_string, "broken JPEG file - size frame not found");
 }
 
+static void measure_gif(const String& origin_string, Measure_reader& reader, ushort& width, ushort& height) {
+
+	const char* buf;
+	const size_t head_size=sizeof(GIF_Header);
+	if(reader.read(buf, head_size)<head_size)
+		throw Exception(IMAGE_FORMAT, &origin_string, "not GIF file - too small");
+	GIF_Header *head=(GIF_Header *)buf;
+
+	if(strncmp(head->signature, "GIF", 3)!=0)
+		throw Exception(IMAGE_FORMAT, &origin_string, "not GIF file - wrong signature");
+
+	width=endian_to_ushort(false, head->width);
+	height=endian_to_ushort(false, head->height);
+}
+
 static void measure_png(const String& origin_string, Measure_reader& reader, ushort& width, ushort& height) {
 
 	const char* buf;
@@ -707,6 +721,25 @@ static void measure_png(const String& origin_string, Measure_reader& reader, ush
 	height=endian_to_ushort(true, head->height);
 }
 
+static void measure_bmp(const String& origin_string, Measure_reader& reader, ushort& width, ushort& height) {
+
+	const char* buf;
+	const size_t head_size=sizeof(BMP_Header);
+	if(reader.read(buf, head_size)<head_size)
+		throw Exception(IMAGE_FORMAT, &origin_string, "not BMP file - too small");
+	BMP_Header *head=(BMP_Header *)buf;
+
+	if(strncmp(head->signature, "BM", 2)!=0)
+		throw Exception(IMAGE_FORMAT, &origin_string, "not BMP file - wrong signature");
+
+	reader.seek(0, SEEK_END);
+	if(reader.tell() != endian_to_uint(false, head->file_size))
+		throw Exception(IMAGE_FORMAT, &origin_string, "not BMP file - length header and file size do not match");
+
+	width=endian_to_ushort(false, head->width);
+	height=endian_to_ushort(false, head->height);
+}
+
 // measure center
 
 static void measure(const String& file_name, Measure_reader& reader, Measure_info &info) {
@@ -719,6 +752,8 @@ static void measure(const String& file_name, Measure_reader& reader, Measure_inf
 			measure_jpeg(file_name, reader, info);
 		else if(strcasecmp(cext, "PNG")==0)
 			measure_png(file_name, reader, info.width, info.height);
+		else if(strcasecmp(cext, "BMP")==0)
+			measure_bmp(file_name, reader, info.width, info.height);
 		else
 			throw Exception(IMAGE_FORMAT, &file_name, "unhandled image file name extension '%s'", cext);
 	} else
