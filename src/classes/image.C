@@ -26,7 +26,7 @@
 #include "pa_table.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.164 2018/09/20 20:37:33 moko Exp $";
+volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.165 2018/09/24 13:09:55 moko Exp $";
 
 // defines
 
@@ -359,8 +359,8 @@ struct JPG_Size_segment_body {
 
 /// JPEG Exif TIFF Header
 struct JPG_Exif_TIFF_header {
-	uchar byte_align_identifier[2];
-	char dummy[2]; // always 000A [or 0A00]
+	char byte_align_identifier[2];
+	uchar signature[2]; // always 000A [or 0A00]
 	uchar first_IFD_offset[4]; // Usually the first IFD starts immediately next to TIFF header, so this offset has value '0x00000008'.
 };
 
@@ -691,6 +691,56 @@ static void measure_jpeg(const String& origin_string, Measure_reader& reader, Me
 	throw Exception(IMAGE_FORMAT, &origin_string, "broken JPEG file - size frame not found");
 }
 
+static bool parse_tiff_IFD(bool is_big, Measure_reader& reader, Measure_info &info) {
+	const char* buf;
+	if(reader.read(buf, sizeof(JPG_Exif_IFD_begin))<sizeof(JPG_Exif_IFD_begin))
+		return false;
+	JPG_Exif_IFD_begin *start=(JPG_Exif_IFD_begin *)buf;
+
+	ushort directory_entry_count=endian_to_ushort(is_big, start->directory_entry_count);
+	for(int i=0; i<directory_entry_count; i++) {
+		if(reader.read(buf, sizeof(JPG_Exif_IFD_entry))<sizeof(JPG_Exif_IFD_entry))
+			return false;
+
+		JPG_Exif_IFD_entry *entry=(JPG_Exif_IFD_entry *)buf;
+		ushort entry_tag=endian_to_ushort(is_big, entry->tag);
+
+		if(entry_tag == 256 || entry_tag == 257){
+			ushort entry_format=endian_to_ushort(is_big, entry->format);
+			if(entry_format != 3 && entry_format != 4 || endian_to_uint(is_big, entry->components_count) != 1)
+				return false;
+			uint value = (entry_format == 3) ? endian_to_ushort(is_big, entry->value_or_offset_to_it) : endian_to_uint(is_big, entry->value_or_offset_to_it);
+			(entry_tag == 256) ? info.width=value : info.height=value;
+			if(info.width && info.height)
+				return true;
+		}
+	}
+
+	return false;
+	// then goes: LLLLLLLL Offset to next IFD [not going there]
+}
+
+static void measure_tiff(const String& origin_string, Measure_reader& reader, Measure_info &info) {
+	const char* buf;
+
+	if(reader.read(buf, sizeof(JPG_Exif_TIFF_header))<sizeof(JPG_Exif_TIFF_header))
+		throw Exception(IMAGE_FORMAT, &origin_string, "not TIFF file - too small");
+
+	JPG_Exif_TIFF_header *head=(JPG_Exif_TIFF_header *)buf;
+
+	if(strncmp(head->byte_align_identifier, "II", 2)!=0 && strncmp(head->byte_align_identifier, "MM", 2)!=0)
+		throw Exception(IMAGE_FORMAT, &origin_string, "not TIFF file - wrong signature");
+
+	bool is_big=head->byte_align_identifier[0]=='M'; // [M]otorola vs [I]ntel
+
+	if(endian_to_ushort(is_big, head->signature) != 42)
+		throw Exception(IMAGE_FORMAT, &origin_string, "not TIFF file - wrong signature");
+
+	reader.seek(endian_to_uint(is_big, head->first_IFD_offset), SEEK_SET);
+	if(!parse_tiff_IFD(is_big, reader, info))
+		throw Exception(IMAGE_FORMAT, &origin_string, "broken TIFF file - size field entry not found");
+}
+
 static void measure_gif(const String& origin_string, Measure_reader& reader, ushort& width, ushort& height) {
 
 	const char* buf;
@@ -748,12 +798,14 @@ static void measure(const String& file_name, Measure_reader& reader, Measure_inf
 		cext++;
 		if(strcasecmp(cext, "GIF")==0)
 			measure_gif(file_name, reader, info.width, info.height);
-		else if(strcasecmp(cext, "JPG")==0 || strcasecmp(cext, "JPEG")==0) 
+		else if(strcasecmp(cext, "JPG")==0 || strcasecmp(cext, "JPEG")==0)
 			measure_jpeg(file_name, reader, info);
 		else if(strcasecmp(cext, "PNG")==0)
 			measure_png(file_name, reader, info.width, info.height);
 		else if(strcasecmp(cext, "BMP")==0)
 			measure_bmp(file_name, reader, info.width, info.height);
+		else if(strcasecmp(cext, "TIF")==0 || strcasecmp(cext, "TIFF")==0)
+			measure_tiff(file_name, reader, info);
 		else
 			throw Exception(IMAGE_FORMAT, &file_name, "unhandled image file name extension '%s'", cext);
 	} else
