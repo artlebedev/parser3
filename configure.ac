@@ -75,8 +75,8 @@ AC_ARG_WITH(coverage, [  --with-coverage         to enable gcov code coverage su
 
 AC_ARG_WITH(profiler, [  --with-profiler         to enable gprof code profiler support],
 	AC_MSG_WARN(enabling gprof support)
-	CFLAGS="$CFLAGS -O0 -pg"
-	CXXFLAGS="$CXXFLAGS -O0 -pg"
+	CFLAGS="$CFLAGS -O0 -pg -g"
+	CXXFLAGS="$CXXFLAGS -O0 -pg -g"
 )
 
 AC_ARG_WITH(assertions, [  --with-assertions       to enable assertions],
@@ -231,6 +231,7 @@ AC_ARG_WITH(xml,[  --with-xml=D            D is the directory where
 		AC_MSG_WARN([--with-xml value was not specified, hoping linker would find it])
 	else
 		XML_INCLUDES="-I$XML/include -I$XML/include/libxml2"
+		XML_LIBS="-L$XML/lib $XML_LIBS"
 
 		if test -f $XML/include/libxslt/xslt.h -a -f $XML/lib/libxml2.la \
 			-a -f $XML/lib/libxslt.la -a -f $XML/lib/libexslt.la; then
