@@ -1,3 +1,240 @@
+2019-01-15  moko
+
+	* src/classes/curl.C: ^curl:info[] - OrderedHashString used, items
+	  logically sorted
+
+2018-12-27  moko
+
+	* src/include/pa_config_includes.h: warning war:
+	  -Wdeprecated-register added for C++ 17
+
+2018-10-15  moko
+
+	* configure.ac: FreeBSD 11.2 can be build with ./configure
+	  --with-gc=/usr/local/lib/ --with-pcre=/usr/local/
+	  --with-xml=/usr/local/
+
+2018-09-24  moko
+
+	* tests/: 396.html, 396.tiff, results/396.processed: test for
+	  ^image::measure[] now supports tiff added (related to feature
+	  #1188)
+
+	* src/classes/image.C: ^image::measure[] now supports tiff
+	  (implements feature #1188)
+
+2018-09-20  moko
+
+	* tests/: 395.bmp, 395.html, results/395.processed: test for bmp
+	  files measure added (related to ticket #1188)
+
+	* src/classes/image.C: measure of bmp files implemented (related to
+	  ticket #1188)
+
+2018-09-18  moko
+
+	* tests/: 394-curl.html, results/394-curl.processed,
+	  results/auto.p: test for bug #1187 (max_file_size check for head
+	  requests) added
+
+2018-08-24  moko
+
+	* src/classes/curl.C: CURLOPT_NOBODY value used to check if
+	  response content-length check is required (fixes bug #1187)
+
+2018-05-11  moko
+
+	* tests/: 157.html, results/157.processed: test for ^file:copy[..;
+	  $.append(bool) ] option added (related to feature #919)
+
+	* src/classes/file.C: ^file:copy[..; $.append(bool) ] option added
+	  from misha@ patch (implements feature #919)
+
+2018-03-22  moko
+
+	* src/main/pa_request.C: $response:download[ $.file[file.namef] ]
+	  worked rather slow (about 1mb/sec) with 10kb buffer, replaced it
+	  with 128kb buffer.  Now works at least 12 times faster. :) May be
+	  Windows-only problem.
+
+	* src/lib/cord/cord.vcproj: Profile * complete cleanup (VS 2003
+	  build fix)
+
+2018-02-03  moko
+
+	* src/main/execute.C: removes irrelevant lines from exception stack
+	  trace when exceptions occurs in assigment (fixes bug #1165)
+
+	* tests/: 393.html, results/393.processed: test for behavour after
+	  "Property can not be created, already exists field with that
+	  name" exception removed (related to feature #1183)
+
+	* src/types/pa_vclass.C: "Property can not be created, already
+	  exists field with that name" exception removed (implements
+	  feature #1183)
+
+2018-01-19  moko
+
+	* src/classes/string.C: whitespace
+
+	* src/classes/string.C: whitespace
+
+	* tests/: 392.html, results/392.processed: test for
+	  ^regex::create[$regex] added (related to feature #1135)
+
+	* src/: classes/regex.C, types/pa_vregex.C, types/pa_vregex.h:
+	  ^regex::create[$regex] added (implements feature #1135)
+
+	* src/types/: pa_vclass.C, pa_vclass.h: CLASS_GETTER_UNPROTECTED
+	  commented define added (related to feature #1157)
+
+2018-01-17  moko
+
+	* buildall: gc 7.6.0 -> 7.6.2 (related to feature #1136)
+
+2018-01-15  moko
+
+	* tests/: 390.html, results/390.processed: real path replaced by
+	  stub
+
+	* tests/: 391.html, results/391.processed: test for feature #1181
+	  (XML_PARSE_HUGE exception) added
+
+2018-01-11  moko
+
+	* bin/auto.p.dist.in: sqlite3 -> libsqlite3
+
+	* src/classes/xdoc.C: xmlReadMemory/xmlReadFile now used with
+	  XML_PARSE_HUGE option passed by default (implements feature
+	  #1181)
+
+	* src/classes/string.C: whitespace
+
+2017-12-10  moko
+
+	* tests/: 389.html, 390.html, results/389.processed,
+	  results/390.processed: image code coverage tests added (related
+	  to feature #1125)
+
+2017-12-08  moko
+
+	* tests/: 346-curl.html, 388-sql.html, 389.html,
+	  results/346-curl.processed, results/388-sql.processed,
+	  results/389.processed: more code coverage tests
+
+	* tests/: 264.html, results/264.processed: code coverage for
+	  ^file::exec[]
+
+2017-12-07  moko
+
+	* tests/: 174.html, 388-sql.html, 389.html,
+	  results/388-sql.processed, results/389.processed,
+	  results/174.processed: more coverage tests
+
+	* src/classes/math.C: exception text actualized
+
+2017-12-06  moko
+
+	* tests/388-sql.html: $SQL can be here
+
+	* tests/results/auto.p: $SQL not required here
+
+	* tests/: 388-sql.html, 389.html, Makefile,
+	  results/388-sql.processed, results/389.processed, results/auto.p:
+	  code coverage tests for sql (using sqlite) and int/double/bool
+	  added (related to feature #1125)
+
+	* src/: classes/classes.vcproj, lib/cord/cord.vcproj,
+	  lib/json/json.vcproj, lib/md5/md5.vcproj,
+	  lib/memcached/memcached.vcproj, lib/punycode/punycode.vcproj,
+	  lib/sdbm/sdbm.vcproj, lib/smtp/smtp.vcproj, main/main.vcproj,
+	  targets/apache/ApacheModuleParser3Core.vcproj,
+	  targets/cgi/parser3.vcproj, targets/isapi/parser3isapi.vcproj,
+	  types/types.vcproj: gc\include no longer required
+
+	* src/lib/: cord/cord.vcproj, gd/gd.vcproj: gc\include no longer
+	  required
+
+	* src/: classes/Makefile.am, classes/table.C,
+	  include/pa_config_includes.h, include/pa_string.h,
+	  lib/cord/Makefile.am, lib/cord/cordbscs.c, lib/cord/cordxtra.c,
+	  lib/gd/Makefile.am, lib/json/Makefile.am, lib/sdbm/Makefile.am,
+	  lib/smtp/Makefile.am, main/Makefile.am, main/untaint.C,
+	  targets/apache/Makefile.am, targets/cgi/Makefile.am,
+	  types/Makefile.am: to be sure that our version of gc.h/cord.h is
+	  used, we now include it directly
+
+2017-12-04  moko
+
+	* src/lib/: gd/gd.vcproj, md5/md5.vcproj,
+	  memcached/memcached.vcproj, punycode/punycode.vcproj,
+	  sdbm/sdbm.vcproj, smtp/smtp.vcproj: includes unified, gc added
+	  where required
+
+	* src/: classes/memory.C, include/pa_config_includes.h: GC_DEBUG
+	  now can be used to trace memory allocations
+
+	* src/: classes/table.C, include/pa_config_includes.h,
+	  include/pa_memory.h, lib/cord/cordbscs.c, lib/cord/cordxtra.c,
+	  main/pa_globals.C: PA_DEBUG_DISABLE_GC works again, pa_gc_*
+	  method removes, libcord also can work without libgc
+
+	* src/classes/json.C: pa_gc_malloc_atomic should not be used
+
+2017-11-29  moko
+
+	* src/classes/curl.C: no exception if some of ^curl:info[] elements
+	  are not present (related to feature #1173)
+
+	* tests/346-curl.html: test updated to test curl content-length bug
+	  (related to feature #1173)
+
+	* tests/results/346-curl.processed: more test for content-length
+	  curl bug (related to feature #1173)
+
+	* tests/results/346-curl.processed: test results updated after
+	  #1173 implemented
+
+2017-11-28  moko
+
+	* src/classes/curl.C: another libcurl Content-length bug walkaround
+	  (related to feature #1173)
+
+2017-11-27  moko
+
+	* src/: classes/curl.C, lib/curl/curl.h: ^curl:options
+	  $.http_version[version string] added (implements feature #1173),
+	  CURLOPT_POSTFIELDSIZE is set to 0 now only for old versions,
+	  where $post(true) bug existed.
+
+2017-11-18  moko
+
+	* src/include/pa_memory.h: warning war (related to feature #1170)
+
+	* src/include/pa_pool.h: RedHat 7.3 compatibility fixed (related to
+	  feature #1170)
+
+2017-11-17  moko
+
+	* src/include/pa_memory.h: CHECK_DELETE_USAGE define added as
+	  std::basic_stringstream used in ^table.csv-string[] is compatible
+	  with delete usage check only under Debian 9 (related to feature
+	  #1170)
+
+2017-11-16  moko
+
+	* src/: classes/curl.C, classes/hash.C, classes/json.C,
+	  classes/table.C, classes/xdoc.C, include/pa_config_includes.h,
+	  include/pa_hash.h, include/pa_memory.h, include/pa_pool.h,
+	  main/pa_charset.C, main/pa_memory.C, main/pa_xml_io.C,
+	  sql/pa_sql_driver.h, types/pa_value.h, types/pa_vmemcached.C,
+	  types/pa_vxdoc.h: regular new/delete no longer used in our code,
+	  stubs defend from accidental use (implements feature #1170)
+
+2017-06-24  moko
+
+	* configure.ac: minor fix: thanks to alx@
+
 2017-05-29  moko
 
 	* src/types/pa_vmail.C: mail headers are now correctly truncated -
@@ -473,8 +710,6 @@
 	  -wAll warning war
 
 2016-12-23  moko
-
-	* src/lib/ltdl/Makefile.in: extra dist fixed
 
 	* src/lib/ltdl/Makefile.am: extra dist added
 
@@ -2201,41 +2436,20 @@
 	* src/classes/string.C: Static calls fixed for ^string:base64[],
 	  ^string:idna[], ^string:js-escape[] (closes bug #1031)
 
-	* Makefile.am, Makefile.in, acsite.m4, configure.ac, configure.in:
-	  Warning war: configure.in -> configure.ac
+	* Makefile.am, acsite.m4, configure.ac, configure.in: Warning war:
+	  configure.in -> configure.ac
 
-	* Makefile.in, configure, configure.in, bin/Makefile.in,
-	  etc/Makefile.in, etc/parser3.charsets/Makefile.in,
-	  src/Makefile.in, src/classes/Makefile.in,
-	  src/include/Makefile.in, src/include/pa_config_auto.h.in,
-	  src/lib/Makefile.in, src/lib/cord/Makefile.in,
-	  src/lib/cord/include/Makefile.in,
-	  src/lib/cord/include/private/Makefile.in,
-	  src/lib/curl/Makefile.in, src/lib/gc/Makefile.in,
-	  src/lib/gc/include/Makefile.in, src/lib/gd/Makefile.in,
-	  src/lib/json/Makefile.in, src/lib/md5/Makefile.in,
-	  src/lib/memcached/Makefile.in, src/lib/pcre/Makefile.in,
-	  src/lib/punycode/Makefile.in, src/lib/sdbm/Makefile.in,
-	  src/lib/sdbm/pa-include/Makefile.in, src/lib/smtp/Makefile.in,
-	  src/main/Makefile.in, src/sql/Makefile.in,
-	  src/targets/Makefile.in, src/targets/apache/Makefile.in,
-	  src/targets/cgi/Makefile.in, src/targets/isapi/Makefile.in,
-	  src/types/Makefile.in: more correct timezone check for FreeBSD
-	  Warning war: configure.in -> configure.ac
+	* configure, configure.in, src/include/pa_config_auto.h.in: more
+	  correct timezone check for FreeBSD Warning war: configure.in ->
+	  configure.ac
 
 	* configure, configure.in, src/classes/Makefile.am,
-	  src/classes/Makefile.in, src/include/pa_config_auto.h.in,
-	  src/lib/cord/Makefile.am, src/lib/cord/Makefile.in,
-	  src/lib/gd/Makefile.am, src/lib/gd/Makefile.in,
-	  src/lib/json/Makefile.am, src/lib/json/Makefile.in,
-	  src/lib/memcached/Makefile.am, src/lib/memcached/Makefile.in,
-	  src/lib/pcre/Makefile.am, src/lib/pcre/Makefile.in,
-	  src/lib/sdbm/Makefile.am, src/lib/sdbm/Makefile.in,
-	  src/lib/smtp/Makefile.am, src/lib/smtp/Makefile.in,
-	  src/main/Makefile.am, src/main/Makefile.in,
-	  src/targets/apache/Makefile.am, src/targets/apache/Makefile.in,
-	  src/targets/cgi/Makefile.am, src/targets/cgi/Makefile.in,
-	  src/types/Makefile.am, src/types/Makefile.in: INCLUDES ->
+	  src/include/pa_config_auto.h.in, src/lib/cord/Makefile.am,
+	  src/lib/gd/Makefile.am, src/lib/json/Makefile.am,
+	  src/lib/memcached/Makefile.am, src/lib/pcre/Makefile.am,
+	  src/lib/sdbm/Makefile.am, src/lib/smtp/Makefile.am,
+	  src/main/Makefile.am, src/targets/apache/Makefile.am,
+	  src/targets/cgi/Makefile.am, src/types/Makefile.am: INCLUDES ->
 	  AM_CPPFLAGS (warning war) PA_DATE64 (0..9999 year date range)
 	  check added
 
@@ -2273,8 +2487,8 @@
 
 2015-08-06  moko
 
-	* src/types/: Makefile.am, Makefile.in, pa_vdate.C, pa_vdate.h,
-	  types.vcproj: pa_vdate.C added
+	* src/types/: Makefile.am, pa_vdate.C, pa_vdate.h, types.vcproj:
+	  pa_vdate.C added
 
 2015-08-05  moko
 
@@ -3108,11 +3322,10 @@
 	* configure.in: uint16_t check added
 
 	* src/: classes/json.C, lib/json/JSON_parser.C,
-	  lib/json/JSON_parser.h, lib/json/Makefile.am,
-	  lib/json/Makefile.in, lib/json/json.c, lib/json/json.h,
-	  lib/json/json.vcproj, lib/json/pa_json.C, lib/json/pa_json.h:
-	  JSON_parser with non-free licence is replaced with similar GPL
-	  licenced libjson (fixes issue #892)
+	  lib/json/JSON_parser.h, lib/json/Makefile.am, lib/json/json.c,
+	  lib/json/json.h, lib/json/json.vcproj, lib/json/pa_json.C,
+	  lib/json/pa_json.h: JSON_parser with non-free licence is replaced
+	  with similar GPL licenced libjson (fixes issue #892)
 
 2013-07-25  moko
 
@@ -3266,8 +3479,6 @@
 2013-07-13  moko
 
 	* src/lib/md5/md5.vcproj: sha2 added
-
-	* src/lib/md5/Makefile.in: sha2 support
 
 	* src/: lib/md5/pa_sha2.c, lib/md5/pa_sha2.h, lib/md5/Makefile.am,
 	  classes/math.C: sha2 support (sha256/sha512 digest)
@@ -3556,8 +3767,8 @@
 
 2012-06-28  moko
 
-	* src/targets/apache/: Makefile.am, Makefile.in: fix for apache
-	  cflags for Linux 32 bit
+	* src/targets/apache/Makefile.am: fix for apache cflags for Linux
+	  32 bit
 
 2012-06-27  moko
 
@@ -3621,10 +3832,10 @@
 	  __imp__pcre_* fix for Windows
 
 	* src/: include/pa_charset.h, lib/pcre/Makefile.am,
-	  lib/pcre/Makefile.in, lib/pcre/pa_pcre_internal.h,
-	  lib/pcre/pcre_internal.h: pcre_internal.h -> pa_pcre_internal.h
-	  for Windows compatibility (win32/pcre has own copy of
-	  pcre_internal.h _pcre_default_tables define fixed
+	  lib/pcre/pa_pcre_internal.h, lib/pcre/pcre_internal.h:
+	  pcre_internal.h -> pa_pcre_internal.h for Windows compatibility
+	  (win32/pcre has own copy of pcre_internal.h _pcre_default_tables
+	  define fixed
 
 2012-06-18  moko
 
@@ -3657,25 +3868,10 @@
 	* configure.in: --with-gc and --with-pcre now also processed
 	  correctly
 
-	* Makefile.in, aclocal.m4, configure, bin/Makefile.in,
-	  etc/Makefile.in, etc/parser3.charsets/Makefile.in,
-	  src/Makefile.in, src/classes/Makefile.in,
-	  src/include/Makefile.in, src/include/pa_config_auto.h.in,
-	  src/lib/Makefile.in, src/lib/cord/Makefile.in,
-	  src/lib/cord/include/Makefile.in,
-	  src/lib/cord/include/private/Makefile.in,
-	  src/lib/curl/Makefile.in, src/lib/gc/Makefile.in,
-	  src/lib/gc/include/Makefile.in, src/lib/gd/Makefile.in,
-	  src/lib/json/Makefile.in, src/lib/md5/Makefile.in,
-	  src/lib/memcached/Makefile.in, src/lib/pcre/Makefile.in,
-	  src/lib/sdbm/Makefile.in, src/lib/sdbm/pa-include/Makefile.in,
-	  src/lib/smtp/Makefile.in, src/main/Makefile.in,
-	  src/sql/Makefile.in, src/targets/Makefile.in,
-	  src/targets/apache/Makefile.in, src/targets/cgi/Makefile.in,
-	  src/targets/isapi/Makefile.in, src/types/Makefile.in: now aclocal
-	  -I src/lib/ltdl/m4/ && autoheader && automake && autoconf should
-	  be run on rol1 using automake / aclocal (GNU automake) 1.11.1
-	  autoconf (GNU Autoconf) 2.68
+	* aclocal.m4, configure, src/include/pa_config_auto.h.in: now
+	  aclocal -I src/lib/ltdl/m4/ && autoheader && automake && autoconf
+	  should be run on rol1 using automake / aclocal (GNU automake)
+	  1.11.1 autoconf (GNU Autoconf) 2.68
 
 	* configure.in: new PARSER_VERSION logic
 
@@ -3714,8 +3910,7 @@
 	  tests/results/281.processed: "hash flocked" error removed for
 	  safe operations like ^h._count[] ( new feature: #335 )
 
-	* src/targets/apache/: Makefile.am, Makefile.in: libmod_parser3 ->
-	  mod_parser3
+	* src/targets/apache/Makefile.am: libmod_parser3 -> mod_parser3
 
 	* buildall-with-xml, buildall-without-xml: --with-static -> --with
 
@@ -3784,38 +3979,21 @@
 
 	* src/targets/cgi/pp3.cmd: old PAF stuff
 
-	* Makefile.am, Makefile.in: ACLOCAL_AMFLAGS = -I src/lib/ltdl/m4
-	  added and some beauty
+	* Makefile.am: ACLOCAL_AMFLAGS = -I src/lib/ltdl/m4 added and some
+	  beauty
 
 	* depcomp: from libtool 2.4.2
 
 	* configure.in: ltdl directory removed, it has correct Makefile.in
 
-	* src/lib/ltdl/Makefile.in: correct Makefile.in from libtoolize
-
 2012-06-09  moko
 
-	* Makefile.am, Makefile.in, aclocal.m4, config.guess, config.sub,
-	  configure, install-sh, ltmain.sh, missing, bin/Makefile.in,
-	  etc/Makefile.in, etc/parser3.charsets/Makefile.in,
-	  src/Makefile.in, src/classes/Makefile.in,
-	  src/include/Makefile.in, src/include/pa_config_auto.h.in,
-	  src/lib/Makefile.in, src/lib/cord/Makefile.in,
-	  src/lib/cord/include/Makefile.in,
-	  src/lib/cord/include/private/Makefile.in,
-	  src/lib/curl/Makefile.in, src/lib/gc/Makefile.in,
-	  src/lib/gc/include/Makefile.in, src/lib/gd/Makefile.in,
-	  src/lib/json/Makefile.in, src/lib/md5/Makefile.in,
-	  src/lib/memcached/Makefile.in, src/lib/pcre/Makefile.in,
-	  src/lib/sdbm/Makefile.in, src/lib/sdbm/pa-include/Makefile.in,
-	  src/lib/smtp/Makefile.in, src/main/Makefile.in,
-	  src/sql/Makefile.in, src/targets/Makefile.in,
-	  src/targets/apache/Makefile.in, src/targets/cgi/Makefile.in,
-	  src/targets/isapi/Makefile.in, src/types/Makefile.in:
+	* Makefile.am, aclocal.m4, config.guess, config.sub, configure,
+	  install-sh, ltmain.sh, missing, src/include/pa_config_auto.h.in:
 	  autogenerated files updated after libtool update
 
-	* src/lib/ltdl/: COPYING.LIB, Makefile.am, Makefile.in, README,
-	  acinclude.m4, aclocal.m4, argz.c, argz_.h, config-h.in, config.h,
+	* src/lib/ltdl/: COPYING.LIB, Makefile.am, README, acinclude.m4,
+	  aclocal.m4, argz.c, argz_.h, config-h.in, config.h,
 	  config_auto.h.in, config_fixed.h, configure, configure.ac,
 	  configure.in, lt__alloc.c, lt__dirent.c, lt__strl.c,
 	  lt_dlloader.c, lt_error.c, ltdl.c, ltdl.h, slist.c,
@@ -3913,8 +4091,7 @@
 
 2012-06-05  moko
 
-	* src/targets/: Makefile.am, Makefile.in: cgi now build with apache
-	  module
+	* src/targets/Makefile.am: cgi now build with apache module
 
 	* src/classes/memcached.C: flish ttl fixed
 
@@ -4092,7 +4269,7 @@
 
 2012-04-27  moko
 
-	* src/targets/apache/: Makefile.am, Makefile.in:
+	* src/targets/apache/Makefile.am:
 	  ../../lib/memcached/libmemcached.a added
 
 2012-04-27  misha
@@ -4133,25 +4310,10 @@
 	* src/: classes/curl.C, lib/curl/curl.h: lib/curl/curl.h now
 	  contains what we need from curl, #ifdef HAVE_CURL removed
 
-	* Makefile.in, configure, configure.in, bin/Makefile.in,
-	  etc/Makefile.in, etc/parser3.charsets/Makefile.in,
-	  src/Makefile.in, src/classes/Makefile.am,
-	  src/classes/Makefile.in, src/include/Makefile.in,
+	* configure, configure.in, src/classes/Makefile.am,
 	  src/include/pa_config_auto.h.in, src/include/pa_version.h,
-	  src/lib/Makefile.am, src/lib/Makefile.in,
-	  src/lib/cord/Makefile.in, src/lib/cord/include/Makefile.in,
-	  src/lib/cord/include/private/Makefile.in,
-	  src/lib/curl/Makefile.am, src/lib/curl/Makefile.in,
-	  src/lib/curl/curl.h, src/lib/gc/Makefile.in,
-	  src/lib/gc/include/Makefile.in, src/lib/gd/Makefile.in,
-	  src/lib/json/Makefile.in, src/lib/ltdl/Makefile.in,
-	  src/lib/md5/Makefile.in, src/lib/memcached/Makefile.in,
-	  src/lib/pcre/Makefile.in, src/lib/sdbm/Makefile.in,
-	  src/lib/sdbm/pa-include/Makefile.in, src/lib/smtp/Makefile.in,
-	  src/main/Makefile.in, src/sql/Makefile.in,
-	  src/targets/Makefile.in, src/targets/apache/Makefile.in,
-	  src/targets/cgi/Makefile.in, src/targets/isapi/Makefile.in,
-	  src/types/Makefile.in: curl.h header now in src/lib/curl, not
+	  src/lib/Makefile.am, src/lib/curl/Makefile.am,
+	  src/lib/curl/curl.h: curl.h header now in src/lib/curl, not
 	  configure option
 
 2012-04-19  moko
@@ -4211,10 +4373,7 @@
 
 2012-03-20  moko
 
-	* configure, configure.in, src/classes/Makefile.in,
-	  src/lib/Makefile.in, src/lib/memcached/Makefile.in,
-	  src/targets/cgi/Makefile.in, src/types/Makefile.in: Makefiles.in
-	  updated for memcached
+	* configure, configure.in: Makefiles.in updated for memcached
 
 	* src/targets/cgi/Makefile.am: cleanup
 
@@ -4231,7 +4390,7 @@
 	* src/main/execute.C: ident now works under Linux + ident displays
 	  filenames (closes issue #818)
 
-	* src/types/: Makefile.am, Makefile.in, pa_vmethod_frame_global.h,
+	* src/types/: Makefile.am, pa_vmethod_frame_global.h,
 	  pa_vmethod_frame_local.h: cleanup: pa_vmethod_frame_global.h
 	  pa_vmethod_frame_local.h removed
 
@@ -4571,7 +4730,7 @@
 
 2011-02-21  misha
 
-	* src/targets/apache/: Makefile.am, Makefile.in: - mention
+	* src/targets/apache/: Makefile.am: - mention
 	  ApacheModuleParser3.vcproj was removed
 
 	* src/types/pa_vjunction.C: - EOL before EOF was added (warning
@@ -4648,9 +4807,6 @@
 	* src/lib/sdbm/: pa_strings.C, sdbm.c, pa-include/pa_strings.h: apr
 	  -> pa
 
-	* src/: classes/Makefile.in, lib/sdbm/Makefile.in,
-	  lib/sdbm/pa-include/Makefile.in, types/Makefile.in: apr -> pa
-
 	* configure.in: apr -> pa
 
 	* src/types/: pa_vhashfile.C, pa_vhashfile.h: apr -> pa
@@ -4688,22 +4844,7 @@
 
 2010-11-24  moko
 
-	* bin/Makefile.in, etc/Makefile.in,
-	  etc/parser3.charsets/Makefile.in: APACHE13->APACHE
-
-	* src/: Makefile.in, classes/Makefile.in, include/Makefile.in,
-	  lib/Makefile.in, lib/cord/Makefile.in,
-	  lib/cord/include/Makefile.in,
-	  lib/cord/include/private/Makefile.in, lib/gc/Makefile.in,
-	  lib/gc/include/Makefile.in, lib/gd/Makefile.in,
-	  lib/json/Makefile.in, lib/ltdl/Makefile.in, lib/md5/Makefile.in,
-	  lib/pcre/Makefile.in, lib/sdbm/Makefile.in, lib/smtp/Makefile.in,
-	  main/Makefile.in, sql/Makefile.in, targets/Makefile.in,
-	  targets/cgi/Makefile.in, targets/isapi/Makefile.in,
-	  types/Makefile.in: APACHE13 -> APACHE
-
-	* Makefile.in, src/targets/apache/Makefile.in, configure: apxs
-	  support
+	* configure: apxs support
 
 	* configure.in: apxs support -Bstatic gc removed for OS X
 
@@ -5013,10 +5154,9 @@
 
 2010-09-21  moko
 
-	* etc/parser3.charsets/: Makefile.in, windows-1250.cfg,
-	  windows-1251.cfg, windows-1254.cfg, windows-1257.cfg,
-	  x-mac-cyrillic.cfg: updated to conform to
-	  http://unicode.org/Public/MAPPINGS/VENDORS/
+	* etc/parser3.charsets/: windows-1250.cfg, windows-1251.cfg,
+	  windows-1254.cfg, windows-1257.cfg, x-mac-cyrillic.cfg: updated
+	  to conform to http://unicode.org/Public/MAPPINGS/VENDORS/
 
 2010-09-20  misha
 
@@ -7108,9 +7248,6 @@
 
 2008-09-05  misha
 
-	* src/lib/pcre/Makefile.in: file Makefile.in was added on branch
-	  release_3_3_0 on 2008-09-05 10:59:35 +0000
-
 	* src/lib/pcre/Makefile.am: file Makefile.am was added on branch
 	  release_3_3_0 on 2008-09-05 10:59:35 +0000
 
@@ -7219,10 +7356,10 @@
 
 2008-08-15  misha
 
-	* src/lib/pcre/: LICENCE, Makefile.am, Makefile.in, README,
-	  Tech.Notes, get.c, internal.h, pcre.3, pcre.3.html, pcre.3.txt,
-	  pcre.c, pcre.h, pcre.vcproj, study.c, maketables.c,
-	  pcre_dftables.vcproj, dftables.c: - old PCRE files removed
+	* src/lib/pcre/: LICENCE, Makefile.am, README, Tech.Notes, get.c,
+	  internal.h, pcre.3, pcre.3.html, pcre.3.txt, pcre.c, pcre.h,
+	  pcre.vcproj, study.c, maketables.c, pcre_dftables.vcproj,
+	  dftables.c: - old PCRE files removed
 
 	* src/lib/pcre/config.h: - configuration for PCRE library
 
@@ -8566,7 +8703,7 @@
 
 	* operators.txt: - info bool class was added
 
-	* src/: classes/Makefile.am, classes/Makefile.in, classes/bool.C,
+	* src/: classes/Makefile.am, classes/bool.C,
 	  classes/classes.vcproj, classes/double.C, classes/int.C,
 	  classes/string.C, classes/void.C, classes/xnode.C,
 	  include/pa_string.h, types/pa_vbool.h, types/pa_vclass.h,
@@ -8886,30 +9023,29 @@
 
 2005-12-29  paf
 
-	* INSTALL, Makefile.am, Makefile.in, buildall-with-xml,
-	  buildall-without-xml, configure, configure.in,
-	  src/include/pa_version.h, src/lib/ltdl/Makefile.am,
-	  src/lib/ltdl/Makefile.in, src/lib/ltdl/acconfig.h,
+	* INSTALL, Makefile.am, buildall-with-xml, buildall-without-xml,
+	  configure, configure.in, src/include/pa_version.h,
+	  src/lib/ltdl/Makefile.am, src/lib/ltdl/acconfig.h,
 	  src/lib/ltdl/acinclude.m4, src/lib/ltdl/config.guess,
 	  src/lib/ltdl/config.sub, src/lib/ltdl/configure.in,
 	  src/lib/ltdl/install-sh, src/lib/ltdl/ltmain.sh,
 	  src/lib/ltdl/missing: . merged from 3.2.1
 
-	* Makefile.am, Makefile.in, src/lib/ltdl/Makefile.am,
-	  src/lib/ltdl/Makefile.in: . now site.m4 also packaged when 'make
-	  dist', so do configure companion files in src/lib/ltdl
+	* Makefile.am, src/lib/ltdl/Makefile.am: . now site.m4 also
+	  packaged when 'make dist', so do configure companion files in
+	  src/lib/ltdl
 
-	* src/lib/ltdl/: Makefile.am, Makefile.in, acconfig.h,
-	  acinclude.m4, config.guess, config.sub, configure.in, install-sh,
-	  ltmain.sh, missing: . now config_auto.h is created with configure
-	  [were constant]
+	* src/lib/ltdl/: Makefile.am, acconfig.h, acinclude.m4,
+	  config.guess, config.sub, configure.in, install-sh, ltmain.sh,
+	  missing: . now config_auto.h is created with configure [were
+	  constant]
 
 	* INSTALL: . references to documentation and some clarification
 
 	* buildall-with-xml, buildall-without-xml: . farawell doc
 	  indication
 
-	* Makefile.am, Makefile.in: . dist+=buildall*
+	* Makefile.am: . dist+=buildall*
 
 2005-12-28  paf
 
@@ -9018,7 +9154,7 @@
 	  results/148.processed, results/149.processed, results/auto.p: .
 	  now works if we turn off default auto.p
 
-	* configure, src/lib/Makefile.in, src/lib/cord/Makefile.in: . makes
+	* configure: . makes
 
 	* src/types/pa_vxnode.C: . less warnings
 
@@ -9318,28 +9454,13 @@
 	  situations "class not found because .p file has bad rights" << in
 	  that case error would be explicit "access denied to 'this' file"
 
-	* Makefile.in, aclocal.m4, configure, bin/Makefile.in,
-	  etc/Makefile.in, etc/parser3.charsets/Makefile.in,
-	  src/Makefile.in, src/classes/Makefile.in,
-	  src/include/Makefile.in, src/include/pa_config_auto.h.in,
-	  src/lib/Makefile.in, src/lib/cord/Makefile.in,
-	  src/lib/cord/include/Makefile.in,
-	  src/lib/cord/include/private/Makefile.in, src/lib/gc/Makefile.in,
-	  src/lib/gc/include/Makefile.in, src/lib/gd/Makefile.in,
-	  src/lib/ltdl/Makefile.in, src/lib/md5/Makefile.in,
-	  src/lib/pcre/Makefile.in, src/lib/sdbm/Makefile.in,
-	  src/lib/smtp/Makefile.in, src/main/Makefile.in,
-	  src/sql/Makefile.in, src/targets/Makefile.in,
-	  src/targets/cgi/Makefile.in, src/targets/isapi/Makefile.in,
-	  src/types/Makefile.in: makefiles
+	* aclocal.m4, configure, src/include/pa_config_auto.h.in: makefiles
 
 	* src/: classes/file.C, include/pa_common.h, main/execute.C,
 	  main/pa_common.C, main/pa_request.C: ! changed file/dir_readable
 	  to simple file/dir_exist, this would help in situations "class
 	  not found because .p file has bad rights" << in that case error
 	  would be explicit "access denied to 'this' file"
-
-	* src/: include/Makefile.in, main/Makefile.in: makefiles
 
 	* src/: classes/file.C, include/Makefile.am, include/pa_common.h,
 	  include/pa_http.h, main/Makefile.am, main/main.vcproj,
@@ -9364,19 +9485,7 @@
 
 	* acinclude.m4, configure.in: . merged underquting fixes
 
-	* bin/Makefile.in, etc/Makefile.in,
-	  etc/parser3.charsets/Makefile.in, src/Makefile.in,
-	  src/classes/Makefile.in, src/include/Makefile.in,
-	  src/include/pa_config_auto.h.in, src/lib/Makefile.in,
-	  src/lib/cord/Makefile.in, src/lib/cord/include/Makefile.in,
-	  src/lib/cord/include/private/Makefile.in, src/lib/gc/Makefile.in,
-	  src/lib/gc/include/Makefile.in, src/lib/gd/Makefile.in,
-	  src/lib/ltdl/Makefile.in, src/lib/md5/Makefile.in,
-	  src/lib/pcre/Makefile.in, src/lib/sdbm/Makefile.in,
-	  src/lib/smtp/Makefile.in, src/main/Makefile.in,
-	  src/sql/Makefile.in, src/targets/Makefile.in,
-	  src/targets/cgi/Makefile.in, src/targets/isapi/Makefile.in,
-	  src/types/Makefile.in: configure+makes
+	* src/include/pa_config_auto.h.in: configure+makes
 
 	* src/classes/op.C: . overmerged a little
 
@@ -9564,8 +9673,8 @@
 
 2005-11-03  paf
 
-	* src/main/: Makefile.am, Makefile.in, compile.tab.C: removed $<
-	  from .y compilation, not all makefiles liked that
+	* src/main/: Makefile.am, compile.tab.C: removed $< from .y
+	  compilation, not all makefiles liked that
 
 2005-08-30  paf
 
@@ -9831,18 +9940,18 @@
 	  src/classes/table.C, src/classes/xdoc.C, src/classes/xnode.C,
 	  src/classes/xnode.h, src/include/pa_hash.h,
 	  src/include/pa_version.h, src/main/execute.C,
-	  src/types/Makefile.am, src/types/Makefile.in,
-	  src/types/pa_method.h, src/types/pa_value.h,
-	  src/types/pa_vclass.C, src/types/pa_vclass.h,
-	  src/types/pa_vcode_frame.h, src/types/pa_vconsole.h,
-	  src/types/pa_vcookie.C, src/types/pa_vcookie.h,
-	  src/types/pa_vhash.h, src/types/pa_vhashfile.h,
-	  src/types/pa_vimage.C, src/types/pa_vimage.h,
-	  src/types/pa_vmethod_frame.h, src/types/pa_vobject.C,
-	  src/types/pa_vobject.h, src/types/pa_vproperty.h,
-	  src/types/pa_vrequest.C, src/types/pa_vrequest.h,
-	  src/types/pa_vresponse.C, src/types/pa_vresponse.h,
-	  src/types/pa_vstateless_class.C, src/types/pa_vstateless_class.h,
+	  src/types/Makefile.am, src/types/pa_method.h,
+	  src/types/pa_value.h, src/types/pa_vclass.C,
+	  src/types/pa_vclass.h, src/types/pa_vcode_frame.h,
+	  src/types/pa_vconsole.h, src/types/pa_vcookie.C,
+	  src/types/pa_vcookie.h, src/types/pa_vhash.h,
+	  src/types/pa_vhashfile.h, src/types/pa_vimage.C,
+	  src/types/pa_vimage.h, src/types/pa_vmethod_frame.h,
+	  src/types/pa_vobject.C, src/types/pa_vobject.h,
+	  src/types/pa_vproperty.h, src/types/pa_vrequest.C,
+	  src/types/pa_vrequest.h, src/types/pa_vresponse.C,
+	  src/types/pa_vresponse.h, src/types/pa_vstateless_class.C,
+	  src/types/pa_vstateless_class.h,
 	  src/types/pa_vstateless_object.h, src/types/pa_vvoid.h,
 	  src/types/pa_vxnode.C, src/types/pa_vxnode.h,
 	  src/types/pa_wwrapper.h: + 3.2.0 beta: merged from
@@ -9870,7 +9979,7 @@
 	* src/types/pa_vobject.h: . fixed warning
 
 	* configure, configure.in, src/include/pa_version.h,
-	  src/types/Makefile.am, src/types/Makefile.in: 3.2.0beta started
+	  src/types/Makefile.am: 3.2.0beta started
 
 	* src/: classes/xnode.C, include/pa_hash.h,
 	  types/pa_vstateless_class.C: ! new asserts were all false.
@@ -10059,10 +10168,9 @@
 
 2005-01-19  paf
 
-	* src/: lib/gd/Makefile.am, lib/gd/Makefile.in,
-	  lib/ltdl/Makefile.am, lib/ltdl/Makefile.in,
-	  targets/cgi/parser3.C, types/Makefile.am, types/Makefile.in:
-	  forgotten makefiles.	couple warnings in parser3.C
+	* src/: lib/gd/Makefile.am, lib/ltdl/Makefile.am,
+	  targets/cgi/parser3.C, types/Makefile.am: forgotten makefiles.
+	  couple warnings in parser3.C
 
 2004-12-23  paf
 
@@ -10314,8 +10422,6 @@
 	* src/classes/table.C: bugfix:
 	  ^table.save[export.csv;$.separator[^;]] now works fine [separator
 	  were ignored, and \t used unconditionally]
-
-	* src/types/Makefile.in: added vhash.c
 
 	* src/types/Makefile.am: added vhash.c
 
@@ -10930,9 +11036,8 @@
 
 2004-02-25  paf
 
-	* etc/parser3.charsets/: Makefile.am, Makefile.in: bugfix:
-	  @sysconfdir@ used [were old @charsetsdir@ recently erased from
-	  configure.in]
+	* etc/parser3.charsets/Makefile.am: bugfix: @sysconfdir@ used [were
+	  old @charsetsdir@ recently erased from configure.in]
 
 	* src/classes/hash.C: feature: ^hash::sql{one colum result} now
 	  produces hash of column=>1
@@ -10951,8 +11056,7 @@
 
 	* src/lib/smtp/: smtp.C: smtp on unix: steps to work on unix
 
-	* src/classes/: Makefile.am, Makefile.in: smtp on unix: steps to
-	  work on unix
+	* src/classes/Makefile.am: smtp on unix: steps to work on unix
 
 	* src/: classes/mail.C, types/pa_vmail.C, types/pa_vmail.h: smtp on
 	  unix: steps to work on unix [extracted 'to']
@@ -10961,10 +11065,9 @@
 
 	* src/lib/smtp/smtp.C: smtp on unix: compiled on win32
 
-	* src/: lib/smtp/Makefile.am, lib/smtp/Makefile.in,
-	  lib/smtp/comms.C, lib/smtp/smtp.C, lib/smtp/smtp.h,
-	  targets/cgi/Makefile.am, targets/cgi/Makefile.in: started porting
-	  smtp to unix [testing on solaris]
+	* src/: lib/smtp/Makefile.am, lib/smtp/comms.C, lib/smtp/smtp.C,
+	  lib/smtp/smtp.h, targets/cgi/Makefile.am: started porting smtp to
+	  unix [testing on solaris]
 
 2004-02-20  paf
 
@@ -11035,19 +11138,7 @@
 
 2004-02-13  paf
 
-	* bin/Makefile.in, etc/Makefile.in,
-	  etc/parser3.charsets/Makefile.in, src/Makefile.in,
-	  src/classes/Makefile.in, src/include/Makefile.in,
-	  src/include/pa_version.h, src/lib/Makefile.in,
-	  src/lib/cord/Makefile.in, src/lib/cord/include/Makefile.in,
-	  src/lib/cord/include/private/Makefile.in, src/lib/gc/Makefile.in,
-	  src/lib/gc/include/Makefile.in, src/lib/gd/Makefile.in,
-	  src/lib/ltdl/Makefile.in, src/lib/md5/Makefile.in,
-	  src/lib/pcre/Makefile.in, src/lib/sdbm/Makefile.in,
-	  src/lib/smtp/Makefile.in, src/main/Makefile.in,
-	  src/sql/Makefile.in, src/targets/Makefile.in,
-	  src/targets/cgi/Makefile.in, src/targets/isapi/Makefile.in,
-	  src/types/Makefile.in: prerelease
+	* src/include/pa_version.h: prerelease
 
 	* src/main/pa_stylesheet_connection.C: change: .xsl.stamp now not
 	  used, introducing dependencies timestamp check
@@ -11269,8 +11360,8 @@
 
 2003-12-22  paf
 
-	* src/include/: Makefile.am, Makefile.in: bugfix: removed from
-	  dist: src/include/pa_config_auto.h which were configured for
+	* src/include/Makefile.am: bugfix: removed from dist:
+	  src/include/pa_config_auto.h which were configured for
 	  make-dist-platform and badly updated proper config file in target
 	  [when .tar used for updating existing source tree]
 
@@ -11460,24 +11551,19 @@
 
 2003-11-21  paf
 
-	* Makefile.am, Makefile.in, configure, configure.in,
-	  src/classes/Makefile.am, src/classes/Makefile.in,
-	  src/include/Makefile.in, src/include/pa_config_auto.h.in,
-	  src/lib/Makefile.in, src/lib/gd/Makefile.in,
-	  src/lib/smtp/Makefile.in, src/targets/cgi/Makefile.am,
-	  src/targets/cgi/Makefile.in, src/types/Makefile.am,
-	  src/types/Makefile.in: rearrange: gd&smtp moved to src/lib
+	* Makefile.am, configure, configure.in, src/classes/Makefile.am,
+	  src/include/pa_config_auto.h.in, src/targets/cgi/Makefile.am,
+	  src/types/Makefile.am: rearrange: gd&smtp moved to src/lib
 
 	* src/classes/classes.vcproj: rearrange: gd&smtp moved to src/lib
 
 	* src/classes/mail.C: bugfix: typo
 
 	* parser3.sln, src/classes/Makefile.am, src/lib/Makefile.am,
-	  src/lib/gd/Makefile.am, src/lib/gd/Makefile.in,
-	  src/lib/gd/gd.vcproj, src/lib/gd/gif.C, src/lib/gd/gif.h,
-	  src/lib/gd/gifio.C, src/lib/gd/mtables.h,
-	  src/lib/smtp/Makefile.am, src/lib/smtp/Makefile.in,
-	  src/lib/smtp/comms.C, src/lib/smtp/smtp.C, src/lib/smtp/smtp.h,
+	  src/lib/gd/Makefile.am, src/lib/gd/gd.vcproj, src/lib/gd/gif.C,
+	  src/lib/gd/gif.h, src/lib/gd/gifio.C, src/lib/gd/mtables.h,
+	  src/lib/smtp/Makefile.am, src/lib/smtp/comms.C,
+	  src/lib/smtp/smtp.C, src/lib/smtp/smtp.h,
 	  src/lib/smtp/smtp.vcproj: rearrange: gd&smtp moved to src/lib
 
 	* src/main/pa_exec.C: bug in safe mode
@@ -11672,8 +11758,8 @@
 	* parser3.sln, src/targets/cgi/Makefile.am: .vcproj & .am updated
 	  to include sdbm
 
-	* src/include/: Makefile.in, pa_config_includes.h, pa_version.h:
-	  our replacements of max& co only for cpp
+	* src/include/: pa_config_includes.h, pa_version.h: our
+	  replacements of max& co only for cpp
 
 	* src/lib/sdbm/: Makefile.am, apr_file_io.C, apr_strings.C: move to
 	  upper dir, .am updated
@@ -11759,7 +11845,7 @@
 
 	* src/classes/table.C: compiled on unix
 
-	* src/classes/: Makefile.am, Makefile.in: classes.C to rebuild last
+	* src/classes/Makefile.am: classes.C to rebuild last
 
 	* src/classes/mail.C: compiled on unix
 
@@ -12114,10 +12200,9 @@
 	  .NET to detect Jalindi Igloo capabilities.
 
 	* ChangeLog, configure, configure.in, src/classes/Makefile.am,
-	  src/classes/Makefile.in, src/classes/classes.awk,
-	  src/doc/footer.htm, src/include/pa_config_fixed.h,
-	  src/include/pa_version.h, src/lib/Makefile.am,
-	  src/lib/Makefile.in, src/main/compile.tab.C,
+	  src/classes/classes.awk, src/doc/footer.htm,
+	  src/include/pa_config_fixed.h, src/include/pa_version.h,
+	  src/lib/Makefile.am, src/main/compile.tab.C,
 	  src/main/pa_charset.C, src/main/pa_string.C, src/main/untaint.C,
 	  src/types/pa_vmail.C: merged 3.1.0 latest changes
 
@@ -12131,16 +12216,15 @@
 
 2003-07-29  paf
 
-	* src/classes/: Makefile.am, Makefile.in, classes.awk: classes.awk
-	  added to make dist
+	* src/classes/: Makefile.am, classes.awk: classes.awk added to make
+	  dist
 
 	* src/types/pa_vmail.C: just started --with-mail-receive
 
 2003-07-28  paf
 
-	* src/: classes/Makefile.am, classes/Makefile.in, lib/Makefile.am,
-	  lib/Makefile.in: removed circular dependence in src/classes,
-	  src/lib/gc now in dist
+	* src/: classes/Makefile.am, lib/Makefile.am: removed circular
+	  dependence in src/classes, src/lib/gc now in dist
 
 	* src/main/pa_string.C: ^cache bug fix [were not working at all]
 
@@ -12155,8 +12239,7 @@
 
 	* src/include/pa_version.h: release
 
-	* src/lib/gc/include/: Makefile.am, Makefile.in, gc.h: moved
-	  tempate_gc to HEAD
+	* src/lib/gc/include/: Makefile.am, gc.h: moved tempate_gc to HEAD
 
 	* ChangeLog, src/classes/classes.dsp, src/main/main.dsp,
 	  src/main/pa_globals.C, src/targets/cgi/parser3.dsp,
@@ -12165,13 +12248,10 @@
 
 	* src/main/: compile.tab.C, pa_memory.C: moved tempate_gc to HEAD
 
-	* ChangeLog, INSTALL, Makefile.am, Makefile.in, acsite.m4,
-	  configure, configure.in, operators.txt, parser3.dsw,
-	  bin/Makefile.in, etc/Makefile.in,
-	  etc/parser3.charsets/Makefile.in,
+	* ChangeLog, INSTALL, Makefile.am, acsite.m4, configure,
+	  configure.in, operators.txt, parser3.dsw,
 	  etc/parser3.charsets/koi8-r.cfg,
-	  etc/parser3.charsets/windows-1251.cfg, src/Makefile.in,
-	  src/classes/Makefile.am, src/classes/Makefile.in,
+	  etc/parser3.charsets/windows-1251.cfg, src/classes/Makefile.am,
 	  src/classes/classes.C, src/classes/classes.awk,
 	  src/classes/classes.dsp, src/classes/classes.h,
 	  src/classes/date.C, src/classes/double.C, src/classes/file.C,
@@ -12182,16 +12262,16 @@
 	  src/classes/xdoc.C, src/classes/xnode.C, src/classes/xnode.h,
 	  src/doc/exception.dox, src/doc/index.dox, src/doc/memory.dox,
 	  src/doc/string.dox, src/include/Makefile.am,
-	  src/include/Makefile.in, src/include/pa_array.h,
-	  src/include/pa_cache_managers.h, src/include/pa_charset.h,
-	  src/include/pa_charsets.h, src/include/pa_common.h,
-	  src/include/pa_config_auto.h.in, src/include/pa_config_fixed.h,
-	  src/include/pa_config_includes.h, src/include/pa_dictionary.h,
-	  src/include/pa_dir.h, src/include/pa_exception.h,
-	  src/include/pa_exec.h, src/include/pa_globals.h,
-	  src/include/pa_hash.h, src/include/pa_memory.h,
-	  src/include/pa_opcode.h, src/include/pa_operation.h,
-	  src/include/pa_pool.h, src/include/pa_pragma_pack_begin.h,
+	  src/include/pa_array.h, src/include/pa_cache_managers.h,
+	  src/include/pa_charset.h, src/include/pa_charsets.h,
+	  src/include/pa_common.h, src/include/pa_config_auto.h.in,
+	  src/include/pa_config_fixed.h, src/include/pa_config_includes.h,
+	  src/include/pa_dictionary.h, src/include/pa_dir.h,
+	  src/include/pa_exception.h, src/include/pa_exec.h,
+	  src/include/pa_globals.h, src/include/pa_hash.h,
+	  src/include/pa_memory.h, src/include/pa_opcode.h,
+	  src/include/pa_operation.h, src/include/pa_pool.h,
+	  src/include/pa_pragma_pack_begin.h,
 	  src/include/pa_pragma_pack_end.h, src/include/pa_request.h,
 	  src/include/pa_request_charsets.h, src/include/pa_request_info.h,
 	  src/include/pa_sapi.h, src/include/pa_socks.h,
@@ -12200,47 +12280,40 @@
 	  src/include/pa_string.h, src/include/pa_stylesheet_connection.h,
 	  src/include/pa_stylesheet_manager.h, src/include/pa_table.h,
 	  src/include/pa_threads.h, src/include/pa_types.h,
-	  src/include/pa_uue.h, src/lib/Makefile.am, src/lib/Makefile.in,
-	  src/lib/cord/Makefile.am, src/lib/cord/Makefile.in,
-	  src/lib/cord/cord.dsp, src/lib/cord/cordbscs.c,
-	  src/lib/cord/cordprnt.c, src/lib/cord/cordxtra.c,
-	  src/lib/cord/source.url, src/lib/cord/include/Makefile.am,
-	  src/lib/cord/include/Makefile.in, src/lib/cord/include/cord.h,
+	  src/include/pa_uue.h, src/lib/Makefile.am,
+	  src/lib/cord/Makefile.am, src/lib/cord/cord.dsp,
+	  src/lib/cord/cordbscs.c, src/lib/cord/cordprnt.c,
+	  src/lib/cord/cordxtra.c, src/lib/cord/source.url,
+	  src/lib/cord/include/Makefile.am, src/lib/cord/include/cord.h,
 	  src/lib/cord/include/ec.h,
 	  src/lib/cord/include/private/Makefile.am,
-	  src/lib/cord/include/private/Makefile.in,
 	  src/lib/cord/include/private/cord_pos.h, src/lib/gc/Makefile.am,
-	  src/lib/gc/Makefile.in, src/lib/ltdl/Makefile.in,
-	  src/lib/ltdl/libltdl.dsp, src/lib/md5/Makefile.in,
-	  src/lib/md5/pa_md5.h, src/lib/md5/pa_md5c.c,
-	  src/lib/pcre/Makefile.in, src/lib/pcre/pcre.h,
+	  src/lib/ltdl/libltdl.dsp, src/lib/md5/pa_md5.h,
+	  src/lib/md5/pa_md5c.c, src/lib/pcre/pcre.h,
 	  src/lib/pcre/pcre_parser_ctype.c, src/main/Makefile.am,
-	  src/main/Makefile.in, src/main/compile.C, src/main/compile.tab.C,
-	  src/main/compile.y, src/main/compile_tools.C,
-	  src/main/compile_tools.h, src/main/execute.C, src/main/main.dsp,
-	  src/main/pa_array.C, src/main/pa_cache_managers.C,
-	  src/main/pa_charset.C, src/main/pa_charsets.C,
-	  src/main/pa_common.C, src/main/pa_dictionary.C,
-	  src/main/pa_dir.C, src/main/pa_exception.C, src/main/pa_exec.C,
+	  src/main/compile.C, src/main/compile.tab.C, src/main/compile.y,
+	  src/main/compile_tools.C, src/main/compile_tools.h,
+	  src/main/execute.C, src/main/main.dsp, src/main/pa_array.C,
+	  src/main/pa_cache_managers.C, src/main/pa_charset.C,
+	  src/main/pa_charsets.C, src/main/pa_common.C,
+	  src/main/pa_dictionary.C, src/main/pa_dir.C,
+	  src/main/pa_exception.C, src/main/pa_exec.C,
 	  src/main/pa_globals.C, src/main/pa_hash.C, src/main/pa_pool.C,
 	  src/main/pa_request.C, src/main/pa_socks.C,
 	  src/main/pa_sql_driver_manager.C, src/main/pa_string.C,
 	  src/main/pa_stylesheet_manager.C, src/main/pa_table.C,
-	  src/main/pa_uue.C, src/main/untaint.C, src/sql/Makefile.in,
-	  src/sql/pa_sql_driver.h, src/targets/Makefile.am,
-	  src/targets/Makefile.in, src/targets/cgi/Makefile.am,
-	  src/targets/cgi/Makefile.in, src/targets/cgi/getopt.c,
-	  src/targets/cgi/getopt.h, src/targets/cgi/pa_pool.C,
-	  src/targets/cgi/pa_threads.C, src/targets/cgi/parser3.C,
-	  src/targets/cgi/parser3.dsp, src/targets/cgi/pool_storage.h,
-	  src/targets/cgi/pp3.cmd, src/targets/isapi/Makefile.am,
-	  src/targets/isapi/Makefile.in, src/targets/isapi/pa_pool.C,
+	  src/main/pa_uue.C, src/main/untaint.C, src/sql/pa_sql_driver.h,
+	  src/targets/Makefile.am, src/targets/cgi/Makefile.am,
+	  src/targets/cgi/getopt.c, src/targets/cgi/getopt.h,
+	  src/targets/cgi/pa_pool.C, src/targets/cgi/pa_threads.C,
+	  src/targets/cgi/parser3.C, src/targets/cgi/parser3.dsp,
+	  src/targets/cgi/pool_storage.h, src/targets/cgi/pp3.cmd,
+	  src/targets/isapi/Makefile.am, src/targets/isapi/pa_pool.C,
 	  src/targets/isapi/pa_threads.C, src/targets/isapi/parser3isapi.C,
 	  src/targets/isapi/parser3isapi.dsp,
 	  src/targets/isapi/pool_storage.h, src/types/Makefile.am,
-	  src/types/Makefile.in, src/types/pa_junction.h,
-	  src/types/pa_method.h, src/types/pa_value.C,
-	  src/types/pa_value.h, src/types/pa_vbool.h,
+	  src/types/pa_junction.h, src/types/pa_method.h,
+	  src/types/pa_value.C, src/types/pa_value.h, src/types/pa_vbool.h,
 	  src/types/pa_vclass.C, src/types/pa_vclass.h,
 	  src/types/pa_vcode_frame.h, src/types/pa_vcookie.C,
 	  src/types/pa_vcookie.h, src/types/pa_vdate.h,
@@ -12400,8 +12473,8 @@
 	* src/: classes/math.C, lib/md5/pa_md5.h, lib/md5/pa_md5c.c:
 	  renamed a little [to move to comman naming conv]
 
-	* src/targets/: Makefile.am, Makefile.in: apache13 splitted to
-	  simplify apache build
+	* src/targets/Makefile.am: apache13 splitted to simplify apache
+	  build
 
 	* src/: include/pa_request.h, include/pa_stack.h, main/execute.C,
 	  main/pa_request.C, main/pa_sql_driver_manager.C,
@@ -12433,8 +12506,7 @@
 
 2003-07-21  paf
 
-	* src/classes/: Makefile.am, Makefile.in: removed circular
-	  dependency on classes.C
+	* src/classes/Makefile.am: removed circular dependency on classes.C
 
 	* src/classes/file.C: file::exec/cgi environment variables now must
 	  be UPPERCASE and A-Z 0-9 _-
@@ -12549,7 +12621,7 @@
 
 2003-04-21  paf
 
-	* src/targets/cgi/: Makefile.am, Makefile.in: pp3 added to .am
+	* src/targets/cgi/Makefile.am: pp3 added to .am
 
 	* src/main/pa_globals.C: pcre memory management changed to use GC
 	  memory
@@ -12590,8 +12662,7 @@
 	* etc/parser3.charsets/: koi8-r.cfg, windows-1251.cfg: merged from
 	  HEAD
 
-	* src/: classes/table.C, lib/Makefile.in: fix: gcc reported tiny
-	  error
+	* src/classes/table.C: fix: gcc reported tiny error
 
 2003-04-15  paf
 
@@ -12982,8 +13053,6 @@
 
 2003-04-03  paf
 
-	* src/lib/Makefile.in: removed 'patches'
-
 	* INSTALL, src/include/pa_operation.h, src/include/pa_request.h,
 	  src/main/compile.tab.C, src/main/compile.y,
 	  src/main/compile_tools.C, src/main/compile_tools.h,
@@ -13270,34 +13339,24 @@
 	  targets/isapi/parser3isapi.dsp, types/types.dsp: .dsp updated to
 	  use lib/gc,lib/cord
 
-	* acsite.m4, bin/Makefile.in, etc/Makefile.in,
-	  etc/parser3.charsets/Makefile.in, src/Makefile.in,
-	  src/classes/Makefile.am, src/classes/Makefile.in,
-	  src/classes/mail.C, src/classes/math.C, src/classes/op.C,
-	  src/include/Makefile.in, src/include/pa_common.h,
+	* acsite.m4, src/classes/Makefile.am, src/classes/mail.C,
+	  src/classes/math.C, src/classes/op.C, src/include/pa_common.h,
 	  src/include/pa_config_auto.h.in, src/include/pa_config_fixed.h,
 	  src/include/pa_config_includes.h, src/include/pa_request.h,
 	  src/include/pa_sql_driver_manager.h, src/include/pa_string.h,
 	  src/include/pa_stylesheet_connection.h, src/include/pa_version.h,
-	  src/lib/Makefile.am, src/lib/Makefile.in,
-	  src/lib/cord/Makefile.am, src/lib/cord/Makefile.in,
+	  src/lib/Makefile.am, src/lib/cord/Makefile.am,
 	  src/lib/cord/include/Makefile.am,
-	  src/lib/cord/include/Makefile.in,
-	  src/lib/cord/include/private/Makefile.am,
-	  src/lib/cord/include/private/Makefile.in,
-	  src/lib/ltdl/Makefile.in, src/lib/md5/Makefile.in,
-	  src/lib/pcre/Makefile.in, src/main/Makefile.am,
-	  src/main/Makefile.in, src/main/pa_exec.C, src/main/pa_string.C,
-	  src/main/untaint.C, src/sql/Makefile.in, src/targets/Makefile.in,
-	  src/targets/cgi/Makefile.am, src/targets/cgi/Makefile.in,
-	  src/targets/isapi/Makefile.in, src/types/Makefile.am,
-	  src/types/Makefile.in, src/types/pa_vclass.h,
-	  src/types/pa_vcookie.h, src/types/pa_vform.h,
-	  src/types/pa_vhash.h, src/types/pa_vimage.h, src/types/pa_vint.h,
-	  src/types/pa_vmail.h, src/types/pa_vresponse.h,
-	  src/types/pa_vstateless_class.h, src/types/pa_vstatus.C,
-	  src/types/pa_vstatus.h, src/types/pa_vtable.h,
-	  src/types/pa_vxdoc.h: configured math funcs ported pa_exec
+	  src/lib/cord/include/private/Makefile.am, src/main/Makefile.am,
+	  src/main/pa_exec.C, src/main/pa_string.C, src/main/untaint.C,
+	  src/targets/cgi/Makefile.am, src/types/Makefile.am,
+	  src/types/pa_vclass.h, src/types/pa_vcookie.h,
+	  src/types/pa_vform.h, src/types/pa_vhash.h,
+	  src/types/pa_vimage.h, src/types/pa_vint.h, src/types/pa_vmail.h,
+	  src/types/pa_vresponse.h, src/types/pa_vstateless_class.h,
+	  src/types/pa_vstatus.C, src/types/pa_vstatus.h,
+	  src/types/pa_vtable.h, src/types/pa_vxdoc.h: configured math
+	  funcs ported pa_exec
 
 	* src/lib/: cord/include/gc.h, gc/include/gc.h: introducing lib/gc
 
@@ -13616,11 +13675,11 @@
 
 	* src/main/pa_string.C: string.pos fixed
 
-	* src/lib/: ltdl/Makefile.in, ltdl/config_fixed.h, ltdl/configure,
-	  ltdl/configure.in, ltdl/libltdl.dsp, ltdl/ltdl.c, ltdl/ltdl.h,
-	  pcre/dftables.c, pcre/get.c, pcre/internal.h, pcre/maketables.c,
-	  pcre/pcre.c, pcre/pcre.h, pcre/pcre_parser_ctype.c, pcre/study.c:
-	  undone bad replaces
+	* src/lib/: ltdl/config_fixed.h, ltdl/configure, ltdl/configure.in,
+	  ltdl/libltdl.dsp, ltdl/ltdl.c, ltdl/ltdl.h, pcre/dftables.c,
+	  pcre/get.c, pcre/internal.h, pcre/maketables.c, pcre/pcre.c,
+	  pcre/pcre.h, pcre/pcre_parser_ctype.c, pcre/study.c: undone bad
+	  replaces
 
 	* src/: classes/image.C, include/pa_dictionary.h,
 	  include/pa_string.h, lib/ltdl/ltdl.c, lib/ltdl/ltdl.h,
@@ -13711,9 +13770,8 @@
 	  types/pa_vxnode.h, types/pa_wcontext.C, types/pa_wcontext.h,
 	  types/pa_wwrapper.h: started test
 
-	* src/lib/pcre/: Makefile.in, dftables.c, get.c, maketables.c,
-	  pcre.c, pcre.dsp, pcre.h, pcre_parser_ctype.c, study.c: restored
-	  bad replaces
+	* src/lib/pcre/: dftables.c, get.c, maketables.c, pcre.c, pcre.dsp,
+	  pcre.h, pcre_parser_ctype.c, study.c: restored bad replaces
 
 	* src/: classes/op.C, include/pa_array.h, include/pa_memory.h,
 	  include/pa_string.h, main/pa_string.C: string compiled todo: test
@@ -13844,21 +13902,13 @@
 
 2003-03-12  paf
 
-	* configure, configure.in, src/lib/ltdl/Makefile.in,
-	  src/lib/ltdl/configure, src/lib/ltdl/configure.in,
-	  src/targets/cgi/Makefile.am, src/targets/cgi/Makefile.in:
+	* configure, configure.in, src/lib/ltdl/configure,
+	  src/lib/ltdl/configure.in, src/targets/cgi/Makefile.am:
 	  lib/ltdl/Makefile now created by /configure.in only [were by
 	  lib/ltdl/configure.in OVERWRITE]
 
-	* Makefile.in, configure, configure.in, bin/Makefile.in,
-	  etc/Makefile.in, etc/parser3.charsets/Makefile.in,
-	  src/Makefile.in, src/classes/Makefile.in,
-	  src/include/Makefile.in, src/lib/Makefile.in,
-	  src/lib/md5/Makefile.in, src/lib/pcre/Makefile.in,
-	  src/main/Makefile.in, src/sql/Makefile.in,
-	  src/targets/Makefile.in, src/targets/cgi/Makefile.am,
-	  src/targets/cgi/Makefile.in, src/targets/isapi/Makefile.in,
-	  src/types/Makefile.in: libstdc++ linkage fixed for g++ 3.2.2
+	* configure, configure.in, src/targets/cgi/Makefile.am: libstdc++
+	  linkage fixed for g++ 3.2.2
 
 	* src/include/pa_stylesheet_manager.h: gcc 3.2 rightliy complained
 	  on using privately declared class [fixed]
@@ -13873,16 +13923,9 @@
 	  targets/cgi/parser3.C: SIGPIPE now can be intercepted and does
 	  not cause exception in exception handler
 
-	* Makefile.in, configure, configure.in, bin/Makefile.in,
-	  etc/Makefile.in, etc/parser3.charsets/Makefile.in,
-	  src/Makefile.in, src/classes/Makefile.in,
-	  src/include/Makefile.in, src/lib/Makefile.in,
-	  src/lib/md5/Makefile.in, src/lib/pcre/Makefile.in,
-	  src/main/Makefile.in, src/sql/Makefile.in,
-	  src/targets/Makefile.in, src/targets/cgi/Makefile.am,
-	  src/targets/cgi/Makefile.in, src/targets/isapi/Makefile.in,
-	  src/types/Makefile.in: configure now default links libstdc++
-	  statically.  that can be overriden by --with-dynamic-stdcpp
+	* configure, configure.in, src/targets/cgi/Makefile.am: configure
+	  now default links libstdc++ statically.  that can be overriden by
+	  --with-dynamic-stdcpp
 
 2003-03-11  paf
 
@@ -14041,15 +14084,13 @@
 
 	* tests/: 057.html, results/057.processed: test bug fixed
 
-	* src/targets/cgi/: Makefile.am, Makefile.in: linker needed more
-	  tricks to link OK
+	* src/targets/cgi/Makefile.am: linker needed more tricks to link OK
 
 	* src/classes/math.C: can be: crypt in -lcrypt OK, but crypt.h be
 	  missing
 
-	* src/: include/Makefile.am, include/Makefile.in, main/Makefile.am,
-	  main/Makefile.in, types/Makefile.am, types/Makefile.in: forgotten
-	  files added to Makes
+	* src/: include/Makefile.am, main/Makefile.am, types/Makefile.am:
+	  forgotten files added to Makes
 
 	* ltmain.sh: ltmain.sh added
 
@@ -14060,9 +14101,8 @@
 	  made static
 
 	* src/: classes/math.C, classes/op.C, classes/string.C,
-	  lib/Makefile.in, lib/md5/Makefile.in, lib/pcre/Makefile.in,
-	  main/pa_exec.C, targets/Makefile.in, targets/cgi/Makefile.am,
-	  targets/cgi/Makefile.in: gcc more happy. todo:make linker happy
+	  main/pa_exec.C, targets/cgi/Makefile.am: gcc more happy.
+	  todo:make linker happy
 
 	* src/: classes/file.C, include/pa_exec.h, main/pa_exec.C: pa_exec
 	  env param made optional
@@ -14573,9 +14613,8 @@
 	* src/: include/pa_exception.h, include/pa_pool.h,
 	  main/pa_exception.C: exception gcc change #1
 
-	* src/include/: Makefile.am, Makefile.in, pa_hash.h, pa_pool.h: gcc
-	  refused to compile _P identifier. it replaced it to some strange
-	  0x0000040
+	* src/include/: Makefile.am, pa_hash.h, pa_pool.h: gcc refused to
+	  compile _P identifier. it replaced it to some strange 0x0000040
 
 	* src/types/: pa_vmath.C, pa_vmethod_frame.C: vmath compiled
 
@@ -15030,16 +15069,6 @@
 	  src/main/pa_common.C: http request now return status. and not
 	  fail on status!=200
 
-	* bin/Makefile.in, etc/Makefile.in,
-	  etc/parser3.charsets/Makefile.in, src/Makefile.in,
-	  src/classes/Makefile.in, src/include/Makefile.in,
-	  src/lib/Makefile.in, src/lib/md5/Makefile.in,
-	  src/lib/pcre/Makefile.in, src/main/Makefile.in,
-	  src/sql/Makefile.in, src/targets/Makefile.in,
-	  src/targets/cgi/Makefile.in, src/targets/isapi/Makefile.in,
-	  src/types/Makefile.in: proper AC_LANG_ switching to fix qsort
-	  detection bug
-
 2003-01-15  paf
 
 	* src/main/pa_globals.C: localized pa_xmlFileRead/Close
@@ -15058,7 +15087,7 @@
 	* config.guess, config.sub, ltmain.sh: removed last piece of
 	  configure.in(libtool) hacks
 
-	* src/lib/ltdl/: COPYING.LIB, Makefile.in, acinclude.m4, config.h,
+	* src/lib/ltdl/: COPYING.LIB, acinclude.m4, config.h,
 	  config_auto.h.in, configure, configure.in, libltdl.dsp, ltdl.c,
 	  ltdl.h: moved to latest libtool (1.4.3)
 
@@ -15082,17 +15111,10 @@
 	* INSTALL: xml,xslt,gdome lib urls updated
 
 	* config.guess, config.sub, missing, mkinstalldirs,
-	  bin/Makefile.in, etc/Makefile.in,
-	  etc/parser3.charsets/Makefile.in, src/Makefile.in,
-	  src/classes/Makefile.in, src/include/Makefile.in,
-	  src/include/pa_config_auto.h.in, src/lib/Makefile.in,
-	  src/lib/ltdl/Makefile.in, src/lib/ltdl/config_auto.h.in,
+	  src/include/pa_config_auto.h.in, src/lib/ltdl/config_auto.h.in,
 	  src/lib/ltdl/configure, src/lib/ltdl/configure.in,
-	  src/lib/md5/Makefile.in, src/lib/pcre/Makefile.in,
-	  src/main/Makefile.in, src/sql/Makefile.in,
-	  src/targets/Makefile.in, src/targets/cgi/Makefile.am,
-	  src/targets/cgi/Makefile.in, src/targets/isapi/Makefile.in,
-	  src/types/Makefile.in: moved to autoconf 2.57 & automake 1.7.2
+	  src/targets/cgi/Makefile.am: moved to autoconf 2.57 & automake
+	  1.7.2
 
 	* depcomp: moving to automake 1.7.2
 
@@ -15178,8 +15200,6 @@
 
 2002-12-16  paf
 
-	* Makefile.in: ltmain.sh silly required for stupid automake added
-
 	* ltmain.sh: some automakes silly insist on having this handy
 
 	* src/main/untaint.C: filespec russian small 'r' changed to latin
@@ -15233,16 +15253,9 @@
 	  sql/pa_sql_driver.h: changed exception handling mech in sql
 	  handlers
 
-	* configure.in, bin/Makefile.in, etc/Makefile.in,
-	  etc/parser3.charsets/Makefile.in, src/Makefile.in,
-	  src/classes/Makefile.in, src/include/Makefile.in,
-	  src/lib/Makefile.in, src/lib/ltdl/Makefile.in,
-	  src/lib/md5/Makefile.in, src/lib/pcre/Makefile.in,
-	  src/main/Makefile.in, src/sql/Makefile.in,
-	  src/targets/Makefile.in, src/targets/cgi/Makefile.in,
-	  src/targets/isapi/Makefile.in, src/types/Makefile.in: removed
-	  configure.in:AC_LIBTOOL, it caused automake to write makefile
-	  which used libtool to install things, which is not needed
+	* configure.in: removed configure.in:AC_LIBTOOL, it caused automake
+	  to write makefile which used libtool to install things, which is
+	  not needed
 
 2002-12-06  paf
 
@@ -15294,24 +15307,17 @@
 
 	* gnu.dsp: restored
 
-	* configure.in, gnu.dsp, bin/Makefile.in, etc/Makefile.in,
-	  etc/parser3.charsets/Makefile.in, src/Makefile.in,
-	  src/classes/Makefile.in, src/include/Makefile.in,
-	  src/lib/Makefile.am, src/lib/Makefile.in,
-	  src/lib/ltdl/Makefile.am, src/lib/ltdl/Makefile.in,
-	  src/lib/ltdl/README, src/lib/ltdl/acinclude.m4,
-	  src/lib/ltdl/config.guess, src/lib/ltdl/config.h,
-	  src/lib/ltdl/config.sub, src/lib/ltdl/config_auto.h.in,
-	  src/lib/ltdl/config_fixed.h, src/lib/ltdl/configure,
-	  src/lib/ltdl/configure.in, src/lib/ltdl/install-sh,
-	  src/lib/ltdl/libltdl.dsp, src/lib/ltdl/ltdl.c,
-	  src/lib/ltdl/ltdl.h, src/lib/md5/Makefile.in,
-	  src/lib/pcre/Makefile.in, src/main/Makefile.in,
-	  src/sql/Makefile.in, src/targets/Makefile.in,
-	  src/targets/cgi/Makefile.in, src/targets/isapi/Makefile.in,
-	  src/types/Makefile.in: src/lib/ltdl/Makefile now created with
-	  /configure, not ltdl/configure, so it does have no problems with
-	  automake.  ltdl/configure AC_OUTPUT(Makefile<<removed)
+	* configure.in, gnu.dsp, src/lib/Makefile.am,
+	  src/lib/ltdl/Makefile.am, src/lib/ltdl/README,
+	  src/lib/ltdl/acinclude.m4, src/lib/ltdl/config.guess,
+	  src/lib/ltdl/config.h, src/lib/ltdl/config.sub,
+	  src/lib/ltdl/config_auto.h.in, src/lib/ltdl/config_fixed.h,
+	  src/lib/ltdl/configure, src/lib/ltdl/configure.in,
+	  src/lib/ltdl/install-sh, src/lib/ltdl/libltdl.dsp,
+	  src/lib/ltdl/ltdl.c, src/lib/ltdl/ltdl.h: src/lib/ltdl/Makefile
+	  now created with /configure, not ltdl/configure, so it does have
+	  no problems with automake.  ltdl/configure
+	  AC_OUTPUT(Makefile<<removed)
 
 2002-12-02  paf
 
@@ -15383,9 +15389,8 @@
 	* configure.in, src/classes/image.C,
 	  src/include/pa_config_auto.h.in,
 	  src/include/pa_config_includes.h, src/main/Makefile.am,
-	  src/main/Makefile.in, src/main/pa_common.C,
-	  src/main/pa_globals.C: http:// and image const void related probs
-	  fixed
+	  src/main/pa_common.C, src/main/pa_globals.C: http:// and image
+	  const void related probs fixed
 
 	* operators.txt, src/main/pa_common.C: http fields now UPPERCASE
 
@@ -15701,17 +15706,15 @@
 
 2002-09-24  paf
 
-	* src/targets/cgi/: Makefile.am, Makefile.in: LIBS were bad name in
-	  .am
+	* src/targets/cgi/Makefile.am: LIBS were bad name in .am
 
 	* src/types/pa_vmail.C: HAVE_TIMEZONE & co now checked and
 	  mailreceive would compile on freebsd now
 
 	* src/include/pa_config_fixed.h, src/types/pa_vmail.C, acconfig.h,
 	  configure, configure.in, src/include/pa_config_auto.h.in,
-	  src/targets/cgi/Makefile.am, src/targets/cgi/Makefile.in:
-	  HAVE_TIMEZONE & co now checked and mailreceive would compile on
-	  freebsd now
+	  src/targets/cgi/Makefile.am: HAVE_TIMEZONE & co now checked and
+	  mailreceive would compile on freebsd now
 
 	* src/: classes/file.C, main/untaint.C: 1.  file spec language
 	  changed: now there are only few chars are untainted: * ? ' " < >
@@ -15773,9 +15776,9 @@
 
 	* src/main/compile_tools.h: mistype
 
-	* src/targets/cgi/: Makefile.am, Makefile.in: binaries now depend
-	  on makefiles, thus taking linking options configure changes into
-	  account [were: ignoring]
+	* src/targets/cgi/Makefile.am: binaries now depend on makefiles,
+	  thus taking linking options configure changes into account [were:
+	  ignoring]
 
 	* src/types/: pa_vjunction.C, Makefile.am: introducing
 	  $junction.get/put(1) one can write iterators now:
@@ -15797,7 +15800,7 @@
 
 2002-09-19  paf
 
-	* Makefile.am, Makefile.in: new: make commit
+	* Makefile.am: new: make commit
 
 	* aclocal.m4: forced to be older
 
@@ -15868,16 +15871,8 @@
 	* configure, configure.in: .so now detected [can be .sl on hpux,
 	  .dll on cygwin, .so in other cases)
 
-	* Makefile.in, configure, configure.in, bin/auto.p.dist.in,
-	  bin/Makefile.in, etc/Makefile.in,
-	  etc/parser3.charsets/Makefile.in, src/Makefile.in,
-	  src/classes/Makefile.in, src/include/Makefile.in,
-	  src/lib/Makefile.in, src/lib/md5/Makefile.in,
-	  src/lib/pcre/Makefile.in, src/main/Makefile.in,
-	  src/sql/Makefile.in, src/targets/Makefile.in,
-	  src/targets/cgi/Makefile.in, src/targets/isapi/Makefile.in,
-	  src/types/Makefile.in: .so now detected [can be .sl on hpux, .dll
-	  on cygwin, .so in other cases)
+	* configure, configure.in, bin/auto.p.dist.in: .so now detected
+	  [can be .sl on hpux, .dll on cygwin, .so in other cases)
 
 	* operators.txt, src/classes/hash.C, src/classes/table.C,
 	  src/include/pa_globals.h, src/main/pa_globals.C: table.sql
@@ -15921,9 +15916,8 @@
 	* src/: include/pa_config_fixed.h, main/pa_socks.C: HAVE_WINSOCK_H
 	  cheched in pa_socks.C
 
-	* Makefile.in, configure, configure.in,
-	  src/include/pa_config_auto.h.in: HAVE_WINSOCK_H created in
-	  configure.in
+	* configure, configure.in, src/include/pa_config_auto.h.in:
+	  HAVE_WINSOCK_H created in configure.in
 
 	* src/: main/compile.tab.C, main/compile.y, types/pa_vresponse.C:
 	  cookie date now clean [were mistakenly tainted & that worked bad
@@ -16014,8 +16008,7 @@
 
 	* src/types/pa_vdate.h: removed debug
 
-	* Makefile.am, Makefile.in, src/types/pa_vdate.h: happy now only
-	  install-exec
+	* Makefile.am, src/types/pa_vdate.h: happy now only install-exec
 
 	* src/main/execute.C: fixed numeric < & co so that thay now use
 	  c=a-b, c OPERATOR 0.	this works fine on solaris/intel for still
@@ -16049,8 +16042,7 @@
 
 2002-08-27  paf
 
-	* etc/parser3.charsets/: Makefile.am, Makefile.in: merged from
-	  3.0.0005
+	* etc/parser3.charsets/Makefile.am: merged from 3.0.0005
 
 	* operators.txt, src/main/compile.tab.C, src/main/compile.y: # now
 	  delimiter
@@ -16070,8 +16062,7 @@
 
 2002-08-21  paf
 
-	* Makefile.am, Makefile.in: can use: make happy equals to make
-	  update install
+	* Makefile.am: can use: make happy equals to make update install
 
 	* src/main/: compile.tab.C, compile.y, compile_tools.C,
 	  compile_tools.h: "BASE:" "BASE::" syntax allowed, means "base
@@ -16194,8 +16185,6 @@
 	* src/types/pa_vclass.C: allow override parent variables, useful
 	  for form descendants
 
-	* src/types/Makefile.in: added vobject.c & vclass
-
 	* src/types/pa_vclass.C: checked: form[vclass]fields can be
 	  overwritten in derived(table)
 
@@ -16223,8 +16212,6 @@
 	* src/types/: Makefile.am, pa_vclass.h, pa_vobject.h, types.dsp:
 	  reorganized modules todo: fix bug with put endless recoursion
 	  todo: check 'as'
-
-	* src/types/Makefile.in: VAliased removed
 
 	* src/types/pa_vobject.h: checked: table fields can be overwritten
 	  in derived(table)
@@ -16344,8 +16331,7 @@
 	  lib/pcre/pcre_parser_ctype.dsp, main/pa_array.C, types/types.dsp:
 	  all Debug dirs in .dsp now named 'Debug'
 
-	* etc/parser3.charsets/: Makefile.am, Makefile.in: all included
-	  into dist
+	* etc/parser3.charsets/Makefile.am: all included into dist
 
 	* operators.txt, src/classes/mail.C: exception_type  email.send
 
@@ -16457,7 +16443,7 @@
 	  types/pa_vstring.h, types/pa_vtable.C, types/pa_vtable.h,
 	  types/pa_vvoid.h, types/pa_vxdoc.C, types/pa_vxdoc.h,
 	  types/pa_vxnode.C, types/pa_vxnode.h, types/pa_wcontext.C,
-	  types/pa_wcontext.h, types/pa_wwrapper.h: $Date: 2017/06/11 20:14:37 $
+	  types/pa_wcontext.h, types/pa_wwrapper.h: $Date: 2019/02/10 21:08:17 $
 
 	* src/: classes/classes.C, classes/classes.dsp, classes/classes.h,
 	  classes/date.C, classes/double.C, classes/file.C, classes/form.C,
@@ -16531,10 +16517,8 @@
 
 2002-07-30  paf
 
-	* Makefile.in, configure, configure.in,
-	  src/targets/cgi/Makefile.in,
-	  src/targets/cgi/pa_config_paths.h.in, src/targets/cgi/parser3.C:
-	  removed pa_config_paths.h
+	* configure, configure.in, src/targets/cgi/pa_config_paths.h.in,
+	  src/targets/cgi/parser3.C: removed pa_config_paths.h
 
 	* src/main/pa_charset.C: comment
 
@@ -16579,7 +16563,7 @@
 
 	* configure, configure.in: removed paths.h
 
-	* Makefile.in, configure, src/include/pa_version.h,
+	* configure, src/include/pa_version.h,
 	  src/targets/cgi/pa_config_paths.h.in: lates changes from 4 build
 	  merged, makes updated
 
@@ -16640,15 +16624,8 @@
 
 	* src/include/pa_config_fixed.h: ssize_t fixed
 
-	* Makefile.in, configure, configure.in, bin/Makefile.in,
-	  etc/Makefile.in, etc/parser3.charsets/Makefile.in,
-	  src/Makefile.in, src/classes/Makefile.in,
-	  src/include/Makefile.in, src/include/pa_config_auto.h.in,
-	  src/lib/Makefile.in, src/lib/pcre/Makefile.in,
-	  src/main/Makefile.in, src/sql/Makefile.in,
-	  src/targets/Makefile.in, src/targets/cgi/Makefile.am,
-	  src/targets/cgi/Makefile.in, src/targets/isapi/Makefile.in,
-	  src/types/Makefile.am, src/types/Makefile.in,
+	* configure, configure.in, src/include/pa_config_auto.h.in,
+	  src/targets/cgi/Makefile.am, src/types/Makefile.am,
 	  src/types/pa_vmail.C: $mail:received makes update
 
 	* src/: include/pa_config_fixed.h, types/pa_vmail.C: #ifdef
@@ -16682,16 +16659,12 @@
 
 2002-06-21  paf
 
-	* src/lib/: Makefile.am, Makefile.in, md5/pa_md5.h: lib restructure
-	  apache .am & co changes
+	* src/lib/: Makefile.am, md5/pa_md5.h: lib restructure apache .am &
+	  co changes
 
-	* Makefile.in, configure, configure.in, src/Makefile.in,
-	  src/classes/Makefile.in, src/lib/Makefile.in,
-	  src/lib/md5/Makefile.am, src/lib/md5/pa_md5c.c,
-	  src/lib/pcre/Makefile.in, src/main/Makefile.in,
-	  src/targets/cgi/Makefile.am, src/targets/cgi/Makefile.in,
-	  src/types/Makefile.in: lib restructure .in and .am files
-	  appropriate changes
+	* configure, configure.in, src/lib/md5/Makefile.am,
+	  src/lib/md5/pa_md5c.c, src/targets/cgi/Makefile.am: lib
+	  restructure .in and .am files appropriate changes
 
 	* src/lib/md5/: md5.dsp, pa_md5.h, pa_md5c.c: moved libltdl and
 	  pcre to libs/ added libs/md5 which is linked to non-apache
@@ -16701,15 +16674,14 @@
 	  src/Makefile.am, src/classes/Makefile.am,
 	  src/classes/classes.dsp, src/classes/math.C,
 	  src/lib/md5/Makefile.am, src/lib/pcre/LICENCE,
-	  src/lib/pcre/Makefile.am, src/lib/pcre/Makefile.in,
-	  src/lib/pcre/README, src/lib/pcre/Tech.Notes,
-	  src/lib/pcre/dftables.c, src/lib/pcre/get.c,
-	  src/lib/pcre/ibm-1250.ucm, src/lib/pcre/ibm-1251.ucm,
-	  src/lib/pcre/ibm-1257.ucm, src/lib/pcre/internal.h,
-	  src/lib/pcre/maketables.c, src/lib/pcre/pcre-2_08.tar.gz,
-	  src/lib/pcre/pcre.3, src/lib/pcre/pcre.3.html,
-	  src/lib/pcre/pcre.3.txt, src/lib/pcre/pcre.c,
-	  src/lib/pcre/pcre.dsp, src/lib/pcre/pcre.h,
+	  src/lib/pcre/Makefile.am, src/lib/pcre/README,
+	  src/lib/pcre/Tech.Notes, src/lib/pcre/dftables.c,
+	  src/lib/pcre/get.c, src/lib/pcre/ibm-1250.ucm,
+	  src/lib/pcre/ibm-1251.ucm, src/lib/pcre/ibm-1257.ucm,
+	  src/lib/pcre/internal.h, src/lib/pcre/maketables.c,
+	  src/lib/pcre/pcre-2_08.tar.gz, src/lib/pcre/pcre.3,
+	  src/lib/pcre/pcre.3.html, src/lib/pcre/pcre.3.txt,
+	  src/lib/pcre/pcre.c, src/lib/pcre/pcre.dsp, src/lib/pcre/pcre.h,
 	  src/lib/pcre/pcre_dftables.dsp, src/lib/pcre/pcre_parser_ctype.c,
 	  src/lib/pcre/pcre_parser_ctype.dsp,
 	  src/lib/pcre/ruspart_win2koi.pl, src/lib/pcre/study.c,
@@ -16724,8 +16696,8 @@
 2002-06-20  paf
 
 	* INSTALL, configure, configure.in, operators.txt, bin/Makefile.am,
-	  bin/Makefile.in, bin/auto.p.dist.in, src/classes/file.C,
-	  src/classes/op.C, src/doc/doxygen.cfg, src/include/pa_globals.h,
+	  bin/auto.p.dist.in, src/classes/file.C, src/classes/op.C,
+	  src/doc/doxygen.cfg, src/include/pa_globals.h,
 	  src/include/pa_request.h, src/main/execute.C,
 	  src/main/pa_request.C, src/targets/cgi/parser3.C,
 	  src/targets/isapi/parser3isapi.C, src/types/pa_vmethod_frame.h:
@@ -16745,8 +16717,7 @@
 
 	* bin/auto.p.dist.in: <noindex>
 
-	* configure, bin/Makefile.in: parser3.conf renamed to auto.p
-	  autoconf changes
+	* configure: parser3.conf renamed to auto.p autoconf changes
 
 	* INSTALL, configure.in, operators.txt, bin/Makefile.am,
 	  bin/auto.p.dist.in, src/doc/doxygen.cfg,
@@ -16760,18 +16731,16 @@
 
 	* INSTALL: reflected .conf.dist dir change
 
-	* Makefile.am, Makefile.in, configure, configure.in,
-	  bin/Makefile.am, bin/Makefile.in, etc/Makefile.in,
-	  etc/parser3.charsets/Makefile.am,
-	  etc/parser3.charsets/Makefile.in: parser3.conf.dist moved to bin,
+	* Makefile.am, configure, configure.in, bin/Makefile.am,
+	  etc/parser3.charsets/Makefile.am: parser3.conf.dist moved to bin,
 	  .in & *.am updated
 
 	* src/classes/file.C: strncasecmp
 
 	* src/classes/file.C: strcasecmp
 
-	* bin/Makefile.am, bin/Makefile.in, etc/Makefile.am:
-	  bin/parser3.conf.dist [moved from etc
+	* bin/Makefile.am, etc/Makefile.am: bin/parser3.conf.dist [moved
+	  from etc
 
 	* src/classes/file.C: ^file::exec[script;$.bad error case
 	  insensitive check now
@@ -16797,14 +16766,8 @@
 
 2002-06-12  paf
 
-	* Makefile.in, configure, configure.in, etc/Makefile.in,
-	  etc/parser3.charsets/Makefile.in, src/Makefile.in,
-	  src/classes/Makefile.in, src/include/Makefile.in,
-	  src/main/Makefile.in, src/sql/Makefile.in,
-	  src/targets/Makefile.in, src/targets/cgi/Makefile.am,
-	  src/targets/cgi/Makefile.in, src/targets/cgi/parser3.C,
-	  src/targets/isapi/Makefile.in, src/types/Makefile.in: removed
-	  root conf define creation
+	* configure, configure.in, src/targets/cgi/Makefile.am,
+	  src/targets/cgi/parser3.C: removed root conf define creation
 
 	* INSTALL, configure.in, operators.txt, etc/Makefile.am,
 	  src/include/pa_globals.h, src/include/pa_request.h,
@@ -17236,11 +17199,6 @@
 	  types/pa_vdouble.h, types/pa_vint.h: int/double get_string now
 	  not pool.malloc(MAX_NUMBER) but really neaded
 
-	* etc/Makefile.in, etc/parser3.charsets/Makefile.in,
-	  src/classes/Makefile.in, src/sql/Makefile.in,
-	  src/targets/Makefile.in, src/targets/cgi/Makefile.in,
-	  src/targets/isapi/Makefile.in, src/types/Makefile.in: makse
-
 	* operators.txt, src/classes/double.C, src/classes/int.C:
 	  int/double.int/double(default)
 
@@ -17261,10 +17219,7 @@
 
 	* configure, configure.in: more checks on nonexistent charset
 
-	* INSTALL, Makefile.in, configure, configure.in, etc/Makefile.in,
-	  etc/parser3.charsets/Makefile.in, src/Makefile.in,
-	  src/include/Makefile.in, src/main/Makefile.in: root config
-	  configure options
+	* INSTALL, configure, configure.in: root config configure options
 
 2002-04-02  paf
 
@@ -17354,17 +17309,15 @@
 
 	* INSTALL, configure, configure.in, src/classes/mail.C,
 	  src/include/pa_config_auto.h.in, src/main/pa_exec.C,
-	  src/targets/cgi/Makefile.am, src/targets/cgi/Makefile.in:
-	  --disable-foreign-group-files now disables execs also.
-	  introducing --sendmail
+	  src/targets/cgi/Makefile.am: --disable-foreign-group-files now
+	  disables execs also.	introducing --sendmail
 
 	* operators.txt: pgsql options comment
 
 	* INSTALL: comment on --disable-link-stdcpp
 
-	* INSTALL, configure, configure.in, src/targets/cgi/Makefile.am,
-	  src/targets/cgi/Makefile.in: libstdc++ link skipping configure
-	  option
+	* INSTALL, configure, configure.in, src/targets/cgi/Makefile.am:
+	  libstdc++ link skipping configure option
 
 	* src/: classes/op.C, include/pa_sql_connection.h: sql connection
 	  with error were put to cache with 'marked_to_rollback' flag, all
@@ -17482,7 +17435,7 @@
 
 	* INSTALL: hashfile removed from INSTALL
 
-	* Makefile.am, Makefile.in: make update
+	* Makefile.am: make update
 
 	* src/main/pa_string.C: string iterators fixed again, so were
 	  String::join_chain
@@ -17498,9 +17451,8 @@
 	* operators.txt, src/types/pa_vcookie.C: cookie "expires=0" =
 	  "session"
 
-	* Makefile.in, configure, configure.in,
-	  src/include/pa_config_auto.h.in: --with-shared-xml
-	  --with-static-xml
+	* configure, configure.in, src/include/pa_config_auto.h.in:
+	  --with-shared-xml --with-static-xml
 
 	* src/: classes/classes.dsp, main/compile.tab.C, main/main.dsp,
 	  targets/cgi/parser3.dsp, targets/isapi/parser3isapi.dsp,
@@ -17513,28 +17465,22 @@
 	  src/types/types.dsp: removed hashfile support from sources for
 	  now
 
-	* Makefile.in, configure, configure.in, etc/Makefile.in,
-	  etc/parser3.charsets/Makefile.in, src/Makefile.in,
-	  src/classes/Makefile.am, src/classes/Makefile.in,
+	* configure, configure.in, src/classes/Makefile.am,
 	  src/classes/hashfile.C, src/include/Makefile.am,
-	  src/include/Makefile.in, src/include/pa_config_auto.h.in,
-	  src/include/pa_db_connection.h, src/include/pa_db_manager.h,
-	  src/include/pa_db_table.h, src/main/Makefile.am,
-	  src/main/Makefile.in, src/main/pa_db_connection.C,
+	  src/include/pa_config_auto.h.in, src/include/pa_db_connection.h,
+	  src/include/pa_db_manager.h, src/include/pa_db_table.h,
+	  src/main/Makefile.am, src/main/pa_db_connection.C,
 	  src/main/pa_db_manager.C, src/main/pa_db_table.C,
-	  src/main/pa_globals.C, src/sql/Makefile.in,
-	  src/targets/Makefile.in, src/targets/cgi/Makefile.am,
-	  src/targets/cgi/Makefile.in, src/targets/isapi/Makefile.in,
-	  src/types/Makefile.am, src/types/Makefile.in,
-	  src/types/pa_vhashfile.C, src/types/pa_vhashfile.h: removed
-	  hashfile support for now
+	  src/main/pa_globals.C, src/targets/cgi/Makefile.am,
+	  src/types/Makefile.am, src/types/pa_vhashfile.C,
+	  src/types/pa_vhashfile.h: removed hashfile support for now
 
 2002-02-21  paf
 
 	* src/main/untaint.C: removed debug code, activated commented-for
 	  debug parts
 
-	* Makefile.am, Makefile.in: make cvsupdate
+	* Makefile.am: make cvsupdate
 
 	* src/: include/pa_string.h, include/pa_types.h, main/pa_string.C,
 	  main/untaint.C: STRING_*FOREACH_ROW changed to stop at
@@ -17612,17 +17558,12 @@
 
 	* INSTALL: local install comment
 
-	* Makefile.in, ltconfig, ltmain.sh: removed libtool subpart files
+	* ltconfig, ltmain.sh: removed libtool subpart files
 
-	* Makefile.in, acinclude.m4, aclocal.m4, configure, configure.in,
-	  etc/Makefile.in, etc/parser3.charsets/Makefile.in,
-	  src/Makefile.in, src/classes/Makefile.in,
-	  src/include/Makefile.in, src/include/pa_config_auto.h.in,
-	  src/include/pa_config_includes.h, src/main/Makefile.in,
-	  src/sql/Makefile.in, src/targets/Makefile.in,
-	  src/targets/cgi/Makefile.am, src/targets/cgi/Makefile.in,
-	  src/targets/cgi/parser3.C, src/targets/isapi/Makefile.in,
-	  src/types/Makefile.in: removed libtool usage from build mech
+	* acinclude.m4, aclocal.m4, configure, configure.in,
+	  src/include/pa_config_auto.h.in,
+	  src/include/pa_config_includes.h, src/targets/cgi/Makefile.am,
+	  src/targets/cgi/parser3.C: removed libtool usage from build mech
 
 	* operators.txt: \ comment
 
@@ -17633,9 +17574,8 @@
 	  six|ablv] so when would see them again would think up proper
 	  check
 
-	* INSTALL, configure, configure.in, src/targets/cgi/Makefile.am,
-	  src/targets/cgi/Makefile.in: --with-glib-config CXXLINK=$(CC) for
-	  targets/cgi/parser3
+	* INSTALL, configure, configure.in, src/targets/cgi/Makefile.am:
+	  --with-glib-config CXXLINK=$(CC) for targets/cgi/parser3
 
 	* src/main/pa_common.C: truncation never occured when writing files
 	  on unix [since i've changed cache mech] fix
@@ -17650,9 +17590,8 @@
 
 2002-02-08  paf
 
-	* src/: include/Makefile.am, include/Makefile.in, sql/Makefile.am,
-	  sql/Makefile.in, targets/isapi/Makefile.am,
-	  targets/isapi/Makefile.in: forgotten makes
+	* src/: include/Makefile.am, sql/Makefile.am,
+	  targets/isapi/Makefile.am: forgotten makes
 
 	* src/types/: pa_vcookie.C: VCookie::fill_fields one check
 	  forgotten
@@ -17663,15 +17602,12 @@
 
 	* AUTHORS, COPYING, ChangeLog, INSTALL: install&others updated
 
-	* Makefile.am, Makefile.in, configure, configure.in,
-	  etc/parser3.charsets/Makefile.am,
-	  etc/parser3.charsets/Makefile.in, src/Makefile.am,
-	  src/Makefile.in, src/classes/Makefile.am,
-	  src/classes/Makefile.in, src/main/Makefile.am,
-	  src/main/Makefile.in, src/main/pa_status_provider.C,
-	  src/targets/Makefile.am, src/targets/Makefile.in,
-	  src/targets/cgi/Makefile.am, src/targets/cgi/Makefile.in,
-	  src/types/Makefile.am, src/types/Makefile.in: 'make dist' works
+	* Makefile.am, configure, configure.in,
+	  etc/parser3.charsets/Makefile.am, src/Makefile.am,
+	  src/classes/Makefile.am, src/main/Makefile.am,
+	  src/main/pa_status_provider.C, src/targets/Makefile.am,
+	  src/targets/cgi/Makefile.am, src/types/Makefile.am: 'make dist'
+	  works
 
 	* src/: classes/classes.C, classes/classes.h, classes/date.C,
 	  classes/double.C, classes/file.C, classes/form.C, classes/hash.C,
@@ -17781,15 +17717,9 @@
 
 	* src/main/pa_socks.C: swapped headers to avoid compiler warnings
 
-	* src/: classes/Makefile.in, main/Makefile.in, targets/Makefile.in,
-	  targets/cgi/Makefile.in, types/Makefile.in: makes
-
-	* configure, configure.in, src/classes/Makefile.in,
-	  src/include/pa_config_auto.h.in, src/main/Makefile.in,
-	  src/main/pa_common.C, src/main/pa_socks.C,
-	  src/targets/Makefile.in, src/targets/cgi/Makefile.in,
-	  src/types/Makefile.in: compiled under cygwin added yet another
-	  locking function: fcntl
+	* configure, configure.in, src/include/pa_config_auto.h.in,
+	  src/main/pa_common.C, src/main/pa_socks.C: compiled under cygwin
+	  added yet another locking function: fcntl
 
 	* config.sub: on cygwin configure passes it with strange i1586
 	  const, hacked it to mean i586
@@ -17896,35 +17826,25 @@
 	* src/: classes/xdoc.C, targets/cgi/parser3.dsp: now compiles under
 	  win32
 
-	* INSTALL, Makefile.in, configure, configure.in, ident.awk,
-	  etc/Makefile.am, etc/Makefile.in,
-	  etc/parser3.charsets/Makefile.in, src/Makefile.in,
-	  src/classes/Makefile.am, src/classes/Makefile.in,
-	  src/main/Makefile.am, src/main/Makefile.in,
-	  src/targets/Makefile.in, src/targets/cgi/Makefile.am,
-	  src/targets/cgi/Makefile.in,
+	* INSTALL, configure, configure.in, ident.awk, etc/Makefile.am,
+	  src/classes/Makefile.am, src/main/Makefile.am,
+	  src/targets/cgi/Makefile.am,
 	  src/targets/cgi/pa_config_paths.h.in, src/targets/cgi/parser3.C,
-	  src/types/Makefile.am, src/types/Makefile.in: lowered indent.awk
-	  back to src/
+	  src/types/Makefile.am: lowered indent.awk back to src/
 
-	* AUTHORS, COPYING, ChangeLog, INSTALL, Makefile.am, Makefile.in,
-	  NEWS, README, acinclude.m4, aclocal.m4, asm.txt, config.guess,
-	  config.sub, configure, configure.in, form.txt, ident.awk,
-	  install-sh, lang.txt, ltconfig, ltmain.sh, missing,
-	  mkinstalldirs, operators.txt, parser3.dsw, sql.txt, types.txt,
-	  etc/Makefile.am, etc/Makefile.in,
+	* AUTHORS, COPYING, ChangeLog, INSTALL, Makefile.am, NEWS, README,
+	  acinclude.m4, aclocal.m4, asm.txt, config.guess, config.sub,
+	  configure, configure.in, form.txt, ident.awk, install-sh,
+	  lang.txt, ltconfig, ltmain.sh, missing, mkinstalldirs,
+	  operators.txt, parser3.dsw, sql.txt, types.txt, etc/Makefile.am,
 	  etc/parser3.charsets/Makefile.am,
-	  etc/parser3.charsets/Makefile.in,
 	  etc/parser3.charsets/koi8-r.cfg,
 	  etc/parser3.charsets/windows-1250.cfg,
 	  etc/parser3.charsets/windows-1251.cfg, src/Makefile.am,
-	  src/Makefile.in, src/classes/Makefile.am,
-	  src/classes/Makefile.in, src/include/pa_config_auto.h.in,
-	  src/main/Makefile.am, src/main/Makefile.in,
-	  src/targets/Makefile.in, src/targets/cgi/Makefile.am,
-	  src/targets/cgi/Makefile.in, src/targets/cgi/parser3.C,
-	  src/types/Makefile.am, src/types/Makefile.in: moved etc&www out
-	  of src, moved configure&co out of src added windows-1250.cfg
+	  src/classes/Makefile.am, src/include/pa_config_auto.h.in,
+	  src/main/Makefile.am, src/targets/cgi/Makefile.am,
+	  src/targets/cgi/parser3.C, src/types/Makefile.am: moved etc&www
+	  out of src, moved configure&co out of src added windows-1250.cfg
 	  straightened installation scripts procedure made
 	  targets/cgi/parser3.C be dependant on ./configure --sysconfdir
 	  change
@@ -17937,14 +17857,12 @@
 
 2002-01-29  paf
 
-	* src/: Makefile.am, Makefile.in, classes/Makefile.am,
-	  classes/Makefile.in, main/Makefile.in, targets/Makefile.in,
-	  targets/cgi/Makefile.in, types/Makefile.in: removed
-	  libltdl/libtool creation [modified acinclude.m4 which were
-	  creating int into just assignment LIBTOOL=../libtool] added
-	  default system config&charsetts prepared 'make install', now it
-	  installs targets/cgi/parser3 into bin directory etc/parser3.conf
-	  & etc/parser3.charsets/* into $sysconfdir and
+	* src/: Makefile.am, classes/Makefile.am: removed libltdl/libtool
+	  creation [modified acinclude.m4 which were creating int into just
+	  assignment LIBTOOL=../libtool] added default system
+	  config&charsetts prepared 'make install', now it installs
+	  targets/cgi/parser3 into bin directory etc/parser3.conf &
+	  etc/parser3.charsets/* into $sysconfdir and
 	  $sysconfdir/parser3.charsets respectively
 
 	* src/: classes/xdoc.C, include/pa_charset.h, include/pa_globals.h,
@@ -17952,8 +17870,7 @@
 
 2002-01-28  paf
 
-	* src/: classes/Makefile.am, classes/Makefile.in,
-	  targets/cgi/Makefile.am, targets/cgi/Makefile.in: xalan-patch
+	* src/: classes/Makefile.am, targets/cgi/Makefile.am: xalan-patch
 	  removed
 
 	* src/main/pa_exception.C: dom|generic error output fix
@@ -17969,8 +17886,6 @@
 	  xdoc.importNode 0
 
 	* src/classes/xdoc.C: xdoc::set now untaints OK
-
-	* src/Makefile.in: stupid make runs automake on ths
 
 2002-01-25  paf
 
@@ -18103,11 +18018,11 @@
 	* src/classes/xdoc.C: transform error source now
 	  stylesheet_filespec
 
-	* src/: classes/Makefile.in, classes/xdoc.C, classes/xnode.C,
+	* src/: classes/xdoc.C, classes/xnode.C,
 	  include/pa_stylesheet_connection.h, main/pa_charset.C,
 	  main/pa_globals.C, main/pa_sql_driver_manager.C,
-	  main/pa_stylesheet_manager.C, targets/cgi/Makefile.am,
-	  targets/cgi/Makefile.in: autoconf gnome
+	  main/pa_stylesheet_manager.C, targets/cgi/Makefile.am: autoconf
+	  gnome
 
 	* src/: classes/xdoc.C, classes/xnode.C, include/pa_exception.h,
 	  include/pa_globals.h, include/pa_stylesheet_connection.h,
@@ -18300,9 +18215,6 @@
 	* src/classes/image.C: govno
 
 2001-12-16  paf
-
-	* src/: main/Makefile.in, targets/cgi/Makefile.in,
-	  types/Makefile.in: makes
 
 	* src/include/: pa_charset.h, pa_charsets.h: forgot to add
 
@@ -18505,8 +18417,7 @@
 	* src/main/untaint.C: ORIGINS mode was bad - forgot about optimize
 	  bit
 
-	* src/: Makefile.in, classes/xdoc.C, targets/Makefile.in,
-	  targets/cgi/Makefile.in: cached xslt [removed nocache forcing]
+	* src/classes/xdoc.C: cached xslt [removed nocache forcing]
 
 2001-11-21  paf
 
@@ -18529,9 +18440,8 @@
 
 2001-11-20  paf
 
-	* src/: classes/Makefile.am, classes/Makefile.in, classes/table.C,
-	  main/Makefile.am, main/Makefile.in, main/pa_exception.C,
-	  types/Makefile.am, types/Makefile.in: moved ident.C & co to
+	* src/: classes/Makefile.am, classes/table.C, main/Makefile.am,
+	  main/pa_exception.C, types/Makefile.am: moved ident.C & co to
 	  bottom of dependeces, so that errors would popup quicklier, fixed
 	  line numbering in table::sql
 
@@ -18544,13 +18454,11 @@
 	  types/pa_wcontext.h: UL_CLEAN pieces now inherit UL_OPTIMIZED_BIT
 	  at wcontext.write
 
-	* src/: classes/Makefile.in, main/Makefile.in, targets/Makefile.am,
-	  targets/Makefile.in, targets/cgi/Makefile.in,
-	  targets/cgi/parser3.C, types/Makefile.in: #if _MSC_VER
+	* src/targets/: Makefile.am, cgi/parser3.C: #if _MSC_VER
 	  _set_new_handler
 
-	* src/: Makefile.in, targets/cgi/parser3.C,
-	  targets/isapi/parser3isapi.C: set_new_handler in apache&isapi
+	* src/targets/: cgi/parser3.C, isapi/parser3isapi.C:
+	  set_new_handler in apache&isapi
 
 2001-11-16  paf
 
@@ -18595,9 +18503,7 @@
 	* src/: classes/classes.awk, include/pa_config_auto.h.in,
 	  include/pa_config_includes.h: setnewhandler check
 
-	* src/: include/pa_config_auto.h.in, main/Makefile.in: makes
-
-	* src/Makefile.in: configure set_new_handler check added
+	* src/include/pa_config_auto.h.in: makes
 
 	* src/targets/cgi/parser3.C: set_new_handler started
 
@@ -18691,8 +18597,8 @@
 	  simple parent, not second parent [gcc 2.96 strangly refused to
 	  call virtual from second parent]
 
-	* src/: Makefile.in, include/pa_common.h, main/Makefile.am,
-	  main/Makefile.in, targets/cgi/pa_pool.C: makes
+	* src/: include/pa_common.h, main/Makefile.am,
+	  targets/cgi/pa_pool.C: makes
 
 	* src/: include/pa_request.h, main/pa_request.C,
 	  targets/cgi/parser3.C, targets/isapi/parser3isapi.C: apache
@@ -18815,10 +18721,6 @@
 	  behavior in native calls.  it left unchanged, so ^for ^foreach &
 	  co can use r.root to write their i & key,value there
 
-	* src/: Makefile.in, classes/Makefile.in, main/Makefile.in,
-	  targets/Makefile.in, targets/cgi/Makefile.in, types/Makefile.in:
-	  makes
-
 	* src/classes/op.C: detected for var storage bug, fixed.
 	  todo:foreach
 
@@ -18902,7 +18804,7 @@
 	  pa_pragma_pack_end.h, pa_string.h, pa_types.h: String & Origin
 	  packed with #pragma pack
 
-	* src/: Makefile.in, include/pa_config_auto.h.in: pragma detection
+	* src/include/pa_config_auto.h.in: pragma detection
 
 2001-10-29  paf
 
@@ -19001,8 +18903,7 @@
 	* src/main/: pa_db_connection.C, pa_db_table.C: exception
 	  translation
 
-	* src/: classes/Makefile.am, classes/Makefile.in,
-	  targets/cgi/Makefile.am, targets/cgi/Makefile.in: db makes.
+	* src/: classes/Makefile.am, targets/cgi/Makefile.am: db makes.
 	  remember to build DB2 with -fexceptions!!!
 
 	* src/main/pa_db_table.C: DB_RMW defed
@@ -19019,16 +18920,12 @@
 	  main/pa_db_manager.C, main/pa_db_table.C, main/pa_globals.C,
 	  types/pa_vhashfile.C: DB2 ifdefs
 
-	* src/: Makefile.in, classes/Makefile.am, classes/Makefile.in,
-	  include/pa_config_fixed.h, main/Makefile.am, main/Makefile.in,
-	  targets/Makefile.in, targets/cgi/Makefile.am,
-	  targets/cgi/Makefile.in, types/Makefile.am, types/Makefile.in:
+	* src/: classes/Makefile.am, include/pa_config_fixed.h,
+	  main/Makefile.am, targets/cgi/Makefile.am, types/Makefile.am:
 	  makes with DB2
 
-	* src/: Makefile.in, classes/Makefile.in,
-	  include/pa_config_auto.h.in, main/Makefile.am, main/Makefile.in,
-	  targets/Makefile.in, targets/cgi/Makefile.in, types/Makefile.am,
-	  types/Makefile.in: makes db
+	* src/: include/pa_config_auto.h.in, main/Makefile.am,
+	  types/Makefile.am: makes db
 
 	* src/: main/pa_globals.C, targets/cgi/parser3.dsp,
 	  targets/isapi/parser3isapi.dsp: vc projects libdb ifdefed into
@@ -19093,7 +18990,7 @@
 
 2001-10-24  parser
 
-	* src/classes/: Makefile.am, Makefile.in: makes
+	* src/classes/Makefile.am: makes
 
 	* src/targets/: cgi/pool_storage.h, isapi/parser3isapi.C,
 	  isapi/pool_storage.h: pool_storage fixed
@@ -19101,8 +18998,7 @@
 	* src/: include/pa_common.h, main/pa_common.C, types/pa_vform.C,
 	  types/pa_vform.h: form fix_line_breaks
 
-	* src/: classes/Makefile.in, main/Makefile.in,
-	  targets/cgi/Makefile.in, targets/cgi/pool_storage.h: makes
+	* src/targets/cgi/pool_storage.h: makes
 
 	* src/: classes/Makefile.am, targets/cgi/Makefile.am,
 	  targets/cgi/pool_storage.h: makes
@@ -19215,9 +19111,7 @@
 
 	* src/classes/image.C: comment
 
-	* src/: Makefile.in, classes/Makefile.in, include/pa_pool.h,
-	  main/Makefile.in, main/pa_common.C, targets/Makefile.in,
-	  targets/cgi/Makefile.in, types/Makefile.in: makes
+	* src/: include/pa_pool.h, main/pa_common.C: makes
 
 	* src/: classes/xdoc.C, classes/xnode.C, classes/xnode.h,
 	  types/pa_vxdoc.C, types/pa_vxdoc.h, types/pa_vxnode.C,
@@ -19343,9 +19237,9 @@
 		  !readonly attribute DOMString publicId
 		  !readonly attribute DOMString systemId
 
-	* src/: Makefile.in, types/pa_vcode_frame.h, types/pa_wcontext.C:
-	  code_frame fixed - ::write badly passed string too transparently
-	  [failed to intercept it]
+	* src/types/: pa_vcode_frame.h, pa_wcontext.C: code_frame fixed -
+	  ::write badly passed string too transparently [failed to
+	  intercept it]
 
 	* src/: classes/xdoc.C, classes/xnode.C, include/pa_config_fixed.h,
 	  include/pa_request.h, main/pa_sql_driver_manager.C,
@@ -19417,19 +19311,7 @@
 	  fixed.  got rid of empty_string, which caused errors - it hasnt
 	  exception but somebody[value.bark] tried to throw it on it's pool
 
-	* src/Makefile.in: makes
-
-	* src/: Makefile.in, classes/Makefile.in: makes. stdc++ lib added
-	  to apache libraries
-
-	* src/: Makefile.in, classes/Makefile.in,
-	  include/pa_config_auto.h.in, main/Makefile.in,
-	  targets/Makefile.in, targets/cgi/Makefile.in, types/Makefile.in:
-	  makes
-
-	* src/: Makefile.in, classes/Makefile.in, main/Makefile.in,
-	  targets/Makefile.in, targets/cgi/Makefile.in, types/Makefile.in:
-	  makes
+	* src/include/pa_config_auto.h.in: makes
 
 2001-10-10  parser
 
@@ -19444,14 +19326,8 @@
 
 2001-10-09  parser
 
-	* src/: Makefile.in, classes/Makefile.am, classes/Makefile.in,
-	  main/Makefile.am, main/Makefile.in, targets/Makefile.in,
-	  targets/cgi/Makefile.am, targets/cgi/Makefile.in,
-	  types/Makefile.am, types/Makefile.in: makes
-
-	* src/: Makefile.in, classes/Makefile.in, main/Makefile.in,
-	  targets/Makefile.in, targets/cgi/Makefile.in, types/Makefile.in:
-	  makes
+	* src/: classes/Makefile.am, main/Makefile.am,
+	  targets/cgi/Makefile.am, types/Makefile.am: makes
 
 	* src/classes/Makefile.am: makes
 
@@ -19546,8 +19422,8 @@
 	* src/main/: pa_charset_connection.C: ctype another mem clear
 	  bugfix
 
-	* src/: Makefile.in, main/compile.tab.C, main/compile.y: disabled
-	  ^literals in names $result[^[$p^]z] now works fine
+	* src/main/: compile.tab.C, compile.y: disabled ^literals in names
+	  $result[^[$p^]z] now works fine
 
 	* src/: include/pa_hash.h, main/pa_hash.C: Hash::size() calculated
 	  wrong. fixed it
@@ -19583,10 +19459,6 @@
 	* src/: classes/classes.dsp, types/types.dsp: release projects
 	  options fixed to use release msvcrt lib
 
-	* src/: Makefile.in, classes/Makefile.in, main/Makefile.in,
-	  targets/Makefile.in, targets/cgi/Makefile.in, types/Makefile.in:
-	  makes
-
 	* src/main/pa_charset_connection.C: pcre tables now const inside
 	  removed default - pcre handles that internally fixed bug on
 	  not-cleaning tables [previously was calloced, now member]
@@ -19605,7 +19477,7 @@
 	* src/main/pa_charset_connection.C: removed entitify external hack
 	  [internal installed]
 
-	* src/main/: Makefile.am, Makefile.in: makes+removed dtd
+	* src/main/Makefile.am: makes+removed dtd
 
 	* src/: include/pa_charset_connection.h,
 	  include/pa_charset_manager.h,
@@ -19672,10 +19544,8 @@
 
 	* src/classes/classes.C: forgot one non-xml check
 
-	* src/: Makefile.am, classes/Makefile.am, classes/Makefile.in,
-	  main/Makefile.am, main/Makefile.in, targets/Makefile.in,
-	  targets/cgi/Makefile.am, targets/cgi/Makefile.in,
-	  types/Makefile.am, types/Makefile.in: makes with clases.awk
+	* src/: Makefile.am, classes/Makefile.am, main/Makefile.am,
+	  targets/cgi/Makefile.am, types/Makefile.am: makes with clases.awk
 
 	* src/targets/cgi/parser3.C: z
 
@@ -19745,21 +19615,17 @@
 	* src/include/pa_config_auto.h.in: xml on linux[elik] works! no
 	  1251 though, todo ICU
 
-	* src/: Makefile.am, Makefile.in, classes/Makefile.am,
-	  classes/Makefile.in, classes/dom.C,
+	* src/: Makefile.am, classes/Makefile.am, classes/dom.C,
 	  include/pa_stylesheet_connection.h, main/Makefile.am,
-	  main/Makefile.in, main/pa_pool.C, targets/Makefile.in,
-	  targets/cgi/Makefile.am, targets/cgi/Makefile.in,
-	  types/Makefile.am, types/Makefile.in, types/pa_vdom.h: xml
-	  configure makes
+	  main/pa_pool.C, targets/cgi/Makefile.am, types/Makefile.am,
+	  types/pa_vdom.h: xml configure makes
 
 2001-09-24  parser
 
-	* src/: Makefile.in, classes/Makefile.am, classes/Makefile.in,
-	  include/pa_config_auto.h.in, main/Makefile.in,
-	  targets/Makefile.in, types/Makefile.am, types/Makefile.in: makes
+	* src/: classes/Makefile.am, include/pa_config_auto.h.in,
+	  types/Makefile.am: makes
 
-	* src/targets/cgi/: Makefile.am, Makefile.in: makefiles
+	* src/targets/cgi/Makefile.am: makefiles
 
 	* src/: Makefile.am, targets/Makefile.am, targets/cgi/pa_pool.C:
 	  started unix makes update
@@ -19795,14 +19661,13 @@
 	  targets/isapi/parser3isapi.dsp: updated project files [/ sadly
 	  produced "" in make file and sadly wrong interpreted on load]
 
-	* src/: Makefile.in, classes/classes.h, classes/hash.C,
-	  classes/op.C, classes/table.C, doc/doxygen.cfg,
-	  include/pa_common.h, include/pa_globals.h, include/pa_request.h,
-	  include/pa_sapi.h, include/pa_sql_driver_manager.h,
-	  include/pa_string.h, main/compile.tab.C, main/main.dsp,
-	  main/pa_common.C, main/pa_exec.C, main/pa_globals.C,
-	  targets/cgi/parser3.dsp, targets/isapi/parser3isapi.dsp: merged
-	  with before_xml
+	* src/: classes/classes.h, classes/hash.C, classes/op.C,
+	  classes/table.C, doc/doxygen.cfg, include/pa_common.h,
+	  include/pa_globals.h, include/pa_request.h, include/pa_sapi.h,
+	  include/pa_sql_driver_manager.h, include/pa_string.h,
+	  main/compile.tab.C, main/main.dsp, main/pa_common.C,
+	  main/pa_exec.C, main/pa_globals.C, targets/cgi/parser3.dsp,
+	  targets/isapi/parser3isapi.dsp: merged with before_xml
 
 	* src/: classes/classes.C, classes/date.C, classes/dnode.C,
 	  classes/dom.C, classes/file.C, classes/form.C, classes/int.C,
@@ -20094,7 +19959,7 @@
 	* src/: targets/cgi/parser3.dsp, types/pa_vform.C,
 	  types/pa_vform.h, types/pa_vhash.h: !$form:fields
 
-	* src/: Makefile.in, classes/dom.C, classes/table.C, main/main.dsp,
+	* src/: classes/dom.C, classes/table.C, main/main.dsp,
 	  types/pa_vdom.h, types/pa_vform.C: merged with successful start
 	  of dom
 
@@ -20104,7 +19969,7 @@
 	* src/: main/pa_exception.C, types/pa_vform.C: getting FIRST form
 	  element [not last]
 
-	* src/: Makefile.in, classes/dom.C, classes/table.C, main/main.dsp,
+	* src/: classes/dom.C, classes/table.C, main/main.dsp,
 	  types/pa_vdom.h: introducing dom. dom:load[a.xml]
 
 2001-09-06  parser
@@ -20139,8 +20004,6 @@
 	* src/classes/: string.C, table.C: sql options can be void [same as
 	  image:html the other day]
 
-	* src/targets/cgi/Makefile.in: makes
-
 	* src/targets/cgi/Makefile.am: .am undo
 
 	* src/: main/pa_sql_driver_manager.C, sql/pa_sql_driver.h,
@@ -20159,9 +20022,6 @@
 
 	* src/: main/pa_sql_driver_manager.C, sql/pa_sql_driver.h:
 	  SQL_DRIVER_CREATE_FUNC_NAME
-
-	* src/: Makefile.in, classes/Makefile.in, main/Makefile.in,
-	  types/Makefile.in: makes
 
 	* src/classes/mail.C: MAIN:MAIL check fixed
 
@@ -20183,13 +20043,11 @@
 
 	* src/classes/date.C: date:sql-string is now without ''
 
-	* src/: include/pa_config_auto.h.in, targets/Makefile.in,
-	  targets/cgi/Makefile.am, targets/cgi/Makefile.in,
+	* src/: include/pa_config_auto.h.in, targets/cgi/Makefile.am,
 	  targets/cgi/parser3.C: configure --sysconfdir=sysadmin-controlled
 	  auto.p location for targets/cgi/parser3, default[/usr/local/etc]
 
-	* src/: Makefile.in, include/pa_config_auto.h.in,
-	  targets/cgi/Makefile.in: makes
+	* src/include/pa_config_auto.h.in: makes
 
 2001-09-03  parser
 
@@ -20210,8 +20068,8 @@
 
 	* src/targets/cgi/parser3.C: z
 
-	* src/: Makefile.in, include/pa_dir.h, targets/Makefile.in,
-	  targets/cgi/parser3.C: compiled under cygwin
+	* src/: include/pa_dir.h, targets/cgi/parser3.C: compiled under
+	  cygwin
 
 	* src/classes/void.C: void:int/double += (default)
 
@@ -20230,13 +20088,8 @@
 
 	* src/classes/image.C: image: gifsize little endian
 
-	* src/Makefile.in: makes
-
 	* src/doc/doxygen.cfg: doxygen conf removed some garbage from under
 	  doxygeneration
-
-	* src/: classes/Makefile.in, main/Makefile.in,
-	  targets/cgi/Makefile.in, types/Makefile.in: make.ins
 
 	* src/: classes/Makefile.am, main/Makefile.am,
 	  targets/cgi/Makefile.am, types/Makefile.am: .am-s
@@ -20245,10 +20098,6 @@
 	  main/pa_sql_driver_manager.C: NO_STRING_ORIGIN check3
 
 	* src/main/compile.C: NO_STRING_ORIGIN check2
-
-	* src/: Makefile.in, classes/Makefile.in, main/Makefile.in,
-	  targets/Makefile.in, targets/cgi/Makefile.in, types/Makefile.in:
-	  makefiles
 
 	* src/classes/table.C: NO_STRING_ORIGIN check
 
@@ -20281,11 +20130,9 @@
 	* src/: main/pa_request.C, targets/cgi/parser3.C: parser3 test.html
 	  [auto.p from current dir loading]
 
-	* src/: Makefile.in, classes/Makefile.in, main/Makefile.in,
-	  main/pa_common.C, main/pa_exception.C,
-	  main/pa_sql_driver_manager.C, targets/Makefile.in,
-	  targets/cgi/Makefile.am, targets/cgi/Makefile.in,
-	  types/Makefile.in: configure for solaris -lsocket
+	* src/: main/pa_common.C, main/pa_exception.C,
+	  main/pa_sql_driver_manager.C, targets/cgi/Makefile.am: configure
+	  for solaris -lsocket
 
 2001-08-24  parser
 
@@ -20377,8 +20224,6 @@
 
 	* src/types/pa_vcookie.C: cookie name&value origins added, more
 	  precise $ORIGINS(1)
-
-	* src/main/Makefile.in: make.in
 
 	* src/main/Makefile.am: .am
 
@@ -20563,13 +20408,9 @@
 
 	* src/: classes/file.C, main/pa_exec.C: file:exec
 
-	* src/: classes/Makefile.in, main/Makefile.in, targets/Makefile.in,
-	  targets/cgi/Makefile.in, types/Makefile.in: $id in .in's from
-	  .am's removed
-
-	* src/: Makefile.am, Makefile.in, classes/Makefile.am,
-	  main/Makefile.am, targets/Makefile.am, targets/cgi/Makefile.am,
-	  types/Makefile.am: removed $id from *.in *.am
+	* src/: Makefile.am, classes/Makefile.am, main/Makefile.am,
+	  targets/Makefile.am, targets/cgi/Makefile.am, types/Makefile.am:
+	  removed $id from *.in *.am
 
 	* src/main/: pa_request.C, untaint.C: ORIGINS langs name
 	  abbrevations
@@ -20581,10 +20422,6 @@
 	  types/pa_value.h, types/pa_vdouble.h, types/pa_vfile.h,
 	  types/pa_vint.h, types/pa_vstring.C, types/pa_vstring.h:
 	  $ORIGINS(1) output tracing mode
-
-2001-07-17  parser
-
-	* src/: Makefile.in, classes/Makefile.in: == wrong
 
 2001-07-13  parser
 
@@ -20664,8 +20501,6 @@
 
 	* src/main/execute.C: /0  %0 checke
 
-	* src/: Makefile.in, classes/Makefile.in: makes
-
 	* src/classes/Makefile.am: nothing - void
 
 	* src/classes/table.C: empty strings @ sql
@@ -20696,7 +20531,7 @@
 	  main/pa_hash.C, main/pa_pool.C, main/pa_request.C,
 	  main/pa_socks.C, main/pa_sql_driver_manager.C, main/pa_string.C,
 	  main/pa_table.C, main/untaint.C, targets/cgi/parser3.C,
-	  targets/isapi/parser3isapi.C: static char *RCSId="$Id: ChangeLog,v 1.115 2017/06/11 20:14:37 moko Exp $";
+	  targets/isapi/parser3isapi.C: static char *RCSId="$Id: ChangeLog,v 1.116 2019/02/10 21:08:17 moko Exp $";
 
 	* src/main/: compile.y, compile_tools.h: $:name: == ${name}:
 	  $class:name: == ${class:name}:
@@ -20736,10 +20571,6 @@
 
 	* src/targets/cgi/parser3.dsp: project file
 
-	* src/: Makefile.in, classes/Makefile.in, main/Makefile.in,
-	  targets/Makefile.in, targets/cgi/Makefile.in, types/Makefile.in:
-	  makes
-
 	* src/: classes/op.C, main/pa_request.C, targets/cgi/parser3.C:
 	  ^log ^exp
 
@@ -20762,10 +20593,6 @@
 	* src/classes/op.C: if params code-required
 
 2001-05-21  parser
-
-	* src/: Makefile.in, classes/Makefile.in, main/Makefile.in,
-	  targets/Makefile.in, targets/cgi/Makefile.in, types/Makefile.in:
-	  makes
 
 	* src/types/pa_vstring.C: eoleof
 
@@ -20807,18 +20634,10 @@
 
 	* src/main/execute.C: z
 
-	* src/: Makefile.in, classes/Makefile.in, main/Makefile.in,
-	  targets/Makefile.in, targets/cgi/Makefile.in, types/Makefile.in:
-	  make system timestamps
-
-	* src/Makefile.in: file stamps to remove autoreconf
-
 	* src/targets/cgi/parser3.C: z
 
 	* src/targets/cgi/parser3.C: argv can be just "parser3". made
 	  site_auto_path "." in that case
-
-	* src/targets/cgi/Makefile.in: z
 
 	* src/targets/cgi/: parser3.C: z
 
@@ -20848,8 +20667,6 @@
 
 	* src/classes/string.C: z
 
-	* src/classes/Makefile.in: clean
-
 	* src/classes/Makefile.am: classes/.am
 
 	* src/classes/: Makefile.am: classes/.am
@@ -20859,10 +20676,8 @@
 
 2001-05-18  parser
 
-	* src/: Makefile.in, classes/Makefile.in,
-	  include/pa_config_auto.h.in, main/Makefile.in,
-	  targets/Makefile.in, targets/cgi/Makefile.in,
-	  targets/cgi/pa_pool.C, types/Makefile.in: .am pa_threads.C ins
+	* src/: include/pa_config_auto.h.in, targets/cgi/pa_pool.C: .am
+	  pa_threads.C ins
 
 	* src/targets/cgi/Makefile.am: .am pa_threads.C added
 
@@ -21010,11 +20825,8 @@
 	* src/include/: pa_common.h, pa_config_includes.h: inline undefed
 	  for C++, that's all
 
-	* src/: Makefile.in, classes/Makefile.in,
-	  include/pa_config_auto.h.in, include/pa_config_fixed.h,
-	  include/pa_config_includes.h, main/Makefile.in,
-	  targets/Makefile.in, targets/cgi/Makefile.in, types/Makefile.in:
-	  inline wonders
+	* src/include/: pa_config_auto.h.in, pa_config_fixed.h,
+	  pa_config_includes.h: inline wonders
 
 	* src/: classes/Makefile.am, classes/hash.C, doc/doxygen.cfg,
 	  doc/doxygen.cmd: hash.C added
@@ -21318,8 +21130,6 @@
 
 2001-04-24  paf
 
-	* src/targets/Makefile.in: apache makefile.in s
-
 	* src/targets/Makefile.am: apache module lib .am
 
 	* src/main/pa_exec.C: windows32 buildCommand
@@ -21339,14 +21149,8 @@
 
 	* src/include/pa_config_auto.h.in: .h.in
 
-	* src/targets/Makefile.in: makefiles&co
-
 	* src/: classes/Makefile, main/Makefile, targets/cgi/Makefile,
 	  types/Makefile: makefiles removed
-
-	* src/: classes/Makefile.in, main/Makefile.in,
-	  targets/cgi/Makefile.in, types/Makefile.in, Makefile.in: makefile
-	  ins
 
 	* src/: classes/Makefile, main/Makefile, main/pa_string.C,
 	  targets/cgi/Makefile, types/Makefile: configure.in + makefiles
@@ -23542,9 +23346,9 @@
 
 	* src/include/: pa_pool.h, pa_string.h: pa_pool split
 
-	* src/main/: main.dsp, pa_string.C: $Id: ChangeLog,v 1.115 2017/06/11 20:14:37 moko Exp $ check
+	* src/main/: main.dsp, pa_string.C: $Id: ChangeLog,v 1.116 2019/02/10 21:08:17 moko Exp $ check
 
-	* src/: main/pa_pool.C, main/pa_string.C, include/pa_pool.h: $Id: ChangeLog,v 1.115 2017/06/11 20:14:37 moko Exp $
+	* src/: main/pa_pool.C, main/pa_string.C, include/pa_pool.h: $Id: ChangeLog,v 1.116 2019/02/10 21:08:17 moko Exp $
 	  check
 
 	* src/: include/pa_pool.h, main/pa_string.C: String prealloc &
