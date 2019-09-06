@@ -50,7 +50,7 @@
 #define pa_mkdir(path, mode) mkdir(path, mode)
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.304 2017/05/17 14:22:12 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.305 2019/09/06 10:17:07 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -78,6 +78,13 @@ volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.304 2017/05/17 14:
 // globals
 
 const String file_status_name(FILE_STATUS_NAME);
+
+String sql_bind_name(SQL_BIND_NAME);
+String sql_limit_name(PA_SQL_LIMIT_NAME);
+String sql_offset_name(PA_SQL_OFFSET_NAME);
+String sql_default_name(SQL_DEFAULT_NAME);
+String sql_distinct_name(SQL_DISTINCT_NAME);
+String sql_value_type_name(SQL_VALUE_TYPE_NAME);
 
 // forwards
 

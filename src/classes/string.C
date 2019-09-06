@@ -20,7 +20,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.238 2018/01/19 16:52:50 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.239 2019/09/06 10:17:07 moko Exp $";
 
 // class
 
@@ -483,11 +483,7 @@ public:
 	}
 };
 #endif
-extern String sql_bind_name;
-extern String sql_limit_name;
-extern String sql_offset_name;
-extern String sql_default_name;
-extern String sql_distinct_name;
+
 extern int marshal_binds(HashStringValue& hash, SQL_Driver::Placeholder*& placeholders);
 extern void unmarshal_bind_updates(HashStringValue& hash, int placeholder_count, SQL_Driver::Placeholder* placeholders);
 

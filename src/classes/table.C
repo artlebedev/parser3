@@ -22,7 +22,7 @@
 #define USE_STRINGSTREAM
 #endif
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.346 2017/12/05 22:59:57 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.347 2019/09/06 10:17:07 moko Exp $";
 
 // class
 
@@ -37,16 +37,9 @@ public:
 
 DECLARE_CLASS_VAR(table, new MTable);
 
-#define TABLE_REVERSE_NAME "reverse"
-
 // globals
 
-String sql_bind_name(SQL_BIND_NAME);
-String sql_limit_name(PA_SQL_LIMIT_NAME);
-String sql_offset_name(PA_SQL_OFFSET_NAME);
-String sql_default_name(SQL_DEFAULT_NAME);
-String sql_distinct_name(SQL_DISTINCT_NAME);
-String sql_value_type_name(SQL_VALUE_TYPE_NAME);
+#define TABLE_REVERSE_NAME "reverse"
 String table_reverse_name(TABLE_REVERSE_NAME);
 
 // methods
@@ -1334,11 +1327,7 @@ public:
 };
 #endif
 
-static void marshal_bind(
-						 HashStringValue::key_type aname, 
-						 HashStringValue::value_type avalue,
-						 SQL_Driver::Placeholder** pptr) 
-{
+static void marshal_bind( HashStringValue::key_type aname, HashStringValue::value_type avalue, SQL_Driver::Placeholder** pptr) {
 	SQL_Driver::Placeholder& ph=**pptr;
 	ph.name=aname.cstr();
 	ph.value=avalue->as_string().untaint_cstr(String::L_AS_IS);

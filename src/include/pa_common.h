@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.174 2017/02/07 22:00:32 moko Exp $"
+#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.175 2019/09/06 10:17:07 moko Exp $"
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -293,8 +293,6 @@ extern const String file_status_name;
 
 // global defines for file options which are handled but not checked elsewhere, we check them
 
-#define PA_SQL_LIMIT_NAME "limit"
-#define PA_SQL_OFFSET_NAME "offset"
 #define PA_COLUMN_SEPARATOR_NAME "separator"
 #define PA_COLUMN_ENCLOSER_NAME "encloser"
 #define PA_CHARSET_NAME "charset"
@@ -303,9 +301,18 @@ extern const String file_status_name;
 // globals defines for sql options
 
 #define SQL_BIND_NAME "bind"
+#define PA_SQL_LIMIT_NAME "limit"
+#define PA_SQL_OFFSET_NAME "offset"
 #define SQL_DEFAULT_NAME "default"
 #define SQL_DISTINCT_NAME "distinct"
 #define SQL_VALUE_TYPE_NAME "type"
+
+extern String sql_bind_name;
+extern String sql_limit_name;
+extern String sql_offset_name;
+extern String sql_default_name;
+extern String sql_distinct_name;
+extern String sql_value_type_name;
 
 #ifndef DOXYGEN
 enum Table2hash_distint { D_ILLEGAL, D_FIRST };

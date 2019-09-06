@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.143 2017/11/15 22:48:57 moko Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.144 2019/09/06 10:17:07 moko Exp $";
 
 // class
 
@@ -284,12 +284,6 @@ static void _intersects(Request& r, MethodParams& params) {
 }
 
 
-extern String sql_bind_name;
-extern String sql_limit_name;
-extern String sql_offset_name;
-extern String sql_default_name;
-extern String sql_distinct_name;
-extern String sql_value_type_name;
 extern Table2hash_value_type get_value_type(Value& vvalue_type);
 extern int marshal_binds(HashStringValue& hash, SQL_Driver::Placeholder*& placeholders);
 extern void unmarshal_bind_updates(HashStringValue& hash, int placeholder_count, SQL_Driver::Placeholder* placeholders);

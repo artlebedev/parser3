@@ -12,11 +12,7 @@
 #include "pa_vvoid.h"
 #include "pa_sql_connection.h"
 
-volatile const char * IDENT_VOID_C="$Id: void.C,v 1.55 2017/02/07 22:00:30 moko Exp $";
-
-// externs
-
-extern String sql_bind_name;
+volatile const char * IDENT_VOID_C="$Id: void.C,v 1.56 2019/09/06 10:17:07 moko Exp $";
 
 // class
 
