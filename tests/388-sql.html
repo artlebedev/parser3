@@ -12,7 +12,7 @@ sqlite	../../sql/sqlite/.libs/libparser3sqlite.so	libsqlite3.so
 
 	2. void
 
-	2.1 ^void:sql{create table pets (pet varchar, food varchar, aggressive varchar, weigth varchar)}
+	2.1 ^void:sql{create table pets (pet varchar(128), food varchar(128), aggressive varchar(128), weigth varchar(128))}
 
 	2.2 ^void:sql{insert into pets values
 		('cat', 'milk', '^taint['very']', 5),
