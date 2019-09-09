@@ -1,3 +1,11 @@
+2019-09-06  moko
+
+	* tests/388-sql.html: mysql compat
+
+	* src/: classes/hash.C, classes/string.C, classes/table.C,
+	  classes/void.C, include/pa_common.h, main/pa_common.C: cleanup:
+	  sql_ variables declaration moved to pa_common.h
+
 2019-01-15  moko
 
 	* src/classes/curl.C: ^curl:info[] - OrderedHashString used, items
