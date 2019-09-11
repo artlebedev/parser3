@@ -1,10 +1,10 @@
 Content-Type: text/html
-Content-Length: 2923
+Content-Length: 2939
 
 1. 2 + 2 = 4
 2. void
-2.1 2.2 2.3 Type: parser.runtime,
-Source: sqlite://****,
+2.1 2.2 2.3 Type: sql.execute,
+Source: select * from pets,
 Comment: must return nothing
 2.4 Type: parser.runtime,
 Source: sql,
@@ -57,8 +57,8 @@ Comment: produced no result, but no default option specified
 	"dog":"bone",
 	"parrot":"grain"
 }
-4.4 Type: parser.runtime,
-Source: sqlite://****,
+4.4 Type: sql.execute,
+Source: select * from pets,
 Comment: only 2 columns allowed for $.type[string].
 4.5. {
 	"dog":[
@@ -97,8 +97,8 @@ Comment: called with invalid option
 	"content-type":"unknown",
 	"text":"\"never\""
 }
-6.3 Type: parser.runtime,
-Source: sqlite://****,
+6.3 Type: sql.execute,
+Source: select * from pets,
 Comment: result must contain not more then 3 columns
 6.4 Type: parser.runtime,
 Source: sql,
@@ -111,19 +111,19 @@ Comment: produced no result
 	"content-type":"1",
 	"text":"1"
 } - bug!
-6.6 Type: parser.runtime,
-Source: sqlite://****,
+6.6 Type: sql.execute,
+Source: select 1,2 from pets,
 Comment: result must not contain more then one row, three columns
 6.7 Type: parser.runtime,
 Source: sql,
 Comment: called with invalid option
 6.8 "''test''"
 7. string
-7.1 Type: parser.runtime,
-Source: sqlite://****,
+7.1 Type: sql.execute,
+Source: select * from pets,
 Comment: result must contain exactly one column
-7.2 Type: parser.runtime,
-Source: sqlite://****,
+7.2 Type: sql.execute,
+Source: select pet from pets,
 Comment: result must not contain more then one row
 7.3 Type: sql.execute,
 Source: select 2+2,
