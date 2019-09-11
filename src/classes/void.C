@@ -12,7 +12,7 @@
 #include "pa_vvoid.h"
 #include "pa_sql_connection.h"
 
-volatile const char * IDENT_VOID_C="$Id: void.C,v 1.56 2019/09/06 10:17:07 moko Exp $";
+volatile const char * IDENT_VOID_C="$Id: void.C,v 1.57 2019/09/11 15:26:09 moko Exp $";
 
 // class
 
@@ -27,15 +27,11 @@ public:
 
 #ifndef DOXYGEN
 class Void_sql_event_handlers: public SQL_Driver_query_event_handlers {
-	const String& statement_string;
 public:
-	Void_sql_event_handlers(const String& astatement_string): statement_string(astatement_string) {}
 	bool add_column(SQL_Error& /*error*/, const char* /*str*/, size_t /*length*/) { /* ignore */ return false; }
 	bool before_rows(SQL_Error& error) {
 		// there are some result rows, which is wrong
-		error=SQL_Error(PARSER_RUNTIME,
-			/*statement_string,*/
-			"must return nothing");
+		error=SQL_Error("must return nothing");
 		return true;
 	}
 	bool add_row(SQL_Error& /*error*/) { /* never */ return false; }
@@ -70,13 +66,8 @@ static void _sql(Request& r, MethodParams& params) {
 	const String& statement_string=r.process_to_string(statement);
 	const char* statement_cstr=statement_string.untaint_cstr(String::L_SQL, r.connection());
 
-	Void_sql_event_handlers handlers(statement_string);
-	r.connection()->query(
-		statement_cstr, 
-		placeholders_count, placeholders,
-		0, SQL_NO_LIMIT,
-		handlers,
-		statement_string);
+	Void_sql_event_handlers handlers;
+	r.connection()->query(statement_cstr, placeholders_count, placeholders, 0, SQL_NO_LIMIT, handlers, statement_string);
 
 	if(bind)
 		unmarshal_bind_updates(*bind, placeholders_count, placeholders);

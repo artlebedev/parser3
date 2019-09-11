@@ -22,7 +22,7 @@
 #define USE_STRINGSTREAM
 #endif
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.347 2019/09/06 10:17:07 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.348 2019/09/11 15:26:09 moko Exp $";
 
 // class
 
@@ -1296,7 +1296,11 @@ public:
 			return true;
 		}
 	}
-	bool before_rows(SQL_Error& error) { 
+	bool before_rows(SQL_Error& error) {
+		if(table) {
+			error=SQL_Error("result must contain exactly one table");
+			return true;
+		}
 		try {
 			table=new Table(&columns);
 			columns_count=columns.count();

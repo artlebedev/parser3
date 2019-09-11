@@ -8,7 +8,7 @@
 #ifndef PA_SQL_CONNECTION_H
 #define PA_SQL_CONNECTION_H
 
-#define IDENT_PA_SQL_CONNECTION_H "$Id: pa_sql_connection.h,v 1.44 2017/02/07 22:00:36 moko Exp $"
+#define IDENT_PA_SQL_CONNECTION_H "$Id: pa_sql_connection.h,v 1.45 2019/09/11 15:26:09 moko Exp $"
 
 
 #include "pa_sql_driver.h"
@@ -64,7 +64,7 @@ public:
 		one can simply 'throw' from dynamic library.
 		[sad story: one can not longjump/throw due to some bug in gcc as of 3.2.1 version]
 	*/
-	override void _throw(const SQL_Error& aexception) { 
+	override void _throw(const SQL_Error& aexception) {
 		// converting SQL_exception to parser Exception
 		// hiding passwords and addresses from accidental show [imagine user forgot @exception]
 #ifdef PA_WITH_SJLJ_EXCEPTIONS
@@ -72,14 +72,13 @@ public:
 #else
 		fexception=
 #endif
-		Exception(aexception.type(), 
-				&url_without_login(),
-				aexception.comment()); 
+		Exception(aexception.type() ? aexception.type() : "sql.connect", &url_without_login(), aexception.comment());
 
 #ifndef PA_WITH_SJLJ_EXCEPTIONS
 		longjmp(mark, 1);
 #endif
 	}
+
 	virtual void propagate_exception() {
 #ifndef PA_WITH_SJLJ_EXCEPTIONS
 		throw fexception;
@@ -148,18 +147,12 @@ public:
 		const String& source) {
 		try {
 			SQL_CONNECTION_SERVICED_FUNC_GUARDED(
-				fdriver.query(fconnection, 
-					statement, 
-					placeholders_count, placeholders,
-					offset, limit, 
-					handlers)
-			);	
+				fdriver.query(fconnection, statement, placeholders_count, placeholders, offset, limit, handlers)
+			);
 		} catch(const Exception& e) { // query problem
 			if(strcmp(e.type(), "sql.connect")==0) { // if it is _throw exception, 
-				// give more specific source [were url]
-				throw Exception("sql.execute",
-					&source, 
-					"%s", e.comment());
+				// show query instead of connect string
+				throw Exception("sql.execute", &source, "%s", e.comment());
 			} else
 				rethrow;
 		}

@@ -15,7 +15,7 @@
 #include "pa_vtable.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_PA_SQL_DRIVER_MANAGER_C="$Id: pa_sql_driver_manager.C,v 1.97 2017/02/07 22:00:44 moko Exp $" IDENT_PA_SQL_DRIVER_MANAGER_H IDENT_PA_SQL_CONNECTION_H;
+volatile const char * IDENT_PA_SQL_DRIVER_MANAGER_C="$Id: pa_sql_driver_manager.C,v 1.98 2019/09/11 15:26:09 moko Exp $" IDENT_PA_SQL_DRIVER_MANAGER_H IDENT_PA_SQL_CONNECTION_H;
 
 // globals
 
@@ -80,7 +80,7 @@ void SQL_Driver_services_impl::transcode(const char* src, size_t src_length,
 	} catch(const Exception& e) {
 		_throw(SQL_Error(e.type(), e.comment()));
 	} catch(...) {
-		_throw(SQL_Error(0, "unknown error while transcoding in sql driver"));
+		_throw(SQL_Error("unknown error while transcoding in sql driver"));
 	}
 }
 

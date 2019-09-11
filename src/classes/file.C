@@ -25,7 +25,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.264 2018/05/10 23:05:10 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.265 2019/09/11 15:26:08 moko Exp $";
 
 // defines
 
@@ -953,7 +953,6 @@ static void _sql_string(Request& r, MethodParams&) {
 
 #ifndef DOXYGEN
 class File_sql_event_handlers: public SQL_Driver_query_event_handlers {
-	const String& statement_string; const char* statement_cstr;
 	int got_columns;
 	int got_cells;
 public:
@@ -961,9 +960,7 @@ public:
 	const String* user_file_name;
 	const String* user_content_type;
 public:
-	File_sql_event_handlers(
-		const String& astatement_string, const char* astatement_cstr):
-		statement_string(astatement_string), statement_cstr(astatement_cstr),
+	File_sql_event_handlers():
 		got_columns(0),
 		got_cells(0),
 		user_file_name(0),
@@ -971,7 +968,7 @@ public:
 
 	bool add_column(SQL_Error& error, const char* /*str*/, size_t /*length*/) {
 		if(got_columns++==3) {
-			error=SQL_Error(PARSER_RUNTIME, "result must contain not more then 3 columns");
+			error=SQL_Error("result must contain not more then 3 columns");
 			return true;
 		}
 		return false;
@@ -993,7 +990,7 @@ public:
 						user_content_type=new String(str, String::L_TAINTED);
 					break;
 				default:
-					error=SQL_Error(PARSER_RUNTIME, "result must not contain more then one row, three columns");
+					error=SQL_Error("result must not contain more then one row, three columns");
 					return true;
 			}
 			return false;
@@ -1010,7 +1007,7 @@ static void _sql(Request& r, MethodParams& params) {
 	const String& statement_string=r.process_to_string(statement);
 	const char* statement_cstr=statement_string.untaint_cstr(String::L_SQL, r.connection());
 
-	File_sql_event_handlers handlers(statement_string, statement_cstr);
+	File_sql_event_handlers handlers;
 
 	ulong limit=SQL_NO_LIMIT;
 	ulong offset=0;
@@ -1039,12 +1036,7 @@ static void _sql(Request& r, MethodParams& params) {
 		}
 
 
-	r.connection()->query(
-		statement_cstr, 
-		0, 0,
-		offset, limit,
-		handlers,
-		statement_string);
+	r.connection()->query(statement_cstr, 0, 0, offset, limit, handlers, statement_string);
 
 	if(!handlers.value.str)
 		throw Exception(PARSER_RUNTIME, 0, "produced no result");

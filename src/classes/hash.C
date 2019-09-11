@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.144 2019/09/06 10:17:07 moko Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.145 2019/09/11 15:26:08 moko Exp $";
 
 // class
 
@@ -37,7 +37,6 @@ DECLARE_CLASS_VAR(hash, new MHash);
 
 #ifndef DOXYGEN
 class Hash_sql_event_handlers: public SQL_Driver_query_event_handlers {
-	const String& statement_string; const char* statement_cstr;
 	bool distinct;
 	HashStringValue& rows_hash;
 	Value* row_value;
@@ -50,15 +49,7 @@ class Hash_sql_event_handlers: public SQL_Driver_query_event_handlers {
 public:
 	Table* empty;
 public:
-	Hash_sql_event_handlers(
-		const String& astatement_string,
-		const char* astatement_cstr,
-		bool adistinct,
-		HashStringValue& arows_hash,
-		Table2hash_value_type avalue_type)
-	: 
-		statement_string(astatement_string),
-		statement_cstr(astatement_cstr),
+	Hash_sql_event_handlers(bool adistinct, HashStringValue& arows_hash, Table2hash_value_type avalue_type):
 		distinct(adistinct),
 		rows_hash(arows_hash),
 		row_value(0),
@@ -81,13 +72,13 @@ public:
 
 	bool before_rows(SQL_Error& error) { 
 		if(columns.count()<1) {
-			error=SQL_Error(PARSER_RUNTIME, "no columns");
+			error=SQL_Error("no columns");
 			return true;
 		}
 		switch(value_type){
 			case C_STRING: {
 				if(columns.count()>2){
-					error=SQL_Error(PARSER_RUNTIME, "only 2 columns allowed for $.type[string].");
+					error=SQL_Error("only 2 columns allowed for $.type[string].");
 					return true;
 				}
 			}
@@ -110,7 +101,7 @@ public:
 
 	bool add_row_cell(SQL_Error& error, const char *str, size_t ) {
 		try {
-			const String& cell=str?*new String(str, String::L_TAINTED /* no length as 0x00 can be inside */):String::Empty;
+			const String& cell=str ? *new String(str, String::L_TAINTED /* no length as 0x00 can be inside */) : String::Empty;
 
 			bool duplicate=false;
 			if(one_bool_column) {
@@ -173,7 +164,7 @@ public:
 			}
 
 			if(duplicate & !distinct) {
-				error=SQL_Error(PARSER_RUNTIME, "duplicate key");
+				error=SQL_Error("duplicate key");
 				return true;
 			}
 
@@ -332,19 +323,10 @@ static void _sql(Request& r, MethodParams& params) {
 	const char* statement_cstr=statement_string.untaint_cstr(String::L_SQL, r.connection());
 
 	HashStringValue& hash=GET_SELF(r, VHashBase).hash();
-	hash.clear();	
-	Hash_sql_event_handlers handlers(
-		statement_string, statement_cstr, 
-		distinct,
-		hash,
-		value_type);
+	hash.clear();
+	Hash_sql_event_handlers handlers(distinct, hash, value_type);
 
-	r.connection()->query(
-		statement_cstr, 
-		placeholders_count, placeholders,
-		offset, limit,
-		handlers,
-		statement_string);
+	r.connection()->query(statement_cstr, placeholders_count, placeholders, offset, limit, handlers, statement_string);
 
 	if(bind)
 		unmarshal_bind_updates(*bind, placeholders_count, placeholders);

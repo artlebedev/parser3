@@ -20,7 +20,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.239 2019/09/06 10:17:07 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.240 2019/09/11 15:26:08 moko Exp $";
 
 // class
 
@@ -443,22 +443,19 @@ static void _lower(Request& r, MethodParams& params) {
 
 #ifndef DOXYGEN
 class String_sql_event_handlers: public SQL_Driver_query_event_handlers {
-	const String& statement_string; const char* statement_cstr;
 	bool got_column;
 public:
 	bool got_cell;
 	const String* result;
 public:
-	String_sql_event_handlers(
-		const String& astatement_string, const char* astatement_cstr):
-		statement_string(astatement_string), statement_cstr(astatement_cstr),
+	String_sql_event_handlers():
 		got_column(false),
 		got_cell(false),
 		result(&String::Empty) {}
 
 	bool add_column(SQL_Error& error, const char* /*str*/, size_t /*length*/) {
 		if(got_column) {
-			error=SQL_Error(PARSER_RUNTIME, /*statement_string,*/ "result must contain exactly one column");
+			error=SQL_Error("result must contain exactly one column");
 			return true;
 		}
 		got_column=true;
@@ -468,10 +465,9 @@ public:
 	bool add_row(SQL_Error& /*error*/) { /* ignore */ return false; }
 	bool add_row_cell(SQL_Error& error, const char* str, size_t) {
 		if(got_cell) {
-			error=SQL_Error(PARSER_RUNTIME, /*statement_string,*/ "result must not contain more then one row");
+			error=SQL_Error("result must not contain more then one row");
 			return true;
 		}
-
 		try {
 			got_cell=true;
 			result=new String(str, String::L_TAINTED /* no length as 0x00 can be inside */ );
@@ -524,14 +520,9 @@ const String* sql_result_string(Request& r, MethodParams& params, Value*& defaul
 	const String& statement_string=r.process_to_string(statement);
 	const char* statement_cstr=statement_string.untaint_cstr(String::L_SQL, r.connection());
 
-	String_sql_event_handlers handlers(statement_string, statement_cstr);
+	String_sql_event_handlers handlers;
 
-	r.connection()->query(
-		statement_cstr, 
-		placeholders_count, placeholders,
-		offset, limit, 
-		handlers,
-		statement_string);
+	r.connection()->query(statement_cstr, placeholders_count, placeholders, offset, limit, handlers, statement_string);
 	
 	if(bind)
 		unmarshal_bind_updates(*bind, placeholders_count, placeholders);
