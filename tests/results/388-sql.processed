@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 2939
+Content-Length: 3022
 
 1. 2 + 2 = 4
 2. void
@@ -65,6 +65,9 @@ Comment: only 2 columns allowed for $.type[string].
 		{"pet":"dog","food":"bone","aggressive":"\"never\"","weigth":"10"}
 	]
 }
+4.6 Type: sql.execute,
+Source: select 'dup', pet from pets,
+Comment: duplicate key
 5. table
 5.1 [
 	{"pet":"cat","food":"milk","aggressive":"'very'","weigth":"5"},
