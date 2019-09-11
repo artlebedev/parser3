@@ -13,7 +13,7 @@
 #include "pa_vint.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_INT_C="$Id: int.C,v 1.68 2017/02/07 22:00:28 moko Exp $" IDENT_PA_VINT_H;
+volatile const char * IDENT_INT_C="$Id: int.C,v 1.69 2019/09/11 16:10:28 moko Exp $" IDENT_PA_VINT_H;
 
 // externs
 
@@ -55,8 +55,7 @@ static void __mul(VInt& vint, double param) { vint.mul(param); }
 static void __div(VInt& vint, double param) { vint.div(param); }
 static void __mod(VInt& vint, double param) { vint.mod((int)param); }
 
-static void vint_op(Request& r, MethodParams& params, 
-					 vint_op_func_ptr func) {
+static void vint_op(Request& r, MethodParams& params, vint_op_func_ptr func) {
 	VInt& vint=GET_SELF(r, VInt);
 	double param=params.count()?params.as_double(0, "param must be numerical", r):1;
 	(*func)(vint, param);
@@ -80,9 +79,7 @@ static void _sql(Request& r, MethodParams& params) {
 		if(default_code)
 			val=r.process(*default_code).as_int();
 		else {
-			throw Exception(PARSER_RUNTIME,
-				0,
-				"produced no result, but no default option specified");
+			throw Exception(PARSER_RUNTIME, 0, "produced no result, but no default option specified");
 		}
 	r.write(*new VInt(val));
 }
