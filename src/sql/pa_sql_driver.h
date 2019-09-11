@@ -26,7 +26,7 @@
 #ifndef PA_SQL_DRIVER_H
 #define PA_SQL_DRIVER_H
 
-#define IDENT_PA_SQL_DRIVER_H "$Id: pa_sql_driver.h,v 1.50 2019/09/11 15:26:09 moko Exp $"
+#define IDENT_PA_SQL_DRIVER_H "$Id: pa_sql_driver.h,v 1.51 2019/09/11 15:33:43 moko Exp $"
 
 #include <sys/types.h>
 #include <setjmp.h>
@@ -102,7 +102,7 @@ public:
 	/// throw C++ exception from prepared
 	virtual void propagate_exception() =0;
 	/// helper func
-	void _throw(const char* comment) { _throw(SQL_Error(comment)); }
+	void _throw(const char* comment) { _throw(SQL_Error("sql.connect", comment)); }
 public:
 	/// regretrully public, because can't make stack frames: "nowhere to return to"
 	jmp_buf mark;
