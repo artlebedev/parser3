@@ -1,9 +1,9 @@
 Content-Type: text/html
-Content-Length: 3022
+Content-Length: 3188
 
 1. 2 + 2 = 4
 2. void
-2.1 2.2 2.3 Type: sql.execute,
+2.0 2.1 2.2 2.3 Type: sql.execute,
 Source: select * from pets,
 Comment: must return nothing
 2.4 Type: parser.runtime,
@@ -11,7 +11,10 @@ Source: sql,
 Comment: called with invalid option
 2.5 Type: sql.execute,
 Source: query,
-Comment: bind variables not supported yet
+Comment: bind variables not supported (yet)
+2.6 Multiple queries: 2.7 Exception in second query: Type: sql.execute,
+Source: delete from pets where pet='' ; select 2+2 ,
+Comment: must return nothing
 3. int/double
 3.1 2 int
 3.2 Type: parser.runtime,
@@ -79,7 +82,7 @@ Comment: duplicate key
 ]
 5.3 Type: sql.execute,
 Source: select * from pets,
-Comment: bind variables not supported yet
+Comment: bind variables not supported (yet)
 5.4 Type: parser.runtime,
 Source: sql,
 Comment: called with invalid option
@@ -120,7 +123,7 @@ Comment: result must not contain more then one row, three columns
 6.7 Type: parser.runtime,
 Source: sql,
 Comment: called with invalid option
-6.8 "''test''"
+6.8 \"\'test\'\"
 7. string
 7.1 Type: sql.execute,
 Source: select * from pets,
@@ -130,7 +133,7 @@ Source: select pet from pets,
 Comment: result must not contain more then one row
 7.3 Type: sql.execute,
 Source: select 2+2,
-Comment: bind variables not supported yet
+Comment: bind variables not supported (yet)
 7.4 Type: parser.runtime,
 Source: sql,
 Comment: called with invalid option

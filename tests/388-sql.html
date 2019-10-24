@@ -3,14 +3,18 @@
 $SQL[
 	$.drivers[^table::create{protocol	driver	client
 sqlite	../../sql/sqlite/.libs/libparser3sqlite.so	libsqlite3.so
+mysql	../../sql/mysql/.libs/libparser3mysql.so	libmariadbclient.so
 }]
 ]
 
-^connect[sqlite://:memory:]{
+#config_group
+^connect[^if(0){sqlite://:memory:?}{mysql://@/?config_group=parser3&}multi_statements=1]{
 	1. 2 + 2 = ^string:sql{select 2+2}
 
 
 	2. void
+
+	2.0 $ignore[^try-catch{ ^void:sql{drop table pets} }]
 
 	2.1 ^void:sql{create table pets (pet varchar(128), food varchar(128), aggressive varchar(128), weigth varchar(128))}
 
@@ -24,6 +28,8 @@ sqlite	../../sql/sqlite/.libs/libparser3sqlite.so	libsqlite3.so
 	2.4 ^try-catch{ ^void:sql{query}[ $.unknown[yes] ] }
 	2.5 ^try-catch{ ^void:sql{query}[ $.bind[ $.name[value] ] ] }
 
+	2.6 Multiple queries: ^try-catch{ ^void:sql{delete from pets where pet='' ^; delete from pets where pet='' } }
+	2.7 Exception in second query: ^try-catch{ ^void:sql{delete from pets where pet='' ^; select 2+2 } }
 
 	3. int/double
 
