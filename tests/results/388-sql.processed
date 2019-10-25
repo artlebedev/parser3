@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 3180
+Content-Length: 3571
 
 1. 2 + 2 = 4
 2. void
@@ -12,8 +12,11 @@ Comment: called with invalid option
 2.5 Type: sql.execute,
 Source: query,
 Comment: bind variables not supported yet
-2.6 Multiple queries: 2.7 Exception in second query: Type: sql.execute,
-Source: delete from pets where pet='' ; select 2+2 ,
+2.6 Multiple queries: 2.8 Multiple queries, data in first query: Type: sql.execute,
+Source: select 2+2 ; delete from pets where pet='',
+Comment: must return nothing
+2.9 Multiple queries, data in second query: Type: sql.execute,
+Source: delete from pets where pet='' ; select 2+2,
 Comment: must return nothing
 3. int/double
 3.1 2 int
@@ -26,6 +29,9 @@ Comment: produced no result, but no default option specified
 Source: sql,
 Comment: produced no result, but no default option specified
 3.6 1
+3.7 Multiple queries, data in first query: 4 3.8 Multiple queries, data in second query: 4 3.9 Multiple queries, data in both queries: Type: sql.execute,
+Source: select 2+2 ; select 3+3 ,
+Comment: result must contain exactly one column
 4. hash
 4.1 {
 	"cat":{

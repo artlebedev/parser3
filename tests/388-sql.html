@@ -8,11 +8,13 @@ pgsql	../../sql/pgsql/.libs/libparser3pgsql.so	libpq.so	pgsql://test@localhost/t
 }]
 ]
 
-$ignore[^SQL.drivers.locate[protocol;sqlite]]
+$sql[sqlite]
+$ignore[^SQL.drivers.locate[protocol;$sql]]
 
 ^connect[$SQL.drivers.connect]{
 
 	1. 2 + 2 = ^string:sql{select 2+2}
+
 
 	2. void
 
@@ -30,8 +32,10 @@ $ignore[^SQL.drivers.locate[protocol;sqlite]]
 	2.4 ^try-catch{ ^void:sql{query}[ $.unknown[yes] ] }
 	2.5 ^try-catch{ ^void:sql{query}[ $.bind[ $.name[value] ] ] }
 
-	2.6 Multiple queries: ^try-catch{ ^void:sql{delete from pets where pet='' ^; delete from pets where pet='' } }
-	2.7 Exception in second query: ^try-catch{ ^void:sql{delete from pets where pet='' ^; select 2+2 } }
+	2.6 Multiple queries: ^try-catch{ ^void:sql{delete from pets where pet='' ^; delete from pets where pet=''} }
+	2.8 Multiple queries, data in first query: ^if($sql ne 'mysql'){ ^try-catch{ ^void:sql{select 2+2 ^; delete from pets where pet=''} } }
+	2.9 Multiple queries, data in second query: ^try-catch{ ^void:sql{delete from pets where pet='' ^; select 2+2} }
+
 
 	3. int/double
 
@@ -42,6 +46,10 @@ $ignore[^SQL.drivers.locate[protocol;sqlite]]
 	3.4 $v(^double:sql{select -2}) $v $v.CLASS_NAME
 	3.5 ^try-catch{ ^double:sql{select -2}[ $.limit(0) ] }
 	3.6 ^double:sql{select -2}[ $.limit(0) $.default[1] ]
+
+	3.7 Multiple queries, data in first query: ^if($sql ne 'mysql'){ ^try-catch{ ^int:sql{select 2+2 ^; delete from pets where pet=''} } }
+	3.8 Multiple queries, data in second query: ^try-catch{ ^int:sql{delete from pets where pet='' ^; select 2+2} }
+	3.9 Multiple queries, data in both queries: ^try-catch{ ^int:sql{select 2+2 ^; select 3+3 } }
 
 
 	4. hash
