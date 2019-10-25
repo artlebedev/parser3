@@ -47,7 +47,7 @@ $ignore[^SQL.drivers.locate[protocol;$sql]]
 	3.5 ^try-catch{ ^double:sql{select -2}[ $.limit(0) ] }
 	3.6 ^double:sql{select -2}[ $.limit(0) $.default[1] ]
 
-	3.7 Multiple queries, data in first query: ^if($sql ne 'mysql'){ ^try-catch{ ^int:sql{select 2+2 ^; delete from pets where pet=''} } }
+	3.7 Multiple queries, data in first query: ^try-catch{ ^int:sql{select 2+2 ^; delete from pets where pet=''} }
 	3.8 Multiple queries, data in second query: ^try-catch{ ^int:sql{delete from pets where pet='' ^; select 2+2} }
 	3.9 Multiple queries, data in both queries: ^try-catch{ ^int:sql{select 2+2 ^; select 3+3 } }
 
