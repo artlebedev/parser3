@@ -1,3 +1,18 @@
+2019-10-25  moko
+
+	* tests/: 388-sql.html, results/388-sql.processed: more multiple
+	  queries tests
+
+2019-10-24  moko
+
+	* tests/: 388-sql.html, results/388-sql.processed: support for
+	  pgsql driver test
+
+	* tests/: 388-sql.html, results/388-sql.processed:
+	  multi_statements=1 now tested, mysql test now supported
+	  (connection must be specified in [parser3] section in .my.cnf)
+	  related to issues #1195 and #1194
+
 2019-09-11  moko
 
 	* src/classes/int.C: whitespace
