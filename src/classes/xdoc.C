@@ -28,7 +28,7 @@
 #include "xnode.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_XDOC_C="$Id: xdoc.C,v 1.194 2018/01/11 00:03:56 moko Exp $";
+volatile const char * IDENT_XDOC_C="$Id: xdoc.C,v 1.195 2019/10/31 13:10:42 moko Exp $";
 
 // defines
 
@@ -366,10 +366,7 @@ static void _importNode(Request& r, MethodParams& params) {
 	writeNode(r, vdoc, node);
 }
 
-/*
-GdomeElement *gdome_doc_createElementNS (GdomeDocument *self, GdomeDOMString *namespaceURI, GdomeDOMString *qualifiedName, GdomeException *exc);
-GdomeAttr *gdome_doc_createAttributeNS (GdomeDocument *self, GdomeDOMString *namespaceURI, GdomeDOMString *qualifiedName, GdomeException *exc);
-*/
+#define XML_PARSE_OPTIONS (XML_PARSE_DTDLOAD | XML_PARSE_NOENT | XML_PARSE_HUGE)
 
 static void _create(Request& r, MethodParams& params) {
 	Charset& source_charset=r.charsets.source();
@@ -383,9 +380,8 @@ static void _create(Request& r, MethodParams& params) {
 		const String& xml=r.process_to_string(param);
 		String::Body sbody=xml.cstr_to_string_body_untaint(String::L_XML, r.connection(false), &r.charsets);
 
-		xmldoc=xmlReadMemory(sbody.cstr(), sbody.length(), NULL, NULL, XML_PARSE_HUGE);
+		xmldoc=xmlReadMemory(sbody.cstr(), sbody.length(), NULL, NULL, XML_PARSE_OPTIONS);
 
-		//printf("document=0x%p\n", document);
 		if(!xmldoc || xmlHaveGenericErrors())
 			throw XmlException(0, r);
 
@@ -396,19 +392,6 @@ static void _create(Request& r, MethodParams& params) {
 			if(xmlValidateNCName(localName, 0) != 0)
 				throw XmlException(0, XML_INVALID_LOCAL_NAME, localName);
 
-#if 0
-			GdomeDocumentType *documentType=gdome_di_createDocumentType (
-				docimpl, 
-				r.transcode(qualifiedName), 
-				0/*publicId*/, 
-				0/*systemId*/, 
-				&exc);
-			if(!documentType || exc || xmlHaveGenericErrors())
-				throw Exception(
-					method_name, 
-					exc);
-			/// +xalan createXMLDecl ?
-#endif
 			xmldoc=xmlNewDoc(0);
 			if(!xmldoc || xmlHaveGenericErrors())
 				throw XmlException(0, r);
@@ -421,7 +404,7 @@ static void _create(Request& r, MethodParams& params) {
 			// must be last action in if, see after if}
 		} else {
 			VFile* vfile=param.as_vfile(String::L_AS_IS);
-			xmldoc=xmlReadMemory(vfile->value_ptr(), vfile->value_size(), NULL, NULL, XML_PARSE_HUGE);
+			xmldoc=xmlReadMemory(vfile->value_ptr(), vfile->value_size(), NULL, NULL, XML_PARSE_OPTIONS);
 			if(!xmldoc || xmlHaveGenericErrors())
 				throw XmlException(0, r);
 		}
@@ -458,7 +441,7 @@ static void _load(Request& r, MethodParams& params) {
 		uri_cstr=uri->taint_cstr(String::L_AS_IS); // leave as-is for xmlParseFile to handle
 
 	/// @todo!! add SAFE MODE!!
-	xmlDoc* xmldoc=xmlReadFile(uri_cstr, NULL, XML_PARSE_HUGE);
+	xmlDoc* xmldoc=xmlReadFile(uri_cstr, NULL, XML_PARSE_OPTIONS);
 	if(!xmldoc || xmlHaveGenericErrors())
 		throw XmlException(uri, r);
 	
