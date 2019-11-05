@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-volatile const char * IDENT_PA_XML_IO_C="$Id: pa_xml_io.C,v 1.34 2017/11/15 22:48:58 moko Exp $" IDENT_PA_XML_IO_H;
+volatile const char * IDENT_PA_XML_IO_C="$Id: pa_xml_io.C,v 1.35 2019/11/05 16:50:30 moko Exp $" IDENT_PA_XML_IO_H;
 
 #include "libxslt/extensions.h"
 
@@ -58,8 +58,7 @@ struct MemoryStream : public PA_Allocated {
 };
 #endif
 
-static void *
-xmlFileOpen_ReadIntoStream (const char* do_not_store_filename, bool adjust_path_to_root_from_document_root=false) {
+static void * xmlFileOpen_ReadIntoStream (const char* do_not_store_filename, bool adjust_path_to_root_from_document_root=false) {
 #ifdef PA_SAFE_MODE
 //copied from libxml/catalog.c
 #	define XML_XML_DEFAULT_CATALOG "file:///etc/xml/catalog"
@@ -69,7 +68,7 @@ xmlFileOpen_ReadIntoStream (const char* do_not_store_filename, bool adjust_path_
 #endif
 
 	Request& r=pa_thread_request();
-	char adjust_buf[MAX_STRING];	
+	char adjust_buf[MAX_STRING];
 	if(adjust_path_to_root_from_document_root) {
 		const char* document_root=r.request_info.document_root;
 		if(!document_root)
@@ -82,7 +81,7 @@ xmlFileOpen_ReadIntoStream (const char* do_not_store_filename, bool adjust_path_
 	} else
 		if(!strstr(do_not_store_filename, "http://")) {
 			if(strstr(do_not_store_filename, "file://")) {
-				do_not_store_filename+=7/*strlen("file://")*/;
+				do_not_store_filename+=7 /*strlen("file://")*/;
 #ifdef WIN32
 				if(
 					do_not_store_filename[0]=='/'
@@ -106,9 +105,9 @@ xmlFileOpen_ReadIntoStream (const char* do_not_store_filename, bool adjust_path_
 	const char *buf;
 	try {
 		buf=file_load_text(r, *new String(can_store_filename), 
-							true/*fail_on_read_problem*/,
-							0/*params*/,
-							false/*don't transcode result because it must be fit with @encoding value!*/);
+			true /*fail_on_read_problem*/,
+			0 /*params*/,
+			false /*don't transcode result because it must be fit with @encoding value!*/);
 	} catch(const Exception& e) {
 		if(strcmp(e.type(), "file.missing")==0)
 			return 0; // let the library try that and report an error properly
@@ -123,15 +122,13 @@ xmlFileOpen_ReadIntoStream (const char* do_not_store_filename, bool adjust_path_
 	return (void *)stream;
 }
 
-static int
-xmlFileMatchMonitor(const char* /*file_spec_cstr*/) {
+static int xmlFileMatchMonitor(const char* /*file_spec_cstr*/) {
 	return 1; // always intercept, causing xmlFileOpenMonitor to be called
 }
-static void *
-xmlFileOpenMonitor(const char* filename) {
+
+static void *xmlFileOpenMonitor(const char* filename) {
 	return xmlFileOpen_ReadIntoStream(filename); // handles localfile case, else returns 0
 }
-
 
 /**
  * xmlFileMatchWithLocalhostEqDocumentRoot:
@@ -141,11 +138,8 @@ xmlFileOpenMonitor(const char* filename) {
  *
  * Returns 1 if matches, 0 otherwise
  */
-static int
-xmlFileMatchLocalhost(const char* filename) {
-	if (!strncmp(filename, "http://localhost", 16))
-		return(1);
-	return(0);
+static int xmlFileMatchLocalhost(const char* filename) {
+	return !strncmp(filename, "http://localhost", 16);
 }
 
 /**
@@ -156,21 +150,16 @@ xmlFileMatchLocalhost(const char* filename) {
  *
  * Returns an I/O context or NULL in case of error
  */
-static void *
-xmlFileOpenLocalhost (const char* filename) {
+static void *xmlFileOpenLocalhost(const char* filename) {
 	return xmlFileOpen_ReadIntoStream(filename, true/*adjust path to root from document_root*/);
 }
 
-static int
-xmlFileMatchMethod(const char* filename) {
-	if (!strncmp(filename, "parser://", 9 /*strlen("parser://"), and check xmlFileOpenMethod*/))
-		return(1);
-	return(0);
+static int xmlFileMatchMethod(const char* filename) {
+	return !strncmp(filename, "parser://", 9 /*strlen("parser://"), and check xmlFileOpenMethod*/);
 }
 
 /// parser://method/param/here -> ^MAIN:method[/params/here]
-static void *
-xmlFileOpenMethod (const char* afilename) {
+static void *xmlFileOpenMethod (const char* afilename) {
 	const char* buf;
 	try {
 		Request& r=pa_thread_request();
@@ -209,38 +198,26 @@ xmlFileOpenMethod (const char* afilename) {
  *
  * Returns the number of bytes written
  */
-static int
-pa_xmlFileReadMethod (void * context, //< MemoryStream actually
-					  char * buffer, int len) 
-{
+static int pa_xmlFileReadMethod (void* context, char* buffer, int len){
 	MemoryStream& stream=*static_cast<MemoryStream*>(context);
 
 	return stream.read(buffer, len);
 }
 
-static int
-pa_xmlFileCloseMethod (void * /*context*/) {
+static int pa_xmlFileCloseMethod (void* /*context*/) {
 	return 0;
 }
-
-
 
 void pa_xml_io_init() {
 	// file open monitorer [for xslt cacher]
 	// safe mode checker, always fail match, but checks non-"://" there
-	xmlRegisterInputCallbacks(
-		xmlFileMatchMonitor, xmlFileOpenMonitor,
-		pa_xmlFileReadMethod, pa_xmlFileCloseMethod);
+	xmlRegisterInputCallbacks(xmlFileMatchMonitor, xmlFileOpenMonitor, pa_xmlFileReadMethod, pa_xmlFileCloseMethod);
 
 	// http://localhost/abc -> $ENV{DOCUMENT_ROOT}/abc | ./abc
-	xmlRegisterInputCallbacks(
-		xmlFileMatchLocalhost, xmlFileOpenLocalhost,
-		pa_xmlFileReadMethod, pa_xmlFileCloseMethod);
+	xmlRegisterInputCallbacks(xmlFileMatchLocalhost, xmlFileOpenLocalhost, pa_xmlFileReadMethod, pa_xmlFileCloseMethod);
 
 	// parser://method/param/here -> ^MAIN:method[/params/here]
-	xmlRegisterInputCallbacks(
-		xmlFileMatchMethod, xmlFileOpenMethod,
-		pa_xmlFileReadMethod, pa_xmlFileCloseMethod);
+	xmlRegisterInputCallbacks(xmlFileMatchMethod, xmlFileOpenMethod, pa_xmlFileReadMethod, pa_xmlFileCloseMethod);
 }
 
 #endif
