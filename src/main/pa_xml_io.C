@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-volatile const char * IDENT_PA_XML_IO_C="$Id: pa_xml_io.C,v 1.38 2019/11/05 19:59:23 moko Exp $" IDENT_PA_XML_IO_H;
+volatile const char * IDENT_PA_XML_IO_C="$Id: pa_xml_io.C,v 1.39 2019/11/05 20:05:58 moko Exp $" IDENT_PA_XML_IO_H;
 
 #include "libxslt/extensions.h"
 
@@ -65,8 +65,8 @@ static int xmlFileMatchMonitor(const char* /*file_spec_cstr*/) {
 }
 
 /**
- * xmlFileOpenLocalhost:
- * filename:  the URI for matching
+ * xmlFileOpenMonitor:
+ * afilename:  the URI for matching
  *
  * http://localhost/abc -> $ENV{DOCUMENT_ROOT}/abc | ./abc
  *
