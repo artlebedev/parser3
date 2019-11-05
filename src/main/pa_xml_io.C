@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-volatile const char * IDENT_PA_XML_IO_C="$Id: pa_xml_io.C,v 1.35 2019/11/05 16:50:30 moko Exp $" IDENT_PA_XML_IO_H;
+volatile const char * IDENT_PA_XML_IO_C="$Id: pa_xml_io.C,v 1.36 2019/11/05 19:25:51 moko Exp $" IDENT_PA_XML_IO_H;
 
 #include "libxslt/extensions.h"
 
@@ -43,6 +43,8 @@ struct MemoryStream : public PA_Allocated {
 	const char* m_buf;
 	size_t m_size;
 	size_t m_position;
+
+	MemoryStream(const char *a_buf) : m_buf(a_buf), m_size(strlen(m_buf)), m_position(0) {}
 
 	int read(char* a_buffer, size_t a_size) {
 		size_t left=m_size-m_position;
@@ -116,10 +118,7 @@ static void * xmlFileOpen_ReadIntoStream (const char* do_not_store_filename, boo
 	} catch(...) {
 		buf="xmlFileOpen_ReadIntoStream: unknown error";
 	}
-	MemoryStream* stream=new MemoryStream;
-	stream->m_buf=buf;
-	stream->m_size=strlen(buf);
-	return (void *)stream;
+	return (void *)new MemoryStream(buf);
 }
 
 static int xmlFileMatchMonitor(const char* /*file_spec_cstr*/) {
@@ -182,10 +181,7 @@ static void *xmlFileOpenMethod (const char* afilename) {
 	} catch(...) {
 		buf="xmlFileOpenLocalhost: unknown error";
 	}
-	MemoryStream* stream=new MemoryStream;
-	stream->m_buf=buf;
-	stream->m_size=strlen(buf);
-	return (void *)stream;
+	return (void *)new MemoryStream(buf);
 }
 
 /**
@@ -200,7 +196,6 @@ static void *xmlFileOpenMethod (const char* afilename) {
  */
 static int pa_xmlFileReadMethod (void* context, char* buffer, int len){
 	MemoryStream& stream=*static_cast<MemoryStream*>(context);
-
 	return stream.read(buffer, len);
 }
 
