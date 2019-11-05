@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-volatile const char * IDENT_PA_XML_IO_C="$Id: pa_xml_io.C,v 1.36 2019/11/05 19:25:51 moko Exp $" IDENT_PA_XML_IO_H;
+volatile const char * IDENT_PA_XML_IO_C="$Id: pa_xml_io.C,v 1.37 2019/11/05 19:35:00 moko Exp $" IDENT_PA_XML_IO_H;
 
 #include "libxslt/extensions.h"
 
@@ -60,12 +60,12 @@ struct MemoryStream : public PA_Allocated {
 };
 #endif
 
-static void * xmlFileOpen_ReadIntoStream (const char* do_not_store_filename, bool adjust_path_to_root_from_document_root=false) {
+static void * xmlFileOpen_ReadIntoStream (const char* afilename, bool adjust_path_to_root_from_document_root=false) {
 #ifdef PA_SAFE_MODE
 //copied from libxml/catalog.c
 #	define XML_XML_DEFAULT_CATALOG "file:///etc/xml/catalog"
 	// disable attempts to consult default catalog [usually, that file belongs to other user/group]
-	if(strcmp(do_not_store_filename, XML_XML_DEFAULT_CATALOG)==0)
+	if(strcmp(afilename, XML_XML_DEFAULT_CATALOG)==0)
 		return 0;
 #endif
 
@@ -78,30 +78,25 @@ static void * xmlFileOpen_ReadIntoStream (const char* do_not_store_filename, boo
 
 		adjust_buf[0]=0;
 		strcat(adjust_buf, document_root);
-		strcat(adjust_buf, &do_not_store_filename[16]);
-		do_not_store_filename=adjust_buf;
+		strcat(adjust_buf, &afilename[16]);
+		afilename=adjust_buf;
 	} else
-		if(!strstr(do_not_store_filename, "http://")) {
-			if(strstr(do_not_store_filename, "file://")) {
-				do_not_store_filename+=7 /*strlen("file://")*/;
+		if(!strstr(afilename, "http://")) {
+			if(strstr(afilename, "file://")) {
+				afilename+=7 /*strlen("file://")*/;
 #ifdef WIN32
-				if(
-					do_not_store_filename[0]=='/'
-					&& do_not_store_filename[1]
-					&& do_not_store_filename[2]==':'
-					&& do_not_store_filename[3]=='/'
-				) {
+				if(afilename[0]=='/' && afilename[1] && afilename[2]==':' && afilename[3]=='/') {
 					// skip leading slash for absolute path file:///C:/path/to/file
-					do_not_store_filename++;
+					afilename++;
 				}
 #endif
-			} else if(*do_not_store_filename && do_not_store_filename[1]!=':' && strstr(do_not_store_filename, "://")) {
+			} else if(afilename[0] && afilename[1]!=':' && strstr(afilename, "://")) {
 				pa_xmlStopMonitoringDependencies();
 				return 0; // plug out [do not handle other prefixes]
 			}
 		}
 
-	const char* can_store_filename=pa_strdup(do_not_store_filename);
+	const char* can_store_filename=pa_strdup(afilename);
 	add_dependency(can_store_filename);
 
 	const char *buf;
@@ -211,7 +206,7 @@ void pa_xml_io_init() {
 	// http://localhost/abc -> $ENV{DOCUMENT_ROOT}/abc | ./abc
 	xmlRegisterInputCallbacks(xmlFileMatchLocalhost, xmlFileOpenLocalhost, pa_xmlFileReadMethod, pa_xmlFileCloseMethod);
 
-	// parser://method/param/here -> ^MAIN:method[/params/here]
+	// parser://method/param/here -> ^MAIN:method[/params/here] - should be last to be called first
 	xmlRegisterInputCallbacks(xmlFileMatchMethod, xmlFileOpenMethod, pa_xmlFileReadMethod, pa_xmlFileCloseMethod);
 }
 
