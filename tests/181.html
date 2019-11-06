@@ -1,7 +1,20 @@
-$x[^xdoc::create{<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE document SYSTEM "http://localhost/tests/181.ent">
-<document>
-<root />
-</document>}]
+@main[]
+
+$x[^xdoc::create{^xml[http://localhost/tests/181.ent]}]
+^x.string[]
+^x.string[ $.method[html] $.omit-xml-declaration[yes] ]
+
+$x[^xdoc::create{^xml[$request:document-root/tests/181.ent]}]
+
+^try-catch{
+	$x[^xdoc::create{^xml[http://localhost/tests/no-such-file.ent]}]
+}
 
 done.
+
+@xml[fname]
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE document SYSTEM "$fname">
+<document>
+<root />a&nbsp^;b
+</document>

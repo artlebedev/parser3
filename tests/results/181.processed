@@ -1,4 +1,23 @@
 Content-Type: text/html
-Content-Length: 5
+Content-Length: 548
 
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE document SYSTEM "http://localhost/tests/181.ent">
+<document>
+<root/>a b
+</document>
+
+<!DOCTYPE document SYSTEM "http://localhost/tests/181.ent">
+<document>
+<root></root>a b
+</document>
+
+Type: xml,
+Source: create,
+Comment: I/O warning : failed to load external entity &quot;http://localhost/tests/no-such-file.ent&quot;
+&lt;!DOCTYPE document SYSTEM &quot;http://localhost/tests/no-such-file.ent&quot;&gt;
+^
+Entity: line 4: parser error : Entity 'nbsp' not defined
+&lt;root /&gt;a&amp;nbsp;b
+^
 done.
