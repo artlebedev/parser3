@@ -1,0 +1,76 @@
+Content-Type: text/html
+Content-Length: 1424
+
+1 1.1 {
+"class":"file"
+}
+2 20
+2.1 {
+"class":"file",
+"name":"noname.dat",
+"size":2,
+"mode":"binary",
+"content-type":"application\/octet-stream"
+}
+3 3.1 {
+"class":"file"
+}
+4 A
+4.1 a
+4.2 'A'
+5 A0A
+6 1010
+6.1 -1010
+6.2 -1010
+7 -10
+7.1 1221
+7.2 1010101
+8 Type: parser.runtime,
+Source: convert,
+Comment: alphabet 'from' must contain at least 2 characters
+8.1 Type: number.format,
+Source: convert,
+Comment: '3' is invalid digit
+8.2 Type: number.format,
+Source: convert,
+Comment: '1' is invalid digit
+8.3 Type: number.format,
+Source: convert,
+Comment: '-' is invalid number
+8.4 Type: number.format,
+Source: convert,
+Comment: '+' is invalid number
+8.5 bc
+9 Type: parser.runtime,
+Source: convert,
+Comment: alphabet 'to' must contain at least 2 characters
+9.1 Type: parser.runtime,
+Source: convert,
+Comment: base 'from' must be an integer from 2 to 16 or 256
+9.2 Type: parser.runtime,
+Source: convert,
+Comment: base 'from' must be an integer from 2 to 16 or 256
+9.3 Type: parser.runtime,
+Source: convert,
+Comment: base 'to' must be an integer from 2 to 16 or 256
+9.4 Type: parser.runtime,
+Source: convert,
+Comment: base 'to' must be an integer from 2 to 16 or 256
+9.5 Type: number.format,
+Source: convert,
+Comment: '3' is invalid digit
+10 b000bb
+10.1 bbba
+10.1 bbba
+10.2 ----
+11. baab
+12. 'ABA'
+13. OK
+14. 'GIF89a	' 7
+15. {
+"class":"file",
+"name":"noname.dat",
+"size":1371,
+"mode":"binary",
+"content-type":"application\/octet-stream"
+}

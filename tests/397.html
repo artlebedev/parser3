@@ -1,0 +1,62 @@
+$b64[ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/]
+
+1   ^math:convert[](256)(16)
+1.1 ^json:string[^math:convert[](256)(16)[ $.format[file] ]]
+
+2   ^math:convert[ ](256)(16)
+2.1 ^json:string[^math:convert[ ](256)(16)[ $.format[file] ]]
+
+3   ^math:convert[ ](16)(10)
+3.1 ^json:string[^math:convert[ ](16)(10)[ $.format[file] ]]
+
+4   ^math:convert[^#0A](256)(16)
+4.1 ^math:convert[97](10)(256)
+4.2 '^math:convert[410041](16)(256)'
+
+5   ^math:convert[^#0A^#0A](256)(16)
+
+6   ^math:convert[+10](10)(2)
+6.1 ^math:convert[-10](10)(2)
+6.2 ^math:convert[ -10 ](10)[01]
+
+7   ^math:convert[-10][0123456789-][0123456789-]
+7.1 ^math:convert[-10][0123456789-](10)
+7.2 ^math:convert[1111](9)(3)
+
+8   ^try-catch{ ^math:convert[1][a](2) }
+8.1 ^try-catch{ ^math:convert[123](3)[ab] }
+8.2 ^try-catch{ ^math:convert[12 1](3)[ab] }
+8.3 ^try-catch{ ^math:convert[ - ](2)(10) }
+8.4 ^try-catch{ ^math:convert[ + ](2)(10) }
+8.5 ^math:convert[ 12 ](3)[abc]
+
+9   ^try-catch{ ^math:convert[1](2)[a] }
+9.1 ^try-catch{ ^math:convert[1](17)[ab] }
+9.2 ^try-catch{ ^math:convert[1](0)[ab] }
+9.3 ^try-catch{ ^math:convert[1][ab](17) }
+9.4 ^try-catch{ ^math:convert[1][ab](0) }
+9.5 ^try-catch{ ^math:convert[123][12][ab] }
+
+10 ^math:convert[1212][01212][0ab]
+10.1 ^math:convert[254](10)[abab]
+10.1 ^math:convert[254](10)[--ab]
+10.2 ^math:convert[254](10)[ab--]
+
+11. ^math:convert[001001](2)[ab]
+
+12. '^math:convert[^math:convert[414241](16)(2)](2)(256)'
+
+$f[^file::load[binary;098font.gif]]
+
+$b[^f.base64[]]
+$b[^b.replace[^table::create[nameless]{^taint[^#0A]}]]
+
+$b2[^math:convert[$f](256)[$b64]]
+
+13. ^if($b eq $b2){OK}{failed}
+
+14. $f[^math:convert[$b][$b64](256)[ $.format[string] ]]
+   '$f' ^f.length[]
+
+15. $f[^math:convert[$b][$b64](256)[ $.format[file] ]]
+   ^json:string[$f]
