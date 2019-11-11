@@ -22,7 +22,7 @@
 extern "C" char *crypt(const char* , const char* );
 #endif
 
-volatile const char * IDENT_MATH_C="$Id: math.C,v 1.86 2017/12/07 00:23:16 moko Exp $";
+volatile const char * IDENT_MATH_C="$Id: math.C,v 1.87 2019/11/11 20:57:18 moko Exp $";
 
 // defines
 
@@ -337,6 +337,16 @@ static void _sha1(Request& r, MethodParams& params) {
 	r.write(*new String(hex_string(digest, sizeof(digest), false)));
 }
 
+String::C getData(Value& vdata, Request& r){
+	if(const String* sdata=vdata.get_string()){
+		String::Body body=sdata->cstr_to_string_body_untaint(String::L_AS_IS, r.connection(false), &r.charsets); // explode content, honor tainting changes
+		return String::C(body.cstr(), body.length());
+	} else {
+		VFile *file=vdata.as_vfile(String::L_AS_IS);
+		return String::C(file->value_ptr(),file->value_size());
+	}
+}
+
 void memxor(char *dest, const char *src, size_t n){
 	for (;n>0;n--) *dest++ ^= *src++;
 }
@@ -374,16 +384,7 @@ void memxor(char *dest, const char *src, size_t n){
 static void _digest(Request& r, MethodParams& params) {
 	const String &smethod = params.as_string(0, PARAMETER_MUST_BE_STRING);
 
-	Value& vdata=params.as_no_junction(1, "parameter must be string or file");
-
-	String::C data;
-	if(const String* sdata=vdata.get_string()){
-		String::Body body=sdata->cstr_to_string_body_untaint(String::L_AS_IS, r.connection(false), &r.charsets); // explode content, honor tainting changes
-		data=String::C(body.cstr(), body.length());
-	} else {
-		VFile *file=vdata.as_vfile(String::L_AS_IS);
-		data=String::C(file->value_ptr(),file->value_size());
-	}
+	String::C data=getData(params.as_no_junction(1, "parameter must be string or file"), r);
 
 	enum Method { M_MD5, M_SHA1, M_SHA256, M_SHA512 } method;
 
@@ -492,49 +493,182 @@ static void _crc32(Request& r, MethodParams& params) {
 	r.write(*new VInt(pa_crc32(string, strlen(string))));
 }
 
-static void toBase(unsigned long long int value, unsigned int base, char*& ptr){
-	static const char* hex="0123456789ABCDEF";
-	unsigned int rest = (unsigned int)(value % base);
-	if(value >= base)
-		toBase( (value-rest)/base, base, ptr);
-	*ptr++=(char)hex[rest];
+static const char* abc_hex="0123456789ABCDEF";
+
+static unsigned char hex_lookup[256]={
+	 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 0, 0, 0, 0, 0,
+	 0,10,11,12,13,14,15, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	 0,10,11,12,13,14,15, 0, 0, 0, 0, 0, 0, 0, 0, 0
+};
+
+static unsigned char abc_lookup[256]={};
+static unsigned char abc_256_lookup[256]={};
+
+inline unsigned char *init_abc_256(){
+	if(!abc_256_lookup[255]) for(int i=0; i<256; i++) abc_256_lookup[i] = (unsigned char)i;
+	return abc_256_lookup;
 }
 
 static void _convert(Request& r, MethodParams& params) {
-	const char *str=params.as_string(0, PARAMETER_MUST_BE_STRING).cstr();
+	String::C data=getData(params.as_no_junction(0, "parameter must be string or file"), r);
 
-	int base_from=params.as_int(1, "base from must be integer", r);
-	if(base_from < 2 || base_from > 16)
-		throw Exception(PARSER_RUNTIME, 0, "base from must be an integer from 2 to 16");
+	bool abc_mode = true;
+	unsigned char *lookup;
+	const char *abc_from;
+	int base_from;
 
-	int base_to=params.as_int(2, "base to must be integer", r);
-	if(base_to < 2 || base_to > 16)
-		throw Exception(PARSER_RUNTIME, 0, "base to must be an integer from 2 to 16");
-
-	while(isspace(*str))
-		str++;
-
-	if(!*str)
-		return;
-
-	bool negative=false;
-	if(str[0]=='-') {
-		negative=true;
-		str++;
-	} else if(str[0]=='+') {
-		str++;
+	if(params[1].is_string()){
+		abc_from = params[1].get_string()->cstr();
+		base_from = strlen(abc_from);
+		if(base_from < 2)
+			throw Exception(PARSER_RUNTIME, 0, "alphabet 'from' must contain at least 2 characters");
+		lookup = abc_lookup;
+		memset(abc_lookup,0,sizeof(abc_lookup));
+		for(int i=0; i<base_from; i++) abc_lookup[(unsigned char)abc_from[i]] = (unsigned char)i;
+	} else {
+		base_from=params.as_int(1, "base 'from' must be integer or string", r);
+		if(base_from < 2 || base_from > 16 && base_from != 256)
+			throw Exception(PARSER_RUNTIME, 0, "base 'from' must be an integer from 2 to 16 or 256");
+		if (base_from == 256){
+			abc_from = "";
+			lookup = init_abc_256();
+		} else {
+			abc_mode = false;
+			abc_from = abc_hex;
+			lookup = hex_lookup;
+		}
 	}
 
-	unsigned long long int value=pa_atoul(str, base_from);
+	const char *abc_to;
+	int base_to;
 
-	char result_cstr[sizeof(unsigned long long int)*8+1/*minus for negative number*/+1/*terminator*/];
-	char* ptr=result_cstr;
+	if(params[2].is_string()){
+		abc_to=params[2].get_string()->cstr();
+		base_to=strlen(abc_to);
+		if(base_to < 2)
+			throw Exception(PARSER_RUNTIME, 0, "alphabet 'to' must contain at least 2 characters");
+	} else {
+		base_to=params.as_int(2, "base 'to' must be integer or string", r);
+		if(base_to < 2 || base_to > 16 && base_to != 256)
+			throw Exception(PARSER_RUNTIME, 0, "base 'to' must be an integer from 2 to 16 or 256");
+		if (base_to == 256){
+			abc_to = (char *)init_abc_256();
+		} else {
+			abc_to = abc_hex;
+		}
+	}
+
+	VFile* result_file = 0;
+
+	if(params.count() == 4)
+		if(HashStringValue* options=params.as_hash(3)) {
+			int valid_options=0;
+			if(Value* value=options->get("format")) {
+				const String& sformat=value->as_string();
+				if (sformat == "file" ) result_file = new VFile;
+				else if (sformat != "string") throw Exception(PARSER_RUNTIME, &sformat, "must be 'string' or 'file'");
+				valid_options++;
+			}
+			if(valid_options!=options->count())
+				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+		}
+
+	bool negative=false;
+	bool sign=false;
+
+	// converting digits to their numeric values
+
+	unsigned char *src=(unsigned char *)pa_strdup(data.str, data.length);
+	const unsigned char *src_end = src + data.length;
+
+	unsigned char *c;
+
+	if(abc_mode){
+
+		for(c=src;c<src_end;c++){
+			unsigned char digit=lookup[*c];
+			if(!digit && *c != abc_from[0])
+				throw Exception("number.format", 0, "'%c' is invalid digit", *c);
+			*c=digit;
+		}
+
+	} else {
+		// numbers mode, allow whitespace and sign
+
+		while(isspace(*src))
+			src++;
+
+		if(src[0]=='-') {
+			negative=true;
+			sign=true;
+			src++;
+		} else if(src[0]=='+') {
+			sign=true;
+			src++;
+		}
+
+		for(c=src;c<src_end;c++) {
+			unsigned char digit=lookup[*c];
+			if(!digit && *c != abc_from[0] || digit>=base_from) {
+				for(unsigned char *s=c;s<src_end;s++)
+					if(!isspace(*s))
+						throw Exception("number.format", 0, "'%c' is invalid digit", *s);
+				src_end=c;
+				break;
+			}
+			*c=digit;
+		}
+
+	}
+
+	if(src==src_end){
+		if(sign)
+			throw Exception("number.format", 0,  "'%c' is invalid number", negative ? '-' : '+');
+		if(result_file)
+			r.write(*result_file);
+		return;
+	}
+
+	// core
+
+	Array<char> remainders(round(data.length * log2(base_from) / log2(base_to)) + 1);
+
+	do {
+		int carry = 0;
+		unsigned char *dst = src;
+		for (c=src; c<src_end; c++) {
+			carry = carry * base_from + *c;
+			if (carry >= base_to) {
+				*(dst++) = carry / base_to;
+				carry %= base_to;
+			} else if (dst > src) {
+				*(dst++) = 0;
+			}
+		}
+		src_end = dst;
+		remainders += abc_to[carry];
+	} while (src_end > src);
+
+	// result processing
+
+	size_t result_length = negative + remainders.count();
+	char *result_str = (char *)pa_malloc_atomic(result_length+1);
 	if(negative)
-		*ptr++='-';
+		result_str[0] = '-';
+	for(int i=0; i<remainders.count(); i++)
+		result_str[result_length - 1 - i] = remainders[i];
+	result_str[result_length]='\0';
 
-	toBase(value, base_to, ptr);
-	*ptr=0;
-	r.write(*new String(pa_strdup(result_cstr)));
+	if(result_file){
+		result_file->set(true/*tainted*/, 0 /*binary*/, result_str, result_length, 0, 0, &r);
+		r.write(*result_file);
+	} else {
+		r.write(*new String(result_str)); // no length as there can be '\0' inside
+	}
 }
 
 // constructor
@@ -552,8 +686,8 @@ MMath::MMath(): Methoded("math") {
 	ADD1(abs);	ADD1(sign);
 	ADD1(exp);
 	ADD1(log);	ADD1(log10);
-	ADD1(sin);	ADD1(asin);	
-	ADD1(cos);	ADD1(acos);	
+	ADD1(sin);	ADD1(asin);
+	ADD1(cos);	ADD1(acos);
 	ADD1(tan);	ADD1(atan);
 	ADD1(degrees);	ADD1(radians);
 	ADD1(sqrt);
@@ -583,6 +717,6 @@ MMath::MMath(): Methoded("math") {
 	// ^math:uid64[]
 	ADD0(uid64);
 
-	// ^math:convert[number](base-from;base-to)
-	add_native_method("convert", Method::CT_STATIC, _convert, 3, 3);
+	// ^math:convert[number|file](base-from)|[abc_from](base-to)|[abc_to][options]
+	add_native_method("convert", Method::CT_STATIC, _convert, 3, 4);
 }
