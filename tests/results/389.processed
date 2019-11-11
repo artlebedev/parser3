@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 3378
+Content-Length: 3396
 
 code coverage tests:
 1. int
@@ -60,10 +60,10 @@ Source: digest,
 Comment: called with invalid option
 5.10 Type: parser.runtime,
 Source: convert,
-Comment: base from must be an integer from 2 to 16
+Comment: base 'from' must be an integer from 2 to 16 or 256
 5.11 Type: parser.runtime,
 Source: convert,
-Comment: base to must be an integer from 2 to 16
+Comment: base 'to' must be an integer from 2 to 16 or 256
 5.12 5.13 255
 6. string
 6.1 Type: parser.runtime,
