@@ -1,3 +1,20 @@
+2019-11-06  moko
+
+	* tests/: 181.html, results/181.processed: entities usage added,
+	  more entites load tests (related to bug #842 discussion)
+
+2019-11-05  moko
+
+	* src/main/pa_xml_io.C: bugfix: no more extra http://localhost/
+	  call from xmlFileOpen if http://localhost/<file> was not found
+	  (related to bug #842)
+
+	* src/main/pa_xml_io.C: rename
+
+	* src/main/pa_xml_io.C: +MemoryStream constructor
+
+	* src/main/pa_xml_io.C: whitespace
+
 2019-10-31  moko
 
 	* src/classes/xdoc.C: XML_PARSE_OPTIONS (XML_PARSE_DTDLOAD |
