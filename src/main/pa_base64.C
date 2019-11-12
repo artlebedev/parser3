@@ -8,7 +8,7 @@
 #include "pa_base64.h"
 #include "pa_common.h"
 
-volatile const char * IDENT_PA_BASE64_C="$Id: pa_base64.C,v 1.1 2019/11/12 21:13:31 moko Exp $" IDENT_PA_BASE64_H;
+volatile const char * IDENT_PA_BASE64_C="$Id: pa_base64.C,v 1.2 2019/11/12 21:18:30 moko Exp $" IDENT_PA_BASE64_H;
 
 /*
  * BASE64 part
@@ -33,8 +33,7 @@ volatile const char * IDENT_PA_BASE64_C="$Id: pa_base64.C,v 1.1 2019/11/12 21:13
  *
  */
 
-static const char *base64_alphabet =
-	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+static const char *base64_alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 /**
  * g_mime_utils_base64_encode_step:
@@ -54,9 +53,7 @@ static const char *base64_alphabet =
 
 #define BASE64_GROUPS_IN_LINE 19
 
-static size_t
-g_mime_utils_base64_encode_step (const unsigned char *in, size_t inlen, unsigned char *out, int *state, int *save)
-{
+static size_t g_mime_utils_base64_encode_step (const unsigned char *in, size_t inlen, unsigned char *out, int *state, int *save) {
 	register const unsigned char *inptr;
 	register unsigned char *outptr;
 	
@@ -140,9 +137,7 @@ g_mime_utils_base64_encode_step (const unsigned char *in, size_t inlen, unsigned
  *
  * Returns the number of bytes encoded.
  **/
-static size_t
-g_mime_utils_base64_encode_close (const unsigned char *in, size_t inlen, unsigned char *out, int *state, int *save)
-{
+static size_t g_mime_utils_base64_encode_close (const unsigned char *in, size_t inlen, unsigned char *out, int *state, int *save) {
 	unsigned char *outptr = out;
 	int c1, c2;
 	
@@ -206,9 +201,7 @@ static unsigned char gmime_base64_rank[256] = {
  *
  * Returns the number of bytes decoded (which have been dumped in @out).
  **/
-size_t
-g_mime_utils_base64_decode_step(const unsigned char *in, size_t inlen, unsigned char *out, int *state, int *save, bool strict=false)
-{
+size_t g_mime_utils_base64_decode_step(const unsigned char *in, size_t inlen, unsigned char *out, int *state, int *save, bool strict=false) {
 	const unsigned char *inptr;
 	unsigned char *outptr;
 	const unsigned char *inend;
@@ -263,7 +256,7 @@ g_mime_utils_base64_decode_step(const unsigned char *in, size_t inlen, unsigned 
 }
 
 
-char* pa_base64_encode(const char *in, size_t in_size){
+char* pa_base64_encode(const char *in, size_t in_size) {
 	size_t new_size = ((in_size / 3 + 1) * 4);
 	new_size += new_size / (BASE64_GROUPS_IN_LINE * 4)/*new lines*/ + 1/*zero terminator*/;
 	char* result = new(PointerFreeGC) char[new_size];
@@ -329,5 +322,4 @@ void pa_base64_decode(const char *in, size_t in_size, char*& result, size_t& res
 	if(strict && state!=0)
 		throw Exception(BASE64_FORMAT, 0, "Unexpected end of chars");
 }
-
 
