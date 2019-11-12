@@ -22,7 +22,7 @@
 extern "C" char *crypt(const char* , const char* );
 #endif
 
-volatile const char * IDENT_MATH_C="$Id: math.C,v 1.87 2019/11/11 20:57:18 moko Exp $";
+volatile const char * IDENT_MATH_C="$Id: math.C,v 1.88 2019/11/12 21:56:42 moko Exp $";
 
 // defines
 
@@ -664,10 +664,10 @@ static void _convert(Request& r, MethodParams& params) {
 	result_str[result_length]='\0';
 
 	if(result_file){
-		result_file->set(true/*tainted*/, 0 /*binary*/, result_str, result_length, 0, 0, &r);
+		result_file->set(true /*tainted*/, 0 /*binary*/, result_str, result_length, 0, 0, &r);
 		r.write(*result_file);
 	} else {
-		r.write(*new String(result_str)); // no length as there can be '\0' inside
+		r.write(*new String(result_str, String::L_TAINTED)); // note: there can be '\0' inside
 	}
 }
 
