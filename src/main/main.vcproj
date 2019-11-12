@@ -198,6 +198,12 @@
 			RelativePath="..\include\pa_common.h">
 		</File>
 		<File
+			RelativePath=".\pa_base64.C">
+		</File>
+		<File
+			RelativePath="..\include\pa_base64.h">
+		</File>
+		<File
 			RelativePath="..\include\pa_config_fixed.h">
 		</File>
 		<File

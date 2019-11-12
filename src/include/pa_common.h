@@ -8,10 +8,11 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.175 2019/09/06 10:17:07 moko Exp $"
+#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.176 2019/11/12 21:13:31 moko Exp $"
 
 #include "pa_string.h"
 #include "pa_hash.h"
+#include "pa_base64.h"
 
 class Request;
 
@@ -268,10 +269,6 @@ char *str_upper(const char *s, size_t helper_length=0);
 
 const char* hex_string(unsigned char* bytes, size_t size, bool upcase);
 extern const char* hex_digits;
-
-void pa_base64_decode(const char *in, size_t in_size, char*& result, size_t& result_size, bool strict=false);
-char* pa_base64_encode(const char *in, size_t in_size);
-char* pa_base64_encode(const String& file_spec);
 
 const char *pa_idna_encode(const char *in, Charset &source);
 const char *pa_idna_decode(const char *in, Charset &source);
