@@ -109,7 +109,7 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libmain_la_LIBADD =
-am_libmain_la_OBJECTS = pa_pool.lo pa_os.lo pa_common.lo \
+am_libmain_la_OBJECTS = pa_pool.lo pa_os.lo pa_common.lo pa_base64.lo \
 	compile.tab.lo compile.lo compile_tools.lo execute.lo \
 	pa_cache_managers.lo pa_exception.lo pa_xml_exception.lo \
 	pa_globals.lo pa_xml_io.lo pa_memory.lo pa_request.lo \
@@ -341,7 +341,7 @@ top_srcdir = @top_srcdir@
 AM_CPPFLAGS = -I../types -I../classes -I../sql -I../lib/punycode $(INCLTDL) @PCRE_INCLUDES@ @XML_INCLUDES@
 noinst_HEADERS = compile_tools.h utf8-to-lower.inc utf8-to-upper.inc
 noinst_LTLIBRARIES = libmain.la
-libmain_la_SOURCES = pa_pool.C pa_os.C pa_common.C compile.tab.C compile.C compile_tools.C execute.C pa_cache_managers.C pa_exception.C pa_xml_exception.C pa_globals.C pa_xml_io.C pa_memory.C pa_request.C pa_string.C pa_table.C untaint.C pa_dir.C pa_exec.C pa_socks.C pa_dictionary.C pa_charset.C pa_charsets.C pa_uue.C pa_sql_driver_manager.C pa_stylesheet_manager.C pa_stylesheet_connection.C pa_http.C pa_random.C pa_symbols.C
+libmain_la_SOURCES = pa_pool.C pa_os.C pa_common.C pa_base64.C compile.tab.C compile.C compile_tools.C execute.C pa_cache_managers.C pa_exception.C pa_xml_exception.C pa_globals.C pa_xml_io.C pa_memory.C pa_request.C pa_string.C pa_table.C untaint.C pa_dir.C pa_exec.C pa_socks.C pa_dictionary.C pa_charset.C pa_charsets.C pa_uue.C pa_sql_driver_manager.C pa_stylesheet_manager.C pa_stylesheet_connection.C pa_http.C pa_random.C pa_symbols.C
 EXTRA_DIST = compile.y main.vcproj
 all: all-am
 
@@ -405,6 +405,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_charset.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_charsets.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_common.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_base64.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_dictionary.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_dir.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_exception.Plo@am__quote@
