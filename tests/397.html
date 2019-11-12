@@ -60,3 +60,7 @@ $b2[^math:convert[$f](256)[$b64]]
 
 15. $f[^math:convert[$b][$b64](256)[ $.format[file] ]]
    ^json:string[$f]
+
+16. $s[^math:convert[412241](16)(256)]
+    $js[^json:parse[{"key":"$s"}]] $js.key
+
