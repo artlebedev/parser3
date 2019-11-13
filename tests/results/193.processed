@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 897
+Content-Length: 895
 
 <table>
 <tr>
@@ -26,12 +26,12 @@ Comment: Unexpected end of chars
 <td>
 Type: parser.runtime,
 Source: base64,
-Comment: Invalid \x00 character found while decode to string. Decode it to file instead.
+Comment: Invalid \x00 character found while decoding to string. Decode to file instead.
 </td>
 <td>
 Type: parser.runtime,
 Source: base64,
-Comment: Invalid \x00 character found while decode to string. Decode it to file instead.
+Comment: Invalid \x00 character found while decoding to string. Decode to file instead.
 </td>
 </tr>
 <tr>

@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 1437
+Content-Length: 1558
 
 1 1.1 {
 "class":"file"
@@ -17,7 +17,7 @@ Content-Length: 1437
 }
 4 A
 4.1 a
-4.2 'A'
+4.2 410A41
 5 A0A
 6 1010
 6.1 -1010
@@ -66,7 +66,9 @@ Comment: '3' is invalid digit
 11. baab
 12. 'ABA'
 13. OK
-14. 'GIF89a	' 7
+14. Type: parser.runtime,
+Source: convert,
+Comment: Invalid \x00 character found while converting to string. Convert to file instead.
 15. {
 "class":"file",
 "name":"noname.dat",
