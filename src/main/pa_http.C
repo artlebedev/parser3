@@ -7,13 +7,14 @@
 
 #include "pa_http.h"
 #include "pa_common.h"
+#include "pa_base64.h"
 #include "pa_charsets.h"
 #include "pa_request_charsets.h"
 #include "pa_request.h"
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.80 2017/05/17 14:22:12 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.81 2019/11/13 22:05:48 moko Exp $" IDENT_PA_HTTP_H; 
 
 #ifdef _MSC_VER
 #include <windows.h>

@@ -11,6 +11,7 @@
 #include "pa_vstring.h"
 #include "pa_request.h"
 #include "pa_common.h"
+#include "pa_base64.h"
 #include "pa_charset.h"
 #include "pa_charsets.h"
 #include "pa_random.h"
@@ -18,7 +19,7 @@
 #include "pa_vfile.h"
 #include "pa_uue.h"
 
-volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.126 2017/05/29 11:03:23 moko Exp $" IDENT_PA_VMAIL_H;
+volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.127 2019/11/13 22:05:48 moko Exp $" IDENT_PA_VMAIL_H;
 
 #ifdef WITH_MAILRECEIVE
 extern "C" {

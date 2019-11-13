@@ -7,13 +7,14 @@
 */
 
 #include "classes.h"
+#include "pa_base64.h"
 #include "pa_vfile.h"
 #include "pa_vstring.h"
 #include "pa_vint.h"
 #include "pa_charsets.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VFILE_C="$Id: pa_vfile.C,v 1.77 2017/02/07 22:00:48 moko Exp $" IDENT_PA_VFILE_H;
+volatile const char * IDENT_PA_VFILE_C="$Id: pa_vfile.C,v 1.78 2019/11/13 22:05:48 moko Exp $" IDENT_PA_VFILE_H;
 
 // externs
 

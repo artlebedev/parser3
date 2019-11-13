@@ -7,6 +7,7 @@
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
+#include "pa_base64.h"
 
 #include "pa_request.h"
 #include "pa_vdouble.h"
@@ -20,7 +21,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.240 2019/09/11 15:26:08 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.241 2019/11/13 22:05:48 moko Exp $";
 
 // class
 
@@ -641,26 +642,69 @@ static void _trim(Request& r, MethodParams& params) {
 	r.write(src.trim(kind, chars, &r.charsets.source()));
 }
 
+Base64Options base64_encode_options(Request& r, HashStringValue* options) {
+	Base64Options result;
+	if(options) {
+		int valid_options=0;
+		for(HashStringValue::Iterator i(*options); i; i.next()) {
+			String::Body key=i.key();
+			Value* value=i.value();
+			if(key == "pad") {
+				result.pad=r.process(*value).as_bool();
+				valid_options++;
+			} else if(key == "wrap") {
+				result.wrap=r.process(*value).as_bool();
+				valid_options++;
+			} else if(key == "url-safe") {
+				if(r.process(*value).as_bool())
+					result.set_url_safe_abc();
+				valid_options++;
+			}
+		}
+
+		if(valid_options != options->count())
+			throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+	}
+	return result;
+}
+
+Base64Options base64_decode_options(Request& r, HashStringValue* options) {
+	Base64Options result;
+	if(options) {
+		int valid_options=0;
+		for(HashStringValue::Iterator i(*options); i; i.next() ) {
+			String::Body key=i.key();
+			Value* value=i.value();
+			if(key == "pad") {
+				result.pad=r.process(*value).as_bool();
+				valid_options++;
+			} else if(key == "strict") {
+				result.strict=r.process(*value).as_bool();
+				valid_options++;
+			} else if(key == "url-safe") {
+				if(r.process(*value).as_bool())
+					result.set_url_safe_abc();
+				valid_options++;
+			}
+		}
+
+		if(valid_options != options->count())
+			throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+	}
+	return result;
+}
+
 static void _base64(Request& r, MethodParams& params) {
 	if(&r.get_self() == string_class) {
-		// decode: ^string:base64[encoded[;$.strict(true|false)]]
+		// decode: ^string:base64[encoded[;options]]
 		const char* cstr=params.count() ? params.as_string(0, PARAMETER_MUST_BE_STRING).cstr() : "";
+		Base64Options options = base64_decode_options(r, params.count() > 1 ? params.as_hash(1) : NULL);
+
 		char* decoded=0;
 		size_t length=0;
 
-		bool strict=false;
-		if(params.count() > 1)
-			if(HashStringValue* options=params.as_hash(1)) {
-				int valid_options=0;
-				if(Value* vstrict=options->get(BASE64_STRICT_OPTION_NAME)) {
-					strict=r.process(*vstrict).as_bool();
-					valid_options++;
-				}
-				if(valid_options!=options->count())
-					throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
-			}
+		pa_base64_decode(cstr, strlen(cstr), decoded, length, options);
 
-		pa_base64_decode(cstr, strlen(cstr), decoded, length, strict);
 		if(decoded && length){
 			if(memchr((const char*)decoded, 0, length))
 				throw Exception(PARSER_RUNTIME, 0, "Invalid \\x00 character found while decode to string. Decode it to file instead.");
@@ -670,11 +714,12 @@ static void _base64(Request& r, MethodParams& params) {
 				r.write(*new String(decoded, String::L_TAINTED));
 		}
 	} else {
-		// encode: ^str.base64[]
+		// encode: ^str.base64[options]
 		VString& self=GET_SELF(r, VString);
 		const char* cstr=self.string().cstr();
-		const char* encoded=pa_base64_encode(cstr, strlen(cstr));
-		r.write(*new String(encoded, String::L_TAINTED/*once ?param=base64(something) was needed*/));
+		Base64Options options = base64_encode_options(r, params.count() ? params.as_hash(0) : NULL);
+		const char* encoded=pa_base64_encode(cstr, strlen(cstr), options);
+		r.write(*new String(encoded, String::L_TAINTED /*once ?param=base64(something) was needed*/ ));
 	}
 }
 

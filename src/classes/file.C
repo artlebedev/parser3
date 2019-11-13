@@ -9,6 +9,7 @@
 
 #include "classes.h"
 #include "pa_vmethod_frame.h"
+#include "pa_base64.h"
 
 #include "pa_request.h"
 #include "pa_vfile.h"
@@ -25,7 +26,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.265 2019/09/11 15:26:08 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.266 2019/11/13 22:05:47 moko Exp $";
 
 // defines
 
@@ -1048,44 +1049,61 @@ static void _sql(Request& r, MethodParams& params) {
 				, &r);
 }
 
+extern Base64Options base64_encode_options(Request& r, HashStringValue* options);
+
+Base64Options base64_decode_options(Request& r, HashStringValue* options, VString** vcontent_type) {
+	Base64Options result;
+	if(options) {
+		int valid_options=0;
+		for(HashStringValue::Iterator i(*options); i; i.next() ) {
+			String::Body key=i.key();
+			Value* value=i.value();
+			if(key == "pad") {
+				result.pad=r.process(*value).as_bool();
+				valid_options++;
+			} else if(key == "strict") {
+				result.strict=r.process(*value).as_bool();
+				valid_options++;
+			} else if(key == CONTENT_TYPE_NAME) {
+				*vcontent_type=new VString(value->as_string());
+				valid_options++;
+			} else if(key == "url-safe") {
+				if(r.process(*value).as_bool())
+					result.set_url_safe_abc();
+				valid_options++;
+			}
+		}
+
+		if(valid_options != options->count())
+			throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+	}
+	return result;
+}
+
 static void _base64(Request& r, MethodParams& params) {
 	bool dynamic=!(&r.get_self() == file_class);
 	if(dynamic) {
 		VFile& self=GET_SELF(r, VFile);
-		if(params.count()) {
+		if(params.count() && params[0].is_string()) {
 			// decode: 
 			//	^file::base64[encoded] // backward
 			//	^file::base64[mode;user-file-name;encoded[;$.content-type[...] $.strict(true|false)]]
 			bool is_text=false;
-			bool strict=false;
-			VString* vcontent_type=0;
 			const String* user_file_name=0;
+			VString* vcontent_type=0;
+			Base64Options options;
+
 			size_t param_index=0;
 
 			if(params.count() > 1) {
 				if(params.count() < 3)
-					throw Exception(PARSER_RUNTIME,
-						0,
-						"constructor can not have less then 3 parameters (has %d parameters)",
-						params.count()); // actually it accepts 1 parameter (backward)
+					throw Exception(PARSER_RUNTIME, 0, "constructor can not have less then 3 parameters (has %d parameters)", params.count()); // actually it accepts 1 parameter (backward)
 
 				is_text=VFile::is_text_mode(params.as_string(0, MODE_MUST_NOT_BE_CODE));
 				user_file_name=&params.as_string(1, FILE_NAME_MUST_BE_STRING);
 
 				if(params.count() == 4)
-					if(HashStringValue* options=params.as_hash(3)) {
-						int valid_options=0;
-						if(Value* value=options->get(CONTENT_TYPE_NAME)) {
-							vcontent_type=new VString(value->as_string());
-							valid_options++;
-						}
-						if(Value* vstrict=options->get(BASE64_STRICT_OPTION_NAME)) {
-							strict=r.process(*vstrict).as_bool();
-							valid_options++;
-						}
-						if(valid_options!=options->count())
-							throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
-					}
+					options=base64_decode_options(r, params.as_hash(3), &vcontent_type);
 
 				param_index=2;
 			}
@@ -1094,19 +1112,21 @@ static void _base64(Request& r, MethodParams& params) {
 
 			char* decoded=0;
 			size_t length=0;
-			pa_base64_decode(encoded, strlen(encoded), decoded, length, strict);
+			pa_base64_decode(encoded, strlen(encoded), decoded, length, options);
 
 			self.set(true/*tainted*/, is_text, decoded, length, user_file_name, vcontent_type, &r);
 		} else {
-			// encode: ^f.base64[]
-			const char* encoded=pa_base64_encode(self.value_ptr(), self.value_size());
-			r.write(*new String(encoded, String::L_TAINTED/*once ?param=base64(something) was needed**/));
+			// encode: ^f.base64[options]
+			Base64Options options = base64_encode_options(r, params.count() > 0 ? params.as_hash(0) : NULL);
+			const char* encoded=pa_base64_encode(self.value_ptr(), self.value_size(), options);
+			r.write(*new String(encoded, String::L_TAINTED /*once ?param=base64(something) was needed**/ ));
 		}
 	} else {
-		// encode: ^file:base64[filespec]
-		const String& file_spec=params.as_string(0, FILE_NAME_MUST_BE_STRING);
-		const char* encoded=pa_base64_encode(r.absolute(file_spec));
-		r.write(*new String(encoded, String::L_TAINTED/*once ?param=base64(something) was needed*/));
+		// encode: ^file:base64[filespec[;options]]
+		const String& file_spec = params.as_string(0, FILE_NAME_MUST_BE_STRING);
+		Base64Options options = base64_encode_options(r, params.count() > 1 ? params.as_hash(1) : NULL);
+		const char* encoded = pa_base64_encode(r.absolute(file_spec), options);
+		r.write(*new String(encoded, String::L_TAINTED /*once ?param=base64(something) was needed*/ ));
 	}
 }
 

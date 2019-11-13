@@ -8,11 +8,10 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.176 2019/11/12 21:13:31 moko Exp $"
+#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.177 2019/11/13 22:05:48 moko Exp $"
 
 #include "pa_string.h"
 #include "pa_hash.h"
-#include "pa_base64.h"
 
 class Request;
 
@@ -39,8 +38,6 @@ class Request;
 #define HTTP_CONTENT_TYPE_MULTIPART_FORMDATA	"multipart/form-data"
 #define HTTP_CONTENT_TYPE_MULTIPART_RELATED	"multipart/related"
 #define HTTP_CONTENT_TYPE_MULTIPART_MIXED	"multipart/mixed"
-
-#define BASE64_STRICT_OPTION_NAME "strict"
 
 const String content_disposition_filename_name(CONTENT_DISPOSITION_FILENAME_NAME);
 

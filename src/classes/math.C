@@ -10,6 +10,7 @@
 
 #include "pa_vmethod_frame.h"
 #include "pa_common.h"
+#include "pa_base64.h"
 #include "pa_vint.h"
 #include "pa_vmath.h"
 #include "pa_vfile.h"
@@ -22,7 +23,7 @@
 extern "C" char *crypt(const char* , const char* );
 #endif
 
-volatile const char * IDENT_MATH_C="$Id: math.C,v 1.89 2019/11/13 21:29:51 moko Exp $";
+volatile const char * IDENT_MATH_C="$Id: math.C,v 1.90 2019/11/13 22:05:47 moko Exp $";
 
 // defines
 

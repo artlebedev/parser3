@@ -8,7 +8,7 @@
 #include "pa_base64.h"
 #include "pa_common.h"
 
-volatile const char * IDENT_PA_BASE64_C="$Id: pa_base64.C,v 1.2 2019/11/12 21:18:30 moko Exp $" IDENT_PA_BASE64_H;
+volatile const char * IDENT_PA_BASE64_C="$Id: pa_base64.C,v 1.3 2019/11/13 22:05:48 moko Exp $" IDENT_PA_BASE64_H;
 
 /*
  * BASE64 part
@@ -34,6 +34,13 @@ volatile const char * IDENT_PA_BASE64_C="$Id: pa_base64.C,v 1.2 2019/11/12 21:18
  */
 
 static const char *base64_alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+static const char *base64_alphabet_url_safe = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+
+Base64Options::Base64Options(): strict(false), wrap(false), pad(false), abc(base64_alphabet) {}
+
+void Base64Options::set_url_safe_abc() {
+	abc=base64_alphabet_url_safe;
+}
 
 /**
  * g_mime_utils_base64_encode_step:
@@ -256,7 +263,7 @@ size_t g_mime_utils_base64_decode_step(const unsigned char *in, size_t inlen, un
 }
 
 
-char* pa_base64_encode(const char *in, size_t in_size) {
+char* pa_base64_encode(const char *in, size_t in_size, Base64Options options) {
 	size_t new_size = ((in_size / 3 + 1) * 4);
 	new_size += new_size / (BASE64_GROUPS_IN_LINE * 4)/*new lines*/ + 1/*zero terminator*/;
 	char* result = new(PointerFreeGC) char[new_size];
@@ -298,7 +305,7 @@ static void file_base64_file_action(struct stat& finfo, int f, const String& fil
 	}
 }
 
-char* pa_base64_encode(const String& file_spec){
+char* pa_base64_encode(const String& file_spec, Base64Options options){
 	unsigned char* base64=0;
 	File_base64_action_info info={&base64}; 
 
@@ -307,7 +314,7 @@ char* pa_base64_encode(const String& file_spec){
 	return (char*)base64; 
 }
 
-void pa_base64_decode(const char *in, size_t in_size, char*& result, size_t& result_size, bool strict) {
+void pa_base64_decode(const char *in, size_t in_size, char*& result, size_t& result_size, Base64Options options) {
 	// every 4 base64 bytes are converted into 3 normal bytes
 	// not full set (tail) of 4-bytes set is ignored
 	size_t new_size=in_size/4*3;
@@ -315,11 +322,11 @@ void pa_base64_decode(const char *in, size_t in_size, char*& result, size_t& res
 
 	int state=0;
 	int save=0;
-	result_size=g_mime_utils_base64_decode_step ((const unsigned char*)in, in_size, (unsigned char*)result, &state, &save, strict);
+	result_size=g_mime_utils_base64_decode_step ((const unsigned char*)in, in_size, (unsigned char*)result, &state, &save, options.strict);
 	assert(result_size <= new_size);
 	result[result_size]=0; // for text files
 
-	if(strict && state!=0)
+	if(options.strict && state!=0)
 		throw Exception(BASE64_FORMAT, 0, "Unexpected end of chars");
 }
 
