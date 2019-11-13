@@ -26,7 +26,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.266 2019/11/13 22:05:47 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.267 2019/11/13 22:12:51 moko Exp $";
 
 // defines
 
@@ -1084,7 +1084,7 @@ static void _base64(Request& r, MethodParams& params) {
 	bool dynamic=!(&r.get_self() == file_class);
 	if(dynamic) {
 		VFile& self=GET_SELF(r, VFile);
-		if(params.count() && params[0].is_string()) {
+		if(params.count()>1 || params.count()==1 && params[0].is_string()) {
 			// decode: 
 			//	^file::base64[encoded] // backward
 			//	^file::base64[mode;user-file-name;encoded[;$.content-type[...] $.strict(true|false)]]
