@@ -22,7 +22,7 @@
 extern "C" char *crypt(const char* , const char* );
 #endif
 
-volatile const char * IDENT_MATH_C="$Id: math.C,v 1.88 2019/11/12 21:56:42 moko Exp $";
+volatile const char * IDENT_MATH_C="$Id: math.C,v 1.89 2019/11/13 21:29:51 moko Exp $";
 
 // defines
 
@@ -493,9 +493,9 @@ static void _crc32(Request& r, MethodParams& params) {
 	r.write(*new VInt(pa_crc32(string, strlen(string))));
 }
 
-static const char* abc_hex="0123456789ABCDEF";
+static const char* abc_hex = "0123456789ABCDEF";
 
-static unsigned char hex_lookup[256]={
+static unsigned char hex_lookup[256] = {
 	 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -505,11 +505,12 @@ static unsigned char hex_lookup[256]={
 	 0,10,11,12,13,14,15, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
-static unsigned char abc_lookup[256]={};
-static unsigned char abc_256_lookup[256]={};
+static unsigned char abc_lookup[256] = {};
+static unsigned char abc_256_lookup[256] = {};
 
-inline unsigned char *init_abc_256(){
-	if(!abc_256_lookup[255]) for(int i=0; i<256; i++) abc_256_lookup[i] = (unsigned char)i;
+inline unsigned char *init_abc_256() {
+	if(!abc_256_lookup[255])
+		for(int i=0; i<256; i++) abc_256_lookup[i] = (unsigned char)i;
 	return abc_256_lookup;
 }
 
@@ -521,7 +522,7 @@ static void _convert(Request& r, MethodParams& params) {
 	const char *abc_from;
 	int base_from;
 
-	if(params[1].is_string()){
+	if(params[1].is_string()) {
 		abc_from = params[1].get_string()->cstr();
 		base_from = strlen(abc_from);
 		if(base_from < 2)
@@ -533,7 +534,7 @@ static void _convert(Request& r, MethodParams& params) {
 		base_from=params.as_int(1, "base 'from' must be integer or string", r);
 		if(base_from < 2 || base_from > 16 && base_from != 256)
 			throw Exception(PARSER_RUNTIME, 0, "base 'from' must be an integer from 2 to 16 or 256");
-		if (base_from == 256){
+		if (base_from == 256) {
 			abc_from = "";
 			lookup = init_abc_256();
 		} else {
@@ -546,7 +547,7 @@ static void _convert(Request& r, MethodParams& params) {
 	const char *abc_to;
 	int base_to;
 
-	if(params[2].is_string()){
+	if(params[2].is_string()) {
 		abc_to=params[2].get_string()->cstr();
 		base_to=strlen(abc_to);
 		if(base_to < 2)
@@ -555,7 +556,7 @@ static void _convert(Request& r, MethodParams& params) {
 		base_to=params.as_int(2, "base 'to' must be integer or string", r);
 		if(base_to < 2 || base_to > 16 && base_to != 256)
 			throw Exception(PARSER_RUNTIME, 0, "base 'to' must be an integer from 2 to 16 or 256");
-		if (base_to == 256){
+		if (base_to == 256) {
 			abc_to = (char *)init_abc_256();
 		} else {
 			abc_to = abc_hex;
@@ -589,7 +590,7 @@ static void _convert(Request& r, MethodParams& params) {
 
 	if(abc_mode){
 
-		for(c=src;c<src_end;c++){
+		for(c=src;c<src_end;c++) {
 			unsigned char digit=lookup[*c];
 			if(!digit && *c != abc_from[0])
 				throw Exception("number.format", 0, "'%c' is invalid digit", *c);
@@ -625,7 +626,7 @@ static void _convert(Request& r, MethodParams& params) {
 
 	}
 
-	if(src==src_end){
+	if(src==src_end) {
 		if(sign)
 			throw Exception("number.format", 0,  "'%c' is invalid number", negative ? '-' : '+');
 		if(result_file)
@@ -663,7 +664,7 @@ static void _convert(Request& r, MethodParams& params) {
 		result_str[result_length - 1 - i] = remainders[i];
 	result_str[result_length]='\0';
 
-	if(result_file){
+	if(result_file) {
 		result_file->set(true /*tainted*/, 0 /*binary*/, result_str, result_length, 0, 0, &r);
 		r.write(*result_file);
 	} else {
