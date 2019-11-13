@@ -21,7 +21,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.241 2019/11/13 22:05:48 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.242 2019/11/13 22:27:15 moko Exp $";
 
 // class
 
@@ -706,10 +706,11 @@ static void _base64(Request& r, MethodParams& params) {
 		pa_base64_decode(cstr, strlen(cstr), decoded, length, options);
 
 		if(decoded && length){
-			if(memchr((const char*)decoded, 0, length))
-				throw Exception(PARSER_RUNTIME, 0, "Invalid \\x00 character found while decode to string. Decode it to file instead.");
+			if(memchr(decoded, 0, length))
+				throw Exception(PARSER_RUNTIME, 0, "Invalid \\x00 character found while decoding to string. Decode to file instead.");
 
 			fix_line_breaks(decoded, length);
+
 			if(length)
 				r.write(*new String(decoded, String::L_TAINTED));
 		}

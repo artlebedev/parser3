@@ -23,7 +23,7 @@
 extern "C" char *crypt(const char* , const char* );
 #endif
 
-volatile const char * IDENT_MATH_C="$Id: math.C,v 1.90 2019/11/13 22:05:47 moko Exp $";
+volatile const char * IDENT_MATH_C="$Id: math.C,v 1.91 2019/11/13 22:27:15 moko Exp $";
 
 // defines
 
@@ -669,7 +669,13 @@ static void _convert(Request& r, MethodParams& params) {
 		result_file->set(true /*tainted*/, 0 /*binary*/, result_str, result_length, 0, 0, &r);
 		r.write(*result_file);
 	} else {
-		r.write(*new String(result_str, String::L_TAINTED)); // note: there can be '\0' inside
+		if(memchr(result_str, 0, result_length))
+			throw Exception(PARSER_RUNTIME, 0, "Invalid \\x00 character found while converting to string. Convert to file instead.");
+
+		fix_line_breaks(result_str, result_length);
+
+		if(result_length)
+			r.write(*new String(result_str, String::L_TAINTED));
 	}
 }
 
