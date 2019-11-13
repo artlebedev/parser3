@@ -1,32 +1,32 @@
-$uuid[^math:uuid[]]^uuid.length[]<br />
-$uid64[^math:uid64[]]^uid64.length[]<br />
+1   $uuid[^math:uuid[]]^uuid.length[]<br />
+1.1 $uid64[^math:uid64[]]^uid64.length[]<br />
 
-$long[very-long-long-long-long-long-long-long-long-long-long-long-long-long-long-long-long-key]
+2   $long[very-long-long-long-long-long-long-long-long-long-long-long-long-long-long-long-long-key]
 
-^math:md5[123]<br />
-^math:digest[md5;123]<br />
-^math:digest[md5;123; $.hmac[pwd] ]<br />
-^math:digest[md5;123; $.hmac[$long] $.format[base64] ]<br />
+3   ^math:md5[123]<br />
+3.1 ^math:digest[md5;123]<br />
+3.2 ^math:digest[md5;123; $.hmac[pwd] ]<br />
+3.3 ^math:digest[md5;123; $.hmac[$long] $.format[base64] ]<br />
 
-^math:sha1[123]<br />
-^math:digest[sha1;123]<br />
-^math:digest[sha1;123; $.hmac[pwd] ]<br />
-^math:digest[sha1;123; $.hmac[$long] $.format[base64] ]<br />
+4   ^math:sha1[123]<br />
+4.1 ^math:digest[sha1;123]<br />
+4.2 ^math:digest[sha1;123; $.hmac[pwd] ]<br />
+4.3 ^math:digest[sha1;123; $.hmac[$long] $.format[base64] ]<br />
 
-^math:digest[sha256;123; $.hmac[pwd] ]<br />
-^math:digest[sha256;123; $.hmac[$long] $.format[base64] ]<br />
+5   ^math:digest[sha256;123; $.hmac[pwd] ]<br />
+5.1 ^math:digest[sha256;123; $.hmac[$long] $.format[base64] ]<br />
 
-^math:digest[sha512;123]<br />
-^math:digest[sha512;123; $.hmac[pwd] ]<br />
-^math:digest[sha512;123; $.hmac[$long$long] $.format[base64] ]<br />
+6   ^math:digest[sha512;123]<br />
+6.1 ^math:digest[sha512;123; $.hmac[pwd] ]<br />
+6.2 ^math:digest[sha512;123; $.hmac[$long$long] $.format[base64] ]<br />
 
 $paf[^file::load[binary;019paf2001.gif]]
 
-^math:digest[md5;$paf]<br />
-^math:digest[sha256;$paf]<br />
+7   ^math:digest[md5;$paf]<br />
+7.1 ^math:digest[sha256;$paf]<br />
 
 $s[{ "name": "^taint[json;va"lue]" }]
 $f[^file::create[$s]]
 
-^math:md5[$s] = ^math:md5[$f.text]<br />
-^math:digest[sha1;$s] = ^math:digest[sha1;$f.text]<br />
+8   ^math:md5[$s] = ^math:md5[$f.text]<br />
+8.1 ^math:digest[sha1;$s] = ^math:digest[sha1;$f.text]<br />
