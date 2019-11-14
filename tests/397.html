@@ -57,8 +57,9 @@ $b2[^math:convert[$f](256)[$b64]]
 
 14. ^try-catch{ $f[^math:convert[$b][$b64](256)[ $.format[string] ]] }
 
-15. $f[^math:convert[$b][$b64](256)[ $.format[file] ]]
-   ^json:string[$f]
+15. $f2[^math:convert[$b][$b64](256)[ $.format[file] ]]
+   ^json:string[$f2]
+   ^f.md5[] = ^f2.md5[]
 
 16. $s[^math:convert[412241](16)(256)]
     $js[^json:parse[{"key":"$s"}]] $js.key
