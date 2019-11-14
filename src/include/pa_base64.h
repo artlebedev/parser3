@@ -8,7 +8,7 @@
 #ifndef PA_BASE64_H
 #define PA_BASE64_H
 
-#define IDENT_PA_BASE64_H "$Id: pa_base64.h,v 1.2 2019/11/13 22:05:48 moko Exp $"
+#define IDENT_PA_BASE64_H "$Id: pa_base64.h,v 1.3 2019/11/14 23:15:39 moko Exp $"
 
 #include "pa_string.h"
 
@@ -18,7 +18,7 @@ struct Base64Options {
 	bool pad;
 	const char *abc;
 
-	Base64Options();
+	Base64Options(bool awrap = false);
 	void set_url_safe_abc();
 };
 

@@ -8,7 +8,7 @@
 #include "pa_base64.h"
 #include "pa_common.h"
 
-volatile const char * IDENT_PA_BASE64_C="$Id: pa_base64.C,v 1.3 2019/11/13 22:05:48 moko Exp $" IDENT_PA_BASE64_H;
+volatile const char * IDENT_PA_BASE64_C="$Id: pa_base64.C,v 1.4 2019/11/14 23:15:39 moko Exp $" IDENT_PA_BASE64_H;
 
 /*
  * BASE64 part
@@ -36,10 +36,10 @@ volatile const char * IDENT_PA_BASE64_C="$Id: pa_base64.C,v 1.3 2019/11/13 22:05
 static const char *base64_alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 static const char *base64_alphabet_url_safe = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
 
-Base64Options::Base64Options(): strict(false), wrap(false), pad(false), abc(base64_alphabet) {}
+Base64Options::Base64Options(bool awrap): strict(false), wrap(awrap), pad(false), abc(base64_alphabet) {}
 
 void Base64Options::set_url_safe_abc() {
-	abc=base64_alphabet_url_safe;
+	abc = base64_alphabet_url_safe;
 }
 
 /**
@@ -228,7 +228,7 @@ size_t g_mime_utils_base64_decode_step(const unsigned char *in, size_t inlen, un
 		switch(c) {
 			case 0xff: // non-base64 and non-whitespace chars. not allowed in strict mode
 				if(strict)
-					throw Exception(BASE64_FORMAT, 0, "Invalid base64 char on position %d is detected", inptr-in-1);
+					throw Exception(BASE64_FORMAT, 0, "Invalid base64 char on position %d is detected", inptr - in - 1);
 			case 0xfe: // whitespace chars 0x09, 0x0A, 0x0D, 0x20 are allowed in any mode
 				break;
 			default:
@@ -262,17 +262,18 @@ size_t g_mime_utils_base64_decode_step(const unsigned char *in, size_t inlen, un
 	return (outptr - out);
 }
 
+size_t pa_base64_size(size_t in_size, bool wrap){
+	size_t new_size = ((in_size / 3 + 1) * 4) + 1 /*zero terminator*/;
+	if (wrap) new_size += new_size / (BASE64_GROUPS_IN_LINE * 4) /*new lines*/;
+	return new_size;
+}
 
 char* pa_base64_encode(const char *in, size_t in_size, Base64Options options) {
-	size_t new_size = ((in_size / 3 + 1) * 4);
-	new_size += new_size / (BASE64_GROUPS_IN_LINE * 4)/*new lines*/ + 1/*zero terminator*/;
+	size_t new_size = pa_base64_size(in_size, options.wrap);
 	char* result = new(PointerFreeGC) char[new_size];
-	int state=0;
-	int save=0;
-#ifndef NDEBUG
-	size_t filled=
-#endif
-		g_mime_utils_base64_encode_close ((const unsigned char*)in, in_size, (unsigned char*)result, &state, &save);
+	int state = 0;
+	int save = 0;
+	size_t filled = g_mime_utils_base64_encode_close ((const unsigned char*)in, in_size, (unsigned char*)result, &state, &save);
 
 	//throw Exception(PARSER_RUNTIME, 0, "%d %d %d", in_size, new_size, filled);
 	assert(filled <= new_size);
@@ -285,20 +286,19 @@ struct File_base64_action_info {
 }; 
 
 static void file_base64_file_action(struct stat& finfo, int f, const String& file_spec, void *context) {
-
-	if(finfo.st_size) { 
-		File_base64_action_info& info=*static_cast<File_base64_action_info *>(context);
-		*info.base64=new(PointerFreeGC) unsigned char[check_file_size(finfo.st_size, file_spec) * 2 + 6]; 
+	if(finfo.st_size) {
+		File_base64_action_info& info = *static_cast<File_base64_action_info *>(context);
+		*info.base64 = new(PointerFreeGC) unsigned char[pa_base64_size(check_file_size(finfo.st_size, file_spec), false)]; 
 		unsigned char* base64 = *info.base64;
-		int state=0;
-		int save=0;
+		int state = 0;
+		int save = 0;
 		int nCount;
 		do {
 			unsigned char buffer[FILE_BUFFER_SIZE];
 			nCount = file_block_read(f, buffer, sizeof(buffer));
 			if( nCount ){
-				size_t filled=g_mime_utils_base64_encode_step ((const unsigned char*)buffer, nCount, base64, &state, &save);
-				base64+=filled;
+				size_t filled = g_mime_utils_base64_encode_step ((const unsigned char*)buffer, nCount, base64, &state, &save);
+				base64 += filled;
 			}
 		} while(nCount > 0);
 		g_mime_utils_base64_encode_close (0, 0, base64, &state, &save);
@@ -306,8 +306,8 @@ static void file_base64_file_action(struct stat& finfo, int f, const String& fil
 }
 
 char* pa_base64_encode(const String& file_spec, Base64Options options){
-	unsigned char* base64=0;
-	File_base64_action_info info={&base64}; 
+	unsigned char* base64 = 0;
+	File_base64_action_info info = { &base64 };
 
 	file_read_action_under_lock(file_spec, "pa_base64_encode", file_base64_file_action, &info);
 
@@ -317,16 +317,16 @@ char* pa_base64_encode(const String& file_spec, Base64Options options){
 void pa_base64_decode(const char *in, size_t in_size, char*& result, size_t& result_size, Base64Options options) {
 	// every 4 base64 bytes are converted into 3 normal bytes
 	// not full set (tail) of 4-bytes set is ignored
-	size_t new_size=in_size/4*3;
-	result=new(PointerFreeGC) char[new_size+1/*terminator*/];
+	size_t new_size = (in_size + 3) / 4 * 3;
+	result = new(PointerFreeGC) char[new_size + 1 /*terminator*/];
 
-	int state=0;
-	int save=0;
-	result_size=g_mime_utils_base64_decode_step ((const unsigned char*)in, in_size, (unsigned char*)result, &state, &save, options.strict);
+	int state = 0;
+	int save = 0;
+	result_size = g_mime_utils_base64_decode_step ((const unsigned char*)in, in_size, (unsigned char*)result, &state, &save, options.strict);
 	assert(result_size <= new_size);
-	result[result_size]=0; // for text files
+	result[result_size] = 0; // for text files
 
-	if(options.strict && state!=0)
+	if(options.strict && state !=0 )
 		throw Exception(BASE64_FORMAT, 0, "Unexpected end of chars");
 }
 
