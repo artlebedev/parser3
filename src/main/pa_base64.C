@@ -8,7 +8,7 @@
 #include "pa_base64.h"
 #include "pa_common.h"
 
-volatile const char * IDENT_PA_BASE64_C="$Id: pa_base64.C,v 1.4 2019/11/14 23:15:39 moko Exp $" IDENT_PA_BASE64_H;
+volatile const char * IDENT_PA_BASE64_C="$Id: pa_base64.C,v 1.5 2019/11/15 21:48:51 moko Exp $" IDENT_PA_BASE64_H;
 
 /*
  * BASE64 part
@@ -195,70 +195,83 @@ static unsigned char gmime_base64_rank[256] = {
 	255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,
 };
 
+static unsigned char gmime_base64_rank_url_safe[256] = {
+	255,255,255,255,255,255,255,255,255,254,254,255,255,254,255,255,
+	255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,
+	254,255,255,255,255,255,255,255,255,255,255,255,255, 62,255,255,
+	 52, 53, 54, 55, 56, 57, 58, 59, 60, 61,255,255,255,  0,255,255,
+	255,  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14,
+	 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,255,255,255,255, 63,
+	255, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
+	 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51,255,255,255,255,255,
+	255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,
+	255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,
+	255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,
+	255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,
+	255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,
+	255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,
+	255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,
+	255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,
+};
+
 /**
  * g_mime_utils_base64_decode_step:
  * @in: input stream
  * @inlen: max length of data to decode
  * @out: output stream
- * @state: holds the number of bits that are stored in @save
- * @save: leftover bits that have not yet been decoded
  * @strict: only base64 and whitespace chars are allowed
  *
  * Decodes a chunk of base64 encoded data.
  *
  * Returns the number of bytes decoded (which have been dumped in @out).
  **/
-size_t g_mime_utils_base64_decode_step(const unsigned char *in, size_t inlen, unsigned char *out, int *state, int *save, bool strict=false) {
-	const unsigned char *inptr;
-	unsigned char *outptr;
-	const unsigned char *inend;
-	int saved;
-	unsigned char c;
-	int i;
+size_t g_mime_utils_base64_decode(const unsigned char *in, size_t inlen, unsigned char *out, Base64Options options) {
+	const unsigned char *inptr = in;
+	unsigned char *outptr = out;
+	const unsigned char *inend = in + inlen;
+
+	int saved = 0;
+	int state = 0;
 	
-	inend = in + inlen;
-	outptr = out;
-	
+	unsigned char *abc_rank = options.abc == base64_alphabet ? gmime_base64_rank : gmime_base64_rank_url_safe;
+
 	/* convert 4 base64 bytes to 3 normal bytes */
-	saved = *save;
-	i = *state;
-	inptr = in;
 	while (inptr < inend) {
-		c = gmime_base64_rank[*inptr++];
+		unsigned char c = abc_rank[*inptr++];
 		switch(c) {
 			case 0xff: // non-base64 and non-whitespace chars. not allowed in strict mode
-				if(strict)
+				if(options.strict)
 					throw Exception(BASE64_FORMAT, 0, "Invalid base64 char on position %d is detected", inptr - in - 1);
 			case 0xfe: // whitespace chars 0x09, 0x0A, 0x0D, 0x20 are allowed in any mode
 				break;
 			default:
 				saved = (saved << 6) | c;
-				i++;
-				if (i == 4) {
+				state++;
+				if (state == 4) {
 					*outptr++ = (unsigned char)(saved >> 16);
 					*outptr++ = (unsigned char)(saved >> 8);
 					*outptr++ = (unsigned char)(saved);
-					i = 0;
+					state = 0;
 				}
 		}
 	}
 	
-	*save = saved;
-	*state = i;
-	
+	if(options.strict && state !=0 )
+		throw Exception(BASE64_FORMAT, 0, "Unexpected end of chars");
+
 	/* quick scan back for '=' on the end somewhere */
 	/* fortunately we can drop 1 output char for each trailing = (upto 2) */
-	i = 2;
-	while (inptr > in && i) {
+	state = 2;
+	while (inptr > in && state) {
 		inptr--;
-		if (gmime_base64_rank[*inptr] <= 0xfe) {
+		if (abc_rank[*inptr] <= 0xfe) {
 			if (*inptr == '=' && outptr > out)
 				outptr--;
-			i--;
+			state--;
 		}
 	}
-	
-	/* if i != 0 then there is a truncation error! */
+
+	/* if state != 0 then there is a truncation error! */
 	return (outptr - out);
 }
 
@@ -288,7 +301,7 @@ struct File_base64_action_info {
 static void file_base64_file_action(struct stat& finfo, int f, const String& file_spec, void *context) {
 	if(finfo.st_size) {
 		File_base64_action_info& info = *static_cast<File_base64_action_info *>(context);
-		*info.base64 = new(PointerFreeGC) unsigned char[pa_base64_size(check_file_size(finfo.st_size, file_spec), false)]; 
+		*info.base64 = new(PointerFreeGC) unsigned char[pa_base64_size(check_file_size(finfo.st_size, file_spec), true)]; 
 		unsigned char* base64 = *info.base64;
 		int state = 0;
 		int save = 0;
@@ -320,13 +333,9 @@ void pa_base64_decode(const char *in, size_t in_size, char*& result, size_t& res
 	size_t new_size = (in_size + 3) / 4 * 3;
 	result = new(PointerFreeGC) char[new_size + 1 /*terminator*/];
 
-	int state = 0;
-	int save = 0;
-	result_size = g_mime_utils_base64_decode_step ((const unsigned char*)in, in_size, (unsigned char*)result, &state, &save, options.strict);
+	result_size = g_mime_utils_base64_decode ((const unsigned char*)in, in_size, (unsigned char*)result, options);
 	assert(result_size <= new_size);
 	result[result_size] = 0; // for text files
 
-	if(options.strict && state !=0 )
-		throw Exception(BASE64_FORMAT, 0, "Unexpected end of chars");
 }
 
