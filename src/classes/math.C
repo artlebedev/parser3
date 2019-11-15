@@ -23,7 +23,7 @@
 extern "C" char *crypt(const char* , const char* );
 #endif
 
-volatile const char * IDENT_MATH_C="$Id: math.C,v 1.91 2019/11/13 22:27:15 moko Exp $";
+volatile const char * IDENT_MATH_C="$Id: math.C,v 1.92 2019/11/15 11:09:51 moko Exp $";
 
 // defines
 
@@ -635,9 +635,9 @@ static void _convert(Request& r, MethodParams& params) {
 		return;
 	}
 
-	// core
+	// core, using log since log2 is not present in FreeBSD < 8.X
 
-	Array<char> remainders(round(data.length * log2(base_from) / log2(base_to)) + 1);
+	Array<char> remainders((size_t)round(data.length * log2(base_from) / log2(base_to)) + 1);
 
 	do {
 		int carry = 0;
