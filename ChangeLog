@@ -1,3 +1,70 @@
+2019-11-16  moko
+
+	* src/main/pa_base64.C: base64_decode converted to C++, url-safe
+	  support added, step support removed (related to #986)
+
+2019-11-15  moko
+
+	* src/classes/math.C: using log since log2 is not present on
+	  FreeBSD < 8.4 (related to feature #1177)
+
+	* src/: include/pa_base64.h, main/pa_base64.C: whitespace,
+	  pa_base64_size extracted and used for files as well (related to
+	  feature 986)
+
+2019-11-14  moko
+
+	* tests/: 397.html, results/397.processed: + content check
+
+	* tests/: 141.html, results/141.processed: make test resuls more
+	  readable
+
+	* tests/: 397.html, results/193.processed, results/397.processed:
+	  test results updated after \x00 character was disabled in
+	  math:convert string mode (related to feature #1177)
+
+	* src/classes/: math.C, string.C: \\x00 character disabled while
+	  converting to string (as in base64, related to feature #1177)
+
+	* src/classes/file.C: more correct arguments separation
+
+	* src/: classes/file.C, classes/math.C, classes/string.C,
+	  include/pa_base64.h, include/pa_common.h, main/pa_base64.C,
+	  main/pa_http.C, types/pa_vfile.C, types/pa_vmail.C: base64
+	  options added, but not yet implemented (related to feature #986)
+
+	* src/classes/math.C: whitespace
+
+2019-11-13  moko
+
+	* tests/: 397.html, results/397.processed: +tainting test (related
+	  to feature #1177)
+
+	* src/classes/math.C: as we now produce not only digits, result
+	  should be tainted (related to feature #1177)
+
+	* src/main/pa_base64.C: whitespace
+
+	* src/: include/Makefile.am, main/Makefile.am, main/main.vcproj,
+	  include/pa_base64.h, include/pa_common.h, main/pa_base64.C,
+	  main/pa_common.C: pa_base64.h and pa_base64.C added, base64
+	  implementation moved from pa_common.h and pa_common.C
+
+2019-11-12  moko
+
+	* tests/: 275.html, results/275.processed: out of range test fixed,
+	  as ^math:convert now supports arbitrary precision
+
+2019-11-11  moko
+
+	* tests/results/389.processed: uctualized error message
+
+	* tests/: 389.html, 397.html, results/397.processed: tests for
+	  ^math:convert added (related to feature #1177)
+
+	* src/classes/math.C: ^math:convert now supports arbitrary
+	  precision, alphabet support added (implements feature #1177)
+
 2019-11-06  moko
 
 	* tests/: 181.html, results/181.processed: entities usage added,
