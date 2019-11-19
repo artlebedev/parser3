@@ -9,7 +9,7 @@
 #ifndef PA_MEMORY_H
 #define PA_MEMORY_H
 
-#define IDENT_PA_MEMORY_H "$Id: pa_memory.h,v 1.35 2017/12/03 23:36:23 moko Exp $"
+#define IDENT_PA_MEMORY_H "$Id: pa_memory.h,v 1.36 2019/11/19 20:31:06 moko Exp $"
 
 // include
 
@@ -19,7 +19,7 @@
 // define destructors use for Array, Hash and VMethodFrame
 #define USE_DESTRUCTORS
 
-// std::basic_stringstream used in ^table.csv-string[] is compatible with delete usage check only under Debian 9
+// std::basic_stringstream used in ^table.csv-string[] is compatible with delete usage check only under Debian 9/10, FreeBSD 12
 // #define CHECK_DELETE_USAGE
 
 // forwards
