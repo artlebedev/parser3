@@ -8,7 +8,7 @@
 #include "pa_base64.h"
 #include "pa_common.h"
 
-volatile const char * IDENT_PA_BASE64_C="$Id: pa_base64.C,v 1.5 2019/11/15 21:48:51 moko Exp $" IDENT_PA_BASE64_H;
+volatile const char * IDENT_PA_BASE64_C="$Id: pa_base64.C,v 1.6 2019/11/20 20:31:52 moko Exp $" IDENT_PA_BASE64_H;
 
 /*
  * BASE64 part
@@ -36,7 +36,7 @@ volatile const char * IDENT_PA_BASE64_C="$Id: pa_base64.C,v 1.5 2019/11/15 21:48
 static const char *base64_alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 static const char *base64_alphabet_url_safe = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
 
-Base64Options::Base64Options(bool awrap): strict(false), wrap(awrap), pad(false), abc(base64_alphabet) {}
+Base64Options::Base64Options(bool awrap): strict(false), wrap(awrap), pad(true), abc(base64_alphabet) {}
 
 void Base64Options::set_url_safe_abc() {
 	abc = base64_alphabet_url_safe;
@@ -180,7 +180,7 @@ static unsigned char gmime_base64_rank[256] = {
 	255,255,255,255,255,255,255,255,255,254,254,255,255,254,255,255,
 	255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,
 	254,255,255,255,255,255,255,255,255,255,255, 62,255,255,255, 63,
-	 52, 53, 54, 55, 56, 57, 58, 59, 60, 61,255,255,255,  0,255,255,
+	 52, 53, 54, 55, 56, 57, 58, 59, 60, 61,255,255,255,253,255,255,
 	255,  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14,
 	 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,255,255,255,255,255,
 	255, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
@@ -199,7 +199,7 @@ static unsigned char gmime_base64_rank_url_safe[256] = {
 	255,255,255,255,255,255,255,255,255,254,254,255,255,254,255,255,
 	255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,
 	254,255,255,255,255,255,255,255,255,255,255,255,255, 62,255,255,
-	 52, 53, 54, 55, 56, 57, 58, 59, 60, 61,255,255,255,  0,255,255,
+	 52, 53, 54, 55, 56, 57, 58, 59, 60, 61,255,255,255,253,255,255,
 	255,  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14,
 	 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,255,255,255,255, 63,
 	255, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
@@ -215,7 +215,7 @@ static unsigned char gmime_base64_rank_url_safe[256] = {
 };
 
 /**
- * g_mime_utils_base64_decode_step:
+ * g_mime_utils_base64_decode:
  * @in: input stream
  * @inlen: max length of data to decode
  * @out: output stream
@@ -239,10 +239,35 @@ size_t g_mime_utils_base64_decode(const unsigned char *in, size_t inlen, unsigne
 	while (inptr < inend) {
 		unsigned char c = abc_rank[*inptr++];
 		switch(c) {
-			case 0xff: // non-base64 and non-whitespace chars. not allowed in strict mode
+			case 255: // non-base64 and non-whitespace chars. not allowed in strict mode
 				if(options.strict)
 					throw Exception(BASE64_FORMAT, 0, "Invalid base64 char on position %d is detected", inptr - in - 1);
-			case 0xfe: // whitespace chars 0x09, 0x0A, 0x0D, 0x20 are allowed in any mode
+			case 254: // whitespace chars 0x09, 0x0A, 0x0D, 0x20 are allowed in any mode
+				break;
+			case 253: // =
+				if(state < 2) {
+					if(options.strict)
+						throw Exception(BASE64_FORMAT, 0, "Unexpected '=' on position %d is detected", inptr - in - 1);
+					break;
+				}
+				if(state == 2) { // double '='
+					if(inptr == inend) {
+						if(options.strict)
+							throw Exception(BASE64_FORMAT, 0, "Unexpected end of chars");
+						break;
+					}
+					if(*inptr != '=') {
+						if(options.strict)
+							throw Exception(BASE64_FORMAT, 0, "Unexpected '=' on position %d is detected", inptr - in - 1);
+						break;
+					}
+					inptr++;
+					*outptr++ = (unsigned char)(saved >> 4);
+				} else { // single '='
+					*outptr++ = (unsigned char)(saved >> 10);
+					*outptr++ = (unsigned char)(saved >> 2);
+				}
+				state = 0;
 				break;
 			default:
 				saved = (saved << 6) | c;
@@ -255,23 +280,23 @@ size_t g_mime_utils_base64_decode(const unsigned char *in, size_t inlen, unsigne
 				}
 		}
 	}
-	
-	if(options.strict && state !=0 )
-		throw Exception(BASE64_FORMAT, 0, "Unexpected end of chars");
 
-	/* quick scan back for '=' on the end somewhere */
-	/* fortunately we can drop 1 output char for each trailing = (upto 2) */
-	state = 2;
-	while (inptr > in && state) {
-		inptr--;
-		if (abc_rank[*inptr] <= 0xfe) {
-			if (*inptr == '=' && outptr > out)
-				outptr--;
-			state--;
+	if(state > 0) {
+		if(state > 1) {
+			if(options.pad && options.strict)
+				throw Exception(BASE64_FORMAT, 0, "Unexpected end of chars");
+			if(state == 2) {
+				*outptr++ = (unsigned char)(saved >> 4);
+			} else {
+				*outptr++ = (unsigned char)(saved >> 10);
+				*outptr++ = (unsigned char)(saved >> 2);
+			}
+		} else {
+			if(options.strict)
+				throw Exception(BASE64_FORMAT, 0, "Unexpected end of chars");
 		}
 	}
 
-	/* if state != 0 then there is a truncation error! */
 	return (outptr - out);
 }
 
@@ -329,13 +354,11 @@ char* pa_base64_encode(const String& file_spec, Base64Options options){
 
 void pa_base64_decode(const char *in, size_t in_size, char*& result, size_t& result_size, Base64Options options) {
 	// every 4 base64 bytes are converted into 3 normal bytes
-	// not full set (tail) of 4-bytes set is ignored
 	size_t new_size = (in_size + 3) / 4 * 3;
 	result = new(PointerFreeGC) char[new_size + 1 /*terminator*/];
 
 	result_size = g_mime_utils_base64_decode ((const unsigned char*)in, in_size, (unsigned char*)result, options);
 	assert(result_size <= new_size);
 	result[result_size] = 0; // for text files
-
 }
 
