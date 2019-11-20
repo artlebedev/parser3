@@ -1,0 +1,27 @@
+@main[]
+
+$s[  ] $s[^s.base64[]]
+$a[a]  $a[^a.base64[]]
+
+$b64[${a}${s}${a}] 
+
+'$b64' = '^string:base64[$b64]'
+
+$s[aaa]^s.base64[]=YWFh
+
+I. non-strict:
+^check[]
+II. strict:
+^check[ $.strict(true) ]
+II. strict withour padding:
+^check[ $.strict(true) $.pad(false) ]
+
+@check[options]
+
+1 ^try-catch{'^string:base64[=YWFh;$options]'}
+2 ^try-catch{'^string:base64[Y===WFh;$options]'}
+3 ^try-catch{'^string:base64[YW=Fh;$options]'}
+4 ^try-catch{'^string:base64[YQ=;$options]'}
+5 ^try-catch{'^string:base64[Y;$options]'}
+6 ^try-catch{'^string:base64[YQ;$options]'}
+7 ^try-catch{'^string:base64[YWE;$options]'}
