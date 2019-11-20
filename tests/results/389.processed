@@ -124,7 +124,7 @@ Comment: Unexpected end of chars
 7.5 {
 "class":"file",
 "name":"fname.text",
-"size":3,
+"size":4,
 "mode":"text",
 "content-type":"strange"
 }
