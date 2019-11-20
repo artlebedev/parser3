@@ -8,7 +8,7 @@
 #include "pa_base64.h"
 #include "pa_common.h"
 
-volatile const char * IDENT_PA_BASE64_C="$Id: pa_base64.C,v 1.6 2019/11/20 20:31:52 moko Exp $" IDENT_PA_BASE64_H;
+volatile const char * IDENT_PA_BASE64_C="$Id: pa_base64.C,v 1.7 2019/11/20 20:48:25 moko Exp $" IDENT_PA_BASE64_H;
 
 /*
  * BASE64 part
@@ -214,17 +214,6 @@ static unsigned char gmime_base64_rank_url_safe[256] = {
 	255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,
 };
 
-/**
- * g_mime_utils_base64_decode:
- * @in: input stream
- * @inlen: max length of data to decode
- * @out: output stream
- * @strict: only base64 and whitespace chars are allowed
- *
- * Decodes a chunk of base64 encoded data.
- *
- * Returns the number of bytes decoded (which have been dumped in @out).
- **/
 size_t g_mime_utils_base64_decode(const unsigned char *in, size_t inlen, unsigned char *out, Base64Options options) {
 	const unsigned char *inptr = in;
 	unsigned char *outptr = out;
@@ -297,6 +286,7 @@ size_t g_mime_utils_base64_decode(const unsigned char *in, size_t inlen, unsigne
 		}
 	}
 
+	*outptr='\0';  // for text files
 	return (outptr - out);
 }
 
@@ -352,13 +342,10 @@ char* pa_base64_encode(const String& file_spec, Base64Options options){
 	return (char*)base64; 
 }
 
-void pa_base64_decode(const char *in, size_t in_size, char*& result, size_t& result_size, Base64Options options) {
+size_t pa_base64_decode(const char *in, size_t in_size, char*& result, Base64Options options) {
 	// every 4 base64 bytes are converted into 3 normal bytes
 	size_t new_size = (in_size + 3) / 4 * 3;
 	result = new(PointerFreeGC) char[new_size + 1 /*terminator*/];
 
-	result_size = g_mime_utils_base64_decode ((const unsigned char*)in, in_size, (unsigned char*)result, options);
-	assert(result_size <= new_size);
-	result[result_size] = 0; // for text files
+	return g_mime_utils_base64_decode ((const unsigned char*)in, in_size, (unsigned char*)result, options);
 }
-

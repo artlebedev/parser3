@@ -21,7 +21,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.242 2019/11/13 22:27:15 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.243 2019/11/20 20:48:25 moko Exp $";
 
 // class
 
@@ -701,9 +701,7 @@ static void _base64(Request& r, MethodParams& params) {
 		Base64Options options = base64_decode_options(r, params.count() > 1 ? params.as_hash(1) : NULL);
 
 		char* decoded=0;
-		size_t length=0;
-
-		pa_base64_decode(cstr, strlen(cstr), decoded, length, options);
+		size_t length=pa_base64_decode(cstr, strlen(cstr), decoded, options);
 
 		if(decoded && length){
 			if(memchr(decoded, 0, length))

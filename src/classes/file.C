@@ -26,7 +26,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.267 2019/11/13 22:12:51 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.268 2019/11/20 20:48:25 moko Exp $";
 
 // defines
 
@@ -1111,8 +1111,7 @@ static void _base64(Request& r, MethodParams& params) {
 			const char* encoded=params.as_string(param_index, PARAMETER_MUST_BE_STRING).cstr();
 
 			char* decoded=0;
-			size_t length=0;
-			pa_base64_decode(encoded, strlen(encoded), decoded, length, options);
+			size_t length=pa_base64_decode(encoded, strlen(encoded), decoded, options);
 
 			self.set(true/*tainted*/, is_text, decoded, length, user_file_name, vcontent_type, &r);
 		} else {
