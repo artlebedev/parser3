@@ -1,0 +1,53 @@
+Content-Type: text/html
+Content-Length: 1114
+
+'YQ==ICA=YQ==' = 'a a'
+YWFh=YWFh
+I. non-strict:
+1 'aaa'
+2 'aaa'
+3 'aaa'
+4 'a'
+5 ''
+6 'a'
+7 'aa'
+II. strict:
+1 Type: base64.format,
+Source: base64,
+Comment: Unexpected '=' on position 0 is detected
+2 Type: base64.format,
+Source: base64,
+Comment: Unexpected '=' on position 1 is detected
+3 Type: base64.format,
+Source: base64,
+Comment: Unexpected '=' on position 2 is detected
+4 Type: base64.format,
+Source: base64,
+Comment: Unexpected end of chars
+5 Type: base64.format,
+Source: base64,
+Comment: Unexpected end of chars
+6 Type: base64.format,
+Source: base64,
+Comment: Unexpected end of chars
+7 Type: base64.format,
+Source: base64,
+Comment: Unexpected end of chars
+II. strict withour padding:
+1 Type: base64.format,
+Source: base64,
+Comment: Unexpected '=' on position 0 is detected
+2 Type: base64.format,
+Source: base64,
+Comment: Unexpected '=' on position 1 is detected
+3 Type: base64.format,
+Source: base64,
+Comment: Unexpected '=' on position 2 is detected
+4 Type: base64.format,
+Source: base64,
+Comment: Unexpected end of chars
+5 Type: base64.format,
+Source: base64,
+Comment: Unexpected end of chars
+6 'a'
+7 'aa'
