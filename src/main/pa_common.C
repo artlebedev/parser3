@@ -29,7 +29,7 @@
 #define pa_mkdir(path, mode) mkdir(path, mode)
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.308 2019/11/22 22:37:30 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.309 2019/11/22 23:11:25 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -91,13 +91,24 @@ FILE *pa_fopen(const char *pathname, const char *mode){
 
 #endif
 
+/**
+	read specified file
+	if fail_on_read_problem is true[default] throws an exception
+*/
+File_read_result file_read(Request_charsets& charsets,
+				const String& file_spec,
+				bool as_text,
+				HashStringValue* options=0,
+				bool fail_on_read_problem=true,
+				size_t offset=0, size_t size=0, bool transcode_text_result=true);
+
 char* file_read_text(Request_charsets& charsets, const String& file_spec, bool fail_on_read_problem) {
-	File_read_result file=file_read(charsets, file_spec, true, 0, fail_on_read_problem, 0, 0, 0, true);
+	File_read_result file=file_read(charsets, file_spec, true, 0, fail_on_read_problem);
 	return file.success?file.str:0;
 }
 
 char* file_load_text(Request& r, const String& file_spec, bool fail_on_read_problem, HashStringValue* params, bool transcode_result) {
-	File_read_result file=file_load(r, file_spec, true, params, fail_on_read_problem, 0, 0, 0, transcode_result);
+	File_read_result file=file_load(r, file_spec, true, params, fail_on_read_problem, 0, 0, transcode_result);
 	return file.success?file.str:0;
 }
 
@@ -146,10 +157,18 @@ static void file_read_action(struct stat& finfo, int f, const String& file_spec,
 	}
 }
 
+File_read_result file_read_binary(const String& file_spec, bool fail_on_read_problem, char* buf, size_t offset, size_t size) {
+	File_read_result result={false, 0, 0, 0};
+	File_read_action_info info={&result.str, &result.length, buf, offset, size}; 
+
+	result.success=file_read_action_under_lock(file_spec, "read", file_read_action, &info, 0, fail_on_read_problem); 
+	return result;
+}
+
 File_read_result file_read(Request_charsets& charsets, const String& file_spec, 
 			bool as_text, HashStringValue *params,
 			bool fail_on_read_problem,
-			char* buf, size_t offset, size_t count, bool transcode_text_result) {
+			size_t offset, size_t count, bool transcode_text_result) {
 	File_read_result result={false, 0, 0, 0};
 	if(params){
 		int valid_options=pa_get_valid_file_options_count(*params);
@@ -157,7 +176,7 @@ File_read_result file_read(Request_charsets& charsets, const String& file_spec,
 			throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 	}
 
-	File_read_action_info info={&result.str, &result.length, buf, offset, count}; 
+	File_read_action_info info={&result.str, &result.length, 0, offset, count}; 
 
 	result.success=file_read_action_under_lock(file_spec, "read", file_read_action, &info, as_text, fail_on_read_problem); 
 
@@ -188,7 +207,7 @@ File_read_result file_read(Request_charsets& charsets, const String& file_spec,
 File_read_result file_load(Request& r, const String& file_spec, 
 			bool as_text, HashStringValue *params,
 			bool fail_on_read_problem,
-			char* buf, size_t offset, size_t count, bool transcode_text_result) {
+			size_t offset, size_t count, bool transcode_text_result) {
 
 	File_read_result result={false, 0, 0, 0};
 	if(file_spec.starts_with("http://")) {
@@ -202,7 +221,7 @@ File_read_result file_load(Request& r, const String& file_spec,
 		result.length=http.length;
 		result.headers=http.headers; 
 	} else
-		result = file_read(r.charsets, file_spec, as_text, params, fail_on_read_problem, buf, offset, count, transcode_text_result);
+		result = file_read(r.charsets, file_spec, as_text, params, fail_on_read_problem, offset, count, transcode_text_result);
 
 	return result;
 }

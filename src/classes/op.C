@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.252 2019/11/22 22:37:30 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.253 2019/11/22 23:11:24 moko Exp $";
 
 // defines
 
@@ -704,7 +704,7 @@ struct Cache_get_result {
 static Cache_get_result cache_get(Request_charsets& charsets, const String& file_spec, time_t now) {
 	Cache_get_result result={0, false};
 
-	File_read_result file=file_read(charsets, file_spec, false /*as_text*/, 0, /*no params*/ false /*fail_on_read_problem*/);
+	File_read_result file=file_read_binary(file_spec, false /*fail_on_read_problem*/);
 	if(file.success && file.length /*ignore reads which are empty due to non-unary open+lockEX conflict with lockSH*/) {
 		
 		Data_string_serialized_prolog& prolog = *reinterpret_cast<Data_string_serialized_prolog *>(file.str);
