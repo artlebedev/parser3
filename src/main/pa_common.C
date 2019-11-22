@@ -29,7 +29,7 @@
 #define pa_mkdir(path, mode) mkdir(path, mode)
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.307 2019/11/22 22:21:44 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.308 2019/11/22 22:37:30 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -202,8 +202,7 @@ File_read_result file_load(Request& r, const String& file_spec,
 		result.length=http.length;
 		result.headers=http.headers; 
 	} else
-		result=
-			file_read(r.charsets, file_spec, as_text, params, fail_on_read_problem, buf, offset, count, transcode_text_result);
+		result = file_read(r.charsets, file_spec, as_text, params, fail_on_read_problem, buf, offset, count, transcode_text_result);
 
 	return result;
 }

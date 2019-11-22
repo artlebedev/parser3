@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.251 2017/02/07 22:00:29 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.252 2019/11/22 22:37:30 moko Exp $";
 
 // defines
 
@@ -704,20 +704,13 @@ struct Cache_get_result {
 static Cache_get_result cache_get(Request_charsets& charsets, const String& file_spec, time_t now) {
 	Cache_get_result result={0, false};
 
-	File_read_result file=file_read(charsets, file_spec, 
-			   false/*as_text*/, 
-			   0, //no params
-			   false/*fail_on_read_problem*/);
-	if(file.success && file.length/* ignore reads which are empty due to 
-			non-unary open+lockEX conflict with lockSH */) {
-			
-		Data_string_serialized_prolog& prolog=
-			*reinterpret_cast<Data_string_serialized_prolog *>(file.str);
-
+	File_read_result file=file_read(charsets, file_spec, false /*as_text*/, 0, /*no params*/ false /*fail_on_read_problem*/);
+	if(file.success && file.length /*ignore reads which are empty due to non-unary open+lockEX conflict with lockSH*/) {
+		
+		Data_string_serialized_prolog& prolog = *reinterpret_cast<Data_string_serialized_prolog *>(file.str);
+		
 		String* body=new String;
-		if(
-			file.length>=sizeof(Data_string_serialized_prolog)
-			&& prolog.version==DATA_STRING_SERIALIZED_VERSION) {
+		if(file.length>=sizeof(Data_string_serialized_prolog) && prolog.version==DATA_STRING_SERIALIZED_VERSION) {
 			if(body->deserialize(sizeof(Data_string_serialized_prolog),  file.str, file.length)) {
 				result.body=body;
 				result.expired=prolog.expires <= now;
@@ -727,8 +720,8 @@ static Cache_get_result cache_get(Request_charsets& charsets, const String& file
 
 	return result;
 }
-static time_t as_expires(Request& r, MethodParams& params, 
-						int index, time_t now) {
+
+static time_t as_expires(Request& r, MethodParams& params, int index, time_t now) {
 	time_t result;
 	if(Value* vdate=params[index].as(VDATE_TYPE))
 		result=(time_t)(static_cast<VDate*>(vdate)->get_time());

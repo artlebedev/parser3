@@ -17,7 +17,7 @@
 #include "pa_vtable.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_PA_VFORM_C="$Id: pa_vform.C,v 1.117 2017/02/07 22:00:48 moko Exp $" IDENT_PA_VFORM_H;
+volatile const char * IDENT_PA_VFORM_C="$Id: pa_vform.C,v 1.118 2019/11/22 22:37:31 moko Exp $" IDENT_PA_VFORM_H;
 
 // defines
 
@@ -309,11 +309,10 @@ void VForm::refill_fields_tables_and_files() {
 
 #ifdef DEBUG_POST
 	frequest_info.method="POST";
-	File_read_result file=file_read(fcharsets, *new String("test.stdin"), true/*as_text*/, 0, true, 0, 0, 0, false/*transcode*/);	
+	File_read_result file=file_read(fcharsets, *new String("test.stdin"), true/*as_text*/, 0, true, 0, 0, 0, false/*transcode*/);
 	frequest_info.post_size=file.length;
 	frequest_info.post_data=(char*)file.str;
 	frequest_info.content_type="multipart/form-data; boundary=----------mcqY2UDNcdEAoN1mLmne2i";
-
 #endif
 
 	// parsing POST data

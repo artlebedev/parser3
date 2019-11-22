@@ -33,7 +33,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.377 2018/03/22 16:04:05 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.378 2019/11/22 22:37:30 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -830,10 +830,8 @@ static void output_pieces(Request& r, bool header_only, const String& filename, 
 		size_t to_read = 0;
 		size_t size = 0;
 		do{
-			to_read = part_length<BUFSIZE?part_length:BUFSIZE;
-			File_read_result read_result=file_read(r.charsets, filespec, 
-				false /*as text*/,  0/*params*/, true/*fail on problem*/,
-				buf, offset, to_read);
+			to_read = part_length < BUFSIZE ? part_length : BUFSIZE;
+			File_read_result read_result=file_read(r.charsets, filespec, false /*as text*/,  0/*params*/, true/*fail on problem*/, buf, offset, to_read);
 			to_read=read_result.length;
 			if(to_read == 0)
 				break;
