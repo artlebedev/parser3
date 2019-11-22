@@ -26,7 +26,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.268 2019/11/20 20:48:25 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.269 2019/11/22 22:24:45 moko Exp $";
 
 // defines
 
@@ -283,11 +283,9 @@ static void _load(Request& r, MethodParams& params) {
 		if(Value *vlimit=(Value *)options->get(sql_limit_name)){
 			limit=r.process(*vlimit).as_int();
 		}
-		// no check on options count here, see file_read
+		// no check on options count here, see file_load
 	}
-	File_read_result file=file_load(r, lfile_name,
-		as_text, options, true, 0, offset, limit
-	);
+	File_read_result file=file_load(r, lfile_name, as_text, options, true, 0, offset, limit);
 
 	Value* vcontent_type=0;
 	if(file.headers){
