@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.177 2019/11/13 22:05:48 moko Exp $"
+#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.178 2019/11/22 22:21:44 moko Exp $"
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -127,11 +127,7 @@ bool file_read_action_under_lock(const String& file_spec,
 
 	WARNING: charset is used for http header case conversion, it's not a charset of input file!
 */
-char *file_read_text(Request_charsets& charsets, 
-					const String& file_spec, 
-					bool fail_on_read_problem=true,
-					HashStringValue* options=0,
-					bool transcode_result=true);
+char *file_read_text(Request_charsets& charsets, const String& file_spec, bool fail_on_read_problem=true);
 
 char *file_load_text(Request& r, 
 					const String& file_spec, 

@@ -29,7 +29,7 @@
 #define pa_mkdir(path, mode) mkdir(path, mode)
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.306 2019/11/12 21:13:31 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.307 2019/11/22 22:21:44 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -91,8 +91,8 @@ FILE *pa_fopen(const char *pathname, const char *mode){
 
 #endif
 
-char* file_read_text(Request_charsets& charsets, const String& file_spec, bool fail_on_read_problem, HashStringValue* params, bool transcode_result) {
-	File_read_result file=file_read(charsets, file_spec, true, params, fail_on_read_problem, 0, 0, 0, transcode_result);
+char* file_read_text(Request_charsets& charsets, const String& file_spec, bool fail_on_read_problem) {
+	File_read_result file=file_read(charsets, file_spec, true, 0, fail_on_read_problem, 0, 0, 0, true);
 	return file.success?file.str:0;
 }
 
