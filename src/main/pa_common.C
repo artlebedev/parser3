@@ -29,7 +29,7 @@
 #define pa_mkdir(path, mode) mkdir(path, mode)
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.309 2019/11/22 23:11:25 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.310 2019/11/23 23:48:41 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -91,27 +91,6 @@ FILE *pa_fopen(const char *pathname, const char *mode){
 
 #endif
 
-/**
-	read specified file
-	if fail_on_read_problem is true[default] throws an exception
-*/
-File_read_result file_read(Request_charsets& charsets,
-				const String& file_spec,
-				bool as_text,
-				HashStringValue* options=0,
-				bool fail_on_read_problem=true,
-				size_t offset=0, size_t size=0, bool transcode_text_result=true);
-
-char* file_read_text(Request_charsets& charsets, const String& file_spec, bool fail_on_read_problem) {
-	File_read_result file=file_read(charsets, file_spec, true, 0, fail_on_read_problem);
-	return file.success?file.str:0;
-}
-
-char* file_load_text(Request& r, const String& file_spec, bool fail_on_read_problem, HashStringValue* params, bool transcode_result) {
-	File_read_result file=file_load(r, file_spec, true, params, fail_on_read_problem, 0, 0, transcode_result);
-	return file.success?file.str:0;
-}
-
 /// these options were handled but not checked elsewhere, now check them
 int pa_get_valid_file_options_count(HashStringValue& options) {
 	int result=0;
@@ -131,70 +110,70 @@ int pa_get_valid_file_options_count(HashStringValue& options) {
 #ifndef DOXYGEN
 struct File_read_action_info {
 	char **data; size_t *data_size;
-	char* buf; size_t offset; size_t count;
+	char* buf; size_t offset; size_t limit;
 }; 
 #endif
 
 static void file_read_action(struct stat& finfo, int f, const String& file_spec, void *context) {
-	File_read_action_info& info=*static_cast<File_read_action_info *>(context); 
-	size_t to_read_size=info.count;
+	File_read_action_info& info = *static_cast<File_read_action_info *>(context); 
+	size_t to_read_size = info.limit;
 	if(!to_read_size)
-		to_read_size=check_file_size(finfo.st_size, file_spec);
+		to_read_size = check_file_size(finfo.st_size, file_spec);
 	if(to_read_size) {
 		if(info.offset)
 			lseek(f, info.offset, SEEK_SET);
-		*info.data=info.buf ? info.buf : (char *)pa_malloc_atomic(to_read_size+1);
-		ssize_t result=read(f, *info.data, to_read_size);
+		*info.data = info.buf ? info.buf : (char *)pa_malloc_atomic(to_read_size+1);
+		ssize_t result = read(f, *info.data, to_read_size);
 		if(result<0)
 			throw Exception("file.read", &file_spec, "read failed: %s (%d)", strerror(errno), errno);
-		*info.data_size=result;
+		*info.data_size = result;
 	} else { // empty file
 		// for both, text and binary: for text we need that terminator, for binary we need nonzero pointer to be able to save such files
-		*info.data=(char *)pa_malloc_atomic(1);
-		*(char*)(*info.data)=0;
-		*info.data_size=0;
+		*info.data = (char *)pa_malloc_atomic(1);
+		*(char*)(*info.data) = 0;
+		*info.data_size = 0;
 		return;
 	}
 }
 
-File_read_result file_read_binary(const String& file_spec, bool fail_on_read_problem, char* buf, size_t offset, size_t size) {
-	File_read_result result={false, 0, 0, 0};
-	File_read_action_info info={&result.str, &result.length, buf, offset, size}; 
+File_read_result file_read_binary(const String& file_spec, bool fail_on_read_problem, char* buf, size_t offset, size_t limit) {
+	File_read_result result = {false, 0, 0, 0};
+	File_read_action_info info = {&result.str, &result.length, buf, offset, limit};
 
-	result.success=file_read_action_under_lock(file_spec, "read", file_read_action, &info, 0, fail_on_read_problem); 
+	result.success = file_read_action_under_lock(file_spec, "read", file_read_action, &info, 0, fail_on_read_problem);
 	return result;
 }
 
 File_read_result file_read(Request_charsets& charsets, const String& file_spec, 
-			bool as_text, HashStringValue *params,
+			bool as_text, HashStringValue *options,
 			bool fail_on_read_problem,
-			size_t offset, size_t count, bool transcode_text_result) {
-	File_read_result result={false, 0, 0, 0};
-	if(params){
-		int valid_options=pa_get_valid_file_options_count(*params);
-		if(valid_options!=params->count())
+			size_t offset = 0, size_t limit = 0, bool transcode_text_result = true) {
+	File_read_result result = {false, 0, 0, 0};
+	if(options){
+		int valid_options = pa_get_valid_file_options_count(*options);
+		if(valid_options != options->count())
 			throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 	}
 
-	File_read_action_info info={&result.str, &result.length, 0, offset, count}; 
+	File_read_action_info info = {&result.str, &result.length, 0, offset, limit}; 
 
-	result.success=file_read_action_under_lock(file_spec, "read", file_read_action, &info, as_text, fail_on_read_problem); 
+	result.success = file_read_action_under_lock(file_spec, "read", file_read_action, &info, as_text, fail_on_read_problem); 
 
 	if(as_text){
 		if(result.success){
-			Charset* asked_charset=0;
-			if(params)
-				if(Value* vcharset_name=params->get(PA_CHARSET_NAME))
-					asked_charset=&pa_charsets.get(vcharset_name->as_string());
+			Charset* asked_charset = 0;
+			if(options)
+				if(Value* vcharset_name = options->get(PA_CHARSET_NAME))
+					asked_charset = &pa_charsets.get(vcharset_name->as_string());
 
-			asked_charset=pa_charsets.checkBOM(result.str, result.length, asked_charset);
+			asked_charset = pa_charsets.checkBOM(result.str, result.length, asked_charset);
 
 			if(result.length && transcode_text_result && asked_charset){ // length must be checked because transcode returns CONST string in case length==0, which contradicts hacking few lines below
-				String::C body=String::C(result.str, result.length);
+				String::C body = String::C(result.str, result.length);
 				body=Charset::transcode(body, *asked_charset, charsets.source());
 
-				result.str=const_cast<char*>(body.str); // hacking a little
-				result.length=body.length;
+				result.str = const_cast<char*>(body.str); // hacking a little
+				result.length = body.length;
 			}
 		}
 		if(result.length)
@@ -205,27 +184,43 @@ File_read_result file_read(Request_charsets& charsets, const String& file_spec,
 }
 
 File_read_result file_load(Request& r, const String& file_spec, 
-			bool as_text, HashStringValue *params,
+			bool as_text, HashStringValue *options,
 			bool fail_on_read_problem,
-			size_t offset, size_t count, bool transcode_text_result) {
+			bool transcode_text_result) {
 
-	File_read_result result={false, 0, 0, 0};
+	size_t offset = 0;
+	size_t limit = 0;
+
+	if(options){
+		if(Value *voffset = (Value *)options->get(sql_offset_name))
+			offset = r.process(*voffset).as_int();
+		if(Value *vlimit = (Value *)options->get(sql_limit_name))
+			limit = r.process(*vlimit).as_int();
+		// no check on options count here
+	}
+
 	if(file_spec.starts_with("http://")) {
-		if(offset || count)
+		if(offset || limit)
 			throw Exception(PARSER_RUNTIME, 0, "offset and load options are not supported for HTTP:// file load");
 
 		// fail on read problem
-		File_read_http_result http=pa_internal_file_read_http(r, file_spec, as_text, params, transcode_text_result);
-		result.success=true;
-		result.str=http.str;
-		result.length=http.length;
-		result.headers=http.headers; 
-	} else
-		result = file_read(r.charsets, file_spec, as_text, params, fail_on_read_problem, offset, count, transcode_text_result);
+		File_read_http_result http = pa_internal_file_read_http(r, file_spec, as_text, options, transcode_text_result);
 
-	return result;
+		File_read_result result = {true, http.str, http.length, http.headers};
+		return result;
+	} else
+		return file_read(r.charsets, file_spec, as_text, options, fail_on_read_problem, offset, limit, transcode_text_result);
 }
 
+char* file_read_text(Request_charsets& charsets, const String& file_spec, bool fail_on_read_problem) {
+	File_read_result file = file_read(charsets, file_spec, true, 0, fail_on_read_problem);
+	return file.success ? file.str : 0;
+}
+
+char* file_load_text(Request& r, const String& file_spec, bool fail_on_read_problem, HashStringValue* options, bool transcode_result) {
+	File_read_result file = file_load(r, file_spec, true, options, fail_on_read_problem, transcode_result);
+	return file.success ? file.str : 0;
+}
 
 #ifdef PA_SAFE_MODE 
 void check_safe_mode(struct stat finfo, const String& file_spec, const char* fname) {

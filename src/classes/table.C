@@ -22,7 +22,7 @@
 #define USE_STRINGSTREAM
 #endif
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.348 2019/09/11 15:26:09 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.349 2019/11/23 23:48:41 moko Exp $";
 
 // class
 
@@ -406,12 +406,8 @@ static void _load(Request& r, MethodParams& params) {
 
 	HashStringValue *options=0;
 	TableControlChars control_chars;
-	if(options_param_index<params.count()
-		&& (options=params.as_hash(options_param_index))) {
-		// cloning, so that we could change [to simplify checks on params inside file_read_text
-		options=new HashStringValue(*options);
+	if(options_param_index<params.count() && (options=params.as_hash(options_param_index)))
 		control_chars.load(*options);
-	}
 
 	// loading text
 	char *data=file_load_text(r, r.absolute(params.as_string(filename_param_index, FILE_NAME_MUST_BE_STRING)), true, options);

@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.179 2019/11/22 23:11:24 moko Exp $"
+#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.180 2019/11/23 23:48:41 moko Exp $"
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -141,19 +141,14 @@ struct File_read_result {
 	if fail_on_read_problem is true[default] throws an exception
 */
 
-File_read_result file_read_binary(const String& file_spec, bool fail_on_read_problem = true, char* buf = 0, size_t offset = 0, size_t size = 0);
+File_read_result file_read_binary(const String& file_spec, bool fail_on_read_problem = true, char* buf = 0, size_t offset = 0, size_t limit = 0);
 
 /**
 	load specified file
 	if fail_on_read_problem is true[default] throws an exception
 */
 
-File_read_result file_load(Request& r,
-				const String& file_spec,
-				bool as_text,
-				HashStringValue* options=0,
-				bool fail_on_read_problem=true,
-				size_t offset=0, size_t size=0, bool transcode_text_result=true);
+File_read_result file_load(Request& r, const String& file_spec, bool as_text, HashStringValue* options=0, bool fail_on_read_problem=true, bool transcode_text_result=true);
 
 typedef void (*File_write_action)(int f, void *context);
 
