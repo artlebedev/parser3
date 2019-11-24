@@ -8,7 +8,7 @@
 #ifndef PA_BASE64_H
 #define PA_BASE64_H
 
-#define IDENT_PA_BASE64_H "$Id: pa_base64.h,v 1.4 2019/11/20 20:48:25 moko Exp $"
+#define IDENT_PA_BASE64_H "$Id: pa_base64.h,v 1.5 2019/11/24 22:25:54 moko Exp $"
 
 #include "pa_string.h"
 
@@ -24,6 +24,5 @@ struct Base64Options {
 
 size_t pa_base64_decode(const char *in, size_t in_size, char*& result, Base64Options options);
 char* pa_base64_encode(const char *in, size_t in_size, Base64Options options = Base64Options());
-char* pa_base64_encode(const String& file_spec, Base64Options options);
 
 #endif

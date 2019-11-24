@@ -8,7 +8,7 @@
 #include "pa_base64.h"
 #include "pa_common.h"
 
-volatile const char * IDENT_PA_BASE64_C="$Id: pa_base64.C,v 1.7 2019/11/20 20:48:25 moko Exp $" IDENT_PA_BASE64_H;
+volatile const char * IDENT_PA_BASE64_C="$Id: pa_base64.C,v 1.8 2019/11/24 22:25:54 moko Exp $" IDENT_PA_BASE64_H;
 
 /*
  * BASE64 part
@@ -290,56 +290,18 @@ size_t g_mime_utils_base64_decode(const unsigned char *in, size_t inlen, unsigne
 	return (outptr - out);
 }
 
-size_t pa_base64_size(size_t in_size, bool wrap){
-	size_t new_size = ((in_size / 3 + 1) * 4) + 1 /*zero terminator*/;
-	if (wrap) new_size += new_size / (BASE64_GROUPS_IN_LINE * 4) /*new lines*/;
-	return new_size;
-}
-
 char* pa_base64_encode(const char *in, size_t in_size, Base64Options options) {
-	size_t new_size = pa_base64_size(in_size, options.wrap);
+	size_t new_size = ((in_size / 3 + 1) * 4) + 1 /*zero terminator*/;
+	if (options.wrap) new_size += new_size / (BASE64_GROUPS_IN_LINE * 4) /*new lines*/;
+
 	char* result = new(PointerFreeGC) char[new_size];
 	int state = 0;
 	int save = 0;
 	size_t filled = g_mime_utils_base64_encode_close ((const unsigned char*)in, in_size, (unsigned char*)result, &state, &save);
 
-	//throw Exception(PARSER_RUNTIME, 0, "%d %d %d", in_size, new_size, filled);
 	assert(filled <= new_size);
 
 	return result;
-}
-
-struct File_base64_action_info {
-	unsigned char** base64;
-}; 
-
-static void file_base64_file_action(struct stat& finfo, int f, const String& file_spec, void *context) {
-	if(finfo.st_size) {
-		File_base64_action_info& info = *static_cast<File_base64_action_info *>(context);
-		*info.base64 = new(PointerFreeGC) unsigned char[pa_base64_size(check_file_size(finfo.st_size, file_spec), true)]; 
-		unsigned char* base64 = *info.base64;
-		int state = 0;
-		int save = 0;
-		int nCount;
-		do {
-			unsigned char buffer[FILE_BUFFER_SIZE];
-			nCount = file_block_read(f, buffer, sizeof(buffer));
-			if( nCount ){
-				size_t filled = g_mime_utils_base64_encode_step ((const unsigned char*)buffer, nCount, base64, &state, &save);
-				base64 += filled;
-			}
-		} while(nCount > 0);
-		g_mime_utils_base64_encode_close (0, 0, base64, &state, &save);
-	}
-}
-
-char* pa_base64_encode(const String& file_spec, Base64Options options){
-	unsigned char* base64 = 0;
-	File_base64_action_info info = { &base64 };
-
-	file_read_action_under_lock(file_spec, "pa_base64_encode", file_base64_file_action, &info);
-
-	return (char*)base64; 
 }
 
 size_t pa_base64_decode(const char *in, size_t in_size, char*& result, Base64Options options) {

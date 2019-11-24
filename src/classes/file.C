@@ -26,7 +26,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.271 2019/11/23 23:48:40 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.272 2019/11/24 22:25:53 moko Exp $";
 
 // defines
 
@@ -1107,9 +1107,14 @@ static void _base64(Request& r, MethodParams& params) {
 		}
 	} else {
 		// encode: ^file:base64[filespec[;options]]
+		if(params.count() > 2)
+			throw Exception(PARSER_RUNTIME, 0, "accepts maximum 2 parameter(s) (has %d parameters)", params.count());
+
 		const String& file_spec = params.as_string(0, FILE_NAME_MUST_BE_STRING);
+		File_read_result data = file_read_binary(r.absolute(file_spec), true /*fail on problem*/);
+
 		Base64Options options = base64_encode_options(r, params.count() > 1 ? params.as_hash(1) : NULL);
-		const char* encoded = pa_base64_encode(r.absolute(file_spec), options);
+		const char* encoded = pa_base64_encode(data.str, data.length, options);
 		r.write(*new String(encoded, String::L_TAINTED /*once ?param=base64(something) was needed*/ ));
 	}
 }
