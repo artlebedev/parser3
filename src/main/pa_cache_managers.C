@@ -7,7 +7,7 @@
 
 #include "pa_cache_managers.h"
 
-volatile const char * IDENT_PA_CACHE_MANAGERS_C="$Id: pa_cache_managers.C,v 1.20 2017/02/07 22:00:41 moko Exp $" IDENT_PA_CACHE_MANAGERS_H;
+volatile const char * IDENT_PA_CACHE_MANAGERS_C="$Id: pa_cache_managers.C,v 1.21 2019/11/24 23:31:34 moko Exp $" IDENT_PA_CACHE_MANAGERS_H;
 
 #include "pa_sql_driver_manager.h"
 #ifdef XML
@@ -25,8 +25,7 @@ Cache_managers::Cache_managers() {
 #endif
 }
 
-static void delete_one(Cache_managers::key_type /*akey*/, Cache_managers::value_type avalue, 
-						int) {
+static void delete_one(Cache_managers::key_type /*akey*/, Cache_managers::value_type avalue, int) {
 	delete avalue;
 }
 Cache_managers::~Cache_managers() {
@@ -35,10 +34,10 @@ Cache_managers::~Cache_managers() {
 
 // methods
 
-static void maybe_expire_one(Cache_managers::key_type /*akey*/, Cache_managers::value_type avalue, 
-										  int) {
+static void maybe_expire_one(Cache_managers::key_type /*akey*/, Cache_managers::value_type avalue, int) {
 	avalue->maybe_expire_cache();
 }
+
 void Cache_managers::maybe_expire() {
 	for_each<int>(maybe_expire_one, 0);
 }
