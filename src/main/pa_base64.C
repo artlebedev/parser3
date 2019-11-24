@@ -8,10 +8,10 @@
 #include "pa_base64.h"
 #include "pa_common.h"
 
-volatile const char * IDENT_PA_BASE64_C="$Id: pa_base64.C,v 1.8 2019/11/24 22:25:54 moko Exp $" IDENT_PA_BASE64_H;
+volatile const char * IDENT_PA_BASE64_C="$Id: pa_base64.C,v 1.9 2019/11/24 23:32:14 moko Exp $" IDENT_PA_BASE64_H;
 
 /*
- * BASE64 part
+ *  BASE64 part inspired by g_mime_utils
  *  Authors: Michael Zucchi <notzed@ximian.com>
  *           Jeffrey Stedfast <fejj@ximian.com>
  *
@@ -42,138 +42,63 @@ void Base64Options::set_url_safe_abc() {
 	abc = base64_alphabet_url_safe;
 }
 
-/**
- * g_mime_utils_base64_encode_step:
- * @in: input stream
- * @inlen: length of the input
- * @out: output string
- * @state: holds the number of bits that are stored in @save
- * @save: leftover bits that have not yet been encoded
- *
- * Base64 encodes a chunk of data. Performs an 'encode step', only
- * encodes blocks of 3 characters to the output at a time, saves
- * left-over state in state and save (initialise to 0 on first
- * invocation).
- *
- * Returns the number of bytes encoded.
- **/
-
 #define BASE64_GROUPS_IN_LINE 19
 
-static size_t g_mime_utils_base64_encode_step (const unsigned char *in, size_t inlen, unsigned char *out, int *state, int *save) {
-	register const unsigned char *inptr;
-	register unsigned char *outptr;
-	
-	if (inlen <= 0)
-		return 0;
-	
-	inptr = in;
-	outptr = out;
-	
-	if (inlen + ((unsigned char *)save)[0] > 2) {
+static size_t pa_base64_encode(const unsigned char *in, size_t inlen, unsigned char *out, Base64Options options) {
+	const unsigned char *inptr = in;
+	unsigned char *outptr = out;
+
+	const unsigned char *abc = (const unsigned char *)options.abc;
+
+	if (inlen > 2) {
 		const unsigned char *inend = in + inlen - 2;
-		register int c1 = 0, c2 = 0, c3 = 0;
-		register int already;
+		int already=0;
 		
-		already = *state;
-		
-		switch (((char *)save)[0]) {
-		case 1:	c1 = ((unsigned char *)save)[1]; goto skip1;
-		case 2:	c1 = ((unsigned char *)save)[1];
-			c2 = ((unsigned char *)save)[2]; goto skip2;
-		}
-		
-		/* yes, we jump into the loop, no i'm not going to change it, its beautiful! */
 		while (inptr < inend) {
-			c1 = *inptr++;
-		skip1:
-			c2 = *inptr++;
-		skip2:
-			c3 = *inptr++;
-			*outptr++ = base64_alphabet [c1 >> 2];
-			*outptr++ = base64_alphabet [(c2 >> 4) | ((c1 & 0x3) << 4)];
-			*outptr++ = base64_alphabet [((c2 & 0x0f) << 2) | (c3 >> 6)];
-			*outptr++ = base64_alphabet [c3 & 0x3f];
-			/* this is a bit ugly ... */
-			if ((++already) >= BASE64_GROUPS_IN_LINE) {
+			int c1 = *inptr++;
+			int c2 = *inptr++;
+			int c3 = *inptr++;
+			*outptr++ = abc[c1 >> 2];
+			*outptr++ = abc[(c2 >> 4) | ((c1 & 0x3) << 4)];
+			*outptr++ = abc[((c2 & 0x0f) << 2) | (c3 >> 6)];
+			*outptr++ = abc[c3 & 0x3f];
+
+			if ((++already) >= BASE64_GROUPS_IN_LINE && options.wrap) {
 				*outptr++ = '\n';
 				already = 0;
 			}
 		}
 		
-		((unsigned char *)save)[0] = 0;
 		inlen = 2 - (inptr - inend);
-		*state = already;
 	}
-	
-	//d(printf ("state = %d, inlen = %d\n", (int)((char *)save)[0], inlen));
-	
-	if (inlen > 0) {
-		register char *saveout;
-		
-		/* points to the slot for the next char to save */
-		saveout = & (((char *)save)[1]) + ((char *)save)[0];
-		
-		/* inlen can only be 0 1 or 2 */
-		switch (inlen) {
-		case 2:	*saveout++ = *inptr++;
-		case 1:	*saveout++ = *inptr++;
-		}
-		*(char *)save = *(char *)save+(char)inlen;
-	}
-	
-	/*d(printf ("mode = %d\nc1 = %c\nc2 = %c\n",
-		  (int)((char *)save)[0],
-		  (int)((char *)save)[1],
-		  (int)((char *)save)[2]));*/
-	
-	return (outptr - out);
-}
 
-/**
- * g_mime_utils_base64_encode_close:
- * @in: input stream
- * @inlen: length of the input
- * @out: output string
- * @state: holds the number of bits that are stored in @save
- * @save: leftover bits that have not yet been encoded
- *
- * Base64 encodes the input stream to the output stream. Call this
- * when finished encoding data with g_mime_utils_base64_encode_step to
- * flush off the last little bit.
- *
- * Returns the number of bytes encoded.
- **/
-static size_t g_mime_utils_base64_encode_close (const unsigned char *in, size_t inlen, unsigned char *out, int *state, int *save) {
-	unsigned char *outptr = out;
-	int c1, c2;
-	
-	if (inlen > 0)
-		outptr += g_mime_utils_base64_encode_step (in, inlen, outptr, state, save);
-	
-	c1 = ((unsigned char *)save)[1];
-	c2 = ((unsigned char *)save)[2];
-	
-	switch (((unsigned char *)save)[0]) {
-	case 2:
-		outptr[2] = base64_alphabet [(c2 & 0x0f) << 2];
-		goto skip;
-	case 1:
-		outptr[2] = '=';
-	skip:
-		outptr[0] = base64_alphabet [c1 >> 2];
-		outptr[1] = base64_alphabet [c2 >> 4 | ((c1 & 0x3) << 4)];
-		outptr[3] = '=';
-		outptr += 4;
-		break;
+	if (inlen == 2) {
+		int c1 = *inptr++;
+		int c2 = *inptr++;
+		outptr[0] = abc[c1 >> 2];
+		outptr[1] = abc[c2 >> 4 | ((c1 & 0x3) << 4)];
+		outptr[2] = abc[(c2 & 0x0f) << 2];
+		if(options.pad) {
+			outptr[3] = '=';
+			outptr += 4;
+		} else {
+			outptr += 3;
+		}
+	} else if (inlen == 1) {
+		int c1 = *inptr++;
+		outptr[0] = abc[c1 >> 2];
+		outptr[1] = abc[(c1 & 0x3) << 4];
+		if(options.pad) {
+			outptr[2] = '=';
+			outptr[3] = '=';
+			outptr += 4;
+		} else {
+			outptr += 2;
+		}
 	}
-	
-	*outptr++ = 0;
-	
-	*save = 0;
-	*state = 0;
-	
-	return (outptr - out);
+
+	*outptr='\0';
+	return outptr - out;
 }
 
 static unsigned char gmime_base64_rank[256] = {
@@ -214,7 +139,7 @@ static unsigned char gmime_base64_rank_url_safe[256] = {
 	255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,
 };
 
-size_t g_mime_utils_base64_decode(const unsigned char *in, size_t inlen, unsigned char *out, Base64Options options) {
+size_t pa_base64_decode(const unsigned char *in, size_t inlen, unsigned char *out, Base64Options options) {
 	const unsigned char *inptr = in;
 	unsigned char *outptr = out;
 	const unsigned char *inend = in + inlen;
@@ -287,18 +212,17 @@ size_t g_mime_utils_base64_decode(const unsigned char *in, size_t inlen, unsigne
 	}
 
 	*outptr='\0';  // for text files
-	return (outptr - out);
+	return outptr - out;
 }
 
 char* pa_base64_encode(const char *in, size_t in_size, Base64Options options) {
-	size_t new_size = ((in_size / 3 + 1) * 4) + 1 /*zero terminator*/;
-	if (options.wrap) new_size += new_size / (BASE64_GROUPS_IN_LINE * 4) /*new lines*/;
+	size_t new_size = ((in_size / 3 + 1) * 4);
+	if (options.wrap)
+		new_size += new_size / (BASE64_GROUPS_IN_LINE * 4) /*new lines*/;
 
-	char* result = new(PointerFreeGC) char[new_size];
-	int state = 0;
-	int save = 0;
-	size_t filled = g_mime_utils_base64_encode_close ((const unsigned char*)in, in_size, (unsigned char*)result, &state, &save);
+	char* result = new(PointerFreeGC) char[new_size + 1 /*zero terminator*/];
 
+	size_t filled = pa_base64_encode((const unsigned char*)in, in_size, (unsigned char*)result, options);
 	assert(filled <= new_size);
 
 	return result;
@@ -309,5 +233,5 @@ size_t pa_base64_decode(const char *in, size_t in_size, char*& result, Base64Opt
 	size_t new_size = (in_size + 3) / 4 * 3;
 	result = new(PointerFreeGC) char[new_size + 1 /*terminator*/];
 
-	return g_mime_utils_base64_decode ((const unsigned char*)in, in_size, (unsigned char*)result, options);
+	return pa_base64_decode((const unsigned char*)in, in_size, (unsigned char*)result, options);
 }
