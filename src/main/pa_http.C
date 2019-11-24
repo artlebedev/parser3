@@ -14,7 +14,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.81 2019/11/13 22:05:48 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.82 2019/11/24 23:46:22 moko Exp $" IDENT_PA_HTTP_H; 
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -407,7 +407,7 @@ static const String* basic_authorization_field(const char* user, const char* pas
 		combined<<pass;
 	
 	String* result=new String("Basic ");
-	*result<<pa_base64_encode(combined.cstr(), combined.length());
+	*result<<pa_base64_encode(combined.cstr(), combined.length(), Base64Options(false /*no wrap*/));
 	return result;
 }
 

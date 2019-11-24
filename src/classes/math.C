@@ -23,7 +23,7 @@
 extern "C" char *crypt(const char* , const char* );
 #endif
 
-volatile const char * IDENT_MATH_C="$Id: math.C,v 1.93 2019/11/15 11:11:13 moko Exp $";
+volatile const char * IDENT_MATH_C="$Id: math.C,v 1.94 2019/11/24 23:46:22 moko Exp $";
 
 // defines
 
@@ -474,7 +474,7 @@ static void _digest(Request& r, MethodParams& params) {
 		r.write(*new String(hex_string((unsigned char *)digest.str, digest.length, false)));
 	}
 	if(format == F_BASE64){
-		r.write(*new String(pa_base64_encode(digest.str, digest.length)));
+		r.write(*new String(pa_base64_encode(digest.str, digest.length, Base64Options(false /*no wrap*/))));
 	}
 }
 
