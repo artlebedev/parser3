@@ -1,0 +1,14 @@
+@main[]
+
+1. ^try-catch{^file:base64[;;bug]}
+
+2. ^file:base64[001.html; ]
+3. ^file:base64[001.html; $.pad(false) ]
+
+4. ^file:base64[396.tiff; $.wrap(false) ]
+5. $f[^file::load[binary;396.tiff]] ^f.base64[ $.wrap(false) $.pad(false) ]
+
+$s[xxxxxxxxxxxxxxxxxxxxxx]
+
+6. ^s.base64[ $.pad(1) ]
+7. ^s.base64[ $.pad(0) ]
