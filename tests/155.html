@@ -1,3 +1,4 @@
+@main[]
 $t[^table::create{a	b
 ^taint[av	av]	^taint[b
 v]}]
@@ -6,14 +7,9 @@ v]}]
 	$.encloser["]
 ]
 
-$t[^table::load[155.cfg;$.encloser["]]]
-^untaint[as-is]{
-<table border="1">
-^t.menu{
-	<tr>
-		<td>$t.a</td>
-		<td>$t.b</td>
-	</tr>
-}
-</table>
-}
+^show[^table::load[155.cfg;$.encloser["]]]
+
+^show[^table::load[155.cfg;$.encloser["] $.offset(4) $.limit(11) ]]
+
+@show[t]
+^json:string[$t; $.indent(true) ]

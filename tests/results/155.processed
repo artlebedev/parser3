@@ -1,10 +1,9 @@
 Content-Type: text/html
-Content-Length: 67
+Content-Length: 50
 
-<table border="1">
-<tr>
-<td>av	av</td>
-<td>b
-v</td>
-</tr>
-</table>
+[
+	{"a":"av\tav","b":"b\nv"}
+]
+[
+	{"b":"av\tav"}
+]
