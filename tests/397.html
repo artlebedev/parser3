@@ -48,7 +48,7 @@ $b64[ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/]
 
 $f[^file::load[binary;098font.gif]]
 
-$b[^f.base64[ $.pad(false) ]]
+$b[^f.base64[ $.wrap(false) ]]
 
 $b2[^math:convert[$f](256)[$b64]]
 

@@ -6,7 +6,7 @@
 3. ^file:base64[001.html; $.pad(false) ]
 
 4. ^file:base64[396.tiff; $.wrap(false) ]
-5. $f[^file::load[binary;396.tiff]] ^f.base64[ $.wrap(false) $.pad(false) ]
+5. $f[^file::load[binary;396.tiff]] ^f.base64[ $.wrap(false) $.pad(false) $.url-safe(true) ]
 
 $s[xxxxxxxxxxxxxxxxxxxxxx]
 
