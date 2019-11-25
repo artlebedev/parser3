@@ -13,7 +13,7 @@
 #include "pa_vdouble.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_COMPILE_TOOLS_C="$Id: compile_tools.C,v 1.79 2017/02/07 22:00:40 moko Exp $" IDENT_COMPILE_TOOLS_H;
+volatile const char * IDENT_COMPILE_TOOLS_C="$Id: compile_tools.C,v 1.80 2019/11/25 22:01:51 moko Exp $" IDENT_COMPILE_TOOLS_H;
 
 Value* LA2V(ArrayOperation& literal_string_array, int offset, OP::OPCODE code) {
 	return literal_string_array[offset+0].code==code?literal_string_array[offset+2/*skip opcode&origin*/].value
@@ -43,29 +43,29 @@ bool change_first(ArrayOperation& opcodes, OP::OPCODE find, OP::OPCODE replace) 
 
 
 // OP_VALUE+origin+self+OP_GET_ELEMENT+OP_VALUE+origin+value+OP_GET_ELEMENT => OP_WITH_SELF__VALUE__GET_ELEMENT+origin+value
-bool maybe_make_self(ArrayOperation& opcodes, ArrayOperation& diving_code, size_t divine_count){
+bool maybe_make_self(ArrayOperation& opcodes, ArrayOperation& diving_code, size_t diving_count){
 	const String* first_name=LA2S(diving_code);
 
 	if(first_name && SYMBOLS_EQ(*first_name,SELF_SYMBOL)){
 #ifdef OPTIMIZE_BYTECODE_GET_SELF_ELEMENT
 		if(
-			divine_count>=8
+			diving_count>=8
 			&& diving_code[3].code==OP::OP_GET_ELEMENT
 			&& diving_code[4].code==OP::OP_VALUE
 			&& diving_code[7].code==OP::OP_GET_ELEMENT
 		){
 			// optimization for $self.field and ^self.method
 			O(opcodes, OP::OP_WITH_SELF__VALUE__GET_ELEMENT);
-			P(opcodes, diving_code, 5/*offset*/, 2/*limit*/); // copy second origin+value. we know that the first one is "self"
-			if(divine_count>8)
-				P(opcodes, diving_code, 8/*offset*/); // copy tail
+			P(opcodes, diving_code, 5 /*offset*/, 2 /*limit*/); // copy second origin+value. we know that the first one is "self"
+			if(diving_count>8)
+				P(opcodes, diving_code, 8 /*offset*/); // copy tail
 		} else
 #endif
 		{
 			// self.xxx... => xxx...
 			// OP_VALUE+origin+string+OP_GET_ELEMENT+... -> OP_WITH_SELF+...
 			O(opcodes, OP::OP_WITH_SELF); /* stack: starting context */
-			P(opcodes, diving_code, divine_count>=4?4/*OP::OP_VALUE+origin+string+OP::OP_GET_ELEMENTx*/:3/*OP::OP_+origin+string*/);
+			P(opcodes, diving_code, diving_count >=4 ? 4 /*OP::OP_VALUE+origin+string+OP::OP_GET_ELEMENTx*/ : 3 /*OP::OP_+origin+string*/);
 		}
 		return true;
 	}
