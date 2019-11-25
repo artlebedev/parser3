@@ -1,3 +1,67 @@
+2019-11-25  moko
+
+	* tests/: 397.html, 399.html, results/141.processed,
+	  results/399.processed: base64 options tested
+
+	* src/: classes/math.C, main/pa_http.C: base64 options used
+
+	* src/main/pa_base64.C: base64 encode rewritten, base64 options
+	  implemented (feature #986)
+
+	* src/main/pa_cache_managers.C: whitespace
+
+	* tests/: 397.html, 399.html, results/399.processed: tests for
+	  ^base64 encode options added (related to feature #986)
+
+	* src/: classes/file.C, include/pa_base64.h, main/pa_base64.C:
+	  pa_base64_encode(file) removed - more memory, but faster and less
+	  code (related fo feature #986)
+
+2019-11-24  moko
+
+	* tests/: 155.html, results/155.processed: limit and offset in
+	  ^table::load[] now supported, thus test added
+
+	* src/: classes/file.C, classes/table.C, include/pa_common.h,
+	  main/pa_common.C: optimization: offset and limit options parsing
+	  moved inside file_load.
+
+2019-11-23  moko
+
+	* src/: classes/file.C, classes/op.C, include/pa_common.h,
+	  main/pa_common.C, main/pa_request.C, types/pa_vform.C:
+	  optimization: file_read replaced with simplified file_read_binary
+
+	* src/: classes/op.C, main/pa_common.C, main/pa_request.C,
+	  types/pa_vform.C: whitespace
+
+	* src/: include/pa_common.h, main/pa_common.C: never used params
+	  removed
+
+2019-11-21  moko
+
+	* tests/: 193.html, results/193.processed, results/389.processed:
+	  test results updated as now base64 does not discard tail without
+	  padding (related to feature #986)
+
+2019-11-20  moko
+
+	* src/: classes/file.C, classes/string.C, include/pa_base64.h,
+	  main/pa_base64.C: optimization: void pa_base64_decode -> size_t
+	  pa_base64_decode (related to feature #986)
+
+	* tests/398.html: tests for base64 decode added (related to feature
+	  #986)
+
+	* src/main/pa_base64.C: base64_decode rewritten - padding option
+	  support, padding inside base 64 supported (related to feature
+	  #096)
+
+2019-11-19  moko
+
+	* src/include/pa_memory.h: CHECK_DELETE_USAGE tested to work under
+	  FreeBSD 12
+
 2019-11-16  moko
 
 	* src/main/pa_base64.C: base64_decode converted to C++, url-safe
