@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: buildall,v 1.25 2018/01/17 00:01:21 moko Exp $
+# $Id: buildall,v 1.26 2019/11/27 23:23:49 moko Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -12,6 +12,7 @@ build_xml="yes"
 build_gmime=""
 build_apache=""
 build_stripped=""
+direct_download=""
 
 options="--with-included-ltdl"
 options="$options --with-gc=$project_dir/gc/lib"
@@ -39,9 +40,13 @@ for PARAM in "$@"; do
 	    printf ", without debug information"
 	    build_stripped="yes"
 	    ;;
+	"--direct-download")
+	    printf ", download sources from master"
+	    direct_download="yes"
+	    ;;
 	"--help")
 	    echo
-	    echo "Usage: buildall [--without-xml] [--with-apache] [--with-mailreceive] [--strip] [--disable-safe-mode] [other configure options ...]"
+	    echo "Usage: buildall [--without-xml] [--with-apache] [--with-mailreceive] [--strip] [--direct-download] [--disable-safe-mode] [other configure options ...]"
 	    exit 1
 	    ;;
 	*)
@@ -74,37 +79,38 @@ fi
 
 ############################### Support functions ################################
 
-prepare_gz () {
+prepare () {
     cd $project_dir/src
 
     if test ! -f "$1"; then
-	echo "Downloading $lib (master at $2)..."
-	$download https://www.parser.ru/off-line/download/libs/$1
+	if test "$direct_download" = "yes"; then
+	    echo "Downloading $lib from $2..."
+	    $download $2$1
+	else
+	    echo "Downloading $lib (master at $2)..."
+	    $download https://www.parser.ru/off-line/download/libs/$1
+	fi
     fi
 
     echo "Unpacking $lib..."
     rm -rf $lib
+}
+
+prepare_gz () {
+    prepare $1 $2
     gunzip -c $1 | tar xf - >/dev/null
     cd $lib
 }
 
 prepare_xz () {
-    cd $project_dir/src
-
-    if test ! -f "$1"; then
-	echo "Downloading $lib (master at $2)..."
-	$download https://www.parser.ru/off-line/download/libs/$1
-    fi
-
-    echo "Unpacking $lib..."
-    rm -rf $lib
+    prepare $1 $2
     xzcat $1 | tar xf - >/dev/null
     cd $lib
 }
 
 cleanup () {
     cd ..
-    rm -rf $lib
+#    rm -rf $lib
 }
 
 #################################### Building ####################################
@@ -113,12 +119,8 @@ echo
 mkdir src >/dev/null 2>&1
 
 if test ! -f "$project_dir/gc/lib/libgc.a"; then
-    lib="libatomic_ops-7.6.2"
+    lib="gc-8.0.4"
     prepare_gz ${lib}.tar.gz http://www.hboehm.info/gc/gc_source/
-    lib="gc-7.6.2"
-    prepare_gz ${lib}.tar.gz http://www.hboehm.info/gc/gc_source/
-
-    mv ../libatomic_ops-7.6.2 libatomic_ops
 
     echo "Configuring $lib..."
     CPPFLAGS="-DUSE_MMAP -DDONT_ADD_BYTE_AT_END" \
@@ -132,8 +134,8 @@ if test ! -f "$project_dir/gc/lib/libgc.a"; then
 fi
 
 if test ! -f "$project_dir/pcre/lib/libpcre.a"; then
-    lib="pcre-8.40"
-    prepare_gz $lib.tar.gz ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/
+    lib="pcre-8.43"
+    prepare_gz $lib.tar.gz https://ftp.pcre.org/pub/pcre/
     echo "Configuring $lib..."
     ./configure --prefix="$project_dir/pcre" \
 	--with-match-limit-recursion=10000 \
