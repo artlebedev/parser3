@@ -23,7 +23,7 @@
 extern "C" char *crypt(const char* , const char* );
 #endif
 
-volatile const char * IDENT_MATH_C="$Id: math.C,v 1.94 2019/11/24 23:46:22 moko Exp $";
+volatile const char * IDENT_MATH_C="$Id: math.C,v 1.95 2019/11/28 14:05:08 moko Exp $";
 
 // defines
 
@@ -637,7 +637,7 @@ static void _convert(Request& r, MethodParams& params) {
 
 	// core, using log since log2 is not present in FreeBSD < 8.X
 
-	Array<char> remainders((size_t)round(data.length * log(base_from) / log(base_to)) + 1);
+	Array<char> remainders((size_t)round(data.length * log((double)base_from) / log((double)base_to)) + 1);
 
 	do {
 		int carry = 0;
@@ -645,7 +645,7 @@ static void _convert(Request& r, MethodParams& params) {
 		for (c=src; c<src_end; c++) {
 			carry = carry * base_from + *c;
 			if (carry >= base_to) {
-				*(dst++) = carry / base_to;
+				*(dst++) = (unsigned char)(carry / base_to);
 				carry %= base_to;
 			} else if (dst > src) {
 				*(dst++) = 0;
@@ -661,7 +661,7 @@ static void _convert(Request& r, MethodParams& params) {
 	char *result_str = (char *)pa_malloc_atomic(result_length+1);
 	if(negative)
 		result_str[0] = '-';
-	for(int i=0; i<remainders.count(); i++)
+	for(size_t i=0; i<remainders.count(); i++)
 		result_str[result_length - 1 - i] = remainders[i];
 	result_str[result_length]='\0';
 
