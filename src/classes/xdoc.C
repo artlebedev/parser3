@@ -28,7 +28,7 @@
 #include "xnode.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_XDOC_C="$Id: xdoc.C,v 1.195 2019/10/31 13:10:42 moko Exp $";
+volatile const char * IDENT_XDOC_C="$Id: xdoc.C,v 1.196 2019/11/28 10:49:23 moko Exp $";
 
 // defines
 
@@ -168,9 +168,8 @@ struct IdsIteratorInfo {
 	xmlNode *element;
 };
 
-/* Hash Scanner function for pa_getElementById */
-extern "C" void // switching to calling convetion of libxml
-idsHashScanner (void *payload, void *data, xmlChar *name) {
+/* switching to calling convetion of libxml */
+extern "C" void idsHashScanner (void *payload, void *data, const xmlChar *name) {
 	IdsIteratorInfo *priv = (IdsIteratorInfo *)data;
 
 	if (priv->element == NULL && xmlStrEqual (name, priv->elementId))
@@ -181,11 +180,10 @@ idsHashScanner (void *payload, void *data, xmlChar *name) {
 	}
 }
 
-static xmlNode*
-pa_getElementById(xmlDoc& xmldoc, xmlChar* elementId) {
+static xmlNode* pa_getElementById(xmlDoc& xmldoc, xmlChar* elementId) {
 	xmlHashTable *ids = (xmlHashTable *)xmldoc.ids;
 	IdsIteratorInfo iter={elementId, NULL};
-	xmlHashScan(ids, idsHashScanner, &iter);
+	xmlHashScan(ids, (xmlHashScanner)idsHashScanner, &iter);
 	return iter.element;
 }
 
