@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: buildall,v 1.27 2019/11/28 13:02:14 moko Exp $
+# $Id: buildall,v 1.28 2019/11/30 22:17:48 moko Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -82,7 +82,7 @@ fi
 prepare () {
     cd $project_dir/src
 
-    if test ! -f "$1"; then
+    if test ! -f "temp $1"; then
 	if test "$direct_download" = "yes"; then
 	    echo "Downloading $lib from $2..."
 	    $download $2$1
