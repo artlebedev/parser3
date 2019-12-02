@@ -1,3 +1,22 @@
+2019-11-28  moko
+
+	* src/classes/math.C: vs2003 compatibility + warning war
+
+	* buildall: libxslt-1.1.29 -> libxslt-1.1.34, libxml2-2.9.4 ->
+	  libxml2-2.9.9 (related to feature #1136)
+
+	* src/classes/xdoc.C: xmlHashScanner declaration changed, using
+	  typecast for more compatibility (related to feature #1136)
+
+	* buildall: --direct-download option added, gc-7.6.2 -> gc-8.0.4 +
+	  libatomic no longer required, pcre-8.40 -> pcre-8.43 (related to
+	  feature #1136)
+
+2019-11-26  moko
+
+	* src/main/: compile_tools.C, compile_tools.h: invalid assert
+	  removed (it was failing in $$var case), condition added
+
 2019-11-25  moko
 
 	* tests/: 397.html, 399.html, results/141.processed,
