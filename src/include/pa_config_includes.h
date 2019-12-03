@@ -229,6 +229,7 @@ inline size_t min(size_t a, size_t b){ return a<b?a:b; }
 #endif
 
 #ifdef _MSC_VER
+// VS 2003
 #pragma warning(disable:4355)  // using this in calls to parent constructors
 #pragma warning(disable:4291)  // no matching operator delete found; memory will not be freed if initialization throws an exception
 #pragma warning(disable:4512)  // assignment operator could not be generated
@@ -238,6 +239,9 @@ inline size_t min(size_t a, size_t b){ return a<b?a:b; }
 #pragma warning(disable:4996)  // memcpy deprecation
 #pragma warning(disable:4702)  // unreachable code
 #pragma warning(disable:4511)  // copy constructor could not be generated (vs2003 specific)
+// VS 2015
+#pragma warning(disable:4267) // conversion from 'size_t' to 'int', possible loss of data
+#pragma warning(disable:4244) // conversion from 'std::size_t' to 'double', possible loss of data
 #endif
 
 #endif
