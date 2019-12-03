@@ -26,7 +26,7 @@
 #include "pa_table.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.165 2018/09/24 13:09:55 moko Exp $";
+volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.166 2019/12/03 15:09:49 moko Exp $";
 
 // defines
 
@@ -783,7 +783,7 @@ static void measure_bmp(const String& origin_string, Measure_reader& reader, ush
 		throw Exception(IMAGE_FORMAT, &origin_string, "not BMP file - wrong signature");
 
 	reader.seek(0, SEEK_END);
-	if(reader.tell() != endian_to_uint(false, head->file_size))
+	if((uint)reader.tell() != endian_to_uint(false, head->file_size))
 		throw Exception(IMAGE_FORMAT, &origin_string, "not BMP file - length header and file size do not match");
 
 	width=endian_to_ushort(false, head->width);
