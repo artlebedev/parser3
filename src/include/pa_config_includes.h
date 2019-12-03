@@ -233,7 +233,6 @@ inline size_t min(size_t a, size_t b){ return a<b?a:b; }
 #pragma warning(disable:4355)  // using this in calls to parent constructors
 #pragma warning(disable:4291)  // no matching operator delete found; memory will not be freed if initialization throws an exception
 #pragma warning(disable:4512)  // assignment operator could not be generated
-#pragma warning(disable:4505)  // unreferenced local function has been removed
 #pragma warning(disable:4127)  // conditional expression is constant; while(true) OK
 #pragma warning(disable:4706)  // assignment within conditional expression if(type var=somethig) OK
 #pragma warning(disable:4996)  // memcpy deprecation
