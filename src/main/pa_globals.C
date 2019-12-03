@@ -28,7 +28,7 @@ extern "C" {
 #include "ltdl.h"
 #include "pcre.h"
 
-volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.199 2017/12/03 23:36:23 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
+volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.200 2019/12/03 03:32:09 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
 
 // defines
 
@@ -312,29 +312,36 @@ void pa_dlinit() {
 
 #ifdef _MSC_VER
 
+#define PREFIX "../../../../win32/"
+
+#ifdef _DEBUG
+#define CONFIGURATION "Debug"
+#else
+#define CONFIGURATION "Release"
+#endif
+
+#ifdef _WIN64
+#define PLATFORM_64 "x64/"
+#define PLATFORM_32 ""
+#else
+#define PLATFORM_64 ""
+#define PLATFORM_32 "win32/"
+#endif
+
+
 #ifndef PA_DEBUG_DISABLE_GC
 
-#define GC_LIB "../../../../win32/gc"
-#ifdef _DEBUG
-#pragma comment(lib, GC_LIB "/Debug/gc.lib")
-#else
-#pragma comment(lib, GC_LIB "/Release/gc.lib")
-#endif
+#pragma comment(lib, PREFIX "gc/" PLATFORM_64 CONFIGURATION "/gc.lib")
 
 #endif // PA_DEBUG_DISABLE_GC
 
 
 #ifdef XML
 
-#define GNOME_LIBS "../../../../win32/gnome"
+#define GNOME_LIBS PREFIX "gnome"
 
-#ifdef _DEBUG
-#define LIB_XML GNOME_LIBS "/libxml2-x.x.x/win32/debug/lib/"
-#define LIB_XSLT GNOME_LIBS "/libxslt-x.x.x/win32/debug/lib/"
-#else
-#define LIB_XML GNOME_LIBS "/libxml2-x.x.x/win32/release/lib/"
-#define LIB_XSLT GNOME_LIBS "/libxslt-x.x.x/win32/release/lib/"
-#endif
+#define LIB_XML PREFIX "gnome/libxml2-x.x.x/" PLATFORM_64 PLATFORM_32 CONFIGURATION "/lib/"
+#define LIB_XSLT PREFIX "gnome/libxslt-x.x.x/" PLATFORM_64 PLATFORM_32 CONFIGURATION "/lib/"
 
 #ifdef LIBXML_STATIC
 #pragma comment(lib, LIB_XML "libxml2_a.lib")
