@@ -8,7 +8,7 @@
 #ifndef PA_METHOD_H
 #define PA_METHOD_H
 
-#define IDENT_PA_METHOD_H "$Id: pa_method.h,v 1.30 2017/02/07 22:00:46 moko Exp $"
+#define IDENT_PA_METHOD_H "$Id: pa_method.h,v 1.31 2019/12/03 02:11:14 moko Exp $"
 
 #define OPTIMIZE_CALL
 #define OPTIMIZE_RESULT
@@ -119,7 +119,7 @@ public:
 		junction_template(0),
 		name(&String::Empty) {
 			if (params_names){
-				params_count=params_names->count();
+				params_count=(int)params_names->count();
 				const char *last_param = params_names->get(params_count-1)->cstr();
 				if (last_param[0] == '*' && last_param[1]){
 					extra_params = new String(pa_strdup(last_param+1));
