@@ -45,7 +45,6 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalDependencies="..\..\..\win32\pcre\Release\pcre.lib"
 				OutputFile=".\Release\main.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
@@ -97,7 +96,6 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalDependencies="..\..\..\win32\pcre\Debug\pcre.lib"
 				OutputFile=".\Debug\main.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool

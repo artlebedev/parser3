@@ -28,7 +28,7 @@ extern "C" {
 #include "ltdl.h"
 #include "pcre.h"
 
-volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.200 2019/12/03 03:32:09 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
+volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.201 2019/12/04 00:21:28 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
 
 // defines
 
@@ -328,6 +328,7 @@ void pa_dlinit() {
 #define PLATFORM_32 "win32/"
 #endif
 
+#pragma comment(lib, PREFIX "pcre/" PLATFORM_64 CONFIGURATION "/pcre.lib")
 
 #ifndef PA_DEBUG_DISABLE_GC
 
