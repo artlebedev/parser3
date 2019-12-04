@@ -8,7 +8,7 @@
 #include "pa_base64.h"
 #include "pa_common.h"
 
-volatile const char * IDENT_PA_BASE64_C="$Id: pa_base64.C,v 1.9 2019/11/24 23:32:14 moko Exp $" IDENT_PA_BASE64_H;
+volatile const char * IDENT_PA_BASE64_C="$Id: pa_base64.C,v 1.10 2019/12/04 20:39:39 moko Exp $" IDENT_PA_BASE64_H;
 
 /*
  *  BASE64 part inspired by g_mime_utils
@@ -44,14 +44,14 @@ void Base64Options::set_url_safe_abc() {
 
 #define BASE64_GROUPS_IN_LINE 19
 
-static size_t pa_base64_encode(const unsigned char *in, size_t inlen, unsigned char *out, Base64Options options) {
-	const unsigned char *inptr = in;
-	unsigned char *outptr = out;
+static size_t pa_base64_encode(const uchar *in, size_t inlen, uchar *out, Base64Options options) {
+	const uchar *inptr = in;
+	uchar *outptr = out;
 
-	const unsigned char *abc = (const unsigned char *)options.abc;
+	const uchar *abc = (const uchar *)options.abc;
 
 	if (inlen > 2) {
-		const unsigned char *inend = in + inlen - 2;
+		const uchar *inend = in + inlen - 2;
 		int already=0;
 		
 		while (inptr < inend) {
@@ -101,7 +101,7 @@ static size_t pa_base64_encode(const unsigned char *in, size_t inlen, unsigned c
 	return outptr - out;
 }
 
-static unsigned char gmime_base64_rank[256] = {
+static uchar gmime_base64_rank[256] = {
 	255,255,255,255,255,255,255,255,255,254,254,255,255,254,255,255,
 	255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,
 	254,255,255,255,255,255,255,255,255,255,255, 62,255,255,255, 63,
@@ -120,7 +120,7 @@ static unsigned char gmime_base64_rank[256] = {
 	255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,
 };
 
-static unsigned char gmime_base64_rank_url_safe[256] = {
+static uchar gmime_base64_rank_url_safe[256] = {
 	255,255,255,255,255,255,255,255,255,254,254,255,255,254,255,255,
 	255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,
 	254,255,255,255,255,255,255,255,255,255,255,255,255, 62,255,255,
@@ -139,19 +139,19 @@ static unsigned char gmime_base64_rank_url_safe[256] = {
 	255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,255,
 };
 
-size_t pa_base64_decode(const unsigned char *in, size_t inlen, unsigned char *out, Base64Options options) {
-	const unsigned char *inptr = in;
-	unsigned char *outptr = out;
-	const unsigned char *inend = in + inlen;
+size_t pa_base64_decode(const uchar *in, size_t inlen, uchar *out, Base64Options options) {
+	const uchar *inptr = in;
+	uchar *outptr = out;
+	const uchar *inend = in + inlen;
 
 	int saved = 0;
 	int state = 0;
 	
-	unsigned char *abc_rank = options.abc == base64_alphabet ? gmime_base64_rank : gmime_base64_rank_url_safe;
+	uchar *abc_rank = options.abc == base64_alphabet ? gmime_base64_rank : gmime_base64_rank_url_safe;
 
 	/* convert 4 base64 bytes to 3 normal bytes */
 	while (inptr < inend) {
-		unsigned char c = abc_rank[*inptr++];
+		uchar c = abc_rank[*inptr++];
 		switch(c) {
 			case 255: // non-base64 and non-whitespace chars. not allowed in strict mode
 				if(options.strict)
@@ -176,10 +176,10 @@ size_t pa_base64_decode(const unsigned char *in, size_t inlen, unsigned char *ou
 						break;
 					}
 					inptr++;
-					*outptr++ = (unsigned char)(saved >> 4);
+					*outptr++ = (uchar)(saved >> 4);
 				} else { // single '='
-					*outptr++ = (unsigned char)(saved >> 10);
-					*outptr++ = (unsigned char)(saved >> 2);
+					*outptr++ = (uchar)(saved >> 10);
+					*outptr++ = (uchar)(saved >> 2);
 				}
 				state = 0;
 				break;
@@ -187,9 +187,9 @@ size_t pa_base64_decode(const unsigned char *in, size_t inlen, unsigned char *ou
 				saved = (saved << 6) | c;
 				state++;
 				if (state == 4) {
-					*outptr++ = (unsigned char)(saved >> 16);
-					*outptr++ = (unsigned char)(saved >> 8);
-					*outptr++ = (unsigned char)(saved);
+					*outptr++ = (uchar)(saved >> 16);
+					*outptr++ = (uchar)(saved >> 8);
+					*outptr++ = (uchar)(saved);
 					state = 0;
 				}
 		}
@@ -200,10 +200,10 @@ size_t pa_base64_decode(const unsigned char *in, size_t inlen, unsigned char *ou
 			if(options.pad && options.strict)
 				throw Exception(BASE64_FORMAT, 0, "Unexpected end of chars");
 			if(state == 2) {
-				*outptr++ = (unsigned char)(saved >> 4);
+				*outptr++ = (uchar)(saved >> 4);
 			} else {
-				*outptr++ = (unsigned char)(saved >> 10);
-				*outptr++ = (unsigned char)(saved >> 2);
+				*outptr++ = (uchar)(saved >> 10);
+				*outptr++ = (uchar)(saved >> 2);
 			}
 		} else {
 			if(options.strict)
@@ -222,7 +222,7 @@ char* pa_base64_encode(const char *in, size_t in_size, Base64Options options) {
 
 	char* result = new(PointerFreeGC) char[new_size + 1 /*zero terminator*/];
 
-	size_t filled = pa_base64_encode((const unsigned char*)in, in_size, (unsigned char*)result, options);
+	size_t filled = pa_base64_encode((const uchar*)in, in_size, (uchar*)result, options);
 	assert(filled <= new_size);
 
 	return result;
@@ -233,5 +233,5 @@ size_t pa_base64_decode(const char *in, size_t in_size, char*& result, Base64Opt
 	size_t new_size = (in_size + 3) / 4 * 3;
 	result = new(PointerFreeGC) char[new_size + 1 /*terminator*/];
 
-	return pa_base64_decode((const unsigned char*)in, in_size, (unsigned char*)result, options);
+	return pa_base64_decode((const uchar*)in, in_size, (uchar*)result, options);
 }
