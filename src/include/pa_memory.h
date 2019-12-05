@@ -9,7 +9,7 @@
 #ifndef PA_MEMORY_H
 #define PA_MEMORY_H
 
-#define IDENT_PA_MEMORY_H "$Id: pa_memory.h,v 1.36 2019/11/19 20:31:06 moko Exp $"
+#define IDENT_PA_MEMORY_H "$Id: pa_memory.h,v 1.37 2019/12/05 21:49:21 moko Exp $"
 
 // include
 
@@ -120,6 +120,7 @@ void delete_disabled();
 
 inline void *operator new[] (std::size_t) PA_THROW(std::bad_alloc){ return new_disabled(); }
 inline void operator delete[](void *) throw(){ delete_disabled(); }
+inline void operator delete[](void *, std::size_t) throw(){ delete_disabled(); }
 
 inline void *operator new(std::size_t) PA_THROW(std::bad_alloc){ return new_disabled(); }
 #ifdef CHECK_DELETE_USAGE
