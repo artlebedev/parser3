@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.224 2017/12/05 22:59:58 moko Exp $"
+#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.225 2019/12/05 11:36:15 moko Exp $"
 
 // includes
 #include "pa_types.h"
@@ -90,24 +90,30 @@ public:
 
 		WARNING WARNING WARNING WARNING WARNING WARNING 
 	*/
-	enum Language {
-		L_UNSPECIFIED=0, ///< no real string has parts of this lange: it's just convinient to check when string's empty
-		// these two must go before others, there are checks for >L_AS_IS
-		L_CLEAN='0',	///< clean  WARNING: read above warning before changing
-		L_AS_IS='A',	///< leave all characters intact  WARNING: read above warning before changing
 
-		L_TAINTED='T',	///< tainted, untaint lang as assigned later 
+#if _MSC_VER >= 1900
+	/// required for VS2015+ to make sizeof(Languages::opt) == sizeof(CORD), will be 16 byte under x64 without it
+	enum Language : size_t {
+#else
+	enum Language {
+#endif
+		L_UNSPECIFIED=0,	///< no real string has parts of this lange: it's just convinient to check when string's empty
+		// these two must go before others, there are checks for >L_AS_IS
+		L_CLEAN='0',		///< clean  WARNING: read above warning before changing
+		L_AS_IS='A',		///< leave all characters intact  WARNING: read above warning before changing
+
+		L_TAINTED='T',		///< tainted, untaint lang as assigned later
 		// untaint langs. assigned by ^untaint[lang]{...}
 		L_FILE_SPEC='F',	///< file specification
 		L_HTTP_HEADER='h',	///< text in HTTP response header
 		L_MAIL_HEADER='m',	///< text in mail header
-		L_URI='U',			///< text in uri
-		L_SQL='Q',			///< ^table:sql body
-		L_JS='J',			///< JavaScript code
-		L_XML='X',			///< ^xdoc:create xml
-		L_HTML='H',			///< HTML code
+		L_URI='U',		///< text in uri
+		L_SQL='Q',		///< ^table:sql body
+		L_JS='J',		///< JavaScript code
+		L_XML='X',		///< ^xdoc:create xml
+		L_HTML='H',		///< HTML code
 		L_REGEX='R',		///< RegExp
-		L_JSON='S',			///< JSON code
+		L_JSON='S',		///< JSON code
 		L_HTTP_COOKIE='C',	///< cookies encoded as %uXXXX for compartibility with js functions encode/decode
 		L_PARSER_CODE='p',	///< ^process body
 		// READ WARNING ABOVE BEFORE ADDING ANYTHING
