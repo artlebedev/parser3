@@ -28,7 +28,7 @@ extern "C" {
 #include "ltdl.h"
 #include "pcre.h"
 
-volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.201 2019/12/04 00:21:28 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
+volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.202 2019/12/05 22:39:15 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
 
 // defines
 
@@ -344,21 +344,13 @@ void pa_dlinit() {
 #define LIB_XML PREFIX "gnome/libxml2-x.x.x/" PLATFORM_64 PLATFORM_32 CONFIGURATION "/lib/"
 #define LIB_XSLT PREFIX "gnome/libxslt-x.x.x/" PLATFORM_64 PLATFORM_32 CONFIGURATION "/lib/"
 
-#ifdef LIBXML_STATIC
+#ifdef XML_STATIC
 #pragma comment(lib, LIB_XML "libxml2_a.lib")
-#else
-#pragma comment(lib, LIB_XML "libxml2.lib")
-#endif
-
-#ifdef LIBXSLT_STATIC
 #pragma comment(lib, LIB_XSLT "libxslt_a.lib")
-#else
-#pragma comment(lib, LIB_XSLT "libxslt.lib")
-#endif
-
-#ifdef LIBEXSLT_STATIC
 #pragma comment(lib, LIB_XSLT "libexslt_a.lib")
 #else
+#pragma comment(lib, LIB_XML "libxml2.lib")
+#pragma comment(lib, LIB_XSLT "libxslt.lib")
 #pragma comment(lib, LIB_XSLT "libexslt.lib")
 #endif
 

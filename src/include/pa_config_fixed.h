@@ -8,7 +8,7 @@
 #ifndef PA_CONFIG_FIXED_H
 #define PA_CONFIG_FIXED_H
 
-#define IDENT_PA_CONFIG_FIXED_H "$Id: pa_config_fixed.h,v 1.87 2017/02/07 22:00:33 moko Exp $"
+#define IDENT_PA_CONFIG_FIXED_H "$Id: pa_config_fixed.h,v 1.88 2019/12/05 22:39:15 moko Exp $"
 
 #if _MSC_VER < 1310
 #define inline  __inline
@@ -82,11 +82,6 @@ typedef unsigned __int64 uint64_t;
 #define XML
 
 #define XML_STATIC
-#ifdef XML_STATIC
-#	define LIBXML_STATIC
-#	define LIBXSLT_STATIC
-#	define LIBEXSLT_STATIC
-#endif
 
 // otherwise functions in pcre.h will be declared as __declspec(dllimport)
 #define PCRE_STATIC
