@@ -9,7 +9,7 @@
 #include "pa_memory.h"
 #include "pa_os.h"
 
-volatile const char * IDENT_PA_FILE_IO_C="$Id: pa_file_io.C,v 1.4 2017/02/07 22:00:39 moko Exp $";
+volatile const char * IDENT_PA_FILE_IO_C="$Id: pa_file_io.C,v 1.5 2019/12/05 16:22:10 moko Exp $";
 
 struct pa_file_t {
     int handle;
@@ -121,10 +121,11 @@ pa_status_t pa_file_read_full(pa_file_t *file, void *buf,
                                         pa_size_t *p_bytes_read)
 {
 	int l_bytes_read = read(file->handle, buf, nbytes);
-    if (l_bytes_read == 0)
+    if (l_bytes_read == 0) {
         return PA_EOF;
-    else if (l_bytes_read == -1)
+    } else if (l_bytes_read == -1) {
         return errno;
+    }
 
 	if(p_bytes_read)
 		*p_bytes_read=(pa_size_t)l_bytes_read;
