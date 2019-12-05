@@ -12,9 +12,12 @@
 #include "pa_charset.h"
 #include "pa_vregex.h"
 
-volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.260 2017/02/07 22:00:44 moko Exp $" IDENT_PA_STRING_H;
+volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.261 2019/12/05 22:54:09 moko Exp $" IDENT_PA_STRING_H;
 
 const String String::Empty;
+
+#define COMPILE_ASSERT(x) extern int assert_checker[(int)(x) ? 1 : -1]
+COMPILE_ASSERT(sizeof(String::Languages) == sizeof(CORD));
 
 // pa_atoui is based on Manuel Novoa III _strto_l for uClibc
 
