@@ -21,7 +21,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.243 2019/11/20 20:48:25 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.244 2019/12/05 21:35:28 moko Exp $";
 
 // class
 
@@ -153,15 +153,15 @@ static void _bool(Request& r, MethodParams& params) {
 }
 
 static void _left(Request& r, MethodParams& params) {
-	ssize_t sn=params.as_int(0, "n must be int", r);
+	int sn=params.as_int(0, "n must be int", r);
 	const String& string=GET_SELF(r, VString).string();
-	r.write(sn<0 ? string : string.mid(r.charsets.source(), 0, (size_t)sn));
+	r.write(sn<0 ? string : string.mid(r.charsets.source(), 0, sn));
 }
 
 static void _right(Request& r, MethodParams& params) {
-	ssize_t sn=params.as_int(0, "n must be int", r);
+	int sn=params.as_int(0, "n must be int", r);
 	if(sn>0){
-		size_t n=(size_t)sn;
+		size_t n=sn;
 		const String& string=GET_SELF(r, VString).string();
 		size_t length=string.length(r.charsets.source());
 		r.write(n<length ? string.mid(r.charsets.source(), length-n, length, length) : string);
