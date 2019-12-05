@@ -8,7 +8,7 @@
 #ifndef PA_VTABLE_H
 #define PA_VTABLE_H
 
-#define IDENT_PA_VTABLE_H "$Id: pa_vtable.h,v 1.66 2017/02/07 22:00:51 moko Exp $"
+#define IDENT_PA_VTABLE_H "$Id: pa_vtable.h,v 1.67 2019/12/05 21:44:26 moko Exp $"
 
 #include "pa_vstateless_object.h"
 #include "pa_table.h"
@@ -30,7 +30,7 @@ public: // Value
 	override const char* type() const { return VTABLE_TYPE; }
 	override VStateless_class *get_class() { return table_class; }
 	/// VTable: count
-	override int as_int() const { return table().count(); }
+	override int as_int() const { return (int)table().count(); }
 	/// VTable: count
 	override double as_double() const { return table().count(); }
 	/// VTable: count!=0
