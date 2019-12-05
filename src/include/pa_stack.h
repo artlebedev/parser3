@@ -8,7 +8,7 @@
 #ifndef PA_STACK_H
 #define PA_STACK_H
 
-#define IDENT_PA_STACK_H "$Id: pa_stack.h,v 1.29 2017/02/07 22:00:36 moko Exp $"
+#define IDENT_PA_STACK_H "$Id: pa_stack.h,v 1.30 2019/12/05 22:21:16 moko Exp $"
 
 #include "pa_array.h"
 
@@ -39,7 +39,7 @@ public:
 	/// call this prior to collecting garbage [in unused part of stack there may be pointers(unused)]
 	void wipe_unused() {
 		if(size_t above_top_size=this->fallocated-this->fused)
-			memset(&this->felements[this->fused], 0, above_top_size*sizeof(T));
+			memset((void *)&this->felements[this->fused], 0, above_top_size*sizeof(T));
 	}
 
 protected:
