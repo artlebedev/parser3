@@ -21,7 +21,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.244 2019/12/05 21:35:28 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.245 2019/12/05 21:41:08 moko Exp $";
 
 // class
 
@@ -171,18 +171,18 @@ static void _right(Request& r, MethodParams& params) {
 static void _mid(Request& r, MethodParams& params) {
 	const String& string=GET_SELF(r, VString).string();
 
-	ssize_t sbegin=params.as_int(0, "p must be int", r);
-	if(sbegin<0)
-		throw Exception(PARSER_RUNTIME, 0,  "p(%d) must be >=0", sbegin);
-	size_t begin=(size_t)sbegin;
+	int begin=params.as_int(0, "p must be int", r);
+	if(begin<0)
+		throw Exception(PARSER_RUNTIME, 0,  "p(%d) must be >=0", begin);
 
 	size_t end;
 	size_t length=0;
+
 	if(params.count()>1) {
-		ssize_t sn=params.as_int(1, "n must be int", r);
-		if(sn<0)
-			throw Exception(PARSER_RUNTIME, 0, "n(%d) must be >=0", sn);
-		end=begin+(size_t)sn;
+		int n=params.as_int(1, "n must be int", r);
+		if(n<0)
+			throw Exception(PARSER_RUNTIME, 0, "n(%d) must be >=0", n);
+		end=begin+n;
 	} else {
 		length=string.length(r.charsets.source());
 		end=length;
@@ -195,14 +195,14 @@ static void _pos(Request& r, MethodParams& params) {
 	Value& substr=params.as_no_junction(0, "substr must not be code");
 	
 	const String& string=GET_SELF(r, VString).string();
-	ssize_t offset=0;
+	int offset=0;
 	if(params.count()>1){
 		offset=params.as_int(1, "n must be int", r);
 		if(offset<0)
 			throw Exception(PARSER_RUNTIME, 0, "n(%d) must be >=0", offset);
 	}
 
-	r.write(*new VInt((int)string.pos(r.charsets.source(), substr.as_string(), (size_t)offset)));
+	r.write(*new VInt((int)string.pos(r.charsets.source(), substr.as_string(), offset)));
 }
 
 static void split_list(MethodParams& params, int paramIndex, const String& string, ArrayString& result) {
