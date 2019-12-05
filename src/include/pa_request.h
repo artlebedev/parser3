@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.249 2017/02/07 22:00:35 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.250 2019/12/05 22:21:33 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -89,8 +89,6 @@ private:
 		ArrayOperation& ops() const { return *fops; }
 		VMethodFrame& method_frame() const { return *fmethod_frame; }
 
-		/// needed to fill unused Array entries
-		StackItem() {}
 		StackItem(Value& avalue): fvalue(&avalue) {}
 		StackItem(ArrayOperation& aops): fops(&aops) {}
 		StackItem(VMethodFrame& amethod_frame): fmethod_frame(&amethod_frame) {}
