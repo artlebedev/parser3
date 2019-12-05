@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.278 2017/02/08 13:05:46 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.279 2019/12/05 23:09:02 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -258,9 +258,9 @@ static void full_file_spec(const char* file_name, char *buf, size_t buf_size) {
 #ifdef WIN32
 			|| file_name[0] && file_name[1]==':'
 #endif
-			)
-				strncpy(buf, file_name, buf_size);
-		else {
+		){
+			strncpy(buf, file_name, buf_size-1); buf[buf_size-1]=0;
+		} else {
 			char cwd[MAX_STRING];
 			snprintf(buf, buf_size, "%s/%s", getcwd(cwd, MAX_STRING) ? cwd : "", file_name);
 		}
