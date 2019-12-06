@@ -1,10 +1,13 @@
 @main[]
 
+$path[^os[Release/;.libs/lib]]
+$ext[^os[dll;so]]
+
 $SQL[
 	$.drivers[^table::create{protocol	driver	client	connect
-sqlite	../../sql/sqlite/.libs/libparser3sqlite.so	libsqlite3.so	sqlite://:memory:?multi_statements=1
-mysql	../../sql/mysql/.libs/libparser3mysql.so	libmariadbclient.so	mysql://@/?config_group=parser3&multi_statements=1
-pgsql	../../sql/pgsql/.libs/libparser3pgsql.so	libpq.so	pgsql://test@localhost/test
+sqlite	../../sql/sqlite/${path}parser3sqlite.$ext	^os[sqlite3.dll;libsqlite3.so]	sqlite://:memory:?multi_statements=1
+mysql	../../sql/mysql/${path}parser3mysql.$ext	^os[libmySQL.dll;libmariadbclient.so]	mysql://@/?config_group=parser3&multi_statements=1
+pgsql	../../sql/pgsql/${path}parser3pgsql.$ext	libpq.$ext	pgsql://test@localhost/test
 }]
 ]
 
