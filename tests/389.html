@@ -30,7 +30,7 @@ code coverage tests:
     4.11 ^try-catch{ ^inet:name2ip[$empty] }
     4.12 ^try-catch{ ^inet:name2ip[name; $.no-such-option[] ] }
     4.13 ^try-catch{ ^inet:name2ip[no-such-domain.артлебедев.рф; $.ipv[6] ] }
-    4.14 ^inet:name2ip[test.артлебедев.рф; $.ipv[6] ]
+    4.14 ^try-catch{ ^inet:name2ip[test.артлебедев.рф; $.ipv[6] ] }
 
 5. math
     5.1 ^math:random(1)
