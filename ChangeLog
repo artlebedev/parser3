@@ -1,3 +1,73 @@
+2019-12-08  moko
+
+	* src/main/main.vcproj: compile.y - ExcludedFromBuild, as we
+	  process grammar under Unix.
+
+2019-12-07  moko
+
+	* tests/389.html: For Windows XP. :)
+
+	* tests/388-sql.html: Windows compatibility added
+
+2019-12-06  moko
+
+	* src/targets/cgi/parser3.C: warning war
+
+	* src/main/pa_string.C: + COMPILE_ASSERT(sizeof(String::Languages)
+	  == sizeof(CORD)) to avoid aligning bugs in future
+
+	* src/: include/pa_config_fixed.h, main/pa_globals.C: simplified to
+	  XML_STATIC
+
+	* src/include/pa_request.h: StackItem() not required
+
+	* src/include/pa_stack.h: warning war
+
+	* src/include/pa_config_includes.h: GCC warning silenced
+
+	* src/include/pa_memory.h: warning war: the program should also
+	  define 'void operator delete [](void*, std::size_t)'
+	  [-Wsized-deallocation]
+
+	* src/types/: pa_vregex.h, pa_vtable.h: warning war
+
+	* src/classes/string.C: not reqired cast removed
+
+	* src/classes/string.C: not reqired cast removed
+
+2019-12-05  moko
+
+	* src/lib/sdbm/pa_file_io.C: warning war
+
+	* src/include/pa_string.h: bugfix for Windows x64: enum Language ->
+	  enum Language : size_t - required for VS2015+ to make
+	  sizeof(Languages::opt) == sizeof(CORD), will be 16 byte under x64
+	  without it (related to feature #1198)
+
+2019-12-04  moko
+
+	* src/main/pa_base64.C: unsigned char -> uchar
+
+	* src/main/: main.vcproj, pa_globals.C: libpcre now linked same way
+	  as other libs
+
+	* src/include/pa_version.h: +amd64
+
+2019-12-03  moko
+
+	* src/: classes/classes.vcproj, types/types.vcproj: sync debug with
+	  release
+
+	* src/include/pa_config_includes.h: warning war
+
+	* src/classes/image.C: warning war
+
+	* src/main/pa_globals.C: x64 libs support
+
+	* src/include/pa_config_includes.h: warning war
+
+	* src/types/pa_method.h: warning war
+
 2019-11-28  moko
 
 	* src/classes/math.C: vs2003 compatibility + warning war
