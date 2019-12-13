@@ -43,8 +43,7 @@ Comment: called with invalid option
 4.13 Type: parser.runtime,
 Source: name2ip,
 Comment: Can't resolve domain name 'no-such-domain.xn--80acdhdbb7b5bu.xn--p1ai': Name or service not known
-4.14 ::1
-5. math
+4.14 ::1 5. math
 5.1 0
 5.2 Type: parser.runtime,
 Source: random,
