@@ -1,3 +1,7 @@
+2019-12-09  moko
+
+	* src/include/pa_config_fixed.h: warning war
+
 2019-12-08  moko
 
 	* src/main/main.vcproj: compile.y - ExcludedFromBuild, as we
