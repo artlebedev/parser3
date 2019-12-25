@@ -58,19 +58,11 @@
 				TypeLibraryName=".\Debug/mod_parser3.tlb"
 				HeaderFileName=""/>
 			<Tool
-				Name="VCPostBuildEventTool"
-				Description="Starting apache..."
-				CommandLine="net start apache_debug
-dir&gt;nul
-"/>
+				Name="VCPostBuildEventTool"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
-				Name="VCPreLinkEventTool"
-				Description="Stopping apache..."
-				CommandLine="net stop apache_debug
-dir&gt;nul
-"/>
+				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG"
@@ -137,19 +129,11 @@ dir&gt;nul
 				TypeLibraryName=".\Release/mod_parser3.tlb"
 				HeaderFileName=""/>
 			<Tool
-				Name="VCPostBuildEventTool"
-				Description="Starting apache..."
-				CommandLine="net start apache_release
-dir&gt;nul
-"/>
+				Name="VCPostBuildEventTool"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
-				Name="VCPreLinkEventTool"
-				Description="Stopping apache..."
-				CommandLine="net stop apache_release
-dir&gt;nul
-"/>
+				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG"
