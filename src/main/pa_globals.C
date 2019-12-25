@@ -17,6 +17,7 @@ extern "C" {
 #endif
 
 #include "pa_globals.h"
+#include "pa_socks.h"
 #include "pa_sapi.h"
 #include "pa_threads.h"
 #include "pa_xml_io.h"
@@ -28,7 +29,7 @@ extern "C" {
 #include "ltdl.h"
 #include "pcre.h"
 
-volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.202 2019/12/05 22:39:15 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
+volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.203 2019/12/25 22:01:03 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
 
 // defines
 
@@ -232,7 +233,10 @@ static void gc_substitute_memory_management_functions() {
 	@test hint on one should call this for each thread xmlSubstituteEntitiesDefault(1);
 */
 void pa_globals_init() {
-	// global variables 
+	// init socks
+	pa_socks_init();
+
+	// global variables
 	cache_managers=new Cache_managers;
 
 	// in various libraries
@@ -300,6 +304,8 @@ void pa_globals_done() {
 
 	if(is_dlinited)
 		lt_dlexit();
+
+	pa_socks_done();
 }
 
 void pa_dlinit() {

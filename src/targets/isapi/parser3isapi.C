@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.110 2017/02/08 13:05:46 moko Exp $";
+volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.111 2019/12/25 22:01:03 moko Exp $";
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -17,7 +17,6 @@ volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.110 2017/02/
 #include "pa_globals.h"
 #include "pa_request.h"
 #include "pa_version.h"
-#include "pa_socks.h"
 
 #include <windows.h>
 #include <process.h>
@@ -267,27 +266,19 @@ static bool parser_init() {
 	globals_inited=true;
 
 	try {
-		// init socks
-		pa_socks_init();
-		// init global variables
+		// init libraries
 		pa_globals_init();
-
 		// successful finish
 		return true;
 	} catch(.../*const Exception& e*/) { // global problem 
-		//const char* body=e.comment();
-		
 		// unsuccessful finish
 		return false;
 	}
 }
 
 static void parser_done() {
-	// finalize global variables
+	// finalize libraries
 	pa_globals_done();
-
-	// 
-	pa_socks_done();
 }
 
 /// ISAPI //

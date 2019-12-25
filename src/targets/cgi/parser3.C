@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.279 2019/12/05 23:09:02 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.280 2019/12/25 22:01:03 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -13,7 +13,6 @@ volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.279 2019/12/05 23:09:0
 #include "classes.h"
 #include "pa_common.h"
 #include "pa_request.h"
-#include "pa_socks.h"
 #include "pa_version.h"
 #include "pa_vconsole.h"
 
@@ -362,10 +361,8 @@ main workhorse
 	wich is tested but seems slow.
 */
 static void real_parser_handler(const char* filespec_to_process, const char* request_method, bool header_only) {
-	// init socks
-	pa_socks_init();
 
-	// init global variables
+	// init libraries
 	pa_globals_init();
 	
 	if(!filespec_to_process || !*filespec_to_process)
@@ -520,11 +517,8 @@ static void real_parser_handler(const char* filespec_to_process, const char* req
 		// ::request cleared in RequestController desctructor to prevent signal handlers from accessing invalid memory
 	}
 
-	// finalize global variables
+	// finalize libraries
 	pa_globals_done();
-
-	//
-	pa_socks_done();
 }
 
 #ifdef PA_SUPPRESS_SYSTEM_EXCEPTION
