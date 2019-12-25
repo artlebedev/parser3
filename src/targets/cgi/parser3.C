@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.280 2019/12/25 22:01:03 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.281 2019/12/25 22:22:07 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -582,14 +582,6 @@ static void usage(const char* program) {
 int main(int argc, char *argv[]) {
 #ifdef PA_DEBUG_CGI_ENTRY_EXIT
 	log("main: entry");
-#endif
-
-#ifndef PA_DEBUG_DISABLE_GC
-	GC_java_finalization=0;
-	// Dont collect unless explicitly requested 
-	// this is quicker (~30% ), but less memory-efficient(~8%)
-	// so deciding for speed
-	GC_dont_gc=1; 
 #endif
 
 #ifdef SIGUSR1
