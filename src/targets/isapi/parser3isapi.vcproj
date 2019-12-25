@@ -66,19 +66,11 @@
 				TypeLibraryName=".\Release/parser3isapi.tlb"
 				HeaderFileName=""/>
 			<Tool
-				Name="VCPostBuildEventTool"
-				Description="Starting inetinfo..."
-				CommandLine="..\..\..\..\win32\tools\istart
-dir&gt;nul
-"/>
+				Name="VCPostBuildEventTool"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
-				Name="VCPreLinkEventTool"
-				Description="Stopping inetinfo..."
-				CommandLine="..\..\..\..\win32\tools\istop
-dir&gt;nul
-"/>
+				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="NDEBUG"
@@ -140,22 +132,11 @@ dir&gt;nul
 				TypeLibraryName=".\Debug/parser3isapi.tlb"
 				HeaderFileName=""/>
 			<Tool
-				Name="VCPostBuildEventTool"
-				Description="Starting inetinfo..."
-				CommandLine="CD \parser3project\win32\tools
-istart
-dir&gt;nul
-"/>
+				Name="VCPostBuildEventTool"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
-				Name="VCPreLinkEventTool"
-				Description="Stopping inetinfo..."
-				CommandLine="cd
-CD \parser3project\win32\tools
-istop
-dir&gt;nul
-"/>
+				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG"
