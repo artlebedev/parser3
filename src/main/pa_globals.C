@@ -29,7 +29,7 @@ extern "C" {
 #include "ltdl.h"
 #include "pcre.h"
 
-volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.203 2019/12/25 22:01:03 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
+volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.204 2019/12/25 22:13:51 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
 
 // defines
 
@@ -37,32 +37,15 @@ volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.203 2019/12/25 2
 
 // globals
 
-short hex_value[0x100]={0};
-
-static void setup_hex_value() {
-	hex_value['0'] = 0;
-	hex_value['1'] = 1;
-	hex_value['2'] = 2;
-	hex_value['3'] = 3;
-	hex_value['4'] = 4;
-	hex_value['5'] = 5;
-	hex_value['6'] = 6;
-	hex_value['7'] = 7;
-	hex_value['8'] = 8;
-	hex_value['9'] = 9;
-	hex_value['A'] = 10;
-	hex_value['B'] = 11;
-	hex_value['C'] = 12;
-	hex_value['D'] = 13;
-	hex_value['E'] = 14;
-	hex_value['F'] = 15;
-	hex_value['a'] = 10;
-	hex_value['b'] = 11;
-	hex_value['c'] = 12;
-	hex_value['d'] = 13;
-	hex_value['e'] = 14;
-	hex_value['f'] = 15;
-}
+short hex_value[0x100] = {
+	  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+	  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+	  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+	  0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  0,  0,  0,  0,  0,  0,
+	  0, 10, 11, 12, 13, 14, 15,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+	  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+	  0, 10, 11, 12, 13, 14, 15,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+};
 
 THREAD_LOCAL Request* thread_request=NULL;
 
@@ -241,9 +224,6 @@ void pa_globals_init() {
 
 	// in various libraries
 	gc_substitute_memory_management_functions();
-
-	// hex value
-	setup_hex_value();
 
 #ifdef SYMBOLS_CACHING
 	// symbols cache
