@@ -768,9 +768,12 @@ GC_API int GC_invoke_finalizers GC_PROTO((void));
 /* GC_set_warn_proc can be used to redirect or filter warning messages.	*/
 /* p may not be a NULL pointer.						*/
 typedef void (*GC_warn_proc) GC_PROTO((char *msg, GC_word arg));
-GC_API GC_warn_proc GC_set_warn_proc GC_PROTO((GC_warn_proc p));
-    /* Returns old warning procedure.	*/
-	
+GC_API void GC_set_warn_proc GC_PROTO((GC_warn_proc p));
+
+/* GC_ignore_warn_proc may be used as an argument for GC_set_warn_proc  */
+/* to suppress all warnings (unless statistics printing is turned on).  */
+GC_API void GC_ignore_warn_proc(char *, GC_word);
+
 /* The following is intended to be used by a higher level	*/
 /* (e.g. Java-like) finalization facility.  It is expected	*/
 /* that finalization code will arrange for hidden pointers to	*/

@@ -29,7 +29,7 @@ extern "C" {
 #include "ltdl.h"
 #include "pcre.h"
 
-volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.205 2019/12/25 22:22:06 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
+volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.206 2019/12/25 22:33:13 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
 
 // defines
 
@@ -219,10 +219,11 @@ void pa_globals_init() {
 
 #ifndef PA_DEBUG_DISABLE_GC
 	GC_java_finalization=0;
-	// Dont collect unless explicitly requested 
-	// this is quicker (~30% ), but less memory-efficient(~8%)
-	// so deciding for speed
+	// Dont collect unless explicitly requested. This is quicker (~30% ),
+	// but less memory-efficient(~8%), so deciding for speed.
 	GC_dont_gc=1; 
+	// as we log allocation errors, we don't need default gc warnings (without timestamp and URI)
+	GC_set_warn_proc(GC_ignore_warn_proc);
 #endif
 
 	// init socks
