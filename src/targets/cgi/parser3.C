@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.284 2019/12/27 16:34:08 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.285 2019/12/27 20:46:26 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -373,7 +373,7 @@ static void real_parser_handler(const char* filespec_to_process, const char* req
 		SAPI::die("Parser/%s", PARSER_VERSION);
 	
 	// Request info
-	Request_info request_info;  memset(&request_info, 0, sizeof(request_info));
+	Request_info request_info; memset(&request_info, 0, sizeof(request_info));
 	char document_root_buf[MAX_STRING];
 
 	request_info.path_translated = filespec_to_process;
@@ -388,16 +388,20 @@ static void real_parser_handler(const char* filespec_to_process, const char* req
 		
 		request_info.document_root = getenv("DOCUMENT_ROOT");
 		if(!request_info.document_root) {
-			// IIS
-			size_t len=min(sizeof(document_root_buf)-1, strlen(filespec_to_process)-strlen(path_info));
-			memcpy(document_root_buf, filespec_to_process, len); document_root_buf[len]=0;
-			request_info.document_root=document_root_buf;
+			// IIS or fcgiwrap minimalistic setup
+			ssize_t prefix_len = strlen(filespec_to_process) - strlen(path_info);
+			if(prefix_len < 0 || strcmp(filespec_to_process + prefix_len, path_info) != 0)
+				SAPI::die("CGI: illegal call (invalid PATH_INFO in reinventing DOCUMENT_ROOT)");
+
+			char* document_root = new(PointerFreeGC) char[prefix_len + 1/*0*/];
+			memcpy(document_root, filespec_to_process, prefix_len); document_root[prefix_len] = 0;
+			request_info.document_root = document_root;
 		}
 
-		request_info.uri=request_info.strip_absolute_uri(getenv("REQUEST_URI"));
+		request_info.uri = request_info.strip_absolute_uri(getenv("REQUEST_URI"));
 		if(request_info.uri) { // apache & others stuck to standards
 			// another obligatory
-			const char* script_name=getenv("SCRIPT_NAME");
+			const char* script_name = getenv("SCRIPT_NAME");
 			if(!script_name)
 				SAPI::die("CGI: illegal call (missing SCRIPT_NAME)");
 			/*
@@ -406,32 +410,32 @@ static void real_parser_handler(const char* filespec_to_process, const char* req
 				REQUEST_URI='/env.html?123'
 				SCRIPT_NAME='/cgi-bin/parser3'
 				PATH_INFO='/env.html'
-
+				
 				http://parser3/cgi-bin/parser3/env.html?123 =ERROR
 				$request:uri=/cgi-bin/parser3/env.html?123
 				REQUEST_URI='/cgi-bin/parser3/env.html?123'
 				SCRIPT_NAME='/cgi-bin/parser3'
 				PATH_INFO='/env.html'
 			*/
-			size_t script_name_len=strlen(script_name);
-			size_t uri_len=strlen(request_info.uri);
+			size_t script_name_len = strlen(script_name);
+			size_t uri_len = strlen(request_info.uri);
 			if(strncmp(request_info.uri, script_name, script_name_len)==0 && script_name_len != uri_len) // under IIS they are the same
 				SAPI::die("CGI: illegal call (1)");
 		} else { // fcgiwrap minimalistic setup
 
 			if(request_info.query_string) {
-				char* reconstructed_uri=new(PointerFreeGC) char[strlen(path_info) + 1/*'?'*/+ strlen(request_info.query_string) + 1/*0*/];
+				char* reconstructed_uri = new(PointerFreeGC) char[strlen(path_info) + 1/*'?'*/+ strlen(request_info.query_string) + 1/*0*/];
 				strcpy(reconstructed_uri, path_info);
 				strcat(reconstructed_uri, "?");
 				strcat(reconstructed_uri, request_info.query_string);
-				request_info.uri=reconstructed_uri;
+				request_info.uri = reconstructed_uri;
 			} else
-				request_info.uri=path_info;
+				request_info.uri = path_info;
 		}
 	} else{
 		full_file_spec("", document_root_buf, sizeof(document_root_buf));
-		request_info.document_root=document_root_buf;
-		request_info.uri="";
+		request_info.document_root = document_root_buf;
+		request_info.uri = "";
 	}
 	
 	request_info.content_type = getenv("CONTENT_TYPE");
