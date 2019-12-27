@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.285 2019/12/27 20:46:26 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.286 2019/12/27 21:32:33 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -423,7 +423,7 @@ static void real_parser_handler(const char* filespec_to_process, const char* req
 				SAPI::die("CGI: illegal call (1)");
 		} else { // fcgiwrap minimalistic setup
 
-			if(request_info.query_string) {
+			if(request_info.query_string && *request_info.query_string) {
 				char* reconstructed_uri = new(PointerFreeGC) char[strlen(path_info) + 1/*'?'*/+ strlen(request_info.query_string) + 1/*0*/];
 				strcpy(reconstructed_uri, path_info);
 				strcat(reconstructed_uri, "?");
