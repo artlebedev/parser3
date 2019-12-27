@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.281 2019/12/25 22:22:07 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.282 2019/12/27 13:48:47 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -25,7 +25,7 @@ volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.281 2019/12/25 22:22:0
 // defines
 
 // comment remove me after debugging
-//#define PA_DEBUG_CGI_ENTRY_EXIT	"c:\\parser\\debug-parser3.log"
+//#define PA_DEBUG_CGI_ENTRY_EXIT	"parser3-debug.log"
 
 #if defined(_MSC_VER) && !defined(_DEBUG)
 #	define PA_SUPPRESS_SYSTEM_EXCEPTION
@@ -366,11 +366,7 @@ static void real_parser_handler(const char* filespec_to_process, const char* req
 	pa_globals_init();
 	
 	if(!filespec_to_process || !*filespec_to_process)
-		SAPI::die("Parser/%s"
-#ifdef PA_DEBUG_CGI_ENTRY_EXIT
-		" with entry/exit tracing"
-#endif
-		, PARSER_VERSION);
+		SAPI::die("Parser/%s", PARSER_VERSION);
 	
 	// Request info
 	Request_info request_info;  memset(&request_info, 0, sizeof(request_info));
