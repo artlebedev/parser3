@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.282 2019/12/27 13:48:47 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.283 2019/12/27 14:37:17 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -338,6 +338,10 @@ const char* maybe_reconstruct_IIS_status_in_qs(const char* original)
 	
 	return original;
 }
+
+#define MAYBE_RECONSTRUCT_IIS_STATUS_IN_QS(s) maybe_reconstruct_IIS_status_in_qs(s)
+#else 
+#define MAYBE_RECONSTRUCT_IIS_STATUS_IN_QS(s) s
 #endif
 
 
@@ -371,51 +375,31 @@ static void real_parser_handler(const char* filespec_to_process, const char* req
 	// Request info
 	Request_info request_info;  memset(&request_info, 0, sizeof(request_info));
 	char document_root_buf[MAX_STRING];
-	if(cgi) {
-		if(const char* env_document_root=getenv("DOCUMENT_ROOT"))
-			request_info.document_root=env_document_root;
-		else if(const char* path_info=getenv("PATH_INFO")) {
-			// IIS
-			size_t len=min(sizeof(document_root_buf)-1, strlen(filespec_to_process)-strlen(path_info));
-			memcpy(document_root_buf, filespec_to_process, len); document_root_buf[len]=0;
-			request_info.document_root=document_root_buf;
-		} else
-			throw Exception(PARSER_RUNTIME, 0, "CGI: no PATH_INFO defined(in reinventing DOCUMENT_ROOT)");
-	} else {
-		full_file_spec("", document_root_buf, sizeof(document_root_buf));
-		request_info.document_root=document_root_buf;
-	}
-	request_info.path_translated=filespec_to_process;
-	request_info.method=request_method ? request_method : "GET";
-	const char* query_string=
-#ifdef WIN32
-		maybe_reconstruct_IIS_status_in_qs
-#endif
-		(getenv("QUERY_STRING"));
-	request_info.query_string=query_string;
+
+	request_info.path_translated = filespec_to_process;
+	request_info.method = request_method ? request_method : "GET";
+	request_info.query_string = MAYBE_RECONSTRUCT_IIS_STATUS_IN_QS(getenv("QUERY_STRING"));
+
 	if(cgi) {
 		// few absolute obligatory
 		const char* path_info=getenv("PATH_INFO");
 		if(!path_info)
 			SAPI::die("CGI: illegal call (missing PATH_INFO)");
+		
 		const char* script_name=getenv("SCRIPT_NAME");
 		if(!script_name)
 				SAPI::die("CGI: illegal call (missing SCRIPT_NAME)");
+		
+		request_info.document_root = getenv("DOCUMENT_ROOT");
+		if(!request_info.document_root) {
+			// IIS
+			size_t len=min(sizeof(document_root_buf)-1, strlen(filespec_to_process)-strlen(path_info));
+			memcpy(document_root_buf, filespec_to_process, len); document_root_buf[len]=0;
+			request_info.document_root=document_root_buf;
+		}
 
-		const char* env_request_uri=request_info.strip_absolute_uri(getenv("REQUEST_URI"));
-		if(env_request_uri)
-			request_info.uri=env_request_uri;
-		else 
-			if(query_string) {
-				char* reconstructed_uri=new(PointerFreeGC) char[strlen(path_info) + 1/*'?'*/+ strlen(query_string) + 1/*0*/];
-				strcpy(reconstructed_uri, path_info);
-				strcat(reconstructed_uri, "?");
-				strcat(reconstructed_uri, query_string);
-				request_info.uri=reconstructed_uri;
-			} else
-				request_info.uri=path_info;
-
-		if(env_request_uri) { // apache & others stuck to standards
+		request_info.uri=request_info.strip_absolute_uri(getenv("REQUEST_URI"));
+		if(request_info.uri) { // apache & others stuck to standards
 			/*
 				http://parser3/env.html?123  =OK
 				$request:uri=/env.html?123
@@ -430,10 +414,20 @@ static void real_parser_handler(const char* filespec_to_process, const char* req
 				PATH_INFO='/env.html'
 			*/
 			size_t script_name_len=strlen(script_name);
-			size_t uri_len=strlen(env_request_uri);
-			if(strncmp(env_request_uri, script_name, script_name_len)==0 && script_name_len != uri_len) // under IIS they are the same
+			size_t uri_len=strlen(request_info.uri);
+			if(strncmp(request_info.uri, script_name, script_name_len)==0 && script_name_len != uri_len) // under IIS they are the same
 				SAPI::die("CGI: illegal call (1)");
 		} else { // seen on IIS5
+
+			if(request_info.query_string) {
+				char* reconstructed_uri=new(PointerFreeGC) char[strlen(path_info) + 1/*'?'*/+ strlen(request_info.query_string) + 1/*0*/];
+				strcpy(reconstructed_uri, path_info);
+				strcat(reconstructed_uri, "?");
+				strcat(reconstructed_uri, request_info.query_string);
+				request_info.uri=reconstructed_uri;
+			} else
+				request_info.uri=path_info;
+
 			/*
 				http://nestle/env.html?123 =OK
 				$request:uri=/env.html?123
@@ -450,20 +444,23 @@ static void real_parser_handler(const char* filespec_to_process, const char* req
 			if(strcmp(script_name, path_info)!=0)
 				SAPI::die("CGI: illegal call (2)");
 		}
-	} else
+	} else{
+		full_file_spec("", document_root_buf, sizeof(document_root_buf));
+		request_info.document_root=document_root_buf;
 		request_info.uri="";
+	}
 	
-	request_info.content_type=getenv("CONTENT_TYPE");
-	const char* content_length=getenv("CONTENT_LENGTH");
-	request_info.content_length=(content_length?atoi(content_length):0);
-	request_info.cookie=getenv("HTTP_COOKIE");
-	request_info.mail_received=mail_received;
+	request_info.content_type = getenv("CONTENT_TYPE");
+	const char* content_length = getenv("CONTENT_LENGTH");
+	request_info.content_length = content_length ? atoi(content_length) : 0;
+	request_info.cookie = getenv("HTTP_COOKIE");
+	request_info.mail_received = mail_received;
 
-	request_info.argv=argv_all;
-	request_info.args_skip=args_skip;
+	request_info.argv = argv_all;
+	request_info.args_skip = args_skip;
 
 	// get request_info ptr for signal handlers
-	::request_info=&request_info;
+	::request_info = &request_info;
 	if(execution_canceled)
 		SAPI::die("Execution canceled");
 
