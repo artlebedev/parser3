@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.283 2019/12/27 14:37:17 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.284 2019/12/27 16:34:08 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -381,14 +381,10 @@ static void real_parser_handler(const char* filespec_to_process, const char* req
 	request_info.query_string = MAYBE_RECONSTRUCT_IIS_STATUS_IN_QS(getenv("QUERY_STRING"));
 
 	if(cgi) {
-		// few absolute obligatory
+		// obligatory
 		const char* path_info=getenv("PATH_INFO");
 		if(!path_info)
 			SAPI::die("CGI: illegal call (missing PATH_INFO)");
-		
-		const char* script_name=getenv("SCRIPT_NAME");
-		if(!script_name)
-				SAPI::die("CGI: illegal call (missing SCRIPT_NAME)");
 		
 		request_info.document_root = getenv("DOCUMENT_ROOT");
 		if(!request_info.document_root) {
@@ -400,6 +396,10 @@ static void real_parser_handler(const char* filespec_to_process, const char* req
 
 		request_info.uri=request_info.strip_absolute_uri(getenv("REQUEST_URI"));
 		if(request_info.uri) { // apache & others stuck to standards
+			// another obligatory
+			const char* script_name=getenv("SCRIPT_NAME");
+			if(!script_name)
+				SAPI::die("CGI: illegal call (missing SCRIPT_NAME)");
 			/*
 				http://parser3/env.html?123  =OK
 				$request:uri=/env.html?123
@@ -417,7 +417,7 @@ static void real_parser_handler(const char* filespec_to_process, const char* req
 			size_t uri_len=strlen(request_info.uri);
 			if(strncmp(request_info.uri, script_name, script_name_len)==0 && script_name_len != uri_len) // under IIS they are the same
 				SAPI::die("CGI: illegal call (1)");
-		} else { // seen on IIS5
+		} else { // fcgiwrap minimalistic setup
 
 			if(request_info.query_string) {
 				char* reconstructed_uri=new(PointerFreeGC) char[strlen(path_info) + 1/*'?'*/+ strlen(request_info.query_string) + 1/*0*/];
@@ -427,22 +427,6 @@ static void real_parser_handler(const char* filespec_to_process, const char* req
 				request_info.uri=reconstructed_uri;
 			} else
 				request_info.uri=path_info;
-
-			/*
-				http://nestle/env.html?123 =OK
-				$request:uri=/env.html?123
-				REQUEST_URI=''
-				SCRIPT_NAME='/env.html'
-				PATH_INFO='/env.html'
-
-				http://nestle/cgi-bin/parser3.exe/env.html =ERROR
-				$request:uri=/env.html
-				REQUEST_URI=''
-				SCRIPT_NAME='/cgi-bin/parser3.exe'
-				PATH_INFO='/env.html'
-			*/
-			if(strcmp(script_name, path_info)!=0)
-				SAPI::die("CGI: illegal call (2)");
 		}
 	} else{
 		full_file_spec("", document_root_buf, sizeof(document_root_buf));
