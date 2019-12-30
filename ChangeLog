@@ -1,3 +1,45 @@
+2019-12-28  moko
+
+	* src/targets/cgi/parser3.C: avoid empty ?
+
+2019-12-27  moko
+
+	* src/targets/cgi/parser3.C: PATH_INFO check in reinventing
+	  DOCUMENT_ROOT (related to feature #1164)
+
+	* src/targets/cgi/parser3.C: IIS5 support removed to simplify
+	  fcgiwrap setup (implements feature #1164)
+
+	* src/targets/cgi/parser3.C: real_parser_handler logic simplified,
+	  but no issues found (related to feature #1164)
+
+	* src/targets/cgi/parser3.C: actualized
+
+2019-12-26  moko
+
+	* src/targets/apache/ApacheModuleParser3.vcproj: apache stop/start
+	  removed
+
+	* src/targets/isapi/parser3isapi.vcproj: inetinfo stop/start
+	  removed
+
+	* src/: lib/gc/include/gc.h, main/pa_globals.C: As we log
+	  allocation errors, we don't want default gc warnings (without
+	  timestamp and URI).
+
+	* src/: classes/memory.C, main/pa_globals.C,
+	  targets/apache/mod_parser3_core.C, targets/cgi/parser3.C,
+	  targets/isapi/parser3isapi.C: GC_dont_gc=1 moved to
+	  pa_globals_init
+
+	* src/main/pa_globals.C: setup_hex_value() removed, static array
+	  initialization used (optimization)
+
+	* src/: main/pa_globals.C, targets/apache/mod_parser3_core.C,
+	  targets/cgi/parser3.C, targets/isapi/parser3isapi.C:
+	  pa_socks_init/pa_socks_done moved inside pa_globals_init
+	  (optimization)
+
 2019-12-09  moko
 
 	* src/include/pa_config_fixed.h: warning war
