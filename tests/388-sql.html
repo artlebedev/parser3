@@ -125,3 +125,6 @@ $ignore[^SQL.drivers.locate[protocol;$sql]]
 @s[query;options]
 	$s[^string:sql{$query}[$options]]
 	"$s"
+
+@postprocess[text]
+	$result[^taint[as-is;$text]]
