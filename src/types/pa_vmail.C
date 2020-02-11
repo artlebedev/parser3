@@ -19,7 +19,7 @@
 #include "pa_vfile.h"
 #include "pa_uue.h"
 
-volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.127 2019/11/13 22:05:48 moko Exp $" IDENT_PA_VMAIL_H;
+volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.128 2020/02/11 21:39:15 moko Exp $" IDENT_PA_VMAIL_H;
 
 #ifdef WITH_MAILRECEIVE
 extern "C" {
@@ -121,6 +121,45 @@ struct MimePart2body_info {
 };
 #endif
 
+#if GMIME_MAJOR_VERSION > 2
+typedef void (* GMimeHeaderForeachFunc) (const char *name, const char *value, gpointer user_data);
+
+void g_mime_header_list_foreach (GMimeHeaderList *headers, GMimeHeaderForeachFunc func, gpointer user_data){
+	int cnt = g_mime_header_list_get_count(headers);
+	for(int i = 0; i < cnt; i++){
+		GMimeHeader *header = g_mime_header_list_get_header_at(headers, i);
+		func (g_mime_header_get_name(header), g_mime_header_get_value(header), user_data);
+	}
+}
+
+#define g_mime_part_get_content_object(arg) g_mime_part_get_content(arg)
+
+#define g_mime_filter_crlf_new(encode, dots) g_mime_filter_dos2unix_new(false)
+
+#define G_MIME_CTYPE_PARAMS(action) {							\
+	GMimeParamList *params=g_mime_content_type_get_parameters(type);		\
+	int cnt = g_mime_param_list_length(params);					\
+	for(int i = 0; i < cnt; i++){							\
+		GMimeParam *param = g_mime_param_list_get_parameter_at(params, i);	\
+		action									\
+	}}
+
+#define G_MIME_INIT() g_mime_init()
+#define G_MIME_PARSER_CONSTRUCT_MESSAGE(msg) g_mime_parser_construct_message(msg, NULL)
+
+#else
+
+#define G_MIME_CTYPE_PARAMS(action) {							\
+	const GMimeParam *param=g_mime_content_type_get_params(type);			\
+	while(param) {									\
+		action									\
+		param=g_mime_param_next(param);						\
+	}}
+
+#define G_MIME_INIT() g_mime_init(0)
+#define G_MIME_PARSER_CONSTRUCT_MESSAGE(msg) g_mime_parser_construct_message(msg)
+
+#endif
 
 static char *readStream(GMimeStream* gstream, size_t &length){
 	length=MAX_STRING;
@@ -201,12 +240,10 @@ static void MimePart2body(GMimeObject *parent, GMimeObject *part, gpointer data)
 		snprintf(value, MAX_STRING, "%s/%s", type->type ? type->type : "x-unknown", type->subtype ? type->subtype : "x-unknown");
 		putReceived(vcontent_type->hash(), VALUE_NAME, value);
 
-		const GMimeParam *param=g_mime_content_type_get_params(type);
-		while(param) {
-			// $.charset[windows-1251]  && co
+		// $.charset[windows-1251] && co
+		G_MIME_CTYPE_PARAMS(
 			putReceived(vcontent_type->hash(), g_mime_param_get_name(param), transcode(g_mime_param_get_value(param)), true /*capitalizeName*/);
-			param=g_mime_param_next(param);
-		}
+		);
 
 		if (GMIME_IS_MESSAGE_PART (part)) {
 			/* message/rfc822, $.raw[] will be overwitten */
@@ -261,21 +298,31 @@ static void parse(Request& r, GMimeMessage *message, HashStringValue& received) 
 
 		//  secondly standard headers
 		putReceived(received, "message-id", g_mime_message_get_message_id(message));
-		putReceived(received, "from", transcode(g_mime_message_get_sender(message)));
 
+#if GMIME_MAJOR_VERSION > 2
+		const char *msg_from=internet_address_list_to_string(g_mime_message_get_addresses (message, GMIME_ADDRESS_TYPE_FROM), NULL, false);
+		const char *msg_to=internet_address_list_to_string(g_mime_message_get_addresses (message, GMIME_ADDRESS_TYPE_TO), NULL, false);
+		const char *msg_cc=internet_address_list_to_string(g_mime_message_get_addresses (message, GMIME_ADDRESS_TYPE_CC), NULL, false);
+		const char *msg_reply_to=internet_address_list_to_string(g_mime_message_get_addresses (message, GMIME_ADDRESS_TYPE_REPLY_TO), NULL, false);
+
+		GDateTime *gdate = g_mime_message_get_date(message);
+		time_t date = gdate ? g_date_time_to_unix(gdate) : 0;
+#else
+		const char *msg_from=g_mime_message_get_sender(message);
 		const char *msg_to=internet_address_list_to_string(g_mime_message_get_recipients(message, GMIME_RECIPIENT_TYPE_TO), false);
-		putReceived(received, "to", transcode(msg_to));
 		const char *msg_cc=internet_address_list_to_string(g_mime_message_get_recipients(message, GMIME_RECIPIENT_TYPE_CC), false);
-		putReceived(received, "cc", transcode(msg_cc));
+		const char *msg_reply_to=g_mime_message_get_reply_to(message);
 
-		putReceived(received, "reply-to", transcode(g_mime_message_get_reply_to(message)));
-		putReceived(received, "subject", transcode(g_mime_message_get_subject(message)));
-
-		// @todo: g_mime_message_get_recipients(message)
-		
-		// .date(time_t in UTC)
 		time_t date;
 		g_mime_message_get_date(message, &date, 0);
+#endif
+		putReceived(received, "from", transcode(msg_from));
+		putReceived(received, "to", transcode(msg_to));
+		putReceived(received, "cc", transcode(msg_cc));
+		putReceived(received, "reply-to", transcode(msg_reply_to));
+		putReceived(received, "subject", transcode(g_mime_message_get_subject(message)));
+
+		// .date(time_t in UTC)
 		putReceived(received, "date", date);
 
 		// .body[part/parts
@@ -293,14 +340,14 @@ static void parse(Request& r, GMimeMessage *message, HashStringValue& received) 
 void VMail::fill_received(Request& r) {
 	if(r.request_info.mail_received) {
 		source_charset=&r.charsets.source();
-		g_mime_init(0);
-
+		g_type_init();
+		G_MIME_INIT();
 		// create stream with CRLF filter
-		GMimeStream *stream = g_mime_stream_filter_new(g_mime_stream_file_new(stdin));
+		GMimeStream *stream = g_mime_stream_filter_new(g_mime_stream_file_new(stdin) /* g_mime_stream_file_open("test.eml", "r", NULL) */);
 		g_mime_stream_filter_add(GMIME_STREAM_FILTER(stream), g_mime_filter_crlf_new(false, false));
 		try {
 			// parse incoming message
-			GMimeMessage *message=g_mime_parser_construct_message(g_mime_parser_new_with_stream(stream));
+			GMimeMessage *message=G_MIME_PARSER_CONSTRUCT_MESSAGE(g_mime_parser_new_with_stream(stream));
 			parse(r, message, vreceived.hash());
 			g_object_unref(GMIME_OBJECT(message));
 		} catch(const Exception& e) {
