@@ -19,7 +19,7 @@
 #include "pa_vfile.h"
 #include "pa_uue.h"
 
-volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.128 2020/02/11 21:39:15 moko Exp $" IDENT_PA_VMAIL_H;
+volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.129 2020/02/12 00:01:21 moko Exp $" IDENT_PA_VMAIL_H;
 
 #ifdef WITH_MAILRECEIVE
 extern "C" {
@@ -133,8 +133,7 @@ void g_mime_header_list_foreach (GMimeHeaderList *headers, GMimeHeaderForeachFun
 }
 
 #define g_mime_part_get_content_object(arg) g_mime_part_get_content(arg)
-
-#define g_mime_filter_crlf_new(encode, dots) g_mime_filter_dos2unix_new(false)
+#define g_mime_filter_crlf_new(encode, dots) g_mime_filter_dos2unix_new(encode)
 
 #define G_MIME_CTYPE_PARAMS(action) {							\
 	GMimeParamList *params=g_mime_content_type_get_parameters(type);		\
@@ -143,9 +142,6 @@ void g_mime_header_list_foreach (GMimeHeaderList *headers, GMimeHeaderForeachFun
 		GMimeParam *param = g_mime_param_list_get_parameter_at(params, i);	\
 		action									\
 	}}
-
-#define G_MIME_INIT() g_mime_init()
-#define G_MIME_PARSER_CONSTRUCT_MESSAGE(msg) g_mime_parser_construct_message(msg, NULL)
 
 #else
 
@@ -156,8 +152,8 @@ void g_mime_header_list_foreach (GMimeHeaderList *headers, GMimeHeaderForeachFun
 		param=g_mime_param_next(param);						\
 	}}
 
-#define G_MIME_INIT() g_mime_init(0)
-#define G_MIME_PARSER_CONSTRUCT_MESSAGE(msg) g_mime_parser_construct_message(msg)
+#define g_mime_init() g_mime_init(0)
+#define g_mime_parser_construct_message(msg,p) g_mime_parser_construct_message(msg)
 
 #endif
 
@@ -341,13 +337,13 @@ void VMail::fill_received(Request& r) {
 	if(r.request_info.mail_received) {
 		source_charset=&r.charsets.source();
 		g_type_init();
-		G_MIME_INIT();
+		g_mime_init();
 		// create stream with CRLF filter
 		GMimeStream *stream = g_mime_stream_filter_new(g_mime_stream_file_new(stdin) /* g_mime_stream_file_open("test.eml", "r", NULL) */);
 		g_mime_stream_filter_add(GMIME_STREAM_FILTER(stream), g_mime_filter_crlf_new(false, false));
 		try {
 			// parse incoming message
-			GMimeMessage *message=G_MIME_PARSER_CONSTRUCT_MESSAGE(g_mime_parser_new_with_stream(stream));
+			GMimeMessage *message=g_mime_parser_construct_message(g_mime_parser_new_with_stream(stream), NULL);
 			parse(r, message, vreceived.hash());
 			g_object_unref(GMIME_OBJECT(message));
 		} catch(const Exception& e) {
