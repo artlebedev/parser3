@@ -1,3 +1,10 @@
+2020-02-12  moko
+
+	* src/types/pa_vmail.C: minimize diff
+
+	* src/types/pa_vmail.C: libgmime 3.X support (implements feature
+	  #1199)
+
 2020-01-18  moko
 
 	* tests/: 388-sql.html, results/388-sql.processed: +postprocess
