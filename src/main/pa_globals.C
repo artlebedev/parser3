@@ -29,7 +29,7 @@ extern "C" {
 #include "ltdl.h"
 #include "pcre.h"
 
-volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.206 2019/12/25 22:33:13 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
+volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.207 2020/02/18 15:33:12 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
 
 // defines
 
@@ -355,7 +355,6 @@ void pa_dlinit() {
 // defines for VS2015 to link with gc/xml libs compiled in the previous VS versions
 #if _MSC_VER >= 1900
 #pragma comment(lib,"legacy_stdio_definitions.lib")
-extern "C" { FILE _iob[3] = { *stdin, *stdout, *stderr }; }
 #endif
 
 #endif // _MSC_VER
