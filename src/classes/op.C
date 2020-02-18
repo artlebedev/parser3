@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.253 2019/11/22 23:11:24 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.254 2020/02/18 15:40:29 moko Exp $";
 
 // defines
 
@@ -892,7 +892,7 @@ static void _sleep_operator(Request& r, MethodParams& params) {
 		pa_sleep((int)trunc(seconds), (int)trunc((seconds-trunc(seconds))*1000000));
  }
 
-#if defined(WIN32) && defined(_DEBUG)
+#if defined(WIN32) && defined(_DEBUG) && !defined(_WIN64)
 #	define PA_BPT
 static void _bpt(Request&, MethodParams&) {
 	_asm int 3;
