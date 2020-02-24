@@ -1,3 +1,21 @@
+2020-02-18  moko
+
+	* src/classes/op.C: windows x64 debug mode compile fix
+
+	* src/main/pa_globals.C: no longer required due to -MD -> -MT
+	  change (releated to feature #1200)
+
+	* src/: classes/classes.vcproj, lib/cord/cord.vcproj,
+	  lib/gd/gd.vcproj, lib/json/json.vcproj, lib/ltdl/ltdl.vcproj,
+	  lib/md5/md5.vcproj, lib/memcached/memcached.vcproj,
+	  lib/pcre/pcre_internal.vcproj, lib/punycode/punycode.vcproj,
+	  lib/sdbm/sdbm.vcproj, lib/smtp/smtp.vcproj, main/main.vcproj,
+	  targets/apache/ApacheModuleParser3.vcproj,
+	  targets/apache/ApacheModuleParser3Core.vcproj,
+	  targets/cgi/parser3.vcproj, targets/isapi/parser3isapi.vcproj,
+	  types/types.vcproj: -MD -> -MT to remove msvcp71.dll/etc
+	  dependency (related to feature #1200)
+
 2020-02-12  moko
 
 	* src/types/pa_vmail.C: minimize diff
