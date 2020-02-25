@@ -19,7 +19,7 @@
 #include "pa_vfile.h"
 #include "pa_uue.h"
 
-volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.130 2020/02/25 08:54:33 moko Exp $" IDENT_PA_VMAIL_H;
+volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.131 2020/02/25 23:21:10 moko Exp $" IDENT_PA_VMAIL_H;
 
 #ifdef WITH_MAILRECEIVE
 extern "C" {
@@ -132,52 +132,27 @@ void g_mime_header_list_foreach (GMimeHeaderList *headers, GMimeHeaderForeachFun
 	}
 }
 
-static ssize_t no_seek_stream_read (GMimeStream *stream, char *buf, size_t len) {
-	GMimeStreamFile *fstream = (GMimeStreamFile *) stream;
-	size_t nread;
-	
-	if (fstream->fp == NULL) {
-		errno = EBADF;
-		return -1;
-	}
-	
-	if (stream->bound_end != -1 && stream->position >= stream->bound_end) {
-		errno = EINVAL;
-		return -1;
-	}
-	
-	if (stream->bound_end != -1)
-		len = (size_t) MIN (stream->bound_end - stream->position, (gint64) len);
-	
-	if ((nread = fread (buf, 1, len, fstream->fp)) > 0)
-		stream->position += nread;
-	
-	return (ssize_t) nread;
-}
-
 #define g_mime_part_get_content_object(arg) g_mime_part_get_content(arg)
 #define g_mime_filter_crlf_new(encode, dots) g_mime_filter_dos2unix_new(encode)
 
-#define G_MIME_CTYPE_PARAMS(action) {										\
-	GMimeParamList *params=g_mime_content_type_get_parameters(type);					\
-	int cnt = g_mime_param_list_length(params);								\
-	for(int i = 0; i < cnt; i++){										\
-		GMimeParam *param = g_mime_param_list_get_parameter_at(params, i);				\
-		action												\
+#define G_MIME_CTYPE_PARAMS(action) {							\
+	GMimeParamList *params=g_mime_content_type_get_parameters(type);		\
+	int cnt = g_mime_param_list_length(params);					\
+	for(int i = 0; i < cnt; i++){							\
+		GMimeParam *param = g_mime_param_list_get_parameter_at(params, i);	\
+		action									\
 	}}
-
-#define g_mime_init(v) g_mime_init();										\
-	GMimeStreamClass *stream_file_class = (GMimeStreamClass *)g_type_class_ref(GMIME_TYPE_STREAM_FILE);	\
-	stream_file_class->read = no_seek_stream_read;
 
 #else
 
-#define G_MIME_CTYPE_PARAMS(action) {										\
-	const GMimeParam *param=g_mime_content_type_get_params(type);						\
-	while(param) {												\
-		action												\
-		param=g_mime_param_next(param);									\
+#define G_MIME_CTYPE_PARAMS(action) {							\
+	const GMimeParam *param=g_mime_content_type_get_params(type);			\
+	while(param) {									\
+		action									\
+		param=g_mime_param_next(param);						\
 	}}
+
+#define g_mime_init() g_mime_init(0)
 
 #define g_mime_parser_construct_message(msg,p) g_mime_parser_construct_message(msg)
 
@@ -362,10 +337,14 @@ static void parse(Request& r, GMimeMessage *message, HashStringValue& received) 
 void VMail::fill_received(Request& r) {
 	if(r.request_info.mail_received) {
 		source_charset=&r.charsets.source();
-		g_mime_init(0);
+		g_mime_init();
 		// create stream with CRLF filter
-		GMimeStream *stream = g_mime_stream_filter_new(g_mime_stream_file_new(stdin) /* g_mime_stream_file_open("test.eml", "r", NULL) */);
-		g_mime_stream_filter_add(GMIME_STREAM_FILTER(stream), g_mime_filter_crlf_new(false, false));
+#if GMIME_MAJOR_VERSION > 2
+		GMimeStream *stream = g_mime_stream_pipe_new(STDIN_FILENO);
+#else
+		GMimeStream *stream = g_mime_stream_fs_new(STDIN_FILENO);
+#endif
+		g_mime_stream_filter_add(GMIME_STREAM_FILTER(g_mime_stream_filter_new(stream)), g_mime_filter_crlf_new(false, false));
 		try {
 			// parse incoming message
 			GMimeMessage *message=g_mime_parser_construct_message(g_mime_parser_new_with_stream(stream), NULL);
