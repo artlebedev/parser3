@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: buildall,v 1.30 2020/02/25 09:58:24 moko Exp $
+# $Id: buildall,v 1.31 2020/02/25 10:06:49 moko Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -257,7 +257,7 @@ fi
 cd $parser3_dir
 if test ! -f "Makefile"; then
     echo "Configuring parser3..."
-    ./configure --prefix=$install_directory "--with-sendmail=$sendmail_command" $options --silent $cflags $gmime_cflags
+    ./configure --prefix=$install_directory "--with-sendmail=$sendmail_command" $options $cflags $gmime_cflags
 fi
 
 echo "Building parser3..."
