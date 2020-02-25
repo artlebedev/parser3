@@ -274,6 +274,11 @@ AC_ARG_WITH(mailreceive,[  --with-mailreceive=D is the directory where
 		MIME=""
 		MIME_INCLUDES=`pkg-config --cflags $GMIME 2>/dev/null`
 		MIME_LIBS=`pkg-config --libs $GMIME 2>/dev/null`
+		if test -z "$MIME_LIBS"; then
+			GMIME="gmime-3.0"
+			MIME_INCLUDES=`pkg-config --cflags $GMIME 2>/dev/null`
+			MIME_LIBS=`pkg-config --libs $GMIME 2>/dev/null`
+		fi
 		AC_MSG_WARN([--with-mailreceive value was not specified, hoping linker would find Gnome MIME library])
 	else
 		MIME_INCLUDES="-I$MIME/include/$GMIME"
