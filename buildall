@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: buildall,v 1.29 2019/12/01 00:12:19 moko Exp $
+# $Id: buildall,v 1.30 2020/02/25 09:58:24 moko Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -36,6 +36,10 @@ for PARAM in "$@"; do
 	    options="$options --with-mailreceive=$project_dir/gnome"
 	    build_gmime="yes"
 	    ;;
+	"--with-system-mailreceive")
+	    printf ", with mail receiving"
+	    options="$options --with-mailreceive"
+	    ;;
 	"--strip")
 	    printf ", without debug information"
 	    build_stripped="yes"
@@ -46,7 +50,7 @@ for PARAM in "$@"; do
 	    ;;
 	"--help")
 	    echo
-	    echo "Usage: buildall [--without-xml] [--with-apache] [--with-mailreceive] [--strip] [--direct-download] [--disable-safe-mode] [other configure options ...]"
+	    echo "Usage: buildall [--without-xml] [--with-apache] [--with-mailreceive] [--with-system-mailreceive] [--strip] [--direct-download] [--disable-safe-mode] [other configure options ...]"
 	    exit 1
 	    ;;
 	*)
