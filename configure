@@ -5234,6 +5234,11 @@ if test "${with_mailreceive+set}" = set; then :
 		MIME=""
 		MIME_INCLUDES=`pkg-config --cflags $GMIME 2>/dev/null`
 		MIME_LIBS=`pkg-config --libs $GMIME 2>/dev/null`
+		if test -z "$MIME_LIBS"; then
+			GMIME="gmime-3.0"
+			MIME_INCLUDES=`pkg-config --cflags $GMIME 2>/dev/null`
+			MIME_LIBS=`pkg-config --libs $GMIME 2>/dev/null`
+		fi
 		{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: --with-mailreceive value was not specified, hoping linker would find Gnome MIME library" >&5
 $as_echo "$as_me: WARNING: --with-mailreceive value was not specified, hoping linker would find Gnome MIME library" >&2;}
 	else
