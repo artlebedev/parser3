@@ -29,7 +29,7 @@
 #define pa_mkdir(path, mode) mkdir(path, mode)
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.310 2019/11/23 23:48:41 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.311 2020/02/26 11:59:39 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -407,7 +407,8 @@ static size_t get_dir(char* fname, size_t helper_length){
 	return pos;
 }
 
-static bool entry_readable(char* fname, bool need_dir) {
+static bool entry_exists(const String& file_spec, bool need_dir) {
+	char *fname=file_spec.taint_cstrm(String::L_FILE_SPEC);
 	if(need_dir){
 		size_t size=strlen(fname);
 		while(size) {
@@ -420,15 +421,11 @@ static bool entry_readable(char* fname, bool need_dir) {
 	}
 
 	struct stat finfo;
-	if(access(fname, R_OK)==0 && entry_exists(fname, &finfo)) {
+	if(entry_exists(fname, &finfo)) {
 		bool is_dir=(finfo.st_mode&S_IFDIR) != 0;
 		return is_dir==need_dir;
 	}
 	return false;
-}
-
-static bool entry_readable(const String& file_spec, bool need_dir) {
-	return entry_readable(file_spec.taint_cstrm(String::L_FILE_SPEC), need_dir);
 }
 
 // throws nothing! [this is required in file_move & file_delete]
@@ -437,7 +434,7 @@ static void rmdir(const String& file_spec, size_t pos_after) {
 	size_t length=strlen(dir_spec);
 	while( (length=get_dir(dir_spec, length)) && (length > pos_after) ){
 #ifdef _MSC_VER
-		if(!entry_readable(dir_spec, true))
+		if(!entry_exists(dir_spec, true))
 			break;
 		DWORD attrs=GetFileAttributes(dir_spec);
 		if(
@@ -497,11 +494,11 @@ bool entry_exists(const String& file_spec) {
 }
 
 bool file_exist(const String& file_spec) {
-	return entry_readable(file_spec, false); 
+	return entry_exists(file_spec, false); 
 }
 
 bool dir_exists(const String& file_spec) {
-	return entry_readable(file_spec, true); 
+	return entry_exists(file_spec, true); 
 }
 
 const String* file_exist(const String& path, const String& name) {
