@@ -29,7 +29,7 @@
 #define pa_mkdir(path, mode) mkdir(path, mode)
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.311 2020/02/26 11:59:39 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.312 2020/02/26 12:17:30 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -407,8 +407,19 @@ static size_t get_dir(char* fname, size_t helper_length){
 	return pos;
 }
 
-static bool entry_exists(const String& file_spec, bool need_dir) {
-	char *fname=file_spec.taint_cstrm(String::L_FILE_SPEC);
+bool entry_exists(const char* fname, struct stat *afinfo) {
+	struct stat lfinfo;
+	bool result=pa_stat(fname, &lfinfo)==0;
+	if(afinfo)
+		*afinfo=lfinfo;
+	return result;
+}
+
+bool entry_exists(const String& file_spec) {
+	return entry_exists(file_spec.taint_cstr(String::L_FILE_SPEC), 0); 
+}
+
+static bool entry_ifdir(char *fname, bool need_dir) {
 	if(need_dir){
 		size_t size=strlen(fname);
 		while(size) {
@@ -428,13 +439,17 @@ static bool entry_exists(const String& file_spec, bool need_dir) {
 	return false;
 }
 
+static bool entry_ifdir(const String& file_spec, bool need_dir) {
+	return entry_ifdir(file_spec.taint_cstrm(String::L_FILE_SPEC), need_dir);
+}
+
 // throws nothing! [this is required in file_move & file_delete]
 static void rmdir(const String& file_spec, size_t pos_after) {
 	char* dir_spec=file_spec.taint_cstrm(String::L_FILE_SPEC);
 	size_t length=strlen(dir_spec);
 	while( (length=get_dir(dir_spec, length)) && (length > pos_after) ){
 #ifdef _MSC_VER
-		if(!entry_exists(dir_spec, true))
+		if(!entry_ifdir(dir_spec, true))
 			break;
 		DWORD attrs=GetFileAttributes(dir_spec);
 		if(
@@ -480,25 +495,12 @@ void file_move(const String& old_spec, const String& new_spec, bool keep_empty_d
 }
 
 
-bool entry_exists(const char* fname, struct stat *afinfo) {
-	struct stat lfinfo;
-	bool result=pa_stat(fname, &lfinfo)==0;
-	if(afinfo)
-		*afinfo=lfinfo;
-	return result;
-}
-
-bool entry_exists(const String& file_spec) {
-	const char* fname=file_spec.taint_cstr(String::L_FILE_SPEC); 
-	return entry_exists(fname, 0); 
-}
-
 bool file_exist(const String& file_spec) {
-	return entry_exists(file_spec, false); 
+	return entry_ifdir(file_spec, false); 
 }
 
 bool dir_exists(const String& file_spec) {
-	return entry_exists(file_spec, true); 
+	return entry_ifdir(file_spec, true); 
 }
 
 const String* file_exist(const String& path, const String& name) {
