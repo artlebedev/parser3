@@ -1,3 +1,29 @@
+2020-02-26  moko
+
+	* src/main/pa_common.C: entry_exists -> entry_ifdir to fix Windows
+	  compilation issue (related to bug #1201)
+
+	* src/main/pa_common.C: entry_readable -> entry_exists,
+	  undocumented access(fname, R_OK) call removed (fixes bug #1201)
+	  -f and -d now works under Windows in UTF-8 with Russian
+	  filenames.
+
+	* src/types/pa_vmail.C: g_mime_stream_pipe_new used by gmime author
+	  advice (related to feature #1199)
+
+2020-02-25  moko
+
+	* buildall: --silent removed
+
+	* configure.ac: gmime-3.0 support
+
+	* buildall: --with-system-mailreceive option added to build with
+	  system libgmime
+
+	* src/types/pa_vmail.C: avoiding
+	  https://github.com/jstedfast/gmime/issues/83 "feature" (related
+	  to feature #1199)
+
 2020-02-18  moko
 
 	* src/classes/op.C: windows x64 debug mode compile fix
