@@ -118,8 +118,8 @@ fi
 
 
 dnl String stream argument
-AC_ARG_ENABLE(stringstream, [  --disable-stringstream  to disable stringstream usage.
-                          when disabled table.save use more memory but it's safer on freebsd 4.x],
+AC_ARG_ENABLE(stringstream, [  --disable-stringstream to disable stringstream usage.
+                          when disabled table.save uses more memory, but more compilers are supported],
 [
 if test "$enableval" = "no"; then
 	AC_MSG_WARN(disabling stringstream usage)
@@ -394,7 +394,10 @@ AC_CHECK_HEADERS(sys/socket.h netinet/in.h arpa/inet.h netdb.h)
 dnl Checks for libraries
 case "$host" in
   *-freebsd4*)
-	  AC_DEFINE(FREEBSD4,,FreeBSD4X target platform)
+	  AC_DEFINE(FREEBSD4,,FreeBSD4.X target platform)
+  ;;
+  *-freebsd1*)
+	  AC_DEFINE(FREEBSD1X,,FreeBSD1X.X target platform)
   ;;
   *-sunos5.6* | *-solaris2.6*)
 	  AC_CHECK_LIB(xnet, main)
