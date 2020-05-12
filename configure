@@ -1482,8 +1482,8 @@ Optional Features:
                           files belonging to group+user other then effective
   --disable-execs	  to disable any execs
                           (file::exec, file::cgi, unix mail:send)
-  --disable-stringstream  to disable stringstream usage.
-                          when disabled table.save use more memory but it's safer on freebsd 4.x
+  --disable-stringstream to disable stringstream usage.
+                          when disabled table.save uses more memory, but more compilers are supported
   --enable-shared[=PKGS]  build shared libraries [default=yes]
   --enable-static[=PKGS]  build static libraries [default=yes]
   --enable-fast-install[=PKGS]
@@ -18339,6 +18339,11 @@ case "$host" in
   *-freebsd4*)
 
 $as_echo "#define FREEBSD4 /**/" >>confdefs.h
+
+  ;;
+  *-freebsd1*)
+
+$as_echo "#define FREEBSD1X /**/" >>confdefs.h
 
   ;;
   *-sunos5.6* | *-solaris2.6*)

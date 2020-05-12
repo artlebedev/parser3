@@ -6,7 +6,10 @@
 /* using cygwin building environment */
 #undef CYGWIN
 
-/* FreeBSD4X target platform */
+/* FreeBSD1X.X target platform */
+#undef FREEBSD1X
+
+/* FreeBSD4.X target platform */
 #undef FREEBSD4
 
 /* Define to 1 if you have the `argz_add' function. */
