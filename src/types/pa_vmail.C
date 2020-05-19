@@ -19,7 +19,7 @@
 #include "pa_vfile.h"
 #include "pa_uue.h"
 
-volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.131 2020/02/25 23:21:10 moko Exp $" IDENT_PA_VMAIL_H;
+volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.132 2020/05/19 09:17:32 moko Exp $" IDENT_PA_VMAIL_H;
 
 #ifdef WITH_MAILRECEIVE
 extern "C" {
@@ -843,16 +843,6 @@ const String& VMail::message_hash_to_string(Request& r,
 			result << "\n\n--ALT" << boundary << "--\n";
 	}
 
-	// files
-	{
-		ArrayValue& files=*info.parts[P_FILE];
-		for(size_t i=0; i<files.count(); i++) {
-			if(boundary)
-				result << "\n\n--" << boundary << "\n";  // intermediate boundary
-			result << file_value_to_string(r, files.get(i));
-		}
-	}
-
 	// messages
 	{
 		ArrayValue& messages=*info.parts[P_MESSAGE];
@@ -867,6 +857,16 @@ const String& VMail::message_hash_to_string(Request& r,
 		}
 	}
 	
+	// files go last
+	{
+		ArrayValue& files=*info.parts[P_FILE];
+		for(size_t i=0; i<files.count(); i++) {
+			if(boundary)
+				result << "\n\n--" << boundary << "\n";  // intermediate boundary
+			result << file_value_to_string(r, files.get(i));
+		}
+	}
+
 	// tailer
 	if(boundary)
 		result << "\n\n--" << boundary << "--\n"; // finish boundary
