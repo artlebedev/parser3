@@ -19,7 +19,7 @@
 #include "pa_vfile.h"
 #include "pa_uue.h"
 
-volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.132 2020/05/19 09:17:32 moko Exp $" IDENT_PA_VMAIL_H;
+volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.133 2020/05/19 09:36:39 moko Exp $" IDENT_PA_VMAIL_H;
 
 #ifdef WITH_MAILRECEIVE
 extern "C" {
@@ -169,7 +169,7 @@ static char *readStream(GMimeStream* gstream, size_t &length){
 		ssize_t received_size=g_mime_stream_read (gstream, ptr, todo_size);
 
 		if(received_size<0)
-			throw Exception(PARSER_RUNTIME, 0,"mail content stream read error");
+			throw Exception(PARSER_RUNTIME, 0, "mail content stream read error");
 		if(received_size==0)
 			break;
 		if(received_size==todo_size) {
@@ -473,7 +473,10 @@ struct Store_message_element_info {
 		mime_version_specified(false),
 		parts_count(0),
 		backward_compatibility(false), content_type(0),
-		had_content_disposition(false){
+		had_content_disposition(false)
+	{
+		for(int pt=0; pt<P_TYPES_COUNT; pt++)
+			parts[pt]=new ArrayValue(1);
 	}
 };
 #endif
@@ -660,17 +663,13 @@ static const String& file_value_to_string(Request& r, Value* send_value) {
 			result << CONTENT_TRANSFER_ENCODING_CAPITALIZED ": x-uuencode\n\n";
 			result << pa_uuencode((const unsigned char*)vfile->value_ptr(), vfile->value_size(), file_name_cstr);
 		} else
-			throw Exception(PARSER_RUNTIME,
-				type,
-				"unknown attachment encode format");
+			throw Exception(PARSER_RUNTIME, type, "unknown attachment encode format");
 	}
 
 	return result;
 }
 
-static const String& text_value_to_string(Request& r,
-					PartType pt, Value* send_value,
-					Store_message_element_info& info) {
+static const String& text_value_to_string(Request& r, PartType pt, Value* send_value, Store_message_element_info& info) {
 	String& result=*new String;
 
 	Value* text_value;
@@ -683,9 +682,7 @@ static const String& text_value_to_string(Request& r,
 		// $.value
 		text_value=send_hash->get(value_name);
 		if(!text_value)
-			throw Exception(PARSER_RUNTIME,
-				0,
-				"%s part has no $" VALUE_NAME, part_name_begins[pt]);
+			throw Exception(PARSER_RUNTIME, 0, "%s part has no $" VALUE_NAME, part_name_begins[pt]);
 		content_transfer_encoding=send_hash->get(content_transfer_encoding_name);
 	} else
 		text_value=send_value;
@@ -735,14 +732,10 @@ static const String& text_value_to_string(Request& r,
 }
 
 /// @todo files and messages in order (file, file2, ...)
-const String& VMail::message_hash_to_string(Request& r,
-					HashStringValue* message_hash, int level, 
-					const String* & from, bool extract_to, String* & to) {
+const String& VMail::message_hash_to_string(Request& r, HashStringValue* message_hash, int level, const String* & from, bool extract_to, String* & to) {
 	
 	if(!message_hash)
-		throw Exception(PARSER_RUNTIME,
-			0,
-			"message must be hash");
+		throw Exception(PARSER_RUNTIME, 0, "message must be hash");
 
 	String& result=*new String;
 
@@ -752,20 +745,16 @@ const String& VMail::message_hash_to_string(Request& r,
 		r.charsets.set_mail(r.charsets.source());
 	// no big deal that we leave it set. they wont miss this point which would reset it
 
-	Store_message_element_info info(r.charsets, 
-		result, from, extract_to, to);
-	{
-		// for backward compatibilyty $.body+$.content-type -> 
-		// $.text[$.value[] $.content-type[]]
+	Store_message_element_info info(r.charsets, result, from, extract_to, to);
 
-		for(int pt=0; pt<P_TYPES_COUNT; pt++)
-			info.parts[pt]=new ArrayValue(1);
+	{
+		// for backward compatibilyty $.body+$.content-type -> $.text[$.value[] $.content-type[]]
 
 		Value* body=message_hash->get("body");
 		if(body) {
 			message_hash->remove("body");
 			info.backward_compatibility=true;
-		}		
+		}
 		message_hash->for_each<Store_message_element_info*>(store_message_element, &info);
 
 		if(body) {
@@ -785,15 +774,10 @@ const String& VMail::message_hash_to_string(Request& r,
 
 	int textCount=info.parts[P_TEXT]->count();
 	if(textCount>1)
-		throw Exception(PARSER_RUNTIME,
-			0,
-			"multiple text parts not supported, use file part");
+		throw Exception(PARSER_RUNTIME, 0, "multiple text parts not supported, use file part");
 	int htmlCount=info.parts[P_HTML]->count();
 	if(htmlCount>1)
-		throw Exception(PARSER_RUNTIME,
-			0,
-			"multiple html parts not supported, use file part");
-
+		throw Exception(PARSER_RUNTIME, 0, "multiple html parts not supported, use file part");
 
 	bool multipart=info.parts_count>1;
 	bool alternative=textCount && htmlCount;
@@ -813,14 +797,11 @@ const String& VMail::message_hash_to_string(Request& r,
 				}
 			}
 		}
-		
+
 		result << HTTP_CONTENT_TYPE_CAPITALIZED ": " << ( is_inline ? HTTP_CONTENT_TYPE_MULTIPART_RELATED : HTTP_CONTENT_TYPE_MULTIPART_MIXED ) << ";";
 
 		// multi-part
-		result 
-			 << " boundary=\"" << boundary << "\"\n"
-				"\n"
-				"This is a multi-part message in MIME format.";
+		result << " boundary=\"" << boundary << "\"\n\nThis is a multi-part message in MIME format.";
 	}
 
 	// alternative or not
@@ -852,8 +833,7 @@ const String& VMail::message_hash_to_string(Request& r,
 			
 			const String* dummy_from;
 			String* dummy_to;
-			result << message_hash_to_string(r, messages.get(i)->get_hash(), level+1,
-				dummy_from, false, dummy_to);
+			result << message_hash_to_string(r, messages.get(i)->get_hash(), level+1,dummy_from, false, dummy_to);
 		}
 	}
 	
