@@ -19,7 +19,7 @@
 
 #include "smtp.h"
 
-volatile const char * IDENT_MAIL_C="$Id: mail.C,v 1.133 2017/02/07 22:00:28 moko Exp $";
+volatile const char * IDENT_MAIL_C="$Id: mail.C,v 1.134 2020/05/22 21:14:01 moko Exp $";
 
 // defines
 
@@ -72,17 +72,13 @@ static void sendmail(
 			 ) {
 	const char* exception_type="email.format";
 	if(!from) // we use in sendmail -f {from} && SMTP MAIL from: {from}
-		throw Exception(exception_type,
-			0,
-			"parameter does not specify 'from' header field");
+		throw Exception(exception_type, 0, "parameter does not specify 'from' header field");
 
 	const char* message_cstr=message.untaint_cstr(String::L_AS_IS);
 
 	if(smtp_server_port) {
 		if(!to) // we use only in SMTP RCPT to: {to}
-			throw Exception(exception_type,
-				0,
-				"parameter does not specify 'to' header field");
+			throw Exception(exception_type, 0, "parameter does not specify 'to' header field");
 
 		SMTP smtp;
 		char* server=smtp_server_port->as_string().cstrm();
@@ -96,9 +92,7 @@ static void sendmail(
 
 #ifdef WIN32
 	// win32 without SMTP server configured
-	throw Exception(PARSER_RUNTIME,
-		0,
-		"$" MAIN_CLASS_NAME ":" MAIL_NAME ".SMTP not defined");
+	throw Exception(PARSER_RUNTIME, 0, "$" MAIN_CLASS_NAME ":" MAIL_NAME ".SMTP not defined");
 #else
 	// unix
 	// $MAIN:MAIL.sendmail["/usr/sbin/sendmail -t -i -f postmaster"] default
@@ -115,9 +109,7 @@ static void sendmail(
 		if(Value* sendmail_value=vmail_conf->get_hash()->get(mail_sendmail_name))
 			*sendmail_command<<sendmail_value->as_string();
 		else
-			throw Exception(PARSER_RUNTIME,
-				0,
-				"$" MAIN_CLASS_NAME ":" MAIL_NAME "." SENDMAIL_NAME " not defined");
+			throw Exception(PARSER_RUNTIME, 0, "$" MAIN_CLASS_NAME ":" MAIL_NAME "." SENDMAIL_NAME " not defined");
 #endif
 	} else {
 #ifdef PA_FORCED_SENDMAIL
@@ -205,12 +197,9 @@ static void _send(Request& r, MethodParams& params) {
 		smtp_server_port=vmail_conf->get_hash()->get("SMTP");
 	}
 
-
 	const String* from=0;
 	String* to=0;
-	const String& message=
-		GET_SELF(r, VMail).message_hash_to_string(r, hash, 0, from, 
-			smtp_server_port?true:false /*send by SMTP=strip to?*/, to);
+	const String& message = GET_SELF(r, VMail).message_hash_to_string(r, hash, from, smtp_server_port ? true : false /*send by SMTP=strip to?*/, to);
 
 	if(print_debug)
 		r.write(message);
@@ -233,8 +222,6 @@ void MMail::configure_user(Request& r) {
 			r.classes_conf.put(type(), mail_element);
 		else
 			if( !mail_element->is_string() )
-				throw Exception(PARSER_RUNTIME,
-					0,
-					"$" MAIL_CLASS_NAME ":" MAIL_NAME " is not hash");
+				throw Exception(PARSER_RUNTIME, 0, "$" MAIL_CLASS_NAME ":" MAIL_NAME " is not hash");
 	}
 }

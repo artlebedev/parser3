@@ -19,7 +19,7 @@
 #include "pa_vfile.h"
 #include "pa_uue.h"
 
-volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.133 2020/05/19 09:36:39 moko Exp $" IDENT_PA_VMAIL_H;
+volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.134 2020/05/22 21:14:01 moko Exp $" IDENT_PA_VMAIL_H;
 
 #ifdef WITH_MAILRECEIVE
 extern "C" {
@@ -732,7 +732,7 @@ static const String& text_value_to_string(Request& r, PartType pt, Value* send_v
 }
 
 /// @todo files and messages in order (file, file2, ...)
-const String& VMail::message_hash_to_string(Request& r, HashStringValue* message_hash, int level, const String* & from, bool extract_to, String* & to) {
+const String& VMail::message_hash_to_string(Request& r, HashStringValue* message_hash, const String* & from, bool extract_to, String* & to) {
 	
 	if(!message_hash)
 		throw Exception(PARSER_RUNTIME, 0, "message must be hash");
@@ -833,7 +833,7 @@ const String& VMail::message_hash_to_string(Request& r, HashStringValue* message
 			
 			const String* dummy_from;
 			String* dummy_to;
-			result << message_hash_to_string(r, messages.get(i)->get_hash(), level+1,dummy_from, false, dummy_to);
+			result << message_hash_to_string(r, messages.get(i)->get_hash(), dummy_from, false, dummy_to);
 		}
 	}
 	

@@ -8,7 +8,7 @@
 #ifndef PA_VMAIL_H
 #define PA_VMAIL_H
 
-#define IDENT_PA_VMAIL_H "$Id: pa_vmail.h,v 1.23 2017/02/07 22:00:49 moko Exp $"
+#define IDENT_PA_VMAIL_H "$Id: pa_vmail.h,v 1.24 2020/05/22 21:14:01 moko Exp $"
 
 #include "classes.h"
 #include "pa_common.h"
@@ -43,10 +43,7 @@ public: // usage
 	VMail();
 	
 	void fill_received(Request& r);
-	const String& message_hash_to_string(Request& r,
-		HashStringValue* message_hash, int level, 
-		const String* & from, bool extract_to, String* & to);
-
+	const String& message_hash_to_string(Request& r, HashStringValue* message_hash, const String* & from, bool extract_to, String* & to);
 };
 
 #endif
