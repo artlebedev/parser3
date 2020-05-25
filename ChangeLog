@@ -1,3 +1,15 @@
+2020-05-23  moko
+
+	* src/: classes/mail.C, types/pa_vmail.C, types/pa_vmail.h:
+	  whitespace, unused level removed
+
+2020-05-19  moko
+
+	* src/types/pa_vmail.C: whitespace
+
+	* src/types/pa_vmail.C: files should be processed last (related to
+	  feature #1176)
+
 2020-05-12  moko
 
 	* src/include/pa_memory.h: no new/delete checks for for FreeBSD1X.X
