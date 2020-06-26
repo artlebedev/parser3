@@ -1,0 +1,43 @@
+@main[]
+
+1: ^test[1]
+2: ^test[2]
+X: ^test[X]
+4: ^test[4]
+5: ^test[5]
+
+1: ^test345[1]
+2: ^test345[2]
+X: ^test345[X]
+4: ^test345[4]
+5: ^test345[5]
+
+X: ^fail[X]
+Y: ^fail[Y] ^rem{will work without OPTIMIZE_CALL}
+
+@test[value]
+no result
+^if($value eq 'X'){
+  ^return[]
+}
+
+$result[result]
+
+
+@test345[value]
+no result
+^if($value eq 'X'){
+  ^return[]
+}
+
+$result[result]
+result
+
+
+@fail[value]
+no result
+^if($value eq 'X'){
+  ^return[]
+}
+
+$result[result]
