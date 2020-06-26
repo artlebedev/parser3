@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.124 2017/02/07 22:00:50 moko Exp $"
+#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.125 2020/06/26 15:45:11 moko Exp $"
 
 #include "pa_symbols.h"
 #include "pa_wcontext.h"
@@ -240,18 +240,9 @@ public: // WContext
 	/// VParserMethodFrame: skip write when RO_USE_RESULT
 	override void write(const String& astring) {
 #ifdef OPTIMIZE_RESULT
-		switch (method.result_optimization){
-			case Method::RO_USE_RESULT:
-				return;
-			case Method::RO_UNKNOWN:
-				if(get_result_variable()){
-					((Method *)&method)->result_optimization=Method::RO_USE_RESULT;
-					return;
-				}
-			case Method::RO_USE_WCONTEXT: break;
-		}
+		if(method.result_optimization != Method::RO_USE_RESULT)
 #endif
-		WContext::write(astring);
+			WContext::write(astring);
 	}
 
 	override void write(Value& avalue) {
@@ -262,8 +253,12 @@ public: // WContext
 		// check the $result value
 		Value* result_value=get_result_variable();
 		// if we have one, return it, else return as usual: accumulated fstring or fvalue
-		if(result_value)
+		if(result_value){
+#ifdef OPTIMIZE_RESULT
+			((Method *)&method)->result_optimization=Method::RO_USE_RESULT;
+#endif
 			return result_value;
+		}
 #ifdef OPTIMIZE_RESULT
 		if(method.result_optimization==Method::RO_USE_RESULT)
 			return VVoid::get();
