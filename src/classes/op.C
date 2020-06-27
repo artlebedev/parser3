@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.254 2020/02/18 15:40:29 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.255 2020/06/27 09:45:49 moko Exp $";
 
 // defines
 
@@ -333,7 +333,7 @@ static void _continue(Request& r, MethodParams& params) {
 static void _return(Request& r, MethodParams& params) {
 	VMethodFrame& caller=*r.get_method_frame()->caller();
 	if(params.count())
-		r.put_element(caller, Symbols::RESULT_SYMBOL, &params[0]);
+		r.put_element(caller, Symbols::RESULT_SYMBOL, &r.process(params[0]));
 	r.set_skip_return(caller);
 }
 
