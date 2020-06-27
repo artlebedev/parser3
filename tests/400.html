@@ -15,6 +15,8 @@ X: ^test345[X]
 X: ^fail[X]
 Y: ^fail[Y] ^rem{will work without OPTIMIZE_CALL}
 
+Z: ^gpf345[]
+
 @test[value]
 no result
 ^if($value eq 'X'){
@@ -41,3 +43,6 @@ no result
 }
 
 $result[result]
+
+@gpf345[]
+^return{code}
