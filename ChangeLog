@@ -1,3 +1,20 @@
+2020-06-27  moko
+
+	* tests/: 400.html, results/400.processed: test updated to check
+	  ^return{code}
+
+	* src/classes/op.C: bugfix: ^return{code} or ^return(expre+ssion)
+	  fixed
+
+2020-06-26  moko
+
+	* tests/: 400.html, results/400.processed: test for OPTIMIZE_RESULT
+	  added (related to https://www.parser.ru/forum/?id=85319)
+
+	* src/types/pa_vmethod_frame.h: bugfix: OPTIMIZE_RESULT failed,
+	  when $result assignment was last statement in the method
+	  (https://www.parser.ru/forum/?id=85319)
+
 2020-05-23  moko
 
 	* src/: classes/mail.C, types/pa_vmail.C, types/pa_vmail.h:
