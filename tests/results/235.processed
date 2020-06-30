@@ -1,7 +1,7 @@
 Content-Type: text/html
-Content-Length: 3858
+Content-Length: 3868
 
-<pre>
+1 <pre>
 X-Mailer: Parser 3
 From: from@parser3test
 To: to@parser3test
@@ -13,7 +13,7 @@ Content-Transfer-Encoding: 8bit
 РўРµР»Рѕ РїРёСЃСЊРјР°
 </pre>
 <hr />
-<pre>
+2 <pre>
 From: from@parser3test
 To: to@parser3test
 Subject: =?WINDOWS-1251?Q?=C7=E0=E3=EE=EB=EE=E2=EE=EA?=
@@ -45,7 +45,7 @@ Content-Transfer-Encoding: 8bit
 
 </pre>
 <hr />
-<pre>
+3 <pre>
 From: from@parser3test
 To: to@parser3test
 Subject: =?WINDOWS-1251?Q?=C7=E0=E3=EE=EB=EE=E2=EE=EA?=
@@ -78,7 +78,7 @@ dGV4dCBhdHRhY2htZW50DQp3aXRoDQp3aW5kb3dzIGxpbmUtZW5kaW5ncw0K
 
 </pre>
 <hr />
-<pre>
+4 <pre>
 From: from@parser3test
 To: to@parser3test
 Subject: =?WINDOWS-1251?Q?=C7=E0=E3=EE=EB=EE=E2=EE=EA?=
@@ -92,13 +92,6 @@ Content-Type: text/plain; charset=WINDOWS-1251
 Content-Transfer-Encoding: 8bit
 
 Тело письма
-
-------------boundary-value
-Content-Type: application/octet-stream; name="235_attach.txt"
-Content-Disposition: attachment; filename="235_attach.txt"
-Content-Transfer-Encoding: base64
-
-dGV4dCBhdHRhY2htZW50DQp3aXRoDQp3aW5kb3dzIGxpbmUtZW5kaW5ncw0K
 
 ------------boundary-value
 From: from-message@parser3test
@@ -125,11 +118,18 @@ dGV4dCBhdHRhY2htZW50CndpdGgKd2luZG93cyBsaW5lLWVuZGluZ3MK
 ------------boundary-value--
 
 
+------------boundary-value
+Content-Type: application/octet-stream; name="235_attach.txt"
+Content-Disposition: attachment; filename="235_attach.txt"
+Content-Transfer-Encoding: base64
+
+dGV4dCBhdHRhY2htZW50DQp3aXRoDQp3aW5kb3dzIGxpbmUtZW5kaW5ncw0K
+
 ------------boundary-value--
 
 </pre>
 <hr />
-<pre>
+5 <pre>
 From: from@parser3test
 To: to@parser3test
 Subject: =?WINDOWS-1251?Q?=C7=E0=E3=EE=EB=EE=E2=EE=EA?=

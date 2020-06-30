@@ -5,23 +5,23 @@ $sAttachFileName[235_attach.txt]
 $fText[^file::load[text;$sAttachFileName]]
 $fBinary[^file::load[binary;$sAttachFileName]]
 
-^do[;
+1 ^do[;
 	$.text[$sBody]
 	$.x-mailer[Parser 3]
 ]
 
-^do[windows-1251;
+2 ^do[windows-1251;
 	$.text[$sBody]
 	$.html{<p>$sBody</p>}
 ]
 
-^do[windows-1251;
+3 ^do[windows-1251;
 	$.text[$sBody]
 	$.file[$fText]
 	$.file2[$fBinary]
 ]
 
-^do[windows-1251;
+4 ^do[windows-1251;
 	$.text[$sBody]
 	$.file[$fBinary]
 	$.message[
@@ -34,7 +34,7 @@ $fBinary[^file::load[binary;$sAttachFileName]]
 	]
 ]
 
-^do[windows-1251;
+5 ^do[windows-1251;
 	$.text[$sBody]
 	$.file[
 		$.value[$fText]
