@@ -1,3 +1,8 @@
+2020-07-01  moko
+
+	* tests/: 235.html, results/235.processed: test result updated as
+	  messages before attachments implemented (feature #1176)
+
 2020-06-27  moko
 
 	* tests/: 400.html, results/400.processed: test updated to check
