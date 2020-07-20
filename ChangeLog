@@ -1,3 +1,8 @@
+2020-07-13  moko
+
+	* tests/: 401.html, results/401.processed: test for hash key does
+	  not keep language, but tainted in foreach.
+
 2020-07-01  moko
 
 	* tests/: 235.html, results/235.processed: test result updated as
