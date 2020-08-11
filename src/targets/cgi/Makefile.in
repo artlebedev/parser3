@@ -331,7 +331,7 @@ top_srcdir = @top_srcdir@
 PA_LIBS = ../../main/.libs/libmain.a ../../classes/.libs/libclasses.a ../../types/.libs/libtypes.a ../../main/.libs/libmain.a \
 	  ../../lib/gd/libgd.la ../../lib/cord/libcord.la ../../lib/md5/libmd5.la ../../lib/sdbm/libsdbm.la \
 	  ../../lib/pcre/libpcre_internal.la ../../lib/smtp/libsmtp.la ../../lib/json/libjson.la \
-	  ../../lib/punycode/libpunycode.la ../../lib/memcached/libmemcached.la
+	  ../../lib/punycode/libpunycode.la ../../lib/memcached/libmemcached.la ../../lib/httpd/libhttpd.la
 
 AM_CPPFLAGS = -I../../classes -I../../types @XML_INCLUDES@
 
