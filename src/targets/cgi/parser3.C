@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.286 2019/12/27 21:32:33 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.287 2020/08/12 17:30:40 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -113,8 +113,8 @@ static void log(const char* fmt, va_list args) {
 
 	if(request_info)
 		fprintf(f, " [uri=%s, method=%s, cl=%lu]",
-			request_info->uri? request_info->uri: "<unknown>",
-			request_info->method? request_info->method: "<unknown>",
+			request_info->uri ? request_info->uri : "<unknown>",
+			request_info->method ? request_info->method : "<unknown>",
 			request_info->content_length);
 	else
 		fputs(" [no request info]", f);
@@ -272,15 +272,9 @@ static void full_file_spec(const char* file_name, char *buf, size_t buf_size) {
 
 static void log_signal(const char* signal_name) {
 	if(request_info)
-		SAPI::log(SAPI_info, "%s received while %s. uri=%s, method=%s, cl=%u",
-			signal_name,
-			request ? "executing code" : "reading data",
-			request_info->uri,
-			request_info->method,
-			request_info->content_length);
+		SAPI::log(SAPI_info, "%s received while %s.", signal_name, request ? "executing code" : "reading data");
 	else
-		SAPI::log(SAPI_info, "%s received before or after processing request",
-			signal_name);
+		SAPI::log(SAPI_info, "%s received before or after processing request", signal_name);
 }
 
 #ifdef SIGUSR1
