@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.287 2020/08/12 17:30:40 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.288 2020/08/12 22:00:12 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -25,7 +25,7 @@ volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.287 2020/08/12 17:30:4
 // defines
 
 // comment remove me after debugging
-//#define PA_DEBUG_CGI_ENTRY_EXIT	"parser3-debug.log"
+//#define PA_DEBUG_CGI_ENTRY_EXIT "parser3-debug.log"
 
 #if defined(_MSC_VER) && !defined(_DEBUG)
 #	define PA_SUPPRESS_SYSTEM_EXCEPTION
@@ -40,9 +40,7 @@ volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.287 2020/08/12 17:30:4
 /// IIS refuses to read bigger chunks
 const size_t READ_POST_CHUNK_SIZE=0x400*0x400; // 1M
 
-static const char* argv0;
 static const char* config_filespec_cstr=0;
-static bool fail_on_config_read_problem=true;
 
 static int args_skip=1;
 static char** argv_all = NULL;
@@ -349,6 +347,28 @@ public:
 	}
 };
 
+static bool locate_config(){
+	if(!config_filespec_cstr) {
+		config_filespec_cstr=getenv(PARSER_CONFIG_ENV_NAME);
+		if(!config_filespec_cstr)
+			config_filespec_cstr=getenv(REDIRECT_PREFIX PARSER_CONFIG_ENV_NAME);
+		if(!config_filespec_cstr){
+			// beside by binary
+			char beside_binary_path[MAX_STRING];
+			strncpy(beside_binary_path, argv_all[0], MAX_STRING-1);  beside_binary_path[MAX_STRING-1]=0; // filespec of my binary
+			if(!(rsplit(beside_binary_path, '/') || rsplit(beside_binary_path, '\\'))) { // strip filename
+				// no path, just filename
+				// @todo full path, not ./!
+				beside_binary_path[0]='.'; beside_binary_path[1]=0;
+			}
+			char config_filespec_buf[MAX_STRING];
+			snprintf(config_filespec_buf, MAX_STRING, "%s/%s", beside_binary_path, AUTO_FILE_NAME);
+			config_filespec_cstr=pa_strdup(config_filespec_buf);
+			return entry_exists(config_filespec_cstr);
+		}
+	}
+	return true;
+}
 
 /**
 main workhorse
@@ -459,36 +479,12 @@ static void real_parser_handler(const char* filespec_to_process, const char* req
 
 	// prepare to process request
 	Request request(SAPI_info, request_info, cgi ? String::Language(String::L_HTML|String::L_OPTIMIZE_BIT) : String::L_AS_IS);
-
 	{
 		// get ::request ptr for signal handlers
 		RequestController rc(&request);
-
-		char config_filespec_buf[MAX_STRING];
-		if(!config_filespec_cstr) {
-			const char* config_by_env=getenv(PARSER_CONFIG_ENV_NAME);
-			if(!config_by_env)
-				config_by_env=getenv(REDIRECT_PREFIX PARSER_CONFIG_ENV_NAME);
-			if(config_by_env)
-				config_filespec_cstr=config_by_env;
-			else {
-				// beside by binary
-				char beside_binary_path[MAX_STRING];
-				strncpy(beside_binary_path, argv0, MAX_STRING-1);  beside_binary_path[MAX_STRING-1]=0; // filespec of my binary
-				if(!(rsplit(beside_binary_path, '/') || rsplit(beside_binary_path, '\\'))) { // strip filename
-					// no path, just filename
-					// @todo full path, not ./!
-					beside_binary_path[0]='.'; beside_binary_path[1]=0;
-				}
-				snprintf(config_filespec_buf, MAX_STRING, "%s/%s", beside_binary_path, AUTO_FILE_NAME);
-				config_filespec_cstr=config_filespec_buf;
-				fail_on_config_read_problem=entry_exists(config_filespec_cstr);
-			}
-		}
-		
+		bool fail_on_config_read_problem=locate_config();
 		// process the request
 		request.core(config_filespec_cstr, fail_on_config_read_problem, header_only);
-
 		// ::request cleared in RequestController desctructor to prevent signal handlers from accessing invalid memory
 	}
 
@@ -513,10 +509,7 @@ static void call_real_parser_handler__supress_system_exception(const char* files
 
 	__try {
 		parser_exception=call_real_parser_handler__do_PEH_return_it(filespec_to_process, request_method, header_only);
-	} __except (
-		(system_exception=GetExceptionInformation()), 
-		EXCEPTION_EXECUTE_HANDLER) 
-	{
+	} __except ( (system_exception=GetExceptionInformation()), EXCEPTION_EXECUTE_HANDLER) {
 
 		if(system_exception)
 			if(_EXCEPTION_RECORD *er=system_exception->ExceptionRecord)
@@ -569,8 +562,6 @@ int main(int argc, char *argv[]) {
 #endif
 
 	argv_all=argv;
-	argv0=argv[0];
-
 	umask(2);
 
 	// were we started as CGI?
