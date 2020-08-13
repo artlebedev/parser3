@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.288 2020/08/12 22:00:12 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.289 2020/08/13 10:55:00 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -493,7 +493,7 @@ static void real_parser_handler(const char* filespec_to_process, const char* req
 }
 
 #ifdef PA_SUPPRESS_SYSTEM_EXCEPTION
-static const Exception call_real_parser_handler__do_PEH_return_it(const char* filespec_to_process, const char* request_method, bool header_only){
+static const Exception call_real_parser_handler__do_PEH_return_it(const char* filespec_to_process, const char* request_method, bool header_only) {
 	try {
 		real_parser_handler(filespec_to_process, request_method, header_only);
 	} catch(const Exception& e) {
@@ -503,14 +503,13 @@ static const Exception call_real_parser_handler__do_PEH_return_it(const char* fi
 	return Exception();
 }
 
-static void call_real_parser_handler__supress_system_exception(const char* filespec_to_process, const char* request_method, bool header_only){
+static void call_real_parser_handler__supress_system_exception(const char* filespec_to_process, const char* request_method, bool header_only) {
 	Exception parser_exception;
 	LPEXCEPTION_POINTERS system_exception=0;
 
 	__try {
 		parser_exception=call_real_parser_handler__do_PEH_return_it(filespec_to_process, request_method, header_only);
 	} __except ( (system_exception=GetExceptionInformation()), EXCEPTION_EXECUTE_HANDLER) {
-
 		if(system_exception)
 			if(_EXCEPTION_RECORD *er=system_exception->ExceptionRecord)
 				throw Exception("system", 0, "0x%08X at 0x%08X", er->ExceptionCode,  er->ExceptionAddress);

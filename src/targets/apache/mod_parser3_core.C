@@ -5,7 +5,7 @@ Parser: apache 1.3/2.X module, part, compiled by parser3project.
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_MOD_PARSER3_CORE_C="$Id: mod_parser3_core.C,v 1.19 2019/12/25 22:22:07 moko Exp $";
+volatile const char * IDENT_MOD_PARSER3_CORE_C="$Id: mod_parser3_core.C,v 1.20 2020/08/13 10:52:34 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -237,10 +237,7 @@ static void real_parser_handler(SAPI_Info& SAPI_info, Parser_module_config *dcfg
 }
 
 #ifdef PA_SUPPRESS_SYSTEM_EXCEPTION
-static const Exception 
-call_real_parser_handler__do_PEH_return_it(
-	SAPI_Info& SAPI_info, Parser_module_config *dcfg) 
-{
+static const Exception call_real_parser_handler__do_PEH_return_it(SAPI_Info& SAPI_info, Parser_module_config *dcfg) {
 	try {
 		real_parser_handler(SAPI_info, dcfg);
 	} catch(const Exception& e) {
@@ -249,33 +246,21 @@ call_real_parser_handler__do_PEH_return_it(
 
 	return Exception();
 }
-static void call_real_parser_handler__supress_system_exception(
-	SAPI_Info& SAPI_info, Parser_module_config *dcfg) 
-{
+
+static void call_real_parser_handler__supress_system_exception(SAPI_Info& SAPI_info, Parser_module_config *dcfg) {
 	Exception parser_exception;
 	LPEXCEPTION_POINTERS system_exception=0;
 
 	__try {
-		parser_exception=call_real_parser_handler__do_PEH_return_it(
-			SAPI_info, dcfg);
-	} __except (
-		(system_exception=GetExceptionInformation()), 
-		EXCEPTION_EXECUTE_HANDLER) 
-	{
-
+		parser_exception=call_real_parser_handler__do_PEH_return_it(SAPI_info, dcfg);
+	} __except ( (system_exception=GetExceptionInformation()), EXCEPTION_EXECUTE_HANDLER) {
 		if(system_exception)
 			if(_EXCEPTION_RECORD *er=system_exception->ExceptionRecord)
-				throw Exception("system",
-					0,
-					"0x%08X at 0x%08X", er->ExceptionCode,  er->ExceptionAddress);
+				throw Exception("system", 0, "0x%08X at 0x%08X", er->ExceptionCode,  er->ExceptionAddress);
 			else
-				throw Exception("system", 
-					0, 
-					"<no exception record>");
+				throw Exception("system", 0, "<no exception record>");
 		else
-			throw Exception("system", 
-				0, 
-				"<no exception information>");
+			throw Exception("system", 0, "<no exception information>");
 	}
 
 	if(parser_exception)
