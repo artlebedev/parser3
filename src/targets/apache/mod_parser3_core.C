@@ -5,7 +5,7 @@ Parser: apache 1.3/2.X module, part, compiled by parser3project.
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_MOD_PARSER3_CORE_C="$Id: mod_parser3_core.C,v 1.21 2020/08/13 11:44:21 moko Exp $";
+volatile const char * IDENT_MOD_PARSER3_CORE_C="$Id: mod_parser3_core.C,v 1.22 2020/08/13 13:00:28 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -88,11 +88,13 @@ struct SAPI_environment_append_info {
 	const char** cur;
 };
 #endif
+
 static const char* mk_env_pair(const char* key, const char* value) {
 	char *result=new(PointerFreeGC) char[strlen(key)+1/*=*/+strlen(value)+1/*0*/];
 	strcpy(result, key); strcat(result, "="); strcat(result, value);
 	return result;
 }
+
 static int SAPI_environment_append(void *d, const char* k, const char* val) {
 	if( k && val ) {
 		SAPI_environment_append_info& info=
@@ -101,6 +103,7 @@ static int SAPI_environment_append(void *d, const char* k, const char* val) {
 	}
 	return 1/*true*/;
 }
+
 const char* const* SAPI::Env::get(SAPI_Info& SAPI_info) {
 	const pa_table *t=SAPI_info.r->subprocess_env;
 	const char** result=new const char*[pa_ap_table_size(t)+1/*0*/];
@@ -134,8 +137,7 @@ size_t SAPI::read_post(SAPI_Info& SAPI_info, char *buf, size_t max_bytes) {
 }
 
 /// @test location provide with protocol. think about internal redirects
-void SAPI::add_header_attribute(SAPI_Info& SAPI_info,
-				const char* dont_store_key, const char* dont_store_value) {
+void SAPI::add_header_attribute(SAPI_Info& SAPI_info, const char* dont_store_key, const char* dont_store_value) {
 	if(strcasecmp(dont_store_key, "location")==0) 
 		*SAPI_info.r->status=302;
 	
@@ -169,15 +171,8 @@ size_t SAPI::send_body(SAPI_Info& SAPI_info, const void *buf, size_t size) {
 
 //@}
 
-#ifndef PA_DEBUG_DISABLE_GC
-#ifndef _MSC_VER
-extern long GC_large_alloc_warn_suppressed;
-#endif
-#endif
-
 /**
 main workhorse
-
 	@todo intelligent cache-control
 */
 static void real_parser_handler(SAPI_Info& SAPI_info, Parser_module_config *dcfg) {
