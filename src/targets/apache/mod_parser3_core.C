@@ -5,7 +5,7 @@ Parser: apache 1.3/2.X module, part, compiled by parser3project.
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_MOD_PARSER3_CORE_C="$Id: mod_parser3_core.C,v 1.20 2020/08/13 10:52:34 moko Exp $";
+volatile const char * IDENT_MOD_PARSER3_CORE_C="$Id: mod_parser3_core.C,v 1.21 2020/08/13 11:44:21 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -37,7 +37,7 @@ void pa_setup_module_cells() {
 		// init libraries
 		pa_globals_init();
 	} catch(const Exception& e) { // global problem 
-		SAPI::abort("setup_module_cells failed: %s", e.comment());
+		SAPI::die("setup_module_cells failed: %s", e.comment());
 	}
 }
 
@@ -67,31 +67,15 @@ void SAPI::log(SAPI_Info& SAPI_info, const char* fmt, ...) {
 	va_end(args);
 }
 
-static void die_or_abort(const char* fmt, va_list args, bool write_core) {
+void SAPI::die(const char* fmt, ...) {
+	va_list args;
+	va_start(args, fmt);
 	char buf[MAX_LOG_STRING];
 	size_t size=vsnprintf(buf, MAX_LOG_STRING, fmt, args);
 	size=remove_crlf(buf, buf+size);
 	pa_ap_log_error(PA_APLOG_MARK, PA_APLOG_EMERG, 0, "%s", buf);
-	
-	// exit & try to produce core dump
-	if(write_core)
-		abort();
-	else
-		exit(1);
-}
-
-void SAPI::die(const char* fmt, ...) {
-	va_list args;
-	va_start(args, fmt);
-	die_or_abort(fmt, args, false/*write core?*/);
-	va_end(args);
-}
-
-void SAPI::abort(const char* fmt, ...) {
-	va_list args;
-	va_start(args, fmt);
-	die_or_abort(fmt, args, true/*write core?*/);
-	va_end(args);
+	exit(1);
+//	va_end(args);
 }
 
 char* SAPI::Env::get(SAPI_Info& SAPI_info, const char* name) {
@@ -126,9 +110,8 @@ const char* const* SAPI::Env::get(SAPI_Info& SAPI_info) {
 }
 
 size_t SAPI::read_post(SAPI_Info& SAPI_info, char *buf, size_t max_bytes) {
-/*    pa_ap_log_error(PA_APLOG_MARK, PA_APLOG_DEBUG, SAPI_info.r->server, 
-"mod_parser3: SAPI::read_post(max=%u)", max_bytes);
-	*/
+//	pa_ap_log_error(PA_APLOG_MARK, PA_APLOG_DEBUG, SAPI_info.r->server, "mod_parser3: SAPI::read_post(max=%u)", max_bytes);
+
 	int retval;
 	if((retval = pa_ap_setup_client_block(SAPI_info.r, PA_REQUEST_CHUNKED_ERROR)))
 		return 0;

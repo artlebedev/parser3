@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.289 2020/08/13 10:55:00 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.290 2020/08/13 11:44:21 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -144,8 +144,18 @@ void SAPI::log(SAPI_Info&, const char* fmt, ...) {
 }
 
 static void die_or_abort(const char* fmt, va_list args, bool write_core) {
-	// inform user
+}
 
+void SAPI::die(const char* fmt, ...) {
+	va_list args;
+
+	// logging first, first vsnprintf
+	va_start(args,fmt);
+	::log(fmt, args);
+	va_end(args);
+
+	// inform user, second vsnprintf
+	va_start(args, fmt);
 	char body[MAX_STRING];
 	int content_length=vsnprintf(body, MAX_STRING, fmt, args);
 
@@ -165,41 +175,7 @@ static void die_or_abort(const char* fmt, va_list args, bool write_core) {
 	// body
 	SAPI::send_body(SAPI_info, body, content_length);
 
-	// exit & try to produce core dump[unix] or invoke debugger[Win32 Debug version]
-	if(write_core) {
-#ifdef WIN32
-		// IIS with abort failes to show STDOUT, it just barks "abnormal program termination"
-		exit(1);
-#else
-		abort();
-#endif
-	} else
-		exit(1);
-}
-
-void SAPI::die(const char* fmt, ...) {
-	va_list args;
-
-	// logging first, can't log inside die_or_abort due to vsnprintf (bug #106)
-	va_start(args,fmt);
-	::log(fmt, args);
-	va_end(args);
-
-	va_start(args, fmt);
-	die_or_abort(fmt, args, false /*write core?*/);
-//	va_end(args);
-}
-
-void SAPI::abort(const char* fmt, ...) {
-	va_list args;
-
-	// logging first, can't log inside die_or_abort due to vsnprintf (bug #106)
-	va_start(args,fmt);
-	::log(fmt, args);
-	va_end(args);
-
-	va_start(args, fmt);
-	die_or_abort(fmt, args, true /*write core?*/);
+	exit(1);
 //	va_end(args);
 }
 

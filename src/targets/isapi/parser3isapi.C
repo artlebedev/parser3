@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.113 2020/08/13 10:53:15 moko Exp $";
+volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.114 2020/08/13 11:44:21 moko Exp $";
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -83,30 +83,19 @@ void SAPI::log(SAPI_Info& SAPI_info, const char* fmt, ...) {
 	DWORD size=vsnprintf(start, MAX_LOG_STRING-strlen(prefix), fmt, args);
 	size=remove_crlf(start, start+size);
 
-	SAPI_info.lpECB->ServerSupportFunction(SAPI_info.lpECB->ConnID, 
-		HSE_APPEND_LOG_PARAMETER, buf, &size, 0);
+	SAPI_info.lpECB->ServerSupportFunction(SAPI_info.lpECB->ConnID, HSE_APPEND_LOG_PARAMETER, buf, &size, 0);
 }
 
 /// @todo event log
-static void abort(const char* fmt, va_list args) {
+void SAPI::die(const char* fmt, ...) {
+	va_list args;
+	va_start(args, fmt);
 	if(FILE *log=fopen("c:\\parser3die.log", "at")) {
 		vfprintf(log, fmt, args);
 		fclose(log);
 	}
-	// exit & try to produce core dump
+	// abnormal exit
 	abort();
-}
-void SAPI::die(const char* fmt, ...) {
-	va_list args;
-	va_start(args, fmt);
-	::abort(fmt, args);
-//	va_end(args);
-}
-
-void SAPI::abort(const char* fmt, ...) {
-	va_list args;
-	va_start(args, fmt);
-	::abort(fmt, args);
 //	va_end(args);
 }
 

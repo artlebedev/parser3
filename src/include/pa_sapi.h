@@ -8,7 +8,7 @@
 #ifndef PA_SAPI_H
 #define PA_SAPI_H
 
-#define IDENT_PA_SAPI_H "$Id: pa_sapi.h,v 1.33 2017/02/07 22:00:36 moko Exp $"
+#define IDENT_PA_SAPI_H "$Id: pa_sapi.h,v 1.34 2020/08/13 11:44:20 moko Exp $"
 
 // includes
 
@@ -25,8 +25,6 @@ struct SAPI {
 	static void log(SAPI_Info& info, const char* fmt, ...);
 	/// log error message & exit
 	static void die(const char* fmt, ...);
-	/// log error message & abort[write core]
-	static void abort(const char* fmt, ...);
 	/// read POST request bytes
 	static size_t read_post(SAPI_Info& info, char *buf, size_t max_bytes);
 	/// add response header attribute [but do not send it to client]

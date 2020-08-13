@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_UNTAINT_C="$Id: untaint.C,v 1.174 2017/12/05 22:59:59 moko Exp $";
+volatile const char * IDENT_UNTAINT_C="$Id: untaint.C,v 1.175 2020/08/13 11:44:20 moko Exp $";
 
 
 #include "pa_string.h"
@@ -579,8 +579,7 @@ int cstr_to_string_body_block(String::Language to_lang, size_t fragment_length, 
 		);
 		break;
 	default:
-		SAPI::abort("unknown untaint language #%d", 
-			static_cast<int>(to_lang)); // should never
+		SAPI::die("unknown untaint language #%d", static_cast<int>(to_lang)); // should never
 		break; // never
 	}
 
