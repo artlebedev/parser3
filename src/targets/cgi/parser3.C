@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.291 2020/08/13 11:49:28 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.292 2020/08/13 14:49:13 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -271,8 +271,7 @@ static void SIGPIPE_handler(int /*sig*/){
 #endif
 
 #ifdef WIN32
-const char* maybe_reconstruct_IIS_status_in_qs(const char* original) 
-{
+const char* maybe_reconstruct_IIS_status_in_qs(const char* original) {
 	// 404;http://servername/page[?param=value...]
 	// ';' should be urlencoded by HTTP standard, so we shouldn't get it from browser 
 	// and can consider that as an indication that this is IIS way to report errors
@@ -613,34 +612,8 @@ int main(int argc, char *argv[]) {
 
 	try { // global try
 		REAL_PARSER_HANDLER(filespec_to_process, request_method, header_only);
-	} catch(const Exception& e) { // global problem 
-		// don't allocate anything on pool here:
-		//   possible pool' exception not catch-ed now
-		//   and there could be out-of-memory exception
-		char buf[MAX_STRING];
-		snprintf(buf, MAX_STRING, "Unhandled exception %s", e.comment());
-		// log it
-		SAPI::log(SAPI_info, "%s", buf);
-
-		//
-		int content_length=strlen(buf);
-
-		// prepare header
-		// capitalized headers are used for preventing malloc during capitalization
-		SAPI::add_header_attribute(SAPI_info, HTTP_CONTENT_TYPE_CAPITALIZED, "text/plain");
-		// don't use 'format' function because it calls malloc
-		char content_length_cstr[MAX_NUMBER];
-		snprintf(content_length_cstr, MAX_NUMBER, "%u", content_length);
-		SAPI::add_header_attribute(SAPI_info, HTTP_CONTENT_LENGTH_CAPITALIZED, content_length_cstr);
-
-		// send header
-		SAPI::send_header(SAPI_info);
-
-		// send body
-		if(!header_only)
-			SAPI::send_body(SAPI_info, buf, content_length);
-
-		// unsuccessful finish
+	} catch(const Exception& e) { // exception in unhandled exception
+		SAPI::die("Unhandled exception %s", e.comment());
 	}
 
 #ifdef PA_DEBUG_CGI_ENTRY_EXIT
