@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.290 2020/08/13 11:44:21 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.291 2020/08/13 11:49:28 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -141,9 +141,6 @@ void SAPI::log(SAPI_Info&, const char* fmt, ...) {
 	va_start(args,fmt);
 	::log(fmt, args);
 	va_end(args);
-}
-
-static void die_or_abort(const char* fmt, va_list args, bool write_core) {
 }
 
 void SAPI::die(const char* fmt, ...) {
