@@ -501,7 +501,6 @@ AC_OUTPUT(
 	src/lib/curl/Makefile
 	src/lib/punycode/Makefile
 	src/lib/memcached/Makefile
-	src/lib/httpd/Makefile
 	src/targets/Makefile
 	src/targets/cgi/Makefile
 	src/targets/apache/Makefile

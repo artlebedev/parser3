@@ -12,7 +12,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "parser3", "src\targets\cgi\
 		{B95DF5BC-85D8-4B4C-AF72-113B99592D38} = {B95DF5BC-85D8-4B4C-AF72-113B99592D38}
 		{71C9E3C6-47E8-4CB2-AF6F-784A49F5ABFD} = {71C9E3C6-47E8-4CB2-AF6F-784A49F5ABFD}
 		{74F38AE8-E0CF-4684-B4EA-B0555F0B30AE} = {74F38AE8-E0CF-4684-B4EA-B0555F0B30AE}
-		{292B09D4-DC11-11EA-A47B-94DE80B5A21A} = {292B09D4-DC11-11EA-A47B-94DE80B5A21A}
 		{9B5091F7-0ED5-4E5A-ABAF-430ED79D231A} = {9B5091F7-0ED5-4E5A-ABAF-430ED79D231A}
 		{019EA036-519E-11E4-A984-001D7DE6219A} = {019EA036-519E-11E4-A984-001D7DE6219A}
 	EndProjectSection
@@ -113,10 +112,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pcre_internal", "src\lib\pc
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "httpd", "src\lib\httpd\httpd.vcproj", "{292B09D4-DC11-11EA-A47B-94DE80B5A21A}"
-	ProjectSection(ProjectDependencies) = postProject
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
@@ -188,10 +183,6 @@ Global
 		{019EA036-519E-11E4-A984-001D7DE6219A}.Debug.Build.0 = Debug|Win32
 		{019EA036-519E-11E4-A984-001D7DE6219A}.Release.ActiveCfg = Release|Win32
 		{019EA036-519E-11E4-A984-001D7DE6219A}.Release.Build.0 = Release|Win32
-		{292B09D4-DC11-11EA-A47B-94DE80B5A21A}.Debug.ActiveCfg = Debug|Win32
-		{292B09D4-DC11-11EA-A47B-94DE80B5A21A}.Debug.Build.0 = Debug|Win32
-		{292B09D4-DC11-11EA-A47B-94DE80B5A21A}.Release.ActiveCfg = Release|Win32
-		{292B09D4-DC11-11EA-A47B-94DE80B5A21A}.Release.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection
