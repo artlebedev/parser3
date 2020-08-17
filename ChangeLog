@@ -1,3 +1,41 @@
+2020-08-14  moko
+
+	* configure, configure.ac, parser3.sln, src/lib/Makefile.am,
+	  src/targets/cgi/Makefile.am: no httpd as separate library
+
+2020-08-13  moko
+
+	* src/targets/cgi/parser3.C: SAPI::die used in exception in
+	  unhandled exception handler to report 500 instead of 200 it was
+	  before.
+
+	* src/targets/apache/mod_parser3_core.C: minor cleanup
+
+	* src/: include/pa_sapi.h, main/untaint.C,
+	  targets/apache/mod_parser3_core.C, targets/cgi/parser3.C,
+	  targets/isapi/parser3isapi.C: SAPI::abort was used only once,
+	  thus replaced with SAPI::die and removed
+
+	* src/targets/: apache/mod_parser3_core.C, isapi/parser3isapi.C,
+	  cgi/parser3.C: whitespace
+
+	* src/targets/cgi/parser3.C: locate_config() extracted, whitespace.
+
+2020-08-12  moko
+
+	* src/targets/cgi/parser3.C: duplicate info in signal logging
+	  removed, whitespace was: SIGPIPE received while executing code.
+	  uri=/_tmp.html, method=GET, cl=0 [uri=/_tmp.html, method=GET,
+	  cl=0]
+
+	* parser3.sln: + httpd.vcproj
+
+2020-08-11  moko
+
+	* src/targets/cgi/Makefile.am: +libhttpd
+
+	* configure.ac, src/lib/Makefile.am: +libhttpd
+
 2020-07-13  moko
 
 	* tests/: 401.html, results/401.processed: test for hash key does
