@@ -14,7 +14,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.82 2019/11/24 23:46:22 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.83 2020/09/30 20:01:08 moko Exp $" IDENT_PA_HTTP_H; 
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -129,7 +129,7 @@ public:
 		return true;
 	}
 
-	size_t status_size(){
+	size_t first_line(){
 		char *headers=strchr(buf, '\n');
 		if(!headers)
 			return false;
@@ -207,7 +207,7 @@ static int http_read_response(HTTP_response& response, int sock, bool fail_on_st
 	while(response.read(sock, chunk_size)){
 		switch(state){
 			case HTTP_STATUS_CODE: {
-				size_t status_size=response.status_size();
+				size_t status_size=response.first_line();
 				if(!status_size)
 					break;
 
