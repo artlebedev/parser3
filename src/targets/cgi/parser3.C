@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.292 2020/08/13 14:49:13 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.293 2020/10/03 22:58:07 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -40,13 +40,13 @@ volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.292 2020/08/13 14:49:1
 /// IIS refuses to read bigger chunks
 const size_t READ_POST_CHUNK_SIZE=0x400*0x400; // 1M
 
-static const char* config_filespec_cstr=0;
+static const char* config_filespec_cstr=0; // -f option
+static bool mail_received=false; // -m option? [asked to parse incoming message to $mail:received]
 
 static int args_skip=1;
 static char** argv_all = NULL;
 
 static bool cgi; ///< we were started as CGI?
-static bool mail_received=false; ///< we were started with -m option? [asked to parse incoming message to $mail:received]
 
 // for signal handlers
 Request *request=0;
