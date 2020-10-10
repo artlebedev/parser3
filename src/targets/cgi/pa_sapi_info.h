@@ -1,7 +1,7 @@
 #ifndef PA_SAPI_INFO_H
 #define PA_SAPI_INFO_H
 
-#define IDENT_PA_SAPI_INFO_H "$Id: pa_sapi_info.h,v 1.1 2020/10/10 06:08:37 moko Exp $"
+#define IDENT_PA_SAPI_INFO_H "$Id: pa_sapi_info.h,v 1.2 2020/10/10 09:05:42 moko Exp $"
 
 #include "pa_sapi.h"
 #include "pa_http.h"
@@ -105,8 +105,8 @@ public:
 	SAPI_Info_HTTPD(HTTPD_Connection &aconnection) : connection(aconnection) {}
 
 	virtual char* get_env(const char* name) {
-		for(Array_iterator<ResponseHeaders::Header> i(connection.headers()); i.has_next(); ){
-			ResponseHeaders::Header header=i.next();
+		for(Array_iterator<HTTP_Headers::Header> i(connection.headers()); i.has_next(); ){
+			HTTP_Headers::Header header=i.next();
 			if(!strcmp(name, header.name.cstr()))
 				return header.value.cstrm();
 		}
@@ -122,8 +122,8 @@ public:
 	virtual const char* const *get_env() {
 		const char** result=new(PointerGC) const char*[connection.headers().count()+1/*0*/];
 		const char** cur=result;
-		for(Array_iterator<ResponseHeaders::Header> i(connection.headers()); i.has_next(); ){
-			ResponseHeaders::Header header=i.next();
+		for(Array_iterator<HTTP_Headers::Header> i(connection.headers()); i.has_next(); ){
+			HTTP_Headers::Header header=i.next();
 			*cur++=mk_env_pair(header.name.cstr(), header.value.cstr());
 		}
 		*cur=NULL;

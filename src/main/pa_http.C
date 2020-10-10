@@ -14,7 +14,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.84 2020/10/10 06:08:36 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.85 2020/10/10 09:05:42 moko Exp $" IDENT_PA_HTTP_H; 
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -48,7 +48,7 @@ volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.84 2020/10/10 06:08:36
 
 // helpers
 
-bool ResponseHeaders::add_header(const char *line){
+bool HTTP_Headers::add_header(const char *line){
 	const char *value=strchr(line, ':');
 
 	if(value && value != line){ // we need only headers, not the response code
@@ -103,7 +103,7 @@ public:
 	size_t buf_size;
 	size_t body_offset;
 
-	ResponseHeaders headers;
+	HTTP_Headers headers;
 	const String &url;
 
 	HTTP_response(const String& aurl) : buf(NULL), length(0), buf_size(0), body_offset(0), url(aurl){}
@@ -884,8 +884,8 @@ File_read_http_result pa_internal_file_read_http(Request& r, const String& file_
 	if (!real_remote_charset)
 		real_remote_charset=asked_remote_charset; // never null
 
-	for(Array_iterator<ResponseHeaders::Header> i(response.headers.headers); i.has_next(); ){
-		ResponseHeaders::Header header=i.next();
+	for(Array_iterator<HTTP_Headers::Header> i(response.headers.headers); i.has_next(); ){
+		HTTP_Headers::Header header=i.next();
 
 		header.transcode(*real_remote_charset, r.charsets.source());
 
@@ -991,7 +991,7 @@ void HTTPD_request::read_header(int sock) {
 
 /* ********************************************************** */
 
-Array<ResponseHeaders::Header> &HTTPD_Connection::headers() {
+Array<HTTP_Headers::Header> &HTTPD_Connection::headers() {
 	return request->headers.headers;
 }
 

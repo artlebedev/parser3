@@ -17,7 +17,7 @@
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.61 2019/01/15 13:57:38 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.62 2020/10/10 09:05:42 moko Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -655,9 +655,9 @@ public:
 	char *buf;
 	size_t length;
 	size_t buf_size;
-	ResponseHeaders& headers;
+	HTTP_Headers& headers;
 
-	Curl_buffer(ResponseHeaders& aheaders) : buf((char *)pa_malloc_atomic(MAX_STRING)), length(0), buf_size(MAX_STRING-1), headers(aheaders){}
+	Curl_buffer(HTTP_Headers& aheaders) : buf((char *)pa_malloc_atomic(MAX_STRING)), length(0), buf_size(MAX_STRING-1), headers(aheaders){}
 
 	void resize(size_t size){
 		buf_size=size;
@@ -680,7 +680,7 @@ static int curl_writer(char *data, size_t size, size_t nmemb, Curl_buffer *resul
 	return size;
 }
 
-static int curl_header(char *data, size_t size, size_t nmemb, ResponseHeaders *result){
+static int curl_header(char *data, size_t size, size_t nmemb, HTTP_Headers *result){
 	if(result == 0)
 		return 0;
 
@@ -711,7 +711,7 @@ static void _curl_load_action(Request& r, MethodParams& params){
 	CURLcode res;
 
 	// we need a container for headers as VFile fields can be put only after VFile.set
-	ResponseHeaders response;
+	HTTP_Headers response;
 	CURL_SETOPT(CURLOPT_HEADERFUNCTION, curl_header, "curl header function");
 	CURL_SETOPT(CURLOPT_WRITEHEADER, &response, "curl header buffer");
 
@@ -783,8 +783,8 @@ static void _curl_load_action(Request& r, MethodParams& params){
 	VHash* vtables=new VHash;
 	result.fields().put("tables", vtables);
 
-	for(Array_iterator<ResponseHeaders::Header> i(response.headers); i.has_next(); ){
-		ResponseHeaders::Header header=i.next();
+	for(Array_iterator<HTTP_Headers::Header> i(response.headers); i.has_next(); ){
+		HTTP_Headers::Header header=i.next();
 
 		if(asked_charset)
 			header.transcode(*asked_charset, r.charsets.source());

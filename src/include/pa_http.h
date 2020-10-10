@@ -8,7 +8,7 @@
 #ifndef PA_HTTP_H
 #define PA_HTTP_H
 
-#define IDENT_PA_HTTP_H "$Id: pa_http.h,v 1.20 2020/10/10 06:08:36 moko Exp $"
+#define IDENT_PA_HTTP_H "$Id: pa_http.h,v 1.21 2020/10/10 09:05:42 moko Exp $"
 
 #include "pa_vstring.h"
 #include "pa_vint.h"
@@ -27,7 +27,7 @@ struct File_read_http_result {
 }; 
 #endif
 
-class ResponseHeaders {
+class HTTP_Headers {
 public:
 	class Header {
 	public:
@@ -48,7 +48,7 @@ public:
 	String::Body content_type;
 	uint64_t content_length;
 
-	ResponseHeaders() : content_type(""), content_length(0){}
+	HTTP_Headers() : content_type(""), content_length(0){}
 
 	bool add_header(const char *line);
 
@@ -81,7 +81,7 @@ public:
 
 	HTTPD_Connection(int asock, const char *addr) : sock(asock), remote_addr(addr), request(NULL){};
 
-	Array<ResponseHeaders::Header> &headers();
+	Array<HTTP_Headers::Header> &headers();
 
 	const char *method();
 	const char *uri();
