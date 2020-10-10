@@ -5,7 +5,7 @@ Parser: apache 1.3/2.X module, part, compiled by parser3project.
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_MOD_PARSER3_CORE_C="$Id: mod_parser3_core.C,v 1.22 2020/08/13 13:00:28 moko Exp $";
+volatile const char * IDENT_MOD_PARSER3_CORE_C="$Id: mod_parser3_core.C,v 1.23 2020/10/10 06:08:37 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -149,7 +149,7 @@ void SAPI::add_header_attribute(SAPI_Info& SAPI_info, const char* dont_store_key
 		*/
 		*SAPI_info.r->content_type = pa_ap_pstrdup(SAPI_info.r->pool, dont_store_value);
 	} else if(strcasecmp(dont_store_key, HTTP_STATUS)==0) 
-		*SAPI_info.r->status=atoi(dont_store_value);
+		*SAPI_info.r->status=pa_atoi(dont_store_value, 10);
 	else
 		pa_ap_table_addn(SAPI_info.r->headers_out, 
 		pa_ap_pstrdup(SAPI_info.r->pool, capitalize(dont_store_key)), 
@@ -196,8 +196,7 @@ static void real_parser_handler(SAPI_Info& SAPI_info, Parser_module_config *dcfg
 	request_info.query_string=SAPI_info.r->args;
 	request_info.uri=request_info.strip_absolute_uri(SAPI::Env::get(SAPI_info, "REQUEST_URI"));
 	request_info.content_type=SAPI::Env::get(SAPI_info, "CONTENT_TYPE");
-	const char* content_length=SAPI::Env::get(SAPI_info, "CONTENT_LENGTH");
-	request_info.content_length=content_length?atoi(content_length):0;
+	request_info.content_length=pa_atoui(SAPI::Env::get(SAPI_info, "CONTENT_LENGTH"), 10);
 	request_info.cookie=SAPI::Env::get(SAPI_info, "HTTP_COOKIE");
 	request_info.mail_received=false;
 	
@@ -268,8 +267,7 @@ int pa_parser_handler(pa_request_rec *r, Parser_module_config *dcfg) {
 		//   possible pool' exception not catch-ed now
 		//   and there could be out-of-memory exception
 		char buf[MAX_STRING];
-		snprintf(buf, MAX_STRING, "Unhandled exception %s",
-			e.comment());
+		snprintf(buf, MAX_STRING, "Unhandled exception %s", e.comment());
 		// log it
 		SAPI::log(SAPI_info, "%s", buf);
 		

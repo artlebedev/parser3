@@ -12,7 +12,7 @@
 #include "pa_charset.h"
 #include "pa_vregex.h"
 
-volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.262 2019/12/05 22:59:45 moko Exp $" IDENT_PA_STRING_H;
+volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.263 2020/10/10 06:08:37 moko Exp $" IDENT_PA_STRING_H;
 
 const String String::Empty;
 
@@ -86,10 +86,16 @@ template<typename T> inline T pa_ato_any(const char *str, int base, const String
 }
 
 unsigned int pa_atoui(const char *str, int base, const String* problem_source){
+	if(!str)
+		return 0;
+
 	return pa_ato_any<unsigned int>(str, base, problem_source, UINT_MAX);
 }
 
 unsigned long long pa_atoul(const char *str, int base, const String* problem_source){
+	if(!str)
+		return 0;
+
 	return pa_ato_any<unsigned long long int>(str, base, problem_source, ULLONG_MAX);
 }
 

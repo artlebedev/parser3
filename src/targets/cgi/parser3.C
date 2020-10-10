@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.293 2020/10/03 22:58:07 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.294 2020/10/10 06:08:37 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -15,6 +15,7 @@ volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.293 2020/10/03 22:58:0
 #include "pa_request.h"
 #include "pa_version.h"
 #include "pa_vconsole.h"
+#include "pa_sapi_info.h"
 
 #ifdef _MSC_VER
 #include <crtdbg.h>
@@ -37,10 +38,8 @@ volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.293 2020/10/03 22:58:0
 #define PARSER_CONFIG_ENV_NAME "CGI_PARSER_CONFIG"
 #define PARSER_LOG_ENV_NAME "CGI_PARSER_LOG"
 
-/// IIS refuses to read bigger chunks
-const size_t READ_POST_CHUNK_SIZE=0x400*0x400; // 1M
-
 static const char* config_filespec_cstr=0; // -f option
+static const char* httpd_port=0; // -p option
 static bool mail_received=false; // -m option? [asked to parse incoming message to $mail:received]
 
 static int args_skip=1;
@@ -50,15 +49,9 @@ static bool cgi; ///< we were started as CGI?
 
 // for signal handlers
 Request *request=0;
-Request_info *request_info=0;
 bool execution_canceled=false;
 
 // SAPI
-
-class SAPI_Info {
-public:
-	int http_response_code;
-} SAPI_info = { 0 };
 
 static void log(const char* fmt, va_list args) {
 	bool opened=false;
@@ -109,11 +102,13 @@ static void log(const char* fmt, va_list args) {
 	size=remove_crlf(buf, buf+size);
 	fwrite(buf, size, 1, f);
 
-	if(request_info)
+	if(request){
+		Request_info& request_info = request->request_info;
 		fprintf(f, " [uri=%s, method=%s, cl=%lu]",
-			request_info->uri ? request_info->uri : "<unknown>",
-			request_info->method ? request_info->method : "<unknown>",
-			request_info->content_length);
+			request_info.uri ? request_info.uri : "<unknown>",
+			request_info.method ? request_info.method : "<unknown>",
+			request_info.content_length);
+	}
 	else
 		fputs(" [no request info]", f);
 
@@ -156,70 +151,33 @@ void SAPI::die(const char* fmt, ...) {
 	char body[MAX_STRING];
 	int content_length=vsnprintf(body, MAX_STRING, fmt, args);
 
-	// prepare header
-	// let's be honest, that's bad we couldn't produce valid output
-	// capitalized headers passed for preventing malloc during capitalization
-	SAPI::add_header_attribute(SAPI_info, HTTP_STATUS_CAPITALIZED, "500");
-	SAPI::add_header_attribute(SAPI_info, HTTP_CONTENT_TYPE_CAPITALIZED, "text/plain");
-	// don't use 'format' function because it calls malloc
-	char content_length_cstr[MAX_NUMBER];
-	snprintf(content_length_cstr, sizeof(content_length_cstr), "%u", content_length);
-	SAPI::add_header_attribute(SAPI_info, HTTP_CONTENT_LENGTH_CAPITALIZED, content_length_cstr);
-
-	// send header
-	SAPI::send_header(SAPI_info);
-
-	// body
-	SAPI::send_body(SAPI_info, body, content_length);
-
+	sapiInfo->die(body, content_length);
 	exit(1);
 //	va_end(args);
 }
 
-char* SAPI::Env::get(SAPI_Info& , const char* name) {
-	if(char *local=getenv(name))
-		return pa_strdup(local);
-	else
-		return 0;
+char* SAPI::Env::get(SAPI_Info& info, const char* name) {
+	return info.get_env(name);
 }
 
-const char* const *SAPI::Env::get(SAPI_Info&) {
-#ifdef _MSC_VER
-	extern char **_environ;
-	return _environ;
-#else
-	extern char **environ;
-	return environ;
-#endif
+const char* const *SAPI::Env::get(SAPI_Info& info) {
+	return info.get_env();
 }
 
-size_t SAPI::read_post(SAPI_Info& , char *buf, size_t max_bytes) {
-	size_t read_size=0;
-	do {
-		ssize_t chunk_size=read(fileno(stdin), buf+read_size, min(READ_POST_CHUNK_SIZE, max_bytes-read_size));
-		if(chunk_size<=0)
-			break;
-		read_size+=chunk_size;
-	} while(read_size<max_bytes);
-
-	return read_size;
+size_t SAPI::read_post(SAPI_Info& info, char *buf, size_t max_bytes) {
+	return info.read_post(buf, max_bytes);
 }
 
-void SAPI::add_header_attribute(SAPI_Info& , const char* dont_store_key, const char* dont_store_value) {
-	if(strcasecmp(dont_store_key, HTTP_STATUS)==0)
-		SAPI_info.http_response_code=atoi(dont_store_value);
-	if( cgi && (!request || !request->console.was_used()) )
-		printf("%s: %s\n", capitalize(dont_store_key), dont_store_value);
+void SAPI::add_header_attribute(SAPI_Info& info, const char* dont_store_key, const char* dont_store_value) {
+	info.add_header_attribute(dont_store_key, dont_store_value);
 }
 
-void SAPI::send_header(SAPI_Info& ) {
-	if(cgi) {
-		puts("");
-	}
+void SAPI::send_header(SAPI_Info& info) {
+	info.send_header();
 }
 
-size_t SAPI::send_body(SAPI_Info& , const void *buf, size_t size) {
-	return stdout_write(buf, size);
+size_t SAPI::send_body(SAPI_Info& info, const void *buf, size_t size) {
+	return info.send_body(buf, size);
 }
 
 static void full_file_spec(const char* file_name, char *buf, size_t buf_size) {
@@ -242,10 +200,7 @@ static void full_file_spec(const char* file_name, char *buf, size_t buf_size) {
 }
 
 static void log_signal(const char* signal_name) {
-	if(request_info)
-		SAPI::log(SAPI_info, "%s received while %s.", signal_name, request ? "executing code" : "reading data");
-	else
-		SAPI::log(SAPI_info, "%s received before or after processing request", signal_name);
+	SAPI::log(*sapiInfo, "%s received %s processing request", signal_name, request ? "while" : "before or after");
 }
 
 #ifdef SIGUSR1
@@ -342,19 +297,69 @@ static bool locate_config(){
 	return true;
 }
 
-/**
-main workhorse
+static void connection_handler(SAPI_Info_HTTPD &info, HTTPD_Connection &connection, const char* filespec_to_process){
+	connection.read_header();
 
-  @todo
-	IIS: remove trailing default-document[index.html] from $request.uri.
-	to do that we need to consult metabase,
-	wich is tested but seems slow.
-*/
-static void real_parser_handler(const char* filespec_to_process, const char* request_method, bool header_only) {
+	// Request info
+	Request_info request_info; memset(&request_info, 0, sizeof(request_info));
 
+	char document_root_buf[MAX_STRING];
+	full_file_spec("", document_root_buf, sizeof(document_root_buf));
+	request_info.document_root = document_root_buf;
+	request_info.path_translated = filespec_to_process;
+	request_info.method = connection.method();
+	request_info.query_string=NULL;
+	request_info.uri=request_info.strip_absolute_uri(connection.uri());
+	request_info.content_type=connection.content_type();
+	request_info.content_length=connection.content_length();
+	request_info.cookie=info.get_env("HTTP_COOKIE");
+	request_info.mail_received=false;
+	request_info.argv = argv_all + args_skip;
+
+	// prepare to process request
+	Request request(info, request_info, String::Language(String::L_HTML|String::L_OPTIMIZE_BIT));
+	{
+		// get ::request ptr for signal handlers
+		RequestController rc(&request);
+		bool fail_on_config_read_problem=locate_config();
+		// process the request
+		request.core(config_filespec_cstr, fail_on_config_read_problem, strcasecmp(request_info.method, "HEAD")==0);
+		// ::request cleared in RequestController desctructor to prevent signal handlers from accessing invalid memory
+	}
+}
+
+static void httpd_mode(const char* filespec_to_process){
+	int sock = HTTPD_Server::bind(/*"127.0.0.1"*/ NULL, pa_atoui(httpd_port, 10));
+
+	while(1 == 1){
+		HTTPD_Connection *connection = HTTPD_Server::accept(sock,5);
+		if(!connection)
+			continue;
+
+		SAPI_Info_HTTPD info(*connection);
+
+		try { // connection try
+			connection_handler(info, *connection, filespec_to_process);
+		} catch(const Exception& e) { // exception in unhandled exception
+//			info.die(e);
+		}
+
+		close(connection->sock);
+	}
+}
+
+/** main workhorse */
+
+static void real_parser_handler(const char* filespec_to_process) {
 	// init libraries
 	pa_globals_init();
-	
+
+	if(httpd_port){
+		httpd_mode(filespec_to_process);
+	}
+
+	const char* request_method=getenv("REQUEST_METHOD");
+
 	if(!filespec_to_process || !*filespec_to_process)
 		SAPI::die("Parser/%s", PARSER_VERSION);
 	
@@ -425,16 +430,12 @@ static void real_parser_handler(const char* filespec_to_process, const char* req
 	}
 	
 	request_info.content_type = getenv("CONTENT_TYPE");
-	const char* content_length = getenv("CONTENT_LENGTH");
-	request_info.content_length = content_length ? atoi(content_length) : 0;
+	request_info.content_length = pa_atoui(getenv("CONTENT_LENGTH"), 10);
 	request_info.cookie = getenv("HTTP_COOKIE");
 	request_info.mail_received = mail_received;
 
-	request_info.argv = argv_all;
-	request_info.args_skip = args_skip;
+	request_info.argv = argv_all + args_skip;
 
-	// get request_info ptr for signal handlers
-	::request_info = &request_info;
 	if(execution_canceled)
 		SAPI::die("Execution canceled");
 
@@ -450,13 +451,13 @@ static void real_parser_handler(const char* filespec_to_process, const char* req
 #endif
 
 	// prepare to process request
-	Request request(SAPI_info, request_info, cgi ? String::Language(String::L_HTML|String::L_OPTIMIZE_BIT) : String::L_AS_IS);
+	Request request(*sapiInfo, request_info, cgi ? String::Language(String::L_HTML|String::L_OPTIMIZE_BIT) : String::L_AS_IS);
 	{
 		// get ::request ptr for signal handlers
 		RequestController rc(&request);
 		bool fail_on_config_read_problem=locate_config();
 		// process the request
-		request.core(config_filespec_cstr, fail_on_config_read_problem, header_only);
+		request.core(config_filespec_cstr, fail_on_config_read_problem, strcasecmp(request_info.method, "HEAD")==0);
 		// ::request cleared in RequestController desctructor to prevent signal handlers from accessing invalid memory
 	}
 
@@ -465,9 +466,9 @@ static void real_parser_handler(const char* filespec_to_process, const char* req
 }
 
 #ifdef PA_SUPPRESS_SYSTEM_EXCEPTION
-static const Exception call_real_parser_handler__do_PEH_return_it(const char* filespec_to_process, const char* request_method, bool header_only) {
+static const Exception call_real_parser_handler__do_PEH_return_it(const char* filespec_to_process) {
 	try {
-		real_parser_handler(filespec_to_process, request_method, header_only);
+		real_parser_handler(filespec_to_process);
 	} catch(const Exception& e) {
 		return e;
 	}
@@ -475,12 +476,12 @@ static const Exception call_real_parser_handler__do_PEH_return_it(const char* fi
 	return Exception();
 }
 
-static void call_real_parser_handler__supress_system_exception(const char* filespec_to_process, const char* request_method, bool header_only) {
+static void call_real_parser_handler__supress_system_exception(const char* filespec_to_process) {
 	Exception parser_exception;
 	LPEXCEPTION_POINTERS system_exception=0;
 
 	__try {
-		parser_exception=call_real_parser_handler__do_PEH_return_it(filespec_to_process, request_method, header_only);
+		parser_exception=call_real_parser_handler__do_PEH_return_it(filespec_to_process);
 	} __except ( (system_exception=GetExceptionInformation()), EXCEPTION_EXECUTE_HANDLER) {
 		if(system_exception)
 			if(_EXCEPTION_RECORD *er=system_exception->ExceptionRecord)
@@ -512,16 +513,25 @@ static void usage(const char* program) {
 		"    -m              Parse mail, put received letter to $mail:received\n"
 #endif
 		"    -f config_file  Use this config file (/path/to/auto.p)\n"
+		"    -p port         Start web server on this port\n"
 		"    -h              Display usage information (this message)\n",
 		PARSER_VERSION,
 		program);
 	exit(EINVAL);
 }
 
+
 int main(int argc, char *argv[]) {
 #ifdef PA_DEBUG_CGI_ENTRY_EXIT
 	log("main: entry");
 #endif
+
+	argv_all=argv;
+	umask(2);
+
+	// were we started as CGI?
+	cgi=(getenv("SERVER_SOFTWARE") || getenv("SERVER_NAME") || getenv("GATEWAY_INTERFACE") || getenv("REQUEST_METHOD")) && !getenv("PARSER_VERSION");
+	sapiInfo = cgi ? new SAPI_Info_CGI() : new SAPI_Info();
 
 #ifdef SIGUSR1
     if(signal(SIGUSR1, SIGUSR1_handler)==SIG_ERR)
@@ -531,12 +541,6 @@ int main(int argc, char *argv[]) {
     if(signal(SIGPIPE, SIGPIPE_handler)==SIG_ERR)
 		SAPI::die("Can not set handler for SIGPIPE");
 #endif
-
-	argv_all=argv;
-	umask(2);
-
-	// were we started as CGI?
-	cgi=(getenv("SERVER_SOFTWARE") || getenv("SERVER_NAME") || getenv("GATEWAY_INTERFACE") || getenv("REQUEST_METHOD")) && !getenv("PARSER_VERSION");
 
 	char *raw_filespec_to_process;
 	if(cgi) {
@@ -562,6 +566,12 @@ int main(int argc, char *argv[]) {
 							config_filespec_cstr=argv[optind];
 						}
 						break;
+					case 'p':
+						if(optind < argc - 1){
+							optind++;
+							httpd_port=argv[optind];
+						}
+						break;
 #ifdef WITH_MAILRECEIVE
 					case 'm':
 						mail_received=true;
@@ -577,11 +587,19 @@ int main(int argc, char *argv[]) {
 		}
 		
 		if (optind > argc - 1) {
-			fprintf(stderr, "%s: file not specified\n", argv[0]);
-			usage(argv[0]);
+			if(!httpd_port) {
+				fprintf(stderr, "%s: file not specified\n", argv[0]);
+				usage(argv[0]);
+			}
+		} else {
+			raw_filespec_to_process=argv[optind];
 		}
-		raw_filespec_to_process=argv[optind];
 		args_skip=optind;
+
+		if (httpd_port && mail_received) {
+				fprintf(stderr, "%s: -p and -m options should not be used together\n", argv[0]);
+				usage(argv[0]);
+		}
 	}
 
 #ifdef _MSC_VER
@@ -607,11 +625,8 @@ int main(int argc, char *argv[]) {
 	char filespec_to_process[MAX_STRING];
 	full_file_spec(raw_filespec_to_process, filespec_to_process, sizeof(filespec_to_process));
 
-	const char* request_method=getenv("REQUEST_METHOD");
-	bool header_only=request_method && strcasecmp(request_method, "HEAD")==0;
-
 	try { // global try
-		REAL_PARSER_HANDLER(filespec_to_process, request_method, header_only);
+		REAL_PARSER_HANDLER(filespec_to_process);
 	} catch(const Exception& e) { // exception in unhandled exception
 		SAPI::die("Unhandled exception %s", e.comment());
 	}
@@ -619,5 +634,5 @@ int main(int argc, char *argv[]) {
 #ifdef PA_DEBUG_CGI_ENTRY_EXIT
 	log("main: successful return");
 #endif
-	return SAPI_info.http_response_code < 100 ? SAPI_info.http_response_code : 0;
+	return sapiInfo && sapiInfo->http_response_code < 100 ? sapiInfo->http_response_code : 0;
 }

@@ -8,7 +8,7 @@
 #ifndef PA_HTTP_H
 #define PA_HTTP_H
 
-#define IDENT_PA_HTTP_H "$Id: pa_http.h,v 1.19 2017/02/07 22:00:34 moko Exp $"
+#define IDENT_PA_HTTP_H "$Id: pa_http.h,v 1.20 2020/10/10 06:08:36 moko Exp $"
 
 #include "pa_vstring.h"
 #include "pa_vint.h"
@@ -60,11 +60,43 @@ public:
 
 };
 
+/*** http part ***/
+
 Table* parse_cookies(Request& r, Table *cookies);
 void tables_update(HashStringValue& tables, const String::Body name, const String& value);
 
 char *pa_http_safe_header_name(const char *name);
 
 File_read_http_result pa_internal_file_read_http(Request& r, const String& file_spec, bool as_text, HashStringValue *options=0, bool transcode_text_result=true);
+
+/*** httpd part ***/
+
+class HTTPD_request;
+
+class HTTPD_Connection : public PA_Allocated {
+public:
+	int sock;
+	const char *remote_addr;
+	HTTPD_request *request;
+
+	HTTPD_Connection(int asock, const char *addr) : sock(asock), remote_addr(addr), request(NULL){};
+
+	Array<ResponseHeaders::Header> &headers();
+
+	const char *method();
+	const char *uri();
+	const char *content_type();
+	uint64_t content_length();
+
+	void read_header();
+	size_t read_post(char *, size_t);
+	size_t send_body(const void *buf, size_t size);
+};
+
+class HTTPD_Server : public PA_Allocated {
+public:
+	static int bind(const char *host, int port);
+	static HTTPD_Connection *accept(int sock, int timeout_value);
+};
 
 #endif

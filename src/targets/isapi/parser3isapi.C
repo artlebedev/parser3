@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.114 2020/08/13 11:44:21 moko Exp $";
+volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.115 2020/10/10 06:08:38 moko Exp $";
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -201,7 +201,7 @@ void SAPI::add_header_attribute(SAPI_Info& SAPI_info,
 		SAPI_info.http_response_code=302;
 
 	if(strcasecmp(dont_store_key, HTTP_STATUS)==0) 
-		SAPI_info.http_response_code=atoi(dont_store_value);
+		SAPI_info.http_response_code=pa_atoi(dont_store_value);
 	else
 		(*SAPI_info.header) << capitalize(dont_store_key) << ": " << pa_strdup(dont_store_value) << "\r\n";
 }

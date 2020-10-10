@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_INFO_H
 #define PA_REQUEST_INFO_H
 
-#define IDENT_PA_REQUEST_INFO_H "$Id: pa_request_info.h,v 1.14 2017/02/07 22:00:36 moko Exp $"
+#define IDENT_PA_REQUEST_INFO_H "$Id: pa_request_info.h,v 1.15 2020/10/10 06:08:36 moko Exp $"
 
 /// some information from web server
 class Request_info {
@@ -24,7 +24,6 @@ public:
 	const char* cookie;
 	
 	char** argv;
-	int args_skip;
 	bool mail_received;
 	//@}
 	//@{ these are filed by Request class itself: user's post data

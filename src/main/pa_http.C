@@ -14,7 +14,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.83 2020/09/30 20:01:08 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.84 2020/10/10 06:08:36 moko Exp $" IDENT_PA_HTTP_H; 
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -96,7 +96,7 @@ static bool set_addr(struct sockaddr_in *addr, const char* host, const short por
 	return false;
 }
 
-class HTTP_response {
+class HTTP_response : public PA_Allocated {
 public:
 	char *buf;
 	size_t length;
@@ -104,9 +104,9 @@ public:
 	size_t body_offset;
 
 	ResponseHeaders headers;
-	String &url;
+	const String &url;
 
-	HTTP_response(String& aurl) : buf(NULL), length(0), buf_size(0), body_offset(0), url(aurl){}
+	HTTP_response(const String& aurl) : buf(NULL), length(0), buf_size(0), body_offset(0), url(aurl){}
 
 	void resize(size_t size){
 		buf_size=size;
@@ -152,7 +152,7 @@ public:
 			return status_line;
 
 		const char *result_str=pa_strdup(status_start, status_end-status_start);
-		result=atoi(result_str);
+		result=pa_atoui(result_str, 10);
 		return result_str;
 	}
 
@@ -916,3 +916,172 @@ File_read_http_result pa_internal_file_read_http(Request& r, const String& file_
 
 	return result;
 }
+
+/* ********************** httpd *************************** */
+
+class HTTPD_request : public HTTP_response {
+public:
+	const char *method;
+	const char *uri;
+
+	HTTPD_request() : HTTP_response(String::Empty), method(NULL), uri(NULL){};
+
+	const char *extract_method(char *method_line){
+		char* uri_start = strchr(method_line, ' ');
+
+		if(!uri_start || uri_start == method_line)
+			return NULL;
+
+		char* uri_end=strchr(uri_start+1, ' ');
+
+		if(!uri_end || uri_end == uri_start+1)
+			return NULL;
+
+		uri=pa_strdup(uri_start+1, uri_end-uri_start-1);
+		return str_upper(method_line, uri_start-method_line);
+	}
+
+	void read_header(int sock);
+};
+
+enum HTTPD_request_state {
+	HTTPD_METHOD,
+	HTTPD_HEADERS
+};
+
+void HTTPD_request::read_header(int sock) {
+	enum HTTPD_request_state state = HTTPD_METHOD;
+
+	size_t chunk_size = 0x400*4;
+	resize(chunk_size);
+
+	while(read(sock, chunk_size)){
+		switch(state){
+			case HTTPD_METHOD: {
+				size_t method_size = first_line();
+				if(!method_size)
+					break;
+
+				char *method_line = pa_strdup(buf, method_size);
+				method = extract_method(method_line);
+
+				if(!method || strcmp(method, "GET") && strcmp(method, "HEAD") && strcmp(method, "POST") && strcmp(method, "PUT") && strcmp(method, "DELETE"))
+					throw Exception("httpd.method", new String(method ? method : method_line), "invalid request method");
+				state = HTTPD_HEADERS;
+			}
+
+			case HTTPD_HEADERS: {
+				if(!body_start())
+					break;
+
+				parse_headers();
+				return;
+			}
+		}
+	}
+
+	if(state == HTTPD_METHOD)
+		throw Exception("httpd.request", 0, "bad request from host - no method found (size=%u)", length);
+
+	if(state == HTTPD_HEADERS){
+		parse_headers();
+		body_offset=length;
+	}
+}
+
+/* ********************************************************** */
+
+Array<ResponseHeaders::Header> &HTTPD_Connection::headers() {
+	return request->headers.headers;
+}
+
+const char *HTTPD_Connection::method() {
+	return request->method;
+}
+
+const char *HTTPD_Connection::uri() {
+	return request->uri;
+}
+
+const char *HTTPD_Connection::content_type() {
+	return request->headers.content_type.cstr();
+}
+
+uint64_t HTTPD_Connection::content_length(){
+	return request->headers.content_length;
+}
+
+void HTTPD_Connection::read_header(){
+	request = new HTTPD_request();
+	request->read_header(sock);
+}
+
+static int sock_on = 1;
+
+int HTTPD_Server::bind(const char *host, int port){
+	struct sockaddr_in me;
+
+	if(!set_addr(&me, host, port)){
+		if (host)
+			throw Exception("httpd.bind", 0, "can not resolve hostname \"%s\"", host);
+		me.sin_addr.s_addr=INADDR_ANY;
+	}
+
+	int sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP/*0*/);
+
+	if(sock < 0){
+		int no=pa_socks_errno();
+		throw Exception("httpd.bind", 0, "can not make socket: %s (%d)", pa_socks_strerr(no), no);
+	}
+
+	if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (char *)&sock_on, sizeof(sock_on)) ||
+	    setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, (char *)&sock_on, sizeof(sock_on)) ||
+	    ::bind(sock, (struct sockaddr*)&me, sizeof(me)) ||
+	    listen(sock, 16)) {
+		close(sock);
+		int no = pa_socks_errno();
+		throw Exception("httpd.bind", 0, "can not bind socket: %s (%d)", pa_socks_strerr(no), no);
+	}
+	return sock;
+}
+
+int ready(int fd,int operation,int timeout_value){
+	struct timeval timeout = {0, timeout_value * 1000};
+	fd_set fds;
+	FD_ZERO(&fds);
+	FD_SET(fd, &fds);
+	switch (operation){
+		case 0: return select(fd + 1, &fds, NULL, NULL, &timeout)>0;  /* read */
+		case 1: return select(fd + 1, NULL, &fds, NULL, &timeout)>0;  /* write */
+		default: return select(fd + 1, &fds, &fds, NULL, &timeout)>0;  /* both */
+	}
+}
+
+
+HTTPD_Connection *HTTPD_Server::accept(int sock, int timeout_value) {
+
+	int ready = ::ready(sock, 0, timeout_value);
+	if (ready < 0) {
+		int no=pa_socks_errno();
+		if(no == EINTR)
+			return NULL;
+		throw Exception("httpd.accept", 0, "error waiting for connection: %s (%d)", pa_socks_strerr(no), no);
+	}
+	if (ready == 0) {
+		/* Timeout */
+		return NULL;
+	}
+
+	struct sockaddr_in addr;
+	unsigned int sock_addr_len = sizeof(struct sockaddr_in);
+	memset(&addr, 0, sock_addr_len);
+
+	int csock = ::accept(sock, (struct sockaddr *)&addr, &sock_addr_len);
+	if(csock == -1){
+		int no=pa_socks_errno();
+		throw Exception("httpd.accept", 0, "error accepting connection: %s (%d)", pa_socks_strerr(no), no);
+	}
+
+	return new HTTPD_Connection(csock, pa_strdup(inet_ntoa(addr.sin_addr)));
+}
+
