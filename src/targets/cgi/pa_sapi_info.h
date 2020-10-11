@@ -1,7 +1,7 @@
 #ifndef PA_SAPI_INFO_H
 #define PA_SAPI_INFO_H
 
-#define IDENT_PA_SAPI_INFO_H "$Id: pa_sapi_info.h,v 1.2 2020/10/10 09:05:42 moko Exp $"
+#define IDENT_PA_SAPI_INFO_H "$Id: pa_sapi_info.h,v 1.3 2020/10/11 22:59:19 moko Exp $"
 
 #include "pa_sapi.h"
 #include "pa_http.h"
@@ -96,35 +96,60 @@ public:
 
 };
 
+char* replace_char(char* str, char from, char to){
+    for(char *pos = strchr(str,from); pos; pos=strchr(pos,from)) {
+        *pos = to;
+    }
+    return str;
+}
+
 class SAPI_Info_HTTPD : public SAPI_Info {
 public:
 
 	HTTPD_Connection &connection;
 	String output;
+	HashStringString env;
 
 	SAPI_Info_HTTPD(HTTPD_Connection &aconnection) : connection(aconnection) {}
 
-	virtual char* get_env(const char* name) {
+	void populate_env() {
+		String::Body host("localhost");
 		for(Array_iterator<HTTP_Headers::Header> i(connection.headers()); i.has_next(); ){
 			HTTP_Headers::Header header=i.next();
-			if(!strcmp(name, header.name.cstr()))
-				return header.value.cstrm();
+			String name("HTTP_");
+			name << replace_char(header.name.cstrm(), '-', '_');
+			String::Body value=header.value;
+
+			if(header.name == "HOST"){
+				size_t port=value.pos(':');
+				if(port != STRING_NOT_FOUND)
+					value=value.mid(0, port);
+				host=value;
+			}
+			env.put(name, value);
 		}
-		return NULL;
+
+		env.put("REQUEST_METHOD", connection.method());
+		env.put("REQUEST_URI", connection.uri());
+		env.put("QUERY_STRING", connection.query());
+
+		env.put("SERVER_NAME", host);
+		env.put("REMOTE_ADDR", connection.remote_addr);
+
 	}
 
-	static const char* mk_env_pair(const char* key, const char* value) {
-		char *result=new(PointerFreeGC) char[5 /*HTTP_*/ + strlen(key) + 1 /*=*/ + strlen(value) + 1 /*0*/];
-		strcpy(result, "HTTP_"); strcat(result, key); strcat(result, "="); strcat(result, value);
-		return result;
+	virtual char* get_env(const char* name) {
+		String::Body value = env.get(name);
+		return !value ? NULL : value.cstrm();
 	}
 
 	virtual const char* const *get_env() {
-		const char** result=new(PointerGC) const char*[connection.headers().count()+1/*0*/];
+		const char** result=new(PointerGC) const char*[env.count()+1/*0*/];
 		const char** cur=result;
-		for(Array_iterator<HTTP_Headers::Header> i(connection.headers()); i.has_next(); ){
-			HTTP_Headers::Header header=i.next();
-			*cur++=mk_env_pair(header.name.cstr(), header.value.cstr());
+		for(HashStringString::Iterator i(env); i; i.next()){
+			String pair;
+			pair << i.key() << "=" << i.value();
+			*cur++=pair.cstr();
 		}
 		*cur=NULL;
 		return result;

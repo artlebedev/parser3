@@ -8,7 +8,7 @@
 #ifndef PA_HTTP_H
 #define PA_HTTP_H
 
-#define IDENT_PA_HTTP_H "$Id: pa_http.h,v 1.21 2020/10/10 09:05:42 moko Exp $"
+#define IDENT_PA_HTTP_H "$Id: pa_http.h,v 1.22 2020/10/11 22:59:19 moko Exp $"
 
 #include "pa_vstring.h"
 #include "pa_vint.h"
@@ -87,6 +87,15 @@ public:
 	const char *uri();
 	const char *content_type();
 	uint64_t content_length();
+
+	const char *query(){
+		if(uri()){
+			const char *result=strchr(uri(), '?');
+			if(result++ && *result)
+				return result;
+		}
+		return NULL;
+	}
 
 	void read_header();
 	size_t read_post(char *, size_t);

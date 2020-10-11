@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.294 2020/10/10 06:08:37 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.295 2020/10/11 22:59:19 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -299,6 +299,7 @@ static bool locate_config(){
 
 static void connection_handler(SAPI_Info_HTTPD &info, HTTPD_Connection &connection, const char* filespec_to_process){
 	connection.read_header();
+	info.populate_env();
 
 	// Request info
 	Request_info request_info; memset(&request_info, 0, sizeof(request_info));
@@ -308,12 +309,12 @@ static void connection_handler(SAPI_Info_HTTPD &info, HTTPD_Connection &connecti
 	request_info.document_root = document_root_buf;
 	request_info.path_translated = filespec_to_process;
 	request_info.method = connection.method();
-	request_info.query_string=NULL;
-	request_info.uri=request_info.strip_absolute_uri(connection.uri());
-	request_info.content_type=connection.content_type();
-	request_info.content_length=connection.content_length();
-	request_info.cookie=info.get_env("HTTP_COOKIE");
-	request_info.mail_received=false;
+	request_info.query_string = connection.query();
+	request_info.uri = request_info.strip_absolute_uri(connection.uri());
+	request_info.content_type = connection.content_type();
+	request_info.content_length = connection.content_length();
+	request_info.cookie = info.get_env("HTTP_COOKIE");
+	request_info.mail_received = false;
 	request_info.argv = argv_all + args_skip;
 
 	// prepare to process request
