@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.295 2020/10/11 22:59:19 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.296 2020/10/11 23:25:10 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -39,7 +39,7 @@ volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.295 2020/10/11 22:59:1
 #define PARSER_LOG_ENV_NAME "CGI_PARSER_LOG"
 
 static const char* config_filespec_cstr=0; // -f option
-static const char* httpd_port=0; // -p option
+static const char* httpd_host_port=0; // -p option
 static bool mail_received=false; // -m option? [asked to parse incoming message to $mail:received]
 
 static int args_skip=1;
@@ -330,7 +330,7 @@ static void connection_handler(SAPI_Info_HTTPD &info, HTTPD_Connection &connecti
 }
 
 static void httpd_mode(const char* filespec_to_process){
-	int sock = HTTPD_Server::bind(/*"127.0.0.1"*/ NULL, pa_atoui(httpd_port, 10));
+	int sock = HTTPD_Server::bind(httpd_host_port);
 
 	while(1 == 1){
 		HTTPD_Connection *connection = HTTPD_Server::accept(sock,5);
@@ -355,7 +355,7 @@ static void real_parser_handler(const char* filespec_to_process) {
 	// init libraries
 	pa_globals_init();
 
-	if(httpd_port){
+	if(httpd_host_port){
 		httpd_mode(filespec_to_process);
 	}
 
@@ -514,7 +514,7 @@ static void usage(const char* program) {
 		"    -m              Parse mail, put received letter to $mail:received\n"
 #endif
 		"    -f config_file  Use this config file (/path/to/auto.p)\n"
-		"    -p port         Start web server on this port\n"
+		"    -p [host:]port  Start web server on this port\n"
 		"    -h              Display usage information (this message)\n",
 		PARSER_VERSION,
 		program);
@@ -570,7 +570,7 @@ int main(int argc, char *argv[]) {
 					case 'p':
 						if(optind < argc - 1){
 							optind++;
-							httpd_port=argv[optind];
+							httpd_host_port=argv[optind];
 						}
 						break;
 #ifdef WITH_MAILRECEIVE
@@ -588,7 +588,7 @@ int main(int argc, char *argv[]) {
 		}
 		
 		if (optind > argc - 1) {
-			if(!httpd_port) {
+			if(!httpd_host_port) {
 				fprintf(stderr, "%s: file not specified\n", argv[0]);
 				usage(argv[0]);
 			}
@@ -597,7 +597,7 @@ int main(int argc, char *argv[]) {
 		}
 		args_skip=optind;
 
-		if (httpd_port && mail_received) {
+		if (httpd_host_port && mail_received) {
 				fprintf(stderr, "%s: -p and -m options should not be used together\n", argv[0]);
 				usage(argv[0]);
 		}

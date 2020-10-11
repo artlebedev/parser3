@@ -14,7 +14,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.85 2020/10/10 09:05:42 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.86 2020/10/11 23:25:10 moko Exp $" IDENT_PA_HTTP_H; 
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -1018,10 +1018,19 @@ void HTTPD_Connection::read_header(){
 
 static int sock_on = 1;
 
-int HTTPD_Server::bind(const char *host, int port){
+int HTTPD_Server::bind(const char *host_port){
 	struct sockaddr_in me;
 
-	if(!set_addr(&me, host, port)){
+	const char *port = strchr(host_port, ':');
+	const char *host = NULL;
+	if(port && port > host_port){
+		host = pa_strdup(host_port, port - host_port);
+		port += 1;
+	} else {
+		port = host_port;
+	}
+
+	if(!set_addr(&me, host, pa_atoui(port, 10))){
 		if (host)
 			throw Exception("httpd.bind", 0, "can not resolve hostname \"%s\"", host);
 		me.sin_addr.s_addr=INADDR_ANY;

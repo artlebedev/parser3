@@ -8,7 +8,7 @@
 #ifndef PA_HTTP_H
 #define PA_HTTP_H
 
-#define IDENT_PA_HTTP_H "$Id: pa_http.h,v 1.22 2020/10/11 22:59:19 moko Exp $"
+#define IDENT_PA_HTTP_H "$Id: pa_http.h,v 1.23 2020/10/11 23:25:09 moko Exp $"
 
 #include "pa_vstring.h"
 #include "pa_vint.h"
@@ -104,7 +104,7 @@ public:
 
 class HTTPD_Server : public PA_Allocated {
 public:
-	static int bind(const char *host, int port);
+	static int bind(const char *host_port);
 	static HTTPD_Connection *accept(int sock, int timeout_value);
 };
 
