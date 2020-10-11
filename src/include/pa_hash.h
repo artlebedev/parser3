@@ -17,7 +17,7 @@
 #ifndef PA_HASH_H
 #define PA_HASH_H
 
-#define IDENT_PA_HASH_H "$Id: pa_hash.h,v 1.99 2017/11/15 22:48:57 moko Exp $"
+#define IDENT_PA_HASH_H "$Id: pa_hash.h,v 1.100 2020/10/11 22:58:37 moko Exp $"
 
 #include "pa_memory.h"
 #include "pa_types.h"
@@ -555,7 +555,7 @@ public:
 			if(pair->code==code && CORD_cmp(pair->key,(CORD)key)==0)
 				return pair->value;
 
-		return V(0);
+		return V((const char *)0);
 	}
 
 	/// put a [value] under the [key] if that [key] existed @returns existed or not
