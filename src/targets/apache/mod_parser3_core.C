@@ -5,7 +5,7 @@ Parser: apache 1.3/2.X module, part, compiled by parser3project.
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_MOD_PARSER3_CORE_C="$Id: mod_parser3_core.C,v 1.24 2020/10/12 20:57:08 moko Exp $";
+volatile const char * IDENT_MOD_PARSER3_CORE_C="$Id: mod_parser3_core.C,v 1.25 2020/10/12 22:02:33 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -149,7 +149,7 @@ void SAPI::add_header_attribute(SAPI_Info& SAPI_info, const char* dont_store_key
 		*/
 		*SAPI_info.r->content_type = pa_ap_pstrdup(SAPI_info.r->pool, dont_store_value);
 	} else if(strcasecmp(dont_store_key, HTTP_STATUS)==0) 
-		*SAPI_info.r->status=pa_atoi(dont_store_value, 10);
+		*SAPI_info.r->status=atoi(dont_store_value);
 	else
 		pa_ap_table_addn(SAPI_info.r->headers_out, 
 		pa_ap_pstrdup(SAPI_info.r->pool, capitalize(dont_store_key)), 
