@@ -1,7 +1,7 @@
 #ifndef PA_SAPI_INFO_H
 #define PA_SAPI_INFO_H
 
-#define IDENT_PA_SAPI_INFO_H "$Id: pa_sapi_info.h,v 1.4 2020/10/12 14:28:53 moko Exp $"
+#define IDENT_PA_SAPI_INFO_H "$Id: pa_sapi_info.h,v 1.5 2020/10/12 21:55:18 moko Exp $"
 
 #include "pa_sapi.h"
 #include "pa_http.h"
@@ -201,11 +201,7 @@ public:
 	}
 
 	virtual size_t send_body(const void *buf, size_t size) {
-		if(send(connection.sock, buf, size, 0)!=(ssize_t)size) {
-			int no=pa_socks_errno();
-			throw Exception("httpd.timeout", 0, "error sending response: %s (%d)", pa_socks_strerr(no), no);
-		}
-		return size;
+		return connection.send_body(buf, size);
 	}
 
 };

@@ -14,7 +14,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.89 2020/10/12 21:15:07 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.90 2020/10/12 21:55:17 moko Exp $" IDENT_PA_HTTP_H; 
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -1039,6 +1039,14 @@ void HTTPD_Connection::read_header(){
 
 size_t HTTPD_Connection::read_post(char *body, size_t max_bytes) {
 	return request->read_post(sock, body, max_bytes);
+}
+
+size_t HTTPD_Connection::send_body(const void *buf, size_t size) {
+	if(send(sock, buf, size, 0) != (ssize_t)size) {
+		int no=pa_socks_errno();
+		throw Exception("httpd.timeout", 0, "error sending response: %s (%d)", pa_socks_strerr(no), no);
+	}
+	return size;
 }
 
 static int sock_on = 1;
