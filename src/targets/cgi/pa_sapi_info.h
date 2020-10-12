@@ -1,7 +1,7 @@
 #ifndef PA_SAPI_INFO_H
 #define PA_SAPI_INFO_H
 
-#define IDENT_PA_SAPI_INFO_H "$Id: pa_sapi_info.h,v 1.3 2020/10/11 22:59:19 moko Exp $"
+#define IDENT_PA_SAPI_INFO_H "$Id: pa_sapi_info.h,v 1.4 2020/10/12 14:28:53 moko Exp $"
 
 #include "pa_sapi.h"
 #include "pa_http.h"
@@ -155,8 +155,8 @@ public:
 		return result;
 	}
 
-	virtual size_t read_post(char *, size_t) {
-		return 0;
+	virtual size_t read_post(char *buf, size_t max_bytes) {
+		return connection.read_post(buf, max_bytes);
 	}
 
 	virtual void add_header_attribute(const char* dont_store_key, const char* dont_store_value) {

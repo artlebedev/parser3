@@ -8,7 +8,7 @@
 #ifndef PA_HTTP_H
 #define PA_HTTP_H
 
-#define IDENT_PA_HTTP_H "$Id: pa_http.h,v 1.23 2020/10/11 23:25:09 moko Exp $"
+#define IDENT_PA_HTTP_H "$Id: pa_http.h,v 1.24 2020/10/12 14:28:53 moko Exp $"
 
 #include "pa_vstring.h"
 #include "pa_vint.h"
@@ -99,7 +99,7 @@ public:
 
 	void read_header();
 	size_t read_post(char *, size_t);
-	size_t send_body(const void *buf, size_t size);
+	size_t send_body(const void *, size_t);
 };
 
 class HTTPD_Server : public PA_Allocated {

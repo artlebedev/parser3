@@ -14,7 +14,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.86 2020/10/11 23:25:10 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.87 2020/10/12 14:28:53 moko Exp $" IDENT_PA_HTTP_H; 
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -941,7 +941,8 @@ public:
 		return str_upper(method_line, uri_start-method_line);
 	}
 
-	void read_header(int sock);
+	void read_header(int);
+	size_t read_post(int, char *, size_t);
 };
 
 enum HTTPD_request_state {
@@ -989,6 +990,24 @@ void HTTPD_request::read_header(int sock) {
 	}
 }
 
+size_t HTTPD_request::read_post(int sock, char *body, size_t max_bytes) {
+	size_t total_read = min(length - body_offset, max_bytes);
+	memcpy(body, buf, total_read);
+
+	while (total_read < max_bytes){
+		ssize_t received_size = recv(sock, buf + total_read, max_bytes - total_read, 0);
+		if(received_size == 0)
+			return total_read;
+		if(received_size < 0) {
+			if(int no = pa_socks_errno())
+				throw Exception("httpd.timeout", &url, "error receiving request body: %s (%d)", pa_socks_strerr(no), no);
+			return total_read;
+		}
+		total_read += received_size;
+	}
+	return total_read;
+}
+
 /* ********************************************************** */
 
 Array<HTTP_Headers::Header> &HTTPD_Connection::headers() {
@@ -1014,6 +1033,10 @@ uint64_t HTTPD_Connection::content_length(){
 void HTTPD_Connection::read_header(){
 	request = new HTTPD_request();
 	request->read_header(sock);
+}
+
+size_t HTTPD_Connection::read_post(char *body, size_t max_bytes) {
+	return request->read_post(sock, body, max_bytes);
 }
 
 static int sock_on = 1;
@@ -1066,9 +1089,7 @@ int ready(int fd,int operation,int timeout_value){
 	}
 }
 
-
 HTTPD_Connection *HTTPD_Server::accept(int sock, int timeout_value) {
-
 	int ready = ::ready(sock, 0, timeout_value);
 	if (ready < 0) {
 		int no=pa_socks_errno();
