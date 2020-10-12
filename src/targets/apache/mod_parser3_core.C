@@ -5,7 +5,7 @@ Parser: apache 1.3/2.X module, part, compiled by parser3project.
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_MOD_PARSER3_CORE_C="$Id: mod_parser3_core.C,v 1.23 2020/10/10 06:08:37 moko Exp $";
+volatile const char * IDENT_MOD_PARSER3_CORE_C="$Id: mod_parser3_core.C,v 1.24 2020/10/12 20:57:08 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -250,7 +250,7 @@ int pa_parser_handler(pa_request_rec *r, Parser_module_config *dcfg) {
 	// SAPI info
 	SAPI_Info SAPI_info; SAPI_info.r=r;
 	
-	if(r->file_not_found ) 
+	if(r->file_not_found)
 		return PA_HTTP_NOT_FOUND;
 	
 	try { // global try
@@ -262,32 +262,20 @@ int pa_parser_handler(pa_request_rec *r, Parser_module_config *dcfg) {
 			SAPI_info, dcfg);
 
 		// successful finish
-	} catch(const Exception& e) { // global problem 
-		// don't allocate anything on pool here:
-		//   possible pool' exception not catch-ed now
-		//   and there could be out-of-memory exception
-		char buf[MAX_STRING];
-		snprintf(buf, MAX_STRING, "Unhandled exception %s", e.comment());
+	} catch(const Exception& e) { // exception in unhandled exception
 		// log it
-		SAPI::log(SAPI_info, "%s", buf);
-		
-		//
-		int content_length=strlen(buf);
+		SAPI::log(SAPI_info, "%s", e.comment());
 		
 		// prepare header
 		// capitalized headers are used for preventing malloc during capitalization
 		SAPI::add_header_attribute(SAPI_info, HTTP_CONTENT_TYPE_CAPITALIZED, "text/plain");
-		// don't use 'format' function because it calls malloc
-		char content_length_cstr[MAX_NUMBER];
-		snprintf(content_length_cstr, MAX_NUMBER, "%u", content_length);
-		SAPI::add_header_attribute(SAPI_info, HTTP_CONTENT_LENGTH_CAPITALIZED, content_length_cstr);
 		
 		// send header
 		SAPI::send_header(SAPI_info);
 		
 		// send body
 		if(!r->header_only)
-			SAPI::send_body(SAPI_info, buf, content_length);
+			SAPI::send_body(SAPI_info, e.comment(), strlen(e.comment()));
 		
 		// unsuccessful finish
 	}

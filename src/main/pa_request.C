@@ -33,7 +33,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.379 2019/11/22 23:11:26 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.380 2020/10/12 20:57:08 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -563,10 +563,8 @@ void Request::core(const char* config_filespec, bool config_fail_on_read_problem
 		} catch(const Exception& e) { // exception in unhandled exception
 			Request::Exception_details details=get_details(e);
 			const char* exception_cstr=get_exception_cstr(e, details);
-			// unconditionally log the beast
-			SAPI::log(sapi_info, "%s", exception_cstr);
-
-			throw Exception(0, 0, "in %s", exception_cstr);
+			// unconditionally log the beast in exception handler
+			throw Exception(0, 0, "Unhandled exception in %s", exception_cstr);
 		}
 	}
 }

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.297 2020/10/12 20:01:48 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.298 2020/10/12 20:57:08 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -622,7 +622,7 @@ int main(int argc, char *argv[]) {
 	try { // global try
 		REAL_PARSER_HANDLER(filespec_to_process);
 	} catch(const Exception& e) { // exception in unhandled exception
-		SAPI::die("Unhandled exception %s", e.comment());
+		SAPI::die("%s", e.comment());
 	}
 
 #ifdef PA_DEBUG_CGI_ENTRY_EXIT

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.115 2020/10/10 06:08:38 moko Exp $";
+volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.116 2020/10/12 20:57:09 moko Exp $";
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -423,75 +423,27 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 #endif
 			SAPI_info, header_only);
 		// successful finish
-	} catch(const Exception& e) { // global problem
-		// don't allocate anything on pool here:
-		//   possible pool' exception not catch-ed now
-			//   and there could be out-of-memory exception
-		const char* body=e.comment();
+	} catch(const Exception& e) { // exception in unhandled exception
 		// log it
-		SAPI::log(SAPI_info, "exception in request exception handler: %s", body);
-
-		//
-		int content_length=strlen(body);
-
-		// prepare header // not using SAPI func wich allocates on pool
-		char header_buf[MAX_STRING];
-		int header_len=snprintf(header_buf, MAX_STRING,
-			HTTP_CONTENT_TYPE_CAPITALIZED ": text/plain\r\n"
-			HTTP_CONTENT_LENGTH_CAPITALIZED ": %u\r\n"
-//			"expires: Fri, 23 Mar 2001 09:32:23 GMT\r\n"
-			"\r\n",
-			content_length);
+		SAPI::log(SAPI_info, "%s", e.comment());
 
 		HSE_SEND_HEADER_EX_INFO header_info;
 		header_info.pszStatus="200 OK";
 		header_info.cchStatus=strlen(header_info.pszStatus);
-		header_info.pszHeader=header_buf;
-		header_info.cchHeader=header_len;
+		header_info.pszHeader=HTTP_CONTENT_TYPE_CAPITALIZED ": text/plain\r\n\r\n";
+		header_info.cchHeader=strlen(header_info.pszHeader);
 		header_info.fKeepConn=true;
 		
 		// send header
 		lpECB->dwHttpStatusCode=200;
-		lpECB->ServerSupportFunction(lpECB->ConnID, 
-			HSE_REQ_SEND_RESPONSE_HEADER_EX, &header_info, NULL, NULL);
+		lpECB->ServerSupportFunction(lpECB->ConnID, HSE_REQ_SEND_RESPONSE_HEADER_EX, &header_info, NULL, NULL);
 
 		// send body
 		if(!header_only)
-			SAPI::send_body(SAPI_info, body, content_length);
+			SAPI::send_body(SAPI_info, e.comment(), strlen(e.comment()));
 
 		// unsuccessful finish
 	}
-/*
-		const char* body="test";
-
-		//
-		int content_length=strlen(body);
-
-		// prepare header // not using SAPI func wich allocates on pool
-		char header_buf[MAX_STRING];
-		int header_len=snprintf(header_buf, MAX_STRING,
-			HTTP_CONTENT_TYPE_CAPITALIZED ": text/plain\r\n"
-			HTTP_CONTENT_LENGTH_CAPITALIZED ": %u\r\n"
-			"expires: Fri, 23 Mar 2001 09:32:23 GMT\r\n"
-			"\r\n",
-			content_length);
-		HSE_SEND_HEADER_EX_INFO header_info;
-		header_info.pszStatus="200 OK";
-		header_info.cchStatus=strlen(header_info.pszStatus);
-		header_info.pszHeader=header_buf;
-		header_info.cchHeader=header_len;
-		header_info.fKeepConn=true;
-		
-	// send header
-		lpECB->dwHttpStatusCode=200;
-		lpECB->ServerSupportFunction(lpECB->ConnID, 
-			HSE_REQ_SEND_RESPONSE_HEADER_EX, &header_info, NULL, NULL);
-
-		// send body
-	DWORD num_bytes=content_length;
-	lpECB->WriteClient(lpECB->ConnID, 
-		(void *)body, &num_bytes, HSE_IO_SYNC);
-*/
 	return HSE_STATUS_SUCCESS_AND_KEEP_CONN;
 }
 
