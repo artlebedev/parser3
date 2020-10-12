@@ -1,3 +1,25 @@
+2020-10-12  moko
+
+	* src/: include/pa_http.h, main/pa_http.C, targets/cgi/parser3.C:
+	  [host:]port syntax support in httpd mode
+
+	* src/: include/pa_http.h, targets/cgi/pa_sapi_info.h,
+	  targets/cgi/parser3.C: populate_env added
+
+	* src/include/pa_hash.h: to make get(char *) compiling in
+	  HashStringString
+
+2020-10-10  moko
+
+	* src/: classes/curl.C, include/pa_http.h, main/pa_http.C,
+	  targets/cgi/pa_sapi_info.h: ResponseHeaders -> HTTP_Headers
+
+	* src/: include/pa_http.h, include/pa_request_info.h,
+	  main/pa_http.C, main/pa_string.C,
+	  targets/apache/mod_parser3_core.C, targets/cgi/pa_sapi_info.h,
+	  targets/cgi/parser3.C, targets/isapi/parser3isapi.C,
+	  types/pa_vrequest.C: initial httpd mode implementation
+
 2020-10-04  moko
 
 	* src/targets/cgi/parser3.C: options together
