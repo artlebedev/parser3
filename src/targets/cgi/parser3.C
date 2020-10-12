@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.296 2020/10/11 23:25:10 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.297 2020/10/12 20:01:48 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -50,6 +50,8 @@ static bool cgi; ///< we were started as CGI?
 // for signal handlers
 Request *request=0;
 bool execution_canceled=false;
+// for die error logging
+Request_info request_info;
 
 // SAPI
 
@@ -102,18 +104,10 @@ static void log(const char* fmt, va_list args) {
 	size=remove_crlf(buf, buf+size);
 	fwrite(buf, size, 1, f);
 
-	if(request){
-		Request_info& request_info = request->request_info;
-		fprintf(f, " [uri=%s, method=%s, cl=%lu]",
-			request_info.uri ? request_info.uri : "<unknown>",
-			request_info.method ? request_info.method : "<unknown>",
-			request_info.content_length);
-	}
-	else
-		fputs(" [no request info]", f);
-
-	// newline
-	fputs("\n", f);
+	if(request_info.method) {
+		fprintf(f, " [uri=%s, method=%s, cl=%lu]\n", request_info.uri ? request_info.uri : "<unknown>", request_info.method, request_info.content_length);
+	} else
+		fputs(" [no request info]\n", f);
 
 	if(opened)
 		fclose(f);
@@ -301,7 +295,7 @@ static void connection_handler(SAPI_Info_HTTPD &info, HTTPD_Connection &connecti
 	connection.read_header();
 	info.populate_env();
 
-	// Request info
+	// connection request info
 	Request_info request_info; memset(&request_info, 0, sizeof(request_info));
 
 	char document_root_buf[MAX_STRING];
@@ -320,20 +314,20 @@ static void connection_handler(SAPI_Info_HTTPD &info, HTTPD_Connection &connecti
 	// prepare to process request
 	Request request(info, request_info, String::Language(String::L_HTML|String::L_OPTIMIZE_BIT));
 	{
-		// get ::request ptr for signal handlers
+		// initing ::request ptr for signal handlers
 		RequestController rc(&request);
 		bool fail_on_config_read_problem=locate_config();
 		// process the request
 		request.core(config_filespec_cstr, fail_on_config_read_problem, strcasecmp(request_info.method, "HEAD")==0);
-		// ::request cleared in RequestController desctructor to prevent signal handlers from accessing invalid memory
+		// clearing ::request in RequestController desctructor to prevent signal handlers from accessing invalid memory
 	}
 }
 
 static void httpd_mode(const char* filespec_to_process){
 	int sock = HTTPD_Server::bind(httpd_host_port);
 
-	while(1 == 1){
-		HTTPD_Connection *connection = HTTPD_Server::accept(sock,5);
+	while(1){
+		HTTPD_Connection *connection = HTTPD_Server::accept(sock, 5);
 		if(!connection)
 			continue;
 
@@ -364,10 +358,9 @@ static void real_parser_handler(const char* filespec_to_process) {
 	if(!filespec_to_process || !*filespec_to_process)
 		SAPI::die("Parser/%s", PARSER_VERSION);
 	
-	// Request info
-	Request_info request_info; memset(&request_info, 0, sizeof(request_info));
 	char document_root_buf[MAX_STRING];
 
+	// global request info
 	request_info.path_translated = filespec_to_process;
 	request_info.method = request_method ? request_method : "GET";
 	request_info.query_string = MAYBE_RECONSTRUCT_IIS_STATUS_IN_QS(getenv("QUERY_STRING"));
@@ -441,7 +434,7 @@ static void real_parser_handler(const char* filespec_to_process) {
 		SAPI::die("Execution canceled");
 
 #ifdef PA_DEBUG_CGI_ENTRY_EXIT
-	log("request_info: method=%s, uri=%s, q=%s, dr=%s, pt=%s, cookies=%s, cl=%u", 
+	log("request_info: method=%s, uri=%s, q=%s, dr=%s, pt=%s, cookies=%s, cl=%u",
 		request_info.method,
 		request_info.uri,
 		request_info.query_string,
@@ -454,12 +447,12 @@ static void real_parser_handler(const char* filespec_to_process) {
 	// prepare to process request
 	Request request(*sapiInfo, request_info, cgi ? String::Language(String::L_HTML|String::L_OPTIMIZE_BIT) : String::L_AS_IS);
 	{
-		// get ::request ptr for signal handlers
+		// initing ::request ptr for signal handlers
 		RequestController rc(&request);
 		bool fail_on_config_read_problem=locate_config();
 		// process the request
 		request.core(config_filespec_cstr, fail_on_config_read_problem, strcasecmp(request_info.method, "HEAD")==0);
-		// ::request cleared in RequestController desctructor to prevent signal handlers from accessing invalid memory
+		// clearing ::request in RequestController desctructor to prevent signal handlers from accessing invalid memory
 	}
 
 	// finalize libraries
