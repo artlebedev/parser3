@@ -14,10 +14,11 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.88 2020/10/12 16:58:55 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.89 2020/10/12 21:15:07 moko Exp $" IDENT_PA_HTTP_H; 
 
 #ifdef _MSC_VER
 #include <windows.h>
+#define socklen_t int
 #else
 #define closesocket close
 #endif
@@ -130,11 +131,11 @@ public:
 	}
 
 	size_t first_line(){
-		char *headers=strchr(buf, '\n');
-		if(!headers)
+		char *header=strchr(buf, '\n');
+		if(!header)
 			return false;
 
-		return headers-buf;
+		return header-buf;
 	}
 
 	const char *status_code(char *status_line, int &result){
@@ -897,7 +898,7 @@ File_read_http_result pa_internal_file_read_http(Request& r, const String& file_
 	}
 
 	// filling $.cookies
-	if(Value *vcookies=vtables->hash().get("SET-COOKIE"))
+	if(vcookies=vtables->hash().get("SET-COOKIE"))
 		result.headers->put(HTTP_COOKIES_NAME, new VTable(parse_cookies(r, vcookies->get_table())));
 
 	// output response
@@ -1071,7 +1072,7 @@ int HTTPD_Server::bind(const char *host_port){
 	    setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, (char *)&sock_on, sizeof(sock_on)) ||
 	    ::bind(sock, (struct sockaddr*)&me, sizeof(me)) ||
 	    listen(sock, 16)) {
-		close(sock);
+		closesocket(sock);
 		int no = pa_socks_errno();
 		throw Exception("httpd.bind", 0, "can not bind socket: %s (%d)", pa_socks_strerr(no), no);
 	}
@@ -1104,7 +1105,7 @@ HTTPD_Connection *HTTPD_Server::accept(int sock, int timeout_value) {
 	}
 
 	struct sockaddr_in addr;
-	unsigned int sock_addr_len = sizeof(struct sockaddr_in);
+	socklen_t sock_addr_len = sizeof(struct sockaddr_in);
 	memset(&addr, 0, sock_addr_len);
 
 	int csock = ::accept(sock, (struct sockaddr *)&addr, &sock_addr_len);
