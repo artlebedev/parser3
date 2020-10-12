@@ -14,7 +14,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.87 2020/10/12 14:28:53 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.88 2020/10/12 16:58:55 moko Exp $" IDENT_PA_HTTP_H; 
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -189,6 +189,7 @@ public:
 		}
 	}
 
+	int read_response(int sock, bool fail_on_status_ne_200);
 };
 
 enum HTTP_response_state {
@@ -197,21 +198,21 @@ enum HTTP_response_state {
 	HTTP_BODY
 };
 
-static int http_read_response(HTTP_response& response, int sock, bool fail_on_status_ne_200) {
+int HTTP_response::read_response(int sock, bool fail_on_status_ne_200) {
 	HTTP_response_state state=HTTP_STATUS_CODE;
 	int result=0;
 
 	size_t chunk_size=0x400*16;
-	response.resize(2*chunk_size);
+	resize(2*chunk_size);
 
-	while(response.read(sock, chunk_size)){
+	while(read(sock, chunk_size)){
 		switch(state){
 			case HTTP_STATUS_CODE: {
-				size_t status_size=response.first_line();
+				size_t status_size=first_line();
 				if(!status_size)
 					break;
 
-				const char *status=response.status_code(pa_strdup(response.buf, status_size), result);
+				const char *status=status_code(pa_strdup(buf, status_size), result);
 
 				if(!result || fail_on_status_ne_200 && result!=200)
 					throw Exception("http.status", status ? new String(status) : &String::Empty, "invalid HTTP response status");
@@ -220,14 +221,14 @@ static int http_read_response(HTTP_response& response, int sock, bool fail_on_st
 			}
 
 			case HTTP_HEADERS: {
-				if(!response.body_start())
+				if(!body_start())
 					break;
 
-				response.parse_headers();
+				parse_headers();
 
-				size_t content_length=check_file_size(response.headers.content_length, response.url);
-				if(content_length>0 && (content_length + response.body_offset) > response.length){
-					response.resize(content_length + response.body_offset + 0x400*64);
+				size_t content_length=check_file_size(headers.content_length, url);
+				if(content_length>0 && (content_length + body_offset) > length){
+					resize(content_length + body_offset + 0x400*64);
 				}
 
 				state=HTTP_BODY;
@@ -242,11 +243,11 @@ static int http_read_response(HTTP_response& response, int sock, bool fail_on_st
 	}
 
 	if(state==HTTP_STATUS_CODE)
-		throw Exception("http.response", &response.url, "bad response from host - no status found (size=%u)", response.length);
+		throw Exception("http.response", &url, "bad response from host - no status found (size=%u)", length);
 
 	if(state==HTTP_HEADERS){
-		response.parse_headers();
-		response.body_offset=response.length;
+		parse_headers();
+		body_offset=length;
 	}
 
 	return result;
@@ -322,7 +323,7 @@ static int http_request(HTTP_response& response, const char* host, short port, c
 				throw Exception("http.timeout", 0, "error sending request: %s (%d)", pa_socks_strerr(no), no);
 			}
 
-			result=http_read_response(response, sock, fail_on_status_ne_200);
+			result=response.read_response(sock, fail_on_status_ne_200);
 			closesocket(sock);
 #ifdef PA_USE_ALARM
 			alarm(0);
@@ -1077,7 +1078,7 @@ int HTTPD_Server::bind(const char *host_port){
 	return sock;
 }
 
-int ready(int fd,int operation,int timeout_value){
+static int ready(int fd,int operation,int timeout_value){
 	struct timeval timeout = {0, timeout_value * 1000};
 	fd_set fds;
 	FD_ZERO(&fds);
