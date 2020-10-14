@@ -14,7 +14,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.95 2020/10/14 21:20:15 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.96 2020/10/14 21:22:59 moko Exp $" IDENT_PA_HTTP_H; 
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -227,7 +227,7 @@ int HTTP_response::read_response(int sock, bool fail_on_status_ne_200) {
 
 				parse_headers();
 
-				size_t content_length=check_file_size(headers.content_length, url);
+				size_t content_length=check_file_size(headers.content_length, &url);
 				if(content_length>0 && (content_length + body_offset) > length){
 					resize(content_length + body_offset + 0x400*64);
 				}

@@ -29,7 +29,7 @@
 #define pa_mkdir(path, mode) mkdir(path, mode)
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.312 2020/02/26 12:17:30 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.313 2020/10/14 21:22:59 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -118,7 +118,7 @@ static void file_read_action(struct stat& finfo, int f, const String& file_spec,
 	File_read_action_info& info = *static_cast<File_read_action_info *>(context); 
 	size_t to_read_size = info.limit;
 	if(!to_read_size)
-		to_read_size = check_file_size(finfo.st_size, file_spec);
+		to_read_size = check_file_size(finfo.st_size, &file_spec);
 	if(to_read_size) {
 		if(info.offset)
 			lseek(f, info.offset, SEEK_SET);
@@ -531,9 +531,9 @@ bool file_stat(const String& file_spec, uint64_t& rsize, time_t& ratime, time_t&
 	return true;
 }
 
-size_t check_file_size(uint64_t size, const String& file_spec){
+size_t check_file_size(uint64_t size, const String* file_spec){
 	if(size > pa_file_size_limit)
-		throw Exception(PARSER_RUNTIME, &file_spec, "content size of %.15g bytes exceeds the limit (%.15g bytes)", (double)size, (double)pa_file_size_limit);
+		throw Exception(PARSER_RUNTIME, file_spec, "content size of %.15g bytes exceeds the limit (%.15g bytes)", (double)size, (double)pa_file_size_limit);
 	return (size_t)size;
 }
 
