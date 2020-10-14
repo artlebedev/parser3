@@ -14,7 +14,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.92 2020/10/14 00:07:42 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.93 2020/10/14 11:24:46 moko Exp $" IDENT_PA_HTTP_H; 
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -1044,10 +1044,6 @@ void HTTPD_Connection::read_header(){
 	request->read_header(sock);
 }
 
-void HTTPD_Connection::close(){
-	::closesocket(sock);
-}
-
 size_t HTTPD_Connection::read_post(char *body, size_t max_bytes) {
 	return request->read_post(sock, body, max_bytes);
 }
@@ -1060,7 +1056,47 @@ size_t HTTPD_Connection::send_body(const void *buf, size_t size) {
 	return size;
 }
 
-static int sock_on = 1;
+HTTPD_Connection::~HTTPD_Connection(){
+	if(sock != -1)
+		closesocket(sock);
+}
+
+static int sock_ready(int fd,int operation,int timeout_value){
+	struct timeval timeout = {0, timeout_value * 1000};
+	fd_set fds;
+	FD_ZERO(&fds);
+	FD_SET(fd, &fds);
+	switch (operation){
+		case 0: return select(fd + 1, &fds, NULL, NULL, &timeout)>0;  /* read */
+		case 1: return select(fd + 1, NULL, &fds, NULL, &timeout)>0;  /* write */
+		default: return select(fd + 1, &fds, &fds, NULL, &timeout)>0;  /* both */
+	}
+}
+
+bool HTTPD_Connection::accept(int server_sock, int timeout_value) {
+	int ready = sock_ready(server_sock, 0, timeout_value);
+	if (ready < 0) {
+		int no=pa_socks_errno();
+		if(no == EINTR)
+			return false;
+		throw Exception("httpd.accept", 0, "error waiting for connection: %s (%d)", pa_socks_strerr(no), no);
+	}
+	if (ready == 0)
+		return false; /* Timeout */
+
+	struct sockaddr_in addr;
+	socklen_t sock_addr_len = sizeof(struct sockaddr_in);
+	memset(&addr, 0, sock_addr_len);
+
+	sock = ::accept(server_sock, (struct sockaddr *)&addr, &sock_addr_len);
+	if(server_sock == -1){
+		int no=pa_socks_errno();
+		throw Exception("httpd.accept", 0, "error accepting connection: %s (%d)", pa_socks_strerr(no), no);
+	}
+
+	remote_addr = pa_strdup(inet_ntoa(addr.sin_addr));
+	return true;
+}
 
 int HTTPD_Server::bind(const char *host_port){
 	struct sockaddr_in me;
@@ -1087,6 +1123,8 @@ int HTTPD_Server::bind(const char *host_port){
 		throw Exception("httpd.bind", 0, "can not make socket: %s (%d)", pa_socks_strerr(no), no);
 	}
 
+	static int sock_on = 1;
+
 	if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (char *)&sock_on, sizeof(sock_on)) ||
 	    setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, (char *)&sock_on, sizeof(sock_on)) ||
 	    ::bind(sock, (struct sockaddr*)&me, sizeof(me)) ||
@@ -1097,42 +1135,3 @@ int HTTPD_Server::bind(const char *host_port){
 	}
 	return sock;
 }
-
-static int ready(int fd,int operation,int timeout_value){
-	struct timeval timeout = {0, timeout_value * 1000};
-	fd_set fds;
-	FD_ZERO(&fds);
-	FD_SET(fd, &fds);
-	switch (operation){
-		case 0: return select(fd + 1, &fds, NULL, NULL, &timeout)>0;  /* read */
-		case 1: return select(fd + 1, NULL, &fds, NULL, &timeout)>0;  /* write */
-		default: return select(fd + 1, &fds, &fds, NULL, &timeout)>0;  /* both */
-	}
-}
-
-HTTPD_Connection *HTTPD_Server::accept(int sock, int timeout_value) {
-	int ready = ::ready(sock, 0, timeout_value);
-	if (ready < 0) {
-		int no=pa_socks_errno();
-		if(no == EINTR)
-			return NULL;
-		throw Exception("httpd.accept", 0, "error waiting for connection: %s (%d)", pa_socks_strerr(no), no);
-	}
-	if (ready == 0) {
-		/* Timeout */
-		return NULL;
-	}
-
-	struct sockaddr_in addr;
-	socklen_t sock_addr_len = sizeof(struct sockaddr_in);
-	memset(&addr, 0, sock_addr_len);
-
-	int csock = ::accept(sock, (struct sockaddr *)&addr, &sock_addr_len);
-	if(csock == -1){
-		int no=pa_socks_errno();
-		throw Exception("httpd.accept", 0, "error accepting connection: %s (%d)", pa_socks_strerr(no), no);
-	}
-
-	return new HTTPD_Connection(csock, pa_strdup(inet_ntoa(addr.sin_addr)));
-}
-

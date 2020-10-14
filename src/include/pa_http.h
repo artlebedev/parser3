@@ -8,7 +8,7 @@
 #ifndef PA_HTTP_H
 #define PA_HTTP_H
 
-#define IDENT_PA_HTTP_H "$Id: pa_http.h,v 1.25 2020/10/14 00:07:42 moko Exp $"
+#define IDENT_PA_HTTP_H "$Id: pa_http.h,v 1.26 2020/10/14 11:24:46 moko Exp $"
 
 #include "pa_vstring.h"
 #include "pa_vint.h"
@@ -79,7 +79,8 @@ public:
 	const char *remote_addr;
 	HTTPD_request *request;
 
-	HTTPD_Connection(int asock, const char *addr) : sock(asock), remote_addr(addr), request(NULL){};
+	HTTPD_Connection() : sock(-1), remote_addr(NULL), request(NULL){}
+	~HTTPD_Connection();
 
 	Array<HTTP_Headers::Header> &headers();
 
@@ -97,16 +98,15 @@ public:
 		return NULL;
 	}
 
+	bool accept(int, int);
 	void read_header();
 	size_t read_post(char *, size_t);
 	size_t send_body(const void *, size_t);
-	void close();
 };
 
 class HTTPD_Server : public PA_Allocated {
 public:
-	static int bind(const char *host_port);
-	static HTTPD_Connection *accept(int sock, int timeout_value);
+	static int bind(const char *);
 };
 
 #endif

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.302 2020/10/14 00:14:45 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.303 2020/10/14 11:24:46 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -327,19 +327,23 @@ static void httpd_mode(const char* filespec_to_process){
 	int sock = HTTPD_Server::bind(httpd_host_port);
 
 	while(1){
-		HTTPD_Connection *connection = HTTPD_Server::accept(sock, 5);
-		if(!connection)
-			continue;
+		try {
+			HTTPD_Connection connection;
+			if(!connection.accept(sock, 5))
+				continue;
 
-		SAPI_Info_HTTPD info(*connection);
+			SAPI_Info_HTTPD info(connection);
 
-		try { // connection try
-			connection_handler(info, *connection, filespec_to_process);
-		} catch(const Exception& e) { // exception in connection handling or unhandled exception
-			SAPI::log(info, "%s", e.comment());
-			SAPI::send_error(info, e.comment(), info.exception_http_status(e.type()));
+			try { // connection try
+				connection_handler(info, connection, filespec_to_process);
+			} catch(const Exception& e) { // exception in connection handling or unhandled exception
+				SAPI::log(info, "%s", e.comment());
+				SAPI::send_error(info, e.comment(), info.exception_http_status(e.type()));
+			}
+			// closing connection socket in HTTPD_Connection destructor
+		} catch(const Exception& e) { // exception in accept or send_error
+			SAPI::log(*sapiInfo, "%s", e.comment());
 		}
-		connection->close();
 	}
 }
 
@@ -452,7 +456,7 @@ static void real_parser_handler(const char* filespec_to_process) {
 		bool fail_on_config_read_problem=locate_config();
 		// process the request
 		request.core(config_filespec_cstr, fail_on_config_read_problem, strcasecmp(request_info.method, "HEAD")==0);
-		// clearing ::request in RequestController desctructor to prevent signal handlers from accessing invalid memory
+		// clearing ::request in RequestController destructor to prevent signal handlers from accessing invalid memory
 	}
 
 	// finalize libraries
