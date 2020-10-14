@@ -8,7 +8,7 @@
 #ifndef PA_EXCEPTION_H
 #define PA_EXCEPTION_H
 
-#define IDENT_PA_EXCEPTION_H "$Id: pa_exception.h,v 1.66 2017/02/07 22:00:34 moko Exp $"
+#define IDENT_PA_EXCEPTION_H "$Id: pa_exception.h,v 1.67 2020/10/14 21:20:15 moko Exp $"
 
 const char* const PARSER_RUNTIME = "parser.runtime";
 const char* const IMAGE_FORMAT = "image.format";
@@ -46,30 +46,48 @@ class Exception {
 public:
 
 	Exception();
-	Exception(
-		const char* atype,
-		const String* aproblem_source, 
-		const char* comment_fmt, ...);
+	Exception(const char* atype, const String* aproblem_source, const char* comment_fmt, ...);
 	Exception(const Exception& src);
+
 	operator bool() { return ftype || fproblem_source || fcomment; }
 	Exception& operator =(const Exception& src);
 
 	/// extracts exception type
-	const char* type(bool can_be_empty=false) const { 
-		if(can_be_empty)
-			return ftype; 
-		else
-			return ftype?ftype:"<no type>";
+	const char* type(bool can_be_empty=false) const {
+		return can_be_empty || ftype ? ftype : "<no type>";
 	}
+
 	/// extracts exception problem_source
 	const String* problem_source() const;
+
 	/// extracts exception comment
-	const char* comment(bool can_be_empty=false) const { 
-		const char* result=fcomment && *fcomment?fcomment:0;
-		if(can_be_empty)
-			return result; 
-		else
-			return result?result:"<no comment>";
+	const char* comment(bool can_be_empty=false) const {
+		const char* result=fcomment && *fcomment ? fcomment : 0;
+		return can_be_empty || result ? result : "<no comment>";
+	}
+
+	// modifies exception to fine-tune error reporting
+	void set_source(const String* aproblem_source) {
+		if(!problem_source())
+			fproblem_source=aproblem_source;
+	}
+
+	void add_comment(const char* acomment);
+
+#define ALTER_EXCEPTION_SOURCE(code, source)	\
+	try {					\
+		code;				\
+	} catch (Exception& e) {		\
+		e.set_source(source);		\
+		rethrow;			\
+	}
+
+#define ALTER_EXCEPTION_COMMENT(code, comment)	\
+	try {					\
+		code;				\
+	} catch (Exception& e) {		\
+		e.add_comment(comment);		\
+		rethrow;			\
 	}
 
 protected:

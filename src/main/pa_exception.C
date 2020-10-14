@@ -10,16 +10,18 @@
 #include "pa_sapi.h"
 #include "pa_globals.h"
 
-volatile const char * IDENT_PA_EXCEPTION_C="$Id: pa_exception.C,v 1.54 2017/02/07 22:00:43 moko Exp $" IDENT_PA_EXCEPTION_H;
+volatile const char * IDENT_PA_EXCEPTION_C="$Id: pa_exception.C,v 1.55 2020/10/14 21:20:15 moko Exp $" IDENT_PA_EXCEPTION_H;
 
 // methods
 
 Exception::Exception(): ftype(0), fproblem_source(0), fcomment(0) {}
+
 Exception::Exception(const Exception& src):
 	ftype(src.ftype),
 	fproblem_source(src.fproblem_source),
 	fcomment(src.fcomment) {
 }
+
 Exception& Exception::operator =(const Exception& src) {
 	ftype=src.ftype;
 	fproblem_source=src.fproblem_source;
@@ -27,22 +29,29 @@ Exception& Exception::operator =(const Exception& src) {
 	return *this;
 }
 
-Exception::Exception(const char* atype, 
-			const String* aproblem_source, 
-			const char* comment_fmt, ...) {
+Exception::Exception(const char* atype, const String* aproblem_source, const char* comment_fmt, ...) {
 	ftype=atype;
 	fproblem_source=aproblem_source ? new String(*aproblem_source) : 0;
 
 	if(comment_fmt) {
-		fcomment=new(PointerFreeGC) char[MAX_STRING];
+		char comment[MAX_STRING];
 		va_list args;
 		va_start(args, comment_fmt);
-		vsnprintf((char *)fcomment, MAX_STRING, comment_fmt, args);
+		fcomment=pa_strdup(comment, vsnprintf(comment, MAX_STRING, comment_fmt, args));
 		va_end(args);
 	} else
 		fcomment=0;
 }
 
-const String* Exception::problem_source() const { 
-	return fproblem_source && !fproblem_source->is_empty()?fproblem_source:0; 
+void Exception::add_comment(const char* acomment) {
+	if(fcomment && acomment){
+		char *comment=new(PointerFreeGC) char[strlen(fcomment) + strlen(acomment) + 1];
+		strcpy(comment, fcomment);
+		strcat(comment, acomment);
+		fcomment=comment;
+	}
+}
+
+const String* Exception::problem_source() const {
+	return fproblem_source && !fproblem_source->is_empty() ? fproblem_source : 0;
 }

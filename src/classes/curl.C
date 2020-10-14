@@ -17,7 +17,7 @@
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.62 2020/10/10 09:05:42 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.63 2020/10/14 21:20:15 moko Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -725,7 +725,8 @@ static void _curl_load_action(Request& r, MethodParams& params){
 		CURL_SETOPT(CURLOPT_POSTFIELDSIZE, 0, "post content-length");
 	}
 
-	if((res=f_curl_easy_perform(curl())) != CURLE_OK){
+	ALTER_EXCEPTION_SOURCE(res=f_curl_easy_perform(curl()), new String(options().url));
+	if(res != CURLE_OK){
 		const char *ex_type = 0; 
 		switch(res){
 			case CURLE_OPERATION_TIMEDOUT:
@@ -746,7 +747,7 @@ static void _curl_load_action(Request& r, MethodParams& params){
 				check_file_size(response.content_length, *new String(options().url)); break;
 			default: break;
 		}
-		throw Exception( PA_DEFAULT(ex_type, "curl.fail"), 0, "%s", f_curl_easy_strerror(res));
+		throw Exception( PA_DEFAULT(ex_type, "curl.fail"), new String(options().url), "%s", f_curl_easy_strerror(res));
 	}
 
 	// assure trailing zero

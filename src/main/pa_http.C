@@ -14,7 +14,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.94 2020/10/14 16:51:46 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.95 2020/10/14 21:20:15 moko Exp $" IDENT_PA_HTTP_H; 
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -59,7 +59,7 @@ bool HTTP_Headers::add_header(const char *line){
 			content_type=header.value;
 
 		if(header.name == String::Body("CONTENT-LENGTH") && content_length==0)
-			content_length=pa_atoul(header.value.cstr());
+			ALTER_EXCEPTION_COMMENT(content_length=pa_atoul(header.value.cstr()), " for content-length");
 
 		headers+=header;
 
@@ -153,7 +153,7 @@ public:
 			return status_line;
 
 		const char *result_str=pa_strdup(status_start, status_end-status_start);
-		result=pa_atoui(result_str);
+		ALTER_EXCEPTION_COMMENT(result=pa_atoui(result_str), " for HTTP status");
 		return result_str;
 	}
 
@@ -867,7 +867,8 @@ File_read_http_result pa_internal_file_read_http(Request& r, const String& file_
 	HTTP_response response(connect_string);
 
 	// sending request
-	int status_code=http_request(response, idna_host, port, request, request_size, timeout_secs, fail_on_status_ne_200);
+	int status_code;
+	ALTER_EXCEPTION_SOURCE(status_code=http_request(response, idna_host, port, request, request_size, timeout_secs, fail_on_status_ne_200), &connect_string);
 
 	// processing results
 	char* raw_body=response.buf + response.body_offset;
