@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.299 2020/10/14 00:07:43 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.300 2020/10/14 00:09:54 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -143,7 +143,7 @@ void SAPI::die(const char* fmt, ...) {
 	// inform user, second vsnprintf
 	va_start(args, fmt);
 	char message[MAX_STRING];
-	int content_length=vsnprintf(message, MAX_STRING, fmt, args);
+	vsnprintf(message, MAX_STRING, fmt, args);
 
 	SAPI::send_error(*sapiInfo, message);
 	exit(1);
