@@ -14,7 +14,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.96 2020/10/14 21:22:59 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.97 2020/10/14 21:35:00 moko Exp $" IDENT_PA_HTTP_H; 
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -105,9 +105,8 @@ public:
 	size_t body_offset;
 
 	HTTP_Headers headers;
-	const String &url;
 
-	HTTP_response(const String& aurl) : buf(NULL), length(0), buf_size(0), body_offset(0), url(aurl){}
+	HTTP_response() : buf(NULL), length(0), buf_size(0), body_offset(0){}
 
 	void resize(size_t size){
 		buf_size=size;
@@ -122,7 +121,7 @@ public:
 			return false;
 		if(received_size<0) {
 			if(int no=pa_socks_errno())
-				throw Exception("http.timeout", &url, "error receiving response body: %s (%d)", pa_socks_strerr(no), no);
+				throw Exception("http.timeout", 0, "error receiving response body: %s (%d)", pa_socks_strerr(no), no);
 			return false;
 		}
 		length+=received_size;
@@ -186,7 +185,7 @@ public:
 		for(;i.has_next();){
 			const char *line=i.next()->cstr();
 			if(!headers.add_header(line))
-				throw Exception("http.response", &url, "bad response from host - bad header \"%s\"", line);
+				throw Exception("http.response", 0, "bad response from host - bad header \"%s\"", line);
 		}
 	}
 
@@ -227,7 +226,7 @@ int HTTP_response::read_response(int sock, bool fail_on_status_ne_200) {
 
 				parse_headers();
 
-				size_t content_length=check_file_size(headers.content_length, &url);
+				size_t content_length=check_file_size(headers.content_length, 0);
 				if(content_length>0 && (content_length + body_offset) > length){
 					resize(content_length + body_offset + 0x400*64);
 				}
@@ -244,7 +243,7 @@ int HTTP_response::read_response(int sock, bool fail_on_status_ne_200) {
 	}
 
 	if(state==HTTP_STATUS_CODE)
-		throw Exception("http.response", &url, "bad response from host - no status found (size=%u)", length);
+		throw Exception("http.response", 0, "bad response from host - no status found (size=%u)", length);
 
 	if(state==HTTP_HEADERS){
 		parse_headers();
@@ -864,7 +863,7 @@ File_read_http_result pa_internal_file_read_http(Request& r, const String& file_
 	}
 	
 
-	HTTP_response response(connect_string);
+	HTTP_response response;
 
 	// sending request
 	int status_code;
@@ -927,7 +926,7 @@ public:
 	const char *method;
 	const char *uri;
 
-	HTTPD_request() : HTTP_response(String::Empty), method(NULL), uri(NULL){};
+	HTTPD_request() : HTTP_response(), method(NULL), uri(NULL){};
 
 	const char *extract_method(char *method_line){
 		char* uri_start = strchr(method_line, ' ');
@@ -1010,7 +1009,7 @@ size_t HTTPD_request::read_post(int sock, char *body, size_t max_bytes) {
 			return total_read;
 		if(received_size < 0) {
 			if(int no = pa_socks_errno())
-				throw Exception("httpd.timeout", &url, "error receiving request body: %s (%d)", pa_socks_strerr(no), no);
+				throw Exception("httpd.timeout", new String(uri), "error receiving request body: %s (%d)", pa_socks_strerr(no), no);
 			return total_read;
 		}
 		total_read += received_size;
