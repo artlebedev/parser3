@@ -14,7 +14,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.91 2020/10/12 21:57:20 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.92 2020/10/14 00:07:42 moko Exp $" IDENT_PA_HTTP_H; 
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -968,7 +968,14 @@ void HTTPD_request::read_header(int sock) {
 				char *method_line = pa_strdup(buf, method_size);
 				method = extract_method(method_line);
 
-				if(!method || strcmp(method, "GET") && strcmp(method, "HEAD") && strcmp(method, "POST") && strcmp(method, "PUT") && strcmp(method, "DELETE"))
+				if(!method ||
+					strcmp(method, "GET") &&
+					strcmp(method, "HEAD") &&
+					strcmp(method, "POST") &&
+					strcmp(method, "PUT") &&
+					strcmp(method, "DELETE") &&
+					strcmp(method, "PATCH")
+				)
 					throw Exception("httpd.method", new String(method ? method : method_line), "invalid request method");
 				state = HTTPD_HEADERS;
 			}
@@ -1035,6 +1042,10 @@ uint64_t HTTPD_Connection::content_length(){
 void HTTPD_Connection::read_header(){
 	request = new HTTPD_request();
 	request->read_header(sock);
+}
+
+void HTTPD_Connection::close(){
+	::closesocket(sock);
 }
 
 size_t HTTPD_Connection::read_post(char *body, size_t max_bytes) {

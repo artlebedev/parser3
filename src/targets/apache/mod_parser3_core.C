@@ -5,7 +5,7 @@ Parser: apache 1.3/2.X module, part, compiled by parser3project.
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_MOD_PARSER3_CORE_C="$Id: mod_parser3_core.C,v 1.25 2020/10/12 22:02:33 moko Exp $";
+volatile const char * IDENT_MOD_PARSER3_CORE_C="$Id: mod_parser3_core.C,v 1.26 2020/10/14 00:07:42 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -96,9 +96,8 @@ static const char* mk_env_pair(const char* key, const char* value) {
 }
 
 static int SAPI_environment_append(void *d, const char* k, const char* val) {
-	if( k && val ) {
-		SAPI_environment_append_info& info=
-			*static_cast<SAPI_environment_append_info *>(d);
+	if(k && val) {
+		SAPI_environment_append_info& info=*static_cast<SAPI_environment_append_info *>(d);
 		*info.cur++=mk_env_pair(k, val);
 	}
 	return 1/*true*/;
@@ -265,19 +264,7 @@ int pa_parser_handler(pa_request_rec *r, Parser_module_config *dcfg) {
 	} catch(const Exception& e) { // exception in unhandled exception
 		// log it
 		SAPI::log(SAPI_info, "%s", e.comment());
-		
-		// prepare header
-		// capitalized headers are used for preventing malloc during capitalization
-		SAPI::add_header_attribute(SAPI_info, HTTP_CONTENT_TYPE_CAPITALIZED, "text/plain");
-		
-		// send header
-		SAPI::send_header(SAPI_info);
-		
-		// send body
-		if(!r->header_only)
-			SAPI::send_body(SAPI_info, e.comment(), strlen(e.comment()));
-		
-		// unsuccessful finish
+		SAPI::send_error(SAPI_info, e.comment());
 	}
 	
 	/*

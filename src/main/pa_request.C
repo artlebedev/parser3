@@ -33,14 +33,11 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.380 2020/10/12 20:57:08 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.381 2020/10/14 00:07:42 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
 #define UNHANDLED_EXCEPTION_METHOD_NAME "unhandled_exception"
-
-/// content type of exception response, when no @MAIN:exception handler defined
-const char* UNHANDLED_EXCEPTION_CONTENT_TYPE="text/plain";
 
 /// content type of response when no $MAIN:defaults.content-type defined
 const char* DEFAULT_CONTENT_TYPE="text/html";
@@ -539,26 +536,21 @@ void Request::core(const char* config_filespec, bool config_fail_on_read_problem
 			}
 		}
 		
-		if(!body_string) {  // couldn't report an error beautifully?
-			// doing that ugly
-
-			// future $response:content-type
-			response.fields().put(content_type_name_upper, new VString(*new String(UNHANDLED_EXCEPTION_CONTENT_TYPE)));
-			// future $response:body
-			body_string=new String(exception_cstr);
-		}
-
-		VString body_vstring(*body_string);
-		VFile* body_file=body_vstring.as_vfile(flang, &charsets);
-
 		// conditionally log it
 		Value* vhandled=details.vhash.hash().get(exception_handled_part_name);
 		if(!vhandled || !vhandled->as_bool()) {
 			SAPI::log(sapi_info, "%s", exception_cstr);
 		}
 
-		// ERROR. write it out
-		output_result(body_file, header_only, false);
+		if(body_string) {  // could report an error beautifully?
+			VString body_vstring(*body_string);
+			VFile* body_file=body_vstring.as_vfile(flang, &charsets);
+			// write it out the error
+			output_result(body_file, header_only, false);
+		} else {
+			// doing that ugly
+			SAPI::send_error(sapi_info, exception_cstr, !strcmp(e.type(), "file.missing") ? "404" : "500");
+		}
 
 		} catch(const Exception& e) { // exception in unhandled exception
 			Request::Exception_details details=get_details(e);

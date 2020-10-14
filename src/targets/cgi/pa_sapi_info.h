@@ -1,7 +1,7 @@
 #ifndef PA_SAPI_INFO_H
 #define PA_SAPI_INFO_H
 
-#define IDENT_PA_SAPI_INFO_H "$Id: pa_sapi_info.h,v 1.5 2020/10/12 21:55:18 moko Exp $"
+#define IDENT_PA_SAPI_INFO_H "$Id: pa_sapi_info.h,v 1.6 2020/10/14 00:07:42 moko Exp $"
 
 #include "pa_sapi.h"
 #include "pa_http.h"
@@ -47,10 +47,6 @@ public:
 		return stdout_write(buf, size);
 	}
 
-	virtual void die(const char *content, int content_length) {
-		stdout_write(content, content_length);
-	}
-
 } *sapiInfo = NULL;
 
 class SAPI_Info_CGI : public SAPI_Info {
@@ -77,22 +73,6 @@ public:
 		puts("");
 	}
 
-	virtual void die(const char *content, int content_length) {
-		// prepare header
-		// let's be honest, that's bad we couldn't produce valid output
-		// capitalized headers passed for preventing malloc during capitalization
-		add_header_attribute(HTTP_STATUS_CAPITALIZED, "500");
-		add_header_attribute(HTTP_CONTENT_TYPE_CAPITALIZED, "text/plain");
-		// don't use 'format' function because it calls malloc
-		char content_length_cstr[MAX_NUMBER];
-		snprintf(content_length_cstr, sizeof(content_length_cstr), "%u", content_length);
-		add_header_attribute(HTTP_CONTENT_LENGTH_CAPITALIZED, content_length_cstr);
-
-		// send header
-		send_header();
-		// body
-		send_body(content, content_length);
-	}
 
 };
 
@@ -168,7 +148,25 @@ public:
 			output << capitalize(dont_store_key) << ": " << pa_strdup(dont_store_value) << "\r\n";
 	}
 
-	static const char *message(int code) {
+	static const char *exception_http_status(const char *type) {
+		struct Lookup {
+			const char *code;
+			const char *type;
+		} static lookup[] = {
+			{"400", "httpd.request"},
+			{"404", "file.missing"},
+			{"408", "httpd.timeout"},
+			{"501", "httpd.method"},
+			{ NULL, ""}
+		};
+		Lookup *cur = lookup;
+		for(; cur->code; cur++)
+			if(!strcmp(type, cur->type))
+				return cur->code;
+		return "500";
+	}
+
+	static const char *status_message(int code) {
 		struct Lookup {
 			int code;
 			const char *message;
@@ -177,10 +175,12 @@ public:
 			{206, "Partial Content"},
 			{301, "Moved Permanently"},
 			{302, "Found"},
+			{304, "Not Modified"},
 			{400, "Bad Request"},
 			{401, "Unauthorized"},
 			{403, "Forbidden"},
 			{404, "Not Found"},
+			{408, "Request Timeout"},
 			{500, "Internal Server Error"},
 			{501, "Not Implemented"},
 			{502, "Bad Gateway"},
@@ -196,7 +196,7 @@ public:
 
 	virtual void send_header() {
 		String result("HTTP/1.0 ");
-		result << String::Body::Format(http_response_code) << " " << message(http_response_code) << "\r\n" << output << "\r\n";
+		result << String::Body::Format(http_response_code) << " " << status_message(http_response_code) << "\r\n" << output << "\r\n";
 		send_body(result.cstr(), result.length());
 	}
 

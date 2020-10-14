@@ -8,13 +8,13 @@
 #ifndef PA_SAPI_H
 #define PA_SAPI_H
 
-#define IDENT_PA_SAPI_H "$Id: pa_sapi.h,v 1.34 2020/08/13 11:44:20 moko Exp $"
+#define IDENT_PA_SAPI_H "$Id: pa_sapi.h,v 1.35 2020/10/14 00:07:42 moko Exp $"
 
 // includes
 
-
-#include "pa_types.h"
+#include "pa_common.h"
 #include "pa_array.h"
+#include "pa_exception.h"
 
 // forwards
 class SAPI_Info;
@@ -33,6 +33,14 @@ struct SAPI {
 	static void send_header(SAPI_Info& info);
 	/// output body bytes
 	static size_t send_body(SAPI_Info& info, const void *buf, size_t size);
+
+	static void send_error(SAPI_Info& info, const char *exception_cstr, const char *status = "500"){
+		// capitalized headers passed for preventing malloc during capitalization
+		add_header_attribute(info, HTTP_STATUS_CAPITALIZED, status);
+		add_header_attribute(info, HTTP_CONTENT_TYPE_CAPITALIZED, "text/plain");
+		send_header(info);
+		send_body(info, exception_cstr, strlen(exception_cstr));
+	}
 
 	class Env {
 	public:

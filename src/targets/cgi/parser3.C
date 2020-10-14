@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.298 2020/10/12 20:57:08 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.299 2020/10/14 00:07:43 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -142,10 +142,10 @@ void SAPI::die(const char* fmt, ...) {
 
 	// inform user, second vsnprintf
 	va_start(args, fmt);
-	char body[MAX_STRING];
-	int content_length=vsnprintf(body, MAX_STRING, fmt, args);
+	char message[MAX_STRING];
+	int content_length=vsnprintf(message, MAX_STRING, fmt, args);
 
-	sapiInfo->die(body, content_length);
+	SAPI::send_error(*sapiInfo, message);
 	exit(1);
 //	va_end(args);
 }
@@ -295,8 +295,8 @@ static void connection_handler(SAPI_Info_HTTPD &info, HTTPD_Connection &connecti
 	connection.read_header();
 	info.populate_env();
 
-	// connection request info
-	Request_info request_info; memset(&request_info, 0, sizeof(request_info));
+	// connection request info, still global for correct log() reporting
+	memset(&request_info, 0, sizeof(request_info));
 
 	char document_root_buf[MAX_STRING];
 	full_file_spec("", document_root_buf, sizeof(document_root_buf));
@@ -335,11 +335,11 @@ static void httpd_mode(const char* filespec_to_process){
 
 		try { // connection try
 			connection_handler(info, *connection, filespec_to_process);
-		} catch(const Exception& e) { // exception in unhandled exception
-//			info.die(e);
+		} catch(const Exception& e) { // exception in connection handling or unhandled exception
+			SAPI::log(info, "%s", e.comment());
+			SAPI::send_error(info, e.comment(), info.exception_http_status(e.type()));
 		}
-
-		close(connection->sock);
+		connection->close();
 	}
 }
 
@@ -628,5 +628,5 @@ int main(int argc, char *argv[]) {
 #ifdef PA_DEBUG_CGI_ENTRY_EXIT
 	log("main: successful return");
 #endif
-	return sapiInfo && sapiInfo->http_response_code < 100 ? sapiInfo->http_response_code : 0;
+	return sapiInfo->http_response_code < 100 ? sapiInfo->http_response_code : 0;
 }
