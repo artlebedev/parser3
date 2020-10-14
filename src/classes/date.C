@@ -13,7 +13,7 @@
 #include "pa_vdate.h"
 #include "pa_vtable.h"
 
-volatile const char * IDENT_DATE_C="$Id: date.C,v 1.110 2017/02/07 22:00:26 moko Exp $" IDENT_PA_VDATE_H;
+volatile const char * IDENT_DATE_C="$Id: date.C,v 1.111 2020/10/14 16:51:45 moko Exp $" IDENT_PA_VDATE_H;
 
 // class
 
@@ -235,9 +235,9 @@ tm cstr_to_time_t(char *cstr, const char **tzOut) {
 		tmIn.tm_mday=tmNow->tm_mday;
 	}
 
-	tmIn.tm_hour=hour?pa_atoi(hour):0;
-	tmIn.tm_min=min?pa_atoi(min):0;
-	tmIn.tm_sec=sec?pa_atoi(sec):0;	
+	tmIn.tm_hour=pa_atoi(hour);
+	tmIn.tm_min=pa_atoi(min);
+	tmIn.tm_sec=pa_atoi(sec);
 	//tmIn.tm_[msec<<no such, waits reimplementation of the class]=f(msec);
 
 	return tmIn;

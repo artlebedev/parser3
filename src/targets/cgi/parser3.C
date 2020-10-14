@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.303 2020/10/14 11:24:46 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.304 2020/10/14 16:51:46 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -428,7 +428,7 @@ static void real_parser_handler(const char* filespec_to_process) {
 	}
 	
 	request_info.content_type = getenv("CONTENT_TYPE");
-	request_info.content_length = pa_atoui(getenv("CONTENT_LENGTH"), 10);
+	request_info.content_length = pa_atoul(getenv("CONTENT_LENGTH"));
 	request_info.cookie = getenv("HTTP_COOKIE");
 	request_info.mail_received = mail_received;
 

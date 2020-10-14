@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.225 2019/12/05 11:36:15 moko Exp $"
+#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.226 2020/10/14 16:51:45 moko Exp $"
 
 // includes
 #include "pa_types.h"
@@ -52,10 +52,10 @@ class VRegex;
 
 // generally useful
 
-int pa_atoi(const char* str, const String* problem_source=0);
 double pa_atod(const char* str, const String* problem_source=0);
-unsigned int pa_atoui(const char *str, int base, const String* problem_source=0);
-unsigned long long int pa_atoul(const char *str, int base, const String* problem_source=0);
+int pa_atoi(const char* str, int base=10, const String* problem_source=0);
+unsigned int pa_atoui(const char *str, int base=10, const String* problem_source=0);
+unsigned long long int pa_atoul(const char *str, int base=10, const String* problem_source=0);
 
 /// this is result of pos functions which mean that substr were not found
 #define STRING_NOT_FOUND ((size_t)-1)
@@ -683,7 +683,7 @@ public:
 	const String& replace(const Dictionary& dict) const;
 	const String& trim(Trim_kind kind=TRIM_BOTH, const char* chars=0, Charset* source_charset=0) const;
 	double as_double() const { return pa_atod(cstr(), this); }
-	int as_int() const { return pa_atoi(cstr(), this); }
+	int as_int() const { return pa_atoi(cstr(), 0, this); }
 	bool as_bool() const { return as_int()!=0; }
 	const String& escape(Charset& source_charset) const;
 

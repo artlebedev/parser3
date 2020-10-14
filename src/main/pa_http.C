@@ -14,7 +14,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.93 2020/10/14 11:24:46 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.94 2020/10/14 16:51:46 moko Exp $" IDENT_PA_HTTP_H; 
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -59,7 +59,7 @@ bool HTTP_Headers::add_header(const char *line){
 			content_type=header.value;
 
 		if(header.name == String::Body("CONTENT-LENGTH") && content_length==0)
-			content_length=pa_atoul(header.value.cstr(), 10);
+			content_length=pa_atoul(header.value.cstr());
 
 		headers+=header;
 
@@ -153,7 +153,7 @@ public:
 			return status_line;
 
 		const char *result_str=pa_strdup(status_start, status_end-status_start);
-		result=pa_atoui(result_str, 10);
+		result=pa_atoui(result_str);
 		return result_str;
 	}
 
@@ -1110,7 +1110,7 @@ int HTTPD_Server::bind(const char *host_port){
 		port = host_port;
 	}
 
-	if(!set_addr(&me, host, pa_atoui(port, 10))){
+	if(!set_addr(&me, host, pa_atoui(port))){
 		if (host)
 			throw Exception("httpd.bind", 0, "can not resolve hostname \"%s\"", host);
 		me.sin_addr.s_addr=INADDR_ANY;
