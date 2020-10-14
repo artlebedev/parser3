@@ -1,7 +1,7 @@
 #ifndef PA_SAPI_INFO_H
 #define PA_SAPI_INFO_H
 
-#define IDENT_PA_SAPI_INFO_H "$Id: pa_sapi_info.h,v 1.6 2020/10/14 00:07:42 moko Exp $"
+#define IDENT_PA_SAPI_INFO_H "$Id: pa_sapi_info.h,v 1.7 2020/10/14 22:19:57 moko Exp $"
 
 #include "pa_sapi.h"
 #include "pa_http.h"
@@ -13,7 +13,7 @@ class SAPI_Info : public PA_Allocated {
 public:
 	int http_response_code;
 
-	SAPI_Info() : http_response_code(0) {}
+	SAPI_Info() : http_response_code(200) {}
 
 	virtual char* get_env(const char* name) {
 		if(char *local=getenv(name))
