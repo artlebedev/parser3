@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.301 2020/10/14 00:13:01 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.302 2020/10/14 00:14:45 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -105,7 +105,7 @@ static void log(const char* fmt, va_list args) {
 	fwrite(buf, size, 1, f);
 
 	if(request_info.method) {
-		fprintf(f, " [uri=%s, method=%s, cl=%lu]\n", request_info.uri ? request_info.uri : "<unknown>", request_info.method, request_info.content_length);
+		fprintf(f, " [uri=%s, method=%s, cl=%lu]\n", request_info.uri ? request_info.uri : "<unknown>", request_info.method, (unsigned long)request_info.content_length);
 	} else
 		fputs(" [no request info]\n", f);
 
