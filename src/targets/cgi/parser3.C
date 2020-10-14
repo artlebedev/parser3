@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.300 2020/10/14 00:09:54 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.301 2020/10/14 00:13:01 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -536,7 +536,7 @@ int main(int argc, char *argv[]) {
 		SAPI::die("Can not set handler for SIGPIPE");
 #endif
 
-	char *raw_filespec_to_process;
+	char *raw_filespec_to_process = NULL;
 	if(cgi) {
 		raw_filespec_to_process=getenv("PATH_TRANSLATED");
 		if(raw_filespec_to_process && !*raw_filespec_to_process)
