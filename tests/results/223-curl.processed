@@ -1,12 +1,11 @@
 Content-Type: text/html
-Content-Length: 7413
+Content-Length: 7251
 
 <h2>POST in $response:charset (UTF-8) w/o file</h2>
 <h3>Headers</h3>
 <pre>CONTENT_LENGTH	: 487
 CONTENT_TYPE	: multipart/form-data; boundary=------------boundary-value
 HTTP_ACCEPT	: */*
-HTTP_EXPECT	: 100-continue
 HTTP_HOST	: www.parser.ru
 HTTP_MY_NAME	: ЗнА  чЕ&н"И:е%
 HTTP_________	: зна чение
@@ -44,7 +43,6 @@ Content-Disposition: form-data; name="table"
 <pre>CONTENT_LENGTH	: 487
 CONTENT_TYPE	: multipart/form-data; boundary=------------boundary-value
 HTTP_ACCEPT	: */*
-HTTP_EXPECT	: 100-continue
 HTTP_HOST	: www.parser.ru
 HTTP_MY_NAME	: ЗнА  чЕ&н"И:е%
 HTTP_USER_AGENT	: Мой-Странный-User-Agent
@@ -83,7 +81,6 @@ Content-Disposition: form-data; name="table"
 <pre>CONTENT_LENGTH	: 460
 CONTENT_TYPE	: multipart/form-data; boundary=------------boundary-value
 HTTP_ACCEPT	: */*
-HTTP_EXPECT	: 100-continue
 HTTP_HOST	: www.parser.ru
 HTTP_MY_NAME	: ЗнА  чЕ&н"И:е%
 HTTP_________	: зна чение
@@ -121,7 +118,6 @@ Content-Disposition: form-data; name="table"
 <pre>CONTENT_LENGTH	: 661
 CONTENT_TYPE	: multipart/form-data; boundary=------------boundary-value
 HTTP_ACCEPT	: */*
-HTTP_EXPECT	: 100-continue
 HTTP_HOST	: www.parser.ru
 HTTP_MY_NAME	: ЗнА  чЕ&н"И:е%
 HTTP_________	: зна чение
@@ -164,7 +160,6 @@ Content-Type: application/octet-stream
 <pre>CONTENT_LENGTH	: 632
 CONTENT_TYPE	: multipart/form-data; boundary=------------boundary-value
 HTTP_ACCEPT	: */*
-HTTP_EXPECT	: 100-continue
 HTTP_HOST	: www.parser.ru
 HTTP_MY_NAME	: ЗнА  чЕ&н"И:е%
 HTTP_________	: зна чение
@@ -208,7 +203,6 @@ Content-Type: application/octet-stream
 <pre>CONTENT_LENGTH	: 629
 CONTENT_TYPE	: multipart/form-data; boundary=------------boundary-value
 HTTP_ACCEPT	: */*
-HTTP_EXPECT	: 100-continue
 HTTP_HOST	: www.parser.ru
 HTTP_MY_NAME	: ЗнА  чЕ&н"И:е%
 HTTP_________	: зна чение

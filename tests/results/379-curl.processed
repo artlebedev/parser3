@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 3343
+Content-Length: 3497
 
 1. slow test result:
 {
@@ -132,50 +132,33 @@ Comment: content size of 10000000000 bytes exceeds the limit (536870912 bytes)
 "tables":{},
 "text":""
 }
+7.1 bad-headers test result:
+{
+"class":"file",
+"name":"nph-379.pl",
+"size":5,
+"mode":"text",
+"content-type":"application\/octet-stream",
+"status":200,
+"tables":{},
+"text":"body\n"
+}
 8. invalid-status test result:
-{
-"class":"file",
-"name":"nph-379.pl",
-"size":0,
-"mode":"text",
-"content-type":"application\/octet-stream",
-"status":200,
-"tables":{},
-"text":""
-}
+Type: curl.fail,
+Source: http://www.parser.ru/_/tests/nph-379.pl?invalid-status,
+Comment: Unsupported protocol
 9. no-status-1 test result:
-{
-"class":"file",
-"name":"nph-379.pl",
-"size":0,
-"mode":"text",
-"content-type":"application\/octet-stream",
-"status":200,
-"tables":{},
-"text":""
-}
+Type: curl.fail,
+Source: http://www.parser.ru/_/tests/nph-379.pl?no-status-1,
+Comment: Unsupported protocol
 10. no-status-2 test result:
-{
-"class":"file",
-"name":"nph-379.pl",
-"size":0,
-"mode":"text",
-"content-type":"application\/octet-stream",
-"status":200,
-"tables":{},
-"text":""
-}
+Type: curl.fail,
+Source: http://www.parser.ru/_/tests/nph-379.pl?no-status-2,
+Comment: Unsupported protocol
 11. no-status-3 test result:
-{
-"class":"file",
-"name":"nph-379.pl",
-"size":0,
-"mode":"text",
-"content-type":"application\/octet-stream",
-"status":200,
-"tables":{},
-"text":""
-}
+Type: curl.fail,
+Source: http://www.parser.ru/_/tests/nph-379.pl?no-status-3,
+Comment: Unsupported protocol
 12. strange-status test result:
 {
 "class":"file",
@@ -188,10 +171,10 @@ Comment: content size of 10000000000 bytes exceeds the limit (536870912 bytes)
 "text":""
 }
 13. strange-content-length-1 test result:
-Type: number.format,
-Source: load,
-Comment: '-1' is invalid number (int)
+Type: curl.fail,
+Source: http://www.parser.ru/_/tests/nph-379.pl?strange-content-length-1,
+Comment: Weird server reply
 14. strange-content-length-2 test result:
 Type: number.format,
-Source: load,
-Comment: '200OK?' is invalid number (int)
+Source: http://www.parser.ru/_/tests/nph-379.pl?strange-content-length-2,
+Comment: '200OK?' is invalid number (int) for content-length

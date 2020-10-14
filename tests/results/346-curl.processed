@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 3821
+Content-Length: 3849
 
 1. Type: curl,
 Source: info,
@@ -38,34 +38,34 @@ Comment: called with invalid option 'no-such-option'
 Source: info,
 Comment: called with invalid parameter 'no-such-info'
 11. {
+"scheme":"",
 "http_version":"none",
-"size_download":0,
-"request_size":0,
-"content_type":"",
 "effective_url":"",
-"header_size":0,
-"redirect_time":0,
+"content_type":"",
+"response_code":0,
+"os_errno":0,
+"namelookup_time":0,
 "appconnect_time":0,
 "pretransfer_time":0,
-"num_connects":0,
-"scheme":"",
-"primary_ip":"",
-"speed_upload":0,
-"speed_download":0,
-"redirect_url":"",
-"proxyauth_avail":0,
 "starttransfer_time":0,
 "connect_time":0,
-"namelookup_time":0,
-"redirect_count":0,
-"httpauth_avail":0,
 "total_time":0,
 "content_length_download":-1,
-"os_errno":0,
-"ssl_verifyresult":0,
-"response_code":0,
 "content_length_upload":-1,
-"size_upload":0
+"header_size":0,
+"request_size":0,
+"size_download":0,
+"size_upload":0,
+"speed_download":0,
+"speed_upload":0,
+"num_connects":0,
+"primary_ip":"",
+"httpauth_avail":0,
+"proxyauth_avail":0,
+"redirect_count":0,
+"redirect_time":0,
+"redirect_url":"",
+"ssl_verifyresult":0
 }
 12. Parser3 tests (make tests).
 Don't delete or modify them.
@@ -166,5 +166,5 @@ SERVER_NAME	: www.parser.ru</pre>
 <pre></pre>
 <hr />
 19. Type: curl.host,
-Source: load,
+Source: http://no-such-domain.parser.ru/,
 Comment: Couldn't resolve host name

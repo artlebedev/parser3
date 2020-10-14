@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 3218
+Content-Length: 3617
 
 1. slow test result:
 {
@@ -137,10 +137,14 @@ Comment: content size of 10000000000 bytes exceeds the limit (536870912 bytes)
 "status":200,
 "text":""
 }
+7.1 bad-headers test result:
+Type: http.response,
+Source: http://www.parser.ru/_/tests/nph-379.pl?bad-headers,
+Comment: bad response from host - bad header &quot;:value&quot;
 8. invalid-status test result:
-Type: http.status,
-Source: bad,
-Comment: invalid HTTP response status
+Type: number.format,
+Source: http://www.parser.ru/_/tests/nph-379.pl?invalid-status,
+Comment: 'bad' is invalid number (int) for HTTP status
 9. no-status-1 test result:
 Type: http.status,
 Source: HTTP/1.0 OK,
@@ -154,21 +158,14 @@ Type: http.status,
 Source: HTTP/1.0,
 Comment: invalid HTTP response status
 12. strange-status test result:
-{
-"class":"file",
-"name":"nph-379.pl",
-"size":0,
-"mode":"text",
-"content-type":"application\/octet-stream",
-"tables":{},
-"status":200,
-"text":""
-}
+Type: number.format,
+Source: http://www.parser.ru/_/tests/nph-379.pl?strange-status,
+Comment: '200OK?' is invalid number (int) for HTTP status
 13. strange-content-length-1 test result:
 Type: number.format,
-Source: load,
-Comment: '-1' is invalid number (int)
+Source: http://www.parser.ru/_/tests/nph-379.pl?strange-content-length-1,
+Comment: '-1' is invalid number (int) for content-length
 14. strange-content-length-2 test result:
 Type: number.format,
-Source: load,
-Comment: '200OK?' is invalid number (int)
+Source: http://www.parser.ru/_/tests/nph-379.pl?strange-content-length-2,
+Comment: '200OK?' is invalid number (int) for content-length
