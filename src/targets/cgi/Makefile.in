@@ -14,6 +14,7 @@
 
 @SET_MAKE@
 
+
 VPATH = @srcdir@
 am__is_gnu_make = { \
   if test -z '$(MAKELEVEL)'; then \
@@ -101,7 +102,8 @@ am__aclocal_m4_deps = $(top_srcdir)/src/lib/ltdl/m4/argz.m4 \
 	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
-DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
+DIST_COMMON = $(srcdir)/Makefile.am $(noinst_HEADERS) \
+	$(am__DIST_COMMON)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/src/include/pa_config_auto.h
 CONFIG_CLEAN_FILES =
@@ -153,6 +155,7 @@ am__can_run_installinfo = \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
+HEADERS = $(noinst_HEADERS)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 # Read a list of newline-separated strings from the standard input,
 # and print each of them once, without duplicates.  Input order is
@@ -333,10 +336,11 @@ PA_LIBS = ../../main/.libs/libmain.a ../../classes/.libs/libclasses.a ../../type
 	  ../../lib/pcre/libpcre_internal.la ../../lib/smtp/libsmtp.la ../../lib/json/libjson.la \
 	  ../../lib/punycode/libpunycode.la ../../lib/memcached/libmemcached.la
 
-AM_CPPFLAGS = -I../../classes -I../../types @XML_INCLUDES@
+AM_CPPFLAGS = -I../../classes -I../../types @PCRE_INCLUDES@ @XML_INCLUDES@
 
 # Automake 1.9 does not support LIBTOOLFLAGS
 CXXLINK = $(LIBTOOL) --preserve-dup-deps --mode=link --tag=CXX $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+noinst_HEADERS = pa_sapi_info.h
 parser3_DEPENDENCIES = Makefile $(PA_LIBS)
 parser3_SOURCES = pa_threads.C parser3.C
 parser3_LDADD = $(PA_LIBS) $(LIBLTDL) @GC_LIBS@ @PCRE_LIBS@ @XML_LIBS@ @MIME_LIBS@
@@ -548,7 +552,7 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(PROGRAMS)
+all-am: Makefile $(PROGRAMS) $(HEADERS)
 installdirs:
 	for dir in "$(DESTDIR)$(bindir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
