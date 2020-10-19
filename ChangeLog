@@ -1,4 +1,66 @@
+2020-10-18  moko
+
+	* src/targets/cgi/Makefile.am: + pa_sapi_info.h
+
+2020-10-15  moko
+
+	* src/main/pa_http.C: url no longer needed as
+	  ALTER_EXCEPTION_SOURCE is used
+
+	* src/: classes/curl.C, include/pa_common.h, main/pa_common.C,
+	  main/pa_http.C: check_file_size filespec is now optional
+
+	* src/: classes/curl.C, include/pa_exception.h,
+	  main/pa_exception.C, main/pa_http.C: ALTER_EXCEPTION_SOURCE and
+	  ALTER_EXCEPTION_COMMENT added for better error reporting
+
+	* tests/: 379-curl.html, 379.html, results/223-curl.processed,
+	  results/346-curl.processed, results/379-curl.processed,
+	  results/379.processed: test results updated as load now provides
+	  better error reporting + curl responses updated
+
+2020-10-14  moko
+
+	* src/: classes/date.C, include/pa_string.h, main/pa_http.C,
+	  main/pa_string.C, targets/apache/mod_parser3_core.C,
+	  targets/cgi/parser3.C: pa_atoi / pa_atoui / pa_atoul usage
+	  checked. 10 is now default base, no hex autodetect by default
+
+	* src/: include/pa_http.h, main/pa_http.C, targets/cgi/parser3.C:
+	  connection socket closing in destructor + accept exception
+	  handling
+
+	* src/targets/cgi/parser3.C: warning war
+
+	* src/: include/pa_http.h, include/pa_sapi.h, main/pa_http.C,
+	  main/pa_request.C, targets/apache/mod_parser3_core.C,
+	  targets/cgi/pa_sapi_info.h, targets/cgi/parser3.C: global try
+	  exception handling unified
+
+2020-10-13  moko
+
+	* src/targets/isapi/parser3isapi.C: reverted to atoi to avoid hex
+	  autodetection
+
+	* src/targets/apache/mod_parser3_core.C: reverted to atoi
+
+	* src/: main/pa_http.C, targets/cgi/pa_sapi_info.h: warning war
+
+	* src/main/pa_http.C: warning war
+
 2020-10-12  moko
+
+	* src/: main/pa_request.C, targets/apache/mod_parser3_core.C,
+	  targets/cgi/parser3.C, targets/isapi/parser3isapi.C: excaption in
+	  unhandled exception code optimization
+
+	* src/targets/cgi/parser3.C: request_info now global variable
+
+	* src/main/pa_http.C: http_read_response moved to HTTP_response
+	  class
+
+	* src/: include/pa_http.h, main/pa_http.C,
+	  targets/cgi/pa_sapi_info.h: read_post implemented
 
 	* src/: include/pa_http.h, main/pa_http.C, targets/cgi/parser3.C:
 	  [host:]port syntax support in httpd mode
