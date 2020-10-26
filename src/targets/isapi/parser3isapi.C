@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.117 2020/10/12 22:05:49 moko Exp $";
+volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.118 2020/10/26 23:15:52 moko Exp $";
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -122,6 +122,10 @@ char* SAPI::Env::get(SAPI_Info& SAPI_info, const char* name) {
 	}
 		
 	return 0;
+}
+
+bool SAPI::Env::set(SAPI_Info&, const char*, const char*) {
+	return false;
 }
 
 static int grep_char(const char* s, char c) {

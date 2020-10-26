@@ -8,7 +8,7 @@
 #ifndef PA_SAPI_H
 #define PA_SAPI_H
 
-#define IDENT_PA_SAPI_H "$Id: pa_sapi.h,v 1.35 2020/10/14 00:07:42 moko Exp $"
+#define IDENT_PA_SAPI_H "$Id: pa_sapi.h,v 1.36 2020/10/26 23:15:51 moko Exp $"
 
 // includes
 
@@ -48,6 +48,7 @@ struct SAPI {
 		static const char* const* get(SAPI_Info& ainfo);
 		/// single environment string
 		static char* get(SAPI_Info& ainfo, const char* name);
+		static bool set(SAPI_Info& ainfo, const char* name, const char* value);
 
 		class Iterator {
 		private:

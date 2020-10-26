@@ -8,7 +8,7 @@
 #ifndef PA_VFORM_H
 #define PA_VFORM_H
 
-#define IDENT_PA_VFORM_H "$Id: pa_vform.h,v 1.65 2017/02/07 22:00:48 moko Exp $"
+#define IDENT_PA_VFORM_H "$Id: pa_vform.h,v 1.66 2020/10/26 23:15:53 moko Exp $"
 
 // includes
 
@@ -57,6 +57,9 @@ public: // Value
 	// form: fields,tables,files,imap,method,field
 	Value* get_element(const String& aname);
 	Charset* get_body_charset();
+
+	/// form: (field)=value
+	override const VJunction* put_element(const String& name, Value* value);
 
 public: // usage
 

@@ -17,7 +17,7 @@
 #include "pa_vtable.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_PA_VFORM_C="$Id: pa_vform.C,v 1.119 2019/11/22 23:11:26 moko Exp $" IDENT_PA_VFORM_H;
+volatile const char * IDENT_PA_VFORM_C="$Id: pa_vform.C,v 1.120 2020/10/26 23:15:52 moko Exp $" IDENT_PA_VFORM_H;
 
 // defines
 
@@ -375,4 +375,12 @@ Value* VForm::get_element(const String& aname) {
 Charset* VForm::get_body_charset(){
 	detect_post_charset();
 	return fpost_charset;
+}
+
+const VJunction* VForm::put_element(const String& aname, Value* avalue) {
+	if(should_refill_fields_tables_and_files())
+		refill_fields_tables_and_files();
+
+	fields.put(aname, avalue);
+	return PUT_ELEMENT_REPLACED_ELEMENT;
 }

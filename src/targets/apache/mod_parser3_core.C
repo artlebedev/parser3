@@ -5,7 +5,7 @@ Parser: apache 1.3/2.X module, part, compiled by parser3project.
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_MOD_PARSER3_CORE_C="$Id: mod_parser3_core.C,v 1.27 2020/10/14 16:51:46 moko Exp $";
+volatile const char * IDENT_MOD_PARSER3_CORE_C="$Id: mod_parser3_core.C,v 1.28 2020/10/26 23:15:51 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -81,6 +81,10 @@ void SAPI::die(const char* fmt, ...) {
 char* SAPI::Env::get(SAPI_Info& SAPI_info, const char* name) {
 	const char* dont_return_me=pa_ap_table_get(SAPI_info.r->subprocess_env, name);
 	return dont_return_me?pa_strdup(dont_return_me):0;
+}
+
+bool SAPI::Env::set(SAPI_Info&, const char*, const char*) {
+	return false;
 }
 
 #ifndef DOXYGEN

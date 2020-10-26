@@ -8,7 +8,7 @@
 #ifndef PA_VENV_H
 #define PA_VENV_H
 
-#define IDENT_PA_VENV_H "$Id: pa_venv.h,v 1.42 2017/02/07 22:00:47 moko Exp $"
+#define IDENT_PA_VENV_H "$Id: pa_venv.h,v 1.43 2020/10/26 23:15:52 moko Exp $"
 
 // includes
 
@@ -24,6 +24,9 @@ public: // Value
 
 	// env: field
 	Value* get_element(const String& aname);
+
+	/// request: (key)=value
+	override const VJunction* put_element(const String& name, Value* value);
 
 public: // usage
 
