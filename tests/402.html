@@ -1,0 +1,9 @@
+@unhandled_exception[exception;stack]
+Unhandled Exception: $exception.type
+Source: $exception.source
+Comment: $exception.comment
+^if(!def $exception.file){no file}
+^if(!def $stack){no stack}
+
+@main[]
+$result[^hash::create[]]
