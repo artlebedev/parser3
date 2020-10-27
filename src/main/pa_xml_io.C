@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-volatile const char * IDENT_PA_XML_IO_C="$Id: pa_xml_io.C,v 1.39 2019/11/05 20:05:58 moko Exp $" IDENT_PA_XML_IO_H;
+volatile const char * IDENT_PA_XML_IO_C="$Id: pa_xml_io.C,v 1.40 2020/10/27 21:25:25 moko Exp $" IDENT_PA_XML_IO_H;
 
 #include "libxslt/extensions.h"
 
@@ -141,16 +141,14 @@ static void *xmlFileOpenMethod (const char* afilename) {
 		char* s=pa_strdup(afilename+9 /*strlen("parser://")*/);
 		const char* method_cstr=lsplit(&s, '/');
 		const String* method=new String(method_cstr);
-		String::Body param_body("/");  
+		String::Body param_body("/");
 		if(s)
 			param_body.append_know_length(s, strlen(s));
 
-		VString* vparam=new VString(*new String(param_body, String::L_TAINTED));
-		Request::Execute_nonvirtual_method_result body=r.execute_nonvirtual_method(r.main_class, *method, vparam, true);
-		if(body.string) {
-			buf=body.string->untaint_cstr(String::L_XML);
-		} else
+		const String *body=r.execute_method(r.main_class, *method, new VString(*new String(param_body, String::L_TAINTED)));
+		if(!body)
 			throw Exception(0, new String(afilename), "'%s' method not found in %s class", method_cstr, MAIN_CLASS_NAME);
+		buf=body->untaint_cstr(String::L_XML);
 	} catch(const Exception& e) {
 		buf=e.comment();
 	} catch(...) {

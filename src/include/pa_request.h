@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.250 2019/12/05 22:21:33 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.251 2020/10/27 21:25:25 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -341,19 +341,12 @@ public: // status read methods
 	/// public for ^reflection:copy[]
 	void put_element(Value& ncontext, const String& name, Value* value);
 
-	/// for @main[]
-	const String* execute_virtual_method(Value& aself, const String& method_name);
+	/// for @main[] and parser://method/call
+	const String* execute_method(VStateless_class& aclass, const String& method_name, Value* optional_param = 0);
 
-	//{ for @conf[filespec] and @auto[filespec] and parser://method/call
-	const String* execute_method(Value& aself, const Method& method, Value* optional_param, bool do_return_string);
+	//{ for @conf[filespec] and @auto[filespec]
+	bool execute_method_if_exists(VStateless_class& aclass, const String& method_name, Value* optional_param);
 
-	struct Execute_nonvirtual_method_result {
-		const String* string;
-		Method* method;
-		Execute_nonvirtual_method_result(): string(0), method(0) {}
-	};
-
-	Execute_nonvirtual_method_result execute_nonvirtual_method(VStateless_class& aclass, const String& method_name, VString* optional_param, bool do_return_string);
 	//}
 
 #ifdef XML

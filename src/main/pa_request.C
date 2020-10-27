@@ -33,7 +33,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.381 2020/10/14 00:07:42 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.382 2020/10/27 21:25:25 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -446,7 +446,7 @@ void Request::core(const char* config_filespec, bool config_fail_on_read_problem
 		}
 
 		// execute @main[]
-		const String* body_string=execute_virtual_method(main_class, main_method_name);
+		const String* body_string=execute_method(main_class, main_method_name);
 		if(!body_string)
 			throw Exception(PARSER_RUNTIME, 0, "'" MAIN_METHOD_NAME "' method not found");
 
@@ -656,12 +656,11 @@ void Request::use_buf(VStateless_class& aclass, const char* source, const String
 		VStateless_class& cclass=*cclasses.get(i);
 
 		// locate and execute possible @conf[] static
-		Execute_nonvirtual_method_result executed=execute_nonvirtual_method(cclass, conf_method_name, vfilespec, false/*no string result needed*/);
-		if(executed.method)
+		if(execute_method_if_exists(cclass, conf_method_name, vfilespec))
 			configure_admin(cclass/*, executed.method->name*/);
 
 		// locate and execute possible @auto[] static
-		execute_nonvirtual_method(cclass, auto_method_name, vfilespec, false/*no result needed*/);
+		execute_method_if_exists(cclass, auto_method_name, vfilespec);
 
 		cclass.enable_default_setter();
 	}

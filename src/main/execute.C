@@ -21,7 +21,7 @@
 #include "pa_vimage.h"
 #include "pa_wwrapper.h"
 
-volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.407 2020/10/27 10:10:08 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
+volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.408 2020/10/27 21:25:25 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
 
 //#define DEBUG_EXECUTE
 
@@ -1432,41 +1432,42 @@ void Request::process_write(Value& input_value) {
 	write(input_value);
 }
 
-const String* Request::execute_method(Value& aself, const Method& method, Value* optional_param, bool do_return_string) {
-	METHOD_FRAME_ACTION(method, method_frame/*caller*/, aself, {
+const String* Request::execute_method(VStateless_class& aclass, const String& method_name, Value* optional_param) {
+	if(const Method *method=aclass.get_method(method_name)){
+		METHOD_FRAME_ACTION(*method, method_frame/*caller*/, aclass, {
 
-		if(optional_param && method.params_count>0) {
-			frame.store_params(&optional_param, 1);
-		} else {
-			frame.empty_params();
-		}
+			if(optional_param && method->params_count>0) {
+				frame.store_params(&optional_param, 1);
+			} else {
+				frame.empty_params();
+			}
 
-		// prevent non-string writes for better error reporting
-		if(do_return_string)
+			// prevent non-string writes for better error reporting
 			frame.write(frame);
-	
-		call(frame);
-	
-		return do_return_string ? frame.get_string() : 0;
-	});
-}
 
-Request::Execute_nonvirtual_method_result 
-Request::execute_nonvirtual_method(VStateless_class& aclass, const String& method_name, VString* optional_param, bool do_return_string) {
-	Execute_nonvirtual_method_result result;
-	result.method=aclass.get_method(method_name);
-	if(result.method)
-		result.string=execute_method(aclass, *result.method, optional_param, do_return_string);
-	return result;
-}
-
-const String* Request::execute_virtual_method(Value& aself, const String& method_name) {
-	if(Value* value=aself.get_element(method_name))
-		if(Junction* junction=value->get_junction())
-			if(const Method *method=junction->method) 
-				return execute_method(aself, *method, 0/*no params*/, true);
-			
+			call(frame);
+	
+			return &frame.as_string();
+		});
+	}
 	return 0;
+}
+
+bool Request::execute_method_if_exists(VStateless_class& aclass, const String& method_name, Value* optional_param) {
+	if(const Method *method=aclass.get_method(method_name)){
+		METHOD_FRAME_ACTION(*method, method_frame/*caller*/, aclass, {
+
+			if(optional_param && method->params_count>0) {
+				frame.store_params(&optional_param, 1);
+			} else {
+				frame.empty_params();
+			}
+
+			call(frame);
+		});
+		return true;
+	}
+	return false;
 }
 
 const String* Request::get_method_filespec(const Method* method){
