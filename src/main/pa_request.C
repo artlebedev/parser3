@@ -33,7 +33,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.382 2020/10/27 21:25:25 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.383 2020/10/27 22:12:40 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -459,17 +459,15 @@ void Request::core(const char* config_filespec, bool config_fail_on_read_problem
 			body_value=new VString(*body_string); // just result of ^main[]
 
 		// @postprocess
-		if(Value* value=main_class.get_element(post_process_method_name))
-			if(Junction* junction=value->get_junction())
-				if(const Method *method=junction->method) {
-					// preparing to pass parameters to 
-					//	@postprocess[data]
-					METHOD_FRAME_ACTION(*method, 0 /*no parent*/, main_class, {
-						frame.store_params(&body_value, 1);
-						call(frame);
-						body_value=&frame.result();
-					});
-				}
+		if(const Method *method=main_class.get_method(post_process_method_name)) {
+			// preparing to pass parameters to
+			//	@postprocess[data]
+			METHOD_FRAME_ACTION(*method, 0 /*no parent*/, main_class, {
+				frame.store_params(&body_value, 1);
+				call(frame);
+				body_value=&frame.result();
+			});
+		}
 
 		VFile* body_file=body_value->as_vfile(flang, &charsets);
 
@@ -494,46 +492,42 @@ void Request::core(const char* config_filespec, bool config_fail_on_read_problem
 
 		// maybe we'd be lucky enough as to report an error
 		// in a gracefull way...
-		if(Value* value=main_class.get_element(*new String(UNHANDLED_EXCEPTION_METHOD_NAME))) {
-			if(Junction* junction=value->get_junction()) {
-				if(const Method *method=junction->method) {
-					// preparing to pass parameters to 
-					//	@unhandled_exception[exception;stack]
+		if(const Method *method=main_class.get_method(*new String(UNHANDLED_EXCEPTION_METHOD_NAME))) {
+			// preparing to pass parameters to 
+			//	@unhandled_exception[exception;stack]
 
-					// $stack[^table::create{name	file	lineno	colno}]
-					Table::columns_type stack_trace_columns(new ArrayString);
-					*stack_trace_columns+=new String("name");
-					*stack_trace_columns+=new String("file");
-					*stack_trace_columns+=new String("lineno");
-					*stack_trace_columns+=new String("colno");
-					Table& stack_trace=*new Table(stack_trace_columns);
-					if(!exception_trace.is_empty()/*signed!*/) 
-						for(size_t i=exception_trace.bottom_index(); i<exception_trace.top_index(); i++) {
-							Trace trace=exception_trace.get(i);
-							Table::element_type row(new ArrayString);
+			// $stack[^table::create{name	file	lineno	colno}]
+			Table::columns_type stack_trace_columns(new ArrayString);
+			*stack_trace_columns+=new String("name");
+			*stack_trace_columns+=new String("file");
+			*stack_trace_columns+=new String("lineno");
+			*stack_trace_columns+=new String("colno");
+			Table& stack_trace=*new Table(stack_trace_columns);
+			if(!exception_trace.is_empty()/*signed!*/) 
+				for(size_t i=exception_trace.bottom_index(); i<exception_trace.top_index(); i++) {
+					Trace trace=exception_trace.get(i);
+					Table::element_type row(new ArrayString);
 
-							*row+=trace.name(); // name column
-							Operation::Origin origin=trace.origin();
-							if(origin.file_no) {
-								*row+=new String(file_list[origin.file_no], String::L_TAINTED); // 'file' column
-								*row+=new String(String::Body::Format(1+origin.line), String::L_CLEAN); // 'lineno' column
-								*row+=new String(String::Body::Format(1+origin.col), String::L_CLEAN); // 'colno' column
-							}
-							stack_trace+=row;
-						}
-
-					// future $response:body=
-					//   execute ^unhandled_exception[exception;stack]
-					exception_trace.clear(); // forget all about previous life, in case there would be error inside of this method, error handled  would not be mislead by old stack contents (see extract_origin)
-
-					Value *params[]={&details.vhash, new VTable(&stack_trace)};
-					METHOD_FRAME_ACTION(*method, 0 /*no caller*/, main_class, {
-						frame.store_params(params, 2);
-						call(frame);
-						body_string=&frame.result().as_string();
-					});
+					*row+=trace.name(); // name column
+					Operation::Origin origin=trace.origin();
+					if(origin.file_no) {
+						*row+=new String(file_list[origin.file_no], String::L_TAINTED); // 'file' column
+						*row+=new String(String::Body::Format(1+origin.line), String::L_CLEAN); // 'lineno' column
+						*row+=new String(String::Body::Format(1+origin.col), String::L_CLEAN); // 'colno' column
+					}
+					stack_trace+=row;
 				}
-			}
+
+			// future $response:body=
+			//   execute ^unhandled_exception[exception;stack]
+			exception_trace.clear(); // forget all about previous life, in case there would be error inside of this method, error handled  would not be mislead by old stack contents (see extract_origin)
+
+			Value *params[]={&details.vhash, new VTable(&stack_trace)};
+			METHOD_FRAME_ACTION(*method, 0 /*no caller*/, main_class, {
+				frame.store_params(params, 2);
+				call(frame);
+				body_string=&frame.result().as_string();
+			});
 		}
 		
 		// conditionally log it
