@@ -21,7 +21,7 @@
 #include "pa_vimage.h"
 #include "pa_wwrapper.h"
 
-volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.409 2020/10/27 22:12:40 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
+volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.410 2020/10/27 22:45:33 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
 
 //#define DEBUG_EXECUTE
 
@@ -1447,7 +1447,11 @@ const String* Request::execute_method(VStateless_class& aclass, const String& me
 
 			call(frame);
 	
-			return &frame.result().as_string();
+			Value &result=frame.result();
+			if(const String* sresult=result.get_string()){
+				return sresult;
+			}
+			result.bark("is '%s', it has no string representation", &method_name);
 		});
 	}
 	return 0;
