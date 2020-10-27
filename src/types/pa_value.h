@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.165 2017/11/15 22:48:58 moko Exp $"
+#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.166 2020/10/27 10:10:08 moko Exp $"
 
 #include "pa_common.h"
 #include "pa_array.h"
@@ -180,12 +180,8 @@ public: // Value
 	}
 #endif
 
-	/// indicator value meaning that put_element overwritten something
-	#define PUT_ELEMENT_REPLACED_ELEMENT reinterpret_cast<const VJunction*>(1)
-
 	/// store Value element under @a name
-	/// @returns putter method junction, or it can just report[PUT_ELEMENT_REPLACED_ELEMENT] 
-	/// that it replaced something in base fields 
+	/// @returns putter method junction, or 0
 	virtual const VJunction* put_element(const String& aname, Value* /*avalue*/) { 
 		// to prevent modification of system classes,
 		// created at system startup, and not having exception
@@ -230,12 +226,7 @@ public: // usage
 
 	/// throws exception specifying bark-reason and name() type() of problematic value
 	Value* bark(const char *reason, const String *problem_source=0) const {
-		//if(this) // removing warnings on unreachable code
-			throw Exception(PARSER_RUNTIME,
-				problem_source, 
-				reason, type());
-
-		//return 0;
+		throw Exception(PARSER_RUNTIME, problem_source, reason, type());
 	}
 
 };

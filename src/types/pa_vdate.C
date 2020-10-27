@@ -9,7 +9,7 @@
 #include "pa_vint.h"
 #include "pa_vstring.h"
 
-volatile const char * IDENT_PA_PA_VDATE_C="$Id: pa_vdate.C,v 1.22 2017/02/07 22:00:47 moko Exp $" IDENT_PA_VDATE_H;
+volatile const char * IDENT_PA_PA_VDATE_C="$Id: pa_vdate.C,v 1.23 2020/10/27 10:10:09 moko Exp $" IDENT_PA_VDATE_H;
 
 #define ZERO_DATE (-62169984000ll-SECS_PER_DAY) // '0000-00-00 00:00:00' - 1 day
 #define MAX_DATE (253402300799ll+SECS_PER_DAY) // '9999-12-31 23:59:59' + 1 day
@@ -240,7 +240,7 @@ const VJunction* VDate::put_element(const String& aname, Value* avalue) {
 
 	set_tm(tmIn);
 
-	return PUT_ELEMENT_REPLACED_ELEMENT;
+	return 0;
 }
 
 

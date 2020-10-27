@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.125 2020/06/26 15:45:11 moko Exp $"
+#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.126 2020/10/27 10:10:10 moko Exp $"
 
 #include "pa_symbols.h"
 #include "pa_wcontext.h"
@@ -231,7 +231,7 @@ public: // Value
 	/// VParserMethodFrame: my or self_transparent
 	override const VJunction* put_element(const String& aname, Value* avalue) {
 		if(my.put_replaced(aname, avalue))
-			return PUT_ELEMENT_REPLACED_ELEMENT;
+			return 0;
 		return self().put_element(aname, avalue);
 	}
 
@@ -340,7 +340,7 @@ public: // Value
 
 	override const VJunction* put_element(const String& aname, Value* avalue){
 		set_my_variable(aname, *avalue);
-		return PUT_ELEMENT_REPLACED_ELEMENT;
+		return 0;
 	}
 
 public: // usage

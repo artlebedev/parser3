@@ -21,7 +21,7 @@
 #include "pa_vimage.h"
 #include "pa_wwrapper.h"
 
-volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.406 2018/02/02 22:59:55 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
+volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.407 2020/10/27 10:10:08 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
 
 //#define DEBUG_EXECUTE
 
@@ -450,7 +450,6 @@ void Request::execute(ArrayOperation& ops) {
 				const String& name=stack.pop().string();  debug_name=&name;
 				Value& ncontext=stack.pop().value();
 				if(const VJunction* vjunction=ncontext.put_element(name, &value))
-					if(vjunction!=PUT_ELEMENT_REPLACED_ELEMENT)
 						throw Exception(PARSER_RUNTIME, 0, "property value can not be code, use [] or () brackets");
 
 				break;
@@ -1252,34 +1251,33 @@ Value& Request::get_element4call(Value& ncontext, const String& name) {
 
 void Request::put_element(Value& ncontext, const String& name, Value* value) {
 	// put_element can return property-setting-junction
-	if(const VJunction* vjunction=ncontext.put_element(name, value))
-		if(vjunction!=PUT_ELEMENT_REPLACED_ELEMENT) {
-			const Junction& junction = vjunction->junction();
-			int param_count=junction.method->params_count;
+	if(const VJunction* vjunction=ncontext.put_element(name, value)) {
+		const Junction& junction = vjunction->junction();
+		int param_count=junction.method->params_count;
 
-			if(junction.auto_name){
-				// default setter
-				if(param_count!=2)
-					throw Exception(PARSER_RUNTIME, 0, "default setter method must have TWO parameters (has %d parameters)", param_count);
+		if(junction.auto_name) {
+			// default setter
+			if(param_count!=2)
+				throw Exception(PARSER_RUNTIME, 0, "default setter method must have TWO parameters (has %d parameters)", param_count);
 
-				Value* params[2] = { new VString(*junction.auto_name), value };
+			Value* params[2] = { new VString(*junction.auto_name), value };
 
-				CONSTRUCTOR_FRAME_ACTION(*junction.method, method_frame /*caller*/, junction.self, {
-					frame.store_params(params, 2);
-					Temp_disable_default_setter temp(junction.self);
-					call(frame);
-				});
-			} else {
-				// setter
-				if(param_count!=1)
-					throw Exception(PARSER_RUNTIME, 0, "setter method must have ONE parameter (has %d parameters)", param_count);
+			CONSTRUCTOR_FRAME_ACTION(*junction.method, method_frame /*caller*/, junction.self, {
+				frame.store_params(params, 2);
+				Temp_disable_default_setter temp(junction.self);
+				call(frame);
+			});
+		} else {
+			// setter
+			if(param_count!=1)
+				throw Exception(PARSER_RUNTIME, 0, "setter method must have ONE parameter (has %d parameters)", param_count);
 
-				CONSTRUCTOR_FRAME_ACTION(*junction.method, method_frame /*caller*/, junction.self, {
-					frame.store_params(&value, 1);
-					call(frame);
-				});
-			}
+			CONSTRUCTOR_FRAME_ACTION(*junction.method, method_frame /*caller*/, junction.self, {
+				frame.store_params(&value, 1);
+				call(frame);
+			});
 		}
+	}
 }
 
 Value& Request::process_getter(Junction& junction) {

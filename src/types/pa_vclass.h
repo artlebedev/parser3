@@ -8,7 +8,7 @@
 #ifndef PA_VCLASS_H
 #define PA_VCLASS_H
 
-#define IDENT_PA_VCLASS_H "$Id: pa_vclass.h,v 1.71 2018/01/18 23:06:51 moko Exp $"
+#define IDENT_PA_VCLASS_H "$Id: pa_vclass.h,v 1.72 2020/10/27 10:10:09 moko Exp $"
 
 #define OBJECT_PROTOTYPE
 //#define CLASS_GETTER_UNPROTECTED
@@ -36,6 +36,10 @@ public: // Value
 
 	override Value* get_element(Value& aself, const String& aname);
 	override const VJunction* put_element(Value& self, const String& name, Value* value);
+
+	/// indicator value meaning that put_element_replace_only overwritten static field in non-prototype mode
+	#define PUT_ELEMENT_REPLACED_FIELD reinterpret_cast<const VJunction*>(1)
+
 	// for VObject::put_element
 	const VJunction* put_element_replace_only(Value& self, const String& name, Value* value);
 

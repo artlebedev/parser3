@@ -8,7 +8,7 @@
 #ifndef PA_VCONSOLE_H
 #define PA_VCONSOLE_H
 
-#define IDENT_PA_VCONSOLE_H "$Id: pa_vconsole.h,v 1.25 2017/02/07 22:00:47 moko Exp $"
+#define IDENT_PA_VCONSOLE_H "$Id: pa_vconsole.h,v 1.26 2020/10/27 10:10:09 moko Exp $"
 
 // includes
 
@@ -55,12 +55,10 @@ public: // Value
 			puts(avalue->as_string().cstr());
 			fflush(stdout);
 
-			return PUT_ELEMENT_REPLACED_ELEMENT;
+			return 0;
 		}
 
-		throw Exception(PARSER_RUNTIME,
-			&aname,
-			"writing to invalid field");
+		throw Exception(PARSER_RUNTIME, &aname, "writing to invalid field");
 	}
 
 	bool was_used(){

@@ -11,7 +11,7 @@
 #include "gif.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_PA_VIMAGE_C="$Id: pa_vimage.C,v 1.48 2017/05/16 14:42:07 moko Exp $" IDENT_PA_VIMAGE_H;
+volatile const char * IDENT_PA_VIMAGE_C="$Id: pa_vimage.C,v 1.49 2020/10/27 10:10:10 moko Exp $" IDENT_PA_VIMAGE_H;
 
 void VImage::set(const String* src, int width, int height, gdImage* aimage, Value* aexif, Value* axmp) {
 	fimage=aimage;
@@ -69,5 +69,5 @@ const VJunction* VImage::put_element(const String& aname, Value* avalue) {
 		}
 	}
 
-	return PUT_ELEMENT_REPLACED_ELEMENT;
+	return 0;
 }

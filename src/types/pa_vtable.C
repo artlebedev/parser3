@@ -11,7 +11,7 @@
 #include "pa_vvoid.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VTABLE_C="$Id: pa_vtable.C,v 1.48 2017/05/04 16:23:14 moko Exp $" IDENT_PA_VTABLE_H;
+volatile const char * IDENT_PA_VTABLE_C="$Id: pa_vtable.C,v 1.49 2020/10/27 10:10:10 moko Exp $" IDENT_PA_VTABLE_H;
 
 #ifndef DOXYGEN
 struct Record_info {
@@ -111,7 +111,7 @@ const VJunction* VTable::put_element(const String& aname, Value* avalue) {
 			if(!svalue)
 				throw Exception(PARSER_RUNTIME, 0, "column value must be string compatible");
 			ftable->put_item(index, svalue);
-			return PUT_ELEMENT_REPLACED_ELEMENT;
+			return 0;
 		}
 	}
 

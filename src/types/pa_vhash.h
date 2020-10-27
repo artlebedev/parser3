@@ -8,7 +8,7 @@
 #ifndef PA_VHASH_H
 #define PA_VHASH_H
 
-#define IDENT_PA_VHASH_H "$Id: pa_vhash.h,v 1.80 2017/02/14 14:34:08 moko Exp $"
+#define IDENT_PA_VHASH_H "$Id: pa_vhash.h,v 1.81 2020/10/27 10:10:10 moko Exp $"
 
 #include "classes.h"
 #include "pa_value.h"
@@ -95,7 +95,7 @@ public: // value
 		else 
 			fhash.put(aname, avalue);
 
-		return PUT_ELEMENT_REPLACED_ELEMENT;
+		return 0;
 	}
 
 	override VFile* as_vfile(String::Language lang, const Request_charsets *charsets=0);
@@ -171,7 +171,7 @@ public: // value
 	/// VHash: (key)=value
 	override const VJunction* put_element(const String& aname, Value* avalue) {
 		fhash->put(aname, avalue);
-		return PUT_ELEMENT_REPLACED_ELEMENT;
+		return 0;
 	}
 
 public: // usage

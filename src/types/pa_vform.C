@@ -17,7 +17,7 @@
 #include "pa_vtable.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_PA_VFORM_C="$Id: pa_vform.C,v 1.120 2020/10/26 23:15:52 moko Exp $" IDENT_PA_VFORM_H;
+volatile const char * IDENT_PA_VFORM_C="$Id: pa_vform.C,v 1.121 2020/10/27 10:10:09 moko Exp $" IDENT_PA_VFORM_H;
 
 // defines
 
@@ -382,5 +382,5 @@ const VJunction* VForm::put_element(const String& aname, Value* avalue) {
 		refill_fields_tables_and_files();
 
 	fields.put(aname, avalue);
-	return PUT_ELEMENT_REPLACED_ELEMENT;
+	return 0;
 }

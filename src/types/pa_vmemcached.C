@@ -13,7 +13,7 @@
 #include "pa_vhash.h"
 #include "pa_vvoid.h"
 
-volatile const char * IDENT_PA_VMEMCACHED_C="$Id: pa_vmemcached.C,v 1.20 2017/11/15 22:48:58 moko Exp $" IDENT_PA_VMEMCACHED_H;
+volatile const char * IDENT_PA_VMEMCACHED_C="$Id: pa_vmemcached.C,v 1.21 2020/10/27 10:10:10 moko Exp $" IDENT_PA_VMEMCACHED_H;
 
 const char *memcached_library="libmemcached" LT_MODULE_EXT;
 
@@ -266,6 +266,6 @@ const VJunction* VMemcached::put_element(const String& aname, Value* avalue){
 
 	check("set", fm, f_memcached_set(fm, aname.cstr(), aname.length(), data.ptr, data.length, ttl, data.flags));
 
-	return PUT_ELEMENT_REPLACED_ELEMENT;
+	return 0;
 }
 
