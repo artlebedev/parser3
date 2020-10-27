@@ -1,5 +1,8 @@
 Content-Type: text/html
-Content-Length: 108
+Content-Length: 199
 
+Type: parser.runtime,
+Source: no-such-element,
+Comment: element can not be stored to xnode
 <?xml version="1.0" encoding="UTF-8"?>
 <root><node>даже&amp;интересно&lt;br/&gt;</node></root>
