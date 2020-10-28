@@ -33,7 +33,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.384 2020/10/28 22:32:02 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.385 2020/10/28 22:43:48 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -402,7 +402,7 @@ void Request::core(const char* config_filespec, bool header_only) {
 	try {
 		// loading config
 		if(config_filespec)
-			use_file_directly(main_class, *new String(config_filespec), true, true /*file must exist if 'fail on read problem' not set*/);
+			use_file_directly(main_class, *new String(config_filespec));
 
 		// filling mail received
 		mail.fill_received(*this);
@@ -425,7 +425,7 @@ void Request::core(const char* config_filespec, bool header_only) {
 					sfile_spec.append_strdup(request_info.path_translated, before-request_info.path_translated, String::L_CLEAN);
 					sfile_spec << "/" AUTO_FILE_NAME;
 
-					use_file_directly(main_class, sfile_spec, true /*fail on read problem*/, false /*but ignore absence, sole user*/);
+					use_file_directly(main_class, sfile_spec, false /*ignore absence, sole user*/);
 				}
 				for(after=before+1;*after=='/';after++);
 			}
@@ -558,17 +558,16 @@ uint Request::register_file(String::Body file_spec) {
 	return file_list.count()-1;
 }
 
-void Request::use_file_directly(VStateless_class& aclass, const String& file_spec, bool fail_on_read_problem, bool fail_on_file_absence) {
+void Request::use_file_directly(VStateless_class& aclass, const String& file_spec, bool fail_on_file_absence) {
 	// cyclic dependence check
 	if(used_files.get(file_spec))
 		return;
 	used_files.put(file_spec, true);
 
-	if(fail_on_read_problem && !fail_on_file_absence) // ignore file absence if asked for
-		if(!entry_exists(file_spec))
-			return;
+	if(!fail_on_file_absence && !entry_exists(file_spec)) // ignore file absence if asked for
+		return;
 
-	if(const char* source=file_read_text(charsets, file_spec, fail_on_read_problem))
+	if(const char* source=file_read_text(charsets, file_spec, true))
 		use_buf(aclass, source, 0, register_file(file_spec));
 }
 

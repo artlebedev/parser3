@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.252 2020/10/28 22:32:02 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.253 2020/10/28 22:43:48 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -235,7 +235,7 @@ public:
 	}
 
 	///
-	void use_file_directly(VStateless_class& aclass, const String& file_spec, bool fail_on_read_problem=true, bool fail_on_file_absence=true);
+	void use_file_directly(VStateless_class& aclass, const String& file_spec, bool fail_on_file_absence=true);
 
 	/// compiles the file, maybe forcing it's class @a name and @a base_class.
 	void use_file(VStateless_class& aclass, const String& file_name, const String* use_filespec);
