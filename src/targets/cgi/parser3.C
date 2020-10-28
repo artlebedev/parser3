@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.305 2020/10/26 23:15:52 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.306 2020/10/28 22:32:02 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -320,9 +320,8 @@ static void connection_handler(SAPI_Info_HTTPD &info, HTTPD_Connection &connecti
 	{
 		// initing ::request ptr for signal handlers
 		RequestController rc(&request);
-		bool fail_on_config_read_problem=locate_config();
 		// process the request
-		request.core(config_filespec_cstr, fail_on_config_read_problem, strcasecmp(request_info.method, "HEAD")==0);
+		request.core(locate_config() ? config_filespec_cstr : NULL, strcasecmp(request_info.method, "HEAD")==0);
 		// clearing ::request in RequestController desctructor to prevent signal handlers from accessing invalid memory
 	}
 }
@@ -457,9 +456,8 @@ static void real_parser_handler(const char* filespec_to_process) {
 	{
 		// initing ::request ptr for signal handlers
 		RequestController rc(&request);
-		bool fail_on_config_read_problem=locate_config();
 		// process the request
-		request.core(config_filespec_cstr, fail_on_config_read_problem, strcasecmp(request_info.method, "HEAD")==0);
+		request.core(locate_config() ? config_filespec_cstr : NULL, strcasecmp(request_info.method, "HEAD")==0);
 		// clearing ::request in RequestController destructor to prevent signal handlers from accessing invalid memory
 	}
 

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.118 2020/10/26 23:15:52 moko Exp $";
+volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.119 2020/10/28 22:32:03 moko Exp $";
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -352,29 +352,20 @@ void real_parser_handler(SAPI_Info& SAPI_info, bool header_only) {
 	request_info.mail_received=false;
 	
 	// prepare to process request
-	Request request(SAPI_info, 
-		request_info,
-		String::Language(String::L_HTML|String::L_OPTIMIZE_BIT));
+	Request request(SAPI_info, request_info, String::Language(String::L_HTML|String::L_OPTIMIZE_BIT));
 
 	// beside by binary
 	static char beside_binary_path[MAX_STRING];
 	strncpy(beside_binary_path, argv0, MAX_STRING-1);  beside_binary_path[MAX_STRING-1]=0; // filespec of my binary
-	if(!(
-		rsplit(beside_binary_path, '/') || 
-		rsplit(beside_binary_path, '\\'))) { // strip filename
+	if(!(rsplit(beside_binary_path, '/') || rsplit(beside_binary_path, '\\'))) { // strip filename
 		// no path, just filename
 		beside_binary_path[0]='.'; beside_binary_path[1]=0;
-	}	
+	}
 	char config_filespec[MAX_STRING];
-	snprintf(config_filespec, MAX_STRING, 
-		"%s/%s", 
-		beside_binary_path, AUTO_FILE_NAME);
-	bool fail_on_config_read_problem=entry_exists(config_filespec);
+	snprintf(config_filespec, MAX_STRING, "%s/%s", beside_binary_path, AUTO_FILE_NAME);
 
 	// process the request
-	request.core(
-		config_filespec, fail_on_config_read_problem, // /path/to/first/auto.p
-		header_only);
+	request.core(entry_exists(config_filespec) ? config_filespec : NULL, header_only);
 }
 
 #ifdef PA_SUPPRESS_SYSTEM_EXCEPTION
