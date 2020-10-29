@@ -33,7 +33,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.385 2020/10/28 22:43:48 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.386 2020/10/29 16:02:21 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -407,36 +407,9 @@ void Request::core(const char* config_filespec, bool header_only) {
 		// filling mail received
 		mail.fill_received(*this);
 
-		// loading auto.p files from document_root/.. 
-		// to the one beside requested file.
-		// all assigned bases from upper dir
-		{
-			const char* after=request_info.path_translated;
-			size_t drlen=strlen(request_info.document_root);
-			if(memcmp(after, request_info.document_root, drlen)==0) {
-				after+=drlen;
-				if(after[-1]=='/') 
-					--after;
-			}
-			
-			while(const char* before=strchr(after, '/')) {
-				String& sfile_spec=*new String;
-				if(after!=request_info.path_translated) {
-					sfile_spec.append_strdup(request_info.path_translated, before-request_info.path_translated, String::L_CLEAN);
-					sfile_spec << "/" AUTO_FILE_NAME;
-
-					use_file_directly(main_class, sfile_spec, false /*ignore absence, sole user*/);
-				}
-				for(after=before+1;*after=='/';after++);
-			}
-		}
-
 		try {
 			// compile requested file
-			String& spath_translated=*new String;
-			spath_translated.append_help_length(request_info.path_translated, 0, String::L_TAINTED);
-			use_file_directly(main_class, spath_translated);
-
+			use_file_directly(main_class, *new String(request_info.path_translated, String::L_TAINTED), true, true /* load auto.p files */);
 			configure();
 		} catch(...) {
 			configure(); // configure anyway, useful in @unhandled_exception [say, if they would want to mail by SMTP something]
@@ -558,7 +531,7 @@ uint Request::register_file(String::Body file_spec) {
 	return file_list.count()-1;
 }
 
-void Request::use_file_directly(VStateless_class& aclass, const String& file_spec, bool fail_on_file_absence) {
+void Request::use_file_directly(VStateless_class& aclass, const String& file_spec, bool fail_on_file_absence, bool with_auto_p) {
 	// cyclic dependence check
 	if(used_files.get(file_spec))
 		return;
@@ -567,12 +540,41 @@ void Request::use_file_directly(VStateless_class& aclass, const String& file_spe
 	if(!fail_on_file_absence && !entry_exists(file_spec)) // ignore file absence if asked for
 		return;
 
+	if(with_auto_p) {
+		// loading auto.p files from document_root/.. 
+		// to the one beside requested file.
+		// all assigned bases from upper dir
+		const char* target=file_spec.cstr();
+
+		// all relative paths are calculated from main document
+		request_info.path_translated=target;
+
+		const char* after=target;
+		size_t drlen=strlen(request_info.document_root);
+		if(memcmp(after, request_info.document_root, drlen)==0) {
+			after+=drlen;
+			if(after[-1]=='/') 
+				--after;
+		}
+
+		while(const char* before=strchr(after, '/')) {
+			String& sfile_spec=*new String;
+			if(after!=target) {
+				sfile_spec.append_strdup(target, before-target, String::L_CLEAN);
+				sfile_spec << "/" AUTO_FILE_NAME;
+
+				use_file_directly(main_class, sfile_spec, false /*ignore absence, sole user*/);
+			}
+			for(after=before+1;*after=='/';after++);
+		}
+	}
+
 	if(const char* source=file_read_text(charsets, file_spec, true))
 		use_buf(aclass, source, 0, register_file(file_spec));
 }
 
 
-void Request::use_file(VStateless_class& aclass, const String& file_name, const String* use_filespec/*absolute*/) {
+void Request::use_file(VStateless_class& aclass, const String& file_name, const String* use_filespec/*absolute*/, bool with_auto_p) {
 	if(file_name.is_empty())
 		throw Exception(PARSER_RUNTIME, 0, "usage failed - no filename was specified");
 
@@ -608,7 +610,7 @@ void Request::use_file(VStateless_class& aclass, const String& file_name, const 
 			throw Exception(PARSER_RUNTIME, &file_name, "usage failed - no $" MAIN_CLASS_NAME  ":" CLASS_PATH_NAME " were specified");
 	}
 
-	use_file_directly(aclass, *filespec);
+	use_file_directly(aclass, *filespec, true, with_auto_p);
 }
 
 void Request::use_file(const String& file_name, const String* use_filespec/*absolute*/, Operation::Origin origin) {

@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.255 2020/06/27 09:45:49 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.256 2020/10/29 16:02:21 moko Exp $";
 
 // defines
 
@@ -281,8 +281,9 @@ static void _while(Request& r, MethodParams& params) {
 static void _use(Request& r, MethodParams& params) {
 	Value& vfile=params.as_no_junction(0, FILE_NAME_MUST_NOT_BE_CODE);
 
-	bool allow_class_replace=false;
 	const String* use_origin=0;
+	bool allow_class_replace=false;
+	bool load_auto_p=false;
 
 	if(params.count()==2)
 		if(HashStringValue* options=params.as_hash(1)) {
@@ -292,14 +293,19 @@ static void _use(Request& r, MethodParams& params) {
 				String::Body key=i.key();
 				Value* value=i.value();
 
+				if(key == "origin") {
+					valid_options++;
+					use_origin=&value->as_string();
+				}
+
 				if(key == "replace") {
 					valid_options++;
 					allow_class_replace=r.process(*value).as_bool();
 				}
 
-				if(key == "origin") {
+				if(key == "main") {
 					valid_options++;
-					use_origin=&value->as_string();
+					load_auto_p=r.process(*value).as_bool();
 				}
 
 				if(valid_options!=options->count())
@@ -313,7 +319,7 @@ static void _use(Request& r, MethodParams& params) {
 
 	Temp_class_replace class_replace(r, allow_class_replace);
 
-	r.use_file(r.main_class, vfile.as_string(), use_origin);
+	r.use_file(r.main_class, vfile.as_string(), use_origin, load_auto_p);
 }
 
 static void set_skip(Request& r, Request::Skip askip) {
