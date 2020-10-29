@@ -14,7 +14,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.98 2020/10/18 23:40:41 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.99 2020/10/29 14:26:07 moko Exp $" IDENT_PA_HTTP_H; 
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -1004,7 +1004,7 @@ size_t HTTPD_request::read_post(int sock, char *body, size_t max_bytes) {
 	memcpy(body, buf + body_offset, total_read);
 
 	while (total_read < max_bytes){
-		ssize_t received_size = recv(sock, buf + total_read, max_bytes - total_read, 0);
+		ssize_t received_size = recv(sock, body + total_read, max_bytes - total_read, 0);
 		if(received_size == 0)
 			return total_read;
 		if(received_size < 0) {
