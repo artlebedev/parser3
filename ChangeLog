@@ -1,3 +1,51 @@
+2020-10-29  moko
+
+	* src/: classes/op.C, include/pa_request.h, main/pa_request.C:
+	  ^use[file; $.main(true) ] implemented for auto.p processing and
+	  path_translated changing to correct relative files path
+	  calculation in httpd mode
+
+	* src/: include/pa_request.h, main/pa_request.C:
+	  fail_on_read_problem removed, as it allways true, as if should
+	  be.
+
+	* src/: include/pa_request.h, main/pa_request.C,
+	  targets/apache/mod_parser3_core.C, targets/cgi/parser3.C,
+	  targets/isapi/parser3isapi.C: clearing config_filespec when
+	  config was not found, thus flag not required and removed.
+
+2020-10-28  moko
+
+	* tests/: 402.html, results/402.processed: error reporting test
+
+	* src/main/execute.C: better error reporting when
+	  $result[^hash::create[]] in @main.
+
+	* src/main/: execute.C, pa_request.C: frame.result() should be used
+	  + minor optimization
+
+	* src/: include/pa_request.h, main/execute.C, main/pa_request.C,
+	  main/pa_xml_io.C: execute_*_method simplified and unified
+
+2020-10-27  moko
+
+	* tests/: 306.html, results/306.processed: a bit more testing. :)
+
+	* src/: main/execute.C, types/pa_value.h, types/pa_vclass.C,
+	  types/pa_vclass.h, types/pa_vconsole.h, types/pa_vcookie.C,
+	  types/pa_vdate.C, types/pa_venv.C, types/pa_vform.C,
+	  types/pa_vhash.h, types/pa_vimage.C, types/pa_vmemcached.C,
+	  types/pa_vmethod_frame.h, types/pa_vobject.C,
+	  types/pa_vrequest.C, types/pa_vresponse.C, types/pa_vtable.C,
+	  types/pa_vxnode.C: optimization: PUT_ELEMENT_REPLACED_ELEMENT no
+	  longer used in object-prototype mode
+
+	* src/: include/pa_sapi.h, targets/apache/mod_parser3_core.C,
+	  targets/cgi/pa_sapi_info.h, targets/cgi/parser3.C,
+	  targets/isapi/parser3isapi.C, types/pa_venv.C, types/pa_venv.h,
+	  types/pa_vform.C, types/pa_vform.h: + $env:name[value] and
+	  $form:name[value] features
+
 2020-10-18  moko
 
 	* src/targets/cgi/Makefile.am: + pa_sapi_info.h
