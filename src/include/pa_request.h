@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.254 2020/10/29 16:02:21 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.255 2020/11/03 16:25:49 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -235,10 +235,10 @@ public:
 	}
 
 	///
-	void use_file_directly(VStateless_class& aclass, const String& file_spec, bool fail_on_file_absence=true, bool with_auto_p=false);
+	void use_file_directly(const String& file_spec, bool fail_on_file_absence=true, bool with_auto_p=false);
 
-	/// compiles the file, maybe forcing it's class @a name and @a base_class.
-	void use_file(VStateless_class& aclass, const String& file_name, const String* use_filespec, bool with_auto_p=false);
+	/// compiles the file in main class context by default
+	void use_file(const String& file_name, const String* use_filespec, bool with_auto_p=false);
 
 	/// for @USE only, calls ^use (which may be user-defined)
 	void use_file(const String& file_name, const String* use_filespec, Operation::Origin origin);

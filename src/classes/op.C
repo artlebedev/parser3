@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.256 2020/10/29 16:02:21 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.257 2020/11/03 16:25:48 moko Exp $";
 
 // defines
 
@@ -319,7 +319,7 @@ static void _use(Request& r, MethodParams& params) {
 
 	Temp_class_replace class_replace(r, allow_class_replace);
 
-	r.use_file(r.main_class, vfile.as_string(), use_origin, load_auto_p);
+	r.use_file(vfile.as_string(), use_origin, load_auto_p);
 }
 
 static void set_skip(Request& r, Request::Skip askip) {
