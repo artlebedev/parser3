@@ -33,7 +33,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.386 2020/10/29 16:02:21 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.387 2020/11/03 16:25:33 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -121,7 +121,6 @@ static const String body_name_upper(BODY_NAME_UPPER);
 
 static const String content_type_name_upper(HTTP_CONTENT_TYPE_UPPER);
 static const String content_disposition_name_upper(CONTENT_DISPOSITION_UPPER);
-static const String content_disposition_inline(CONTENT_DISPOSITION_INLINE);
 static const String content_disposition_attachment(CONTENT_DISPOSITION_ATTACHMENT);
 
 // defines
@@ -402,14 +401,14 @@ void Request::core(const char* config_filespec, bool header_only) {
 	try {
 		// loading config
 		if(config_filespec)
-			use_file_directly(main_class, *new String(config_filespec));
+			use_file_directly(*new String(config_filespec));
 
 		// filling mail received
 		mail.fill_received(*this);
 
 		try {
 			// compile requested file
-			use_file_directly(main_class, *new String(request_info.path_translated, String::L_TAINTED), true, true /* load auto.p files */);
+			use_file_directly(*new String(request_info.path_translated, String::L_TAINTED), true, true /* load auto.p files */);
 			configure();
 		} catch(...) {
 			configure(); // configure anyway, useful in @unhandled_exception [say, if they would want to mail by SMTP something]
@@ -531,7 +530,7 @@ uint Request::register_file(String::Body file_spec) {
 	return file_list.count()-1;
 }
 
-void Request::use_file_directly(VStateless_class& aclass, const String& file_spec, bool fail_on_file_absence, bool with_auto_p) {
+void Request::use_file_directly(const String& file_spec, bool fail_on_file_absence, bool with_auto_p) {
 	// cyclic dependence check
 	if(used_files.get(file_spec))
 		return;
@@ -563,18 +562,18 @@ void Request::use_file_directly(VStateless_class& aclass, const String& file_spe
 				sfile_spec.append_strdup(target, before-target, String::L_CLEAN);
 				sfile_spec << "/" AUTO_FILE_NAME;
 
-				use_file_directly(main_class, sfile_spec, false /*ignore absence, sole user*/);
+				use_file_directly(sfile_spec, false /*ignore absence, sole user*/);
 			}
 			for(after=before+1;*after=='/';after++);
 		}
 	}
 
 	if(const char* source=file_read_text(charsets, file_spec, true))
-		use_buf(aclass, source, 0, register_file(file_spec));
+		use_buf(main_class, source, 0, register_file(file_spec));
 }
 
 
-void Request::use_file(VStateless_class& aclass, const String& file_name, const String* use_filespec/*absolute*/, bool with_auto_p) {
+void Request::use_file(const String& file_name, const String* use_filespec/*absolute*/, bool with_auto_p) {
 	if(file_name.is_empty())
 		throw Exception(PARSER_RUNTIME, 0, "usage failed - no filename was specified");
 
@@ -610,7 +609,7 @@ void Request::use_file(VStateless_class& aclass, const String& file_name, const 
 			throw Exception(PARSER_RUNTIME, &file_name, "usage failed - no $" MAIN_CLASS_NAME  ":" CLASS_PATH_NAME " were specified");
 	}
 
-	use_file_directly(aclass, *filespec, true, with_auto_p);
+	use_file_directly(*filespec, true, with_auto_p);
 }
 
 void Request::use_file(const String& file_name, const String* use_filespec/*absolute*/, Operation::Origin origin) {
@@ -851,12 +850,12 @@ void Request::output_result(VFile* body_file, bool header_only, bool as_attachme
 	if(vfile_name) {
 		const String& sfile_name=vfile_name->as_string();
 		if(sfile_name!=NONAME_DAT) {
-			VHash& hash=*new VHash();
-			HashStringValue &h=hash.hash();
-			h.put(value_name, new VString( as_attachment ? content_disposition_attachment : content_disposition_inline ));
-			h.put(content_disposition_filename_name, new VString(*new String(sfile_name, String::L_HTTP_HEADER)));
-
-			response.fields().put(content_disposition_name_upper, &hash);
+			if(as_attachment) {
+				VHash& hash=*new VHash();
+				hash.hash().put(value_name, new VString(content_disposition_attachment));
+				hash.hash().put(content_disposition_filename_name, new VString(*new String(sfile_name, String::L_HTTP_HEADER)));
+				response.fields().put(content_disposition_name_upper, &hash);
+			}
 
 			if(!body_file_content_type)
 				body_file_content_type=new VString(mime_type_of(sfile_name.cstr()));
