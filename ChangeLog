@@ -1,3 +1,10 @@
+2020-11-03  moko
+
+	* src/: classes/op.C, include/pa_request.h: unused argument removed
+
+	* src/main/pa_request.C: content_disposition_inline is the default,
+	  not required.
+
 2020-10-29  moko
 
 	* src/: classes/op.C, include/pa_request.h, main/pa_request.C:
