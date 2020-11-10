@@ -33,7 +33,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.388 2020/11/10 22:42:26 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.389 2020/11/10 22:50:58 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -408,7 +408,8 @@ void Request::core(const char* config_filespec, bool header_only) {
 
 		try {
 			// compile requested file
-			use_file_directly(*new String(request_info.path_translated, String::L_TAINTED), true, true /* load auto.p files */);
+			if(request_info.path_translated)
+				use_file_directly(*new String(request_info.path_translated, String::L_TAINTED), true, true /* load auto.p files */);
 			configure();
 		} catch(...) {
 			configure(); // configure anyway, useful in @unhandled_exception [say, if they would want to mail by SMTP something]
@@ -672,17 +673,17 @@ const String& Request::full_disk_path(const String& relative_name) {
 		String& result=*new String(pa_strdup(request_info.document_root));
 		result << relative_name;
 		return result;
-	} else 
-		if(relative_name.pos("://")!=STRING_NOT_FOUND // something like "http://xxx"
+	}
+	if(relative_name.pos("://")!=STRING_NOT_FOUND // something like "http://xxx"
 #ifdef WIN32
-			|| relative_name.pos(":")==1  // DRIVE:
-			|| relative_name.starts_with("\\\\") // UNC1
-			|| relative_name.starts_with("//") // UNC2
+		|| relative_name.pos(":")==1  // DRIVE:
+		|| relative_name.starts_with("\\\\") // UNC1
+		|| relative_name.starts_with("//") // UNC2
 #endif
-			)
-			return relative_name;
-		else
-			return relative(request_info.path_translated, relative_name);
+		)
+		return relative_name;
+
+	return relative(request_info.path_translated ? request_info.path_translated : request_info.document_root, relative_name);
 }
 
 #ifndef DOXYGEN
