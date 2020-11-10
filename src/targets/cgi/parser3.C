@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.306 2020/10/28 22:32:02 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.307 2020/11/10 22:32:13 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -320,8 +320,8 @@ static void connection_handler(SAPI_Info_HTTPD &info, HTTPD_Connection &connecti
 	{
 		// initing ::request ptr for signal handlers
 		RequestController rc(&request);
-		// process the request
-		request.core(locate_config() ? config_filespec_cstr : NULL, strcasecmp(request_info.method, "HEAD")==0);
+		// process the request, we need @httpd-main in auto.p if filespec_to_process not specified
+		request.core(locate_config() || !filespec_to_process ? config_filespec_cstr : NULL, strcasecmp(request_info.method, "HEAD")==0);
 		// clearing ::request in RequestController desctructor to prevent signal handlers from accessing invalid memory
 	}
 }
@@ -507,7 +507,7 @@ static void usage(const char* program) {
 		"Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)\n"
 		"Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)\n"
 		"\n"
-		"Usage: %s [options] file\n"
+		"Usage: %s [options] [file]\n"
 		"Options are:\n"
 #ifdef WITH_MAILRECEIVE
 		"    -m              Parse mail, put received letter to $mail:received\n"
