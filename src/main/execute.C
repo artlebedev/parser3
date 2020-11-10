@@ -21,7 +21,7 @@
 #include "pa_vimage.h"
 #include "pa_wwrapper.h"
 
-volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.410 2020/10/27 22:45:33 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
+volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.411 2020/11/10 22:42:26 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
 
 //#define DEBUG_EXECUTE
 
@@ -928,14 +928,14 @@ void Request::execute(ArrayOperation& ops) {
 		case OP::OP_FEXISTS:
 			{
 				Value& a=stack.pop().value();
-				Value& value=VBool::get(file_exist(absolute(a.as_string())));
+				Value& value=VBool::get(file_exist(full_disk_path(a.as_string())));
 				stack.push(value);
 				break;
 			}
 		case OP::OP_DEXISTS:
 			{
 				Value& a=stack.pop().value();
-				Value& value=VBool::get(dir_exists(absolute(a.as_string())));
+				Value& value=VBool::get(dir_exists(full_disk_path(a.as_string())));
 				stack.push(value);
 				break;
 			}

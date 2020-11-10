@@ -33,7 +33,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.387 2020/11/03 16:25:33 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.388 2020/11/10 22:42:26 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -580,7 +580,7 @@ void Request::use_file(const String& file_name, const String* use_filespec/*abso
 	const String* filespec=0;
 
 	if(file_name.first_char()=='/') //absolute path? [no need to scan MAIN:CLASS_PATH]
-		filespec=&absolute(file_name);
+		filespec=&full_disk_path(file_name);
 	else if(use_filespec){ // search in current dir first
 		size_t last_slash_pos=use_filespec->strrpbrk("/");
 		if(last_slash_pos!=STRING_NOT_FOUND)
@@ -594,11 +594,11 @@ void Request::use_file(const String& file_name, const String* use_filespec/*abso
 		searched_along_class_path.put(file_name, true);
 		if(Value* element=main_class.get_element(class_path_name)) {
 			if(element->is_string()) {
-				filespec=file_exist(absolute(element->as_string()), file_name); // found at class_path?
+				filespec=file_exist(full_disk_path(element->as_string()), file_name); // found at class_path?
 			} else if(Table *table=element->get_table()) {
 				for(size_t i=table->count(); i--; ) {
 					const String& path=*(*table->get(i))[0];
-					if(filespec=file_exist(absolute(path), file_name))
+					if(filespec=file_exist(full_disk_path(path), file_name))
 						break; // found along class_path
 				}
 			} else
@@ -667,7 +667,7 @@ const String& Request::relative(const char* apath, const String& relative_name) 
 	return result;
 }
 
-const String& Request::absolute(const String& relative_name) {
+const String& Request::full_disk_path(const String& relative_name) {
 	if(relative_name.first_char()=='/') {
 		String& result=*new String(pa_strdup(request_info.document_root));
 		result << relative_name;
@@ -804,7 +804,7 @@ static void output_pieces(Request& r, bool header_only, const String& filename, 
 
 	SAPI::send_header(r.sapi_info);
 
-	const String& filespec=r.absolute(filename);
+	const String& filespec=r.full_disk_path(filename);
 
 	size_t sent = 0;
 	if(!header_only){
@@ -880,7 +880,7 @@ void Request::output_result(VFile* body_file, bool header_only, bool as_attachme
 		const String& sresponse_body_file=vresponse_body_file->as_string();
 		uint64_t content_length=0;
 		time_t atime=0, mtime=0, ctime=0;
-		file_stat(absolute(sresponse_body_file), content_length, atime, mtime, ctime);
+		file_stat(full_disk_path(sresponse_body_file), content_length, atime, mtime, ctime);
 
 		VDate* vdate=0;
 		if(Value* v=body_file->fields().get("mdate")) {

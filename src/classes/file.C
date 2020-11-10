@@ -26,7 +26,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.272 2019/11/24 22:25:53 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.273 2020/11/10 22:42:24 moko Exp $";
 
 // defines
 
@@ -143,7 +143,7 @@ static void _save(Request& r, MethodParams& params) {
 		}
 
 	// save
-	GET_SELF(r, VFile).save(r.charsets, r.absolute(vfile_name.as_string()), is_text, asked_charset);
+	GET_SELF(r, VFile).save(r.charsets, r.full_disk_path(vfile_name.as_string()), is_text, asked_charset);
 }
 
 static void _delete(Request& r, MethodParams& params) {
@@ -167,7 +167,7 @@ static void _delete(Request& r, MethodParams& params) {
 		}
 
 	// unlink
-	file_delete(r.absolute(file_name), fail_on_problem, keep_empty_dirs);
+	file_delete(r.full_disk_path(file_name), fail_on_problem, keep_empty_dirs);
 }
 
 static void _move(Request& r, MethodParams& params) {
@@ -188,8 +188,8 @@ static void _move(Request& r, MethodParams& params) {
 
 	// move
 	file_move(
-		r.absolute(vfrom_file_name.as_string()),
-		r.absolute(vto_file_name.as_string()),
+		r.full_disk_path(vfrom_file_name.as_string()),
+		r.full_disk_path(vto_file_name.as_string()),
 		keep_empty_dirs);
 }
 
@@ -230,8 +230,8 @@ static void _copy(Request& r, MethodParams& params) {
 				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 		}
 
-	String from_spec = r.absolute(vfrom_file_name.as_string());
-	const String& to_spec = r.absolute(vto_file_name.as_string());
+	String from_spec = r.full_disk_path(vfrom_file_name.as_string());
+	const String& to_spec = r.full_disk_path(vto_file_name.as_string());
 	
 	file_write_action_under_lock(
 			to_spec,
@@ -251,7 +251,7 @@ static void _load_pass_param(
 
 static void _load(Request& r, MethodParams& params) {
 	bool as_text=VFile::is_text_mode(params.as_string(0, MODE_MUST_NOT_BE_CODE));
-	const String& lfile_name=r.absolute(params.as_string(1, FILE_NAME_MUST_NOT_BE_CODE));
+	const String& lfile_name=r.full_disk_path(params.as_string(1, FILE_NAME_MUST_NOT_BE_CODE));
 
 	size_t param_index=params.count()-1;
 	Value* param_value=param_index>1?&params.as_no_junction(param_index, "file name or options must not be code"):0;
@@ -388,7 +388,7 @@ static void _stat(Request& r, MethodParams& params) {
 
 	uint64_t size;
 	time_t atime, mtime, ctime;
-	file_stat(r.absolute(lfile_name), size, atime, mtime, ctime);
+	file_stat(r.full_disk_path(lfile_name), size, atime, mtime, ctime);
 	
 	VFile& self=GET_SELF(r, VFile);
 
@@ -482,7 +482,7 @@ static void _exec_cgi(Request& r, MethodParams& params, bool cgi) {
 	if(param_index>=params.count())
 		throw Exception(PARSER_RUNTIME, 0, FILE_NAME_MUST_BE_SPECIFIED);
 
-	const String& script_name=r.absolute(params.as_string(param_index++, FILE_NAME_MUST_NOT_BE_CODE));
+	const String& script_name=r.full_disk_path(params.as_string(param_index++, FILE_NAME_MUST_NOT_BE_CODE));
 
 	HashStringString env;
 	#define ECSTR(name, value_cstr) if(value_cstr) env.put(#name, value_cstr);
@@ -721,7 +721,7 @@ static void _list(Request& r, MethodParams& params) {
 		}
 	}
 
-	const char* absolute_path_cstr=r.absolute(relative_path.as_string()).taint_cstr(String::L_FILE_SPEC);
+	const char* absolute_path_cstr=r.full_disk_path(relative_path.as_string()).taint_cstr(String::L_FILE_SPEC);
 
 	Table::Action_options table_options;
 	Table& table=*new Table(file_list_table_template, table_options);
@@ -765,7 +765,7 @@ static void lock_execute_body(int , void *ainfo) {
 }
 
 static void _lock(Request& r, MethodParams& params) {
-	const String& file_spec=r.absolute(params.as_string(0, FILE_NAME_MUST_BE_STRING));
+	const String& file_spec=r.full_disk_path(params.as_string(0, FILE_NAME_MUST_BE_STRING));
 	Lock_execute_body_info info={
 		&r, 
 		&params.as_junction(1, "body must be code")
@@ -800,7 +800,7 @@ static void _find(Request& r, MethodParams& params) {
 		file_spec=&r.relative(r.request_info.uri, file_name);
 
 	// easy way
-	if(file_exist(r.absolute(*file_spec))) {
+	if(file_exist(r.full_disk_path(*file_spec))) {
 		r.write(*file_spec);
 		return;
 	}
@@ -818,7 +818,7 @@ static void _find(Request& r, MethodParams& params) {
 		String test_name;
 		test_name << dirname.mid(0, slash+1);
 		test_name << basename;
-		if(file_exist(r.absolute(test_name))) {
+		if(file_exist(r.full_disk_path(test_name))) {
 			r.write(test_name);
 			return;
 		}
@@ -917,7 +917,7 @@ static void _fullpath(Request& r, MethodParams& params) {
 		result=&file_spec;
 	else {
 		// /some/page.html: ^file:fullpath[a.gif] => /some/a.gif
-		const String& full_disk_path=r.absolute(file_spec);
+		const String& full_disk_path=r.full_disk_path(file_spec);
 		size_t document_root_length=strlen(r.request_info.document_root);
 
 		if(document_root_length>0) {
@@ -1111,7 +1111,7 @@ static void _base64(Request& r, MethodParams& params) {
 			throw Exception(PARSER_RUNTIME, 0, "accepts maximum 2 parameter(s) (has %d parameters)", params.count());
 
 		const String& file_spec = params.as_string(0, FILE_NAME_MUST_BE_STRING);
-		File_read_result data = file_read_binary(r.absolute(file_spec), true /*fail on problem*/);
+		File_read_result data = file_read_binary(r.full_disk_path(file_spec), true /*fail on problem*/);
 
 		Base64Options options = base64_encode_options(r, params.count() > 1 ? params.as_hash(1) : NULL);
 		const char* encoded = pa_base64_encode(data.str, data.length, options);
@@ -1125,7 +1125,7 @@ static void _crc32(Request& r, MethodParams& params) {
 		// ^file:crc32[file-name]
 		if(params.count()) {
 			const String& file_spec=params.as_string(0, FILE_NAME_MUST_BE_STRING);
-			crc32=pa_crc32(r.absolute(file_spec));
+			crc32=pa_crc32(r.full_disk_path(file_spec));
 		} else {
 			throw Exception(PARSER_RUNTIME, 0, FILE_NAME_MUST_BE_SPECIFIED);
 		}
@@ -1181,7 +1181,7 @@ static void _md5(Request& r, MethodParams& params) {
 		// ^file:md5[file-name]
 		if(params.count()) {
 			const String& file_spec=params.as_string(0, FILE_NAME_MUST_BE_STRING);
-			md5=pa_md5(r.absolute(file_spec));
+			md5=pa_md5(r.full_disk_path(file_spec));
 		} else {
 			throw Exception(PARSER_RUNTIME, 0, FILE_NAME_MUST_BE_SPECIFIED);
 		}

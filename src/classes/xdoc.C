@@ -28,7 +28,7 @@
 #include "xnode.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_XDOC_C="$Id: xdoc.C,v 1.196 2019/11/28 10:49:23 moko Exp $";
+volatile const char * IDENT_XDOC_C="$Id: xdoc.C,v 1.197 2020/11/10 22:42:25 moko Exp $";
 
 // defines
 
@@ -415,7 +415,7 @@ static void _create(Request& r, MethodParams& params) {
 	const char* URI_cstr;
 	if(params.count()>1) { // absolute(param)
 		const String& URI=params.as_string(0, "URI must be string");
-		URI_cstr=r.absolute(URI).cstr();
+		URI_cstr=r.full_disk_path(URI).cstr();
 	} else // default = disk path to requested document
 		URI_cstr=r.request_info.path_translated;
 	if(URI_cstr)
@@ -434,7 +434,7 @@ static void _load(Request& r, MethodParams& params) {
 	const String* uri=&params.as_string(0, "URI must be string");
 	const char* uri_cstr;
 	if(uri->pos("://")==STRING_NOT_FOUND) // disk path
-		uri_cstr=r.absolute(*uri).taint_cstr(String::L_FILE_SPEC);
+		uri_cstr=r.full_disk_path(*uri).taint_cstr(String::L_FILE_SPEC);
 	else // xxx:// 
 		uri_cstr=uri->taint_cstr(String::L_AS_IS); // leave as-is for xmlParseFile to handle
 
@@ -558,7 +558,7 @@ static void _file(Request& r, MethodParams& params) {
 static void _save(Request& r, MethodParams& params) {
 	VXdoc& vdoc=GET_SELF(r, VXdoc);
 
-	const String& file_spec=r.absolute(params.as_string(0, FILE_NAME_MUST_BE_STRING));
+	const String& file_spec=r.full_disk_path(params.as_string(0, FILE_NAME_MUST_BE_STRING));
 	
 	XDocOutputOptions oo(vdoc.output_options);
 	oo.append(r, get_options(params, 1));
@@ -685,8 +685,7 @@ static void _transform(Request& r, MethodParams& params) {
 		result=&_transform(r, 0, vdoc, vstylesheet.stylesheet, transform_params);
 	} else { // stylesheet (file name)
 		// extablish stylesheet connection
-		const String& stylesheet_filespec=
-			r.absolute(params.as_string(0, "stylesheet must be file name (string) or DOM document (xdoc)"));
+		const String& stylesheet_filespec=r.full_disk_path(params.as_string(0, "stylesheet must be file name (string) or DOM document (xdoc)"));
 		Stylesheet_connection_ptr connection=stylesheet_manager->get_connection(stylesheet_filespec);
 
 		// load and compile file to stylesheet [or get cached if any]

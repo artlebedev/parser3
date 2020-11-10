@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.255 2020/11/03 16:25:49 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.256 2020/11/10 22:42:25 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -279,8 +279,7 @@ public:
 	/// returns relative to @a path  path to @a file 
 	const String& relative(const char* apath, const String& relative_name);
 
-	/// returns an absolute @a path to relative @a name
-	const String& absolute(const String& relative_name);
+	const String& full_disk_path(const String& relative_name);
 
 	/// returns the mime type of 'user_file_name'
 	const String& mime_type_of(const String* file_name);

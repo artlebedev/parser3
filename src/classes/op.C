@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.257 2020/11/03 16:25:48 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.258 2020/11/10 22:42:24 moko Exp $";
 
 // defines
 
@@ -200,7 +200,7 @@ static void _process(Request& r, MethodParams& params) {
 					throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 			}
 
-		uint processe_file_no=file_alias ? r.register_file(r.absolute(*file_alias)) : pseudo_file_no__process;
+		uint processe_file_no=file_alias ? r.register_file(r.full_disk_path(*file_alias)) : pseudo_file_no__process;
 		// process...{string}
 		Value& vjunction=params.as_junction(index, "body must be code");
 		// evaluate source to process
@@ -738,7 +738,7 @@ static time_t as_expires(Request& r, MethodParams& params, int index, time_t now
 }
 
 static const String& as_file_spec(Request& r, MethodParams& params, int index) {
-	return r.absolute(params.as_string(index, "filespec must be string"));
+	return r.full_disk_path(params.as_string(index, "filespec must be string"));
 }
 
 static void _cache(Request& r, MethodParams& params) {

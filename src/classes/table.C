@@ -22,7 +22,7 @@
 #define USE_STRINGSTREAM
 #endif
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.349 2019/11/23 23:48:41 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.350 2020/11/10 22:42:25 moko Exp $";
 
 // class
 
@@ -410,7 +410,7 @@ static void _load(Request& r, MethodParams& params) {
 		control_chars.load(*options);
 
 	// loading text
-	char *data=file_load_text(r, r.absolute(params.as_string(filename_param_index, FILE_NAME_MUST_BE_STRING)), true, options);
+	char *data=file_load_text(r, r.full_disk_path(params.as_string(filename_param_index, FILE_NAME_MUST_BE_STRING)), true, options);
 
 	Skip_lines_action skip_lines_action = (control_chars.separator=='#' || control_chars.encloser=='#') ? skip_empty_lines : skip_empty_and_comment_lines;
 
@@ -633,7 +633,7 @@ static void _save(Request& r, MethodParams& params) {
 		--param_index;
 
 	const String& file_name=params.as_string(param_index++, FILE_NAME_MUST_NOT_BE_CODE);
-	String file_spec=r.absolute(file_name);
+	String file_spec=r.full_disk_path(file_name);
 
 	if(do_append && file_exist(file_spec))
 		output_column_names=false;

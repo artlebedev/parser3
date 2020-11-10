@@ -26,7 +26,7 @@
 #include "pa_table.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.166 2019/12/03 15:09:49 moko Exp $";
+volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.167 2020/11/10 22:42:24 moko Exp $";
 
 // defines
 
@@ -854,7 +854,7 @@ static void _measure(Request& r, MethodParams& params) {
 	const String* file_name;
 
 	if(file_name=data.get_string()) {
-		file_read_action_under_lock(r.absolute(*file_name), "measure", file_measure_action, &info);
+		file_read_action_under_lock(r.full_disk_path(*file_name), "measure", file_measure_action, &info);
 	} else {
 		VFile* vfile=data.as_vfile(String::L_AS_IS);
 		file_name=&vfile->fields().get(name_name)->as_string();
@@ -911,7 +911,7 @@ static void _html(Request& r, MethodParams& params) {
 
 /// @test wrap FILE to auto-object
 static gdImage* load(Request& r, const String& file_name){
-	const char* file_name_cstr=r.absolute(file_name).taint_cstr(String::L_FILE_SPEC);
+	const char* file_name_cstr=r.full_disk_path(file_name).taint_cstr(String::L_FILE_SPEC);
 	if(FILE *f=pa_fopen(file_name_cstr, "rb")) {
 		gdImage* image=new gdImage;
 		bool ok=image->CreateFromGif(f);

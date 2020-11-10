@@ -21,7 +21,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.245 2019/12/05 21:41:08 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.246 2020/11/10 22:42:25 moko Exp $";
 
 // class
 
@@ -602,7 +602,7 @@ static void _save(Request& r, MethodParams& params) {
 	String::Body sbody=src.cstr_to_string_body_untaint(String::L_AS_IS, r.connection(false), &r.charsets);
 
 	// write
-	file_write(r.charsets, r.absolute(file_name), sbody.cstr(), sbody.length(), true, do_append, asked_charset);
+	file_write(r.charsets, r.full_disk_path(file_name), sbody.cstr(), sbody.length(), true, do_append, asked_charset);
 }
 
 static void _normalize(Request& r, MethodParams&) {
