@@ -14,7 +14,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.100 2020/11/12 15:09:41 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.101 2020/11/12 16:26:19 moko Exp $" IDENT_PA_HTTP_H; 
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -262,31 +262,31 @@ int HTTP_response::read_response(int sock, bool fail_on_status_ne_200) {
 #ifdef PA_USE_ALARM
 static sigjmp_buf timeout_env;
 static void timeout_handler(int /*sig*/){
-	siglongjmp(timeout_env, 1); 
+	siglongjmp(timeout_env, 1);
 }
+#define ALARM(value) alarm(value)
+#else
+#define ALARM(value)
 #endif
 
 static int http_request(HTTP_response& response, const char* host, short port, const char* request, size_t request_size, int timeout_secs, bool fail_on_status_ne_200) {
 	if(!host)
 		throw Exception("http.host", 0, "zero hostname");  //never
 
-	volatile // to prevent makeing it register variable, because it will be clobbered by longjmp [thanks gcc warning]
-		int sock=-1;
+	volatile int sock=-1; // to prevent makeing it register variable, because it will be clobbered by longjmp [thanks gcc warning]
+		
 #ifdef PA_USE_ALARM
-	signal(SIGALRM, timeout_handler); 
-#endif
-#ifdef PA_USE_ALARM
+	signal(SIGALRM, timeout_handler);
 	if(sigsetjmp(timeout_env, 1)) {
-		// stupid gcc [2.95.4] generated bad code
-		// which failed to handle sigsetjmp+throw: crashed inside of pre-throw code.
-		// rewritten simplier [athough duplicating closesocket code]
-		if(sock>=0) 
-			closesocket(sock); 
-		throw Exception("http.timeout", 0, "timeout occurred while retrieving document"); 
+		// duplicating closesocket to make code more simple for old compilers
+		if(sock>=0)
+			closesocket(sock);
+		throw Exception("http.timeout", 0, "timeout occurred while retrieving document");
 		return 0; // never
-	} else {
-		alarm(timeout_secs); 
+	} else
 #endif
+	{
+		ALARM(timeout_secs);
 		try {
 			int result;
 			struct sockaddr_in dest;
@@ -325,21 +325,15 @@ static int http_request(HTTP_response& response, const char* host, short port, c
 
 			result=response.read_response(sock, fail_on_status_ne_200);
 			closesocket(sock);
-#ifdef PA_USE_ALARM
-			alarm(0);
-#endif
+			ALARM(0);
 			return result;
 		} catch(...) {
-#ifdef PA_USE_ALARM
-			alarm(0);
-#endif
+			ALARM(0);
 			if(sock>=0)
 				closesocket(sock);
 			rethrow;
 		}
-#ifdef PA_USE_ALARM
 	}
-#endif
 }
 
 #ifndef DOXYGEN
@@ -364,9 +358,7 @@ char *pa_http_safe_header_name(const char *name) {
 	return result;
 }
 
-static void http_pass_header(HashStringValue::key_type aname, 
-				HashStringValue::value_type avalue, 
-				Http_pass_header_info *info) {
+static void http_pass_header(HashStringValue::key_type aname, HashStringValue::value_type avalue, Http_pass_header_info *info) {
 
 	const char* name_cstr=aname.cstr();
 
