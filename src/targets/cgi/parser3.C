@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.307 2020/11/10 22:32:13 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.308 2020/11/12 15:06:12 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -38,6 +38,7 @@ volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.307 2020/11/10 22:32:1
 #define PARSER_CONFIG_ENV_NAME "CGI_PARSER_CONFIG"
 #define PARSER_LOG_ENV_NAME "CGI_PARSER_LOG"
 
+static const char* filespec_to_process=0; // [file]
 static const char* config_filespec_cstr=0; // -f option
 static const char* httpd_host_port=0; // -p option
 static bool mail_received=false; // -m option? [asked to parse incoming message to $mail:received]
@@ -179,19 +180,16 @@ size_t SAPI::send_body(SAPI_Info& info, const void *buf, size_t size) {
 }
 
 static void full_file_spec(const char* file_name, char *buf, size_t buf_size) {
-	if(file_name)
-		if(file_name[0]=='/' 
+	if(file_name[0]=='/' 
 #ifdef WIN32
-			|| file_name[0] && file_name[1]==':'
+		|| file_name[0] && file_name[1]==':'
 #endif
-		){
-			strncpy(buf, file_name, buf_size-1); buf[buf_size-1]=0;
-		} else {
-			char cwd[MAX_STRING];
-			snprintf(buf, buf_size, "%s/%s", getcwd(cwd, MAX_STRING) ? cwd : "", file_name);
-		}
-	else
-		buf[0]=0;
+	){
+		strncpy(buf, file_name, buf_size-1); buf[buf_size-1]=0;
+	} else {
+		char cwd[MAX_STRING];
+		snprintf(buf, buf_size, "%s/%s", getcwd(cwd, MAX_STRING) ? cwd : "", file_name);
+	}
 #ifdef WIN32
 	back_slashes_to_slashes(buf);
 #endif
@@ -295,7 +293,7 @@ static bool locate_config(){
 	return true;
 }
 
-static void connection_handler(SAPI_Info_HTTPD &info, HTTPD_Connection &connection, const char* filespec_to_process){
+static void connection_handler(SAPI_Info_HTTPD &info, HTTPD_Connection &connection){
 	connection.read_header();
 	info.populate_env();
 
@@ -321,12 +319,12 @@ static void connection_handler(SAPI_Info_HTTPD &info, HTTPD_Connection &connecti
 		// initing ::request ptr for signal handlers
 		RequestController rc(&request);
 		// process the request, we need @httpd-main in auto.p if filespec_to_process not specified
-		request.core(locate_config() || !filespec_to_process ? config_filespec_cstr : NULL, strcasecmp(request_info.method, "HEAD")==0);
+		request.core(locate_config() || !filespec_to_process ? config_filespec_cstr : NULL, strcasecmp(request_info.method, "HEAD")==0, String("httpd-main"));
 		// clearing ::request in RequestController desctructor to prevent signal handlers from accessing invalid memory
 	}
 }
 
-static void httpd_mode(const char* filespec_to_process){
+static void httpd_mode(){
 	int sock = HTTPD_Server::bind(httpd_host_port);
 
 	while(1){
@@ -338,7 +336,7 @@ static void httpd_mode(const char* filespec_to_process){
 			SAPI_Info_HTTPD info(connection);
 
 			try { // connection try
-				connection_handler(info, connection, filespec_to_process);
+				connection_handler(info, connection);
 			} catch(const Exception& e) { // exception in connection handling or unhandled exception
 				SAPI::log(info, "%s", e.comment());
 				SAPI::send_error(info, e.comment(), info.exception_http_status(e.type()));
@@ -352,17 +350,17 @@ static void httpd_mode(const char* filespec_to_process){
 
 /** main workhorse */
 
-static void real_parser_handler(const char* filespec_to_process) {
+static void real_parser_handler() {
 	// init libraries
 	pa_globals_init();
 
 	if(httpd_host_port){
-		httpd_mode(filespec_to_process);
+		httpd_mode();
 	}
 
 	const char* request_method=getenv("REQUEST_METHOD");
 
-	if(!filespec_to_process || !*filespec_to_process)
+	if(!filespec_to_process)
 		SAPI::die("Parser/%s", PARSER_VERSION);
 	
 	char document_root_buf[MAX_STRING];
@@ -466,9 +464,9 @@ static void real_parser_handler(const char* filespec_to_process) {
 }
 
 #ifdef PA_SUPPRESS_SYSTEM_EXCEPTION
-static const Exception call_real_parser_handler__do_PEH_return_it(const char* filespec_to_process) {
+static const Exception call_real_parser_handler__do_PEH_return_it() {
 	try {
-		real_parser_handler(filespec_to_process);
+		real_parser_handler();
 	} catch(const Exception& e) {
 		return e;
 	}
@@ -476,12 +474,12 @@ static const Exception call_real_parser_handler__do_PEH_return_it(const char* fi
 	return Exception();
 }
 
-static void call_real_parser_handler__supress_system_exception(const char* filespec_to_process) {
+static void call_real_parser_handler__supress_system_exception() {
 	Exception parser_exception;
 	LPEXCEPTION_POINTERS system_exception=0;
 
 	__try {
-		parser_exception=call_real_parser_handler__do_PEH_return_it(filespec_to_process);
+		parser_exception=call_real_parser_handler__do_PEH_return_it();
 	} __except ( (system_exception=GetExceptionInformation()), EXCEPTION_EXECUTE_HANDLER) {
 		if(system_exception)
 			if(_EXCEPTION_RECORD *er=system_exception->ExceptionRecord)
@@ -545,8 +543,6 @@ int main(int argc, char *argv[]) {
 	char *raw_filespec_to_process = NULL;
 	if(cgi) {
 		raw_filespec_to_process=getenv("PATH_TRANSLATED");
-		if(raw_filespec_to_process && !*raw_filespec_to_process)
-			raw_filespec_to_process=0;
 	} else {
 		int optind=1;
 		while(optind < argc){
@@ -622,11 +618,14 @@ int main(int argc, char *argv[]) {
 	_CrtSetReportFile( _CRT_WARN, _CRTDBG_FILE_STDERR );
 #endif
 
-	char filespec_to_process[MAX_STRING];
-	full_file_spec(raw_filespec_to_process, filespec_to_process, sizeof(filespec_to_process));
+	char filespec_to_process_buf[MAX_STRING];
+	if(raw_filespec_to_process && *raw_filespec_to_process){
+		full_file_spec(raw_filespec_to_process, filespec_to_process_buf, sizeof(filespec_to_process_buf));
+		filespec_to_process=filespec_to_process_buf;
+	}
 
 	try { // global try
-		REAL_PARSER_HANDLER(filespec_to_process);
+		REAL_PARSER_HANDLER();
 	} catch(const Exception& e) { // exception in unhandled exception
 		SAPI::die("%s", e.comment());
 	}
