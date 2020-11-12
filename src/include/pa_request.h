@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.256 2020/11/10 22:42:25 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.257 2020/11/12 16:16:00 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -18,6 +18,26 @@
 #include "pa_request_info.h"
 #include "pa_request_charsets.h"
 #include "pa_sapi.h"
+
+// defines for externs
+
+#define EXCEPTION_HANDLED_PART_NAME "handled"
+
+
+// externs
+
+extern const String main_method_name;
+extern const String auto_method_name;
+
+extern const String exception_type_part_name;
+extern const String exception_source_part_name;
+extern const String exception_comment_part_name;
+extern const String exception_handled_part_name;
+
+// defines for statics
+
+#define MAIN_CLASS_NAME "MAIN"
+#define AUTO_FILE_NAME "auto.p"
 
 // consts
 
@@ -37,6 +57,7 @@ class VConsole;
 
 extern int pa_loop_limit;
 extern int pa_execute_recoursion_limit;
+extern int pa_httpd_timeout;
 extern size_t pa_file_size_limit;
 
 /// Main workhorse.
@@ -191,7 +212,7 @@ public:
 		core request processing
 		BEWARE: may throw exception to you: catch it!
 	*/
-	void core(const char* config_filespec, bool header_only);
+	void core(const char* config_filespec, bool header_only, const String& amain_method_name = main_method_name);
 
 	/// executes ops
 	void execute(ArrayOperation& ops); // execute.C
@@ -512,25 +533,5 @@ public:
 	Temp_value_element(Request& arequest, Value& awhere, const String& aname, Value* awhat);
 	~Temp_value_element();
 };
-
-// defines for externs
-
-#define EXCEPTION_HANDLED_PART_NAME "handled"
-
-
-// externs
-
-extern const String main_method_name;
-extern const String auto_method_name;
-
-extern const String exception_type_part_name;
-extern const String exception_source_part_name;
-extern const String exception_comment_part_name;
-extern const String exception_handled_part_name;
-
-// defines for statics
-
-#define MAIN_CLASS_NAME "MAIN"
-#define AUTO_FILE_NAME "auto.p"
 
 #endif

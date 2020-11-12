@@ -33,7 +33,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.389 2020/11/10 22:50:58 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.390 2020/11/12 16:16:01 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -44,6 +44,7 @@ const char* DEFAULT_CONTENT_TYPE="text/html";
 
 const uint LOOP_LIMIT=20000;
 const uint EXECUTE_RECOURSION_LIMIT=1000;
+const uint HTTPD_TIMEOUT=4;
 const size_t FILE_SIZE_LIMIT=512*1024*1024;
 
 // defines for globals
@@ -75,6 +76,7 @@ static const String origin_key(ORIGIN_KEY);
 
 int pa_loop_limit=LOOP_LIMIT;
 int pa_execute_recoursion_limit=EXECUTE_RECOURSION_LIMIT;
+int pa_httpd_timeout=HTTPD_TIMEOUT;
 size_t pa_file_size_limit=FILE_SIZE_LIMIT;
 
 // defines for statics
@@ -86,6 +88,7 @@ size_t pa_file_size_limit=FILE_SIZE_LIMIT;
 #define LIMITS_NAME "LIMITS"
 #define LOOP_LIMIT_NAME "max_loop"
 #define RECOURSION_LIMIT_NAME "max_recoursion"
+#define HTTPD_TIMEOUT_NAME "httpd_timeout"
 #define FILE_SIZE_LIMIT_NAME "max_file_size"
 #define LOCK_WAIT_TIMEOUT_NAME "lock_wait_timeout"
 #define CONF_METHOD_NAME "conf"
@@ -106,6 +109,7 @@ static const String prototype_name(PROTOTYPE_NAME);
 static const String limits_name(LIMITS_NAME);
 static const String loop_limit_name(LOOP_LIMIT_NAME);
 static const String recoursion_limit_name(RECOURSION_LIMIT_NAME);
+static const String httpd_timeout_name(HTTPD_TIMEOUT_NAME);
 static const String file_size_limit_name(FILE_SIZE_LIMIT_NAME);
 static const String lock_wait_timeout_name(LOCK_WAIT_TIMEOUT_NAME);
 
@@ -305,6 +309,16 @@ void Request::configure_admin(VStateless_class& conf_class) {
 				throw Exception(PARSER_RUNTIME, 0, "$" MAIN_CLASS_NAME ":LIMITS." RECOURSION_LIMIT_NAME " must be int");
 		}
 
+	pa_httpd_timeout=HTTPD_TIMEOUT;
+	if(limits)
+		if(Value* httpd_timeout=limits->get_element(httpd_timeout_name)) {
+			if(httpd_timeout->is_evaluated_expr()) {
+				pa_httpd_timeout=httpd_timeout->as_int();
+				if(pa_httpd_timeout==0) pa_httpd_timeout=INT_MAX;
+			} else
+				throw Exception(PARSER_RUNTIME, 0, "$" MAIN_CLASS_NAME ":LIMITS." HTTPD_TIMEOUT_NAME " must be int");
+		}
+
 	pa_file_size_limit=FILE_SIZE_LIMIT;
 	if(limits)
 		if(Value* file_size_limit=limits->get_element(file_size_limit_name)) {
@@ -397,7 +411,7 @@ void Request::configure() {
 	@test log stack trace
 
 */
-void Request::core(const char* config_filespec, bool header_only) {
+void Request::core(const char* config_filespec, bool header_only, const String &amain_method_name) {
 	try {
 		// loading config
 		if(config_filespec)
@@ -417,9 +431,9 @@ void Request::core(const char* config_filespec, bool header_only) {
 		}
 
 		// execute @main[]
-		const String* body_string=execute_method(main_class, main_method_name);
+		const String* body_string=execute_method(main_class, amain_method_name);
 		if(!body_string)
-			throw Exception(PARSER_RUNTIME, 0, "'" MAIN_METHOD_NAME "' method not found");
+			throw Exception(PARSER_RUNTIME, 0, "'%s' method not found", amain_method_name.cstr());
 
 		// extract response body
 		Value* body_value=response.fields().get(download_name_upper); // $response:download?

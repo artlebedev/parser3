@@ -1,7 +1,7 @@
 #ifndef PA_SAPI_INFO_H
 #define PA_SAPI_INFO_H
 
-#define IDENT_PA_SAPI_INFO_H "$Id: pa_sapi_info.h,v 1.8 2020/10/26 23:15:51 moko Exp $"
+#define IDENT_PA_SAPI_INFO_H "$Id: pa_sapi_info.h,v 1.9 2020/11/12 16:16:01 moko Exp $"
 
 #include "pa_sapi.h"
 #include "pa_http.h"
@@ -163,6 +163,7 @@ public:
 			const char *type;
 		} static lookup[] = {
 			{"400", "httpd.request"},
+			{"400", "http.response"},
 			{"404", "file.missing"},
 			{"408", "httpd.timeout"},
 			{"501", "httpd.method"},
