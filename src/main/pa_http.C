@@ -14,7 +14,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.99 2020/10/29 14:26:07 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.100 2020/11/12 15:09:41 moko Exp $" IDENT_PA_HTTP_H; 
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -921,6 +921,67 @@ File_read_http_result pa_internal_file_read_http(Request& r, const String& file_
 
 /* ********************** httpd *************************** */
 
+enum EscapeState {
+        Initial,
+        Default,
+        EscapeFirst,
+        EscapeSecond
+};
+
+static bool check_uri(const char *uri){
+	EscapeState state=Initial;
+	uint escapedValue;
+
+	const char *pattern="/../";
+	const char *pos=pattern;
+
+	while(*uri){
+		uchar c=(uchar)*(uri++);
+		switch(state) {
+			case Initial:
+				if(c!='/')
+					return false;
+				state=Default;
+				break;
+			case Default:
+				if(c=='%'){
+					state=EscapeFirst;
+					continue;
+				}
+				if(c=='?')
+					return true;
+				break;
+			case EscapeFirst:
+				if(isxdigit(c)){
+					state=EscapeSecond;
+					escapedValue=hex_value[c] << 4;
+					continue;
+				}
+				return false;
+			case EscapeSecond:
+				if(isxdigit(c)){
+					state=Default;
+					c=escapedValue + hex_value[c];
+
+					// implementing Apache AllowEncodedSlashes Off just in case
+					if(c=='/' || c=='\\')
+						return false;
+
+					break;
+				}
+				return false;
+		}
+
+		if(c==*pos || c=='\\' && *pos=='/'){
+			if(!*(++pos))
+				return false;
+		} else {
+			pos=pattern;
+		}
+	}
+	return true;
+}
+
 class HTTPD_request : public HTTP_response {
 public:
 	const char *method;
@@ -940,6 +1001,9 @@ public:
 			return NULL;
 
 		uri=pa_strdup(uri_start+1, uri_end-uri_start-1);
+		if(!check_uri(uri))
+			throw Exception("httpd.request", 0, "invalid uri '%s'", uri);
+
 		return str_upper(method_line, uri_start-method_line);
 	}
 
