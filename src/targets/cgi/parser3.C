@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.310 2020/11/13 21:49:12 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.311 2020/11/13 23:08:24 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -39,7 +39,7 @@ volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.310 2020/11/13 21:49:1
 #define PARSER_LOG_ENV_NAME "CGI_PARSER_LOG"
 
 static const char* filespec_to_process=0; // [file]
-static const char* config_filespec_cstr=0; // -f option
+static const char* config_filespec=0; // -f option or beside executable
 static const char* httpd_host_port=0; // -p option
 static bool mail_received=false; // -m option? [asked to parse incoming message to $mail:received]
 
@@ -71,9 +71,9 @@ static void log(const char* fmt, va_list args) {
 	opened=f!=0;
 #endif
 
-	if(!opened && config_filespec_cstr) {
+	if(!opened && config_filespec) {
 		char beside_config_path[MAX_STRING];
-		strncpy(beside_config_path, config_filespec_cstr, MAX_STRING-1);  beside_config_path[MAX_STRING-1]=0;
+		strncpy(beside_config_path, config_filespec, MAX_STRING-1);  beside_config_path[MAX_STRING-1]=0;
 		if(!(rsplit(beside_config_path, '/') || rsplit(beside_config_path, '\\'))) { // strip filename
 			// no path, just filename
 			beside_config_path[0]='.'; beside_config_path[1]=0;
@@ -124,7 +124,7 @@ static void log(const char* fmt, ...) {
 }
 #endif
 
-// appends to parser3.log located beside my binary if openable, to stderr otherwize
+// appends to parser3.log located beside my executable if openable, to stderr otherwize
 void SAPI::log(SAPI_Info&, const char* fmt, ...) {
 	va_list args;
 	va_start(args,fmt);
@@ -294,7 +294,7 @@ static void connection_handler(SAPI_Info_HTTPD &info, HTTPD_Connection &connecti
 		// initing ::request ptr for signal handlers
 		RequestController rc(&request);
 		// process the request
-		request.core(config_filespec_cstr, strcasecmp(request_info.method, "HEAD")==0, String("httpd-main"));
+		request.core(config_filespec, strcasecmp(request_info.method, "HEAD")==0, String("httpd-main"));
 		// clearing ::request in RequestController desctructor to prevent signal handlers from accessing invalid memory
 	}
 }
@@ -427,7 +427,7 @@ static void real_parser_handler() {
 		// initing ::request ptr for signal handlers
 		RequestController rc(&request);
 		// process the request
-		request.core(config_filespec_cstr, strcasecmp(request_info.method, "HEAD")==0);
+		request.core(config_filespec, strcasecmp(request_info.method, "HEAD")==0);
 		// clearing ::request in RequestController destructor to prevent signal handlers from accessing invalid memory
 	}
 
@@ -490,24 +490,24 @@ static void usage(const char* program) {
 	exit(EINVAL);
 }
 
-static void locate_config(const char *binary_path){
-	if(!config_filespec_cstr) {
-		config_filespec_cstr=getenv(PARSER_CONFIG_ENV_NAME);
-		if(!config_filespec_cstr)
-			config_filespec_cstr=getenv(REDIRECT_PREFIX PARSER_CONFIG_ENV_NAME);
-		if(!config_filespec_cstr){
-			// beside by binary
-			char beside_binary_path[MAX_STRING];
-			strncpy(beside_binary_path, binary_path, MAX_STRING-1);  beside_binary_path[MAX_STRING-1]=0; // filespec of my binary
-			if(!(rsplit(beside_binary_path, '/') || rsplit(beside_binary_path, '\\'))) { // strip filename
+static void locate_config(const char *executable_path){
+	if(!config_filespec) {
+		config_filespec=getenv(PARSER_CONFIG_ENV_NAME);
+		if(!config_filespec)
+			config_filespec=getenv(REDIRECT_PREFIX PARSER_CONFIG_ENV_NAME);
+		if(!config_filespec){
+			// beside my executable
+			char beside_executable_path[MAX_STRING];
+			strncpy(beside_executable_path, executable_path, MAX_STRING-1);  beside_executable_path[MAX_STRING-1]=0; // filespec of my executable
+			if(!(rsplit(beside_executable_path, '/') || rsplit(beside_executable_path, '\\'))) { // strip filename
 				// no path, just filename
 				// @todo full path, not ./!
-				beside_binary_path[0]='.'; beside_binary_path[1]=0;
+				beside_executable_path[0]='.'; beside_executable_path[1]=0;
 			}
 			char config_filespec_buf[MAX_STRING];
-			snprintf(config_filespec_buf, MAX_STRING, "%s/%s", beside_binary_path, AUTO_FILE_NAME);
+			snprintf(config_filespec_buf, MAX_STRING, "%s/%s", beside_executable_path, AUTO_FILE_NAME);
 			if(entry_exists(config_filespec_buf))
-				config_filespec_cstr=pa_strdup(config_filespec_buf);
+				config_filespec=pa_strdup(config_filespec_buf);
 		}
 	}
 }
@@ -553,7 +553,7 @@ int main(int argc, char *argv[]) {
 					case 'f':
 						if(optind < argc - 1){
 							optind++;
-							config_filespec_cstr=argv[optind];
+							config_filespec=argv[optind];
 						}
 						break;
 					case 'p':
