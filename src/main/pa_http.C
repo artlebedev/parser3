@@ -14,7 +14,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.102 2020/11/13 11:57:24 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.103 2020/11/13 16:55:48 moko Exp $" IDENT_PA_HTTP_H; 
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -114,13 +114,13 @@ public:
 	}
 
 	bool read(int sock, size_t size){
-		if(length+size>buf_size)
-			resize(buf_size*2 + size);
+		if(length + size > buf_size)
+			resize(buf_size * 2 + size);
 		ssize_t received_size=recv(sock, buf + length, size, 0);
-		if(received_size==0)
+		if(received_size == 0)
 			return false;
-		if(received_size<0) {
-			if(int no=pa_socks_errno())
+		if(received_size < 0) {
+			if(int no = pa_socks_errno())
 				throw Exception("http.timeout", 0, "error receiving response: %s (%d)", pa_socks_strerr(no), no);
 			return false;
 		}
@@ -981,6 +981,24 @@ public:
 
 	HTTPD_request() : HTTP_response(), method(NULL), uri(NULL){};
 
+	ssize_t pa_recv(int sockfd, void *buf, size_t len);
+
+	bool read(int sock, size_t size){
+		if(length + size > buf_size)
+			resize(buf_size * 2 + size);
+		ssize_t received_size=pa_recv(sock, buf + length, size);
+		if(received_size == 0)
+			return false;
+		if(received_size < 0) {
+			if(int no = pa_socks_errno())
+				throw Exception("httpd.timeout", 0, "error receiving request: %s (%d)", pa_socks_strerr(no), no);
+			return false;
+		}
+		length+=received_size;
+		buf[length]='\0';
+		return true;
+	}
+
 	const char *extract_method(char *method_line){
 		char* uri_start = strchr(method_line, ' ');
 
@@ -999,6 +1017,7 @@ public:
 		return str_upper(method_line, uri_start-method_line);
 	}
 
+
 	void read_header(int);
 	size_t read_post(int, char *, size_t);
 };
@@ -1007,6 +1026,22 @@ enum HTTPD_request_state {
 	HTTPD_METHOD,
 	HTTPD_HEADERS
 };
+
+ssize_t HTTPD_request::pa_recv(int sockfd, void *buf, size_t len){
+#ifdef PA_USE_ALARM
+	signal(SIGALRM, timeout_handler);
+	if(sigsetjmp(timeout_env, 1)) {
+		throw Exception("httpd.timeout", 0, "timeout occurred while receiving request");
+		return 0; // never
+	} else
+#endif
+	{
+		ALARM(pa_httpd_timeout);
+		ssize_t result=recv(sockfd, buf, len, 0);
+		ALARM(0);
+		return result;
+	}
+}
 
 void HTTPD_request::read_header(int sock) {
 	enum HTTPD_request_state state = HTTPD_METHOD;
@@ -1060,7 +1095,7 @@ size_t HTTPD_request::read_post(int sock, char *body, size_t max_bytes) {
 	memcpy(body, buf + body_offset, total_read);
 
 	while (total_read < max_bytes){
-		ssize_t received_size = recv(sock, body + total_read, max_bytes - total_read, 0);
+		ssize_t received_size = pa_recv(sock, body + total_read, max_bytes - total_read);
 		if(received_size == 0)
 			return total_read;
 		if(received_size < 0) {
