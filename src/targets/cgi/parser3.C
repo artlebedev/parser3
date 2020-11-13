@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.309 2020/11/13 21:33:12 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.310 2020/11/13 21:49:12 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -43,7 +43,6 @@ static const char* config_filespec_cstr=0; // -f option
 static const char* httpd_host_port=0; // -p option
 static bool mail_received=false; // -m option? [asked to parse incoming message to $mail:received]
 
-static int args_skip=1;
 static char** argv_all = NULL;
 
 static bool cgi; ///< we were started as CGI?
@@ -269,29 +268,6 @@ public:
 	}
 };
 
-static bool locate_config(){
-	if(!config_filespec_cstr) {
-		config_filespec_cstr=getenv(PARSER_CONFIG_ENV_NAME);
-		if(!config_filespec_cstr)
-			config_filespec_cstr=getenv(REDIRECT_PREFIX PARSER_CONFIG_ENV_NAME);
-		if(!config_filespec_cstr){
-			// beside by binary
-			char beside_binary_path[MAX_STRING];
-			strncpy(beside_binary_path, argv_all[0], MAX_STRING-1);  beside_binary_path[MAX_STRING-1]=0; // filespec of my binary
-			if(!(rsplit(beside_binary_path, '/') || rsplit(beside_binary_path, '\\'))) { // strip filename
-				// no path, just filename
-				// @todo full path, not ./!
-				beside_binary_path[0]='.'; beside_binary_path[1]=0;
-			}
-			char config_filespec_buf[MAX_STRING];
-			snprintf(config_filespec_buf, MAX_STRING, "%s/%s", beside_binary_path, AUTO_FILE_NAME);
-			config_filespec_cstr=pa_strdup(config_filespec_buf);
-			return entry_exists(config_filespec_cstr);
-		}
-	}
-	return true;
-}
-
 static void connection_handler(SAPI_Info_HTTPD &info, HTTPD_Connection &connection){
 	connection.read_header();
 	info.populate_env();
@@ -310,15 +286,15 @@ static void connection_handler(SAPI_Info_HTTPD &info, HTTPD_Connection &connecti
 	request_info.content_length = connection.content_length();
 	request_info.cookie = info.get_env("HTTP_COOKIE");
 	request_info.mail_received = false;
-	request_info.argv = argv_all + args_skip;
+	request_info.argv = argv_all;
 
 	// prepare to process request
 	Request request(info, request_info, String::Language(String::L_HTML|String::L_OPTIMIZE_BIT));
 	{
 		// initing ::request ptr for signal handlers
 		RequestController rc(&request);
-		// process the request, we need @httpd-main in auto.p if filespec_to_process not specified
-		request.core(locate_config() || !filespec_to_process ? config_filespec_cstr : NULL, strcasecmp(request_info.method, "HEAD")==0, String("httpd-main"));
+		// process the request
+		request.core(config_filespec_cstr, strcasecmp(request_info.method, "HEAD")==0, String("httpd-main"));
 		// clearing ::request in RequestController desctructor to prevent signal handlers from accessing invalid memory
 	}
 }
@@ -432,7 +408,7 @@ static void real_parser_handler() {
 	request_info.cookie = getenv("HTTP_COOKIE");
 	request_info.mail_received = mail_received;
 
-	request_info.argv = argv_all + args_skip;
+	request_info.argv = argv_all;
 
 #ifdef PA_DEBUG_CGI_ENTRY_EXIT
 	log("request_info: method=%s, uri=%s, q=%s, dr=%s, pt=%s, cookies=%s, cl=%u",
@@ -451,7 +427,7 @@ static void real_parser_handler() {
 		// initing ::request ptr for signal handlers
 		RequestController rc(&request);
 		// process the request
-		request.core(locate_config() ? config_filespec_cstr : NULL, strcasecmp(request_info.method, "HEAD")==0);
+		request.core(config_filespec_cstr, strcasecmp(request_info.method, "HEAD")==0);
 		// clearing ::request in RequestController destructor to prevent signal handlers from accessing invalid memory
 	}
 
@@ -514,13 +490,34 @@ static void usage(const char* program) {
 	exit(EINVAL);
 }
 
+static void locate_config(const char *binary_path){
+	if(!config_filespec_cstr) {
+		config_filespec_cstr=getenv(PARSER_CONFIG_ENV_NAME);
+		if(!config_filespec_cstr)
+			config_filespec_cstr=getenv(REDIRECT_PREFIX PARSER_CONFIG_ENV_NAME);
+		if(!config_filespec_cstr){
+			// beside by binary
+			char beside_binary_path[MAX_STRING];
+			strncpy(beside_binary_path, binary_path, MAX_STRING-1);  beside_binary_path[MAX_STRING-1]=0; // filespec of my binary
+			if(!(rsplit(beside_binary_path, '/') || rsplit(beside_binary_path, '\\'))) { // strip filename
+				// no path, just filename
+				// @todo full path, not ./!
+				beside_binary_path[0]='.'; beside_binary_path[1]=0;
+			}
+			char config_filespec_buf[MAX_STRING];
+			snprintf(config_filespec_buf, MAX_STRING, "%s/%s", beside_binary_path, AUTO_FILE_NAME);
+			if(entry_exists(config_filespec_buf))
+				config_filespec_cstr=pa_strdup(config_filespec_buf);
+		}
+	}
+}
+
 
 int main(int argc, char *argv[]) {
 #ifdef PA_DEBUG_CGI_ENTRY_EXIT
 	log("main: entry");
 #endif
 
-	argv_all=argv;
 	umask(2);
 
 	// were we started as CGI?
@@ -539,6 +536,7 @@ int main(int argc, char *argv[]) {
 	char *raw_filespec_to_process = NULL;
 	if(cgi) {
 		raw_filespec_to_process=getenv("PATH_TRANSLATED");
+		argv_all=argv + 1;
 	} else {
 		int optind=1;
 		while(optind < argc){
@@ -586,12 +584,13 @@ int main(int argc, char *argv[]) {
 		} else {
 			raw_filespec_to_process=argv[optind];
 		}
-		args_skip=optind;
 
 		if (httpd_host_port && mail_received) {
 				fprintf(stderr, "%s: -p and -m options should not be used together\n", argv[0]);
 				usage(argv[0]);
 		}
+
+		argv_all=argv + optind;
 	}
 
 #ifdef _MSC_VER
@@ -619,6 +618,8 @@ int main(int argc, char *argv[]) {
 		full_file_spec(raw_filespec_to_process, filespec_to_process_buf, sizeof(filespec_to_process_buf));
 		filespec_to_process=filespec_to_process_buf;
 	}
+
+	locate_config(argv[0]);
 
 	try { // global try
 		REAL_PARSER_HANDLER();
