@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.311 2020/11/13 23:08:24 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.312 2020/11/13 23:14:37 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -39,7 +39,7 @@ volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.311 2020/11/13 23:08:2
 #define PARSER_LOG_ENV_NAME "CGI_PARSER_LOG"
 
 static const char* filespec_to_process=0; // [file]
-static const char* config_filespec=0; // -f option or beside executable
+static const char* config_filespec=0; // -f option or beside by executable
 static const char* httpd_host_port=0; // -p option
 static bool mail_received=false; // -m option? [asked to parse incoming message to $mail:received]
 
@@ -124,7 +124,7 @@ static void log(const char* fmt, ...) {
 }
 #endif
 
-// appends to parser3.log located beside my executable if openable, to stderr otherwize
+// appends to parser3.log located beside by executable if openable, to stderr otherwize
 void SAPI::log(SAPI_Info&, const char* fmt, ...) {
 	va_list args;
 	va_start(args,fmt);
@@ -496,9 +496,9 @@ static void locate_config(const char *executable_path){
 		if(!config_filespec)
 			config_filespec=getenv(REDIRECT_PREFIX PARSER_CONFIG_ENV_NAME);
 		if(!config_filespec){
-			// beside my executable
+			// beside by executable
 			char beside_executable_path[MAX_STRING];
-			strncpy(beside_executable_path, executable_path, MAX_STRING-1);  beside_executable_path[MAX_STRING-1]=0; // filespec of my executable
+			strncpy(beside_executable_path, executable_path, MAX_STRING-1);  beside_executable_path[MAX_STRING-1]=0;
 			if(!(rsplit(beside_executable_path, '/') || rsplit(beside_executable_path, '\\'))) { // strip filename
 				// no path, just filename
 				// @todo full path, not ./!
