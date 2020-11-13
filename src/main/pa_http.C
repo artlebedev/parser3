@@ -14,7 +14,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.101 2020/11/12 16:26:19 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.102 2020/11/13 11:57:24 moko Exp $" IDENT_PA_HTTP_H; 
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -121,7 +121,7 @@ public:
 			return false;
 		if(received_size<0) {
 			if(int no=pa_socks_errno())
-				throw Exception("http.timeout", 0, "error receiving response body: %s (%d)", pa_socks_strerr(no), no);
+				throw Exception("http.timeout", 0, "error receiving response: %s (%d)", pa_socks_strerr(no), no);
 			return false;
 		}
 		length+=received_size;
