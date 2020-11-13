@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.308 2020/11/12 15:06:12 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.309 2020/11/13 21:33:12 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -50,9 +50,9 @@ static bool cgi; ///< we were started as CGI?
 
 // for signal handlers
 Request *request=0;
-bool execution_canceled=false;
+
 // for die error logging
-Request_info request_info;
+static Request_info request_info;
 
 // SAPI
 
@@ -215,7 +215,6 @@ static void SIGPIPE_handler(int /*sig*/){
 	if(sigpipe && sigpipe->as_bool())
 		log_signal(SIGPIPE_NAME);
 
-	execution_canceled=true;
 	if(request)
 		request->set_skip(Request::SKIP_INTERRUPTED);
 }
@@ -434,9 +433,6 @@ static void real_parser_handler() {
 	request_info.mail_received = mail_received;
 
 	request_info.argv = argv_all + args_skip;
-
-	if(execution_canceled)
-		SAPI::die("Execution canceled");
 
 #ifdef PA_DEBUG_CGI_ENTRY_EXIT
 	log("request_info: method=%s, uri=%s, q=%s, dr=%s, pt=%s, cookies=%s, cl=%u",
