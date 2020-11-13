@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.313 2020/11/13 23:34:10 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.314 2020/11/13 23:35:53 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -178,7 +178,7 @@ size_t SAPI::send_body(SAPI_Info& info, const void *buf, size_t size) {
 	return info.send_body(buf, size);
 }
 
-static void full_file_spec(const char* file_name, char *buf, size_t buf_size) {
+static void full_disk_path(const char* file_name, char *buf, size_t buf_size) {
 	if(file_name[0]=='/' 
 #ifdef WIN32
 		|| file_name[0] && file_name[1]==':'
@@ -276,7 +276,7 @@ static void connection_handler(SAPI_Info_HTTPD &info, HTTPD_Connection &connecti
 	memset(&request_info, 0, sizeof(request_info));
 
 	char document_root_buf[MAX_STRING];
-	full_file_spec("", document_root_buf, sizeof(document_root_buf));
+	full_disk_path("", document_root_buf, sizeof(document_root_buf));
 	request_info.document_root = document_root_buf;
 	request_info.path_translated = filespec_to_process;
 	request_info.method = connection.method();
@@ -398,7 +398,7 @@ static void real_parser_handler() {
 				request_info.uri = path_info;
 		}
 	} else{
-		full_file_spec("", document_root_buf, sizeof(document_root_buf));
+		full_disk_path("", document_root_buf, sizeof(document_root_buf));
 		request_info.document_root = document_root_buf;
 		request_info.uri = "";
 	}
@@ -615,7 +615,7 @@ int main(int argc, char *argv[]) {
 
 	char filespec_to_process_buf[MAX_STRING];
 	if(raw_filespec_to_process && *raw_filespec_to_process){
-		full_file_spec(raw_filespec_to_process, filespec_to_process_buf, sizeof(filespec_to_process_buf));
+		full_disk_path(raw_filespec_to_process, filespec_to_process_buf, sizeof(filespec_to_process_buf));
 		filespec_to_process=filespec_to_process_buf;
 	}
 
