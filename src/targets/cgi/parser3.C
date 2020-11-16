@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.316 2020/11/16 16:15:36 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.317 2020/11/16 21:22:36 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -47,9 +47,9 @@ static char** argv_all = NULL;
 // for signal handlers
 Request *request=0;
 
-// for die error logging
-static Request_info request_info;
-static const char* filespec_4log = 0; // never null
+// for error logging
+static Request_info request_info; // global for correct log() reporting
+static const char* filespec_4log = NULL; // never null
 
 // SAPI
 
@@ -266,15 +266,33 @@ public:
 	}
 };
 
-static void connection_handler(SAPI_Info_HTTPD &info, HTTPD_Connection &connection){
+static void config_handler(SAPI_Info &info) {
+	char document_root_buf[MAX_STRING];
+	full_disk_path("", document_root_buf, sizeof(document_root_buf));
+
+	request_info.document_root = document_root_buf;
+	request_info.uri = "";
+	request_info.argv = argv_all;
+
+	// prepare to process request
+	Request request(info, request_info, String::Language(String::L_HTML|String::L_OPTIMIZE_BIT));
+	{
+		// initing ::request ptr for signal handlers
+		RequestController rc(&request);
+		// process main auto.p only
+		request.core(config_filespec, false, String::Empty);
+		// clearing ::request in RequestController desctructor to prevent signal handlers from accessing invalid memory
+	}
+}
+
+static void connection_handler(SAPI_Info_HTTPD &info, HTTPD_Connection &connection) {
 	connection.read_header();
 	info.populate_env();
 
-	// connection request info, still global for correct log() reporting
-	memset(&request_info, 0, sizeof(request_info));
-
 	char document_root_buf[MAX_STRING];
 	full_disk_path("", document_root_buf, sizeof(document_root_buf));
+
+	memset(&request_info, 0, sizeof(request_info));
 	request_info.document_root = document_root_buf;
 	request_info.path_translated = filespec_to_process;
 	request_info.method = connection.method();
@@ -297,8 +315,10 @@ static void connection_handler(SAPI_Info_HTTPD &info, HTTPD_Connection &connecti
 	}
 }
 
-static void httpd_mode(){
+static void httpd_mode() {
 	int sock = HTTPD_Server::bind(httpd_host_port);
+
+	config_handler(*sapiInfo);
 
 	while(1){
 		try {

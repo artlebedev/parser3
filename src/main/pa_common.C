@@ -29,7 +29,7 @@
 #define pa_mkdir(path, mode) mkdir(path, mode)
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.315 2020/11/16 14:56:15 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.316 2020/11/16 21:22:36 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -766,16 +766,19 @@ size_t stdout_write(const void *buf, size_t size) {
 #ifdef WIN32
 	size_t to_write = size;
 	do{
-		int chunk_written=fwrite(buf, 1, min((size_t)8*0x400, size), stdout); 
+		int chunk_written=fwrite(buf, 1, min((size_t)8*0x400, size), stdout);
 		if(chunk_written<=0)
 			break;
 		size-=chunk_written;
 		buf=((const char*)buf)+chunk_written;
-	} while(size>0); 
+	} while(size>0);
 
+	fflush(stdout);
 	return to_write-size;
 #else
-	return fwrite(buf, 1, size, stdout); 
+	size_t result=fwrite(buf, 1, size, stdout);
+	fflush(stdout);
+	return result;
 #endif
 }
 
