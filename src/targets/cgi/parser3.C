@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.314 2020/11/13 23:35:53 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.315 2020/11/16 14:52:19 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -387,15 +387,7 @@ static void real_parser_handler() {
 			if(strncmp(request_info.uri, script_name, script_name_len)==0 && script_name_len != uri_len) // under IIS they are the same
 				SAPI::die("CGI: illegal call (1)");
 		} else { // fcgiwrap minimalistic setup
-
-			if(request_info.query_string && *request_info.query_string) {
-				char* reconstructed_uri = new(PointerFreeGC) char[strlen(path_info) + 1/*'?'*/+ strlen(request_info.query_string) + 1/*0*/];
-				strcpy(reconstructed_uri, path_info);
-				strcat(reconstructed_uri, "?");
-				strcat(reconstructed_uri, request_info.query_string);
-				request_info.uri = reconstructed_uri;
-			} else
-				request_info.uri = path_info;
+			request_info.uri = request_info.query_string && *request_info.query_string ? pa_strcat(path_info, "?", request_info.query_string) : path_info;
 		}
 	} else{
 		full_disk_path("", document_root_buf, sizeof(document_root_buf));

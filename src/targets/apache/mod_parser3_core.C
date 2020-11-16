@@ -5,7 +5,7 @@ Parser: apache 1.3/2.X module, part, compiled by parser3project.
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_MOD_PARSER3_CORE_C="$Id: mod_parser3_core.C,v 1.29 2020/10/28 22:32:02 moko Exp $";
+volatile const char * IDENT_MOD_PARSER3_CORE_C="$Id: mod_parser3_core.C,v 1.30 2020/11/16 14:52:19 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -93,16 +93,10 @@ struct SAPI_environment_append_info {
 };
 #endif
 
-static const char* mk_env_pair(const char* key, const char* value) {
-	char *result=new(PointerFreeGC) char[strlen(key)+1/*=*/+strlen(value)+1/*0*/];
-	strcpy(result, key); strcat(result, "="); strcat(result, value);
-	return result;
-}
-
 static int SAPI_environment_append(void *d, const char* k, const char* val) {
 	if(k && val) {
 		SAPI_environment_append_info& info=*static_cast<SAPI_environment_append_info *>(d);
-		*info.cur++=mk_env_pair(k, val);
+		*info.cur++=pa_strcat(k, "=", val);
 	}
 	return 1/*true*/;
 }

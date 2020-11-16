@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.119 2020/10/28 22:32:03 moko Exp $";
+volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.120 2020/11/16 14:52:20 moko Exp $";
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -138,11 +138,7 @@ static int grep_char(const char* s, char c) {
 	}
 	return result;
 }
-static const char* mk_env_pair(const char* key, const char* value) {
-	char *result=new(PointerFreeGC) char[strlen(key)+1/*=*/+strlen(value)+1/*0*/];
-	strcpy(result, key); strcat(result, "="); strcat(result, value);
-	return result;
-}
+
 const char* const *SAPI::Env::get(SAPI_Info& info) {
 	// we know this buf is writable
 	char* all_http_vars=SAPI::Env::get(info, "ALL_HTTP");
@@ -155,7 +151,7 @@ const char* const *SAPI::Env::get(SAPI_Info& info) {
 	for(int i=0; i<IIS51var_count; i++) {
 		const char* key=IIS51vars[i];
 		if(const char* value=SAPI::Env::get(info, key))
-			*cur++=mk_env_pair(key, value);
+			*cur++=pa_strcat(key, "=", value);
 	}
 
 	// HTTP_* vars
@@ -328,24 +324,12 @@ void real_parser_handler(SAPI_Info& SAPI_info, bool header_only) {
 		strncpy(buf, filespec_to_process, len); buf[len]=0;
 		request_info.document_root=buf;
 	} else
-		throw Exception(PARSER_RUNTIME,
-			0,
-			"ISAPI: no PATH_INFO defined (in reinventing DOCUMENT_ROOT)");
+		throw Exception(PARSER_RUNTIME, 0, "ISAPI: no PATH_INFO defined (in reinventing DOCUMENT_ROOT)");
 
 	request_info.path_translated=filespec_to_process;
 	request_info.method=lpECB->lpszMethod;
 	request_info.query_string=lpECB->lpszQueryString;
-	if(lpECB->lpszQueryString && *lpECB->lpszQueryString) {
-		char *reconstructed_uri=new(PointerFreeGC) char[
-			strlen(lpECB->lpszPathInfo)+1/*'?'*/+
-			strlen(lpECB->lpszQueryString)+1/*0*/];
-		strcpy(reconstructed_uri, lpECB->lpszPathInfo);
-		strcat(reconstructed_uri, "?");
-		strcat(reconstructed_uri, lpECB->lpszQueryString);
-		request_info.uri=reconstructed_uri;
-	} else
-		request_info.uri=lpECB->lpszPathInfo;
-	
+	request_info.uri=lpECB->lpszQueryString && *lpECB->lpszQueryString ? pa_strcat(lpECB->lpszPathInfo, "?", lpECB->lpszQueryString) : lpECB->lpszPathInfo;
 	request_info.content_type=lpECB->lpszContentType;
 	request_info.content_length=lpECB->cbTotalBytes;
 	request_info.cookie=SAPI::Env::get(SAPI_info, "HTTP_COOKIE");

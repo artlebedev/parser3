@@ -10,7 +10,7 @@
 #include "pa_sapi.h"
 #include "pa_globals.h"
 
-volatile const char * IDENT_PA_EXCEPTION_C="$Id: pa_exception.C,v 1.55 2020/10/14 21:20:15 moko Exp $" IDENT_PA_EXCEPTION_H;
+volatile const char * IDENT_PA_EXCEPTION_C="$Id: pa_exception.C,v 1.56 2020/11/16 14:52:19 moko Exp $" IDENT_PA_EXCEPTION_H;
 
 // methods
 
@@ -44,12 +44,8 @@ Exception::Exception(const char* atype, const String* aproblem_source, const cha
 }
 
 void Exception::add_comment(const char* acomment) {
-	if(fcomment && acomment){
-		char *comment=new(PointerFreeGC) char[strlen(fcomment) + strlen(acomment) + 1];
-		strcpy(comment, fcomment);
-		strcat(comment, acomment);
-		fcomment=comment;
-	}
+	if(acomment)
+		fcomment=pa_strcat(fcomment, acomment);
 }
 
 const String* Exception::problem_source() const {
