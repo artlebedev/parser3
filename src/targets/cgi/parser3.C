@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.315 2020/11/16 14:52:19 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.316 2020/11/16 16:15:36 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -38,20 +38,18 @@ volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.315 2020/11/16 14:52:1
 #define PARSER_CONFIG_ENV_NAME "CGI_PARSER_CONFIG"
 #define PARSER_LOG_ENV_NAME "CGI_PARSER_LOG"
 
-static const char* filespec_to_process=0; // [file]
-static const char* config_filespec=0; // -f option or next to the executable
-static const char* httpd_host_port=0; // -p option
-static bool mail_received=false; // -m option? [asked to parse incoming message to $mail:received]
-
+static const char* filespec_to_process = 0; // [file]
+static const char* httpd_host_port = 0; // -p option
+static const char* config_filespec = 0; // -f option or from env or next to the executable
+static bool mail_received = false; // -m option? [asked to parse incoming message to $mail:received]
 static char** argv_all = NULL;
-
-static bool cgi; ///< we were started as CGI?
 
 // for signal handlers
 Request *request=0;
 
 // for die error logging
 static Request_info request_info;
+static const char* filespec_4log = 0; // never null
 
 // SAPI
 
@@ -71,12 +69,12 @@ static void log(const char* fmt, va_list args) {
 	opened=f!=0;
 #endif
 
-	if(!opened && config_filespec) {
+	if(!opened && filespec_4log) {
 		char beside_config_path[MAX_STRING];
-		strncpy(beside_config_path, config_filespec, MAX_STRING-1);  beside_config_path[MAX_STRING-1]=0;
+		strncpy(beside_config_path, filespec_4log, MAX_STRING-1);  beside_config_path[MAX_STRING-1]=0;
 		if(!(rsplit(beside_config_path, '/') || rsplit(beside_config_path, '\\'))) { // strip filename
 			// no path, just filename
-			beside_config_path[0]='.'; beside_config_path[1]=0;
+			strcpy(beside_config_path, ".");
 		}
 
 		char file_spec[MAX_STRING];
@@ -325,7 +323,7 @@ static void httpd_mode(){
 
 /** main workhorse */
 
-static void real_parser_handler() {
+static void real_parser_handler(bool cgi) {
 	// init libraries
 	pa_globals_init();
 
@@ -428,9 +426,9 @@ static void real_parser_handler() {
 }
 
 #ifdef PA_SUPPRESS_SYSTEM_EXCEPTION
-static const Exception call_real_parser_handler__do_PEH_return_it() {
+static const Exception call_real_parser_handler__do_PEH_return_it(bool cgi) {
 	try {
-		real_parser_handler();
+		real_parser_handler(cgi);
 	} catch(const Exception& e) {
 		return e;
 	}
@@ -438,12 +436,12 @@ static const Exception call_real_parser_handler__do_PEH_return_it() {
 	return Exception();
 }
 
-static void call_real_parser_handler__supress_system_exception() {
+static void call_real_parser_handler__supress_system_exception(bool cgi) {
 	Exception parser_exception;
 	LPEXCEPTION_POINTERS system_exception=0;
 
 	__try {
-		parser_exception=call_real_parser_handler__do_PEH_return_it();
+		parser_exception=call_real_parser_handler__do_PEH_return_it(cgi);
 	} __except ( (system_exception=GetExceptionInformation()), EXCEPTION_EXECUTE_HANDLER) {
 		if(system_exception)
 			if(_EXCEPTION_RECORD *er=system_exception->ExceptionRecord)
@@ -482,26 +480,21 @@ static void usage(const char* program) {
 	exit(EINVAL);
 }
 
-static void locate_config(const char *executable_path){
-	if(!config_filespec) {
-		config_filespec=getenv(PARSER_CONFIG_ENV_NAME);
-		if(!config_filespec)
-			config_filespec=getenv(REDIRECT_PREFIX PARSER_CONFIG_ENV_NAME);
-		if(!config_filespec){
+static const char *locate_config(const char *config_filespec_option, const char *executable_path){
+	if(!(filespec_4log = config_filespec_option)) {
+		filespec_4log=getenv(PARSER_CONFIG_ENV_NAME);
+		if(!filespec_4log)
+			filespec_4log=getenv(REDIRECT_PREFIX PARSER_CONFIG_ENV_NAME);
+		if(!filespec_4log){
 			// next to the executable
-			char beside_executable_path[MAX_STRING];
-			strncpy(beside_executable_path, executable_path, MAX_STRING-1);  beside_executable_path[MAX_STRING-1]=0;
-			if(!(rsplit(beside_executable_path, '/') || rsplit(beside_executable_path, '\\'))) { // strip filename
-				// no path, just filename
-				// @todo full path, not ./!
-				beside_executable_path[0]='.'; beside_executable_path[1]=0;
-			}
-			char config_filespec_buf[MAX_STRING];
-			snprintf(config_filespec_buf, MAX_STRING, "%s/%s", beside_executable_path, AUTO_FILE_NAME);
-			if(entry_exists(config_filespec_buf))
-				config_filespec=pa_strdup(config_filespec_buf);
+			char *beside_executable_path = pa_strdup(executable_path);
+			bool stripped_filename = rsplit(beside_executable_path, '/') || rsplit(beside_executable_path, '\\');
+			filespec_4log = pa_strcat(stripped_filename ? beside_executable_path : "." /* no path, just filename */ , "/" AUTO_FILE_NAME);
+			if(!entry_exists(filespec_4log))
+				return NULL;
 		}
 	}
+	return filespec_4log;
 }
 
 
@@ -513,7 +506,7 @@ int main(int argc, char *argv[]) {
 	umask(2);
 
 	// were we started as CGI?
-	cgi=(getenv("SERVER_SOFTWARE") || getenv("SERVER_NAME") || getenv("GATEWAY_INTERFACE") || getenv("REQUEST_METHOD")) && !getenv("PARSER_VERSION");
+	bool cgi=(getenv("SERVER_SOFTWARE") || getenv("SERVER_NAME") || getenv("GATEWAY_INTERFACE") || getenv("REQUEST_METHOD")) && !getenv("PARSER_VERSION");
 	sapiInfo = cgi ? new SAPI_Info_CGI() : new SAPI_Info();
 
 #ifdef SIGUSR1
@@ -611,10 +604,10 @@ int main(int argc, char *argv[]) {
 		filespec_to_process=filespec_to_process_buf;
 	}
 
-	locate_config(argv[0]);
+	config_filespec = locate_config(config_filespec, argv[0]);
 
 	try { // global try
-		REAL_PARSER_HANDLER();
+		REAL_PARSER_HANDLER(cgi);
 	} catch(const Exception& e) { // exception in unhandled exception
 		SAPI::die("%s", e.comment());
 	}
