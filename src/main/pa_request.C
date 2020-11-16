@@ -33,7 +33,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.390 2020/11/12 16:16:01 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.391 2020/11/16 21:37:13 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -431,7 +431,7 @@ void Request::core(const char* config_filespec, bool header_only, const String &
 		}
 
 		// execute @main[]
-		const String* body_string=execute_method(main_class, amain_method_name);
+		const String* body_string=amain_method_name.is_empty() ? &String::Empty : execute_method(main_class, amain_method_name);
 		if(!body_string)
 			throw Exception(PARSER_RUNTIME, 0, "'%s' method not found", amain_method_name.cstr());
 
