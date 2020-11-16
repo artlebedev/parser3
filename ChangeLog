@@ -1,3 +1,45 @@
+2020-11-14  moko
+
+	* src/targets/cgi/parser3.C: spelling
+
+	* src/targets/cgi/parser3.C: renaming
+
+	* src/targets/cgi/parser3.C: args_skip removed, locate_config
+	  relocated
+
+	* src/targets/cgi/parser3.C: execution_canceled was for sigpipe
+	  before request processing, which is weired
+
+2020-11-13  moko
+
+	* src/main/pa_http.C: pa_recv added with timeout support, thus read
+	  copied in httpd.
+
+2020-11-12  moko
+
+	* src/main/pa_http.C: ALARM code unified to be used in httpd
+
+	* src/: include/pa_request.h, main/pa_request.C,
+	  targets/cgi/pa_sapi_info.h: pa_httpd_timeout added
+
+	* src/main/pa_http.C: URI validation added
+
+	* src/targets/cgi/parser3.C: filespec_to_process now variable,
+	  can't be empty but can be null.  httpd-main is now main method
+	  name for httpd mode
+
+2020-11-11  moko
+
+	* src/main/pa_request.C: path_translated can be null in httpd mode
+
+	* src/: classes/curl.C, classes/file.C, classes/hashfile.C,
+	  classes/image.C, classes/op.C, classes/string.C, classes/table.C,
+	  classes/xdoc.C, include/pa_request.h, main/execute.C,
+	  main/pa_request.C: r.absolute -> r.full_disk_path
+
+	* src/targets/cgi/parser3.C: if filename to process is not
+	  specified, auto.p should be present.
+
 2020-11-03  moko
 
 	* src/: classes/op.C, include/pa_request.h: unused argument removed
