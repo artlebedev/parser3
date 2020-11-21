@@ -29,7 +29,7 @@
 #define pa_mkdir(path, mode) mkdir(path, mode)
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.316 2020/11/16 21:22:36 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.317 2020/11/21 23:26:26 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -669,6 +669,15 @@ char *pa_strcat(const char *a, const char *b, const char *c) {
 	return result;
 }
 
+const char *pa_filename(const char *path){
+	if(!path)
+		return NULL;
+	for(const char *c = path + strlen(path) - 1; c >= path; c--) {
+		if(*c == '/' || *c == '\\')
+			return c+1;
+        }
+        return path;
+}
 
 // format: %[flags][width][.precision]type	http://msdn.microsoft.com/ru-ru/library/56e442dc(en-us,VS.80).aspx
 //		flags: '-', '+', ' ', '#', '0'		http://msdn.microsoft.com/ru-ru/library/8aky45ct(en-us,VS.80).aspx

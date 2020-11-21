@@ -14,7 +14,7 @@
 #include "pa_charsets.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VFILE_C="$Id: pa_vfile.C,v 1.78 2019/11/13 22:05:48 moko Exp $" IDENT_PA_VFILE_H;
+volatile const char * IDENT_PA_VFILE_C="$Id: pa_vfile.C,v 1.79 2020/11/21 23:26:27 moko Exp $" IDENT_PA_VFILE_H;
 
 // externs
 
@@ -134,22 +134,18 @@ void VFile::set_mode(bool ais_text_mode){
 }
 
 void VFile::set_name(const String* afile_name){
-	char *lfile_name;
+	const char *lfile_name;
 	if(afile_name && !afile_name->is_empty()) {
 		if(afile_name->starts_with("http://") || afile_name->starts_with("https://")){
 			size_t query=afile_name->pos('?');
 			if(query!=STRING_NOT_FOUND)
 				afile_name=&afile_name->mid(0,query);
 		}
-		lfile_name=pa_strdup(afile_name->taint_cstr(String::L_FILE_SPEC));
-		if(char *after_slash=rsplit(lfile_name, '\\'))
-			lfile_name=after_slash;
-		if(char *after_slash=rsplit(lfile_name, '/'))
-			lfile_name=after_slash;
+		lfile_name=pa_filename(afile_name->taint_cstr(String::L_FILE_SPEC));
 		if(!lfile_name[0])
-			lfile_name=(char *)NONAME_DAT;
+			lfile_name=NONAME_DAT;
 	} else
-		lfile_name=(char *)NONAME_DAT;
+		lfile_name=NONAME_DAT;
 
 	ffields.put(name_name, new VString(*new String(lfile_name, String::L_FILE_SPEC)));
 }

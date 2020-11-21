@@ -33,7 +33,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.392 2020/11/21 23:14:43 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.393 2020/11/21 23:26:26 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -855,12 +855,7 @@ void Request::output_result(VFile* body_file, bool header_only, bool as_attachme
 	if(!vfile_name) {
 		vfile_name=body_file->fields().get(response_body_file_name);
 		if(vfile_name) {
-			char* name_cstr=vfile_name->as_string().cstrm();
-			if(char *after_slash=rsplit(name_cstr, '\\'))
-				name_cstr=after_slash;
-			if(char *after_slash=rsplit(name_cstr, '/'))
-				name_cstr=after_slash;
-			vfile_name=new VString(*new String(name_cstr));
+			vfile_name=new VString(*new String(pa_filename(vfile_name->as_string().cstr())));
 		}
 	}
 	if(vfile_name) {
