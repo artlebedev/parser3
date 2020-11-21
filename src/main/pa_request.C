@@ -33,7 +33,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.391 2020/11/16 21:37:13 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.392 2020/11/21 23:14:43 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -125,6 +125,7 @@ static const String body_name_upper(BODY_NAME_UPPER);
 
 static const String content_type_name_upper(HTTP_CONTENT_TYPE_UPPER);
 static const String content_disposition_name_upper(CONTENT_DISPOSITION_UPPER);
+static const String content_disposition_inline(CONTENT_DISPOSITION_INLINE);
 static const String content_disposition_attachment(CONTENT_DISPOSITION_ATTACHMENT);
 
 // defines
@@ -865,12 +866,10 @@ void Request::output_result(VFile* body_file, bool header_only, bool as_attachme
 	if(vfile_name) {
 		const String& sfile_name=vfile_name->as_string();
 		if(sfile_name!=NONAME_DAT) {
-			if(as_attachment) {
-				VHash& hash=*new VHash();
-				hash.hash().put(value_name, new VString(content_disposition_attachment));
-				hash.hash().put(content_disposition_filename_name, new VString(*new String(sfile_name, String::L_HTTP_HEADER)));
-				response.fields().put(content_disposition_name_upper, &hash);
-			}
+			VHash& hash=*new VHash();
+			hash.hash().put(value_name, new VString(as_attachment ? content_disposition_attachment : content_disposition_inline));
+			hash.hash().put(content_disposition_filename_name, new VString(*new String(sfile_name, String::L_HTTP_HEADER)));
+			response.fields().put(content_disposition_name_upper, &hash);
 
 			if(!body_file_content_type)
 				body_file_content_type=new VString(mime_type_of(sfile_name.cstr()));
