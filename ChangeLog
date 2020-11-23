@@ -1,3 +1,29 @@
+2020-11-22  moko
+
+	* src/: include/pa_common.h, main/pa_common.C, main/pa_request.C,
+	  types/pa_vfile.C: pa_filename added to avoid useless rsplit
+
+	* src/main/pa_request.C: content_disposition_inline returned.
+
+2020-11-17  moko
+
+	* src/main/pa_request.C: empty main method name support
+
+	* src/: main/pa_common.C, targets/cgi/parser3.C: httpd
+	  config_handler added, stdout flush added.
+
+2020-11-16  moko
+
+	* src/targets/cgi/parser3.C: filespec_4log added, pa_strcat used.
+
+	* tests/results/: 099.processed, 205.processed, 237.processed,
+	  309.processed, 310.processed: Content-Disposition: inline is not
+	  required and should not contain filename="<name>"
+
+	* src/: include/pa_common.h, main/pa_common.C, main/pa_exception.C,
+	  targets/apache/mod_parser3_core.C, targets/cgi/parser3.C,
+	  targets/isapi/parser3isapi.C: pa_strcat implemented and used
+
 2020-11-14  moko
 
 	* src/targets/cgi/parser3.C: spelling
