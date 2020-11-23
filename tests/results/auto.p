@@ -36,6 +36,13 @@ $NO_PROTOTYPE[
 	]
 }
 
+^if($env:PATH_TRANSLATED eq '403.html'){
+	$MIME-TYPES[^table::create{ext	mime-type
+txt	text/plain
+html	text/html
+}]
+}
+
 
 @auto[]
 
