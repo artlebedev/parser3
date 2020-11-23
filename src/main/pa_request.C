@@ -33,7 +33,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.393 2020/11/21 23:26:26 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.394 2020/11/23 22:45:11 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -847,28 +847,31 @@ void Request::output_result(VFile* body_file, bool header_only, bool as_attachme
 	// header: cookies
 	cookie.output_result(sapi_info);
 	
-	// _file_ content-type might be specified
-	Value* body_file_content_type=body_file->fields().get(content_type_name);
+	// $.file and $.name (when body is real vfile)
+	Value* vfile = body_file->fields().get(response_body_file_name);
+	Value* vname = body_file->fields().get(name_name);
+
+	const String* sfile = vfile ? &vfile->as_string() : NULL;
+	const String* sname = vname ? &vname->as_string() : NULL;
+
+	if(sname && *sname == NONAME_DAT)
+		sname = NULL;
 
 	// Content-Disposition
-	Value* vfile_name=body_file->fields().get(name_name);
-	if(!vfile_name) {
-		vfile_name=body_file->fields().get(response_body_file_name);
-		if(vfile_name) {
-			vfile_name=new VString(*new String(pa_filename(vfile_name->as_string().cstr())));
-		}
+	const String* disposition_name = sname ? sname->is_empty() ? NULL : sname : sfile;
+	if(disposition_name) {
+		VHash& hash=*new VHash();
+		hash.hash().put(value_name, new VString(as_attachment ? content_disposition_attachment : content_disposition_inline));
+		hash.hash().put(content_disposition_filename_name, new VString(*new String(*disposition_name, String::L_HTTP_HEADER)));
+		response.fields().put(content_disposition_name_upper, &hash);
 	}
-	if(vfile_name) {
-		const String& sfile_name=vfile_name->as_string();
-		if(sfile_name!=NONAME_DAT) {
-			VHash& hash=*new VHash();
-			hash.hash().put(value_name, new VString(as_attachment ? content_disposition_attachment : content_disposition_inline));
-			hash.hash().put(content_disposition_filename_name, new VString(*new String(sfile_name, String::L_HTTP_HEADER)));
-			response.fields().put(content_disposition_name_upper, &hash);
 
-			if(!body_file_content_type)
-				body_file_content_type=new VString(mime_type_of(sfile_name.cstr()));
-		}
+	// _file_ content-type might be specified
+	Value* body_file_content_type = body_file->fields().get(content_type_name);
+	if(!body_file_content_type){
+		const String* scontent_name = sname && !sname->is_empty() ? sname : sfile;
+		if(scontent_name)
+			body_file_content_type = new VString(mime_type_of(scontent_name->cstr()));
 	}
 
 	// set Content-Type
@@ -884,12 +887,11 @@ void Request::output_result(VFile* body_file, bool header_only, bool as_attachme
 	Add_header_attribute_info info(*this);
 	response.fields().for_each<Add_header_attribute_info*>(add_header_attribute, &info);
 
-	if(Value* vresponse_body_file=body_file->fields().get(response_body_file_name)) {
+	if(sfile) {
 		// $response:[download|body][$.file[filespec]] -- optput specified file
-		const String& sresponse_body_file=vresponse_body_file->as_string();
 		uint64_t content_length=0;
 		time_t atime=0, mtime=0, ctime=0;
-		file_stat(full_disk_path(sresponse_body_file), content_length, atime, mtime, ctime);
+		file_stat(full_disk_path(*sfile), content_length, atime, mtime, ctime);
 
 		VDate* vdate=0;
 		if(Value* v=body_file->fields().get("mdate")) {
@@ -901,7 +903,7 @@ void Request::output_result(VFile* body_file, bool header_only, bool as_attachme
 		if(!vdate)
 			vdate=new VDate((pa_time_t)mtime);
 
-		output_pieces(*this, header_only, sresponse_body_file, (size_t)content_length, *vdate, info.add_last_modified);
+		output_pieces(*this, header_only, *sfile, (size_t)content_length, *vdate, info.add_last_modified);
 	} else {
 		if(body_file_content_type)
 			if(HashStringValue *hash=body_file_content_type->get_hash())
