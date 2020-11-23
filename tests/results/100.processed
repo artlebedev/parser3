@@ -1,5 +1,5 @@
 Content-Disposition: attachment; filename="099.html"
 Content-Type: application/octet-stream
-Content-Length: 43
+Content-Length: 50
 
-$response:body[^file::load[text;099.html]]
+$response:body[^file::load[text;/tests/099.html]]
