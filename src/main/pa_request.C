@@ -33,7 +33,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.394 2020/11/23 22:45:11 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.395 2020/11/29 00:02:38 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -81,42 +81,32 @@ size_t pa_file_size_limit=FILE_SIZE_LIMIT;
 
 // defines for statics
 
-#define CHARSETS_NAME "CHARSETS"
 #define MIME_TYPES_NAME "MIME-TYPES"
-#define STRICT_VARS_NAME "STRICT-VARS"
-#define PROTOTYPE_NAME "OBJECT-PROTOTYPE"
-#define LIMITS_NAME "LIMITS"
-#define LOOP_LIMIT_NAME "max_loop"
-#define RECOURSION_LIMIT_NAME "max_recoursion"
-#define HTTPD_TIMEOUT_NAME "httpd_timeout"
-#define FILE_SIZE_LIMIT_NAME "max_file_size"
-#define LOCK_WAIT_TIMEOUT_NAME "lock_wait_timeout"
-#define CONF_METHOD_NAME "conf"
-#define POST_PROCESS_METHOD_NAME "postprocess"
 #define CLASS_PATH_NAME "CLASS_PATH"
-#define RESPONSE_BODY_FILE_NAME "file"
 
 #define DOWNLOAD_NAME_UPPER "DOWNLOAD"
 #define BODY_NAME_UPPER "BODY"
 
 // statics
 
-static const String charsets_name(CHARSETS_NAME);
 static const String main_class_name(MAIN_CLASS_NAME);
 static const String mime_types_name(MIME_TYPES_NAME);
-static const String strict_vars_name(STRICT_VARS_NAME);
-static const String prototype_name(PROTOTYPE_NAME);
-static const String limits_name(LIMITS_NAME);
-static const String loop_limit_name(LOOP_LIMIT_NAME);
-static const String recoursion_limit_name(RECOURSION_LIMIT_NAME);
-static const String httpd_timeout_name(HTTPD_TIMEOUT_NAME);
-static const String file_size_limit_name(FILE_SIZE_LIMIT_NAME);
-static const String lock_wait_timeout_name(LOCK_WAIT_TIMEOUT_NAME);
-
-static const String conf_method_name(CONF_METHOD_NAME);
-static const String post_process_method_name(POST_PROCESS_METHOD_NAME);
 static const String class_path_name(CLASS_PATH_NAME);
-static const String response_body_file_name(RESPONSE_BODY_FILE_NAME);
+
+static const String charsets_name("CHARSETS");
+static const String strict_vars_name("STRICT-VARS");
+static const String prototype_name("OBJECT-PROTOTYPE");
+static const String limits_name("LIMITS");
+static const String loop_limit_name("max_loop");
+static const String recoursion_limit_name("max_recoursion");
+static const String file_size_limit_name("max_file_size");
+static const String lock_wait_timeout_name("lock_wait_timeout");
+static const String httpd_name("HTTPD");
+static const String httpd_timeout_name("timeout");
+
+static const String conf_method_name("conf");
+static const String post_process_method_name("postprocess");
+static const String response_body_file_name("file");
 
 static const String download_name_upper(DOWNLOAD_NAME_UPPER);
 static const String body_name_upper(BODY_NAME_UPPER);
@@ -246,6 +236,16 @@ static void load_charset(HashStringValue::key_type akey, HashStringValue::value_
 	pa_charsets.load_charset(*charsets, akey, avalue->as_string());
 }
 
+
+#define CONF_OPTION(config, name, code, exception_name)		\
+	if(config)						\
+		if(Value* option=config->get_element(name)) {	\
+			if(option->is_evaluated_expr()) {	\
+				code;				\
+			} else					\
+				throw Exception(PARSER_RUNTIME, 0, "$main:" exception_name, name.cstr()); \
+		}
+
 void Request::configure_admin(VStateless_class& conf_class) {
 	if(configure_admin_done)
 		throw Exception(PARSER_RUNTIME, 0, "parser already configured");
@@ -264,7 +264,7 @@ void Request::configure_admin(VStateless_class& conf_class) {
 			if(HashStringValue* charsets=vcharsets->get_hash())
 				charsets->for_each<Request_charsets*>(load_charset, &this->charsets);
 			else
-				throw Exception(PARSER_RUNTIME, 0, "$" MAIN_CLASS_NAME ":" CHARSETS_NAME " must be hash");
+				throw Exception(PARSER_RUNTIME, 0, "$main:%s must be hash", charsets_name.cstr());
 		}
 	}
 
@@ -274,7 +274,7 @@ void Request::configure_admin(VStateless_class& conf_class) {
 		if(strict_vars->is_bool())
 			VVoid::strict_vars=strict_vars->as_bool();
 		else
-			throw Exception(PARSER_RUNTIME, 0, "$" MAIN_CLASS_NAME ":" STRICT_VARS_NAME " must be bool");
+			throw Exception(PARSER_RUNTIME, 0, "$main:%s must be bool", strict_vars_name.cstr());
 	}
 #endif
 
@@ -284,66 +284,49 @@ void Request::configure_admin(VStateless_class& conf_class) {
 		if(prototype->is_bool())
 			VClass::prototype=prototype->as_bool();
 		else
-			throw Exception(PARSER_RUNTIME, 0, "$" MAIN_CLASS_NAME ":" PROTOTYPE_NAME " must be bool");
+			throw Exception(PARSER_RUNTIME, 0, "$main:%s must be bool", prototype_name.cstr());
 	}
 #endif
 
 	Value* limits=conf_class.get_element(limits_name);
 
 	pa_loop_limit=LOOP_LIMIT;
-	if(limits)
-		if(Value* loop_limit=limits->get_element(loop_limit_name)) {
-			if(loop_limit->is_evaluated_expr()) {
-				pa_loop_limit=loop_limit->as_int();
-				if(pa_loop_limit==0) pa_loop_limit=INT_MAX;
-			} else
-				throw Exception(PARSER_RUNTIME, 0, "$" MAIN_CLASS_NAME ":LIMITS." LOOP_LIMIT_NAME " must be int");
-		}
+	CONF_OPTION(limits, loop_limit_name, {
+		pa_loop_limit=option->as_int();
+		if(pa_loop_limit==0) pa_loop_limit=INT_MAX;
+	}, "LIMITS.%s must be int");
 
 	pa_execute_recoursion_limit=EXECUTE_RECOURSION_LIMIT;
-	if(limits)
-		if(Value* recoursion_limit=limits->get_element(recoursion_limit_name)) {
-			if(recoursion_limit->is_evaluated_expr()) {
-				pa_execute_recoursion_limit=recoursion_limit->as_int();
-				if(pa_execute_recoursion_limit==0) pa_execute_recoursion_limit=INT_MAX;
-			} else
-				throw Exception(PARSER_RUNTIME, 0, "$" MAIN_CLASS_NAME ":LIMITS." RECOURSION_LIMIT_NAME " must be int");
-		}
-
-	pa_httpd_timeout=HTTPD_TIMEOUT;
-	if(limits)
-		if(Value* httpd_timeout=limits->get_element(httpd_timeout_name)) {
-			if(httpd_timeout->is_evaluated_expr()) {
-				pa_httpd_timeout=httpd_timeout->as_int();
-				if(pa_httpd_timeout==0) pa_httpd_timeout=INT_MAX;
-			} else
-				throw Exception(PARSER_RUNTIME, 0, "$" MAIN_CLASS_NAME ":LIMITS." HTTPD_TIMEOUT_NAME " must be int");
-		}
+	CONF_OPTION(limits, recoursion_limit_name, {
+		pa_execute_recoursion_limit=option->as_int();
+		if(pa_execute_recoursion_limit==0) pa_execute_recoursion_limit=INT_MAX;
+	}, "LIMITS.%s must be int");
 
 	pa_file_size_limit=FILE_SIZE_LIMIT;
-	if(limits)
-		if(Value* file_size_limit=limits->get_element(file_size_limit_name)) {
-			if(file_size_limit->is_evaluated_expr()) {
-				double limit=file_size_limit->as_double();
-				if(limit >= (double)SSIZE_MAX)
-					throw Exception(PARSER_RUNTIME, 0, "$" MAIN_CLASS_NAME ":LIMITS." FILE_SIZE_LIMIT_NAME " must be less then %.15g", (double)SSIZE_MAX);
-				pa_file_size_limit=(size_t)limit;
-				if(pa_file_size_limit==0) pa_file_size_limit=SSIZE_MAX;
-			} else
-				throw Exception(PARSER_RUNTIME, 0, "$" MAIN_CLASS_NAME ":LIMITS." FILE_SIZE_LIMIT_NAME " must be number");
-		}
+	CONF_OPTION(limits, file_size_limit_name, {
+		double limit=option->as_double();
+		if(limit >= (double)SSIZE_MAX)
+			throw Exception(PARSER_RUNTIME, 0, "$main:LIMITS.%s must be less then %.15g", file_size_limit_name.cstr(), (double)SSIZE_MAX);
+		pa_file_size_limit=(size_t)limit;
+		if(pa_file_size_limit==0)
+			pa_file_size_limit=SSIZE_MAX;
+	}, "LIMITS.%s must be number");
 
 	pa_lock_attempts=PA_LOCK_ATTEMPTS;
-	if(limits)
-		if(Value* lock_wait_timeout=limits->get_element(lock_wait_timeout_name)) {
-			if(lock_wait_timeout->is_evaluated_expr()) {
-				double limit=lock_wait_timeout->as_double();
-				if(limit >= 3600*24)
-					throw Exception(PARSER_RUNTIME, 0, "$" MAIN_CLASS_NAME ":LIMITS." LOCK_WAIT_TIMEOUT_NAME " must be less then %d", 3600*24);
-				pa_lock_attempts=(unsigned int)(limit*2)+1;
-			} else
-				throw Exception(PARSER_RUNTIME, 0, "$" MAIN_CLASS_NAME ":LIMITS." LOCK_WAIT_TIMEOUT_NAME " must be number");
-		}
+	CONF_OPTION(limits, lock_wait_timeout_name, {
+		double limit=option->as_double();
+		if(limit >= 3600*24)
+			throw Exception(PARSER_RUNTIME, 0, "$main:LIMITS.%s must be less then %d", lock_wait_timeout_name.cstr(), 3600*24);
+		pa_lock_attempts=(unsigned int)(limit*2)+1;
+	}, "LIMITS.%s must be number");
+
+	Value* httpd=conf_class.get_element(httpd_name);
+
+	pa_httpd_timeout=HTTPD_TIMEOUT;
+	CONF_OPTION(httpd, httpd_timeout_name, {
+		pa_httpd_timeout=option->as_int();
+		if(pa_httpd_timeout==0) pa_httpd_timeout=INT_MAX;
+	}, "HTTPD.%s must be int");
 
 	// configure method_frame options
 	//	until someone with less privileges have overriden them
@@ -399,7 +382,7 @@ void Request::configure() {
 	// $MAIN:MIME-TYPES
 	if(Value* element=main_class.get_element(mime_types_name))
 		if(Table *table=element->get_table())
-			mime_types=table;			
+			mime_types=table;
 }
 /**
 	load MAIN class, execute @main.
@@ -620,9 +603,9 @@ void Request::use_file(const String& file_name, const String* use_filespec/*abso
 			} else
 				throw Exception(PARSER_RUNTIME, 0, "$" CLASS_PATH_NAME " must be string or table");
 			if(!filespec)
-				throw Exception(PARSER_RUNTIME, &file_name, "not found along $" MAIN_CLASS_NAME ":" CLASS_PATH_NAME);
+				throw Exception(PARSER_RUNTIME, &file_name, "not found along $main:" CLASS_PATH_NAME);
 		} else 
-			throw Exception(PARSER_RUNTIME, &file_name, "usage failed - no $" MAIN_CLASS_NAME  ":" CLASS_PATH_NAME " were specified");
+			throw Exception(PARSER_RUNTIME, &file_name, "usage failed - no $main:" CLASS_PATH_NAME " were specified");
 	}
 
 	use_file_directly(*filespec, true, with_auto_p);
@@ -926,7 +909,7 @@ const String& Request::mime_type_of(const char* user_file_name_cstr) {
 				if(const String* result=mime_types->item(1))
 					return *result;
 				else
-					throw Exception(PARSER_RUNTIME, 0, MIME_TYPES_NAME  " table column elements must not be empty");
+					throw Exception(PARSER_RUNTIME, 0, MIME_TYPES_NAME " table column elements must not be empty");
 			}
 		}
 
