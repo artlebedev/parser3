@@ -26,7 +26,7 @@
 #include "pa_table.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.167 2020/11/10 22:42:24 moko Exp $";
+volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.168 2020/11/30 16:44:24 moko Exp $";
 
 // defines
 
@@ -383,6 +383,34 @@ struct JPG_Exif_IFD_entry {
 
 #define JPEG_EXIF_DATE_CHARS 20
 
+/// WEBP file header
+struct WEBP_Header {
+	char signature_riff[4]; // 'RIFF'
+	uchar file_size[4];
+	char signature[4];      // 'WEBP'
+	char format[4];         // 'VP8 ' or 'VP8L' or 'VP8X'
+};
+
+struct WEBP_VP8_Chunk {
+	uchar size[4];
+	char tag[3];
+	uchar signature[3];    // 0x9D 0x01 0x2A
+	uchar width[2];        // 14 bits each
+	uchar height[2];       // 14 bits each
+};
+
+struct WEBP_VP8L_Chunk {
+	uchar size[4];
+	char signature;        // 0x2F
+	uchar width_height[4]; // 14 bits each
+};
+
+struct WEBP_X_Chunk {
+	uchar size[4];
+	char reserved[4];
+	uchar width[3];
+	uchar height[3];
+};
 
 #ifndef DOXYGEN
 struct Measure_info {
@@ -405,13 +433,11 @@ inline uint x_endian_to_uint(uchar b0, uchar b1, uchar b2, uchar b3) {
 }
 
 inline ushort endian_to_ushort(bool is_big, const uchar *b/* [2] */) {
-	return is_big?x_endian_to_ushort(b[1], b[0]):
-		x_endian_to_ushort(b[0], b[1]);
+	return is_big ? x_endian_to_ushort(b[1], b[0]) : x_endian_to_ushort(b[0], b[1]);
 }
 
 inline uint endian_to_uint(bool is_big, const uchar *b /* [4] */) {
-	return is_big?x_endian_to_uint(b[3], b[2], b[1], b[0]):
-		x_endian_to_uint(b[0], b[1], b[2], b[3]);
+	return is_big ? x_endian_to_uint(b[3], b[2], b[1], b[0]) : x_endian_to_uint(b[0], b[1], b[2], b[3]);
 }
 
 static Value* parse_IFD_entry_formatted_one_value(bool is_big, ushort format, size_t component_size, const uchar *value) {
@@ -790,6 +816,50 @@ static void measure_bmp(const String& origin_string, Measure_reader& reader, ush
 	height=endian_to_ushort(false, head->height);
 }
 
+
+static void measure_webp(const String& origin_string, Measure_reader& reader, ushort& width, ushort& height) {
+	const char* buf;
+
+	if(reader.read(buf, sizeof(WEBP_Header))<sizeof(WEBP_Header))
+		throw Exception(IMAGE_FORMAT, &origin_string, "not WEBP file - too small");
+
+	WEBP_Header *head=(WEBP_Header *)buf;
+
+	if(strncmp(head->signature_riff, "RIFF", 4)!=0 || strncmp(head->signature, "WEBP", 4)!=0)
+		throw Exception(IMAGE_FORMAT, &origin_string, "not WEBP file - wrong signature");
+
+	if(strncmp(head->format, "VP8 ", 4)==0){
+		if(reader.read(buf, sizeof(WEBP_VP8_Chunk))<sizeof(WEBP_VP8_Chunk))
+			throw Exception(IMAGE_FORMAT, &origin_string, "broken WEBP file - too small VP8 chunk");
+
+		WEBP_VP8_Chunk *chunk=(WEBP_VP8_Chunk *)buf;
+		if (chunk->signature[0] != 0x9D || chunk->signature[1] != 0x01 || chunk->signature[2] != 0x2A)
+			throw Exception(IMAGE_FORMAT, &origin_string, "broken WEBP file - wrong VP8 chunk signature");
+
+		width=endian_to_ushort(false, chunk->width) & 0x3FFF;
+		height=endian_to_ushort(false, chunk->height) & 0x3FFF;
+	} else if(strncmp(head->format, "VP8L", 4)==0){
+		if(reader.read(buf, sizeof(WEBP_VP8L_Chunk))<sizeof(WEBP_VP8L_Chunk))
+			throw Exception(IMAGE_FORMAT, &origin_string, "broken WEBP file - too small VP8L chunk");
+
+		WEBP_VP8L_Chunk *chunk=(WEBP_VP8L_Chunk *)buf;
+		if(chunk->signature != 0x2F)
+			throw Exception(IMAGE_FORMAT, &origin_string, "broken WEBP file - wrong VP8L chunk signature");
+
+		uint wh=endian_to_uint(false, chunk->width_height);
+		width=(wh & 0x3FFF) + 1;
+		height=((wh >> 14) & 0x3FFF) + 1;
+	} else if (strncmp(head->format, "VP8X", 4)==0){
+		if(reader.read(buf, sizeof(WEBP_X_Chunk))<sizeof(WEBP_X_Chunk))
+			throw Exception(IMAGE_FORMAT, &origin_string, "broken WEBP file - too small VP8X chunk");
+
+		WEBP_X_Chunk *chunk=(WEBP_X_Chunk *)buf;
+
+		width=endian_to_ushort(false, chunk->width) + 1;   // we ignore third byte to simplify code
+		height=endian_to_ushort(false, chunk->height) + 1; // we ignore third byte to simplify code
+	} else throw Exception(IMAGE_FORMAT, &origin_string, "broken WEBP file - invalid chunk signature");
+}
+
 // measure center
 
 static void measure(const String& file_name, Measure_reader& reader, Measure_info &info) {
@@ -804,6 +874,8 @@ static void measure(const String& file_name, Measure_reader& reader, Measure_inf
 			measure_png(file_name, reader, info.width, info.height);
 		else if(strcasecmp(cext, "BMP")==0)
 			measure_bmp(file_name, reader, info.width, info.height);
+		else if(strcasecmp(cext, "WEBP")==0)
+			measure_webp(file_name, reader, info.width, info.height);
 		else if(strcasecmp(cext, "TIF")==0 || strcasecmp(cext, "TIFF")==0)
 			measure_tiff(file_name, reader, info);
 		else
