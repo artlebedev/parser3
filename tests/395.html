@@ -1,6 +1,10 @@
 @main[]
-^show[395.bmp]
-^show[^file::load[binary;395.bmp]]
+^show[1.bmp]
+^show[^file::load[binary;395_dir/1.bmp]]
+
+^show[3_VP8.webp]
+^show[3_VP8L.webp]
+^show[3_VP8X.webp]
 
 @show[arg]
-^json:string[^image::measure[$arg]]
+^json:string[^image::measure[395_dir/$arg]]

@@ -1,17 +1,38 @@
 Content-Type: text/html
-Content-Length: 147
+Content-Length: 415
 
 {
-"src":"395.bmp",
+"src":"395_dir\/1.bmp",
 "width":150,
 "height":57,
 "border":0,
 "line-width":1
 }
 {
-"src":"395.bmp",
+"src":"1.bmp",
 "width":150,
 "height":57,
+"border":0,
+"line-width":1
+}
+{
+"src":"395_dir\/3_VP8.webp",
+"width":320,
+"height":214,
+"border":0,
+"line-width":1
+}
+{
+"src":"395_dir\/3_VP8L.webp",
+"width":386,
+"height":395,
+"border":0,
+"line-width":1
+}
+{
+"src":"395_dir\/3_VP8X.webp",
+"width":386,
+"height":395,
 "border":0,
 "line-width":1
 }
