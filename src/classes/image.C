@@ -26,7 +26,7 @@
 #include "pa_table.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.168 2020/11/30 16:44:24 moko Exp $";
+volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.169 2020/11/30 19:50:47 moko Exp $";
 
 // defines
 
@@ -228,9 +228,8 @@ public:
 	}
 } exif_gps_tag_value2name;
 
-#undef EXIF_TAG
+///*********************************************** support functions
 
-#ifndef DOXYGEN
 class Measure_reader {
 public:
 	virtual size_t read(const char* &buf, size_t limit)=0;
@@ -307,43 +306,33 @@ public:
 
 };
 
-#endif
 
-/// PNG file header
-struct PNG_Header {
-	char	dummy[12];
-	char	signature[4];   //< must be "IHDR"
-	uchar	high_width[2];  //< image width high bytes [we ignore for now]
-	uchar	width[2];       //< image width low bytes
-	uchar	high_height[2]; //< image height high bytes [we ignore for now]
-	uchar	height[4];      //< image height
+struct Measure_info {
+	ushort width;
+	ushort height;
+	Value** exif;
+	Value** xmp;
+	Charset* xmp_charset;
 };
 
-/// GIF file header
-struct GIF_Header {
-	char	signature[3];   // 'GIF'
-	char	version[3];
-	uchar	width[2];
-	uchar	height[2];
-	char	dif;
-	char	fonColor;
-	char	nulls;
-};
 
-/// BMP file header + DIB header part
-struct BMP_Header {
-	char	signature[2];   // 'BM'
-	uchar	file_size[4];
-	uchar	reserved[4];
-	uchar	bitmap_offset[4];
-	uchar	header_size[4];
-	uchar	width[2];
-	uchar	high_width[2];  //< image width high bytes [we ignore for now]
-	uchar	height[2];
-	uchar	high_height[2]; //< image height high bytes [we ignore for now]
-};
+inline ushort x_endian_to_ushort(uchar b0, uchar b1) {
+	return (ushort)((b1<<8) + b0);
+}
 
-/// JPEG record head
+inline uint x_endian_to_uint(uchar b0, uchar b1, uchar b2, uchar b3) {
+	return (uint)(((((b3<<8) + b2)<<8)+b1)<<8)+b0;
+}
+
+inline ushort endian_to_ushort(bool is_big, const uchar *b/* [2] */) {
+	return is_big ? x_endian_to_ushort(b[1], b[0]) : x_endian_to_ushort(b[0], b[1]);
+}
+
+inline uint endian_to_uint(bool is_big, const uchar *b /* [4] */) {
+	return is_big ? x_endian_to_uint(b[3], b[2], b[1], b[0]) : x_endian_to_uint(b[0], b[1], b[2], b[3]);
+}
+
+///*********************************************** JPEG
 struct JPG_Segment_head {
 	uchar marker;
 	uchar code;
@@ -382,63 +371,6 @@ struct JPG_Exif_IFD_entry {
 #define JPG_IFD_TAG_EXIF_GPS_OFFSET 0x8825
 
 #define JPEG_EXIF_DATE_CHARS 20
-
-/// WEBP file header
-struct WEBP_Header {
-	char signature_riff[4]; // 'RIFF'
-	uchar file_size[4];
-	char signature[4];      // 'WEBP'
-	char format[4];         // 'VP8 ' or 'VP8L' or 'VP8X'
-};
-
-struct WEBP_VP8_Chunk {
-	uchar size[4];
-	char tag[3];
-	uchar signature[3];    // 0x9D 0x01 0x2A
-	uchar width[2];        // 14 bits each
-	uchar height[2];       // 14 bits each
-};
-
-struct WEBP_VP8L_Chunk {
-	uchar size[4];
-	char signature;        // 0x2F
-	uchar width_height[4]; // 14 bits each
-};
-
-struct WEBP_X_Chunk {
-	uchar size[4];
-	char reserved[4];
-	uchar width[3];
-	uchar height[3];
-};
-
-#ifndef DOXYGEN
-struct Measure_info {
-	ushort width;
-	ushort height;
-	Value** exif;
-	Value** xmp;
-	Charset* xmp_charset;
-};
-#endif
-
-//
-
-inline ushort x_endian_to_ushort(uchar b0, uchar b1) {
-	return (ushort)((b1<<8) + b0);
-}
-
-inline uint x_endian_to_uint(uchar b0, uchar b1, uchar b2, uchar b3) {
-	return (uint)(((((b3<<8) + b2)<<8)+b1)<<8)+b0;
-}
-
-inline ushort endian_to_ushort(bool is_big, const uchar *b/* [2] */) {
-	return is_big ? x_endian_to_ushort(b[1], b[0]) : x_endian_to_ushort(b[0], b[1]);
-}
-
-inline uint endian_to_uint(bool is_big, const uchar *b /* [4] */) {
-	return is_big ? x_endian_to_uint(b[3], b[2], b[1], b[0]) : x_endian_to_uint(b[0], b[1], b[2], b[3]);
-}
 
 static Value* parse_IFD_entry_formatted_one_value(bool is_big, ushort format, size_t component_size, const uchar *value) {
 	switch(format) {
@@ -717,6 +649,8 @@ static void measure_jpeg(const String& origin_string, Measure_reader& reader, Me
 	throw Exception(IMAGE_FORMAT, &origin_string, "broken JPEG file - size frame not found");
 }
 
+///*********************************************** TIFF
+
 static bool parse_tiff_IFD(bool is_big, Measure_reader& reader, Measure_info &info) {
 	const char* buf;
 	if(reader.read(buf, sizeof(JPG_Exif_IFD_begin))<sizeof(JPG_Exif_IFD_begin))
@@ -767,6 +701,19 @@ static void measure_tiff(const String& origin_string, Measure_reader& reader, Me
 		throw Exception(IMAGE_FORMAT, &origin_string, "broken TIFF file - size field entry not found");
 }
 
+
+///*********************************************** GIF
+
+struct GIF_Header {
+	char	signature[3];   // 'GIF'
+	char	version[3];
+	uchar	width[2];
+	uchar	height[2];
+	char	dif;
+	char	fonColor;
+	char	nulls;
+};
+
 static void measure_gif(const String& origin_string, Measure_reader& reader, ushort& width, ushort& height) {
 
 	const char* buf;
@@ -782,6 +729,18 @@ static void measure_gif(const String& origin_string, Measure_reader& reader, ush
 	height=endian_to_ushort(false, head->height);
 }
 
+
+///*********************************************** PNG
+
+struct PNG_Header {
+	char	dummy[12];
+	char	signature[4];   //< must be "IHDR"
+	uchar	high_width[2];  //< image width high bytes [we ignore for now]
+	uchar	width[2];       //< image width low bytes
+	uchar	high_height[2]; //< image height high bytes [we ignore for now]
+	uchar	height[4];      //< image height
+};
+
 static void measure_png(const String& origin_string, Measure_reader& reader, ushort& width, ushort& height) {
 
 	const char* buf;
@@ -796,6 +755,21 @@ static void measure_png(const String& origin_string, Measure_reader& reader, ush
 	width=endian_to_ushort(true, head->width);
 	height=endian_to_ushort(true, head->height);
 }
+
+
+///*********************************************** BMP
+
+struct BMP_Header {
+	char	signature[2];   // 'BM'
+	uchar	file_size[4];
+	uchar	reserved[4];
+	uchar	bitmap_offset[4];
+	uchar	header_size[4];
+	uchar	width[2];
+	uchar	high_width[2];  //< image width high bytes [we ignore for now]
+	uchar	height[2];
+	uchar	high_height[2]; //< image height high bytes [we ignore for now]
+};
 
 static void measure_bmp(const String& origin_string, Measure_reader& reader, ushort& width, ushort& height) {
 
@@ -816,6 +790,36 @@ static void measure_bmp(const String& origin_string, Measure_reader& reader, ush
 	height=endian_to_ushort(false, head->height);
 }
 
+
+///*********************************************** WEBP
+
+struct WEBP_Header {
+	char signature_riff[4]; // 'RIFF'
+	uchar file_size[4];
+	char signature[4];      // 'WEBP'
+	char format[4];         // 'VP8 ' or 'VP8L' or 'VP8X'
+};
+
+struct WEBP_VP8_Chunk {
+	uchar size[4];
+	char tag[3];
+	uchar signature[3];    // 0x9D 0x01 0x2A
+	uchar width[2];        // 14 bits each
+	uchar height[2];       // 14 bits each
+};
+
+struct WEBP_VP8L_Chunk {
+	uchar size[4];
+	char signature;        // 0x2F
+	uchar width_height[4]; // 14 bits each
+};
+
+struct WEBP_X_Chunk {
+	uchar size[4];
+	char reserved[4];
+	uchar width[3];
+	uchar height[3];
+};
 
 static void measure_webp(const String& origin_string, Measure_reader& reader, ushort& width, ushort& height) {
 	const char* buf;
@@ -860,7 +864,7 @@ static void measure_webp(const String& origin_string, Measure_reader& reader, us
 	} else throw Exception(IMAGE_FORMAT, &origin_string, "broken WEBP file - invalid chunk signature");
 }
 
-// measure center
+///*********************************************** measure center
 
 static void measure(const String& file_name, Measure_reader& reader, Measure_info &info) {
 	const char* file_name_cstr=file_name.taint_cstr(String::L_FILE_SPEC);
