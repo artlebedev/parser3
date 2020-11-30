@@ -1,3 +1,23 @@
+2020-11-29  moko
+
+	* src/main/pa_request.C: CONF_OPTION added to unify @conf options
+	  processing, unnessesary defines removed
+
+2020-11-24  moko
+
+	* tests/results/: 099.processed, 100.processed, 205.processed,
+	  309.processed, 310.processed: Content-Disposition: inline
+	  returned
+
+	* tests/: 099.html, 237.html, 403.html, outputs/403.processed,
+	  results/auto.p: test for $response:body[ $.file[<file>] $.name[]
+	  ] added (related to bug #1204)
+
+	* src/main/pa_request.C: $response:body[ $file[<file>.ext] $.name[]
+	  ] supported to avoid Content-Disposition: inline;
+	  filename="<file>.ext" but still set Content-Type for ext (related
+	  to bug #1204)
+
 2020-11-22  moko
 
 	* src/: include/pa_common.h, main/pa_common.C, main/pa_request.C,
