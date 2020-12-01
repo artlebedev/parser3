@@ -14,7 +14,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.103 2020/11/13 16:55:48 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.104 2020/12/01 21:30:42 moko Exp $" IDENT_PA_HTTP_H; 
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -981,7 +981,7 @@ public:
 
 	HTTPD_request() : HTTP_response(), method(NULL), uri(NULL){};
 
-	ssize_t pa_recv(int sockfd, void *buf, size_t len);
+	ssize_t pa_recv(int sockfd, char *buf, size_t len);
 
 	bool read(int sock, size_t size){
 		if(length + size > buf_size)
@@ -1027,7 +1027,7 @@ enum HTTPD_request_state {
 	HTTPD_HEADERS
 };
 
-ssize_t HTTPD_request::pa_recv(int sockfd, void *buf, size_t len){
+ssize_t HTTPD_request::pa_recv(int sockfd, char *buffer, size_t len){
 #ifdef PA_USE_ALARM
 	signal(SIGALRM, timeout_handler);
 	if(sigsetjmp(timeout_env, 1)) {
@@ -1037,7 +1037,7 @@ ssize_t HTTPD_request::pa_recv(int sockfd, void *buf, size_t len){
 #endif
 	{
 		ALARM(pa_httpd_timeout);
-		ssize_t result=recv(sockfd, buf, len, 0);
+		ssize_t result=recv(sockfd, buffer, len, 0);
 		ALARM(0);
 		return result;
 	}
