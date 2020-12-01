@@ -26,7 +26,7 @@
 #include "pa_table.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.172 2020/12/01 18:53:01 moko Exp $";
+volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.173 2020/12/01 20:26:21 moko Exp $";
 
 // defines
 
@@ -875,18 +875,34 @@ struct MP4_Header {
 	char signature[4];   // 'ftyp' in first chunk
 };
 
+struct MP4_ExtSize {
+	uchar high[4];
+	uchar low[4];
+};
+
+struct MP4_Tkhd {
+	uchar width[4];
+	uchar height[4];
+};
+
 static bool measure_mp4(const String& origin_string, Measure_reader& reader, ushort& width, ushort& height, off_t anext, const char* lastTkhd=NULL) {
 	for(bool first=anext==0;;){
 		const char* buf;
-		const size_t head_size=sizeof(MP4_Header);
-		if(reader.read(buf, head_size)<head_size)
+		off_t next=reader.tell();
+
+		if(reader.read(buf, sizeof(MP4_Header))<sizeof(MP4_Header))
 			throw Exception(IMAGE_FORMAT, &origin_string, first ? "not MP4 file - too small" : "broken MP4 file - truncated chunk header");
 
 		MP4_Header *head=(MP4_Header *)buf;
-		uint size=endian_to_uint(true, head->size);
-		off_t next=reader.tell() + size - head_size;
+		off_t size=endian_to_uint(true, head->size);
 
-//		printf("%d processing chunk size %d signature '%c%c%c%c %p'\n", anext, size, head->signature[0], head->signature[1], head->signature[2], head->signature[3], lastTkhd);
+		if(size==1){
+			if(reader.read(buf, sizeof(MP4_ExtSize))<sizeof(MP4_ExtSize))
+				throw Exception(IMAGE_FORMAT, &origin_string, "broken MP4 file - truncated chunk extended size header");
+			MP4_ExtSize *ext_size=(MP4_ExtSize *)buf;
+			size=((off_t)endian_to_uint(true, ext_size->high) << 32) + endian_to_uint(true, ext_size->low);
+		}
+		next+=size;
 
 		if(first){
 			if(strncmp(head->signature, "ftyp", 4)!=0)
@@ -900,7 +916,7 @@ static bool measure_mp4(const String& origin_string, Measure_reader& reader, ush
 		} else if(strncmp(head->signature, "tkhd", 4)==0) {
 			if(size>8){
 				reader.seek(next-8, SEEK_SET);
-				if(reader.read(lastTkhd, 8)<8)
+				if(reader.read(lastTkhd, sizeof(MP4_Tkhd))<sizeof(MP4_Tkhd))
 					throw Exception(IMAGE_FORMAT, &origin_string, "broken MP4 file - bad tkhd chunk");
 			}
 		} else if (strncmp(head->signature, "hdlr", 4)==0) {
@@ -908,12 +924,10 @@ static bool measure_mp4(const String& origin_string, Measure_reader& reader, ush
 				const char* hdlr;
 				if(reader.read(hdlr, 12)<12)
 					throw Exception(IMAGE_FORMAT, &origin_string, "broken MP4 file - bad hdlr chunk");
-//				if(strncmp(hdlr+8, "vide", 4)==0)
-//					printf("vide found\n");
-				if( lastTkhd && strncmp(hdlr+8, "vide", 4)==0) {
-					width=endian_to_ushort(true, (const unsigned char*)(lastTkhd));
-					height=endian_to_ushort(true, (const unsigned char*)(lastTkhd+4));
-//					printf("wh %d %d\n",width, height);
+				if(lastTkhd && strncmp(hdlr+8, "vide", 4)==0) {
+					MP4_Tkhd *tkhd=(MP4_Tkhd *)lastTkhd;
+					width=endian_to_ushort(true, tkhd->width);
+					height=endian_to_ushort(true, tkhd->height);
 					return true;
 				}
 			}
