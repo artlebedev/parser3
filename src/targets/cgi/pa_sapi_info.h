@@ -1,7 +1,7 @@
 #ifndef PA_SAPI_INFO_H
 #define PA_SAPI_INFO_H
 
-#define IDENT_PA_SAPI_INFO_H "$Id: pa_sapi_info.h,v 1.9 2020/11/12 16:16:01 moko Exp $"
+#define IDENT_PA_SAPI_INFO_H "$Id: pa_sapi_info.h,v 1.10 2020/12/01 22:59:13 moko Exp $"
 
 #include "pa_sapi.h"
 #include "pa_http.h"
@@ -22,7 +22,7 @@ public:
 			return 0;
 	}
 
-	virtual bool set_env(const char* name, const char* value) {
+	virtual bool set_env(const char*, const char*) {
 		return false;
 	}
 
