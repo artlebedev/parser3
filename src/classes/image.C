@@ -26,7 +26,7 @@
 #include "pa_table.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.170 2020/12/01 00:50:06 moko Exp $";
+volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.171 2020/12/01 18:47:51 moko Exp $";
 
 // defines
 
@@ -234,8 +234,8 @@ public:
 class Measure_reader {
 public:
 	virtual size_t read(const char* &buf, size_t limit)=0;
-	virtual void seek(long value, int whence)=0;
-	virtual long tell()=0;
+	virtual void seek(off_t value, int whence)=0;
+	virtual off_t tell()=0;
 };
 
 class Measure_file_reader: public Measure_reader {
@@ -258,12 +258,12 @@ public:
 		return read_size;
 	}
 
-	override void seek(long value, int whence) {
+	override void seek(off_t value, int whence) {
 		if(lseek(f, value, whence)<0)
 			throw Exception(IMAGE_FORMAT, &file_name, "seek(value=%ld, whence=%d) failed: %s (%d)", value, whence, strerror(errno), errno);
 	}
 
-	override long tell() { return lseek(f, 0, SEEK_CUR); }
+	override off_t tell() { return lseek(f, 0, SEEK_CUR); }
 
 };
 
@@ -286,7 +286,7 @@ public:
 		return to_read;
 	}
 
-	override void seek(long value, int whence) {
+	override void seek(off_t value, int whence) {
 		size_t new_offset;
 		switch(whence) {
 		case SEEK_CUR: new_offset=offset+value; break;
@@ -303,7 +303,7 @@ public:
 		offset=new_offset;
 	}
 
-	override long tell() { return offset; }
+	override off_t tell() { return offset; }
 
 };
 
@@ -490,7 +490,7 @@ static Value* parse_IFD_entry_value(bool is_big, Measure_reader& reader, long ti
 	if(value_size<=4)
 		result=parse_IFD_entry_formatted_value(is_big, format, component_size, components_count, entry.value_or_offset_to_it);
 	else {
-		long remembered=reader.tell();
+		off_t remembered=reader.tell();
 		{
 			reader.seek(tiff_base+endian_to_uint(is_big, entry.value_or_offset_to_it), SEEK_SET);
 			const char* value;
@@ -510,7 +510,7 @@ static void parse_IFD_entry(HashStringValue& hash, bool is_big, Measure_reader& 
 	ushort tag=endian_to_ushort(is_big, entry.tag);
 
 	if(tag==JPG_IFD_TAG_EXIF_OFFSET || tag==JPG_IFD_TAG_EXIF_GPS_OFFSET){
-		long remembered=reader.tell();
+		off_t remembered=reader.tell();
 		{
 			reader.seek(tiff_base+endian_to_uint(is_big, entry.value_or_offset_to_it), SEEK_SET);
 			parse_IFD(hash, is_big, reader, tiff_base, (tag==JPG_IFD_TAG_EXIF_GPS_OFFSET)?true:gps);
@@ -875,7 +875,7 @@ struct MP4_Header {
 	char signature[4];   // 'ftyp' in first chunk
 };
 
-static bool measure_mp4(const String& origin_string, Measure_reader& reader, ushort& width, ushort& height, long anext, const char* lastTkhd=NULL) {
+static bool measure_mp4(const String& origin_string, Measure_reader& reader, ushort& width, ushort& height, off_t anext, const char* lastTkhd=NULL) {
 	for(bool first=anext==0;;){
 		const char* buf;
 		const size_t head_size=sizeof(MP4_Header);
@@ -884,7 +884,7 @@ static bool measure_mp4(const String& origin_string, Measure_reader& reader, ush
 
 		MP4_Header *head=(MP4_Header *)buf;
 		uint size=endian_to_uint(true, head->size);
-		long next=reader.tell() + size - head_size;
+		off_t next=reader.tell() + size - head_size;
 
 //		printf("%d processing chunk size %d signature '%c%c%c%c %p'\n", anext, size, head->signature[0], head->signature[1], head->signature[2], head->signature[3], lastTkhd);
 
@@ -946,7 +946,7 @@ static void measure(const String& file_name, Measure_reader& reader, Measure_inf
 			measure_webp(file_name, reader, info.width, info.height);
 		else if(strcasecmp(cext, "TIF")==0 || strcasecmp(cext, "TIFF")==0)
 			measure_tiff(file_name, reader, info);
-		else if(strcasecmp(cext, "MP4")==0)
+		else if(strcasecmp(cext, "MP4")==0 || strcasecmp(cext, "MOV")==0)
 			measure_mp4(file_name, reader, info.width, info.height);
 		else
 			throw Exception(IMAGE_FORMAT, &file_name, "unhandled image file name extension '%s'", cext);
