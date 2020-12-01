@@ -26,7 +26,7 @@
 #include "pa_table.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.171 2020/12/01 18:47:51 moko Exp $";
+volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.172 2020/12/01 18:53:01 moko Exp $";
 
 // defines
 
@@ -880,7 +880,7 @@ static bool measure_mp4(const String& origin_string, Measure_reader& reader, ush
 		const char* buf;
 		const size_t head_size=sizeof(MP4_Header);
 		if(reader.read(buf, head_size)<head_size)
-			throw Exception(IMAGE_FORMAT, &origin_string, first ? "not MP4 file - too small" : "broken MP4 file - small chunk header");
+			throw Exception(IMAGE_FORMAT, &origin_string, first ? "not MP4 file - too small" : "broken MP4 file - truncated chunk header");
 
 		MP4_Header *head=(MP4_Header *)buf;
 		uint size=endian_to_uint(true, head->size);
@@ -892,6 +892,8 @@ static bool measure_mp4(const String& origin_string, Measure_reader& reader, ush
 			if(strncmp(head->signature, "ftyp", 4)!=0)
 				throw Exception(IMAGE_FORMAT, &origin_string, "not MP4 file - wrong signature");
 			first=false;
+			reader.seek(0, SEEK_END);
+			anext=reader.tell(); // to avoid reading beyond EOF
 		} else if(strncmp(head->signature, "moov", 4)==0 || strncmp(head->signature, "mdia", 4)==0 || strncmp(head->signature, "trak", 4)==0) {
 			if(measure_mp4(origin_string, reader, width, height, next, lastTkhd))
 				return true;
