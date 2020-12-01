@@ -26,7 +26,7 @@
 #include "pa_table.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.169 2020/11/30 19:50:47 moko Exp $";
+volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.170 2020/12/01 00:50:06 moko Exp $";
 
 // defines
 
@@ -228,6 +228,7 @@ public:
 	}
 } exif_gps_tag_value2name;
 
+
 ///*********************************************** support functions
 
 class Measure_reader {
@@ -332,7 +333,9 @@ inline uint endian_to_uint(bool is_big, const uchar *b /* [4] */) {
 	return is_big ? x_endian_to_uint(b[3], b[2], b[1], b[0]) : x_endian_to_uint(b[0], b[1], b[2], b[3]);
 }
 
+
 ///*********************************************** JPEG
+
 struct JPG_Segment_head {
 	uchar marker;
 	uchar code;
@@ -864,6 +867,67 @@ static void measure_webp(const String& origin_string, Measure_reader& reader, us
 	} else throw Exception(IMAGE_FORMAT, &origin_string, "broken WEBP file - invalid chunk signature");
 }
 
+
+///*********************************************** MP4
+
+struct MP4_Header {
+	uchar size[4];
+	char signature[4];   // 'ftyp' in first chunk
+};
+
+static bool measure_mp4(const String& origin_string, Measure_reader& reader, ushort& width, ushort& height, long anext, const char* lastTkhd=NULL) {
+	for(bool first=anext==0;;){
+		const char* buf;
+		const size_t head_size=sizeof(MP4_Header);
+		if(reader.read(buf, head_size)<head_size)
+			throw Exception(IMAGE_FORMAT, &origin_string, first ? "not MP4 file - too small" : "broken MP4 file - small chunk header");
+
+		MP4_Header *head=(MP4_Header *)buf;
+		uint size=endian_to_uint(true, head->size);
+		long next=reader.tell() + size - head_size;
+
+//		printf("%d processing chunk size %d signature '%c%c%c%c %p'\n", anext, size, head->signature[0], head->signature[1], head->signature[2], head->signature[3], lastTkhd);
+
+		if(first){
+			if(strncmp(head->signature, "ftyp", 4)!=0)
+				throw Exception(IMAGE_FORMAT, &origin_string, "not MP4 file - wrong signature");
+			first=false;
+		} else if(strncmp(head->signature, "moov", 4)==0 || strncmp(head->signature, "mdia", 4)==0 || strncmp(head->signature, "trak", 4)==0) {
+			if(measure_mp4(origin_string, reader, width, height, next, lastTkhd))
+				return true;
+		} else if(strncmp(head->signature, "tkhd", 4)==0) {
+			if(size>8){
+				reader.seek(next-8, SEEK_SET);
+				if(reader.read(lastTkhd, 8)<8)
+					throw Exception(IMAGE_FORMAT, &origin_string, "broken MP4 file - bad tkhd chunk");
+			}
+		} else if (strncmp(head->signature, "hdlr", 4)==0) {
+			if(size>12){
+				const char* hdlr;
+				if(reader.read(hdlr, 12)<12)
+					throw Exception(IMAGE_FORMAT, &origin_string, "broken MP4 file - bad hdlr chunk");
+//				if(strncmp(hdlr+8, "vide", 4)==0)
+//					printf("vide found\n");
+				if( lastTkhd && strncmp(hdlr+8, "vide", 4)==0) {
+					width=endian_to_ushort(true, (const unsigned char*)(lastTkhd));
+					height=endian_to_ushort(true, (const unsigned char*)(lastTkhd+4));
+//					printf("wh %d %d\n",width, height);
+					return true;
+				}
+			}
+		}
+		if(anext && next>=anext)
+			break;
+		reader.seek(next, SEEK_SET);
+	}
+	return false;
+}
+
+static void measure_mp4(const String& origin_string, Measure_reader& reader, ushort& width, ushort& height) {
+	if(!measure_mp4(origin_string, reader, width, height, 0))
+		throw Exception(IMAGE_FORMAT, &origin_string, "unsupported MP4 file - size not found");
+}
+
 ///*********************************************** measure center
 
 static void measure(const String& file_name, Measure_reader& reader, Measure_info &info) {
@@ -882,6 +946,8 @@ static void measure(const String& file_name, Measure_reader& reader, Measure_inf
 			measure_webp(file_name, reader, info.width, info.height);
 		else if(strcasecmp(cext, "TIF")==0 || strcasecmp(cext, "TIFF")==0)
 			measure_tiff(file_name, reader, info);
+		else if(strcasecmp(cext, "MP4")==0)
+			measure_mp4(file_name, reader, info.width, info.height);
 		else
 			throw Exception(IMAGE_FORMAT, &file_name, "unhandled image file name extension '%s'", cext);
 	} else
