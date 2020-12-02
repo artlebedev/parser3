@@ -29,7 +29,7 @@
 #define pa_mkdir(path, mode) mkdir(path, mode)
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.317 2020/11/21 23:26:26 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.318 2020/12/02 17:22:44 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -110,7 +110,7 @@ int pa_get_valid_file_options_count(HashStringValue& options) {
 #ifndef DOXYGEN
 struct File_read_action_info {
 	char **data; size_t *data_size;
-	char* buf; size_t offset; size_t limit;
+	char* buf; uint64_t offset; size_t limit;
 }; 
 #endif
 
@@ -120,8 +120,8 @@ static void file_read_action(struct stat& finfo, int f, const String& file_spec,
 	if(!to_read_size)
 		to_read_size = check_file_size(finfo.st_size, &file_spec);
 	if(to_read_size) {
-		if(info.offset)
-			lseek(f, info.offset, SEEK_SET);
+		if(info.offset && pa_lseek(f, info.offset) !=  info.offset)
+			throw Exception("file.read", &file_spec, "seek to %.15g failed: %s (%d)", (double)info.offset, strerror(errno), errno);
 		*info.data = info.buf ? info.buf : (char *)pa_malloc_atomic(to_read_size+1);
 		ssize_t result = read(f, *info.data, to_read_size);
 		if(result<0)
@@ -136,7 +136,7 @@ static void file_read_action(struct stat& finfo, int f, const String& file_spec,
 	}
 }
 
-File_read_result file_read_binary(const String& file_spec, bool fail_on_read_problem, char* buf, size_t offset, size_t limit) {
+File_read_result file_read_binary(const String& file_spec, bool fail_on_read_problem, char* buf, uint64_t offset, size_t limit) {
 	File_read_result result = {false, 0, 0, 0};
 	File_read_action_info info = {&result.str, &result.length, buf, offset, limit};
 

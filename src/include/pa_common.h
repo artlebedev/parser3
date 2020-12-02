@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.183 2020/11/21 23:26:26 moko Exp $"
+#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.184 2020/12/02 17:22:44 moko Exp $"
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -82,6 +82,8 @@ int pa_stat(const char *pathname, struct stat *buffer);
 int pa_open(const char *pathname, int flags, int mode=0);
 FILE *pa_fopen(const char *pathname, const char *mode);
 
+#define pa_lseek(fd, offset) _lseeki64(fd, offset, SEEK_SET)
+
 #else
 
 #define pa_stat stat
@@ -89,6 +91,8 @@ FILE *pa_fopen(const char *pathname, const char *mode);
 
 #define pa_open open
 #define pa_fopen fopen
+
+#define pa_lseek(fd, offset) lseek(fd, offset, SEEK_SET)
 
 #endif
 
@@ -141,7 +145,7 @@ struct File_read_result {
 	if fail_on_read_problem is true[default] throws an exception
 */
 
-File_read_result file_read_binary(const String& file_spec, bool fail_on_read_problem = true, char* buf = 0, size_t offset = 0, size_t limit = 0);
+File_read_result file_read_binary(const String& file_spec, bool fail_on_read_problem = true, char* buf = 0, uint64_t offset = 0, size_t limit = 0);
 
 /**
 	load specified file

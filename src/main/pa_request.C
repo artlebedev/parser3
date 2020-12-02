@@ -33,7 +33,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.395 2020/11/29 00:02:38 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.396 2020/12/02 17:22:44 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -728,25 +728,28 @@ static void output_sole_piece(Request& r, bool header_only, VFile& body_file, Va
 #ifndef DOXYGEN
 struct Range
 {
-	size_t start;
-	size_t end;
+	uint64_t start;
+	uint64_t end;
 };
 #endif
+
+#define UNSET ((uint64_t)-1)
+
 static void parse_range(const String* s, Array<Range> &ar) {
 	const char *p = s->cstr();
 	if(s->starts_with("bytes="))
 		p += 6;
 	Range r;
 	while(*p){
-		r.start = (size_t)-1;
-		r.end = (size_t)-1;
+		r.start = UNSET;
+		r.end = UNSET;
 		if(*p >= '0' && *p <= '9'){
-			r.start = atol(p);
+			r.start = pa_atoul(p);
 			while(*p>='0' && *p<='9') ++p;
 		}
 		if(*p++ != '-') break;
 		if(*p >= '0' && *p <= '9'){
-			r.end = atol(p);
+			r.end = pa_atoul(p);
 			while(*p>='0' && *p<='9') ++p;
 		}
 		if(*p == ',') ++p;
@@ -754,30 +757,30 @@ static void parse_range(const String* s, Array<Range> &ar) {
 	}
 }
 
-static void output_pieces(Request& r, bool header_only, const String& filename, size_t content_length, Value& date, bool add_last_modified) {
+static void output_pieces(Request& r, bool header_only, const String& filename, uint64_t content_length, Value& date, bool add_last_modified) {
 	SAPI::add_header_attribute(r.sapi_info, "accept-ranges", "bytes");
 
 	const size_t BUFSIZE = 128*0x400;
 	char buf[BUFSIZE];
 	const char *range = SAPI::Env::get(r.sapi_info, "HTTP_RANGE");
-	size_t offset=0;
-	size_t part_length=content_length;
+	uint64_t offset=0;
+	uint64_t part_length=content_length;
 	if(range){
 		Array<Range> ar;
 		parse_range(new String(range), ar);
-		size_t count = ar.count();
+		int count = ar.count();
 		if(count == 1){
 			Range &rg = ar.get_ref(0);
-			if(rg.start == (size_t)-1 && rg.end == (size_t)-1){
+			if(rg.start == UNSET && rg.end == UNSET){
 				SAPI::add_header_attribute(r.sapi_info, HTTP_STATUS, "416 Requested Range Not Satisfiable");
 				return;
 			}
-			if(rg.start == (size_t)-1 && rg.end != (size_t)-1){
+			if(rg.start == UNSET && rg.end != UNSET){
 				rg.start = content_length - rg.end;
 				rg.end = content_length;
 				offset += rg.start;
 				part_length = rg.end-rg.start;
-			}else if(rg.start != (size_t)-1 && rg.end == (size_t)-1){
+			}else if(rg.start != UNSET && rg.end == UNSET){
 				rg.end = content_length-1;
 				offset += rg.start;
 				part_length -= rg.start;
@@ -787,7 +790,7 @@ static void output_pieces(Request& r, bool header_only, const String& filename, 
 				return;
 			}
 			SAPI::add_header_attribute(r.sapi_info, HTTP_STATUS, "206 Partial Content");
-			snprintf(buf, BUFSIZE, "bytes %u-%u/%u", rg.start, rg.end, content_length);
+			snprintf(buf, BUFSIZE, "bytes %.15g-%.15g/%.15g", (double)rg.start, (double)rg.end, (double)content_length);
 			SAPI::add_header_attribute(r.sapi_info, "content-range", buf);
 		}else if(count != 0){
 			SAPI::add_header_attribute(r.sapi_info, HTTP_STATUS, "501 Not Implemented");
@@ -796,7 +799,7 @@ static void output_pieces(Request& r, bool header_only, const String& filename, 
 	}
 
 
-	SAPI::add_header_attribute(r.sapi_info, HTTP_CONTENT_LENGTH, format(part_length, "%u"));
+	SAPI::add_header_attribute(r.sapi_info, HTTP_CONTENT_LENGTH, format(part_length, "%.15g"));
 
 	if(add_last_modified)
 		SAPI::add_header_attribute(r.sapi_info, "last-modified", attributed_meaning_to_string(date, String::L_AS_IS, true).cstr());
@@ -805,7 +808,6 @@ static void output_pieces(Request& r, bool header_only, const String& filename, 
 
 	const String& filespec=r.full_disk_path(filename);
 
-	size_t sent = 0;
 	if(!header_only){
 		size_t to_read = 0;
 		size_t size = 0;
@@ -818,7 +820,6 @@ static void output_pieces(Request& r, bool header_only, const String& filename, 
 			offset += to_read;
 
 			size = SAPI::send_body(r.sapi_info, read_result.str, to_read);
-			sent += size;
 			if(size != to_read)
 				break;
 			part_length -= to_read;
