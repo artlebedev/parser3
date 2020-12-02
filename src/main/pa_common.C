@@ -29,7 +29,7 @@
 #define pa_mkdir(path, mode) mkdir(path, mode)
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.318 2020/12/02 17:22:44 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.319 2020/12/02 20:23:05 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -116,11 +116,9 @@ struct File_read_action_info {
 
 static void file_read_action(struct stat& finfo, int f, const String& file_spec, void *context) {
 	File_read_action_info& info = *static_cast<File_read_action_info *>(context); 
-	size_t to_read_size = info.limit;
-	if(!to_read_size)
-		to_read_size = check_file_size(finfo.st_size, &file_spec);
+	size_t to_read_size = check_file_size(info.limit && info.limit < finfo.st_size ? info.limit : finfo.st_size, &file_spec);
 	if(to_read_size) {
-		if(info.offset && pa_lseek(f, info.offset) !=  info.offset)
+		if(info.offset && (uint64_t)pa_lseek(f, info.offset) !=  info.offset)
 			throw Exception("file.read", &file_spec, "seek to %.15g failed: %s (%d)", (double)info.offset, strerror(errno), errno);
 		*info.data = info.buf ? info.buf : (char *)pa_malloc_atomic(to_read_size+1);
 		ssize_t result = read(f, *info.data, to_read_size);
@@ -532,7 +530,7 @@ bool file_stat(const String& file_spec, uint64_t& rsize, time_t& ratime, time_t&
 }
 
 size_t check_file_size(uint64_t size, const String* file_spec){
-	if(size > pa_file_size_limit)
+	if(size > (uint64_t)pa_file_size_limit)
 		throw Exception(PARSER_RUNTIME, file_spec, "content size of %.15g bytes exceeds the limit (%.15g bytes)", (double)size, (double)pa_file_size_limit);
 	return (size_t)size;
 }
