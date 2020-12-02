@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.226 2020/10/14 16:51:45 moko Exp $"
+#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.227 2020/12/02 15:25:41 moko Exp $"
 
 // includes
 #include "pa_types.h"
@@ -55,7 +55,7 @@ class VRegex;
 double pa_atod(const char* str, const String* problem_source=0);
 int pa_atoi(const char* str, int base=10, const String* problem_source=0);
 unsigned int pa_atoui(const char *str, int base=10, const String* problem_source=0);
-unsigned long long int pa_atoul(const char *str, int base=10, const String* problem_source=0);
+uint64_t pa_atoul(const char *str, int base=10, const String* problem_source=0);
 
 /// this is result of pos functions which mean that substr were not found
 #define STRING_NOT_FOUND ((size_t)-1)
