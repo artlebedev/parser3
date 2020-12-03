@@ -33,7 +33,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.396 2020/12/02 17:22:44 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.397 2020/12/03 22:48:09 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -809,21 +809,19 @@ static void output_pieces(Request& r, bool header_only, const String& filename, 
 	const String& filespec=r.full_disk_path(filename);
 
 	if(!header_only){
-		size_t to_read = 0;
-		size_t size = 0;
 		do{
-			to_read = part_length < BUFSIZE ? part_length : BUFSIZE;
+			size_t to_read = part_length < BUFSIZE ? part_length : BUFSIZE;
 			File_read_result read_result=file_read_binary(filespec, true /*fail on problem*/, buf, offset, to_read);
 			to_read=read_result.length;
 			if(to_read == 0)
 				break;
 			offset += to_read;
 
-			size = SAPI::send_body(r.sapi_info, read_result.str, to_read);
+			size_t size = SAPI::send_body(r.sapi_info, read_result.str, to_read);
 			if(size != to_read)
 				break;
 			part_length -= to_read;
-		}while(part_length);
+		} while (part_length);
 	}
 }
 

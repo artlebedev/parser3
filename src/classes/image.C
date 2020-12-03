@@ -26,7 +26,7 @@
 #include "pa_table.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.173 2020/12/01 20:26:21 moko Exp $";
+volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.174 2020/12/03 22:48:09 moko Exp $";
 
 // defines
 
@@ -234,8 +234,9 @@ public:
 class Measure_reader {
 public:
 	virtual size_t read(const char* &buf, size_t limit)=0;
-	virtual void seek(off_t value, int whence)=0;
-	virtual off_t tell()=0;
+	virtual void seek(uint64_t value)=0;
+	virtual uint64_t tell()=0;
+	virtual uint64_t length()=0;
 };
 
 class Measure_file_reader: public Measure_reader {
@@ -258,12 +259,14 @@ public:
 		return read_size;
 	}
 
-	override void seek(off_t value, int whence) {
-		if(lseek(f, value, whence)<0)
-			throw Exception(IMAGE_FORMAT, &file_name, "seek(value=%ld, whence=%d) failed: %s (%d)", value, whence, strerror(errno), errno);
+	override void seek(uint64_t value) {
+		if(pa_lseek(f, value, SEEK_SET)<0)
+			throw Exception(IMAGE_FORMAT, &file_name, "seek to %.15g failed: %s (%d)", (double)value, strerror(errno), errno);
 	}
 
-	override off_t tell() { return lseek(f, 0, SEEK_CUR); }
+	override uint64_t tell() { return pa_lseek(f, 0, SEEK_CUR); }
+
+	override uint64_t length() { return pa_lseek(f, 0, SEEK_END); }
 
 };
 
@@ -286,24 +289,15 @@ public:
 		return to_read;
 	}
 
-	override void seek(off_t value, int whence) {
-		size_t new_offset;
-		switch(whence) {
-		case SEEK_CUR: new_offset=offset+value; break;
-		case SEEK_SET: new_offset=(size_t)value; break;
-		case SEEK_END: new_offset=size; break;
-		default: 
-			throw Exception(0, 0, "whence #%d not supported", 0, whence); 
-			break; // never
-		}
-		
-		if((ssize_t)new_offset<0 || new_offset>size)
-			throw Exception(IMAGE_FORMAT, &file_name, "seek(value=%l, whence=%d) failed: out of buffer, new_offset>size (%l>%l) or new_offset<0", 
-					value, whence, new_offset, size);
-		offset=new_offset;
+	override void seek(uint64_t value) {
+		if(value>(uint64_t)size)
+			throw Exception(IMAGE_FORMAT, &file_name, "seek to %.15g failed: out of buffer (%.15g)", value, size);
+		offset=(size_t)value;
 	}
 
-	override off_t tell() { return offset; }
+	override uint64_t tell() { return offset; }
+
+	override uint64_t length() { return size; }
 
 };
 
@@ -490,15 +484,15 @@ static Value* parse_IFD_entry_value(bool is_big, Measure_reader& reader, long ti
 	if(value_size<=4)
 		result=parse_IFD_entry_formatted_value(is_big, format, component_size, components_count, entry.value_or_offset_to_it);
 	else {
-		off_t remembered=reader.tell();
+		uint64_t remembered=reader.tell();
 		{
-			reader.seek(tiff_base+endian_to_uint(is_big, entry.value_or_offset_to_it), SEEK_SET);
+			reader.seek(tiff_base+endian_to_uint(is_big, entry.value_or_offset_to_it));
 			const char* value;
 			if(reader.read(value, value_size)<value_size)
 				return 0;
 			result=parse_IFD_entry_formatted_value(is_big, format, component_size, components_count, (const uchar*)value);
 		}
-		reader.seek(remembered, SEEK_SET);
+		reader.seek(remembered);
 	}
 
 	return result;
@@ -510,12 +504,12 @@ static void parse_IFD_entry(HashStringValue& hash, bool is_big, Measure_reader& 
 	ushort tag=endian_to_ushort(is_big, entry.tag);
 
 	if(tag==JPG_IFD_TAG_EXIF_OFFSET || tag==JPG_IFD_TAG_EXIF_GPS_OFFSET){
-		off_t remembered=reader.tell();
+		uint64_t remembered=reader.tell();
 		{
-			reader.seek(tiff_base+endian_to_uint(is_big, entry.value_or_offset_to_it), SEEK_SET);
+			reader.seek(tiff_base+endian_to_uint(is_big, entry.value_or_offset_to_it));
 			parse_IFD(hash, is_big, reader, tiff_base, (tag==JPG_IFD_TAG_EXIF_GPS_OFFSET)?true:gps);
 		}
-		reader.seek(remembered, SEEK_SET);
+		reader.seek(remembered);
 		return;
 	}
 
@@ -554,7 +548,7 @@ static Value* parse_exif(Measure_reader& reader) {
 	bool is_big=head->byte_align_identifier[0]=='M'; // [M]otorola vs [I]ntel
 
 	uint first_IFD_offset=endian_to_uint(is_big, head->first_IFD_offset);
-	reader.seek(tiff_base+first_IFD_offset, SEEK_SET);
+	reader.seek(tiff_base+first_IFD_offset);
 
 	VHash* vhash=new VHash;
 
@@ -646,7 +640,7 @@ static void measure_jpeg(const String& origin_string, Measure_reader& reader, Me
 			return;
 		};
 
-		reader.seek(segment_base + segment_length, SEEK_SET);
+		reader.seek(segment_base + segment_length);
 	}
 
 	throw Exception(IMAGE_FORMAT, &origin_string, "broken JPEG file - size frame not found");
@@ -699,7 +693,7 @@ static void measure_tiff(const String& origin_string, Measure_reader& reader, Me
 	if(endian_to_ushort(is_big, head->signature) != 42)
 		throw Exception(IMAGE_FORMAT, &origin_string, "not TIFF file - wrong signature");
 
-	reader.seek(endian_to_uint(is_big, head->first_IFD_offset), SEEK_SET);
+	reader.seek(endian_to_uint(is_big, head->first_IFD_offset));
 	if(!parse_tiff_IFD(is_big, reader, info))
 		throw Exception(IMAGE_FORMAT, &origin_string, "broken TIFF file - size field entry not found");
 }
@@ -785,8 +779,7 @@ static void measure_bmp(const String& origin_string, Measure_reader& reader, ush
 	if(strncmp(head->signature, "BM", 2)!=0)
 		throw Exception(IMAGE_FORMAT, &origin_string, "not BMP file - wrong signature");
 
-	reader.seek(0, SEEK_END);
-	if((uint)reader.tell() != endian_to_uint(false, head->file_size))
+	if((uint)reader.length() != endian_to_uint(false, head->file_size))
 		throw Exception(IMAGE_FORMAT, &origin_string, "not BMP file - length header and file size do not match");
 
 	width=endian_to_ushort(false, head->width);
@@ -885,22 +878,22 @@ struct MP4_Tkhd {
 	uchar height[4];
 };
 
-static bool measure_mp4(const String& origin_string, Measure_reader& reader, ushort& width, ushort& height, off_t anext, const char* lastTkhd=NULL) {
+static bool measure_mp4(const String& origin_string, Measure_reader& reader, ushort& width, ushort& height, uint64_t anext, const char* lastTkhd=NULL) {
 	for(bool first=anext==0;;){
 		const char* buf;
-		off_t next=reader.tell();
+		uint64_t next=reader.tell();
 
 		if(reader.read(buf, sizeof(MP4_Header))<sizeof(MP4_Header))
 			throw Exception(IMAGE_FORMAT, &origin_string, first ? "not MP4 file - too small" : "broken MP4 file - truncated chunk header");
 
 		MP4_Header *head=(MP4_Header *)buf;
-		off_t size=endian_to_uint(true, head->size);
+		uint64_t size=endian_to_uint(true, head->size);
 
 		if(size==1){
 			if(reader.read(buf, sizeof(MP4_ExtSize))<sizeof(MP4_ExtSize))
 				throw Exception(IMAGE_FORMAT, &origin_string, "broken MP4 file - truncated chunk extended size header");
 			MP4_ExtSize *ext_size=(MP4_ExtSize *)buf;
-			size=((off_t)endian_to_uint(true, ext_size->high) << 32) + endian_to_uint(true, ext_size->low);
+			size=((uint64_t)endian_to_uint(true, ext_size->high) << 32) + endian_to_uint(true, ext_size->low);
 		}
 		next+=size;
 
@@ -908,14 +901,13 @@ static bool measure_mp4(const String& origin_string, Measure_reader& reader, ush
 			if(strncmp(head->signature, "ftyp", 4)!=0)
 				throw Exception(IMAGE_FORMAT, &origin_string, "not MP4 file - wrong signature");
 			first=false;
-			reader.seek(0, SEEK_END);
-			anext=reader.tell(); // to avoid reading beyond EOF
+			anext=reader.length(); // to avoid reading beyond EOF
 		} else if(strncmp(head->signature, "moov", 4)==0 || strncmp(head->signature, "mdia", 4)==0 || strncmp(head->signature, "trak", 4)==0) {
 			if(measure_mp4(origin_string, reader, width, height, next, lastTkhd))
 				return true;
 		} else if(strncmp(head->signature, "tkhd", 4)==0) {
 			if(size>8){
-				reader.seek(next-8, SEEK_SET);
+				reader.seek(next-8);
 				if(reader.read(lastTkhd, sizeof(MP4_Tkhd))<sizeof(MP4_Tkhd))
 					throw Exception(IMAGE_FORMAT, &origin_string, "broken MP4 file - bad tkhd chunk");
 			}
@@ -934,7 +926,7 @@ static bool measure_mp4(const String& origin_string, Measure_reader& reader, ush
 		}
 		if(anext && next>=anext)
 			break;
-		reader.seek(next, SEEK_SET);
+		reader.seek(next);
 	}
 	return false;
 }

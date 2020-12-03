@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.184 2020/12/02 17:22:44 moko Exp $"
+#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.185 2020/12/03 22:48:09 moko Exp $"
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -82,7 +82,7 @@ int pa_stat(const char *pathname, struct stat *buffer);
 int pa_open(const char *pathname, int flags, int mode=0);
 FILE *pa_fopen(const char *pathname, const char *mode);
 
-#define pa_lseek(fd, offset) _lseeki64(fd, offset, SEEK_SET)
+#define pa_lseek _lseeki64
 
 #else
 
@@ -92,7 +92,7 @@ FILE *pa_fopen(const char *pathname, const char *mode);
 #define pa_open open
 #define pa_fopen fopen
 
-#define pa_lseek(fd, offset) lseek(fd, offset, SEEK_SET)
+#define pa_lseek lseek
 
 #endif
 
