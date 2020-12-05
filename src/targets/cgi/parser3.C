@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.317 2020/11/16 21:22:36 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.318 2020/12/05 21:50:15 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -618,15 +618,15 @@ int main(int argc, char *argv[]) {
 	_CrtSetReportFile( _CRT_WARN, _CRTDBG_FILE_STDERR );
 #endif
 
-	char filespec_to_process_buf[MAX_STRING];
-	if(raw_filespec_to_process && *raw_filespec_to_process){
-		full_disk_path(raw_filespec_to_process, filespec_to_process_buf, sizeof(filespec_to_process_buf));
-		filespec_to_process=filespec_to_process_buf;
-	}
-
-	config_filespec = locate_config(config_filespec, argv[0]);
-
 	try { // global try
+		char filespec_to_process_buf[MAX_STRING];
+		if(raw_filespec_to_process && *raw_filespec_to_process){
+			full_disk_path(raw_filespec_to_process, filespec_to_process_buf, sizeof(filespec_to_process_buf));
+			filespec_to_process=filespec_to_process_buf;
+		}
+
+		config_filespec = locate_config(config_filespec, argv[0]);
+
 		REAL_PARSER_HANDLER(cgi);
 	} catch(const Exception& e) { // exception in unhandled exception
 		SAPI::die("%s", e.comment());
