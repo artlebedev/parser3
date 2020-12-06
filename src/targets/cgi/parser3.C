@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.319 2020/12/06 22:32:40 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.320 2020/12/06 22:36:10 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -421,14 +421,7 @@ static void real_parser_handler(bool cgi) {
 	request_info.argv = argv_extra;
 
 #ifdef PA_DEBUG_CGI_ENTRY_EXIT
-	log("request_info: method=%s, uri=%s, q=%s, dr=%s, pt=%s, cookies=%s, cl=%u",
-		request_info.method,
-		request_info.uri,
-		request_info.query_string,
-		request_info.document_root,
-		request_info.path_translated,
-		request_info.cookie,
-		request_info.content_length);
+	log("request_info: method=%s, uri=%s, q=%s, dr=%s, pt=%s", request_info.method, request_info.uri, request_info.query_string, request_info.document_root, request_info.path_translated);
 #endif
 
 	// prepare to process request
