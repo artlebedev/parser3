@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.320 2020/12/06 22:36:10 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.321 2020/12/06 22:47:06 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -43,6 +43,7 @@ static const char* httpd_host_port = 0; // -p option
 static const char* config_filespec = 0; // -f option or from env or next to the executable if exists
 static bool mail_received = false; // -m option? [asked to parse incoming message to $mail:received]
 static char** argv_extra = NULL;
+static char* parser3_filespec = 0; // argv[0]
 
 // for signal handlers
 Request *request=0;
@@ -217,6 +218,24 @@ static void SIGPIPE_handler(int /*sig*/){
 }
 #endif
 
+// requires pa_thread_request() under Windows in pa_stat()
+static const char *locate_config(const char *config_filespec_option, const char *executable_path){
+	if(!(filespec_4log = config_filespec_option)) {
+		filespec_4log=getenv(PARSER_CONFIG_ENV_NAME);
+		if(!filespec_4log)
+			filespec_4log=getenv(REDIRECT_PREFIX PARSER_CONFIG_ENV_NAME);
+		if(!filespec_4log){
+			// next to the executable
+			char *beside_executable_path = pa_strdup(executable_path);
+			bool stripped_filename = rsplit(beside_executable_path, '/') || rsplit(beside_executable_path, '\\');
+			filespec_4log = pa_strcat(stripped_filename ? beside_executable_path : "." /* no path, just filename */ , "/" AUTO_FILE_NAME);
+			if(!entry_exists(filespec_4log))
+				return NULL;
+		}
+	}
+	return filespec_4log;
+}
+
 #ifdef WIN32
 const char* maybe_reconstruct_IIS_status_in_qs(const char* original) {
 	// 404;http://servername/page[?param=value...]
@@ -279,6 +298,8 @@ static void config_handler(SAPI_Info &info) {
 	{
 		// initing ::request ptr for signal handlers
 		RequestController rc(&request);
+		// only once
+		config_filespec = locate_config(config_filespec, parser3_filespec);
 		// process main auto.p only
 		request.core(config_filespec, false, String::Empty);
 		// clearing ::request in RequestController desctructor to prevent signal handlers from accessing invalid memory
@@ -430,7 +451,7 @@ static void real_parser_handler(bool cgi) {
 		// initing ::request ptr for signal handlers
 		RequestController rc(&request);
 		// process the request
-		request.core(config_filespec, strcasecmp(request_info.method, "HEAD")==0);
+		request.core(locate_config(config_filespec, parser3_filespec), strcasecmp(request_info.method, "HEAD")==0);
 		// clearing ::request in RequestController destructor to prevent signal handlers from accessing invalid memory
 	}
 
@@ -493,29 +514,13 @@ static void usage(const char* program) {
 	exit(EINVAL);
 }
 
-static const char *locate_config(const char *config_filespec_option, const char *executable_path){
-	if(!(filespec_4log = config_filespec_option)) {
-		filespec_4log=getenv(PARSER_CONFIG_ENV_NAME);
-		if(!filespec_4log)
-			filespec_4log=getenv(REDIRECT_PREFIX PARSER_CONFIG_ENV_NAME);
-		if(!filespec_4log){
-			// next to the executable
-			char *beside_executable_path = pa_strdup(executable_path);
-			bool stripped_filename = rsplit(beside_executable_path, '/') || rsplit(beside_executable_path, '\\');
-			filespec_4log = pa_strcat(stripped_filename ? beside_executable_path : "." /* no path, just filename */ , "/" AUTO_FILE_NAME);
-			if(!entry_exists(filespec_4log))
-				return NULL;
-		}
-	}
-	return filespec_4log;
-}
-
 
 int main(int argc, char *argv[]) {
 #ifdef PA_DEBUG_CGI_ENTRY_EXIT
 	log("main: entry");
 #endif
 
+	parser3_filespec = argv[0];
 	umask(2);
 
 	// were we started as CGI?
@@ -617,8 +622,6 @@ int main(int argc, char *argv[]) {
 			full_disk_path(raw_filespec_to_process, filespec_to_process_buf, sizeof(filespec_to_process_buf));
 			filespec_to_process=filespec_to_process_buf;
 		}
-
-		config_filespec = locate_config(config_filespec, argv[0]);
 
 		REAL_PARSER_HANDLER(cgi);
 	} catch(const Exception& e) { // exception in unhandled exception
