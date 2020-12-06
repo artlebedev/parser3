@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.318 2020/12/05 21:50:15 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.319 2020/12/06 22:32:40 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -40,9 +40,9 @@ volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.318 2020/12/05 21:50:1
 
 static const char* filespec_to_process = 0; // [file]
 static const char* httpd_host_port = 0; // -p option
-static const char* config_filespec = 0; // -f option or from env or next to the executable
+static const char* config_filespec = 0; // -f option or from env or next to the executable if exists
 static bool mail_received = false; // -m option? [asked to parse incoming message to $mail:received]
-static char** argv_all = NULL;
+static char** argv_extra = NULL;
 
 // for signal handlers
 Request *request=0;
@@ -272,7 +272,7 @@ static void config_handler(SAPI_Info &info) {
 
 	request_info.document_root = document_root_buf;
 	request_info.uri = "";
-	request_info.argv = argv_all;
+	request_info.argv = argv_extra;
 
 	// prepare to process request
 	Request request(info, request_info, String::Language(String::L_HTML|String::L_OPTIMIZE_BIT));
@@ -302,7 +302,7 @@ static void connection_handler(SAPI_Info_HTTPD &info, HTTPD_Connection &connecti
 	request_info.content_length = connection.content_length();
 	request_info.cookie = info.get_env("HTTP_COOKIE");
 	request_info.mail_received = false;
-	request_info.argv = argv_all;
+	request_info.argv = argv_extra;
 
 	// prepare to process request
 	Request request(info, request_info, String::Language(String::L_HTML|String::L_OPTIMIZE_BIT));
@@ -418,7 +418,7 @@ static void real_parser_handler(bool cgi) {
 	request_info.cookie = getenv("HTTP_COOKIE");
 	request_info.mail_received = mail_received;
 
-	request_info.argv = argv_all;
+	request_info.argv = argv_extra;
 
 #ifdef PA_DEBUG_CGI_ENTRY_EXIT
 	log("request_info: method=%s, uri=%s, q=%s, dr=%s, pt=%s, cookies=%s, cl=%u",
@@ -541,7 +541,7 @@ int main(int argc, char *argv[]) {
 	char *raw_filespec_to_process = NULL;
 	if(cgi) {
 		raw_filespec_to_process=getenv("PATH_TRANSLATED");
-		argv_all=argv + 1;
+		argv_extra=argv + 1;
 	} else {
 		int optind=1;
 		while(optind < argc){
@@ -595,7 +595,7 @@ int main(int argc, char *argv[]) {
 				usage(argv[0]);
 		}
 
-		argv_all=argv + optind;
+		argv_extra=argv + optind;
 	}
 
 #ifdef _MSC_VER
