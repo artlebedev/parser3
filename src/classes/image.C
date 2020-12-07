@@ -26,7 +26,7 @@
 #include "pa_table.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.177 2020/12/07 23:17:09 moko Exp $";
+volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.178 2020/12/07 23:18:40 moko Exp $";
 
 // defines
 
@@ -667,7 +667,7 @@ static bool parse_tiff_IFD(bool is_big, Measure_reader& reader, Measure_info &in
 			if(entry_format != 3 && entry_format != 4 || endian_to_uint(is_big, entry->components_count) != 1)
 				return false;
 			uint value = (entry_format == 3) ? endian_to_ushort(is_big, entry->value_or_offset_to_it) : endian_to_uint(is_big, entry->value_or_offset_to_it);
-			(entry_tag == 256) ? info.width=value : info.height=value;
+			(entry_tag == 256) ? info.width=(short)value : info.height=(short)value;
 			if(info.width && info.height)
 				return true;
 		}
