@@ -806,7 +806,7 @@ with_coverage
 with_profiler
 with_assertions
 with_sjlj_exceptions
-with_system_config
+with_system_cfg
 with_system_log
 enable_safe_mode
 enable_execs
@@ -4967,10 +4967,12 @@ fi
 
 
 
-# Check whether --with-system-config was given.
-if test "${with_system_config+set}" = set; then :
-  withval=$with_system_config;
-$as_echo "#define SYSTEM_CONFIG_FILE \$withval" >>confdefs.h
+# Check whether --with-system-cfg was given.
+if test "${with_system_cfg+set}" = set; then :
+  withval=$with_system_cfg;
+cat >>confdefs.h <<_ACEOF
+#define SYSTEM_CONFIG_FILE "$withval"
+_ACEOF
 
 
 fi
@@ -4981,7 +4983,9 @@ fi
 # Check whether --with-system-log was given.
 if test "${with_system_log+set}" = set; then :
   withval=$with_system_log;
-$as_echo "#define SYSTEM_LOG_FILE \$withval" >>confdefs.h
+cat >>confdefs.h <<_ACEOF
+#define SYSTEM_LOG_FILE "$withval"
+_ACEOF
 
 
 fi
