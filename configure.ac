@@ -85,18 +85,18 @@ AC_ARG_WITH(assertions, [  --with-assertions       to enable assertions],
 	AC_DEFINE(NDEBUG,,assertions disabled)
 )
 
-AC_ARG_WITH(sjlj-exceptions,[  --with-sjlj-exceptions  to enable simple 'throw' from dynamic library],
+AC_ARG_WITH(sjlj-exceptions, [  --with-sjlj-exceptions  to enable simple 'throw' from dynamic library],
 	AC_DEFINE(PA_WITH_SJLJ_EXCEPTIONS,,one can throw from dynamic library)
 )
 
 
-AC_ARG_WITH(system-config,[  --with-system-cfg=FILE  to specify system-wide auto.p],
-	AC_DEFINE(SYSTEM_CONFIG_FILE,$withval,system-wide auto.p)
+AC_ARG_WITH(system-cfg, [  --with-system-cfg=FILE  to specify system-wide auto.p],
+	AC_DEFINE_UNQUOTED(SYSTEM_CONFIG_FILE,"$withval",system-wide auto.p)
 )
 
 
-AC_ARG_WITH(system-log,[  --with-system-log=FILE  to specify system-wide parser3.log],
-	AC_DEFINE(SYSTEM_LOG_FILE,$withval,system-wide parser3.log)
+AC_ARG_WITH(system-log, [  --with-system-log=FILE  to specify system-wide parser3.log],
+	AC_DEFINE_UNQUOTED(SYSTEM_LOG_FILE,"$withval",system-wide parser3.log)
 )
 
 
