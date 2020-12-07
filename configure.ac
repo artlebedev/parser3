@@ -507,5 +507,4 @@ AC_OUTPUT(
 	src/targets/isapi/Makefile
 	etc/Makefile
 	etc/parser3.charsets/Makefile
-	bin/Makefile
-	bin/auto.p.dist)
+	etc/auto.p)
