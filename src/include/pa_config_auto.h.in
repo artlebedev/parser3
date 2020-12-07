@@ -375,9 +375,6 @@
 /* system-wide auto.p */
 #undef SYSTEM_CONFIG_FILE
 
-/* system-wide parser3.log */
-#undef SYSTEM_LOG_FILE
-
 /* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
 #undef TIME_WITH_SYS_TIME
 

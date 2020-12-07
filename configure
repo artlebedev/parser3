@@ -807,7 +807,6 @@ with_profiler
 with_assertions
 with_sjlj_exceptions
 with_system_cfg
-with_system_log
 enable_safe_mode
 enable_execs
 enable_stringstream
@@ -1503,7 +1502,6 @@ Optional Packages:
   --with-assertions       to enable assertions
   --with-sjlj-exceptions  to enable simple 'throw' from dynamic library
   --with-system-cfg=FILE  to specify system-wide auto.p
-  --with-system-log=FILE  to specify system-wide parser3.log
   --with-gc=DIR           DIR is the directory where
                           Boehm garbage collecting library is installed
   --with-pcre=DIR         DIR is the directory where
@@ -4972,19 +4970,6 @@ if test "${with_system_cfg+set}" = set; then :
   withval=$with_system_cfg;
 cat >>confdefs.h <<_ACEOF
 #define SYSTEM_CONFIG_FILE "$withval"
-_ACEOF
-
-
-fi
-
-
-
-
-# Check whether --with-system-log was given.
-if test "${with_system_log+set}" = set; then :
-  withval=$with_system_log;
-cat >>confdefs.h <<_ACEOF
-#define SYSTEM_LOG_FILE "$withval"
 _ACEOF
 
 
