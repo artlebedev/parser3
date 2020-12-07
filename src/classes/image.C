@@ -26,7 +26,7 @@
 #include "pa_table.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.176 2020/12/07 23:14:39 moko Exp $";
+volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.177 2020/12/07 23:17:09 moko Exp $";
 
 // defines
 
@@ -586,7 +586,7 @@ static void measure_jpeg(const String& origin_string, Measure_reader& reader, Me
 		throw Exception(IMAGE_FORMAT, &origin_string, "not JPEG file - wrong signature");
 
 	while(true) {
-		uint segment_base=reader.tell()+2/*marker,code*/;
+		uint64_t segment_base=reader.tell()+2/*marker,code*/;
 		if(reader.read(buf, sizeof(JPG_Segment_head))<sizeof(JPG_Segment_head))
 			break;
 		JPG_Segment_head *head=(JPG_Segment_head *)buf;
