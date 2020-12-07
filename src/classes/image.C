@@ -26,7 +26,7 @@
 #include "pa_table.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.174 2020/12/03 22:48:09 moko Exp $";
+volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.175 2020/12/07 23:11:08 moko Exp $";
 
 // defines
 
@@ -540,7 +540,7 @@ static void parse_IFD(HashStringValue& hash, bool is_big, Measure_reader& reader
 static Value* parse_exif(Measure_reader& reader) {
 	const char* buf;
 
-	uint tiff_base=reader.tell();
+	uint64_t tiff_base=reader.tell();
 	if(reader.read(buf, sizeof(JPG_Exif_TIFF_header))<sizeof(JPG_Exif_TIFF_header))
 		return 0;
 
