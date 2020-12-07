@@ -14,7 +14,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.104 2020/12/01 21:30:42 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.105 2020/12/07 23:25:20 moko Exp $" IDENT_PA_HTTP_H; 
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -953,7 +953,7 @@ static bool check_uri(const char *uri){
 			case EscapeSecond:
 				if(isxdigit(c)){
 					state=Default;
-					c=escapedValue + hex_value[c];
+					c=(uchar)(escapedValue + hex_value[c]);
 
 					// implementing Apache AllowEncodedSlashes Off just in case
 					if(c=='/' || c=='\\')
@@ -1201,7 +1201,7 @@ int HTTPD_Server::bind(const char *host_port){
 		port = host_port;
 	}
 
-	if(!set_addr(&me, host, pa_atoui(port))){
+	if(!set_addr(&me, host, (short)pa_atoui(port))){
 		if (host)
 			throw Exception("httpd.bind", 0, "can not resolve hostname \"%s\"", host);
 		me.sin_addr.s_addr=INADDR_ANY;
