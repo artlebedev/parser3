@@ -360,7 +360,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-SUBDIRS = src etc bin
+SUBDIRS = src etc
 ACLOCAL_AMFLAGS = -I src/lib/ltdl/m4
 EXTRA_DIST = operators.txt parser3.sln gnu.vcproj buildall acsite.m4
 all: all-recursive
