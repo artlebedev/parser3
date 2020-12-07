@@ -85,8 +85,18 @@ AC_ARG_WITH(assertions, [  --with-assertions       to enable assertions],
 	AC_DEFINE(NDEBUG,,assertions disabled)
 )
 
-AC_ARG_WITH(sjlj-exceptions,[  --with-sjlj-exceptions  enable simple 'throw' from dynamic library],
+AC_ARG_WITH(sjlj-exceptions,[  --with-sjlj-exceptions  to enable simple 'throw' from dynamic library],
 	AC_DEFINE(PA_WITH_SJLJ_EXCEPTIONS,,one can throw from dynamic library)
+)
+
+
+AC_ARG_WITH(system-config,[  --with-system-cfg=FILE  to specify system-wide auto.p],
+	AC_DEFINE(SYSTEM_CONFIG_FILE,$withval,system-wide auto.p)
+)
+
+
+AC_ARG_WITH(system-log,[  --with-system-log=FILE  to specify system-wide parser3.log],
+	AC_DEFINE(SYSTEM_LOG_FILE,$withval,system-wide parser3.log)
 )
 
 
@@ -130,7 +140,7 @@ fi
 
 
 dnl GC argument
-AC_ARG_WITH(gc,[  --with-gc[=D]             D is the directory where
+AC_ARG_WITH(gc,[  --with-gc[=DIR]           DIR is the directory where
                           Boehm garbage collecting library is installed],[
 
 	GC=$withval
@@ -161,7 +171,7 @@ if test -z "$GC_OK"; then
 	,
 		AC_MSG_RESULT(no)
 		if test -z "$GC"; then
-			AC_MSG_ERROR(please specify path to libgc: --with-gc=D)
+			AC_MSG_ERROR(please specify path to libgc: --with-gc=DIR)
 		else
 			AC_MSG_ERROR($GC does not seem to be valid libgc installation directory)
 		fi
@@ -173,7 +183,7 @@ AC_SUBST(GC_LIBS)
 
 
 dnl PCRE argument
-AC_ARG_WITH(pcre,[  --with-pcre=D           D is the directory where
+AC_ARG_WITH(pcre,[  --with-pcre=DIR         DIR is the directory where
                           PCRE library is installed],[
 	PCRE=$withval
 	PCRE_INCLUDES="-I$PCRE/include"
@@ -206,7 +216,7 @@ if test -z "$PCRE_OK"; then
 	,
 		AC_MSG_RESULT(no)
 		if test -z "$PCRE"; then
-			AC_MSG_ERROR(please specify path to PCRE: --with-pcre=D)
+			AC_MSG_ERROR(please specify path to PCRE: --with-pcre=DIR)
 		else
 			AC_MSG_ERROR($PCRE does not seem to be valid PCRE installation directory)
 		fi
@@ -219,7 +229,7 @@ AC_SUBST(PCRE_LIBS)
 
 
 dnl XML/XSLT argument
-AC_ARG_WITH(xml,[  --with-xml=D            D is the directory where
+AC_ARG_WITH(xml,[  --with-xml=DIR          DIR is the directory where
                           Gnome XML libraries are installed],[
 
 	XML=$withval
@@ -249,7 +259,7 @@ AC_ARG_WITH(xml,[  --with-xml=D            D is the directory where
 		,
 			AC_MSG_RESULT(no)
 			if test -z "$XML"; then
-				AC_MSG_ERROR(please specify path to Gnome XML libraries: --with-xml=D)
+				AC_MSG_ERROR(please specify path to Gnome XML libraries: --with-xml=DIR)
 			else
 				AC_MSG_ERROR($XML does not seem to be valid Gnome XML installation directory)
 			fi
@@ -264,7 +274,7 @@ AC_SUBST(XML_LIBS)
 
 
 dnl Mail receive argument
-AC_ARG_WITH(mailreceive,[  --with-mailreceive=D is the directory where
+AC_ARG_WITH(mailreceive,[  --with-mailreceive=DIR  is the directory where
                           Gnome MIME library is installed],[
 	MIME=$withval
 	GLIB="glib-2.0"
@@ -304,7 +314,7 @@ AC_ARG_WITH(mailreceive,[  --with-mailreceive=D is the directory where
 		,
 			AC_MSG_RESULT(no)
 			if test -z "$MIME"; then
-				AC_MSG_ERROR(please specify path to Gnome MIME library: --with-mailreceive=D)
+				AC_MSG_ERROR(please specify path to Gnome MIME library: --with-mailreceive=DIR)
 			else
 				AC_MSG_ERROR($MIME does not seem to be valid Gnome MIME installation directory)
 			fi

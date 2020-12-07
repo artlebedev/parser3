@@ -806,6 +806,8 @@ with_coverage
 with_profiler
 with_assertions
 with_sjlj_exceptions
+with_system_config
+with_system_log
 enable_safe_mode
 enable_execs
 enable_stringstream
@@ -1499,14 +1501,16 @@ Optional Packages:
   --with-coverage         to enable gcov code coverage support
   --with-profiler         to enable gprof code profiler support
   --with-assertions       to enable assertions
-  --with-sjlj-exceptions  enable simple 'throw' from dynamic library
-  --with-gc=D             D is the directory where
+  --with-sjlj-exceptions  to enable simple 'throw' from dynamic library
+  --with-system-cfg=FILE  to specify system-wide auto.p
+  --with-system-log=FILE  to specify system-wide parser3.log
+  --with-gc=DIR           DIR is the directory where
                           Boehm garbage collecting library is installed
-  --with-pcre=D           D is the directory where
+  --with-pcre=DIR         DIR is the directory where
                           PCRE library is installed
-  --with-xml=D            D is the directory where
+  --with-xml=DIR          DIR is the directory where
                           Gnome XML libraries are installed
-  --with-mailreceive=D is the directory where
+  --with-mailreceive=DIR  is the directory where
                           Gnome MIME library is installed
   \"--with-sendmail=COMMAND\" forces this command to send mail.
                           example: \"--with-sendmail=/usr/sbin/sendmail -t\"
@@ -4962,6 +4966,28 @@ fi
 
 
 
+
+# Check whether --with-system-config was given.
+if test "${with_system_config+set}" = set; then :
+  withval=$with_system_config;
+$as_echo "#define SYSTEM_CONFIG_FILE \$withval" >>confdefs.h
+
+
+fi
+
+
+
+
+# Check whether --with-system-log was given.
+if test "${with_system_log+set}" = set; then :
+  withval=$with_system_log;
+$as_echo "#define SYSTEM_LOG_FILE \$withval" >>confdefs.h
+
+
+fi
+
+
+
 # Check whether --enable-safe-mode was given.
 if test "${enable_safe_mode+set}" = set; then :
   enableval=$enable_safe_mode;
@@ -5068,7 +5094,7 @@ else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 		if test -z "$GC"; then
-			as_fn_error $? "please specify path to libgc: --with-gc=D" "$LINENO" 5
+			as_fn_error $? "please specify path to libgc: --with-gc=DIR" "$LINENO" 5
 		else
 			as_fn_error $? "$GC does not seem to be valid libgc installation directory" "$LINENO" 5
 		fi
@@ -5138,7 +5164,7 @@ else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 		if test -z "$PCRE"; then
-			as_fn_error $? "please specify path to PCRE: --with-pcre=D" "$LINENO" 5
+			as_fn_error $? "please specify path to PCRE: --with-pcre=DIR" "$LINENO" 5
 		else
 			as_fn_error $? "$PCRE does not seem to be valid PCRE installation directory" "$LINENO" 5
 		fi
@@ -5201,7 +5227,7 @@ else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 			if test -z "$XML"; then
-				as_fn_error $? "please specify path to Gnome XML libraries: --with-xml=D" "$LINENO" 5
+				as_fn_error $? "please specify path to Gnome XML libraries: --with-xml=DIR" "$LINENO" 5
 			else
 				as_fn_error $? "$XML does not seem to be valid Gnome XML installation directory" "$LINENO" 5
 			fi
@@ -5280,7 +5306,7 @@ else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 			if test -z "$MIME"; then
-				as_fn_error $? "please specify path to Gnome MIME library: --with-mailreceive=D" "$LINENO" 5
+				as_fn_error $? "please specify path to Gnome MIME library: --with-mailreceive=DIR" "$LINENO" 5
 			else
 				as_fn_error $? "$MIME does not seem to be valid Gnome MIME installation directory" "$LINENO" 5
 			fi
