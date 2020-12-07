@@ -26,7 +26,7 @@
 #include "pa_table.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.175 2020/12/07 23:11:08 moko Exp $";
+volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.176 2020/12/07 23:14:39 moko Exp $";
 
 // defines
 
@@ -447,7 +447,7 @@ static Value* parse_IFD_entry_formatted_value(bool is_big, ushort format, size_t
 	return result;
 }
 
-static Value* parse_IFD_entry_value(bool is_big, Measure_reader& reader, long tiff_base, JPG_Exif_IFD_entry& entry) {
+static Value* parse_IFD_entry_value(bool is_big, Measure_reader& reader, uint64_t tiff_base, JPG_Exif_IFD_entry& entry) {
 	size_t format2component_size[]={
 		0, // undefined
 		1, // unsigned byte
@@ -498,9 +498,9 @@ static Value* parse_IFD_entry_value(bool is_big, Measure_reader& reader, long ti
 	return result;
 }
 
-static void parse_IFD(HashStringValue& hash, bool is_big, Measure_reader& reader, long tiff_base, bool gps=false);
+static void parse_IFD(HashStringValue& hash, bool is_big, Measure_reader& reader, uint64_t tiff_base, bool gps=false);
 
-static void parse_IFD_entry(HashStringValue& hash, bool is_big, Measure_reader& reader, long tiff_base, JPG_Exif_IFD_entry& entry, bool gps=false) {
+static void parse_IFD_entry(HashStringValue& hash, bool is_big, Measure_reader& reader, uint64_t tiff_base, JPG_Exif_IFD_entry& entry, bool gps=false) {
 	ushort tag=endian_to_ushort(is_big, entry.tag);
 
 	if(tag==JPG_IFD_TAG_EXIF_OFFSET || tag==JPG_IFD_TAG_EXIF_GPS_OFFSET){
@@ -521,7 +521,7 @@ static void parse_IFD_entry(HashStringValue& hash, bool is_big, Measure_reader& 
 	}
 }
 
-static void parse_IFD(HashStringValue& hash, bool is_big, Measure_reader& reader, long tiff_base, bool gps) {
+static void parse_IFD(HashStringValue& hash, bool is_big, Measure_reader& reader, uint64_t tiff_base, bool gps) {
 	const char* buf;
 	if(reader.read(buf, sizeof(JPG_Exif_IFD_begin))<sizeof(JPG_Exif_IFD_begin))
 		return;
