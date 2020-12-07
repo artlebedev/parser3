@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.321 2020/12/06 22:47:06 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.322 2020/12/07 20:54:58 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -42,15 +42,15 @@ static const char* filespec_to_process = 0; // [file]
 static const char* httpd_host_port = 0; // -p option
 static const char* config_filespec = 0; // -f option or from env or next to the executable if exists
 static bool mail_received = false; // -m option? [asked to parse incoming message to $mail:received]
-static char** argv_extra = NULL;
 static char* parser3_filespec = 0; // argv[0]
+static char** argv_extra = NULL;
 
 // for signal handlers
 Request *request=0;
 
 // for error logging
 static Request_info request_info; // global for correct log() reporting
-static const char* filespec_4log = NULL; // never null
+static const char* filespec_4log = NULL; // null only if system-wide auto.p used
 
 // SAPI
 
@@ -123,7 +123,7 @@ static void log(const char* fmt, ...) {
 }
 #endif
 
-// appends to parser3.log located next to the executable if openable, to stderr otherwize
+// appends to parser3.log located next to the config file if openable, to stderr otherwize
 void SAPI::log(SAPI_Info&, const char* fmt, ...) {
 	va_list args;
 	va_start(args,fmt);
@@ -218,20 +218,27 @@ static void SIGPIPE_handler(int /*sig*/){
 }
 #endif
 
-// requires pa_thread_request() under Windows in pa_stat()
+// requires pa_thread_request() in entry_exists() under Windows
 static const char *locate_config(const char *config_filespec_option, const char *executable_path){
-	if(!(filespec_4log = config_filespec_option)) {
+	filespec_4log=config_filespec_option;
+	if(!filespec_4log)
 		filespec_4log=getenv(PARSER_CONFIG_ENV_NAME);
-		if(!filespec_4log)
-			filespec_4log=getenv(REDIRECT_PREFIX PARSER_CONFIG_ENV_NAME);
-		if(!filespec_4log){
+	if(!filespec_4log)
+		filespec_4log=getenv(REDIRECT_PREFIX PARSER_CONFIG_ENV_NAME);
+	if(!filespec_4log){
 			// next to the executable
 			char *beside_executable_path = pa_strdup(executable_path);
 			bool stripped_filename = rsplit(beside_executable_path, '/') || rsplit(beside_executable_path, '\\');
 			filespec_4log = pa_strcat(stripped_filename ? beside_executable_path : "." /* no path, just filename */ , "/" AUTO_FILE_NAME);
-			if(!entry_exists(filespec_4log))
-				return NULL;
-		}
+			if(entry_exists(filespec_4log))
+				return filespec_4log;
+#ifdef SYSTEM_CONFIG_FILE
+			if(entry_exists(SYSTEM_CONFIG_FILE)){
+				filespec_4log=NULL;
+				return SYSTEM_CONFIG_FILE;
+			}
+#endif
+			return NULL;
 	}
 	return filespec_4log;
 }
