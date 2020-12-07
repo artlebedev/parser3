@@ -95,11 +95,6 @@ AC_ARG_WITH(system-cfg, [  --with-system-cfg=FILE  to specify system-wide auto.p
 )
 
 
-AC_ARG_WITH(system-log, [  --with-system-log=FILE  to specify system-wide parser3.log],
-	AC_DEFINE_UNQUOTED(SYSTEM_LOG_FILE,"$withval",system-wide parser3.log)
-)
-
-
 dnl Safe mode argument
 AC_ARG_ENABLE(safe-mode, [  --disable-safe-mode	  to enable reading and executing
                           files belonging to group+user other then effective],
