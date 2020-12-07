@@ -1,3 +1,67 @@
+2020-12-07  moko
+
+	* src/targets/cgi/parser3.C: locate_config call returned to
+	  original place as it requires pa_thread_request() under Windows
+
+	* src/targets/cgi/parser3.C: renaming
+
+2020-12-06  moko
+
+	* src/: main/pa_globals.C, targets/cgi/parser3.C: thread request
+	  check added
+
+2020-12-04  moko
+
+	* src/: classes/image.C, include/pa_common.h, main/pa_common.C,
+	  main/pa_request.C: unified uint64_t lseek implemented to support
+	  >4Gb files under x86, including Windows
+
+2020-12-02  moko
+
+	* src/main/pa_common.C: minor bugfix: $.limit() should be checked
+	  with max_file_size
+
+	* src/: include/pa_common.h, main/pa_common.C, main/pa_request.C:
+	  support for processing files sized >4Gb on 32 bit planforms
+
+	* tests/399.html: file moved
+
+	* src/: include/pa_string.h, main/pa_string.C: long long -> int64_t
+
+	* src/targets/cgi/pa_sapi_info.h: warning war
+
+	* src/: main/pa_http.C, targets/isapi/parser3isapi.C: windows
+	  warning war
+
+2020-12-01  moko
+
+	* src/classes/image.C: mp4 extended size (>4Gb) support added
+
+	* src/classes/image.C: for "size not found" exception to be shown
+	  if size not found until eof
+
+	* src/classes/image.C: long -> off_t (which is 64 bits even on 32
+	  bit linux)
+
+	* src/classes/image.C: ^image::measure[] now supports mp4 (feature
+	  #1188)
+
+2020-11-30  moko
+
+	* src/classes/image.C: definitions moved closer to code
+
+	* bin/auto.p.dist.in: mime types table actualized a bit
+
+	* tests/: 395.bmp, 395.html, 396.html, 396.tiff, 395_dir/1.bmp,
+	  395_dir/2.tiff, 395_dir/3_VP8.webp, 395_dir/3_VP8L.webp,
+	  395_dir/3_VP8X.webp, results/395.processed,
+	  results/396.processed: tests for ^image::measure[] .webp support
+	  added, all image files moved into one directory (related to
+	  feature #1188)
+
+	* src/classes/image.C: ^image::measure[] now supports webp (feature
+	  #1188)
+
 2020-11-29  moko
 
 	* src/main/pa_request.C: CONF_OPTION added to unify @conf options
