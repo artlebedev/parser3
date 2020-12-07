@@ -5,6 +5,14 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
+#include "pa_config_includes.h"
+
+#if (!defined(NO_STRINGSTREAM) && !defined(FREEBSD4) && !defined(PA_DEBUG_DISABLE_GC))
+#include <sstream>
+#include "../lib/gc/include/gc_allocator.h"
+#define USE_STRINGSTREAM
+#endif
+
 #include "classes.h"
 #include "pa_vmethod_frame.h"
 
@@ -17,12 +25,7 @@
 #include "pa_vbool.h"
 #include "pa_array.h"
 
-#if (!defined(NO_STRINGSTREAM) && !defined(FREEBSD4) && !defined(PA_DEBUG_DISABLE_GC))
-#include <sstream>
-#define USE_STRINGSTREAM
-#endif
-
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.350 2020/11/10 22:42:25 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.351 2020/12/07 23:02:07 moko Exp $";
 
 // class
 
@@ -454,7 +457,6 @@ static void _load(Request& r, MethodParams& params) {
 }
 
 #ifdef USE_STRINGSTREAM
-#include "../lib/gc/include/gc_allocator.h"
 
 typedef std::basic_stringstream<char, std::char_traits<char>, gc_allocator<char> > pa_stringstream;
 typedef std::basic_string<char, std::char_traits<char>, gc_allocator<char> > pa_string;
