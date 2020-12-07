@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.322 2020/12/07 20:54:58 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.323 2020/12/07 22:49:59 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -301,14 +301,14 @@ static void config_handler(SAPI_Info &info) {
 	request_info.argv = argv_extra;
 
 	// prepare to process request
-	Request request(info, request_info, String::Language(String::L_HTML|String::L_OPTIMIZE_BIT));
+	Request r(info, request_info, String::Language(String::L_HTML|String::L_OPTIMIZE_BIT));
 	{
 		// initing ::request ptr for signal handlers
-		RequestController rc(&request);
+		RequestController rc(&r);
 		// only once
 		config_filespec = locate_config(config_filespec, parser3_filespec);
 		// process main auto.p only
-		request.core(config_filespec, false, String::Empty);
+		r.core(config_filespec, false, String::Empty);
 		// clearing ::request in RequestController desctructor to prevent signal handlers from accessing invalid memory
 	}
 }
@@ -333,12 +333,12 @@ static void connection_handler(SAPI_Info_HTTPD &info, HTTPD_Connection &connecti
 	request_info.argv = argv_extra;
 
 	// prepare to process request
-	Request request(info, request_info, String::Language(String::L_HTML|String::L_OPTIMIZE_BIT));
+	Request r(info, request_info, String::Language(String::L_HTML|String::L_OPTIMIZE_BIT));
 	{
 		// initing ::request ptr for signal handlers
-		RequestController rc(&request);
+		RequestController rc(&r);
 		// process the request
-		request.core(config_filespec, strcasecmp(request_info.method, "HEAD")==0, String("httpd-main"));
+		r.core(config_filespec, strcasecmp(request_info.method, "HEAD")==0, String("httpd-main"));
 		// clearing ::request in RequestController desctructor to prevent signal handlers from accessing invalid memory
 	}
 }
@@ -453,12 +453,12 @@ static void real_parser_handler(bool cgi) {
 #endif
 
 	// prepare to process request
-	Request request(*sapiInfo, request_info, cgi ? String::Language(String::L_HTML|String::L_OPTIMIZE_BIT) : String::L_AS_IS);
+	Request r(*sapiInfo, request_info, cgi ? String::Language(String::L_HTML|String::L_OPTIMIZE_BIT) : String::L_AS_IS);
 	{
 		// initing ::request ptr for signal handlers
-		RequestController rc(&request);
+		RequestController rc(&r);
 		// process the request
-		request.core(locate_config(config_filespec, parser3_filespec), strcasecmp(request_info.method, "HEAD")==0);
+		r.core(locate_config(config_filespec, parser3_filespec), strcasecmp(request_info.method, "HEAD")==0);
 		// clearing ::request in RequestController destructor to prevent signal handlers from accessing invalid memory
 	}
 
