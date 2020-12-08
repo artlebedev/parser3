@@ -29,7 +29,7 @@
 #define pa_mkdir(path, mode) mkdir(path, mode)
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.320 2020/12/03 22:48:09 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.321 2020/12/08 21:30:46 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -943,8 +943,8 @@ const char* hex_string(unsigned char* bytes, size_t size, bool upcase) {
 	return bytes_hex;
 }
 
-int file_block_read(const int f, unsigned char* buffer, const size_t size){
-	int nCount = read(f, buffer, size);
+ssize_t file_block_read(const int f, void* buffer, const size_t size){
+	ssize_t nCount = read(f, buffer, size);
 	if (nCount < 0)
 		throw Exception("file.read", 0, "read failed: %s (%d)", strerror(errno), errno); 
 	return nCount;

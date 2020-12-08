@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.185 2020/12/03 22:48:09 moko Exp $"
+#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.186 2020/12/08 21:30:45 moko Exp $"
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -212,7 +212,7 @@ size_t stdout_write(const void *buf, size_t size);
 
 void check_safe_mode(struct stat finfo, const String& file_spec, const char* fname); 
 
-int file_block_read(const int f, unsigned char* buffer, const size_t size);
+ssize_t file_block_read(const int f, void* buffer, const size_t size);
 
 /** 
 	String related functions

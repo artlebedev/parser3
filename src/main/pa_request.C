@@ -33,7 +33,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.399 2020/12/07 23:38:46 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.400 2020/12/08 21:30:46 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -757,11 +757,37 @@ static void parse_range(const String* s, Array<Range> &ar) {
 	}
 }
 
-static void output_pieces(Request& r, bool header_only, const String& filename, uint64_t content_length, Value& date, bool add_last_modified) {
-	SAPI::add_header_attribute(r.sapi_info, "accept-ranges", "bytes");
+struct Send_range_action_info {
+	Request *r;
+	uint64_t offset;
+	uint64_t part_length;
+};
+
+static void send_range(struct stat& /*finfo*/, int f, const String& /*file_spec*/, void *context){
+	Send_range_action_info &info = *(Send_range_action_info*)context;
+
+	pa_lseek(f, info.offset, SEEK_SET);
 
 	const size_t BUFSIZE = 128*0x400;
 	char buf[BUFSIZE];
+	do{
+		size_t to_read = info.part_length < BUFSIZE ? (size_t)info.part_length : BUFSIZE;
+		size_t to_write = file_block_read(f, buf, to_read);
+
+		if(to_write == 0)
+			break;
+
+		size_t size = SAPI::send_body(info.r->sapi_info, buf, to_write);
+		if(size != to_write)
+			break;
+
+		info.part_length -= to_write;
+	} while (info.part_length);
+}
+
+static void output_pieces(Request& r, bool header_only, const String& filename, uint64_t content_length, Value& date, bool add_last_modified) {
+	SAPI::add_header_attribute(r.sapi_info, "accept-ranges", "bytes");
+
 	const char *range = SAPI::Env::get(r.sapi_info, "HTTP_RANGE");
 	uint64_t offset=0;
 	uint64_t part_length=content_length;
@@ -790,14 +816,14 @@ static void output_pieces(Request& r, bool header_only, const String& filename, 
 				return;
 			}
 			SAPI::add_header_attribute(r.sapi_info, HTTP_STATUS, "206 Partial Content");
-			snprintf(buf, BUFSIZE, "bytes %.15g-%.15g/%.15g", (double)rg.start, (double)rg.end, (double)content_length);
+			char buf[MAX_STRING];
+			snprintf(buf, MAX_STRING, "bytes %.15g-%.15g/%.15g", (double)rg.start, (double)rg.end, (double)content_length);
 			SAPI::add_header_attribute(r.sapi_info, "content-range", buf);
 		}else if(count != 0){
 			SAPI::add_header_attribute(r.sapi_info, HTTP_STATUS, "501 Not Implemented");
 			return;
 		}
 	}
-
 
 	SAPI::add_header_attribute(r.sapi_info, HTTP_CONTENT_LENGTH, format((double)part_length, "%.15g"));
 
@@ -806,22 +832,9 @@ static void output_pieces(Request& r, bool header_only, const String& filename, 
 
 	SAPI::send_header(r.sapi_info);
 
-	const String& filespec=r.full_disk_path(filename);
-
 	if(!header_only){
-		do{
-			size_t to_read = part_length < BUFSIZE ? (size_t)part_length : BUFSIZE;
-			File_read_result read_result=file_read_binary(filespec, true /*fail on problem*/, buf, offset, to_read);
-			to_read=read_result.length;
-			if(to_read == 0)
-				break;
-			offset += to_read;
-
-			size_t size = SAPI::send_body(r.sapi_info, read_result.str, to_read);
-			if(size != to_read)
-				break;
-			part_length -= to_read;
-		} while (part_length);
+		Send_range_action_info info = { &r, offset, part_length};
+		file_read_action_under_lock(r.full_disk_path(filename), "send", send_range, &info);
 	}
 }
 
