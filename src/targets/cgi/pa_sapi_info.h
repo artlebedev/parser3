@@ -1,7 +1,7 @@
 #ifndef PA_SAPI_INFO_H
 #define PA_SAPI_INFO_H
 
-#define IDENT_PA_SAPI_INFO_H "$Id: pa_sapi_info.h,v 1.10 2020/12/01 22:59:13 moko Exp $"
+#define IDENT_PA_SAPI_INFO_H "$Id: pa_sapi_info.h,v 1.11 2020/12/09 12:37:06 moko Exp $"
 
 #include "pa_sapi.h"
 #include "pa_http.h"
@@ -182,6 +182,7 @@ public:
 			const char *message;
 		} static lookup[] = {
 			{200, "OK"},
+			{204, "No Content"},
 			{206, "Partial Content"},
 			{301, "Moved Permanently"},
 			{302, "Found"},
@@ -191,6 +192,7 @@ public:
 			{403, "Forbidden"},
 			{404, "Not Found"},
 			{408, "Request Timeout"},
+			{416, "Range Not Satisfiable"},
 			{500, "Internal Server Error"},
 			{501, "Not Implemented"},
 			{502, "Bad Gateway"},

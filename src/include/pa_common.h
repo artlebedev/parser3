@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.186 2020/12/08 21:30:45 moko Exp $"
+#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.187 2020/12/09 12:37:05 moko Exp $"
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -20,7 +20,6 @@ class Request;
 #define HTTP_STATUS_CAPITALIZED	"Status"
 
 #define HTTP_CONTENT_LENGTH		"content-length"
-#define HTTP_CONTENT_LENGTH_CAPITALIZED	"Content-Length"
 
 #define HTTP_CONTENT_TYPE		"content-type"
 #define HTTP_CONTENT_TYPE_UPPER		"CONTENT-TYPE"

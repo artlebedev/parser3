@@ -33,7 +33,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.400 2020/12/08 21:30:46 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.401 2020/12/09 12:37:05 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -743,16 +743,32 @@ static void parse_range(const String* s, Array<Range> &ar) {
 	while(*p){
 		r.start = UNSET;
 		r.end = UNSET;
+
+		while(*p==' ' || *p=='\t') p++;
+
 		if(*p >= '0' && *p <= '9'){
-			r.start = pa_atoul(p);
-			while(*p>='0' && *p<='9') ++p;
+			const char *s=p;
+			while(*p>='0' && *p<='9') p++;
+			r.start = pa_atoul(pa_strdup(s,p-s));
 		}
+
+		while(*p==' ' || *p=='\t') p++;
+
 		if(*p++ != '-') break;
+
+		while(*p==' ' || *p=='\t') p++;
+
 		if(*p >= '0' && *p <= '9'){
-			r.end = pa_atoul(p);
-			while(*p>='0' && *p<='9') ++p;
+			const char *s=p;
+			while(*p>='0' && *p<='9') p++;
+			r.end = pa_atoul(pa_strdup(s,p-s));
 		}
-		if(*p == ',') ++p;
+
+		while(*p==' ' || *p=='\t') p++;
+
+		if(*p)
+			if(*p++ != ',') break;
+
 		ar += r;
 	}
 }
@@ -791,37 +807,41 @@ static void output_pieces(Request& r, bool header_only, const String& filename, 
 	const char *range = SAPI::Env::get(r.sapi_info, "HTTP_RANGE");
 	uint64_t offset=0;
 	uint64_t part_length=content_length;
-	if(range){
+
+	if(range && content_length){
 		Array<Range> ar;
 		parse_range(new String(range), ar);
 		int count = ar.count();
 		if(count == 1){
 			Range &rg = ar.get_ref(0);
-			if(rg.start == UNSET && rg.end == UNSET){
-				SAPI::add_header_attribute(r.sapi_info, HTTP_STATUS, "416 Requested Range Not Satisfiable");
-				return;
-			}
+
+			if(rg.start == UNSET && rg.end == UNSET)
+				return SAPI::send_error(r.sapi_info, "", "416");
+
 			if(rg.start == UNSET && rg.end != UNSET){
-				rg.start = content_length - rg.end;
-				rg.end = content_length;
-				offset += rg.start;
-				part_length = rg.end-rg.start;
-			}else if(rg.start != UNSET && rg.end == UNSET){
+				if(rg.end > content_length)
+					rg.end = content_length;
+				rg = { content_length - rg.end, content_length-1 };
+			} else if(rg.start != UNSET && rg.end == UNSET){
+				if(rg.start >= content_length)
+					return SAPI::send_error(r.sapi_info, "", "416");
 				rg.end = content_length-1;
-				offset += rg.start;
-				part_length -= rg.start;
+			} else {
+				if(rg.start >= content_length || rg.start > rg.end)
+					return SAPI::send_error(r.sapi_info, "", "416");
+				if(rg.end >= content_length)
+					rg.end = content_length-1;
 			}
-			if(part_length == 0){
-				SAPI::add_header_attribute(r.sapi_info, HTTP_STATUS, "204 No Content");
-				return;
-			}
-			SAPI::add_header_attribute(r.sapi_info, HTTP_STATUS, "206 Partial Content");
+
+			offset = rg.start;
+			part_length = rg.end-rg.start+1;
+
 			char buf[MAX_STRING];
 			snprintf(buf, MAX_STRING, "bytes %.15g-%.15g/%.15g", (double)rg.start, (double)rg.end, (double)content_length);
+			SAPI::add_header_attribute(r.sapi_info, HTTP_STATUS, "206");
 			SAPI::add_header_attribute(r.sapi_info, "content-range", buf);
-		}else if(count != 0){
-			SAPI::add_header_attribute(r.sapi_info, HTTP_STATUS, "501 Not Implemented");
-			return;
+		} else {
+			return SAPI::send_error(r.sapi_info, count ? "Multiple ranges not supported" : "Invalid range", count ? "501" : "400");
 		}
 	}
 
