@@ -1,4 +1,4 @@
-#$Id: auto.p.in,v 1.2 2020/12/09 15:36:45 moko Exp $
+#$Id: auto.p.in,v 1.3 2020/12/09 15:47:00 moko Exp $
 
 @conf[filespec]
 $confdir[^file:dirname[$filespec]]
@@ -181,8 +181,8 @@ $line[$env:REMOTE_ADDR [^now.sql-string[]] "$request:method $request:uri"$detail
 ^line.save[append;$filename]
 
 @httpd-404[]
-The requested URL was not found on this server.
 $response:status[404]
+The requested URL was not found on this server.
 
 
 @httpd-main[][uri;basic]
@@ -223,6 +223,7 @@ $uri[^string:unescape[uri;$uri; $.charset[UTF-8] ]]
 }
 
 ^if(def $httpd.deny && ^uri.match[$httpd.deny]){
+	$response:status[403]
 	$result[^httpd-option[$httpd.403]]
 }(def $httpd.index && -f "$uri/$httpd.index"){
 	$result[^httpd-file[$uri/$httpd.index]]
