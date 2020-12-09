@@ -1,4 +1,4 @@
-#$Id: auto.p.in,v 1.1 2020/12/07 16:04:22 moko Exp $
+#$Id: auto.p.in,v 1.2 2020/12/09 15:36:45 moko Exp $
 
 @conf[filespec]
 $confdir[^file:dirname[$filespec]]
@@ -152,6 +152,87 @@ $result(def $env:REMOTE_ADDR && ^env:REMOTE_ADDR.match[^^127\.0\.0\.1^$])
 	}{
 		^unhandled_exception_release[$exception;$stack]
 	}
+}
+
+
+@httpd-include[filename]
+^use[$filename; $.main(true) ]
+^main[]
+
+@httpd-index[dir][list]
+^fatal_error[Index of $dir;Index of $dir;
+	$list[^file:list[$dir]]
+	^list.sort{^if($list.dir)[0;1] $list.name}
+	^list.menu{
+		<a href="$list.name^if($list.dir){/}">^if($list.dir){/}$list.name</a><br/>
+	}
+]
+$response:status(200)
+
+@httpd-option[option]
+$result[^if($option is junction){^option[]}(^option.match[$httpd.parser]){^httpd-include[$option]}{$option}]
+
+@httpd-file[filename]
+$result[^if(^filename.match[$httpd.parser]){^httpd-include[$filename]}{$response:body[ $.file[$filename] $.name[] ]}]
+
+@httpd-log[filename;detail][now;line]
+$now[^date::now[]]
+$line[$env:REMOTE_ADDR [^now.sql-string[]] "$request:method $request:uri"$detail^#0A]
+^line.save[append;$filename]
+
+@httpd-404[]
+The requested URL was not found on this server.
+$response:status[404]
+
+
+@httpd-main[][uri;basic]
+
+$httpd[
+	$.parser[(\.html^$)]
+	$.index[index.html]
+#	$.autoindex(true)
+	$.404[$httpd-404]
+#	$.404[/_doc.html]
+	$.auth[ $.url[^^/\.?admin/] $.login[admin] $.password[test] $.realm[site administration] ]
+	$.deny[(/\.ht[^^/]+|\.p|\.cfg)^$]
+	$.403[Permission denied]
+	$.memory(64000)
+	$.log[/access.log]
+]
+
+$response:server[Parser$env:PARSER_VERSION]
+$response:date[^date::now[]]
+$response:connection[close]
+$uri[^request:uri.match[\?.*][]{}]
+$uri[^string:unescape[uri;$uri; $.charset[UTF-8] ]]
+
+^if(def $httpd.log){
+	^httpd-log[$httpd.log]
+}
+^if(def $httpd.memory && $status:memory.ever_allocated_since_compact > $httpd.memory){
+	^memory:compact[]
+}
+
+^if(def $httpd.auth.url && ^uri.match[$httpd.auth.url]){
+	$basic[$httpd.auth.login:$httpd.auth.password]
+	^if($env:HTTP_AUTHORIZATION ne "Basic ^basic.base64[]"){
+		$response:WWW-Authenticate[Basic realm="$httpd.auth.realm"]
+		^return[$response:status[401]]
+	}
+	$env:REMOTE_USER[$httpd.auth.login]
+}
+
+^if(def $httpd.deny && ^uri.match[$httpd.deny]){
+	$result[^httpd-option[$httpd.403]]
+}(def $httpd.index && -f "$uri/$httpd.index"){
+	$result[^httpd-file[$uri/$httpd.index]]
+}($httpd.autoindex && -d "$uri"){
+	$result[^httpd-index[$uri]]
+}(-f $uri){
+	$result[^httpd-file[$uri]]
+}{
+#	$form:request[^uri.mid(1)]
+	$result[^httpd-option[$httpd.404]]
 }
 
 
