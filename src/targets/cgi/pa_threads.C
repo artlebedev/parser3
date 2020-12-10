@@ -7,9 +7,7 @@
 
 #include "pa_threads.h"
 
-volatile const char * IDENT_PA_THREADS_C="$Id: pa_threads.C,v 1.19 2017/02/07 22:00:45 moko Exp $" IDENT_PA_THREADS_H;
-
-const bool parser_multithreaded=false;
+volatile const char * IDENT_PA_THREADS_C="$Id: pa_threads.C,v 1.20 2020/12/10 23:07:04 moko Exp $" IDENT_PA_THREADS_H;
 
 pa_thread_t pa_get_thread_id() { return 1; }
 

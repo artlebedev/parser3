@@ -7,15 +7,13 @@
 
 #include "pa_threads.h"
 
-volatile const char * IDENT_PA_THREADS_C="$Id: pa_threads.C,v 1.5 2017/02/07 22:00:45 moko Exp $" IDENT_PA_THREADS_H;
+volatile const char * IDENT_PA_THREADS_C="$Id: pa_threads.C,v 1.6 2020/12/10 23:07:04 moko Exp $" IDENT_PA_THREADS_H;
 
 Mutex global_mutex;
 
 #ifdef WIN32
 
 #include <windows.h>
-
-const bool parser_multithreaded=true;
 
 pa_thread_t pa_get_thread_id() {
 	return GetCurrentThreadId();
@@ -38,8 +36,6 @@ void Mutex::release() {
 }
 
 #else
-
-const bool parser_multithreaded=false;
 
 pa_thread_t pa_get_thread_id() { return 1; }
 

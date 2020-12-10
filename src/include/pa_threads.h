@@ -8,7 +8,7 @@
 #ifndef PA_THREADS_H
 #define PA_THREADS_H
 
-#define IDENT_PA_THREADS_H "$Id: pa_threads.h,v 1.33 2017/02/07 22:00:37 moko Exp $"
+#define IDENT_PA_THREADS_H "$Id: pa_threads.h,v 1.34 2020/12/10 23:07:04 moko Exp $"
 
 #include "pa_config_includes.h"
 #include "pa_types.h"
@@ -34,7 +34,6 @@ private: // for AutoSYNCHRONIZED
 	void release();
 };
 
-extern const bool parser_multithreaded;
 extern Mutex global_mutex;
 
 /** 
