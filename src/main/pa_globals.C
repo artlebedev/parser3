@@ -29,7 +29,7 @@ extern "C" {
 #include "ltdl.h"
 #include "pcre.h"
 
-volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.208 2020/12/05 21:50:15 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
+volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.209 2020/12/10 16:38:09 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
 
 // defines
 
@@ -220,7 +220,6 @@ static void gc_substitute_memory_management_functions() {
 void pa_globals_init() {
 
 #ifndef PA_DEBUG_DISABLE_GC
-	GC_java_finalization=0;
 	// Dont collect unless explicitly requested. This is quicker (~30% ),
 	// but less memory-efficient(~8%), so deciding for speed.
 	GC_dont_gc=1; 
