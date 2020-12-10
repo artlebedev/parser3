@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.325 2020/12/10 20:47:06 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.326 2020/12/10 23:04:17 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -370,6 +370,9 @@ static void httpd_mode() {
 #if 0
 	signal(SIGCHLD, SIG_IGN);
 	signal(SIGPIPE, SIG_IGN);
+
+//	HTTPD_Server::mode = HTTPD_Server::PARALLEL;
+//	HTTPD_Server::mode = HTTPD_Server::MULTITHREADED;
 #endif
 
 	while(1){
