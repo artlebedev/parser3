@@ -14,7 +14,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.106 2020/12/10 20:47:06 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.107 2020/12/10 22:38:42 moko Exp $" IDENT_PA_HTTP_H; 
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -1028,17 +1028,20 @@ enum HTTPD_request_state {
 };
 
 ssize_t HTTPD_request::pa_recv(int sockfd, char *buffer, size_t len){
-/*#ifdef PA_USE_ALARM
+	if(HTTPD_Server::mode == HTTPD_Server::MULTITHREADED)
+		return recv(sockfd, buffer, len, 0);
+
+#ifdef PA_USE_ALARM
 	signal(SIGALRM, timeout_handler);
 	if(sigsetjmp(timeout_env, 1)) {
 		throw Exception("httpd.timeout", 0, "timeout occurred while receiving request");
 		return 0; // never
 	} else
-#endif */
+#endif
 	{
-//		ALARM(pa_httpd_timeout);
+		ALARM(pa_httpd_timeout);
 		ssize_t result=recv(sockfd, buffer, len, 0);
-//		ALARM(0);
+		ALARM(0);
 		return result;
 	}
 }
@@ -1189,7 +1192,7 @@ bool HTTPD_Connection::accept(int server_sock, int timeout_value) {
 	return true;
 }
 
-HTTPD_Server::HTTPD_MODE HTTPD_Server::mode = SEQUENTIAL;
+HTTPD_Server::HTTPD_MODE HTTPD_Server::mode = HTTPD_Server::SEQUENTIAL;
 
 int HTTPD_Server::bind(const char *host_port){
 	struct sockaddr_in me;
