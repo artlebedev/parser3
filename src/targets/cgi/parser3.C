@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.324 2020/12/07 23:30:16 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.325 2020/12/10 20:47:06 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -46,10 +46,10 @@ static char* parser3_filespec = 0; // argv[0]
 static char** argv_extra = NULL;
 
 // for signal handlers
-Request *request=0;
+static THREAD_LOCAL Request *request=0;
 
 // for error logging
-static Request_info request_info; // global for correct log() reporting
+static THREAD_LOCAL Request_info request_info; // global for correct log() reporting
 static const char* filespec_4log = NULL; // null only if system-wide auto.p used
 
 // SAPI
@@ -314,58 +314,104 @@ static void config_handler(SAPI_Info &info) {
 }
 
 static void connection_handler(SAPI_Info_HTTPD &info, HTTPD_Connection &connection) {
-	connection.read_header();
-	info.populate_env();
+	try {
+		connection.read_header();
+		info.populate_env();
 
-	char document_root_buf[MAX_STRING];
-	full_disk_path("", document_root_buf, sizeof(document_root_buf));
+		char document_root_buf[MAX_STRING];
+		full_disk_path("", document_root_buf, sizeof(document_root_buf));
 
-	memset(&request_info, 0, sizeof(request_info));
-	request_info.document_root = document_root_buf;
-	request_info.path_translated = filespec_to_process;
-	request_info.method = connection.method();
-	request_info.query_string = connection.query();
-	request_info.uri = request_info.strip_absolute_uri(connection.uri());
-	request_info.content_type = connection.content_type();
-	request_info.content_length = (size_t)connection.content_length();
-	request_info.cookie = info.get_env("HTTP_COOKIE");
-	request_info.mail_received = false;
-	request_info.argv = argv_extra;
+		memset(&request_info, 0, sizeof(request_info));
+		request_info.document_root = document_root_buf;
+		request_info.path_translated = filespec_to_process;
+		request_info.method = connection.method();
+		request_info.query_string = connection.query();
+		request_info.uri = request_info.strip_absolute_uri(connection.uri());
+		request_info.content_type = connection.content_type();
+		request_info.content_length = (size_t)connection.content_length();
+		request_info.cookie = info.get_env("HTTP_COOKIE");
+		request_info.mail_received = false;
+		request_info.argv = argv_extra;
 
-	// prepare to process request
-	Request r(info, request_info, String::Language(String::L_HTML|String::L_OPTIMIZE_BIT));
-	{
-		// initing ::request ptr for signal handlers
-		RequestController rc(&r);
-		// process the request
-		r.core(config_filespec, strcasecmp(request_info.method, "HEAD")==0, String("httpd-main"));
-		// clearing ::request in RequestController desctructor to prevent signal handlers from accessing invalid memory
+		// prepare to process request
+		Request r(info, request_info, String::Language(String::L_HTML|String::L_OPTIMIZE_BIT));
+		{
+			// initing ::request ptr for signal handlers
+			RequestController rc(&r);
+			// process the request
+			r.core(config_filespec, strcasecmp(request_info.method, "HEAD")==0, String("httpd-main"));
+			// clearing ::request in RequestController desctructor to prevent signal handlers from accessing invalid memory
+		}
+	} catch(const Exception& e) { // exception in connection handling or unhandled exception
+		SAPI::log(info, "%s", e.comment());
+		SAPI::send_error(info, e.comment(), info.exception_http_status(e.type()));
 	}
 }
 
-static void httpd_mode() {
-	int sock = HTTPD_Server::bind(httpd_host_port);
+static void *connection_thread(void *arg){
+	HTTPD_Connection &connection=*(HTTPD_Connection*)arg;
+	SAPI_Info_HTTPD info(connection);
 
+	try {
+		connection_handler(info, connection);
+	} catch(const Exception& e) { // exception in send_error
+		SAPI::log(*sapiInfo, "%s", e.comment());
+	}
+
+	delete(&connection);
+	return NULL;
+}
+
+static void httpd_mode() {
 	config_handler(*sapiInfo);
 
+	int sock = HTTPD_Server::bind(httpd_host_port);
+
+#if 0
+	signal(SIGCHLD, SIG_IGN);
+	signal(SIGPIPE, SIG_IGN);
+#endif
+
 	while(1){
+		pid_t pid=1;
+
 		try {
 			HTTPD_Connection connection;
 			if(!connection.accept(sock, 5))
 				continue;
 
-			SAPI_Info_HTTPD info(connection);
+			switch (HTTPD_Server::mode) {
+#if 0
+				case HTTPD_Server::MULTITHREADED:
+					pthread_t thread;
+					pthread_attr_t attr;
+					pthread_attr_init(&attr);
+					pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
 
-			try { // connection try
-				connection_handler(info, connection);
-			} catch(const Exception& e) { // exception in connection handling or unhandled exception
-				SAPI::log(info, "%s", e.comment());
-				SAPI::send_error(info, e.comment(), info.exception_http_status(e.type()));
+					if(int result=GC_pthread_create(&thread, &attr, connection_thread, new HTTPD_Connection(connection)))
+						throw Exception("httpd.fork", 0, "thread creation failed (%d)", result);
+					connection.sock=-1;
+					break;
+
+				case HTTPD_Server::PARALLEL:
+					pid=fork();
+					if(pid<0)
+						throw Exception("httpd.fork", 0, "fork failed: %s (%d)", strerror(errno), errno);
+					if(pid>0)
+						continue; // parent should close connection.sock as well
+#endif
+				case HTTPD_Server::SEQUENTIAL: // and fork child
+
+					SAPI_Info_HTTPD info(connection);
+					connection_handler(info, connection);
 			}
 			// closing connection socket in HTTPD_Connection destructor
 		} catch(const Exception& e) { // exception in accept or send_error
 			SAPI::log(*sapiInfo, "%s", e.comment());
 		}
+
+		if(pid==0) // fork child
+			exit(0);
 	}
 }
 
@@ -535,12 +581,10 @@ int main(int argc, char *argv[]) {
 	sapiInfo = cgi ? new SAPI_Info_CGI() : new SAPI_Info();
 
 #ifdef SIGUSR1
-    if(signal(SIGUSR1, SIGUSR1_handler)==SIG_ERR)
-		SAPI::die("Can not set handler for SIGUSR1");
+	signal(SIGUSR1, SIGUSR1_handler);
 #endif
 #ifdef SIGPIPE
-    if(signal(SIGPIPE, SIGPIPE_handler)==SIG_ERR)
-		SAPI::die("Can not set handler for SIGPIPE");
+	signal(SIGPIPE, SIGPIPE_handler);
 #endif
 
 	char *raw_filespec_to_process = NULL;

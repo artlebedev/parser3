@@ -8,7 +8,7 @@
 #ifndef PA_HTTP_H
 #define PA_HTTP_H
 
-#define IDENT_PA_HTTP_H "$Id: pa_http.h,v 1.26 2020/10/14 11:24:46 moko Exp $"
+#define IDENT_PA_HTTP_H "$Id: pa_http.h,v 1.27 2020/12/10 20:47:06 moko Exp $"
 
 #include "pa_vstring.h"
 #include "pa_vint.h"
@@ -106,6 +106,12 @@ public:
 
 class HTTPD_Server : public PA_Allocated {
 public:
+	enum HTTPD_MODE {
+		SEQUENTIAL,
+		PARALLEL,
+		MULTITHREADED
+	} static mode;
+
 	static int bind(const char *);
 };
 
