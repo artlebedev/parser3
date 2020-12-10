@@ -8,7 +8,7 @@
 #ifndef PA_SQL_CONNECTION_H
 #define PA_SQL_CONNECTION_H
 
-#define IDENT_PA_SQL_CONNECTION_H "$Id: pa_sql_connection.h,v 1.45 2019/09/11 15:26:09 moko Exp $"
+#define IDENT_PA_SQL_CONNECTION_H "$Id: pa_sql_connection.h,v 1.46 2020/12/10 23:21:09 moko Exp $"
 
 
 #include "pa_sql_driver.h"
@@ -132,11 +132,13 @@ public:
 		SQL_CONNECTION_SERVICED_FUNC_GUARDED(
 			return fdriver.ping(fconnection)
 		);
+		return false; // never reached, warning war
 	}
 	const char* quote(const char* str, unsigned int length) {
 		SQL_CONNECTION_SERVICED_FUNC_GUARDED(
 			return fdriver.quote(fconnection, str, length)
 		);
+		return NULL; // never reached, warning war
 	}
 
 	void query(

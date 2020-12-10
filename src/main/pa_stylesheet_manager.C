@@ -15,7 +15,7 @@
 #include "pa_vhash.h"
 #include "pa_vtable.h"
 
-volatile const char * IDENT_PA_STYLESHEET_MANAGER_C="$Id: pa_stylesheet_manager.C,v 1.31 2017/02/07 22:00:44 moko Exp $" IDENT_PA_STYLESHEET_MANAGER_H;
+volatile const char * IDENT_PA_STYLESHEET_MANAGER_C="$Id: pa_stylesheet_manager.C,v 1.32 2020/12/10 23:21:09 moko Exp $" IDENT_PA_STYLESHEET_MANAGER_H;
 
 // globals
 
@@ -32,10 +32,7 @@ static void expire_connection(Stylesheet_connection& connection, time_t older_di
 	if(connection.connected() && connection.expired(older_dies))
 		connection.disconnect();
 }
-static void expire_connections(
-			       Stylesheet_manager::connection_cache_type::key_type /*key*/, 
-			       Stylesheet_manager::connection_cache_type::value_type stack, 
-			       time_t older_dies) {
+static void expire_connections(Stylesheet_manager::connection_cache_type::key_type /*key*/, Stylesheet_manager::connection_cache_type::value_type stack, time_t older_dies) {
 	for(size_t i=0; i<stack->top_index(); i++)
 		expire_connection(*stack->get(i), older_dies);
 }
@@ -81,8 +78,7 @@ Stylesheet_connection* Stylesheet_manager::get_connection_from_cache(String::Bod
 	return 0;
 }
 
-void Stylesheet_manager::put_connection_to_cache(String::Body file_spec, 
-						 Stylesheet_connection& connection) { 
+void Stylesheet_manager::put_connection_to_cache(String::Body file_spec, Stylesheet_connection& connection) {
 	SYNCHRONIZED;
 
 	connection_cache_type::value_type connections=connection_cache.get(file_spec);
@@ -116,10 +112,7 @@ static void add_connection_to_status_cache_table(Stylesheet_connection& connecti
 		*table+=&row;
 	}
 }
-static void add_connections_to_status_cache_table(
-	Stylesheet_manager::connection_cache_type::key_type /*key*/, 
-	Stylesheet_manager::connection_cache_type::value_type stack, Table* table) 
-{
+static void add_connections_to_status_cache_table(Stylesheet_manager::connection_cache_type::key_type /*key*/, Stylesheet_manager::connection_cache_type::value_type stack, Table* table) {
 	for(Array_iterator<Stylesheet_connection*> i(*stack); i.has_next(); )
 		add_connection_to_status_cache_table(*i.next(), table);
 }
