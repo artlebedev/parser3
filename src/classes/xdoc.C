@@ -28,7 +28,7 @@
 #include "xnode.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_XDOC_C="$Id: xdoc.C,v 1.197 2020/11/10 22:42:25 moko Exp $";
+volatile const char * IDENT_XDOC_C="$Id: xdoc.C,v 1.198 2020/12/11 14:04:09 moko Exp $";
 
 // defines
 
@@ -686,7 +686,7 @@ static void _transform(Request& r, MethodParams& params) {
 	} else { // stylesheet (file name)
 		// extablish stylesheet connection
 		const String& stylesheet_filespec=r.full_disk_path(params.as_string(0, "stylesheet must be file name (string) or DOM document (xdoc)"));
-		Stylesheet_connection_ptr connection=stylesheet_manager->get_connection(stylesheet_filespec);
+		Stylesheet_connection_ptr connection(stylesheet_manager->get_connection(stylesheet_filespec));
 
 		// load and compile file to stylesheet [or get cached if any]
 		// transform!
