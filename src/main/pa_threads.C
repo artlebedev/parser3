@@ -5,10 +5,9 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-#include <pthread.h>
 #include "pa_threads.h"
 
-volatile const char * IDENT_PA_THREADS_C="$Id: pa_threads.C,v 1.4 2020/12/11 14:59:36 moko Exp $" IDENT_PA_THREADS_H;
+volatile const char * IDENT_PA_THREADS_C="$Id: pa_threads.C,v 1.5 2020/12/11 15:44:14 moko Exp $" IDENT_PA_THREADS_H;
 
 Mutex global_mutex;
 
@@ -38,9 +37,17 @@ void Mutex::release() {
 
 #else
 
+#include <pthread.h>
+#ifdef HAVE_GETTID
 #include <sys/syscall.h>
+#endif
+
 uint pa_get_thread_id() {
+#ifdef HAVE_GETTID
 	return syscall(__NR_gettid);
+#else
+	return 1;
+#endif
 }
 
 Mutex::Mutex() {
