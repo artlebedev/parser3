@@ -8,24 +8,26 @@
 #ifndef PA_THREADS_H
 #define PA_THREADS_H
 
-#define IDENT_PA_THREADS_H "$Id: pa_threads.h,v 1.34 2020/12/10 23:07:04 moko Exp $"
+#define IDENT_PA_THREADS_H "$Id: pa_threads.h,v 1.35 2020/12/11 14:59:19 moko Exp $"
 
 #include "pa_config_includes.h"
 #include "pa_types.h"
 
-/// thread ID type
-typedef unsigned int pa_thread_t;
-
 /// get caller thread ID
-pa_thread_t pa_get_thread_id();
+uint pa_get_thread_id();
 
 class AutoSYNCHRONIZED;
 
 /// simple semaphore object
 class Mutex {
 	friend class AutoSYNCHRONIZED;
-private:
-	uint handle;
+
+#ifdef WIN32
+HANDLE handle;
+#else
+pthread_mutex_t handle;
+#endif
+
 public:
 	Mutex();
 	~Mutex();
@@ -38,9 +40,9 @@ extern Mutex global_mutex;
 
 /** 
 	Helper to ensure paired Mutex::acquire() and Mutex::release().
-
 	Use it with SYNCHRONIZED macro
 */
+
 class AutoSYNCHRONIZED {
 public:
 	AutoSYNCHRONIZED() { global_mutex.acquire(); }
