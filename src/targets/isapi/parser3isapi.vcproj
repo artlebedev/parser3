@@ -157,29 +157,6 @@
 	</References>
 	<Files>
 		<File
-			RelativePath="pa_threads.C">
-			<FileConfiguration
-				Name="Release|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="2"
-					GlobalOptimizations="TRUE"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions="WIN32;$(NoInherit)"
-					CompileAs="2"/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Debug|Win32">
-				<Tool
-					Name="VCCLCompilerTool"
-					Optimization="0"
-					AdditionalIncludeDirectories=""
-					PreprocessorDefinitions=""
-					BasicRuntimeChecks="3"
-					CompileAs="2"/>
-			</FileConfiguration>
-		</File>
-		<File
 			RelativePath="parser3isapi.C">
 			<FileConfiguration
 				Name="Release|Win32">

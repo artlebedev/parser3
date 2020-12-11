@@ -13,6 +13,6 @@ noinst_HEADERS = pa_sapi_info.h
 
 bin_PROGRAMS = parser3
 parser3_DEPENDENCIES=Makefile $(PA_LIBS)
-parser3_SOURCES = pa_threads.C parser3.C
+parser3_SOURCES = parser3.C
 parser3_LDADD = $(PA_LIBS) $(LIBLTDL) @GC_LIBS@ @PCRE_LIBS@ @XML_LIBS@ @MIME_LIBS@
 EXTRA_DIST = parser3.vcproj

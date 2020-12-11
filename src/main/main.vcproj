@@ -264,6 +264,9 @@
 			RelativePath=".\pa_os.C">
 		</File>
 		<File
+			RelativePath=".\pa_threads.C">
+		</File>
+		<File
 			RelativePath="..\include\pa_os.h">
 		</File>
 		<File

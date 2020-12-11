@@ -152,9 +152,6 @@
 	</References>
 	<Files>
 		<File
-			RelativePath=".\pa_threads.C">
-		</File>
-		<File
 			RelativePath=".\parser3.C">
 		</File>
 	</Files>
