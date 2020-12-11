@@ -137,7 +137,7 @@ am__uninstall_files_from_dir = { \
 am__installdirs = "$(DESTDIR)$(libdir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-am_mod_parser3_la_OBJECTS = pa_threads.lo mod_parser3_core.lo \
+am_mod_parser3_la_OBJECTS = mod_parser3_core.lo \
 	mod_parser3_la-mod_parser3.lo
 mod_parser3_la_OBJECTS = $(am_mod_parser3_la_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
@@ -156,8 +156,7 @@ DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/src/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ./$(DEPDIR)/mod_parser3_core.Plo \
-	./$(DEPDIR)/mod_parser3_la-mod_parser3.Plo \
-	./$(DEPDIR)/pa_threads.Plo
+	./$(DEPDIR)/mod_parser3_la-mod_parser3.Plo
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -391,7 +390,7 @@ AM_CPPFLAGS = $(APACHE_INC) -I./ -I../../classes -I../../types @XML_INCLUDES@
 mod_parser3_la_LINK = $(LIBTOOL) --tag=CXX --tag=disable-static --mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(mod_parser3_la_LDFLAGS) $(LDFLAGS) -o $@
 noinst_HEADERS = pa_httpd.h
 lib_LTLIBRARIES = mod_parser3.la
-mod_parser3_la_SOURCES = pa_threads.C mod_parser3_core.C mod_parser3.c
+mod_parser3_la_SOURCES = mod_parser3_core.C mod_parser3.c
 mod_parser3_la_DEPENDENCIES = Makefile $(PA_LIBS)
 mod_parser3_la_LDFLAGS = -module -avoid-version
 mod_parser3_la_CFLAGS = $(APACHE_CFLAGS)
@@ -476,7 +475,6 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mod_parser3_core.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mod_parser3_la-mod_parser3.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_threads.Plo@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -669,7 +667,6 @@ clean-am: clean-generic clean-libLTLIBRARIES clean-libtool \
 distclean: distclean-am
 		-rm -f ./$(DEPDIR)/mod_parser3_core.Plo
 	-rm -f ./$(DEPDIR)/mod_parser3_la-mod_parser3.Plo
-	-rm -f ./$(DEPDIR)/pa_threads.Plo
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -717,7 +714,6 @@ installcheck-am:
 maintainer-clean: maintainer-clean-am
 		-rm -f ./$(DEPDIR)/mod_parser3_core.Plo
 	-rm -f ./$(DEPDIR)/mod_parser3_la-mod_parser3.Plo
-	-rm -f ./$(DEPDIR)/pa_threads.Plo
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

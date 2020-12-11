@@ -10,7 +10,7 @@
 #ifndef PA_STYLESHEET_MANAGER_H
 #define PA_STYLESHEET_MANAGER_H
 
-#define IDENT_PA_STYLESHEET_MANAGER_H "$Id: pa_stylesheet_manager.h,v 1.26 2017/02/07 22:00:37 moko Exp $"
+#define IDENT_PA_STYLESHEET_MANAGER_H "$Id: pa_stylesheet_manager.h,v 1.27 2020/12/11 14:16:15 moko Exp $"
 
 
 #include "pa_hash.h"
@@ -33,7 +33,7 @@ public:
 		check for disk update of "{file_spec}" or "{file_spec}.stamp",
 		if not updated return cached version[if any] otherwise load/compile/return
 	*/
-	Stylesheet_connection_ptr get_connection(String::Body file_spec);
+	Stylesheet_connection* get_connection(String::Body file_spec);
 
 private: // cache
 
