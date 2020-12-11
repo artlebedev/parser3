@@ -8,7 +8,7 @@
 #ifndef PA_STYLESHEET_CONNECTION_H
 #define PA_STYLESHEET_CONNECTION_H
 
-#define IDENT_PA_STYLESHEET_CONNECTION_H "$Id: pa_stylesheet_connection.h,v 1.44 2017/02/07 22:00:37 moko Exp $"
+#define IDENT_PA_STYLESHEET_CONNECTION_H "$Id: pa_stylesheet_connection.h,v 1.45 2020/12/11 11:52:20 moko Exp $"
 
 #include "libxslt/xslt.h"
 #include "libxslt/xsltInternals.h"
@@ -115,14 +115,12 @@ public:
 	Stylesheet_connection* operator->() {
 		return fconnection;
 	}
-/*	Stylesheet_connection& operator*() {
-		return *fconnection;
-	}*/
 
 	// copying
 	Stylesheet_connection_ptr(const Stylesheet_connection_ptr& src) : fconnection(src.fconnection) {
 		fconnection->use();
 	}
+
 	Stylesheet_connection_ptr& operator =(const Stylesheet_connection_ptr& src) {
 		// may do without this=src check
 		fconnection->unuse();

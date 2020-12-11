@@ -9,7 +9,7 @@
 #ifndef PA_SQL_DRIVER_MANAGER_H
 #define PA_SQL_DRIVER_MANAGER_H
 
-#define IDENT_PA_SQL_DRIVER_MANAGER_H "$Id: pa_sql_driver_manager.h,v 1.39 2017/02/07 22:00:36 moko Exp $"
+#define IDENT_PA_SQL_DRIVER_MANAGER_H "$Id: pa_sql_driver_manager.h,v 1.40 2020/12/11 11:52:21 moko Exp $"
 
 
 #include "pa_sql_driver.h"
@@ -53,10 +53,7 @@ public:
 		using driver dynamic library found in table, if not loaded yet
 		checks driver version
 	*/
-	SQL_Connection* get_connection(const String& aurl, 
-		Table *protocol2driver_and_client,
-		const char* arequest_charset,
-		const char* adocument_root);
+	SQL_Connection* get_connection(const String& aurl, Table *protocol2driver_and_client, const char* arequest_charset, const char* adocument_root);
 
 private: // driver cache
 
@@ -66,16 +63,14 @@ private: // driver cache
 private: // connection cache
 
 	SQL_Connection* get_connection_from_cache(connection_cache_type::key_type url);
-	void put_connection_to_cache(connection_cache_type::key_type url, 
-		SQL_Connection* connection);
+	void put_connection_to_cache(connection_cache_type::key_type url, SQL_Connection* connection);
 private:
 	time_t prev_expiration_pass_time;
 
 private: // for SQL_Connection
 
 	/// caches connection
-	void close_connection(connection_cache_type::key_type url, 
-		SQL_Connection* connection);
+	void close_connection(connection_cache_type::key_type url, SQL_Connection* connection);
 
 public: // Cache_manager
 
