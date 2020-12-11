@@ -12,7 +12,7 @@ noinst_HEADERS = pa_httpd.h
 
 lib_LTLIBRARIES = mod_parser3.la
 
-mod_parser3_la_SOURCES = pa_threads.C mod_parser3_core.C mod_parser3.c
+mod_parser3_la_SOURCES = mod_parser3_core.C mod_parser3.c
 mod_parser3_la_DEPENDENCIES = Makefile $(PA_LIBS)
 mod_parser3_la_LDFLAGS = -module -avoid-version
 mod_parser3_la_CFLAGS = $(APACHE_CFLAGS)
