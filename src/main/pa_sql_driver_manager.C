@@ -15,7 +15,7 @@
 #include "pa_vtable.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_PA_SQL_DRIVER_MANAGER_C="$Id: pa_sql_driver_manager.C,v 1.99 2020/12/10 23:21:09 moko Exp $" IDENT_PA_SQL_DRIVER_MANAGER_H IDENT_PA_SQL_CONNECTION_H;
+volatile const char * IDENT_PA_SQL_DRIVER_MANAGER_C="$Id: pa_sql_driver_manager.C,v 1.100 2020/12/11 11:31:22 moko Exp $" IDENT_PA_SQL_DRIVER_MANAGER_H IDENT_PA_SQL_CONNECTION_H;
 
 // globals
 
@@ -23,7 +23,7 @@ SQL_Driver_manager* SQL_driver_manager=0;
 
 // consts
 
-const time_t EXPIRE_UNUSED_CONNECTION_SECONDS=60;
+const time_t EXPIRE_UNUSED_CONNECTION_SECONDS=10;
 const time_t CHECK_EXPIRED_CONNECTIONS_SECONDS=EXPIRE_UNUSED_CONNECTION_SECONDS*2;
 
 // helpers
