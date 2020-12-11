@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: buildall,v 1.32 2020/12/07 16:05:42 moko Exp $
+# $Id: buildall,v 1.33 2020/12/11 14:31:24 moko Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -129,7 +129,6 @@ if test ! -f "$project_dir/gc/lib/libgc.a"; then
     echo "Configuring $lib..."
     CPPFLAGS="-DUSE_MMAP -DDONT_ADD_BYTE_AT_END" \
     ./configure --prefix=$project_dir/gc \
-	--disable-threads \
 	--disable-shared \
 	--silent $cflags
     echo "Building $lib..."
@@ -163,7 +162,6 @@ if test "$build_xml" = "yes" -a ! -f "$project_dir/gnome/lib/libxml2.a"; then
     ./configure --prefix=$project_dir/gnome \
 	--without-catalog \
 	--without-iconv \
-	--without-threads \
 	--without-debug \
 	--without-iso8859x \
 	--without-legacy \
