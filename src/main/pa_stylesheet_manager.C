@@ -15,7 +15,7 @@
 #include "pa_vhash.h"
 #include "pa_vtable.h"
 
-volatile const char * IDENT_PA_STYLESHEET_MANAGER_C="$Id: pa_stylesheet_manager.C,v 1.32 2020/12/10 23:21:09 moko Exp $" IDENT_PA_STYLESHEET_MANAGER_H;
+volatile const char * IDENT_PA_STYLESHEET_MANAGER_C="$Id: pa_stylesheet_manager.C,v 1.33 2020/12/11 14:03:09 moko Exp $" IDENT_PA_STYLESHEET_MANAGER_H;
 
 // globals
 
@@ -52,11 +52,9 @@ Stylesheet_manager::~Stylesheet_manager() {
 	connection_cache.for_each<time_t>(expire_connections, time(0)+(time_t)10/*=in future=expire all*/);
 }
 
-Stylesheet_connection_ptr Stylesheet_manager::get_connection(String::Body file_spec) {
+Stylesheet_connection* Stylesheet_manager::get_connection(String::Body file_spec) {
 	Stylesheet_connection* result=get_connection_from_cache(file_spec);
-	if(!result)
-		result=new Stylesheet_connection(file_spec);
-	return Stylesheet_connection_ptr(result);
+	return result ? result : new Stylesheet_connection(file_spec);
 }
 
 void Stylesheet_manager::close_connection(String::Body file_spec, Stylesheet_connection& connection) {
