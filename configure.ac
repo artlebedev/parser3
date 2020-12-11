@@ -456,6 +456,12 @@ AC_TRY_COMPILE([#include <time.h>], [struct tm tm; tm.tm_gmtoff=0;], AC_DEFINE(H
 AC_MSG_CHECKING(for tm_tzadj in struct tm)
 AC_TRY_COMPILE([#include <time.h>], [struct tm tm; tm.tm_tzadj=0;], AC_DEFINE(HAVE_TM_TZADJ) AC_MSG_RESULT(yes), AC_MSG_RESULT(no))
 
+AC_MSG_CHECKING(for gettid)
+AC_TRY_COMPILE([
+#include <sys/types.h>
+#include <sys/syscall.h>
+], [uint tid=syscall(__NR_gettid);], AC_DEFINE(HAVE_GETTID) AC_MSG_RESULT(yes), AC_MSG_RESULT(no))
+
 AC_MSG_CHECKING(for 0..9999 year date range support)
 AC_TRY_RUN([
 #include <string.h>
@@ -478,6 +484,7 @@ dnl Output header and makefiles
 AH_TEMPLATE([HAVE_TIMEZONE],[Define if you have timezone external variable in <time.h>])
 AH_TEMPLATE([HAVE_TM_GMTOFF],[Define if you have tm_gmtoff member of tm structure in <time.h>])
 AH_TEMPLATE([HAVE_TM_TZADJ],[Define if you have tm_tzadj member of tm structure in <time.h>])
+AH_TEMPLATE([HAVE_GETTID],[Define if you have gettid()])
 AH_TEMPLATE([PA_DATE64],[Define if you have 0..9999 year date range support])
 
 AM_CONFIG_HEADER(src/include/pa_config_auto.h)
