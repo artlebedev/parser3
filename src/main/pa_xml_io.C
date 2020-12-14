@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-volatile const char * IDENT_PA_XML_IO_C="$Id: pa_xml_io.C,v 1.40 2020/10/27 21:25:25 moko Exp $" IDENT_PA_XML_IO_H;
+volatile const char * IDENT_PA_XML_IO_C="$Id: pa_xml_io.C,v 1.41 2020/12/14 20:57:06 moko Exp $" IDENT_PA_XML_IO_H;
 
 #include "libxslt/extensions.h"
 
@@ -17,15 +17,15 @@ volatile const char * IDENT_PA_XML_IO_C="$Id: pa_xml_io.C,v 1.40 2020/10/27 21:2
 #include "pa_globals.h"
 #include "pa_request.h"
 
-THREAD_LOCAL HashStringBool* xml_dependencies = NULL;
+THREAD_LOCAL HashStringBool* xml_dependencies = NULL; // every TLS should be referenced elsewhere, or GC will collect it
 
 static void add_dependency(const String::Body url) { 
 	if(xml_dependencies) // do we need to monitor now?
 		xml_dependencies->put(url, true);
 }
 
-void pa_xmlStartMonitoringDependencies() { 
-	xml_dependencies=new HashStringBool;
+HashStringBool* pa_xmlStartMonitoringDependencies() {
+	return xml_dependencies=new HashStringBool; // to keep another reference on TLS
 }
 
 void pa_xmlStopMonitoringDependencies() { 

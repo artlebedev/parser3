@@ -11,7 +11,7 @@
 #ifndef PA_XML_IO_H
 #define PA_XML_IO_H
 
-#define IDENT_PA_XML_IO_H "$Id: pa_xml_io.h,v 1.8 2017/02/07 22:00:38 moko Exp $"
+#define IDENT_PA_XML_IO_H "$Id: pa_xml_io.h,v 1.9 2020/12/14 20:57:06 moko Exp $"
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -20,7 +20,7 @@ void pa_xml_io_init();
 
 typedef HashString<bool> HashStringBool;
 
-void pa_xmlStartMonitoringDependencies();
+HashStringBool* pa_xmlStartMonitoringDependencies();
 HashStringBool* pa_xmlGetDependencies();
 
 #endif

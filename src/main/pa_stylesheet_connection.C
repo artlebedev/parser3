@@ -11,30 +11,28 @@
 #include "pa_stylesheet_connection.h"
 #include "pa_xml_exception.h"
 
-volatile const char * IDENT_PA_STYLESHEET_CONNECTION_C="$Id: pa_stylesheet_connection.C,v 1.11 2017/02/07 22:00:44 moko Exp $" IDENT_PA_STYLESHEET_CONNECTION_H;
+volatile const char * IDENT_PA_STYLESHEET_CONNECTION_C="$Id: pa_stylesheet_connection.C,v 1.12 2020/12/14 20:57:06 moko Exp $" IDENT_PA_STYLESHEET_CONNECTION_H;
 
 void Stylesheet_connection::load(time_t new_disk_time) {
 	xsltStylesheet *nstylesheet;
 	{
-		pa_xmlStartMonitoringDependencies();
+		dependencies=pa_xmlStartMonitoringDependencies(); // just to reference TLS variable
 		{
-			int saved=xmlDoValidityCheckingDefaultValue;//
-			xmlDoValidityCheckingDefaultValue=0;//
+			int saved=xmlDoValidityCheckingDefaultValue;
+			xmlDoValidityCheckingDefaultValue=0;
 			nstylesheet=xsltParseStylesheetFile(BAD_CAST ffile_spec.cstr());
-			xmlDoValidityCheckingDefaultValue = saved;//
+			xmlDoValidityCheckingDefaultValue = saved;
 		}
 		dependencies=pa_xmlGetDependencies();
 	}
 	if(xmlHaveGenericErrors())
 		throw XmlException(new String(ffile_spec, String::L_TAINTED), pa_thread_request());
 	if(!nstylesheet)
-		throw Exception("file.missing",
-			new String(ffile_spec, String::L_TAINTED),
-			"stylesheet failed to load");
+		throw Exception("file.missing", new String(ffile_spec, String::L_TAINTED), "stylesheet failed to load");
 
-	xsltFreeStylesheet(fstylesheet);  
+	xsltFreeStylesheet(fstylesheet);
 	fstylesheet=nstylesheet;
-	prev_disk_time=new_disk_time;
+	prev_disk_time=new_disk_time; // note: 0 for the first fime, cache works only from second hit
 }
 
 static void update_max_mtime(HashStringValue::key_type stat_file_spec_cstr, bool /*value*/, time_t* max) {
