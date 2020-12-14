@@ -1,4 +1,107 @@
+2020-12-11  moko
+
+	* configure.ac: gettid() check added
+
+	* src/main/pa_threads.C: HAVE_GETTID used
+
+	* src/include/pa_config_auto.h.in: +HAVE_GETTID
+
+	* src/: include/pa_threads.h, main/pa_threads.C: now unified
+	  version for isapi/cgi/apache
+
+	* buildall: threads are now required.
+
+	* src/: targets/apache/ApacheModuleParser3Core.vcproj,
+	  targets/cgi/parser3.vcproj, targets/isapi/parser3isapi.vcproj,
+	  main/main.vcproj: pa_threads.C moved to main
+
+	* src/targets/: apache/pa_threads.C, cgi/pa_threads.C,
+	  isapi/pa_threads.C: pa_threads.C moved to main
+
+	* src/: main/Makefile.am, targets/cgi/Makefile.am,
+	  targets/apache/Makefile.am: pa_threads.C moved to main
+
+	* src/classes/xdoc.C: Stylesheet_connection_ptr changed a bit
+
+	* src/: include/pa_stylesheet_connection.h,
+	  main/pa_stylesheet_manager.C: Stylesheet_connection_ptr simplfied
+	  and weird GPF in multithreaded httpd is gone
+
+	* src/include/: pa_stylesheet_connection.h,
+	  pa_sql_driver_manager.h: whitespace
+
+	* src/main/pa_sql_driver_manager.C: timeout 60 sec -> 10 sec
+
+	* src/: include/pa_sql_connection.h, main/pa_sql_driver_manager.C,
+	  main/pa_stylesheet_manager.C: whitespace, warning war
+
+	* src/: include/pa_threads.h, targets/apache/pa_threads.C,
+	  targets/cgi/pa_threads.C, targets/isapi/pa_threads.C:
+	  parser_multithreaded never used
+
+	* src/main/pa_http.C: no ALARM in MULTITHREADED httpd server mode
+
+2020-12-10  moko
+
+	* src/: include/pa_config_includes.h, include/pa_http.h,
+	  main/pa_http.C, targets/cgi/parser3.C: initial support for
+	  MULTITHREADED and PARALLEL httpd server modes
+
+	* src/main/pa_globals.C: GC_java_finalization is depricated
+
+2020-12-09  moko
+
+	* etc/auto.p.in: + @httpd-main
+
+	* src/: include/pa_common.h, main/pa_request.C,
+	  targets/cgi/pa_sapi_info.h: Range Requests (rfc7233) now really
+	  work
+
+	* src/: include/pa_common.h, main/pa_common.C, main/pa_request.C:
+	  slow file_read_binary no longer used, send_range added
+
+2020-12-08  moko
+
+	* src/main/pa_request.C: >4Gb support
+
+	* src/targets/cgi/parser3.C: msvc warning war
+
+	* src/: include/pa_config_includes.h, main/pa_http.C,
+	  main/pa_request.C: msvc warnings war
+
+	* src/classes/image.C: warning war
+
+	* src/classes/table.C: MSVC warning war
+
+	* src/targets/cgi/parser3.C: msvc warnings war
+
+	* src/targets/apache/mod_parser3_core.C: SYSTEM_CONFIG_FILE support
+	  added
+
 2020-12-07  moko
+
+	* configure.ac: SYSTEM_LOG_FILE no longer required as cheat used to
+	  avoid logging beside system-wide auto.p
+
+	* src/targets/cgi/parser3.C: SYSTEM_CONFIG_FILE used
+
+	* configure, configure.ac, src/include/pa_config_auto.h.in:
+	  configure options added:
+
+	  --with-system-cfg=FILE  to specify system-wide auto.p
+	  --with-system-log=FILE  to specify system-wide parser3.log
+
+	* Makefile.am: bin no longer exists
+
+	* configure, configure.ac: auto.p moved to etc to simplify debian
+	  package
+
+	* buildall: auto.p and parser3.charsets moved to their default
+	  location after install
+
+	* etc/: Makefile.am, auto.p.in: auto.p moved to etc directory
+
+	* aclocal.m4, configure: automake 1.15 -> 1.16.1
 
 	* src/targets/cgi/parser3.C: locate_config call returned to
 	  original place as it requires pa_thread_request() under Windows
@@ -49,8 +152,6 @@
 2020-11-30  moko
 
 	* src/classes/image.C: definitions moved closer to code
-
-	* bin/auto.p.dist.in: mime types table actualized a bit
 
 	* tests/: 395.bmp, 395.html, 396.html, 396.tiff, 395_dir/1.bmp,
 	  395_dir/2.tiff, 395_dir/3_VP8.webp, 395_dir/3_VP8L.webp,
@@ -871,8 +972,6 @@
 	  (XML_PARSE_HUGE exception) added
 
 2018-01-11  moko
-
-	* bin/auto.p.dist.in: sqlite3 -> libsqlite3
 
 	* src/classes/xdoc.C: xmlReadMemory/xmlReadFile now used with
 	  XML_PARSE_HUGE option passed by default (implements feature
@@ -3838,10 +3937,6 @@
 	  main/pa_stylesheet_connection.C: forgotten to be replaced
 	  XmlException is now replaced (once again closes issue #938)
 
-2013-10-19  misha
-
-	* bin/auto.p.dist.in: - more mime-types are added
-
 2013-10-18  moko
 
 	* buildall: disable clock_gettime detection to avoid librt linking
@@ -4140,8 +4235,6 @@
 
 	* src/types/pa_vmemcached.C: LT_MODULE_EXT used
 
-	* bin/auto.p.dist.in: libpq.so -> libpq.
-
 	* src/classes/curl.C: LT_MODULE_EXT used
 
 	* src/include/pa_config_fixed.h: LT_MODULE_EXT defined
@@ -4259,10 +4352,6 @@
 	  fixed (related to issue #933)
 
 2013-07-07  moko
-
-	* bin/auto.p.dist.in: windows-1251 commented to remove auto.p
-	  dependense from $charsetsdir directory existance and content (and
-	  UTF-8 is default allready)
 
 	* AUTHORS: + misha + moko. :)
 
@@ -4713,8 +4802,6 @@
 
 	* src/targets/apache/Makefile.am: updated for libtool usage
 
-	* bin/auto.p.dist.in: .cfg removed from charset names.
-
 	* buildall-without-xml: --with-included-ltdl added
 
 	* buildall-without-xml: sync with buildall-with-xml
@@ -4807,10 +4894,6 @@
 	  pcre_parser_ctype.vcproj, ruspart_win2koi.pl, win-koi.tab:
 	  debian/patches/101_pcre.patch - local copy of pcre_internal.h
 	  extracts now used old trash removed
-
-	* bin/auto.p.dist.in: all charsets are listed, utf-8 by default,
-	  rare charsets/drivers are commented, sql driver quessing removed
-	  (debian/patches/103_auto_p.patch)
 
 	* etc/parser3.charsets/Makefile.am: charsets now in share
 	  (debian/patches/104_automake.patch) + all charsets are copied
@@ -9373,8 +9456,6 @@
 
 2007-02-20  misha
 
-	* bin/auto.p.dist.in: - added lines for sqlite
-
 	* configure.in: - added some strings for sqlite detection
 
 2007-02-19  misha
@@ -9633,11 +9714,6 @@
 2006-10-31  misha
 
 	* src/classes/file.C: - empty args in file::exec removed now
-
-2006-09-11  misha
-
-	* bin/auto.p.dist.in: - 2 errors were fixed - table::set was
-	  replaced to table::create - some changes in text/code formatting
 
 2006-09-03  paf
 
@@ -10580,12 +10656,6 @@
 	  ^call(vdouble), no junction creation, no calls later
 
 2005-08-08  paf
-
-	* bin/auto.p.dist.in: merged . apache bad 404 handling workaround
-	  integrated
-
-	* bin/auto.p.dist.in: . apache bad 404 handling workaround
-	  integrated
 
 	* src/main/: compile.tab.C, compile.y, compile_tools.C,
 	  compile_tools.h: merged + optimized constants in expressions
@@ -11918,7 +11988,7 @@
 	  main/main.vcproj, main/pa_globals.C, main/pa_xml_io.C: change:
 	  .xsl.stamp now not used, introducing dependencies timestamp check
 
-	* configure.in, bin/auto.p.dist.in: auto.p: @conf made relative
+	* configure.in: auto.p: @conf made relative
 
 2004-02-12  paf
 
@@ -12476,8 +12546,6 @@
 
 	* src/types/: pa_value.h, pa_vfile.h: more C++ compatible [HP C++
 	  failed]
-
-	* bin/auto.p.dist.in: colno
 
 2003-11-10  paf
 
@@ -16636,13 +16704,11 @@
 	* src/main/pa_string.C: string.replace fixed [were missing words on
 	  pieces boundaries]
 
-	* bin/auto.p.dist.in: strange \n
-
 	* configure, configure.in: .so now detected [can be .sl on hpux,
 	  .dll on cygwin, .so in other cases)
 
-	* configure, configure.in, bin/auto.p.dist.in: .so now detected
-	  [can be .sl on hpux, .dll on cygwin, .so in other cases)
+	* configure, configure.in: .so now detected [can be .sl on hpux,
+	  .dll on cygwin, .so in other cases)
 
 	* operators.txt, src/classes/hash.C, src/classes/table.C,
 	  src/include/pa_globals.h, src/main/pa_globals.C: table.sql
@@ -16843,8 +16909,7 @@
 
 	* src/: main/execute.C, types/pa_vobject.h: fixed virtual calls
 
-	* bin/auto.p.dist.in, src/targets/cgi/parser3.C,
-	  src/types/pa_vfile.C, src/types/pa_vmail.C:
+	* src/: targets/cgi/parser3.C, types/pa_vfile.C, types/pa_vmail.C:
 	  $mail.received.file.value.content-type fixed
 
 2002-08-20  paf
@@ -17041,10 +17106,6 @@
 	  VAliased [redundant], moved $CLASS to VObject only [parser class
 	  instance]
 
-	* bin/auto.p.dist.in: more like in dist on parser.ru
-
-	* bin/auto.p.dist.in: fixed sendmail default comment
-
 	* src/main/pa_request.C: $response:body[file] content-type check
 	  fixed [were bad when content-type is hash]
 
@@ -17128,8 +17189,6 @@
 
 	* src/main/pa_request.C: case insensitive mime_type_of
 
-	* bin/auto.p.dist.in: jpeg
-
 2002-08-05  paf
 
 	* src/types/pa_vxnode.C: xnode.childNodes  now 0... [were 1...]
@@ -17155,8 +17214,6 @@
 
 	* configure, configure.in, src/include/pa_version.h: release
 	  3_0_0005
-
-	* bin/auto.p.dist.in: unhandled_exception comments
 
 	* src/types/: pa_vclass.h, pa_vform.C, pa_vobject.h: opera
 	  multipart post fixed
@@ -17384,9 +17441,9 @@
 
 	* src/main/pa_request.C: configure_admin forced if no @conf
 
-	* operators.txt, bin/auto.p.dist.in, src/classes/math.C,
-	  src/types/pa_vmail.C: ^math:crypt updated to generate random salt
-	  when needed and to call system crypt() if not $apr1$ prefix
+	* operators.txt, src/classes/math.C, src/types/pa_vmail.C:
+	  ^math:crypt updated to generate random salt when needed and to
+	  call system crypt() if not $apr1$ prefix
 
 2002-06-24  paf
 
@@ -17465,14 +17522,13 @@
 
 2002-06-20  paf
 
-	* INSTALL, configure, configure.in, operators.txt, bin/Makefile.am,
-	  bin/auto.p.dist.in, src/classes/file.C, src/classes/op.C,
-	  src/doc/doxygen.cfg, src/include/pa_globals.h,
-	  src/include/pa_request.h, src/main/execute.C,
-	  src/main/pa_request.C, src/targets/cgi/parser3.C,
-	  src/targets/isapi/parser3isapi.C, src/types/pa_vmethod_frame.h:
-	  marged latest HEAD updates, mainly file:justname&co &
-	  @auto/conf[filespec
+	* INSTALL, configure, configure.in, operators.txt,
+	  src/classes/file.C, src/classes/op.C, src/doc/doxygen.cfg,
+	  src/include/pa_globals.h, src/include/pa_request.h,
+	  src/main/execute.C, src/main/pa_request.C,
+	  src/targets/cgi/parser3.C, src/targets/isapi/parser3isapi.C,
+	  src/types/pa_vmethod_frame.h: marged latest HEAD updates, mainly
+	  file:justname&co & @auto/conf[filespec
 
 	* operators.txt, src/classes/file.C:
 	  !^file:dirname[/a/some.tar.gz]=/a
@@ -17485,12 +17541,9 @@
 	  main/pa_request.C, types/pa_vmethod_frame.h: introducing
 	  @conf/auto[filespec]
 
-	* bin/auto.p.dist.in: <noindex>
-
 	* configure: parser3.conf renamed to auto.p autoconf changes
 
-	* INSTALL, configure.in, operators.txt, bin/Makefile.am,
-	  bin/auto.p.dist.in, src/doc/doxygen.cfg,
+	* INSTALL, configure.in, operators.txt, src/doc/doxygen.cfg,
 	  src/include/pa_globals.h, src/targets/cgi/parser3.C,
 	  src/targets/isapi/parser3isapi.C: parser3.conf renamed to auto.p
 
@@ -17501,7 +17554,7 @@
 
 	* INSTALL: reflected .conf.dist dir change
 
-	* Makefile.am, configure, configure.in, bin/Makefile.am,
+	* Makefile.am, configure, configure.in,
 	  etc/parser3.charsets/Makefile.am: parser3.conf.dist moved to bin,
 	  .in & *.am updated
 
@@ -17509,8 +17562,7 @@
 
 	* src/classes/file.C: strcasecmp
 
-	* bin/Makefile.am, etc/Makefile.am: bin/parser3.conf.dist [moved
-	  from etc
+	* etc/Makefile.am: bin/parser3.conf.dist [moved from etc
 
 	* src/classes/file.C: ^file::exec[script;$.bad error case
 	  insensitive check now
