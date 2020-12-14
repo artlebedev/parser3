@@ -17,7 +17,7 @@
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.65 2020/11/10 22:42:24 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.66 2020/12/14 20:58:15 moko Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -116,10 +116,14 @@ static ParserOptions &options(){
 class Temp_curl {
 	CURL *saved_curl;
 	ParserOptions *saved_options;
+
+	// every TLS should be referenced elsewhere, or GC will collect it
+	CURL *thread_curl;
+	ParserOptions *thread_options;
 public:
 	Temp_curl() : saved_curl(fcurl), saved_options(foptions){
-		fcurl = f_curl_easy_init();
-		foptions = new ParserOptions();
+		thread_curl = fcurl = f_curl_easy_init();
+		thread_options = foptions = new ParserOptions();
 		f_curl_easy_setopt(fcurl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4); // avoid ipv6 by default
 	}
 

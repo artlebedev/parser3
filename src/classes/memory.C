@@ -9,7 +9,7 @@
 #include "pa_vmemory.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_MEMORY_C="$Id: memory.C,v 1.14 2019/12/25 22:22:06 moko Exp $" IDENT_PA_VMEMORY_H;
+volatile const char * IDENT_MEMORY_C="$Id: memory.C,v 1.15 2020/12/14 20:58:15 moko Exp $" IDENT_PA_VMEMORY_H;
 
 class MMemory: public Methoded {
 public:
@@ -31,9 +31,9 @@ static void _compact(Request& r, MethodParams&) {
 	r.wipe_unused_execution_stack();
 #ifndef PA_DEBUG_DISABLE_GC
 	{
-		GC_dont_gc=0;
+		GC_enable();
 		GC_gcollect();
-		GC_dont_gc=1;
+		GC_disable();
 #ifdef GC_DEBUG
 		GC_generate_random_backtrace();
 #endif
