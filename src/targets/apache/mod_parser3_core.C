@@ -5,7 +5,7 @@ Parser: apache 1.3/2.X module, part, compiled by parser3project.
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_MOD_PARSER3_CORE_C="$Id: mod_parser3_core.C,v 1.31 2020/12/07 21:26:34 moko Exp $";
+volatile const char * IDENT_MOD_PARSER3_CORE_C="$Id: mod_parser3_core.C,v 1.32 2020/12/15 13:33:26 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -174,11 +174,7 @@ main workhorse
 */
 static void real_parser_handler(SAPI_Info& SAPI_info, Parser_module_config *dcfg) {
 	// collect garbage from prev request
-#ifndef PA_DEBUG_DISABLE_GC
-	GC_dont_gc=0;
-	GC_gcollect();
-	GC_dont_gc=1;
-#endif
+	PA_GC_GCOLLECT;
 
 	// populate env
 	pa_ap_add_common_vars(SAPI_info.r);

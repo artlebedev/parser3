@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.121 2020/12/01 21:32:10 moko Exp $";
+volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.122 2020/12/15 13:33:26 moko Exp $";
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -299,11 +299,7 @@ BOOL WINAPI TerminateExtension(
 */
 void real_parser_handler(SAPI_Info& SAPI_info, bool header_only) {
 	// collect garbage from prev request
-#ifndef PA_DEBUG_DISABLE_GC
-	GC_dont_gc=0;
-	GC_gcollect();
-	GC_dont_gc=1;
-#endif
+	PA_GC_GCOLLECT;
 	
 	SAPI_info.header=new String;
 	LPEXTENSION_CONTROL_BLOCK lpECB=SAPI_info.lpECB;

@@ -9,7 +9,7 @@
 #ifndef PA_MEMORY_H
 #define PA_MEMORY_H
 
-#define IDENT_PA_MEMORY_H "$Id: pa_memory.h,v 1.39 2020/12/15 13:29:27 moko Exp $"
+#define IDENT_PA_MEMORY_H "$Id: pa_memory.h,v 1.40 2020/12/15 13:33:26 moko Exp $"
 
 // include
 
@@ -147,9 +147,9 @@ inline char *strdup(const char*, size_t){ return strdup_disabled(); }
 #endif // _MSC_VER
 
 #ifdef PA_DEBUG_DISABLE_GC
-#define PA_GC_COLLECT
+#define PA_GC_GCOLLECT
 #else
-#define PA_GC_COLLECT { GC_enable(); GC_gcollect(); GC_disable(); }
+#define PA_GC_GCOLLECT { GC_enable(); GC_gcollect(); GC_disable(); }
 #endif
 
 #endif
