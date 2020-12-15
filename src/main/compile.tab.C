@@ -70,10 +70,9 @@
 	Copyright (c) 2001-2020 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexander Petrosyan <paf@design.ru> (http://design.ru/paf)
 
-	
 */
 
-volatile const char * IDENT_COMPILE_Y = "$Id: compile.tab.C,v 1.179 2020/12/15 17:10:33 moko Exp $";
+volatile const char * IDENT_COMPILE_Y = "$Id: compile.tab.C,v 1.180 2020/12/15 17:25:21 moko Exp $";
 
 /**
 	@todo parser4: 
