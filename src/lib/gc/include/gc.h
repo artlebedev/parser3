@@ -209,44 +209,6 @@ GC_API void GC_set_warn_proc GC_PROTO((GC_warn_proc p));
 /* to suppress all warnings (unless statistics printing is turned on).  */
 GC_API void GC_ignore_warn_proc(char *, GC_word);
 
-
-GC_API int GC_pthread_create(pthread_t *, const pthread_attr_t *, void *(*)(void *), void * /* arg */);
-
-#if defined(GC_WIN32_THREADS)
-# include <windows.h>
-# include <winbase.h>
-
-  /*
-   * All threads must be created using GC_CreateThread, so that they will be
-   * recorded in the thread table.  For backwards compatibility, this is not
-   * technically true if the GC is built as a dynamic library, since it can
-   * and does then use DllMain to keep track of thread creations.  But new code
-   * should be built to call GC_CreateThread.
-   */
-  HANDLE WINAPI GC_CreateThread(
-      LPSECURITY_ATTRIBUTES lpThreadAttributes,
-      DWORD dwStackSize, LPTHREAD_START_ROUTINE lpStartAddress,
-      LPVOID lpParameter, DWORD dwCreationFlags, LPDWORD lpThreadId );
-
-# if defined(_WIN32_WCE)
-  /*
-   * win32_threads.c implements the real WinMain, which will start a new thread
-   * to call GC_WinMain after initializing the garbage collector.
-   */
-  int WINAPI GC_WinMain(
-      HINSTANCE hInstance,
-      HINSTANCE hPrevInstance,
-      LPWSTR lpCmdLine,
-      int nCmdShow );
-
-#  ifndef GC_BUILD
-#    define WinMain GC_WinMain
-#    define CreateThread GC_CreateThread
-#  endif
-# endif /* defined(_WIN32_WCE) */
-
-#endif /* defined(GC_WIN32_THREADS) */
-
 #ifdef __cplusplus
     }  /* end of extern "C" */
 #endif
