@@ -7,32 +7,30 @@
 
 #include "pa_threads.h"
 
-volatile const char * IDENT_PA_THREADS_C="$Id: pa_threads.C,v 1.5 2020/12/11 15:44:14 moko Exp $" IDENT_PA_THREADS_H;
+volatile const char * IDENT_PA_THREADS_C="$Id: pa_threads.C,v 1.6 2020/12/15 11:28:40 moko Exp $" IDENT_PA_THREADS_H;
 
 Mutex global_mutex;
 
-#ifdef WIN32
-
-#include <windows.h>
+#ifdef _MSC_VER
 
 uint pa_get_thread_id() {
 	return GetCurrentThreadId();
 }
 
 Mutex::Mutex() :
-	handle(reinterpret_cast<uint>(CreateMutex(NULL, FALSE, 0))) {
+	handle(CreateMutex(NULL, FALSE, 0)) {
 }
 
 Mutex::~Mutex() {
-	CloseHandle(reinterpret_cast<HANDLE>(handle));
+	CloseHandle(handle);
 }
 
 void Mutex::acquire() {
-    WaitForSingleObject(reinterpret_cast<HANDLE>(handle), INFINITE);
+    WaitForSingleObject(handle, INFINITE);
 }
 
 void Mutex::release() {
-    ReleaseMutex(reinterpret_cast<HANDLE>(handle));
+    ReleaseMutex(handle);
 }
 
 #else

@@ -8,10 +8,14 @@
 #ifndef PA_THREADS_H
 #define PA_THREADS_H
 
-#define IDENT_PA_THREADS_H "$Id: pa_threads.h,v 1.35 2020/12/11 14:59:19 moko Exp $"
+#define IDENT_PA_THREADS_H "$Id: pa_threads.h,v 1.36 2020/12/15 11:28:40 moko Exp $"
 
 #include "pa_config_includes.h"
 #include "pa_types.h"
+
+#ifdef _MSC_VER
+#include <windows.h>
+#endif
 
 /// get caller thread ID
 uint pa_get_thread_id();
@@ -22,7 +26,7 @@ class AutoSYNCHRONIZED;
 class Mutex {
 	friend class AutoSYNCHRONIZED;
 
-#ifdef WIN32
+#ifdef _MSC_VER
 HANDLE handle;
 #else
 pthread_mutex_t handle;
