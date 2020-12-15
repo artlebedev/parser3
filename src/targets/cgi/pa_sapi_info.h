@@ -1,13 +1,17 @@
 #ifndef PA_SAPI_INFO_H
 #define PA_SAPI_INFO_H
 
-#define IDENT_PA_SAPI_INFO_H "$Id: pa_sapi_info.h,v 1.11 2020/12/09 12:37:06 moko Exp $"
+#define IDENT_PA_SAPI_INFO_H "$Id: pa_sapi_info.h,v 1.12 2020/12/15 17:23:56 moko Exp $"
 
 #include "pa_sapi.h"
 #include "pa_http.h"
 
 /// IIS refuses to read bigger chunks
 const size_t READ_POST_CHUNK_SIZE=0x400*0x400; // 1M
+
+// for signal handlers and cgi console detection
+static Request *request=0;
+
 
 class SAPI_Info : public PA_Allocated {
 public:
@@ -69,7 +73,7 @@ public:
 
 	virtual void add_header_attribute(const char* dont_store_key, const char* dont_store_value) {
 		SAPI_Info::add_header_attribute(dont_store_key, dont_store_value);
-//		if(!request || !request->console.was_used())
+		if(!request || !request->console.was_used())
 			printf("%s: %s\n", capitalize(dont_store_key), dont_store_value);
 	}
 

@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.329 2020/12/15 17:10:38 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.330 2020/12/15 17:23:56 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -51,9 +51,6 @@ static const char* config_filespec = 0; // -f option or from env or next to the 
 static bool mail_received = false; // -m option? [asked to parse incoming message to $mail:received]
 static char* parser3_filespec = 0; // argv[0]
 static char** argv_extra = NULL;
-
-// for signal handlers
-static THREAD_LOCAL Request *request=0;
 
 // for error logging
 static THREAD_LOCAL Request_info request_info; // global for correct log() reporting
@@ -309,15 +306,10 @@ static void config_handler(SAPI_Info &info) {
 
 	// prepare to process request
 	Request r(info, request_info, String::Language(String::L_HTML|String::L_OPTIMIZE_BIT));
-	{
-		// initing ::request ptr for signal handlers
-		RequestController rc(&r);
-		// only once
-		config_filespec = locate_config(config_filespec, parser3_filespec);
-		// process main auto.p only
-		r.core(config_filespec, false, String::Empty);
-		// clearing ::request in RequestController desctructor to prevent signal handlers from accessing invalid memory
-	}
+	// only once
+	config_filespec = locate_config(config_filespec, parser3_filespec);
+	// process main auto.p only
+	r.core(config_filespec, false, String::Empty);
 }
 
 static void connection_handler(SAPI_Info_HTTPD &info, HTTPD_Connection &connection) {
@@ -342,13 +334,8 @@ static void connection_handler(SAPI_Info_HTTPD &info, HTTPD_Connection &connecti
 
 		// prepare to process request
 		Request r(info, request_info, String::Language(String::L_HTML|String::L_OPTIMIZE_BIT));
-		{
-			// initing ::request ptr for signal handlers
-			RequestController rc(&r);
-			// process the request
-			r.core(config_filespec, strcasecmp(request_info.method, "HEAD")==0, String("httpd-main"));
-			// clearing ::request in RequestController desctructor to prevent signal handlers from accessing invalid memory
-		}
+		// process the request
+		r.core(config_filespec, strcasecmp(request_info.method, "HEAD")==0, String("httpd-main"));
 	} catch(const Exception& e) { // exception in connection handling or unhandled exception
 		SAPI::log(info, "%s", e.comment());
 		SAPI::send_error(info, e.comment(), info.exception_http_status(e.type()));
