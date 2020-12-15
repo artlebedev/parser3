@@ -29,7 +29,7 @@ extern "C" {
 #include "ltdl.h"
 #include "pcre.h"
 
-volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.209 2020/12/10 16:38:09 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
+volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.210 2020/12/15 00:21:33 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
 
 // defines
 
@@ -47,11 +47,12 @@ short hex_value[0x100] = {
 	  0, 10, 11, 12, 13, 14, 15,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 };
 
-THREAD_LOCAL Request* thread_request=NULL;
+THREAD_LOCAL Request* thread_request=NULL; // every TLS should be referenced elsewhere, or GC will collect it
 
 void pa_register_thread_request(Request& r) {
 	thread_request=&r;
 }
+
 /// retrives request set by pa_set_request function, useful in contextless places [slow]
 Request& pa_thread_request() {
 	if(!thread_request)
@@ -222,7 +223,7 @@ void pa_globals_init() {
 #ifndef PA_DEBUG_DISABLE_GC
 	// Dont collect unless explicitly requested. This is quicker (~30% ),
 	// but less memory-efficient(~8%), so deciding for speed.
-	GC_dont_gc=1; 
+	GC_disable();
 	// as we log allocation errors, we don't need default gc warnings (without timestamp and URI)
 	GC_set_warn_proc(GC_ignore_warn_proc);
 #endif
