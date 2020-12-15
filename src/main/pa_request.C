@@ -34,7 +34,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.402 2020/12/15 10:25:16 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.403 2020/12/15 12:16:04 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -330,10 +330,12 @@ void Request::configure_admin(VStateless_class& conf_class) {
 		if(pa_httpd_timeout==0) pa_httpd_timeout=INT_MAX;
 	}, "HTTPD.%s must be int");
 
-	HTTPD_Server::mode=HTTPD_Server::SEQUENTIAL;
-	CONF_OPTION(httpd, httpd_mode_name, {
-		HTTPD_Server::set_mode(option->as_string());
-	}, "HTTPD.%s must be string");
+	if(httpd)
+		if(Value* option=httpd->get_element( httpd_mode_name)) {
+			if(option->get_junction())
+				throw Exception(PARSER_RUNTIME, 0, "$main:HTTPD:mode must be string");
+			HTTPD_Server::set_mode(option->as_string());
+		}
 
 	// configure method_frame options
 	//	until someone with less privileges have overriden them
