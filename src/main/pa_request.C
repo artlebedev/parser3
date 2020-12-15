@@ -34,7 +34,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.403 2020/12/15 12:16:04 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.404 2020/12/15 16:52:36 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -830,7 +830,8 @@ static void output_pieces(Request& r, bool header_only, const String& filename, 
 			if(rg.start == UNSET && rg.end != UNSET){
 				if(rg.end > content_length)
 					rg.end = content_length;
-				rg = { content_length - rg.end, content_length-1 };
+				rg.start = content_length - rg.end;
+				rg.end =  content_length-1;
 			} else if(rg.start != UNSET && rg.end == UNSET){
 				if(rg.start >= content_length)
 					return SAPI::send_error(r.sapi_info, "", "416");
