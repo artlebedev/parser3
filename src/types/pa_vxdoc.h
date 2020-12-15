@@ -8,7 +8,7 @@
 #ifndef PA_VXDOC_H
 #define PA_VXDOC_H
 
-#define IDENT_PA_VXDOC_H "$Id: pa_vxdoc.h,v 1.60 2017/11/15 22:48:58 moko Exp $"
+#define IDENT_PA_VXDOC_H "$Id: pa_vxdoc.h,v 1.61 2020/12/15 16:37:41 moko Exp $"
 
 #include "classes.h"
 #include "pa_common.h"
@@ -41,8 +41,6 @@ struct XDocOutputOptions : public PA_Allocated {
 
 	void append(Request& r, HashStringValue* options, bool with_filename=false);
 };
-
-typedef struct _xsltStylesheet xsltStylesheet;
 
 /// value of type 'xdoc'. implemented with libxml & co
 class VXdoc: public VXnode {
@@ -77,7 +75,7 @@ public: // VXNode
 
 public: // usage
 
-	VXdoc() : VXnode(*this), stylesheet(0), fcharsets(0), fdocument(0) {}
+	VXdoc() : VXnode(*this), fcharsets(0), fdocument(0) {}
 
 	VXdoc(Request_charsets& acharsets, xmlDoc& adocument) : VXnode(*this) {
 		set_xmldoc(acharsets, adocument);
@@ -89,7 +87,6 @@ public: // VXdoc
 		fcharsets=&acharsets;
 		fdocument=&adocument;
 		fdocument->_private=this;
-		stylesheet=0;
 	}
 
 	xmlDoc& get_xmldoc() {
@@ -111,8 +108,6 @@ public:
 	VHash search_namespaces;
 
 	XDocOutputOptions output_options;
-
-	xsltStylesheet *stylesheet;
 
 private:
 

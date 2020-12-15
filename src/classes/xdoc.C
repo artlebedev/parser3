@@ -28,7 +28,7 @@
 #include "xnode.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_XDOC_C="$Id: xdoc.C,v 1.198 2020/12/11 14:04:09 moko Exp $";
+volatile const char * IDENT_XDOC_C="$Id: xdoc.C,v 1.199 2020/12/15 16:37:40 moko Exp $";
 
 // defines
 
@@ -116,39 +116,6 @@ public:
 private:
 	bool _Owns;
 	xsltTransformContext *_Ptr;
-};
-
-class xsltStylesheet_auto_ptr {
-public:
-	explicit xsltStylesheet_auto_ptr(xsltStylesheet *_APtr = 0) 
-		: _Owns(_APtr != 0), _Ptr(_APtr) {}
-	xsltStylesheet_auto_ptr(const xsltStylesheet_auto_ptr& _Y) 
-		: _Owns(_Y._Owns), _Ptr(_Y.release()) {}
-	xsltStylesheet_auto_ptr& operator=(const xsltStylesheet_auto_ptr& _Y) 
-		{if (this != &_Y)
-			{if (_Ptr != _Y.get())
-				{if (_Owns && _Ptr)
-					xsltFreeStylesheet(_Ptr);
-				_Owns = _Y._Owns; }
-			else if (_Y._Owns)
-				_Owns = true;
-			_Ptr = _Y.release(); }
-		return (*this); }
-	~xsltStylesheet_auto_ptr()
-		{if (_Owns && _Ptr)
-			xsltFreeStylesheet(_Ptr); }
-	xsltStylesheet& operator*() const 
-		{return (*get()); }
-	xsltStylesheet *operator->() const 
-		{return (get()); }
-	xsltStylesheet *get() const 
-		{return (_Ptr); }
-	xsltStylesheet *release() const 
-		{((xsltStylesheet_auto_ptr *)this)->_Owns = false;
-		return (_Ptr); }
-private:
-	bool _Owns;
-	xsltStylesheet *_Ptr;
 };
 
 // methods
@@ -472,11 +439,9 @@ String::C xdoc2buf(Request& r, VXdoc& vdoc,
 
 	xmlOutputBuffer_auto_ptr outputBuffer(xmlAllocOutputBuffer(renderer));
 
-	xsltStylesheet_auto_ptr stylesheet(xsltNewStylesheet());
-	if(!stylesheet.get())
-		throw Exception(0,
-			0,
-			"xsltNewStylesheet failed");
+	xsltStylesheet *stylesheet = xsltNewStylesheet();
+	if(!stylesheet)
+		throw Exception(0, 0, "xsltNewStylesheet failed");
 
 	#define OOSTRING2STYLE(name) \
 		stylesheet->name=oo.name?BAD_CAST xmlMemStrdup((const char*)r.transcode(*oo.name)):0
@@ -497,7 +462,7 @@ String::C xdoc2buf(Request& r, VXdoc& vdoc,
 	xmldoc.encoding=BAD_CAST xmlMemStrdup(render_encoding);
 	if(header_encoding)
 		stylesheet->encoding=BAD_CAST xmlMemStrdup(header_encoding);
-	if(xsltSaveResultTo(outputBuffer.get(), &xmldoc, stylesheet.get())<0
+	if(xsltSaveResultTo(outputBuffer.get(), &xmldoc, stylesheet)<0
 		|| xmlHaveGenericErrors())
 		throw XmlException(0, r);
 
@@ -594,8 +559,7 @@ static void add_xslt_param(
 	*info->current_transform_param++=(s=info->r->transcode(meaning->as_string())); *info->strings+=s;
 }
 
-static VXdoc& _transform(Request& r, const String* stylesheet_source, 
-						   VXdoc& vdoc, xsltStylesheetPtr stylesheet, const xmlChar** transform_params) 
+static VXdoc& _transform(Request& r, const String* stylesheet_source, VXdoc& vdoc, xsltStylesheetPtr stylesheet, const xmlChar** transform_params) 
 {
 	xmlDoc& xmldoc=vdoc.get_xmldoc();
 
@@ -669,20 +633,17 @@ static void _transform(Request& r, MethodParams& params) {
 	VXdoc* result;
 	if(Value *vxdoc=params[0].as(VXDOC_TYPE)) { // stylesheet (xdoc)
 		VXdoc& vstylesheet=static_cast<VXdoc &>(*vxdoc);
+		xmlDoc& stylesheetdoc=vstylesheet.get_xmldoc();
 
-		if(!vstylesheet.stylesheet){
-			xmlDoc& stylesheetdoc=vstylesheet.get_xmldoc();
-
-			// compile xdoc stylesheet
-			vstylesheet.stylesheet=xsltParseStylesheetDoc(&stylesheetdoc);
-			if(xmlHaveGenericErrors())
-				throw XmlException(0, r);
-			if(!vstylesheet.stylesheet)
-				throw Exception("xml", 0, "stylesheet failed to compile");
-		}
+		// compile xdoc stylesheet
+		xsltStylesheet *stylesheet=xsltParseStylesheetDoc(&stylesheetdoc);
+		if(xmlHaveGenericErrors())
+			throw XmlException(0, r);
+		if(!stylesheet)
+			throw Exception("xml", 0, "stylesheet failed to compile");
 
 		// transform!
-		result=&_transform(r, 0, vdoc, vstylesheet.stylesheet, transform_params);
+		result=&_transform(r, 0, vdoc, stylesheet, transform_params);
 	} else { // stylesheet (file name)
 		// extablish stylesheet connection
 		const String& stylesheet_filespec=r.full_disk_path(params.as_string(0, "stylesheet must be file name (string) or DOM document (xdoc)"));
