@@ -256,33 +256,6 @@ size_t CORD_str(CORD x, size_t start, CORD s, size_t xlen);
 CORD CORD_chars(char c, size_t i);
 # define CORD_nul(i) CORD_chars('\0', (i))
 
-/* Turn a file into cord.  The file must be seekable.  Its contents	*/
-/* must remain constant.  The file may be accessed as an immediate	*/
-/* result of this call and/or as a result of subsequent accesses to 	*/
-/* the cord.  Short files are likely to be immediately read, but	*/
-/* long files are likely to be read on demand, possibly relying on 	*/
-/* stdio for buffering.							*/
-/* We must have exclusive access to the descriptor f, i.e. we may	*/
-/* read it at any time, and expect the file pointer to be		*/
-/* where we left it.  Normally this should be invoked as		*/
-/* CORD_from_file(fopen(...))						*/
-/* CORD_from_file arranges to close the file descriptor when it is no	*/
-/* longer needed (e.g. when the result becomes inaccessible).		*/ 
-/* The file f must be such that ftell reflects the actual character	*/
-/* position in the file, i.e. the number of characters that can be 	*/
-/* or were read with fread.  On UNIX systems this is always true.  On	*/
-/* MS Windows systems, f must be opened in binary mode.			*/
-CORD CORD_from_file(FILE * f);
-
-/* Equivalent to the above, except that the entire file will be read	*/
-/* and the file pointer will be closed immediately.			*/
-/* The binary mode restriction from above does not apply.		*/
-CORD CORD_from_file_eager(FILE * f);
-
-/* Equivalent to the above, except that the file will be read on demand.*/
-/* The binary mode restriction applies.					*/
-CORD CORD_from_file_lazy(FILE * f);
-
 /* Turn a cord into a C string.	The result shares no structure with	*/
 /* x, and is thus modifiable.						*/
 char * CORD_to_char_star(CORD x, size_t len);
