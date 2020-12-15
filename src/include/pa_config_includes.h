@@ -96,6 +96,10 @@
 # include <signal.h>
 #endif
 
+#ifdef HAVE_PTHREAD_H
+# include <pthread.h>
+#endif
+
 #ifdef HAVE_ERRNO_H
 # include <errno.h>
 #endif
