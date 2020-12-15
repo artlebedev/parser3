@@ -7,8 +7,6 @@
 
 #include "pa_config_includes.h"
 
-#define NO_STRINGSTREAM
-
 #if (!defined(NO_STRINGSTREAM) && !defined(FREEBSD4) && !defined(PA_DEBUG_DISABLE_GC))
 #include <sstream>
 #include "../lib/gc/include/gc_allocator.h"
@@ -27,7 +25,7 @@
 #include "pa_vbool.h"
 #include "pa_array.h"
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.352 2020/12/14 20:58:15 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.353 2020/12/15 00:27:12 moko Exp $";
 
 // class
 
