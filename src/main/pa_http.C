@@ -14,7 +14,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.107 2020/12/10 22:38:42 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.108 2020/12/15 10:25:16 moko Exp $" IDENT_PA_HTTP_H; 
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -1193,6 +1193,17 @@ bool HTTPD_Connection::accept(int server_sock, int timeout_value) {
 }
 
 HTTPD_Server::HTTPD_MODE HTTPD_Server::mode = HTTPD_Server::SEQUENTIAL;
+
+void HTTPD_Server::set_mode(const String &value){
+                if(value == "sequental") mode = SEQUENTIAL;
+                else if (value == "threaded") mode = MULTITHREADED;
+#ifdef _MSC_VER
+		else throw Exception("httpd.mode", &value, "$main:HTTPD.mode must be 'sequental' or 'threaded'");
+#else
+                else if (value == "parallel") mode = PARALLEL;
+		else throw Exception("httpd.mode", &value, "$main:HTTPD.mode must be 'sequental', 'parallel' or 'threaded'");
+#endif
+}
 
 int HTTPD_Server::bind(const char *host_port){
 	struct sockaddr_in me;

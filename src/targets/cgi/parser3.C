@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.326 2020/12/10 23:04:17 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.327 2020/12/15 10:25:17 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -367,12 +367,11 @@ static void httpd_mode() {
 
 	int sock = HTTPD_Server::bind(httpd_host_port);
 
-#if 0
+#ifdef SIGCHLD
 	signal(SIGCHLD, SIG_IGN);
+#endif
+#ifdef SIGPIPE
 	signal(SIGPIPE, SIG_IGN);
-
-//	HTTPD_Server::mode = HTTPD_Server::PARALLEL;
-//	HTTPD_Server::mode = HTTPD_Server::MULTITHREADED;
 #endif
 
 	while(1){
@@ -384,7 +383,6 @@ static void httpd_mode() {
 				continue;
 
 			switch (HTTPD_Server::mode) {
-#if 0
 				case HTTPD_Server::MULTITHREADED:
 					pthread_t thread;
 					pthread_attr_t attr;
@@ -395,7 +393,7 @@ static void httpd_mode() {
 						throw Exception("httpd.fork", 0, "thread creation failed (%d)", result);
 					connection.sock=-1;
 					break;
-
+#ifndef _MSC_VER
 				case HTTPD_Server::PARALLEL:
 					pid=fork();
 					if(pid<0)

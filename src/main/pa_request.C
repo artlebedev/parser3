@@ -25,6 +25,7 @@
 #include "pa_charset.h"
 #include "pa_charsets.h"
 #include "pa_cache_managers.h"
+#include "pa_http.h"
 #include "pa_vmail.h"
 #include "pa_vform.h"
 #include "pa_vcookie.h"
@@ -33,7 +34,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.401 2020/12/09 12:37:05 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.402 2020/12/15 10:25:16 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -103,6 +104,7 @@ static const String file_size_limit_name("max_file_size");
 static const String lock_wait_timeout_name("lock_wait_timeout");
 static const String httpd_name("HTTPD");
 static const String httpd_timeout_name("timeout");
+static const String httpd_mode_name("mode");
 
 static const String conf_method_name("conf");
 static const String post_process_method_name("postprocess");
@@ -327,6 +329,11 @@ void Request::configure_admin(VStateless_class& conf_class) {
 		pa_httpd_timeout=option->as_int();
 		if(pa_httpd_timeout==0) pa_httpd_timeout=INT_MAX;
 	}, "HTTPD.%s must be int");
+
+	HTTPD_Server::mode=HTTPD_Server::SEQUENTIAL;
+	CONF_OPTION(httpd, httpd_mode_name, {
+		HTTPD_Server::set_mode(option->as_string());
+	}, "HTTPD.%s must be string");
 
 	// configure method_frame options
 	//	until someone with less privileges have overriden them
