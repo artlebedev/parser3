@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.327 2020/12/15 10:25:17 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.328 2020/12/15 13:08:17 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -21,6 +21,13 @@ volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.327 2020/12/15 10:25:1
 #include <crtdbg.h>
 #include <windows.h>
 #include <direct.h>
+
+extern "C" HANDLE WINAPI GC_CreateThread(LPSECURITY_ATTRIBUTES, DWORD, LPTHREAD_START_ROUTINE, LPVOID, DWORD, LPDWORD);
+
+#else
+
+extern "C" int GC_pthread_create(pthread_t *, const pthread_attr_t *, void *(*)(void *), void * /* arg */);
+
 #endif
 
 // defines
@@ -348,7 +355,11 @@ static void connection_handler(SAPI_Info_HTTPD &info, HTTPD_Connection &connecti
 	}
 }
 
+#ifdef _MSC_VER
+DWORD WINAPI connection_thread(void *arg){
+#else
 static void *connection_thread(void *arg){
+#endif
 	HTTPD_Connection &connection=*(HTTPD_Connection*)arg;
 	SAPI_Info_HTTPD info(connection);
 
@@ -359,7 +370,7 @@ static void *connection_thread(void *arg){
 	}
 
 	delete(&connection);
-	return NULL;
+	return 0;
 }
 
 static void httpd_mode() {
@@ -375,8 +386,9 @@ static void httpd_mode() {
 #endif
 
 	while(1){
+#ifndef _MSC_VER
 		pid_t pid=1;
-
+#endif
 		try {
 			HTTPD_Connection connection;
 			if(!connection.accept(sock, 5))
@@ -384,6 +396,12 @@ static void httpd_mode() {
 
 			switch (HTTPD_Server::mode) {
 				case HTTPD_Server::MULTITHREADED:
+#ifdef _MSC_VER
+					if (!GC_CreateThread(0, 0, connection_thread, new HTTPD_Connection(connection), 0, 0))
+						throw Exception("httpd.fork", 0, "thread creation failed");
+					connection.sock = -1;
+					break;
+#else
 					pthread_t thread;
 					pthread_attr_t attr;
 					pthread_attr_init(&attr);
@@ -393,7 +411,6 @@ static void httpd_mode() {
 						throw Exception("httpd.fork", 0, "thread creation failed (%d)", result);
 					connection.sock=-1;
 					break;
-#ifndef _MSC_VER
 				case HTTPD_Server::PARALLEL:
 					pid=fork();
 					if(pid<0)
@@ -411,8 +428,10 @@ static void httpd_mode() {
 			SAPI::log(*sapiInfo, "%s", e.comment());
 		}
 
+#ifndef _MSC_VER
 		if(pid==0) // fork child
 			exit(0);
+#endif
 	}
 }
 
