@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 1080
+Content-Length: 1054
 
 1. original template: <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
@@ -20,7 +20,7 @@ but transform OK as we cache compiled one: 2
 
 transform still OK: test
 
-4. new templates are ignored: <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0"><xsl:template match="*">test</xsl:template><xsl:template match="root">works if used before first transform</xsl:template></xsl:stylesheet>
+4. new templates are not ignored: <?xml version="1.0" encoding="UTF-8"?>
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0"><xsl:template match="*">test</xsl:template><xsl:template match="root">works</xsl:template></xsl:stylesheet>
 
-transform: test
+transform: works

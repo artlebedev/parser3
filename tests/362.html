@@ -24,10 +24,10 @@ transform still OK: ^transform[3]
 
 $new[^template.documentElement.appendChild[^template.createElementNS[http://www.w3.org/1999/XSL/Transform;xsl:template]]]
 ^new.setAttribute[match;root]
-$new.nodeValue[works if used before first transform]
+$new.nodeValue[works]
 
-4. new templates are ignored: ^taint[as-is][^template.string[]]
-transform: ^transform[3]
+4. new templates are not ignored: ^taint[as-is][^template.string[]]
+transform: ^transform[4]
 
 
 @transform[param]
