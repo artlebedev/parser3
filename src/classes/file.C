@@ -1,7 +1,7 @@
 /** @file
 	Parser: @b file parser class.
 
-	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2020 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
@@ -26,7 +26,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.273 2020/11/10 22:42:24 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.274 2020/12/15 17:10:28 moko Exp $";
 
 // defines
 

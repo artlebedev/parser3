@@ -1,11 +1,11 @@
 /** @file
 	Parser: String class part: untaint mechanizm.
 
-	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2020 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_UNTAINT_C="$Id: untaint.C,v 1.175 2020/08/13 11:44:20 moko Exp $";
+volatile const char * IDENT_UNTAINT_C="$Id: untaint.C,v 1.176 2020/12/15 17:10:37 moko Exp $";
 
 
 #include "pa_string.h"

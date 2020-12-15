@@ -1,7 +1,7 @@
 /** @file
 	Parser: directory scanning for different OS-es.
 
-	Copyright (c) 2000-2017 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2000-2020 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
@@ -10,7 +10,7 @@
 #include "pa_request.h"
 #include "pa_convert_utf.h"
 
-volatile const char * IDENT_PA_DIR_C="$Id: pa_dir.C,v 1.29 2017/02/07 22:00:42 moko Exp $" IDENT_PA_DIR_H;
+volatile const char * IDENT_PA_DIR_C="$Id: pa_dir.C,v 1.30 2020/12/15 17:10:36 moko Exp $" IDENT_PA_DIR_H;
 
 #ifdef _MSC_VER
 

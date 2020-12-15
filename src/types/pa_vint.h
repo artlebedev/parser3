@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b int parser class decl.
 
-	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2020 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VINT_H
 #define PA_VINT_H
 
-#define IDENT_PA_VINT_H "$Id: pa_vint.h,v 1.54 2017/02/07 22:00:48 moko Exp $"
+#define IDENT_PA_VINT_H "$Id: pa_vint.h,v 1.55 2020/12/15 17:10:41 moko Exp $"
 
 // include
 

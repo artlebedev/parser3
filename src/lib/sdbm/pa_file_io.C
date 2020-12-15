@@ -1,7 +1,7 @@
 /** @file
 	Parser: implementation of apr functions.
 
-	Copyright (c) 2000-2017 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2000-2020 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
@@ -9,7 +9,7 @@
 #include "pa_memory.h"
 #include "pa_os.h"
 
-volatile const char * IDENT_PA_FILE_IO_C="$Id: pa_file_io.C,v 1.5 2019/12/05 16:22:10 moko Exp $";
+volatile const char * IDENT_PA_FILE_IO_C="$Id: pa_file_io.C,v 1.6 2020/12/15 17:10:33 moko Exp $";
 
 struct pa_file_t {
     int handle;

@@ -1,14 +1,14 @@
 /** @file
 	Parser: Junction class decl.
 
-	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2020 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_JUNCTION_H
 #define PA_JUNCTION_H
 
-#define IDENT_PA_JUNCTION_H "$Id: pa_junction.h,v 1.14 2017/02/07 22:00:46 moko Exp $"
+#define IDENT_PA_JUNCTION_H "$Id: pa_junction.h,v 1.15 2020/12/15 17:10:38 moko Exp $"
 
 
 #include "pa_string.h"

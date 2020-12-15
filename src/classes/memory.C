@@ -1,7 +1,7 @@
 /** @file
 	Parser: @b memory parser class.
 
-	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2020 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
 */
 
@@ -9,7 +9,7 @@
 #include "pa_vmemory.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_MEMORY_C="$Id: memory.C,v 1.17 2020/12/15 13:33:26 moko Exp $" IDENT_PA_VMEMORY_H;
+volatile const char * IDENT_MEMORY_C="$Id: memory.C,v 1.18 2020/12/15 17:10:29 moko Exp $" IDENT_PA_VMEMORY_H;
 
 class MMemory: public Methoded {
 public:

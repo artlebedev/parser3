@@ -1,14 +1,14 @@
 /**	@file
 	Parser: base64 functions impl.
 
-	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2020 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #include "pa_base64.h"
 #include "pa_common.h"
 
-volatile const char * IDENT_PA_BASE64_C="$Id: pa_base64.C,v 1.10 2019/12/04 20:39:39 moko Exp $" IDENT_PA_BASE64_H;
+volatile const char * IDENT_PA_BASE64_C="$Id: pa_base64.C,v 1.11 2020/12/15 17:10:34 moko Exp $" IDENT_PA_BASE64_H;
 
 /*
  *  BASE64 part inspired by g_mime_utils

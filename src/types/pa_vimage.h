@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b image parser type decl.
 
-	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2020 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VIMAGE_H
 #define PA_VIMAGE_H
 
-#define IDENT_PA_VIMAGE_H "$Id: pa_vimage.h,v 1.60 2017/05/17 14:22:12 moko Exp $"
+#define IDENT_PA_VIMAGE_H "$Id: pa_vimage.h,v 1.61 2020/12/15 17:10:41 moko Exp $"
 
 #include "classes.h"
 #include "pa_common.h"

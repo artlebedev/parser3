@@ -1,14 +1,14 @@
 /** @file
 	Parser: table class decl.
 
-	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2020 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_TABLE_H
 #define PA_TABLE_H
 
-#define IDENT_PA_TABLE_H "$Id: pa_table.h,v 1.70 2017/02/07 22:00:37 moko Exp $"
+#define IDENT_PA_TABLE_H "$Id: pa_table.h,v 1.71 2020/12/15 17:10:32 moko Exp $"
 
 #include "pa_types.h"
 #include "pa_hash.h"

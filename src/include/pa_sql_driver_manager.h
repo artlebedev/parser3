@@ -2,14 +2,14 @@
 	Parser: sql driver manager decl.
 	global sql driver manager, must be thread-safe
 
-	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2020 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_SQL_DRIVER_MANAGER_H
 #define PA_SQL_DRIVER_MANAGER_H
 
-#define IDENT_PA_SQL_DRIVER_MANAGER_H "$Id: pa_sql_driver_manager.h,v 1.40 2020/12/11 11:52:21 moko Exp $"
+#define IDENT_PA_SQL_DRIVER_MANAGER_H "$Id: pa_sql_driver_manager.h,v 1.41 2020/12/15 17:10:32 moko Exp $"
 
 
 #include "pa_sql_driver.h"

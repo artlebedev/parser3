@@ -1,14 +1,14 @@
 /** @file
 	Parser: request info class decl.
 
-	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2020 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_REQUEST_INFO_H
 #define PA_REQUEST_INFO_H
 
-#define IDENT_PA_REQUEST_INFO_H "$Id: pa_request_info.h,v 1.15 2020/10/10 06:08:36 moko Exp $"
+#define IDENT_PA_REQUEST_INFO_H "$Id: pa_request_info.h,v 1.16 2020/12/15 17:10:32 moko Exp $"
 
 /// some information from web server
 class Request_info {

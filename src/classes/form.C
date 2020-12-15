@@ -1,7 +1,7 @@
 /** @file
 	Parser: @b form parser class.
 
-	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2020 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
@@ -11,7 +11,7 @@
 #include "pa_request.h"
 #include "pa_vform.h"
 
-volatile const char * IDENT_FORM_C="$Id: form.C,v 1.49 2017/02/07 22:00:27 moko Exp $";
+volatile const char * IDENT_FORM_C="$Id: form.C,v 1.50 2020/12/15 17:10:28 moko Exp $";
 
 /// $LIMITS.max_post_size default 10M
 const size_t MAX_POST_SIZE_DEFAULT=10*0x400*0x400;

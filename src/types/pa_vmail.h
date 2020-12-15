@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b mail class decls.
 
-	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2020 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VMAIL_H
 #define PA_VMAIL_H
 
-#define IDENT_PA_VMAIL_H "$Id: pa_vmail.h,v 1.24 2020/05/22 21:14:01 moko Exp $"
+#define IDENT_PA_VMAIL_H "$Id: pa_vmail.h,v 1.25 2020/12/15 17:10:41 moko Exp $"
 
 #include "classes.h"
 #include "pa_common.h"

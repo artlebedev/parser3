@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b Methoded class decl.
 
-	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2020 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef CLASSES_H
 #define CLASSES_H
 
-#define IDENT_CLASSES_H "$Id: classes.h,v 1.40 2017/02/07 22:00:25 moko Exp $"
+#define IDENT_CLASSES_H "$Id: classes.h,v 1.41 2020/12/15 17:10:27 moko Exp $"
 
 // include
 

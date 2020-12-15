@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b memory parser class.
 
-	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2020 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VMEMORY_H
 #define PA_VMEMORY_H
 
-#define IDENT_PA_VMEMORY_H "$Id: pa_vmemory.h,v 1.12 2017/02/07 22:00:49 moko Exp $"
+#define IDENT_PA_VMEMORY_H "$Id: pa_vmemory.h,v 1.13 2020/12/15 17:10:42 moko Exp $"
 
 #include "classes.h"
 #include "pa_vstateless_object.h"

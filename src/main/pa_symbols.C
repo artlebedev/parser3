@@ -1,12 +1,12 @@
 /** @file
 	Parser: static symbols cache implementation.
-	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2020 Art. Lebedev Studio (http://www.artlebedev.com)
 */
 
 #include "pa_symbols.h"
 #include "pa_vstring.h"
 
-volatile const char * IDENT_PA_SYMBOLS_C="$Id: pa_symbols.C,v 1.9 2017/02/07 22:00:44 moko Exp $" IDENT_PA_SYMBOLS_H;
+volatile const char * IDENT_PA_SYMBOLS_C="$Id: pa_symbols.C,v 1.10 2020/12/15 17:10:37 moko Exp $" IDENT_PA_SYMBOLS_H;
 
 const String Symbols::SELF_SYMBOL("self");
 const String Symbols::CALLER_SYMBOL("caller");

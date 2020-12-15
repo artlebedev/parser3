@@ -1,14 +1,14 @@
 /** @file
 	Parser: random related functions.
 
-	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2020 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_RANDOM_H
 #define PA_RANDOM_H
 
-#define IDENT_PA_RANDOM_H "$Id: pa_random.h,v 1.7 2017/02/07 22:00:35 moko Exp $"
+#define IDENT_PA_RANDOM_H "$Id: pa_random.h,v 1.8 2020/12/15 17:10:31 moko Exp $"
 
 #include "pa_types.h"
 

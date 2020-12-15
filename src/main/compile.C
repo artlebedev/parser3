@@ -1,11 +1,11 @@
 /** @file
 	Parser: compiler part of request class.
 
-	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2020 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_COMPILE_C="$Id: compile.C,v 1.86 2017/02/07 22:00:40 moko Exp $";
+volatile const char * IDENT_COMPILE_C="$Id: compile.C,v 1.87 2020/12/15 17:10:33 moko Exp $";
 
 #include "pa_request.h"
 #include "compile_tools.h"

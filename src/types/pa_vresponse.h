@@ -1,14 +1,14 @@
 /** @file
 	Parser: response class.
 
-	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2020 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VRESPONSE_H
 #define PA_VRESPONSE_H
 
-#define IDENT_PA_VRESPONSE_H "$Id: pa_vresponse.h,v 1.47 2017/02/07 22:00:50 moko Exp $"
+#define IDENT_PA_VRESPONSE_H "$Id: pa_vresponse.h,v 1.48 2020/12/15 17:10:43 moko Exp $"
 
 #include "pa_vstateless_object.h"
 #include "pa_string.h"

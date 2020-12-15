@@ -1,7 +1,7 @@
 /** @file
 	Parser: SMTP sender.
 
-	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2020 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 
 	Parts of the code here is based upon an early gensock and blat
@@ -10,7 +10,7 @@
 #include "pa_exception.h"
 #include "smtp.h"
 
-volatile const char * IDENT_SMTP_C="$Id: smtp.C,v 1.14 2017/02/07 22:00:39 moko Exp $" IDENT_SMTP_H;
+volatile const char * IDENT_SMTP_C="$Id: smtp.C,v 1.15 2020/12/15 17:10:33 moko Exp $" IDENT_SMTP_H;
 
 // pa_common.C
 #undef snprintf

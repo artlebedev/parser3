@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b regex class decls.
 
-	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2020 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VREGEX_H
 #define PA_VREGEX_H
 
-#define IDENT_PA_VREGEX_H "$Id: pa_vregex.h,v 1.13 2019/12/05 21:44:26 moko Exp $"
+#define IDENT_PA_VREGEX_H "$Id: pa_vregex.h,v 1.14 2020/12/15 17:10:42 moko Exp $"
 
 // include
 

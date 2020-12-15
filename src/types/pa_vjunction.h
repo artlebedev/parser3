@@ -1,14 +1,14 @@
 /**	@file
 	Parser: @b junction class decl.
 
-	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2020 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VJUNCTION_H
 #define PA_VJUNCTION_H
 
-#define IDENT_PA_VJUNCTION_H "$Id: pa_vjunction.h,v 1.36 2017/02/07 22:00:49 moko Exp $"
+#define IDENT_PA_VJUNCTION_H "$Id: pa_vjunction.h,v 1.37 2020/12/15 17:10:41 moko Exp $"
 
 // include
 

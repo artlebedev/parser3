@@ -1,13 +1,13 @@
 /** @file
 	Parser: sql driver manager implementation.
 
-	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2020 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #include "pa_charsets.h"
 
-volatile const char * IDENT_PA_CHARSETS_C="$Id: pa_charsets.C,v 1.24 2017/02/07 22:00:41 moko Exp $" IDENT_PA_CHARSETS_H;
+volatile const char * IDENT_PA_CHARSETS_C="$Id: pa_charsets.C,v 1.25 2020/12/15 17:10:35 moko Exp $" IDENT_PA_CHARSETS_H;
 
 // defines for globals
 

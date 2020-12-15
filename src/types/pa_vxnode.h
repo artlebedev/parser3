@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b xnode parser class decl.
 
-	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2020 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_VXNODE_H
 #define PA_VXNODE_H
 
-#define IDENT_PA_VXNODE_H "$Id: pa_vxnode.h,v 1.48 2017/02/07 22:00:52 moko Exp $"
+#define IDENT_PA_VXNODE_H "$Id: pa_vxnode.h,v 1.49 2020/12/15 17:10:44 moko Exp $"
 
 #include "classes.h"
 #include "pa_common.h"

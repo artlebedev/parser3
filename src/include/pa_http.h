@@ -1,14 +1,14 @@
 /** @file
 	Parser: commonly used functions.
 
-	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2020 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_HTTP_H
 #define PA_HTTP_H
 
-#define IDENT_PA_HTTP_H "$Id: pa_http.h,v 1.28 2020/12/15 10:25:16 moko Exp $"
+#define IDENT_PA_HTTP_H "$Id: pa_http.h,v 1.29 2020/12/15 17:10:31 moko Exp $"
 
 #include "pa_vstring.h"
 #include "pa_vint.h"

@@ -1,14 +1,14 @@
 /** @file
 	Parser: compiler support helper functions decls.
 
-	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2020 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef COMPILE_TOOLS
 #define COMPILE_TOOLS
 
-#define IDENT_COMPILE_TOOLS_H "$Id: compile_tools.h,v 1.114 2019/11/25 22:01:51 moko Exp $"
+#define IDENT_COMPILE_TOOLS_H "$Id: compile_tools.h,v 1.115 2020/12/15 17:10:34 moko Exp $"
 
 #include "pa_opcode.h"
 #include "pa_types.h"

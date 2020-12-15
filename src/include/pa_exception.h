@@ -1,14 +1,14 @@
 /** @file
 	Parser: exception decls.
 
-	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2020 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_EXCEPTION_H
 #define PA_EXCEPTION_H
 
-#define IDENT_PA_EXCEPTION_H "$Id: pa_exception.h,v 1.67 2020/10/14 21:20:15 moko Exp $"
+#define IDENT_PA_EXCEPTION_H "$Id: pa_exception.h,v 1.68 2020/12/15 17:10:31 moko Exp $"
 
 const char* const PARSER_RUNTIME = "parser.runtime";
 const char* const IMAGE_FORMAT = "image.format";

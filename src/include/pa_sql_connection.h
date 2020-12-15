@@ -1,14 +1,14 @@
 /** @file
 	Parser: sql fconnection decl.
 
-	Copyright (c) 2001-2017 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2020 Art. Lebedev Studio (http://www.artlebedev.com)
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
 #ifndef PA_SQL_CONNECTION_H
 #define PA_SQL_CONNECTION_H
 
-#define IDENT_PA_SQL_CONNECTION_H "$Id: pa_sql_connection.h,v 1.46 2020/12/10 23:21:09 moko Exp $"
+#define IDENT_PA_SQL_CONNECTION_H "$Id: pa_sql_connection.h,v 1.47 2020/12/15 17:10:32 moko Exp $"
 
 
 #include "pa_sql_driver.h"
