@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.332 2020/12/16 10:45:09 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.333 2020/12/16 11:04:22 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -14,6 +14,7 @@ volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.332 2020/12/16 10:45:0
 #include "pa_common.h"
 #include "pa_request.h"
 #include "pa_version.h"
+#include "pa_threads.h"
 #include "pa_vconsole.h"
 #include "pa_sapi_info.h"
 
@@ -98,7 +99,7 @@ static void log(const char* fmt, va_list args) {
 	time_t t=time(0);
 	if(const char* stamp=ctime(&t)) { // never saw that
 		if(size_t len=strlen(stamp)) // saw once stamp being =""
-			fprintf(f, "[%.*s] [%u] ", (int)len-1, stamp, (unsigned int)getpid() );
+			fprintf(f, "[%.*s] [%u] ", (int)len-1, stamp, (unsigned int)pa_get_thread_id() );
 	}
 	// message
 
