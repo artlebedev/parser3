@@ -34,7 +34,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.406 2020/12/16 19:27:40 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.407 2020/12/16 19:45:33 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -380,6 +380,33 @@ const char* Request::get_exception_cstr(const Exception& e, Request::Exception_d
 	return result;
 }
 
+Table &Request::Exception_trace::table(Request &r){
+	// $stack[^table::create{name	file	lineno	colno}]
+	Table::columns_type stack_trace_columns(new ArrayString);
+	*stack_trace_columns+=new String("name");
+	*stack_trace_columns+=new String("file");
+	*stack_trace_columns+=new String("lineno");
+	*stack_trace_columns+=new String("colno");
+	Table& stack_trace=*new Table(stack_trace_columns);
+
+	if(!is_empty()/*signed!*/)
+		for(size_t i=bottom_index(); i<top_index(); i++) {
+			Trace trace=get(i);
+			Table::element_type row(new ArrayString);
+
+			*row+=trace.name(); // name column
+			Operation::Origin origin=trace.origin();
+			if(origin.file_no) {
+				*row+=new String(r.file_list[origin.file_no], String::L_TAINTED); // 'file' column
+				*row+=new String(String::Body::Format(1+origin.line), String::L_CLEAN); // 'lineno' column
+				*row+=new String(String::Body::Format(1+origin.col), String::L_CLEAN); // 'colno' column
+			}
+			stack_trace+=row;
+		}
+
+	return stack_trace;
+}
+
 void Request::configure() {
 	// configure admin options if not configured yet
 	if(!configure_admin_done)
@@ -452,82 +479,55 @@ void Request::core(const char* config_filespec, bool header_only, const String &
 
 	} catch(const Exception& e) { // request handling problem
 		try {
-		// we're returning not result, but error explanation
+			// we're returning not result, but error explanation
 
-		Request::Exception_details details=get_details(e);
-		const char* exception_cstr=get_exception_cstr(e, details);
+			Request::Exception_details details=get_details(e);
+			const char* exception_cstr=get_exception_cstr(e, details);
 
-		// reset language to default
-		flang=fdefault_lang;
-		
-		// reset response
-		response.fields().clear();
+			// reset language to default
+			flang=fdefault_lang;
+			// reset response
+			response.fields().clear();
 
-		// this is what we'd return in $response:body
-		const String* body_string=0;
+			// this is what we'd return in $response:body
+			const String* body_string=0;
 
-		// maybe we'd be lucky enough as to report an error
-		// in a gracefull way...
-		if(const Method *method=main_class.get_method(*new String(UNHANDLED_EXCEPTION_METHOD_NAME))) {
-			// preparing to pass parameters to 
-			//	@unhandled_exception[exception;stack]
+			// maybe we'd be lucky enough as to report an error in a gracefull way...
+			if(const Method *method=main_class.get_method(*new String(UNHANDLED_EXCEPTION_METHOD_NAME))) {
+				// preparing parameters to @unhandled_exception[exception;stack]
 
-			// $stack[^table::create{name	file	lineno	colno}]
-			Table::columns_type stack_trace_columns(new ArrayString);
-			*stack_trace_columns+=new String("name");
-			*stack_trace_columns+=new String("file");
-			*stack_trace_columns+=new String("lineno");
-			*stack_trace_columns+=new String("colno");
-			Table& stack_trace=*new Table(stack_trace_columns);
-			if(!exception_trace.is_empty()/*signed!*/) 
-				for(size_t i=exception_trace.bottom_index(); i<exception_trace.top_index(); i++) {
-					Trace trace=exception_trace.get(i);
-					Table::element_type row(new ArrayString);
+				Table& stack_trace=exception_trace.table(*this);
+				exception_trace.clear(); // forget all about previous life, in case there would be error inside of this method, error handled would not be mislead by old stack contents (see extract_origin)
 
-					*row+=trace.name(); // name column
-					Operation::Origin origin=trace.origin();
-					if(origin.file_no) {
-						*row+=new String(file_list[origin.file_no], String::L_TAINTED); // 'file' column
-						*row+=new String(String::Body::Format(1+origin.line), String::L_CLEAN); // 'lineno' column
-						*row+=new String(String::Body::Format(1+origin.col), String::L_CLEAN); // 'colno' column
-					}
-					stack_trace+=row;
-				}
+				Value *params[]={&details.vhash, new VTable(&stack_trace)};
+				METHOD_FRAME_ACTION(*method, 0 /*no caller*/, main_class, {
+					frame.store_params(params, 2);
+					call(frame);
+					body_string=&frame.result().as_string();
+				});
+			}
 
-			// future $response:body=
-			//   execute ^unhandled_exception[exception;stack]
-			exception_trace.clear(); // forget all about previous life, in case there would be error inside of this method, error handled  would not be mislead by old stack contents (see extract_origin)
+			// conditionally log it
+			Value* vhandled=details.vhash.hash().get(exception_handled_part_name);
+			if(!vhandled || !vhandled->as_bool()) {
+				SAPI::log(sapi_info, "%s", exception_cstr);
+			}
 
-			Value *params[]={&details.vhash, new VTable(&stack_trace)};
-			METHOD_FRAME_ACTION(*method, 0 /*no caller*/, main_class, {
-				frame.store_params(params, 2);
-				call(frame);
-				body_string=&frame.result().as_string();
-			});
-		}
-		
-		// conditionally log it
-		Value* vhandled=details.vhash.hash().get(exception_handled_part_name);
-		if(!vhandled || !vhandled->as_bool()) {
-			SAPI::log(sapi_info, "%s", exception_cstr);
-		}
+			if(body_string) {  // could report an error beautifully?
+				VString body_vstring(*body_string);
 
-		if(body_string) {  // could report an error beautifully?
-			VString body_vstring(*body_string);
-			
-			body_file=body_vstring.as_vfile(flang, &charsets);
-			as_attachment=false;
-		} else {
-			// doing that ugly
-			SAPI::send_error(sapi_info, exception_cstr, !strcmp(e.type(), "file.missing") ? "404" : "500");
-			return;
-		}
+				body_file=body_vstring.as_vfile(flang, &charsets);
+				as_attachment=false;
+			} else {
+				// doing that ugly
+				SAPI::send_error(sapi_info, exception_cstr, !strcmp(e.type(), "file.missing") ? "404" : "500");
+				return;
+			}
 
 		} catch(const Exception& e) { // exception in unhandled exception
 			Request::Exception_details details=get_details(e);
-			const char* exception_cstr=get_exception_cstr(e, details);
 			// unconditionally log the beast in exception handler
-			throw Exception(0, 0, "Unhandled exception in %s", exception_cstr);
+			throw Exception(0, 0, "Unhandled exception in %s", get_exception_cstr(e, details));
 		}
 	}
 

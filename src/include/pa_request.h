@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.258 2020/12/15 17:10:31 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.259 2020/12/16 19:45:28 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -131,6 +131,8 @@ private:
 		bool is_empty() {
 			return fused==fbottom;
 		}
+
+		Table &table(Request &r);
 	};
 
 	///@{ core data
