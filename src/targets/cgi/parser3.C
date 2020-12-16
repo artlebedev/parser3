@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.334 2020/12/16 11:15:49 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.335 2020/12/16 11:23:10 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -59,7 +59,7 @@ static const char* filespec_4log = NULL; // null only if system-wide auto.p used
 
 // SAPI
 
-void log(const char* fmt, va_list args) {
+static void pa_log(const char* fmt, va_list args) {
 	bool opened=false;
 	FILE *f=0;
 
@@ -119,20 +119,18 @@ void log(const char* fmt, va_list args) {
 		fflush(f);
 }
 
-#ifdef PA_DEBUG_CGI_ENTRY_EXIT
-static void log(const char* fmt, ...) {
+void pa_log(const char* fmt, ...) {
 	va_list args;
 	va_start(args,fmt);
-	log(fmt, args);
+	pa_log(fmt, args);
 	va_end(args);
 }
-#endif
 
 // appends to parser3.log located next to the config file if openable, to stderr otherwize
 void SAPI::log(SAPI_Info&, const char* fmt, ...) {
 	va_list args;
 	va_start(args,fmt);
-	::log(fmt, args);
+	pa_log(fmt, args);
 	va_end(args);
 }
 
@@ -141,7 +139,7 @@ void SAPI::die(const char* fmt, ...) {
 
 	// logging first, first vsnprintf
 	va_start(args,fmt);
-	::log(fmt, args);
+	pa_log(fmt, args);
 	va_end(args);
 
 	// inform user, second vsnprintf
