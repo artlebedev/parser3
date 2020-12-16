@@ -8,7 +8,7 @@
 #ifndef PA_HTTP_H
 #define PA_HTTP_H
 
-#define IDENT_PA_HTTP_H "$Id: pa_http.h,v 1.29 2020/12/15 17:10:31 moko Exp $"
+#define IDENT_PA_HTTP_H "$Id: pa_http.h,v 1.30 2020/12/16 10:45:09 moko Exp $"
 
 #include "pa_vstring.h"
 #include "pa_vint.h"
@@ -99,7 +99,7 @@ public:
 	}
 
 	bool accept(int, int);
-	void read_header();
+	bool read_header();
 	size_t read_post(char *, size_t);
 	size_t send_body(const void *, size_t);
 };

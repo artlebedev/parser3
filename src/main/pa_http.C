@@ -14,7 +14,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.109 2020/12/15 17:10:36 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.110 2020/12/16 10:45:09 moko Exp $" IDENT_PA_HTTP_H; 
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -1018,7 +1018,7 @@ public:
 	}
 
 
-	void read_header(int);
+	bool read_header(int);
 	size_t read_post(int, char *, size_t);
 };
 
@@ -1046,7 +1046,7 @@ ssize_t HTTPD_request::pa_recv(int sockfd, char *buffer, size_t len){
 	}
 }
 
-void HTTPD_request::read_header(int sock) {
+bool HTTPD_request::read_header(int sock) {
 	enum HTTPD_request_state state = HTTPD_METHOD;
 
 	size_t chunk_size = 0x400*4;
@@ -1079,10 +1079,13 @@ void HTTPD_request::read_header(int sock) {
 					break;
 
 				parse_headers();
-				return;
+				return true;
 			}
 		}
 	}
+
+	if(!length) // browsers open connections in advance and they will be empty if user does not request more pages
+		return false;
 
 	if(state == HTTPD_METHOD)
 		throw Exception("httpd.request", 0, "bad request from host - no method found (size=%u)", length);
@@ -1091,6 +1094,8 @@ void HTTPD_request::read_header(int sock) {
 		parse_headers();
 		body_offset=length;
 	}
+
+	return true;
 }
 
 size_t HTTPD_request::read_post(int sock, char *body, size_t max_bytes) {
@@ -1133,9 +1138,9 @@ uint64_t HTTPD_Connection::content_length(){
 	return request->headers.content_length;
 }
 
-void HTTPD_Connection::read_header(){
+bool HTTPD_Connection::read_header(){
 	request = new HTTPD_request();
-	request->read_header(sock);
+	return request->read_header(sock);
 }
 
 size_t HTTPD_Connection::read_post(char *body, size_t max_bytes) {
