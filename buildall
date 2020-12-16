@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: buildall,v 1.33 2020/12/11 14:31:24 moko Exp $
+# $Id: buildall,v 1.34 2020/12/16 20:37:16 moko Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -123,8 +123,13 @@ echo
 mkdir src >/dev/null 2>&1
 
 if test ! -f "$project_dir/gc/lib/libgc.a"; then
+    lib="libatomic_ops-7.6.2"
+    prepare_gz ${lib}.tar.gz http://www.hboehm.info/gc/gc_source/
+
     lib="gc-8.0.4"
     prepare_gz ${lib}.tar.gz http://www.hboehm.info/gc/gc_source/
+
+    mv ../libatomic_ops-7.6.2 libatomic_ops
 
     echo "Configuring $lib..."
     CPPFLAGS="-DUSE_MMAP -DDONT_ADD_BYTE_AT_END" \
