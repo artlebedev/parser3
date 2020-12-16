@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.333 2020/12/16 11:04:22 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.334 2020/12/16 11:15:49 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -59,7 +59,7 @@ static const char* filespec_4log = NULL; // null only if system-wide auto.p used
 
 // SAPI
 
-static void log(const char* fmt, va_list args) {
+void log(const char* fmt, va_list args) {
 	bool opened=false;
 	FILE *f=0;
 
