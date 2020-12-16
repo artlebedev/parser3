@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.335 2020/12/16 11:23:10 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.336 2020/12/16 14:03:01 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -315,7 +315,7 @@ static void connection_handler(SAPI_Info_HTTPD &info, HTTPD_Connection &connecti
 	try {
 		memset(&request_info, 0, sizeof(request_info));
 
-		if(connection.read_header())
+		if(!connection.read_header())
 			return; // ignore "void" connections
 		info.populate_env();
 
