@@ -8,7 +8,7 @@
 #ifndef PA_HTTP_H
 #define PA_HTTP_H
 
-#define IDENT_PA_HTTP_H "$Id: pa_http.h,v 1.30 2020/12/16 10:45:09 moko Exp $"
+#define IDENT_PA_HTTP_H "$Id: pa_http.h,v 1.31 2020/12/16 15:04:47 moko Exp $"
 
 #include "pa_vstring.h"
 #include "pa_vint.h"
@@ -70,6 +70,8 @@ char *pa_http_safe_header_name(const char *name);
 File_read_http_result pa_internal_file_read_http(Request& r, const String& file_spec, bool as_text, HashStringValue *options=0, bool transcode_text_result=true);
 
 /*** httpd part ***/
+
+//#define HTTPD_DEBUG
 
 class HTTPD_request;
 

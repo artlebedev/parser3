@@ -14,7 +14,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.110 2020/12/16 10:45:09 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.111 2020/12/16 15:04:47 moko Exp $" IDENT_PA_HTTP_H; 
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -913,6 +913,13 @@ File_read_http_result pa_internal_file_read_http(Request& r, const String& file_
 
 /* ********************** httpd *************************** */
 
+#ifdef HTTPD_DEBUG
+void pa_log(const char* fmt, ...);
+#define LOG(action) action
+#else
+#define LOG(action)
+#endif
+
 enum EscapeState {
         Initial,
         Default,
@@ -991,7 +998,7 @@ public:
 			return false;
 		if(received_size < 0) {
 			if(int no = pa_socks_errno())
-				throw Exception("httpd.timeout", 0, "error receiving request: %s (%d)", pa_socks_strerr(no), no);
+				throw Exception("httpd.read", 0, "error receiving request: %s (%d)", pa_socks_strerr(no), no);
 			return false;
 		}
 		length+=received_size;
@@ -1028,20 +1035,27 @@ enum HTTPD_request_state {
 };
 
 ssize_t HTTPD_request::pa_recv(int sockfd, char *buffer, size_t len){
-	if(HTTPD_Server::mode == HTTPD_Server::MULTITHREADED)
-		return recv(sockfd, buffer, len, 0);
+	LOG(pa_log("httpd [%d] recv %d appending to %d ...", sockfd, len, length));
+	if(HTTPD_Server::mode == HTTPD_Server::MULTITHREADED){
+		ssize_t result=recv(sockfd, buffer, len, 0);
+		LOG(pa_log("httpd [%d] recv got %d bytes", sockfd, result));
+		return result;
+	}
 
 #ifdef PA_USE_ALARM
 	signal(SIGALRM, timeout_handler);
 	if(sigsetjmp(timeout_env, 1)) {
-		throw Exception("httpd.timeout", 0, "timeout occurred while receiving request");
-		return 0; // never
+		LOG(pa_log("httpd [%d] recv got %d sec timeout", sockfd, pa_httpd_timeout));
+		if(length) // timeout on "void" connection is normal
+			throw Exception("httpd.timeout", 0, "timeout occurred while receiving request");
+		return 0;
 	} else
 #endif
 	{
 		ALARM(pa_httpd_timeout);
 		ssize_t result=recv(sockfd, buffer, len, 0);
 		ALARM(0);
+		LOG(pa_log("httpd [%d] recv got %d bytes", sockfd, result));
 		return result;
 	}
 }
@@ -1084,8 +1098,10 @@ bool HTTPD_request::read_header(int sock) {
 		}
 	}
 
-	if(!length) // browsers open connections in advance and they will be empty if user does not request more pages
+	if(!length){ // browsers open connections in advance and they will be empty unless user requests more pages
+		LOG(pa_log("httpd [%d] void request", sock));
 		return false;
+	}
 
 	if(state == HTTPD_METHOD)
 		throw Exception("httpd.request", 0, "bad request from host - no method found (size=%u)", length);
@@ -1108,7 +1124,7 @@ size_t HTTPD_request::read_post(int sock, char *body, size_t max_bytes) {
 			return total_read;
 		if(received_size < 0) {
 			if(int no = pa_socks_errno())
-				throw Exception("httpd.timeout", new String(uri), "error receiving request body: %s (%d)", pa_socks_strerr(no), no);
+				throw Exception("httpd.read", new String(uri), "error receiving request body: %s (%d)", pa_socks_strerr(no), no);
 			return total_read;
 		}
 		total_read += received_size;
@@ -1140,7 +1156,11 @@ uint64_t HTTPD_Connection::content_length(){
 
 bool HTTPD_Connection::read_header(){
 	request = new HTTPD_request();
-	return request->read_header(sock);
+	bool result = request->read_header(sock);
+	LOG(if(result){
+		pa_log("httpd [%d] got %s \"%s\"", sock, method(), uri());
+	})
+	return result;
 }
 
 size_t HTTPD_Connection::read_post(char *body, size_t max_bytes) {
@@ -1148,16 +1168,19 @@ size_t HTTPD_Connection::read_post(char *body, size_t max_bytes) {
 }
 
 size_t HTTPD_Connection::send_body(const void *buf, size_t size) {
+	LOG(pa_log("httpd [%d] response %d", sock, size));
 	if(send(sock, (const char*)buf, size, 0) != (ssize_t)size) {
 		int no=pa_socks_errno();
-		throw Exception("httpd.timeout", 0, "error sending response: %s (%d)", pa_socks_strerr(no), no);
+		throw Exception("httpd.write", 0, "error sending response: %s (%d)", pa_socks_strerr(no), no);
 	}
 	return size;
 }
 
 HTTPD_Connection::~HTTPD_Connection(){
-	if(sock != -1)
+	if(sock != -1){
+		LOG(pa_log("httpd [%d] closed", sock));
 		closesocket(sock);
+	}
 }
 
 static int sock_ready(int fd,int operation,int timeout_value){
@@ -1194,6 +1217,7 @@ bool HTTPD_Connection::accept(int server_sock, int timeout_value) {
 	}
 
 	remote_addr = pa_strdup(inet_ntoa(addr.sin_addr));
+	LOG(pa_log("httpd [%d] accepted from %s", sock, remote_addr));
 	return true;
 }
 
