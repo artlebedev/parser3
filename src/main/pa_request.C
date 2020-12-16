@@ -34,7 +34,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.405 2020/12/15 17:10:36 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.406 2020/12/16 19:27:40 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -405,6 +405,9 @@ void Request::configure() {
 
 */
 void Request::core(const char* config_filespec, bool header_only, const String &amain_method_name) {
+	VFile* body_file=NULL;
+	bool as_attachment=false;
+
 	try {
 		// loading config
 		if(config_filespec)
@@ -430,7 +433,7 @@ void Request::core(const char* config_filespec, bool header_only, const String &
 
 		// extract response body
 		Value* body_value=response.fields().get(download_name_upper); // $response:download?
-		bool as_attachment=body_value!=0;
+		as_attachment=body_value!=0;
 		if(!body_value)
 			body_value=response.fields().get(body_name_upper); // $response:body
 		if(!body_value)
@@ -438,8 +441,6 @@ void Request::core(const char* config_filespec, bool header_only, const String &
 
 		// @postprocess
 		if(const Method *method=main_class.get_method(post_process_method_name)) {
-			// preparing to pass parameters to
-			//	@postprocess[data]
 			METHOD_FRAME_ACTION(*method, 0 /*no parent*/, main_class, {
 				frame.store_params(&body_value, 1);
 				call(frame);
@@ -447,10 +448,7 @@ void Request::core(const char* config_filespec, bool header_only, const String &
 			});
 		}
 
-		VFile* body_file=body_value->as_vfile(flang, &charsets);
-
-		// OK. write out the result
-		output_result(body_file, header_only, as_attachment);
+		body_file=body_value->as_vfile(flang, &charsets);
 
 	} catch(const Exception& e) { // request handling problem
 		try {
@@ -516,12 +514,13 @@ void Request::core(const char* config_filespec, bool header_only, const String &
 
 		if(body_string) {  // could report an error beautifully?
 			VString body_vstring(*body_string);
-			VFile* body_file=body_vstring.as_vfile(flang, &charsets);
-			// write it out the error
-			output_result(body_file, header_only, false);
+			
+			body_file=body_vstring.as_vfile(flang, &charsets);
+			as_attachment=false;
 		} else {
 			// doing that ugly
 			SAPI::send_error(sapi_info, exception_cstr, !strcmp(e.type(), "file.missing") ? "404" : "500");
+			return;
 		}
 
 		} catch(const Exception& e) { // exception in unhandled exception
@@ -531,6 +530,9 @@ void Request::core(const char* config_filespec, bool header_only, const String &
 			throw Exception(0, 0, "Unhandled exception in %s", exception_cstr);
 		}
 	}
+
+	// write out the result outside of try as network exceptions should not be handled by parser code.
+	output_result(body_file, header_only, as_attachment);
 }
 
 uint Request::register_file(String::Body file_spec) {
