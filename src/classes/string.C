@@ -21,7 +21,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.248 2020/12/17 19:51:21 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.249 2020/12/17 20:01:03 moko Exp $";
 
 // class
 
@@ -205,8 +205,7 @@ static void _pos(Request& r, MethodParams& params) {
 	r.write(*new VInt((int)string.pos(r.charsets.source(), substr.as_string(), offset)));
 }
 
-static void split_list(MethodParams& params, int paramIndex, const String& string, ArrayString& result) {
-	Value& delim_value=params.as_no_junction(paramIndex, "delimiter must not be code");
+static void split_list(Value& delim_value, const String& string, ArrayString& result) {
 	string.split(result, 0, delim_value.as_string());
 }
 
@@ -286,7 +285,7 @@ static void split_with_options(Request& r, MethodParams& params, int bits) {
 	size_t params_count=params.count();
 
 	ArrayString pieces;
-	split_list(params, 0, string, pieces);
+	split_list(params.as_no_junction(0, "delimiter must not be code"), string, pieces);
 
 	if(!bits) {
 		const String* options=0;
