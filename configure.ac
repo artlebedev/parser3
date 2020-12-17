@@ -462,6 +462,9 @@ AC_TRY_COMPILE([
 #include <sys/syscall.h>
 ], [uint tid=syscall(__NR_gettid);], AC_DEFINE(HAVE_GETTID) AC_MSG_RESULT(yes), AC_MSG_RESULT(no))
 
+AC_MSG_CHECKING(for TLS)
+AC_TRY_COMPILE([], [__thread int i=0;], AC_DEFINE(HAVE_TLS) AC_MSG_RESULT(yes), AC_MSG_RESULT(no))
+
 AC_MSG_CHECKING(for 0..9999 year date range support)
 AC_TRY_RUN([
 #include <string.h>
@@ -485,6 +488,7 @@ AH_TEMPLATE([HAVE_TIMEZONE],[Define if you have timezone external variable in <t
 AH_TEMPLATE([HAVE_TM_GMTOFF],[Define if you have tm_gmtoff member of tm structure in <time.h>])
 AH_TEMPLATE([HAVE_TM_TZADJ],[Define if you have tm_tzadj member of tm structure in <time.h>])
 AH_TEMPLATE([HAVE_GETTID],[Define if you have gettid()])
+AH_TEMPLATE([HAVE_TLS],[Define if you have Thread-Local Storage])
 AH_TEMPLATE([PA_DATE64],[Define if you have 0..9999 year date range support])
 
 AM_CONFIG_HEADER(src/include/pa_config_auto.h)
