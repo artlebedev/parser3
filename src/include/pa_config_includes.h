@@ -222,7 +222,11 @@ inline size_t min(size_t a, size_t b){ return a<b?a:b; }
 #ifdef WIN32
 #define THREAD_LOCAL __declspec(thread)
 #else
+#ifdef HAVE_TLS
 #define THREAD_LOCAL __thread
+#else
+#define THREAD_LOCAL
+#endif
 #endif
 
 #ifdef __clang__
