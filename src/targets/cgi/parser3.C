@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.337 2020/12/16 14:51:27 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.338 2020/12/17 11:47:17 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -340,8 +340,10 @@ static void connection_handler(SAPI_Info_HTTPD &info, HTTPD_Connection &connecti
 	} catch(const Exception& e) { // exception in connection handling or unhandled exception
 		SAPI::log(info, "%s", e.comment());
 		const char *status = info.exception_http_status(e.type());
-		if(status)
+		if(*status){
+			info.clear_response_headers();
 			SAPI::send_error(info, e.comment(), status);
+		}
 	}
 }
 

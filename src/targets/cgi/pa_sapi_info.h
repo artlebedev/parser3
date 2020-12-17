@@ -1,7 +1,7 @@
 #ifndef PA_SAPI_INFO_H
 #define PA_SAPI_INFO_H
 
-#define IDENT_PA_SAPI_INFO_H "$Id: pa_sapi_info.h,v 1.13 2020/12/16 14:51:26 moko Exp $"
+#define IDENT_PA_SAPI_INFO_H "$Id: pa_sapi_info.h,v 1.14 2020/12/17 11:47:17 moko Exp $"
 
 #include "pa_sapi.h"
 #include "pa_http.h"
@@ -95,7 +95,7 @@ class SAPI_Info_HTTPD : public SAPI_Info {
 public:
 
 	HTTPD_Connection &connection;
-	String output;
+	String::Body output;
 	HashStringString env;
 
 	SAPI_Info_HTTPD(HTTPD_Connection &aconnection) : connection(aconnection) {}
@@ -159,6 +159,11 @@ public:
 			http_response_code=atoi(dont_store_value);
 		else
 			output << capitalize(dont_store_key) << ": " << pa_strdup(dont_store_value) << "\r\n";
+	}
+
+	void clear_response_headers() {
+		http_response_code=200;
+		output.clear();
 	}
 
 	static const char *exception_http_status(const char *type) {
