@@ -273,6 +273,9 @@
 /* Define if you have timezone external variable in <time.h> */
 #undef HAVE_TIMEZONE
 
+/* Define if you have Thread-Local Storage */
+#undef HAVE_TLS
+
 /* Define if you have tm_gmtoff member of tm structure in <time.h> */
 #undef HAVE_TM_GMTOFF
 
