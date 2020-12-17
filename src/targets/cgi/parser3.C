@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.338 2020/12/17 11:47:17 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.339 2020/12/17 13:44:16 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -395,6 +395,7 @@ static void httpd_mode() {
 					connection.sock = -1;
 					break;
 #else
+#ifdef HAVE_TLS
 					pthread_t thread;
 					pthread_attr_t attr;
 					pthread_attr_init(&attr);
@@ -404,6 +405,7 @@ static void httpd_mode() {
 						throw Exception("httpd.fork", 0, "thread creation failed (%d)", result);
 					connection.sock=-1;
 					break;
+#endif
 				case HTTPD_Server::PARALLEL:
 					pid=fork();
 					if(pid<0)
