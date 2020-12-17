@@ -21,7 +21,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.249 2020/12/17 20:01:03 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.250 2020/12/17 20:47:00 moko Exp $";
 
 // class
 
@@ -205,8 +205,32 @@ static void _pos(Request& r, MethodParams& params) {
 	r.write(*new VInt((int)string.pos(r.charsets.source(), substr.as_string(), offset)));
 }
 
+struct Split_action_info {
+	const String& src;
+	ArrayString &result;
+};
+
+static void split_action(Table& , ArrayString* row, int prestart, int prefinish, int poststart, int postfinish, void *info) {
+	Split_action_info& ai=*static_cast<Split_action_info *>(info);
+	if(row) { // begin&middle
+		// piece from last match['prestart'] to beginning of this match['prefinish']
+		ai.result += &ai.src.mid(prestart, prefinish);
+	} else // end
+		if(poststart != postfinish)
+			ai.result += &ai.src.mid(poststart, postfinish);
+}
+
 static void split_list(Value& delim_value, const String& string, ArrayString& result) {
-	string.split(result, 0, delim_value.as_string());
+	if(Value* value=delim_value.as(VREGEX_TYPE)){
+		VRegex *vregex=static_cast<VRegex*>(value);
+		vregex->study();
+
+		int matches_count=0;
+		Split_action_info ai = { string, result };
+
+		string.match(vregex, split_action, &ai, matches_count);
+	} else
+		string.split(result, 0, delim_value.as_string());
 }
 
 #define SPLIT_LEFT 0x0001
