@@ -1,0 +1,5 @@
+$t1[^table::create{id}]
+
+1. whitespace string for table - OK ^t1.join[ ]
+2. ^try-catch{^t1.join[ not whitespace - not OK ]}
+3. $s[string] ^s.replace[$void] ^s.replace[ ]
