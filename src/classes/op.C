@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.259 2020/12/15 17:10:29 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.260 2020/12/17 16:50:53 moko Exp $";
 
 // defines
 
@@ -877,18 +877,18 @@ static void _throw_operator(Request&, MethodParams& params) {
 			if(Value* value=hash->get(exception_comment_part_name))
 				comment=value->as_string().cstr();
 
-			throw Exception(type,
-				source?source:0,
-				"%s", comment?comment:"");
+			Exception e(type, source, 0);
+			e.add_comment(comment); // to avoid MAX_LENGTH limit
+			throw e;
 		} else
-			throw Exception(PARSER_RUNTIME,
-				0,
-				"one-param version has hash or string param");
+			throw Exception(PARSER_RUNTIME, 0, "one-param version has hash or string param");
 	} else {
 		const char* type=params.as_string(0, "type must be string").cstr();
 		const String* source=params.count()>1? &params.as_string(1, "source must be string"):0;
 		const char* comment=params.count()>2? params.as_string(2, "comment must be string").cstr():0;
-		throw Exception(type, source, "%s", comment?comment:"");
+		Exception e(type, source, 0);
+		e.add_comment(comment); // to avoid MAX_LENGTH limit
+		throw e;
 	}
  }
 
