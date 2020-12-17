@@ -463,7 +463,7 @@ AC_TRY_COMPILE([
 ], [uint tid=syscall(__NR_gettid);], AC_DEFINE(HAVE_GETTID) AC_MSG_RESULT(yes), AC_MSG_RESULT(no))
 
 AC_MSG_CHECKING(for TLS)
-AC_TRY_COMPILE([], [__thread int i=0;], AC_DEFINE(HAVE_TLS) AC_MSG_RESULT(yes), AC_MSG_RESULT(no))
+AC_TRY_COMPILE([__thread int i=0;], [], AC_DEFINE(HAVE_TLS) AC_MSG_RESULT(yes), AC_MSG_RESULT(no))
 
 AC_MSG_CHECKING(for 0..9999 year date range support)
 AC_TRY_RUN([
