@@ -1,0 +1,6 @@
+1. $s[a, b ,,c,] [$s]
+^json:string[^s.split[^regex::create[\s*,\s*;g];;v]]
+^json:string[^s.split[,;;v]]
+2. $s[,a, b ,,c] [$s]
+^json:string[^s.split[^regex::create[\s*,\s*;g];;v]]
+^json:string[^s.split[,;;v]]
