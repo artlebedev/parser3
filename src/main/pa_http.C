@@ -14,7 +14,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.112 2020/12/17 11:50:44 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.113 2020/12/17 13:38:45 moko Exp $" IDENT_PA_HTTP_H; 
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -1227,7 +1227,9 @@ HTTPD_Server::HTTPD_MODE HTTPD_Server::mode = HTTPD_Server::SEQUENTIAL;
 
 void HTTPD_Server::set_mode(const String &value){
                 if(value == "sequental") mode = SEQUENTIAL;
+#ifdef HAVE_TLS
                 else if (value == "threaded") mode = MULTITHREADED;
+#endif
 #ifdef _MSC_VER
 		else throw Exception("httpd.mode", &value, "$main:HTTPD.mode must be 'sequental' or 'threaded'");
 #else
