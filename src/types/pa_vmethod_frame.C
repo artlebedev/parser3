@@ -9,7 +9,7 @@
 #include "pa_vcaller_wrapper.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VMETHOD_FRAME_C="$Id: pa_vmethod_frame.C,v 1.42 2020/12/15 17:10:42 moko Exp $" IDENT_PA_VMETHOD_FRAME_H IDENT_PA_VCALLER_WRAPPER_H;
+volatile const char * IDENT_PA_VMETHOD_FRAME_C="$Id: pa_vmethod_frame.C,v 1.43 2020/12/17 19:51:21 moko Exp $" IDENT_PA_VMETHOD_FRAME_H IDENT_PA_VCALLER_WRAPPER_H;
 
 static VVoid void_result; // unique value to be sure the result is changed
 
@@ -54,6 +54,8 @@ Table* MethodParams::as_table(int index, const char* name) {
 		throw Exception(PARSER_RUNTIME, 0, "%s param must not be code (parameter #%d)", name ? name : "options", 1+index);
 	if(Table* result=value.get_table())
 		return result;
+	if(value.is_string() && value.get_string()->trim().is_empty())
+		return 0;
 	throw Exception(PARSER_RUNTIME, 0, "%s param must have table representation (parameter #%d)", name ? name : "options", 1+index);
 }
 

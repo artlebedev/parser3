@@ -25,7 +25,7 @@
 #include "pa_vbool.h"
 #include "pa_array.h"
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.354 2020/12/15 17:10:29 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.355 2020/12/17 19:51:21 moko Exp $";
 
 // class
 
@@ -1259,18 +1259,18 @@ static void join_nameless_row(Table& src, Table* dest) {
 	*dest+=src[src.current()];
 }
 static void _join(Request& r, MethodParams& params) {
-	Table& src=*params.as_table(0, "source");
+	if(Table* src=params.as_table(0, "source")){
+		Table::Action_options o=get_action_options(r, params, 1, *src);
 
-	Table::Action_options o=get_action_options(r, params, 1, src);
+		Table& dest=GET_SELF(r, VTable).table();
+		if(src == &dest)
+			throw Exception(PARSER_RUNTIME, 0, "source and destination are same table");
 
-	Table& dest=GET_SELF(r, VTable).table();
-	if(&src == &dest)
-		throw Exception(PARSER_RUNTIME, 0, "source and destination are same table");
-
-	if(dest.columns()) // dest is named
-		src.table_for_each(join_named_row, &dest, o);
-	else // dest is nameless
-		src.table_for_each(join_nameless_row, &dest, o);
+		if(dest.columns()) // dest is named
+			src->table_for_each(join_named_row, &dest, o);
+		else // dest is nameless
+			src->table_for_each(join_nameless_row, &dest, o);
+	}
 }
 
 #ifndef DOXYGEN

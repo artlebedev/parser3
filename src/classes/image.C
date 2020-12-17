@@ -26,7 +26,7 @@
 #include "pa_table.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.179 2020/12/15 17:10:28 moko Exp $";
+volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.180 2020/12/17 19:51:21 moko Exp $";
 
 // defines
 
@@ -1175,11 +1175,12 @@ static void _replace(Request& r, MethodParams& params) {
 	gdImage::Point* all_p=0;
 	size_t count=0;
 	if(params.count() == 3){
-		Table* table=params.as_table(2, "coordinates");
-		count=table->count();
-		all_p=new(PointerFreeGC) gdImage::Point[count];
-		gdImage::Point* add_p=all_p;
-		table->for_each(add_point, &add_p);
+		if(Table* table=params.as_table(2, "coordinates")){
+			count=table->count();
+			all_p=new(PointerFreeGC) gdImage::Point[count];
+			gdImage::Point* add_p=all_p;
+			table->for_each(add_point, &add_p);
+		}
 	} else {
 		int max_x=image.SX()-1;
 		int max_y=image.SY()-1;
@@ -1201,38 +1202,34 @@ static void _replace(Request& r, MethodParams& params) {
 static void _polyline(Request& r, MethodParams& params) {
 	gdImage& image=GET_SELF(r, VImage).image();
 
-	Table* table=params.as_table(1, "coordinates");
-
-	gdImage::Point* all_p=new(PointerFreeGC) gdImage::Point[table->count()];
-	gdImage::Point *add_p=all_p;	
-	table->for_each(add_point, &add_p);
-	image.Polygon(all_p, table->count(), 
-		image.Color(params.as_int(0, "color must be int", r)),
-		false/*not closed*/);
+	if(Table* table=params.as_table(1, "coordinates")){
+		gdImage::Point* all_p=new(PointerFreeGC) gdImage::Point[table->count()];
+		gdImage::Point *add_p=all_p;
+		table->for_each(add_point, &add_p);
+		image.Polygon(all_p, table->count(), image.Color(params.as_int(0, "color must be int", r)), false/*not closed*/);
+	}
 }
 
 static void _polygon(Request& r, MethodParams& params) {
 	gdImage& image=GET_SELF(r, VImage).image();
 
-	Table* table=(Table*)params.as_table(1, "coordinates");
-
-	gdImage::Point* all_p=new(PointerFreeGC) gdImage::Point[table->count()];
-	gdImage::Point *add_p=all_p;	
-	table->for_each(add_point, &add_p);
-	image.Polygon(all_p, table->count(), 
-		image.Color(params.as_int(0, "color must be int", r)));
+	if(Table* table=(Table*)params.as_table(1, "coordinates")){
+		gdImage::Point* all_p=new(PointerFreeGC) gdImage::Point[table->count()];
+		gdImage::Point *add_p=all_p;
+		table->for_each(add_point, &add_p);
+		image.Polygon(all_p, table->count(), image.Color(params.as_int(0, "color must be int", r)));
+	}
 }
 
 static void _polybar(Request& r, MethodParams& params) {
 	gdImage& image=GET_SELF(r, VImage).image();
 
-	Table* table=(Table*)params.as_table(1, "coordinates");
-
-	gdImage::Point* all_p=new(PointerFreeGC) gdImage::Point[table->count()];
-	gdImage::Point *add_p=all_p;	
-	table->for_each(add_point, &add_p);
-	image.FilledPolygon(all_p, table->count(), 
-		image.Color(params.as_int(0, "color must be int", r)));
+	if(Table* table=(Table*)params.as_table(1, "coordinates")){
+		gdImage::Point* all_p=new(PointerFreeGC) gdImage::Point[table->count()];
+		gdImage::Point *add_p=all_p;
+		table->for_each(add_point, &add_p);
+		image.FilledPolygon(all_p, table->count(), image.Color(params.as_int(0, "color must be int", r)));
+	}
 }
 
 // font

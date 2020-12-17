@@ -21,7 +21,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.247 2020/12/15 17:10:29 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.248 2020/12/17 19:51:21 moko Exp $";
 
 // class
 
@@ -553,9 +553,11 @@ static void _replace(Request& r, MethodParams& params) {
 
 	if(params.count()==1) {
 		// ^string.replace[table]
-		Table* table=params.as_table(0, "param");
-		Dictionary dict(*table);
-		r.write(src.replace(dict));
+		if(Table* table=params.as_table(0, "param")){
+			Dictionary dict(*table);
+			r.write(src.replace(dict));
+		} else
+			r.write(src);
 	} else {
 		// ^string.replace[from-string;to-string]
 		Dictionary dict(params.as_string(0, "from must be string"), params.as_string(1, "to must be string"));
