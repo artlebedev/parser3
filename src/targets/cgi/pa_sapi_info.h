@@ -1,7 +1,7 @@
 #ifndef PA_SAPI_INFO_H
 #define PA_SAPI_INFO_H
 
-#define IDENT_PA_SAPI_INFO_H "$Id: pa_sapi_info.h,v 1.14 2020/12/17 11:47:17 moko Exp $"
+#define IDENT_PA_SAPI_INFO_H "$Id: pa_sapi_info.h,v 1.15 2020/12/19 22:34:21 moko Exp $"
 
 #include "pa_sapi.h"
 #include "pa_http.h"
@@ -122,6 +122,7 @@ public:
 		env.put("QUERY_STRING", connection.query());
 
 		env.put("SERVER_NAME", host);
+		env.put("SERVER_PORT", HTTPD_Server::port);
 		env.put("REMOTE_ADDR", connection.remote_addr);
 
 	}

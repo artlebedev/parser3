@@ -8,7 +8,7 @@
 #ifndef PA_HTTP_H
 #define PA_HTTP_H
 
-#define IDENT_PA_HTTP_H "$Id: pa_http.h,v 1.31 2020/12/16 15:04:47 moko Exp $"
+#define IDENT_PA_HTTP_H "$Id: pa_http.h,v 1.32 2020/12/19 22:34:21 moko Exp $"
 
 #include "pa_vstring.h"
 #include "pa_vint.h"
@@ -113,6 +113,7 @@ public:
 		PARALLEL,
 		MULTITHREADED
 	} static mode;
+	static const char *port;
 
 	static void set_mode(const String&);
 	static int bind(const char *);
