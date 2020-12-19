@@ -1,3 +1,209 @@
+2020-12-20  moko
+
+	* src/: include/pa_http.h, main/pa_http.C,
+	  targets/cgi/pa_sapi_info.h: SERVER_PORT now available
+
+2020-12-17  moko
+
+	* tests/: 405.html, results/405.processed: test for split by regex
+	  added (related to feature #1160)
+
+	* src/classes/string.C: split by regex implemented (feature #1160)
+
+	* src/classes/string.C: minor
+
+	* tests/: 404.html, results/404.processed: test for whitespace
+	  string is now OK for table argument (related to feature #1169)
+
+	* src/: classes/image.C, classes/string.C, classes/table.C,
+	  types/pa_vmethod_frame.C: whitespace string is now OK for table
+	  argument (as with hash) (implements feature #1169)
+
+	* src/classes/op.C: Exception.add_comment used to avoid MAX_LENGTH
+	  limit for comment (fixes bug #1102)
+
+	* src/targets/cgi/parser3.C: +HAVE_TLS check
+
+	* src/main/pa_http.C: no HAVE_TLS -> no multithreads mode
+
+	* src/include/pa_config_includes.h: HAVE_TLS used
+
+	* configure.ac: +TLS check
+
+	* src/main/pa_http.C: content logging added
+
+	* src/targets/cgi/: pa_sapi_info.h, parser3.C:
+	  clear_response_headers added
+
+2020-12-16  moko
+
+	* buildall: as we now use threads, libatomic_ops still required for
+	  some OS.
+
+	* src/main/pa_request.C: whitespace
+
+	* src/: include/pa_request.h, main/pa_request.C:
+	  Request::Exception_trace::table extracted and used
+
+	* src/main/pa_request.C: moving output_result call outside of try
+	  as network exceptions should not be handled by parser code
+
+	* src/: include/pa_http.h, main/pa_http.C: HTTPD_DEBUG added for
+	  logging network exchange
+
+	* src/targets/cgi/: pa_sapi_info.h, parser3.C: do not send error
+	  via network if it was network write error.
+
+	* src/targets/cgi/parser3.C: log -> pa_log
+
+	* src/targets/cgi/parser3.C: pa_get_thread_id() used for logging
+
+	* src/main/pa_threads.C: getpid() if no gettid() found
+
+	* src/: include/pa_http.h, main/pa_http.C, targets/cgi/parser3.C:
+	  we need to ignore "void" connections from browsers (browsers open
+	  connections in advance and they will be empty if user does not
+	  request more pages)
+
+2020-12-15  moko
+
+	* src/targets/cgi/parser3.C: avoid previous uri in logs
+
+	* src/targets/cgi/: pa_sapi_info.h, parser3.C: global ::request and
+	  RequestController not needed in httpd mode
+
+	* src/: classes/bool.C, classes/classes.C, classes/classes.awk,
+	  classes/classes.h, classes/curl.C, classes/date.C,
+	  classes/double.C, classes/file.C, classes/form.C, classes/hash.C,
+	  classes/hashfile.C, classes/image.C, classes/inet.C,
+	  classes/int.C, classes/json.C, classes/mail.C, classes/math.C,
+	  classes/memcached.C, classes/memory.C, classes/op.C,
+	  classes/reflection.C, classes/regex.C, classes/response.C,
+	  classes/string.C, classes/table.C, classes/void.C,
+	  classes/xdoc.C, classes/xnode.C, classes/xnode.h,
+	  include/pa_array.h, include/pa_base64.h,
+	  include/pa_cache_managers.h, include/pa_charset.h,
+	  include/pa_charsets.h, include/pa_common.h,
+	  include/pa_config_fixed.h, include/pa_config_includes.h,
+	  include/pa_dictionary.h, include/pa_dir.h,
+	  include/pa_exception.h, include/pa_exec.h, include/pa_globals.h,
+	  include/pa_hash.h, include/pa_http.h, include/pa_memory.h,
+	  include/pa_opcode.h, include/pa_operation.h, include/pa_os.h,
+	  include/pa_pool.h, include/pa_random.h, include/pa_request.h,
+	  include/pa_request_charsets.h, include/pa_request_info.h,
+	  include/pa_sapi.h, include/pa_socks.h,
+	  include/pa_sql_connection.h, include/pa_sql_driver_manager.h,
+	  include/pa_stack.h, include/pa_string.h,
+	  include/pa_stylesheet_connection.h,
+	  include/pa_stylesheet_manager.h, include/pa_symbols.h,
+	  include/pa_table.h, include/pa_threads.h, include/pa_types.h,
+	  include/pa_uue.h, include/pa_xml_exception.h,
+	  include/pa_xml_io.h, lib/gd/gif.C, lib/gd/gif.h, lib/gd/gifio.C,
+	  lib/md5/pa_md5.h, lib/md5/pa_md5c.c,
+	  lib/memcached/pa_memcached.C, lib/memcached/pa_memcached.h,
+	  lib/punycode/pa_idna.c, lib/punycode/pa_idna.h,
+	  lib/sdbm/pa_file_io.C, lib/sdbm/pa_strings.C, lib/smtp/comms.C,
+	  lib/smtp/smtp.C, lib/smtp/smtp.h, main/compile.C,
+	  main/compile.tab.C, main/compile.y, main/compile_tools.C,
+	  main/compile_tools.h, main/execute.C, main/pa_base64.C,
+	  main/pa_cache_managers.C, main/pa_charset.C, main/pa_charsets.C,
+	  main/pa_common.C, main/pa_dictionary.C, main/pa_dir.C,
+	  main/pa_exception.C, main/pa_exec.C, main/pa_globals.C,
+	  main/pa_http.C, main/pa_memory.C, main/pa_os.C, main/pa_pool.C,
+	  main/pa_random.C, main/pa_request.C, main/pa_socks.C,
+	  main/pa_sql_driver_manager.C, main/pa_string.C,
+	  main/pa_stylesheet_connection.C, main/pa_stylesheet_manager.C,
+	  main/pa_symbols.C, main/pa_table.C, main/pa_threads.C,
+	  main/pa_uue.C, main/pa_xml_exception.C, main/pa_xml_io.C,
+	  main/untaint.C, sql/pa_sql_driver.h,
+	  targets/apache/mod_parser3.c, targets/apache/mod_parser3_core.C,
+	  targets/apache/pa_httpd.h, targets/cgi/parser3.C,
+	  targets/isapi/parser3isapi.C, types/pa_junction.h,
+	  types/pa_method.h, types/pa_property.h, types/pa_value.C,
+	  types/pa_value.h, types/pa_vbool.h, types/pa_vcaller_wrapper.h,
+	  types/pa_vclass.C, types/pa_vclass.h, types/pa_vcode_frame.h,
+	  types/pa_vconsole.h, types/pa_vcookie.C, types/pa_vcookie.h,
+	  types/pa_vdate.C, types/pa_vdate.h, types/pa_vdouble.h,
+	  types/pa_venv.C, types/pa_venv.h, types/pa_vfile.C,
+	  types/pa_vfile.h, types/pa_vform.C, types/pa_vform.h,
+	  types/pa_vhash.C, types/pa_vhash.h, types/pa_vhashfile.C,
+	  types/pa_vhashfile.h, types/pa_vimage.C, types/pa_vimage.h,
+	  types/pa_vint.h, types/pa_vjunction.C, types/pa_vjunction.h,
+	  types/pa_vmail.C, types/pa_vmail.h, types/pa_vmath.C,
+	  types/pa_vmath.h, types/pa_vmemcached.C, types/pa_vmemcached.h,
+	  types/pa_vmemory.h, types/pa_vmethod_frame.C,
+	  types/pa_vmethod_frame.h, types/pa_vobject.C, types/pa_vobject.h,
+	  types/pa_vregex.C, types/pa_vregex.h, types/pa_vrequest.C,
+	  types/pa_vrequest.h, types/pa_vresponse.C, types/pa_vresponse.h,
+	  types/pa_vstateless_class.C, types/pa_vstateless_class.h,
+	  types/pa_vstateless_object.h, types/pa_vstatus.C,
+	  types/pa_vstatus.h, types/pa_vstring.C, types/pa_vstring.h,
+	  types/pa_vtable.C, types/pa_vtable.h, types/pa_vvoid.C,
+	  types/pa_vvoid.h, types/pa_vxdoc.C, types/pa_vxdoc.h,
+	  types/pa_vxnode.C, types/pa_vxnode.h, types/pa_wcontext.C,
+	  types/pa_wcontext.h, types/pa_wwrapper.h: Copyright year updated
+
+	* src/main/pa_request.C: old compilers support
+
+	* tests/: 362.html, results/362.processed: test updated after
+	  changes after upgrade to libxml2-2.9.9 were made (related to bug
+	  #1108)
+
+	* src/: classes/xdoc.C, types/pa_vxdoc.h: xsltStylesheet_auto_ptr
+	  removed, as xsltFreeStylesheet has side effects on original doc.
+	  compiled stylesheet no longer cached as with libxml2-2.9.9 it was
+	  not updated after xdoc modification (part 3 of test 362).
+	  (related to bug #1108)
+
+	* src/targets/isapi/parser3isapi.C: +pa_strcat
+
+	* src/: classes/memory.C, include/pa_memory.h,
+	  targets/apache/mod_parser3_core.C, targets/isapi/parser3isapi.C:
+	  PA_GC_GCOLLECT used
+
+	* src/include/pa_memory.h: +PA_GC_COLLECT
+
+	* src/targets/cgi/parser3.C: msvs support fixes
+
+	* src/lib/gc/include/gc.h: more cleanup
+
+	* src/: include/pa_threads.h, main/pa_threads.C: win32 fixes
+
+	* src/: include/pa_http.h, main/pa_http.C, main/pa_request.C,
+	  targets/cgi/parser3.C: $main:HTTPD.mode implemented
+
+	* src/include/pa_config_includes.h: +HAVE_PTHREAD_H
+
+	* configure.ac: pthread.h added to checked headers
+
+	* src/classes/table.C: string stream is back :)
+
+	* src/classes/memory.C: GC_generate_random_backtrace no longer
+	  exists
+
+	* src/main/pa_globals.C: GC_dont_gc replaced
+
+	* src/lib/gc/include/gc.h: major cleanup, only used functions are
+	  left to simplify adding new functions.  depricated GC_dont_gc
+	  replaced with GC_disable and GC_enable calls.
+
+	* src/lib/cord/: cordxtra.c, include/cord.h: cleanup:
+	  CORD_from_file* not used and thus removed
+
+	* src/lib/gc/include/gc_allocator.h: minor cleanup
+
+2020-12-14  moko
+
+	* src/classes/: curl.C, memory.C, table.C: every TLS should be
+	  referenced elsewhere, or GC will collect it.
+
+	* src/: include/pa_xml_io.h, main/pa_stylesheet_connection.C,
+	  main/pa_xml_io.C: bugfix: TLS variables should be referenced
+	  elsewhere, or GC will collect them (and we'll get GPF in
+	  multithreaded enviroment).  May be it can be also fixed by some
+	  GC call, not sure. But this fix costs nothing (but hours of
+	  debugging to find the issue :).
+
 2020-12-11  moko
 
 	* configure.ac: gettid() check added
