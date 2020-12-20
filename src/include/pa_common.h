@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.188 2020/12/15 17:10:30 moko Exp $"
+#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.189 2020/12/20 20:45:24 moko Exp $"
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -252,8 +252,10 @@ char *pa_strcat(const char *a, const char *b, const char *c = 0);
 const char *pa_filename(const char *path);
 
 const char* capitalize(const char* s);
-char *str_lower(const char *s, size_t helper_length=0);
-char *str_upper(const char *s, size_t helper_length=0);
+char *str_lower(const char *s, size_t length);
+char *str_upper(const char *s, size_t length);
+inline char *str_lower(const char *s) { return str_lower(s, strlen(s)); }
+inline char *str_upper(const char *s) { return str_upper(s, strlen(s)); }
 
 const char* hex_string(unsigned char* bytes, size_t size, bool upcase);
 extern const char* hex_digits;

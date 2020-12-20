@@ -9,7 +9,7 @@
 #ifndef PA_MEMORY_H
 #define PA_MEMORY_H
 
-#define IDENT_PA_MEMORY_H "$Id: pa_memory.h,v 1.41 2020/12/15 17:10:31 moko Exp $"
+#define IDENT_PA_MEMORY_H "$Id: pa_memory.h,v 1.42 2020/12/20 20:45:24 moko Exp $"
 
 // include
 
@@ -42,18 +42,19 @@ inline void *pa_malloc_atomic(size_t size) {
 	return pa_fail_alloc("allocate clean", size);
 }
 
-/// @a length may be null, which mean "autocalc it"
-inline char *pa_strdup(const char* auto_variable_never_null, size_t helper_length=0) {
-	size_t known_length= helper_length ? helper_length : strlen(auto_variable_never_null);
-
-	size_t size=known_length+1;
-	if(char *result=static_cast<char*>(GC_MALLOC_ATOMIC(size))) {
+/// length may be zero, and this is normal
+inline char *pa_strdup(const char* auto_variable_never_null, size_t known_length) {
+	if(char *result=static_cast<char*>(GC_MALLOC_ATOMIC(known_length+1))) {
 		memcpy(result, auto_variable_never_null, known_length);
 		result[known_length]=0;
 		return result;
 	}
 
-	return static_cast<char*>(pa_fail_alloc("allocate clean", size));
+	return static_cast<char*>(pa_fail_alloc("allocate clean", known_length+1));
+}
+
+inline char *pa_strdup(const char* auto_variable_never_null) {
+	return pa_strdup(auto_variable_never_null, strlen(auto_variable_never_null));
 }
 
 inline void pa_free(void *ptr) {

@@ -29,7 +29,7 @@
 #define pa_mkdir(path, mode) mkdir(path, mode)
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.322 2020/12/15 17:10:35 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.323 2020/12/20 20:45:24 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -564,15 +564,15 @@ const char* capitalize(const char* s){
 	return (const char*)result;
 }
 
-char *str_lower(const char *s, size_t helper_length){
-	char *result=pa_strdup(s, helper_length);
+char *str_lower(const char *s, size_t length){
+	char *result=pa_strdup(s, length);
 	for(char* c=result; *c; c++)
 		*c=(char)tolower((unsigned char)*c);
 	return result;
 }
 
-char *str_upper(const char *s, size_t helper_length){
-	char *result=pa_strdup(s, helper_length);
+char *str_upper(const char *s, size_t length){
+	char *result=pa_strdup(s, length);
 	for(char* c=result; *c; c++)
 		*c=(char)toupper((unsigned char)*c);
 	return result;
