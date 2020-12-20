@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.124 2020/12/15 17:10:38 moko Exp $";
+volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.125 2020/12/20 20:30:14 moko Exp $";
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -307,8 +307,7 @@ void real_parser_handler(SAPI_Info& SAPI_info, bool header_only) {
 	// Request info
 	Request_info request_info;  memset(&request_info, 0, sizeof(request_info));
 
-	size_t path_translated_buf_size=strlen(lpECB->lpszPathTranslated)+1;
-	char *filespec_to_process=pa_strdup(lpECB->lpszPathTranslated, path_translated_buf_size);
+	char *filespec_to_process=pa_strdup(lpECB->lpszPathTranslated);
 #ifdef WIN32
 	back_slashes_to_slashes(filespec_to_process);
 #endif
