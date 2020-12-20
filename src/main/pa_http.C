@@ -14,7 +14,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.114 2020/12/19 22:34:21 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.115 2020/12/20 19:58:54 moko Exp $" IDENT_PA_HTTP_H; 
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -1061,6 +1061,20 @@ ssize_t HTTPD_request::pa_recv(int sockfd, char *buffer, size_t len){
 	}
 }
 
+static bool valid_http_method(const char * method){
+	return method && (
+		!strcmp(method, "GET") ||
+		!strcmp(method, "HEAD") ||
+		!strcmp(method, "POST") ||
+		!strcmp(method, "PUT") ||
+		!strcmp(method, "DELETE") ||
+		!strcmp(method, "CONNECT") ||
+		!strcmp(method, "OPTIONS") ||
+		!strcmp(method, "TRACE") ||
+		!strcmp(method, "PATCH")
+	);
+}
+
 bool HTTPD_request::read_header(int sock) {
 	enum HTTPD_request_state state = HTTPD_METHOD;
 
@@ -1077,14 +1091,7 @@ bool HTTPD_request::read_header(int sock) {
 				char *method_line = pa_strdup(buf, method_size);
 				method = extract_method(method_line);
 
-				if(!method ||
-					strcmp(method, "GET") &&
-					strcmp(method, "HEAD") &&
-					strcmp(method, "POST") &&
-					strcmp(method, "PUT") &&
-					strcmp(method, "DELETE") &&
-					strcmp(method, "PATCH")
-				)
+				if(!valid_http_method(method))
 					throw Exception("httpd.method", new String(method ? method : method_line), "invalid request method");
 				state = HTTPD_HEADERS;
 			}
