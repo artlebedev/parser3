@@ -1,5 +1,14 @@
 2020-12-20  moko
 
+	* src/: include/pa_common.h, include/pa_memory.h, main/pa_common.C:
+	  it is more safe to have versions of pa_strdup with one and two
+	  arguments, as helper_length=0 not always mean that strlen()
+	  should be called, but means zero.
+
+	* src/targets/isapi/parser3isapi.C: minor
+
+	* src/main/pa_http.C: +valid_http_method
+
 	* src/: include/pa_http.h, main/pa_http.C,
 	  targets/cgi/pa_sapi_info.h: SERVER_PORT now available
 
