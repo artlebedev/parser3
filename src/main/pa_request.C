@@ -34,7 +34,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.408 2020/12/16 19:48:48 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.409 2020/12/21 14:12:57 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -884,7 +884,7 @@ void Request::output_result(VFile* body_file, bool header_only, bool as_attachme
 	if(sname && *sname == NONAME_DAT)
 		sname = NULL;
 
-	// Content-Disposition
+	// Content-Disposition, use $.name[<empty>] to avoid
 	const String* disposition_name = sname ? sname->is_empty() ? NULL : sname : sfile;
 	if(disposition_name) {
 		VHash& hash=*new VHash();
