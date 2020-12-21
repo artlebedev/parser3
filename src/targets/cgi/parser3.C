@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.339 2020/12/17 13:44:16 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.340 2020/12/21 23:35:50 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -199,12 +199,6 @@ static void full_disk_path(const char* file_name, char *buf, size_t buf_size) {
 static void log_signal(const char* signal_name) {
 	SAPI::log(*sapiInfo, "%s received %s processing request", signal_name, request ? "while" : "before or after");
 }
-
-#ifdef SIGUSR1
-static void SIGUSR1_handler(int /*sig*/){
-	log_signal("SIGUSR1");
-}
-#endif
 
 #ifdef SIGPIPE
 #define SIGPIPE_NAME "SIGPIPE"
@@ -595,9 +589,6 @@ int main(int argc, char *argv[]) {
 	bool cgi=(getenv("SERVER_SOFTWARE") || getenv("SERVER_NAME") || getenv("GATEWAY_INTERFACE") || getenv("REQUEST_METHOD")) && !getenv("PARSER_VERSION");
 	sapiInfo = cgi ? new SAPI_Info_CGI() : new SAPI_Info();
 
-#ifdef SIGUSR1
-	signal(SIGUSR1, SIGUSR1_handler);
-#endif
 #ifdef SIGPIPE
 	signal(SIGPIPE, SIGPIPE_handler);
 #endif
