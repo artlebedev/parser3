@@ -13,7 +13,7 @@
 #include "pa_exception.h"
 #include "pa_common.h"
 
-volatile const char * IDENT_PA_EXEC_C="$Id: pa_exec.C,v 1.94 2020/12/15 17:10:36 moko Exp $" IDENT_PA_EXEC_H;
+volatile const char * IDENT_PA_EXEC_C="$Id: pa_exec.C,v 1.95 2020/12/22 23:11:49 moko Exp $" IDENT_PA_EXEC_H;
 
 #ifdef _MSC_VER
 
@@ -313,7 +313,7 @@ static pid_t execve_piped(const char* file_spec_cstr,
 }
 
 static int get_exit_status(int pid) {
-	int status;
+	int status=0;
 	pid_t cid;
 	while ((cid=waitpid(pid, &status, WUNTRACED)) == -1 && errno == EINTR);	
 	if(!cid)
