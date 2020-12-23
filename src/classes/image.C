@@ -26,7 +26,7 @@
 #include "pa_table.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.180 2020/12/17 19:51:21 moko Exp $";
+volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.181 2020/12/23 15:01:13 moko Exp $";
 
 // defines
 
@@ -308,6 +308,7 @@ struct Measure_info {
 	Value** exif;
 	Value** xmp;
 	Charset* xmp_charset;
+	bool	video;
 };
 
 
@@ -955,11 +956,14 @@ static void measure(const String& file_name, Measure_reader& reader, Measure_inf
 		else if(strcasecmp(cext, "TIF")==0 || strcasecmp(cext, "TIFF")==0)
 			measure_tiff(file_name, reader, info);
 		else if(strcasecmp(cext, "MP4")==0 || strcasecmp(cext, "MOV")==0)
-			measure_mp4(file_name, reader, info.width, info.height);
+			if(info.video)
+				measure_mp4(file_name, reader, info.width, info.height);
+			else
+				throw Exception(IMAGE_FORMAT, &file_name, "handling disabled for file name extension '%s'", cext);
 		else
-			throw Exception(IMAGE_FORMAT, &file_name, "unhandled image file name extension '%s'", cext);
+			throw Exception(IMAGE_FORMAT, &file_name, "unhandled file name extension '%s'", cext);
 	} else
-		throw Exception(IMAGE_FORMAT, &file_name, "can not determine image type - no file name extension");
+		throw Exception(IMAGE_FORMAT, &file_name, "can not determine file type - no file name extension");
 }
 
 // methods
@@ -974,7 +978,7 @@ static void _measure(Request& r, MethodParams& params) {
 
 	Value* exif=0;
 	Value* xmp=0;
-	Measure_info info={ 0, 0, 0, 0, &pa_UTF8_charset };
+	Measure_info info={ 0, 0, 0, 0, &pa_UTF8_charset, false };
 
 	if(params.count()>1)
 		if(HashStringValue* options=params.as_hash(1, "methods options")) {
@@ -994,6 +998,10 @@ static void _measure(Request& r, MethodParams& params) {
 				}
 				if(key == "xmp-charset") {
 					info.xmp_charset=&pa_charsets.get(value->as_string());
+					valid_options++;
+				}
+				if(key == "video") {
+					info.video=r.process(*value).as_bool();
 					valid_options++;
 				}
 			}
