@@ -6,5 +6,10 @@
 ^show[3_VP8L.webp]
 ^show[3_VP8X.webp]
 
-@show[arg]
-^json:string[^image::measure[395_dir/$arg]]
+^try-catch{
+	^show[4.mp4]
+}
+^show[4.mp4; $.video(true) ]
+
+@show[arg;options]
+^json:string[^image::measure[395_dir/$arg;$options]]

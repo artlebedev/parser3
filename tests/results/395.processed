@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 415
+Content-Length: 634
 
 {
 "src":"395_dir\/1.bmp",
@@ -33,6 +33,16 @@ Content-Length: 415
 "src":"395_dir\/3_VP8X.webp",
 "width":386,
 "height":395,
+"border":0,
+"line-width":1
+}
+Type: image.format,
+Source: /home/moko/Work/parser/parser3/tests/395_dir/4.mp4,
+Comment: handling disabled for file name extension 'mp4'
+{
+"src":"395_dir\/4.mp4",
+"width":300,
+"height":260,
 "border":0,
 "line-width":1
 }
