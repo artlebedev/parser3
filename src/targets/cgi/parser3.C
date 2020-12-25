@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.340 2020/12/21 23:35:50 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.341 2020/12/25 14:32:44 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -54,7 +54,7 @@ static char* parser3_filespec = 0; // argv[0]
 static char** argv_extra = NULL;
 
 // for error logging
-static THREAD_LOCAL Request_info request_info; // global for correct log() reporting
+static THREAD_LOCAL Request_info *request_info_4log = NULL; // global for correct log() reporting
 static const char* filespec_4log = NULL; // null only if system-wide auto.p used
 
 // SAPI
@@ -108,8 +108,8 @@ static void pa_log(const char* fmt, va_list args) {
 	size=remove_crlf(buf, buf+size);
 	fwrite(buf, size, 1, f);
 
-	if(request_info.method) {
-		fprintf(f, " [uri=%s, method=%s, cl=%lu]\n", request_info.uri ? request_info.uri : "<unknown>", request_info.method, (unsigned long)request_info.content_length);
+	if(request_info_4log && request_info_4log->method) {
+		fprintf(f, " [uri=%s, method=%s, cl=%lu]\n", request_info_4log->uri ? request_info_4log->uri : "<unknown>", request_info_4log->method, (unsigned long)request_info_4log->content_length);
 	} else
 		fputs(" [no request info]\n", f);
 
@@ -282,16 +282,29 @@ const char* maybe_reconstruct_IIS_status_in_qs(const char* original) {
 class RequestController {
 public:
 	RequestController(Request* r){
-		::request=r;
+		request=r;
 	}
 	~RequestController(){
-		::request=0;
+		request=0;
+	}
+};
+
+class RequestInfoController {
+public:
+	RequestInfoController(Request_info* rinfo){
+		request_info_4log=rinfo;
+	}
+	~RequestInfoController(){
+		request_info_4log=0;
 	}
 };
 
 static void config_handler(SAPI_Info &info) {
 	char document_root_buf[MAX_STRING];
 	full_disk_path("", document_root_buf, sizeof(document_root_buf));
+
+	Request_info request_info;
+	RequestInfoController ric(&request_info);
 
 	request_info.document_root = document_root_buf;
 	request_info.uri = "";
@@ -306,9 +319,10 @@ static void config_handler(SAPI_Info &info) {
 }
 
 static void connection_handler(SAPI_Info_HTTPD &info, HTTPD_Connection &connection) {
-	try {
-		memset(&request_info, 0, sizeof(request_info));
+	Request_info request_info;
+	RequestInfoController ric(&request_info);
 
+	try {
 		if(!connection.read_header())
 			return; // ignore "void" connections
 		info.populate_env();
@@ -376,7 +390,6 @@ static void httpd_mode() {
 		pid_t pid=1;
 #endif
 		try {
-			request_info.method=NULL; // wipe previous request for correct logging
 			HTTPD_Connection connection;
 			if(!connection.accept(sock, 5))
 				continue;
@@ -442,6 +455,9 @@ static void real_parser_handler(bool cgi) {
 	char document_root_buf[MAX_STRING];
 
 	// global request info
+	Request_info request_info;
+	RequestInfoController ric(&request_info);
+
 	request_info.path_translated = filespec_to_process;
 	request_info.method = request_method ? request_method : "GET";
 	request_info.query_string = MAYBE_RECONSTRUCT_IIS_STATUS_IN_QS(getenv("QUERY_STRING"));

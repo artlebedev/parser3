@@ -8,7 +8,11 @@
 #ifndef PA_REQUEST_INFO_H
 #define PA_REQUEST_INFO_H
 
-#define IDENT_PA_REQUEST_INFO_H "$Id: pa_request_info.h,v 1.16 2020/12/15 17:10:32 moko Exp $"
+#define IDENT_PA_REQUEST_INFO_H "$Id: pa_request_info.h,v 1.17 2020/12/25 14:32:43 moko Exp $"
+
+// include
+
+#include "pa_config_includes.h"
 
 /// some information from web server
 class Request_info {
@@ -53,6 +57,10 @@ public:
 			return auri;
 		for(; *auri && *auri != '/'; auri++);
 		return auri;
+	}
+
+	Request_info() {
+		memset(this, 0, sizeof(*this)); // OK as Request_info is POD
 	}
 };
 
