@@ -7,18 +7,17 @@
 
 #include "pa_table.h"
 
-volatile const char * IDENT_PA_TABLE_C="$Id: pa_table.C,v 1.71 2020/12/15 17:10:37 moko Exp $" IDENT_PA_TABLE_H;
+volatile const char * IDENT_PA_TABLE_C="$Id: pa_table.C,v 1.72 2020/12/25 22:05:31 moko Exp $" IDENT_PA_TABLE_H;
 
 #include "pa_exception.h"
 
-Table::Table(columns_type acolumns, size_t initial_rows):
-	Array<element_type>(initial_rows),
+Table::Table(columns_type acolumns, size_t initial_rows): Array<element_type>(initial_rows), fcurrent(0), fcolumns(acolumns), name2number(NULL){
+	column_names_init();
+}
 
-	fcurrent(0),
-	fcolumns(acolumns), 
-	name2number(new name2number_hash_class) {
-
-	if(fcolumns) {
+void Table::column_names_init(){
+	if(fcolumns){
+		name2number = new name2number_hash_class;
 		size_t number=1;
 		for(Array_iterator<const String*> i(*fcolumns); i.has_next(); ) {
 			const String& name=*i.next();
@@ -58,9 +57,7 @@ int Table::column_name2index(const String& column_name, bool bark) const {
 	if(fcolumns) {// named
 		int result=name2number->get(column_name)-1; // -1 = column not found
 		if(bark && result<0)
-			throw Exception(PARSER_RUNTIME,
-				&column_name,
-				"column not found");
+			throw Exception(PARSER_RUNTIME, &column_name, "column not found");
 		return result;
 	} else // nameless
 		return column_name.as_int();
@@ -107,14 +104,12 @@ bool locate_int_string(Table& self, Locate_int_string_info* info) {
 	return item_value && *item_value==*info->value;
 }
 
-bool Table::locate(int column, const String& value,
-		   Table::Action_options& options) {
+bool Table::locate(int column, const String& value, Table::Action_options& options) {
 	Locate_int_string_info info={column, &value};
 	return table_first_that(locate_int_string, &info, options);
 }
 
-bool Table::locate(const String& column, const String& value, 
-		   Table::Action_options& options) {
+bool Table::locate(const String& column, const String& value, Table::Action_options& options) {
 	return locate(column_name2index(column, true), value, options);
 }
 

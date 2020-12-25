@@ -8,7 +8,7 @@
 #ifndef PA_TABLE_H
 #define PA_TABLE_H
 
-#define IDENT_PA_TABLE_H "$Id: pa_table.h,v 1.71 2020/12/15 17:10:32 moko Exp $"
+#define IDENT_PA_TABLE_H "$Id: pa_table.h,v 1.72 2020/12/25 22:05:31 moko Exp $"
 
 #include "pa_types.h"
 #include "pa_hash.h"
@@ -32,9 +32,7 @@ class Table: public Array<ArrayString*> {
 public:
 	typedef ArrayString* columns_type;
 
-	Table(
-		columns_type acolumns,
-		size_t initial_rows=3);
+	Table(columns_type acolumns, size_t initial_rows=3);
 	Table(const Table& src, Action_options& options);
 
 	/// gets column names
@@ -57,6 +55,8 @@ public:
 		if no such - 'bark'
 	*/
 	int column_name2index(const String& column, bool bark) const;
+
+	void column_names_init();
 
 	/// @return item from @a column
 	const String* item(size_t column);
@@ -123,7 +123,6 @@ public:
 
 		return false;
 	}
-
 
 	bool locate(int column, const String& value, Action_options& options);
 	bool locate(const String& column, const String& value, Action_options& options);
