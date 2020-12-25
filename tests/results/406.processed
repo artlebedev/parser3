@@ -1,0 +1,24 @@
+Content-Type: text/html
+Content-Length: 490
+
+1. Type: parser.runtime,
+Source: b,
+Comment: column not found
+2. vb
+3. Type: parser.runtime,
+Source: a,
+Comment: column name must be string
+4. vd
+5. vb, vd
+6. Type: parser.runtime,
+Source: a,
+Comment: column not found
+7. Type: parser.runtime,
+Source: rename,
+Comment: called with invalid option
+8. Type: parser.runtime,
+Source: rename,
+Comment: options must have hash representation (parameter #1)
+9. Type: parser.runtime,
+Source: rename,
+Comment: column name must be string (parameter #2)

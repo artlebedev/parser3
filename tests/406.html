@@ -1,0 +1,20 @@
+$t[^table::create{a	b	c	a
+va	vb	vc	vd}]
+
+^t.rename[b;e]
+
+1. ^try-catch{ $t.b }
+2. $t.e
+
+3. ^try-catch{ ^t.rename[ $.a{code} ] }
+
+4. $t.a
+
+^t.rename[ $.e[b] $.a[z] $.z[a] ]
+
+5. $t.b, $t.z
+6. ^try-catch{ $t.a }
+
+7. ^try-catch{ ^t.rename[ ] }
+8. ^try-catch{ ^t.rename[ z ] }
+9. ^try-catch{ ^t.rename[ z ]{ z } }
