@@ -1,4 +1,4 @@
-$t[^table::create{a	b	c	a
+$t[^table::create{a	b	s	a
 va	vb	vc	vd}]
 
 ^t.rename[b;e]
@@ -10,11 +10,15 @@ va	vb	vc	vd}]
 
 4. $t.a
 
-^t.rename[ $.e[b] $.a[z] $.z[a] ]
+^t.rename[ $.e[] $.a[z] $.z[a] ]
 
-5. $t.b, $t.z
+5. $t.$empty, $t.z
 6. ^try-catch{ $t.a }
 
 7. ^try-catch{ ^t.rename[ ] }
 8. ^try-catch{ ^t.rename[ z ] }
 9. ^try-catch{ ^t.rename[ z ]{ z } }
+
+$t[^table::create[nameless]{va	vb	vc	vd}]
+
+10. ^try-catch{ ^t.rename[;] }

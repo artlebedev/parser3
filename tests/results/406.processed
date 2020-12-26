@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 490
+Content-Length: 521
 
 1. Type: parser.runtime,
 Source: b,
@@ -13,12 +13,12 @@ Comment: column name must be string
 6. Type: parser.runtime,
 Source: a,
 Comment: column not found
-7. Type: parser.runtime,
-Source: rename,
-Comment: called with invalid option
-8. Type: parser.runtime,
+7. 8. Type: parser.runtime,
 Source: rename,
 Comment: options must have hash representation (parameter #1)
 9. Type: parser.runtime,
 Source: rename,
 Comment: column name must be string (parameter #2)
+10. Type: parser.runtime,
+Source: rename,
+Comment: columns renaming is not supported for nameless tables
