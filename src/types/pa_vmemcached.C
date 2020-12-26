@@ -13,7 +13,7 @@
 #include "pa_vhash.h"
 #include "pa_vvoid.h"
 
-volatile const char * IDENT_PA_VMEMCACHED_C="$Id: pa_vmemcached.C,v 1.22 2020/12/15 17:10:41 moko Exp $" IDENT_PA_VMEMCACHED_H;
+volatile const char * IDENT_PA_VMEMCACHED_C="$Id: pa_vmemcached.C,v 1.23 2020/12/26 23:09:08 moko Exp $" IDENT_PA_VMEMCACHED_H;
 
 const char *memcached_library="libmemcached" LT_MODULE_EXT;
 
@@ -235,7 +235,7 @@ static inline time_t serialize_value(time_t ttl, const String& aname, Value* ava
 	if(avalue->is_string()){
 		serialize_string(*avalue->get_string(), data);
 	} else {
-		throw Exception("memcached", &aname, "%s serialization not supported yet", avalue->type());
+		throw Exception("memcached", &aname, "%s serialization is not supported yet", avalue->type());
 	}
 
 	return ttl;

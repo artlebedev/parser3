@@ -19,7 +19,7 @@
 #include "pa_vfile.h"
 #include "pa_uue.h"
 
-volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.135 2020/12/15 17:10:41 moko Exp $" IDENT_PA_VMAIL_H;
+volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.136 2020/12/26 23:09:08 moko Exp $" IDENT_PA_VMAIL_H;
 
 #ifdef WITH_MAILRECEIVE
 extern "C" {
@@ -774,10 +774,10 @@ const String& VMail::message_hash_to_string(Request& r, HashStringValue* message
 
 	int textCount=info.parts[P_TEXT]->count();
 	if(textCount>1)
-		throw Exception(PARSER_RUNTIME, 0, "multiple text parts not supported, use file part");
+		throw Exception(PARSER_RUNTIME, 0, "multiple text parts are not supported, use file part");
 	int htmlCount=info.parts[P_HTML]->count();
 	if(htmlCount>1)
-		throw Exception(PARSER_RUNTIME, 0, "multiple html parts not supported, use file part");
+		throw Exception(PARSER_RUNTIME, 0, "multiple html parts are not supported, use file part");
 
 	bool multipart=info.parts_count>1;
 	bool alternative=textCount && htmlCount;

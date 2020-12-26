@@ -34,7 +34,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.409 2020/12/21 14:12:57 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.410 2020/12/26 23:09:08 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -853,7 +853,7 @@ static void output_pieces(Request& r, bool header_only, const String& filename, 
 			SAPI::add_header_attribute(r.sapi_info, HTTP_STATUS, "206");
 			SAPI::add_header_attribute(r.sapi_info, "content-range", buf);
 		} else {
-			return SAPI::send_error(r.sapi_info, count ? "Multiple ranges not supported" : "Invalid range", count ? "501" : "400");
+			return SAPI::send_error(r.sapi_info, count ? "Multiple ranges are not supported" : "Invalid range", count ? "501" : "400");
 		}
 	}
 

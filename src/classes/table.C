@@ -25,7 +25,7 @@
 #include "pa_vbool.h"
 #include "pa_array.h"
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.356 2020/12/25 22:05:31 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.357 2020/12/26 23:09:08 moko Exp $";
 
 // class
 
@@ -1511,8 +1511,7 @@ static void _rename(Request& r, MethodParams& params) {
 		name_from=&params.as_string(0, COLUMN_NAME_MUST_BE_STRING);
 		name_to=&params.as_string(1, COLUMN_NAME_MUST_BE_STRING);
 	} else
-		if (!(names=params.as_hash(0)))
-			throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+		names=params.as_hash(0);
 
 	Table& table=GET_SELF(r, VTable).table();
 	if(Table::columns_type columns=table.columns()) {
@@ -1520,13 +1519,13 @@ static void _rename(Request& r, MethodParams& params) {
 			for(int i=0; i<columns->count(); i++) {
 				const String *column = columns->get(i);
 				if(Value* vto=names->get(*column)){
-					const String *sto=vto->get_string();
-					if(!sto)
+					if(const String *sto=vto->get_string())
+						columns->put(i, sto);
+					else
 						throw Exception(PARSER_RUNTIME, column, COLUMN_NAME_MUST_BE_STRING);
-					columns->put(i, sto);
 				}
 			}
-		} else {
+		} else if(name_from){
 			for(int i=0; i<columns->count(); i++) {
 				const String *column = columns->get(i);
 				if(*column == *name_from)
@@ -1534,7 +1533,8 @@ static void _rename(Request& r, MethodParams& params) {
 			}
 		}
 		table.column_names_init();
-	}
+	} else
+		throw Exception(PARSER_RUNTIME, 0, "columns renaming is not supported for nameless tables");
 }
 
 // constructor
