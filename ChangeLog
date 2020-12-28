@@ -1,3 +1,78 @@
+2020-12-27  moko
+
+	* tests/: 406.html, results/406.processed: test results updated
+
+	* src/: classes/table.C, main/pa_request.C, types/pa_vmail.C,
+	  types/pa_vmemcached.C: fine tuning in ^table.rename[], minor
+	  spelling
+
+2020-12-26  moko
+
+	* tests/: 406.html, results/406.processed: tests for
+	  ^table.rename[] added (related to feature #1148)
+
+	* src/: classes/table.C, include/pa_table.h, main/pa_table.C:
+	  ^table.rename[column name from;column name to], ^table.rename[
+	  $.[column name from][column name to] ... ] added (implements
+	  feature #1148)
+
+2020-12-25  moko
+
+	* src/: include/pa_request_info.h, targets/cgi/parser3.C:
+	  request_info now on stack to avoid yet another THREAD_LOCAL
+	  memory deallocation issue (now with cookies), explained in #1203
+
+	* src/types/pa_vcookie.C: fields should be inited
+
+2020-12-24  moko
+
+	* src/include/pa_stylesheet_connection.h: looks like
+	  xsltFreeStylesheet leads to memory double-free. If so, it's for
+	  sure libxml bug, but we have GC anyway, so we just remove this
+	  call and see...
+
+	  * thread #1, name = 'parser.parser3.cgi', stop reason = signal
+	  SIGABRT   * frame #0: 0x0000000801ab50fa libc.so.7`__sys_thr_kill
+	  + 10	   frame #2: 0x0000000801ab5039 libc.so.7`abort at
+	  abort.c:65:8	   frame #3: 0x00000000004da663
+	  parser.parser3.cgi`GC_freehblk(hbp=<unavailable>) at
+	  allchblk.c:878:9     frame #4: 0x00000000004cb8c4
+	  parser.parser3.cgi`GC_free(p=0x0000000808b34000) at
+	  malloc.c:617:9     frame #5: 0x0000000000577f0c
+	  parser.parser3.cgi`xmlHashFree(table=0x0000000806991a80,
+	  f=<unavailable>) at hash.c:356:2     frame #6: 0x000000000051a7c2
+	  parser.parser3.cgi`xsltFreeTemplateHashes + 50     frame #7:
+	  0x000000000050cfac parser.parser3.cgi`xsltFreeStylesheet + 124
+	   frame #8: 0x000000000050d35c
+	  parser.parser3.cgi`xsltFreeStylesheetList + 44     frame #9:
+	  0x000000000050d1fa parser.parser3.cgi`xsltFreeStylesheet + 714
+	   frame #10: 0x00000000004436e5
+	  parser.parser3.cgi`Stylesheet_manager::maybe_expire_cache()
+	  [inlined]
+	  Stylesheet_connection::disconnect(this=0x0000000804676c80) at
+	  pa_stylesheet_connection.h:62:3
+
+2020-12-23  moko
+
+	* src/classes/image.C: ^image::measure[; $.video() ] option added
+
+	* tests/: 395.html, 395_dir/4.mp4, results/395.processed: test
+	  ^image::measure[; $.video(true) ] added
+
+	* src/main/pa_exec.C: not cleared automatically in multithreaded
+	  httpd mode for unknown reasons
+
+2020-12-22  moko
+
+	* src/targets/cgi/parser3.C: added by PAF in rev 201 to "write to
+	  error_log uri of currently processed document", but never used
+	  and conflicts with how libgc stops threads on FreeBSD (#define
+	  SIG_SUSPEND SIGUSR1), thus removed.
+
+2020-12-21  moko
+
+	* src/main/pa_request.C: +comment
+
 2020-12-20  moko
 
 	* src/: include/pa_common.h, include/pa_memory.h, main/pa_common.C:
