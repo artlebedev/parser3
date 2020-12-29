@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.146 2020/12/15 17:10:28 moko Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.147 2020/12/29 13:56:18 moko Exp $";
 
 // class
 
@@ -619,6 +619,90 @@ static void _at(Request& r, MethodParams& params) {
 	}
 }
 
+extern String table_reverse_name;
+
+static void _select(Request& r, MethodParams& params) {
+	const String* key_var_name=&params.as_string(0, "key-var name must be string");
+	const String* value_var_name=&params.as_string(1, "value-var name must be string");
+	Value& vcondition=params.as_expression(2, "condition must be number, bool or expression");
+
+	if(key_var_name->is_empty()) key_var_name=0;
+	if(value_var_name->is_empty()) value_var_name=0;
+
+	HashStringValue& source_hash=GET_SELF(r, VHashBase).hash();
+	Value& caller=*r.get_method_frame()->caller();
+
+	int limit=source_hash.count();
+	bool reverse=false;
+
+	if(params.count()>3)
+		if(HashStringValue* options=params.as_hash(3)) {
+			int valid_options=0;
+			if(Value* vlimit=options->get(sql_limit_name)) {
+				valid_options++;
+				limit=r.process(*vlimit).as_int();
+			}
+			if(Value* vreverse=options->get(table_reverse_name)) {
+				valid_options++;
+				reverse=r.process(*vreverse).as_bool();
+			}
+			if(valid_options!=options->count())
+				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+		}
+
+	HashStringValue& result_hash=*new HashStringValue();
+
+	if(limit>0){
+#ifdef HASH_ORDER
+		if(reverse){
+			for(HashStringValue::ReverseIterator i(source_hash); i; i.prev()){
+				if(key_var_name)
+					r.put_element(caller, *key_var_name, new VString(*new String(i.key(), String::L_TAINTED)));
+				if(value_var_name)
+					r.put_element(caller, *value_var_name, i.value());
+
+				if(r.process(vcondition).as_bool()){
+					result_hash.put(i.key(), i.value());
+					if(!--limit)
+						break;
+				}
+			}
+		} else {
+#else
+		{
+#endif
+			for(HashStringValue::Iterator i(source_hash); i; i.next() ){
+				if(key_var_name)
+					r.put_element(caller, *key_var_name, new VString(*new String(i.key(), String::L_TAINTED)));
+				if(value_var_name)
+					r.put_element(caller, *value_var_name, i.value());
+
+				if(r.process(vcondition).as_bool()){
+					result_hash.put(i.key(), i.value());
+					if(!--limit)
+						break;
+				}
+			}
+		}
+	}
+
+	r.write(*new VHash(result_hash));
+}
+
+static void _reverse(Request& r, MethodParams& params) {
+	HashStringValue& source_hash=GET_SELF(r, VHashBase).hash();
+	HashStringValue& result_hash=*new HashStringValue();
+
+#ifdef HASH_ORDER
+	for(HashStringValue::ReverseIterator i(source_hash); i; i.prev())
+		result_hash.put(i.key(), i.value());
+#else
+	for(HashStringValue::Iterator i(source_hash); i; i.next() )
+		result_hash.put(i.key(), i.value());
+#endif
+	r.write(*new VHash(result_hash));
+}
+
 // constructor
 
 MHash::MHash(): Methoded("hash") 
@@ -658,7 +742,13 @@ MHash::MHash(): Methoded("hash")
 
 	// ^hash.sort[key;value]{string-key-maker}[[asc|desc]]
 	// ^hash.sort[key;value](numeric-key-maker)[[asc|desc]]
-	add_native_method("sort", Method::CT_DYNAMIC, _sort, 2+1, 2+1+1);
+	add_native_method("sort", Method::CT_DYNAMIC, _sort, 3, 4);
+
+	// ^hash.select[key;value](bool-condition)[options hash]
+	add_native_method("select", Method::CT_DYNAMIC, _select, 3, 4);
+
+	// ^hash.reverse[]
+	add_native_method("reverse", Method::CT_DYNAMIC, _reverse, 0, 0);
 
 	// ^hash._at[first|last[;'key'|'value'|'hash']]
 	// ^hash._at([-+]offset)[['key'|'value'|'hash']]
