@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.147 2020/12/29 13:56:18 moko Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.148 2020/12/29 14:22:52 moko Exp $";
 
 // class
 
@@ -690,7 +690,8 @@ static void _select(Request& r, MethodParams& params) {
 }
 
 static void _reverse(Request& r, MethodParams& params) {
-	HashStringValue& source_hash=GET_SELF(r, VHashBase).hash();
+	VHashBase& self=GET_SELF(r, VHashBase);
+	HashStringValue& source_hash=self.hash();
 	HashStringValue& result_hash=*new HashStringValue();
 
 #ifdef HASH_ORDER
@@ -700,7 +701,12 @@ static void _reverse(Request& r, MethodParams& params) {
 	for(HashStringValue::Iterator i(source_hash); i; i.next() )
 		result_hash.put(i.key(), i.value());
 #endif
-	r.write(*new VHash(result_hash));
+
+	VHashBase& result=*new VHash(result_hash);
+	if(Value* vdefault=self.get_default())
+		result.set_default(vdefault);
+
+	r.write(result);
 }
 
 // constructor
