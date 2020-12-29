@@ -36,7 +36,11 @@ $short[^log.select[url;](^url.length[]<7)]
 ^short.foreach[url;]{$url}[^#0A]
 
 Reverse test:
-^json:string[^log.reverse[]]
+$h[^hash::create[$log] $._default[-]]
+default before: $h.404
+$h[^h.reverse[]]
+default after: $h.404
+^json:string[$h]
 
 Hit:
 $hit[^log.select[;cpu]($cpu<0.05)[ $.reverse(true) ]]
