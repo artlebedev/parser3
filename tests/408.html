@@ -1,0 +1,6 @@
+$s[test]
+^s.save[a/test.txt]
+^file:move[a;b/c/]
+1. ^if(-f "b/c/test.txt"){ok}{fail}
+^file:delete[b/c/test.txt]
+2. ^if(-d "b"){fail}{ok}
