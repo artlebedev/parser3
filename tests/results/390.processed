@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 2205
+Content-Length: 2198
 
 image code coverage tests:
 1. 2. 3. 4. 5. Type: ,
@@ -17,10 +17,10 @@ Comment: coordinates table must contain two columns: x and y values
 12. <img src="name.gif" width="100" height="100" border="0" />
 13. Type: image.format,
 Source: unknown.format,
-Comment: unhandled image file name extension 'format'
+Comment: unhandled file name extension 'format'
 Type: image.format,
 Source: no-format,
-Comment: can not determine image type - no file name extension
+Comment: can not determine file type - no file name extension
 15. Type: image.format,
 Source: format.png,
 Comment: not PNG file - too small
