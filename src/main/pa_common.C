@@ -29,7 +29,7 @@
 #define pa_mkdir(path, mode) mkdir(path, mode)
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.323 2020/12/20 20:45:24 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.324 2020/12/30 18:06:42 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -286,11 +286,13 @@ bool file_read_action_under_lock(const String& file_spec,
 }
 
 void create_dir_for_file(const String& file_spec) {
-	size_t pos_after=1;
-	size_t pos_before;
-	while((pos_before=file_spec.pos('/', pos_after))!=STRING_NOT_FOUND) {
-		pa_mkdir(file_spec.mid(0, pos_before).taint_cstr(String::L_FILE_SPEC), 0775); 
-		pos_after=pos_before+1;
+	const char *str=file_spec.taint_cstr(String::L_FILE_SPEC);
+	if(str[0]){
+		const char *pos=str+1;
+		while((pos=strchr(pos,'/')) && pos[1]) { // to avoid trailing /, see #1166
+			pa_mkdir(pa_strdup(str,pos-str), 0775);
+			pos++;
+		}
 	}
 }
 
