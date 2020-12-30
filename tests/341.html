@@ -1,6 +1,12 @@
+@main[]
+
+I. named
+
+$id[id]
+$price[price]
 $t[^table::create{id	price
 1	6.50
-2	70.00
+2	70.00		more data
 3	60.85
 _default	0
 }]
@@ -9,34 +15,62 @@ $n[^table::create{name
 id
 price}]
 
+^core[]
+
+II. nameless
+
+$id[0]
+$price[1]
+$t[^table::create[nameless]{1	6.50
+2	70.00		more data
+3	60.85
+_default	0
+}]
+
+$n[^table::create{name
+0
+1}]
+
+^core[]
+
+@core[]
+
 Code coverage tests:
 
-^try-catch{^t.hash[id][ $.type[wrong] ]}
-^try-catch{^t.hash[id][ $.type[ $.not_string[] ] ]}
-^try-catch{^t.hash[id][ $.wrong[option] ]}
-^try-catch{^t.hash[id][price][ not hash ]}
-^try-catch{^t.hash[id][ $.wrong[] ][ $.type[string] ]}
-^try-catch{^t.hash[id][$n][ $.type[string] ]}
-^try-catch{^t.hash[id]{code}[ $.type[string] ]}
-^try-catch{^t.hash[ups;price]}
-^try-catch{^t.hash[id;ups]}
+^try-catch{^t.hash[$id][ $.type[wrong] ]}
+^try-catch{^t.hash[$id][ $.type[ $.not_string[] ] ]}
+^try-catch{^t.hash[$id][ $.wrong[option] ]}
+^try-catch{^t.hash[$id][$price][ not hash ]}
+^try-catch{^t.hash[$id][ $.wrong[] ][ $.type[string] ]}
+^try-catch{^t.hash[$id][$n][ $.type[string] ]}
+^try-catch{^t.hash[$id]{code}[ $.type[string] ]}
+^try-catch{^t.hash[ups;$price]}
+^try-catch{^t.hash[$id;ups]}
 
 Valid calls tests:
 
-^json:string[^t.hash[id]]
-^json:string[^t.hash[id][ $.type[table] ]]
-^json:string[^t.hash[id][price]]
-^json:string[^t.hash{id}[price][ $.distinct(true) ]]
-^json:string[^t.hash[id][$n]]
-^json:string[^t.hash{id}[$n][ $.distinct(true) ]]
+1. ^json:string[^t.hash[$id]]
+2. ^json:string[^t.hash[$id][ $.type[table] ]]
+3. ^json:string[^t.hash[$id][$price]]
+4. ^json:string[^t.hash{$id}[$price][ $.distinct(true) ]]
+5. ^json:string[^t.hash[$id][$n]]
+6. ^json:string[^t.hash{$id}[$n][ $.distinct(true) ]]
 
 New functionality tests:
 
-^json:string[^t.hash{=$t.id=}{$t.id - $t.price}]
-^json:string[^t.hash[id]{$t.id - $t.price}]
+n1. ^json:string[^t.hash{=$t.$id=}{$t.$id - $t.$price}]
+n2. ^json:string[^t.hash[$id]{$t.$id - $t.$price}]
 
-^json:string[^t.hash{id}{code}[ $.distinct(true) ]]
-^json:string[^t.hash[id]{ $h[$.key[$t.price]] $h }]
+n3. ^json:string[^t.hash{$id}{code}[ $.distinct(true) ]]
+n4. ^json:string[^t.hash[$id]{ $h[$.key[$t.$price]] $h }]
 
-^json:string[^t.hash[id;]]
-^json:string[^t.hash[id;; $.type[string] ]]
+n5. ^json:string[^t.hash[$id;]]
+n6. ^json:string[^t.hash[$id;; $.type[string] ]]
+
+@try-catch[jCode]
+^try{$jCode}{
+        $exception.handled(true)
+        Type: $exception.type,
+        Source: $exception.source,
+        Comment: $exception.comment
+}
