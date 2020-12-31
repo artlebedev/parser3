@@ -34,7 +34,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.410 2020/12/26 23:09:08 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.411 2020/12/31 12:08:36 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -231,6 +231,13 @@ VStateless_class* Request::get_class(const String& name){
 			result=classes().get(name);
 		}
 	return result;
+}
+
+VStateless_class& Request::get_class_ref(const String& name){
+	VStateless_class* result=get_class(name);
+	if(!result)
+		throw Exception(PARSER_RUNTIME, &name, "class is undefined");
+	return *result;
 }
 
 static void load_charset(HashStringValue::key_type akey, HashStringValue::value_type avalue, Request_charsets* charsets) {

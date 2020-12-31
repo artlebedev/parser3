@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.259 2020/12/16 19:45:28 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.260 2020/12/31 12:08:34 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -208,6 +208,7 @@ public:
 	/// global classes
 	HashString<VStateless_class*>& classes() { return fclasses; }
 	VStateless_class* get_class(const String& name);
+	VStateless_class& get_class_ref(const String& name);
 	void put_class(VStateless_class *aclass){ classes().put(aclass->type(), aclass); }
 
 	/**

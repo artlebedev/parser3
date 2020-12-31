@@ -10,7 +10,7 @@
 #include "pa_vbool.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.87 2020/12/15 17:10:29 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.88 2020/12/31 12:08:34 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -88,15 +88,13 @@ static void _create(Request& r, MethodParams& params) {
 		params_offset=2;
 	}
 
-	VStateless_class* vclass=r.get_class(*class_name);
-	if(!vclass)
-		throw Exception(PARSER_RUNTIME, class_name, "class is undefined");
+	VStateless_class& vclass=r.get_class_ref(*class_name);
 
-	const Method* method=vclass->get_method(*constructor_name);
+	const Method* method=vclass.get_method(*constructor_name);
 	if(!method)
-		throw Exception(PARSER_RUNTIME, constructor_name, "constructor not found in class '%s'", vclass->type());
+		throw Exception(PARSER_RUNTIME, constructor_name, "constructor not found in class '%s'", vclass.type());
 
-	Value &object = r.construct(*vclass, *method);
+	Value &object = r.construct(vclass, *method);
 
 	int nparams=params_hash ? params_hash->count() : (params.count()-params_offset);
 	if(nparams>MAX_CREATE_PARAMS)
@@ -162,10 +160,7 @@ static void _class_name(Request& r, MethodParams& params) {
 
 static void _class_by_name(Request& r, MethodParams& params) {
 	const String& class_name=params.as_string(0, "class_name must be string");
-	Value* class_value=r.get_class(class_name);
-	if(!class_value)
-		throw Exception(PARSER_RUNTIME, &class_name, "class is undefined");
-	r.write(*class_value);
+	r.write(r.get_class_ref(class_name));
 }
 
 static void _base(Request& r, MethodParams& params) {
@@ -199,9 +194,7 @@ static void _def(Request& r, MethodParams& params) {
 
 static void _methods(Request& r, MethodParams& params) {
 	const String& class_name=params.as_string(0, "class_name must be string");
-	VStateless_class* vclass=r.get_class(class_name);
-	if(!vclass)
-		throw Exception(PARSER_RUNTIME, &class_name, "class is undefined");
+	VStateless_class& vclass=r.get_class_ref(class_name);
 
 	bool reverse=true;
 
@@ -224,14 +217,14 @@ static void _methods(Request& r, MethodParams& params) {
 
 #ifdef HASH_ORDER
 	if(reverse){
-		for(HashStringMethod::ReverseIterator i(vclass->get_methods()); i; i.prev()){
+		for(HashStringMethod::ReverseIterator i(vclass.get_methods()); i; i.prev()){
 			result.hash().put(i.key(), new VString(i.value()->native_code ? method_type_native : method_type_parser));
 		}
 	} else {
 #else
 	{
 #endif
-		for(HashStringMethod::Iterator i(vclass->get_methods()); i; i.next()){
+		for(HashStringMethod::Iterator i(vclass.get_methods()); i; i.next()){
 			result.hash().put(i.key(), new VString(i.value()->native_code ? method_type_native : method_type_parser));
 		}
 	}
@@ -317,21 +310,18 @@ static void _method_info(Request& r, MethodParams& params) {
 
 	} else {
 		const String& class_name=params.as_string(0, "param must be class name or method junction");
-		VStateless_class* vclass=r.get_class(class_name);
-
-		if(!vclass)
-			throw Exception(PARSER_RUNTIME, &class_name, "class is undefined");
+		VStateless_class& vclass=r.get_class_ref(class_name);
 
 		if(params.count()==1)
 			throw Exception(PARSER_RUNTIME, 0, "method name must be specified");
 
 		const String& method_name=params.as_string(1, "method name must be string");
-		if(!(method=vclass->get_method(method_name)))
-			throw Exception(PARSER_RUNTIME, &method_name, "method not found in class '%s'", vclass->type());
+		if(!(method=vclass.get_method(method_name)))
+			throw Exception(PARSER_RUNTIME, &method_name, "method not found in class '%s'", vclass.type());
 
 		Method* base_method;
-		if(vclass && vclass->base() && (base_method=vclass->base()->get_method(*method->name))){
-			VStateless_class* c=vclass->base()->get_class();
+		if(vclass.base() && (base_method=vclass.base()->get_method(*method->name))){
+			VStateless_class* c=vclass.base()->get_class();
 			while(c->base() && base_method==c->base()->get_method(*method->name))
 				c=c->base()->get_class();
 			hash->put((base_method==method) ? method_inherited : method_overridden, new VString(*new String(c->type())));

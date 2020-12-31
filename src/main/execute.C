@@ -21,7 +21,7 @@
 #include "pa_vimage.h"
 #include "pa_wwrapper.h"
 
-volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.412 2020/12/15 17:10:34 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
+volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.413 2020/12/31 12:08:35 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
 
 //#define DEBUG_EXECUTE
 
@@ -280,11 +280,7 @@ void Request::execute(ArrayOperation& ops) {
 
 				DEBUG_PRINT_STRING(name)
 
-				VStateless_class* vclass=get_class(name);
-				if(!vclass)
-					throw Exception(PARSER_RUNTIME, &name, "class is undefined"); 
-
-				stack.push(*vclass);
+				stack.push(get_class_ref(name));
 				break;
 			}
 
@@ -297,11 +293,7 @@ void Request::execute(ArrayOperation& ops) {
 
 				DEBUG_PRINT_STRING(name)
 
-				VStateless_class* vclass=get_class(name);
-				if(!vclass)
-					throw Exception(PARSER_RUNTIME, &name, "class is undefined"); 
-
-				stack.push(*new VBaseClassWrapper(*vclass, get_self()));
+				stack.push(*new VBaseClassWrapper(get_class_ref(name), get_self()));
 				break;
 			}
 
@@ -850,9 +842,7 @@ void Request::execute(ArrayOperation& ops) {
 
 				DEBUG_PRINT_STRING(class_name)
 
-				VStateless_class* vclass=get_class(class_name);
-				if(!vclass)
-					throw Exception(PARSER_RUNTIME, &class_name, "class is undefined"); 
+				VStateless_class& vclass=get_class_ref(class_name);
 
 				debug_origin=i.next().origin;
 				Value& vconstructor_name=*i.next().value;
@@ -860,9 +850,9 @@ void Request::execute(ArrayOperation& ops) {
 
 				DEBUG_PRINT_STRING(constructor_name)
 
-				Junction* constructor_junction=get_element(*vclass, constructor_name).get_junction();
+				Junction* constructor_junction=get_element(vclass, constructor_name).get_junction();
 				if(!constructor_junction)
-					throw Exception(PARSER_RUNTIME, &constructor_name, "constructor must be declared in class '%s'", vclass->type());
+					throw Exception(PARSER_RUNTIME, &constructor_name, "constructor must be declared in class '%s'", vclass.type());
 
 				ArrayOperation* local_ops=i.next().ops;
 				DEBUG_PRINT_OPS(local_ops)
@@ -870,7 +860,7 @@ void Request::execute(ArrayOperation& ops) {
 
 				Value *result;
 				{
-					Value& object=construct(*vclass, *constructor_junction->method);
+					Value& object=construct(vclass, *constructor_junction->method);
 					CONSTRUCTOR_FRAME_ACTION(*constructor_junction->method, method_frame, object, {
 						METHOD_PARAMS_ACTION(call(frame));
 						object.enable_default_setter();
