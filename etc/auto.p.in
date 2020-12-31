@@ -1,4 +1,4 @@
-#$Id: auto.p.in,v 1.5 2020/12/31 10:25:41 moko Exp $
+#$Id: auto.p.in,v 1.6 2020/12/31 12:27:33 moko Exp $
 
 @auto[]
 #source/client charsets
@@ -190,10 +190,10 @@ $response:status(200)
 
 # option can be method, URL or text/code
 @option[option]
-$result[^if($option is junction){^option[]}(^option.match[$httpd.parser]){^include[$option]}{$option}]
+$result[^if($option is junction){^option[]}(^option.match[$cfg.parser]){^include[$option]}{$option}]
 
 @file[filename]
-$result[^if(^filename.match[$httpd.parser]){^include[$filename]}{$response:body[ $.file[$filename] $.name[] ]}]
+$result[^if(^filename.match[$cfg.parser]){^include[$filename]}{$response:body[ $.file[$filename] $.name[] ]}]
 
 @log[filename;detail][now;line]
 $now[^date::now[]]
@@ -248,7 +248,7 @@ $uri[^string:unescape[uri;$uri; $.charset[UTF-8] ]]
 ^if(def $cfg.deny && ^uri.match[$cfg.deny]){
 	$response:status[403]
 	$result[^option[$cfg.403]]
-}(def $cfg.fix-trailing-slash && ^uri.match[^^[^^.]+[^^/.]^$]){
+}(def $cfg.[fix-trailing-slash] && ^uri.match[^^[^^.]+[^^/.]^$]){
 	$result[$response:location[$uri/^if(def $request:query){?^taint[as-is;$request:query]}}]]
 }(def $cfg.index && -f "$uri/$cfg.index"){
 	$result[^file[$uri/$cfg.index]]
