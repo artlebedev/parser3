@@ -1,4 +1,20 @@
-#$Id: auto.p.in,v 1.3 2020/12/09 15:47:00 moko Exp $
+#$Id: auto.p.in,v 1.4 2020/12/31 10:10:28 moko Exp $
+
+@auto[]
+#source/client charsets
+$request:charset[utf-8]
+$response:charset[utf-8]
+
+$response:content-type[
+	$.value[text/html]
+	$.charset[$response:charset]
+]
+
+#$SQL.connect-string[mysql://user:pass@host/db?charset=utf8]
+#$SQL.connect-string[sqlite://db]
+#$SQL.connect-string[pgsql://user:pass@host/db]
+#$SQL.connect-string[odbc://DSN=datasource^;UID=user^;PWD=password]
+
 
 @conf[filespec]
 $confdir[^file:dirname[$filespec]]
@@ -83,11 +99,12 @@ $LIMITS[
 	$.post_max_size(10*0x400*0x400)
 ]
 
+#$HTTPD[
+#	$.mode[threaded]
+#]
+
 #$MAIL[
-#	$.sendmail[your sendmail command goes here]
-#	these are tried when no 'sendmail' specified:
-#		/usr/sbin/sendmail -t -i -f postmaster
-#		/usr/lib/sendmail -t -i -f postmaster
+#	$.SMTP[localhost]
 #]
 
 
@@ -188,16 +205,17 @@ The requested URL was not found on this server.
 @httpd-main[][uri;basic]
 
 $httpd[
-	$.parser[(\.html^$)]
+	$.parser[\.(html|phtml)^$]
 	$.index[index.html]
 #	$.autoindex(true)
 	$.404[$httpd-404]
 #	$.404[/_doc.html]
-	$.auth[ $.url[^^/\.?admin/] $.login[admin] $.password[test] $.realm[site administration] ]
+#	$.fix-trailing-slash(true)
+#	$.auth[ $.url[^^/\.?admin/] $.login[admin] $.password[change me] $.realm[site administration] ]
 	$.deny[(/\.ht[^^/]+|\.p|\.cfg)^$]
 	$.403[Permission denied]
 	$.memory(64000)
-	$.log[/access.log]
+#	$.log[/access.log]
 ]
 
 $response:server[Parser$env:PARSER_VERSION]
@@ -225,6 +243,8 @@ $uri[^string:unescape[uri;$uri; $.charset[UTF-8] ]]
 ^if(def $httpd.deny && ^uri.match[$httpd.deny]){
 	$response:status[403]
 	$result[^httpd-option[$httpd.403]]
+}(def $httpd.fix-trailing-slash && ^uri.match[^^[^^.]+[^^/.]^$]){
+	$result[$response:location[$uri/^if(def $request:query){?^taint[as-is;$request:query]}}]]
 }(def $httpd.index && -f "$uri/$httpd.index"){
 	$result[^httpd-file[$uri/$httpd.index]]
 }($httpd.autoindex && -d "$uri"){
@@ -236,18 +256,3 @@ $uri[^string:unescape[uri;$uri; $.charset[UTF-8] ]]
 	$result[^httpd-option[$httpd.404]]
 }
 
-
-@auto[]
-#source/client charsets
-$request:charset[utf-8]
-$response:charset[utf-8]
-
-$response:content-type[
-	$.value[text/html]
-	$.charset[$response:charset]
-]
-
-#$SQL.connect-string[mysql://user:pass@host/db?charset=utf8]
-#$SQL.connect-string[sqlite://db]
-#$SQL.connect-string[pgsql://user:pass@host/db]
-#$SQL.connect-string[odbc://DSN=datasource^;UID=user^;PWD=password]
