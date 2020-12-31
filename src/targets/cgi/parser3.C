@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.341 2020/12/25 14:32:44 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.342 2020/12/31 19:48:47 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -274,10 +274,9 @@ const char* maybe_reconstruct_IIS_status_in_qs(const char* original) {
 }
 
 #define MAYBE_RECONSTRUCT_IIS_STATUS_IN_QS(s) maybe_reconstruct_IIS_status_in_qs(s)
-#else 
+#else
 #define MAYBE_RECONSTRUCT_IIS_STATUS_IN_QS(s) s
 #endif
-
 
 class RequestController {
 public:
@@ -298,6 +297,9 @@ public:
 		request_info_4log=0;
 	}
 };
+
+/** httpd support */
+static const String httpd_class_name("httpd");
 
 static void config_handler(SAPI_Info &info) {
 	char document_root_buf[MAX_STRING];
@@ -344,7 +346,7 @@ static void connection_handler(SAPI_Info_HTTPD &info, HTTPD_Connection &connecti
 		// prepare to process request
 		Request r(info, request_info, String::Language(String::L_HTML|String::L_OPTIMIZE_BIT));
 		// process the request
-		r.core(config_filespec, strcasecmp(request_info.method, "HEAD")==0, String("httpd-main"));
+		r.core(config_filespec, strcasecmp(request_info.method, "HEAD")==0, main_method_name, &httpd_class_name);
 	} catch(const Exception& e) { // exception in connection handling or unhandled exception
 		SAPI::log(info, "%s", e.comment());
 		const char *status = info.exception_http_status(e.type());

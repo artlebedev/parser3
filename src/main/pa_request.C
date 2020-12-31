@@ -34,7 +34,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.411 2020/12/31 12:08:36 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.412 2020/12/31 19:48:46 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -438,7 +438,7 @@ void Request::configure() {
 	@test log stack trace
 
 */
-void Request::core(const char* config_filespec, bool header_only, const String &amain_method_name) {
+void Request::core(const char* config_filespec, bool header_only, const String &amain_method_name, const String* amain_class_name) {
 	VFile* body_file=NULL;
 	bool as_attachment=false;
 
@@ -460,10 +460,12 @@ void Request::core(const char* config_filespec, bool header_only, const String &
 			rethrow;
 		}
 
+		VStateless_class& main = amain_class_name ? get_class_ref(*amain_class_name) : main_class;
+
 		// execute @main[]
-		const String* body_string=amain_method_name.is_empty() ? &String::Empty : execute_method(main_class, amain_method_name);
+		const String* body_string=amain_method_name.is_empty() ? &String::Empty : execute_method(main, amain_method_name);
 		if(!body_string)
-			throw Exception(PARSER_RUNTIME, 0, "'%s' method not found", amain_method_name.cstr());
+			throw Exception(PARSER_RUNTIME, &amain_method_name, "method not found in class %s", main.type());
 
 		// extract response body
 		Value* body_value=response.fields().get(download_name_upper); // $response:download?
