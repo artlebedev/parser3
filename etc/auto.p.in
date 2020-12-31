@@ -1,4 +1,4 @@
-#$Id: auto.p.in,v 1.4 2020/12/31 10:10:28 moko Exp $
+#$Id: auto.p.in,v 1.5 2020/12/31 10:25:41 moko Exp $
 
 @auto[]
 #source/client charsets
@@ -171,12 +171,14 @@ $result(def $env:REMOTE_ADDR && ^env:REMOTE_ADDR.match[^^127\.0\.0\.1^$])
 	}
 }
 
+@CLASS
+httpd
 
-@httpd-include[filename]
+@include[filename]
 ^use[$filename; $.main(true) ]
 ^main[]
 
-@httpd-index[dir][list]
+@index[dir][list]
 ^fatal_error[Index of $dir;Index of $dir;
 	$list[^file:list[$dir]]
 	^list.sort{^if($list.dir)[0;1] $list.name}
@@ -186,29 +188,32 @@ $result(def $env:REMOTE_ADDR && ^env:REMOTE_ADDR.match[^^127\.0\.0\.1^$])
 ]
 $response:status(200)
 
-@httpd-option[option]
-$result[^if($option is junction){^option[]}(^option.match[$httpd.parser]){^httpd-include[$option]}{$option}]
+# option can be method, URL or text/code
+@option[option]
+$result[^if($option is junction){^option[]}(^option.match[$httpd.parser]){^include[$option]}{$option}]
 
-@httpd-file[filename]
-$result[^if(^filename.match[$httpd.parser]){^httpd-include[$filename]}{$response:body[ $.file[$filename] $.name[] ]}]
+@file[filename]
+$result[^if(^filename.match[$httpd.parser]){^include[$filename]}{$response:body[ $.file[$filename] $.name[] ]}]
 
-@httpd-log[filename;detail][now;line]
+@log[filename;detail][now;line]
 $now[^date::now[]]
 $line[$env:REMOTE_ADDR [^now.sql-string[]] "$request:method $request:uri"$detail^#0A]
 ^line.save[append;$filename]
 
-@httpd-404[]
+@404[]
 $response:status[404]
 The requested URL was not found on this server.
 
 
-@httpd-main[][uri;basic]
+@main[][basic]
 
-$httpd[
-	$.parser[\.(html|phtml)^$]
+#$request:document-root[/website/folder]
+
+$cfg[
+	$.parser[\.(html)^$]
 	$.index[index.html]
 #	$.autoindex(true)
-	$.404[$httpd-404]
+	$.404[$404]
 #	$.404[/_doc.html]
 #	$.fix-trailing-slash(true)
 #	$.auth[ $.url[^^/\.?admin/] $.login[admin] $.password[change me] $.realm[site administration] ]
@@ -224,35 +229,35 @@ $response:connection[close]
 $uri[^request:uri.match[\?.*][]{}]
 $uri[^string:unescape[uri;$uri; $.charset[UTF-8] ]]
 
-^if(def $httpd.log){
-	^httpd-log[$httpd.log]
+^if(def $cfg.log){
+	^log[$cfg.log]
 }
-^if(def $httpd.memory && $status:memory.ever_allocated_since_compact > $httpd.memory){
+^if(def $cfg.memory && $status:memory.ever_allocated_since_compact > $cfg.memory){
 	^memory:compact[]
 }
 
-^if(def $httpd.auth.url && ^uri.match[$httpd.auth.url]){
-	$basic[$httpd.auth.login:$httpd.auth.password]
+^if(def $cfg.auth.url && ^uri.match[$cfg.auth.url]){
+	$basic[$cfg.auth.login:$cfg.auth.password]
 	^if($env:HTTP_AUTHORIZATION ne "Basic ^basic.base64[]"){
-		$response:WWW-Authenticate[Basic realm="$httpd.auth.realm"]
+		$response:WWW-Authenticate[Basic realm="$cfg.auth.realm"]
 		^return[$response:status[401]]
 	}
-	$env:REMOTE_USER[$httpd.auth.login]
+	$env:REMOTE_USER[$cfg.auth.login]
 }
 
-^if(def $httpd.deny && ^uri.match[$httpd.deny]){
+^if(def $cfg.deny && ^uri.match[$cfg.deny]){
 	$response:status[403]
-	$result[^httpd-option[$httpd.403]]
-}(def $httpd.fix-trailing-slash && ^uri.match[^^[^^.]+[^^/.]^$]){
+	$result[^option[$cfg.403]]
+}(def $cfg.fix-trailing-slash && ^uri.match[^^[^^.]+[^^/.]^$]){
 	$result[$response:location[$uri/^if(def $request:query){?^taint[as-is;$request:query]}}]]
-}(def $httpd.index && -f "$uri/$httpd.index"){
-	$result[^httpd-file[$uri/$httpd.index]]
-}($httpd.autoindex && -d "$uri"){
-	$result[^httpd-index[$uri]]
+}(def $cfg.index && -f "$uri/$cfg.index"){
+	$result[^file[$uri/$cfg.index]]
+}($cfg.autoindex && -d "$uri"){
+	$result[^index[$uri]]
 }(-f $uri){
-	$result[^httpd-file[$uri]]
+	$result[^file[$uri]]
 }{
 #	$form:request[^uri.mid(1)]
-	$result[^httpd-option[$httpd.404]]
+	$result[^option[$cfg.404]]
 }
 
