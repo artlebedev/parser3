@@ -1,4 +1,4 @@
-#$Id: auto.p.in,v 1.6 2020/12/31 12:27:33 moko Exp $
+#$Id: auto.p.in,v 1.7 2020/12/31 13:49:46 moko Exp $
 
 @auto[]
 #source/client charsets
@@ -176,7 +176,7 @@ httpd
 
 @include[filename]
 ^use[$filename; $.main(true) ]
-^main[]
+^MAIN:main[]
 
 @index[dir][list]
 ^fatal_error[Index of $dir;Index of $dir;
