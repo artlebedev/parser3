@@ -34,7 +34,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.413 2021/01/02 10:40:08 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.414 2021/01/02 10:49:22 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -801,6 +801,7 @@ struct Send_range_action_info {
 static void send_range(struct stat& /*finfo*/, int f, const String& /*file_spec*/, void *context){
 	Send_range_action_info &info = *(Send_range_action_info*)context;
 
+	SAPI::send_header(info.r->sapi_info);
 	pa_lseek(f, info.offset, SEEK_SET);
 
 	const size_t BUFSIZE = 128*0x400;
@@ -870,9 +871,9 @@ static void output_pieces(Request& r, bool header_only, const String& filename, 
 	if(add_last_modified)
 		SAPI::add_header_attribute(r.sapi_info, "last-modified", attributed_meaning_to_string(date, String::L_AS_IS, true).cstr());
 
-	SAPI::send_header(r.sapi_info);
-
-	if(!header_only){
+	if(header_only){
+		SAPI::send_header(r.sapi_info);
+	} else {
 		Send_range_action_info info = { &r, offset, part_length};
 		file_read_action_under_lock(r.full_disk_path(filename), "send", send_range, &info);
 	}
