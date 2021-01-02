@@ -1,4 +1,4 @@
-#$Id: auto.p.in,v 1.7 2020/12/31 13:49:46 moko Exp $
+#$Id: auto.p.in,v 1.8 2021/01/02 11:18:05 moko Exp $
 
 @auto[]
 #source/client charsets
@@ -163,8 +163,7 @@ $result(def $env:REMOTE_ADDR && ^env:REMOTE_ADDR.match[^^127\.0\.0\.1^$])
 	^unhandled_exception_debug[$exception;$stack]
 }{
 	^if($exception.type eq "file.missing"){
-#		^log404[]
-#		^location[/404/]
+#		$response:location[/404/]
 		$response:status(404)
 	}{
 		^unhandled_exception_release[$exception;$stack]
@@ -249,7 +248,7 @@ $uri[^string:unescape[uri;$uri; $.charset[UTF-8] ]]
 	$response:status[403]
 	$result[^option[$cfg.403]]
 }(def $cfg.[fix-trailing-slash] && ^uri.match[^^[^^.]+[^^/.]^$]){
-	$result[$response:location[$uri/^if(def $request:query){?^taint[as-is;$request:query]}}]]
+	$result[$response:location[$uri/^if(def $request:query){?^taint[as-is;$request:query]}]]
 }(def $cfg.index && -f "$uri/$cfg.index"){
 	$result[^file[$uri/$cfg.index]]
 }($cfg.autoindex && -d "$uri"){
@@ -260,4 +259,3 @@ $uri[^string:unescape[uri;$uri; $.charset[UTF-8] ]]
 #	$form:request[^uri.mid(1)]
 	$result[^option[$cfg.404]]
 }
-
