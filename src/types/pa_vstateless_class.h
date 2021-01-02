@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
-#define IDENT_PA_VSTATELESS_CLASS_H "$Id: pa_vstateless_class.h,v 1.93 2020/12/15 17:10:43 moko Exp $"
+#define IDENT_PA_VSTATELESS_CLASS_H "$Id: pa_vstateless_class.h,v 1.94 2021/01/02 23:01:11 moko Exp $"
 
 // include
 
@@ -88,9 +88,11 @@ public: // Value
 
 public: // usage
 
+	static bool gall_vars_local; // @conf[] $MAIN:LOCALS
+
 	VStateless_class(VStateless_class* amethoded_donor=0):
 		flocked(false),
-		fall_vars_local(false),
+		fall_vars_local(gall_vars_local),
 		fpartial(false),
 		fcall_type(Method::CT_ANY),
 		fbase(0),

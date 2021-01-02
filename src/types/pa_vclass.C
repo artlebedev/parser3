@@ -8,10 +8,13 @@
 #include "pa_vclass.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_PA_VCLASS_C="$Id: pa_vclass.C,v 1.61 2020/12/15 17:10:39 moko Exp $" IDENT_PA_VCLASS_H;
+volatile const char * IDENT_PA_VCLASS_C="$Id: pa_vclass.C,v 1.62 2021/01/02 23:01:11 moko Exp $" IDENT_PA_VCLASS_H;
 
 #ifdef OBJECT_PROTOTYPE
 	bool VClass::prototype = true;
+#endif
+#ifdef CLASS_GETTER_UNPROTECTED
+	bool VClass::getter_protected = true;
 #endif
 
 Property& VClass::get_property(const String& aname) {
@@ -120,12 +123,13 @@ const VJunction* VClass::put_element(Value& aself, const String& aname, Value* a
 			if(VJunction *result=get_default_setter(aself, aname))
 				return result;
 #ifdef CLASS_GETTER_UNPROTECTED
-			prop->getter=0;
-#else
-			throw Exception(PARSER_RUNTIME,	0, "this property has no setter method (@SET_%s[value])", aname.cstr());
+			if(!getter_protected)
+				prop->getter=0;
+			else
 #endif
+				throw Exception(PARSER_RUNTIME,	0, "this property has no setter method (@SET_%s[value])", aname.cstr());
 		}
-		
+
 		// just field, value can be 0 and unlike usual we don't remove it
 		prop->value=avalue;
 	} else {

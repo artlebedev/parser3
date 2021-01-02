@@ -8,10 +8,10 @@
 #ifndef PA_VCLASS_H
 #define PA_VCLASS_H
 
-#define IDENT_PA_VCLASS_H "$Id: pa_vclass.h,v 1.73 2020/12/15 17:10:39 moko Exp $"
+#define IDENT_PA_VCLASS_H "$Id: pa_vclass.h,v 1.74 2021/01/02 23:01:11 moko Exp $"
 
 #define OBJECT_PROTOTYPE
-//#define CLASS_GETTER_UNPROTECTED
+#define CLASS_GETTER_UNPROTECTED
 
 // includes
 
@@ -54,6 +54,9 @@ public:
 
 #ifdef OBJECT_PROTOTYPE
 	static bool prototype;
+#endif
+#ifdef CLASS_GETTER_UNPROTECTED
+	static bool getter_protected;
 #endif
 
 	// VStateless_class

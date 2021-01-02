@@ -34,7 +34,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.414 2021/01/02 10:49:22 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.415 2021/01/02 23:01:11 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -97,6 +97,8 @@ static const String class_path_name(CLASS_PATH_NAME);
 static const String charsets_name("CHARSETS");
 static const String strict_vars_name("STRICT-VARS");
 static const String prototype_name("OBJECT-PROTOTYPE");
+static const String getter_protected_name("CLASS-GETTER-PROTECTED");
+static const String locals_name("LOCALS");
 static const String limits_name("LIMITS");
 static const String loop_limit_name("max_loop");
 static const String recoursion_limit_name("max_recoursion");
@@ -251,7 +253,7 @@ static void load_charset(HashStringValue::key_type akey, HashStringValue::value_
 			if(option->is_evaluated_expr()) {	\
 				code;				\
 			} else					\
-				throw Exception(PARSER_RUNTIME, 0, "$main:" exception_name, name.cstr()); \
+				throw Exception(PARSER_RUNTIME, 0, "$MAIN:" exception_name, name.cstr()); \
 		}
 
 void Request::configure_admin(VStateless_class& conf_class) {
@@ -272,7 +274,7 @@ void Request::configure_admin(VStateless_class& conf_class) {
 			if(HashStringValue* charsets=vcharsets->get_hash())
 				charsets->for_each<Request_charsets*>(load_charset, &this->charsets);
 			else
-				throw Exception(PARSER_RUNTIME, 0, "$main:%s must be hash", charsets_name.cstr());
+				throw Exception(PARSER_RUNTIME, 0, "$MAIN:%s must be hash", charsets_name.cstr());
 		}
 	}
 
@@ -282,7 +284,7 @@ void Request::configure_admin(VStateless_class& conf_class) {
 		if(strict_vars->is_bool())
 			VVoid::strict_vars=strict_vars->as_bool();
 		else
-			throw Exception(PARSER_RUNTIME, 0, "$main:%s must be bool", strict_vars_name.cstr());
+			throw Exception(PARSER_RUNTIME, 0, "$MAIN:%s must be bool", strict_vars_name.cstr());
 	}
 #endif
 
@@ -292,9 +294,28 @@ void Request::configure_admin(VStateless_class& conf_class) {
 		if(prototype->is_bool())
 			VClass::prototype=prototype->as_bool();
 		else
-			throw Exception(PARSER_RUNTIME, 0, "$main:%s must be bool", prototype_name.cstr());
+			throw Exception(PARSER_RUNTIME, 0, "$MAIN:%s must be bool", prototype_name.cstr());
 	}
 #endif
+
+#ifdef CLASS_GETTER_UNPROTECTED
+	VClass::getter_protected=true;
+	if(Value* getter_protected=conf_class.get_element(getter_protected_name)) {
+		if(getter_protected->is_bool())
+			VClass::getter_protected=getter_protected->as_bool();
+		else
+			throw Exception(PARSER_RUNTIME, 0, "$MAIN:%s must be bool", getter_protected_name.cstr());
+	}
+#endif
+
+	VStateless_class::gall_vars_local=false;
+	if(Value* locals=conf_class.get_element(locals_name)) {
+		if(locals->is_bool()){
+			VStateless_class::gall_vars_local=locals->as_bool();
+			main_class.set_all_vars_local();
+		} else
+			throw Exception(PARSER_RUNTIME, 0, "$MAIN:%s must be bool", locals_name.cstr());
+	}
 
 	Value* limits=conf_class.get_element(limits_name);
 
@@ -314,7 +335,7 @@ void Request::configure_admin(VStateless_class& conf_class) {
 	CONF_OPTION(limits, file_size_limit_name, {
 		double limit=option->as_double();
 		if(limit >= (double)SSIZE_MAX)
-			throw Exception(PARSER_RUNTIME, 0, "$main:LIMITS.%s must be less then %.15g", file_size_limit_name.cstr(), (double)SSIZE_MAX);
+			throw Exception(PARSER_RUNTIME, 0, "$MAIN:LIMITS.%s must be less then %.15g", file_size_limit_name.cstr(), (double)SSIZE_MAX);
 		pa_file_size_limit=(size_t)limit;
 		if(pa_file_size_limit==0)
 			pa_file_size_limit=SSIZE_MAX;
@@ -324,7 +345,7 @@ void Request::configure_admin(VStateless_class& conf_class) {
 	CONF_OPTION(limits, lock_wait_timeout_name, {
 		double limit=option->as_double();
 		if(limit >= 3600*24)
-			throw Exception(PARSER_RUNTIME, 0, "$main:LIMITS.%s must be less then %d", lock_wait_timeout_name.cstr(), 3600*24);
+			throw Exception(PARSER_RUNTIME, 0, "$MAIN:LIMITS.%s must be less then %d", lock_wait_timeout_name.cstr(), 3600*24);
 		pa_lock_attempts=(unsigned int)(limit*2)+1;
 	}, "LIMITS.%s must be number");
 
@@ -339,7 +360,7 @@ void Request::configure_admin(VStateless_class& conf_class) {
 	if(httpd)
 		if(Value* option=httpd->get_element( httpd_mode_name)) {
 			if(option->get_junction())
-				throw Exception(PARSER_RUNTIME, 0, "$main:HTTPD:mode must be string");
+				throw Exception(PARSER_RUNTIME, 0, "$MAIN:HTTPD:mode must be string");
 			HTTPD_Server::set_mode(option->as_string());
 		}
 
@@ -622,9 +643,9 @@ void Request::use_file(const String& file_name, const String* use_filespec/*abso
 			} else
 				throw Exception(PARSER_RUNTIME, 0, "$" CLASS_PATH_NAME " must be string or table");
 			if(!filespec)
-				throw Exception(PARSER_RUNTIME, &file_name, "not found along $main:" CLASS_PATH_NAME);
+				throw Exception(PARSER_RUNTIME, &file_name, "not found along $MAIN:" CLASS_PATH_NAME);
 		} else 
-			throw Exception(PARSER_RUNTIME, &file_name, "usage failed - no $main:" CLASS_PATH_NAME " were specified");
+			throw Exception(PARSER_RUNTIME, &file_name, "usage failed - no $MAIN:" CLASS_PATH_NAME " were specified");
 	}
 
 	use_file_directly(*filespec, true, with_auto_p);

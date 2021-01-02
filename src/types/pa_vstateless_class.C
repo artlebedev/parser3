@@ -11,7 +11,9 @@
 #include "pa_symbols.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VSTATELESS_CLASS_C="$Id: pa_vstateless_class.C,v 1.62 2020/12/15 17:10:43 moko Exp $" IDENT_PA_VSTATELESS_CLASS_H IDENT_PA_METHOD_H;
+volatile const char * IDENT_PA_VSTATELESS_CLASS_C="$Id: pa_vstateless_class.C,v 1.63 2021/01/02 23:01:11 moko Exp $" IDENT_PA_VSTATELESS_CLASS_H IDENT_PA_METHOD_H;
+
+bool VStateless_class::gall_vars_local=false;
 
 override Value& VStateless_class::as_expr_result() {
 	return VBool::get(as_bool());
