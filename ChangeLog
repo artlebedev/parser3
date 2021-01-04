@@ -1,3 +1,65 @@
+2021-01-03  moko
+
+	* src/: main/pa_http.C, main/pa_request.C, types/pa_vclass.C,
+	  types/pa_vclass.h, types/pa_vstateless_class.C,
+	  types/pa_vstateless_class.h: @conf[] +CLASS-GETTER-PROTECTED,
+	  +LOCALS. $main -> $MAIN in exception texts (implements feature
+	  #1207)
+
+2021-01-02  moko
+
+	* etc/auto.p.in: minor
+
+	* src/main/pa_request.C: sending headers only after opening file to
+	  allow error reporting if file was not opened (foreign group,
+	  etc).
+
+2020-12-31  moko
+
+	* src/: include/pa_request.h, main/pa_request.C,
+	  targets/cgi/parser3.C: ^httpd-main[] -> ^httpd:main[]
+
+	* src/: classes/reflection.C, include/pa_request.h, main/execute.C,
+	  main/pa_request.C: get_class_ref added and used
+
+	* etc/auto.p.in: @CLASS httpd added
+
+	* etc/auto.p.in: @auto[] is now first
+
+2020-12-30  moko
+
+	* tests/: 408.html, results/408.processed: test for bug #1166
+	  (windows only) added
+
+	* src/main/pa_common.C: create_dir_for_file should not create dir
+	  for trailing / (fixes bug #1166)
+
+	* tests/: 341.html, results/341.processed: tests for
+	  ^nameless_table.hash[] added (related to feature #1138)
+
+	* src/classes/table.C: ^nameless_table.hash[0;1] now supported
+	  (implements feature #1138), extra fields in named tables no
+	  longer ignored (implements feature #1138)
+
+	* tests/results/390.processed: updated after exception text change
+
+2020-12-29  moko
+
+	* tests/: 407.html, results/407.processed: +$._default check
+
+	* src/classes/hash.C: keep $_default in ^hash.reverse[]
+
+	* tests/: 407.html, results/407.processed: test for ^hash.select[]
+	  and ^hash.reverse[] added (releated to feature #1172)
+
+	* src/classes/hash.C:
+	  ^hash.select[key;value](bool-condition)[options hash] +
+	  ^hash.reverse[] added (implements feature #1172)
+
+	* src/types/pa_vtable.h: warning war
+
+	* src/include/pa_config_fixed.h: win32 fix
+
 2020-12-27  moko
 
 	* tests/: 406.html, results/406.processed: test results updated
