@@ -1,0 +1,40 @@
+@main[]
+
+# 4objects (default behavour)
+
+$object[^object::create[]]
+
+# getter will be called and the result will be cached
+o1: $object.field
+# without getter call, cached result will be returned
+o2: $object.field
+o3: $object.field
+
+calls count: $object.cnt
+
+# 4class, not default as getter will be deleted from class
+# use $CLASS-GETTER-PROTECTED(false) to allow it.
+
+# getter will be called and the result will be cached
+c1: $self.field
+# without getter call, cached result will be returned
+c2: $self.field
+c3: $self.field
+
+calls count: $self.cnt
+
+@GET_field[]
+$result[some code result]
+$self.field[$result]
+$self.cnt($self.cnt+1)
+
+
+@CLASS
+object
+
+@create[]
+
+@GET_field[]
+$result[some code result]
+$self.field[$result]
+$self.cnt($self.cnt+1)

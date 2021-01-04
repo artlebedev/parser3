@@ -1,0 +1,11 @@
+Content-Type: text/html
+Content-Length: 155
+
+o1: some code result
+o2: some code result
+o3: some code result
+calls count: 1
+c1: some code result
+c2: some code result
+c3: some code result
+calls count: 1
