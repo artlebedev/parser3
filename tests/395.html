@@ -6,9 +6,10 @@
 ^show[3_VP8L.webp]
 ^show[3_VP8X.webp]
 
-^try-catch{
+$s[^try-catch{
 	^show[4.mp4]
-}
+}] ^s.match[[^^ ]+/][]{/-real-path-was-here-/}
+
 ^show[4.mp4; $.video(true) ]
 
 @show[arg;options]

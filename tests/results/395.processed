@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 634
+Content-Length: 611
 
 {
 "src":"395_dir\/1.bmp",
@@ -37,7 +37,7 @@ Content-Length: 634
 "line-width":1
 }
 Type: image.format,
-Source: /home/moko/Work/parser/parser3/tests/395_dir/4.mp4,
+Source: /-real-path-was-here-/4.mp4,
 Comment: handling disabled for file name extension 'mp4'
 {
 "src":"395_dir\/4.mp4",
