@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 289
+Content-Length: 292
 
 /tests/270_dir///subdir/270.txt<br />
 /tests/270_dir/270.txt<br />
@@ -7,7 +7,7 @@ Content-Length: 289
 <br />
 file not found (OK)<br />
 file not found (OK)<br />
-/Makefile<br />
+/Makefile.in<br />
 /tests/Makefile<br />
 file not found (OK)<br />
 file not found (OK)<br />
