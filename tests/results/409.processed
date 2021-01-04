@@ -1,0 +1,14 @@
+Content-Type: text/html
+Content-Length: 258
+
+name: value - visible without $self
+localy modified name: another value - local var shadows class var
+localy defined name1: value1
+1. name not modified: value
+2. local var disappear: - OK
+another class test:
+a:
+b:bb - visible without $self
+self: {
+"b":"bb"
+}

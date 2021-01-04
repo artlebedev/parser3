@@ -43,6 +43,13 @@ html	text/html
 }]
 }
 
+^if($env:PATH_TRANSLATED eq '409.html'){
+	$LOCALS(true)
+}
+
+^if($env:PATH_TRANSLATED eq '410.html'){
+	$CLASS-GETTER-PROTECTED(false)
+}
 
 @auto[]
 

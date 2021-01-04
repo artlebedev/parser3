@@ -1,0 +1,36 @@
+# $MAIN:LOCALS(true) test
+
+@main[]
+
+$self.name[value]
+
+^method[]
+
+1. name not modified: $name
+2. local var disappear: $name1 - OK
+
+another class test:
+
+$t[^test::create[]]
+^t.show[]
+
+
+@method[]
+
+name: $name - visible without ^$self
+$name[another value]
+localy modified name: $name - local var shadows class var
+$name1[value1]
+localy defined name1: $name1
+
+@CLASS
+test
+
+@create[]
+$a[aa]
+$self.b[bb]
+
+@show[]
+a:$a
+b:$b - visible without ^$self
+self: ^json:string[$self]
