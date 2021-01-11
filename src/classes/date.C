@@ -13,7 +13,7 @@
 #include "pa_vdate.h"
 #include "pa_vtable.h"
 
-volatile const char * IDENT_DATE_C="$Id: date.C,v 1.112 2020/12/15 17:10:27 moko Exp $" IDENT_PA_VDATE_H;
+volatile const char * IDENT_DATE_C="$Id: date.C,v 1.113 2021/01/11 16:29:37 moko Exp $" IDENT_PA_VDATE_H;
 
 // class
 
@@ -57,12 +57,16 @@ static void _now(Request& r, MethodParams& params) {
 	vdate.set_time(t);
 }
 
-static void _today(Request& r, MethodParams&) {
+static void _today(Request& r, MethodParams& params) {
 	VDate& vdate=GET_SELF(r, VDate);
 
 	time_t t=time(0);
 
 	tm today=*localtime(&t);
+
+	if (params.count() == 1) // ^today(offset)
+		today.tm_mday += params.as_int(0, "offset must be int", r);
+
 	today.tm_hour=0;
 	today.tm_min=0;
 	today.tm_sec=0;
@@ -533,7 +537,8 @@ MDate::MDate(): Methoded("date") {
 	add_native_method("now", Method::CT_DYNAMIC, _now, 0, 1);
 
 	// ^date::today[]
-	add_native_method("today", Method::CT_DYNAMIC, _today, 0, 0);
+	// ^date::today(offset int days)
+	add_native_method("today", Method::CT_DYNAMIC, _today, 0, 1);
 
 	// ^date::create(float days)
 	// ^date::create[date]
