@@ -1,3 +1,19 @@
+2021-01-05  moko
+
+	* tests/: 270.html, results/270.processed: test modified to work
+	  under Windows
+
+	* tests/: 390.html, 395.html, results/395.processed: tests updated
+	  4 windows
+
+	* tests/: 410.html, results/410.processed: test for
+	  $CLASS-GETTER-PROTECTED(false) added
+
+2021-01-04  moko
+
+	* tests/: 409.html, results/409.processed, results/auto.p: test for
+	  $MAIN:LOCALS(true) added
+
 2021-01-03  moko
 
 	* src/: main/pa_http.C, main/pa_request.C, types/pa_vclass.C,
