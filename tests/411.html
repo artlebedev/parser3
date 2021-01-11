@@ -1,0 +1,11 @@
+$result[]
+^date:roll[TZ;Europe/Moscow]
+
+^for[i](0;10000){
+
+    $dt[^date::today(-$i)]
+    $dt2[^date::today[]]
+
+    $dt2[^date::create($dt2-$i)]
+    ^if(^dt.iso-string[] ne ^dt2.iso-string[]){ $result[^dt.iso-string[] vs ^dt2.iso-string[]^#0A] ^break[] }
+}
