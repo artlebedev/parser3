@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.148 2020/12/29 14:22:52 moko Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.149 2021/01/13 22:21:29 moko Exp $";
 
 // class
 
@@ -634,6 +634,7 @@ static void _select(Request& r, MethodParams& params) {
 
 	int limit=source_hash.count();
 	bool reverse=false;
+	bool copy_default=false;
 
 	if(params.count()>3)
 		if(HashStringValue* options=params.as_hash(3)) {
@@ -645,6 +646,10 @@ static void _select(Request& r, MethodParams& params) {
 			if(Value* vreverse=options->get(table_reverse_name)) {
 				valid_options++;
 				reverse=r.process(*vreverse).as_bool();
+			}
+			if(Value* vcopy_default=options->get(sql_default_name)) {
+				valid_options++;
+				copy_default=r.process(*vcopy_default).as_bool();
 			}
 			if(valid_options!=options->count())
 				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
@@ -686,7 +691,12 @@ static void _select(Request& r, MethodParams& params) {
 		}
 	}
 
-	r.write(*new VHash(result_hash));
+	VHash *result=new VHash(result_hash);
+	if(copy_default){
+		result->set_default(GET_SELF(r, VHashBase).get_default());
+	}
+
+	r.write(*result);
 }
 
 static void _reverse(Request& r, MethodParams& params) {
