@@ -1,5 +1,10 @@
 1   $uuid[^math:uuid[]]^uuid.length[]<br />
-1.1 $uid64[^math:uid64[]]^uid64.length[]<br />
+1.1   $uuid[^math:uuid[ $.solid(true)]] ^uuid.length[]<br />
+1.2   $uuid[^math:uuid[ $.lower(true)]] ^uuid.length[]<br />
+1.3   $uuid[^math:uuid[ $.lower(true) $.solid(true)]] ^uuid.length[]<br />
+
+1.5 $uid64[^math:uid64[]] ^uid64.length[]<br />
+1.6 $uid64[^math:uid64[ $.lower(true) ]] ^uid64.length[]<br />
 
 2   $long[very-long-long-long-long-long-long-long-long-long-long-long-long-long-long-long-long-key]
 
