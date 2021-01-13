@@ -113,13 +113,15 @@
         по умолчанию, методы компилируются в $self [в случае оператора, $self=$MAIN:CLASS]
 
     ^connect[protocol://строка соединения]]{код с ^sql[...]-ями}
-        mysql://user:pass@{host[:port]|[/unix/socket]}/database?
+        mysql://user:pass@{host[:port][, host[:port]]|[/unix/socket]}/database?
             ClientCharset=parser-charset << charset in which parser thinks client works
             charset=UTF-8&
             timeout=3&
             compress=0&
             named_pipe=1&
-            multi_statements=1&	allow execute more then one query in one parser :sql{} request
+            multi_statements=1&  allow execute more then one query in one parser :sql{} request
+            config_file=.my.cnf&
+            config_group=parser3&  use group name from .my.cnf
             autocommit=1
             autocommit если выставить в 0, будет делать commit/rollback
 
@@ -305,7 +307,7 @@ string
         опции поиска+=
         g заменить все вхождения, а не одно
 
-    ^строка.split[разделитель][[lrhv]][[название столбца для вертикального разбиения]]
+    ^строка.split[разделитель|regex][[lrhv]][[название столбца для вертикального разбиения]]
         l слева направо [default]
         r справа налево
         h nameless таблица с ключами 0, 1, 2, ...
@@ -343,8 +345,8 @@ string
 
     ^строка.trim[chars] выкидывает chars из начала и конца
 
-    ^строка.base64[] encode
-    ^string:base64[encoded[;$.strict(true)]] decode
+    ^строка.base64[ $.pad(bool) $.wrap(bool) $.url-safe(bool) ] encode
+    ^string:base64[encoded[; $.pad(bool) $.strict(bool) url-safe(bool) ]] decode
 
     ^строка.idna[]
         IDNA кодирование, поддержка кириллических доменов
@@ -409,6 +411,8 @@ table
         если distinct содержит tables, то будет создан hash из таблиц, содержащих строки с ключом
         $.type[string/table] поменять значение элемента на строку (указать одну колонку) или таблицу
     ^таблица.columns[[название столбца]] + таблица из одного столбца 'column' или как передадут
+    ^таблица.rename[название столбца;новое навание столбца] - переименовывает столбец
+    ^таблица.rename[ $.название столбца[новое навание столбца] ] - переименовывает столбцы
     $отобранное[^таблица.select(выражение)] = таблица из тех же столбцов и строк, у которых условие совпало
         $adults[^man.select($man.age>=18)]
     ^таблица.color[цвет1;цвет2]
@@ -445,6 +449,8 @@ hash
     ^хэш.at([-]N)[[key|value|hash]]
         доступ к заданным элементам упорядоченного хеша
     ^хэш.sort[key;value]{{ключеделатель строка}|(ключеделатель число)}[[desc|asc]] default=asc
+    $обратный_хеш[^хеш.reverse[]]
+    $отобранное[^хэш.select[key;value](выражение)[ $.limit(N) $.reverse(bool) $.default(bool) ]]] = хэш из ключей и значений, для которых условие истинно
 
 hashfile
     ^hashfile::open[filename]
@@ -543,7 +549,7 @@ regex
     в выражении
         логическое значение всегда равно true
         числовое значение равно количеству байт скомпилированного шаблона.
-    ^regex::create[шаблон-строка][[опции поиска]]
+    ^regex::create[шаблон-строка|regex][[опции поиска]]
     ^шаблон.size[] количество байт скомпилированного шаблона
         если значение очень большое - стоит почитать документацию по pcre и, возможно, переписать шаблон.
     ^шаблон.study_size[] размер study-структуры. если==0 - шаблон не может быть "изучен"
@@ -708,10 +714,10 @@ mail
         $MAIL.SMTP[smtp.domain.ru]
 
 image
-    $картинка[^image::measure[DATA]]
-        смотрит на .ext case insensitive, 
-        умеет мерить пока только .gif и .jpg .jpeg
-    $картинка.exif << hash после measure jpeg с exif информацией 
+    $картинка[^image::measure[DATA[; $.exif(bool) $.xmp(bool) $.xmp-charset[] $.video(bool) ]]]
+        смотрит на .ext case insensitive,
+        умеет мерить .gif, .jpg, tiff, bmp, webp и mp4 (mov)
+    $картинка.exif << hash после measure jpeg с exif информацией и $.exif(true)
         $image.exif.DateTime & co 
             [полный список см. http://www.ba.wakwak.com/~tsuruzoh/Computer/Digicams/exif-e.html]
         числа типа int/double,
@@ -789,7 +795,7 @@ file
         можно переименовывать и двигать каталоги[win32: но не через границу дисков]
         каталоги для dest создаются с правами 775
         каталог старого файла стирается, если после move он остаётся пуст
-    ^file:copy[имя файла;имя копии файла]
+    ^file:copy[имя файла;имя копии файла[; $.append(1) ]]
         можно копировать только файлы
     ^file:lock[имя файла]{код}
         файл при необходимости создаётся
@@ -813,11 +819,11 @@ file
         первая колонка - данные
         если есть вторая - это имя файла
         если есть третья - это content-type
-    ^файл.base64[] encode
-    ^file:base64[имя файла]
+    ^файл.base64[ $.pad(bool) $.wrap(bool) $.url-safe(bool) ] encode
+    ^file:base64[имя файла[; $.pad(bool) $.wrap(bool) $.url-safe(bool) ]]
         encode
-    ^file::base64[encoded string]
-    ^file::base64[mode;имя файла;encoded string[;$.content-type[...]]]
+    ^file::base64[encoded string[; $.pad(bool) $.strict(bool) url-safe(bool) ]]
+    ^file::base64[mode;имя файла;encoded string[; $.content-type[...] $.pad(bool) $.strict(bool) url-safe(bool) ]]
         decode
     ^file:crc32[имя файла]
         вычисляет crc32 файла с указанным именем
@@ -841,14 +847,14 @@ math
     ^math:random(ширина диапазона)
     ^math:convert[number](base-from;base-to)
         преобразует строку с числом из одной системы исчисления в другую
-    ^math:uuid[]
+    ^math:uuid[ $.lower(bool) $.solid(bool) ]
         22C0983C-E26E-4169-BD07-77ECE9405BA5
         win32: пользуется cryptapi
         unix: пользуется /dev/urandom,
             если нет, /dev/random,
             если нет, rand
             [на solaris /dev/random можно добавить]
-    ^math:uid64[]
+    ^math:uid64[ $.lower(bool) ]
         BA39BAB6340BE370
     ^math:md5[string]
         выдает digest строки, длиной 16 байт в виде строки, 
@@ -925,6 +931,7 @@ date
     ^date::now[]
     ^date::now(смещение в днях) выдаёт сейчас+смещение
     ^date::today[] дата на 00:00:00 текущего дня
+    ^date::today(целочисленное смещение в днях) дата на 00:00:00 текущего дня+смещение
     ^date::create(дней с epoch)
     ^date::create(year;month[;day[;hour[;minute[;second[;TZ]]]]])
     ^date::create[дата в формате %Y-%m-%d %H:%M:%S]
