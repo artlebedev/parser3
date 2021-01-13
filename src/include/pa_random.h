@@ -8,7 +8,7 @@
 #ifndef PA_RANDOM_H
 #define PA_RANDOM_H
 
-#define IDENT_PA_RANDOM_H "$Id: pa_random.h,v 1.8 2020/12/15 17:10:31 moko Exp $"
+#define IDENT_PA_RANDOM_H "$Id: pa_random.h,v 1.9 2021/01/13 21:28:15 moko Exp $"
 
 #include "pa_types.h"
 
@@ -20,7 +20,7 @@ static inline int _random(int top) {
 	return int( double(raw) / ((double)UINT32_MAX+1) * top );
 }
 
-char *get_uuid_cstr();
+char *get_uuid_cstr(bool lower, bool solid);
 char *get_uuid_boundary();
 
 #endif

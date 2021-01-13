@@ -23,7 +23,7 @@
 extern "C" char *crypt(const char* , const char* );
 #endif
 
-volatile const char * IDENT_MATH_C="$Id: math.C,v 1.96 2020/12/15 17:10:29 moko Exp $";
+volatile const char * IDENT_MATH_C="$Id: math.C,v 1.97 2021/01/13 21:28:15 moko Exp $";
 
 // defines
 
@@ -478,15 +478,46 @@ static void _digest(Request& r, MethodParams& params) {
 	}
 }
 
-static void _uuid(Request& r, MethodParams& /*params*/) {
-	r.write(*new String(get_uuid_cstr()));
+static void _uuid(Request& r, MethodParams& params) {
+	bool lower=false;
+	bool solid=false;
+
+	if (params.count() == 1)
+		if (HashStringValue* options = params.as_hash(0)) {
+			int valid_options = 0;
+			if (Value* vlower = options->get("lower")) {
+				lower = r.process(*vlower).as_bool();
+				valid_options++;
+			}
+			if (Value* vsolid = options->get("solid")) {
+				solid = r.process(*vsolid).as_bool();
+				valid_options++;
+			}
+			if (valid_options != options->count())
+				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+		}
+	
+	r.write(*new String(get_uuid_cstr(lower, solid)));
 }
 
-static void _uid64(Request& r, MethodParams& /*params*/) {
+static void _uid64(Request& r, MethodParams& params) {
+	bool lower = false;
+
+	if (params.count() == 1)
+		if (HashStringValue* options = params.as_hash(0)) {
+			int valid_options = 0;
+			if (Value* vlower = options->get("lower")) {
+				lower = r.process(*vlower).as_bool();
+				valid_options++;
+			}
+			if (valid_options != options->count())
+				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+		}
+
 	unsigned char id[64/8];
 	random(&id, sizeof(id));
 
-	r.write(*new String(hex_string(id, sizeof(id), true)));
+	r.write(*new String(hex_string(id, sizeof(id), !lower)));
 }
 
 static void _crc32(Request& r, MethodParams& params) {
@@ -720,10 +751,12 @@ MMath::MMath(): Methoded("math") {
 	ADD1(crc32);
 
 	// ^math:uuid[]
-	ADD0(uuid);
+	// ^math:uuid[options hash]
+	add_native_method("uuid", Method::CT_STATIC, _uuid, 0, 1);
 
 	// ^math:uid64[]
-	ADD0(uid64);
+	// ^math:uid64[options hash]
+	add_native_method("uid64", Method::CT_STATIC, _uid64, 0, 1);
 
 	// ^math:convert[number|file](base-from)|[abc_from](base-to)|[abc_to][options]
 	add_native_method("convert", Method::CT_STATIC, _convert, 3, 4);

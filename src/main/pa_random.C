@@ -12,7 +12,7 @@
 #include "pa_exception.h"
 #include "pa_threads.h"
 
-volatile const char * IDENT_PA_RANDOM_C="$Id: pa_random.C,v 1.10 2020/12/15 17:10:36 moko Exp $" IDENT_PA_RANDOM_H;
+volatile const char * IDENT_PA_RANDOM_C="$Id: pa_random.C,v 1.11 2021/01/13 21:28:15 moko Exp $" IDENT_PA_RANDOM_H;
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -144,14 +144,21 @@ static uuid get_uuid() {
 	return uuid;
 }
 
-char *get_uuid_cstr() {
+char *get_uuid_cstr(bool lower, bool solid) {
 	uuid uuid=get_uuid();
 
 	const size_t bufsize=36+1/*zero-teminator*/+1/*for faulty snprintfs*/;
 	char* cstr=new(PointerFreeGC) char[bufsize];
 
-	snprintf(cstr, bufsize,
+	const char *format[] = {
 		"%08X-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X",
+		"%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x",
+		"%08X%04X%04X%02X%02X%02X%02X%02X%02X%02X%02X",
+		"%08x%04x%04x%02x%02x%02x%02x%02x%02x%02x%02x"
+	};
+
+	snprintf(cstr, bufsize,
+		format[(lower ? 1:0) + (solid ? 2:0)],
 		uuid.time_low, uuid.time_mid, uuid.time_hi_and_version,
 		uuid.clock_seq >> 8, uuid.clock_seq & 0xFF,
 		uuid.node[0], uuid.node[1], uuid.node[2],
