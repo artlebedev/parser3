@@ -37,10 +37,17 @@ $short[^log.select[url;](^url.length[]<7)]
 
 Reverse test:
 $h[^hash::create[$log] $._default[-]]
-default before: $h.404
+default before: "$h.404"
 $h[^h.reverse[]]
-default after: $h.404
+default after: "$h.404"
 ^json:string[$h]
+
+$h[^h.select[;](true)[ $.default(true) $.limit(1) ]]
+^json:string[$h]
+default after select: "$h.404"
+$h[^h.select[;](true)]
+^json:string[$h]
+default after another select: "$h.404"
 
 Hit:
 $hit[^log.select[;cpu]($cpu<0.05)[ $.reverse(true) ]]

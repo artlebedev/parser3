@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 734
+Content-Length: 845
 
 Hit:
 /_/rss/_rss.html
@@ -16,8 +16,8 @@ Short:
 /
 /perm/
 Reverse test:
-default before: -
-default after: -
+default before: "-"
+default after: "-"
 {
 "\/perm\/":"0.1533",
 "\/peterburg\/":"0.0033",
@@ -35,6 +35,14 @@ default after: -
 "\/nizhninovgorod\/":"0.1600",
 "\/novosibirsk\/retail\/":"0.2200"
 }
+{
+"\/perm\/":"0.1533"
+}
+default after select: "-"
+{
+"\/perm\/":"0.1533"
+}
+default after another select: ""
 Hit:
 /peterburg/
 /retail/
