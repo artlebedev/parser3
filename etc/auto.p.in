@@ -1,4 +1,4 @@
-#$Id: auto.p.in,v 1.8 2021/01/02 11:18:05 moko Exp $
+#$Id: auto.p.in,v 1.9 2021/01/15 20:43:05 moko Exp $
 
 @auto[]
 #source/client charsets
@@ -169,6 +169,7 @@ $result(def $env:REMOTE_ADDR && ^env:REMOTE_ADDR.match[^^127\.0\.0\.1^$])
 		^unhandled_exception_release[$exception;$stack]
 	}
 }
+
 
 @CLASS
 httpd
