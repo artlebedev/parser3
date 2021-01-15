@@ -18,7 +18,7 @@
 #include "pa_vxdoc.h"
 #endif
 
-volatile const char * IDENT_JSON_C="$Id: json.C,v 1.55 2020/12/15 17:10:28 moko Exp $";
+volatile const char * IDENT_JSON_C="$Id: json.C,v 1.56 2021/01/15 16:28:36 moko Exp $";
 
 // class
 
@@ -366,10 +366,25 @@ const uint ANTI_ENDLESS_JSON_STRING_RECOURSION=128;
 char *get_indent(uint level){
 	static char* cache[ANTI_ENDLESS_JSON_STRING_RECOURSION]={};
 	if (!cache[level]){
-		char *result = 	static_cast<char*>(pa_malloc_atomic(level+1));
+		char *result = static_cast<char*>(pa_malloc_atomic(level+1));
 		memset(result, '\t', level);
 		result[level]='\0';
 		return cache[level]=result;
+	}
+	return cache[level];
+}
+
+String *get_delim(uint level){
+	static String* cache[ANTI_ENDLESS_JSON_STRING_RECOURSION]={};
+
+	if (!cache[level]){
+		char *result = static_cast<char*>(pa_malloc_atomic(level+2+1+1));
+		result[0]=',';
+		result[1]='\n';
+		memset(result+2, '\t', level);
+		result[level+2]='"';
+		result[level+3]='\0';
+		return cache[level] = new String(result, String::L_AS_IS);
 	}
 	return cache[level];
 }
@@ -406,7 +421,7 @@ const String* Json_options::hash_json_string(HashStringValue *hash) {
 				result << *delim;
 			} else {
 				result << indent << "\"";
-				delim = new String(",\n", String::L_AS_IS); *delim << indent << "\"";
+				delim = get_delim(json_string_recoursion);
 			}
 			result << String(i.key(), String::L_JSON) << "\":" << value_json_string(i.key(), *i.value(), *this);
 		}
