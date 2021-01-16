@@ -131,6 +131,10 @@ GC_API GC_PTR GC_realloc GC_PROTO((GC_PTR old_object, size_t new_size_in_bytes))
 /* Explicitly trigger a full, world-stop collection. 	*/
 GC_API void GC_gcollect GC_PROTO((void));
 
+/* We try to make sure that we allocate at least N/GC_free_space_divisor bytes between collections */
+GC_API void GC_set_free_space_divisor(GC_word);
+GC_API GC_word GC_get_free_space_divisor(void);
+
 /* Return the number of bytes in the heap.  Excludes collector private	*/
 /* data structures.  Includes empty blocks and fragmentation loss.	*/
 /* Includes some pages that were allocated but never written.		*/

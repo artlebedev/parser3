@@ -7,8 +7,9 @@
 
 #include "pa_sapi.h"
 #include "pa_common.h"
+#include "pa_threads.h"
 
-volatile const char * IDENT_PA_MEMORY_C="$Id: pa_memory.C,v 1.16 2020/12/15 17:10:36 moko Exp $" IDENT_PA_MEMORY_H;
+volatile const char * IDENT_PA_MEMORY_C="$Id: pa_memory.C,v 1.17 2021/01/16 15:47:05 moko Exp $" IDENT_PA_MEMORY_H;
 
 void *pa_fail_alloc(const char* what, size_t size) {
 #ifdef PA_DEBUG_DISABLE_GC
@@ -30,3 +31,30 @@ void *pa_fail_alloc(const char* what) {
 	return 0;
 }
 #endif
+
+int pa_free_space_divisor = 0;
+
+void pa_gc_collect(bool forced){
+#ifndef PA_DEBUG_DISABLE_GC
+    int divisor = pa_free_space_divisor; // as it can change during collect in multithreaded enviroment
+    if(!divisor) GC_enable();
+    if(!divisor || forced) GC_gcollect();
+    if(!divisor) GC_disable();
+#endif
+}
+
+void pa_gc_set_free_space_divisor(int divisor){
+#ifndef PA_DEBUG_DISABLE_GC
+	if(divisor != pa_free_space_divisor){
+		SYNCHRONIZED;
+		if(pa_free_space_divisor){
+			if(!divisor) GC_disable();
+		} else {
+			if(divisor) GC_enable();
+		}
+		if(divisor)
+			GC_set_free_space_divisor(divisor);
+		pa_free_space_divisor = divisor;
+	}
+#endif
+}

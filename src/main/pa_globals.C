@@ -19,7 +19,6 @@ extern "C" {
 #include "pa_globals.h"
 #include "pa_socks.h"
 #include "pa_sapi.h"
-#include "pa_threads.h"
 #include "pa_xml_io.h"
 #include "pa_common.h"
 #include "pa_symbols.h"
@@ -29,7 +28,7 @@ extern "C" {
 #include "ltdl.h"
 #include "pcre.h"
 
-volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.211 2020/12/15 17:10:36 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
+volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.212 2021/01/16 15:47:05 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
 
 // defines
 
