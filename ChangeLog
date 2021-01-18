@@ -1,3 +1,47 @@
+2021-01-16  moko
+
+	* src/: classes/memory.C, include/pa_memory.h, lib/gc/include/gc.h,
+	  main/pa_globals.C, main/pa_memory.C,
+	  targets/apache/mod_parser3_core.C, targets/isapi/parser3isapi.C,
+	  types/pa_vhashfile.C: ^memory:auto-compact(N) added (implements
+	  feature #1209)
+
+2021-01-15  moko
+
+	* configure, configure.ac, src/include/pa_version.h: 3.4.6b ->
+	  3.4.6rc
+
+	* src/classes/json.C: get_delim added for delimiter caching (10%
+	  faster on large json)
+
+2021-01-14  moko
+
+	* operators.txt: updated with 3.4.6 changes
+
+	* tests/results/224.processed: test result modified after
+	  today(shift) implemented
+
+	* tests/: 407.html, results/407.processed: test for ^hash.select
+	  option $.default(bool) added (related to feature #1172)
+
+	* src/classes/hash.C: ^hash.select option $.default(bool) added
+	  (related to feature #1172)
+
+	* tests/: 141.html, results/141.processed: test modified for
+	  feature #1185.
+
+	* src/: classes/math.C, include/pa_random.h, main/pa_random.C:
+	  ^math:uuid options $.lower(bool) $.solid(bool), ^math:uid64
+	  options $.lower(bool) (implements feature #1185)
+
+2021-01-11  moko
+
+	* src/classes/date.C: ^date::today(N) by gz@ (implements feature
+	  #1192)
+
+	* tests/: 411.html, results/411.processed: test for ^date::today(N)
+	  added (related to feature #1192)
+
 2021-01-05  moko
 
 	* tests/: 270.html, results/270.processed: test modified to work
