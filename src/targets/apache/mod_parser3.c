@@ -15,7 +15,7 @@
 
 #include "pa_httpd.h"
 
-volatile const char * IDENT_MOD_PARSER3_C="$Id: mod_parser3.c,v 1.21 2021/01/20 16:15:29 moko Exp $" IDENT_PA_HTTPD_H;
+volatile const char * IDENT_MOD_PARSER3_C="$Id: mod_parser3.c,v 1.22 2021/01/20 16:48:34 moko Exp $" IDENT_PA_HTTPD_H;
 
 #define PARSER3_HANDLER "parser3-handler"
 
@@ -79,7 +79,7 @@ static int parser_handler(request_rec *r) {
 		return DECLINED;
 
 	if(is_threaded){
-		const char *message="Parser3 module requires libapache2-mpm-itk";
+		const char *message="Parser3 module requires 'a2enmod mpm_prefork'";
 		r->status=HTTP_INTERNAL_SERVER_ERROR;
 		r->content_type="text/plain";
 		ap_rwrite(message, strlen(message), r);
