@@ -1,3 +1,21 @@
+2021-01-20  moko
+
+	* etc/auto.p.in: post_max_size 10Mb -> 64Mb. It's 2021 year now. :)
+
+	* etc/auto.p.in: @config[result] added to simplify $cfg change in
+	  /httpd.p
+
+	* etc/auto.p.in: httpd fine-tune: + @OPTIONS partial, +
+	  ^use[/httpd.p] + optional ^preprocess[] (related to feature
+	  #1203)
+
+2021-01-19  moko
+
+	* buildall: --disable-parallel-mark added to avoid "number of
+	  processors" threads creation for heap marking as it conflicts
+	  with RLimitNProc in apache (on Linux setrlimit RLIMIT_NPROC
+	  limits threads)
+
 2021-01-16  moko
 
 	* src/: classes/memory.C, include/pa_memory.h, lib/gc/include/gc.h,
