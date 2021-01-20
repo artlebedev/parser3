@@ -5,7 +5,7 @@ Parser: apache 1.3/2.X module, part, compiled by parser3project.
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_MOD_PARSER3_CORE_C="$Id: mod_parser3_core.C,v 1.34 2021/01/16 15:47:06 moko Exp $";
+volatile const char * IDENT_MOD_PARSER3_CORE_C="$Id: mod_parser3_core.C,v 1.35 2021/01/20 16:09:53 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -103,7 +103,7 @@ static int SAPI_environment_append(void *d, const char* k, const char* val) {
 
 const char* const* SAPI::Env::get(SAPI_Info& SAPI_info) {
 	const pa_table *t=SAPI_info.r->subprocess_env;
-	const char** result=new const char*[pa_ap_table_size(t)+1/*0*/];
+	const char** result=new(PointerGC) const char*[pa_ap_table_size(t)+1/*0*/];
 	SAPI_environment_append_info info={result};
 	pa_ap_table_do(SAPI_environment_append, &info, t, 0); *info.cur=0; // mark EOE
 	return result;
