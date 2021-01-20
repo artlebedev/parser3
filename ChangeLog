@@ -1,5 +1,8 @@
 2021-01-20  moko
 
+	* configure, configure.ac, src/include/pa_version.h: 3.4.6rc ->
+	  3.4.6
+
 	* etc/auto.p.in: post_max_size 10Mb -> 64Mb. It's 2021 year now. :)
 
 	* etc/auto.p.in: @config[result] added to simplify $cfg change in
