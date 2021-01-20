@@ -1,5 +1,11 @@
 2021-01-20  moko
 
+	* src/targets/apache/mod_parser3.c: prefork name is now
+	  'libapache2-mpm-itk'
+
+	* src/targets/apache/mod_parser3_core.C: last regular malloc
+	  removed
+
 	* src/targets/isapi/Makefile.am: -pa_threads.C
 
 	* configure, configure.ac, src/include/pa_version.h: 3.4.6rc ->
