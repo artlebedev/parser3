@@ -1,5 +1,8 @@
 2021-01-20  moko
 
+	* src/targets/apache/mod_parser3.c: it is more correct to recommend
+	  'a2enmod mpm_prefork'
+
 	* src/targets/apache/mod_parser3.c: prefork name is now
 	  'libapache2-mpm-itk'
 
