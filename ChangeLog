@@ -1,5 +1,7 @@
 2021-01-20  moko
 
+	* src/targets/isapi/Makefile.am: -pa_threads.C
+
 	* configure, configure.ac, src/include/pa_version.h: 3.4.6rc ->
 	  3.4.6
 
