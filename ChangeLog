@@ -1,3 +1,8 @@
+2021-01-21  moko
+
+	* src/main/pa_http.C: no alarm() in file::load when web server mode
+	  is MULTITHREADED
+
 2021-01-20  moko
 
 	* src/targets/apache/mod_parser3.c: it is more correct to recommend
