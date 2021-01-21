@@ -14,7 +14,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.117 2021/01/02 23:01:11 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.118 2021/01/21 16:46:53 moko Exp $" IDENT_PA_HTTP_H; 
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -264,7 +264,10 @@ static sigjmp_buf timeout_env;
 static void timeout_handler(int /*sig*/){
 	siglongjmp(timeout_env, 1);
 }
-#define ALARM(value) alarm(value)
+
+#define PA_NO_THREADS (HTTPD_Server::mode != HTTPD_Server::MULTITHREADED)
+
+#define ALARM(value) if(PA_NO_THREADS) alarm(value)
 #else
 #define ALARM(value)
 #endif
@@ -276,8 +279,8 @@ static int http_request(HTTP_response& response, const char* host, short port, c
 	volatile int sock=-1; // to prevent makeing it register variable, because it will be clobbered by longjmp [thanks gcc warning]
 		
 #ifdef PA_USE_ALARM
-	signal(SIGALRM, timeout_handler);
-	if(sigsetjmp(timeout_env, 1)) {
+	if(PA_NO_THREADS) signal(SIGALRM, timeout_handler);
+	if(PA_NO_THREADS && sigsetjmp(timeout_env, 1)) {
 		// duplicating closesocket to make code more simple for old compilers
 		if(sock>=0)
 			closesocket(sock);
@@ -1036,15 +1039,10 @@ enum HTTPD_request_state {
 
 ssize_t HTTPD_request::pa_recv(int sockfd, char *buffer, size_t len){
 	LOG(pa_log("httpd [%d] recv %d appending to %d ...", sockfd, len, length));
-	if(HTTPD_Server::mode == HTTPD_Server::MULTITHREADED){
-		ssize_t result=recv(sockfd, buffer, len, 0);
-		LOG(pa_log("httpd [%d] recv got %d bytes", sockfd, result));
-		return result;
-	}
 
 #ifdef PA_USE_ALARM
-	signal(SIGALRM, timeout_handler);
-	if(sigsetjmp(timeout_env, 1)) {
+	if(PA_NO_THREADS) signal(SIGALRM, timeout_handler);
+	if(PA_NO_THREADS && sigsetjmp(timeout_env, 1)) {
 		LOG(pa_log("httpd [%d] recv got %d sec timeout", sockfd, pa_httpd_timeout));
 		if(length) // timeout on "void" connection is normal
 			throw Exception("httpd.timeout", 0, "timeout occurred while receiving request");
