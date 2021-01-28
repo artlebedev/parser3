@@ -1,4 +1,4 @@
-#$Id: auto.p.in,v 1.12 2021/01/20 13:57:03 moko Exp $
+#$Id: auto.p.in,v 1.13 2021/01/28 16:24:43 moko Exp $
 
 @auto[]
 #source/client charsets
@@ -18,8 +18,8 @@ $response:content-type[
 
 @conf[filespec]
 $confdir[^file:dirname[$filespec]]
-$charsetsdir[$confdir/charsets]
-$sqldriversdir[$confdir/lib]
+$charsetsdir[@datarootdir@/charsets]
+$sqldriversdir[@libdir@]
 
 $CHARSETS[
 #	$.cp866[$charsetsdir/cp866.cfg]
