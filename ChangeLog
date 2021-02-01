@@ -1,3 +1,10 @@
+2021-01-28  moko
+
+	* buildall, etc/auto.p.in: to remove last patch in debian package
+
+	* configure, configure.ac, src/include/pa_version.h: 3.4.6 ->
+	  3.4.7b
+
 2021-01-21  moko
 
 	* src/main/pa_http.C: no alarm() in file::load when web server mode
