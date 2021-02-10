@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.127 2020/12/15 17:10:42 moko Exp $"
+#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.128 2021/02/10 21:50:57 moko Exp $"
 
 #include "pa_symbols.h"
 #include "pa_wcontext.h"
@@ -395,10 +395,10 @@ public:
 		action;										\
 	} else {										\
 		if((method).all_vars_local){							\
-			VExpressionFrame<VLocalParserMethodFrame> frame(method, caller, self);	\
+			VLocalParserMethodFrame frame(method, caller, self);			\
 			action;									\
 		} else {									\
-			VExpressionFrame<VParserMethodFrame> frame(method, caller, self);	\
+			VParserMethodFrame frame(method, caller, self);				\
 			action;									\
 		}										\
 	}
