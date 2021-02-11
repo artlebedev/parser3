@@ -5,7 +5,7 @@ code junctions ignore in expression flag, this it works:
 $x(^if(2){^n.int[]^n.int[]})
 $x
 
-this code will work if OPTIMIZE_CALL is undefined after OP_PREPARE_TO_EXPRESSION removed (#1104):
+this code works after #1211:
 ^try-catch{ $y(^test[]) }
 $y
 
@@ -13,19 +13,20 @@ this code does not work in 3.4.4:
 ^try-catch{ $z(^test-wrapper[]) }
 $z
 
-string and value: $s(^test-string[]) $s $s.CLASS_NAME
-string and object: $s[^test-object[]] $s.CLASS_NAME
+^try-catch{ string and number: $s(^test-string[]) $s $s.CLASS_NAME}
+string and object[]: $s[^test-object[]] $s.CLASS_NAME
+string and object(): $n(^test-object[]) $n.CLASS_NAME
 
-#test is in expression + CO_WITHOUT_WCONTEXT is on by default, thus exception
+#since 3.4.7 numbers are converted to strings in expression context
 @test[]
 ^n.int[]^n.int[]
 
-#wrapper hides in expression flag, thus no more exception after OP_PREPARE_TO_EXPRESSION removed
+#in 3.4.5-3.4.6 wrapper hided "in expression" flag, thus no exception
 @test-wrapper[]
 ^test[]
 
 @test-string[]
-string value (even non-whitespace!) is ignored if value (^n.int[]) is returned.
+-^n.int[]
 
 @test-object[]
-same thing in string context if object (^hash::create[]) is returned.
+string value (even non-whitespace!) is ignored if object (^hash::create[]) is returned.
