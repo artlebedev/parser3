@@ -1,0 +1,23 @@
+$xdoc[^xdoc::create{^process{<?xml version="1.0"?>
+<data>
+	<row id="1"/>
+	<row id="a"/>
+	<row id="2"/>
+</data>
+}}]
+$sheet[^xdoc::create{<?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
+
+  <xsl:template match="data">
+    <xsl:apply-templates/>
+  </xsl:template>
+
+  <xsl:template match="row">
+    <xsl:variable name="string_data"><xsl:value-of select="@id"/></xsl:variable>
+    <xsl:value-of select="normalize-space(^$string_data)"/> is a number? <xsl:if test="string(number(^$string_data)) != 'NaN'">yes</xsl:if>
+  </xsl:template>
+</xsl:stylesheet>
+}]
+
+$xdoc[^xdoc.transform[$sheet]]
+^xdoc.string[$.method[html]]
