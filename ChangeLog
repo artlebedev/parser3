@@ -1,3 +1,8 @@
+2021-03-25  moko
+
+	* tests/: 412.html, results/412.processed: test to demonstrate bug
+	  #1213
+
 2021-02-12  moko
 
 	* tests/: 360.html, results/360.processed, results/363.processed:
