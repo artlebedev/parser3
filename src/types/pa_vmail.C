@@ -19,7 +19,7 @@
 #include "pa_vfile.h"
 #include "pa_uue.h"
 
-volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.137 2021/02/10 22:05:21 moko Exp $" IDENT_PA_VMAIL_H;
+volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.138 2021/04/16 20:44:31 moko Exp $" IDENT_PA_VMAIL_H;
 
 #ifdef WITH_MAILRECEIVE
 extern "C" {
@@ -348,8 +348,10 @@ void VMail::fill_received(Request& r) {
 		try {
 			// parse incoming message
 			GMimeMessage *message=g_mime_parser_construct_message(g_mime_parser_new_with_stream(stream), NULL);
-			parse(r, message, vreceived.hash());
-			g_object_unref(GMIME_OBJECT(message));
+			if(message){
+				parse(r, message, vreceived.hash());
+				g_object_unref(GMIME_OBJECT(message));
+			}
 		} catch(const Exception& e) {
 			HashStringValue& received=vreceived.hash();
 			putReceived(received, VALUE_NAME, "<exception occurred while parsing message>");
