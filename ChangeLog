@@ -1,3 +1,8 @@
+2021-04-16  moko
+
+	* src/types/pa_vmail.C: message can be null when e-mail is broken,
+	  processing it leads to assertions.
+
 2021-03-25  moko
 
 	* tests/: 412.html, results/412.processed: test to demonstrate bug
