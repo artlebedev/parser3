@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.342 2020/12/31 19:48:47 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.343 2021/07/19 16:31:11 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -380,9 +380,6 @@ static void httpd_mode() {
 
 	int sock = HTTPD_Server::bind(httpd_host_port);
 
-#ifdef SIGCHLD
-	signal(SIGCHLD, SIG_IGN);
-#endif
 #ifdef SIGPIPE
 	signal(SIGPIPE, SIG_IGN);
 #endif
@@ -390,6 +387,8 @@ static void httpd_mode() {
 	while(1){
 #ifndef _MSC_VER
 		pid_t pid=1;
+		if(HTTPD_Server::mode == HTTPD_Server::PARALLEL)
+			while (waitpid((pid_t)(-1), 0, WNOHANG) > 0);
 #endif
 		try {
 			HTTPD_Connection connection;
