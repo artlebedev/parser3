@@ -1,3 +1,8 @@
+2021-07-19  moko
+
+	* src/targets/cgi/parser3.C: waitpid in file::exec returned "No
+	  child processes" when SIGCHLD was SIG_IGN (fixes bug #1215)
+
 2021-04-16  moko
 
 	* src/types/pa_vmail.C: message can be null when e-mail is broken,
