@@ -1,0 +1,10 @@
+1. ^try-catch{ ^image::measure[ $.name[name] ] }
+2. ^try-catch{ ^math:convert[ $.k[v] ](10;16) }
+3. ^try-catch{ ^mail:send[
+	$.from[from@parser3test]
+	$.to[to@parser3test]
+	$.print-debug(1)
+	$.file[
+		$.value(3)
+	]
+    ] }
