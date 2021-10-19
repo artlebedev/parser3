@@ -19,7 +19,7 @@
 #include "pa_vfile.h"
 #include "pa_uue.h"
 
-volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.138 2021/04/16 20:44:31 moko Exp $" IDENT_PA_VMAIL_H;
+volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.139 2021/10/19 16:16:36 moko Exp $" IDENT_PA_VMAIL_H;
 
 #ifdef WITH_MAILRECEIVE
 extern "C" {
@@ -608,7 +608,7 @@ static const String& file_value_to_string(Request& r, Value* send_value) {
 
 		// $.value
 		if(Value* value=send_hash->get(value_name))
-			vfile=value->as_vfile(String::L_AS_IS);
+			vfile=value->as_vfile();
 		else
 			throw Exception(PARSER_RUNTIME, 0, "file part has no $value");
 
@@ -622,7 +622,7 @@ static const String& file_value_to_string(Request& r, Value* send_value) {
 		if(Value* vfile_name=send_hash->get(name_name)) // $name specified 
 			file_name=&vfile_name->as_string();
 	} else  // must be VFile then
-		vfile=send_value->as_vfile(String::L_AS_IS);
+		vfile=send_value->as_vfile();
 
 	if(!file_name)
 		file_name=&vfile->fields().get(name_name)->as_string();

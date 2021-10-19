@@ -28,7 +28,7 @@
 #include "xnode.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_XDOC_C="$Id: xdoc.C,v 1.200 2020/12/15 17:10:29 moko Exp $";
+volatile const char * IDENT_XDOC_C="$Id: xdoc.C,v 1.201 2021/10/19 16:16:35 moko Exp $";
 
 // defines
 
@@ -368,7 +368,7 @@ static void _create(Request& r, MethodParams& params) {
 			set_encoding=true;
 			// must be last action in if, see after if}
 		} else {
-			VFile* vfile=param.as_vfile(String::L_AS_IS);
+			VFile* vfile=param.as_vfile();
 			xmldoc=xmlReadMemory(vfile->value_ptr(), vfile->value_size(), NULL, NULL, XML_PARSE_OPTIONS);
 			if(!xmldoc || xmlHaveGenericErrors())
 				throw XmlException(0, r);

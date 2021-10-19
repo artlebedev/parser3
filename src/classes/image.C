@@ -26,7 +26,7 @@
 #include "pa_table.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.181 2020/12/23 15:01:13 moko Exp $";
+volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.182 2021/10/19 16:16:35 moko Exp $";
 
 // defines
 
@@ -1014,7 +1014,7 @@ static void _measure(Request& r, MethodParams& params) {
 	if(file_name=data.get_string()) {
 		file_read_action_under_lock(r.full_disk_path(*file_name), "measure", file_measure_action, &info);
 	} else {
-		VFile* vfile=data.as_vfile(String::L_AS_IS);
+		VFile* vfile=data.as_vfile();
 		file_name=&vfile->fields().get(name_name)->as_string();
 		Measure_buf_reader reader(vfile->value_ptr(), vfile->value_size(), *file_name);
 		measure(*file_name, reader, info);

@@ -8,7 +8,7 @@
 #ifndef PA_VFILE_H
 #define PA_VFILE_H
 
-#define IDENT_PA_VFILE_H "$Id: pa_vfile.h,v 1.85 2020/12/15 17:10:40 moko Exp $"
+#define IDENT_PA_VFILE_H "$Id: pa_vfile.h,v 1.86 2021/10/19 16:16:36 moko Exp $"
 
 // include
 
@@ -54,8 +54,7 @@ public: // Value
 	override Value& as_expr_result() { return VBool::get(true); }
 
 	/// VFile: this
-	override VFile* as_vfile(String::Language /*lang*/, 
-		const Request_charsets* /*charsets*/) { return this; }
+	override VFile* as_vfile() { return this; }
 
 	/// VFile: json-string
 	override const String* get_json_string(Json_options& options);

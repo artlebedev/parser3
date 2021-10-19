@@ -17,7 +17,7 @@
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.67 2020/12/15 17:10:27 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.68 2021/10/19 16:16:35 moko Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -499,7 +499,7 @@ static void curl_setopt(HashStringValue::key_type key, HashStringValue::value_ty
 				if( (res=f_curl_easy_setopt(curl(), CURLOPT_POSTFIELDSIZE, -1L)) == CURLE_OK )
 					res=f_curl_easy_setopt(curl(), opt->id, curl_urlencode(v.as_string(), r));
 			} else {
-				VFile *file=v.as_vfile(String::L_AS_IS);
+				VFile *file=v.as_vfile();
 				if( (res=f_curl_easy_setopt(curl(), CURLOPT_POSTFIELDSIZE, (long)file->value_size())) == CURLE_OK )
 					res=f_curl_easy_setopt(curl(), opt->id, file->value_ptr());
 			}

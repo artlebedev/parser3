@@ -13,7 +13,7 @@
 #include "pa_request.h"
 
 
-volatile const char * IDENT_PA_VALUE_C="$Id: pa_value.C,v 1.47 2020/12/15 17:10:38 moko Exp $" IDENT_PA_VALUE_H IDENT_PA_PROPERTY_H;
+volatile const char * IDENT_PA_VALUE_C="$Id: pa_value.C,v 1.48 2021/10/19 16:16:36 moko Exp $" IDENT_PA_VALUE_H IDENT_PA_PROPERTY_H;
 
 // globals
 
@@ -31,8 +31,8 @@ Value* Value::get_element(const String& /*aname*/) {
 	return bark("element can not be fetched from %s");
 }
 
-VFile* Value::as_vfile(String::Language /*lang*/, const Request_charsets* /*charsets*/) { 
-	bark("is '%s', it does not have file value"); return 0;
+VFile* Value::as_vfile() {
+	throw Exception(PARSER_RUNTIME, 0, "parameter is '%s', it does not have file value", type());
 }
 
 // Should be synced with MethodParams::as_hash

@@ -26,7 +26,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.274 2020/12/15 17:10:28 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.275 2021/10/19 16:16:35 moko Exp $";
 
 // defines
 
@@ -365,7 +365,7 @@ static void _create(Request& r, MethodParams& params) {
 		String::Body body=content_str->cstr_to_string_body_untaint(String::L_AS_IS, r.connection(false), &r.charsets); // explode content, honor tainting changes
 		self.set(true/*tainted*/, is_text, body.cstrm(), body.length(), file_name, vcontent_type, &r);
 	} else {
-		VFile& fcontent=*vcontent.as_vfile(String::L_AS_IS); // can't be null
+		VFile& fcontent=*vcontent.as_vfile(); // can't be null
 		if(mode){
 			self.set(fcontent, &is_text, file_name, vcontent_type, &r);
 			if(is_text && !fcontent.is_text_mode())

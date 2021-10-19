@@ -23,7 +23,7 @@
 extern "C" char *crypt(const char* , const char* );
 #endif
 
-volatile const char * IDENT_MATH_C="$Id: math.C,v 1.97 2021/01/13 21:28:15 moko Exp $";
+volatile const char * IDENT_MATH_C="$Id: math.C,v 1.98 2021/10/19 16:16:35 moko Exp $";
 
 // defines
 
@@ -343,7 +343,7 @@ String::C getData(Value& vdata, Request& r){
 		String::Body body=sdata->cstr_to_string_body_untaint(String::L_AS_IS, r.connection(false), &r.charsets); // explode content, honor tainting changes
 		return String::C(body.cstr(), body.length());
 	} else {
-		VFile *file=vdata.as_vfile(String::L_AS_IS);
+		VFile *file=vdata.as_vfile();
 		return String::C(file->value_ptr(),file->value_size());
 	}
 }

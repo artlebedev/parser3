@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.167 2020/12/15 17:10:38 moko Exp $"
+#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.168 2021/10/19 16:16:36 moko Exp $"
 
 #include "pa_common.h"
 #include "pa_array.h"
@@ -165,7 +165,8 @@ public: // Value
 	virtual bool as_bool() const { bark("is '%s', it does not have logical value"); return 0; }
 
 	/// extract file
-	virtual VFile* as_vfile(String::Language lang, const Request_charsets* charsets=0);
+	virtual VFile* as_vfile();
+	virtual VFile* as_vfile(String::Language /*lang*/, const Request_charsets* /*charsets*/) { return as_vfile(); }
 
 	/// extract Junction
 	virtual Junction* get_junction();
