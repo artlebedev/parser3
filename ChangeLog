@@ -1,3 +1,13 @@
+2021-10-19  moko
+
+	* tests/: 413.html, results/413.processed: test for hash no longer
+	  is accepted as file parameter (related to bug #1218)
+
+	* src/: classes/curl.C, classes/file.C, classes/image.C,
+	  classes/math.C, classes/xdoc.C, types/pa_value.C,
+	  types/pa_value.h, types/pa_vfile.h, types/pa_vmail.C: hash no
+	  longer is accepted as file parameter (fixes bug #1218)
+
 2021-07-19  moko
 
 	* src/targets/cgi/parser3.C: waitpid in file::exec returned "No
