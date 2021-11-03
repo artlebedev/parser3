@@ -17,7 +17,7 @@
 #ifndef PA_HASH_H
 #define PA_HASH_H
 
-#define IDENT_PA_HASH_H "$Id: pa_hash.h,v 1.101 2020/12/15 17:10:31 moko Exp $"
+#define IDENT_PA_HASH_H "$Id: pa_hash.h,v 1.102 2021/11/03 21:45:15 moko Exp $"
 
 #include "pa_memory.h"
 #include "pa_types.h"
@@ -474,7 +474,7 @@ public:
 		CORD key=str.get_cord();
 
 		uint code=str.get_hash_code();
-		uint index=code%this->allocated;
+		uint index=code % this->allocated;
 		Pair **ref=&this->refs[index];
 		for(Pair *pair=*ref; pair; pair=pair->link)
 			if(pair->code==code && CORD_cmp(pair->key,key)==0) {
@@ -495,7 +495,7 @@ public:
 	bool remove(K str) {
 		CORD key=str.get_cord();
 		uint code=str.get_hash_code();
-		uint index=code%this->allocated;
+		uint index=code % this->allocated;
 		for(Pair **ref=&this->refs[index]; *ref; ref=&(*ref)->link){
 			Pair *pair=*ref;
 			if(pair->code==code && CORD_cmp(pair->key,key)==0) {
@@ -521,7 +521,7 @@ public:
 	bool contains(K str){
 		CORD key=str.get_cord();
 		uint code=str.get_hash_code();
-		uint index=code%this->allocated;
+		uint index=code % this->allocated;
 		for(Pair *pair=this->refs[index]; pair; pair=pair->link){
 			if(pair->code==code && CORD_cmp(pair->key,key)==0)
 				return true;
@@ -534,7 +534,7 @@ public:
 	V get(K str) const {
 		CORD key=str.get_cord();
 		uint code=str.get_hash_code();
-		uint index=code%this->allocated;
+		uint index=code % this->allocated;
 		for(Pair *pair=this->refs[index]; pair; pair=pair->link)
 			if(pair->code==code && CORD_cmp(pair->key,key)==0)
 				return pair->value;
@@ -550,7 +550,7 @@ public:
 		} else {
 			key=0;
 		}
-		uint index=code%this->allocated;
+		uint index=code % this->allocated;
 		for(Pair *pair=this->refs[index]; pair; pair=pair->link)
 			if(pair->code==code && CORD_cmp(pair->key,(CORD)key)==0)
 				return pair->value;
@@ -567,7 +567,7 @@ public:
 
 		CORD key=str.get_cord();
 		uint code=str.get_hash_code();
-		uint index=code%this->allocated;
+		uint index=code % this->allocated;
 		for(Pair *pair=this->refs[index]; pair; pair=pair->link)
 			if(pair->code==code && CORD_cmp(pair->key,key)==0) {
 				// found a pair with the same key, replacing
@@ -590,7 +590,7 @@ public:
 
 		CORD key=str.get_cord();
 		uint code=str.get_hash_code();
-		uint index=code%this->allocated;
+		uint index=code % this->allocated;
 		Pair **ref=&this->refs[index];
 		for(Pair *pair=*ref; pair; pair=pair->link)
 			if(pair->code==code && CORD_cmp(pair->key,key)==0) {
@@ -604,6 +604,44 @@ public:
 		HASH_NEW_PAIR(code, key, value);
 		this->fpairs_count++;
 		return false;
+	}
+
+	/// rename $.from[] to $.to[]
+	void rename(K from, K to) {
+		CORD key_from=from.get_cord();
+		uint code_from=from.get_hash_code();
+		uint index_from=code_from % this->allocated;
+
+		CORD key_to=to.get_cord();
+		uint code_to=to.get_hash_code();
+		uint index_to=code_to % this->allocated;
+
+		if(code_from == code_to && CORD_cmp(key_from, key_to)==0)
+			return;
+
+		for(Pair **ref=&this->refs[index_from]; *ref; ref=&(*ref)->link){
+			Pair *pair=*ref;
+			if(pair->code==code_from && CORD_cmp(pair->key,key_from)==0) {
+				// found a pair with the required key
+
+				// remove it from the from key first
+				Pair *next=pair->link;
+				*ref=next;
+
+				// to simplify code
+				remove(to);
+
+				// change pair key
+				pair->code=code_to;
+				(CORD &)(pair->key)=key_to;
+
+				// link to the to key, hash order left intact
+				if(!(pair->link=this->refs[index_to])) // root was unused?
+					this->fused_refs++; // we've used it and record the fact
+				this->refs[index_to]=pair;
+				return;
+			}
+		}
 	}
 
 	/// put all 'src' values if NO with same key existed

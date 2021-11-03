@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.149 2021/01/13 22:21:29 moko Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.150 2021/11/03 21:45:15 moko Exp $";
 
 // class
 
@@ -719,6 +719,16 @@ static void _reverse(Request& r, MethodParams& params) {
 	r.write(result);
 }
 
+
+static void _rename(Request& r, MethodParams& params) {
+	const String& key_from=params.as_string(0, "from key must be string");
+	const String& key_to=params.as_string(1, "to key must be string");
+
+	HashStringValue& hash=GET_SELF(r, VHashBase).hash();
+	hash.rename(key_from, key_to);
+}
+
+
 // constructor
 
 MHash::MHash(): Methoded("hash") 
@@ -769,6 +779,9 @@ MHash::MHash(): Methoded("hash")
 	// ^hash._at[first|last[;'key'|'value'|'hash']]
 	// ^hash._at([-+]offset)[['key'|'value'|'hash']]
 	add_native_method("_at", Method::CT_DYNAMIC, _at, 1, 2);
+
+	// ^hash.rename[from;to]
+	add_native_method("rename", Method::CT_DYNAMIC, _rename, 2, 2);
 
 #ifdef FEATURE_GET_ELEMENT4CALL
 	// aliases without "_"
