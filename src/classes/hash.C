@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.150 2021/11/03 21:45:15 moko Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.151 2021/11/04 21:31:15 moko Exp $";
 
 // class
 
@@ -721,11 +721,19 @@ static void _reverse(Request& r, MethodParams& params) {
 
 
 static void _rename(Request& r, MethodParams& params) {
-	const String& key_from=params.as_string(0, "from key must be string");
-	const String& key_to=params.as_string(1, "to key must be string");
-
 	HashStringValue& hash=GET_SELF(r, VHashBase).hash();
-	hash.rename(key_from, key_to);
+
+	if(params.count()>1){
+		const String& key_from=params.as_string(0, "from key must be string");
+		const String& key_to=params.as_string(1, "to key must be string");
+
+		hash.rename(key_from, key_to);
+	} else	{
+		HashStringValue* names=params.as_hash(0);
+
+		for(HashStringValue::Iterator i(*names); i; i.next())
+			hash.rename(i.key(), i.value()->as_string());
+	}
 }
 
 
@@ -781,7 +789,8 @@ MHash::MHash(): Methoded("hash")
 	add_native_method("_at", Method::CT_DYNAMIC, _at, 1, 2);
 
 	// ^hash.rename[from;to]
-	add_native_method("rename", Method::CT_DYNAMIC, _rename, 2, 2);
+	// ^hash.rename[ $.from[to] ... ]
+	add_native_method("rename", Method::CT_DYNAMIC, _rename, 1, 2);
 
 #ifdef FEATURE_GET_ELEMENT4CALL
 	// aliases without "_"
