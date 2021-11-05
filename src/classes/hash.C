@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.152 2021/11/04 21:31:46 moko Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.153 2021/11/05 21:25:38 moko Exp $";
 
 // class
 
@@ -729,7 +729,7 @@ static void _rename(Request& r, MethodParams& params) {
 
 		hash.rename(key_from, key_to);
 	} else {
-		HashStringValue* names=params.as_hash(0);
+		HashStringValue* names=params.as_hash(0,"single parameter");
 
 		for(HashStringValue::Iterator i(*names); i; i.next())
 			hash.rename(i.key(), i.value()->as_string());
