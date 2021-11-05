@@ -14,7 +14,7 @@
 #include "ws2tcpip.h"
 #endif
 
-volatile const char * IDENT_INET_C="$Id: inet.C,v 1.16 2020/12/15 17:10:28 moko Exp $";
+volatile const char * IDENT_INET_C="$Id: inet.C,v 1.17 2021/11/05 21:42:07 moko Exp $";
 
 class MInet: public Methoded {
 public:
@@ -97,7 +97,7 @@ static void _ip2name(Request& r, MethodParams& params){
 	hints.ai_family=AF_INET;
 	hints.ai_socktype=SOCK_STREAM;
 	hints.ai_flags=AI_NUMERICHOST; // to disable DNS lookup
-	
+
 	if(params.count() == 2)
 		if(HashStringValue* options=params.as_hash(1)){
 			int valid_options=0;
@@ -126,6 +126,7 @@ static void _ip2name(Request& r, MethodParams& params){
 		throw Exception(PARSER_RUNTIME, 0, "Can't resolve IP address '%s': %s", ip_cstr, gai_strerror(error));
 	}
 }
+
 static void _name2ip(Request& r, MethodParams& params){
 	const String sname=params.as_string(0, PARAMETER_MUST_BE_STRING);
 	if(sname.is_empty())
@@ -189,6 +190,15 @@ static void _name2ip(Request& r, MethodParams& params){
 	freeaddrinfo(info);
 }
 
+static void _hostname(Request& r, MethodParams& params){
+	char buf[MAX_STRING];
+
+	if(gethostname(buf, MAX_STRING))
+		throw Exception(PARSER_RUNTIME, 0, "Cant't get hostname");
+
+	r.write(*new String(pa_strdup(buf), String::L_TAINTED));
+}
+
 // constructor
 MInet::MInet(): Methoded("inet") {
 	add_native_method("ntoa", Method::CT_STATIC, _ntoa, 1, 1);
@@ -197,4 +207,6 @@ MInet::MInet(): Methoded("inet") {
 	add_native_method("ip2name", Method::CT_STATIC, _ip2name, 1, 2);
 	// ^inet:name2ip[name; $.ipv[4|6|any] $.table(true) ]
 	add_native_method("name2ip", Method::CT_STATIC, _name2ip, 1, 2);
+	// ^inet:hostname[]
+	add_native_method("hostname", Method::CT_STATIC, _hostname, 0, 0);
 }
