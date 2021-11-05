@@ -1,0 +1,85 @@
+Content-Type: text/html
+Content-Length: 822
+
+1. {
+"a":"1",
+"b":"2",
+"c":"3",
+"d":"4"
+}
+{
+"a":"1",
+"b":"2",
+"c":"3",
+"d":"4"
+}
+2. {
+"a":"1",
+"x":"2",
+"c":"3",
+"d":"4"
+}
+{
+"x":"1",
+"b":"2",
+"c":"3",
+"d":"4"
+}
+{
+"a":"1",
+"b":"2",
+"c":"3",
+"x":"4"
+}
+3. {
+"c":"1",
+"b":"2",
+"d":"4"
+}
+{
+"b":"2",
+"c":"3",
+"a":"4"
+}
+{
+"a":"1",
+"c":"2",
+"d":"4"
+}
+4. {
+"d":"1"
+}
+{
+"a1":"1",
+"b1":"2",
+"c1":"3",
+"d":"4"
+}
+5. {
+"":"1",
+"b":"2",
+"c":"3",
+"d":"4"
+}
+{
+"a":"1",
+"":"2",
+"c":"3",
+"d":"4"
+}
+{
+"":"3",
+"d":"4"
+}
+6. Type: parser.runtime,
+Source: rename,
+Comment: single parameter must have hash representation (parameter #1)
+Type: parser.runtime,
+Source: rename,
+Comment: from key must be string (parameter #1)
+Type: parser.runtime,
+Source: rename,
+Comment: to key must be string (parameter #2)
+Type: parser.runtime,
+Source: rename,
+Comment: is 'hash', it has no string representation

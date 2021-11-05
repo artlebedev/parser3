@@ -1,0 +1,38 @@
+@main[]
+
+$demo[
+    $.a[1]
+    $.b[2]
+    $.c[3]
+    $.d[4]
+]
+
+1. ^rename[v;c]
+   ^rename[b;b]
+2. ^rename[b;x]
+   ^rename[a;x]
+   ^rename[d;x]
+3. ^rename[a;c]
+   ^rename[d;a]
+   ^rename[b;c]
+
+4. ^rename[ $.a[b] $.b[c] $.c[d] ]
+   ^rename[ $.a[a1] $.b[b1] $.c[c1] ]
+
+5. ^rename[a;]
+   ^rename[b;$void]
+   ^rename[ $.a[] $.b[] $.c[] ]
+
+6. ^try-catch{ ^demo.rename[a] }
+   ^try-catch{ ^demo.rename{a}[b] }
+   ^try-catch{ ^demo.rename[a]{b} }
+   ^try-catch{ ^demo.rename[$.a[b];c] }
+
+@rename[a;b]
+$h[^hash::create[$demo]]
+^if($a is hash){
+    ^h.rename[$a]
+}{
+    ^h.rename[$a;$b]
+}
+$result[^json:string[$h]]
