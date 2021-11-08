@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.343 2021/07/19 16:31:11 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.344 2021/11/08 11:44:20 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -77,7 +77,7 @@ static void pa_log(const char* fmt, va_list args) {
 
 	if(!opened && filespec_4log) {
 		char beside_config_path[MAX_STRING];
-		strncpy(beside_config_path, filespec_4log, MAX_STRING-1);  beside_config_path[MAX_STRING-1]=0;
+		pa_strncpy(beside_config_path, filespec_4log, MAX_STRING);
 		if(!(rsplit(beside_config_path, '/') || rsplit(beside_config_path, '\\'))) { // strip filename
 			// no path, just filename
 			strcpy(beside_config_path, ".");
@@ -186,7 +186,7 @@ static void full_disk_path(const char* file_name, char *buf, size_t buf_size) {
 		|| file_name[0] && file_name[1]==':'
 #endif
 	){
-		strncpy(buf, file_name, buf_size-1); buf[buf_size-1]=0;
+		pa_strncpy(buf, file_name, buf_size);
 	} else {
 		char cwd[MAX_STRING];
 		snprintf(buf, buf_size, "%s/%s", getcwd(cwd, MAX_STRING) ? cwd : "", file_name);

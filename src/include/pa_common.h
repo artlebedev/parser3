@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.189 2020/12/20 20:45:24 moko Exp $"
+#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.190 2021/11/08 11:44:19 moko Exp $"
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -248,6 +248,7 @@ int remove_crlf(char *start, char *end);
 inline bool pa_isalpha(unsigned char c) { return (((c>='A') && (c<='Z')) || ((c>='a') && (c<='z'))); }
 inline bool pa_isalnum(unsigned char c) { return (((c>='0') && (c<='9')) || pa_isalpha(c)); }
 
+void pa_strncpy(char *dst, const char *src, size_t n);
 char *pa_strcat(const char *a, const char *b, const char *c = 0);
 const char *pa_filename(const char *path);
 

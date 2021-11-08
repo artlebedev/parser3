@@ -13,7 +13,7 @@
 #include "pa_exception.h"
 #include "pa_common.h"
 
-volatile const char * IDENT_PA_EXEC_C="$Id: pa_exec.C,v 1.95 2020/12/22 23:11:49 moko Exp $" IDENT_PA_EXEC_H;
+volatile const char * IDENT_PA_EXEC_C="$Id: pa_exec.C,v 1.96 2021/11/08 11:44:19 moko Exp $" IDENT_PA_EXEC_H;
 
 #ifdef _MSC_VER
 
@@ -79,7 +79,7 @@ static DWORD CreateHiddenConsoleProcess(LPCTSTR szCmdLine,
 	
 	// calculating script's directory
 	char dir[MAX_STRING];
-	strncpy(dir, szScriptFileSpec, MAX_STRING-1); dir[MAX_STRING-1]=0;
+	pa_strncpy(dir, szScriptFileSpec, MAX_STRING);
 	lsplit(dir,' '); // trim arguments
 	rsplit(dir,'/'); rsplit(dir,'\\'); // trim filename
 	
@@ -283,7 +283,7 @@ static pid_t execve_piped(const char* file_spec_cstr,
 	
 		// chdir to script's directory
 		char dir[MAX_STRING];
-		strncpy(dir, file_spec_cstr, MAX_STRING-1); dir[MAX_STRING-1]=0;
+		pa_strncpy(dir, file_spec_cstr, MAX_STRING);
 		rsplit(dir,'/'); // trim filename
 		chdir(dir);
 

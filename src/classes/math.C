@@ -23,7 +23,7 @@
 extern "C" char *crypt(const char* , const char* );
 #endif
 
-volatile const char * IDENT_MATH_C="$Id: math.C,v 1.98 2021/10/19 16:16:35 moko Exp $";
+volatile const char * IDENT_MATH_C="$Id: math.C,v 1.99 2021/11/08 11:44:19 moko Exp $";
 
 // defines
 
@@ -134,7 +134,7 @@ static void _crypt(Request& r, MethodParams& params) {
 	const char* normal_salt;
 	char normalize_buf[MAX_STRING];
 	if(prefix_size==strlen(maybe_bodyless_salt)) { // bodyless?
-		strncpy(normalize_buf, maybe_bodyless_salt, MAX_STRING-MAX_SALT-1);
+		pa_strncpy(normalize_buf, maybe_bodyless_salt, MAX_STRING-MAX_SALT);
 		char *cur=normalize_buf+strlen(normalize_buf);
 		// sould add up MAX_SALT random chars
 		static unsigned char itoa64[] =         /* 0 ... 63 => ASCII - 64 */

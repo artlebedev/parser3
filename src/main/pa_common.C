@@ -29,7 +29,7 @@
 #define pa_mkdir(path, mode) mkdir(path, mode)
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.324 2020/12/30 18:06:42 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.325 2021/11/08 11:44:19 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -652,6 +652,19 @@ char* rsplit(char* string, char delim) {
 		}
 	}
 	return NULL;
+}
+
+void pa_strncpy(char *dst, const char *src, size_t n){
+	size_t left = n;
+
+	if (left != 0 && src) {
+		while (--left != 0) {
+			if ((*dst++ = *src++) == '\0')
+				return;
+		}
+	}
+	if (n != 0)
+		*dst = '\0';
 }
 
 #define STRCAT_STEP(str, len) if(str) { memcpy(ptr, str, len); ptr += len; }

@@ -10,7 +10,7 @@
 #include "pa_request.h"
 #include "pa_convert_utf.h"
 
-volatile const char * IDENT_PA_DIR_C="$Id: pa_dir.C,v 1.30 2020/12/15 17:10:36 moko Exp $" IDENT_PA_DIR_H;
+volatile const char * IDENT_PA_DIR_C="$Id: pa_dir.C,v 1.31 2021/11/08 11:44:19 moko Exp $" IDENT_PA_DIR_H;
 
 #ifdef _MSC_VER
 
@@ -90,9 +90,8 @@ bool findnext(struct ffblk *_ffblk) {
 		if(!entry)
 			return true;
 
-		strncpy(_ffblk->ff_name, entry->d_name, sizeof(_ffblk->ff_name)-1);
-		_ffblk->ff_name[sizeof(_ffblk->ff_name)-1]=0;
-		
+		pa_strncpy(_ffblk->ff_name, entry->d_name, sizeof(_ffblk->ff_name));
+
 #ifdef HAVE_STRUCT_DIRENT_D_TYPE
 		// http://www.gnu.org/software/libc/manual/html_node/Directory-Entries.html
 		_ffblk->_d_type=entry->d_type;

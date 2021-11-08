@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.126 2021/01/16 15:47:06 moko Exp $";
+volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.127 2021/11/08 11:44:21 moko Exp $";
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -272,8 +272,7 @@ static void parser_done() {
 /// ISAPI //
 BOOL WINAPI GetExtensionVersion(HSE_VERSION_INFO *pVer) {
 	pVer->dwExtensionVersion = HSE_VERSION;
-	strncpy(pVer->lpszExtensionDesc, "Parser " PARSER_VERSION, HSE_MAX_EXT_DLL_NAME_LEN-1);
-	pVer->lpszExtensionDesc[HSE_MAX_EXT_DLL_NAME_LEN-1]=0;
+	pa_strncpy(pVer->lpszExtensionDesc, "Parser " PARSER_VERSION, HSE_MAX_EXT_DLL_NAME_LEN);
 	return parser_init();
 }
 // dwFlags & HSE_TERM_MUST_UNLOAD means we can't return false
@@ -315,8 +314,8 @@ void real_parser_handler(SAPI_Info& SAPI_info, bool header_only) {
 	if(const char* path_info=SAPI::Env::get(SAPI_info, "PATH_INFO")) {
 		// IIS
 		size_t len=strlen(filespec_to_process)-strlen(path_info);
-		char *buf=new(PointerFreeGC) char[len+1];
-		strncpy(buf, filespec_to_process, len); buf[len]=0;
+		char *buf=new(PointerFreeGC) char[len];
+		pa_strncpy(buf, filespec_to_process, len);
 		request_info.document_root=buf;
 	} else
 		throw Exception(PARSER_RUNTIME, 0, "ISAPI: no PATH_INFO defined (in reinventing DOCUMENT_ROOT)");
@@ -335,7 +334,7 @@ void real_parser_handler(SAPI_Info& SAPI_info, bool header_only) {
 
 	// beside by binary
 	static char beside_binary_path[MAX_STRING];
-	strncpy(beside_binary_path, argv0, MAX_STRING-1);  beside_binary_path[MAX_STRING-1]=0; // filespec of my binary
+	pa_strncpy(beside_binary_path, argv0, MAX_STRING); // filespec of my binary
 	if(!(rsplit(beside_binary_path, '/') || rsplit(beside_binary_path, '\\'))) { // strip filename
 		// no path, just filename
 		beside_binary_path[0]='.'; beside_binary_path[1]=0;

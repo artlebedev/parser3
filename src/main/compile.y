@@ -8,7 +8,7 @@
 	
 */
 
-volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.290 2020/12/15 17:10:34 moko Exp $";
+volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.291 2021/11/08 11:44:19 moko Exp $";
 
 /**
 	@todo parser4: 
@@ -1617,7 +1617,7 @@ break2:
 }
 
 static int real_yyerror(Parse_control *pc, const char *s) {  // Called by yyparse on error
-	strncpy(PC.error, s, MAX_STRING);
+	pa_strncpy(PC.error, s, MAX_STRING);
 	return 1;
 }
 

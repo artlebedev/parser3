@@ -14,7 +14,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.118 2021/01/21 16:46:53 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.119 2021/11/08 11:44:20 moko Exp $" IDENT_PA_HTTP_H; 
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -742,7 +742,7 @@ File_read_http_result pa_internal_file_read_http(Request& r, const String& file_
 			throw Exception(PARSER_RUNTIME, &connect_string, "does not start with http://"); //never
 		current+=7;
 
-		strncpy(host, current, sizeof(host)-1);  host[sizeof(host)-1]=0;
+		pa_strncpy(host, current, sizeof(host));
 		char* host_uri=lsplit(host, '/');
 		uri=host_uri?current+(host_uri-1-host):"/";
 		char* port_cstr=lsplit(host, ':');

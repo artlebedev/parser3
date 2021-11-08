@@ -9,7 +9,7 @@
 #include "pa_vint.h"
 #include "pa_vstring.h"
 
-volatile const char * IDENT_PA_PA_VDATE_C="$Id: pa_vdate.C,v 1.24 2020/12/15 17:10:39 moko Exp $" IDENT_PA_VDATE_H;
+volatile const char * IDENT_PA_PA_VDATE_C="$Id: pa_vdate.C,v 1.25 2021/11/08 11:44:21 moko Exp $" IDENT_PA_VDATE_H;
 
 #define ZERO_DATE (-62169984000ll-SECS_PER_DAY) // '0000-00-00 00:00:00' - 1 day
 #define MAX_DATE (253402300799ll+SECS_PER_DAY) // '9999-12-31 23:59:59' + 1 day
@@ -78,7 +78,7 @@ public:
 		if(!ntz)
 			return;
 		if(const char* ctz=getenv("TZ")){
-			strncpy(saved_tz, ctz, sizeof(saved_tz)-1);
+			pa_strncpy(saved_tz, ctz, MAX_STRING);
 		} else
 			saved_tz[0]=0;
 		pa_set_tz(ntz);
