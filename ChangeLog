@@ -1,3 +1,21 @@
+2021-11-06  moko
+
+	* src/classes/inet.C: ^inet:hostname[] added by sumo@ patch
+	  (implements feature #1219)
+
+	* tests/: 414.html, results/414.processed: test for
+	  ^hash.rename[from;to] added (related to feature #1144)
+
+2021-11-05  moko
+
+	* src/classes/hash.C: ^hash.rename[ $.from[to] ... ] support added
+	  (related to feature #1144)
+
+2021-11-04  moko
+
+	* src/: classes/hash.C, include/pa_hash.h: ^hash.rename[from;to]
+	  added (implements feature #1144)
+
 2021-10-19  moko
 
 	* tests/: 413.html, results/413.processed: test for hash no longer
