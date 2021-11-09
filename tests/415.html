@@ -1,0 +1,14 @@
+@main[]
+#^use[415_dir/1.p]
+$list[^file:list[415_dir]]
+^list.sort{$list.name}
+^list.menu{
+    ${list.name}: ^try-catch{ ^use[415_dir/$list.name] }
+}
+
+@try-catch[jCode]
+$result[]
+^try{$jCode}{
+	$exception.handled(true)
+	$result[$exception.comment]
+}
