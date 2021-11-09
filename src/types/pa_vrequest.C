@@ -15,7 +15,7 @@
 #include "pa_vvoid.h"
 #include "pa_vfile.h"
 
-volatile const char * IDENT_PA_VREQUEST_C="$Id: pa_vrequest.C,v 1.68 2020/12/15 17:10:42 moko Exp $" IDENT_PA_VREQUEST_H;
+volatile const char * IDENT_PA_VREQUEST_C="$Id: pa_vrequest.C,v 1.69 2021/11/09 15:04:26 moko Exp $" IDENT_PA_VREQUEST_H;
 
 // defines
 
@@ -30,12 +30,9 @@ VRequest::VRequest(Request_info& ainfo, Request_charsets& acharsets, VForm& afor
 {
 	if(ainfo.argv)
 		for(size_t i=0; ainfo.argv[i]; i++) {
-			char* value=new(PointerFreeGC) char[strlen(ainfo.argv[i])+1];
-			strcpy(value, ainfo.argv[i]);
-	
 			fargv.put_dont_replace(
 				String(i, "%d"),
-				new VString(*new String(value, String::L_TAINTED))
+				new VString(*new String(pa_strdup(ainfo.argv[i]), String::L_TAINTED))
 			);
 		}
 }

@@ -26,7 +26,7 @@
 #include "pa_table.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.182 2021/10/19 16:16:35 moko Exp $";
+volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.183 2021/11/09 15:04:26 moko Exp $";
 
 // defines
 
@@ -421,11 +421,8 @@ static Value* parse_IFD_entry_formatted_value(bool is_big, ushort format, size_t
 		size_t length=components_count;
 		// Data format is "YYYY:MM:DD HH:MM:SS"+0x00, total 20bytes
 		if(length==JPEG_EXIF_DATE_CHARS && isdigit((unsigned char)cstr[0]) && cstr[length-1]==0) {
-			char cstr_writable[JPEG_EXIF_DATE_CHARS];
-			strcpy(cstr_writable, cstr);
-
 			try {
-				tm tmIn=cstr_to_time_t(cstr_writable, 0);
+				tm tmIn=cstr_to_time_t(pa_strdup(cstr), 0);
 				return new VDate(tmIn);
 			}
 			catch(...) { /*ignore bad date times*/ }
