@@ -17,7 +17,7 @@
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.68 2021/10/19 16:16:35 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.69 2021/11/09 21:19:16 moko Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -148,7 +148,8 @@ static void temp_curl(void (*action)(Request&, MethodParams&), Request& r, Metho
 		Temp_curl temp_curl;
 		action(r,params);
 	} else {
-		throw Exception("curl", 0, "failed to load curl library %s: %s", curl_library, curl_status);
+		const char *hint=strcmp(curl_library, "libcurl" LT_MODULE_EXT) ? "" : " (at first call ^curl:options[ $.library[correct.libcurl" LT_MODULE_EXT ".name] ])";
+		throw Exception("curl", 0, "failed to load curl library %s%s", curl_status, hint);
 	}
 }
 
