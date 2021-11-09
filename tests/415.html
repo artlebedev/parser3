@@ -1,6 +1,5 @@
 @main[]
-#^use[415_dir/1.p]
-$list[^file:list[415_dir]]
+$list[^file:list[415_dir;.*\.p]]
 ^list.sort{$list.name}
 ^list.menu{
     ${list.name}: ^try-catch{ ^use[415_dir/$list.name] }
