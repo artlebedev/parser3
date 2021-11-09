@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-volatile const char * IDENT_PA_XML_IO_C="$Id: pa_xml_io.C,v 1.42 2020/12/15 17:10:37 moko Exp $" IDENT_PA_XML_IO_H;
+volatile const char * IDENT_PA_XML_IO_C="$Id: pa_xml_io.C,v 1.43 2021/11/09 15:54:59 moko Exp $" IDENT_PA_XML_IO_H;
 
 #include "libxslt/extensions.h"
 
@@ -82,17 +82,12 @@ static void *xmlFileOpenMonitor(const char* afilename) {
 #endif
 
 	Request& r=pa_thread_request();
-	char adjust_buf[MAX_STRING];
 	if(!strncmp(afilename, "http://localhost", 16)) {
 		const char* document_root=r.request_info.document_root;
 		if(!document_root)
 			document_root=".";
-
-		adjust_buf[0]=0;
-		strcat(adjust_buf, document_root);
-		strcat(adjust_buf, &afilename[16]);
-		afilename=adjust_buf;
-	} else
+		afilename=pa_strcat(document_root, &afilename[16]);
+	} else {
 		if(!strstr(afilename, "http://")) {
 			if(strstr(afilename, "file://")) {
 				afilename+=7 /*strlen("file://")*/;
@@ -107,13 +102,14 @@ static void *xmlFileOpenMonitor(const char* afilename) {
 				return 0; // plug out [do not handle other prefixes]
 			}
 		}
+		afilename=pa_strdup(afilename);
+	}
 
-	const char* can_store_filename=pa_strdup(afilename);
-	add_dependency(can_store_filename);
+	add_dependency(afilename);
 
 	const char *buf;
 	try {
-		buf=file_load_text(r, *new String(can_store_filename), 
+		buf=file_load_text(r, *new String(afilename),
 			true /*fail_on_read_problem*/,
 			0 /*params*/,
 			false /*don't transcode result because it must be fit with @encoding value!*/);
