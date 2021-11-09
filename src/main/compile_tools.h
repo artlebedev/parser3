@@ -8,7 +8,7 @@
 #ifndef COMPILE_TOOLS
 #define COMPILE_TOOLS
 
-#define IDENT_COMPILE_TOOLS_H "$Id: compile_tools.h,v 1.115 2020/12/15 17:10:34 moko Exp $"
+#define IDENT_COMPILE_TOOLS_H "$Id: compile_tools.h,v 1.116 2021/11/09 14:21:04 moko Exp $"
 
 #include "pa_opcode.h"
 #include "pa_types.h"
@@ -87,7 +87,7 @@ public:
 	//@}
 	
 	/// output: filled input 'methods' and 'error' if any
-	char error[MAX_STRING];
+	const char *error;
 
 	Parse_control(Request& arequest, 
 		VStateless_class* aclass,
@@ -114,7 +114,8 @@ public:
 		ls_sp(0),
 		in_call_value(false),
 		explicit_result(false),
-		append(false) {
+		append(false),
+		error("") {
 
 		*cclasses+=aclass;
 	}

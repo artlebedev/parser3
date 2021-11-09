@@ -8,7 +8,7 @@
 	
 */
 
-volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.291 2021/11/08 11:44:19 moko Exp $";
+volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.292 2021/11/09 14:21:04 moko Exp $";
 
 /**
 	@todo parser4: 
@@ -62,16 +62,19 @@ static const VString vempty;
 #define POOL  (*PC.pool)
 #ifndef DOXYGEN
 
-#define CLASS_ADD if(PC.class_add()){				\
-	strncpy(PC.error, PC.cclass->type(), MAX_STRING/2);	\
-	strcat(PC.error, " - class is already defined");	\
-	YYERROR;						\
+#define CLASS_ADD if(PC.class_add()){						\
+	PC.error=pa_strcat(PC.cclass->type(), " - class is already defined");	\
+	YYERROR;								\
 }
 
-#define PC_ERROR(header, value, footer){			\
-	strcpy(PC.error, header);				\
-	strncat(PC.error, value, MAX_STRING/2);			\
-	strcat(PC.error, footer);				\
+#define YYERROR3(header, value, footer) {		\
+	PC.error=pa_strcat(header, value, footer);	\
+	YYERROR;					\
+}
+
+#define YYERROR1(value) {				\
+	PC.error=value;					\
+	YYERROR;					\
 }
 
 %}
@@ -157,10 +160,8 @@ control_method: '@' STRING '\n'
 				maybe_control_strings {
 	const String& command=LA2S(*$2)->trim(String::TRIM_END);
 	YYSTYPE strings_code=$4;
-	if(strings_code->count()<1*OPERATIONS_PER_OPVALUE) {
-		PC_ERROR("@", command.cstr(), " is empty");
-		YYERROR;
-	}
+	if(strings_code->count()<1*OPERATIONS_PER_OPVALUE)
+		YYERROR3("@", command.cstr(), " is empty");
 	if(command==CLASS_NAME) {
 		if(strings_code->count()==1*OPERATIONS_PER_OPVALUE) {
 			CLASS_ADD;
@@ -171,8 +172,7 @@ control_method: '@' STRING '\n'
 			PC.cclass_new=cclass;
 			PC.append=false;
 		} else {
-			strcpy(PC.error, "@" CLASS_NAME " must contain only one line with class name (contains more then one)");
-			YYERROR;
+			YYERROR1("@" CLASS_NAME " must contain only one line with class name (contains more then one)");
 		}
 	} else if(command==USE_CONTROL_METHOD_NAME) {
 		CLASS_ADD;
@@ -180,31 +180,23 @@ control_method: '@' STRING '\n'
 			PC.request.use_file(LA2S(*strings_code, i)->trim(String::TRIM_END), PC.request.get_used_filespec(PC.file_no), strings_code->get(i+1).origin);
 		}
 	} else if(command==BASE_NAME) {
-		if(PC.append){
-			PC_ERROR("can't set base while appending methods to class '", PC.cclass->type(), "'");
-			YYERROR;
-		}
+		if(PC.append)
+			YYERROR3("can't set base while appending methods to class '", PC.cclass->type(), "'");
 		CLASS_ADD;
-		if(PC.cclass->base_class()) { // already changed from default?
-			PC_ERROR("class already have a base '", PC.cclass->base_class()->type(), "'");
-			YYERROR;
-		}
+		if(PC.cclass->base_class()) // already changed from default?
+			YYERROR3("class already have a base '", PC.cclass->base_class()->type(), "'");
 		if(strings_code->count()==1*OPERATIONS_PER_OPVALUE) {
 			const String& base_name=LA2S(*strings_code)->trim(String::TRIM_END);
 			if(VStateless_class *base_class=PC.request.get_class(base_name)) {
 				// @CLASS == @BASE sanity check
-				if(PC.cclass==base_class) {
-					strcpy(PC.error, "@" CLASS_NAME " equals @" BASE_NAME);
-					YYERROR;
-				}
+				if(PC.cclass==base_class)
+					YYERROR1("@" CLASS_NAME " equals @" BASE_NAME);
 				PC.cclass->get_class()->set_base(base_class);
 			} else {
-				PC_ERROR("'", base_name.cstr(), "': undefined class in @" BASE_NAME);
-				YYERROR;
+				YYERROR3("'", base_name.cstr(), "': undefined class in @" BASE_NAME);
 			}
 		} else {
-			strcpy(PC.error, "@" BASE_NAME " must contain sole name");
-			YYERROR;
+			YYERROR1("@" BASE_NAME " must contain sole name");
 		}
 	} else if(command==OPTIONS_CONTROL_METHOD_NAME) {
 		for(size_t i=0; i<strings_code->count(); i+=OPERATIONS_PER_OPVALUE) {
@@ -214,30 +206,25 @@ control_method: '@' STRING '\n'
 			} else if(option==Symbols::PARTIAL_SYMBOL){
 				if(PC.cclass_new){
 					if(VStateless_class* existed=PC.get_existed_class(PC.cclass_new)){
-						if(!PC.reuse_existed_class(existed)){
-							PC_ERROR("can't append methods to '", PC.cclass_new->type(), "' - the class wasn't marked as partial");
-							YYERROR;
-						}
+						if(!PC.reuse_existed_class(existed))
+							YYERROR3("can't append methods to '", PC.cclass_new->type(), "' - the class wasn't marked as partial");
 					} else {
 						// marks the new class as partial. we will be able to add methods here later.
 						PC.cclass_new->set_partial();
 					}
 				} else {
-					strcpy(PC.error, "'partial' option should be used straight after @" CLASS_NAME);
-					YYERROR;
+					YYERROR1("'partial' option should be used straight after @" CLASS_NAME);
 				}
 			} else if(option==Symbols::STATIC_SYMBOL){
 				PC.set_methods_call_type(Method::CT_STATIC);
 			} else if(option==Symbols::DYNAMIC_SYMBOL){
 				PC.set_methods_call_type(Method::CT_DYNAMIC);
 			} else {
-				PC_ERROR("'", option.cstr(), "' invalid option. valid options are 'partial', 'locals', 'static' and 'dynamic'");
-				YYERROR;
+				YYERROR3("'", option.cstr(), "' invalid option. valid options are 'partial', 'locals', 'static' and 'dynamic'");
 			}
 		}
 	} else {
-		PC_ERROR("'", command.cstr(), "' invalid special name. valid names are '" CLASS_NAME "', '" USE_CONTROL_METHOD_NAME "', '" BASE_NAME "' and '" OPTIONS_CONTROL_METHOD_NAME "'.");
-		YYERROR;
+		YYERROR3("'", command.cstr(), "' invalid special name. valid names are '" CLASS_NAME "', '" USE_CONTROL_METHOD_NAME "', '" BASE_NAME "' and '" OPTIONS_CONTROL_METHOD_NAME "'.");
 	}
 };
 maybe_control_strings: empty | control_strings;
@@ -707,8 +694,7 @@ class_static_prefix: STRING ':' {
 		if(VStateless_class* base=PC.cclass->base_class()) {
 			change_string_literal_value(*$$, *new String(base->type()));
 		} else {
-			strcpy(PC.error, "no base class declared");
-			YYERROR;
+			YYERROR1("no base class declared");
 		}
 		code = OP::OP_VALUE__GET_BASE_CLASS;
 	} else {
@@ -722,10 +708,8 @@ class_static_prefix: STRING ':' {
 };
 class_constructor_prefix: class_static_prefix ':' {
 	$$=$1;
-	if(!PC.in_call_value) {
-		strcpy(PC.error, ":: not allowed here");
-		YYERROR;
-	}
+	if(!PC.in_call_value)
+		YYERROR1(":: not allowed here");
 	O(*$$, OP::OP_PREPARE_TO_CONSTRUCT_OBJECT);
 };
 
@@ -1617,7 +1601,7 @@ break2:
 }
 
 static int real_yyerror(Parse_control *pc, const char *s) {  // Called by yyparse on error
-	pa_strncpy(PC.error, s, MAX_STRING);
+	PC.error=s;
 	return 1;
 }
 
