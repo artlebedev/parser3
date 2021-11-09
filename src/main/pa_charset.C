@@ -11,7 +11,7 @@
 // we are using some pcre_internal.h stuff as well
 #include "../lib/pcre/pa_pcre_internal.h"
 
-volatile const char * IDENT_PA_CHARSET_C="$Id: pa_charset.C,v 1.109 2020/12/15 17:10:35 moko Exp $" IDENT_PA_CHARSET_H;
+volatile const char * IDENT_PA_CHARSET_C="$Id: pa_charset.C,v 1.110 2021/11/09 15:10:30 moko Exp $" IDENT_PA_CHARSET_H;
 
 #ifdef XML
 #include "libxml/encoding.h"
@@ -1246,7 +1246,7 @@ const char *fixUTF8(const char *src){
 			do {
 
 				if(error_offset){
-					strncpy(dst, src, error_offset);
+					memcpy(dst, src, error_offset);
 					dst+=error_offset;
 
 					src+=error_offset;
