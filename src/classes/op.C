@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.260 2020/12/17 16:50:53 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.261 2021/11/09 14:45:06 moko Exp $";
 
 // defines
 
@@ -861,7 +861,6 @@ static void _try_operator(Request& r, MethodParams& params) {
 		// no exception in try/catch, writing processed body_code or catch_code
 		r.write(result.processed_code);
 	}
-
 }
 
 static void _throw_operator(Request&, MethodParams& params) {
@@ -877,26 +876,22 @@ static void _throw_operator(Request&, MethodParams& params) {
 			if(Value* value=hash->get(exception_comment_part_name))
 				comment=value->as_string().cstr();
 
-			Exception e(type, source, 0);
-			e.add_comment(comment); // to avoid MAX_LENGTH limit
-			throw e;
+			throw Exception(type, source, "%s", comment); // to avoid MAX_STRING limit
 		} else
 			throw Exception(PARSER_RUNTIME, 0, "one-param version has hash or string param");
 	} else {
 		const char* type=params.as_string(0, "type must be string").cstr();
-		const String* source=params.count()>1? &params.as_string(1, "source must be string"):0;
-		const char* comment=params.count()>2? params.as_string(2, "comment must be string").cstr():0;
-		Exception e(type, source, 0);
-		e.add_comment(comment); // to avoid MAX_LENGTH limit
-		throw e;
+		const String* source=params.count()>1 ? &params.as_string(1, "source must be string") : 0;
+		const char* comment=params.count()>2 ? params.as_string(2, "comment must be string").cstr() : 0;
+		throw Exception(type, source, "%s", comment); // to avoid MAX_STRING limit
 	}
- }
+}
 
 static void _sleep_operator(Request& r, MethodParams& params) {
 	double seconds=params.as_double(0, "seconds must be double", r);
 	if(seconds>0)
 		pa_sleep((int)trunc(seconds), (int)trunc((seconds-trunc(seconds))*1000000));
- }
+}
 
 #if defined(WIN32) && defined(_DEBUG) && !defined(_WIN64)
 #	define PA_BPT

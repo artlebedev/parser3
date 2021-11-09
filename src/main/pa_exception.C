@@ -10,7 +10,7 @@
 #include "pa_sapi.h"
 #include "pa_globals.h"
 
-volatile const char * IDENT_PA_EXCEPTION_C="$Id: pa_exception.C,v 1.57 2020/12/15 17:10:36 moko Exp $" IDENT_PA_EXCEPTION_H;
+volatile const char * IDENT_PA_EXCEPTION_C="$Id: pa_exception.C,v 1.58 2021/11/09 14:45:07 moko Exp $" IDENT_PA_EXCEPTION_H;
 
 // methods
 
@@ -33,14 +33,20 @@ Exception::Exception(const char* atype, const String* aproblem_source, const cha
 	ftype=atype;
 	fproblem_source=aproblem_source ? new String(*aproblem_source) : 0;
 
-	if(comment_fmt) {
+	if(!comment_fmt) {
+		fcomment=0;
+	} else if (!strcmp(comment_fmt, "%s")) { // to avoid MAX_STRING limit
+		va_list args;
+		va_start(args, comment_fmt);
+		fcomment=va_arg(args, const char *);
+		va_end(args);
+	} else {
 		char comment[MAX_STRING];
 		va_list args;
 		va_start(args, comment_fmt);
 		fcomment=pa_strdup(comment, vsnprintf(comment, MAX_STRING, comment_fmt, args));
 		va_end(args);
-	} else
-		fcomment=0;
+	}
 }
 
 void Exception::add_comment(const char* acomment) {
