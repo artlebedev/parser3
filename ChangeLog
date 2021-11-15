@@ -1,3 +1,50 @@
+2021-11-10  moko
+
+	* tests/results/415.processed: more syntax errors tests added
+
+	* tests/415_dir/: 20.p, 21.p, 22.p, 23.p, 24.p, 25.p, 26.p, 27.p,
+	  28.p: minor syntax error tests
+
+	* src/main/pa_exception.C: pa_strdup added for compatibility
+
+	* src/classes/curl.C: hint to call ^curl:options[
+	  $.library[correct.libcurl.so.name] ] added if default load fails.
+
+2021-11-09  moko
+
+	* src/main/compile.y: error message can be on stack
+
+	* src/main/pa_xml_io.C: strcat replaced with pa_strcat
+
+	* src/main/pa_charset.C: memcpy is more correct and efficient in
+	  this case then strncpy
+
+	* src/: classes/image.C, types/pa_vrequest.C: pa_strdup used
+	  instead of strcpy where possible
+
+	* src/: classes/op.C, main/pa_exception.C: "%s" format now can be
+	  used to avoid MAX_STRING limit in Exception comment
+
+	* tests/results/415.processed: compiler exceptions are no longer
+	  limited to MAX_STRING
+
+	* src/main/: compile.y, compile_tools.h: Parse_control uses const
+	  char * instead of fixed buffer
+
+	* tests/: 415.html, 415_dir/01.p, 415_dir/02.p, 415_dir/03.p,
+	  415_dir/04.p, 415_dir/05.p, 415_dir/06.p, 415_dir/07.p,
+	  415_dir/08.p, 415_dir/09.p, 415_dir/10.p, 415_dir/11.p,
+	  415_dir/12.p, 415_dir/13.p, 415_dir/14.p, 415_dir/15.p,
+	  results/415.processed: tests for parser.compile exceptions added
+
+2021-11-08  moko
+
+	* src/: classes/math.C, include/pa_common.h, main/compile.y,
+	  main/pa_common.C, main/pa_dir.C, main/pa_exec.C, main/pa_http.C,
+	  targets/cgi/parser3.C, targets/isapi/parser3isapi.C,
+	  types/pa_vdate.C: pa_strncpy added ans used to avoid strncpy
+	  drawbacks
+
 2021-11-06  moko
 
 	* src/classes/inet.C: ^inet:hostname[] added by sumo@ patch
