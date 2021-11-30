@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.344 2021/11/08 11:44:20 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.345 2021/11/30 16:18:26 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -392,7 +392,7 @@ static void httpd_mode() {
 #endif
 		try {
 			HTTPD_Connection connection;
-			if(!connection.accept(sock, 5))
+			if(!connection.accept(sock, 500))
 				continue;
 
 			switch (HTTPD_Server::mode) {
