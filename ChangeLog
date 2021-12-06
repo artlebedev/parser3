@@ -1,3 +1,8 @@
+2021-11-30  moko
+
+	* src/targets/cgi/parser3.C: default sock_ready interval changed to
+	  0.5 sec
+
 2021-11-10  moko
 
 	* tests/results/415.processed: more syntax errors tests added
