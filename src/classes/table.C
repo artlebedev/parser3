@@ -25,7 +25,7 @@
 #include "pa_vbool.h"
 #include "pa_array.h"
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.358 2020/12/30 10:16:53 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.359 2021/12/21 14:24:54 moko Exp $";
 
 // class
 
@@ -1441,6 +1441,7 @@ static void _columns(Request& r, MethodParams& params) {
 }
 
 static void _select(Request& r, MethodParams& params) {
+	InCycle temp(r);
 	Value& vcondition=params.as_expression(0, "condition must be number, bool or expression");
 
 	Table& source_table=GET_SELF(r, VTable).table();
@@ -1483,6 +1484,9 @@ static void _select(Request& r, MethodParams& params) {
 
 				bool condition=r.process(vcondition).as_bool();
 
+				if(r.check_skip_break())
+					break;
+
 				if(condition && ++appended > (size_t)offset) // ...condition is true, adding to the result
 					result_table+=source_table[row];
 				if(row==0) break;
@@ -1492,6 +1496,9 @@ static void _select(Request& r, MethodParams& params) {
 				source_table.set_current(row);
 
 				bool condition=r.process(vcondition).as_bool();
+
+				if(r.check_skip_break())
+					break;
 
 				if(condition && ++appended > (size_t)offset) // ...condition is true, adding to the result
 					result_table+=source_table[row];

@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.153 2021/11/05 21:25:38 moko Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.154 2021/12/21 14:24:54 moko Exp $";
 
 // class
 
@@ -622,6 +622,7 @@ static void _at(Request& r, MethodParams& params) {
 extern String table_reverse_name;
 
 static void _select(Request& r, MethodParams& params) {
+	InCycle temp(r);
 	const String* key_var_name=&params.as_string(0, "key-var name must be string");
 	const String* value_var_name=&params.as_string(1, "value-var name must be string");
 	Value& vcondition=params.as_expression(2, "condition must be number, bool or expression");
@@ -658,6 +659,7 @@ static void _select(Request& r, MethodParams& params) {
 	HashStringValue& result_hash=*new HashStringValue();
 
 	if(limit>0){
+
 #ifdef HASH_ORDER
 		if(reverse){
 			for(HashStringValue::ReverseIterator i(source_hash); i; i.prev()){
@@ -666,7 +668,12 @@ static void _select(Request& r, MethodParams& params) {
 				if(value_var_name)
 					r.put_element(caller, *value_var_name, i.value());
 
-				if(r.process(vcondition).as_bool()){
+				bool condition=r.process(vcondition).as_bool();
+
+				if(r.check_skip_break())
+					break;
+
+				if(condition){
 					result_hash.put(i.key(), i.value());
 					if(!--limit)
 						break;
@@ -682,7 +689,12 @@ static void _select(Request& r, MethodParams& params) {
 				if(value_var_name)
 					r.put_element(caller, *value_var_name, i.value());
 
-				if(r.process(vcondition).as_bool()){
+				bool condition=r.process(vcondition).as_bool();
+
+				if(r.check_skip_break())
+					break;
+
+				if(condition){
 					result_hash.put(i.key(), i.value());
 					if(!--limit)
 						break;
