@@ -1,0 +1,22 @@
+@main[]
+$h[
+ $.1[1]
+ $.2[2]
+ $.3[3]
+ $.4[4]
+ $.5[5]
+]
+
+$t[^table::create{v
+1
+2
+3
+4
+5
+}]
+
+^for[limit](0;5){
+    $limit
+    ^json:string[^h.select[k;v]($v<=$limit || ^break[])[ $.limit[4] ]]
+    ^json:string[^t.select($t.v<=$limit || !^break[])[ $.limit[4] ]]
+}
