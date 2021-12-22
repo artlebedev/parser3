@@ -14,14 +14,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.119 2021/11/08 11:44:20 moko Exp $" IDENT_PA_HTTP_H; 
-
-#ifdef _MSC_VER
-#include <windows.h>
-#define socklen_t int
-#else
-#define closesocket close
-#endif
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.120 2021/12/22 21:52:49 moko Exp $" IDENT_PA_HTTP_H; 
 
 // defines
 
@@ -113,7 +106,7 @@ public:
 		buf=(char *)pa_realloc(buf, size + 1);
 	}
 
-	bool read(int sock, size_t size){
+	bool read(SOCKET sock, size_t size){
 		if(length + size > buf_size)
 			resize(buf_size * 2 + size);
 		ssize_t received_size=recv(sock, buf + length, size, 0);
@@ -189,7 +182,7 @@ public:
 		}
 	}
 
-	int read_response(int sock, bool fail_on_status_ne_200);
+	int read_response(SOCKET sock, bool fail_on_status_ne_200);
 };
 
 enum HTTP_response_state {
@@ -198,7 +191,7 @@ enum HTTP_response_state {
 	HTTP_BODY
 };
 
-int HTTP_response::read_response(int sock, bool fail_on_status_ne_200) {
+int HTTP_response::read_response(SOCKET sock, bool fail_on_status_ne_200) {
 	HTTP_response_state state=HTTP_STATUS_CODE;
 	int result=0;
 
@@ -276,13 +269,13 @@ static int http_request(HTTP_response& response, const char* host, short port, c
 	if(!host)
 		throw Exception("http.host", 0, "zero hostname");  //never
 
-	volatile int sock=-1; // to prevent makeing it register variable, because it will be clobbered by longjmp [thanks gcc warning]
+	volatile SOCKET sock=INVALID_SOCKET; // to prevent makeing it register variable, because it will be clobbered by longjmp [thanks gcc warning]
 		
 #ifdef PA_USE_ALARM
 	if(PA_NO_THREADS) signal(SIGALRM, timeout_handler);
 	if(PA_NO_THREADS && sigsetjmp(timeout_env, 1)) {
 		// duplicating closesocket to make code more simple for old compilers
-		if(sock>=0)
+		if(sock != INVALID_SOCKET)
 			closesocket(sock);
 		throw Exception("http.timeout", 0, "timeout occurred while retrieving document");
 		return 0; // never
@@ -297,7 +290,7 @@ static int http_request(HTTP_response& response, const char* host, short port, c
 			if(!set_addr(&dest, host, port))
 				throw Exception("http.host", 0, "can not resolve hostname \"%s\"", host); 
 			
-			if((sock=socket(AF_INET, SOCK_STREAM, IPPROTO_TCP/*0*/))<0) {
+			if((sock=socket(AF_INET, SOCK_STREAM, IPPROTO_TCP/*0*/)) == INVALID_SOCKET) {
 				int no=pa_socks_errno();
 				throw Exception("http.connect", 0, "can not make socket: %s (%d)", pa_socks_strerr(no), no); 
 			}
@@ -332,7 +325,7 @@ static int http_request(HTTP_response& response, const char* host, short port, c
 			return result;
 		} catch(...) {
 			ALARM(0);
-			if(sock>=0)
+			if(sock != INVALID_SOCKET)
 				closesocket(sock);
 			rethrow;
 		}
@@ -932,7 +925,7 @@ enum EscapeState {
 
 static bool check_uri(const char *uri){
 	EscapeState state=Initial;
-	uint escapedValue;
+	uint escapedValue=0;
 
 	const char *pattern="/../";
 	const char *pos=pattern;
@@ -991,9 +984,9 @@ public:
 
 	HTTPD_request() : HTTP_response(), method(NULL), uri(NULL){};
 
-	ssize_t pa_recv(int sockfd, char *buf, size_t len);
+	ssize_t pa_recv(SOCKET sockfd, char *buf, size_t len);
 
-	bool read(int sock, size_t size){
+	bool read(SOCKET sock, size_t size){
 		if(length + size > buf_size)
 			resize(buf_size * 2 + size);
 		ssize_t received_size=pa_recv(sock, buf + length, size);
@@ -1028,8 +1021,8 @@ public:
 	}
 
 
-	bool read_header(int);
-	size_t read_post(int, char *, size_t);
+	bool read_header(SOCKET);
+	size_t read_post(SOCKET, char *, size_t);
 };
 
 enum HTTPD_request_state {
@@ -1037,7 +1030,7 @@ enum HTTPD_request_state {
 	HTTPD_HEADERS
 };
 
-ssize_t HTTPD_request::pa_recv(int sockfd, char *buffer, size_t len){
+ssize_t HTTPD_request::pa_recv(SOCKET sockfd, char *buffer, size_t len){
 	LOG(pa_log("httpd [%d] recv %d appending to %d ...", sockfd, len, length));
 
 #ifdef PA_USE_ALARM
@@ -1073,7 +1066,7 @@ static bool valid_http_method(const char * method){
 	);
 }
 
-bool HTTPD_request::read_header(int sock) {
+bool HTTPD_request::read_header(SOCKET sock) {
 	enum HTTPD_request_state state = HTTPD_METHOD;
 
 	size_t chunk_size = 0x400*4;
@@ -1120,7 +1113,7 @@ bool HTTPD_request::read_header(int sock) {
 	return true;
 }
 
-size_t HTTPD_request::read_post(int sock, char *body, size_t max_bytes) {
+size_t HTTPD_request::read_post(SOCKET sock, char *body, size_t max_bytes) {
 	size_t total_read = min(length - body_offset, max_bytes);
 	memcpy(body, buf + body_offset, total_read);
 
@@ -1184,25 +1177,26 @@ size_t HTTPD_Connection::send_body(const void *buf, size_t size) {
 }
 
 HTTPD_Connection::~HTTPD_Connection(){
-	if(sock != -1){
+	if(sock != INVALID_SOCKET){
 		LOG(pa_log("httpd [%d] closed", sock));
 		closesocket(sock);
 	}
 }
 
-static int sock_ready(int fd,int operation,int timeout_value){
+static int sock_ready(SOCKET fd, int operation, int timeout_value){
 	struct timeval timeout = {0, timeout_value * 1000};
 	fd_set fds;
 	FD_ZERO(&fds);
 	FD_SET(fd, &fds);
+	int nfds = (int)fd + 1; /* typecast as nfds is ignored in MSVC anyway */
 	switch (operation){
-		case 0: return select(fd + 1, &fds, NULL, NULL, &timeout)>0;  /* read */
-		case 1: return select(fd + 1, NULL, &fds, NULL, &timeout)>0;  /* write */
-		default: return select(fd + 1, &fds, &fds, NULL, &timeout)>0;  /* both */
+		case 0: return select(nfds, &fds, NULL, NULL, &timeout)>0;  /* read */
+		case 1: return select(nfds, NULL, &fds, NULL, &timeout)>0;  /* write */
+		default: return select(nfds, &fds, &fds, NULL, &timeout)>0;  /* both */
 	}
 }
 
-bool HTTPD_Connection::accept(int server_sock, int timeout_value) {
+bool HTTPD_Connection::accept(SOCKET server_sock, int timeout_value) {
 	int ready = sock_ready(server_sock, 0, timeout_value);
 	if (ready < 0) {
 		int no=pa_socks_errno();
@@ -1218,7 +1212,7 @@ bool HTTPD_Connection::accept(int server_sock, int timeout_value) {
 	memset(&addr, 0, sock_addr_len);
 
 	sock = ::accept(server_sock, (struct sockaddr *)&addr, &sock_addr_len);
-	if(server_sock == -1){
+	if(sock == INVALID_SOCKET){
 		int no=pa_socks_errno();
 		throw Exception("httpd.accept", 0, "error accepting connection: %s (%d)", pa_socks_strerr(no), no);
 	}
@@ -1244,7 +1238,7 @@ void HTTPD_Server::set_mode(const String &value){
 #endif
 }
 
-int HTTPD_Server::bind(const char *host_port){
+SOCKET HTTPD_Server::bind(const char *host_port){
 	struct sockaddr_in me;
 
 	port = strchr(host_port, ':');
@@ -1263,9 +1257,9 @@ int HTTPD_Server::bind(const char *host_port){
 		me.sin_addr.s_addr=INADDR_ANY;
 	}
 
-	int sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP/*0*/);
+	SOCKET sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP/*0*/);
 
-	if(sock < 0){
+	if(sock == INVALID_SOCKET){
 		int no=pa_socks_errno();
 		throw Exception("httpd.bind", 0, "can not make socket: %s (%d)", pa_socks_strerr(no), no);
 	}

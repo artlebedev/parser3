@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.345 2021/11/30 16:18:26 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.346 2021/12/22 21:52:49 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -378,7 +378,7 @@ static void *connection_thread(void *arg){
 static void httpd_mode() {
 	config_handler(*sapiInfo);
 
-	int sock = HTTPD_Server::bind(httpd_host_port);
+	SOCKET sock = HTTPD_Server::bind(httpd_host_port);
 
 #ifdef SIGPIPE
 	signal(SIGPIPE, SIG_IGN);
@@ -400,7 +400,7 @@ static void httpd_mode() {
 #ifdef _MSC_VER
 					if (!GC_CreateThread(0, 0, connection_thread, new HTTPD_Connection(connection), 0, 0))
 						throw Exception("httpd.fork", 0, "thread creation failed");
-					connection.sock = -1;
+					connection.sock=INVALID_SOCKET;
 					break;
 #else
 #ifdef HAVE_TLS
@@ -411,7 +411,7 @@ static void httpd_mode() {
 
 					if(int result=GC_pthread_create(&thread, &attr, connection_thread, new HTTPD_Connection(connection)))
 						throw Exception("httpd.fork", 0, "thread creation failed (%d)", result);
-					connection.sock=-1;
+					connection.sock=INVALID_SOCKET;
 					break;
 #endif
 				case HTTPD_Server::PARALLEL:

@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.190 2021/11/08 11:44:19 moko Exp $"
+#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.191 2021/12/22 21:52:49 moko Exp $"
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -243,7 +243,7 @@ void back_slashes_to_slashes(char *s);
 
 size_t strpos(const char *str, const char *substr);
 
-int remove_crlf(char *start, char *end);
+size_t remove_crlf(char *start, char *end);
 
 inline bool pa_isalpha(unsigned char c) { return (((c>='A') && (c<='Z')) || ((c>='a') && (c<='z'))); }
 inline bool pa_isalnum(unsigned char c) { return (((c>='0') && (c<='9')) || pa_isalpha(c)); }

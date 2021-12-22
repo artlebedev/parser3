@@ -29,7 +29,7 @@
 #define pa_mkdir(path, mode) mkdir(path, mode)
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.325 2021/11/08 11:44:19 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.326 2021/12/22 21:52:49 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -116,7 +116,7 @@ struct File_read_action_info {
 
 static void file_read_action(struct stat& finfo, int f, const String& file_spec, void *context) {
 	File_read_action_info& info = *static_cast<File_read_action_info *>(context); 
-	size_t to_read_size = check_file_size(info.limit && info.limit < finfo.st_size ? info.limit : finfo.st_size, &file_spec);
+	size_t to_read_size = check_file_size(info.limit && info.limit < (size_t)finfo.st_size ? info.limit : (size_t)finfo.st_size, &file_spec);
 	if(to_read_size) {
 		if(info.offset)
 			 pa_lseek(f, info.offset, SEEK_SET); // seek never fails as POSIX allows the file offset to be set beyond the EOF
@@ -912,7 +912,7 @@ size_t strpos(const char *str, const char *substr) {
 	return (p==0)?STRING_NOT_FOUND:p-str;
 }
 
-int remove_crlf(char* start, char* end) {
+size_t remove_crlf(char* start, char* end) {
 	char* from=start;
 	char* to=start;
 	bool skip=false;

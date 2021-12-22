@@ -8,7 +8,7 @@
 #ifndef PA_HTTP_H
 #define PA_HTTP_H
 
-#define IDENT_PA_HTTP_H "$Id: pa_http.h,v 1.32 2020/12/19 22:34:21 moko Exp $"
+#define IDENT_PA_HTTP_H "$Id: pa_http.h,v 1.33 2021/12/22 21:52:49 moko Exp $"
 
 #include "pa_vstring.h"
 #include "pa_vint.h"
@@ -19,6 +19,15 @@
 #include "pa_request.h"
 
 #define HTTP_COOKIES_NAME "cookies"
+
+#ifdef _MSC_VER
+#include <windows.h>
+#define socklen_t int
+#else
+#define closesocket close
+#define INVALID_SOCKET -1
+typedef int SOCKET;
+#endif
 
 #ifndef DOXYGEN
 struct File_read_http_result {
@@ -77,11 +86,11 @@ class HTTPD_request;
 
 class HTTPD_Connection : public PA_Allocated {
 public:
-	int sock;
+	SOCKET sock;
 	const char *remote_addr;
 	HTTPD_request *request;
 
-	HTTPD_Connection() : sock(-1), remote_addr(NULL), request(NULL){}
+	HTTPD_Connection() : sock(INVALID_SOCKET), remote_addr(NULL), request(NULL){}
 	~HTTPD_Connection();
 
 	Array<HTTP_Headers::Header> &headers();
@@ -100,7 +109,7 @@ public:
 		return NULL;
 	}
 
-	bool accept(int, int);
+	bool accept(SOCKET, int);
 	bool read_header();
 	size_t read_post(char *, size_t);
 	size_t send_body(const void *, size_t);
@@ -116,7 +125,7 @@ public:
 	static const char *port;
 
 	static void set_mode(const String&);
-	static int bind(const char *);
+	static SOCKET bind(const char *);
 };
 
 #endif
