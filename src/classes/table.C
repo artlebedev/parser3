@@ -25,7 +25,7 @@
 #include "pa_vbool.h"
 #include "pa_array.h"
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.359 2021/12/21 14:24:54 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.360 2021/12/22 21:59:50 moko Exp $";
 
 // class
 
@@ -918,7 +918,6 @@ static Table2hash_distint get_distinct(Value& vdistinct, Table2hash_value_type& 
 static void _hash(Request& r, MethodParams& params) {
 	Table& self_table=GET_SELF(r, VTable).table();
 	VHash& result=*new VHash;
-	Table::columns_type columns=self_table.columns();
 
 	Table2hash_distint distinct=D_ILLEGAL;
 	Table2hash_value_type value_type=C_HASH;

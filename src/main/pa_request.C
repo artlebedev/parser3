@@ -34,7 +34,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.415 2021/01/02 23:01:11 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.416 2021/12/22 21:59:50 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -787,9 +787,9 @@ static void parse_range(const String* s, Array<Range> &ar) {
 		while(*p==' ' || *p=='\t') p++;
 
 		if(*p >= '0' && *p <= '9'){
-			const char *s=p;
+			const char *n=p;
 			while(*p>='0' && *p<='9') p++;
-			r.start = pa_atoul(pa_strdup(s,p-s));
+			r.start = pa_atoul(pa_strdup(n, p-n));
 		}
 
 		while(*p==' ' || *p=='\t') p++;
@@ -799,9 +799,9 @@ static void parse_range(const String* s, Array<Range> &ar) {
 		while(*p==' ' || *p=='\t') p++;
 
 		if(*p >= '0' && *p <= '9'){
-			const char *s=p;
+			const char *n=p;
 			while(*p>='0' && *p<='9') p++;
-			r.end = pa_atoul(pa_strdup(s,p-s));
+			r.end = pa_atoul(pa_strdup(n, p-n));
 		}
 
 		while(*p==' ' || *p=='\t') p++;
