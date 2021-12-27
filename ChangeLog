@@ -1,3 +1,22 @@
+2021-12-24  moko
+
+	* tests/: 415_dir/29.p, results/415.processed: yet another test
+
+2021-12-23  moko
+
+	* src/: classes/table.C, main/pa_request.C: warnings war
+
+	* src/: include/pa_common.h, include/pa_http.h, main/pa_common.C,
+	  main/pa_http.C, targets/cgi/parser3.C: MSVC SOCKET warnings war
+
+2021-12-21  moko
+
+	* tests/: 416.html, results/416.processed: test for ^break[] in
+	  ^hash/table.select[] (related to feature #1222)
+
+	* src/classes/: hash.C, table.C: ^break[] support for
+	  ^hash/table.select[] (implements feature #1222)
+
 2021-11-30  moko
 
 	* src/targets/cgi/parser3.C: default sock_ready interval changed to
