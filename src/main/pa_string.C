@@ -12,7 +12,7 @@
 #include "pa_charset.h"
 #include "pa_vregex.h"
 
-volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.266 2020/12/15 17:10:37 moko Exp $" IDENT_PA_STRING_H;
+volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.267 2021/12/28 15:58:31 moko Exp $" IDENT_PA_STRING_H;
 
 const String String::Empty;
 
@@ -661,6 +661,7 @@ Table* String::match(VRegex* vregex, Row_action row_action, void *info, int& mat
 	int prestart=0;
 	int poststart=0;
 	int postfinish=length();
+	int action_was_executed=-1;
 	while(true) {
 		int exec_result=vregex->exec(subject, subject_length, ovector, ovector_size, prestart);
 
@@ -670,8 +671,9 @@ Table* String::match(VRegex* vregex, Row_action row_action, void *info, int& mat
 		int prefinish=ovector[0];
 		poststart=ovector[1];
 
-		if (prestart==poststart && subject[poststart]=='\n'){
+		if (prestart==poststart && action_was_executed==1){
 			prestart++;
+			action_was_executed=0;
 			continue;
 		}
 
@@ -692,12 +694,13 @@ Table* String::match(VRegex* vregex, Row_action row_action, void *info, int& mat
 		}
 		
 		matches_count++;
-		row_action(table, row, prestart, prefinish, poststart, postfinish, info);
+		row_action(table, row, prestart - !action_was_executed, prefinish, poststart, postfinish, info);
 
-		if(!global || prestart==poststart) // last step
+		if(!global) // last step
 			break;
 
 		prestart=poststart;
+		action_was_executed=1;
 	}
 
 	row_action(table, 0/*last time, no raw*/, 0, 0, poststart, postfinish, info);
