@@ -1,3 +1,11 @@
+2021-12-28  moko
+
+	* tests/: 417.html, results/417.processed: test for empty string
+	  match added (related to bug #1224)
+
+	* src/main/pa_string.C: empty string match now works (fixes bug
+	  #1224)
+
 2021-12-24  moko
 
 	* tests/: 415_dir/29.p, results/415.processed: yet another test
