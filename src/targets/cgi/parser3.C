@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.346 2021/12/22 21:52:49 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.347 2022/01/26 17:04:46 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -50,7 +50,7 @@ static const char* filespec_to_process = 0; // [file]
 static const char* httpd_host_port = 0; // -p option
 static const char* config_filespec = 0; // -f option or from env or next to the executable if exists
 static bool mail_received = false; // -m option? [asked to parse incoming message to $mail:received]
-static char* parser3_filespec = 0; // argv[0]
+static const char* parser3_filespec = 0; // argv[0]
 static char** argv_extra = NULL;
 
 // for error logging
@@ -599,7 +599,7 @@ int main(int argc, char *argv[]) {
 	log("main: entry");
 #endif
 
-	parser3_filespec = argv[0];
+	parser3_filespec = argc ? argv[0] : "parser3";
 	umask(2);
 
 	// were we started as CGI?
@@ -625,7 +625,7 @@ int main(int argc, char *argv[]) {
 				char c = carg[k];
 				switch (c) {
 					case 'h':
-						usage(argv[0]);
+						usage(parser3_filespec);
 						break;
 					case 'f':
 						if(optind < argc - 1){
@@ -645,8 +645,8 @@ int main(int argc, char *argv[]) {
 						break;
 #endif
 					default:
-						fprintf(stderr, "%s: invalid option '%c'\n", argv[0], c);
-						usage(argv[0]);
+						fprintf(stderr, "%s: invalid option '%c'\n", parser3_filespec, c);
+						usage(parser3_filespec);
 						break;
 				}
 			}
@@ -655,16 +655,16 @@ int main(int argc, char *argv[]) {
 		
 		if (optind > argc - 1) {
 			if(!httpd_host_port) {
-				fprintf(stderr, "%s: file not specified\n", argv[0]);
-				usage(argv[0]);
+				fprintf(stderr, "%s: file not specified\n", parser3_filespec);
+				usage(parser3_filespec);
 			}
 		} else {
 			raw_filespec_to_process=argv[optind];
 		}
 
 		if (httpd_host_port && mail_received) {
-				fprintf(stderr, "%s: -p and -m options should not be used together\n", argv[0]);
-				usage(argv[0]);
+				fprintf(stderr, "%s: -p and -m options should not be used together\n", parser3_filespec);
+				usage(parser3_filespec);
 		}
 
 		argv_extra=argv + optind;
