@@ -1,3 +1,11 @@
+2022-03-21  moko
+
+	* src/main/pa_charset.C: bugfix: +static xml_encoding_handlers as
+	  xmlInitCharEncodingHandlers is called in libxml static
+	  initializers before gc_substitute_memory_management_functions in
+	  pa_globals and thus gc may not see reference to our
+	  xmlCharEncodingHandler and free it.
+
 2022-01-26  moko
 
 	* src/targets/cgi/parser3.C: argv[0] -> parser3_filespec
