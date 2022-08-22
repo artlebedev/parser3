@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.155 2022/08/22 20:03:12 moko Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.156 2022/08/22 20:06:32 moko Exp $";
 
 // class
 
@@ -252,15 +252,15 @@ static void copy_intersection_by_self(HashStringValue::key_type key, HashStringV
 static void _intersection(Request& r, MethodParams& params) {
 	Value& result=*new VHash;
 
-	bool order_by_arg=true;
+	bool order_by_arg=false;
 	if(params.count()>1)
 		if(HashStringValue* options=params.as_hash(1, "options")) {
 			int valid_options=0;
 			if(Value* vorder=options->get("order")) {
 				const String &sorder=r.process(*vorder).as_string();
-				if(sorder == "self")
-					order_by_arg=false;
-				else if(sorder != "arg")
+				if(sorder == "arg")
+					order_by_arg=true;
+				else if(sorder != "self")
 					throw Exception(PARSER_RUNTIME, &sorder, "'order' must be 'self' or 'arg'");
 				valid_options++;
 			}
