@@ -17,9 +17,10 @@
 #include "pa_random.h"
 #include "pa_vdate.h"
 #include "pa_vfile.h"
+#include "pa_vtable.h"
 #include "pa_uue.h"
 
-volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.139 2021/10/19 16:16:36 moko Exp $" IDENT_PA_VMAIL_H;
+volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.140 2022/08/22 22:04:48 moko Exp $" IDENT_PA_VMAIL_H;
 
 #ifdef WITH_MAILRECEIVE
 extern "C" {
@@ -32,6 +33,7 @@ extern "C" {
 // defines
 
 #define RAW_NAME "raw"
+#define TABLES_NAME "tables"
 
 // internals
 
@@ -106,9 +108,47 @@ static void putReceived(HashStringValue& received, const char* name, time_t valu
 		received.put(pa_strdup(name), new VDate(value) );
 }
 
+struct Field2received_info {
+	HashStringValue *hash;
+	HashStringValue *tables;
+
+	Field2received_info(HashStringValue& part){
+		VHash* vhash(new VHash);
+		VHash* vtables(new VHash);
+		putReceived(part, RAW_NAME, vhash);
+		putReceived(part, TABLES_NAME, vtables);
+		hash=&vhash->hash();
+		tables=&vtables->hash();
+	}
+};
+
+
 static void MimeHeaderField2received(const char* name, const char* value, gpointer data) {
-	HashStringValue* received=static_cast<HashStringValue*>(data);
-	putReceived(*received, name, value, true /*capitalizeName*/);
+	Field2received_info* info=static_cast<Field2received_info*>(data);
+
+	if(name && value){
+		name = capitalize(pa_strdup(name));
+		String *svalue = new String(pa_strdup(value), String::L_TAINTED);
+
+		info->hash->put(name, new VString(*svalue));
+
+		// tables
+		Value* vtable=info->tables->get(name);
+		if(!vtable) {
+			// first appearence
+			Table::columns_type columns(new ArrayString(1));
+			*columns+=new String("field");
+
+			vtable=new VTable(new Table(columns));
+			info->tables->put(name, vtable);
+		}
+		Table& table=*vtable->get_table();
+
+		// this string becomes next row
+		Table::element_type row(new ArrayString(1));
+		*row+=svalue;
+		table+=row;
+	}
 }
 
 static void parse(Request& r, GMimeMessage *message, HashStringValue& received);
@@ -224,9 +264,8 @@ static void MimePart2body(GMimeObject *parent, GMimeObject *part, gpointer data)
 		HashStringValue& partHash=vpartHash->hash();
 
 		// $.raw[
-		VHash* vraw(new VHash);
-		putReceived(partHash, RAW_NAME, vraw);
-		g_mime_header_list_foreach(part->headers, MimeHeaderField2received, &vraw->hash());
+		Field2received_info f2r_info(partHash);
+		g_mime_header_list_foreach(part->headers, MimeHeaderField2received, &f2r_info);
 
 		// $.content-type[
 		VHash* vcontent_type(new VHash);
@@ -289,8 +328,8 @@ static void parse(Request& r, GMimeMessage *message, HashStringValue& received) 
 		//  user headers
 		{
 			// $.raw[
-			VHash* vraw(new VHash);  putReceived( received, RAW_NAME, vraw);
-			g_mime_header_list_foreach(g_mime_object_get_header_list(GMIME_OBJECT(message)), MimeHeaderField2received, &vraw->hash());
+			Field2received_info f2r_info(received);
+			g_mime_header_list_foreach(g_mime_object_get_header_list(GMIME_OBJECT(message)), MimeHeaderField2received, &f2r_info);
 		}
 
 		//  secondly standard headers
@@ -503,6 +542,7 @@ static void store_message_element(HashStringValue::key_type raw_element_name, Ha
 		|| low_element_name==CHARSET_NAME
 		|| low_element_name==VALUE_NAME
 		|| low_element_name==RAW_NAME
+		|| low_element_name==TABLES_NAME
 		|| low_element_name==FORMAT_NAME
 		|| low_element_name==NAME_NAME
 		|| low_element_name==CID_NAME
