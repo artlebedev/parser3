@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.154 2021/12/21 14:24:54 moko Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.155 2022/08/22 20:03:12 moko Exp $";
 
 // class
 
@@ -238,19 +238,46 @@ struct Copy_intersection_to_info {
 	HashStringValue* dest;
 };
 #endif
-static void copy_intersection_to(HashStringValue::key_type key, HashStringValue::value_type value, Copy_intersection_to_info *info) {
+
+static void copy_intersection_by_arg(HashStringValue::key_type key, HashStringValue::value_type, Copy_intersection_to_info *info) {
+	if(HashStringValue::value_type value=info->b->get(key))
+		info->dest->put_dont_replace(key, value);
+}
+
+static void copy_intersection_by_self(HashStringValue::key_type key, HashStringValue::value_type value, Copy_intersection_to_info *info) {
 	if(info->b->get(key))
 		info->dest->put_dont_replace(key, value);
 }
+
 static void _intersection(Request& r, MethodParams& params) {
 	Value& result=*new VHash;
-	// dest += b
+
+	bool order_by_arg=true;
+	if(params.count()>1)
+		if(HashStringValue* options=params.as_hash(1, "options")) {
+			int valid_options=0;
+			if(Value* vorder=options->get("order")) {
+				const String &sorder=r.process(*vorder).as_string();
+				if(sorder == "self")
+					order_by_arg=false;
+				else if(sorder != "arg")
+					throw Exception(PARSER_RUNTIME, &sorder, "'order' must be 'self' or 'arg'");
+				valid_options++;
+			}
+			if(valid_options!=options->count())
+				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+		}
+
 	if(HashStringValue* b=params.as_hash(0, "param")) {
-		Copy_intersection_to_info info={b, result.get_hash()};
-		GET_SELF(r, VHashBase).hash().for_each<Copy_intersection_to_info*>(copy_intersection_to, &info);
+		if(order_by_arg){
+			Copy_intersection_to_info info={&GET_SELF(r, VHashBase).hash(), result.get_hash()};
+			b->for_each<Copy_intersection_to_info*>(copy_intersection_by_arg, &info);
+		} else {
+			Copy_intersection_to_info info={b, result.get_hash()};
+			GET_SELF(r, VHashBase).hash().for_each<Copy_intersection_to_info*>(copy_intersection_by_self, &info);
+		}
 	}
 
-	// return result
 	r.write(result);
 }
 
@@ -761,8 +788,8 @@ MHash::MHash(): Methoded("hash")
 	add_native_method("sub", Method::CT_DYNAMIC, _sub, 1, 1);
 	// ^a.union[b] = hash
 	add_native_method("union", Method::CT_DYNAMIC, _union, 1, 1);
-	// ^a.intersection[b] = hash
-	add_native_method("intersection", Method::CT_DYNAMIC, _intersection, 1, 1);
+	// ^a.intersection[b][options hash] = hash
+	add_native_method("intersection", Method::CT_DYNAMIC, _intersection, 1, 2);
 	// ^a.intersects[b] = bool
 	add_native_method("intersects", Method::CT_DYNAMIC, _intersects, 1, 1);
 
