@@ -1,0 +1,13 @@
+$h_a[
+    $.a[1]
+    $.b[2]
+    $.c[3]
+]
+$h_b[
+    $.c[]
+    $.a[]
+]
+
+1. ^json:string[^h_a.intersection[$h_b]]
+2. ^json:string[^h_a.intersection[$h_b; $.order[arg] ]]
+3. ^json:string[^h_a.intersection[$h_b; $.order[self] ]]
