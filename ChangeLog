@@ -1,3 +1,19 @@
+2022-08-23  moko
+
+	* src/types/pa_vmail.C: .tables addes as .raw contains only last
+	  header value
+
+2022-08-22  moko
+
+	* tests/: 418.html, results/418.processed: test for
+	  ^hash_a.intersection[hash_b; $.order[self|arg] ] added (related
+	  to #1225)
+
+	* src/classes/hash.C: keep old behavoir by default
+
+	* src/classes/hash.C: ^hash_a.intersection[hash_b;
+	  $.order[self|arg] ] added (implements #1215)
+
 2022-03-21  moko
 
 	* src/main/pa_charset.C: bugfix: +static xml_encoding_handlers as
