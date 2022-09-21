@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.347 2022/01/26 17:04:46 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.348 2022/09/21 13:20:56 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -514,7 +514,7 @@ static void real_parser_handler(bool cgi) {
 	}
 	
 	request_info.content_type = getenv("CONTENT_TYPE");
-	request_info.content_length = (size_t)pa_atoul(getenv("CONTENT_LENGTH"));
+	request_info.content_length = cgi ? (size_t)pa_atoul(getenv("CONTENT_LENGTH")) : 0; // only SAPI_Info_CGI can read POST
 	request_info.cookie = getenv("HTTP_COOKIE");
 	request_info.mail_received = mail_received;
 
