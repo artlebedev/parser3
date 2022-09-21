@@ -5,7 +5,7 @@
 	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.348 2022/09/21 13:20:56 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.349 2022/09/21 20:26:08 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -467,14 +467,14 @@ static void real_parser_handler(bool cgi) {
 		// obligatory
 		const char* path_info=getenv("PATH_INFO");
 		if(!path_info)
-			SAPI::die("CGI: illegal call (missing PATH_INFO)");
+			SAPI::die("parser3: illegal CGI call (missing PATH_INFO)");
 		
 		request_info.document_root = getenv("DOCUMENT_ROOT");
 		if(!request_info.document_root) {
 			// IIS or fcgiwrap minimalistic setup
 			ssize_t prefix_len = strlen(filespec_to_process) - strlen(path_info);
 			if(prefix_len < 0 || strcmp(filespec_to_process + prefix_len, path_info) != 0)
-				SAPI::die("CGI: illegal call (invalid PATH_INFO in reinventing DOCUMENT_ROOT)");
+				SAPI::die("parser3: illegal CGI call (invalid PATH_INFO in reinventing DOCUMENT_ROOT)");
 
 			char* document_root = new(PointerFreeGC) char[prefix_len + 1/*0*/];
 			memcpy(document_root, filespec_to_process, prefix_len); document_root[prefix_len] = 0;
@@ -486,7 +486,7 @@ static void real_parser_handler(bool cgi) {
 			// another obligatory
 			const char* script_name = getenv("SCRIPT_NAME");
 			if(!script_name)
-				SAPI::die("CGI: illegal call (missing SCRIPT_NAME)");
+				SAPI::die("parser3: illegal CGI call (missing SCRIPT_NAME)");
 			/*
 				http://parser3/env.html?123  =OK
 				$request:uri=/env.html?123
@@ -503,7 +503,7 @@ static void real_parser_handler(bool cgi) {
 			size_t script_name_len = strlen(script_name);
 			size_t uri_len = strlen(request_info.uri);
 			if(strncmp(request_info.uri, script_name, script_name_len)==0 && script_name_len != uri_len) // under IIS they are the same
-				SAPI::die("CGI: illegal call (1)");
+				SAPI::die("parser3: illegal CGI call (REQUEST_URI starts with SCRIPT_NAME)");
 		} else { // fcgiwrap minimalistic setup
 			request_info.uri = request_info.query_string && *request_info.query_string ? pa_strcat(path_info, "?", request_info.query_string) : path_info;
 		}
