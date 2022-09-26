@@ -1,3 +1,11 @@
+2022-09-21  moko
+
+	* src/targets/cgi/parser3.C: more clear error messages
+
+	* src/targets/cgi/parser3.C: only SAPI_Info_CGI can read POST,
+	  SAPI_Info will return 0 in read_post and post_size !=
+	  content_length will be thrown
+
 2022-08-23  moko
 
 	* src/types/pa_vmail.C: .tables addes as .raw contains only last
