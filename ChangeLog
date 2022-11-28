@@ -1,3 +1,12 @@
+2022-11-22  moko
+
+	* tests/: 419.html, results/419.processed: test for L_URI and path
+	  removeal from filename added (related to bug #1204)
+
+	* src/main/pa_request.C: bugfix: pa_filename was lost in 1.394
+	  commit (related to bug #1204), L_HTTP_HEADER is incorrect for
+	  attribute value, L_URI should be used
+
 2022-09-21  moko
 
 	* src/targets/cgi/parser3.C: more clear error messages
