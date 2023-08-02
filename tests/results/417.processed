@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 67
+Content-Length: 314
 
 abbbbbb
 aDbDbDbDbDbDb
@@ -11,3 +11,9 @@ DbD
 DbDbDb
 bcbcabc
 DbDcDbDcaDbDc
+[
+{"prematch":"","match":"","postmatch":"word1 word2","1":""},
+{"prematch":"word1","match":"","postmatch":" word2","1":""},
+{"prematch":"word1 ","match":"","postmatch":"word2","1":""},
+{"prematch":"word1 word2","match":"","postmatch":"","1":""}
+]

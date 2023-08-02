@@ -13,3 +13,9 @@ bbb]
 $s[bcbcabc]
 $s
 ^s.match[(?=[bc]);g][D]
+
+#empty match after last char test
+
+$title[word1 word2]
+$m[^title.match[\b()\b;g']]
+^json:string[$m]
