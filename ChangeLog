@@ -1,3 +1,11 @@
+2023-08-02  moko
+
+	* tests/: results/417.processed, 417.html: test for empty string
+	  match after last char added (related to bug #1224)
+
+	* src/main/pa_string.C: avoid prestart++ after last char on zero
+	  length match (related to bug #1224)
+
 2022-11-22  moko
 
 	* tests/: 419.html, results/419.processed: test for L_URI and path
