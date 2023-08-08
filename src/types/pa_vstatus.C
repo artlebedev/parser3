@@ -13,7 +13,7 @@
 #include "pa_vdouble.h"
 #include "pa_threads.h"
 
-volatile const char * IDENT_PA_VSTATUS_C="$Id: pa_vstatus.C,v 1.37 2023/08/08 21:49:44 moko Exp $" IDENT_PA_VSTATUS_H;
+volatile const char * IDENT_PA_VSTATUS_C="$Id: pa_vstatus.C,v 1.38 2023/08/08 21:50:57 moko Exp $" IDENT_PA_VSTATUS_H;
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -162,9 +162,7 @@ Value& rusage_element() {
 #ifdef HAVE_GETTIMEOFDAY
 	struct timeval tp;
 	if(gettimeofday(&tp, NULL)<0)
-		throw Exception(0,
-			0,
-			"gettimeofday failed (#%d)", errno);
+		throw Exception(0, 0, "gettimeofday failed (#%d)", errno);
 
 	hash.put("tv_sec", new VDouble(tp.tv_sec));
 	hash.put("tv_usec", new VDouble(tp.tv_usec));
