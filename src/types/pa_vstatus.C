@@ -13,7 +13,7 @@
 #include "pa_vdouble.h"
 #include "pa_threads.h"
 
-volatile const char * IDENT_PA_VSTATUS_C="$Id: pa_vstatus.C,v 1.38 2023/08/08 21:50:57 moko Exp $" IDENT_PA_VSTATUS_H;
+volatile const char * IDENT_PA_VSTATUS_C="$Id: pa_vstatus.C,v 1.39 2023/08/08 21:52:27 moko Exp $" IDENT_PA_VSTATUS_H;
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -147,9 +147,7 @@ Value& rusage_element() {
 #ifdef HAVE_GETRUSAGE
     struct rusage u;
     if(getrusage(RUSAGE_SELF,&u)<0)
-		throw Exception(0,
-			0,
-			"getrusage failed (#%d)", errno);
+		throw Exception(0, 0, "getrusage failed (#%d)", errno);
 
 	hash.put("utime", new VDouble(u.ru_utime.tv_sec+u.ru_utime.tv_usec/1000000.0));
 	hash.put("stime", new VDouble(u.ru_stime.tv_sec+u.ru_stime.tv_usec/1000000.0));
