@@ -13,7 +13,7 @@
 #include "pa_vdouble.h"
 #include "pa_threads.h"
 
-volatile const char * IDENT_PA_VSTATUS_C="$Id: pa_vstatus.C,v 1.36 2020/12/15 17:10:43 moko Exp $" IDENT_PA_VSTATUS_H;
+volatile const char * IDENT_PA_VSTATUS_C="$Id: pa_vstatus.C,v 1.37 2023/08/08 21:49:44 moko Exp $" IDENT_PA_VSTATUS_H;
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -135,7 +135,7 @@ Value& rusage_element() {
 
 	// all windows.
 	FT ft;
-GetSystemTimeAsFileTime( &(ft.ft_struct) );
+	GetSystemTimeAsFileTime( &(ft.ft_struct) );
 	ft.ft_scalar -= EPOCH_BIAS;
 	ui64 tv_sec = ft.ft_scalar/10000000i64;
 	ui64 tv_usec = (ft.ft_scalar-tv_sec*10000000i64)/10i64;
