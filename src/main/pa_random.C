@@ -12,7 +12,7 @@
 #include "pa_exception.h"
 #include "pa_threads.h"
 
-volatile const char * IDENT_PA_RANDOM_C="$Id: pa_random.C,v 1.12 2023/08/15 19:27:48 moko Exp $" IDENT_PA_RANDOM_H;
+volatile const char * IDENT_PA_RANDOM_C="$Id: pa_random.C,v 1.13 2023/08/15 19:44:20 moko Exp $" IDENT_PA_RANDOM_H;
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -44,11 +44,6 @@ public:
 			throw Exception(0, 0, "CryptGenRandom failed");
 	}
 } random_provider;
-
-typedef struct timeval {
-    long tv_sec;
-    long tv_usec;
-} timeval;
 
 int gettimeofday(struct timeval * tp, void *);
 

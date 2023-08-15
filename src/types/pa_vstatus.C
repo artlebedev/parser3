@@ -13,7 +13,7 @@
 #include "pa_vdouble.h"
 #include "pa_threads.h"
 
-volatile const char * IDENT_PA_VSTATUS_C="$Id: pa_vstatus.C,v 1.40 2023/08/15 19:27:48 moko Exp $" IDENT_PA_VSTATUS_H;
+volatile const char * IDENT_PA_VSTATUS_C="$Id: pa_vstatus.C,v 1.41 2023/08/15 19:44:20 moko Exp $" IDENT_PA_VSTATUS_H;
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -52,17 +52,12 @@ typedef union {
 	FILETIME ft_struct;
 } FT;
 
-typedef struct {
-	long tv_sec;
-	long tv_usec;
-} timeval;
-
-int gettimeofday(timeval *tv, void *) {
+int gettimeofday(struct timeval *tv, void *) {
 	FT ft;
 	GetSystemTimeAsFileTime( &(ft.ft_struct) );
 	ft.ft_scalar -= EPOCH_BIAS;
-	tv->tv_sec = ft.ft_scalar/10000000i64;
-	tv->tv_usec = (ft.ft_scalar-tv_sec*10000000i64)/10i64;
+	tv->tv_sec = (long)(ft.ft_scalar/10000000i64);
+	tv->tv_usec = (long)((ft.ft_scalar- tv->tv_sec*10000000i64)/10i64);
 	return 0;
 }
 
