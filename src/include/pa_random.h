@@ -8,7 +8,7 @@
 #ifndef PA_RANDOM_H
 #define PA_RANDOM_H
 
-#define IDENT_PA_RANDOM_H "$Id: pa_random.h,v 1.9 2021/01/13 21:28:15 moko Exp $"
+#define IDENT_PA_RANDOM_H "$Id: pa_random.h,v 1.10 2023/08/15 19:27:48 moko Exp $"
 
 #include "pa_types.h"
 
@@ -21,6 +21,7 @@ static inline int _random(int top) {
 }
 
 char *get_uuid_cstr(bool lower, bool solid);
+char *get_uuid7_cstr(bool lower, bool solid);
 char *get_uuid_boundary();
 
 #endif

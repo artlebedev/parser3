@@ -13,7 +13,7 @@
 #include "pa_vdouble.h"
 #include "pa_threads.h"
 
-volatile const char * IDENT_PA_VSTATUS_C="$Id: pa_vstatus.C,v 1.39 2023/08/08 21:52:27 moko Exp $" IDENT_PA_VSTATUS_H;
+volatile const char * IDENT_PA_VSTATUS_C="$Id: pa_vstatus.C,v 1.40 2023/08/15 19:27:48 moko Exp $" IDENT_PA_VSTATUS_H;
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -48,9 +48,23 @@ typedef BOOL (WINAPI *PGETPROCESSMEMORYINFO)(HANDLE,PPROCESS_MEMORY_COUNTERS,DWO
  * Union to facilitate converting from FILETIME to unsigned __int64
  */
 typedef union {
-        unsigned __int64 ft_scalar;
-        FILETIME ft_struct;
-        } FT;
+	unsigned __int64 ft_scalar;
+	FILETIME ft_struct;
+} FT;
+
+typedef struct {
+	long tv_sec;
+	long tv_usec;
+} timeval;
+
+int gettimeofday(timeval *tv, void *) {
+	FT ft;
+	GetSystemTimeAsFileTime( &(ft.ft_struct) );
+	ft.ft_scalar -= EPOCH_BIAS;
+	tv->tv_sec = ft.ft_scalar/10000000i64;
+	tv->tv_usec = (ft.ft_scalar-tv_sec*10000000i64)/10i64;
+	return 0;
+}
 
 #endif
 
@@ -133,15 +147,6 @@ Value& rusage_element() {
 		FreeLibrary(hMod);
 	}
 
-	// all windows.
-	FT ft;
-	GetSystemTimeAsFileTime( &(ft.ft_struct) );
-	ft.ft_scalar -= EPOCH_BIAS;
-	ui64 tv_sec = ft.ft_scalar/10000000i64;
-	ui64 tv_usec = (ft.ft_scalar-tv_sec*10000000i64)/10i64;
-	hash.put("tv_sec", new VDouble(double((LONGLONG)tv_sec)));
-	hash.put("tv_usec", new VDouble(double((LONGLONG)tv_usec)));
-
 #else
 
 #ifdef HAVE_GETRUSAGE
@@ -157,16 +162,14 @@ Value& rusage_element() {
 	hash.put("isrss", new VDouble(u.ru_isrss));
 #endif
 
-#ifdef HAVE_GETTIMEOFDAY
+#endif
+
 	struct timeval tp;
 	if(gettimeofday(&tp, NULL)<0)
 		throw Exception(0, 0, "gettimeofday failed (#%d)", errno);
 
 	hash.put("tv_sec", new VDouble(tp.tv_sec));
 	hash.put("tv_usec", new VDouble(tp.tv_usec));
-#endif
-
-#endif
 
 	return rusage;
 }

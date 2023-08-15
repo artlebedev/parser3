@@ -12,7 +12,7 @@
 #include "pa_exception.h"
 #include "pa_threads.h"
 
-volatile const char * IDENT_PA_RANDOM_C="$Id: pa_random.C,v 1.11 2021/01/13 21:28:15 moko Exp $" IDENT_PA_RANDOM_H;
+volatile const char * IDENT_PA_RANDOM_C="$Id: pa_random.C,v 1.12 2023/08/15 19:27:48 moko Exp $" IDENT_PA_RANDOM_H;
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -43,8 +43,14 @@ public:
 		if(!CryptGenRandom(fhProv, size, (BYTE*)buffer))
 			throw Exception(0, 0, "CryptGenRandom failed");
 	}
-}
-	random_provider;
+} random_provider;
+
+typedef struct timeval {
+    long tv_sec;
+    long tv_usec;
+} timeval;
+
+int gettimeofday(struct timeval * tp, void *);
 
 #else
 
@@ -179,4 +185,86 @@ char *get_uuid_boundary() {
 		uuid.node[0], uuid.node[1], uuid.node[2],
 		uuid.node[3], uuid.node[4], uuid.node[5]);
 	return boundary;
+}
+
+// UUID version 7
+// https://datatracker.ietf.org/doc/draft-ietf-uuidrev-rfc4122bis/
+//
+// UUID version 7 features a time-ordered value field derived from the
+// widely implemented and well known Unix Epoch timestamp source, the
+// number of milliseconds since midnight 1 Jan 1970 UTC, leap seconds
+// excluded.  UUIDv7 generally has improved entropy characteristics over
+// UUIDv1 or UUIDv6.
+//
+//  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// |                           unix_ts_ms                          |
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// |          unix_ts_ms           |  ver  |       rand_a          |
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// |var|                        rand_b                             |
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// |                            rand_b                             |
+// +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//
+// unix_ts_ms:
+//    48 bit big-endian unsigned number of Unix epoch timestamp in
+//    milliseconds.  Occupies bits 0 through 47 (octets 0-5).
+// ver:
+//    The 4 bit version field, set to 0b0111 (7).
+//    Occupies bits 48 through 51 of octet 6.
+// rand_a:
+//    12 bits pseudo-random data to provide uniqueness as per
+//    Section 6.8 and/or optional constructs to guarantee additional
+//    monotonicity. Occupies bits 52 through 63 (octets 6-7).
+// var:
+//    The 2 bit variant field as defined by Section 4.1, set to 0b10.
+//    Occupies bits 64 and 65 of octet 8.
+// rand_b:
+//    The final 62 bits of pseudo-random data to provide uniqueness as
+//    per Section 6.8 and/or an optional counter to guarantee additional
+//    monotonicity. Occupies bits 66 through 127 (octets 8-15).
+
+char *get_uuid7_cstr(bool lower, bool solid) {
+	unsigned char uuid[16];
+	random(&uuid[8], 8);
+
+	struct timeval tv;
+	gettimeofday(&tv, 0);
+
+	// 48 bit big-endian unsigned number of Unix epoch timestamp in milliseconds
+	uint64_t unix_ts_ms = (uint64_t)tv.tv_sec * 1000 + (uint64_t)tv.tv_usec / 1000;
+	uuid[5] = (unsigned char) (unix_ts_ms); unix_ts_ms >>= 8;
+	uuid[4] = (unsigned char) (unix_ts_ms); unix_ts_ms >>= 8;
+	uuid[3] = (unsigned char) (unix_ts_ms); unix_ts_ms >>= 8;
+	uuid[2] = (unsigned char) (unix_ts_ms); unix_ts_ms >>= 8;
+	uuid[1] = (unsigned char) (unix_ts_ms); unix_ts_ms >>= 8;
+	uuid[0] = (unsigned char) (unix_ts_ms);
+
+	// Use increased clock precision as left-most random bits
+	uint64_t usec = tv.tv_usec;
+	uuid[7] = (unsigned char) (usec); usec >>= 8;
+	uuid[6] = (unsigned char) (usec);
+
+	// Set magic numbers for a "version 7" UUID, see
+	// https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-00.html#name-uuid-version-7
+	uuid[6] = (uuid[6] & 0x0f) | 0x70; /* 4 bit version [0111] */
+	uuid[8] = (uuid[8] & 0x3f) | 0x80; /* 2 bit variant [10]   */
+
+	const size_t bufsize=36+1/*zero-teminator*/+1/*for faulty snprintfs*/;
+	char* cstr=new(PointerFreeGC) char[bufsize];
+
+	const char *format[] = {
+		"%02X%02X%02X%02X-%02X%02X-%02X%02X-%02X%02X-%02X%02X%02X%02X%02X%02X",
+		"%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x",
+		"%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X",
+		"%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
+	};
+
+	snprintf(cstr, bufsize, format[(lower ? 1:0) + (solid ? 2:0)],
+		uuid[0], uuid[1], uuid[2], uuid[3], uuid[4], uuid[5], uuid[6], uuid[7],
+		uuid[8], uuid[9], uuid[10], uuid[11], uuid[12], uuid[13], uuid[14], uuid[15]
+	);
+
+	return cstr;
 }

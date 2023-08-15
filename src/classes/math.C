@@ -23,7 +23,7 @@
 extern "C" char *crypt(const char* , const char* );
 #endif
 
-volatile const char * IDENT_MATH_C="$Id: math.C,v 1.99 2021/11/08 11:44:19 moko Exp $";
+volatile const char * IDENT_MATH_C="$Id: math.C,v 1.100 2023/08/15 19:27:48 moko Exp $";
 
 // defines
 
@@ -500,6 +500,28 @@ static void _uuid(Request& r, MethodParams& params) {
 	r.write(*new String(get_uuid_cstr(lower, solid)));
 }
 
+static void _uuid7(Request& r, MethodParams& params) {
+	bool lower=false;
+	bool solid=false;
+
+	if (params.count() == 1)
+		if (HashStringValue* options = params.as_hash(0)) {
+			int valid_options = 0;
+			if (Value* vlower = options->get("lower")) {
+				lower = r.process(*vlower).as_bool();
+				valid_options++;
+			}
+			if (Value* vsolid = options->get("solid")) {
+				solid = r.process(*vsolid).as_bool();
+				valid_options++;
+			}
+			if (valid_options != options->count())
+				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+		}
+
+	r.write(*new String(get_uuid7_cstr(lower, solid)));
+}
+
 static void _uid64(Request& r, MethodParams& params) {
 	bool lower = false;
 
@@ -753,6 +775,10 @@ MMath::MMath(): Methoded("math") {
 	// ^math:uuid[]
 	// ^math:uuid[options hash]
 	add_native_method("uuid", Method::CT_STATIC, _uuid, 0, 1);
+
+	// ^math:uuid7[]
+	// ^math:uuid7[options hash]
+	add_native_method("uuid7", Method::CT_STATIC, _uuid7, 0, 1);
 
 	// ^math:uid64[]
 	// ^math:uid64[options hash]
