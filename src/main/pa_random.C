@@ -12,7 +12,7 @@
 #include "pa_exception.h"
 #include "pa_threads.h"
 
-volatile const char * IDENT_PA_RANDOM_C="$Id: pa_random.C,v 1.13 2023/08/15 19:44:20 moko Exp $" IDENT_PA_RANDOM_H;
+volatile const char * IDENT_PA_RANDOM_C="$Id: pa_random.C,v 1.14 2023/08/16 02:10:44 moko Exp $" IDENT_PA_RANDOM_H;
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -229,17 +229,28 @@ char *get_uuid7_cstr(bool lower, bool solid) {
 
 	// 48 bit big-endian unsigned number of Unix epoch timestamp in milliseconds
 	uint64_t unix_ts_ms = (uint64_t)tv.tv_sec * 1000 + (uint64_t)tv.tv_usec / 1000;
+
+	// 12 bit monotonicity counter
+	static int seq = 0;
+	static uint64_t ms_previous=0;
+
+	if(unix_ts_ms == ms_previous){
+		seq++;
+		unix_ts_ms += seq >> 12;
+	} else {
+		seq = 0;
+		ms_previous = unix_ts_ms;
+	}
+
+	uuid[7] = (unsigned char) (seq);
+	uuid[6] = (unsigned char) (seq >> 8);
+
 	uuid[5] = (unsigned char) (unix_ts_ms); unix_ts_ms >>= 8;
 	uuid[4] = (unsigned char) (unix_ts_ms); unix_ts_ms >>= 8;
 	uuid[3] = (unsigned char) (unix_ts_ms); unix_ts_ms >>= 8;
 	uuid[2] = (unsigned char) (unix_ts_ms); unix_ts_ms >>= 8;
 	uuid[1] = (unsigned char) (unix_ts_ms); unix_ts_ms >>= 8;
 	uuid[0] = (unsigned char) (unix_ts_ms);
-
-	// Use increased clock precision as left-most random bits
-	uint64_t usec = tv.tv_usec;
-	uuid[7] = (unsigned char) (usec); usec >>= 8;
-	uuid[6] = (unsigned char) (usec);
 
 	// Set magic numbers for a "version 7" UUID, see
 	// https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-00.html#name-uuid-version-7
