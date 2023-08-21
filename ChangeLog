@@ -1,3 +1,23 @@
+2023-08-20  moko
+
+	* tests/: 141.html, results/141.processed: test for ^math:uuid7[]
+	  commited (related to feature #1219)
+
+2023-08-16  moko
+
+	* src/main/pa_random.C: replaced clock precision with monotonicity
+	  counter, good for Windows version with low clock frequency
+	  (related to feature #1229)
+
+2023-08-15  moko
+
+	* src/: main/pa_random.C, types/pa_vstatus.C: win32 compatibility
+	  fixes related to feature #1229
+
+	* src/: classes/math.C, include/pa_random.h, main/pa_random.C,
+	  types/pa_vstatus.C: ^math:uuid7 added, code provided by Sumo
+	  (implements feature #1229)
+
 2023-08-02  moko
 
 	* tests/: results/417.processed, 417.html: test for empty string
