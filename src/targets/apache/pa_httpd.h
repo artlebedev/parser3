@@ -1,14 +1,14 @@
 /** @file
 	Parser: http wrapper.
 
-	Copyright (c) 2003-2020 Art. Lebedev Studio (http://www.artlebedev.com)
-	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
+	Copyright (c) 2003-2023 Art. Lebedev Studio (http://www.artlebedev.com)
+	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
 #ifndef PA_HTTPD_H
 #define PA_HTTPD_H
 
-#define IDENT_PA_HTTPD_H "$Id: pa_httpd.h,v 1.8 2020/12/15 17:10:38 moko Exp $";
+#define IDENT_PA_HTTPD_H "$Id: pa_httpd.h,v 1.9 2023/09/26 20:49:11 moko Exp $";
 
 #ifdef __cplusplus
 extern "C" {

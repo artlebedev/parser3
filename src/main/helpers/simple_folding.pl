@@ -3,9 +3,9 @@
 #		to parser source code
 #
 #	Copyright (c) 2003-2015 Art. Lebedev Studio (http://www.artlebedev.com)
-#	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
+#	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 
-# $Id: simple_folding.pl,v 1.3 2015/10/26 01:29:59 moko Exp $
+# $Id: simple_folding.pl,v 1.4 2023/09/26 20:49:10 moko Exp $
 
 #  usage:
 #    download CaseFolding.txt

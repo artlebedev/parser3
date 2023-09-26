@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b file parser type decl.
 
-	Copyright (c) 2001-2020 Art. Lebedev Studio (http://www.artlebedev.com)
-	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
+	Copyright (c) 2001-2023 Art. Lebedev Studio (http://www.artlebedev.com)
+	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
 #ifndef PA_VFILE_H
 #define PA_VFILE_H
 
-#define IDENT_PA_VFILE_H "$Id: pa_vfile.h,v 1.86 2021/10/19 16:16:36 moko Exp $"
+#define IDENT_PA_VFILE_H "$Id: pa_vfile.h,v 1.87 2023/09/26 20:49:12 moko Exp $"
 
 // include
 

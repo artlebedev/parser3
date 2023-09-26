@@ -1,8 +1,8 @@
 /** @file
 	Parser: directory scanning for different OS-es.
 
-	Copyright (c) 2000-2020 Art. Lebedev Studio (http://www.artlebedev.com)
-	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
+	Copyright (c) 2000-2023 Art. Lebedev Studio (http://www.artlebedev.com)
+	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
 #include "pa_common.h"
@@ -10,7 +10,7 @@
 #include "pa_request.h"
 #include "pa_convert_utf.h"
 
-volatile const char * IDENT_PA_DIR_C="$Id: pa_dir.C,v 1.31 2021/11/08 11:44:19 moko Exp $" IDENT_PA_DIR_H;
+volatile const char * IDENT_PA_DIR_C="$Id: pa_dir.C,v 1.32 2023/09/26 20:49:10 moko Exp $" IDENT_PA_DIR_H;
 
 #ifdef _MSC_VER
 

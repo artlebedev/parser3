@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b env class decl.
 
-	Copyright (c) 2001-2020 Art. Lebedev Studio (http://www.artlebedev.com)
-	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
+	Copyright (c) 2001-2023 Art. Lebedev Studio (http://www.artlebedev.com)
+	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
 #ifndef PA_VENV_H
 #define PA_VENV_H
 
-#define IDENT_PA_VENV_H "$Id: pa_venv.h,v 1.44 2020/12/15 17:10:40 moko Exp $"
+#define IDENT_PA_VENV_H "$Id: pa_venv.h,v 1.45 2023/09/26 20:49:12 moko Exp $"
 
 // includes
 

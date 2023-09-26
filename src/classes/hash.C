@@ -1,8 +1,8 @@
 /** @file
 	Parser: @b hash parser class.
 
-	Copyright (c) 2001-2020 Art. Lebedev Studio (http://www.artlebedev.com)
-	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
+	Copyright (c) 2001-2023 Art. Lebedev Studio (http://www.artlebedev.com)
+	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
 #include "classes.h"
@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.156 2022/08/22 20:06:32 moko Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.157 2023/09/26 20:49:05 moko Exp $";
 
 // class
 

@@ -1,14 +1,14 @@
 /** @file
 	Parser: dictionary class decl.
 
-	Copyright (c) 2001-2020 Art. Lebedev Studio (http://www.artlebedev.com)
-	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
+	Copyright (c) 2001-2023 Art. Lebedev Studio (http://www.artlebedev.com)
+	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
 #ifndef PA_DICTIONARY_H
 #define PA_DICTIONARY_H
 
-#define IDENT_PA_DICTIONARY_H "$Id: pa_dictionary.h,v 1.23 2020/12/15 17:10:30 moko Exp $"
+#define IDENT_PA_DICTIONARY_H "$Id: pa_dictionary.h,v 1.24 2023/09/26 20:49:07 moko Exp $"
 
 #include "pa_table.h"
 

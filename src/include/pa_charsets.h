@@ -1,8 +1,8 @@
 /** @file
 	Parser: sql driver manager decl.
 
-	Copyright (c) 2001-2020 Art. Lebedev Studio (http://www.artlebedev.com)
-	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
+	Copyright (c) 2001-2023 Art. Lebedev Studio (http://www.artlebedev.com)
+	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 
 
 	global sql driver manager, must be thread-safe
@@ -11,7 +11,7 @@
 #ifndef PA_CHARSETS_H
 #define PA_CHARSETS_H
 
-#define IDENT_PA_CHARSETS_H "$Id: pa_charsets.h,v 1.21 2020/12/15 17:10:30 moko Exp $"
+#define IDENT_PA_CHARSETS_H "$Id: pa_charsets.h,v 1.22 2023/09/26 20:49:06 moko Exp $"
 
 #include "pa_hash.h"
 #include "pa_charset.h"

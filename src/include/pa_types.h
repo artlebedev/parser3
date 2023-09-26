@@ -1,14 +1,14 @@
 /** @file
 	Parser: generally used types & constants decls.
 
-	Copyright (c) 2001-2020 Art. Lebedev Studio (http://www.artlebedev.com)
-	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
+	Copyright (c) 2001-2023 Art. Lebedev Studio (http://www.artlebedev.com)
+	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
 #ifndef PA_TYPES_H
 #define PA_TYPES_H
 
-#define IDENT_PA_TYPES_H "$Id: pa_types.h,v 1.55 2020/12/15 17:10:32 moko Exp $"
+#define IDENT_PA_TYPES_H "$Id: pa_types.h,v 1.56 2023/09/26 20:49:08 moko Exp $"
 
 #include "pa_config_includes.h"
 

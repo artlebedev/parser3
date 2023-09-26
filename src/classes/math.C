@@ -1,8 +1,8 @@
 /** @file
 	Parser: @b math parser class.
 
-	Copyright (c) 2001-2020 Art. Lebedev Studio (http://www.artlebedev.com)
-	Author: Alexandr Petrosian <paf@design.ru>(http://paf.design.ru)
+	Copyright (c) 2001-2023 Art. Lebedev Studio (http://www.artlebedev.com)
+	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 
 	portions from gen_uuid.c,
 	Copyright (C) 1996, 1997, 1998, 1999 Theodore Ts'o.
@@ -23,7 +23,7 @@
 extern "C" char *crypt(const char* , const char* );
 #endif
 
-volatile const char * IDENT_MATH_C="$Id: math.C,v 1.100 2023/08/15 19:27:48 moko Exp $";
+volatile const char * IDENT_MATH_C="$Id: math.C,v 1.101 2023/09/26 20:49:06 moko Exp $";
 
 // defines
 

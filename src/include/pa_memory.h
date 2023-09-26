@@ -1,15 +1,15 @@
 /** @file
 	Parser: memory reference counting classes decls.
 
-	Copyright (c) 2001-2020 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2023 Art. Lebedev Studio (http://www.artlebedev.com)
 
-	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
+	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
 #ifndef PA_MEMORY_H
 #define PA_MEMORY_H
 
-#define IDENT_PA_MEMORY_H "$Id: pa_memory.h,v 1.43 2021/01/16 15:47:05 moko Exp $"
+#define IDENT_PA_MEMORY_H "$Id: pa_memory.h,v 1.44 2023/09/26 20:49:07 moko Exp $"
 
 // include
 

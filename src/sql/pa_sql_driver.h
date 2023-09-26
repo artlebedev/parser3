@@ -1,8 +1,8 @@
 /** @file
 	Parser: sql driver interface.
 
-	Copyright (c) 2001-2020 Art. Lebedev Studio (http://www.artlebedev.com)
-	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
+	Copyright (c) 2001-2023 Art. Lebedev Studio (http://www.artlebedev.com)
+	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 
 
 	driver dynamic library must look like this:
@@ -26,7 +26,7 @@
 #ifndef PA_SQL_DRIVER_H
 #define PA_SQL_DRIVER_H
 
-#define IDENT_PA_SQL_DRIVER_H "$Id: pa_sql_driver.h,v 1.52 2020/12/15 17:10:37 moko Exp $"
+#define IDENT_PA_SQL_DRIVER_H "$Id: pa_sql_driver.h,v 1.53 2023/09/26 20:49:10 moko Exp $"
 
 #include <sys/types.h>
 #include <setjmp.h>

@@ -1,14 +1,14 @@
 /** @file
 	Parser: request charsets class decl.
 
-	Copyright (c) 2001-2020 Art. Lebedev Studio (http://www.artlebedev.com)
-	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
+	Copyright (c) 2001-2023 Art. Lebedev Studio (http://www.artlebedev.com)
+	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
 #ifndef PA_REQUEST_CHARSETS_H
 #define PA_REQUEST_CHARSETS_H
 
-#define IDENT_PA_REQUEST_CHARSETS_H "$Id: pa_request_charsets.h,v 1.9 2020/12/15 17:10:32 moko Exp $"
+#define IDENT_PA_REQUEST_CHARSETS_H "$Id: pa_request_charsets.h,v 1.10 2023/09/26 20:49:07 moko Exp $"
 
 class Request_charsets {
 	friend class Temp_client_charset;

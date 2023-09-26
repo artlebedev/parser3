@@ -1,14 +1,14 @@
 /** @file
 	Parser: mutex & helpers decls.
 
-	Copyright (c) 2001-2020 Art. Lebedev Studio (http://www.artlebedev.com)
-	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
+	Copyright (c) 2001-2023 Art. Lebedev Studio (http://www.artlebedev.com)
+	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
 #ifndef PA_THREADS_H
 #define PA_THREADS_H
 
-#define IDENT_PA_THREADS_H "$Id: pa_threads.h,v 1.37 2020/12/15 17:10:32 moko Exp $"
+#define IDENT_PA_THREADS_H "$Id: pa_threads.h,v 1.38 2023/09/26 20:49:08 moko Exp $"
 
 #include "pa_config_includes.h"
 #include "pa_types.h"

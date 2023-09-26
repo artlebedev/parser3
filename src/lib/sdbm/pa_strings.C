@@ -1,14 +1,14 @@
 /** @file
 	Parser: implementation of apr functions.
 
-	Copyright (c) 2000-2020 Art. Lebedev Studio (http://www.artlebedev.com)
-	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
+	Copyright (c) 2000-2023 Art. Lebedev Studio (http://www.artlebedev.com)
+	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
 #include "pa_strings.h"
 #include "pa_memory.h"
 
-volatile const char * IDENT_PA_STRINGS_C="$Id: pa_strings.C,v 1.6 2020/12/15 17:10:33 moko Exp $";
+volatile const char * IDENT_PA_STRINGS_C="$Id: pa_strings.C,v 1.7 2023/09/26 20:49:09 moko Exp $";
 
 /** this is used to cache lengths in pa_pstrcat */
 #define MAX_SAVED_LENGTHS  6

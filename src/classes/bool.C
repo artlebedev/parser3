@@ -1,8 +1,8 @@
 /** @file
 	Parser: @b int parser class.
 
-	Copyright (c) 2001-2020 Art. Lebedev Studio (http://www.artlebedev.com)
-	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
+	Copyright (c) 2001-2023 Art. Lebedev Studio (http://www.artlebedev.com)
+	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
 #include "classes.h"
@@ -13,7 +13,7 @@
 #include "pa_vint.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_BOOL_C="$Id: bool.C,v 1.11 2020/12/15 17:10:27 moko Exp $" IDENT_PA_VBOOL_H;
+volatile const char * IDENT_BOOL_C="$Id: bool.C,v 1.12 2023/09/26 20:49:05 moko Exp $" IDENT_PA_VBOOL_H;
 
 // externs
 

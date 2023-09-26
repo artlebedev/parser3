@@ -1,14 +1,14 @@
 /** @file
 	Parser: uue encoding module.
 
-	Copyright (c) 2000-2020 Art. Lebedev Studio (http://www.artlebedev.com)
-	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
+	Copyright (c) 2000-2023 Art. Lebedev Studio (http://www.artlebedev.com)
+	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
 #ifndef PA_UUE_H
 #define PA_UUE_H
 
-#define IDENT_PA_UUE_H "$Id: pa_uue.h,v 1.14 2020/12/15 17:10:32 moko Exp $"
+#define IDENT_PA_UUE_H "$Id: pa_uue.h,v 1.15 2023/09/26 20:49:08 moko Exp $"
 
 const char* pa_uuencode(const unsigned char* in, size_t in_size, const char* file_name);
 

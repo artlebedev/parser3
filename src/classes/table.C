@@ -1,8 +1,8 @@
 /** @file
 	Parser: @b table parser class.
 
-	Copyright (c) 2001-2020 Art. Lebedev Studio (http://www.artlebedev.com)
-	Author: Alexandr Petrosian <paf@design.ru> (http://paf.design.ru)
+	Copyright (c) 2001-2023 Art. Lebedev Studio (http://www.artlebedev.com)
+	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
 #include "pa_config_includes.h"
@@ -25,7 +25,7 @@
 #include "pa_vbool.h"
 #include "pa_array.h"
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.360 2021/12/22 21:59:50 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.361 2023/09/26 20:49:06 moko Exp $";
 
 // class
 
