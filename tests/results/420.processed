@@ -1,0 +1,17 @@
+Content-Type: text/html
+Content-Length: 343
+
+1. 2. 3
+3. 123
+4. Type: parser.runtime,
+Source: nothing,
+Comment: element can not be fetched from int
+5. Type: parser.runtime,
+Source: something,
+Comment: int method not found
+6. Type: parser.runtime,
+Source: nothing,
+Comment: element can not be fetched from double
+7. Type: parser.runtime,
+Source: something,
+Comment: double method not found
