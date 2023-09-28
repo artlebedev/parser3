@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 735
+Content-Length: 723
 
 Empty string vs void:
 Json: "" vs null
@@ -10,7 +10,7 @@ Double: 0 vs 0
 Base64: "" vs ""
 Hash compatibility: "" "" ""
 More hash compatibility: "false" "false" "false"
-Methods are visible: "junction" "junction" "junction"
+Methods are visible: "void" "void" "void"
 Non-empty or whitespace string not hash compatible: Type: parser.runtime,
 Source: key,
 Comment: element can not be fetched from string

@@ -1,8 +1,13 @@
 Content-Type: text/html
-Content-Length: 343
+Content-Length: 511
 
-1. 2. 3
+1. string methods hidden: Type: parser.runtime,
+Source: length,
+Comment: element can not be fetched from string
+2. 123
+double methods available: 124
 3. 123
+int methods available: 125
 4. Type: parser.runtime,
 Source: nothing,
 Comment: element can not be fetched from int

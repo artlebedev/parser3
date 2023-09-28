@@ -1,11 +1,17 @@
 1. $s[123]
-$l[$s.length]
 
-$d(^l[])
+string methods hidden: ^try-catch{ $s.length }
+
+$d(^s.double[])
 $i(^s.int[])
 
 2. $d
+
+double methods available: $m[$d.inc] ^m[] $d
+
 3. $i
+
+int methods available: $m[$i.inc] ^m[]^m[] $i
 
 4. ^try-catch{ $i.nothing }
 5. ^try-catch{ ^i.something[] }
