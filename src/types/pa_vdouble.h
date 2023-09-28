@@ -8,7 +8,7 @@
 #ifndef PA_VDOUBLE_H
 #define PA_VDOUBLE_H
 
-#define IDENT_PA_VDOUBLE_H "$Id: pa_vdouble.h,v 1.72 2023/09/26 20:49:12 moko Exp $"
+#define IDENT_PA_VDOUBLE_H "$Id: pa_vdouble.h,v 1.73 2023/09/28 01:46:02 moko Exp $"
 
 // includes
 
@@ -63,8 +63,27 @@ public: // Value
 	override int as_int() const { return get_int(); }
 	/// VDouble: 0 or !0
 	override bool as_bool() const { return fdouble!=0; }
-	/// VInt: json-string
+	/// VDouble: json-string
 	override const String* get_json_string(Json_options&) { return get_string(); }
+
+	/// VDouble: $method
+	override Value* get_element(const String& aname) {
+		// $method (CLASS, CLASS_NAME only if no OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL)
+		if(Value* result=VStateless_object::get_element(aname))
+			return result;
+
+		// bad $double.field
+#ifdef FEATURE_GET_ELEMENT4CALL
+		return Value::get_element(aname);
+	}
+
+	override Value* get_element4call(const String& aname) {
+		// $method
+		if(Value* result=VStateless_object::get_element(aname))
+			return result;
+#endif
+		return bark("%s method not found", &aname);
+	}
 
 public: // usage
 
