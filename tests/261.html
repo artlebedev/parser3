@@ -21,7 +21,7 @@ Double: ^s.double(0) vs ^v.double(0)
 Base64: "^s.base64[]" vs "^v.base64[]"
 Hash compatibility: "$s.key" "$w.key" "$v.key"
 More hash compatibility: "^b[^s.contains[key]]" "^b[^w.contains[key]]" "^b[^w.contains[key]]"
-Methods are visible: "^show[$s.length]" "^show[$w.length]" "^show[$v.length]"
+Methods are not visible: "^show[$s.length]" "^show[$w.length]" "^show[$v.length]"
 
 Non-empty or whitespace string not hash compatible: ^try-catch{
 	$s[string]
