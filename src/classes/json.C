@@ -19,7 +19,7 @@
 #include "pa_vxdoc.h"
 #endif
 
-volatile const char * IDENT_JSON_C="$Id: json.C,v 1.57 2023/09/26 20:49:06 moko Exp $";
+volatile const char * IDENT_JSON_C="$Id: json.C,v 1.58 2023/10/01 15:14:44 moko Exp $";
 
 // class
 
@@ -566,5 +566,5 @@ static void _string(Request& r, MethodParams& params) {
 MJson::MJson(): Methoded("json") {
 	add_native_method("parse", Method::CT_STATIC, _parse, 1, 2);
 
-	add_native_method("string", Method::CT_ANY, _string, 1, 2);
+	add_native_method("string", Method::CT_STATIC, _string, 1, 2);
 }
