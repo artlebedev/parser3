@@ -1,3 +1,118 @@
+2023-10-01  moko
+
+	* src/classes/json.C: we don't have a dynamic json object.
+
+2023-09-28  moko
+
+	* tests/: 420.html, results/261.processed, results/420.processed:
+	  tests updated after bug #1228 fix reverted
+
+	* src/types/pa_vstring.h: revering fix for bug #1228, as empty or
+	  whitespace string is hash compatible, so we don't want $s.key to
+	  return a junction
+
+	* tests/: 261.html, 420.html, results/261.processed,
+	  results/420.processed: test for bug #1227 added, test updated
+	  after bug #1228 fixed
+
+	* src/types/: pa_vdouble.h, pa_vint.h: $int.field and $double.field
+	  now throws exception as $non-empty-string.field (fixes bug #1227)
+
+	* src/types/pa_vstring.h: allow $string.method access (fixes bug
+	  #1228)
+
+2023-09-26  moko
+
+	* AUTHORS, aclocal.m4, configure, src/classes/bool.C,
+	  src/classes/classes.C, src/classes/classes.awk,
+	  src/classes/classes.h, src/classes/curl.C, src/classes/date.C,
+	  src/classes/double.C, src/classes/file.C, src/classes/form.C,
+	  src/classes/hash.C, src/classes/hashfile.C, src/classes/image.C,
+	  src/classes/inet.C, src/classes/int.C, src/classes/json.C,
+	  src/classes/mail.C, src/classes/math.C, src/classes/memcached.C,
+	  src/classes/memory.C, src/classes/op.C, src/classes/reflection.C,
+	  src/classes/regex.C, src/classes/response.C,
+	  src/classes/string.C, src/classes/table.C, src/classes/void.C,
+	  src/classes/xdoc.C, src/classes/xnode.C, src/classes/xnode.h,
+	  src/include/pa_array.h, src/include/pa_base64.h,
+	  src/include/pa_cache_managers.h, src/include/pa_charset.h,
+	  src/include/pa_charsets.h, src/include/pa_common.h,
+	  src/include/pa_config_fixed.h, src/include/pa_config_includes.h,
+	  src/include/pa_dictionary.h, src/include/pa_dir.h,
+	  src/include/pa_exception.h, src/include/pa_exec.h,
+	  src/include/pa_globals.h, src/include/pa_hash.h,
+	  src/include/pa_http.h, src/include/pa_memory.h,
+	  src/include/pa_opcode.h, src/include/pa_operation.h,
+	  src/include/pa_os.h, src/include/pa_pool.h,
+	  src/include/pa_random.h, src/include/pa_request.h,
+	  src/include/pa_request_charsets.h, src/include/pa_request_info.h,
+	  src/include/pa_sapi.h, src/include/pa_socks.h,
+	  src/include/pa_sql_connection.h,
+	  src/include/pa_sql_driver_manager.h, src/include/pa_stack.h,
+	  src/include/pa_string.h, src/include/pa_stylesheet_connection.h,
+	  src/include/pa_stylesheet_manager.h, src/include/pa_symbols.h,
+	  src/include/pa_table.h, src/include/pa_threads.h,
+	  src/include/pa_types.h, src/include/pa_uue.h,
+	  src/include/pa_xml_exception.h, src/include/pa_xml_io.h,
+	  src/lib/gd/gif.C, src/lib/gd/gif.h, src/lib/gd/gifio.C,
+	  src/lib/ltdl/configure, src/lib/md5/pa_md5.h,
+	  src/lib/md5/pa_md5c.c, src/lib/memcached/pa_memcached.C,
+	  src/lib/memcached/pa_memcached.h, src/lib/punycode/pa_idna.c,
+	  src/lib/punycode/pa_idna.h, src/lib/sdbm/pa_file_io.C,
+	  src/lib/sdbm/pa_strings.C, src/lib/smtp/comms.C,
+	  src/lib/smtp/smtp.C, src/lib/smtp/smtp.h, src/main/compile.C,
+	  src/main/compile.tab.C, src/main/compile.y,
+	  src/main/compile_tools.C, src/main/compile_tools.h,
+	  src/main/execute.C, src/main/pa_base64.C,
+	  src/main/pa_cache_managers.C, src/main/pa_charset.C,
+	  src/main/pa_charsets.C, src/main/pa_common.C,
+	  src/main/pa_dictionary.C, src/main/pa_dir.C,
+	  src/main/pa_exception.C, src/main/pa_exec.C,
+	  src/main/pa_globals.C, src/main/pa_http.C, src/main/pa_memory.C,
+	  src/main/pa_os.C, src/main/pa_pool.C, src/main/pa_random.C,
+	  src/main/pa_request.C, src/main/pa_socks.C,
+	  src/main/pa_sql_driver_manager.C, src/main/pa_string.C,
+	  src/main/pa_stylesheet_connection.C,
+	  src/main/pa_stylesheet_manager.C, src/main/pa_symbols.C,
+	  src/main/pa_table.C, src/main/pa_threads.C, src/main/pa_uue.C,
+	  src/main/pa_xml_exception.C, src/main/pa_xml_io.C,
+	  src/main/untaint.C, src/main/helpers/simple_folding.pl,
+	  src/sql/pa_sql_driver.h, src/targets/apache/mod_parser3.c,
+	  src/targets/apache/mod_parser3_core.C,
+	  src/targets/apache/pa_httpd.h, src/targets/cgi/parser3.C,
+	  src/targets/isapi/parser3isapi.C, src/types/pa_junction.h,
+	  src/types/pa_method.h, src/types/pa_property.h,
+	  src/types/pa_value.C, src/types/pa_value.h, src/types/pa_vbool.h,
+	  src/types/pa_vcaller_wrapper.h, src/types/pa_vclass.C,
+	  src/types/pa_vclass.h, src/types/pa_vcode_frame.h,
+	  src/types/pa_vconsole.h, src/types/pa_vcookie.C,
+	  src/types/pa_vcookie.h, src/types/pa_vdate.C,
+	  src/types/pa_vdate.h, src/types/pa_vdouble.h,
+	  src/types/pa_venv.C, src/types/pa_venv.h, src/types/pa_vfile.C,
+	  src/types/pa_vfile.h, src/types/pa_vform.C, src/types/pa_vform.h,
+	  src/types/pa_vhash.C, src/types/pa_vhash.h,
+	  src/types/pa_vhashfile.C, src/types/pa_vhashfile.h,
+	  src/types/pa_vimage.C, src/types/pa_vimage.h,
+	  src/types/pa_vint.h, src/types/pa_vjunction.C,
+	  src/types/pa_vjunction.h, src/types/pa_vmail.C,
+	  src/types/pa_vmail.h, src/types/pa_vmath.C, src/types/pa_vmath.h,
+	  src/types/pa_vmemcached.C, src/types/pa_vmemcached.h,
+	  src/types/pa_vmemory.h, src/types/pa_vmethod_frame.C,
+	  src/types/pa_vmethod_frame.h, src/types/pa_vobject.C,
+	  src/types/pa_vobject.h, src/types/pa_vregex.C,
+	  src/types/pa_vregex.h, src/types/pa_vrequest.C,
+	  src/types/pa_vrequest.h, src/types/pa_vresponse.C,
+	  src/types/pa_vresponse.h, src/types/pa_vstateless_class.C,
+	  src/types/pa_vstateless_class.h,
+	  src/types/pa_vstateless_object.h, src/types/pa_vstatus.C,
+	  src/types/pa_vstatus.h, src/types/pa_vstring.C,
+	  src/types/pa_vstring.h, src/types/pa_vtable.C,
+	  src/types/pa_vtable.h, src/types/pa_vvoid.C,
+	  src/types/pa_vvoid.h, src/types/pa_vxdoc.C, src/types/pa_vxdoc.h,
+	  src/types/pa_vxnode.C, src/types/pa_vxnode.h,
+	  src/types/pa_wcontext.C, src/types/pa_wcontext.h,
+	  src/types/pa_wwrapper.h: copyright, authors actualized
+
 2023-08-20  moko
 
 	* tests/: 141.html, results/141.processed: test for ^math:uuid7[]
