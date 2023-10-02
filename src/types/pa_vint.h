@@ -8,7 +8,7 @@
 #ifndef PA_VINT_H
 #define PA_VINT_H
 
-#define IDENT_PA_VINT_H "$Id: pa_vint.h,v 1.57 2023/09/28 01:46:02 moko Exp $"
+#define IDENT_PA_VINT_H "$Id: pa_vint.h,v 1.58 2023/10/02 02:58:01 moko Exp $"
 
 // include
 
@@ -56,16 +56,7 @@ public: // Value
 			return result;
 
 		// bad $int.field
-#ifdef FEATURE_GET_ELEMENT4CALL
 		return Value::get_element(aname);
-	}
-
-	override Value* get_element4call(const String& aname) {
-		// $method
-		if(Value* result=VStateless_object::get_element(aname))
-			return result;
-#endif
-		return bark("%s method not found", &aname);
 	}
 
 public: // usage

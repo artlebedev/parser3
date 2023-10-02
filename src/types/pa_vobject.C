@@ -12,7 +12,7 @@
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VOBJECT_C="$Id: pa_vobject.C,v 1.51 2023/09/26 20:49:12 moko Exp $" IDENT_PA_VOBJECT_H;
+volatile const char * IDENT_PA_VOBJECT_C="$Id: pa_vobject.C,v 1.52 2023/10/02 02:58:01 moko Exp $" IDENT_PA_VOBJECT_H;
 
 Value* VObject::get_scalar_value(const char* as_something) const {
 	VObject* unconst_this=const_cast<VObject*>(this);
@@ -103,7 +103,10 @@ Value* VObject::get_element4call(const String& aname) {
 		return result;
 
 	// class method or property, or _object_ default getter
-	return fclass.get_element(*this, aname);
+	if(Value* result=fclass.get_element(*this, aname))
+		return result;
+
+	return bark("%s method not found", &aname);
 }
 #endif
 

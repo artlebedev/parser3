@@ -8,7 +8,7 @@
 #ifndef PA_VSTRING_H
 #define PA_VSTRING_H
 
-#define IDENT_PA_VSTRING_H "$Id: pa_vstring.h,v 1.78 2023/09/28 12:39:09 moko Exp $"
+#define IDENT_PA_VSTRING_H "$Id: pa_vstring.h,v 1.79 2023/10/02 02:58:01 moko Exp $"
 
 // includes
 
@@ -63,16 +63,7 @@ public: // Value
 			return 0;
 
 		// bad $string.field
-#ifdef FEATURE_GET_ELEMENT4CALL
 		return Value::get_element(aname);
-	}
-
-	override Value* get_element4call(const String& aname) {
-		// $method
-		if(Value* result=VStateless_object::get_element(aname))
-			return result;
-#endif
-		return bark("%s method not found", &aname);
 	}
 
 public: // usage

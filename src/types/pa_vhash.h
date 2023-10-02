@@ -8,7 +8,7 @@
 #ifndef PA_VHASH_H
 #define PA_VHASH_H
 
-#define IDENT_PA_VHASH_H "$Id: pa_vhash.h,v 1.83 2023/09/26 20:49:12 moko Exp $"
+#define IDENT_PA_VHASH_H "$Id: pa_vhash.h,v 1.84 2023/10/02 02:58:01 moko Exp $"
 
 #include "classes.h"
 #include "pa_value.h"
@@ -72,7 +72,7 @@ public: // value
 		// default value
 		return get_default();
 	}
-	
+
 #ifdef FEATURE_GET_ELEMENT4CALL
 	override Value* get_element4call(const String& aname) {
 		// $method first
@@ -84,10 +84,13 @@ public: // value
 			return result;
 
 		// default value
-		return get_default();
+		if(Value* result=get_default())
+			return result;
+
+		return bark("%s method not found", &aname);
 	}
 #endif
-	
+
 	/// VHash: (key)=value
 	override const VJunction* put_element(const String& aname, Value* avalue) {
 		if(SYMBOLS_EQ(aname,_DEFAULT_SYMBOL))

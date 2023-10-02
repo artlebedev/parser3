@@ -11,7 +11,7 @@
 #include "pa_vvoid.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VTABLE_C="$Id: pa_vtable.C,v 1.51 2023/09/26 20:49:13 moko Exp $" IDENT_PA_VTABLE_H;
+volatile const char * IDENT_PA_VTABLE_C="$Id: pa_vtable.C,v 1.52 2023/10/02 02:58:01 moko Exp $" IDENT_PA_VTABLE_H;
 
 #ifndef DOXYGEN
 struct Record_info {
@@ -78,7 +78,10 @@ Value* VTable::get_element(const String& aname) {
 
 Value* VTable::get_element4call(const String& aname) {
 	// methods
-	return VStateless_object::get_element(aname);
+	if(Value* result=VStateless_object::get_element(aname))
+		return result;
+
+	return bark("%s method not found", &aname);
 }
 
 #else
