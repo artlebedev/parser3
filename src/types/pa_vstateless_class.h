@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
-#define IDENT_PA_VSTATELESS_CLASS_H "$Id: pa_vstateless_class.h,v 1.95 2023/09/26 20:49:13 moko Exp $"
+#define IDENT_PA_VSTATELESS_CLASS_H "$Id: pa_vstateless_class.h,v 1.96 2023/10/03 03:16:34 moko Exp $"
 
 // include
 
@@ -63,6 +63,15 @@ public: // Value
 	override Value* get_element(const String& aname) { return get_element(*this, aname); }
 	/// get_element with aself for VObject junctions
 	virtual Value* get_element(Value& aself, const String& aname);
+
+#ifdef FEATURE_GET_ELEMENT4CALL
+	/// same as get_element, but with proper error reporting
+	override Value* get_element4call(const String& aname) {
+		if(Value* result=get_element(*this, aname))
+			return result;
+		return bark("%s method not found", &aname);
+	}
+#endif
 
 	override const VJunction* put_element(const String& aname, Value* avalue) { return put_element(*this, aname, avalue); }
 	/// put_element with aself for VObject junctions
