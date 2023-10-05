@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 3636
+Content-Length: 3822
 
 Testing hash
 Test-hash:
@@ -15,16 +15,16 @@ var: method: 1
 Test-no-such-method:
 var: Type: parser.runtime,
 Source: no-such-method,
-Comment: undefined method
+Comment: hash method not found
 var: Type: parser.runtime,
 Source: no-such-method,
-Comment: undefined method
+Comment: hash method not found
 var: Type: parser.runtime,
 Source: no-such-method,
-Comment: undefined method
+Comment: hash method not found
 var: Type: parser.runtime,
-Source: var,
-Comment: undefined method
+Source: no-such-method,
+Comment: hash method not found
 Testing hash
 Test-hash:
 var: is count
@@ -43,16 +43,16 @@ var: method: 2
 Test-no-such-method:
 var: Type: parser.runtime,
 Source: no-such-method,
-Comment: undefined method
+Comment: hash method not found
 var: Type: parser.runtime,
 Source: no-such-method,
-Comment: undefined method
+Comment: hash method not found
 var: Type: parser.runtime,
 Source: no-such-method,
-Comment: undefined method
+Comment: hash method not found
 var: Type: parser.runtime,
-Source: var,
-Comment: undefined method
+Source: no-such-method,
+Comment: hash method not found
 Testing table
 Test-hash:
 Type: parser.runtime,
@@ -60,25 +60,25 @@ Source: _count,
 Comment: column not found
 Type: parser.runtime,
 Source: _count,
-Comment: undefined method
+Comment: table method not found
 Type: parser.runtime,
 Source: _count,
 Comment: column not found
 Type: parser.runtime,
 Source: _count,
-Comment: undefined method
+Comment: table method not found
 Type: parser.runtime,
 Source: _count,
 Comment: column not found
 Type: parser.runtime,
 Source: _count,
-Comment: undefined method
+Comment: table method not found
 Type: parser.runtime,
 Source: _count,
 Comment: column not found
 Type: parser.runtime,
-Source: var,
-Comment: undefined method
+Source: _count,
+Comment: table method not found
 Test-table:
 Type: parser.runtime,
 Source: count,
@@ -102,25 +102,25 @@ Source: no-such-method,
 Comment: column not found
 Type: parser.runtime,
 Source: no-such-method,
-Comment: undefined method
+Comment: table method not found
 Type: parser.runtime,
 Source: no-such-method,
 Comment: column not found
 Type: parser.runtime,
 Source: no-such-method,
-Comment: undefined method
+Comment: table method not found
 Type: parser.runtime,
 Source: no-such-method,
 Comment: column not found
 Type: parser.runtime,
 Source: no-such-method,
-Comment: undefined method
+Comment: table method not found
 Type: parser.runtime,
 Source: no-such-method,
 Comment: column not found
 Type: parser.runtime,
-Source: var,
-Comment: undefined method
+Source: no-such-method,
+Comment: table method not found
 Testing table
 Test-hash:
 Type: parser.runtime,
@@ -128,25 +128,25 @@ Source: _count,
 Comment: column not found
 Type: parser.runtime,
 Source: _count,
-Comment: undefined method
+Comment: table method not found
 Type: parser.runtime,
 Source: _count,
 Comment: column not found
 Type: parser.runtime,
 Source: _count,
-Comment: undefined method
+Comment: table method not found
 Type: parser.runtime,
 Source: _count,
 Comment: column not found
 Type: parser.runtime,
 Source: _count,
-Comment: undefined method
+Comment: table method not found
 Type: parser.runtime,
 Source: _count,
 Comment: column not found
 Type: parser.runtime,
-Source: var,
-Comment: undefined method
+Source: _count,
+Comment: table method not found
 Test-table:
 var: is count
 method: 1
@@ -162,22 +162,22 @@ Source: no-such-method,
 Comment: column not found
 Type: parser.runtime,
 Source: no-such-method,
-Comment: undefined method
+Comment: table method not found
 Type: parser.runtime,
 Source: no-such-method,
 Comment: column not found
 Type: parser.runtime,
 Source: no-such-method,
-Comment: undefined method
+Comment: table method not found
 Type: parser.runtime,
 Source: no-such-method,
 Comment: column not found
 Type: parser.runtime,
 Source: no-such-method,
-Comment: undefined method
+Comment: table method not found
 Type: parser.runtime,
 Source: no-such-method,
 Comment: column not found
 Type: parser.runtime,
-Source: var,
-Comment: undefined method
+Source: no-such-method,
+Comment: table method not found
