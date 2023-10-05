@@ -1,0 +1,58 @@
+@main[]
+$list[^reflection:classes[]]
+^list.sort[name;]{$name}
+
+1. nonexistent method exception check for all classes
+^list.foreach[name;type]{
+    $class[^reflection:class_by_name[$name]]
+    Class $name $type ^if(def ^reflection:base_name[$class]){(^reflection:base_name[$class])}
+    $code[^^$name^:bad[]]
+    $code ^try-catch{^process{$code}}
+    ^try-catch{^class.bad[]}
+}
+
+2. nonexistent field exception check for all classes
+^list.foreach[name;type]{
+    $class[^reflection:class_by_name[$name]]
+    Class $name
+    $code[^$$name^:bad]
+    $code ^try-catch{^process{$code}
+	no exception}
+    ^try-catch{^process{^$$name^:bad}
+	no exception}
+}
+
+3. nonexistent method and field exception check for all objects
+
+$s[1]
+$doc[^xdoc::create{^xml[]}]
+^check(true)
+^check[s]
+^check(1)
+^check(^s.int[])
+^check[^date::now[]]
+^check[^file::create[name]]
+^check[^hash::create[]]
+^check[^image::create(100;100)]
+^check[^regex::create[.]]
+^check[^table::create{field}]
+^check[$void]
+^check[^obj::create[]]
+^check[$doc]
+^check[$doc.documentElement]
+
+@xml[]
+<?xml version="1.0"?>
+<document>content</document>
+
+@check[v]
+
+#$v.CLASS_NAME method ^try-catch{ ^v.bad[] }
+$v.CLASS_NAME
+    method ^try-catch{ ^v.bad[] }    field ^try-catch{ $v.bad
+	no exception}
+
+@CLASS
+obj
+
+@create[]

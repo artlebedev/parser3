@@ -1,0 +1,387 @@
+Content-Type: text/html
+Content-Length: 9118
+
+1. nonexistent method exception check for all classes
+Class MAIN methoded ^MAIN:bad[] Type: parser.runtime,
+Source: bad,
+Comment: MAIN method not found
+Type: parser.runtime,
+Source: bad,
+Comment: MAIN method not found
+Class bool methoded ^bool:bad[] Type: parser.runtime,
+Source: bad,
+Comment: bool method not found
+Type: parser.runtime,
+Source: bad,
+Comment: bool method not found
+Class console ^console:bad[] Type: parser.runtime,
+Source: bad,
+Comment: console method not found
+Type: parser.runtime,
+Source: bad,
+Comment: console method not found
+Class cookie ^cookie:bad[] Type: parser.runtime,
+Source: bad,
+Comment: cookie method not found
+Type: parser.runtime,
+Source: bad,
+Comment: cookie method not found
+Class curl methoded ^curl:bad[] Type: parser.runtime,
+Source: bad,
+Comment: curl method not found
+Type: parser.runtime,
+Source: bad,
+Comment: curl method not found
+Class date methoded ^date:bad[] Type: parser.runtime,
+Source: bad,
+Comment: date method not found
+Type: parser.runtime,
+Source: bad,
+Comment: date method not found
+Class double methoded ^double:bad[] Type: parser.runtime,
+Source: bad,
+Comment: double method not found
+Type: parser.runtime,
+Source: bad,
+Comment: double method not found
+Class env ^env:bad[] Type: parser.runtime,
+Source: bad,
+Comment: env method not found
+Type: parser.runtime,
+Source: bad,
+Comment: env method not found
+Class file methoded ^file:bad[] Type: parser.runtime,
+Source: bad,
+Comment: file method not found
+Type: parser.runtime,
+Source: bad,
+Comment: file method not found
+Class form ^form:bad[] Type: parser.runtime,
+Source: bad,
+Comment: form method not found
+Type: parser.runtime,
+Source: bad,
+Comment: form method not found
+Class hash methoded ^hash:bad[] Type: parser.runtime,
+Source: bad,
+Comment: hash method not found
+Type: parser.runtime,
+Source: bad,
+Comment: hash method not found
+Class hashfile methoded ^hashfile:bad[] Type: parser.runtime,
+Source: bad,
+Comment: hashfile method not found
+Type: parser.runtime,
+Source: bad,
+Comment: hashfile method not found
+Class image methoded ^image:bad[] Type: parser.runtime,
+Source: bad,
+Comment: image method not found
+Type: parser.runtime,
+Source: bad,
+Comment: image method not found
+Class inet methoded ^inet:bad[] Type: parser.runtime,
+Source: bad,
+Comment: inet method not found
+Type: parser.runtime,
+Source: bad,
+Comment: inet method not found
+Class int methoded ^int:bad[] Type: parser.runtime,
+Source: bad,
+Comment: int method not found
+Type: parser.runtime,
+Source: bad,
+Comment: int method not found
+Class json methoded ^json:bad[] Type: parser.runtime,
+Source: bad,
+Comment: json method not found
+Type: parser.runtime,
+Source: bad,
+Comment: json method not found
+Class mail methoded ^mail:bad[] Type: parser.runtime,
+Source: bad,
+Comment: mail method not found
+Type: parser.runtime,
+Source: bad,
+Comment: mail method not found
+Class math methoded ^math:bad[] Type: parser.runtime,
+Source: bad,
+Comment: math method not found
+Type: parser.runtime,
+Source: bad,
+Comment: math method not found
+Class memcached methoded ^memcached:bad[] Type: parser.runtime,
+Source: bad,
+Comment: memcached method not found
+Type: parser.runtime,
+Source: bad,
+Comment: memcached method not found
+Class memory methoded ^memory:bad[] Type: parser.runtime,
+Source: bad,
+Comment: memory method not found
+Type: parser.runtime,
+Source: bad,
+Comment: memory method not found
+Class obj methoded ^obj:bad[] Type: parser.runtime,
+Source: bad,
+Comment: obj method not found
+Type: parser.runtime,
+Source: bad,
+Comment: obj method not found
+Class reflection methoded ^reflection:bad[] Type: parser.runtime,
+Source: bad,
+Comment: reflection method not found
+Type: parser.runtime,
+Source: bad,
+Comment: reflection method not found
+Class regex methoded ^regex:bad[] Type: parser.runtime,
+Source: bad,
+Comment: regex method not found
+Type: parser.runtime,
+Source: bad,
+Comment: regex method not found
+Class request ^request:bad[] Type: parser.runtime,
+Source: bad,
+Comment: request method not found
+Type: parser.runtime,
+Source: bad,
+Comment: request method not found
+Class response methoded ^response:bad[] Type: parser.runtime,
+Source: bad,
+Comment: response method not found
+Type: parser.runtime,
+Source: bad,
+Comment: response method not found
+Class status ^status:bad[] Type: parser.runtime,
+Source: bad,
+Comment: status method not found
+Type: parser.runtime,
+Source: bad,
+Comment: status method not found
+Class string methoded ^string:bad[] Type: parser.runtime,
+Source: bad,
+Comment: string method not found
+Type: parser.runtime,
+Source: bad,
+Comment: string method not found
+Class table methoded ^table:bad[] Type: parser.runtime,
+Source: bad,
+Comment: table method not found
+Type: parser.runtime,
+Source: bad,
+Comment: table method not found
+Class void methoded (string)
+^void:bad[] Type: parser.runtime,
+Source: bad,
+Comment: void method not found
+Type: parser.runtime,
+Source: bad,
+Comment: void method not found
+Class xdoc methoded (xnode)
+^xdoc:bad[] Type: parser.runtime,
+Source: bad,
+Comment: xdoc method not found
+Type: parser.runtime,
+Source: bad,
+Comment: xdoc method not found
+Class xnode methoded ^xnode:bad[] Type: parser.runtime,
+Source: bad,
+Comment: xnode method not found
+Type: parser.runtime,
+Source: bad,
+Comment: xnode method not found
+2. nonexistent field exception check for all classes
+Class MAIN
+$MAIN:bad no exception
+no exception
+Class bool
+$bool:bad no exception
+no exception
+Class console
+$console:bad Type: parser.runtime,
+Source: bad,
+Comment: console field not found
+Type: parser.runtime,
+Source: bad,
+Comment: console field not found
+Class cookie
+$cookie:bad no exception
+no exception
+Class curl
+$curl:bad no exception
+no exception
+Class date
+$date:bad no exception
+no exception
+Class double
+$double:bad no exception
+no exception
+Class env
+$env:bad no exception
+no exception
+Class file
+$file:bad no exception
+no exception
+Class form
+$form:bad no exception
+no exception
+Class hash
+$hash:bad no exception
+no exception
+Class hashfile
+$hashfile:bad no exception
+no exception
+Class image
+$image:bad no exception
+no exception
+Class inet
+$inet:bad no exception
+no exception
+Class int
+$int:bad no exception
+no exception
+Class json
+$json:bad no exception
+no exception
+Class mail
+$mail:bad Type: parser.runtime,
+Source: bad,
+Comment: mail field not found
+Type: parser.runtime,
+Source: bad,
+Comment: mail field not found
+Class math
+$math:bad no exception
+no exception
+Class memcached
+$memcached:bad no exception
+no exception
+Class memory
+$memory:bad no exception
+no exception
+Class obj
+$obj:bad no exception
+no exception
+Class reflection
+$reflection:bad no exception
+no exception
+Class regex
+$regex:bad no exception
+no exception
+Class request
+$request:bad Type: parser.runtime,
+Source: bad,
+Comment: request field not found
+Type: parser.runtime,
+Source: bad,
+Comment: request field not found
+Class response
+$response:bad no exception
+no exception
+Class status
+$status:bad no exception
+no exception
+Class string
+$string:bad no exception
+no exception
+Class table
+$table:bad no exception
+no exception
+Class void
+$void:bad no exception
+no exception
+Class xdoc
+$xdoc:bad no exception
+no exception
+Class xnode
+$xnode:bad no exception
+no exception
+3. nonexistent method and field exception check for all objects
+bool
+method Type: parser.runtime,
+Source: bad,
+Comment: bool method not found
+field Type: parser.runtime,
+Source: bad,
+Comment: element can not be fetched from bool
+string
+method Type: parser.runtime,
+Source: bad,
+Comment: string method not found
+field Type: parser.runtime,
+Source: bad,
+Comment: element can not be fetched from string
+double
+method Type: parser.runtime,
+Source: bad,
+Comment: double method not found
+field Type: parser.runtime,
+Source: bad,
+Comment: element can not be fetched from double
+int
+method Type: parser.runtime,
+Source: bad,
+Comment: int method not found
+field Type: parser.runtime,
+Source: bad,
+Comment: element can not be fetched from int
+date
+method Type: parser.runtime,
+Source: bad,
+Comment: date method not found
+field Type: parser.runtime,
+Source: bad,
+Comment: date field not found
+file
+method Type: parser.runtime,
+Source: bad,
+Comment: file method not found
+field no exception
+hash
+method Type: parser.runtime,
+Source: bad,
+Comment: hash method not found
+field no exception
+image
+method Type: parser.runtime,
+Source: bad,
+Comment: image method not found
+field no exception
+regex
+method Type: parser.runtime,
+Source: bad,
+Comment: regex method not found
+field Type: parser.runtime,
+Source: bad,
+Comment: regex field not found
+table
+method Type: parser.runtime,
+Source: bad,
+Comment: table method not found
+field Type: parser.runtime,
+Source: bad,
+Comment: column not found
+void
+method Type: parser.runtime,
+Source: bad,
+Comment: void method not found
+field no exception
+obj
+method Type: parser.runtime,
+Source: bad,
+Comment: obj method not found
+field no exception
+xdoc
+method Type: parser.runtime,
+Source: bad,
+Comment: xdoc method not found
+field Type: parser.runtime,
+Source: bad,
+Comment: xdoc field not found
+xnode
+method Type: parser.runtime,
+Source: bad,
+Comment: xnode method not found
+field Type: parser.runtime,
+Source: bad,
+Comment: xnode field not found
