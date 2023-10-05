@@ -8,7 +8,7 @@
 #ifndef PA_VINT_H
 #define PA_VINT_H
 
-#define IDENT_PA_VINT_H "$Id: pa_vint.h,v 1.58 2023/10/02 02:58:01 moko Exp $"
+#define IDENT_PA_VINT_H "$Id: pa_vint.h,v 1.59 2023/10/05 01:28:08 moko Exp $"
 
 // include
 
@@ -23,7 +23,7 @@
 extern Methoded* int_class;
 
 /// value of type 'int'. implemented with @c int
-class VInt: public VStateless_object {
+class VInt: public VSimple_stateless_object {
 public: // Value
 
 	override const char* type() const { return VINT_TYPE; }
@@ -48,16 +48,6 @@ public: // Value
 	override bool as_bool() const { return finteger!=0; }
 	/// VInt: json-string
 	override const String* get_json_string(Json_options&) { return get_string(); }
-
-	/// VInt: $method
-	override Value* get_element(const String& aname) {
-		// $method (CLASS, CLASS_NAME only if no OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL)
-		if(Value* result=VStateless_object::get_element(aname))
-			return result;
-
-		// bad $int.field
-		return Value::get_element(aname);
-	}
 
 public: // usage
 

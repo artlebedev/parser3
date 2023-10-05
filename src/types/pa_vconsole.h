@@ -8,7 +8,7 @@
 #ifndef PA_VCONSOLE_H
 #define PA_VCONSOLE_H
 
-#define IDENT_PA_VCONSOLE_H "$Id: pa_vconsole.h,v 1.28 2023/09/26 20:49:11 moko Exp $"
+#define IDENT_PA_VCONSOLE_H "$Id: pa_vconsole.h,v 1.29 2023/10/05 01:28:08 moko Exp $"
 
 // includes
 
@@ -44,7 +44,7 @@ public: // Value
 			return 0; // EOF
 		}
 
-		throw Exception(PARSER_RUNTIME, &aname, "reading of invalid field");
+		return bark("%s field not found", &aname);
 	}
 
 	/// console: $line

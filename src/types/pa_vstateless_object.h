@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_OBJECT_H
 #define PA_VSTATELESS_OBJECT_H
 
-#define IDENT_PA_VSTATELESS_OBJECT_H "$Id: pa_vstateless_object.h,v 1.46 2023/10/02 02:58:01 moko Exp $"
+#define IDENT_PA_VSTATELESS_OBJECT_H "$Id: pa_vstateless_object.h,v 1.47 2023/10/05 01:28:08 moko Exp $"
 
 // include
 
@@ -21,9 +21,10 @@
 */
 class VStateless_object: public Value {
 public: // Value
-	
+
 	/// VStateless_object: class_transparent
 	override Value* get_element(const String& aname) {
+		// $methods (CLASS, CLASS_NAME only if no OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL)
 		return get_class()->get_element(*this, aname);
 	}
 
@@ -51,6 +52,20 @@ public: // Value
 		return get_class()->get_scalar(aself);
 	}
 
+};
+
+class VSimple_stateless_object: public VStateless_object {
+public: // Value
+
+	/// VSimple_stateless_object: class_transparent
+	override Value* get_element(const String& aname) {
+		// $methods (CLASS, CLASS_NAME only if no OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL)
+		if(Value* result=get_class()->get_element(*this, aname))
+			return result;
+
+		// bad $type.field
+		return Value::get_element(aname);
+	}
 };
 
 #endif

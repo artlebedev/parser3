@@ -8,7 +8,7 @@
 #ifndef PA_VDOUBLE_H
 #define PA_VDOUBLE_H
 
-#define IDENT_PA_VDOUBLE_H "$Id: pa_vdouble.h,v 1.74 2023/10/02 02:58:01 moko Exp $"
+#define IDENT_PA_VDOUBLE_H "$Id: pa_vdouble.h,v 1.75 2023/10/05 01:28:08 moko Exp $"
 
 // includes
 
@@ -40,7 +40,7 @@
 extern Methoded* double_class;
 
 /// value of type 'double'. implemented with @c double
-class VDouble: public VStateless_object {
+class VDouble: public VSimple_stateless_object {
 public: // Value
 
 	override const char* type() const { return VDOUBLE_TYPE; }
@@ -65,16 +65,6 @@ public: // Value
 	override bool as_bool() const { return fdouble!=0; }
 	/// VDouble: json-string
 	override const String* get_json_string(Json_options&) { return get_string(); }
-
-	/// VDouble: $method
-	override Value* get_element(const String& aname) {
-		// $method (CLASS, CLASS_NAME only if no OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL)
-		if(Value* result=VStateless_object::get_element(aname))
-			return result;
-
-		// bad $double.field
-		return Value::get_element(aname);
-	}
 
 public: // usage
 

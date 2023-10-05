@@ -8,7 +8,7 @@
 #ifndef PA_VBOOL_H
 #define PA_VBOOL_H
 
-#define IDENT_PA_VBOOL_H "$Id: pa_vbool.h,v 1.39 2023/09/26 20:49:11 moko Exp $"
+#define IDENT_PA_VBOOL_H "$Id: pa_vbool.h,v 1.40 2023/10/05 01:28:08 moko Exp $"
 
 // include
 
@@ -24,7 +24,7 @@
 extern Methoded* bool_class;
 
 // VBool
-class VBool: public VStateless_object {
+class VBool: public VSimple_stateless_object {
 public: // Value
 
 	override const char* type() const { return VBOOL_TYPE; }

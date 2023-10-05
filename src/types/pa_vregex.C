@@ -9,7 +9,7 @@
 #include "pa_vint.h"
 #include "pa_vstring.h"
 
-volatile const char * IDENT_PA_VREGEX_C="$Id: pa_vregex.C,v 1.22 2023/09/26 20:49:13 moko Exp $" IDENT_PA_VREGEX_H;
+volatile const char * IDENT_PA_VREGEX_C="$Id: pa_vregex.C,v 1.23 2023/10/05 01:28:08 moko Exp $" IDENT_PA_VREGEX_H;
 
 // defines
 
@@ -185,7 +185,5 @@ Value* VRegex::get_element(const String& aname) {
 	if(Value* result=VStateless_object::get_element(aname))
 		return result;
 
-	throw Exception(PARSER_RUNTIME,
-		&aname,
-		"reading of invalid field");
+	return bark("%s field not found", &aname);
 }
