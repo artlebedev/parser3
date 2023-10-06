@@ -1,7 +1,8 @@
 Content-Type: text/html
-Content-Length: 264
+Content-Length: 279
 
 2048-11-02 02:11:10
+should be 0: 0
 Type: date.range,
 Source: year,
 Comment: year '1000000' is out of range 0..9999

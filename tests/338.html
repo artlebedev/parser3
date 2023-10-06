@@ -10,6 +10,8 @@ $d.second(70.999)
 
 ^d.sql-string[]
 
+should be 0: ^eval($d - $d)
+
 ^try-catch{$d.year(1e6)}
 ^try-catch{$d.ups[2]}
 ^try-catch{$d.year{2000}}
