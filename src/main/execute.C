@@ -21,7 +21,7 @@
 #include "pa_vimage.h"
 #include "pa_wwrapper.h"
 
-volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.414 2023/09/26 20:49:09 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
+volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.415 2023/10/06 20:02:50 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
 
 //#define DEBUG_EXECUTE
 
@@ -931,28 +931,40 @@ void Request::execute(ArrayOperation& ops) {
 			}
 
 		// expression ops: binary
-		case OP::OP_SUB: 
+		case OP::OP_SUB:
 			{
 				Value& b=stack.pop().value();  Value& a=stack.pop().value();
-				Value& value=*new VDouble(a.as_double() - b.as_double());
+
+				double a_double=a.as_double();
+				double b_double=b.as_double();
+
+				Value& value=*new VDouble(a_double - b_double);
 				stack.push(value);
 				break;
 			}
-		case OP::OP_ADD: 
+		case OP::OP_ADD:
 			{
 				Value& b=stack.pop().value();  Value& a=stack.pop().value();
-				Value& value=*new VDouble(a.as_double() + b.as_double());
+
+				double a_double=a.as_double();
+				double b_double=b.as_double();
+
+				Value& value=*new VDouble(a_double + b_double);
 				stack.push(value);
 				break;
 			}
-		case OP::OP_MUL: 
+		case OP::OP_MUL:
 			{
 				Value& b=stack.pop().value();  Value& a=stack.pop().value();
-				Value& value=*new VDouble(a.as_double() * b.as_double());
+
+				double a_double=a.as_double();
+				double b_double=b.as_double();
+
+				Value& value=*new VDouble(a_double * b_double);
 				stack.push(value);
 				break;
 			}
-		case OP::OP_DIV: 
+		case OP::OP_DIV:
 			{
 				Value& b=stack.pop().value();  Value& a=stack.pop().value();
 
@@ -968,7 +980,7 @@ void Request::execute(ArrayOperation& ops) {
 				stack.push(value);
 				break;
 			}
-		case OP::OP_MOD: 
+		case OP::OP_MOD:
 			{
 				Value& b=stack.pop().value();  Value& a=stack.pop().value();
 

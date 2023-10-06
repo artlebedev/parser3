@@ -8,7 +8,7 @@
 #ifndef PA_VDATE_H
 #define PA_VDATE_H
 
-#define IDENT_PA_VDATE_H "$Id: pa_vdate.h,v 1.67 2023/09/26 20:49:12 moko Exp $"
+#define IDENT_PA_VDATE_H "$Id: pa_vdate.h,v 1.68 2023/10/06 20:02:51 moko Exp $"
 
 #include "classes.h"
 #include "pa_common.h"
@@ -50,7 +50,10 @@ public: // Value
 	override bool is_evaluated_expr() const { return true; }
 
 	/// VDate: ftime -> float days
-	override double as_double() const { return ((double)ftime)/ SECS_PER_DAY; }
+	override double as_double() const {
+		volatile double result = ((double)ftime) / SECS_PER_DAY; // avoid x87 returns 80 bit double bug
+		return result;
+	}
 
 	/// VDate: 0 or !0
 	override bool as_bool() const { return ftime!=0; }
