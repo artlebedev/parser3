@@ -8,7 +8,7 @@
 #ifndef PA_VDATE_H
 #define PA_VDATE_H
 
-#define IDENT_PA_VDATE_H "$Id: pa_vdate.h,v 1.68 2023/10/06 20:02:51 moko Exp $"
+#define IDENT_PA_VDATE_H "$Id: pa_vdate.h,v 1.69 2023/10/07 01:12:26 moko Exp $"
 
 #include "classes.h"
 #include "pa_common.h"
@@ -51,7 +51,7 @@ public: // Value
 
 	/// VDate: ftime -> float days
 	override double as_double() const {
-		volatile double result = ((double)ftime) / SECS_PER_DAY; // avoid x87 returns 80 bit double bug
+		volatile double result = ((double)ftime) / SECS_PER_DAY; // avoid x87 returns 80 bit double
 		return result;
 	}
 

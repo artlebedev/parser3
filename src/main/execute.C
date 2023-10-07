@@ -21,7 +21,7 @@
 #include "pa_vimage.h"
 #include "pa_wwrapper.h"
 
-volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.415 2023/10/06 20:02:50 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
+volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.416 2023/10/07 01:12:26 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
 
 //#define DEBUG_EXECUTE
 
@@ -933,10 +933,8 @@ void Request::execute(ArrayOperation& ops) {
 		// expression ops: binary
 		case OP::OP_SUB:
 			{
-				Value& b=stack.pop().value();  Value& a=stack.pop().value();
-
-				double a_double=a.as_double();
-				double b_double=b.as_double();
+				volatile double b_double=stack.pop().value().as_double();
+				volatile double a_double=stack.pop().value().as_double();
 
 				Value& value=*new VDouble(a_double - b_double);
 				stack.push(value);
@@ -944,10 +942,8 @@ void Request::execute(ArrayOperation& ops) {
 			}
 		case OP::OP_ADD:
 			{
-				Value& b=stack.pop().value();  Value& a=stack.pop().value();
-
-				double a_double=a.as_double();
-				double b_double=b.as_double();
+				volatile double b_double=stack.pop().value().as_double();
+				volatile double a_double=stack.pop().value().as_double();
 
 				Value& value=*new VDouble(a_double + b_double);
 				stack.push(value);
@@ -955,10 +951,8 @@ void Request::execute(ArrayOperation& ops) {
 			}
 		case OP::OP_MUL:
 			{
-				Value& b=stack.pop().value();  Value& a=stack.pop().value();
-
-				double a_double=a.as_double();
-				double b_double=b.as_double();
+				volatile double b_double=stack.pop().value().as_double();
+				volatile double a_double=stack.pop().value().as_double();
 
 				Value& value=*new VDouble(a_double * b_double);
 				stack.push(value);
@@ -966,10 +960,8 @@ void Request::execute(ArrayOperation& ops) {
 			}
 		case OP::OP_DIV:
 			{
-				Value& b=stack.pop().value();  Value& a=stack.pop().value();
-
-				double a_double=a.as_double();
-				double b_double=b.as_double();
+				volatile double b_double=stack.pop().value().as_double();
+				volatile double a_double=stack.pop().value().as_double();
 
 				if(b_double == 0) {
 					//const String* problem_source=b.as_string();
@@ -982,10 +974,8 @@ void Request::execute(ArrayOperation& ops) {
 			}
 		case OP::OP_MOD:
 			{
-				Value& b=stack.pop().value();  Value& a=stack.pop().value();
-
-				double a_double=a.as_double();
-				double b_double=b.as_double();
+				volatile double b_double=stack.pop().value().as_double();
+				volatile double a_double=stack.pop().value().as_double();
 
 				if(b_double == 0) {
 					//const String* problem_source=b.as_string();
@@ -998,10 +988,8 @@ void Request::execute(ArrayOperation& ops) {
 			}
 		case OP::OP_INTDIV:
 			{
-				Value& b=stack.pop().value();  Value& a=stack.pop().value();
-
-				int a_int=a.as_int();
-				int b_int=b.as_int();
+				int b_int=stack.pop().value().as_int();
+				int a_int=stack.pop().value().as_int();
 
 				if(b_int == 0) {
 					//const String* problem_source=b.as_string();
