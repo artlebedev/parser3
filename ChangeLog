@@ -1,3 +1,50 @@
+2023-10-07  moko
+
+	* src/: main/execute.C, types/pa_vdate.h: volatile added to sync
+	  behavour with other OP_NUM_*, related to bug #1230
+
+2023-10-06  moko
+
+	* tests/: 338.html, results/338.processed: test for bug #1230 added
+
+	* src/: main/execute.C, types/pa_vdate.h: force double operands to
+	  be converted to double to avoid 80 bit operations in x87 mode
+	  (fixes bug #1230)
+
+2023-10-05  moko
+
+	* tests/420.html: add feature FEATURE_GET_ELEMENT4CALL disabled
+	  compatibility
+
+	* tests/337.html: 2work without FEATURE_GET_ELEMENT4CALL
+
+	* tests/: 421.html, results/421.processed: test to cover all
+	  classes and objects nonexistent method and field exceptions
+	  (related to feature #1080 and #1227)
+
+	* tests/results/: 182.processed, 324.processed: undefined method ->
+	  <type> method not found exception (related to feature #1080)
+
+	* src/types/: pa_vbool.h, pa_vconsole.h, pa_vdouble.h, pa_vint.h,
+	  pa_vregex.C, pa_vstateless_object.h: + VSimple_stateless_object,
+	  "element can not be fetched from" for them, "field not found" for
+	  all other types (related to bug #1227)
+
+2023-10-03  moko
+
+	* src/types/pa_vstateless_class.h: "Source: <method name>, Comment:
+	  <type> method not found" exception now thrown for static calls
+	  instead of "undefined method" without class name (related to
+	  feature #1080)
+
+2023-10-02  moko
+
+	* src/types/: pa_vdouble.h, pa_vhash.h, pa_vint.h, pa_vobject.C,
+	  pa_vstateless_object.h, pa_vstring.h, pa_vtable.C: "Source:
+	  <method name>, Comment: <type> method not found" exception now
+	  thrown for all dynamic objects instead of "undefined method"
+	  without class name (implements feature #1080)
+
 2023-10-01  moko
 
 	* src/classes/json.C: we don't have a dynamic json object.
