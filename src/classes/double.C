@@ -13,7 +13,7 @@
 #include "pa_vint.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_DOUBLE_C="$Id: double.C,v 1.75 2023/09/26 20:49:05 moko Exp $" IDENT_PA_VDOUBLE_H;
+volatile const char * IDENT_DOUBLE_C="$Id: double.C,v 1.76 2023/11/16 23:54:54 moko Exp $" IDENT_PA_VDOUBLE_H;
 
 // externs
 
@@ -53,7 +53,7 @@ static void __inc(VDouble& vdouble, double param) { vdouble.inc(param); }
 static void __dec(VDouble& vdouble, double param) { vdouble.inc(-param); }
 static void __mul(VDouble& vdouble, double param) { vdouble.mul(param); }
 static void __div(VDouble& vdouble, double param) { vdouble.div(param); }
-static void __mod(VDouble& vdouble, double param) { vdouble.mod((int)param); }
+static void __mod(VDouble& vdouble, double param) { vdouble.mod(param); }
 
 static void vdouble_op(Request& r, MethodParams& params, vdouble_op_func_ptr func) {
 	VDouble& vdouble=GET_SELF(r, VDouble);

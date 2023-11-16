@@ -29,7 +29,7 @@
 #define pa_mkdir(path, mode) mkdir(path, mode)
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.328 2023/11/16 00:40:42 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.329 2023/11/16 23:54:55 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -763,21 +763,21 @@ const char* format(double value, const char* fmt) {
 	if(fmt && strlen(fmt)){
 		switch(format_type(fmt)){
 			case FormatDouble:
-				size=snprintf(local_buf, sizeof(local_buf), fmt, value); 
+				size=snprintf(local_buf, sizeof(local_buf), fmt, value);
 				break;
 			case FormatUInt:
 				if(value >= 0){ // on Apple M1 (uint)<negative value> is 0
-					size=snprintf(local_buf, sizeof(local_buf), fmt, (uint)value);
+					size=snprintf(local_buf, sizeof(local_buf), fmt, clip2uint(value));
 					break;
 				}
 			case FormatInt:
-				size=snprintf(local_buf, sizeof(local_buf), fmt, (int)value); 
+				size=snprintf(local_buf, sizeof(local_buf), fmt, clip2int(value));
 				break;
 			case FormatInvalid:
 				throw Exception(PARSER_RUNTIME, 0, "Incorrect format string '%s' was specified.", fmt);
 		}
 	} else
-		size=snprintf(local_buf, sizeof(local_buf), "%d", (int)value);
+		size=snprintf(local_buf, sizeof(local_buf), "%d", clip2int(value));
 
 	if(size < 0 || size >= MAX_NUMBER-1){ // on win32 we manually reduce max size while printing
 		throw Exception(PARSER_RUNTIME, 0, "Error occurred white executing snprintf with format string '%s'.", fmt);

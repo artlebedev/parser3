@@ -8,7 +8,7 @@
 #ifndef PA_VDOUBLE_H
 #define PA_VDOUBLE_H
 
-#define IDENT_PA_VDOUBLE_H "$Id: pa_vdouble.h,v 1.75 2023/10/05 01:28:08 moko Exp $"
+#define IDENT_PA_VDOUBLE_H "$Id: pa_vdouble.h,v 1.76 2023/11/16 23:54:55 moko Exp $"
 
 // includes
 
@@ -73,7 +73,7 @@ public: // usage
 			throw Exception("number.format", 0, pa_isnan(adouble) ? "invalid number (double)" : "out of range (double)");
 	}
 
-	int get_int() const { return (int)trunc(fdouble); }
+	int get_int() const { return clip2int(trunc(fdouble)); }
 	double get_double() const { return fdouble; }
 
 	void inc(double increment) { fdouble+=increment; }
@@ -86,10 +86,10 @@ public: // usage
 		fdouble/=d; 
 	}
 	
-	void mod(int d) {
+	void mod(double d) {
 		if(d == 0)
 			throw Exception("number.zerodivision", 0, "Modulus by zero");
-		fdouble=((int)fdouble)%d;
+		fdouble=fmod(fdouble, d);
 	}
 
 private:
