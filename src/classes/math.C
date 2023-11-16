@@ -23,7 +23,7 @@
 extern "C" char *crypt(const char* , const char* );
 #endif
 
-volatile const char * IDENT_MATH_C="$Id: math.C,v 1.101 2023/09/26 20:49:06 moko Exp $";
+volatile const char * IDENT_MATH_C="$Id: math.C,v 1.102 2023/11/16 01:17:51 moko Exp $";
 
 // defines
 
@@ -544,7 +544,7 @@ static void _uid64(Request& r, MethodParams& params) {
 
 static void _crc32(Request& r, MethodParams& params) {
 	const char *string=params.as_string(0, PARAMETER_MUST_BE_STRING).cstr();
-	r.write(*new VInt(pa_crc32(string, strlen(string))));
+	r.write(*new VDouble((uint)pa_crc32(string, strlen(string))));
 }
 
 static const char* abc_hex = "0123456789ABCDEF";
