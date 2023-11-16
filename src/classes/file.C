@@ -26,7 +26,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.276 2023/09/26 20:49:05 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.277 2023/11/16 00:00:53 moko Exp $";
 
 // defines
 
@@ -1120,7 +1120,7 @@ static void _base64(Request& r, MethodParams& params) {
 }
 
 static void _crc32(Request& r, MethodParams& params) {
-	unsigned long crc32 = 0;
+	uint crc32 = 0;
 	if(&r.get_self() == file_class) {
 		// ^file:crc32[file-name]
 		if(params.count()) {
@@ -1134,7 +1134,7 @@ static void _crc32(Request& r, MethodParams& params) {
 		VFile& self=GET_SELF(r, VFile);
 		crc32=pa_crc32(self.value_ptr(), self.value_size());
 	}
-	r.write(*new VInt(crc32));
+	r.write(*new VDouble(crc32));
 }
 
 
