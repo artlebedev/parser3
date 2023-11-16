@@ -29,7 +29,7 @@
 #define pa_mkdir(path, mode) mkdir(path, mode)
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.327 2023/09/26 20:49:09 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.328 2023/11/16 00:40:42 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -765,11 +765,13 @@ const char* format(double value, const char* fmt) {
 			case FormatDouble:
 				size=snprintf(local_buf, sizeof(local_buf), fmt, value); 
 				break;
+			case FormatUInt:
+				if(value >= 0){ // on Apple M1 (uint)<negative value> is 0
+					size=snprintf(local_buf, sizeof(local_buf), fmt, (uint)value);
+					break;
+				}
 			case FormatInt:
 				size=snprintf(local_buf, sizeof(local_buf), fmt, (int)value); 
-				break;
-			case FormatUInt:
-				size=snprintf(local_buf, sizeof(local_buf), fmt, (uint)value); 
 				break;
 			case FormatInvalid:
 				throw Exception(PARSER_RUNTIME, 0, "Incorrect format string '%s' was specified.", fmt);
