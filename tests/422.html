@@ -6,6 +6,29 @@
 ^show(-4000000000)
 ^show(-5000000000)
 
+$n(100000000000)
+
+n:$n (clipped 0x^n.format[%x])
+
+1. % ^eval($n % ($n-1))
+
+2. \ ^eval($n \ ($n/1000))
+
+3. ~ ^eval(~$n)[%x]
+
+4. >> ^eval($n >> 16 )[%x]
+
+5. << ^eval($n << 16 )[%x] (^eval($n << 16 ))
+
+6. % ^eval(1 % 0.3)
+
+7. mod ^n.mod($n-0.5) $n
+
+8. $i(10) $i(^i.int[])
+   mod ^i.mod(4.8) $i
+
+9. $n(10)
+   mod ^n.mod(4.8) $n
 
 @show[n]
 ${n}: ^n.format[%d] ^n.format[%u] ^n.format[%x]
