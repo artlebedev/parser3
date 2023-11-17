@@ -34,7 +34,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.418 2023/09/26 20:49:10 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.419 2023/11/17 19:12:34 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -691,7 +691,7 @@ void Request::use_buf(VStateless_class& aclass, const char* source, const String
 			configure_admin(cclass/*, executed.method->name*/);
 
 		// locate and execute possible @auto[] static
-		execute_method_if_exists(cclass, auto_method_name, vfilespec);
+		execute_auto_method_if_exists(cclass, auto_method_name, vfilespec);
 
 		cclass.enable_default_setter();
 	}

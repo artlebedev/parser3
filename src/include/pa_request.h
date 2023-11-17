@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.262 2023/09/26 20:49:07 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.263 2023/11/17 19:12:34 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -369,6 +369,7 @@ public: // status read methods
 
 	//{ for @conf[filespec] and @auto[filespec]
 	bool execute_method_if_exists(VStateless_class& aclass, const String& method_name, Value* optional_param);
+	bool execute_auto_method_if_exists(VStateless_class& aclass, const String& method_name, Value* optional_param);
 
 	//}
 

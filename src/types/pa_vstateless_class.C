@@ -11,7 +11,7 @@
 #include "pa_symbols.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VSTATELESS_CLASS_C="$Id: pa_vstateless_class.C,v 1.64 2023/09/26 20:49:13 moko Exp $" IDENT_PA_VSTATELESS_CLASS_H IDENT_PA_METHOD_H;
+volatile const char * IDENT_PA_VSTATELESS_CLASS_C="$Id: pa_vstateless_class.C,v 1.65 2023/11/17 19:12:34 moko Exp $" IDENT_PA_VSTATELESS_CLASS_H IDENT_PA_METHOD_H;
 
 bool VStateless_class::gall_vars_local=false;
 
@@ -139,8 +139,12 @@ void VStateless_class::set_base(VStateless_class* abase){
 		bool no_auto = fmethods.get(auto_method_name) == NULL;
 		// we assume there is no derivatives at this point
 		fmethods.merge_dont_replace(abase->fmethods);
-		// we don't want to inherit @auto (issue #75)
-		if (no_auto) fmethods.remove(auto_method_name);
+		// we don't want to inherit @auto (issue #75) unless we should (feature #1233)
+		if (no_auto){
+			Method* mauto = fmethods.get(auto_method_name);
+			if(mauto != NULL && mauto->params_count < 2)
+				fmethods.remove(auto_method_name);
+		}
 
 		if(fbase->fscalar && !fscalar)
 			fscalar=fbase->fscalar;

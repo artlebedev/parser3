@@ -21,7 +21,7 @@
 #include "pa_vimage.h"
 #include "pa_wwrapper.h"
 
-volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.416 2023/10/07 01:12:26 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
+volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.417 2023/11/17 19:12:34 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
 
 //#define DEBUG_EXECUTE
 
@@ -1452,6 +1452,28 @@ bool Request::execute_method_if_exists(VStateless_class& aclass, const String& m
 		METHOD_FRAME_ACTION(*method, method_frame/*caller*/, aclass, {
 
 			if(optional_param && method->params_count>0) {
+				frame.store_params(&optional_param, 1);
+			} else {
+				frame.empty_params();
+			}
+
+			call(frame);
+		});
+		return true;
+	}
+	return false;
+}
+
+bool Request::execute_auto_method_if_exists(VStateless_class& aclass, const String& method_name, Value* optional_param) {
+	if(const Method *method=aclass.get_method(method_name)){
+		METHOD_FRAME_ACTION(*method, method_frame/*caller*/, aclass, {
+			Value* two_params[2];
+
+			if (optional_param && method->params_count>1) {
+				two_params[0] = optional_param;
+				two_params[1] = new VString(*new String(aclass.type()));
+				frame.store_params(two_params, 2);
+			} else if (optional_param && method->params_count>0) {
 				frame.store_params(&optional_param, 1);
 			} else {
 				frame.empty_params();
