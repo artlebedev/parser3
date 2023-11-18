@@ -8,7 +8,7 @@
 #ifndef PA_DIR_H
 #define PA_DIR_H
 
-#define IDENT_PA_DIR_H "$Id: pa_dir.h,v 1.31 2023/09/26 20:49:07 moko Exp $"
+#define IDENT_PA_DIR_H "$Id: pa_dir.h,v 1.32 2023/11/18 15:55:21 moko Exp $"
 
 #include "pa_config_includes.h"
 
@@ -21,7 +21,7 @@
 
 #include <windows.h>
 
-#define MAXPATH MAX_PATH
+#define MAXPATH ((MAX_PATH)*2) /*UTF-16*/
 
 struct ffblk {
 	struct _WIN32_FIND_DATAW stat;
