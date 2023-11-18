@@ -1,3 +1,4 @@
+@main[]
 code coverage tests:
 
 1. int
@@ -25,11 +26,11 @@ code coverage tests:
     4.6 ^try-catch{ ^inet:ip2name[ip; $.no-such-option[] ] }
     4.7 ^try-catch{ ^inet:ip2name[ip; $.ipv[invalid] ] }
     4.8 ^try-catch{ ^inet:ip2name[1.1.1.300] }
-    4.9 ^try-catch{ ^inet:ip2name[1.1.1.1; $.ipv[6] ] }
+    4.9 ^try-catch-partial(28){ ^inet:ip2name[1.1.1.1; $.ipv[6] ] }
 
     4.11 ^try-catch{ ^inet:name2ip[$empty] }
     4.12 ^try-catch{ ^inet:name2ip[name; $.no-such-option[] ] }
-    4.13 ^try-catch{ ^inet:name2ip[no-such-domain.артлебедев.рф; $.ipv[6] ] }
+    4.13 ^try-catch-partial(70){ ^inet:name2ip[no-such-domain.артлебедев.рф; $.ipv[6] ] }
     4.14 ^try-catch{ ^inet:name2ip[test.артлебедев.рф; $.ipv[6] ] }
 
 5. math
@@ -74,3 +75,11 @@ code coverage tests:
 
     7.15 ^try-catch{ ^file:list[.; $.stat(true) $.filter[.*] $.no-such-options[] ] }
     7.15 ^try-catch{ ^file:list[.; $.filter[ $.hash[] ] ] }
+
+@try-catch-partial[limit;jCode]
+^try{$jCode}{
+        $exception.handled(true)
+        Type: $exception.type,
+        Source: $exception.source,
+        Comment: ^exception.comment.left($limit)
+}
