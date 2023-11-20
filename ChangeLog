@@ -1,3 +1,46 @@
+2023-11-18  moko
+
+	* src/include/pa_types.h: minor
+
+	* src/include/pa_dir.h: MAXPATH in UTF-16 chars, not bytes
+
+	* tests/: 389.html, results/389.processed: error messages for some
+	  OS differs a bit, reducing failing tests for them
+
+2023-11-17  moko
+
+	* tests/: 423.html, results/423.processed: test for optional
+	  @auto[] inheritance added (related to feature #1233)
+
+	* src/: include/pa_request.h, main/execute.C, main/pa_request.C,
+	  types/pa_vstateless_class.C: optional @auto[] inheritance
+	  implemented if defined with two args (path, class name)
+	  (implements feature #1233)
+
+	* src/: classes/double.C, classes/int.C, classes/math.C,
+	  include/pa_random.h, include/pa_types.h, main/pa_common.C,
+	  types/pa_vdouble.h, types/pa_vint.h: clip2int,clip2uint added to
+	  sync double->int overflow behavour under different architectures
+	  (fixes bug #1232)
+
+	* tests/: 422.html, results/422.processed: int clipping added
+
+2023-11-16  moko
+
+	* tests/: 422.html, results/422.processed: test for int and uint
+	  overflow in ^n.format[d/u/x]
+
+	* src/classes/math.C: bugfix: crc32 should not be negative (under
+	  Apple M1 when negative double converts to uint the result is 0)
+	  and crc32 should be 32 bits
+
+	* src/main/pa_common.C: avoid (uint)<negative double> conversion as
+	  on Apple M1 it's 0
+
+	* src/classes/file.C: bugfix: crc32 should not be negative (under
+	  Apple M1 when negative double converts to uint the result is 0)
+	  and crc32 should be 32 bits
+
 2023-10-07  moko
 
 	* src/: main/execute.C, types/pa_vdate.h: volatile added to sync
