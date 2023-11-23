@@ -12,7 +12,7 @@
 #include "pa_charset.h"
 #include "pa_vregex.h"
 
-volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.269 2023/09/26 20:49:10 moko Exp $" IDENT_PA_STRING_H;
+volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.270 2023/11/23 01:27:12 moko Exp $" IDENT_PA_STRING_H;
 
 const String String::Empty;
 
@@ -109,12 +109,17 @@ int pa_atoi(const char* str, int base, const String* problem_source) {
 	if(!*str)
 		return 0;
 
+	const char *str_copy=str;
 	bool negative=false;
 	if(str[0]=='-') {
 		negative=true;
 		str++;
+		if(!*str || isspace(*str))
+			throw Exception("number.format", problem_source, problem_source ? "invalid number (int)" : "'%s' is invalid number (int)", str_copy);
 	} else if(str[0]=='+') {
 		str++;
+		if(!*str || isspace(*str))
+			throw Exception("number.format", problem_source, problem_source ? "invalid number (int)" : "'%s' is invalid number (int)", str_copy);
 	}
 
 	unsigned int result=pa_atoui(str, base, problem_source);
@@ -124,11 +129,11 @@ int pa_atoi(const char* str, int base, const String* problem_source) {
 	
 	if(result<=INT_MAX)
 		return (int)result;
-	
-	throw Exception("number.format", problem_source, problem_source ? "out of range (int)" : "'%s' is out of range (int)", str);
+
+	throw Exception("number.format", problem_source, problem_source ? "out of range (int)" : "'%s' is out of range (int)", str_copy);
 }
 
-double pa_atod(const char* str, const String* problem_source) {
+double pa_atod(const char* str, const String* problem_source /* never null */) {
 	if(!str)
 		return 0;
 
@@ -142,8 +147,12 @@ double pa_atod(const char* str, const String* problem_source) {
 	if(str[0]=='-') {
 		negative=true;
 		str++;
+		if(!*str || isspace(*str))
+			throw Exception("number.format", problem_source, "invalid number (double)");
 	} else if(str[0]=='+') {
 		str++;
+		if(!*str || isspace(*str))
+			throw Exception("number.format", problem_source, "invalid number (double)");
 	}
 
 	double result;
@@ -161,9 +170,9 @@ double pa_atod(const char* str, const String* problem_source) {
 	char *error_pos;
 	result=strtod(str, &error_pos);
 
-	while(char c=*error_pos++)
-		if(!isspace((unsigned char)c))
-			throw Exception("number.format", problem_source, problem_source ? "invalid number (double)" : "'%s' is invalid number (double)", str);
+	while(const char c=*error_pos++)
+		if(!isspace(c))
+			throw Exception("number.format", problem_source, "invalid number (double)");
 
 	return negative ? -result : result;
 }

@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.229 2023/09/26 20:49:07 moko Exp $"
+#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.230 2023/11/23 01:27:12 moko Exp $"
 
 // includes
 #include "pa_types.h"
@@ -52,7 +52,7 @@ class VRegex;
 
 // generally useful
 
-double pa_atod(const char* str, const String* problem_source=0);
+double pa_atod(const char* str, const String* problem_source);
 int pa_atoi(const char* str, int base=10, const String* problem_source=0);
 unsigned int pa_atoui(const char *str, int base=10, const String* problem_source=0);
 uint64_t pa_atoul(const char *str, int base=10, const String* problem_source=0);

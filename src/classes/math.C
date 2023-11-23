@@ -23,7 +23,7 @@
 extern "C" char *crypt(const char* , const char* );
 #endif
 
-volatile const char * IDENT_MATH_C="$Id: math.C,v 1.103 2023/11/16 23:54:54 moko Exp $";
+volatile const char * IDENT_MATH_C="$Id: math.C,v 1.104 2023/11/23 01:27:12 moko Exp $";
 
 // defines
 
@@ -633,7 +633,6 @@ static void _convert(Request& r, MethodParams& params) {
 		}
 
 	bool negative=false;
-	bool sign=false;
 
 	// converting digits to their numeric values
 
@@ -659,11 +658,13 @@ static void _convert(Request& r, MethodParams& params) {
 
 		if(src[0]=='-') {
 			negative=true;
-			sign=true;
 			src++;
+			if(!*src || isspace(*src))
+				throw Exception("number.format", 0,  "'-' is invalid number");
 		} else if(src[0]=='+') {
-			sign=true;
 			src++;
+			if(!*src || isspace(*src))
+				throw Exception("number.format", 0,  "'+' is invalid number");
 		}
 
 		for(c=src;c<src_end;c++) {
@@ -681,8 +682,6 @@ static void _convert(Request& r, MethodParams& params) {
 	}
 
 	if(src==src_end) {
-		if(sign)
-			throw Exception("number.format", 0,  "'%c' is invalid number", negative ? '-' : '+');
 		if(result_file)
 			r.write(*result_file);
 		return;
