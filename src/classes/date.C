@@ -12,8 +12,9 @@
 #include "pa_vdouble.h"
 #include "pa_vdate.h"
 #include "pa_vtable.h"
+#include "pa_vbool.h"
 
-volatile const char * IDENT_DATE_C="$Id: date.C,v 1.114 2023/09/26 20:49:05 moko Exp $" IDENT_PA_VDATE_H;
+volatile const char * IDENT_DATE_C="$Id: date.C,v 1.115 2023/11/26 16:02:41 moko Exp $" IDENT_PA_VDATE_H;
 
 // class
 
@@ -529,6 +530,21 @@ static void _last_day(Request& r, MethodParams& params) {
 	r.write(*new VInt(VDate::getMonthDays(tmIn.tm_year, tmIn.tm_mon)));
 }
 
+static void _int(Request& r, MethodParams&) {
+	VDate& vdate=GET_SELF(r, VDate);
+	r.write(*new VInt(vdate.as_int()));
+}
+
+static void _double(Request& r, MethodParams&) {
+	VDate& vdate=GET_SELF(r, VDate);
+	r.write(*new VDouble(vdate.as_double()));
+}
+
+static void _bool(Request& r, MethodParams&) {
+	VDate& vdate=GET_SELF(r, VDate);
+	r.write(VBool::get(vdate.as_bool()));
+}
+
 // constructor
 
 MDate::MDate(): Methoded("date") {
@@ -572,4 +588,13 @@ MDate::MDate(): Methoded("date") {
 	// ^date.unix-timestamp[]
 	// ^date::unix-timestamp(timestamp)
 	add_native_method("unix-timestamp", Method::CT_DYNAMIC, _unix_timestamp, 0, 1);
+
+	// date.int[default for ^string.int compatibility]
+	add_native_method("int", Method::CT_DYNAMIC, _int, 0, 1);
+
+	// ^date.double[default for ^string.double compatibility]
+	add_native_method("double", Method::CT_DYNAMIC, _double, 0, 1);
+
+	// ^date.bool[default for ^string.bool compatibility]
+	add_native_method("bool", Method::CT_DYNAMIC, _bool, 0, 1);
 }
