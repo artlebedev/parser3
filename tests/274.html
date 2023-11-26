@@ -10,11 +10,11 @@ $d2[^date::create(2000;02;29;01;23;45)]
 ^d2.sql-string[datetime]<br />
 ^d2.sql-string[date]<br />
 ^d2.sql-string[time]<br />
-^try{
-	^d2.sql-string[hren]
-}{
-	$exception.handled(true)
-	$exception.type
-	$exception.source
-	$exception.comment
-}
+
+<hr />
+
+^d2.double[]
+^d2.int[]
+^eval(^d2.bool[]*1)
+
+^try-catch{ ^d2.sql-string[hren] }
