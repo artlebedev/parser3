@@ -1,3 +1,17 @@
+2023-11-26  moko
+
+	* tests/: 274.html, results/224.processed, results/274.processed:
+	  tests for date double, int, bool added (related to feature #1235)
+
+	* src/: classes/date.C, types/pa_vdate.h: double,int,bool methods
+	  added for date class (implements feature #1235)
+
+2023-11-23  moko
+
+	* src/: classes/math.C, include/pa_string.h, main/pa_string.C: '+'
+	  and '-' strings are no longer can be treated as number 0,
+	  exception thrown (fixes bug #1234)
+
 2023-11-18  moko
 
 	* src/include/pa_types.h: minor
