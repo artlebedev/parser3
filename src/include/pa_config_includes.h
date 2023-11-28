@@ -237,6 +237,7 @@ inline size_t min(size_t a, size_t b){ return a<b?a:b; }
 
 #elif defined(__GNUC__)
 #pragma GCC diagnostic ignored "-Wimplicit-fallthrough"  // case without break
+#pragma GCC diagnostic ignored "-Wregister"  // ISO C++17 does not allow 'register' storage class specifier
 
 #endif
 
