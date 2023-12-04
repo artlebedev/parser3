@@ -1,3 +1,13 @@
+2023-11-28  moko
+
+	* src/include/pa_config_includes.h: warnings war continues
+
+	* src/include/pa_config_includes.h: warning war
+
+	* tests/: 424.html, results/424.processed: tests for '+' and '-'
+	  number strings, whitespace and sign in exception messages
+	  (related to bug #1234)
+
 2023-11-26  moko
 
 	* tests/: 274.html, results/224.processed, results/274.processed:
