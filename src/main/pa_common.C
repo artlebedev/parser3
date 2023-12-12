@@ -12,7 +12,6 @@
 #include "pa_charsets.h"
 #include "pa_http.h"
 #include "pa_request_charsets.h"
-#include "pcre.h"
 #include "pa_request.h"
 
 #include "pa_idna.h"
@@ -29,7 +28,7 @@
 #define pa_mkdir(path, mode) mkdir(path, mode)
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.329 2023/11/16 23:54:55 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.330 2023/12/12 18:29:28 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 

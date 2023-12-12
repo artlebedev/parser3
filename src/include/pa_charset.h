@@ -8,7 +8,7 @@
 #ifndef PA_CHARSET_H
 #define PA_CHARSET_H
 
-#define IDENT_PA_CHARSET_H "$Id: pa_charset.h,v 1.57 2023/09/26 20:49:06 moko Exp $"
+#define IDENT_PA_CHARSET_H "$Id: pa_charset.h,v 1.58 2023/12/12 18:29:28 moko Exp $"
 
 
 #include "pa_exception.h"
@@ -16,7 +16,11 @@
 #include "pa_hash.h"
 #include "pa_array.h"
 
-#include "pcre.h"
+#ifdef HAVE_PCRE2
+#include <pcre2.h>
+#else
+#include <pcre.h>
+#endif
 // we are using some pcre_internal.h stuff as well
 #include "../lib/pcre/pa_pcre_internal.h"
 

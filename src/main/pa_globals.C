@@ -26,9 +26,9 @@ extern "C" {
 #include "pa_cache_managers.h"
 
 #include "ltdl.h"
-#include "pcre.h"
+#include "pa_vregex.h"
 
-volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.213 2023/09/26 20:49:10 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
+volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.214 2023/12/12 18:29:28 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
 
 // defines
 
@@ -177,6 +177,19 @@ static void pa_gc_free_maybeignore(void* ptr) {
 
 #endif // XML
 
+#ifdef HAVE_PCRE2
+pcre2_general_context* VRegex::fgen_ctxt;
+
+static void* pa_pcre_malloc(size_t size, void *ptr){
+	return pa_malloc(size);
+}
+
+static void pa_pcre_free(void *ptr, void *tag){
+	pa_free(ptr);
+}
+#endif
+
+
 void pa_CORD_oom_fn(void) {
 	pa_fail_alloc("expand string", 0);
 }
@@ -207,8 +220,12 @@ static void gc_substitute_memory_management_functions() {
 #endif
 
 	// pcre
+#ifdef HAVE_PCRE2
+	VRegex::fgen_ctxt=pcre2_general_context_create(pa_pcre_malloc, pa_pcre_free, NULL);
+#else
 	pcre_malloc=pa_malloc;
 	pcre_free=pa_free;
+#endif
 
 	// cord
 	CORD_oom_fn=pa_CORD_oom_fn;

@@ -41,9 +41,13 @@ POSSIBILITY OF SUCH DAMAGE.
 /* This module contains an internal function for validating UTF-8 character
 strings. */
 
-#include "pcre.h"
 #include "pa_pcre_internal.h"
 
+#ifdef HAVE_PCRE2
+#include <pcre2.h>
+#else
+#include <pcre.h>
+#endif
 
 /*************************************************
 *         Validate a UTF-8 string                *

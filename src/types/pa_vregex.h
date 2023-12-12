@@ -8,7 +8,7 @@
 #ifndef PA_VREGEX_H
 #define PA_VREGEX_H
 
-#define IDENT_PA_VREGEX_H "$Id: pa_vregex.h,v 1.15 2023/09/26 20:49:13 moko Exp $"
+#define IDENT_PA_VREGEX_H "$Id: pa_vregex.h,v 1.16 2023/12/12 18:29:28 moko Exp $"
 
 // include
 
@@ -16,7 +16,6 @@
 #include "pa_common.h"
 #include "pa_vstateless_object.h"
 #include "pa_charset.h"
-#include "pcre.h"
 
 // defines
 
@@ -57,31 +56,54 @@ public: // Value
 
 public: // usage
 
+#ifdef HAVE_PCRE2
+	static pcre2_general_context* fgen_ctxt;
+#endif
+
 	VRegex():
 		fcharset(0),
 		fpattern(0),
 		foptions_cstr(0),
 		fcode(0),
+#ifdef HAVE_PCRE2
+		fcmp_ctxt(0),
+		fmatch_ctxt(0),
+		fmatch_data(0)
+#else
 		fextra(0),
 		fstudied(false)
+#endif
 	{
 		foptions[0]=0;
 		foptions[1]=0;
 	}
 
 	VRegex(Charset& acharset, const String* aregex, const String* aoptions):
+#ifdef HAVE_PCRE2
+		fcmp_ctxt(0),
+		fmatch_ctxt(0),
+		fmatch_data(0)
+#else
 		fextra(0),
 		fstudied(false)
+#endif
 	{
 		set(acharset, aregex, aoptions);
 		compile();
 	}
 
 	~VRegex(){
+#ifdef HAVE_PCRE2
+		pcre2_match_data_free(fmatch_data);
+		pcre2_match_context_free(fmatch_ctxt);
+		pcre2_compile_context_free(fcmp_ctxt);
+		pcre2_code_free(fcode);
+#else
 		if(fextra)
 			pcre_free(fextra);
 		if(fcode)
 			pcre_free(fcode);
+#endif
 	}
 
 	void set(Charset& acharset, const String* aregex, const String* aoptions);
@@ -124,9 +146,16 @@ private:
 	const char* foptions_cstr;
 	int foptions[2];
 
+#ifdef HAVE_PCRE2
+	pcre2_code* fcode;
+	pcre2_compile_context* fcmp_ctxt;
+	pcre2_match_context* fmatch_ctxt;
+	pcre2_match_data* fmatch_data;
+#else
 	pcre* fcode;
 	pcre_extra* fextra;
 	bool fstudied;
+#endif
 };
 
 

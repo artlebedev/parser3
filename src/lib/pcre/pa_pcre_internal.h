@@ -1,6 +1,8 @@
 /* Some internal stuff from PCRE library */
 /* Author: Sergey B Kirpichev <skirpichev@gmail.com> */
 
+#include "pa_config_includes.h"
+
 /* Bit definitions for entries in the pcre_ctypes table. */
 
 #define ctype_space   0x01
@@ -51,3 +53,41 @@ for this function is in the pcre_valid_utf8.c module. */
     extern int pa_pcre_valid_utf(unsigned char *string, int length, int *erroroffset);
 #endif
 
+#ifdef HAVE_PCRE2
+#define PCRE_UTF8_ERR0 0
+#define PCRE_UTF8_ERR6 PCRE2_ERROR_UTF8_ERR6
+#define PCRE_UTF8_ERR7 PCRE2_ERROR_UTF8_ERR7
+#define PCRE_UTF8_ERR8 PCRE2_ERROR_UTF8_ERR8
+#define PCRE_UTF8_ERR9 PCRE2_ERROR_UTF8_ERR9
+#define PCRE_UTF8_ERR10 PCRE2_ERROR_UTF8_ERR10
+#define PCRE_UTF8_ERR11 PCRE2_ERROR_UTF8_ERR11
+#define PCRE_UTF8_ERR12 PCRE2_ERROR_UTF8_ERR12
+#define PCRE_UTF8_ERR13 PCRE2_ERROR_UTF8_ERR13
+#define PCRE_UTF8_ERR14 PCRE2_ERROR_UTF8_ERR14
+#define PCRE_UTF8_ERR15 PCRE2_ERROR_UTF8_ERR15
+#define PCRE_UTF8_ERR16 PCRE2_ERROR_UTF8_ERR16
+#define PCRE_UTF8_ERR17 PCRE2_ERROR_UTF8_ERR17
+#define PCRE_UTF8_ERR18 PCRE2_ERROR_UTF8_ERR18
+#define PCRE_UTF8_ERR19 PCRE2_ERROR_UTF8_ERR19
+#define PCRE_UTF8_ERR20 PCRE2_ERROR_UTF8_ERR20
+#define PCRE_UTF8_ERR21 PCRE2_ERROR_UTF8_ERR21
+
+#define PCRE_ERROR_BADUTF8_OFFSET PCRE2_ERROR_BADUTFOFFSET
+
+#define PCRE_UTF8 PCRE2_UTF
+#define PCRE_UCP PCRE2_UCP
+#define PCRE_EXTENDED PCRE2_EXTENDED
+#define PCRE_ERROR_NOMATCH PCRE2_ERROR_NOMATCH
+
+#define PCRE_INFO_SIZE PCRE2_INFO_SIZE
+
+#define PCRE_CASELESS PCRE2_CASELESS
+#define PCRE_DOTALL PCRE2_DOTALL
+#define PCRE_MULTILINE PCRE2_MULTILINE
+#define PCRE_UNGREEDY PCRE2_UNGREEDY
+#define PCRE_DOLLAR_ENDONLY PCRE2_DOLLAR_ENDONLY
+#define PCRE_EXTRA 0
+
+#define pcre_fullinfo(fcode, fextra, type, result) pcre2_pattern_info(fcode, type, result)
+
+#endif

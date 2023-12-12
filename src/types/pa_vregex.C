@@ -9,23 +9,23 @@
 #include "pa_vint.h"
 #include "pa_vstring.h"
 
-volatile const char * IDENT_PA_VREGEX_C="$Id: pa_vregex.C,v 1.23 2023/10/05 01:28:08 moko Exp $" IDENT_PA_VREGEX_H;
+volatile const char * IDENT_PA_VREGEX_C="$Id: pa_vregex.C,v 1.24 2023/12/12 18:29:28 moko Exp $" IDENT_PA_VREGEX_H;
 
 // defines
 
 #define REGEX_PATTERN_NAME "pattern"
 #define REGEX_OPTIONS_NAME "options"
 
-
 const char* get_pcre_exec_error_text(int exec_result){
-	switch(exec_result){
-		case PCRE_ERROR_BADUTF8:
-		case PCRE_ERROR_BADUTF8_OFFSET:
-			return "UTF-8 validation failed during pcre_exec (%d).";
-			break;
-		default:
-			return "execution error (%d)";
-	}
+	if(exec_result == PCRE_ERROR_BADUTF8_OFFSET ||
+#ifdef HAVE_PCRE2
+		exec_result <= PCRE2_ERROR_UTF8_ERR1 /* -3 */ && exec_result >= PCRE2_ERROR_UTF8_ERR21 /* -21 */
+#else
+		exec_result == PCRE_ERROR_BADUTF8
+#endif
+	)
+		return "UTF-8 validation failed during pcre_exec (%d).";
+	return "execution error (%d)";
 }
 
 
@@ -100,20 +100,39 @@ void VRegex::set(VRegex& avregex){
 
 void VRegex::compile(){
 	const char* err_ptr;
-	int err_offset;
 	int options=foptions[0];
 
 	// @todo (for UTF-8): check string & pattern and use PCRE_NO_UTF8_CHECK option 
 	if(fcharset->isUTF8())
 		options |= (PCRE_UTF8 | PCRE_UCP);
 
+#ifdef HAVE_PCRE2
+	int err;
+	size_t err_offset;
+	PCRE2_UCHAR buffer[120];
+
+	if(!fcmp_ctxt)
+		fcmp_ctxt=pcre2_compile_context_create(fgen_ctxt);
+
+	pcre2_set_character_tables(fcmp_ctxt, fcharset->pcre_tables);
+
+	fcode=pcre2_compile((PCRE2_SPTR)fpattern, PCRE2_ZERO_TERMINATED, options,
+		&err, &err_offset,
+		fcmp_ctxt);
+
+	if(!fcode){
+		pcre2_get_error_message(err, buffer, sizeof(buffer));
+		err_ptr=(const char*)buffer;
+	}
+#else
+	int err_offset;
 	fcode=pcre_compile(fpattern, options,
 		&err_ptr, &err_offset,
 		fcharset->pcre_tables);
-
+#endif
 	if(!fcode){
 		throw Exception(PCRE_EXCEPTION_TYPE,
-			new String(fpattern+err_offset, String::L_TAINTED),
+			new String(fpattern + (fpattern[err_offset] ? err_offset : 0), String::L_TAINTED),
 			"regular expression syntax error - %s", err_ptr);
 	}
 
@@ -139,10 +158,16 @@ size_t VRegex::get_info_size(){
 
 
 size_t VRegex::get_study_size(){
+#ifdef HAVE_PCRE2
+	return 0;
+#else
 	return full_info(PCRE_INFO_STUDYSIZE);
+#endif
 }
 
+
 void VRegex::study(){
+#ifndef HAVE_PCRE2
 	if(fstudied)
 		return;
 
@@ -156,20 +181,42 @@ void VRegex::study(){
 	}
 
 	fstudied=true;
+#endif
 }
 
 
 int VRegex::exec(const char* string, size_t string_len, int* ovector, int ovector_size, int prestart){
+#ifdef HAVE_PCRE2
+	if(!fmatch_ctxt)
+		fmatch_ctxt=pcre2_match_context_create(fgen_ctxt);
+
+	if(!fmatch_data)
+		fmatch_data=pcre2_match_data_create_from_pattern(fcode, fgen_ctxt);
+
+	int result=pcre2_match(fcode,
+		(PCRE2_SPTR)string, string_len, prestart,
+		prestart>0 ? PCRE2_NO_UTF_CHECK : 0, fmatch_data, fmatch_ctxt);
+#else
 	int result=pcre_exec(fcode, fextra, 
 		string, string_len, prestart,
 		prestart>0 ? PCRE_NO_UTF8_CHECK : 0, ovector, ovector_size);
-			
+#endif
+
 	if(result<0 && result!=PCRE_ERROR_NOMATCH){
 		throw Exception(PCRE_EXCEPTION_TYPE, 
 			new String(fpattern, String::L_TAINTED),
 			get_pcre_exec_error_text(result), result);
 	}
 
+#ifdef HAVE_PCRE2
+	if(result>0){
+		result=min(result, ovector_size/3);
+		size_t* groups=pcre2_get_ovector_pointer(fmatch_data);
+		for(int i=0; i<result*2; i++){
+			ovector[i]=groups[i];
+		}
+	}
+#endif
 	return result;
 }
 
