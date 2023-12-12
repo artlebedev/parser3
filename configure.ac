@@ -181,29 +181,49 @@ dnl PCRE argument
 AC_ARG_WITH(pcre,[  --with-pcre=DIR         DIR is the directory where
                           PCRE library is installed],[
 	PCRE=$withval
-	PCRE_INCLUDES="-I$PCRE/include"
-	PCRE_LIBS="$PCRE/lib/libpcre.la"
-
-	if test -f $PCRE/include/pcre.h -a -f $PCRE_LIBS; then
-		PCRE_OK="yes"
-	else
-		PCRE_LIBS="-L$PCRE/lib -lpcre"
-	fi
 
 	if test "$PCRE" = "yes"; then
 		PCRE=""
-		PCRE_LIBS="-lpcre"
-		PCRE_INCLUDES=""
 		AC_MSG_WARN([--with-pcre value was not specified, hoping linker would find it])
+	else
+		PCRE_INCLUDES="-I$PCRE/include"
+
+		if test -f $PCRE/include/pcre.h -a -f $PCRE/lib/libpcre.la; then
+			PCRE_OK="yes"
+			PCRE_LIBS="$PCRE/lib/libpcre.la"
+		else
+			if test -f $PCRE/include/pcre2.h -a -f $PCRE/lib/libpcre2-8.la; then
+				PCRE_OK="yes"
+				PCRE_LIBS="$PCRE/lib/libpcre2-8.la"
+				AC_DEFINE(HAVE_PCRE2,,PCRE2 is available)
+			else
+				PCRE_LIBS="-L$PCRE/lib"
+			fi
+		fi
 	fi
 ],[
-	PCRE_LIBS="-lpcre"
-	PCRE_INCLUDES=""
 	AC_MSG_WARN([--with-pcre was not specified, hoping linker would find it])
 ])
 
 if test -z "$PCRE_OK"; then
-	AC_MSG_CHECKING(for prce)
+	AC_MSG_CHECKING(for pcre2)
+	SAVE_LIBS=$LIBS
+	LIBS="$LIBS $PCRE_LIBS $PCRE_INCLUDES -lpcre2-8"
+	AC_TRY_LINK([ #define PCRE2_CODE_UNIT_WIDTH 8
+#include <pcre2.h> ],[ void *v=pcre2_general_context_create(0,0,0); ],
+		AC_MSG_RESULT(yes)
+		PCRE_LIBS="$PCRE_LIBS -lpcre2-8"
+		AC_DEFINE(HAVE_PCRE2,,PCRE2 is available)
+		PCRE_OK="yes"
+	,
+		AC_MSG_RESULT(no)
+	)
+	LIBS=$SAVE_LIBS
+fi
+
+if test -z "$PCRE_OK"; then
+	AC_MSG_CHECKING(for pcre)
+	PCRE_LIBS="$PCRE_LIBS -lpcre"
 	SAVE_LIBS=$LIBS
 	LIBS="$LIBS $PCRE_LIBS $PCRE_INCLUDES"
 	AC_TRY_LINK([ #include <pcre.h> ],[ const char *v=pcre_version(); ],
