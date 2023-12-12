@@ -5097,27 +5097,32 @@ fi
 if test "${with_pcre+set}" = set; then :
   withval=$with_pcre;
 	PCRE=$withval
-	PCRE_INCLUDES="-I$PCRE/include"
-	PCRE_LIBS="$PCRE/lib/libpcre.la"
-
-	if test -f $PCRE/include/pcre.h -a -f $PCRE_LIBS; then
-		PCRE_OK="yes"
-	else
-		PCRE_LIBS="-L$PCRE/lib -lpcre"
-	fi
 
 	if test "$PCRE" = "yes"; then
 		PCRE=""
-		PCRE_LIBS="-lpcre"
-		PCRE_INCLUDES=""
 		{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: --with-pcre value was not specified, hoping linker would find it" >&5
 $as_echo "$as_me: WARNING: --with-pcre value was not specified, hoping linker would find it" >&2;}
+	else
+		PCRE_INCLUDES="-I$PCRE/include"
+
+		if test -f $PCRE/include/pcre.h -a -f $PCRE/lib/libpcre.la; then
+			PCRE_OK="yes"
+			PCRE_LIBS="$PCRE/lib/libpcre.la"
+		else
+			if test -f $PCRE/include/pcre2.h -a -f $PCRE/lib/libpcre2-8.la; then
+				PCRE_OK="yes"
+				PCRE_LIBS="$PCRE/lib/libpcre2-8.la"
+
+$as_echo "#define HAVE_PCRE2 /**/" >>confdefs.h
+
+			else
+				PCRE_LIBS="-L$PCRE/lib"
+			fi
+		fi
 	fi
 
 else
 
-	PCRE_LIBS="-lpcre"
-	PCRE_INCLUDES=""
 	{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: --with-pcre was not specified, hoping linker would find it" >&5
 $as_echo "$as_me: WARNING: --with-pcre was not specified, hoping linker would find it" >&2;}
 
@@ -5125,8 +5130,45 @@ fi
 
 
 if test -z "$PCRE_OK"; then
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for prce" >&5
-$as_echo_n "checking for prce... " >&6; }
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for pcre2" >&5
+$as_echo_n "checking for pcre2... " >&6; }
+	SAVE_LIBS=$LIBS
+	LIBS="$LIBS $PCRE_LIBS $PCRE_INCLUDES -lpcre2-8"
+	cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+ #define PCRE2_CODE_UNIT_WIDTH 8
+#include <pcre2.h>
+int
+main ()
+{
+ void *v=pcre2_general_context_create(0,0,0);
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+		PCRE_LIBS="$PCRE_LIBS -lpcre2-8"
+
+$as_echo "#define HAVE_PCRE2 /**/" >>confdefs.h
+
+		PCRE_OK="yes"
+
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+	LIBS=$SAVE_LIBS
+fi
+
+if test -z "$PCRE_OK"; then
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for pcre" >&5
+$as_echo_n "checking for pcre... " >&6; }
+	PCRE_LIBS="$PCRE_LIBS -lpcre"
 	SAVE_LIBS=$LIBS
 	LIBS="$LIBS $PCRE_LIBS $PCRE_INCLUDES"
 	cat confdefs.h - <<_ACEOF >conftest.$ac_ext
