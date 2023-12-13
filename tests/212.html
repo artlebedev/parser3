@@ -34,7 +34,8 @@ $r[^regex::create[3;gn]]
 
 $s[12312312]
 $r[^regex::create[\d+?]]
-study size: ^if(^r.study_size[]){!=0}{==0}<br />
+#pcre2 does not support study, this allways 0, pcre here !=0
+study size: ^if(^r.study_size[]){!=0}{!=0}<br />
 ^s.match[$r;]{!}
 <br />
 
