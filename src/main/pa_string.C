@@ -12,7 +12,7 @@
 #include "pa_charset.h"
 #include "pa_vregex.h"
 
-volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.270 2023/11/23 01:27:12 moko Exp $" IDENT_PA_STRING_H;
+volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.271 2023/12/13 20:07:11 moko Exp $" IDENT_PA_STRING_H;
 
 const String String::Empty;
 
@@ -661,7 +661,7 @@ Table* String::match(VRegex* vregex, Row_action row_action, void *info, int& mat
 
 	const char* subject=cstr();
 	size_t subject_length=length();
-	const int ovector_size=(1/*match*/+MAX_MATCH_GROUPS)*3;
+	const int ovector_size=(1/*match*/+MAX_MATCH_GROUPS)*3; /* 1/3 is used as workspace by pcre_exec() */
 	int ovector[ovector_size];
 
 	Table::Action_options table_options;
