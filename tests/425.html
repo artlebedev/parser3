@@ -1,0 +1,32 @@
+@main[]
+
+1. ^match[test line bad UTF8 ^#D0]
+2. ^match[test line bad UTF8 ^#D0^#0A]
+
+$s[test line]
+
+3. ^try-catch{ $m[^s.match[bug is ) - here]] }
+4. ^try-catch{ $m[^s.match[bug is ( - here]] }
+
+$r[^regex::create[(.)][g]]
+5. once ^json:string[^s.match[$r]]
+6. twice ^json:string[^s.match[$r]]
+
+$s[test line more then 100 characters long for regex with more then 100 groups test. test line more then 100 characters long. test line more then 100 characters long.]
+$m[^s.match[^for[i](0;12){((.)(.)(.)(.)(.)(.)(.)(.)(.))};']]
+$mm[^json:string[$m]]
+# pcre2 - exactly 100 groups, pcre - empty groups
+7. ^if(^mm.length[]== 1180 || ^mm.length[]== 208){OK}{failed}
+
+@match[s]
+^try-catch{ ^s.match[.] }
+
+@try-catch[jCode]
+^try{$jCode}{
+	$comment[^exception.comment.match[\(-\d+\)][]{(***)}]
+	$comment[^comment.match[ - .*][]{ - ***}]
+	$exception.handled(true)
+	Type: $exception.type,
+	Source: $exception.source,
+	Comment: $comment
+}

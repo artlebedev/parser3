@@ -1,0 +1,38 @@
+Content-Type: text/html
+Content-Length: 1311
+
+1. Type: pcre.execute,
+Source: .,
+Comment: UTF-8 validation failed during pcre_exec (***).
+2. Type: pcre.execute,
+Source: .,
+Comment: UTF-8 validation failed during pcre_exec (***).
+3. Type: pcre.execute,
+Source: ) - here,
+Comment: regular expression syntax error - ***
+4. Type: pcre.execute,
+Source: bug is ( - here,
+Comment: regular expression syntax error - ***
+5. once [
+{"prematch":"","match":"","postmatch":"","1":"t"},
+{"prematch":"","match":"","postmatch":"","1":"e"},
+{"prematch":"","match":"","postmatch":"","1":"s"},
+{"prematch":"","match":"","postmatch":"","1":"t"},
+{"prematch":"","match":"","postmatch":"","1":" "},
+{"prematch":"","match":"","postmatch":"","1":"l"},
+{"prematch":"","match":"","postmatch":"","1":"i"},
+{"prematch":"","match":"","postmatch":"","1":"n"},
+{"prematch":"","match":"","postmatch":"","1":"e"}
+]
+6. twice [
+{"prematch":"","match":"","postmatch":"","1":"t"},
+{"prematch":"","match":"","postmatch":"","1":"e"},
+{"prematch":"","match":"","postmatch":"","1":"s"},
+{"prematch":"","match":"","postmatch":"","1":"t"},
+{"prematch":"","match":"","postmatch":"","1":" "},
+{"prematch":"","match":"","postmatch":"","1":"l"},
+{"prematch":"","match":"","postmatch":"","1":"i"},
+{"prematch":"","match":"","postmatch":"","1":"n"},
+{"prematch":"","match":"","postmatch":"","1":"e"}
+]
+7. OK
