@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: buildall,v 1.36 2021/01/28 16:24:43 moko Exp $
+# $Id: buildall,v 1.37 2023/12/13 20:04:06 moko Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -9,6 +9,7 @@ cd ..
 project_dir=`pwd`
 
 build_xml="yes"
+build_pcre2="yes"
 build_gmime=""
 build_apache=""
 build_stripped=""
@@ -16,7 +17,6 @@ direct_download=""
 
 options="--with-included-ltdl"
 options="$options --with-gc=$project_dir/gc/lib"
-options="$options --with-pcre=$project_dir/pcre"
 #options="$options --disable-stringstream"
 
 printf "Building statically linked parser3"
@@ -25,6 +25,10 @@ for PARAM in "$@"; do
 	"--without-xml")
 	    printf ", without xml"
 	    build_xml=""
+	    ;;
+	"--without-pcre2")
+	    printf ", without pcre2 library"
+	    build_pcre2=""
 	    ;;
 	"--with-apache")
 	    printf ", with apache module"
@@ -50,7 +54,7 @@ for PARAM in "$@"; do
 	    ;;
 	"--help")
 	    echo
-	    echo "Usage: buildall [--without-xml] [--with-apache] [--with-mailreceive] [--with-system-mailreceive] [--strip] [--direct-download] [--disable-safe-mode] [other configure options ...]"
+	    echo "Usage: buildall [--without-xml] [--without-pcre2] [--with-apache] [--with-mailreceive] [--with-system-mailreceive] [--strip] [--direct-download] [--disable-safe-mode] [other configure options ...]"
 	    exit 1
 	    ;;
 	*)
@@ -142,9 +146,31 @@ if test ! -f "$project_dir/gc/lib/libgc.a"; then
     cleanup
 fi
 
+if test "$build_pcre2" = "yes"; then
+
+options="$options --with-pcre=$project_dir/pcre2"
+
+if test ! -f "$project_dir/pcre2/lib/libpcre2-8.a"; then
+    lib="pcre2-10.42"
+    prepare_gz $lib.tar.gz https://github.com/PCRE2Project/pcre2/releases/download/pcre2-10.42/
+    echo "Configuring $lib..."
+    ./configure --prefix="$project_dir/pcre2" \
+	--enable-jit \
+	--with-match-limit-depth=10000 \
+	--disable-shared \
+	--silent $cflags
+    echo "Building $lib..."
+    make install
+    cleanup
+fi
+
+else
+
+options="$options --with-pcre=$project_dir/pcre"
+
 if test ! -f "$project_dir/pcre/lib/libpcre.a"; then
-    lib="pcre-8.43"
-    prepare_gz $lib.tar.gz https://ftp.pcre.org/pub/pcre/
+    lib="pcre-8.45"
+    prepare_gz $lib.tar.gz https://versaweb.dl.sourceforge.net/project/pcre/pcre/8.45/
     echo "Configuring $lib..."
     ./configure --prefix="$project_dir/pcre" \
 	--with-match-limit-recursion=10000 \
@@ -158,6 +184,8 @@ if test ! -f "$project_dir/pcre/lib/libpcre.a"; then
     echo "Building $lib..."
     make install
     cleanup
+fi
+
 fi
 
 if test "$build_xml" = "yes" -a ! -f "$project_dir/gnome/lib/libxml2.a"; then
