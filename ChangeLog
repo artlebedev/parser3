@@ -1,3 +1,28 @@
+2023-12-14  moko
+
+	* tests/212.html: pcre2 compatibility (related to feature #1236)
+
+	* tests/: 425.html, results/425.processed: test for pcre/pcre2
+	  exceptions and behavour added (related to feature #1236)
+
+2023-12-13  moko
+
+	* buildall: by default parser is now bundled with pcre2 10.42,
+	  --without-pcre2 option added to build with pcre-8.45 (related to
+	  feature #1236)
+
+2023-12-12  moko
+
+	* configure.ac, src/include/pa_config_auto.h.in: pcre2 library
+	  support added (implements feature #1236)
+
+	* src/: include/pa_charset.h, include/pa_config_includes.h,
+	  lib/pcre/pa_pcre_internal.h, lib/pcre/pa_pcre_valid_utf8.c,
+	  main/pa_common.C, main/pa_globals.C, types/pa_vregex.C,
+	  types/pa_vregex.h: Adopted patch from Yavor Doganov
+	  <yavor@gnu.org> to add pcre2 library support (implements feature
+	  #1236)
+
 2023-11-28  moko
 
 	* src/include/pa_config_includes.h: warnings war continues
