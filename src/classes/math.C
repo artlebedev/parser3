@@ -23,7 +23,7 @@
 extern "C" char *crypt(const char* , const char* );
 #endif
 
-volatile const char * IDENT_MATH_C="$Id: math.C,v 1.104 2023/11/23 01:27:12 moko Exp $";
+volatile const char * IDENT_MATH_C="$Id: math.C,v 1.105 2023/12/28 23:20:10 moko Exp $";
 
 // defines
 
@@ -109,6 +109,7 @@ static void math2(Request& r, MethodParams& params, math2_func_ptr func) {
 	}
 
 MATH2(pow)
+MATH2(atan2)
 
 inline bool is_salt_body_char(unsigned char c) {
 	return pa_isalnum(c) || c == '.' || c=='/';
@@ -735,11 +736,9 @@ static void _convert(Request& r, MethodParams& params) {
 
 MMath::MMath(): Methoded("math") {
 	// ^FUNC(expr)	
-#define ADDX(name, X) \
-	add_native_method(#name, Method::CT_STATIC, _##name, X, X)
-#define ADD0(name) ADDX(name, 0)
-#define ADD1(name) ADDX(name, 1)
-#define ADD2(name) ADDX(name, 2)
+#define ADDN(name, N) \
+	add_native_method(#name, Method::CT_STATIC, _##name, N, N)
+#define ADD1(name) ADDN(name, 1)
 
 	ADD1(round);	ADD1(floor);	ADD1(ceiling);
 	ADD1(trunc);	ADD1(frac);
@@ -748,16 +747,16 @@ MMath::MMath(): Methoded("math") {
 	ADD1(log);	ADD1(log10);
 	ADD1(sin);	ADD1(asin);
 	ADD1(cos);	ADD1(acos);
-	ADD1(tan);	ADD1(atan);
+	ADD1(tan);	ADD1(atan);	ADDN(atan2, 2);
 	ADD1(degrees);	ADD1(radians);
 	ADD1(sqrt);
 	ADD1(random);
 
 	// ^math:pow(x;y)
-	ADD2(pow);
+	ADDN(pow, 2);
 
 	// ^math:crypt[password;salt]
-	ADD2(crypt);
+	ADDN(crypt, 2);
 
 	// ^math:md5[string]
 	ADD1(md5);
