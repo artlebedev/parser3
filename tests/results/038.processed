@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 319
+Content-Length: 308
 
 y
 y
@@ -14,4 +14,4 @@ y
 ^math:acos(0): 1.57<br />
 ^math:tan($math:PI/4): 1.00<br />
 ^math:atan(-1): -0.79<br />
-^math:atan2(-1;0): -1.5707963267949<br />
+^math:atan2(-1;0): -90°<br />
