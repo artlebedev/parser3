@@ -1,3 +1,11 @@
+2023-12-30  moko
+
+	* tests/: 038.html, results/038.processed: test for atan2 added
+
+2023-12-29  moko
+
+	* src/classes/math.C: atan2(y,x) math function added
+
 2023-12-14  moko
 
 	* tests/212.html: pcre2 compatibility (related to feature #1236)
