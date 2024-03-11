@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 3617
+Content-Length: 4043
 
 1. slow test result:
 {
@@ -141,6 +141,29 @@ Comment: content size of 10000000000 bytes exceeds the limit (536870912 bytes)
 Type: http.response,
 Source: http://www.parser.ru/_/tests/nph-379.pl?bad-headers,
 Comment: bad response from host - bad header &quot;:value&quot;
+7.2 bad-cookies test result:
+{
+"class":"file",
+"name":"nph-379.pl",
+"size":5,
+"mode":"text",
+"content-type":"text\/plain",
+"tables":{
+"CONTENT-TYPE":[
+{"value":"text\/plain"}
+],
+"SET-COOKIE":[
+{"value":"no-value"}
+]
+},
+"CONTENT-TYPE":"text\/plain",
+"SET-COOKIE":"no-value",
+"cookies":[
+{"name":"no-value","value":"","expires":"","max-age":"","domain":"","path":"","httponly":"","secure":""}
+],
+"status":200,
+"text":"body\n"
+}
 8. invalid-status test result:
 Type: number.format,
 Source: http://www.parser.ru/_/tests/nph-379.pl?invalid-status,

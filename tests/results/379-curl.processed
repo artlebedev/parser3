@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 3497
+Content-Length: 3923
 
 1. slow test result:
 {
@@ -141,6 +141,29 @@ Comment: content size of 10000000000 bytes exceeds the limit (536870912 bytes)
 "content-type":"application\/octet-stream",
 "status":200,
 "tables":{},
+"text":"body\n"
+}
+7.1 bad-cookies test result:
+{
+"class":"file",
+"name":"nph-379.pl",
+"size":5,
+"mode":"text",
+"content-type":"text\/plain",
+"status":200,
+"tables":{
+"CONTENT-TYPE":[
+{"value":"text\/plain"}
+],
+"SET-COOKIE":[
+{"value":"no-value"}
+]
+},
+"CONTENT-TYPE":"text\/plain",
+"SET-COOKIE":"no-value",
+"cookies":[
+{"name":"no-value","value":"","expires":"","max-age":"","domain":"","path":"","httponly":"","secure":""}
+],
 "text":"body\n"
 }
 8. invalid-status test result:
