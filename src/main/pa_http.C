@@ -14,7 +14,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.121 2023/09/26 20:49:10 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.122 2024/03/11 21:12:53 moko Exp $" IDENT_PA_HTTP_H; 
 
 // defines
 
@@ -551,7 +551,8 @@ static ArrayString* parse_cookie(Request& r, const String& cookie) {
 				if(first_pair) {
 					// name + value
 					name=sname;
-					value=smeaning;
+					if(smeaning)
+						value=smeaning;
 					first_pair=false;
 				} else {
 					const String& slower=sname->change_case(r.charsets.source(), String::CC_LOWER);
