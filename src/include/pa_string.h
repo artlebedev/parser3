@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.230 2023/11/23 01:27:12 moko Exp $"
+#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.231 2024/03/11 21:15:32 moko Exp $"
 
 // includes
 #include "pa_types.h"
@@ -47,8 +47,21 @@ class SQL_Connection;
 class Dictionary;
 class Request_charsets;
 class String;
-typedef Array<const String*> ArrayString;
 class VRegex;
+
+#ifdef NDEBUG
+typedef Array<const String*> ArrayString;
+#else
+class ArrayString : public Array<const String*> {
+public:
+	inline ArrayString(size_t initial=0) : Array(initial){
+	}
+	inline Array& operator+=(const String *src) {
+		assert(src != NULL);
+		return Array::operator+=(src);
+	}
+};
+#endif
 
 // generally useful
 
