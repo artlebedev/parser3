@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.231 2024/03/11 21:15:32 moko Exp $"
+#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.232 2024/03/14 03:17:01 moko Exp $"
 
 // includes
 #include "pa_types.h"
@@ -56,9 +56,15 @@ class ArrayString : public Array<const String*> {
 public:
 	inline ArrayString(size_t initial=0) : Array(initial){
 	}
-	inline Array& operator+=(const String *src) {
+	inline Array& operator+=(element_type src) {
 		assert(src != NULL);
 		return Array::operator+=(src);
+	}
+
+	inline element_type get(size_t index) const {
+		element_type result=Array::get(index);
+		assert(result != NULL);
+		return result;
 	}
 };
 #endif
