@@ -8,7 +8,7 @@
 #ifndef PA_VSTRING_H
 #define PA_VSTRING_H
 
-#define IDENT_PA_VSTRING_H "$Id: pa_vstring.h,v 1.79 2023/10/02 02:58:01 moko Exp $"
+#define IDENT_PA_VSTRING_H "$Id: pa_vstring.h,v 1.80 2024/03/14 02:52:43 moko Exp $"
 
 // includes
 
@@ -68,7 +68,7 @@ public: // Value
 
 public: // usage
 
-	VString(): fstring(new String) {}
+	VString(): fstring(&String::Empty) {}
 	VString(const String& avalue): fstring(&avalue) {}
 
 	const String& string() const { return *fstring; }

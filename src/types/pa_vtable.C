@@ -11,7 +11,7 @@
 #include "pa_vvoid.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VTABLE_C="$Id: pa_vtable.C,v 1.52 2023/10/02 02:58:01 moko Exp $" IDENT_PA_VTABLE_H;
+volatile const char * IDENT_PA_VTABLE_C="$Id: pa_vtable.C,v 1.53 2024/03/14 02:52:43 moko Exp $" IDENT_PA_VTABLE_H;
 
 #ifndef DOXYGEN
 struct Record_info {
@@ -22,7 +22,7 @@ struct Record_info {
 
 static void store_column_item_to_hash(const String* column_name, Record_info *info) {
 	const String* column_item=info->table->item(*column_name);
-	info->hash->put(*column_name, (column_item && !column_item->is_empty()) ? new VString(*column_item) : new VString() );
+	info->hash->put(*column_name, column_item  ? new VString(*column_item) : VString::empty() );
 }
 
 Value* VTable::fields_element() {
@@ -40,11 +40,7 @@ Value* VTable::fields_element() {
 		size_t row_size=ltable[ltable.current()]->count(); // number of columns in current row
 		for(size_t index=0; index<row_size; index++){
 			const String* column_item=ltable.item(index);
-			hash->put(String::Body::Format(index), 
-				(column_item && !column_item->is_empty())
-					?new VString(*column_item)
-					:new VString()
-			);
+			hash->put(String::Body::Format(index), column_item ? new VString(*column_item) : VString::empty() );
 		}
 	}
 
@@ -63,7 +59,7 @@ Value* VTable::get_element(const String& aname) {
 		if(index>=0) // column aname|number valid
 		{
 			const String* string=ftable->item(index); // there is such column
-			return new VString(string ? *string : String::Empty);
+			return string ? new VString(*string) : VString::empty();
 		}
 	}
 
@@ -95,7 +91,7 @@ Value* VTable::get_element4call(const String& aname) {
 		if(index>=0) // column aname|number valid
 		{
 			const String* string=ftable->item(index); // there is such column
-			return new VString(string ? *string : String::Empty);
+			return new string ? VString(*string) : VString::empty();
 		}
 	}
 
