@@ -8,7 +8,7 @@
 #ifndef PA_VOBJECT_H
 #define PA_VOBJECT_H
 
-#define IDENT_PA_VOBJECT_H "$Id: pa_vobject.h,v 1.69 2023/09/26 20:49:12 moko Exp $"
+#define IDENT_PA_VOBJECT_H "$Id: pa_vobject.h,v 1.70 2024/03/15 18:50:58 moko Exp $"
 
 // includes
 
@@ -50,7 +50,7 @@ public: // Value
 	override int as_int() const;
 	override double as_double() const;
 	override bool as_bool() const;
-	override VFile* as_vfile(String::Language lang, const Request_charsets *charsets=0);
+	override VFile* as_vfile();
 	
 	override HashStringValue* get_hash();
 	override Table *get_table();

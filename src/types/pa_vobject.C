@@ -12,7 +12,7 @@
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VOBJECT_C="$Id: pa_vobject.C,v 1.52 2023/10/02 02:58:01 moko Exp $" IDENT_PA_VOBJECT_H;
+volatile const char * IDENT_PA_VOBJECT_C="$Id: pa_vobject.C,v 1.53 2024/03/15 18:50:58 moko Exp $" IDENT_PA_VOBJECT_H;
 
 Value* VObject::get_scalar_value(const char* as_something) const {
 	VObject* unconst_this=const_cast<VObject*>(this);
@@ -68,10 +68,10 @@ bool VObject::as_bool() const {
 	return Value::as_bool();
 }
 
-VFile* VObject::as_vfile(String::Language lang, const Request_charsets *charsets) {
+VFile* VObject::as_vfile() {
 	if(Value* value=get_scalar_value("file"))
-		return value->as_vfile(lang, charsets);
-	return Value::as_vfile(lang, charsets);
+		return value->as_vfile();
+	return Value::as_vfile();
 }
 
 HashStringValue* VObject::get_hash() {
