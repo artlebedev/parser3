@@ -1,3 +1,4 @@
+@main[]
 1. ^try-catch{ ^image::measure[ $.name[name] ] }
 2. ^try-catch{ ^math:convert[ $.k[v] ](10;16) }
 3. ^try-catch{ ^mail:send[
@@ -8,3 +9,14 @@
 		$.value(3)
 	]
     ] }
+4. ^try-catch{ ^image::measure[ ^TProxy::new[ $.name[name] ] ] }
+5. ^try-catch{ ^json:string[ ^image::measure[ ^TProxy::new[ ^file::load[binary;395_dir/1.bmp] ] ] ] }
+
+@CLASS
+TProxy
+
+@new[data]
+$self._data[$data]
+
+@GET[context]
+$result[$self._data]

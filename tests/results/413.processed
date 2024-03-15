@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 299
+Content-Length: 474
 
 1. Type: parser.runtime,
 Source: measure,
@@ -10,3 +10,13 @@ Comment: parameter is 'hash', it does not have file value
 3. Type: parser.runtime,
 Source: send,
 Comment: parameter is 'double', it does not have file value
+4. Type: parser.runtime,
+Source: measure,
+Comment: parameter is 'hash', it does not have file value
+5. {
+"src":"1.bmp",
+"width":150,
+"height":57,
+"border":0,
+"line-width":1
+} 
