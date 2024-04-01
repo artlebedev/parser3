@@ -1,3 +1,40 @@
+2024-03-27  moko
+
+	* src/lib/pcre/pcre_internal.vcproj: pa_config_includes.h used
+	  (related to feature #1236)
+
+2024-03-15  moko
+
+	* tests/: 413.html, results/413.processed: test for object still
+	  can be used as file parameter (related to bug #1218)
+
+	* src/types/: pa_vobject.C, pa_vobject.h: regression fix: object
+	  still can be used in file context (fixes bug #1218)
+
+2024-03-14  moko
+
+	* src/include/pa_string.h: ArrayString get() null result assert
+	  also added (related to bug #1238)
+
+	* src/types/: pa_vstring.h, pa_vtable.C: VString() optimized;
+	  VString::empty() used instead of new VString()
+
+2024-03-12  moko
+
+	* tests/: 379-curl.html, 379.html, results/379-curl.processed,
+	  results/379.processed: test added for cookie without value
+	  (related to bug #1238)
+
+	* src/include/pa_string.h: In assertions enabled mode, ArrayString
+	  values are now required to be non-null (related to bug #1238)
+
+	* src/main/pa_http.C: cookies without value are now parsed
+	  correctly (fixed bug #1238)
+
+2024-03-11  moko
+
+	* tests/run_parser.sh: for better error reporting
+
 2023-12-30  moko
 
 	* tests/: 038.html, results/038.processed: test for atan2 added
