@@ -14,7 +14,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.122 2024/03/11 21:12:53 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.123 2024/05/10 13:12:39 moko Exp $" IDENT_PA_HTTP_H; 
 
 // defines
 
@@ -1217,6 +1217,10 @@ bool HTTPD_Connection::accept(SOCKET server_sock, int timeout_value) {
 		int no=pa_socks_errno();
 		throw Exception("httpd.accept", 0, "error accepting connection: %s (%d)", pa_socks_strerr(no), no);
 	}
+
+//	Has no positive performance effect, requires include <netinet/tcp.h>
+//	static int sock_on=1;
+//	setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, (char *)&sock_on, sizeof(sock_on));
 
 	remote_addr = pa_strdup(inet_ntoa(addr.sin_addr));
 	LOG(pa_log("httpd [%d] accepted from %s", sock, remote_addr));
