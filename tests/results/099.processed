@@ -1,5 +1,6 @@
-Content-Disposition: inline; filename="099.html"; filename*=UTF-8''099.html
+Content-Disposition: inline; filename="%ED%E5%20ASCII.html"; filename*=WINDOWS-1251''%ED%E5%20ASCII.html
 Content-Type: application/octet-stream
-Content-Length: 50
+Content-Length: 32
 
-$response:body[^file::load[text;/tests/099.html]]
+^eval(1<<3)<br>
+^eval(8>>2)<br>

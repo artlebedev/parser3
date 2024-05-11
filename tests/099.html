@@ -1,1 +1,4 @@
-$response:body[^file::load[text;/tests/099.html]]
+$response:charset[windows-1251]
+$f[^file::load[text;087.html]]
+$f[^file::create[$f; $.name[не ASCII.html] ]]
+$response:body[$f]
