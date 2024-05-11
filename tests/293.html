@@ -18,4 +18,20 @@ $value[abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ
 json:"^taint[json;$value]"
 json:"^apply-taint[json;^taint[$value]]"
 
-^json:string[$response:headers]
+$taintings[^table::create[nameless]{
+as-is
+file-spec
+uri
+http-header
+mail-header
+js
+json
+parser-code
+regex
+xml
+html}]
+
+^taintings.menu{
+tainting $taintings.0:
+^apply-taint[$taintings.0;^taint[$value]]
+}
