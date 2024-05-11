@@ -1,4 +1,4 @@
-Content-Disposition: inline; filename="b%5Bb%5D.txt"
+Content-Disposition: inline; filename="b%5Bb%5D.txt"; filename*=UTF-8''b%5Bb%5D.txt
 Content-Type: application/octet-stream
 Accept-Ranges: bytes
 Content-Length: 0
