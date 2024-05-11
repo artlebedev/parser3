@@ -34,7 +34,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.419 2023/11/17 19:12:34 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.420 2024/05/11 19:20:41 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -121,6 +121,9 @@ static const String content_type_name_upper(HTTP_CONTENT_TYPE_UPPER);
 static const String content_disposition_name_upper(CONTENT_DISPOSITION_UPPER);
 static const String content_disposition_inline(CONTENT_DISPOSITION_INLINE);
 static const String content_disposition_attachment(CONTENT_DISPOSITION_ATTACHMENT);
+
+const String content_disposition_filename_name(CONTENT_DISPOSITION_FILENAME_NAME);
+const String content_disposition_filename_name_asterisk("filename*");
 
 // defines
 
@@ -917,9 +920,13 @@ void Request::output_result(VFile* body_file, bool header_only, bool as_attachme
 	// Content-Disposition, use $.name[<empty>] to avoid
 	const String* disposition_name = sname ? sname->is_empty() ? NULL : sname : sfile;
 	if(disposition_name) {
+		String& filename = *new String(pa_filename(disposition_name->cstr()), String::L_URI);
+		String& filename_asterisk = *new String(charsets.client().NAME(), String::L_CLEAN) << (*new String("''")) << filename;
+
 		VHash& hash=*new VHash();
 		hash.hash().put(value_name, new VString(as_attachment ? content_disposition_attachment : content_disposition_inline));
-		hash.hash().put(content_disposition_filename_name, new VString(*new String(pa_filename(disposition_name->cstr()), String::L_URI)));
+		hash.hash().put(content_disposition_filename_name, new VString(filename));
+		hash.hash().put(content_disposition_filename_name_asterisk, new VString(filename_asterisk));
 		response.fields().put(content_disposition_name_upper, &hash);
 	}
 

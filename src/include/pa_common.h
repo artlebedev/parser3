@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.192 2023/09/26 20:49:07 moko Exp $"
+#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.193 2024/05/11 19:20:41 moko Exp $"
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -38,7 +38,7 @@ class Request;
 #define HTTP_CONTENT_TYPE_MULTIPART_RELATED	"multipart/related"
 #define HTTP_CONTENT_TYPE_MULTIPART_MIXED	"multipart/mixed"
 
-const String content_disposition_filename_name(CONTENT_DISPOSITION_FILENAME_NAME);
+extern const String content_disposition_filename_name;
 
 #define HASH_ORDER
 
