@@ -1,3 +1,26 @@
+2024-05-11  moko
+
+	* tests/: 099.html, 100.html, results/099.processed,
+	  results/100.processed: a test for non-UTF-8 filename* added
+	  (related to feature #1240)
+
+	* tests/: 293.html, results/293.processed: tainting modes tests
+	  added
+
+	* tests/results/: 099.processed, 100.processed, 205.processed,
+	  309.processed, 310.processed, 419.processed: tests results
+	  updated after filename* added (related to feature #1240)
+
+	* src/: include/pa_common.h, main/pa_request.C: The filename*
+	  parameter was added to the Content-Disposition header to conform
+	  with RFC 6266, with code provided by Sumo (implements feature
+	  #1240)
+
+2024-05-10  moko
+
+	* src/main/pa_http.C: Testing shows that TCP_NODELAY has no
+	  positive performance effect in our case
+
 2024-03-27  moko
 
 	* src/lib/pcre/pcre_internal.vcproj: pa_config_includes.h used
