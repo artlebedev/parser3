@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 3326
+Content-Length: 3323
 
 code coverage tests:
 1. int
@@ -83,7 +83,7 @@ Comment: invalid number (int)
 6.6 true
 6.7 Type: parser.runtime,
 Source: pos,
-Comment: n(-1) must be &gt;=0
+Comment: n(-1) must be >=0
 6.8 [
 	{"piece":"c"},
 	{"piece":"b"},

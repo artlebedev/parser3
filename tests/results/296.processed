@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 505
+Content-Length: 537
 
 "<?xml version="1.0" encoding="UTF-8"?>
 
@@ -8,13 +8,14 @@ ok : test
 Type: xml,
 Source: parser://xsl/2,
 Comment: parser://xsl/2:5: parser error : Opening and ending tag mismatch: fail line 4 and xsl:template
-&lt;/xsl:template&gt;
-^
+</xsl:template>
+               ^
 parser://xsl/2:6: parser error : Opening and ending tag mismatch: template line 3 and stylesheet
-&lt;/xsl:stylesheet&gt;
-^
+</xsl:stylesheet>
+                 ^
 parser://xsl/2:6: parser error : Premature end of data in tag stylesheet line 2
-&lt;/xsl:stylesheet&gt;
-^
+</xsl:stylesheet>
+                 ^
 error
 xsltParseStylesheetFile : cannot parse parser://xsl/2
+

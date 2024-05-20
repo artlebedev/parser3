@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 7810
+Content-Length: 7811
 
 [ ]
 Type: date.format,
@@ -90,7 +90,7 @@ Comment: invalid timezone '+22:100'
 [2020-1-31T 23:59:59 +0 2:10 ]
 Type: date.format,
 Source: create,
-Comment: invalid timezone '+0 2:10 '
+Comment: invalid timezone '+0 2:10  '
 [2020-1-31T 23:59:59 +02 X]
 Type: date.format,
 Source: create,

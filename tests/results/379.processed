@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 4043
+Content-Length: 4033
 
 1. slow test result:
 {
@@ -140,7 +140,7 @@ Comment: content size of 10000000000 bytes exceeds the limit (536870912 bytes)
 7.1 bad-headers test result:
 Type: http.response,
 Source: http://www.parser.ru/_/tests/nph-379.pl?bad-headers,
-Comment: bad response from host - bad header &quot;:value&quot;
+Comment: bad response from host - bad header ":value"
 7.2 bad-cookies test result:
 {
 "class":"file",
