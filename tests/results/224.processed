@@ -1,16 +1,24 @@
 Content-Type: text/html
-Content-Length: 1858
+Content-Length: 2088
 
 cookie<br />env<br />hash - methoded<br />table - methoded<br />test - methoded<br />test1 - methoded<br />test2 - methoded
 <hr />
-create
-native method of 'date' accepts minimum 1 parameter(s) (0 present)
+Type: parser.runtime,
+Source: create,
+Comment: native method of 'date' accepts minimum 1 parameter(s) (0 present)
 <br />
-calendar
-method of 'date' is static and can not be used as constructor
+Type: parser.runtime,
+Source: calendar,
+Comment: method of 'date' is static and can not be used as constructor
 <br />
-now
-native method of 'date' accepts maximum 1 parameter(s) (2 present)
+Type: parser.runtime,
+Source: now,
+Comment: native method of 'date' accepts maximum 1 parameter(s) (2 present)
+<br />
+<br />
+<br />
+<br />
+<br />
 <br />
 <hr />
 hash<br />
@@ -24,6 +32,7 @@ env<br />
 @create0[]
 <br />
 @m[x;y;z]
+<br />
 <br /><br />
 'test' object class name: 'test/test'<br />
 'test' object base class name: '/'<br />
@@ -37,6 +46,7 @@ env<br />
 @create1[v]
 <br />
 @m[x;y;z] {defined in test}
+<br />
 <br /><br />
 'test1' object class name: 'test1/test1'<br />
 'test1' object base class name: 'test/test'<br />
@@ -52,6 +62,7 @@ env<br />
 @create2[v]
 <br />
 @m[x;y;z] {defined in test}
+<br />
 <br /><br />
 'test2' object class name: 'test2/test2'<br />
 'test2' object base class name: 'test1/test1'<br />
@@ -83,15 +94,18 @@ env<br />
 @today[0-1] {dynamic}
 <br />
 @unix-timestamp[0-1] {dynamic}
+<br />
 <br /><br />
 'date' object class name: 'date/date'<br />
 'date' object base class name: '/'<br />
 <hr />
+<br />
 'env' object class name: 'env/env'<br />
 'env' object base class name: '/'<br />
 <hr />
-unknown
-class is undefined
+Type: parser.runtime,
+Source: unknown,
+Comment: class is undefined
 <br />
 <hr />
 <hr />

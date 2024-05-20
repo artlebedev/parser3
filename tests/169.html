@@ -16,7 +16,7 @@ $tHorizontal[^sText.split[$sChar;h]]
 	^printColumns[$tHorizontal]
 }{
 	$exception.handled(1)
-	<p>${exception.source}: $exception.comment [$exception.type]</p>
+	<p>${exception.source}: ^taint[as-is;$exception.comment] [$exception.type]</p>
 }
 
 

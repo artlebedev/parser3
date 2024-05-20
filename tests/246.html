@@ -108,7 +108,7 @@ first:last='^h._at[first]':'^h._at[last;value]'<br />
 first_key:last_key='^h._at[first;key]':'^h._at[last;key]'<br />
 
 @do[label;code]
-$label=^try{${code}}{$exception.handled(true)<b>$exception.comment</b>}<br />
+$label=^try{${code}}{$exception.handled(true)<b>^taint[as-is;$exception.comment]</b>}<br />
 
 @print[u][k;v]
 ^if($u is "hash"){

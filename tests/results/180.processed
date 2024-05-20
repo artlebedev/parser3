@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 874
+Content-Length: 939
 
 <table border="1">
 <tr>
@@ -29,27 +29,37 @@ Content-Length: 874
 </tr>
 <tr>
 <td>10.0.0..2</td>
-<td>Invalid IP address '10.0.0..2' specified.</td>
+<td>
+Exception: Invalid IP address '10.0.0..2' specified.
+</td>
 <td>&mdash;</td>
 </tr>
 <tr>
 <td>10.1</td>
-<td>Invalid IP address '10.1' specified.</td>
+<td>
+Exception: Invalid IP address '10.1' specified.
+</td>
 <td>&mdash;</td>
 </tr>
 <tr>
 <td>.10.1.1.1</td>
-<td>Invalid IP address '.10.1.1.1' specified.</td>
+<td>
+Exception: Invalid IP address '.10.1.1.1' specified.
+</td>
 <td>&mdash;</td>
 </tr>
 <tr>
 <td>10.1.1.</td>
-<td>Invalid IP address '10.1.1.' specified.</td>
+<td>
+Exception: Invalid IP address '10.1.1.' specified.
+</td>
 <td>&mdash;</td>
 </tr>
 <tr>
 <td></td>
-<td>IP address must not be empty.</td>
+<td>
+Exception: IP address must not be empty.
+</td>
 <td>&mdash;</td>
 </tr>
 </table>

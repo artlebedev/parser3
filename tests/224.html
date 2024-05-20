@@ -54,16 +54,10 @@ $h[^reflection:fields[$o]]
 done.
 
 @do[code]
-^try{
+^try-catch{
 	$code
-}{
-	$exception.handled(1)
-	$exception.source
-	$exception.comment
-	<br />
 }
-
-
+<br />
 
 @print[class;o][m;k;v;h;i;t]
 ^do{

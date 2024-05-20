@@ -20,19 +20,11 @@ $tList[^table::create{sIP	z
 	</tr>
 	^tList.menu{
 		$dLong[]
-		$sErr[^safe{$dLong(^inet:aton[$tList.sIP])}]
+		$sErr[^try-catch-comment{$dLong(^inet:aton[$tList.sIP])}]
 		<tr>
 			<td>$tList.sIP</td>
 			<td>^if(def $dLong){^dLong.format[%u]}{$sErr}</td>
-			<td>^if(def $dLong){^safe{^inet:ntoa($dLong)}}{&mdash^;}</td>
+			<td>^if(def $dLong){^try-catch-comment{^inet:ntoa($dLong)}}{&mdash^;}</td>
 		</tr>
 	}
 </table>
-
-@safe[jCode]
-^try{
-	$result[$jCode]
-}{
-	$exception.handled(1)
-	$result[$exception.comment]
-}

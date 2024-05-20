@@ -58,7 +58,7 @@ $fUTF-8[^file::load[binary;195_utf8.txt]]
 $sTarget[http://www.parser.ru/_/tests/195.html]
 <hr />
 <h2>$sTitle</h2>
-^try{
+<p>^try-catch-comment{
 	$f[^file::load[text;$sTarget;
 		$.timeout(10)
 		$.charset[$hData.charset]
@@ -70,8 +70,5 @@ $sTarget[http://www.parser.ru/_/tests/195.html]
 			$.enctype[$sEnctype]
 		}
 	]]
-	<p>$f.text</p>
-}{
-	$exception.handled(1)
-	<p>Exception: $exception.comment</p> 
-}
+	$f.text
+}</p>
