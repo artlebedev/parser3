@@ -150,7 +150,7 @@ $bShouldBeException($options.exception)
 	$result[^json:string[$value;$options]^if($bShouldBeException){. FAILED. EXCEPTION SHOULD BE HERE}]
 }{
 	$exception.handled(true)
-	$result["exception":"$exception.source, $exception.comment^if($bShouldBeException){. That's OK}"]
+	$result["exception":"$exception.source, ^taint[as-is;$exception.comment]^if($bShouldBeException){. That's OK}"]
 }
 
 

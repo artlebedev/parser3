@@ -59,7 +59,7 @@ html	text/html
 	$exception.handled(true)
 	Type: $exception.type,
 	Source: $exception.source,
-	Comment: ^if($env:PATH_TRANSLATED eq '269.html'){$exception.comment}{^taint[as-is;$exception.comment]}
+	Comment: ^taint[as-is;$exception.comment]
 }
 
 

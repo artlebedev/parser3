@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 3614
+Content-Length: 3414
 
 $xdoc:
 <pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
@@ -16,14 +16,14 @@ $xdoc:
 ''
 <hr />
 <b>^firstChild.getAttribute[*]</b>:
-exception (type: xml,
-source: getAttribute,
-comment: invalid localName '*')
+Type: xml,
+Source: getAttribute,
+Comment: invalid localName '*'
 <hr />
 <b>^firstChild.getAttribute[]</b>:
-exception (type: xml,
-source: getAttribute,
-comment: invalid localName '')
+Type: xml,
+Source: getAttribute,
+Comment: invalid localName ''
 <h2>^node.getAttributeNS[]</h2>
 <b>^firstChild.getAttributeNS[http://design.ru/uri;a]</b>:
 '2'
@@ -32,14 +32,14 @@ comment: invalid localName '')
 ''
 <hr />
 <b>^firstChild.getAttributeNS[http://design.ru/uri;*]</b>:
-exception (type: xml,
-source: getAttributeNS,
-comment: invalid localName '*')
+Type: xml,
+Source: getAttributeNS,
+Comment: invalid localName '*'
 <hr />
 <b>^firstChild.getAttributeNS[http://design.ru/uri;]</b>:
-exception (type: xml,
-source: getAttributeNS,
-comment: invalid localName '')
+Type: xml,
+Source: getAttributeNS,
+Comment: invalid localName ''
 <h2>^doc.getElementsByTagName[]</h2>
 <b>^xdoc.getElementsByTagName[t]</b>:
 2
@@ -54,14 +54,14 @@ comment: invalid localName '')
 3
 <hr />
 <b>^xdoc.getElementsByTagName[@]</b>:
-exception (type: xml,
-source: getElementsByTagName,
-comment: invalid localName '@')
+Type: xml,
+Source: getElementsByTagName,
+Comment: invalid localName '@'
 <hr />
 <b>^xdoc.getElementsByTagName[]</b>:
-exception (type: xml,
-source: getElementsByTagName,
-comment: invalid localName '')
+Type: xml,
+Source: getElementsByTagName,
+Comment: invalid localName ''
 <h2>^doc.getElementsByTagNameNS[]</h2>
 <b>^xdoc.getElementsByTagNameNS[http://design.ru/uri;t]</b>:
 1
@@ -76,19 +76,19 @@ comment: invalid localName '')
 1
 <hr />
 <b>^xdoc.getElementsByTagNameNS[http://design.ru/uri;@]</b>:
-exception (type: xml,
-source: getElementsByTagNameNS,
-comment: invalid localName '@')
+Type: xml,
+Source: getElementsByTagNameNS,
+Comment: invalid localName '@'
 <hr />
 <b>^xdoc.getElementsByTagNameNS[http://design.ru/uri;]</b>:
-exception (type: xml,
-source: getElementsByTagNameNS,
-comment: invalid localName '')
+Type: xml,
+Source: getElementsByTagNameNS,
+Comment: invalid localName ''
 <hr />
 <b>^xdoc.getElementsByTagNameNS[;]</b>:
-exception (type: xml,
-source: getElementsByTagNameNS,
-comment: invalid localName '')
+Type: xml,
+Source: getElementsByTagNameNS,
+Comment: invalid localName ''
 <hr />
 <b>^xdoc.getElementsByTagNameNS[;t]</b>:
 0
@@ -104,19 +104,19 @@ comment: invalid localName '')
 &lt;doc/&gt;
 <hr />
 <b>$x[^xdoc::create[ns:doc]]</b>:
-exception (type: xml,
-source: create,
-comment: invalid localName 'ns:doc')
+Type: xml,
+Source: create,
+Comment: invalid localName 'ns:doc'
 <hr />
 <b>$x[^xdoc::create[nu i dela - <"bred"!> ]]</b>:
-exception (type: xml,
-source: create,
-comment: invalid localName 'nu i dela - &lt;&quot;bred&quot;!&gt; ')
+Type: xml,
+Source: create,
+Comment: invalid localName 'nu i dela - <"bred"!> '
 <hr />
 <b>$x[^xdoc::create[]]</b>:
-exception (type: xml,
-source: create,
-comment: invalid localName '')
+Type: xml,
+Source: create,
+Comment: invalid localName ''
 <h2>^doc.createElement[]</h2>
 <b>$n[^x.createElement[doc]]</b>:
 &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
@@ -127,11 +127,11 @@ comment: invalid localName '')
 &lt;test&gt;&lt;ns:doc/&gt;&lt;/test&gt;
 <hr />
 <b>$n[^x.createElement[nu i dela - &lt;&quot;bred&quot;!&gt; ]]</b>:
-exception (type: xml,
-source: createElement,
-comment: invalid localName 'nu i dela - &lt;&quot;bred&quot;!&gt; ')
+Type: xml,
+Source: createElement,
+Comment: invalid localName 'nu i dela - <"bred"!> '
 <hr />
 <b>$n[^x.createElement[]]</b>:
-exception (type: xml,
-source: createElement,
-comment: invalid localName '')
+Type: xml,
+Source: createElement,
+Comment: invalid localName ''

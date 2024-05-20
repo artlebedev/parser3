@@ -9,5 +9,5 @@ $list[^file:list[415_dir;.*\.p]]
 $result[]
 ^try{$jCode}{
 	$exception.handled(true)
-	$result[$exception.comment]
+	$result[^taint[as-is;$exception.comment]]
 }

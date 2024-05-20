@@ -107,9 +107,4 @@ nu i dela - <"bred"!>
 ^if(def $sTitle){
 	<b>${sTitle}</b>:
 }
-^try{$jCode}{
-	$exception.handled(true)
-	exception (type: $exception.type,
-	source: $exception.source,
-	comment: $exception.comment)
-}
+^try-catch{$jCode}

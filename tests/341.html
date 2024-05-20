@@ -66,11 +66,3 @@ n4. ^json:string[^t.hash[$id]{ $h[$.key[$t.$price]] $h }]
 
 n5. ^json:string[^t.hash[$id;]]
 n6. ^json:string[^t.hash[$id;; $.type[string] ]]
-
-@try-catch[jCode]
-^try{$jCode}{
-        $exception.handled(true)
-        Type: $exception.type,
-        Source: $exception.source,
-        Comment: $exception.comment
-}
