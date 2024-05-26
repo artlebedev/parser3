@@ -1,59 +1,59 @@
 Content-Type: text/html
-Content-Length: 1370
+Content-Length: 1530
 
-1. Type: number.format,
+1. Exception type: number.format,
 Source: +,
 Comment: invalid number (int)
-Type: number.format,
+Exception type: number.format,
 Source: +,
 Comment: invalid number (double)
-2. Type: number.format,
+2. Exception type: number.format,
 Source: -,
 Comment: invalid number (int)
-Type: number.format,
+Exception type: number.format,
 Source: -,
 Comment: invalid number (double)
-3. Type: number.format,
+3. Exception type: number.format,
 Source: + ,
 Comment: invalid number (int)
-Type: number.format,
+Exception type: number.format,
 Source: + ,
 Comment: invalid number (double)
-4. Type: number.format,
+4. Exception type: number.format,
 Source: - ,
 Comment: invalid number (int)
-Type: number.format,
+Exception type: number.format,
 Source: - ,
 Comment: invalid number (double)
-5. Type: number.format,
+5. Exception type: number.format,
 Source: -1.,
 Comment: invalid number (int)
 -1
-6. Type: number.format,
+6. Exception type: number.format,
 Source: -1.1,
 Comment: invalid number (int)
 -1.1
 space shown, problem_source used (as before):
-7. Type: number.format,
+7. Exception type: number.format,
 Source: +4000000000,
 Comment: out of range (int)
 4000000000
 same exception, but inside pa_atoui:
-8. Type: number.format,
+8. Exception type: number.format,
 Source: +8000000000,
 Comment: out of range (int)
 8000000000
 another exception, without problem_source (and space):
-d1. Type: number.format,
+d1. Exception type: number.format,
 Source: create,
 Comment: '-4000000000' is out of range (int)
-d2. Type: number.format,
+d2. Exception type: number.format,
 Source: create,
 Comment: '+4000000000' is out of range (int)
 another exception, inside pa_atoui, without even sign:
-d3. Type: number.format,
+d3. Exception type: number.format,
 Source: create,
 Comment: '8000000000' is out of range (int)
-d4. Type: number.format,
+d4. Exception type: number.format,
 Source: create,
 Comment: '8000000000' is out of range (int)

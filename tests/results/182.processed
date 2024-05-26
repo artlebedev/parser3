@@ -1,16 +1,16 @@
 Content-Type: text/html
-Content-Length: 295
+Content-Length: 315
 
 ^a:a1[]: a1<br />
 ^a:a2[]: a2<br />
 ^a:a3[]: a3<br />
 ^b:b1[]: b1<br />
 <hr />
-Type: parser.compile,
+Exception type: parser.compile,
 Source: ,
 Comment: a - class is already defined
 ^a:a1[]: new a1<br />
-^a:a2[]: Type: parser.runtime,
+^a:a2[]: Exception type: parser.runtime,
 Source: a2,
 Comment: a method not found
 ^b:b1[]: b1<br />

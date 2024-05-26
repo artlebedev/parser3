@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 390
+Content-Length: 410
 
 $f.name: 192.html
 <br />
@@ -7,7 +7,7 @@ $f.name: 192.html
 <br />
 $f.name: 192.html
 <br />
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: load,
 Comment: native method of 'file' accepts maximum 4 parameter(s) (5 present)
 <br />
@@ -17,7 +17,7 @@ $f.name: overrided.html
 <br />
 $f.name: overrided.html
 <br />
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: load,
 Comment: called with invalid option
 <br />

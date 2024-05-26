@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 1313
+Content-Length: 1363
 
 code coverage:
 1 : a4
@@ -30,13 +30,13 @@ offset: 2
 4 : a2
 5 : a1
 foreach exceptions test:
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: foreach,
 Comment: rownum-var name must be string (parameter #1)
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: foreach,
 Comment: value-var name must be string (parameter #2)
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: foreach,
 Comment: body must be code (parameter #3)
 0 : more
@@ -84,10 +84,10 @@ offset: 2
 ,
 1 : ups
 count: 6
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: error,
 Comment: parameter must be 'columns', 'cells' and 'rows' only
 offset: 3
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: error,
 Comment: is invalid whence, valid are 'cur' or 'set'

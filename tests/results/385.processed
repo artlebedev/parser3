@@ -1,10 +1,10 @@
 Content-Type: text/html
-Content-Length: 138
+Content-Length: 158
 
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: test,
 Comment: class is undefined
 it works!
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: zigi,
 Comment: class is undefined

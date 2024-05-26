@@ -1,10 +1,10 @@
 Content-Type: text/html
-Content-Length: 463
+Content-Length: 483
 
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: fields_reference,
 Comment: param must be object or hash, not junction (parameter #1)
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: fields_reference,
 Comment: param must be object or hash
 object:

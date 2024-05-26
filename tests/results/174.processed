@@ -1,7 +1,7 @@
 Content-Type: text/html
-Content-Length: 1007
+Content-Length: 1017
 
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: open,
 Comment: this hashfile is already opened, use existing variable
 174/data.dir -- not exist<br />

@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 840
+Content-Length: 900
 
 [
 	{"v1":"a\tb","v2":"d","v3":"e","3":""}
@@ -20,21 +20,21 @@ Content-Length: 840
 	{"v1":"c","v2":"d","v3":"e"},
 	{"v1":"","v2":""}
 ]
-1. Type: parser.runtime,
+1. Exception type: parser.runtime,
 Source: no-such-name,
 Comment: must be 'cur' string or expression
-2. Type: parser.runtime,
+2. Exception type: parser.runtime,
 Source: create,
 Comment: called with invalid option
-3. Type: parser.runtime,
+3. Exception type: parser.runtime,
 Source: create,
 Comment: called with invalid option
-4. Type: parser.runtime,
+4. Exception type: parser.runtime,
 Source: abc,
 Comment: separator must be one byte character
-5. 6. Type: parser.runtime,
+5. 6. Exception type: parser.runtime,
 Source: ю,
 Comment: encloser must be empty or one byte character
-7. Type: parser.runtime,
+7. Exception type: parser.runtime,
 Source: no-such-name,
 Comment: table::create called with more then 1 param, first param may be only 'nameless'

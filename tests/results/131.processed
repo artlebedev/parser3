@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 1858
+Content-Length: 1908
 
 [3000-01-01]
 [3000-01-01] timestamp: 32503669200
@@ -18,15 +18,15 @@ Content-Length: 1858
 [1000-01-01] timestamp: -30610206000
 [1000-01-01] sql-string: 1000-01-01 00:00:00 [1000-01-01] iso-string: 1000-01-01T00:00:00-05:00
 [-1-01-01]
-Type: date.range,
+Exception type: date.range,
 Source: create,
 Comment: year '-1' is out of range 0..9999
 [10000-01-01]
-Type: date.range,
+Exception type: date.range,
 Source: create,
 Comment: year '10000' is out of range 0..9999
 [9999-12-32]
-Type: date.range,
+Exception type: date.range,
 Source: create,
 Comment: year '10000' is out of range 0..9999
 [0]
@@ -36,11 +36,11 @@ Comment: year '10000' is out of range 0..9999
 [0-1] timestamp: -62167219200
 [0-1] sql-string: 0000-01-01 00:00:00 [0-1] iso-string: 0000-01-01T00:00:00Z
 [0-0]
-Type: date.range,
+Exception type: date.range,
 Source: create,
 Comment: year '-1' is out of range 0..9999
 [0-0-1]
-Type: date.range,
+Exception type: date.range,
 Source: create,
 Comment: year '-1' is out of range 0..9999
 [0-0-0]

@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 782
+Content-Length: 802
 
 1. break in method string param
 =
@@ -23,11 +23,11 @@ Content-Length: 782
 9.0 %
 9.1 =%
 10. break in native methods expression params is not allowed
-10.0 Type: parser.runtime,
+10.0 Exception type: parser.runtime,
 Source: if,
 Comment: continue is not allowed in expression passed to native method (parameter #1)
 %
-10.1 Type: parser.runtime,
+10.1 Exception type: parser.runtime,
 Source: if,
 Comment: break is not allowed in expression passed to native method (parameter #1)
 %

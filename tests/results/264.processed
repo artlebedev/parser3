@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 847
+Content-Length: 887
 
  
 	 some &lt;a href=&quot;/?a&amp;b&quot;&gt;html&lt;/a&gt; code 
@@ -26,15 +26,15 @@ Content-Length: 847
 	 some <?dirty?> code 
 
 code coverage tests:
-2. Type: parser.runtime,
+2. Exception type: parser.runtime,
 Source: unsafe_env_name,
 Comment: not safe environment variable
-3. Type: parser.runtime,
+3. Exception type: parser.runtime,
 Source: exec,
 Comment: file name must be specified
-4. Type: parser.runtime,
+4. Exception type: parser.runtime,
 Source: exec,
 Comment: stdin parameter must be string or file
-5. Type: parser.runtime,
+5. Exception type: parser.runtime,
 Source: exec,
 Comment: param must be string or table

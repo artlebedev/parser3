@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 822
+Content-Length: 862
 
 1. {
 "a":"1",
@@ -71,15 +71,15 @@ Content-Length: 822
 "":"3",
 "d":"4"
 }
-6. Type: parser.runtime,
+6. Exception type: parser.runtime,
 Source: rename,
 Comment: single parameter must have hash representation (parameter #1)
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: rename,
 Comment: from key must be string (parameter #1)
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: rename,
 Comment: to key must be string (parameter #2)
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: rename,
 Comment: is 'hash', it has no string representation

@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 703
+Content-Length: 743
 
 <h2>without @OPTIONS (==any):</h2>
 m00 (any)
@@ -8,7 +8,7 @@ static:m01 (static)
 <br />
 m00 (any)
 <br />
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: m01,
 Comment: method of 'any' is not allowed to be called dynamically
 <br />
@@ -18,13 +18,13 @@ m02 (static)
 <br />
 static:m03 (static)
 <br />
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: create,
 Comment: method of 'static' is static and can not be used as constructor
 <br />
 <hr />
 <h2>@OPTIONS dynamic:</h2>
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: m04,
 Comment: method of 'dynamic' is not allowed to be called statically
 <br />
@@ -32,7 +32,7 @@ static:m05 (static)
 <br />
 m04 (dynamic)
 <br />
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: m05,
 Comment: method of 'dynamic' is not allowed to be called dynamically
 <br />

@@ -1,24 +1,24 @@
 Content-Type: text/html
-Content-Length: 390
+Content-Length: 440
 
 NaN:
-Type: number.format,
+Exception type: number.format,
 Source: double,
 Comment: invalid number (double)
 NaN:0
 Inf:
-Type: number.format,
+Exception type: number.format,
 Source: double,
 Comment: out of range (double)
 Inf:0
 SQRT(-1):
-Type: number.format,
+Exception type: number.format,
 Source: sqrt,
 Comment: invalid number (double)
 POW(0;-1):
-Type: number.format,
+Exception type: number.format,
 Source: pow,
 Comment: out of range (double)
-Type: number.format,
+Exception type: number.format,
 Source: selectNumber,
 Comment: invalid number (double)

@@ -1,32 +1,32 @@
 Content-Type: text/html
-Content-Length: 877
+Content-Length: 967
 
-1. Type: parser.runtime,
+1. Exception type: parser.runtime,
 Source: method,
 Comment: param must be method junction
-2. Type: parser.runtime,
+2. Exception type: parser.runtime,
 Source: method,
 Comment: method name must be specified
-3. Type: parser.runtime,
+3. Exception type: parser.runtime,
 Source: method,
 Comment: self must be object, not junction (parameter #2)
-4. Type: parser.runtime,
+4. Exception type: parser.runtime,
 Source: method,
 Comment: self must be parser object or class
-5. Type: parser.runtime,
+5. Exception type: parser.runtime,
 Source: length,
 Comment: method must not be native
 6. void
-7. Type: parser.runtime,
+7. Exception type: parser.runtime,
 Source: method,
 Comment: self must be object, not junction (parameter #3)
-8. Type: parser.runtime,
+8. Exception type: parser.runtime,
 Source: length,
 Comment: method must not be native
-9. Type: parser.runtime,
+9. Exception type: parser.runtime,
 Source: method,
 Comment: self must be parser object or class
-10. Type: parser.runtime,
+10. Exception type: parser.runtime,
 Source: length,
 Comment: method of 'string' is not allowed to be called statically
 11. MAIN [O] O dynamic

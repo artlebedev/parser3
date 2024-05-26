@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 212
+Content-Length: 222
 
 $request:charset: UTF-8<br />
 $response:charset: UTF-8<br />
@@ -8,6 +8,6 @@ $response:charset: UTF-8<br />
 <вася name="значение"/>
 
 <hr />
-Type: xml,
+Exception type: xml,
 Source: create,
 Comment: invalid localName '����'

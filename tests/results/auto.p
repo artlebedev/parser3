@@ -57,7 +57,7 @@ html	text/html
 @try-catch[jCode]
 ^try{$jCode}{
 	$exception.handled(true)
-	Type: $exception.type,
+	Exception type: $exception.type,
 	Source: $exception.source,
 	Comment: ^taint[as-is;$exception.comment]
 }

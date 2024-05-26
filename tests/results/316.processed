@@ -1,10 +1,10 @@
 Content-Type: text/html
-Content-Length: 214
+Content-Length: 234
 
-handled0 Type: parser.runtime,
+handled0 Exception type: parser.runtime,
 Source: cache,
 Comment: is 'void', it does not have logical value
 test
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: error,
 Comment: $exception.handled value must be either boolean or string 'cache'

@@ -1,22 +1,22 @@
 Content-Type: text/html
-Content-Length: 511
+Content-Length: 561
 
-1. string methods hidden: Type: parser.runtime,
+1. string methods hidden: Exception type: parser.runtime,
 Source: length,
 Comment: element can not be fetched from string
 2. 123
 double methods available: 124
 3. 123
 int methods available: 125
-4. Type: parser.runtime,
+4. Exception type: parser.runtime,
 Source: nothing,
 Comment: element can not be fetched from int
-5. Type: parser.runtime,
+5. Exception type: parser.runtime,
 Source: something,
 Comment: int method not found
-6. Type: parser.runtime,
+6. Exception type: parser.runtime,
 Source: nothing,
 Comment: element can not be fetched from double
-7. Type: parser.runtime,
+7. Exception type: parser.runtime,
 Source: something,
 Comment: double method not found

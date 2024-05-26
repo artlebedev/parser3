@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 1603
+Content-Length: 1613
 
 f1 : {
 "name":"247_utf8_bom.txt",
@@ -50,7 +50,7 @@ f text from binary transcode using from-charset : {
 "content-type":"application\/octet-stream",
 "text":"проверка"
 }
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: create,
 Comment: charset option can not be used with to-charset
 code coverage tests:

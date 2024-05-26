@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 899
+Content-Length: 909
 
 MAIN methoded MAIN ()
 bool methoded bool ()
@@ -31,7 +31,7 @@ table methoded table ()
 void methoded void (string)
 xdoc methoded xdoc (xnode)
 xnode methoded xnode ()
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: class,
 Comment: param must not be code junction
 class: "junction" "junction"

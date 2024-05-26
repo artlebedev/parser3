@@ -1,17 +1,17 @@
 Content-Type: text/html
-Content-Length: 2088
+Content-Length: 2128
 
 cookie<br />env<br />hash - methoded<br />table - methoded<br />test - methoded<br />test1 - methoded<br />test2 - methoded
 <hr />
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: create,
 Comment: native method of 'date' accepts minimum 1 parameter(s) (0 present)
 <br />
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: calendar,
 Comment: method of 'date' is static and can not be used as constructor
 <br />
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: now,
 Comment: native method of 'date' accepts maximum 1 parameter(s) (2 present)
 <br />
@@ -103,7 +103,7 @@ env<br />
 'env' object class name: 'env/env'<br />
 'env' object base class name: '/'<br />
 <hr />
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: unknown,
 Comment: class is undefined
 <br />

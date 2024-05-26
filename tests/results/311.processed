@@ -1,248 +1,248 @@
 Content-Type: text/html
-Content-Length: 4514
+Content-Length: 4884
 
 
     
 	
-	Type: json.parse,
+	Exception type: json.parse,
 	Source: parse,
 	Comment: unexpected character at line 2
 "A JSON payload should be an object or array, not a string..
 ^
 
 	
-	Type: json.parse,
+	Exception type: json.parse,
 	Source: parse,
 	Comment: unexpected end of json data at line 1
 ["Unclosed array"
                  ^
 
 	
-	Type: json.parse,
+	Exception type: json.parse,
 	Source: parse,
 	Comment: unexpected end of json data at line 2
 
 ^
 
 	
-	Type: json.parse,
+	Exception type: json.parse,
 	Source: parse,
 	Comment: unexpected character at line 1
 {unquoted_key: "keys must be quoted"}
  ^
 
 	
-	Type: json.parse,
+	Exception type: json.parse,
 	Source: parse,
 	Comment: unexpected character at line 1
  ["extra comma" , ]
                   ^
 
 	
-	Type: json.parse,
+	Exception type: json.parse,
 	Source: parse,
 	Comment: unexpected character at line 1
 ["double extra comma",,]
                       ^
 
 	
-	Type: json.parse,
+	Exception type: json.parse,
 	Source: parse,
 	Comment: unexpected character at line 1
 [   , "<-- missing value"]
     ^
 
 	
-	Type: json.parse,
+	Exception type: json.parse,
 	Source: parse,
 	Comment: error comma out of structure at line 1
 ["Comma after the close"],
                          ^
 
 	
-	Type: json.parse,
+	Exception type: json.parse,
 	Source: parse,
 	Comment: stack empty at line 1
 ["Extra close"]]
                ^
 
 	
-	Type: json.parse,
+	Exception type: json.parse,
 	Source: parse,
 	Comment: unexpected character at line 2
 {"Extra comma": true,}]
                      ^
 
 	
-	Type: json.parse,
+	Exception type: json.parse,
 	Source: parse,
 	Comment: unexpected character at line 1
 tra value after close": true} "misplaced quoted value"
                               ^
 
 	
-	Type: json.parse,
+	Exception type: json.parse,
 	Source: parse,
 	Comment: unexpected character at line 1
 {"Illegal expression": 1 + 2}
                          ^
 
 	
-	Type: json.parse,
+	Exception type: json.parse,
 	Source: parse,
 	Comment: unexpected character at line 1
 {"Illegal invocation": alert()}
                        ^
 
 	
-	Type: json.parse,
+	Exception type: json.parse,
 	Source: parse,
 	Comment: unexpected character at line 1
 cannot have leading zeroes": 013}
                               ^
 
 	
-	Type: json.parse,
+	Exception type: json.parse,
 	Source: parse,
 	Comment: unexpected character at line 1
 {"Numbers cannot be hex": 0x14}
                            ^
 
 	
-	Type: json.parse,
+	Exception type: json.parse,
 	Source: parse,
 	Comment: unexpected character at line 1
 ["Illegal backslash escape: \x15"]
                              ^
 
 	
-	Type: json.parse,
+	Exception type: json.parse,
 	Source: parse,
 	Comment: unexpected character at line 1
 [\naked]
  ^
 
 	
-	Type: json.parse,
+	Exception type: json.parse,
 	Source: parse,
 	Comment: unexpected character at line 1
 ["Illegal backslash escape: \017"]
                              ^
 
 	
-	Type: json.parse,
+	Exception type: json.parse,
 	Source: parse,
 	Comment: stack empty at line 3
 [["Too deep"]]]]]]]]]]]]]]]]]]]]
                               ^
 
 	
-	Type: json.parse,
+	Exception type: json.parse,
 	Source: parse,
 	Comment: unexpected character at line 1
 {"Missing colon" null}
                  ^
 
 	
-	Type: json.parse,
+	Exception type: json.parse,
 	Source: parse,
 	Comment: unexpected character at line 1
 {"Double colon":: null}
                 ^
 
 	
-	Type: json.parse,
+	Exception type: json.parse,
 	Source: parse,
 	Comment: unexpected character at line 1
 {"Comma instead of colon", null}
                          ^
 
 	
-	Type: json.parse,
+	Exception type: json.parse,
 	Source: parse,
 	Comment: unexpected character at line 1
 ["Colon instead of comma": false]
                          ^
 
 	
-	Type: json.parse,
+	Exception type: json.parse,
 	Source: parse,
 	Comment: unexpected character at line 1
 ["Bad value", truth]
                  ^
 
 	
-	Type: json.parse,
+	Exception type: json.parse,
 	Source: parse,
 	Comment: unexpected character at line 1
 ?линные буквы", truth]
                    ^
 
 	
-	Type: json.parse,
+	Exception type: json.parse,
 	Source: parse,
 	Comment: unexpected character at line 1
 ['single quote']
  ^
 
 	
-	Type: json.parse,
+	Exception type: json.parse,
 	Source: parse,
 	Comment: unexpected character at line 1
 ["	tab	character	in	very-very-very	long	string	"]
   ^
 
 	
-	Type: json.parse,
+	Exception type: json.parse,
 	Source: parse,
 	Comment: unexpected character at line 1
 ["tab\   character\   in\  string\  "]
       ^
 
 	
-	Type: json.parse,
+	Exception type: json.parse,
 	Source: parse,
 	Comment: unexpected character at line 1
 ["line break"]
       ^
 
 	
-	Type: json.parse,
+	Exception type: json.parse,
 	Source: parse,
 	Comment: unexpected character at line 1
 ["line\ break"]
        ^
 
 	
-	Type: json.parse,
+	Exception type: json.parse,
 	Source: parse,
 	Comment: unexpected character at line 1
 [0e]
   ^
 
 	
-	Type: json.parse,
+	Exception type: json.parse,
 	Source: parse,
 	Comment: unexpected character at line 1
 [0e+]
   ^
 
 	
-	Type: json.parse,
+	Exception type: json.parse,
 	Source: parse,
 	Comment: unexpected character at line 1
 [0e+-1]
   ^
 
 	
-	Type: json.parse,
+	Exception type: json.parse,
 	Source: parse,
 	Comment: unexpected end of json data at line 1
 stead if closing brace": true,
                               ^
 
 	
-	Type: json.parse,
+	Exception type: json.parse,
 	Source: parse,
 	Comment: pop unexpected mode at line 1
 ["mismatch"}
@@ -250,13 +250,13 @@ stead if closing brace": true,
 
     
 	
-	Type: json.parse,
+	Exception type: json.parse,
 	Source: parse,
 	Comment: empty string is not valid json
 
     
 	
-	Type: json.parse,
+	Exception type: json.parse,
 	Source: parse,
 	Comment: illegal quote escape, json may be tainted at line 1
 [\"tainted\"]

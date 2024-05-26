@@ -1,13 +1,13 @@
 Content-Type: text/html
-Content-Length: 313
+Content-Length: 333
 
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: c3,
 Comment: column value must be string compatible
 [
 {"c1":"","c2":"1"}
 ]
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: insert,
 Comment: column value must be string compatible
 [

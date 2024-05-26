@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 596
+Content-Length: 606
 
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE document SYSTEM "http://localhost/tests/181.ent">
@@ -12,7 +12,7 @@ Content-Length: 596
 <root></root>a b
 </document>
 
-Type: xml,
+Exception type: xml,
 Source: create,
 Comment: I/O warning : failed to load external entity "http://localhost/tests/no-such-file.ent"
 <!DOCTYPE document SYSTEM "http://localhost/tests/no-such-file.ent">

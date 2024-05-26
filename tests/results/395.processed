@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 611
+Content-Length: 621
 
 {
 "src":"395_dir\/1.bmp",
@@ -36,7 +36,7 @@ Content-Length: 611
 "border":0,
 "line-width":1
 }
-Type: image.format,
+Exception type: image.format,
 Source: /-real-path-was-here-/4.mp4,
 Comment: handling disabled for file name extension 'mp4'
 {

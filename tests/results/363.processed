@@ -1,7 +1,7 @@
 Content-Type: text/html
-Content-Length: 209
+Content-Length: 219
 
-test1 : Type: parser.runtime,
+test1 : Exception type: parser.runtime,
 Source: test1,
 Comment: undefined method
 

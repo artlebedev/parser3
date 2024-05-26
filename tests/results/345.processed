@@ -1,14 +1,14 @@
 Content-Type: text/html
-Content-Length: 182
+Content-Length: 202
 
 1. ok
 2. ok
 3. ok
 4. ok
 5. ok
-6. Type: parser.runtime,
+6. Exception type: parser.runtime,
 Source: delete,
 Comment: called with invalid option
-7. Type: parser.runtime,
+7. Exception type: parser.runtime,
 Source: move,
 Comment: called with invalid option

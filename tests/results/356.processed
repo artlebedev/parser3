@@ -1,19 +1,19 @@
 Content-Type: text/html
-Content-Length: 1083
+Content-Length: 1133
 
-1. Type: parser.runtime,
+1. Exception type: parser.runtime,
 Source: no-such-class,
 Comment: class is undefined
-2. Type: parser.runtime,
+2. Exception type: parser.runtime,
 Source: method_info,
 Comment: method name must be specified
-3. Type: parser.runtime,
+3. Exception type: parser.runtime,
 Source: no-such-method,
 Comment: method not found in class 'string'
-4. Type: parser.runtime,
+4. Exception type: parser.runtime,
 Source: method_info,
 Comment: method name must be string (parameter #2)
-5. Type: parser.runtime,
+5. Exception type: parser.runtime,
 Source: method_info,
 Comment: param must be class name or method junction
 6. {

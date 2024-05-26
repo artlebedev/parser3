@@ -1,24 +1,24 @@
 Content-Type: text/html
-Content-Length: 521
+Content-Length: 581
 
-1. Type: parser.runtime,
+1. Exception type: parser.runtime,
 Source: b,
 Comment: column not found
 2. vb
-3. Type: parser.runtime,
+3. Exception type: parser.runtime,
 Source: a,
 Comment: column name must be string
 4. vd
 5. vb, vd
-6. Type: parser.runtime,
+6. Exception type: parser.runtime,
 Source: a,
 Comment: column not found
-7. 8. Type: parser.runtime,
+7. 8. Exception type: parser.runtime,
 Source: rename,
 Comment: options must have hash representation (parameter #1)
-9. Type: parser.runtime,
+9. Exception type: parser.runtime,
 Source: rename,
 Comment: column name must be string (parameter #2)
-10. Type: parser.runtime,
+10. Exception type: parser.runtime,
 Source: rename,
 Comment: columns renaming is not supported for nameless tables

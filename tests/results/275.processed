@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 1039
+Content-Length: 1119
 
 11110000000000000000000000000000
 -11110000000000000000000000000000
@@ -7,32 +7,32 @@ Content-Length: 1039
 -1111000000000000000000000000000011110000000000000000000000000000
 844424931115008
 -844424931115008
-Type: number.format,
+Exception type: number.format,
 Source: 0x10000000000000000,
 Comment: out of range (int)
-Type: number.zerodivision,
+Exception type: number.zerodivision,
 Source: div,
 Comment: Division by zero
-Type: number.zerodivision,
+Exception type: number.zerodivision,
 Source: mod,
 Comment: Modulus by zero
 test oct support disabled: 11 11
-Type: number.zerodivision,
+Exception type: number.zerodivision,
 Source: div,
 Comment: Division by zero
-Type: number.zerodivision,
+Exception type: number.zerodivision,
 Source: mod,
 Comment: Modulus by zero
-0x100000000 as int: Type: number.format,
+0x100000000 as int: Exception type: number.format,
 Source: 0x100000000,
 Comment: out of range (int)
-0x10000000000000000 as double: Type: number.format,
+0x10000000000000000 as double: Exception type: number.format,
 Source: 0x10000000000000000,
 Comment: out of range (int)
 0x7FFFFFFF as int: 2147483647
 -0x80000000 as int: -2147483648
 0xFFFFFFFFFFFFFFFF as double: 1.84467440737096e+19
 0x800000000000 as double: 140737488355328
-as int: Type: number.format,
+as int: Exception type: number.format,
 Source: 0x800000000000,
 Comment: out of range (int)

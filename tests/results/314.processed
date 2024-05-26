@@ -1,7 +1,7 @@
 Content-Type: text/html
-Content-Length: 134
+Content-Length: 144
 
 static call test
-1. 2. 3. Type: parser.runtime,
+1. 2. 3. Exception type: parser.runtime,
 Source: js-escape,
 Comment: method of 'string' is not allowed to be called statically

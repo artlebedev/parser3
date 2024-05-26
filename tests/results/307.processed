@@ -1,10 +1,10 @@
 Content-Type: text/html
-Content-Length: 171
+Content-Length: 191
 
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: test,
 Comment: junction used outside of context
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: Test,
 Comment: junction used outside of context
 Hello 1

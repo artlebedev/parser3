@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 4033
+Content-Length: 4123
 
 1. slow test result:
 {
@@ -42,7 +42,7 @@ Content-Length: 4033
 "text":"body\n...................................................................................................."
 }
 3. invalid-content-length test result:
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: http://www.parser.ru/_/tests/nph-379.pl?invalid-content-length,
 Comment: content size of 10000000000 bytes exceeds the limit (536870912 bytes)
 4. empty-body test result:
@@ -138,7 +138,7 @@ Comment: content size of 10000000000 bytes exceeds the limit (536870912 bytes)
 "text":""
 }
 7.1 bad-headers test result:
-Type: http.response,
+Exception type: http.response,
 Source: http://www.parser.ru/_/tests/nph-379.pl?bad-headers,
 Comment: bad response from host - bad header ":value"
 7.2 bad-cookies test result:
@@ -165,30 +165,30 @@ Comment: bad response from host - bad header ":value"
 "text":"body\n"
 }
 8. invalid-status test result:
-Type: number.format,
+Exception type: number.format,
 Source: http://www.parser.ru/_/tests/nph-379.pl?invalid-status,
 Comment: 'bad' is invalid number (int) for HTTP status
 9. no-status-1 test result:
-Type: http.status,
+Exception type: http.status,
 Source: HTTP/1.0 OK,
 Comment: invalid HTTP response status
 10. no-status-2 test result:
-Type: http.status,
+Exception type: http.status,
 Source: HTTP/1.0 OK,
 Comment: invalid HTTP response status
 11. no-status-3 test result:
-Type: http.status,
+Exception type: http.status,
 Source: HTTP/1.0,
 Comment: invalid HTTP response status
 12. strange-status test result:
-Type: number.format,
+Exception type: number.format,
 Source: http://www.parser.ru/_/tests/nph-379.pl?strange-status,
 Comment: '200OK?' is invalid number (int) for HTTP status
 13. strange-content-length-1 test result:
-Type: number.format,
+Exception type: number.format,
 Source: http://www.parser.ru/_/tests/nph-379.pl?strange-content-length-1,
 Comment: '-1' is invalid number (int) for content-length
 14. strange-content-length-2 test result:
-Type: number.format,
+Exception type: number.format,
 Source: http://www.parser.ru/_/tests/nph-379.pl?strange-content-length-2,
 Comment: '200OK?' is invalid number (int) for content-length

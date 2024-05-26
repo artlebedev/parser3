@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 1081
+Content-Length: 1091
 
 1. return in method string param
 =
@@ -20,7 +20,7 @@ Content-Length: 1081
 8.0 %
 8.1 =%
 9. return is not allowed in expression passed to native method
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: if,
 Comment: return is not allowed in expression passed to native method (parameter #1)
 10. testing return value

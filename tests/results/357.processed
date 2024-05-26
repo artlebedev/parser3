@@ -1,9 +1,9 @@
 Content-Type: text/html
-Content-Length: 151
+Content-Length: 171
 
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: for,
 Comment: endless loop detected
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: i,
 Comment: call canceled - endless recursion detected

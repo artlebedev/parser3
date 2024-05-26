@@ -1,16 +1,16 @@
 Content-Type: text/html
-Content-Length: 474
+Content-Length: 514
 
-1. Type: parser.runtime,
+1. Exception type: parser.runtime,
 Source: measure,
 Comment: parameter is 'hash', it does not have file value
-2. Type: parser.runtime,
+2. Exception type: parser.runtime,
 Source: convert,
 Comment: parameter is 'hash', it does not have file value
-3. Type: parser.runtime,
+3. Exception type: parser.runtime,
 Source: send,
 Comment: parameter is 'double', it does not have file value
-4. Type: parser.runtime,
+4. Exception type: parser.runtime,
 Source: measure,
 Comment: parameter is 'hash', it does not have file value
 5. {

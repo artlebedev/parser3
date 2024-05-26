@@ -1,8 +1,8 @@
 Content-Type: text/html
-Content-Length: 544
+Content-Length: 554
 
 valid encoding for match
-Type: xml,
+Exception type: xml,
 Source: create,
 Comment: Entity: line 3: parser error : Opening and ending tag mismatch: document line 2 and b
 ?екст текст текст текст текст текст текст </b>

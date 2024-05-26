@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 1550
+Content-Length: 1700
 
 1. {
 "v1":"",
@@ -30,48 +30,48 @@ Content-Length: 1550
 7. {
 "k":"v"
 }
-10. Type: parser.runtime,
+10. Exception type: parser.runtime,
 Source: create,
 Comment: method of 'O' accepts maximum 2 parameter(s) (3 present)
-11. Type: parser.runtime,
+11. Exception type: parser.runtime,
 Source: create,
 Comment: arguments should not be specified as hash and as create params
-12. Type: parser.runtime,
+12. Exception type: parser.runtime,
 Source: create,
 Comment: param must not be code (parameter #1)
-13. Type: parser.runtime,
+13. Exception type: parser.runtime,
 Source: create,
 Comment: constructor name must be specified
-14. Type: parser.runtime,
+14. Exception type: parser.runtime,
 Source: create,
 Comment: class name must be specified
-15. Type: parser.runtime,
+15. Exception type: parser.runtime,
 Source: create,
 Comment: called with invalid option
-16. Type: parser.runtime,
+16. Exception type: parser.runtime,
 Source: create,
 Comment: constructor name must be specified
-17. Type: parser.runtime,
+17. Exception type: parser.runtime,
 Source: create,
 Comment: constructor name must be string (parameter #2)
-18. Type: parser.runtime,
+18. Exception type: parser.runtime,
 Source: A,
 Comment: class is undefined
-19. Type: parser.runtime,
+19. Exception type: parser.runtime,
 Source: b,
 Comment: constructor not found in class 'O'
-20. Type: parser.runtime,
+20. Exception type: parser.runtime,
 Source: A,
 Comment: class is undefined
-21. Type: parser.runtime,
+21. Exception type: parser.runtime,
 Source: b,
 Comment: constructor not found in class 'O'
-22. Type: parser.runtime,
+22. Exception type: parser.runtime,
 Source: create,
 Comment: arguments count should not exceed 100
-23. Type: parser.runtime,
+23. Exception type: parser.runtime,
 Source: create,
 Comment: arguments must not be code
-24. Type: parser.runtime,
+24. Exception type: parser.runtime,
 Source: create,
 Comment: arguments must have hash representation

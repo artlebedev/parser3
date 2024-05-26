@@ -1,7 +1,7 @@
 Content-Type: text/html
-Content-Length: 115
+Content-Length: 125
 
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: use,
 Comment: circular class inheritance detected in class 'A'
 A base: void

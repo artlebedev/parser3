@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 1356
+Content-Length: 1386
 
 f1 : {
 "class":"file",
@@ -57,12 +57,12 @@ f text from binary, automatic transcode : {
 "content-type":"text\/plain; charset=Windows-1251",
 "text":"тест"
 }
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: create,
 Comment: called with invalid option
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: create,
 Comment: charset options can not be used with binary content
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: create,
 Comment: charset options can not be used with binary content

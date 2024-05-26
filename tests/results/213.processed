@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 174
+Content-Length: 184
 
 a12312312b
 <br />
@@ -11,7 +11,7 @@ a!!!!!!!!b
 <br />
 a!!!!!!!!b
 <br />
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: match,
 Comment: replacement option should be junction or string
 <br />

@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 390
+Content-Length: 400
 
 object: /-real-path-was-here-/368.html
 class: /-real-path-was-here-/368.html
@@ -8,6 +8,6 @@ process class: /-real-path-was-here-/process.p
 process without file specified: -body of process-
 parser method: "/-real-path-was-here-/368.html"
 native method: ""
-code: Type: parser.runtime,
+code: Exception type: parser.runtime,
 Source: filename,
 Comment: param must be object, class or method junction

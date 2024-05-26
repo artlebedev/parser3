@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 216
+Content-Length: 226
 
 t.fields:{
 "c1":"v1",
@@ -9,7 +9,7 @@ h.fields:{
 "a":"a"
 }
 t.fields:
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: fields,
 Comment: column not found
 h.fields:"empty"

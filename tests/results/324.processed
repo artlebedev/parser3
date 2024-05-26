@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 3822
+Content-Length: 4262
 
 Testing hash
 Test-hash:
@@ -13,16 +13,16 @@ var: method: 1
 var: method: 1
 var: method: 1
 Test-no-such-method:
-var: Type: parser.runtime,
+var: Exception type: parser.runtime,
 Source: no-such-method,
 Comment: hash method not found
-var: Type: parser.runtime,
+var: Exception type: parser.runtime,
 Source: no-such-method,
 Comment: hash method not found
-var: Type: parser.runtime,
+var: Exception type: parser.runtime,
 Source: no-such-method,
 Comment: hash method not found
-var: Type: parser.runtime,
+var: Exception type: parser.runtime,
 Source: no-such-method,
 Comment: hash method not found
 Testing hash
@@ -41,110 +41,110 @@ var: method: 2
 var: method: 2
 var: method: 2
 Test-no-such-method:
-var: Type: parser.runtime,
+var: Exception type: parser.runtime,
 Source: no-such-method,
 Comment: hash method not found
-var: Type: parser.runtime,
+var: Exception type: parser.runtime,
 Source: no-such-method,
 Comment: hash method not found
-var: Type: parser.runtime,
+var: Exception type: parser.runtime,
 Source: no-such-method,
 Comment: hash method not found
-var: Type: parser.runtime,
+var: Exception type: parser.runtime,
 Source: no-such-method,
 Comment: hash method not found
 Testing table
 Test-hash:
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: _count,
 Comment: column not found
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: _count,
 Comment: table method not found
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: _count,
 Comment: column not found
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: _count,
 Comment: table method not found
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: _count,
 Comment: column not found
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: _count,
 Comment: table method not found
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: _count,
 Comment: column not found
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: _count,
 Comment: table method not found
 Test-table:
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: count,
 Comment: column not found
 method: 1
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: count,
 Comment: column not found
 method: 1
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: count,
 Comment: column not found
 method: 1
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: count,
 Comment: column not found
 method: 1
 Test-no-such-method:
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: no-such-method,
 Comment: column not found
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: no-such-method,
 Comment: table method not found
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: no-such-method,
 Comment: column not found
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: no-such-method,
 Comment: table method not found
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: no-such-method,
 Comment: column not found
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: no-such-method,
 Comment: table method not found
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: no-such-method,
 Comment: column not found
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: no-such-method,
 Comment: table method not found
 Testing table
 Test-hash:
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: _count,
 Comment: column not found
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: _count,
 Comment: table method not found
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: _count,
 Comment: column not found
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: _count,
 Comment: table method not found
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: _count,
 Comment: column not found
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: _count,
 Comment: table method not found
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: _count,
 Comment: column not found
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: _count,
 Comment: table method not found
 Test-table:
@@ -157,27 +157,27 @@ method: 1
 var: is count
 method: 1
 Test-no-such-method:
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: no-such-method,
 Comment: column not found
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: no-such-method,
 Comment: table method not found
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: no-such-method,
 Comment: column not found
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: no-such-method,
 Comment: table method not found
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: no-such-method,
 Comment: column not found
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: no-such-method,
 Comment: table method not found
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: no-such-method,
 Comment: column not found
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: no-such-method,
 Comment: table method not found

@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 215
+Content-Length: 225
 
 OK
 <hr />
@@ -11,6 +11,6 @@ OK
 11015.9331597222
 11015
 1
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: hren,
 Comment: 'type' must be 'date', 'time' or 'datetime'

@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 3414
+Content-Length: 3554
 
 $xdoc:
 <pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
@@ -16,12 +16,12 @@ $xdoc:
 ''
 <hr />
 <b>^firstChild.getAttribute[*]</b>:
-Type: xml,
+Exception type: xml,
 Source: getAttribute,
 Comment: invalid localName '*'
 <hr />
 <b>^firstChild.getAttribute[]</b>:
-Type: xml,
+Exception type: xml,
 Source: getAttribute,
 Comment: invalid localName ''
 <h2>^node.getAttributeNS[]</h2>
@@ -32,12 +32,12 @@ Comment: invalid localName ''
 ''
 <hr />
 <b>^firstChild.getAttributeNS[http://design.ru/uri;*]</b>:
-Type: xml,
+Exception type: xml,
 Source: getAttributeNS,
 Comment: invalid localName '*'
 <hr />
 <b>^firstChild.getAttributeNS[http://design.ru/uri;]</b>:
-Type: xml,
+Exception type: xml,
 Source: getAttributeNS,
 Comment: invalid localName ''
 <h2>^doc.getElementsByTagName[]</h2>
@@ -54,12 +54,12 @@ Comment: invalid localName ''
 3
 <hr />
 <b>^xdoc.getElementsByTagName[@]</b>:
-Type: xml,
+Exception type: xml,
 Source: getElementsByTagName,
 Comment: invalid localName '@'
 <hr />
 <b>^xdoc.getElementsByTagName[]</b>:
-Type: xml,
+Exception type: xml,
 Source: getElementsByTagName,
 Comment: invalid localName ''
 <h2>^doc.getElementsByTagNameNS[]</h2>
@@ -76,17 +76,17 @@ Comment: invalid localName ''
 1
 <hr />
 <b>^xdoc.getElementsByTagNameNS[http://design.ru/uri;@]</b>:
-Type: xml,
+Exception type: xml,
 Source: getElementsByTagNameNS,
 Comment: invalid localName '@'
 <hr />
 <b>^xdoc.getElementsByTagNameNS[http://design.ru/uri;]</b>:
-Type: xml,
+Exception type: xml,
 Source: getElementsByTagNameNS,
 Comment: invalid localName ''
 <hr />
 <b>^xdoc.getElementsByTagNameNS[;]</b>:
-Type: xml,
+Exception type: xml,
 Source: getElementsByTagNameNS,
 Comment: invalid localName ''
 <hr />
@@ -104,17 +104,17 @@ Comment: invalid localName ''
 &lt;doc/&gt;
 <hr />
 <b>$x[^xdoc::create[ns:doc]]</b>:
-Type: xml,
+Exception type: xml,
 Source: create,
 Comment: invalid localName 'ns:doc'
 <hr />
 <b>$x[^xdoc::create[nu i dela - <"bred"!> ]]</b>:
-Type: xml,
+Exception type: xml,
 Source: create,
 Comment: invalid localName 'nu i dela - <"bred"!> '
 <hr />
 <b>$x[^xdoc::create[]]</b>:
-Type: xml,
+Exception type: xml,
 Source: create,
 Comment: invalid localName ''
 <h2>^doc.createElement[]</h2>
@@ -127,11 +127,11 @@ Comment: invalid localName ''
 &lt;test&gt;&lt;ns:doc/&gt;&lt;/test&gt;
 <hr />
 <b>$n[^x.createElement[nu i dela - &lt;&quot;bred&quot;!&gt; ]]</b>:
-Type: xml,
+Exception type: xml,
 Source: createElement,
 Comment: invalid localName 'nu i dela - <"bred"!> '
 <hr />
 <b>$n[^x.createElement[]]</b>:
-Type: xml,
+Exception type: xml,
 Source: createElement,
 Comment: invalid localName ''

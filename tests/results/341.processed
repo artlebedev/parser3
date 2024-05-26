@@ -1,33 +1,33 @@
 Content-Type: text/html
-Content-Length: 3178
+Content-Length: 3358
 
 I. named
 Code coverage tests:
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: wrong,
 Comment: must be 'hash', 'table' or 'string'
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: hash,
 Comment: 'type' must be string
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: hash,
 Comment: called with invalid option
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: hash,
 Comment: options must be hash
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: hash,
 Comment: value field(s) must be string or table or code
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: hash,
 Comment: you can't specify more then one value field with option $.type[string]
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: hash,
 Comment: you can't specify $.type[] if value is code
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: ups,
 Comment: column not found
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: ups,
 Comment: column not found
 Valid calls tests:
@@ -132,31 +132,31 @@ n6. {
 }
 II. nameless
 Code coverage tests:
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: wrong,
 Comment: must be 'hash', 'table' or 'string'
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: hash,
 Comment: 'type' must be string
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: hash,
 Comment: called with invalid option
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: hash,
 Comment: options must be hash
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: hash,
 Comment: value field(s) must be string or table or code
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: hash,
 Comment: you can't specify more then one value field with option $.type[string]
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: hash,
 Comment: you can't specify $.type[] if value is code
-Type: number.format,
+Exception type: number.format,
 Source: ups,
 Comment: invalid number (int)
-Type: number.format,
+Exception type: number.format,
 Source: ups,
 Comment: invalid number (int)
 Valid calls tests:

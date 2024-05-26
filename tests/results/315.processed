@@ -1,12 +1,12 @@
 Content-Type: text/html
-Content-Length: 7811
+Content-Length: 8261
 
 [ ]
-Type: date.format,
+Exception type: date.format,
 Source: create,
 Comment: number expected in date ' '
 [+]
-Type: date.format,
+Exception type: date.format,
 Source: create,
 Comment: number expected in date '+'
 [1-1- -1T10:10:10.0+5]
@@ -32,31 +32,31 @@ Comment: number expected in date '+'
 [9999-12-31T23:59:59-5] timestamp: 253402318799
 [9999-12-31T23:59:59-5] sql-string: 9999-12-31 23:59:59 SUB+5
 [9999-12-31T23:59:59-5] iso-string: 9999-12-31T23:59:59-05:00
-Type: date.range,
+Exception type: date.range,
 Source: roll,
 Comment: year '10000' is out of range 0..9999
 [2020--31 23:59:59]
-Type: date.format,
+Exception type: date.format,
 Source: create,
 Comment: number delimiter '-' expected, but found '2' in date '-31 23:59:59'
 [2020-1-31T23:59:59]
-Type: date.format,
+Exception type: date.format,
 Source: create,
 Comment: empty timezone
 [2020-1-31T23:59:59x]
-Type: date.format,
+Exception type: date.format,
 Source: create,
 Comment: number delimiter '.' or timezone expected, but found 'x' in date '59x'
 [2020-1-31T23:59:59+]
-Type: date.format,
+Exception type: date.format,
 Source: create,
 Comment: invalid timezone '+'
 [2020-1-31T23:59:59+a]
-Type: date.format,
+Exception type: date.format,
 Source: create,
 Comment: invalid timezone '+a'
 [2020-1-31T23:59:59+111]
-Type: date.format,
+Exception type: date.format,
 Source: create,
 Comment: invalid timezone '+111'
 [2020-1-31T23:59:59+1111]
@@ -64,152 +64,152 @@ Comment: invalid timezone '+111'
 [2020-1-31T23:59:59+1111] sql-string: 2020-01-31 23:59:59 SUB-11:11
 [2020-1-31T23:59:59+1111] iso-string: 2020-01-31T23:59:59+11:11
 [2020-1-31T23:59:59+11 11]
-Type: date.format,
+Exception type: date.format,
 Source: create,
 Comment: invalid timezone '+11 11'
 [2020-1-31T23:59:59+1111x]
-Type: date.format,
+Exception type: date.format,
 Source: create,
 Comment: invalid timezone '+1111x'
 [2020-1-31T23:59:59+1111 x]
-Type: date.format,
+Exception type: date.format,
 Source: create,
 Comment: invalid timezone '+1111 x'
 [2020-1-31T23:59:59+11111]
-Type: date.format,
+Exception type: date.format,
 Source: create,
 Comment: invalid timezone '+11111'
 [2020-1-31T23:59:59+22:]
-Type: date.format,
+Exception type: date.format,
 Source: create,
 Comment: invalid timezone '+22:'
 [2020-1-31T23:59:59+22:100]
-Type: date.format,
+Exception type: date.format,
 Source: create,
 Comment: invalid timezone '+22:100'
 [2020-1-31T 23:59:59 +0 2:10 ]
-Type: date.format,
+Exception type: date.format,
 Source: create,
 Comment: invalid timezone '+0 2:10  '
 [2020-1-31T 23:59:59 +02 X]
-Type: date.format,
+Exception type: date.format,
 Source: create,
 Comment: invalid timezone '+02 X'
 [2020-1-31T 23:59:59+02:10 X]
-Type: date.format,
+Exception type: date.format,
 Source: create,
 Comment: invalid timezone '+02:10 X'
 [2020-1-31T 23:59:59+02-10]
-Type: date.format,
+Exception type: date.format,
 Source: create,
 Comment: invalid timezone '+02-10'
 [2020-1-31T 23:59:59Z X]
-Type: date.format,
+Exception type: date.format,
 Source: create,
 Comment: invalid timezone 'Z X'
 [-1-31 23:59:59]
-Type: date.format,
+Exception type: date.format,
 Source: create,
 Comment: number delimiter '-' expected, but found '2' in date '31 23:59:59'
 [1--1-1 23:59:59.1 1]
-Type: date.format,
+Exception type: date.format,
 Source: create,
 Comment: invalid character '1' after number in '1 1'
 [1--.1-1 23:59:59]
-Type: date.format,
+Exception type: date.format,
 Source: create,
 Comment: '.' must be number in date '-.1-1 23:59:59'
 [2020]
 [2020] timestamp: 1577826000
 [2020] sql-string: 2020-01-01 00:00:00 [2020] iso-string: 2020-01-01T00:00:00+03:00
 [2020-]
-Type: date.format,
+Exception type: date.format,
 Source: create,
 Comment: number expected in date ''
 [2020X]
-Type: date.format,
+Exception type: date.format,
 Source: create,
 Comment: number delimiter '-' expected, but found 'X' in date '2020X'
 [2020-1 ]
 [2020-1 ] timestamp: 1577826000
 [2020-1 ] sql-string: 2020-01-01 00:00:00 [2020-1 ] iso-string: 2020-01-01T00:00:00+03:00
 [2020-1X]
-Type: date.format,
+Exception type: date.format,
 Source: create,
 Comment: number delimiter '-' expected, but found 'X' in date '1X'
 [2020-1-]
-Type: date.format,
+Exception type: date.format,
 Source: create,
 Comment: number expected in date ''
 [2020-1-31 ]
 [2020-1-31 ] timestamp: 1580418000
 [2020-1-31 ] sql-string: 2020-01-31 00:00:00 [2020-1-31 ] iso-string: 2020-01-31T00:00:00+03:00
 [2020-1-31X]
-Type: date.format,
+Exception type: date.format,
 Source: create,
 Comment: number delimiter ' ' expected, but found 'X' in date '31X'
 [2020-1-31 1 ]
 [2020-1-31 1 ] timestamp: 1580421600
 [2020-1-31 1 ] sql-string: 2020-01-31 01:00:00 [2020-1-31 1 ] iso-string: 2020-01-31T01:00:00+03:00
 [2020-1-31 1X]
-Type: date.format,
+Exception type: date.format,
 Source: create,
 Comment: number delimiter ':' expected, but found 'X' in date '1X'
 [2020-1-31 1:]
-Type: date.format,
+Exception type: date.format,
 Source: create,
 Comment: number expected in date ''
 [2020-1-31 1:1 ]
 [2020-1-31 1:1 ] timestamp: 1580421660
 [2020-1-31 1:1 ] sql-string: 2020-01-31 01:01:00 [2020-1-31 1:1 ] iso-string: 2020-01-31T01:01:00+03:00
 [2020-1-31 1:1X]
-Type: date.format,
+Exception type: date.format,
 Source: create,
 Comment: number delimiter ':' expected, but found 'X' in date '1X'
 [2020-1-31 1:1:]
-Type: date.format,
+Exception type: date.format,
 Source: create,
 Comment: number expected in date ''
 [2020-1-31 1:1:1 ]
 [2020-1-31 1:1:1 ] timestamp: 1580421661
 [2020-1-31 1:1:1 ] sql-string: 2020-01-31 01:01:01 [2020-1-31 1:1:1 ] iso-string: 2020-01-31T01:01:01+03:00
 [2020-1-31 1:1:1X]
-Type: date.format,
+Exception type: date.format,
 Source: create,
 Comment: number delimiter '.' expected, but found 'X' in date '1X'
 [2020-1-31 1:1:1.]
-Type: date.format,
+Exception type: date.format,
 Source: create,
 Comment: number expected in date ''
 [2020-1-31 1:1:1.2 ]
 [2020-1-31 1:1:1.2 ] timestamp: 1580421661
 [2020-1-31 1:1:1.2 ] sql-string: 2020-01-31 01:01:01 [2020-1-31 1:1:1.2 ] iso-string: 2020-01-31T01:01:01+03:00
 [2020-1-31 1:1:1.2X]
-Type: date.format,
+Exception type: date.format,
 Source: create,
 Comment: invalid character 'X' after number in '2X'
 [2020-1-31T]
-Type: date.format,
+Exception type: date.format,
 Source: create,
 Comment: number expected in date ''
 [2020-1-31T1 ]
-Type: date.format,
+Exception type: date.format,
 Source: create,
 Comment: empty timezone
 [2020-1-31T1X]
-Type: date.format,
+Exception type: date.format,
 Source: create,
 Comment: number delimiter ':' expected, but found 'X' in date '1X'
 [2020-1-31T1Z]
-Type: date.format,
+Exception type: date.format,
 Source: create,
 Comment: number delimiter ':' expected, but found 'Z' in date '1Z'
 [2020-1-31T1:1 ]
-Type: date.format,
+Exception type: date.format,
 Source: create,
 Comment: empty timezone
 [2020-1-31T1:1X]
-Type: date.format,
+Exception type: date.format,
 Source: create,
 Comment: number delimiter ':' or timezone expected, but found 'X' in date '1X'
 [2020-1-31T1:1Z]
@@ -217,11 +217,11 @@ Comment: number delimiter ':' or timezone expected, but found 'X' in date '1X'
 [2020-1-31T1:1Z] sql-string: 2020-01-31 01:01:00 UTC
 [2020-1-31T1:1Z] iso-string: 2020-01-31T01:01:00Z
 [2020-1-31T1:1:1 ]
-Type: date.format,
+Exception type: date.format,
 Source: create,
 Comment: empty timezone
 [2020-1-31T1:1:1X]
-Type: date.format,
+Exception type: date.format,
 Source: create,
 Comment: number delimiter '.' or timezone expected, but found 'X' in date '1X'
 [2020-1-31T1:1:1Z]
@@ -229,7 +229,7 @@ Comment: number delimiter '.' or timezone expected, but found 'X' in date '1X'
 [2020-1-31T1:1:1Z] sql-string: 2020-01-31 01:01:01 UTC
 [2020-1-31T1:1:1Z] iso-string: 2020-01-31T01:01:01Z
 [2020-1-31T1:1:1.2 ]
-Type: date.format,
+Exception type: date.format,
 Source: create,
 Comment: empty timezone
 [2020-1-31T1:1:1.2Z]
@@ -240,7 +240,7 @@ Comment: empty timezone
 [2020:1] timestamp: 1577826000
 [2020:1] sql-string: 2020-01-01 00:00:00 [2020:1] iso-string: 2020-01-01T00:00:00+03:00
 [2020:1-31]
-Type: date.format,
+Exception type: date.format,
 Source: create,
 Comment: number delimiter ':' expected, but found '-' in date '1-31'
 [2020:1:31]

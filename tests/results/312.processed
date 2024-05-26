@@ -1,10 +1,10 @@
 Content-Type: text/html
-Content-Length: 1087
+Content-Length: 1127
 
 1 : [
 	["c1","c2","c3"]
 ]
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: c3,
 Comment: invalid current row
 2 : [
@@ -41,7 +41,7 @@ current: 1
 8 : [
 	["c1","c2","c3"]
 ]
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: delete,
 Comment: invalid current row
 9: [
@@ -57,7 +57,7 @@ Comment: invalid current row
 n1 : [
 	null
 ]
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: 3,
 Comment: invalid current row
 n2 : [
@@ -72,7 +72,7 @@ n4 : [
 	null,
 	["","","","v1"]
 ]
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: 100000,
 Comment: too big column number
 n5 : [
