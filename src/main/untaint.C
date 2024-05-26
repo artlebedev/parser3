@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_UNTAINT_C="$Id: untaint.C,v 1.177 2023/09/26 20:49:10 moko Exp $";
+volatile const char * IDENT_UNTAINT_C="$Id: untaint.C,v 1.178 2024/05/26 18:36:01 moko Exp $";
 
 
 #include "pa_string.h"
@@ -498,6 +498,7 @@ int cstr_to_string_body_block(String::Language to_lang, size_t fragment_length, 
 			case '>': to_string("&gt;");  break;
 			case '<': to_string("&lt;");  break;
 			case '"': to_string("&quot;");  break;
+			case '\'': to_string("&apos;");  break;
 			default: _default; break;
 		});
 		break;
