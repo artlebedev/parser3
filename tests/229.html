@@ -35,7 +35,7 @@
 ^do{^method_no_args{}}
 
 @do[jCode]
-^try{$jCode}{$exception.handled(true)$exception.source $exception.comment}<br />
+^try{$jCode}{$exception.handled(true)$exception.source ^taint[as-is;$exception.comment]}<br />
 
 @method[a;b]
 $a=$b

@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 3633
+Content-Length: 3658
 
 code coverage tests:
 1. int
@@ -33,7 +33,7 @@ Source: ip2name,
 Comment: Invalid IP address '1.1.1.300' specified
 4.9 Type: parser.runtime,
 Source: ip2name,
-Comment: Invalid IP address '1.1.1.1'
+Comment: Invalid IP address &apos;1.1.1.1&apos;
 4.11 Exception type: parser.runtime,
 Source: name2ip,
 Comment: Domain name must not be empty.
@@ -42,7 +42,7 @@ Source: name2ip,
 Comment: called with invalid option
 4.13 Type: parser.runtime,
 Source: name2ip,
-Comment: Can't resolve domain name 'no-such-domain.xn--80acdhdbb7b5bu.xn--p1ai'
+Comment: Can&apos;t resolve domain name &apos;no-such-domain.xn--80acdhdbb7b5bu.xn--p1ai&apos;
 4.14 ::1 5. math
 5.1 0
 5.2 Exception type: parser.runtime,

@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 331
+Content-Length: 351
 
 'ccc- bbb&amp;'
 <hr />
@@ -15,8 +15,8 @@ Content-Length: 331
 <hr />
 ''
 <hr />
-exception ('from' must not be empty). it's OK
+exception (&apos;from&apos; must not be empty). it's OK
 <hr />
-exception (dictionary table 'from' column elements must not be empty). it's OK
+exception (dictionary table &apos;from&apos; column elements must not be empty). it's OK
 <hr />
 'шило&amp; рыло&amp;'

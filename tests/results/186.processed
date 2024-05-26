@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 1822
+Content-Length: 1832
 
 <hr />
 Origin:
@@ -7,7 +7,7 @@ Origin:
 =abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ
 0123456789
 `+-=~!@#$%^&amp;*()_
-[]{}&lt;&gt;;:'&quot;,./?
+[]{}&lt;&gt;;:&apos;&quot;,./?
 
 абвгдеёжзийклмнопрстуфхцчшщъыьэюя	АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ=
 </pre>
@@ -22,7 +22,7 @@ Unescaped [equal to source]:
 =abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ
 0123456789
 `+-=~!@#$%^&amp;*()_
-[]{}&lt;&gt;;:'&quot;,./?
+[]{}&lt;&gt;;:&apos;&quot;,./?
 абвгдеёжзийклмнопрстуфхцчшщъыьэюя	АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ=
 </pre>
 <hr />

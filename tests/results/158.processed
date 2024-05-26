@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 1906
+Content-Length: 1926
 
 <table border="1">
 <caption>Origin</caption>
@@ -51,7 +51,7 @@ Pen'	'12'
 <td>Маша</td><td>15</td>
 </tr>
 <tr>
-<td>O'Neil</td><td>33</td>
+<td>O&apos;Neil</td><td>33</td>
 </tr>
 <tr>
 <td>Piter
@@ -73,7 +73,7 @@ Pen</td><td>12</td>
 <td>Маша</td><td>15</td>
 </tr>
 <tr>
-<td>O'Neil</td><td>33</td>
+<td>O&apos;Neil</td><td>33</td>
 </tr>
 <tr>
 <td>Piter</td><td></td>
@@ -120,7 +120,7 @@ Pen'	'12'
 <td>Маша</td><td>15</td>
 </tr>
 <tr>
-<td>O'Neil</td><td>33</td>
+<td>O&apos;Neil</td><td>33</td>
 </tr>
 <tr>
 <td>Piter
@@ -139,7 +139,7 @@ Pen</td><td>12</td>
 <td>Маша</td><td>15</td>
 </tr>
 <tr>
-<td>O'Neil</td><td>33</td>
+<td>O&apos;Neil</td><td>33</td>
 </tr>
 <tr>
 <td>Piter</td>
