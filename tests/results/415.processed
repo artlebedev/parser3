@@ -1,25 +1,25 @@
 Content-Type: text/html
-Content-Length: 2686
+Content-Length: 2928
 
-01.p: @CLASS must contain only one line with class name (contains more then one)
-02.p: '0abcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd1' invalid option. valid options are 'partial', 'locals', 'static' and 'dynamic'
-03.p: 'bug': undefined class in @BASE
-04.p: class already have a base 'MAIN'
-05.p: @CLASS equals @BASE
-06.p: @BASE is empty
-07.p: 'partial' option should be used straight after @CLASS
-08.p: 09.p: 'BUG' invalid special name. valid names are 'CLASS', 'USE', 'BASE' and 'OPTIONS'.
-10.p: no base class declared
-11.p: 12.p: can't set base while appending methods to class 'test11'
-13.p: incorrect method call type. the only valid call type method prefix is 'static'
-14.p: @BASE must contain sole name
-15.p: can't append methods to 'test13' - the class wasn't marked as partial
-20.p: syntax error, unexpected '\n', expecting ']'
-21.p: syntax error, unexpected ';', expecting ']'
-22.p: 23.p: syntax error, unexpected ')'
-24.p: syntax error, unexpected ']', expecting STRING or '$' or '^'
-25.p: syntax error, unexpected EON
-26.p: syntax error, unexpected ']', expecting '[' or '{' or '('
-27.p: syntax error, unexpected ')'
-28.p: syntax error, unexpected ']', expecting STRING or '$' or '^'
-29.p: accessing wrapper without value
+01.p: Exception: @CLASS must contain only one line with class name (contains more then one)
+02.p: Exception: '0abcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd1' invalid option. valid options are 'partial', 'locals', 'static' and 'dynamic'
+03.p: Exception: 'bug': undefined class in @BASE
+04.p: Exception: class already have a base 'MAIN'
+05.p: Exception: @CLASS equals @BASE
+06.p: Exception: @BASE is empty
+07.p: Exception: 'partial' option should be used straight after @CLASS
+08.p: 09.p: Exception: 'BUG' invalid special name. valid names are 'CLASS', 'USE', 'BASE' and 'OPTIONS'.
+10.p: Exception: no base class declared
+11.p: 12.p: Exception: can't set base while appending methods to class 'test11'
+13.p: Exception: incorrect method call type. the only valid call type method prefix is 'static'
+14.p: Exception: @BASE must contain sole name
+15.p: Exception: can't append methods to 'test13' - the class wasn't marked as partial
+20.p: Exception: syntax error, unexpected '\n', expecting ']'
+21.p: Exception: syntax error, unexpected ';', expecting ']'
+22.p: 23.p: Exception: syntax error, unexpected ')'
+24.p: Exception: syntax error, unexpected ']', expecting STRING or '$' or '^'
+25.p: Exception: syntax error, unexpected EON
+26.p: Exception: syntax error, unexpected ']', expecting '[' or '{' or '('
+27.p: Exception: syntax error, unexpected ')'
+28.p: Exception: syntax error, unexpected ']', expecting STRING or '$' or '^'
+29.p: Exception: accessing wrapper without value

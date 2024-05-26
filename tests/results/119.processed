@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 267
+Content-Length: 212
 
 $request:charset: UTF-8<br />
 $response:charset: UTF-8<br />
@@ -8,6 +8,6 @@ $response:charset: UTF-8<br />
 <РІР°СЃСЏ name="Р·РЅР°С‡РµРЅРёРµ"/>
 
 <hr />
-$exception.type: 'xml'<br />
-$exception.source: 'create'<br />
-$exception.comment: 'invalid localName 'вася''<br />
+Type: xml,
+Source: create,
+Comment: invalid localName 'вася'

@@ -18,11 +18,8 @@ $i(0)
 
 <hr />
 ^^while(true){w/o break}:
-^try{
+^try-catch{
 	^while(true){}
-}{
-	$exception.handled(1)
-	$exception.source: $exception.comment
 }
 
 
@@ -51,10 +48,7 @@ $result[$i]
 
 @f[c][z]
 ^^for[i](1;$c){.}:
-^try{
+^try-catch{
 	$z[^for[i](1;$c){.}]
 	ok
-}{
-	$exception.handled(1)
-	$exception.source: $exception.comment
 }

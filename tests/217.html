@@ -1,16 +1,13 @@
 @main[]
-^do(1000)
+^do(999)
 ^do(1002)
 
 @do[iCount]
 ${iCount}:
-^try{
+^try-catch-comment{
 	^rem{ '\2' because of if+call on every iteration, '-2' because of do+try }
 	^call($iCount\2-2)
 	OK
-}{
-	$exception.handled(1)
-	$exception.comment
 }
 <br />
 

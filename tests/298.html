@@ -1,13 +1,9 @@
 @main[]
 ^testClass[testClass]
 ^testClass[testClass2]
-^try{
+^try-catch-comment{
 	^reflection:def[zigi;name]
-}{
-	$exception.handled(true)
-	$exception.source $exception.comment
 }
-
 
 
 @testClass[name]

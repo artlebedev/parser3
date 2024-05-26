@@ -9,9 +9,7 @@ $s[a12312312b]
 ^do{^s.match[\d;g;^date::now[]]}
 
 @do[jCode]
-^try{
-	$result[$jCode<br />]
-}{
-	$exception.handled(true)
-	$result['$exception.type', '$exception.source', '$exception.comment'<br />]
+^try-catch{
+	$jCode
 }
+<br />

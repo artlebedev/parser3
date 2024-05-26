@@ -1,16 +1,18 @@
 Content-Type: text/html
-Content-Length: 344
+Content-Length: 391
 
 UTF-8=ПрОвЕрКа<br />
 windows-1251=ПрОвЕрКа<br />
-Error:
-save
-called with invalid option (it's OK)<br />
+Type: parser.runtime,
+Source: save,
+Comment: called with invalid option
+<br />
 <hr />
 UTF-8=ПрОвЕрКа<br />
 UTF-8=ПрОвЕрКаПрОвЕрКа<br />
 windows-1251=ПрОвЕрКа<br />
 windows-1251=ПрОвЕрКаПрОвЕрКа<br />
-Error:
-save
-called with invalid option (it's OK)<br />
+Type: parser.runtime,
+Source: save,
+Comment: called with invalid option
+<br />

@@ -85,10 +85,7 @@ $sSpace[ ]
 ^TR[^if(def $sFormat && def ^sFormat.trim[]){$sFormat}{'$sFormat'};^try_code{$s[^d.format[$sFormat]]'^taint[html][^s.match[\+00][]{+0}]'}]
 
 @try_code[jCode]
-^try{
+^try-catch-comment{
 	$jCode
-}{
-	$exception.handled(1)
-	^taint[as-is;$exception.comment]
 }
 <br />

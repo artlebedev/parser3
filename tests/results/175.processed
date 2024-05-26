@@ -1,11 +1,11 @@
 Content-Type: text/html
-Content-Length: 2896
+Content-Length: 3039
 
 <table border="1">
 <tr>
 <td>w/o param</td>
 <td>
-native method of 'double' accepts minimum 1 parameter(s) (0 present)
+Exception: native method of 'double' accepts minimum 1 parameter(s) (0 present)
 <br /></td>
 </tr>
 <tr>
@@ -23,37 +23,37 @@ native method of 'double' accepts minimum 1 parameter(s) (0 present)
 <tr>
 <td>%K</td>
 <td>
-Incorrect format string '%K' was specified.
+Exception: Incorrect format string '%K' was specified.
 <br /></td>
 </tr>
 <tr>
 <td>%</td>
 <td>
-Incorrect format string '%' was specified.
+Exception: Incorrect format string '%' was specified.
 <br /></td>
 </tr>
 <tr>
 <td>%%</td>
 <td>
-Incorrect format string '%%' was specified.
+Exception: Incorrect format string '%%' was specified.
 <br /></td>
 </tr>
 <tr>
 <td>%n</td>
 <td>
-Incorrect format string '%n' was specified.
+Exception: Incorrect format string '%n' was specified.
 <br /></td>
 </tr>
 <tr>
 <td>%s</td>
 <td>
-Incorrect format string '%s' was specified.
+Exception: Incorrect format string '%s' was specified.
 <br /></td>
 </tr>
 <tr>
 <td>%z</td>
 <td>
-Incorrect format string '%z' was specified.
+Exception: Incorrect format string '%z' was specified.
 <br /></td>
 </tr>
 <tr>
@@ -239,37 +239,37 @@ Incorrect format string '%z' was specified.
 <tr>
 <td>%1+9.03f</td>
 <td>
-Incorrect format string '%1+9.03f' was specified.
+Exception: Incorrect format string '%1+9.03f' was specified.
 <br /></td>
 </tr>
 <tr>
 <td>%99d</td>
 <td>
-Error occurred white executing snprintf with format string '%99d'.
+Exception: Error occurred white executing snprintf with format string '%99d'.
 <br /></td>
 </tr>
 <tr>
 <td>%9..03f</td>
 <td>
-Incorrect format string '%9..03f' was specified.
+Exception: Incorrect format string '%9..03f' was specified.
 <br /></td>
 </tr>
 <tr>
 <td>%9.1.03f</td>
 <td>
-Incorrect format string '%9.1.03f' was specified.
+Exception: Incorrect format string '%9.1.03f' was specified.
 <br /></td>
 </tr>
 <tr>
 <td>%d=</td>
 <td>
-Incorrect format string '%d=' was specified.
+Exception: Incorrect format string '%d=' was specified.
 <br /></td>
 </tr>
 <tr>
 <td>=%d</td>
 <td>
-Incorrect format string '=%d' was specified.
+Exception: Incorrect format string '=%d' was specified.
 <br /></td>
 </tr>
 </table>

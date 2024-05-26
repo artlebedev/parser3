@@ -21,11 +21,7 @@
 
 @do[jCode]
 <hr />
-^try{
+^try-catch{
 	$jCode
-}{
-	$exception.handled(1)
-	^$exception.type: '$exception.type'<br />
-	^$exception.source: '$exception.source'<br />
-	^$exception.comment: '$exception.comment'<br />
 }
+

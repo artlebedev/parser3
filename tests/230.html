@@ -59,11 +59,7 @@ $f[^file::load[text;$sFileName;
 $sCharset=$f.text<br />
 
 @do[jCode]
-^try{
+^try-catch{
 	$jCode
-}{
-	$exception.handled(1)
-	Error:
-	$exception.source
-	$exception.comment (it's OK)<br />
 }
+<br />

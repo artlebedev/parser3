@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 266
+Content-Length: 344
 
 ^while(true){.^break[].}:
 1,3,5,7,9
@@ -11,10 +11,14 @@ Content-Length: 266
 1,3,5,7,9
 <hr />
 ^while(true){w/o break}:
-while: endless loop detected
+Type: parser.runtime,
+Source: while,
+Comment: endless loop detected
 <hr />
 ^for[i](1;20000){.}:
 ok
 <hr />
 ^for[i](1;20001){.}:
-for: endless loop detected
+Type: parser.runtime,
+Source: for,
+Comment: endless loop detected

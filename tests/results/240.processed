@@ -1,5 +1,6 @@
 Content-Type: text/html
-Content-Length: 93
+Content-Length: 89
 
-exception (OK):<br />
-<b>parser.runtime</b> tab2 is 'table', it has no string representation
+Type: parser.runtime,
+Source: tab2,
+Comment: is 'table', it has no string representation

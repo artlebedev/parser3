@@ -5,10 +5,6 @@ $tab1[^table::create{one two three
 $tab2[^table::create{column
 two}]
 
-^try{
+^try-catch{
 	$tab1.$tab2
-}{
-	$exception.handled(1)
-	exception (OK):<br />
-	<b>$exception.type</b> $exception.source $exception.comment
 }

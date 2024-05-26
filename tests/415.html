@@ -2,12 +2,5 @@
 $list[^file:list[415_dir;.*\.p]]
 ^list.sort{$list.name}
 ^list.menu{
-    ${list.name}: ^try-catch{ ^use[415_dir/$list.name] }
-}
-
-@try-catch[jCode]
-$result[]
-^try{$jCode}{
-	$exception.handled(true)
-	$result[^taint[as-is;$exception.comment]]
+    ${list.name}: ^try-catch-comment{ ^use[415_dir/$list.name] }
 }

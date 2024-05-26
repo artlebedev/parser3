@@ -12,12 +12,8 @@ $sName[192.html]
 ^do{^file::load[text;$sName;;overrided.html]}
 
 @do[jCode][f]
-^try{
+^try-catch{
 	$f[$jCode]
 	^$f.name: $f.name
-}{
-	$exception.handled(true)
-	$exception.source
-	$exception.comment
 }
 <br />
