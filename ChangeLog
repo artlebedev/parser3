@@ -1,3 +1,70 @@
+2024-05-26  moko
+
+	* tests/: 195.html, 229.html, results/096.processed,
+	  results/097.processed, results/158.processed,
+	  results/186.processed, results/273.processed,
+	  results/293.processed, results/317.processed,
+	  results/389.processed, results/402.processed: tests updated as
+	  single quote now escaped with &apos; in HTML tainting mode
+	  (related to feature #1241)
+
+	* src/main/untaint.C: single quote now escaped with &apos; in HTML
+	  tainting mode (implements feature #1241)
+
+	* tests/results/: 020.processed, 021.processed, 026.processed,
+	  042.processed, 043.processed, 057.processed, 110.processed,
+	  115.processed, 116.processed, 117.processed, 118.processed,
+	  119.processed, 120.processed, 125.processed, 126.processed,
+	  128.processed, 130.processed, 131.processed, 132.processed,
+	  133.processed, 135.processed, 136.processed, 138.processed,
+	  139.processed, 140.processed, 145.processed, 150.processed,
+	  151.processed, 165.processed, 174.processed, 181.processed,
+	  182.processed, 192.processed, 193.processed, 201.processed,
+	  213.processed, 224.processed, 226.processed, 230.processed,
+	  239.processed, 240.processed, 244.processed, 253.processed,
+	  254.processed, 261.processed, 264.processed, 269.processed,
+	  274.processed, 275.processed, 288.processed, 294.processed,
+	  296.processed, 303.processed, 306.processed, 307.processed,
+	  308.processed, 311.processed, 312.processed, 314.processed,
+	  315.processed, 316.processed, 320.processed, 323.processed,
+	  324.processed, 325.processed, 328.processed, 330.processed,
+	  332.processed, 333.processed, 337.processed, 338.processed,
+	  341.processed, 342.processed, 343.processed, 344.processed,
+	  345.processed, 348.processed, 352.processed, 356.processed,
+	  357.processed, 363.processed, 364.processed, 368.processed,
+	  372.processed, 373.processed, 376.processed, 378.processed,
+	  379.processed, 385.processed, 386.processed, 387.processed,
+	  389.processed, 390.processed, 395.processed, 397.processed,
+	  398.processed, 399.processed, 404.processed, 406.processed,
+	  413.processed, 414.processed, 420.processed, 421.processed,
+	  424.processed, auto.p: Type -> Exception type for readability
+
+	* tests/: 119.html, 165.html, 175.html, 192.html, 213.html,
+	  217.html, 230.html, 240.html, 298.html, 380.html, 415.html,
+	  results/119.processed, results/165.processed,
+	  results/175.processed, results/192.processed,
+	  results/213.processed, results/217.processed,
+	  results/230.processed, results/240.processed,
+	  results/298.processed, results/380.processed,
+	  results/415.processed: try-catch, try-catch-comment used
+
+2024-05-21  moko
+
+	* tests/: 169.html, 180.html, 195.html, 224.html, 246.html,
+	  results/180.processed, results/195.processed,
+	  results/224.processed, results/auto.p: @try-catch-comment added
+	  and used
+
+	* tests/: 175.html, 256.html, 269.html, 283.html, 341.html,
+	  415.html, results/269.processed, results/283.processed,
+	  results/auto.p: more tests are updated to prepare for apostrophe
+	  escaping in HTML tainting
+
+	* tests/results/: 181.processed, 294.processed, 296.processed,
+	  315.processed, 379.processed, 389.processed, auto.p:
+	  $exception.comment printed as-is for whitespace reporting and to
+	  prepare for apostrophe escaping in HTML mode
+
 2024-05-11  moko
 
 	* tests/: 099.html, 100.html, results/099.processed,
