@@ -1,7 +1,7 @@
 #ifndef PA_SAPI_INFO_H
 #define PA_SAPI_INFO_H
 
-#define IDENT_PA_SAPI_INFO_H "$Id: pa_sapi_info.h,v 1.15 2020/12/19 22:34:21 moko Exp $"
+#define IDENT_PA_SAPI_INFO_H "$Id: pa_sapi_info.h,v 1.16 2024/07/14 16:54:18 moko Exp $"
 
 #include "pa_sapi.h"
 #include "pa_http.h"
@@ -128,8 +128,12 @@ public:
 	}
 
 	virtual char* get_env(const char* name) {
-		String::Body value = env.get(name);
-		return !value ? NULL : value.cstrm();
+		String::Body request_value = env.get(name);
+		if(!request_value.is_empty())
+			return request_value.cstrm();
+		if(char *server_value=getenv(name))
+			return pa_strdup(server_value);
+		return NULL;
 	}
 
 	virtual bool set_env(const char* name, const char* value) {
