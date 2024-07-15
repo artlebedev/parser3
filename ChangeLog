@@ -1,3 +1,10 @@
+2024-07-14  moko
+
+	* src/targets/cgi/pa_sapi_info.h: When accessing $env:name,
+	  checking the HTTP request environment; if the variable is not
+	  present, checking the web server process environment (implements
+	  feature #1242)
+
 2024-05-26  moko
 
 	* tests/: 195.html, 229.html, results/096.processed,
