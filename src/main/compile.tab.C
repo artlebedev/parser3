@@ -77,7 +77,7 @@
 	
 */
 
-volatile const char * IDENT_COMPILE_Y = "$Id: compile.tab.C,v 1.183 2023/09/26 20:49:09 moko Exp $";
+volatile const char * IDENT_COMPILE_Y = "$Id: compile.tab.C,v 1.184 2024/07/24 19:29:41 moko Exp $";
 
 /**
 	@todo parser4: 
@@ -2890,12 +2890,12 @@ inline void ungetc(Parse_control& pc, uint last_line_end_col) {
 
 }
 static int yylex(YYSTYPE *lvalp, void *apc) {
-	register Parse_control& pc=*static_cast<Parse_control*>(apc);
+	Parse_control& pc=*static_cast<Parse_control*>(apc);
 
 	#define lexical_brackets_nestage pc.brackets_nestages[pc.ls_sp]
 	#define RC {result=c; goto break2; }
 
-	register int c;
+	int c;
 	int result;
 	
 	if(pc.pending_state) {
