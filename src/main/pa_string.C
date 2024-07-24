@@ -12,7 +12,7 @@
 #include "pa_charset.h"
 #include "pa_vregex.h"
 
-volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.271 2023/12/13 20:07:11 moko Exp $" IDENT_PA_STRING_H;
+volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.272 2024/07/24 19:42:18 moko Exp $" IDENT_PA_STRING_H;
 
 const String String::Empty;
 
@@ -188,7 +188,7 @@ typedef struct {
 
 static int CORD_range_contains_chr_greater_then_proc(char c, size_t size, void* client_data)
 {
-	register chr_data * d = (chr_data *)client_data;
+	chr_data * d = (chr_data *)client_data;
 
 	if (d -> countdown<=0) return(2);
 	d -> countdown -= size;

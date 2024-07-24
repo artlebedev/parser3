@@ -21,7 +21,7 @@
 #include "pa_vimage.h"
 #include "pa_wwrapper.h"
 
-volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.417 2023/11/17 19:12:34 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
+volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.418 2024/07/24 19:42:18 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
 
 //#define DEBUG_EXECUTE
 
@@ -245,7 +245,7 @@ void debug_dump(SAPI_Info& sapi_info, int level, ArrayOperation& ops) {
 // Request
 
 void Request::execute(ArrayOperation& ops) {
-	register Stack<StackItem>& stack=this->stack; // helps a lot on MSVC: 'esi'
+	Stack<StackItem>& stack=this->stack; // helps a lot on MSVC: 'esi'
 
 	const String* debug_name=0;  Operation::Origin debug_origin={0, 0, 0};
 	try{

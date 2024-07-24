@@ -237,13 +237,9 @@ inline size_t min(size_t a, size_t b){ return a<b?a:b; }
 #pragma clang diagnostic ignored "-Wparentheses"         // if(a=b)
 #pragma clang diagnostic ignored "-Wpointer-sign"        // CORD (unsigned char *) to char * in libcord
 #pragma clang diagnostic ignored "-Winline-new-delete"   // test for regular new/delete usage in memory.h
-#pragma clang diagnostic ignored "-Wdeprecated-register" // 'register' specifier is deprecated and incompatible with C++17
 
 #elif defined(__GNUC__)
 #pragma GCC diagnostic ignored "-Wimplicit-fallthrough"  // case without break
-#ifdef __cplusplus
-#pragma GCC diagnostic ignored "-Wregister"  // ISO C++17 does not allow 'register' storage class specifier
-#endif // __cplusplus
 
 #endif
 

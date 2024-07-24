@@ -37,7 +37,7 @@
 
 #include "gif.h"
 
-volatile const char * IDENT_GIFIO_C="$Id: gifio.C,v 1.9 2023/09/26 20:49:08 moko Exp $";
+volatile const char * IDENT_GIFIO_C="$Id: gifio.C,v 1.10 2024/07/24 19:42:18 moko Exp $";
 
 static int colorstobpp(int colors);
 
@@ -424,13 +424,13 @@ typedef        unsigned char   char_type;
 void
 gdGifEncoder::compress(int init_bits)
 {
-    register long fcode;
-    register code_int i /* = 0 */;
-    register int c;
-    register code_int ent;
-    register code_int disp;
-    register code_int hsize_reg;
-    register int hshift;
+    long fcode;
+    code_int i /* = 0 */;
+    int c;
+    code_int ent;
+    code_int disp;
+    code_int hsize_reg;
+    int hshift;
 	
     /*
 	* Set up the globals:  g_init_bits - initial number of bits
@@ -610,10 +610,10 @@ void
 	
 {
 	
-	register count_int *htab_p = htab+hsize;
+	count_int *htab_p = htab+hsize;
 	
-	register long i;
-	register long m1 = -1;
+	long i;
+	long m1 = -1;
 	
 	i = hsize - 16;
 	do {                            /* might use Sys V memset(3) here */
@@ -988,7 +988,7 @@ int gdImage::LWZReadByte(FILE *fd, int flag, int input_code_size)
 	static int      clear_code, end_code;
 	static int      table[2][(1<< MAX_LWZ_BITS)];
 	static int      stack[(1<<(MAX_LWZ_BITS))*2], *sp;
-	register int    i;
+	int    i;
 	
 	if(flag) {
 		set_code_size = input_code_size;
