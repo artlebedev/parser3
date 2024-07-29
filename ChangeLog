@@ -1,3 +1,13 @@
+2024-07-24  moko
+
+	* src/: include/pa_config_includes.h, lib/gd/gifio.C,
+	  main/execute.C, main/pa_string.C: Warning war: clang changed
+	  -Wdeprecated-register warning to -Wregister, it's easier to
+	  remove all register vars then continue this fight. :)
+
+	* src/main/: compile.y, compile.tab.C: warning war: register
+	  removed
+
 2024-07-14  moko
 
 	* src/targets/cgi/pa_sapi_info.h: When accessing $env:name,
