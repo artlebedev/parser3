@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.350 2023/09/26 20:49:11 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.351 2024/08/25 13:36:55 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -180,20 +180,22 @@ size_t SAPI::send_body(SAPI_Info& info, const void *buf, size_t size) {
 	return info.send_body(buf, size);
 }
 
-static void full_disk_path(const char* file_name, char *buf, size_t buf_size) {
-	if(file_name[0]=='/' 
+static const char *full_disk_path(const char* file_name = 0) {
+	char *result;
+	if(file_name[0]=='/'
 #ifdef WIN32
 		|| file_name[0] && file_name[1]==':'
 #endif
 	){
-		pa_strncpy(buf, file_name, buf_size);
+		result=pa_strdup(file_name);
 	} else {
 		char cwd[MAX_STRING];
-		snprintf(buf, buf_size, "%s/%s", getcwd(cwd, MAX_STRING) ? cwd : "", file_name);
+		result=pa_strcat(getcwd(cwd, MAX_STRING) ? cwd : "", "/", file_name);
 	}
 #ifdef WIN32
-	back_slashes_to_slashes(buf);
+	back_slashes_to_slashes(result);
 #endif
+	return result;
 }
 
 static void log_signal(const char* signal_name) {
@@ -302,13 +304,10 @@ public:
 static const String httpd_class_name("httpd");
 
 static void config_handler(SAPI_Info &info) {
-	char document_root_buf[MAX_STRING];
-	full_disk_path("", document_root_buf, sizeof(document_root_buf));
-
 	Request_info request_info;
 	RequestInfoController ric(&request_info);
 
-	request_info.document_root = document_root_buf;
+	request_info.document_root = full_disk_path();
 	request_info.uri = "";
 	request_info.argv = argv_extra;
 
@@ -329,10 +328,7 @@ static void connection_handler(SAPI_Info_HTTPD &info, HTTPD_Connection &connecti
 			return; // ignore "void" connections
 		info.populate_env();
 
-		char document_root_buf[MAX_STRING];
-		full_disk_path("", document_root_buf, sizeof(document_root_buf));
-
-		request_info.document_root = document_root_buf;
+		request_info.document_root = full_disk_path();
 		request_info.path_translated = filespec_to_process;
 		request_info.method = connection.method();
 		request_info.query_string = connection.query();
@@ -508,8 +504,7 @@ static void real_parser_handler(bool cgi) {
 			request_info.uri = request_info.query_string && *request_info.query_string ? pa_strcat(path_info, "?", request_info.query_string) : path_info;
 		}
 	} else{
-		full_disk_path("", document_root_buf, sizeof(document_root_buf));
-		request_info.document_root = document_root_buf;
+		request_info.document_root = full_disk_path();
 		request_info.uri = "";
 	}
 	
@@ -691,10 +686,8 @@ int main(int argc, char *argv[]) {
 #endif
 
 	try { // global try
-		char filespec_to_process_buf[MAX_STRING];
 		if(raw_filespec_to_process && *raw_filespec_to_process){
-			full_disk_path(raw_filespec_to_process, filespec_to_process_buf, sizeof(filespec_to_process_buf));
-			filespec_to_process=filespec_to_process_buf;
+			filespec_to_process=full_disk_path(raw_filespec_to_process);
 		}
 
 		REAL_PARSER_HANDLER(cgi);
