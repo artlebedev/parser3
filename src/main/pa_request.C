@@ -34,7 +34,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.420 2024/05/11 19:20:41 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.421 2024/08/25 19:58:51 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -715,7 +715,7 @@ const String& Request::full_disk_path(const String& relative_name) {
 		result << relative_name;
 		return result;
 	}
-	if(relative_name.pos("://")!=STRING_NOT_FOUND // something like "http://xxx"
+	if(relative_name.starts_with("http://") || relative_name.starts_with("parser://")
 #ifdef WIN32
 		|| relative_name.pos(":")==1  // DRIVE:
 		|| relative_name.starts_with("\\\\") // UNC1
