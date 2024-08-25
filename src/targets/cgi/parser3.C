@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.352 2024/08/25 16:24:03 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.353 2024/08/25 19:50:48 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -58,13 +58,12 @@ static THREAD_LOCAL Request_info *request_info_4log = NULL; // global for correc
 static const char* filespec_4log = NULL; // null only if system-wide auto.p used
 
 template <typename T> static T *dir_pos(T *fname){
-	T *pos=fname;
 	T *result=NULL;
-	while (pos=strpbrk(pos, "/\\")){
-		result=pos;
-		pos++;
+	while (fname=strpbrk(fname, "/\\")){
+		result=fname;
+		fname++;
 	}
-	return !result || (result==fname+1 && *fname=='.') ? NULL : result;
+	return result;
 }
 
 // SAPI
@@ -236,12 +235,21 @@ static const char *locate_config(const char *config_filespec_option, const char 
 	if(!filespec_4log)
 		filespec_4log=getenv(REDIRECT_PREFIX PARSER_CONFIG_ENV_NAME);
 	if(!filespec_4log){
-			// next to the executable
 			const char *exec_dir_pos = dir_pos(executable_path);
-			filespec_4log = exec_dir_pos ? pa_strcat(pa_strdup(executable_path, exec_dir_pos - executable_path), "/" AUTO_FILE_NAME) : full_disk_path(AUTO_FILE_NAME);
-			if(entry_exists(filespec_4log))
-				return filespec_4log;
 #ifdef SYSTEM_CONFIG_FILE
+			if(exec_dir_pos){
+#endif
+				// next to the executable
+				if(!exec_dir_pos || (exec_dir_pos==executable_path+1 && *executable_path=='.')){
+					// just parser3.exe or ./parser3.cgi, full path to avoid "parser already configured"
+					filespec_4log=full_disk_path(AUTO_FILE_NAME);
+				} else {
+					filespec_4log=pa_strcat(pa_strdup(executable_path, exec_dir_pos - executable_path), "/" AUTO_FILE_NAME);
+				}
+				if(entry_exists(filespec_4log))
+					return filespec_4log;
+#ifdef SYSTEM_CONFIG_FILE
+			}
 			if(entry_exists(SYSTEM_CONFIG_FILE)){
 				filespec_4log=NULL;
 				return SYSTEM_CONFIG_FILE;
