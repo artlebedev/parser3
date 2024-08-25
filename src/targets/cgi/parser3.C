@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.351 2024/08/25 13:36:55 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.352 2024/08/25 16:24:03 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -57,6 +57,16 @@ static char** argv_extra = NULL;
 static THREAD_LOCAL Request_info *request_info_4log = NULL; // global for correct log() reporting
 static const char* filespec_4log = NULL; // null only if system-wide auto.p used
 
+template <typename T> static T *dir_pos(T *fname){
+	T *pos=fname;
+	T *result=NULL;
+	while (pos=strpbrk(pos, "/\\")){
+		result=pos;
+		pos++;
+	}
+	return !result || (result==fname+1 && *fname=='.') ? NULL : result;
+}
+
 // SAPI
 
 static void pa_log(const char* fmt, va_list args) {
@@ -76,16 +86,17 @@ static void pa_log(const char* fmt, va_list args) {
 #endif
 
 	if(!opened && filespec_4log) {
-		char beside_config_path[MAX_STRING];
-		pa_strncpy(beside_config_path, filespec_4log, MAX_STRING);
-		if(!(rsplit(beside_config_path, '/') || rsplit(beside_config_path, '\\'))) { // strip filename
+		char log_spec[MAX_STRING + 12 /* '/parser3.log' */];
+		pa_strncpy(log_spec, filespec_4log, MAX_STRING);
+
+		if(char *log_dir_pos=dir_pos(log_spec)){
+			strcpy(log_dir_pos, "/parser3.log");
+		} else {
 			// no path, just filename
-			strcpy(beside_config_path, ".");
+			strcpy(log_spec, "./parser3.log");
 		}
 
-		char file_spec[MAX_STRING];
-		snprintf(file_spec, MAX_STRING, "%s/parser3.log", beside_config_path);
-		f=fopen(file_spec, "at");
+		f=fopen(log_spec, "at");
 		opened=f!=0;
 	}
 	// fallback to stderr
@@ -180,7 +191,7 @@ size_t SAPI::send_body(SAPI_Info& info, const void *buf, size_t size) {
 	return info.send_body(buf, size);
 }
 
-static const char *full_disk_path(const char* file_name = 0) {
+static const char *full_disk_path(const char* file_name = "") {
 	char *result;
 	if(file_name[0]=='/'
 #ifdef WIN32
@@ -226,9 +237,8 @@ static const char *locate_config(const char *config_filespec_option, const char 
 		filespec_4log=getenv(REDIRECT_PREFIX PARSER_CONFIG_ENV_NAME);
 	if(!filespec_4log){
 			// next to the executable
-			char *beside_executable_path = pa_strdup(executable_path);
-			bool stripped_filename = rsplit(beside_executable_path, '/') || rsplit(beside_executable_path, '\\');
-			filespec_4log = pa_strcat(stripped_filename ? beside_executable_path : "." /* no path, just filename */ , "/" AUTO_FILE_NAME);
+			const char *exec_dir_pos = dir_pos(executable_path);
+			filespec_4log = exec_dir_pos ? pa_strcat(pa_strdup(executable_path, exec_dir_pos - executable_path), "/" AUTO_FILE_NAME) : full_disk_path(AUTO_FILE_NAME);
 			if(entry_exists(filespec_4log))
 				return filespec_4log;
 #ifdef SYSTEM_CONFIG_FILE
@@ -594,7 +604,7 @@ int main(int argc, char *argv[]) {
 	log("main: entry");
 #endif
 
-	parser3_filespec = argc ? argv[0] : "parser3";
+	parser3_filespec = argc && argv[0] ? argv[0] : "parser3";
 	umask(2);
 
 	// were we started as CGI?
