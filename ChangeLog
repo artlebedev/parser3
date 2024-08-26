@@ -1,3 +1,17 @@
+2024-08-25  moko
+
+	* src/main/pa_request.C: be more specific
+
+	* src/targets/cgi/parser3.C: parser3 t.html now behaves identically
+	  to /usr/bin/parser3 t.html in terms of /etc/parser3/auto.p load
+	  (fixes bug #1244)
+
+	* src/targets/cgi/parser3.C: avoid "parser allready configured"
+	  exception when ./parser3.cgi <file> is used; rsplit(..., '/') ||
+	  rsplit(..., '\\') is not correct when / and \ are mixed in path
+
+	* src/targets/cgi/parser3.C: full_disk_path now uses pa_strcat()
+
 2024-07-24  moko
 
 	* src/: include/pa_config_includes.h, lib/gd/gifio.C,
