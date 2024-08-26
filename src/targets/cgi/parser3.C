@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.353 2024/08/25 19:50:48 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.354 2024/08/26 20:44:14 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -88,7 +88,7 @@ static void pa_log(const char* fmt, va_list args) {
 		char log_spec[MAX_STRING + 12 /* '/parser3.log' */];
 		pa_strncpy(log_spec, filespec_4log, MAX_STRING);
 
-		if(char *log_dir_pos=dir_pos(log_spec)){
+		if(char* log_dir_pos=dir_pos(log_spec)){
 			strcpy(log_dir_pos, "/parser3.log");
 		} else {
 			// no path, just filename
@@ -174,7 +174,7 @@ const char* const *SAPI::Env::get(SAPI_Info& info) {
 	return info.get_env();
 }
 
-size_t SAPI::read_post(SAPI_Info& info, char *buf, size_t max_bytes) {
+size_t SAPI::read_post(SAPI_Info& info, char* buf, size_t max_bytes) {
 	return info.read_post(buf, max_bytes);
 }
 
@@ -190,8 +190,8 @@ size_t SAPI::send_body(SAPI_Info& info, const void *buf, size_t size) {
 	return info.send_body(buf, size);
 }
 
-static const char *full_disk_path(const char* file_name = "") {
-	char *result;
+static const char* full_disk_path(const char* file_name = "") {
+	char* result;
 	if(file_name[0]=='/'
 #ifdef WIN32
 		|| file_name[0] && file_name[1]==':'
@@ -228,14 +228,14 @@ static void SIGPIPE_handler(int /*sig*/){
 #endif
 
 // requires pa_thread_request() in entry_exists() under Windows
-static const char *locate_config(const char *config_filespec_option, const char *executable_path){
+static const char* locate_config(const char* config_filespec_option, const char* executable_path){
 	filespec_4log=config_filespec_option;
 	if(!filespec_4log)
 		filespec_4log=getenv(PARSER_CONFIG_ENV_NAME);
 	if(!filespec_4log)
 		filespec_4log=getenv(REDIRECT_PREFIX PARSER_CONFIG_ENV_NAME);
 	if(!filespec_4log){
-			const char *exec_dir_pos = dir_pos(executable_path);
+			const char* exec_dir_pos = dir_pos(executable_path);
 #ifdef SYSTEM_CONFIG_FILE
 			if(exec_dir_pos){
 #endif
@@ -261,7 +261,7 @@ static const char *locate_config(const char *config_filespec_option, const char 
 }
 
 #ifdef WIN32
-const char* maybe_reconstruct_IIS_status_in_qs(const char* original) {
+static const char* maybe_reconstruct_IIS_status_in_qs(const char* original) {
 	// 404;http://servername/page[?param=value...]
 	// ';' should be urlencoded by HTTP standard, so we shouldn't get it from browser 
 	// and can consider that as an indication that this is IIS way to report errors
@@ -293,9 +293,20 @@ const char* maybe_reconstruct_IIS_status_in_qs(const char* original) {
 	return original;
 }
 
+static const char* maybe_back_slashes_to_slashes(const char* original){
+	char *result=pa_strdup(original);
+	back_slashes_to_slashes(result);
+	return result;
+}
+
 #define MAYBE_RECONSTRUCT_IIS_STATUS_IN_QS(s) maybe_reconstruct_IIS_status_in_qs(s)
+#define MAYBE_BACK_SLASHES_TO_SLASHES(s) maybe_back_slashes_to_slashes(s)
+
 #else
+
 #define MAYBE_RECONSTRUCT_IIS_STATUS_IN_QS(s) s
+#define MAYBE_BACK_SLASHES_TO_SLASHES(s) s
+
 #endif
 
 class RequestController {
@@ -363,7 +374,7 @@ static void connection_handler(SAPI_Info_HTTPD &info, HTTPD_Connection &connecti
 		r.core(config_filespec, strcasecmp(request_info.method, "HEAD")==0, main_method_name, &httpd_class_name);
 	} catch(const Exception& e) { // exception in connection handling or unhandled exception
 		SAPI::log(info, "%s", e.comment());
-		const char *status = info.exception_http_status(e.type());
+		const char* status = info.exception_http_status(e.type());
 		if(*status){
 			info.clear_response_headers();
 			SAPI::send_error(info, e.comment(), status);
@@ -467,8 +478,6 @@ static void real_parser_handler(bool cgi) {
 	if(!filespec_to_process)
 		SAPI::die("Parser/%s", PARSER_VERSION);
 	
-	char document_root_buf[MAX_STRING];
-
 	// global request info
 	Request_info request_info;
 	RequestInfoController ric(&request_info);
@@ -612,7 +621,7 @@ int main(int argc, char *argv[]) {
 	log("main: entry");
 #endif
 
-	parser3_filespec = argc && argv[0] ? argv[0] : "parser3";
+	parser3_filespec = argc && argv[0] ? MAYBE_BACK_SLASHES_TO_SLASHES(argv[0]) : "parser3";
 	umask(2);
 
 	// were we started as CGI?
@@ -623,14 +632,14 @@ int main(int argc, char *argv[]) {
 	signal(SIGPIPE, SIGPIPE_handler);
 #endif
 
-	char *raw_filespec_to_process = NULL;
+	char* raw_filespec_to_process = NULL;
 	if(cgi) {
 		raw_filespec_to_process=getenv("PATH_TRANSLATED");
 		argv_extra=argv + 1;
 	} else {
 		int optind=1;
 		while(optind < argc){
-			char *carg = argv[optind];
+			char* carg = argv[optind];
 			if(carg[0] != '-')
 				break;
 
