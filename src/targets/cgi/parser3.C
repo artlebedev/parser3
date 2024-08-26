@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.354 2024/08/26 20:44:14 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.355 2024/08/26 20:47:06 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -241,7 +241,7 @@ static const char* locate_config(const char* config_filespec_option, const char*
 #endif
 				// next to the executable
 				if(!exec_dir_pos || (exec_dir_pos==executable_path+1 && *executable_path=='.')){
-					// just parser3.exe or ./parser3.cgi, full path to avoid "parser already configured"
+					// when just parser3 or ./parser3 full path should be used to avoid "parser already configured"
 					filespec_4log=full_disk_path(AUTO_FILE_NAME);
 				} else {
 					filespec_4log=pa_strcat(pa_strdup(executable_path, exec_dir_pos - executable_path), "/" AUTO_FILE_NAME);
