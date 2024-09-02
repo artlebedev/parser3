@@ -1,3 +1,8 @@
+2024-08-26  moko
+
+	* src/targets/cgi/parser3.C: under Windows back_slashes_to_slashes
+	  should be used on argv[0] as well to match document root.
+
 2024-08-25  moko
 
 	* src/main/pa_request.C: be more specific
