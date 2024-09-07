@@ -15,7 +15,7 @@
 #include "pa_vhash.h"
 #include "pa_vtable.h"
 
-volatile const char * IDENT_PA_STYLESHEET_MANAGER_C="$Id: pa_stylesheet_manager.C,v 1.35 2023/09/26 20:49:10 moko Exp $" IDENT_PA_STYLESHEET_MANAGER_H;
+volatile const char * IDENT_PA_STYLESHEET_MANAGER_C="$Id: pa_stylesheet_manager.C,v 1.36 2024/09/07 16:30:27 moko Exp $" IDENT_PA_STYLESHEET_MANAGER_H;
 
 // globals
 
@@ -111,7 +111,7 @@ static void add_connection_to_status_cache_table(Stylesheet_connection& connecti
 	}
 }
 static void add_connections_to_status_cache_table(Stylesheet_manager::connection_cache_type::key_type /*key*/, Stylesheet_manager::connection_cache_type::value_type stack, Table* table) {
-	for(Array_iterator<Stylesheet_connection*> i(*stack); i.has_next(); )
+	for(Array_iterator<Stylesheet_connection*> i(*stack); i; )
 		add_connection_to_status_cache_table(*i.next(), table);
 }
 

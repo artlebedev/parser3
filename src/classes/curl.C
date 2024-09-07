@@ -18,7 +18,7 @@
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.70 2023/09/26 20:49:05 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.71 2024/09/07 16:30:26 moko Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -790,7 +790,7 @@ static void _curl_load_action(Request& r, MethodParams& params){
 	VHash* vtables=new VHash;
 	result.fields().put("tables", vtables);
 
-	for(Array_iterator<HTTP_Headers::Header> i(response.headers); i.has_next(); ){
+	for(Array_iterator<HTTP_Headers::Header> i(response.headers); i; ){
 		HTTP_Headers::Header header=i.next();
 
 		if(asked_charset)

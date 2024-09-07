@@ -15,7 +15,7 @@
 #include "pa_vtable.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_PA_SQL_DRIVER_MANAGER_C="$Id: pa_sql_driver_manager.C,v 1.102 2023/09/26 20:49:10 moko Exp $" IDENT_PA_SQL_DRIVER_MANAGER_H IDENT_PA_SQL_CONNECTION_H;
+volatile const char * IDENT_PA_SQL_DRIVER_MANAGER_C="$Id: pa_sql_driver_manager.C,v 1.103 2024/09/07 16:30:26 moko Exp $" IDENT_PA_SQL_DRIVER_MANAGER_H IDENT_PA_SQL_CONNECTION_H;
 
 // globals
 
@@ -262,7 +262,7 @@ static void add_connection_to_status_cache_table(SQL_Connection& connection, Tab
 	}
 }
 static void add_connections_to_status_cache_table(SQL_Driver_manager::connection_cache_type::key_type /*key*/, SQL_Driver_manager::connection_cache_type::value_type stack, Table* table) {
-	for(Array_iterator<SQL_Connection*> i(*stack); i.has_next(); )
+	for(Array_iterator<SQL_Connection*> i(*stack); i; )
 		add_connection_to_status_cache_table(*i.next(), table);
 }
 

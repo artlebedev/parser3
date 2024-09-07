@@ -8,7 +8,7 @@
 #ifndef PA_ARRAY_H
 #define PA_ARRAY_H
 
-#define IDENT_PA_ARRAY_H "$Id: pa_array.h,v 1.88 2024/09/07 15:01:38 moko Exp $"
+#define IDENT_PA_ARRAY_H "$Id: pa_array.h,v 1.89 2024/09/07 16:30:26 moko Exp $"
 
 // includes
 
@@ -252,7 +252,7 @@ private: //disabled
 /** Array iterator, usage:
 	@code
 	// Array<T> a;
-	for(Array_iterator<T> i(a); i.has_next(); ) {
+	for(Array_iterator<T> i(a); i; ) {
 		T& element=i.next();
 		...
 	}	
@@ -272,7 +272,7 @@ public:
 	}
 
 	/// there are still elements
-	bool has_next() {
+	operator bool () {
 		return fcurrent<flast;
 	}
 

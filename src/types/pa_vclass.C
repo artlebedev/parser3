@@ -8,7 +8,7 @@
 #include "pa_vclass.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_PA_VCLASS_C="$Id: pa_vclass.C,v 1.64 2024/09/07 15:01:38 moko Exp $" IDENT_PA_VCLASS_H;
+volatile const char * IDENT_PA_VCLASS_C="$Id: pa_vclass.C,v 1.65 2024/09/07 16:30:27 moko Exp $" IDENT_PA_VCLASS_H;
 
 #ifdef OBJECT_PROTOTYPE
 	bool VClass::prototype = true;
@@ -140,8 +140,7 @@ const VJunction* VClass::put_element(Value& aself, const String& aname, Value* a
 		prop->value=avalue;
 		ffields.put(aname, prop);
 
-		ArrayClass::Iterator i(fderived);
-		while(i.has_next()) {
+		for(ArrayClass::Iterator i(fderived); i; ) {
 			HashStringProperty *props=i.next()->get_properties();
 			if(props)
 				props->put_dont_replace(aname, prop);

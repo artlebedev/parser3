@@ -7,7 +7,7 @@
 
 #include "pa_wcontext.h"
 
-volatile const char * IDENT_PA_WCONTEXT_C="$Id: pa_wcontext.C,v 1.42 2023/09/26 20:49:13 moko Exp $" IDENT_PA_WCONTEXT_H;
+volatile const char * IDENT_PA_WCONTEXT_C="$Id: pa_wcontext.C,v 1.43 2024/09/07 16:30:27 moko Exp $" IDENT_PA_WCONTEXT_H;
 
 // appends a fstring to result
 void WContext::write(Value& avalue) {
@@ -20,7 +20,6 @@ void WContext::write(Value& avalue) {
 
 
 void WContext::detach_junctions() {
-	Array_iterator<VJunction*> i(junctions);
-	while(i.has_next())
+	for(Array_iterator<VJunction*> i(junctions); i; )
 		i.next()->reattach(fparent);
 }

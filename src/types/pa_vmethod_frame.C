@@ -9,7 +9,7 @@
 #include "pa_vcaller_wrapper.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VMETHOD_FRAME_C="$Id: pa_vmethod_frame.C,v 1.45 2024/09/07 15:01:38 moko Exp $" IDENT_PA_VMETHOD_FRAME_H IDENT_PA_VCALLER_WRAPPER_H;
+volatile const char * IDENT_PA_VMETHOD_FRAME_C="$Id: pa_vmethod_frame.C,v 1.46 2024/09/07 16:30:27 moko Exp $" IDENT_PA_VMETHOD_FRAME_H IDENT_PA_VCALLER_WRAPPER_H;
 
 static VVoid void_result; // unique value to be sure the result is changed
 
@@ -76,7 +76,7 @@ VParserMethodFrame::VParserMethodFrame(const Method& amethod, VMethodFrame *acal
 	if(method.locals_names) { // are there any local var names?
 		// remember them
 		// those are flags that fname is local == to be looked up in 'my'
-		for(ArrayString::Iterator i(*method.locals_names); i.has_next(); ) {
+		for(ArrayString::Iterator i(*method.locals_names); i; ) {
 			// speedup: not checking for clash with "result" fname
 			const String& fname=*i.next();
 			set_my_variable(fname, *VString::empty());

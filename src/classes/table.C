@@ -25,7 +25,7 @@
 #include "pa_vbool.h"
 #include "pa_array.h"
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.361 2023/09/26 20:49:06 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.362 2024/09/07 16:30:26 moko Exp $";
 
 // class
 
@@ -485,15 +485,15 @@ static void table_to_csv(pa_stringstream& result, Table& table, TableControlChar
 	if(output_column_names) {
 		if(table.columns()) { // named table
 			if(control_chars.encloser){
-				for(Array_iterator<const String*> i(*table.columns()); i.has_next(); ) {
+				for(Array_iterator<const String*> i(*table.columns()); i; ) {
 					enclose( result, i.next(), control_chars.encloser );
-					if(i.has_next())
+					if(i)
 						result<<control_chars.separator;
 				}
 			} else {
-				for(Array_iterator<const String*> i(*table.columns()); i.has_next(); ) {
+				for(Array_iterator<const String*> i(*table.columns()); i; ) {
 					result<<i.next()->cstr();
-					if(i.has_next())
+					if(i)
 						result<<control_chars.separator;
 				}
 			}
@@ -518,19 +518,19 @@ static void table_to_csv(pa_stringstream& result, Table& table, TableControlChar
 	// process data lines
 	Array_iterator<ArrayString*> i(table);
 	if(control_chars.encloser){
-		while(i.has_next()) {
-			for(Array_iterator<const String*> c(*i.next()); c.has_next(); ) {
+		while(i) {
+			for(Array_iterator<const String*> c(*i.next()); c; ) {
 				enclose( result, c.next(), control_chars.encloser );
-				if(c.has_next())
+				if(c)
 					result<<control_chars.separator;
 			}
 			result<<'\n';
 		}
 	} else {
-		while(i.has_next()) {
-			for(Array_iterator<const String*> c(*i.next()); c.has_next(); ) {
+		while(i) {
+			for(Array_iterator<const String*> c(*i.next()); c; ) {
 				result<<c.next()->cstr();
-				if(c.has_next())
+				if(c)
 					result<<control_chars.separator;
 			}
 			result<<'\n';
@@ -564,15 +564,15 @@ static void table_to_csv(String& result, Table& table, TableControlChars& contro
 	if(output_column_names) {
 		if(table.columns()) { // named table
 			if(control_chars.encloser) {
-				for(Array_iterator<const String*> i(*table.columns()); i.has_next(); ) {
+				for(Array_iterator<const String*> i(*table.columns()); i; ) {
 					enclose( result, i.next(), control_chars.encloser, control_chars.sencloser );
-					if(i.has_next())
+					if(i)
 						result<<*control_chars.sseparator;
 				}
 			} else {
-				for(Array_iterator<const String*> i(*table.columns()); i.has_next(); ) {
+				for(Array_iterator<const String*> i(*table.columns()); i; ) {
 					result<<*i.next();
-					if(i.has_next())
+					if(i)
 						result<<*control_chars.sseparator;
 				}
 			}
@@ -597,19 +597,19 @@ static void table_to_csv(String& result, Table& table, TableControlChars& contro
 	// data lines
 	Array_iterator<ArrayString*> i(table);
 	if(control_chars.encloser){
-		while(i.has_next()) {
-			for(Array_iterator<const String*> c(*i.next()); c.has_next(); ) {
+		while(i) {
+			for(Array_iterator<const String*> c(*i.next()); c; ) {
 				enclose( result, c.next(), control_chars.encloser, control_chars.sencloser );
-				if(c.has_next())
+				if(c)
 					result<<*control_chars.sseparator;
 			}
 			result.append_know_length("\n", 1, String::L_CLEAN);
 		}
 	} else {
-		while(i.has_next()) {
-			for(Array_iterator<const String*> c(*i.next()); c.has_next(); ) {
+		while(i) {
+			for(Array_iterator<const String*> c(*i.next()); c; ) {
 				result<<*c.next();
-				if(c.has_next())
+				if(c)
 					result<<*control_chars.sseparator;
 			}
 			result.append_know_length("\n", 1, String::L_CLEAN);
@@ -843,7 +843,7 @@ static void table_row_to_hash(Table::element_type row, Row_info *info) {
 			HashStringValue& hash=vhash->hash();
 			Table::columns_type columns=info->table->columns();
 			if(info->value_fields){ // selected fields (can be empty)
-				for(Array_iterator<int> i(*info->value_fields); i.has_next(); ) {
+				for(Array_iterator<int> i(*info->value_fields); i; ) {
 					size_t value_field=i.next();
 					if(value_field<row->count())
 						hash.put(columns ? *columns->get(value_field) : String(format(value_field, 0)), new VString(*row->get(value_field)));
@@ -972,7 +972,7 @@ static void _hash(Request& r, MethodParams& params) {
 			if(!field_name.is_empty())
 				value_fields+=self_table.column_name2index(field_name, true);
 		} else if(Table* value_fields_table=value_fields_param.get_table()) { // list of columns were specified in table
-			for(Array_iterator<Table::element_type> i(*value_fields_table); i.has_next(); ) {
+			for(Array_iterator<Table::element_type> i(*value_fields_table); i; ) {
 				const String& value_field_name =*i.next()->get(0);
 				value_fields +=self_table.column_name2index(value_field_name, true);
 			}
@@ -1429,7 +1429,7 @@ static void _columns(Request& r, MethodParams& params) {
 
 	Table& source_table=GET_SELF(r, VTable).table();
 	if(Table::columns_type source_columns=source_table.columns()) {
-		for(Array_iterator<const String*> i(*source_columns); i.has_next(); ) {
+		for(Array_iterator<const String*> i(*source_columns); i; ) {
 			Table::element_type result_row(new ArrayString);
 			*result_row+=i.next();
 			result_table+=result_row;

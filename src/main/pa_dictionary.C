@@ -8,7 +8,7 @@
 #include "pa_dictionary.h"
 #include "pa_exception.h"
 
-volatile const char * IDENT_PA_DICTIONARY_C="$Id: pa_dictionary.C,v 1.30 2023/09/26 20:49:10 moko Exp $" IDENT_PA_DICTIONARY_H;
+volatile const char * IDENT_PA_DICTIONARY_C="$Id: pa_dictionary.C,v 1.31 2024/09/07 16:30:26 moko Exp $" IDENT_PA_DICTIONARY_H;
 
 Dictionary::Dictionary(Table& atable): substs(atable.count()) {
 	// clear starting_lines
@@ -16,7 +16,7 @@ Dictionary::Dictionary(Table& atable): substs(atable.count()) {
 	// grab first letters of first column of a table
 	constructor_line=1;
 
-	for(Array_iterator<ArrayString*> i(atable); i.has_next(); ) {
+	for(Array_iterator<ArrayString*> i(atable); i; ) {
 		ArrayString* row=i.next();
 
 		append_subst(

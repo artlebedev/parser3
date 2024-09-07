@@ -11,7 +11,7 @@
 #include "pa_vvoid.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VTABLE_C="$Id: pa_vtable.C,v 1.53 2024/03/14 02:52:43 moko Exp $" IDENT_PA_VTABLE_H;
+volatile const char * IDENT_PA_VTABLE_C="$Id: pa_vtable.C,v 1.54 2024/09/07 16:30:27 moko Exp $" IDENT_PA_VTABLE_H;
 
 #ifndef DOXYGEN
 struct Record_info {
@@ -132,7 +132,7 @@ String& VTable::get_json_string_array(String& result, const char *indent) {
 		indent ? result << "\n\t" << indent << "[\"" : result << "\n[\"";
 
 		bool need_delim=false;
-		for(Array_iterator<const String*> c(*ltable.columns()); c.has_next(); ) {
+		for(Array_iterator<const String*> c(*ltable.columns()); c; ) {
 			if(need_delim)
 				result << "\",\"";
 			result.append(*c.next(), String::L_JSON, true/*forced lang*/);
@@ -147,16 +147,16 @@ String& VTable::get_json_string_array(String& result, const char *indent) {
 	// data
 	if(ltable.count()){
 		result << ",";
-		for(Array_iterator<ArrayString*> r(ltable); r.has_next(); ) {
+		for(Array_iterator<ArrayString*> r(ltable); r; ) {
 			indent ? result << "\n\t" << indent << "[\"" : result << "\n[\"";
 			bool need_delim=false;
-			for(Array_iterator<const String*> c(*r.next()); c.has_next(); ) {
+			for(Array_iterator<const String*> c(*r.next()); c; ) {
 				if(need_delim)
 					result << "\",\"";
 				result.append(*c.next(), String::L_JSON, true/*forced lang*/);
 				need_delim=true;
 			}
-			r.has_next() ? result << "\"]," : result << "\"]";
+			r ? result << "\"]," : result << "\"]";
 		}
 	}
 
@@ -174,7 +174,7 @@ String& VTable::get_json_string_object(String& result, const char *indent) {
 	ArrayString* columns=ltable.columns();
 	size_t columns_count = (columns) ? columns->count() : 0;
 
-	for(Array_iterator<ArrayString*> r(ltable); r.has_next(); ) {
+	for(Array_iterator<ArrayString*> r(ltable); r; ) {
 		indent ? result << "\n\t" << indent << "{\"" : result << "\n{\"";
 
 		ArrayString* row=r.next();
@@ -185,7 +185,7 @@ String& VTable::get_json_string_object(String& result, const char *indent) {
 			result << "\":\"";
 			result.append(*row->get(index), String::L_JSON, true/*forced lang*/);
 		}
-		r.has_next() ? result << "\"}," : result << "\"}\n" << indent;
+		r ? result << "\"}," : result << "\"}\n" << indent;
 	}
 	return result;
 }
@@ -198,24 +198,24 @@ String& VTable::get_json_string_compact(String& result, const char *indent) {
 	// ]
 	Table& ltable=table();
 
-	for(Array_iterator<ArrayString*> r(ltable); r.has_next(); ) {
+	for(Array_iterator<ArrayString*> r(ltable); r; ) {
 		ArrayString& line=*r.next();
 		if (line.count()==1){
 			indent ? result << "\n\t" << indent << "\"" : result << "\n\"";
 
 			result.append(*line[0], String::L_JSON, true/*forced lang*/);
-			r.has_next() ? result << "\"," : result << "\"\n" << indent;
+			r ? result << "\"," : result << "\"\n" << indent;
 		} else {
 			indent ? result << "\n\t" << indent << "[\"" : 	result << "\n[\"";
 
 			bool need_delim=false;
-			for(Array_iterator<const String*> c(line); c.has_next(); ) {
+			for(Array_iterator<const String*> c(line); c; ) {
 				if(need_delim)
 					result << "\",\"";
 				result.append(*c.next(), String::L_JSON, true/*forced lang*/);
 				need_delim=true;
 			}
-			r.has_next() ? result << "\"]," : result  << "\"]\n" << indent;
+			r ? result << "\"]," : result  << "\"]\n" << indent;
 		}
 	}
 	return result;

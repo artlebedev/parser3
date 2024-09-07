@@ -21,7 +21,7 @@
 #include "pa_vimage.h"
 #include "pa_wwrapper.h"
 
-volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.418 2024/07/24 19:42:18 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
+volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.419 2024/09/07 16:30:26 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
 
 //#define DEBUG_EXECUTE
 
@@ -128,8 +128,7 @@ void debug_printf(SAPI_Info& sapi_info, const char* fmt, ...) {
 }
 
 void debug_dump(SAPI_Info& sapi_info, int level, ArrayOperation& ops) {
-	Array_iterator<Operation> i(ops);
-	while(i.has_next()) {
+	for(Array_iterator<Operation> i(ops); i;) {
 		OP::OPCODE opcode=i.next().code;
 
 #if defined(OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT) || defined(OPTIMIZE_BYTECODE_GET_OBJECT_VAR_ELEMENT)
@@ -254,7 +253,7 @@ void Request::execute(ArrayOperation& ops) {
 	debug_dump(sapi_info, 0, ops);
 	debug_printf(sapi_info, "execution-------------------------\n");
 #endif
-	for(Array_iterator<Operation> i(ops); i.has_next(); ) {
+	for(Array_iterator<Operation> i(ops); i; ) {
 		OP::OPCODE opcode=i.next().code;
 
 #ifdef DEBUG_EXECUTE
@@ -1496,8 +1495,7 @@ const Operation::Origin Request::get_method_origin(const Method* method){
 
 	if(ArrayOperation* code=method->parser_code)
 		if(code){
-			Array_iterator<Operation> i(*code);
-			while( i.has_next() ){
+			for(Array_iterator<Operation> i(*code); i; ){
 				switch( i.next().code ){
 					case OP::OP_CURLY_CODE__STORE_PARAM: 
 					case OP::OP_EXPR_CODE__STORE_PARAM:

@@ -7,7 +7,7 @@
 
 #include "pa_table.h"
 
-volatile const char * IDENT_PA_TABLE_C="$Id: pa_table.C,v 1.74 2024/09/07 15:01:38 moko Exp $" IDENT_PA_TABLE_H;
+volatile const char * IDENT_PA_TABLE_C="$Id: pa_table.C,v 1.75 2024/09/07 16:30:27 moko Exp $" IDENT_PA_TABLE_H;
 
 #include "pa_exception.h"
 
@@ -19,7 +19,7 @@ void Table::column_names_init(){
 	if(fcolumns){
 		name2number = new name2number_hash_class;
 		size_t number=1;
-		for(ArrayString::Iterator i(*fcolumns); i.has_next(); ) {
+		for(ArrayString::Iterator i(*fcolumns); i; ) {
 			const String& name=*i.next();
 			name2number->put(name, number++);
 		}

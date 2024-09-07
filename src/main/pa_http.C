@@ -14,7 +14,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.124 2024/09/07 15:01:38 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.125 2024/09/07 16:30:26 moko Exp $" IDENT_PA_HTTP_H; 
 
 // defines
 
@@ -175,7 +175,7 @@ public:
 
 		ArrayString::Iterator i(aheaders);
 		i.next(); // skipping status
-		for(;i.has_next();){
+		for(;i;){
 			const char *line=i.next()->cstr();
 			if(!headers.add_header(line))
 				throw Exception("http.response", 0, "bad response from host - bad header \"%s\"", line);
@@ -595,7 +595,7 @@ static ArrayString* parse_cookie(Request& r, const String& cookie) {
 Table* parse_cookies(Request& r, Table *cookies){
 	Table& result=*new Table(new Cookies_table_template_columns);
 
-	for(Array_iterator<Table::element_type> i(*cookies); i.has_next(); )
+	for(Array_iterator<Table::element_type> i(*cookies); i; )
 		if(ArrayString* row=parse_cookie(r, *i.next()->get(0)))
 			result+=row;
 
@@ -875,7 +875,7 @@ File_read_http_result pa_internal_file_read_http(Request& r, const String& file_
 	if (!real_remote_charset)
 		real_remote_charset=asked_remote_charset; // never null
 
-	for(Array_iterator<HTTP_Headers::Header> i(response.headers.headers); i.has_next(); ){
+	for(Array_iterator<HTTP_Headers::Header> i(response.headers.headers); i; ){
 		HTTP_Headers::Header header=i.next();
 
 		header.transcode(*real_remote_charset, r.charsets.source());
