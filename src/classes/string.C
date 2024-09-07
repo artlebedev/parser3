@@ -21,7 +21,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.251 2023/09/26 20:49:06 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.252 2024/09/07 15:01:38 moko Exp $";
 
 // class
 
@@ -278,7 +278,7 @@ static Table& split_vertical(ArrayString& pieces, bool right, const String* colu
 			table+=row;
 		}
 	} else { // left
-		Array_iterator<const String*> i(pieces);
+		ArrayString::Iterator i(pieces);
 		while(i.has_next()) {
 			Table::element_type row(new ArrayString);
 			*row+=i.next();
@@ -296,7 +296,7 @@ static Table& split_horizontal(ArrayString& pieces, bool right) {
 		for(int i=pieces.count(); --i>=0; )
 			*row+=pieces[i];
 	} else { // left
-		for(Array_iterator<const String*> i(pieces); i.has_next(); )
+		for(ArrayString::Iterator i(pieces); i.has_next(); )
 			*row+=i.next();
 	}
 	table+=row;

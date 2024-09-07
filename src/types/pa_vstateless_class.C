@@ -11,7 +11,7 @@
 #include "pa_symbols.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VSTATELESS_CLASS_C="$Id: pa_vstateless_class.C,v 1.65 2023/11/17 19:12:34 moko Exp $" IDENT_PA_VSTATELESS_CLASS_H IDENT_PA_METHOD_H;
+volatile const char * IDENT_PA_VSTATELESS_CLASS_C="$Id: pa_vstateless_class.C,v 1.66 2024/09/07 15:01:38 moko Exp $" IDENT_PA_VSTATELESS_CLASS_H IDENT_PA_METHOD_H;
 
 bool VStateless_class::gall_vars_local=false;
 
@@ -26,7 +26,7 @@ void VStateless_class::set_method(const String& aname, Method* amethod) {
 
 	if(fderived.count() && aname != auto_method_name) {
 		Method *omethod=fmethods.get(aname);
-		Array_iterator<VStateless_class *> i(fderived);
+		ArrayClass::Iterator i(fderived);
 		while(i.has_next()) {
 			VStateless_class *c=i.next();
 			if(c->fmethods.get(aname)==omethod)

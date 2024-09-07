@@ -8,7 +8,7 @@
 #ifndef PA_ARRAY_H
 #define PA_ARRAY_H
 
-#define IDENT_PA_ARRAY_H "$Id: pa_array.h,v 1.87 2023/09/26 20:49:06 moko Exp $"
+#define IDENT_PA_ARRAY_H "$Id: pa_array.h,v 1.88 2024/09/07 15:01:38 moko Exp $"
 
 // includes
 
@@ -40,6 +40,8 @@ protected:
 	size_t fused;
 
 public:
+	typedef Array_iterator<T> Iterator;
+
 	struct Action_options {
 		size_t offset;
 		size_t limit; //< ARRAY_OPTION_LIMIT_ALL means 'all'. zero limit means 'nothing'
@@ -209,11 +211,26 @@ public:
 		return felements + index;
 	}
 
+	void fit(size_t index, T element){
+		if(index >= fallocated){
+			size_t new_allocated=fallocated>0 ? fallocated : 3;
+			while(new_allocated <= index){
+				new_allocated+=2 + new_allocated/32;
+			}
+			expand(new_allocated - fallocated);
+		}
+		felements[index]=element;
+		if(index >= fused){
+			fused=index+1;
+		}
+	}
+
 protected:
 
 	bool is_full() {
 		return fused == fallocated;
 	}
+
 	void expand(size_t delta) {
 		if(fallocated){
 			size_t new_allocated=fallocated+delta;
@@ -259,9 +276,19 @@ public:
 		return fcurrent<flast;
 	}
 
-	/// quickly extracts next Array element
+	/// returns the current element and advances the iterator
 	T next() {
 		return *(fcurrent++);
+	}
+
+	/// returns the current element
+	T value() {
+		return *(fcurrent);
+	}
+
+	// returns the current index of the iterator
+	size_t index() {
+		return fcurrent - farray.felements;
 	}
 
 };
