@@ -8,16 +8,18 @@
 #ifndef PA_ARRAY_H
 #define PA_ARRAY_H
 
-#define IDENT_PA_ARRAY_H "$Id: pa_array.h,v 1.89 2024/09/07 16:30:26 moko Exp $"
+#define IDENT_PA_ARRAY_H "$Id: pa_array.h,v 1.90 2024/09/10 19:09:56 moko Exp $"
 
 // includes
 
 #include "pa_memory.h"
+#include "pa_types.h"
 #include "pa_exception.h"
 
 // forwards
 
 template<typename T> class Array_iterator;
+template<typename T> class Array_reverse_iterator;
 
 // defines
 
@@ -27,6 +29,7 @@ template<typename T> class Array_iterator;
 template<typename T> class Array: public PA_Object {
 
 	friend class Array_iterator<T>;
+	friend class Array_reverse_iterator<T>;
 
 protected:
 
@@ -41,6 +44,7 @@ protected:
 
 public:
 	typedef Array_iterator<T> Iterator;
+	typedef Array_reverse_iterator<T> ReverseIterator;
 
 	struct Action_options {
 		size_t offset;
@@ -172,6 +176,8 @@ public:
 	inline T operator [](size_t index) const { return get(index); }
 
 	inline void clear() {
+		if(fused)
+			memset(felements, 0, fused * sizeof(T));
 		fused=0;
 	}
 
@@ -268,27 +274,67 @@ public:
 
 	Array_iterator(const Array<T>& aarray): farray(aarray) {
 		fcurrent=farray.felements;
-		flast=farray.felements+farray.count();
+		flast=farray.felements + farray.count();
 	}
 
 	/// there are still elements
-	operator bool () {
-		return fcurrent<flast;
+	inline operator bool () {
+		return fcurrent < flast;
 	}
 
 	/// returns the current element and advances the iterator
-	T next() {
+	inline T next() {
 		return *(fcurrent++);
 	}
 
 	/// returns the current element
-	T value() {
+	inline T value() {
 		return *(fcurrent);
 	}
 
 	// returns the current index of the iterator
-	size_t index() {
+	inline size_t index() {
 		return fcurrent - farray.felements;
+	}
+
+	inline char *key(){
+		char local_buf[MAX_NUMBER];
+		size_t length=snprintf(local_buf, MAX_NUMBER, "%zu", index());
+		return pa_strdup(local_buf, length);
+	}
+
+};
+
+template<typename T> class Array_reverse_iterator {
+
+	const Array<T>& farray;
+	T *fcurrent;
+
+public:
+
+	Array_reverse_iterator(const Array<T>& aarray): farray(aarray) {
+		fcurrent=farray.felements+farray.count();
+	}
+
+	/// there are still elements
+	inline operator bool () {
+		return fcurrent > farray.felements;
+	}
+
+	/// returns the current element and advances the iterator
+	inline T prev() {
+		return *(--fcurrent);
+	}
+
+	// returns the current index of the iterator
+	inline size_t index() {
+		return fcurrent - farray.felements;
+	}
+
+	inline char *key(){
+		char local_buf[MAX_NUMBER];
+		size_t length=snprintf(local_buf, MAX_NUMBER, "%zu", index());
+		return pa_strdup(local_buf, length);
 	}
 
 };

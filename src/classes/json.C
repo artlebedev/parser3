@@ -10,6 +10,7 @@
 
 #include "pa_request.h"
 #include "pa_vbool.h"
+//#include "pa_varray.h"
 
 #include "pa_charset.h"
 #include "pa_charsets.h"
@@ -19,7 +20,7 @@
 #include "pa_vxdoc.h"
 #endif
 
-volatile const char * IDENT_JSON_C="$Id: json.C,v 1.58 2023/10/01 15:14:44 moko Exp $";
+volatile const char * IDENT_JSON_C="$Id: json.C,v 1.59 2024/09/10 19:09:56 moko Exp $";
 
 // class
 
@@ -34,7 +35,7 @@ DECLARE_CLASS_VAR(json, new MJson);
 
 // methods
 struct Json : public PA_Allocated {
-	Stack<VHash*> stack;
+	Stack<VHashBase*> stack;
 	Stack<String*> key_stack;
 
 	String* key;
@@ -49,11 +50,12 @@ struct Json : public PA_Allocated {
 
 	bool handle_double;
 	bool handle_int;
+	bool handle_array;
 	enum Distinct { D_EXCEPTION, D_FIRST, D_LAST, D_ALL } distinct;
 
 	Json(Charset* acharset): stack(), key_stack(), key(NULL), result(NULL), hook_object(NULL), hook_array(NULL), 
 		request(NULL), charset(acharset), taint(String::L_TAINTED), handle_double(true), handle_int(true), 
-		distinct(D_EXCEPTION){}
+		handle_array(true), distinct(D_EXCEPTION){}
 
 	bool set_distinct(const String &value){
 		if (value == "first") distinct = D_FIRST;
@@ -62,12 +64,19 @@ struct Json : public PA_Allocated {
 		else return false;
 		return true;
 	}
+
+	bool set_handle_array(const String &value){
+		if (value == "array") handle_array = true;
+		else if (value == "hash") handle_array = false;
+		else return false;
+		return true;
+	}
 };
 
 static void set_json_value(Json *json, Value *value){
-	VHash *top = json->stack.top_value();
+	VHashBase *top = json->stack.top_value();
 	if(json->key == NULL){
-		top->hash().put(format(top->get_hash()->count(), 0), value);
+		top->add(value);
 	} else {
 		switch (json->distinct){
 			case Json::D_EXCEPTION:
@@ -139,14 +148,16 @@ static int json_callback(Json *json, int type, const char *value, uint32_t lengt
 			break;
 		}
 		case JSON_ARRAY_BEGIN:{
-			VHash *v = new VHash();
 			if (json->hook_array){
 				json->key_stack.push(json->key);
 				json->key=NULL;
+				json->stack.push(new VHash);
 			} else {
+				VHashBase *v = new VHash;
+//				VHashBase *v = json->handle_array ? (VHashBase *)new VArray : (VHashBase *)new VHash;
 				if (json->stack.count()) set_json_value(json, v);
+				json->stack.push(v);
 			}
-			json->stack.push(v);
 			break;
 		}
 		case JSON_ARRAY_END:
@@ -326,10 +337,16 @@ static void _parse(Request& r, MethodParams& params) {
 				valid_options++;
 			}
 			if(Value* value=options->get("array")) {
-				json.hook_array=value->get_junction();
-				json.request=&r;
-				if (!json.hook_array || !json.hook_array->method || !json.hook_array->method->params_names || !(json.hook_array->method->params_count == 2))
-					throw Exception(PARSER_RUNTIME, 0, "$.array must be parser method with 2 parameters");
+				if(value->get_string()){
+					const String& sarray=value->as_string();
+					if (!json.set_handle_array(sarray))
+						throw Exception(PARSER_RUNTIME, &sarray, "$.array must be parser method with 2 parameters or 'array' or 'hash'");
+				} else {
+					json.hook_array=value->get_junction();
+					json.request=&r;
+					if (!json.hook_array || !json.hook_array->method || !json.hook_array->method->params_names || !(json.hook_array->method->params_count == 2))
+						throw Exception(PARSER_RUNTIME, 0, "$.array must be parser method with 2 parameters or 'array' or 'hash'");
+				}
 				valid_options++;
 			}
 			if(valid_options!=options->count())
@@ -390,6 +407,20 @@ String *get_delim(uint level){
 	return cache[level];
 }
 
+String *get_array_delim(uint level){
+	static String* cache[ANTI_ENDLESS_JSON_STRING_RECOURSION]={};
+
+	if (!cache[level]){
+		char *result = static_cast<char*>(pa_malloc_atomic(level+2+1));
+		result[0]=',';
+		result[1]='\n';
+		memset(result+2, '\t', level);
+		result[level+2]='\0';
+		return cache[level] = new String(result, String::L_AS_IS);
+	}
+	return cache[level];
+}
+
 class Json_string_recoursion {
 	Json_options& foptions;
 public:
@@ -437,6 +468,86 @@ const String* Json_options::hash_json_string(HashStringValue *hash) {
 			need_delim=true;
 		}
 		result << "\n}";
+
+	}
+
+	return &result;
+}
+
+const String* Json_options::array_json_string(ArrayValue *array) {
+	if(!array || !array->count())
+		return new String("[]", String::L_AS_IS);
+
+	Json_string_recoursion go_down(*this);
+
+	String& result = *new String("[\n", String::L_AS_IS);
+
+	if (indent){
+
+		String *delim=NULL;
+		indent=get_indent(json_string_recoursion);
+		for(ArrayValue::Iterator i(*array); i; i.next() ){
+			if (delim){
+				result << *delim;
+			} else {
+				result << indent;
+				delim = get_array_delim(json_string_recoursion);
+			}
+			result << value_json_string(i.key(), i.value() ? *i.value() : *VVoid::get(), *this);
+		}
+		result << "\n" << (indent=get_indent(json_string_recoursion-1)) << "]";
+
+	} else {
+
+		bool need_delim=false;
+		for(ArrayValue::Iterator i(*array); i; i.next() ){
+			if(need_delim) result << ",\n";
+			result << value_json_string(i.key(), i.value() ? *i.value() : *VVoid::get(), *this);
+			need_delim=true;
+		}
+		result << "\n]";
+
+	}
+
+	return &result;
+}
+
+const String* Json_options::array_compact_json_string(ArrayValue *array) {
+	if(!array || !array->count())
+		return new String("[]", String::L_AS_IS);
+
+	Json_string_recoursion go_down(*this);
+
+	String& result = *new String("[\n", String::L_AS_IS);
+
+	if (indent){
+
+		String *delim=NULL;
+		indent=get_indent(json_string_recoursion);
+		for(ArrayValue::Iterator i(*array); i; i.next() ){
+			if (i.value()){
+				if (delim){
+					result << *delim;
+				} else {
+					result << indent;
+					delim = get_array_delim(json_string_recoursion);
+				}
+				result << value_json_string(i.key(), *i.value(), *this);
+			}
+		}
+		result << "\n" << (indent=get_indent(json_string_recoursion-1)) << "]";
+
+	} else {
+
+		bool need_delim=false;
+		for(ArrayValue::Iterator i(*array); i; i.next() ){
+			if (i.value()){
+				if(need_delim) result << ",\n";
+				result << value_json_string(i.key(), *i.value(), *this);
+				need_delim=true;
+			}
+		}
+		result << "\n]";
 
 	}
 
@@ -505,6 +616,11 @@ static void _string(Request& r, MethodParams& params) {
 				} else if(key == "table" && value->is_string()){
 					const String& svalue=value->as_string();
 					if(!json.set_table_format(svalue))
+						throw Exception(PARSER_RUNTIME, &svalue, "must be 'array', 'object' or 'compact'");
+					valid_options++;
+				} else if(key == "array" && value->is_string()){
+					const String& svalue=value->as_string();
+					if(!json.set_array_format(svalue))
 						throw Exception(PARSER_RUNTIME, &svalue, "must be 'array', 'object' or 'compact'");
 					valid_options++;
 				} else if(key == "file" && value->is_string()){

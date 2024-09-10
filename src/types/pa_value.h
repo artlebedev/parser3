@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.169 2023/09/26 20:49:11 moko Exp $"
+#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.170 2024/09/10 19:09:56 moko Exp $"
 
 #include "pa_common.h"
 #include "pa_array.h"
@@ -47,6 +47,7 @@ struct Json_options : public PA_Allocated {
 	XDocOutputOptions* xdoc_options;
 	enum Date { D_SQL, D_GMT, D_ISO, D_TIMESTAMP } date;
 	enum Table { T_ARRAY, T_OBJECT, T_COMPACT } table;
+	enum Array { A_ARRAY, A_OBJECT, A_COMPACT } array;
 	enum File { F_BODYLESS, F_BASE64, F_TEXT } file;
 	enum Void { V_NULL, V_STRING } fvoid;
 
@@ -62,6 +63,7 @@ struct Json_options : public PA_Allocated {
 		xdoc_options(NULL),
 		date(D_SQL),
 		table(T_OBJECT),
+		array(A_COMPACT),
 		file(F_BODYLESS),
 		fvoid(V_NULL)
 	{}
@@ -83,6 +85,14 @@ struct Json_options : public PA_Allocated {
 		return true;
 	}
 
+	bool set_array_format(const String &value){
+		if(value == "array") array = A_ARRAY;
+		else if (value == "object") array = A_OBJECT;
+		else if (value == "compact") array = A_COMPACT;
+		else return false;
+		return true;
+	}
+
 	bool set_file_format(const String &value){
 		if(value == "base64") file = F_BASE64;
 		else if (value == "text") file = F_TEXT;
@@ -99,6 +109,8 @@ struct Json_options : public PA_Allocated {
 	}
 
 	const String* hash_json_string(HashStringValue *hash);
+	const String* array_json_string(ArrayValue *array);
+	const String* array_compact_json_string(ArrayValue *array);
 };
 
 ///	grandfather of all @a values in @b Parser
