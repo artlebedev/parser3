@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.1 2024/09/10 19:15:48 moko Exp $";
+volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.2 2024/09/10 20:48:15 moko Exp $";
 
 // class
 
@@ -90,6 +90,31 @@ static void _keys(Request& r, MethodParams& params) {
 
 static void _count(Request& r, MethodParams&) {
 	r.write(*new VInt(GET_SELF(r, VArray).count()));
+}
+
+static void _append(Request& r, MethodParams& params) {
+	VArray& self=GET_SELF(r, VArray);
+	ArrayValue& array=self.array();
+
+	int count=params.count();
+
+	for(int i=0; i<count; i++){
+		array+=&r.process(params[i]);
+	}
+	self.clear_hash();
+}
+
+static void _insert(Request& r, MethodParams& params) {
+	VArray& self=GET_SELF(r, VArray);
+	ArrayValue& array=self.array();
+
+	int count=params.count();
+	size_t index=VArray::index(params.as_int(0, "index must be integer", r));
+
+	for(int i=1; i<count; i++){
+		array.insert(index+i-1, &r.process(params[i]));
+	}
+	self.clear_hash();
 }
 
 static void _delete(Request& r, MethodParams& params) {
@@ -448,20 +473,24 @@ MArray::MArray(): Methoded(VARRAY_TYPE) {
 
 	// ^array.sub[sub_from]
 	add_native_method("sub", Method::CT_DYNAMIC, _sub, 1, 1);
-	// ^a.union[b] = array
+	// ^array.union[b] = array
 	add_native_method("union", Method::CT_DYNAMIC, _union, 1, 1);
-	// ^a.intersection[b][options array] = array
+	// ^array.intersection[b][options array] = array
 	add_native_method("intersection", Method::CT_DYNAMIC, _intersection, 1, 2);
-	// ^a.intersects[b] = bool
+	// ^array.intersects[b] = bool
 	add_native_method("intersects", Method::CT_DYNAMIC, _intersects, 1, 1);
 
-	// ^a.delete[key]
+	// ^array.append[value;value]
+	add_native_method("append", Method::CT_DYNAMIC, _append, 1, 10000);
+
+	// ^array.insert[index;value...]
+	add_native_method("insert", Method::CT_DYNAMIC, _insert, 2, 10000);
+
+	// ^array.delete[index]
 	add_native_method("delete", Method::CT_DYNAMIC, _delete, 0, 1);
 
-	// ^a.contains[key]
+	// ^array.contains[index]
 	add_native_method("contains", Method::CT_DYNAMIC, _contains, 1, 1);
-	// backward
-	add_native_method("contain", Method::CT_DYNAMIC, _contains, 1, 1);
 
 	// ^array::sql[query][options array]
 	add_native_method("sql", Method::CT_DYNAMIC, _sql, 1, 2);
@@ -472,21 +501,21 @@ MArray::MArray(): Methoded(VARRAY_TYPE) {
 	// ^array._count[]
 	add_native_method("_count", Method::CT_DYNAMIC, _count, 0, 0);
 
-	// ^array.foreach[key;value]{code}[delim]
+	// ^array.foreach[index;value]{code}[delim]
 	add_native_method("foreach", Method::CT_DYNAMIC, _foreach, 2+1, 2+1+1);
 
-	// ^array.sort[key;value]{string-key-maker}[[asc|desc]]
-	// ^array.sort[key;value](numeric-key-maker)[[asc|desc]]
+	// ^array.sort[index;value]{string-key-maker}[[asc|desc]]
+	// ^array.sort[index;value](numeric-key-maker)[[asc|desc]]
 	add_native_method("sort", Method::CT_DYNAMIC, _sort, 3, 4);
 
-	// ^array.select[key;value](bool-condition)[options array]
+	// ^array.select[index;value](bool-condition)[options hash]
 	add_native_method("select", Method::CT_DYNAMIC, _select, 3, 4);
 
 	// ^array.reverse[]
 	add_native_method("reverse", Method::CT_DYNAMIC, _reverse, 0, 0);
 
-	// ^array._at[first|last[;'key'|'value'|'array']]
-	// ^array._at([-+]offset)[['key'|'value'|'array']]
+	// ^array._at[first|last[;'key'|'value'|'hash']]
+	// ^array._at([-+]offset)[['key'|'value'|'hash']]
 	add_native_method("_at", Method::CT_DYNAMIC, _at, 1, 2);
 
 	// ^array.rename[from;to]
