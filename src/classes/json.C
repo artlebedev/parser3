@@ -10,7 +10,7 @@
 
 #include "pa_request.h"
 #include "pa_vbool.h"
-//#include "pa_varray.h"
+#include "pa_varray.h"
 
 #include "pa_charset.h"
 #include "pa_charsets.h"
@@ -20,7 +20,7 @@
 #include "pa_vxdoc.h"
 #endif
 
-volatile const char * IDENT_JSON_C="$Id: json.C,v 1.59 2024/09/10 19:09:56 moko Exp $";
+volatile const char * IDENT_JSON_C="$Id: json.C,v 1.60 2024/09/10 19:15:48 moko Exp $";
 
 // class
 
@@ -153,8 +153,7 @@ static int json_callback(Json *json, int type, const char *value, uint32_t lengt
 				json->key=NULL;
 				json->stack.push(new VHash);
 			} else {
-				VHashBase *v = new VHash;
-//				VHashBase *v = json->handle_array ? (VHashBase *)new VArray : (VHashBase *)new VHash;
+				VHashBase *v = json->handle_array ? (VHashBase *)new VArray : (VHashBase *)new VHash;
 				if (json->stack.count()) set_json_value(json, v);
 				json->stack.push(v);
 			}
