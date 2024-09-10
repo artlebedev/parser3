@@ -1,7 +1,7 @@
 #ifndef PA_SAPI_INFO_H
 #define PA_SAPI_INFO_H
 
-#define IDENT_PA_SAPI_INFO_H "$Id: pa_sapi_info.h,v 1.16 2024/07/14 16:54:18 moko Exp $"
+#define IDENT_PA_SAPI_INFO_H "$Id: pa_sapi_info.h,v 1.17 2024/09/10 19:16:49 moko Exp $"
 
 #include "pa_sapi.h"
 #include "pa_http.h"
@@ -102,7 +102,7 @@ public:
 
 	void populate_env() {
 		String::Body host("localhost");
-		for(Array_iterator<HTTP_Headers::Header> i(connection.headers()); i.has_next(); ){
+		for(Array_iterator<HTTP_Headers::Header> i(connection.headers()); i; ){
 			HTTP_Headers::Header header=i.next();
 			String name("HTTP_");
 			name << replace_char(header.name.cstrm(), '-', '_');
