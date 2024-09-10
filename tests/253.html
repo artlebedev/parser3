@@ -3,26 +3,24 @@
 $f[^file::load[text;253_json.txt; $.charset[windows-1251]]]
 $s[^taint[as-is][$f.text]]
 
-^try-catch{$o[^json:parse[$s]]}
+^try-catch{$o[^json:parse[$s; $.array[hash] ]]}
 
-$o[^json:parse[$s][ $.object[$hook] $.distinct[first] ]]
-^print[$o]
+^test[$s][ $.object[$hook] $.distinct[first] ]
 
-$o[^json:parse[$s][ $.double(false) $.distinct[last] ]]
-^print[$o]
+^test[$s][ $.double(false) $.distinct[last] ]
 
-$o[^json:parse[$s][ $.int(false) $.distinct[last] ]]
-^print[$o]
+^test[$s][ $.int(false) $.distinct[last] ]
 
-$o[^json:parse[$s][ $.object[$hook_key] $.distinct[all] ]]
-^print[$o]
+^test[$s][ $.object[$hook_key] $.distinct[all] ]
 
 $s[[1,{"type":"class1","value":"3"},4]]
 
-$o[^json:parse[$s][ $.object[$hook] ]]
-^print[$o]
+^test[$s][ $.object[$hook] ]
 
-$o[^json:parse[$s]]
+^test[$s]
+
+@test[s;options]
+$o[^json:parse[$s][ $options $.array[hash] ]]
 ^print[$o]
 
 @print[hash]
