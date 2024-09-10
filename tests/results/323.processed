@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 909
+Content-Length: 947
 
 MAIN methoded MAIN ()
 bool methoded bool ()
@@ -25,6 +25,7 @@ reflection methoded reflection ()
 regex methoded regex ()
 request request ()
 response methoded response ()
+sparse-array methoded sparse-array ()
 status status ()
 string methoded string ()
 table methoded table ()
