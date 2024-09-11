@@ -16,7 +16,7 @@
 #include "pa_charset.h"
 #include "pa_xml_exception.h"
 
-volatile const char * IDENT_PA_VXNODE_C="$Id: pa_vxnode.C,v 1.61 2023/09/26 20:49:13 moko Exp $" IDENT_PA_VXNODE_H;
+volatile const char * IDENT_PA_VXNODE_C="$Id: pa_vxnode.C,v 1.62 2024/09/11 21:07:36 moko Exp $" IDENT_PA_VXNODE_H;
 
 Request_charsets& VXnode::charsets() { 
 	return get_vxdoc().charsets();
@@ -53,14 +53,12 @@ Value* VXnode::get_element(const String& aname) {
 		if(xmlNode* result_node=selfNode.parent)
 			return &get_vxdoc().wrap(*result_node);
 		return 0;
-	} else if(aname=="childNodes") {	
+	} else if(aname=="childNodes") {
 		if(xmlNode* currentNode=selfNode.children) {
 			VHash* result=new VHash;
 			int i=0;
 			do {
-				result->hash().put(
-					String::Body::Format(i++), 
-					&get_vxdoc().wrap(*currentNode));
+				result->hash().put(pa_uitoa(i++), &get_vxdoc().wrap(*currentNode));
 			} while((currentNode=currentNode->next));
 			return result;
 		}

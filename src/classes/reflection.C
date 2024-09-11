@@ -10,7 +10,7 @@
 #include "pa_vbool.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.89 2023/09/26 20:49:06 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.90 2024/09/11 21:07:36 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -356,7 +356,7 @@ static void _method_info(Request& r, MethodParams& params) {
 
 		if(method->params_names)
 			for(size_t i=0; i<method->params_names->count(); i++)
-				hash->put(String::Body::Format(i), new VString(*method->params_names->get(i)));
+				hash->put(pa_uitoa(i), new VString(*method->params_names->get(i)));
 
 		if(method->extra_params)
 			hash->put(method_extra_param, new VString(*method->extra_params));

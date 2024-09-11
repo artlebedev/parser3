@@ -34,7 +34,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.421 2024/08/25 19:58:51 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.422 2024/09/11 21:07:36 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -428,8 +428,8 @@ Table &Request::Exception_trace::table(Request &r){
 			Operation::Origin origin=trace.origin();
 			if(origin.file_no) {
 				*row+=new String(r.file_list[origin.file_no], String::L_TAINTED); // 'file' column
-				*row+=new String(String::Body::Format(1+origin.line), String::L_CLEAN); // 'lineno' column
-				*row+=new String(String::Body::Format(1+origin.col), String::L_CLEAN); // 'colno' column
+				*row+=new String(pa_uitoa(1+origin.line), String::L_CLEAN); // 'lineno' column
+				*row+=new String(pa_uitoa(1+origin.col), String::L_CLEAN); // 'colno' column
 			}
 			stack_trace+=row;
 		}

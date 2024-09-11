@@ -28,7 +28,7 @@
 #define pa_mkdir(path, mode) mkdir(path, mode)
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.330 2023/12/12 18:29:28 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.331 2024/09/11 21:07:36 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -776,7 +776,7 @@ const char* format(double value, const char* fmt) {
 				throw Exception(PARSER_RUNTIME, 0, "Incorrect format string '%s' was specified.", fmt);
 		}
 	} else
-		size=snprintf(local_buf, sizeof(local_buf), "%d", clip2int(value));
+		return pa_itoa(clip2int(value));
 
 	if(size < 0 || size >= MAX_NUMBER-1){ // on win32 we manually reduce max size while printing
 		throw Exception(PARSER_RUNTIME, 0, "Error occurred white executing snprintf with format string '%s'.", fmt);

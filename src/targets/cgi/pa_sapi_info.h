@@ -1,7 +1,7 @@
 #ifndef PA_SAPI_INFO_H
 #define PA_SAPI_INFO_H
 
-#define IDENT_PA_SAPI_INFO_H "$Id: pa_sapi_info.h,v 1.17 2024/09/10 19:16:49 moko Exp $"
+#define IDENT_PA_SAPI_INFO_H "$Id: pa_sapi_info.h,v 1.18 2024/09/11 21:07:36 moko Exp $"
 
 #include "pa_sapi.h"
 #include "pa_http.h"
@@ -224,7 +224,7 @@ public:
 
 	virtual void send_header() {
 		String result("HTTP/1.0 ");
-		result << String::Body::Format(http_response_code) << " " << status_message(http_response_code) << "\r\n" << output << "\r\n";
+		result << pa_uitoa(http_response_code) << " " << status_message(http_response_code) << "\r\n" << output << "\r\n";
 		send_body(result.cstr(), result.length());
 	}
 

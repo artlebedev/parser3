@@ -25,7 +25,7 @@
 #include "pa_vbool.h"
 #include "pa_array.h"
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.362 2024/09/07 16:30:26 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.363 2024/09/11 21:07:36 moko Exp $";
 
 // class
 
@@ -580,9 +580,9 @@ static void table_to_csv(String& result, Table& table, TableControlChars& contro
 			if(int lsize=table.count()?table[0]->count():0)
 				for(int column=0; column<lsize; column++) {
 					if(control_chars.encloser) {
-						result<<*control_chars.sencloser<<String::Body::Format(column)<<*control_chars.sencloser;
+						result<<*control_chars.sencloser<<pa_uitoa(column)<<*control_chars.sencloser;
 					} else {
-						result<<String::Body::Format(column);
+						result<<pa_uitoa(column);
 					}
 					if(column<lsize-1){
 						result<<*control_chars.sseparator;
@@ -1158,7 +1158,7 @@ static void _foreach(Request& r, MethodParams& params) {
 			table.set_current(row);
 
 			if(rownum_var_name)
-				r.put_element(*var_context, *rownum_var_name, new VString(*new String(String::Body::Format(row), String::L_CLEAN)));
+				r.put_element(*var_context, *rownum_var_name, new VString(*new String(pa_uitoa(row), String::L_CLEAN)));
 			if(value_var_name)
 				r.put_element(*var_context, *value_var_name, new VTable(&table));
 
@@ -1183,7 +1183,7 @@ static void _foreach(Request& r, MethodParams& params) {
 			table.set_current(row);
  
 			if(rownum_var_name)
-				r.put_element(*var_context, *rownum_var_name, new VString(*new String(String::Body::Format(row), String::L_CLEAN)));
+				r.put_element(*var_context, *rownum_var_name, new VString(*new String(pa_uitoa(row), String::L_CLEAN)));
 			if(value_var_name)
 				r.put_element(*var_context, *value_var_name, new VTable(&table));
 

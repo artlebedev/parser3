@@ -21,7 +21,7 @@
 #include "libxml/xpath.h"
 #include "libxml/xpathInternals.h"
 
-volatile const char * IDENT_XNODE_C="$Id: xnode.C,v 1.98 2023/09/26 20:49:06 moko Exp $" IDENT_XNODE_H;
+volatile const char * IDENT_XNODE_C="$Id: xnode.C,v 1.99 2024/09/11 21:07:36 moko Exp $" IDENT_XNODE_H;
 
 // classes
 
@@ -233,7 +233,7 @@ struct AccumulateFoundInfo
 static void AccumulateFound(xmlNode& node, AccumulateFoundInfo* info)
 {
 	info->hash->put(
-		String::Body::Format(info->index++), 
+		pa_uitoa(info->index++), 
 		&info->vdoc->wrap(node));
 }
 template<typename I> static void
@@ -725,9 +725,7 @@ static void selectNodesHandler(Request&,
 			if(int size=res->nodesetval->nodeNr) {
 				HashStringValue& hash=vhash.hash();
 				for(int i=0; i<size; i++)
-					hash.put(
-						String::Body::Format(i), 
-						&xdoc.wrap(*res->nodesetval->nodeTab[i]));
+					hash.put(pa_uitoa(i), &xdoc.wrap(*res->nodesetval->nodeTab[i]));
 			}
 		break;
 	default: 

@@ -26,7 +26,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.277 2023/11/16 00:00:53 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.278 2024/09/11 21:07:36 moko Exp $";
 
 // defines
 
@@ -736,12 +736,12 @@ static void _list(Request& r, MethodParams& params) {
 		if(!vregex || vregex->exec(file_name_cstr, file_name_size, ovector, ovector_size)>=0) {
 			Table::element_type row(new ArrayString);
 			*row+=new String(pa_strdup(file_name_cstr, file_name_size), String::L_TAINTED);
-			*row+=new String(String::Body::Format(ffblk.is_dir(stat) ? 1 : 0), String::L_CLEAN);
+			*row+=new String(ffblk.is_dir(stat) ? "1" : "0", String::L_CLEAN);
 			if(stat) {
 				*row+=VDouble(ffblk.size()).get_string();
-				*row+=new String(String::Body::Format((int)ffblk.c_timestamp()), String::L_CLEAN);
-				*row+=new String(String::Body::Format((int)ffblk.m_timestamp()), String::L_CLEAN);
-				*row+=new String(String::Body::Format((int)ffblk.a_timestamp()), String::L_CLEAN);
+				*row+=new String(pa_uitoa(ffblk.c_timestamp()), String::L_CLEAN);
+				*row+=new String(pa_uitoa(ffblk.m_timestamp()), String::L_CLEAN);
+				*row+=new String(pa_uitoa(ffblk.a_timestamp()), String::L_CLEAN);
 			}
 			table+=row;
 		}

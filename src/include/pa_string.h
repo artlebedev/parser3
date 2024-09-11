@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.232 2024/03/14 03:17:01 moko Exp $"
+#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.233 2024/09/11 21:07:36 moko Exp $"
 
 // includes
 #include "pa_types.h"
@@ -400,8 +400,6 @@ public:
 #endif
 		}
 
-
-		static Body Format(int value);
 
 		void clear() { ZERO_LENGTH ZERO_HASH_CODE body=CORD_EMPTY; }
 
