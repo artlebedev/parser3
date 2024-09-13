@@ -13,14 +13,21 @@ $cookie:s[
 	$.expires[session]
 ]
 
-^try{
+e1: ^try-catch{
 	$cookie:z[
 		$.value[zzz-value]
 		$.expires[zzz]
 	]
-}{
-	$exception.handled(true)
-	mustfail, it's OK.<br />
 }
 
-^cookie:fields.foreach[k;v]{${k}: '$v.value'}[<br />^#0A]
+e2: ^try{
+	$cookie:x[
+		$.value[xxx-value]
+		$.expires(-5000*365)
+	]
+}{
+	$exception.handled(true)
+	Exception type: $exception.type
+}
+
+^json:string[$cookie:fields; $.indent(1) ]

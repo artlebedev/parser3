@@ -2,9 +2,23 @@ Set-Cookie: a=a-value; expires=Tue, 25 Feb 2003 21:00:00 GMT; path=/
 Set-Cookie: b=b-value; expires=Wed, 19 Feb 2003 21:00:00 GMT; path=/
 Set-Cookie: s=session-value; path=/
 Content-Type: text/html
-Content-Length: 81
+Content-Length: 306
 
-mustfail, it's OK.<br />
-a: 'a-value'<br />
-b: 'b-value'<br />
-s: 'session-value'
+e1: Exception type: number.format,
+Source: zzz,
+Comment: invalid number (double)
+e2: Exception type: date.range
+{
+	"a":{
+		"value":"a-value",
+		"expires":"2003-02-26 00:00:00"
+	},
+	"b":{
+		"value":"b-value",
+		"expires":"2003-02-20 00:00:00"
+	},
+	"s":{
+		"value":"session-value",
+		"expires":"session"
+	}
+}
