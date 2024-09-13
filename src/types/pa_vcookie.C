@@ -13,7 +13,7 @@
 #include "pa_vhash.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VCOOKIE_C="$Id: pa_vcookie.C,v 1.103 2024/09/13 04:01:23 moko Exp $" IDENT_PA_VCOOKIE_H;
+volatile const char * IDENT_PA_VCOOKIE_C="$Id: pa_vcookie.C,v 1.104 2024/09/13 23:48:15 moko Exp $" IDENT_PA_VCOOKIE_H;
 
 // defines
 
@@ -76,14 +76,8 @@ Value* VCookie::get_element(const String& aname) {
 	return before.get(aname);
 }
 
-time_t expires_sec(double days_till_expire) {
-	time_t result=time(NULL)+(time_t)(60*60*24*days_till_expire);
-	struct tm* tms=gmtime(&result);
-	if(!tms)
-		throw Exception(DATE_RANGE_EXCEPTION_TYPE,
-			0,
-			"bad expires time (seconds from epoch=%u)", result);
-	return result;
+static Value& expires_vdate(double days_till_expire) {
+	return *new VDate(time(NULL)+60*60*24*days_till_expire);
 }
 
 const VJunction* VCookie::put_element(const String& aname, Value* avalue) {
@@ -95,7 +89,7 @@ const VJunction* VCookie::put_element(const String& aname, Value* avalue) {
 			if(!(expires->is_string() && (string=expires->get_string()) && (*string==SESSION_NAME)))
 				if(!dynamic_cast<VDate*>(expires))
 					if(double days_till_expire=expires->as_double())
-						expires_sec(days_till_expire);
+						expires_vdate(days_till_expire); // checking if date is valid here to avoid failure when sending headers
 		}
 		lvalue=hash->get(value_name);
 	} else
@@ -116,10 +110,6 @@ const VJunction* VCookie::put_element(const String& aname, Value* avalue) {
 		deleted.put(aname, 0);
 	}
 	return 0;
-}
-
-static Value& expires_vdate(double days_till_expire) {
-	return *new VDate((pa_time_t)expires_sec(days_till_expire));
 }
 
 /*
@@ -160,7 +150,7 @@ const String* output_set_cookie_value(
 		// clone to safely change it
 		lmeaning=new VHash(*hash);
 		hash=lmeaning->get_hash();
-
+ 
 		// $expires
 		if(Value* expires=hash->get(expires_name)) {
 			const String* string;
