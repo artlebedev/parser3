@@ -34,7 +34,7 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.422 2024/09/11 21:07:36 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.423 2024/09/13 04:01:23 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -959,9 +959,8 @@ void Request::output_result(VFile* body_file, bool header_only, bool as_attachme
 
 		VDate* vdate=0;
 		if(Value* v=body_file->fields().get("mdate")) {
-			if(Value* vdatep=v->as(VDATE_TYPE))
-				vdate=static_cast<VDate*>(vdatep);
-			else 
+			vdate=dynamic_cast<VDate*>(v);
+			if(!vdate)
 				throw Exception(PARSER_RUNTIME, 0, "mdate must be a date");
 		}
 		if(!vdate)

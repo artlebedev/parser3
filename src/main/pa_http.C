@@ -14,7 +14,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.125 2024/09/07 16:30:26 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.126 2024/09/13 04:01:23 moko Exp $" IDENT_PA_HTTP_H; 
 
 // defines
 
@@ -511,7 +511,7 @@ static void form_value2part(HashStringValue::key_type key, HashStringValue::valu
 		Form_table_value2string_info info(key, *part.string);
 		part.info = &info;
 		tvalue->for_each(form_table_value2part, &part);
-	} else if(VFile* vfile=static_cast<VFile *>(value->as("file"))){
+	} else if(VFile* vfile=dynamic_cast<VFile *>(value)){
 		form_file_value2part(key, *vfile, part);
 	} else
 		throw Exception(PARSER_RUNTIME, new String(key, String::L_TAINTED), "is %s, " HTTP_FORM_NAME " option value can be string, table or file only", value->type());

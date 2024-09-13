@@ -18,7 +18,7 @@
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.71 2024/09/07 16:30:26 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.72 2024/09/13 04:01:22 moko Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -399,7 +399,7 @@ static void curl_form(HashStringValue *value_hash, Request& r){
 					CURLFORM_PTRCONTENTS, curl_transcode(String(tvalue->get(t)->get(0)->cstr()), r), 
 					CURLFORM_END);
 			}
-		} else if(VFile* fvalue=static_cast<VFile *>(i.value()->as("file"))){
+		} else if(VFile* fvalue=dynamic_cast<VFile *>(i.value())){
 			// file
 			f_curl_formadd(&options().f_post, &f_last, 
 				CURLFORM_PTRNAME, key,

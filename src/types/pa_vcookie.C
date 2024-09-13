@@ -13,7 +13,7 @@
 #include "pa_vhash.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VCOOKIE_C="$Id: pa_vcookie.C,v 1.102 2023/09/26 20:49:11 moko Exp $" IDENT_PA_VCOOKIE_H;
+volatile const char * IDENT_PA_VCOOKIE_C="$Id: pa_vcookie.C,v 1.103 2024/09/13 04:01:23 moko Exp $" IDENT_PA_VCOOKIE_H;
 
 // defines
 
@@ -93,7 +93,7 @@ const VJunction* VCookie::put_element(const String& aname, Value* avalue) {
 		if(Value* expires=hash->get(expires_name)){
 			const String* string;
 			if(!(expires->is_string() && (string=expires->get_string()) && (*string==SESSION_NAME)))
-				if(!expires->as(VDATE_TYPE))
+				if(!dynamic_cast<VDate*>(expires))
 					if(double days_till_expire=expires->as_double())
 						expires_sec(days_till_expire);
 		}
@@ -168,7 +168,7 @@ const String* output_set_cookie_value(
 				// $expires[session]
 				hash->remove(expires_name);
 			} else {
-				if(Value* vdate=expires->as(VDATE_TYPE))
+				if(Value* vdate=dynamic_cast<VDate*>(expires))
 					hash->put(expires_name, vdate); // $expires[DATE]
 				else if(double days_till_expire=expires->as_double())
 					hash->put(expires_name, &expires_vdate(days_till_expire)); // $expires(days)

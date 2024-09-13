@@ -12,7 +12,7 @@
 #include "pa_request.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_PA_VXDOC_C="$Id: pa_vxdoc.C,v 1.53 2023/09/26 20:49:13 moko Exp $" IDENT_PA_VXDOC_H;
+volatile const char * IDENT_PA_VXDOC_C="$Id: pa_vxdoc.C,v 1.54 2024/09/13 04:01:23 moko Exp $" IDENT_PA_VXDOC_H;
 
 // defines
 
@@ -39,11 +39,11 @@ VXnode& VXdoc::wrap(xmlNode& anode) {
 }
 
 
-Value* VXdoc::as(const char* atype) {
-	return atype && ( strcmp(VXdoc::type(), atype)==0 || strcmp(VXnode::type(), atype)==0 )?this:0;
+bool VXdoc::is(const char* atype) {
+	return atype && ( strcmp(VXdoc::type(), atype)==0 || strcmp(VXnode::type(), atype)==0 );
 }
 
-/// VXdoc: true	 
+/// VXdoc: true
 Value& VXdoc::as_expr_result() { return VBool::get(as_bool()); }
 
 

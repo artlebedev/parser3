@@ -8,7 +8,7 @@
 #ifndef PA_VXDOC_H
 #define PA_VXDOC_H
 
-#define IDENT_PA_VXDOC_H "$Id: pa_vxdoc.h,v 1.63 2023/09/26 20:49:13 moko Exp $"
+#define IDENT_PA_VXDOC_H "$Id: pa_vxdoc.h,v 1.64 2024/09/13 04:01:23 moko Exp $"
 
 #include "classes.h"
 #include "pa_common.h"
@@ -47,7 +47,7 @@ class VXdoc: public VXnode {
 public: // Value
 
 	override const char* type() const { return VXDOC_TYPE; }
-	override Value* as(const char* atype);
+	override bool is(const char* atype);
 
 	override VStateless_class* get_class() { return xdoc_class; }
 

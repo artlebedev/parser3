@@ -13,7 +13,7 @@
 #include "pa_request.h"
 
 
-volatile const char * IDENT_PA_VALUE_C="$Id: pa_value.C,v 1.49 2023/09/26 20:49:11 moko Exp $" IDENT_PA_VALUE_H IDENT_PA_PROPERTY_H;
+volatile const char * IDENT_PA_VALUE_C="$Id: pa_value.C,v 1.50 2024/09/13 04:01:23 moko Exp $" IDENT_PA_VALUE_H IDENT_PA_PROPERTY_H;
 
 // globals
 
@@ -106,8 +106,8 @@ static void append_attribute_meaning(String& result, Value& value, String::Langu
 	if(const String* string=value.get_string())
 		result.append(*string, lang, forced);
 	else
-		if(Value* vdate=value.as(VDATE_TYPE)) {
-			result << *static_cast<VDate&>(*vdate).get_gmt_string();
+		if(VDate* vdate=dynamic_cast<VDate*>(&value)) {
+			result << *vdate->get_gmt_string();
 		} else
 			throw Exception(PARSER_RUNTIME, &result, "trying to append here neither string nor date (%s)", value.type());
 }

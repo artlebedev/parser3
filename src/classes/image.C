@@ -26,7 +26,7 @@
 #include "pa_table.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.185 2024/09/11 21:07:36 moko Exp $";
+volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.186 2024/09/13 04:01:22 moko Exp $";
 
 // defines
 
@@ -1440,8 +1440,8 @@ static void _circle(Request& r, MethodParams& params) {
 gdImage& as_image(MethodParams& params, int index, const char* msg) {
 	Value& value=params.as_no_junction(index, msg);
 
-	if(Value* vimage=value.as(VIMAGE_TYPE)) {
-		return static_cast<VImage *>(vimage)->image();
+	if(VImage* vimage=dynamic_cast<VImage *>(&value)) {
+		return vimage->image();
 	} else
 		throw Exception(PARSER_RUNTIME, 0, msg);
 }

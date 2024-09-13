@@ -21,7 +21,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.253 2024/09/07 16:30:26 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.254 2024/09/13 04:01:22 moko Exp $";
 
 // class
 
@@ -221,8 +221,7 @@ static void split_action(Table& , ArrayString* row, int prestart, int prefinish,
 }
 
 static void split_list(Value& delim_value, const String& string, ArrayString& result) {
-	if(Value* value=delim_value.as(VREGEX_TYPE)){
-		VRegex *vregex=static_cast<VRegex*>(value);
+	if(VRegex *vregex=dynamic_cast<VRegex*>(&delim_value)){
 		vregex->study();
 
 		int matches_count=0;
@@ -386,13 +385,12 @@ static void _match(Request& r, MethodParams& params) {
 	Value& regexp=params.as_no_junction(0, "regexp must not be code");
 	Value* options=(params_count>1)?&params.as_no_junction(1, OPTIONS_MUST_NOT_BE_CODE):0;
 
-	VRegex* vregex;
+	VRegex* vregex=dynamic_cast<VRegex*>(&regexp);
 	VRegexCleaner vrcleaner;
 
-	if(Value* value=regexp.as(VREGEX_TYPE)){
+	if(vregex){
 		if(options && options->is_defined())
 			throw Exception(PARSER_RUNTIME, 0, "you can not specify regex-object and options together");
-		vregex=static_cast<VRegex*>(value);
 	} else {
 		vregex=new VRegex(r.charsets.source(), &regexp.as_string(), (options) ? (&options->as_string()) : 0);
 		vregex->study();

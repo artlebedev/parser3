@@ -26,7 +26,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.278 2024/09/11 21:07:36 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.279 2024/09/13 04:01:22 moko Exp $";
 
 // defines
 
@@ -528,7 +528,7 @@ static void _exec_cgi(Request& r, MethodParams& params, bool cgi) {
 					// untaint stdin
 					in = String::C(sstdin->cstr_to_string_body_untaint(String::L_AS_IS, r.connection(false), &r.charsets));
 				} else
-					if(VFile* vfile=static_cast<VFile *>(info.vstdin->as("file"))){
+					if(VFile* vfile=dynamic_cast<VFile *>(info.vstdin)){
 						in = String::C((const char* )vfile->value_ptr(), vfile->value_size());
 						in_is_text_mode = vfile->is_text_mode();
 					} else
@@ -706,8 +706,8 @@ static void _list(Request& r, MethodParams& params) {
 				vfilter=&voption;
 			}
 			if(vfilter) {
-				if(Value* value=vfilter->as(VREGEX_TYPE)) {
-					vregex=static_cast<VRegex*>(value);
+				if(VRegex* value=dynamic_cast<VRegex*>(vfilter)) {
+					vregex=value;
 				} else if(vfilter->is_string()) {
 					if(!vfilter->get_string()->trim().is_empty()) {
 						vregex=new VRegex(r.charsets.source(), &vfilter->as_string(), 0/*options*/);

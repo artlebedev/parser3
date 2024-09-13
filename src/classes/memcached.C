@@ -15,7 +15,7 @@
 #include "pa_vbool.h"
 #include "pa_vmemcached.h"
 
-volatile const char * IDENT_MEMCACHED_C="$Id: memcached.C,v 1.17 2023/09/26 20:49:06 moko Exp $";
+volatile const char * IDENT_MEMCACHED_C="$Id: memcached.C,v 1.18 2024/09/13 04:01:22 moko Exp $";
 
 class MMemcached: public Methoded {
 public: // VStateless_class
@@ -37,7 +37,7 @@ static void _open(Request& r, MethodParams& params) {
 		for(HashStringValue::Iterator i(*options); i; i.next()){
 			if(i.key() == "skip-connect"){
 				connect=!i.value()->as_bool();
-			} else if(Value *b=i.value()->as("bool")){
+			} else if(Value *b=dynamic_cast<VBool*>(i.value())){
 				if(b->as_bool())
 					result << (result.is_empty() ? "--" : " --") << i.key();
 			} else {

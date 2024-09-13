@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.157 2023/09/26 20:49:05 moko Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.158 2024/09/13 04:01:22 moko Exp $";
 
 // class
 
@@ -188,7 +188,7 @@ static void _create_or_add(Request& r, MethodParams& params) {
 		HashStringValue* self_hash=&(self.hash());
 		HashStringValue* src_hash;
 
-		if(VHashBase* src=static_cast<VHashBase*>(vsrc.as(VHASH_TYPE))) {
+		if(VHashBase* src=dynamic_cast<VHashBase*>(&vsrc)) {
 			src_hash=&(src->hash());
 
 			if(src_hash==self_hash) // same: doing nothing

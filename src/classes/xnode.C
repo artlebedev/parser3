@@ -21,7 +21,7 @@
 #include "libxml/xpath.h"
 #include "libxml/xpathInternals.h"
 
-volatile const char * IDENT_XNODE_C="$Id: xnode.C,v 1.99 2024/09/11 21:07:36 moko Exp $" IDENT_XNODE_H;
+volatile const char * IDENT_XNODE_C="$Id: xnode.C,v 1.100 2024/09/13 04:01:22 moko Exp $" IDENT_XNODE_H;
 
 // classes
 
@@ -95,12 +95,10 @@ private:
 
 xmlNode& as_node(MethodParams& params, int index, const char* msg) {
 	Value& value=params.as_no_junction(index, msg);
-	if(Value* vxnode=value.as(VXNODE_TYPE))
-		return static_cast<VXnode*>(vxnode)->get_xmlnode();
+	if(VXnode* vxnode=dynamic_cast<VXnode*>(&value))
+		return vxnode->get_xmlnode();
 	else
-		throw Exception(PARSER_RUNTIME,
-			0,
-			msg);
+		throw Exception(PARSER_RUNTIME, 0, msg);
 }
 
 xmlChar* as_xmlchar(Request& r, MethodParams& params, int index, const char* msg) {

@@ -12,7 +12,7 @@
 #include "pa_vhashfile.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_VHASHFILE_C="$Id: pa_vhashfile.C,v 1.74 2023/09/26 20:49:12 moko Exp $" IDENT_PA_VHASHFILE_H;
+volatile const char * IDENT_PA_VHASHFILE_C="$Id: pa_vhashfile.C,v 1.75 2024/09/13 04:01:23 moko Exp $" IDENT_PA_VHASHFILE_H;
 
 // consts
 
@@ -156,8 +156,8 @@ void VHashfile::put_field(const String& aname, Value *avalue) {
 			value_string=&value_value->as_string();
 
 			if(Value *expires=hash->get(expires_name)) {
-				if(Value* vdate=expires->as(VDATE_TYPE))
-					time_to_die=(time_t)(static_cast<VDate*>(vdate)->get_time()); // $expires[DATE]
+				if(VDate* vdate=dynamic_cast<VDate*>(expires))
+					time_to_die=vdate->get_time(); // $expires[DATE]
 				else if(double days_till_expire=expires->as_double())
 					time_to_die=time(NULL)+(time_t)(60*60*24*days_till_expire); // $expires(days)
 			}

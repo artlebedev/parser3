@@ -20,7 +20,7 @@
 #include "pa_vxdoc.h"
 #endif
 
-volatile const char * IDENT_JSON_C="$Id: json.C,v 1.60 2024/09/10 19:15:48 moko Exp $";
+volatile const char * IDENT_JSON_C="$Id: json.C,v 1.61 2024/09/13 04:01:22 moko Exp $";
 
 // class
 
@@ -650,7 +650,7 @@ static void _string(Request& r, MethodParams& params) {
 				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 
 			// special handling for $._default 
-			if(VHashBase* vhash=static_cast<VHashBase*>(params[1].as(VHASH_TYPE)))
+			if(VHashBase* vhash=dynamic_cast<VHashBase*>(&params[1]))
 				if(Value* value=vhash->get_default()) {
 					if(!value->is_string()){
 						Junction* junction=value->get_junction();

@@ -21,7 +21,7 @@
 #include "pa_vimage.h"
 #include "pa_wwrapper.h"
 
-volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.419 2024/09/07 16:30:26 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
+volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.420 2024/09/13 04:01:22 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
 
 //#define DEBUG_EXECUTE
 
@@ -758,7 +758,7 @@ void Request::execute(ArrayOperation& ops) {
 
 				Junction* junction=value.get_junction();
 				if(!junction) {
-					if(value.is("void"))
+					if(dynamic_cast<VVoid*>(&value))
 						throw Exception(PARSER_RUNTIME, 0, "undefined method");
 					else
 						throw Exception(PARSER_RUNTIME, 0, "is '%s', not a method or junction, can not call it", value.type());
@@ -789,7 +789,7 @@ void Request::execute(ArrayOperation& ops) {
 
 				Junction* junction=value.get_junction();
 				if(!junction) {
-					if(value.is("void"))
+					if(dynamic_cast<VVoid*>(&value))
 						throw Exception(PARSER_RUNTIME, 0, "undefined method");
 					else
 						throw Exception(PARSER_RUNTIME, 0, "is '%s', not a method or junction, can not call it", value.type());

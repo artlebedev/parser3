@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.170 2024/09/10 19:09:56 moko Exp $"
+#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.171 2024/09/13 04:01:23 moko Exp $"
 
 #include "pa_common.h"
 #include "pa_array.h"
@@ -121,15 +121,10 @@ public: // Value
 	virtual const char* type() const =0;
 
 	/**
-		all except VObject/VClass: this if @atype eq type()
+		all except VObject/VClass: true if @atype eq type()
 		VObject/VClass: can locate parent class by it's type
 	*/
-	virtual Value* as(const char* atype) {
-		return atype && strcmp(type(), atype)==0?this:0;
-	}
-
-	/// type checking helper, uses Value::as
-	bool is(const char* atype) { return as(atype)!=0; }
+	virtual bool is(const char* atype) { return atype && strcmp(type(), atype)==0; }
 
 	/// is this value defined?
 	virtual bool is_defined() const { return true; }

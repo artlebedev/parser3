@@ -14,7 +14,7 @@
 #include "pa_vtable.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_DATE_C="$Id: date.C,v 1.115 2023/11/26 16:02:41 moko Exp $" IDENT_PA_VDATE_H;
+volatile const char * IDENT_DATE_C="$Id: date.C,v 1.116 2024/09/13 04:01:22 moko Exp $" IDENT_PA_VDATE_H;
 
 // class
 
@@ -259,8 +259,8 @@ static void _create(Request& r, MethodParams& params) {
 				vdate.set_tz(tz);
 			vdate.set_tm(tmIn);
 		} else { // ^create(float days) or ^create[date object]
-			if(Value* adate=params[0].as(VDATE_TYPE))
-				vdate.set_tz(static_cast<VDate*>(adate)->get_tz());
+			if(VDate* adate=dynamic_cast<VDate*>(&params[0]))
+				vdate.set_tz(adate->get_tz());
 			vdate.set_time(round(params.as_double(0, "float days must be double", r)*SECS_PER_DAY));
 		}
 	} else { // ^create(y;m;d[;h[;m[;s[;TZ]]]])

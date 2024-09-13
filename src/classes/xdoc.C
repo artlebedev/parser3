@@ -28,7 +28,7 @@
 #include "xnode.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_XDOC_C="$Id: xdoc.C,v 1.202 2023/09/26 20:49:06 moko Exp $";
+volatile const char * IDENT_XDOC_C="$Id: xdoc.C,v 1.203 2024/09/13 04:01:22 moko Exp $";
 
 // defines
 
@@ -631,9 +631,8 @@ static void _transform(Request& r, MethodParams& params) {
 		}
 
 	VXdoc* result;
-	if(Value *vxdoc=params[0].as(VXDOC_TYPE)) { // stylesheet (xdoc)
-		VXdoc& vstylesheet=static_cast<VXdoc &>(*vxdoc);
-		xmlDoc& stylesheetdoc=vstylesheet.get_xmldoc();
+	if(VXdoc *vxdoc=dynamic_cast<VXdoc*>(&params[0])) { // stylesheet (xdoc)
+		xmlDoc& stylesheetdoc=vxdoc->get_xmldoc();
 
 		// compile xdoc stylesheet
 		xsltStylesheet *stylesheet=xsltParseStylesheetDoc(&stylesheetdoc);

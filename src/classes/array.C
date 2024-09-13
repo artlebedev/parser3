@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.2 2024/09/10 20:48:15 moko Exp $";
+volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.3 2024/09/13 04:01:22 moko Exp $";
 
 // class
 
@@ -41,7 +41,7 @@ static void _create_or_add(Request& r, MethodParams& params) {
 		VArray& self=GET_SELF(r, VArray);
 		ArrayValue& self_array=self.array();
 
-		if(VArray* src=static_cast<VArray*>(vsrc.as(VARRAY_TYPE))) {
+		if(VArray* src=dynamic_cast<VArray*>(&vsrc)) {
 			ArrayValue& src_array =src->array();
 			if(&src_array==&self_array) // same: doing nothing
 				return;

@@ -8,7 +8,7 @@
 #ifndef PA_VCLASS_H
 #define PA_VCLASS_H
 
-#define IDENT_PA_VCLASS_H "$Id: pa_vclass.h,v 1.75 2023/09/26 20:49:11 moko Exp $"
+#define IDENT_PA_VCLASS_H "$Id: pa_vclass.h,v 1.76 2024/09/13 04:01:23 moko Exp $"
 
 #define OBJECT_PROTOTYPE
 #define CLASS_GETTER_UNPROTECTED
@@ -32,7 +32,7 @@ public: // Value
 
 	/// VClass: true
 	override bool as_bool() const { return true; }
-	override Value* as(const char* atype);
+	override bool is(const char* atype);
 
 	override Value* get_element(Value& aself, const String& aname);
 	override const VJunction* put_element(Value& self, const String& name, Value* value);

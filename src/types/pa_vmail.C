@@ -20,7 +20,7 @@
 #include "pa_vtable.h"
 #include "pa_uue.h"
 
-volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.141 2023/09/26 20:49:12 moko Exp $" IDENT_PA_VMAIL_H;
+volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.142 2024/09/13 04:01:23 moko Exp $" IDENT_PA_VMAIL_H;
 
 #ifdef WITH_MAILRECEIVE
 extern "C" {
@@ -643,7 +643,7 @@ static const String& file_value_to_string(Request& r, Value* send_value) {
 	Store_message_element_info info(r.charsets, result, dummy_from, false, dummy_to);
 
 	HashStringValue *send_hash=send_value->get_hash();
-	if(send_hash && !send_value->as("file")) { // hash
+	if(send_hash && !dynamic_cast<VFile*>(send_value)) { // hash
 		send_hash->for_each<Store_message_element_info*>(store_message_element, &info);
 
 		// $.value

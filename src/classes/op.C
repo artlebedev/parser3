@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.262 2023/09/26 20:49:06 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.263 2024/09/13 04:01:22 moko Exp $";
 
 // defines
 
@@ -729,8 +729,8 @@ static Cache_get_result cache_get(Request_charsets& charsets, const String& file
 
 static time_t as_expires(Request& r, MethodParams& params, int index, time_t now) {
 	time_t result;
-	if(Value* vdate=params[index].as(VDATE_TYPE))
-		result=(time_t)(static_cast<VDate*>(vdate)->get_time());
+	if(VDate* vdate=dynamic_cast<VDate*>(&params[index]))
+		result=vdate->get_time();
 	else
 		result=now+(time_t)params.as_double(index, "lifespan must be date or number", r);
 	

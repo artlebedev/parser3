@@ -8,7 +8,7 @@
 #include "pa_vclass.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_PA_VCLASS_C="$Id: pa_vclass.C,v 1.65 2024/09/07 16:30:27 moko Exp $" IDENT_PA_VCLASS_H;
+volatile const char * IDENT_PA_VCLASS_C="$Id: pa_vclass.C,v 1.66 2024/09/13 04:01:23 moko Exp $" IDENT_PA_VCLASS_H;
 
 #ifdef OBJECT_PROTOTYPE
 	bool VClass::prototype = true;
@@ -68,9 +68,9 @@ void VClass::set_base(VStateless_class* abase){
 	}
 }
 
-Value* VClass::as(const char* atype) {
-	Value* result=Value::as(atype);
-	return result!=0 ? result : fbase ? fbase->as(atype) : 0;
+bool VClass::is(const char* atype) {
+	bool result=Value::is(atype);
+	return result ? result : fbase ? fbase->is(atype) : false;
 }
 
 /// VClass: $CLASS, (field/property)=STATIC value;(method)=method_ref with self=object_class

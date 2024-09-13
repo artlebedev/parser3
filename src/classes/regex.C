@@ -12,7 +12,7 @@
 #include "pa_vint.h"
 #include "pa_vregex.h"
 
-volatile const char * IDENT_REGEX_C="$Id: regex.C,v 1.16 2023/09/26 20:49:06 moko Exp $";
+volatile const char * IDENT_REGEX_C="$Id: regex.C,v 1.17 2024/09/13 04:01:22 moko Exp $";
 
 // class
 
@@ -32,7 +32,7 @@ DECLARE_CLASS_VAR(regex, new MRegex);
 static void _create(Request& r, MethodParams& params) {
 	VRegex& vregex=GET_SELF(r, VRegex);
 
-	if(VRegex* aregex = static_cast<VRegex*>(params[0].as(VREGEX_TYPE))){
+	if(VRegex* aregex = dynamic_cast<VRegex*>(&params[0])){
 		vregex.set(*aregex);
 	} else {
 		const String& pattern=params.as_string(0, "regexp must not be code");
