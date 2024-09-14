@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 10481
+Content-Length: 10432
 
 1. nonexistent method exception check for all classes
 Class MAIN methoded ^MAIN:bad[] Exception type: parser.runtime,
@@ -8,6 +8,12 @@ Comment: MAIN method not found
 Exception type: parser.runtime,
 Source: bad,
 Comment: MAIN method not found
+Class array methoded ^array:bad[] Exception type: parser.runtime,
+Source: bad,
+Comment: array method not found
+Exception type: parser.runtime,
+Source: bad,
+Comment: array method not found
 Class bool methoded ^bool:bad[] Exception type: parser.runtime,
 Source: bad,
 Comment: bool method not found
@@ -152,12 +158,6 @@ Comment: response method not found
 Exception type: parser.runtime,
 Source: bad,
 Comment: response method not found
-Class sparse-array methoded ^sparse-array:bad[] Exception type: parser.runtime,
-Source: bad,
-Comment: sparse-array method not found
-Exception type: parser.runtime,
-Source: bad,
-Comment: sparse-array method not found
 Class status ^status:bad[] Exception type: parser.runtime,
 Source: bad,
 Comment: status method not found
@@ -199,6 +199,9 @@ Comment: xnode method not found
 2. nonexistent field exception check for all classes
 Class MAIN
 $MAIN:bad no exception
+no exception
+Class array
+$array:bad no exception
 no exception
 Class bool
 $bool:bad no exception
@@ -283,9 +286,6 @@ Source: bad,
 Comment: request field not found
 Class response
 $response:bad no exception
-no exception
-Class sparse-array
-$sparse-array:bad no exception
 no exception
 Class status
 $status:bad no exception
@@ -394,7 +394,7 @@ Comment: xnode method not found
 field Exception type: parser.runtime,
 Source: bad,
 Comment: xnode field not found
-sparse-array
+array
 method Exception type: number.format,
 Source: bad,
 Comment: invalid number (int)

@@ -1,7 +1,8 @@
 Content-Type: text/html
-Content-Length: 947
+Content-Length: 933
 
 MAIN methoded MAIN ()
+array methoded array ()
 bool methoded bool ()
 console console ()
 cookie cookie ()
@@ -25,7 +26,6 @@ reflection methoded reflection ()
 regex methoded regex ()
 request request ()
 response methoded response ()
-sparse-array methoded sparse-array ()
 status status ()
 string methoded string ()
 table methoded table ()
