@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.171 2024/09/13 04:01:23 moko Exp $"
+#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.172 2024/09/14 22:58:50 moko Exp $"
 
 #include "pa_common.h"
 #include "pa_array.h"
@@ -32,7 +32,9 @@ class VMethodFrame;
 class VFile;
 class Table;
 struct XDocOutputOptions;
-typedef Array<Value*> ArrayValue;
+
+template <typename T>class SparseArray;
+typedef SparseArray<Value*> ArrayValue;
 
 struct Json_options : public PA_Allocated {
 	Request* r;

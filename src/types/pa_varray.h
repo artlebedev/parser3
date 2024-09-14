@@ -8,7 +8,7 @@
 #ifndef PA_VARRAY_H
 #define PA_VARRAY_H
 
-#define IDENT_PA_VARRAY_H "$Id: pa_varray.h,v 1.1 2024/09/10 19:15:48 moko Exp $"
+#define IDENT_PA_VARRAY_H "$Id: pa_varray.h,v 1.2 2024/09/14 22:58:50 moko Exp $"
 
 #include "classes.h"
 #include "pa_value.h"
@@ -20,9 +20,30 @@
 
 // defines
 
-#define VARRAY_TYPE "sparse-array"
+#define VARRAY_TYPE "array"
 
 extern Methoded* array_class;
+
+/// Sparse Array
+template<typename T> class SparseArray: public Array<T> {
+public:
+	inline SparseArray(size_t initial=0) : Array<T>(initial) {}
+
+	void fit(size_t index, T element){
+		if(index >= this->fallocated){
+			size_t new_allocated=this->fallocated>0 ? this->fallocated : 3;
+			while(new_allocated <= index){
+				new_allocated+=2 + new_allocated/32;
+			}
+			this->expand(new_allocated - this->fallocated);
+		}
+		this->felements[index]=element;
+		if(index >= this->fused){
+			this->fused=index+1;
+		}
+	}
+};
+
 
 class VArray: public VHashBase {
 public: // value

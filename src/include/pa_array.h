@@ -8,7 +8,7 @@
 #ifndef PA_ARRAY_H
 #define PA_ARRAY_H
 
-#define IDENT_PA_ARRAY_H "$Id: pa_array.h,v 1.91 2024/09/11 21:07:36 moko Exp $"
+#define IDENT_PA_ARRAY_H "$Id: pa_array.h,v 1.92 2024/09/14 22:58:50 moko Exp $"
 
 // includes
 
@@ -76,8 +76,6 @@ public:
 
 			return true;
 		}
-
-		
 	};
 
 	typedef T element_type;
@@ -89,7 +87,7 @@ public:
 		felements=fallocated?(T *)pa_malloc(fallocated*sizeof(T)):0;
 	}
 
-#ifdef USE_DESTRUCTORS 
+#ifdef USE_DESTRUCTORS
 	inline ~Array(){
 		if(felements)
 			pa_free(felements);
@@ -98,6 +96,7 @@ public:
 
 	/// how many items are in Array
 	inline size_t count() const { return fused; }
+
 	/// append to array
 	inline Array& operator+=(T src) {
 		if(is_full())
@@ -217,20 +216,6 @@ public:
 		return felements + index;
 	}
 
-	void fit(size_t index, T element){
-		if(index >= fallocated){
-			size_t new_allocated=fallocated>0 ? fallocated : 3;
-			while(new_allocated <= index){
-				new_allocated+=2 + new_allocated/32;
-			}
-			expand(new_allocated - fallocated);
-		}
-		felements[index]=element;
-		if(index >= fused){
-			fused=index+1;
-		}
-	}
-
 protected:
 
 	bool is_full() {
@@ -253,6 +238,7 @@ private: //disabled
 	Array(const Array&) {}
 	Array& operator = (const Array&) { return *this; }
 };
+
 
 /// Commonly used, templated to work with any integer type
 
@@ -310,7 +296,7 @@ public:
 
 	Array_iterator(const Array<T>& aarray): farray(aarray) {
 		fcurrent=farray.felements;
-		flast=farray.felements + farray.count();
+		flast=farray.felements + farray.fused;
 	}
 
 	/// there are still elements
@@ -347,7 +333,7 @@ template<typename T> class Array_reverse_iterator {
 public:
 
 	Array_reverse_iterator(const Array<T>& aarray): farray(aarray) {
-		fcurrent=farray.felements+farray.count();
+		fcurrent=farray.felements + farray.fused;
 	}
 
 	/// there are still elements

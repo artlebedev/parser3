@@ -20,7 +20,7 @@
 #include "pa_vtable.h"
 #include "pa_uue.h"
 
-volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.142 2024/09/13 04:01:23 moko Exp $" IDENT_PA_VMAIL_H;
+volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.143 2024/09/14 22:58:50 moko Exp $" IDENT_PA_VMAIL_H;
 
 #ifdef WITH_MAILRECEIVE
 extern "C" {
@@ -500,7 +500,7 @@ struct Store_message_element_info {
 	const String* & from;
 	bool extract_to; String* & to;
 	bool mime_version_specified;
-	ArrayValue* parts[P_TYPES_COUNT];
+	Array<Value*>* parts[P_TYPES_COUNT];
 	int parts_count;
 	bool backward_compatibility;
 	Value* content_type;
@@ -517,7 +517,7 @@ struct Store_message_element_info {
 		had_content_disposition(false)
 	{
 		for(int pt=0; pt<P_TYPES_COUNT; pt++)
-			parts[pt]=new ArrayValue(1);
+			parts[pt]=new Array<Value*>(1);
 	}
 };
 #endif
@@ -830,7 +830,7 @@ const String& VMail::message_hash_to_string(Request& r, HashStringValue* message
 
 		bool is_inline = false;
 		{
-			ArrayValue& files=*info.parts[P_FILE];
+			Array<Value*>& files=*info.parts[P_FILE];
 			for(size_t i=0; i<files.count(); i++) {
 				HashStringValue* file;
 				if((file=files.get(i)->get_hash()) && file->get(cid_name)){
@@ -868,7 +868,7 @@ const String& VMail::message_hash_to_string(Request& r, HashStringValue* message
 
 	// messages
 	{
-		ArrayValue& messages=*info.parts[P_MESSAGE];
+		Array<Value*>& messages=*info.parts[P_MESSAGE];
 		for(size_t i=0; i<messages.count(); i++) {
 			if(boundary)
 				result << "\n\n--" << boundary << "\n";  // intermediate boundary
@@ -881,7 +881,7 @@ const String& VMail::message_hash_to_string(Request& r, HashStringValue* message
 	
 	// files go last
 	{
-		ArrayValue& files=*info.parts[P_FILE];
+		Array<Value*>& files=*info.parts[P_FILE];
 		for(size_t i=0; i<files.count(); i++) {
 			if(boundary)
 				result << "\n\n--" << boundary << "\n";  // intermediate boundary
