@@ -8,7 +8,7 @@
 #ifndef PA_VARRAY_H
 #define PA_VARRAY_H
 
-#define IDENT_PA_VARRAY_H "$Id: pa_varray.h,v 1.3 2024/09/15 00:38:27 moko Exp $"
+#define IDENT_PA_VARRAY_H "$Id: pa_varray.h,v 1.4 2024/09/15 23:12:11 moko Exp $"
 
 #include "classes.h"
 #include "pa_value.h"
@@ -28,6 +28,10 @@ extern Methoded* array_class;
 template<typename T> class SparseArray: public Array<T> {
 public:
 	inline SparseArray(size_t initial=0) : Array<T>(initial) {}
+
+	inline T get(size_t index) const {
+		return index < this->count() ? this->felements[index] : NULL;
+	}
 
 	void fit(size_t index, T element){
 		if(index >= this->fallocated)
@@ -64,7 +68,7 @@ public: // value
 	/// VArray: (key)=value
 	override Value* get_element(const String& aname) {
 		// $element first
-		if(Value* result=get(index(aname)))
+		if(Value* result=farray.get(index(aname)))
 			return result;
 
 		// $fields -- pseudo field to make 'hash' and 'array' more like 'table'
@@ -86,7 +90,7 @@ public: // value
 			return result;
 
 		// $element
-		if(Value* result=get(index(aname)))
+		if(Value* result=farray.get(index(aname)))
 			return result;
 
 		return bark("%s method not found", &aname);
@@ -115,12 +119,6 @@ public: // usage
 	ArrayValue &array() { return farray; }
 	size_t count() const;
 
-	Value *get(size_t aindex){
-		if(aindex<farray.count())
-			return farray.get(aindex);
-		return NULL;
-	}
-
 	static size_t index(int aindex){
 		if(aindex<0)
 			throw Exception("number.format", 0, "out of range (negative)");
@@ -144,7 +142,7 @@ public: // usage
 	}
 
 	bool contains(size_t index){
-		return index < farray.count() && farray.get(index) != NULL;
+		return farray.get(index) != NULL;
 	}
 
 	void clear(){
