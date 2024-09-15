@@ -8,7 +8,7 @@
 #ifndef PA_VARRAY_H
 #define PA_VARRAY_H
 
-#define IDENT_PA_VARRAY_H "$Id: pa_varray.h,v 1.2 2024/09/14 22:58:50 moko Exp $"
+#define IDENT_PA_VARRAY_H "$Id: pa_varray.h,v 1.3 2024/09/15 00:38:27 moko Exp $"
 
 #include "classes.h"
 #include "pa_value.h"
@@ -30,13 +30,8 @@ public:
 	inline SparseArray(size_t initial=0) : Array<T>(initial) {}
 
 	void fit(size_t index, T element){
-		if(index >= this->fallocated){
-			size_t new_allocated=this->fallocated>0 ? this->fallocated : 3;
-			while(new_allocated <= index){
-				new_allocated+=2 + new_allocated/32;
-			}
-			this->expand(new_allocated - this->fallocated);
-		}
+		if(index >= this->fallocated)
+			this->resize(max(this->fallocated + this->fallocated/4, index+1));
 		this->felements[index]=element;
 		if(index >= this->fused){
 			this->fused=index+1;

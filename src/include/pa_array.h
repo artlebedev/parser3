@@ -8,7 +8,7 @@
 #ifndef PA_ARRAY_H
 #define PA_ARRAY_H
 
-#define IDENT_PA_ARRAY_H "$Id: pa_array.h,v 1.92 2024/09/14 22:58:50 moko Exp $"
+#define IDENT_PA_ARRAY_H "$Id: pa_array.h,v 1.93 2024/09/15 00:38:27 moko Exp $"
 
 // includes
 
@@ -100,7 +100,7 @@ public:
 	/// append to array
 	inline Array& operator+=(T src) {
 		if(is_full())
-			expand(fallocated>0? 2+fallocated/32 : 3); // 3 is PAF default, confirmed by tests
+			expand();
 
 		felements[fused++]=src;
 
@@ -122,14 +122,14 @@ public:
 		if(limit==ARRAY_OPTION_LIMIT_ALL || limit>m)
 			limit=m;
 
-		ssize_t delta=limit-(fallocated-fused);
-		if(delta>0)
-			expand(delta);
+		size_t required=fused+limit;
+		if(required>fallocated)
+			resize(required);
 
 		T* from=&src.felements[offset];
 		T* to=&felements[fused];
-		for(T* from_end=from+limit; from<from_end; from++)
-			*to++=*from;
+		for(T* from_end=from+limit; from<from_end;)
+			*to++=*from++;
 		fused+=limit;
 		return *this;
 	}
@@ -157,7 +157,7 @@ public:
 		assert(index<=count());
 
 		if(is_full())
-			expand(fallocated>0? 2+fallocated/32 : 3); // 3 is PAF default, confirmed by tests
+			expand();
 
 		memmove(felements+index+1, felements+index, (fused-index) * sizeof(T));
 
@@ -222,14 +222,17 @@ protected:
 		return fused == fallocated;
 	}
 
-	void expand(size_t delta) {
+	inline void expand() {
+		resize(fallocated>0 ? fallocated+fallocated/4+2 : 3); // 3 is PAF default, confirmed by tests
+	}
+
+	void resize(size_t asize) {
 		if(fallocated){
-			size_t new_allocated=fallocated+delta;
-			felements=(T *)pa_realloc(felements, new_allocated*sizeof(T));
-			fallocated=new_allocated;
+			felements=(T *)pa_realloc(felements, asize*sizeof(T));
+			fallocated=asize;
 		} else {
-			fallocated=delta;
-			felements=(T *)pa_malloc(fallocated*sizeof(T));
+			fallocated=asize;
+			felements=(T *)pa_malloc(asize*sizeof(T));
 		}
 	}
 
