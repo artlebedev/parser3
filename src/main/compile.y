@@ -8,7 +8,7 @@
 	
 */
 
-volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.295 2024/07/24 19:29:12 moko Exp $";
+volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.296 2024/09/16 23:59:31 moko Exp $";
 
 /**
 	@todo parser4: 
@@ -62,7 +62,7 @@ static const VString vempty;
 #define POOL  (*PC.pool)
 #ifndef DOXYGEN
 
-#define CLASS_ADD if(PC.class_add()){						\
+#define CLASS_ADD if(!PC.class_add()){						\
 	PC.error=pa_strcat(PC.cclass->type(), " - class is already defined");	\
 	YYERROR;								\
 }
