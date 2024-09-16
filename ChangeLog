@@ -1,3 +1,72 @@
+2024-09-16  moko
+
+	* src/types/pa_varray.h: get moved to where it belongs
+
+2024-09-15  moko
+
+	* src/: include/pa_array.h, types/pa_varray.h: more agressive
+	  expansion to minimize reallocs: fallocated/32 -> fallocated/4
+
+	* tests/: 421.html, results/323.processed, results/421.processed:
+	  tests updated after 'spared-array' class renamed to 'array'
+	  following a discussion on the forum (related to feature #930)
+
+	* src/: include/pa_array.h, types/pa_value.h, types/pa_varray.h,
+	  types/pa_vmail.C: initial SparseArray separation from Array,
+	  parser class now 'array'
+
+2024-09-14  moko
+
+	* tests/: 030.html, results/030.processed: out of range expires
+	  check added
+
+	* src/types/pa_vcookie.C: VDate range is narrower than gmtime, thus
+	  checking expires time using VDate
+
+2024-09-13  moko
+
+	* src/: classes/array.C, classes/curl.C, classes/date.C,
+	  classes/file.C, classes/hash.C, classes/image.C, classes/json.C,
+	  classes/memcached.C, classes/op.C, classes/regex.C,
+	  classes/string.C, classes/xdoc.C, classes/xnode.C,
+	  main/execute.C, main/pa_http.C, main/pa_request.C,
+	  types/pa_value.C, types/pa_value.h, types/pa_vclass.C,
+	  types/pa_vclass.h, types/pa_vcookie.C, types/pa_vhashfile.C,
+	  types/pa_vmail.C, types/pa_vobject.C, types/pa_vobject.h,
+	  types/pa_vxdoc.C, types/pa_vxdoc.h: optimization: Value::as()
+	  removed as dynamic_cast is faster, Value::is() is still required
+	  for is operator.
+
+2024-09-12  moko
+
+	* src/: classes/file.C, classes/image.C, classes/reflection.C,
+	  classes/table.C, classes/xnode.C, include/pa_array.h,
+	  include/pa_string.h, main/pa_common.C, main/pa_request.C,
+	  main/pa_string.C, targets/cgi/pa_sapi_info.h, types/pa_vform.C,
+	  types/pa_vhash.h, types/pa_vtable.C, types/pa_vxnode.C: faster
+	  templated pa_itoa/pa_uitoa added to work with any integer type,
+	  String::Body::Format removed
+
+2024-09-10  moko
+
+	* src/classes/array.C: append and insert methods added to
+	  sparse-array (related to feature #930)
+
+	* tests/: 253.html, 255.html, 421.html, results/421.processed:
+	  tests updated after sparse-array was added to avoid ^json:parse[]
+	  using it in old tests (related to feature #930)
+
+	* src/: classes/array.C, classes/json.C, types/pa_varray.C,
+	  types/pa_varray.h: sparse-array class added (initial feature #930
+	  implementation)
+
+	* src/: classes/Makefile.am, types/Makefile.am: Makefiles update
+	  for sparse-array class files (related to feature #930)
+
+	* src/: classes/json.C, include/pa_array.h, types/pa_value.h,
+	  types/pa_vhash.h: VArray support functions without actual VArray
+	  files (related to feature #930)
+
 2024-09-07  moko
 
 	* src/: classes/curl.C, classes/string.C, classes/table.C,
