@@ -8,7 +8,7 @@
 #ifndef PA_STACK_H
 #define PA_STACK_H
 
-#define IDENT_PA_STACK_H "$Id: pa_stack.h,v 1.32 2023/09/26 20:49:07 moko Exp $"
+#define IDENT_PA_STACK_H "$Id: pa_stack.h,v 1.33 2024/09/16 23:22:52 moko Exp $"
 
 #include "pa_array.h"
 
@@ -21,25 +21,25 @@ public:
 	inline void push(T item) {
 		if(this->is_full())
 			expand(this->fallocated); // free is not called, so expanding a lot to decrease memory waste
-		this->felements[this->fused++]=item;
+		this->felements[this->fsize++]=item;
 	}
 
 	inline T pop() {
-		return this->felements[--this->fused];
+		return this->felements[--this->fsize];
 	}
 
-	inline bool is_empty() { return this->fused==0; }
-	inline size_t top_index() { return this->fused; }
-	inline void set_top_index(size_t atop) { this->fused=atop; }
+	inline bool is_empty() { return this->fsize==0; }
+	inline size_t top_index() { return this->fsize; }
+	inline void set_top_index(size_t atop) { this->fsize=atop; }
 	inline T top_value() {
 		assert(!is_empty());
-		return this->felements[this->fused-1];
+		return this->felements[this->fsize-1];
 	}
 
 	/// call this prior to collecting garbage [in unused part of stack there may be pointers(unused)]
 	void wipe_unused() {
-		if(size_t above_top_size=this->fallocated-this->fused)
-			memset((void *)&this->felements[this->fused], 0, above_top_size*sizeof(T));
+		if(size_t above_top_size=this->fallocated-this->fsize)
+			memset((void *)&this->felements[this->fsize], 0, above_top_size*sizeof(T));
 	}
 
 protected:

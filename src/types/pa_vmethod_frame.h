@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.129 2023/09/26 20:49:12 moko Exp $"
+#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.130 2024/09/16 23:22:52 moko Exp $"
 
 #include "pa_symbols.h"
 #include "pa_wcontext.h"
@@ -26,7 +26,7 @@ class Request;
 
 class MethodParams {
 public:
-	MethodParams() : felements(0), fused(0) {}
+	MethodParams() : felements(0), fsize(0) {}
 
 #ifdef USE_DESTRUCTORS
 	~MethodParams() {
@@ -41,10 +41,10 @@ public:
 
 	void store_params(Value **params, size_t count) {
 		felements=params;
-		fused=count;
+		fsize=count;
 	}
 
-	inline size_t count() const { return fused; }
+	inline size_t count() const { return fsize; }
 
 	inline Value& get(size_t index) const {
 		assert(index<count());
@@ -117,7 +117,7 @@ public:
 private:
 
 	Value **felements;
-	size_t fused;
+	size_t fsize;
 
 	Value& get_processed(Value& value, const char* msg, int index, Request& r);
 

@@ -8,7 +8,7 @@
 #include "pa_varray.h"
 #include "pa_vfile.h"
 
-volatile const char * IDENT_PA_VARRAY_C="$Id: pa_varray.C,v 1.1 2024/09/10 19:15:48 moko Exp $" IDENT_PA_VARRAY_H;
+volatile const char * IDENT_PA_VARRAY_C="$Id: pa_varray.C,v 1.2 2024/09/16 23:22:52 moko Exp $" IDENT_PA_VARRAY_H;
 
 HashStringValue& VArray::hash(){
 	if(fhash==0){
@@ -20,16 +20,6 @@ HashStringValue& VArray::hash(){
 		}
 	}
 	return *fhash;
-}
-
-size_t VArray::count() const{
-	if(!fcount){
-		for(ArrayValue::Iterator i(farray); i;) {
-			if(i.next())
-				fcount++;
-		}
-	}
-	return fcount;
 }
 
 const String* VArray::get_json_string(Json_options& options) {

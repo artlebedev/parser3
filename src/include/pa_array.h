@@ -8,7 +8,7 @@
 #ifndef PA_ARRAY_H
 #define PA_ARRAY_H
 
-#define IDENT_PA_ARRAY_H "$Id: pa_array.h,v 1.93 2024/09/15 00:38:27 moko Exp $"
+#define IDENT_PA_ARRAY_H "$Id: pa_array.h,v 1.94 2024/09/16 23:22:52 moko Exp $"
 
 // includes
 
@@ -40,7 +40,7 @@ protected:
 	size_t fallocated;
 
 	// array size
-	size_t fused;
+	size_t fsize;
 
 public:
 	typedef Array_iterator<T> Iterator;
@@ -82,7 +82,7 @@ public:
 
 	inline Array(size_t initial=0):
 		fallocated(initial),
-		fused(0)
+		fsize(0)
 	{
 		felements=fallocated?(T *)pa_malloc(fallocated*sizeof(T)):0;
 	}
@@ -95,14 +95,14 @@ public:
 #endif
 
 	/// how many items are in Array
-	inline size_t count() const { return fused; }
+	inline size_t count() const { return fsize; }
 
 	/// append to array
 	inline Array& operator+=(T src) {
 		if(is_full())
 			expand();
 
-		felements[fused++]=src;
+		felements[fsize++]=src;
 
 		return *this;
 	}
@@ -122,15 +122,13 @@ public:
 		if(limit==ARRAY_OPTION_LIMIT_ALL || limit>m)
 			limit=m;
 
-		size_t required=fused+limit;
-		if(required>fallocated)
-			resize(required);
+		fit(fsize-1+limit);
 
 		T* from=&src.felements[offset];
-		T* to=&felements[fused];
+		T* to=&felements[fsize];
 		for(T* from_end=from+limit; from<from_end;)
 			*to++=*from++;
-		fused+=limit;
+		fsize+=limit;
 		return *this;
 	}
 
@@ -159,37 +157,37 @@ public:
 		if(is_full())
 			expand();
 
-		memmove(felements+index+1, felements+index, (fused-index) * sizeof(T));
+		memmove(felements+index+1, felements+index, (fsize-index) * sizeof(T));
 
 		felements[index]=element;
-		fused++;
+		fsize++;
 	}
 
 	/// remove index-element
 	inline void remove(size_t index) {
 		assert(index<count());
-		if (index<--fused)
-			memmove(felements+index, felements+index+1, (fused-index) * sizeof(T));
+		if (index<--fsize)
+			memmove(felements+index, felements+index+1, (fsize-index) * sizeof(T));
 	}
 
 	inline T operator [](size_t index) const { return get(index); }
 
 	inline void clear() {
-		if(fused)
-			memset(felements, 0, fused * sizeof(T));
-		fused=0;
+		if(fsize)
+			memset(felements, 0, fsize * sizeof(T));
+		fsize=0;
 	}
 
 	/// iterate over all elements
 	template<typename I> void for_each(void (*callback)(T, I), I info) const {
-		T *last=felements+fused;
+		T *last=felements+fsize;
 		for(T *current=felements; current<last; current++)
 			callback(*current, info);
 	}
 
 	/// iterate over all elements
 	template<typename I> void for_each(bool (*callback)(T, I), I info) const {
-		T *last=felements+fused;
+		T *last=felements+fsize;
 		for(T *current=felements; current<last; current++)
 			if(callback(*current, info))
 				return;
@@ -197,14 +195,14 @@ public:
 
 	/// iterate over all elements
 	template<typename I> void for_each_ref(void (*callback)(T&, I), I info) {
-		T *last=felements+fused;
+		T *last=felements+fsize;
 		for(T *current=felements; current<last; current++)
 			callback(*current, info);
 	}
 
 	/// iterate over all elements until condition becomes true, return that element
 	template<typename I> T first_that(bool (*callback)(T, I), I info) const {
-		T *last=felements+fused;
+		T *last=felements+fsize;
 		for(T *current=felements; current<last; current++)
 			if(callback(*current, info))
 				return *current;
@@ -218,12 +216,17 @@ public:
 
 protected:
 
-	bool is_full() {
-		return fused == fallocated;
+	inline bool is_full() {
+		return fsize == fallocated;
 	}
 
 	inline void expand() {
 		resize(fallocated>0 ? fallocated+fallocated/4+2 : 3); // 3 is PAF default, confirmed by tests
+	}
+
+	inline void fit(size_t index){
+		if(index >= fallocated)
+			resize(max(this->fallocated + this->fallocated/4, index+1));
 	}
 
 	void resize(size_t asize) {
@@ -299,7 +302,7 @@ public:
 
 	Array_iterator(const Array<T>& aarray): farray(aarray) {
 		fcurrent=farray.felements;
-		flast=farray.felements + farray.fused;
+		flast=farray.felements + farray.fsize;
 	}
 
 	/// there are still elements
@@ -336,7 +339,7 @@ template<typename T> class Array_reverse_iterator {
 public:
 
 	Array_reverse_iterator(const Array<T>& aarray): farray(aarray) {
-		fcurrent=farray.felements + farray.fused;
+		fcurrent=farray.felements + farray.fsize;
 	}
 
 	/// there are still elements

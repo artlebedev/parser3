@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.3 2024/09/13 04:01:22 moko Exp $";
+volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.4 2024/09/16 23:22:52 moko Exp $";
 
 // class
 
@@ -51,7 +51,7 @@ static void _create_or_add(Request& r, MethodParams& params) {
 				for(HashStringValue::Iterator i(*src_hash); i; i.next())
 					self_array+=i.value();
 		}
-		self.clear_hash();
+		self.invalidate();
 	}
 }
 
@@ -89,7 +89,7 @@ static void _keys(Request& r, MethodParams& params) {
 }
 
 static void _count(Request& r, MethodParams&) {
-	r.write(*new VInt(GET_SELF(r, VArray).count()));
+	r.write(*new VInt(GET_SELF(r, VArray).array().used()));
 }
 
 static void _append(Request& r, MethodParams& params) {
@@ -101,7 +101,7 @@ static void _append(Request& r, MethodParams& params) {
 	for(int i=0; i<count; i++){
 		array+=&r.process(params[i]);
 	}
-	self.clear_hash();
+	self.invalidate();
 }
 
 static void _insert(Request& r, MethodParams& params) {
@@ -114,7 +114,7 @@ static void _insert(Request& r, MethodParams& params) {
 	for(int i=1; i<count; i++){
 		array.insert(index+i-1, &r.process(params[i]));
 	}
-	self.clear_hash();
+	self.invalidate();
 }
 
 static void _delete(Request& r, MethodParams& params) {
@@ -245,7 +245,7 @@ static void _sort(Request& r, MethodParams& params){
 
 	VArray& self=GET_SELF(r, VArray);
 	ArrayValue& array=self.array();
-	int count=self.count(); // not array.count()
+	int count=array.used(); // not array.count()
 
 	Array_seq_item* seq=new Array_seq_item[count];
 	int pos=0;
@@ -294,7 +294,7 @@ static void _sort(Request& r, MethodParams& params){
 static void _at(Request& r, MethodParams& params) {
 	VArray& self=GET_SELF(r, VArray);
 	ArrayValue& array=self.array();
-	size_t count=self.count();
+	size_t count=array.count();
 
 	int pos=0;
 
@@ -448,11 +448,8 @@ static void _reverse(Request& r, MethodParams& params) {
 	VArray& result=*new VArray(count);
 	ArrayValue& result_array=result.array();
 
-	for(ArrayValue::Iterator i(source_array); i; ){
-		Value *v=i.next();
-		if(v){
-			result_array.fit(count-i.index() /* no -1 as .next() is called */, v);
-		}
+	for(ArrayValue::ReverseIterator i(source_array); i; ){
+		result_array+=i.prev();
 	}
 
 	r.write(result);

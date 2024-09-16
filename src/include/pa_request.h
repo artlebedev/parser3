@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.263 2023/11/17 19:12:34 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.264 2024/09/16 23:22:52 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -125,11 +125,11 @@ private:
 		element_type bottom_value() { return get(bottom_index()); }
 
 		void clear() {
-			fused=fbottom=0;
+			fsize=fbottom=0;
 		}
 
 		bool is_empty() {
-			return fused==fbottom;
+			return fsize==fbottom;
 		}
 
 		Table &table(Request &r);
