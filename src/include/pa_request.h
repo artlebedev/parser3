@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.264 2024/09/16 23:22:52 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.265 2024/09/17 18:09:59 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -210,6 +210,7 @@ public:
 	VStateless_class* get_class(const String& name);
 	VStateless_class& get_class_ref(const String& name);
 	void put_class(VStateless_class *aclass){ classes().put(aclass->type(), aclass); }
+	bool add_class(const char* atype, VStateless_class *aclass);
 
 	/**
 		core request processing

@@ -10,7 +10,7 @@
 #include "pa_vbool.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.90 2024/09/11 21:07:36 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.91 2024/09/17 18:09:59 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -161,6 +161,15 @@ static void _class_name(Request& r, MethodParams& params) {
 static void _class_by_name(Request& r, MethodParams& params) {
 	const String& class_name=params.as_string(0, "class_name must be string");
 	r.write(r.get_class_ref(class_name));
+}
+
+static void _class_alias(Request& r, MethodParams& params) {
+	const String& src_class_name=params.as_string(0, "source class_name must be string");
+	const String& new_class_name=params.as_string(1, "alias class_name must be string");
+
+	VStateless_class &src_class=r.get_class_ref(src_class_name);
+	if(!r.add_class(new_class_name.cstr(), &src_class))
+		throw Exception(PARSER_RUNTIME, &new_class_name, "class is already defined");
 }
 
 static void _base(Request& r, MethodParams& params) {
@@ -669,6 +678,9 @@ MReflection::MReflection(): Methoded("reflection") {
 
 	// ^reflection:class_by_name[class_name]
 	add_native_method("class_by_name", Method::CT_STATIC, _class_by_name, 1, 1);
+
+	// ^reflection:class_alias[class_name;new_class_name]
+	add_native_method("class_alias", Method::CT_STATIC, _class_alias, 2, 2);
 
 	// ^reflection:base_class[object]
 	add_native_method("base", Method::CT_STATIC, _base, 1, 1);
