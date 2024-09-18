@@ -8,7 +8,7 @@
 #ifndef PA_VARRAY_H
 #define PA_VARRAY_H
 
-#define IDENT_PA_VARRAY_H "$Id: pa_varray.h,v 1.5 2024/09/16 23:22:52 moko Exp $"
+#define IDENT_PA_VARRAY_H "$Id: pa_varray.h,v 1.6 2024/09/18 22:24:18 moko Exp $"
 
 #include "classes.h"
 #include "pa_value.h"
@@ -31,6 +31,13 @@ template<typename T> class SparseArray: public Array<T> {
 
 public:
 	inline SparseArray(size_t initial=0) : Array<T>(initial), fused(0) {}
+
+	inline SparseArray(size_t size, T* elements) : Array<T>(size), fused(size) {
+		T* elements_end=elements + size;
+		for(T* dst=this->felements; elements < elements_end;)
+			*dst++=*elements++;
+		this->fsize=size;
+	}
 
 	inline T get(size_t index) const {
 		return index < this->count() ? this->felements[index] : NULL;
@@ -149,6 +156,7 @@ public: // VHashBase
 public: // usage
 
 	VArray(size_t initial=0): farray(initial), fhash(0) {}
+	VArray(size_t size, Value** elements): farray(size, elements), fhash(0) {}
 	~VArray() { invalidate(); }
 
 	ArrayValue &array() { return farray; }

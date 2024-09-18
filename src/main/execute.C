@@ -19,9 +19,10 @@
 #include "pa_vtable.h"
 #include "pa_vfile.h"
 #include "pa_vimage.h"
+#include "pa_varray.h"
 #include "pa_wwrapper.h"
 
-volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.420 2024/09/13 04:01:22 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
+volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.421 2024/09/18 22:24:17 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
 
 //#define DEBUG_EXECUTE
 
@@ -34,7 +35,7 @@ const char *opcode_name[]={
 	// actions
 	"WITH_ROOT",	"WITH_SELF",	"WITH_READ",	"WITH_WRITE",
 	"VALUE__GET_CLASS", "VALUE__GET_BASE_CLASS",
-	"CONSTRUCT_VALUE", "CONSTRUCT_EXPR", "CURLY_CODE__CONSTRUCT",
+	"CONSTRUCT_VALUE", "CONSTRUCT_EXPR", "CURLY_CODE__CONSTRUCT", "CONSTRUCT_ARRAY",
 	"WRITE_VALUE",  "WRITE_EXPR_RESULT",  "STRING__WRITE",
 #ifdef OPTIMIZE_BYTECODE_GET_ELEMENT
 	"VALUE__GET_ELEMENT_OR_OPERATOR",
@@ -219,6 +220,7 @@ void debug_dump(SAPI_Info& sapi_info, int level, ArrayOperation& ops) {
 		case OP::OP_NESTED_CODE:
 		case OP::OP_OBJECT_POOL:
 		case OP::OP_STRING_POOL:
+		case OP::OP_CONSTRUCT_ARRAY:
 		case OP::OP_CALL:
 		case OP::OP_CALL__WRITE:
 			if(ArrayOperation* local_ops=i.next().ops)
@@ -445,6 +447,32 @@ void Request::execute(ArrayOperation& ops) {
 
 				break;
 			}
+
+		case OP::OP_CONSTRUCT_ARRAY:
+			{
+				ArrayOperation* local_ops=i.next().ops;
+
+				DEBUG_PRINT_OPS(local_ops)
+				DEBUG_PRINT_STR("->\n")
+
+				size_t first = stack.top_index();
+				execute(*local_ops);
+				Value *value=new VArray(stack.top_index()-first, (Value**)stack.ptr(first));
+				stack.set_top_index(first);
+
+#ifdef OPTIMIZE_BYTECODE_CONSTRUCT
+				const String& name=stack.pop().string();  debug_name=&name;
+				Value& ncontext=stack.pop().value();
+#else
+				const String& name=stack.pop().string();  debug_name=&name;
+				Value& ncontext=stack.pop().value();
+#endif
+				put_element(ncontext, name, value);
+
+				DEBUG_PRINT_STR("<-returned")
+				goto check_skip;
+			}
+
 		case OP::OP_NESTED_CODE:
 			{
 				ArrayOperation& local_ops=*i.next().ops;

@@ -8,7 +8,7 @@
 	
 */
 
-volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.296 2024/09/16 23:59:31 moko Exp $";
+volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.297 2024/09/18 22:24:17 moko Exp $";
 
 /**
 	@todo parser4: 
@@ -440,13 +440,24 @@ construct:
 construct_square: '[' {
 	// allow $result_or_other_variable[ letters here any time ]
 	*reinterpret_cast<bool*>(&$$)=PC.explicit_result; PC.explicit_result=false;
-} any_constructor_code_value {
+	PC.array=false; // no need to save current value as if() is right after PC.array=true;
+} any_constructor_code_values {
 	PC.explicit_result=*reinterpret_cast<bool*>(&$2);
 } ']' {
 	// stack: context, name
-	$$=$3; // stack: context, name, value
-	O(*$$, OP::OP_CONSTRUCT_VALUE); /* value=pop; name=pop; context=pop; construct(context,name,value) */
+	if(!PC.array){
+		$$=$3; // stack: context, name, value
+		O(*$$, OP::OP_CONSTRUCT_VALUE); /* value=pop; name=pop; context=pop; construct(context,name,value) */
+	} else {
+		$$ = N();
+		OA(*$$, OP::OP_CONSTRUCT_ARRAY, $3);
+		PC.array=false;
+	}
 }
+;
+any_constructor_code_values:
+	any_constructor_code_value { $$ = $1; }
+	| any_constructor_code_values ';' any_constructor_code_value { $$ = $1; P(*$$, *$3); PC.array=true; };
 ;
 construct_round: '(' expr_value ')' { 
 	$$=N(); 

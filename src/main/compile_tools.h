@@ -8,7 +8,7 @@
 #ifndef COMPILE_TOOLS
 #define COMPILE_TOOLS
 
-#define IDENT_COMPILE_TOOLS_H "$Id: compile_tools.h,v 1.119 2024/09/17 18:09:59 moko Exp $"
+#define IDENT_COMPILE_TOOLS_H "$Id: compile_tools.h,v 1.120 2024/09/18 22:24:17 moko Exp $"
 
 #include "pa_opcode.h"
 #include "pa_types.h"
@@ -84,6 +84,7 @@ public:
 	bool in_call_value;
 	bool explicit_result;
 	bool append;
+	bool array;
 	//@}
 	
 	/// output: filled input 'methods' and 'error' if any
@@ -115,6 +116,7 @@ public:
 		in_call_value(false),
 		explicit_result(false),
 		append(false),
+		array(false),
 		error("") {
 
 		*cclasses+=aclass;
