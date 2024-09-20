@@ -8,7 +8,7 @@
 #ifndef PA_VARRAY_H
 #define PA_VARRAY_H
 
-#define IDENT_PA_VARRAY_H "$Id: pa_varray.h,v 1.6 2024/09/18 22:24:18 moko Exp $"
+#define IDENT_PA_VARRAY_H "$Id: pa_varray.h,v 1.7 2024/09/20 01:13:50 moko Exp $"
 
 #include "classes.h"
 #include "pa_value.h"
@@ -72,8 +72,10 @@ public:
 	}
 
 	inline void clear(size_t index) {
-		if(index<this->count()){
+		if(index < this->count()){
 			this->felements[index]=NULL;
+			if(index+1 == this->count())
+				this->fsize--;
 		}
 	}
 
@@ -167,13 +169,8 @@ public: // usage
 		return aindex;
 	}
 
-	static size_t index(const String& aindex){
-		int result=aindex.as_int();
-		if(result<0)
-			throw Exception("number.format", &aindex, "out of range (negative)");
-		return result;
-	}
-
+	static size_t index(const String::Body& aindex){ return pa_atoui(aindex.cstr()); }
+	static size_t index(const String& aindex){ return pa_atoui(aindex.cstr(), 10, &aindex); }
 	static size_t index(const Value& aindex){ return index(aindex.as_int()); }
 
 	bool contains(size_t index){

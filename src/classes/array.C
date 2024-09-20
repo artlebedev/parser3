@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.4 2024/09/16 23:22:52 moko Exp $";
+volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.5 2024/09/20 01:13:50 moko Exp $";
 
 // class
 
@@ -33,23 +33,46 @@ public:
 
 DECLARE_CLASS_VAR(array, new MArray);
 
+const char* const PARAM_ARRAY_OR_HASH = "param must be array or hash";
+
 // methods
+
+enum HState {
+    HS_FIRST,
+    HS_STRING,
+    HS_NUMBER
+};
 
 static void _create_or_add(Request& r, MethodParams& params) {
 	if(params.count()) {
-		Value& vsrc=params.as_no_junction(0, PARAM_MUST_BE_HASH);
+		Value& vsrc=params.as_no_junction(0, PARAM_ARRAY_OR_HASH);
 		VArray& self=GET_SELF(r, VArray);
 		ArrayValue& self_array=self.array();
 
 		if(VArray* src=dynamic_cast<VArray*>(&vsrc)) {
-			ArrayValue& src_array =src->array();
-			if(&src_array==&self_array) // same: doing nothing
+			if(src==&self) // same: doing nothing
 				return;
+			self_array.append(src->array());
 		} else {
 			HashStringValue* src_hash=vsrc.get_hash();
-			if(src_hash)
-				for(HashStringValue::Iterator i(*src_hash); i; i.next())
+			if(!src_hash)
+				return;
+			HState hs=HS_FIRST;
+			for(HashStringValue::Iterator i(*src_hash); i; i.next()){
+				if (hs==HS_STRING){
 					self_array+=i.value();
+				} else if(hs==HS_NUMBER){
+					self_array.put(VArray::index(i.key()), i.value());
+				} else {
+					try {
+						self_array.put(VArray::index(i.key()), i.value());
+						hs==HS_NUMBER;
+					} catch(...) {
+						self_array+=i.value();
+						hs==HS_STRING;
+					}
+				}
+			}
 		}
 		self.invalidate();
 	}
@@ -88,8 +111,17 @@ static void _keys(Request& r, MethodParams& params) {
 	r.write(*new VTable(table));
 }
 
-static void _count(Request& r, MethodParams&) {
-	r.write(*new VInt(GET_SELF(r, VArray).array().used()));
+static void _count(Request& r, MethodParams& params) {
+	ArrayValue& array=GET_SELF(r, VArray).array();
+	if(params.count()>0){
+		const String& what=params.as_string(0, PARAMETER_MUST_BE_STRING);
+		if(!what.is_empty()){
+			if(what != "all")
+				throw Exception(PARSER_RUNTIME, &what, "param must be empty or 'all'");
+			return r.write(*new VInt(array.count()));
+		}
+	}
+	r.write(*new VInt(array.used()));
 }
 
 static void _append(Request& r, MethodParams& params) {
@@ -130,7 +162,57 @@ static void _contains(Request& r, MethodParams& params) {
 	r.write(VBool::get(result));
 }
 
+static void _for(Request& r, MethodParams& params) {
+	InCycle temp(r);
+
+	const String* value_var_name=&params.as_string(0, "value-var name must be string");
+	Value* body_code=&params.as_junction(1, "body must be code");
+	Value* delim_maybe_code=params.count()>2?&params[2]:0;
+	Value& caller=*r.get_method_frame()->caller();
+
+	if(value_var_name->is_empty()) value_var_name=0;
+
+	ArrayValue& array=GET_SELF(r, VArray).array();
+
+	if(delim_maybe_code){ // delimiter set
+		bool need_delim=false;
+		for(ArrayValue::Iterator i(array); i; i.next()){
+			if(value_var_name)
+				r.put_element(caller, *value_var_name, i.value() ? i.value() : VVoid::get());
+
+			Value& sv_processed=r.process(*body_code);
+			TempSkip4Delimiter skip(r);
+
+			const String* s_processed=sv_processed.get_string();
+			if(s_processed && !s_processed->is_empty()) { // we have body
+				if(need_delim) // need delim & iteration produced string?
+					r.write(r.process(*delim_maybe_code));
+				else
+					need_delim=true;
+			}
+
+			r.write(sv_processed);
+
+			if(skip.check_break())
+				break;
+		}
+	} else {
+		for(ArrayValue::Iterator i(array); i; i.next()){
+			if(value_var_name)
+				r.put_element(caller, *value_var_name, i.value() ? i.value() : VVoid::get());
+
+			r.process_write(*body_code);
+
+			if(r.check_skip_break())
+				break;
+		}
+	}
+}
+
 static void _foreach(Request& r, MethodParams& params) {
+	if(params[1].get_junction())
+		return _for(r, params);
+
 	InCycle temp(r);
 
 	const String* key_var_name=&params.as_string(0, "key-var name must be string");
@@ -191,19 +273,6 @@ static void _foreach(Request& r, MethodParams& params) {
 			}
 		}
 	}
-}
-
-
-enum AtResultType {
-	AtResultTypeValue = 0,
-	AtResultTypeKey = 1,
-	AtResultTypeHash = 2
-};
-
-inline Value& SingleElementHash(String::Body akey, Value* avalue) {
-	Value& result=*new VHash;
-	result.put_element(*new String(akey, String::L_TAINTED), avalue);
-	return result;
 }
 
 #ifndef DOXYGEN
@@ -291,10 +360,22 @@ static void _sort(Request& r, MethodParams& params){
 	delete[] seq;
 }
 
+enum AtResultType {
+	AtResultTypeValue = 0,
+	AtResultTypeKey = 1,
+	AtResultTypeHash = 2
+};
+
+inline Value& SingleElementHash(String::Body akey, Value* avalue) {
+	Value& result=*new VHash;
+	result.put_element(*new String(akey, String::L_TAINTED), avalue);
+	return result;
+}
+
 static void _at(Request& r, MethodParams& params) {
 	VArray& self=GET_SELF(r, VArray);
 	ArrayValue& array=self.array();
-	size_t count=array.count();
+	size_t count=array.used(); // not array.count()
 
 	int pos=0;
 
@@ -393,30 +474,29 @@ static void _select(Request& r, MethodParams& params) {
 	ArrayValue& result_array=result->array();
 
 	if(limit>0){
-
 		if(reverse){
 			for(ArrayValue::ReverseIterator i(source_array); i; ){
-				Value *value=i.prev(); // here for correct i.key()
-				if(key_var_name)
-					r.put_element(caller, *key_var_name, new VString(*new String(i.key(), String::L_TAINTED)));
-				if(value_var_name)
-					r.put_element(caller, *value_var_name, value);
+				if(Value *value=i.prev()){ // here for correct i.key()
+					if(key_var_name)
+						r.put_element(caller, *key_var_name, new VString(*new String(i.key(), String::L_TAINTED)));
+					if(value_var_name)
+						r.put_element(caller, *value_var_name, value);
 
-				bool condition=r.process(vcondition).as_bool();
+					bool condition=r.process(vcondition).as_bool();
 
-				if(r.check_skip_break())
-					break;
-
-				if(condition){
-					result_array+=value;
-					if(!--limit)
+					if(r.check_skip_break())
 						break;
+
+					if(condition){
+						result_array+=value;
+						if(!--limit)
+							break;
+					}
 				}
 			}
 		} else {
 			for(ArrayValue::Iterator i(source_array); i; i.next() ){
-				Value *value=i.value();
-				if(value){
+				if(Value *value=i.value()){
 					if(key_var_name)
 						r.put_element(caller, *key_var_name, new VString(*new String(i.key(), String::L_TAINTED)));
 					if(value_var_name)
@@ -441,11 +521,9 @@ static void _select(Request& r, MethodParams& params) {
 }
 
 static void _reverse(Request& r, MethodParams& params) {
-	VArray& self=GET_SELF(r, VArray);
-	ArrayValue& source_array=self.array();
-	size_t count=source_array.count();
+	ArrayValue& source_array=GET_SELF(r, VArray).array();
 
-	VArray& result=*new VArray(count);
+	VArray& result=*new VArray(source_array.count());
 	ArrayValue& result_array=result.array();
 
 	for(ArrayValue::ReverseIterator i(source_array); i; ){
@@ -456,12 +534,9 @@ static void _reverse(Request& r, MethodParams& params) {
 }
 
 
-static void _rename(Request& r, MethodParams& params) {}
-
 // constructor
 
 MArray::MArray(): Methoded(VARRAY_TYPE) {
-//	set_base(hash_class);
 
 	// ^array::create[[copy_from]]
 	add_native_method("create", Method::CT_DYNAMIC, _create_or_add, 0, 1);
@@ -495,11 +570,11 @@ MArray::MArray(): Methoded(VARRAY_TYPE) {
 	// ^array._keys[[column name]]
 	add_native_method("_keys", Method::CT_DYNAMIC, _keys, 0, 1);
 
-	// ^array._count[]
-	add_native_method("_count", Method::CT_DYNAMIC, _count, 0, 0);
+	// ^array._count[[all]]
+	add_native_method("_count", Method::CT_DYNAMIC, _count, 0, 1);
 
 	// ^array.foreach[index;value]{code}[delim]
-	add_native_method("foreach", Method::CT_DYNAMIC, _foreach, 2+1, 2+1+1);
+	add_native_method("foreach", Method::CT_DYNAMIC, _foreach, 2, 2+1+1);
 
 	// ^array.sort[index;value]{string-key-maker}[[asc|desc]]
 	// ^array.sort[index;value](numeric-key-maker)[[asc|desc]]
@@ -514,10 +589,6 @@ MArray::MArray(): Methoded(VARRAY_TYPE) {
 	// ^array._at[first|last[;'key'|'value'|'hash']]
 	// ^array._at([-+]offset)[['key'|'value'|'hash']]
 	add_native_method("_at", Method::CT_DYNAMIC, _at, 1, 2);
-
-	// ^array.rename[from;to]
-	// ^array.rename[ $.from[to] ... ]
-	add_native_method("rename", Method::CT_DYNAMIC, _rename, 1, 2);
 
 #ifdef FEATURE_GET_ELEMENT4CALL
 	// aliases without "_"
