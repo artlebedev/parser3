@@ -8,7 +8,7 @@
 #ifndef PA_VARRAY_H
 #define PA_VARRAY_H
 
-#define IDENT_PA_VARRAY_H "$Id: pa_varray.h,v 1.7 2024/09/20 01:13:50 moko Exp $"
+#define IDENT_PA_VARRAY_H "$Id: pa_varray.h,v 1.8 2024/09/21 15:23:23 moko Exp $"
 
 #include "classes.h"
 #include "pa_value.h"
@@ -80,6 +80,12 @@ public:
 	}
 
 	inline void clear() { Array<T>::clear(); }
+
+	inline void remove(size_t index) {
+		if(index < this->count()){
+			Array<T>::remove(index);
+		}
+	}
 
 	inline void invalidate(){
 		fused=0;
@@ -175,16 +181,6 @@ public: // usage
 
 	bool contains(size_t index){
 		return farray.get(index) != NULL;
-	}
-
-	void clear(size_t index){
-		farray.clear(index);
-		invalidate();
-	}
-
-	void clear(){
-		farray.clear();
-		invalidate();
 	}
 
 	void invalidate() {

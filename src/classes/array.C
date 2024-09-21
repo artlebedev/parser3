@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.6 2024/09/21 01:36:32 moko Exp $";
+volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.7 2024/09/21 15:23:23 moko Exp $";
 
 // class
 
@@ -34,15 +34,9 @@ public:
 DECLARE_CLASS_VAR(array, new MArray);
 
 const char* const PARAM_ARRAY_OR_HASH = "param must be array or hash";
-const char* const PARAM_ARRAY = "param must be array";
+const char* const PARAM_INDEX = "index must be integer";
 
 // methods
-
-enum HState {
-    HS_FIRST,
-    HS_STRING,
-    HS_NUMBER
-};
 
 static void _create_or_add(Request& r, MethodParams& params) {
 	if(params.count()) {
@@ -58,21 +52,8 @@ static void _create_or_add(Request& r, MethodParams& params) {
 			HashStringValue* src_hash=vsrc.get_hash();
 			if(!src_hash)
 				return;
-			HState hs=HS_FIRST;
 			for(HashStringValue::Iterator i(*src_hash); i; i.next()){
-				if (hs==HS_STRING){
-					self_array+=i.value();
-				} else if(hs==HS_NUMBER){
-					self_array.put(VArray::index(i.key()), i.value());
-				} else {
-					try {
-						self_array.put(VArray::index(i.key()), i.value());
-						hs==HS_NUMBER;
-					} catch(...) {
-						self_array+=i.value();
-						hs==HS_STRING;
-					}
-				}
+				self_array.put(VArray::index(i.key()), i.value());
 			}
 		}
 		self.invalidate();
@@ -107,7 +88,7 @@ static ArrayValue::Action_options get_action_options(Request& r, MethodParams& p
 }
 
 static void _join(Request& r, MethodParams& params) {
-	Value& vsrc=params.as_no_junction(0, PARAM_ARRAY);
+	Value& vsrc=params.as_no_junction(0, PARAM_ARRAY_OR_HASH);
 	ArrayValue::Action_options o=get_action_options(r, params, 1);
 
 	VArray& self=GET_SELF(r, VArray);
@@ -135,9 +116,27 @@ static void _join(Request& r, MethodParams& params) {
 					self_array+=i.value();
 			}
 		}
-		self.invalidate();
-	} else
-		throw Exception(PARSER_RUNTIME, 0, PARAM_ARRAY);
+	} else {
+		HashStringValue* src_hash=vsrc.get_hash();
+		if(!src_hash)
+			return;
+		if(o.defined){
+			for(HashStringValue::Iterator i(*src_hash); i; i.next()){
+				if(o.offset > 0){
+					o.offset--;
+					continue;
+				}
+				if(o.limit-- == 0)
+					break;
+				self_array+=i.value();
+			}
+		} else {
+			for(HashStringValue::Iterator i(*src_hash); i; i.next()){
+				self_array+=i.value();
+			}
+		}
+	}
+	self.invalidate();
 }
 
 static void _sql(Request& r, MethodParams& params) {}
@@ -203,7 +202,7 @@ static void _insert(Request& r, MethodParams& params) {
 	ArrayValue& array=self.array();
 
 	int count=params.count();
-	size_t index=VArray::index(params.as_int(0, "index must be integer", r));
+	size_t index=VArray::index(params.as_int(0, PARAM_INDEX, r));
 
 	for(int i=1; i<count; i++){
 		array.insert(index+i-1, &r.process(params[i]));
@@ -212,26 +211,36 @@ static void _insert(Request& r, MethodParams& params) {
 }
 
 static void _delete(Request& r, MethodParams& params) {
+	VArray& self=GET_SELF(r, VArray);
 	if(params.count()>0)
-		GET_SELF(r, VArray).clear(VArray::index(params.as_int(0, "index must be integer", r)));
+		self.array().clear(VArray::index(params.as_int(0, PARAM_INDEX, r)));
 	else
-		GET_SELF(r, VArray).clear();
+		self.array().clear();
+	self.invalidate();
+}
+
+static void _remove(Request& r, MethodParams& params) {
+	VArray& self=GET_SELF(r, VArray);
+	self.array().remove(VArray::index(params.as_int(0, PARAM_INDEX, r)));
+	self.invalidate();
 }
 
 static void _contains(Request& r, MethodParams& params) {
 	VArray& self=GET_SELF(r, VArray);
-	bool result=self.contains(VArray::index(params.as_int(0, "index must be integer", r)));
+	bool result=self.contains(VArray::index(params.as_int(0, PARAM_INDEX, r)));
 	r.write(VBool::get(result));
 }
 
 static void _for(Request& r, MethodParams& params) {
 	InCycle temp(r);
 
-	const String* value_var_name=&params.as_string(0, "value-var name must be string");
-	Value* body_code=&params.as_junction(1, "body must be code");
-	Value* delim_maybe_code=params.count()>2?&params[2]:0;
+	const String* key_var_name=&params.as_string(0, "key-var name must be string");
+	const String* value_var_name=&params.as_string(1, "value-var name must be string");
+	Value* body_code=&params.as_junction(2, "body must be code");
+	Value* delim_maybe_code=params.count()>3 ? &params[3] : 0;
 	Value& caller=*r.get_method_frame()->caller();
 
+	if(key_var_name->is_empty()) key_var_name=0;
 	if(value_var_name->is_empty()) value_var_name=0;
 
 	ArrayValue& array=GET_SELF(r, VArray).array();
@@ -239,6 +248,11 @@ static void _for(Request& r, MethodParams& params) {
 	if(delim_maybe_code){ // delimiter set
 		bool need_delim=false;
 		for(ArrayValue::Iterator i(array); i; i.next()){
+			if(key_var_name){
+				VString* vkey=new VString(*new String(i.key(), String::L_TAINTED));
+				r.put_element(caller, *key_var_name, vkey);
+			}
+
 			if(value_var_name)
 				r.put_element(caller, *value_var_name, i.value() ? i.value() : VVoid::get());
 
@@ -260,6 +274,11 @@ static void _for(Request& r, MethodParams& params) {
 		}
 	} else {
 		for(ArrayValue::Iterator i(array); i; i.next()){
+			if(key_var_name){
+				VString* vkey=new VString(*new String(i.key(), String::L_TAINTED));
+				r.put_element(caller, *key_var_name, vkey);
+			}
+
 			if(value_var_name)
 				r.put_element(caller, *value_var_name, i.value() ? i.value() : VVoid::get());
 
@@ -272,15 +291,12 @@ static void _for(Request& r, MethodParams& params) {
 }
 
 static void _foreach(Request& r, MethodParams& params) {
-	if(params[1].get_junction())
-		return _for(r, params);
-
 	InCycle temp(r);
 
 	const String* key_var_name=&params.as_string(0, "key-var name must be string");
 	const String* value_var_name=&params.as_string(1, "value-var name must be string");
 	Value* body_code=&params.as_junction(2, "body must be code");
-	Value* delim_maybe_code=params.count()>3?&params[3]:0;
+	Value* delim_maybe_code=params.count()>3 ? &params[3] : 0;
 	Value& caller=*r.get_method_frame()->caller();
 
 	if(key_var_name->is_empty()) key_var_name=0;
@@ -618,12 +634,13 @@ MArray::MArray(): Methoded(VARRAY_TYPE) {
 
 	// ^array.append[value;value]
 	add_native_method("append", Method::CT_DYNAMIC, _append, 1, 10000);
-
 	// ^array.insert[index;value...]
 	add_native_method("insert", Method::CT_DYNAMIC, _insert, 2, 10000);
 
 	// ^array.delete[index]
 	add_native_method("delete", Method::CT_DYNAMIC, _delete, 0, 1);
+	// ^array.remove[index]
+	add_native_method("remove", Method::CT_DYNAMIC, _remove, 1, 1);
 
 	// ^array.contains[index]
 	add_native_method("contains", Method::CT_DYNAMIC, _contains, 1, 1);
@@ -637,8 +654,10 @@ MArray::MArray(): Methoded(VARRAY_TYPE) {
 	// ^array._count[[all]]
 	add_native_method("_count", Method::CT_DYNAMIC, _count, 0, 1);
 
+	// ^array.for[index;value]{code}[delim]
+	add_native_method("for", Method::CT_DYNAMIC, _for, 3, 3+1);
 	// ^array.foreach[index;value]{code}[delim]
-	add_native_method("foreach", Method::CT_DYNAMIC, _foreach, 2, 2+1+1);
+	add_native_method("foreach", Method::CT_DYNAMIC, _foreach, 3, 3+1);
 
 	// ^array.sort[index;value]{string-key-maker}[[asc|desc]]
 	// ^array.sort[index;value](numeric-key-maker)[[asc|desc]]
