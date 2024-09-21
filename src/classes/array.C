@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.5 2024/09/20 01:13:50 moko Exp $";
+volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.6 2024/09/21 01:36:32 moko Exp $";
 
 // class
 
@@ -34,6 +34,7 @@ public:
 DECLARE_CLASS_VAR(array, new MArray);
 
 const char* const PARAM_ARRAY_OR_HASH = "param must be array or hash";
+const char* const PARAM_ARRAY = "param must be array";
 
 // methods
 
@@ -50,8 +51,8 @@ static void _create_or_add(Request& r, MethodParams& params) {
 		ArrayValue& self_array=self.array();
 
 		if(VArray* src=dynamic_cast<VArray*>(&vsrc)) {
-			if(src==&self) // same: doing nothing
-				return;
+			if(src==&self)
+				throw Exception(PARSER_RUNTIME, 0, "source and destination are the same array");
 			self_array.append(src->array());
 		} else {
 			HashStringValue* src_hash=vsrc.get_hash();
@@ -76,6 +77,67 @@ static void _create_or_add(Request& r, MethodParams& params) {
 		}
 		self.invalidate();
 	}
+}
+
+static ArrayValue::Action_options get_action_options(Request& r, MethodParams& params, size_t options_index) {
+	ArrayValue::Action_options result;
+	if(params.count() <= options_index)
+		return result;
+
+	HashStringValue* options=params.as_hash(options_index);
+	if(!options)
+		return result;
+
+	result.defined=true;
+	int valid_options=0;
+
+	if(Value* voffset=options->get(sql_offset_name)) {
+		valid_options++;
+		result.offset=r.process(*voffset).as_int();
+	}
+	if(Value* vlimit=options->get(sql_limit_name)) {
+		valid_options++;
+		result.limit=r.process(*vlimit).as_int();
+	}
+
+	if(valid_options!=options->count())
+		throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+
+	return result;
+}
+
+static void _join(Request& r, MethodParams& params) {
+	Value& vsrc=params.as_no_junction(0, PARAM_ARRAY);
+	ArrayValue::Action_options o=get_action_options(r, params, 1);
+
+	VArray& self=GET_SELF(r, VArray);
+	ArrayValue& self_array=self.array();
+
+	if(VArray* src=dynamic_cast<VArray*>(&vsrc)) {
+		if(src==&self)
+			throw Exception(PARSER_RUNTIME, 0, "source and destination are the same array");
+
+		if(o.defined){
+			for(ArrayValue::Iterator i(src->array()); i; i.next()){
+				if(i.value()){
+					if(o.offset > 0){
+						o.offset--;
+						continue;
+					}
+					if(o.limit-- == 0)
+						break;
+					self_array+=i.value();
+				}
+			}
+		} else {
+			for(ArrayValue::Iterator i(src->array()); i; i.next()){
+				if(i.value())
+					self_array+=i.value();
+			}
+		}
+		self.invalidate();
+	} else
+		throw Exception(PARSER_RUNTIME, 0, PARAM_ARRAY);
 }
 
 static void _sql(Request& r, MethodParams& params) {}
@@ -542,6 +604,8 @@ MArray::MArray(): Methoded(VARRAY_TYPE) {
 	add_native_method("create", Method::CT_DYNAMIC, _create_or_add, 0, 1);
 	// ^array.add[add_from]
 	add_native_method("add", Method::CT_DYNAMIC, _create_or_add, 1, 1);
+	// ^array.join[join_from[;options]]
+	add_native_method("join", Method::CT_DYNAMIC, _join, 1, 2);
 
 	// ^array.sub[sub_from]
 	add_native_method("sub", Method::CT_DYNAMIC, _sub, 1, 1);
