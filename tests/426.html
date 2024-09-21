@@ -1,0 +1,14 @@
+$t[^table::create{data
+data1
+data2
+data3
+data4}]
+
+negative limit: $b[^table::create[$t; $.limit(-1) ]]
+^json:string[$b]
+
+negative offset: $b[^table::create[$t; $.offset(-1) ]]
+^json:string[$b]
+
+normal: $b[^table::create[$t; $.limit(1) $.offset(1) ]]
+^json:string[$b]
