@@ -8,7 +8,7 @@
 #ifndef PA_ARRAY_H
 #define PA_ARRAY_H
 
-#define IDENT_PA_ARRAY_H "$Id: pa_array.h,v 1.94 2024/09/16 23:22:52 moko Exp $"
+#define IDENT_PA_ARRAY_H "$Id: pa_array.h,v 1.95 2024/09/21 23:51:04 moko Exp $"
 
 // includes
 
@@ -53,9 +53,9 @@ public:
 		bool defined;
 		
 		Action_options(
-			size_t aoffset=0, 
-			size_t alimit=ARRAY_OPTION_LIMIT_ALL, 
-			bool areverse=false): 
+			size_t aoffset=0,
+			size_t alimit=ARRAY_OPTION_LIMIT_ALL,
+			bool areverse=false):
 			offset(aoffset), limit(alimit), reverse(areverse), 
 			defined(false) {}
 
@@ -71,7 +71,7 @@ public:
 			if(!m)
 				return false;
 			// fix limit
-			if(limit==ARRAY_OPTION_LIMIT_ALL || limit>m)
+			if(limit>m)
 				limit=m;
 
 			return true;
@@ -110,7 +110,7 @@ public:
 	/// append other Array portion to this one. starting from offset
 	Array& append(const Array& src, 
 		size_t offset=0, 
-		size_t limit=ARRAY_OPTION_LIMIT_ALL) { //< negative limit means 'all'. zero limit means 'nothing'
+		size_t limit=ARRAY_OPTION_LIMIT_ALL) { //< zero limit means 'nothing'
 
 		size_t src_count=src.count();
 		// skip tivials
@@ -119,7 +119,7 @@ public:
 		// max(limit)
 		size_t m=src_count-offset;
 		// fix limit
-		if(limit==ARRAY_OPTION_LIMIT_ALL || limit>m)
+		if(limit>m)
 			limit=m;
 
 		fit(fsize-1+limit);

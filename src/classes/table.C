@@ -25,7 +25,7 @@
 #include "pa_vbool.h"
 #include "pa_array.h"
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.363 2024/09/11 21:07:36 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.364 2024/09/21 23:51:03 moko Exp $";
 
 // class
 
@@ -69,19 +69,22 @@ static Table::Action_options get_action_options(Request& r, MethodParams& params
 				result.offset=source.current();
 			else
 				throw Exception(PARSER_RUNTIME, &soffset, "must be 'cur' string or expression");
-		} else 
-			result.offset=r.process(*voffset).as_int();
+		} else {
+			int offset=r.process(*voffset).as_int();
+			result.offset=offset < 0 ? 0 : offset;
+		}
 	}
 	if(Value* vlimit=options->get(sql_limit_name)) {
 		valid_options++;
-		result.limit=r.process(*vlimit).as_int();
+		int limit=r.process(*vlimit).as_int();
+		result.limit=limit < 0 ? 0: limit;
 	}
-	if(Value *vreverse=(Value *)options->get(table_reverse_name)) { 
+	if(Value *vreverse=(Value *)options->get(table_reverse_name)) {
 		valid_options++; 
 		result.reverse=r.process(*vreverse).as_bool(); 
 		if(result.reverse && !defined_offset) 
 			result.offset=source.count()-1; 
-	} 
+	}
 
 	if(valid_options!=options->count())
 		throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);

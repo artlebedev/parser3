@@ -7,7 +7,7 @@
 
 #include "pa_table.h"
 
-volatile const char * IDENT_PA_TABLE_C="$Id: pa_table.C,v 1.75 2024/09/07 16:30:27 moko Exp $" IDENT_PA_TABLE_H;
+volatile const char * IDENT_PA_TABLE_C="$Id: pa_table.C,v 1.76 2024/09/21 23:51:04 moko Exp $" IDENT_PA_TABLE_H;
 
 #include "pa_exception.h"
 
@@ -34,7 +34,7 @@ static void append_row(Table& src, Table* dest) {
 }
 
 Table::Table(const Table& src, Action_options& options) :
-	Array<element_type>( (options.limit==ARRAY_OPTION_LIMIT_ALL || options.limit>src.count()) ?  src.count() : options.limit),
+	Array<element_type>(options.limit > src.count() ? src.count() : options.limit),
 
 	fcurrent(0),
 	fcolumns(src.fcolumns),
