@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.9 2024/09/22 17:01:23 moko Exp $";
+volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.10 2024/09/22 18:23:22 moko Exp $";
 
 // class
 
@@ -144,18 +144,18 @@ static void _join(Request& r, MethodParams& params) {
 static void _sql(Request& r, MethodParams& params) {}
 
 
-static void mid(Request& r, ArrayValue::Action_options o) {
+static void mid(Request& r, size_t offset=0, size_t limit=ARRAY_OPTION_LIMIT_ALL) {
 	ArrayValue& array=GET_SELF(r, VArray).array();
-	if(o.limit>0){
+	if(limit>0){
 		VArray *result=new VArray;
 		ArrayValue& result_array=result->array();
 		for(ArrayValue::Iterator i(array); i; i.next()){
 			if(i.value()){
-				if(o.offset > 0){
-					o.offset--;
+				if(offset > 0){
+					offset--;
 					continue;
 				}
-				if(o.limit-- == 0)
+				if(limit-- == 0)
 					break;
 				result_array+=i.value();
 			}
@@ -168,7 +168,7 @@ static void mid(Request& r, ArrayValue::Action_options o) {
 
 static void _left(Request& r, MethodParams& params) {
 	int sn=params.as_int(0, "n must be int", r);
-	mid(r, ArrayValue::Action_options(0, sn < 0 ? 0 : sn));
+	mid(r, 0, sn < 0 ? 0 : sn);
 }
 
 static void _right(Request& r, MethodParams& params) {
@@ -177,12 +177,12 @@ static void _right(Request& r, MethodParams& params) {
 	if(sn>0){
 		size_t used=GET_SELF(r, VArray).array().used();
 		if(sn<used){
-			mid(r, ArrayValue::Action_options(used-sn, sn));
+			mid(r, used-sn, sn);
 		} else {
-			mid(r, ArrayValue::Action_options());
+			mid(r);
 		}
 	} else {
-		mid(r, ArrayValue::Action_options(0, 0));
+		mid(r, 0, 0);
 	}
 }
 
@@ -200,9 +200,9 @@ static void _mid(Request& r, MethodParams& params) {
 		int n=params.as_int(1, "n must be int", r);
 		if(n<0)
 			throw Exception(PARSER_RUNTIME, 0, "n(%d) must be >=0", n);
-		mid(r, ArrayValue::Action_options(begin, n));
+		mid(r, begin, n);
 	} else {
-		mid(r, ArrayValue::Action_options(begin));
+		mid(r, begin);
 	}
 }
 
