@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.8 2024/09/22 13:56:09 moko Exp $";
+volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.9 2024/09/22 17:01:23 moko Exp $";
 
 // class
 
@@ -143,13 +143,68 @@ static void _join(Request& r, MethodParams& params) {
 
 static void _sql(Request& r, MethodParams& params) {}
 
-static void _sub(Request& r, MethodParams& params) {}
 
-static void _union(Request& r, MethodParams& params) {}
+static void mid(Request& r, ArrayValue::Action_options o) {
+	ArrayValue& array=GET_SELF(r, VArray).array();
+	if(o.limit>0){
+		VArray *result=new VArray;
+		ArrayValue& result_array=result->array();
+		for(ArrayValue::Iterator i(array); i; i.next()){
+			if(i.value()){
+				if(o.offset > 0){
+					o.offset--;
+					continue;
+				}
+				if(o.limit-- == 0)
+					break;
+				result_array+=i.value();
+			}
+		}
+		r.write(*result);
+	} else {
+		r.write(*new VArray);
+	}
+}
 
-static void _intersection(Request& r, MethodParams& params) {}
+static void _left(Request& r, MethodParams& params) {
+	int sn=params.as_int(0, "n must be int", r);
+	mid(r, ArrayValue::Action_options(0, sn < 0 ? 0 : sn));
+}
 
-static void _intersects(Request& r, MethodParams& params) {}
+static void _right(Request& r, MethodParams& params) {
+	int sn=params.as_int(0, "n must be int", r);
+
+	if(sn>0){
+		size_t used=GET_SELF(r, VArray).array().used();
+		if(sn<used){
+			mid(r, ArrayValue::Action_options(used-sn, sn));
+		} else {
+			mid(r, ArrayValue::Action_options());
+		}
+	} else {
+		mid(r, ArrayValue::Action_options(0, 0));
+	}
+}
+
+static void _mid(Request& r, MethodParams& params) {
+	const String& string=GET_SELF(r, VString).string();
+
+	int begin=params.as_int(0, "p must be int", r);
+	if(begin<0)
+		throw Exception(PARSER_RUNTIME, 0,  "p(%d) must be >=0", begin);
+
+	size_t end;
+	size_t length=0;
+
+	if(params.count()>1) {
+		int n=params.as_int(1, "n must be int", r);
+		if(n<0)
+			throw Exception(PARSER_RUNTIME, 0, "n(%d) must be >=0", n);
+		mid(r, ArrayValue::Action_options(begin, n));
+	} else {
+		mid(r, ArrayValue::Action_options(begin));
+	}
+}
 
 static void _keys(Request& r, MethodParams& params) {
 	const String* keys_column_name;
@@ -625,14 +680,13 @@ MArray::MArray(): Methoded(VARRAY_TYPE) {
 	// ^array.join[join_from[;options]]
 	add_native_method("join", Method::CT_DYNAMIC, _join, 1, 2);
 
-	// ^array.sub[sub_from]
-	add_native_method("sub", Method::CT_DYNAMIC, _sub, 1, 1);
-	// ^array.union[b] = array
-	add_native_method("union", Method::CT_DYNAMIC, _union, 1, 1);
-	// ^array.intersection[b][options array] = array
-	add_native_method("intersection", Method::CT_DYNAMIC, _intersection, 1, 2);
-	// ^array.intersects[b] = bool
-	add_native_method("intersects", Method::CT_DYNAMIC, _intersects, 1, 1);
+	// ^array.left(n)
+	add_native_method("left", Method::CT_DYNAMIC, _left, 1, 1);
+	// ^array.right(n)
+	add_native_method("right", Method::CT_DYNAMIC, _right, 1, 1);
+	// ^array.mid(p)
+	// ^array.mid(p;n)
+	add_native_method("mid", Method::CT_DYNAMIC, _mid, 1, 2);
 
 	// ^array::new[value;value]
 	add_native_method("new", Method::CT_DYNAMIC, _append, 0, 10000);
