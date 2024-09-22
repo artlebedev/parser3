@@ -8,7 +8,7 @@
 #ifndef PA_VARRAY_H
 #define PA_VARRAY_H
 
-#define IDENT_PA_VARRAY_H "$Id: pa_varray.h,v 1.8 2024/09/21 15:23:23 moko Exp $"
+#define IDENT_PA_VARRAY_H "$Id: pa_varray.h,v 1.9 2024/09/22 13:56:10 moko Exp $"
 
 #include "classes.h"
 #include "pa_value.h"
@@ -42,6 +42,8 @@ public:
 	inline T get(size_t index) const {
 		return index < this->count() ? this->felements[index] : NULL;
 	}
+
+	void fit(size_t index);
 
 	inline void put(size_t index, T element){
 		this->fit(index);
@@ -171,13 +173,12 @@ public: // usage
 
 	static size_t index(int aindex){
 		if(aindex<0)
-			throw Exception("number.format", 0, "out of range (negative)");
+			throw Exception("number.format", 0, "index out of range (negative)");
 		return aindex;
 	}
 
 	static size_t index(const String::Body& aindex){ return pa_atoui(aindex.cstr()); }
 	static size_t index(const String& aindex){ return pa_atoui(aindex.cstr(), 10, &aindex); }
-	static size_t index(const Value& aindex){ return index(aindex.as_int()); }
 
 	bool contains(size_t index){
 		return farray.get(index) != NULL;

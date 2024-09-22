@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.7 2024/09/21 15:23:23 moko Exp $";
+volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.8 2024/09/22 13:56:09 moko Exp $";
 
 // class
 
@@ -74,11 +74,13 @@ static ArrayValue::Action_options get_action_options(Request& r, MethodParams& p
 
 	if(Value* voffset=options->get(sql_offset_name)) {
 		valid_options++;
-		result.offset=r.process(*voffset).as_int();
+		int offset=r.process(*voffset).as_int();
+		result.offset=offset < 0 ? 0 : offset;
 	}
 	if(Value* vlimit=options->get(sql_limit_name)) {
 		valid_options++;
-		result.limit=r.process(*vlimit).as_int();
+		int limit=r.process(*vlimit).as_int();
+		result.limit=limit < 0 ? 0: limit;
 	}
 
 	if(valid_options!=options->count())
@@ -205,7 +207,7 @@ static void _insert(Request& r, MethodParams& params) {
 	size_t index=VArray::index(params.as_int(0, PARAM_INDEX, r));
 
 	for(int i=1; i<count; i++){
-		array.insert(index+i-1, &r.process(params[i]));
+		array.insert(index++, &r.process(params[i]));
 	}
 	self.invalidate();
 }
@@ -632,6 +634,8 @@ MArray::MArray(): Methoded(VARRAY_TYPE) {
 	// ^array.intersects[b] = bool
 	add_native_method("intersects", Method::CT_DYNAMIC, _intersects, 1, 1);
 
+	// ^array::new[value;value]
+	add_native_method("new", Method::CT_DYNAMIC, _append, 0, 10000);
 	// ^array.append[value;value]
 	add_native_method("append", Method::CT_DYNAMIC, _append, 1, 10000);
 	// ^array.insert[index;value...]

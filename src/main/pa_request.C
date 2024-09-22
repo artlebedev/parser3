@@ -35,7 +35,7 @@
 #include "pa_vdate.h"
 #include "pa_varray.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.424 2024/09/17 18:09:59 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.425 2024/09/22 13:56:09 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -44,7 +44,8 @@ volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.424 2024/09/17 1
 /// content type of response when no $MAIN:defaults.content-type defined
 const char* DEFAULT_CONTENT_TYPE="text/html";
 
-const uint LOOP_LIMIT=20000;
+const uint LOOP_LIMIT=100000;
+const uint ARRAY_LIMIT=1000000;
 const uint EXECUTE_RECOURSION_LIMIT=1000;
 const uint HTTPD_TIMEOUT=4;
 const size_t FILE_SIZE_LIMIT=512*1024*1024;
@@ -77,6 +78,7 @@ const String exception_handled_part_name(EXCEPTION_HANDLED_PART_NAME);
 static const String origin_key(ORIGIN_KEY);
 
 int pa_loop_limit=LOOP_LIMIT;
+int pa_array_limit=ARRAY_LIMIT;
 int pa_execute_recoursion_limit=EXECUTE_RECOURSION_LIMIT;
 int pa_httpd_timeout=HTTPD_TIMEOUT;
 size_t pa_file_size_limit=FILE_SIZE_LIMIT;
@@ -102,6 +104,7 @@ static const String getter_protected_name("CLASS-GETTER-PROTECTED");
 static const String locals_name("LOCALS");
 static const String limits_name("LIMITS");
 static const String loop_limit_name("max_loop");
+static const String array_limit_name("max_array_size");
 static const String recoursion_limit_name("max_recoursion");
 static const String file_size_limit_name("max_file_size");
 static const String lock_wait_timeout_name("lock_wait_timeout");
@@ -338,6 +341,12 @@ void Request::configure_admin(VStateless_class& conf_class) {
 	CONF_OPTION(limits, loop_limit_name, {
 		pa_loop_limit=option->as_int();
 		if(pa_loop_limit==0) pa_loop_limit=INT_MAX;
+	}, "LIMITS.%s must be int");
+
+	pa_array_limit=ARRAY_LIMIT;
+	CONF_OPTION(limits, array_limit_name, {
+		pa_array_limit=option->as_int();
+		if(pa_array_limit==0) pa_array_limit=INT_MAX;
 	}, "LIMITS.%s must be int");
 
 	pa_execute_recoursion_limit=EXECUTE_RECOURSION_LIMIT;

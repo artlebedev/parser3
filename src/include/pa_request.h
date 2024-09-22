@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.265 2024/09/17 18:09:59 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.266 2024/09/22 13:56:09 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -56,6 +56,7 @@ class VStateless_class;
 class VConsole;
 
 extern int pa_loop_limit;
+extern int pa_array_limit;
 extern int pa_execute_recoursion_limit;
 extern int pa_httpd_timeout;
 extern size_t pa_file_size_limit;
