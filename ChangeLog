@@ -1,3 +1,58 @@
+2024-09-22  moko
+
+	* src/classes/array.C: minor simplification
+
+	* src/classes/array.C: ^array.left(N),
+	  ^array.right(N),^array.mid(P;N) added (related to feature #930)
+
+	* src/: classes/array.C, include/pa_request.h, main/pa_request.C,
+	  types/pa_varray.C, types/pa_varray.h: $MAIN:LIMITS.max_array_size
+	  added, default 1000000 (related to feature #930)
+
+	* tests/: 426.html, results/426.processed: test for negative limit
+	  and offset processing for table options added
+
+	* src/: classes/table.C, include/pa_array.h, main/pa_table.C:
+	  bugfix: negative limit and offset processing for table options
+	  fixed
+
+2024-09-21  moko
+
+	* src/: classes/array.C, types/pa_varray.h: join supports hash;
+	  ^for added that also iterates holes; ^remove added (related to
+	  feature #930)
+
+	* src/classes/array.C: ^array.join[$another_array; $.limit(N)
+	  $.offset(M) ] added (related to feature #930)
+
+2024-09-20  moko
+
+	* src/: classes/array.C, types/pa_varray.h: array:
+	  +foreach[value]{code}, + add[hash with numeric keys] (related to
+	  feature #930)
+
+2024-09-19  moko
+
+	* src/: include/pa_opcode.h, main/compile.y, main/compile_tools.h,
+	  main/execute.C, types/pa_varray.h: OP_CONSTRUCT_ARRAY added to
+	  support $a[v1;v2;...] syntax (related to feature #930)
+
+2024-09-17  moko
+
+	* src/: classes/reflection.C, include/pa_request.h,
+	  main/compile_tools.h, main/pa_request.C:
+	  ^reflection:class_alias[existing class name;alias class name]
+	  added. The array class can now be redefined regardless of the
+	  $.replace(bool) option value (related to feature #930)
+
+	* src/main/: compile.y, compile_tools.h: class_add return value
+	  inverted to add it to request class
+
+	* src/: classes/array.C, include/pa_array.h, include/pa_request.h,
+	  include/pa_stack.h, types/pa_varray.C, types/pa_varray.h,
+	  types/pa_vmethod_frame.h: array: fused -> fsize, fit(index) to
+	  resize if required. spared array - added fused, append.
+
 2024-09-16  moko
 
 	* src/types/pa_varray.h: get moved to where it belongs
