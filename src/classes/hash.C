@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.158 2024/09/13 04:01:22 moko Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.159 2024/09/23 23:16:41 moko Exp $";
 
 // class
 
@@ -38,20 +38,19 @@ DECLARE_CLASS_VAR(hash, new MHash);
 #ifndef DOXYGEN
 class Hash_sql_event_handlers: public SQL_Driver_query_event_handlers {
 	bool distinct;
-	HashStringValue& rows_hash;
+	HashStringValue& result;
 	Value* row_value;
 	int column_index;
 	ArrayString& columns;
 	bool one_bool_column;
-	static VBool only_one_column_value;
 	Table2hash_value_type value_type;
 	int columns_count;
 public:
 	Table* empty;
 public:
-	Hash_sql_event_handlers(bool adistinct, HashStringValue& arows_hash, Table2hash_value_type avalue_type):
+	Hash_sql_event_handlers(bool adistinct, HashStringValue& aresult, Table2hash_value_type avalue_type):
 		distinct(adistinct),
-		rows_hash(arows_hash),
+		result(aresult),
 		row_value(0),
 		column_index(0),
 		columns(*new ArrayString),
@@ -105,23 +104,23 @@ public:
 
 			bool duplicate=false;
 			if(one_bool_column) {
-				duplicate=rows_hash.put_dont_replace(cell, &only_one_column_value);  // put. existed?
+				duplicate=result.put_dont_replace(cell, &VBool::get(true));  // put. existed?
 			} else if(column_index==0) {
 				switch(value_type){
 					case C_HASH: {
 						VHash* row_vhash=new VHash;
 						row_value=row_vhash;
-						duplicate=rows_hash.put_dont_replace(cell, row_vhash); // put. existed?
+						duplicate=result.put_dont_replace(cell, row_vhash); // put. existed?
 						break;
 					}
 					case C_STRING: {
 						VString* row_vstring=new VString();
 						row_value=row_vstring;
-						duplicate=rows_hash.put_dont_replace(cell, row_vstring);  // put. existed?
+						duplicate=result.put_dont_replace(cell, row_vstring);  // put. existed?
 						break;
 					}
 					case C_TABLE: {
-						VTable* vtable=(VTable*)rows_hash.get(cell);
+						VTable* vtable=(VTable*)result.get(cell);
 						Table* table;
 
 						if(vtable) { // table with this key exist?
@@ -135,7 +134,7 @@ public:
 							Table::Action_options table_options(0, 0);
 							table=new Table(*empty, table_options/*no rows, just structure*/);
 							vtable=new VTable(table);
-							rows_hash.put(cell, vtable); // put
+							result.put(cell, vtable); // put
 						}
 						ArrayString* row=new ArrayString(columns_count);
 						row_value=(Value*)row;
@@ -177,7 +176,6 @@ public:
 	}
 
 };
-VBool Hash_sql_event_handlers::only_one_column_value(true);
 
 #endif
 
