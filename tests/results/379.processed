@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 4123
+Content-Length: 4135
 
 1. slow test result:
 {
@@ -167,7 +167,7 @@ Comment: bad response from host - bad header ":value"
 8. invalid-status test result:
 Exception type: number.format,
 Source: http://www.parser.ru/_/tests/nph-379.pl?invalid-status,
-Comment: 'bad' is invalid number (int) for HTTP status
+Comment: 'bad' is an invalid number (int) for HTTP status
 9. no-status-1 test result:
 Exception type: http.status,
 Source: HTTP/1.0 OK,
@@ -183,12 +183,12 @@ Comment: invalid HTTP response status
 12. strange-status test result:
 Exception type: number.format,
 Source: http://www.parser.ru/_/tests/nph-379.pl?strange-status,
-Comment: '200OK?' is invalid number (int) for HTTP status
+Comment: '200OK?' is an invalid number (int) for HTTP status
 13. strange-content-length-1 test result:
 Exception type: number.format,
 Source: http://www.parser.ru/_/tests/nph-379.pl?strange-content-length-1,
-Comment: '-1' is invalid number (int) for content-length
+Comment: '-1' is out if range (negative) for content-length
 14. strange-content-length-2 test result:
 Exception type: number.format,
 Source: http://www.parser.ru/_/tests/nph-379.pl?strange-content-length-2,
-Comment: '200OK?' is invalid number (int) for content-length
+Comment: '200OK?' is an invalid number (int) for content-length
