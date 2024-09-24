@@ -12,7 +12,7 @@
 #include "pa_charset.h"
 #include "pa_vregex.h"
 
-volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.273 2024/09/11 21:07:36 moko Exp $" IDENT_PA_STRING_H;
+volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.274 2024/09/24 00:18:54 moko Exp $" IDENT_PA_STRING_H;
 
 const String String::Empty;
 
@@ -46,9 +46,10 @@ template<typename T> inline T pa_ato_any(const char *str, int base, const String
 		}
 	}
 
-	if (base < 2 || base > 16) { /* illegal base */
+	if (base < 2 || base > 16) /* illegal base */
 		throw Exception(PARSER_RUNTIME, 0, "base to must be an integer from 2 to 16");
-	}
+	if (*pos == '-')
+		throw Exception("number.format", problem_source, problem_source ? "out of range (negative)" : "'%s' is out if range (negative)", str);
 
 	T cutoff = max / base;
 	int cutoff_digit = (int)(max - cutoff * base);
@@ -80,7 +81,7 @@ template<typename T> inline T pa_ato_any(const char *str, int base, const String
 
 	while(char c=*pos++)
 		if(!isspace(c))
-			throw Exception("number.format", problem_source, problem_source ? "invalid number (int)" : "'%s' is invalid number (int)", str);
+			throw Exception("number.format", problem_source, problem_source ? "invalid number (int)" : "'%s' is an invalid number (int)", str);
 
 	return result;
 }
