@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 3863
+Content-Length: 4073
 
 
 
@@ -24,19 +24,19 @@ Content-Length: 3863
 
 	2.3 
 	
-	Type: sql.execute,
+	Exception type: sql.execute,
 	Source: select * from pets,
 	Comment: must return nothing
 
 	2.4 
 	
-	Type: parser.runtime,
+	Exception type: parser.runtime,
 	Source: sql,
 	Comment: called with invalid option
 
 	2.5 
 	
-	Type: sql.execute,
+	Exception type: sql.execute,
 	Source: query,
 	Comment: bind variables not supported yet
 
@@ -44,13 +44,13 @@ Content-Length: 3863
 	2.6 Multiple queries:   
 	2.8 Multiple queries, data in first query:  
 	
-	Type: sql.execute,
+	Exception type: sql.execute,
 	Source: select 2+2 ; delete from pets where pet='',
 	Comment: must return nothing
  
 	2.9 Multiple queries, data in second query: 
 	
-	Type: sql.execute,
+	Exception type: sql.execute,
 	Source: delete from pets where pet='' ; select 2+2,
 	Comment: must return nothing
 
@@ -61,7 +61,7 @@ Content-Length: 3863
 	3.1  2 int
 	3.2 
 	
-	Type: parser.runtime,
+	Exception type: parser.runtime,
 	Source: sql,
 	Comment: produced no result, but no default option specified
 
@@ -70,7 +70,7 @@ Content-Length: 3863
 	3.4  -2 double
 	3.5 
 	
-	Type: parser.runtime,
+	Exception type: parser.runtime,
 	Source: sql,
 	Comment: produced no result, but no default option specified
 
@@ -80,7 +80,7 @@ Content-Length: 3863
 	3.8 Multiple queries, data in second query:  4 
 	3.9 Multiple queries, data in both queries: 
 	
-	Type: sql.execute,
+	Exception type: sql.execute,
 	Source: select 2+2 ; select 3+3 ,
 	Comment: result must contain exactly one column
 
@@ -129,7 +129,7 @@ Content-Length: 3863
 
 	4.4 
 	
-	Type: sql.execute,
+	Exception type: sql.execute,
 	Source: select * from pets,
 	Comment: only 2 columns allowed for $.type[string].
 
@@ -143,7 +143,7 @@ Content-Length: 3863
 
 	4.6 
 	
-	Type: sql.execute,
+	Exception type: sql.execute,
 	Source: select 'dup', pet from pets,
 	Comment: duplicate key
 
@@ -165,14 +165,14 @@ Content-Length: 3863
 
 	5.3 
 	
-	Type: sql.execute,
+	Exception type: sql.execute,
 	Source: select * from pets,
 	Comment: bind variables not supported yet
 
 
 	5.4 
 	
-	Type: parser.runtime,
+	Exception type: parser.runtime,
 	Source: sql,
 	Comment: called with invalid option
 
@@ -202,14 +202,14 @@ Content-Length: 3863
 
 	6.3 
 	
-	Type: sql.execute,
+	Exception type: sql.execute,
 	Source: select * from pets,
 	Comment: result must contain not more then 3 columns
 
 
 	6.4 
 	
-	Type: parser.runtime,
+	Exception type: parser.runtime,
 	Source: sql,
 	Comment: produced no result
 
@@ -226,14 +226,14 @@ Content-Length: 3863
 
 	6.6 
 	
-	Type: sql.execute,
+	Exception type: sql.execute,
 	Source: select 1,2 from pets,
 	Comment: result must not contain more then one row, three columns
 
 
 	6.7 
 	
-	Type: parser.runtime,
+	Exception type: parser.runtime,
 	Source: sql,
 	Comment: called with invalid option
 
@@ -244,31 +244,31 @@ Content-Length: 3863
 
 	7.1 
 	
-	Type: sql.execute,
+	Exception type: sql.execute,
 	Source: select * from pets,
 	Comment: result must contain exactly one column
 
 	7.2 
 	
-	Type: sql.execute,
+	Exception type: sql.execute,
 	Source: select pet from pets,
 	Comment: result must not contain more then one row
 
 	7.3 
 	
-	Type: sql.execute,
+	Exception type: sql.execute,
 	Source: select 2+2,
 	Comment: bind variables not supported yet
 
 	7.4 
 	
-	Type: parser.runtime,
+	Exception type: parser.runtime,
 	Source: sql,
 	Comment: called with invalid option
 
 	7.5 
 	
-	Type: parser.runtime,
+	Exception type: parser.runtime,
 	Source: sql,
 	Comment: produced no result, but no default option specified
 
