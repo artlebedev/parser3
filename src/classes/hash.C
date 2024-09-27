@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.160 2024/09/27 20:49:10 moko Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.161 2024/09/27 23:38:52 moko Exp $";
 
 // class
 
@@ -312,25 +312,25 @@ static void _sql(Request& r, MethodParams& params) {
 	if(params.count()>1)
 		if(HashStringValue* options=params.as_hash(1, "sql options")) {
 			int valid_options=0;
-			if(Value* vbind=options->get(sql_bind_name)) {
-				valid_options++;
-				bind=vbind->get_hash();
-			}
-			if(Value* vlimit=options->get(sql_limit_name)) {
-				valid_options++;
-				limit=(ulong)r.process(*vlimit).as_double();
-			}
-			if(Value* voffset=options->get(sql_offset_name)) {
-				valid_options++;
-				offset=(ulong)r.process(*voffset).as_double();
-			}
-			if(Value* vdistinct=options->get(sql_distinct_name)) {
-				valid_options++;
-				distinct=r.process(*vdistinct).as_bool();
-			}
-			if(Value* vvalue_type=options->get(sql_value_type_name)) {
-				valid_options++;
-				value_type=get_value_type(r.process(*vvalue_type));
+			for(HashStringValue::Iterator i(*options); i; i.next() ){
+				String::Body key=i.key();
+				Value* value=i.value();
+				if(key == sql_bind_name) {
+					bind=value->get_hash();
+					valid_options++;
+				} else if(key == sql_limit_name) {
+					limit=(ulong)r.process(*value).as_double();
+					valid_options++;
+				} else if(key == sql_offset_name) {
+					offset=(ulong)r.process(*value).as_double();
+					valid_options++;
+				} else if (key == sql_distinct_name) {
+					distinct=r.process(*value).as_bool();
+					valid_options++;
+				} else if (key == sql_value_type_name) {
+					value_type=get_value_type(r.process(*value));
+					valid_options++;
+				}
 			}
 			if(valid_options!=options->count())
 				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
