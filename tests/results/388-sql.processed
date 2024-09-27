@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 4073
+Content-Length: 4127
 
 
 
@@ -147,6 +147,13 @@ Content-Length: 4073
 	Source: select 'dup', pet from pets,
 	Comment: duplicate key
 
+
+	4.7 	
+	{
+	"cat":true,
+	"dog":true,
+	"parrot":true
+}
 
 
 	5. table
