@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 3923
+Content-Length: 3996
 
 1. slow test result:
 {
@@ -42,7 +42,7 @@ Content-Length: 3923
 "text":"body\n"
 }
 3. invalid-content-length test result:
-Type: parser.runtime,
+Exception type: parser.runtime,
 Source: http://www.parser.ru/_/tests/nph-379.pl?invalid-content-length,
 Comment: content size of 10000000000 bytes exceeds the limit (536870912 bytes)
 4. empty-body test result:
@@ -167,19 +167,19 @@ Comment: content size of 10000000000 bytes exceeds the limit (536870912 bytes)
 "text":"body\n"
 }
 8. invalid-status test result:
-Type: curl.fail,
+Exception type: curl.fail,
 Source: http://www.parser.ru/_/tests/nph-379.pl?invalid-status,
 Comment: Unsupported protocol
 9. no-status-1 test result:
-Type: curl.fail,
+Exception type: curl.fail,
 Source: http://www.parser.ru/_/tests/nph-379.pl?no-status-1,
 Comment: Unsupported protocol
 10. no-status-2 test result:
-Type: curl.fail,
+Exception type: curl.fail,
 Source: http://www.parser.ru/_/tests/nph-379.pl?no-status-2,
 Comment: Unsupported protocol
 11. no-status-3 test result:
-Type: curl.fail,
+Exception type: curl.fail,
 Source: http://www.parser.ru/_/tests/nph-379.pl?no-status-3,
 Comment: Unsupported protocol
 12. strange-status test result:
@@ -194,10 +194,10 @@ Comment: Unsupported protocol
 "text":""
 }
 13. strange-content-length-1 test result:
-Type: curl.fail,
+Exception type: curl.fail,
 Source: http://www.parser.ru/_/tests/nph-379.pl?strange-content-length-1,
 Comment: Weird server reply
 14. strange-content-length-2 test result:
-Type: number.format,
+Exception type: number.format,
 Source: http://www.parser.ru/_/tests/nph-379.pl?strange-content-length-2,
-Comment: '200OK?' is invalid number (int) for content-length
+Comment: '200OK?' is an invalid number (int) for content-length

@@ -1,40 +1,40 @@
 Content-Type: text/html
-Content-Length: 3849
+Content-Length: 3999
 
-1. Type: curl,
+1. Exception type: curl,
 Source: info,
 Comment: outside of 'session' operator
-2. Type: curl,
+2. Exception type: curl,
 Source: options,
 Comment: outside of 'session' operator
-3. Type: curl,
+3. Exception type: curl,
 Source: options,
 Comment: outside of 'session' operator
-4. 5. Type: curl,
+4. 5. Exception type: curl,
 Source: options,
 Comment: failed to set option 'library': already loaded
-6. Type: curl,
+6. Exception type: curl,
 Source: options,
 Comment: failed to set option 'url': invalid url scheme 'ftp://parser.ru/'
-7. Type: curl,
+7. Exception type: curl,
 Source: name,
 Comment: is hash, form option value can be string, table or file only
-8. Type: parser.runtime,
+8. Exception type: parser.runtime,
 Source: options,
 Comment: failed to set option 'httppost': value must have hash representation
-8.1. Type: parser.runtime,
+8.1. Exception type: parser.runtime,
 Source: options,
 Comment: failed to set option 'httppost': value must have hash representation
-8.2. Type: parser.runtime,
+8.2. Exception type: parser.runtime,
 Source: options,
 Comment: failed to set option 'httpheader': value must have hash representation
-8.3. Type: parser.runtime,
+8.3. Exception type: parser.runtime,
 Source: options,
 Comment: failed to set option 'httpheader': value must have hash representation
-8.4. 9. Type: curl,
+8.4. 9. Exception type: curl,
 Source: options,
 Comment: called with invalid option 'no-such-option'
-10. Type: curl,
+10. Exception type: curl,
 Source: info,
 Comment: called with invalid parameter 'no-such-info'
 11. {
@@ -68,11 +68,11 @@ Comment: called with invalid parameter 'no-such-info'
 "ssl_verifyresult":0
 }
 12. Parser3 tests (make tests).
-Don't delete or modify them.
+Don&apos;t delete or modify them.
 bytes 4-62/63
-13. Don't delete or modify them.
+13. Don&apos;t delete or modify them.
 bytes 33-62/63
-13.1. Type: curl,
+13.1. Exception type: curl,
 Source: unknown,
 Comment: invalid http_version option value
 13.2. 14. text : {
@@ -165,6 +165,6 @@ SERVER_NAME	: www.parser.ru</pre>
 <h3>Body</h3>
 <pre></pre>
 <hr />
-19. Type: curl.host,
+19. Exception type: curl.host,
 Source: http://no-such-domain.parser.ru/,
 Comment: Couldn't resolve host name
