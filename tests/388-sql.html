@@ -71,6 +71,10 @@ $ignore[^SQL.drivers.locate[protocol;$sql]]
 
 	4.7 ^h[select pet from pets]
 
+	4.8 ^h[select '0' as key, pet from pets; $.type[table] $.distinct(true) ]
+
+	4.9 ^h[select '0' as key, pet from pets; $.type[string] $.distinct(true) ]
+
 
 	5. table
 
