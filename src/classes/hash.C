@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.159 2024/09/23 23:16:41 moko Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.160 2024/09/27 20:49:10 moko Exp $";
 
 // class
 
@@ -121,25 +121,22 @@ public:
 					}
 					case C_TABLE: {
 						VTable* vtable=(VTable*)result.get(cell);
-						Table* table;
 
 						if(vtable) { // table with this key exist?
 							if(!distinct) {
 								duplicate=true;
 								break;
 							}
-							table=vtable->get_table();
 						} else {
 							// no? creating table of same structure as source
 							Table::Action_options table_options(0, 0);
-							table=new Table(*empty, table_options/*no rows, just structure*/);
-							vtable=new VTable(table);
+							vtable=new VTable(new Table(*empty, table_options/*no rows, just structure*/));
 							result.put(cell, vtable); // put
 						}
 						ArrayString* row=new ArrayString(columns_count);
 						row_value=(Value*)row;
 						*row+=&cell;
-						*table+=row;
+						*vtable->get_table()+=row;
 						break;
 					}
 				}
