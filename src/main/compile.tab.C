@@ -77,7 +77,7 @@
 	
 */
 
-volatile const char * IDENT_COMPILE_Y = "$Id: compile.tab.C,v 1.186 2024/09/18 22:31:34 moko Exp $";
+volatile const char * IDENT_COMPILE_Y = "$Id: compile.tab.C,v 1.187 2024/09/28 14:38:11 moko Exp $";
 
 /**
 	@todo parser4: 
@@ -1611,7 +1611,7 @@ yyreduce:
 			PC.cclass_new=cclass;
 			PC.append=false;
 		} else {
-			YYERROR1("@" CLASS_NAME " must contain only one line with class name (contains more then one)");
+			YYERROR1("@" CLASS_NAME " must contain only one line with class name (contains more than one)");
 		}
 	} else if(command==USE_CONTROL_METHOD_NAME) {
 		CLASS_ADD;
