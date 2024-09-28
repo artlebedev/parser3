@@ -8,5 +8,17 @@
 
 	1.1 ^try-catch{ ^t[select pet from pets^;select food from pets] }
 
-	1.2 ^h[select pet,food from pets^;select aggressive,* from pets; $.type[table] ] -bug
+	1.2 ^h[select 0,* from pets^;select 1,* from pets; $.type[table] $.distinct(true) ]
+
+	1.3 ^h[select 0,* from pets^;select 0,* from pets; $.type[table] $.distinct(true) ]
+
+	1.4 ^h[select 0,* from pets^;select 0, 2+2; $.type[table] $.distinct(true) ]
+
+	1.5 ^h[select 0,* from pets limit 2^;delete from pets where pet=''^;select 1,* from pets limit 1; $.type[table] $.distinct(true) ]
+
+	1.6 ^h[select 0,* from pets^;delete from pets where pet=''^;select 1,* from pets; $.type[table] $.distinct(true) $.limit(1) ]
+
+	1.7 ^h[select pet,food from pets^;select food,* from pets; $.type[table] $.distinct(true)]
+
+	1.8 ^h[select pet,food from pets^;select food,* from pets;  $.distinct(true)]
 }
