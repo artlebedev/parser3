@@ -35,7 +35,7 @@
 #include "pa_vdate.h"
 #include "pa_varray.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.425 2024/09/22 13:56:09 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.426 2024/09/28 14:37:54 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -359,7 +359,7 @@ void Request::configure_admin(VStateless_class& conf_class) {
 	CONF_OPTION(limits, file_size_limit_name, {
 		double limit=option->as_double();
 		if(limit >= (double)SSIZE_MAX)
-			throw Exception(PARSER_RUNTIME, 0, "$MAIN:LIMITS.%s must be less then %.15g", file_size_limit_name.cstr(), (double)SSIZE_MAX);
+			throw Exception(PARSER_RUNTIME, 0, "$MAIN:LIMITS.%s must be less than %.15g", file_size_limit_name.cstr(), (double)SSIZE_MAX);
 		pa_file_size_limit=(size_t)limit;
 		if(pa_file_size_limit==0)
 			pa_file_size_limit=SSIZE_MAX;
@@ -369,7 +369,7 @@ void Request::configure_admin(VStateless_class& conf_class) {
 	CONF_OPTION(limits, lock_wait_timeout_name, {
 		double limit=option->as_double();
 		if(limit >= 3600*24)
-			throw Exception(PARSER_RUNTIME, 0, "$MAIN:LIMITS.%s must be less then %d", lock_wait_timeout_name.cstr(), 3600*24);
+			throw Exception(PARSER_RUNTIME, 0, "$MAIN:LIMITS.%s must be less than %d", lock_wait_timeout_name.cstr(), 3600*24);
 		pa_lock_attempts=(unsigned int)(limit*2)+1;
 	}, "LIMITS.%s must be number");
 

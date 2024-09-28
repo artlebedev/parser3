@@ -14,7 +14,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.126 2024/09/13 04:01:23 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.127 2024/09/28 14:37:54 moko Exp $" IDENT_PA_HTTP_H; 
 
 // defines
 
@@ -288,11 +288,11 @@ static int http_request(HTTP_response& response, const char* host, short port, c
 			struct sockaddr_in dest;
 		
 			if(!set_addr(&dest, host, port))
-				throw Exception("http.host", 0, "can not resolve hostname \"%s\"", host); 
+				throw Exception("http.host", 0, "cannot resolve hostname \"%s\"", host); 
 			
 			if((sock=socket(AF_INET, SOCK_STREAM, IPPROTO_TCP/*0*/)) == INVALID_SOCKET) {
 				int no=pa_socks_errno();
-				throw Exception("http.connect", 0, "can not make socket: %s (%d)", pa_socks_strerr(no), no); 
+				throw Exception("http.connect", 0, "cannot make socket: %s (%d)", pa_socks_strerr(no), no); 
 			}
 
 			// To enable SO_DONTLINGER (that is, disable SO_LINGER) 
@@ -311,7 +311,7 @@ static int http_request(HTTP_response& response, const char* host, short port, c
 
 			if(connect(sock, (struct sockaddr *)&dest, sizeof(dest))) {
 				int no=pa_socks_errno();
-				throw Exception("http.connect", 0, "can not connect to host \"%s\": %s (%d)", host, pa_socks_strerr(no), no);
+				throw Exception("http.connect", 0, "cannot connect to host \"%s\": %s (%d)", host, pa_socks_strerr(no), no);
 			}
 
 			if(send(sock, request, request_size, 0)!=(ssize_t)request_size) {
@@ -704,7 +704,7 @@ File_read_http_result pa_internal_file_read_http(Request& r, const String& file_
 
 	if(encode){
 		if(method_is_get)
-			throw Exception(PARSER_RUNTIME, 0, "you can not use $." HTTP_FORM_ENCTYPE_NAME " option with method GET");
+			throw Exception(PARSER_RUNTIME, 0, "you cannot use $." HTTP_FORM_ENCTYPE_NAME " option with method GET");
 
 		multipart=strcasecmp(encode, HTTP_CONTENT_TYPE_MULTIPART_FORMDATA)==0;
 
@@ -714,10 +714,10 @@ File_read_http_result pa_internal_file_read_http(Request& r, const String& file_
 
 	if(vbody){
 		if(method_is_get)
-			throw Exception(PARSER_RUNTIME, 0, "you can not use $." HTTP_BODY_NAME " option with method GET");
+			throw Exception(PARSER_RUNTIME, 0, "you cannot use $." HTTP_BODY_NAME " option with method GET");
 
 		if(form)
-			throw Exception(PARSER_RUNTIME, 0, "you can not use options $." HTTP_BODY_NAME " and $." HTTP_FORM_NAME " together");
+			throw Exception(PARSER_RUNTIME, 0, "you cannot use options $." HTTP_BODY_NAME " and $." HTTP_FORM_NAME " together");
 	}
 
 	//preparing request
@@ -1258,7 +1258,7 @@ SOCKET HTTPD_Server::bind(const char *host_port){
 
 	if(!set_addr(&me, host, (short)pa_atoui(port))){
 		if (host)
-			throw Exception("httpd.bind", 0, "can not resolve hostname \"%s\"", host);
+			throw Exception("httpd.bind", 0, "cannot resolve hostname \"%s\"", host);
 		me.sin_addr.s_addr=INADDR_ANY;
 	}
 
@@ -1266,7 +1266,7 @@ SOCKET HTTPD_Server::bind(const char *host_port){
 
 	if(sock == INVALID_SOCKET){
 		int no=pa_socks_errno();
-		throw Exception("httpd.bind", 0, "can not make socket: %s (%d)", pa_socks_strerr(no), no);
+		throw Exception("httpd.bind", 0, "cannot make socket: %s (%d)", pa_socks_strerr(no), no);
 	}
 
 	static int sock_on = 1;
@@ -1277,7 +1277,7 @@ SOCKET HTTPD_Server::bind(const char *host_port){
 	    listen(sock, 16)) {
 		closesocket(sock);
 		int no = pa_socks_errno();
-		throw Exception("httpd.bind", 0, "can not bind socket: %s (%d)", pa_socks_strerr(no), no);
+		throw Exception("httpd.bind", 0, "cannot bind socket: %s (%d)", pa_socks_strerr(no), no);
 	}
 	return sock;
 }

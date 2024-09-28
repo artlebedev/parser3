@@ -23,7 +23,7 @@
 extern "C" char *crypt(const char* , const char* );
 #endif
 
-volatile const char * IDENT_MATH_C="$Id: math.C,v 1.105 2023/12/28 23:20:10 moko Exp $";
+volatile const char * IDENT_MATH_C="$Id: math.C,v 1.106 2024/09/28 14:37:53 moko Exp $";
 
 // defines
 
@@ -318,7 +318,7 @@ void SHA1PadMessage(SHA1Context *context) {
 void SHA1ReadDigest(void *buf, SHA1Context *c)
 {
 	if(!SHA1Result(c))
-		throw Exception (PARSER_RUNTIME, 0, "Can not compute SHA1");
+		throw Exception (PARSER_RUNTIME, 0, "Cannot compute SHA1");
 
 	((uint32_t *)buf)[0] = SWAP(c->Message_Digest[0]);
 	((uint32_t *)buf)[1] = SWAP(c->Message_Digest[1]);

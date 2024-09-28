@@ -15,7 +15,7 @@
 #include "pa_vtable.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_PA_SQL_DRIVER_MANAGER_C="$Id: pa_sql_driver_manager.C,v 1.103 2024/09/07 16:30:26 moko Exp $" IDENT_PA_SQL_DRIVER_MANAGER_H IDENT_PA_SQL_CONNECTION_H;
+volatile const char * IDENT_PA_SQL_DRIVER_MANAGER_C="$Id: pa_sql_driver_manager.C,v 1.104 2024/09/28 14:37:54 moko Exp $" IDENT_PA_SQL_DRIVER_MANAGER_H IDENT_PA_SQL_CONNECTION_H;
 
 // globals
 
@@ -154,7 +154,7 @@ SQL_Connection* SQL_Driver_manager::get_connection(const String& aurl, Table *pr
 			lt_dlhandle handle=lt_dlopen(filename);
 			if (!handle) {
 				const char* error=lt_dlerror();
-				throw Exception(0, library, error ? error : "can not open the module");
+				throw Exception(0, library, error ? error : "cannot open the module");
 			}
 
 			SQL_Driver_create_func create=(SQL_Driver_create_func)(lt_dlsym(handle, 

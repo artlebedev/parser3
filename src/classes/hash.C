@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.162 2024/09/28 02:05:19 moko Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.163 2024/09/28 14:37:53 moko Exp $";
 
 // class
 
@@ -89,6 +89,7 @@ public:
 					// create empty table which we'll copy later
 					empty=new Table(&columns);
 					columns_count=columns.count();
+					break;
 				}
 			}
 		}

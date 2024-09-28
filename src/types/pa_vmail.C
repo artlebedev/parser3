@@ -20,7 +20,7 @@
 #include "pa_vtable.h"
 #include "pa_uue.h"
 
-volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.143 2024/09/14 22:58:50 moko Exp $" IDENT_PA_VMAIL_H;
+volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.144 2024/09/28 14:37:54 moko Exp $" IDENT_PA_VMAIL_H;
 
 #ifdef WITH_MAILRECEIVE
 extern "C" {
@@ -607,7 +607,7 @@ static void store_message_element(HashStringValue::key_type raw_element_name, Ha
 	String& mail_line=*new String;
 	if(low_element_name=="to" || low_element_name=="cc" || low_element_name=="bcc")
 	{
-		// never wrap address lines, mailer can not handle wrapped properly
+		// never wrap address lines, mailer cannot handle wrapped properly
 		mail_line.append_strdup(mail.str, mail.length, String::L_MAIL_HEADER);
 	} else {
 		while(mail.length) {

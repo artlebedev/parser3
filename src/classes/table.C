@@ -25,7 +25,7 @@
 #include "pa_vbool.h"
 #include "pa_array.h"
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.364 2024/09/21 23:51:03 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.365 2024/09/28 14:37:53 moko Exp $";
 
 // class
 
@@ -259,9 +259,9 @@ static void _create(Request& r, MethodParams& params) {
 
 	if(params.count()>1) {
 		if(params[0].is_string()){ // can be nameless only
-			const String& snameless=params.as_string(0, "called with more then 1 param, first param may be only string 'nameless' or junction");
+			const String& snameless=params.as_string(0, "called with more than 1 param, first param may be only string 'nameless' or junction");
 			if(snameless!="nameless")
-				throw Exception(PARSER_RUNTIME, &snameless, "table::create called with more then 1 param, first param may be only 'nameless'");
+				throw Exception(PARSER_RUNTIME, &snameless, "table::create called with more than 1 param, first param may be only 'nameless'");
 			nameless=true;
 			data_param_index++;
 		}
@@ -983,7 +983,7 @@ static void _hash(Request& r, MethodParams& params) {
 			throw Exception(PARSER_RUNTIME, 0, "value field(s) must be string or table or code");
 
 		if(value_type==C_STRING && value_fields.count()>1)
-			throw Exception(PARSER_RUNTIME, 0, "you can't specify more then one value field with option $.type[string]");
+			throw Exception(PARSER_RUNTIME, 0, "you can't specify more than one value field with option $.type[string]");
 	}
 
 	Value* key_param=&params[0];

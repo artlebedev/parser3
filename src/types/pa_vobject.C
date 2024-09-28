@@ -12,7 +12,7 @@
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VOBJECT_C="$Id: pa_vobject.C,v 1.54 2024/09/13 04:01:23 moko Exp $" IDENT_PA_VOBJECT_H;
+volatile const char * IDENT_PA_VOBJECT_C="$Id: pa_vobject.C,v 1.55 2024/09/28 14:37:54 moko Exp $" IDENT_PA_VOBJECT_H;
 
 Value* VObject::get_scalar_value(const char* as_something) const {
 	VObject* unconst_this=const_cast<VObject*>(this);
@@ -20,7 +20,7 @@ Value* VObject::get_scalar_value(const char* as_something) const {
 		if(Junction* junction=scalar->get_junction())
 			if(const Method *method=junction->method){
 				if(method->params_count>1)
-					throw Exception(PARSER_RUNTIME, 0, "scalar getter method can't have more then 1 parameter (has %d parameters)", method->params_count);
+					throw Exception(PARSER_RUNTIME, 0, "scalar getter method can't have more than 1 parameter (has %d parameters)", method->params_count);
 				METHOD_FRAME_ACTION(*method, 0 /*no caller*/, *unconst_this, {
 					Value *param;
 					if(method->params_count==1){

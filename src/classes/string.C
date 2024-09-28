@@ -21,7 +21,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.254 2024/09/13 04:01:22 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.255 2024/09/28 14:37:53 moko Exp $";
 
 // class
 
@@ -390,7 +390,7 @@ static void _match(Request& r, MethodParams& params) {
 
 	if(vregex){
 		if(options && options->is_defined())
-			throw Exception(PARSER_RUNTIME, 0, "you can not specify regex-object and options together");
+			throw Exception(PARSER_RUNTIME, 0, "you cannot specify regex-object and options together");
 	} else {
 		vregex=new VRegex(r.charsets.source(), &regexp.as_string(), (options) ? (&options->as_string()) : 0);
 		vregex->study();
@@ -486,7 +486,7 @@ public:
 	bool add_row(SQL_Error& /*error*/) { /* ignore */ return false; }
 	bool add_row_cell(SQL_Error& error, const char* str, size_t) {
 		if(got_cell) {
-			error=SQL_Error("result must not contain more then one row");
+			error=SQL_Error("result must contain no more than one row");
 			return true;
 		}
 		try {

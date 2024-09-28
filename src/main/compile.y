@@ -8,7 +8,7 @@
 	
 */
 
-volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.297 2024/09/18 22:24:17 moko Exp $";
+volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.298 2024/09/28 14:37:53 moko Exp $";
 
 /**
 	@todo parser4: 
@@ -172,7 +172,7 @@ control_method: '@' STRING '\n'
 			PC.cclass_new=cclass;
 			PC.append=false;
 		} else {
-			YYERROR1("@" CLASS_NAME " must contain only one line with class name (contains more then one)");
+			YYERROR1("@" CLASS_NAME " must contain only one line with class name (contains more than one)");
 		}
 	} else if(command==USE_CONTROL_METHOD_NAME) {
 		CLASS_ADD;

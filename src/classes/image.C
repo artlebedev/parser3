@@ -26,7 +26,7 @@
 #include "pa_table.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.186 2024/09/13 04:01:22 moko Exp $";
+volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.187 2024/09/28 14:37:53 moko Exp $";
 
 // defines
 
@@ -629,7 +629,7 @@ static void measure_jpeg(const String& origin_string, Measure_reader& reader, Me
 			{
 				// Segments that contain size info
 				if(reader.read(buf, sizeof(JPG_Size_segment_body))<sizeof(JPG_Size_segment_body))
-					throw Exception(IMAGE_FORMAT, &origin_string, "not JPEG file - can not fully read Size segment");
+					throw Exception(IMAGE_FORMAT, &origin_string, "not JPEG file - cannot fully read Size segment");
 				JPG_Size_segment_body *body=(JPG_Size_segment_body *)buf;
 				
 				info.width=endian_to_ushort(true, body->width);
@@ -960,7 +960,7 @@ static void measure(const String& file_name, Measure_reader& reader, Measure_inf
 		else
 			throw Exception(IMAGE_FORMAT, &file_name, "unhandled file name extension '%s'", cext);
 	} else
-		throw Exception(IMAGE_FORMAT, &file_name, "can not determine file type - no file name extension");
+		throw Exception(IMAGE_FORMAT, &file_name, "cannot determine file type - no file name extension");
 }
 
 // methods
@@ -1075,7 +1075,7 @@ static gdImage* load(Request& r, const String& file_name){
 			throw Exception(IMAGE_FORMAT, &file_name, "is not in GIF format");
 		return image;
 	} else {
-		throw Exception("file.missing", 0, "can not open '%s'", file_name_cstr);
+		throw Exception("file.missing", 0, "cannot open '%s'", file_name_cstr);
 	}
 }
 

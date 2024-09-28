@@ -18,7 +18,7 @@
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.72 2024/09/13 04:01:22 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.73 2024/09/28 14:37:53 moko Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -53,7 +53,7 @@ static const char *dlink(const char *dlopen_file_spec) {
 	if(!handle){
 		if(const char* result=lt_dlerror())
 			return result;
-		return "can not open the dynamic link module";
+		return "cannot open the dynamic link module";
 	}
 
 	DLINK(curl_easy_init);

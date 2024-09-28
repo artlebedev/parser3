@@ -26,7 +26,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.280 2024/09/28 14:02:25 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.281 2024/09/28 14:37:53 moko Exp $";
 
 // defines
 
@@ -345,7 +345,7 @@ static void _create(Request& r, MethodParams& params) {
 			}
 			if(Value* vcharset_name=options->get(PA_CHARSET_NAME)) {
 				if(to_charset)
-					throw Exception(PARSER_RUNTIME, 0, "charset option can not be used with to-charset");
+					throw Exception(PARSER_RUNTIME, 0, "'charset' option cannot be used together with 'to-charset' option");
 				to_charset=&pa_charsets.get(vcharset_name->as_string());
 				valid_options++;
 			}
@@ -380,7 +380,7 @@ static void _create(Request& r, MethodParams& params) {
 		if(is_text)
 			self.transcode(from_charset ? *from_charset : r.charsets.source(), to_charset ? *to_charset : r.charsets.source());
 		else
-			throw Exception(PARSER_RUNTIME, 0, "charset options can not be used with binary content");
+			throw Exception(PARSER_RUNTIME, 0, "charset options cannot be used with binary content");
 }
 
 static void _stat(Request& r, MethodParams& params) {
@@ -1091,7 +1091,7 @@ static void _base64(Request& r, MethodParams& params) {
 
 			if(params.count() > 1) {
 				if(params.count() < 3)
-					throw Exception(PARSER_RUNTIME, 0, "constructor can not have less then 3 parameters (has %d parameters)", params.count()); // actually it accepts 1 parameter (backward)
+					throw Exception(PARSER_RUNTIME, 0, "constructor cannot have less than 3 parameters (has %d parameters)", params.count()); // actually it accepts 1 parameter (backward)
 
 				is_text=VFile::is_text_mode(params.as_string(0, MODE_MUST_NOT_BE_CODE));
 				user_file_name=&params.as_string(1, FILE_NAME_MUST_BE_STRING);

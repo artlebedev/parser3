@@ -11,7 +11,7 @@
 #include "pa_symbols.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VSTATELESS_CLASS_C="$Id: pa_vstateless_class.C,v 1.67 2024/09/07 16:30:27 moko Exp $" IDENT_PA_VSTATELESS_CLASS_H IDENT_PA_METHOD_H;
+volatile const char * IDENT_PA_VSTATELESS_CLASS_C="$Id: pa_vstateless_class.C,v 1.68 2024/09/28 14:37:54 moko Exp $" IDENT_PA_VSTATELESS_CLASS_H IDENT_PA_METHOD_H;
 
 bool VStateless_class::gall_vars_local=false;
 
@@ -22,7 +22,7 @@ override Value& VStateless_class::as_expr_result() {
 /// @TODO why?! request must be different ptr from global [used in VStateless_class.set_method]
 void VStateless_class::set_method(const String& aname, Method* amethod) {
 	if(flocked)
-		throw Exception(PARSER_RUNTIME, &aname, "can not add method to system class (maybe you have forgotten .CLASS in ^process[$caller.CLASS]{...}?)");
+		throw Exception(PARSER_RUNTIME, &aname, "cannot add method to system class (maybe you have forgotten .CLASS in ^process[$caller.CLASS]{...}?)");
 
 	if(fderived.count() && aname != auto_method_name) {
 		Method *omethod=fmethods.get(aname);

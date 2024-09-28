@@ -7,7 +7,7 @@
 #include "pa_memcached.h"
 #include "ltdl.h"
 
-volatile const char * IDENT_PA_MEMCACHED_C="$Id: pa_memcached.C,v 1.12 2023/09/26 20:49:08 moko Exp $";
+volatile const char * IDENT_PA_MEMCACHED_C="$Id: pa_memcached.C,v 1.13 2024/09/28 14:37:53 moko Exp $";
 
 t_memcached f_memcached=0;
 t_memcached_create f_memcached_create;
@@ -50,7 +50,7 @@ static const char *dlink(const char *dlopen_file_spec) {
 	if(!handle){
 		if(const char* result=lt_dlerror())
 			return result;
-		return "can not open the dynamic link module";
+		return "cannot open the dynamic link module";
 	}
 
 	GLINK(memcached);

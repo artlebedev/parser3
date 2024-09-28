@@ -11,7 +11,7 @@
 // we are using some pcre_internal.h stuff as well
 #include "../lib/pcre/pa_pcre_internal.h"
 
-volatile const char * IDENT_PA_CHARSET_C="$Id: pa_charset.C,v 1.112 2023/09/26 20:49:09 moko Exp $" IDENT_PA_CHARSET_H;
+volatile const char * IDENT_PA_CHARSET_C="$Id: pa_charset.C,v 1.113 2024/09/28 14:37:53 moko Exp $" IDENT_PA_CHARSET_H;
 
 #ifdef XML
 #include "libxml/encoding.h"
@@ -173,7 +173,7 @@ void Charset::load_definition(Request_charsets& acharsets, const String& afile_s
 			case 8:
 				// charset
 				if(tables.toTableSize>MAX_CHARSET_UNI_CODES)
-					throw Exception(PARSER_RUNTIME, &afile_spec, "charset must contain not more then %d unicode values", MAX_CHARSET_UNI_CODES);
+					throw Exception(PARSER_RUNTIME, &afile_spec, "charset must contain not more than %d unicode values", MAX_CHARSET_UNI_CODES);
 
 				XMLCh unicode=(XMLCh)to_wchar_code(cell);
 				if(!unicode && column==7/*unicode1 column*/)

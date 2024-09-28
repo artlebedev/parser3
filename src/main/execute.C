@@ -22,7 +22,7 @@
 #include "pa_varray.h"
 #include "pa_wwrapper.h"
 
-volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.421 2024/09/18 22:24:17 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
+volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.422 2024/09/28 14:37:53 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
 
 //#define DEBUG_EXECUTE
 
@@ -443,7 +443,7 @@ void Request::execute(ArrayOperation& ops) {
 				const String& name=stack.pop().string();  debug_name=&name;
 				Value& ncontext=stack.pop().value();
 				if(const VJunction* vjunction=ncontext.put_element(name, &value))
-						throw Exception(PARSER_RUNTIME, 0, "property value can not be code, use [] or () brackets");
+						throw Exception(PARSER_RUNTIME, 0, "property value cannot be code, use [] or () brackets");
 
 				break;
 			}
@@ -789,7 +789,7 @@ void Request::execute(ArrayOperation& ops) {
 					if(dynamic_cast<VVoid*>(&value))
 						throw Exception(PARSER_RUNTIME, 0, "undefined method");
 					else
-						throw Exception(PARSER_RUNTIME, 0, "is '%s', not a method or junction, can not call it", value.type());
+						throw Exception(PARSER_RUNTIME, 0, "is '%s', not a method or junction, cannot call it", value.type());
 				}
 
 				Value *result;
@@ -820,7 +820,7 @@ void Request::execute(ArrayOperation& ops) {
 					if(dynamic_cast<VVoid*>(&value))
 						throw Exception(PARSER_RUNTIME, 0, "undefined method");
 					else
-						throw Exception(PARSER_RUNTIME, 0, "is '%s', not a method or junction, can not call it", value.type());
+						throw Exception(PARSER_RUNTIME, 0, "is '%s', not a method or junction, cannot call it", value.type());
 				}
 
 				const Method& method=*junction->method;
@@ -1251,7 +1251,7 @@ Value& Request::construct(VStateless_class &called_class, const Method &method){
 			throw Exception(PARSER_RUNTIME, method.name,
 				"is not a constructor, system class '%s' can be constructed only implicitly", called_class.type());
 	} else
-		throw Exception(PARSER_RUNTIME, method.name, "method of '%s' is static and can not be used as constructor", called_class.type());
+		throw Exception(PARSER_RUNTIME, method.name, "method of '%s' is static and cannot be used as constructor", called_class.type());
 }
 
 Value& Request::get_element(Value& ncontext, const String& name) {
@@ -1303,7 +1303,7 @@ Value& Request::process_getter(Junction& junction) {
 	if(junction.auto_name){
 		// default getter
 		if(param_count>1)
-			throw Exception(PARSER_RUNTIME, 0, "default getter method can't have more then 1 parameter (has %d parameters)", param_count);
+			throw Exception(PARSER_RUNTIME, 0, "default getter method can't have more than 1 parameter (has %d parameters)", param_count);
 
 		Value *param;
 		METHOD_FRAME_ACTION(*junction.method, method_frame/*caller*/, junction.self, {
@@ -1381,7 +1381,7 @@ Value& Request::process(Value& input_value) {
 			return result;
 		}
 
-		// it is then method-junction, do not explode it
+		// then it is a method-junction, do not explode it
 		// just return it as we do for usual objects
 	}	
 
@@ -1442,7 +1442,7 @@ void Request::process_write(Value& input_value) {
 			return;
 		}
 
-		// it is then method-junction, do not explode it
+		// then it is a method-junction, do not explode it
 		// just return it as we do for usual objects
 	}
 

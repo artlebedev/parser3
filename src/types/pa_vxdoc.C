@@ -12,7 +12,7 @@
 #include "pa_request.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_PA_VXDOC_C="$Id: pa_vxdoc.C,v 1.54 2024/09/13 04:01:23 moko Exp $" IDENT_PA_VXDOC_H;
+volatile const char * IDENT_PA_VXDOC_C="$Id: pa_vxdoc.C,v 1.55 2024/09/28 14:37:54 moko Exp $" IDENT_PA_VXDOC_H;
 
 // defines
 
@@ -130,7 +130,7 @@ void XDocOutputOptions::append(Request& r, HashStringValue* options, bool with_f
 		// $.encoding[windows-1251|...]
 		valid_options+=param_option_over_output_option(*options, "encoding", this->encoding);
 		if(valid_options==2)
-			throw Exception(PARSER_RUNTIME, 0, "you can not specify $.charset and $.encoding together");
+			throw Exception(PARSER_RUNTIME, 0, "you cannot specify $.charset and $.encoding together");
 		// $.method[xml|html|text]
 		valid_options+=param_option_over_output_option(*options, XDOC_OUTPUT_METHOD_OPTION_NAME, this->method);
 		// $.version[1.0]

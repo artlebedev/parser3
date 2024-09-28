@@ -28,7 +28,7 @@
 #define pa_mkdir(path, mode) mkdir(path, mode)
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.331 2024/09/11 21:07:36 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.332 2024/09/28 14:37:53 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -331,7 +331,7 @@ bool file_write_action_under_lock(
 		} catch(...) {
 #ifdef HAVE_FTRUNCATE
 			if(!do_append)
-				ftruncate(f, lseek(f, 0, SEEK_CUR)); // one can not use O_TRUNC, read lower
+				ftruncate(f, lseek(f, 0, SEEK_CUR)); // one cannot use O_TRUNC, read lower
 #endif
 			pa_unlock(f);close(f); 
 			rethrow;
