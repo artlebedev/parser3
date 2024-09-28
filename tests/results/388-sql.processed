@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 4257
+Content-Length: 4697
 
 
 
@@ -100,6 +100,11 @@ Content-Length: 4257
 		"aggressive":"\"never\"",
 		"weigth":"10"
 	},
+	"hamster":{
+		"food":"grain",
+		"aggressive":"",
+		"weigth":"1"
+	},
 	"parrot":{
 		"food":"grain",
 		"aggressive":"alwayws",
@@ -115,6 +120,9 @@ Content-Length: 4257
 	"dog":[
 		{"pet":"dog","food":"bone","aggressive":"\"never\"","weigth":"10"}
 	],
+	"hamster":[
+		{"pet":"hamster","food":"grain","aggressive":"","weigth":"1"}
+	],
 	"parrot":[
 		{"pet":"parrot","food":"grain","aggressive":"alwayws","weigth":"1"}
 	]
@@ -124,6 +132,7 @@ Content-Length: 4257
 	{
 	"cat":"milk",
 	"dog":"bone",
+	"hamster":"grain",
 	"parrot":"grain"
 }
 
@@ -152,21 +161,37 @@ Content-Length: 4257
 	{
 	"cat":true,
 	"dog":true,
+	"hamster":true,
 	"parrot":true
+}
+
+	4.7.1 	
+	{
+	"'very'":true,
+	"\"never\"":true,
+	"":true,
+	"alwayws":true
 }
 
 	4.8 	
 	{
-	"0":[
-		{"key":"0","pet":"cat"},
-		{"key":"0","pet":"dog"},
-		{"key":"0","pet":"parrot"}
+	"milk":[
+		{"key":"milk","pet":"cat"}
+	],
+	"bone":[
+		{"key":"bone","pet":"dog"}
+	],
+	"grain":[
+		{"key":"grain","pet":"hamster"},
+		{"key":"grain","pet":"parrot"}
 	]
 }
 
 	4.9 	
 	{
-	"0":"cat"
+	"milk":"cat",
+	"bone":"dog",
+	"grain":"hamster"
 }
 
 
@@ -176,6 +201,7 @@ Content-Length: 4257
 	[
 	{"pet":"cat","food":"milk","aggressive":"'very'","weigth":"5"},
 	{"pet":"dog","food":"bone","aggressive":"\"never\"","weigth":"10"},
+	{"pet":"hamster","food":"grain","aggressive":"","weigth":"1"},
 	{"pet":"parrot","food":"grain","aggressive":"alwayws","weigth":"1"}
 ]
 

@@ -28,6 +28,7 @@ $ignore[^SQL.drivers.locate[protocol;$sql]]
 	2.2 ^void:sql{insert into pets values
 		('cat', 'milk', '^taint['very']', 5),
 		('dog', 'bone', '^taint["never"]', 10),
+		('hamster', 'grain', null, 1),
 		('parrot', 'grain', 'alwayws', 1)
 	   }
 
@@ -71,9 +72,11 @@ $ignore[^SQL.drivers.locate[protocol;$sql]]
 
 	4.7 ^h[select pet from pets]
 
-	4.8 ^h[select '0' as key, pet from pets; $.type[table] $.distinct(true) ]
+	4.7.1 ^h[select aggressive from pets; $.type[table] ]
 
-	4.9 ^h[select '0' as key, pet from pets; $.type[string] $.distinct(true) ]
+	4.8 ^h[select food as key, pet from pets; $.type[table] $.distinct(true) ]
+
+	4.9 ^h[select food as key, pet from pets; $.type[string] $.distinct(true) ]
 
 
 	5. table
@@ -97,7 +100,7 @@ $ignore[^SQL.drivers.locate[protocol;$sql]]
 
 	6.4 ^try-catch{ ^f[select aggressive from pets; $.limit(0) ] }
 
-	6.5 ^try-catch{ ^f[select 1 from pets] } - bug!
+	6.5 ^try-catch{ ^f[select 1 from pets; $.limit(3) ] } - bug!
 
 	6.6 ^try-catch{ ^f[select 1,2 from pets] }
 
