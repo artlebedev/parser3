@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.161 2024/09/27 23:38:52 moko Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.162 2024/09/28 02:05:19 moko Exp $";
 
 // class
 
@@ -74,20 +74,22 @@ public:
 			error=SQL_Error("no columns");
 			return true;
 		}
-		switch(value_type){
-			case C_STRING: {
-				if(columns.count()>2){
-					error=SQL_Error("only 2 columns allowed for $.type[string].");
-					return true;
+		if(columns.count()==1) {
+			one_bool_column=true;
+		} else {
+			switch(value_type){
+				case C_STRING: {
+					if(columns.count()>2){
+						error=SQL_Error("only 2 columns allowed for $.type[string].");
+						return true;
+					}
+					break;
 				}
-			}
-			case C_TABLE: {
-				// create empty table which we'll copy later
-				empty=new Table(&columns);
-				columns_count=columns.count();
-			}
-			case C_HASH: {
-				one_bool_column=columns.count()==1;
+				case C_TABLE: {
+					// create empty table which we'll copy later
+					empty=new Table(&columns);
+					columns_count=columns.count();
+				}
 			}
 		}
 		return false;
