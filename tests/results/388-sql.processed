@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 4668
+Content-Length: 4667
 
 
 
@@ -289,7 +289,7 @@ Content-Length: 4668
 	
 	Exception type: sql.execute,
 	Source: select pet from pets,
-	Comment: result must not contain more then one row
+	Comment: result must contain no more than one row
 
 	7.3 
 	

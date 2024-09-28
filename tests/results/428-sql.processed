@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 3373
+Content-Length: 4538
 
 
 		
@@ -24,10 +24,10 @@ Content-Length: 3373
 		{"0":"0","pet":"parrot","food":"grain","aggressive":"alwayws","weigth":"1"}
 	],
 	"1":[
-		{"0":"1","pet":"cat","food":"milk","aggressive":"'very'","weigth":"5"},
-		{"0":"1","pet":"dog","food":"bone","aggressive":"\"never\"","weigth":"10"},
-		{"0":"1","pet":"hamster","food":"grain","aggressive":"","weigth":"1"},
-		{"0":"1","pet":"parrot","food":"grain","aggressive":"alwayws","weigth":"1"}
+		{"1":"1","pet":"cat","food":"milk","aggressive":"'very'","weigth":"5"},
+		{"1":"1","pet":"dog","food":"bone","aggressive":"\"never\"","weigth":"10"},
+		{"1":"1","pet":"hamster","food":"grain","aggressive":"","weigth":"1"},
+		{"1":"1","pet":"parrot","food":"grain","aggressive":"alwayws","weigth":"1"}
 	]
 }
 
@@ -63,7 +63,7 @@ Content-Length: 3373
 		{"0":"0","pet":"dog","food":"bone","aggressive":"\"never\"","weigth":"10"}
 	],
 	"1":[
-		{"0":"1","pet":"cat","food":"milk","aggressive":"'very'","weigth":"5"}
+		{"1":"1","pet":"cat","food":"milk","aggressive":"'very'","weigth":"5"}
 	]
 }
 
@@ -76,9 +76,9 @@ Content-Length: 3373
 		{"0":"0","pet":"parrot","food":"grain","aggressive":"alwayws","weigth":"1"}
 	],
 	"1":[
-		{"0":"1","pet":"cat","food":"milk","aggressive":"'very'","weigth":"5"}
+		{"1":"1","pet":"cat","food":"milk","aggressive":"'very'","weigth":"5"}
 	]
-}
+} - minor bug: limit for last query only
 
 	1.7 	
 	{
@@ -95,14 +95,14 @@ Content-Length: 3373
 		{"pet":"parrot","food":"grain"}
 	],
 	"milk":[
-		{"pet":"milk","food":"cat","food":"milk","pet":"'very'","food":"5"}
+		{"food":"milk","pet":"cat","food":"milk","aggressive":"'very'","weigth":"5"}
 	],
 	"bone":[
-		{"pet":"bone","food":"dog","food":"bone","pet":"\"never\"","food":"10"}
+		{"food":"bone","pet":"dog","food":"bone","aggressive":"\"never\"","weigth":"10"}
 	],
 	"grain":[
-		{"pet":"grain","food":"hamster","food":"grain","pet":"","food":"1"},
-		{"pet":"grain","food":"parrot","food":"grain","pet":"alwayws","food":"1"}
+		{"food":"grain","pet":"hamster","food":"grain","aggressive":"","weigth":"1"},
+		{"food":"grain","pet":"parrot","food":"grain","aggressive":"alwayws","weigth":"1"}
 	]
 }
 
@@ -121,16 +121,22 @@ Content-Length: 3373
 		"food":"grain"
 	},
 	"milk":{
-		"food":"5",
-		"pet":"'very'"
+		"pet":"cat",
+		"food":"milk",
+		"aggressive":"'very'",
+		"weigth":"5"
 	},
 	"bone":{
-		"food":"10",
-		"pet":"\"never\""
+		"pet":"dog",
+		"food":"bone",
+		"aggressive":"\"never\"",
+		"weigth":"10"
 	},
 	"grain":{
-		"food":"1",
-		"pet":""
+		"pet":"hamster",
+		"food":"grain",
+		"aggressive":"",
+		"weigth":"1"
 	}
 }
 
@@ -143,10 +149,38 @@ Content-Length: 3373
 		"weigth":"5"
 	}
 }
-	1.9 	
+	1.10 	
 	{
 	"0":{
 		"2+2":"4"
 	}
 }
 
+	1.11 	
+	{
+	"0":[
+		{"0":"0","food":"milk"},
+		{"0":"0","food":"bone"},
+		{"0":"0","food":"grain"},
+		{"0":"0","food":"grain"}
+	],
+	"1":[
+		{"1":"1","pet":"cat","food":"milk","aggressive":"'very'","weigth":"5"},
+		{"1":"1","pet":"dog","food":"bone","aggressive":"\"never\"","weigth":"10"},
+		{"1":"1","pet":"hamster","food":"grain","aggressive":"","weigth":"1"},
+		{"1":"1","pet":"parrot","food":"grain","aggressive":"alwayws","weigth":"1"}
+	]
+} - different structure for each query as key differs
+	1.12 	
+	{
+	"0":[
+		{"0":"0","food":"milk"},
+		{"0":"0","food":"bone"},
+		{"0":"0","food":"grain"},
+		{"0":"0","food":"grain"},
+		{"0":"0","food":"cat","2":"milk","3":"'very'","4":"5"},
+		{"0":"0","food":"dog","2":"bone","3":"\"never\"","4":"10"},
+		{"0":"0","food":"hamster","2":"grain","3":"","4":"1"},
+		{"0":"0","food":"parrot","2":"grain","3":"alwayws","4":"1"}
+	]
+} - note: there are missed and numeric columns in second query, but it better then exception

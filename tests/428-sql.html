@@ -16,13 +16,15 @@
 
 	1.5 ^h[select 0,* from pets limit 2^;delete from pets where pet=''^;select 1,* from pets limit 1; $.type[table] $.distinct(true) ]
 
-	1.6 ^h[select 0,* from pets^;delete from pets where pet=''^;select 1,* from pets; $.type[table] $.distinct(true) $.limit(1) ]
+	1.6 ^h[select 0,* from pets^;delete from pets where pet=''^;select 1,* from pets; $.type[table] $.distinct(true) $.limit(1) ] - minor bug: limit for last query only
 
 	1.7 ^h[select pet,food from pets^;select food,* from pets; $.type[table] $.distinct(true)]
 
 	1.8 ^h[select pet,food from pets^;select food,* from pets;  $.distinct(true)]
 
 	1.9 ^h[select 0,* from pets^;select 0, 2+2; $.type[hash] $.distinct(true) ]
-	1.9 ^h[select 0, 2+2^;select 0,* from pets; $.type[hash] $.distinct(true) ]
+	1.10 ^h[select 0, 2+2^;select 0,* from pets; $.type[hash] $.distinct(true) ]
 
+	1.11 ^h[select 0,food from pets^;select 1,* from pets; $.type[table] $.distinct(true) ] - different structure for each query as key differs
+	1.12 ^h[select 0,food from pets^;select 0,* from pets; $.type[table] $.distinct(true) ] - note: there are missed and numeric columns in second query, but it better then exception
 }
