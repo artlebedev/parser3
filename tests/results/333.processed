@@ -3,7 +3,7 @@ Content-Length: 187
 
 Exception type: parser.runtime,
 Source: key,
-Comment: element can not be fetched from junction
+Comment: element cannot be fetched from junction
 Exception type: parser.runtime,
 Source: key,
-Comment: element can not be stored to junction
+Comment: element cannot be stored into junction

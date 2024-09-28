@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 1386
+Content-Length: 1384
 
 f1 : {
 "class":"file",
@@ -62,7 +62,7 @@ Source: create,
 Comment: called with invalid option
 Exception type: parser.runtime,
 Source: create,
-Comment: charset options can not be used with binary content
+Comment: charset options cannot be used with binary content
 Exception type: parser.runtime,
 Source: create,
-Comment: charset options can not be used with binary content
+Comment: charset options cannot be used with binary content

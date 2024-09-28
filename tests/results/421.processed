@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 10432
+Content-Length: 10428
 
 1. nonexistent method exception check for all classes
 Class MAIN methoded ^MAIN:bad[] Exception type: parser.runtime,
@@ -312,28 +312,28 @@ Source: bad,
 Comment: bool method not found
 field Exception type: parser.runtime,
 Source: bad,
-Comment: element can not be fetched from bool
+Comment: element cannot be fetched from bool
 string
 method Exception type: parser.runtime,
 Source: bad,
 Comment: string method not found
 field Exception type: parser.runtime,
 Source: bad,
-Comment: element can not be fetched from string
+Comment: element cannot be fetched from string
 double
 method Exception type: parser.runtime,
 Source: bad,
 Comment: double method not found
 field Exception type: parser.runtime,
 Source: bad,
-Comment: element can not be fetched from double
+Comment: element cannot be fetched from double
 int
 method Exception type: parser.runtime,
 Source: bad,
 Comment: int method not found
 field Exception type: parser.runtime,
 Source: bad,
-Comment: element can not be fetched from int
+Comment: element cannot be fetched from int
 date
 method Exception type: parser.runtime,
 Source: bad,

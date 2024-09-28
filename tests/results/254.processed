@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 285
+Content-Length: 286
 
 Same uid
 Same string
@@ -17,4 +17,4 @@ Source: copy,
 Comment: source must have hash representation
 Exception type: parser.runtime,
 Source: v1,
-Comment: element can not be stored to string
+Comment: element cannot be stored into string

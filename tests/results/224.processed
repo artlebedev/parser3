@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 2128
+Content-Length: 2127
 
 cookie<br />env<br />hash - methoded<br />table - methoded<br />test - methoded<br />test1 - methoded<br />test2 - methoded
 <hr />
@@ -9,7 +9,7 @@ Comment: native method of 'date' accepts minimum 1 parameter(s) (0 present)
 <br />
 Exception type: parser.runtime,
 Source: calendar,
-Comment: method of 'date' is static and can not be used as constructor
+Comment: method of 'date' is static and cannot be used as constructor
 <br />
 Exception type: parser.runtime,
 Source: now,

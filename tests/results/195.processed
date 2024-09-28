@@ -1,5 +1,5 @@
 Content-Type: text/html; charset=UTF-8
-Content-Length: 1445
+Content-Length: 1444
 
 <hr />
 <h2>Load remote file in WIN-1251 with uploading file in UTF-8</h2>
@@ -22,7 +22,7 @@ Incoming file's name: '195_windows1251.txt'
 <hr />
 <h2>Load remote file with uploading file, correct enctype and method GET</h2>
 <p>
-Exception: you can not use $.enctype option with method GET
+Exception: you cannot use $.enctype option with method GET
 </p>
 <hr />
 <h2>Load remote file with uploading file and method GET</h2>

@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 743
+Content-Length: 742
 
 <h2>without @OPTIONS (==any):</h2>
 m00 (any)
@@ -20,7 +20,7 @@ static:m03 (static)
 <br />
 Exception type: parser.runtime,
 Source: create,
-Comment: method of 'static' is static and can not be used as constructor
+Comment: method of 'static' is static and cannot be used as constructor
 <br />
 <hr />
 <h2>@OPTIONS dynamic:</h2>

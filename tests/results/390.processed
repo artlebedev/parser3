@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 2298
+Content-Length: 2296
 
 image code coverage tests:
 1. 2. 3. 4. 5. Exception type: ,
@@ -20,7 +20,7 @@ Source: unknown.format,
 Comment: unhandled file name extension 'format'
 Exception type: image.format,
 Source: no-format,
-Comment: can not determine file type - no file name extension
+Comment: cannot determine file type - no file name extension
 15. Exception type: image.format,
 Source: format.png,
 Comment: not PNG file - too small
@@ -39,7 +39,7 @@ Comment: not JPEG file - marker not found
 17. <img src="163.jpg" width="100" height="100" border="0" />
 18. Exception type: file.missing,
 Source: load,
-Comment: can not open '/-real-path-was-here-/no-such-file.gif'
+Comment: cannot open '/-real-path-was-here-/no-such-file.gif'
 ]
 19. Exception type: image.format,
 Source: 390.html,

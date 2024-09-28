@@ -20,7 +20,7 @@ Source: hash,
 Comment: value field(s) must be string or table or code
 Exception type: parser.runtime,
 Source: hash,
-Comment: you can't specify more then one value field with option $.type[string]
+Comment: you can't specify more than one value field with option $.type[string]
 Exception type: parser.runtime,
 Source: hash,
 Comment: you can't specify $.type[] if value is code
@@ -149,7 +149,7 @@ Source: hash,
 Comment: value field(s) must be string or table or code
 Exception type: parser.runtime,
 Source: hash,
-Comment: you can't specify more then one value field with option $.type[string]
+Comment: you can't specify more than one value field with option $.type[string]
 Exception type: parser.runtime,
 Source: hash,
 Comment: you can't specify $.type[] if value is code

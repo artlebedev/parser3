@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 1613
+Content-Length: 1632
 
 f1 : {
 "name":"247_utf8_bom.txt",
@@ -52,7 +52,7 @@ f text from binary transcode using from-charset : {
 }
 Exception type: parser.runtime,
 Source: create,
-Comment: charset option can not be used with to-charset
+Comment: 'charset' option cannot be used together with 'to-charset' option
 code coverage tests:
 f1 : {
 "name":"247_utf8_bom.txt",

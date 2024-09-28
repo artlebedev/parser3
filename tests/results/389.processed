@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 3658
+Content-Length: 3657
 
 code coverage tests:
 1. int
@@ -110,7 +110,7 @@ Comment: unknown mode, must be 'append'
 7. file
 7.1 Exception type: parser.runtime,
 Source: base64,
-Comment: constructor can not have less then 3 parameters (has 2 parameters)
+Comment: constructor cannot have less than 3 parameters (has 2 parameters)
 7.2 Exception type: parser.runtime,
 Source: base64,
 Comment: mode must not be code (parameter #1)

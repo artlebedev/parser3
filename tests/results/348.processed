@@ -37,4 +37,4 @@ Source: ю,
 Comment: encloser must be empty or one byte character
 7. Exception type: parser.runtime,
 Source: no-such-name,
-Comment: table::create called with more then 1 param, first param may be only 'nameless'
+Comment: table::create called with more than 1 param, first param may be only 'nameless'

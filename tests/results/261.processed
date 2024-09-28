@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 767
+Content-Length: 766
 
 Empty string vs void:
 Json: "" vs null
@@ -13,7 +13,7 @@ More hash compatibility: "false" "false" "false"
 Methods are not visible: "void" "void" "void"
 Non-empty or whitespace string not hash compatible: Exception type: parser.runtime,
 Source: key,
-Comment: element can not be fetched from string
+Comment: element cannot be fetched from string
 Absent method empty string error: Exception type: parser.runtime,
 Source: something,
 Comment: string method not found
