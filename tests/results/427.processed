@@ -1,0 +1,45 @@
+Content-Type: text/html
+Content-Length: 509
+
+Constructors as methods:
+1. table cleared: []
+2. hash kept: {
+"1":"1",
+"2":"2"
+}
+or added : {
+"1":"1",
+"2":"2",
+"3":"3"
+}
+or ignored {
+"1":"1",
+"2":"2",
+"3":"3"
+}
+3. array kept: [
+"1",
+"2"
+]
+or added: [
+"1",
+"2",
+"3"
+]
+or fail: Exception type: parser.runtime,
+Source: create,
+Comment: source and destination are the same array
+4. array kept: [
+"1",
+"2",
+"3"
+]
+or added: [
+"1",
+"2",
+"3",
+"4"
+]
+or nested: Exception type: parser.runtime,
+Source: string,
+Comment: call canceled - endless json recursion detected
