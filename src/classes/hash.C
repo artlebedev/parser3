@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.163 2024/09/28 14:37:53 moko Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.164 2024/09/28 19:42:41 moko Exp $";
 
 // class
 
@@ -41,7 +41,7 @@ class Hash_sql_event_handlers: public SQL_Driver_query_event_handlers {
 	HashStringValue& result;
 	Value* row_value;
 	int column_index;
-	ArrayString& columns;
+	ArrayString* columns;
 	bool one_bool_column;
 	Table2hash_value_type value_type;
 	int columns_count;
@@ -53,7 +53,7 @@ public:
 		result(aresult),
 		row_value(0),
 		column_index(0),
-		columns(*new ArrayString),
+		columns(new ArrayString),
 		one_bool_column(false),
 		value_type(avalue_type),
 		empty(0) {
@@ -61,7 +61,12 @@ public:
 
 	bool add_column(SQL_Error& error, const char* str, size_t ) {
 		try {
-			columns+=new String(str, String::L_TAINTED /* no length as 0x00 can be inside */);
+			if(columns_count){
+				// another query in multi_statements mode
+				columns=new ArrayString;
+				columns_count=0;
+			}
+			*columns+=new String(str, String::L_TAINTED /* no length as 0x00 can be inside */);
 			return false;
 		} catch(...) {
 			error=SQL_Error("exception occurred in Hash_sql_event_handlers::add_column");
@@ -70,25 +75,25 @@ public:
 	}
 
 	bool before_rows(SQL_Error& error) { 
-		if(columns.count()<1) {
+		columns_count=columns->count();
+		if(columns_count<1) {
 			error=SQL_Error("no columns");
 			return true;
 		}
-		if(columns.count()==1) {
+		if(columns_count==1) {
 			one_bool_column=true;
 		} else {
 			switch(value_type){
 				case C_STRING: {
-					if(columns.count()>2){
-						error=SQL_Error("only 2 columns allowed for $.type[string].");
+					if(columns_count>2){
+						error=SQL_Error("only 2 columns allowed for $.type[string]");
 						return true;
 					}
 					break;
 				}
 				case C_TABLE: {
 					// create empty table which we'll copy later
-					empty=new Table(&columns);
-					columns_count=columns.count();
+					empty=new Table(columns);
 					break;
 				}
 			}
@@ -104,6 +109,12 @@ public:
 	bool add_row_cell(SQL_Error& error, const char *str, size_t ) {
 		try {
 			const String& cell=str ? *new String(str, String::L_TAINTED /* no length as 0x00 can be inside */) : String::Empty;
+
+			if(column_index==columns_count){
+				// should never happen, buggy driver case
+				error=SQL_Error("columns index exceed the columns count");
+				return true;
+			}
 
 			bool duplicate=false;
 			if(one_bool_column) {
@@ -146,7 +157,7 @@ public:
 			} else {
 				switch(value_type) {
 					case C_HASH: {
-						row_value->get_hash()->put(*columns[column_index], new VString(cell));
+						row_value->get_hash()->put(*columns->get(column_index), new VString(cell));
 						break;
 					}
 					case C_STRING: {
