@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.173 2024/09/28 14:37:54 moko Exp $"
+#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.174 2024/09/28 16:35:38 moko Exp $"
 
 #include "pa_common.h"
 #include "pa_array.h"
@@ -196,7 +196,7 @@ public: // Value
 		// to prevent modification of system classes,
 		// created at system startup, and not having exception
 		// handler installed, we neet to bark using request.pool
-		bark("element cannot be stored to %s", &aname); 
+		bark("element cannot be stored into %s", &aname); 
 		return 0;
 	}
 
