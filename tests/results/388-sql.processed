@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 4683
+Content-Length: 4668
 
 
 
@@ -244,7 +244,7 @@ Content-Length: 4683
 	
 	Exception type: sql.execute,
 	Source: select * from pets,
-	Comment: result must contain not more then 3 columns
+	Comment: result must contain no more than 3 columns
 
 
 	6.4 
@@ -254,21 +254,18 @@ Content-Length: 4683
 	Comment: produced no result
 
 
-	6.5  	
-	{
-	"class":"file",
-	"name":"1",
-	"size":1,
-	"mode":"binary",
-	"content-type":"1",
-	"text":"1"
-}  - bug!
+	6.5 
+	
+	Exception type: sql.execute,
+	Source: select 1 from pets,
+	Comment: result must contain no more than 1 row
+
 
 	6.6 
 	
 	Exception type: sql.execute,
 	Source: select 1,2 from pets,
-	Comment: result must not contain more then one row, three columns
+	Comment: result must contain no more than 1 row
 
 
 	6.7 
