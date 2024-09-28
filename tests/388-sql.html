@@ -1,4 +1,4 @@
-@main[]
+@auto[]
 
 $path[^os[Release/;.libs/lib]]
 $ext[^os[dll;so]]
@@ -14,6 +14,20 @@ pgsql	../../sql/pgsql/${path}parser3pgsql.$ext	libpq.$ext	pgsql://test@localhost
 $sql[sqlite]
 $ignore[^SQL.drivers.locate[protocol;$sql]]
 
+@prepare-data[]
+	$ignore[^try-catch{ ^void:sql{drop table pets} }]
+
+	^void:sql{create table pets (pet varchar(128), food varchar(128), aggressive varchar(128), weigth varchar(128))}
+
+	^void:sql{insert into pets values
+		('cat', 'milk', '^taint['very']', 5),
+		('dog', 'bone', '^taint["never"]', 10),
+		('hamster', 'grain', null, 1),
+		('parrot', 'grain', 'alwayws', 1)
+	}
+
+@main[]
+
 ^connect[$SQL.drivers.connect]{
 
 	1. 2 + 2 = ^string:sql{select 2+2}
@@ -21,16 +35,7 @@ $ignore[^SQL.drivers.locate[protocol;$sql]]
 
 	2. void
 
-	2.0 $ignore[^try-catch{ ^void:sql{drop table pets} }]
-
-	2.1 ^void:sql{create table pets (pet varchar(128), food varchar(128), aggressive varchar(128), weigth varchar(128))}
-
-	2.2 ^void:sql{insert into pets values
-		('cat', 'milk', '^taint['very']', 5),
-		('dog', 'bone', '^taint["never"]', 10),
-		('hamster', 'grain', null, 1),
-		('parrot', 'grain', 'alwayws', 1)
-	   }
+	2.1 ^prepare-data[]
 
 	2.3 ^try-catch{ ^void:sql{select * from pets} }
 	2.4 ^try-catch{ ^void:sql{query}[ $.unknown[yes] ] }

@@ -1,0 +1,12 @@
+@USE
+388-sql.html
+
+@main[]
+
+^connect[$SQL.drivers.connect]{
+	^prepare-data[]
+
+	1.1 ^try-catch{ ^t[select pet from pets^;select food from pets] }
+
+	1.2 ^h[select pet,food from pets^;select aggressive,* from pets; $.type[table] ] -bug
+}

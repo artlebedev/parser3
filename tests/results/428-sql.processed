@@ -1,0 +1,44 @@
+Content-Type: text/html
+Content-Length: 736
+
+
+		
+
+	
+
+	
+
+	1.1 
+	
+	Exception type: sql.execute,
+	Source: select pet from pets;select food from pets,
+	Comment: result must contain exactly one table
+
+
+	1.2 	
+	{
+	"cat":[
+		{"pet":"cat","food":"milk"}
+	],
+	"dog":[
+		{"pet":"dog","food":"bone"}
+	],
+	"hamster":[
+		{"pet":"hamster","food":"grain"}
+	],
+	"parrot":[
+		{"pet":"parrot","food":"grain"}
+	],
+	"'very'":[
+		{"pet":"'very'","food":"cat","aggressive":"milk","pet":"'very'","food":"5"}
+	],
+	"\"never\"":[
+		{"pet":"\"never\"","food":"dog","aggressive":"bone","pet":"\"never\"","food":"10"}
+	],
+	"":[
+		{"pet":"","food":"hamster","aggressive":"grain","pet":"","food":"1"}
+	],
+	"alwayws":[
+		{"pet":"alwayws","food":"parrot","aggressive":"grain","pet":"alwayws","food":"1"}
+	]
+} -bug
