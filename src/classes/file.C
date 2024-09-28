@@ -26,7 +26,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.279 2024/09/13 04:01:22 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.280 2024/09/28 14:02:25 moko Exp $";
 
 // defines
 
@@ -941,6 +941,7 @@ static void _sql_string(Request& r, MethodParams&) {
 class File_sql_event_handlers: public SQL_Driver_query_event_handlers {
 	int got_columns;
 	int got_cells;
+	bool got_row;
 public:
 	String::C value;
 	const String* user_file_name;
@@ -949,18 +950,26 @@ public:
 	File_sql_event_handlers():
 		got_columns(0),
 		got_cells(0),
+		got_row(false),
 		user_file_name(0),
 		user_content_type(0) {}
 
 	bool add_column(SQL_Error& error, const char* /*str*/, size_t /*length*/) {
 		if(got_columns++==3) {
-			error=SQL_Error("result must contain not more then 3 columns");
+			error=SQL_Error("result must contain no more than 3 columns");
 			return true;
 		}
 		return false;
 	}
 	bool before_rows(SQL_Error& /*error*/ ) { /* ignore */ return false; }
-	bool add_row(SQL_Error& /*error*/) { /* ignore */ return false; }
+	bool add_row(SQL_Error& error) {
+		if(got_row) {
+			error=SQL_Error("result must contain no more than 1 row");
+			return true;
+		}
+		got_row=true;
+		return false;
+	}
 	bool add_row_cell(SQL_Error& error, const char* str, size_t length) {
 		try {
 			switch(got_cells++) {
@@ -976,7 +985,7 @@ public:
 						user_content_type=new String(str, String::L_TAINTED);
 					break;
 				default:
-					error=SQL_Error("result must not contain more then one row, three columns");
+					error=SQL_Error("result must contain no more than 1 row and 3 columns");
 					return true;
 			}
 			return false;
