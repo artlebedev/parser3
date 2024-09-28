@@ -8,7 +8,7 @@
 #ifndef PA_VARRAY_H
 #define PA_VARRAY_H
 
-#define IDENT_PA_VARRAY_H "$Id: pa_varray.h,v 1.9 2024/09/22 13:56:10 moko Exp $"
+#define IDENT_PA_VARRAY_H "$Id: pa_varray.h,v 1.10 2024/09/28 14:15:13 moko Exp $"
 
 #include "classes.h"
 #include "pa_value.h"
@@ -51,6 +51,17 @@ public:
 		if(index >= this->fsize){
 			this->fsize=index+1;
 		}
+	}
+
+	inline bool put_dont_replace(size_t index, T element){
+		this->fit(index);
+		if(this->felements[index])
+			return true;
+		this->felements[index]=element;
+		if(index >= this->fsize){
+			this->fsize=index+1;
+		}
+		return false;
 	}
 
 	inline void insert(size_t index, T element) {

@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.10 2024/09/22 18:23:22 moko Exp $";
+volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.11 2024/09/28 14:15:13 moko Exp $";
 
 // class
 
@@ -141,7 +141,338 @@ static void _join(Request& r, MethodParams& params) {
 	self.invalidate();
 }
 
-static void _sql(Request& r, MethodParams& params) {}
+#ifndef DOXYGEN
+
+#define STRING(str) ((str) ? *new String(str, String::L_TAINTED /* no length as 0x00 can be inside */) : String::Empty)
+
+class SparseArray_sql_event_handlers: public SQL_Driver_query_event_handlers {
+	bool distinct;
+	ArrayValue& result;
+	Value* row_value;
+	int column_index;
+	ArrayString& columns;
+	bool one_bool_column;
+	Table2hash_value_type value_type;
+	int columns_count;
+public:
+	Table* empty;
+public:
+	SparseArray_sql_event_handlers(bool adistinct, ArrayValue& aresult, Table2hash_value_type avalue_type):
+		distinct(adistinct),
+		result(aresult),
+		row_value(0),
+		column_index(0),
+		columns(*new ArrayString),
+		one_bool_column(false),
+		value_type(avalue_type),
+		empty(0) {
+	}
+
+	bool add_column(SQL_Error& error, const char* str, size_t ) {
+		try {
+			columns+=&STRING(str);
+			return false;
+		} catch(...) {
+			error=SQL_Error("exception occurred in Hash_sql_event_handlers::add_column");
+			return true;
+		}
+	}
+
+	bool before_rows(SQL_Error& error) {
+		if(columns.count()<1) {
+			error=SQL_Error("no columns");
+			return true;
+		}
+		if(columns.count()==1) {
+			one_bool_column=true;
+		} else {
+			switch(value_type){
+				case C_STRING: {
+					if(columns.count()>2){
+						error=SQL_Error("only 2 columns allowed for $.type[string] and $.sparse(true).");
+						return true;
+					}
+					break;
+				}
+				case C_TABLE: {
+					// create empty table which we'll copy later
+					empty=new Table(&columns);
+					columns_count=columns.count();
+					break;
+				}
+			}
+		}
+		return false;
+	}
+
+	bool add_row(SQL_Error& /*error*/) {
+		column_index=0;
+		return false;
+	}
+
+	bool add_row_cell(SQL_Error& error, const char *str, size_t ) {
+		try {
+			bool duplicate=false;
+			if(one_bool_column) {
+				size_t index=str ? pa_atoui(str) : 0;
+				duplicate=result.put_dont_replace(index, &VBool::get(true));  // put. existed?
+			} else if(column_index==0) {
+				size_t index=str ? pa_atoui(str) : 0;
+				switch(value_type){
+					case C_HASH: {
+						VHash* row_vhash=new VHash;
+						row_value=row_vhash;
+						duplicate=result.put_dont_replace(index, row_vhash); // put. existed?
+						break;
+					}
+					case C_STRING: {
+						VString* row_vstring=new VString();
+						row_value=row_vstring;
+						duplicate=result.put_dont_replace(index, row_vstring);  // put. existed?
+						break;
+					}
+					case C_TABLE: {
+						VTable* vtable=(VTable*)result.get(index);
+
+						if(vtable) { // table with this key exist?
+							if(!distinct) {
+								duplicate=true;
+								break;
+							}
+						} else {
+			 				// no? creating table of same structure as source
+							Table::Action_options table_options(0, 0);
+							vtable=new VTable(new Table(*empty, table_options/*no rows, just structure*/));
+							result.put(index, vtable); // put
+						}
+						ArrayString* row=new ArrayString(columns_count);
+						*row+=&STRING(str);
+						*vtable->get_table()+=row;
+						break;
+					}
+				}
+			} else {
+				const String& cell=STRING(str);
+ 				switch(value_type) {
+					case C_HASH: {
+						row_value->get_hash()->put(*columns[column_index], new VString(cell));
+						break;
+					}
+					case C_STRING: {
+						VString* row_string=(VString*)row_value;
+						row_string->set_string(cell);
+						break;
+					}
+					case C_TABLE: {
+						ArrayString* row=(ArrayString*)row_value;
+						*row+=&cell;
+						break;
+					}
+				}
+			}
+
+			if(duplicate & !distinct) {
+				error=SQL_Error("duplicate key");
+				return true;
+			}
+
+			column_index++;
+			return false;
+		} catch(const Exception& e) {
+			error=SQL_Error(e.type(), e.comment());
+			return true;
+		} catch(...) {
+			error=SQL_Error("exception occurred in Hash_sql_event_handlers::add_row_cell");
+			return true;
+		}
+	}
+};
+
+class Array_sql_event_handlers: public SQL_Driver_query_event_handlers {
+	ArrayValue& result;
+	Value* row_value;
+	int column_index;
+	ArrayString& columns;
+	Table2hash_value_type value_type;
+	int columns_count;
+public:
+	Table* empty;
+public:
+	Array_sql_event_handlers(ArrayValue& aresult, Table2hash_value_type avalue_type):
+		result(aresult),
+		row_value(0),
+		column_index(0),
+		columns(*new ArrayString),
+		value_type(avalue_type),
+		empty(0) {
+	}
+
+	bool add_column(SQL_Error& error, const char* str, size_t ) {
+		try {
+			columns+=&STRING(str);
+			return false;
+		} catch(...) {
+			error=SQL_Error("exception occurred in Hash_sql_event_handlers::add_column");
+			return true;
+		}
+	}
+
+	bool before_rows(SQL_Error& error) {
+		if(columns.count()<1) {
+			error=SQL_Error("no columns");
+			return true;
+		}
+		switch(value_type){
+			case C_STRING: {
+				if(columns.count()>1){
+					error=SQL_Error("only one column allowed for $.type[string].");
+					return true;
+				}
+				break;
+			}
+			case C_TABLE: {
+				// create empty table which we'll copy later
+				empty=new Table(&columns);
+				columns_count=columns.count();
+				break;
+			}
+		}
+		return false;
+	}
+
+	bool add_row(SQL_Error& /*error*/) {
+		column_index=0;
+		return false;
+	}
+
+	bool add_row_cell(SQL_Error& error, const char *str, size_t ) {
+		try {
+			if(column_index==0) {
+				switch(value_type){
+					case C_HASH: {
+						VHash* row_vhash=new VHash;
+						row_value=row_vhash;
+						result+=row_vhash;
+						break;
+					}
+					case C_STRING: {
+						VString* row_vstring=new VString();
+						row_value=row_vstring;
+						result+=row_vstring;
+						break;
+					}
+					case C_TABLE: {
+		 				// creating table of same structure as source
+						Table::Action_options table_options(0, 0);
+						VTable* vtable=new VTable(new Table(*empty, table_options/*no rows, just structure*/));
+						result+=vtable;
+
+						ArrayString* row=new ArrayString(columns_count);
+						*vtable->get_table()+=row;
+						break;
+					}
+				}
+			}
+
+			const String& cell=STRING(str);
+			switch(value_type) {
+				case C_HASH: {
+					row_value->get_hash()->put(*columns[column_index], new VString(cell));
+					break;
+				}
+				case C_STRING: {
+					VString* row_string=(VString*)row_value;
+					row_string->set_string(cell);
+					break;
+				}
+				case C_TABLE: {
+					ArrayString* row=(ArrayString*)row_value;
+					*row+=&cell;
+					break;
+				}
+			}
+
+			column_index++;
+			return false;
+		} catch(const Exception& e) {
+			error=SQL_Error(e.type(), e.comment());
+			return true;
+		} catch(...) {
+			error=SQL_Error("exception occurred in Hash_sql_event_handlers::add_row_cell");
+			return true;
+		}
+	}
+};
+
+#endif
+
+extern Table2hash_value_type get_value_type(Value& vvalue_type);
+extern int marshal_binds(HashStringValue& hash, SQL_Driver::Placeholder*& placeholders);
+extern void unmarshal_bind_updates(HashStringValue& hash, int placeholder_count, SQL_Driver::Placeholder* placeholders);
+
+static void _sql(Request& r, MethodParams& params) {
+	Value& statement=params.as_junction(0, "statement must be code");
+
+	HashStringValue* bind=0;
+	ulong limit=SQL_NO_LIMIT;
+	ulong offset=0;
+	bool distinct=false;
+	bool sparse=false;
+	Table2hash_value_type value_type=C_HASH;
+	if(params.count()>1)
+		if(HashStringValue* options=params.as_hash(1, "sql options")) {
+			int valid_options=0;
+			for(HashStringValue::Iterator i(*options); i; i.next() ){
+				String::Body key=i.key();
+				Value* value=i.value();
+				if(key == sql_bind_name) {
+					bind=value->get_hash();
+					valid_options++;
+				} else if(key == sql_limit_name) {
+					limit=(ulong)r.process(*value).as_double();
+					valid_options++;
+				} else if(key == sql_offset_name) {
+					offset=(ulong)r.process(*value).as_double();
+					valid_options++;
+				} else if (key == sql_distinct_name) {
+					distinct=r.process(*value).as_bool();
+					valid_options++;
+				} else if (key == sql_value_type_name) {
+					sparse=r.process(*value).as_bool();
+					valid_options++;
+				} else if (key == "sparse") {
+					value_type=get_value_type(r.process(*value));
+					valid_options++;
+				}
+			}
+			if(valid_options!=options->count())
+				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+		}
+
+	SQL_Driver::Placeholder* placeholders=0;
+	uint placeholders_count=0;
+	if(bind)
+		placeholders_count=marshal_binds(*bind, placeholders);
+
+	const String& statement_string=r.process_to_string(statement);
+	const char* statement_cstr=statement_string.untaint_cstr(String::L_SQL, r.connection());
+
+	VArray& self=GET_SELF(r, VArray);
+	
+	self.array().clear(); self.invalidate(); // just in case if called as method
+
+	if(sparse){
+		SparseArray_sql_event_handlers handlers(distinct, self.array(), value_type);
+		r.connection()->query(statement_cstr, placeholders_count, placeholders, offset, limit, handlers, statement_string);
+	} else {
+		Array_sql_event_handlers handlers(self.array(), value_type);
+		r.connection()->query(statement_cstr, placeholders_count, placeholders, offset, limit, handlers, statement_string);
+	}
+
+	if(bind)
+		unmarshal_bind_updates(*bind, placeholders_count, placeholders);
+}
+
 
 
 static void mid(Request& r, size_t offset=0, size_t limit=ARRAY_OPTION_LIMIT_ALL) {
