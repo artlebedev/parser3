@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 4667
+Content-Length: 4666
 
 
 
@@ -133,7 +133,7 @@ Content-Length: 4667
 	
 	Exception type: sql.execute,
 	Source: select * from pets,
-	Comment: only 2 columns allowed for $.type[string].
+	Comment: only 2 columns allowed for $.type[string]
 
 
 	4.5. 	

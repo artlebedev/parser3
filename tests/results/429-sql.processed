@@ -1,0 +1,697 @@
+Content-Type: text/html
+Content-Length: 12144
+
+
+		
+
+	
+
+	
+		basic tests
+	2.1 	
+	[
+	{
+		"pet":"cat",
+		"food":"milk",
+		"aggressive":"'very'",
+		"weigth":"5"
+	},
+	{
+		"pet":"dog",
+		"food":"bone",
+		"aggressive":"\"never\"",
+		"weigth":"10"
+	},
+	{
+		"pet":"hamster",
+		"food":"grain",
+		"aggressive":"",
+		"weigth":"1"
+	},
+	{
+		"pet":"parrot",
+		"food":"grain",
+		"aggressive":"alwayws",
+		"weigth":"1"
+	}
+]
+
+	2.2 	
+	[
+	[
+		{"pet":"cat","food":"milk","aggressive":"'very'","weigth":"5"}
+	],
+	[
+		{"pet":"dog","food":"bone","aggressive":"\"never\"","weigth":"10"}
+	],
+	[
+		{"pet":"hamster","food":"grain","aggressive":"","weigth":"1"}
+	],
+	[
+		{"pet":"parrot","food":"grain","aggressive":"alwayws","weigth":"1"}
+	]
+]
+
+	2.3 	
+	[
+	{
+		"pet":"cat"
+	},
+	{
+		"pet":"dog"
+	},
+	{
+		"pet":"hamster"
+	},
+	{
+		"pet":"parrot"
+	}
+]
+
+	2.4 	
+	[
+	"cat",
+	"dog",
+	"hamster",
+	"parrot"
+]
+
+	2.5 
+	
+	Exception type: sql.execute,
+	Source: select * from pets,
+	Comment: only one column allowed for $.type[string]
+
+
+	2.6 
+	
+	Exception type: parser.runtime,
+	Source: sql,
+	Comment: 'distinct' option can only be used when $.sparse(true) is specified
+
+
+	2.7 	
+	[
+	[
+		{"pet":"dog","food":"bone","aggressive":"\"never\"","weigth":"10"}
+	]
+]
+
+	2.8 	
+	[
+	[
+		{"aggressive":"'very'"}
+	],
+	[
+		{"aggressive":"\"never\""}
+	],
+	[
+		{"aggressive":""}
+	],
+	[
+		{"aggressive":"alwayws"}
+	]
+]
+		multi statements tests
+
+	1.2 	
+	[
+	[
+		{"0":"0","pet":"cat","food":"milk","aggressive":"'very'","weigth":"5"}
+	],
+	[
+		{"0":"0","pet":"dog","food":"bone","aggressive":"\"never\"","weigth":"10"}
+	],
+	[
+		{"0":"0","pet":"hamster","food":"grain","aggressive":"","weigth":"1"}
+	],
+	[
+		{"0":"0","pet":"parrot","food":"grain","aggressive":"alwayws","weigth":"1"}
+	],
+	[
+		{"1":"1","pet":"cat","food":"milk","aggressive":"'very'","weigth":"5"}
+	],
+	[
+		{"1":"1","pet":"dog","food":"bone","aggressive":"\"never\"","weigth":"10"}
+	],
+	[
+		{"1":"1","pet":"hamster","food":"grain","aggressive":"","weigth":"1"}
+	],
+	[
+		{"1":"1","pet":"parrot","food":"grain","aggressive":"alwayws","weigth":"1"}
+	]
+]
+ 
+	1.3 	
+	[
+	[
+		{"0":"0","pet":"cat","food":"milk","aggressive":"'very'","weigth":"5"}
+	],
+	[
+		{"0":"0","pet":"dog","food":"bone","aggressive":"\"never\"","weigth":"10"}
+	],
+	[
+		{"0":"0","pet":"hamster","food":"grain","aggressive":"","weigth":"1"}
+	],
+	[
+		{"0":"0","pet":"parrot","food":"grain","aggressive":"alwayws","weigth":"1"}
+	],
+	[
+		{"0":"0","pet":"cat","food":"milk","aggressive":"'very'","weigth":"5"}
+	],
+	[
+		{"0":"0","pet":"dog","food":"bone","aggressive":"\"never\"","weigth":"10"}
+	],
+	[
+		{"0":"0","pet":"hamster","food":"grain","aggressive":"","weigth":"1"}
+	],
+	[
+		{"0":"0","pet":"parrot","food":"grain","aggressive":"alwayws","weigth":"1"}
+	]
+]
+
+	1.4 	
+	[
+	[
+		{"0":"0","pet":"cat","food":"milk","aggressive":"'very'","weigth":"5"}
+	],
+	[
+		{"0":"0","pet":"dog","food":"bone","aggressive":"\"never\"","weigth":"10"}
+	],
+	[
+		{"0":"0","pet":"hamster","food":"grain","aggressive":"","weigth":"1"}
+	],
+	[
+		{"0":"0","pet":"parrot","food":"grain","aggressive":"alwayws","weigth":"1"}
+	],
+	[
+		{"0":"0","2+2":"4"}
+	]
+]
+
+	1.5 	
+	[
+	[
+		{"0":"0","pet":"cat","food":"milk","aggressive":"'very'","weigth":"5"}
+	],
+	[
+		{"0":"0","pet":"dog","food":"bone","aggressive":"\"never\"","weigth":"10"}
+	],
+	[
+		{"1":"1","pet":"cat","food":"milk","aggressive":"'very'","weigth":"5"}
+	]
+]
+
+	1.6 	
+	[
+	[
+		{"0":"0","pet":"cat","food":"milk","aggressive":"'very'","weigth":"5"}
+	],
+	[
+		{"0":"0","pet":"dog","food":"bone","aggressive":"\"never\"","weigth":"10"}
+	],
+	[
+		{"0":"0","pet":"hamster","food":"grain","aggressive":"","weigth":"1"}
+	],
+	[
+		{"0":"0","pet":"parrot","food":"grain","aggressive":"alwayws","weigth":"1"}
+	],
+	[
+		{"1":"1","pet":"cat","food":"milk","aggressive":"'very'","weigth":"5"}
+	]
+] - minor bug: limit for last query only
+
+	1.7 	
+	[
+	[
+		{"weigth":"5","food":"milk"}
+	],
+	[
+		{"weigth":"10","food":"bone"}
+	],
+	[
+		{"weigth":"1","food":"grain"}
+	],
+	[
+		{"weigth":"1","food":"grain"}
+	],
+	[
+		{"weigth+10":"15","pet":"cat","food":"milk","aggressive":"'very'","weigth":"5"}
+	],
+	[
+		{"weigth+10":"20","pet":"dog","food":"bone","aggressive":"\"never\"","weigth":"10"}
+	],
+	[
+		{"weigth+10":"11","pet":"hamster","food":"grain","aggressive":"","weigth":"1"}
+	],
+	[
+		{"weigth+10":"11","pet":"parrot","food":"grain","aggressive":"alwayws","weigth":"1"}
+	]
+]
+
+	1.8 	
+	[
+	{
+		"weigth":"5",
+		"food":"milk"
+	},
+	{
+		"weigth":"10",
+		"food":"bone"
+	},
+	{
+		"weigth":"1",
+		"food":"grain"
+	},
+	{
+		"weigth":"1",
+		"food":"grain"
+	},
+	{
+		"weigth+10":"15",
+		"pet":"cat",
+		"food":"milk",
+		"aggressive":"'very'",
+		"weigth":"5"
+	},
+	{
+		"weigth+10":"20",
+		"pet":"dog",
+		"food":"bone",
+		"aggressive":"\"never\"",
+		"weigth":"10"
+	},
+	{
+		"weigth+10":"11",
+		"pet":"hamster",
+		"food":"grain",
+		"aggressive":"",
+		"weigth":"1"
+	},
+	{
+		"weigth+10":"11",
+		"pet":"parrot",
+		"food":"grain",
+		"aggressive":"alwayws",
+		"weigth":"1"
+	}
+]
+
+	1.9 	
+	[
+	{
+		"0":"0",
+		"pet":"cat",
+		"food":"milk",
+		"aggressive":"'very'",
+		"weigth":"5"
+	},
+	{
+		"0":"0",
+		"pet":"dog",
+		"food":"bone",
+		"aggressive":"\"never\"",
+		"weigth":"10"
+	},
+	{
+		"0":"0",
+		"pet":"hamster",
+		"food":"grain",
+		"aggressive":"",
+		"weigth":"1"
+	},
+	{
+		"0":"0",
+		"pet":"parrot",
+		"food":"grain",
+		"aggressive":"alwayws",
+		"weigth":"1"
+	},
+	{
+		"0":"0",
+		"2+2":"4"
+	}
+]
+	1.10 	
+	[
+	{
+		"0":"0",
+		"2+2":"4"
+	},
+	{
+		"0":"0",
+		"pet":"cat",
+		"food":"milk",
+		"aggressive":"'very'",
+		"weigth":"5"
+	},
+	{
+		"0":"0",
+		"pet":"dog",
+		"food":"bone",
+		"aggressive":"\"never\"",
+		"weigth":"10"
+	},
+	{
+		"0":"0",
+		"pet":"hamster",
+		"food":"grain",
+		"aggressive":"",
+		"weigth":"1"
+	},
+	{
+		"0":"0",
+		"pet":"parrot",
+		"food":"grain",
+		"aggressive":"alwayws",
+		"weigth":"1"
+	}
+]
+
+	1.11 	
+	[
+	[
+		{"0":"0","food":"milk"}
+	],
+	[
+		{"0":"0","food":"bone"}
+	],
+	[
+		{"0":"0","food":"grain"}
+	],
+	[
+		{"0":"0","food":"grain"}
+	],
+	[
+		{"1":"1","pet":"cat","food":"milk","aggressive":"'very'","weigth":"5"}
+	],
+	[
+		{"1":"1","pet":"dog","food":"bone","aggressive":"\"never\"","weigth":"10"}
+	],
+	[
+		{"1":"1","pet":"hamster","food":"grain","aggressive":"","weigth":"1"}
+	],
+	[
+		{"1":"1","pet":"parrot","food":"grain","aggressive":"alwayws","weigth":"1"}
+	]
+]
+	1.12 	
+	[
+	[
+		{"0":"0","food":"milk"}
+	],
+	[
+		{"0":"0","food":"bone"}
+	],
+	[
+		{"0":"0","food":"grain"}
+	],
+	[
+		{"0":"0","food":"grain"}
+	],
+	[
+		{"0":"0","pet":"cat","food":"milk","aggressive":"'very'","weigth":"5"}
+	],
+	[
+		{"0":"0","pet":"dog","food":"bone","aggressive":"\"never\"","weigth":"10"}
+	],
+	[
+		{"0":"0","pet":"hamster","food":"grain","aggressive":"","weigth":"1"}
+	],
+	[
+		{"0":"0","pet":"parrot","food":"grain","aggressive":"alwayws","weigth":"1"}
+	]
+]
+
+	
+	        basic tests sparse
+	3.1 	
+	{
+	"1":[
+		{"key":"1","pet":"hamster"},
+		{"key":"1","pet":"parrot"}
+	],
+	"5":[
+		{"key":"5","pet":"cat"}
+	],
+	"10":[
+		{"key":"10","pet":"dog"}
+	]
+}
+
+	3.2 	
+	{
+	"1":"hamster",
+	"5":"cat",
+	"10":"dog"
+}
+
+	
+
+	3.3 	
+	{
+	"1":{
+		"pet":"parrot",
+		"food":"grain",
+		"aggressive":"alwayws",
+		"weigth":"1"
+	},
+	"5":{
+		"pet":"cat",
+		"food":"milk",
+		"aggressive":"'very'",
+		"weigth":"5"
+	},
+	"10":{
+		"pet":"dog",
+		"food":"bone",
+		"aggressive":"\"never\"",
+		"weigth":"10"
+	}
+}
+
+	3.4 	
+	{
+	"1":[
+		{"weigth":"1","pet":"parrot","food":"grain","aggressive":"alwayws","weigth":"1"}
+	],
+	"5":[
+		{"weigth":"5","pet":"cat","food":"milk","aggressive":"'very'","weigth":"5"}
+	],
+	"10":[
+		{"weigth":"10","pet":"dog","food":"bone","aggressive":"\"never\"","weigth":"10"}
+	]
+}
+
+	3.5 	
+	{
+	"1":"grain",
+	"5":"milk",
+	"10":"bone"
+}
+
+	3.6 
+	
+	Exception type: sql.execute,
+	Source: select weigth, * from pets,
+	Comment: only 2 columns allowed for $.type[string] and $.sparse(true)
+
+
+	3.7. 	
+	{
+	"10":[
+		{"weigth":"10","pet":"dog","food":"bone","aggressive":"\"never\"","weigth":"10"}
+	]
+}
+
+	3.8 
+	
+	Exception type: sql.execute,
+	Source: select '1', pet from pets,
+	Comment: duplicate key
+
+
+	3.9 	
+	{
+	"1":{
+		"pet":"parrot"
+	},
+	"5":{
+		"pet":"cat"
+	},
+	"10":{
+		"pet":"dog"
+	}
+}
+	
+		
+
+	
+
+	
+		multi statements tests
+
+	1.2 	
+	{
+	"0":[
+		{"0":"0","pet":"cat","food":"milk","aggressive":"'very'","weigth":"5"},
+		{"0":"0","pet":"dog","food":"bone","aggressive":"\"never\"","weigth":"10"},
+		{"0":"0","pet":"hamster","food":"grain","aggressive":"","weigth":"1"},
+		{"0":"0","pet":"parrot","food":"grain","aggressive":"alwayws","weigth":"1"}
+	],
+	"1":[
+		{"1":"1","pet":"cat","food":"milk","aggressive":"'very'","weigth":"5"},
+		{"1":"1","pet":"dog","food":"bone","aggressive":"\"never\"","weigth":"10"},
+		{"1":"1","pet":"hamster","food":"grain","aggressive":"","weigth":"1"},
+		{"1":"1","pet":"parrot","food":"grain","aggressive":"alwayws","weigth":"1"}
+	]
+}
+ 
+	1.3 	
+	{
+	"0":[
+		{"0":"0","pet":"cat","food":"milk","aggressive":"'very'","weigth":"5"},
+		{"0":"0","pet":"dog","food":"bone","aggressive":"\"never\"","weigth":"10"},
+		{"0":"0","pet":"hamster","food":"grain","aggressive":"","weigth":"1"},
+		{"0":"0","pet":"parrot","food":"grain","aggressive":"alwayws","weigth":"1"},
+		{"0":"0","pet":"cat","food":"milk","aggressive":"'very'","weigth":"5"},
+		{"0":"0","pet":"dog","food":"bone","aggressive":"\"never\"","weigth":"10"},
+		{"0":"0","pet":"hamster","food":"grain","aggressive":"","weigth":"1"},
+		{"0":"0","pet":"parrot","food":"grain","aggressive":"alwayws","weigth":"1"}
+	]
+}
+
+	1.4 	
+	{
+	"0":[
+		{"0":"0","pet":"cat","food":"milk","aggressive":"'very'","weigth":"5"},
+		{"0":"0","pet":"dog","food":"bone","aggressive":"\"never\"","weigth":"10"},
+		{"0":"0","pet":"hamster","food":"grain","aggressive":"","weigth":"1"},
+		{"0":"0","pet":"parrot","food":"grain","aggressive":"alwayws","weigth":"1"},
+		{"0":"0","pet":"4"}
+	]
+}
+
+	1.5 	
+	{
+	"0":[
+		{"0":"0","pet":"cat","food":"milk","aggressive":"'very'","weigth":"5"},
+		{"0":"0","pet":"dog","food":"bone","aggressive":"\"never\"","weigth":"10"}
+	],
+	"1":[
+		{"1":"1","pet":"cat","food":"milk","aggressive":"'very'","weigth":"5"}
+	]
+}
+
+	1.6 	
+	{
+	"0":[
+		{"0":"0","pet":"cat","food":"milk","aggressive":"'very'","weigth":"5"},
+		{"0":"0","pet":"dog","food":"bone","aggressive":"\"never\"","weigth":"10"},
+		{"0":"0","pet":"hamster","food":"grain","aggressive":"","weigth":"1"},
+		{"0":"0","pet":"parrot","food":"grain","aggressive":"alwayws","weigth":"1"}
+	],
+	"1":[
+		{"1":"1","pet":"cat","food":"milk","aggressive":"'very'","weigth":"5"}
+	]
+} - minor bug: limit for last query only
+
+	1.7 	
+	{
+	"1":[
+		{"weigth":"1","food":"grain"},
+		{"weigth":"1","food":"grain"}
+	],
+	"5":[
+		{"weigth":"5","food":"milk"}
+	],
+	"10":[
+		{"weigth":"10","food":"bone"}
+	],
+	"11":[
+		{"weigth+10":"11","pet":"hamster","food":"grain","aggressive":"","weigth":"1"},
+		{"weigth+10":"11","pet":"parrot","food":"grain","aggressive":"alwayws","weigth":"1"}
+	],
+	"15":[
+		{"weigth+10":"15","pet":"cat","food":"milk","aggressive":"'very'","weigth":"5"}
+	],
+	"20":[
+		{"weigth+10":"20","pet":"dog","food":"bone","aggressive":"\"never\"","weigth":"10"}
+	]
+}
+
+	1.8 	
+	{
+	"1":{
+		"food":"grain"
+	},
+	"5":{
+		"food":"milk"
+	},
+	"10":{
+		"food":"bone"
+	},
+	"11":{
+		"pet":"hamster",
+		"food":"grain",
+		"aggressive":"",
+		"weigth":"1"
+	},
+	"15":{
+		"pet":"cat",
+		"food":"milk",
+		"aggressive":"'very'",
+		"weigth":"5"
+	},
+	"20":{
+		"pet":"dog",
+		"food":"bone",
+		"aggressive":"\"never\"",
+		"weigth":"10"
+	}
+}
+
+	1.9 	
+	{
+	"0":{
+		"pet":"cat",
+		"food":"milk",
+		"aggressive":"'very'",
+		"weigth":"5"
+	}
+}
+	1.10 	
+	{
+	"0":{
+		"2+2":"4"
+	}
+}
+
+	1.11 	
+	{
+	"0":[
+		{"0":"0","food":"milk"},
+		{"0":"0","food":"bone"},
+		{"0":"0","food":"grain"},
+		{"0":"0","food":"grain"}
+	],
+	"1":[
+		{"1":"1","pet":"cat","food":"milk","aggressive":"'very'","weigth":"5"},
+		{"1":"1","pet":"dog","food":"bone","aggressive":"\"never\"","weigth":"10"},
+		{"1":"1","pet":"hamster","food":"grain","aggressive":"","weigth":"1"},
+		{"1":"1","pet":"parrot","food":"grain","aggressive":"alwayws","weigth":"1"}
+	]
+}
+	1.12 	
+	{
+	"0":[
+		{"0":"0","food":"milk"},
+		{"0":"0","food":"bone"},
+		{"0":"0","food":"grain"},
+		{"0":"0","food":"grain"},
+		{"0":"0","food":"cat","2":"milk","3":"'very'","4":"5"},
+		{"0":"0","food":"dog","2":"bone","3":"\"never\"","4":"10"},
+		{"0":"0","food":"hamster","2":"grain","3":"","4":"1"},
+		{"0":"0","food":"parrot","2":"grain","3":"alwayws","4":"1"}
+	]
+}
