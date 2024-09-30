@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.12 2024/09/28 21:28:57 moko Exp $";
+volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.13 2024/09/30 19:03:53 moko Exp $";
 
 // class
 
@@ -445,6 +445,7 @@ static void _sql(Request& r, MethodParams& params) {
 	if(params.count()>1)
 		if(HashStringValue* options=params.as_hash(1, "sql options")) {
 			int valid_options=0;
+			bool distinct_specified=false;
 			for(HashStringValue::Iterator i(*options); i; i.next() ){
 				String::Body key=i.key();
 				Value* value=i.value();
@@ -459,6 +460,7 @@ static void _sql(Request& r, MethodParams& params) {
 					valid_options++;
 				} else if (key == sql_distinct_name) {
 					distinct=r.process(*value).as_bool();
+					distinct_specified=true;
 					valid_options++;
 				} else if (key == sql_value_type_name) {
 					value_type=get_value_type(r.process(*value));
@@ -470,6 +472,8 @@ static void _sql(Request& r, MethodParams& params) {
 			}
 			if(valid_options!=options->count())
 				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+			if(distinct_specified && !sparse)
+				throw Exception(PARSER_RUNTIME, 0, "'distinct' option can only be used when $.sparse(true) is specified");
 		}
 
 	SQL_Driver::Placeholder* placeholders=0;
@@ -481,7 +485,7 @@ static void _sql(Request& r, MethodParams& params) {
 	const char* statement_cstr=statement_string.untaint_cstr(String::L_SQL, r.connection());
 
 	VArray& self=GET_SELF(r, VArray);
-	
+
 	self.array().clear(); self.invalidate(); // just in case if called as method
 
 	if(sparse){
