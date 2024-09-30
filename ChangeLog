@@ -1,3 +1,99 @@
+2024-09-29  moko
+
+	* src/classes/array.C: synced ^array::sql multi_statements logic
+	  with ^hash::sql new behavour
+
+2024-09-28  moko
+
+	* tests/: 428-sql.html, results/388-sql.processed,
+	  results/428-sql.processed: tests updated after column names were
+	  fixed in multi_statements mode (related to feature #1197)
+
+	* src/classes/hash.C: column names are fixed for most cases in
+	  multi_statements mode (related to feature #1197)
+
+	* tests/: 428-sql.html, results/195.processed,
+	  results/224.processed, results/239.processed,
+	  results/254.processed, results/261.processed,
+	  results/306.processed, results/333.processed,
+	  results/341.processed, results/343.processed,
+	  results/344.processed, results/348.processed,
+	  results/364.processed, results/389.processed,
+	  results/390.processed, results/415.processed,
+	  results/420.processed, results/421.processed: tests results
+	  updated after error messages spelling minor fixes
+
+	* src/types/: pa_value.h, pa_vstateless_class.h: a bit more
+	  spelling
+
+	* src/: classes/curl.C, classes/file.C, classes/hash.C,
+	  classes/image.C, classes/math.C, classes/string.C,
+	  classes/table.C, lib/memcached/pa_memcached.C, main/compile.y,
+	  main/execute.C, main/pa_charset.C, main/pa_common.C,
+	  main/pa_http.C, main/pa_request.C, main/pa_socks.C,
+	  main/pa_sql_driver_manager.C, types/pa_value.C, types/pa_value.h,
+	  types/pa_vmail.C, types/pa_vobject.C,
+	  types/pa_vstateless_class.C, types/pa_vstateless_class.h,
+	  types/pa_vxdoc.C: minor error messages spelling fixes
+
+	* src/: classes/array.C, types/pa_varray.h: initial ^array::sql{}
+	  implementation (related to feature #930)
+
+	* tests/: 388-sql.html, results/388-sql.processed: test results
+	  updated after rows number ^file::sql{} check added
+
+	* src/classes/file.C: rows number now checked in ^file::sql{}
+
+	* tests/: 428-sql.html, results/428-sql.processed: more tests
+
+	* tests/: 428-sql.html, results/428-sql.processed: more
+	  multi_statements testing before bugfix
+
+	* tests/: 388-sql.html, 428-sql.html, results/388-sql.processed,
+	  results/428-sql.processed: support for multiple sql test files
+	  added
+
+	* tests/: 388-sql.html, results/388-sql.processed: more sql testing
+
+	* src/classes/hash.C: more accurate one_bool_column processing
+
+	* tests/: 427.html, results/427.processed: Constructors as methods
+	  behavour documented in test
+
+	* src/classes/hash.C: HashStringValue::Iterator used for options
+
+	* tests/: 388-sql.html, results/388-sql.processed: even more tests
+
+	* tests/: 388-sql.html, results/388-sql.processed: a bit more
+	  testing
+
+	* tests/results/367-curl.processed: test result updated after
+	  server charset changed
+
+	* tests/results/347-curl.processed: error messages updated
+
+	* tests/results/: 346-curl.processed, 379-curl.processed,
+	  394-curl.processed: tests results updated after Type -> Exception
+	  type replacement
+
+	* tests/results/388-sql.processed: tests result updated after Type
+	  -> Exception type
+
+2024-09-27  moko
+
+	* src/classes/hash.C: minor simplification
+
+2024-09-24  moko
+
+	* src/main/pa_string.C: atoui error messages improved
+
+	* tests/: 165.html, 312.html, results/165.processed,
+	  results/312.processed, results/379.processed: tests updated after
+	  default endless loop limit increased, atoi error messages
+	  improved
+
+	* src/classes/hash.C: VBool::get used, unification
+
 2024-09-22  moko
 
 	* src/classes/array.C: minor simplification
