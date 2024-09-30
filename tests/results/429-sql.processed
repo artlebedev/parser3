@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 12144
+Content-Length: 12640
 
 
 		
@@ -112,7 +112,17 @@ Content-Length: 12144
 		{"aggressive":"alwayws"}
 	]
 ]
+
+	2.9 
+	
+	Exception type: parser.runtime,
+	Source: sql,
+	Comment: called with invalid option
+
 		multi statements tests
+
+	1.1 	
+	[]
 
 	1.2 	
 	[
@@ -438,6 +448,12 @@ Content-Length: 12144
 		{"key":"10","pet":"dog"}
 	]
 }
+	3.1.1 
+	
+	Exception type: sql.execute,
+	Source: select weigth as key, pet from pets,
+	Comment: duplicate key
+
 
 	3.2 	
 	{
@@ -445,6 +461,12 @@ Content-Length: 12144
 	"5":"cat",
 	"10":"dog"
 }
+	3.2.1 
+	
+	Exception type: sql.execute,
+	Source: select weigth as key, pet from pets,
+	Comment: duplicate key
+
 
 	
 
@@ -523,6 +545,20 @@ Content-Length: 12144
 		"pet":"dog"
 	}
 }
+
+	3.10 	
+	{
+	"1":true,
+	"5":true,
+	"10":true
+}
+
+	3.11 
+	
+	Exception type: number.format,
+	Source: sqlite://****,
+	Comment: '-1' is out if range (negative)
+
 	
 		
 
@@ -530,6 +566,9 @@ Content-Length: 12144
 
 	
 		multi statements tests
+
+	1.1 	
+	{}
 
 	1.2 	
 	{
