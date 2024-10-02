@@ -1,0 +1,303 @@
+Content-Type: text/html
+Content-Length: 4585
+
+0. init
+0.1 {
+"0":"",
+"1":{
+"k1":"v1",
+"k2":"v2"
+},
+"2":"here?",
+"3":"vv"
+}
+0.2 "vv" {
+"0":"b",
+"1":"c"
+} string array
+0.3 {
+"0":"",
+"1":{
+"k1":"v1",
+"k2":"v2"
+},
+"2":null
+}
+0.4 {
+"0":"",
+"1":"string",
+"2":null,
+"5":6
+}
+0.5 Exception type: number.format,
+Source: -5,
+Comment: out of range (negative)
+0.6 4 vs 6 6
+1. create, add vs join
+1.1 создаем "дырявый" массив 1.2 из него дырявый массив: {
+"2":"1",
+"5":"2",
+"9":"3"
+}
+1.3 из него обычный массив: {
+"0":"1",
+"1":"2",
+"2":"3"
+}
+1.4 если параметр хеш, перезапись значений при add: {
+"0":"1",
+"1":"2",
+"2":"over"
+}
+1.5 если параметр хеш, добавление значений при join: {
+"0":"1",
+"1":"2",
+"2":"over",
+"3":"over"
+}
+1.6 1.6 если параметр массив, перезапись значений при add: {
+"2":"1",
+"5":"2",
+"9":"3"
+} {
+"2":"over2",
+"4":"over4",
+"5":"2",
+"9":"3"
+}
+1.7 если параметр массив, добевление значений при join: {
+"2":"1",
+"5":"2",
+"9":"3"
+} {
+"2":"1",
+"5":"2",
+"9":"3",
+"10":"over2",
+"11":"over4"
+}
+2. left, right, mid, for, foreach, select
+2.1 {
+"0":"v1",
+"1":"v5"
+}
+2.2 {
+"0":"v1",
+"1":"v5",
+"2":"v6",
+"3":"v8"
+}
+2.3 {}
+2.4 {
+"0":"v6",
+"1":"v8"
+}
+2.5 {
+"0":"v1",
+"1":"v5",
+"2":"v6",
+"3":"v8"
+}
+2.6 {}
+2.7 {
+"0":"v6",
+"1":"v8"
+}
+2.8 {
+"0":"v6"
+}
+2.9 {
+"0":"v1"
+}
+2.10 'v1','v5','v6','v8'
+2.11 '1','5','6','8'
+2.12 'v1','v5','v6','v8'
+2.13 'v1'[5],'v5'[6],'v6'[8],'v8'
+2.14 '','v1','','','','v5','v6','','v8'
+2.14 void,string,void,void,void,string,string,void,string
+2.15 v1[5],v5[6],v6[8],v8
+2.16 , v1, , , , v5, v6, , v8
+2.17 0=, 1=v1, 2=, 3=, 4=, 5=v5, 6=v6, 7=, 8=v8
+2.18 0= 1=v1 2= 3= 4= 2.20 {
+"0":"v6",
+"1":"v8"
+}
+2.21 {
+"0":"v5"
+}
+2.22 {
+"0":"v6"
+}
+2.23 {
+"0":"v5",
+"1":"v6"
+}
+2.24 {
+"0":"v8",
+"1":"v6"
+}
+2.25 Exception type: parser.runtime,
+Source: select,
+Comment: called with invalid option
+3. append/insert
+3.1 {}
+3.2 Exception type: parser.runtime,
+Source: create,
+Comment: param must be array or hash (parameter #1)
+3.3 Exception type: number.format,
+Source: insert,
+Comment: index out of range (negative)
+3.4 Exception type: parser.runtime,
+Source: insert,
+Comment: index must be integer (parameter #1)
+3.5 Exception type: parser.runtime,
+Source: insert,
+Comment: array index 2147483647 exceeds the $MAIN:LIMITS.max_array_size (1000000)
+3.6 OK: 3.7 {
+"0":"a1",
+"1":"a2",
+"2":"a3",
+"3":"a4",
+"10":"v1",
+"11":"v2",
+"12":{
+"0":"b1",
+"1":"b2"
+},
+"13":"c1",
+"14":"c2"
+}
+3.8 {
+"0":"a1",
+"1":"a2",
+"2":"d1",
+"3":"d2",
+"4":"a3",
+"5":"a4",
+"12":"v1",
+"13":"v2",
+"14":{
+"0":"b1",
+"1":"b2"
+},
+"15":"c1",
+"16":"c2"
+}
+3.9 Exception type: parser.runtime,
+Source: create,
+Comment: param must be array or hash (parameter #1)
+3.10 Exception type: parser.runtime,
+Source: create,
+Comment: param must be array or must have hash representation
+3.11 3.12 Exception type: parser.runtime,
+Source: join,
+Comment: param must be array or hash (parameter #1)
+3.13 Exception type: parser.runtime,
+Source: join,
+Comment: param must be array or must have hash representation
+4. json
+4.1. Exception type: parser.runtime,
+Source: x,
+Comment: $.array must be parser method with 2 parameters or 'array' or 'hash'
+4.2. array, 2
+4.3 {
+	"object":{
+		"type":"class1",
+		"value":"sample1"
+	},
+	"array":[
+		"Много букв в кодировке windows-1251",
+		{
+			"id":1,
+			"label":"test1"
+		},
+		{
+			"id":2,
+			"label":"test2"
+		},
+		{
+			"Ключ":"Значение в windows-1251"
+		},
+		false,
+		true,
+		2,
+		1.23456789012346e+19,
+		2,
+		null
+	],
+	"object_2":{
+		"type":"class2",
+		"value":"sample2"
+	}
+}
+4.4 {
+	"0":"Много букв в кодировке windows-1251",
+	"1":{
+		"id":1,
+		"label":"test1"
+	},
+	"2":{
+		"id":2,
+		"label":"test2"
+	},
+	"3":{
+		"Ключ":"Значение в windows-1251"
+	},
+	"4":false,
+	"5":true,
+	"6":2,
+	"7":1.23456789012346e+19,
+	"8":2,
+	"9":null,
+	"15":"last"
+}
+4.5 [
+	"Много букв в кодировке windows-1251",
+	{
+		"id":1,
+		"label":"test1"
+	},
+	{
+		"id":2,
+		"label":"test2"
+	},
+	{
+		"Ключ":"Значение в windows-1251"
+	},
+	false,
+	true,
+	2,
+	1.23456789012346e+19,
+	2,
+	null,
+	null,
+	null,
+	null,
+	null,
+	null,
+	"last"
+]
+4.6 [
+	"Много букв в кодировке windows-1251",
+	{
+		"id":1,
+		"label":"test1"
+	},
+	{
+		"id":2,
+		"label":"test2"
+	},
+	{
+		"Ключ":"Значение в windows-1251"
+	},
+	false,
+	true,
+	2,
+	1.23456789012346e+19,
+	2,
+	null,
+	"last"
+]
+4.7 Exception type: parser.runtime,
+Source: bug,
+Comment: must be 'array', 'object' or 'compact'

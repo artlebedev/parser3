@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 509
+Content-Length: 430
 
 Constructors as methods:
 1. table cleared: []
@@ -26,9 +26,11 @@ or added: [
 "2",
 "3"
 ]
-or fail: Exception type: parser.runtime,
-Source: create,
-Comment: source and destination are the same array
+or ignored [
+"1",
+"2",
+"3"
+]
 4. array kept: [
 "1",
 "2",
