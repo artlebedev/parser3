@@ -22,7 +22,7 @@
 #include "pa_varray.h"
 #include "pa_wwrapper.h"
 
-volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.422 2024/09/28 14:37:53 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
+volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.423 2024/10/02 21:24:41 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
 
 //#define DEBUG_EXECUTE
 
@@ -1360,7 +1360,7 @@ Value& Request::process(Value& input_value) {
 				wcontext=&local;
 
 				// execute it
-				recoursion_checked_execute(*junction->code);
+				recursion_checked_execute(*junction->code);
 
 				result=wcontext->result();
 			} else {
@@ -1369,7 +1369,7 @@ Value& Request::process(Value& input_value) {
 				wcontext=&local;
 
 				// execute it
-				recoursion_checked_execute(*junction->code);
+				recursion_checked_execute(*junction->code);
 
 				result=wcontext->result();
 			}
@@ -1412,7 +1412,7 @@ void Request::process_write(Value& input_value) {
 #ifdef OPTIMIZE_CALL
 			if(wcontext==junction->wcontext){
 				// no wrappers for wcontext
-				recoursion_checked_execute(*junction->code);
+				recursion_checked_execute(*junction->code);
 				RESTORE_CONTEXT
 
 			} else
@@ -1423,7 +1423,7 @@ void Request::process_write(Value& input_value) {
 				wcontext=&local;
 
 				// execute it
-				recoursion_checked_execute(*junction->code);
+				recursion_checked_execute(*junction->code);
 				RESTORE_CONTEXT
 				write(local.result());
 			} else {
@@ -1432,7 +1432,7 @@ void Request::process_write(Value& input_value) {
 				wcontext=&local;
 
 				// execute it
-				recoursion_checked_execute(*junction->code);
+				recursion_checked_execute(*junction->code);
 				RESTORE_CONTEXT
 				write(local.result());
 			}

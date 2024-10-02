@@ -20,7 +20,7 @@
 #include "pa_vxdoc.h"
 #endif
 
-volatile const char * IDENT_JSON_C="$Id: json.C,v 1.62 2024/10/02 19:34:04 moko Exp $";
+volatile const char * IDENT_JSON_C="$Id: json.C,v 1.63 2024/10/02 21:24:41 moko Exp $";
 
 // class
 
@@ -378,10 +378,10 @@ static void _parse(Request& r, MethodParams& params) {
 	if (json.result) r.write(*json.result);
 }
 
-const uint ANTI_ENDLESS_JSON_STRING_RECOURSION=128;
+const uint ANTI_ENDLESS_JSON_STRING_RECURSION=128;
 
 char *get_indent(uint level){
-	static char* cache[ANTI_ENDLESS_JSON_STRING_RECOURSION]={};
+	static char* cache[ANTI_ENDLESS_JSON_STRING_RECURSION]={};
 	if (!cache[level]){
 		char *result = static_cast<char*>(pa_malloc_atomic(level+1));
 		memset(result, '\t', level);
@@ -392,7 +392,7 @@ char *get_indent(uint level){
 }
 
 String *get_delim(uint level){
-	static String* cache[ANTI_ENDLESS_JSON_STRING_RECOURSION]={};
+	static String* cache[ANTI_ENDLESS_JSON_STRING_RECURSION]={};
 
 	if (!cache[level]){
 		char *result = static_cast<char*>(pa_malloc_atomic(level+2+1+1));
@@ -407,7 +407,7 @@ String *get_delim(uint level){
 }
 
 String *get_array_delim(uint level){
-	static String* cache[ANTI_ENDLESS_JSON_STRING_RECOURSION]={};
+	static String* cache[ANTI_ENDLESS_JSON_STRING_RECURSION]={};
 
 	if (!cache[level]){
 		char *result = static_cast<char*>(pa_malloc_atomic(level+2+1));
@@ -420,16 +420,16 @@ String *get_array_delim(uint level){
 	return cache[level];
 }
 
-class Json_string_recoursion {
+class Json_string_recursion {
 	Json_options& foptions;
 public:
-	Json_string_recoursion(Json_options& aoptions) : foptions(aoptions) {
-		if(++foptions.json_string_recoursion==ANTI_ENDLESS_JSON_STRING_RECOURSION)
+	Json_string_recursion(Json_options& aoptions) : foptions(aoptions) {
+		if(++foptions.json_string_recursion==ANTI_ENDLESS_JSON_STRING_RECURSION)
 			throw Exception(PARSER_RUNTIME, 0, "call canceled - endless json recursion detected");
 	}
-	~Json_string_recoursion() {
-		if(foptions.json_string_recoursion)
-			foptions.json_string_recoursion--;
+	~Json_string_recursion() {
+		if(foptions.json_string_recursion)
+			foptions.json_string_recursion--;
 	}
 };
 
@@ -439,24 +439,24 @@ const String* Json_options::hash_json_string(HashStringValue *hash) {
 	if(!hash || !hash->count())
 		return new String("{}", String::L_AS_IS);
 
-	Json_string_recoursion go_down(*this);
+	Json_string_recursion go_down(*this);
 
 	String& result = *new String("{\n", String::L_AS_IS);
 
 	if (indent){
 
 		String *delim=NULL;
-		indent=get_indent(json_string_recoursion);
+		indent=get_indent(json_string_recursion);
 		for(HashStringValue::Iterator i(*hash); i; i.next() ){
 			if (delim){
 				result << *delim;
 			} else {
 				result << indent << "\"";
-				delim = get_delim(json_string_recoursion);
+				delim = get_delim(json_string_recursion);
 			}
 			result << String(i.key(), String::L_JSON) << "\":" << value_json_string(i.key(), *i.value(), *this);
 		}
-		result << "\n" << (indent=get_indent(json_string_recoursion-1)) << "}";
+		result << "\n" << (indent=get_indent(json_string_recursion-1)) << "}";
 
 	} else {
 
@@ -477,24 +477,24 @@ const String* Json_options::array_json_string(ArrayValue *array) {
 	if(!array || !array->count())
 		return new String("[]", String::L_AS_IS);
 
-	Json_string_recoursion go_down(*this);
+	Json_string_recursion go_down(*this);
 
 	String& result = *new String("[\n", String::L_AS_IS);
 
 	if (indent){
 
 		String *delim=NULL;
-		indent=get_indent(json_string_recoursion);
+		indent=get_indent(json_string_recursion);
 		for(ArrayValue::Iterator i(*array); i; i.next() ){
 			if (delim){
 				result << *delim;
 			} else {
 				result << indent;
-				delim = get_array_delim(json_string_recoursion);
+				delim = get_array_delim(json_string_recursion);
 			}
 			result << value_json_string(i.key(), i.value() ? *i.value() : *VVoid::get(), *this);
 		}
-		result << "\n" << (indent=get_indent(json_string_recoursion-1)) << "]";
+		result << "\n" << (indent=get_indent(json_string_recursion-1)) << "]";
 
 	} else {
 
@@ -515,26 +515,26 @@ const String* Json_options::array_compact_json_string(ArrayValue *array) {
 	if(!array || !array->count())
 		return new String("[]", String::L_AS_IS);
 
-	Json_string_recoursion go_down(*this);
+	Json_string_recursion go_down(*this);
 
 	String& result = *new String("[\n", String::L_AS_IS);
 
 	if (indent){
 
 		String *delim=NULL;
-		indent=get_indent(json_string_recoursion);
+		indent=get_indent(json_string_recursion);
 		for(ArrayValue::Iterator i(*array); i; i.next() ){
 			if (i.value()){
 				if (delim){
 					result << *delim;
 				} else {
 					result << indent;
-					delim = get_array_delim(json_string_recoursion);
+					delim = get_array_delim(json_string_recursion);
 				}
 				result << value_json_string(i.key(), *i.value(), *this);
 			}
 		}
-		result << "\n" << (indent=get_indent(json_string_recoursion-1)) << "]";
+		result << "\n" << (indent=get_indent(json_string_recursion-1)) << "]";
 
 	} else {
 
@@ -609,7 +609,7 @@ static void _string(Request& r, MethodParams& params) {
 				} else if(key == "indent"){
 					if(value->is_string()){
 						json.indent=value->as_string().cstr();
-						json.json_string_recoursion=strlen(json.indent);
+						json.json_string_recursion=strlen(json.indent);
 					} else json.indent=r.process(*value).as_bool() ? "" : NULL;
 					valid_options++;
 				} else if(key == "table" && value->is_string()){

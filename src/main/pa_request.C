@@ -35,7 +35,7 @@
 #include "pa_vdate.h"
 #include "pa_varray.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.426 2024/09/28 14:37:54 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.427 2024/10/02 21:24:41 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -46,7 +46,7 @@ const char* DEFAULT_CONTENT_TYPE="text/html";
 
 const uint LOOP_LIMIT=100000;
 const uint ARRAY_LIMIT=1000000;
-const uint EXECUTE_RECOURSION_LIMIT=1000;
+const uint EXECUTE_RECURSION_LIMIT=1000;
 const uint HTTPD_TIMEOUT=4;
 const size_t FILE_SIZE_LIMIT=512*1024*1024;
 
@@ -79,7 +79,7 @@ static const String origin_key(ORIGIN_KEY);
 
 int pa_loop_limit=LOOP_LIMIT;
 int pa_array_limit=ARRAY_LIMIT;
-int pa_execute_recoursion_limit=EXECUTE_RECOURSION_LIMIT;
+int pa_execute_recursion_limit=EXECUTE_RECURSION_LIMIT;
 int pa_httpd_timeout=HTTPD_TIMEOUT;
 size_t pa_file_size_limit=FILE_SIZE_LIMIT;
 
@@ -105,7 +105,7 @@ static const String locals_name("LOCALS");
 static const String limits_name("LIMITS");
 static const String loop_limit_name("max_loop");
 static const String array_limit_name("max_array_size");
-static const String recoursion_limit_name("max_recoursion");
+static const String recursion_limit_name("max_recursion");
 static const String file_size_limit_name("max_file_size");
 static const String lock_wait_timeout_name("lock_wait_timeout");
 static const String httpd_name("HTTPD");
@@ -140,7 +140,7 @@ VStateless_class& VClassMAIN_create();
 //
 Request::Request(SAPI_Info& asapi_info, Request_info& arequest_info, String::Language adefault_lang):
 	// private
-	anti_endless_execute_recoursion(0),
+	anti_endless_execute_recursion(0),
 
 	// public
 	allow_class_replace(false),
@@ -349,10 +349,10 @@ void Request::configure_admin(VStateless_class& conf_class) {
 		if(pa_array_limit==0) pa_array_limit=INT_MAX;
 	}, "LIMITS.%s must be int");
 
-	pa_execute_recoursion_limit=EXECUTE_RECOURSION_LIMIT;
-	CONF_OPTION(limits, recoursion_limit_name, {
-		pa_execute_recoursion_limit=option->as_int();
-		if(pa_execute_recoursion_limit==0) pa_execute_recoursion_limit=INT_MAX;
+	pa_execute_recursion_limit=EXECUTE_RECURSION_LIMIT;
+	CONF_OPTION(limits, recursion_limit_name, {
+		pa_execute_recursion_limit=option->as_int();
+		if(pa_execute_recursion_limit==0) pa_execute_recursion_limit=INT_MAX;
 	}, "LIMITS.%s must be int");
 
 	pa_file_size_limit=FILE_SIZE_LIMIT;

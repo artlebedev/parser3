@@ -9,7 +9,7 @@
 #include "pa_vcaller_wrapper.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VMETHOD_FRAME_C="$Id: pa_vmethod_frame.C,v 1.46 2024/09/07 16:30:27 moko Exp $" IDENT_PA_VMETHOD_FRAME_H IDENT_PA_VCALLER_WRAPPER_H;
+volatile const char * IDENT_PA_VMETHOD_FRAME_C="$Id: pa_vmethod_frame.C,v 1.47 2024/10/02 21:24:41 moko Exp $" IDENT_PA_VMETHOD_FRAME_H IDENT_PA_VCALLER_WRAPPER_H;
 
 static VVoid void_result; // unique value to be sure the result is changed
 
@@ -68,7 +68,7 @@ void VNativeMethodFrame::call(Request &r){
 
 void VParserMethodFrame::call(Request &r){
 	check_call_type();
-	r.recoursion_checked_execute(*method.parser_code);
+	r.recursion_checked_execute(*method.parser_code);
 	r.check_skip_return();
 }
 
