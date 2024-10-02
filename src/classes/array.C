@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.15 2024/10/02 02:40:26 moko Exp $";
+volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.16 2024/10/02 17:58:15 moko Exp $";
 
 // class
 
@@ -866,7 +866,7 @@ enum AtResultType {
 	AtResultTypeHash = 2
 };
 
-inline Value& SingleElementHash(String::Body akey, Value* avalue) {
+static Value& SingleElementHash(String::Body akey, Value* avalue) {
 	Value& result=*new VHash;
 	result.put_element(*new String(akey, String::L_TAINTED), avalue);
 	return result;

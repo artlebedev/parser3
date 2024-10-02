@@ -11,13 +11,14 @@
 #include "pa_request.h"
 #include "pa_charsets.h"
 #include "pa_vhash.h"
+#include "pa_varray.h"
 #include "pa_vvoid.h"
 #include "pa_sql_connection.h"
 #include "pa_vtable.h"
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.164 2024/09/28 19:42:41 moko Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.165 2024/10/02 17:58:15 moko Exp $";
 
 // class
 
@@ -197,7 +198,13 @@ static void _create_or_add(Request& r, MethodParams& params) {
 		HashStringValue* self_hash=&(self.hash());
 		HashStringValue* src_hash;
 
-		if(VHashBase* src=dynamic_cast<VHashBase*>(&vsrc)) {
+		if(VArray* src=dynamic_cast<VArray*>(&vsrc)) {
+			for(ArrayValue::Iterator i(src->array()); i; i.next()){
+				if(i.value())
+					self_hash->put(i.key(), i.value());
+			}
+			return;
+		} else if(VHashBase* src=dynamic_cast<VHashBase*>(&vsrc)) {
 			src_hash=&(src->hash());
 
 			if(src_hash==self_hash) // same: doing nothing
@@ -206,6 +213,7 @@ static void _create_or_add(Request& r, MethodParams& params) {
 			if(Value* vdefault=src->get_default())
 				self.set_default(vdefault);
 		} else {
+			// allows $h[^hash::create[non-blank string]], thus as_hash("param") is more correct, but is not backward compatible
 			src_hash=vsrc.get_hash();
 		}
 
@@ -472,7 +480,7 @@ enum AtResultType {
 	AtResultTypeHash = 2
 };
 
-inline Value& SingleElementHash(String::Body akey, Value* avalue) {
+static Value& SingleElementHash(String::Body akey, Value* avalue) {
 	Value& result=*new VHash;
 	result.put_element(*new String(akey, String::L_TAINTED), avalue);
 	return result;
