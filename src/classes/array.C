@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.13 2024/09/30 19:03:53 moko Exp $";
+volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.14 2024/10/02 00:07:57 moko Exp $";
 
 // class
 
@@ -46,8 +46,15 @@ static void _create_or_add(Request& r, MethodParams& params) {
 
 		if(VArray* src=dynamic_cast<VArray*>(&vsrc)) {
 			if(src==&self)
-				throw Exception(PARSER_RUNTIME, 0, "source and destination are the same array");
-			self_array.append(src->array());
+				return;
+			if(self_array.count()){
+				for(ArrayValue::Iterator i(src->array()); i; i.next()){
+					if(i.value())
+						self_array.put(i.index(), i.value());
+				}
+			} else {
+				self_array.append(src->array());
+			}
 		} else {
 			HashStringValue* src_hash=vsrc.get_hash();
 			if(!src_hash)
@@ -1092,7 +1099,7 @@ MArray::MArray(): Methoded(VARRAY_TYPE) {
 #ifdef FEATURE_GET_ELEMENT4CALL
 	// aliases without "_"
 	add_native_method("keys", Method::CT_DYNAMIC, _keys, 0, 1);
-	add_native_method("count", Method::CT_DYNAMIC, _count, 0, 0);
+	add_native_method("count", Method::CT_DYNAMIC, _count, 0, 1);
 	add_native_method("at", Method::CT_DYNAMIC, _at, 1, 2);
 #endif
 
