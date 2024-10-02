@@ -1,0 +1,118 @@
+@main[]
+$a[^array::create[]]
+^first_and_last[Empty hash (^$a[^^hash::create[]]);$a]
+
+$a.1[a]
+^first_and_last[One element was added (^$a.1[a]);$a]
+
+^a.delete(1)
+^first_and_last[One element was deleted (^^a.delete[1]);$a]
+
+$a.1[a]
+^first_and_last[One element was added (^$a.1[a]);$a]
+
+$a[^array::create[
+	$.1[a]
+	$.2[b]
+	$.3[c]
+	$.4[d]
+	$.5[e]
+]]
+^first_and_last[Hash with 5 elements (^$a[ ^$.1[a] ^$.2[b] ^$.3[c] ^$.4[d] ^$.5[e] ]);$a]
+
+^a.delete(5)
+^first_and_last[The last element was deleted (^^a.delete[5]);$a]
+
+^a.delete(1)
+^first_and_last[The first element was deleted (^^a.delete[1]);$a]
+
+$a.5[e]
+^first_and_last[One element was added at the end (^$a.5[e]);$a]
+
+$a.3[cc]
+^first_and_last[One element was added at the middle (^$a.3[cc]);$a]
+
+<h3>_at on hash with 5 elements (^$a[ ^$.1[a] ^$.2[b] ^$.3[c] ^$.4[d] ^$.5[e] ])</h3>
+$a[^array::create[
+	$.1[a]
+	$.2[b]
+	$.3[c]
+	$.4[d]
+	$.5[e]
+]]
+^at(0)
+^at(1)
+^at(2)
+^at(3)
+^at(4)
+
+<br />
+^at(-1)
+^at(-2)
+^at(-3)
+^at(-4)
+^at(-5)
+
+<br />
+^at(0)[key]
+^at(1)[key]
+^at(2)[key]
+^at(3)[key]
+^at(4)[key]
+
+<br />
+^at(0)[value]
+^at(1)[value]
+^at(2)[value]
+^at(3)[value]
+^at(4)[value]
+
+<br />
+^at(0)[hash]
+^at(1)[hash]
+^at(2)[hash]
+^at(3)[hash]
+^at(4)[hash]
+
+<br />
+# check if values preserve tainting. keys are always lost tainting
+<h3>The first element was replaced (^$a.1[b&b])</h3>
+$a.1[b&b]
+^^a._at[first;hash]=^print[^a._at[first;hash]]<br />
+^at(0)[key]
+^at(0)[value]
+^at(0)[hash]
+<h3>One element was added at the end (^$a.100[^^taint[d&d]])</h3>
+$a.100[^taint[d&d]]
+^at(5)[key]
+^at(5)[value]
+^at(5)[hash]
+^^a._at[last;hash]=^print[^a._at[last;hash]]<br />
+
+<br />
+^do[^^a._at[]]{must fail^a._at[]}
+^do[^^a._at[first^;key^;hren]]{must fail^a._at[first;key;hren]}
+^do[^^a._at(1){code}]{must fail^a._at(1){code}}
+^do[^^a._at(1)(true)]{must fail^a._at(1)(true)}
+^do[^^a._at[hren]]{must fail^a._at[hren]}
+^do[^^a._at[first][hren]]{must fail^a._at[first][hren]}
+^do[^^a._at[last][hren]]{must fail^a._at[last][hren]}
+^do[^^a._at(1)[hren]]{must fail^a._at(1)[hren]}
+
+@at[i;type]
+^^a._at($i)^if(def $type){[$type]}=^print[^if(def $type){^a._at($i)[$type]}{^a._at($i)}]<br />
+
+@first_and_last[sTitle;a]
+^if(def $sTitle){<h3>$sTitle</h3>}
+first:last='^a._at[first]':'^a._at[last;value]'<br />
+first_key:last_key='^a._at[first;key]':'^a._at[last;key]'<br />
+
+@do[label;code]
+$label=^try{${code}}{$exception.handled(true)<b>^taint[as-is;$exception.comment]</b>}<br />
+
+@print[u][k;v]
+^if($u is "array" || $u is "hash"){
+	$result[^u.foreach[k;v]{'$k':'$v'}[, ]]
+}{
+	$result[$u]
+}

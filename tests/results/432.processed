@@ -1,0 +1,80 @@
+Content-Type: text/html
+Content-Length: 2646
+
+<h3>Empty hash ($a[^hash::create[]])</h3>
+first:last='':''<br />
+first_key:last_key='':''<br />
+<h3>One element was added ($a.1[a])</h3>
+first:last='a':'a'<br />
+first_key:last_key='1':'1'<br />
+<h3>One element was deleted (^a.delete[1])</h3>
+first:last='':''<br />
+first_key:last_key='':''<br />
+<h3>One element was added ($a.1[a])</h3>
+first:last='a':'a'<br />
+first_key:last_key='1':'1'<br />
+<h3>Hash with 5 elements ($a[ $.1[a] $.2[b] $.3[c] $.4[d] $.5[e] ])</h3>
+first:last='a':'e'<br />
+first_key:last_key='1':'5'<br />
+<h3>The last element was deleted (^a.delete[5])</h3>
+first:last='a':'d'<br />
+first_key:last_key='1':'4'<br />
+<h3>The first element was deleted (^a.delete[1])</h3>
+first:last='b':'d'<br />
+first_key:last_key='2':'4'<br />
+<h3>One element was added at the end ($a.5[e])</h3>
+first:last='b':'e'<br />
+first_key:last_key='2':'5'<br />
+<h3>One element was added at the middle ($a.3[cc])</h3>
+first:last='b':'e'<br />
+first_key:last_key='2':'5'<br />
+<h3>_at on hash with 5 elements ($a[ $.1[a] $.2[b] $.3[c] $.4[d] $.5[e] ])</h3>
+^a._at(0)=a<br />
+^a._at(1)=b<br />
+^a._at(2)=c<br />
+^a._at(3)=d<br />
+^a._at(4)=e<br />
+<br />
+^a._at(-1)=e<br />
+^a._at(-2)=d<br />
+^a._at(-3)=c<br />
+^a._at(-4)=b<br />
+^a._at(-5)=a<br />
+<br />
+^a._at(0)[key]=1<br />
+^a._at(1)[key]=2<br />
+^a._at(2)[key]=3<br />
+^a._at(3)[key]=4<br />
+^a._at(4)[key]=5<br />
+<br />
+^a._at(0)[value]=a<br />
+^a._at(1)[value]=b<br />
+^a._at(2)[value]=c<br />
+^a._at(3)[value]=d<br />
+^a._at(4)[value]=e<br />
+<br />
+^a._at(0)[hash]='1':'a'<br />
+^a._at(1)[hash]='2':'b'<br />
+^a._at(2)[hash]='3':'c'<br />
+^a._at(3)[hash]='4':'d'<br />
+^a._at(4)[hash]='5':'e'<br />
+<br />
+<h3>The first element was replaced ($a.1[b&b])</h3>
+^a._at[first;hash]='1':'b&b'<br />
+^a._at(0)[key]=1<br />
+^a._at(0)[value]=b&b<br />
+^a._at(0)[hash]='1':'b&b'<br />
+<h3>One element was added at the end ($a.100[^taint[d&d]])</h3>
+^a._at(5)[key]=100<br />
+^a._at(5)[value]=d&amp;d<br />
+^a._at(5)[hash]='100':'d&amp;d'<br />
+^a._at[last;hash]='100':'d&amp;d'<br />
+<br />
+^a._at[]=<b>native method of 'array' accepts minimum 1 parameter(s) (0 present)</b><br />
+^a._at[first;key;hren]=<b>native method of 'array' accepts maximum 2 parameter(s) (3 present)</b><br />
+^a._at(1){code}=<b>type must be string (parameter #2)</b><br />
+^a._at(1)(true)=<b>is 'bool', it has no string representation</b><br />
+^a._at[hren]=<b>whence must be 'first', 'last' or expression</b><br />
+^a._at[first][hren]=<b>type must be 'key', 'value' or 'hash'</b><br />
+^a._at[last][hren]=<b>type must be 'key', 'value' or 'hash'</b><br />
+^a._at(1)[hren]=<b>type must be 'key', 'value' or 'hash'</b><br />
