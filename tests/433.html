@@ -20,6 +20,18 @@ $a.05[a5] $a.20[a20] $a.10[a30] $a.25[$void]
 6. $a[^array::create[^o::create[]]]
    ^show[$a]
 
+7. $obj[^o2::create[]] $o.1
+   $a[^array::create[$obj]]
+   $MAIN:log
+   as_hash calls def and thus result is empty: ^show[$a]
+
+8. $MAIN:log[]
+   $h[^hash::create[$obj]]
+   $MAIN:log
+   get_hash can still get the hash: ^show[$h]
+
+9. ^try-catch{ $h[^hash::create[^o2-endless-bug::create[]]] }
+
 @show[v]
 ^json:string[$v; $.array[object] ]
 
@@ -29,4 +41,23 @@ o
 @create[]
 $1[v1]
 $3[v3]
+$MAIN:log[created]
 
+@CLASS
+o2
+
+@BASE
+o
+
+@GET[mode]
+^if($mode eq 'def'){ $result(false)}{ $result[^reflection:fields_reference[$self]] }
+$MAIN:log[$MAIN:log^#0A$mode called got $result.CLASS_NAME]
+
+@CLASS
+o2-endless-bug
+
+@BASE
+o
+
+@GET[mode]
+$result[$self]

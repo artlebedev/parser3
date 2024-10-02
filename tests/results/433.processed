@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 306
+Content-Length: 568
 
 {}
 1. 4 elements, {
@@ -37,3 +37,14 @@ Content-Length: 306
 "1":"v1",
 "3":"v3"
 }
+7. created
+def called got bool
+as_hash calls def and thus result is empty: {}
+8. hash called got hash
+get_hash can still get the hash: {
+"1":"v1",
+"3":"v3"
+}
+9. Exception type: parser.runtime,
+Source: create,
+Comment: call canceled - endless recursion detected
