@@ -21,7 +21,7 @@ $NO_PROTOTYPE[
 ^if($env:PATH_TRANSLATED eq '357.html'){
 	$LIMITS[
 		$.max_loop(50)
-		$.max_recoursion(50)
+		$.max_recursion(50)
 	]
 }
 ^if($env:PATH_TRANSLATED eq '358.html'){
