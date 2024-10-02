@@ -141,6 +141,9 @@ $s[^h.foreach[k;v]{
 
 ^s.match["([acm]date)":"[^^"]+"][g]{"$match.1":"-value-"}
 
+check large date timestamp: ^json:string[^date::create[9000-01-01]; $.date[unix-timestamp] ]
+
+
 
 @2string[value;options]
 $options[^hash::create[$options]]
