@@ -12,7 +12,7 @@
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VOBJECT_C="$Id: pa_vobject.C,v 1.55 2024/09/28 14:37:54 moko Exp $" IDENT_PA_VOBJECT_H;
+volatile const char * IDENT_PA_VOBJECT_C="$Id: pa_vobject.C,v 1.56 2024/10/02 21:33:52 moko Exp $" IDENT_PA_VOBJECT_H;
 
 Value* VObject::get_scalar_value(const char* as_something) const {
 	VObject* unconst_this=const_cast<VObject*>(this);
@@ -39,48 +39,56 @@ bool VObject::is(const char* atype) {
 }
 
 bool VObject::is_defined() const {
+	Temp_recursion go_down(pa_thread_request());
 	if(Value* value=get_scalar_value("def"))
 		return value->as_bool();
 	return Value::is_defined();
 }
 
 Value& VObject::as_expr_result() {
+	Temp_recursion go_down(pa_thread_request());
 	if(Value* value=get_scalar_value("expression"))
 		return value->as_expr_result();
 	return Value::as_expr_result();
 }
 
 int VObject::as_int() const {
+	Temp_recursion go_down(pa_thread_request());
 	if(Value* value=get_scalar_value("int"))
 		return value->as_int();
 	return Value::as_int();
 }
 
 double VObject::as_double() const {
+	Temp_recursion go_down(pa_thread_request());
 	if(Value* value=get_scalar_value("double"))
 		return value->as_double();
 	return Value::as_double();
 }
 
 bool VObject::as_bool() const { 
+	Temp_recursion go_down(pa_thread_request());
 	if(Value* value=get_scalar_value("bool"))
 		return value->as_bool();
 	return Value::as_bool();
 }
 
 VFile* VObject::as_vfile() {
+	Temp_recursion go_down(pa_thread_request());
 	if(Value* value=get_scalar_value("file"))
 		return value->as_vfile();
 	return Value::as_vfile();
 }
 
 HashStringValue* VObject::get_hash() {
+	Temp_recursion go_down(pa_thread_request());
 	if(Value* value=get_scalar_value("hash"))
 		return value->get_hash();
 	return &ffields;
 }
 
 Table *VObject::get_table() {
+	Temp_recursion go_down(pa_thread_request());
 	if(Value* value=get_scalar_value("table"))
 		return value->get_table();
 	return Value::get_table();
