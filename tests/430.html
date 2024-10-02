@@ -13,6 +13,7 @@
 0.5 ^try-catch{ $a.-5[bug] }
 
 0.6 ^a.count[] vs ^a.count[all] ^a._count[all]
+0.7 ^try-catch{ ^a.count[bug] }
 
 
 1. create, add vs join
@@ -45,6 +46,8 @@ $a[^array::create[ $.1[v1] $.5[v5] $.6[v6] $.8[v8] ]]
 2.7 ^show[^a.mid(2)]
 2.8 ^show[^a.mid(2;1)]
 2.9 ^show[^a.mid(0;1)]
+2.91 ^try-catch{ ^a.mid(-1;1) }
+2.92 ^try-catch{ ^a.mid(1;-1) }
 
 2.10 ^a.foreach[;v]{'$v'}[,]
 2.11 ^a.foreach[k;]{'$k'}[,]
@@ -63,6 +66,8 @@ $a[^array::create[ $.1[v1] $.5[v5] $.6[v6] $.8[v8] ]]
 2.23 ^show[^a.select[k;v]($k>1)[ $.limit(2) ]]
 2.24 ^show[^a.select[k;v]($k>1)[ $.limit(2) $.reverse(1) ]]
 2.25 ^try-catch{ ^a.select[k;v]($k>1)[ $.bug(1) ] }
+2.25 ^show[^a.select[k;v]($k<5 || ^break[])[ $.limit(2) ]]
+2.26 ^show[^a.select[k;v]($k>5 || ^break[])[ $.limit(2) $.reverse(1) ]]
 
 
 3. append/insert

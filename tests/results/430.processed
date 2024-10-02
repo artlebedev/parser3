@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 4585
+Content-Length: 4872
 
 0. init
 0.1 {
@@ -33,6 +33,9 @@ Content-Length: 4585
 Source: -5,
 Comment: out of range (negative)
 0.6 4 vs 6 6
+0.7 Exception type: parser.runtime,
+Source: bug,
+Comment: param must be empty or 'all'
 1. create, add vs join
 1.1 создаем "дырявый" массив 1.2 из него дырявый массив: {
 "2":"1",
@@ -109,6 +112,12 @@ Comment: out of range (negative)
 2.9 {
 "0":"v1"
 }
+2.91 Exception type: parser.runtime,
+Source: mid,
+Comment: p(-1) must be >=0
+2.92 Exception type: parser.runtime,
+Source: mid,
+Comment: n(-1) must be >=0
 2.10 'v1','v5','v6','v8'
 2.11 '1','5','6','8'
 2.12 'v1','v5','v6','v8'
@@ -139,6 +148,13 @@ Comment: out of range (negative)
 2.25 Exception type: parser.runtime,
 Source: select,
 Comment: called with invalid option
+2.25 {
+"0":"v1"
+}
+2.26 {
+"0":"v8",
+"1":"v6"
+}
 3. append/insert
 3.1 {}
 3.2 Exception type: parser.runtime,

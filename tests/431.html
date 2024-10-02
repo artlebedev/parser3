@@ -1,0 +1,47 @@
+@main[]
+
+0.1 ^try-catch{ ^array::create[ $.5[v5] $.-7[v7] ] }
+0.2 ^try-catch{ ^array::create[ $.5[v5] $.12x5[v7] ] }
+
+join
+
+$a[data;data1;data2;data3;data4;$void]
+$h[ $.k[data] $.k1[data1] $.k2[data2] $.k3[data3] $.k4[data4] $.k5[$void] ]
+
+1.1 negative limit: ^test-join[ $.limit(-1) ]
+1.2 negative offset: ^test-join[ $.offset(-1) ]
+1.3 normal: ^test-join[ $.limit(1) $.offset(1) ]
+1.4 large offset: ^test-join[ $.limit(1) $.offset(10) ]
+1.5 large limit : ^test-join[ $.limit(10) $.offset(1) ]
+1.6 ^try-catch{ ^a.join[$a] }
+
+delete / remove
+
+$b[^array::create[$a]]
+2.1 ^a.delete(2) ^json:string[$a; $.array[object] ]
+2.2 ^b.remove(2) ^json:string[$b; $.array[object] ]
+2.3 ^if(^a.contains(2)){2 yes}{2 no}
+2.4 ^if(^a.contains(5)){5 yes}{5 no}
+2.5 ^a.count[] ^a.delete[] ^a.count[]
+
+key
+
+3.1 $a[^array::create[ $.5[v5] $.7[v7] $.10[v10]  $.12[v12] ]]
+
+3.2 ^json:string[^a.keys[]]
+3.3 ^json:string[^a.keys[column]]
+
+3.4 ^a.foreach[;v]{ ^if($v eq 'v10'){^break[]}{$v} }
+3.5 ^a.foreach[k;v]{ ^if($k eq '10'){^break[]}{$v} }[,]
+3.6 ^a.for[k;v]{^if($k eq '10'){^break[]}{$v} }[,]
+
+3.7 ^a.sort[k;](-$k) ^json:string[$a; $.array[object] ]
+3.8 ^a.sort[;v]{$v}[desc] ^json:string[$a; $.array[object] ]
+
+@test-join[options]
+$b[0;1]
+^b.join[$a;$options]
+^json:string[$b]
+$b[0;1]
+^b.join[$h;$options]
+^json:string[$b]
