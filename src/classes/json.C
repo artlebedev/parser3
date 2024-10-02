@@ -20,7 +20,7 @@
 #include "pa_vxdoc.h"
 #endif
 
-volatile const char * IDENT_JSON_C="$Id: json.C,v 1.61 2024/09/13 04:01:22 moko Exp $";
+volatile const char * IDENT_JSON_C="$Id: json.C,v 1.62 2024/10/02 19:34:04 moko Exp $";
 
 // class
 
@@ -93,7 +93,7 @@ static void set_json_value(Json *json, Value *value){
 				if (top->hash().put_dont_replace(*json->key, value)){
 					for(int i=2;;i++){
 						String key;
-						key << *json->key << "_" << format(i, 0);
+						key << *json->key << "_" << pa_uitoa(i);
 						if (!top->hash().put_dont_replace(key, value)) break;
 					}
 				}
