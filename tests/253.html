@@ -5,6 +5,10 @@ $s[^taint[as-is][$f.text]]
 
 ^try-catch{$o[^json:parse[$s; $.array[hash] ]]}
 
+^try-catch{$o[^json:parse[$s; $.depth(2) ]]}
+
+^try-catch{$o[^json:parse[$s; $.distinct[bug] ]]}
+
 ^test[$s][ $.object[$hook] $.distinct[first] ]
 
 ^test[$s][ $.double(false) $.distinct[last] ]

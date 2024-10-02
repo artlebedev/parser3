@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 4872
+Content-Length: 5553
 
 0. init
 0.1 {
@@ -215,6 +215,15 @@ Comment: param must be array or must have hash representation
 4.1. Exception type: parser.runtime,
 Source: x,
 Comment: $.array must be parser method with 2 parameters or 'array' or 'hash'
+Exception type: parser.runtime,
+Source: parse,
+Comment: $.array must be parser method with 2 parameters or 'array' or 'hash'
+Exception type: parser.runtime,
+Source: parse,
+Comment: $.object must be parser method with 2 parameters
+Exception type: parser.runtime,
+Source: parse,
+Comment: called with invalid option
 4.2. array, 2
 4.3 {
 	"object":{
@@ -317,3 +326,35 @@ Comment: $.array must be parser method with 2 parameters or 'array' or 'hash'
 4.7 Exception type: parser.runtime,
 Source: bug,
 Comment: must be 'array', 'object' or 'compact'
+4.8 Exception type: parser.runtime,
+Source: bug,
+Comment: must be 'string' or 'null'
+4.9 Exception type: parser.runtime,
+Source: string,
+Comment: $._default must be string or parser method with 3 parameters
+4.10 [
+"0",
+"1",
+"2",
+null,
+null,
+"5"
+]
+4.11 [
+	"0",
+	"1",
+	"2",
+	null,
+	null,
+	"5"
+]
+4.12 [
+			"0",
+			"1",
+			"2",
+			null,
+			null,
+			"5"
+		]
+4.13 []
+4.14 []

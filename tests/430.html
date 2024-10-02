@@ -106,6 +106,9 @@ $f[^file::load[text;253_json.txt; $.charset[windows-1251] ]]
 $s[^taint[as-is][$f.text]]
 
 4.1. ^try-catch{ $o[^json:parse[$s][ $.array[x] ]] }
+     ^try-catch{ $o[^json:parse[$s][ $.array[$print] ]] }
+     ^try-catch{ $o[^json:parse[$s][ $.object[$print] ]] }
+     ^try-catch{ $o[^json:parse[$s][ $.bug[yes] ]] }
 
 $o[^json:parse[$s][ $.distinct[all] ]]
 
@@ -123,6 +126,21 @@ $o.array.15[last]
 
 4.7 ^try-catch{ ^print[^json:string[$o.array; $.array[bug] ]] }
 
+4.8 ^try-catch{ ^print[^json:string[$o.array; $.void[bug] ]] }
+
+4.9 ^try-catch{ ^print[^json:string[$o.array; $._default[$print] ]] }
+
+$a[0;1;2] $a.5[5]
+
+4.10 ^json:string[$a; $.array[array] ]
+
+4.11 ^json:string[$a; $.array[array] $.indent(1) ]
+
+4.12 ^json:string[$a; $.array[array] $.indent[  ] ]
+
+4.13 ^json:string[^array::new[]]
+
+4.14 ^json:string[^array::new[]; $.array[array] ]
 
 
 @print[s]

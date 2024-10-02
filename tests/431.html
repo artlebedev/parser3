@@ -29,14 +29,20 @@ key
 3.1 $a[^array::create[ $.5[v5] $.7[v7] $.10[v10]  $.12[v12] ]]
 
 3.2 ^json:string[^a.keys[]]
+
 3.3 ^json:string[^a.keys[column]]
 
-3.4 ^a.foreach[;v]{ ^if($v eq 'v10'){^break[]}{$v} }
+3.4 ^a.foreach[k;v]{ ^if($v eq 'v10'){^break[]}{$k=$v} }
+
 3.5 ^a.foreach[k;v]{ ^if($k eq '10'){^break[]}{$v} }[,]
+
 3.6 ^a.for[k;v]{^if($k eq '10'){^break[]}{$v} }[,]
 
 3.7 ^a.sort[k;](-$k) ^json:string[$a; $.array[object] ]
+
 3.8 ^a.sort[;v]{$v}[desc] ^json:string[$a; $.array[object] ]
+
+3.9 ^json:string[^a.reverse[]; $.array[object] ]
 
 @test-join[options]
 $b[0;1]

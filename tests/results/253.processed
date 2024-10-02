@@ -1,9 +1,17 @@
 Content-Type: text/html
-Content-Length: 1685
+Content-Length: 1887
 
 Exception type: parser.runtime,
 Source: object,
 Comment: duplicate key
+Exception type: json.parse,
+Source: parse,
+Comment: nesting limit at line 7
+    {"id": 1, "label": "test1"},
+    ^
+Exception type: parser.runtime,
+Source: bug,
+Comment: must be 'first', 'last' or 'all'
 {
 	"object":{
 		"value":"class1 sample1"

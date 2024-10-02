@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 209
+Content-Length: 305
 
 {
 	"a":{
@@ -25,3 +25,7 @@ Content-Length: 209
 		}
 	}
 }
+null
+Exception type: parser.runtime,
+Source: string,
+Comment: Unsupported value's type (xnode)
