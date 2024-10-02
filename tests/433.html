@@ -1,0 +1,30 @@
+@main[]
+
+$a[^array::create[]]
+
+$a.05[a5] $a.20[a20] $a.10[a30] $a.25[$void]
+
+1. ^a.count[] elements, ^show[$a]
+
+2. $h[^hash::create[$a]] ^show[$h]
+
+3. $h[ $.05[h05] $.10[h10] $.1[h1] ]
+   $tmp[^hash::create[$h]] ^tmp.add[$a] ^show[$tmp]
+
+4. ^show[^h.union[$a]]
+
+5. ^show[^h.intersection[$a]]
+
+6. $a[^array::create[^o::create[]]]
+   ^show[$a]
+
+@show[v]
+^json:string[$v; $.array[object] ]
+
+@CLASS
+o
+
+@create[]
+$1[v1]
+$3[v3]
+
