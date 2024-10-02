@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.193 2024/05/11 19:20:41 moko Exp $"
+#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.194 2024/10/02 22:54:03 moko Exp $"
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -227,7 +227,7 @@ char *lsplit(char *string, char delim);
 char *lsplit(char **string_ref,char delim);
 char *rsplit(char *string, char delim);
 
-const char* format(double value, const char *fmt);
+const char* format_double(double value, const char *fmt);
 
 char* unescape_chars(const char* cp, int len, Charset* client_charset=0, bool js=false/*true==decode \uXXXX and don't convert '+' to space*/);
 

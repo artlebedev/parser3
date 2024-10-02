@@ -21,7 +21,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.255 2024/09/28 14:37:53 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.256 2024/10/02 22:54:02 moko Exp $";
 
 // class
 
@@ -147,7 +147,7 @@ static void _bool(Request& r, MethodParams& params) {
 	// for some time due to stupid {} in original design
 	const String& fmt=r.process_to_string(fmt_maybe_code);
 
-	const char* buf=format(r.get_self().as_double(), fmt.trim().cstrm());
+	const char* buf=format_double(r.get_self().as_double(), fmt.trim().cstrm());
 
 	r.write(String(buf));
 }

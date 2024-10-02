@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.263 2024/09/13 04:01:22 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.264 2024/10/02 22:54:02 moko Exp $";
 
 // defines
 
@@ -401,7 +401,7 @@ static void _eval(Request& r, MethodParams& params) {
 		if(fmt.is_empty()){
 			r.write(value_result);
 		} else {
-			r.write(String(format(value_result.as_double(), fmt.cstrm())));
+			r.write(String(format_double(value_result.as_double(), fmt.cstrm())));
 		}
 	} else
 		r.write(value_result);

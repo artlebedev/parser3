@@ -11,7 +11,7 @@
 #include "pa_vvoid.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VTABLE_C="$Id: pa_vtable.C,v 1.55 2024/09/11 21:07:36 moko Exp $" IDENT_PA_VTABLE_H;
+volatile const char * IDENT_PA_VTABLE_C="$Id: pa_vtable.C,v 1.56 2024/10/02 22:54:03 moko Exp $" IDENT_PA_VTABLE_H;
 
 #ifndef DOXYGEN
 struct Record_info {
@@ -181,7 +181,7 @@ String& VTable::get_json_string_object(String& result, const char *indent) {
 		for(size_t index=0; index<row->count(); index++){
 			if(index)
 				result << "\",\"";
-			result.append(index < columns_count ? *columns->get(index) : String(format(index, 0)), String::L_JSON, true/*forced lang*/);
+			result.append(index < columns_count ? *columns->get(index) : String(pa_uitoa(index)), String::L_JSON, true/*forced lang*/);
 			result << "\":\"";
 			result.append(*row->get(index), String::L_JSON, true/*forced lang*/);
 		}

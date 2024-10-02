@@ -35,7 +35,7 @@
 #include "pa_vdate.h"
 #include "pa_varray.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.427 2024/10/02 21:24:41 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.428 2024/10/02 22:54:03 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -779,7 +779,7 @@ static void output_sole_piece(Request& r, bool header_only, VFile& body_file, Va
 		output=Charset::transcode(output, r.charsets.source(), r.charsets.client());
 
 	// prepare header: Content-Length
-	SAPI::add_header_attribute(r.sapi_info, HTTP_CONTENT_LENGTH, format(output.length, "%u"));
+	SAPI::add_header_attribute(r.sapi_info, HTTP_CONTENT_LENGTH, pa_uitoa(output.length));
 
 	// send header
 	SAPI::send_header(r.sapi_info);
@@ -911,7 +911,7 @@ static void output_pieces(Request& r, bool header_only, const String& filename, 
 		}
 	}
 
-	SAPI::add_header_attribute(r.sapi_info, HTTP_CONTENT_LENGTH, format((double)part_length, "%.15g"));
+	SAPI::add_header_attribute(r.sapi_info, HTTP_CONTENT_LENGTH, pa_uitoa(part_length));
 
 	if(add_last_modified)
 		SAPI::add_header_attribute(r.sapi_info, "last-modified", attributed_meaning_to_string(date, String::L_AS_IS, true).cstr());

@@ -10,7 +10,7 @@
 #include "pa_vbool.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.91 2024/09/17 18:09:59 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.92 2024/10/02 22:54:02 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -652,7 +652,7 @@ static void _stack(Request& r, MethodParams& params) {
 				}
 			}
 
-			result->put(format(index, 0), &vcurrent);
+			result->put(pa_uitoa(index), &vcurrent);
 		}
 		caller=caller->caller();
 		index++;

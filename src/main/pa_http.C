@@ -14,7 +14,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.127 2024/09/28 14:37:54 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.128 2024/10/02 22:54:03 moko Exp $" IDENT_PA_HTTP_H; 
 
 // defines
 
@@ -832,7 +832,7 @@ File_read_http_result pa_internal_file_read_http(Request& r, const String& file_
 		}
 
 		if(request_body)
-			head << "Content-Length: " << format(post_size, "%u") << CRLF;
+			head << "Content-Length: " << pa_uitoa(post_size) << CRLF;
 		
 		head << CRLF;
 		

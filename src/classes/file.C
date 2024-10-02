@@ -26,7 +26,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.281 2024/09/28 14:37:53 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.282 2024/10/02 22:54:02 moko Exp $";
 
 // defines
 
@@ -500,7 +500,7 @@ static void _exec_cgi(Request& r, MethodParams& params, bool cgi) {
 	ECSTR(QUERY_STRING, r.request_info.query_string);
 	ECSTR(REQUEST_URI, r.request_info.uri);
 	ECSTR(CONTENT_TYPE, r.request_info.content_type);
-	ECSTR(CONTENT_LENGTH, format(r.request_info.content_length, "%u"));
+	ECSTR(CONTENT_LENGTH, pa_uitoa(r.request_info.content_length));
 	// SCRIPT_*
 	env.put("SCRIPT_NAME", script_name);
 
