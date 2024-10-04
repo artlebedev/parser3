@@ -8,7 +8,7 @@
 #ifndef PA_ARRAY_H
 #define PA_ARRAY_H
 
-#define IDENT_PA_ARRAY_H "$Id: pa_array.h,v 1.95 2024/09/21 23:51:04 moko Exp $"
+#define IDENT_PA_ARRAY_H "$Id: pa_array.h,v 1.96 2024/10/04 05:12:05 moko Exp $"
 
 // includes
 
@@ -221,7 +221,7 @@ protected:
 	}
 
 	inline void expand() {
-		resize(fallocated>0 ? fallocated+fallocated/4+2 : 3); // 3 is PAF default, confirmed by tests
+		resize(fallocated>0 ? fallocated+fallocated/2+2 : 3); // 3 is PAF default, confirmed by tests
 	}
 
 	inline void fit(size_t index){

@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.16 2024/10/02 17:58:15 moko Exp $";
+volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.17 2024/10/04 05:12:05 moko Exp $";
 
 // class
 
@@ -492,21 +492,23 @@ static void _sql(Request& r, MethodParams& params) {
 	const char* statement_cstr=statement_string.untaint_cstr(String::L_SQL, r.connection());
 
 	VArray& self=GET_SELF(r, VArray);
+	ArrayValue& array=self.array();
 
-	self.array().clear(); self.invalidate(); // just in case if called as method
+	array.clear(); self.invalidate(); // just in case if called as method
 
 	if(sparse){
-		SparseArray_sql_event_handlers handlers(distinct, self.array(), value_type);
+		SparseArray_sql_event_handlers handlers(distinct, array, value_type);
 		r.connection()->query(statement_cstr, placeholders_count, placeholders, offset, limit, handlers, statement_string);
 	} else {
-		Array_sql_event_handlers handlers(self.array(), value_type);
+		Array_sql_event_handlers handlers(array, value_type);
 		r.connection()->query(statement_cstr, placeholders_count, placeholders, offset, limit, handlers, statement_string);
 	}
+
+	array.confirm_all_used();
 
 	if(bind)
 		unmarshal_bind_updates(*bind, placeholders_count, placeholders);
 }
-
 
 
 static void mid(Request& r, size_t offset=0, size_t limit=ARRAY_OPTION_LIMIT_ALL) {
@@ -525,6 +527,7 @@ static void mid(Request& r, size_t offset=0, size_t limit=ARRAY_OPTION_LIMIT_ALL
 				result_array+=i.value();
 			}
 		}
+		result_array.confirm_all_used();
 		r.write(*result);
 	} else {
 		r.write(*new VArray);
@@ -857,6 +860,7 @@ static void _sort(Request& r, MethodParams& params){
 		for(pos=0; pos<count; pos++)
 			array+=seq[pos].array_data;
 
+	self.invalidate();
 	delete[] seq;
 }
 
@@ -1017,6 +1021,7 @@ static void _select(Request& r, MethodParams& params) {
 		}
 	}
 
+	result_array.confirm_all_used();
 	r.write(*result);
 }
 

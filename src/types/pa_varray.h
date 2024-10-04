@@ -8,7 +8,7 @@
 #ifndef PA_VARRAY_H
 #define PA_VARRAY_H
 
-#define IDENT_PA_VARRAY_H "$Id: pa_varray.h,v 1.10 2024/09/28 14:15:13 moko Exp $"
+#define IDENT_PA_VARRAY_H "$Id: pa_varray.h,v 1.11 2024/10/04 05:12:05 moko Exp $"
 
 #include "classes.h"
 #include "pa_value.h"
@@ -102,6 +102,10 @@ public:
 
 	inline void invalidate(){
 		fused=0;
+	}
+
+	inline void confirm_all_used(){
+		fused=this->count();
 	}
 
 };
