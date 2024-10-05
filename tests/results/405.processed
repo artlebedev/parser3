@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 237
+Content-Length: 776
 
 1. [a, b ,,c,]
 [
@@ -28,4 +28,34 @@ Content-Length: 237
 {"v":" b "},
 {"v":""},
 {"v":"c"}
+]
+3.
+Exception type: parser.runtime,
+Source: v,
+Comment: column name cannot be specified when splitting into a table horizontal row
+Exception type: parser.runtime,
+Source: v,
+Comment: column name cannot be specified when splitting into an array
+Exception type: parser.runtime,
+Source: ha,
+Comment: conflicting split options
+Exception type: parser.runtime,
+Source: va,
+Comment: conflicting split options
+Exception type: parser.runtime,
+Source: hv,
+Comment: conflicting split options
+4. [
+"",
+"a",
+" b ",
+"",
+"c"
+]
+[
+"c",
+"",
+" b ",
+"a",
+""
 ]

@@ -4,3 +4,12 @@
 2. $s[,a, b ,,c] [$s]
 ^json:string[^s.split[^regex::create[\s*,\s*;g];;v]]
 ^json:string[^s.split[,;;v]]
+
+3.^try-catch{ ^json:string[^s.split[,;h;v]] }
+^try-catch{ ^json:string[^s.split[,;a;v]] }
+^try-catch{  ^json:string[^s.split[,;ha;]] }
+^try-catch{  ^json:string[^s.split[,;va;]] }
+^try-catch{  ^json:string[^s.split[,;hv;]] }
+
+4. ^json:string[^s.split[,;a bug;]]
+   ^json:string[^s.split[,;ra;]]
