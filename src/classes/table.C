@@ -24,8 +24,9 @@
 #include "pa_sql_connection.h"
 #include "pa_vbool.h"
 #include "pa_array.h"
+#include "pa_varray.h"
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.366 2024/10/02 22:54:03 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.367 2024/10/05 18:05:23 moko Exp $";
 
 // class
 
@@ -1010,6 +1011,28 @@ static void _hash(Request& r, MethodParams& params) {
 	r.write(result);
 }
 
+static void _cells(Request& r, MethodParams& params) {
+	Table& self_table=GET_SELF(r, VTable).table();
+	size_t row_size=self_table[self_table.current()]->count(); // number of columns in current row
+
+	if(params.count()){
+		int limit=params.as_int(params.count()-1, "offset must be expression", r);
+		if(limit<0)
+			limit=0;
+		if(limit<row_size)
+			row_size=limit;
+	}
+
+	VArray& result=*new VArray(row_size);
+	ArrayValue& result_array=result.array();
+
+	for(size_t index=0; index<row_size; index++){
+		const String* column_item=self_table.item(index);
+		result_array+=column_item ? new VString(*column_item) : VString::empty();
+	}
+	r.write(result);
+}
+
 #ifndef DOXYGEN
 struct Table_seq_item : public PA_Allocated {
 	ArrayString* row;
@@ -1594,6 +1617,10 @@ MTable::MTable(): Methoded("table") {
 	// ^table.hash[key field name]
 	// ^table.hash[key field name][value field name(s) string/table]
 	add_native_method("hash", Method::CT_DYNAMIC, _hash, 1, 3);
+
+	// ^table.cells[]
+	// ^table.cells(limit)
+	add_native_method("cells", Method::CT_DYNAMIC, _cells, 0, 1);
 
 	// ^table.sort{string-key-maker} ^table.sort{string-key-maker}[desc|asc]
 	// ^table.sort(numeric-key-maker) ^table.sort(numeric-key-maker)[desc|asc]
