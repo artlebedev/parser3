@@ -15,13 +15,14 @@
 #include "pa_vtable.h"
 #include "pa_vbool.h"
 #include "pa_string.h"
+#include "pa_varray.h"
 #include "pa_sql_connection.h"
 #include "pa_dictionary.h"
 #include "pa_vmethod_frame.h"
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.256 2024/10/02 22:54:02 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.257 2024/10/05 03:38:14 moko Exp $";
 
 // class
 
@@ -236,6 +237,7 @@ static void split_list(Value& delim_value, const String& string, ArrayString& re
 #define SPLIT_RIGHT 0x0010
 #define SPLIT_HORIZONTAL 0x0100
 #define SPLIT_VERTICAL 0x1000
+#define SPLIT_ARRAY 0x10000
 
 static int split_options(const String* options) {
     struct Split_option {
@@ -244,10 +246,11 @@ static int split_options(const String* options) {
 		int setBit;
 		int checkBit;
     } split_option[]={
-		{"l", "L", SPLIT_LEFT, SPLIT_RIGHT}, // 0xVHRL
+		{"l", "L", SPLIT_LEFT, SPLIT_RIGHT}, // 0xAVHRL
 		{"r", "R", SPLIT_RIGHT, SPLIT_LEFT},
-		{"h", "H", SPLIT_HORIZONTAL, SPLIT_VERTICAL},
-		{"v", "V", SPLIT_VERTICAL, SPLIT_HORIZONTAL},
+		{"h", "H", SPLIT_HORIZONTAL, SPLIT_VERTICAL | SPLIT_ARRAY},
+		{"v", "V", SPLIT_VERTICAL, SPLIT_HORIZONTAL | SPLIT_ARRAY},
+		{"a", "A", SPLIT_ARRAY, SPLIT_VERTICAL | SPLIT_HORIZONTAL},
 		{0, 0, 0, 0}
     };
 
@@ -302,6 +305,19 @@ static Table& split_horizontal(ArrayString& pieces, bool right) {
 	return table;
 }
 
+static VArray& split_array(ArrayString& pieces, bool right) {
+	VArray& result=*new VArray(pieces.count());
+	ArrayValue &array=result.array();
+	if(right) { // right
+		for(int i=pieces.count(); --i>=0; )
+			array+=new VString(*pieces[i]);
+	} else { // left
+		for(ArrayString::Iterator i(pieces); i; )
+			array+=new VString(*i.next());
+	}
+	return result;
+}
+
 static void split_with_options(Request& r, MethodParams& params, int bits) {
 	const String& string=GET_SELF(r, VString).string();
 	size_t params_count=params.count();
@@ -318,19 +334,25 @@ static void split_with_options(Request& r, MethodParams& params, int bits) {
 
 	bool right=(bits & SPLIT_RIGHT) != 0;
 	bool horizontal=(bits & SPLIT_HORIZONTAL) !=0;
+	bool array=(bits & SPLIT_ARRAY) !=0;
 
 	const String* column_name=0;
 	if(params_count>2){
 		column_name=&params.as_string(2, COLUMN_NAME_MUST_BE_STRING);
-		if (horizontal && !column_name->is_empty()) 
-			throw Exception(PARSER_RUNTIME, column_name, "column name can't be specified with horisontal split");
-	} 
-	if(!column_name || column_name->is_empty())
-		column_name=new String("piece");
+		if (horizontal && !column_name->is_empty())
+			throw Exception(PARSER_RUNTIME, column_name, "column name cannot be specified when splitting into a table horizontal row");
+		if (array && !column_name->is_empty())
+			throw Exception(PARSER_RUNTIME, column_name, "column name cannot be specified when splitting into an array");
+	}
 
-	Table& table=horizontal?split_horizontal(pieces, right):split_vertical(pieces, right, column_name);
-
-	r.write(*new VTable(&table));
+	if(array){
+		r.write(split_array(pieces, right));
+	} else {
+		if(!column_name || column_name->is_empty())
+			column_name=new String("piece");
+		Table& table=horizontal ? split_horizontal(pieces, right) : split_vertical(pieces, right, column_name);
+		r.write(*new VTable(&table));
+	}
 }
 static void _split(Request& r, MethodParams& params) {
 	split_with_options(r, params, 0 /* maybe-determine from param #2 */);
