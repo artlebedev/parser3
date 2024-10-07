@@ -1,3 +1,89 @@
+2024-10-05  moko
+
+	* src/classes/table.C: ^table.cells[] / ^table.cells(limit) added,
+	  returns current row cells array (implements feature #1250)
+
+	* tests/: 405.html, results/169.processed, results/405.processed:
+	  tests updated after ^string.split[;a] implemented (related to
+	  feature #1249)
+
+	* src/classes/string.C: ^string.split[] - 'a' option added for
+	  splitting into an array (implements feature #1249)
+
+2024-10-04  moko
+
+	* tests/: 431.html, results/431.processed: final code coverage
+	  array tests
+
+	* src/: classes/array.C, include/pa_array.h, types/pa_varray.h:
+	  array: confirm_all_used() added and used where possible, expand()
+	  now expends faster
+
+2024-10-03  moko
+
+	* tests/: 357.html, results/auto.p: max_recoursion -> max_recursion
+
+	* tests/: 256.html, results/256.processed: test for
+	  $.date[unix-timestamp] handling large dates
+
+	* src/: classes/file.C, classes/op.C, classes/reflection.C,
+	  classes/string.C, classes/table.C, include/pa_common.h,
+	  main/pa_common.C, main/pa_http.C, main/pa_request.C,
+	  types/pa_vdate.C, types/pa_vmethod_frame.h, types/pa_vtable.C:
+	  format replaced with pa_uitoa where applicable,
+	  $.date[unix-timestamp] fixed for handling large dates
+
+	* tests/: 433.html, results/433.processed: more tests, including
+	  test for possible endless recursion in ^o.GET[]
+
+	* src/types/pa_vobject.C: bugfix: detecting possible endless
+	  recursion in get_scalar_value inside ^o.GET[]
+
+	* src/: classes/json.C, include/pa_request.h, main/execute.C,
+	  main/pa_request.C, types/pa_value.h, types/pa_vmethod_frame.C:
+	  Temp_recursion class added; spelling: $LIMITS.max_recoursion ->
+	  $LIMITS.max_recursion
+
+2024-10-02  moko
+
+	* tests/: 253.html, 287.html, 430.html, 431.html, 433.html,
+	  results/253.processed, results/287.processed,
+	  results/430.processed, results/433.processed: more tests for full
+	  array and json code coverage
+
+	* tests/: 433.html, results/433.processed: tests for hash functions
+	  with array param
+
+	* src/classes/: array.C, hash.C: ^hash::create[$array] optimized
+
+	* tests/: 432.html, results/432.processed: modified ^hash.at tests
+	  in 246.html used to test ^array.at, same result produced
+
+	* tests/: 430.html, 431.html, results/430.processed,
+	  results/431.processed: more array tests for 100% code coverage
+	  (related to feature #930)
+
+	* tests/: 427.html, 430.html, results/427.processed,
+	  results/430.processed: first portion of array tests added
+	  (related to feature #930)
+
+	* src/classes/array.C: allow only whitespace string as argument for
+	  add and join
+
+	* src/classes/array.C: add behavour for array synced with hash
+
+2024-09-30  moko
+
+	* tests/: 429-sql.html, results/429-sql.processed: code coverage
+	  tests added
+
+	* src/classes/array.C: $.distinct should not be used unless
+	  $.sparse(true)
+
+	* tests/: 429-sql.html, results/388-sql.processed,
+	  results/429-sql.processed: tests for ^array::sql{}, including
+	  multi_statements mode (related to feature #930)
+
 2024-09-29  moko
 
 	* src/classes/array.C: synced ^array::sql multi_statements logic
