@@ -8,7 +8,7 @@
 #ifndef PA_ARRAY_H
 #define PA_ARRAY_H
 
-#define IDENT_PA_ARRAY_H "$Id: pa_array.h,v 1.96 2024/10/04 05:12:05 moko Exp $"
+#define IDENT_PA_ARRAY_H "$Id: pa_array.h,v 1.97 2024/10/07 23:46:24 moko Exp $"
 
 // includes
 
@@ -259,7 +259,7 @@ template<typename T> char* pa_itoa(T n, T base=10){
 	}
 
 	do {
-		*(--pos)=(n % base) + '0';
+		*(--pos)=(char)(n % base) + '0';
 		n/=base;
 	} while (n > 0);
 
@@ -275,7 +275,7 @@ template<typename T> char* pa_uitoa(T n, T base=10){
 	*pos='\0';
 
 	do {
-		*(--pos)=(n % base) + '0';
+		*(--pos)=(char)(n % base) + '0';
 		n/=base;
 	} while (n > 0);
 
