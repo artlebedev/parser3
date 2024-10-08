@@ -9,7 +9,10 @@
 #include "pa_vfile.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VARRAY_C="$Id: pa_varray.C,v 1.3 2024/09/22 13:56:09 moko Exp $" IDENT_PA_VARRAY_H;
+volatile const char * IDENT_PA_VARRAY_C="$Id: pa_varray.C,v 1.4 2024/10/08 00:02:42 moko Exp $" IDENT_PA_VARRAY_H;
+
+// Explicit instantiation for Visual Studio
+template class SparseArray<Value*>;
 
 template<typename T> void SparseArray<T>::fit(size_t index){
 	if(index > pa_array_limit)
