@@ -8,7 +8,7 @@
 #ifndef PA_VARRAY_H
 #define PA_VARRAY_H
 
-#define IDENT_PA_VARRAY_H "$Id: pa_varray.h,v 1.11 2024/10/04 05:12:05 moko Exp $"
+#define IDENT_PA_VARRAY_H "$Id: pa_varray.h,v 1.12 2024/10/13 04:12:25 moko Exp $"
 
 #include "classes.h"
 #include "pa_value.h"
@@ -157,8 +157,9 @@ public: // value
 			return result;
 
 		// $element
-		if(Value* result=farray.get(index(aname)))
-			return result;
+		if(is_index(aname))
+			if(Value* result=farray.get(index(aname)))
+				return result;
 
 		return bark("%s method not found", &aname);
 	}
@@ -194,6 +195,14 @@ public: // usage
 
 	static size_t index(const String::Body& aindex){ return pa_atoui(aindex.cstr()); }
 	static size_t index(const String& aindex){ return pa_atoui(aindex.cstr(), 10, &aindex); }
+
+	static bool is_index(const String& aindex){
+		for(const char *pos=aindex.cstr();*pos;pos++){
+			if ((*pos < '0') || (*pos > '9'))
+				return false;
+		}
+		return true;
+	}
 
 	bool contains(size_t index){
 		return farray.get(index) != NULL;
