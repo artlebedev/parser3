@@ -18,7 +18,7 @@ $list[^reflection:classes[]]
     $code[^$$name^:bad]
     $code ^try-catch{^process{$code}
 	no exception}
-    ^try-catch{^process{^$$name^:bad}
+    ^try-catch{^process{$class.bad}
 	no exception}
 }
 
@@ -41,6 +41,9 @@ $doc[^xdoc::create{^xml[]}]
 ^check[$doc]
 ^check[$doc.documentElement]
 ^check[^array::create[]]
+
+4. nonexistent constructor
+  ^try-catch{ ^hash::bad[] }
 
 @xml[]
 <?xml version="1.0"?>

@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 10428
+Content-Length: 10539
 
 1. nonexistent method exception check for all classes
 Class MAIN methoded ^MAIN:bad[] Exception type: parser.runtime,
@@ -395,9 +395,13 @@ field Exception type: parser.runtime,
 Source: bad,
 Comment: xnode field not found
 array
-method Exception type: number.format,
+method Exception type: parser.runtime,
 Source: bad,
-Comment: invalid number (int)
+Comment: array method not found
 field Exception type: number.format,
 Source: bad,
 Comment: invalid number (int)
+4. nonexistent constructor
+Exception type: parser.runtime,
+Source: bad,
+Comment: hash constructor not found
