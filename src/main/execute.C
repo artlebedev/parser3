@@ -22,7 +22,7 @@
 #include "pa_varray.h"
 #include "pa_wwrapper.h"
 
-volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.423 2024/10/02 21:24:41 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
+volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.424 2024/10/14 21:55:09 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
 
 //#define DEBUG_EXECUTE
 
@@ -877,9 +877,10 @@ void Request::execute(ArrayOperation& ops) {
 
 				DEBUG_PRINT_STRING(constructor_name)
 
+				// not get_element4call for better error reporting
 				Junction* constructor_junction=get_element(vclass, constructor_name).get_junction();
 				if(!constructor_junction)
-					throw Exception(PARSER_RUNTIME, &constructor_name, "constructor must be declared in class '%s'", vclass.type());
+					throw Exception(PARSER_RUNTIME, &constructor_name, "%s constructor not found", vclass.type());
 
 				ArrayOperation* local_ops=i.next().ops;
 				DEBUG_PRINT_OPS(local_ops)
