@@ -20,18 +20,23 @@
 #include "pa_vxdoc.h"
 #endif
 
-volatile const char * IDENT_JSON_C="$Id: json.C,v 1.63 2024/10/02 21:24:41 moko Exp $";
+volatile const char * IDENT_JSON_C="$Id: json.C,v 1.64 2024/10/16 03:28:30 moko Exp $";
 
 // class
 
 class MJson: public Methoded {
 public:
 	MJson();
+
+	override Value* get_element(const String&);
+	override const VJunction* put_element(const String&, Value*);
 };
 
 // global variable
 
 DECLARE_CLASS_VAR(json, new MJson);
+
+bool handle_array_default=true;
 
 // methods
 struct Json : public PA_Allocated {
@@ -55,7 +60,7 @@ struct Json : public PA_Allocated {
 
 	Json(Charset* acharset): stack(), key_stack(), key(NULL), result(NULL), hook_object(NULL), hook_array(NULL), 
 		request(NULL), charset(acharset), taint(String::L_TAINTED), handle_double(true), handle_int(true), 
-		handle_array(true), distinct(D_EXCEPTION){}
+		handle_array(handle_array_default), distinct(D_EXCEPTION){}
 
 	bool set_distinct(const String &value){
 		if (value == "first") distinct = D_FIRST;
@@ -72,6 +77,31 @@ struct Json : public PA_Allocated {
 		return true;
 	}
 };
+
+
+Value* MJson::get_element(const String& aname) {
+	if (aname=="array"){
+		return new VString(*new String(handle_array_default ? "array" : "hash"));
+	}
+	return Methoded::get_element(aname);
+}
+
+const VJunction* MJson::put_element(const String& aname, Value* avalue) {
+	if (aname=="array"){
+		Json json(NULL);
+		if (avalue->get_string()){
+			const String& sarray=avalue->as_string();
+			if (json.set_handle_array(sarray)){
+				handle_array_default=json.handle_array;
+				return 0;
+			}
+			throw Exception(PARSER_RUNTIME, &sarray, "$json:array must be 'array' or 'hash'");
+		}
+		throw Exception(PARSER_RUNTIME, 0, "$json:array must be 'array' or 'hash'");
+	}
+	return Methoded::put_element(aname, avalue);
+}
+
 
 static void set_json_value(Json *json, Value *value){
 	VHashBase *top = json->stack.top_value();
