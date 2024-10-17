@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.17 2024/10/04 05:12:05 moko Exp $";
+volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.18 2024/10/17 22:24:44 moko Exp $";
 
 // class
 
@@ -1043,12 +1043,19 @@ static void _reverse(Request& r, MethodParams& params) {
 
 MArray::MArray(): Methoded(VARRAY_TYPE) {
 
-	// ^array::create[[copy_from]]
-	add_native_method("create", Method::CT_DYNAMIC, _create_or_add, 0, 1);
+	// ^array::copy[[copy_from]]
+	add_native_method("copy", Method::CT_DYNAMIC, _create_or_add, 0, 1);
 	// ^array.add[add_from]
 	add_native_method("add", Method::CT_DYNAMIC, _create_or_add, 1, 1);
 	// ^array.join[join_from[;options]]
 	add_native_method("join", Method::CT_DYNAMIC, _join, 1, 2);
+
+	// ^array::create[value;value]
+	add_native_method("create", Method::CT_DYNAMIC, _append, 0, 10000);
+	// ^array.append[value;value]
+	add_native_method("append", Method::CT_DYNAMIC, _append, 1, 10000);
+	// ^array.insert[index;value...]
+	add_native_method("insert", Method::CT_DYNAMIC, _insert, 2, 10000);
 
 	// ^array.left(n)
 	add_native_method("left", Method::CT_DYNAMIC, _left, 1, 1);
@@ -1057,13 +1064,6 @@ MArray::MArray(): Methoded(VARRAY_TYPE) {
 	// ^array.mid(p)
 	// ^array.mid(p;n)
 	add_native_method("mid", Method::CT_DYNAMIC, _mid, 1, 2);
-
-	// ^array::new[value;value]
-	add_native_method("new", Method::CT_DYNAMIC, _append, 0, 10000);
-	// ^array.append[value;value]
-	add_native_method("append", Method::CT_DYNAMIC, _append, 1, 10000);
-	// ^array.insert[index;value...]
-	add_native_method("insert", Method::CT_DYNAMIC, _insert, 2, 10000);
 
 	// ^array.delete[index]
 	add_native_method("delete", Method::CT_DYNAMIC, _delete, 0, 1);
