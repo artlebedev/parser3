@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 10539
+Content-Length: 10612
 
 1. nonexistent method exception check for all classes
 Class MAIN methoded ^MAIN:bad[] Exception type: parser.runtime,
@@ -405,3 +405,6 @@ Comment: invalid number (int)
 Exception type: parser.runtime,
 Source: bad,
 Comment: hash constructor not found
+Exception type: parser.runtime,
+Source: bad,
+Comment: class is undefined

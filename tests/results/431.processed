@@ -1,11 +1,11 @@
 Content-Type: text/html
-Content-Length: 1244
+Content-Length: 1240
 
 0.1 Exception type: number.format,
-Source: create,
+Source: copy,
 Comment: '-7' is out if range (negative)
 0.2 Exception type: number.format,
-Source: create,
+Source: copy,
 Comment: '12x5' is an invalid number (int)
 join
 1.1 negative limit: [

@@ -1,6 +1,6 @@
 @main[]
 
-^show[^array::create[$void]]
+^show[^array::copy[$void]]
 
 $a[^array::create[]]
 
@@ -17,11 +17,11 @@ $a.05[a5] $a.20[a20] $a.10[a30] $a.25[$void]
 
 5. ^show[^h.intersection[$a]]
 
-6. $a[^array::create[^o::create[]]]
+6. $a[^array::copy[^o::create[]]]
    ^show[$a]
 
 7. $obj[^o2::create[]] $o.1
-   $a[^array::create[$obj]]
+   $a[^array::copy[$obj]]
    $MAIN:log
    as_hash calls def and thus result is empty: ^show[$a]
 
