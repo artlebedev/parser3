@@ -14,10 +14,10 @@ $h[ $.1[1] $.2[2] ]
 
 $a[1;2]
 
-3. array kept: ^a.create[] ^json:string[$a]
-   or added: ^a.create[ $.3[3] ] ^json:string[$a]
-   or ignored ^a.create[$a] ^json:string[$a]
+3. array kept: ^a.copy[] ^json:string[$a]
+   or added: ^a.copy[ $.3[3] ] ^json:string[$a]
+   or ignored ^a.copy[$a] ^json:string[$a]
 
-4. array kept: ^a.new[] ^json:string[$a]
-   or added: ^a.new[4] ^json:string[$a]
-   or nested: ^a.new[$a] ^try-catch{ ^json:string[$a] }
+4. array kept: ^a.create[] ^json:string[$a]
+   or added: ^a.create[4] ^json:string[$a]
+   or nested: ^a.create[$a] ^try-catch{ ^json:string[$a] }
