@@ -167,6 +167,9 @@ set CYGWIN=nodosfilewarning
 			RelativePath=".\classes.inc">
 		</File>
 		<File
+			RelativePath=".\array.C">
+		</File>
+		<File
 			RelativePath=".\curl.C">
 		</File>
 		<File

@@ -152,6 +152,12 @@
 			RelativePath=".\pa_value.h">
 		</File>
 		<File
+			RelativePath=".\pa_varray.C">
+		</File>
+		<File
+			RelativePath=".\pa_varray.h">
+		</File>
+		<File
 			RelativePath=".\pa_vbool.h">
 		</File>
 		<File
