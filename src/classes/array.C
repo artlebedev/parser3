@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.18 2024/10/17 22:24:44 moko Exp $";
+volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.19 2024/10/20 13:20:57 moko Exp $";
 
 // class
 
@@ -555,14 +555,10 @@ static void _right(Request& r, MethodParams& params) {
 }
 
 static void _mid(Request& r, MethodParams& params) {
-	const String& string=GET_SELF(r, VString).string();
-
 	int begin=params.as_int(0, "p must be int", r);
+
 	if(begin<0)
 		throw Exception(PARSER_RUNTIME, 0,  "p(%d) must be >=0", begin);
-
-	size_t end;
-	size_t length=0;
 
 	if(params.count()>1) {
 		int n=params.as_int(1, "n must be int", r);
@@ -1025,7 +1021,7 @@ static void _select(Request& r, MethodParams& params) {
 	r.write(*result);
 }
 
-static void _reverse(Request& r, MethodParams& params) {
+static void _reverse(Request& r, MethodParams&) {
 	ArrayValue& source_array=GET_SELF(r, VArray).array();
 
 	VArray& result=*new VArray(source_array.count());
