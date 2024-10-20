@@ -26,7 +26,7 @@
 #include "pa_table.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.187 2024/09/28 14:37:53 moko Exp $";
+volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.188 2024/10/20 13:38:31 moko Exp $";
 
 // defines
 
@@ -515,7 +515,7 @@ static void parse_IFD_entry(HashStringValue& hash, bool is_big, Measure_reader& 
 		if(const char* name=(gps)?exif_gps_tag_value2name.get(tag):exif_tag_value2name.get(tag))
 			hash.put(name, value);
 		else
-			hash.put(pa_uitoa(tag), value);
+			hash.put(pa_uitoa((int)tag), value);
 	}
 }
 
