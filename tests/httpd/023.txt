@@ -1,0 +1,2 @@
+GET /auto.p HTTP/1.0
+

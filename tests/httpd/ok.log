@@ -1,0 +1,314 @@
+running test 001.txt
+HTTP/1.0 200 OK
+Content-Type: text/html; charset=UTF-8
+Server: Parser3
+Connection: close
+Content-Length: 159
+
+2+2 is 4
+{
+"SERVER_NAME":"parser.ru",
+"REMOTE_ADDR":"127.0.0.1",
+"HTTP_HOST":"parser.ru",
+"SERVER_PORT":"8100",
+"REQUEST_URI":"\/",
+"REQUEST_METHOD":"GET"
+}
+{}
+=============
+running test 002.txt
+HTTP/1.0 501 Not Implemented
+Content-Type: text/plain
+
+invalid request method
+=============
+running test 003.txt
+HTTP/1.0 200 OK
+Content-Type: text/html; charset=UTF-8
+Server: Parser3
+Connection: close
+Content-Length: 162
+
+2+2 is 4
+{
+"HTTP_CONTENT_LENGTH":"10",
+"SERVER_NAME":"localhost",
+"REMOTE_ADDR":"127.0.0.1",
+"SERVER_PORT":"8100",
+"REQUEST_URI":"\/",
+"REQUEST_METHOD":"GET"
+}
+{}
+=============
+running test 004.txt
+HTTP/1.0 404 Not Found
+Content-Type: text/html; charset=UTF-8
+Server: Parser3
+Connection: close
+Content-Length: 47
+
+The requested URL was not found on this server.
+=============
+running test 005.txt
+HTTP/1.0 400 Bad Request
+Content-Type: text/plain
+
+bad response from host - bad header ":value"
+=============
+running test 007.txt
+HTTP/1.0 400 Bad Request
+Content-Type: text/plain
+
+invalid uri '/../data/test.txt'
+=============
+running test 008.txt
+HTTP/1.0 400 Bad Request
+Content-Type: text/plain
+
+invalid uri '%2Ftest.txt'
+=============
+running test 009.txt
+HTTP/1.0 400 Bad Request
+Content-Type: text/plain
+
+invalid uri '/.%2E/data/test.txt'
+=============
+running test 010.txt
+HTTP/1.0 400 Bad Request
+Content-Type: text/plain
+
+invalid uri '/test%2Ftest.txt'
+=============
+running test 011.txt
+HTTP/1.0 400 Bad Request
+Content-Type: text/plain
+
+invalid uri 'test.txt'
+=============
+running test 012.txt
+HTTP/1.0 200 OK
+Content-Type: text/plain
+Server: Parser3
+Connection: close
+Accept-Ranges: bytes
+Content-Length: 15
+Last-Modified: Tue, 08 Dec 2020 22:46:59 GMT
+
+test?test.test!
+=============
+running test 013.txt
+HTTP/1.0 400 Bad Request
+Content-Type: text/plain
+
+invalid uri '/.%2E\data/test.txt'
+=============
+running test 014.txt
+HTTP/1.0 200 OK
+Content-Type: text/html; charset=UTF-8
+Server: Parser3
+Connection: close
+Content-Length: 145
+
+2+2 is 4
+{
+"SERVER_NAME":"localhost",
+"REMOTE_ADDR":"127.0.0.1",
+"REQUEST_URI":"\/%00test.txt",
+"SERVER_PORT":"8100",
+"REQUEST_METHOD":"GET"
+}
+{}
+=============
+running test 015.txt
+HTTP/1.0 206 Partial Content
+Content-Type: text/plain
+Server: Parser3
+Connection: close
+Accept-Ranges: bytes
+Content-Range: bytes 5-9/15
+Content-Length: 5
+Last-Modified: Tue, 08 Dec 2020 22:46:59 GMT
+
+test.
+=============
+running test 016.txt
+HTTP/1.0 400 Bad Request
+Content-Type: text/plain
+Server: Parser3
+Connection: close
+Accept-Ranges: bytes
+Content-Type: text/plain
+
+Invalid range
+=============
+running test 017.txt
+HTTP/1.0 206 Partial Content
+Content-Type: text/plain
+Server: Parser3
+Connection: close
+Accept-Ranges: bytes
+Content-Range: bytes 5-14/15
+Content-Length: 10
+Last-Modified: Tue, 08 Dec 2020 22:46:59 GMT
+
+test.test!
+=============
+running test 018.txt
+HTTP/1.0 206 Partial Content
+Content-Type: text/plain
+Server: Parser3
+Connection: close
+Accept-Ranges: bytes
+Content-Range: bytes 10-14/15
+Content-Length: 5
+Last-Modified: Tue, 08 Dec 2020 22:46:59 GMT
+
+test!
+=============
+running test 019.txt
+HTTP/1.0 416 Range Not Satisfiable
+Content-Type: text/plain
+Server: Parser3
+Connection: close
+Accept-Ranges: bytes
+Content-Type: text/plain
+
+
+=============
+running test 020.txt
+HTTP/1.0 206 Partial Content
+Content-Type: text/plain
+Server: Parser3
+Connection: close
+Accept-Ranges: bytes
+Content-Range: bytes 10-14/15
+Content-Length: 5
+Last-Modified: Tue, 08 Dec 2020 22:46:59 GMT
+
+test!
+=============
+running test 021.txt
+HTTP/1.0 501 Not Implemented
+Content-Type: text/plain
+Server: Parser3
+Connection: close
+Accept-Ranges: bytes
+Content-Type: text/plain
+
+Multiple ranges are not supported
+=============
+running test 022.txt
+HTTP/1.0 501 Not Implemented
+Content-Type: text/plain
+
+invalid request method
+=============
+running test 023.txt
+HTTP/1.0 403 Forbidden
+Content-Type: text/html; charset=UTF-8
+Server: Parser3.4.7b (compiled on x86_64-unknown-linux-gnu)
+Date: WWW, DD MMM YYYY HH MM:SS GMT
+Connection: close
+Content-Length: 17
+
+Permission denied
+=============
+running test 024.txt
+HTTP/1.0 401 Unauthorized
+Content-Type: text/html; charset=UTF-8
+Server: Parser3.4.7b (compiled on x86_64-unknown-linux-gnu)
+Date: WWW, DD MMM YYYY HH MM:SS GMT
+Connection: close
+Www-Authenticate: Basic realm="auth test"
+Content-Length: 22
+
+Authorization Required
+=============
+running test 025.txt
+HTTP/1.0 200 OK
+Content-Type: text/html; charset=UTF-8
+Server: Parser3
+Connection: close
+Content-Length: 209
+
+2+2 is 4
+{
+"SERVER_NAME":"localhost",
+"REMOTE_ADDR":"127.0.0.1",
+"HTTP_AUTHORIZATION":"Basic YXV0aDp0ZXN0",
+"REMOTE_USER":"auth",
+"SERVER_PORT":"8100",
+"REQUEST_URI":"\/index.html",
+"REQUEST_METHOD":"GET"
+}
+{}
+=============
+running test 026.txt
+HTTP/1.0 200 OK
+Content-Type: text/html; charset=UTF-8
+Server: Parser3
+Connection: close
+Content-Length: 237
+
+2+2 is 4
+{
+"HTTP_CONTENT_LENGTH":"10",
+"SERVER_NAME":"localhost",
+"REMOTE_ADDR":"127.0.0.1",
+"SERVER_PORT":"8100",
+"REQUEST_URI":"\/",
+"HTTP_CONTENT_TYPE":"application\/x-www-form-urlencoded",
+"REQUEST_METHOD":"POST"
+}
+{
+"name":"value"
+}
+=============
+running test 027.txt
+HTTP/1.0 200 OK
+Content-Type: text/html; charset=UTF-8
+Server: Parser3
+Connection: close
+Content-Length: 232
+
+2+2 is 4
+{
+"HTTP_CONTENT_LENGTH":"6",
+"SERVER_NAME":"localhost",
+"REMOTE_ADDR":"127.0.0.1",
+"SERVER_PORT":"8100",
+"REQUEST_URI":"\/",
+"HTTP_CONTENT_TYPE":"application\/x-www-form-urlencoded",
+"REQUEST_METHOD":"POST"
+}
+{
+"name":"v"
+}
+=============
+running test 028.txt
+HTTP/1.0 200 OK
+Content-Type: text/html; charset=UTF-8
+Server: Parser3
+Connection: close
+Content-Length: 207
+
+2+2 is 4
+{
+"SERVER_NAME":"localhost",
+"REMOTE_ADDR":"127.0.0.1",
+"QUERY_STRING":"name=value&a=b",
+"SERVER_PORT":"8100",
+"REQUEST_URI":"\/?name=value&a=b",
+"REQUEST_METHOD":"GET"
+}
+{
+"name":"value",
+"a":"b"
+}
+=============
+running test 030.txt
+HTTP/1.0 408 Request Timeout
+Content-Type: text/plain
+
+timeout occurred while receiving request
+=============

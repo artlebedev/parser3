@@ -1,0 +1,3 @@
+ZZZ /test.txt HTTP/1.0
+Range: bytes=5-9,10-14 
+

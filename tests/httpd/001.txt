@@ -1,0 +1,4 @@
+GET / HTTP/1.0
+Host: parser.ru
+
+<body>

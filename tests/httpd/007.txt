@@ -1,0 +1,2 @@
+GET /../data/test.txt HTTP/1.0
+

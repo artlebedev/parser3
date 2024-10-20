@@ -1,0 +1,4 @@
+GET /a+b/?a=b&c=d HTTP/1.0
+Host: %20parser.ru
+
+<body>

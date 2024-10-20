@@ -1,0 +1,5 @@
+POST / HTTP/1.0
+Content-Length: 10
+Content-Type: application/x-www-form-urlencoded
+
+name=value

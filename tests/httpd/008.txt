@@ -1,0 +1,1 @@
+GET %2Ftest.txt HTTP/1.0
