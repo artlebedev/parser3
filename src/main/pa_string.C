@@ -12,7 +12,7 @@
 #include "pa_charset.h"
 #include "pa_vregex.h"
 
-volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.274 2024/09/24 00:18:54 moko Exp $" IDENT_PA_STRING_H;
+volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.275 2024/10/20 14:33:16 moko Exp $" IDENT_PA_STRING_H;
 
 const String String::Empty;
 
@@ -700,7 +700,7 @@ Table* String::match(VRegex* vregex, Row_action row_action, void *info, int& mat
 		matches_count++;
 		row_action(table, row, prestart - !action_was_executed, prefinish, poststart, postfinish, info);
 
-		if(!global || poststart>=subject_length) // last step, avoid prestart++ after last char
+		if(!global || (size_t)poststart>=subject_length) // last step, avoid prestart++ after last char
 			break;
 
 		prestart=poststart;

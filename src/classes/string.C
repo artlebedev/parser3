@@ -22,7 +22,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.257 2024/10/05 03:38:14 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.258 2024/10/20 14:38:46 moko Exp $";
 
 // class
 
@@ -209,6 +209,7 @@ static void _pos(Request& r, MethodParams& params) {
 struct Split_action_info {
 	const String& src;
 	ArrayString &result;
+	Split_action_info(const String& s, ArrayString& r) : src(s), result(r) {}
 };
 
 static void split_action(Table& , ArrayString* row, int prestart, int prefinish, int poststart, int postfinish, void *info) {
@@ -226,7 +227,7 @@ static void split_list(Value& delim_value, const String& string, ArrayString& re
 		vregex->study();
 
 		int matches_count=0;
-		Split_action_info ai = { string, result };
+		Split_action_info ai(string, result);
 
 		string.match(vregex, split_action, &ai, matches_count);
 	} else

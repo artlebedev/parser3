@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.19 2024/10/20 13:20:57 moko Exp $";
+volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.20 2024/10/20 14:35:05 moko Exp $";
 
 // class
 
@@ -544,7 +544,7 @@ static void _right(Request& r, MethodParams& params) {
 
 	if(sn>0){
 		size_t used=GET_SELF(r, VArray).array().used();
-		if(sn<used){
+		if((size_t)sn<used){
 			mid(r, used-sn, sn);
 		} else {
 			mid(r);

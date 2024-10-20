@@ -20,7 +20,7 @@
 #include "pa_vxdoc.h"
 #endif
 
-volatile const char * IDENT_JSON_C="$Id: json.C,v 1.64 2024/10/16 03:28:30 moko Exp $";
+volatile const char * IDENT_JSON_C="$Id: json.C,v 1.65 2024/10/20 14:30:14 moko Exp $";
 
 // class
 
@@ -522,7 +522,7 @@ const String* Json_options::array_json_string(ArrayValue *array) {
 				result << indent;
 				delim = get_array_delim(json_string_recursion);
 			}
-			result << value_json_string(i.key(), i.value() ? *i.value() : *VVoid::get(), *this);
+			result << value_json_string(i.key(), i.value() ? *i.value() : static_cast<Value&>(*VVoid::get()), *this);
 		}
 		result << "\n" << (indent=get_indent(json_string_recursion-1)) << "]";
 
@@ -531,7 +531,7 @@ const String* Json_options::array_json_string(ArrayValue *array) {
 		bool need_delim=false;
 		for(ArrayValue::Iterator i(*array); i; i.next() ){
 			if(need_delim) result << ",\n";
-			result << value_json_string(i.key(), i.value() ? *i.value() : *VVoid::get(), *this);
+			result << value_json_string(i.key(), i.value() ? *i.value() : static_cast<Value&>(*VVoid::get()), *this);
 			need_delim=true;
 		}
 		result << "\n]";
